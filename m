@@ -1,192 +1,84 @@
-Message-ID: <472E31BA.60406@domain.hid>
-Date: Sun, 04 Nov 2007 21:55:22 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <fd6a47a90711120643x5ecc2520t5e592100dc5d8cc9@domain.hid>
+Date: Mon, 12 Nov 2007 15:43:04 +0100
+From: "Jeroen Van den Keybus" <jeroen.vandenkeybus@domain.hid>
+In-Reply-To: <fd6a47a90711051114i2ee37cf1p565f81542cfa570a@domain.hid>
 MIME-Version: 1.0
-References: <20071031154106.29f66afc@domain.hid>	<18216.57598.559447.478769@domain.hid>	<20071104120932.0a396361@domain.hid>
-	<472E06CF.1060305@domain.hid> <472E1913.3080909@domain.hid>
-	<472E26BC.5060908@domain.hid>
-In-Reply-To: <472E26BC.5060908@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig9C04E8BBD149E67B41D61CB6"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] rt_task_inquire and NULL 2nd arg
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_24289_7417528.1194878584732"
+References: <fd6a47a90711020421u6c5a6dadqff4864eec6aa188@domain.hid>
+	<472B0EED.40209@domain.hid>
+	<fd6a47a90711020549u5630ec9cgda7042c8c6c0f10a@domain.hid>
+	<fd6a47a90711020636t73e357d5ub9cbca0675adc1d7@domain.hid>
+	<fd6a47a90711020730m662abcc9q69fcb4f87ad470cc@domain.hid>
+	<472B3B5C.9010002@domain.hid>
+	<fd6a47a90711031042j568938fev22c3b5a6f99d8e17@domain.hid>
+	<472CBBAC.7030403@domain.hid>
+	<fd6a47a90711031236g7415be6fn3a6d838846e082ef@domain.hid>
+	<fd6a47a90711051114i2ee37cf1p565f81542cfa570a@domain.hid>
+Subject: Re: [Xenomai-core] Registering MSI interrupt with Xenomai fails
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: philippe.gerum@domain.hid
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: rpm@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig9C04E8BBD149E67B41D61CB6
+------=_Part_24289_7417528.1194878584732
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> Daniel Simon wrote:
->>>> On Wed, 31 Oct 2007 21:09:34 +0100
->>>> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
->>>>
->>>>> Daniel Simon wrote:
->>>>>  > Hello all,
->>>>>  >=20
->>>>>  > I am testing some former programs with
->>>>>  > xenomai-2.4-rc4/kernel-2.6.23.1/pentiumM;
->>>>>  >=20
->>>>>  > Calling rt_task_inquire(Id, NULL) with a null second argument no=
-w
->>>>>  > freezes or reboots the pc...
->>>>>  >=20
->>>>>  > I had no problem with this call with a former (2.3.1) xenomai ve=
-rsion. Is
->>>>>  > it a known behaviour?
->>>>>
->>>>> the rt_task_inquire system call checks that the "info" pointer poin=
-ts to
->>>>> a piece of writable memory and returns -EFAULT otherwise.=20
->>>> That was the behaviour I got with xenomai-2.3.1 (I only wanted to ch=
-eck if the
->>>> task was still existing and thus only interested in the value return=
-ed)
->>>>
->>>>> So, what you
->>>>> should get is a segmentation fault, no freeze or reboot. Actually, =
-I
->>>>> have tested a small test which segfaults as expected. Could you pro=
-vide
->>>>> us with the simple test that causes a freeze or reboot ?
->>>>>
->>>> file testinfo.c and config attached, uncommenting line 201 reboots t=
-he system
->>>> at cleaning time after ^C=20
->>>> (xeno 2.4-rc5, kernel 2.6.23.1, gcc 4.0.2 with --xeno-cflags and --x=
-eno-ldflags)
->>>>
->>> As a matter of fact, the address checking code on x86* considers any
->>> address below the page offset as being valid, so passing NULL went
->> Could you explain why Xenomai is special here? The range-checking macr=
-os
->> matched mainline before (as it should be), now it is different without=
+I must suspend the search for this problem for a while. The specific
+hardware (computer) is unavailable to me for about a week.
 
->> any (at least to) obvious reason. Their purpose is not to avoid page
->> faults but to avoid "confused deputy" attacks (user making the kernel
->> accessing privileged memory).
->>
->=20
-> Mainline macros only check for (addr < PAGE_OFFSET), which basically
-> says that any address below the first kernel location is ok. The rest i=
-s
-> expected to be caught by the usual exception mechanism. Because of the
-> dual domain model, we have to fixup things that Linux hasn't.
-
-What things precisely? Maybe just a clarifying comment is lacking in the
-code, though for me this patch still looks unrelated to the issue below.
-
->=20
->>> undetected in your case. This was already the case with 2.3.1, you
->>> likely just got lucky with respect to the consequences of another hol=
-e -
->>> in the I-pipe this time - which has been plugged recently, and now fi=
-xes
->>> up any fault whenever Xenomai has to leave it unhandled:
->>> http://www.denx.de/cgi-bin/gitweb.cgi?p=3Dipipe-2.6.git;a=3Dcommit;h=3D=
-e7b140c69794521fe8979a39337f36112dbe330c
->> Err, my feeling is you misunderstand this.
->>
->>> The fix above was only available when CONFIG_IPIPE_DEBUG was enabled =
-in
->>> the latest patch series, and prevented any ungraceful consequence of
->>> writing to an invalid address from the Xenomai domain. We actually ne=
-ed
->> Nope, it is intended to catch *improperly handled* invalid memory
->> accesses, ie. non-root domain bugs in the kernel.
->>
->=20
-> You are missing the major issue: there is some situations where Xenomai=
-
-> will never handle a fault occurring on top of the Xenomai domain,
-> because it has not really be triggered by a shadow, but rather by a pur=
-e
-> Linux thread running a syscall in high stage. This is the case for thos=
-e
-> running __xn_exec_any flagged services, like rt_task_inquire. And no, w=
-e
-> don't want to turn __xn_exec_any services into __xn_exec_conforming
-> ones, because there is no point in having real-time threads calling suc=
-h
-> services from secondary mode to be uselessly switched to primary mode.
->=20
->>> to have this fixup done in any case. Next I-pipe patches will include=
-
->>> this change.
->> I'm not sure if we need this debugging feature on by default - in the
->> fast path of Linux code running on usual page faults. The check must
->> never fire unless the RT domain's kernel is buggy, thus we should only=
-
->> use it during debugging.
->=20
-> As explained, some situations should better be left to the I-pipe as a
-> fallback situation. This is what is going to happen with the next patch=
-es.
->=20
-> What we have to do is the fixup always, only enabling the debug message=
-
-> and the trace freeze according to the IPIPE_DEBUG knob. The rationale i=
-s
-> simple: those situations are bugous, but should not be lethal, because
-> Linux normally allows for the fault to occur, so we should allow this
-> too. But since this reveals a problem, this has to be reported in the
-> message log when running in debug mode, since we cannot propagate this
-> information in any other way.
-
-OK, got it. We do have a case now where faults happen over non-root
-domains and are not a kernel faults. But such faults, even though they
-are not OK, shall not uselessly flood our kernel console. Instead, we
-need to switch silently and let Linux handle them. If the faults are
-fixable (like in this case), we are fine again. If not, we see the usual
-oops. Maybe we can track - silently - if there was a switch back earlier
-in order to report the original domain in the oops.
-
->=20
->> Something is fishy here - or I'm still missing the point. The question=
-
->> for me is: Why was the NULL pointer access over Xenomai passed through=
-
->> without relaxing the caller,
->=20
-> The caller was _NOT_ running as a shadow. You may have tasks running as=
-
-> pure Linux threads in the Xenomai domain. In such a case, Xenomai
-> _cannot_ handle the situation by itself, and needs the help of the
-> I-pipe, because only the I-pipe is allowed to switch domains.
->=20
-
-Ack. Still, this fiddling with __xn_access_ok is totally unclear to me.
-
-Jan
+Jeroen.
 
 
---------------enig9C04E8BBD149E67B41D61CB6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFHLjG+niDOoMHTA+kRAgU4AJ0cpQNcNF25CQfqrapT5ofh1QWxeQCfTUTV
-qEEDndeaqI3d4ixs9/X1o20=
-=7IJh
------END PGP SIGNATURE-----
+>  Could there be any reason why e.g. a pci_config_read_dword() call would
+> > fail in Xenomai context (because when still in the module probe code, I
+> > can perform the call correctly - in both cases I checked the
+> > dev->bus->ops->read/write pointers and they are identical) ?
+> >
+>
+> Today I moved the Xenomai ISR registration (rtdm_request_irq)) from the
+> RTDM open method (rtdm_dev_open) to the module probe code (dev_probe). Then
+> the registration works, but not always. Upon frequent insmod- and rmmodding,
+> I still can make the machine freeze.
+>
+> I'm now more or less lost and open to any ideas..
+>
 
---------------enig9C04E8BBD149E67B41D61CB6--
+------=_Part_24289_7417528.1194878584732
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<div>&nbsp;</div>
+<div>I must suspend the search for this problem for a while. The specific hardware (computer) is unavailable to me for about a week.</div>
+<div>&nbsp;</div>
+<div>Jeroen.</div>
+<div>&nbsp;</div>
+<div><br>&nbsp;</div>
+<blockquote class="gmail_quote" style="PADDING-LEFT: 1ex; MARGIN: 0px 0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">
+<div>
+<blockquote class="gmail_quote" style="PADDING-LEFT: 1ex; MARGIN: 0px 0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">
+<div>Could there be any reason why&nbsp;e.g. a pci_config_read_dword()&nbsp;call would fail in Xenomai context&nbsp;(because when still in the module probe code, I can&nbsp;perform the call correctly - in both cases I checked the dev-&gt;bus-&gt;ops-&gt;read/write pointers and they are identical) ? 
+</div></blockquote>
+<div>&nbsp;</div>
+<div>Today I moved the Xenomai ISR registration (rtdm_request_irq)) from&nbsp;the RTDM open method (rtdm_dev_open) to the module probe code&nbsp;(dev_probe). Then the registration works, but not always. Upon frequent insmod- and rmmodding, I still can make the machine freeze. 
+</div>
+<div>&nbsp;</div>
+<div>I&#39;m now more or less lost and open to any ideas..</div></div></blockquote>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div><br><br>&nbsp;</div>
+
+------=_Part_24289_7417528.1194878584732--
 
