@@ -1,6 +1,6 @@
-Message-ID: <4739E29B.3080908@domain.hid>
-Date: Tue, 13 Nov 2007 18:44:59 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4739E2D5.7010105@domain.hid>
+Date: Tue, 13 Nov 2007 18:45:57 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <2ff1a98a0711130556j58141e80yc0bca6b574fad7e9@domain.hid>	
 	<4739B1DC.4030705@domain.hid>	
@@ -10,10 +10,8 @@ References: <2ff1a98a0711130556j58141e80yc0bca6b574fad7e9@domain.hid>
 In-Reply-To: <2ff1a98a0711130924k3a81a5b8jf11982437308876e@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
 Subject: Re: [Xenomai-core] local_irq_save/local_irq_restore in real-time
  interrupt handler and slab corruption.
-Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -76,16 +74,16 @@ Gilles Chanteperdrix wrote:
 > The system runs stably, so I have to assume that calling
 > local_irq_restore in a real-time interrupt handler can cause slab
 > corruption. Strange.
-> 
 
-I guess this is likely not on your critical path, but when time allows,
-I'd be interested to know whether such bug still occurs when using a
-purely kernel-only tasking, assuming that you currently see this bug
-with userland tasks. Basically, I wonder if migrating shadows between
-both domains would not reveal the bug, since your real-time handler
-starts being preemptible by hw IRQs as soon as it returns from
-__ipipe_unstall_root, which forces local_irq_enable_hw().
+What about instrumenting the involved I-pipe code path with
+ipipe_trace_specials and then restoring the buggy code. You may even
+ipipe_trace_freeze on that spot so that you can watch in pre/post trace
+what happens. May help to understand if this was the only issue, or if
+we may need some further measures for future versions.
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
