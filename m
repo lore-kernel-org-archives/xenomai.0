@@ -1,15 +1,12 @@
-Message-ID: <47397C4B.1070901@domain.hid>
-Date: Tue, 13 Nov 2007 11:28:27 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <2ff1a98a0711130556j58141e80yc0bca6b574fad7e9@domain.hid>
+Date: Tue, 13 Nov 2007 14:56:01 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <472F6C17.2070100@domain.hid>	<472F6DAD.20308@domain.hid>	<472F990A.2030209@domain.hid>	<473006D8.4080808@domain.hid>	<47302D55.9050808@domain.hid>	<47339C53.5010700@domain.hid>	<4734677E.6010904@domain.hid>	<47348EE0.5020007@domain.hid>	<473493CB.4080701@domain.hid>
-	<4734995B.20900@domain.hid> <4737510F.7010309@domain.hid>
-In-Reply-To: <4737510F.7010309@domain.hid>
-Content-Type: multipart/mixed; boundary="------------010106030708060309060200"
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [Adeos-main] [PATCH] i386: switch to root domain
- on unhandled non-root faults
-Reply-To: rpm@xenomai.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Subject: [Xenomai-core] local_irq_save/local_irq_restore in real-time
+	interrupt handler and slab corruption.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,190 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main@gna.org, Xenomai-core@domain.hid
+To: xenomai-core <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
---------------010106030708060309060200
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Hi,
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->> Jan Kiszka wrote:
->>> Philippe Gerum wrote:
->>>> Jan Kiszka wrote:
->>>>
->>>>> Well, this is practically your original version. I still don't see why
->>>>> we want debug code in production setups (WARN_ON, e.g., doesn't work
->>>>> this way either),
->>>> Do you actually leave CONFIG_IPIPE_DEBUG on in production setups?
->>> Not /me, but your patch drags in the the full warning message even
->>> without CONFIG_IPIPE_DEBUG - if I virtually apply the patch correctly.
->>>
->> Are you 100% sure of this?
-> 
-> Yep, I am. The rationale here is to keep the Linux fault path free of
-> tests, unless we need them urgently also for non-debug setups. We don't,
-> we just loose the context information in case the test is actually true.
-> The oops will come anyway.
-> 
+I am chasing a slab corruption bug which happens on a Xenomai+RTnet
+enabled box under heavy non real-time network load (which passes
+through rtnet and rtmac_vnic to Linux which does NAT and resend it to
+another rtmac_vnic). When reading some I-pipe tracer traces, I
+remarked that I forgot to replace a local_irq_save/local_irq_restore
+with local_irq_save_hw/local_irq_restore_hw in a real-time interrupt
+handler. I fixed this bug, and the slab corruption seems to be gone.
 
-Ok, the intent of the patch may still be unclear to you because two
-changes have been merged in a single place, covering two distinct
-issues, both occurring when some Xenomai context raises an exception
-without any possibility for the nucleus to downgrade to the root domain.
-
-Issue #1 - sloppy copy_from/to_user from skins. Fixable faults may be
-charged to userland, but since a current problem within skins prevents
-from sending any sensible information back to the caller through normal
-return codes (i.e. -EFAULT), the warning is welcome to point the finger
-at the problematic syscall, only when IPIPE_DEBUG is enabled. This is
-aimed at skin writers, to help them identifying issues reported by
-users, when they are caused by unchecked copy_to/from_user calls: in
-such a case, the first step would be to ask the user to check for its
-syscall arguments, if he happens to use an unfixed Xenomai release. What
-one has to update to get this help feature is only the I-pipe, not the
-entire Xenomai release: this is what makes a significant difference for
-deployed systems. You call this user space debug, I don't: we are only
-giving user-space some support to work around our current in-kernel
-sloppiness, at least temporarily. Because we have a legacy to deal with,
-and out-of-tree code elsewhere, anything unexpensive which may save
-everyone debug time is welcome.
-
-Issue #2 - Unfixable exception from kernel space, typically from a
-real-time ISR. Since this issue is _not_ recoverable through the
-exception table mechanism, it has to be a severe kernel issue, and as
-such, we do want a big fat warning for it, regardless of the
-debug/non-debug state. This has exactly the same semantics than the
-standard BUG() assertion. But, in such a case, you don't want to rely on
-the Linux fault handling mechanism to eventually generate an oops later,
-because the underlying context is fundamentally unsafe Linux-wise, and
-the exception path may well not make it up to that point. What we want
-is an early warning, asap, so that at the very least, we may get a hint
-about what was going on before a possible lockup. Said differently, it's
-co-kernel world, and we have basically no guarantee that all the code
-which is going to be executed on behalf of the regular Linux exception
-handler will survive long enough to reach the oops handler. E.g.
-notifier call chain invoked, hardware interrupts enabled anew in the
-fault handler, scanning of the VMA list, and I'm only illustrating the
-page fault handling case here, albeit practically all kind of exception
-handlers may be involved. We may even want to add %eip to the initial
-warning output, in case dump_stack() fails miserably -- usually,
-experience shows that at least the first printk() works, fortunately. In
-future updates, we may want to rely on raw UART output when the platform
-provides for it (currently, all blackfin, mpc52xx and some? ARM do, IIRC).
-
-> See, I didn't introduce
-> CONFIG_IPIPE_DEBUG for user space debugging, it has always been a kernel
-> debug switch. So I would prefer to keep its semantics straight here as
-well.
->
-
-Really, If you look at the facts and what has been written so far,
-this patch has never been meant as a user-space debugging feature. The
-fact that warnings might be issued upon user-space errors is merely an
-help to better identify current kernel issues in skins, before the lack
-of check for copy_to/from_user return values may generalize havoc, and
-possibly trigger even more faults. This is issue #1 as described.
-
->>>> This feature is mainly aimed at API writers, not users. Additionally,
->>> If you want to support API writer: Let us tag __xn_copy* with
->>> __must_check - _that_ would be the right tool for pointing out remaining
->>> issues, not some runtime warning that a) only triggers if the user
->> What do you make of existing setups which will not upgrade to 2.4 in any
->> foreseeable future?
-> 
-> 99% of the very same setups won't upgrade to new kernel patches either,
-> so the effect is likely negligible.
-> 
-
-I don't know where you got this figure from, but as far as I can tell,
-since I'm also regularly helping people to deploy Xenomai in production
-systems, they will upgrade their kernel more frequently than their
-Xenomai baseline, e.g. to grab the latest kernel fixes from the stable
-Linux branch, which is especially true regarding 2.6.20. At this chance,
-they will much more likely upgrade their I-pipe patch rather than the
-entire Xenomai release.
-
-If you take into account that 2.6.20/x86 now includes this
-feature, people maintaining 2.3.x setups will actually benefit from
-it when it comes to identify issue #1. The same way, other non-x86 archs
-may use very recent kernels with v2.3.x, like powerpc which may run the
-latest 2.6.23. Basically, only x86 needs to upgrade to 2.4 for running
-kernels beyond 2.6.20. This is why an equivalent feature is also needed
-for all other archs when it makes sense.
-
-I will amend my latest patch to address your concern about the initial
-test though, by saving the cycles your patch spends unconditionally
-resetting the domain to the root one on the fast path. This will put
-our respective implementations roughly on par with respect to this
-particular issue.
+So, my question is: is it possible ? I mean, if local_irq_restore in
+the real-time interrupt handler calls __ipipe_sync_stage, the root
+domain is not stalled, so there should be no problem Linux-wise
+playing root domain interrupts, I would rather expect the I-pipe state
+to be jammed (after all, we are probably reentering functions that
+should not be reentered), not Linux state.
 
 -- 
-Philippe.
-
-
-
-
-
-
-
-
---------------010106030708060309060200
-Content-Type: text/x-patch;
- name="no-useless-domain-downgrade.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="no-useless-domain-downgrade.patch"
-
-diff --git a/arch/i386/kernel/ipipe.c b/arch/i386/kernel/ipipe.c
-index 07e6a65..26fc04b 100644
---- a/arch/i386/kernel/ipipe.c
-+++ b/arch/i386/kernel/ipipe.c
-@@ -657,24 +657,25 @@ fastcall int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int
- 	/*
- 	 * Detect unhandled faults from kernel space over non-root domains.
- 	 */
--	if (unlikely(!ipipe_root_domain_p && !(error_code & 4))) {
--		/*
--		 * Always warn about such faults when running in debug
--		 * mode, otherwise avoid reporting the fixable ones.
--		 */
--		if (ipipe_may_dump_nonroot_fault(regs)) {
--			struct ipipe_domain *ipd = ipipe_current_domain;
--			ipipe_current_domain = ipipe_root_domain;
--			ipipe_trace_panic_freeze();
--			printk(KERN_ERR "DOMAIN FAULT: Unhandled exception over domain"
--			       " %s - switching to ROOT\n", ipd->name);
--			dump_stack();
-+	if (unlikely(!ipipe_root_domain_p)) {
-+		if (unlikely(!(error_code & 4))) {
-+			/*
-+			 * Always warn about such faults when running in debug
-+			 * mode, otherwise avoid reporting the fixable ones.
-+			 */
-+			if (ipipe_may_dump_nonroot_fault(regs)) {
-+				struct ipipe_domain *ipd = ipipe_current_domain;
-+				ipipe_current_domain = ipipe_root_domain;
-+				ipipe_trace_panic_freeze();
-+				printk(KERN_ERR "DOMAIN FAULT: Unhandled exception over domain"
-+				       " %s at 0x%lx - switching to ROOT\n", ipd->name, regs->eip);
-+				dump_stack();
-+			}
- 		}
-+		/* Switch to root so that Linux can handle the fault cleanly. */
-+		ipipe_current_domain = ipipe_root_domain;
- 	}
- 
--	/* Always switch to root so that Linux can handle it cleanly. */
--	ipipe_current_domain = ipipe_root_domain;
--
- 	__ipipe_std_extable[vector](regs, error_code);
- 	local_irq_restore(flags);
- 	__fixup_if(regs);
-
-
-
---------------010106030708060309060200--
+                                               Gilles Chanteperdrix
 
