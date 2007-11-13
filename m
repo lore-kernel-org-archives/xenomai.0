@@ -1,19 +1,21 @@
-Message-ID: <4739E4E5.2030507@domain.hid>
-Date: Tue, 13 Nov 2007 18:54:45 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4739E6C2.8040309@domain.hid>
+Date: Tue, 13 Nov 2007 19:02:42 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <2ff1a98a0711130556j58141e80yc0bca6b574fad7e9@domain.hid>	
 	<4739B1DC.4030705@domain.hid>	
 	<2ff1a98a0711130634x552683c4ib1c420a859a4d665@domain.hid>	
 	<4739DA74.7040409@domain.hid>	
 	<2ff1a98a0711130924k3a81a5b8jf11982437308876e@domain.hid>	
-	<4739E2D5.7010105@domain.hid>
-	<2ff1a98a0711130951h5ff16415kb6b1c2ebb6f7abed@domain.hid>
-In-Reply-To: <2ff1a98a0711130951h5ff16415kb6b1c2ebb6f7abed@domain.hid>
+	<4739E29B.3080908@domain.hid>
+	<2ff1a98a0711130950n59ed9533l2024043aae004fe9@domain.hid>
+In-Reply-To: <2ff1a98a0711130950n59ed9533l2024043aae004fe9@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
 Subject: Re: [Xenomai-core] local_irq_save/local_irq_restore in real-time
  interrupt handler and slab corruption.
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -27,7 +29,7 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 Gilles Chanteperdrix wrote:
-> On Nov 13, 2007 6:45 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> On Nov 13, 2007 6:44 PM, Philippe Gerum <rpm@xenomai.org> wrote:
 >> Gilles Chanteperdrix wrote:
 >>> On Nov 13, 2007 6:10 PM, Philippe Gerum <rpm@xenomai.org> wrote:
 >>>> Gilles Chanteperdrix wrote:
@@ -76,24 +78,27 @@ Gilles Chanteperdrix wrote:
 >>> The system runs stably, so I have to assume that calling
 >>> local_irq_restore in a real-time interrupt handler can cause slab
 >>> corruption. Strange.
->> What about instrumenting the involved I-pipe code path with
->> ipipe_trace_specials and then restoring the buggy code. You may even
->> ipipe_trace_freeze on that spot so that you can watch in pre/post trace
->> what happens. May help to understand if this was the only issue, or if
->> we may need some further measures for future versions.
+>>>
+>> I guess this is likely not on your critical path, but when time allows,
+>> I'd be interested to know whether such bug still occurs when using a
+>> purely kernel-only tasking, assuming that you currently see this bug
+>> with userland tasks. Basically, I wonder if migrating shadows between
+>> both domains would not reveal the bug, since your real-time handler
+>> starts being preemptible by hw IRQs as soon as it returns from
+>> __ipipe_unstall_root, which forces local_irq_enable_hw().
 > 
-> I have used the tracer, but the "slab corruption" message triggers a
-> long time after the bug. At least, with a 128K backtrace, I could not
-> find the place where the bug happened.
+> Actually, I had only kernel-only tasking, since in my test I had
+> remove everything and only kept the RTnet drivers and stack and tested
+> Linux routing (my basic goal was to improve non-real time trafic
+> rate).
+> 
 
-Well, IF this local_irq fiddling here is supposed to be the reason, you
-should already be able to spot unexpected code paths around its usage.
-That was my idea. If there is nothing, you are probably only pushing
-around some still existing race window.
-
-Jan
+Ah, ok. So maybe the preemption issue? Would the ISR be fine with being
+re-entered for instance? Any potential trashing in sight? I guess that
+you could check if this is related with using a local version of
+local_irq_restore in this particular code spot, which would basically do
+what __ipipe_unstall_root does, but local_irq_enable_hw().
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Philippe.
 
