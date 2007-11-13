@@ -1,20 +1,21 @@
-Message-ID: <fd6a47a90711290850w5d21c703na1af5eab5eee928c@domain.hid>
-Date: Thu, 29 Nov 2007 17:50:58 +0100
-From: "Jeroen Van den Keybus" <jeroen.vandenkeybus@domain.hid>
-In-Reply-To: <474ED223.9040009@domain.hid>
+Message-ID: <b054e88e0711130323t6e68d1fbs113fdff7e2359cd@domain.hid>
+Date: Tue, 13 Nov 2007 12:23:18 +0100
+From: "Giammarco Zacheo" <g.zacheo@domain.hid>
+In-Reply-To: <4739628F.8000100@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_7370_5718800.1196355059007"
-References: <2ff1a98a0711210140x39088655idf0339a49522fa73@domain.hid>
-	<822923.79799.qm@domain.hid>
-	<fd6a47a90711211544q437ea186mcfbab54fd0a257cc@domain.hid>
-	<47450B49.2060907@domain.hid>
-	<fd6a47a90711220342y119217aei841a2b7bce90acb0@domain.hid>
-	<47459517.20003@domain.hid> <47459716.50508@domain.hid>
-	<fd6a47a90711221100t6baff4bej3d42e4440c2d452f@domain.hid>
-	<474ED223.9040009@domain.hid>
-Subject: Re: [Xenomai-help] xnintr_shirq_handler: IRQ11 not handled.
-	Disabling IRQ line.
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <b054e88e0711090616r6376a8a6t81e9bc94b4290dea@domain.hid>
+	<473471FB.9010305@domain.hid> <4734736D.7060100@domain.hid>
+	<b054e88e0711090652h176ef99dx740a5c0deb333829@domain.hid>
+	<4734755F.2010301@domain.hid> <47347593.3040605@domain.hid>
+	<b054e88e0711090747m315c1ecdsa998c41653737046@domain.hid>
+	<47348393.5030202@domain.hid>
+	<b054e88e0711091028v76750ff0jcf3b20aa12317d69@domain.hid>
+	<4739628F.8000100@domain.hid>
+Subject: Re: [Xenomai-help] Kernel oops while trying first boot w/ Xenomai
+	2.4rc5
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,41 +25,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Dennis Nguyen <dennisnguy@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>, adeos-main@gna.org
 
-------=_Part_7370_5718800.1196355059007
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Hi Jan,
+the patch works fine, the kernel boots with no problem. Thank you very much.
 
+I am going to make some tests in the afternoon, but right now I tried
+to start xeno-test - it hanged halfway.
+
+I will report later the problem with more details.
+
+Keep up with the excellent work! :-)
+
+Giammarco
+
+
+On Nov 13, 2007 9:38 AM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> Hi Giammarco,
 >
-> I'm sorry for replying late.  my interrupt conflicts could be solved by
-> using only one NIC or upgrade to Linux 2.6.23.9.  Interestingly I
-> noticed that the kernel 2.6.23.9 assigned different IRQ for each PCI
-> device.
-
-
-That's exactly what I meant by trying to have ACPI reorganize the interrupts
-for you. Never compile without CONFIG_ACPI=yes... And beware, I believe that
-the IRQ config may vary, theoretically even upon every reboot.
-
-Jeroen.
-
-------=_Part_7370_5718800.1196355059007
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-<div>
-<blockquote class="gmail_quote" style="PADDING-LEFT: 1ex; MARGIN: 0px 0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">I&#39;m sorry for replying late.&nbsp;&nbsp;my interrupt conflicts could be solved by<br>using only one NIC or upgrade to Linux 
-<a href="http://2.6.23.9">2.6.23.9</a>.&nbsp;&nbsp;Interestingly I<br>noticed that the kernel <a href="http://2.6.23.9">2.6.23.9</a> assigned different IRQ for each PCI device.</blockquote>
-<div>&nbsp;</div>
-<div>That&#39;s exactly what I meant by trying to&nbsp;have ACPI reorganize the interrupts for you. Never compile without CONFIG_ACPI=yes... And beware, I believe that the IRQ config may vary, theoretically even upon every reboot.
-</div>
-<div>&nbsp;</div>
-<div>Jeroen.</div>
-<div>&nbsp;</div></div>
-
-------=_Part_7370_5718800.1196355059007--
+> Giammarco Zacheo wrote:
+> > Ok, I hope this is what you asked for...
+> >
+> > I added printk in mask_ack_irq. Look at mask_ack_irq--> in the text
+> > below, those are the addresses of the function pointers.
+> > the printk related to mask_ack is printed once at the first pass in
+> > the function, otherwise the kernel would be choked by the output.
+>
+> Yep, this pointed to the right spot. I still don't get why we didn't
+> stumble over this earlier (obviously, most x86_64 boxes take a different
+> code path here), but it is at least clear now what went wrong:
+>
+> I-pipe ran into one of the remaining non-genirq code paths on x86_64.
+> More precisely, the IRQ chip of timer interrupt was changed from 8259 to
+> APIC without going through the generic API so that I-pipe was still
+> using the old ack handler, stepping later on the missing mask and
+> mack_ack handler.
+>
+> This patch now updates irq_chip.ipipe_ack when it changes for IRQ0. This
+> is a temporary fix, I guess kernel people will refactor io_apic_*.c into
+> a shared variant soon, overcoming this "minor" variation between i386
+> and x86_64...
+>
+> Please let us know if this helps!
+>
+> Jan
+>
 
