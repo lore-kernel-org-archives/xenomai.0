@@ -1,15 +1,13 @@
-Message-ID: <473B492F.7020707@domain.hid>
-Date: Wed, 14 Nov 2007 20:14:55 +0100
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
+From: Paul <paul_c@domain.hid>
+Date: Wed, 14 Nov 2007 22:14:17 +0000
 References: <4739E07B.1000608@domain.hid> <200711141056.06083.lepalom@domain.hid>
-	<473AC972.8070209@domain.hid> <200711141221.47396.lepalom@domain.hid>
-In-Reply-To: <200711141221.47396.lepalom@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
+	<200711141637.30166.paul_c@domain.hid>
+In-Reply-To: <200711141637.30166.paul_c@domain.hid>
+MIME-Version: 1.0
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_5M3OHbMI/ZTu9uS"
+Message-Id: <200711142214.17651.paul_c@domain.hid>
 Subject: Re: [Xenomai-core] [Xenomai-help] Xenomai v2.4-rc6
-Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,102 +17,141 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Leopold Palomo-Avellaneda <lepalom@domain.hid>
-Cc: xenomai@xenomai.org, xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Leopold Palomo-Avellaneda <lepalom@domain.hid>
 
-Leopold Palomo-Avellaneda wrote:
-> A Dimecres 14 Novembre 2007, Philippe Gerum va escriure:
->> Leopold Palomo-Avellaneda wrote:
->>> A Dimarts 13 Novembre 2007, Philippe Gerum va escriure:
->>>> Here is the sixth candidate release for the v2.4.x branch.
->>> [....]
->>>
->>>> 	[i386, x86_64 => x86]
->>>>
->>>> 	* Merge i386 and x86_64 arch-dep support as x86.
->>>>  	* Update Adeos/i386 support for 2.6.20, 2.6.22 and 2.6.23.
->>> [...]
->>>
->>> this has break the creation of the debian packages. I can understand that
->>> conceptually they are the same arch (one with 32bits and another with 64
->>> and more extensions) in general _all_ the distros treat them as two
->>> different arch.
->> How long do you think this is going to be that way, with 2.6.24 actually
->> merging those supports at kernel level?
->>
->>  So this changes break things. I don't think that it's a good idea do it
->>
->>> in a release candidate, IMHO.
->> We discussed this issue and the reason for doing this change asap in
->> length on the mailing list two weeks ago or so. Please have a look at
->> the archive for more. You will also find some significant patches
->> already exploiting the new common tree in order to streamline the code,
->> and ease maintenance on our side. Few resources, large work, we have to
->> be efficient, and maintaining two closely related archs sharing bits in
->> separate code bases is pointless, and a loss of time for the project.
->>
-> 
-> Ok,
-> 
-> I'm not subscribing to xenomai-core, so I don't know if this have been 
-> discussed on the list.
-> 
-> Yes, I didn't have done a search on the web/list about if this have been 
-> discused, I just have pointed that you are working (with a few resources, 
-> etc) to release a new version rc-6 and have done a change that break 
-> our "lazy way" of install/ compile xenomai. I don't know if others things.
-> 
-> I'm sure that you have worked/thought that this is the best way to do the 
-> things. Now I have read the thread about it and well, it's just a normal 
-> discussions about to make a important change and the people comment. You as 
-> project leader have an idea that you think that it's good for the project, 
-> and you implement it. And other people saying, ok, if you want to do it, I 
-> will try to help...
-> 
-> I can understand that my post have ..... I don't know the verb in english, in 
-> catalan will be "tocar-te els collons" and in english something like "touch 
-> your balls". That's not my intention, really.
->
+--Boundary-00=_5M3OHbMI/ZTu9uS
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-That's ok. Asbestos underwear should be part of any maintainer's outfit
-for that very reason.
+On Wednesday 14 November 2007 16:37, Paul wrote:
+> I'm right in the middle of looking at the packaging scripts, so expect a
+> patch within the next few days.
 
-> I also will try to help it and I will look the debian packages to solve 
-> this ... ;-) and probably I'm one this strange people that if I use a open 
-> source soft and I begin I use a release candidate to test it and try help.
+Attached, one patch for the Debian rules. The debian/changelog version will 
+need to be bumped up to 2.4.0-1 once we get out of the -rc phase. I'll submit 
+a trivial patch at that point and build a set of i386 & amd64 packages.
 
-Testing -rcS is actually what helps us the most, so I'm not going to
-mumble about this, but rather thank you instead.
+Regards, Paul.
 
-The actual issue I raised was more about putting things in the right
-perspective. We always have to adapt to new kernel releases, and since
-we also have to move forward in order to do a better job, distros may
-also have to fix things on their side from time to time. This said, we
-still try to avoid pointless changes because there is no benefit in
-causing havoc downstream just for the "fun" of it (unless the maintainer
-really has to get an appointment asap with his favorite shrink, that is).
 
-In the x86* merge case, doing it after 2.4.0 final would have made the
-maintenance of 2.4.x way more complex while working on 2.5.x in
-parallel, since we would have had two rapidly diverging branches: one
-old-fashioned with separate x86* trees, and another one with a merged
-support being continuously streamlined. Moving patches both ways would
-have been a real pain in the neck, without any upside for us. One has to
-keep in mind that a Xenomai maintenance cycle is roughly one year long,
-during which we commit to routinely issue bug fix releases, which is not
-that bad when you compare to the average free software project.
 
- At
-> least some kind of .. please could you run bla, or can you try bla ... but 
-> I'm not statistically important because I'm not showed at google ;-)
-> 
 
-Well, Google says that "shrek" amounts for more than 27 millions
-matches, but despite this fact, I'm not going to expect any
-advice/comment for him regarding Xenomai. So, the best way to move
-forward is that real people keep posting comments here, like you've just
-done.
 
--- 
-Philippe.
+--Boundary-00=_5M3OHbMI/ZTu9uS
+Content-Type: text/x-diff;
+  charset="us-ascii";
+  name="debian_rules.diff"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="debian_rules.diff"
+
+Index: debian/changelog
+===================================================================
+--- debian/changelog	(revision 3182)
++++ debian/changelog	(working copy)
+@@ -1,3 +1,11 @@
++xenomai (2.4.0-0+rc6) unstable; urgency=low
++
++  * Update prepare-patch.sh to use combined x86/i386 Xenomai tree.
++  * Split patch generation out of build-stamp so that it only gets
++    called once along with the configure.
++
++ -- Paul Corner <paul_c@domain.hid>  Wed, 14 Nov 2007 21:48:27 +0000
++
+ xenomai (2.3.50-05+r2299) unstable; urgency=low
+ 
+   * Add top level ChangeLog and CREDITS to each package.
+Index: debian/prepare-patch.sh
+===================================================================
+--- debian/prepare-patch.sh	(revision 3182)
++++ debian/prepare-patch.sh	(working copy)
+@@ -54,7 +54,6 @@ patch_link() {
+             if test ! -d  $temp_tree/$link_dir/$d ; then
+                 mkdir -p $temp_tree/$link_dir/$d
+             fi
+-echo " cp $xenomai_root/$target_dir/$f $temp_tree/$link_dir/$f"
+             cp $xenomai_root/$target_dir/$f $temp_tree/$link_dir/$f
+         done
+     )
+@@ -77,7 +76,6 @@ generate_patch() {
+ diff_addons() {
+     lines=`(echo ; echo ; cat $xenomai_root/scripts/Kconfig.frag) | wc -l`
+ 
+-#    echo "diff -u1wbr orig/arch/$linux_arch/Kconfig new/arch/$linux_arch/Kconfig" >> $patch_file
+     echo "--- linux/arch/$linux_arch/Kconfig	1970-01-01 01:00:00.000000000 +0100" >> $patch_file
+     echo "+++ linux-patched/arch/$linux_arch/Kconfig	2007-03-06 17:55:58.000000000 +0000" >> $patch_file
+     echo "@@ -40,2 +40,$lines @@" >> $patch_file
+@@ -97,9 +95,22 @@ mkdir -p $xenomai_root/tmp/linux.new
+ linux_tree="$xenomai_root/tmp/linux"
+ temp_tree="$xenomai_root/tmp/linux.new"
+ 
++
+ for linux_arch in $supported_arch ; do
+-    patch_link r m ksrc/arch/$linux_arch arch/$linux_arch/xenomai
+-    patch_link r n include/asm-$linux_arch include/asm-$linux_arch/xenomai
++    case $linux_arch in
++        i386)
++            base_arch=x86
++            ;;
++        x86_64)
++            base_arch=x86
++            ;;
++        *)
++            base_arch=$linux_arch
++            ;;
++    esac
++
++    patch_link r m ksrc/arch/$base_arch arch/$linux_arch/xenomai
++    patch_link r n include/asm-$base_arch include/asm-$linux_arch/xenomai
+ 
+     p="+drivers-\$(CONFIG_XENOMAI)		+= arch/$linux_arch/xenomai/"
+     echo $p | patch_append arch/$linux_arch/Makefile
+@@ -115,7 +126,6 @@ echo $p | patch_append kernel/Makefile
+ # Create local directories then symlink to the source files from
+ # there, so that we don't pollute the Xenomai source tree with
+ # compilation files.
+-
+ patch_link n m ksrc/ kernel/xenomai
+ patch_link n m ksrc/arch kernel/xenomai/arch
+ patch_link r m ksrc/arch/generic kernel/xenomai/arch/generic
+Index: debian/rules
+===================================================================
+--- debian/rules	(revision 3182)
++++ debian/rules	(working copy)
+@@ -34,21 +34,25 @@ endif
+ 	            --includedir=/usr/include/xenomai \
+ 	            --mandir=/usr/share/man
+ 
+-build: build-stamp
+-	./configure $(CONFIG_OPTS)
++build: build-stamp patch-stamp
+ 	$(MAKE)
+-#	The kernel patches get generated next - Likely to involve some
+-#	additional scripting..
++
++patch-stamp:
++	dh_testdir
++	touch patch-stamp
++#	The kernel patches get generated next - Need to revisit again
++#	when 2.6.24 ipipe patch is released.
+ 	$(CURDIR)/debian/prepare-patch.sh arm i386 powerpc x86_64
+ 
+ build-stamp:
+ 	dh_testdir
+ 	touch build-stamp
++	./configure $(CONFIG_OPTS)
+ 
+ clean:
+ 	dh_testdir
+ 	dh_testroot
+-	rm -f build-stamp
++	rm -f *-stamp
+ 	dh_clean
+ 	if test -f Makefile ; then \
+ 	    $(MAKE) distclean 2>/dev/null ; \
+
+--Boundary-00=_5M3OHbMI/ZTu9uS--
 
