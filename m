@@ -1,18 +1,14 @@
+Message-ID: <473AC972.8070209@domain.hid>
+Date: Wed, 14 Nov 2007 11:09:54 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+References: <4739E07B.1000608@domain.hid> <200711141056.06083.lepalom@domain.hid>
+In-Reply-To: <200711141056.06083.lepalom@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-ID: <18234.6110.166676.909212@domain.hid>
-Date: Tue, 13 Nov 2007 22:32:14 +0100
-In-Reply-To: <47397C4B.1070901@domain.hid>
-References: <472F6C17.2070100@domain.hid> <472F6DAD.20308@domain.hid>
-	<472F990A.2030209@domain.hid> <473006D8.4080808@domain.hid>
-	<47302D55.9050808@domain.hid> <47339C53.5010700@domain.hid>
-	<4734677E.6010904@domain.hid> <47348EE0.5020007@domain.hid>
-	<473493CB.4080701@domain.hid> <4734995B.20900@domain.hid>
-	<4737510F.7010309@domain.hid> <47397C4B.1070901@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] [Adeos-main] [PATCH] i386: switch to root domain
- on unhandled non-root faults
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] [Xenomai-help] Xenomai v2.4-rc6
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,23 +18,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: adeos-main@gna.org, Jan Kiszka <jan.kiszka@domain.hid>, Xenomai-core@domain.hid
+To: Leopold Palomo-Avellaneda <lepalom@domain.hid>
+Cc: xenomai@xenomai.org, xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
- > (...) In
- > future updates, we may want to rely on raw UART output when the platform
- > provides for it (currently, all blackfin, mpc52xx and some? ARM do, IIRC).
+Leopold Palomo-Avellaneda wrote:
+> A Dimarts 13 Novembre 2007, Philippe Gerum va escriure:
+>> Here is the sixth candidate release for the v2.4.x branch.
+> [....]
+>> 	[i386, x86_64 => x86]
+>>
+>> 	* Merge i386 and x86_64 arch-dep support as x86.
+>>  	* Update Adeos/i386 support for 2.6.20, 2.6.22 and 2.6.23.
+> 
+> [...]
+> 
+> this has break the creation of the debian packages. I can understand that 
+> conceptually they are the same arch (one with 32bits and another with 64 and 
+> more extensions) in general _all_ the distros treat them as two different 
+> arch.
 
-ARMs do have printascii, which outputs a string to the UART, it is
-defined from include/asm-arm/arch-*/debug-macro.S, so I guess all ARM
-architectures with a non-trivial debug-macro.S have a working
-printascii. Note that compilation of printascii depends on the option
-CONFIG_DEBUG_LL to be enabled in the kernel configuration.
+How long do you think this is going to be that way, with 2.6.24 actually
+merging those supports at kernel level?
+
+ So this changes break things. I don't think that it's a good idea do it
+> in a release candidate, IMHO.
+
+We discussed this issue and the reason for doing this change asap in
+length on the mailing list two weeks ago or so. Please have a look at
+the archive for more. You will also find some significant patches
+already exploiting the new common tree in order to streamline the code,
+and ease maintenance on our side. Few resources, large work, we have to
+be efficient, and maintaining two closely related archs sharing bits in
+separate code bases is pointless, and a loss of time for the project.
+
+> 
+> Regards,
+> 
+> Leo
+> 
 
 
 -- 
-
-
-					    Gilles Chanteperdrix.
+Philippe.
 
