@@ -1,14 +1,15 @@
-Message-ID: <fd6a47a90711211544q437ea186mcfbab54fd0a257cc@domain.hid>
-Date: Thu, 22 Nov 2007 00:44:14 +0100
-From: "Jeroen Van den Keybus" <jeroen.vandenkeybus@domain.hid>
-In-Reply-To: <822923.79799.qm@domain.hid>
+From: Leopold Palomo-Avellaneda <lepalom@domain.hid>
+Date: Wed, 14 Nov 2007 12:21:46 +0100
+References: <4739E07B.1000608@domain.hid> <200711141056.06083.lepalom@domain.hid>
+	<473AC972.8070209@domain.hid>
+In-Reply-To: <473AC972.8070209@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_31018_21636862.1195688654644"
-References: <2ff1a98a0711210140x39088655idf0339a49522fa73@domain.hid>
-	<822923.79799.qm@domain.hid>
-Subject: Re: [Xenomai-help] xnintr_shirq_handler: IRQ11 not handled. Disable
-	IRQ line.
+Message-Id: <200711141221.47396.lepalom@domain.hid>
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Disposition: inline
+Subject: Re: [Xenomai-help] Xenomai v2.4-rc6
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,83 +19,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: DENNIS NGUYEN <dennisnguy@domain.hid>
-Cc: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org, xenomai-core <xenomai@xenomai.org>
 
-------=_Part_31018_21636862.1195688654644
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+A Dimecres 14 Novembre 2007, Philippe Gerum va escriure:
+> Leopold Palomo-Avellaneda wrote:
+> > A Dimarts 13 Novembre 2007, Philippe Gerum va escriure:
+> >> Here is the sixth candidate release for the v2.4.x branch.
+> >
+> > [....]
+> >
+> >> 	[i386, x86_64 => x86]
+> >>
+> >> 	* Merge i386 and x86_64 arch-dep support as x86.
+> >>  	* Update Adeos/i386 support for 2.6.20, 2.6.22 and 2.6.23.
+> >
+> > [...]
+> >
+> > this has break the creation of the debian packages. I can understand that
+> > conceptually they are the same arch (one with 32bits and another with 64
+> > and more extensions) in general _all_ the distros treat them as two
+> > different arch.
 >
-> Yes, I have problem with sharing the IRQ 11.
-> my questions are:
-> How can I set the rteth0 to a known not sharing IRQ in the system?
+> How long do you think this is going to be that way, with 2.6.24 actually
+> merging those supports at kernel level?
+>
+>  So this changes break things. I don't think that it's a good idea do it
+>
+> > in a release candidate, IMHO.
+>
+> We discussed this issue and the reason for doing this change asap in
+> length on the mailing list two weeks ago or so. Please have a look at
+> the archive for more. You will also find some significant patches
+> already exploiting the new common tree in order to streamline the code,
+> and ease maintenance on our side. Few resources, large work, we have to
+> be efficient, and maintaining two closely related archs sharing bits in
+> separate code bases is pointless, and a loss of time for the project.
+>
+
+Ok,
+
+I'm not subscribing to xenomai-core, so I don't know if this have been 
+discussed on the list.
+
+Yes, I didn't have done a search on the web/list about if this have been 
+discused, I just have pointed that you are working (with a few resources, 
+etc) to release a new version rc-6 and have done a change that break 
+our "lazy way" of install/ compile xenomai. I don't know if others things.
+
+I'm sure that you have worked/thought that this is the best way to do the 
+things. Now I have read the thread about it and well, it's just a normal 
+discussions about to make a important change and the people comment. You as 
+project leader have an idea that you think that it's good for the project, 
+and you implement it. And other people saying, ok, if you want to do it, I 
+will try to help...
+
+I can understand that my post have ..... I don't know the verb in english, in 
+catalan will be "tocar-te els collons" and in english something like "touch 
+your balls". That's not my intention, really.
+
+I also will try to help it and I will look the debian packages to solve 
+this ... ;-) and probably I'm one this strange people that if I use a open 
+source soft and I begin I use a release candidate to test it and try help. At 
+least some kind of .. please could you run bla, or can you try bla ... but 
+I'm not statistically important because I'm not showed at google ;-)
+
+Leo
+
+PS from some mail that I have read:
+... sun is still shining, birds are still singing, hardware is not burning - 
+yet. 
 
 
-- You already said you don't have BIOS options.
-- If you have multiple PCI slots, try swapping the cards. Usually, adjacent
-slots have different interrupt lines. But you might end up sharing with
-something else.
-- Avoid the use of the sharing device (possible with audio, some USB, ...)
-- Check if ACPI configures the interrupt lines for you (bypassing the BIOS).
-I don't know for sure, but I think you can use the acpi_irq_pci kernel
-parameter to somehow influence the mapping of the physical interrupt lines
-to logical IRQ lines (numbers).
-- You could also try to share the same IRQ for both cards (again by
-replacing them in the PCI slots).
-
-But, in all fairness, I think your problem lies elsewhere, because both
-IRQ10 and 11 are affected and disabling only occurs after a lot (1000 or so)
-of unhandled requests have happened.
 
 
 
-> How can I pass a known IRQ from RTnet to the Xenomai xnintr_shirq_handler?
 
 
-The PCI interrupts are fixed after BIOS (or ACPI) has done its job. If you
-change the number of the IRQ line by moving it or using the BIOS/ACPI,
-it should also change correctly.
-
-
-What does the dmesg log say ? Perhaps you can turn on debugging for the
-rtnet driver and get more info.
-
-Last but not least: do the cards work correctly in parallel using the
-standard Linux driver (8139too) ?
-
-
-Jeroen.
-
-------=_Part_31018_21636862.1195688654644
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-<blockquote class="gmail_quote" style="PADDING-LEFT: 1ex; MARGIN: 0px 0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">Yes, I have problem with sharing the IRQ 11.<br>my questions are:<br>How can I set the rteth0 to a known not sharing IRQ in the system?
-</blockquote>
-<div>&nbsp;</div>
-<div>- You already said you don&#39;t have BIOS options.</div>
-<div>- If you have multiple PCI slots, try swapping&nbsp;the cards. Usually, adjacent slots have different interrupt lines. But you might end up sharing with something else.</div>
-<div>- Avoid the use of the sharing device (possible with audio, some USB, ...)</div>
-<div>-&nbsp;Check if&nbsp;ACPI configures the interrupt lines for you (bypassing the BIOS). I don&#39;t know for sure, but I think you can use the acpi_irq_pci kernel parameter to somehow influence the mapping of the physical&nbsp;interrupt lines to logical IRQ lines (numbers).
-</div>
-<div>- You could also try to share the same IRQ for both cards (again by replacing them in the PCI slots).</div>
-<div>&nbsp;</div>
-<div>But, in all fairness, I think your problem lies elsewhere, because both IRQ10 and 11 are affected and&nbsp;disabling only occurs after a lot (1000 or so) of unhandled requests have happened. </div>
-<div><br>&nbsp;</div>
-<blockquote class="gmail_quote" style="PADDING-LEFT: 1ex; MARGIN: 0px 0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">How can I pass a known IRQ from RTnet to the Xenomai xnintr_shirq_handler?</blockquote>
-<div>&nbsp;</div>
-<div>The PCI interrupts are fixed after BIOS (or ACPI) has done its job. If you change the number of the IRQ line by moving it or using the BIOS/ACPI, it&nbsp;should also change correctly.</div>
-<div>&nbsp;</div>
-<div>&nbsp;</div>
-<div>What does the dmesg log say ? Perhaps you can turn on debugging for the rtnet driver and get more info.</div>
-<div>&nbsp;</div>
-<div>Last but not least: do the cards work correctly in parallel using the standard Linux driver (8139too) ?</div>
-<div>&nbsp;</div>
-<div>&nbsp;</div>
-<div>Jeroen.</div>
-
-------=_Part_31018_21636862.1195688654644--
 
