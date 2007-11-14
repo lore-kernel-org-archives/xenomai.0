@@ -1,5 +1,5 @@
-Message-ID: <473B3536.3000709@domain.hid>
-Date: Wed, 14 Nov 2007 18:49:42 +0100
+Message-ID: <473B35A2.4020904@domain.hid>
+Date: Wed, 14 Nov 2007 18:51:30 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <4739E07B.1000608@domain.hid> <200711141056.06083.lepalom@domain.hid>
@@ -48,14 +48,15 @@ Paul wrote:
 > 
 > 
 
-I don't think so, at least for 2.6.26/x86*. Even if we do have an
-experimental patch for 2.6.24-rc1/x86, it would make sense to go for a
-combo x86_32/64 bit support patch for 2.6.24 directly. To get that, I'd
-rather take the needed time to properly merge both I-pipe branches
-without any release deadline pressure, and since we already have the
-proper infrastructure available in 2.4-rc to run over the latest x86*
-kernels, we may provide support for 2.6.24 during the Xenomai 2.4
-maintenance cycle anyway.
+I don't think so, at least for 2.6.24/x86*.
+
+Even if we do have an experimental patch for 2.6.24-rc1/x86, it would
+make sense to go for a combo x86_32/64 bit support patch for 2.6.24
+directly. To get that, I'd rather take the needed time to properly merge
+both I-pipe branches without any release deadline pressure, and since we
+already have the proper infrastructure available in 2.4-rc to run over
+the latest x86* kernels, we may provide support for 2.6.24 during the
+Xenomai 2.4 maintenance cycle anyway.
 
 -- 
 Philippe.
