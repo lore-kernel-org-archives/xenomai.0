@@ -1,15 +1,15 @@
-Message-ID: <473B35A2.4020904@domain.hid>
-Date: Wed, 14 Nov 2007 18:51:30 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <473B423D.1010006@domain.hid>
+Date: Wed, 14 Nov 2007 13:45:17 -0500
+From: "Steven A. Falco" <sfalco@domain.hid>
 MIME-Version: 1.0
-References: <4739E07B.1000608@domain.hid> <200711141056.06083.lepalom@domain.hid>
-	<200711141637.30166.paul_c@domain.hid>
-In-Reply-To: <200711141637.30166.paul_c@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [Xenomai-help] Xenomai v2.4-rc6
-Reply-To: rpm@xenomai.org
+References: <473391B0.5040809@domain.hid> <4733A2B8.8070100@domain.hid>
+	<47344759.4020505@domain.hid> <473484C6.6050101@domain.hid>
+	<473492EF.6090309@domain.hid> <4734995E.7090105@domain.hid>
+	<4735DC17.1070003@domain.hid> <47373B92.1050008@domain.hid>
+In-Reply-To: <47373B92.1050008@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="------------060608060401050105070907"
+Subject: Re: [Xenomai-core] User space drivers on PPC440
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,45 +19,167 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Paul <paul_c@domain.hid>
-Cc: xenomai@xenomai.org, xenomai-core <xenomai@xenomai.org>, Leopold Palomo-Avellaneda <lepalom@domain.hid>
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-Paul wrote:
-> On Wednesday 14 November 2007 09:56, Leopold Palomo-Avellaneda wrote:
->> A Dimarts 13 Novembre 2007, Philippe Gerum va escriure:
->>> Here is the sixth candidate release for the v2.4.x branch.
->> [....]
->>
->>> 	[i386, x86_64 => x86]
+This is a multi-part message in MIME format.
+--------------060608060401050105070907
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+
+That works perfectly.  Thanks!
+
+    Steve
+
+
+Philippe Gerum wrote:
+> Philippe Gerum wrote:
+>   
+>> Steven A. Falco wrote:
+>>     
+>>> Solved.  As you pointed out, Xenomai inverts the returned value from
+>>> request_region.  So, that was a bug in my application.
 >>>
->>> 	* Merge i386 and x86_64 arch-dep support as x86.
->>>  	* Update Adeos/i386 support for 2.6.20, 2.6.22 and 2.6.23.
->> [...]
+>>> However, turns out that instead of request_region, I have to use
+>>> request_mem_region.  This is because the I/O region only goes up to
+>>> 2^32, but the mem region goes up to 2^64.
+>>>
+>>> So, attached is a patch to add two new syscalls: rt_misc_get_mem_region
+>>> and rt_misc_put_mem_region.
+>>>
+>>>       
+>> Thanks. At this chance, I've reworked the I/O region support to
+>> introduce descriptors, so that this API conforms to the
+>> one-descriptor-per-object rule commonly followed by other services from
+>> the native skin. I've merged your MMIO support on top of this. The added
+>> bonus is that auto-cleanup upon process exit becomes available with I/O
+>> regions too, since we now have the proper descriptor to hold the cleanup
+>> data.
 >>
->> this has break the creation of the debian packages. I can understand that
->> conceptually they are the same arch (one with 32bits and another with 64
->> and more extensions) in general _all_ the distros treat them as two
->> different arch. So this changes break things. I don't think that it's a
->> good idea do it in a release candidate, IMHO.
-> 
-> I'm right in the middle of looking at the packaging scripts, so expect a patch 
-> within the next few days.
-> 
-> Giles/Philippe: Is there likely to be a 2.6.24 ipipe patch out before Xenomai 
-> reaches 2.4.0 ?
-> 
-> 
+>> The calls supporting this scheme are named rt_io_get_region, and
+>> rt_io_put_region, taking a RT_IOREGION object descriptor to hold the
+>> internal resource information. The rt_misc_io_get/put_region API is now
+>> deprecated starting with 2.4-rc6, albeit still available to allow for
+>> smooth transition; one will only get a warning as a reminder to upgrade
+>> to the new calls when using the old ones. e.g.
+>>
+>> RT_IOREGION iorn;
+>>
+>> rt_io_get_region(&iorn, label, start, len, IORN_IOPORT)
+>> is equivalent to calling:
+>> rt_misc_get_io_region(start, len, label)
+>>
+>> the same way,
+>>
+>> rt_io_get_region(&iorn, label, start, len, IORN_MEMORY)
+>>     
+>
+> s,IORN_MEMORY,IORN_IOMEM,
+>
+> (for consistency reason with Linux's naming scheme)
+>
+>   
+>> is equivalent to calling:
+>> rt_misc_get_mem_region(start, len, label)
+>>
+>> Conversely,
+>>
+>> rt_io_put_region(&iorn)
+>> is equivalent to calling:
+>> rt_misc_put_io/mem_region(start, len)
+>>
+>>
+>>     
+>
+>
+>   
 
-I don't think so, at least for 2.6.24/x86*.
+--------------060608060401050105070907
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-Even if we do have an experimental patch for 2.6.24-rc1/x86, it would
-make sense to go for a combo x86_32/64 bit support patch for 2.6.24
-directly. To get that, I'd rather take the needed time to properly merge
-both I-pipe branches without any release deadline pressure, and since we
-already have the proper infrastructure available in 2.4-rc to run over
-the latest x86* kernels, we may provide support for 2.6.24 during the
-Xenomai 2.4 maintenance cycle anyway.
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<tt>That works perfectly.&nbsp; Thanks!<br>
+<br>
+&nbsp;&nbsp;&nbsp; Steve<br>
+<br>
+</tt><br>
+Philippe Gerum wrote:
+<blockquote cite="mid:47373B92.1050008@domain.hid" type="cite">
+  <pre wrap="">Philippe Gerum wrote:
+  </pre>
+  <blockquote type="cite">
+    <pre wrap="">Steven A. Falco wrote:
+    </pre>
+    <blockquote type="cite">
+      <pre wrap="">Solved.  As you pointed out, Xenomai inverts the returned value from
+request_region.  So, that was a bug in my application.
 
--- 
-Philippe.
+However, turns out that instead of request_region, I have to use
+request_mem_region.  This is because the I/O region only goes up to
+2^32, but the mem region goes up to 2^64.
+
+So, attached is a patch to add two new syscalls: rt_misc_get_mem_region
+and rt_misc_put_mem_region.
+
+      </pre>
+    </blockquote>
+    <pre wrap="">Thanks. At this chance, I've reworked the I/O region support to
+introduce descriptors, so that this API conforms to the
+one-descriptor-per-object rule commonly followed by other services from
+the native skin. I've merged your MMIO support on top of this. The added
+bonus is that auto-cleanup upon process exit becomes available with I/O
+regions too, since we now have the proper descriptor to hold the cleanup
+data.
+
+The calls supporting this scheme are named rt_io_get_region, and
+rt_io_put_region, taking a RT_IOREGION object descriptor to hold the
+internal resource information. The rt_misc_io_get/put_region API is now
+deprecated starting with 2.4-rc6, albeit still available to allow for
+smooth transition; one will only get a warning as a reminder to upgrade
+to the new calls when using the old ones. e.g.
+
+RT_IOREGION iorn;
+
+rt_io_get_region(&amp;iorn, label, start, len, IORN_IOPORT)
+is equivalent to calling:
+rt_misc_get_io_region(start, len, label)
+
+the same way,
+
+rt_io_get_region(&amp;iorn, label, start, len, IORN_MEMORY)
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->
+s,IORN_MEMORY,IORN_IOMEM,
+
+(for consistency reason with Linux's naming scheme)
+
+  </pre>
+  <blockquote type="cite">
+    <pre wrap="">is equivalent to calling:
+rt_misc_get_mem_region(start, len, label)
+
+Conversely,
+
+rt_io_put_region(&amp;iorn)
+is equivalent to calling:
+rt_misc_put_io/mem_region(start, len)
+
+
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->
+
+  </pre>
+</blockquote>
+</body>
+</html>
+
+--------------060608060401050105070907--
 
