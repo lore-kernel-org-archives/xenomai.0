@@ -1,14 +1,15 @@
-Message-ID: <474BF115.1050309@domain.hid>
-Date: Tue, 27 Nov 2007 11:27:33 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <2ff1a98a0711161037n374d388p2ed0dbe592f394a6@domain.hid>
+Date: Fri, 16 Nov 2007 19:37:24 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <2ff1a98a0711160718x57ee9129w2424c1e1a9c4e32d@domain.hid>
 MIME-Version: 1.0
-References: <1820393698@domain.hid>
-In-Reply-To: <1820393698@domain.hid>
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] interrupt programm hang up the computer
-Reply-To: rpm@xenomai.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <DD39B5C3F4963040ADC9768BE7E430CB026DBC4E@is-hdq-exchange.marel.net>
+	<2ff1a98a0711160718x57ee9129w2424c1e1a9c4e32d@domain.hid>
+Subject: Re: [Xenomai-help] Houston,
+	we have a problem ... In timed POSIX space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,54 +19,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Andreas Vogt <A_C_V@web.de>
+To: Daniel Schnell <daniel.schnell@domain.hid>
 Cc: xenomai@xenomai.org
 
-Andreas Vogt wrote:
-> Hello,
->=20
-> I try to implement an interrupt but I get always the error message -38.
-
--ENOSYS. Function not implemented.
-
- What does this messages mean?
-> And when i delete in the section...
->=20
-> if (err > 0) {int_count++;}
-> 	 else {
-> 			printf("interrupt_task_2 error =3D %i\n", err);
-> 		}
-> 		rt_intr_enable (&intr_desc);=20
->       =20
-> 	   }
->=20
->  ... the printf command the program hang up.
+On Nov 16, 2007 4:18 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On Nov 16, 2007 4:00 PM, Daniel Schnell <daniel.schnell@domain.hid> wrote:
+> >
+> >
+> > Hi,
+> >
+> > The attached program demonstrates that mq_timedsend() doesn't work. The sent
+> > value changes on the way to the receiver.
 >
+> will check your example ASAP.
+>
+>  Always! mq_send() works fine.
+> > Additionally if no asolute timeout value is used, there will be no error
+> > returned which is contrary to the POSIX standard (however glibc2.3 also
+> > fails here).
+>
+> There is no way to make difference between an absolute and relative
+> timeout. Additionaly, the only constraint I see in the POSIX spec is
+> that what should be checked is that the tv_nsec member of the timeout
+> should be less than 1000000000, which Xenomai posix skin does.
 
-Infinite loop you created yourself by not testing the status returned
-from rt_intr_wait().
-
-What about testing the return code from rt_intr_create() too?
-
-> In my config the XENO_OPT_NATIVE_INTR is not set. Cause this any Problem?
-> __________________
-
-Yes. This is why you get -ENOSYS.
-
-_____________________________________________________
-> Jetzt neu! Sch=FCtzen Sie Ihren PC mit McAfee und WEB.DE. 3 Monate
-> kostenlos testen. http://www.pc-sicherheit.web.de/startseite/?mc=3D022220
->=20
->=20
->=20
-> ------------------------------------------------------------------------
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+Actually, if you pass a relative timeout, it will probably be
+considered as a date in the past, so mq_timedsend should return
+-ETIMEDOUT immediately. And it is what the POSIX spec asks.
 
 
---=20
-Philippe.
+-- 
+                                               Gilles Chanteperdrix
 
