@@ -1,13 +1,15 @@
-Content-Class: urn:content-classes:message
+Message-ID: <473EEB10.30704@domain.hid>
+Date: Sat, 17 Nov 2007 14:22:24 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 28 Nov 2007 09:43:43 +0100
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2AE3BEFE@ARVMAIL1.mra.roland-man.biz>
-In-Reply-To: <18252.36930.625870.462352@domain.hid>
-From: <Roderik.Wildenburg@domain.hid>
-Subject: Re: [Xenomai-help] Compatibility of Xenomai-Versions
+References: <200711171224.15108.niklaus.giger@domain.hid>
+In-Reply-To: <200711171224.15108.niklaus.giger@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-help] Failure running
+	prepare-kernel.sh	adeos-ipipe-2.6.23-powerpc-DENX-2.0-03.patch
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,92 +19,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: gilles.chanteperdrix@xenomai.org
+To: niklaus.giger@domain.hid
 Cc: xenomai@xenomai.org
 
-Thank you for your explanations!
 
-Sorry for the following stupid questions but till now I wasn=B4t aware =
-of the ABI revisions.
-How do I, as a simple user of xenomai, recognize when the ABI changed ?
+Hi Niklaus,
 
-Is the following true ?
+Niklaus Giger wrote:
+> Hi
+> 
+> I get the attached errors when running
+> $ xenomai-trunk/scripts/prepare-kernel.sh \
+> --linux=linux-2.6-denx \
+> --adeos=xenomai-trunk/ksrc/arch/powerpc/patches/\
+> adeos-ipipe-2.6.23-powerpc-DENX-2.0-03.patch \
+> --arch=powerpc 
+> 
+> The kernel directory is a git clone of 
+> git://www.denx.de/git/linux-2.6-denx.git
+> and was created with the following command
+> git checkout -b sequoia-v2.6.23.1 v2.6.23.1
+> xenomai-trunk is at Revision 3185
+> 
+> I get the same errors when running against v2.6.23.
+> 
+> Could you please indicate me against which kernel this patch
+> was built against?
+> 
 
-Xenomai Version : a.b.c
+This patch is based on a snapshot from DENX's tree taken on 2007-10-12,
+against commit #3e44e7de644b521c5301c806d90da6feb99158d5. I guess we
+need this info in the README file -- wil fix, thanks.
 
-a changed : change of the API =3D> rework your source code
-b changed : change of the ABI =3D> recompile your application=20
-            and libraries, replace your Xenomai libraries
-c changed : no change in application,libraries necessary
-
-
-Best regards
-Roderik
-
-> -----Urspr=FCngliche Nachricht-----
-> Von: xenomai-help-bounces@domain.hid
-> [mailto:xenomai-help-bounces@domain.hid] Im Auftrag von Gilles=20
-> Chanteperdrix
-> Gesendet: Dienstag, 27. November 2007 22:47
-> An: Wildenburg, Roderik RAEK3 MRA
-> Cc: xenomai@xenomai.org
-> Betreff: Re: [Xenomai-help] Compatibility of Xenomai-Versions
->=20
-> Roderik.Wildenburg@domain.hid wrote:
->  > How compatible are the different Xenomai-Versions ?=20
->  >=20
->  > - E.g. can I use a 2.3.2 application (compiled and linked=20
-> against 2.3.2
->  > Libraries) on an 2.4.x kernel (kernel with a 2.4.x Xenomai) without
->  > recompiling the application ?=20
->=20
-> Xenomai has a notion of ABI revision, which has been increased in
-> 2.4.x. So, no, if you update Xenomai kernel-space support, you have to
-> update Xenomai user-space support. The ABI revision was=20
-> increased for a
-> good reason: some system calls implementation changed, so running with
-> mixed version would cause random errors.
->=20
-> Xenomai libraries are also versioned, so you will get a=20
-> loader error if
-> you try to run an old application with a newer library.
->=20
->  > - Can I link a 2.4.x-application (linked and compiled against 2.4.x
->  > libraries) with an xenomai vendor libriary (e.g. some=20
-> realtime functions
->  > from a vendor) build with an 2.3.x Xenomai version ?
->=20
-> It depends on what is in this library. If there is a call to
-> xeno_bind_skin, you will get the ABI revision error.
->=20
->  >=20
->  > In my understanding I would say yes, as long as the API=20
-> and the header
->  > files did not change (type or number of parameters, constants).
->  > Is this correct ? If yes, is there an documentation where=20
-> and when the
->  > API changed in an significant way ?
->=20
-> Look for ksrc/skins/*/API.CHANGES. Note that only external API changes
-> are documented, internal API changes are not documented though they
-> caused an ABI revision increase.
->=20
-> --=20
->=20
->=20
-> 					    Gilles Chanteperdrix.
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->=20
-
-MAN Roland Druckmaschinen AG
-Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle   =20
-Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592   =20
-USt-Ident-Nr. DE 250200933
+-- 
+Philippe.
 
