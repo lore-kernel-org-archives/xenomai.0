@@ -1,16 +1,13 @@
-From: adam - Li Yi <yi.li@domain.hid>
-In-Reply-To: <474D3D0D.3090403@domain.hid>
-References: <5D63919D95F87E4D9D34FF7748CE2C2AE3BBE9@domain.hid>
-	<18252.36930.625870.462352@domain.hid>
-	<1196223312.6012.5.camel@domain.hid>
-	<474D3D0D.3090403@domain.hid>
-Content-Type: text/plain
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Date: Wed, 28 Nov 2007 18:22:20 +0800
-Message-Id: <1196245340.6012.35.camel@domain.hid>
-Mime-Version: 1.0
-Subject: Re: [Xenomai-help] question
-	about	patch:	adeos-ipipe-2.6.23-bf5xx-1.7-00.patch
+Message-ID: <18239.3938.28607.266649@domain.hid>
+Date: Sat, 17 Nov 2007 16:57:22 +0100
+In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB026DBC4E@is-hdq-exchange.marel.net>
+References: <DD39B5C3F4963040ADC9768BE7E430CB026DBC4E@is-hdq-exchange.marel.net>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] Houston,
+	we have a problem ... In timed POSIX space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,23 +17,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Daniel Schnell <daniel.schnell@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Wed, 2007-11-28 at 11:03 +0100, Philippe Gerum wrote:
-> adam - Li Yi wrote:
-> > Hi Philippe,
-> > 
-> > I tried to apply patch "adeos-ipipe-2.6.23-bf5xx-1.7-00.patch" to
-> > Blackfin uClinux kernel SVN trunk 2007-Nov-27 but failed. The problem is
-> > that the blackfin uclinux kernel is still 2.6.22. I am wondering at
-> > which svn revision the patch is made?
-> 
-> This patch is against v2.6.23 vanilla. GIT commit
-> bbf25010f1a6b761914430f5fca081ec8c7accd1. I don't track the Blackfin SVN
-> repo anymore since 2.6.23, but rather the mainline tree.
-> 
-Ok. I will try to merge the patch with the Blackfin uclinux SVN. 
+Daniel Schnell wrote:
+ > Hi,
+ >  
+ > The attached program demonstrates that mq_timedsend() doesn't work. The
+ > sent value changes on the way to the receiver. Always! mq_send() works
+ > fine.
+ > Additionally if no asolute timeout value is used, there will be no error
+ > returned which is contrary to the POSIX standard (however glibc2.3 also
+ > fails here).
 
--Yi
+You misread the POSIX spec. It says:
+"The timeout shall expire when the absolute time specified by abs_timeout
+passes, as measured by the clock on which timeouts are based (that is,
+when the value of that clock equals or exceeds abs_timeout), or if the
+absolute time specified by abs_timeout has already been passed at the
+time of the call."
+
+But it also says:
+"Under no circumstance shall the operation fail with a timeout if there
+is sufficient room in the queue to add the message immediately. The
+validity of the abs_timeout parameter need not be checked when there is
+sufficient room in the queue."
+
+
+-- 
+
+
+					    Gilles Chanteperdrix.
 
