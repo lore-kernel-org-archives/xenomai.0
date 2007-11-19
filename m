@@ -1,18 +1,14 @@
-Message-ID: <4739628F.8000100@domain.hid>
-Date: Tue, 13 Nov 2007 09:38:39 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <b054e88e0711090616r6376a8a6t81e9bc94b4290dea@domain.hid>	<473471FB.9010305@domain.hid>
-	<4734736D.7060100@domain.hid>	<b054e88e0711090652h176ef99dx740a5c0deb333829@domain.hid>	<4734755F.2010301@domain.hid>
-	<47347593.3040605@domain.hid>	<b054e88e0711090747m315c1ecdsa998c41653737046@domain.hid>	<47348393.5030202@domain.hid>
-	<b054e88e0711091028v76750ff0jcf3b20aa12317d69@domain.hid>
-In-Reply-To: <b054e88e0711091028v76750ff0jcf3b20aa12317d69@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1E84205C68D9872C18C9F3EB"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Kernel oops while trying first boot w/ Xenomai
- 2.4rc5
+Content-Type: text/plain;
+	charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 19 Nov 2007 16:11:55 +0100
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2AE09170@domain.hid>
+In-Reply-To: <47419F33.7040203@domain.hid>
+From: <Roderik.Wildenburg@domain.hid>
+Subject: Re: [Xenomai-help] rt_queue_write error: "Cannot allocate memory ";
+	bug or feature ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,102 +18,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Giammarco Zacheo <g.zacheo@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>, adeos-main@gna.org
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1E84205C68D9872C18C9F3EB
-Content-Type: multipart/mixed;
- boundary="------------020901050509060900000504"
-
-This is a multi-part message in MIME format.
---------------020901050509060900000504
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Hi Giammarco,
-
-Giammarco Zacheo wrote:
-> Ok, I hope this is what you asked for...
+> > When running the attached programm for a while I get an=20
+> "Cannot allocate memory" error with the function rt_queue_write.
 >=20
-> I added printk in mask_ack_irq. Look at mask_ack_irq--> in the text
-> below, those are the addresses of the function pointers.
-> the printk related to mask_ack is printed once at the first pass in
-> the function, otherwise the kernel would be choked by the output.
+> What is the exact size of the message rt_queue_write() fails=20
+> to send, as
+> displayed by your trace?
 
-Yep, this pointed to the right spot. I still don't get why we didn't
-stumble over this earlier (obviously, most x86_64 boxes take a different
-code path here), but it is at least clear now what went wrong:
+Here is the output of my programm :
 
-I-pipe ran into one of the remaining non-genirq code paths on x86_64.
-More precisely, the IRQ chip of timer interrupt was changed from 8259 to
-APIC without going through the generic API so that I-pipe was still
-using the old ack handler, stepping later on the missing mask and
-mack_ack handler.
+WriteQueue 529 1116951692
+WriteQueue 282 594405035
+qtest2t: rt_queue_write error: Cannot allocate memory
+Message size :282 return : -12
+---- qtest1q NMsg:0 Size:12288 used:0
+WriteQueue 612 1291961188
+WriteQueue 765 1617804041
+WriteQueue 842 1781076386
+WriteQueue 263 553963391
+qtest2t: rt_queue_write error: Cannot allocate memory
+Message size :263 return : -12
+---- qtest1q NMsg:0 Size:12288 used:0
+WriteQueue 308 648658497
+qtest2t: rt_queue_write error: Cannot allocate memory
+Message size :308 return : -12
+---- qtest1q NMsg:0 Size:12288 used:0
+WriteQueue 394 830909457
+qtest2t: rt_queue_write error: Cannot allocate memory
+Message size :394 return : -12
+---- qtest1q NMsg:0 Size:12288 used:0
+WriteQueue 965 2040427517
+WriteQueue 304 641396835
+qtest2t: rt_queue_write error: Cannot allocate memory
+Message size :304 return : -12
+---- qtest1q NMsg:0 Size:12288 used:0
+WriteQueue 697 1472466673
+WriteQueue 543 1146244746
+WriteQueue 253 531620889
+qtest2t: rt_queue_write error: Cannot allocate memory
+Message size :253 return : -12
+---- qtest1q NMsg:0 Size:12288 used:0
+WriteQueue 66 136664073
+qtest2t: rt_queue_write error: Cannot allocate memory
+Message size :66 return : -12
+---- qtest1q NMsg:0 Size:12288 used:0
+WriteQueue 456 962746131
+qtest2t: rt_queue_write error: Cannot allocate memory
+Message size :456 return : -12
+---- qtest1q NMsg:0 Size:12288 used:0
 
-This patch now updates irq_chip.ipipe_ack when it changes for IRQ0. This
-is a temporary fix, I guess kernel people will refactor io_apic_*.c into
-a shared variant soon, overcoming this "minor" variation between i386
-and x86_64...
 
-Please let us know if this helps!
 
-Jan
+As you can see I make a queue_inquire after the write fails and it
+allways says "No Messages" "No Used Memory".
 
---------------020901050509060900000504
-Content-Type: text/x-patch;
- name="update-ipipe_ack_irq-for-irq0.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="update-ipipe_ack_irq-for-irq0.patch"
 
----
- arch/x86_64/kernel/io_apic.c |    5 +++++
- 1 file changed, 5 insertions(+)
+>=20
+> Message buffers are simply obtained from a memory pool managed as a
+> nucleus heap. rt_queue_write() allocates a message block from the pool
+> to hold the emitted data, and pushes it to the pending message queue,
+> rt_queue_read() then pops the next available message from this queue,
+> copies the payload data to the user-space buffer, and frees=20
+> the message
+> block.
 
-Index: linux-2.6.23.1-xeno_64/arch/x86_64/kernel/io_apic.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.23.1-xeno_64.orig/arch/x86_64/kernel/io_apic.c
-+++ linux-2.6.23.1-xeno_64/arch/x86_64/kernel/io_apic.c
-@@ -1659,6 +1659,8 @@ static inline void unlock_ExtINT_logic(v
- 	spin_unlock_irqrestore(&ioapic_lock, flags);
- }
-=20
-+void __ipipe_ack_edge_irq(unsigned irq, struct irq_desc *desc);
-+
- /*
-  * This code may look a bit paranoid, but it's supposed to cooperate wit=
-h
-  * a wide range of boards and BIOS bugs.  Fortunately only the timer IRQ=
+But the allocated block keeps bounded to a spezial block size and if
+some other
+blocksize is needed an other block is alloctated ?
 
-@@ -1752,6 +1754,9 @@ static inline void check_timer(void)
-=20
- 	disable_8259A_irq(0);
- 	irq_desc[0].chip =3D &lapic_irq_type;
-+#ifdef CONFIG_IPIPE
-+	irq_desc[0].ipipe_ack =3D &__ipipe_ack_edge_irq;
-+#endif
- 	apic_write(APIC_LVT0, APIC_DM_FIXED | cfg->vector);	/* Fixed mode */
- 	enable_8259A_irq(0);
-=20
 
---------------020901050509060900000504--
+>=20
+> I have the impression the problem of my program results from some kind
+> of heap fragmentation,
+> as I write very differnt buffersizes to a quite small queue (see code
+> line 59-62).
+> >=20
+>=20
+> It's unlikely, since the consumer thread has absolute=20
+> priority (50) over
+> the producer in your code (30); in such a case, the buffer pool should
+> only have a single busy message block at any given time.
 
---------------enig1E84205C68D9872C18C9F3EB
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+As you can see by the queue_inquire output no messages is in the queue
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+>=20
+> You may want to display /proc/xenomai/registry/native/queues/qtest1q
+> periodically, while your test program is running, and check=20
+> the usedmem
+> field. If it indeed decreases over time, then there is a memory leak
+> somewhere.
+>=20
 
-iD8DBQFHOWKPniDOoMHTA+kRAjmSAJ4pMnEG4iyDLal23CTvnqYGWdjf9ACfccIy
-Bhr74ougepwT/Zrd9sKK12E=
-=5qvP
------END PGP SIGNATURE-----
+Again, the output from queue_inquire shows, there is no leak.=20
 
---------------enig1E84205C68D9872C18C9F3EB--
+MAN Roland Druckmaschinen AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle   =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592   =20
+USt-Ident-Nr. DE 250200933
 
