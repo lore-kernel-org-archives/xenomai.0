@@ -1,17 +1,15 @@
-Message-ID: <4741824A.1090309@domain.hid>
-Date: Mon, 19 Nov 2007 13:32:10 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4741849C.7090308@domain.hid>
+Date: Mon, 19 Nov 2007 13:42:04 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4739E07B.1000608@domain.hid>
-	<200711142214.17651.paul_c@domain.hid>
-	<200711150013.51123.lepalom@domain.hid>
-	<200711152202.11279.paul_c@domain.hid>
-In-Reply-To: <200711152202.11279.paul_c@domain.hid>
+References: <472F6C17.2070100@domain.hid>	<472F6DAD.20308@domain.hid>	<472F990A.2030209@domain.hid>	<473006D8.4080808@domain.hid>	<47302D55.9050808@domain.hid>	<47339C53.5010700@domain.hid>	<4734677E.6010904@domain.hid>	<47348EE0.5020007@domain.hid>	<473493CB.4080701@domain.hid>	<4734995B.20900@domain.hid>
+	<4737510F.7010309@domain.hid> <47397C4B.1070901@domain.hid>
+	<4739E19D.3000004@domain.hid> <47417ABC.3050100@domain.hid>
+In-Reply-To: <47417ABC.3050100@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [Xenomai-help] Xenomai v2.4-rc6
-Reply-To: rpm@xenomai.org
+Subject: Re: [Xenomai-core] [Adeos-main] [PATCH] i386: switch to root domain
+ on unhandled non-root faults
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,15 +19,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Paul <paul_c@domain.hid>
-Cc: xenomai@xenomai.org, xenomai@xenomai.org, lepalom@domain.hid
+To: rpm@xenomai.org
+Cc: adeos-main@gna.org, Xenomai-core@domain.hid
 
-Paul wrote:
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>> OK, attached is an attempt to follow your arguments, while also keeping
+>> topics separate which have different backgrounds (ie. clarify the
+>> messages). As we go for reporting user faults now, lets include those
+>> (unlikely and really buggy) cases over user mode as well.
 > 
-> Fixed with the new patch.
+> I guess you meant this?
+> 
+> - if ((error_code & 4) && !search_exception_tables(regs->eip))
+> + if ((error_code & 4) || !search_exception_tables(regs->eip))
 
-Merged, thanks.
+Oh... yeah.
+
+> 
+> In any case, I fully agree on the logic of your latest patch. Will
+> commit, thanks.
+> 
+
+That's fine.
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
