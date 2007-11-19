@@ -1,35 +1,112 @@
-Message-ID: <4753D93F.6030809@domain.hid>
-Date: Mon, 03 Dec 2007 11:23:59 +0100
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
-References: <200712021303.27815.paul_c@domain.hid>
-In-Reply-To: <200712021303.27815.paul_c@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH] trivial native mutex doc tweak.
-Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C82AB2.352F8D62"
+Date: Mon, 19 Nov 2007 14:43:46 +0100
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2AE09111@domain.hid>
+From: <Roderik.Wildenburg@domain.hid>
+Subject: [Xenomai-help] rt_queue_write error: "Cannot allocate memory ";
+	bug or feature ?
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Paul <paul_c@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Paul wrote:
-> Attached, trivial patch for native rt_mutex_acquire function documentation. 
-> The reference to deprecated (and undocumented) rt_mutex_lock() & 
-> rt_mutex_release() is a little confusing.
-> 
->  Also updated the code snippets to match.
+This is a multi-part message in MIME format.
 
-Merged, thanks.
+------_=_NextPart_001_01C82AB2.352F8D62
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
--- 
-Philippe.
+When running the attached programm for a while I get an "Cannot allocate =
+memory" error with the function rt_queue_write.
+I can=B4t see any obvious mistake in my code, so I don=B4t have an =
+simple explanation for this behavior but just a suspicion (see below). =
+Could somebody be so kind to try to reproduce this problem, so I can =
+determine whether this is a problem of my context or of xenomai.=20
+I use Xenomai 2.3.2 with an 2.4.25 kernel on PPC.
+
+Or, even better, could somebody explain to me the functionality of heap =
+allocation of native queues. I have the impression the problem of my =
+program results from some kind of heap fragmentation, as I write very =
+differnt buffersizes to a quite small queue (see code line 59-62).
+
+Thank you in advance and best regards
+Roderik=20
+
+MAN Roland Druckmaschinen AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle   =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592   =20
+USt-Ident-Nr. DE 250200933
+
+------_=_NextPart_001_01C82AB2.352F8D62
+Content-Type: application/octet-stream;
+	name="qtest.c"
+Content-Transfer-Encoding: base64
+Content-Description: qtest.c
+Content-Disposition: attachment;
+	filename="qtest.c"
+
+I2luY2x1ZGUgPHN0ZGlvLmg+CiNpbmNsdWRlIDxhc3NlcnQuaD4KI2luY2x1ZGUgPHN5cy90eXBl
+cy5oPgojaW5jbHVkZSA8c3lzL2lwYy5oPgojaW5jbHVkZSA8c3lzL3NobS5oPgojaW5jbHVkZSA8
+c3lzL3NvY2tldC5oPgojaW5jbHVkZSA8bmV0aW5ldC9pbi5oPgojaW5jbHVkZSA8YXJwYS9pbmV0
+Lmg+CiNpbmNsdWRlIDxzeXMvdW4uaD4KI2luY2x1ZGUgPGVycm5vLmg+CiNpbmNsdWRlIDxzdGRs
+aWIuaD4KI2luY2x1ZGUgPHN0ZGRlZi5oPgojaW5jbHVkZSA8c3RkYXJnLmg+CiNpbmNsdWRlIDxz
+eXMvaW9jdGwuaD4KI2luY2x1ZGUgPHN5cy9tbWFuLmg+CiNpbmNsdWRlIDx1bmlzdGQuaD4KI2lu
+Y2x1ZGUgPHRpbWUuaD4KI2luY2x1ZGUgPGVycm5vLmg+CiNpbmNsdWRlIDx1bmlzdGQuaD4KI2lu
+Y2x1ZGUgPHNpZ25hbC5oPgojaW5jbHVkZSA8cHRocmVhZC5oPgoKI2luY2x1ZGUgPG5hdGl2ZS90
+YXNrLmg+CiNpbmNsdWRlIDxuYXRpdmUvcXVldWUuaD4KCiNkZWZpbmUgIE1BWExFTiAgIDEwMjQg
+IC8qIGdy9t9lciBtYXhpbWFsZSBOYWNocmljaHRlbmzkbmdlICovCiNkZWZpbmUgQ09OVFJPTExF
+Ul9XQUlUIDE1MDAwMDAwMDAKClJUX1FVRVVFIHF0ZXN0MXE7ClJUX1RBU0sgcXRlc3QxLCBxdGVz
+dDI7CgoKdm9pZCBxdGVzdDF0KHZvaWQpCnsKICAgc3NpemVfdCBsZW47CiAgIHN0YXRpYyBjaGFy
+IGJ1ZltNQVhMRU5dOwoKICAgZm9yICg7OykKICAgewogICAgICBpZiAoKGxlbiA9IHJ0X3F1ZXVl
+X3JlYWQoJnF0ZXN0MXEsICZidWYsIHNpemVvZiAoYnVmKSwgVE1fSU5GSU5JVEUpKSA8IDApCiAg
+ICAgIHsKICAgICAgICAgcHJpbnRmKCJxdGVzdDF0OiBydF9xdWV1ZV9yZWFkIGZhaWxlZCB3aXRo
+ICVkXG4iLGxlbik7CiAgICAgICAgIHBlcnJvcigicGVycm9yIHF0ZXN0MXQ6IHJ0X3F1ZXVlX3Jl
+YWQiKTsKICAgICAgICAgZXJybm8gPSAtbGVuLCBwZXJyb3IoInBlcnJvcjIgcXRlc3QxdDogcnRf
+cXVldWVfcmVhZCIpOwogICAgICB9CiAgIH0KICAgIAp9Cgp2b2lkIHF0ZXN0MnQodm9pZCkKewog
+ICBpbnQgcmV0LCBsZW47CiAgIFJUX1FVRVVFX0lORk8gcWluZm87CiAgIHN0YXRpYyBjaGFyIGJ1
+ZltNQVhMRU5dOwogICBpbnQgenVmOwoKICAgZm9yICg7OykKICAgewogICAgICB6dWY9cmFuZCgp
+OwogICAgICBsZW49IChpbnQpICgoZmxvYXQpKChmbG9hdCl6dWYvKGZsb2F0KVJBTkRfTUFYKSAq
+IChmbG9hdCkoTUFYTEVOLTEwKSArIDIuMCApOwogICAgICBwcmludGYoIldyaXRlUXVldWUgJWQg
+JWRcbiIsbGVuLHp1Zik7CiAgICAgIGlmICgocmV0ID0gcnRfcXVldWVfd3JpdGUoJnF0ZXN0MXEs
+ICZidWYsIGxlbiAsIFFfTk9STUFMKSkgPCAwKQogICAgICB7CiAgICAgICAgIGVycm5vID0gLXJl
+dCwgcGVycm9yKCJxdGVzdDJ0OiBydF9xdWV1ZV93cml0ZSBlcnJvciIpOwogICAgICAgICBwcmlu
+dGYoIk1lc3NhZ2Ugc2l6ZSA6JWQgcmV0dXJuIDogJWRcbiIsbGVuLCByZXQpOwogICAgICAgICBp
+ZiggKHJldD1ydF9xdWV1ZV9pbnF1aXJlKCZxdGVzdDFxLCZxaW5mbykpPDApCiAgICAgICAgIHsK
+ICAgICAgICAgICAgcHJpbnRmKCJxdWV1ZV9pbnF1aXJlIDogJWRcbiIscmV0KTsKICAgICAgICAg
+fQogICAgICAgICBlbHNlCiAgICAgICAgIHsKICAgICAgICAgICAgcHJpbnRmKCItLS0tICVzIE5N
+c2c6JWQgU2l6ZTolZCB1c2VkOiVkXG4iLHFpbmZvLm5hbWUsIHFpbmZvLm5tZXNzYWdlcyxxaW5m
+by5wb29sc2l6ZSxxaW5mby51c2VkbWVtKTsKICAgICAgICAgfQogICAgICB9CiAgICAgIHJ0X3Rh
+c2tfc2xlZXAoQ09OVFJPTExFUl9XQUlUKTsKICAgfQp9CiAgICAKCmludCBzdGFydHF0ZXN0KHZv
+aWQpCnsKICAgaW50IGVycjsKCiAgIHNyYW5kICh0aW1lICgwKSk7CiAgIAogICBpZighcnRfcXVl
+dWVfYmluZCgmcXRlc3QxcSwicXRlc3QxcSIsVE1fTk9OQkxPQ0spKQogICAgICBydF9xdWV1ZV9k
+ZWxldGUoJnF0ZXN0MXEpOwogICBpZiggKGVyciA9IHJ0X3F1ZXVlX2NyZWF0ZSgmcXRlc3QxcSwg
+InF0ZXN0MXEiLCBNQVhMRU4qMTAsIDEwLCBRX0ZJRk8pKSAhPSAwICkKICAgICAgcHJpbnRmKCJx
+X2NyZWF0ZSBxdGVzdDFxIGZhaWxlZCB3aXRoICVkXG4iLGVycik7CgogICBlcnIgPSBydF90YXNr
+X2NyZWF0ZSgmcXRlc3QxLCAicXRlc3QxdCIsIDAsIDUwLCAwKTsgICAvKiBUQ1AvVURQLVNlbmRl
+cHJvemVzcyAqLwogICBpZiAoIWVycikKICAgICAgcnRfdGFza19zdGFydCgmcXRlc3QxLCAodm9p
+ZCgqKSh2b2lkICopKXF0ZXN0MXQsIE5VTEwpOwoKICAgZXJyID0gcnRfdGFza19jcmVhdGUoJnF0
+ZXN0MiwgInF0ZXN0MnQiLCAwLCAzMCwgMCk7ICAgLyogVENQLUVtcGZhbmdzcHJvemVzcyAqLwog
+ICBpZiAoIWVycikKICAgICAgcnRfdGFza19zdGFydCgmcXRlc3QyLCAodm9pZCgqKSh2b2lkICop
+KXF0ZXN0MnQsIE5VTEwpOwogICAKICAgcmV0dXJuKDApOwp9CgoKaW50IG1haW4gKGludCBhYywg
+Y2hhciAqYXZbXSkKCnsKICAgIHNpZ3NldF90IG1hc2s7CiAgICBpbnQgc2lnOwoKICAgIHByaW50
+ZigicXRlc3Qgc3RhcnQgIVxuIik7CiAgICBzbGVlcCgyKTsKCiAgICBzaWdlbXB0eXNldCgmbWFz
+ayk7CiAgICBzaWdhZGRzZXQoJm1hc2ssU0lHSU5UKTsKICAgIHNpZ2FkZHNldCgmbWFzayxTSUdU
+RVJNKTsKICAgIHNpZ2FkZHNldCgmbWFzayxTSUdIVVApOwogICAgc2lnYWRkc2V0KCZtYXNrLFNJ
+R0FMUk0pOwoKICAgIHB0aHJlYWRfc2lnbWFzayhTSUdfQkxPQ0ssICZtYXNrLCBOVUxMKTsKCiAg
+ICBtbG9ja2FsbChNQ0xfQ1VSUkVOVHxNQ0xfRlVUVVJFKTsKCiAgICBzdGFydHF0ZXN0KCk7CgoK
+ICAgIHNpZ3dhaXQoJm1hc2ssICZzaWcpOwoKICAgIHJldHVybiAwOwp9Cg==
+
+------_=_NextPart_001_01C82AB2.352F8D62--
 
