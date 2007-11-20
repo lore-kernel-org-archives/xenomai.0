@@ -1,14 +1,11 @@
-From: Paul <paul_c@domain.hid>
-Date: Tue, 20 Nov 2007 20:47:31 +0000
-References: <4b7912400711201144y21e893c0w7e494e1eba20f3b1@domain.hid>
-In-Reply-To: <4b7912400711201144y21e893c0w7e494e1eba20f3b1@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
+From: Dennis Nguyen <dennisnguy@domain.hid>
+Content-Type: text/plain
+Date: Tue, 20 Nov 2007 14:42:08 -0800
+Message-Id: <1195598528.25407.9.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200711202047.31990.paul_c@domain.hid>
-Subject: Re: [Xenomai-help] rtai_free & rtai_malloc problem
+Subject: [Xenomai-help] xnintr_shirq_handler: IRQ11 not handled. Disable IRQ
+	line.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,26 +17,23 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-On Tuesday 20 November 2007 19:44, zhangwei zhang wrote:
-> I try to install emc2 on xenomai (x86), the error is like this:
-<snip>
-> usrmot-usrmotintf.o: In function `usrmotExit':
-> /home/kyla/eldk/xenomai-2.3.4/src/emc/iotask/usrmotintf.c:1052:
+Hello,
 
-This line tells me you are compiling from a tarball sent over last night. This 
-code is based on the original NIST EMC code, not emc2.
+I'm using linux kernel 2.6.22.12, xenomai 2.4-rc6, and rtnet trunk 1140
+date 11/15/2007. There are 2 8139 RealTek nics in the system 
 
-<snip>
-> How can I modify the code to solve this problem?
+I got the disable IRQ messages when loading RTnet modules:
+Xenomai: xnintr_shirq_handler: IRQ11 not handled. Disable IRQ line.
+Xenomai: xnintr_shirq_handler: IRQ10 not handled. Disable IRQ line.
 
-I'll take a look at the code I sent, and will advise shortly - Compiling on a 
-PowerPC reveals a couple of problems with the configure script, and there 
-will also be some issues with includes.
+one nic using IRQ 11 and the other using IRQ 10
+These cause the rteth0 and rteth1 not receive any packages.
 
-Unless there is a wider interest in this particular project, general compile 
-time problems & bugs are probably best dealt with off-list. Feel free to 
-email me anytime.
+How can I enable the interrupts? or control so that the
+xnintr_shirq_handler not disable the interrupts?
+
+Thanks in advance.
+Dennis  
 
 
-Regards, Paul.
 
