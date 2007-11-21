@@ -1,14 +1,12 @@
-Content-class: urn:content-classes:message
+Date: Wed, 21 Nov 2007 14:33:33 -0800 (PST)
+From: DENNIS NGUYEN <dennisnguy@domain.hid>
+In-Reply-To: <2ff1a98a0711210140x39088655idf0339a49522fa73@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 21 Nov 2007 15:07:33 +0100
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2AE097CD@ARVMAIL1.mra.roland-man.biz>
-In-Reply-To: <4742E82B.1040000@domain.hid>
-From: <Roderik.Wildenburg@domain.hid>
-Subject: Re: [Xenomai-help] rt_queue_write error: "Cannot allocate memory ";
-	bug or feature ?
+Content-Type: multipart/alternative; boundary="0-480501778-1195684413=:79799"
+Content-Transfer-Encoding: 8bit
+Message-ID: <822923.79799.qm@domain.hid>
+Subject: Re: [Xenomai-help] xnintr_shirq_handler: IRQ11 not handled. Disable
+	IRQ line.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,60 +16,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-> >=20
-> > Could you please try to run my example on your machine, or are you
-> > shure, that this
-> > problem is specific to our platform ? Thank you for your help !
+--0-480501778-1195684413=:79799
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 
->=20
-> This is likely not a platform specific issue. You may want to run your
-> small test on v2.4-rc6 on your side.
->=20
+Hello Gilles,
 
-If you think so, have you been able do reproduce the problem ?
+Thanks for the advice.
+Yes, I have problem with sharing the IRQ 11.
+my questions are:
+How can I set the rteth0 to a known not sharing IRQ in the system?
+How can I pass a known IRQ from RTnet to the Xenomai xnintr_shirq_handler?
+I tried to fix the IRQ from "network configuration" but it didn't help.  I also tried to set up the system BIOS but it did not have IRQ configuration.
+The Realtek NICs are using PCI bus.
 
-Xenomai 2.4.-rc6 did not make any differenece as you can see from the
-following output :
-(/proc/xenomai/version says 2.4-rc6)
+Thanks,
+Dennis
 
-WriteQueue 716 1512231002
-WriteQueue 1007 2129556885
-WriteQueue 227 476645315
-WriteQueue 615 1299758337
-WriteQueue 582 1228925036
-WriteQueue 449 947777523
-WriteQueue 270 567867246
-WriteQueue 752 1589385927
-WriteQueue 958 2026690827
-WriteQueue 64 131957776
-qtest2t: rt_queue_write error: Cannot allocate memory
-Message size :64 return : -12
----- qtest1q NMsg:0 Size:12288 used:0
-WriteQueue 849 1795696479
-WriteQueue 939 1985770412
-WriteQueue 234 491648752
-WriteQueue 307 646407494
-WriteQueue 1012 2140941003
-qtest2t: rt_queue_write error: Cannot allocate memory
-Message size :1012 return : -12
----- qtest1q NMsg:0 Size:12288 used:0
-WriteQueue 610 1289683840
-WriteQueue 313 660303794
-WriteQueue 472 996746841
 
-So, what can we do now ?
 
-Best regards=20
-Roderik=20
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote: On Nov 20, 2007 11:42 PM, Dennis Nguyen  wrote:
+> Hello,
+>
+> I'm using linux kernel 2.6.22.12, xenomai 2.4-rc6, and rtnet trunk 1140
+> date 11/15/2007. There are 2 8139 RealTek nics in the system
+>
+> I got the disable IRQ messages when loading RTnet modules:
+> Xenomai: xnintr_shirq_handler: IRQ11 not handled. Disable IRQ line.
+> Xenomai: xnintr_shirq_handler: IRQ10 not handled. Disable IRQ line.
+>
+> one nic using IRQ 11 and the other using IRQ 10
+> These cause the rteth0 and rteth1 not receive any packages.
+>
+> How can I enable the interrupts? or control so that the
+> xnintr_shirq_handler not disable the interrupts?
 
-MAN Roland Druckmaschinen AG
-Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle   =20
-Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592   =20
-USt-Ident-Nr. DE 250200933
+There are several reasons why this can happen. One reason is a bug in
+the drivers interrupt handler, which returns RTDM_IRQ_NONE whereas it
+should not. Another reason is that the IRQs 10 and 11 are shared
+between the ethernet driver and non real-time drivers. This can not
+work.
+
+
+-- 
+                                               Gilles Chanteperdrix
+
+
+--0-480501778-1195684413=:79799
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+
+Hello Gilles,<br><br>Thanks for the advice.<br>Yes, I have problem with sharing the IRQ 11.<br>my questions are:<br>How can I set the rteth0 to a known not sharing IRQ in the system?<br>How can I pass a known IRQ from RTnet to the Xenomai xnintr_shirq_handler?<br>I tried to fix the IRQ from "network configuration" but it didn't help.&nbsp; I also tried to set up the system BIOS but it did not have IRQ configuration.<br>The Realtek NICs are using PCI bus.<br><br>Thanks,<br>Dennis<br><br><br><br><b><i>Gilles Chanteperdrix &lt;gilles.chanteperdrix@xenomai.org&gt;</i></b> wrote:<blockquote class="replbq" style="border-left: 2px solid rgb(16, 16, 255); margin-left: 5px; padding-left: 5px;"> On Nov 20, 2007 11:42 PM, Dennis Nguyen <dennisnguy@domain.hid> wrote:<br>&gt; Hello,<br>&gt;<br>&gt; I'm using linux kernel 2.6.22.12, xenomai 2.4-rc6, and rtnet trunk 1140<br>&gt; date 11/15/2007. There are 2 8139 RealTek nics in the system<br>&gt;<br>&gt; I got the disable IRQ messages
+ when loading RTnet modules:<br>&gt; Xenomai: xnintr_shirq_handler: IRQ11 not handled. Disable IRQ line.<br>&gt; Xenomai: xnintr_shirq_handler: IRQ10 not handled. Disable IRQ line.<br>&gt;<br>&gt; one nic using IRQ 11 and the other using IRQ 10<br>&gt; These cause the rteth0 and rteth1 not receive any packages.<br>&gt;<br>&gt; How can I enable the interrupts? or control so that the<br>&gt; xnintr_shirq_handler not disable the interrupts?<br><br>There are several reasons why this can happen. One reason is a bug in<br>the drivers interrupt handler, which returns RTDM_IRQ_NONE whereas it<br>should not. Another reason is that the IRQs 10 and 11 are shared<br>between the ethernet driver and non real-time drivers. This can not<br>work.<br><br><br>-- <br>                                               Gilles Chanteperdrix<br></dennisnguy@domain.hid></blockquote><br>
+--0-480501778-1195684413=:79799--
 
