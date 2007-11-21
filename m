@@ -1,14 +1,14 @@
-Message-ID: <2ff1a98a0711210140x39088655idf0339a49522fa73@domain.hid>
-Date: Wed, 21 Nov 2007 10:40:49 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <1195598528.25407.9.camel@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <1195598528.25407.9.camel@domain.hid>
-Subject: Re: [Xenomai-help] xnintr_shirq_handler: IRQ11 not handled. Disable
-	IRQ line.
+Content-Type: text/plain;
+	charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 21 Nov 2007 15:07:33 +0100
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2AE097CD@ARVMAIL1.mra.roland-man.biz>
+In-Reply-To: <4742E82B.1040000@domain.hid>
+From: <Roderik.Wildenburg@domain.hid>
+Subject: Re: [Xenomai-help] rt_queue_write error: "Cannot allocate memory ";
+	bug or feature ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,32 +18,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Dennis Nguyen <dennisnguy@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-On Nov 20, 2007 11:42 PM, Dennis Nguyen <dennisnguy@domain.hid> wrote:
-> Hello,
->
-> I'm using linux kernel 2.6.22.12, xenomai 2.4-rc6, and rtnet trunk 1140
-> date 11/15/2007. There are 2 8139 RealTek nics in the system
->
-> I got the disable IRQ messages when loading RTnet modules:
-> Xenomai: xnintr_shirq_handler: IRQ11 not handled. Disable IRQ line.
-> Xenomai: xnintr_shirq_handler: IRQ10 not handled. Disable IRQ line.
->
-> one nic using IRQ 11 and the other using IRQ 10
-> These cause the rteth0 and rteth1 not receive any packages.
->
-> How can I enable the interrupts? or control so that the
-> xnintr_shirq_handler not disable the interrupts?
+> >=20
+> > Could you please try to run my example on your machine, or are you
+> > shure, that this
+> > problem is specific to our platform ? Thank you for your help !
 
-There are several reasons why this can happen. One reason is a bug in
-the drivers interrupt handler, which returns RTDM_IRQ_NONE whereas it
-should not. Another reason is that the IRQs 10 and 11 are shared
-between the ethernet driver and non real-time drivers. This can not
-work.
+>=20
+> This is likely not a platform specific issue. You may want to run your
+> small test on v2.4-rc6 on your side.
+>=20
 
+If you think so, have you been able do reproduce the problem ?
 
--- 
-                                               Gilles Chanteperdrix
+Xenomai 2.4.-rc6 did not make any differenece as you can see from the
+following output :
+(/proc/xenomai/version says 2.4-rc6)
+
+WriteQueue 716 1512231002
+WriteQueue 1007 2129556885
+WriteQueue 227 476645315
+WriteQueue 615 1299758337
+WriteQueue 582 1228925036
+WriteQueue 449 947777523
+WriteQueue 270 567867246
+WriteQueue 752 1589385927
+WriteQueue 958 2026690827
+WriteQueue 64 131957776
+qtest2t: rt_queue_write error: Cannot allocate memory
+Message size :64 return : -12
+---- qtest1q NMsg:0 Size:12288 used:0
+WriteQueue 849 1795696479
+WriteQueue 939 1985770412
+WriteQueue 234 491648752
+WriteQueue 307 646407494
+WriteQueue 1012 2140941003
+qtest2t: rt_queue_write error: Cannot allocate memory
+Message size :1012 return : -12
+---- qtest1q NMsg:0 Size:12288 used:0
+WriteQueue 610 1289683840
+WriteQueue 313 660303794
+WriteQueue 472 996746841
+
+So, what can we do now ?
+
+Best regards=20
+Roderik=20
+
+MAN Roland Druckmaschinen AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle   =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592   =20
+USt-Ident-Nr. DE 250200933
 
