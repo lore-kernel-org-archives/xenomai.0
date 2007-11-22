@@ -1,15 +1,15 @@
-From: Leopold Palomo-Avellaneda <lepalom@domain.hid>
-Date: Wed, 14 Nov 2007 12:21:46 +0100
-References: <4739E07B.1000608@domain.hid> <200711141056.06083.lepalom@domain.hid>
-	<473AC972.8070209@domain.hid>
-In-Reply-To: <473AC972.8070209@domain.hid>
+Message-ID: <47450B49.2060907@domain.hid>
+Date: Wed, 21 Nov 2007 20:53:29 -0800
+From: Dennis Nguyen <dennisnguy@domain.hid>
 MIME-Version: 1.0
-Message-Id: <200711141221.47396.lepalom@domain.hid>
+References: <2ff1a98a0711210140x39088655idf0339a49522fa73@domain.hid>	
+	<822923.79799.qm@domain.hid>
+	<fd6a47a90711211544q437ea186mcfbab54fd0a257cc@domain.hid>
+In-Reply-To: <fd6a47a90711211544q437ea186mcfbab54fd0a257cc@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Disposition: inline
-Subject: Re: [Xenomai-help] Xenomai v2.4-rc6
+Subject: Re: [Xenomai-help] xnintr_shirq_handler: IRQ11 not handled. Disable
+ IRQ line.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,81 +19,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org, xenomai-core <xenomai@xenomai.org>
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
+Cc: xenomai@xenomai.org
 
-A Dimecres 14 Novembre 2007, Philippe Gerum va escriure:
-> Leopold Palomo-Avellaneda wrote:
-> > A Dimarts 13 Novembre 2007, Philippe Gerum va escriure:
-> >> Here is the sixth candidate release for the v2.4.x branch.
-> >
-> > [....]
-> >
-> >> 	[i386, x86_64 => x86]
-> >>
-> >> 	* Merge i386 and x86_64 arch-dep support as x86.
-> >>  	* Update Adeos/i386 support for 2.6.20, 2.6.22 and 2.6.23.
-> >
-> > [...]
-> >
-> > this has break the creation of the debian packages. I can understand that
-> > conceptually they are the same arch (one with 32bits and another with 64
-> > and more extensions) in general _all_ the distros treat them as two
-> > different arch.
+Hi Jeroen,
+
+Thanks for the information.
+
+The Xenomai disabled the interrupt when it saw the sharing. The message 
+log from dmesg was:
+xenomai: xnintr_shirq_handler: IRQ11 not handled. Disabling IRQ line.
+
+The NICs worked normally with 8139too.ko and 8139cp.ko drivers.
+
+I have three difference types of PCs: pentium III 650 Mhz, Core2, and 
+AMD athlon 2Ghz. on different mother boards.  All of them have conflict 
+IRQs with xenomai and RTnet.  I swapped the slots but it did not 
+changed.  I'm thinking of giving the NICs  fixed IRQ but I don't know how.
+
+Anyone have any ideas?
+
+Thanks,
+Dennis
+
+
+
+Jeroen Van den Keybus wrote:
 >
-> How long do you think this is going to be that way, with 2.6.24 actually
-> merging those supports at kernel level?
+>     Yes, I have problem with sharing the IRQ 11.
+>     my questions are:
+>     How can I set the rteth0 to a known not sharing IRQ in the system? 
 >
->  So this changes break things. I don't think that it's a good idea do it
+>  
+> - You already said you don't have BIOS options.
+> - If you have multiple PCI slots, try swapping the cards. Usually, 
+> adjacent slots have different interrupt lines. But you might end up 
+> sharing with something else.
+> - Avoid the use of the sharing device (possible with audio, some USB, ...)
+> - Check if ACPI configures the interrupt lines for you (bypassing the 
+> BIOS). I don't know for sure, but I think you can use the acpi_irq_pci 
+> kernel parameter to somehow influence the mapping of the 
+> physical interrupt lines to logical IRQ lines (numbers).
+> - You could also try to share the same IRQ for both cards (again by 
+> replacing them in the PCI slots).
+>  
+> But, in all fairness, I think your problem lies elsewhere, because 
+> both IRQ10 and 11 are affected and disabling only occurs after a lot 
+> (1000 or so) of unhandled requests have happened.
 >
-> > in a release candidate, IMHO.
+>  
 >
-> We discussed this issue and the reason for doing this change asap in
-> length on the mailing list two weeks ago or so. Please have a look at
-> the archive for more. You will also find some significant patches
-> already exploiting the new common tree in order to streamline the code,
-> and ease maintenance on our side. Few resources, large work, we have to
-> be efficient, and maintaining two closely related archs sharing bits in
-> separate code bases is pointless, and a loss of time for the project.
+>     How can I pass a known IRQ from RTnet to the Xenomai
+>     xnintr_shirq_handler?
 >
-
-Ok,
-
-I'm not subscribing to xenomai-core, so I don't know if this have been 
-discussed on the list.
-
-Yes, I didn't have done a search on the web/list about if this have been 
-discused, I just have pointed that you are working (with a few resources, 
-etc) to release a new version rc-6 and have done a change that break 
-our "lazy way" of install/ compile xenomai. I don't know if others things.
-
-I'm sure that you have worked/thought that this is the best way to do the 
-things. Now I have read the thread about it and well, it's just a normal 
-discussions about to make a important change and the people comment. You as 
-project leader have an idea that you think that it's good for the project, 
-and you implement it. And other people saying, ok, if you want to do it, I 
-will try to help...
-
-I can understand that my post have ..... I don't know the verb in english, in 
-catalan will be "tocar-te els collons" and in english something like "touch 
-your balls". That's not my intention, really.
-
-I also will try to help it and I will look the debian packages to solve 
-this ... ;-) and probably I'm one this strange people that if I use a open 
-source soft and I begin I use a release candidate to test it and try help. At 
-least some kind of .. please could you run bla, or can you try bla ... but 
-I'm not statistically important because I'm not showed at google ;-)
-
-Leo
-
-PS from some mail that I have read:
-... sun is still shining, birds are still singing, hardware is not burning - 
-yet. 
-
-
-
-
-
-
-
+>  
+> The PCI interrupts are fixed after BIOS (or ACPI) has done its job. If 
+> you change the number of the IRQ line by moving it or using the 
+> BIOS/ACPI, it should also change correctly.
+>  
+>  
+> What does the dmesg log say ? Perhaps you can turn on debugging for 
+> the rtnet driver and get more info.
+>  
+> Last but not least: do the cards work correctly in parallel using the 
+> standard Linux driver (8139too) ?
+>  
+>  
+> Jeroen.
 
