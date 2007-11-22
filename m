@@ -1,13 +1,15 @@
-Message-ID: <2ff1a98a0711130246sc56a332n4a782fa9b470d662@domain.hid>
-Date: Tue, 13 Nov 2007 11:46:10 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <e4ef24880711121452p631a5e05ud7ada7595fd1f4e3@domain.hid>
+Message-ID: <47459716.50508@domain.hid>
+Date: Thu, 22 Nov 2007 15:49:58 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <2ff1a98a0711210140x39088655idf0339a49522fa73@domain.hid>		<822923.79799.qm@domain.hid>		<fd6a47a90711211544q437ea186mcfbab54fd0a257cc@domain.hid>		<47450B49.2060907@domain.hid>	<fd6a47a90711220342y119217aei841a2b7bce90acb0@domain.hid>
+	<47459517.20003@domain.hid>
+In-Reply-To: <47459517.20003@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <e4ef24880711121452p631a5e05ud7ada7595fd1f4e3@domain.hid>
-Subject: Re: [Xenomai-help] Time critical tasks
+From: Roland Tollenaar <rwatollenaar@domain.hid>
+Subject: Re: [Xenomai-help] xnintr_shirq_handler: IRQ11 not handled. Disable
+ IRQ line.
+Reply-To: rolandtollenaar@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,20 +19,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Robert Gubler <rgubler@domain.hid>
+To: Dennis Nguyen <dennisnguy@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Nov 12, 2007 11:52 PM, Robert Gubler <rgubler@domain.hid> wrote:
-> Hello,
->
-> I have a task that is very time critical.  I used the xenomai/bin/latency
-> program to get an idea of my worst case latency; its about 30 us.  Is there
-> a facility in POSIX or the POSIX skin, that will allow me to account for
-> this worst case latency? Does clock_nanosleep() provides this?
+post the output of
 
-No, you have to measure this with clock_gettime, the way cyclictest do it.
-If you use CLOCK_MONOTONIC, the tsc will be used as the time source.
+lspci -v
 
--- 
-                                               Gilles Chanteperdrix
+Roland
+
+Dennis Nguyen wrote:
+> Most of the times the RTnet/Xenomai disabled the IRQ right away. few 
+> time it ran for a while.
+> It doesn't matter the system has single or 2 cards, it still have 
+> conflict IRQ.  I tried to change the slot but it did not help.
+> Thanks,
+> Dennis
+> 
+> Jeroen Van den Keybus wrote:
+>>     The Xenomai disabled the interrupt when it saw the sharing.
+>>
+>>  
+>> I may have mislooked, but doesn't xnintr_shirq_handler only disable 
+>> the line after XNINTR_MAX_UNHANDLED problematic IRQs (which is by 
+>> default set to 1000) ? If you get the error immediately after loading 
+>> the driver, it looks like either the interrupt doesn't get properly 
+>> acknowledged in the I-pipe (after which the driver gets pounded by 999 
+>> stray interrupts, causing it to return 'unhandled') or the driver 
+>> fails to acknowledge it on the card.
+>>  
+>>
+>>     The NICs worked normally with 8139too.ko and 8139cp.ko drivers.
+>>
+>>  
+>> Ok. I think that means that at least no weird things happen in the 
+>> I-pipe or that the cards are defective (or poorly inserted in slot).
+>>  
+>>
+>>     I have three difference types of PCs: pentium III 650 Mhz, Core2, and
+>>     AMD athlon 2Ghz. on different mother boards.  All of them have
+>>     conflict
+>>     IRQs with xenomai and RTnet.  I swapped the slots but it did not
+>>     changed.  I'm thinking of giving the NICs  fixed IRQ but I don't
+>>     know how.
+>>
+>>  
+>> As said before, you can only practically do that in the BIOS or using 
+>> ACPI.
+>>  
+>> Does the rtnet driver work correctly with only one card ?
+>>  
+>>  
+>> Jeroen.
+>>  
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+> 
+
 
