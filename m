@@ -1,13 +1,17 @@
-Message-ID: <2ff1a98a0711220640i475b9d94h9b59cb07fe00cb61@domain.hid>
-Date: Thu, 22 Nov 2007 15:40:32 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <1806495015@domain.hid>
+Message-ID: <47459517.20003@domain.hid>
+Date: Thu, 22 Nov 2007 06:41:27 -0800
+From: Dennis Nguyen <dennisnguy@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <2ff1a98a0711210140x39088655idf0339a49522fa73@domain.hid>	
+	<822923.79799.qm@domain.hid>	
+	<fd6a47a90711211544q437ea186mcfbab54fd0a257cc@domain.hid>	
+	<47450B49.2060907@domain.hid>
+	<fd6a47a90711220342y119217aei841a2b7bce90acb0@domain.hid>
+In-Reply-To: <fd6a47a90711220342y119217aei841a2b7bce90acb0@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <1806495015@domain.hid>
-Subject: Re: [Xenomai-help] boot hang up with lapic
+Subject: Re: [Xenomai-help] xnintr_shirq_handler: IRQ11 not handled. Disable
+ IRQ line.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,16 +21,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Andreas Vogt <A_C_V@web.de>
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
 Cc: xenomai@xenomai.org
 
-You selected 586 as a processor, a processor without tsc, so Xenomai
-uses the tsc emulation, maybe this is what causes the problem ? In
-order to know, try selecting a processor with a tsc (586tsc or
-better), the best option is to select the processor that you really
-use, it allows linux makefile to select the best compilation options
-for your processor.
+Most of the times the RTnet/Xenomai disabled the IRQ right away. few 
+time it ran for a while.
+It doesn't matter the system has single or 2 cards, it still have 
+conflict IRQ.  I tried to change the slot but it did not help.
+Thanks,
+Dennis
 
--- 
-                                               Gilles Chanteperdrix
+Jeroen Van den Keybus wrote:
+>
+>     The Xenomai disabled the interrupt when it saw the sharing.
+>
+>  
+> I may have mislooked, but doesn't xnintr_shirq_handler only disable 
+> the line after XNINTR_MAX_UNHANDLED problematic IRQs (which is by 
+> default set to 1000) ? If you get the error immediately after loading 
+> the driver, it looks like either the interrupt doesn't get properly 
+> acknowledged in the I-pipe (after which the driver gets pounded by 999 
+> stray interrupts, causing it to return 'unhandled') or the driver 
+> fails to acknowledge it on the card.
+>  
+>
+>     The NICs worked normally with 8139too.ko and 8139cp.ko drivers.
+>
+>  
+> Ok. I think that means that at least no weird things happen in the 
+> I-pipe or that the cards are defective (or poorly inserted in slot).
+>  
+>
+>     I have three difference types of PCs: pentium III 650 Mhz, Core2, and
+>     AMD athlon 2Ghz. on different mother boards.  All of them have
+>     conflict
+>     IRQs with xenomai and RTnet.  I swapped the slots but it did not
+>     changed.  I'm thinking of giving the NICs  fixed IRQ but I don't
+>     know how.
+>
+>  
+> As said before, you can only practically do that in the BIOS or using 
+> ACPI.
+>  
+> Does the rtnet driver work correctly with only one card ?
+>  
+>  
+> Jeroen.
+>  
 
