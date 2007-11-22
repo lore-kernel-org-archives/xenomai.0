@@ -1,12 +1,10 @@
-Content-class: urn:content-classes:message
+Date: Thu, 22 Nov 2007 14:45:03 +0100
+Message-Id: <1806365692@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
+From: Andreas Vogt <A_C_V@web.de>
+Content-Type: text/plain; charset=iso-8859-15
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 22 Nov 2007 13:33:35 +0100
-Message-ID: <0B45E93C5FF65740AEAE690BF3848B7A4AB29E@rennsmail04.eu.thmulti.com>
-From: "Fillod Stephane" <stephane.fillod@domain.hid>
-Subject: Re: [Xenomai-help] rtai_free & rtai_malloc problem
+Subject: [Xenomai-help] boot hang up with lapic
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,26 +14,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: zhangwei zhang <linda.zhangwei@domain.hid>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-zhangwei zhang wrote:
->I try to install emc2 on xenomai (x86), the error is like this:
 
-I have no idea what is emc2. Is this thing using the RTAI skin?
+Hello
+I hope somebody can help me.
+I have Xenomai 2.3.1 and Linux 2.6.20.13 and i tried it with other Version=
+s and adeos-ipipe-2.6.20-i386-1.10-10.patch.
+Everytime I have in the boot options nolapic then the Linux works but the =
+Error
 
->gcc -I/usr/local -I../../../include -g -Wall -DDEBUG -g -O2
->-o .libs/usrmot usrmot-usrmotintf.o usrmot-usrmot.o usrmot-emcmotglb.o
->usrmot-pid.o usrmot-emcmotlog.o usrmot-emcmotutil.o
->-L/home/kyla/eldk/xeno-tux-0.1/src/libnml
->/home/kyla/eldk/xeno-tux-0.1/src/libnml/.libs/libnml.so
->-L/home/kyla/eldk/xeno-tux-0.1/src/emc/nml_intf
->/home/kyla/eldk/xeno-tux-0.1/src/emc/nml_intf/.libs/libemc.a
->-L/usr/xenomai/lib /usr/xenomai/lib/libnative.so -Wl,--rpath
-                                     ^^^^^^^^^^^^
-If your application uses the RTAI skin, then the library is wrong.
-It should be librtai.so instead. Hence the _link_ error you've got.
+>Xenomai: Local APIC absent or disabled!
+>Disable APIC support or pass "lapic=3D1" as bootparam.
+>Xenomai: system init failed, code -19.
+>Xenomai: starting POSIX services.
+>Xenomai: POSIX skin init failed, code -19.
+>Xenomai: RTDM skin init failed, code -19.
 
-Regards,
---=20
-Stephane
+happen.
+And if i write lapic in the boot options the system doesn't boot.
+Andreas
+
+=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
+Jetzt neu! Sch=FCtzen Sie Ihren PC mit McAfee und WEB.DE. 3 Monate
+kostenlos testen. http://www.pc-sicherheit.web.de/startseite/=3Fmc=3D022220
+
 
