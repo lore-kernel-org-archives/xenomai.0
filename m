@@ -1,5 +1,5 @@
-Date: Thu, 22 Nov 2007 15:21:12 +0100
-Message-Id: <1806472257@domain.hid>
+Date: Thu, 22 Nov 2007 15:17:28 +0100
+Message-Id: <1806459848@domain.hid>
 MIME-Version: 1.0
 From: Andreas Vogt <A_C_V@web.de>
 Content-Type: text/plain; charset=iso-8859-15
@@ -16,6 +16,7 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
+
 > -----Urspr=FCngliche Nachricht-----
 > Von: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 > Gesendet: 22.11.07 14:53:13
@@ -24,7 +25,7 @@ To: xenomai@xenomai.org
 > Betreff: Re: [Xenomai-help] boot hang up with lapic
 
 
->
+>=20
 > On Nov 22, 2007 2:45 PM, Andreas Vogt <A=5FC=5FV@web.de> wrote:
 > >
 > > Hello
@@ -44,19 +45,17 @@ the Error
 > > happen.
 > > And if i write lapic in the boot options the system doesn't boot.
 > > Andreas
->
+>=20
 > Your last choice is to disable local apic in kernel configuration, then.=
 
->
-> --
-> Gilles Chanteperdrix
->
-Im did this but then the System hang up just before the user/login screen =
-usually came. Have you further ideas=3F I really need Xenomai.
-Thanxs
+>=20
+> --=20
+>                                                Gilles Chanteperdrix
+>=20
 
-=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
-Der WEB.DE SmartSurfer hilft bis zu 70% Ihrer Onlinekosten zu sparen!
-http://smartsurfer.web.de/=3Fmc=3D100071&distributionid=3D000000000066
+
+=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
+Jetzt neu! Sch=FCtzen Sie Ihren PC mit McAfee und WEB.DE. 3 Monate
+kostenlos testen. http://www.pc-sicherheit.web.de/startseite/=3Fmc=3D022220
 
 
