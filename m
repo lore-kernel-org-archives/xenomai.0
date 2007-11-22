@@ -1,17 +1,10 @@
-Message-ID: <47459517.20003@domain.hid>
-Date: Thu, 22 Nov 2007 06:41:27 -0800
-From: Dennis Nguyen <dennisnguy@domain.hid>
+Date: Thu, 22 Nov 2007 15:21:12 +0100
+Message-Id: <1806472257@domain.hid>
 MIME-Version: 1.0
-References: <2ff1a98a0711210140x39088655idf0339a49522fa73@domain.hid>	
-	<822923.79799.qm@domain.hid>	
-	<fd6a47a90711211544q437ea186mcfbab54fd0a257cc@domain.hid>	
-	<47450B49.2060907@domain.hid>
-	<fd6a47a90711220342y119217aei841a2b7bce90acb0@domain.hid>
-In-Reply-To: <fd6a47a90711220342y119217aei841a2b7bce90acb0@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] xnintr_shirq_handler: IRQ11 not handled. Disable
- IRQ line.
+From: Andreas Vogt <A_C_V@web.de>
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] boot hang up with lapic
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,51 +14,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Most of the times the RTnet/Xenomai disabled the IRQ right away. few 
-time it ran for a while.
-It doesn't matter the system has single or 2 cards, it still have 
-conflict IRQ.  I tried to change the slot but it did not help.
-Thanks,
-Dennis
+> -----Urspr=FCngliche Nachricht-----
+> Von: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+> Gesendet: 22.11.07 14:53:13
+> An: "Andreas Vogt" <A=5FC=5FV@web.de>
+> CC: xenomai@xenomai.org
+> Betreff: Re: [Xenomai-help] boot hang up with lapic
 
-Jeroen Van den Keybus wrote:
+
 >
->     The Xenomai disabled the interrupt when it saw the sharing.
+> On Nov 22, 2007 2:45 PM, Andreas Vogt <A=5FC=5FV@web.de> wrote:
+> >
+> > Hello
+> > I hope somebody can help me.
+> > I have Xenomai 2.3.1 and Linux 2.6.20.13 and i tried it with other Ver=
+sions and adeos-ipipe-2.6.20-i386-1.10-10.patch.
+> > Everytime I have in the boot options nolapic then the Linux works but =
+the Error
+> >
+> > >Xenomai: Local APIC absent or disabled!
+> > >Disable APIC support or pass "lapic=3D1" as bootparam.
+> > >Xenomai: system init failed, code -19.
+> > >Xenomai: starting POSIX services.
+> > >Xenomai: POSIX skin init failed, code -19.
+> > >Xenomai: RTDM skin init failed, code -19.
+> >
+> > happen.
+> > And if i write lapic in the boot options the system doesn't boot.
+> > Andreas
 >
->  
-> I may have mislooked, but doesn't xnintr_shirq_handler only disable 
-> the line after XNINTR_MAX_UNHANDLED problematic IRQs (which is by 
-> default set to 1000) ? If you get the error immediately after loading 
-> the driver, it looks like either the interrupt doesn't get properly 
-> acknowledged in the I-pipe (after which the driver gets pounded by 999 
-> stray interrupts, causing it to return 'unhandled') or the driver 
-> fails to acknowledge it on the card.
->  
+> Your last choice is to disable local apic in kernel configuration, then.=
+
 >
->     The NICs worked normally with 8139too.ko and 8139cp.ko drivers.
+> --
+> Gilles Chanteperdrix
 >
->  
-> Ok. I think that means that at least no weird things happen in the 
-> I-pipe or that the cards are defective (or poorly inserted in slot).
->  
->
->     I have three difference types of PCs: pentium III 650 Mhz, Core2, and
->     AMD athlon 2Ghz. on different mother boards.  All of them have
->     conflict
->     IRQs with xenomai and RTnet.  I swapped the slots but it did not
->     changed.  I'm thinking of giving the NICs  fixed IRQ but I don't
->     know how.
->
->  
-> As said before, you can only practically do that in the BIOS or using 
-> ACPI.
->  
-> Does the rtnet driver work correctly with only one card ?
->  
->  
-> Jeroen.
->  
+Im did this but then the System hang up just before the user/login screen =
+usually came. Have you further ideas=3F I really need Xenomai.
+Thanxs
+
+=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
+Der WEB.DE SmartSurfer hilft bis zu 70% Ihrer Onlinekosten zu sparen!
+http://smartsurfer.web.de/=3Fmc=3D100071&distributionid=3D000000000066
+
 
