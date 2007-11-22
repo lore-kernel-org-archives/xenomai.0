@@ -1,16 +1,13 @@
-Message-ID: <47455227.804@domain.hid>
-Date: Thu, 22 Nov 2007 10:55:51 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <2ff1a98a0711220202q66a624aufeec60d246172a75@domain.hid>
+Date: Thu, 22 Nov 2007 11:02:27 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <474540B2.9050208@domain.hid>
 MIME-Version: 1.0
-References: <473391B0.5040809@domain.hid>
-	<47344759.4020505@domain.hid>	<473484C6.6050101@domain.hid>
-	<200711152309.00386.niklaus.giger@domain.hid>
-In-Reply-To: <200711152309.00386.niklaus.giger@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] buildbot and state of xenomai on PPC440?
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+References: <474540B2.9050208@domain.hid>
+Subject: Re: [Xenomai-help] CLOCK_REALTIME initialization
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,24 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai@xenomai.org, "Steven A. Falco" <sfalco@domain.hid>
+To: Theo Veenker <Theo.Veenker@domain.hid>
+Cc: Xenomai <xenomai@xenomai.org>
 
+On Nov 22, 2007 9:41 AM, Theo Veenker <Theo.Veenker@domain.hid> wrote:
+> Hi,
+>
+> I understand in the Xenomai posix skin CLOCK_REALTIME gets initialized
+> on startup of the system and then left alone. There is a problem if the
+> system's hwclock is storing local time as opposed to UTC. In this case
+> the Xenomai clock gets initialized with local time instead of UTC.
+> I use local time in the hwclock because my systems are dual-boot with
+> MS Windows XP and XP aparently still can't properly deal with hwclock
+> set to UTC.
 
-Hi Niklaus,
+We use do_getttimeofday at Xenomai initialization time to get the
+system time. Do you know what we should call to get UTC time ?
 
-Niklaus Giger wrote:
-> Hi
-> 
-> For a series of personal problems I have been away from the xenomai project 
-> and the buildbot I maintained for some time is quite bit rotten. If there is 
-> interest around I think I will soon be able to put in some work to bring into 
-> shape again.
-> 
+>
+> What I would like to do is tell Xenomai to reinitialize CLOCK_REALTIME
+> at some point *after* Linux has initialized its own clock from the
+> hwclock. As clock_settime() isn't yet supported (in 2.3) I can't do
+> this now. Will it be in 2.5, or is there at present another way of
+> reinitializing CLOCK_REALTIME?
 
-FWIW, I'm relying on your buildbot, so it would be nice if it could
-remain available. TIA,
+Yes, it is in 2.4.
 
 -- 
-Philippe.
+                                               Gilles Chanteperdrix
 
