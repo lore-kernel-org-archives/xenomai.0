@@ -1,15 +1,15 @@
-Message-ID: <2ff1a98a0711230214s5f9d4456n98912d2c6d87aea8@domain.hid>
-Date: Fri, 23 Nov 2007 11:14:35 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <474566B5.4050105@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <474540B2.9050208@domain.hid>
-	<2ff1a98a0711220202q66a624aufeec60d246172a75@domain.hid>
-	<474566B5.4050105@domain.hid>
-Subject: Re: [Xenomai-help] CLOCK_REALTIME initialization
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 23 Nov 2007 13:37:09 +0100
+Message-ID: <0456E5B751F6DB4A83688EED49C9CAF705731F4E@CHNIS191.bystronic.metal.firm>
+References: <0456E5B751F6DB4A83688EED49C9CAF705731F4D@CHNIS191.bystronic.metal.firm>
+	<2ff1a98a0711230153l6300983cg1e8a98b53676ae0d@domain.hid>
+	<2ff1a98a0711230155w4dee347ct9257337474a004e2@domain.hid>
+From: "Lauener Nathan" <Nathan.Lauener@domain.hid>
+Subject: Re: [Xenomai-help] RTDM and user space task synchronisation problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,57 +19,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Theo Veenker <Theo.Veenker@domain.hid>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Nov 22, 2007 12:23 PM, Theo Veenker <Theo.Veenker@domain.hid> wrote:
-> Gilles Chanteperdrix wrote:
-> > On Nov 22, 2007 9:41 AM, Theo Veenker <Theo.Veenker@domain.hid> wrote:
-> >> Hi,
-> >>
-> >> I understand in the Xenomai posix skin CLOCK_REALTIME gets initialized
-> >> on startup of the system and then left alone. There is a problem if the
-> >> system's hwclock is storing local time as opposed to UTC. In this case
-> >> the Xenomai clock gets initialized with local time instead of UTC.
-> >> I use local time in the hwclock because my systems are dual-boot with
-> >> MS Windows XP and XP aparently still can't properly deal with hwclock
-> >> set to UTC.
+Thanks Gilles, it works fine now.
+
+Nathan
+
+-----Urspr=FCngliche Nachricht-----
+Von: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
+Gesendet: Freitag, 23. November 2007 10:56
+An: Lauener Nathan
+Cc: xenomai@xenomai.org
+Betreff: Re: [Xenomai-help] RTDM and user space task synchronisation =
+problem
+
+On Nov 23, 2007 10:53 AM, Gilles Chanteperdrix =
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On Nov 23, 2007 9:57 AM, Lauener Nathan <Nathan.Lauener@domain.hid> =
+wrote:
 > >
-> > We use do_getttimeofday at Xenomai initialization time to get the
-> > system time. Do you know what we should call to get UTC time ?
+> >
+> >
+> > Hi,
+> >
+> > we have ported a largely POSIX based QNX application to Linux. It is =
+
+> > a machine control application with hard real time requirements. We=20
+> > use the POSIX-skin of Xenomai and so far the user space tasks seem =
+to run well.
+> > Calling pthread_set_mode_np(0,PTHREAD_PRIMARY) returns with no =
+error.
+> >
+> > But we are having some problems with the RTDM based driver. Our=20
+> > interrupt handler should wake up a user task after finishing its=20
+> > work. The IOCTL-function invoked by the user calls rtdm_event_wait() =
+
+> > and the interrupt handler invokes rtdm_event_pulse(). At first we=20
+> > had page faults and the kernel printed the following message before=20
+> > rebooting
+> >
+> > BUG: unable to handle kernel paging request<0>------------[ cut here
+> > ]------------
+> >
+> > The variable of type rtdm_event_t is initialised in the init=20
+> > function of the module. The documentation for rtdm_event_wait()=20
+> > states that it can only be called from a realtime environment.=20
+> > Checking for this condition with
+> > rtdm_in_rt_context() in the IOCTL-function revealed that the=20
+> > function is called in non realtime context. Without calling=20
+> > rtdm_event_wait() when in the non realtime environment we don't have =
+
+> > any page faults any more (and no synchronisation). To my=20
+> > understanding the IOCTL function should be executed in the context=20
+> > of the caller. Any suggestions to what I am missing? Linux kernel =
+version is 2.6.23.1 and the Xenomai version used is 2.3.94.
 >
-> Well I think the call is correct, but I suspect it is done before the
-> system time is initialized from the hwtimer. Or doesn't that make sense?
-> On my system (Ubuntu) hwclock is called from /etc/rcS.d/S50hwclock.sh
-> (rather late). It does something like /sbin/hwclock --hctosys --localtime
-> (the latter option indicates hwclock is supposed to store local time).
+> You register by_ioctl as a handler for both real-time and non=20
+> real-time ioctl handler, so RTDM assumes that by_ioctl may be called=20
+> from non real-time context. If you want an ioctl to be handled=20
+> exclusively in real-time context, while a handler is registered for=20
+> non real-time ioctls, you should return -ENOSYS for this ioctl in the=20
+> non real-time handler.
 >
-> I would suggest to supply a Xenomai init.d start script which reinitializes
-> the xenomai realtime clock. This should then obviously be scheduled
-> after Linux has called /sbin/hwclock --hctosys.
+> I am not sure this explanation is clear, so here comes an example
 
-I had a look at hwclock code, it gets the timezone from localtime
-(which probably gets it from glibc's /etc/localtime) and calls
-settimeofday with this timezone. sys_settimeofday sets the global
-variable sys_tz with the timezone passed by hwclock.
+Sorry, hit the send button before finishing the mail
 
-So, if we want Xenomai to get the UTC time independently from the
-timezone setting, we should take sys_tz into account.
+int by_rt_ioctl(struct rtdm_dev_context *context, rtdm_user_info_t * =
+user_info,
+     unsigned int request, void *arg)
+{
+ ...
+ case BY_IOC_GET_EVENT:
+       rtdm_event_wait(&event);
+...
+ }
 
-The problem is that it will work when Xenomai is compiled as module,
-since the module will probably be loaded after hwclock is called, but
-with Xenomai compiled in kernel, Xenomai initlization will take place
-before hwclock is called.
+int by_nrt_ioctl(struct rtdm_dev_context *context, rtdm_user_info_t * =
+user_info,
+     unsigned int request, void *arg)
+{
+ ...
+ case BY_IOC_GET_EVENT:
+        return -ENOSYS;
+...
+ }
 
-So, either we should provide, as you suggest, a user-space tool to be
-called  in init scripts, but this mean that we have to develop an
-interface (probably a driver) for this tool (using any skin would
-create an unwanted dependency). Another solution is to generate an
-I-pipe event when settimeofday is called, and call xnpod_settime in
-this event's handler.
+static struct rtdm_device device =3D {
+  ...
+    ops: {
+        close_rt:       by_release,
+        close_nrt:      by_release,
 
-Philippe, what do you think ?
+        ioctl_rt:       by_rt_ioctl,
+        ioctl_nrt:      by_nrt_ioctl,
+    },
+  ...
+};
 
--- 
+--=20
                                                Gilles Chanteperdrix
 
