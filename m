@@ -1,11 +1,13 @@
-Date: Thu, 15 Nov 2007 10:46:34 -0700
+Message-ID: <2ff1a98a0711230153l6300983cg1e8a98b53676ae0d@domain.hid>
+Date: Fri, 23 Nov 2007 10:53:16 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <0456E5B751F6DB4A83688EED49C9CAF705731F4D@CHNIS191.bystronic.metal.firm>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C827AF.7716C472"
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D3286BA@slcmail.slc.mew.int>
-Content-class: urn:content-classes:message
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: [Xenomai-help] queue cleanup issue
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <0456E5B751F6DB4A83688EED49C9CAF705731F4D@CHNIS191.bystronic.metal.firm>
+Subject: Re: [Xenomai-help] RTDM and user space task synchronisation problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,128 +17,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Lauener Nathan <Nathan.Lauener@domain.hid>
+Cc: xenomai@xenomai.org
+
+On Nov 23, 2007 9:57 AM, Lauener Nathan <Nathan.Lauener@domain.hid> wrote:
+>
+>
+>
+> Hi,
+>
+> we have ported a largely POSIX based QNX application to Linux. It is a
+> machine control application with hard real time requirements. We use the
+> POSIX-skin of Xenomai and so far the user space tasks seem to run well.
+> Calling pthread_set_mode_np(0,PTHREAD_PRIMARY) returns with no error.
+>
+> But we are having some problems with the RTDM based driver. Our interrupt
+> handler should wake up a user task after finishing its work. The
+> IOCTL-function invoked by the user calls rtdm_event_wait() and the interrupt
+> handler invokes rtdm_event_pulse(). At first we had page faults and the
+> kernel printed the following message before rebooting
+>
+> BUG: unable to handle kernel paging request<0>------------[ cut here
+> ]------------
+>
+> The variable of type rtdm_event_t is initialised in the init function of the
+> module. The documentation for rtdm_event_wait() states that it can only be
+> called from a realtime environment. Checking for this condition with
+> rtdm_in_rt_context() in the IOCTL-function revealed that the function is
+> called in non realtime context. Without calling rtdm_event_wait() when in
+> the non realtime environment we don't have any page faults any more (and no
+> synchronisation). To my understanding the IOCTL function should be executed
+> in the context of the caller. Any suggestions to what I am missing? Linux
+> kernel version is 2.6.23.1 and the Xenomai version used is 2.3.94.
+
+You register by_ioctl as a handler for both real-time and non
+real-time ioctl handler, so RTDM assumes that by_ioctl may be called
+from non real-time context. If you want an ioctl to be handled
+exclusively in real-time context, while a handler is registered for
+non real-time ioctls, you should return -ENOSYS for this ioctl in the
+non real-time handler.
+
+I am not sure this explanation is clear, so here comes an example
+
+int by_rt_ioctl(struct rtdm_dev_context *context, rtdm_user_info_t * user_info,
+    unsigned int request, void *arg)
+{
+...
+case BY_IOC_GET_EVENT:
+
+}
 
 
-This is a multi-part message in MIME format.
-
-------_=_NextPart_001_01C827AF.7716C472
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-Using native, I notice behavior where if I create a queue with one
-userspace app, and then open another userspace application that uses the
-same queue, then quit the original application with ctrl-c, and then
-close the 2nd application, that the queue will be left behind. I have to
-rmmod xeno_native and modprobe xeno_native to be able to open my first
-application again.
-
-=20
-
-The cleanup seems to work fine if I close the 2nd application first, and
-then the 1st application.
-
-=20
-
-Steven
 
 
-------_=_NextPart_001_01C827AF.7716C472
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
-xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
-
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:"MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
-@font-face
-	{font-family:"\@MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:Arial;
-	color:windowtext;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.25in 1.0in 1.25in;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-<!--[if gte mso 9]><xml>
- <o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
- <o:shapelayout v:ext=3D"edit">
-  <o:idmap v:ext=3D"edit" data=3D"1" />
- </o:shapelayout></xml><![endif]-->
-</head>
-
-<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Using native, I notice behavior where if I create a =
-queue
-with one userspace app, and then open another userspace application that =
-uses
-the same queue, then quit the original application with ctrl-c, and then =
-close
-the 2<sup>nd</sup> application, that the queue will be left behind. I =
-have to
-rmmod xeno_native and modprobe xeno_native to be able to open my first
-application again.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>The cleanup seems to work fine if I close the =
-2<sup>nd</sup>
-application first, and then the 1<sup>st</sup> =
-application.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Steven<o:p></o:p></span></font></p>
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01C827AF.7716C472--
+-- 
+                                               Gilles Chanteperdrix
 
