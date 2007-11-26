@@ -1,14 +1,14 @@
-Message-ID: <474A6BC8.6010705@domain.hid>
-Date: Mon, 26 Nov 2007 07:46:32 +0100
+Message-ID: <474A6D17.3090704@domain.hid>
+Date: Mon, 26 Nov 2007 07:52:07 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <41f748550711252024x51cf33ctd97a076c741274be@domain.hid>
-In-Reply-To: <41f748550711252024x51cf33ctd97a076c741274be@domain.hid>
+References: <200711231819.04655.rtos@domain.hid>
+In-Reply-To: <200711231819.04655.rtos@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig5F57FD2F39C04653C6210C6C"
+	boundary="------------enigCEC923B178DCC0EEF23C7944"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] /proc/xenomai/sched
+Subject: Re: [Xenomai-help] paper with jitter measurment
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,29 +18,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Iwan Budi Kusnanto <iwanbk@domain.hid>
+To: rtos@domain.hid
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig5F57FD2F39C04653C6210C6C
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enigCEC923B178DCC0EEF23C7944
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Iwan Budi Kusnanto wrote:
-> Hello all.
-> Is all task will listed in /proc/xenomai/sched ?
-> One of may tasks not in there.
-> rt_task_spawn return 0 (success) and no error message in dmesg.
->=20
+Marcin Pi=C4=85tek wrote:
+> Hello
+> I have recently published this paper about jitter measurment and tests =
+in RTAI=20
+> and Xenomai. It was published and spoken at the conference "Computer Me=
+thods=20
+> and Systems" 21-23 this year. I hope you like it and the results would =
+be=20
+> usefull for you. You can find it at the address:=20
+> http://home.agh.edu.pl/~mpi/papers/RTAI_Xenomai_paper.pdf
+> Waiting for some comments if you have one.
 
-May be you should check if your task happens to exit before you have a
-chance to spot it in /proc. And yes, as long as it exists, it is listed
-there.
+Interesting paper, but it's tricky to understand the results. It would
+have been good if you had provided more details about the test code
+(central code in an appendix or attached to your mail here). Moreover,
+you unfortunately do not describe the load you applied on your test
+boxes. Due to this it is not possible to reproduce your results.
 
 Jan
 
 
---------------enig5F57FD2F39C04653C6210C6C
+--------------enigCEC923B178DCC0EEF23C7944
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -49,10 +56,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.4-svn0 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFHSmvMniDOoMHTA+kRArE+AJ9xfIPfxgQnKx8Qf/PYWYEIJeZ5cQCggUbm
-gcIqZZYd1j8IHgcrJGpOrL4=
-=tUD4
+iD8DBQFHSm0XniDOoMHTA+kRAotyAJ4+tETkY8U2isEEsRhcpfwoHXuU5gCbBQpH
+JEGu36KTVBl4L3cYJk59B2Q=
+=Nlqb
 -----END PGP SIGNATURE-----
 
---------------enig5F57FD2F39C04653C6210C6C--
+--------------enigCEC923B178DCC0EEF23C7944--
 
