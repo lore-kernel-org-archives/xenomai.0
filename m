@@ -1,13 +1,12 @@
-Message-ID: <2ff1a98a0711260528nd5b56b1he0a41f0239b2236e@domain.hid>
-Date: Mon, 26 Nov 2007 14:28:41 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <5a4b7020711260424v76ccb304m2ebf177bf9050d2b@domain.hid>
+Message-Id: <200711261415.lAQEFdoD028307@domain.hid>
+From: "Patrick" <kpa_info@domain.hid>
+Date: Mon, 26 Nov 2007 15:15:42 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=KOI8-R
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
-References: <5a4b7020711260424v76ccb304m2ebf177bf9050d2b@domain.hid>
-Subject: Re: [Xenomai-help] NOTE: Xenomai conflicts with PC speaker support.
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+In-Reply-To: <2ff1a98a0711260528nd5b56b1he0a41f0239b2236e@domain.hid>
+Subject: [Xenomai-help] RTDM blocking non RT task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,25 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jie zhang <xenomai.rtai@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-T24gTm92IDI2LCAyMDA3IDE6MjQgUE0sIGppZSB6aGFuZyA8eGVub21haS5ydGFpQGdtYWlsLmNv
-bT4gd3JvdGU6Cj4gSGkKPiBJIG1lZXQgYSBzdHJhbmdlIHNpdHVhdGlvbiB3aGVuIEkgY29tcGls
-ZSB4ZW5vbWFpLTIuNC1yYzUgb24gTGludXgtMi42LjIzCj4KPiBMaW51eCBLZXJuZWwgQ29uZmln
-dXJhdGlvbgo+IFJlYWwtdGltZSBzdWItc3lzdGVtICAtLS0+Cj4gLS0tIE5PVEU6IFhlbm9tYWkg
-Y29uZmxpY3RzIHdpdGggUEMgc3BlYWtlciBzdXBwb3J0Lgo+ICAgICAgICAgICAggSCBCj4gICCB
-IIEgICAgICAgICAgIC0tLSAobWVudSBEZXZpY2UgRHJpdmVycy9JbnB1dCBkZXZpY2UKPiBzdXBw
-b3J0L01pc2NlbGxhbmVvdXMgZGV2aWNlcykgICAgICAgICAgICAgIIEggQo+Cj4KPiBJIGRvbid0
-IGtub3cgd2hhdCBkcml2ZXJzIGNvbmZsaWN0cyB3aXRoIFBDIHNwZWFrZXIgc3VwcG9ydD8KCkl0
-IGlzIG5vdCBhIGRyaXZlciwgaXQgaXMgeGVub21haSBhcyBhIHdob2xlLiBUaGVyZSBhcmUgdHdv
-IHdheXMgb3V0IG9mIHRoaXM6Ci0gZWl0aGVyIHRoZSBwcm9jZXNzb3IgeW91IHVzZSBpcyBiZXR0
-ZXIgdGhhbiBhIDU4NiwgaW4gd2hpY2ggY2FzZSB5b3UKc2hvdWxkIHByb2JhYmx5IHNlbGVjdCB0
-aGlzIHByb2Nlc3NvciBpbiBMaW51eCBjb25maWd1cmF0aW9uLCBpdCB3aWxsCmdpdmUgeW91IGJl
-dHRlciBwZXJmb3JtYW5jZTsKLSBvciB5b3UgcmVhbGx5IHdhbnQgdG8gY29tcGlsZSB5b3VyIGtl
-cm5lbCBmb3Igc29tZXRoaW5nIHdpdGhvdXQgYQp0c2MsIGluIHdoaWNoIGNhc2UgeW91IHNob3Vs
-ZCB1bnNlbGVjdCBzdXBwb3J0IGZvciB0aGUgUEMgc3BlYWtlcgoobWVudSBEZXZpY2UgZHJpdmVy
-cy9JbnB1dCBkZXZpY2Ugc3VwcG9ydC9NaXNjZWxsYW5lb3VzIGRldmljZXMvUEMKU3BlYWtlciBz
-dXBwb3J0KS4KCgotLSAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICBHaWxsZXMgQ2hhbnRlcGVyZHJpeAo=
+Hi,
+
+I have a non-RT task (from user space) reading an RTDM driver (nrt_read).
+I would like to block the task on read as long as RTDM doesn't have data to
+read.
+For the moment I use rt_event_wait but it doesn't work with non-RT task (it
+works only with a RT task).
+
+Do you have any idea?
+
+Thanks Patrick
+
+
 
