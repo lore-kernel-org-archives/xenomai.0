@@ -1,11 +1,13 @@
-Message-ID: <5a4b7020711260424v76ccb304m2ebf177bf9050d2b@domain.hid>
-Date: Mon, 26 Nov 2007 20:24:15 +0800
-From: "jie zhang" <xenomai.rtai@domain.hid>
+Message-ID: <2ff1a98a0711260528nd5b56b1he0a41f0239b2236e@domain.hid>
+Date: Mon, 26 Nov 2007 14:28:41 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <5a4b7020711260424v76ccb304m2ebf177bf9050d2b@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=KOI8-R
 Content-Transfer-Encoding: base64
 Content-Disposition: inline
-Subject: [Xenomai-help] NOTE: Xenomai conflicts with PC speaker support.
+References: <5a4b7020711260424v76ccb304m2ebf177bf9050d2b@domain.hid>
+Subject: Re: [Xenomai-help] NOTE: Xenomai conflicts with PC speaker support.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,13 +17,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: jie zhang <xenomai.rtai@domain.hid>
+Cc: xenomai@xenomai.org
 
-SGkKSSBtZWV0IGEgc3RyYW5nZSBzaXR1YXRpb24gd2hlbiBJIGNvbXBpbGUgeGVub21haS0yLjQt
-cmM1IG9uIExpbnV4LTIuNi4yMwoKTGludXggS2VybmVsIENvbmZpZ3VyYXRpb24KUmVhbC10aW1l
-IHN1Yi1zeXN0ZW0gIC0tLT4KLS0tIE5PVEU6IFhlbm9tYWkgY29uZmxpY3RzIHdpdGggUEMgc3Bl
-YWtlciBzdXBwb3J0LgogICAgICAgICAgIIEggQogIIEggSAgICAgICAgICAgLS0tIChtZW51IERl
-dmljZSBEcml2ZXJzL0lucHV0IGRldmljZQpzdXBwb3J0L01pc2NlbGxhbmVvdXMgZGV2aWNlcykg
-ICAgICAgICAgICAgIIEggQoKCkkgZG9uJ3Qga25vdyB3aGF0IGRyaXZlcnMgY29uZmxpY3RzIHdp
-dGggUEMgc3BlYWtlciBzdXBwb3J0Pwo=
+T24gTm92IDI2LCAyMDA3IDE6MjQgUE0sIGppZSB6aGFuZyA8eGVub21haS5ydGFpQGdtYWlsLmNv
+bT4gd3JvdGU6Cj4gSGkKPiBJIG1lZXQgYSBzdHJhbmdlIHNpdHVhdGlvbiB3aGVuIEkgY29tcGls
+ZSB4ZW5vbWFpLTIuNC1yYzUgb24gTGludXgtMi42LjIzCj4KPiBMaW51eCBLZXJuZWwgQ29uZmln
+dXJhdGlvbgo+IFJlYWwtdGltZSBzdWItc3lzdGVtICAtLS0+Cj4gLS0tIE5PVEU6IFhlbm9tYWkg
+Y29uZmxpY3RzIHdpdGggUEMgc3BlYWtlciBzdXBwb3J0Lgo+ICAgICAgICAgICAggSCBCj4gICCB
+IIEgICAgICAgICAgIC0tLSAobWVudSBEZXZpY2UgRHJpdmVycy9JbnB1dCBkZXZpY2UKPiBzdXBw
+b3J0L01pc2NlbGxhbmVvdXMgZGV2aWNlcykgICAgICAgICAgICAgIIEggQo+Cj4KPiBJIGRvbid0
+IGtub3cgd2hhdCBkcml2ZXJzIGNvbmZsaWN0cyB3aXRoIFBDIHNwZWFrZXIgc3VwcG9ydD8KCkl0
+IGlzIG5vdCBhIGRyaXZlciwgaXQgaXMgeGVub21haSBhcyBhIHdob2xlLiBUaGVyZSBhcmUgdHdv
+IHdheXMgb3V0IG9mIHRoaXM6Ci0gZWl0aGVyIHRoZSBwcm9jZXNzb3IgeW91IHVzZSBpcyBiZXR0
+ZXIgdGhhbiBhIDU4NiwgaW4gd2hpY2ggY2FzZSB5b3UKc2hvdWxkIHByb2JhYmx5IHNlbGVjdCB0
+aGlzIHByb2Nlc3NvciBpbiBMaW51eCBjb25maWd1cmF0aW9uLCBpdCB3aWxsCmdpdmUgeW91IGJl
+dHRlciBwZXJmb3JtYW5jZTsKLSBvciB5b3UgcmVhbGx5IHdhbnQgdG8gY29tcGlsZSB5b3VyIGtl
+cm5lbCBmb3Igc29tZXRoaW5nIHdpdGhvdXQgYQp0c2MsIGluIHdoaWNoIGNhc2UgeW91IHNob3Vs
+ZCB1bnNlbGVjdCBzdXBwb3J0IGZvciB0aGUgUEMgc3BlYWtlcgoobWVudSBEZXZpY2UgZHJpdmVy
+cy9JbnB1dCBkZXZpY2Ugc3VwcG9ydC9NaXNjZWxsYW5lb3VzIGRldmljZXMvUEMKU3BlYWtlciBz
+dXBwb3J0KS4KCgotLSAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICBHaWxsZXMgQ2hhbnRlcGVyZHJpeAo=
 
