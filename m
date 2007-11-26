@@ -1,10 +1,16 @@
-Content-class: urn:content-classes:message
+Message-ID: <e4ef24880711252034v12ca459ct4c09c3cb4cb4c306@domain.hid>
+Date: Sun, 25 Nov 2007 20:34:36 -0800
+From: "Robert Gubler" <rgubler@domain.hid>
+In-Reply-To: <5a4b7020711252019s18f8248eyc251b050214fe55b@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C82861.6D56F329"
-Date: Fri, 16 Nov 2007 15:00:31 -0000
-Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB026DBC4E@is-hdq-exchange.marel.net>
-From: "Daniel Schnell" <daniel.schnell@domain.hid>
-Subject: [Xenomai-help] Houston, we have a problem ... In timed POSIX space
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_5205_9220506.1196051676868"
+References: <5a4b7020711251915v402411d7i5365c099a8668073@domain.hid>
+	<e4ef24880711251933kf0afe5au3fa461821c82ef80@domain.hid>
+	<5a4b7020711252019s18f8248eyc251b050214fe55b@domain.hid>
+Subject: Re: [Xenomai-help] These options are known to cause troubles with
+	Xenomai, Kernel panic - not syncing: VFS unable to mount root fs on
+	unknown-block(8, 7)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,269 +20,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: jie zhang <xenomai.rtai@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
+------=_Part_5205_9220506.1196051676868
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-------_=_NextPart_001_01C82861.6D56F329
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_002_01C82861.6D56F329"
+Boot your kernel that does work. Send back what your /boot/grub/grub.conf
+looks like and /etc/fstab might help too.  Are you building this on a i386
+machine?  What is your kernel version?
+
+-Rob
+
+PS.  If you don't mind, CC the xenomai@xenomai.org mailing list -- this way
+other people can chime in with their suggestions or get help if they're
+having similar issues :)
 
 
-------_=_NextPart_002_01C82861.6D56F329
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 
-Hi,
-=20
-The attached program demonstrates that mq_timedsend() doesn't work. The
-sent value changes on the way to the receiver. Always! mq_send() works
-fine.
-Additionally if no asolute timeout value is used, there will be no error
-returned which is contrary to the POSIX standard (however glibc2.3 also
-fails here).
-=20
-Additionally there seem to happen some memory corruption in kernel space
-as I experienced several kernel panic when I restarted the program
-without cleaned up message queues.
-=20
-This is now the second timer based POSIX bug. Maybe one should take a
-look at the other timeout based POSIX functions before releasing 2.4.0 ?
-=20
-Also I wonder if there are no regression tests for the skins to show up
-these issues ... E.g. at least for POSIX one could compile LTP POSIX
-tests with Xenomai and let it run ?
-=20
-=20
-Xenomai 2.4-rc6 + Denx Kernel 2.6.23 commit ID
-56db4bb9f67fda46e204b93f119742b626a683d1
-=20
-Best regards,
-=20
-Daniel Schnell
-=20
 
-------_=_NextPart_002_01C82861.6D56F329
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+On Nov 25, 2007 8:19 PM, jie zhang <xenomai.rtai@domain.hid> wrote:
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META http-equiv=3DContent-Type content=3D"text/html; =
-charset=3Dus-ascii">
-<META content=3D"MSHTML 6.00.6000.16544" name=3DGENERATOR></HEAD>
-<BODY>
-<DIV><SPAN class=3D236175013-16112007><FONT face=3DArial=20
-size=3D2>Hi,</FONT></SPAN></DIV>
-<DIV><SPAN class=3D236175013-16112007><FONT face=3DArial=20
-size=3D2></FONT></SPAN>&nbsp;</DIV>
-<DIV><SPAN class=3D236175013-16112007><FONT face=3DArial size=3D2>The =
-attached program=20
-demonstrates that mq_timedsend() doesn't&nbsp;work. The sent =
-value&nbsp;changes=20
-on the way to the receiver. Always! mq_send() works =
-fine.</FONT></SPAN></DIV>
-<DIV><SPAN class=3D236175013-16112007><FONT face=3DArial =
-size=3D2>Additionally if no=20
-asolute timeout value is used, there will be no error returned which is =
-contrary=20
-to the POSIX standard (however glibc2.3 also fails =
-here).</FONT></SPAN></DIV>
-<DIV><SPAN class=3D236175013-16112007><FONT face=3DArial=20
-size=3D2></FONT></SPAN>&nbsp;</DIV>
-<DIV><SPAN class=3D236175013-16112007><FONT face=3DArial =
-size=3D2>Additionally there=20
-seem to happen some memory corruption in kernel space as I experienced =
-several=20
-kernel panic when I restarted the program&nbsp;without cleaned up =
-message=20
-queues.</FONT></SPAN></DIV>
-<DIV><SPAN class=3D236175013-16112007><FONT face=3DArial=20
-size=3D2></FONT></SPAN>&nbsp;</DIV>
-<DIV><SPAN class=3D236175013-16112007><FONT face=3DArial size=3D2>This =
-is now the=20
-second timer based POSIX bug. Maybe one should take a look at the other =
-timeout=20
-based POSIX functions before releasing 2.4.0 ?</FONT></SPAN></DIV>
-<DIV><SPAN class=3D236175013-16112007></SPAN><SPAN =
-class=3D236175013-16112007><FONT=20
-face=3DArial size=3D2></FONT></SPAN>&nbsp;</DIV>
-<DIV><SPAN class=3D236175013-16112007><FONT face=3DArial size=3D2>Also I =
-wonder if=20
-there are no regression tests for the skins to show up these issues ... =
-E.g. at=20
-least for POSIX one could compile LTP POSIX tests with Xenomai and let =
-it run=20
-?</FONT></SPAN></DIV>
-<DIV><SPAN class=3D236175013-16112007><FONT face=3DArial=20
-size=3D2></FONT></SPAN>&nbsp;</DIV>
-<DIV><SPAN class=3D236175013-16112007><FONT face=3DArial=20
-size=3D2></FONT></SPAN>&nbsp;</DIV>
-<DIV><SPAN class=3D236175013-16112007><FONT face=3DArial =
-size=3D2>Xenomai 2.4-rc6 +=20
-Denx Kernel 2.6.23 commit ID=20
-56db4bb9f67fda46e204b93f119742b626a683d1</FONT></SPAN></DIV>
-<DIV><SPAN class=3D236175013-16112007><FONT face=3DArial=20
-size=3D2></FONT></SPAN>&nbsp;</DIV>
-<DIV><SPAN class=3D236175013-16112007><FONT face=3DArial size=3D2>Best=20
-regards,</FONT></SPAN></DIV>
-<DIV><SPAN class=3D236175013-16112007><FONT face=3DArial=20
-size=3D2></FONT></SPAN>&nbsp;</DIV>
-<DIV><SPAN class=3D236175013-16112007><FONT face=3DArial size=3D2>Daniel =
+> hi robert,
+> I am so appreciated that you help me, but now I still have a question,
+> when I compile the kernel about xenomai, I always meet the kernel
+> panic:
+> kernel panic - not syncing: VFS unable to mount root fs on
+> unknown-block(0,0)
+> Kernel panic - not syncing: VFS unable to mount root fs on
+>  unknown-block(8,7)
+>
+> frankly, I don't know much about this kernel panic, Is this problem
+> cased by I ingored?
+> this is my lspci
+> 00:1f.2 IDE interface: Intel Corporation 82801GBM/GHM (ICH7 Family)
+> SATA IDE Controller (rev 01)
+>
+> Device Drivers
+>   [*] Block devices  --->
+>        <M>   Promise SATA SX8 support
+>
+> I mean is it the right option for my IDE interface? are they have
+> direct relation with the kernel panic?
+>
+>
+>
+>
+>
+> > > And finally, when I reboot the kernel , there is a kernel panic seems
+> > > as Kernel panic - not syncing: VFS unable to mount root fs on
+> > > unknown-block(8,7)
+> >
+> > It looks as though the kernel you built doesn't know how to find or read
+> the
+> > root device.  Check your grub.conf to see if it looks similar to your
+> kernel
+> > that does work.  I've had this happen with Fedora.  I know for example
+> > Fedora uses some kind of Volume Manager that the vanilla kernel doesn't
+> know
+> > how to use.  I imagine its included in one of the Fedora patches, but I
+> had
+> > trouble getting their stuff working (inexperience on my part).  Anyway,
+> not
+> > that this is the case for you, but it might be a good idea to see if all
+> > your Distribution patches are being applied to the kernel you are trying
+> to
+> > build with Xenomai support.
+> >
+> > -Rob
+> >
+>
 
-Schnell</FONT></SPAN></DIV>
-<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV></BODY></HTML>
+------=_Part_5205_9220506.1196051676868
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-------_=_NextPart_002_01C82861.6D56F329--
+Boot your kernel that does work. Send back what your /boot/grub/grub.conf looks like and /etc/fstab might help too.&nbsp; Are you building this on a i386 machine?&nbsp; What is your kernel version?<br><br>-Rob<br><br>PS.&nbsp; If you don&#39;t mind, CC the 
+<a href="mailto:xenomai@xenomai.org">xenomai@xenomai.org</a> mailing list -- this way other people can chime in with their suggestions or get help if they&#39;re having similar issues :)<br><br><br><br><br><div class="gmail_quote">
+On Nov 25, 2007 8:19 PM, jie zhang &lt;<a href="mailto:xenomai.rtai@domain.hid">xenomai.rtai@domain.hid</a>&gt; wrote:<br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+hi robert,<br>I am so appreciated that you help me, but now I still have a question,<br>when I compile the kernel about xenomai, I always meet the kernel<br>panic:<br>kernel panic - not syncing: VFS unable to mount root fs on unknown-block(0,0)
+<br><div class="Ih2E3d">Kernel panic - not syncing: VFS unable to mount root fs on &nbsp;unknown-block(8,7)<br><br></div>frankly, I don&#39;t know much about this kernel panic, Is this problem<br>cased by I ingored?<br>this is my lspci
+<br><div class="Ih2E3d">00:1f.2 IDE interface: Intel Corporation 82801GBM/GHM (ICH7 Family)<br>SATA IDE Controller (rev 01)<br><br></div>Device Drivers<br> &nbsp; [*] Block devices &nbsp;---&gt;<br> &nbsp; &nbsp; &nbsp; &nbsp;&lt;M&gt; &nbsp; Promise SATA SX8 support
+<br><br>I mean is it the right option for my IDE interface? are they have<br>direct relation with the kernel panic?<br><div><div></div><div class="Wj3C7c"><br><br><br><br><br>&gt; &gt; And finally, when I reboot the kernel , there is a kernel panic seems
+<br>&gt; &gt; as Kernel panic - not syncing: VFS unable to mount root fs on<br>&gt; &gt; unknown-block(8,7)<br>&gt;<br>&gt; It looks as though the kernel you built doesn&#39;t know how to find or read the<br>&gt; root device. &nbsp;Check your 
+grub.conf to see if it looks similar to your kernel<br>&gt; that does work. &nbsp;I&#39;ve had this happen with Fedora. &nbsp;I know for example<br>&gt; Fedora uses some kind of Volume Manager that the vanilla kernel doesn&#39;t know
+<br>&gt; how to use. &nbsp;I imagine its included in one of the Fedora patches, but I had<br>&gt; trouble getting their stuff working (inexperience on my part). &nbsp;Anyway, not<br>&gt; that this is the case for you, but it might be a good idea to see if all
+<br>&gt; your Distribution patches are being applied to the kernel you are trying to<br>&gt; build with Xenomai support.<br>&gt;<br>&gt; -Rob<br>&gt;<br></div></div></blockquote></div><br>
 
-------_=_NextPart_001_01C82861.6D56F329
-Content-Type: application/octet-stream;
-	name="xenomqtest.cpp"
-Content-Transfer-Encoding: base64
-Content-Description: xenomqtest.cpp
-Content-Disposition: attachment;
-	filename="xenomqtest.cpp"
-
-LyoqCiAgICBAZmlsZSA8ZmlsZW5hbWU+CgogICAgPGI+CiAgICBDb3B5cmlnaHQgKGMpIDIwMDcg
-TWFyZWwgSGYuIAogICAgUHJvcHJpZXRhcnkgbWF0ZXJpYWwsIGFsbCByaWdodHMgcmVzZXJ2ZWQs
-IHVzZSBvciBkaXNjbG9zdXJlIGZvcmJpZGRlbi4KICAgIDwvYj4KKi8KCgovLyBkZWZpbmVzIC0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tCgoKLy8gbWFjcm9zIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKCi8vIGZvcndhcmQgZGVjbGFyYXRp
-b25zIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0KCgovLyB0eXBlZGVmcyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgoKLy8gZ2xvYmFsIHZhcmlhYmxlcyAtLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKCi8v
-IGxvY2FsIHByb3RvdHlwZXMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0KCgovLyBmdW5jdGlvbnMgY2xhc3NlcyAtLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgoKI2luY2x1ZGUg
-PHN0ZGlvLmg+CiNpbmNsdWRlIDxzdHJpbmcuaD4KI2luY2x1ZGUgPHVuaXN0ZC5oPgojaW5jbHVk
-ZSA8ZXJybm8uaD4KI2luY2x1ZGUgPHN5cy90eXBlcy5oPgojaW5jbHVkZSA8c3lzL21tYW4uaD4K
-I2luY2x1ZGUgPHN5cy9zdGF0Lmg+CiNpbmNsdWRlIDxmY250bC5oPgojaW5jbHVkZSA8cHRocmVh
-ZC5oPgojaW5jbHVkZSA8bXF1ZXVlLmg+CgojZGVmaW5lIE1fVVUgX19hdHRyaWJ1dGVfXygodW51
-c2VkKSkKCiNkZWZpbmUgUE9TSVhfU1RBTkRBUkRfQlVHIDEKCmludCBpbml0VGhyZWFkQXR0cihw
-dGhyZWFkX2F0dHJfdCAqYXR0cikKewogICAgaWYgKHB0aHJlYWRfYXR0cl9pbml0IChhdHRyKSAh
-PSAwKQogICAgewogICAgICAgIHByaW50ZigiRmFpbGVkIHRvIGluaXQgdGhyZWFkIGF0dHJpYnV0
-ZVxuIik7CiAgICAgICAgcmV0dXJuIC0xOwogICAgfQoKICAgIGlmIChnZXR1aWQoKSA9PSAwKQog
-ICAgewogICAgICAgIHN0cnVjdCBzY2hlZF9wYXJhbSBzcDsKICAgICAgICBzcC5zY2hlZF9wcmlv
-cml0eSA9IDA7CiAgICAgICAgaWYgKHB0aHJlYWRfYXR0cl9zZXRzY2hlZHBvbGljeSAoYXR0ciwg
-U0NIRURfRklGTykgIT0gMCkKICAgICAgICB7CiAgICAgICAgICAgIHByaW50ZigiVW5hYmxlIHRv
-IHNldCBzY2hlZF9wcmlvcml0eS5cbiIpOwogICAgICAgICAgICByZXR1cm4gLTE7CiAgICAgICAg
-fQoKICAgICAgICBpZiAocHRocmVhZF9hdHRyX3NldHNjaGVkcGFyYW0gKGF0dHIsICZzcCkgIT0g
-MCkKICAgICAgICB7CiAgICAgICAgICAgIHByaW50ZigiVW5hYmxlIHRvIHNldCBzY2hlZHBhcmFt
-XG4iKTsKICAgICAgICAgICAgcmV0dXJuIC0xOwogICAgICAgIH0KICAgIH0KICAgIGVsc2UKICAg
-IHsKICAgICAgICBwcmludGYoInByaXZpbGVnZXM6IHVuYWJsZSB0byBzZXQgdXAgUlQgc2NoZWR1
-bGluZ1xuIik7CiAgICB9CgogICAgcmV0dXJuIDA7Cn0KCgoKaW50IGluaXRRdWV1ZShjb25zdCBj
-aGFyICpxTmFtZSwgbXFkX3QgKnF1ZXVlKQp7CiAgICBtcV9hdHRyIHFBdHRyOwogICAgbXFkX3Qg
-ICBxOwogICAgbWVtc2V0ICgmcUF0dHIsIDAsIHNpemVvZiAocUF0dHIpKTsKCiAgICBxQXR0ci5t
-cV9tYXhtc2cgID0gMTsKICAgIHFBdHRyLm1xX21zZ3NpemUgPSBzaXplb2YgKGludCk7ICAgLyog
-anVzdCBvbmUgbnVtYmVyICovCgogICAgcSA9IG1xX29wZW4gKHFOYW1lLCBPX0NSRUFUfE9fUkRX
-UiwgU19JUlVTUiB8IFNfSVdVU1IgfCBTX0lSR1JQIHwgU19JV0dSUCwgJnFBdHRyKTsKICAgIGlm
-ICgtMSA9PSAoaW50KSBxKQogICAgICAgIHsKICAgICAgICBzd2l0Y2ggKGVycm5vKQogICAgICAg
-ICAgICB7CiAgICAgICAgICAgIGNhc2UgRUVYSVNUOgogICAgICAgICAgICAgICAgcSA9IG1xX29w
-ZW4gKHFOYW1lLCBPX1JET05MWSwgMCwgTlVMTCk7CiAgICAgICAgICAgICAgICBpZiAoLTEgPT0g
-KGludCkgcXVldWUpCiAgICAgICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIGZw
-cmludGYgKHN0ZGVyciwgIm1xX29wZW4oKSBmYWlsZWQgKDEpLCByZWFzb246ICglcylcbiIsIHN0
-cmVycm9yIChlcnJubykpOwogICAgICAgICAgICAgICAgICAgIHJldHVybiAtMTsKICAgICAgICAg
-ICAgICAgICAgICB9CiAgICAgICAgICAgICAgICBicmVhazsKCiAgICAgICAgICAgIGNhc2UgRUlO
-VkFMOgogICAgICAgICAgICAgICAgZnByaW50ZiAoc3RkZXJyLCAibXFfb3BlbigpIGZhaWxlZCAo
-MiksIHJlYXNvbjogKCVzKVxuIiwgc3RyZXJyb3IgKGVycm5vKSk7CiAgICAgICAgICAgICAgICBm
-cHJpbnRmIChzdGRlcnIsICIobWF5YmUga2VybmVsIGxpbWl0cyByZWFjaGVkID8pXG4iKTsKICAg
-ICAgICAgICAgICAgIHJldHVybiAtMTsKICAgICAgICAgICAgICAgIGJyZWFrOwoKICAgICAgICAg
-ICAgZGVmYXVsdDoKICAgICAgICAgICAgICAgIGZwcmludGYgKHN0ZGVyciwgIkNvdWxkIG5vdCBj
-cmVhdGUgdGhlIHF1ZXVlLCByZWFzb246ICglcylcbiIsIHN0cmVycm9yIChlcnJubykpOwogICAg
-ICAgICAgICAgICAgcmV0dXJuIC0xOwogICAgICAgICAgICAgICAgYnJlYWs7CiAgICAgICAgICAg
-IH0KICAgICAgICB9CgogICAgKnF1ZXVlID0gcTsKICAgIHJldHVybiAwOwp9CgoKCgoKdm9pZCAq
-IHByb2R1Y2VyKHZvaWQgKiBhcmcgTV9VVSkKewogICAgbXFkX3QgdGhlUSA9ICooKG1xZF90ICop
-IGFyZyk7CiAgICBpbnQgdmFsPTA7CgoKICAgIGZwcmludGYgKHN0ZG91dCwgIlByb2R1Y2VyIHN0
-YXJ0ZWRcbiIpOwoKICAgIHN0cnVjdCB0aW1lc3BlYyBkZWxheTsKICAgIGRlbGF5LnR2X3NlYyA9
-IDA7CiAgICBkZWxheS50dl9uc2VjPSA1MDAgKiAxMDAwMDAwOyAvKiA1MDAgbXNlYyAqLwoKICAg
-IHdoaWxlICh2YWwrKyA8IDEwKQogICAgewogICAgICAgIAogICAgICAgIGlmKCg0IDw9IHZhbCkg
-JiYgKDYgPj0gdmFsKSkKICAgICAgICAgICAgewogICAgICAgICAgICAvLyBzbGVlcCBmb3IgY3Jl
-YXRpbmcgYSB0aW1lb3V0CiAgICAgICAgICAgIHNsZWVwICgyKTsKCiAgICAgICAgICAgIGZwcmlu
-dGYgKHN0ZG91dCwgInNlbmRpbmcgKCVkKVxuIiwgdmFsKTsgZmZsdXNoIChzdGRvdXQpOwogICAg
-ICAgICAgICAvLyB1c2UgbXFfdGltZWRzZW5kKCkKICAgICAgICAgICAgc3RydWN0IHRpbWVzcGVj
-IG5vdywgdGltZW91dDsKICAgICAgICAgICAgaWYgKDAgIT0gY2xvY2tfZ2V0dGltZSAoQ0xPQ0tf
-UkVBTFRJTUUsICZub3cpKQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgZnByaW50
-ZiAoc3RkZXJyLCAiY2xvY2tfZ2V0dGltZSB3ZW50IHdyb25nLCByZWFzb24gKCVzKVxuIiwgc3Ry
-ZXJyb3IgKGVycm5vKSk7CiAgICAgICAgICAgICAgICB2YWwgPSA0OwogICAgICAgICAgICAgICAg
-Y29udGludWU7CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIHRpbWVvdXQgPSBub3c7CiNp
-Zm5kZWYgUE9TSVhfU1RBTkRBUkRfQlVHCiAgICAgICAgICAgIHRpbWVvdXQudHZfc2VjICs9IDE7
-CiNlbmRpZgogICAgICAgICAgICBpZiAoLTEgPT0gbXFfdGltZWRzZW5kICh0aGVRLCAoY29uc3Qg
-Y2hhciAqKSAmdmFsLCBzaXplb2YgKHZhbCksIDAsICZ0aW1lb3V0KSkKICAgICAgICAgICAgICAg
-IHsKICAgICAgICAgICAgICAgIGZwcmludGYgKHN0ZGVyciwgIm1xX3RpbWVkc2VuZCgpIHdlbnQg
-d3JvbmcsIHJlYXNvbiAoJXMpXG4iLCBzdHJlcnJvciAoZXJybm8pKTsKICAgICAgICAgICAgICAg
-IH0KCiNpZmRlZiBQT1NJWF9TVEFOREFSRF9CVUcKICAgICAgICAgICAgZWxzZQogICAgICAgICAg
-ICAgICAgewogICAgICAgICAgICAgICAgZnByaW50ZiAoc3RkZXJyLCAiUE9TSVhfU1RBTkRBUkRf
-QlVHOiBtcV90aW1lZHNlbmQoKSBzaG91bGQgaGF2ZSBjYXVzZWQgdGltZW91dFxuIik7CiAgICAg
-ICAgICAgICAgICB9CiNlbmRpZgogICAgICAgICAgICB9CiAgICAgICAgZWxzZQogICAgICAgICAg
-ICB7CiAgICAgICAgICAgIC8vIHVzZSBtcV9zZW5kKCkKICAgICAgICAgICAgZnByaW50ZiAoc3Rk
-b3V0LCAic2VuZGluZyAoJWQpXG4iLCB2YWwpOyBmZmx1c2ggKHN0ZG91dCk7CiAgICAgICAgICAg
-IGlmICgtMSA9PSBtcV9zZW5kICh0aGVRLCAoY29uc3QgY2hhciAqKSAmdmFsLCBzaXplb2YgKHZh
-bCksIDApKQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgZnByaW50ZiAoc3RkZXJy
-LCAibXFfc2VuZCgpIHdlbnQgd3JvbmcsIHJlYXNvbiAoJXMpXG4iLCBzdHJlcnJvciAoZXJybm8p
-KTsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgCiAgICAgICAgY2xvY2tf
-bmFub3NsZWVwIChDTE9DS19NT05PVE9OSUMsIDAsICZkZWxheSwgTlVMTCk7CgogICAgfQoKICAg
-IGZwcmludGYgKHN0ZG91dCwgIlByb2R1Y2VyIGxlYXZpbmdcbiIpOwogICAgcmV0dXJuIE5VTEw7
-Cn0KCgp2b2lkICogY29uc3VtZXIodm9pZCAqIGFyZykKewogICAgbXFkX3QgdGhlUSA9ICooKG1x
-ZF90ICopIGFyZyk7CiAgICBpbnQgdmFsPTA7CiAgICB1bnNpZ25lZCBpbnQgcHJpbzsKCiAgICBz
-dHJ1Y3QgdGltZXNwZWMgZGVsYXk7CiAgICBkZWxheS50dl9zZWMgPSAxOwogICAgZGVsYXkudHZf
-bnNlYz0gMDsKICAgIGZwcmludGYgKHN0ZG91dCwgIkNvbnN1bWVyIHN0YXJ0ZWRcbiIpOwogICAg
-ZG8KICAgICAgICB7CiAgICAgICAgLy8gcmVhZCBvdXQgb2YgdGhlIG1lc3NhZ2UgcXVldWUKICAg
-ICAgICBpZiAoMyA9PSB2YWwpCiAgICAgICAgICAgIHsKICAgICAgICAgICAgZnByaW50ZiAoc3Rk
-b3V0LCAiICAgICAgd2FpdGluZyAuLiAiKTsgZmZsdXNoIChzdGRvdXQpOwogICAgICAgICAgICBz
-dHJ1Y3QgdGltZXNwZWMgbm93LCB0aGVuOwogICAgICAgICAgICBpZiAoMCAhPSBjbG9ja19nZXR0
-aW1lIChDTE9DS19SRUFMVElNRSwgJm5vdykpCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAg
-ICAgICBmcHJpbnRmIChzdGRlcnIsICIgICAgICBjbG9ja19nZXR0aW1lIHdlbnQgd3JvbmcsIHJl
-YXNvbiAoJXMpXG4iLCBzdHJlcnJvciAoZXJybm8pKTsKICAgICAgICAgICAgICAgIHZhbCA9IDQ7
-CiAgICAgICAgICAgICAgICBjb250aW51ZTsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAg
-dGhlbiA9IG5vdzsKICAgICAgICAgICAgdGhlbi50dl9zZWMgKz0gIDI7CiAgICAgICAgICAgIC8v
-IHVzZSBtcV90aW1lZHJlY2VpdmUoKQogICAgICAgICAgICBpZiAoLTEgPT0gbXFfdGltZWRyZWNl
-aXZlICh0aGVRLCAoY2hhciAqKSAmdmFsLCBzaXplb2YgKHZhbCksICZwcmlvLCAmdGhlbikpCiAg
-ICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBmcHJpbnRmIChzdGRlcnIsICIgICAgICBt
-cV90aW1lZHJlY2VpdmUgd2VudCB3cm9uZywgcmVhc29uICglcylcbiIsIHN0cmVycm9yIChlcnJu
-bykpOwogICAgICAgICAgICAgICAgY2xvY2tfbmFub3NsZWVwKENMT0NLX01PTk9UT05JQywgMCwg
-JmRlbGF5LCBOVUxMKTsKICAgICAgICAgICAgICAgIGNvbnRpbnVlOwogICAgICAgICAgICAgICAg
-fQogICAgICAgICAgICBmcHJpbnRmIChzdGRvdXQsICIgICAgICBnb3QgKCVkKVxuIiwgdmFsKTsg
-IGZmbHVzaCAoc3Rkb3V0KTsKICAgICAgICAgICAgLy8gbGV0IHRoZSBwcm9kdWNlciBydW4gaW50
-byB0aW1lb3V0IC4uLgogICAgICAgICAgICBzbGVlcCAoOCk7CiAgICAgICAgICAgIH0KICAgICAg
-ICBlbHNlCiAgICAgICAgICAgIHsKICAgICAgICAgICAgLy8gdXNlIG1xX3JlY2VpdmUoKQogICAg
-ICAgICAgICBpZiAoLTEgPT0gbXFfcmVjZWl2ZSAodGhlUSwgKGNoYXIgKikgJnZhbCwgc2l6ZW9m
-ICh2YWwpLCAmcHJpbykpCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBmcHJpbnRm
-IChzdGRlcnIsICIgICAgICBtcV9yZWNlaXZlIHdlbnQgd3JvbmcsIHJlYXNvbiAoJXMpXG4iLCBz
-dHJlcnJvciAoZXJybm8pKTsKICAgICAgICAgICAgICAgIGNsb2NrX25hbm9zbGVlcChDTE9DS19N
-T05PVE9OSUMsIDAsICZkZWxheSwgTlVMTCk7CiAgICAgICAgICAgICAgICBjb250aW51ZTsKICAg
-ICAgICAgICAgICAgIH0KCiAgICAgICAgICAgIGZwcmludGYgKHN0ZG91dCwgIiAgICAgIGdvdCAo
-JWQpXG4iLCB2YWwpOyAgZmZsdXNoIChzdGRvdXQpOwogICAgICAgICAgICB9CgogICAgICAgIH0K
-ICAgIHdoaWxlICh2YWwgIT0gMTApOwoKICAgIHByaW50ZigiQ29uc3VtZXIgbGVhdmluZ1xuIik7
-CgogICAgcmV0dXJuIE5VTEw7Cn0KCgoKCmludCBtYWluKGludCBhcmdjIE1fVVUsIGNoYXIgKiog
-YXJndiBNX1VVKQp7CiAgICBwdGhyZWFkX2F0dHJfdCAgdEF0dHI7CiAgICBtcWRfdCAgICAgICAg
-ICAgcHJvZFE9MDsKICAgIG1xZF90ICAgICAgICAgICBjb25zUT0wOwogICAgcHRocmVhZF90ICAg
-ICAgIHByb2Q7CiAgICBwdGhyZWFkX3QgICAgICAgY29uczsKCiAgICBtbG9ja2FsbCAoTUNMX0NV
-UlJFTlQgfCBNQ0xfRlVUVVJFKTsKCiAgICBpZiAoaW5pdFRocmVhZEF0dHIgKCZ0QXR0cikgIT0g
-MCkKICAgIHsKICAgICAgICByZXR1cm4gLTE7CiAgICB9CiAgICAKICAgIGlmIChpbml0UXVldWUg
-KCIveGVub3F0ZXN0IiwgJmNvbnNRKSAhPSAwKQogICAgewogICAgICAgIHJldHVybiAtMTsKICAg
-IH0KCiAgICBpZiAoaW5pdFF1ZXVlICgiL3hlbm9xdGVzdCIsICZwcm9kUSkgIT0gMCkKICAgIHsK
-ICAgICAgICByZXR1cm4gLTE7CiAgICB9CgogICAgaWYgKHB0aHJlYWRfY3JlYXRlICgmY29ucywg
-JnRBdHRyLCBjb25zdW1lciwgJmNvbnNRKSAhPSAwKQogICAgewogICAgICAgIGZwcmludGYgKHN0
-ZG91dCwgIlVuYWJsZSB0byBjcmVhdGUgY29uc3VtZXIgdGhyZWFkXG4iKTsgCiAgICAgICAgcmV0
-dXJuIC0xOwogICAgfQoKICAgIHNsZWVwKDEpOwoKICAgIGlmIChwdGhyZWFkX2NyZWF0ZSAoJnBy
-b2QsICZ0QXR0ciwgcHJvZHVjZXIsICZwcm9kUSkgIT0gMCkKICAgIHsKICAgICAgICBmcHJpbnRm
-IChzdGRvdXQsICJVbmFibGUgdG8gY3JlYXRlIHByb2R1Y2VyIHRocmVhZFxuIik7CiAgICAgICAg
-cmV0dXJuIC0xOwogICAgfQoKICAgIHB0aHJlYWRfam9pbiAoY29ucywgTlVMTCk7CiAgICBwdGhy
-ZWFkX2pvaW4gKHByb2QsIE5VTEwpOwoKICAgIGZwcmludGYgKHN0ZG91dCwgImNsb3NlIHByb2R1
-Y2VyIG1lc3NhZ2UgcXVldWUgLi5cbiIpOyAKICAgIGlmICgtMSA9PSBtcV9jbG9zZSAocHJvZFEp
-KQogICAgICAgIHsKICAgICAgICBmcHJpbnRmIChzdGRvdXQsICJ1bmFibGUgdG8gY2xvc2UgcHJv
-ZHVjZXIgbWVzc2FnZSBxdWV1ZSBkZXNjcmlwdG9yXG4iKTsgCiAgICAgICAgfQoKICAgIGZwcmlu
-dGYgKHN0ZG91dCwgImNsb3NlIGNvbnN1bWVyIG1lc3NhZ2UgcXVldWUgLi5cbiIpOyAKICAgIGlm
-ICgtMSA9PSBtcV9jbG9zZSAoY29uc1EpKQogICAgICAgIHsKICAgICAgICBmcHJpbnRmIChzdGRv
-dXQsICJ1bmFibGUgdG8gY2xvc2UgY29uc3VtZXIgbWVzc2FnZSBxdWV1ZSBkZXNjcmlwdG9yXG4i
-KTsgCiAgICAgICAgfQoKICAgIGZwcmludGYgKHN0ZG91dCwgInVubGluayBtZXNzYWdlIHF1ZXVl
-IC4uXG4iKTsgCiAgICBpZiAoLTEgPT0gbXFfdW5saW5rICgiL3hlbm9xdGVzdCIpKQogICAgICAg
-IHsKICAgICAgICBmcHJpbnRmIChzdGRvdXQsICJ1bmFibGUgdG8gdW5saW5rIG1lc3NhZ2UgcXVl
-dWVcbiIpOyAKICAgICAgICB9CiAgICBtdW5sb2NrYWxsKCk7CgogICAgcmV0dXJuIDA7Cn0KCgo=
-
-------_=_NextPart_001_01C82861.6D56F329--
+------=_Part_5205_9220506.1196051676868--
 
