@@ -1,21 +1,12 @@
-Message-ID: <2ff1a98a0711260242q46b423fwcd4a3dad1db45d86@domain.hid>
-Date: Mon, 26 Nov 2007 11:42:06 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <4739E6C2.8040309@domain.hid>
+Message-ID: <474ADEDB.3040700@domain.hid>
+Date: Mon, 26 Nov 2007 15:57:31 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <2ff1a98a0711130556j58141e80yc0bca6b574fad7e9@domain.hid>
-	<4739B1DC.4030705@domain.hid>
-	<2ff1a98a0711130634x552683c4ib1c420a859a4d665@domain.hid>
-	<4739DA74.7040409@domain.hid>
-	<2ff1a98a0711130924k3a81a5b8jf11982437308876e@domain.hid>
-	<4739E29B.3080908@domain.hid>
-	<2ff1a98a0711130950n59ed9533l2024043aae004fe9@domain.hid>
-	<4739E6C2.8040309@domain.hid>
-Subject: Re: [Xenomai-core] local_irq_save/local_irq_restore in real-time
-	interrupt handler and slab corruption.
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: [Xenomai-core] Xenomai v2.4-rc7
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -25,92 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>, xenomai-help <xenomai@xenomai.org>
 
-On Nov 13, 2007 7:02 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->
-> Gilles Chanteperdrix wrote:
-> > On Nov 13, 2007 6:44 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> >> Gilles Chanteperdrix wrote:
-> >>> On Nov 13, 2007 6:10 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> >>>> Gilles Chanteperdrix wrote:
-> >>>>> On Nov 13, 2007 3:17 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> >>>>>> Gilles Chanteperdrix wrote:
-> >>>>>>> Hi,
-> >>>>>>>
-> >>>>>>> I am chasing a slab corruption bug which happens on a Xenomai+RTnet
-> >>>>>>> enabled box under heavy non real-time network load (which passes
-> >>>>>>> through rtnet and rtmac_vnic to Linux which does NAT and resend it to
-> >>>>>>> another rtmac_vnic). When reading some I-pipe tracer traces, I
-> >>>>>>> remarked that I forgot to replace a local_irq_save/local_irq_restore
-> >>>>>>> with local_irq_save_hw/local_irq_restore_hw in a real-time interrupt
-> >>>>>>> handler. I fixed this bug, and the slab corruption seems to be gone.
-> >>>>>> Hope you mean rtdm_lock_irqsave/irqrestore instead. Otherwise Xenomai's
-> >>>>>> domain state would not be updated appropriately - which is at least unclean.
-> >>>>> It is some low level secondary timer handling code, there is no rtdm
-> >>>>> involved. The code protected by the interrupt masking routines is one
-> >>>>> or two inline assembly instructions.
-> >>>>>
-> >>>>>> BTW, CONFIG_IPIPE_DEBUG_CONTEXT should have caught this bug as well.
-> >>>>> I am using an old I-pipe pacth without CONFIG_IPIPE_DEBUG_CONTEXT.
-> >>>>> I-pipe patch and Xenomai update is scheduled for when RT applications
-> >>>>> and drivers porting will be finished.
-> >>>>>
-> >>>>> Besides the BUG_ON(!ipipe_root_domain_p) in ipipe_restore_root and
-> >>>>> ipipe_unstall_root are unconditional.
-> >>>>>
-> >>>> What bothers me, is that even looking at the old 1.3 series here and on,
-> >>>> the code should exhibit a call chain like
-> >>>> local_irq_restore -> raw_local_irq_restore() -> __ipipe_restore_root ->
-> >>>> __ipipe_unstall_root -> __ipipe_sync_stage, without touching the current
-> >>>> domain pointer, which is ok, since well, it has to be right in the first
-> >>>> place. If we were running over a real-time handler, then I assume the
-> >>>> Xenomai domain was active. So BUG_ON() should have triggered if present
-> >>>> in __ipipe_unstall_root.
-> >>> I am using an I-pipe arm 1.5-04 (now that I have done cat
-> >>> /proc/ipipe/version, I really feel ashamed). And it has no BUG_ON in
-> >>> __ipipe_unstall_root or __ipipe_restore_root. I promise, one day, I
-> >>> will switch to Xenomai 2.4.
-> >>>
-> >>>> Additionally, calling __ipipe_sync_pipeline() would sync the current
-> >>>> stage, i.e. Xenomai, and run the real-time ISRs, not the Linux handlers.
-> >>>>
-> >>>> Mm, ok, in short: I have no clue.
-> >>> The system runs stably, so I have to assume that calling
-> >>> local_irq_restore in a real-time interrupt handler can cause slab
-> >>> corruption. Strange.
-> >>>
-> >> I guess this is likely not on your critical path, but when time allows,
-> >> I'd be interested to know whether such bug still occurs when using a
-> >> purely kernel-only tasking, assuming that you currently see this bug
-> >> with userland tasks. Basically, I wonder if migrating shadows between
-> >> both domains would not reveal the bug, since your real-time handler
-> >> starts being preemptible by hw IRQs as soon as it returns from
-> >> __ipipe_unstall_root, which forces local_irq_enable_hw().
-> >
-> > Actually, I had only kernel-only tasking, since in my test I had
-> > remove everything and only kept the RTnet drivers and stack and tested
-> > Linux routing (my basic goal was to improve non-real time trafic
-> > rate).
-> >
->
-> Ah, ok. So maybe the preemption issue? Would the ISR be fine with being
-> re-entered for instance? Any potential trashing in sight? I guess that
-> you could check if this is related with using a local version of
-> local_irq_restore in this particular code spot, which would basically do
-> what __ipipe_unstall_root does, but local_irq_enable_hw().
 
-Now that I have spent some time again in arch/arm/kernel/entry*.S, I
-think I understand what happened. Because of the call to
-local_irq_enable_hw() in ipipe_unstall_root(), and because
-ipipe_run_isr calls local_irq_disable_nohead, we exit the irq_handler
-with hardware irqs on. And some path in entry.S assume that hardware
-irqs are off. I do not remember why, but doing the kernel/user context
-switch with hardware irqs on may result in random registers
-corruption, which is exactly what causes the slab corruption I
-observe.
+Here is the seventh candidate release for the v2.4.x branch. This
+should be the last one before 2.4.0.
+
+	[nucleus]
+
+	* Clear wchan when failing to suspend a thread due to
+          preposterous timeout value.
+	* Report configured timer and clock device.
+	* Recycle empty bucketed pages to the global free page list.
+
+	[powerpc]
+
+	Update Adeos support for 2.6.20.
+
+	[arm]
+
+	Upgrade Adeos support to the 1.8 series.
+
+	[x86]
+
+	Rebase Adeos/2.6.20 support on the stable series (2.6.20.21).
+	Upgrade Adeos/i386 support for 2.6.20.x and 2.6.23.
+	Upgrade Adeos/x86_64 support for 2.6.23.
+
+	[posix]
+
+	* Fix mq_timedsend() in case no receiver is present.
+	* Fix error paths upon failure to init skin.
+
+	[debian]
+
+	* Adapt to x86* merge.
+
+http://download.gna.org/xenomai/testing/xenomai-2.4-rc7.tar.bz2
 
 -- 
-                                               Gilles Chanteperdrix
+Philippe.
 
