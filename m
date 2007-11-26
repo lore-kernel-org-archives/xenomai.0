@@ -1,7 +1,7 @@
-Message-ID: <2ff1a98a0711260716ra7f453cg8fe0450b99e1fbae@domain.hid>
-Date: Mon, 26 Nov 2007 16:16:08 +0100
+Message-ID: <2ff1a98a0711260808p2d4a1116lf3c1aeb970f52975@domain.hid>
+Date: Mon, 26 Nov 2007 17:08:40 +0100
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <5a4b7020711260705jc350e52n3bba457b0c0b4a53@domain.hid>
+In-Reply-To: <5a4b7020711260729q4445f615m2cd187541abb6621@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
@@ -13,6 +13,8 @@ References: <5a4b7020711260424v76ccb304m2ebf177bf9050d2b@domain.hid>
 	<5a4b7020711260641t79d5caccvf75baf4c30b6694d@domain.hid>
 	<2ff1a98a0711260647x63170d86p7a085738e2a0f95e@domain.hid>
 	<5a4b7020711260705jc350e52n3bba457b0c0b4a53@domain.hid>
+	<2ff1a98a0711260716ra7f453cg8fe0450b99e1fbae@domain.hid>
+	<5a4b7020711260729q4445f615m2cd187541abb6621@domain.hid>
 Subject: Re: [Xenomai-help] NOTE: Xenomai conflicts with PC speaker support.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -26,60 +28,36 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: jie zhang <xenomai.rtai@domain.hid>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On Nov 26, 2007 4:05 PM, jie zhang <xenomai.rtai@domain.hid> wrote:
+On Nov 26, 2007 4:29 PM, jie zhang <xenomai.rtai@domain.hid> wrote:
 > Hi gilles,
-> I really have problem with my laptop, I carefully select the kernel
-> configurations, but oh my god, there are still kernel panic
-> kernel panic - not syncing: VFS unable to mount root fs on unknown-block(0,0)
-> and it sees that is because root=/dev/sda? have problem
-> the following is my menu.lst
->
-> title           xenomai
-> root            (hd0,5)
-> kernel          /vmlinuz-2.6.23-xenomai  root=/dev/sda6(What should I
-> wrote here?)   ro
->
-> title           Ubuntu 7.10, kernel 2.6.22-14-generic
-> root            (hd0,5)
-> kernel          /vmlinuz-2.6.22-14-generic
-> root=UUID=4db354f4-1591-42a0-a09b-f551dd8405f8 ro quiet splash
-> initrd          /initrd.img-2.6.22-14-generic
-> quiet
->
-> when I use df
-> /dev/sda7             22588240   4031060  17409740  19% /
-> varrun                  513156       148    513008   1% /var/run
-> varlock                 513156         0    513156   0% /var/lock
-> udev                    513156        92    513064   1% /dev
-> devshm                  513156         0    513156   0% /dev/shm
-> lrm                     513156     34696    478460   7%
-> /lib/modules/2.6.22-14-generic/volatile
-> /dev/sda6               474440     38167    411776   9% /boot
-> /dev/sda8             61519876   5132588  53262248   9% /home
-> /dev/sda1             19525456   5738448  13787008  30% /media/sda1
->
->
-> what should I do to resolve the kernel panic,
+> except initrd , what should I wrote on the "Kernel
+> /vmlinuz-2.6.23-xenomai  root=/dev/??????(sda?) " does it have
+> relation ship with the kernel panic, I was confused now, I am so sorry
+> for trouble you. by the way , do you know some thing about UUID?
 
-Please do not drop xenomai@xenomai.org from your answers.
+Please do send mails to the xenomai@xenomai.org mailing list, not only to me.
 
-The message "unable to mount root" means that well, the kernel is
-unable to mount a root filesystem.
+Your problem is with initrd, so try and solve the initrd problem
+first. My advice is to run mkinitrd and to make your grub entry look
+exactly like the non-Xenomai entry. If your grub.conf entry has an
+initrd entry, grub will generate the correct command line for your
+kernel, so you do not have to specify a root=something to the Xenomai
+entry.
 
-This may be normal if you reused a kernel configuration which uses an
-initrd (initial ram disk image). If you want this configuration to
-work, you should create an initrd for your kernel (if the kernel
-installation did not do it by itself), usually you do this by calling
-mkinitrd with some parameters like the kernel version (mkinitrd --help
-is your friend). You then have to tell grub or lilo to use the initrd
-which you just created.
+If, on the other hand, you build the kernel with built-in support for
+the root device disk controller and root filesystem, you can get rid
+of the initrd item, but specify a root=/dev/sda? on the image command
+line.
 
-The other way to work around this problem is to create your kernel
-with built-in drivers for your root device disk controller (from your
-various posts, I would say that you have a PIIX Sata controller) and
-your root filesystem (probably ext3). This way you can completely get
-rid of an initrd, unless you use the Logical Volume Manager, in which
-case you have to boot from an initrd.
+UUID is another way to specify a partition name which is independent
+of the number of disks on your system.
+If for instance, UUID 4db354f4-1591-42a0-a09b-f551dd8405f8 is
+/dev/sda6 and you plug another disk on your system, what was
+previously called /dev/sda6 becomes /dev/sdb6, its UUID will still be
+valid.
+So, you can use the same root=UUID argument for Xenomai as for your
+original kernel.
+
 
 -- 
                                                Gilles Chanteperdrix
