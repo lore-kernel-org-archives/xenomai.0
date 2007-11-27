@@ -1,15 +1,14 @@
-Message-ID: <2ff1a98a0711161037n374d388p2ed0dbe592f394a6@domain.hid>
-Date: Fri, 16 Nov 2007 19:37:24 +0100
+Message-ID: <2ff1a98a0711270604n4abf25bdg6237ad5971c71959@domain.hid>
+Date: Tue, 27 Nov 2007 15:04:35 +0100
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <2ff1a98a0711160718x57ee9129w2424c1e1a9c4e32d@domain.hid>
+In-Reply-To: <5a4b7020711270211i9c996a8l25ba908cac47ae5b@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <DD39B5C3F4963040ADC9768BE7E430CB026DBC4E@is-hdq-exchange.marel.net>
-	<2ff1a98a0711160718x57ee9129w2424c1e1a9c4e32d@domain.hid>
-Subject: Re: [Xenomai-help] Houston,
-	we have a problem ... In timed POSIX space
+References: <5a4b7020711270211i9c996a8l25ba908cac47ae5b@domain.hid>
+Subject: Re: [Xenomai-help] kernel panic - not syncing: VFS unable to mount
+	root fs on unknown-block(0, 0) and mkinitrd
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,35 +18,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniel Schnell <daniel.schnell@domain.hid>
+To: jie zhang <xenomai.rtai@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Nov 16, 2007 4:18 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On Nov 16, 2007 4:00 PM, Daniel Schnell <daniel.schnell@domain.hid> wrote:
-> >
-> >
-> > Hi,
-> >
-> > The attached program demonstrates that mq_timedsend() doesn't work. The sent
-> > value changes on the way to the receiver.
+On Nov 27, 2007 11:11 AM, jie zhang <xenomai.rtai@domain.hid> wrote:
+> hi ,
+> I have a question, I built xenomai-2.4-rc5 and linux-2.6.23 on pc with
+> debian distribution and same xenomai and same linux-2.6.23 on laptop
+> with ubuntu, I always meet
 >
-> will check your example ASAP.
+> cannot open root device "hda2" or unknown-block(0,0)
+> please append a correct root= boot option; here are the available partitions:
+> kernel panic - not syncing: VFS unable to mount root fs on unknown-block(0,0)
 >
->  Always! mq_send() works fine.
-> > Additionally if no asolute timeout value is used, there will be no error
-> > returned which is contrary to the POSIX standard (however glibc2.3 also
-> > fails here).
->
-> There is no way to make difference between an absolute and relative
-> timeout. Additionaly, the only constraint I see in the POSIX spec is
-> that what should be checked is that the tv_nsec member of the timeout
-> should be less than 1000000000, which Xenomai posix skin does.
+> and Gilles Chanteperdrix told me I should mkinitrd, and I  do that,
+> then it is booting now, but I want to know why I need this step just
+> because in slackware distribution, I don't do that   Thank you
 
-Actually, if you pass a relative timeout, it will probably be
-considered as a date in the past, so mq_timedsend should return
--ETIMEDOUT immediately. And it is what the POSIX spec asks.
+As I said in previous mails, using an initrd is not mandatory.
+Distributions use an initrd because it allows to build a kernel that
+will fit any machine: the initrd scripts load the needed modules
+(namely the root device disk controller and the root filesystem), then
+continue the boot process.
 
+But if you are building a kernel for a fixed configuration, you do not
+need the initrd. All you have to do is to build in kernel (that is
+select 'y' instead of 'm' in the kernel configuration) the root device
+disk controller and the root filesystem. Then you can get rid of the
+initrd.
 
 -- 
                                                Gilles Chanteperdrix
