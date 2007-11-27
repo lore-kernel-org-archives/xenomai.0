@@ -1,16 +1,17 @@
-Message-ID: <2ff1a98a0711270904h43f3e02eqf955e9b3cebc9957@domain.hid>
-Date: Tue, 27 Nov 2007 18:04:21 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <e4ef24880711270901w3c1b0lde2fd40dd5bffd2f@domain.hid>
+Message-ID: <474C5592.3030203@domain.hid>
+Date: Tue, 27 Nov 2007 18:36:18 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
+References: <51CAD0CE1504444DBE77CBBE51A0135D3285C8@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D3285C9@domain.hid>
+	<47373710.1030400@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D3285CB@slcmail.slc.mew.int>
+In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D3285CB@slcmail.slc.mew.int>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <5a4b7020711270211i9c996a8l25ba908cac47ae5b@domain.hid>
-	<2ff1a98a0711270604n4abf25bdg6237ad5971c71959@domain.hid>
-	<e4ef24880711270901w3c1b0lde2fd40dd5bffd2f@domain.hid>
-Subject: Re: [Xenomai-help] kernel panic - not syncing: VFS unable to mount
-	root fs on unknown-block(0, 0) and mkinitrd
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-help] more geode issues
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,19 +21,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Rob Gubler <rgubler@domain.hid>
+To: Steven Seeger <sseeger@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Nov 27, 2007 6:01 PM, Rob Gubler <rgubler@domain.hid> wrote:
-> Oh, thats good to know.  I didn't realize that.  I thought some
-> configurations, like with certain SCSI controllers *required* initrd to do
-> some pre-configuration before loading the root device.  Thanks for the info.
+Steven Seeger wrote:
+> 
+> On 2.6.22.2, if I load native it fixes the fast interrupt problem. On
+> 2.6.23, the interrupts slow down by a factor of 10. Unloading
+> xeno_native on both systems yields correct interrupt behavior even with
+> the nucleus loaded.
 
-The only case I have seen where using an initrd is mandatory is when
-using LVM with the root filesystem on a logical volume: some
-user-space tools need to be run to configure the volumes, so they must
-run from an initrd.
+>From your description, I understand that:
+
+...boot...
+# modprobe xeno_nucleus => fast timer
+# modprobe xeno_native => slow timer
+# rmmod xeno_native => timer ticks normally
+
+Is that correct?
 
 -- 
-                                               Gilles Chanteperdrix
+Philippe.
 
