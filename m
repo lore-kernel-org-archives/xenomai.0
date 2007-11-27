@@ -1,12 +1,12 @@
-Message-ID: <474ADEDB.3040700@domain.hid>
-Date: Mon, 26 Nov 2007 15:57:31 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: [Xenomai-core] Xenomai v2.4-rc7
-Reply-To: rpm@xenomai.org
+Message-ID: <18251.57085.191543.603085@domain.hid>
+Date: Tue, 27 Nov 2007 10:10:21 +0100
+In-Reply-To: <474ADEDB.3040700@domain.hid>
+References: <474ADEDB.3040700@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] Xenomai v2.4-rc7
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,44 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>, xenomai-help <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: xenomai-help <xenomai@xenomai.org>, xenomai-core <xenomai@xenomai.org>
 
+Philippe Gerum wrote:
+ > 	[arm]
+ > 
+ > 	Upgrade Adeos support to the 1.8 series.
 
-Here is the seventh candidate release for the v2.4.x branch. This
-should be the last one before 2.4.0.
+A few more words about this: in this new patch, the boards specific code
+was adapted to the new "flat log", which concretely means that all
+boards now have to account for lost linux timer interrupts. This new
+patch also contains a new ARM sub-architecture, the IMX. And finally,
+Xenomai 2.4-rc7 contains a fix for the issue with context switches with
+iwmmxt fpu. 
 
-	[nucleus]
-
-	* Clear wchan when failing to suspend a thread due to
-          preposterous timeout value.
-	* Report configured timer and clock device.
-	* Recycle empty bucketed pages to the global free page list.
-
-	[powerpc]
-
-	Update Adeos support for 2.6.20.
-
-	[arm]
-
-	Upgrade Adeos support to the 1.8 series.
-
-	[x86]
-
-	Rebase Adeos/2.6.20 support on the stable series (2.6.20.21).
-	Upgrade Adeos/i386 support for 2.6.20.x and 2.6.23.
-	Upgrade Adeos/x86_64 support for 2.6.23.
-
-	[posix]
-
-	* Fix mq_timedsend() in case no receiver is present.
-	* Fix error paths upon failure to init skin.
-
-	[debian]
-
-	* Adapt to x86* merge.
-
-http://download.gna.org/xenomai/testing/xenomai-2.4-rc7.tar.bz2
+Please give it a try if you can.
 
 -- 
-Philippe.
+
+
+					    Gilles Chanteperdrix.
 
