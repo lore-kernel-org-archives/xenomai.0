@@ -1,13 +1,12 @@
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18252.34775.863059.743025@domain.hid>
-Date: Tue, 27 Nov 2007 22:10:47 +0100
-In-Reply-To: <BF58A8AFB316514587D61EADBFBF4C410165FD36@domain.hid>
-References: <18252.31008.17258.994903@domain.hid>
-	<BF58A8AFB316514587D61EADBFBF4C410165FD36@domain.hid>
+Message-ID: <18252.36930.625870.462352@domain.hid>
+Date: Tue, 27 Nov 2007 22:46:42 +0100
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2AE3BBE9@domain.hid>
+References: <5D63919D95F87E4D9D34FF7748CE2C2AE3BBE9@domain.hid>
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] Interrupts lost during sleep / unblock cycles
+Subject: Re: [Xenomai-help] Compatibility of Xenomai-Versions
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,51 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Kyle Howell <khowell@domain.hid>
+To: Roderik.Wildenburg@domain.hid
 Cc: xenomai@xenomai.org
 
-Kyle Howell wrote:
- > >  > >  > I have been debugging a stall problem for a couple of 
- > >  > > days, and I think  > I've put together enough info to check 
- > >  > > with the pros. Everything below  > was experienced on a P4 
- > >  > > (Celeron) running 2.6.20 / Xenomai 2.3.4. I've  > also 
- > >  > > reproduced it on 2.6.19.7 / 2.3.1. A quick test *did not* 
- > >  > > reproduce  > this problem on a Core2 running x86_64 2.6.22.9 
- > >  > > / 2.4RC3. 
- > >  > >  >
- > >  > >  > I've reduced the problem to a fairly simple example below:
- > >  > >  >
- > >  > >  > The Overview:
- > >  > >  > - Running a single real-time process with one standard 
- > >  > > thread and one RT  > task  > - The RT task loops on a 1sec 
- > >  > > rt_task_sleep  > - The standard thread loops on 
- > >  > > nanosleep(10msec) and rt_task_unblock of  > the RT task.
- > >  > >  > - When an unrelated interrupt arrives at the wrong time, 
- > >  > > the entire  > system will hang until the 1sec task_sleep expires.
- > >  > >  > - After resuming, everything runs normally until another 
- > >  > > interrupt lands  > at the wrong moment.
- > >  > > 
- > >  > > Do you observe the same behaviour without the interrupt shield ?
- > >  > 
- > >  > It doesn't appear so. I'll have to let it run longer to be 
- > > 100% sure,
- > >  > but the usual stressing isn't causing the problem. That's 
- > > not expected
- > >  > behavior with the interrupt shield, is it?
- > > 
- > > No, it is not an expected behavior.
+Roderik.Wildenburg@domain.hid wrote:
+ > How compatible are the different Xenomai-Versions ? 
  > 
- > Well, that's good news. Still no stalls without the IShield, so that's
- > certainly narrowed it down.
- > 
- > Another note: I'm currently using the IPipe 1.8-08 that is packaged with
- > Xenomai 2.3.4. Do you expect a change if I grab 1.10-12 or 1.11-00? Are
- > the Xenomai releases tightly coupled to a particular I-Pipe version (had
- > problems with this in the past)?
+ > - E.g. can I use a 2.3.2 application (compiled and linked against 2.3.2
+ > Libraries) on an 2.4.x kernel (kernel with a 2.4.x Xenomai) without
+ > recompiling the application ? 
 
-Usually, a Xenomai version is compatible with past I-pipe releases. But
-you should expect problems using a new I-pipe release with an older
-version of Xenomai.
+Xenomai has a notion of ABI revision, which has been increased in
+2.4.x. So, no, if you update Xenomai kernel-space support, you have to
+update Xenomai user-space support. The ABI revision was increased for a
+good reason: some system calls implementation changed, so running with
+mixed version would cause random errors.
+
+Xenomai libraries are also versioned, so you will get a loader error if
+you try to run an old application with a newer library.
+
+ > - Can I link a 2.4.x-application (linked and compiled against 2.4.x
+ > libraries) with an xenomai vendor libriary (e.g. some realtime functions
+ > from a vendor) build with an 2.3.x Xenomai version ?
+
+It depends on what is in this library. If there is a call to
+xeno_bind_skin, you will get the ABI revision error.
+
+ > 
+ > In my understanding I would say yes, as long as the API and the header
+ > files did not change (type or number of parameters, constants).
+ > Is this correct ? If yes, is there an documentation where and when the
+ > API changed in an significant way ?
+
+Look for ksrc/skins/*/API.CHANGES. Note that only external API changes
+are documented, internal API changes are not documented though they
+caused an ABI revision increase.
 
 -- 
 
