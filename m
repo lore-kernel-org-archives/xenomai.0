@@ -1,12 +1,14 @@
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18252.36930.625870.462352@domain.hid>
-Date: Tue, 27 Nov 2007 22:46:42 +0100
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2AE3BBE9@domain.hid>
+From: adam - Li Yi <yi.li@domain.hid>
+In-Reply-To: <18252.36930.625870.462352@domain.hid>
 References: <5D63919D95F87E4D9D34FF7748CE2C2AE3BBE9@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] Compatibility of Xenomai-Versions
+	<18252.36930.625870.462352@domain.hid>
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+Date: Wed, 28 Nov 2007 12:15:12 +0800
+Message-Id: <1196223312.6012.5.camel@domain.hid>
+Mime-Version: 1.0
+Subject: [Xenomai-help] question about patch:
+	adeos-ipipe-2.6.23-bf5xx-1.7-00.patch
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,44 +18,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Roderik.Wildenburg@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Roderik.Wildenburg@domain.hid wrote:
- > How compatible are the different Xenomai-Versions ? 
- > 
- > - E.g. can I use a 2.3.2 application (compiled and linked against 2.3.2
- > Libraries) on an 2.4.x kernel (kernel with a 2.4.x Xenomai) without
- > recompiling the application ? 
+Hi Philippe,
 
-Xenomai has a notion of ABI revision, which has been increased in
-2.4.x. So, no, if you update Xenomai kernel-space support, you have to
-update Xenomai user-space support. The ABI revision was increased for a
-good reason: some system calls implementation changed, so running with
-mixed version would cause random errors.
+I tried to apply patch "adeos-ipipe-2.6.23-bf5xx-1.7-00.patch" to
+Blackfin uClinux kernel SVN trunk 2007-Nov-27 but failed. The problem is
+that the blackfin uclinux kernel is still 2.6.22. I am wondering at
+which svn revision the patch is made?
 
-Xenomai libraries are also versioned, so you will get a loader error if
-you try to run an old application with a newer library.
+Thanks!
 
- > - Can I link a 2.4.x-application (linked and compiled against 2.4.x
- > libraries) with an xenomai vendor libriary (e.g. some realtime functions
- > from a vendor) build with an 2.3.x Xenomai version ?
-
-It depends on what is in this library. If there is a call to
-xeno_bind_skin, you will get the ABI revision error.
-
- > 
- > In my understanding I would say yes, as long as the API and the header
- > files did not change (type or number of parameters, constants).
- > Is this correct ? If yes, is there an documentation where and when the
- > API changed in an significant way ?
-
-Look for ksrc/skins/*/API.CHANGES. Note that only external API changes
-are documented, internal API changes are not documented though they
-caused an ABI revision increase.
-
--- 
-
-
-					    Gilles Chanteperdrix.
+-Yi 
 
