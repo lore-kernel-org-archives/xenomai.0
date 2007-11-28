@@ -1,13 +1,14 @@
-Message-ID: <474D499D.3090204@domain.hid>
-Date: Wed, 28 Nov 2007 11:57:33 +0100
-From: Philippe Gerum <philippe.gerum@domain.hid>
+Message-ID: <2ff1a98a0711280508s2a6ddd09i102e00e7e6cae8df@domain.hid>
+Date: Wed, 28 Nov 2007 14:08:31 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <2F8EE677D406514ABE53EF9C0934A666042ABDFF@anubis2.clb.tcfr.thales>
 MIME-Version: 1.0
-References: <BF58A8AFB316514587D61EADBFBF4C410165FD61@domain.hid>
-In-Reply-To: <BF58A8AFB316514587D61EADBFBF4C410165FD61@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Interrupts lost during sleep / unblock cycles
-Reply-To: philippe.gerum@domain.hid
+Content-Disposition: inline
+References: <2F8EE677D406514ABE53EF9C0934A666042ABDFF@anubis2.clb.tcfr.thales>
+Subject: Re: [Xenomai-help] Low priority primary mode threads scheduling vs
+	linux regular th read.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,97 +18,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Kyle Howell <khowell@domain.hid>
+To: Laurent.POYART@fr.thalesgroup.com
 Cc: xenomai@xenomai.org
 
-Kyle Howell wrote:
->>  > >  > I have been debugging a stall problem for a couple of 
->>  > > days, and I think  > I've put together enough info to check 
->>  > > with the pros. Everything below  > was experienced on a P4 
->>  > > (Celeron) running 2.6.20 / Xenomai 2.3.4. I've  > also 
->>  > > reproduced it on 2.6.19.7 / 2.3.1. A quick test *did not* 
->>  > > reproduce  > this problem on a Core2 running x86_64 2.6.22.9 
->>  > > / 2.4RC3. 
->>  > >  >
->>  > >  > I've reduced the problem to a fairly simple example below:
->>  > >  >
->>  > >  > The Overview:
->>  > >  > - Running a single real-time process with one standard 
->>  > > thread and one RT  > task  > - The RT task loops on a 1sec 
->>  > > rt_task_sleep  > - The standard thread loops on 
->>  > > nanosleep(10msec) and rt_task_unblock of  > the RT task.
->>  > >  > - When an unrelated interrupt arrives at the wrong time, 
->>  > > the entire  > system will hang until the 1sec task_sleep expires.
->>  > >  > - After resuming, everything runs normally until another 
->>  > > interrupt lands  > at the wrong moment.
->>  > > 
->>  > > Do you observe the same behaviour without the interrupt shield ?
->>  > 
->>  > It doesn't appear so. I'll have to let it run longer to be 
->> 100% sure,
->>  > but the usual stressing isn't causing the problem. That's 
->> not expected
->>  > behavior with the interrupt shield, is it?
->>
->> No, it is not an expected behavior.
->>
-> 
-> After considerable staring and code surfing, I think I have an idea of
-> what's happening. There are still enough parts of the code I don't fully
-> undertand that I'm not positive, though. Check this theory out for me:
-> 
-> Flow of events when it works:
-> 1. Process running in root domain.
-> 2. Interrupt fires, IShield pending bit set.
-> 3. ipipe_walk_pipeline calls IShield handler.
-> 4. IShield propagates interrupt to root domain.
-> 5. Root domain finishes restoring the APIC.
-> 6. Everything continues as expected.
->  - or -
-> 1. Process running in Xenomai domain.
-> 2. Interrupt fires, IShield pending bit set.
-> 3. ipipe_walk_pipeline resumes high-priority Xenomai domain.
-> 4. Xenomai domain finishes and suspends.
-> 3. ipipe_walk_pipeline calls IShield handler.
-> 4. IShield propagates interrupt to root domain.
-> 5. Root domain finishes restoring the APIC.
-> 6. Everything continues as expected.
-> 
-> Flow of events when it fails:
-> 1. Process running in root domain, makes syscall *requiring Xenomai
-> domain*.
-> 2. Thread is temporarily promoted to Xenomai domain to execute syscall.
-> 3. (Optional) Syscall results in another Xenomai task gaining control.
-> 3. Interrupt fires, IShield pending bit set.
-> 4. ipipe_walk_pipeline resumes high-priority Xenomai domain.
-> 5. (Optional) Other Xenomai task completes, promoted syscall resumes.
-> 6. Syscall returns to root domain, never calling ipipe_sync_pipeline on
-> IShield domain.
-> 7. Root domain sleeps without ever restoring the APIC.
-> 8. System hangs until event-timer fires for Xenomai task.
-> 9. Xenomai task finishes and suspends.
-> 10. ipipe_walk_pipeline calls Ishield handler.
-> 11. IShield propagates interrupt to root domain.
-> 12. Root domain finishes restoring the APIC.
-> 13. Everything continues as expected.
-> 
-> To put it in a sentence, it looks like there's a loop-hole where a
-> promoted syscall can get back to the root domain without the
-> intermediate domains being checked for pending interrupts.
+On Nov 28, 2007 9:24 AM,  <Laurent.POYART@fr.thalesgroup.com> wrote:
+> Hi,
+>
+> It was said in a previous thread under title "scheduling of low priority primary mode Xenomai threads versus high priority secondary mode Xenomai threads":
+> <<Plain regular Linux threads unknown from the Xenomai scheduler are always preempted by primary mode threads, but they _do_ compete for the CPU with secondary mode threads according to their priority and scheduling class>>
+> Consider the following example with 3 Threads (coupling between Xenomai and Linux schedulers is On):
+> *       TL : regular linux thread with high priority (unknown from Xenomai Scheduler) => ready to run.
+> *       Tx1 : xenomai real time thread with medium priority in primary mode => running.
+> *       Tx2 : xenomai real time thread with low priority in primary mode => blocked (waiting for an event).
+> Tx1, which is running, issues a linux system call and then switches to secondary mode. TL and Tx1 compete for the CPU and TL takes the CPU control (am I right?).
+> Then an interrupt occurs and gives the necessary condition to unblock the Tx2 thread. Does the sentence <<Plain regular Linux threads unknown from the Xenomai scheduler are always preempted by primary mode threads>> means that Tx2 will preempt TL or does TL keep control of the CPU because it is still in competition with the secondary mode thread Tx2 which has a higher priority compared to Tx1?
 
-Your analysis makes a lot of sense, even if I can't spot the loophole
-immediately in the I-pipe code.
+The problem is that when Tx2 is running in secondary mode, it needs to
+voluntary switch to primary mode. When in secondary mode, Tx2 is
+suspended from Xenomai nucleus point of view, so xnpod_resume_thread
+cause the SIGHARDEN signal to be sent to Tx2, but Tx2 needs to run a
+little bit to handle the signal which will cause it to switch to
+primary mode.
 
- The propagate
-> logic in ipipe_dispatch_event *seems* like it would take care of this,
+So, in my opinion (but I may be wrong) TL will continue to run until
+it lets Tx2 run.
 
-This routine is indeed where I would point my finger at, as a first
-guess. As you explained, it does look like an adverse effect of domain
-migration taking some sideway in the pipeline logic, which ends up
-breaking the propagation of events. Normally, the interrupt shield
-domain is never stalled, so the only reason for such issue to pop up
-could only be due to this domain being bypassed somehow.
 
 -- 
-Philippe.
+                                               Gilles Chanteperdrix
 
