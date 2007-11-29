@@ -1,15 +1,19 @@
-Message-ID: <474D9337.90206@domain.hid>
-Date: Wed, 28 Nov 2007 17:11:35 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <474ED223.9040009@domain.hid>
+Date: Thu, 29 Nov 2007 06:52:19 -0800
+From: Dennis Nguyen <dennisnguy@domain.hid>
 MIME-Version: 1.0
-References: <2F8EE677D406514ABE53EF9C0934A666042ABE01@domain.hid>
-In-Reply-To: <2F8EE677D406514ABE53EF9C0934A666042ABE01@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <2ff1a98a0711210140x39088655idf0339a49522fa73@domain.hid>	
+	<822923.79799.qm@domain.hid>	
+	<fd6a47a90711211544q437ea186mcfbab54fd0a257cc@domain.hid>	
+	<47450B49.2060907@domain.hid>	
+	<fd6a47a90711220342y119217aei841a2b7bce90acb0@domain.hid>	
+	<47459517.20003@domain.hid> <47459716.50508@domain.hid>
+	<fd6a47a90711221100t6baff4bej3d42e4440c2d452f@domain.hid>
+In-Reply-To: <fd6a47a90711221100t6baff4bej3d42e4440c2d452f@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Low priority primary mode threads scheduling v
- s	linux regular th read.
-Reply-To: rpm@xenomai.org
+Subject: Re: [Xenomai-help] xnintr_shirq_handler: IRQ11 not handled.
+ Disabling IRQ line.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,39 +23,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Laurent.POYART@fr.thalesgroup.com
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>, rolandtollenaar@domain.hid
 Cc: xenomai@xenomai.org
 
-Laurent.POYART@fr.thalesgroup.com wrote:
-> Gilles wrote:
->> The problem is that when Tx2 is running in secondary mode, it needs to
->> voluntary switch to primary mode. When in secondary mode, Tx2 is
->> suspended from Xenomai nucleus point of view, so xnpod_resume_thread
->> cause the SIGHARDEN signal to be sent to Tx2, but Tx2 needs to run a
->> little bit to handle the signal which will cause it to switch to
->> primary mode.
->>
->> So, in my opinion (but I may be wrong) TL will continue to run until
->> it lets Tx2 run.
-> 
-> I think there is a misundestanding. In my example (see bellow), Tx2 is not in secondary mode . It is a primary mode thread which is blocked while waiting for an RT event (xenomai domain). I wanted to be sure of the scheduling issue between the TL (linux regular thread) which is running and the Tx2 (primary) which becomes runnable.
-> In my opinion, TL will continue to run (because of the Tx1 status) but I'm not sure.
-> 
+Jeroen, Roland,
 
-Due to priority coupling, that's correct, provided TL undergoes
-SCHED_FIFO. The point of such coupling is to make the kernel temporarily
-inherit the real-time priority of the Xenomai thread while the latter
-runs in secondary mode, so that the priority scheme is preserved as much
-as possible during migrations. As such, TL inherits it too and may
-compete for the CPU since it runs in the SCHED_FIFO class.
+I'm sorry for replying late.  my interrupt conflicts could be solved by 
+using only one NIC or upgrade to Linux 2.6.23.9.  Interestingly I 
+noticed that the kernel 2.6.23.9 assigned different IRQ for each PCI device.
+My solution is using Linux i386 2.6.23.9 and xenomai 2.4-rc7.
+Thanks for your help,
+Dennis
 
-Said differently, Xenomai and plain Linux real-time threads all run in
-the SCHED_FIFO class as seen from the Linux scheduler, and start sharing
-a common priority scheme as soon as a Xenomai thread switches to
-secondary mode, with priority coupling enabled.  Of course, plain Linux
-threads running in the SCHED_NORMAL class cannot compete this way for
-the CPU.
-
--- 
-Philippe.
+Jeroen Van den Keybus wrote:
+>
+>     post the output of
+>
+>     lspci -v
+>
+>  
+> And while you're at it, please also show the results of
+>  
+> cat /proc/interrupts
+> cat /proc/xenomai/irq
+>  
+> both just before loading the driver and right after the 'Disabling 
+> IRQ.' message.
+>  
+>  
+> Jeroen.
+>  
+>
+>  
+>
+>
+>  
+>
+>     Roland
+>
+>     Dennis Nguyen wrote:
+>     > Most of the times the RTnet/Xenomai disabled the IRQ right away.
+>     few
+>     > time it ran for a while.
+>     > It doesn't matter the system has single or 2 cards, it still have
+>     > conflict IRQ.  I tried to change the slot but it did not help.
+>     > Thanks,
+>     > Dennis
+>     >
+>     > Jeroen Van den Keybus wrote:
+>     >>     The Xenomai disabled the interrupt when it saw the sharing.
+>     >>
+>     >>
+>     >> I may have mislooked, but doesn't xnintr_shirq_handler only
+>     disable
+>     >> the line after XNINTR_MAX_UNHANDLED problematic IRQs (which is by
+>     >> default set to 1000) ? If you get the error immediately after
+>     loading
+>     >> the driver, it looks like either the interrupt doesn't get
+>     properly
+>     >> acknowledged in the I-pipe (after which the driver gets pounded
+>     by 999
+>     >> stray interrupts, causing it to return 'unhandled') or the driver
+>     >> fails to acknowledge it on the card.
+>     >>
+>     >>
+>     >>     The NICs worked normally with 8139too.ko and 8139cp.ko drivers.
+>     >>
+>     >>
+>     >> Ok. I think that means that at least no weird things happen in the
+>     >> I-pipe or that the cards are defective (or poorly inserted in
+>     slot).
+>     >>
+>     >>
+>     >>     I have three difference types of PCs: pentium III 650 Mhz,
+>     Core2, and
+>     >>     AMD athlon 2Ghz. on different mother boards.  All of them have
+>     >>     conflict
+>     >>     IRQs with xenomai and RTnet.  I swapped the slots but it
+>     did not
+>     >>     changed.  I'm thinking of giving the NICs  fixed IRQ but I
+>     don't
+>     >>     know how.
+>     >>
+>     >>
+>     >> As said before, you can only practically do that in the BIOS or
+>     using
+>     >> ACPI.
+>     >>
+>     >> Does the rtnet driver work correctly with only one card ?
+>     >>
+>     >>
+>     >> Jeroen.
+>     >>
+>     >
+>     > _______________________________________________
+>     > Xenomai-help mailing list
+>     > Xenomai-help@domain.hid <mailto:Xenomai-help@domain.hid>
+>     > https://mail.gna.org/listinfo/xenomai-help
+>     >
+>
+>
 
