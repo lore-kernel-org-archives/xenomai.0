@@ -1,11 +1,20 @@
-Content-Transfer-Encoding: 7bit
-Content-Class: urn:content-classes:message
+Message-ID: <fd6a47a90711290850w5d21c703na1af5eab5eee928c@domain.hid>
+Date: Thu, 29 Nov 2007 17:50:58 +0100
+From: "Jeroen Van den Keybus" <jeroen.vandenkeybus@domain.hid>
+In-Reply-To: <474ED223.9040009@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C83299.50183321"
-Date: Thu, 29 Nov 2007 16:05:43 +0100
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2AE3C474@domain.hid>
-From: <Roderik.Wildenburg@domain.hid>
-Subject: [Xenomai-help] rt_queue_write strange behaviour
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_7370_5718800.1196355059007"
+References: <2ff1a98a0711210140x39088655idf0339a49522fa73@domain.hid>
+	<822923.79799.qm@domain.hid>
+	<fd6a47a90711211544q437ea186mcfbab54fd0a257cc@domain.hid>
+	<47450B49.2060907@domain.hid>
+	<fd6a47a90711220342y119217aei841a2b7bce90acb0@domain.hid>
+	<47459517.20003@domain.hid> <47459716.50508@domain.hid>
+	<fd6a47a90711221100t6baff4bej3d42e4440c2d452f@domain.hid>
+	<474ED223.9040009@domain.hid>
+Subject: Re: [Xenomai-help] xnintr_shirq_handler: IRQ11 not handled.
+	Disabling IRQ line.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,77 +24,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Dennis Nguyen <dennisnguy@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
+------=_Part_7370_5718800.1196355059007
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-------_=_NextPart_001_01C83299.50183321
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+>
+> I'm sorry for replying late.  my interrupt conflicts could be solved by
+> using only one NIC or upgrade to Linux 2.6.23.9.  Interestingly I
+> noticed that the kernel 2.6.23.9 assigned different IRQ for each PCI
+> device.
 
-Sometimes we get an EINVAL-Error with rt_queue_write.
-If we immediatelly after the EINVAL-Error try an a second time to write
-to the queue (with exactly the same parameters as at the first time) the
-rt_queue_write succeeds (see appended code sniped) !!??
 
-I traced down (xnprintf) the error to the function rt_queue_send where a
-plausibility test is made :
+That's exactly what I meant by trying to have ACPI reorganize the interrupts
+for you. Never compile without CONFIG_ACPI=yes... And beware, I believe that
+the IRQ config may vary, theoretically even upon every reboot.
 
-if (xnheap_check_block(&q->bufpool, msg) || msg->refcount =3D=3D 0)=20
-[approx at line 614]
+Jeroen.
 
-this test fail as (msg->refcount =3D=3D 0).
-If I understand the comment correctly :
+------=_Part_7370_5718800.1196355059007
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-/* In case of invalid block or if the sender does not own the
-   message, just bail out. */
+<div>
+<blockquote class="gmail_quote" style="PADDING-LEFT: 1ex; MARGIN: 0px 0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">I&#39;m sorry for replying late.&nbsp;&nbsp;my interrupt conflicts could be solved by<br>using only one NIC or upgrade to Linux 
+<a href="http://2.6.23.9">2.6.23.9</a>.&nbsp;&nbsp;Interestingly I<br>noticed that the kernel <a href="http://2.6.23.9">2.6.23.9</a> assigned different IRQ for each PCI device.</blockquote>
+<div>&nbsp;</div>
+<div>That&#39;s exactly what I meant by trying to&nbsp;have ACPI reorganize the interrupts for you. Never compile without CONFIG_ACPI=yes... And beware, I believe that the IRQ config may vary, theoretically even upon every reboot.
+</div>
+<div>&nbsp;</div>
+<div>Jeroen.</div>
+<div>&nbsp;</div></div>
 
-the sender does not own the message.
-But if so, the second try should fail also (and I am quite sure the
-message belongs to the sender) ?
-Does anyone (probabliy Philipe) has an idea in what situation this
-problem could occur or what is the reason for this stange behaviour ?
-
-Unfortunately I could not reproduce this problem in a simple testcase.
-Therefore I do not have an simple test case, but with our application
-the error occurs regularly (~10 times a hour).
-So I rely on your intuition to spike this problem.
-
-Many thanks in advance and best regards
-Roderik=20
-
-MAN Roland Druckmaschinen AG
-Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle   =20
-Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592   =20
-USt-Ident-Nr. DE 250200933
-
-------_=_NextPart_001_01C83299.50183321
-Content-Type: application/octet-stream;
-	name="rt_queue_write.c"
-Content-Transfer-Encoding: base64
-Content-Description: rt_queue_write.c
-Content-Disposition: attachment;
-	filename="rt_queue_write.c"
-
-ZXJyID0gcnRfcXVldWVfd3JpdGUoJmlwcHRyLT51ZHBSY3ZRLCBucHRyLCBNQVhMRU4vKjEwICsg
-bnB0ci0+bGVuKi8sIFFfTk9STUFMKTsNCmlmIChlcnIgPT0gLUVOT01FTSkgICAgIA0Kew0KICAg
-ZG9zb21ldGhpbmcoKTsNCn0NCmVsc2UgaWYgKGVyciA8IDApDQp7DQogICBSVF9RVUVVRV9JTkZP
-IHFpbmZvOw0KICAgZXJybm8gPSAtZXJyLCBwZXJyb3IoIlByb0Nvbk9TLXVkcFJjdjogcnRfcXVl
-dWVfd3JpdGUiKTsNCiAgIGZwcmludGYoc3RkZXJyLCAiZXJyb3I9JWQsIFE9JXAsIG5wdHI9JXBc
-biIsIGVyciwgJmlwcHRyLT51ZHBSY3ZRLCBucHRyKTsNCiAgIGlmICgoZXJyPXJ0X3F1ZXVlX2lu
-cXVpcmUoJmlwcHRyLT51ZHBSY3ZRLCAmcWluZm8pKTwwKQ0KICAgICAgICAgZnByaW50ZihzdGRl
-cnIsICJxdWV1ZV9pbnF1aXJlIDogJWRcbiIsZXJyKTsNCiAgIGVsc2UNCiAgICAgICAgIGZwcmlu
-dGYoc3RkZXJyLCAiLS0tLSAlcyBOTXNnOiVkIFNpemU6JWQgdXNlZDolZFxuIixxaW5mby5uYW1l
-LCBxaW5mby5ubWVzc2FnZXMscWluZm8ucG9vbHNpemUscWluZm8udXNlZG1lbSk7DQogICBmcHJp
-bnRmKHN0ZGVyciwgIjIuIHRyeTogIik7DQogICBlcnIgPSBydF9xdWV1ZV93cml0ZSgmaXBwdHIt
-PnVkcFJjdlEsIG5wdHIsIE1BWExFTi8qMTAgKyBucHRyLT5sZW4qLywgUV9OT1JNQUwpOw0KICAg
-aWYgKGVyciA8IDApDQogICAgICBlcnJubyA9IC1lcnIsIHBlcnJvcigiUHJvQ29uT1MtdWRwUmN2
-OiBydF9xdWV1ZV93cml0ZSAyLiBWZXJzdWNoIik7DQogICBlbHNlDQogICAgICBmcHJpbnRmKHN0
-ZGVyciwgIk9LXG4iKTsNCn0=
-
-------_=_NextPart_001_01C83299.50183321--
+------=_Part_7370_5718800.1196355059007--
 
