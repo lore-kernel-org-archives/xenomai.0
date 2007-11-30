@@ -1,21 +1,12 @@
-Message-ID: <b054e88e0711130323t6e68d1fbs113fdff7e2359cd@domain.hid>
-Date: Tue, 13 Nov 2007 12:23:18 +0100
-From: "Giammarco Zacheo" <g.zacheo@domain.hid>
-In-Reply-To: <4739628F.8000100@domain.hid>
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <b054e88e0711090616r6376a8a6t81e9bc94b4290dea@domain.hid>
-	<473471FB.9010305@domain.hid> <4734736D.7060100@domain.hid>
-	<b054e88e0711090652h176ef99dx740a5c0deb333829@domain.hid>
-	<4734755F.2010301@domain.hid> <47347593.3040605@domain.hid>
-	<b054e88e0711090747m315c1ecdsa998c41653737046@domain.hid>
-	<47348393.5030202@domain.hid>
-	<b054e88e0711091028v76750ff0jcf3b20aa12317d69@domain.hid>
-	<4739628F.8000100@domain.hid>
-Subject: Re: [Xenomai-help] Kernel oops while trying first boot w/ Xenomai
-	2.4rc5
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 30 Nov 2007 11:42:57 +0100
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2AE3C69D@ARVMAIL1.mra.roland-man.biz>
+From: <Roderik.Wildenburg@domain.hid>
+Subject: [Xenomai-help] rt_queue_write strange behaviour ++
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,50 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>, adeos-main@gna.org
+To: xenomai@xenomai.org
 
-Hi Jan,
-the patch works fine, the kernel boots with no problem. Thank you very much.
+Sorry, but in my last mail (see below) I had forgotten to tell you my=20
+Xenomai-Version and architecture.
+I still use Xenomai 2.3.2 on PPC.
 
-I am going to make some tests in the afternoon, but right now I tried
-to start xeno-test - it hanged halfway.
+In the meantime I had a deeper look into the Xenomai source code=20
+and I would say, the case we observed (msg->refcount =3D=3D 0 ; see =
+below)
+isn=B4t possible with rt_queue_write, as this function implicitly =
+allocate=20
+its messagebuffer and rt_queue_alloc initilaizes refcount to 1.
+Immediatelly after this rt_queue_send is called, where the=20
+plausibility test if( msg->refcount =3D=3D 0) is done and fails.=20
+So, I can=B4t see a gap where refcount falls back to 0.
 
-I will report later the problem with more details.
+Does any guru have a good idea, I am quite clueless.
 
-Keep up with the excellent work! :-)
+Original mail :
+--------------------------------------------------------------------
 
-Giammarco
+Sometimes we get an EINVAL-Error with rt_queue_write.
+If we immediatelly after the EINVAL-Error try an a second time to write
+to the queue (with exactly the same parameters as at the first time) the
+rt_queue_write succeeds (see appended code sniped) !!??
 
+I traced down (xnprintf) the error to the function rt_queue_send where a
+plausibility test is made :
 
-On Nov 13, 2007 9:38 AM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> Hi Giammarco,
->
-> Giammarco Zacheo wrote:
-> > Ok, I hope this is what you asked for...
-> >
-> > I added printk in mask_ack_irq. Look at mask_ack_irq--> in the text
-> > below, those are the addresses of the function pointers.
-> > the printk related to mask_ack is printed once at the first pass in
-> > the function, otherwise the kernel would be choked by the output.
->
-> Yep, this pointed to the right spot. I still don't get why we didn't
-> stumble over this earlier (obviously, most x86_64 boxes take a different
-> code path here), but it is at least clear now what went wrong:
->
-> I-pipe ran into one of the remaining non-genirq code paths on x86_64.
-> More precisely, the IRQ chip of timer interrupt was changed from 8259 to
-> APIC without going through the generic API so that I-pipe was still
-> using the old ack handler, stepping later on the missing mask and
-> mack_ack handler.
->
-> This patch now updates irq_chip.ipipe_ack when it changes for IRQ0. This
-> is a temporary fix, I guess kernel people will refactor io_apic_*.c into
-> a shared variant soon, overcoming this "minor" variation between i386
-> and x86_64...
->
-> Please let us know if this helps!
->
-> Jan
->
+if (xnheap_check_block(&q->bufpool, msg) || msg->refcount =3D=3D 0)=20
+[approx at line 614]
+
+this test fail as (msg->refcount =3D=3D 0).
+If I understand the comment correctly :
+
+/* In case of invalid block or if the sender does not own the
+   message, just bail out. */
+
+the sender does not own the message.
+But if so, the second try should fail also (and I am quite sure the
+message belongs to the sender) ?
+Does anyone (probabliy Philipe) has an idea in what situation this
+problem could occur or what is the reason for this strange behaviour ?
+
+Unfortunately I could not reproduce this problem in a simple testcase,=20
+but with our application the error occurs regularly (~10 times a hour).
+So I rely on your intuition to spike this problem.
+
+Many thanks in advance and best regards
+Roderik=20
+
+MAN Roland Druckmaschinen AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle   =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592   =20
+USt-Ident-Nr. DE 250200933
 
