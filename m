@@ -1,10 +1,13 @@
-Date: Fri, 30 Nov 2007 11:52:48 +0100
-Message-Id: <1829866571@domain.hid>
+Message-ID: <474FEC18.7040304@domain.hid>
+Date: Fri, 30 Nov 2007 11:55:20 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-From: Andreas Vogt <A_C_V@web.de>
-Content-Type: multipart/mixed;
- boundary="=-------------11964199698687424589"
-Subject: [Xenomai-help] error while rt_task_wait_period, code -110
+References: <5D63919D95F87E4D9D34FF7748CE2C2AE3C69D@ARVMAIL1.mra.roland-man.biz>
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2AE3C69D@ARVMAIL1.mra.roland-man.biz>
+Content-Type: multipart/mixed; boundary="------------070702020308090009080203"
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-help] rt_queue_write strange behaviour ++
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,180 +17,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Roderik.Wildenburg@domain.hid
+Cc: xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
+--------------070702020308090009080203
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
---=-------------11964199698687424589
-Content-Type: text/plain; charset=iso-8859-15
+Roderik.Wildenburg@domain.hid wrote:
+> Sorry, but in my last mail (see below) I had forgotten to tell you my=20
+> Xenomai-Version and architecture.
+> I still use Xenomai 2.3.2 on PPC.
+>=20
+> In the meantime I had a deeper look into the Xenomai source code=20
+> and I would say, the case we observed (msg->refcount =3D=3D 0 ; see below)
+> isn=B4t possible with rt_queue_write, as this function implicitly allocat=
+e=20
+> its messagebuffer and rt_queue_alloc initilaizes refcount to 1.
+> Immediatelly after this rt_queue_send is called, where the=20
+> plausibility test if( msg->refcount =3D=3D 0) is done and fails.=20
+> So, I can=B4t see a gap where refcount falls back to 0.
+
+Does the attached patch trigger any message when your app fails?
+
+--=20
+Philippe.
+
+--------------070702020308090009080203
+Content-Type: text/x-patch;
+ name="heap-check-block-trace.patch"
 Content-Transfer-Encoding: 7bit
-
-Hallo,
-
-I get an error in a simple program with a period time of 1 ms.My latency test program works with a period of 100us.The worst latenz time is about 23us
-Any suggestions?
-
-Andreas
-_____________________________________________________________________
-Der WEB.DE SmartSurfer hilft bis zu 70% Ihrer Onlinekosten zu sparen!
-http://smartsurfer.web.de/?mc=100071&distributionid=000000000066
-
-
---=-------------11964199698687424589
-Content-Type: text/x-csrc;
- name="speaker.c"
-Content-Disposition: attachment;
- filename="speaker.c"
-Content-Transfer-Encoding: 7bit
-
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <signal.h>
-#include <sys/time.h>
-#include <sys/io.h>
-#include <sys/mman.h>
-#include <native/task.h>
-#include <native/queue.h>
-#include <native/intr.h>
-#include <native/sem.h>
-
-
-#define STACK_SIZE 0
-#define PRIO_TIMER 3
-
-
-RT_TASK test_task;
-
-int int_count = 0;
-int end = 0;
-
-//                     --s-ms-us-ns
-RTIME task_period_ns =    001000000llu;
-
-void test_task_fct(){
-	
-	int count = 0;
-	int ret;
-	int err =0;
-	unsigned long overrun;
-	unsigned char sound_byte;
-  	unsigned char toggle = 0;
-
-
-	ret = rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(task_period_ns));
-	if (ret) {
-		printf("error while set periodic, code %d\n",ret);
-		return;
-	}
-
-	while(!end){
-
-		ret = rt_task_set_mode(0, T_PRIMARY, NULL);
-		if (ret) {
-					
-		printf("error while rt_task_set_mode, code %d\n",ret);
-			return;
-		}
-
-		ret = rt_task_wait_period(&overrun);
-		if (ret) {
-			switch (ret) {
-				case -EWOULDBLOCK:  printf("1\n");
-					      break;
-				case -EINTR: printf("2\n");
-					      break;
-				case -ETIMEDOUT: printf("3\n");
-					      break;
-				case -EPERM: printf("4\n");
-					      break;
-			}	
-			printf("error while rt_task_wait_period, code %d\n",ret);
-			return;
-		}
-
-		unsigned char bell = 7;
-		printf("%c",bell);
-
-
-		fflush(NULL);
-	}
-}
-
-
-// signal-handler, to ensure clean exit on Ctrl-C
-void clean_exit(int dummy) {
-	printf("[MAIN] try clean exit\n");
-	end = 1;
-  	rt_task_delete(&test_task);
-	printf("[MAIN] bye bye\n");
-
-}
-
-
-int main(int argc, char *argv[]) {
-
-	int err, ret = 0;
-	printf("[MAIN] start system\n");
-
-
-	// install signal handler
-	signal(SIGTERM, clean_exit);	
-	signal(SIGINT, clean_exit);	
-	mlockall(MCL_CURRENT | MCL_FUTURE);
-
-
-	err = rt_task_spawn(&test_task, "Timer", STACK_SIZE, PRIO_TIMER, 0, &test_task_fct, NULL);
-	if (err) {
-		printf("error rt_task_spawn\n");
-		return 0;
-	}
-	printf("[MAIN] test_task created\n");
-	
-
-printf("[MAIN] \n");
-	pause();
-	fflush(NULL);
-	return 0;
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
---=-------------11964199698687424589--
+Content-Disposition: inline;
+ filename="heap-check-block-trace.patch"
+
+Index: ksrc/nucleus/heap.c
+===================================================================
+--- ksrc/nucleus/heap.c	(revision 3224)
++++ ksrc/nucleus/heap.c	(working copy)
+@@ -911,8 +911,10 @@
+ 			break;
+ 	}
+ 
+-	if (!holder)
++	if (!holder) {
++		printk(KERN_DEBUG "XNHEAP: no extent found: block=%p\n", block);
+ 		goto bad_block;
++	}
+ 
+ 	/* Compute the heading page number in the page map. */
+ 	pagenum = ((caddr_t) block - extent->membase) >> heap->pageshift;
+@@ -922,9 +924,11 @@
+ 	ptype = extent->pagemap[pagenum].type;
+ 
+ 	if (ptype == XNHEAP_PFREE ||	/* Unallocated page? */
+-	    ptype == XNHEAP_PCONT)	/* Not a range heading page? */
++	    ptype == XNHEAP_PCONT) {	/* Not a range heading page? */
++		printk(KERN_DEBUG "XNHEAP: bad page type: 0x%x\n", ptype);
+   bad_block: 
+ 		err = -EINVAL;
++	}
+ 
+ 	xnlock_put_irqrestore(&heap->lock, s);
+ 
+
+--------------070702020308090009080203--
 
