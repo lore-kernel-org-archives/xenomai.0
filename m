@@ -1,37 +1,40 @@
-From: Leopold Palomo-Avellaneda <lepalom@domain.hid>
-Date: Mon, 19 Nov 2007 14:37:20 +0100
-References: <4739E07B.1000608@domain.hid>
-	<200711152202.11279.paul_c@domain.hid>
-	<4741824A.1090309@domain.hid>
-In-Reply-To: <4741824A.1090309@domain.hid>
+Message-ID: <35d9c6ed0712010628vb3bf2t5923e2b1d5ba17af@domain.hid>
+Date: Sat, 1 Dec 2007 22:28:36 +0800
+From: "sarra risto" <sarra.risto@domain.hid>
 MIME-Version: 1.0
-Message-Id: <200711191437.20971.lepalom@domain.hid>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Disposition: inline
-Subject: Re: [Xenomai-help] [Xenomai-core]  Xenomai v2.4-rc6
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_3136_7411472.1196519316336"
+Subject: [Xenomai-core] xenomai graduation thesis
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org, xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-A Dilluns 19 Novembre 2007, Philippe Gerum va escriure:
-> Paul wrote:
-> > Fixed with the new patch.
->
-> Merged, thanks.
+------=_Part_3136_7411472.1196519316336
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-trunk now is xenomai-rc6  with the new patches for debian?
+Hi
+Are there anybody wants to do xenomai as his graduation thesis? I will do
+something about xenomai as my graduation thesis, but I didn't have some good
+topic, does somebody have good ideas?  Thanks a lot!
 
-Regards,
+------=_Part_3136_7411472.1196519316336
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Leo
+Hi<br>
+Are there anybody wants to do xenomai as his graduation thesis? I will
+do something about xenomai as my graduation thesis, but I didn&#39;t have
+some good topic, does somebody have good ideas?&nbsp; Thanks a lot!
+
+------=_Part_3136_7411472.1196519316336--
 
