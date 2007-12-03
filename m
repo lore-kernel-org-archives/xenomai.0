@@ -1,5 +1,5 @@
-Message-ID: <2ff1a98a0712030218y28b259b4jdee0db97df5ec567@domain.hid>
-Date: Mon, 3 Dec 2007 11:18:04 +0100
+Message-ID: <2ff1a98a0712030235vfc316b8nff4b1e422db82c96@domain.hid>
+Date: Mon, 3 Dec 2007 11:35:47 +0100
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D375ECE@slcmail.slc.mew.int>
 MIME-Version: 1.0
@@ -38,12 +38,12 @@ On Dec 3, 2007 12:55 AM, Steven Seeger
 >
 > What do you think?
 
-With the patch I sent, you can register a handler for SIGRTMAX, and
-this handler will be called when the watchdog kills a thread. Note
-that it is impossible to notify precisely the thread to be killed, so
-the thread notified is the one who called pthread_set_mode_np or
-rt_task_set_mode. What we can do, however, is to pass a siginfo with
-the signal containing the pid of the thread which the watchdog killed.
+Now that I think about it, there is little you can safely do when the
+nucleus kills a runaway thread. Imagine that the killed thread held a
+mutex: if you try to lock this mutex in the cleanup routines, you will
+wait forever. So, the only thing you can do safely is call exit and
+rely on xenomai to cleanup things properly.
+
 
 -- 
                                                Gilles Chanteperdrix
