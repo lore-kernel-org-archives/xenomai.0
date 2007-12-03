@@ -1,138 +1,206 @@
+From: "Henk Geraads" <linux@domain.hid>
+Date: Mon, 3 Dec 2007 13:58:35 +0100
+Message-ID: <NGBBLNEOGLJIIJKLFLPFOEBFDFAA.linux@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18268.29130.406826.933528@domain.hid>
-Date: Sun, 9 Dec 2007 23:52:58 +0100
-In-Reply-To: <475C6454.2090002@domain.hid>
-References: <4757EBAE.4050608@domain.hid>
-	<2ff1a98a0712060513g3b056866x883691498daf00e1@domain.hid>
-	<4757F811.70905@domain.hid>
-	<2ff1a98a0712060528y13159abdwb83617a8744b3735@domain.hid>
-	<2ff1a98a0712060544x6e1e8c11q52e9417fb096e4b7@domain.hid>
-	<475801AA.3060300@domain.hid>
-	<2ff1a98a0712060621k436f32b7sc1d1cfe53bea8f18@domain.hid>
-	<475952CD.3020003@domain.hid>
-	<18265.47545.897637.377869@domain.hid>
-	<18265.50385.343346.558000@domain.hid>
-	<475C6454.2090002@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] How to cancel a Xenomai POSIX thread
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_005E_01C835B4.99105930"
+Subject: Re: [Xenomai-help] native pipe can not write
+Reply-To: linux@domain.hid
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
- > Gilles Chanteperdrix wrote:
- > > Gilles Chanteperdrix wrote:
- > >  > Wolfgang Grandegger wrote:
- > >  >  > Hi Gilles,
- > >  >  > 
- > >  >  > Gilles Chanteperdrix wrote:
- > >  >  > > On Dec 6, 2007 3:05 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
- > >  >  > >> Gilles Chanteperdrix wrote:
- > >  >  > >>> On Dec 6, 2007 2:28 PM, Gilles Chanteperdrix
- > >  >  > >>> <gilles.chanteperdrix@xenomai.org> wrote:
- > >  >  > >>>> On Dec 6, 2007 2:24 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
- > >  >  > >>>>> Gilles Chanteperdrix wrote:
- > >  >  > >>>>>> On Dec 6, 2007 1:31 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
- > >  >  > >>>>>>> Hello,
- > >  >  > >>>>>>>
- > >  >  > >>>>>>> how do I cancel or delete a Xenomai POSIX thread running in primary
- > >  >  > >>>>>>> context from a higher priority thread? IIUC, pthread_kill() can only be
- > >  >  > >>>>>>> used in secondary context. I tried pthread_cancel(), but it only works
- > >  >  > >>>>>>> when hitting a cancelation point, e.g. pthread_testcancel(). Setting
- > >  >  > >>>>>>> pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS) did not help. Is
- > >  >  > >>>>>>> there a code snippet or even an example program showing how to cancel a
- > >  >  > >>>>>>> pthread in primary context?
- > >  >  > >>>>>> pthread_kill or pthread_cancel should result in sending a signal to
- > >  >  > >>>>>> the target thread, so should cause this thread to switch to secondary
- > >  >  > >>>>>> mode to handle it. If you want to wait for the target thread to be
- > >  >  > >>>>>> canceled, you should use pthread_cancel and pthread_join.
- > >  >  > >>>>> There is no way to cancel a pthread in primary mode from another pthread?
- > >  >  > >>>> No. You always need secondary mode to effectively delete a thread. The
- > >  >  > >>>> same goes for the native skin.
- > >  >  > >>> Ok. I understand what you mean. You want pthread_cancel not to leave
- > >  >  > >>> primary mode. This can easily be done by causing pthread_cancel to use
- > >  >  > >>> the kernel-space real-time pthread_cancel service. This should work
- > >  >  > >>> with no further modification.
- > >  >  > >> I want to cancel/delete a task running in primary mode, e.g.
- > >  >  > >>
- > >  >  > >>   void* work_task(void* dummy)
- > >  >  > >>   {
- > >  >  > >>         int count = 0;
- > >  >  > >>         while (1)
- > >  >  > >>                 count++;
- > >  >  > >>   }
- > >  >  > >>
- > >  >  > >> from the outside (= another higher priority task). How can I use the
- > >  >  > >> kernel-space real-time pthread_cancel service? My POSIX app is runs in
- > >  >  > >> user-land.
- > >  >  > > 
- > >  >  > > I was thinking about adding a pthread_cancel syscall that would have
- > >  >  > > triggered the kernel-space pthread_cancel. But this will not work:
- > >  >  > > user-space cleanup handlers would no longer get executed. However,
- > >  >  > > this can work for pthread_kill. Here is a patch which adds the
- > >  >  > > pthread_kill syscall.
- > >  >  > 
- > >  >  > Great, thanks a lot. This seems to work but I'm now fiddling with proper
- > >  >  > cleanup and exit. I have attached my small test program. It behaves
- > >  >  > somehow strange, at least to me:
- > >  >  > 
- > >  >  > - I see task period overruns when the low prio task is started. I
- > >  >  >   suspect some switch to secondary mode in init_task().
- > >  >  > 
- > >  >  > - The program/system hangs after the listed messages:
- > >  >  > 
- > >  >  >   # ./kill_pthread
- > >  >  >   Starting high_prio_task
- > >  >  >   Killed low_prio task: count=3813129, overruns=0
- > >  >  > 
- > >  >  > Any idea what I'm doing wrong?
- > >  >  > 
- > >  >  > This is with Linux 2.4.25 and Xenomai 2.3.x on a MPC5200 board.
- > >  > 
- > >  > Your test runs fine with Xenomai trunk (on ARM). I will now try with
- > >  > current state of the v2.3.x branch.
- > > 
- > > Works with v2.3.x too.
- > 
- > I re-activated my test PC running Linux 2.6.20.21. with Xenomai 2.3.x.
- > There the program runs fine _without_ your pthread_kill patch. For some
- > reason the low_prio_task() is running in secondary mode (do you know
- > why? Is there a function to check the mode?). I added
- > 
- >         struct sched_param  param = { .sched_priority = LOW_PRIO };
- >         pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
- > 
- > to the head of that function and then I get:
- > 
- >   ./kill_pthread
- >   Starting high_prio_task
- >   BUG: NMI Watchdog detected LOCKUP
- >   Killed low_prio task: count=1588495996, overruns=0
- >   Exiting main
- > 
- > I have attached the corresponding oops in case it's of interest.
- > Unfortunately, with your patch and adding the function
- > __real_pthread_kill() to wrappers.c, the behavior is the same. I'm going
- > to repeat the tests with Xenomai trunk tomorrow.
+This is a multi-part message in MIME format.
 
-The oops is due to the NMI watchdog calling some linux domain functions
-over Xenomai domain. You should probably use Xenomai watchdog instead.
+------=_NextPart_000_005E_01C835B4.99105930
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-As for the reason why the watchdog triggers: are you sure you are
-running the kernel recompiled after having applied the patch?
+Hi,
 
--- 
+we are currently using a PXA270 board with kernel 2.6.15 with xenomai =
+2.2.2. We are having the same problem. We create a pipe like;
+rt_pipe_create(&dti_pipe_wr, "DTI_FROM_UART", FIFO_WR, 1000);
+
+i=3Drt_pipe_write(&dti_pipe_wr, data->dti_rcvbuf, 20, P_NORMAL)
+
+we got error =3D -ENOMEM?
+
+Is this the same error?
+
+> -- Gilles Chanteperdrix wrote :=20
+> wrote:
+> > Hi,
+> > I try to use the message pipe in native API, but I can not write t=
+o the
+> > pipe. Can anyone help me to find what is wrong?
+> > And in Linux side it says:"write failed: Cannot allocate memory"
+> > Thank you!
+> > Following is the program and return message.
+> > #./test_pipe
+> > create return: 0, write return: -12, read return: -110
+> >=20
+> > #include <stdio.h>
+> > #include <errno.h>
+> > #include <native/task.h>
+> > #include <sys/mman.h>
+> >=20
+> > RT_PIPE pipe_desc;
+> > RT_TASK task;
+> >=20
+> > void op_pipe(void *arg)
+> > {
+> >         int  err, pipe_fd, wre, rre;
+> >         char buf[16] =3D {'a', 'b', 'c'};
+> >         char rd;
+> >=20
+> >         err =3D rt_pipe_create(&pipe_desc, "my_testpipe2", 3, 128);
+> >         char tmp[] =3D {"test pipe"};
+> >=20
+> >         wre =3D rt_pipe_write(&pipe_desc, buf, 2, P_NORMAL);
+> >         rre =3D rt_pipe_read(&pipe_desc, &rd, 2, 100);
+
+> I do not know if this is related with your issue, but the receive bu=
+ff
+> is too small: you want write 2 bytes in a 1 byte buffer.
+>
+> --=20
+>         Gilles Chanteperdrix.
+
+If we create the pipe on the heap, that means at creation time with si=
+ze '0' the pipe seems at first to works, but the memory of other proce=
+sses (not related) is corrupted and those processes crashes!
+
+Henk Geraads=20
+
+------=_NextPart_000_005E_01C835B4.99105930
+Content-Type: text/html;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+=EF=BB=BF<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; charset=3Dutf-8">
+<META content=3D"MSHTML 6.00.6000.16544" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV><FONT face=3DArial size=3D2>Hi,</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>we are currently using a PXA270 board with =
+kernel=20
+2.6.15 with xenomai 2.2.2. We are having the same problem. We create a=
+ pipe=20
+like;<BR>rt_pipe_create(&amp;dti_pipe_wr, "DTI_FROM_UART", FIFO_WR,=20
+1000);</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>i=3Drt_pipe_write(&amp;dti_pipe_wr,=20
+data-&gt;dti_rcvbuf, 20, P_NORMAL)</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>we got error =3D -ENOMEM?</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>Is this the same error?</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=3DArial><FONT size=3D2><SPAN class=3D515555512-03122007>&gt; </=
+SPAN>--=20
+Gilles Chanteperdrix wrote :&nbsp;<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;wrote:<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt; Hi,<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt; I try to use the message=
+ pipe in=20
+native API, but I can not write to the<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt; pipe. Can anyone help me=
+ to find=20
+what is wrong?<BR><SPAN class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt; =
+And in=20
+Linux side it says:"write failed: Cannot allocate memory"<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt; Thank you!<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt; Following is the program=
+ and=20
+return message.<BR><SPAN class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt;=
+=20
+#./test_pipe<BR><SPAN class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt; cr=
+eate=20
+return: 0, write return: -12, read return: -110<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt;&nbsp;<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt; #include &lt;stdio.h&gt;=
+<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt; #include &lt;errno.h&gt;=
+<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt; #include=20
+&lt;native/task.h&gt;<BR><SPAN class=3D515555512-03122007>&gt;</SPAN>&nbs=
+p;&gt;=20
+#include &lt;sys/mman.h&gt;<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt;&nbsp;<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt; RT_PIPE pipe_desc;<BR><S=
+PAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt; RT_TASK task;<BR><SPAN=
+=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt;&nbsp;<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt; void op_pipe(void *arg)<=
+BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt; {<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;=20
+int&nbsp; err, pipe_fd, wre, rre;<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;=20
+char buf[16] =3D {'a', 'b', 'c'};<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;=20
+char rd;<BR><SPAN class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt;&nbsp;<=
+BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;=20
+err =3D rt_pipe_create(&amp;pipe_desc, "my_testpipe2", 3, 128);<BR><SPAN=
+=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;=20
+char tmp[] =3D {"test pipe"};<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt;&nbsp;<BR><SPAN=20
+class=3D515555512-03122007>&gt;=20
+</SPAN>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wre =3D=20
+rt_pipe_write(&amp;pipe_desc, buf, 2, P_NORMAL);<BR><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;=20
+rre =3D rt_pipe_read(&amp;pipe_desc, &amp;rd, 2, 100);</FONT></FONT></DIV=
+>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial><FONT size=3D2><SPAN class=3D515555512-03122007>&gt; </=
+SPAN>I=20
+do not know if this is related with your issue, but the receive buff<B=
+R><SPAN=20
+class=3D515555512-03122007>&gt; </SPAN>is too small: you want write 2 byt=
+es in a 1=20
+byte buffer.</FONT></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN></FONT></DIV>
+<DIV><SPAN class=3D515555512-03122007></SPAN><FONT face=3DArial size=3D2>&gt;<S=
+PAN=20
+class=3D515555512-03122007> </SPAN>-- </FONT></DIV>
+<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
+class=3D515555512-03122007>&gt;</SPAN>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;=20
+Gilles Chanteperdrix.</FONT></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>If we create the pipe on the heap, that mea=
+ns at=20
+creation time with size '0' the pipe seems at first to works, but the =
+memory of=20
+other processes (not related) is corrupted and those processes=20
+crashes!</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>Henk Geraads </FONT></DIV>
+<DIV>&nbsp;</DIV></FONT></DIV></BODY></HTML>
+
+------=_NextPart_000_005E_01C835B4.99105930--
 
 
-					    Gilles Chanteperdrix.
 
