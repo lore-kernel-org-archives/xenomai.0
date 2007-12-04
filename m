@@ -1,10 +1,12 @@
-Message-ID: <8b3b30860712041501v55e485e0t1ec4aca98d31b92f@domain.hid>
-Date: Wed, 5 Dec 2007 00:01:06 +0100
-From: "Racconico Lambrati" <racconico.lambrati@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_15693_11734896.1196809266483"
-Subject: [Xenomai-help] rtp[0-9]*
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18261.58019.287350.591595@domain.hid>
+Date: Wed, 5 Dec 2007 00:28:35 +0100
+In-Reply-To: <8b3b30860712041501v55e485e0t1ec4aca98d31b92f@domain.hid>
+References: <8b3b30860712041501v55e485e0t1ec4aca98d31b92f@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] rtp[0-9]*
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,31 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Racconico Lambrati <racconico.lambrati@domain.hid>
+Cc: xenomai@xenomai.org
 
-------=_Part_15693_11734896.1196809266483
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Racconico Lambrati wrote:
+ > Hi.
+ >        I have developed a Library to handle inter process communication
+ > using the /dev/rtp[0-9]* device.
+ > 
+ > Now I'm porting all on an embedded distro, that haven't this device.
+ > 
+ > My question (very newbie at all) is how to create this special, considering
+ > that I have no compiler on this distro (it's a very small distribution)
 
-Hi.
-       I have developed a Library to handle inter process communication
-using the /dev/rtp[0-9]* device.
+Usually, utilities used to create filesystem images for embedded distros
+have a way to pass the list of devices nodes in /dev. /dev/rtp[0-9]*
+devices are character devices with major number 150 and the same minor
+number as their name.
 
-Now I'm porting all on an embedded distro, that haven't this device.
+To create these devices manually, run:
+for((i=0; i<32; i++)); do mknod /dev/rtp$i c 150 $i; done
 
-My question (very newbie at all) is how to create this special, considering
-that I have no compiler on this distro (it's a very small distribution)
+-- 
 
-Thanks, Racconico
 
-------=_Part_15693_11734896.1196809266483
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hi.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I have developed a Library to handle inter process communication using the /dev/rtp[0-9]* device.<br><br>Now I&#39;m porting all on an embedded distro, that haven&#39;t this device.<br><br>My question (very newbie at all) is how to create this special, considering that I have no compiler on this distro (it&#39;s a very small distribution)
-<br><br>Thanks, Racconico<br>
-
-------=_Part_15693_11734896.1196809266483--
+					    Gilles Chanteperdrix.
 
