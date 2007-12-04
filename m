@@ -1,13 +1,10 @@
-Message-ID: <2ff1a98a0712030605n4a7f93b5k932dd6e6ba185db3@domain.hid>
-Date: Mon, 3 Dec 2007 15:05:24 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <4272986BE32B50458F5E186DBBF3392B0166B1@domain.hid>
+Message-ID: <d6c8ef150712040833s61321e24j3117dcef9e334839@domain.hid>
+Date: Tue, 4 Dec 2007 17:33:56 +0100
+From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-References: <4272986BE32B50458F5E186DBBF3392B0166B1@domain.hid>
-Subject: Re: [Adeos-main] FW: Latest version of patch
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_200_16319190.1196786036677"
+Subject: [Adeos-main] Supporting newer kernel versions (2.6 tree)
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -16,28 +13,26 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: =?ISO-8859-1?Q?Kristoffer_R=F6nnblom?= <krro@domain.hid>
-Cc: adeos-main@gna.org
+To: adeos-main@gna.org
 
-On Dec 3, 2007 2:59 PM, Kristoffer R=F6nnblom <krro@domain.hid> wrote:
->
->
-> Hi
-> My name is Kristoffer R=F6nnblom, Sweden, and I'm doing a thesis on RTOS =
-on
-> ARM9-processors at the Royal Institute Of Technology(KTH) in Stockholm.
->
-> I read in mail-archives about certain versions of
-> "adeos-ipipe-2.6.19-arm-AT91.patch",  and since I'm using ATMEL=B4s
-> AT91SAM9600-EK, it would be ideal to implement ADEOS as nanokernel. I can
-> find "adeos-ipipe-2.6.20-arm-1.8-02", will it surffice? Does it support t=
-he
-> evaluation board?
+------=_Part_200_16319190.1196786036677
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Yes, adeos-ipipe-2.6.20-arm-1.8-02 should support AT91SAM926x based
-boards. It should apply whether or not you apply the maxim.org's AT91
-patch.
+Hi!
 
---=20
-                                               Gilles Chanteperdrix
+Are there any plans/dates to support some newer kernel version? Like 2.6.23,
+for example.
+
+Thanx!
+
+------=_Part_200_16319190.1196786036677
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hi!<br><br>Are there any plans/dates to support some newer kernel version? Like 2.6.23, for example.<br><br>Thanx!<br><br>
+
+------=_Part_200_16319190.1196786036677--
 
