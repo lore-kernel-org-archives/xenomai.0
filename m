@@ -1,13 +1,13 @@
-Content-Class: urn:content-classes:message
+Message-ID: <2ff1a98a0712040527k6f2c1439i52a5e2d9e756a3c5@domain.hid>
+Date: Tue, 4 Dec 2007 14:27:44 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <NGBBLNEOGLJIIJKLFLPFMEBKDFAA.linux@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 4 Dec 2007 13:05:23 +0100
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2AE670E0@domain.hid>
-In-Reply-To: <475433EF.4020804@domain.hid>
-From: <Roderik.Wildenburg@domain.hid>
-Subject: Re: [Xenomai-help] rt_queue_write strange behaviour ++ testcase !!
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <NGBBLNEOGLJIIJKLFLPFMEBKDFAA.linux@domain.hid>
+Subject: Re: [Xenomai-help] native pipe can not write
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,29 +17,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: linux@domain.hid
 Cc: xenomai@xenomai.org
 
-Hello Philippe,
+On Dec 4, 2007 8:03 AM, Henk Geraads <linux@domain.hid> wrote:
+>
+> Hi,
+>
+> we are currently using a PXA270 board with kernel 2.6.15 with xenomai 2.2.2. We are having the same problem. We create a pipe like;
+> rt_pipe_create(&dti_pipe_wr, "DTI_FROM_UART", FIFO_WR, 1000);
+>
+> i=rt_pipe_write(&dti_pipe_wr, data->dti_rcvbuf, 20, P_NORMAL)
+>
+> we got error = -ENOMEM?
+>
+> Is this the same error?
 
->=20
-> Do you have this patch in?
->=20
+See this discussion thread:
+https://mail.gna.org/public/xenomai-help/2007-12/msg00012.html
 
-no I hadn=B4t (still using 2.3.2), but with this patch queues work like =
-I expected.
-So, thanks a lot !=20
-I hope, you will not hear anything about queues from me for the next =
-year ;-)
-
-Best regards
-Roderik=20
-
-MAN Roland Druckmaschinen AG
-Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle   =20
-Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592   =20
-USt-Ident-Nr. DE 250200933
+-- 
+                                               Gilles Chanteperdrix
 
