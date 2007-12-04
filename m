@@ -1,11 +1,11 @@
-Message-ID: <2ff1a98a0712040608l634b902kf1d7db3652b71575@domain.hid>
-Date: Tue, 4 Dec 2007 15:08:29 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D375F43@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 4 Dec 2007 07:18:39 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D375F44@domain.hid>
+In-Reply-To: <2ff1a98a0712040608l634b902kf1d7db3652b71575@domain.hid>
 References: <51CAD0CE1504444DBE77CBBE51A0135D375D6B@slcmail.slc.mew.int>
 	<51CAD0CE1504444DBE77CBBE51A0135D375ECE@slcmail.slc.mew.int>
 	<2ff1a98a0712030235vfc316b8nff4b1e422db82c96@domain.hid>
@@ -16,6 +16,8 @@ References: <51CAD0CE1504444DBE77CBBE51A0135D375D6B@slcmail.slc.mew.int>
 	<51CAD0CE1504444DBE77CBBE51A0135D375F08@domain.hid>
 	<18260.29573.817255.968962@domain.hid>
 	<51CAD0CE1504444DBE77CBBE51A0135D375F43@domain.hid>
+	<2ff1a98a0712040608l634b902kf1d7db3652b71575@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
 Subject: Re: [Xenomai-help] wathcdog
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -26,59 +28,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <sseeger@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Dec 4, 2007 2:57 PM, Steven Seeger
-<sseeger@domain.hid> wrote:
-> It seems that I am missing something. I see that you limit the signal to
-> be sent to a thread with a matching mm, however doesn't this send a
-> signal that can only be captured by a kernel space thread with
-> rt_task_catch()?
+> No, signals with xnshadow_send_sig are pure linux signals sent with
+> the kernel function send_sig. So, they are caught by installing a
+> signal handler with either signal or sigaction.
 
-No, signals with xnshadow_send_sig are pure linux signals sent with
-the kernel function send_sig. So, they are caught by installing a
-signal handler with either signal or sigaction.
+This is fine then. At least then we would know what application had the
+problem. Thanks! I will try this tomorrow when I have some time to work
+on that project and I'll let you know.
 
- If so, that wouldn't be part of the application. I
-> don't really know what "mm" means, but if it's a virtual address space,
-> then usually that's shared among all modules.
+> Note that if a kernel space thread is killed by the watchdog, all
+> user-space threads which armed the XNSIGWDG are notified, because we
+> do not know to which process the kernel-space thread logically
+> belongs.
 
-mm is almost the only way to recognize threads belonging to the same
-process. Threads created with linuxthreads are alone in their thread
-group, so we can not portably use the threads group feature.
+Maybe it makes more sense to only notify kernel threads that set this
+mode. Just a thought. Our application only needs one kernel thread so
+it's not a big deal. It has no possible way to run away... at least I
+don't think so. :)
 
-Note that if a kernel space thread is killed by the watchdog, all
-user-space threads which armed the XNSIGWDG are notified, because we
-do not know to which process the kernel-space thread logically
-belongs.
+BTW, maybe to solve the problem with registering an opaque pointer with
+the nucleus, perhaps we should consider adding a single void* to all
+xenomai types. (Tasks, queues, pipes, etc.) Then, the user could have a
+single call that binds an opaque pointer to any type. This could contain
+data the user program needs to identify and properly clean up the
+deleted thread. This way, the watchdog timer could simply suspend a
+thread rather than delete it, and the user thread could then clean it up
+properly. In order to ensure the thread isn't restarted before the user
+program gets the signal, it could be marked in such a way as to not
+schedule again.
 
->
-> Steven
->
-> > -----Original Message-----
-> > From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
-> > Sent: Monday, December 03, 2007 2:22 PM
-> > To: Steven Seeger
-> > Cc: xenomai@xenomai.org
-> > Subject: RE: [Xenomai-help] wathcdog
-> >
->
-> > Steven Seeger wrote:
-> >  > > Ok. We can send the signal only to threads which are part of the
-> same
-> >  > > application as the faulting thread.
-> >  >
-> >  > That would be a big help! At least then we can report which
-> application
-> >  > had the fault. We have a few applications that work together.
-> >
-> > Here it comes.
->
->
+I just keep making this more complicated. :)
 
+Steven
 
-
--- 
-                                               Gilles Chanteperdrix
 
