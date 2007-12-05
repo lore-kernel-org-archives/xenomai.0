@@ -1,9 +1,14 @@
-Message-ID: <47569BA8.2050907@domain.hid>
-Date: Wed, 05 Dec 2007 14:38:00 +0200
-From: Ravid Baruch Naali <ravidbn@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------040107040801070208090303"
-Subject: [Xenomai-help] Real Time Course final Project
+From: Dennis Nguyen <dennisnguy@domain.hid>
+In-Reply-To: <2ff1a98a0712050209o2737f0a9oa9da90859fe5a827@domain.hid>
+References: <47563A68.8060404@domain.hid>
+	<2ff1a98a0712050209o2737f0a9oa9da90859fe5a827@domain.hid>
+Content-Type: text/plain
+Date: Wed, 05 Dec 2007 09:44:10 -0800
+Message-Id: <1196876650.22401.14.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] undefined reference to `rt_printf(char const*,
+	...)'
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -13,63 +18,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------040107040801070208090303
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+On Wed, 2007-12-05 at 11:09 +0100, Gilles Chanteperdrix wrote:
+> On Dec 5, 2007 6:43 AM, Dennis Nguyen <dennisnguy@domain.hid> wrote:
+> > Hello all,
+> >
+> > I got the "undefined reference to rt_printf" function when I called
+> > rt_printf in my application.  I included the header #include <rtdk.h> in
+> > the source file and -L /usr/xenomai/lib -lrtdk -lpthread-rt in the
+> > makefile.  I'm using kernel i386 2.6.23.9 and xenomai 2-4rc7. I have the
+> > rtdk.h include file in /usr/xenomai/include and librtdk.so in the
+> > /usr/xenomai/lib.
+> > What am I missing?
+> 
+> Does the attached patch help ?
+> 
+Thanks Gilles,
+Yes, the patch helped. My application is a cpp file.
+Dennis
 
-Hello again,
-
-
-Sorry for disappearing, but apparently I overloaded my self, with other
-projects.
-
-Nevertheless, as I mentioned in the past I'm teaching a course on Real
-Time system, and brought Xenomai as good implementation example.
-
-At this stage my student should choose a project to commit by the end of
-February.
-
-I would be more then happy if they will contribute to Xenomai project.
-therefore I'll appreciate if you can recommend a list of task that a
-newbie can do (like benchmarks) and can contribute to Xenomai.
-
-Needless to say that every project accepted by you guys into the source
-tree, will automatically be given the maximum available grade.
-
-
-Thanks in advance
-
-Ravid
-
-
-
--- 
-Ravid Baruch Naali
-ravidbn@domain.hid
-+972 4 6732729
-+972 52 5830021
-
-
-
---------------040107040801070208090303
-Content-Type: text/x-vcard; charset=utf-8;
- name="ravidbn.vcf"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="ravidbn.vcf"
-
-begin:vcard
-fn:Ravid Baruch Naali
-n:Baruch Naali;Ravid
-email;internet:ravidbn@domain.hid
-tel;work:052-5830021
-tel;home:04-6732729
-version:2.1
-end:vcard
-
-
---------------040107040801070208090303--
 
