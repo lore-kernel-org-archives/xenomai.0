@@ -1,13 +1,13 @@
-From: "Henk Geraads" <linux@domain.hid>
-Date: Wed, 5 Dec 2007 09:43:11 +0100
-Message-ID: <NGBBLNEOGLJIIJKLFLPFIEBPDFAA.linux@domain.hid>
+Message-ID: <2ff1a98a0712050209o2737f0a9oa9da90859fe5a827@domain.hid>
+Date: Wed, 5 Dec 2007 11:09:56 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <47563A68.8060404@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-In-Reply-To: <2ff1a98a0712040527k6f2c1439i52a5e2d9e756a3c5@domain.hid>
-Subject: Re: [Xenomai-help] native pipe can not write
-Reply-To: linux@domain.hid
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_12728_32796163.1196849396041"
+References: <47563A68.8060404@domain.hid>
+Subject: Re: [Xenomai-help] undefined reference to `rt_printf(char const*,
+	...)'
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,61 +17,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Dennis Nguyen <dennisnguy@domain.hid>
 Cc: xenomai@xenomai.org
 
+------=_Part_12728_32796163.1196849396041
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Hi,
-
-Does this mean I have to perform the following patch also in my system?
-
---- ksrc/skins/native/syscall.c	(revision 3195)
-+++ ksrc/skins/native/syscall.c	(revision 3196)
-@@ -2468,10 +2468,10 @@
-
- 		if (size > 0)
- 			__xn_copy_to_user(curr, buf, mbuf, size);
-+
-+		rt_queue_free(q, mbuf);
- 	}
-
--	rt_queue_free(q, mbuf);
--
- 	return (int)rsize;
- }
-
-
-Br,
-
-Henk Geraads
-
------Oorspronkelijk bericht-----
-Van: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
-Verzonden: dinsdag 4 december 2007 14:28
-Aan: linux@domain.hid
-CC: xenomai@xenomai.org
-Onderwerp: Re: [Xenomai-help] native pipe can not write
-
-
-On Dec 4, 2007 8:03 AM, Henk Geraads <linux@domain.hid> wrote:
+On Dec 5, 2007 6:43 AM, Dennis Nguyen <dennisnguy@domain.hid> wrote:
+> Hello all,
 >
-> Hi,
->
-> we are currently using a PXA270 board with kernel 2.6.15 with xenomai
-2.2.2. We are having the same problem. We create a pipe like;
-> rt_pipe_create(&dti_pipe_wr, "DTI_FROM_UART", FIFO_WR, 1000);
->
-> i=rt_pipe_write(&dti_pipe_wr, data->dti_rcvbuf, 20, P_NORMAL)
->
-> we got error = -ENOMEM?
->
-> Is this the same error?
+> I got the "undefined reference to rt_printf" function when I called
+> rt_printf in my application.  I included the header #include <rtdk.h> in
+> the source file and -L /usr/xenomai/lib -lrtdk -lpthread-rt in the
+> makefile.  I'm using kernel i386 2.6.23.9 and xenomai 2-4rc7. I have the
+> rtdk.h include file in /usr/xenomai/include and librtdk.so in the
+> /usr/xenomai/lib.
+> What am I missing?
 
-See this discussion thread:
-https://mail.gna.org/public/xenomai-help/2007-12/msg00012.html
+Does the attached patch help ?
 
---
+-- 
                                                Gilles Chanteperdrix
 
+------=_Part_12728_32796163.1196849396041
+Content-Type: application/octet-stream; name=xeno-extern-c-rtdk.diff
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_f9tp7ra70
+Content-Disposition: attachment; filename=xeno-extern-c-rtdk.diff
 
+SW5kZXg6IGluY2x1ZGUvcnRkay5oCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KLS0tIGluY2x1ZGUvcnRkay5oCShyw6l2
+aXNpb24gMzIzNykKKysrIGluY2x1ZGUvcnRkay5oCShjb3BpZSBkZSB0cmF2YWlsKQpAQCAtNDQs
+NiArNDQsMTAgQEAKICNpbmNsdWRlIDxzdGRpby5oPgogI2luY2x1ZGUgPHN0ZGFyZy5oPgogCisj
+aWZkZWYgX19jcGx1c3BsdXMKK2V4dGVybiAiQyIgeworI2VuZGlmIC8qIF9fY3BsdXNwbHVzICov
+CisKIGludCBydF92ZnByaW50ZihGSUxFICpzdHJlYW0sIGNvbnN0IGNoYXIgKmZvcm1hdCwgdmFf
+bGlzdCBhcmdzKTsKIGludCBydF92cHJpbnRmKGNvbnN0IGNoYXIgKmZvcm1hdCwgdmFfbGlzdCBh
+cmdzKTsKIGludCBydF9mcHJpbnRmKEZJTEUgKnN0cmVhbSwgY29uc3QgY2hhciAqZm9ybWF0LCAu
+Li4pOwpAQCAtNTQsNiArNTgsMTAgQEAKIHZvaWQgcnRfcHJpbnRfYXV0b19pbml0KGludCBlbmFi
+bGUpOwogY29uc3QgY2hhciAqcnRfcHJpbnRfYnVmZmVyX25hbWUodm9pZCk7CiAKKyNpZmRlZiBf
+X2NwbHVzcGx1cworfQorI2VuZGlmIC8qIF9fY3BsdXNwbHVzICovCisKICNlbmRpZiAvKiAhS0VS
+TkVMICovCiAKICNlbmRpZiAvKiAhX1JUVVRJTFNfSCAqLwo=
+------=_Part_12728_32796163.1196849396041--
 
