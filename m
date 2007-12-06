@@ -1,65 +1,69 @@
-Message-ID: <47419F33.7040203@domain.hid>
-Date: Mon, 19 Nov 2007 15:35:31 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <475801AA.3060300@domain.hid>
+Date: Thu, 06 Dec 2007 15:05:30 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <5D63919D95F87E4D9D34FF7748CE2C2AE09111@domain.hid>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2AE09111@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] rt_queue_write error: "Cannot allocate memory ";
- bug or feature ?
-Reply-To: rpm@xenomai.org
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <4757EBAE.4050608@domain.hid>	
+	<2ff1a98a0712060513g3b056866x883691498daf00e1@domain.hid>	
+	<4757F811.70905@domain.hid>	
+	<2ff1a98a0712060528y13159abdwb83617a8744b3735@domain.hid>
+	<2ff1a98a0712060544x6e1e8c11q52e9417fb096e4b7@domain.hid>
+In-Reply-To: <2ff1a98a0712060544x6e1e8c11q52e9417fb096e4b7@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] How to cancel a Xenomai POSIX thread
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Roderik.Wildenburg@domain.hid
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Roderik.Wildenburg@domain.hid wrote:
-> When running the attached programm for a while I get an "Cannot allocate =
-memory" error with the function rt_queue_write.
+Gilles Chanteperdrix wrote:
+> On Dec 6, 2007 2:28 PM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>> On Dec 6, 2007 2:24 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> On Dec 6, 2007 1:31 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
+>>>>> Hello,
+>>>>>
+>>>>> how do I cancel or delete a Xenomai POSIX thread running in primary
+>>>>> context from a higher priority thread? IIUC, pthread_kill() can only be
+>>>>> used in secondary context. I tried pthread_cancel(), but it only works
+>>>>> when hitting a cancelation point, e.g. pthread_testcancel(). Setting
+>>>>> pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS) did not help. Is
+>>>>> there a code snippet or even an example program showing how to cancel a
+>>>>> pthread in primary context?
+>>>> pthread_kill or pthread_cancel should result in sending a signal to
+>>>> the target thread, so should cause this thread to switch to secondary
+>>>> mode to handle it. If you want to wait for the target thread to be
+>>>> canceled, you should use pthread_cancel and pthread_join.
+>>> There is no way to cancel a pthread in primary mode from another pthread?
+>> No. You always need secondary mode to effectively delete a thread. The
+>> same goes for the native skin.
+> 
+> Ok. I understand what you mean. You want pthread_cancel not to leave
+> primary mode. This can easily be done by causing pthread_cancel to use
+> the kernel-space real-time pthread_cancel service. This should work
+> with no further modification.
 
-What is the exact size of the message rt_queue_write() fails to send, as
-displayed by your trace?
+I want to cancel/delete a task running in primary mode, e.g.
 
-> I can=B4t see any obvious mistake in my code, so I don=B4t have an simple=
- explanation for this behavior but just a suspicion (see below). Could some=
-body be so kind to try to reproduce this problem, so I can determine whethe=
-r this is a problem of my context or of xenomai.=20
-> I use Xenomai 2.3.2 with an 2.4.25 kernel on PPC.
->=20
-> Or, even better, could somebody explain to me the functionality of heap a=
-llocation of native queues.
+  void* work_task(void* dummy)
+  {
+	int count = 0;
+	while (1)
+		count++;
+  }
 
-Message buffers are simply obtained from a memory pool managed as a
-nucleus heap. rt_queue_write() allocates a message block from the pool
-to hold the emitted data, and pushes it to the pending message queue,
-rt_queue_read() then pops the next available message from this queue,
-copies the payload data to the user-space buffer, and frees the message
-block.
+from the outside (= another higher priority task). How can I use the
+kernel-space real-time pthread_cancel service? My POSIX app is runs in
+user-land.
 
-I have the impression the problem of my program results from some kind
-of heap fragmentation,
-as I write very differnt buffersizes to a quite small queue (see code
-line 59-62).
->=20
+Wolfgang.
 
-It's unlikely, since the consumer thread has absolute priority (50) over
-the producer in your code (30); in such a case, the buffer pool should
-only have a single busy message block at any given time.
-
-You may want to display /proc/xenomai/registry/native/queues/qtest1q
-periodically, while your test program is running, and check the usedmem
-field. If it indeed decreases over time, then there is a memory leak
-somewhere.
-
---=20
-Philippe.
 
