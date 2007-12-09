@@ -1,10 +1,13 @@
-Content-class: urn:content-classes:message
+Message-ID: <475C0EF1.9060402@domain.hid>
+Date: Sun, 09 Dec 2007 16:51:13 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C83C9A.3620DF30"
-Date: Wed, 12 Dec 2007 09:37:20 +0100
-Message-ID: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E01A5BFB6@domain.hid>
-From: "Thomas Necker" <thomas.necker@domain.hid>
-Subject: [Xenomai-core] Patch for I-Pipe 2.6.18-ppc-1.5-01 patch
+References: <35d9c6ed0712010628vb3bf2t5923e2b1d5ba17af@domain.hid>
+In-Reply-To: <35d9c6ed0712010628vb3bf2t5923e2b1d5ba17af@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] xenomai graduation thesis
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,39 +17,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: sarra risto <sarra.risto@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
+sarra risto wrote:
+> Hi
+> Are there anybody wants to do xenomai as his graduation thesis? I will do
+> something about xenomai as my graduation thesis, but I didn't have some good
+> topic, does somebody have good ideas?  Thanks a lot!
 
-------_=_NextPart_001_01C83C9A.3620DF30
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+A good topic is always one that fits well the interests and/or skills of
+the student. What are your major interests about real-time, operating
+systems, Linux, whatever?
 
-Attached is a small patch for the ipipe  2.6.18-ppc-1.5-01 patch.
-Without this small change I was not able to compile the patched kernel.
-
-Thomas
-
- <<adeos-ipipe-2.6.18-ppc-1.5-01.patch.patch>>=20
-
-------_=_NextPart_001_01C83C9A.3620DF30
-Content-Type: application/octet-stream;
-	name="adeos-ipipe-2.6.18-ppc-1.5-01.patch.patch"
-Content-Transfer-Encoding: base64
-Content-Description: adeos-ipipe-2.6.18-ppc-1.5-01.patch.patch
-Content-Disposition: attachment;
-	filename="adeos-ipipe-2.6.18-ppc-1.5-01.patch.patch"
-
-LS0tIGFkZW9zLWlwaXBlLTIuNi4xOC1wcGMtMS41LTAxLnBhdGNoLm9yaWcJMjAwNy0xMi0xMSAx
-Mjo1MDoxOC4wMDAwMDAwMDAgKzAxMDAKKysrIGFkZW9zLWlwaXBlLTIuNi4xOC1wcGMtMS41LTAx
-LnBhdGNoCTIwMDctMTItMTEgMTI6NTA6MjcuMDAwMDAwMDAwICswMTAwCkBAIC0yODgxLDcgKzI4
-ODEsNyBAQAogIGFzbWxpbmthZ2Ugdm9pZCBwcmVlbXB0X3NjaGVkdWxlKHZvaWQpOwogIAogKyNp
-ZmRlZiBDT05GSUdfSVBJUEUKLSsjaW5jbHVkZSA8YXNtL2lwaXBlLmg+CisrI2luY2x1ZGUgPGFz
-bS1nZW5lcmljL3BlcmNwdS5oPgogK0RFQ0xBUkVfUEVSX0NQVShzdHJ1Y3QgaXBpcGVfZG9tYWlu
-ICosIGlwaXBlX3BlcmNwdV9kb21haW4pOwogK2V4dGVybiBzdHJ1Y3QgaXBpcGVfZG9tYWluIGlw
-aXBlX3Jvb3Q7CiArI2RlZmluZSBpcGlwZV9wcmVlbXB0X2d1YXJkKCkgKHBlcl9jcHUoaXBpcGVf
-cGVyY3B1X2RvbWFpbiwgaXBpcGVfcHJvY2Vzc29yX2lkKCkpID09ICZpcGlwZV9yb290KQo=
-
-------_=_NextPart_001_01C83C9A.3620DF30--
+Jan
 
