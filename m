@@ -1,14 +1,12 @@
-Message-ID: <475D4A31.1080908@domain.hid>
-Date: Mon, 10 Dec 2007 15:16:17 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-References: <c12ec2810712100218s7c93af6drc2ada3ee7644c152@domain.hid>
-In-Reply-To: <c12ec2810712100218s7c93af6drc2ada3ee7644c152@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] rtpipe consistency problems
-Reply-To: rpm@xenomai.org
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 10 Dec 2007 15:19:20 +0100
+Message-ID: <4B2EEE69E41E524EB7FCDC62A15D68D8018CFEBF@ARVMAIL1.mra.roland-man.biz>
+From: <Thomas.Debes@domain.hid>
+Subject: [Xenomai-help] Uniqueness of registry objects
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,35 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ulf Karlsson <karlsson.ulf@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Ulf Karlsson wrote:
-> Hi,
-> 
-> I encounter a problem with rtpipes where the packets are being being
-> "locked up" inside the pipe, that is the read(2) call waiting for the
-> data does not return, Furthermore, it appears like I lose packets in
-> the pipe.
-> 
-> I have attached a two simple C-programs that demonstrate this behavior.
-> 
-> The program linux-pipe.c writes increasing integer values to the pipe
-> and expects to be able to read the same value back from the pipe,
-> while the program xeno-pipe.c reads an integer from the pipe and
-> instantly writes the very same value back.
-> 
-> I am using a 2.6.20.21 kernel together with xenomai 2.4.0.
->
+Hi,
 
-I can't reproduce this issue here, on the very same kernel/xenomai
-combo. Looking at the pipe code, a closing regular Linux side
-(linux-pipe) explicitly flushes the real-time output queue, so I just
-don't get how any lingering data could be delivered across a pipe close.
-Weird.
+I am using the native skin together with mutexes and message queues. If
+I use the same name for both objects (mutex=3D"test" , =
+queuename=3D"test") I
+can not register the second one because it fails with error -17 (file
+exists) in rt_queue_create. I assume that the registry service doesn't
+make a difference between the various RT object types. Can you confirm
+this behaviour? If it is by design would it be better to differ between
+the various RT object types (mutex, queue, pipe etc.)?
 
-Could you send your .config? TIA,
+Thanks
+Thomas=20
 
--- 
-Philippe.
+MAN Roland Druckmaschinen AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle   =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592   =20
+USt-Ident-Nr. DE 250200933
 
