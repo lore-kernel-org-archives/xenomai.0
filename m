@@ -1,63 +1,66 @@
-Message-ID: <2ff1a98a0712050209o2737f0a9oa9da90859fe5a827@domain.hid>
-Date: Wed, 5 Dec 2007 11:09:56 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <47563A68.8060404@domain.hid>
+Message-ID: <b054e88e0712100324l4a142c1bn9ad1129954dc4754@domain.hid>
+Date: Mon, 10 Dec 2007 12:24:01 +0100
+From: "Giammarco Zacheo" <g.zacheo@domain.hid>
+In-Reply-To: <475C120F.9020107@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_12728_32796163.1196849396041"
-References: <47563A68.8060404@domain.hid>
-Subject: Re: [Xenomai-help] undefined reference to `rt_printf(char const*,
-	...)'
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Dennis Nguyen <dennisnguy@domain.hid>
-Cc: xenomai@xenomai.org
-
-------=_Part_12728_32796163.1196849396041
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
+References: <b054e88e0711290957v17aac9b1vf30cd76c171bc1ac@domain.hid>
+	<475C120F.9020107@domain.hid>
+Subject: Re: [Xenomai-core] BUG while modprobing nucleus - no SMI workaround
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Dec 5, 2007 6:43 AM, Dennis Nguyen <dennisnguy@domain.hid> wrote:
-> Hello all,
+Yes, it does.
+
+Thanks a lot
+
+
+On Dec 9, 2007 5:04 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> Giammarco Zacheo wrote:
+> > Just installed kernel 2.6.23.9 with Xenomai 2.4-rc7 on my quad-core
+> > machine, and I got this on the console:
+> >
+> > BUG: using smp_processor_id() in preemptible [00000001] code: modprobe/4776
+> > caller is flat_send_IPI_allbutself+0x17/0x32
+> >
+> > Call Trace:
+> >  [<ffffffff80319796>] debug_smp_processor_id+0xde/0xec
+> >  [<ffffffff80219fb5>] flat_send_IPI_allbutself+0x17/0x32
+> >  [<ffffffff8021651a>] ipipe_critical_enter+0x84/0xaf
+> >  [<ffffffff80253239>] ipipe_register_domain+0x65/0x225
+> >  [<ffffffff8025387e>] rthal_init+0x164/0x1fd
+> >  [<ffffffff803da4e7>] rthal_domain_entry+0x0/0x3d
+> >  [<ffffffff88103059>] :xeno_nucleus:__xeno_sys_init+0x3e/0x1d4
+> >  [<ffffffff8024bfb2>] sys_init_module+0x1565/0x16c5
+> >  [<ffffffff8020b482>] system_call+0x92/0x97
 >
-> I got the "undefined reference to rt_printf" function when I called
-> rt_printf in my application.  I included the header #include <rtdk.h> in
-> the source file and -L /usr/xenomai/lib -lrtdk -lpthread-rt in the
-> makefile.  I'm using kernel i386 2.6.23.9 and xenomai 2-4rc7. I have the
-> rtdk.h include file in /usr/xenomai/include and librtdk.so in the
-> /usr/xenomai/lib.
-> What am I missing?
-
-Does the attached patch help ?
-
--- 
-                                               Gilles Chanteperdrix
-
-------=_Part_12728_32796163.1196849396041
-Content-Type: application/octet-stream; name=xeno-extern-c-rtdk.diff
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_f9tp7ra70
-Content-Disposition: attachment; filename=xeno-extern-c-rtdk.diff
-
-SW5kZXg6IGluY2x1ZGUvcnRkay5oCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KLS0tIGluY2x1ZGUvcnRkay5oCShyw6l2
-aXNpb24gMzIzNykKKysrIGluY2x1ZGUvcnRkay5oCShjb3BpZSBkZSB0cmF2YWlsKQpAQCAtNDQs
-NiArNDQsMTAgQEAKICNpbmNsdWRlIDxzdGRpby5oPgogI2luY2x1ZGUgPHN0ZGFyZy5oPgogCisj
-aWZkZWYgX19jcGx1c3BsdXMKK2V4dGVybiAiQyIgeworI2VuZGlmIC8qIF9fY3BsdXNwbHVzICov
-CisKIGludCBydF92ZnByaW50ZihGSUxFICpzdHJlYW0sIGNvbnN0IGNoYXIgKmZvcm1hdCwgdmFf
-bGlzdCBhcmdzKTsKIGludCBydF92cHJpbnRmKGNvbnN0IGNoYXIgKmZvcm1hdCwgdmFfbGlzdCBh
-cmdzKTsKIGludCBydF9mcHJpbnRmKEZJTEUgKnN0cmVhbSwgY29uc3QgY2hhciAqZm9ybWF0LCAu
-Li4pOwpAQCAtNTQsNiArNTgsMTAgQEAKIHZvaWQgcnRfcHJpbnRfYXV0b19pbml0KGludCBlbmFi
-bGUpOwogY29uc3QgY2hhciAqcnRfcHJpbnRfYnVmZmVyX25hbWUodm9pZCk7CiAKKyNpZmRlZiBf
-X2NwbHVzcGx1cworfQorI2VuZGlmIC8qIF9fY3BsdXNwbHVzICovCisKICNlbmRpZiAvKiAhS0VS
-TkVMICovCiAKICNlbmRpZiAvKiAhX1JUVVRJTFNfSCAqLwo=
-------=_Part_12728_32796163.1196849396041--
+> Looks like a harmless false positive. Does this patch help?
+>
+> Index: linux-2.6.23.8-xeno_64/lib/smp_processor_id.c
+> ===================================================================
+> --- linux-2.6.23.8-xeno_64.orig/lib/smp_processor_id.c
+> +++ linux-2.6.23.8-xeno_64/lib/smp_processor_id.c
+> @@ -19,7 +19,7 @@ unsigned int debug_smp_processor_id(void
+>         if (likely(preempt_count))
+>                 goto out;
+>
+> -       if (irqs_disabled())
+> +       if (irqs_disabled() || irqs_disabled_hw())
+>                 goto out;
+>
+>         /*
+>
+> Jan
+>
 
