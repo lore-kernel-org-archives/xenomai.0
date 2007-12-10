@@ -1,74 +1,143 @@
-Content-class: urn:content-classes:message
+Message-ID: <475CEA44.9060007@domain.hid>
+Date: Mon, 10 Dec 2007 08:27:00 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 3 Dec 2007 13:57:22 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D375F08@domain.hid>
-In-Reply-To: <18260.25837.479943.881970@domain.hid>
-References: <51CAD0CE1504444DBE77CBBE51A0135D375D6B@slcmail.slc.mew.int><2ff1a98a0711270657y63482de1ref80ba849f172918@domain.hid><51CAD0CE1504444DBE77CBBE51A0135D375D71@domain.hid><18259.5205.292521.503167@domain.hid><51CAD0CE1504444DBE77CBBE51A0135D375ECE@slcmail.slc.mew.int><2ff1a98a0712030235vfc316b8nff4b1e422db82c96@domain.hid><51CAD0CE1504444DBE77CBBE51A0135D375EEC@slcmail.slc.mew.int><2ff1a98a0712030552y1c9b10b8p54730d45f6245906@domain.hid><51CAD0CE1504444DBE77CBBE51A0135D375EEE@slcmail.slc.mew.int>
-	<18260.25837.479943.881970@domain.hid>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: Re: [Xenomai-help] wathcdog
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <4757EBAE.4050608@domain.hid>	<2ff1a98a0712060513g3b056866x883691498daf00e1@domain.hid>	<4757F811.70905@domain.hid>	<2ff1a98a0712060528y13159abdwb83617a8744b3735@domain.hid>	<2ff1a98a0712060544x6e1e8c11q52e9417fb096e4b7@domain.hid>	<475801AA.3060300@domain.hid>	<2ff1a98a0712060621k436f32b7sc1d1cfe53bea8f18@domain.hid>	<475952CD.3020003@domain.hid>	<18265.47545.897637.377869@domain.hid>	<18265.50385.343346.558000@domain.hid>	<475C6454.2090002@domain.hid>
+	<18268.29130.406826.933528@domain.hid>
+In-Reply-To: <18268.29130.406826.933528@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] How to cancel a Xenomai POSIX thread
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
-> Ok. We can send the signal only to threads which are part of the same
-> application as the faulting thread.
+Gilles Chanteperdrix wrote:
+> Wolfgang Grandegger wrote:
+>  > Gilles Chanteperdrix wrote:
+>  > > Gilles Chanteperdrix wrote:
+>  > >  > Wolfgang Grandegger wrote:
+>  > >  >  > Hi Gilles,
+>  > >  >  > 
+>  > >  >  > Gilles Chanteperdrix wrote:
+>  > >  >  > > On Dec 6, 2007 3:05 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
+>  > >  >  > >> Gilles Chanteperdrix wrote:
+>  > >  >  > >>> On Dec 6, 2007 2:28 PM, Gilles Chanteperdrix
+>  > >  >  > >>> <gilles.chanteperdrix@xenomai.org> wrote:
+>  > >  >  > >>>> On Dec 6, 2007 2:24 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
+>  > >  >  > >>>>> Gilles Chanteperdrix wrote:
+>  > >  >  > >>>>>> On Dec 6, 2007 1:31 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
+>  > >  >  > >>>>>>> Hello,
+>  > >  >  > >>>>>>>
+>  > >  >  > >>>>>>> how do I cancel or delete a Xenomai POSIX thread running in primary
+>  > >  >  > >>>>>>> context from a higher priority thread? IIUC, pthread_kill() can only be
+>  > >  >  > >>>>>>> used in secondary context. I tried pthread_cancel(), but it only works
+>  > >  >  > >>>>>>> when hitting a cancelation point, e.g. pthread_testcancel(). Setting
+>  > >  >  > >>>>>>> pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS) did not help. Is
+>  > >  >  > >>>>>>> there a code snippet or even an example program showing how to cancel a
+>  > >  >  > >>>>>>> pthread in primary context?
+>  > >  >  > >>>>>> pthread_kill or pthread_cancel should result in sending a signal to
+>  > >  >  > >>>>>> the target thread, so should cause this thread to switch to secondary
+>  > >  >  > >>>>>> mode to handle it. If you want to wait for the target thread to be
+>  > >  >  > >>>>>> canceled, you should use pthread_cancel and pthread_join.
+>  > >  >  > >>>>> There is no way to cancel a pthread in primary mode from another pthread?
+>  > >  >  > >>>> No. You always need secondary mode to effectively delete a thread. The
+>  > >  >  > >>>> same goes for the native skin.
+>  > >  >  > >>> Ok. I understand what you mean. You want pthread_cancel not to leave
+>  > >  >  > >>> primary mode. This can easily be done by causing pthread_cancel to use
+>  > >  >  > >>> the kernel-space real-time pthread_cancel service. This should work
+>  > >  >  > >>> with no further modification.
+>  > >  >  > >> I want to cancel/delete a task running in primary mode, e.g.
+>  > >  >  > >>
+>  > >  >  > >>   void* work_task(void* dummy)
+>  > >  >  > >>   {
+>  > >  >  > >>         int count = 0;
+>  > >  >  > >>         while (1)
+>  > >  >  > >>                 count++;
+>  > >  >  > >>   }
+>  > >  >  > >>
+>  > >  >  > >> from the outside (= another higher priority task). How can I use the
+>  > >  >  > >> kernel-space real-time pthread_cancel service? My POSIX app is runs in
+>  > >  >  > >> user-land.
+>  > >  >  > > 
+>  > >  >  > > I was thinking about adding a pthread_cancel syscall that would have
+>  > >  >  > > triggered the kernel-space pthread_cancel. But this will not work:
+>  > >  >  > > user-space cleanup handlers would no longer get executed. However,
+>  > >  >  > > this can work for pthread_kill. Here is a patch which adds the
+>  > >  >  > > pthread_kill syscall.
+>  > >  >  > 
+>  > >  >  > Great, thanks a lot. This seems to work but I'm now fiddling with proper
+>  > >  >  > cleanup and exit. I have attached my small test program. It behaves
+>  > >  >  > somehow strange, at least to me:
+>  > >  >  > 
+>  > >  >  > - I see task period overruns when the low prio task is started. I
+>  > >  >  >   suspect some switch to secondary mode in init_task().
+>  > >  >  > 
+>  > >  >  > - The program/system hangs after the listed messages:
+>  > >  >  > 
+>  > >  >  >   # ./kill_pthread
+>  > >  >  >   Starting high_prio_task
+>  > >  >  >   Killed low_prio task: count=3813129, overruns=0
+>  > >  >  > 
+>  > >  >  > Any idea what I'm doing wrong?
+>  > >  >  > 
+>  > >  >  > This is with Linux 2.4.25 and Xenomai 2.3.x on a MPC5200 board.
+>  > >  > 
+>  > >  > Your test runs fine with Xenomai trunk (on ARM). I will now try with
+>  > >  > current state of the v2.3.x branch.
+>  > > 
+>  > > Works with v2.3.x too.
+>  > 
+>  > I re-activated my test PC running Linux 2.6.20.21. with Xenomai 2.3.x.
+>  > There the program runs fine _without_ your pthread_kill patch. For some
+>  > reason the low_prio_task() is running in secondary mode (do you know
+>  > why? Is there a function to check the mode?). I added
+>  > 
+>  >         struct sched_param  param = { .sched_priority = LOW_PRIO };
+>  >         pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
+>  > 
+>  > to the head of that function and then I get:
+>  > 
+>  >   ./kill_pthread
+>  >   Starting high_prio_task
+>  >   BUG: NMI Watchdog detected LOCKUP
+>  >   Killed low_prio task: count=1588495996, overruns=0
+>  >   Exiting main
+>  > 
+>  > I have attached the corresponding oops in case it's of interest.
+>  > Unfortunately, with your patch and adding the function
+>  > __real_pthread_kill() to wrappers.c, the behavior is the same. I'm going
+>  > to repeat the tests with Xenomai trunk tomorrow.
+> 
+> The oops is due to the NMI watchdog calling some linux domain functions
+> over Xenomai domain. You should probably use Xenomai watchdog instead.
 
-That would be a big help! At least then we can report which application
-had the fault. We have a few applications that work together.=20
+OK, the Xenomai watchdog might be another possibility to kill a pthread
+blocking the system.
 
-> To be completely fair, Linux has the same problem: kernel-space has
-> pids, user-space has pthread_t, and there is no way to make a
-> correspondance between the two. The glibc probably has a way, but
-there
-> is no public service that makes this available to the user. Xenomai is
-> not different from Linux with regard to this issue.
+> As for the reason why the watchdog triggers: are you sure you are
+> running the kernel recompiled after having applied the patch?
 
-Yes, but Linux is not pretending to blend the existence of kernel and
-userspace threads. :)
-=20
-> Even if we used skin-level (note that the watchdog notification
-> mechanism is done at nucleus level for now) services to try and return
-a
-> thread/task identifier to the user-space, by the time the watchdog
-> signal get serviced, this identifier would have become invalid, since
-> the watchdog kills the faulting thread.
+Yes, because:
 
-Well, if the userspace program could register a watchdog handler for
-each thread it creates, then it could store a void* with that handler
-that's passed back to the userspace application. This handler would have
-special meaning to that application, and so the correct behavior can be
-performed.=20
+# grep pthread_kill System.map
+c015af9e T pthread_kill
+c015f4e6 t __pthread_kill
+c0390650 r __ksymtab_pthread_kill
+c03968b8 r __kcrctab_pthread_kill
+c039ce83 r __kstrtab_pthread_kill
 
-> The only way I see to solve your issue is to maintain, in your
-> application, a list of running threads, and upon notification from the
-> watchdog, poll each thread (using rt_task_inquire(task, NULL) with
-> native or pthread_kill(thread, 0) with posix) in order to find which
-one
-> was killed.
+But I will double-check again.
 
-What I suggested above makes the list unnecessary. The only reason this
-may have to be done at skin level is because the nucleus can't call a
-userspace handler. But, the skin could set up a queue and a thread that
-waits on a message from the nucleus saying that a thread was killed, and
-then the it could pass data back that is meaningful to the skin
-(userspace handler and void* argument) for each registered handler, and
-the skin could then call the appropriate function.
+Wolfgang.
 
-What do you think?
-
-Thanks,
-Steven
 
 
