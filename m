@@ -1,87 +1,132 @@
-Message-ID: <7289437c0712140750i176b34e9r8b3b5e16af52c92a@domain.hid>
-Date: Fri, 14 Dec 2007 16:50:41 +0100
-From: "Perrine Martignoni" <perrmart@domain.hid>
-In-Reply-To: <0B45E93C5FF65740AEAE690BF3848B7A4AB2DF@rennsmail04.eu.thmulti.com>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_1331_19233182.1197647441466"
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB2DF@rennsmail04.eu.thmulti.com>
-Subject: Re: [Xenomai-help] RTDM mmap and DMA
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18269.44492.753877.217708@domain.hid>
+Date: Mon, 10 Dec 2007 22:21:16 +0100
+In-Reply-To: <475D5923.2050701@domain.hid>
+References: <4757EBAE.4050608@domain.hid>
+	<2ff1a98a0712060513g3b056866x883691498daf00e1@domain.hid>
+	<4757F811.70905@domain.hid>
+	<2ff1a98a0712060528y13159abdwb83617a8744b3735@domain.hid>
+	<2ff1a98a0712060544x6e1e8c11q52e9417fb096e4b7@domain.hid>
+	<475801AA.3060300@domain.hid>
+	<2ff1a98a0712060621k436f32b7sc1d1cfe53bea8f18@domain.hid>
+	<475952CD.3020003@domain.hid>
+	<18265.47545.897637.377869@domain.hid>
+	<18265.50385.343346.558000@domain.hid>
+	<475C6454.2090002@domain.hid>
+	<18268.29130.406826.933528@domain.hid>
+	<475D5923.2050701@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] How to cancel a Xenomai POSIX thread
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_1331_19233182.1197647441466
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Wolfgang Grandegger wrote:
+ > Gilles Chanteperdrix wrote:
+ > > Wolfgang Grandegger wrote:
+ > >  > Gilles Chanteperdrix wrote:
+ > >  > > Gilles Chanteperdrix wrote:
+ > >  > >  > Wolfgang Grandegger wrote:
+ > >  > >  >  > Hi Gilles,
+ > >  > >  >  > 
+ > >  > >  >  > Gilles Chanteperdrix wrote:
+ > >  > >  >  > > On Dec 6, 2007 3:05 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
+ > >  > >  >  > >> Gilles Chanteperdrix wrote:
+ > >  > >  >  > >>> On Dec 6, 2007 2:28 PM, Gilles Chanteperdrix
+ > >  > >  >  > >>> <gilles.chanteperdrix@xenomai.org> wrote:
+ > >  > >  >  > >>>> On Dec 6, 2007 2:24 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
+ > >  > >  >  > >>>>> Gilles Chanteperdrix wrote:
+ > >  > >  >  > >>>>>> On Dec 6, 2007 1:31 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
+ > >  > >  >  > >>>>>>> Hello,
+ > >  > >  >  > >>>>>>>
+ > >  > >  >  > >>>>>>> how do I cancel or delete a Xenomai POSIX thread running in primary
+ > >  > >  >  > >>>>>>> context from a higher priority thread? IIUC, pthread_kill() can only be
+ > >  > >  >  > >>>>>>> used in secondary context. I tried pthread_cancel(), but it only works
+ > >  > >  >  > >>>>>>> when hitting a cancelation point, e.g. pthread_testcancel(). Setting
+ > >  > >  >  > >>>>>>> pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS) did not help. Is
+ > >  > >  >  > >>>>>>> there a code snippet or even an example program showing how to cancel a
+ > >  > >  >  > >>>>>>> pthread in primary context?
+ > >  > >  >  > >>>>>> pthread_kill or pthread_cancel should result in sending a signal to
+ > >  > >  >  > >>>>>> the target thread, so should cause this thread to switch to secondary
+ > >  > >  >  > >>>>>> mode to handle it. If you want to wait for the target thread to be
+ > >  > >  >  > >>>>>> canceled, you should use pthread_cancel and pthread_join.
+ > >  > >  >  > >>>>> There is no way to cancel a pthread in primary mode from another pthread?
+ > >  > >  >  > >>>> No. You always need secondary mode to effectively delete a thread. The
+ > >  > >  >  > >>>> same goes for the native skin.
+ > >  > >  >  > >>> Ok. I understand what you mean. You want pthread_cancel not to leave
+ > >  > >  >  > >>> primary mode. This can easily be done by causing pthread_cancel to use
+ > >  > >  >  > >>> the kernel-space real-time pthread_cancel service. This should work
+ > >  > >  >  > >>> with no further modification.
+ > >  > >  >  > >> I want to cancel/delete a task running in primary mode, e.g.
+ > >  > >  >  > >>
+ > >  > >  >  > >>   void* work_task(void* dummy)
+ > >  > >  >  > >>   {
+ > >  > >  >  > >>         int count = 0;
+ > >  > >  >  > >>         while (1)
+ > >  > >  >  > >>                 count++;
+ > >  > >  >  > >>   }
+ > >  > >  >  > >>
+ > >  > >  >  > >> from the outside (= another higher priority task). How can I use the
+ > >  > >  >  > >> kernel-space real-time pthread_cancel service? My POSIX app is runs in
+ > >  > >  >  > >> user-land.
+ > >  > >  >  > > 
+ > >  > >  >  > > I was thinking about adding a pthread_cancel syscall that would have
+ > >  > >  >  > > triggered the kernel-space pthread_cancel. But this will not work:
+ > >  > >  >  > > user-space cleanup handlers would no longer get executed. However,
+ > >  > >  >  > > this can work for pthread_kill. Here is a patch which adds the
+ > >  > >  >  > > pthread_kill syscall.
+ > >  > >  >  > 
+ > >  > >  >  > Great, thanks a lot. This seems to work but I'm now fiddling with proper
+ > >  > >  >  > cleanup and exit. I have attached my small test program. It behaves
+ > >  > >  >  > somehow strange, at least to me:
+ > >  > >  >  > 
+ > >  > >  >  > - I see task period overruns when the low prio task is started. I
+ > >  > >  >  >   suspect some switch to secondary mode in init_task().
+ > >  > >  >  > 
+ > >  > >  >  > - The program/system hangs after the listed messages:
+ > >  > >  >  > 
+ > >  > >  >  >   # ./kill_pthread
+ > >  > >  >  >   Starting high_prio_task
+ > >  > >  >  >   Killed low_prio task: count=3813129, overruns=0
+ > >  > >  >  > 
+ > >  > >  >  > Any idea what I'm doing wrong?
+ > >  > >  >  > 
+ > >  > >  >  > This is with Linux 2.4.25 and Xenomai 2.3.x on a MPC5200 board.
+ > >  > >  > 
+ > >  > >  > Your test runs fine with Xenomai trunk (on ARM). I will now try with
+ > >  > >  > current state of the v2.3.x branch.
+ > >  > > 
+ > >  > > Works with v2.3.x too.
+ > >  > 
+ > >  > I re-activated my test PC running Linux 2.6.20.21. with Xenomai 2.3.x.
+ > >  > There the program runs fine _without_ your pthread_kill patch. For some
+ > >  > reason the low_prio_task() is running in secondary mode (do you know
+ > >  > why? Is there a function to check the mode?). I added
+ > >  > 
+ > >  >         struct sched_param  param = { .sched_priority = LOW_PRIO };
+ > >  >         pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
+ > 
+ > After adding pthread_getschedparam() I realized, that policy was 1 and
+ > prio 10 and not as expected 5. The corresponding attribute settings
+ > before calling pthread_create have been ignored somehow. Am I doing
+ > something wrong in task_init()?
 
-I don't know how memory heaps really work but it seems that memory heaps are
-shared between user and kernel spaces.
-So, if I do like this I don't need mmap, am I wrong ?
-How is done the DMA transfer after ?
+No, I think there is rather something wrong in Xenomai user-space
+library. __pthread_trampoline should call __wrap_pthread_setschedparam
+instead of __real_pthread_setschedparam.
 
-Thanks
+-- 
 
-On Dec 14, 2007 2:59 PM, Fillod Stephane <stephane.fillod@domain.hid>
-wrote:
 
-> Perrine Martignoni wrote:
-> >Currently, I write an RTDM module and I would like to do DMA and mmap
-> to perform transfers who have hard constraints.
-> >I would like to know if there is an example in a driver who would help
-> me to do this.
->
-> I'm looking for the same need, except I'm not using RTDM, and everything
-> is in userland. Using the attached patch against Xenomai 2.4.0, I hope
-> to make it to work with something like this:
->
->        RT_HEAP_INFO info;
->        RT_HEAP heap;
->        void *user_addr;        /* DMA buffer, user access */
->        unsigned long dma_addr; /* for use with the DMA controller */
->
->        /* Allocate memory, suitable for DMA. This occurs before
-> entering RT land. */
->        err = rt_heap_create (&heap,
->                        name,
->                        heapsz,
->                        H_SHARED|H_DMA);
->        if (err) { /* ... */ }
->
->        err = rt_heap_alloc (&heap, 0, TM_INFINITE, &user_addr);
->        if (err) { /* ... */ }
->
->        err = rt_heap_inquire (&heap, &info);
->        if (err) { /* ... */ }
->
->        dma_addr = info.phys_addr;
->
-> Any comments?
-> --
-> Stephane
->
-
-------=_Part_1331_19233182.1197647441466
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-I don&#39;t know how memory heaps really work but it seems that memory heaps are shared between user and kernel spaces.<br>So, if I do like this I don&#39;t need mmap, am I wrong ?<br>How is done the DMA transfer after ?<br>
-<br>Thanks<br><br><div class="gmail_quote">On Dec 14, 2007 2:59 PM, Fillod Stephane &lt;<a href="mailto:stephane.fillod@domain.hid">stephane.fillod@domain.hid</a>&gt; wrote:<br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-<div><div></div><div class="Wj3C7c">Perrine Martignoni wrote:<br>&gt;Currently, I write an RTDM module and I would like to do DMA and mmap<br>to perform transfers who have hard constraints.<br>&gt;I would like to know if there is an example in a driver who would help
-<br>me to do this.<br><br></div></div>I&#39;m looking for the same need, except I&#39;m not using RTDM, and everything<br>is in userland. Using the attached patch against Xenomai 2.4.0, I hope<br>to make it to work with something like this:
-<br><br> &nbsp; &nbsp; &nbsp; &nbsp;RT_HEAP_INFO info;<br> &nbsp; &nbsp; &nbsp; &nbsp;RT_HEAP heap;<br> &nbsp; &nbsp; &nbsp; &nbsp;void *user_addr; &nbsp; &nbsp; &nbsp; &nbsp;/* DMA buffer, user access */<br> &nbsp; &nbsp; &nbsp; &nbsp;unsigned long dma_addr; /* for use with the DMA controller */<br><br> &nbsp; &nbsp; &nbsp; &nbsp;/* Allocate memory, suitable for DMA. This occurs before
-<br>entering RT land. */<br> &nbsp; &nbsp; &nbsp; &nbsp;err = rt_heap_create (&amp;heap,<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;name,<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;heapsz,<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;H_SHARED|H_DMA);<br> &nbsp; &nbsp; &nbsp; &nbsp;if (err) { /* ... */ }<br><br>
- &nbsp; &nbsp; &nbsp; &nbsp;err = rt_heap_alloc (&amp;heap, 0, TM_INFINITE, &amp;user_addr);<br> &nbsp; &nbsp; &nbsp; &nbsp;if (err) { /* ... */ }<br><br> &nbsp; &nbsp; &nbsp; &nbsp;err = rt_heap_inquire (&amp;heap, &amp;info);<br> &nbsp; &nbsp; &nbsp; &nbsp;if (err) { /* ... */ }<br><br> &nbsp; &nbsp; &nbsp; &nbsp;dma_addr = 
-info.phys_addr;<br><br>Any comments?<br>--<br><font color="#888888">Stephane<br></font></blockquote></div><br>
-
-------=_Part_1331_19233182.1197647441466--
+					    Gilles Chanteperdrix.
 
