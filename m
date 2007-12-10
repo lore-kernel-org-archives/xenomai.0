@@ -1,64 +1,83 @@
-Content-class: urn:content-classes:message
+Message-ID: <b054e88e0712100325o75285b0ej9f2c649cd8cd7079@domain.hid>
+Date: Mon, 10 Dec 2007 12:25:08 +0100
+From: "Giammarco Zacheo" <g.zacheo@domain.hid>
+In-Reply-To: <b054e88e0712100258l4a52db06m1efd4b0cc2c4e4be@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 6 Dec 2007 10:26:39 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D375FD8@domain.hid>
-In-Reply-To: <2ff1a98a0712060848j4822e7eal5f8d3b8ba8dc6772@domain.hid>
-References: <51CAD0CE1504444DBE77CBBE51A0135D375FC2@domain.hid>
-	<2ff1a98a0712060848j4822e7eal5f8d3b8ba8dc6772@domain.hid>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: Re: [Xenomai-help] more watchdog stuff
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <b054e88e0711290957v17aac9b1vf30cd76c171bc1ac@domain.hid>
+	<475C13C6.8080508@domain.hid>
+	<18268.5917.619555.657394@domain.hid>
+	<b054e88e0712100258l4a52db06m1efd4b0cc2c4e4be@domain.hid>
+Subject: [Xenomai-core] BUG while modprobing nucleus - no SMI workaround
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-Thanks for the answers. For now, I think that one second is ok. We can't
-use the soft lockup detect either because it doesn't say anything.
+The smictrl utility gives this output:
 
-Originally (before xenomai) what we did was have a low priority linux
-task ping a high priority hard realtime task (rtai) and then that would
-detect all lockups. However, we were only running one app at a time
-then. I think we may just have to live with what we have. :) I'm
-awaiting answers from the "boss".
+# ./smictrl -s 0
 
-Steven
+SMI-enabled chipset found:
+PCI_VENDOR_ID_INTEL:PCI_DEVICE_ID_INTEL_ICH7_0 (8086:27b8)
+SMI_EN register:       0002202b
+new value:             00000003
 
-> -----Original Message-----
-> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
-> Sent: Thursday, December 06, 2007 9:49 AM
-> To: Steven Seeger
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] more watchdog stuff
->=20
-> On Dec 6, 2007 5:41 PM, Steven Seeger
-> <sseeger@domain.hid> wrote:
-> >
-> >
-> >
-> >
-> > Can a Xenomai thread running in the secondary domain cause the
-watchdog
-> > timer to kill it?
->=20
-> No, this one will be caught by Linux soft-lockup detector.
->=20
-> > Also, how hard would it be to modify the watchdog system to give
-timing
-> > requirements in resolutions better of 1 second?
->=20
-> I guess the resolution of 1 second was chosen because it allows the
-> watchdog to have a very low overhead, but this can be changed easily.
->=20
+Seems like someone's locking those bits.
+
+Anyway, lspci -nn gives this:
+
+00:00.0 Host bridge [0600]: Intel Corporation 82975X Memory Controller
+Hub [8086:277c]
+00:01.0 PCI bridge [0604]: Intel Corporation 82975X PCI Express Root
+Port [8086:277d]
+00:1b.0 Audio device [0403]: Intel Corporation 82801G (ICH7 Family)
+High Definition Audio Controller [8086:27d8] (rev 01)
+00:1c.0 PCI bridge [0604]: Intel Corporation 82801G (ICH7 Family) PCI
+Express Port 1 [8086:27d0] (rev 01)
+00:1c.4 PCI bridge [0604]: Intel Corporation 82801GR/GH/GHM (ICH7
+Family) PCI Express Port 5 [8086:27e0] (rev 01)
+00:1c.5 PCI bridge [0604]: Intel Corporation 82801GR/GH/GHM (ICH7
+Family) PCI Express Port 6 [8086:27e2] (rev 01)
+00:1d.0 USB Controller [0c03]: Intel Corporation 82801G (ICH7 Family)
+USB UHCI Controller #1 [8086:27c8] (rev 01)
+00:1d.1 USB Controller [0c03]: Intel Corporation 82801G (ICH7 Family)
+USB UHCI Controller #2 [8086:27c9] (rev 01)
+00:1d.2 USB Controller [0c03]: Intel Corporation 82801G (ICH7 Family)
+USB UHCI Controller #3 [8086:27ca] (rev 01)
+00:1d.3 USB Controller [0c03]: Intel Corporation 82801G (ICH7 Family)
+USB UHCI Controller #4 [8086:27cb] (rev 01)
+00:1d.7 USB Controller [0c03]: Intel Corporation 82801G (ICH7 Family)
+USB2 EHCI Controller [8086:27cc] (rev 01)
+00:1e.0 PCI bridge [0604]: Intel Corporation 82801 PCI Bridge
+[8086:244e] (rev e1)
+00:1f.0 ISA bridge [0601]: Intel Corporation 82801GB/GR (ICH7 Family)
+LPC Interface Bridge [8086:27b8] (rev 01)
+00:1f.1 IDE interface [0101]: Intel Corporation 82801G (ICH7 Family)
+IDE Controller [8086:27df] (rev 01)
+00:1f.2 RAID bus controller [0104]: Intel Corporation 82801GR/GH (ICH7
+Family) SATA RAID Controller [8086:27c3] (rev 01)
+01:00.0 VGA compatible controller [0300]: ATI Technologies Inc RV515GL
+[FireGL V3350] [1002:7153]
+01:00.1 Display controller [0380]: ATI Technologies Inc RV515GL
+[FireGL V3350] (Secondary) [1002:7173]
+3f:00.0 Ethernet controller [0200]: Broadcom Corporation NetXtreme
+BCM5755 Gigabit Ethernet PCI Express [14e4:167b] (rev 02)
+
+
+> "SMI workaround failed" does not mean that the chipset is not supported,
+> it means that the chipset is supported but that masking/settting the SMI
+> bits failed, probably because the BIOS locked the SMI bits.
+>
 > --
->                                                Gilles Chanteperdrix
+>                                             Gilles Chanteperdrix.
+>
 
