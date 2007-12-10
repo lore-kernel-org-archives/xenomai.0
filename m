@@ -1,310 +1,164 @@
-Message-ID: <35d9c6ed0712180445j76063b97h7ffb397f312860bb@domain.hid>
-Date: Tue, 18 Dec 2007 20:45:23 +0800
-From: "sarra risto" <sarra.risto@domain.hid>
+Message-ID: <475DB21C.8040800@domain.hid>
+Date: Mon, 10 Dec 2007 22:39:40 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_12057_221490.1197981923307"
-Subject: [Xenomai-help] rt_intr_create=-38
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
-
-------=_Part_12057_221490.1197981923307
+References: <4757EBAE.4050608@domain.hid>	
+	<2ff1a98a0712060544x6e1e8c11q52e9417fb096e4b7@domain.hid>	
+	<475801AA.3060300@domain.hid>	
+	<2ff1a98a0712060621k436f32b7sc1d1cfe53bea8f18@domain.hid>	
+	<475952CD.3020003@domain.hid>	
+	<18265.47545.897637.377869@domain.hid>	
+	<18265.50385.343346.558000@domain.hid>	
+	<475C6454.2090002@domain.hid>	
+	<18268.29130.406826.933528@domain.hid>	
+	<475D5923.2050701@domain.hid>
+	<2ff1a98a0712100755l5c091420oe4d86ecd919992a4@domain.hid>
+In-Reply-To: <2ff1a98a0712100755l5c091420oe4d86ecd919992a4@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Subject: Re: [Xenomai-core] How to cancel a Xenomai POSIX thread
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi,
-In http://www.captain.at/xenomai-parallel-port-interrupt.php, there is a
-example about capturing the parallel port interrupt. I have a great interest
-in it, so I just want to have a try, but when I compile the code, I found a
-error:
-start
-rt_intr_create=-38
-error while rt_task_wait_period, code -110
-0 interrupts occured
-0 interrupts occured
-0 interrupts occured
-0 interrupts occured
-0 interrupts occured
-0 interrupts occured
-0 interrupts occured
-0 interrupts occured
-0 interrupts occured
-cleanup
-end
+Gilles Chanteperdrix wrote:
+> On Dec 10, 2007 4:20 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Wolfgang Grandegger wrote:
+>>>  > Gilles Chanteperdrix wrote:
+>>>  > > Gilles Chanteperdrix wrote:
+>>>  > >  > Wolfgang Grandegger wrote:
+>>>  > >  >  > Hi Gilles,
+>>>  > >  >  >
+>>>  > >  >  > Gilles Chanteperdrix wrote:
+>>>  > >  >  > > On Dec 6, 2007 3:05 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
+>>>  > >  >  > >> Gilles Chanteperdrix wrote:
+>>>  > >  >  > >>> On Dec 6, 2007 2:28 PM, Gilles Chanteperdrix
+>>>  > >  >  > >>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>>  > >  >  > >>>> On Dec 6, 2007 2:24 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
+>>>  > >  >  > >>>>> Gilles Chanteperdrix wrote:
+>>>  > >  >  > >>>>>> On Dec 6, 2007 1:31 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
+>>>  > >  >  > >>>>>>> Hello,
+>>>  > >  >  > >>>>>>>
+>>>  > >  >  > >>>>>>> how do I cancel or delete a Xenomai POSIX thread running in primary
+>>>  > >  >  > >>>>>>> context from a higher priority thread? IIUC, pthread_kill() can only be
+>>>  > >  >  > >>>>>>> used in secondary context. I tried pthread_cancel(), but it only works
+>>>  > >  >  > >>>>>>> when hitting a cancelation point, e.g. pthread_testcancel(). Setting
+>>>  > >  >  > >>>>>>> pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS) did not help. Is
+>>>  > >  >  > >>>>>>> there a code snippet or even an example program showing how to cancel a
+>>>  > >  >  > >>>>>>> pthread in primary context?
+>>>  > >  >  > >>>>>> pthread_kill or pthread_cancel should result in sending a signal to
+>>>  > >  >  > >>>>>> the target thread, so should cause this thread to switch to secondary
+>>>  > >  >  > >>>>>> mode to handle it. If you want to wait for the target thread to be
+>>>  > >  >  > >>>>>> canceled, you should use pthread_cancel and pthread_join.
+>>>  > >  >  > >>>>> There is no way to cancel a pthread in primary mode from another pthread?
+>>>  > >  >  > >>>> No. You always need secondary mode to effectively delete a thread. The
+>>>  > >  >  > >>>> same goes for the native skin.
+>>>  > >  >  > >>> Ok. I understand what you mean. You want pthread_cancel not to leave
+>>>  > >  >  > >>> primary mode. This can easily be done by causing pthread_cancel to use
+>>>  > >  >  > >>> the kernel-space real-time pthread_cancel service. This should work
+>>>  > >  >  > >>> with no further modification.
+>>>  > >  >  > >> I want to cancel/delete a task running in primary mode, e.g.
+>>>  > >  >  > >>
+>>>  > >  >  > >>   void* work_task(void* dummy)
+>>>  > >  >  > >>   {
+>>>  > >  >  > >>         int count = 0;
+>>>  > >  >  > >>         while (1)
+>>>  > >  >  > >>                 count++;
+>>>  > >  >  > >>   }
+>>>  > >  >  > >>
+>>>  > >  >  > >> from the outside (= another higher priority task). How can I use the
+>>>  > >  >  > >> kernel-space real-time pthread_cancel service? My POSIX app is runs in
+>>>  > >  >  > >> user-land.
+>>>  > >  >  > >
+>>>  > >  >  > > I was thinking about adding a pthread_cancel syscall that would have
+>>>  > >  >  > > triggered the kernel-space pthread_cancel. But this will not work:
+>>>  > >  >  > > user-space cleanup handlers would no longer get executed. However,
+>>>  > >  >  > > this can work for pthread_kill. Here is a patch which adds the
+>>>  > >  >  > > pthread_kill syscall.
+>>>  > >  >  >
+>>>  > >  >  > Great, thanks a lot. This seems to work but I'm now fiddling with proper
+>>>  > >  >  > cleanup and exit. I have attached my small test program. It behaves
+>>>  > >  >  > somehow strange, at least to me:
+>>>  > >  >  >
+>>>  > >  >  > - I see task period overruns when the low prio task is started. I
+>>>  > >  >  >   suspect some switch to secondary mode in init_task().
+>>>  > >  >  >
+>>>  > >  >  > - The program/system hangs after the listed messages:
+>>>  > >  >  >
+>>>  > >  >  >   # ./kill_pthread
+>>>  > >  >  >   Starting high_prio_task
+>>>  > >  >  >   Killed low_prio task: count=3813129, overruns=0
+>>>  > >  >  >
+>>>  > >  >  > Any idea what I'm doing wrong?
+>>>  > >  >  >
+>>>  > >  >  > This is with Linux 2.4.25 and Xenomai 2.3.x on a MPC5200 board.
+>>>  > >  >
+>>>  > >  > Your test runs fine with Xenomai trunk (on ARM). I will now try with
+>>>  > >  > current state of the v2.3.x branch.
+>>>  > >
+>>>  > > Works with v2.3.x too.
+>>>  >
+>>>  > I re-activated my test PC running Linux 2.6.20.21. with Xenomai 2.3.x.
+>>>  > There the program runs fine _without_ your pthread_kill patch. For some
+>>>  > reason the low_prio_task() is running in secondary mode (do you know
+>>>  > why? Is there a function to check the mode?). I added
+>>>  >
+>>>  >         struct sched_param  param = { .sched_priority = LOW_PRIO };
+>>>  >         pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
+>> After adding pthread_getschedparam() I realized, that policy was 1 and
+>> prio 10 and not as expected 5. The corresponding attribute settings
+>> before calling pthread_create have been ignored somehow. Am I doing
+>> something wrong in task_init()?
+>>
+>>>  > to the head of that function and then I get:
+>>>  >
+>>>  >   ./kill_pthread
+>>>  >   Starting high_prio_task
+>>>  >   BUG: NMI Watchdog detected LOCKUP
+>>>  >   Killed low_prio task: count=1588495996, overruns=0
+>>>  >   Exiting main
+>>>  >
+>>>  > I have attached the corresponding oops in case it's of interest.
+>>>  > Unfortunately, with your patch and adding the function
+>>>  > __real_pthread_kill() to wrappers.c, the behavior is the same. I'm going
+>>>  > to repeat the tests with Xenomai trunk tomorrow.
+>>>
+>>> The oops is due to the NMI watchdog calling some linux domain functions
+>>> over Xenomai domain. You should probably use Xenomai watchdog instead.
+>>>
+>>> As for the reason why the watchdog triggers: are you sure you are
+>>> running the kernel recompiled after having applied the patch?
+>> Indeed, after a "make clean; make bzImage" of the kernel it behaves
+>> differently. Wired, may be some dependency issue.
+>>
+>>   # ./kill_pthread
+>>   Starting high_prio_task
+>>   low_prio_task: policy=1 prio=10
+>>   Killed low_prio task: count=172709970, overruns=0
+>>
+>>   [1]+  Stopped                 ./kill_pthread
+> 
+> What you are observing is probably a difference between linuxthreads
+> and NPTL: with linuxthreads, SIGSTOP can be sent to a particular
+> thread and will cause this thread only to stop. With NPTL, it seems
+> that the effect of SIGSTOP is global, it affects the entire process. I
+> will test tonight on my x86 box to see if I observe the same effect.
 
-it seems it is because the return value of rt_intr_create() API  is not
-correct, besides, there is a notice that you should make the
+Ah, the man page says:
 
-CONFIG_XENO_OPT_NATIVE_INTR=y otherwise it fails with ENOSYS (38)
+ Note  that  pthread_kill()  only causes the signal to be handled in the
+ context of the given thread; the signal action  (termination  or  stop-
+ ping) affects the process as a whole.
 
-I met this problem firstly, but I recompile the kernel and xenomai
-again,  but I still met the above errors , does somebody can disscuss
-with me? Thank you for your attention!
+Wolfgang.
 
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <signal.h>
-#include <sys/time.h>
-#include <sys/io.h>
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-
-#include <native/task.h>
-#include <native/queue.h>
-#include <native/intr.h>
-#include <native/pipe.h>
-
-#define STACK_SIZE 8192
-#define STD_PRIO 1
-#define STD_PRIORITY 1
-#define HIGH_PRIORITY 99
-#define MID_PRIORITY 50
-#define BASEPORT 0x378
-#define PARPORTINT 7
-#define PIPE_MINOR 0
-
-RT_TASK print_task_ptr;
-RT_TASK square_task_ptr;
-RT_TASK interrupt_task_ptr;
-RT_INTR intr_desc; //set rt_intr task
-RT_PIPE mypipe;//set rt_pipe task
-int int_count = 0;
-int end = 0;
-int test;
-
-RTIME task_period_ns =   1000000000llu;
-RTIME print_period_ns =  1000000000llu;
-RTIME square_period_ns =  300000000llu;
-
-void interrupt_task(void *cookie) {
-        int err = 0;
-        int error;
-error = rt_pipe_create(&mypipe, "intpipe", PIPE_MINOR, 0);
-while (!end) {
-                err = rt_intr_wait(&intr_desc, TM_INFINITE);
-                printf("err = %d\n", err);
-                if (err > 0) {
-                        int_count++;
-                printf("int_count = %d\n", int_count);
-                        rt_pipe_write(&mypipe, &int_count,
-sizeof(int_count), P_NORMAL);
-                } else {
-}
-                rt_intr_enable (&intr_desc);
-        }
-        rt_pipe_delete(&mypipe);
-}
-void print_task(void *cookie) {
-        unsigned long overrun;
-        int ret;
-        ret = rt_task_set_periodic(NULL, TM_NOW,
-rt_timer_ns2ticks(print_period_ns));
-        if (ret) {
-                printf("error while set periodic, code %d\n",ret);
-return;
-        }
-        while (!end) {
-                ret = rt_task_wait_period(&overrun);
-                if (ret) {
-                        printf("error while rt_task_wait_period, code
-%d\n",ret);
-                        return;
-                }
-                printf("%d interrupts occured\n", int_count);
-                fflush(NULL);
-        }
-}
-void squaretask(void *cookie) {
-        unsigned long overrun;
-        int ret = rt_task_set_periodic(NULL, TM_NOW,
-rt_timer_ns2ticks(square_period_ns));
-        if (ret) {
-                printf("error while set periodic, code %d\n",ret);
-                return;
-        }
-        ret = rt_task_wait_period(&overrun);
-return;
-        }
-        while (!end) {
-                ret = rt_task_wait_period(&overrun);
-                if (ret) {
-                        printf("error while rt_task_wait_period, code
-%d\n",ret);
-                        return;
-                }
-                printf("%d interrupts occured\n", int_count);
-                fflush(NULL);
-        }
-}
-void squaretask(void *cookie) {
-        unsigned long overrun;
-        int ret = rt_task_set_periodic(NULL, TM_NOW,
-rt_timer_ns2ticks(square_period_ns));
-        if (ret) {
-                printf("error while set periodic, code %d\n",ret);
-                return;
-        }
-        ret = rt_task_wait_period(&overrun);
-        if (ret) {
-printf("error while rt_task_wait_period, code %d\n",ret);
-                return;
-        }
-        while (!end) {
-                outb_p(0xff, BASEPORT);
-                ret = rt_task_wait_period(&overrun);
-                if (ret) {
-                        printf("error while rt_task_wait_period, code
-%d\n",ret);
-                        return;
-                }
-                outb_p(0x00, BASEPORT);
-                ret = rt_task_wait_period(&overrun);
-                if (ret) {
-                        printf("error while rt_task_wait_period, code
-%d\n",ret);
-                        return;
-                }
-        }
-}
-void clean_exit(int dummy) {
-        printf("cleanup\n");
- printf("error while rt_task_wait_period, code %d\n",ret);
-                return;
-        }
-        while (!end) {
-                outb_p(0xff, BASEPORT);
-                ret = rt_task_wait_period(&overrun);
-                if (ret) {
-                        printf("error while rt_task_wait_period, code
-%d\n",ret);
-                        return;
-                }
-                outb_p(0x00, BASEPORT);
-                ret = rt_task_wait_period(&overrun);
-                if (ret) {
-                        printf("error while rt_task_wait_period, code
-%d\n",ret);
-                        return;
-                }
-        }
-}
-void clean_exit(int dummy) {
-        printf("cleanup\n");
-       rt_task_delete(&print_task_ptr);
-        rt_task_delete(&square_task_ptr);
-        rt_task_delete(&interrupt_task_ptr);
-        rt_intr_delete(&intr_desc);
-        rt_pipe_delete(&mypipe);
-        printf("end\n");
-}
-
-int main(int argc, char *argv[]) {
-        int err, fd;
-        printf("start\n");
-        signal(SIGTERM, clean_exit);
-        signal(SIGINT, clean_exit);
-if (iopl(3)) {
-        printf("iopl err\n");
-        exit(1);
-}
-        outb_p(0x10, BASEPORT + 2);
-       // err = rt_intr_create(&intr_desc, "parint", PARPORTINT ,I_NOAUTOENA);
-        mlockall(MCL_CURRENT | MCL_FUTURE);
-        err = rt_intr_create(&intr_desc, "parint", PARPORTINT, I_NOAUTOENA);
-
-
-
-if (err) {
-                printf("rt_intr_create = %d\n", err);
-                return 0;
-        }
-        rt_intr_enable(&intr_desc);
-
-        err = rt_task_spawn(&square_task_ptr, "Square", STACK_SIZE, STD_PRIO, 0,
-                         &squaretask, NULL);
-        if (err) {
-                printf("error rt_task_spawn\n");
-                return 0;
-        }
-
-        err = rt_task_spawn(&interrupt_task_ptr, "Int", STACK_SIZE, STD_PRIO, 0,
-                              &interrupt_task, NULL);
-        if (err) {
-                printf("error rt_task_spawn 2\n");
-                return 0;
-        }
-
-        err = rt_task_spawn(&print_task_ptr, "Printer", STACK_SIZE,
-STD_PRIO, 0,&print_task, NULL);
-        if (err) {
-                printf("error rt_task_spawn 3\n");
-                return 0;
-        }
-        fd = open("/dev/rtp0", O_RDONLY);
-        while (!end) {
-                err = read(fd, &test, sizeof(test));
-                if (err == -1) {
-                        printf("read error\n");
-                } else {
-                        printf("Read from pipe: %d\n", test);
-        }
-}
-        fflush(NULL);
-        return 0;
-}
-
-------=_Part_12057_221490.1197981923307
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hi, <br>In <a href="http://www.captain.at/xenomai-parallel-port-interrupt.php">http://www.captain.at/xenomai-parallel-port-interrupt.php</a>, there is a example about <span class="mcon">capturing the parallel port interrupt. I have a great interest in it, so I just want to have a try, but when I compile the code, I found a error:
-<br>start<br>rt_intr_create=-38<br>error while rt_task_wait_period, code -110<br>0 interrupts occured<br>0 interrupts occured<br>0 interrupts occured<br>0 interrupts occured<br>0 interrupts occured<br>0 interrupts occured
-<br>0 interrupts occured<br>0 interrupts occured<br>0 interrupts occured<br>cleanup<br>end<br><br>it seems it is because the return value of rt_intr_create() API&nbsp; is not correct, besides, there is a notice that you should make the 
-</span><span class="mcon"><pre>CONFIG_XENO_OPT_NATIVE_INTR=y otherwise it fails with ENOSYS (38)<br><br>I met this problem firstly, but I recompile the kernel and xenomai again,  but I still met the above errors , does somebody can disscuss with me? Thank you for your attention!
-<br><br>#include &lt;stdio.h&gt;<br>#include &lt;unistd.h&gt;<br>#include &lt;stdlib.h&gt;<br>#include &lt;string.h&gt;<br>#include &lt;signal.h&gt;<br>#include &lt;sys/time.h&gt;<br>#include &lt;sys/io.h&gt;<br>#include &lt;sys/mman.h&gt;
-<br>#include &lt;sys/types.h&gt;<br>#include &lt;sys/ioctl.h&gt;<br>#include &lt;fcntl.h&gt;<br><br>#include &lt;native/task.h&gt;<br>#include &lt;native/queue.h&gt;<br>#include &lt;native/intr.h&gt;<br>#include &lt;native/pipe.h&gt;
-<br><br>#define STACK_SIZE 8192<br>#define STD_PRIO 1<br>#define STD_PRIORITY 1<br>#define HIGH_PRIORITY 99<br>#define MID_PRIORITY 50<br>#define BASEPORT 0x378<br>#define PARPORTINT 7<br>#define PIPE_MINOR 0<br><br>RT_TASK print_task_ptr;
-<br>RT_TASK square_task_ptr;<br>RT_TASK interrupt_task_ptr;<br>RT_INTR intr_desc; //set rt_intr task<br>RT_PIPE mypipe;//set rt_pipe task<br>int int_count = 0;<br>int end = 0;<br>int test;<br><br>RTIME task_period_ns =   1000000000llu;
-<br>RTIME print_period_ns =  1000000000llu;<br>RTIME square_period_ns =  300000000llu;<br><br>void interrupt_task(void *cookie) {<br>        int err = 0;<br>        int error;<br>error = rt_pipe_create(&amp;mypipe, &quot;intpipe&quot;, PIPE_MINOR, 0);
-<br>while (!end) {<br>                err = rt_intr_wait(&amp;intr_desc, TM_INFINITE);<br>                printf(&quot;err = %d\n&quot;, err);<br>                if (err &gt; 0) {<br>                        int_count++;<br>
-                printf(&quot;int_count = %d\n&quot;, int_count);<br>                        rt_pipe_write(&amp;mypipe, &amp;int_count, sizeof(int_count), P_NORMAL);<br>                } else {<br>}<br>                rt_intr_enable (&amp;intr_desc);
-<br>        }<br>        rt_pipe_delete(&amp;mypipe);<br>}<br>void print_task(void *cookie) {<br>        unsigned long overrun;<br>        int ret;<br>        ret = rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(print_period_ns));
-<br>        if (ret) {<br>                printf(&quot;error while set periodic, code %d\n&quot;,ret);<br>return;<br>        }<br>        while (!end) {<br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {
-<br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);<br>                        return;<br>                }<br>                printf(&quot;%d interrupts occured\n&quot;, int_count);
-<br>                fflush(NULL);<br>        }<br>}<br>void squaretask(void *cookie) {<br>        unsigned long overrun;<br>        int ret = rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(square_period_ns));<br>        if (ret) {
-<br>                printf(&quot;error while set periodic, code %d\n&quot;,ret);<br>                return;<br>        }<br>        ret = rt_task_wait_period(&amp;overrun);<br>return;<br>        }<br>        while (!end) {
-<br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {<br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);<br>                        return;<br>
-                }<br>                printf(&quot;%d interrupts occured\n&quot;, int_count);<br>                fflush(NULL);<br>        }<br>}<br>void squaretask(void *cookie) {<br>        unsigned long overrun;<br>        int ret = rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(square_period_ns));
-<br>        if (ret) {<br>                printf(&quot;error while set periodic, code %d\n&quot;,ret);<br>                return;<br>        }<br>        ret = rt_task_wait_period(&amp;overrun);<br>        if (ret) {<br>printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);
-<br>                return;<br>        }<br>        while (!end) {<br>                outb_p(0xff, BASEPORT);<br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {<br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);
-<br>                        return;<br>                }<br>                outb_p(0x00, BASEPORT);<br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {<br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);
-<br>                        return;<br>                }<br>        }<br>}<br>void clean_exit(int dummy) {<br>        printf(&quot;cleanup\n&quot;);<br> printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);<br>
-                return;<br>        }<br>        while (!end) {<br>                outb_p(0xff, BASEPORT);<br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {<br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);
-<br>                        return;<br>                }<br>                outb_p(0x00, BASEPORT);<br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {<br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);
-<br>                        return;<br>                }<br>        }<br>}<br>void clean_exit(int dummy) {<br>        printf(&quot;cleanup\n&quot;);<br>       rt_task_delete(&amp;print_task_ptr);<br>        rt_task_delete(&amp;square_task_ptr);
-<br>        rt_task_delete(&amp;interrupt_task_ptr);<br>        rt_intr_delete(&amp;intr_desc);<br>        rt_pipe_delete(&amp;mypipe);<br>        printf(&quot;end\n&quot;);<br>}<br><br>int main(int argc, char *argv[]) {<br>
-        int err, fd;<br>        printf(&quot;start\n&quot;);<br>        signal(SIGTERM, clean_exit);<br>        signal(SIGINT, clean_exit);<br>if (iopl(3)) {<br>        printf(&quot;iopl err\n&quot;);<br>        exit(1);<br>
-}<br>        outb_p(0x10, BASEPORT + 2);<br>       // err = rt_intr_create(&amp;intr_desc, &quot;parint&quot;, PARPORTINT ,I_NOAUTOENA);<br>        mlockall(MCL_CURRENT | MCL_FUTURE);<br>        err = rt_intr_create(&amp;intr_desc, &quot;parint&quot;, PARPORTINT, I_NOAUTOENA);
-<br><br><br><br>if (err) {<br>                printf(&quot;rt_intr_create = %d\n&quot;, err);<br>                return 0;<br>        }<br>        rt_intr_enable(&amp;intr_desc);<br><br>        err = rt_task_spawn(&amp;square_task_ptr, &quot;Square&quot;, STACK_SIZE, STD_PRIO, 0,
-<br>                         &amp;squaretask, NULL);<br>        if (err) {<br>                printf(&quot;error rt_task_spawn\n&quot;);<br>                return 0;<br>        }<br><br>        err = rt_task_spawn(&amp;interrupt_task_ptr, &quot;Int&quot;, STACK_SIZE, STD_PRIO, 0,
-<br>                              &amp;interrupt_task, NULL);<br>        if (err) {<br>                printf(&quot;error rt_task_spawn 2\n&quot;);<br>                return 0;<br>        }<br><br>        err = rt_task_spawn(&amp;print_task_ptr, &quot;Printer&quot;, STACK_SIZE, STD_PRIO, 0,&amp;print_task, NULL);
-<br>        if (err) {<br>                printf(&quot;error rt_task_spawn 3\n&quot;);<br>                return 0;<br>        }<br>        fd = open(&quot;/dev/rtp0&quot;, O_RDONLY);<br>        while (!end) {<br>                err = read(fd, &amp;test, sizeof(test));
-<br>                if (err == -1) {<br>                        printf(&quot;read error\n&quot;);<br>                } else {<br>                        printf(&quot;Read from pipe: %d\n&quot;, test);<br>        }<br>}<br>
-        fflush(NULL);<br>        return 0;<br>}<br><br><br><br><br><br><br>       <br><br><br></pre></span>
-
-------=_Part_12057_221490.1197981923307--
 
