@@ -1,15 +1,10 @@
-Message-ID: <475D7DF6.3070502@domain.hid>
-Date: Mon, 10 Dec 2007 18:57:10 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <475E76A0.4010007@domain.hid>
+Date: Tue, 11 Dec 2007 12:38:08 +0100
+From: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
 MIME-Version: 1.0
-References: <c12ec2810712100218s7c93af6drc2ada3ee7644c152@domain.hid>	<475D4A31.1080908@domain.hid>
-	<c12ec2810712100655l47f5f55dr5ca5e762e18a1522@domain.hid>
-In-Reply-To: <c12ec2810712100655l47f5f55dr5ca5e762e18a1522@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] rtpipe consistency problems
-Reply-To: rpm@xenomai.org
+Subject: [Xenomai-help] Application broken 2.3.4 ---> 2.4.0
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,26 +14,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ulf Karlsson <karlsson.ulf@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Ulf Karlsson wrote:
-> Hi,
-> 
->> I can't reproduce this issue here, on the very same kernel/xenomai
->> combo. Looking at the pipe code, a closing regular Linux side
->> (linux-pipe) explicitly flushes the real-time output queue, so I just
->> don't get how any lingering data could be delivered across a pipe close.
->> Weird.
->>
->> Could you send your .config? TIA,
-> 
-> I have attached my .config-file.
-> 
+Hi,
 
-I need to run this testcase on a SMP then. Ok, I'll have a look at this.
-Thanks for reporting.
+I've compiled a previously 100% working application under the new 2.4.0 
+release and found the following issues:
 
--- 
-Philippe.
+
+1- rt_task_set_periodic does not work sometimes?
+
+In this application I have a periodic task (250ms period) which is used 
+to blink some lights. The blinking is occasionally resynchronized to 
+some external event, and this is what I do:
+
+In the periodic task:
+
+blink_count = 0;
+rt_task_set_periodic();
+for (;;) {
+    whatever();
+    blink_count = (blink_count + 1) & 3;
+    rt_task_wait_period();
+}
+
+Some somewhere else, when I want to synchronize the blinking:
+
+    blink_count = 0;
+    rt_task_set_periodic();
+
+This has worked perfectly until version 2.4.0. It seems that further 
+calls to rt_task_set_periodic (from a different task) break the 
+periodicity (the periodic task enters rt_task_wait_period() and never 
+leaves again).
+
+Any clues?
+
+
+
+2- ENOBUFS error in rt_pipe_read upon userland close of the pipe.
+
+This is weird and I still have to investigate it further. When the 
+userland program closes the pipe, the RT kernel module gets a ENOBUFS 
+error from rt_pipe_read.
+
+Any clues?
+
+
+
+Thanks.
 
