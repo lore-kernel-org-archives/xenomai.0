@@ -1,12 +1,12 @@
-Message-ID: <475BD389.5040909@domain.hid>
-Date: Sun, 09 Dec 2007 12:37:45 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <475E80A2.5080203@domain.hid>
+Date: Tue, 11 Dec 2007 13:20:50 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+References: <00a501c83bee$de20b5c0$2903050a@domain.hid>
+In-Reply-To: <00a501c83bee$de20b5c0$2903050a@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: [Xenomai-core] Xenomai v2.3.5
-Reply-To: rpm@xenomai.org
+Subject: Re: [Xenomai-core] Interrupt Handling in Xenomai
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,55 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: "kapilkumar.jain" <kapilkumar.jain@domain.hid>
+Cc: xenomai@xenomai.org
 
+kapilkumar.jain wrote:
+> Hello all,
+> 
+> The problem i faced in Registering Interrupt in Xenomai, if my interrupt line is shared with the ethernet irqs.
+> 
+> If we register for the interrupt line which is shared by ethernet irqs we will get the continuous interrupt.
+> 
+> According to the Xenomai interrupt handling - we should return RTDM_IRQ_NONE for unhandled interrupt.
+> and RTDM_IRQ_HANDLED for interrupt handled.
+> 
+> the problem if I return RTDM_IRQ_NONE, system get hanged with message
+> __XINTIRQ_ No Body cared for IRQ 19
+> 
+> IRQ 19 - same irq sharing with ethernet & my module.
+> 
+> If instead of RTDM_IRQ_NONE i will return 0; it will not hang.
+> but i am not sure about the functionality when it wil share with some other irq which is important.
+> 
+> what is the meaning of returning 0 from Xenomai ISR?
 
-Here is the latest release from the v2.3.x branch. Short log follows:
+Using 0 directly is not valid, always use the constants, they (or they
+docs) explain their meaning.
 
-	[nucleus]
+I guess you are rather looking for this explanation:
 
-	* Fix broken select() on a message pipe.
-	* Fix computation of overhead due to heap meta-data.
-	* Properly recycle empty bucketed pages to the free list.
-	* Sanitize heap size rounding at call sites.
+http://www.xenomai.org/index.php/FAQs
+"What can I do if Xenomai and Linux devices share the same IRQ?"
 
-	[posix]
-
-	* Fix pthread_cond_wait().
-
-	[native]
-
-	* Fix rt_queue_read() error path causing unexpected message
-          deletion.
-
-	[can]
-
-	* Support CONFIG_PPC_MERGE for resource management.
-
-	[powerpc]
-
-	* Integrated 32/64bit I-pipe support against 2.6.23/powerpc
-          (i.e. CONFIG_PPC_MERGE).
-        * Backported 32bit I-pipe support against 2.6.23/ppc.
-	* Add a set of EVB-specific calibration values.
-
-	[arm]
-
-	* Upgrade to I-pipe 2.6.20/1.8 series.
-
-	[i386]
-
-	* Upgrade to I-pipe 2.6.20.21/1.11 series.
-
-	[blackfin]
-
-	* Combined bf5xx support (bf533, bf537, bf561) against 2.6.23.
-
-See the ChangeLog for details.
-
-http://download.gna.org/xenomai/stable/xenomai-2.3.5.tar.bz2
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
