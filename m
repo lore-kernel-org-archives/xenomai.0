@@ -1,15 +1,9 @@
-Message-ID: <2ff1a98a0712040848l4789d7a9ge729d60ce354a36@domain.hid>
-Date: Tue, 4 Dec 2007 17:48:56 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <d6c8ef150712040846k2d5c684fq4307260fa4fc0012@domain.hid>
+Date: Tue, 11 Dec 2007 17:19:27 +0000 (GMT)
+From: Michael Trimarchi <trimarchimichael@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <d6c8ef150712040833s61321e24j3117dcef9e334839@domain.hid>
-	<2ff1a98a0712040845j3e747680x12f7ba1fc28b0093@domain.hid>
-	<d6c8ef150712040846k2d5c684fq4307260fa4fc0012@domain.hid>
-Subject: Re: [Adeos-main] Supporting newer kernel versions (2.6 tree)
+Content-Type: multipart/alternative; boundary="0-1673113346-1197393567=:83925"
+Message-ID: <632549.83925.qm@domain.hid>
+Subject: [Adeos-main] at91sam9260
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -18,22 +12,34 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Bosko Radivojevic <bosko.radivojevic@domain.hid>
-Cc: adeos-main@gna.org
+To: adeos-main@gna.org
 
-On Dec 4, 2007 5:46 PM, Bosko Radivojevic <bosko.radivojevic@domain.hid> wrote:
-> On Dec 4, 2007 5:45 PM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->
-> > I guess you mean for the ARM architecture ? Yes it is planned, but
-> > probably not before Xenomai 2.4.0 is out.
-> >
->
-> Yes, you're right, for the ARM arch. What is the prediction for Xenomai
-> 2.4.0? :)
+--0-1673113346-1197393567=:83925
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Very soon.
+Hi all,=0A=0AI prepare an adeos patch for the at91sam9260 and linux 2.6.22,=
+ and I test it with success. I reported only a problem with=0Athe serial dr=
+ivers. I have overrun and I can't using it in interrupt mode with trasfer r=
+ate > 57600 using zmodem =0Aprotocol. Is there any suggest?=0A=0ARegards Mi=
+chael=0A=0A=0A=0A=0A      ___________________________________ =0AL'email de=
+lla prossima generazione? Puoi averla con la nuova Yahoo! Mail: http://it.d=
+ocs.yahoo.com/nowyoucan.html
+--0-1673113346-1197393567=:83925
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
--- 
-                                               Gilles Chanteperdrix
+<html><head><style type=3D"text/css"><!-- DIV {margin:0px;} --></style></he=
+ad><body><div style=3D"font-family:times new roman, new york, times, serif;=
+font-size:10pt"><div>Hi all,<br><br>I prepare an adeos patch for the at91sa=
+m9260 and linux 2.6.22, and I test it with success. I reported only a probl=
+em with<br>the serial drivers. I have overrun and I can't using it in inter=
+rupt mode with trasfer rate &gt; 57600 using zmodem <br>protocol. Is there =
+any suggest?<br><br>Regards Michael<br></div></div><br>=0A=0A=0A=0A      <h=
+r size=3D1><font face=3D"Arial" size=3D"2"><hr size=3D1><font face=3D"Arial=
+" size=3D"2">L'email della prossima generazione? Puoi averla con la <a href=
+=3D"http://us.rd.yahoo.com/mail/it/taglines/hotmail/nowyoucan/nextgen/*http=
+://it.docs.yahoo.com/nowyoucan.html">nuova Yahoo! Mail</a></font></body></h=
+tml>
+--0-1673113346-1197393567=:83925--
 
