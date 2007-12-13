@@ -1,85 +1,108 @@
-Message-ID: <475DA397.6000408@domain.hid>
-Date: Mon, 10 Dec 2007 21:37:43 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <476076C6.4060604@domain.hid>
+Date: Thu, 13 Dec 2007 01:03:18 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <OFD2B0EC2A.B4C937F8-ONC12573AD.0036F9DB-C12573AD.00370BC4@domain.hid>
-In-Reply-To: <OFD2B0EC2A.B4C937F8-ONC12573AD.0036F9DB-C12573AD.00370BC4@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Antwort: Xenomai v2.4.0:
- CONFIG_XENO_OPT_SHIRQ_LEVEL vs. CONFIG_XENO_OPT_SHIRQ
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <0C9896A4B6D338488AD6FFFE58BAEF1001DB8EEF@serveur3.lgm.com>
+In-Reply-To: <0C9896A4B6D338488AD6FFFE58BAEF1001DB8EEF@serveur3.lgm.com>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8BA4D6BCC8DBAFF6098C801A"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] CP-118U RTDM Driver
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Thomas Wiedemann <Thomas.Wiedemann@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: DOURNES Guillaume <Guillaume.DOURNES@lgm.fr>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Thomas Wiedemann wrote:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8BA4D6BCC8DBAFF6098C801A
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+DOURNES Guillaume wrote:
 > Hi,
-> 
-> we had a problem compiling the CAN-Driver for the last release candidate 
-> when
-> shared interrupts had been enabled, because of the re-named option
-> "CONFIG_XENO_OPT_SHIRQ_LEVEL.". After a quick look, version 2.4.0 still
-> doesn't fix this. A patch is included (for ksrc/drivers/can).
+>=20
+> =20
+>=20
+> I have a kernel 2.6.20.9 with Xenomai 2.3.4.
+>=20
+> I chose a Moxa CP-118U board on my project, to be able to drive this PC=
+I board with the xeno_16550A module.
+>=20
+> So I tried to drive one port of this board by calling :
+>=20
+> =20
+>=20
+> modprobe mxser
+>=20
+> rmmod mxser
+>=20
+> modprobe xeno_16550A ioaddr=3D0xb500 irq=3D5
+>=20
+> =20
+>=20
+> And I run my simple software of test.
+>=20
+> =20
+>=20
+> But when the task is started, my computer become very slow, as a proces=
+s eats a lot of CPU load.
+>=20
+> This state stay even if I stop the software by CTRL+C, and even if I di=
+scharge the xeno_16550A module.
+>=20
+> Only a reboot allow to go I a good state.
+>=20
+> =20
+>=20
+> My question is why the CPU become very loaded, whereas my software do n=
+othing.
+>=20
 
-Ah, thanks for reporting. I'm going to remove these #ifdefs a.s.a.p.
-It's sufficient to print an appropriate error messsage in case interrupt
-registration fails with -EBUSY.
+Interrupt flood? Check the system activity via /proc/xenomai/irq and
+proc/xenomai/stat.
 
-Wolfgang.
+> =20
+>=20
+> I tried my software with the serial port on my mother board, and with t=
+his port, the system stay in a good state. It becomes not very slow.
+>=20
+> =20
+>=20
+> Moreover, I contact Moxa and his response was :
+>=20
+> "I am afraid that you cannot use 16550A module to driver CP-118U.
+>=20
+> The reason is because we use MU860 but not 16550A in CP118U."
+>=20
 
-> ------------------------------------------------------------------------
-> 
-> diff -urN sja1000.orig/rtcan_ems_pci.c sja1000/rtcan_ems_pci.c
-> --- sja1000.orig/rtcan_ems_pci.c	2007-09-16 19:20:45.000000000 +0200
-> +++ sja1000/rtcan_ems_pci.c	2007-12-10 10:14:58.000000000 +0100
-> @@ -272,7 +272,7 @@
->  	if ((err = rtcan_ems_pci_add_chan(pdev, EMS_PCI_MASTER,
->  					  &master_dev)))
->  		goto failure_cleanup;
-> -#ifdef CONFIG_XENO_OPT_SHIRQ_LEVEL
-> +#ifdef CONFIG_XENO_OPT_SHIRQ
->  	if ((err = rtcan_ems_pci_add_chan(pdev, EMS_PCI_SLAVE,
->  					  &master_dev)))
->  		goto failure_cleanup;
-> diff -urN sja1000.orig/rtcan_ixxat_pci.c sja1000/rtcan_ixxat_pci.c
-> --- sja1000.orig/rtcan_ixxat_pci.c	2007-09-16 19:20:45.000000000 +0200
-> +++ sja1000/rtcan_ixxat_pci.c	2007-12-10 10:14:54.000000000 +0100
-> @@ -254,7 +254,7 @@
->  	goto failure_iounmap;
->  
->      if (channel != CHANNEL_SINGLE) {
-> -#ifdef CONFIG_XENO_OPT_SHIRQ_LEVEL
-> +#ifdef CONFIG_XENO_OPT_SHIRQ
->  	channel = CHANNEL_SLAVE;
->  	if ((ret = rtcan_ixxat_pci_add_chan(pdev, channel,
->  					    &master_dev, conf_addr,
-> diff -urN sja1000.orig/rtcan_peak_pci.c sja1000/rtcan_peak_pci.c
-> --- sja1000.orig/rtcan_peak_pci.c	2007-09-16 19:20:45.000000000 +0200
-> +++ sja1000/rtcan_peak_pci.c	2007-12-10 10:14:51.000000000 +0100
-> @@ -292,7 +292,7 @@
->  	if ((ret = rtcan_peak_pci_add_chan(pdev, CHANNEL_MASTER, 
->  					   &master_dev)))
->  	    goto failure_cleanup;
-> -#ifdef CONFIG_XENO_OPT_SHIRQ_LEVEL
-> +#ifdef CONFIG_XENO_OPT_SHIRQ
->  	if ((ret = rtcan_peak_pci_add_chan(pdev, CHANNEL_SLAVE, 
->  					   &master_dev)))
->  	    goto failure_cleanup;
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+There might be some subtle minor differences in the MU860 that causes
+the existing driver to fail. Someone would have to study the mxser code
+in this regard...
 
+Jan
+
+
+--------------enig8BA4D6BCC8DBAFF6098C801A
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFHYHbHniDOoMHTA+kRAuQVAJwNY0wBdNzLEMSEflMk33zgbfaLTwCfcWxH
+lJPXUaG6JXoLSSbAzmJwjLI=
+=2kh5
+-----END PGP SIGNATURE-----
+
+--------------enig8BA4D6BCC8DBAFF6098C801A--
 
