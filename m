@@ -1,132 +1,103 @@
+Message-ID: <4762B80F.3020804@domain.hid>
+Date: Fri, 14 Dec 2007 18:06:23 +0100
+From: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+References: <475E76A0.4010007@domain.hid> <475E7CBA.7060300@domain.hid>	
+	<475E7F84.1040600@domain.hid> <475E8DAE.9070405@domain.hid>	
+	<2ff1a98a0712110541x12633fa3yb311214d9d0245a1@domain.hid>	
+	<475EA9F4.3020306@domain.hid>	
+	<2ff1a98a0712110841y7d16bb2esfca8fdfd7419ea5e@domain.hid>	
+	<47624674.5070107@domain.hid>
+	<2ff1a98a0712140146o2a3c5761i8a97d67921fedecd@domain.hid>
+In-Reply-To: <2ff1a98a0712140146o2a3c5761i8a97d67921fedecd@domain.hid>
+Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-ID: <18269.44492.753877.217708@domain.hid>
-Date: Mon, 10 Dec 2007 22:21:16 +0100
-In-Reply-To: <475D5923.2050701@domain.hid>
-References: <4757EBAE.4050608@domain.hid>
-	<2ff1a98a0712060513g3b056866x883691498daf00e1@domain.hid>
-	<4757F811.70905@domain.hid>
-	<2ff1a98a0712060528y13159abdwb83617a8744b3735@domain.hid>
-	<2ff1a98a0712060544x6e1e8c11q52e9417fb096e4b7@domain.hid>
-	<475801AA.3060300@domain.hid>
-	<2ff1a98a0712060621k436f32b7sc1d1cfe53bea8f18@domain.hid>
-	<475952CD.3020003@domain.hid>
-	<18265.47545.897637.377869@domain.hid>
-	<18265.50385.343346.558000@domain.hid>
-	<475C6454.2090002@domain.hid>
-	<18268.29130.406826.933528@domain.hid>
-	<475D5923.2050701@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] How to cancel a Xenomai POSIX thread
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Application broken 2.3.4 ---> 2.4.0
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Wolfgang Grandegger wrote:
- > Gilles Chanteperdrix wrote:
- > > Wolfgang Grandegger wrote:
- > >  > Gilles Chanteperdrix wrote:
- > >  > > Gilles Chanteperdrix wrote:
- > >  > >  > Wolfgang Grandegger wrote:
- > >  > >  >  > Hi Gilles,
- > >  > >  >  > 
- > >  > >  >  > Gilles Chanteperdrix wrote:
- > >  > >  >  > > On Dec 6, 2007 3:05 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
- > >  > >  >  > >> Gilles Chanteperdrix wrote:
- > >  > >  >  > >>> On Dec 6, 2007 2:28 PM, Gilles Chanteperdrix
- > >  > >  >  > >>> <gilles.chanteperdrix@xenomai.org> wrote:
- > >  > >  >  > >>>> On Dec 6, 2007 2:24 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
- > >  > >  >  > >>>>> Gilles Chanteperdrix wrote:
- > >  > >  >  > >>>>>> On Dec 6, 2007 1:31 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
- > >  > >  >  > >>>>>>> Hello,
- > >  > >  >  > >>>>>>>
- > >  > >  >  > >>>>>>> how do I cancel or delete a Xenomai POSIX thread running in primary
- > >  > >  >  > >>>>>>> context from a higher priority thread? IIUC, pthread_kill() can only be
- > >  > >  >  > >>>>>>> used in secondary context. I tried pthread_cancel(), but it only works
- > >  > >  >  > >>>>>>> when hitting a cancelation point, e.g. pthread_testcancel(). Setting
- > >  > >  >  > >>>>>>> pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS) did not help. Is
- > >  > >  >  > >>>>>>> there a code snippet or even an example program showing how to cancel a
- > >  > >  >  > >>>>>>> pthread in primary context?
- > >  > >  >  > >>>>>> pthread_kill or pthread_cancel should result in sending a signal to
- > >  > >  >  > >>>>>> the target thread, so should cause this thread to switch to secondary
- > >  > >  >  > >>>>>> mode to handle it. If you want to wait for the target thread to be
- > >  > >  >  > >>>>>> canceled, you should use pthread_cancel and pthread_join.
- > >  > >  >  > >>>>> There is no way to cancel a pthread in primary mode from another pthread?
- > >  > >  >  > >>>> No. You always need secondary mode to effectively delete a thread. The
- > >  > >  >  > >>>> same goes for the native skin.
- > >  > >  >  > >>> Ok. I understand what you mean. You want pthread_cancel not to leave
- > >  > >  >  > >>> primary mode. This can easily be done by causing pthread_cancel to use
- > >  > >  >  > >>> the kernel-space real-time pthread_cancel service. This should work
- > >  > >  >  > >>> with no further modification.
- > >  > >  >  > >> I want to cancel/delete a task running in primary mode, e.g.
- > >  > >  >  > >>
- > >  > >  >  > >>   void* work_task(void* dummy)
- > >  > >  >  > >>   {
- > >  > >  >  > >>         int count = 0;
- > >  > >  >  > >>         while (1)
- > >  > >  >  > >>                 count++;
- > >  > >  >  > >>   }
- > >  > >  >  > >>
- > >  > >  >  > >> from the outside (= another higher priority task). How can I use the
- > >  > >  >  > >> kernel-space real-time pthread_cancel service? My POSIX app is runs in
- > >  > >  >  > >> user-land.
- > >  > >  >  > > 
- > >  > >  >  > > I was thinking about adding a pthread_cancel syscall that would have
- > >  > >  >  > > triggered the kernel-space pthread_cancel. But this will not work:
- > >  > >  >  > > user-space cleanup handlers would no longer get executed. However,
- > >  > >  >  > > this can work for pthread_kill. Here is a patch which adds the
- > >  > >  >  > > pthread_kill syscall.
- > >  > >  >  > 
- > >  > >  >  > Great, thanks a lot. This seems to work but I'm now fiddling with proper
- > >  > >  >  > cleanup and exit. I have attached my small test program. It behaves
- > >  > >  >  > somehow strange, at least to me:
- > >  > >  >  > 
- > >  > >  >  > - I see task period overruns when the low prio task is started. I
- > >  > >  >  >   suspect some switch to secondary mode in init_task().
- > >  > >  >  > 
- > >  > >  >  > - The program/system hangs after the listed messages:
- > >  > >  >  > 
- > >  > >  >  >   # ./kill_pthread
- > >  > >  >  >   Starting high_prio_task
- > >  > >  >  >   Killed low_prio task: count=3813129, overruns=0
- > >  > >  >  > 
- > >  > >  >  > Any idea what I'm doing wrong?
- > >  > >  >  > 
- > >  > >  >  > This is with Linux 2.4.25 and Xenomai 2.3.x on a MPC5200 board.
- > >  > >  > 
- > >  > >  > Your test runs fine with Xenomai trunk (on ARM). I will now try with
- > >  > >  > current state of the v2.3.x branch.
- > >  > > 
- > >  > > Works with v2.3.x too.
- > >  > 
- > >  > I re-activated my test PC running Linux 2.6.20.21. with Xenomai 2.3.x.
- > >  > There the program runs fine _without_ your pthread_kill patch. For some
- > >  > reason the low_prio_task() is running in secondary mode (do you know
- > >  > why? Is there a function to check the mode?). I added
- > >  > 
- > >  >         struct sched_param  param = { .sched_priority = LOW_PRIO };
- > >  >         pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
- > 
- > After adding pthread_getschedparam() I realized, that policy was 1 and
- > prio 10 and not as expected 5. The corresponding attribute settings
- > before calling pthread_create have been ignored somehow. Am I doing
- > something wrong in task_init()?
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<br>
+<blockquote
+ cite="mid:2ff1a98a0712140146o2a3c5761i8a97d67921fedecd@domain.hid"
+ type="cite">
+  <blockquote type="cite">
+    <pre wrap="">immediate execution while in 2.4.0 it is not.
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->
+I do not see this in 2.3.4 code, but let's admit it is true: then
+v2.3.4 code is broken, and so is your application. Really, no RTOS
+allows starting timers with dates in the past, you can check the
+various Xenomai skins implementation or the posix spec. So, our advice
+is to fix your application.
 
-No, I think there is rather something wrong in Xenomai user-space
-library. __pthread_trampoline should call __wrap_pthread_setschedparam
-instead of __real_pthread_setschedparam.
-
--- 
-
-
-					    Gilles Chanteperdrix.
+  </pre>
+</blockquote>
+<br>
+I agree it makes no sense to start a timer in the past, but we are not
+talking about a timer, but about a <b>task</b>.<br>
+<br>
+The discussion is: I want to make a task periodic starting a "little
+while" ago, what should the rt_task_set_periodic do:<br>
+<br>
+a) Fail and do nothing about the task (actually it will <b>stop</b> it
+if it was already periodic !!!).<br>
+<br>
+b) Fail, but schedule the task for immediate execution and set it
+periodic starting at the specified date plus a period multiple such
+that the result is in the future.<br>
+<br>
+Not only it seems to me that (b) makes more sense and does something
+actually useful, but also <b>I think there is no way I can do the
+equivalent in an atomic way in the application code</b> (I mean without
+resorting to non-native API functions).<br>
+<br>
+I might be wrong, and if so, I'll really appreciate an example of how
+do to that. Atomically. Meanwhile this is the only thing I could come
+up with:<br>
+<br>
+while ((r = rt_task_set_periodic(&amp;mytask, start, period)) ==
+-ETIMEDOUT) {<br>
+&nbsp;&nbsp;&nbsp; count++; start += period;<br>
+}<br>
+if (count &gt; 0) rt_task_resume(&amp;mytask);<br>
+<br>
+That code, would however have a non-desirable effect under certain
+circumstances: let's assume that I want a task A executed, rather than
+every T milliseconds, N times per second. If the "master" if both tasks
+are prevented from executing by some other task with higher priority
+for a large amount of time larger than several periods, several
+executions would be skipped, which may not be the best solution (maybe
+I'd rather have the task A execute its processing loop severan times
+nonstop until it "cathes up" with the total expected number of
+executions).<br>
+<br>
+And now that I think about it, &iquest;what happens to a periodic task when it
+is prevented from executing by some other higher priority task for an
+interval equivalent to several periods?<br>
+<br>
+Regards.<br>
+<br>
+Nacho.<br>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>
 
