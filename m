@@ -1,8 +1,11 @@
-Date: Mon, 17 Dec 2007 14:51:43 +0000 (GMT)
-From: Michael Trimarchi <trimarchimichael@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-2063534368-1197903103=:6456"
-Message-ID: <662766.6456.qm@domain.hid>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18278.61029.777027.211635@domain.hid>
+Date: Mon, 17 Dec 2007 22:47:17 +0100
+In-Reply-To: <168027.86920.qm@domain.hid>
+References: <168027.86920.qm@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Subject: Re: [Adeos-main] at91sam9260
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
@@ -12,53 +15,63 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Michael Trimarchi <trimarchimichael@domain.hid>
 Cc: adeos-main@gna.org
 
---0-2063534368-1197903103=:6456
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Michael Trimarchi wrote:
+ > In linux the interrupt nesting is controlled by the hardware logic. Is it true?
+ > 
+ > 
+ > 
+ > The priority is mainted using ipipe in at91sam9260? 
 
-=0AHi,=0A>Ok. Could you try something ? It will work with I-pipe only but w=
-ill=0A>break Xenomai, so do not try to run Xenomai over this modification.=
-=0A=0A>In include/asm-arm/system.h in the definition of the switch_to macro=
-=0A>try removing the calls to local_irq_disable_hw_cond and=0A>local_irq_en=
-able_hw_cond, and tell us if you still get the serial=0A>driver overruns.=
-=0AOk,=0Anow I can't because I have a flight in the afternoon. Maybe this n=
-ight =0Aor tomorrow :)=0A=0A>This means that there is a fault in xnpod_sche=
-dule, that causes a=0A>Linux function to be called over Xenomai domain. But=
- the problem is=0A>the fault in the first place. To debug this, we need a d=
-isassembly of=0A>xnpod_schedule. This will be best discussed on Xenomai mai=
-ling list.=0A>You probably have a problem in your port of the I-pipe patch,=
- since=0A>Xenomai is reported to works on other AT91s.=0AOk=0A=0ARegards MI=
-chael=0A=0A=0A=0A=0A=0A=0A      ___________________________________ =0AL'em=
-ail della prossima generazione? Puoi averla con la nuova Yahoo! Mail: =0Aht=
-tp://it.docs.yahoo.com/nowyoucan.html
---0-2063534368-1197903103=:6456
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+On AT91 the interrupt controller works as follows: when an interrupt
+occurs, the processor irq line is asserted, until the processor reads
+the AIC_IVR register. At that point, and until the processor writes to
+the AIC_EOICR register, interrupts of lower priority are masked, and
+only interrupts of higher priority could cause the processor irq line to
+be reasserted.
 
-<html><head><style type=3D"text/css"><!-- DIV {margin:0px;} --></style></he=
-ad><body><div style=3D"font-family:times new roman, new york, times, serif;=
-font-size:10pt"><div style=3D"font-family: times new roman,new york,times,s=
-erif; font-size: 10pt;"><br><div style=3D"font-family: times new roman,new =
-york,times,serif; font-size: 12pt;">Hi,<br>&gt;Ok. Could you try something =
-? It will work with I-pipe only but will<br>&gt;break Xenomai, so do not tr=
-y to run Xenomai over this modification.<br><br>&gt;In include/asm-arm/syst=
-em.h in the definition of the switch_to macro<br>&gt;try removing the calls=
- to local_irq_disable_hw_cond and<br>&gt;local_irq_enable_hw_cond, and tell=
- us if you still get the serial<br>&gt;driver overruns.<br>Ok,<br>now I can=
-'t because I have a flight in the afternoon. Maybe this night <br>or tomorr=
-ow :)<br><br>&gt;This means that there is a fault in xnpod_schedule, that c=
-auses a<br>&gt;Linux function to be called over Xenomai domain. But the
- problem is<br>&gt;the fault in the first place. To debug this, we need a d=
-isassembly of<br>&gt;xnpod_schedule. This will be best discussed on Xenomai=
- mailing list.<br>&gt;You probably have a problem in your port of the I-pip=
-e patch, since<br>&gt;Xenomai is reported to works on other AT91s.<br>Ok<br=
-><br>Regards MIchael<br><br></div></div></div><br>=0A=0A=0A      <hr size=
-=3D1><font face=3D"Arial" size=3D"2">L'email della prossima generazione? Pu=
-oi averla con la <a href=3D"http://us.rd.yahoo.com/mail/it/taglines/gmail/n=
-owyoucan/nextgen/*http://it.docs.yahoo.com/nowyoucan.html">Nuova Yahoo! Mai=
-l</a></font></body></html>
---0-2063534368-1197903103=:6456--
+In linux implementation (as of today), the write to the AIC_EOICR
+register occurs at the end of the asm_do_IRQ function, after the
+interrupt handler is invoked. So, this means that during all the work
+done by an interrupt handler, lower priority interrupts are masked, and
+only higher or equal priority interrupts can trigger the next
+interrupt. So, the answer to your first question is yes, the interrupt
+nesting of Linux _on AT91_ is controlled by the hardware logic.
+
+Now about the I-pipe. The first implementation of I-pipe on AT91
+followed the same logic as Linux, and this caused me a lot of headaches:
+when testing the I-pipe: I could get timer interrupt jitter of 40 ms
+when the board was put under ethernet irq load and could not understand
+why. Until I understood that the interrupt controller had priorities,
+and that the TC (used as timer hardware on AT91) had a lower priority
+than the ethernet interrupt. So my first conclusion was that TC should
+be given a priority higher than any other interrupt on the system if we
+wanted to run Xenomai on AT91. And the result is that the I-pipe patch,
+until 1.7-06 followed the same logic as Linux.
+
+But this behaviour means that a non real-time interrupt can delay a
+real-time interrupt if its hardware priority is higher. And discussion
+with Jan convinced me that the behaviour was wrong: interrupt controller
+priorities should only arbiter interrupts occuring at the same time, and
+soon I understood why this happened: because of the late writing to the
+AIC_EOICR register, so, I changed the write to the AIC_EOICR register to
+happen when acknowleding the interrupt, at the very beginning of the
+interrupt handling, which allowed me to test successfully the I-pipe
+patch with the original interrupt priorities. So, the answer to your
+second question is no: the priority in I-pipe (from 1.8-00 onward) is no
+longer handled in hardware, and it is probably better the way it is.
+
+Interestingly enough, I have not followed that discussion at all, but a
+discussion took place about interrupt handling and the RT patch on AT91,
+and looking at the patches sent to the linux-arm-kernel mailing list, it
+seems that these people came to the same conclusion: write to the
+AIC_EOICR should take place when acknowleding the interrupt, that is why
+I say that the I-pipe patch is probably better the way it is.
+
+-- 
+
+
+					    Gilles Chanteperdrix.
 
