@@ -1,5 +1,5 @@
-Message-ID: <2ff1a98a0712170226i778e62f8l3be1d4017fb97f10@domain.hid>
-Date: Mon, 17 Dec 2007 11:26:48 +0100
+Message-ID: <2ff1a98a0712170611q7a6174ejbd254d4827ecd673@domain.hid>
+Date: Mon, 17 Dec 2007 15:11:44 +0100
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 In-Reply-To: <530102.83624.qm@domain.hid>
 MIME-Version: 1.0
@@ -36,11 +36,9 @@ On Dec 17, 2007 11:23 AM, Michael Trimarchi <trimarchimichael@domain.hid> wrote:
 >
 > PS work with linux
 
-When there is no load yes, but are you sure this is still true under load ?
-I see discussions and patches on linux-arm-kernel about changing AT91
-serial interrupt handling. So, are you sure this works that well with
-Linux ?
-
+Do you observe this behaviour with I-pipe only or with Xenomai running
+? If we xenomai, could you try only booting Linux with I-pipe enabled
+?
 
 -- 
                                                Gilles Chanteperdrix
