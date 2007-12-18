@@ -1,16 +1,12 @@
-Message-ID: <476805F3.5000409@domain.hid>
-Date: Tue, 18 Dec 2007 19:40:03 +0200
-From: Maksym Veremeyenko <verem@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <0C9896A4B6D338488AD6FFFE58BAEF1001DB8EEF@serveur3.lgm.com>
-	<4762A57F.2020909@domain.hid>
-	<0C9896A4B6D338488AD6FFFE58BAEF1001EECC33@domain.hid>
-	<4767FA80.1060403@domain.hid>
-	<0C9896A4B6D338488AD6FFFE58BAEF1001EECCF9@domain.hid>
-In-Reply-To: <0C9896A4B6D338488AD6FFFE58BAEF1001EECCF9@domain.hid>
-Content-Type: text/plain; charset=KOI8-U; format=flowed
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] CP-118U RTDM Driver
+Date: Tue, 18 Dec 2007 18:40:30 +0100
+Message-ID: <0B45E93C5FF65740AEAE690BF3848B7A4AB2F0@domain.hid>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
+Subject: Re: [Xenomai-help] RTDM mmap and DMA
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,20 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: DOURNES Guillaume <Guillaume.DOURNES@lgm.fr>
-Cc: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-DOURNES Guillaume =D0=C9=DB=C5=D4:
-> Even if I add the baud_base parameter, the rxevent never appears.
-> Moreover when I test the mother board port, the rtser0 number increase =
-in cat /proc/xenomai/irq when the soft is running. But when I test a moxa=
- port, the rtser0 number stay always to the same value (7000 in my last t=
-est).
-could you provide complete modprobe command and output.
-could you check jumper setting on moxa board.
+Gilles Chanteperdrix wrote:
+>On Dec 18, 2007 1:47 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>> Perrine Martignoni wrote:
+>> > Thanks for the explanation.
+>> > But how can I do to allocate the DMA area ? with the Dma-api of
+Linux or
+>> > Xenomai offers the possibility to do this ? and what about memory
+heap with
+>> > H_DMA ?
+>> > I'm a bit confused with all of this.
+>>
+>> Yes, allocation and registration (pci_map*/pci_unmap*) is intended to
+>> run via normal Linux. H_DMA (if you were using heaps here), which
+leads
+>> to GFP_DMA, is only involved for old ISA hardware.
+>
+>GFP_DMA may also make a big difference on some ARMs. See
+>arch/arm/common/dmabounce.c for details.
+
+Not only ARMs. The H_DMA flag appears to work fine with PowerPCs (PQ).
+This is quite=20
+handy in order to obtain physically contiguous memory, from a user task
+context.=20
+The question though is whether there's the below 16 MB address mask in
+action,
+which is kind of stupid most of the time on embedded PowerPCs.
+The patch I sent previously about rt_heap_inquire is also useful to get=20
+the physical address of the buffer (hint hint: care to commit it?),
+which
+is needed by most embedded DMAs.
 
 --=20
-________________________________________
-Maksym Veremeyenko
-
+Stephane
 
