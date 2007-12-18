@@ -1,15 +1,15 @@
-content-class: urn:content-classes:message
+Message-ID: <476805F3.5000409@domain.hid>
+Date: Tue, 18 Dec 2007 19:40:03 +0200
+From: Maksym Veremeyenko <verem@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: base64
-Date: Tue, 18 Dec 2007 18:25:55 +0100
-Message-ID: <0C9896A4B6D338488AD6FFFE58BAEF1001EECCF9@domain.hid>
 References: <0C9896A4B6D338488AD6FFFE58BAEF1001DB8EEF@serveur3.lgm.com>
 	<4762A57F.2020909@domain.hid>
 	<0C9896A4B6D338488AD6FFFE58BAEF1001EECC33@domain.hid>
 	<4767FA80.1060403@domain.hid>
-From: "DOURNES Guillaume" <Guillaume.DOURNES@lgm.fr>
+	<0C9896A4B6D338488AD6FFFE58BAEF1001EECCF9@domain.hid>
+In-Reply-To: <0C9896A4B6D338488AD6FFFE58BAEF1001EECCF9@domain.hid>
+Content-Type: text/plain; charset=KOI8-U; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] CP-118U RTDM Driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -20,28 +20,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Maksym Veremeyenko <verem@domain.hid>
+To: DOURNES Guillaume <Guillaume.DOURNES@lgm.fr>
 Cc: xenomai@xenomai.org
 
-RXZlbiBpZiBJIGFkZCB0aGUgYmF1ZF9iYXNlIHBhcmFtZXRlciwgdGhlIHJ4ZXZlbnQgbmV2ZXIg
-YXBwZWFycy4NCk1vcmVvdmVyIHdoZW4gSSB0ZXN0IHRoZSBtb3RoZXIgYm9hcmQgcG9ydCwgdGhl
-IHJ0c2VyMCBudW1iZXIgaW5jcmVhc2UgaW4gY2F0IC9wcm9jL3hlbm9tYWkvaXJxIHdoZW4gdGhl
-IHNvZnQgaXMgcnVubmluZy4gQnV0IHdoZW4gSSB0ZXN0IGEgbW94YSBwb3J0LCB0aGUgcnRzZXIw
-IG51bWJlciBzdGF5IGFsd2F5cyB0byB0aGUgc2FtZSB2YWx1ZSAoNzAwMCBpbiBteSBsYXN0IHRl
-c3QpLg0KDQogDQpHdWlsbGF1bWUgRE9VUk5FUyANCg0KLS0tLS1NZXNzYWdlIGQnb3JpZ2luZS0t
-LS0tDQpEZcKgOiBNYWtzeW0gVmVyZW1leWVua28gW21haWx0bzp2ZXJlbUBtMXN0ZXJlby50dl0g
-DQpFbnZvecOpwqA6IG1hcmRpIDE4IGTDqWNlbWJyZSAyMDA3IDE3OjUxDQrDgMKgOiBET1VSTkVT
-IEd1aWxsYXVtZQ0KQ2PCoDogeGVub21haS1oZWxwQGduYS5vcmcNCk9iamV0wqA6IFJlOiBbWGVu
-b21haS1oZWxwXSBDUC0xMThVIFJURE0gRHJpdmVyDQoNCkRPVVJORVMgR3VpbGxhdW1lINC/0LjR
-iNC10YI6DQoNCj4gDQo+IG1vZHByb2JlIHhlbm9fMTY1NTBBIGlvPTB4YmEzMCBpcnE9NQ0KPiBG
-QVRBTDogRXJyb3IgaW5zZXJ0aW5nIHhlbm9fMTY1NTBBICgvbGliL21vZHVsZXMvMi42LjIzLXhl
-bm9tYWkva2VybmVsL2RyaXZlcnMveGVub21haS9zZXJpYWwveGVub18xNjU1MEEua28pOiBEZXZp
-Y2Ugb3IgcmVzb3VyY2UgYnVzeQ0KPiANCj4gVGhlIG1vZHByb2JlIHdvcmsgb25seSBpZiBJIHJl
-bW92ZSB0aGUgbXhzZXIgZHJpdmVyIGJ5IHJtbW9kIG14c2VyDQp5b3Ugc2hvdWxkIHJtbW9kIG14
-c2VyDQoNCg0KPiBJbiB0aGlzIGNhc2UsIHRoZSBjYXB0YWluIGV4YW1wbGUgaXMgcnVubmluZyBj
-b3JyZWN0bHksIGJ1dCB0aGUgcnhldmVudCBuZXZlciBoYXBwZW5zLCB3aGVyZWFzIHRoaXMgZXhh
-bXBsZSB3b3JrIGNvcnJlY3RseSB3aXRoIG1vdGhlciBib2FyZCBwb3J0Lg0KRG8gbm90IGZvcmdl
-dCBhYm91dCAqYmF1ZF9iYXNlKiBwYXJhbWV0ZXI6IA0KaHR0cDovL3d3dy54ZW5vbWFpLm9yZy9p
-bmRleC5waHAvMTY1NTBBDQoNCg0KLS0gDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fDQpNYWtzeW0gVmVyZW1leWVua28NCg0K
+DOURNES Guillaume =D0=C9=DB=C5=D4:
+> Even if I add the baud_base parameter, the rxevent never appears.
+> Moreover when I test the mother board port, the rtser0 number increase =
+in cat /proc/xenomai/irq when the soft is running. But when I test a moxa=
+ port, the rtser0 number stay always to the same value (7000 in my last t=
+est).
+could you provide complete modprobe command and output.
+could you check jumper setting on moxa board.
+
+--=20
+________________________________________
+Maksym Veremeyenko
+
 
