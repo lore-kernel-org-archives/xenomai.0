@@ -1,15 +1,14 @@
-Message-ID: <7289437c0712180611i45662e10k1f02c66e584ec99b@domain.hid>
-Date: Tue, 18 Dec 2007 15:11:52 +0100
-From: "Perrine Martignoni" <perrmart@domain.hid>
-In-Reply-To: <4767C175.7060907@domain.hid>
+content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_10000_16482018.1197987112756"
-References: <7289437c0712140324s41dd3255u9534c606bc510ec7@domain.hid>
-	<476792F5.6030108@domain.hid>
-	<7289437c0712180212l6d47beb5r5766386d333456c1@domain.hid>
-	<4767C175.7060907@domain.hid>
-Subject: Re: [Xenomai-help] RTDM mmap and DMA
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
+Date: Tue, 18 Dec 2007 15:27:21 +0100
+Message-ID: <0C9896A4B6D338488AD6FFFE58BAEF1001EECC33@domain.hid>
+References: <0C9896A4B6D338488AD6FFFE58BAEF1001DB8EEF@serveur3.lgm.com>
+	<4762A57F.2020909@domain.hid>
+From: "DOURNES Guillaume" <Guillaume.DOURNES@lgm.fr>
+Subject: Re: [Xenomai-help] CP-118U RTDM Driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,50 +18,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
+To: Maksym Veremeyenko <verem@domain.hid>
+Cc: xenomai@xenomai.org
 
-------=_Part_10000_16482018.1197987112756
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-So, if I understand, I have to use the Dma Api of Linux (linux/dma-mapping.h)
-to allocate a dma buffer and then call rtdm_mmap_to_user to map it in user
-space.
-Isn't it disadvantageous to do it in regular Linux ?
-
-
-On Dec 18, 2007 1:47 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-
-> Perrine Martignoni wrote:
-> > Thanks for the explanation.
-> > But how can I do to allocate the DMA area ? with the Dma-api of Linux or
-> > Xenomai offers the possibility to do this ? and what about memory heap
-> with
-> > H_DMA ?
-> > I'm a bit confused with all of this.
->
-> Yes, allocation and registration (pci_map*/pci_unmap*) is intended to
-> run via normal Linux. H_DMA (if you were using heaps here), which leads
-> to GFP_DMA, is only involved for old ISA hardware.
->
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT SE 2
-> Corporate Competence Center Embedded Linux
->
-
-------=_Part_10000_16482018.1197987112756
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-So, if I understand, I have to use the Dma Api of Linux (linux/dma-mapping.h) to allocate a dma buffer and then call rtdm_mmap_to_user to map it in user space.<br>Isn&#39;t it disadvantageous to do it in regular Linux ?<br>
-<br><br><div class="gmail_quote">On Dec 18, 2007 1:47 PM, Jan Kiszka &lt;<a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt; wrote:<br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-<div class="Ih2E3d">Perrine Martignoni wrote:<br>&gt; Thanks for the explanation.<br>&gt; But how can I do to allocate the DMA area ? with the Dma-api of Linux or<br>&gt; Xenomai offers the possibility to do this ? and what about memory heap with
-<br>&gt; H_DMA ?<br>&gt; I&#39;m a bit confused with all of this.<br><br></div>Yes, allocation and registration (pci_map*/pci_unmap*) is intended to<br>run via normal Linux. H_DMA (if you were using heaps here), which leads
-<br>to GFP_DMA, is only involved for old ISA hardware.<br><br>Jan<br><font color="#888888"><br>--<br>Siemens AG, Corporate Technology, CT SE 2<br>Corporate Competence Center Embedded Linux<br></font></blockquote></div><br>
-
-------=_Part_10000_16482018.1197987112756--
+T25seSBvbmUgVVNCIHBvcnQgc2VlbXMgdG8gYmUgaW5mbHVlbmNlZCwgc28gSSBtb3ZlIG15IHVz
+YiBtb3VzZSBwb3J0LCBhbmQgdGhpcyBwcm9ibGVtIGlzIGhpZGRlbi4NCg0KQnV0IGV2ZXJ5IGlz
+IG5vdCBjbGVhbi4gSW4gZmFjdCwgSSB0cmllZCAxNjU1MEEgdmVyc2lvbiAxLjUuMSwgYnV0IEkg
+aGF2ZSB0aGUgc2FtZSBwcm9ibGVtIHdpdGggdmVyc2lvbiAxLjQuMS4NCg0KSSB1c2UgdGhlIGNh
+cHRhaW4gZXhhbXBsZSB0byB0ZXN0IHRoZSBSUzIzMiBjb21tdW5pY2F0aW9uIG9uIG9ubHkgb25l
+IHBvcnQgZm9yIHRoZSBtb21lbnQuDQoNCldoZW4gSSB0cnkgd2l0aCB0aGUgbW90aGVyIGJvYXJk
+IHBvcnQgSSBoYXZlIG5vIHByb2JsZW0sIGJ1dCB3aXRoIG1veGEgQ1AtMTE4VSBwb3J0IHRoZSBl
+eGFtcGxlIGRvZXMgbm90IHdvcmsuDQoNCmxzcGNpIC12DQoNCjAyOjA5LjAgU2VyaWFsIGNvbnRy
+b2xsZXI6IE1veGEgVGVjaG5vbG9naWVzIENvIEx0ZCBVbmtub3duIGRldmljZSAxMTgwIChwcm9n
+LWlmIDAyIFsxNjU1MF0pDQogICAgICAgIFN1YnN5c3RlbTogTW94YSBUZWNobm9sb2dpZXMgQ28g
+THRkIFVua25vd24gZGV2aWNlIDExODANCiAgICAgICAgRmxhZ3M6IG1lZGl1bSBkZXZzZWwsIElS
+USA1DQogICAgICAgIEkvTyBwb3J0cyBhdCBiOTAwIFtzaXplPTMyXQ0KICAgICAgICBJL08gcG9y
+dHMgYXQgYmEwMCBbc2l6ZT02NF0NCiAgICAgICAgSS9PIHBvcnRzIGF0IGJiMDAgW3NpemU9MTZd
+DQoNCnNldHNlcmlhbCAvZGV2L3R0eU1JNg0KL2Rldi90dHlNSTYsIFVBUlQ6IDE2NTUwQSwgUG9y
+dDogMHhiYTMwLCBJUlE6IDUNCg0Kc2V0c2VyaWFsIC9kZXYvdHR5UzANCi9kZXYvdHR5UzAsIFVB
+UlQ6IHVua25vd24sIFBvcnQ6IDB4MDNmOCwgSVJROiA0DQoNCnNldHNlcmlhbCAvZGV2L3R0eU1J
+NiB1YXJ0IG5vbmUNCg0Kc2V0c2VyaWFsIC9kZXYvdHR5TUk2DQovZGV2L3R0eU1JNiwgVUFSVDog
+VW5rbm93biwgUG9ydDogMHhiYTMwLCBJUlE6IDUNCg0KbW9kcHJvYmUgeGVub18xNjU1MEEgaW89
+MHhiYTMwIGlycT01DQpGQVRBTDogRXJyb3IgaW5zZXJ0aW5nIHhlbm9fMTY1NTBBICgvbGliL21v
+ZHVsZXMvMi42LjIzLXhlbm9tYWkva2VybmVsL2RyaXZlcnMveGVub21haS9zZXJpYWwveGVub18x
+NjU1MEEua28pOiBEZXZpY2Ugb3IgcmVzb3VyY2UgYnVzeQ0KDQpUaGUgbW9kcHJvYmUgd29yayBv
+bmx5IGlmIEkgcmVtb3ZlIHRoZSBteHNlciBkcml2ZXIgYnkgcm1tb2QgbXhzZXINCg0KSW4gdGhp
+cyBjYXNlLCB0aGUgY2FwdGFpbiBleGFtcGxlIGlzIHJ1bm5pbmcgY29ycmVjdGx5LCBidXQgdGhl
+IHJ4ZXZlbnQgbmV2ZXIgaGFwcGVucywgd2hlcmVhcyB0aGlzIGV4YW1wbGUgd29yayBjb3JyZWN0
+bHkgd2l0aCBtb3RoZXIgYm9hcmQgcG9ydC4NCg0KSSBzdXBwb3NlIHRoYXQgaXMgYmVjYXVzZSB3
+aGVuIEkgcmVtb3ZlIHRoZSBteHNlciBkcml2ZXIsIHRoZSBib2FyZCBjYW4gYmVjb21lIG5vdCBz
+dXBwbHlpbmcuDQoNClNvLCBteSBxdWVzdGlvbiBpcyBob3cgY2FuIEkgdXNlIG1vZHByb2JlIHdp
+dGhvdXQgdXNlIHJtbW9kIG14c2VyID8NCg0KUmVtYXJrczogSWYgSSB0cnkgYWdhaW4gc2V0c2Vy
+aWFsIC9kZXYvdHR5TUk2IHVhcnQgbm9uZSBiZWZvcmUgcm1tb2QgbXhzZXIsIHRoZSByZXNwb25z
+ZSBpcyA6DQpDYW5ub3Qgc2V0IHNlcmlhbCBpbmZvIDogSW5wdXQvb3V0cHV0IGVycm9yDQoNCk1v
+cmVvdmVyIEkgdHJpZWQgdG8gY2hhbmdlIHRoZSBtb3hhIGJvYXJkLCBidXQgdGhlIHByb2JsZW0g
+cGVyc2lzdC4NCg0KSGF2ZSB5b3UgYW4gaWRlYSB0byByZXNvbHZlIG15IHByb2JsZW0NCiANCkd1
+aWxsYXVtZSBET1VSTkVTIA0KSW5nw6luaWV1cg0KMTEgQXZlbnVlIERpZGllciBEYXVyYXQgDQoz
+MTcwMCBCbGFnbmFjDQpUZWw6IDA1IDYxIDE2IDkyIDgyDQpGYXg6IDA1IDYxIDE2IDkyIDgzDQp3
+d3cubGdtLmZyDQoNCi0tLS0tTWVzc2FnZSBkJ29yaWdpbmUtLS0tLQ0KRGXCoDogTWFrc3ltIFZl
+cmVtZXllbmtvIFttYWlsdG86dmVyZW1AbTFzdGVyZW8udHZdIA0KRW52b3nDqcKgOiB2ZW5kcmVk
+aSAxNCBkw6ljZW1icmUgMjAwNyAxNjo0Nw0Kw4DCoDogRE9VUk5FUyBHdWlsbGF1bWUNCkNjwqA6
+IHhlbm9tYWktaGVscEBnbmEub3JnDQpPYmpldMKgOiBSZTogW1hlbm9tYWktaGVscF0gQ1AtMTE4
+VSBSVERNIERyaXZlcg0KDQpET1VSTkVTIEd1aWxsYXVtZSDQv9C40YjQtdGCOg0KDQo+IEkgY2hv
+c2UgYSBNb3hhIENQLTExOFUgYm9hcmQgb24gbXkgcHJvamVjdCwgdG8gYmUgYWJsZSB0byBkcml2
+ZSB0aGlzIFBDSSANCj4gYm9hcmQgd2l0aCB0aGUgeGVub18xNjU1MEEgbW9kdWxlLg0KaSBoYWQg
+YSBzdWNjZXNzIHdpdGggdGhpcyBib2FyZCBhbmQgeGVub18xNjU1MEEgbW9kdWxlLg0KaGF2ZSBh
+IGxvb2sgYXQ6IGh0dHA6Ly93d3cueGVub21haS5vcmcvaW5kZXgucGhwLzE2NTUwQSBhbmQgaWYg
+bHNwY2kgLXYgDQpyZXR1cm4gdGhlIHNhbWUuDQoNCj4gQnV0IHdoZW4gdGhlIHRhc2sgaXMgc3Rh
+cnRlZCwgbXkgY29tcHV0ZXIgYmVjb21lIHZlcnkgc2xvdywgYXMgYSBwcm9jZXNzIA0KPiBlYXRz
+IGEgbG90IG9mIENQVSBsb2FkLg0KDQo+IE15IHF1ZXN0aW9uIGlzIHdoeSB0aGUgQ1BVIGJlY29t
+ZSB2ZXJ5IGxvYWRlZCwgd2hlcmVhcyBteSBzb2Z0d2FyZSBkbyANCj4gbm90aGluZy4NCg0KY2hl
+Y2sgaWYgKnJlYWRfdGFza19wcm9jKiBlYXQgYWxsIENQVQ0KY2hlY2sgZm9yIHRpbWVvdXRzIHNl
+dHRpbmcgb24gc2VyaWFsIHBvcnQuDQoNCg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXw0KTWFrc3ltIFZlcmVtZXllbmtvDQoNCg==
 
