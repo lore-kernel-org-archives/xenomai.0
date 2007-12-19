@@ -1,15 +1,10 @@
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
-Date: Wed, 19 Dec 2007 01:19:11 +0100
-References: <f8f856500712180507q16d5c21bp56b45ec23ae5d36@domain.hid>
-In-Reply-To: <f8f856500712180507q16d5c21bp56b45ec23ae5d36@domain.hid>
+Message-ID: <35d9c6ed0712181747i1487e9a4v7d15fa8c09802131@domain.hid>
+Date: Wed, 19 Dec 2007 09:47:33 +0800
+From: "sarra risto" <sarra.risto@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200712190119.11578.berlemont.hauw@domain.hid>
-Subject: Re: [Xenomai-help] Kernel hangs in initramfs with ipipe activated
-	(arch=ppc)
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_14203_21475137.1198028853864"
+Subject: [Xenomai-help] rt_intr_create -38
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,78 +16,329 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
+------=_Part_14203_21475137.1198028853864
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 Hi,
+In http://www.captain.at/xenomai-parallel-port-interrupt.php, there is a
+example about capturing the parallel port interrupt. I have a great interest
+in it, so I just want to have a try, but when I compile the code, I found a
+error:
+start
+rt_intr_create=-38
+error while rt_task_wait_period, code -110
+0 interrupts occured
+0 interrupts occured
+0 interrupts occured
+0 interrupts occured
+0 interrupts occured
+0 interrupts occured
+0 interrupts occured
+0 interrupts occured
+0 interrupts occured
+cleanup
+end
 
->
->
-> Oops: kernel access of bad area, sig: 11 [#1]
-> NIP: 00000000 LR: c0005854 CTR: 00000000
-> REGS: c0fefc10 TRAP: 0400   Not tainted  (2.6.23.6)
-> MSR: 40001032 <ME,IR,DR>  CR: 24004028  XER: 00000000
-> TASK = c0f99030[12] 'sh' THREAD: c0fee000
-> GPR00: 00000000 c0fefcc0 c0f99030 00000014 c01ce410 00100000 00000000
-> 00000000 GPR08: 00000000 c01cdec0 c01cec10 c01cebc0 c0fee1f0 cfefffff
-> 00ffe000 007fff14 GPR16: 00000000 00000001 c01b0000 c01d0000 c01f0000
-> 00000002 c00d09a4 c0f4600c GPR24: 0000003d c01d7b9c 000001b0 00000000
-> 00000140 c0200a44 00000014 c0200a40 NIP [00000000] 0x0
-> LR [c0005854] __ipipe_ack_irq+0x28/0x3c
-> Call Trace:
-> [c0fefcc0] [c0200a44] 0xc0200a44 (unreliable)
-> [c0fefcd0] [c0005ba0] __ipipe_handle_irq+0x124/0x140
-> [c0fefd00] [c0005dd4] __ipipe_grab_irq+0x3c/0xac
-> [c0fefd20] [c0003154] __ipipe_ret_from_except+0x0/0xc
-> [c0fefde0] [c00d9400] cpm_uart_start_tx+0x38/0xa8
-> [c0fefe00] [c00d4c40] __uart_start+0x64/0x74
-> [c0fefe10] [c00d5c84] uart_start+0x30/0x4c
-> [c0fefe30] [c00d5d9c] uart_write+0xf8/0x130
-> [c0fefe60] [c00d0bac] write_chan+0x208/0x3a4
-> [c0fefeb0] [c00cd530] tty_write+0x170/0x238
-> [c0fefef0] [c0056128] vfs_write+0xcc/0x108
-> [c0feff10] [c0056a94] sys_write+0x4c/0x90
-> [c0feff40] [c0002900] ret_from_syscall+0x0/0x38
+it seems it is because the return value of rt_intr_create() API  is not
+correct, besides, there is a notice that you should make the
 
-Just an idea which may lead to nowhere... :
+CONFIG_XENO_OPT_NATIVE_INTR=y otherwise it fails with ENOSYS (38)
 
-Considering this oops, we might guess the bug occured in __ipipe_ack_irq(), in 
-this function we may have called NULL function pointer (NIP == NULL).
+I met this problem firstly, but I recompile the kernel and xenomai
+again,  but I still met the above errors , does somebody can disscuss
+with me? Thank you for your attention!
 
-After having a look at this function's content: 
 
-int __ipipe_ack_irq(unsigned irq)
-{
-	irq_desc_t *desc = irq_desc + irq;
-	desc->ipipe_ack(irq, desc);
-	return 1;
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <sys/io.h>
+#include <sys/mman.h>
+
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+
+#include <native/task.h>
+#include <native/queue.h>
+#include <native/intr.h>
+#include <native/pipe.h>
+
+
+#define STACK_SIZE 8192
+#define STD_PRIO 1
+#define STD_PRIORITY 1
+#define HIGH_PRIORITY 99
+#define MID_PRIORITY 50
+#define BASEPORT 0x378
+#define PARPORTINT 7
+#define PIPE_MINOR 0
+
+RT_TASK print_task_ptr;
+
+RT_TASK square_task_ptr;
+RT_TASK interrupt_task_ptr;
+RT_INTR intr_desc; //set rt_intr task
+RT_PIPE mypipe;//set rt_pipe task
+int int_count = 0;
+int end = 0;
+int test;
+
+RTIME task_period_ns =   1000000000llu;
+
+RTIME print_period_ns =  1000000000llu;
+RTIME square_period_ns =  300000000llu;
+
+void interrupt_task(void *cookie) {
+        int err = 0;
+        int error;
+error = rt_pipe_create(&mypipe, "intpipe", PIPE_MINOR, 0);
+
+while (!end) {
+                err = rt_intr_wait(&intr_desc, TM_INFINITE);
+                printf("err = %d\n", err);
+                if (err > 0) {
+                        int_count++;
+
+                printf("int_count = %d\n", int_count);
+                        rt_pipe_write(&mypipe, &int_count,
+sizeof(int_count), P_NORMAL);
+                } else {
+}
+                rt_intr_enable (&intr_desc);
+
+        }
+        rt_pipe_delete(&mypipe);
+}
+void print_task(void *cookie) {
+        unsigned long overrun;
+        int ret;
+        ret = rt_task_set_periodic(NULL, TM_NOW,
+rt_timer_ns2ticks(print_period_ns));
+
+        if (ret) {
+                printf("error while set periodic, code %d\n",ret);
+return;
+        }
+        while (!end) {
+                ret = rt_task_wait_period(&overrun);
+                if (ret) {
+
+                        printf("error while rt_task_wait_period, code
+%d\n",ret);
+                        return;
+                }
+                printf("%d interrupts occured\n", int_count);
+
+                fflush(NULL);
+        }
+}
+void squaretask(void *cookie) {
+        unsigned long overrun;
+        int ret = rt_task_set_periodic(NULL, TM_NOW,
+rt_timer_ns2ticks(square_period_ns));
+        if (ret) {
+
+                printf("error while set periodic, code %d\n",ret);
+                return;
+        }
+        ret = rt_task_wait_period(&overrun);
+return;
+        }
+        while (!end) {
+
+                ret = rt_task_wait_period(&overrun);
+                if (ret) {
+                        printf("error while rt_task_wait_period, code
+%d\n",ret);
+                        return;
+
+                }
+                printf("%d interrupts occured\n", int_count);
+                fflush(NULL);
+        }
+}
+void squaretask(void *cookie) {
+        unsigned long overrun;
+        int ret = rt_task_set_periodic(NULL, TM_NOW,
+rt_timer_ns2ticks(square_period_ns));
+
+        if (ret) {
+                printf("error while set periodic, code %d\n",ret);
+                return;
+        }
+        ret = rt_task_wait_period(&overrun);
+        if (ret) {
+printf("error while rt_task_wait_period, code %d\n",ret);
+
+                return;
+        }
+        while (!end) {
+                outb_p(0xff, BASEPORT);
+                ret = rt_task_wait_period(&overrun);
+                if (ret) {
+                        printf("error while rt_task_wait_period, code
+%d\n",ret);
+
+                        return;
+                }
+                outb_p(0x00, BASEPORT);
+                ret = rt_task_wait_period(&overrun);
+                if (ret) {
+                        printf("error while rt_task_wait_period, code
+%d\n",ret);
+
+                        return;
+                }
+        }
+}
+void clean_exit(int dummy) {
+        printf("cleanup\n");
+ printf("error while rt_task_wait_period, code %d\n",ret);
+
+                return;
+        }
+        while (!end) {
+                outb_p(0xff, BASEPORT);
+                ret = rt_task_wait_period(&overrun);
+                if (ret) {
+                        printf("error while rt_task_wait_period, code
+%d\n",ret);
+
+                        return;
+                }
+                outb_p(0x00, BASEPORT);
+                ret = rt_task_wait_period(&overrun);
+                if (ret) {
+                        printf("error while rt_task_wait_period, code
+%d\n",ret);
+
+                        return;
+                }
+        }
+}
+void clean_exit(int dummy) {
+        printf("cleanup\n");
+       rt_task_delete(&print_task_ptr);
+        rt_task_delete(&square_task_ptr);
+
+        rt_task_delete(&interrupt_task_ptr);
+        rt_intr_delete(&intr_desc);
+        rt_pipe_delete(&mypipe);
+        printf("end\n");
 }
 
-it seems the field "ipipe_ack" of the irq descriptor was not properly filled 
-at initialization time. Therefore a piece of code like the one below is 
-missing in your IRQ setup function.
+int main(int argc, char *argv[]) {
 
- 	/* Init descriptors */
--	for (i = offset; i < NumSources + offset; i++)
-+	for (i = offset; i < NumSources + offset; i++) {
- 		irq_desc[i].chip = &open_pic;
-+#ifdef CONFIG_IPIPE
-+		/* We want mask_ack/unmask for all. */
-+		irq_desc[i].ipipe_ack = &__ipipe_ack_level_irq;
-+		irq_desc[i].ipipe_end = &__ipipe_end_level_irq;
-+#endif
-+	}
+        int err, fd;
+        printf("start\n");
+        signal(SIGTERM, clean_exit);
+        signal(SIGINT, clean_exit);
+if (iopl(3)) {
+        printf("iopl err\n");
+        exit(1);
 
-In order to test we are in the right way , you can make an ugly modification 
-in the function ipipe_virtualize_irq() in kernel/ipipe/core.c: 
+}
+        outb_p(0x10, BASEPORT + 2);
+       // err = rt_intr_create(&intr_desc, "parint", PARPORTINT ,I_NOAUTOENA);
+        mlockall(MCL_CURRENT | MCL_FUTURE);
+        err = rt_intr_create(&intr_desc, "parint", PARPORTINT, I_NOAUTOENA);
 
-	ipd->irqs[irq].handler = handler;
-	ipd->irqs[irq].cookie = cookie;
--	ipd->irqs[irq].acknowledge = acknowledge;
-+	ipd->irqs[irq].acknowledge = ipipe_root_domain->irqs[irq].acknowledge;
-	ipd->irqs[irq].control = modemask;
 
-Thanks to this change, you will not go through __ipipe_ack_irq().
 
-I hope I have not said too much rubbish...
 
-Alexis.
+if (err) {
+                printf("rt_intr_create = %d\n", err);
+                return 0;
+        }
+        rt_intr_enable(&intr_desc);
 
+        err = rt_task_spawn(&square_task_ptr, "Square", STACK_SIZE, STD_PRIO, 0,
+
+                         &squaretask, NULL);
+        if (err) {
+                printf("error rt_task_spawn\n");
+                return 0;
+        }
+
+        err = rt_task_spawn(&interrupt_task_ptr, "Int", STACK_SIZE, STD_PRIO, 0,
+
+                              &interrupt_task, NULL);
+        if (err) {
+                printf("error rt_task_spawn 2\n");
+                return 0;
+        }
+
+        err = rt_task_spawn(&print_task_ptr, "Printer", STACK_SIZE,
+STD_PRIO, 0,&print_task, NULL);
+
+        if (err) {
+                printf("error rt_task_spawn 3\n");
+                return 0;
+        }
+        fd = open("/dev/rtp0", O_RDONLY);
+        while (!end) {
+                err = read(fd, &test, sizeof(test));
+
+                if (err == -1) {
+                        printf("read error\n");
+                } else {
+                        printf("Read from pipe: %d\n", test);
+        }
+}
+
+        fflush(NULL);
+        return 0;
+}
+
+------=_Part_14203_21475137.1198028853864
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hi, <br>In <a href="http://www.captain.at/xenomai-parallel-port-interrupt.php" target="_blank">http://www.captain.at/xenomai-parallel-port-interrupt.php</a>, there is a example about <span>capturing
+the parallel port interrupt. I have a great interest in it, so I just
+want to have a try, but when I compile the code, I found a error:
+<br>start<br>rt_intr_create=-38<br>error while rt_task_wait_period, code -110<br>0 interrupts occured<br>0 interrupts occured<br>0 interrupts occured<br>0 interrupts occured<br>0 interrupts occured<br>0 interrupts occured
+<br>0 interrupts occured<br>0 interrupts occured<br>0 interrupts occured<br>cleanup<br>end<br><br>it
+seems it is because the return value of rt_intr_create() API&nbsp; is not
+correct, besides, there is a notice that you should make the </span><span><pre>CONFIG_XENO_OPT_NATIVE_INTR=y otherwise it fails with ENOSYS (38)<br><br>I met this problem firstly, but I recompile the kernel and xenomai again,  but I still met the above errors , does somebody can disscuss with me? Thank you for your attention!
+<br><br><br>#include &lt;stdio.h&gt;<br>#include &lt;unistd.h&gt;<br>#include &lt;stdlib.h&gt;<br>#include &lt;string.h&gt;<br>#include &lt;signal.h&gt;<br>#include &lt;sys/time.h&gt;<br>#include &lt;sys/io.h&gt;<br>#include &lt;sys/mman.h&gt;
+<br><br>#include &lt;sys/types.h&gt;<br>#include &lt;sys/ioctl.h&gt;<br>#include &lt;fcntl.h&gt;<br><br>#include &lt;native/task.h&gt;<br>#include &lt;native/queue.h&gt;<br>#include &lt;native/intr.h&gt;<br>#include &lt;native/pipe.h&gt;
+<br><br><br>#define STACK_SIZE 8192<br>#define STD_PRIO 1<br>#define STD_PRIORITY 1<br>#define HIGH_PRIORITY 99<br>#define MID_PRIORITY 50<br>#define BASEPORT 0x378<br>#define PARPORTINT 7<br>#define PIPE_MINOR 0<br><br>RT_TASK print_task_ptr;
+<br><br>RT_TASK square_task_ptr;<br>RT_TASK interrupt_task_ptr;<br>RT_INTR intr_desc; //set rt_intr task<br>RT_PIPE mypipe;//set rt_pipe task<br>int int_count = 0;<br>int end = 0;<br>int test;<br><br>RTIME task_period_ns =   1000000000llu;
+<br><br>RTIME print_period_ns =  1000000000llu;<br>RTIME square_period_ns =  300000000llu;<br><br>void interrupt_task(void *cookie) {<br>        int err = 0;<br>        int error;<br>error = rt_pipe_create(&amp;mypipe, &quot;intpipe&quot;, PIPE_MINOR, 0);
+<br><br>while (!end) {<br>                err = rt_intr_wait(&amp;intr_desc, TM_INFINITE);<br>                printf(&quot;err = %d\n&quot;, err);<br>                if (err &gt; 0) {<br>                        int_count++;
+<br><br>                printf(&quot;int_count = %d\n&quot;, int_count);<br>                        rt_pipe_write(&amp;mypipe, &amp;int_count, sizeof(int_count), P_NORMAL);<br>                } else {<br>}<br>                rt_intr_enable (&amp;intr_desc);
+<br><br>        }<br>        rt_pipe_delete(&amp;mypipe);<br>}<br>void print_task(void *cookie) {<br>        unsigned long overrun;<br>        int ret;<br>        ret = rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(print_period_ns));
+<br><br>        if (ret) {<br>                printf(&quot;error while set periodic, code %d\n&quot;,ret);<br>return;<br>        }<br>        while (!end) {<br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {
+<br><br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);<br>                        return;<br>                }<br>                printf(&quot;%d interrupts occured\n&quot;, int_count);
+<br><br>                fflush(NULL);<br>        }<br>}<br>void squaretask(void *cookie) {<br>        unsigned long overrun;<br>        int ret = rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(square_period_ns));<br>
+        if (ret) {<br><br>                printf(&quot;error while set periodic, code %d\n&quot;,ret);<br>                return;<br>        }<br>        ret = rt_task_wait_period(&amp;overrun);<br>return;<br>        }<br>
+        while (!end) {<br><br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {<br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);<br>                        return;
+<br><br>                }<br>                printf(&quot;%d interrupts occured\n&quot;, int_count);<br>                fflush(NULL);<br>        }<br>}<br>void squaretask(void *cookie) {<br>        unsigned long overrun;<br>
+        int ret = rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(square_period_ns));<br><br>        if (ret) {<br>                printf(&quot;error while set periodic, code %d\n&quot;,ret);<br>                return;
+<br>        }<br>        ret = rt_task_wait_period(&amp;overrun);<br>        if (ret) {<br>printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);<br><br>                return;<br>        }<br>        while (!end) {
+<br>                outb_p(0xff, BASEPORT);<br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {<br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);
+<br><br>                        return;<br>                }<br>                outb_p(0x00, BASEPORT);<br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {<br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);
+<br><br>                        return;<br>                }<br>        }<br>}<br>void clean_exit(int dummy) {<br>        printf(&quot;cleanup\n&quot;);<br> printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);
+<br><br>                return;<br>        }<br>        while (!end) {<br>                outb_p(0xff, BASEPORT);<br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {<br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);
+<br><br>                        return;<br>                }<br>                outb_p(0x00, BASEPORT);<br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {<br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);
+<br><br>                        return;<br>                }<br>        }<br>}<br>void clean_exit(int dummy) {<br>        printf(&quot;cleanup\n&quot;);<br>       rt_task_delete(&amp;print_task_ptr);<br>        rt_task_delete(&amp;square_task_ptr);
+<br><br>        rt_task_delete(&amp;interrupt_task_ptr);<br>        rt_intr_delete(&amp;intr_desc);<br>        rt_pipe_delete(&amp;mypipe);<br>        printf(&quot;end\n&quot;);<br>}<br><br>int main(int argc, char *argv[]) {
+<br><br>        int err, fd;<br>        printf(&quot;start\n&quot;);<br>        signal(SIGTERM, clean_exit);<br>        signal(SIGINT, clean_exit);<br>if (iopl(3)) {<br>        printf(&quot;iopl err\n&quot;);<br>        exit(1);
+<br><br>}<br>        outb_p(0x10, BASEPORT + 2);<br>       // err = rt_intr_create(&amp;intr_desc, &quot;parint&quot;, PARPORTINT ,I_NOAUTOENA);<br>        mlockall(MCL_CURRENT | MCL_FUTURE);<br>        err = rt_intr_create(&amp;intr_desc, &quot;parint&quot;, PARPORTINT, I_NOAUTOENA);
+<br><br><br><br><br>if (err) {<br>                printf(&quot;rt_intr_create = %d\n&quot;, err);<br>                return 0;<br>        }<br>        rt_intr_enable(&amp;intr_desc);<br><br>        err = rt_task_spawn(&amp;square_task_ptr, &quot;Square&quot;, STACK_SIZE, STD_PRIO, 0,
+<br><br>                         &amp;squaretask, NULL);<br>        if (err) {<br>                printf(&quot;error rt_task_spawn\n&quot;);<br>                return 0;<br>        }<br><br>        err = rt_task_spawn(&amp;interrupt_task_ptr, &quot;Int&quot;, STACK_SIZE, STD_PRIO, 0,
+<br><br>                              &amp;interrupt_task, NULL);<br>        if (err) {<br>                printf(&quot;error rt_task_spawn 2\n&quot;);<br>                return 0;<br>        }<br><br>        err = rt_task_spawn(&amp;print_task_ptr, &quot;Printer&quot;, STACK_SIZE, STD_PRIO, 0,&amp;print_task, NULL);
+<br><br>        if (err) {<br>                printf(&quot;error rt_task_spawn 3\n&quot;);<br>                return 0;<br>        }<br>        fd = open(&quot;/dev/rtp0&quot;, O_RDONLY);<br>        while (!end) {<br>                err = read(fd, &amp;test, sizeof(test));
+<br><br>                if (err == -1) {<br>                        printf(&quot;read error\n&quot;);<br>                } else {<br>                        printf(&quot;Read from pipe: %d\n&quot;, test);<br>        }<br>
+}<br><br>        fflush(NULL);<br>        return 0;<br>}</pre></span>
+
+------=_Part_14203_21475137.1198028853864--
 
