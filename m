@@ -1,15 +1,10 @@
-Message-ID: <f8f856500712190529q34efcf75r4d80c22bb987cc8@domain.hid>
-Date: Wed, 19 Dec 2007 14:29:23 +0100
-From: fabien <fabien.fb@domain.hid>
-In-Reply-To: <200712190119.11578.berlemont.hauw@domain.hid>
+Date: Wed, 19 Dec 2007 16:06:22 +0100
+From: Juan Antonio Garcia Redondo <juan-antonio.garcia@domain.hid>
+Message-ID: <20071219150622.GA15974@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="/04w6evG8XlLl3ft"
 Content-Disposition: inline
-References: <f8f856500712180507q16d5c21bp56b45ec23ae5d36@domain.hid>
-	<200712190119.11578.berlemont.hauw@domain.hid>
-Subject: Re: [Xenomai-help] Kernel hangs in initramfs with ipipe activated
-	(arch=ppc)
+Subject: [Xenomai-help] PIOX irq problems with at91sam9260
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,105 +14,182 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Alexis Berlemont <berlemont.hauw@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: jagarcia@domain.hid
 
-hello, first thanks for your answer Alexis
-I tried to add as you said
-+       ipd->irqs[irq].acknowledge = ipipe_root_domain->irqs[irq].acknowledge;
-in kernel/ipipe/core.c and my kernel boot now properly.
 
-I've check in the adeos_ipipe patch that open_pic.c, ppc4xx_pic.c and
-ipiq.c are patched.
-My processor is an mpc8xx and it's seem that the pic driver is
-arch/ppc/syslib/ppc8xx_pic.c
-according to :
-irq_desc[i].chip = &ppc8xx_pic;  (in arch/ppc/syslib/m8xx_setup.c)
-Is this normal that the arch/ppc/syslib/ppc8xx_pic.c is not patch by
-adeos ipipe ?
-What changes do i need to make in this file ?
+--/04w6evG8XlLl3ft
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Best regards
+Hello list,
 
-2007/12/19, Alexis Berlemont <berlemont.hauw@domain.hid>:
-> Hi,
->
-> >
-> >
-> > Oops: kernel access of bad area, sig: 11 [#1]
-> > NIP: 00000000 LR: c0005854 CTR: 00000000
-> > REGS: c0fefc10 TRAP: 0400   Not tainted  (2.6.23.6)
-> > MSR: 40001032 <ME,IR,DR>  CR: 24004028  XER: 00000000
-> > TASK = c0f99030[12] 'sh' THREAD: c0fee000
-> > GPR00: 00000000 c0fefcc0 c0f99030 00000014 c01ce410 00100000 00000000
-> > 00000000 GPR08: 00000000 c01cdec0 c01cec10 c01cebc0 c0fee1f0 cfefffff
-> > 00ffe000 007fff14 GPR16: 00000000 00000001 c01b0000 c01d0000 c01f0000
-> > 00000002 c00d09a4 c0f4600c GPR24: 0000003d c01d7b9c 000001b0 00000000
-> > 00000140 c0200a44 00000014 c0200a40 NIP [00000000] 0x0
-> > LR [c0005854] __ipipe_ack_irq+0x28/0x3c
-> > Call Trace:
-> > [c0fefcc0] [c0200a44] 0xc0200a44 (unreliable)
-> > [c0fefcd0] [c0005ba0] __ipipe_handle_irq+0x124/0x140
-> > [c0fefd00] [c0005dd4] __ipipe_grab_irq+0x3c/0xac
-> > [c0fefd20] [c0003154] __ipipe_ret_from_except+0x0/0xc
-> > [c0fefde0] [c00d9400] cpm_uart_start_tx+0x38/0xa8
-> > [c0fefe00] [c00d4c40] __uart_start+0x64/0x74
-> > [c0fefe10] [c00d5c84] uart_start+0x30/0x4c
-> > [c0fefe30] [c00d5d9c] uart_write+0xf8/0x130
-> > [c0fefe60] [c00d0bac] write_chan+0x208/0x3a4
-> > [c0fefeb0] [c00cd530] tty_write+0x170/0x238
-> > [c0fefef0] [c0056128] vfs_write+0xcc/0x108
-> > [c0feff10] [c0056a94] sys_write+0x4c/0x90
-> > [c0feff40] [c0002900] ret_from_syscall+0x0/0x38
->
-> Just an idea which may lead to nowhere... :
->
-> Considering this oops, we might guess the bug occured in __ipipe_ack_irq(), in
-> this function we may have called NULL function pointer (NIP == NULL).
->
-> After having a look at this function's content:
->
-> int __ipipe_ack_irq(unsigned irq)
-> {
->         irq_desc_t *desc = irq_desc + irq;
->         desc->ipipe_ack(irq, desc);
->         return 1;
-> }
->
-> it seems the field "ipipe_ack" of the irq descriptor was not properly filled
-> at initialization time. Therefore a piece of code like the one below is
-> missing in your IRQ setup function.
->
->         /* Init descriptors */
-> -       for (i = offset; i < NumSources + offset; i++)
-> +       for (i = offset; i < NumSources + offset; i++) {
->                 irq_desc[i].chip = &open_pic;
-> +#ifdef CONFIG_IPIPE
-> +               /* We want mask_ack/unmask for all. */
-> +               irq_desc[i].ipipe_ack = &__ipipe_ack_level_irq;
-> +               irq_desc[i].ipipe_end = &__ipipe_end_level_irq;
-> +#endif
-> +       }
->
-> In order to test we are in the right way , you can make an ugly modification
-> in the function ipipe_virtualize_irq() in kernel/ipipe/core.c:
->
->         ipd->irqs[irq].handler = handler;
->         ipd->irqs[irq].cookie = cookie;
-> -       ipd->irqs[irq].acknowledge = acknowledge;
-> +       ipd->irqs[irq].acknowledge = ipipe_root_domain->irqs[irq].acknowledge;
->         ipd->irqs[irq].control = modemask;
->
-> Thanks to this change, you will not go through __ipipe_ack_irq().
->
-> I hope I have not said too much rubbish...
->
-> Alexis.
->
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->
+I'm testing xenomai 2.4.0 (kernel 2.6.20, adeos-ipipe-2.6.20-arm-1.8-02) 
+over a at91sam9260 based board. The initial tests runs OK but I've problems 
+with the PIOX interrupts. It seems that, to work properly with the
+interrupt, I need to install first the interrupt on the linux side.
+
+Environment:
+	o A sligtly modified user_irq.c from the xenomai
+	documentation.
+	o A normal linux kernel module which does nothing except 
+	catching the irq received as parameter.
+	o PIB_11 y PIOB_10 in short circuit.
+ 
+
+Test 1:
+	o External gpio programming as input(PIOB_11)
+	# test_irq 75
+		Waiting for irq 75 ...
+	
+	o Nothing occurs although I've set and reset the PIOB_10. The
+	first thing I see is that the PIOB_IMR is 0x000000 when I'll expect
+	0x00000800.
+
+Test 2:
+	o External gpio programming as input(PIOB_11)
+	# insmod irqena.ko gpio_in=75
+	0 Now the PIOB_IMR is 0x00000800
+	# rmmod irqena
+	# test_irq 75
+	    Waiting for irq 75
+	o External gpio PIOB_10 set and reset.
+	#  ..........
+	   Waiting for irq 75
+           Arrives irq -> 1
+	   Arrives irq -> 1
+	   ..................
+
+I've attached the tests programs.
+
+Any hints ?
+
+Regards,
+	Juan Antonio
+	
+	
+
+
+--/04w6evG8XlLl3ft
+Content-Type: text/x-csrc; charset=us-ascii
+Content-Disposition: attachment; filename="test_irq.c"
+
+#include <sys/mman.h>
+#include <native/task.h>
+#include <native/intr.h>
+
+#define IRQ_NUMBER 89  /* Intercept interrupt #7 */
+#define TASK_PRIO  99  /* Highest RT priority */
+#define TASK_MODE  0   /* No flags */
+#define TASK_STKSZ 0   /* Stack size (use default one) */
+
+RT_INTR intr_desc;
+
+RT_TASK server_desc;
+
+static int irq_number = IRQ_NUMBER;
+
+void irq_server (void *cookie)
+
+{
+    int ret;
+    printf("Waiting for irq %d\n", irq_number);
+
+    for (;;) {
+
+       /* Wait for the next interrupt. */
+       ret = rt_intr_wait(&intr_desc,TM_INFINITE);
+
+       if (ret > 0) {
+           /* Process interrupt. */
+           printf("Arrives irq ->%d\n", ret);
+       } else {
+           printf("Error %d\n", ret);
+       }
+    }
+}
+
+int main (int argc, char *argv[])
+
+{
+    int err;
+
+    if (argc > 1)
+        irq_number = atoi(argv[1]);
+
+    mlockall(MCL_CURRENT|MCL_FUTURE);
+
+    err = rt_intr_create(&intr_desc,"MyIrq",irq_number,0);
+
+    err = rt_task_create(&server_desc,
+                         "MyIrqServer",
+                         TASK_STKSZ,
+                         TASK_PRIO,
+                         TASK_MODE);
+    if (!err)
+        rt_task_start(&server_desc,&irq_server,NULL);
+
+    pause();
+
+}
+
+void cleanup (void)
+
+{
+    rt_intr_delete(&intr_desc);
+    rt_task_delete(&server_desc);
+}
+
+
+--/04w6evG8XlLl3ft
+Content-Type: text/x-csrc; charset=us-ascii
+Content-Disposition: attachment; filename="irqena.c"
+
+#include <linux/module.h>
+#include <linux/version.h>
+#include <linux/module.h>
+#include <linux/interrupt.h>
+#include <asm/arch/gpio.h>
+
+#define MODULE_NAME "irqena"
+
+static uint gpio_in = 0;
+static uint irq;
+
+irqreturn_t
+irqtest_irq_handler(int irq, void *dev_id)
+{
+        return IRQ_HANDLED;
+}
+
+
+static int __init irqtest_init(void)
+{
+        irq = irq_canonicalize(gpio_in);
+
+        if (request_irq(irq,
+                        irqtest_irq_handler, IRQF_DISABLED, MODULE_NAME, NULL))
+        {
+                printk(KERN_ERR "I can't use irq %d\n", irq);
+                return -EINVAL;
+        }
+        return 0;
+}
+
+module_init(irqtest_init);
+
+static void __exit irqtest_exit(void)
+{
+        free_irq(irq, NULL);
+}
+module_exit(irqtest_exit);
+
+module_param(gpio_in, uint, 0444);
+MODULE_PARM_DESC(gpio_in, "Input pin");
+
+
+MODULE_DESCRIPTION("Irq Enable");
+MODULE_LICENSE("GPL");
+
+--/04w6evG8XlLl3ft--
 
