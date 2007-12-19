@@ -1,10 +1,16 @@
-Message-ID: <35d9c6ed0712181748p30126b44y7d2b8621107e56de@domain.hid>
-Date: Wed, 19 Dec 2007 09:48:49 +0800
-From: "sarra risto" <sarra.risto@domain.hid>
+content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_14213_31588831.1198028929735"
-Subject: [Xenomai-help] rt_intr_create - 38
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C84228.2C960676"
+Date: Wed, 19 Dec 2007 11:16:09 +0100
+Message-ID: <0C9896A4B6D338488AD6FFFE58BAEF1001EECDA2@domain.hid>
+References: <0C9896A4B6D338488AD6FFFE58BAEF1001DB8EEF@serveur3.lgm.com>
+	<4762A57F.2020909@domain.hid>
+	<0C9896A4B6D338488AD6FFFE58BAEF1001EECC33@domain.hid>
+	<4767FA80.1060403@domain.hid>
+	<0C9896A4B6D338488AD6FFFE58BAEF1001EECCF9@domain.hid>
+	<476805F3.5000409@domain.hid>
+From: "DOURNES Guillaume" <Guillaume.DOURNES@lgm.fr>
+Subject: Re: [Xenomai-help] CP-118U RTDM Driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,363 +20,271 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org, sarra.risto@domain.hid
-
-------=_Part_14213_31588831.1198028929735
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hi,
-In http://www.captain.at/xenomai-parallel-port-interrupt.php, there is a
-example about capturing the parallel port interrupt. I have a great interest
-in it, so I just want to have a try, but when I compile the code, I found a
-error:
-start
-rt_intr_create=-38
-error while rt_task_wait_period, code -110
-0 interrupts occured
-0 interrupts occured
-0 interrupts occured
-0 interrupts occured
-0 interrupts occured
-0 interrupts occured
-0 interrupts occured
-0 interrupts occured
-0 interrupts occured
-cleanup
-end
-
-it seems it is because the return value of rt_intr_create() API  is not
-correct, besides, there is a notice that you should make the
-
-CONFIG_XENO_OPT_NATIVE_INTR=y otherwise it fails with ENOSYS (38)
-
-I met this problem firstly, but I recompile the kernel and xenomai
-again,  but I still met the above errors , does somebody can disscuss
-with me? Thank you for your attention!
-
-
-
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <signal.h>
-#include <sys/time.h>
-#include <sys/io.h>
-#include <sys/mman.h>
-
-
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-
-#include <native/task.h>
-#include <native/queue.h>
-#include <native/intr.h>
-#include <native/pipe.h>
-
-
-
-#define STACK_SIZE 8192
-#define STD_PRIO 1
-#define STD_PRIORITY 1
-#define HIGH_PRIORITY 99
-#define MID_PRIORITY 50
-#define BASEPORT 0x378
-#define PARPORTINT 7
-#define PIPE_MINOR 0
-
-RT_TASK print_task_ptr;
-
-
-RT_TASK square_task_ptr;
-RT_TASK interrupt_task_ptr;
-RT_INTR intr_desc; //set rt_intr task
-RT_PIPE mypipe;//set rt_pipe task
-int int_count = 0;
-int end = 0;
-int test;
-
-RTIME task_period_ns =   1000000000llu;
-
-
-RTIME print_period_ns =  1000000000llu;
-RTIME square_period_ns =  300000000llu;
-
-void interrupt_task(void *cookie) {
-        int err = 0;
-        int error;
-error = rt_pipe_create(&mypipe, "intpipe", PIPE_MINOR, 0);
-
-
-while (!end) {
-                err = rt_intr_wait(&intr_desc, TM_INFINITE);
-                printf("err = %d\n", err);
-                if (err > 0) {
-                        int_count++;
-
-
-                printf("int_count = %d\n", int_count);
-                        rt_pipe_write(&mypipe, &int_count,
-sizeof(int_count), P_NORMAL);
-                } else {
-}
-                rt_intr_enable (&intr_desc);
-
-
-        }
-        rt_pipe_delete(&mypipe);
-}
-void print_task(void *cookie) {
-        unsigned long overrun;
-        int ret;
-        ret = rt_task_set_periodic(NULL, TM_NOW,
-rt_timer_ns2ticks(print_period_ns));
-
-
-        if (ret) {
-                printf("error while set periodic, code %d\n",ret);
-return;
-        }
-        while (!end) {
-                ret = rt_task_wait_period(&overrun);
-                if (ret) {
-
-
-                        printf("error while rt_task_wait_period, code
-%d\n",ret);
-                        return;
-                }
-                printf("%d interrupts occured\n", int_count);
-
-
-                fflush(NULL);
-        }
-}
-void squaretask(void *cookie) {
-        unsigned long overrun;
-        int ret = rt_task_set_periodic(NULL, TM_NOW,
-rt_timer_ns2ticks(square_period_ns));
-
-        if (ret) {
-
-                printf("error while set periodic, code %d\n",ret);
-                return;
-        }
-        ret = rt_task_wait_period(&overrun);
-return;
-        }
-
-        while (!end) {
-
-                ret = rt_task_wait_period(&overrun);
-                if (ret) {
-                        printf("error while rt_task_wait_period, code
-%d\n",ret);
-                        return;
-
-
-                }
-                printf("%d interrupts occured\n", int_count);
-                fflush(NULL);
-        }
-}
-void squaretask(void *cookie) {
-        unsigned long overrun;
-
-        int ret = rt_task_set_periodic(NULL, TM_NOW,
-rt_timer_ns2ticks(square_period_ns));
-
-        if (ret) {
-                printf("error while set periodic, code %d\n",ret);
-                return;
-
-        }
-        ret = rt_task_wait_period(&overrun);
-        if (ret) {
-printf("error while rt_task_wait_period, code %d\n",ret);
-
-                return;
-        }
-        while (!end) {
-
-                outb_p(0xff, BASEPORT);
-                ret = rt_task_wait_period(&overrun);
-                if (ret) {
-                        printf("error while rt_task_wait_period, code
-%d\n",ret);
-
-
-                        return;
-                }
-                outb_p(0x00, BASEPORT);
-                ret = rt_task_wait_period(&overrun);
-                if (ret) {
-                        printf("error while rt_task_wait_period, code
-%d\n",ret);
-
-
-                        return;
-                }
-        }
-}
-void clean_exit(int dummy) {
-        printf("cleanup\n");
- printf("error while rt_task_wait_period, code %d\n",ret);
-
-
-                return;
-        }
-        while (!end) {
-                outb_p(0xff, BASEPORT);
-                ret = rt_task_wait_period(&overrun);
-                if (ret) {
-                        printf("error while rt_task_wait_period, code
-%d\n",ret);
-
-
-                        return;
-                }
-                outb_p(0x00, BASEPORT);
-                ret = rt_task_wait_period(&overrun);
-                if (ret) {
-                        printf("error while rt_task_wait_period, code
-%d\n",ret);
-
-
-                        return;
-                }
-        }
-}
-void clean_exit(int dummy) {
-        printf("cleanup\n");
-       rt_task_delete(&print_task_ptr);
-        rt_task_delete(&square_task_ptr);
-
-
-        rt_task_delete(&interrupt_task_ptr);
-        rt_intr_delete(&intr_desc);
-        rt_pipe_delete(&mypipe);
-        printf("end\n");
-}
-
-int main(int argc, char *argv[]) {
-
-
-        int err, fd;
-        printf("start\n");
-        signal(SIGTERM, clean_exit);
-        signal(SIGINT, clean_exit);
-if (iopl(3)) {
-        printf("iopl err\n");
-        exit(1);
-
-
-}
-        outb_p(0x10, BASEPORT + 2);
-       // err = rt_intr_create(&intr_desc, "parint", PARPORTINT ,I_NOAUTOENA);
-        mlockall(MCL_CURRENT | MCL_FUTURE);
-        err = rt_intr_create(&intr_desc, "parint", PARPORTINT, I_NOAUTOENA);
-
-
-
-
-
-if (err) {
-                printf("rt_intr_create = %d\n", err);
-                return 0;
-        }
-        rt_intr_enable(&intr_desc);
-
-        err = rt_task_spawn(&square_task_ptr, "Square", STACK_SIZE, STD_PRIO, 0,
-
-
-                         &squaretask, NULL);
-        if (err) {
-                printf("error rt_task_spawn\n");
-                return 0;
-        }
-
-        err = rt_task_spawn(&interrupt_task_ptr, "Int", STACK_SIZE, STD_PRIO, 0,
-
-
-                              &interrupt_task, NULL);
-        if (err) {
-                printf("error rt_task_spawn 2\n");
-                return 0;
-        }
-
-        err = rt_task_spawn(&print_task_ptr, "Printer", STACK_SIZE,
-STD_PRIO, 0,&print_task, NULL);
-
-
-        if (err) {
-                printf("error rt_task_spawn 3\n");
-                return 0;
-        }
-        fd = open("/dev/rtp0", O_RDONLY);
-        while (!end) {
-                err = read(fd, &test, sizeof(test));
-
-
-                if (err == -1) {
-                        printf("read error\n");
-                } else {
-                        printf("Read from pipe: %d\n", test);
-        }
-
-}
-
-        fflush(NULL);
-        return 0;
-}
-
-------=_Part_14213_31588831.1198028929735
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hi, <br>In <a href="http://www.captain.at/xenomai-parallel-port-interrupt.php" target="_blank">http://www.captain.at/xenomai-parallel-port-interrupt.php</a>, there is a example about <span>capturing
-the parallel port interrupt. I have a great interest in it, so I just
-want to have a try, but when I compile the code, I found a error:
-<br>start<br>rt_intr_create=-38<br>error while rt_task_wait_period, code -110<br>0 interrupts occured<br>0 interrupts occured<br>0 interrupts occured<br>0 interrupts occured<br>0 interrupts occured<br>0 interrupts occured
-<br>0 interrupts occured<br>0 interrupts occured<br>0 interrupts occured<br>cleanup<br>end<br><br>it
-seems it is because the return value of rt_intr_create() API&nbsp; is not
-correct, besides, there is a notice that you should make the </span><span><pre>CONFIG_XENO_OPT_NATIVE_INTR=y otherwise it fails with ENOSYS (38)<br><br>I met this problem firstly, but I recompile the kernel and xenomai again,  but I still met the above errors , does somebody can disscuss with me? Thank you for your attention!
-<br><br><br><br>#include &lt;stdio.h&gt;<br>#include &lt;unistd.h&gt;<br>#include &lt;stdlib.h&gt;<br>#include &lt;string.h&gt;<br>#include &lt;signal.h&gt;<br>#include &lt;sys/time.h&gt;<br>#include &lt;sys/io.h&gt;<br>#include &lt;sys/mman.h&gt;
-<br><br><br>#include &lt;sys/types.h&gt;<br>#include &lt;sys/ioctl.h&gt;<br>#include &lt;fcntl.h&gt;<br><br>#include &lt;native/task.h&gt;<br>#include &lt;native/queue.h&gt;<br>#include &lt;native/intr.h&gt;<br>#include &lt;native/pipe.h&gt;
-<br><br><br><br>#define STACK_SIZE 8192<br>#define STD_PRIO 1<br>#define STD_PRIORITY 1<br>#define HIGH_PRIORITY 99<br>#define MID_PRIORITY 50<br>#define BASEPORT 0x378<br>#define PARPORTINT 7<br>#define PIPE_MINOR 0<br><br>
-RT_TASK print_task_ptr;<br><br><br>RT_TASK square_task_ptr;<br>RT_TASK interrupt_task_ptr;<br>RT_INTR intr_desc; //set rt_intr task<br>RT_PIPE mypipe;//set rt_pipe task<br>int int_count = 0;<br>int end = 0;<br>int test;<br>
-<br>RTIME task_period_ns =   1000000000llu;<br><br><br>RTIME print_period_ns =  1000000000llu;<br>RTIME square_period_ns =  300000000llu;<br><br>void interrupt_task(void *cookie) {<br>        int err = 0;<br>        int error;
-<br>error = rt_pipe_create(&amp;mypipe, &quot;intpipe&quot;, PIPE_MINOR, 0);<br><br><br>while (!end) {<br>                err = rt_intr_wait(&amp;intr_desc, TM_INFINITE);<br>                printf(&quot;err = %d\n&quot;, err);
-<br>                if (err &gt; 0) {<br>                        int_count++;<br><br><br>                printf(&quot;int_count = %d\n&quot;, int_count);<br>                        rt_pipe_write(&amp;mypipe, &amp;int_count, sizeof(int_count), P_NORMAL);
-<br>                } else {<br>}<br>                rt_intr_enable (&amp;intr_desc);<br><br><br>        }<br>        rt_pipe_delete(&amp;mypipe);<br>}<br>void print_task(void *cookie) {<br>        unsigned long overrun;<br>
-        int ret;<br>        ret = rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(print_period_ns));<br><br><br>        if (ret) {<br>                printf(&quot;error while set periodic, code %d\n&quot;,ret);<br>return;
-<br>        }<br>        while (!end) {<br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {<br><br><br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);
-<br>                        return;<br>                }<br>                printf(&quot;%d interrupts occured\n&quot;, int_count);<br><br><br>                fflush(NULL);<br>        }<br>}<br>void squaretask(void *cookie) {
-<br>        unsigned long overrun;<br>        int ret = rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(square_period_ns));<br><br>        if (ret) {<br><br>                printf(&quot;error while set periodic, code %d\n&quot;,ret);
-<br>                return;<br>        }<br>        ret = rt_task_wait_period(&amp;overrun);<br>return;<br>        }<br><br>        while (!end) {<br><br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {
-<br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);<br>                        return;<br><br><br>                }<br>                printf(&quot;%d interrupts occured\n&quot;, int_count);
-<br>                fflush(NULL);<br>        }<br>}<br>void squaretask(void *cookie) {<br>        unsigned long overrun;<br><br>        int ret = rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(square_period_ns));<br>
-<br>        if (ret) {<br>                printf(&quot;error while set periodic, code %d\n&quot;,ret);<br>                return;<br><br>        }<br>        ret = rt_task_wait_period(&amp;overrun);<br>        if (ret) {<br>
-printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);<br><br>                return;<br>        }<br>        while (!end) {<br><br>                outb_p(0xff, BASEPORT);<br>                ret = rt_task_wait_period(&amp;overrun);
-<br>                if (ret) {<br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);<br><br><br>                        return;<br>                }<br>                outb_p(0x00, BASEPORT);
-<br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {<br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);<br><br><br>                        return;
-<br>                }<br>        }<br>}<br>void clean_exit(int dummy) {<br>        printf(&quot;cleanup\n&quot;);<br> printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);<br><br><br>                return;<br>
-        }<br>        while (!end) {<br>                outb_p(0xff, BASEPORT);<br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {<br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);
-<br><br><br>                        return;<br>                }<br>                outb_p(0x00, BASEPORT);<br>                ret = rt_task_wait_period(&amp;overrun);<br>                if (ret) {<br>                        printf(&quot;error while rt_task_wait_period, code %d\n&quot;,ret);
-<br><br><br>                        return;<br>                }<br>        }<br>}<br>void clean_exit(int dummy) {<br>        printf(&quot;cleanup\n&quot;);<br>       rt_task_delete(&amp;print_task_ptr);<br>        rt_task_delete(&amp;square_task_ptr);
-<br><br><br>        rt_task_delete(&amp;interrupt_task_ptr);<br>        rt_intr_delete(&amp;intr_desc);<br>        rt_pipe_delete(&amp;mypipe);<br>        printf(&quot;end\n&quot;);<br>}<br><br>int main(int argc, char *argv[]) {
-<br><br><br>        int err, fd;<br>        printf(&quot;start\n&quot;);<br>        signal(SIGTERM, clean_exit);<br>        signal(SIGINT, clean_exit);<br>if (iopl(3)) {<br>        printf(&quot;iopl err\n&quot;);<br>        exit(1);
-<br><br><br>}<br>        outb_p(0x10, BASEPORT + 2);<br>       // err = rt_intr_create(&amp;intr_desc, &quot;parint&quot;, PARPORTINT ,I_NOAUTOENA);<br>        mlockall(MCL_CURRENT | MCL_FUTURE);<br>        err = rt_intr_create(&amp;intr_desc, &quot;parint&quot;, PARPORTINT, I_NOAUTOENA);
-<br><br><br><br><br><br>if (err) {<br>                printf(&quot;rt_intr_create = %d\n&quot;, err);<br>                return 0;<br>        }<br>        rt_intr_enable(&amp;intr_desc);<br><br>        err = rt_task_spawn(&amp;square_task_ptr, &quot;Square&quot;, STACK_SIZE, STD_PRIO, 0,
-<br><br><br>                         &amp;squaretask, NULL);<br>        if (err) {<br>                printf(&quot;error rt_task_spawn\n&quot;);<br>                return 0;<br>        }<br><br>        err = rt_task_spawn(&amp;interrupt_task_ptr, &quot;Int&quot;, STACK_SIZE, STD_PRIO, 0,
-<br><br><br>                              &amp;interrupt_task, NULL);<br>        if (err) {<br>                printf(&quot;error rt_task_spawn 2\n&quot;);<br>                return 0;<br>        }<br><br>        err = rt_task_spawn(&amp;print_task_ptr, &quot;Printer&quot;, STACK_SIZE, STD_PRIO, 0,&amp;print_task, NULL);
-<br><br><br>        if (err) {<br>                printf(&quot;error rt_task_spawn 3\n&quot;);<br>                return 0;<br>        }<br>        fd = open(&quot;/dev/rtp0&quot;, O_RDONLY);<br>        while (!end) {<br>
-                err = read(fd, &amp;test, sizeof(test));<br><br><br>                if (err == -1) {<br>                        printf(&quot;read error\n&quot;);<br>                } else {<br>                        printf(&quot;Read from pipe: %d\n&quot;, test);
-<br>        }<br><br>}<br><br>        fflush(NULL);<br>        return 0;<br>}</pre></span>
-
-------=_Part_14213_31588831.1198028929735--
+To: Maksym Veremeyenko <verem@domain.hid>
+Cc: xenomai@xenomai.org
+
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01C84228.2C960676
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
+
+VGhlIE1veGEgc3dpdGNoZXMgYXJlIGFzIGZvbGxvdyA6DQpBbGwgUzEgPSBPRkYNCkFsbCBTMiA9
+IE9GRg0KQWxsIFMzID0gT04NCg0KQWxsIHRoZSBtb3hhIGp1bXBlciBhcmUgbm90IGNvbm5lY3Rl
+ZC4NCg0KDQoqKioqKioqKioqKioqIFdpdGggTW94YSBCb2FyZCAqKioqKioqKioqKioqDQpNeSBj
+b21tYW5kcyBpcyA6DQoNCiMgc2V0c2VyaWFsIC9kZXYvdHR5TUk2IA0KL2Rldi90dHlNSTYsIFVB
+UlQ6IDE2NTUwQSwgUG9ydDogMHhiYTMwLCBJUlE6IDUgDQojIHJtbW9kIG14c2VyIA0KIyBtb2Rw
+cm9iZSB4ZW5vXzE2NTUwQSBpbz0weGJhMzAgaXJxPTUgYmF1ZF9iYXNlPTkyMTYwMCANCiMgLi90
+ZXN0DQpydF9zZXJpYWxfdXByb2c6IFBSRVNTIENUUkwtQyB0byBFWElUDQpMZXMgZGV2aWNlcyBz
+b250IG91dmVydHMgYXZlYyBzdWNjw6lzDQpydF9zZXJpYWxfdXByb2c6IENvbmZpZ3VyYXRpb24g
+ZGVzIGRldmljZXMgYXZlYyBzdWNjw6lzDQpydF9zZXJpYWxfdXByb2c6IExhIHRhY2hlIGV2ZW50
+LXRhc2sgY3LDqcOpZSBhdmVjIHN1Y2PDqXMNCnJ0X3NlcmlhbF91cHJvZzogTGEgdGFjaGUgd3Jp
+dGUtdGFzayBjcsOpw6llIGF2ZWMgc3VjY8Opcw0KcnRfc2VyaWFsX3Vwcm9nOiBEZW1hcnJhZ2Ug
+ZGUgbGEgdGFjaGUgd3JpdGUtdGFzaw0KcnRfc2VyaWFsX3Vwcm9nOiBEZW1hcnJhZ2UgZGUgbGEg
+dGFjaGUgZXZlbnQtdGFzayBMYW5jZW1lbnQgYXR0ZW50ZSBldmVudCB0YXNrDQp3cml0ZV90YXNr
+OiBydF9kZXZfd3JpdGUgd3JpdHRlbj0xNyBzej0xNw0Kd3JpdGVfdGFzazogcnRfZGV2X3dyaXRl
+IHdyaXR0ZW49MTcgc3o9MTcNCndyaXRlX3Rhc2s6IHJ0X2Rldl93cml0ZSB3cml0dGVuPTE3IHN6
+PTE3DQp3cml0ZV90YXNrOiBydF9kZXZfd3JpdGUgd3JpdHRlbj0xNyBzej0xNw0Kd3JpdGVfdGFz
+azogcnRfZGV2X3dyaXRlIHdyaXR0ZW49MTcgc3o9MTcNCi4NCi4NCi4NCkFuZCB3aGVuIEkgcHJl
+c3MgQ1RSTC1DIDoNCg0KZXZlbnRfdGFzayA6IGVycm9yIHdoaWxlIFJUU0VSX1JUSU9DX1dBSVRf
+RVZFTlQsIGNvZGUgLTkNCnJ0X3NlcmlhbF91cHJvZzogcnRzZXIwIC0+IGludmFsaWQgZmQgb3Ig
+Y29udGV4dCBldmVudF90YXNrIDogZXhpdA0KcnRfc2VyaWFsX3Vwcm9nOiBydHNlcjAgLT4gY2xv
+eGVub21haS1oZWxwQGduYS5vcmdzZWQNCnJ0X3NlcmlhbF91cHJvZzogZGVsZXRlIHdyaXRlX3Rh
+c2sNCnJ0X3NlcmlhbF91cHJvZzogZGVsZXRlIGV2ZW50X3Rhc2sNCnJ0X3NlcmlhbF91cHJvZzog
+ZXhpdA0KDQoNCkR1cmluZyB0aGUgZXhlY3V0aW9uIEkgaGF2ZSA6DQokIGNhdCAvcHJvYy94ZW5v
+bWFpL2lycQ0KSVJRICAgICAgICAgQ1BVMA0KICA1OiAgICAgICAgMjAwMCAgICAgICAgIHJ0c2Vy
+MA0KIDI1OiAgICAgMzUyNzA0OCAgICAgICAgIFt0aW1lcl0NCiA2NjogICAgICAgICAgNDggICAg
+ICAgICBbdmlydHVhbF0NCiQgY2F0IC9wcm9jL3hlbm9tYWkvaXJxDQpJUlEgICAgICAgICBDUFUw
+DQogIDU6ICAgICAgICAyMDAwICAgICAgICAgcnRzZXIwDQogMjU6ICAgICAzNTI4ODEwICAgICAg
+ICAgW3RpbWVyXQ0KIDY2OiAgICAgICAgICA1MiAgICAgICAgIFt2aXJ0dWFsXQ0KJCBjYXQgL3By
+b2MveGVub21haS9pcnENCklSUSAgICAgICAgIENQVTANCiAgNTogICAgICAgIDIwMDAgICAgICAg
+ICBydHNlcjANCiAyNTogICAgIDM1Mjk4ODIgICAgICAgICBbdGltZXJdDQogNjY6ICAgICAgICAg
+IDU0ICAgICAgICAgW3ZpcnR1YWxdDQogDQoqKioqKioqKioqIFdpdGggTW90aGVyIEJvYXJkICoq
+KioqKioqKioqKioqKioqKioqKg0KDQojIHJtbW9kIHhlbm9fMTY1NTBBIA0KIyBzZXRzZXJpYWwg
+L2Rldi90dHlTMCANCi9kZXYvdHR5UzAsIFVBUlQ6IDE2NTUwQSwgUG9ydDogMHgwM2Y4LCBJUlE6
+IDQgDQojIHNldHNlcmlhbCAvZGV2L3R0eVMwIHVhcnQgbm9uZSANCiMgbW9kcHJvYmUgeGVub18x
+NjU1MEEgaW89MHgwM2Y4IGlycT00IA0KIyAuL3Rlc3QNCnJ0X3NlcmlhbF91cHJvZzogUFJFU1Mg
+Q1RSTC1DIHRvIEVYSVQNCkxlcyBkZXZpY2VzIHNvbnQgb3V2ZXJ0cyBhdmVjIHN1Y2PDqXMNCnJ0
+X3NlcmlhbF91cHJvZzogQ29uZmlndXJhdGlvbiBkZXMgZGV2aWNlcyBhdmVjIHN1Y2PDqXMNCnJ0
+X3NlcmlhbF91cHJvZzogTGEgdGFjaGUgZXZlbnQtdGFzayBjcsOpw6llIGF2ZWMgc3VjY8Opcw0K
+cnRfc2VyaWFsX3Vwcm9nOiBMYSB0YWNoZSB3cml0ZS10YXNrIGNyw6nDqWUgYXZlYyBzdWNjw6lz
+DQpydF9zZXJpYWxfdXByb2c6IERlbWFycmFnZSBkZSBsYSB0YWNoZSB3cml0ZS10YXNrDQpydF9z
+ZXJpYWxfdXByb2c6IERlbWFycmFnZSBkZSBsYSB0YWNoZSBldmVudC10YXNrIExhbmNlbWVudCBh
+dHRlbnRlIGV2ZW50IHRhc2sNCndyaXRlX3Rhc2s6IHJ0X2Rldl93cml0ZSB3cml0dGVuPTE3IHN6
+PTE3IGV2ZW50X3Rhc2sgOiBFdmVuZW1lbnQgZMOpdGVjdMOpIENBUkFDVEVSSVNUSVFVRSBkZSBM
+J0VWRU5UIDoNCmV2ZW50cyA9IDEgOg0KcnhfcGVuZGluZyA9IDEgOg0KbGFzdCB0aW1lc3RhbXAg
+PSAtOTAxMDY5MDI0IDoNCnJ4cGVuZF90aW1lc3RhbXAgPSAtOTAxMDY5MDI0IDoNCiEhISEhISEh
+IE1lc3NhZ2UgUmVjdSBkZSAxIGNoYXIgc3VyIENPTTAgISEhISEhISEhIQ0KZXZlbnRfdGFzayA6
+ICA9Q0FQVEFJTiBXQVMgSEVSRQ0KTGFuY2VtZW50IGF0dGVudGUgZXZlbnQgdGFzaw0Kd3JpdGVf
+dGFzazogcnRfZGV2X3dyaXRlIHdyaXR0ZW49MTcgc3o9MTcgZXZlbnRfdGFzayA6IEV2ZW5lbWVu
+dCBkw6l0ZWN0w6kgQ0FSQUNURVJJU1RJUVVFIGRlIEwnRVZFTlQgOg0KZXZlbnRzID0gMSA6DQpy
+eF9wZW5kaW5nID0gMSA6DQpsYXN0IHRpbWVzdGFtcCA9IDk4OTA1NTU3IDoNCnJ4cGVuZF90aW1l
+c3RhbXAgPSA5ODkwNTU1NyA6DQohISEhISEhISBNZXNzYWdlIFJlY3UgZGUgMSBjaGFyIHN1ciBD
+T00wICEhISEhISEhISENCmV2ZW50X3Rhc2sgOiAgPUNBUFRBSU4gV0FTIEhFUkUNCkxhbmNlbWVu
+dCBhdHRlbnRlIGV2ZW50IHRhc2sNCmV2ZW50X3Rhc2sgOiBlcnJvciB3aGlsZSBSVFNFUl9SVElP
+Q19XQUlUX0VWRU5ULCBjb2RlIC05DQpydF9zZXJpYWxfdXByb2c6IHJ0c2VyMCAtPiBpbnZhbGlk
+IGZkIG9yIGNvbnRleHQgZXZlbnRfdGFzayA6IGV4aXQNCnJ0X3NlcmlhbF91cHJvZzogcnRzZXIw
+IC0+IGNsb3hlbm9tYWktaGVscEBnbmEub3Jnc2VkDQpydF9zZXJpYWxfdXByb2c6IGRlbGV0ZSB3
+cml0ZV90YXNrDQpydF9zZXJpYWxfdXByb2c6IGRlbGV0ZSBldmVudF90YXNrDQpydF9zZXJpYWxf
+dXByb2c6IGV4aXQNCg0KRHVyaW5nIHRoZSBleGVjdXRpb24gSSBoYXZlIDoNCiQgY2F0IC9wcm9j
+L3hlbm9tYWkvaXJxDQpJUlEgICAgICAgICBDUFUwDQogIDQ6ICAgICAgICAgMjY3ICAgICAgICAg
+cnRzZXIwDQogMjU6ICAgICAzNjY5NTM4ICAgICAgICAgW3RpbWVyXQ0KIDY2OiAgICAgICAgIDE3
+MiAgICAgICAgIFt2aXJ0dWFsXQ0KJCBjYXQgL3Byb2MveGVub21haS9pcnENCklSUSAgICAgICAg
+IENQVTANCiAgNDogICAgICAgICAyODYgICAgICAgICBydHNlcjANCiAyNTogICAgIDM2NzA1NjMg
+ICAgICAgICBbdGltZXJdDQogNjY6ICAgICAgICAgMTc4ICAgICAgICAgW3ZpcnR1YWxdDQokIGNh
+dCAvcHJvYy94ZW5vbWFpL2lycQ0KSVJRICAgICAgICAgQ1BVMA0KICA0OiAgICAgICAgIDMwNSAg
+ICAgICAgIHJ0c2VyMA0KIDI1OiAgICAgMzY3MTIzNiAgICAgICAgIFt0aW1lcl0NCiA2NjogICAg
+ICAgICAxODQgICAgICAgICBbdmlydHVhbF0NCg0KKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioNCg0KDQpJIGdpdmUgeW91IG15IHRlc3Qgc291cmNl
+IGNvZGUgYW5kIHRoZSBtYWtlZmlsZSwgYnV0IHRoaXMgc29mdCB3b3JrIHdpdGggbW90aGVyIGJv
+YXJkIHNlcmlhbCBwb3J0Lg0KDQpUaGFua3MsDQoNCg0KR3VpbGxhdW1lIERPVVJORVMgDQoNCg0K
+DQoNCi0tLS0tTWVzc2FnZSBkJ29yaWdpbmUtLS0tLQ0KRGXCoDogTWFrc3ltIFZlcmVtZXllbmtv
+IFttYWlsdG86dmVyZW1AbTFzdGVyZW8udHZdIA0KRW52b3nDqcKgOiBtYXJkaSAxOCBkw6ljZW1i
+cmUgMjAwNyAxODo0MA0Kw4DCoDogRE9VUk5FUyBHdWlsbGF1bWUNCkNjwqA6IHhlbm9tYWktaGVs
+cEBnbmEub3JnDQpPYmpldMKgOiBSZTogW1hlbm9tYWktaGVscF0gQ1AtMTE4VSBSVERNIERyaXZl
+cg0KDQpET1VSTkVTIEd1aWxsYXVtZSDQv9C40YjQtdGCOg0KPiBFdmVuIGlmIEkgYWRkIHRoZSBi
+YXVkX2Jhc2UgcGFyYW1ldGVyLCB0aGUgcnhldmVudCBuZXZlciBhcHBlYXJzLg0KPiBNb3Jlb3Zl
+ciB3aGVuIEkgdGVzdCB0aGUgbW90aGVyIGJvYXJkIHBvcnQsIHRoZSBydHNlcjAgbnVtYmVyIGlu
+Y3JlYXNlIGluIGNhdCAvcHJvYy94ZW5vbWFpL2lycSB3aGVuIHRoZSBzb2Z0IGlzIHJ1bm5pbmcu
+IEJ1dCB3aGVuIEkgdGVzdCBhIG1veGEgcG9ydCwgdGhlIHJ0c2VyMCBudW1iZXIgc3RheSBhbHdh
+eXMgdG8gdGhlIHNhbWUgdmFsdWUgKDcwMDAgaW4gbXkgbGFzdCB0ZXN0KS4NCmNvdWxkIHlvdSBw
+cm92aWRlIGNvbXBsZXRlIG1vZHByb2JlIGNvbW1hbmQgYW5kIG91dHB1dC4NCmNvdWxkIHlvdSBj
+aGVjayBqdW1wZXIgc2V0dGluZyBvbiBtb3hhIGJvYXJkLg0KDQotLSANCl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX18NCk1ha3N5bSBWZXJlbWV5ZW5rbw0KDQoNCg==
+
+------_=_NextPart_001_01C84228.2C960676
+Content-Type: application/octet-stream;
+	name="test.c"
+Content-Transfer-Encoding: base64
+Content-Description: test.c
+Content-Disposition: attachment;
+	filename="test.c"
+
+Ly8gZGVyaXZlZCBmcm9tOgovLyBodHRwOi8vd3d3LnJ0cy51bmktaGFubm92ZXIuZGUvbWl0YXJi
+ZWl0ZXIva2lzemthL3J0YWRkb24vCi8vIHJ0c2VyaWFsIGRvY3VtZW50YXRpb246Ci8vIGh0dHA6
+Ly9kb3dubG9hZC5nbmEub3JnL3hlbm9tYWkvZG9jdW1lbnRhdGlvbi9odG1sL2FwaS9ncm91cF9f
+cnRzZXJpYWwuaHRtbAoKI2luY2x1ZGUgPHN0ZGlvLmg+CiNpbmNsdWRlIDxzaWduYWwuaD4KI2lu
+Y2x1ZGUgPHVuaXN0ZC5oPgojaW5jbHVkZSA8c3lzL21tYW4uaD4KCiNpbmNsdWRlIDxuYXRpdmUv
+dGFzay5oPgojaW5jbHVkZSA8bmF0aXZlL3RpbWVyLmg+CgojaW5jbHVkZSA8cnRkbS9ydHNlcmlh
+bC5oPgoKI2RlZmluZSBMT0dfUFJFRklYICAgICJydF9zZXJpYWxfdXByb2c6ICIKI2RlZmluZSBX
+VEFTS19QUkVGSVggICJ3cml0ZV90YXNrOiAiCiNkZWZpbmUgUlRBU0tfUFJFRklYICAicmVhZF90
+YXNrIDogIgojZGVmaW5lIEVUQVNLX1BSRUZJWCAgImV2ZW50X3Rhc2sgOiAiCgoKI2RlZmluZSBQ
+T1JUXzAJCQkicnRzZXIwIgojZGVmaW5lIFBPUlRfNwkJCSJydHNlcjEiCgppbnQgdGltZXJfc3Rh
+cnRlZCA9IDA7CmludCBteV9mZF8wID0gLTE7CmludCBteV9mZF83ID0gLTE7CgojZGVmaW5lIFNU
+QVRFX0ZJTEVfT1BFTkVEX1BPUlRfMCAgICAgICAJMHgwMQojZGVmaW5lIFNUQVRFX0ZJTEVfT1BF
+TkVEX1BPUlRfNyAgICAgICAJMHgwMgojZGVmaW5lIFNUQVRFX1RBU0tfRVZFTlRfQ1JFQVRFRAkJ
+MHgwNAojZGVmaW5lIFNUQVRFX1RBU0tfUkVBRF9DUkVBVEVECQkJMHgwOAojZGVmaW5lIFNUQVRF
+X1RBU0tfV1JJVEVfQ1JFQVRFRAkJMHgxMAoKdW5zaWduZWQgaW50IG15X3N0YXRlID0gMDsKCi8v
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgLS1zLW1zLXVzLW5zClJUSU1FIHdyaXRlX3Rhc2tf
+cGVyaW9kX25zID0gICAxMDAwMDAwMDAwbGx1OwpSVElNRSByZWFkX3Rhc2tfcGVyaW9kX25zID0J
+CTEwMDAwMDAwbGx1OwpSVF9UQVNLIHdyaXRlX3Rhc2s7ClJUX1RBU0sgcmVhZF90YXNrOwpSVF9U
+QVNLIGV2ZW50X3Rhc2s7CgpzdGF0aWMgY29uc3Qgc3RydWN0IHJ0c2VyX2NvbmZpZyBzZXJfY29u
+ZmlnXzAgPQp7CiAgICAweEZGRkYsICAgICAgICAgICAgICAgICAgICAgLyogY29uZmlnX21hc2sg
+Ki8KICAgIDM4NDAwLCAgICAgICAgICAgICAgICAgICAgICAgLyogYmF1ZF9yYXRlICovCiAgICBS
+VFNFUl9PRERfUEFSSVRZICwgICAgICAgICAgLyogcGFyaXR5ICovCiAgICBSVFNFUl84X0JJVFMg
+LCAgICAgICAgICAgICAgLyogZGF0YV9iaXRzICovCiAgICBSVFNFUl8xX1NUT1BCICwgICAgICAg
+ICAgICAgLyogc3RvcF9iaXRzICovCiAgICBSVFNFUl9OT19IQU5EICwgICAgICAgICAgICAgLyog
+aGFuZHNoYWtlICovCiAgICBSVFNFUl9ERUZfRklGT19ERVBUSCwgICAgICAgLyogZmlmb19kZXB0
+aCovCiAgICBSVFNFUl9ERUZfVElNRU9VVCwgICAgICAgICAgLyogcnhfdGltZW91dCAqLwogICAg
+UlRTRVJfREVGX1RJTUVPVVQsICAgICAgICAgIC8qIHR4X3RpbWVvdXQgKi8KICAgIFJUU0VSX0RF
+Rl9USU1FT1VULCAgICAgICAgICAvKiBldmVudF90aW1lb3V0ICovCiAgICBSVFNFUl9SWF9USU1F
+U1RBTVBfSElTVE9SWSwgLyogdGltZXN0YW1wX2hpc3RvcnkgKi8KICAgIFJUU0VSX0VWRU5UX1JY
+UEVORCAgICAgICAgICAvKiBldmVudCBtYXNrICovCn07CgpzdGF0aWMgY29uc3Qgc3RydWN0IHJ0
+c2VyX2NvbmZpZyBzZXJfY29uZmlnXzcgPQp7CiAgICAweEZGRkYsICAgICAgICAgICAgICAgICAg
+ICAgLyogY29uZmlnX21hc2sgKi8KICAgIDM4NDAwLCAgICAgICAgICAgICAgICAgICAgICAgLyog
+YmF1ZF9yYXRlICovCiAgICBSVFNFUl9PRERfUEFSSVRZICwgICAgICAgICAgLyogcGFyaXR5ICov
+CiAgICBSVFNFUl84X0JJVFMgLCAgICAgICAgICAgICAgLyogZGF0YV9iaXRzICovCiAgICBSVFNF
+Ul8xX1NUT1BCICwgICAgICAgICAgICAgLyogc3RvcF9iaXRzICovCiAgICBSVFNFUl9OT19IQU5E
+ICwgICAgICAgICAgICAgLyogaGFuZHNoYWtlICovCiAgICBSVFNFUl9ERUZfRklGT19ERVBUSCwg
+ICAgICAgLyogZmlmb19kZXB0aCovCiAgICBSVFNFUl9ERUZfVElNRU9VVCwgICAgICAgICAgLyog
+cnhfdGltZW91dCAqLwogICAgUlRTRVJfREVGX1RJTUVPVVQsICAgICAgICAgIC8qIHR4X3RpbWVv
+dXQgKi8KICAgIFJUU0VSX0RFRl9USU1FT1VULCAgICAgICAgICAvKiBldmVudF90aW1lb3V0ICov
+CiAgICBSVFNFUl9SWF9USU1FU1RBTVBfSElTVE9SWSwgLyogdGltZXN0YW1wX2hpc3RvcnkgKi8K
+ICAgIFJUU0VSX0RFRl9FVkVOVF9NQVNLICAgICAgICAvKiBldmVudCBtYXNrICovCn07CgpzdGF0
+aWMgaW50IGNsb3NlX2ZpbGUoIGludCBmZCwgdW5zaWduZWQgY2hhciAqbmFtZSkKewoJaW50IHJl
+dCxpPTA7CglkbwoJewoJCWkrKzsKCQlyZXQgPSBydF9kZXZfY2xvc2UoZmQpOwoJCXN3aXRjaCgt
+cmV0KQoJCXsKCQkJY2FzZSBFQkFERjoKCQkJCXByaW50ZihMT0dfUFJFRklYICIlcyAtPiBpbnZh
+bGlkIGZkIG9yIGNvbnRleHRcbiIsbmFtZSk7CgkJCWJyZWFrOwoKCQkJY2FzZSBFQUdBSU46CgkJ
+CQlwcmludGYoTE9HX1BSRUZJWCAiJXMgLT4gRUFHQUlOICglZCB0aW1lcylcbiIsbmFtZSxpKTsK
+ICAgICAgICAgICAgCXJ0X3Rhc2tfc2xlZXAoNTAwMDApOyAvLyB3YWl0IDUwdXMKICAgICAgICAg
+ICAgYnJlYWs7CgogICAgICAgICAgICBjYXNlIDA6CiAgICAgICAgICAgIAlwcmludGYoTE9HX1BS
+RUZJWCAiJXMgLT4gY2xveGVub21haS1oZWxwQGduYS5vcmdzZWRcbiIsbmFtZSk7CiAgICAgICAg
+ICAgIGJyZWFrOwoKICAgICAgICAgICAgZGVmYXVsdDoKICAgICAgICAgICAgCXByaW50ZihMT0df
+UFJFRklYICIlcyAtPiA/Pz9cbiIsbmFtZSk7CiAgICAgICAgICAgIGJyZWFrOwoJCX0KCX0gd2hp
+bGUgKHJldCA9PSAtRUFHQUlOICYmIGkgPCAxMCk7CglyZXR1cm4gcmV0Owp9Cgp2b2lkIGNsb3Nl
+X2FsbF9maWxlKHZvaWQpCnsKCWlmIChteV9zdGF0ZSAmIFNUQVRFX0ZJTEVfT1BFTkVEX1BPUlRf
+MCkKCXsKCQljbG9zZV9maWxlKCBteV9mZF8wLCBQT1JUXzApOwoJCW15X3N0YXRlICY9IH5TVEFU
+RV9GSUxFX09QRU5FRF9QT1JUXzA7Cgl9CglpZiAobXlfc3RhdGUgJiBTVEFURV9GSUxFX09QRU5F
+RF9QT1JUXzcpCgl7CgkJY2xvc2VfZmlsZSggbXlfZmRfNywgUE9SVF83KTsKCQlteV9zdGF0ZSAm
+PSB+U1RBVEVfRklMRV9PUEVORURfUE9SVF83OwoJfQp9Cgp2b2lkIGNsZWFudXBfYWxsKHZvaWQp
+CnsKCWlmIChteV9zdGF0ZSAmIFNUQVRFX0ZJTEVfT1BFTkVEX1BPUlRfMCkKCXsKCQljbG9zZV9m
+aWxlKCBteV9mZF8wLCBQT1JUXzApOwoJCW15X3N0YXRlICY9IH5TVEFURV9GSUxFX09QRU5FRF9Q
+T1JUXzA7Cgl9CglpZiAobXlfc3RhdGUgJiBTVEFURV9GSUxFX09QRU5FRF9QT1JUXzcpCgl7CgkJ
+Y2xvc2VfZmlsZSggbXlfZmRfNywgUE9SVF83KTsKCQlteV9zdGF0ZSAmPSB+U1RBVEVfRklMRV9P
+UEVORURfUE9SVF83OwoJfQoJaWYgKG15X3N0YXRlICYgU1RBVEVfVEFTS19XUklURV9DUkVBVEVE
+KQoJewoJCXByaW50ZihMT0dfUFJFRklYICJkZWxldGUgd3JpdGVfdGFza1xuIik7CgkJcnRfdGFz
+a19kZWxldGUoJndyaXRlX3Rhc2spOwoJCW15X3N0YXRlICY9IH5TVEFURV9UQVNLX1dSSVRFX0NS
+RUFURUQ7Cgl9CglpZiAobXlfc3RhdGUgJiBTVEFURV9UQVNLX1JFQURfQ1JFQVRFRCkKCXsKCQlw
+cmludGYoTE9HX1BSRUZJWCAiZGVsZXRlIHJlYWRfdGFza1xuIik7CgkJcnRfdGFza19kZWxldGUo
+JnJlYWRfdGFzayk7CgkJbXlfc3RhdGUgJj0gflNUQVRFX1RBU0tfUkVBRF9DUkVBVEVEOwoJfQoJ
+aWYgKG15X3N0YXRlICYgU1RBVEVfVEFTS19FVkVOVF9DUkVBVEVEKQoJewoJCXByaW50ZihMT0df
+UFJFRklYICJkZWxldGUgZXZlbnRfdGFza1xuIik7CgkJcnRfdGFza19kZWxldGUoJmV2ZW50X3Rh
+c2spOwoJCW15X3N0YXRlICY9IH5TVEFURV9UQVNLX0VWRU5UX0NSRUFURUQ7Cgl9Cn0KCnZvaWQg
+Y2F0Y2hfc2lnbmFsKGludCBzaWcpCnsKCWNsZWFudXBfYWxsKCk7CglwcmludGYoTE9HX1BSRUZJ
+WCAiZXhpdFxuIik7CglyZXR1cm47Cn0KCgp2b2lkIHdyaXRlX3Rhc2tfcHJvYyh2b2lkICphcmcp
+IHsKICBpbnQgcmV0OwogIHNzaXplX3Qgc3ogPSBzaXplb2YoUlRJTUUpOwogIHNzaXplX3Qgd3Jp
+dHRlbiA9IDA7CiAgdW5zaWduZWQgY2hhciBidWZbMTddID0gIkNBUFRBSU4gV0FTIEhFUkVcMCI7
+CiAgdW5zaWduZWQgbG9uZyBvdmVycnVuOwoKICByZXQgPSBydF90YXNrX3NldF9wZXJpb2RpYyhO
+VUxMLCBUTV9OT1csIHJ0X3RpbWVyX25zMnRpY2tzKHdyaXRlX3Rhc2tfcGVyaW9kX25zKSk7CiAg
+aWYgKHJldCkgewogICAgcHJpbnRmKFdUQVNLX1BSRUZJWCAiZXJyb3Igd2hpbGUgc2V0IHBlcmlv
+ZGljLCBjb2RlICVkXG4iLHJldCk7CiAgICBnb3RvIGV4aXRfd3JpdGVfdGFzazsKICB9CgogIHdo
+aWxlICgxKSB7CiAgICByZXQgPSBydF90YXNrX3dhaXRfcGVyaW9kKCZvdmVycnVuKTsKICAgIGlm
+IChyZXQpIHsKICAgICAgcHJpbnRmKFdUQVNLX1BSRUZJWCAiZXJyb3Igd2hpbGUgcnRfdGFza193
+YWl0X3BlcmlvZCwgY29kZSAlZFxuIixyZXQpOwogICAgICBnb3RvIGV4aXRfd3JpdGVfdGFzazsK
+ICAgIH0KICAgIHN6ID0gc2l6ZW9mKGJ1Zik7CiAgICB3cml0dGVuID0gcnRfZGV2X3dyaXRlKG15
+X2ZkXzAsICZidWYsIHNpemVvZihidWYpKTsKICAgIHByaW50ZihXVEFTS19QUkVGSVggInJ0X2Rl
+dl93cml0ZSB3cml0dGVuPSVkIHN6PSVkXG4iLCB3cml0dGVuLCBzeik7CiAgICBpZiAod3JpdHRl
+biAhPSBzeiApIHsKICAgICAgaWYgKHdyaXR0ZW4gPCAwICkgewogICAgICAgIHByaW50ZihXVEFT
+S19QUkVGSVggImVycm9yIHdoaWxlIHJ0X2Rldl93cml0ZSwgY29kZSAlZFxuIix3cml0dGVuKTsK
+ICAgICAgfSBlbHNlIHsKICAgICAgICBwcmludGYoV1RBU0tfUFJFRklYICJvbmx5ICVkIC8gJWQg
+Ynl0ZSB0cmFuc21pdHRlZFxuIix3cml0dGVuLCBzeik7CiAgICAgIH0KICAgICAgZ290byBleGl0
+X3dyaXRlX3Rhc2s7CiAgICB9CiAgfQpleGl0X3dyaXRlX3Rhc2s6CgljbG9zZV9hbGxfZmlsZSgp
+OwogIHByaW50ZihXVEFTS19QUkVGSVggImV4aXRcbiIpOwp9CgoKCnZvaWQgZXZlbnRfdGFza19w
+cm9jKHZvaWQgKmFyZykKewoKCWludCByZXQ7CgkKCSAgc3NpemVfdCBzeiA9IHNpemVvZihSVElN
+RSk7CgkgIHNzaXplX3QgcmVkID0gMDsKCSAgc3RydWN0IHJ0c2VyX2V2ZW50IHJ4X2V2ZW50OwoJ
+ICBpbnQgdGFpbGxlX3JlY2VwdGlvbjsKCSAgdW5zaWduZWQgY2hhciBvY3RldF9yZWN1WzUwXTsK
+CSAgaW50IGk7CgoJICB3aGlsZSAoMSkgewoJICAgIC8qIHdhaXRpbmcgZm9yIGV2ZW50ICovCgkJ
+cHJpbnRmKCJMYW5jZW1lbnQgYXR0ZW50ZSBldmVudCB0YXNrXG4iKTsKCSAgICByZXQgPSBydF9k
+ZXZfaW9jdGwobXlfZmRfMCwgUlRTRVJfUlRJT0NfV0FJVF9FVkVOVCwgJnJ4X2V2ZW50ICk7Cgkg
+ICAgaWYgKHJldCkgewoJICAgICAgcHJpbnRmKEVUQVNLX1BSRUZJWCAiZXJyb3Igd2hpbGUgUlRT
+RVJfUlRJT0NfV0FJVF9FVkVOVCwgY29kZSAlZFxuIixyZXQpOwoJICAgICAgZ290byBleGl0X2V2
+ZW50X3Rhc2s7CgkgICAgfQoJICAgIHByaW50ZihFVEFTS19QUkVGSVggIkV2ZW5lbWVudCBkw6l0
+ZWN0w6lcbiIpOwoJICAgIAoJICAgIHRhaWxsZV9yZWNlcHRpb24gPSByeF9ldmVudC5yeF9wZW5k
+aW5nOwoJICAgIHByaW50ZigiQ0FSQUNURVJJU1RJUVVFIGRlIEwnRVZFTlQgOlxuIik7CgkgICAg
+cHJpbnRmKCJldmVudHMgPSAlZCA6XG4iLHJ4X2V2ZW50LmV2ZW50cyk7CgkgICAgcHJpbnRmKCJy
+eF9wZW5kaW5nID0gJWQgOlxuIixyeF9ldmVudC5yeF9wZW5kaW5nKTsKCSAgICBwcmludGYoImxh
+c3QgdGltZXN0YW1wID0gJWQgOlxuIixyeF9ldmVudC5sYXN0X3RpbWVzdGFtcCk7CgkgICAgcHJp
+bnRmKCJyeHBlbmRfdGltZXN0YW1wID0gJWQgOlxuIixyeF9ldmVudC5yeHBlbmRfdGltZXN0YW1w
+KTsKCSAgICBydF9kZXZfcmVhZChteV9mZF8wLCAmb2N0ZXRfcmVjdSwgMTcpOwoJICAgIC8vb2N0
+ZXRfcmVjdVt0YWlsbGVfcmVjZXB0aW9uXSA9ICdcMCc7CgkgICAgcHJpbnRmKCIhISEhISEhISBN
+ZXNzYWdlIFJlY3UgZGUgJWQgY2hhciBzdXIgQ09NMCAhISEhISEhISEhXG4iLCB0YWlsbGVfcmVj
+ZXB0aW9uKTsKCSAgICBwcmludGYoRVRBU0tfUFJFRklYICIgPSVzXG4iLG9jdGV0X3JlY3UpOwoJ
+ICB9CmV4aXRfZXZlbnRfdGFzazoKCWNsb3NlX2FsbF9maWxlKCk7CiAgCXByaW50ZihFVEFTS19Q
+UkVGSVggImV4aXRcbiIpOwp9CgoKCmludCBtYWluKGludCBhcmdjLCBjaGFyKiBhcmd2W10pCnsK
+CWludCByZXQgPSAwOwoJc2lnbmFsKFNJR1RFUk0sIGNhdGNoX3NpZ25hbCk7CglzaWduYWwoU0lH
+SU5ULCBjYXRjaF9zaWduYWwpOwovLwoJcHJpbnRmKExPR19QUkVGSVggIlBSRVNTIENUUkwtQyB0
+byBFWElUXG4iKTsKCS8qIG5vIG1lbW9yeS1zd2FwcGluZyBmb3IgdGhpcyBwcm9ncmFtbSAqLwoJ
+bWxvY2thbGwoTUNMX0NVUlJFTlQgfCBNQ0xfRlVUVVJFKTsKCgkvKiBvcGVuIFBPUlRfMCAqLwoJ
+bXlfZmRfMCA9IHJ0X2Rldl9vcGVuKCBQT1JUXzAsIDApOwoJaWYgKG15X2ZkXzAgPCAwKQoJewoJ
+CXByaW50ZihMT0dfUFJFRklYICJjYW4ndCBvcGVuICVzIGNhciBteV9mZCA9ICVkXG4iLCBQT1JU
+XzAsIG15X2ZkXzApOwoJCWdvdG8gZXJyb3I7Cgl9CglteV9zdGF0ZSB8PSBTVEFURV9GSUxFX09Q
+RU5FRF9QT1JUXzA7CgogICAgcHJpbnRmKCJMZXMgZGV2aWNlcyBzb250IG91dmVydHMgYXZlYyBz
+dWNjw6lzXG4iKTsKCiAgICAvKiBDb25maXVncmF0aW9uIGR1IFBPUlRfMCAqLwogICAgcmV0ID0g
+cnRfZGV2X2lvY3RsKG15X2ZkXzAsIFJUU0VSX1JUSU9DX1NFVF9DT05GSUcsICZzZXJfY29uZmln
+XzApOwogICAgaWYgKHJldCkKICAgIHsKICAgIAlwcmludGYoTE9HX1BSRUZJWCAiZXJyb3Igd2hp
+bGUgUlRTRVJfUlRJT0NfU0VUX0NPTkZJRywgY29kZSAlZFxuIixyZXQpOwogICAgCWdvdG8gZXJy
+b3I7CiAgICB9CgogICAgcHJpbnRmKExPR19QUkVGSVggIkNvbmZpZ3VyYXRpb24gZGVzIGRldmlj
+ZXMgYXZlYyBzdWNjw6lzXG4iKTsKCiAgICAvKiBjcmVhdGUgZXZlbnRfdGFzayAqLwogICAgcmV0
+ID0gcnRfdGFza19jcmVhdGUoJmV2ZW50X3Rhc2ssImV2ZW50X3Rhc2siLDAsNTIsMCk7CiAgICBp
+ZiAocmV0KQogICAgewogICAgICAJcHJpbnRmKExPR19QUkVGSVggImZhaWxlZCB0byBjcmVhdGUg
+ZXZlbnRfdGFzaywgY29kZSAlZFxuIixyZXQpOwogICAgICAgCWdvdG8gZXJyb3I7CiAgICB9CiAg
+ICBteV9zdGF0ZSB8PSBTVEFURV9UQVNLX0VWRU5UX0NSRUFURUQ7CiAgICBwcmludGYoTE9HX1BS
+RUZJWCAiTGEgdGFjaGUgZXZlbnQtdGFzayBjcsOpw6llIGF2ZWMgc3VjY8Opc1xuIik7CgogICAg
+LyogY3JlYXRlIHdyaXRlX3Rhc2sgKi8KICAgIHJldCA9IHJ0X3Rhc2tfY3JlYXRlKCZ3cml0ZV90
+YXNrLCJ3cml0ZV90eGVub21haS1oZWxwQGduYS5vcmdhc2siLDAsNTAsMCk7CiAgICBpZiAocmV0
+KQogICAgewogICAgCXByaW50ZihMT0dfUFJFRklYICJmYWlsZWQgdG8gY3JlYXRlIHdyaXRlX3Rh
+c2ssIGNvZGUgJWRcbiIscmV0KTsKICAgIAlnb3RvIGVycm9yOwogICAgfQogICAgbXlfc3RhdGUg
+fD0gU1RBVEVfVEFTS19XUklURV9DUkVBVEVEOwogICAgcHJpbnRmKExPR19QUkVGSVggIkxhIHRh
+Y2hlIHdyaXRlLXRhc2sgY3LDqcOpZSBhdmVjIHN1Y2PDqXNcbiIpOwoKICAgIC8qIHN0YXJ0IHdy
+aXRlX3Rhc2sgKi8KICAgIHByaW50ZihMT0dfUFJFRklYICJEZW1hcnJhZ2UgZGUgbGEgdGFjaGUg
+d3JpdGUtdGFza1xuIik7CiAgICByZXQgPSBydF90YXNrX3N0YXJ0KCZ3cml0ZV90YXNrLCZ3cml0
+ZV90YXNrX3Byb2MsTlVMTCk7CiAgICBpZiAocmV0KQogICAgewogICAgCXByaW50ZihMT0dfUFJF
+RklYICJmYWlsZWQgdG8gc3RhcnQgd3JpdGVfdGFzaywgY29kZSAlZFxuIixyZXQpOwogICAgCWdv
+dG8gZXJyb3I7CiAgICB9CgogICAgLyogc3RhcnQgZXZlbnRfdGFzayAqLwogICAgcHJpbnRmKExP
+R19QUkVGSVggIkRlbWFycmFnZSBkZSBsYSB0YWNoZSBldmVudC10YXNrXG4iKTsKICAgIHJldCA9
+IHJ0X3Rhc2tfc3RhcnQoJmV2ZW50X3Rhc2ssJmV2ZW50X3Rhc2tfcHJvYyxOVUxMKTsKICAgIGlm
+IChyZXQpCiAgICB7CiAgICAJcHJpbnRmKExPR19QUkVGSVggImZhaWxlZCB0byBzdGFydCBldmVu
+dF90YXNrLCBjb2RlICVkXG4iLHJldCk7CiAgICAJZ290byBlcnJvcjsKICAgIH0KCiAgCXBhdXNl
+KCk7CgogICAgcmV0dXJuIDA7CgplcnJvcjoKICAJY2xlYW51cF9hbGwoKTsKCXJldHVybiByZXQ7
+Cn0K
+
+------_=_NextPart_001_01C84228.2C960676
+Content-Type: application/octet-stream;
+	name="Makefile"
+Content-Transfer-Encoding: base64
+Content-Description: Makefile
+Content-Disposition: attachment;
+	filename="Makefile"
+
+VEFSR0VUID0gdGVzdAoKaWZlcSAoJChYRU5PRElSKSwpCiAgICBYRU5PRElSID0gL3Vzci94ZW5v
+bWFpCmVuZGlmCgpYRU5PX0xJQl9ESVIgPSAkKHNoZWxsICQoWEVOT0RJUikvYmluL3hlbm8tY29u
+ZmlnIC0tbGlicmFyeS1kaXIpCgpDQyAgICAgPSAkKHNoZWxsICQoWEVOT0RJUikvYmluL3hlbm8t
+Y29uZmlnIC0tY2MpCkNGTEFHUyA9IC1nIC1JICQoWEVOT0RJUikvaW5jbHVkZSAtbHB0aHJlYWQg
+LWxuYXRpdmUgLWxydGRtIC1MICQoWEVOT19MSUJfRElSKSAtV2FsbCAtTzIKI0NGTEFHUyA9IC1n
+IC1JICQoWEVOT0RJUikvaW5jbHVkZSAtbHB0aHJlYWQgLWxydGRtIC1MICQoWEVOT19MSUJfRElS
+KSAtV2FsbCAtTzIKCgoKYWxsOiAkKFRBUkdFVCkKCiQoVEFSR0VUKTogJChUQVJHRVQpLmMKCmNs
+ZWFuOgoJJChSTSkgJChUQVJHRVQpCg==
+
+------_=_NextPart_001_01C84228.2C960676--
 
