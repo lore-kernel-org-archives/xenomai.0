@@ -1,12 +1,13 @@
+Message-ID: <2ff1a98a0712190838n68ea4dacs9a27834e07de4939@domain.hid>
+Date: Wed, 19 Dec 2007 17:38:42 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <20071219150622.GA15974@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-ID: <18286.24088.191796.349268@domain.hid>
-Date: Sun, 23 Dec 2007 14:09:44 +0100
-In-Reply-To: <0B45E93C5FF65740AEAE690BF3848B7A4AB2DF@rennsmail04.eu.thmulti.com>
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB2DF@rennsmail04.eu.thmulti.com>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] RTDM mmap and DMA
+Content-Disposition: inline
+References: <20071219150622.GA15974@domain.hid>
+Subject: Re: [Xenomai-help] PIOX irq problems with at91sam9260
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,49 +17,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fillod Stephane <stephane.fillod@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Juan Antonio Garcia Redondo <juan-antonio.garcia@domain.hid>
+Cc: jagarcia@domain.hid, xenomai@xenomai.org
 
-Fillod Stephane wrote:
- > Perrine Martignoni wrote:
- > >Currently, I write an RTDM module and I would like to do DMA and mmap
- > to perform transfers who have hard constraints.
- > >I would like to know if there is an example in a driver who would help
- > me to do this.
- > 
- > I'm looking for the same need, except I'm not using RTDM, and everything
- > is in userland. Using the attached patch against Xenomai 2.4.0, I hope
- > to make it to work with something like this:
- > 
- >         RT_HEAP_INFO info;
- >         RT_HEAP heap;
- >         void *user_addr;	/* DMA buffer, user access */
- >         unsigned long dma_addr;	/* for use with the DMA controller */
- > 
- >         /* Allocate memory, suitable for DMA. This occurs before
- > entering RT land. */
- >         err = rt_heap_create (&heap,
- >                         name,
- >                         heapsz,
- >                         H_SHARED|H_DMA);
- >         if (err) { /* ... */ }
- > 
- >         err = rt_heap_alloc (&heap, 0, TM_INFINITE, &user_addr);
- >         if (err) { /* ... */ }
- > 
- >         err = rt_heap_inquire (&heap, &info);
- >         if (err) { /* ... */ }
- > 
- >         dma_addr = info.phys_addr;
- > 
- > Any comments?
+On Dec 19, 2007 4:06 PM, Juan Antonio Garcia Redondo
+<juan-antonio.garcia@domain.hid> wrote:
+> Hello list,
+>
+> I'm testing xenomai 2.4.0 (kernel 2.6.20, adeos-ipipe-2.6.20-arm-1.8-02)
+> over a at91sam9260 based board. The initial tests runs OK but I've problems
+> with the PIOX interrupts. It seems that, to work properly with the
+> interrupt, I need to install first the interrupt on the linux side.
+>
+> Environment:
+>         o A sligtly modified user_irq.c from the xenomai
+>         documentation.
+>         o A normal linux kernel module which does nothing except
+>         catching the irq received as parameter.
+>         o PIB_11 y PIOB_10 in short circuit.
+>
+>
+> Test 1:
+>         o External gpio programming as input(PIOB_11)
+>         # test_irq 75
+>                 Waiting for irq 75 ...
+>
+>         o Nothing occurs although I've set and reset the PIOB_10. The
+>         first thing I see is that the PIOB_IMR is 0x000000 when I'll expect
+>         0x00000800.
+>
+> Test 2:
+>         o External gpio programming as input(PIOB_11)
+>         # insmod irqena.ko gpio_in=75
+>         0 Now the PIOB_IMR is 0x00000800
+>         # rmmod irqena
+>         # test_irq 75
+>             Waiting for irq 75
+>         o External gpio PIOB_10 set and reset.
+>         #  ..........
+>            Waiting for irq 75
+>            Arrives irq -> 1
+>            Arrives irq -> 1
+>            ..................
+>
+> I've attached the tests programs.
+>
+> Any hints ?
 
-You patch looks OK. However, a small detail: can not we use the constant
-KMALLOC_MAX_SIZE defined in linux/slab.h instead of defining our own
-constant ?
+There is probably a difference (in term of the irq chip callbacks
+called) between request_irq, used by the Linux driver, and
+ipipe_virtualize_irq, used by Xenomai interrupts management routines.
+The problem is to find this difference; at first sight, it is not
+obvious
 
 -- 
-
-
-					    Gilles Chanteperdrix.
+                                               Gilles Chanteperdrix
 
