@@ -1,50 +1,67 @@
-Date: Tue, 18 Dec 2007 09:32:50 -0800 (PST)
-From: Jonathan Day <imipak@domain.hid>
+Message-ID: <25501221.1198142506055.JavaMail.ngmail@domain.hid>
+Date: Thu, 20 Dec 2007 10:21:46 +0100 (CET)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
+Subject: Re: [Xenomai-help] [RTnet-users] /proc/xenomai/affinity and
+	T_CPU(n) in
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: jan.kiszka@domain.hid, mathias_koehrer@domain.hid
+
+	rt_task_create
+Cc: xenomai@xenomai.org, rtnet-users@domain.hid
+In-Reply-To: <47693FE6.30707@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Message-ID: <835557.38744.qm@domain.hid>
-Subject: [Adeos-main] Using ADEOS to run multiple Linux kernels
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+References: <47693FE6.30707@domain.hid> <5864711.1198077318353.JavaMail.ngmail@domain.hid>
+X-ngMessageSubType: MessageSubType_MAIL
+X-WebmailclientIP: 91.32.110.150
 
-Hi,
+Hi Jan,
 
-According to the white papers and other documentation
-on the ADEOS site, it is possible to use the ADEOS
-nanokernel to run multiple kernels in parallel.
-However, what I am not entirely sure on is how you
-would actually do so.
+does this mean that the value of /proc/xenomai/affinity is only relevant fo=
+r creation of a new task?
+I.e., once it is created I can modify it without "destroying" anything in t=
+he already created tasks?=20
+If this is the case I think I get everything up and running following your =
+hint.
 
-What I am wanting to do is run two Linux kernels in
-parallel, minus the overheads of virtualization (I
-don't need it), where the only requirements are that
-if one Linux kernel crashes, it won't take out the
-other and that there's some way of restarting a
-crashed kernel.
+Perhaps the word "affinity" does not exactly describe the behaviour here as=
+ it is not only affinity but also=20
+"allowed CPUs for new tasks"....
 
-The documentation I can find suggests that ADEOS would
-be perfect for the job. It's lightweight, doesn't have
-anything I don't need, and is designed to run multiple
-kernels within it. The only bit left is to find an
-example, a HOWTO, or some other information on how I'd
-actually do something like this.
+Thanks a lot.
 
-Can anyone give me a recommendation on where I'd find
-the information I'd need?
+Regards
 
-Jonathan
+Mathias
 
 
 
-      ____________________________________________________________________________________
-Looking for last minute shopping deals?  
-Find them fast with Yahoo! Search.  http://tools.search.yahoo.com/newsearch/category.php?category=shopping
+>=20
+> Suggested procedure:
+> 1. set global affinity for RTnet and start up the stack
+> 2. set global affinity for your application (or open it) and start that
+>    one up
+>=20
+
+
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
+
+
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT F=DCR ALLE NEUEINSTEIGER
+Jetzt bei Arcor: g=FCnstig und schnell mit DSL - das All-Inclusive-Paket
+f=FCr clevere Doppel-Sparer, nur  29,95 Euro  inkl. DSL- und ISDN-Grundgeb=
+=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
