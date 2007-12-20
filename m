@@ -1,48 +1,51 @@
-Date: Mon, 17 Dec 2007 10:23:29 +0000 (GMT)
-From: Michael Trimarchi <trimarchimichael@domain.hid>
+Message-ID: <476A1B97.6060602@domain.hid>
+Date: Thu, 20 Dec 2007 08:36:55 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-701914227-1197887009=:83624"
-Message-ID: <530102.83624.qm@domain.hid>
-Subject: Re: [Adeos-main] at91sam9260
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: adeos-main@gna.org
+References: <f8f856500712180507q16d5c21bp56b45ec23ae5d36@domain.hid>
+In-Reply-To: <f8f856500712180507q16d5c21bp56b45ec23ae5d36@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Kernel hangs in initramfs with ipipe activated
+ (arch=ppc)
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: fabien <fabien.fb@domain.hid>
+Cc: xenomai@xenomai.org
 
---0-701914227-1197887009=:83624
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Hello,
 
-=0AHi,=0A>Wait a minute. You mean that you want more than 5000 interrupts b=
-y=0A>second ? Are you sure you do not get overruns with plain, unpatched=0A=
->Linux, if you load it sufficiently ?=0AIf you do a simple count ( 115200 b=
-ps ) considering buffer length =3D 1 the answer is yes.=0A=0A:)=0A=0Aregard=
-s Michael=0A=0APS work with linux=0A=0A=0A=0A=0A=0A      __________________=
-_________________ =0AL'email della prossima generazione? Puoi averla con la=
- nuova Yahoo! Mail: =0Ahttp://it.docs.yahoo.com/nowyoucan.html
---0-701914227-1197887009=:83624
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+fabien wrote:
+> hello,
+> 
+> I'm new to this list and Xenomai. I've ported a Linux 2.6 kernel on a
+> custom board based on MPC855T (PQ1). I'm able to boot my kernel
+> 2.6.23-6 (DENX) compiled with eldk 4.1 (uClibC) and run userspace
+> applications on flash filesystem without problems (Busybox). The
+> booloader is ppcboot 1.1.5. My uart is on SMC1.
 
-<html><head><style type=3D"text/css"><!-- DIV {margin:0px;} --></style></he=
-ad><body><div style=3D"font-family:times new roman, new york, times, serif;=
-font-size:10pt"><div style=3D"font-family: times new roman,new york,times,s=
-erif; font-size: 10pt;"><br><div style=3D"font-family: times new roman,new =
-york,times,serif; font-size: 12pt;">Hi,<br>&gt;Wait a minute. You mean that=
- you want more than 5000 interrupts by<br>&gt;second ? Are you sure you do =
-not get overruns with plain, unpatched<br>&gt;Linux, if you load it suffici=
-ently ?<br>If you do a simple count ( 115200 bps ) considering buffer lengt=
-h =3D 1 the answer is yes.<br><br>:)<br><br>regards Michael<br><br>PS work =
-with linux<br></div></div></div><br>=0A=0A=0A      <hr size=3D1><font face=
-=3D"Arial" size=3D"2">L'email della prossima generazione? Puoi averla con l=
-a <a href=3D"http://us.rd.yahoo.com/mail/it/taglines/gmail/nowyoucan/nextge=
-n/*http://it.docs.yahoo.com/nowyoucan.html">Nuova Yahoo! Mail</a></font></b=
-ody></html>
---0-701914227-1197887009=:83624--
+The old arch/ppc tree is deprecated and the removal is scheduled for
+middle of the next year. Any chance to move to "arch/powerpc"?
+
+> The prepare kernel script patchs correcly the kernel with
+> adeos-ipipe-2.6.23-ppc-1.6-00.patch. I'm based on arch=ppc :
+> scripts/prepare-kernel.sh
+> --linux=/opt/eldk/ppc_8xx/usr/src/linux-2.6-denx/
+> --adeos=ksrc/arch/powerpc/patches/adeos-ipipe-2.6.23-ppc-1.6-00.patch
+> --arch=ppc
+> 
+> When i try to boot with Xenomai support my kernel hangs.
+
+Support for MPC8xx boards in Linux 2.6 is still poor and rather
+experimental and you are likely the first one trying Xenomai with it. We
+still do not have a MPC8xx platform for testing under 2.6.
+
+Wolfgang.
 
