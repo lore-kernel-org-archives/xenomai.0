@@ -1,114 +1,55 @@
-Message-ID: <47782A6F.2060607@domain.hid>
-Date: Mon, 31 Dec 2007 00:31:59 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Fri, 21 Dec 2007 09:27:24 +0100
+From: Juan Antonio Garcia Redondo <juan-antonio.garcia@domain.hid>
+Message-ID: <20071221082724.GA9091@domain.hid>
+References: <20071219150622.GA15974@domain.hid>
+	<2ff1a98a0712190838n68ea4dacs9a27834e07de4939@domain.hid>
 MIME-Version: 1.0
-References: <4776D48E.7050002@domain.hid> <4777785F.2030903@domain.hid>
-	<4777D22A.1090805@domain.hid> <4777F7CA.3000305@domain.hid>
-In-Reply-To: <4777F7CA.3000305@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigEB3052FFE8170F5DD7D9303C"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Adeos-main] [PATCH 4/5] remove legacy code
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: rpm@xenomai.org
-Cc: adeos-main <adeos-main@gna.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2ff1a98a0712190838n68ea4dacs9a27834e07de4939@domain.hid>
+Subject: Re: [Xenomai-help] PIOX irq problems with at91sam9260
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: jagarcia@domain.hid, xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigEB3052FFE8170F5DD7D9303C
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+I've found a workaround for my problem, but I'm not sure if is the
+correct solution.
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> Jan Kiszka wrote:
->>>> This patch gets rid of code that is no longer needed or valid:
->>>>
->>>>  - x86_64 APIC frequency is now delivered via ipipe_request_tickdev
->>> Ack.
->>>
->>>>  - __ipipe_tick_irq is maintained via ipipe_update_tick_evtdev also =
-on
->>>>    x86_64
->>> Client RTOS may/do assume that timing is always delivered through the=
+First, my test program test_irq.c had an error, after request the irq,
+it have be enabled; anyway the problem persists because the
+__ipipe_mach_demux_irq find the irq disabled (gpio->depth = 1).
 
->>> local APIC timer on x86_64. We could merge that and allow the 8253 to=
- be
->>> used as the timer device, but this would not work in practice.
->> For forget HPET. There is no wiring of the timer IRQ to the APIC
->> anymore.
->=20
-> My point is that whatever timer IRQs the kernel routes to INT0, be them=
+My workaround:
++++ wrappers.h	2007-12-21 08:19:19.000000000 +0100
+@@ -74,8 +74,15 @@
+ #define rthal_irq_chip_disable(irq)  ({
+rthal_irq_descp(irq)->chip->disable(irq); 0; })
+ #define rthal_irq_chip_end(irq)      ({
+rthal_irq_descp(irq)->ipipe_end(irq, rthal_irq_descp(irq)); 0; })
+ typedef irq_handler_t rthal_irq_host_handler_t;
+-#define rthal_mark_irq_disabled(irq) (rthal_irq_desc_status(irq) |=
+IRQ_DISABLED)
+-#define rthal_mark_irq_enabled(irq) (rthal_irq_desc_status(irq) &=
+~IRQ_DISABLED)
++#define rthal_mark_irq_disabled(irq) do {              \
++            rthal_irq_desc_status(irq) |= IRQ_DISABLED; \
++            rthal_irq_descp(irq)->depth = 1;            \
++        } while(0);
++#define rthal_mark_irq_enabled(irq) do {                 \
++            rthal_irq_desc_status(irq) &= ~IRQ_DISABLED; \
++            rthal_irq_descp(irq)->depth = 0;             \
++        } while(0);
++#endif
 
-> from the HPET in legacy route replacement mode or from the i8253 with
-> some former routing, we currently rely on the local APIC timer vector.
-> No matter what, HPET it's just unsupported by Xenomai right now, so we
-> can't see any IRQ0 registered as our tick device interrupt.
+Regards,
+	Juan Antonio
 
-__ipipe_tick_irq, as it is used now, is reflecting Linux' tick IRQ, not
-necessarily the one that Xenomai prefers.
-
->=20
-> If your point is about allowing HPET to be used, then your patch
-> currently expects the HPET to be used in legacy replacement route mode,=
-
-> which is no more the default setup. In short, TIMER_IRQ may not be the
-
-static struct clock_event_device hpet_clockevent =3D {
-=2E..
-        .irq            =3D 0,
-
-which is TIMER_IRQ.
-
-> right -constant- value in the common case.
->=20
->  The result is that there is no difference between x86_32 and
->> x86_64 anymore, and that's what the code reflects.
->>
->> If the client RTOS is not yet fully prepared for this, this has to be
->> fixed. And only if there is no valid Linux configuration (e.g. HPET of=
-f)
->> that results in the same timer assignment as with 2.6.23, we need a
->> workaround at I-pipe level IMHO.
->>
->=20
-> Again, I see no basic issue in merging that patch, but the message is:
-> Xenomai still has to support more timer devices than the local APIC one=
-
-> on x86_64 (e.g. HPET), before this patch has any real upside for it. In=
-
-> short, it's ok with me, but I feel that we are still half-way from the
-> complete support.
-
-As long as the APIC is available to Xenomai, we should no longer worry
-about Linux using some other clockevent device. At least in theory. But
-I will carefully check again during this week if there are any
-regressions or .config limitation related to these hunks.
-
-Jan
-
-
---------------enigEB3052FFE8170F5DD7D9303C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.4-svn0 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFHeCp3niDOoMHTA+kRAhYXAJ9GxX8e0z7KNF1MOkCbUrs1AphxHgCfSm9X
-0gRfDjTzo4r19itk5SkEBRA=
-=gwxH
------END PGP SIGNATURE-----
-
---------------enigEB3052FFE8170F5DD7D9303C--
 
