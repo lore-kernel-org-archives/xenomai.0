@@ -1,12 +1,14 @@
+Message-ID: <476E6D11.7080408@domain.hid>
+Date: Sun, 23 Dec 2007 15:13:37 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+References: <200712161158.20969.paul_c@domain.hid>
+In-Reply-To: <200712161158.20969.paul_c@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-ID: <18282.49629.159795.612417@domain.hid>
-Date: Thu, 20 Dec 2007 20:26:21 +0100
-In-Reply-To: <456258.24487.qm@domain.hid>
-References: <456258.24487.qm@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Adeos-main] at91sam9260
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Adeos-main] [PATCH] ipipe fix for PowerPC & SMP
+Reply-To: rpm@xenomai.org
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,33 +17,22 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Michael Trimarchi <trimarchimichael@domain.hid>
+To: Paul <paul_c@domain.hid>
 Cc: adeos-main@gna.org
 
-Michael Trimarchi wrote:
- > Hi,
- > 
- > > Ok. Could you try something ? It will work with I-pipe only but will
- > > break Xenomai, so do not try to run Xenomai over this modification.
- > > 
- > 
- > I tried the adeos-2.6.20-arm-1.8-02 patch and linux 2.6.20 and  I obtained the
- > same results. When the system is not loaded I can't receive from the serial
- > line using the adeos patch and null modem cable. 
- > 
- > AT91sam9260 8MB ram (using filesystem on ramdisk)
- > I removed spi flash support, mmc support.
- > I have only serial driver and using lrz for receiving file
- > 
- > Can I do some tests for you using my board? Do you have and updated patch 
- > for linux 2.6.23?
+Paul wrote:
+> Attached, a trivial patch to fix a compile time error when building an SMP 
+> kernel for powerpc - I suspect this affects all patches for this 
+> architecture, not just the current 2.6.21 & 2.6.23 releases.
+> 
 
-No, patch for Linux 2.6.23 is not there yet. Current I-pipe patch has
-performance problems (probably a spurious interrupts masking section of
-around 100us) which I would like to find first.
+We don't support SMP platforms over 2.6.2[01]/powerpc, but this is
+indeed applicable to 2.6.23. The funny thing is that GCC 4.2.0 for
+powerpc64 does not seem to have any problem with this, and fortunately
+generates the right offset out of a wrong expression...
+
+Applied, thanks.
 
 -- 
-
-
-					    Gilles Chanteperdrix.
+Philippe.
 
