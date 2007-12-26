@@ -1,12 +1,12 @@
-Message-ID: <477275E0.7080001@domain.hid>
-Date: Wed, 26 Dec 2007 16:40:16 +0100
+Message-ID: <477275E6.9090306@domain.hid>
+Date: Wed, 26 Dec 2007 16:40:22 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigEA9B7698D0C7C03730DB3A96"
+	boundary="------------enig070785F1A2FC8972C349A9F4"
 Sender: jan.kiszka@domain.hid
-Subject: [Adeos-main] [PATCH 3/3] i386: Cleanup root IRQ trampolines
+Subject: [Adeos-main] [PATCH 1/3] i386: fix tracking of __ipipe_tick_irq
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -19,144 +19,124 @@ To: adeos-main <adeos-main@gna.org>
 Cc: Philippe Gerum <rpm@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigEA9B7698D0C7C03730DB3A96
+--------------enig070785F1A2FC8972C349A9F4
 Content-Type: multipart/mixed;
- boundary="------------020206040105030602080707"
+ boundary="------------030706070102030309060904"
 
 This is a multi-part message in MIME format.
---------------020206040105030602080707
+--------------030706070102030309060904
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Simplifies xirq trampoline and applies the xirq refactorings to
-virq_handler too.
-
-Merry Christmas and all the best for 2008 to everyone!
+The existing algorithm to track the Linux tick IRQ breaks when other
+clockevent drivers than PIT or LAPIC are involved (HPET...?). This patch
+fixes the logic by pushing updates to the spot where they occur - into
+the clockevent layer.
 
 Jan
 
---------------020206040105030602080707
+--------------030706070102030309060904
 Content-Type: text/x-patch;
- name="cleanup-root-irq-trampolines-i386.patch"
+ name="fix-ipipe_tick_irq-definition-i386.patch"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline;
- filename="cleanup-root-irq-trampolines-i386.patch"
+ filename="fix-ipipe_tick_irq-definition-i386.patch"
 
 ---
- include/asm-i386/ipipe.h |   78 ++++++++++++++++++++++++----------------=
--------
- 1 file changed, 40 insertions(+), 38 deletions(-)
+ arch/i386/kernel/ipipe.c  |   11 +----------
+ include/asm-i386/ipipe.h  |   17 ++++++++++++++++-
+ kernel/time/tick-common.c |    4 ++++
+ 3 files changed, 21 insertions(+), 11 deletions(-)
 
+Index: linux-2.6.23.12-xeno/arch/i386/kernel/ipipe.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.23.12-xeno.orig/arch/i386/kernel/ipipe.c
++++ linux-2.6.23.12-xeno/arch/i386/kernel/ipipe.c
+@@ -50,9 +50,7 @@
+=20
+ extern struct clock_event_device *global_clock_event;
+=20
+-extern struct clock_event_device pit_clockevent;
+-
+-int __ipipe_tick_irq;
++int __ipipe_tick_irq =3D TIMER_IRQ;
+=20
+ DEFINE_PER_CPU(struct pt_regs, __ipipe_tick_regs);
+=20
+@@ -220,13 +218,6 @@ void __init __ipipe_enable_pipeline(void
+ 			     IPIPE_STDROOT_MASK);
+ #endif /* CONFIG_X86_MCE_P4THERMAL */
+=20
+-	__ipipe_tick_irq =3D global_clock_event =3D=3D &pit_clockevent ? 0
+-		: ipipe_apic_vector_irq(LOCAL_TIMER_VECTOR);
+-
+-#else	/* !CONFIG_X86_LOCAL_APIC */
+-
+-	__ipipe_tick_irq =3D 0;
+-
+ #endif	/* CONFIG_X86_LOCAL_APIC */
+=20
+ #ifdef CONFIG_SMP
 Index: linux-2.6.23.12-xeno/include/asm-i386/ipipe.h
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 --- linux-2.6.23.12-xeno.orig/include/asm-i386/ipipe.h
 +++ linux-2.6.23.12-xeno/include/asm-i386/ipipe.h
-@@ -141,11 +141,7 @@ __ipipe_call_root_xirq_handler(unsigned=20
- 		"pushl %%ds\n\t"
- 		"pushl %%eax\n\t"
- 		"pushl %%ebp\n\t"
--		"pushl %%edi\n\t"
--		"pushl %%esi\n\t"
--		"pushl %%edx\n\t"
--		"pushl %%ecx\n\t"
--		"pushl %%ebx\n\t"
-+		"subl  $5*4,%%esp	# rest can remain unsaved\n\t"
+@@ -107,6 +107,20 @@ void __ipipe_do_critical_sync(unsigned i
 =20
- 		"movl  %[regs],%%eax	# always pass tick regs\n\t"
- 		"call *%[handler]\n\t"
-@@ -158,33 +154,41 @@ __ipipe_call_root_xirq_handler(unsigned=20
- 		 : "eax");
- }
+ extern int __ipipe_tick_irq;
 =20
--#define __ipipe_call_root_virq_handler(ipd,irq) \
--   __asm__ __volatile__ ("pushfl\n\t" \
--                         "pushl %%cs\n\t" \
--                         "pushl $__virq_end\n\t" \
--	                 "pushl $-1\n\t" \
--                         "pushl %%fs\n\t" \
--	                 "pushl %%es\n\t" \
--	                 "pushl %%ds\n\t" \
--	                 "pushl %%eax\n\t" \
--	                 "pushl %%ebp\n\t" \
--	                 "pushl %%edi\n\t" \
--	                 "pushl %%esi\n\t" \
--	                 "pushl %%edx\n\t" \
--	                 "pushl %%ecx\n\t" \
--	                 "pushl %%ebx\n\t" \
--			 "pushl %2\n\t" \
--                         "pushl %%eax\n\t" \
--                         "call *%1\n\t" \
--			 "addl $8,%%esp\n\t" \
--			 : /* no output */ \
--			 : "a" (irq), "m" ((ipd)->irqs[irq].handler), "r" ((ipd)->irqs[irq].c=
-ookie))
--
--#define __ipipe_finalize_root_virq_handler() \
--   __asm__ __volatile__ ("jmp ret_from_intr\n\t" \
--	                 "__virq_end: cli\n" \
--			 : /* no output */ \
--			 : /* no input */)
-+void irq_enter(void);
-+void irq_exit(void);
++#ifdef CONFIG_X86_LOCAL_APIC
++#define ipipe_update_tick_evtdev(evtdev)				\
++	do {								\
++		if (strcmp((evtdev)->name, "lapic") =3D=3D 0)		\
++			__ipipe_tick_irq =3D				\
++				ipipe_apic_vector_irq(LOCAL_TIMER_VECTOR); \
++		else							\
++			__ipipe_tick_irq =3D TIMER_IRQ;			\
++	} while (0)
++#else
++#define ipipe_update_tick_evtdev(evtdev)				\
++	__ipipe_tick_irq =3D TIMER_IRQ
++#endif
 +
-+static inline void
-+__ipipe_call_root_virq_handler(unsigned irq,
-+			       void (*handler)(unsigned irq, void *cookie),
-+			       void *cookie)
-+{
-+	irq_enter();
-+	__asm__ __volatile__ (
-+		"pushfl\n\t"
-+		"pushl %%cs\n\t"
-+		"pushl $virq_end\n\t"
-+		"pushl %%eax		# dummy value\n\t"
-+		"pushl %%fs\n\t"
-+		"pushl %%es\n\t"
-+		"pushl %%ds\n\t"
-+		"pushl %%eax\n\t"
-+		"pushl %%ebp\n\t"
-+		"subl  $5*4,%%esp	# rest can remain unsaved\n\t"
-+
-+		"pushl %[cookie]\n\t"
-+		"pushl %[irq]\n\t"
-+		"call *%[handler]\n\t"
-+		"addl $8,%%esp\n\t" \
-+		 : /* no output */ \
-+		 : [irq] "rm" (irq), [handler] "rm" (handler),
-+		   [cookie] "rm" (cookie));
-+	irq_exit();
-+	__asm__ __volatile__ (
-+		"jmp ret_from_intr	# Linux IRQ epilogue\n\t"
-+		"virq_end: cli\n\t"
-+		 : /* no output */
-+		 : /* no input */);
-+}
+ DECLARE_PER_CPU(struct pt_regs, __ipipe_tick_regs);
 =20
- static inline unsigned long __ipipe_ffnz(unsigned long ul)
- {
-@@ -205,12 +209,10 @@ static inline unsigned long __ipipe_ffnz
- 			if (likely(!ipipe_virtual_irq_p(irq)))		\
- 				__ipipe_call_root_xirq_handler(		\
- 					irq, (ipd)->irqs[irq].handler); \
--			else {						\
--				irq_enter();				\
--				__ipipe_call_root_virq_handler(ipd,irq); \
--				irq_exit();				\
--				__ipipe_finalize_root_virq_handler();	\
--			}						\
-+			else						\
-+				__ipipe_call_root_virq_handler(		\
-+					irq, (ipd)->irqs[irq].handler,	\
-+					(ipd)->irqs[irq].cookie);	\
- 		} else {						\
- 			__clear_bit(IPIPE_SYNC_FLAG, &ipipe_cpudom_var(ipd, status)); \
- 			ipd->irqs[irq].handler(irq, ipd->irqs[irq].cookie); \
+ #define __ipipe_call_root_xirq_handler(ipd,irq) \
+@@ -205,7 +219,8 @@ int __ipipe_check_tickdev(const char *de
+=20
+ #else /* !CONFIG_IPIPE */
+=20
+-#define task_hijacked(p)	0
++#define ipipe_update_tick_evtdev(evtdev)	do { } while (0)
++#define task_hijacked(p)			0
+=20
+ #endif /* CONFIG_IPIPE */
+=20
+Index: linux-2.6.23.12-xeno/kernel/time/tick-common.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.23.12-xeno.orig/kernel/time/tick-common.c
++++ linux-2.6.23.12-xeno/kernel/time/tick-common.c
+@@ -163,6 +163,10 @@ static void tick_setup_device(struct tic
+=20
+ 	td->evtdev =3D newdev;
+=20
++	/* I-pipe: derive global tick IRQ from CPU 0 */
++	if (cpu =3D=3D 0)
++		ipipe_update_tick_evtdev(newdev);
++
+ 	/*
+ 	 * When the device is not per cpu, pin the interrupt to the
+ 	 * current cpu:
 
---------------020206040105030602080707--
+--------------030706070102030309060904--
 
---------------enigEA9B7698D0C7C03730DB3A96
+--------------enig070785F1A2FC8972C349A9F4
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -165,10 +145,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.4-svn0 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFHcnXgniDOoMHTA+kRAjjGAJ90WoDOUJA1+w9FYIkSFbOSe/rMdwCeKdHv
-9grXLxl7QavvE+sTuXqNjdI=
-=ItX4
+iD8DBQFHcnXmniDOoMHTA+kRAjhxAKCCTXh9fJkS822099WeIKBf1FdZLwCZAWOQ
+wZy2xZYBBZ8B3DD4u0dgsJU=
+=U8TU
 -----END PGP SIGNATURE-----
 
---------------enigEA9B7698D0C7C03730DB3A96--
+--------------enig070785F1A2FC8972C349A9F4--
 
