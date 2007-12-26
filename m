@@ -1,56 +1,88 @@
-content-class: urn:content-classes:message
+Message-ID: <47727556.4090201@domain.hid>
+Date: Wed, 26 Dec 2007 16:37:58 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: base64
-Date: Thu, 20 Dec 2007 10:59:49 +0100
-Message-ID: <0C9896A4B6D338488AD6FFFE58BAEF1001EECF9D@serveur3.lgm.com>
-References: <0C9896A4B6D338488AD6FFFE58BAEF1001DB8EEF@serveur3.lgm.com>
-	<4762A57F.2020909@domain.hid>
-	<0C9896A4B6D338488AD6FFFE58BAEF1001EECC33@domain.hid>
-	<4767FA80.1060403@domain.hid>
-	<0C9896A4B6D338488AD6FFFE58BAEF1001EECCF9@domain.hid>
-	<476805F3.5000409@domain.hid>
-	<0C9896A4B6D338488AD6FFFE58BAEF1001EECDA2@domain.hid>
-	<4769C9CD.1000607@domain.hid>
-From: "DOURNES Guillaume" <Guillaume.DOURNES@lgm.fr>
-Subject: Re: [Xenomai-help] CP-118U RTDM Driver
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Maksym Veremeyenko <verem@domain.hid>
-Cc: xenomai@xenomai.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig37DA328393CAD4BD0296A1DF"
+Sender: jan.kiszka@domain.hid
+Subject: [Adeos-main] [PATCH 2/4] x86_64: fix TRACE_IRQS_OFF regression
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main <adeos-main@gna.org>
+Cc: Philippe Gerum <rpm@xenomai.org>
 
-SSBoYXZlIHNlZW4gSSB5b3VyIGV4YW1wbGUgdGhlIHByb2JsZW0gb2Ygc2hhcmVkIGludGVycnVw
-dC4NClNvLCBJIGNoYW5nZWQgdGhlIHBjaSBzbG90LCBhbmQgSSBteSBzb2Z0IHdvcmsgd2l0aCB0
-aGUgbW94YSBib2FyZC4NCg0KU28gdGhhbmsgeW91IHZlcnkgbXVjaCBmb3IgaGVscA0KIA0KR3Vp
-bGxhdW1lIERPVVJORVMgDQoNCi0tLS0tTWVzc2FnZSBkJ29yaWdpbmUtLS0tLQ0KRGXCoDogTWFr
-c3ltIFZlcmVtZXllbmtvIFttYWlsdG86dmVyZW1AbTFzdGVyZW8udHZdIA0KRW52b3nDqcKgOiBq
-ZXVkaSAyMCBkw6ljZW1icmUgMjAwNyAwMjo0OA0Kw4DCoDogRE9VUk5FUyBHdWlsbGF1bWUNCkNj
-wqA6IHhlbm9tYWktaGVscEBnbmEub3JnDQpPYmpldMKgOiBSZTogW1hlbm9tYWktaGVscF0gQ1At
-MTE4VSBSVERNIERyaXZlcg0KDQpET1VSTkVTIEd1aWxsYXVtZSDQv9C40YjQtdGCOg0KDQpJIGRp
-ZCBzb21lIHRlc3Qgd2l0aCBteSBDUC0xMThVIGJvYXJkIGluIGNvbmZpZ3VyYXRpb24NCiAgLSBs
-aW51eC0yLjYuMjMuMTINCiAgLSB4ZW5vbWFpIGZyb20gdHJ1bmsgcjMyNzkNCiAgLSBhZGVvcy1p
-cGlwZS0yLjYuMjMtaTM4Ni0xLjExLTAwLnBhdGNoDQooa2VybmVsIGNvbmZpZyBhdHRhY2hlZCkg
-QW5kIGZvdW5kIG5vIHByb2JsZW1zIHdpdGggYm9hcmQuDQoNCj4gSSBnaXZlIHlvdSBteSB0ZXN0
-IHNvdXJjZSBjb2RlIGFuZCB0aGUgbWFrZWZpbGUsIGJ1dCB0aGlzIHNvZnQgd29yayB3aXRoIG1v
-dGhlciBib2FyZCBzZXJpYWwgcG9ydC4NCmFjdHVhbGx5IGkgZGlkIG5vdCB1bmRlcnN0YW5kIHRo
-YXQgaXMgZ29hbCBvZiB0aGlzIGNvZGUgKGluIGFkZGl0aW9uYWwgDQpGcmVuY2ggaXMgZGlmZmlj
-dWx0IGZvciBtZSksIGJ1dCBpIHdvdWxkIGxpa2UgdG8gcHJvcG9zZSB5b3UgYW5vdGhlciBzZXQg
-DQpmb3IgdGVzdGluZy4gSSBjb2xsZWN0ZWQgYWxsIHBpZWNlcyBvZiBjb2RlIGkgZGlkIGR1cmlu
-ZyB0ZXN0aW5nIHNvbWUgDQpzZXJpYWwgY29ubmVjdGVkIGRldmljZSB3aXRoIHhlbm9tYWkgc2Vy
-aWFsIHJ0IGRyaXZlci4gUGxlYXNlIGZpbmQgDQpSRUFETUUgZm9yIHRlc3RpbmcgcHJvY2VkdXJl
-IGRlc2NyaXB0aW9uLg0KDQpBdHRhY2hlZCBhcmNoaXZlIGNvbnRhaW5zIHNvdXJjZSBmb3IgdGVz
-dGluZyBzZXJpYWwgbGluZSBpbiBydCBhbmQgDQpub24tcnQgbW9kZXMgKGFuZCBhbHNvIHVzZWZ1
-bCBmb3IgcGxheWluZyB3aXRoIGJpbmFyeSBzZXF1ZW5jZSByZXF1aXJlZCANCmJ5IHNvbWUgc2Vy
-aWFsIGF0dGFjaGVkIGNvbnRyb2xsZXJzL2RldmljZXMpLg0KDQpKYW4hDQpJcyBwb3NzaWJsZSB0
-byBpbmNsdWRlIHRoaXMgc291cmNlcyB0byB4ZW5vbWFpL2V4YW1wbGVzL3J0ZG0vcHJvZmlsZXMg
-dHJlZT8NCg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KTWFrc3lt
-IFZlcmVtZXllbmtvDQoNCg0K
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig37DA328393CAD4BD0296A1DF
+Content-Type: multipart/mixed;
+ boundary="------------070805080201010806070507"
+
+This is a multi-part message in MIME format.
+--------------070805080201010806070507
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
+
+We need to save rax across the IRQ exit tracing, as it carries
+information about how to return from interrupt.
+
+Jan
+
+
+
+--------------070805080201010806070507
+Content-Type: text/x-patch;
+ name="fix-irqtrace-thunk-x86_64.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="fix-irqtrace-thunk-x86_64.patch"
+
+---
+ arch/x86_64/kernel/entry.S |    2 ++
+ 1 file changed, 2 insertions(+)
+
+Index: linux-2.6.23.12-xeno_64/arch/x86_64/kernel/entry.S
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.23.12-xeno_64.orig/arch/x86_64/kernel/entry.S
++++ linux-2.6.23.12-xeno_64/arch/x86_64/kernel/entry.S
+@@ -567,10 +567,12 @@ END(stub_rt_sigreturn)
+=20
+ 	popq %rbp
+ 	pushq %rbp
++	pushq %rax
+ 	movq 8-ARGOFFSET+ORIG_RAX(%rbp), %rdi
+ 	leaq 8-ARGOFFSET+RIP-8(%rbp), %rbp
+ 	notq %rdi
+ 	call ipipe_trace_end
++	popq %rax
+ 	popq %rbp
+ 	pushq %rbp
+ #else
+
+
+
+--------------070805080201010806070507--
+
+--------------enig37DA328393CAD4BD0296A1DF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFHcnVWniDOoMHTA+kRAphFAJ9IgqoJjBF7KOq3bY4MH+1coYPzYQCfWt4N
+d4zvsB2oYckXtOl767QJMYA=
+=IUiK
+-----END PGP SIGNATURE-----
+
+--------------enig37DA328393CAD4BD0296A1DF--
 
