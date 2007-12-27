@@ -1,12 +1,13 @@
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Thu, 27 Dec 2007 12:33:42 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Message-ID: <18290.62470.714603.940223@domain.hid>
-Date: Thu, 27 Dec 2007 01:38:30 +0100
-In-Reply-To: <2ff1a98a0712200643u797cfad2ve3848d88feda3bea@domain.hid>
-References: <2ff1a98a0712200643u797cfad2ve3848d88feda3bea@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] Auto closing of file descriptors and fork.
+Content-Disposition: inline
+Message-Id: <200712271233.44101.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] Still an error in the simulator for v2.3.x
+Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,31 +17,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
- > Hi,
- > 
- > I have a problem with auto closing of file descriptors and fork. I
- > have an application (a modified pppd, to name it), which in a certain
- > mode (pppd "updetach" mode) opens some real-time file descriptors,
- > forks and exit the parent, continuing to use the file descriptors in
- > the child. The problem is that when exiting the parent, file
- > descriptors are automatically destroyed and therefore can not be used
- > in the child.
- > 
- > Any ideas for a fix ?
+Hi
 
-More precisely. We need to trap the "fork" event, and handle it in the
-skins event callbacks. We will need to create a new ppd structure for
-the new process, but what will we do with the skin objects ? If we keep
-the same objects for the child and increment a reference count, we will
-end up with an object that need to be inserted in two per-process
-lists. If we create new objects, how will we manage for user-space
-references (inherited accross fork) to remain valid ?
+Philippe fixed the error I reported in less than 6 minutes. Wonderful work!
+But my buildbot machines are a lot slower and take almost one hour
+for all builds.
+
+But now the simulator gives on the v2.3 branch again one of (rather silly and
+easily corrected errors) like this:
+Some problems were reported in:
+vxworks->t010823-2:../../../../xenomai/sim/skins/vxworks/testsuite/t010823-2.c:163: Expected sequence: SEQ("Test2",2004); got SEQ("Test2",1954)
+vxworks->t010823-2: ../../../../xenomai/sim/skins/vxworks/testsuite/t010823-2.c:166, test finished: 1 failures/ 33 tests
+For Details look at 
+http://ngiger.dyndns.org/buildbot/builders/sim_q/builds/29/steps/check_sim/logs/stdio
+and 
+http://ngiger.dyndns.org/buildbot/builders/sim_q/builds/29
+
+The other builds for the 2.3.x branch are okay.
+The failures from i386 and tqm will be fixed by correcting the buildbot configuration.
+
+Best regards
 
 -- 
-
-
-					    Gilles Chanteperdrix.
+Niklaus Giger
 
