@@ -1,10 +1,12 @@
-Message-ID: <8b3b30860712270704o1a7d0cbahe97a4e90e9455cbc@domain.hid>
-Date: Thu, 27 Dec 2007 16:04:12 +0100
-From: "Racconico Lambrati" <racconico.lambrati@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_11633_10479936.1198767852237"
-Subject: [Xenomai-help] update from fusion 0.9.1 to xenomai 2.4.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 27 Dec 2007 16:39:53 +0100
+Message-ID: <0B45E93C5FF65740AEAE690BF3848B7A4AB2FB@rennsmail04.eu.thmulti.com>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
+Subject: Re: [Xenomai-help] RTDM mmap and DMA
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,39 +16,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-------=_Part_11633_10479936.1198767852237
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Gilles Chanteperdrix wrote:
+>Fillod Stephane wrote:
+> > Perrine Martignoni wrote:
+> > >Currently, I write an RTDM module and I would like to do DMA and
+mmap
+> > to perform transfers who have hard constraints.
+> > >I would like to know if there is an example in a driver who would
+help
+> > me to do this.
+> >=20
+> > I'm looking for the same need, except I'm not using RTDM, and
+everything
+> > is in userland. Using the attached patch against Xenomai 2.4.0, I
+hope
+> > to make it to work with something like this:
+>
+>I propose the attached modifications. Is it Ok for you ?
 
-Hi.
+Yes, your patch is much cleaner, esp. wrt KMALLOC_MAX_SIZE which I was
+not aware of.
 
-I've update my system to xenomai 2.4.0 from fusion 0.9.1 using vxworks skin
+The documentation needs an update, and a link to RT_HEAP_INFO.
+Does any Doxygen guru knows how to make rt_heap_inquire a hyperlink
+in the above chunk?
 
-I used http://www.captain.at/xenomai-porting-fusion.php to make the porting
-of my application.
+--- ksrc/skins/native/heap.c    17 Dec 2007 14:36:15 -0000      1.6
++++ ksrc/skins/native/heap.c    27 Dec 2007 15:23:06 -0000
+@@ -201,8 +201,8 @@
+  *
+  * - H_DMA causes the block pool associated to the heap to be
+  * allocated in physically contiguous memory, suitable for DMA
+- * operations with I/O devices. A 128Kb limit exists for @a heapsize
+- * when this flag is passed.
++ * operations with I/O devices. The physical address of the
++ * heap can be obtained by a call to rt_heap_inquire.
+  *
+  * @return 0 is returned upon success. Otherwise:
+  *
+--- include/native/heap.h       17 Dec 2007 14:36:09 -0000      1.2
++++ include/native/heap.h       27 Dec 2007 15:34:22 -0000
+@@ -34,6 +34,10 @@
+ #define H_SINGLE   0x400       /* Manage as single-block area. */
+ #define H_SHARED   (H_MAPPABLE|H_SINGLE) /* I.e. shared memory segment.
+*/
 
-now I have this linker problem:
++/** Structure containing heap-information useful to users.
++ *
++ *  @see rt_heap_inquire()
++ */
+ typedef struct rt_heap_info {
 
-... undefined reference to 'printk'
-... undefined reference to 'intUnlock'
-... undefined reference to 'intLock'
-... undefined reference to 'sysClkConnect'
+     int nwaiters;              /* !< Number of pending tasks. */
 
-could you give me an hint?
-
-thanks, Racconico
-
-------=_Part_11633_10479936.1198767852237
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hi.<br><br>I&#39;ve update my system to xenomai 2.4.0 from fusion 0.9.1 using vxworks skin<br><br>I used <a href="http://www.captain.at/xenomai-porting-fusion.php">http://www.captain.at/xenomai-porting-fusion.php</a> to make the porting of my application.
-<br><br>now I have this linker problem:<br><br>... undefined reference to &#39;printk&#39;<br>... undefined reference to &#39;intUnlock&#39;<br>... undefined reference to &#39;intLock&#39;<br>... undefined reference to &#39;sysClkConnect&#39;
-<br><br>could you give me an hint?<br><br>thanks, Racconico<br>
-
-------=_Part_11633_10479936.1198767852237--
+Thanks!
+--=20
+Stephane
 
