@@ -1,13 +1,13 @@
-Message-ID: <2ff1a98a0712270743h545e7de4ta5707d6caecc9743@domain.hid>
-Date: Thu, 27 Dec 2007 16:43:20 +0100
+Message-ID: <2ff1a98a0712270815r30b5e19eycf6fb44224d2ea83@domain.hid>
+Date: Thu, 27 Dec 2007 17:15:58 +0100
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <0B45E93C5FF65740AEAE690BF3848B7A4AB2FB@rennsmail04.eu.thmulti.com>
+In-Reply-To: <8b3b30860712270704o1a7d0cbahe97a4e90e9455cbc@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB2FB@rennsmail04.eu.thmulti.com>
-Subject: Re: [Xenomai-help] RTDM mmap and DMA
+References: <8b3b30860712270704o1a7d0cbahe97a4e90e9455cbc@domain.hid>
+Subject: Re: [Xenomai-help] update from fusion 0.9.1 to xenomai 2.4.0
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,37 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fillod Stephane <stephane.fillod@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Racconico Lambrati <racconico.lambrati@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Dec 27, 2007 4:39 PM, Fillod Stephane <stephane.fillod@domain.hid> wrote:
+On Dec 27, 2007 4:04 PM, Racconico Lambrati
+<racconico.lambrati@domain.hid> wrote:
+> Hi.
 >
-> Gilles Chanteperdrix wrote:
-> >Fillod Stephane wrote:
-> > > Perrine Martignoni wrote:
-> > > >Currently, I write an RTDM module and I would like to do DMA and
-> mmap
-> > > to perform transfers who have hard constraints.
-> > > >I would like to know if there is an example in a driver who would
-> help
-> > > me to do this.
-> > >
-> > > I'm looking for the same need, except I'm not using RTDM, and
-> everything
-> > > is in userland. Using the attached patch against Xenomai 2.4.0, I
-> hope
-> > > to make it to work with something like this:
-> >
-> >I propose the attached modifications. Is it Ok for you ?
+> I've update my system to xenomai 2.4.0 from fusion 0.9.1 using vxworks skin
 >
-> Yes, your patch is much cleaner, esp. wrt KMALLOC_MAX_SIZE which I was
-> not aware of.
+> I used http://www.captain.at/xenomai-porting-fusion.php to make the porting
+> of my application.
 >
-> The documentation needs an update, and a link to RT_HEAP_INFO.
-> Does any Doxygen guru knows how to make rt_heap_inquire a hyperlink
-> in the above chunk?
+> now I have this linker problem:
+>
+> ... undefined reference to 'printk'
+> ... undefined reference to 'intUnlock'
+> ... undefined reference to 'intLock'
+> ... undefined reference to 'sysClkConnect'
+>
+> could you give me an hint?
 
-I seem to remember that you have to write ::rt_heap_inquire or rt_heap_inquire()
+These functions are only available in kernel-space. The fact that you
+must use them probably means that you should split your application:
+move the part that require access to low-level functions in a driver
+using the rtdm skin.
 
 -- 
                                                Gilles Chanteperdrix
