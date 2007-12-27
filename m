@@ -1,15 +1,10 @@
-Message-ID: <4773A1D8.4030509@domain.hid>
-Date: Thu, 27 Dec 2007 14:00:08 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <8b3b30860712270704o1a7d0cbahe97a4e90e9455cbc@domain.hid>
+Date: Thu, 27 Dec 2007 16:04:12 +0100
+From: "Racconico Lambrati" <racconico.lambrati@domain.hid>
 MIME-Version: 1.0
-References: <25501221.1198142506055.JavaMail.ngmail@domain.hid>
-In-Reply-To: <25501221.1198142506055.JavaMail.ngmail@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC1E5AED6CD78AEF295D77138"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] [RTnet-users] /proc/xenomai/affinity and
-	T_CPU(n) in
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_11633_10479936.1198767852237"
+Subject: [Xenomai-help] update from fusion 0.9.1 to xenomai 2.4.0
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,59 +14,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC1E5AED6CD78AEF295D77138
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+------=_Part_11633_10479936.1198767852237
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-M. Koehrer wrote:
-> Hi Jan,
->=20
-> does this mean that the value of /proc/xenomai/affinity is only relevan=
-t fo=3D
-> r creation of a new task?
-> I.e., once it is created I can modify it without "destroying" anything =
-in t=3D
-> he already created tasks?=3D20
-> If this is the case I think I get everything up and running following y=
-our =3D
-> hint.
+Hi.
 
-If your worries are that modifying /proc/xenomai/affinity would force
-running tasks to new CPUs: no, there is no such side effect. The
-affinity mask only "burns" the CPU affinity into the task structure when
-they are created. Later states of that mask do not impact existing tasks.=
+I've update my system to xenomai 2.4.0 from fusion 0.9.1 using vxworks skin
 
+I used http://www.captain.at/xenomai-porting-fusion.php to make the porting
+of my application.
 
->=20
-> Perhaps the word "affinity" does not exactly describe the behaviour her=
-e as=3D
->  it is not only affinity but also=3D20
-> "allowed CPUs for new tasks"....
+now I have this linker problem:
 
-Feel free to define the precise semantic of this feature e.g. in the
-wiki :). In the end, expectations and associations always change the
-meaning of terms in the eye of the user.
+... undefined reference to 'printk'
+... undefined reference to 'intUnlock'
+... undefined reference to 'intLock'
+... undefined reference to 'sysClkConnect'
 
-Jan
+could you give me an hint?
 
+thanks, Racconico
 
---------------enigC1E5AED6CD78AEF295D77138
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+------=_Part_11633_10479936.1198767852237
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.4-svn0 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+Hi.<br><br>I&#39;ve update my system to xenomai 2.4.0 from fusion 0.9.1 using vxworks skin<br><br>I used <a href="http://www.captain.at/xenomai-porting-fusion.php">http://www.captain.at/xenomai-porting-fusion.php</a> to make the porting of my application.
+<br><br>now I have this linker problem:<br><br>... undefined reference to &#39;printk&#39;<br>... undefined reference to &#39;intUnlock&#39;<br>... undefined reference to &#39;intLock&#39;<br>... undefined reference to &#39;sysClkConnect&#39;
+<br><br>could you give me an hint?<br><br>thanks, Racconico<br>
 
-iD8DBQFHc6HcniDOoMHTA+kRAjrxAJ9n2VgOF0jya677gwjAd+HbMQXE0wCfRj+Y
-YJfrN3gLCMBDdWoDEyeMlgE=
-=2EJZ
------END PGP SIGNATURE-----
-
---------------enigC1E5AED6CD78AEF295D77138--
+------=_Part_11633_10479936.1198767852237--
 
