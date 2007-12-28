@@ -1,5 +1,5 @@
-Message-ID: <4774DA7B.4080903@domain.hid>
-Date: Fri, 28 Dec 2007 12:14:03 +0100
+Message-ID: <4774DB43.1010801@domain.hid>
+Date: Fri, 28 Dec 2007 12:17:23 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <4774D852.2040406@domain.hid>
@@ -38,20 +38,11 @@ Jan Kiszka wrote:
 >      fi
 >  
 >      patch_architecture_specific="n"
->
-
-This won't work for newer x86 patches. Which kernel/patch combo have you
-been using?
-
 > 
 > 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
 
+Ok, I forgot to forward port the changes from v2.4.x. The complete fix
+is now merged into the trunk.
 
 -- 
 Philippe.
