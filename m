@@ -1,15 +1,12 @@
-Message-ID: <477374E2.3020403@domain.hid>
-Date: Thu, 27 Dec 2007 10:48:18 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <477505A5.6070900@domain.hid>
+Date: Fri, 28 Dec 2007 15:18:13 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <477275E0.7080001@domain.hid> <4772D19C.4030506@domain.hid>
-	<4772EF89.4040101@domain.hid>
-In-Reply-To: <4772EF89.4040101@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Adeos-main] [PATCH 3/3] i386: Cleanup root IRQ trampolines
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF9BE4B0BD90D4C9E3781A7B7"
+Sender: jan.kiszka@domain.hid
+Subject: [Adeos-main] fastcall and asmlinkage in x86
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -18,42 +15,44 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: adeos-main <adeos-main@gna.org>
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->> Jan Kiszka wrote:
->>> Simplifies xirq trampoline and applies the xirq refactorings to
->>> virq_handler too.
->>>
->> --- linux-2.6.23.12-xeno.orig/include/asm-i386/ipipe.h
->> +++ linux-2.6.23.12-xeno/include/asm-i386/ipipe.h
->> @@ -141,11 +141,7 @@ __ipipe_call_root_xirq_handler(unsigned
->>  		"pushl %%ds\n\t"
->>  		"pushl %%eax\n\t"
->>  		"pushl %%ebp\n\t"
->> -		"pushl %%edi\n\t"
->> -		"pushl %%esi\n\t"
->> -		"pushl %%edx\n\t"
->> -		"pushl %%ecx\n\t"
->> -		"pushl %%ebx\n\t"
->> +		"subl  $5*4,%%esp	# rest can remain unsaved\n\t"
->>
->> This won't work. We actually want to save our regs, so that they are
->> restored when going back to xirq_end through the iret path. If we don't
->> save them, the registers will remain terminally clobbered.
-> 
-> General purpose registers aren't stable across functions calls. But it
-> is a valid question what the compiler assumes due to the function
-> inlining here. So declaring those five clobbered should be safe enough -
-> but if you prefer to add a few extra cycles for safety, keep it as
-> explicit as it was :->.
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF9BE4B0BD90D4C9E3781A7B7
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Declaring clobbers would duplicate what entry.S already does when
-restoring args from the interrupt frame.
+Hi Philippe,
 
--- 
-Philippe.
+most of the code in arch/x86/ipipe_*.c can be pushed into some
+ipipe-common.c, reducing the patch size by 10-20k and improving code
+maintainability.
+
+But one thing is currently blocking a copy&paste move: a lot of
+functions that are declared fastcall on 32 bit are asmlinkage on 64 bit.
+As both asmlinkage and fastcall are meaningless on 64 bit, can we safely
+switch to fastcall? Or even better, could we drop that redundant
+declarations totally, given that everything is fastcall on 32 bit anyway
+(unless its marked asmlinkage)?
+
+Thanks,
+Jan
+
+
+--------------enigF9BE4B0BD90D4C9E3781A7B7
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFHdQWpniDOoMHTA+kRAgD/AJsF9kQhPSqwkupGDOo3RklcZH4rgQCeLa5O
+btZeRpXfSIObL5gIwdJ2bwc=
+=s7XX
+-----END PGP SIGNATURE-----
+
+--------------enigF9BE4B0BD90D4C9E3781A7B7--
 
