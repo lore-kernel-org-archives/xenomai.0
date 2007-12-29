@@ -1,266 +1,220 @@
-Message-ID: <f8f856500712200558t1ba75d98l11237f8c7cc76f01@domain.hid>
-Date: Thu, 20 Dec 2007 14:58:56 +0100
-From: fabien <fabien.fb@domain.hid>
-In-Reply-To: <200712200206.59253.berlemont.hauw@domain.hid>
+Message-ID: <4776D48E.7050002@domain.hid>
+Date: Sun, 30 Dec 2007 00:13:18 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <f8f856500712180507q16d5c21bp56b45ec23ae5d36@domain.hid>
-	<200712190119.11578.berlemont.hauw@domain.hid>
-	<f8f856500712190529q34efcf75r4d80c22bb987cc8@domain.hid>
-	<200712200206.59253.berlemont.hauw@domain.hid>
-Subject: Re: [Xenomai-help] Kernel hangs in initramfs with ipipe activated
-	(arch=ppc)
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Alexis Berlemont <berlemont.hauw@domain.hid>
-Cc: xenomai@xenomai.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig6B5621321177A2B25F20C07F"
+Sender: jan.kiszka@domain.hid
+Subject: [Adeos-main] [PATCH 4/5] remove legacy code
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main <adeos-main@gna.org>
+Cc: Philippe Gerum <rpm@xenomai.org>
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig6B5621321177A2B25F20C07F
+Content-Type: multipart/mixed;
+ boundary="------------000402070407010604060107"
 
-2007/12/20, Alexis Berlemont <berlemont.hauw@domain.hid>:
-> Hi,
->
-> >
-> > I've check in the adeos_ipipe patch that open_pic.c, ppc4xx_pic.c and
-> > ipiq.c are patched.
-> > My processor is an mpc8xx and it's seem that the pic driver is
-> > arch/ppc/syslib/ppc8xx_pic.c
-> > according to :
-> > irq_desc[i].chip = &ppc8xx_pic;  (in arch/ppc/syslib/m8xx_setup.c)
-> > Is this normal that the arch/ppc/syslib/ppc8xx_pic.c is not patch by
-> > adeos ipipe ?
->
-> The patch you are using (adeos-ipipe-2.6.23-ppc-1.6-00.patch) seems to be a
-> backport of the patch adeos-ipipe-2.6.23-powerpc-DENX-2.0-03.patch. The
-> latter patch fully relies on the new generic IRQ layer.
->
-> Maybe, your architecture has slipped away during the backport or maybe there
-> is a real reason I do not guess / understand.
->
-> > What changes do i need to make in this file ?
-> >
->
-> Once more just an idea:
->
-> It seems like the interrupt controller of the ppc8xx can handle only level /
-> edge interrupts; then we can consider adding the following code:
->
->
->         for (i = SIU_IRQ_OFFSET ; i < SIU_IRQ_OFFSET + NR_SIU_INTS ; i++)
-> +#ifdef CONFIG_IPIPE
-> +       {
-> +#endif /* !CONFIG_IPIPE */
->                 irq_desc[i].chip = &ppc8xx_pic;
-> +#ifdef CONFIG_IPIPE
-> +               irq_desc[i].ipipe_ack = &__ipipe_ack_level_irq;
-> +               irq_desc[i].ipipe_end = &__ipipe_end_level_irq;
-> +       }
-> +#endif /* !CONFIG_IPIPE */
->
-> Furthermore, the file ppc8xx_pic.c should be modified in the same way as
-> open_pic.c:
->
-> static void m8xx_mask_irq(unsigned int irq_nr)
-> {
->         int     bit, word;
-> +       unsigned long flags;
->
->         bit = irq_nr & 0x1f;
->         word = irq_nr >> 5;
->
-> +       local_irq_save_hw_cond(flags);
-> +
->         ppc_cached_irq_mask[word] &= ~(1 << (31-bit));
->         out_be32(&((immap_t *)IMAP_ADDR)->im_siu_conf.sc_simask,
-> ppc_cached_irq_mask[word]);
-> +
-> +       local_irq_restore_hw_cond(flags);
-> }
->
-> static void m8xx_unmask_irq(unsigned int irq_nr)
-> {
->         int     bit, word;
-> +       unsigned long flags;
->
->         bit = irq_nr & 0x1f;
->         word = irq_nr >> 5;
->
-> +       local_irq_save_hw_cond(flags);
-> +
->         ppc_cached_irq_mask[word] |= (1 << (31-bit));
->         out_be32(&((immap_t *)IMAP_ADDR)->im_siu_conf.sc_simask,
-> ppc_cached_irq_mask[word]);
-> +
-> +       local_irq_restore_hw_cond(flags);
-> }
->
-> static void m8xx_end_irq(unsigned int irq_nr)
-> {
->         if (!(irq_desc[irq_nr].status & (IRQ_DISABLED|IRQ_INPROGRESS))
->                         && irq_desc[irq_nr].action) {
->                 int bit, word;
-> +               unsigned long flags;
->
->                 bit = irq_nr & 0x1f;
->                 word = irq_nr >> 5;
->
-> +               local_irq_save_hw_cond(flags);
-> +
->
->                 ppc_cached_irq_mask[word] |= (1 << (31-bit));
->                 out_be32(&((immap_t *)IMAP_ADDR)->im_siu_conf.sc_simask,
-> ppc_cached_irq_mask[word]);
-> +
-> +               local_irq_restore_hw_cond(flags);
->         }
-> }
->
->
-> static void m8xx_mask_and_ack(unsigned int irq_nr)
-> {
->         int     bit, word;
-> +       unsigned long flags;
->
->         bit = irq_nr & 0x1f;
->         word = irq_nr >> 5;
-> +               local_irq_save_hw_cond(flags);
-> +
->         ppc_cached_irq_mask[word] &= ~(1 << (31-bit));
->         out_be32(&((immap_t *)IMAP_ADDR)->im_siu_conf.sc_simask,
-> ppc_cached_irq_mask[word]);
->         out_be32(&((immap_t *)IMAP_ADDR)->im_siu_conf.sc_sipend, 1 <<
-> (31-bit));
-> +
-> +       local_irq_restore_hw_cond(flags);
-> }
->
-> struct hw_interrupt_type ppc8xx_pic = {
->         .typename = " 8xx SIU  ",
->         .enable = m8xx_unmask_irq,
->         .disable = m8xx_mask_irq,
->         .ack = m8xx_mask_and_ack,
->         .end = m8xx_end_irq,
-> +#ifdef CONFIG_IPIPE
-> +       .mask_ack       = m8xx_mask_and_ack,
-> +       .mask           = m8xx_mask_irq,
-> +       .unmask         = m8xx_unmask_irq,
-> +#endif /* CONFIG_IPIPE */
-> };
->
-> Alexis.
->
+This is a multi-part message in MIME format.
+--------------000402070407010604060107
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Thanks Alexis for the help
-Ok i've done these modifications in mpc8xx_setup.c and ppc8xx_pic.c.
-But it's seems the problem occurs when the kernels needs to ack an IT
-on the CPM :
+This patch gets rid of code that is no longer needed or valid:
 
-Freeing unused kernel memory: 88k init
-Launch a shell /bin/sh
+ - x86_64 APIC frequency is now delivered via ipipe_request_tickdev
+ - __ipipe_tick_irq is maintained via ipipe_update_tick_evtdev also on
+   x86_64
+ - global_clock_event is no longer needed by ipipe_32.c
+ - ipipe_tune_timer was dead code in x86_64 (there was no prototype in
+   whatever header), and this arch does not really have a legacy code
+   base to maintain, so kill this function
 
+Jan
 
-irq = 20, @desc= C020C410, @desc->ipipe_ack= 0
-Chip name =  CPM
-Oops: kernel access of bad area, sig: 11 [#1]
-NIP: 00000000 LR: c0005890 CTR: 00000000
-REGS: c0221c00 TRAP: 0400   Not tainted  (2.6.23.6)
-MSR: 40001032 <ME,IR,DR>  CR: 24004024  XER: 00000000
-TASK = c0feec00[13] 'sh' THREAD: c0220000
-GPR00: c000587c c0221cb0 c0feec00 00000014 c020c410 00000001 00000000 ff0028e0
-GPR08: fdfff830 c020cbc0 00000001 c0210000 00000001 0281af08 00ffe000 007fff14
-GPR16: 00000000 00000001 c01f0000 c0210000 c0230000 00000002 c0109390 c0f4500c
-GPR24: 0000003d c02167cc 00000014 00000000 c020c410 c020bec0 00000014 c0240b40
-NIP [00000000] 0x0
-LR [c0005890] __ipipe_ack_irq+0x64/0x7c
-Call Trace:
-[c0221cb0] [c000587c] __ipipe_ack_irq+0x50/0x7c (unreliable)
-[c0221cd0] [c0005be0] __ipipe_handle_irq+0x124/0x140
-[c0221d00] [c0005e14] __ipipe_grab_irq+0x3c/0xac
-[c0221d20] [c0003154] __ipipe_ret_from_except+0x0/0xc
-[c0221de0] [c0111dec] cpm_uart_start_tx+0x38/0xa8
-[c0221e00] [c010d62c] __uart_start+0x64/0x74
-[c0221e10] [c010e670] uart_start+0x30/0x4c
-...
+--------------000402070407010604060107
+Content-Type: text/x-patch;
+ name="remove-legacy.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="remove-legacy.patch"
 
-So in commproc.c in cpm_interrupt_init(void) I add the same :
-        for ( i = CPM_IRQ_OFFSET ; i < CPM_IRQ_OFFSET + NR_CPM_INTS ; i++ ) {
-                irq_desc[i].chip = &cpm_pic;
-+		#ifdef CONFIG_IPIPE
-+	               irq_desc[i].ipipe_ack = &__ipipe_ack_level_irq;
-+        	       irq_desc[i].ipipe_end = &__ipipe_end_level_irq;
-+		#endif
-         }
+---
+ arch/x86/kernel/apic_64.c       |    6 ------
+ arch/x86/kernel/ipipe_32.c      |    2 --
+ arch/x86/kernel/ipipe_64.c      |   10 +---------
+ include/asm-x86/ipipe_64.h      |   21 +++++++++++----------
+ include/asm-x86/ipipe_base_64.h |    4 ----
+ 5 files changed, 12 insertions(+), 31 deletions(-)
 
-Now the kernel is hanging (see the log below) in an inline fonction in chip.c :
-static inline void mask_ack_irq(struct irq_desc *desc, int irq)
-called by void fastcall __ipipe_ack_level_irq(unsigned irq, struct
-irq_desc *desc) in the same file.
+Index: linux-2.6.24-rc6-xeno/arch/x86/kernel/apic_64.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.24-rc6-xeno.orig/arch/x86/kernel/apic_64.c
++++ linux-2.6.24-rc6-xeno/arch/x86/kernel/apic_64.c
+@@ -939,9 +939,6 @@ static void __init calibrate_APIC_clock(
+=20
+ 	printk(KERN_INFO "Detected %d.%03d MHz APIC timer.\n",
+ 		result / 1000 / 1000, result / 1000 % 1000);
+-#ifdef CONFIG_IPIPE
+-	__ipipe_apic_timer_freq =3D result;
+-#endif
+=20
+ 	/* Calculate the scaled math multiplication factor */
+ 	lapic_clockevent.mult =3D div_sc(result, NSEC_PER_SEC, 32);
+@@ -970,9 +967,6 @@ void __init setup_boot_APIC_clock (void)
+ 	}
+=20
+ 	printk(KERN_INFO "Using local APIC timer interrupts.\n");
+-#ifdef CONFIG_IPIPE
+-	__ipipe_tick_irq =3D ipipe_apic_vector_irq(LOCAL_TIMER_VECTOR);
+-#endif
+ 	calibrate_APIC_clock();
+=20
+ 	/*
+Index: linux-2.6.24-rc6-xeno/arch/x86/kernel/ipipe_64.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.24-rc6-xeno.orig/arch/x86/kernel/ipipe_64.c
++++ linux-2.6.24-rc6-xeno/arch/x86/kernel/ipipe_64.c
+@@ -46,8 +46,7 @@
+=20
+ asmlinkage void preempt_schedule_irq(void);
+=20
+-int __ipipe_tick_irq;
+-unsigned long __ipipe_apic_timer_freq;
++int __ipipe_tick_irq =3D TIMER_IRQ;
+=20
+ DEFINE_PER_CPU(struct pt_regs, __ipipe_tick_regs);
+=20
+@@ -102,12 +101,6 @@ int ipipe_get_sysinfo(struct ipipe_sysin
+ 	return 0;
+ }
+=20
+-int ipipe_tune_timer(unsigned long ns, int flags)
+-{
+-	printk(KERN_WARNING "I-pipe: %s is deprecated - no action taken\n", __F=
+UNCTION__);
+-	return -ENOSYS;
+-}
+-
+ asmlinkage unsigned int do_IRQ(struct pt_regs *regs);
+ asmlinkage void smp_apic_timer_interrupt(struct pt_regs *regs);
+ asmlinkage void smp_spurious_interrupt(struct pt_regs *regs);
+@@ -792,7 +785,6 @@ EXPORT_SYMBOL(ipipe_critical_enter);
+ EXPORT_SYMBOL(ipipe_critical_exit);
+ EXPORT_SYMBOL(ipipe_trigger_irq);
+ EXPORT_SYMBOL(ipipe_get_sysinfo);
+-EXPORT_SYMBOL(ipipe_tune_timer);
+=20
+ EXPORT_SYMBOL_GPL(irq_desc);
+ struct task_struct *__switch_to(struct task_struct *prev_p,
+Index: linux-2.6.24-rc6-xeno/include/asm-x86/ipipe_64.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.24-rc6-xeno.orig/include/asm-x86/ipipe_64.h
++++ linux-2.6.24-rc6-xeno/include/asm-x86/ipipe_64.h
+@@ -79,13 +79,6 @@ extern unsigned cpu_khz;
+ #define ipipe_tsc2ns(t)	(((t) * 1000UL) / (ipipe_cpu_freq() / 1000000UL)=
+)
+ #define ipipe_tsc2us(t)	((t) / (ipipe_cpu_freq() / 1000000UL))
+=20
+-/*
+- * The following interface will be deprecated once generic clockevents
+- * are supported by this architecture, at which point
+- * ipipe_request_tickdev() should be used instead.
+- */
+-extern unsigned long __ipipe_apic_timer_freq;
+-
+ /* Private interface -- Internal use only */
+=20
+ #define __ipipe_check_platform()	do { } while(0)
+@@ -125,6 +118,15 @@ static inline unsigned long __ipipe_ffnz
+       return ul;
+ }
+=20
++#define ipipe_update_tick_evtdev(evtdev)				\
++	do {								\
++		if (strcmp((evtdev)->name, "lapic") =3D=3D 0)		\
++			__ipipe_tick_irq =3D				\
++				ipipe_apic_vector_irq(LOCAL_TIMER_VECTOR); \
++		else							\
++			__ipipe_tick_irq =3D TIMER_IRQ;			\
++	} while (0)
++
+ struct irq_desc;
+=20
+ void __ipipe_ack_edge_irq(unsigned irq, struct irq_desc *desc);
+@@ -236,10 +238,9 @@ int __ipipe_check_tickdev(const char *de
+=20
+ #else /* !CONFIG_IPIPE */
+=20
+-#define task_hijacked(p)	0
++#define ipipe_update_tick_evtdev(evtdev)	do { } while (0)
++#define task_hijacked(p)			0
+=20
+ #endif /* CONFIG_IPIPE */
+=20
+-#define ipipe_update_tick_evtdev(evtdev)	do { } while (0)
+-
+ #endif	/* !__X86_IPIPE_64_H */
+Index: linux-2.6.24-rc6-xeno/include/asm-x86/ipipe_base_64.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.24-rc6-xeno.orig/include/asm-x86/ipipe_base_64.h
++++ linux-2.6.24-rc6-xeno/include/asm-x86/ipipe_base_64.h
+@@ -182,8 +182,4 @@ static inline unsigned long __ipipe_test
+=20
+ #endif /* !__ASSEMBLY__ */
+=20
+-/* Arch-dependent features */
+-
+-#define __IPIPE_FEATURE_APIC_TIMER_FREQ  1
+-
+ #endif	/* !__X86_IPIPE_BASE_64_H */
+Index: linux-2.6.24-rc6-xeno/arch/x86/kernel/ipipe_32.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.24-rc6-xeno.orig/arch/x86/kernel/ipipe_32.c
++++ linux-2.6.24-rc6-xeno/arch/x86/kernel/ipipe_32.c
+@@ -48,8 +48,6 @@
+ #include <mach_ipi.h>
+ #endif	/* CONFIG_X86_LOCAL_APIC */
+=20
+-extern struct clock_event_device *global_clock_event;
+-
+ int __ipipe_tick_irq =3D TIMER_IRQ;
+=20
+ DEFINE_PER_CPU(struct pt_regs, __ipipe_tick_regs);
 
-Freeing unused kernel memory: 88k init
-Launch a shell /bin/sh
+--------------000402070407010604060107--
 
-irq = 20, @desc= C020C410, @desc->ipipe_ack= C00374C0
-Chip name =  CPM
-Dans chip.c : mack_ack_irq : desc->chip->mask = 0
-Dans chip.c : mack_ack_irq : desc->chip->ack = C012B8CC
-Oops: kernel access of bad area, sig: 11 [#1]
-NIP: 00000000 LR: c0037558 CTR: 00000000
-REGS: c0221bf0 TRAP: 0400   Not tainted  (2.6.23.6)
-MSR: 40001032 <ME,IR,DR>  CR: 24004024  XER: 00000000
-TASK = c0feec00[13] 'sh' THREAD: c0220000
-GPR00: c0037544 c0221ca0 c0feec00 00000014 00000001 00000001 00000000 ff0028c0
-GPR08: fdfff828 00000000 00000001 c0210000 00000001 0281af08 00ffe000 007fff14
-GPR16: 00000000 00000001 c01f0000 c0210000 c0230000 00000002 c0109390 c0f4500c
-GPR24: 0000003d c02167cc 00000014 c00374c0 c020c410 c020bec0 00000014 c020c410
-NIP [00000000] 0x0
-LR [c0037558] __ipipe_ack_level_irq+0x98/0xc0
-Call Trace:
-[c0221ca0] [c0037544] __ipipe_ack_level_irq+0x84/0xc0 (unreliable)
-[c0221cb0] [c0005890] __ipipe_ack_irq+0x64/0x7c
-[c0221cd0] [c0005be0] __ipipe_handle_irq+0x124/0x140
-...
-desc->chip->mask  is a null pointer, so i tried to add in commproc.c
-in cpm_pic struct the following :
-struct hw_interrupt_type cpm_pic = {
-	.typename	= " CPM      ",
-	.enable		= cpm_unmask_irq,
-	.disable	= cpm_mask_irq,
-	.ack		= cpm_ack,
-	.end		= cpm_eoi,
+--------------enig6B5621321177A2B25F20C07F
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-+       #ifdef CONFIG_IPIPE
-+	.mask           = cpm_mask_irq,
-+	.unmask         = cpm_unmask_irq,
-+	#endif  CONFIG_IPIPE
-}
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-Freeing unused kernel memory: 88k init
-Launch a shell /bin/sh
+iD8DBQFHdtSOniDOoMHTA+kRAvspAJ4oephXG3c1xsiuNHwciE9CWT6VQQCfWW/2
+gmvcLcjMTvncy7mMpBjc/jw=
+=i40R
+-----END PGP SIGNATURE-----
 
-
-irq = 20, @desc= C020C410, @desc->ipipe_ack= C00374C0
-Chip name =  CPM
-Dans chip.c : mack_ack_irq : desc->chip->mask = C012BED0
-Dans chip.c : mack_ack_irq : desc->chip->ack = C012B8CC
-BusyBox v1.8.1 (2007-12-10 13:06
-(no more logs)
-
-If i remove (in order to test) desc->chip->mask(irq) and just leave
-desc->chip->ack (irq) it's ok i get my shell in busybox. So it's seems
-behind the mask an ack, there is no unmask done...
-indeed if i add desc->chip->unmask(irq); after in mask_ack_irq(...) i
-get the shell.
-
-Any ideas ?
-Best regards
-Fab
+--------------enig6B5621321177A2B25F20C07F--
 
