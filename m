@@ -1,13 +1,14 @@
-Message-ID: <4777839E.90401@domain.hid>
-Date: Sun, 30 Dec 2007 12:40:14 +0100
+Message-ID: <47777383.7080006@domain.hid>
+Date: Sun, 30 Dec 2007 11:31:31 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4776D46A.7080500@domain.hid>
-In-Reply-To: <4776D46A.7080500@domain.hid>
+References: <4776D45C.80207@domain.hid>
+In-Reply-To: <4776D45C.80207@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Adeos-main] [PATCH 2/5] x86_64:inline root irq thunks
+Subject: Re: [Adeos-main] [PATCH 1/5] x86: optimize access to
+	__ipipe_tick_regs
 Reply-To: rpm@xenomai.org
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
@@ -21,17 +22,15 @@ To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: adeos-main <adeos-main@gna.org>
 
 Jan Kiszka wrote:
-> Align x86_64 with x86_32 by inlining the xirq and virq trampolines. This
-> saves a few bytes of text and avoids holes in the function backtraces
-> you see with the tracer.
-> 
+> By intention, the compiler is not able to fold succeeding accesses to
+> via __raw_get_cpu_var & friends into a single one. As we are in an
+> atomic section in __ipipe_handle_irq, let's help him with a temporary
+> variable, saving some text size in this hotpath.
+>
 
-Ok, the same kind of changes from the last patch series badly broke the
-kernel at boot time for both 32/64 archs, so this patch is held until
-the needed time can be dedicated to test it extensively.
+Will merge, thanks.
 
 -- 
 Philippe.
-
 
 
