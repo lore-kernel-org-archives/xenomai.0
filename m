@@ -1,16 +1,15 @@
-Message-ID: <4779000C.9050403@domain.hid>
-Date: Mon, 31 Dec 2007 15:43:24 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <8b3b30860712310658n4729fc2bo300f01a59b333b06@domain.hid>
+Date: Mon, 31 Dec 2007 15:58:54 +0100
+From: "Racconico Lambrati" <racconico.lambrati@domain.hid>
+In-Reply-To: <2ff1a98a0712310616n58d0a63en4c36e75e5ed2ab53@domain.hid>
 MIME-Version: 1.0
-References: <b131c9f0712300411w46996c98i395344b377c6bacf@domain.hid>	<200712310033.05927.paul_c@domain.hid>
-	<b131c9f0712310604k2aac428rccacaf2006ecd147@domain.hid>
-In-Reply-To: <b131c9f0712310604k2aac428rccacaf2006ecd147@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig326F0BEB24219E75FA840ABC"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Large (negative) latency test results and fast
- PC clock
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_20258_22870773.1199113134457"
+References: <8b3b30860712271756n526daf67yc8e5be203ae5421d@domain.hid>
+	<2ff1a98a0712280630t7d524928r2f66355fd0731d67@domain.hid>
+	<8b3b30860712301217p6ee4e724lebd1b1c2740d2ebf@domain.hid>
+	<2ff1a98a0712310616n58d0a63en4c36e75e5ed2ab53@domain.hid>
+Subject: Re: [Xenomai-help] update from fusion 0.9.1 to xenomai 2.4.0
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,109 +19,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: vikesh rambaran <vikesh.rambaran@domain.hid>
-Cc: Xenomai-help@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig326F0BEB24219E75FA840ABC
+------=_Part_20258_22870773.1199113134457
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-vikesh rambaran wrote:
-> Hi
->=20
-> Thanx for taking the time to reply over this festive season !
->=20
-> Although suboptimal for this PC, i am compiling using ubuntu's default
-> config file.
-> The idea is to make a general kernel image .deb file which can be used =
-to
-> install
-> xenomai on older PC architectures (not necessarily AMD 64 bit CPUs)
-> Therefore the processor shows up as "CONFIG_M586"
-
-But will there be CPUs included that don't have TSC support? If not,
-choose at least a type that tells Xenomai it can use the TSC and does
-not have to fall back to slow PIT-based emulation for timekeeping.
-
->=20
-> This seems to be what Paul is making available as well - thanx i will t=
-ry
-> them out.
->=20
-> Jan, i have checked the kernel config file. The following are set
->=20
-> CONFIG_X86_LOCAL_APIC=3Dy
-> CONFIG_X86_IO_APIC=3Dy
->=20
-> CONFIG_HPET_TIMER=3Dy
-> CONFIG_HPET_EMULATE_RTC=3Dy
->=20
-> Is this combination a problem ?
-
-Yes, because with TSC being officially available, Xenomai uses the PIT
-for timekeeping. At the same time, HPET_TIMER disables the PIT. That's
-my theory ATM. Could you validate it by disabling CONFIG_HPET_TIMER?
-
-> dmesg shows that the APIC is configured and enabled, but no information=
- of
-> the HPET is displayed. (dmesg output is attached)
->=20
-> I have not been able to find the message "NOTE: Xenomai needs either
-> X86_LOCAL_APIC enabled or HPET_TIMER disabled."
-> during kernel configuration (make menuconfig) or during the xenomai
-> configuration. Is there a specific place where i should look ?
-
-It would pop up on top of the Xenomai submenu. But as the local APIC is
-on, this will not trigger anyway. If my theory is correct, we need to
-enhance the condition for the warning.
-
->=20
-> To build the kernel image package i used
->=20
-> fakeroot makekpkg --initrd --append_to_version "-adeos-realtime"
-> kernel_image kernel_headers
->=20
-> For the xenomai configuration i used
->=20
-> ./configure --disable-x86-tsc
->=20
->=20
-> Note, on this same PC, using ubuntu 6.06, kernel 2.6.20.12, xenomai 2.3=
-=2E1,
-
-According to your logs, you are using Xenomai 2.4.
-
-> the latency test runs without large
-> (negative) latencies and no noticeable PC clock speedup. Test configura=
-tion
-> was also for CONFIG_M586=3Dy
-> but with SMI workaround not enabled.
->=20
-> Please let me know if any other information that i can provide or tests=
- that
-> can be done to solve this.
->=20
-> Thanx for your help
-> Vicki
->=20
-
-Jan
+2007/12/31, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+>
+> On Dec 30, 2007 9:17 PM, Racconico Lambrati
+> <racconico.lambrati@domain.hid> wrote:
+> > I've done some works, and searched in xenomai's native function.
+> >
+> > To replace SysClkConnect I've created a periodic task with priority=90
+> that
+> > wait 5ms.
+> > The last operation in a task's cycle is semGive(gServiceSem);
+> > A second task, non periodic, have as first operation of the cycle
+> > semTake(gServiceSem,WAIT_FOREVER);
+> > the second task has priority=50
+> >
+> > when the total time for one cycle of task1 and task2 everything seems
+> run
+> > properly , when task2 take more then 5ms for do it's cycle
+> > rt_task_wait_period(NULL) return me 146 and not 0, and the time for
+> task1 is
+> > not respected.
+> >
+> > This sound strange for me, why the scheduler don't switch the task in
+> > execution?
+>
+> This looks strange, could you try and reduce your application to a
+> simple example which exhibits the same behaviour ? Maybe you lock the
+> scheduler with taskLock/taskUnlock ?
 
 
---------------enig326F0BEB24219E75FA840ABC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+I use the rt_task_set_mode with T_LOCK option in critical section, could it
+be the cause of the problem?
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFHeQARniDOoMHTA+kRAkWeAJ91RQKVjOsVLbTwGJTCYpJcIZJSYQCdHuWk
-AQOpCYPqC6Hgoqe712YWMuY=
-=XREX
------END PGP SIGNATURE-----
+> A second question is, if can I change (TaskIdSelf() == IdTask) with
+> > (rt_task_self() == &IdTask)?
+>
+> No, the task id spaces are distinct. You can only use TaskIdSelf in a
+> vxworks skin task (created with taskInit or taskSpawn) and
+> rt_task_self with a native skin task (created with rt_task_create).
+> You can use most native skin services (such as rt_task_set_periodic
+> with a NULL task id) in  a vxworks skin task, but vxworks skin
+> services expect a vxworks skin task. If I were you, I would use only
+> vxworks skin services (for example, watchdog services to make a task
+> perdioc).
 
---------------enig326F0BEB24219E75FA840ABC--
+
+I changed all the handling of task to native skin, so IdTask now is a
+RT_TASK variable.
+
+------=_Part_20258_22870773.1199113134457
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<br><br><div><span class="gmail_quote">2007/12/31, Gilles Chanteperdrix &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt;:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+On Dec 30, 2007 9:17 PM, Racconico Lambrati<br>&lt;<a href="mailto:racconico.lambrati@domain.hid">racconico.lambrati@domain.hid</a>&gt; wrote:<br>&gt; I&#39;ve done some works, and searched in xenomai&#39;s native function.
+<br>&gt;<br>&gt; To replace SysClkConnect I&#39;ve created a periodic task with priority=90 that<br>&gt; wait 5ms.<br>&gt; The last operation in a task&#39;s cycle is semGive(gServiceSem);<br>&gt; A second task, non periodic, have as first operation of the cycle
+<br>&gt; semTake(gServiceSem,WAIT_FOREVER);<br>&gt; the second task has priority=50<br>&gt;<br>&gt; when the total time for one cycle of task1 and task2 everything seems run<br>&gt; properly , when task2 take more then 5ms for do it&#39;s cycle
+<br>&gt; rt_task_wait_period(NULL) return me 146 and not 0, and the time for task1 is<br>&gt; not respected.<br>&gt;<br>&gt; This sound strange for me, why the scheduler don&#39;t switch the task in<br>&gt; execution?<br>
+<br>This looks strange, could you try and reduce your application to a<br>simple example which exhibits the same behaviour ? Maybe you lock the<br>scheduler with taskLock/taskUnlock ?</blockquote><div><br>I use the rt_task_set_mode with T_LOCK option in critical section, could it be the cause of the problem?
+<br>&nbsp;</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt; A second question is, if can I change (TaskIdSelf() == IdTask) with<br>&gt; (rt_task_self() == &amp;IdTask)?
+<br><br>No, the task id spaces are distinct. You can only use TaskIdSelf in a<br>vxworks skin task (created with taskInit or taskSpawn) and<br>rt_task_self with a native skin task (created with rt_task_create).<br>You can use most native skin services (such as rt_task_set_periodic
+<br>with a NULL task id) in&nbsp;&nbsp;a vxworks skin task, but vxworks skin<br>services expect a vxworks skin task. If I were you, I would use only<br>vxworks skin services (for example, watchdog services to make a task<br>perdioc).
+</blockquote><br>I changed all the handling of task to native skin, so IdTask now is a RT_TASK variable.<br></div>
+
+------=_Part_20258_22870773.1199113134457--
 
