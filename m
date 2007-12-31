@@ -1,17 +1,16 @@
-Message-ID: <8b3b30860712310723y39bae134o8bcefbd16f582541@domain.hid>
-Date: Mon, 31 Dec 2007 16:23:40 +0100
-From: "Racconico Lambrati" <racconico.lambrati@domain.hid>
-In-Reply-To: <2ff1a98a0712310704s65b6d7fbv106c7a4bd17d4677@domain.hid>
+Message-ID: <b131c9f0712310754o309ada74t31415576266d6ac4@domain.hid>
+Date: Mon, 31 Dec 2007 17:54:11 +0200
+From: "vikesh rambaran" <vikesh.rambaran@domain.hid>
+In-Reply-To: <4779000C.9050403@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/alternative; 
-	boundary="----=_Part_20338_5510274.1199114620249"
-References: <8b3b30860712271756n526daf67yc8e5be203ae5421d@domain.hid>
-	<2ff1a98a0712280630t7d524928r2f66355fd0731d67@domain.hid>
-	<8b3b30860712301217p6ee4e724lebd1b1c2740d2ebf@domain.hid>
-	<2ff1a98a0712310616n58d0a63en4c36e75e5ed2ab53@domain.hid>
-	<8b3b30860712310658n4729fc2bo300f01a59b333b06@domain.hid>
-	<2ff1a98a0712310704s65b6d7fbv106c7a4bd17d4677@domain.hid>
-Subject: Re: [Xenomai-help] update from fusion 0.9.1 to xenomai 2.4.0
+	boundary="----=_Part_16828_24853515.1199116451265"
+References: <b131c9f0712300411w46996c98i395344b377c6bacf@domain.hid>
+	<200712310033.05927.paul_c@domain.hid>
+	<b131c9f0712310604k2aac428rccacaf2006ecd147@domain.hid>
+	<4779000C.9050403@domain.hid>
+Subject: Re: [Xenomai-help] Large (negative) latency test results and fast
+	PC clock
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,78 +20,164 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai-help@domain.hid
 
-------=_Part_20338_5510274.1199114620249
+------=_Part_16828_24853515.1199116451265
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-2007/12/31, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+Hi
+
+On Dec 31, 2007 4:43 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+
+> vikesh rambaran wrote:
+> > Hi
+> >
+> > Thanx for taking the time to reply over this festive season !
+> >
+> > Although suboptimal for this PC, i am compiling using ubuntu's default
+> > config file.
+> > The idea is to make a general kernel image .deb file which can be used
+> to
+> > install
+> > xenomai on older PC architectures (not necessarily AMD 64 bit CPUs)
+> > Therefore the processor shows up as "CONFIG_M586"
 >
-> On Dec 31, 2007 3:58 PM, Racconico Lambrati
-> <racconico.lambrati@domain.hid> wrote:
+> But will there be CPUs included that don't have TSC support? If not,
+> choose at least a type that tells Xenomai it can use the TSC and does
+> not have to fall back to slow PIT-based emulation for timekeeping.
+
+
+Thanx for the info. Will have a look at all our platforms and change the
+processor type accordingly
+
+
 > >
+> > This seems to be what Paul is making available as well - thanx i will
+> try
+> > them out.
 > >
-> > 2007/12/31, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
-> > > On Dec 30, 2007 9:17 PM, Racconico Lambrati
-> > > <racconico.lambrati@domain.hid> wrote:
-> > > > I've done some works, and searched in xenomai's native function.
-> > > >
-> > > > To replace SysClkConnect I've created a periodic task with
-> priority=90
-> > that
-> > > > wait 5ms.
-> > > > The last operation in a task's cycle is semGive(gServiceSem);
-> > > > A second task, non periodic, have as first operation of the cycle
-> > > > semTake(gServiceSem,WAIT_FOREVER);
-> > > > the second task has priority=50
-> > > >
-> > > > when the total time for one cycle of task1 and task2 everything
-> seems
-> > run
-> > > > properly , when task2 take more then 5ms for do it's cycle
-> > > > rt_task_wait_period(NULL) return me 146 and not 0, and the time for
-> > task1 is
-> > > > not respected.
-> > > >
-> > > > This sound strange for me, why the scheduler don't switch the task
-> in
-> > > > execution?
-> > >
-> > > This looks strange, could you try and reduce your application to a
-> > > simple example which exhibits the same behaviour ? Maybe you lock the
-> > > scheduler with taskLock/taskUnlock ?
+> > Jan, i have checked the kernel config file. The following are set
 > >
-> > I use the rt_task_set_mode with T_LOCK option in critical section, could
-> it
-> > be the cause of the problem?
+> > CONFIG_X86_LOCAL_APIC=y
+> > CONFIG_X86_IO_APIC=y
+> >
+> > CONFIG_HPET_TIMER=y
+> > CONFIG_HPET_EMULATE_RTC=y
+> >
+> > Is this combination a problem ?
 >
-> Yes, the aim of T_LOCK is precisely to prevent the scheduler from
-> switching to another task as long as the bit is armed.
+> Yes, because with TSC being officially available, Xenomai uses the PIT
+> for timekeeping. At the same time, HPET_TIMER disables the PIT. That's
+> my theory ATM. Could you validate it by disabling CONFIG_HPET_TIMER?
+>
+
+Ok, will disable CONFIG_HPET_TIMER and provide feedback
 
 
-But I reset the mask after the critical section...  I'll try without  this
-lock and report the result
+>
+> > dmesg shows that the APIC is configured and enabled, but no information
+> of
+> > the HPET is displayed. (dmesg output is attached)
+> >
+> > I have not been able to find the message "NOTE: Xenomai needs either
+> > X86_LOCAL_APIC enabled or HPET_TIMER disabled."
+> > during kernel configuration (make menuconfig) or during the xenomai
+> > configuration. Is there a specific place where i should look ?
+>
+> It would pop up on top of the Xenomai submenu. But as the local APIC is
+> on, this will not trigger anyway. If my theory is correct, we need to
+> enhance the condition for the warning.
 
-thanks Racconico
 
-------=_Part_20338_5510274.1199114620249
+Yes, this is where the power management and speaker warning messages popped
+up. After disabling
+them, there were no more warning messages
+
+
+>
+> >
+> > To build the kernel image package i used
+> >
+> > fakeroot makekpkg --initrd --append_to_version "-adeos-realtime"
+> > kernel_image kernel_headers
+> >
+> > For the xenomai configuration i used
+> >
+> > ./configure --disable-x86-tsc
+> >
+> >
+> > Note, on this same PC, using ubuntu 6.06, kernel 2.6.20.12, xenomai
+> 2.3.1,
+>
+> According to your logs, you are using Xenomai 2.4.
+
+
+You are correct, the logs which i have posted thus far are only for xenomai
+2.4.
+But i have a dual boot configuration on which Ubuntu 6.06 exists with
+xenomai 2.3.1
+
+
+>
+> > the latency test runs without large
+> > (negative) latencies and no noticeable PC clock speedup. Test
+> configuration
+> > was also for CONFIG_M586=y
+> > but with SMI workaround not enabled.
+> >
+> > Please let me know if any other information that i can provide or tests
+> that
+> > can be done to solve this.
+> >
+> > Thanx for your help
+> > Vicki
+> >
+>
+> Jan
+>
+
+As an additional test i have downloaded and installed the xenomai kernel
+image generated by Paul. The kernel boots
+and there is no pc time speedup. Still need to get the latency test
+installed and running. However, i've noticed that the
+xenomai version displayed in dmesg logs is 2.4.1.
+
+Is this an SVN snapshot ?
+
+I will try to compile with this kernel config file and give feedback in the
+"new year"
+
+Keep well and have a great new years day!
+Vicki
+
+------=_Part_16828_24853515.1199116451265
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-<br><br><div><span class="gmail_quote">2007/12/31, Gilles Chanteperdrix &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt;:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-On Dec 31, 2007 3:58 PM, Racconico Lambrati<br>&lt;<a href="mailto:racconico.lambrati@domain.hid">racconico.lambrati@domain.hid</a>&gt; wrote:<br>&gt;<br>&gt;<br>&gt; 2007/12/31, Gilles Chanteperdrix &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">
-gilles.chanteperdrix@xenomai.org</a>&gt;:<br>&gt; &gt; On Dec 30, 2007 9:17 PM, Racconico Lambrati<br>&gt; &gt; &lt;<a href="mailto:racconico.lambrati@domain.hid">racconico.lambrati@domain.hid</a>&gt; wrote:<br>&gt; &gt; &gt; I&#39;ve done some works, and searched in xenomai&#39;s native function.
-<br>&gt; &gt; &gt;<br>&gt; &gt; &gt; To replace SysClkConnect I&#39;ve created a periodic task with priority=90<br>&gt; that<br>&gt; &gt; &gt; wait 5ms.<br>&gt; &gt; &gt; The last operation in a task&#39;s cycle is semGive(gServiceSem);
-<br>&gt; &gt; &gt; A second task, non periodic, have as first operation of the cycle<br>&gt; &gt; &gt; semTake(gServiceSem,WAIT_FOREVER);<br>&gt; &gt; &gt; the second task has priority=50<br>&gt; &gt; &gt;<br>&gt; &gt; &gt; when the total time for one cycle of task1 and task2 everything seems
-<br>&gt; run<br>&gt; &gt; &gt; properly , when task2 take more then 5ms for do it&#39;s cycle<br>&gt; &gt; &gt; rt_task_wait_period(NULL) return me 146 and not 0, and the time for<br>&gt; task1 is<br>&gt; &gt; &gt; not respected.
-<br>&gt; &gt; &gt;<br>&gt; &gt; &gt; This sound strange for me, why the scheduler don&#39;t switch the task in<br>&gt; &gt; &gt; execution?<br>&gt; &gt;<br>&gt; &gt; This looks strange, could you try and reduce your application to a
-<br>&gt; &gt; simple example which exhibits the same behaviour ? Maybe you lock the<br>&gt; &gt; scheduler with taskLock/taskUnlock ?<br>&gt;<br>&gt; I use the rt_task_set_mode with T_LOCK option in critical section, could it
-<br>&gt; be the cause of the problem?<br><br>Yes, the aim of T_LOCK is precisely to prevent the scheduler from<br>switching to another task as long as the bit is armed.</blockquote><div><br>But I reset the mask after the critical section...&nbsp; I&#39;ll try without&nbsp; this lock and report the result
-<br><br>thanks Racconico <br></div><br></div><br>
+Hi <br><br><div class="gmail_quote">On Dec 31, 2007 4:43 PM, Jan Kiszka &lt;<a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt; wrote:<br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+<div class="Ih2E3d">vikesh rambaran wrote:<br>&gt; Hi<br>&gt;<br>&gt; Thanx for taking the time to reply over this festive season !<br>&gt;<br>&gt; Although suboptimal for this PC, i am compiling using ubuntu&#39;s default
+<br>&gt; config file.<br>&gt; The idea is to make a general kernel image .deb file which can be used to<br>&gt; install<br>&gt; xenomai on older PC architectures (not necessarily AMD 64 bit CPUs)<br>&gt; Therefore the processor shows up as &quot;CONFIG_M586&quot;
+<br><br></div>But will there be CPUs included that don&#39;t have TSC support? If not,<br>choose at least a type that tells Xenomai it can use the TSC and does<br>not have to fall back to slow PIT-based emulation for timekeeping.
+</blockquote><div>&nbsp;</div><div>Thanx for the info. Will have a look at all our platforms and change the processor type accordingly<br><br></div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+<div class="Ih2E3d"><br>&gt;<br>&gt; This seems to be what Paul is making available as well - thanx i will try<br>&gt; them out.<br>&gt;<br>&gt; Jan, i have checked the kernel config file. The following are set<br>&gt;<br>
+&gt; CONFIG_X86_LOCAL_APIC=y<br>&gt; CONFIG_X86_IO_APIC=y<br>&gt;<br>&gt; CONFIG_HPET_TIMER=y<br>&gt; CONFIG_HPET_EMULATE_RTC=y<br>&gt;<br>&gt; Is this combination a problem ?<br><br></div>Yes, because with TSC being officially available, Xenomai uses the PIT
+<br>for timekeeping. At the same time, HPET_TIMER disables the PIT. That&#39;s<br>my theory ATM. Could you validate it by disabling CONFIG_HPET_TIMER?<br><div class="Ih2E3d"></div></blockquote><div><br>Ok, will disable CONFIG_HPET_TIMER and provide feedback
+<br>&nbsp;<br></div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><div class="Ih2E3d"><br>&gt; dmesg shows that the APIC is configured and enabled, but no information of
+<br>&gt; the HPET is displayed. (dmesg output is attached)<br>&gt;<br>&gt; I have not been able to find the message &quot;NOTE: Xenomai needs either<br>&gt; X86_LOCAL_APIC enabled or HPET_TIMER disabled.&quot;<br>&gt; during kernel configuration (make menuconfig) or during the xenomai
+<br>&gt; configuration. Is there a specific place where i should look ?<br><br></div>It would pop up on top of the Xenomai submenu. But as the local APIC is<br>on, this will not trigger anyway. If my theory is correct, we need to
+<br>enhance the condition for the warning.</blockquote><div><br>Yes, this is where the power management and speaker warning messages popped up. After disabling <br>them, there were no more warning messages<br><br></div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+<br><div class="Ih2E3d"><br>&gt;<br>&gt; To build the kernel image package i used<br>&gt;<br>&gt; fakeroot makekpkg --initrd --append_to_version &quot;-adeos-realtime&quot;<br>&gt; kernel_image kernel_headers<br>&gt;<br>&gt; For the xenomai configuration i used
+<br>&gt;<br>&gt; ./configure --disable-x86-tsc<br>&gt;<br>&gt;<br>&gt; Note, on this same PC, using ubuntu 6.06, kernel <a href="http://2.6.20.12" target="_blank">2.6.20.12</a>, xenomai 2.3.1,<br><br></div>According to your logs, you are using Xenomai 
+2.4.</blockquote><div><br>You are correct, the logs which i have posted thus far are only for xenomai 2.4.<br>But i have a dual boot configuration on which Ubuntu 6.06 exists with xenomai 2.3.1<br><br></div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+<br><div><div></div><div class="Wj3C7c"><br>&gt; the latency test runs without large<br>&gt; (negative) latencies and no noticeable PC clock speedup. Test configuration<br>&gt; was also for CONFIG_M586=y<br>&gt; but with SMI workaround not enabled.
+<br>&gt;<br>&gt; Please let me know if any other information that i can provide or tests that<br>&gt; can be done to solve this.<br>&gt;<br>&gt; Thanx for your help<br>&gt; Vicki<br>&gt;<br><br></div></div><font color="#888888">
+Jan<br></font></blockquote><div><br>As an additional test i have downloaded and installed the xenomai kernel image generated by Paul. The kernel boots <br>and there is no pc time speedup. Still need to get the latency test installed and running. However, i&#39;ve noticed that the 
+<br>xenomai version displayed in dmesg logs is 2.4.1. <br><br>Is this an SVN snapshot ?<br><br>I will try to compile with this kernel config file and give feedback in the &quot;new year&quot;<br><br>Keep well and have a great new years day!
+<br>Vicki<br><br><br></div></div><br>
 
-------=_Part_20338_5510274.1199114620249--
+------=_Part_16828_24853515.1199116451265--
 
