@@ -1,17 +1,12 @@
-From: Paul <paul_c@domain.hid>
-Date: Tue, 1 Jan 2008 19:48:49 +0000
-References: <b131c9f0712300411w46996c98i395344b377c6bacf@domain.hid>
-	<200712311654.51903.paul_c@domain.hid>
-	<b131c9f0801010817l2f36aea3h7d521d7be8b7255@domain.hid>
-In-Reply-To: <b131c9f0801010817l2f36aea3h7d521d7be8b7255@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
 Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200801011948.50010.paul_c@domain.hid>
-Subject: Re: [Xenomai-help] Large (negative) latency test results and fast
-	PC clock
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 3 Jan 2008 19:40:19 +0100
+Message-ID: <0B45E93C5FF65740AEAE690BF3848B7A4AB2FF@rennsmail04.eu.thmulti.com>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
+Subject: Re: [Xenomai-help] RTDM mmap and DMA
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,28 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: vikesh rambaran <vikesh.rambaran@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On Tuesday 01 January 2008 16:17, vikesh rambaran wrote:
-> The kernel .config file for the "Linux 2.6.23 image on
-> 586/K5/5x86/6x86/6x86MX (patched with Xenomai)"
-> package has the following set
->
-> CONFIG_X86_GOOD_APIC=y
-> # CONFIG_X86_UP_APIC is not set
-> # CONFIG_M586TSC is not set
-> CONFIG_X86_TSC=y
-> # CONFIG_M586 is not set
-> CONFIG_M686=y
->
-> This does not seem to correspond to your comment above. Is there something
-> i've missed ?
+Gilles Chanteperdrix wrote:
+[...]
+> Ok. I merged the patch I sent, as well as this patch (fixed to make
+> rt_heap_inquire a hyperlink) in trunk. However, I did not commit it in
+> the v2.[34].x branch, since it is a patch which breaks the ABI (size
+of
+> the rt_heap_info structure changes). Should I increment the ABI
+revision
+?
 
-/me curses.. Some of the basic 586 options appear to have been overrriden by 
-options for the 686 flavour. With the release of Xenomai-2.4.1 anounced, I'll 
-rebuild everything overnight and try to resolve the APIC/TSC issue.
+Albeit it is a minor ABI break, I guess this is the policy expected by=20
+Xenomai dev.
 
+> Beware: your mailer broke your patch by adding a newline. It may be a
+> better idea to send the patch as a plain text attachment, it avoids
+such
+> surprises. I have already seen a site explaining how to teach your
+> mailer not to do this, but I do not have the URL at hand.
 
-Regards, Paul.
+Sorry about that. My MUA is a corporate crap, not even able to respect
+the References: field. I'll make sure to always use attached files in
+the future.
+--=20
+Stephane
 
