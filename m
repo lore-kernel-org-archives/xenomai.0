@@ -1,11 +1,12 @@
-Message-ID: <2ff1a98a0801020231k19be7d89k1a6f04b7d497cc34@domain.hid>
-Date: Wed, 2 Jan 2008 11:31:58 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Subject: [Xenomai-core] High latencies on ARM.
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 3 Jan 2008 11:59:55 +0100
+Message-ID: <0B45E93C5FF65740AEAE690BF3848B7A4AB2FD@rennsmail04.eu.thmulti.com>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] I see negative faults
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,55 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi,
+Philippe Gerum wrote:
+>Fillod Stephane wrote:
+>> Attached is an obvious patch (to me). Part of it is across I-Pipe.
+>> Is there a reason why the counter was declared signed?
+>>=20
+>
+>Well, because the number of faults was not expected to increase
+>indefinitely... Is it the PF count we are talking about, on a mpc85xx?
 
-after some (unsuccessful) time trying to instrument the code in a way
-that does not change the latency results completely, I found the
-reason for the high latency with latency -t 1 and latency -t 2 on ARM.
-So, here comes an update on this issue. The culprit is the user-space
-context switch, which flushes the processor cache with the nklock
-locked, irqs off.
+Indeed. It's a MPC8541E.=20
 
-There are two things we could do:
-- arrange for the ARM cache flush to happen with the nklock unlocked
-and irqs enabled. This will improve interrupt latency (latency -t 2)
-but obviously not scheduling latency (latency -t 1). If we go that
-way, there are several problems we should solve:
+$ cat /proc/xenomai/faults
+TRAP         CPU0
+  0:            4    (Data or instruction access)
+  1:            0    (Alignment)
+  2:            0    (Altivec unavailable)
+  3:            0    (Program check exception)
+  4:            0    (Machine check exception)
+  5:            0    (Unknown)
+  6:            0    (Instruction breakpoint)
+  7:            0    (Run mode exception)
+  8:            0    (Single-step exception)
+  9:            0    (Non-recoverable exception)
+ 10:            0    (Software emulation)
+ 11:            0    (Debug)
+ 12:            0    (SPE)
+ 13:            0    (Altivec assist)
+ 14:   3221526824    (Cache-locking exception)
+ 15:            0    (Kernel FP unavailable)
 
-we do not want interrupt handlers to reenter xnpod_schedule(), for
-this we can use the XNLOCK bit, set on whatever is
-xnpod_current_thread() when the cache flush occurs
+Any clue?
 
-since the interrupt handler may modify the rescheduling bits, we need
-to test these bits in xnpod_schedule() epilogue and restart
-xnpod_schedule() if need be
+--=20
+Stephane
 
-we do not want xnpod_delete_thread() to delete one of the two threads
-involved in the context switch, for this the only solution I found is
-to add a bit to the thread mask meaning that the thread is currently
-switching, and to (re)test the XNZOMBIE bit in xnpod_schedule epilogue
-to delete whatever thread was marked for deletion
-
-in case of migration with xnpod_migrate_thread, we do not want
-xnpod_schedule() on the target CPU to switch to the migrated thread
-before the context switch on the source CPU is finished, for this we
-can avoid setting the resched bit in xnpod_migrate_thread(), detect
-the condition in xnpod_schedule() epilogue and set the rescheduling
-bits so that xnpod_schedule is restarted and send the IPI to the
-target CPU.
-
-- avoid using user-space real-time tasks when running latency
-kernel-space benches, i.e. at least in the latency -t 1 and latency -t
-2 case. This means that we should change the timerbench driver. There
-are at least two ways of doing this:
-use an rt_pipe
- modify the timerbench driver to implement only the nrt ioctl, using
-vanilla linux services such as wait_event and wake_up.
-
-What do you think ?
-
--- 
-                                               Gilles Chanteperdrix
+PS: Happy new year to whoever read this message :-)=20
 
