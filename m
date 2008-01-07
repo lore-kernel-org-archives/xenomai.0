@@ -1,14 +1,9 @@
-Message-ID: <477CC72E.4060402@domain.hid>
-Date: Thu, 03 Jan 2008 12:29:50 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4781F1A1.8070004@domain.hid>
+Date: Mon, 07 Jan 2008 10:32:17 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB2FD@rennsmail04.eu.thmulti.com>
-In-Reply-To: <0B45E93C5FF65740AEAE690BF3848B7A4AB2FD@rennsmail04.eu.thmulti.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH] I see negative faults
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/mixed; boundary="------------080604030907030907010404"
+Subject: [Xenomai-core] [PATCH] extend HPET-disabled requirement
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,47 +13,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Fillod Stephane <stephane.fillod@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai-core@domain.hid
 
-Fillod Stephane wrote:
-> Philippe Gerum wrote:
->> Fillod Stephane wrote:
->>> Attached is an obvious patch (to me). Part of it is across I-Pipe.
->>> Is there a reason why the counter was declared signed?
->>>
->> Well, because the number of faults was not expected to increase
->> indefinitely... Is it the PF count we are talking about, on a mpc85xx?
-> 
-> Indeed. It's a MPC8541E. 
-> 
-> $ cat /proc/xenomai/faults
-> TRAP         CPU0
->   0:            4    (Data or instruction access)
->   1:            0    (Alignment)
->   2:            0    (Altivec unavailable)
->   3:            0    (Program check exception)
->   4:            0    (Machine check exception)
->   5:            0    (Unknown)
->   6:            0    (Instruction breakpoint)
->   7:            0    (Run mode exception)
->   8:            0    (Single-step exception)
->   9:            0    (Non-recoverable exception)
->  10:            0    (Software emulation)
->  11:            0    (Debug)
->  12:            0    (SPE)
->  13:            0    (Altivec assist)
->  14:   3221526824    (Cache-locking exception)
->  15:            0    (Kernel FP unavailable)
-> 
-> Any clue?
-> 
+This is a multi-part message in MIME format.
+--------------080604030907030907010404
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
-Book-E cache locking instructions are still considered as privileged ops
-by the kernel, so userland gets a SIGILL as a result of issuing them,
-therefore Xenomai has to switch back the context to secondary mode for
-this reason. There seems to be something going on at application level.
+As this thread [1] demonstrated, there is another nasty corner-case
+where enabled CONFIG_HPET_TIMER bites us. The attached patch aims at
+catching this case as well.
+
+Jan
+
+[1] https://mail.gna.org/public/xenomai-help/2008-01/msg00009.html
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
+
+--------------080604030907030907010404
+Content-Type: text/x-patch;
+ name="extend-hpet-dependency.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="extend-hpet-dependency.patch"
+
+---
+ scripts/Kconfig.frag |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+Index: xenomai/scripts/Kconfig.frag
+===================================================================
+--- xenomai.orig/scripts/Kconfig.frag
++++ xenomai/scripts/Kconfig.frag
+@@ -12,12 +12,12 @@ comment "(menu Device Drivers/Input devi
+ 	depends on !X86_TSC && X86 && INPUT_PCSPKR
+ 
+ comment "NOTE: Xenomai needs either X86_LOCAL_APIC enabled or HPET_TIMER disabled."
+-	depends on !X86_LOCAL_APIC && X86 && HPET_TIMER
++	depends on (!X86_LOCAL_APIC || !X86_TSC) && X86 && HPET_TIMER
+ comment "(menu Processor type and features)"
+-	depends on !X86_LOCAL_APIC && X86 && HPET_TIMER
++	depends on (!X86_LOCAL_APIC || !X86_TSC) && X86 && HPET_TIMER
+ 
+ config XENOMAI
+-	depends on ((X86_TSC || !X86 || !INPUT_PCSPKR) && (!HPET_TIMER || !X86 || X86_LOCAL_APIC))
++	depends on ((X86_TSC || !X86 || !INPUT_PCSPKR) && (!HPET_TIMER || !X86 || (X86_LOCAL_APIC && X86_TSC)))
+ 	bool "Xenomai"
+ 	default y
+         select IPIPE
+
+--------------080604030907030907010404--
 
