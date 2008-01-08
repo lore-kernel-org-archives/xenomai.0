@@ -1,96 +1,240 @@
+Message-ID: <4783735F.8080201@domain.hid>
+Date: Tue, 08 Jan 2008 13:58:07 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/mixed; boundary="------------020502040301070503040402"
+Subject: [Adeos-main] [PATCH 3/3] 2.6.24-x86: inline root irq thunks
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
+
+This is a multi-part message in MIME format.
+--------------020502040301070503040402
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Message-ID: <18352.51397.803115.798009@domain.hid>
-Date: Mon, 11 Feb 2008 23:14:29 +0100
-In-Reply-To: <47B0C7BD.3020609@domain.hid>
-References: <18350.7135.108901.491437@domain.hid>
-	<18350.7315.555644.171720@domain.hid>
-	<47AF057A.3070305@domain.hid>
-	<18351.28960.164520.295075@domain.hid>
-	<47AF781E.4070102@domain.hid>
-	<18351.31369.697255.825404@domain.hid>
-	<47AF7F3C.6080805@domain.hid>
-	<18352.48401.264561.143362@domain.hid>
-	<47B0C7BD.3020609@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] [patch 2/4] RTDM support for select-like service.
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
- > Gilles Chanteperdrix wrote:
- > > Jan Kiszka wrote:
- > >  > Gilles Chanteperdrix wrote:
- > >  > > Would not it be simpler to put a pointer to the task_struct ? After all,
- > >  > > it already has a pid, comm and mm, and a file descriptor will not
- > >  > > survive a task_struct thanks to automatic closing of file descriptors.
- > >  > 
- > >  > Hmm, hmm, hmmmm... Sounds reasonable, should be safe.
- > > 
- > > Actually no, we can not do that because a task_struct may well disappear
- > > and the rtdm_process continue to exist as long as another thread uses the
- > > same mm.
- > 
- > Because we cleanup on mm exit, not task exit, right? OK, looks like I 
- > originally spent a few more thoughts than this time :-/.
- > 
- > > 
- > >  > 
- > >  > > 
- > >  > >  Could you
- > >  > >  > live without the check until we have per-process fd tabled, or was it
- > >  > >  > essential for the select thing?
- > >  > > 
- > >  > > An application which I ported to Xenomai (and which uses the select
- > >  > > call) closes all file descriptors in a for loop. The purpose of this
- > >  > > loop is, I guess, to avoid leaving a file descriptor opened that was
- > >  > > passed through exec.
- > >  > 
- > >  > OK.
- > >  > 
- > >  > So, will you change rtdm_process too? Thanks.
- > > 
- > > I commited the select support, without any change to rtdm_context_get or
- > > rtdm_process. So, now, how do you prefer this to be fixed, by adding an
- > > mm struct to the rtdm_process struct ? By the way, after thinking about
- > > it I can live without this fix: I just have to stop the loop closing
- > > file descriptors at 768, so that it will not try to close RTDM file
- > > descriptors.
- > 
- > If you can live with it, I would vote for fixing it by the intended 
- > redesign via per-process fds.
+This is a rebased and reordered version of [1]. Also this patch survived
+testing over three different boxes (2, 4, and 8-way).
 
-Ok.
+Jan
 
- > 
- > > 
- > > While commiting the support for select, I also had a dependency problem
- > > in Kconfig: when support for posix select is enabled the posix module
- > > uses a function defined in the RTDM module. So, there is one invalid
- > > configuration: posix built-in with support for select and rtdm built as
- > > a module. I could not find a way to express this condition in the
- > > Kconfig language, so I just made a comment depend on this condition, but
- > > would be happy if anyone found a better solution.
- > 
- > I would say:
- > 
- > config POSIX
- > 	select RTDM if OPT_SELECT
-
-But in this case, I can not have posix with select and without rtdm.
+[1] https://mail.gna.org/public/adeos-main/2007-12/msg00061.html
 
 -- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
+--------------020502040301070503040402
+Content-Type: text/x-patch;
+ name="inline-irq-thunks.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="inline-irq-thunks.patch"
 
-					    Gilles Chanteperdrix.
+---
+ arch/x86/kernel/entry_64.S |   51 +------------------------
+ include/asm-x86/ipipe_64.h |   89 +++++++++++++++++++++++++++++++++++++--------
+ 2 files changed, 77 insertions(+), 63 deletions(-)
+
+Index: linux-2.6.24-rc6-xeno_64/arch/x86/kernel/entry_64.S
+===================================================================
+--- linux-2.6.24-rc6-xeno_64.orig/arch/x86/kernel/entry_64.S
++++ linux-2.6.24-rc6-xeno_64/arch/x86/kernel/entry_64.S
+@@ -582,54 +582,8 @@ END(stub_rt_sigreturn)
+ #endif
+ 	.endm
+ 
+-#ifdef CONFIG_IPIPE
+-
+-	/* %rdi=negated _vector_ number, %rsi=handler, %rdx=regs */
+-ENTRY(__ipipe_root_xirq_thunk)
+-	movq %rsp, %rax
+-	pushq $0
+-	pushq %rax
+-	pushfq
+-	pushq $__KERNEL_CS
+-	pushq $1f
+-	pushq %rdi
+-	XCPT_FRAME
+-	SAVE_ARGS
+-	movq %rdi, ORIG_RAX(%rdx)	# regs->orig_eax = ~irq_vector
+-	movq %rdx, %rdi		     	# regs for handler
+-	call *%rsi
+-	jmp exit_intr
+-	CFI_ENDPROC
+-1:
+-	cli
+-        ret
+-END(__ipipe_root_xirq_thunk)
+-	
+-	/* %rdi=virq number, %rsi=cookie, %rdx=handler */
+-ENTRY(__ipipe_root_virq_thunk)
+-	movq %rsp, %rax
+-	pushq $0
+-	pushq %rax
+-	pushfq
+-	pushq $__KERNEL_CS
+-	pushq $1f
+-	pushq $-1
+-	XCPT_FRAME
+-	SAVE_ARGS
+-	call irq_enter
+-	movq RDI-ARGOFFSET(%rsp), %rdi
+-	movq RSI-ARGOFFSET(%rsp), %rsi
+-	movq RDX-ARGOFFSET(%rsp), %rdx
+-	call *%rdx
+-	call irq_exit
+-	jmp exit_intr
+-	CFI_ENDPROC
+-1:
+-	cli
+-        ret
+-END(__ipipe_root_virq_thunk)
+-	
+ ENTRY(common_interrupt)
++#ifdef CONFIG_IPIPE
+ 	XCPT_FRAME
+ 	interrupt __ipipe_handle_irq
+ 	testl %eax, %eax
+@@ -643,7 +597,6 @@ ENTRY(common_interrupt)
+ 	swapgs
+ 	jmp restore_args
+ #else /* !CONFIG_IPIPE */
+-ENTRY(common_interrupt)
+ 	XCPT_FRAME
+ 	interrupt do_IRQ
+ #endif /* !CONFIG_IPIPE */	
+@@ -655,7 +608,7 @@ ret_from_intr:
+ 	leaveq
+ 	CFI_DEF_CFA_REGISTER	rsp
+ 	CFI_ADJUST_CFA_OFFSET	-8
+-exit_intr:
++ENTRY(exit_intr)
+ 	GET_THREAD_INFO(%rcx)
+ 	testl $3,CS-ARGOFFSET(%rsp)
+ 	je retint_kernel
+Index: linux-2.6.24-rc6-xeno_64/include/asm-x86/ipipe_64.h
+===================================================================
+--- linux-2.6.24-rc6-xeno_64.orig/include/asm-x86/ipipe_64.h
++++ linux-2.6.24-rc6-xeno_64/include/asm-x86/ipipe_64.h
+@@ -51,14 +51,6 @@ void __ipipe_serial_debug(const char *fm
+ 
+ unsigned __ipipe_get_irq_vector(int irq);
+ 
+-asmlinkage void __ipipe_root_xirq_thunk(unsigned irq,
+-					void (*handler)(unsigned irq, void *cookie),
+-					struct pt_regs *regs);
+-
+-asmlinkage void __ipipe_root_virq_thunk(unsigned irq,
+-					void *cookie,
+-					void (*handler)(unsigned irq, void *cookie));
+-
+ static inline unsigned long __ipipe_ffnz(unsigned long ul)
+ {
+       __asm__("bsrq %1, %0":"=r"(ul)
+@@ -72,6 +64,76 @@ void __ipipe_ack_edge_irq(unsigned irq, 
+ 
+ void __ipipe_end_edge_irq(unsigned irq, struct irq_desc *desc);
+ 
++static inline void __ipipe_call_root_xirq_handler(unsigned irq,
++						  void (*handler)(unsigned, void *))
++{
++	struct pt_regs *regs = &__raw_get_cpu_var(__ipipe_tick_regs);
++
++	regs->orig_rax = ~__ipipe_get_irq_vector(irq);
++
++	__asm__ __volatile__("movq  %%rsp, %%rax\n\t"
++			     "pushq $0\n\t"
++			     "pushq %%rax\n\t"
++			     "pushfq\n\t"
++			     "pushq %[kernel_cs]\n\t"
++			     "pushq $__xirq_end\n\t"
++			     "pushq %[vector]\n\t"
++			     "subq  $9*8,%%rsp\n\t"
++			     "movq  %%rdi,8*8(%%rsp)\n\t"
++			     "movq  %%rsi,7*8(%%rsp)\n\t"
++			     "movq  %%rdx,6*8(%%rsp)\n\t"
++			     "movq  %%rcx,5*8(%%rsp)\n\t"
++			     "movq  %%rax,4*8(%%rsp)\n\t"
++			     "movq  %%r8,3*8(%%rsp)\n\t"
++			     "movq  %%r9,2*8(%%rsp)\n\t"
++			     "movq  %%r10,1*8(%%rsp)\n\t"
++			     "movq  %%r11,(%%rsp)\n\t"
++			     "call  *%[handler]\n\t"
++			     "jmp exit_intr\n\t"
++			     "__xirq_end: cli\n"
++			     : /* no output */
++			     : [kernel_cs] "i" (__KERNEL_CS),
++			       [vector] "rm" (regs->orig_rax),
++			       [handler] "rm" (handler), "D" (regs)
++			     : "rax");
++}
++
++void irq_enter(void);
++void irq_exit(void);
++
++static inline void __ipipe_call_root_virq_handler(unsigned irq,
++						  void (*handler)(unsigned, void *),
++						  void *cookie)
++{
++	__asm__ __volatile__("movq  %%rsp, %%rax\n\t"
++			     "pushq $0\n\t"
++			     "pushq %%rax\n\t"
++			     "pushfq\n\t"
++			     "pushq %[kernel_cs]\n\t"
++			     "pushq $__virq_end\n\t"
++			     "pushq $-1\n\t"
++			     "subq  $9*8,%%rsp\n\t"
++			     "movq  %%rdi,8*8(%%rsp)\n\t"
++			     "movq  %%rsi,7*8(%%rsp)\n\t"
++			     "movq  %%rdx,6*8(%%rsp)\n\t"
++			     "movq  %%rcx,5*8(%%rsp)\n\t"
++			     "movq  %%rax,4*8(%%rsp)\n\t"
++			     "movq  %%r8,3*8(%%rsp)\n\t"
++			     "movq  %%r9,2*8(%%rsp)\n\t"
++			     "movq  %%r10,1*8(%%rsp)\n\t"
++			     "movq  %%r11,(%%rsp)\n\t"
++			     : /* no output */
++			     : [kernel_cs] "i" (__KERNEL_CS)
++			     : "rax");
++	irq_enter();
++	handler(irq, cookie);
++	irq_exit();
++	__asm__ __volatile__("jmp exit_intr\n\t"
++			     "__virq_end: cli\n"
++			     : /* no output */
++			     : /* no input */);
++}
++
+ /*
+  * When running handlers, enable hw interrupts for all domains but the
+  * one heading the pipeline, so that IRQs can never be significantly
+@@ -82,13 +144,12 @@ void __ipipe_end_edge_irq(unsigned irq, 
+ 		local_irq_enable_nohead(ipd);				\
+ 		if (ipd == ipipe_root_domain) {				\
+ 			if (likely(!ipipe_virtual_irq_p(irq)))		\
+-				__ipipe_root_xirq_thunk(~__ipipe_get_irq_vector(irq),	\
+-							(ipd)->irqs[irq].handler,	\
+-							&__raw_get_cpu_var(__ipipe_tick_regs)); \
++				__ipipe_call_root_xirq_handler(		\
++					irq, (ipd)->irqs[irq].handler);	\
+ 			else						\
+-				__ipipe_root_virq_thunk(irq, \
+-							(ipd)->irqs[irq].cookie, \
+-							(ipd)->irqs[irq].handler); \
++				__ipipe_call_root_virq_handler(		\
++					irq, (ipd)->irqs[irq].handler,	\
++					(ipd)->irqs[irq].cookie);	\
+ 		} else {						\
+ 			__clear_bit(IPIPE_SYNC_FLAG, &ipipe_cpudom_var(ipd, status)); \
+ 			ipd->irqs[irq].handler(irq, ipd->irqs[irq].cookie); \
+
+--------------020502040301070503040402--
 
