@@ -1,12 +1,10 @@
-Message-ID: <478276AC.9000705@domain.hid>
-Date: Mon, 07 Jan 2008 19:59:56 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <478497ED.3050809@domain.hid>
+Date: Wed, 09 Jan 2008 10:46:21 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB304@domain.hid>
-In-Reply-To: <0B45E93C5FF65740AEAE690BF3848B7A4AB304@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] RTDM/rtser fix for RTSER_RTIOC_WAIT_EVENT
+Subject: [Xenomai-core] #include <linux/uaccess.h> fails with Linux 2.4
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,27 +14,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Fillod Stephane <stephane.fillod@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Fillod Stephane wrote:
-> Hi,
-> 
-> Pretty much everything is in the title.
-> The interrupts were just not kicking.
+Hello,
 
-Oops. Obviously.
+recent versions of Xenomai include the header file "linux/uaccess.h" in
+"xenomai/include/asm-generic/syscall.h" which does not exist under Linux
+2.4. "asm/uaccess" should be used instead. Any clever idea how to fix it
+(without using #ifdefs)?
 
-> 
-> The patch is against Xenomai 2.4.1.
-
-Thanks, will apply.
-
-Jan
-
-PS: No need to zip such small files.
-
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Wolfgang.
 
