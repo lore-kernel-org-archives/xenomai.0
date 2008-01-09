@@ -1,51 +1,104 @@
-Message-ID: <47977DE1.8060207@domain.hid>
-Date: Wed, 23 Jan 2008 18:48:17 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4784BCDD.9000404@domain.hid>
+Date: Wed, 09 Jan 2008 13:23:57 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <2ff1a98a0801020231k19be7d89k1a6f04b7d497cc34@domain.hid>	<18315.63245.160672.547658@domain.hid>
-	<18326.21480.397736.413726@domain.hid>
-In-Reply-To: <18326.21480.397736.413726@domain.hid>
+References: <f8f856500801070737s2934e741i99717c5b2a2d3d88@domain.hid>	
+	<47827A59.1050806@domain.hid>
+	<f8f856500801090304l13ffa333p53a35f82cc8ed957@domain.hid>
+In-Reply-To: <f8f856500801090304l13ffa333p53a35f82cc8ed957@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] High latencies on ARM.
-Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Xenomai latency tests on MPC8xx
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: fabien <fabien.fb@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Gilles Chanteperdrix wrote:
->  > Please find attached a patch implementing these ideas. This adds some
->  > clutter, which I would be happy to reduce. Better ideas are welcome.
->  > 
+fabien wrote:
+> Hello, first thank for your advices Wolfgang.
 > 
-> Ok. New version of the patch, this time split in two parts, should
-> hopefully make it more readable.
+> 2008/1/7, Wolfgang Grandegger <wg@domain.hid>:
+>> fabien wrote:
+>>> Here, there is some xenomai tests on a MPC855T, could you comment
+>>> these results please ?
+>>> Are they correct ?
+[...deletions...]
+> First, it's nice to see that all tests passed without oops, system hang
+>> or large latency figures. Your results are reasonable for your test
+>> scenario. I remember similar results on my TQM860L module under Linux
+>> 2.4.25. Your target is a very low-end PowerPC system with little cache
+>> (min latency is rather close to max latency) and it's already a pain to
+>> run Linux 2.6 on it. But you should apply more load and run the test
+>> much longer to get realistic worst case latency figures, which are
+>> likely higher then the values listed above. I usually use "while ls; do
+>> ls; done" in a telnet window, "ping -f <host-ip>" and the cache
+>> calibrator to produce high load. And do not forget to add "cat
+>> /proc/xenomai/latency" to the above figures.
+>>
+>> Wolfgang,
+>>
+>>
 > 
+> I did the same test with :
+> a ping -f
+> telnet session : while ls; do ls; done
+> and a dd if=/dev/zero of=/dev/null
+> 
+> And i got the following results :
+> ./latency -t0 -p1000 -T500
+> RTS|      86.400|     131.200|     229.440|       0|    00:08:21/00:08:20
+> 
+> # cat /proc/xenomai/latency
+> 4160
+> 
+> ./latency -t1 -p1000 -T500
+> RTS|      63.040|      92.998|     180.480|       0|    00:08:21/00:08:20
+> 
+> ./latency -t2 -p1000 -T500
+> RTS|      20.480|      36.130|     123.200|       0|    00:08:21/00:08:20
+> 
+> # ./cyclictest -t5 -l 30000 -q
+> T: 0 (  563) P:99 I:    1000 C:   30000 Min:      97 Act:     142 Avg:
+>     150 Max:     216
+> T: 1 (  564) P:98 I:    1500 C:   30000 Min:      95 Act:     142 Avg:
+>     228 Max:     574
+> T: 2 (  565) P:97 I:    2000 C:   30000 Min:     102 Act:     141 Avg:
+>     335 Max:     776
+> T: 3 (  566) P:96 I:    2500 C:   30000 Min:      96 Act:     138 Avg:
+>     303 Max:     964
+> T: 4 (  567) P:95 I:    3000 C:   30000 Min:     123 Act:     143 Avg:
+>     481 Max:    1458
+> 
+> # ./switchbench -n100000 -p 1000
+> == Sampling period: 1000 us
+> == Do not interrupt this program
+> RTH|     lat min|     lat avg|     lat max|        lost
+> RTD|     140.480|     176.000|     276.480|           0
+> 
+> # ./switchtest -T30 -n
+> == Threads: sleeper-0 rtk-1 rtk-2 rtup-3 rtup-4 rtus-5 rtus-6 rtuo-7 rtuo-8
+> RTT|  00:00:03
+> RTH|ctx switches|-------total
+> RTD|         666|         666
+> RTD|           3|         669
+> RTD|          15|         684
+> RTD|          12|         696
+> 
+> I think the tests are correct ?
 
-Ack. I'd suggest the following:
+Yes, and the results are reasonable, apart from the last one...
 
-- let's have a rate limiter when walking the zombie queue in
-__xnpod_finalize_zombies. We hold the superlock here, and what the patch
-also introduces is the potential for flushing more than a single TCB at
-a time, which might not always be a cheap operation, depending on which
-cra^H^Hode runs on behalf of the deletion hooks for instance. We may
-take for granted that no sane code would continuously create more
-threads than we would be able to finalize in a given time frame anyway.
+> exept for the latter that is catastrophic .... just when i applied the ping -f
+> What do you think about this results ?
 
-- We could move most of the code depending on XNARCH_WANT_UNLOCKED_CTXSW
- to conditional inlines in pod.h. This would reduce the visual pollution
-a lot.
+... likely because the system is overloaded with 30 tasks.
 
--- 
-Philippe.
+Wolfgang.
 
