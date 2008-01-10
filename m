@@ -1,686 +1,109 @@
-Message-ID: <18326.21459.333811.155772@domain.hid>
-Date: Tue, 22 Jan 2008 21:36:35 +0100
+Content-Transfer-Encoding: 7bit
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="B9IRCk3Dyt"
-Content-Transfer-Encoding: 7bit
-In-Reply-To: <2ff1a98a0801020231k19be7d89k1a6f04b7d497cc34@domain.hid>
-References: <2ff1a98a0801020231k19be7d89k1a6f04b7d497cc34@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] High latencies on ARM.
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C85366.6F6A6B71"
+Date: Thu, 10 Jan 2008 09:54:39 +0100
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2AEF9AF4@domain.hid>
+In-Reply-To: <4784BCDD.9000404@domain.hid>
+From: <Roderik.Wildenburg@domain.hid>
+Subject: [Xenomai-help] Shared Memory mmap fails
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
+This is a multi-part message in MIME format.
 
---B9IRCk3Dyt
-Content-Type: text/plain; charset=us-ascii
-Content-Description: message body and .signature
-Content-Transfer-Encoding: 7bit
+------_=_NextPart_001_01C85366.6F6A6B71
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
- > Hi,
- > 
- > after some (unsuccessful) time trying to instrument the code in a way
- > that does not change the latency results completely, I found the
- > reason for the high latency with latency -t 1 and latency -t 2 on ARM.
- > So, here comes an update on this issue. The culprit is the user-space
- > context switch, which flushes the processor cache with the nklock
- > locked, irqs off.
- > 
- > There are two things we could do:
- > - arrange for the ARM cache flush to happen with the nklock unlocked
- > and irqs enabled. This will improve interrupt latency (latency -t 2)
- > but obviously not scheduling latency (latency -t 1). If we go that
- > way, there are several problems we should solve:
- > 
- > we do not want interrupt handlers to reenter xnpod_schedule(), for
- > this we can use the XNLOCK bit, set on whatever is
- > xnpod_current_thread() when the cache flush occurs
- > 
- > since the interrupt handler may modify the rescheduling bits, we need
- > to test these bits in xnpod_schedule() epilogue and restart
- > xnpod_schedule() if need be
- > 
- > we do not want xnpod_delete_thread() to delete one of the two threads
- > involved in the context switch, for this the only solution I found is
- > to add a bit to the thread mask meaning that the thread is currently
- > switching, and to (re)test the XNZOMBIE bit in xnpod_schedule epilogue
- > to delete whatever thread was marked for deletion
- > 
- > in case of migration with xnpod_migrate_thread, we do not want
- > xnpod_schedule() on the target CPU to switch to the migrated thread
- > before the context switch on the source CPU is finished, for this we
- > can avoid setting the resched bit in xnpod_migrate_thread(), detect
- > the condition in xnpod_schedule() epilogue and set the rescheduling
- > bits so that xnpod_schedule is restarted and send the IPI to the
- > target CPU.
+Dear Xenomai Pros,
 
-Please find attached a patch implementing these ideas. This adds some
-clutter, which I would be happy to reduce. Better ideas are welcome.
+executing the attached code snippet(a very much striped down satch.c =
+example) results in the following error message.
 
+# ./satch
+mmap(producer_shm): 6
 
- > 
- > - avoid using user-space real-time tasks when running latency
- > kernel-space benches, i.e. at least in the latency -t 1 and latency -t
- > 2 case. This means that we should change the timerbench driver. There
- > are at least two ways of doing this:
- > use an rt_pipe
- >  modify the timerbench driver to implement only the nrt ioctl, using
- > vanilla linux services such as wait_event and wake_up.
- > 
- > What do you think ?
+This means : "ENXIO, the range [off;off+len) is invalid for the shared =
+memory region specified by fd;"
 
-So, what do you thing is the best way to change the timerbench driver,
-* use an rt_pipe ? Pros: allows to run latency -t 1 and latency -t 2 even
- if Xenomai is compiled with CONFIG_XENO_OPT_PERVASIVE off; cons: make
- the timerbench non portable on other implementations of rtdm, eg. rtdm
- over rtai or the version of rtdm which runs over vanilla linux
-* modify the timerbecn driver to implement only nrt ioctls ? Pros:
-  better driver portability; cons: latency would still need
-  CONFIG_XENO_OPT_PERVASIVE to run latency -t 1 and latency -t 2.
+This problem does not only occur in this small example but also in my =
+application.
+Therefore and as I can=B4t see any obvious  mistake in this example, I =
+think this could be a problem of Xenomai.=20
+Could somedbody try to execute this example and validate if there is a =
+general problem ?
+I use Xenomai 2.3.5 on a 2.4.25 PPC-kernel.
 
--- 
+Thank you very much in advance
+Roderik=20
 
+MAN Roland Druckmaschinen AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle   =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592   =20
+USt-Ident-Nr. DE 250200933
 
-					    Gilles Chanteperdrix.
+------_=_NextPart_001_01C85366.6F6A6B71
+Content-Type: application/octet-stream;
+	name="satch.c"
+Content-Transfer-Encoding: base64
+Content-Description: satch.c
+Content-Disposition: attachment;
+	filename="satch.c"
 
---B9IRCk3Dyt
-Content-Type: text/plain
-Content-Disposition: inline;
-	filename="xeno-unlocked-arm-ctx-switch.diff"
-Content-Transfer-Encoding: 7bit
+I2luY2x1ZGUgPHN0ZGlvLmg+CgojaW5jbHVkZSA8dGltZS5oPgojaW5jbHVkZSA8ZXJybm8uaD4K
+I2luY2x1ZGUgPHVuaXN0ZC5oPgojaW5jbHVkZSA8c2lnbmFsLmg+CiNpbmNsdWRlIDxzeXMvbW1h
+bi5oPgojaW5jbHVkZSA8cHRocmVhZC5oPgojaW5jbHVkZSA8bXF1ZXVlLmg+CiNpbmNsdWRlIDxw
+b3NpeC9wb3NpeC5oPgoKI2RlZmluZSBTSE1fTkFNRSAiL3NhdGNoc2htIgoKc3RhdGljIHZvaWQg
+KnByb2R1Y2VyX3NobSA9IE1BUF9GQUlMRUQ7CgoKdm9pZCBfX3hlbm9fdXNlcl9leGl0ICh2b2lk
+KQp7CiAgICBpZiAocHJvZHVjZXJfc2htICE9IE1BUF9GQUlMRUQpCiAgICAgICAgbXVubWFwKHBy
+b2R1Y2VyX3NobSwgNjU1MzYpOwogICAgc2htX3VubGluayhTSE1fTkFNRSk7Cn0KCmludCBfX3hl
+bm9fdXNlcl9pbml0ICh2b2lkKQoKewogICAgaW50IGZkID0gLTE7CgogICAgZmQgPSBzaG1fb3Bl
+bihTSE1fTkFNRSwgT19DUkVBVCB8IE9fUkRXUiwgMDc3Nyk7CiAgICBpZiAoZmQgPT0gLTEpCiAg
+ICAgICAgewogICAgICAgIHByaW50Zigic2htX29wZW46ICVkXG4iLCBlcnJubyk7CiAgICAgICAg
+cmV0dXJuIC1lcnJubzsKICAgICAgICB9CgogICAgaWYgKGZ0cnVuY2F0ZShmZCwgNjU1MzYpKQog
+ICAgICAgIHsKICAgICAgICBwcmludGYoImZ0cnVuY2F0ZTogJWRcbiIsIGVycm5vKTsKICAgICAg
+ICBjbG9zZShmZCk7CiAgICAgICAgcmV0dXJuKC0xKTsKICAgICAgICB9CgogICAgCiAgICBwcm9k
+dWNlcl9zaG0gPSBtbWFwKE5VTEwsIDY1NTM2LCBQUk9UX1JFQUQgfCBQUk9UX1dSSVRFLCBNQVBf
+U0hBUkVELCBmZCwgMCk7CiAgICBpZiAocHJvZHVjZXJfc2htID09IE1BUF9GQUlMRUQpCiAgICAg
+ICAgewogICAgICAgIHByaW50ZigibW1hcChwcm9kdWNlcl9zaG0pOiAlZFxuIiwgZXJybm8pOwog
+ICAgICAgIHJldHVybiAtZXJybm87CiAgICAgICAgfQogICByZXR1cm4oZmQpOwp9CgppbnQgbWFp
+biAoaW50IGFjLCBjaGFyICphdltdKQoKewogICAgc2lnc2V0X3QgbWFzazsKICAgIGludCByYywg
+c2lnOwoKICAgIHNpZ2VtcHR5c2V0KCZtYXNrKTsKICAgIHNpZ2FkZHNldCgmbWFzayxTSUdJTlQp
+OwogICAgc2lnYWRkc2V0KCZtYXNrLFNJR1RFUk0pOwogICAgc2lnYWRkc2V0KCZtYXNrLFNJR0hV
+UCk7CiAgICBzaWdhZGRzZXQoJm1hc2ssU0lHQUxSTSk7CgogICAgcHRocmVhZF9zaWdtYXNrKFNJ
+R19CTE9DSywgJm1hc2ssIE5VTEwpOwoKICAgIG1sb2NrYWxsKE1DTF9DVVJSRU5UfE1DTF9GVVRV
+UkUpOwoKICAgIHJjID0gX194ZW5vX3VzZXJfaW5pdCgpOwoKICAgIGlmIChyYz4wKQogICAgICAg
+IHsKICAgICAgICAgICBjbG9zZShyYyk7CiAgICAgICAgfQoKICAgIHNpZ3dhaXQoJm1hc2ssICZz
+aWcpOwogICAgX194ZW5vX3VzZXJfZXhpdCgpOwoKICAgIHJldHVybiAwOwp9Cg==
 
-Index: include/asm-arm/bits/pod.h
-===================================================================
---- include/asm-arm/bits/pod.h	(revision 3405)
-+++ include/asm-arm/bits/pod.h	(working copy)
-@@ -67,41 +67,41 @@
- #endif /* TIF_MMSWITCH_INT */
- }
- 
--static inline void xnarch_switch_to(xnarchtcb_t * out_tcb, xnarchtcb_t * in_tcb)
--{
--	struct task_struct *prev = out_tcb->active_task;
--	struct mm_struct *prev_mm = out_tcb->active_mm;
--	struct task_struct *next = in_tcb->user_task;
--
--
--	if (likely(next != NULL)) {
--		in_tcb->active_task = next;
--		in_tcb->active_mm = in_tcb->mm;
--		rthal_clear_foreign_stack(&rthal_domain);
--	} else {
--		in_tcb->active_task = prev;
--		in_tcb->active_mm = prev_mm;
--		rthal_set_foreign_stack(&rthal_domain);
--	}
--
--	if (prev_mm != in_tcb->active_mm) {
--		/* Switch to new user-space thread? */
--		if (in_tcb->active_mm)
--			switch_mm(prev_mm, in_tcb->active_mm, next);
--		if (!next->mm)
--			enter_lazy_tlb(prev_mm, next);
--	}
--
--	/* Kernel-to-kernel context switch. */
--	rthal_thread_switch(prev, out_tcb->tip, in_tcb->tip);
-+#define xnarch_switch_to(_out_tcb, _in_tcb, lock)			\
-+{									\
-+	xnarchtcb_t *in_tcb = (_in_tcb);				\
-+	xnarchtcb_t *out_tcb = (_out_tcb);				\
-+	struct task_struct *prev = out_tcb->active_task;		\
-+	struct mm_struct *prev_mm = out_tcb->active_mm;			\
-+	struct task_struct *next = in_tcb->user_task;			\
-+									\
-+									\
-+	if (likely(next != NULL)) {					\
-+		in_tcb->active_task = next;				\
-+		in_tcb->active_mm = in_tcb->mm;				\
-+		rthal_clear_foreign_stack(&rthal_domain);		\
-+	} else {							\
-+		in_tcb->active_task = prev;				\
-+		in_tcb->active_mm = prev_mm;				\
-+		rthal_set_foreign_stack(&rthal_domain);			\
-+	}								\
-+									\
-+	if (prev_mm != in_tcb->active_mm) {				\
-+		/* Switch to new user-space thread? */			\
-+		if (in_tcb->active_mm) {				\
-+			spl_t ignored;					\
-+			xnlock_clear_irqon(lock);			\
-+			switch_mm(prev_mm, in_tcb->active_mm, next);	\
-+			xnlock_get_irqsave(lock, ignored);		\
-+		}							\
-+		if (!next->mm)						\
-+			enter_lazy_tlb(prev_mm, next);			\
-+	}								\
-+									\
-+	/* Kernel-to-kernel context switch. */				\
-+	rthal_thread_switch(prev, out_tcb->tip, in_tcb->tip);		\
- }
- 
--static inline void xnarch_finalize_and_switch(xnarchtcb_t * dead_tcb,
--					      xnarchtcb_t * next_tcb)
--{
--	xnarch_switch_to(dead_tcb, next_tcb);
--}
--
- static inline void xnarch_finalize_no_switch(xnarchtcb_t * dead_tcb)
- {
- 	/* Empty */
-Index: include/asm-arm/system.h
-===================================================================
---- include/asm-arm/system.h	(revision 3405)
-+++ include/asm-arm/system.h	(working copy)
-@@ -31,6 +31,8 @@
- 
- #define XNARCH_THREAD_STACKSZ   4096
- 
-+#define XNARCH_WANT_UNLOCKED_CTXSW
-+
- #define xnarch_stack_size(tcb)  ((tcb)->stacksize)
- #define xnarch_user_task(tcb)   ((tcb)->user_task)
- #define xnarch_user_pid(tcb)    ((tcb)->user_task->pid)
-Index: include/nucleus/thread.h
-===================================================================
---- include/nucleus/thread.h	(revision 3405)
-+++ include/nucleus/thread.h	(working copy)
-@@ -61,6 +61,7 @@
- #define XNFPU     0x00100000 /**< Thread uses FPU */
- #define XNSHADOW  0x00200000 /**< Shadow thread */
- #define XNROOT    0x00400000 /**< Root thread (that is, Linux/IDLE) */
-+#define XNSWLOCK  0x00800000 /**< Thread is currently switching context. */
- 
- /*! @} */ /* Ends doxygen comment group: nucleus_state_flags */
- 
-Index: include/nucleus/pod.h
-===================================================================
---- include/nucleus/pod.h	(revision 3405)
-+++ include/nucleus/pod.h	(working copy)
-@@ -139,6 +139,11 @@
- 
- 	xntimer_t htimer;	/*!< Host timer. */
- 
-+	xnqueue_t zombies;
-+
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	xnthread_t *lastthread;
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
- } xnsched_t;
- 
- #define nkpod (&nkpod_struct)
-@@ -238,6 +243,14 @@
- }
- #endif /* CONFIG_XENO_OPT_WATCHDOG */
- 
-+void __xnpod_finalize_zombies(xnsched_t *sched);
-+
-+static inline void xnpod_finalize_zombies(xnsched_t *sched)
-+{
-+	if (!emptyq_p(&sched->zombies))
-+		__xnpod_finalize_zombies(sched);
-+}
-+
- 	/* -- Beginning of the exported interface */
- 
- #define xnpod_sched_slot(cpu) \
-Index: ksrc/nucleus/pod.c
-===================================================================
---- ksrc/nucleus/pod.c	(revision 3415)
-+++ ksrc/nucleus/pod.c	(working copy)
-@@ -292,6 +292,7 @@
- #endif /* CONFIG_SMP */
- 		xntimer_set_name(&sched->htimer, htimer_name);
- 		xntimer_set_sched(&sched->htimer, sched);
-+		initq(&sched->zombies);
- 	}
- 
- 	xnlock_put_irqrestore(&nklock, s);
-@@ -545,63 +546,35 @@
- 	__clrbits(sched->status, XNKCOUT);
- }
- 
--static inline void xnpod_switch_zombie(xnthread_t *threadout,
--				       xnthread_t *threadin)
-+void __xnpod_finalize_zombies(xnsched_t *sched)
- {
--	/* Must be called with nklock locked, interrupts off. */
--	xnsched_t *sched = xnpod_current_sched();
--#ifdef CONFIG_XENO_OPT_PERVASIVE
--	int shadow = xnthread_test_state(threadout, XNSHADOW);
--#endif /* CONFIG_XENO_OPT_PERVASIVE */
-+	xnholder_t *holder;
- 
--	trace_mark(xn_nucleus_sched_finalize,
--		   "thread_out %p thread_out_name %s "
--		   "thread_in %p thread_in_name %s",
--		   threadout, xnthread_name(threadout),
--		   threadin, xnthread_name(threadin));
-+	while ((holder = getq(&sched->zombies))) {
-+		xnthread_t *thread = link2thread(holder, glink);
- 
--	if (!emptyq_p(&nkpod->tdeleteq) && !xnthread_test_state(threadout, XNROOT)) {
--		trace_mark(xn_nucleus_thread_callout,
--			   "thread %p thread_name %s hook %s",
--			   threadout, xnthread_name(threadout), "DELETE");
--		xnpod_fire_callouts(&nkpod->tdeleteq, threadout);
--	}
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+		if (thread == sched->runthread) {
-+			appendq(&sched->zombies, &thread->glink);
-+			break;
-+		}
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
- 
--	sched->runthread = threadin;
-+		/* Must be called with nklock locked, interrupts off. */
-+		trace_mark(xn_nucleus_sched_finalize,
-+			   "thread_out %p thread_out_name %s",
-+			   thread, xnthread_name(thread));
- 
--	if (xnthread_test_state(threadin, XNROOT)) {
--		xnpod_reset_watchdog(sched);
--		xnfreesync();
--		xnarch_enter_root(xnthread_archtcb(threadin));
-+		if (!emptyq_p(&nkpod->tdeleteq)
-+		    && !xnthread_test_state(thread, XNROOT)) {
-+			trace_mark(xn_nucleus_thread_callout,
-+				   "thread %p thread_name %s hook %s",
-+				   thread, xnthread_name(thread), "DELETE");
-+			xnpod_fire_callouts(&nkpod->tdeleteq, thread);
-+		}
-+
-+		xnthread_cleanup_tcb(thread);
- 	}
--
--	/* FIXME: Catch 22 here, whether we choose to run on an invalid
--	   stack (cleanup then hooks), or to access the TCB space shortly
--	   after it has been freed while non-preemptible (hooks then
--	   cleanup)... Option #2 is current. */
--
--	xnthread_cleanup_tcb(threadout);
--
--	xnstat_exectime_finalize(sched, &threadin->stat.account);
--
--	xnarch_finalize_and_switch(xnthread_archtcb(threadout),
--				   xnthread_archtcb(threadin));
--
--#ifdef CONFIG_XENO_OPT_PERVASIVE
--	xnarch_trace_pid(xnthread_user_task(threadin) ?
--			 xnarch_user_pid(xnthread_archtcb(threadin)) : -1,
--			 xnthread_current_priority(threadin));
--
--	if (shadow)
--		/* Reap the user-space mate of a deleted real-time shadow.
--		   The Linux task has resumed into the Linux domain at the
--		   last code location executed by the shadow. Remember
--		   that both sides use the Linux task's stack. */
--		xnshadow_exit();
--#endif /* CONFIG_XENO_OPT_PERVASIVE */
--
--	xnpod_fatal("zombie thread %s (%p) would not die...", threadout->name,
--		    threadout);
- }
- 
- /*! 
-@@ -1211,11 +1184,17 @@
- 
- 	xnthread_set_state(thread, XNZOMBIE);
- 
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW		
-+	if (sched->runthread == thread
-+	    || xnthread_test_state(thread, XNSWLOCK)) {
-+#else /* XNARCH_WANT_UNLOCKED_CTXSW */
- 	if (sched->runthread == thread) {
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
- 		/* We first need to elect a new runthread before switching out
- 		   the current one forever. Use the thread zombie state to go
- 		   through the rescheduling procedure then actually destroy
- 		   the thread object. */
-+		appendq(&sched->zombies, &thread->glink);
- 		xnsched_set_resched(sched);
- 		xnpod_schedule();
- 	} else {
-@@ -1788,7 +1767,7 @@
- 	xnlock_get_irqsave(&nklock, s);
- 
- 	trace_mark(xn_nucleus_thread_renice,
--		   "thread %p thread_name %s priority %d",
-+		   "thread %p thread_nmae %s priority %d",
- 		   thread, xnthread_name(thread), prio);
- 
- 	oldprio = thread->cprio;
-@@ -1899,7 +1878,11 @@
- 
- 	/* Put thread in the ready queue of the destination CPU's scheduler. */
- 	xnpod_resume_thread(thread, 0);
--
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	/* Clear the resched bit to avoid that the migrated thread be
-+	   scheduled on destination CPU. */
-+	xnsched_clr_resched(thread->sched);
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
- 	xnpod_schedule();
- 
- 	/* Reset execution time measurement period so that we don't mess up
-@@ -2140,6 +2123,21 @@
- 
- void xnpod_welcome_thread(xnthread_t *thread, int imask)
- {
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	xnsched_t *sched = thread->sched;
-+
-+	xnthread_clear_state(sched->lastthread, XNSWLOCK);
-+	xnthread_clear_state(sched->runthread, XNSWLOCK);
-+
-+	/* Detect a thread which called xnpod_migrate_thread */
-+	if (sched->lastthread->sched != sched) {
-+		xnsched_set_resched(sched);
-+		xnsched_set_resched(sched->lastthread->sched);
-+	}
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
-+
-+	xnpod_finalize_zombies(thread->sched);
-+
- 	trace_mark(xn_nucleus_thread_boot, "thread %p thread_name %s",
- 		   thread, xnthread_name(thread));
- 
-@@ -2174,6 +2172,11 @@
- 
- 	xnlock_clear_irqoff(&nklock);
- 	splexit(!!imask);
-+
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	if (xnsched_tst_resched(sched))
-+		xnpod_schedule();
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
- }
- 
- #ifdef CONFIG_XENO_HW_FPU
-@@ -2373,6 +2376,7 @@
- 	xnthread_t *threadout, *threadin, *runthread;
- 	xnpholder_t *pholder;
- 	xnsched_t *sched;
-+	int zombie;
- #if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
- 	int need_resched;
- #endif /* CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
-@@ -2402,7 +2406,9 @@
- 	xnarch_trace_pid(xnthread_user_task(runthread) ?
- 			 xnarch_user_pid(xnthread_archtcb(runthread)) : -1,
- 			 xnthread_current_priority(runthread));
--
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+      restart:
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
- #if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
- 	need_resched = xnsched_tst_resched(sched);
- #endif
-@@ -2426,16 +2432,24 @@
- 
- #endif /* CONFIG_SMP */
- 
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	if (xnthread_test_state(runthread, XNSWLOCK))
-+		goto unlock_and_exit;
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
-+
- 	/* Clear the rescheduling bit */
- 	xnsched_clr_resched(sched);
- 
-+	zombie = xnthread_test_state(runthread, XNZOMBIE);
- 	if (!xnthread_test_state(runthread, XNTHREAD_BLOCK_BITS | XNZOMBIE)) {
- 
- 		/* Do not preempt the current thread if it holds the
- 		 * scheduler lock. */
- 
--		if (xnthread_test_state(runthread, XNLOCK))
-+		if (xnthread_test_state(runthread, XNLOCK)) {
-+			xnsched_set_resched(sched);
- 			goto signal_unlock_and_exit;
-+		}
- 
- 		pholder = sched_getheadpq(&sched->readyq);
- 
-@@ -2491,9 +2505,6 @@
- 	shadow = xnthread_test_state(threadout, XNSHADOW);
- #endif /* CONFIG_XENO_OPT_PERVASIVE */
- 
--	if (xnthread_test_state(threadout, XNZOMBIE))
--		xnpod_switch_zombie(threadout, threadin);
--
- 	sched->runthread = threadin;
- 
- 	if (xnthread_test_state(threadout, XNROOT))
-@@ -2507,8 +2518,18 @@
- 	xnstat_exectime_switch(sched, &threadin->stat.account);
- 	xnstat_counter_inc(&threadin->stat.csw);
- 
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	sched->lastthread = threadout;
-+	xnthread_set_state(threadout, XNSWLOCK);
-+	xnthread_set_state(threadin, XNSWLOCK);
-+
- 	xnarch_switch_to(xnthread_archtcb(threadout),
-+			 xnthread_archtcb(threadin),
-+			 &nklock);
-+#else /* !XNARCH_WANT_UNLOCKED_CTXSW */	
-+	xnarch_switch_to(xnthread_archtcb(threadout),
- 			 xnthread_archtcb(threadin));
-+#endif /* !XNARCH_WANT_UNLOCKED_CTXSW */
- 
- #ifdef CONFIG_SMP
- 	/* If threadout migrated while suspended, sched is no longer correct. */
-@@ -2525,23 +2546,27 @@
- #ifdef CONFIG_XENO_OPT_PERVASIVE
- 	/* Test whether we are relaxing a thread. In such a case, we are here the
- 	   epilogue of Linux' schedule, and should skip xnpod_schedule epilogue. */
--	if (shadow && xnthread_test_state(runthread, XNROOT)) {
--		spl_t ignored;
--		/* Shadow on entry and root without shadow extension on exit? 
--		   Mmmm... This must be the user-space mate of a deleted real-time
--		   shadow we've just rescheduled in the Linux domain to have it
--		   exit properly.  Reap it now. */
--		if (xnshadow_thrptd(current) == NULL)
--			xnshadow_exit();
-+	if (shadow && xnthread_test_state(runthread, XNROOT))
-+		goto relax_epilogue;
-+#endif /* CONFIG_XENO_OPT_PERVASIVE */
- 
--		/* We need to relock nklock here, since it is not locked and
--		   the caller may expect it to be locked. */
--		xnlock_get_irqsave(&nklock, ignored);
--		xnlock_put_irqrestore(&nklock, s);
--		return;
-+	if (zombie)
-+		xnpod_fatal("zombie thread %s (%p) would not die...",
-+			    threadout->name, threadout);
-+
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	xnthread_clear_state(sched->lastthread, XNSWLOCK);
-+	xnthread_clear_state(sched->runthread, XNSWLOCK);
-+
-+	/* Detect a thread which called xnpod_migrate_thread */
-+	if (sched->lastthread->sched != sched) {
-+		xnsched_set_resched(sched);
-+		xnsched_set_resched(sched->lastthread->sched);
- 	}
--#endif /* CONFIG_XENO_OPT_PERVASIVE */
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
- 
-+	xnpod_finalize_zombies(sched);
-+
- #ifdef CONFIG_XENO_HW_FPU
- 	__xnpod_switch_fpu(sched);
- #endif /* CONFIG_XENO_HW_FPU */
-@@ -2558,12 +2583,42 @@
- 		xnpod_fire_callouts(&nkpod->tswitchq, runthread);
- 	}
- 
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	if (xnsched_tst_resched(sched)) {
-+		if (xnthread_signaled_p(runthread))
-+			xnpod_dispatch_signals();
-+		goto restart;
-+	}
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
-+
-       signal_unlock_and_exit:
- 
- 	if (xnthread_signaled_p(runthread))
- 		xnpod_dispatch_signals();
- 
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+      unlock_and_exit:
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
- 	xnlock_put_irqrestore(&nklock, s);
-+	return;
-+
-+#ifdef CONFIG_XENO_OPT_PERVASIVE
-+      relax_epilogue:
-+	{
-+		spl_t ignored;
-+		/* Shadow on entry and root without shadow extension on exit? 
-+		   Mmmm... This must be the user-space mate of a deleted real-time
-+		   shadow we've just rescheduled in the Linux domain to have it
-+		   exit properly.  Reap it now. */
-+		if (xnshadow_thrptd(current) == NULL)
-+			xnshadow_exit();
-+
-+		/* We need to relock nklock here, since it is not locked and
-+		   the caller may expect it to be locked. */
-+		xnlock_get_irqsave(&nklock, ignored);
-+		xnlock_put_irqrestore(&nklock, s);
-+	}
-+#endif /* CONFIG_XENO_OPT_PERVASIVE */
- }
- 
- /*! 
-@@ -2664,9 +2719,6 @@
- 	if (threadin == runthread)
- 		return;		/* No switch. */
- 
--	if (xnthread_test_state(runthread, XNZOMBIE))
--		xnpod_switch_zombie(runthread, threadin);
--
- 	sched->runthread = threadin;
- 
- 	if (xnthread_test_state(runthread, XNROOT))
-@@ -2684,18 +2736,41 @@
- 	xnstat_exectime_switch(sched, &threadin->stat.account);
- 	xnstat_counter_inc(&threadin->stat.csw);
- 
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	sched->lastthread = runthread;
-+	xnthread_set_state(runthread, XNSWLOCK);
-+	xnthread_set_state(threadin, XNSWLOCK);
-+
- 	xnarch_switch_to(xnthread_archtcb(runthread),
-+			 xnthread_archtcb(threadin),
-+			 &nklock);
-+#else /* !XNARCH_WANT_UNLOCKED_CTXSW */	
-+	xnarch_switch_to(xnthread_archtcb(runthread),
- 			 xnthread_archtcb(threadin));
-+#endif /* !XNARCH_WANT_UNLOCKED_CTXSW */
- 
--	xnarch_trace_pid(xnthread_user_task(runthread) ?
--			 xnarch_user_pid(xnthread_archtcb(runthread)) : -1,
--			 xnthread_current_priority(runthread));
--
- #ifdef CONFIG_SMP
- 	/* If runthread migrated while suspended, sched is no longer correct. */
- 	sched = xnpod_current_sched();
- #endif
- 
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	xnthread_clear_state(sched->lastthread, XNSWLOCK);
-+	xnthread_clear_state(sched->runthread, XNSWLOCK);
-+
-+	/* Detect a thread which called xnpod_migrate_thread */
-+	if (sched->lastthread->sched != sched) {
-+		xnsched_set_resched(sched);
-+		xnsched_set_resched(sched->lastthread->sched);
-+	}
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
-+
-+	xnpod_finalize_zombies(sched);
-+
-+	xnarch_trace_pid(xnthread_user_task(runthread) ?
-+			 xnarch_user_pid(xnthread_archtcb(runthread)) : -1,
-+			 xnthread_current_priority(runthread));
-+
- #ifdef CONFIG_XENO_HW_FPU
- 	__xnpod_switch_fpu(sched);
- #endif /* CONFIG_XENO_HW_FPU */
-@@ -2704,6 +2779,11 @@
- 	if (nkpod->schedhook && runthread == sched->runthread)
- 		nkpod->schedhook(runthread, XNRUNNING);
- #endif /* __XENO_SIM__ */
-+
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	if (xnsched_tst_resched(sched))
-+		xnpod_schedule();
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
- }
- 
- /*! 
-Index: ksrc/nucleus/shadow.c
-===================================================================
---- ksrc/nucleus/shadow.c	(revision 3405)
-+++ ksrc/nucleus/shadow.c	(working copy)
-@@ -1059,6 +1059,7 @@
- 	struct task_struct *this_task = current;
- 	struct __gatekeeper *gk;
- 	xnthread_t *thread;
-+	xnsched_t *sched;
- 	int gk_cpu;
- 
- redo:
-@@ -1124,9 +1125,23 @@
- 	}
- 
- 	/* "current" is now running into the Xenomai domain. */
-+	sched = xnpod_current_sched();
- 
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	xnthread_clear_state(sched->lastthread, XNSWLOCK);
-+	xnthread_clear_state(sched->runthread, XNSWLOCK);
-+
-+	/* Detect a thread which called xnpod_migrate_thread */
-+	if (sched->lastthread->sched != sched) {
-+		xnsched_set_resched(sched);
-+		xnsched_set_resched(sched->lastthread->sched);
-+	}
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
-+
-+	xnpod_finalize_zombies(sched);
-+
- #ifdef CONFIG_XENO_HW_FPU
--	xnpod_switch_fpu(xnpod_current_sched());
-+	xnpod_switch_fpu(sched);
- #endif /* CONFIG_XENO_HW_FPU */
- 
- 	xnarch_schedule_tail(this_task);
-@@ -1149,6 +1164,11 @@
- 	trace_mark(xn_nucleus_shadow_hardened, "thread %p thread_name %s",
- 		   thread, xnthread_name(thread));
- 
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	if (xnsched_tst_resched(sched))
-+		xnpod_schedule();
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
-+
- 	return 0;
- }
- 
+------_=_NextPart_001_01C85366.6F6A6B71
+Content-Type: application/octet-stream;
+	name="Makefile"
+Content-Transfer-Encoding: base64
+Content-Description: Makefile
+Content-Disposition: attachment;
+	filename="Makefile"
 
---B9IRCk3Dyt--
+QVBQTElDQVRJT05TID0gc2F0Y2gKCmFsbDo6CgpzYXRjaDogc2F0Y2guYwoKCgojIyMgRGVmYXVs
+dCBYZW5vbWFpIGluc3RhbGxhdGlvbiBwYXRoClhFTk8gPz0gL29wdC9lbGRrL3hlbm9tYWkKClhF
+Tk9DT05GSUc9JChzaGVsbCBQQVRIPSQoWEVOTyk6JChYRU5PKS9iaW46JChQQVRIKSB3aGljaCB4
+ZW5vLWNvbmZpZyAyPi9kZXYvbnVsbCkKCgpDQz0kKHNoZWxsICQoWEVOT0NPTkZJRykgLS1jYykK
+CkNGTEFHUz0gJChzaGVsbCAkKFhFTk9DT05GSUcpIC0tcG9zaXgtY2ZsYWdzKQoKTERGTEFHUz0k
+KHNoZWxsICQoWEVOT0NPTkZJRykgLS1wb3NpeC1sZGZsYWdzKQoKCmFsbDo6ICQoQVBQTElDQVRJ
+T05TKQoKY2xlYW46OgoJJChSTSkgJChBUFBMSUNBVElPTlMpICoubwoKCgoKCgo=
+
+------_=_NextPart_001_01C85366.6F6A6B71--
 
