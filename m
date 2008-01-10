@@ -1,12 +1,12 @@
-Content-Transfer-Encoding: 7bit
-Content-Class: urn:content-classes:message
+Message-ID: <2ff1a98a0801100605l1639190eve13def369901f28b@domain.hid>
+Date: Thu, 10 Jan 2008 15:05:19 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2AEF9AF4@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C85366.6F6A6B71"
-Date: Thu, 10 Jan 2008 09:54:39 +0100
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2AEF9AF4@domain.hid>
-In-Reply-To: <4784BCDD.9000404@domain.hid>
-From: <Roderik.Wildenburg@domain.hid>
-Subject: [Xenomai-help] Shared Memory mmap fails
+Content-Type: multipart/mixed; boundary="----=_Part_1182_256661.1199973919817"
+References: <4784BCDD.9000404@domain.hid>
+	<5D63919D95F87E4D9D34FF7748CE2C2AEF9AF4@domain.hid>
+Subject: Re: [Xenomai-help] Shared Memory mmap fails
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,94 +16,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Roderik.Wildenburg@domain.hid
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
-
-------_=_NextPart_001_01C85366.6F6A6B71
-Content-Type: text/plain;
-	charset="iso-8859-1"
+------=_Part_1182_256661.1199973919817
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Dear Xenomai Pros,
+ Jan 10, 2008 9:54 AM,  <Roderik.Wildenburg@domain.hid> wrote:
+> Dear Xenomai Pros,
+>
+> executing the attached code snippet(a very much striped down satch.c exam=
+ple) results in the following error message.
+>
+> # ./satch
+> mmap(producer_shm): 6
+>
+> This means : "ENXIO, the range [off;off+len) is invalid for the shared me=
+mory region specified by fd;"
+>
+> This problem does not only occur in this small example but also in my app=
+lication.
+> Therefore and as I can=B4t see any obvious  mistake in this example, I th=
+ink this could be a problem of Xenomai.
+> Could somedbody try to execute this example and validate if there is a ge=
+neral problem ?
+> I use Xenomai 2.3.5 on a 2.4.25 PPC-kernel.
+>
+> Thank you very much in advance
+> Roderik
 
-executing the attached code snippet(a very much striped down satch.c =
-example) results in the following error message.
+Could you try the attached patch ?
 
-# ./satch
-mmap(producer_shm): 6
+--=20
+                                               Gilles Chanteperdrix
 
-This means : "ENXIO, the range [off;off+len) is invalid for the shared =
-memory region specified by fd;"
-
-This problem does not only occur in this small example but also in my =
-application.
-Therefore and as I can=B4t see any obvious  mistake in this example, I =
-think this could be a problem of Xenomai.=20
-Could somedbody try to execute this example and validate if there is a =
-general problem ?
-I use Xenomai 2.3.5 on a 2.4.25 PPC-kernel.
-
-Thank you very much in advance
-Roderik=20
-
-MAN Roland Druckmaschinen AG
-Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle   =20
-Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592   =20
-USt-Ident-Nr. DE 250200933
-
-------_=_NextPart_001_01C85366.6F6A6B71
+------=_Part_1182_256661.1199973919817
 Content-Type: application/octet-stream;
-	name="satch.c"
+ name=xeno-posix-revert-commit-3245.diff
 Content-Transfer-Encoding: base64
-Content-Description: satch.c
+X-Attachment-Id: f_fb9dgzpq2
 Content-Disposition: attachment;
-	filename="satch.c"
+ filename=xeno-posix-revert-commit-3245.diff
 
-I2luY2x1ZGUgPHN0ZGlvLmg+CgojaW5jbHVkZSA8dGltZS5oPgojaW5jbHVkZSA8ZXJybm8uaD4K
-I2luY2x1ZGUgPHVuaXN0ZC5oPgojaW5jbHVkZSA8c2lnbmFsLmg+CiNpbmNsdWRlIDxzeXMvbW1h
-bi5oPgojaW5jbHVkZSA8cHRocmVhZC5oPgojaW5jbHVkZSA8bXF1ZXVlLmg+CiNpbmNsdWRlIDxw
-b3NpeC9wb3NpeC5oPgoKI2RlZmluZSBTSE1fTkFNRSAiL3NhdGNoc2htIgoKc3RhdGljIHZvaWQg
-KnByb2R1Y2VyX3NobSA9IE1BUF9GQUlMRUQ7CgoKdm9pZCBfX3hlbm9fdXNlcl9leGl0ICh2b2lk
-KQp7CiAgICBpZiAocHJvZHVjZXJfc2htICE9IE1BUF9GQUlMRUQpCiAgICAgICAgbXVubWFwKHBy
-b2R1Y2VyX3NobSwgNjU1MzYpOwogICAgc2htX3VubGluayhTSE1fTkFNRSk7Cn0KCmludCBfX3hl
-bm9fdXNlcl9pbml0ICh2b2lkKQoKewogICAgaW50IGZkID0gLTE7CgogICAgZmQgPSBzaG1fb3Bl
-bihTSE1fTkFNRSwgT19DUkVBVCB8IE9fUkRXUiwgMDc3Nyk7CiAgICBpZiAoZmQgPT0gLTEpCiAg
-ICAgICAgewogICAgICAgIHByaW50Zigic2htX29wZW46ICVkXG4iLCBlcnJubyk7CiAgICAgICAg
-cmV0dXJuIC1lcnJubzsKICAgICAgICB9CgogICAgaWYgKGZ0cnVuY2F0ZShmZCwgNjU1MzYpKQog
-ICAgICAgIHsKICAgICAgICBwcmludGYoImZ0cnVuY2F0ZTogJWRcbiIsIGVycm5vKTsKICAgICAg
-ICBjbG9zZShmZCk7CiAgICAgICAgcmV0dXJuKC0xKTsKICAgICAgICB9CgogICAgCiAgICBwcm9k
-dWNlcl9zaG0gPSBtbWFwKE5VTEwsIDY1NTM2LCBQUk9UX1JFQUQgfCBQUk9UX1dSSVRFLCBNQVBf
-U0hBUkVELCBmZCwgMCk7CiAgICBpZiAocHJvZHVjZXJfc2htID09IE1BUF9GQUlMRUQpCiAgICAg
-ICAgewogICAgICAgIHByaW50ZigibW1hcChwcm9kdWNlcl9zaG0pOiAlZFxuIiwgZXJybm8pOwog
-ICAgICAgIHJldHVybiAtZXJybm87CiAgICAgICAgfQogICByZXR1cm4oZmQpOwp9CgppbnQgbWFp
-biAoaW50IGFjLCBjaGFyICphdltdKQoKewogICAgc2lnc2V0X3QgbWFzazsKICAgIGludCByYywg
-c2lnOwoKICAgIHNpZ2VtcHR5c2V0KCZtYXNrKTsKICAgIHNpZ2FkZHNldCgmbWFzayxTSUdJTlQp
-OwogICAgc2lnYWRkc2V0KCZtYXNrLFNJR1RFUk0pOwogICAgc2lnYWRkc2V0KCZtYXNrLFNJR0hV
-UCk7CiAgICBzaWdhZGRzZXQoJm1hc2ssU0lHQUxSTSk7CgogICAgcHRocmVhZF9zaWdtYXNrKFNJ
-R19CTE9DSywgJm1hc2ssIE5VTEwpOwoKICAgIG1sb2NrYWxsKE1DTF9DVVJSRU5UfE1DTF9GVVRV
-UkUpOwoKICAgIHJjID0gX194ZW5vX3VzZXJfaW5pdCgpOwoKICAgIGlmIChyYz4wKQogICAgICAg
-IHsKICAgICAgICAgICBjbG9zZShyYyk7CiAgICAgICAgfQoKICAgIHNpZ3dhaXQoJm1hc2ssICZz
-aWcpOwogICAgX194ZW5vX3VzZXJfZXhpdCgpOwoKICAgIHJldHVybiAwOwp9Cg==
+SW5kZXg6IGtzcmMvc2tpbnMvcG9zaXgvc2htLmMKPT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQotLS0ga3NyYy9za2lucy9w
+b3NpeC9zaG0uYwkocsOpdmlzaW9uIDMyNDUpCisrKyBrc3JjL3NraW5zL3Bvc2l4L3NobS5jCShy
+w6l2aXNpb24gMzI0NCkKQEAgLTQ5NCw2ICs0OTQsMTEgQEAKIAkJZ290byBlcnJfc2htX3B1dDsK
+IAl9CiAKKwkvKiBBbGxvY2F0ZSBvbmUgbW9yZSBwYWdlIGZvciBhbGlnbm1lbnQgKHRoZSBhZGRy
+ZXNzIHJldHVybmVkIGJ5IG1tYXAKKwkgICBtdXN0IGJlIGFsaWduZWQpLiAqLworCWlmIChsZW4p
+CisJCWxlbiA9IHhuaGVhcF9yb3VuZGVkX3NpemUobGVuICsgUEFHRV9TSVpFLCBQQUdFX1NJWkUp
+OworCiAJZXJyID0gMDsKIAlpZiAoZW1wdHlxX3AoJnNobS0+bWFwcGluZ3MpKSB7CiAJCS8qIFRl
+bXBvcmFyeSBzdG9yYWdlLCBpbiBvcmRlciB0byBwcmVzZXJ2ZSB0aGUgbWVtb3J5IGNvbnRlbnRz
+IHVwb24KQEAgLTUyNSwxOCArNTMwLDEyIEBACiAKIAkJaWYgKGxlbikgewogI2lmZGVmIENPTkZJ
+R19YRU5PX09QVF9QRVJWQVNJVkUKLQkJCWludCBmbGFnczsKLQkJCWxlbiA9IHhuaGVhcF9yb3Vu
+ZGVkX3NpemUobGVuLCBQQUdFX1NJWkUpOwotCQkJZmxhZ3MgPSBsZW4gPD0gMTI4ICogMTAyNCA/
+IEdGUF9VU0VSIDogMDsKKwkJCWludCBmbGFncyA9IGxlbiA8PSAxMjggKiAxMDI0ID8gR0ZQX1VT
+RVIgOiAwOwogCQkJZXJyID0gLXhuaGVhcF9pbml0X21hcHBlZCgmc2htLT5oZWFwYmFzZSwgbGVu
+LCBmbGFncyk7CiAjZWxzZSAvKiAhQ09ORklHX1hFTk9fT1BUX1BFUlZBU0lWRS4gKi8KIAkJCXsK
+LQkJCQl2b2lkICpoZWFwYWRkcjsKKwkJCQl2b2lkICpoZWFwYWRkciA9IHhuYXJjaF9zeXNhbGxv
+YyhsZW4pOwogCi0JCQkJbGVuID0geG5oZWFwX3JvdW5kZWRfc2l6ZShsZW4sIFBBR0VfU0laRSk7
+Ci0KLQkJCQloZWFwYWRkciA9IHhuYXJjaF9zeXNhbGxvYyhsZW4pOwotCiAJCQkJaWYgKGhlYXBh
+ZGRyKQogCQkJCQllcnIgPQogCQkJCQkgICAgLXhuaGVhcF9pbml0KCZzaG0tPmhlYXBiYXNlLAo=
 
-------_=_NextPart_001_01C85366.6F6A6B71
-Content-Type: application/octet-stream;
-	name="Makefile"
-Content-Transfer-Encoding: base64
-Content-Description: Makefile
-Content-Disposition: attachment;
-	filename="Makefile"
-
-QVBQTElDQVRJT05TID0gc2F0Y2gKCmFsbDo6CgpzYXRjaDogc2F0Y2guYwoKCgojIyMgRGVmYXVs
-dCBYZW5vbWFpIGluc3RhbGxhdGlvbiBwYXRoClhFTk8gPz0gL29wdC9lbGRrL3hlbm9tYWkKClhF
-Tk9DT05GSUc9JChzaGVsbCBQQVRIPSQoWEVOTyk6JChYRU5PKS9iaW46JChQQVRIKSB3aGljaCB4
-ZW5vLWNvbmZpZyAyPi9kZXYvbnVsbCkKCgpDQz0kKHNoZWxsICQoWEVOT0NPTkZJRykgLS1jYykK
-CkNGTEFHUz0gJChzaGVsbCAkKFhFTk9DT05GSUcpIC0tcG9zaXgtY2ZsYWdzKQoKTERGTEFHUz0k
-KHNoZWxsICQoWEVOT0NPTkZJRykgLS1wb3NpeC1sZGZsYWdzKQoKCmFsbDo6ICQoQVBQTElDQVRJ
-T05TKQoKY2xlYW46OgoJJChSTSkgJChBUFBMSUNBVElPTlMpICoubwoKCgoKCgo=
-
-------_=_NextPart_001_01C85366.6F6A6B71--
+------=_Part_1182_256661.1199973919817--
 
