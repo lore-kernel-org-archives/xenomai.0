@@ -1,17 +1,10 @@
-Content-class: urn:content-classes:message
+Message-ID: <db67beef0801151413sc078e51k1e14f76b3cdf6319@domain.hid>
+Date: Tue, 15 Jan 2008 23:13:21 +0100
+From: bite <anonimo.passante@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 15 Jan 2008 10:24:51 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D376589@domain.hid>
-In-Reply-To: <2ff1a98a0801150844l309d1368i945e7183aa5da807@domain.hid>
-References: <51CAD0CE1504444DBE77CBBE51A0135D376570@domain.hid>
-	<2ff1a98a0801150827ka2070dfxd937209e57271b3f@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D37657B@slcmail.slc.mew.int>
-	<2ff1a98a0801150844l309d1368i945e7183aa5da807@domain.hid>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: Re: [Xenomai-help] rms scheduling
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_8746_6651790.1200435201859"
+Subject: [Xenomai-help] rtpipe problem not solved by 2.4.1
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,27 +14,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-> This is transparent, you do not have to care about that, provided that
-> you use rt_timer_ns2ticks everywhere, things will work the same way in
-> one-shot mode or periodic mode.
+------=_Part_8746_6651790.1200435201859
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-I didn't do this, of course. :) Oh well. It won't take too long.
+Hi,
 
-> Since xenomai 2.4, each skin has its own timebase. Most skins do not
-> have a service such as rt_timer_set_mode to set whether they will be
-> periodic or one-shot, but their module accept a parameter.
+working with 2.3.4 I have an occasional problem with rtpipe.
 
-I think there is a disconnect in Xenomai with regards to userspace
-threading and applications. If I have two applications that use Xenomai
-threads, it might be nice if they could each operate on a separate
-timebase (xenomai running in one shot) but of course this could violate
-RMS if the applications don't play nice.
+Writing several integers from the rt side with rt_pipe_write (..., P_NORMAL)
+sometimes it happens that only the first integer can be read from non-rt.
 
-Anyway, I have my answer. Thanks! BTW, any word on if your watchdog
-patch will make it in to trunk? I have been using it with great success.
+The problem seems to be triggered by (moderately) heavy socket traffic, not
+clear why.
 
-Steven=20
+Reading from the 2.4.1 log: "Close SMP race window in message pipe's
+read-side", I decided to give it a try even if I'm not working with SMP, but
+my problem persists.
+
+It is not urgent for me, I found my way out by polling ring buffers instead
+of using rtps, but I think it is worth raising the suspect that there _is_
+even a non-SMP race condition.
+
+Best regards,
+
+Bite
+
+------=_Part_8746_6651790.1200435201859
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hi,<br><br>working with 2.3.4 I have an occasional problem with rtpipe.<br><br>Writing several integers from the rt side with rt_pipe_write (..., P_NORMAL) sometimes it happens that only the first integer can be read from non-rt.
+<br><br>The problem seems to be triggered by (moderately) heavy socket traffic, not clear why.<br><br>Reading from the 2.4.1 log: &quot;Close SMP race window in message pipe&#39;s read-side&quot;, I decided to give it a try even if I&#39;m not working with SMP, but my problem persists.
+<br><br>It is not urgent for me, I found my way out by polling ring buffers instead of using rtps, but I think it is worth raising the suspect that there _is_ even a non-SMP race condition.<br><br>Best regards,<br><br>Bite
+<br>
+
+------=_Part_8746_6651790.1200435201859--
 
