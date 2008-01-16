@@ -1,62 +1,83 @@
-Message-ID: <2ff1a98a0801240218y1f09ae38w93e244a47218900@domain.hid>
-Date: Thu, 24 Jan 2008 11:18:11 +0100
+Message-ID: <2ff1a98a0801160930w3b63bc5dyd89f8ec867a3ae35@domain.hid>
+Date: Wed, 16 Jan 2008 18:30:37 +0100
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <479788A5.80407@domain.hid>
+In-Reply-To: <2ff1a98a0801160635n2040f566mb1bdd464aaa017e4@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <2ff1a98a0801020231k19be7d89k1a6f04b7d497cc34@domain.hid>
-	<18315.63245.160672.547658@domain.hid>
-	<18326.21480.397736.413726@domain.hid>
-	<47977DE1.8060207@domain.hid>
-	<2ff1a98a0801230953m2a67e614s6c921b3b6ec77c3c@domain.hid>
-	<479788A5.80407@domain.hid>
-Subject: Re: [Xenomai-core] High latencies on ARM.
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <47891672.4050409@domain.hid>
+	<2ff1a98a0801140752y5e6e47e2tb9980bfb344522a4@domain.hid>
+	<478CAB5F.70208@domain.hid>
+	<2ff1a98a0801150509w2dae4826r4696cd95c21aecb3@domain.hid>
+	<478CBD27.4020501@domain.hid>
+	<2ff1a98a0801150610n4404224bl98be4fcbccba70b7@domain.hid>
+	<478DD90B.6020302@domain.hid>
+	<2ff1a98a0801160249t7e4c1989i5ebde8e6b69d52e7@domain.hid>
+	<478E1270.1000409@domain.hid>
+	<2ff1a98a0801160635n2040f566mb1bdd464aaa017e4@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai problems on pxa
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Bernhard Michael <michael.bernhard@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Jan 23, 2008 7:34 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> Gilles Chanteperdrix wrote:
-> > On Jan 23, 2008 6:48 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> >> Gilles Chanteperdrix wrote:
-> >>> Gilles Chanteperdrix wrote:
-> >>>  > Please find attached a patch implementing these ideas. This adds some
-> >>>  > clutter, which I would be happy to reduce. Better ideas are welcome.
-> >>>  >
-> >>>
-> >>> Ok. New version of the patch, this time split in two parts, should
-> >>> hopefully make it more readable.
-> >>>
-> >> Ack. I'd suggest the following:
-> >>
-> >> - let's have a rate limiter when walking the zombie queue in
-> >> __xnpod_finalize_zombies. We hold the superlock here, and what the patch
-> >> also introduces is the potential for flushing more than a single TCB at
-> >> a time, which might not always be a cheap operation, depending on which
-> >> cra^H^Hode runs on behalf of the deletion hooks for instance. We may
-> >> take for granted that no sane code would continuously create more
-> >> threads than we would be able to finalize in a given time frame anyway.
+On Jan 16, 2008 3:35 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On Jan 16, 2008 3:19 PM, Bernhard Michael <michael.bernhard@domain.hid> wrote:
+> > Gilles Chanteperdrix wrote:
+> > > I do not know how to solve this. From my point of view, this is a
+> > > compiler bug: knowing that it uses instructions which needs 8 bytes
+> > > alignment, the compiler should align stack frames on 8 bytes
+> > > boundaries, period.
 > >
-> > The maximum number of zombies in the queue is
-> > 1 + XNARCH_WANT_UNLOCKED_CTXSW, since a zombie is added to the queue
-> > only if a deleted thread is xnpod_current_thread(), or if the XNLOCKSW
-> > bit is armed.
+> > Digging a bit in the mailing lists about stack alignment and EABI I find
+> > that gcc *realy* should handle proper stack alignment.
+> >
+> > See http://gcc.gnu.org/ml/gcc/2006-07/msg00030.html
+> > or http://www.codesourcery.com/archives/arm-gnu/msg01467.html
+> >
+> > Now, looking at the assembly code for the SWI handler, I see that ipipe
+> > introduces flowing code:
 >
-> Ack. rate_limit = 1? I'm really reluctant to increase the WCET here,
-> thread deletion isn't cheap already.
+> Of course. I found that suspicious that the kernel code could rely on
+> suboptimal trap handlers to work correctly, and was about to tell you
+> to run Linux without Xenomai to see if the unaligned fault counters
+> incremented in /proc/cpu/alignment
+>
+> >
+> >         #ifdef CONFIG_IPIPE
+> >                 stmfd   sp!, {r0-r3, ip}
+> >                 add     r1, sp, #S_OFF
+>
+> You could try adding:
+>                    add     sp, sp, #4
+> here
+> >                 add     r1, r1, #20
+> >                 mov     r0, scno
+> >                 bl      __ipipe_syscall_root
+> >                 cmp     r0, #0
+> and:
+>                    sub     sp, sp, #4
+> here
+>
+> >                 ldmfd   sp!, {r0-r3, ip}
+> >                 blt     __ipipe_ret_fast_syscall
+> >                 bgt     __ipipe_fast_exit_syscall
+> >         #endif /* CONFIG_IPIPE */
 
-I am not sure that holding the nklock while we run the thread deletion
-hooks is really needed.
+Stack goes down, so this should be the other way around, substract 4
+from sp before, and add 4 to sp after.
+
+I tested it on another arm (without EABI, so I can not know if it
+works), and there is at least no regression.
 
 -- 
                                                Gilles Chanteperdrix
