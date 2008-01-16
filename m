@@ -1,10 +1,20 @@
-Message-ID: <db67beef0801151526o79074308o18f2bd486df68b72@domain.hid>
-Date: Wed, 16 Jan 2008 00:26:01 +0100
-From: bite <anonimo.passante@domain.hid>
+Message-ID: <478DD90B.6020302@domain.hid>
+Date: Wed, 16 Jan 2008 11:14:35 +0100
+From: "Bernhard Michael" <michael.bernhard@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_9011_8240907.1200439561118"
-Subject: Re: [Xenomai-help] rtpipe problem not solved by 2.4.1
+References: <47891672.4050409@domain.hid>
+	<2ff1a98a0801140525y2bc4a198o97967585f6de0f7c@domain.hid>
+	<478B8249.90303@domain.hid>
+	<2ff1a98a0801140752y5e6e47e2tb9980bfb344522a4@domain.hid>
+	<478CAB5F.70208@domain.hid>
+	<2ff1a98a0801150509w2dae4826r4696cd95c21aecb3@domain.hid>
+	<478CBD27.4020501@domain.hid>
+	<2ff1a98a0801150610n4404224bl98be4fcbccba70b7@domain.hid>
+In-Reply-To: <2ff1a98a0801150610n4404224bl98be4fcbccba70b7@domain.hid>
+Content-Type: text/plain;
+	charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai problems on pxa
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,103 +24,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-------=_Part_9011_8240907.1200439561118
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Gilles Chanteperdrix wrote:
+> To solve the problem about unaligned accesses, the solution is to put
+> some print_symbol or show_stack(NULL, NULL) in xnpod_trap_fault. Once
+> we get the exact location of an unaligned access, disassemble the
+> kernel or a module at the given location and try and understand why
+> there is an unaligned access. 
 
->
-> Hi,
->
-> intentionally dropped the CC?
->
+Well, even though I've never done that before I couldn't resist to try it out.
 
-No, just an occasional gmail user. Not intuitive, at least for me. Hitting
-"reply" to your message, this is what I got. (Looking again, your message
-appears to have me as the only addressee, so no surprise).
+I put a 'show_stack(NULL,NULL)' in 'xnpod_trap_fault' and got following
+stack traces:
 
+----
 
-> bite wrote:
-> > I know, but if it was easy to do, i would already have posted an
-> example.
-> >
-> > The problem arises in a numerical controller application having the
-> > following organization:
-> >
-> > - rt periodic task, receiving commands thru ring buffers and sending
-> replies
-> > thru rtp.
-> > - non-rt server working as a bridge, pending on select both for tcp/ip
-> > sockets and /dev/rtp*.
-> > - c++ client talking to the server thru tcp/ip sockets
-> > - java user interface talking to the server thru tcp/ip sockets, too.
-> >
-> > The java UI asks for status information (axis position etc) about twice
-> a
-> > second, while the c++ client transacts only upon user request.
-> >
-> > No problem ever occurs when the java UI is not working.
-> >
-> > The problem occasionally occurs only when the java UI is up.
-> >
-> > You can see that it is not easy to nail down an example, sorry.
->
-> An alternative to reproducing the bug on one of our systems is to debug
-> it on yours, either with the help of the I-pipe tracer or with LTTng.
->
-> The former marks each and ever function call inside the kernel and is
-> specifically helpful to track the call history temporally close to the
-> failure (the application could issue a trace freeze on detecting the
-> issue).
->
-> The latter, LTTng, traces at a higher level and can therefore run over a
-> longer time. But it also requires some help of the application to mark
-> the failure in order to find it later on in the trace log.
->
-> Both methods need a specifically prepared kernels (for LTTng, I would
-> have to provide some patches from my private repository, the I-pipe
-> trace just needs a config switch), and both methods may need interactive
-> debugging, ie. some rounds where we put additional instrumentation in
-> your kernel to collect rt-pipe specific states. Would you have the time
-> and motivation to work together with us on this?
->
+[<c002734c>] (show_stack+0x0/0x5c) from [<bf005d88>] (xnpod_trap_fault+0x50/0x1e0 [xeno_nucleus])
+[<bf005d38>] (xnpod_trap_fault+0x0/0x1e0 [xeno_nucleus]) from [<bf002278>] (xnarch_trap_fault+0x20/0x28 [xeno_nucleus])
+ r6 = C01EFFE0  r5 = 00000000  r4 = 58454E4F
+[<bf002258>] (xnarch_trap_fault+0x0/0x28 [xeno_nucleus]) from [<c01f0038>] (exception_event+0x58/0x70)
+[<c01effe0>] (exception_event+0x0/0x70) from [<c005abf0>] (__ipipe_dispatch_event+0x124/0x1ec)
+ r5 = 00000000  r4 = 00000100
+[<c005aacc>] (__ipipe_dispatch_event+0x0/0x1ec) from [<c002b914>] (do_alignment+0x1a4/0x410)
+[<c002b770>] (do_alignment+0x0/0x410) from [<c0029a98>] (do_DataAbort+0x3c/0x13c)
+[<c0029a5c>] (do_DataAbort+0x0/0x13c) from [<c00229ac>] (__dabt_svc+0x4c/0x60)
+[<bf028e54>] (rt_timer_inquire+0x0/0xb0 [xeno_native]) from [<bf02c9a0>] (__rt_timer_inquire+0x20/0x7c [xeno_native])
+ r7 = BF01C2A4  r6 = C308BEA4  r5 = 00000000  r4 = C308BFB0
+[<bf02c980>] (__rt_timer_inquire+0x0/0x7c [xeno_native]) from [<bf00c688>] (hisyscall_event+0x1ac/0x2b8 [xeno_nucleus])
+ r6 = C3C2F100  r5 = 00000000  r4 = C308BFB0
+[<bf00c4dc>] (hisyscall_event+0x0/0x2b8 [xeno_nucleus]) from [<c005abf0>] (__ipipe_dispatch_event+0x124/0x1ec)
+[<c005aacc>] (__ipipe_dispatch_event+0x0/0x1ec) from [<c0028270>] (__ipipe_syscall_root+0x5c/0x108)
+[<c0028214>] (__ipipe_syscall_root+0x0/0x108) from [<c0022f7c>] (vector_swi+0x5c/0x98)
 
-Surely yes for the motivation. For what concerns the time, yes too, but
-please leave me one week to ten days to complete my work and deliver it to
-my customer, then I will be glad to cooperate.
+Xenomai: Switching sampling-763 to secondary mode after exception #8 in kernel-space at 0xbf028e94 (pid 765)
 
-I will inform you when ready and if I don't, please remind me.
+[<c002734c>] (show_stack+0x0/0x5c) from [<bf005d88>] (xnpod_trap_fault+0x50/0x1e0 [xeno_nucleus])
+[<bf005d38>] (xnpod_trap_fault+0x0/0x1e0 [xeno_nucleus]) from [<bf002278>] (xnarch_trap_fault+0x20/0x28 [xeno_nucleus])
+ r6 = C01EFFE0  r5 = 00000000  r4 = 58454E4F
+[<bf002258>] (xnarch_trap_fault+0x0/0x28 [xeno_nucleus]) from [<c01f0038>] (exception_event+0x58/0x70)
+[<c01effe0>] (exception_event+0x0/0x70) from [<c005abf0>] (__ipipe_dispatch_event+0x124/0x1ec)
+ r5 = 00000000  r4 = 00000100
+[<c005aacc>] (__ipipe_dispatch_event+0x0/0x1ec) from [<c002b914>] (do_alignment+0x1a4/0x410)
+[<c002b770>] (do_alignment+0x0/0x410) from [<c0029a98>] (do_DataAbort+0x3c/0x13c)
+[<c0029a5c>] (do_DataAbort+0x0/0x13c) from [<c00229ac>] (__dabt_svc+0x4c/0x60)
+[<bf02a7d4>] (__rt_task_set_periodic+0x0/0x11c [xeno_native]) from [<bf00c3f8>] (losyscall_event+0xc8/0x1ac [xeno_nucleus])
+ r6 = C308BFB0  r5 = 00000001  r4 = 00000022
+[<bf00c330>] (losyscall_event+0x0/0x1ac [xeno_nucleus]) from [<c005abf0>] (__ipipe_dispatch_event+0x124/0x1ec)
+[<c005aacc>] (__ipipe_dispatch_event+0x0/0x1ec) from [<c0028270>] (__ipipe_syscall_root+0x5c/0x108)
+[<c0028214>] (__ipipe_syscall_root+0x0/0x108) from [<c0022f7c>] (vector_swi+0x5c/0x98)
 
-Thank you,
+Xenomai: Switching sampling-763 to secondary mode after exception #8 in kernel-space at 0xbf02a8b0 (pid 765)
+latency: failed to set periodic, code -110
+warming up...
 
-Bite
+[<c002734c>] (show_stack+0x0/0x5c) from [<bf005d88>] (xnpod_trap_fault+0x50/0x1e0 [xeno_nucleus])
+[<bf005d38>] (xnpod_trap_fault+0x0/0x1e0 [xeno_nucleus]) from [<bf002278>] (xnarch_trap_fault+0x20/0x28 [xeno_nucleus])
+ r6 = C01EFFE0  r5 = 00000000  r4 = 58454E4F
+[<bf002258>] (xnarch_trap_fault+0x0/0x28 [xeno_nucleus]) from [<c01f0038>] (exception_event+0x58/0x70)
+[<c01effe0>] (exception_event+0x0/0x70) from [<c005abf0>] (__ipipe_dispatch_event+0x124/0x1ec)
+ r5 = 00000000  r4 = 00000100
+[<c005aacc>] (__ipipe_dispatch_event+0x0/0x1ec) from [<c002b914>] (do_alignment+0x1a4/0x410)
+[<c002b770>] (do_alignment+0x0/0x410) from [<c0029a98>] (do_DataAbort+0x3c/0x13c)
+[<c0029a5c>] (do_DataAbort+0x0/0x13c) from [<c00229ac>] (__dabt_svc+0x4c/0x60)
+[<bf02af24>] (__rt_sem_p+0x0/0xc0 [xeno_native]) from [<bf00c3f8>] (losyscall_event+0xc8/0x1ac [xeno_nucleus])
+ r6 = C3B33FB0  r5 = 00000001  r4 = 00000006
+[<bf00c330>] (losyscall_event+0x0/0x1ac [xeno_nucleus]) from [<c005abf0>] (__ipipe_dispatch_event+0x124/0x1ec)
+[<c005aacc>] (__ipipe_dispatch_event+0x0/0x1ec) from [<c0028270>] (__ipipe_syscall_root+0x5c/0x108)
+[<c0028214>] (__ipipe_syscall_root+0x0/0x108) from [<c0022f7c>] (vector_swi+0x5c/0x98)
 
+Xenomai: Switching display-763 to secondary mode after exception #8 in kernel-space at 0xbf02afd4 (pid 764)
+latency: failed to pend on semaphore, code -1
 
-Jan
->
->
+----
 
-------=_Part_9011_8240907.1200439561118
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+In the first unaligned access, data abort occurs in 'rt_timer_inquire'. 
+In this function I put a 'printk' after each C-line. If I didn't mess
+the things up this way, data abort occurs at the assignment:
 
-<blockquote style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;" class="gmail_quote"><div style="direction: ltr;">Hi,<br><br>intentionally dropped the CC?</div></blockquote><div>
-<br>No, just an occasional gmail user. Not intuitive, at least for me. Hitting &quot;reply&quot; to your message, this is what I got. (Looking again, your message appears to have me as the only addressee, so no surprise).
-<br></div><br><blockquote style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;" class="gmail_quote"><div style="direction: ltr;"><span class="q"><br>bite wrote:<br>&gt; I know, but if it was easy to do, i would already have posted an example.
-<br>&gt;<br>&gt; The problem arises in a numerical controller application having the<br>&gt; following organization:<br>&gt;<br>&gt; - rt periodic task, receiving commands thru ring buffers and sending replies<br>&gt; thru rtp.
-<br>&gt; - non-rt server working as a bridge, pending on select both for tcp/ip<br>&gt; sockets and /dev/rtp*.<br>&gt; - c++ client talking to the server thru tcp/ip sockets<br>&gt; - java user interface talking to the server thru tcp/ip sockets, too.
-<br>&gt;<br>&gt; The java UI asks for status information (axis position etc) about twice a<br>&gt; second, while the c++ client transacts only upon user request.<br>&gt;<br>&gt; No problem ever occurs when the java UI is not working.
-<br>&gt;<br>&gt; The problem occasionally occurs only when the java UI is up.<br>&gt;<br>&gt; You can see that it is not easy to nail down an example, sorry.<br><br></span></div><div style="direction: ltr;">An alternative to reproducing the bug on one of our systems is to debug
-<br>it on yours, either with the help of the I-pipe tracer or with LTTng.<br><br>The former marks each and ever function call inside the kernel and is<br>specifically helpful to track the call history temporally close to the
-<br>failure (the application could issue a trace freeze on detecting the issue).<br><br>The latter, LTTng, traces at a higher level and can therefore run over a<br>longer time. But it also requires some help of the application to mark
-<br>the failure in order to find it later on in the trace log.<br><br>Both methods need a specifically prepared kernels (for LTTng, I would<br>have to provide some patches from my private repository, the I-pipe<br>trace just needs a config switch), and both methods may need interactive
-<br>debugging, ie. some rounds where we put additional instrumentation in<br>your kernel to collect rt-pipe specific states. Would you have the time<br>and motivation to work together with us on this?</div></blockquote><div>
-<br>Surely yes for the motivation. For what concerns the time, yes too, but please leave me one week to ten days to complete my work and deliver it to my customer, then I will be glad to cooperate.<br><br>I will inform you when ready and if I don&#39;t, please remind me.
-<br><br>Thank you,<br><br>Bite<br><br></div><br><blockquote style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;" class="gmail_quote"><div style="direction: ltr;"><span class="sg">
-Jan<br><br></span></div></blockquote>
+info->period = period;
 
-------=_Part_9011_8240907.1200439561118--
+Looking at the assembler, instruction 'strd' is used to store this 'long long'
+variable.
+
+Interestingly, structure 'info' is allocated on the stack in function
+'__rt_timer_inquire' which calls 'rt_timer_inquire' and passes 'info' as an
+argument.
+
+I'm not sure but the problem could be that 'long long' variables need to be
+8-byte aligned in order to allow 'strd' and 'ldrd' instructions. 
+See: http://groups.google.ch/group/comp.sys.arm/browse_thread/thread/a4ed79328671521d/2e3bb93e5a59f785
+
+However, I don't know how to make 'info' to be allocated at an 8-byte boundary.
+
+Looking at the assembler of the two other catches (in '__rt_task_set_periodic'
+and '__rt_sem_p') shows that both function use also 'strd' and 'ldrd'
+instructions. I didn't check if data abort occurred at these instructions however.
+
+> You can do this yourself if you are in a
+> hurry, or let me do it if I am able to reproduce the bug on AT91, but
+> I need to generate a full image with EABI enabled, so it will take
+> some time.
+
+OK, I started with it but I'd like to let you work on this now. I don't have the knowledge
+to fiddle with compiler options or using macros or whatever to solve this problem.
+
+Today, I don't have access to the hardware. When needed I can run tests on an other day.
+
+--
+Michael
 
