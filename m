@@ -1,102 +1,79 @@
-Message-ID: <47C05FE8.4090908@domain.hid>
-Date: Sat, 23 Feb 2008 19:03:20 +0100
+Message-ID: <478FA839.5070409@domain.hid>
+Date: Thu, 17 Jan 2008 20:10:49 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <47C020A9.3050704@domain.hid>	<47C02194.6010607@domain.hid>
-	<18368.23071.202085.682705@domain.hid>
-In-Reply-To: <18368.23071.202085.682705@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigF7B61BE8C87D3A395085CA5D"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [PATCH 1/4] Refactor generic system.h
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai-core@domain.hid
+Content-Type: multipart/mixed; boundary="------------060308020405050100060200"
+Subject: [Adeos-main] [PATCH] cow-pinning: bark on bad pages
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF7B61BE8C87D3A395085CA5D
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------060308020405050100060200
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > In order to allow further optimizations of xnlock, I started with
->  > refactoring the related system.h. This improves the readability
->  > significantly, IMHO. It also happen to reduce the text size of
->  > __xnlock_get a bit by avoid redundant rthal_processor_id read-outs.
->  >=20
->  > Another quirk I happen to remove: xnlock debugging depends on
->  > XENO_OPT_DEBUG_NUCLEUS, but needlessly we used to pick the debug ver=
-sion
->  > of xnlock_t already with XENO_OPT_DEBUG.
->=20
-> There is a lot of whitespace change in this patch, which make it hard t=
-o
-> read.
+Use Linux standard pattern for walking through the page table hierarchy.
 
-Well, this patch is mostly about whitespace and formatting fixes (among
-which ifdef reduction falls for me as well). But I can split it up if
-desired.
-
->=20
-> Anyway, there are a few things I do not like in this patch:
-> - macro which make reference to symbols defined elsewhere
-
-You mean XNLOCK_DBG_PREPARE_ACQUIRE vs. XNLOCK_DBG_SPINNING/ACQUIRED?
-Granted, not nice but so far the most compact approach I found. My goal
-was to keep the lock implementations as pure as possible (you can easily
-ignore the debug stuff now when reading xnlock_get/put).
-
-> - functions arguments as macro, I find more readable the #ifdef with th=
-e
->   different function prototypes, the code can be read without having to=
-
->   look at a different place.
-
-I'm open to learn a third way to achieve what we need. I'm just
-convinced that the old way was far worse.
-
-Please consider for a better suggestion that the number of variants
-increase with my ticket lock. That's why I tried to stuff things in
-macros. Hmm, maybe we should simply get rid of the file/line/function
-stuff completely and switch to IP + ksyms. What do you think?
-
->=20
-> Something we could be interesting would be to be able to enable
-> spinlocks debug in UP, which would enable real debugging xnlocks in thi=
-s
-> case. I made an attempt of doing this on ARM some time ago, this
-> generated a kernel that would lockup at boot. But I think this is
-> something we should sort out.
->=20
-
-Yeah, sounds good and should be feasible. Will check.
+As we know that the warning I once saw with this applied was related to
+another, already fixed bug, my feeling is far better about this variant
+now. :)
 
 Jan
 
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
---------------enigF7B61BE8C87D3A395085CA5D
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--------------060308020405050100060200
+Content-Type: text/x-patch;
+ name="bark-on-bad-page.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="bark-on-bad-page.patch"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.4-svn0 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+---
+ mm/memory.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-iD8DBQFHwF/sniDOoMHTA+kRAodUAJ9iw6OfatHvzTv2/qHtojgSYnriMQCcDO+b
-gcb7dWCyP38E8GETeKCgEWM=
-=nua8
------END PGP SIGNATURE-----
+Index: linux-2.6.24-rc8-xeno_64/mm/memory.c
+===================================================================
+--- linux-2.6.24-rc8-xeno_64.orig/mm/memory.c
++++ linux-2.6.24-rc8-xeno_64/mm/memory.c
+@@ -2827,7 +2827,7 @@ static inline int ipipe_pin_pmd_range(st
+ 	pmd = pmd_offset(pud, addr);
+ 	do {
+ 		next = pmd_addr_end(addr, end);
+-		if (pmd_none(*pmd) || unlikely(pmd_bad(*pmd)))
++		if (pmd_none_or_clear_bad(pmd))
+ 			continue;
+ 		if (ipipe_pin_pte_range(mm, pmd, vma, addr, next))
+ 			return -ENOMEM;
+@@ -2845,7 +2845,7 @@ static inline int ipipe_pin_pud_range(st
+ 	pud = pud_offset(pgd, addr);
+ 	do {
+ 		next = pud_addr_end(addr, end);
+-		if (pud_none(*pud) || unlikely(pud_bad(*pud)))
++		if (pud_none_or_clear_bad(pud))
+ 			continue;
+ 		if (ipipe_pin_pmd_range(mm, pud, vma, addr, next))
+ 			return -ENOMEM;
+@@ -2879,7 +2879,7 @@ int ipipe_disable_ondemand_mappings(stru
+ 		pgd = pgd_offset(mm, addr);
+ 		do {
+ 			next = pgd_addr_end(addr, end);
+-			if (pgd_none(*pgd) || unlikely(pgd_bad(*pgd)))
++			if (pgd_none_or_clear_bad(pgd))
+ 				continue;
+ 			if (ipipe_pin_pud_range(mm, pgd, vma, addr, next)) {
+ 				result = -ENOMEM;
 
---------------enigF7B61BE8C87D3A395085CA5D--
+--------------060308020405050100060200--
 
