@@ -1,16 +1,13 @@
-Message-ID: <2ff1a98a0801170559r48816868jb8451c52e2a7cdfc@domain.hid>
-Date: Thu, 17 Jan 2008 14:59:17 +0100
+Message-ID: <2ff1a98a0801170604s68893af2h5fe7f867bf166b45@domain.hid>
+Date: Thu, 17 Jan 2008 15:04:26 +0100
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <478F4239.30808@domain.hid>
+In-Reply-To: <d3f72a390801170558s2d683197p4dba00f087d45eb8@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <2ff1a98a0801020231k19be7d89k1a6f04b7d497cc34@domain.hid>
-	<478F30FB.8060501@domain.hid>
-	<2ff1a98a0801170247t4378e733l24d470a31d208f95@domain.hid>
-	<478F4239.30808@domain.hid>
-Subject: Re: [Xenomai-core] High latencies on ARM.
+References: <d3f72a390801170558s2d683197p4dba00f087d45eb8@domain.hid>
+Subject: Re: [Xenomai-core] PORTING XENOMAI on ep9315 proccessor
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,79 +17,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: axel axel <softaxel@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Jan 17, 2008 12:55 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+On Jan 17, 2008 2:58 PM, axel axel <softaxel@domain.hid> wrote:
+> HI
 >
-> Gilles Chanteperdrix wrote:
-> > On Jan 17, 2008 11:42 AM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> >> Gilles Chanteperdrix wrote:
-> >>> Hi,
-> >>>
-> >>> after some (unsuccessful) time trying to instrument the code in a way
-> >>> that does not change the latency results completely, I found the
-> >>> reason for the high latency with latency -t 1 and latency -t 2 on ARM.
-> >>> So, here comes an update on this issue. The culprit is the user-space
-> >>> context switch, which flushes the processor cache with the nklock
-> >>> locked, irqs off.
-> >>>
-> >>> There are two things we could do:
-> >>> - arrange for the ARM cache flush to happen with the nklock unlocked
-> >>> and irqs enabled. This will improve interrupt latency (latency -t 2)
-> >>> but obviously not scheduling latency (latency -t 1). If we go that
-> >>> way, there are several problems we should solve:
-> >>>
-> >>> we do not want interrupt handlers to reenter xnpod_schedule(), for
-> >>> this we can use the XNLOCK bit, set on whatever is
-> >>> xnpod_current_thread() when the cache flush occurs
-> >>>
-> >>> since the interrupt handler may modify the rescheduling bits, we need
-> >>> to test these bits in xnpod_schedule() epilogue and restart
-> >>> xnpod_schedule() if need be
-> >>>
-> >>> we do not want xnpod_delete_thread() to delete one of the two threads
-> >>> involved in the context switch, for this the only solution I found is
-> >>> to add a bit to the thread mask meaning that the thread is currently
-> >>> switching, and to (re)test the XNZOMBIE bit in xnpod_schedule epilogue
-> >>> to delete whatever thread was marked for deletion
-> >>>
-> >>> in case of migration with xnpod_migrate_thread, we do not want
-> >>> xnpod_schedule() on the target CPU to switch to the migrated thread
-> >>> before the context switch on the source CPU is finished, for this we
-> >>> can avoid setting the resched bit in xnpod_migrate_thread(), detect
-> >>> the condition in xnpod_schedule() epilogue and set the rescheduling
-> >>> bits so that xnpod_schedule is restarted and send the IPI to the
-> >>> target CPU.
-> >>>
-> >>> - avoid using user-space real-time tasks when running latency
-> >>> kernel-space benches, i.e. at least in the latency -t 1 and latency -t
-> >>> 2 case. This means that we should change the timerbench driver. There
-> >>> are at least two ways of doing this:
-> >>> use an rt_pipe
-> >>>  modify the timerbench driver to implement only the nrt ioctl, using
-> >>> vanilla linux services such as wait_event and wake_up.
-> >> [As you reminded me of this unanswered question:]
-> >> One may consider adding further modes _besides_ current kernel tests
-> >> that do not rely on RTDM & native userland support (e.g. when
-> >> CONFIG_XENO_OPT_PERVASIVE is disabled). But the current tests are valid
-> >> scenarios as well that must not be killed by such a change.
-> >
-> > I think the current test scenario for latency -t 1 and latency -t 2
-> > are a bit misleading: they measure kernel-space latencies in presence
-> > of user-space real-time tasks. When one runs latency -t 1 or latency
-> > -t 2, one would expect that there are only kernel-space real-time
-> > tasks.
+> another question four you.
 >
-> If they are misleading, depends on your perspective. In fact, they are
-> measuring in-kernel scenarios over the standard Xenomai setup, which
-> includes userland RT task activity these day. Those scenarios are mainly
-> targeting driver use cases, not pure kernel-space applications.
+> i'm a newbie of Xenomai and Ipipe, but i had to porting Xenomai on ARM9
+> Cirrus ep9315.
 >
-> But I agree that, for !CONFIG_XENO_OPT_PERVASIVE-like scenarios, we
-> would benefit from an additional set of test cases.
+> And so i ask me and you:
+>
+> where and when is TSC( time stam counter ) used in Xenomai ? I try to know
+> reading the code but i don't understand good.
+>
+> I explain it better.
+>
+> Is it foundamental  the  implementation of TSC emulation  ( the hardware
+> doesn't have TSC, has only a free counter for debug  ) for the main
+> functionality of Xenomai OR
+> need only for the functions relative to exactly differences of time () ?
 
-Ok, I will not touch timerbench then, and implement another kernel module.
+Implementation of a TSC is mandatory, but the good news is that if
+your hardware has a free running counter, the implementation is pretty
+straightforward, and you have an example on Xenomai wiki:
+http://www.xenomai.org/index.php/I-pipe:ArmPorting#Free-running_counters
 
 -- 
                                                Gilles Chanteperdrix
