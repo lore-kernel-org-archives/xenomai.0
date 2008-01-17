@@ -1,13 +1,12 @@
-Message-ID: <2ff1a98a0801170816k6eb1fd93i2c798d3ae82b0638@domain.hid>
-Date: Thu, 17 Jan 2008 17:16:22 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <d3f72a390801170758p64ea9816ra0d8c43917ab9a3@domain.hid>
+Message-ID: <478FB5A9.5060104@domain.hid>
+Date: Thu, 17 Jan 2008 21:08:09 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
+References: <d3f72a390801170558s2d683197p4dba00f087d45eb8@domain.hid>
+In-Reply-To: <d3f72a390801170558s2d683197p4dba00f087d45eb8@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <d3f72a390801170758p64ea9816ra0d8c43917ab9a3@domain.hid>
-Subject: Re: [Xenomai-core] INFO ON TSC ep9315
+Subject: Re: [Xenomai-core] PORTING XENOMAI on ep9315 proccessor
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,31 +19,17 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: axel axel <softaxel@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Jan 17, 2008 4:58 PM, axel axel <softaxel@domain.hid> wrote:
-> HI,
->
-> i copied RTAI on kernel 2.4.21 cirrus for hardware example, but
->
-> how can i test if all the functionality of Xenomai are OK?
+axel axel wrote:
+> HI
+> 
+> another question four you.
+> 
+> i'm a newbie of Xenomai and Ipipe, but i had to porting Xenomai on ARM9
+> Cirrus ep9315.
 
-Run Xenomai testsuite.
+Are you aware of the following thread?
 
->
-> Also i have some questions:
->
->  1. Which are the link and the meaning between the
-> ipipe_mach_set_dec,ipipe_mach_get_dec  and the ipipe_mach_get_tsc ?
+https://mail.gna.org/public/xenomai-core/2007-06/msg00022.html
 
-In a previous mail, I sent you an link to Xenomai wiki: please click
-on the link and read what you find there.
-
->
-> 2. How ipipe calculates the wait time for a running periodic task ( if it
-> uses tsc, dec, other ) ?
-
-This is irrelevant when porting I-pipe, you should not have to care
-about that. What is your real problem ?
-
--- 
-                                               Gilles Chanteperdrix
+Wolfgang.
 
