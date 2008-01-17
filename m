@@ -1,14 +1,10 @@
-Message-ID: <2ff1a98a0801170520s53e3a63ey1d3eb5492c36003e@domain.hid>
-Date: Thu, 17 Jan 2008 14:20:02 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <d3f72a390801170429r60f3b445jf4ed366780727515@domain.hid>
+Message-ID: <d3f72a390801170558s2d683197p4dba00f087d45eb8@domain.hid>
+Date: Thu, 17 Jan 2008 14:58:03 +0100
+From: "axel axel" <softaxel@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <mailman.1450.1200567103.28415.xenomai@xenomai.org>
-	<d3f72a390801170429r60f3b445jf4ed366780727515@domain.hid>
-Subject: Re: [Xenomai-core] ARM FLOATING POINT
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_32688_16402206.1200578283571"
+Subject: [Xenomai-core] PORTING XENOMAI on ep9315 proccessor
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,32 +14,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: axel axel <softaxel@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Jan 17, 2008 1:29 PM, axel axel <softaxel@domain.hid> wrote:
-> Hi,
->
-> is it possible to support the FPU on arm ? I'm porting ipipe on ep9315 and i
-> don't find the information on how to modify IPIPE for supporting FPU.
->
-> Thanks for all.
+------=_Part_32688_16402206.1200578283571
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-It depends if you want to support FPU in kernel-space or not. If you
-simply want to support FPU in user-space, you have to modify
-rthal_thread_switch in ksrc/arch/arm/switch.S to add support for
-cirrus logic FPU (rthal_thread_switch was copied from Linux 2.6.14
-context switch at a time when cirrus logic processors were not yet
-supported by mainline). I modified rthal_thread_switch recently and
-hesitated to put the FPU switch in a separated C file, since in recent
-kernels, FPU switch is done in C. So, if you ask, I could do that.
+HI
 
-If you want to support FPU in kernel-space, you will have to implement
-the various functions needed by Xenomai nucleus (xnarch_fpu_init_p,
-xnarch_init_fpu, xnarch_save_fpu, xnarch_restore_fpu), and implement
-include/asm-arm/fptest.h to allow switchtest to validate your
-implementation.
+another question four you.
 
--- 
-                                               Gilles Chanteperdrix
+i'm a newbie of Xenomai and Ipipe, but i had to porting Xenomai on ARM9
+Cirrus ep9315.
+
+And so i ask me and you:
+
+where and when is TSC( time stam counter ) used in Xenomai ? I try to know
+reading the code but i don't understand good.
+
+I explain it better.
+
+Is it foundamental  the  implementation of TSC emulation  ( the hardware
+doesn't have TSC, has only a free counter for debug  ) for the main
+functionality of Xenomai OR
+need only for the functions relative to exactly differences of time () ?
+
+Thanks for All
+
+Roberto Bielli
+
+------=_Part_32688_16402206.1200578283571
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+HI <br><br>another question four you.<br><br>i&#39;m a newbie of Xenomai and Ipipe, but i had to porting Xenomai on ARM9 Cirrus ep9315.<br><br>And so i ask me and you:<br><br>where and when is TSC( time stam counter ) used in Xenomai ? I try to know reading the code but i don&#39;t understand good.
+<br>&nbsp;<br>I explain it better. <br><br>Is
+it foundamental&nbsp; the&nbsp; implementation of TSC emulation&nbsp; ( the hardware
+doesn&#39;t have TSC, has only a free counter for debug&nbsp; ) for the main functionality of Xenomai OR <br>need only for the functions relative to exactly differences of time () ? <br><br>Thanks for All <br><br>Roberto Bielli
+<br>
+
+------=_Part_32688_16402206.1200578283571--
 
