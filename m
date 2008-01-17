@@ -1,10 +1,13 @@
-Message-ID: <d3f72a390801170758p64ea9816ra0d8c43917ab9a3@domain.hid>
-Date: Thu, 17 Jan 2008 16:58:56 +0100
-From: "axel axel" <softaxel@domain.hid>
+Message-ID: <2ff1a98a0801170816k6eb1fd93i2c798d3ae82b0638@domain.hid>
+Date: Thu, 17 Jan 2008 17:16:22 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <d3f72a390801170758p64ea9816ra0d8c43917ab9a3@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_33400_6306467.1200585536029"
-Subject: [Xenomai-core] INFO ON TSC ep9315
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <d3f72a390801170758p64ea9816ra0d8c43917ab9a3@domain.hid>
+Subject: Re: [Xenomai-core] INFO ON TSC ep9315
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,42 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: axel axel <softaxel@domain.hid>
+Cc: xenomai@xenomai.org
 
-------=_Part_33400_6306467.1200585536029
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+On Jan 17, 2008 4:58 PM, axel axel <softaxel@domain.hid> wrote:
+> HI,
+>
+> i copied RTAI on kernel 2.4.21 cirrus for hardware example, but
+>
+> how can i test if all the functionality of Xenomai are OK?
 
-HI,
+Run Xenomai testsuite.
 
-i copied RTAI on kernel 2.4.21 cirrus for hardware example, but
+>
+> Also i have some questions:
+>
+>  1. Which are the link and the meaning between the
+> ipipe_mach_set_dec,ipipe_mach_get_dec  and the ipipe_mach_get_tsc ?
 
-how can i test if all the functionality of Xenomai are OK?
+In a previous mail, I sent you an link to Xenomai wiki: please click
+on the link and read what you find there.
 
-Also i have some questions:
+>
+> 2. How ipipe calculates the wait time for a running periodic task ( if it
+> uses tsc, dec, other ) ?
 
-1. Which are the link and the meaning between the ipipe_mach_set_dec,
-ipipe_mach_get_dec  and the ipipe_mach_get_tsc ?
+This is irrelevant when porting I-pipe, you should not have to care
+about that. What is your real problem ?
 
-2. How ipipe calculates the wait time for a running periodic task ( if it
-uses tsc, dec, other ) ?
-
-
-Thanks a lot for your help
-
-
-Roberto Bielli
-
-------=_Part_33400_6306467.1200585536029
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-HI,<br><br>i copied RTAI on kernel 2.4.21 cirrus for hardware example, but <br><br><span style="font-weight: bold;">how can i test if all the functionality of Xenomai are OK? </span><br><br>Also i have some questions:<br><br>
-1. Which are the link and the meaning between the <span style="font-weight: bold;">ipipe_mach_set_dec</span>,<span style="font-weight: bold;">ipipe_mach_get_dec</span>&nbsp; and the <span style="font-weight: bold;">ipipe_mach_get_tsc
-</span> ?<br><br>2. How ipipe calculates the <span style="font-weight: bold;">wait time</span> <span style="font-weight: bold;">for a running periodic task</span> ( if it uses tsc, dec, other ) ?<br><br><br>Thanks a lot for your help
-<br><br><br>Roberto Bielli<br><br><br><br>
-
-------=_Part_33400_6306467.1200585536029--
+-- 
+                                               Gilles Chanteperdrix
 
