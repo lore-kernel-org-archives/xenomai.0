@@ -1,13 +1,12 @@
-Message-ID: <478FC490.5090708@domain.hid>
-Date: Thu, 17 Jan 2008 22:11:44 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <4B2EEE69E41E524EB7FCDC62A15D68D8018CFF0B@ARVMAIL1.mra.roland-man.biz>
-In-Reply-To: <4B2EEE69E41E524EB7FCDC62A15D68D8018CFF0B@ARVMAIL1.mra.roland-man.biz>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig2E956BF79992FBF7CD993C70"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 18 Jan 2008 14:14:02 +0100
+Message-ID: <4B2EEE69E41E524EB7FCDC62A15D68D8018CFF0F@ARVMAIL1.mra.roland-man.biz>
+In-Reply-To: <478FC490.5090708@domain.hid>
+From: <Thomas.Debes@domain.hid>
 Subject: Re: [Xenomai-help] Modeswitch using message queues
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,97 +17,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Thomas.Debes@domain.hid
+To: jan.kiszka@domain.hid
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig2E956BF79992FBF7CD993C70
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-
-Thomas.Debes@domain.hid wrote:
-> Hello,
+> -----Urspr=FCngliche Nachricht-----
+> Von: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid
+> Gesendet: Donnerstag, 17. Januar 2008 22:12
+> An: Debes, Thomas RAEK3 MRA
+> Cc: xenomai@xenomai.org
+> Betreff: Re: [Xenomai-help] Modeswitch using message queues
 >=20
-> I am writing a communication daemon based on Xenomai message queues
-> (using native skin). This daemon creates a queue und starts listening
-> for incoming client messages. A client can open a "connection" by
-> binding to the daemons queue and sending a special message containing
-> ist own queuename. Thereafter the daemon binds to the client queue and
-> sends back a response message. "Disconnecting" works the same way.
-> Everything works as expected, the only thing is that the mode switch
-> counter in /proc/xenomai/stat increases on each
-> rt_bind_queue/rt_unbind_queue call (for the daemon and the client). I
-> tracked this back by adding a signal handler for SIGXCPU and setting th=
-e
-> T_WARNSW bit in my realtime task. The gdb backtrace output shows the
-> nunmap(..) as last call before the mode switch occurs.
+> Thomas.Debes@domain.hid wrote:
+> > Hello,
+> >=20
+> > I am writing a communication daemon based on Xenomai message queues=20
+> > (using native skin). This daemon creates a queue und starts=20
+> listening=20
+> > for incoming client messages. A client can open a "connection" by=20
+> > binding to the daemons queue and sending a special message=20
+> containing=20
+> > ist own queuename. Thereafter the daemon binds to the=20
+> client queue and=20
+> > sends back a response message. "Disconnecting" works the same way.
+> > Everything works as expected, the only thing is that the=20
+> mode switch=20
+> > counter in /proc/xenomai/stat increases on each=20
+> > rt_bind_queue/rt_unbind_queue call (for the daemon and the=20
+> client). I=20
+> > tracked this back by adding a signal handler for SIGXCPU=20
+> and setting=20
+> > the T_WARNSW bit in my realtime task. The gdb backtrace=20
+> output shows=20
+> > the
+> > nunmap(..) as last call before the mode switch occurs.
+> >=20
+> > Program received signal SIGXCPU, CPU time limit exceeded.
+> > [Switching to Thread 16386 (LWP 520)]
+> > 0x0fddb7d8 in munmap () from /lib/libc.so.6
+> > (gdb) bt
+> > #0  0x0fddb7d8 in munmap () from /lib/libc.so.6
+> > #1  0x0fe829d8 in rt_queue_unbind (q=3D0x1003a1b6) at queue.c:100
+> > #2  0x100084d4 in remove_connection (client_address=3D17) at=20
+> > src/proto_mqc.c:1610
+> > #3  0x10006230 in eval_disconnect_msg (connection=3D0x30036240,
+> >     in_msg=3D0x300362b0) at src/proto_mqc.c:793
+> > #4  0x10005cd4 in eval_msg (connection=3D0x30036240,=20
+> in_msg=3D0x300362b0)
+> >     at src/proto_mqc.c:634
+> > #5  0x10005ba8 in proto_mqc_handler (msg=3D0x300362b0) at
+> > src/proto_mqc.c:598
+> > #6  0x1000399c in dispatch_message (msg=3D0x300362b0) at
+> > src/dispatch.c:236
+> > #7  0x10003c38 in dispatch (cookie=3D0x0) at src/dispatch.c:309
+> > #8  0x0fe835f0 in rt_task_trampoline (cookie=3D0x0) at task.c:95
+> > #9  0x0fba8920 in pthread_start_thread_event (arg=3D0x30036be0) at=20
+> > manager.c:300 #10 0x0fddedc4 in clone () from /lib/libc.so.6
+> > (gdb) c
+> >=20
+> >=20
+> > All queue related functions (except create/delete) are called from=20
+> > realtime tasks. The daemon itself and all other=20
+> applications are user=20
+> > space programs. So from my point of view, mode switches shouldn't=20
+> > occur here.
 >=20
-> Program received signal SIGXCPU, CPU time limit exceeded.
-> [Switching to Thread 16386 (LWP 520)]
-> 0x0fddb7d8 in munmap () from /lib/libc.so.6
-> (gdb) bt
-> #0  0x0fddb7d8 in munmap () from /lib/libc.so.6
-> #1  0x0fe829d8 in rt_queue_unbind (q=3D0x1003a1b6) at queue.c:100
-> #2  0x100084d4 in remove_connection (client_address=3D17) at
-> src/proto_mqc.c:1610
-> #3  0x10006230 in eval_disconnect_msg (connection=3D0x30036240,
->     in_msg=3D0x300362b0) at src/proto_mqc.c:793
-> #4  0x10005cd4 in eval_msg (connection=3D0x30036240, in_msg=3D0x300362b=
-0)
->     at src/proto_mqc.c:634
-> #5  0x10005ba8 in proto_mqc_handler (msg=3D0x300362b0) at
-> src/proto_mqc.c:598
-> #6  0x1000399c in dispatch_message (msg=3D0x300362b0) at
-> src/dispatch.c:236
-> #7  0x10003c38 in dispatch (cookie=3D0x0) at src/dispatch.c:309
-> #8  0x0fe835f0 in rt_task_trampoline (cookie=3D0x0) at task.c:95
-> #9  0x0fba8920 in pthread_start_thread_event (arg=3D0x30036be0) at
-> manager.c:300
-> #10 0x0fddedc4 in clone () from /lib/libc.so.6
-> (gdb) c
+> Native queues are designed for efficient data transfer also=20
+> of larger blocks, i.e. without copying. Therefore, when you=20
+> establish a communication channel based on a queue between=20
+> two processes, both have to map the underlying buffer into=20
+> their address spaces. This means leaving RT land.
 >=20
+> I think you have to redesign your communication protocol with=20
+> this fact in mind, so that you can avoiding continuous=20
+> reconnections. Those which are still required for clients=20
+> joining the party, could be handled by splitting up the=20
+> daemon into two threads: one for time-critical communication,=20
+> the other for low-prio connection setup/cleanup.
 >=20
-> All queue related functions (except create/delete) are called from
-> realtime tasks. The daemon itself and all other applications are user
-> space programs. So from my point of view, mode switches shouldn't occur=
+> An alternative would be an IPC scheme that requires at least=20
+> one copy-step (from the sender's into the receiver's buffer).=20
+> We once did this for the RACK RT-middleware based on RTDM=20
+> sockets [1] (it's a bit "specialised").
+>=20
+> Jan
+>=20
+> [1] http://svn.berlios.de/viewcvs/rack/trunk/rack/main/tims/driver/
+>
 
-> here.
+Thanks for your help, I'll rewrite the connection setup stuff by putting =
+it into a separate task.
 
-Native queues are designed for efficient data transfer also of larger=20
-blocks, i.e. without copying. Therefore, when you establish a=20
-communication channel based on a queue between two processes, both have=20
-to map the underlying buffer into their address spaces. This means=20
-leaving RT land.
+Regards
+Thomas=20
 
-I think you have to redesign your communication protocol with this fact=20
-in mind, so that you can avoiding continuous reconnections. Those which=20
-are still required for clients joining the party, could be handled by=20
-splitting up the daemon into two threads: one for time-critical=20
-communication, the other for low-prio connection setup/cleanup.
-
-An alternative would be an IPC scheme that requires at least one=20
-copy-step (from the sender's into the receiver's buffer). We once did=20
-this for the RACK RT-middleware based on RTDM sockets [1] (it's a bit=20
-"specialised").
-
-Jan
-
-[1] http://svn.berlios.de/viewcvs/rack/trunk/rack/main/tims/driver/
-
-
---------------enig2E956BF79992FBF7CD993C70
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFHj8SRniDOoMHTA+kRAvZaAJ965QHAuoJ2ouvm+/nB5ZY6jU9q4QCeIQSd
-/1l6rfttRq5mCeOlUDRkwxE=
-=ORmt
------END PGP SIGNATURE-----
-
---------------enig2E956BF79992FBF7CD993C70--
+MAN Roland Druckmaschinen AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle   =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592   =20
+USt-Ident-Nr. DE 250200933
 
