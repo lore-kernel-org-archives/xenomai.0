@@ -1,40 +1,45 @@
-Message-ID: <47C1A85D.9030409@domain.hid>
-Date: Sun, 24 Feb 2008 18:24:45 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <47946EBA.2020107@domain.hid>
+Date: Mon, 21 Jan 2008 11:06:50 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <18369.40812.619977.597263@domain.hid>
-In-Reply-To: <18369.40812.619977.597263@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] Clockevent/clocksource.
-Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Adeos-main] [PATCH] x86-64: fix build for CONFIG_PREEMPT
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
 
-Gilles Chanteperdrix wrote:
-> Hi,
->=20
-> I would like to implement the (I-pipe) AT91 timer management as
-> clocksource/clockevent, however, I have a question, how does one choose
-> the "shift" value in struct clocksource and struct clock_event_device ?
->=20
+Someone (me? :-]) broke CONFIG_PREEMPT for 2.6.24 x86-64. Here is the
+required fix.
 
-http://ixlabs.cs.pub.ro/category/projects/linux-kernel-library/
+Jan
 
-> TIA=E7
->=20
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
+---
+ arch/x86/kernel/ipipe.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---=20
-Philippe.
+Index: linux-2.6.24-rc8-xeno_64/arch/x86/kernel/ipipe.c
+===================================================================
+--- linux-2.6.24-rc8-xeno_64.orig/arch/x86/kernel/ipipe.c
++++ linux-2.6.24-rc8-xeno_64/arch/x86/kernel/ipipe.c
+@@ -570,6 +570,8 @@ asmlinkage int __ipipe_syscall_root(stru
+ #else /* !CONFIG_X86_32 */
+
+ #ifdef CONFIG_PREEMPT
++asmlinkage void preempt_schedule_irq(void);
++
+ /*
+  * Check the stall bit of the root domain to make sure the existing
+  * preemption opportunity upon in-kernel resumption could be
 
