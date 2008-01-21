@@ -1,11 +1,19 @@
-Message-ID: <4794E904.5060106@domain.hid>
-Date: Mon, 21 Jan 2008 19:48:36 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4794DDF7.9070009@domain.hid> <4794E556.1030904@domain.hid>
-In-Reply-To: <4794E556.1030904@domain.hid>
-Content-Type: multipart/mixed; boundary="------------070907020409030609040208"
-Subject: Re: [Xenomai-core] Patch selection by prepare-kernel.sh (again)
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18325.5311.379131.83389@domain.hid>
+Date: Mon, 21 Jan 2008 22:55:11 +0100
+In-Reply-To: <478F6499.8060700@domain.hid>
+References: <2ff1a98a0801020231k19be7d89k1a6f04b7d497cc34@domain.hid>
+	<478F30FB.8060501@domain.hid>
+	<2ff1a98a0801170247t4378e733l24d470a31d208f95@domain.hid>
+	<478F4239.30808@domain.hid>
+	<2ff1a98a0801170559r48816868jb8451c52e2a7cdfc@domain.hid>
+	<478F6321.4030602@domain.hid>
+	<2ff1a98a0801170620rd984e60i228fc99442114bb4@domain.hid>
+	<478F6499.8060700@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] High latencies on ARM.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,120 +23,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai-core@domain.hid
-
-This is a multi-part message in MIME format.
---------------070907020409030609040208
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> Jan Kiszka wrote:
->> Philippe,
->>
->> what was the idea behind commit #3256 [1]? It breaks the original
->> behavior of selection adeos-ipipe-2.6.23-... in the presence of 2.6.23.x
->> - and leaves a bad first impression for beginners (I received such a
->> notice here...). Was this for the special case
->> adeos-ipipe-2.6.20.21-i386-1.12-02.patch? But I think the common case
->> should take precedence over this corner case here. Unless there are more
->> issues with the original version, I would vote for restoring it.
->>
->> Alternatively, we could add a safety belt by trying to apply the patch
->> with --dry-run first and only continue if this works out without
->> failures. Can hack this up if it's acceptable.
-> 
-> Oh, this check already exists!
-> 
-> So let's try this version, which additionally cleans up the related
-> documentation. Catches both 2.6.23* and 2.6.24* for me here, but I may
-> miss some cases (2.4?).
+ > Gilles Chanteperdrix wrote:
+ > > On Jan 17, 2008 3:16 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+ > >> Gilles Chanteperdrix wrote:
+ > >>> On Jan 17, 2008 12:55 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+ > >>>> Gilles Chanteperdrix wrote:
+ > >>>>> On Jan 17, 2008 11:42 AM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+ > >>>>>> Gilles Chanteperdrix wrote:
+ > >>>>>>> Hi,
+ > >>>>>>>
+ > >>>>>>> after some (unsuccessful) time trying to instrument the code in a way
+ > >>>>>>> that does not change the latency results completely, I found the
+ > >>>>>>> reason for the high latency with latency -t 1 and latency -t 2 on ARM.
+ > >>>>>>> So, here comes an update on this issue. The culprit is the user-space
+ > >>>>>>> context switch, which flushes the processor cache with the nklock
+ > >>>>>>> locked, irqs off.
+ > >>>>>>>
+ > >>>>>>> There are two things we could do:
+ > >>>>>>> - arrange for the ARM cache flush to happen with the nklock unlocked
+ > >>>>>>> and irqs enabled. This will improve interrupt latency (latency -t 2)
+ > >>>>>>> but obviously not scheduling latency (latency -t 1). If we go that
+ > >>>>>>> way, there are several problems we should solve:
+ > >>>>>>>
+ > >>>>>>> we do not want interrupt handlers to reenter xnpod_schedule(), for
+ > >>>>>>> this we can use the XNLOCK bit, set on whatever is
+ > >>>>>>> xnpod_current_thread() when the cache flush occurs
+ > >>>>>>>
+ > >>>>>>> since the interrupt handler may modify the rescheduling bits, we need
+ > >>>>>>> to test these bits in xnpod_schedule() epilogue and restart
+ > >>>>>>> xnpod_schedule() if need be
+ > >>>>>>>
+ > >>>>>>> we do not want xnpod_delete_thread() to delete one of the two threads
+ > >>>>>>> involved in the context switch, for this the only solution I found is
+ > >>>>>>> to add a bit to the thread mask meaning that the thread is currently
+ > >>>>>>> switching, and to (re)test the XNZOMBIE bit in xnpod_schedule epilogue
+ > >>>>>>> to delete whatever thread was marked for deletion
+ > >>>>>>>
+ > >>>>>>> in case of migration with xnpod_migrate_thread, we do not want
+ > >>>>>>> xnpod_schedule() on the target CPU to switch to the migrated thread
+ > >>>>>>> before the context switch on the source CPU is finished, for this we
+ > >>>>>>> can avoid setting the resched bit in xnpod_migrate_thread(), detect
+ > >>>>>>> the condition in xnpod_schedule() epilogue and set the rescheduling
+ > >>>>>>> bits so that xnpod_schedule is restarted and send the IPI to the
+ > >>>>>>> target CPU.
+ > >>>>>>>
+ > >>>>>>> - avoid using user-space real-time tasks when running latency
+ > >>>>>>> kernel-space benches, i.e. at least in the latency -t 1 and latency -t
+ > >>>>>>> 2 case. This means that we should change the timerbench driver. There
+ > >>>>>>> are at least two ways of doing this:
+ > >>>>>>> use an rt_pipe
+ > >>>>>>>  modify the timerbench driver to implement only the nrt ioctl, using
+ > >>>>>>> vanilla linux services such as wait_event and wake_up.
+ > >>>>>> [As you reminded me of this unanswered question:]
+ > >>>>>> One may consider adding further modes _besides_ current kernel tests
+ > >>>>>> that do not rely on RTDM & native userland support (e.g. when
+ > >>>>>> CONFIG_XENO_OPT_PERVASIVE is disabled). But the current tests are valid
+ > >>>>>> scenarios as well that must not be killed by such a change.
+ > >>>>> I think the current test scenario for latency -t 1 and latency -t 2
+ > >>>>> are a bit misleading: they measure kernel-space latencies in presence
+ > >>>>> of user-space real-time tasks. When one runs latency -t 1 or latency
+ > >>>>> -t 2, one would expect that there are only kernel-space real-time
+ > >>>>> tasks.
+ > >>>> If they are misleading, depends on your perspective. In fact, they are
+ > >>>> measuring in-kernel scenarios over the standard Xenomai setup, which
+ > >>>> includes userland RT task activity these day. Those scenarios are mainly
+ > >>>> targeting driver use cases, not pure kernel-space applications.
+ > >>>>
+ > >>>> But I agree that, for !CONFIG_XENO_OPT_PERVASIVE-like scenarios, we
+ > >>>> would benefit from an additional set of test cases.
+ > >>> Ok, I will not touch timerbench then, and implement another kernel module.
+ > >>>
+ > >> [Without considering all details]
+ > >> To achieve this independence of user space RT thread, it should suffice
+ > >> to implement a kernel-based frontend for timerbench. This frontent would
+ > >> then either dump to syslog or open some pipe to tell userland about the
+ > >> benchmark results. What do yo think?
+ > > 
+ > > My intent was to implement a protocol similar to the one of
+ > > timerbench, but using an rt-pipe, and continue to use the latency
+ > > test, adding new options such as -t 3 and t 4. But there may be
+ > > problems with this approach: if we are compiling without
+ > > CONFIG_XENO_OPT_PERVASIVE, latency will not run at all. So, it is
+ > > probably simpler to implement a klatency that just reads from the
+ > > rt-pipe.
+ > 
+ > But that klantency could perfectly reuse what timerbench already
+ > provides, without code changes to the latter, in theory.
 
-The documentation hunk was nonsense, here is a hopefully better version.
-
-Jan
+In theory yes, but in practice, timerbench non real-time ioctls use some
+linux services, so they can not be called from the context of a
+kernel-space task listening on a real-time pipe.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
 
---------------070907020409030609040208
-Content-Type: text/x-patch;
- name="improve-patch-detection.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="improve-patch-detection.patch"
 
----
- README.INSTALL            |   11 +++++------
- scripts/prepare-kernel.sh |    8 ++++----
- 2 files changed, 9 insertions(+), 10 deletions(-)
-
-Index: xenomai/README.INSTALL
-===================================================================
---- xenomai.orig/README.INSTALL
-+++ xenomai/README.INSTALL
-@@ -51,8 +51,10 @@ $ scripts/prepare-kernel.sh --linux=<lin
-     valid either way.
- 
-     --adeos specifies the path of the Adeos patch to apply against the
--    kernel tree. This parameter can be omitted if Adeos has already
--    been patched in. In any case, the script will not try to apply it
-+    kernel tree. Suitable patches are available with Xenomai under
-+    ksrc/arch/<target-arch>/patches. This parameter can be omitted if
-+    Adeos has already been patched in or the script shall suggest an
-+    appropriate one. In any case, the script will not try to apply it
-     again whenever a former patch is detected.
- 
-     --arch tells the script about the target architecture. If
-@@ -64,10 +66,7 @@ located at /usr/src/linux-2.6.23-ipipe i
- support:
- 
- $ cd xenomai-2.4
--$ scripts/prepare-kernel.sh
--  --linux=/usr/src/linux-2.6.23-ipipe
--  --adeos=/tmp/adeos-ipipe-2.6.23-i386-1.10-12.patch
--  --arch=i386
-+$ scripts/prepare-kernel.sh --linux=/usr/src/linux-2.6.23-ipipe
- 
- Note: The script will infer the location of the Xenomai kernel code
- from its own location within the Xenomai source tree. In other words,
-Index: xenomai/scripts/prepare-kernel.sh
-===================================================================
---- xenomai.orig/scripts/prepare-kernel.sh
-+++ xenomai/scripts/prepare-kernel.sh
-@@ -353,10 +353,10 @@ eval linux_`grep '^PATCHLEVEL =' $linux_
- eval linux_`grep '^SUBLEVEL =' $linux_tree/Makefile | sed -e 's, ,,g'`
- eval linux_`grep '^VERSION =' $linux_tree/Makefile | sed -e 's, ,,g'`
- 
--linux_version="$linux_VERSION.$linux_PATCHLEVEL.$linux_SUBLEVEL$linux_EXTRAVERSION"
-+linux_version="$linux_VERSION.$linux_PATCHLEVEL.$linux_SUBLEVEL"
- 
- if test x$verbose = x1; then
--echo "Preparing kernel $linux_version in $linux_tree..."
-+echo "Preparing kernel $linux_version$linux_EXTRAVERSION in $linux_tree..."
- fi
- 
- if test -r $linux_tree/include/linux/ipipe.h; then
-@@ -369,7 +369,7 @@ elif test -r $linux_tree/include/linux/a
-    exit 2
- else
-    if test x$adeos_patch = x; then
--      default_adeos_patch=`( ls $xenomai_root/ksrc/arch/$xenomai_arch/patches/adeos-ipipe-$linux_version-$linux_arch-*|sort -r ) 2>/dev/null | head -n1`
-+      default_adeos_patch="`( ls $xenomai_root/ksrc/arch/$xenomai_arch/patches/adeos-ipipe-$linux_version*-{$linux_arch,$xenomai_arch}-*|sort -r ) 2>/dev/null | head -n1`"
-    fi
-    if test x$default_adeos_patch = x; then
-       default_adeos_patch=/dev/null
-@@ -393,7 +393,7 @@ else
-    curdir=$PWD
-    cd $linux_tree && patch --dry-run -p1 -f < $adeos_patch || { 
-         cd $curdir;
--        echo "$me: Unable to patch kernel $linux_version with `basename $adeos_patch`." >&2
-+        echo "$me: Unable to patch kernel $linux_version$linux_EXTRAVERSION with `basename $adeos_patch`." >&2
-         exit 2;
-    }
-    patch -p1 -f -s < $adeos_patch
-
---------------070907020409030609040208--
+					    Gilles Chanteperdrix.
 
