@@ -1,20 +1,14 @@
-Message-ID: <2ff1a98a0801280302j6dd97285o75d22a4bfc0efab0@domain.hid>
-Date: Mon, 28 Jan 2008 12:02:51 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <479D1519.5020102@domain.hid>
+Message-ID: <4796643D.7010208@domain.hid>
+Date: Tue, 22 Jan 2008 22:46:37 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 References: <2ff1a98a0801020231k19be7d89k1a6f04b7d497cc34@domain.hid>
-	<47977DE1.8060207@domain.hid>
-	<2ff1a98a0801230953m2a67e614s6c921b3b6ec77c3c@domain.hid>
-	<479788A5.80407@domain.hid>
-	<2ff1a98a0801240218y1f09ae38w93e244a47218900@domain.hid>
-	<479B7938.2000206@domain.hid>
-	<18331.32587.725949.407764@domain.hid>
-	<479BCE17.600@domain.hid> <18333.3277.36164.63798@domain.hid>
-	<479D1519.5020102@domain.hid>
+	<18326.21459.333811.155772@domain.hid>
+In-Reply-To: <18326.21459.333811.155772@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig9A1DACE8EC684EB9926AACB4"
+Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-core] High latencies on ARM.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -25,87 +19,125 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-On Jan 28, 2008 12:34 AM, Philippe Gerum <rpm@xenomai.org> wrote:
->
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig9A1DACE8EC684EB9926AACB4
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
+
+Gilles Chanteperdrix wrote:
 > Gilles Chanteperdrix wrote:
-> > Philippe Gerum wrote:
-> >  > Gilles Chanteperdrix wrote:
-> >  > > Philippe Gerum wrote:
-> >  > >  > Gilles Chanteperdrix wrote:
-> >  > >  > > On Jan 23, 2008 7:34 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> >  > >  > >> Gilles Chanteperdrix wrote:
-> >  > >  > >>> On Jan 23, 2008 6:48 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> >  > >  > >>>> Gilles Chanteperdrix wrote:
-> >  > >  > >>>>> Gilles Chanteperdrix wrote:
-> >  > >  > >>>>>  > Please find attached a patch implementing these ideas. This adds some
-> >  > >  > >>>>>  > clutter, which I would be happy to reduce. Better ideas are welcome.
-> >  > >  > >>>>>  >
-> >  > >  > >>>>>
-> >  > >  > >>>>> Ok. New version of the patch, this time split in two parts, should
-> >  > >  > >>>>> hopefully make it more readable.
-> >  > >  > >>>>>
-> >  > >  > >>>> Ack. I'd suggest the following:
-> >  > >  > >>>>
-> >  > >  > >>>> - let's have a rate limiter when walking the zombie queue in
-> >  > >  > >>>> __xnpod_finalize_zombies. We hold the superlock here, and what the patch
-> >  > >  > >>>> also introduces is the potential for flushing more than a single TCB at
-> >  > >  > >>>> a time, which might not always be a cheap operation, depending on which
-> >  > >  > >>>> cra^H^Hode runs on behalf of the deletion hooks for instance. We may
-> >  > >  > >>>> take for granted that no sane code would continuously create more
-> >  > >  > >>>> threads than we would be able to finalize in a given time frame anyway.
-> >  > >  > >>> The maximum number of zombies in the queue is
-> >  > >  > >>> 1 + XNARCH_WANT_UNLOCKED_CTXSW, since a zombie is added to the queue
-> >  > >  > >>> only if a deleted thread is xnpod_current_thread(), or if the XNLOCKSW
-> >  > >  > >>> bit is armed.
-> >  > >  > >> Ack. rate_limit = 1? I'm really reluctant to increase the WCET here,
-> >  > >  > >> thread deletion isn't cheap already.
-> >  > >  > >
-> >  > >  > > I am not sure that holding the nklock while we run the thread deletion
-> >  > >  > > hooks is really needed.
-> >  > >  > >
-> >  > >  >
-> >  > >  > Deletion hooks may currently rely on the following assumptions when running:
-> >  > >  >
-> >  > >  > - rescheduling is locked
-> >  > >  > - nklock is held, interrupts are off
-> >  > >  > - they run on behalf of the deletor context
-> >  > >  >
-> >  > >  > The self-delete refactoring currently kills #3 because we now run the
-> >  > >  > hooks after the context switch, and would also kill #2 if we did not
-> >  > >  > hold the nklock (btw, enabling the nucleus debug while running with this
-> >  > >  > patch should raise an abort, from xnshadow_unmap, due to the second
-> >  > >  > assertion).
-> >  > >  >
-> >  >
-> >  > Forget about this; shadows are always exited in secondary mode, so
-> >  > that's fine, i.e. xnpod_current_thread() != deleted thread, hence we
-> >  > should always run the deletion hooks immediately on behalf of the caller.
-> >
-> > What happens if the watchdog kills a user-space thread which is
-> > currently running in primary mode ? If I read xnpod_delete_thread
-> > correctly, the SIGKILL signal is sent to the target thread only if it is
-> > not the current thread.
-> >
->
-> I'd say: zombie queuing from xnpod_delete, then shadow unmap on behalf
-> of the next switched context which would trigger the lo-stage unmap
-> request -> wake_up_process against the Linux side and asbestos underwear
-> provided by the relax epilogue, which would eventually reap the guy
-> through do_exit(). As a matter of fact, we would still have the
-> unmap-over-non-current issue, that's true.
->
-> Ok, could we try coding a damn Tetris instead? Pong, maybe? Gasp...
+>  > Hi,
+>  >=20
+>  > after some (unsuccessful) time trying to instrument the code in a wa=
+y
+>  > that does not change the latency results completely, I found the
+>  > reason for the high latency with latency -t 1 and latency -t 2 on AR=
+M.
+>  > So, here comes an update on this issue. The culprit is the user-spac=
+e
+>  > context switch, which flushes the processor cache with the nklock
+>  > locked, irqs off.
+>  >=20
+>  > There are two things we could do:
+>  > - arrange for the ARM cache flush to happen with the nklock unlocked=
 
-Games for mobile phones then, because I am afraid games for consoles
-or PCs are too complicated for me.
+>  > and irqs enabled. This will improve interrupt latency (latency -t 2)=
 
-No, seriously, how do we solve this ? Maybe we could relax from
-xnpod_delete_thread ?
+>  > but obviously not scheduling latency (latency -t 1). If we go that
+>  > way, there are several problems we should solve:
+>  >=20
+>  > we do not want interrupt handlers to reenter xnpod_schedule(), for
+>  > this we can use the XNLOCK bit, set on whatever is
+>  > xnpod_current_thread() when the cache flush occurs
+>  >=20
+>  > since the interrupt handler may modify the rescheduling bits, we nee=
+d
+>  > to test these bits in xnpod_schedule() epilogue and restart
+>  > xnpod_schedule() if need be
+>  >=20
+>  > we do not want xnpod_delete_thread() to delete one of the two thread=
+s
+>  > involved in the context switch, for this the only solution I found i=
+s
+>  > to add a bit to the thread mask meaning that the thread is currently=
+
+>  > switching, and to (re)test the XNZOMBIE bit in xnpod_schedule epilog=
+ue
+>  > to delete whatever thread was marked for deletion
+>  >=20
+>  > in case of migration with xnpod_migrate_thread, we do not want
+>  > xnpod_schedule() on the target CPU to switch to the migrated thread
+>  > before the context switch on the source CPU is finished, for this we=
+
+>  > can avoid setting the resched bit in xnpod_migrate_thread(), detect
+>  > the condition in xnpod_schedule() epilogue and set the rescheduling
+>  > bits so that xnpod_schedule is restarted and send the IPI to the
+>  > target CPU.
+>=20
+> Please find attached a patch implementing these ideas. This adds some
+> clutter, which I would be happy to reduce. Better ideas are welcome.
+>=20
+
+I tried to cross-read the patch (-p would have been nice) but failed -=20
+this needs to be applied on some tree. Does the patch improve ARM=20
+latencies already?
+
+>=20
+>  >=20
+>  > - avoid using user-space real-time tasks when running latency
+>  > kernel-space benches, i.e. at least in the latency -t 1 and latency =
+-t
+>  > 2 case. This means that we should change the timerbench driver. Ther=
+e
+>  > are at least two ways of doing this:
+>  > use an rt_pipe
+>  >  modify the timerbench driver to implement only the nrt ioctl, using=
+
+>  > vanilla linux services such as wait_event and wake_up.
+>  >=20
+>  > What do you think ?
+>=20
+> So, what do you thing is the best way to change the timerbench driver,
+> * use an rt_pipe ? Pros: allows to run latency -t 1 and latency -t 2 ev=
+en
+>  if Xenomai is compiled with CONFIG_XENO_OPT_PERVASIVE off; cons: make
+>  the timerbench non portable on other implementations of rtdm, eg. rtdm=
+
+>  over rtai or the version of rtdm which runs over vanilla linux
+> * modify the timerbecn driver to implement only nrt ioctls ? Pros:
+>   better driver portability; cons: latency would still need
+>   CONFIG_XENO_OPT_PERVASIVE to run latency -t 1 and latency -t 2.
+
+I'm still voting for my third approach:
+
+  -> Write latency as kernel application (klatency) against the
+     timerbench device
+  -> Call NRT IOCTLs of timerbench during module init/cleanup
+  -> Use module parameters for customization
+  -> Setup a low-prio kernel-based RT task to issue the RT IOCTLs
+  -> Format the results nicely (similar to userland latency) in that RT
+     task and stuff them into some rtpipe
+  -> Use "cat /dev/rtpipeX" to display the results
+
+Jan
 
 
--- 
-                                               Gilles Chanteperdrix
+--------------enig9A1DACE8EC684EB9926AACB4
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFHlmQ9niDOoMHTA+kRAuRSAJ4jKQAkEjN0QrwJ1p1jfArBTpW5rQCfcJeM
+/FN5tfzRR7Es4SOZnS4uZJI=
+=Sz6I
+-----END PGP SIGNATURE-----
+
+--------------enig9A1DACE8EC684EB9926AACB4--
 
