@@ -1,12 +1,12 @@
-Content-class: urn:content-classes:message
+Message-ID: <18326.22441.591044.659440@domain.hid>
+Date: Tue, 22 Jan 2008 21:52:57 +0100
 MIME-Version: 1.0
-Date: Tue, 22 Jan 2008 15:34:18 -0500
-Message-ID: <BF58A8AFB316514587D61EADBFBF4C4101746623@domain.hid>
-In-Reply-To: <4796458F.4060501@domain.hid>
-From: "Kyle Howell" <khowell@domain.hid>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] x86_64 user/system process accounting
+In-Reply-To: <BAY108-W34CAB388B56804A1404032AF4A0@domain.hid>
+References: <BAY108-W34CAB388B56804A1404032AF4A0@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] a propos de xenomai et du skin POSIX
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,42 +16,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid
+To: valentin brehier <valentinbrehier@domain.hid>
 Cc: xenomai@xenomai.org
 
-> Kyle Howell wrote:
-> > I'm running Xenomai 2.4.1 against Linux 2.6.23.12 on an=20
-> x86_64 (Core2)
-> > system. I'm finding that all of my CPU cycles are being accounted as
-> > kernel time rather than user time. The correct processes are still
-> > billed, but the system is always 0% user. I'm wondering if=20
-> this problem
-> > is specific to my setup, or if it is a real bug. Can anyone else out
-> > there running x86_64 confirm or deny this behavior?
->=20
-> That bug should have been fixed by [1]. Already updated your ipipe=20
-> patch? This one [2] also includes your recently posted fix.
+valentin brehier wrote:
+ >=20
+ > bonjour,
+ >=20
+ > (...)
+ >=20
+ > mon probleme porte sur la m=E9thode clock_settime(). J'ai du mal =E0 bie=
+n saisir son comportement et la documentation en ligne n'est pas tr=E8s pr=
+=E9cise.
+ >=20
+ > Mon probl=E8me est donc le suivant: lorsque j'appel cette m=E9thode, l'h=
+orloge syst=E8me Xenomai est bien modifi=E9, mais pas l'horloge syst=E8me L=
+inux. De ce fait je ne peut pas utiliser hwclock pour mettre =E0 jour l'heu=
+re de la RTC. je dois rester compatible POSIX, il me faut donc une solution=
+ pour mettre =E0 jour la RTC =E0 l'aide du skin POSIX, ce que je n'ai pas t=
+rouv=E9.
+ >=20
+ > Pour information j'utilise une carte ETX qui ne poss=E8de pas le support=
+ LAPIC, le timer Xenomai utilise donc la m=EAme IRQ (0) que Linux.
+ >=20
+ > dans l'attente de votre r=E9ponse, cordialement,
 
-Thanks, Jan.
+For other readers on this list who do not read french, your problem is
+that clock_settime sets Xenomai clock but does not set Linux clock. Then
+you talk about setting the RTC.
 
-I'm basing off of ipipe-2.6.23-x86_64-1.4-01, which appears to include
-that patch. I don't think I saw this problem back on 2.4-rc3, so I may
-try rolling back some of the I-pipe patches since then. Also, I just
-tried a kernel with CONFIG_IPIPE turned on but CONFIG_XENOMAI turned
-off, and it didn't show this problem. I don't know if that casts doubt
-on Xenomai itself, or if I just made the pipeline too simple.
+First, you need to understand that the RTC and Linux system clock are
+two different things: the RTC may be used to set Linux system clock
+when running hwclock or the NTP daemon. But once it is done, Linux clock
+continues its own course.
 
-Do you think any of your recent fixes against 2.6.24-x86 would be
-related to this?
+Xenomai has yet another clock, it is synchronized with Linux clock when
+starting Xenomai. This scheme works when Xenomai is compiled as a
+module, because loading Xenomai modules usually happens once Linux
+system clock is set (using hwclock or ntp) by some boot scripts. But this
+scheme does not work when Xenomai is built in Linux kernel, because
+Xenomai startup occurs way before Linux clock is set.
 
---
-Kyle Howell
+So, what I would advise is to write a little tool (actually, I think
+this tool could even be part of the tools installed with Xenomai) to
+set-up Xenomai clock from Linux clock, this is as simple as running
+__real_clock_gettime and clock_settime. You would then run this tool in
+a boot script after Linux clock is set by hwclock or ntpd.
 
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D
-This email and any files transmitted with it are
-confidential and intended solely for the use of the
-named recipient or recipients.  If you have received
-this email in error please notify the sender
-immediately. =20
+Regards.
+
+--=20
+
+
+					    Gilles Chanteperdrix.
 
