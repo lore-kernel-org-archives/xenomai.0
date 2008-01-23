@@ -1,19 +1,13 @@
-Message-ID: <2ff1a98a0801230610t366862dbmcb36ff9fb50604c4@domain.hid>
-Date: Wed, 23 Jan 2008 15:10:09 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <8b3b30860712310723y39bae134o8bcefbd16f582541@domain.hid>
+Message-ID: <4797594B.7060504@domain.hid>
+Date: Wed, 23 Jan 2008 16:12:11 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+References: <BF58A8AFB316514587D61EADBFBF4C4101746623@domain.hid>
+	<47965E88.5000106@domain.hid>
+In-Reply-To: <47965E88.5000106@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <8b3b30860712271756n526daf67yc8e5be203ae5421d@domain.hid>
-	<2ff1a98a0712280630t7d524928r2f66355fd0731d67@domain.hid>
-	<8b3b30860712301217p6ee4e724lebd1b1c2740d2ebf@domain.hid>
-	<2ff1a98a0712310616n58d0a63en4c36e75e5ed2ab53@domain.hid>
-	<8b3b30860712310658n4729fc2bo300f01a59b333b06@domain.hid>
-	<2ff1a98a0712310704s65b6d7fbv106c7a4bd17d4677@domain.hid>
-	<8b3b30860712310723y39bae134o8bcefbd16f582541@domain.hid>
-Subject: Re: [Xenomai-help] update from fusion 0.9.1 to xenomai 2.4.0
+Subject: Re: [Xenomai-help] x86_64 user/system process accounting
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,75 +17,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Racconico Lambrati <racconico.lambrati@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Kyle Howell <khowell@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Dec 31, 2007 4:23 PM, Racconico Lambrati
-<racconico.lambrati@domain.hid> wrote:
->
->
->
->
-> 2007/12/31, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
-> > On Dec 31, 2007 3:58 PM, Racconico Lambrati
-> > <racconico.lambrati@domain.hid> wrote:
-> > >
-> > >
-> > > 2007/12/31, Gilles Chanteperdrix < gilles.chanteperdrix@xenomai.org>:
-> > > > On Dec 30, 2007 9:17 PM, Racconico Lambrati
-> > > > <racconico.lambrati@domain.hid> wrote:
-> > > > > I've done some works, and searched in xenomai's native function.
-> > > > >
-> > > > > To replace SysClkConnect I've created a periodic task with
-> priority=90
-> > > that
-> > > > > wait 5ms.
-> > > > > The last operation in a task's cycle is semGive(gServiceSem);
-> > > > > A second task, non periodic, have as first operation of the cycle
-> > > > > semTake(gServiceSem,WAIT_FOREVER);
-> > > > > the second task has priority=50
-> > > > >
-> > > > > when the total time for one cycle of task1 and task2 everything
-> seems
-> > > run
-> > > > > properly , when task2 take more then 5ms for do it's cycle
-> > > > > rt_task_wait_period(NULL) return me 146 and not 0, and the time for
-> > > task1 is
-> > > > > not respected.
-> > > > >
-> > > > > This sound strange for me, why the scheduler don't switch the task
-> in
-> > > > > execution?
-> > > >
-> > > > This looks strange, could you try and reduce your application to a
-> > > > simple example which exhibits the same behaviour ? Maybe you lock the
-> > > > scheduler with taskLock/taskUnlock ?
-> > >
-> > > I use the rt_task_set_mode with T_LOCK option in critical section, could
-> it
-> > > be the cause of the problem?
-> >
-> > Yes, the aim of T_LOCK is precisely to prevent the scheduler from
-> > switching to another task as long as the bit is armed.
->
-> But I reset the mask after the critical section...  I'll try without  this
-> lock and report the result
+Jan Kiszka wrote:
+> Kyle Howell wrote:
+>>> Kyle Howell wrote:
+>>>> I'm running Xenomai 2.4.1 against Linux 2.6.23.12 on an 
+>>> x86_64 (Core2)
+>>>> system. I'm finding that all of my CPU cycles are being accounted as
+>>>> kernel time rather than user time. The correct processes are still
+>>>> billed, but the system is always 0% user. I'm wondering if 
+>>> this problem
+>>>> is specific to my setup, or if it is a real bug. Can anyone else out
+>>>> there running x86_64 confirm or deny this behavior?
+>>> That bug should have been fixed by [1]. Already updated your ipipe 
+>>> patch? This one [2] also includes your recently posted fix.
+>> Thanks, Jan.
+>>
+>> I'm basing off of ipipe-2.6.23-x86_64-1.4-01, which appears to include
+>> that patch. I don't think I saw this problem back on 2.4-rc3, so I may
+> 
+> /me would be surprised if the issue was not present in that version or 
+> any earlier one.
+> 
+>> try rolling back some of the I-pipe patches since then. Also, I just
+>> tried a kernel with CONFIG_IPIPE turned on but CONFIG_XENOMAI turned
+>> off, and it didn't show this problem. I don't know if that casts doubt
+>> on Xenomai itself, or if I just made the pipeline too simple.
+>>
+>> Do you think any of your recent fixes against 2.6.24-x86 would be
+>> related to this?
+> 
+> Nope, they are not related. But you could try if 2.6.24 with the latest 
+> patch shows that effect, too. Maybe something slipped into the backport 
+> of the original fix for 2.6.24-rcX. I will check with 2.6.23 tomorrow at 
+> work and keep you posted.
 
-I recently noticed something strange in xnpod_schedule which might
-explain this bug: when the T_LOCK bit is set, xnpod_schedule clears
-the rescheduling bit even though it does not reschedule. So, could you
-try, in xnpod_schedule, to replace:
+I currently have my fingers on a box with 2.6.23.14 with Xenomai 2.4.1
+and I-pipe 1.4-01 (all standard), but I'm not able to reproduce your
+effect. Some simple shell loop nicely loads one CPU at 100%, and
+/proc/stat looks like this:
 
-if (xnthread_test_state(runthread, XNLOCK))
-        goto signal_unlock_and_exit;
+cpu  38794 0 6325 411304 2882 0 3265 0
+cpu0 34786 0 3094 189892 413 0 2716 0
+cpu1 4007 0 3231 221411 2468 0 548 0
 
-with:
+Could you send me your full .config?
 
-if (xnthread_test_state(runthread, XNLOCK)) {
-        xnsched_set_resched(sched);
-        goto signal_unlock_and_exit;
-}
+Jan
 
 -- 
-                                               Gilles Chanteperdrix
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
