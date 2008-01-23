@@ -1,278 +1,51 @@
-Message-ID: <f8f856500801090304l13ffa333p53a35f82cc8ed957@domain.hid>
-Date: Wed, 9 Jan 2008 12:04:34 +0100
-From: fabien <fabien.fb@domain.hid>
-In-Reply-To: <47827A59.1050806@domain.hid>
+Message-ID: <47977DE1.8060207@domain.hid>
+Date: Wed, 23 Jan 2008 18:48:17 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
+References: <2ff1a98a0801020231k19be7d89k1a6f04b7d497cc34@domain.hid>	<18315.63245.160672.547658@domain.hid>
+	<18326.21480.397736.413726@domain.hid>
+In-Reply-To: <18326.21480.397736.413726@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <f8f856500801070737s2934e741i99717c5b2a2d3d88@domain.hid>
-	<47827A59.1050806@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai latency tests on MPC8xx
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] High latencies on ARM.
+Reply-To: rpm@xenomai.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hello, first thank for your advices Wolfgang.
+Gilles Chanteperdrix wrote:
+> Gilles Chanteperdrix wrote:
+>  > Please find attached a patch implementing these ideas. This adds some
+>  > clutter, which I would be happy to reduce. Better ideas are welcome.
+>  > 
+> 
+> Ok. New version of the patch, this time split in two parts, should
+> hopefully make it more readable.
+> 
 
-2008/1/7, Wolfgang Grandegger <wg@domain.hid>:
-> fabien wrote:
-> > Here, there is some xenomai tests on a MPC855T, could you comment
-> > these results please ?
-> > Are they correct ?
-> >
-> > # cat cpuinfo
-> > processor       : 0
-> > cpu             : 8xx
-> > clock           : 50MHz
-> > bus clock       : 50MHz
-> > revision        : 0.0 (pvr 0050 0000)
-> > bogomips        : 48.38
-> >
-> > The kernel is a 2.6.23-6 (ppc branch) from DENX git repository,
-> > Xenomai 2.4.0, and adeo-ipipe patch :
-> > adeos-ipipe-2.6.23-ppc-1.6-00.patch.
-> >
-> > I'm new in realtime system and xenomai so i have also some questions :
-> > First, what's the purpose of the cyclic and switchbench test ?
-> > How could i interpret the results of switchtest ?
-> > And finaly, it's seem there is something wrong with irqloop test, but what ?
-> >
-> > First, tests without load :
-> >
-> > # ./latency -t0 -p1000 -T30
-> > == Sampling period: 1000 us
-> > == Test mode: periodic user-mode task
-> > == All results in microseconds
-> > warming up...
-> > RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
-> > RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-> > RTD|      75.520|      84.480|     128.640|       0|      75.520|     128.640
-> > RTD|      75.520|      86.080|     136.960|       0|      75.520|     136.960
-> > [...]
-> > RTS|      75.520|      86.080|     185.920|       0|    00:00:30/00:00:30
-> >
-> > # ./latency -t1 -p1000 -T30
-> > == Sampling period: 1000 us
-> > == Test mode: in-kernel periodic task
-> > == All results in microseconds
-> > warming up...
-> > RTT|  00:00:01  (in-kernel periodic task, 1000 us period, priority 99)
-> > RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-> > RTD|      56.960|      66.118|      92.800|       0|      56.960|      92.800
-> > RTD|      56.960|      66.777|     106.240|       0|      56.960|     106.240
-> > RTD|      56.960|      66.037|     136.640|       0|      56.960|     136.640
-> > [...]
-> > RTS|      56.960|      66.308|     149.440|       0|    00:00:30/00:00:30
-> >
-> > # ./latency -t2 -p1000 -T30
-> > == Sampling period: 1000 us
-> > == Test mode: in-kernel timer handler
-> > == All results in microseconds
-> > warming up...
-> > RTT|  00:00:01  (in-kernel timer handler, 1000 us period, priority 99)
-> > RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-> > RTD|      18.560|      20.938|      34.880|       0|      18.560|      34.880
-> > RTD|      18.560|      21.446|      45.760|       0|      18.560|      45.760
-> > [...]
-> > RTS|      18.560|      21.320|     118.400|       0|    00:00:30/00:00:30
-> >
-> > # ./cyclictest -t5 -l 30000
-> > T: 0 (   64) P:99 I:    1000 C:   30000 Min:      97 Act:     138 Avg:
-> >     127 Max:     180
-> > T: 1 (   65) P:98 I:    1500 C:   30000 Min:      97 Act:     101 Avg:
-> >     195 Max:     431
-> > T: 2 (   66) P:97 I:    2000 C:   30000 Min:      97 Act:     138 Avg:
-> >     290 Max:     660
-> > T: 3 (   67) P:96 I:    2500 C:   25569 Min:      95 Act:     881 Avg:
-> >     286 Max:     881
-> > T: 4 (   68) P:95 I:    3000 C:   21308 Min:      96 Act:     168 Avg:
-> >     552 Max:    1354
-> >
-> > # ./switchbench -n10000 -p 1000
-> > == Sampling period: 1000 us
-> > == Do not interrupt this program
-> > RTH|     lat min|     lat avg|     lat max|        lost
-> > RTD|     137.920|     143.040|     160.640|           0
-> >
-> > # ./switchtest -T30 -n
-> > == Threads: sleeper-0 rtk-1 rtk-2 rtup-3 rtup-4 rtus-5 rtus-6 rtuo-7 rtuo-8
-> > RTT|  00:00:01
-> > RTH|ctx switches|-------total
-> > RTD|         999|         999
-> > RTD|         993|        1992
-> > RTD|        1005|        2997
-> > RTD|         999|        3996
-> > RTD|         993|        4989
-> > RTD|        1005|        5994
-> > RTD|         999|        6993
-> > RTD|         990|        7983
-> > RTD|         993|        8976
-> > RTD|        1005|        9981
-> > RTD|         999|       10980
-> > [...]
-> >
-> > # insmod ./xeno_irqbench.ko
-> > # ./irqloop -t0
-> > irqloop: error starting test: Inappropriate ioctl for device
-> > Xenomai: POSIX: destroyed thread c03a0e10
-> > # lsmod
-> > Module                  Size  Used by    Not tainted
-> > xeno_irqbench           9788  -
-> > xeno_posix            179428  -
-> > xeno_switchtest         8704  -
-> > xeno_rtdm              30572  -
-> > #
-> >
-> >
-> >
-> > ----
-> > Now tests with load : dd if=/dev/zero of=/dev/null
-> > ----
-> >
-> > # ./latency -t0 -p1000 -T30
-> > == Sampling period: 1000 us
-> > == Test mode: periodic user-mode task
-> > == All results in microseconds
-> > warming up...
-> > RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
-> > RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-> > RTD|     108.160|     119.680|     133.760|       0|     108.160|     133.760
-> > RTD|     115.840|     120.000|     154.240|       0|     108.160|     154.240
-> > [...]
-> > RTS|      95.040|     119.680|     202.880|       0|    00:00:30/00:00:30
-> >
-> > # ./latency -t1 -p1000 -T30
-> > == Sampling period: 1000 us
-> > == Test mode: in-kernel periodic task
-> > == All results in microseconds
-> > warming up...
-> > RTT|  00:00:01  (in-kernel periodic task, 1000 us period, priority 99)
-> > RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-> > RTD|      65.920|      73.409|     100.480|       0|      65.920|     100.480
-> > RTD|      65.920|      74.055|     107.840|       0|      65.920|     107.840
-> > RTD|      65.920|      73.954|     100.800|       0|      65.920|     107.840
-> > [...]
-> > RTS|      65.920|      73.868|     132.480|       0|    00:00:30/00:00:30
-> >
-> > # ./latency -t2 -p1000 -T30
-> > == Sampling period: 1000 us
-> > == Test mode: in-kernel timer handler
-> > == All results in microseconds
-> > warming up...
-> > RTT|  00:00:01  (in-kernel timer handler, 1000 us period, priority 99)
-> > RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-> > RTD|      21.120|      25.826|      39.680|       0|      21.120|      39.680
-> > RTD|      21.120|      26.073|      39.360|       0|      21.120|      39.680
-> > [...]
-> > RTS|      20.800|      25.987|      54.400|       0|    00:00:30/00:00:30
-> >
-> > # ./cyclictest -t5 -l 30000
-> > T: 0 (   68) P:99 I:    1000 C:   30000 Min:      96 Act:     135 Avg:
-> >     144 Max:     177
-> > T: 1 (   69) P:98 I:    1500 C:   30000 Min:      96 Act:     130 Avg:
-> >     216 Max:     483
-> > T: 2 (   70) P:97 I:    2000 C:   30000 Min:     128 Act:     133 Avg:
-> >     313 Max:     704
-> > T: 3 (   71) P:96 I:    2500 C:   30000 Min:      98 Act:     136 Avg:
-> >     292 Max:     932
-> > T: 4 (   72) P:95 I:    3000 C:   30000 Min:     127 Act:     135 Avg:
-> >     470 Max:    1378
-> >
-> > # ./switchbench -n10000 -p 1000
-> > == Sampling period: 1000 us
-> > == Do not interrupt this program
-> > RTH|     lat min|     lat avg|     lat max|        lost
-> > RTD|     144.960|     156.160|     162.240|           0
-> >
-> > # ./switchtest -T30 -n
-> > == Threads: sleeper-0 rtk-1 rtk-2 rtup-3 rtup-4 rtus-5 rtus-6 rtuo-7 rtuo-8
-> > RTT|  00:00:01
-> > RTH|ctx switches|-------total
-> > RTD|         999|         999
-> > RTD|         993|        1992
-> > RTD|        1005|        2997
-> > RTD|         999|        3996
-> > RTD|        1008|        5004
-> > RTD|         993|        5997
-> > RTD|        1005|        7002
-> > RTD|         999|        8001
-> > RTD|         999|        9000
-> > RTD|         999|        9999
-> > RTD|         993|       10992
->
-> First, it's nice to see that all tests passed without oops, system hang
-> or large latency figures. Your results are reasonable for your test
-> scenario. I remember similar results on my TQM860L module under Linux
-> 2.4.25. Your target is a very low-end PowerPC system with little cache
-> (min latency is rather close to max latency) and it's already a pain to
-> run Linux 2.6 on it. But you should apply more load and run the test
-> much longer to get realistic worst case latency figures, which are
-> likely higher then the values listed above. I usually use "while ls; do
-> ls; done" in a telnet window, "ping -f <host-ip>" and the cache
-> calibrator to produce high load. And do not forget to add "cat
-> /proc/xenomai/latency" to the above figures.
->
-> Wolfgang,
->
->
+Ack. I'd suggest the following:
 
-I did the same test with :
-a ping -f
-telnet session : while ls; do ls; done
-and a dd if=/dev/zero of=/dev/null
+- let's have a rate limiter when walking the zombie queue in
+__xnpod_finalize_zombies. We hold the superlock here, and what the patch
+also introduces is the potential for flushing more than a single TCB at
+a time, which might not always be a cheap operation, depending on which
+cra^H^Hode runs on behalf of the deletion hooks for instance. We may
+take for granted that no sane code would continuously create more
+threads than we would be able to finalize in a given time frame anyway.
 
-And i got the following results :
-./latency -t0 -p1000 -T500
-RTS|      86.400|     131.200|     229.440|       0|    00:08:21/00:08:20
+- We could move most of the code depending on XNARCH_WANT_UNLOCKED_CTXSW
+ to conditional inlines in pod.h. This would reduce the visual pollution
+a lot.
 
-# cat /proc/xenomai/latency
-4160
-
-./latency -t1 -p1000 -T500
-RTS|      63.040|      92.998|     180.480|       0|    00:08:21/00:08:20
-
-./latency -t2 -p1000 -T500
-RTS|      20.480|      36.130|     123.200|       0|    00:08:21/00:08:20
-
-# ./cyclictest -t5 -l 30000 -q
-T: 0 (  563) P:99 I:    1000 C:   30000 Min:      97 Act:     142 Avg:
-    150 Max:     216
-T: 1 (  564) P:98 I:    1500 C:   30000 Min:      95 Act:     142 Avg:
-    228 Max:     574
-T: 2 (  565) P:97 I:    2000 C:   30000 Min:     102 Act:     141 Avg:
-    335 Max:     776
-T: 3 (  566) P:96 I:    2500 C:   30000 Min:      96 Act:     138 Avg:
-    303 Max:     964
-T: 4 (  567) P:95 I:    3000 C:   30000 Min:     123 Act:     143 Avg:
-    481 Max:    1458
-
-# ./switchbench -n100000 -p 1000
-== Sampling period: 1000 us
-== Do not interrupt this program
-RTH|     lat min|     lat avg|     lat max|        lost
-RTD|     140.480|     176.000|     276.480|           0
-
-# ./switchtest -T30 -n
-== Threads: sleeper-0 rtk-1 rtk-2 rtup-3 rtup-4 rtus-5 rtus-6 rtuo-7 rtuo-8
-RTT|  00:00:03
-RTH|ctx switches|-------total
-RTD|         666|         666
-RTD|           3|         669
-RTD|          15|         684
-RTD|          12|         696
-
-I think the tests are correct ?
-exept for the latter that is catastrophic .... just when i applied the ping -f
-What do you think about this results ?
-
-Best regards
+-- 
+Philippe.
 
