@@ -1,57 +1,39 @@
-Message-ID: <4e0b9cb00801240505y77d71956w994e312be382f91b@domain.hid>
-Date: Thu, 24 Jan 2008 14:05:06 +0100
-From: "Remi Lefevre" <rlefevre@domain.hid>
+Message-ID: <2ff1a98a0801230515i77f8c22bk866c4cd592a3a9b8@domain.hid>
+Date: Wed, 23 Jan 2008 14:15:53 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <2ff1a98a0801230204s15e4eefaifdd2c946c44549df@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Subject: [Xenomai-core] Some beginner technical questions
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <20080123065221.GB6573@domain.hid>
+	<2ff1a98a0801230204s15e4eefaifdd2c946c44549df@domain.hid>
+Subject: Re: [Xenomai-help] AT91SAM9260 latency
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Juan Antonio Garcia Redondo <juan-antonio.garcia@domain.hid>
+Cc: jagarcia@domain.hid, xenomai@xenomai.org
 
-Hi, I try to really understand the Xenomai design & behavior and have
-a few technical questions for which I can't find exact answers on
-documentations or mailing list :
+On Jan 23, 2008 11:04 AM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On Jan 23, 2008 7:52 AM, Juan Antonio Garcia Redondo
+>
+> <juan-antonio.garcia@domain.hid> wrote:
+> > I see everything OK except for the first samples of cyclictests. Any comments ?
+>
+> The load you apply does not load the cache, which is a source of
+> jitter. You should run the cache calibrator (I do not find the cache
+> calibrator URL, but it is somewhere in Xenomai distribution or wiki).
 
-- What is the overhead of the Adeos/I-Pipe layer on non RT Linux tasks
-(including linux kernel) ?
-This surely depends on interrupts number, but perhaps some results on
-a particular platform exist.
+It is in the TROUBLESHOOTING guide, question "How do I adequately stress test".
 
-- When using RTnet, I understand that non RT Linux tasks uses a
-virtual network device linked to the RTnet one, so what performance
-impact does this have on non RT network bandwidth ?
-
-I saw on some introduction slides that an arinc 653 skin would be possible.
-Emulating the arinc 653 is certainly possible, but if a real arinc 653
-system is considered, this raises a few technical issues.
-- Is the nucleus memory space protected from the Linux kernel (at
-least in primary mode) ? If not, would this be possible ?
-- It seems from what I understand that nucleus implements threads, but
-not processes (like others RTOS), does this mean that they all share
-the same memory space ?
-- Can the nucleus kernel still run if the Linux kernel crashes (which
-happens in ring 1 mode on x86 if I'm correct) ?
-- Or more generally, what Linux kernel services are used by nucleus
-(it seems at least the memory allocation ones) ?
-- This is linked to the previous questions, but if we wanted to remove
-everything from the Linux kernel that is not used by Xenomai, what
-would be necessary to keep ?
-- At last, is there a way to guaranty a worst case latency on Xenomai
-(even a high one) supposing we know every hardware behavior (hum...) ?
-
-I'm sorry if these questions are stupid or have been answered
-previously, guiding me to the references would certainly greatly help
-me in this case.
-
-Best regards,
-r=E9mi
+-- 
+                                               Gilles Chanteperdrix
 
