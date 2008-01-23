@@ -1,53 +1,196 @@
-Message-ID: <14854214.1199776626079.JavaMail.ngmail@domain.hid>
-Date: Tue, 8 Jan 2008 08:17:06 +0100 (CET)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
+Message-ID: <d3f72a390801230120k1412d9acvce5ebdf11b72eb0b@domain.hid>
+Date: Wed, 23 Jan 2008 10:20:52 +0100
+From: "axel axel" <softaxel@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] posix functions for real time and non real time
-	threads
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_6091_30986311.1201080052131"
+Subject: [Xenomai-core] TASK SCHEDULING E PRIORITY
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi everybody,
+------=_Part_6091_30986311.1201080052131
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-I have a fairly huge application that consists of several real time threads=
- and several non real time (posix) threads.
-For the non real time threads I use the pthread_create function and e.g. th=
-e pthread_mutex_lock/unlock functions to
-synchronize them.
-Is it possible to use the Xenomai Posix skin for real time threads as well?
-When linking against pthread_rt and pthread I have two "variants" of e.g. p=
-thread_create. One to be used for real
-time threads and one for the non real time threads. How are they distinguis=
-hed?
-How can I define to create a real time task using pthread_create and how ca=
-n I define to create a non real time task
-using pthread_create.
+Hi,
 
-Thanks for any hints on that issue.
+i'm testing xenomai but i have a problem:
 
-Regards
+i try to run 2 TASKS with the same PRIORITY that never exit out of the cycle
+( down there is the code of task )
+and never SLEEP but i see with the oscilloscope that the second task never
+execute.
 
-Mathias
+I set also round robin mode for the task, with rt_task_set_mode( 0,T_RRB,0
+), and xnpod_activate_rr( LATCH ) kernel side.
 
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
+Which is the problem for you ?
+
+Thanks a lot in advance.
+
+Roberto Bielli
+
+--------------CODE---------------------------------------------------------------------------------------
+
+void task1samePrio (void *cookie)
+{
+    if( rt_task_set_mode( 0,T_RRB,0 ) != 0 )
+    {
+        printf( "Error rt_task_set_mode on task3samePrio\n" );
+        fflush( stdout );
+        return;
+    }
+
+     rt_sem_p( &rtSemStartAll, TM_INFINITE );
+     rt_sem_v( &rtSemStartAll );
 
 
-Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
-ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT F=DCR ALLE NEUEINSTEIGER
-Jetzt bei Arcor: g=FCnstig und schnell mit DSL - das All-Inclusive-Paket
-f=FCr clevere Doppel-Sparer, nur  29,95 Euro  inkl. DSL- und ISDN-Grundgeb=
-=FChr!
-http://www.arcor.de/rd/emf-dsl-2
+     for (;;) {
+
+
+        //    P9 on
+        *mapp_dout = *mapp_dout | 0x00000004;
+
+        //    P9 off
+        *mapp_dout = *mapp_dout & 0xFFFFFFFB;
+     }
+ }
+
+void task2samePrio (void *cookie)
+{
+
+    int err;
+    if( rt_task_set_mode( 0,T_RRB,0 ) != 0 )
+    {
+        printf( "Error rt_task_set_mode on task2samePrio\n" );
+        fflush( stdout );
+        return;
+    }
+
+    rt_sem_p( &rtSemStartAll, TM_INFINITE );
+    rt_sem_v( &rtSemStartAll );
+
+     for (;;) {
+
+
+        //    P8 on
+        *mapp_dout = *mapp_dout | 0x00000008;
+
+        //    P8 off
+        *mapp_dout = *mapp_dout & 0xFFFFFFF7;
+
+     }
+ }
+
+void task3samePrio (void *cookie)
+{
+    if( rt_task_set_mode( 0,T_RRB,0 ) != 0 )
+    {
+        printf( "Error rt_task_set_mode on task3samePrio\n" );
+        fflush( stdout );
+        return;
+    }
+
+    rt_sem_p( &rtSemStartAll, TM_INFINITE );
+    rt_sem_v( &rtSemStartAll );
+
+     for (;;) {
+
+        //    P7 on
+        *mapp_dout = *mapp_dout | 0x00000010;
+
+        //    P7 off
+        *mapp_dout = *mapp_dout & 0xFFFFFFEF;
+
+     }
+ }
+
+
+void testPriority( void )
+{
+     int err;
+
+     err = rt_sem_create( &rtSemStartAll, "rtSemStartAll", 0, S_FIFO );
+
+     if( err != 0 )
+     {
+        printf( "Error on rt_sem_create rtSemStartAll \n" );
+        fflush( stdout );
+
+        return;
+     }
+
+     err = rt_task_spawn( &rtTask1prio, "task1prio", 0, 1, 0,
+task1samePrio,NULL );
+     if( err != 0 )
+     {
+        printf( "Error on rt_task_spawn rtTask1prio\n" );
+        fflush( stdout );
+
+        rt_task_delete(&rtTask1prio);
+
+        return;
+     }
+
+     err = rt_task_spawn( &rtTask2prio, "task2prio", 0, 1, 0,
+task2samePrio,NULL );
+     if( err != 0 )
+     {
+        printf( "Error on rt_task_spawn rtTask2prio\n" );
+        fflush( stdout );
+
+        rt_task_delete(&rtTask2prio);
+
+        return;
+     }
+
+     err = rt_task_spawn( &rtTask3prio, "task3prio", 0, 1, 0,
+task3samePrio,NULL );
+     if( err != 0 )
+     {
+        printf( "Error on rt_task_spawn rtTask3prio\n" );
+        fflush( stdout );
+
+        rt_task_delete(&rtTask3prio);
+
+        return;
+     }
+
+     rt_sem_v( &rtSemStartAll );
+
+
+}
+
+------=_Part_6091_30986311.1201080052131
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hi,<br><br>i&#39;m testing xenomai but i have a problem:<br><br>i try to run 2 TASKS with the same PRIORITY that never exit out of the cycle ( down there is the code of task )<br>and never SLEEP but i see with the oscilloscope that the second task never execute. 
+<br><br>I set also round robin mode for the task, with rt_task_set_mode( 0,T_RRB,0 ), and xnpod_activate_rr( LATCH ) kernel side.<br><br>Which is the problem for you ?<br><br>Thanks a lot in advance.<br><br>Roberto Bielli
+<br><br>--------------CODE---------------------------------------------------------------------------------------<br><br>void task1samePrio (void *cookie)<br>{<br>&nbsp;&nbsp;&nbsp; if( rt_task_set_mode( 0,T_RRB,0 ) != 0 ) <br>&nbsp;&nbsp;&nbsp; {<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; printf( &quot;Error rt_task_set_mode on task3samePrio\n&quot; );<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; fflush( stdout );<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; return;<br>&nbsp;&nbsp;&nbsp; }<br><br>&nbsp;&nbsp;&nbsp; &nbsp;rt_sem_p( &amp;rtSemStartAll, TM_INFINITE );<br>&nbsp;&nbsp;&nbsp; &nbsp;rt_sem_v( &amp;rtSemStartAll );
+<br>&nbsp;&nbsp;&nbsp; &nbsp;<br><br>&nbsp;&nbsp;&nbsp;&nbsp; for (;;) {<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp; P9 on<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; *mapp_dout = *mapp_dout | 0x00000004;<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp; P9 off<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; *mapp_dout = *mapp_dout &amp; 0xFFFFFFFB;<br>&nbsp;&nbsp;&nbsp;&nbsp; }<br>&nbsp;}<br>
+<br>void task2samePrio (void *cookie)<br>{<br><br>&nbsp;&nbsp;&nbsp; int err;<br>&nbsp;&nbsp;&nbsp; if( rt_task_set_mode( 0,T_RRB,0 ) != 0 ) <br>&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; printf( &quot;Error rt_task_set_mode on task2samePrio\n&quot; );<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; fflush( stdout );
+<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; return;<br>&nbsp;&nbsp;&nbsp; }<br><br>&nbsp;&nbsp;&nbsp; rt_sem_p( &amp;rtSemStartAll, TM_INFINITE );<br>&nbsp;&nbsp;&nbsp; rt_sem_v( &amp;rtSemStartAll );<br><br>&nbsp;&nbsp;&nbsp;&nbsp; for (;;) {<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp; P8 on<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; *mapp_dout = *mapp_dout | 0x00000008;
+<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp; P8 off<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; *mapp_dout = *mapp_dout &amp; 0xFFFFFFF7;<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp; }<br>&nbsp;}<br><br>void task3samePrio (void *cookie)<br>{<br>&nbsp;&nbsp;&nbsp; if( rt_task_set_mode( 0,T_RRB,0 ) != 0 ) <br>&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; printf( &quot;Error rt_task_set_mode on task3samePrio\n&quot; );
+<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; fflush( stdout );<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; return;<br>&nbsp;&nbsp;&nbsp; }<br><br>&nbsp;&nbsp;&nbsp; rt_sem_p( &amp;rtSemStartAll, TM_INFINITE );<br>&nbsp;&nbsp;&nbsp; rt_sem_v( &amp;rtSemStartAll );<br><br>&nbsp;&nbsp;&nbsp;&nbsp; for (;;) {<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp; P7 on<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; *mapp_dout = *mapp_dout | 0x00000010;
+<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp; P7 off<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; *mapp_dout = *mapp_dout &amp; 0xFFFFFFEF;<br><br>&nbsp;&nbsp;&nbsp;&nbsp; }<br>&nbsp;}<br><br><br>void testPriority( void )<br>{<br>&nbsp;&nbsp;&nbsp; &nbsp;int err;<br><br>&nbsp;&nbsp;&nbsp; &nbsp;err = rt_sem_create( &amp;rtSemStartAll, &quot;rtSemStartAll&quot;, 0, S_FIFO );
+<br><br>&nbsp;&nbsp;&nbsp; &nbsp;if( err != 0 ) <br>&nbsp;&nbsp;&nbsp; &nbsp;{<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; printf( &quot;Error on rt_sem_create rtSemStartAll \n&quot; );<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; fflush( stdout );<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; return;<br>&nbsp;&nbsp;&nbsp; &nbsp;}<br><br>&nbsp;&nbsp;&nbsp; &nbsp;err = rt_task_spawn( &amp;rtTask1prio, &quot;task1prio&quot;, 0, 1, 0, task1samePrio,NULL );
+<br>&nbsp;&nbsp;&nbsp; &nbsp;if( err != 0 ) <br>&nbsp;&nbsp;&nbsp; &nbsp;{<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; printf( &quot;Error on rt_task_spawn rtTask1prio\n&quot; );<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; fflush( stdout );<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; rt_task_delete(&amp;rtTask1prio);<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; return;<br>&nbsp;&nbsp;&nbsp; &nbsp;}<br><br>
+&nbsp;&nbsp;&nbsp; &nbsp;err = rt_task_spawn( &amp;rtTask2prio, &quot;task2prio&quot;, 0, 1, 0, task2samePrio,NULL );<br>&nbsp;&nbsp;&nbsp; &nbsp;if( err != 0 ) <br>&nbsp;&nbsp;&nbsp; &nbsp;{<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; printf( &quot;Error on rt_task_spawn rtTask2prio\n&quot; );<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; fflush( stdout );
+<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; rt_task_delete(&amp;rtTask2prio);<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; return;<br>&nbsp;&nbsp;&nbsp; &nbsp;}<br><br>&nbsp;&nbsp;&nbsp; &nbsp;err = rt_task_spawn( &amp;rtTask3prio, &quot;task3prio&quot;, 0, 1, 0, task3samePrio,NULL );<br>&nbsp;&nbsp;&nbsp; &nbsp;if( err != 0 ) <br>&nbsp;&nbsp;&nbsp; &nbsp;{
+<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; printf( &quot;Error on rt_task_spawn rtTask3prio\n&quot; );<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; fflush( stdout );<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; rt_task_delete(&amp;rtTask3prio);<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; return;<br>&nbsp;&nbsp;&nbsp; &nbsp;}<br><br>&nbsp;&nbsp;&nbsp; &nbsp;rt_sem_v( &amp;rtSemStartAll );
+<br>&nbsp;&nbsp;&nbsp; &nbsp;<br><br>}<br><br><br><br>
+
+------=_Part_6091_30986311.1201080052131--
 
