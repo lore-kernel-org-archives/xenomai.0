@@ -1,61 +1,68 @@
-Message-ID: <4799F056.8030005@domain.hid>
-Date: Fri, 25 Jan 2008 15:21:10 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <2ff1a98a0801240828q5eb24503ve5a04b8f844eca22@domain.hid>
+Date: Thu, 24 Jan 2008 17:28:22 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <d3f72a390801240819r34179b2av7f92a17e8d6277a@domain.hid>
 MIME-Version: 1.0
-References: <BF58A8AFB316514587D61EADBFBF4C4101746780@domain.hid>
-In-Reply-To: <BF58A8AFB316514587D61EADBFBF4C4101746780@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] x86_64 user/system process accounting
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Disposition: inline
+References: <d3f72a390801240819r34179b2av7f92a17e8d6277a@domain.hid>
+Subject: Re: [Xenomai-core] TASK SCHEDULING E PRIORITY
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Kyle Howell <khowell@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: axel axel <softaxel@domain.hid>
+Cc: xenomai@xenomai.org
 
-Kyle Howell wrote:
->> Jan Kiszka wrote:
->>>>>>>> Kyle Howell wrote:
->>>>>>>> I'm running Xenomai 2.4.1 against Linux 2.6.23.12 on an
->>>>>>>> x86_64 (Core2)
->>>>>>>> system. I'm finding that all of my CPU cycles are being 
->>>>>>>> accounted as kernel time rather than user time. The correct 
->>>>>>>> processes are still billed, but the system is always 0% user. 
->> And here comes a fix:
->>
->> In rthal_timer_set_oneshot() we assume that the hijacked APIC 
->> timer will also be used to for emulating host ticks, thus 
->> __ipipe_tick_irq is set accordingly. But this is not true for 
->> x86-64 over non-clockevent kernels (2.6.23...), so we have to 
->> fixup __ipipe_tick_irq with the correct number (first patch).
-> 
-> cat /proc/stat
-> cpu  9562 0 418 166028 12 0 2 0
-> cpu0 1208 0 118 20706 0 0 0 0 
-> 
-> Ahh... That feels much better. Thanks a lot, Jan. I think that would
-> have taken me a long, long time to find on my own. BTW, I hope that you
-> didn't stay up until 5 in the morning on my account.
+On Jan 24, 2008 5:19 PM, axel axel <softaxel@domain.hid> wrote:
+> Hi,
+>
+> you answer me this:
+>
+> > Hi,
+> >
+> > i'm testing xenomai but i have a problem:
+> >
+> > i try to run 2 TASKS with the same PRIORITY that never exit out of the
+> cycle
+> > ( down there is the code of task )
+> > and never SLEEP
+>
+> 1. This will not work. Xenomai relies on Linux, so Xenomai tasks must let
+> Linux run from time to time.
+>
+> but i see with the oscilloscope that the second task never
+> > execute.
+> >
+> > I set also round robin mode for the task, with rt_task_set_mode( 0,T_RRB,0
+> > ), and xnpod_activate_rr( LATCH ) kernel side.
+> >
+> > Which is the problem for you ?
+>
+>  2. If you use Xenomai in one-shot mode, round-robin is not implemented.
+>  You have to switch Xenomai timer to periodic mode.
+>
+>
+> But if i use periodic mode ( second point ) i can do the first point or it's
+> the same impossibile ?
 
-Not till 5... :->
+When you reply to a mail, please hit the "reply" button, so that mail
+clients (as well as the mailing list archive) nicely put the reply in
+the same thread as the mail you reply to.
 
-Unfortunately I just had to learn from my colleague that the problem is
-not fully solved (for good-old 2.6.23).
+And since you are at it, please avoid uppercase, uppercase is
+equivalent to shouting on usenet. We hear you, there is no need to
+shout.
 
-So I'm banging my head against it again, and I think I understood that
-SMP can still account the load to the wrong context any CPU except the
-one that receives its ticks via RTHAL_BCAST_TICK_IRQ. Back to the
-drawing board to design a better workaround...
-
-Jan - who's happy that 2.6.24 cleans up with the timer mess
+Now, to answer your question, independently on the timer mode, your
+system will not run if you never let Linux run.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+                                               Gilles Chanteperdrix
 
