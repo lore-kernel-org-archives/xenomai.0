@@ -1,12 +1,16 @@
-Message-ID: <47985F53.8010603@domain.hid>
-Date: Thu, 24 Jan 2008 10:50:11 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <2ff1a98a0801240202g83ca10esd2f7fc928946e3c1@domain.hid>
+Date: Thu, 24 Jan 2008 11:02:15 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <20080124094150.GA7503@domain.hid>
 MIME-Version: 1.0
-References: <BF58A8AFB316514587D61EADBFBF4C41017466AD@Alpha1>
-	<479774E9.3080405@domain.hid>
-In-Reply-To: <479774E9.3080405@domain.hid>
-Content-Type: multipart/mixed; boundary="------------020706060109000208030602"
-Subject: Re: [Xenomai-help] x86_64 user/system process accounting
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <20080123065221.GB6573@domain.hid>
+	<2ff1a98a0801230204s15e4eefaifdd2c946c44549df@domain.hid>
+	<2ff1a98a0801230515i77f8c22bk866c4cd592a3a9b8@domain.hid>
+	<20080124094150.GA7503@domain.hid>
+Subject: Re: [Xenomai-help] AT91SAM9260 latency
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,141 +20,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Kyle Howell <khowell@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Juan Antonio Garcia Redondo <juan-antonio.garcia@domain.hid>
+Cc: jagarcia@domain.hid, xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------020706060109000208030602
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+On Jan 24, 2008 10:41 AM, Juan Antonio Garcia Redondo
+<juan-antonio.garcia@domain.hid> wrote:
+>
+> On 23/01/08 14:15, Gilles Chanteperdrix wrote:
+> > On Jan 23, 2008 11:04 AM, Gilles Chanteperdrix
+> > <gilles.chanteperdrix@xenomai.org> wrote:
+> > > On Jan 23, 2008 7:52 AM, Juan Antonio Garcia Redondo
+> > >
+> > > <juan-antonio.garcia@domain.hid> wrote:
+> > > > I see everything OK except for the first samples of cyclictests. Any comments ?
+> > >
+> > > The load you apply does not load the cache, which is a source of
+> > > jitter. You should run the cache calibrator (I do not find the cache
+> > > calibrator URL, but it is somewhere in Xenomai distribution or wiki).
+> >
+> > It is in the TROUBLESHOOTING guide, question "How do I adequately stress test".
+> >
+> > --
+> >                                                Gilles Chanteperdrix
+>
+> Thanks Gilles, I've done more tests using the cache calibrator from
+> http://www.cwi.nl/~manegold/Calibrator. The latency numbers are very
+> similar althought I've found an strange behaviour related to telnet
+> sessions.
 
-Jan Kiszka wrote:
-> Kyle Howell wrote:
->>> Jan Kiszka wrote:
->>>> Kyle Howell wrote:
->>>>>> Kyle Howell wrote:
->>>>>>> I'm running Xenomai 2.4.1 against Linux 2.6.23.12 on an
->>>>>> x86_64 (Core2)
->>>>>>> system. I'm finding that all of my CPU cycles are being accounted
->>>>>>> as kernel time rather than user time. The correct processes are 
->>>>>>> still billed, but the system is always 0% user. I'm wondering if
->>>>>> this problem
->>>>>>> is specific to my setup, or if it is a real bug. Can anyone else 
->>>>>>> out there running x86_64 confirm or deny this behavior?
->>> I currently have my fingers on a box with 2.6.23.14 with 
->>> Xenomai 2.4.1 and I-pipe 1.4-01 (all standard), but I'm not 
->>> able to reproduce your effect. Some simple shell loop nicely 
->>> loads one CPU at 100%, and /proc/stat looks like this:
->>>
->>> cpu  38794 0 6325 411304 2882 0 3265 0
->>> cpu0 34786 0 3094 189892 413 0 2716 0
->>> cpu1 4007 0 3231 221411 2468 0 548 0
->> Well, I'm not sure whether to be happy or sad. Thanks for checking. 
->>
->>> Could you send me your full .config?
->> I've attached my latest .config.
-> 
-> That one makes the difference: it's reproducible on some test box! /me
-> has to find the magic switch now...
+Are you kidding ? In the first results you posted, the latency was
+around 80us whereas now, you get a latency around 130us. And from I
+read, you did not run the tests for long period. If you want reliable
+results, you should let the test run, under load, for hours.
 
-And here comes a fix:
+>
+> Environment:
+>         o Tests running from console over atmel serial port.
+>         o A telnet session over on-chip ethernet.
+>         o System without load.
+>
+> ./latency -p 500 -t0
+> == All results in microseconds
+> warming up...
+> RTT|  00:00:01  (periodic user-mode task, 500 us period, priority 99)
+> RTH|-RTH----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
+> worst
+> RTD|      49.613|      52.190|      62.822|       0|      49.613| 62.822
+> RTD|      42.203|      52.512|      66.365|       0|      42.203| 66.365
+>
+>
+> Now If hit a key on the telnet session :
+>
+> RTD|      36.726|      57.989|     109.536|       0|      31.572| 109.536  <-------- Here I've hit the key.
+> RTD|      36.404|      51.868|      69.587|       0|      31.572| 109.536
+> RTD|      35.760|      51.868|      73.775|       0|      31.572| 109.536
+>
+> Now, I launch an script which executes four instances of cache
+> calibrator.
+>
+> RTD|      45.103|      57.667|      75.708|       0|      32.538| 122.422
+> RTD|      45.425|      57.023|      76.030|       0|      32.538| 122.422
+> RTD|      46.069|      57.023|      75.708|       0|      32.538| 122.422
+>
+> Now, I can hit a key on the telnet session without effects over latency
+> numbers:
+>
+> RTD|      44.136|      57.989|      75.386|       0|      27.384| 128.221
+> RTD|      46.713|      57.345|      76.353|       0|      27.384| 128.221
+> RTD|      44.780|      57.345|      76.675|       0|      27.384| 128.221
+> RTD|      43.492|      56.701|      76.997|       0|      27.384| 128.221
+>
+> Now I stop the calibrator process and launch 'ping -f -s2048 192.168.2.82' from an external
+> machine.
+>
+> RTD|      40.270|      68.621|      90.850|       0|      27.384| 128.221
+> RTD|      36.082|      68.621|      88.273|       0|      27.384| 128.221
+> RTD|      40.592|      67.976|      91.494|       0|      27.384| 128.221
+> RTD|      41.237|      68.298|      89.239|       0|      27.384| 128.221
+>
+>
+> Now If hit a key on the telnet session :
+>
+> RTD|      42.203|      67.976|      88.273|       0|      27.384| 128.221
+> RTD|      32.216|      93.427|     128.543|       0|      27.384| 128.543 <---------- Here I've hit the key.
+> RTD|      42.203|      68.298|      87.628|       0|      27.384| 128.543
+>
+> And again the calibrator execution results on eliminate the strange
+> behaviour whith the telnet session.
+>
+> Any clues ?
 
-In rthal_timer_set_oneshot() we assume that the hijacked APIC timer will
-also be used to for emulating host ticks, thus __ipipe_tick_irq is set
-accordingly. But this is not true for x86-64 over non-clockevent kernels
-(2.6.23...), so we have to fixup __ipipe_tick_irq with the correct
-number (first patch).
+No mystery: hitting a key on a telnet session causes an interrupt
+masking section of 110us, you see it as the maximum if you never
+observed longer masking sections, but it is not the maximum if you
+observed longer masking sections.
 
-While reading the related code, I also noticed that we may better
-reorder the initialization and reconfigure the APIC _after_ we have
-allocated all required IRQs, at least for the sake of clean error
-handling (second patch).
+>
+> BTW, if finally the bad numbers on ARM are user-context switches related,
+> are you considering the ipipe upgrading to 2.6.23 ?
 
-Jan
+No comment. I have already answered this question.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
-
---------------020706060109000208030602
-Content-Type: text/x-patch;
- name="fixup-ipipe_tick_irq-for-legacy-x86.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="fixup-ipipe_tick_irq-for-legacy-x86.patch"
-
----
- ksrc/arch/x86/hal-common.c |    6 ++++++
- 1 file changed, 6 insertions(+)
-
-Index: xenomai/ksrc/arch/x86/hal-common.c
-===================================================================
---- xenomai.orig/ksrc/arch/x86/hal-common.c
-+++ xenomai/ksrc/arch/x86/hal-common.c
-@@ -236,6 +236,12 @@ int rthal_timer_request(void (*tick_hand
- 			       "rthal_broadcast_timer",
- 			       &rthal_broadcast_to_local_timers);
- 
-+	/*
-+	 * rthal_timer_set_oneshot assumes the host tick flows via
-+	 * RTHAL_TIMER_IRQ, but that's not the case for legacy x86_64.
-+	 */
-+	__ipipe_tick_irq = RTHAL_BCAST_TICK_IRQ;
-+
- 	rthal_nmi_init(&rthal_latency_above_max);
- out:
- 	return 0;
-
---------------020706060109000208030602
-Content-Type: text/x-patch;
- name="reorder-apic-setup.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="reorder-apic-setup.patch"
-
----
- ksrc/arch/x86/hal-common.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-Index: xenomai/ksrc/arch/x86/hal-common.c
-===================================================================
---- xenomai.orig/ksrc/arch/x86/hal-common.c
-+++ xenomai/ksrc/arch/x86/hal-common.c
-@@ -183,14 +183,14 @@ int rthal_timer_request(
- 	if (cpu > 0)
- 		goto out;
- 
--	rthal_timer_set_oneshot(1);
--
- 	err = rthal_irq_request(RTHAL_APIC_TIMER_IPI,
- 				(rthal_irq_handler_t) tick_handler, NULL, NULL);
- 
- 	if (err)
- 		return err;
- 
-+	rthal_timer_set_oneshot(1);
-+
- 	rthal_nmi_init(&rthal_latency_above_max);
- out:
- 	return tickval;
-@@ -223,8 +223,6 @@ int rthal_timer_request(void (*tick_hand
- 	if (cpu > 0)
- 		goto out;
- 
--	rthal_timer_set_oneshot(1);
--
- 	err = rthal_irq_request(RTHAL_APIC_TIMER_IPI,
- 			  (rthal_irq_handler_t) tick_handler, NULL, NULL);
- 
-@@ -236,6 +234,8 @@ int rthal_timer_request(void (*tick_hand
- 			       "rthal_broadcast_timer",
- 			       &rthal_broadcast_to_local_timers);
- 
-+	rthal_timer_set_oneshot(1);
-+
- 	/*
- 	 * rthal_timer_set_oneshot assumes the host tick flows via
- 	 * RTHAL_TIMER_IRQ, but that's not the case for legacy x86_64.
-
---------------020706060109000208030602--
+                                               Gilles Chanteperdrix
 
