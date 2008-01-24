@@ -1,12 +1,14 @@
+Date: Thu, 24 Jan 2008 10:41:50 +0100
+From: Juan Antonio Garcia Redondo <juan-antonio.garcia@domain.hid>
+Message-ID: <20080124094150.GA7503@domain.hid>
+References: <20080123065221.GB6573@domain.hid>
+	<2ff1a98a0801230204s15e4eefaifdd2c946c44549df@domain.hid>
+	<2ff1a98a0801230515i77f8c22bk866c4cd592a3a9b8@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Message-ID: <18327.41159.877097.684423@domain.hid>
-Date: Wed, 23 Jan 2008 21:17:11 +0100
-In-Reply-To: <2220D86D21B55040AB683933DBD97B5A014A26202B@FND-MAILB03.VIA.DK>
-References: <2220D86D21B55040AB683933DBD97B5A014A26202B@FND-MAILB03.VIA.DK>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] Calling rt_task_start with cookie not NULL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2ff1a98a0801230515i77f8c22bk866c4cd592a3a9b8@domain.hid>
+Subject: Re: [Xenomai-help] AT91SAM9260 latency
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,141 +18,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "=?iso-8859-1?Q?Hans_S=F8ndergaard_(HSO)?=" <HSO@VIAUC.DK>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: jagarcia@domain.hid, xenomai@xenomai.org
 
-Hans S=F8ndergaard (HSO) wrote:
- > The rt_task_start has the following signature:
- >=20
- > int rt_task_start (RT_TASK * task, void(*)(void *cookie) entry, void * c=
-ookie);
- >=20
- > but I have not been able to find any example where the cookie parameter =
-is not NULL.
- >=20
- > I am programming an example, where the entry function need some paramete=
-rs (five).
- >=20
- > Can someone tell me how to do that?
+On 23/01/08 14:15, Gilles Chanteperdrix wrote:
+> On Jan 23, 2008 11:04 AM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+> > On Jan 23, 2008 7:52 AM, Juan Antonio Garcia Redondo
+> >
+> > <juan-antonio.garcia@domain.hid> wrote:
+> > > I see everything OK except for the first samples of cyclictests. Any comments ?
+> >
+> > The load you apply does not load the cache, which is a source of
+> > jitter. You should run the cache calibrator (I do not find the cache
+> > calibrator URL, but it is somewhere in Xenomai distribution or wiki).
+> 
+> It is in the TROUBLESHOOTING guide, question "How do I adequately stress test".
+> 
+> -- 
+>                                                Gilles Chanteperdrix
 
-you could pass a pointer to a structure containing the five parameters
-as a cookie. If you want to allocate the structure on stack, you should
-take care of synchronizing the starting thread with the thread which
-calls rt_task_start, using, for instance, a semaphore. For instance:
+Thanks Gilles, I've done more tests using the cache calibrator from
+http://www.cwi.nl/~manegold/Calibrator. The latency numbers are very
+similar althought I've found an strange behaviour related to telnet
+sessions.
 
-struct five_parms {
-        unsigned parm1;
-        int parm2;
-        void *parm3;
-        long long parm4;
-        int parm5;
-};
+Environment:
+	o Tests running from console over atmel serial port.
+	o A telnet session over on-chip ethernet. 
+        o System without load.
 
-RT_SEM five_parms_done;
-
-void task_entry(void *cookie)
-{
-        struct five_parms *parms =3D (struct five_parms *) cookie;
-        unsigned parm1;
-        int parm2;
-        void *parm3;
-        long long parm4;
-        int parm5;
-
-        parm1 =3D parms->parm1;
-        parm2 =3D parms->parm2;
-        parm3 =3D parms->parm3;
-        parm4 =3D parms->parm4;
-        parm5 =3D parms->parm5;
-
-        rt_sem_v(&five_parms_done);
-
-        /* Your code here. */
-}
-
-void some_other_function(void)
-{
-        struct five_parms parms;
-        RT_TASK task;
-        /* Your code here. */
-        parms.parm1 =3D 12;
-        parms.parm2 =3D -42;
-        parms.parm3 =3D NULL;
-        parms.parm4 =3D 20000000000LL;
-        parms.parm5 =3D 1;
-
-        rt_task_start(&task, task_entry, &parms);
-        rt_sem_p(&five_parms_done, TM_INFINITE);
-}
-
-If you plan to routinely pass 5 arguments to all the tasks you
-create, you can go one step further by defining your own wrapper of
-rt_task_start. For instance:
-
-typedef void entry_5parms(unsigned, int, void *, long long, int);
-
-struct five_parms {
-        unsigned parm1;
-        int parm2;
-        void *parm3;
-        long long parm4;
-        int parm5;
-        entry_5parms *entry;
-};
-
-RT_SEM five_parms_done;
-
-void task_trampoline(void *cookie)
-{
-        struct five_parms *parms =3D (struct five_parms *) cookie;
-        entry_5parms *entry;
-        unsigned parm1;
-        int parm2;
-        void *parm3;
-        long long parm4;
-        int parm5;
-
-        parm1 =3D parms->parm1;
-        parm2 =3D parms->parm2;
-        parm3 =3D parms->parm3;
-        parm4 =3D parms->parm4;
-        parm5 =3D parms->parm5;
-        entry =3D parms->entry;
-
-        rt_sem_v(&five_parms_done);
-
-        entry(parm1, parm2, parm3, parm4, parm5);
-}
-
-rt_task_start(RT_TASK *task, entry_5parms *entry, unsigned parm1,=20
-              int parm2, void *parm3, long long parm4, int parm5)
-{
-        struct five_parms parms;
-        RT_TASK task;
-        int err;
-
-        /* Your code here. */
-        parms.parm1 =3D parm1;
-        parms.parm2 =3D parm2;
-        parms.parm3 =3D parm3;
-        parms.parm4 =3D parm4;
-        parms.parm5 =3D parm5;
-        parms.entry =3D entry;
-
-        err =3D rt_task_start(task, task_trampoline, &parms);
-
-        if (!err)
-                rt_sem_p(&five_parms_done, TM_INFINITE);
-
-        return err;
-}
-           =20
-I have been lazy, and not checked all the return values of all xenomai
-services, which real code should do. Also note that I did not show the
-initialization of the semaphore, but real code needs that too.
-
---=20
+./latency -p 500 -t0
+== All results in microseconds
+warming up...
+RTT|  00:00:01  (periodic user-mode task, 500 us period, priority 99)
+RTH|-RTH----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
+worst
+RTD|      49.613|      52.190|      62.822|       0|      49.613| 62.822
+RTD|      42.203|      52.512|      66.365|       0|      42.203| 66.365
 
 
-					    Gilles Chanteperdrix.
+Now If hit a key on the telnet session :
+
+RTD|      36.726|      57.989|     109.536|       0|      31.572| 109.536  <-------- Here I've hit the key.
+RTD|      36.404|      51.868|      69.587|       0|      31.572| 109.536
+RTD|      35.760|      51.868|      73.775|       0|      31.572| 109.536
+
+Now, I launch an script which executes four instances of cache
+calibrator.
+
+RTD|      45.103|      57.667|      75.708|       0|      32.538| 122.422
+RTD|      45.425|      57.023|      76.030|       0|      32.538| 122.422
+RTD|      46.069|      57.023|      75.708|       0|      32.538| 122.422
+
+Now, I can hit a key on the telnet session without effects over latency
+numbers:
+
+RTD|      44.136|      57.989|      75.386|       0|      27.384| 128.221
+RTD|      46.713|      57.345|      76.353|       0|      27.384| 128.221
+RTD|      44.780|      57.345|      76.675|       0|      27.384| 128.221
+RTD|      43.492|      56.701|      76.997|       0|      27.384| 128.221
+
+Now I stop the calibrator process and launch 'ping -f -s2048 192.168.2.82' from an external
+machine.
+
+RTD|      40.270|      68.621|      90.850|       0|      27.384| 128.221
+RTD|      36.082|      68.621|      88.273|       0|      27.384| 128.221
+RTD|      40.592|      67.976|      91.494|       0|      27.384| 128.221
+RTD|      41.237|      68.298|      89.239|       0|      27.384| 128.221
+
+
+Now If hit a key on the telnet session :
+
+RTD|      42.203|      67.976|      88.273|       0|      27.384| 128.221
+RTD|      32.216|      93.427|     128.543|       0|      27.384| 128.543 <---------- Here I've hit the key.
+RTD|      42.203|      68.298|      87.628|       0|      27.384| 128.543
+
+And again the calibrator execution results on eliminate the strange
+behaviour whith the telnet session.
+
+Any clues ?
+
+BTW, if finally the bad numbers on ARM are user-context switches related,
+are you considering the ipipe upgrading to 2.6.23 ? 
+
+Regards,
+	Juan Antonio
 
