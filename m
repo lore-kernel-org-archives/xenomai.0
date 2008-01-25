@@ -1,13 +1,13 @@
-Message-ID: <2ff1a98a0801220843x23b1c4c5g337df9a10b38ed17@domain.hid>
-Date: Tue, 22 Jan 2008 17:43:41 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <4796186D.2070906@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_13098_9791258.1201020221962"
-References: <4794DDF7.9070009@domain.hid> <4794E556.1030904@domain.hid>
-	<4794E904.5060106@domain.hid> <4796186D.2070906@domain.hid>
-Subject: Re: [Xenomai-core] Patch selection by prepare-kernel.sh (again)
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Message-ID: <18330.16392.961632.366406@domain.hid>
+Date: Fri, 25 Jan 2008 21:01:12 +0100
+In-Reply-To: <479A38CF.6070209@domain.hid>
+References: <4e0b9cb00801240505y77d71956w994e312be382f91b@domain.hid>
+	<479A38CF.6070209@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] Some beginner technical questions
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,61 +17,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, Xenomai-core@domain.hid
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-------=_Part_13098_9791258.1201020221962
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Jan Kiszka wrote:
+ > Remi Lefevre wrote:
+ > > Hi, I try to really understand the Xenomai design & behavior and h=
+ave
+ > > a few technical questions for which I can't find exact answers on
+ > > documentations or mailing list :
+ > >=20
+ > > - What is the overhead of the Adeos/I-Pipe layer on non RT Linux t=
+asks
+ > > (including linux kernel) =3F
+ > > This surely depends on interrupts number, but perhaps some results=
+ on
+ > > a particular platform exist.
+ >=20
+ > It also depends on the architecture and CPU speed. I can't provide
+ > up-to-date numbers, and the best for you is anyway to evaluate
+ > specifically your desired platform. This could mean running typical
+ > Linux benchmark (eg. lmbench) on kernels with and without I-pipe +
+ > Xenomai. You are always welcome to publish results and discuss them =
+with us.
 
-On Jan 22, 2008 5:23 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->
-> Jan Kiszka wrote:
-> > Jan Kiszka wrote:
-> >> Jan Kiszka wrote:
-> >>> Philippe,
-> >>>
-> >>> what was the idea behind commit #3256 [1]? It breaks the original
-> >>> behavior of selection adeos-ipipe-2.6.23-... in the presence of 2.6.23.x
-> >>> - and leaves a bad first impression for beginners (I received such a
-> >>> notice here...). Was this for the special case
-> >>> adeos-ipipe-2.6.20.21-i386-1.12-02.patch? But I think the common case
-> >>> should take precedence over this corner case here. Unless there are more
-> >>> issues with the original version, I would vote for restoring it.
-> >>>
-> >>> Alternatively, we could add a safety belt by trying to apply the patch
-> >>> with --dry-run first and only continue if this works out without
-> >>> failures. Can hack this up if it's acceptable.
-> >> Oh, this check already exists!
-> >>
-> >> So let's try this version, which additionally cleans up the related
-> >> documentation. Catches both 2.6.23* and 2.6.24* for me here, but I may
-> >> miss some cases (2.4?).
-> >
-> > The documentation hunk was nonsense, here is a hopefully better version.
-> >
->
-> Makes sense and works fine for the kernel/arch combos I've tested so
-> far. Merged, thanks.
+Some number were published a long time ago on the LKML comparing the
+overhead of adeos and preempt=5Frt. It starts at:
+http://groups.google.com/group/linux.kernel/msg/b59137a4da507a55=3Fhl=3D=
+en
 
-configure.in probably needs a similar fix for the --enable-linux-build
-option to work with the -x86 patches.
+=46rom my experience on ARM based Intel IXP465 hardware, the overhead of
+Adeos is invisible when observing network throughput or CPU consumption=
 
--- 
-                                               Gilles Chanteperdrix
+induced by this network traffic.
 
-------=_Part_13098_9791258.1201020221962
-Content-Type: application/octet-stream; name=xeno-x86-configure.diff
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_fbqof5dx0
-Content-Disposition: attachment; filename=xeno-x86-configure.diff
+ >=20
+ > >=20
+ > > - When using RTnet, I understand that non RT Linux tasks uses a
+ > > virtual network device linked to the RTnet one, so what performanc=
+e
+ > > impact does this have on non RT network bandwidth =3F
+ >=20
+ > That depends. First of all, you only have to use the the virtual NIC=
+s
+ > when you have to share the RT Ethernet link with non-RT traffic.
+ > Otherwise you could simply use standard networking without penalties=
+. If
+ > VNICs are to be used, the performance Linux sees heavily depends on =
+the
+ > RTmac discipline and its configuration (e.g. the TDMA slot layout). =
+Feel
+ > free to continue on this topic on the rtnet-user list.
 
-SW5kZXg6IGNvbmZpZ3VyZS5pbgo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ci0tLSBjb25maWd1cmUuaW4JKHLDqXZpc2lv
-biAzNDMxKQorKysgY29uZmlndXJlLmluCShjb3BpZSBkZSB0cmF2YWlsKQpAQCAtMzM3LDYgKzMz
-Nyw3IEBACiAgIGZpCiAgIGNhc2UgIiRBREVPU19QQVRDSCIgaW4KIAkqLXBvd2VycGMtKikgWEVO
-T19MSU5VWF9BUkNIPXBvd2VycGM7OworCSoteDg2LSopIFhFTk9fTElOVVhfQVJDSD14ODY7Owog
-ICBlc2FjCiAgIEFDX1NVQlNUKEFERU9TX1BBVENIKQogCg==
-------=_Part_13098_9791258.1201020221962--
+I have a particular experience with IXP465 on this topic, using the
+nomac policy. First RTnet vnic TX suffer from a performance problem
+which is due to the fact that sending a packet wakes up a real-time tas=
+k
+to send the packet. Since the task is real-time, it wakes up
+immediately, so there is no way the packets may be batched, and for
+every packet sent, we pay the price of a context switch. Once this
+bottleneck removed and after a few other minor performance improvements=
+,
+I could make some measurements:
+- on IXP465 running vanilla linux, NATing a 100 Mbits/sec traffic
+  consumes 80% of CPU;
+- when running through RTnet vnics, it consumes 100% of CPU for a
+  traffic around 95 Mbits/sec, so, it does not come for free, but
+  remains acceptable.
+
+--=20
+
+
+=09=09=09=09=09    Gilles Chanteperdrix.
 
