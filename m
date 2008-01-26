@@ -1,18 +1,15 @@
-Message-ID: <2ff1a98a0801250900if03294epded12290544d5480@domain.hid>
-Date: Fri, 25 Jan 2008 18:00:05 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <20080125100404.GA8833@domain.hid>
+Message-ID: <479B4B16.4090909@domain.hid>
+Date: Sat, 26 Jan 2008 16:00:38 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
+References: <BF58A8AFB316514587D61EADBFBF4C4101746780@domain.hid>
+	<4799F056.8030005@domain.hid> <479A122D.7080509@domain.hid>
+In-Reply-To: <479A122D.7080509@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <20080123065221.GB6573@domain.hid>
-	<2ff1a98a0801230204s15e4eefaifdd2c946c44549df@domain.hid>
-	<2ff1a98a0801230515i77f8c22bk866c4cd592a3a9b8@domain.hid>
-	<20080124094150.GA7503@domain.hid>
-	<2ff1a98a0801240202g83ca10esd2f7fc928946e3c1@domain.hid>
-	<20080125100404.GA8833@domain.hid>
-Subject: Re: [Xenomai-help] AT91SAM9260 latency
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-help] x86_64 user/system process accounting
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,36 +19,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Juan Antonio Garcia Redondo <juan-antonio.garcia@domain.hid>
-Cc: jagarcia@domain.hid, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>, adeos-main <adeos-main@gna.org>
 
-On Jan 25, 2008 11:04 AM, Juan Antonio Garcia Redondo
-<juan-antonio.garcia@domain.hid> wrote:
-> On 24/01/08 11:02, Gilles Chanteperdrix wrote:
-> Well, after several tests, (one of them 4 hours long), I can't see
-> latencies above 100 us. Anyway I'll do more tests this weekend. The
-> latency around 130us occurs with telnet activity.
+Jan Kiszka wrote:
+> Jan Kiszka wrote:
+>> Kyle Howell wrote:
+>>>> Jan Kiszka wrote:
+>>>>>>>>>> Kyle Howell wrote:
+>>>>>>>>>> I'm running Xenomai 2.4.1 against Linux 2.6.23.12 on an
+>>>>>>>>>> x86_64 (Core2)
+>>>>>>>>>> system. I'm finding that all of my CPU cycles are being 
+>>>>>>>>>> accounted as kernel time rather than user time. The correct 
+>>>>>>>>>> processes are still billed, but the system is always 0% user. 
+>>>> And here comes a fix:
+>>>>
+>>>> In rthal_timer_set_oneshot() we assume that the hijacked APIC 
+>>>> timer will also be used to for emulating host ticks, thus 
+>>>> __ipipe_tick_irq is set accordingly. But this is not true for 
+>>>> x86-64 over non-clockevent kernels (2.6.23...), so we have to 
+>>>> fixup __ipipe_tick_irq with the correct number (first patch).
+>>> cat /proc/stat
+>>> cpu  9562 0 418 166028 12 0 2 0
+>>> cpu0 1208 0 118 20706 0 0 0 0 
+>>>
+>>> Ahh... That feels much better. Thanks a lot, Jan. I think that would
+>>> have taken me a long, long time to find on my own. BTW, I hope that you
+>>> didn't stay up until 5 in the morning on my account.
+>> Not till 5... :->
+>>
+>> Unfortunately I just had to learn from my colleague that the problem is
+>> not fully solved (for good-old 2.6.23).
+>>
+>> So I'm banging my head against it again, and I think I understood that
+>> SMP can still account the load to the wrong context any CPU except the
+>> one that receives its ticks via RTHAL_BCAST_TICK_IRQ. Back to the
+>> drawing board to design a better workaround...
+>>
+>> Jan - who's happy that 2.6.24 cleans up with the timer mess
+>>
+> 
+> Here is a reworked patch set for this issue. It takes into account that,
+> on SMP, Linux receives tick IRQs both via the PIT as well as the APIC
+> (forwarded from the PIT). Due to this two sources, I-pipe now has to be
+> adopted as well. And it has to be adopted in a way, that the locally
+> forwarded timer IRQ is not used by I-pipe to update the registers. That
+> property required an extra development cycle here...
+> 
+> Granted, this approach is ugly. It hacks a bit of Xenomai timer usage
+> patterns into I-pipe, but it is currently the only solution I see. And
+> it is a temporary workaround for only this kernel series. Philippe, how
+> bad is your feeling? Anyone any better idea?
+> 
 
-This contradicts what you told us in previous posts. You told us that
-the maximum latency went up to 130us when starting the calibrator.
-
-
-> > No mystery: hitting a key on a telnet session causes an interrupt
-> > masking section of 110us, you see it as the maximum if you never
-> > observed longer masking sections, but it is not the maximum if you
-> > observed longer masking sections.
->
-> OK, but why the masking section on linux side affects to xenomai side ?
-> Another thing I don't understand is why when the system has load (above
-> I'm talking about calibrator but the same occurs with dd if=/dev/zero
-> of=/dev/null), the effect seems to dissapear.
-
-It is probably not a masking section on linux side but rather a
-masking section on I-pipe side. Anyway, the effect does not disappear:
-it means that the cache effects cause larger latencies than the
-ethernet interrupt, but maybe I did not understand what you explained.
-The results you obtain with no load are simply irrelevant.
+These patches make sense. The entire timer broadcast thingy is working
+around an Intel CPU issue regarding C3 mode, so I see no reason why we
+should not work around the kernel work-around for the accounting issue
+the latter eventually introduces for the I-pipe... Will merge, thanks.
 
 -- 
-                                               Gilles Chanteperdrix
+Philippe.
 
