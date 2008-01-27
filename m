@@ -1,12 +1,15 @@
-Message-ID: <479C9D83.1060409@domain.hid>
-Date: Sun, 27 Jan 2008 16:04:35 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <479D1519.5020102@domain.hid>
+Date: Mon, 28 Jan 2008 00:34:49 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigE41246595255C9C7A66D5670"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH] Fix cleanup race in xnpod_disable_timesource
+References: <2ff1a98a0801020231k19be7d89k1a6f04b7d497cc34@domain.hid>	<18315.63245.160672.547658@domain.hid>	<18326.21480.397736.413726@domain.hid>	<47977DE1.8060207@domain.hid>	<2ff1a98a0801230953m2a67e614s6c921b3b6ec77c3c@domain.hid>	<479788A5.80407@domain.hid>	<2ff1a98a0801240218y1f09ae38w93e244a47218900@domain.hid>	<479B7938.2000206@domain.hid>	<18331.32587.725949.407764@domain.hid>	<479BCE17.600@domain.hid>
+	<18333.3277.36164.63798@domain.hid>
+In-Reply-To: <18333.3277.36164.63798@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] High latencies on ARM.
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,140 +19,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai-core@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE41246595255C9C7A66D5670
-Content-Type: multipart/mixed;
- boundary="------------040005010200010803080106"
+Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+>  > Gilles Chanteperdrix wrote:
+>  > > Philippe Gerum wrote:
+>  > >  > Gilles Chanteperdrix wrote:
+>  > >  > > On Jan 23, 2008 7:34 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+>  > >  > >> Gilles Chanteperdrix wrote:
+>  > >  > >>> On Jan 23, 2008 6:48 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+>  > >  > >>>> Gilles Chanteperdrix wrote:
+>  > >  > >>>>> Gilles Chanteperdrix wrote:
+>  > >  > >>>>>  > Please find attached a patch implementing these ideas. This adds some
+>  > >  > >>>>>  > clutter, which I would be happy to reduce. Better ideas are welcome.
+>  > >  > >>>>>  >
+>  > >  > >>>>>
+>  > >  > >>>>> Ok. New version of the patch, this time split in two parts, should
+>  > >  > >>>>> hopefully make it more readable.
+>  > >  > >>>>>
+>  > >  > >>>> Ack. I'd suggest the following:
+>  > >  > >>>>
+>  > >  > >>>> - let's have a rate limiter when walking the zombie queue in
+>  > >  > >>>> __xnpod_finalize_zombies. We hold the superlock here, and what the patch
+>  > >  > >>>> also introduces is the potential for flushing more than a single TCB at
+>  > >  > >>>> a time, which might not always be a cheap operation, depending on which
+>  > >  > >>>> cra^H^Hode runs on behalf of the deletion hooks for instance. We may
+>  > >  > >>>> take for granted that no sane code would continuously create more
+>  > >  > >>>> threads than we would be able to finalize in a given time frame anyway.
+>  > >  > >>> The maximum number of zombies in the queue is
+>  > >  > >>> 1 + XNARCH_WANT_UNLOCKED_CTXSW, since a zombie is added to the queue
+>  > >  > >>> only if a deleted thread is xnpod_current_thread(), or if the XNLOCKSW
+>  > >  > >>> bit is armed.
+>  > >  > >> Ack. rate_limit = 1? I'm really reluctant to increase the WCET here,
+>  > >  > >> thread deletion isn't cheap already.
+>  > >  > > 
+>  > >  > > I am not sure that holding the nklock while we run the thread deletion
+>  > >  > > hooks is really needed.
+>  > >  > > 
+>  > >  > 
+>  > >  > Deletion hooks may currently rely on the following assumptions when running:
+>  > >  > 
+>  > >  > - rescheduling is locked
+>  > >  > - nklock is held, interrupts are off
+>  > >  > - they run on behalf of the deletor context
+>  > >  > 
+>  > >  > The self-delete refactoring currently kills #3 because we now run the
+>  > >  > hooks after the context switch, and would also kill #2 if we did not
+>  > >  > hold the nklock (btw, enabling the nucleus debug while running with this
+>  > >  > patch should raise an abort, from xnshadow_unmap, due to the second
+>  > >  > assertion).
+>  > >  > 
+>  > 
+>  > Forget about this; shadows are always exited in secondary mode, so
+>  > that's fine, i.e. xnpod_current_thread() != deleted thread, hence we
+>  > should always run the deletion hooks immediately on behalf of the caller.
+> 
+> What happens if the watchdog kills a user-space thread which is
+> currently running in primary mode ? If I read xnpod_delete_thread
+> correctly, the SIGKILL signal is sent to the target thread only if it is
+> not the current thread.
+> 
 
-This is a multi-part message in MIME format.
---------------040005010200010803080106
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+I'd say: zombie queuing from xnpod_delete, then shadow unmap on behalf
+of the next switched context which would trigger the lo-stage unmap
+request -> wake_up_process against the Linux side and asbestos underwear
+provided by the relax epilogue, which would eventually reap the guy
+through do_exit(). As a matter of fact, we would still have the
+unmap-over-non-current issue, that's true.
 
-CPU n (n!=3D0)
-------------
-xnpod_disable_timesource()
-for (cpu =3D 0..x)
-  rthal_timer_release(cpu=3D0)
-  ipipe_release_tickdev(cpu=3D0)
-  rthal_timer_set_oneshot(0)
-  rthal_trigger_irq(RTHAL_HOST_TICK_IRQ)
-  ...
-  lapic_next_event(...)
-  xnarch_next_htick_shot(...)
-  ...
-  rthal_timer_release(cpu=3Dn)
-  ipipe_release_tickdev(cpu=3Dn)
+Ok, could we try coding a damn Tetris instead? Pong, maybe? Gasp...
 
-And dead it is, the lapic on this CPU. Attached patch fixes the issue
-(and gets rid off multiple RTHAL_BCAST_TICK_IRQ deregistrations).
-
-Jan
-
---------------040005010200010803080106
-Content-Type: text/x-patch;
- name="fix-timesource-cleanup-race.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="fix-timesource-cleanup-race.patch"
-
----
- ChangeLog                  |    5 +++++
- ksrc/arch/x86/hal-common.c |   18 +++++++++++-------
- 2 files changed, 16 insertions(+), 7 deletions(-)
-
-Index: b/ChangeLog
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/ChangeLog
-+++ b/ChangeLog
-@@ -1,3 +1,8 @@
-+2008-01-27  Jan Kiszka  <jan.kiszka@domain.hid>
-+
-+	* ksrc/arch/x86/hal-common.c: Fix race when starting the cleanup
-+	on CPU > 0. Avoid multiple RTHAL_BCAST_TICK_IRQ releases.
-+
- 2008-01-26  Gilles Chanteperdrix  <gilles.chanteperdrix@xenomai.org>
-=20
- 	* configure.in: Fix --enable-linux-build for latest arch/x86
-Index: b/ksrc/arch/x86/hal-common.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/ksrc/arch/x86/hal-common.c
-+++ b/ksrc/arch/x86/hal-common.c
-@@ -120,6 +120,8 @@ DECLARE_LINUX_IRQ_HANDLER(rthal_broadcas
- 	return IRQ_HANDLED;
- }
-=20
-+static int cpu_timers_requested;
-+
- #ifdef CONFIG_GENERIC_CLOCKEVENTS
-=20
- int rthal_timer_request(
-@@ -179,7 +181,7 @@ int rthal_timer_request(
- 	 * The rest of the initialization should only be performed
- 	 * once by a single CPU.
- 	 */
--	if (cpu > 0)
-+	if (cpu_timers_requested++ > 0)
- 		goto out;
-=20
- 	err =3D rthal_irq_request(RTHAL_APIC_TIMER_IPI,
-@@ -219,7 +221,7 @@ int rthal_timer_request(void (*tick_hand
- 	 * The rest of the initialization should only be performed
- 	 * once by a single CPU.
- 	 */
--	if (cpu > 0)
-+	if (cpu_timers_requested++ > 0)
- 		goto out;
-=20
- 	err =3D rthal_irq_request(RTHAL_APIC_TIMER_IPI,
-@@ -252,18 +254,20 @@ void rthal_timer_release(int cpu)
- {
- #ifdef CONFIG_GENERIC_CLOCKEVENTS
- 	ipipe_release_tickdev(cpu);
--#else
--	rthal_irq_host_release(RTHAL_BCAST_TICK_IRQ,
--			       &rthal_broadcast_to_local_timers);
- #endif
-=20
- 	/*
- 	 * The rest of the cleanup work should only be performed once
--	 * by a single CPU.
-+	 * by the last releasing CPU.
- 	 */
--	if (cpu > 0)
-+	if (--cpu_timers_requested > 0)
- 		return;
-=20
-+#ifndef CONFIG_GENERIC_CLOCKEVENTS
-+	rthal_irq_host_release(RTHAL_BCAST_TICK_IRQ,
-+			       &rthal_broadcast_to_local_timers);
-+#endif
-+
- 	rthal_nmi_release();
-=20
- 	rthal_irq_release(RTHAL_APIC_TIMER_IPI);
-
---------------040005010200010803080106--
-
---------------enigE41246595255C9C7A66D5670
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.4-svn0 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFHnJ2JniDOoMHTA+kRAuleAJ9zwsVegsbyZYLJ6je+kS452OCykACbBhgU
-hydikLm5XEIULmT4GM4rkis=
-=46Kl
------END PGP SIGNATURE-----
-
---------------enigE41246595255C9C7A66D5670--
+-- 
+Philippe.
 
