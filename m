@@ -1,6 +1,11 @@
-Date: Mon, 28 Jan 2008 10:21:56 +0100
-From: Juan Antonio Garcia Redondo <juan-antonio.garcia@domain.hid>
-Message-ID: <20080128092156.GA8551@domain.hid>
+Message-ID: <2ff1a98a0801280519m62768928x5e5fa40123abe9cd@domain.hid>
+Date: Mon, 28 Jan 2008 14:19:34 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <20080128085123.GA7297@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 References: <20080123065221.GB6573@domain.hid>
 	<2ff1a98a0801230204s15e4eefaifdd2c946c44549df@domain.hid>
 	<2ff1a98a0801230515i77f8c22bk866c4cd592a3a9b8@domain.hid>
@@ -9,10 +14,6 @@ References: <20080123065221.GB6573@domain.hid>
 	<20080125100404.GA8833@domain.hid>
 	<2ff1a98a0801250900if03294epded12290544d5480@domain.hid>
 	<20080128085123.GA7297@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20080128085123.GA7297@domain.hid>
 Subject: Re: [Xenomai-help] AT91SAM9260 latency
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -23,10 +24,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Juan Antonio Garcia Redondo <juan-antonio.garcia@domain.hid>
 Cc: jagarcia@domain.hid, xenomai@xenomai.org
 
-On 28/01/08 09:51, Juan Antonio Garcia Redondo wrote:
+On Jan 28, 2008 9:51 AM, Juan Antonio Garcia Redondo
+<juan-antonio.garcia@domain.hid> wrote:
 > On 25/01/08 18:00, Gilles Chanteperdrix wrote:
 > > On Jan 25, 2008 11:04 AM, Juan Antonio Garcia Redondo
 > > <juan-antonio.garcia@domain.hid> wrote:
@@ -34,33 +36,33 @@ On 28/01/08 09:51, Juan Antonio Garcia Redondo wrote:
 > > > Well, after several tests, (one of them 4 hours long), I can't see
 > > > latencies above 100 us. Anyway I'll do more tests this weekend. The
 > > > latency around 130us occurs with telnet activity.
-> > 
+> >
 > > This contradicts what you told us in previous posts. You told us that
 > > the maximum latency went up to 130us when starting the calibrator.
-> 
+>
 > I guess that there has been a misunderstanding. In the mail
 > https://mail.gna.org/public/xenomai-help/2008-01/msg00108.html I
 > wanted to point to the fact that the telnet activity had a direct and
 > reproducible efect on lat_max field. So my test was:
 > 1) From a minicom terminal run 'latency -t0 -p500'
 > 2) From a telnet terminal launch calibrator, kill calibrator etc.
-> 
+>
 > So, the lat_worst numbers I showed in that email has no value. I
 > launched the calibrator process during several minutes, and, while I
 > was doing the tests I saw the telnet behaviour and I thought that could be
 > interesting to report it.
-> 
+>
 > I've done more tests this weekend. I've switched to at91sam9260_ek
 > development plattform because I can hold it doing xenomai tests without affect
-> my current work.  
-> 
+> my current work.
+>
 > My numbers:
-> 
+>
 > o Test xenomai-2.4.0 + 5 * (dd if=/dev/sda of=/dev/null) + 5 * (calibrator 180
 > 4M calibra) + ping -f -s2048
-> 
-> ./latency -p 500 -t0 
-> 
+>
+> ./latency -p 500 -t0
+>
 > RTD|      47.358|      67.976|      93.105|       0|      28.672| 122.422
 > RTD|      47.680|      68.298|      91.817|       0|      28.672| 122.422
 > RTD|      49.291|      68.298|      91.494|       0|      28.672| 122.422
@@ -69,9 +71,12 @@ On 28/01/08 09:51, Juan Antonio Garcia Redondo wrote:
 > RTD|      47.358|      68.621|      91.172|       0|      28.672| 122.422
 > RTD|      37.048|      68.621|      92.139|       0|      28.672| 122.422
 > RTT|  07:35:22  (periodic user-mode task, 500 us period, priority 99)
-> 
-> > 
-> > 
+
+Ok, so worst case latency is around 130us, as I thought I understood.
+
+>
+> >
+> >
 > > > > No mystery: hitting a key on a telnet session causes an interrupt
 > > > > masking section of 110us, you see it as the maximum if you never
 > > > > observed longer masking sections, but it is not the maximum if you
@@ -81,29 +86,40 @@ On 28/01/08 09:51, Juan Antonio Garcia Redondo wrote:
 > > > Another thing I don't understand is why when the system has load (above
 > > > I'm talking about calibrator but the same occurs with dd if=/dev/zero
 > > > of=/dev/null), the effect seems to dissapear.
-> > 
+> >
 > > It is probably not a masking section on linux side but rather a
 > > masking section on I-pipe side. Anyway, the effect does not disappear:
 > > it means that the cache effects cause larger latencies than the
 > > ethernet interrupt, but maybe I did not understand what you explained.
 > > The results you obtain with no load are simply irrelevant.
-> 
+>
 > I'll try to explain it better:
-> 
+>
 > o Without load I run ./latency -t0 -p500.
 > RTD|      33.182|      53.479|      67.976|       0|      31.250| 77.319
 > RTD|      43.170|      53.479|      67.654|       0|      31.250| 77.319
 > RTD|      41.881|      53.479|      67.332|       0|      31.250| 77.319
 > RTT|  00:02:07  (periodic user-mode task, 500 us period, priority 99)
-> 
+>
 > o Each time I press a key (over a telnet session) I can see the lat_max field increase on 40 to 50 us aprox.
 > RTD|      33.505|      53.479|      71.842|       0|      26.739| 77.319
 > RTD|      40.592|      62.177|     123.067|       0|      26.739| 123.067
 >                                    -------
->                                       \_________: Key pressed 
+>                                       \_________: Key pressed
 > RTD|      50.579|      53.479|      73.775|       0|      26.739| 123.067
-> 
-> 
+
+This is where you are wrong:
+- first, let me repeat it: test made without load are irrelevant;
+- second, an event has no relative effect on max latency, its effect
+is absolute: pressing a key over a telnet session causes, for unknown
+reason,  a masking section of around 130us, which happens to also be
+the worst case latency that we measured properly with a loaded system.
+
+Now, if you want to know why you get such a masking section, you are
+free to investigate.
+
+>
+>
 > o Stop the latency test.
 > o run dd if=/dev/zero of=/dev/null
 > o run ./latency -t0 -p 500
@@ -113,27 +129,34 @@ On 28/01/08 09:51, Juan Antonio Garcia Redondo wrote:
 > RTD|      45.103|      55.412|      90.206|       0|      36.082| 93.105
 > RTD|      45.425|      55.734|      88.273|       0|      36.082| 93.105
 > RTT|  00:02:07  (periodic user-mode task, 500 us period, priority 99)
-> 
+>
 > o I can't see any effect on lat_max field when I press a key on the
 > telnet session.
-> 
+>
 > RTD|      44.136|      55.734|      92.461|       0|      36.082| 94.394
 >                                    -------
->                                       \_________: Key pressed 
+>                                       \_________: Key pressed
 > RTD|      43.814|      55.734|      90.528|       0|      36.082| 94.394
 >                                    -------
->                                       \_________: Key pressed 
+>                                       \_________: Key pressed
 > RTD|      45.103|      55.412|      89.239|       0|      36.082| 94.394
 >                                    -------
->                                       \_________: Key pressed 
+>                                       \_________: Key pressed
 > RTT|  00:03:31  (periodic user-mode task, 500 us period, priority 99)
-> 
+>
 > As you can see the lat_max numbers are under the 100 us while I can go
 > up 120 us easily whith the former test.
-> 
 
-Just to say that the test were done with xenomai-2.4.1 (ipipe 1.8-03).
+The worst case latency of your system is above 120us, so, the results
+you get when not running the calibrator are not really significant.
 
-Regards,
-	Juan Antonio
+The behaviour you get may be due, for instance, to the fact that the
+processor goes into some sleep mode when idle and to a wake-up
+latency; if you run some load, there is no wake-up latency. It is hard
+to say anything. In order to investigate, I would instrument the
+kernel to trace the irq masking sections.
+
+
+-- 
+                                               Gilles Chanteperdrix
 
