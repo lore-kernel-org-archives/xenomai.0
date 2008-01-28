@@ -1,10 +1,9 @@
-Message-ID: <d3f72a390801280134l6073203fr3cee621b34321301@domain.hid>
-Date: Mon, 28 Jan 2008 10:34:55 +0100
-From: "axel axel" <softaxel@domain.hid>
+Message-ID: <479DAA2E.7000307@domain.hid>
+Date: Mon, 28 Jan 2008 11:10:54 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_11359_23708986.1201512895786"
-Subject: [Xenomai-core] RESCHEDULE TASK
+Content-Type: multipart/mixed; boundary="------------010206060704090303010400"
+Subject: [Xenomai-core] [PATCH] consistent xeno-config output
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,41 +13,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Xenomai-core@domain.hid
 
-------=_Part_11359_23708986.1201512895786
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
+--------------010206060704090303010400
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-Hi,
+I received some complaint that xeno-config [--verbose] does not match
+xeno-config --posix-ldflags. Here is a fix.
 
+Jan
 
-after the previouses answers about not sleeping tasks ( mailing list thread
-"task scheduling e priority"* *) i ask you how to reschedule a not sleeping
-task.
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
-I explain better:
-
-if my xenomai primary task work for example for 7 seconds without sleep the
-other task and linux don't work.
-
-How can i run the task for a estabilished time ( for example 10 ms ) and
-start schedule for other task without insert in the task sleep or other
-instruction ?
-
-thanks a lot
-
-Roberto Bielli
-
-------=_Part_11359_23708986.1201512895786
-Content-Type: text/html; charset=ISO-8859-1
+--------------010206060704090303010400
+Content-Type: text/x-patch;
+ name="consistify-xeno-config-output.patch"
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Content-Disposition: inline;
+ filename="consistify-xeno-config-output.patch"
 
-Hi,<br><br><br>after the previouses answers about not sleeping tasks ( mailing list thread &quot;task scheduling e priority&quot;<span style="font-size: larger;"><b> </b></span>) i ask you how to reschedule a not sleeping task.<br>
-<br>I explain better:<br><br>if my xenomai primary task work for example for 7 seconds without sleep the other task and linux don&#39;t work.<br>
-<br>How can i run the task for a estabilished time ( for example 10 ms ) and start schedule for other task without insert in the task sleep or other&nbsp; instruction ?<br><br>thanks a lot <br><br>Roberto Bielli<br><br><br>
+Index: xenomai/scripts/xeno-config.in
+===================================================================
+--- xenomai/scripts/xeno-config.in	(Revision 3451)
++++ xenomai/scripts/xeno-config.in	(Arbeitskopie)
+@@ -23,6 +23,23 @@ XENO_LIBRARY_DIR="${staging}${libdir}"
+ 
+ unset prefix exec_prefix libdir datadir datarootdir pkgdatadir includedir
+ 
++posix_ldflags ()
++{
++    if test \! -r $XENO_POSIX_WRAPPERS; then
++        echo "POSIX support is not available" >&2
++        exit 1
++    fi
++    if test "$XENO_POSIX_FAST_WRAPPING" = "yes"; then
++        echo -n "-Wl,@$XENO_POSIX_WRAPPERS $XENO_POSIX_LDFLAGS"
++    else
++        wrappers=`cat $XENO_POSIX_WRAPPERS | \
++            while read wrap_option symbol; do \
++                echo -n "-Wl,$wrap_option,$symbol " ; \
++            done`
++        echo -n "$wrappers $XENO_POSIX_LDFLAGS"
++    fi
++}
++
+ usage ()
+ {
+ cat <<EOF
+@@ -46,15 +63,15 @@ EOF
+ verbose ()
+ {
+     echo xeno-config --verbose
+-    echo "   " --version="\"${XENO_VERSION}\""
+-    echo "   " --cc="\"$XENO_CC\""
+-    echo "   " --arch="\"$XENO_TARGET_ARCH\""
+-    echo "   " --prefix="\"$XENO_PREFIX\""
+-    echo "   " --xeno-cflags="\"$XENO_BASE_CFLAGS\""
+-    echo "   " --xeno-ldflags="\"$XENO_BASE_LDFLAGS\""
+-    echo "   " --posix-cflags="\"$XENO_POSIX_CFLAGS\""
+-    echo "   " --posix-ldflags="\"$XENO_POSIX_LDFLAGS\""
+-    echo "   " --library-dir="\"$XENO_LIBRARY_DIR\""
++    echo "        --version=\"${XENO_VERSION}\""
++    echo "        --cc=\"$XENO_CC\""
++    echo "        --arch=\"$XENO_TARGET_ARCH\""
++    echo "        --prefix=\"$XENO_PREFIX\""
++    echo "        --xeno-cflags=\"$XENO_BASE_CFLAGS\""
++    echo "        --xeno-ldflags=\"$XENO_BASE_LDFLAGS\""
++    echo "        --posix-cflags=\"$XENO_POSIX_CFLAGS\""
++    echo "        --posix-ldflags=\"`posix_ldflags`\""
++    echo "        --library-dir=\"$XENO_LIBRARY_DIR\""
+ }
+ 
+ if test $# -eq 0; then
+@@ -90,19 +107,7 @@ while test $# -gt 0; do
+             echo $XENO_POSIX_CFLAGS
+             ;;
+         --posix-ldflags)
+-            if test \! -r $XENO_POSIX_WRAPPERS; then
+-               echo "POSIX support is not available" >&2
+-               exit 1
+-            fi
+-            if test "$XENO_POSIX_FAST_WRAPPING" = "yes"; then
+-                echo "-Wl,@$XENO_POSIX_WRAPPERS $XENO_POSIX_LDFLAGS"
+-            else
+-                wrappers=`cat $XENO_POSIX_WRAPPERS | \
+-                    while read wrap_option symbol; do \
+-                        echo -n "-Wl,$wrap_option,$symbol " ; \
+-                    done`
+-                echo "$wrappers $XENO_POSIX_LDFLAGS"
+-            fi
++            echo `posix_ldflags`
+             ;;
+         --lib*-dir|--libdir|--user-libdir)
+             echo $XENO_LIBRARY_DIR
 
-------=_Part_11359_23708986.1201512895786--
+--------------010206060704090303010400--
 
