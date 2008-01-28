@@ -1,15 +1,10 @@
-Message-ID: <479D1519.5020102@domain.hid>
-Date: Mon, 28 Jan 2008 00:34:49 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <d3f72a390801280134l6073203fr3cee621b34321301@domain.hid>
+Date: Mon, 28 Jan 2008 10:34:55 +0100
+From: "axel axel" <softaxel@domain.hid>
 MIME-Version: 1.0
-References: <2ff1a98a0801020231k19be7d89k1a6f04b7d497cc34@domain.hid>	<18315.63245.160672.547658@domain.hid>	<18326.21480.397736.413726@domain.hid>	<47977DE1.8060207@domain.hid>	<2ff1a98a0801230953m2a67e614s6c921b3b6ec77c3c@domain.hid>	<479788A5.80407@domain.hid>	<2ff1a98a0801240218y1f09ae38w93e244a47218900@domain.hid>	<479B7938.2000206@domain.hid>	<18331.32587.725949.407764@domain.hid>	<479BCE17.600@domain.hid>
-	<18333.3277.36164.63798@domain.hid>
-In-Reply-To: <18333.3277.36164.63798@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] High latencies on ARM.
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_11359_23708986.1201512895786"
+Subject: [Xenomai-core] RESCHEDULE TASK
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,78 +14,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->  > Gilles Chanteperdrix wrote:
->  > > Philippe Gerum wrote:
->  > >  > Gilles Chanteperdrix wrote:
->  > >  > > On Jan 23, 2008 7:34 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->  > >  > >> Gilles Chanteperdrix wrote:
->  > >  > >>> On Jan 23, 2008 6:48 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->  > >  > >>>> Gilles Chanteperdrix wrote:
->  > >  > >>>>> Gilles Chanteperdrix wrote:
->  > >  > >>>>>  > Please find attached a patch implementing these ideas. This adds some
->  > >  > >>>>>  > clutter, which I would be happy to reduce. Better ideas are welcome.
->  > >  > >>>>>  >
->  > >  > >>>>>
->  > >  > >>>>> Ok. New version of the patch, this time split in two parts, should
->  > >  > >>>>> hopefully make it more readable.
->  > >  > >>>>>
->  > >  > >>>> Ack. I'd suggest the following:
->  > >  > >>>>
->  > >  > >>>> - let's have a rate limiter when walking the zombie queue in
->  > >  > >>>> __xnpod_finalize_zombies. We hold the superlock here, and what the patch
->  > >  > >>>> also introduces is the potential for flushing more than a single TCB at
->  > >  > >>>> a time, which might not always be a cheap operation, depending on which
->  > >  > >>>> cra^H^Hode runs on behalf of the deletion hooks for instance. We may
->  > >  > >>>> take for granted that no sane code would continuously create more
->  > >  > >>>> threads than we would be able to finalize in a given time frame anyway.
->  > >  > >>> The maximum number of zombies in the queue is
->  > >  > >>> 1 + XNARCH_WANT_UNLOCKED_CTXSW, since a zombie is added to the queue
->  > >  > >>> only if a deleted thread is xnpod_current_thread(), or if the XNLOCKSW
->  > >  > >>> bit is armed.
->  > >  > >> Ack. rate_limit = 1? I'm really reluctant to increase the WCET here,
->  > >  > >> thread deletion isn't cheap already.
->  > >  > > 
->  > >  > > I am not sure that holding the nklock while we run the thread deletion
->  > >  > > hooks is really needed.
->  > >  > > 
->  > >  > 
->  > >  > Deletion hooks may currently rely on the following assumptions when running:
->  > >  > 
->  > >  > - rescheduling is locked
->  > >  > - nklock is held, interrupts are off
->  > >  > - they run on behalf of the deletor context
->  > >  > 
->  > >  > The self-delete refactoring currently kills #3 because we now run the
->  > >  > hooks after the context switch, and would also kill #2 if we did not
->  > >  > hold the nklock (btw, enabling the nucleus debug while running with this
->  > >  > patch should raise an abort, from xnshadow_unmap, due to the second
->  > >  > assertion).
->  > >  > 
->  > 
->  > Forget about this; shadows are always exited in secondary mode, so
->  > that's fine, i.e. xnpod_current_thread() != deleted thread, hence we
->  > should always run the deletion hooks immediately on behalf of the caller.
-> 
-> What happens if the watchdog kills a user-space thread which is
-> currently running in primary mode ? If I read xnpod_delete_thread
-> correctly, the SIGKILL signal is sent to the target thread only if it is
-> not the current thread.
-> 
+------=_Part_11359_23708986.1201512895786
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-I'd say: zombie queuing from xnpod_delete, then shadow unmap on behalf
-of the next switched context which would trigger the lo-stage unmap
-request -> wake_up_process against the Linux side and asbestos underwear
-provided by the relax epilogue, which would eventually reap the guy
-through do_exit(). As a matter of fact, we would still have the
-unmap-over-non-current issue, that's true.
+Hi,
 
-Ok, could we try coding a damn Tetris instead? Pong, maybe? Gasp...
 
--- 
-Philippe.
+after the previouses answers about not sleeping tasks ( mailing list thread
+"task scheduling e priority"* *) i ask you how to reschedule a not sleeping
+task.
+
+I explain better:
+
+if my xenomai primary task work for example for 7 seconds without sleep the
+other task and linux don't work.
+
+How can i run the task for a estabilished time ( for example 10 ms ) and
+start schedule for other task without insert in the task sleep or other
+instruction ?
+
+thanks a lot
+
+Roberto Bielli
+
+------=_Part_11359_23708986.1201512895786
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hi,<br><br><br>after the previouses answers about not sleeping tasks ( mailing list thread &quot;task scheduling e priority&quot;<span style="font-size: larger;"><b> </b></span>) i ask you how to reschedule a not sleeping task.<br>
+<br>I explain better:<br><br>if my xenomai primary task work for example for 7 seconds without sleep the other task and linux don&#39;t work.<br>
+<br>How can i run the task for a estabilished time ( for example 10 ms ) and start schedule for other task without insert in the task sleep or other&nbsp; instruction ?<br><br>thanks a lot <br><br>Roberto Bielli<br><br><br>
+
+------=_Part_11359_23708986.1201512895786--
 
