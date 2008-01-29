@@ -1,166 +1,98 @@
-Message-ID: <479A38CF.6070209@domain.hid>
-Date: Fri, 25 Jan 2008 20:30:23 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <2ff1a98a0801290919h5de50ad0h3176968ebbc9af61@domain.hid>
+Date: Tue, 29 Jan 2008 18:19:27 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <20080129080922.GA6314@domain.hid>
 MIME-Version: 1.0
-References: <4e0b9cb00801240505y77d71956w994e312be382f91b@domain.hid>
-In-Reply-To: <4e0b9cb00801240505y77d71956w994e312be382f91b@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigAB7E50113EE2B2708B923576"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] Some beginner technical questions
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Remi Lefevre <rlefevre@domain.hid>
-Cc: xenomai@xenomai.org
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAB7E50113EE2B2708B923576
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <20080123065221.GB6573@domain.hid>
+	<2ff1a98a0801230204s15e4eefaifdd2c946c44549df@domain.hid>
+	<2ff1a98a0801230515i77f8c22bk866c4cd592a3a9b8@domain.hid>
+	<20080124094150.GA7503@domain.hid>
+	<2ff1a98a0801240202g83ca10esd2f7fc928946e3c1@domain.hid>
+	<20080125100404.GA8833@domain.hid>
+	<2ff1a98a0801250900if03294epded12290544d5480@domain.hid>
+	<20080128085123.GA7297@domain.hid>
+	<2ff1a98a0801280519m62768928x5e5fa40123abe9cd@domain.hid>
+	<20080129080922.GA6314@domain.hid>
+Subject: Re: [Xenomai-help] AT91SAM9260 latency
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Juan Antonio Garcia Redondo <juan-antonio.garcia@domain.hid>
+Cc: jagarcia@domain.hid, xenomai@xenomai.org
 
-Remi Lefevre wrote:
-> Hi, I try to really understand the Xenomai design & behavior and have
-> a few technical questions for which I can't find exact answers on
-> documentations or mailing list :
->=20
-> - What is the overhead of the Adeos/I-Pipe layer on non RT Linux tasks
-> (including linux kernel) ?
-> This surely depends on interrupts number, but perhaps some results on
-> a particular platform exist.
+On Jan 29, 2008 9:09 AM, Juan Antonio Garcia Redondo
+<juan-antonio.garcia@domain.hid> wrote:
+>
+> On 28/01/08 14:19, Gilles Chanteperdrix wrote:
+> > > >
+> > > >
+> > > > > > No mystery: hitting a key on a telnet session causes an interrupt
+> > > > > > masking section of 110us, you see it as the maximum if you never
+> > > > > > observed longer masking sections, but it is not the maximum if you
+> > > > > > observed longer masking sections.
+> > > > >
+> > > > > OK, but why the masking section on linux side affects to xenomai side ?
+> > > > > Another thing I don't understand is why when the system has load (above
+> > > > > I'm talking about calibrator but the same occurs with dd if=/dev/zero
+> > > > > of=/dev/null), the effect seems to dissapear.
+> > > >
+> > > > It is probably not a masking section on linux side but rather a
+> > > > masking section on I-pipe side. Anyway, the effect does not disappear:
+> > > > it means that the cache effects cause larger latencies than the
+> > > > ethernet interrupt, but maybe I did not understand what you explained.
+> > > > The results you obtain with no load are simply irrelevant.
+> > >
+> > > I'll try to explain it better:
+> > >
+> > > o Without load I run ./latency -t0 -p500.
+> > > RTD|      33.182|      53.479|      67.976|       0|      31.250| 77.319
+> > > RTD|      43.170|      53.479|      67.654|       0|      31.250| 77.319
+> > > RTD|      41.881|      53.479|      67.332|       0|      31.250| 77.319
+> > > RTT|  00:02:07  (periodic user-mode task, 500 us period, priority 99)
+> > >
+> > > o Each time I press a key (over a telnet session) I can see the lat_max field increase on 40 to 50 us aprox.
+> > > RTD|      33.505|      53.479|      71.842|       0|      26.739| 77.319
+> > > RTD|      40.592|      62.177|     123.067|       0|      26.739| 123.067
+> > >                                    -------
+> > >                                       \_________: Key pressed
+> > > RTD|      50.579|      53.479|      73.775|       0|      26.739| 123.067
+> >
+> > This is where you are wrong:
+> > - first, let me repeat it: test made without load are irrelevant;
+> I can't agree with you. When we stress a system with load is, as far as
+> I know, because usually, the large latencies don't appear on a quiet
+> system. Here we have a case where a large latency (the lat_worst number
+> I've gotten after more than 7 hours with the system fully loaded is even
+> less than this) appears on a quiet system and directly related to an
+> external event.
+>
+> > - second, an event has no relative effect on max latency, its effect
+> > is absolute: pressing a key over a telnet session causes, for unknown
+> > reason,  a masking section of around 130us, which happens to also be
+> > the worst case latency that we measured properly with a loaded system.
+> I pointed out the lat_max field because, if you keep the latency test
+> running and hit a key on a telnet session, you can easily see how the
+> lat_max increase each time you hit the key, while the lat_worst increase
+> depends on the former history.
+>
+> >
+> > Now, if you want to know why you get such a masking section, you are
+> > free to investigate.
+>
+> I'll try to do it.
 
-It also depends on the architecture and CPU speed. I can't provide
-up-to-date numbers, and the best for you is anyway to evaluate
-specifically your desired platform. This could mean running typical
-Linux benchmark (eg. lmbench) on kernels with and without I-pipe +
-Xenomai. You are always welcome to publish results and discuss them with =
-us.
+Does the network driver use the AT91 PDC ? If yes, and if it is
+possible to disable it, could you try disabling it ?
 
->=20
-> - When using RTnet, I understand that non RT Linux tasks uses a
-> virtual network device linked to the RTnet one, so what performance
-> impact does this have on non RT network bandwidth ?
-
-That depends. First of all, you only have to use the the virtual NICs
-when you have to share the RT Ethernet link with non-RT traffic.
-Otherwise you could simply use standard networking without penalties. If
-VNICs are to be used, the performance Linux sees heavily depends on the
-RTmac discipline and its configuration (e.g. the TDMA slot layout). Feel
-free to continue on this topic on the rtnet-user list.
-
->=20
-> I saw on some introduction slides that an arinc 653 skin would be possi=
-ble.
-> Emulating the arinc 653 is certainly possible, but if a real arinc 653
-> system is considered, this raises a few technical issues.
-> - Is the nucleus memory space protected from the Linux kernel (at
-> least in primary mode) ? If not, would this be possible ?
-
-Nucleus, skins, and Linux kernel share the same memory space and run at
-the same privilege level. This enables very advanced Linux integration
-of RT threads and significantly reduces the performance impact on Linux
-(and/or the need to add emulation/paravirtualisation code).
-
-Before thinking about any design to add such memory protection domains
-for Linux and I-pipe/Xenomai, it should be clarified what level of
-protection is required. Full protection means not just establishing
-separate memory domain, but also pushing Linux out of the supervisor
-mode. And that means a lot of work - to provide all the trusted hardware
-drivers in the context of some hypervisor, because Linux is untrusted
-and unprivileged then.
-
-Some less drastic approach might be to isolate the Nucleus from Linux,
-but to trust Linux (and it's drivers) to
- a) not install invalid page tables and
- b) not program DMA-capable hardware with invalid addresses.
-
-But I can't comment on if this approach is acceptable for whatsoever
-"critical" ARINC 653 application (and its potential certification).
-
-> - It seems from what I understand that nucleus implements threads, but
-> not processes (like others RTOS), does this mean that they all share
-> the same memory space ?
-
-If you write your applications for the Linux kernel space (not
-recommended!), then they share the memory space with everything else in
-the kernel. But when you write user space applications, Xenomai reuses
-the process abstraction and protection Linux already provides. So,
-process are protected from each other, even if they include Xenomai RT
-threads.
-
-> - Can the nucleus kernel still run if the Linux kernel crashes (which
-> happens in ring 1 mode on x86 if I'm correct) ?
-
-[Linux runs at ring 0 - don't trust old written concepts of Adeos.]
-There are certain fault scenarios of the Linux kernel which will not
-impact the nucleus - but that should be carefully analyzed for the
-particular system (as you do with _every_ critical system anyway).
-
-> - Or more generally, what Linux kernel services are used by nucleus
-> (it seems at least the memory allocation ones) ?
-
-What is a "Linux kernel service" for you? Some potentially blocking or
-failing kernel subsystem or also some inline functions from Linux
-headers etc.? Bugs aside, the former is definitely not the case while
-the later is unavoidable for certain shared services (which are
-generally checked on kernel updates and/or with the help of kernel
-instrumentations).
-
-> - This is linked to the previous questions, but if we wanted to remove
-> everything from the Linux kernel that is not used by Xenomai, what
-> would be necessary to keep ?
-
-For what level of Xenomai services? Something like a stand-alone nucleus
-+ in-kernel applications? In any case, Xenomai is built on the
-environment that Linux provides, with all the platform and peripheral
-hardware initialized and managed later on. So it heavily depends on what
-you want for such a scenario, and then you will have to provide it on
-your own (look at what Xen does these days: reimplementing wide parts of
-the tricky board setup that Linux normally provides - with all its quirks=
-).
-
-> - At last, is there a way to guaranty a worst case latency on Xenomai
-> (even a high one) supposing we know every hardware behavior (hum...) ?
-
-The Xenomai design is, theoretically, prepared for a comprehensive WCET
-analysis. Going through the code paths that a certain application
-depends on, you shall not be able to find dependencies on the timing
-behavior of Linux, its lock-nestings, memory consumption, I/O load, etc.
-However, deriving a reliable WCET model from this is still a challenge,
-and surely not a small one. We also do not have "building blocks" for
-such a model that one could use for a concrete configuration - because
-no one yet needed them and/or was willing to spend the required effort.
-
-> I'm sorry if these questions are stupid or have been answered
-> previously, guiding me to the references would certainly greatly help
-> me in this case.
-
-In no way are they stupid. And I do not recall anyone asking this in
-such depth before. You are welcome!
-
-Jan
-
-
---------------enigAB7E50113EE2B2708B923576
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.4-svn0 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFHmjjYniDOoMHTA+kRAqB/AJ95bJcjD570ZU2iKt9TMsDnAiDaLgCfZizP
-RTlbz9YaHoSlwzJUeDx0WCE=
-=hn4p
------END PGP SIGNATURE-----
-
---------------enigAB7E50113EE2B2708B923576--
+-- 
+                                               Gilles Chanteperdrix
 
