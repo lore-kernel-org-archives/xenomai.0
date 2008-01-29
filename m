@@ -1,9 +1,14 @@
-Message-ID: <479F2825.4000405@domain.hid>
-Date: Tue, 29 Jan 2008 14:20:37 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <479F2D33.2050209@domain.hid>
+Date: Tue, 29 Jan 2008 14:42:11 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------090101000209020405090202"
-Subject: [Xenomai-core] [PATCH] bug in xnintr_irq_proc()
+References: <479F2825.4000405@domain.hid>
+In-Reply-To: <479F2825.4000405@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] bug in xnintr_irq_proc()
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -13,50 +18,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
---------------090101000209020405090202
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Wolfgang Grandegger wrote:
+> Hello,
+>=20
+> attached is a fix for a nice bug in xnintr_irq_proc() of Xenomai v2.3.x.
 
-Hello,
+Mmf... Thanks.
 
-attached is a fix for a nice bug in xnintr_irq_proc() of Xenomai v2.3.x.
-Check for tabs. I have not checked if it's present in recent versions as
-well.
+> Check for tabs. I have not checked if it's present in recent versions as
+> well.
 
-Wolfgang.
+Even if a bit overkill, I would even go for something like
+p +=3D sprintf(p, "...
+just to be sure we won't get hit again.
 
---------------090101000209020405090202
-Content-Type: text/x-patch;
- name="xenomai-2.3.x-irq-proc.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="xenomai-2.3.x-irq-proc.patch"
+(or even snprintf() for the parano=EFds among us).
 
-Index: ksrc/nucleus/intr.c
-===================================================================
---- ksrc/nucleus/intr.c	(revision 3441)
-+++ ksrc/nucleus/intr.c	(working copy)
-@@ -836,7 +836,7 @@ int xnintr_irq_proc(unsigned int irq, ch
- #if defined(CONFIG_XENO_OPT_SHIRQ_LEVEL) || defined(CONFIG_XENO_OPT_SHIRQ_EDGE)
- 	intr = xnirqs[irq].handlers;
- 	if (intr) {
--		strcpy(p, "	   "); p += 8;
-+		strcpy(p, "	   "); p += 4;
- 
- 		do {
- 			*p = ' '; p += 1;
-@@ -848,7 +848,7 @@ int xnintr_irq_proc(unsigned int irq, ch
- #else /* !CONFIG_XENO_OPT_SHIRQ_LEVEL && !CONFIG_XENO_OPT_SHIRQ_EDGE */
- 	intr = rthal_irq_cookie(&rthal_domain, irq);
- 	if (intr) {
--		strcpy(p, "	    "); p += 9;
-+		strcpy(p, "	    "); p += 5;
- 		strcpy(p, intr->name); p += strlen(intr->name);
- 	}
- #endif /* CONFIG_XENO_OPT_SHIRQ_LEVEL || CONFIG_XENO_OPT_SHIRQ_EDGE */
+>=20
+> Wolfgang.
+>=20
+>=20
+> ------------------------------------------------------------------------
+>=20
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
---------------090101000209020405090202--
+
+--=20
+Philippe.
 
