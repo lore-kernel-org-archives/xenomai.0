@@ -1,22 +1,19 @@
-Message-ID: <2ff1a98a0801290035l1eafd08ai90124a1561dbdf4d@domain.hid>
-Date: Tue, 29 Jan 2008 09:35:42 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <20080129080922.GA6314@domain.hid>
+Message-ID: <8b3b30860801290115m197afc80p3ee98cb42bea334f@domain.hid>
+Date: Tue, 29 Jan 2008 10:15:30 +0100
+From: "Racconico Lambrati" <racconico.lambrati@domain.hid>
+In-Reply-To: <2ff1a98a0801230610t366862dbmcb36ff9fb50604c4@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <20080123065221.GB6573@domain.hid>
-	<2ff1a98a0801230204s15e4eefaifdd2c946c44549df@domain.hid>
-	<2ff1a98a0801230515i77f8c22bk866c4cd592a3a9b8@domain.hid>
-	<20080124094150.GA7503@domain.hid>
-	<2ff1a98a0801240202g83ca10esd2f7fc928946e3c1@domain.hid>
-	<20080125100404.GA8833@domain.hid>
-	<2ff1a98a0801250900if03294epded12290544d5480@domain.hid>
-	<20080128085123.GA7297@domain.hid>
-	<2ff1a98a0801280519m62768928x5e5fa40123abe9cd@domain.hid>
-	<20080129080922.GA6314@domain.hid>
-Subject: Re: [Xenomai-help] AT91SAM9260 latency
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_9921_12301373.1201598130361"
+References: <8b3b30860712271756n526daf67yc8e5be203ae5421d@domain.hid>
+	<2ff1a98a0712280630t7d524928r2f66355fd0731d67@domain.hid>
+	<8b3b30860712301217p6ee4e724lebd1b1c2740d2ebf@domain.hid>
+	<2ff1a98a0712310616n58d0a63en4c36e75e5ed2ab53@domain.hid>
+	<8b3b30860712310658n4729fc2bo300f01a59b333b06@domain.hid>
+	<2ff1a98a0712310704s65b6d7fbv106c7a4bd17d4677@domain.hid>
+	<8b3b30860712310723y39bae134o8bcefbd16f582541@domain.hid>
+	<2ff1a98a0801230610t366862dbmcb36ff9fb50604c4@domain.hid>
+Subject: Re: [Xenomai-help] update from fusion 0.9.1 to xenomai 2.4.0
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,54 +23,122 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Juan Antonio Garcia Redondo <juan-antonio.garcia@domain.hid>
-Cc: jagarcia@domain.hid, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On Jan 29, 2008 9:09 AM, Juan Antonio Garcia Redondo
-<juan-antonio.garcia@domain.hid> wrote:
+------=_Part_9921_12301373.1201598130361
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+2008/1/23, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
 >
-> On 28/01/08 14:19, Gilles Chanteperdrix wrote:
-> > > >
-> > > >
-> > > > > > No mystery: hitting a key on a telnet session causes an interrupt
-> > > > > > masking section of 110us, you see it as the maximum if you never
-> > > > > > observed longer masking sections, but it is not the maximum if you
-> > > > > > observed longer masking sections.
-> > > > >
-> > > > > OK, but why the masking section on linux side affects to xenomai side ?
-> > > > > Another thing I don't understand is why when the system has load (above
-> > > > > I'm talking about calibrator but the same occurs with dd if=/dev/zero
-> > > > > of=/dev/null), the effect seems to dissapear.
-> > > >
-> > > > It is probably not a masking section on linux side but rather a
-> > > > masking section on I-pipe side. Anyway, the effect does not disappear:
-> > > > it means that the cache effects cause larger latencies than the
-> > > > ethernet interrupt, but maybe I did not understand what you explained.
-> > > > The results you obtain with no load are simply irrelevant.
-> > >
-> > > I'll try to explain it better:
-> > >
-> > > o Without load I run ./latency -t0 -p500.
-> > > RTD|      33.182|      53.479|      67.976|       0|      31.250| 77.319
-> > > RTD|      43.170|      53.479|      67.654|       0|      31.250| 77.319
-> > > RTD|      41.881|      53.479|      67.332|       0|      31.250| 77.319
-> > > RTT|  00:02:07  (periodic user-mode task, 500 us period, priority 99)
-> > >
-> > > o Each time I press a key (over a telnet session) I can see the lat_max field increase on 40 to 50 us aprox.
-> > > RTD|      33.505|      53.479|      71.842|       0|      26.739| 77.319
-> > > RTD|      40.592|      62.177|     123.067|       0|      26.739| 123.067
-> > >                                    -------
-> > >                                       \_________: Key pressed
-> > > RTD|      50.579|      53.479|      73.775|       0|      26.739| 123.067
+> On Dec 31, 2007 4:23 PM, Racconico Lambrati
+> <racconico.lambrati@domain.hid> wrote:
 > >
-> > This is where you are wrong:
-> > - first, let me repeat it: test made without load are irrelevant;
-> I can't agree with you. When we stress a system with load is, as far as
-> I know, because usually, the large latencies don't appear on a quiet
-> system.
+> >
+> >
+> >
+> > 2007/12/31, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+> > > On Dec 31, 2007 3:58 PM, Racconico Lambrati
+> > > <racconico.lambrati@domain.hid> wrote:
+> > > >
+> > > >
+> > > > 2007/12/31, Gilles Chanteperdrix < gilles.chanteperdrix@xenomai.org>:
+> > > > > On Dec 30, 2007 9:17 PM, Racconico Lambrati
+> > > > > <racconico.lambrati@domain.hid> wrote:
+> > > > > > I've done some works, and searched in xenomai's native function.
+> > > > > >
+> > > > > > To replace SysClkConnect I've created a periodic task with
+> > priority=90
+> > > > that
+> > > > > > wait 5ms.
+> > > > > > The last operation in a task's cycle is semGive(gServiceSem);
+> > > > > > A second task, non periodic, have as first operation of the
+> cycle
+> > > > > > semTake(gServiceSem,WAIT_FOREVER);
+> > > > > > the second task has priority=50
+> > > > > >
+> > > > > > when the total time for one cycle of task1 and task2 everything
+> > seems
+> > > > run
+> > > > > > properly , when task2 take more then 5ms for do it's cycle
+> > > > > > rt_task_wait_period(NULL) return me 146 and not 0, and the time
+> for
+> > > > task1 is
+> > > > > > not respected.
+> > > > > >
+> > > > > > This sound strange for me, why the scheduler don't switch the
+> task
+> > in
+> > > > > > execution?
+> > > > >
+> > > > > This looks strange, could you try and reduce your application to a
+> > > > > simple example which exhibits the same behaviour ? Maybe you lock
+> the
+> > > > > scheduler with taskLock/taskUnlock ?
+> > > >
+> > > > I use the rt_task_set_mode with T_LOCK option in critical section,
+> could
+> > it
+> > > > be the cause of the problem?
+> > >
+> > > Yes, the aim of T_LOCK is precisely to prevent the scheduler from
+> > > switching to another task as long as the bit is armed.
+> >
+> > But I reset the mask after the critical section...  I'll try
+> without  this
+> > lock and report the result
+>
+> I recently noticed something strange in xnpod_schedule which might
+> explain this bug: when the T_LOCK bit is set, xnpod_schedule clears
+> the rescheduling bit even though it does not reschedule. So, could you
+> try, in xnpod_schedule, to replace:
+>
+> if (xnthread_test_state(runthread, XNLOCK))
+>         goto signal_unlock_and_exit;
+>
+> with:
+>
+> if (xnthread_test_state(runthread, XNLOCK)) {
+>         xnsched_set_resched(sched);
+>         goto signal_unlock_and_exit;
+> }
+>
+> --
+>                                                Gilles Chanteperdrix
+>
 
-Wrong: they are less likely to appear, but may appear as well.
+I make this change but nothing changed...
 
--- 
-                                               Gilles Chanteperdrix
+The deadlock it seem not connected to rt_task_set_mode because if I remove
+it the deadlock is always present.
+
+when the cycle for(i=0;i<=1000;i++)    appo*=1.01;
+do more then 100000 cycle came the deadlock...
+
+It's seems that is related to rt_task_wait_period
+
+------=_Part_9921_12301373.1201598130361
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<br><br><div><span class="gmail_quote">2008/1/23, Gilles Chanteperdrix &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt;:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+On Dec 31, 2007 4:23 PM, Racconico Lambrati<br>&lt;<a href="mailto:racconico.lambrati@domain.hid">racconico.lambrati@domain.hid</a>&gt; wrote:<br>&gt;<br>&gt;<br>&gt;<br>&gt;<br>&gt; 2007/12/31, Gilles Chanteperdrix &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt;:<br>
+&gt; &gt; On Dec 31, 2007 3:58 PM, Racconico Lambrati<br>&gt; &gt; &lt;<a href="mailto:racconico.lambrati@domain.hid">racconico.lambrati@domain.hid</a>&gt; wrote:<br>&gt; &gt; &gt;<br>&gt; &gt; &gt;<br>&gt; &gt; &gt; 2007/12/31, Gilles Chanteperdrix &lt; <a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt;:<br>
+&gt; &gt; &gt; &gt; On Dec 30, 2007 9:17 PM, Racconico Lambrati<br>&gt; &gt; &gt; &gt; &lt;<a href="mailto:racconico.lambrati@domain.hid">racconico.lambrati@domain.hid</a>&gt; wrote:<br>&gt; &gt; &gt; &gt; &gt; I&#39;ve done some works, and searched in xenomai&#39;s native function.<br>
+&gt; &gt; &gt; &gt; &gt;<br>&gt; &gt; &gt; &gt; &gt; To replace SysClkConnect I&#39;ve created a periodic task with<br>&gt; priority=90<br>&gt; &gt; &gt; that<br>&gt; &gt; &gt; &gt; &gt; wait 5ms.<br>&gt; &gt; &gt; &gt; &gt; The last operation in a task&#39;s cycle is semGive(gServiceSem);<br>
+&gt; &gt; &gt; &gt; &gt; A second task, non periodic, have as first operation of the cycle<br>&gt; &gt; &gt; &gt; &gt; semTake(gServiceSem,WAIT_FOREVER);<br>&gt; &gt; &gt; &gt; &gt; the second task has priority=50<br>&gt; &gt; &gt; &gt; &gt;<br>
+&gt; &gt; &gt; &gt; &gt; when the total time for one cycle of task1 and task2 everything<br>&gt; seems<br>&gt; &gt; &gt; run<br>&gt; &gt; &gt; &gt; &gt; properly , when task2 take more then 5ms for do it&#39;s cycle<br>&gt; &gt; &gt; &gt; &gt; rt_task_wait_period(NULL) return me 146 and not 0, and the time for<br>
+&gt; &gt; &gt; task1 is<br>&gt; &gt; &gt; &gt; &gt; not respected.<br>&gt; &gt; &gt; &gt; &gt;<br>&gt; &gt; &gt; &gt; &gt; This sound strange for me, why the scheduler don&#39;t switch the task<br>&gt; in<br>&gt; &gt; &gt; &gt; &gt; execution?<br>
+&gt; &gt; &gt; &gt;<br>&gt; &gt; &gt; &gt; This looks strange, could you try and reduce your application to a<br>&gt; &gt; &gt; &gt; simple example which exhibits the same behaviour ? Maybe you lock the<br>&gt; &gt; &gt; &gt; scheduler with taskLock/taskUnlock ?<br>
+&gt; &gt; &gt;<br>&gt; &gt; &gt; I use the rt_task_set_mode with T_LOCK option in critical section, could<br>&gt; it<br>&gt; &gt; &gt; be the cause of the problem?<br>&gt; &gt;<br>&gt; &gt; Yes, the aim of T_LOCK is precisely to prevent the scheduler from<br>
+&gt; &gt; switching to another task as long as the bit is armed.<br>&gt;<br>&gt; But I reset the mask after the critical section...&nbsp;&nbsp;I&#39;ll try without&nbsp;&nbsp;this<br>&gt; lock and report the result<br><br>I recently noticed something strange in xnpod_schedule which might<br>
+explain this bug: when the T_LOCK bit is set, xnpod_schedule clears<br>the rescheduling bit even though it does not reschedule. So, could you<br>try, in xnpod_schedule, to replace:<br><br>if (xnthread_test_state(runthread, XNLOCK))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;goto signal_unlock_and_exit;<br><br>with:<br><br>if (xnthread_test_state(runthread, XNLOCK)) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xnsched_set_resched(sched);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;goto signal_unlock_and_exit;<br>}<br><br>--<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Gilles Chanteperdrix<br>
+</blockquote></div><br>I make this change but nothing changed...<br><br>The deadlock it seem not connected to rt_task_set_mode because if I remove it the deadlock is always present.<br><br>when the cycle for(i=0;i&lt;=1000;i++)&nbsp;&nbsp;&nbsp; appo*=1.01;<br>
+do more then 100000 cycle came the deadlock...<br><br>It&#39;s seems that is related to rt_task_wait_period<br>
+
+------=_Part_9921_12301373.1201598130361--
 
