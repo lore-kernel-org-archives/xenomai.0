@@ -1,76 +1,49 @@
-Message-ID: <4794703D.1000700@domain.hid>
-Date: Mon, 21 Jan 2008 11:13:17 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <2ff1a98a0801300740r513a119axc02896fe2c113f2@domain.hid>
+Date: Wed, 30 Jan 2008 16:40:21 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <OPEMLLGLICPDOMGAPGNBIEBACAAA.jpdublon@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [PATCH] refactor generic EXPORT_SYMBOLs
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+Content-Disposition: inline
+References: <OPEMLLGLICPDOMGAPGNBIEBACAAA.jpdublon@domain.hid>
+Subject: Re: [Xenomai-help] shared interrupt again and again
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: jpdublon <jpdublon@domain.hid>
+Cc: xenomai@xenomai.org
 
-The exported symbols below are not specific to x86 or any other arch,
-just their implementation is. So let's move them into generic ipipe.c.
+On Jan 30, 2008 4:25 PM, jpdublon <jpdublon@domain.hid> wrote:
+>
+> Hello,
+>
+> When I disable and shut down (in cleanup_module) an IRQ shared (with ata!)
+> in linux domain ,
+> it seems to also shut down (or disable?) the linux IRQ.
+>
+> Is there a special way to unregister shared IRQs?
 
-Jan
+Are you trying to share an IRQ between linux and Xenomai domain ? If
+yes, you should be aware that it will not work out of the box.
 
----
- arch/x86/kernel/ipipe.c |    9 ---------
- kernel/ipipe/core.c     |   10 ++++++++++
- 2 files changed, 10 insertions(+), 9 deletions(-)
+To get it to work, you will have to move the small part of code which
+reads and clears the device status from Linux domain interrupt handler
+to a Xenomai domain interrupt handler, where you will then need to
+post the Linux domain interrupt if the device has an interrupt
+pending. This is something that must be done for any driver which IRQ
+line needs to be shared with a Xenomai driver.
 
-Index: linux-2.6.24-rc8-xeno_64/arch/x86/kernel/ipipe.c
-===================================================================
---- linux-2.6.24-rc8-xeno_64.orig/arch/x86/kernel/ipipe.c
-+++ linux-2.6.24-rc8-xeno_64/arch/x86/kernel/ipipe.c
-@@ -975,10 +975,6 @@ int __ipipe_check_tickdev(const char *de
- }
-
- EXPORT_SYMBOL(__ipipe_tick_irq);
--EXPORT_SYMBOL(ipipe_critical_enter);
--EXPORT_SYMBOL(ipipe_critical_exit);
--EXPORT_SYMBOL(ipipe_trigger_irq);
--EXPORT_SYMBOL(ipipe_get_sysinfo);
-
- EXPORT_SYMBOL_GPL(irq_desc);
- struct task_struct *__switch_to(struct task_struct *prev_p,
-@@ -998,8 +994,3 @@ EXPORT_SYMBOL_GPL(cpu_gdt_descr);
- #if defined(CONFIG_SMP) || defined(CONFIG_DEBUG_SPINLOCK)
- EXPORT_SYMBOL(tasklist_lock);
- #endif /* CONFIG_SMP || CONFIG_DEBUG_SPINLOCK */
--
--#ifdef CONFIG_IPIPE_TRACE_MCOUNT
--void notrace mcount(void);
--EXPORT_SYMBOL(mcount);
--#endif /* CONFIG_IPIPE_TRACE_MCOUNT */
-Index: linux-2.6.24-rc8-xeno_64/kernel/ipipe/core.c
-===================================================================
---- linux-2.6.24-rc8-xeno_64.orig/kernel/ipipe/core.c
-+++ linux-2.6.24-rc8-xeno_64/kernel/ipipe/core.c
-@@ -1624,3 +1624,13 @@ EXPORT_SYMBOL(__ipipe_schedule_irq);
- EXPORT_SYMBOL(ipipe_request_tickdev);
- EXPORT_SYMBOL(ipipe_release_tickdev);
- #endif
-+
-+EXPORT_SYMBOL(ipipe_critical_enter);
-+EXPORT_SYMBOL(ipipe_critical_exit);
-+EXPORT_SYMBOL(ipipe_trigger_irq);
-+EXPORT_SYMBOL(ipipe_get_sysinfo);
-+
-+#ifdef CONFIG_IPIPE_TRACE_MCOUNT
-+void notrace mcount(void);
-+EXPORT_SYMBOL(mcount);
-+#endif /* CONFIG_IPIPE_TRACE_MCOUNT */
-
+If doing this is impossible for you (for instance because you intend
+to run your driver on multiple boxes with different driver/IRQ
+assignment), then you should read Xenomai FAQ.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+                                               Gilles Chanteperdrix
 
