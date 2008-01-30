@@ -1,11 +1,11 @@
 Content-class: urn:content-classes:message
 MIME-Version: 1.0
 Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C8634F.13342F7C"
-Date: Wed, 30 Jan 2008 07:47:44 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D376802@domain.hid>
+	boundary="----_=_NextPart_001_01C8634F.B4529984"
+Date: Wed, 30 Jan 2008 07:52:14 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D376803@domain.hid>
 From: "Steven Seeger" <sseeger@domain.hid>
-Subject: [Xenomai-help] rt_task_wait_period() & rt_task_set_periodic()
+Subject: [Xenomai-help] rt_task_set_periodic()
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,34 +20,24 @@ To: xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
 
-------_=_NextPart_001_01C8634F.13342F7C
+------_=_NextPart_001_01C8634F.B4529984
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-A while ago there was a discussion regarding rt_task_wait_period() and
-its overrun handling. I believe it was stated then that the function
-would always sleep until the next scheduled time on the timeline, but
-you could see your number of overruns if you wanted to pass a non-null
-parameter. After reading the documentation for its ETIMEDOUT return
-value, I wonder if this has changed? It seems like this will return
-immediately if the time was missed.=20
+I notice that I only get -EAGAIN (-11) when I call
+rt_task_set_periodic() when I have a kernel module loaded that calls
+rt_timer_set_mode(125000) to start a periodic timebase of 125us. If I
+don't do this, then it works as expected. Any idea?
 
 =20
-
-Also, I am getting a -EAGAIN when calling rt_task_set_periodic() and
-can't figure out why. Any idea?
-
-=20
-
-Thanks,
 
 Steven
 
 =20
 
 
-------_=_NextPart_001_01C8634F.13342F7C
+------_=_NextPart_001_01C8634F.B4529984
 Content-Type: text/html;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
@@ -101,36 +91,17 @@ div.Section1
 
 <p class=3DMsoNormal><font size=3D2 face=3DArial><span =
 style=3D'font-size:10.0pt;
-font-family:Arial'>A while ago there was a discussion regarding
-rt_task_wait_period() and its overrun handling. I believe it was stated =
-then
-that the function would always sleep until the next scheduled time on =
-the
-timeline, but you could see your number of overruns if you wanted to =
-pass a
-non-null parameter. After reading the documentation for its ETIMEDOUT =
-return
-value, I wonder if this has changed? It seems like this will return =
-immediately
-if the time was missed. <o:p></o:p></span></font></p>
+font-family:Arial'>I notice that I only get &#8211;EAGAIN (-11) when I =
+call
+rt_task_set_periodic() when I have a kernel module loaded that calls =
+rt_timer_set_mode(125000)
+to start a periodic timebase of 125us. If I don&#8217;t do this, then it =
+works
+as expected. Any idea?<o:p></o:p></span></font></p>
 
 <p class=3DMsoNormal><font size=3D2 face=3DArial><span =
 style=3D'font-size:10.0pt;
 font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Also, I am getting a &#8211;EAGAIN when calling
-rt_task_set_periodic() and can&#8217;t figure out why. Any =
-idea?<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Thanks,<o:p></o:p></span></font></p>
 
 <p class=3DMsoNormal><font size=3D2 face=3DArial><span =
 style=3D'font-size:10.0pt;
@@ -146,5 +117,5 @@ font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
 
 </html>
 
-------_=_NextPart_001_01C8634F.13342F7C--
+------_=_NextPart_001_01C8634F.B4529984--
 
