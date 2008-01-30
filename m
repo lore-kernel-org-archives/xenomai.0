@@ -1,51 +1,40 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <2ff1a98a0801300654r5d6a30c3vbc4a28e126e30ad1@domain.hid>
+Date: Wed, 30 Jan 2008 15:54:44 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D376803@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18338.46934.267322.303918@domain.hid>
-Date: Fri, 1 Feb 2008 07:08:22 +0100
-In-Reply-To: <18338.15747.218667.236566@domain.hid>
-References: <18338.15747.218667.236566@domain.hid>
-Subject: Re: [Xenomai-core] [Patch] bre^H^H^H^H reworking self deletion,
-	take 3.
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+References: <51CAD0CE1504444DBE77CBBE51A0135D376803@domain.hid>
+Subject: Re: [Xenomai-help] rt_task_set_periodic()
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Steven Seeger <sseeger@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
- > 
- > Hi Philippe,
- > 
- > here comes a new patch on the theme "reworking self deletion". This
- > time, execution of nkpod delete hooks is made before the context switch
- > whereas finalizing the thread takes place after the context
- > switch. Special care has been taken to call xnfreesync before we run the
- > hooks, in order to avoid freeing the thread control block before the
- > finalization, and xnheap_t::idleq was made a per-cpu thing for the same
- > purpose.
- > 
- > I made a simple watchdog test with all debugs enabled, and
- > xnshadow_unmap did not complain.
- > 
- > If you are OK with this patch, I will rebase the unlocked context switch
- > patch on it.
+On Jan 30, 2008 3:52 PM, Steven Seeger
+<sseeger@domain.hid> wrote:
+>
+>
+>
+>
+> I notice that I only get =96EAGAIN (-11) when I call rt_task_set_periodic=
+()
+> when I have a kernel module loaded that calls rt_timer_set_mode(125000) t=
+o
+> start a periodic timebase of 125us. If I don't do this, then it works as
+> expected. Any idea?
 
-Thinking a bit more about the unlocked context switch case: do we
-tolerate that an ISR may delete a thread that is not current ? Because
-if an ISR deleted a non current thread, we would not run the hooks over
-the deleted thread context, so we would be again in the case where
-xnshadow_unmap is not run by current. Besides, at first sight, it seems
-to simplify greatly the case of the unlocked context switch.
+Check the return value of rt_timer_set_mode.
 
--- 
-
-
-					    Gilles Chanteperdrix.
+--=20
+                                               Gilles Chanteperdrix
 
