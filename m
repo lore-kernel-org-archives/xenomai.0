@@ -1,12 +1,11 @@
-Message-ID: <47A06256.9020807@domain.hid>
-Date: Wed, 30 Jan 2008 12:41:10 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <2F8EE677D406514ABE53EF9C0934A666042ABE27@domain.hid>
-In-Reply-To: <2F8EE677D406514ABE53EF9C0934A666042ABE27@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Understanding rtdm_lock_get
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C8634F.13342F7C"
+Date: Wed, 30 Jan 2008 07:47:44 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D376802@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
+Subject: [Xenomai-help] rt_task_wait_period() & rt_task_set_periodic()
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,34 +15,136 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Laurent.POYART@fr.thalesgroup.com
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Laurent.POYART@fr.thalesgroup.com wrote:
-> Hi, 
-> 
-> Looking at the xenomai documentation, I saw that the rtdm_lock_get function
-> can be used in an interrupt service routine. 
-> This function seems to be base on spinlocks but in my mind, spinlock under
-> linux on the single CPU doesn't do anything (am I right?). Then I don't
-> really understand, how the lock mechanism works when there is a race
-> condition between the rtdm_lock_get in ISR and the rtdm_lock_get_irqsave
-> function used in an ioctl. Would it be possible to explain me briefly what
-> is doing rtdm_lock_get on the lock parameter in a single CPU context?
 
-On UP, rtdm_lock_get/put are void (that's in contrast to Linux where
-spin_lock also disables local preemption so that you can call it from
-interruptible contexts without risking deadlocks).
+This is a multi-part message in MIME format.
 
-> 
-> Complementary question:
-> does rtdm_lock_get_irqsave disables all interrupts?
+------_=_NextPart_001_01C8634F.13342F7C
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-Yes, it does (for the local CPU, of course).
+A while ago there was a discussion regarding rt_task_wait_period() and
+its overrun handling. I believe it was stated then that the function
+would always sleep until the next scheduled time on the timeline, but
+you could see your number of overruns if you wanted to pass a non-null
+parameter. After reading the documentation for its ETIMEDOUT return
+value, I wonder if this has changed? It seems like this will return
+immediately if the time was missed.=20
 
-Jan
+=20
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Also, I am getting a -EAGAIN when calling rt_task_set_periodic() and
+can't figure out why. Any idea?
+
+=20
+
+Thanks,
+
+Steven
+
+=20
+
+
+------_=_NextPart_001_01C8634F.13342F7C
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns=3D"http://www.w3.org/TR/REC-html40">
+
+<head>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Dus-ascii">
+<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"MS Mincho";
+	panose-1:2 2 6 9 4 2 5 8 3 4;}
+@font-face
+	{font-family:"\@MS Mincho";
+	panose-1:2 2 6 9 4 2 5 8 3 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:Arial;
+	color:windowtext;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.25in 1.0in 1.25in;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+
+</head>
+
+<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
+
+<div class=3DSection1>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>A while ago there was a discussion regarding
+rt_task_wait_period() and its overrun handling. I believe it was stated =
+then
+that the function would always sleep until the next scheduled time on =
+the
+timeline, but you could see your number of overruns if you wanted to =
+pass a
+non-null parameter. After reading the documentation for its ETIMEDOUT =
+return
+value, I wonder if this has changed? It seems like this will return =
+immediately
+if the time was missed. <o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Also, I am getting a &#8211;EAGAIN when calling
+rt_task_set_periodic() and can&#8217;t figure out why. Any =
+idea?<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Thanks,<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Steven<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+</div>
+
+</body>
+
+</html>
+
+------_=_NextPart_001_01C8634F.13342F7C--
 
