@@ -1,20 +1,10 @@
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="pEjKj201Vg"
-Content-Transfer-Encoding: 7bit
-Message-ID: <18337.31791.997218.941625@domain.hid>
-Date: Thu, 31 Jan 2008 08:43:43 +0100
-In-Reply-To: <2ff1a98a0801170737p75aab37fgd0750108167c7085@domain.hid>
-References: <2ff1a98a0801020231k19be7d89k1a6f04b7d497cc34@domain.hid>
-	<478F30FB.8060501@domain.hid>
-	<2ff1a98a0801170247t4378e733l24d470a31d208f95@domain.hid>
-	<478F4239.30808@domain.hid>
-	<2ff1a98a0801170559r48816868jb8451c52e2a7cdfc@domain.hid>
-	<478F6321.4030602@domain.hid>
-	<2ff1a98a0801170620rd984e60i228fc99442114bb4@domain.hid>
-	<478F6499.8060700@domain.hid>
-	<2ff1a98a0801170737p75aab37fgd0750108167c7085@domain.hid>
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] High latencies on ARM.
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="BYJhvjOlB+"
+Content-Transfer-Encoding: 7bit
+Message-ID: <18338.15747.218667.236566@domain.hid>
+Date: Thu, 31 Jan 2008 22:28:35 +0100
+Subject: [Xenomai-core] [Patch] bre^H^H^H^H reworking self deletion, take 3.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -24,796 +14,544 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
 
---pEjKj201Vg
+--BYJhvjOlB+
 Content-Type: text/plain; charset=us-ascii
 Content-Description: message body and .signature
 Content-Transfer-Encoding: 7bit
 
-Gilles Chanteperdrix wrote:
- > On Jan 17, 2008 3:22 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
- > >
- > > Gilles Chanteperdrix wrote:
- > > > On Jan 17, 2008 3:16 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
- > > >> Gilles Chanteperdrix wrote:
- > > >>> On Jan 17, 2008 12:55 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
- > > >>>> Gilles Chanteperdrix wrote:
- > > >>>>> On Jan 17, 2008 11:42 AM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
- > > >>>>>> Gilles Chanteperdrix wrote:
- > > >>>>>>> Hi,
- > > >>>>>>>
- > > >>>>>>> after some (unsuccessful) time trying to instrument the code in a way
- > > >>>>>>> that does not change the latency results completely, I found the
- > > >>>>>>> reason for the high latency with latency -t 1 and latency -t 2 on ARM.
- > > >>>>>>> So, here comes an update on this issue. The culprit is the user-space
- > > >>>>>>> context switch, which flushes the processor cache with the nklock
- > > >>>>>>> locked, irqs off.
- > > >>>>>>>
- > > >>>>>>> There are two things we could do:
- > > >>>>>>> - arrange for the ARM cache flush to happen with the nklock unlocked
- > > >>>>>>> and irqs enabled. This will improve interrupt latency (latency -t 2)
- > > >>>>>>> but obviously not scheduling latency (latency -t 1). If we go that
- > > >>>>>>> way, there are several problems we should solve:
- > > >>>>>>>
- > > >>>>>>> we do not want interrupt handlers to reenter xnpod_schedule(), for
- > > >>>>>>> this we can use the XNLOCK bit, set on whatever is
- > > >>>>>>> xnpod_current_thread() when the cache flush occurs
- > > >>>>>>>
- > > >>>>>>> since the interrupt handler may modify the rescheduling bits, we need
- > > >>>>>>> to test these bits in xnpod_schedule() epilogue and restart
- > > >>>>>>> xnpod_schedule() if need be
- > > >>>>>>>
- > > >>>>>>> we do not want xnpod_delete_thread() to delete one of the two threads
- > > >>>>>>> involved in the context switch, for this the only solution I found is
- > > >>>>>>> to add a bit to the thread mask meaning that the thread is currently
- > > >>>>>>> switching, and to (re)test the XNZOMBIE bit in xnpod_schedule epilogue
- > > >>>>>>> to delete whatever thread was marked for deletion
- > > >>>>>>>
- > > >>>>>>> in case of migration with xnpod_migrate_thread, we do not want
- > > >>>>>>> xnpod_schedule() on the target CPU to switch to the migrated thread
- > > >>>>>>> before the context switch on the source CPU is finished, for this we
- > > >>>>>>> can avoid setting the resched bit in xnpod_migrate_thread(), detect
- > > >>>>>>> the condition in xnpod_schedule() epilogue and set the rescheduling
- > > >>>>>>> bits so that xnpod_schedule is restarted and send the IPI to the
- > > >>>>>>> target CPU.
- > > >>>>>>>
- > > >>>>>>> - avoid using user-space real-time tasks when running latency
- > > >>>>>>> kernel-space benches, i.e. at least in the latency -t 1 and latency -t
- > > >>>>>>> 2 case. This means that we should change the timerbench driver. There
- > > >>>>>>> are at least two ways of doing this:
- > > >>>>>>> use an rt_pipe
- > > >>>>>>>  modify the timerbench driver to implement only the nrt ioctl, using
- > > >>>>>>> vanilla linux services such as wait_event and wake_up.
- > > >>>>>> [As you reminded me of this unanswered question:]
- > > >>>>>> One may consider adding further modes _besides_ current kernel tests
- > > >>>>>> that do not rely on RTDM & native userland support (e.g. when
- > > >>>>>> CONFIG_XENO_OPT_PERVASIVE is disabled). But the current tests are valid
- > > >>>>>> scenarios as well that must not be killed by such a change.
- > > >>>>> I think the current test scenario for latency -t 1 and latency -t 2
- > > >>>>> are a bit misleading: they measure kernel-space latencies in presence
- > > >>>>> of user-space real-time tasks. When one runs latency -t 1 or latency
- > > >>>>> -t 2, one would expect that there are only kernel-space real-time
- > > >>>>> tasks.
- > > >>>> If they are misleading, depends on your perspective. In fact, they are
- > > >>>> measuring in-kernel scenarios over the standard Xenomai setup, which
- > > >>>> includes userland RT task activity these day. Those scenarios are mainly
- > > >>>> targeting driver use cases, not pure kernel-space applications.
- > > >>>>
- > > >>>> But I agree that, for !CONFIG_XENO_OPT_PERVASIVE-like scenarios, we
- > > >>>> would benefit from an additional set of test cases.
- > > >>> Ok, I will not touch timerbench then, and implement another kernel module.
- > > >>>
- > > >> [Without considering all details]
- > > >> To achieve this independence of user space RT thread, it should suffice
- > > >> to implement a kernel-based frontend for timerbench. This frontent would
- > > >> then either dump to syslog or open some pipe to tell userland about the
- > > >> benchmark results. What do yo think?
- > > >
- > > > My intent was to implement a protocol similar to the one of
- > > > timerbench, but using an rt-pipe, and continue to use the latency
- > > > test, adding new options such as -t 3 and t 4. But there may be
- > > > problems with this approach: if we are compiling without
- > > > CONFIG_XENO_OPT_PERVASIVE, latency will not run at all. So, it is
- > > > probably simpler to implement a klatency that just reads from the
- > > > rt-pipe.
- > >
- > > But that klantency could perfectly reuse what timerbench already
- > > provides, without code changes to the latter, in theory.
- > 
- > That would be a kernel module then, but I also need some user-space
- > piece of software to do the computations and print the results.
 
-Ok. Here comes, for review, a patch following your advices which adds
-the "klatency" test.
+Hi Philippe,
+
+here comes a new patch on the theme "reworking self deletion". This
+time, execution of nkpod delete hooks is made before the context switch
+whereas finalizing the thread takes place after the context
+switch. Special care has been taken to call xnfreesync before we run the
+hooks, in order to avoid freeing the thread control block before the
+finalization, and xnheap_t::idleq was made a per-cpu thing for the same
+purpose.
+
+I made a simple watchdog test with all debugs enabled, and
+xnshadow_unmap did not complain.
+
+If you are OK with this patch, I will rebase the unlocked context switch
+patch on it.
 
 -- 
 
 
 					    Gilles Chanteperdrix.
 
---pEjKj201Vg
+--BYJhvjOlB+
 Content-Type: text/plain
 Content-Disposition: inline;
-	filename="xeno-klatency.diff"
+	filename="xeno-rework-self-deletion.3.diff"
 Content-Transfer-Encoding: 7bit
 
-Index: configure
-===================================================================
-Index: Makefile.in
-===================================================================
-Index: include/uitron/Makefile.in
-===================================================================
-Index: include/asm-ia64/bits/Makefile.in
-===================================================================
-Index: include/asm-ia64/Makefile.in
-===================================================================
-Index: include/Makefile.in
-===================================================================
-Index: include/vxworks/Makefile.in
-===================================================================
-Index: include/native/Makefile.in
-===================================================================
-Index: include/asm-blackfin/bits/Makefile.in
-===================================================================
-Index: include/asm-blackfin/Makefile.in
-===================================================================
-Index: include/asm-generic/bits/Makefile.in
-===================================================================
-Index: include/asm-generic/Makefile.in
-===================================================================
-Index: include/asm-arm/bits/Makefile.in
-===================================================================
-Index: include/asm-arm/Makefile.in
-===================================================================
-Index: include/asm-powerpc/bits/Makefile.in
-===================================================================
-Index: include/asm-powerpc/Makefile.in
-===================================================================
-Index: include/rtai/Makefile.in
-===================================================================
-Index: include/psos+/Makefile.in
-===================================================================
-Index: include/posix/syscall.h
-===================================================================
-Index: include/posix/Makefile.in
-===================================================================
-Index: include/posix/sys/Makefile.in
-===================================================================
-Index: include/posix/sys/select.h
-===================================================================
-Index: include/vrtx/Makefile.in
-===================================================================
-Index: include/asm-x86/Makefile.in
-===================================================================
-Index: include/asm-x86/bits/Makefile.in
-===================================================================
-Index: include/rtdm/Makefile.in
-===================================================================
-Index: include/rtdm/rtdm_driver.h
-===================================================================
-Index: include/rtdm/rtdm.h
-===================================================================
-Index: include/asm-sim/bits/Makefile.in
-===================================================================
-Index: include/asm-sim/Makefile.in
-===================================================================
-Index: include/nucleus/Makefile.in
-===================================================================
-Index: include/nucleus/select.h
-===================================================================
-Index: configure.in
-===================================================================
---- configure.in	(revision 3452)
-+++ configure.in	(working copy)
-@@ -766,6 +766,7 @@ AC_CONFIG_FILES([ \
-        	src/testsuite/switchtest/Makefile \
- 	src/testsuite/irqbench/Makefile \
- 	src/testsuite/clocktest/Makefile \
-+       	src/testsuite/klatency/Makefile \
- 	src/utils/Makefile \
- 	src/utils/can/Makefile \
-        	include/Makefile \
-Index: src/utils/can/Makefile.in
-===================================================================
-Index: src/utils/Makefile.in
-===================================================================
-Index: src/Makefile.in
-===================================================================
-Index: src/include/Makefile.in
-===================================================================
-Index: src/rtdk/Makefile.in
-===================================================================
-Index: src/skins/psos+/Makefile.in
-===================================================================
-Index: src/skins/rtai/Makefile.in
-===================================================================
-Index: src/skins/uitron/Makefile.in
-===================================================================
-Index: src/skins/posix/Makefile.in
-===================================================================
-Index: src/skins/posix/wrappers.c
-===================================================================
-Index: src/skins/posix/select.c
-===================================================================
-Index: src/skins/posix/posix.wrappers
-===================================================================
-Index: src/skins/posix/Makefile.am
-===================================================================
-Index: src/skins/Makefile.in
-===================================================================
-Index: src/skins/vrtx/Makefile.in
-===================================================================
-Index: src/skins/vxworks/Makefile.in
-===================================================================
-Index: src/skins/rtdm/Makefile.in
-===================================================================
-Index: src/testsuite/latency/Makefile.in
-===================================================================
-Index: src/testsuite/switchbench/Makefile.in
-===================================================================
-Index: src/testsuite/switchtest/Makefile.in
-===================================================================
-Index: src/testsuite/Makefile.in
-===================================================================
-Index: src/testsuite/cyclic/Makefile.in
-===================================================================
-Index: src/testsuite/Makefile.am
-===================================================================
---- src/testsuite/Makefile.am	(revision 3452)
-+++ src/testsuite/Makefile.am	(working copy)
-@@ -1 +1 @@
--SUBDIRS = latency switchbench cyclic switchtest irqbench clocktest
-+SUBDIRS = latency switchbench cyclic switchtest irqbench clocktest klatency
-Index: src/testsuite/klatency/Makefile.in
-===================================================================
-Index: src/testsuite/klatency/runinfo.in
-===================================================================
---- src/testsuite/klatency/runinfo.in	(revision 0)
-+++ src/testsuite/klatency/runinfo.in	(revision 0)
-@@ -0,0 +1 @@
-+latency:native+rtdm+timerbench+klat:!@exec_prefix@domain.hid
-Index: src/testsuite/klatency/Makefile.am
-===================================================================
---- src/testsuite/klatency/Makefile.am	(revision 0)
-+++ src/testsuite/klatency/Makefile.am	(revision 0)
-@@ -0,0 +1,25 @@
-+testdir = $(exec_prefix)/share/xenomai/testsuite/klatency
-+
-+bin_PROGRAMS = klatency
-+
-+klatency_SOURCES = klatency.c
-+
-+klatency_CPPFLAGS = \
-+	@XENO_USER_CFLAGS@ \
-+	-I$(top_srcdir)/include
-+
-+klatency_LDFLAGS = @XENO_USER_LDFLAGS@
-+
-+install-data-local:
-+	$(mkinstalldirs) $(DESTDIR)$(testdir)
-+	@sed -e's,@exec_prefix\@,$(exec_prefix),g' $(srcdir)/runinfo.in > $(DESTDIR)$(testdir)/.runinfo
-+	@echo "\$${DESTDIR}$(exec_prefix)/bin/xeno-load \`dirname \$$0\` \$$*" > $(DESTDIR)$(testdir)/run
-+	@chmod +x $(DESTDIR)$(testdir)/run
-+
-+uninstall-local:
-+	$(RM) $(DESTDIR)$(testdir)/.runinfo $(DESTDIR)$(testdir)/run
-+
-+run: all
-+	@$(top_srcdir)/scripts/xeno-load --verbose
-+
-+EXTRA_DIST = runinfo.in
-Index: src/testsuite/klatency/klatency.c
-===================================================================
---- src/testsuite/klatency/klatency.c	(revision 0)
-+++ src/testsuite/klatency/klatency.c	(revision 0)
-@@ -0,0 +1,217 @@
-+#include <unistd.h>
-+#include <stdlib.h>
-+#include <stdio.h>
-+#include <string.h>
-+#include <signal.h>
-+#include <getopt.h>
-+#include <time.h>
-+#include <errno.h>
-+#include <rtdm/rttesting.h>
-+
-+long long period_ns = 0;
-+int test_duration = 0;		/* sec of testing, via -T <sec>, 0 is inf */
-+int data_lines = 21;		/* data lines per header line, -l <lines> to change */
-+int quiet = 0;			/* suppress printing of RTH, RTD lines when -T given */
-+int benchdev_no = -1;
-+int benchdev = -1;
-+int freeze_max;
-+int priority;
-+
-+#define USER_TASK       0
-+#define KERNEL_TASK     1
-+#define TIMER_HANDLER   2
-+
-+int test_mode = USER_TASK;
-+const char *test_mode_names[] = {
-+	"periodic user-mode task",
-+	"in-kernel periodic task",
-+	"in-kernel timer handler"
-+};
-+
-+time_t test_start, test_end;	/* report test duration */
-+int test_loops = 0;		/* outer loop count */
-+
-+int finished = 0;
-+
-+void display(void)
-+{
-+	struct rttst_interm_bench_res result;
-+	int err, n = 0, got_results = 0;
-+	time_t start, actual_duration;
-+
-+	time(&start);
-+
-+	printf("warming up...\n");
-+
-+	if (quiet)
-+		fprintf(stderr, "running quietly for %d seconds\n",
-+			test_duration);
-+
-+	while (!finished) {
-+		long minj, gminj, maxj, gmaxj, avgj, goverrun;
-+
-+		err = read(benchdev, &result, sizeof(result));
-+		if (err <= 0) {
-+			fprintf(stderr, "read: %d, errno: %d\n", err, errno);
-+			break;
-+		}
-+
-+		got_results = 1;
-+		minj = result.last.min;
-+		gminj = result.overall.min;
-+		avgj = result.last.avg;
-+		maxj = result.last.max;
-+		gmaxj = result.overall.max;
-+		goverrun = result.overall.overruns;
-+
-+		if (!quiet) {
-+			if (data_lines && (n++ % data_lines) == 0) {
-+				time_t now, dt;
-+				time(&now);
-+				dt = now - start;
-+				printf
-+					("RTT|  %.2ld:%.2ld:%.2ld  (%s, %Ld us period, "
-+					 "priority %d)\n", dt / 3600,
-+					 (dt / 60) % 60, dt % 60,
-+					 test_mode_names[test_mode],
-+					 period_ns / 1000, priority);
-+				printf("RTH|%12s|%12s|%12s|%8s|%12s|%12s\n",
-+				       "-----lat min", "-----lat avg",
-+				       "-----lat max", "-overrun",
-+				       "----lat best", "---lat worst");
-+			}
-+
-+			printf("RTD|%12.3f|%12.3f|%12.3f|%8ld|%12.3f|%12.3f\n",
-+			       (double)minj / 1000,
-+			       (double)avgj / 1000,
-+			       (double)maxj / 1000,
-+			       goverrun,
-+			       (double)gminj / 1000, (double)gmaxj / 1000);
-+		}
-+	}
-+
-+	time(&test_end);
-+	actual_duration = test_end - test_start;
-+	if (!test_duration)
-+		test_duration = actual_duration;
-+
-+	if (got_results) {
-+		long gminj, gmaxj, gavgj, goverrun;
-+
-+		gminj = result.overall.min;
-+		gmaxj = result.overall.max;
-+		goverrun = result.overall.overruns;
-+		gavgj = result.overall.avg
-+			/ ((result.overall.test_loops) > 1 ?
-+			   result.overall.test_loops : 2) - 1;
-+
-+		printf("---|------------|------------|------------|--------|-------------------------\n"
-+		       "RTS|%12.3f|%12.3f|%12.3f|%8ld|    %.2ld:%.2ld:%.2ld/%.2d:%.2d:%.2d\n",
-+		       (double)gminj / 1000, (double)gavgj / 1000, (double)gmaxj / 1000,
-+		       goverrun, actual_duration / 3600, (actual_duration / 60) % 60,
-+		       actual_duration % 60, test_duration / 3600,
-+		       (test_duration / 60) % 60, test_duration % 60);
-+
-+	}
-+
-+	if (benchdev >= 0)
-+		close(benchdev);
-+}
-+
-+void sighand(int sig __attribute__ ((unused)))
-+{
-+	finished = 1;
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	struct rttst_tmbench_config config;
-+	int c;
-+
-+	while ((c = getopt(argc, argv, "l:T:qP:")) != EOF)
-+		switch (c) {
-+		case 'l':
-+
-+			data_lines = atoi(optarg);
-+			break;
-+
-+		case 'T':
-+
-+			test_duration = atoi(optarg);
-+			alarm(test_duration);
-+			break;
-+
-+		case 'q':
-+
-+			quiet = 1;
-+			break;
-+
-+		case 'P':
-+
-+			benchdev_no = atoi(optarg);
-+			break;
-+
-+		default:
-+
-+			fprintf(stderr, "usage: latency [options]\n"
-+				"  [-l <data-lines per header>] # default=21, 0 to supress headers\n"
-+				"  [-T <test_duration_seconds>] # default=0, so ^C to end\n"
-+				"  [-q]                         # supresses RTD, RTH lines if -T is used\n"
-+				"  [-P <rt_pipe_no>]            # number of testing pipe, default=auto\n");
-+			exit(2);
-+		}
-+
-+	if (!test_duration && quiet) {
-+		fprintf(stderr,
-+			"latency: -q only works if -T has been given.\n");
-+		quiet = 0;
-+	}
-+
-+	time(&test_start);
-+
-+	signal(SIGINT, sighand);
-+	signal(SIGTERM, sighand);
-+	signal(SIGHUP, sighand);
-+	signal(SIGALRM, sighand);
-+
-+	setlinebuf(stdout);
-+
-+	if (benchdev_no == -1) {
-+		benchdev = open("/proc/xenomai/registry/native/pipes/klat_pipe",
-+				O_RDONLY);
-+		if (benchdev == -1) {
-+			perror("open(/proc/xenomai/registry/native/pipes/klat_pipe)");
-+			fprintf(stderr,
-+				"modprobe klat_mod or try the -P option?\n");
-+			exit(EXIT_FAILURE);
-+		}
-+	} else {
-+		char devname[64];
-+		snprintf(devname, sizeof(devname), "/dev/rtp%d", benchdev_no);
-+		benchdev = open(devname, O_RDONLY);
-+		if (benchdev == -1) {
-+			fprintf(stderr, "open(%s): %s\n",
-+				devname, strerror(errno));
-+			exit(EXIT_FAILURE);
-+		}
-+	}
-+
-+	if (read(benchdev, &config, sizeof(config)) == -1) {
-+		perror("read");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	test_mode = config.mode;
-+	priority = config.priority;
-+	period_ns = config.period;
-+	freeze_max = config.freeze_max;
-+
-+	printf("== Sampling period: %Ld us\n"
-+	       "== Test mode: %s\n"
-+	       "== All results in microseconds\n",
-+	       period_ns / 1000, test_mode_names[test_mode]);
-+
-+	display();
-+
-+	return 0;
-+}
-Index: src/testsuite/irqbench/Makefile.in
-===================================================================
-Index: src/testsuite/clocktest/Makefile.in
-===================================================================
-Index: scripts/Makefile.in
-===================================================================
-Index: ksrc/skins/posix/syscall.c
-===================================================================
-Index: ksrc/skins/posix/mq.c
-===================================================================
-Index: ksrc/skins/posix/thread.c
-===================================================================
-Index: ksrc/skins/posix/thread.h
-===================================================================
-Index: ksrc/skins/posix/internal.h
-===================================================================
-Index: ksrc/skins/rtdm/device.c
-===================================================================
-Index: ksrc/skins/rtdm/drvlib.c
-===================================================================
-Index: ksrc/skins/rtdm/core.c
-===================================================================
-Index: ksrc/drivers/testing/Kconfig
-===================================================================
---- ksrc/drivers/testing/Kconfig	(revision 3452)
-+++ ksrc/drivers/testing/Kconfig	(working copy)
-@@ -22,4 +22,10 @@ config XENO_DRIVERS_SWITCHTEST
- 	Kernel-based driver for unit testing context switches and
- 	FPU switches.
+Index: include/asm-ia64/bits/pod.h
+===================================================================
+--- include/asm-ia64/bits/pod.h	(revision 3454)
++++ include/asm-ia64/bits/pod.h	(working copy)
+@@ -100,12 +100,6 @@ static inline void xnarch_switch_to(xnar
+ 	}
+ }
  
-+config XENO_DRIVERS_KLATENCY
-+	depends on XENO_DRIVERS_TIMERBENCH
-+	tristate "Kernel-only latency measurement module"
-+	help
-+	Kernel module for kernel-only latency measurement.
-+
- endmenu
-Index: ksrc/drivers/testing/Config.in
-===================================================================
---- ksrc/drivers/testing/Config.in	(revision 3452)
-+++ ksrc/drivers/testing/Config.in	(working copy)
-@@ -11,4 +11,6 @@ dep_tristate 'IRQ benchmark driver' CONF
- 
- dep_tristate 'Context switches test driver' CONFIG_XENO_DRIVERS_SWITCHTEST $CONFIG_XENO_SKIN_RTDM
- 
-+dep_tristate 'Kernel-only latency measurement module' CONFIG_XENO_DRIVERS_KLATENCY $XENO_DRIVERS_TIMERBENCH
-+
- endmenu
-Index: ksrc/drivers/testing/klat.c
-===================================================================
---- ksrc/drivers/testing/klat.c	(revision 0)
-+++ ksrc/drivers/testing/klat.c	(revision 0)
-@@ -0,0 +1,156 @@
-+/*
-+ * Copyright (C) 2008 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>.
-+ *
-+ * Xenomai is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * Xenomai is distributed in the hope that it will be useful, but
-+ * WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-+ * General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with Xenomai; if not, write to the Free Software Foundation,
-+ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ */
-+
-+#include <native/pipe.h>
-+#include <native/task.h>
-+#include <rtdm/rttesting.h>
-+
-+#define DEV_NR_MAX 256
-+
-+static int pipe = P_MINOR_AUTO;
-+module_param(pipe, int, 0400);
-+MODULE_PARM_DESC(pipe, "Index of the RT-pipe used for first connection"
-+		 " (-1, the default, means automatic minor allocation)");
-+
-+static int mode = 1;
-+module_param(mode, int, 0400);
-+MODULE_PARM_DESC(mode, "Test mode, (1 for kernel task, 2 for timer handler)");
-+
-+static int priority = 99;
-+module_param(priority, int, 0400);
-+MODULE_PARM_DESC(priority, "Kernel task priority");
-+
-+static unsigned period = 100;
-+module_param(period, uint, 0400);
-+MODULE_PARM_DESC(period, "Sampling period, in microseconds");
-+
-+static int freeze_max = 0;
-+module_param(freeze_max, int, 0400);
-+MODULE_PARM_DESC(freeze_max, "Freeze trace for each new max latency");
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("gilles.chanteperdrix@xenomai.org");
-+
-+static RT_TASK klat_srvr;
-+static RT_PIPE klat_pipe;
-+static int fd;
-+
-+static void klat_server(void *cookie)
-+{
-+	struct rttst_interm_bench_res res;
-+	int err;
-+
-+	for (;;) {
-+		err = rt_dev_ioctl(fd, RTTST_RTIOC_INTERM_BENCH_RES, &res);
-+		if (err) {
-+			if (err != -EIDRM)
-+				printk("rt_dev_ioctl(RTTST_RTIOC_INTERM_BENCH_RES): %d",
-+				       err);
-+			return;
-+		}
-+
-+		/* Do not check rt_pipe_write return value, the pipe may well be
-+		   full. */
-+		rt_pipe_write(&klat_pipe, &res, sizeof(res), P_NORMAL);
-+	}
-+}
-+
-+static int __init klat_mod_init(void)
-+{
-+	char devname[RTDM_MAX_DEVNAME_LEN + 1];
-+	struct rttst_tmbench_config config;
-+	unsigned dev_nr;
-+	int err;
-+
-+	err = rt_pipe_create(&klat_pipe, "klat_pipe", pipe, 4096);
-+	if (err) {
-+		printk("rt_pipe_create(klat_pipe): %d\n", err);
-+		return err;
-+	}
-+
-+	err = rt_task_create(&klat_srvr, "klat_srvr", 0, 0, 0);
-+	if (err) {
-+		printk("rt_task_create(klat_srvr): %d\n", err);
-+		goto err_close_pipe;
-+	}
-+
-+	config.mode = mode;
-+	config.priority = priority;
-+	config.period = period * 1000;
-+	config.warmup_loops = 1;
-+	config.histogram_size = 0;
-+	config.freeze_max = freeze_max;
-+
-+	for (dev_nr = 0; dev_nr < DEV_NR_MAX; dev_nr++) {
-+		snprintf(devname, sizeof(devname), "rttest%d", dev_nr);
-+		fd = rt_dev_open(devname, O_RDONLY);
-+		if (fd < 0)
-+			continue;
-+
-+		err = rt_dev_ioctl(fd, RTTST_RTIOC_TMBENCH_START, &config);
-+		if (err == -ENOTTY) {
-+			rt_dev_close(fd);
-+			continue;
-+		}
-+
-+		if (err < 0) {
-+			printk("rt_dev_ioctl(RTTST_RTIOC_TMBENCH_START): %d\n",
-+			       err);
-+			goto err_close_dev;
-+		}
-+
-+		break;
-+	}
-+	if (fd < 0) {
-+		printk("rt_dev_open: could not find rttest device\n"
-+		       "(modprobe timerbench?)");
-+		return fd;
-+	}
-+
-+	err = rt_pipe_write(&klat_pipe, &config, sizeof(config), P_NORMAL);
-+	if (err < 0) {
-+		printk("rt_pipe_write: %d\n", err);
-+		goto err_close_dev;
-+	}
-+
-+	err = rt_task_start(&klat_srvr, &klat_server, NULL);
-+	if (err) {
-+		printk("rt_task_start: %d\n", err);
-+		goto err_close_dev;
-+	}
-+	
-+	return 0;
-+
-+  err_close_dev:
-+	rt_dev_close(fd);
-+	rt_task_delete(&klat_srvr);
-+  err_close_pipe:
-+	rt_pipe_delete(&klat_pipe);
-+	return err;
-+}
-+
-+
-+static void klat_mod_exit(void)
-+{
-+	rt_dev_close(fd);
-+	rt_task_delete(&klat_srvr);
-+	rt_pipe_delete(&klat_pipe);
-+}
-+
-+module_init(klat_mod_init);
-+module_exit(klat_mod_exit);
-Index: ksrc/drivers/testing/Makefile
-===================================================================
---- ksrc/drivers/testing/Makefile	(revision 3452)
-+++ ksrc/drivers/testing/Makefile	(working copy)
-@@ -7,6 +7,7 @@ EXTRA_CFLAGS += -D__IN_XENOMAI__ -Iinclu
- obj-$(CONFIG_XENO_DRIVERS_TIMERBENCH) += xeno_timerbench.o
- obj-$(CONFIG_XENO_DRIVERS_IRQBENCH)   += xeno_irqbench.o
- obj-$(CONFIG_XENO_DRIVERS_SWITCHTEST) += xeno_switchtest.o
-+obj-$(CONFIG_XENO_DRIVERS_KLATENCY)   += xeno_klat.o
- 
- xeno_timerbench-y := timerbench.o
- 
-@@ -14,6 +15,8 @@ xeno_irqbench-y := irqbench.o
- 
- xeno_switchtest-y := switchtest.o
- 
-+xeno_klat-y := klat.o
-+
- EXTRA_CFLAGS += -D__IN_XENOMAI__ -Iinclude/xenomai
- 
- else
-@@ -25,14 +28,17 @@ O_TARGET := built-in.o
- obj-$(CONFIG_XENO_DRIVERS_TIMERBENCH) += xeno_timerbench.o
- obj-$(CONFIG_XENO_DRIVERS_IRQBENCH)   += xeno_irqbench.o
- obj-$(CONFIG_XENO_DRIVERS_SWITCHTEST) += xeno_switchtest.o
+-static inline void xnarch_finalize_and_switch(xnarchtcb_t * dead_tcb,
+-					      xnarchtcb_t * next_tcb)
+-{
+-	xnarch_switch_to(dead_tcb, next_tcb);
+-}
 -
-+obj-$(CONFIG_XENO_DRIVERS_KLATENCY)   += xeno_klat.o
- xeno_timerbench-objs := timerbench.o
+ static inline void xnarch_finalize_no_switch(xnarchtcb_t * dead_tcb)
+ {
+ 	/* Empty */
+Index: include/asm-blackfin/bits/pod.h
+===================================================================
+--- include/asm-blackfin/bits/pod.h	(revision 3454)
++++ include/asm-blackfin/bits/pod.h	(working copy)
+@@ -67,12 +67,6 @@ static inline void xnarch_switch_to(xnar
+ 	rthal_thread_switch(out_tcb->tsp, in_tcb->tsp);
+ }
  
- xeno_irqbench-objs := irqbench.o
+-static inline void xnarch_finalize_and_switch(xnarchtcb_t * dead_tcb,
+-					      xnarchtcb_t * next_tcb)
+-{
+-	xnarch_switch_to(dead_tcb, next_tcb);
+-}
+-
+ static inline void xnarch_finalize_no_switch(xnarchtcb_t * dead_tcb)
+ {
+ 	/* Empty */
+Index: include/asm-powerpc/bits/pod.h
+===================================================================
+--- include/asm-powerpc/bits/pod.h	(revision 3454)
++++ include/asm-powerpc/bits/pod.h	(working copy)
+@@ -106,12 +106,6 @@ static inline void xnarch_switch_to(xnar
+ 	barrier();
+ }
  
- xeno_switchtest-objs := switchtest.o
+-static inline void xnarch_finalize_and_switch(xnarchtcb_t * dead_tcb,
+-					      xnarchtcb_t * next_tcb)
+-{
+-	xnarch_switch_to(dead_tcb, next_tcb);
+-}
+-
+ static inline void xnarch_finalize_no_switch(xnarchtcb_t * dead_tcb)
+ {
+ 	/* Empty */
+Index: include/asm-arm/bits/pod.h
+===================================================================
+--- include/asm-arm/bits/pod.h	(revision 3454)
++++ include/asm-arm/bits/pod.h	(working copy)
+@@ -96,12 +96,6 @@ static inline void xnarch_switch_to(xnar
+ 	rthal_thread_switch(prev, out_tcb->tip, in_tcb->tip);
+ }
  
--export-objs := $(xeno_timerbench-objs) $(xeno_irqbench-objs) $(xeno_switchtest-objs)
-+xeno_klat-objs := klat.o
+-static inline void xnarch_finalize_and_switch(xnarchtcb_t * dead_tcb,
+-					      xnarchtcb_t * next_tcb)
+-{
+-	xnarch_switch_to(dead_tcb, next_tcb);
+-}
+-
+ static inline void xnarch_finalize_no_switch(xnarchtcb_t * dead_tcb)
+ {
+ 	/* Empty */
+Index: include/asm-x86/bits/pod_64.h
+===================================================================
+--- include/asm-x86/bits/pod_64.h	(revision 3454)
++++ include/asm-x86/bits/pod_64.h	(working copy)
+@@ -96,12 +96,6 @@ static inline void xnarch_switch_to(xnar
+ 	stts();
+ }
+ 
+-static inline void xnarch_finalize_and_switch(xnarchtcb_t * dead_tcb,
+-					      xnarchtcb_t * next_tcb)
+-{
+-	xnarch_switch_to(dead_tcb, next_tcb);
+-}
+-
+ static inline void xnarch_finalize_no_switch(xnarchtcb_t * dead_tcb)
+ {
+ 	/* Empty */
+Index: include/asm-x86/bits/pod_32.h
+===================================================================
+--- include/asm-x86/bits/pod_32.h	(revision 3454)
++++ include/asm-x86/bits/pod_32.h	(working copy)
+@@ -123,12 +123,6 @@ static inline void xnarch_switch_to(xnar
+ 	stts();
+ }
+ 
+-static inline void xnarch_finalize_and_switch(xnarchtcb_t * dead_tcb,
+-					      xnarchtcb_t * next_tcb)
+-{
+-	xnarch_switch_to(dead_tcb, next_tcb);
+-}
+-
+ static inline void xnarch_finalize_no_switch(xnarchtcb_t * dead_tcb)
+ {
+ 	/* Empty */
+Index: include/asm-sim/bits/pod.h
+===================================================================
+--- include/asm-sim/bits/pod.h	(revision 3454)
++++ include/asm-sim/bits/pod.h	(working copy)
+@@ -38,12 +38,6 @@ static inline void xnarch_switch_to (xna
+     __mvm_breakable(mvm_switch_threads)(out_tcb->vmthread,in_tcb->vmthread);
+ }
+ 
+-static inline void xnarch_finalize_and_switch (xnarchtcb_t *dead_tcb,
+-					       xnarchtcb_t *next_tcb)
+-{
+-    mvm_finalize_switch_threads(dead_tcb->vmthread,next_tcb->vmthread);
+-}
+-
+ static inline void xnarch_finalize_no_switch (xnarchtcb_t *dead_tcb)
+ {
+     if (dead_tcb->vmthread)	/* Might be unstarted. */
+Index: include/nucleus/heap.h
+===================================================================
+--- include/nucleus/heap.h	(revision 3454)
++++ include/nucleus/heap.h	(working copy)
+@@ -97,7 +97,7 @@ typedef struct xnheap {
+ 		int fcount;
+ 	} buckets[XNHEAP_NBUCKETS];
+ 
+-	xnholder_t *idleq;
++	xnholder_t *idleq[XNARCH_NR_CPUS];
+ 
+ 	xnarch_heapcb_t archdep;
+ 
+Index: include/nucleus/pod.h
+===================================================================
+--- include/nucleus/pod.h	(revision 3454)
++++ include/nucleus/pod.h	(working copy)
+@@ -139,6 +139,7 @@ typedef struct xnsched {
+ 
+ 	xntimer_t htimer;	/*!< Host timer. */
+ 
++	xnqueue_t zombies;
+ } xnsched_t;
+ 
+ #define nkpod (&nkpod_struct)
+@@ -238,6 +239,14 @@ static inline void xnpod_reset_watchdog(
+ }
+ #endif /* CONFIG_XENO_OPT_WATCHDOG */
+ 
++void __xnpod_finalize_zombies(xnsched_t *sched);
 +
-+export-objs := $(xeno_timerbench-objs) $(xeno_irqbench-objs) \
-+	$(xeno_switchtest-objs) $(xeno_klat-objs)
- 
- EXTRA_CFLAGS += -D__IN_XENOMAI__ -I$(TOPDIR)/include/xenomai -I$(TOPDIR)/include/xenomai/compat
- 
-@@ -47,4 +53,7 @@ xeno_irqbench.o: $(xeno_irqbench-objs)
- xeno_switchtest.o: $(xeno_switchtest-objs)
- 	$(LD) -r -o $@ $(xeno_switchtest-objs)
- 
-+xeno_klat.o: $(xeno_klat-objs)
-+	$(LD) -r -o $@ $(xeno_klat-objs)
++static inline void xnpod_finalize_zombies(xnsched_t *sched)
++{
++	if (!emptyq_p(&sched->zombies))
++		__xnpod_finalize_zombies(sched);
++}
 +
- endif
-Index: ksrc/nucleus/select.c
+ 	/* -- Beginning of the exported interface */
+ 
+ #define xnpod_sched_slot(cpu) \
+Index: ksrc/nucleus/heap.c
 ===================================================================
-Index: ksrc/nucleus/Makefile
+--- ksrc/nucleus/heap.c	(revision 3454)
++++ ksrc/nucleus/heap.c	(working copy)
+@@ -163,6 +163,7 @@ static void init_extent(xnheap_t *heap, 
+ int xnheap_init(xnheap_t *heap,
+ 		void *heapaddr, u_long heapsize, u_long pagesize)
+ {
++	unsigned cpu, nr_cpus = xnarch_num_online_cpus();
+ 	u_long hdrsize, shiftsize, pageshift;
+ 	xnextent_t *extent;
+ 
+@@ -218,7 +219,8 @@ int xnheap_init(xnheap_t *heap,
+ 
+ 	heap->ubytes = 0;
+ 	heap->maxcont = heap->npages * pagesize;
+-	heap->idleq = NULL;
++	for (cpu = 0; cpu < nr_cpus; cpu++)
++		heap->idleq[cpu] = NULL;
+ 	inith(&heap->link);
+ 	initq(&heap->extents);
+ 	xnlock_init(&heap->lock);
+@@ -866,6 +868,7 @@ int xnheap_extend(xnheap_t *heap, void *
+ 
+ void xnheap_schedule_free(xnheap_t *heap, void *block, xnholder_t *link)
+ {
++	unsigned cpu;
+ 	spl_t s;
+ 
+ 	xnlock_get_irqsave(&heap->lock, s);
+@@ -873,21 +876,24 @@ void xnheap_schedule_free(xnheap_t *heap
+ 	   idle objects through the 'next' field, so the 'last' field of
+ 	   the link is used to point at the beginning of the freed
+ 	   memory. */
++	cpu = xnarch_current_cpu();
+ 	link->last = (xnholder_t *)block;
+-	link->next = heap->idleq;
+-	heap->idleq = link;
++	link->next = heap->idleq[cpu];
++	heap->idleq[cpu] = link;
+ 	xnlock_put_irqrestore(&heap->lock, s);
+ }
+ 
+ void xnheap_finalize_free_inner(xnheap_t *heap)
+ {
+ 	xnholder_t *holder;
++	unsigned cpu;
+ 	spl_t s;
+ 
+ 	xnlock_get_irqsave(&heap->lock, s);
++	cpu = xnarch_current_cpu();
+ 
+-	while ((holder = heap->idleq) != NULL) {
+-		heap->idleq = holder->next;
++	while ((holder = heap->idleq[cpu]) != NULL) {
++		heap->idleq[cpu] = holder->next;
+ 		xnheap_free(heap, holder->last);
+ 	}
+ 
+Index: ksrc/nucleus/pod.c
 ===================================================================
-Index: config/Makefile.in
+--- ksrc/nucleus/pod.c	(revision 3454)
++++ ksrc/nucleus/pod.c	(working copy)
+@@ -292,6 +292,7 @@ int xnpod_init(void)
+ #endif /* CONFIG_SMP */
+ 		xntimer_set_name(&sched->htimer, htimer_name);
+ 		xntimer_set_sched(&sched->htimer, sched);
++		initq(&sched->zombies);
+ 	}
+ 
+ 	xnlock_put_irqrestore(&nklock, s);
+@@ -545,63 +546,29 @@ static inline void xnpod_fire_callouts(x
+ 	__clrbits(sched->status, XNKCOUT);
+ }
+ 
+-static inline void xnpod_switch_zombie(xnthread_t *threadout,
+-				       xnthread_t *threadin)
++static void xnpod_zombie_hooks(xnthread_t *thread)
+ {
+ 	/* Must be called with nklock locked, interrupts off. */
+-	xnsched_t *sched = xnpod_current_sched();
+-#ifdef CONFIG_XENO_OPT_PERVASIVE
+-	int shadow = xnthread_test_state(threadout, XNSHADOW);
+-#endif /* CONFIG_XENO_OPT_PERVASIVE */
+-
+ 	trace_mark(xn_nucleus_sched_finalize,
+-		   "thread_out %p thread_out_name %s "
+-		   "thread_in %p thread_in_name %s",
+-		   threadout, xnthread_name(threadout),
+-		   threadin, xnthread_name(threadin));
++		   "thread_out %p thread_out_name %s",
++		   thread, xnthread_name(thread));
+ 
+-	if (!emptyq_p(&nkpod->tdeleteq) && !xnthread_test_state(threadout, XNROOT)) {
++	if (!emptyq_p(&nkpod->tdeleteq)
++	    && !xnthread_test_state(thread, XNROOT)) {
+ 		trace_mark(xn_nucleus_thread_callout,
+ 			   "thread %p thread_name %s hook %s",
+-			   threadout, xnthread_name(threadout), "DELETE");
+-		xnpod_fire_callouts(&nkpod->tdeleteq, threadout);
+-	}
+-
+-	sched->runthread = threadin;
+-
+-	if (xnthread_test_state(threadin, XNROOT)) {
+-		xnpod_reset_watchdog(sched);
+-		xnfreesync();
+-		xnarch_enter_root(xnthread_archtcb(threadin));
++			   thread, xnthread_name(thread), "DELETE");
++		xnpod_fire_callouts(&nkpod->tdeleteq, thread);
+ 	}
++}
+ 
+-	/* FIXME: Catch 22 here, whether we choose to run on an invalid
+-	   stack (cleanup then hooks), or to access the TCB space shortly
+-	   after it has been freed while non-preemptible (hooks then
+-	   cleanup)... Option #2 is current. */
+-
+-	xnthread_cleanup_tcb(threadout);
+-
+-	xnstat_exectime_finalize(sched, &threadin->stat.account);
+-
+-	xnarch_finalize_and_switch(xnthread_archtcb(threadout),
+-				   xnthread_archtcb(threadin));
++void __xnpod_finalize_zombies(xnsched_t *sched)
++{
++	xnthread_t *thread = link2thread(getq(&sched->zombies), glink);
+ 
+-#ifdef CONFIG_XENO_OPT_PERVASIVE
+-	xnarch_trace_pid(xnthread_user_task(threadin) ?
+-			 xnarch_user_pid(xnthread_archtcb(threadin)) : -1,
+-			 xnthread_current_priority(threadin));
+-
+-	if (shadow)
+-		/* Reap the user-space mate of a deleted real-time shadow.
+-		   The Linux task has resumed into the Linux domain at the
+-		   last code location executed by the shadow. Remember
+-		   that both sides use the Linux task's stack. */
+-		xnshadow_exit();
+-#endif /* CONFIG_XENO_OPT_PERVASIVE */
++	xnthread_cleanup_tcb(thread);
+ 
+-	xnpod_fatal("zombie thread %s (%p) would not die...", threadout->name,
+-		    threadout);
++	xnarch_finalize_no_switch(xnthread_archtcb(thread));
+ }
+ 
+ /*! 
+@@ -1216,6 +1183,7 @@ void xnpod_delete_thread(xnthread_t *thr
+ 		   the current one forever. Use the thread zombie state to go
+ 		   through the rescheduling procedure then actually destroy
+ 		   the thread object. */
++		appendq(&sched->zombies, &thread->glink);
+ 		xnsched_set_resched(sched);
+ 		xnpod_schedule();
+ 	} else {
+@@ -2140,6 +2108,8 @@ void xnpod_dispatch_signals(void)
+ 
+ void xnpod_welcome_thread(xnthread_t *thread, int imask)
+ {
++	xnpod_finalize_zombies(thread->sched);
++
+ 	trace_mark(xn_nucleus_thread_boot, "thread %p thread_name %s",
+ 		   thread, xnthread_name(thread));
+ 
+@@ -2373,6 +2343,7 @@ void xnpod_schedule(void)
+ 	xnthread_t *threadout, *threadin, *runthread;
+ 	xnpholder_t *pholder;
+ 	xnsched_t *sched;
++	int zombie;
+ #if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
+ 	int need_resched;
+ #endif /* CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
+@@ -2402,7 +2373,6 @@ void xnpod_schedule(void)
+ 	xnarch_trace_pid(xnthread_user_task(runthread) ?
+ 			 xnarch_user_pid(xnthread_archtcb(runthread)) : -1,
+ 			 xnthread_current_priority(runthread));
+-
+ #if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
+ 	need_resched = xnsched_tst_resched(sched);
+ #endif
+@@ -2429,13 +2399,16 @@ void xnpod_schedule(void)
+ 	/* Clear the rescheduling bit */
+ 	xnsched_clr_resched(sched);
+ 
++	zombie = xnthread_test_state(runthread, XNZOMBIE);
+ 	if (!xnthread_test_state(runthread, XNTHREAD_BLOCK_BITS | XNZOMBIE)) {
+ 
+ 		/* Do not preempt the current thread if it holds the
+ 		 * scheduler lock. */
+ 
+-		if (xnthread_test_state(runthread, XNLOCK))
++		if (xnthread_test_state(runthread, XNLOCK)) {
++			xnsched_set_resched(sched);
+ 			goto signal_unlock_and_exit;
++		}
+ 
+ 		pholder = sched_getheadpq(&sched->readyq);
+ 
+@@ -2491,18 +2464,20 @@ void xnpod_schedule(void)
+ 	shadow = xnthread_test_state(threadout, XNSHADOW);
+ #endif /* CONFIG_XENO_OPT_PERVASIVE */
+ 
+-	if (xnthread_test_state(threadout, XNZOMBIE))
+-		xnpod_switch_zombie(threadout, threadin);
++	if (xnthread_test_state(threadin, XNROOT)) {
++		xnpod_reset_watchdog(sched);
++		xnfreesync();
++	}
++
++	if (zombie)
++		xnpod_zombie_hooks(threadout);
+ 
+ 	sched->runthread = threadin;
+ 
+ 	if (xnthread_test_state(threadout, XNROOT))
+ 		xnarch_leave_root(xnthread_archtcb(threadout));
+-	else if (xnthread_test_state(threadin, XNROOT)) {
+-		xnpod_reset_watchdog(sched);
+-		xnfreesync();
++	else if (xnthread_test_state(threadin, XNROOT))
+ 		xnarch_enter_root(xnthread_archtcb(threadin));
+-	}
+ 
+ 	xnstat_exectime_switch(sched, &threadin->stat.account);
+ 	xnstat_counter_inc(&threadin->stat.csw);
+@@ -2525,23 +2500,16 @@ void xnpod_schedule(void)
+ #ifdef CONFIG_XENO_OPT_PERVASIVE
+ 	/* Test whether we are relaxing a thread. In such a case, we are here the
+ 	   epilogue of Linux' schedule, and should skip xnpod_schedule epilogue. */
+-	if (shadow && xnthread_test_state(runthread, XNROOT)) {
+-		spl_t ignored;
+-		/* Shadow on entry and root without shadow extension on exit? 
+-		   Mmmm... This must be the user-space mate of a deleted real-time
+-		   shadow we've just rescheduled in the Linux domain to have it
+-		   exit properly.  Reap it now. */
+-		if (xnshadow_thrptd(current) == NULL)
+-			xnshadow_exit();
+-
+-		/* We need to relock nklock here, since it is not locked and
+-		   the caller may expect it to be locked. */
+-		xnlock_get_irqsave(&nklock, ignored);
+-		xnlock_put_irqrestore(&nklock, s);
+-		return;
+-	}
++	if (shadow && xnthread_test_state(runthread, XNROOT))
++		goto relax_epilogue;
+ #endif /* CONFIG_XENO_OPT_PERVASIVE */
+ 
++	if (zombie)
++		xnpod_fatal("zombie thread %s (%p) would not die...",
++			    threadout->name, threadout);
++
++	xnpod_finalize_zombies(sched);
++
+ #ifdef CONFIG_XENO_HW_FPU
+ 	__xnpod_switch_fpu(sched);
+ #endif /* CONFIG_XENO_HW_FPU */
+@@ -2564,6 +2532,25 @@ void xnpod_schedule(void)
+ 		xnpod_dispatch_signals();
+ 
+ 	xnlock_put_irqrestore(&nklock, s);
++	return;
++
++#ifdef CONFIG_XENO_OPT_PERVASIVE
++      relax_epilogue:
++	{
++		spl_t ignored;
++		/* Shadow on entry and root without shadow extension on exit? 
++		   Mmmm... This must be the user-space mate of a deleted real-time
++		   shadow we've just rescheduled in the Linux domain to have it
++		   exit properly.  Reap it now. */
++		if (xnshadow_thrptd(current) == NULL)
++			xnshadow_exit();
++
++		/* We need to relock nklock here, since it is not locked and
++		   the caller may expect it to be locked. */
++		xnlock_get_irqsave(&nklock, ignored);
++		xnlock_put_irqrestore(&nklock, s);
++	}
++#endif /* CONFIG_XENO_OPT_PERVASIVE */
+ }
+ 
+ /*! 
+@@ -2664,9 +2651,6 @@ void xnpod_schedule_runnable(xnthread_t 
+ 	if (threadin == runthread)
+ 		return;		/* No switch. */
+ 
+-	if (xnthread_test_state(runthread, XNZOMBIE))
+-		xnpod_switch_zombie(runthread, threadin);
+-
+ 	sched->runthread = threadin;
+ 
+ 	if (xnthread_test_state(runthread, XNROOT))
+@@ -2687,15 +2671,17 @@ void xnpod_schedule_runnable(xnthread_t 
+ 	xnarch_switch_to(xnthread_archtcb(runthread),
+ 			 xnthread_archtcb(threadin));
+ 
+-	xnarch_trace_pid(xnthread_user_task(runthread) ?
+-			 xnarch_user_pid(xnthread_archtcb(runthread)) : -1,
+-			 xnthread_current_priority(runthread));
+-
+ #ifdef CONFIG_SMP
+ 	/* If runthread migrated while suspended, sched is no longer correct. */
+ 	sched = xnpod_current_sched();
+ #endif
+ 
++	xnpod_finalize_zombies(sched);
++
++	xnarch_trace_pid(xnthread_user_task(runthread) ?
++			 xnarch_user_pid(xnthread_archtcb(runthread)) : -1,
++			 xnthread_current_priority(runthread));
++
+ #ifdef CONFIG_XENO_HW_FPU
+ 	__xnpod_switch_fpu(sched);
+ #endif /* CONFIG_XENO_HW_FPU */
+Index: ksrc/nucleus/shadow.c
 ===================================================================
-Index: doc/txt/Makefile.in
-===================================================================
-Index: doc/docbook/xenomai/Makefile.in
-===================================================================
-Index: doc/docbook/Makefile.in
-===================================================================
-Index: doc/docbook/custom-stylesheets/Makefile.in
-===================================================================
-Index: doc/docbook/custom-stylesheets/xsl/Makefile.in
-===================================================================
-Index: doc/docbook/custom-stylesheets/xsl/fo/Makefile.in
-===================================================================
-Index: doc/docbook/custom-stylesheets/xsl/html/Makefile.in
-===================================================================
-Index: doc/docbook/custom-stylesheets/xsl/common/Makefile.in
-===================================================================
-Index: doc/Makefile.in
-===================================================================
-Index: doc/man/Makefile.in
-===================================================================
-Index: doc/doxygen/Makefile.in
-===================================================================
-Index: aclocal.m4
-===================================================================
+--- ksrc/nucleus/shadow.c	(revision 3454)
++++ ksrc/nucleus/shadow.c	(working copy)
+@@ -1059,6 +1059,7 @@ int xnshadow_harden(void)
+ 	struct task_struct *this_task = current;
+ 	struct __gatekeeper *gk;
+ 	xnthread_t *thread;
++	xnsched_t *sched;
+ 	int gk_cpu;
+ 
+ redo:
+@@ -1124,9 +1125,12 @@ redo:
+ 	}
+ 
+ 	/* "current" is now running into the Xenomai domain. */
++	sched = xnpod_current_sched();
++
++	xnpod_finalize_zombies(sched);
+ 
+ #ifdef CONFIG_XENO_HW_FPU
+-	xnpod_switch_fpu(xnpod_current_sched());
++	xnpod_switch_fpu(sched);
+ #endif /* CONFIG_XENO_HW_FPU */
+ 
+ 	xnarch_schedule_tail(this_task);
 
---pEjKj201Vg--
+--BYJhvjOlB+--
 
