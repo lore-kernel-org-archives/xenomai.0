@@ -1,69 +1,57 @@
-Message-ID: <2ff1a98a0802010200q981e76fkd2340c6ba7796157@domain.hid>
-Date: Fri, 1 Feb 2008 11:00:47 +0100
+Message-ID: <2ff1a98a0801310115o4168772y52ba733dd477716c@domain.hid>
+Date: Thu, 31 Jan 2008 10:15:35 +0100
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <47A2EE40.2070602@domain.hid>
+In-Reply-To: <8b3b30860801310010w2234d82ds4c78205b308a0c05@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <d3f72a390802010108l4f24cc4bq81272fdae55089e9@domain.hid>
-	<2ff1a98a0802010120u6fdf215apf0a542e0c2b2bcff@domain.hid>
-	<d3f72a390802010142g3ac085b5qb2104ccd108796ec@domain.hid>
-	<2ff1a98a0802010153l70062d8eo41c709715ad4fcdb@domain.hid>
-	<47A2EE40.2070602@domain.hid>
-Subject: Re: [Xenomai-core] rt_task_sleep doesn't work with round robin
-	scheduling
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <8b3b30860712271756n526daf67yc8e5be203ae5421d@domain.hid>
+	<8b3b30860712301217p6ee4e724lebd1b1c2740d2ebf@domain.hid>
+	<2ff1a98a0712310616n58d0a63en4c36e75e5ed2ab53@domain.hid>
+	<8b3b30860712310658n4729fc2bo300f01a59b333b06@domain.hid>
+	<2ff1a98a0712310704s65b6d7fbv106c7a4bd17d4677@domain.hid>
+	<8b3b30860712310723y39bae134o8bcefbd16f582541@domain.hid>
+	<2ff1a98a0801230610t366862dbmcb36ff9fb50604c4@domain.hid>
+	<8b3b30860801290115m197afc80p3ee98cb42bea334f@domain.hid>
+	<2ff1a98a0801290705g54e4d98alfc11990d8098e33e@domain.hid>
+	<8b3b30860801310010w2234d82ds4c78205b308a0c05@domain.hid>
+Subject: Re: [Xenomai-help] update from fusion 0.9.1 to xenomai 2.4.0
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Soft Axel <softaxel@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Racconico Lambrati <racconico.lambrati@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On Fri, Feb 1, 2008 at 11:02 AM, Soft Axel <softaxel@domain.hid> wrote:
+On Thu, Jan 31, 2008 at 9:10 AM, Racconico Lambrati
+<racconico.lambrati@domain.hid> wrote:
+> I've make a more clever test program (I hope).
 >
->  Gilles Chanteperdrix ha scritto:
+> The scheduler work fine but there is some other problem
 >
->  On Fri, Feb 1, 2008 at 10:42 AM, axel axel <softaxel@domain.hid> wrote:
+> First of all I've reduced the working time into the two task (to avoid
+> deadlock as you suggested). I also insert the code that in corresponding of
+> the two task high a bit on the parallel port.
+>  Then I use the oscilloscope to test that every 5 milliseconds the TaskPlc
+> start it's execution. In normal condition there's no problem, but when I
+> make a write on the disk, or I mount an external device the time of High
+> priority task increase in considerable  manner.
 >
->
->  2008/2/1, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->
->
->  On Fri, Feb 1, 2008 at 10:08 AM, axel axel <softaxel@domain.hid> wrote:
->
->
->  Hi,
->
-> i try to use rt_task_sleep( 10000000 ) in a user-space task under
-> round-robin scheduling but doesnt' work.
->
->  Do not forget that the number passed to rt_task_sleep is a count of
-> ticks (and documented as such), so, if you want to sleep for 10ms, you
-> should call:
-> rt_task_sleep(rt_timer_ns2ticks(10000000))
->
->  i try also this but nothing is changed.
->
->  Of course, but about the other question: do you observe the same
-> behaviour with xenomai trunk ?
->
->
->  What do you mean  xenomai trunk ?
->
->  this is my actual configuration:
->   - xenomai-2.4-rc5
->   - kernel 2.6.20.4 arm cirrus ep9315 patched
->
->  have i try with xenomai 2.4.1 ?
+> I cannot explain this situation, that is not respecting the priority of the
+> task...
 
-No, please try Xenomai trunk:
-https://gna.org/svn/?group=xenomai
+The printf between the two calls to sysOutByte causes your tasks to
+switch to secondary mode, if you had set the T_WARNSW bit, you would
+have been informed of the mode switch by a signal. If using a recent
+version of Xenomai, #include <rtdk.h> and use rt_printf instead of
+printf.
+
 
 -- 
                                                Gilles Chanteperdrix
