@@ -1,5 +1,5 @@
-Message-ID: <2ff1a98a0802010118m75f51ed8gb01e87981b529a57@domain.hid>
-Date: Fri, 1 Feb 2008 10:18:48 +0100
+Message-ID: <2ff1a98a0802010120u6fdf215apf0a542e0c2b2bcff@domain.hid>
+Date: Fri, 1 Feb 2008 10:20:28 +0100
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 In-Reply-To: <d3f72a390802010108l4f24cc4bq81272fdae55089e9@domain.hid>
 MIME-Version: 1.0
@@ -26,12 +26,29 @@ On Fri, Feb 1, 2008 at 10:08 AM, axel axel <softaxel@domain.hid> wrote:
 >
 > i try to use rt_task_sleep( 10000000 ) in a user-space task under
 > round-robin scheduling but doesnt' work.
+
+Do not forget that the number passed to rt_task_sleep is a count of
+ticks (and documented as such), so, if you want to sleep for 10ms, you
+should call:
+rt_task_sleep(rt_timer_ns2ticks(10000000))
+
 >
 > It returns the value -11.
 >
 > Any idea ?
+>
+> Thanks a lot
+>
+> Roberto Bielli
+>
+> _______________________________________________
+>  Xenomai-core mailing list
+>  Xenomai-core@domain.hid
+>  https://mail.gna.org/listinfo/xenomai-core
+>
+>
 
-Do you observe the same behaviour with xenomai trunk ?
+
 
 -- 
                                                Gilles Chanteperdrix
