@@ -1,10 +1,11 @@
-Message-ID: <7470.62.39.72.60.1203063044.squirrel@domain.hid>
-Date: Fri, 15 Feb 2008 09:10:44 +0100 (CET)
-From: "Fabien MAHOT" <fabien.mahot@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] Problem of thread creation with Xenomai Posix 2
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C864E8.6E522680"
+Date: Fri, 1 Feb 2008 08:38:01 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D376870@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
+Subject: [Xenomai-help] 125 us part 2
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,176 +17,107 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-OK, thank you.
 
-I wrote a new program in which there is no call to my function Console.
-There is just calls to printf at the end of the program. Thus, we can be
-sure that the problem comes from the pthread_create call.
+This is a multi-part message in MIME format.
 
-New program :
+------_=_NextPart_001_01C864E8.6E522680
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-#include <sys/mman.h>
-#include <pthread.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <string.h>
-#include <stdio.h>
+I forgot to mention that after calling rt_timer_set_mode(125000) a task
+that does nothing but an outb and a rt_task_wait_period(0); will also
+trigger the watchdog (when set to 1 second) as a runaway thread even
+though the timing is correct. I never had a problem with this timing in
+RTAI. The system does seem to lock up.
 
-#define NB_ELEMENTS 50
+=20
 
-int j;
-char Text [NB_ELEMENTS];
+Steven
 
-int func(volatile int* i)
-{
-	return (*i)++;
-}
-
-void AddConsole (char val)
-{
- 	Text[j] =3D val;
-     	j++;
-}
-
-void ReadTabConsole (void)
-{
-     	int i;
-     	int NbConsole =3D j;
-
-     	for (i=3D0; i<NbConsole; i++)
-     	{
-     		printf("%d\n",Text[i]);
-         	j--;
-     	}
-}
-
-void* thread1(void * context) {
-     	volatile int i;
-	volatile int result;
-
-	AddConsole(5);
-        while (i < 1000) {
-              result =3D func(&i);
-        }
-    	AddConsole(6);
-
-	return NULL;
-}
-
-void* thread2(void * context) {
-        volatile int i;
-	volatile int result;
-
-	AddConsole(7);
-        while (i < 1000) {
-              result =3D func(&i);
-        }
-	AddConsole(8);
-
-	// Lecture du tableau de console
-    	ReadTabConsole();
-
-	return NULL;
-}
-
-void* thread_main(void *arg) {
-    	pthread_attr_t attr;
-    	pthread_t p1;
-    	pthread_t p2;
-    	struct sched_param sch;
-    	struct sched_param sch1;
-    	int result;
-
-        pthread_attr_init(&attr);
-        pthread_attr_setinheritsched(&attr,PTHREAD_EXPLICIT_SCHED);
-	pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
-
-        sch.sched_priority =3D 25;
-        pthread_attr_setschedparam(&attr, &sch);
+=20
 
 
-	AddConsole(1);
-        pthread_create(&p1, &attr, thread1, NULL);
-	AddConsole(2);
+------_=_NextPart_001_01C864E8.6E522680
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-        sch.sched_priority =3D 20;
-        pthread_attr_setschedparam(&attr, &sch);
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns=3D"http://www.w3.org/TR/REC-html40">
 
-	AddConsole(3);
-        result =3D pthread_create(&p2, &attr, thread2, NULL);
-	if (result !=3D 0)
-	{
-		AjoutConsole(0);
-	}
-	AddConsole(4);
+<head>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Dus-ascii">
+<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"MS Mincho";
+	panose-1:2 2 6 9 4 2 5 8 3 4;}
+@font-face
+	{font-family:"\@MS Mincho";
+	panose-1:2 2 6 9 4 2 5 8 3 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:Arial;
+	color:windowtext;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.25in 1.0in 1.25in;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
 
-        pthread_attr_destroy(&attr);
+</head>
 
-        while (1) {
-                sleep(500);
-        }
-	return NULL;
-}
+<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
 
-int main(int argc, char** argv) {
+<div class=3DSection1>
 
-    	j =3D 0;
-    	pthread_attr_t attr;
-        pthread_t p;
-    	struct sched_param sch;
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>I forgot to mention that after calling
+rt_timer_set_mode(125000) a task that does nothing but an outb and a
+rt_task_wait_period(0); will also trigger the watchdog (when set to 1 =
+second)
+as a runaway thread even though the timing is correct. I never had a =
+problem
+with this timing in RTAI. The system does seem to lock =
+up.<o:p></o:p></span></font></p>
 
-       	mlockall(MCL_CURRENT|MCL_FUTURE);
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
 
-        pthread_attr_init(&attr);
-	    pthread_attr_setinheritsched(&attr,PTHREAD_EXPLICIT_SCHED);
-        pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Steven<o:p></o:p></span></font></p>
 
-        sch.sched_priority =3D 30;
-        pthread_attr_setschedparam(&attr, &sch);
-        pthread_create(&p, &attr, thread_main, NULL);
-        pthread_attr_destroy(&attr);
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
 
-        while (1) {
-                sleep(500);
-        }
+</div>
 
-        return 0;
-}
+</body>
 
-Result in Linux environment(Linux 2.6.20 kernel configurated preemptive) =
-:
-1
-2
-3
-4
-5
-6
-7
-8
+</html>
 
-Result in Xenomai environment(Xenomai 2.3.4 kernel) :
-1
-2
-3
-5
-6
-4
-7
-8
-
-OK, we can see that there is the same problem. T1 thread prempts Main
-Thread during the pthread_create of T2 with Xenomai and not with Linux
-standard. I would like to know why.
-
-I don't that there is a difference beetween the posix Linux pthread_creat=
-e
-and the posix Xenomai pthread_create ?
-
-If pthread_create suspends a short time its caller, why we don t have the
-same behaviour in the two cases ?
-
-In my opinion, there is a problem with Xenomai, no ?
-
-I hope that you could help me. thank you
-
+------_=_NextPart_001_01C864E8.6E522680--
 
