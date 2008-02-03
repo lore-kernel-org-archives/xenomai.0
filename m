@@ -1,11 +1,11 @@
 Content-class: urn:content-classes:message
 MIME-Version: 1.0
 Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C86632.FF75E28C"
-Date: Sun, 3 Feb 2008 00:04:19 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D37689F@slcmail.slc.mew.int>
+	boundary="----_=_NextPart_001_01C8668E.E851D596"
+Date: Sun, 3 Feb 2008 11:02:14 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D3768AD@slcmail.slc.mew.int>
 From: "Steven Seeger" <sseeger@domain.hid>
-Subject: [Xenomai-help] rt_task_wait_period() and gdb
+Subject: [Xenomai-help] periodic task question
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,14 +20,25 @@ To: xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
 
-------_=_NextPart_001_01C86632.FF75E28C
+------_=_NextPart_001_01C8668E.E851D596
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-I seem to lose backtraces when a thread is blocked in
-rt_task_wait_period(). Is there any reason for this? No other blocking
-call seems to cause this issue. (rt_queue_read(), rt_cond_wait(), etc.)
+If I want a periodic task to wait on a condition variable whose purpose
+is to wait until the task is needed again, should I set it non-periodic
+first and then set it periodic again after it wakes up?
+
+=20
+
+If I am running in periodic timebase mode, I notice weird behavior
+without this behavior. It seems ok in aperiodic mode, however.
+
+=20
+
+Also, if I set the native skin to periodic mode, the latency default
+setting of 4200 doesn't change tick types, therefore it causes all my
+calls to rt_task_set_periodic() fail with jiffies less than this.
 
 =20
 
@@ -36,7 +47,7 @@ Steven
 =20
 
 
-------_=_NextPart_001_01C86632.FF75E28C
+------_=_NextPart_001_01C8668E.E851D596
 Content-Type: text/html;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
@@ -90,11 +101,35 @@ div.Section1
 
 <p class=3DMsoNormal><font size=3D2 face=3DArial><span =
 style=3D'font-size:10.0pt;
-font-family:Arial'>I seem to lose backtraces when a thread is blocked in
-rt_task_wait_period(). Is there any reason for this? No other blocking =
-call
-seems to cause this issue. (rt_queue_read(), rt_cond_wait(), =
-etc.)<o:p></o:p></span></font></p>
+font-family:Arial'>If I want a periodic task to wait on a condition =
+variable
+whose purpose is to wait until the task is needed again, should I set it
+non-periodic first and then set it periodic again after it wakes =
+up?<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>If I am running in periodic timebase mode, I notice =
+weird
+behavior without this behavior. It seems ok in aperiodic mode, =
+however.<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Also, if I set the native skin to periodic mode, the =
+latency
+default setting of 4200 doesn&#8217;t change tick types, therefore it =
+causes
+all my calls to rt_task_set_periodic() fail with jiffies less than =
+this.<o:p></o:p></span></font></p>
 
 <p class=3DMsoNormal><font size=3D2 face=3DArial><span =
 style=3D'font-size:10.0pt;
@@ -114,5 +149,5 @@ font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
 
 </html>
 
-------_=_NextPart_001_01C86632.FF75E28C--
+------_=_NextPart_001_01C8668E.E851D596--
 
