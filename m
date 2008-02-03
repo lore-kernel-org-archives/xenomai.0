@@ -1,11 +1,11 @@
 Content-class: urn:content-classes:message
 MIME-Version: 1.0
 Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C8669D.BD9F0C92"
-Date: Sun, 3 Feb 2008 12:48:25 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D3768B2@domain.hid>
+	boundary="----_=_NextPart_001_01C866A0.0923068A"
+Date: Sun, 3 Feb 2008 13:04:50 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D3768B7@domain.hid>
 From: "Steven Seeger" <sseeger@domain.hid>
-Subject: [Xenomai-help] periodic issues/watchdog
+Subject: [Xenomai-help] update
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,51 +20,28 @@ To: xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
 
-------_=_NextPart_001_01C8669D.BD9F0C92
+------_=_NextPart_001_01C866A0.0923068A
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-So with rt_timer_set_periodic(125000) on and my sound task running, I
-still trip the watchdog. /proc/xenomai/stat is showing 9.5% usage by the
-sound task and a whopping 16.5% by IRQ0. (This amount seems considerably
-lower when watchdog support is not compiled in.) The weird thing is that
-the watchdog keeps killing the thread even though it isn't at all
-locking up the system.  (ROOT using 82%.)
+Without watchdog support compiled in, the IRQ0 handler uses about 12%.
+It was closer to 9% when I compiled the scheduler with the heap option.
+Now I'm using the hash and O(1) scheduler so there's more overhead.
+(Experimenting with different results here.)
 
 =20
 
-I changed my code to use this:
-
-=20
-
-if(rt_task_wait_period(0)) rt_task_wait_period(0);
-
-=20
-
-This was intended to catch the -ETIMEDOUT return value in case it did
-time out. I figure this maybe was causing the hard lockup I was seeing
-before.
-
-=20
-
-Gilles's patch did work for me regarding the rt_timer_set_mode()
-problem.
-
-=20
-
-It seems that for now, I'll have to disable the watchdog as I see this
-behavior with periodic mode or aperiodic mode. (My watchdog timeout is
-set for 1 second.)
+Are there some options I can live without to save some cycles on the
+critical path? My application uses about 14 threads, but most of them
+are blocked at any given time.
 
 =20
 
 Steven
 
-=20
 
-
-------_=_NextPart_001_01C8669D.BD9F0C92
+------_=_NextPart_001_01C866A0.0923068A
 Content-Type: text/html;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
@@ -74,7 +51,7 @@ xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
 xmlns=3D"http://www.w3.org/TR/REC-html40">
 
 <head>
-<meta http-equiv=3DContent-Type content=3D"text/html; =
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
 charset=3Dus-ascii">
 <meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
 <style>
@@ -118,17 +95,14 @@ div.Section1
 
 <p class=3DMsoNormal><font size=3D2 face=3DArial><span =
 style=3D'font-size:10.0pt;
-font-family:Arial'>So with rt_timer_set_periodic(125000) on and my sound =
-task
-running, I still trip the watchdog. /proc/xenomai/stat is showing 9.5% =
-usage by
-the sound task and a whopping 16.5% by IRQ0. (This amount seems =
-considerably
-lower when watchdog support is not compiled in.) The weird thing is that =
-the
-watchdog keeps killing the thread even though it isn&#8217;t at all =
-locking up
-the system. &nbsp;(ROOT using 82%.)<o:p></o:p></span></font></p>
+font-family:Arial'>Without watchdog support compiled in, the IRQ0 =
+handler uses
+about 12%. It was closer to 9% when I compiled the scheduler with the =
+heap option.
+Now I&#8217;m using the hash and O(1) scheduler so there&#8217;s more =
+overhead.
+(Experimenting with different results =
+here.)<o:p></o:p></span></font></p>
 
 <p class=3DMsoNormal><font size=3D2 face=3DArial><span =
 style=3D'font-size:10.0pt;
@@ -136,49 +110,11 @@ font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
 
 <p class=3DMsoNormal><font size=3D2 face=3DArial><span =
 style=3D'font-size:10.0pt;
-font-family:Arial'>I changed my code to use =
-this:<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>if(rt_task_wait_period(0)) =
-rt_task_wait_period(0);<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>This was intended to catch the &#8211;ETIMEDOUT =
-return value
-in case it did time out. I figure this maybe was causing the hard lockup =
-I was
-seeing before.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Gilles&#8217;s patch did work for me regarding the
-rt_timer_set_mode() problem.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>It seems that for now, I&#8217;ll have to disable the
-watchdog as I see this behavior with periodic mode or aperiodic mode. =
-(My
-watchdog timeout is set for 1 second.)<o:p></o:p></span></font></p>
+font-family:Arial'>Are there some options I can live without to save =
+some
+cycles on the critical path? My application uses about 14 threads, but =
+most of
+them are blocked at any given time.<o:p></o:p></span></font></p>
 
 <p class=3DMsoNormal><font size=3D2 face=3DArial><span =
 style=3D'font-size:10.0pt;
@@ -188,15 +124,11 @@ font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
 style=3D'font-size:10.0pt;
 font-family:Arial'>Steven<o:p></o:p></span></font></p>
 
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
 </div>
 
 </body>
 
 </html>
 
-------_=_NextPart_001_01C8669D.BD9F0C92--
+------_=_NextPart_001_01C866A0.0923068A--
 
