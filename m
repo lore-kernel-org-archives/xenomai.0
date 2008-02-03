@@ -1,34 +1,56 @@
-Message-ID: <47C3EBB0.4090001@domain.hid>
-Date: Tue, 26 Feb 2008 11:36:32 +0100
-From: Roland Stigge <stigge@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <200802181213.29872.leo@domain.hid>	<47C2A484.4050006@domain.hid>	<200802251317.23736.leo@domain.hid>	<47C2B9E5.9090900@domain.hid>	<18371.16698.219209.759123@domain.hid>	<47C3CA72.1090100@domain.hid>
-	<47C3D7A9.6090300@domain.hid> <47C3DE6A.8000809@domain.hid>
-	<47C3E312.4090003@domain.hid>
-In-Reply-To: <47C3E312.4090003@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Debian package
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Sun, 3 Feb 2008 14:00:27 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D3768BA@slcmail.slc.mew.int>
+In-Reply-To: <18342.10131.452022.345890@domain.hid>
+References: <51CAD0CE1504444DBE77CBBE51A0135D3768B2@domain.hid>
+	<18342.10131.452022.345890@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
+Subject: Re: [Xenomai-help] periodic issues/watchdog
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Paul Corner <paul_c@domain.hid>, xenomai@xenomai.org, Leopold Palomo-Avellaneda <leo@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Ah, I see... that powerpc already failed. :->
+With the watchdog timeout set to 2 seconds, everything runs correctly
+both in periodic and aperiodic mode.
 
-Of course... The DEBIAN/control "hackery" is operating on an
-architecture independent package (linux-patch-xenomai), while only
-building the architecture dependent packages on the build daemons...
+Is there an alternate way to sync all threads on a common timebase
+rather than periodic timing? I don't understand why periodic timing
+requires more CPU usage than aperiodic, when all it has to do is reset
+the interrupt. You'd think without calculations for absolute time
+expirations, it would be faster.
 
-Will be fixed in next revision... Thanks for the note!
+Steven
 
-Roland
+> -----Original Message-----
+> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+> Sent: Sunday, February 03, 2008 1:44 PM
+> To: Steven Seeger
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai-help] periodic issues/watchdog
+>=20
+> Steven Seeger wrote:
+>  > It seems that for now, I'll have to disable the watchdog as I see
+this
+>  > behavior with periodic mode or aperiodic mode. (My watchdog timeout
+is
+>  > set for 1 second.)
+>=20
+> What happens if you set the timeout to 2 seconds ?
+>=20
+> --
+>=20
+>=20
+> 					    Gilles Chanteperdrix.
 
