@@ -1,12 +1,12 @@
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="K8xntcVFjl"
+Content-Type: multipart/mixed; boundary="PltMr7To8A"
 Content-Transfer-Encoding: 7bit
-Message-ID: <18341.1842.200110.826268@domain.hid>
-Date: Sun, 3 Feb 2008 01:13:38 +0100
+Message-ID: <18341.1895.173514.464390@domain.hid>
+Date: Sun, 3 Feb 2008 01:14:31 +0100
 In-Reply-To: <18341.1681.919618.418201@domain.hid>
 References: <18341.1681.919618.418201@domain.hid>
-Subject: [Xenomai-core] [PATCH 2/3] ARM unlocked context switch.
+Subject: Re: [Xenomai-core] [PATCH 3/3] kernel-space only latency test.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,420 +19,719 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai@xenomai.org
 
 
---K8xntcVFjl
+--PltMr7To8A
 Content-Type: text/plain; charset=us-ascii
 Content-Description: message body and .signature
 Content-Transfer-Encoding: 7bit
 
 
-This patch allows the cache flushing needed by ARM context switches to take
-place with the nklock unlocked, irqs on, in the same way as Linux.
+This patch adds a kernel module and a user-space tool to measure the
+kernel-space latency without running user-space real-time tasks. It is mostly
+useful to do a fair comparison between Xenomai and RTAI on platforms without
+LXRT support.
 
-To this end, I added a new thread state XNSWLOCK meaning that a thread is
-currently switching context. Functions switching contexts set this bit in the
-two switching threads status before the context switch, and clear it after. If
-xnpod_schedule is entered (due to execution of an ISR which nklock is unlocked
-during the cache flush) when the current thread has this bit armed, it exits
-immediately with the resched bit remaining set, the routine switching context
-will then restart xnpod_schedule when it detects this situation.
-
-Another case arise if one of the two threads switching context is deleted while
-the nklock is locked. If this thread is the current thread, the rescheduling bit
-is set, so that the normal deletion procedure will take place when
-xnpod_schedule is called again. If this thread is the previous thread, it means
-that the thread has been deleted by a distant CPU on an SMP system, and its
-deletion hooks may be run on any context. We can not delete the thread on the
-distant CPU since the thread stack may currently be in use. We can not even run
-the thread deletion hooks on the distant CPU since it would put the thread
-control block in the distant CPU nkheap idleq, risking that xnfreesync on the
-distant CPU frees the thread control block before its finalization. So, the
-approach taken is to detect this case after the context swich, running the
-deletion hooks immediately so that the finalization can take place normally.
+The kernel module uses the timerbench driver and write intermediate results to
+an rt_pipe; The user-space tool reads the rt_pipe, formats the results and print
+them.
 
 Stats:
- include/asm-arm/bits/pod.h |   60 +++++++++++++++++++-----------------
- include/asm-arm/system.h   |    2 +
- include/nucleus/pod.h      |   40 ++++++++++++++++++++++++
- include/nucleus/thread.h   |    1
- ksrc/nucleus/pod.c         |   75 +++++++++++++++++++++++++++++++++++++++++----
- ksrc/nucleus/shadow.c      |    4 ++
- 6 files changed, 149 insertions(+), 33 deletions(-)
+ configure.in                       |    1
+ ksrc/drivers/testing/Config.in     |    2
+ ksrc/drivers/testing/Kconfig       |    6 +
+ ksrc/drivers/testing/Makefile      |   13 +-
+ ksrc/drivers/testing/klat.c        |  156 ++++++++++++++++++++++++++
+ src/testsuite/Makefile.am          |    2
+ src/testsuite/klatency/Makefile.am |   25 ++++
+ src/testsuite/klatency/klatency.c  |  217 +++++++++++++++++++++++++++++++++++++
+ src/testsuite/klatency/runinfo.in  |    1
+ 9 files changed, 420 insertions(+), 3 deletions(-)
 
 -- 
 
 
 					    Gilles Chanteperdrix.
 
---K8xntcVFjl
+--PltMr7To8A
 Content-Type: text/plain
 Content-Disposition: inline;
-	filename="xeno-unlocked-arm-ctx-switch.4.diff"
+	filename="xeno-klatency.diff"
 Content-Transfer-Encoding: 7bit
 
---- include/asm-arm/bits/pod.h	2008-01-23 22:54:20.000000000 +0100
-+++ include/asm-arm/bits/pod.h	2008-02-03 00:06:05.000000000 +0100
-@@ -67,33 +67,39 @@ static inline void xnarch_enter_root(xna
- #endif /* TIF_MMSWITCH_INT */
- }
- 
--static inline void xnarch_switch_to(xnarchtcb_t * out_tcb, xnarchtcb_t * in_tcb)
--{
--	struct task_struct *prev = out_tcb->active_task;
--	struct mm_struct *prev_mm = out_tcb->active_mm;
--	struct task_struct *next = in_tcb->user_task;
--
--
--	if (likely(next != NULL)) {
--		in_tcb->active_task = next;
--		in_tcb->active_mm = in_tcb->mm;
--		rthal_clear_foreign_stack(&rthal_domain);
--	} else {
--		in_tcb->active_task = prev;
--		in_tcb->active_mm = prev_mm;
--		rthal_set_foreign_stack(&rthal_domain);
--	}
--
--	if (prev_mm != in_tcb->active_mm) {
--		/* Switch to new user-space thread? */
--		if (in_tcb->active_mm)
--			switch_mm(prev_mm, in_tcb->active_mm, next);
--		if (!next->mm)
--			enter_lazy_tlb(prev_mm, next);
--	}
--
--	/* Kernel-to-kernel context switch. */
--	rthal_thread_switch(prev, out_tcb->tip, in_tcb->tip);
-+#define xnarch_switch_to(_out_tcb, _in_tcb, lock)			\
-+{									\
-+	xnarchtcb_t *in_tcb = (_in_tcb);				\
-+	xnarchtcb_t *out_tcb = (_out_tcb);				\
-+	struct task_struct *prev = out_tcb->active_task;		\
-+	struct mm_struct *prev_mm = out_tcb->active_mm;			\
-+	struct task_struct *next = in_tcb->user_task;			\
-+									\
-+									\
-+	if (likely(next != NULL)) {					\
-+		in_tcb->active_task = next;				\
-+		in_tcb->active_mm = in_tcb->mm;				\
-+		rthal_clear_foreign_stack(&rthal_domain);		\
-+	} else {							\
-+		in_tcb->active_task = prev;				\
-+		in_tcb->active_mm = prev_mm;				\
-+		rthal_set_foreign_stack(&rthal_domain);			\
-+	}								\
-+									\
-+	if (prev_mm != in_tcb->active_mm) {				\
-+		/* Switch to new user-space thread? */			\
-+		if (in_tcb->active_mm) {				\
-+			spl_t ignored;					\
-+			xnlock_clear_irqon(lock);			\
-+			switch_mm(prev_mm, in_tcb->active_mm, next);	\
-+			xnlock_get_irqsave(lock, ignored);		\
-+		}							\
-+		if (!next->mm)						\
-+			enter_lazy_tlb(prev_mm, next);			\
-+	}								\
-+									\
-+	/* Kernel-to-kernel context switch. */				\
-+	rthal_thread_switch(prev, out_tcb->tip, in_tcb->tip);		\
- }
- 
- static inline void xnarch_finalize_no_switch(xnarchtcb_t * dead_tcb)
---- include/asm-arm/system.h	2008-01-15 21:13:47.000000000 +0100
-+++ include/asm-arm/system.h	2008-02-03 00:06:28.000000000 +0100
-@@ -31,6 +31,8 @@
- 
- #define XNARCH_THREAD_STACKSZ   4096
- 
-+#define XNARCH_WANT_UNLOCKED_CTXSW
+Index: configure
+===================================================================
+Index: Makefile.in
+===================================================================
+Index: include/uitron/Makefile.in
+===================================================================
+Index: include/asm-ia64/bits/Makefile.in
+===================================================================
+Index: include/asm-ia64/Makefile.in
+===================================================================
+Index: include/Makefile.in
+===================================================================
+Index: include/vxworks/Makefile.in
+===================================================================
+Index: include/native/Makefile.in
+===================================================================
+Index: include/asm-blackfin/bits/Makefile.in
+===================================================================
+Index: include/asm-blackfin/Makefile.in
+===================================================================
+Index: include/asm-generic/bits/Makefile.in
+===================================================================
+Index: include/asm-generic/Makefile.in
+===================================================================
+Index: include/asm-arm/bits/Makefile.in
+===================================================================
+Index: include/asm-arm/Makefile.in
+===================================================================
+Index: include/asm-powerpc/bits/Makefile.in
+===================================================================
+Index: include/asm-powerpc/Makefile.in
+===================================================================
+Index: include/rtai/Makefile.in
+===================================================================
+Index: include/psos+/Makefile.in
+===================================================================
+Index: include/posix/syscall.h
+===================================================================
+Index: include/posix/Makefile.in
+===================================================================
+Index: include/posix/sys/Makefile.in
+===================================================================
+Index: include/posix/sys/select.h
+===================================================================
+Index: include/vrtx/Makefile.in
+===================================================================
+Index: include/asm-x86/Makefile.in
+===================================================================
+Index: include/asm-x86/bits/Makefile.in
+===================================================================
+Index: include/rtdm/Makefile.in
+===================================================================
+Index: include/rtdm/rtdm_driver.h
+===================================================================
+Index: include/rtdm/rtdm.h
+===================================================================
+Index: include/asm-sim/bits/Makefile.in
+===================================================================
+Index: include/asm-sim/Makefile.in
+===================================================================
+Index: include/nucleus/Makefile.in
+===================================================================
+Index: include/nucleus/select.h
+===================================================================
+Index: configure.in
+===================================================================
+--- configure.in	(revision 3452)
++++ configure.in	(working copy)
+@@ -766,6 +766,7 @@ AC_CONFIG_FILES([ \
+        	src/testsuite/switchtest/Makefile \
+ 	src/testsuite/irqbench/Makefile \
+ 	src/testsuite/clocktest/Makefile \
++       	src/testsuite/klatency/Makefile \
+ 	src/utils/Makefile \
+ 	src/utils/can/Makefile \
+        	include/Makefile \
+Index: src/utils/can/Makefile.in
+===================================================================
+Index: src/utils/Makefile.in
+===================================================================
+Index: src/Makefile.in
+===================================================================
+Index: src/include/Makefile.in
+===================================================================
+Index: src/rtdk/Makefile.in
+===================================================================
+Index: src/skins/psos+/Makefile.in
+===================================================================
+Index: src/skins/rtai/Makefile.in
+===================================================================
+Index: src/skins/uitron/Makefile.in
+===================================================================
+Index: src/skins/posix/Makefile.in
+===================================================================
+Index: src/skins/posix/wrappers.c
+===================================================================
+Index: src/skins/posix/select.c
+===================================================================
+Index: src/skins/posix/posix.wrappers
+===================================================================
+Index: src/skins/posix/Makefile.am
+===================================================================
+Index: src/skins/Makefile.in
+===================================================================
+Index: src/skins/vrtx/Makefile.in
+===================================================================
+Index: src/skins/vxworks/Makefile.in
+===================================================================
+Index: src/skins/rtdm/Makefile.in
+===================================================================
+Index: src/testsuite/latency/Makefile.in
+===================================================================
+Index: src/testsuite/switchbench/Makefile.in
+===================================================================
+Index: src/testsuite/switchtest/Makefile.in
+===================================================================
+Index: src/testsuite/Makefile.in
+===================================================================
+Index: src/testsuite/cyclic/Makefile.in
+===================================================================
+Index: src/testsuite/Makefile.am
+===================================================================
+--- src/testsuite/Makefile.am	(revision 3452)
++++ src/testsuite/Makefile.am	(working copy)
+@@ -1 +1 @@
+-SUBDIRS = latency switchbench cyclic switchtest irqbench clocktest
++SUBDIRS = latency switchbench cyclic switchtest irqbench clocktest klatency
+Index: src/testsuite/klatency/Makefile.in
+===================================================================
+Index: src/testsuite/klatency/runinfo.in
+===================================================================
+--- src/testsuite/klatency/runinfo.in	(revision 0)
++++ src/testsuite/klatency/runinfo.in	(revision 0)
+@@ -0,0 +1 @@
++latency:native+rtdm+timerbench+klat:!@exec_prefix@domain.hid
+Index: src/testsuite/klatency/Makefile.am
+===================================================================
+--- src/testsuite/klatency/Makefile.am	(revision 0)
++++ src/testsuite/klatency/Makefile.am	(revision 0)
+@@ -0,0 +1,25 @@
++testdir = $(exec_prefix)/share/xenomai/testsuite/klatency
 +
- #define xnarch_stack_size(tcb)  ((tcb)->stacksize)
- #define xnarch_user_task(tcb)   ((tcb)->user_task)
- #define xnarch_user_pid(tcb)    ((tcb)->user_task->pid)
---- include/nucleus/pod.h	2008-02-02 22:47:59.000000000 +0100
-+++ include/nucleus/pod.h	2008-02-02 22:49:18.000000000 +0100
-@@ -140,6 +140,10 @@ typedef struct xnsched {
- 	xntimer_t htimer;	/*!< Host timer. */
- 
- 	xnthread_t *zombie;
++bin_PROGRAMS = klatency
 +
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	xnthread_t *lastthread;
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
- } xnsched_t;
- 
- #define nkpod (&nkpod_struct)
-@@ -457,6 +461,42 @@ static inline void xnpod_delete_self(voi
- 	xnpod_delete_thread(xnpod_current_thread());
- }
- 
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+void xnpod_zombie_hooks(xnthread_t *thread);
++klatency_SOURCES = klatency.c
 +
-+static inline void xnpod_finish_unlocked_switch(xnsched_t *sched)
++klatency_CPPFLAGS = \
++	@XENO_USER_CFLAGS@ \
++	-I$(top_srcdir)/include
++
++klatency_LDFLAGS = @XENO_USER_LDFLAGS@
++
++install-data-local:
++	$(mkinstalldirs) $(DESTDIR)$(testdir)
++	@sed -e's,@exec_prefix\@,$(exec_prefix),g' $(srcdir)/runinfo.in > $(DESTDIR)$(testdir)/.runinfo
++	@echo "\$${DESTDIR}$(exec_prefix)/bin/xeno-load \`dirname \$$0\` \$$*" > $(DESTDIR)$(testdir)/run
++	@chmod +x $(DESTDIR)$(testdir)/run
++
++uninstall-local:
++	$(RM) $(DESTDIR)$(testdir)/.runinfo $(DESTDIR)$(testdir)/run
++
++run: all
++	@$(top_srcdir)/scripts/xeno-load --verbose
++
++EXTRA_DIST = runinfo.in
+Index: src/testsuite/klatency/klatency.c
+===================================================================
+--- src/testsuite/klatency/klatency.c	(revision 0)
++++ src/testsuite/klatency/klatency.c	(revision 0)
+@@ -0,0 +1,217 @@
++#include <unistd.h>
++#include <stdlib.h>
++#include <stdio.h>
++#include <string.h>
++#include <signal.h>
++#include <getopt.h>
++#include <time.h>
++#include <errno.h>
++#include <rtdm/rttesting.h>
++
++long long period_ns = 0;
++int test_duration = 0;		/* sec of testing, via -T <sec>, 0 is inf */
++int data_lines = 21;		/* data lines per header line, -l <lines> to change */
++int quiet = 0;			/* suppress printing of RTH, RTD lines when -T given */
++int benchdev_no = -1;
++int benchdev = -1;
++int freeze_max;
++int priority;
++
++#define USER_TASK       0
++#define KERNEL_TASK     1
++#define TIMER_HANDLER   2
++
++int test_mode = USER_TASK;
++const char *test_mode_names[] = {
++	"periodic user-mode task",
++	"in-kernel periodic task",
++	"in-kernel timer handler"
++};
++
++time_t test_start, test_end;	/* report test duration */
++int test_loops = 0;		/* outer loop count */
++
++int finished = 0;
++
++void display(void)
 +{
-+	xnthread_clear_state(sched->lastthread, XNSWLOCK);
-+	xnthread_clear_state(sched->runthread, XNSWLOCK);
++	struct rttst_interm_bench_res result;
++	int err, n = 0, got_results = 0;
++	time_t start, actual_duration;
 +
-+	/* Detect a thread which called xnpod_migrate_thread */
-+	if (sched->lastthread->sched != sched)
-+		xnpod_resume_thread(sched->lastthread, 0);
++	time(&start);
 +
-+	if (xnthread_test_state(sched->lastthread, XNZOMBIE)) {
-+		/* There are two cases where sched->lastthread has the zombie
-+		   bit:
-+		   - either it had it before the context switch, the hooks
-+		   have been executed and sched->zombie is lastthread;
-+		   - or it has been killed while the nklocked was unlocked
-+		   during the context switch, in which case we must run the
-+		   hooks, and we do it now.
-+		*/
-+		if (sched->zombie != sched->lastthread)
-+			xnpod_zombie_hooks(sched->lastthread);
++	printf("warming up...\n");
++
++	if (quiet)
++		fprintf(stderr, "running quietly for %d seconds\n",
++			test_duration);
++
++	while (!finished) {
++		long minj, gminj, maxj, gmaxj, avgj, goverrun;
++
++		err = read(benchdev, &result, sizeof(result));
++		if (err <= 0) {
++			fprintf(stderr, "read: %d, errno: %d\n", err, errno);
++			break;
++		}
++
++		got_results = 1;
++		minj = result.last.min;
++		gminj = result.overall.min;
++		avgj = result.last.avg;
++		maxj = result.last.max;
++		gmaxj = result.overall.max;
++		goverrun = result.overall.overruns;
++
++		if (!quiet) {
++			if (data_lines && (n++ % data_lines) == 0) {
++				time_t now, dt;
++				time(&now);
++				dt = now - start;
++				printf
++					("RTT|  %.2ld:%.2ld:%.2ld  (%s, %Ld us period, "
++					 "priority %d)\n", dt / 3600,
++					 (dt / 60) % 60, dt % 60,
++					 test_mode_names[test_mode],
++					 period_ns / 1000, priority);
++				printf("RTH|%12s|%12s|%12s|%8s|%12s|%12s\n",
++				       "-----lat min", "-----lat avg",
++				       "-----lat max", "-overrun",
++				       "----lat best", "---lat worst");
++			}
++
++			printf("RTD|%12.3f|%12.3f|%12.3f|%8ld|%12.3f|%12.3f\n",
++			       (double)minj / 1000,
++			       (double)avgj / 1000,
++			       (double)maxj / 1000,
++			       goverrun,
++			       (double)gminj / 1000, (double)gmaxj / 1000);
++		}
++	}
++
++	time(&test_end);
++	actual_duration = test_end - test_start;
++	if (!test_duration)
++		test_duration = actual_duration;
++
++	if (got_results) {
++		long gminj, gmaxj, gavgj, goverrun;
++
++		gminj = result.overall.min;
++		gmaxj = result.overall.max;
++		goverrun = result.overall.overruns;
++		gavgj = result.overall.avg
++			/ ((result.overall.test_loops) > 1 ?
++			   result.overall.test_loops : 2) - 1;
++
++		printf("---|------------|------------|------------|--------|-------------------------\n"
++		       "RTS|%12.3f|%12.3f|%12.3f|%8ld|    %.2ld:%.2ld:%.2ld/%.2d:%.2d:%.2d\n",
++		       (double)gminj / 1000, (double)gavgj / 1000, (double)gmaxj / 1000,
++		       goverrun, actual_duration / 3600, (actual_duration / 60) % 60,
++		       actual_duration % 60, test_duration / 3600,
++		       (test_duration / 60) % 60, test_duration % 60);
++
++	}
++
++	if (benchdev >= 0)
++		close(benchdev);
++}
++
++void sighand(int sig __attribute__ ((unused)))
++{
++	finished = 1;
++}
++
++int main(int argc, char **argv)
++{
++	struct rttst_tmbench_config config;
++	int c;
++
++	while ((c = getopt(argc, argv, "l:T:qP:")) != EOF)
++		switch (c) {
++		case 'l':
++
++			data_lines = atoi(optarg);
++			break;
++
++		case 'T':
++
++			test_duration = atoi(optarg);
++			alarm(test_duration);
++			break;
++
++		case 'q':
++
++			quiet = 1;
++			break;
++
++		case 'P':
++
++			benchdev_no = atoi(optarg);
++			break;
++
++		default:
++
++			fprintf(stderr, "usage: latency [options]\n"
++				"  [-l <data-lines per header>] # default=21, 0 to supress headers\n"
++				"  [-T <test_duration_seconds>] # default=0, so ^C to end\n"
++				"  [-q]                         # supresses RTD, RTH lines if -T is used\n"
++				"  [-P <rt_pipe_no>]            # number of testing pipe, default=auto\n");
++			exit(2);
++		}
++
++	if (!test_duration && quiet) {
++		fprintf(stderr,
++			"latency: -q only works if -T has been given.\n");
++		quiet = 0;
++	}
++
++	time(&test_start);
++
++	signal(SIGINT, sighand);
++	signal(SIGTERM, sighand);
++	signal(SIGHUP, sighand);
++	signal(SIGALRM, sighand);
++
++	setlinebuf(stdout);
++
++	if (benchdev_no == -1) {
++		benchdev = open("/proc/xenomai/registry/native/pipes/klat_pipe",
++				O_RDONLY);
++		if (benchdev == -1) {
++			perror("open(/proc/xenomai/registry/native/pipes/klat_pipe)");
++			fprintf(stderr,
++				"modprobe klat_mod or try the -P option?\n");
++			exit(EXIT_FAILURE);
++		}
++	} else {
++		char devname[64];
++		snprintf(devname, sizeof(devname), "/dev/rtp%d", benchdev_no);
++		benchdev = open(devname, O_RDONLY);
++		if (benchdev == -1) {
++			fprintf(stderr, "open(%s): %s\n",
++				devname, strerror(errno));
++			exit(EXIT_FAILURE);
++		}
++	}
++
++	if (read(benchdev, &config, sizeof(config)) == -1) {
++		perror("read");
++		exit(EXIT_FAILURE);
++	}
++
++	test_mode = config.mode;
++	priority = config.priority;
++	period_ns = config.period;
++	freeze_max = config.freeze_max;
++
++	printf("== Sampling period: %Ld us\n"
++	       "== Test mode: %s\n"
++	       "== All results in microseconds\n",
++	       period_ns / 1000, test_mode_names[test_mode]);
++
++	display();
++
++	return 0;
++}
+Index: src/testsuite/irqbench/Makefile.in
+===================================================================
+Index: src/testsuite/clocktest/Makefile.in
+===================================================================
+Index: scripts/Makefile.in
+===================================================================
+Index: ksrc/skins/posix/syscall.c
+===================================================================
+Index: ksrc/skins/posix/mq.c
+===================================================================
+Index: ksrc/skins/posix/thread.c
+===================================================================
+Index: ksrc/skins/posix/thread.h
+===================================================================
+Index: ksrc/skins/posix/internal.h
+===================================================================
+Index: ksrc/skins/rtdm/device.c
+===================================================================
+Index: ksrc/skins/rtdm/drvlib.c
+===================================================================
+Index: ksrc/skins/rtdm/core.c
+===================================================================
+Index: ksrc/drivers/testing/Kconfig
+===================================================================
+--- ksrc/drivers/testing/Kconfig	(revision 3452)
++++ ksrc/drivers/testing/Kconfig	(working copy)
+@@ -22,4 +22,10 @@ config XENO_DRIVERS_SWITCHTEST
+ 	Kernel-based driver for unit testing context switches and
+ 	FPU switches.
+ 
++config XENO_DRIVERS_KLATENCY
++	depends on XENO_DRIVERS_TIMERBENCH
++	tristate "Kernel-only latency measurement module"
++	help
++	Kernel module for kernel-only latency measurement.
++
+ endmenu
+Index: ksrc/drivers/testing/Config.in
+===================================================================
+--- ksrc/drivers/testing/Config.in	(revision 3452)
++++ ksrc/drivers/testing/Config.in	(working copy)
+@@ -11,4 +11,6 @@ dep_tristate 'IRQ benchmark driver' CONF
+ 
+ dep_tristate 'Context switches test driver' CONFIG_XENO_DRIVERS_SWITCHTEST $CONFIG_XENO_SKIN_RTDM
+ 
++dep_tristate 'Kernel-only latency measurement module' CONFIG_XENO_DRIVERS_KLATENCY $XENO_DRIVERS_TIMERBENCH
++
+ endmenu
+Index: ksrc/drivers/testing/klat.c
+===================================================================
+--- ksrc/drivers/testing/klat.c	(revision 0)
++++ ksrc/drivers/testing/klat.c	(revision 0)
+@@ -0,0 +1,156 @@
++/*
++ * Copyright (C) 2008 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>.
++ *
++ * Xenomai is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * Xenomai is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with Xenomai; if not, write to the Free Software Foundation,
++ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
++ */
++
++#include <native/pipe.h>
++#include <native/task.h>
++#include <rtdm/rttesting.h>
++
++#define DEV_NR_MAX 256
++
++static int pipe = P_MINOR_AUTO;
++module_param(pipe, int, 0400);
++MODULE_PARM_DESC(pipe, "Index of the RT-pipe used for first connection"
++		 " (-1, the default, means automatic minor allocation)");
++
++static int mode = 1;
++module_param(mode, int, 0400);
++MODULE_PARM_DESC(mode, "Test mode, (1 for kernel task, 2 for timer handler)");
++
++static int priority = 99;
++module_param(priority, int, 0400);
++MODULE_PARM_DESC(priority, "Kernel task priority");
++
++static unsigned period = 100;
++module_param(period, uint, 0400);
++MODULE_PARM_DESC(period, "Sampling period, in microseconds");
++
++static int freeze_max = 0;
++module_param(freeze_max, int, 0400);
++MODULE_PARM_DESC(freeze_max, "Freeze trace for each new max latency");
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("gilles.chanteperdrix@xenomai.org");
++
++static RT_TASK klat_srvr;
++static RT_PIPE klat_pipe;
++static int fd;
++
++static void klat_server(void *cookie)
++{
++	struct rttst_interm_bench_res res;
++	int err;
++
++	for (;;) {
++		err = rt_dev_ioctl(fd, RTTST_RTIOC_INTERM_BENCH_RES, &res);
++		if (err) {
++			if (err != -EIDRM)
++				printk("rt_dev_ioctl(RTTST_RTIOC_INTERM_BENCH_RES): %d",
++				       err);
++			return;
++		}
++
++		/* Do not check rt_pipe_write return value, the pipe may well be
++		   full. */
++		rt_pipe_write(&klat_pipe, &res, sizeof(res), P_NORMAL);
 +	}
 +}
 +
-+static inline void xnpod_resched_after_unlocked_switch(void)
++static int __init klat_mod_init(void)
 +{
-+	if (xnsched_resched_p())
-+		xnpod_schedule();
-+}
-+#else /* !XNARCH_WANT_UNLOCKED_CTXSW */
-+#define xnpod_finish_unlocked_switch(sched)
-+#define xnpod_resched_after_unlocked_switch()
-+#endif /* !XNARCH_WANT_UNLOCKED_CTXSW */
++	char devname[RTDM_MAX_DEVNAME_LEN + 1];
++	struct rttst_tmbench_config config;
++	unsigned dev_nr;
++	int err;
 +
- #ifdef __cplusplus
- }
- #endif
---- include/nucleus/thread.h	2008-01-15 21:13:13.000000000 +0100
-+++ include/nucleus/thread.h	2008-02-02 21:29:53.000000000 +0100
-@@ -61,6 +61,7 @@
- #define XNFPU     0x00100000 /**< Thread uses FPU */
- #define XNSHADOW  0x00200000 /**< Shadow thread */
- #define XNROOT    0x00400000 /**< Root thread (that is, Linux/IDLE) */
-+#define XNSWLOCK  0x00800000 /**< Thread is currently switching context. */
- 
- /*! @} */ /* Ends doxygen comment group: nucleus_state_flags */
- 
---- ksrc/nucleus/pod.c	2008-02-03 00:20:17.000000000 +0100
-+++ ksrc/nucleus/pod.c	2008-02-03 00:25:26.000000000 +0100
-@@ -66,6 +66,22 @@ char *nkmsgbuf = NULL;
- 
- xnarch_cpumask_t nkaffinity = XNPOD_ALL_CPUS;
- 
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+static inline void xnpod_switch_to(xnsched_t *sched,
-+				   xnthread_t *threadout, xnthread_t *threadin)
++	err = rt_pipe_create(&klat_pipe, "klat_pipe", pipe, 4096);
++	if (err) {
++		printk("rt_pipe_create(klat_pipe): %d\n", err);
++		return err;
++	}
++
++	err = rt_task_create(&klat_srvr, "klat_srvr", 0, 0, 0);
++	if (err) {
++		printk("rt_task_create(klat_srvr): %d\n", err);
++		goto err_close_pipe;
++	}
++
++	config.mode = mode;
++	config.priority = priority;
++	config.period = period * 1000;
++	config.warmup_loops = 1;
++	config.histogram_size = 0;
++	config.freeze_max = freeze_max;
++
++	for (dev_nr = 0; dev_nr < DEV_NR_MAX; dev_nr++) {
++		snprintf(devname, sizeof(devname), "rttest%d", dev_nr);
++		fd = rt_dev_open(devname, O_RDONLY);
++		if (fd < 0)
++			continue;
++
++		err = rt_dev_ioctl(fd, RTTST_RTIOC_TMBENCH_START, &config);
++		if (err == -ENOTTY) {
++			rt_dev_close(fd);
++			continue;
++		}
++
++		if (err < 0) {
++			printk("rt_dev_ioctl(RTTST_RTIOC_TMBENCH_START): %d\n",
++			       err);
++			goto err_close_dev;
++		}
++
++		break;
++	}
++	if (fd < 0) {
++		printk("rt_dev_open: could not find rttest device\n"
++		       "(modprobe timerbench?)");
++		return fd;
++	}
++
++	err = rt_pipe_write(&klat_pipe, &config, sizeof(config), P_NORMAL);
++	if (err < 0) {
++		printk("rt_pipe_write: %d\n", err);
++		goto err_close_dev;
++	}
++
++	err = rt_task_start(&klat_srvr, &klat_server, NULL);
++	if (err) {
++		printk("rt_task_start: %d\n", err);
++		goto err_close_dev;
++	}
++	
++	return 0;
++
++  err_close_dev:
++	rt_dev_close(fd);
++	rt_task_delete(&klat_srvr);
++  err_close_pipe:
++	rt_pipe_delete(&klat_pipe);
++	return err;
++}
++
++
++static void klat_mod_exit(void)
 +{
-+	sched->lastthread = threadout;
-+	xnthread_set_state(threadout, XNSWLOCK);
-+	xnthread_set_state(threadin, XNSWLOCK);
-+
-+	xnarch_switch_to(xnthread_archtcb(threadout),
-+			 xnthread_archtcb(threadin), &nklock);
++	rt_dev_close(fd);
++	rt_task_delete(&klat_srvr);
++	rt_pipe_delete(&klat_pipe);
 +}
-+#else /* !XNARCH_WANT_UNLOCKED_CTXSW */
-+#define xnpod_switch_to(sched, threadout, threadin) \
-+	xnarch_switch_to(xnthread_archtcb(threadout), xnthread_archtcb(threadin))
-+#endif /* !XNARCH_WANT_UNLOCKED_CTXSW */
 +
- const char *xnpod_fatal_helper(const char *format, ...)
- {
- 	const unsigned nr_cpus = xnarch_num_online_cpus();
-@@ -546,7 +562,7 @@ static inline void xnpod_fire_callouts(x
- 	__clrbits(sched->status, XNKCOUT);
- }
++module_init(klat_mod_init);
++module_exit(klat_mod_exit);
+Index: ksrc/drivers/testing/Makefile
+===================================================================
+--- ksrc/drivers/testing/Makefile	(revision 3452)
++++ ksrc/drivers/testing/Makefile	(working copy)
+@@ -7,6 +7,7 @@ EXTRA_CFLAGS += -D__IN_XENOMAI__ -Iinclu
+ obj-$(CONFIG_XENO_DRIVERS_TIMERBENCH) += xeno_timerbench.o
+ obj-$(CONFIG_XENO_DRIVERS_IRQBENCH)   += xeno_irqbench.o
+ obj-$(CONFIG_XENO_DRIVERS_SWITCHTEST) += xeno_switchtest.o
++obj-$(CONFIG_XENO_DRIVERS_KLATENCY)   += xeno_klat.o
  
--static void xnpod_zombie_hooks(xnthread_t *thread)
-+void xnpod_zombie_hooks(xnthread_t *thread)
- {
- 	XENO_BUGON(NUCLEUS, thread->sched->zombie != NULL);
- 	thread->sched->zombie = thread;
-@@ -1190,7 +1206,14 @@ void xnpod_delete_thread(xnthread_t *thr
- 		   the thread object. */
- 		xnsched_set_resched(sched);
- 		xnpod_schedule();
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	} else if (!xnthread_test_state(thread, XNSWLOCK)) {
-+		/* When killing a thread in the course of a context switch
-+		   with nklock unlocked on a distant CPU, do nothing, this case
-+		   will be caught in xnpod_finish_unlocked_switch. */
-+#else /* !XNARCH_WANT_UNLOCKED_CTXSW */
- 	} else {
-+#endif /* !XNARCH_WANT_UNLOCKED_CTXSW */
- 		if (!emptyq_p(&nkpod->tdeleteq)
- 		    && !xnthread_test_state(thread, XNROOT)) {
- 			trace_mark(xn_nucleus_thread_callout,
-@@ -1869,8 +1892,10 @@ int xnpod_migrate_thread(int cpu)
- 	/* Migrate the thread periodic timer. */
- 	xntimer_set_sched(&thread->ptimer, thread->sched);
+ xeno_timerbench-y := timerbench.o
  
-+#ifndef XNARCH_WANT_UNLOCKED_CTXSW
- 	/* Put thread in the ready queue of the destination CPU's scheduler. */
- 	xnpod_resume_thread(thread, 0);
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
+@@ -14,6 +15,8 @@ xeno_irqbench-y := irqbench.o
  
- 	xnpod_schedule();
+ xeno_switchtest-y := switchtest.o
  
-@@ -2112,6 +2137,8 @@ void xnpod_dispatch_signals(void)
- 
- void xnpod_welcome_thread(xnthread_t *thread, int imask)
- {
-+	xnpod_finish_unlocked_switch(thread->sched);
++xeno_klat-y := klat.o
 +
- 	xnpod_finalize_zombie(thread->sched);
+ EXTRA_CFLAGS += -D__IN_XENOMAI__ -Iinclude/xenomai
  
- 	trace_mark(xn_nucleus_thread_boot, "thread %p thread_name %s",
-@@ -2148,6 +2175,8 @@ void xnpod_welcome_thread(xnthread_t *th
+ else
+@@ -25,14 +28,17 @@ O_TARGET := built-in.o
+ obj-$(CONFIG_XENO_DRIVERS_TIMERBENCH) += xeno_timerbench.o
+ obj-$(CONFIG_XENO_DRIVERS_IRQBENCH)   += xeno_irqbench.o
+ obj-$(CONFIG_XENO_DRIVERS_SWITCHTEST) += xeno_switchtest.o
+-
++obj-$(CONFIG_XENO_DRIVERS_KLATENCY)   += xeno_klat.o
+ xeno_timerbench-objs := timerbench.o
  
- 	xnlock_clear_irqoff(&nklock);
- 	splexit(!!imask);
+ xeno_irqbench-objs := irqbench.o
+ 
+ xeno_switchtest-objs := switchtest.o
+ 
+-export-objs := $(xeno_timerbench-objs) $(xeno_irqbench-objs) $(xeno_switchtest-objs)
++xeno_klat-objs := klat.o
 +
-+	xnpod_resched_after_unlocked_switch();
- }
++export-objs := $(xeno_timerbench-objs) $(xeno_irqbench-objs) \
++	$(xeno_switchtest-objs) $(xeno_klat-objs)
  
- #ifdef CONFIG_XENO_HW_FPU
-@@ -2367,6 +2396,10 @@ void xnpod_schedule(void)
- 	if (xnpod_callout_p() || xnpod_interrupt_p())
- 		return;
+ EXTRA_CFLAGS += -D__IN_XENOMAI__ -I$(TOPDIR)/include/xenomai -I$(TOPDIR)/include/xenomai/compat
  
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+      restart:
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
+@@ -47,4 +53,7 @@ xeno_irqbench.o: $(xeno_irqbench-objs)
+ xeno_switchtest.o: $(xeno_switchtest-objs)
+ 	$(LD) -r -o $@ $(xeno_switchtest-objs)
+ 
++xeno_klat.o: $(xeno_klat-objs)
++	$(LD) -r -o $@ $(xeno_klat-objs)
 +
- 	trace_mark(xn_nucleus_sched, MARK_NOARGS);
- 
- 	xnlock_get_irqsave(&nklock, s);
-@@ -2388,7 +2421,7 @@ void xnpod_schedule(void)
- 		xnarch_send_ipi(xnsched_resched_mask());
- 		xnsched_clr_mask(sched);
- 	}
--#if XENO_DEBUG(NUCLEUS)
-+#if !XENO_DEBUG(NUCLEUS)
- 	if (!need_resched)
- 		goto signal_unlock_and_exit;
- 
-@@ -2400,6 +2433,11 @@ void xnpod_schedule(void)
- 
- #endif /* CONFIG_SMP */
- 
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	if (xnthread_test_state(runthread, XNSWLOCK))
-+		goto unlock_and_exit;
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
-+
- 	/* Clear the rescheduling bit */
- 	xnsched_clr_resched(sched);
- 
-@@ -2486,8 +2524,7 @@ void xnpod_schedule(void)
- 	xnstat_exectime_switch(sched, &threadin->stat.account);
- 	xnstat_counter_inc(&threadin->stat.csw);
- 
--	xnarch_switch_to(xnthread_archtcb(threadout),
--			 xnthread_archtcb(threadin));
-+	xnpod_switch_to(sched, threadout, threadin);
- 
- #ifdef CONFIG_SMP
- 	/* If threadout migrated while suspended, sched is no longer correct. */
-@@ -2512,6 +2549,8 @@ void xnpod_schedule(void)
- 		xnpod_fatal("zombie thread %s (%p) would not die...",
- 			    threadout->name, threadout);
- 
-+	xnpod_finish_unlocked_switch(sched);
-+
- 	xnpod_finalize_zombie(sched);
- 
- #ifdef CONFIG_XENO_HW_FPU
-@@ -2530,11 +2569,19 @@ void xnpod_schedule(void)
- 		xnpod_fire_callouts(&nkpod->tswitchq, runthread);
- 	}
- 
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+	if (unlikely(xnsched_resched_p()))
-+		goto signal_unlock_and_restart;
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
-+
-       signal_unlock_and_exit:
- 
- 	if (xnthread_signaled_p(runthread))
- 		xnpod_dispatch_signals();
- 
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+      unlock_and_exit:
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
- 	xnlock_put_irqrestore(&nklock, s);
- 	return;
- 
-@@ -2553,8 +2600,21 @@ void xnpod_schedule(void)
- 		   the caller may expect it to be locked. */
- 		xnlock_get_irqsave(&nklock, ignored);
- 		xnlock_put_irqrestore(&nklock, s);
-+
-+		return;
- 	}
- #endif /* CONFIG_XENO_OPT_PERVASIVE */
-+
-+#ifdef XNARCH_WANT_UNLOCKED_CTXSW
-+  signal_unlock_and_restart:
-+	if (xnthread_signaled_p(runthread))
-+		xnpod_dispatch_signals();
-+
-+	xnlock_put_irqrestore(&nklock, s);
-+
-+	if (xnsched_resched_p())
-+		goto restart;
-+#endif /* XNARCH_WANT_UNLOCKED_CTXSW */
- }
- 
- /*! 
-@@ -2672,14 +2732,15 @@ void xnpod_schedule_runnable(xnthread_t 
- 	xnstat_exectime_switch(sched, &threadin->stat.account);
- 	xnstat_counter_inc(&threadin->stat.csw);
- 
--	xnarch_switch_to(xnthread_archtcb(runthread),
--			 xnthread_archtcb(threadin));
-+	xnpod_switch_to(sched, runthread, threadin);
- 
- #ifdef CONFIG_SMP
- 	/* If runthread migrated while suspended, sched is no longer correct. */
- 	sched = xnpod_current_sched();
- #endif
- 
-+	xnpod_finish_unlocked_switch(sched);
-+
- 	xnpod_finalize_zombie(sched);
- 
- 	xnarch_trace_pid(xnthread_user_task(runthread) ?
-@@ -2694,6 +2755,8 @@ void xnpod_schedule_runnable(xnthread_t 
- 	if (nkpod->schedhook && runthread == sched->runthread)
- 		nkpod->schedhook(runthread, XNRUNNING);
- #endif /* __XENO_SIM__ */
-+
-+	xnpod_resched_after_unlocked_switch();
- }
- 
- /*! 
---- ksrc/nucleus/shadow.c	2008-02-02 22:48:08.000000000 +0100
-+++ ksrc/nucleus/shadow.c	2008-02-02 22:47:04.000000000 +0100
-@@ -1127,6 +1127,8 @@ redo:
- 	/* "current" is now running into the Xenomai domain. */
- 	sched = xnpod_current_sched();
- 
-+	xnpod_finish_unlocked_switch(sched);
-+
- 	xnpod_finalize_zombie(sched);
- 
- #ifdef CONFIG_XENO_HW_FPU
-@@ -1153,6 +1155,8 @@ redo:
- 	trace_mark(xn_nucleus_shadow_hardened, "thread %p thread_name %s",
- 		   thread, xnthread_name(thread));
- 
-+	xnpod_resched_after_unlocked_switch();
-+
- 	return 0;
- }
- 
+ endif
+Index: ksrc/nucleus/select.c
+===================================================================
+Index: ksrc/nucleus/Makefile
+===================================================================
+Index: config/Makefile.in
+===================================================================
+Index: doc/txt/Makefile.in
+===================================================================
+Index: doc/docbook/xenomai/Makefile.in
+===================================================================
+Index: doc/docbook/Makefile.in
+===================================================================
+Index: doc/docbook/custom-stylesheets/Makefile.in
+===================================================================
+Index: doc/docbook/custom-stylesheets/xsl/Makefile.in
+===================================================================
+Index: doc/docbook/custom-stylesheets/xsl/fo/Makefile.in
+===================================================================
+Index: doc/docbook/custom-stylesheets/xsl/html/Makefile.in
+===================================================================
+Index: doc/docbook/custom-stylesheets/xsl/common/Makefile.in
+===================================================================
+Index: doc/Makefile.in
+===================================================================
+Index: doc/man/Makefile.in
+===================================================================
+Index: doc/doxygen/Makefile.in
+===================================================================
+Index: aclocal.m4
+===================================================================
 
---K8xntcVFjl--
+--PltMr7To8A--
 
