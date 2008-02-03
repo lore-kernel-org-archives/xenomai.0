@@ -1,14 +1,15 @@
-Message-ID: <47A63D49.4050700@domain.hid>
-Date: Sun, 03 Feb 2008 23:16:41 +0100
+Message-ID: <47A63DA8.4020609@domain.hid>
+Date: Sun, 03 Feb 2008 23:18:16 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <18340.31233.591834.293535@domain.hid>
-In-Reply-To: <18340.31233.591834.293535@domain.hid>
+References: <18340.31233.591834.293535@domain.hid>	<18340.31323.677695.655702@domain.hid>
+	<18340.31655.777349.789045@domain.hid>
+In-Reply-To: <18340.31655.777349.789045@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig50D7171AB6013ECE066A13D1"
+	boundary="------------enig762DB7B40A0C8DC66249E6AE"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [PATCH 0/5] Support for select v2.
+Subject: Re: [Xenomai-core] [PATCH 5/5] RTDM: check file descriptor owner.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,38 +23,29 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig50D7171AB6013ECE066A13D1
-Content-Type: text/plain; charset=us-ascii
+--------------enig762DB7B40A0C8DC66249E6AE
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
 Gilles Chanteperdrix wrote:
-> Hi,
->=20
-> after some tests, bug fixes and optimizations, here comes a second vers=
-ion of=20
-> the patch-set adding select support to xenomai posix skin.
->=20
+> This patch makes RTDM service rtdm_context_get check the owner of a fil=
+e
+> descriptor. This will prevent a process to close an RTDM file descripto=
+r
+> belonging to another process.
 
-Puh, a lot of code, and my brain is still full of KGDB stuff I'm trying
-to polish for mainline since days.
+I assume this is a safety belt against crazy applications, right? Hope
+one day we can solve this via process-local FD name spaces.
 
-The approach looks consistent to me. I would just suggest to make the
-whole thing configurable, so that it doesn't add overhead to systems
-which do not use it.
-
-Out of curiosity: Did you already have a chance to compare a
-multi-threaded demo application with one based on these new select servic=
-es?
-
-I guess your current test cases are built on top of RTnet, aren't they?
-Would be nice, also for regression testing, to have some demo for
-/examples, e.g. exploiting the CAN stack (because it has virtual CAN,
-thus it is usable without hardware).
+I'm OK with this if you keep the API of rtdm_context_get as is and add
+an internal checked service __rtdm_context_get(user_info, fd) instead.
+rtdm_context_get would then call __rtdm_context_get(NULL, fd) because it
+is supposed to operate on kernel file descriptors only.
 
 Jan
 
 
---------------enig50D7171AB6013ECE066A13D1
+--------------enig762DB7B40A0C8DC66249E6AE
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -62,10 +54,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.4-svn0 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFHpj1NniDOoMHTA+kRArgyAJ9KRM/F0IxstcpaaZpR1UfXlEAzYQCfeJ7u
-EhC8/D2xhpR9wkQ9608mvpg=
-=nUN7
+iD8DBQFHpj2pniDOoMHTA+kRAlctAJ0SMhvR0oWefM2VE/aep0LthIjzhQCffErJ
+aybU6Ozt29TP5hDnHBIAv48=
+=TZf4
 -----END PGP SIGNATURE-----
 
---------------enig50D7171AB6013ECE066A13D1--
+--------------enig762DB7B40A0C8DC66249E6AE--
 
