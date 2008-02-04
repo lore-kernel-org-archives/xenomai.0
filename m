@@ -1,5 +1,5 @@
-Message-ID: <47A6FCD2.3070709@domain.hid>
-Date: Mon, 04 Feb 2008 12:53:54 +0100
+Message-ID: <47A6FC16.4050708@domain.hid>
+Date: Mon, 04 Feb 2008 12:50:46 +0100
 From: Soft Axel <softaxel@domain.hid>
 MIME-Version: 1.0
 References: <d3f72a390802010108l4f24cc4bq81272fdae55089e9@domain.hid>	
@@ -10,7 +10,7 @@ References: <d3f72a390802010108l4f24cc4bq81272fdae55089e9@domain.hid>
 	<2ff1a98a0802010200q981e76fkd2340c6ba7796157@domain.hid>
 In-Reply-To: <2ff1a98a0802010200q981e76fkd2340c6ba7796157@domain.hid>
 Content-Type: multipart/alternative;
-	boundary="------------080701090609010704010406"
+	boundary="------------040602050808060401010503"
 Subject: Re: [Xenomai-core] rt_task_sleep doesn't work with round robin
 	scheduling
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -26,7 +26,7 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
---------------080701090609010704010406
+--------------040602050808060401010503
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 
@@ -73,20 +73,18 @@ Gilles Chanteperdrix ha scritto:
 > https://gna.org/svn/?group=xenomai
 >
 >   
+I try with the xenomai trunk and this is OK.
 
-Yes, it works.
+But i have one question: the xenomai trunk is stable or every change is 
+uploaded ?
+Because i can't upgrade my board very frequently and i want to put a 
+stable version.
 
-But i have one question.
-The main trunk is stable or every change is uploaded ?
-
-For me it's very important because i can't upgrade the board very 
-frequently.
+thanks a lot
 
 Roberto
 
-
-
---------------080701090609010704010406
+--------------040602050808060401010503
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 
@@ -145,20 +143,18 @@ No, please try Xenomai trunk:
 
   </pre>
 </blockquote>
+I try with the xenomai trunk and this is OK. <br>
 <br>
-Yes, it works.<br>
+But i have one question: the xenomai trunk is stable or every change is
+uploaded ?<br>
+Because i can't upgrade my board very frequently and i want to put a
+stable version.<br>
 <br>
-But i have one question. <br>
-The main trunk is stable or every change is uploaded ?<br>
-<br>
-For me it's very important because i can't upgrade the board very
-frequently.<br>
+thanks a lot<br>
 <br>
 Roberto<br>
-<br>
-<br>
 </body>
 </html>
 
---------------080701090609010704010406--
+--------------040602050808060401010503--
 
