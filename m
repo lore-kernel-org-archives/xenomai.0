@@ -1,40 +1,58 @@
-Message-ID: <2ff1a98a0802290958k3457d577j8e2ad01079612320@domain.hid>
-Date: Fri, 29 Feb 2008 18:58:20 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <47C838A9.8040200@domain.hid>
+Message-ID: <d6c8ef150802040033x1e4ec041m261f7407baf5ff23@domain.hid>
+Date: Mon, 4 Feb 2008 09:33:19 +0100
+From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
+In-Reply-To: <2ff1a98a0712040845j3e747680x12f7ba1fc28b0093@domain.hid>
 MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_4713_25319976.1202113999430"
+References: <d6c8ef150712040833s61321e24j3117dcef9e334839@domain.hid>
+	<2ff1a98a0712040845j3e747680x12f7ba1fc28b0093@domain.hid>
+Subject: Re: [Adeos-main] Supporting newer kernel versions (2.6 tree)
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: adeos-main@gna.org
+
+------=_Part_4713_25319976.1202113999430
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <47C838A9.8040200@domain.hid>
-Subject: Re: [Xenomai-help] rt_cond_wait doesn't timeout (xenomai 2.4.1)
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Anders Blomdell <anders.blomdell@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
 
-On Fri, Feb 29, 2008 at 5:54 PM, Anders Blomdell
-<anders.blomdell@domain.hid> wrote:
-> Hi,
->
->  with xenomai 2.4.1 my call to:
->
->   rt_cond_wait(&cond, &mutex, 1000);
->
->  doesn't timeout (signalling works OK). Kernel version is 2.6.23.12, can it be
->  due to CONFIG_NO_HZ=y, or have I misunderstood something?
+Still nothing? :)
 
-What is your system timer setting ? Are you running in periodic or
-aperiodic mode ? If aperiodic, 1000 ticks means 1000 ns, that is 1us,
-so rt_cond_wait should return instantaneously.
+On Dec 4, 2007 5:45 PM, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+wrote:
 
--- 
-                                               Gilles Chanteperdrix
+> On Dec 4, 2007 5:33 PM, Bosko Radivojevic <bosko.radivojevic@domain.hid>
+> wrote:
+> > Hi!
+> >
+> > Are there any plans/dates to support some newer kernel version? Like
+> 2.6.23,
+> > for example.
+>
+> I guess you mean for the ARM architecture ? Yes it is planned, but
+> probably not before Xenomai 2.4.0 is out.
+>
+> --
+>                                               Gilles Chanteperdrix
+>
+
+------=_Part_4713_25319976.1202113999430
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Still nothing? :) <br><br><div class="gmail_quote">On Dec 4, 2007 5:45 PM, Gilles Chanteperdrix &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt; wrote:<br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+<div><div></div><div class="Wj3C7c">On Dec 4, 2007 5:33 PM, Bosko Radivojevic &lt;<a href="mailto:bosko.radivojevic@domain.hid">bosko.radivojevic@domain.hid</a>&gt; wrote:<br>&gt; Hi!<br>&gt;<br>&gt; Are there any plans/dates to support some newer kernel version? Like 2.6.23,<br>
+&gt; for example.<br><br></div></div>I guess you mean for the ARM architecture ? Yes it is planned, but<br>probably not before Xenomai 2.4.0 is out.<br><br>--<br><font color="#888888"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Gilles Chanteperdrix<br>
+</font></blockquote></div><br>
+
+------=_Part_4713_25319976.1202113999430--
 
