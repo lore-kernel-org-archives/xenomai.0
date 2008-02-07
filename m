@@ -1,11 +1,12 @@
-Content-class: urn:content-classes:message
+Message-ID: <47AB2771.7080508@domain.hid>
+Date: Thu, 07 Feb 2008 16:44:49 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C8699D.64F3E542"
-Date: Thu, 7 Feb 2008 08:23:29 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D3769E8@domain.hid>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: [Xenomai-help] fpu
+References: <51CAD0CE1504444DBE77CBBE51A0135D3769E8@domain.hid>
+In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D3769E8@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] fpu
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,134 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Steven Seeger <sseeger@domain.hid>
+Cc: xenomai@xenomai.org
 
+Steven Seeger wrote:
+> This is probably an application error, but I am having some random weird
+> behavior where sometimes a double that I add 0.01 to in a periodic task
+> gets corrupted and becomes nan. I didn't specify the T_FPU flag in
+> rt_task_spawn() but the docs said that flag is assumed for a user space
+> task. I've since set that flag manually and haven't had the problem
+> happen yet. Is this just a coincidence? 
+> 
 
-This is a multi-part message in MIME format.
+Likely, as T_FPU is hard-coded for user space threads. You could try to
+strip down your test so that incorrect application behaviour can be
+excluded (or use the test below).
 
-------_=_NextPart_001_01C8699D.64F3E542
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+>  
+> 
+> The corruption seems to happen in a half-second window where the system
+> is doing a lot and only about 35% of the CPU is available to Linux.
+> However, I am testing for overruns on rt_task_wait_period() and never
+> seeing any.
 
-This is probably an application error, but I am having some random weird
-behavior where sometimes a double that I add 0.01 to in a periodic task
-gets corrupted and becomes nan. I didn't specify the T_FPU flag in
-rt_task_spawn() but the docs said that flag is assumed for a user space
-task. I've since set that flag manually and haven't had the problem
-happen yet. Is this just a coincidence?=20
+Overload must not cause data corruption, "only" missed deadlines. This
+case needs closer examination.
 
-=20
+As some first step: there is the switchtest tool coming with Xenomai. It
+includes consistency checks of the FPU environment across context
+switches. Maybe you can give this a try under similar load conditions
+over a longer period.
 
-The corruption seems to happen in a half-second window where the system
-is doing a lot and only about 35% of the CPU is available to Linux.
-However, I am testing for overruns on rt_task_wait_period() and never
-seeing any.
+Jan
 
-=20
-
-Steven
-
-=20
-
-
-------_=_NextPart_001_01C8699D.64F3E542
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
-
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:"MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
-@font-face
-	{font-family:"\@MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:Arial;
-	color:windowtext;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.25in 1.0in 1.25in;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-
-</head>
-
-<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>This is probably an application error, but I am =
-having some
-random weird behavior where sometimes a double that I add 0.01 to in a =
-periodic
-task gets corrupted and becomes nan. I didn&#8217;t specify the T_FPU =
-flag in
-rt_task_spawn() but the docs said that flag is assumed for a user space =
-task. I&#8217;ve
-since set that flag manually and haven&#8217;t had the problem happen =
-yet. Is
-this just a coincidence? <o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>The corruption seems to happen in a half-second =
-window where
-the system is doing a lot and only about 35% of the CPU is available to =
-Linux.
-However, I am testing for overruns on rt_task_wait_period() and never =
-seeing
-any.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Steven<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01C8699D.64F3E542--
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
