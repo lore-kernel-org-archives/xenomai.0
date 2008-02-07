@@ -1,15 +1,17 @@
-Message-ID: <47AB1C21.3070702@domain.hid>
-Date: Thu, 07 Feb 2008 15:56:33 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <200710081503.15198@domain.hid> <200802061509.13010@domain.hid>
-	<2ff1a98a0802070523r7af4ec4fv20f514b0cf1868c@domain.hid>
-	<47AB0B79.8000709@domain.hid> <47AB0F88.3000001@domain.hid>
-	<47AB174F.5070207@domain.hid>
-In-Reply-To: <47AB174F.5070207@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] FPU not available
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 7 Feb 2008 15:16:53 -0000
+Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB02AF4DB5@domain.hid>
+In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D3769E1@domain.hid>
+References: <51CAD0CE1504444DBE77CBBE51A0135D3769D5@domain.hid><2ff1a98a0802070043n7c78e397i9345f3de1229f6bf@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D3769DF@slcmail.slc.mew.int>
+	<DD39B5C3F4963040ADC9768BE7E430CB02AF4D89@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D3769E1@domain.hid>
+From: "Daniel Schnell" <daniel.schnell@domain.hid>
+Subject: Re: [Xenomai-help] SIGTRAP
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,81 +21,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Petr Cervenka <grugh@domain.hid>, xenomai-help <xenomai@xenomai.org>
+To: Steven Seeger <sseeger@domain.hid>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Jan Kiszka wrote:
->>> Gilles Chanteperdrix wrote:
->>>> On Wed, Feb 6, 2008 at 3:09 PM, Petr Cervenka <grugh@domain.hid> wrote:
->>>>> Hello.
->>>>>  Recently, we switched to newer distribution of linux (Kubuntu 7.10). During this switch we changed many things (Xenomai 2.4.1, linux kernel 2.6.24, x86_64 architecture, ...).
->>>>>  No we have problem, that in one of our tasks we are sometimes not able to use floating point operations (under very specific circumstances) . In such case, that task crashes immediately, but rest of the application runs "normaly". Output from dmesg is attached to this message. Task was created with T_FPU flag.
->>>>>  Is there anything we can check or change?
->>>>>  Petr Cervenka
->>>> I do not know if this is related to the issue you are facing, but the
->>>> first FPU fault of a thread running in primary mode may be handled by
->>>> Xenomai without switching to secondary mode. So, maybe the fault
->>>> epilogue implicitely expects Xenomai to have switched the fault to
->>>> secondary mode and use some secondary mode services such as
->>>> ipipe_restore_root, whereas the thread never leaved primary mode.
->>>>
->>> Good point! That is probably this path (and not the one I starred on):
->>>
->>> __ipipe_handle_exception()
->>> 	...
->>> 	if (unlikely(ipipe_trap_notify(vector, regs))) {
->>> 		local_irq_restore(flags);
->>> 		return 1;
->>> 	}
->>>
->>> That needs some more thoughts...
->> Looking at the whole __ipipe_handle_exception, the problem is related to
->>  the early, context-independent __ipipe_stall_root(). Can we postpone
->> this safely after having called any potential high-stage hooks for this
->> exception, and then only if the callee migrated the thread to the root
->> domain? Or is there a need to have the root domain stalled across the
->> post-fault migration?
->>
-> 
-> Someone from the root domain may want to get notified of the exceptions
-> occurring in that domain too, in which case we may not postpone the
-> virtual mask fixup after the notifier invocation, otherwise we would
-> call the handler with a broken interrupt state.
-> 
->> In the latter case, we would have to fiddle with the stall bits directly
->> instead of calling local_irq_restore - not just to work around the
->> BUG_ON, but also to avoid sync'ing root over potentially stalled
->> non-root domains...
->>
-> 
-> This used to be done by ipipe_restore_pipeline_nosync() in older
-> patches, but this one has disappeared after the flat log refactoring. We
-> indeed need to resurrect something alike in order to reset the stall bit
-> without calling the syncer, when taking the fast exit path after
-> ipipe_trap_notify().
+Okay,
 
-Hmm, so it could be fairly simple in fact:
+We had the same problem, different target (ppc). You have to be careful
+to give the remote gdb the correct paths to the target binaries
+including the shared libraries. We are using ssh and have a script to
+start the gdbserver on the target with a command line that looks
+basically like this:
 
---- a/arch/x86/kernel/ipipe.c
-+++ b/arch/x86/kernel/ipipe.c
-@@ -755,7 +755,9 @@ int __ipipe_handle_exception(struct pt_r
- #endif /* CONFIG_KGDB */
- 
- 	if (unlikely(ipipe_trap_notify(vector, regs))) {
--		local_irq_restore(flags);
-+		if (!flags)
-+			__clear_bit(IPIPE_STALL_FLAG,
-+				    &ipipe_root_cpudom_var(status));
- 		return 1;
- 	}
- 
-Petr, ready to try?
- 
-Jan
+ssh -f root@domain.hid "cd $workingdir;killall gdbserver;export
+LD_LIBRARY_PATH=3D'/lib:/usr/lib:/usr/xenomai/lib:/opt/marel/runtime
+/ppc/lib' && echo $LD_LIBRARY_PATH && gdb
+server $hostip:45678 $filename"
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Then the remote gdb is started by a feature enhanced kdbg with another
+script where the important pieces are:
+
+if [ "$cpu" =3D "ppc" ]; then
+        echo set solib-absolute-prefix /opt/rootfs > tmp.gdb
+        echo set solib-search-path
+/opt/marel/runtime/ppc/lib:/opt/rootfs/usr/xenomai/lib >> tmp.gdb
+        echo break main >> tmp.gdb
+        echo Starting session for ppc
+        kdbg -r $targetip:45678 -d 'powerpc-603e-linux-gnu-gdb
+--fullname --nx --command=3Dtmp.gdb' $workingdir/$filename
+
+        # Cleanup file and kill gdbserver
+        rm tmp.gdb
+        ssh -f root@domain.hid "killall gdbserver
+fi
+
+/opt/rootfs is our target root filesystem. The solib-xxxx are important,
+otherwise gdb will take the standard host libraries.
+
+
+Best regards,
+
+Daniel.
+
+
+Steven Seeger wrote:
+> Kernel 2.6.23.12 remote debugger (x86). Gdb 6.7.1. glibc is 2.6.1.
+>=20
+> Steven
+>=20
+>> -----Original Message-----
+>> From: Daniel Schnell [mailto:daniel.schnell@domain.hid]
+>> Sent: Thursday, February 07, 2008 7:41 AM
+>> To: Steven Seeger; Gilles Chanteperdrix
+>> Cc: xenomai@xenomai.org
+>> Subject: RE: [Xenomai-help] SIGTRAP
+>>=20
+>> How do you debug ? Are you using remote debugger or native debugger
+>> on target ? Which debugger version and glibc version are you using ?
+>> And which kernel ?=20
+>>=20
+>> Ciao,
+>>=20
+>> Daniel.
+
+
+
+--=20
+                                 |
+                                 | www.marel.com
+Tel: +354 563 8000 Fax: +354 563 8001
+Iceland
 
