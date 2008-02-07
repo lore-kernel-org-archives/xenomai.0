@@ -1,12 +1,12 @@
-Message-ID: <47AB049A.30204@domain.hid>
-Date: Thu, 07 Feb 2008 14:16:10 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <2ff1a98a0802070523r7af4ec4fv20f514b0cf1868c@domain.hid>
+Date: Thu, 7 Feb 2008 14:23:15 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <200802061509.13010@domain.hid>
 MIME-Version: 1.0
-References: 200710081503.15198@domain.hid> <200802061509.13010@domain.hid>
-	<47A9C7FA.40302@domain.hid> <200802071322.19227@domain.hid>
-In-Reply-To: <200802071322.19227@domain.hid>
-Content-Type: text/plain; charset=windows-1250
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <200710081503.15198@domain.hid> <200802061509.13010@domain.hid>
 Subject: Re: [Xenomai-help] FPU not available
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,142 +18,22 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Petr Cervenka <grugh@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Petr Cervenka wrote:
->> Petr Cervenka wrote:
->>> Hello.
->>> Recently, we switched to newer distribution of linux (Kubuntu 7.10).
-> During this switch we changed many things (Xenomai 2.4.1, linux kernel
-> 2.6.24, x86_64 architecture, ...).
->>> No we have problem, that in one of our tasks we are sometimes not able
-> to use floating point operations (under very specific circumstances) . In
-> such case, that task crashes immediately, but rest of the application runs
-> "normaly". Output from dmesg is attached to this message. Task was created
-> with T_FPU flag.
->>> Is there anything we can check or change?
->>> Petr Cervenka
->>>
->>>
->>> [ 1132.862102] ------------[ cut here ]------------
->>> [ 1132.862110] kernel BUG at kernel/ipipe/core.c:321!
->> Uah, that should no longer happen. What ipipe version are you using?
-> 
-> I' was using ipipe ipipe-2.6.24-rc6-x86-2.0-01, so I tried ipipe-2.6.24-rc6-x86-2.0-02.
-> I was unable to compile the kernel because of this error:
->   CC      arch/x86/kernel/ipipe.o
-> arch/x86/kernel/ipipe.c: In function __ipipe_preempt_schedule_irq:
-> arch/x86/kernel/ipipe.c:588: error: implicit declaration of function preempt_schedule_irq
-> make[1]: *** [arch/x86/kernel/ipipe.o] Error 1
-> make: *** [arch/x86/kernel] Error 2 
-> 
-> So I changed the file preempt.h:
-> --- old/include/linux/preempt.h	2008-02-06 17:29:37.000000000 +0100
-> +++ new/include/linux/preempt.h	2008-02-06 17:54:51.000000000 +0100
-> @@ -28,6 +28,8 @@
->  
->  asmlinkage void preempt_schedule(void);
->  
-> +asmlinkage void preempt_schedule_irq(void);
-> +
->  #define preempt_disable() \
->  do { \
->  	ipipe_check_context(ipipe_root_domain); \ 
-> 
+On Wed, Feb 6, 2008 at 3:09 PM, Petr Cervenka <grugh@domain.hid> wrote:
+> Hello.
+>  Recently, we switched to newer distribution of linux (Kubuntu 7.10). During this switch we changed many things (Xenomai 2.4.1, linux kernel 2.6.24, x86_64 architecture, ...).
+>  No we have problem, that in one of our tasks we are sometimes not able to use floating point operations (under very specific circumstances) . In such case, that task crashes immediately, but rest of the application runs "normaly". Output from dmesg is attached to this message. Task was created with T_FPU flag.
+>  Is there anything we can check or change?
+>  Petr Cervenka
 
-Yes, that fix is already in git and will be delivered with the next
-ipipe version.
-
->>> [ 1132.862112] invalid opcode: 0000 [2] PREEMPT SMP
->>> [ 1132.862115] CPU 0
->>> [ 1132.862117] Modules linked in: rt_r8169 rtpacket rtnet rfcomm l2cap
-> bluetooth ppdev container ac sbs sbshc dock battery lp irtty_sir sir_dev
-> psmouse irda serio_raw parport_pc parport crc_ccitt pcspkr k8temp shpchp
-> pci_hotplug i2c_nforce2 button i2c_core af_packet ipv6 evdev ext3 jbd
-> mbcache sg sd_mod sata_nv forcedeth ata_generic ehci_hcd ohci_hcd libata
-> amd74xx ide_core scsi_mod usbcore fan fuse
->>> [ 1132.862148] Pid: 5802, comm: REG_TASK_2056 Tainted: G      D
-> 2.6.24-adeos #2
->>> [ 1132.862150] RIP: 0010:[<ffffffff80277adc>]  [<ffffffff80277adc>]
-> __ipipe_restore_root+0x3c/0x50
->>> [ 1132.862159] RSP: 0000:ffff81003b74ff00  EFLAGS: 00010002
->>> [ 1132.862161] RAX: ffffffff80674aa0 RBX: ffffffff80674aa0 RCX:
-> ffff81008099b000
->>> [ 1132.862163] RDX: ffff81008099b000 RSI: 0000000000418ed6 RDI:
-> 0000000000000000
->>> [ 1132.862165] RBP: 00000000400903e0 R08: 0000000080400140 R09:
-> 00000000007e883f
->>> [ 1132.862168] R10: 0000000000000000 R11: 0000000000000206 R12:
-> ffff81003b74ff58
->>> [ 1132.862170] R13: 0000000000000007 R14: ffffffff8066f7c0 R15:
-> 0000000000000001
->>> [ 1132.862172] FS:  0000000040091950(0063) GS:ffffffff805ee000(0000)
-> knlGS:0000000000000000
->>> [ 1132.862174] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
->>> [ 1132.862176] CR2: 00002aaab0bbe028 CR3: 000000003b7c6000 CR4:
-> 00000000000006e0
->>> [ 1132.862178] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-> 0000000000000000
->>> [ 1132.862180] DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7:
-> 0000000000000400
->>> [ 1132.862183] Process REG_TASK_2056 (pid: 5802, threadinfo
-> ffff81003b74e000, task ffff81003be78790)
->>> [ 1132.862184] Stack:  ffffffff8022728b 0000000000000296
-> 0000000000000000 0000000000000000
->>> [ 1132.862189]  0000000000000000 00000000400903e0 00000000007f2bb8
-> 0000000040090380
->>> [ 1132.862193]  00000000007f2a50 0000000000000001 ffffffff8049c103
-> 0000000000000001
->>> [ 1132.862197] Call Trace:
->>> [ 1132.862203]  [<ffffffff8022728b>]
-> __ipipe_handle_exception+0x16b/0x210
->>> [ 1132.862210]  [<ffffffff8049c103>] error_sti+0x1e/0x52
->>> [ 1132.862218]
->>> [ 1132.862219]
->>> [ 1132.862219] Code: 0f 0b 66 90 eb fc 66 66 66 66 66 2e 0f 1f 84 00 00
-> 00 00 00
->>> [ 1132.862229] RIP  [<ffffffff80277adc>] __ipipe_restore_root+0x3c/0x50
->>> [ 1132.862233]  RSP <ffff81003b74ff00>
->>> [ 1132.862238] ---[ end trace a3cc53b342d61517 ]---
->>>
->> If you are already on latest ipipe-2.6.24-rc6-x86-2.0-02, please switch
->> on IPIPE_DEBUG and the tracer, specifically IPIPE_TRACE_MCOUNT. Then try
->> to trigger the issue and post the full kernel dump. Also, if you happen
->> to have a self-contained test case for this, we would happily take it.
->>
-> 
-> When I enabled IPIPE_DEBUG and trace, the problem disapperared. But when it's switched off it's the same as before.
-> Also temporary switching to secondary mode helps.
-> 
-
-Some evil race may happen here, and the tracer may prevent it from
-occurring (or make it far less probable). You have SMP on, but do you
-also run on something >1 CPU?
-
-What is weird:
-
-__ipipe_handle_exception()
-	if (unlikely(!ipipe_root_domain_p)) {
-		...
-		/* Switch to root so that Linux can handle the fault cleanly. */
-		ipipe_current_domain = ipipe_root_domain;
-
-But then later in this function:
-
-	local_irq_restore(flags);
-	=> __ipipe_restore_root()
-		BUG_ON(!ipipe_root_domain_p);
-
-Hmm, the latter BUG_ON is not armed with CONFIG_IPIPE_DEBUG_CONTEXT -
-which is default y for CONFIG_IPIPE_DEBUG. Could you check it is off
-when doing the test with the tracer? Still weird, though.
-
-Again, a test case to reproduce the problem is welcome, too.
-
-Thanks,
-Jan
+I do not know if this is related to the issue you are facing, but the
+first FPU fault of a thread running in primary mode may be handled by
+Xenomai without switching to secondary mode. So, maybe the fault
+epilogue implicitely expects Xenomai to have switched the fault to
+secondary mode and use some secondary mode services such as
+ipipe_restore_root, whereas the thread never leaved primary mode.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+                                               Gilles Chanteperdrix
 
