@@ -1,11 +1,13 @@
-Content-class: urn:content-classes:message
+Message-ID: <2ff1a98a0802070043n7c78e397i9345f3de1229f6bf@domain.hid>
+Date: Thu, 7 Feb 2008 09:43:43 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D3769D5@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C86940.9C3B45B6"
-Date: Wed, 6 Feb 2008 21:19:19 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D3769D5@domain.hid>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: [Xenomai-help] SIGTRAP
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <51CAD0CE1504444DBE77CBBE51A0135D3769D5@domain.hid>
+Subject: Re: [Xenomai-help] SIGTRAP
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,101 +17,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Steven Seeger <sseeger@domain.hid>
+Cc: xenomai@xenomai.org
 
+On Thu, Feb 7, 2008 at 5:19 AM, Steven Seeger
+<sseeger@domain.hid> wrote:
+>
+>
+>
+>
+> Is there anything that would cause me to get spurious SIGTRAPs while running
+> a xenomai app in userspace?
 
-This is a multi-part message in MIME format.
+AFAIK, SIGTRAP is an internal signal used when debugging.
 
-------_=_NextPart_001_01C86940.9C3B45B6
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-Is there anything that would cause me to get spurious SIGTRAPs while
-running a xenomai app in userspace?=20
-
-=20
-
-Steven
-
-=20
-
-
-------_=_NextPart_001_01C86940.9C3B45B6
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
-
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:"MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
-@font-face
-	{font-family:"\@MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:Arial;
-	color:windowtext;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.25in 1.0in 1.25in;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-
-</head>
-
-<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Is there anything that would cause me to get spurious
-SIGTRAPs while running a xenomai app in userspace? =
-<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Steven<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01C86940.9C3B45B6--
+-- 
+                                               Gilles Chanteperdrix
 
