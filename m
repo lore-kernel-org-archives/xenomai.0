@@ -1,14 +1,12 @@
-Message-ID: <47ACA034.5040408@domain.hid>
-Date: Fri, 08 Feb 2008 19:32:20 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <51CAD0CE1504444DBE77CBBE51A0135D376A5C@slcmail.slc.mew.int>
-In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D376A5C@slcmail.slc.mew.int>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC64E83AE3D0C19B8F69B7C9B"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] fpu
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 8 Feb 2008 12:20:04 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D376A69@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
+Subject: Re: [Xenomai-help] BUG fs/buffer.c:1245
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,43 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <sseeger@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC64E83AE3D0C19B8F69B7C9B
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+It's very hard to reproduce. I found via google a bug report about the
+same bug, but it turned out to be a patch in the e1000 driver. I'm using
+the eepro100 driver. I wonder if the issue is related? I should see if
+it's fixed in 2.6.24.
 
-Steven Seeger wrote:
-> We ran switchtest and it seems to pass. It continues to perform context=
-
-> switches (about 4600/sec) and doesn't report any errors. So, I'll take
-> that to mean that I have an application problem somewhere.
+Steven
 >=20
+> > -----Original Message-----
+> > From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid]
+> > Sent: Friday, February 08, 2008 11:30 AM
+> > To: Steven Seeger
+> > Cc: xenomai@xenomai.org
+> > Subject: Re: [Xenomai-help] BUG fs/buffer.c:1245
+> >
+> > Sporadic or deterministic bug? Specifically in case of the latter I
+> > would be interested in your .config.
+> >
+> > Unless the slowdown papers over the actual issue, letting the ipipe
+> > tracer run, so that it reports a nice backtrace on the BUG, may help
+us
+> > tracking down the point where irq_enable is missing (also in
+> > non-Xenomai/Ipipe code).
+> >
+> > Jan
 
-Well, let's say it is less likely. If you can manage to shrink down your =
-
-scenario now, this may either point to the application bug - or generate =
-
-a nice test case we could try out.
-
-Jan
-
-
---------------enigC64E83AE3D0C19B8F69B7C9B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFHrKA0niDOoMHTA+kRAiAWAJ9d3GoSHC0UgIuGspUQUJe7J90IoQCfV1P4
-1RunFficUZXeFxyRMoqYbsw=
-=TJc9
------END PGP SIGNATURE-----
-
---------------enigC64E83AE3D0C19B8F69B7C9B--
 
