@@ -1,5 +1,5 @@
-Message-ID: <47AC5660.6020203@domain.hid>
-Date: Fri, 08 Feb 2008 14:17:20 +0100
+Message-ID: <47AC56A1.8090706@domain.hid>
+Date: Fri, 08 Feb 2008 14:18:25 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: 200710081503.15198@domain.hid>
@@ -93,23 +93,22 @@ Petr Cervenka wrote:
 >>
 > I tried this patch and the problem (or the race condition) disappeared. ;-)
 > Is there any (easy) method to recognise if the problem was solved?
->
+> 
 
-If the following warning pops up when running your app, then the patch
-just saved your day too.
+This one won't break the whole thing...
 
 diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-index ce24db7..8b034cd 100644
+index ce24db7..af9d4c4 100644
 --- a/arch/x86/kernel/ipipe.c
 +++ b/arch/x86/kernel/ipipe.c
-@@ -759,6 +759,7 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
+@@ -758,6 +758,7 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
+ #endif /* CONFIG_KGDB */
 
  	if (unlikely(ipipe_trap_notify(vector, regs))) {
++		WARN_ON(!ipipe_root_domain_p);
  		if (!flags)
-+			WARN_ON(!ipipe_root_domain_p);
  			__clear_bit(IPIPE_STALL_FLAG,
  				    &ipipe_root_cpudom_var(status));
- 		return 1;
 
 > To your previous questions:
 > We use Athlon64 X2 (2 cores, 64-bit), kubuntu 7.10 amd64.
