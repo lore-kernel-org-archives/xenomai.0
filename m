@@ -1,13 +1,12 @@
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="VjZH4JrU7C"
+Content-Type: multipart/mixed; boundary="fegA2J2lwi"
 Content-Transfer-Encoding: 7bit
-Message-ID: <18350.7226.142276.738207@domain.hid>
-Date: Sat, 9 Feb 2008 22:33:46 +0100
+Message-ID: <18350.7315.555644.171720@domain.hid>
+Date: Sat, 9 Feb 2008 22:35:15 +0100
 In-Reply-To: <18350.7135.108901.491437@domain.hid>
 References: <18350.7135.108901.491437@domain.hid>
-Subject: [Xenomai-core] [patch 1/4] nucleus core support for select-like
-	services.
+Subject: Re: [Xenomai-core] [patch 2/4] RTDM support for select-like service.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,603 +19,457 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai@xenomai.org
 
 
---VjZH4JrU7C
+--fegA2J2lwi
 Content-Type: text/plain; charset=us-ascii
 Content-Description: message body and .signature
 Content-Transfer-Encoding: 7bit
 
 
 stats:
- include/nucleus/select.h |  124 ++++++++++++++
- ksrc/nucleus/Kconfig     |    3
- ksrc/nucleus/Makefile    |    3
- ksrc/nucleus/select.c    |  412 +++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 542 insertions(+)
+ include/rtdm/rtdm.h        |    4 ++
+ include/rtdm/rtdm_driver.h |   30 +++++++++++++++-
+ ksrc/skins/rtdm/core.c     |   84 +++++++++++++++++++++++++++++++--------------
+ ksrc/skins/rtdm/device.c   |   10 +++++
+ ksrc/skins/rtdm/drvlib.c   |   76 ++++++++++++++++++++++++++++++++++++----
+ 5 files changed, 170 insertions(+), 34 deletions(-)
 
 -- 
 
 
 					    Gilles Chanteperdrix.
 
---VjZH4JrU7C
+--fegA2J2lwi
 Content-Type: text/plain
 Content-Disposition: inline;
-	filename="xeno-select-core.diff"
+	filename="xeno-select-rtdm.diff"
 Content-Transfer-Encoding: 7bit
 
---- include/nucleus/select.h	(revision 0)
-+++ include/nucleus/select.h	(revision 0)
-@@ -0,0 +1,124 @@
-+/*!\file select.h
-+ * \brief file descriptors events multiplexing header.
-+ * \author Gilles Chanteperdrix
-+ *
-+ * Copyright (C) 2008 Efixo <gilles.chanteperdrix@xenomai.org>
-+ *
-+ * Xenomai is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published
-+ * by the Free Software Foundation; either version 2 of the License,
-+ * or (at your option) any later version.
-+ *
-+ * Xenomai is distributed in the hope that it will be useful, but
-+ * WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-+ * General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with Xenomai; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-+ * 02111-1307, USA.
-+ *
-+ * \ingroup select
-+ */
-+
-+#ifndef XNSELECT_H
-+#define XNSELECT_H
-+
-+/*! \addtogroup select
-+ *@{*/
-+
-+#include <nucleus/thread.h>
-+
-+#define XNSELECT_READ      0
-+#define XNSELECT_WRITE     1
-+#define XNSELECT_EXCEPT    2
-+#define XNSELECT_MAX_TYPES 3
-+
-+struct xnselector { 
-+        xnsynch_t synchbase;
-+	struct fds {
-+		fd_set expected;
-+		fd_set pending;
-+	} fds [XNSELECT_MAX_TYPES];
-+	xnqueue_t bindings; /* only used by xnselector_destroy */
-+};
-+
-+#ifdef CONFIG_XENO_OPT_SELECT
-+
-+struct xnselect {
-+	xnqueue_t bindings;
-+};
-+
-+#define DECLARE_XNSELECT(name) struct xnselect name
-+
-+struct xnselect_binding {
-+	struct xnselector *selector;
-+	struct xnselect *fd;
-+	unsigned type;
-+	unsigned bit_index;
-+	xnholder_t link;  /* link in selected fds list. */
-+	xnholder_t slink; /* link in selector list */
-+};
-+
-+#ifdef __cplusplus
-+extern "C" {
-+#endif /* __cplusplus */
-+
-+void xnselect_init(struct xnselect *select_block);
-+
-+int xnselect_bind(struct xnselect *select_block,
-+		  struct xnselect_binding *binding,
-+		  struct xnselector *selector,
-+		  unsigned type,
-+		  unsigned bit_index,
-+		  unsigned state);
-+
-+int __xnselect_signal(struct xnselect *select_block, unsigned state);
-+
-+/** 
-+ * Signal a file descriptor state change.
-+ * 
-+ * @param select_block pointer to an @a xnselect structure representing the file
-+ * descriptor whose state changed;
-+ * @param state new value of the state.
-+ * 
-+ * @retval 1 if rescheduling is needed;
-+ * @retval 0 otherwise.
-+ */
-+static inline int
-+xnselect_signal(struct xnselect *select_block, unsigned state)
-+{
-+	if (!emptyq_p(&select_block->bindings))
-+		return __xnselect_signal(select_block, state);
-+	return 0;
-+}
-+
-+void xnselect_destroy(struct xnselect *select_block);
-+
-+int xnselector_init(struct xnselector *selector);
-+
-+int xnselect(struct xnselector *selector,
-+	     fd_set *out_fds[XNSELECT_MAX_TYPES],
-+	     fd_set *in_fds[XNSELECT_MAX_TYPES],
-+	     int nfds,
-+	     xnticks_t timeout, xntmode_t timeout_mode);
-+
-+void xnselector_destroy(struct xnselector *selector);
-+
-+#ifdef __cplusplus
-+}
-+#endif /* __cplusplus */
-+
-+#else /* !CONFIG_XENO_OPT_SELECT */
-+struct xnselector;
-+#define DECLARE_XNSELECT(name)
-+#define xnselect_init(block)
-+#define xnselect_bind(select_block,binding,selector,type,bit_index,state) -EBADF
-+#define xnselect_signal(block, state) ({ 0; })
-+#define xnselect_destroy(block)
-+#endif /* !CONFIG_XENO_OPT_SELECT */
-+
-+/*@}*/
-+
-+#endif /* XNSELECT_H */
---- ksrc/nucleus/Kconfig	(revision 3460)
-+++ ksrc/nucleus/Kconfig	(working copy)
-@@ -228,6 +228,9 @@ config XENO_OPT_SHIRQ
- 	are allowed to control dedicated hardware devices which are
- 	configured to share the same interrupt line.
- 
-+config XENO_OPT_SELECT
-+	bool
-+
- menu "Timing"
- 
- config XENO_OPT_TIMING_PERIODIC
---- ksrc/nucleus/select.c	(revision 0)
-+++ ksrc/nucleus/select.c	(revision 0)
-@@ -0,0 +1,412 @@
-+/*!\file select.c
-+ * \brief file descriptors events multiplexing.
-+ * \author Gilles Chanteperdrix
-+ *
-+ * Copyright (C) 2008 Efixo <gilles.chanteperdrix@xenomai.org>
-+ *
-+ * Xenomai is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published
-+ * by the Free Software Foundation; either version 2 of the License,
-+ * or (at your option) any later version.
-+ *
-+ * Xenomai is distributed in the hope that it will be useful, but
-+ * WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-+ * General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with Xenomai; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-+ * 02111-1307, USA.
-+ *
-+ * \ingroup select
-+ */
-+
-+/*!
-+ * \ingroup nucleus
-+ * \defgroup select File descriptors events multiplexing services.
-+ *
-+ * File descriptors events multiplexing services.
-+ *
-+ * This module implements the services needed for implementing the posix
-+ * "select" service, or any other events multiplexing services.
-+ *
-+ * Following the implementation of the posix select service, this module defines
-+ * three types of events:
-+ * - \a XNSELECT_READ meaning that a file descriptor is ready for reading;
-+ * - \a XNSELECT_WRITE meaning that a file descriptor is ready for writing;
-+ * - \a XNSELECT_EXCEPT meaning that a file descriptor received an exceptional
-+ *   event.
-+ *
-+ * It works by defining two structures:
-+ * - a @a struct @a xnselect structure, which should be added to every file
-+ * descriptor for every event type (read, write, or except);
-+ * - a @a struct @a xnselector structure, the selection structure,  passed by
-+ * the thread calling the xnselect service, where this service does all its
-+ * housekeeping.
-+ *@{*/
-+
-+#include <nucleus/heap.h>
-+#include <nucleus/pod.h>
-+#include <nucleus/synch.h>
+--- include/rtdm/rtdm_driver.h	(revision 3460)
++++ include/rtdm/rtdm_driver.h	(working copy)
+@@ -38,6 +38,7 @@
+ #include <nucleus/heap.h>
+ #include <nucleus/pod.h>
+ #include <nucleus/synch.h>
 +#include <nucleus/select.h>
-+#include <linux/types.h>
-+#include <linux/bitops.h>	/* For hweight_long */
+ #include <rtdm/rtdm.h>
+ 
+ /* debug support */
+@@ -262,6 +263,10 @@ typedef ssize_t (*rtdm_sendmsg_handler_t
+ typedef int (*rtdm_rt_handler_t)(struct rtdm_dev_context *context,
+ 				 rtdm_user_info_t *user_info, void *arg);
+ 
++typedef int (*rtdm_select_bind_handler_t)(struct rtdm_dev_context *context,
++					  struct xnselector *selector,
++					  unsigned type,
++					  unsigned index);
+ /**
+  * Device operations
+  */
+@@ -304,6 +309,8 @@ struct rtdm_operations {
+ 	/** Transmit message handler for non-real-time context (optional) */
+ 	rtdm_sendmsg_handler_t sendmsg_nrt;
+ 	/** @} Message-Oriented Device Operations */
 +
-+#define link2binding(baddr, memb)				\
-+	container_of(baddr, struct xnselect_binding, memb)
-+
-+/** 
-+ * Initialize a @a struct @a xnselect structure.
-+ *
-+ * This service must be called to initialize a @a struct @a xnselect structure
-+ * before it is bound to a selector by the means of xnselect_bind().
-+ * 
-+ * @param select_block pointer to the xnselect structure to be initialized
-+ */
-+void xnselect_init(struct xnselect *select_block)
++	rtdm_select_bind_handler_t select_bind;
+ };
+ 
+ struct rtdm_devctx_reserved {
+@@ -453,7 +460,8 @@ int rtdm_dev_unregister(struct rtdm_devi
+ #define rtdm_getpeername	rt_dev_getpeername
+ #define rtdm_shutdown		rt_dev_shutdown
+ 
+-struct rtdm_dev_context *rtdm_context_get(int fd);
++struct rtdm_dev_context *__rtdm_context_get(rtdm_user_info_t *user_info, int fd);
++#define rtdm_context_get(fd) __rtdm_context_get(NULL, fd)
+ 
+ #ifndef DOXYGEN_CPP /* Avoid static inline tags for RTDM in doxygen */
+ static inline void rtdm_context_lock(struct rtdm_dev_context *context)
+@@ -1002,11 +1010,20 @@ void rtdm_toseq_init(rtdm_toseq_t *timeo
+ 
+ typedef struct {
+ 	xnsynch_t synch_base;
++	DECLARE_XNSELECT(select_block);
+ } rtdm_event_t;
+ 
+ #define RTDM_EVENT_PENDING		XNSYNCH_SPARE1
+ 
+ void rtdm_event_init(rtdm_event_t *event, unsigned long pending);
++#ifdef CONFIG_XENO_OPT_SELECT
++int rtdm_event_select_bind(rtdm_event_t *event,
++			   struct xnselector *selector,
++			   unsigned type,
++			   unsigned bit_index);
++#else /* !CONFIG_XENO_OPT_SELECT */
++#define rtdm_event_select_bind(e, s, t, b) -EBADF
++#endif /* !CONFIG_XENO_OPT_SELECT */
+ int rtdm_event_wait(rtdm_event_t *event);
+ int rtdm_event_timedwait(rtdm_event_t *event, nanosecs_rel_t timeout,
+ 			 rtdm_toseq_t *timeout_seq);
+@@ -1027,6 +1044,7 @@ static inline void rtdm_event_destroy(rt
+ {
+ 	trace_mark(xn_rtdm_event_destroy, "event %p", event);
+ 	__rtdm_synch_flush(&event->synch_base, XNRMID);
++	xnselect_destroy(&event->select_block);
+ }
+ #endif /* !DOXYGEN_CPP */
+ 
+@@ -1035,9 +1053,18 @@ static inline void rtdm_event_destroy(rt
+ typedef struct {
+ 	unsigned long value;
+ 	xnsynch_t synch_base;
++	DECLARE_XNSELECT(select_block);
+ } rtdm_sem_t;
+ 
+ void rtdm_sem_init(rtdm_sem_t *sem, unsigned long value);
++#ifdef CONFIG_XENO_OPT_SELECT
++int rtdm_sem_select_bind(rtdm_sem_t *sem,
++			 struct xnselector *selector,
++			 unsigned type,
++			 unsigned bit_index);
++#else /* !CONFIG_XENO_OPT_SELECT */
++#define rtdm_sem_select_bind(s, se, t, b) -EBADF
++#endif /* !CONFIG_XENO_OPT_SELECT */
+ int rtdm_sem_down(rtdm_sem_t *sem);
+ int rtdm_sem_timeddown(rtdm_sem_t *sem, nanosecs_rel_t timeout,
+ 		       rtdm_toseq_t *timeout_seq);
+@@ -1048,6 +1075,7 @@ static inline void rtdm_sem_destroy(rtdm
+ {
+ 	trace_mark(xn_rtdm_sem_destroy, "sem %p", sem);
+ 	__rtdm_synch_flush(&sem->synch_base, XNRMID);
++	xnselect_destroy(&sem->select_block);
+ }
+ #endif /* !DOXYGEN_CPP */
+ 
+--- include/rtdm/rtdm.h	(revision 3460)
++++ include/rtdm/rtdm.h	(working copy)
+@@ -247,6 +247,10 @@ ssize_t __rt_dev_recvmsg(rtdm_user_info_
+ 			 struct msghdr *msg, int flags);
+ ssize_t __rt_dev_sendmsg(rtdm_user_info_t *user_info, int fd,
+ 			 const struct msghdr *msg, int flags);
++struct xnselector;
++int __rt_dev_select_bind(rtdm_user_info_t *user_info, int fd,
++			 struct xnselector *selector,
++			 unsigned type, unsigned index);
+ #endif /* __KERNEL__ */
+ 
+ /* Define RTDM_NO_DEFAULT_USER_API to switch off the default rt_dev_xxx
+--- ksrc/skins/rtdm/device.c	(revision 3460)
++++ ksrc/skins/rtdm/device.c	(working copy)
+@@ -70,6 +70,14 @@ int rtdm_no_support(void)
+ 	return -ENOSYS;
+ }
+ 
++int rtdm_select_bind_no_support(struct rtdm_dev_context *context,
++				struct xnselector *selector,
++				unsigned type,
++				unsigned index)
 +{
-+	initq(&select_block->bindings);
++	return -EBADF;
 +}
-+EXPORT_SYMBOL(xnselect_init);
-+
-+static inline int xnselect_wakeup(struct xnselector *selector)
++  
+ static inline int get_name_hash(const char *str, int limit, int hashkey_mask)
+ {
+ 	int hash = 0;
+@@ -242,6 +250,8 @@ int rtdm_dev_register(struct rtdm_device
+ 	SET_DEFAULT_OP_IF_NULL(device->ops, write);
+ 	SET_DEFAULT_OP_IF_NULL(device->ops, recvmsg);
+ 	SET_DEFAULT_OP_IF_NULL(device->ops, sendmsg);
++	if (!device->ops.select_bind)
++		device->ops.select_bind = rtdm_select_bind_no_support;
+ 
+ 	atomic_set(&device->reserved.refcount, 0);
+ 	device->reserved.exclusive_context = NULL;
+--- ksrc/skins/rtdm/drvlib.c	(revision 3460)
++++ ksrc/skins/rtdm/drvlib.c	(working copy)
+@@ -756,12 +756,39 @@ void rtdm_event_init(rtdm_event_t *event
+ 	xnsynch_init(&event->synch_base, XNSYNCH_PRIO);
+ 	if (pending)
+ 		xnsynch_set_flags(&event->synch_base, RTDM_EVENT_PENDING);
++	xnselect_init(&event->select_block);
+ 
+ 	xnlock_put_irqrestore(&nklock, s);
+ }
+ 
+ EXPORT_SYMBOL(rtdm_event_init);
+ 
++#ifdef CONFIG_XENO_OPT_SELECT
++int rtdm_event_select_bind(rtdm_event_t *event,
++			   struct xnselector *selector,
++			   unsigned type,
++			   unsigned bit_index)
 +{
-+	return xnsynch_flush(&selector->synchbase, 0) == XNSYNCH_RESCHED;
-+}
-+
-+/** 
-+ * Bind a file descriptor (represented by its @a xnselect structure) to a
-+ * selector block.
-+ *
-+ * @param select_block pointer to the @a struct @a xnselect to be bound;
-+ *
-+ * @param binding pointer to a newly allocated (using xnmalloc) @a struct
-+ * @a xnselect_binding;
-+ *
-+ * @param selector pointer to the selector structure;
-+ *
-+ * @param type type of events (@a XNSELECT_READ, @a XNSELECT_WRITE, or @a
-+ * XNSELECT_EXCEPT);
-+ *
-+ * @param index index of the file descriptor (represented by @a select_block) in the bit fields used by the @a selector structure;
-+ *
-+ * @param state current state of the file descriptor>.
-+ * 
-+ * @a select_block must have been initialized with xnselect_init(),
-+ * the @a xnselector structure must have been initialized with
-+ * xnselector_init(), @a binding may be uninitialized.
-+ *
-+ * This service must be called with nklock locked, irqs off. For this reason,
-+ * the @a binding parameter must have been allocated by the caller outside the
-+ * locking section.
-+ * 
-+ * @retval -EINVAL if @a type or @a index is invalid;
-+ * @retval 0 otherwise.
-+ */
-+int xnselect_bind(struct xnselect *select_block,
-+		  struct xnselect_binding *binding,
-+		  struct xnselector *selector,
-+		  unsigned type,
-+		  unsigned index,
-+		  unsigned state)
-+{
-+	if (type >= XNSELECT_MAX_TYPES || index > __FD_SETSIZE)
-+		return -EINVAL;
-+
-+	binding->selector = selector;
-+	binding->fd = select_block;
-+	binding->type = type;
-+	binding->bit_index = index;
-+	inith(&binding->link);
-+	inith(&binding->slink);
-+	
-+	appendq(&selector->bindings, &binding->slink);
-+	appendq(&select_block->bindings, &binding->link);
-+	__FD_SET(index, &selector->fds[type].expected);
-+	if (state)
-+		__FD_SET(index, &selector->fds[type].pending);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(xnselect_bind);
-+
-+/* Must be called with nklock locked irqs off */
-+int __xnselect_signal(struct xnselect *select_block, unsigned state)
-+{
-+	xnholder_t *holder;
-+	int resched;
-+
-+	for(resched = 0, holder = getheadq(&select_block->bindings);
-+	    holder; holder = nextq(&select_block->bindings, holder)) {
-+		struct xnselect_binding *binding;
-+		struct xnselector *selector;
-+
-+		binding = link2binding(holder, link);
-+
-+		selector = binding->selector;
-+		if (state) {
-+			if (!__FD_ISSET(binding->bit_index,
-+					&selector->fds[binding->type].pending)) {
-+				__FD_SET(binding->bit_index,
-+					 &selector->fds[binding->type].pending);
-+				if (xnselect_wakeup(selector))
-+					resched = 1;
-+			}
-+		} else
-+			__FD_CLR(binding->bit_index, 
-+				 &selector->fds[binding->type].pending);
-+	}
-+
-+	return resched;
-+}
-+EXPORT_SYMBOL(__xnselect_signal);
-+
-+/** 
-+ * Destroy the @a xnselect structure associated with a file descriptor.
-+ *
-+ * Any binding with a @a xnselector block is destroyed.
-+ *
-+ * @param select_block pointer to the @a xnselect structure associated with a file descriptor
-+ */
-+void xnselect_destroy(struct xnselect *select_block)
-+{
-+	xnholder_t *holder;
++	struct xnselect_binding *binding;
++	int err;
 +	spl_t s;
 +
++	binding = xnmalloc(sizeof(*binding));
++	if (!binding)
++		return -ENOMEM;
++
 +	xnlock_get_irqsave(&nklock, s);
-+	while ((holder = getq(&select_block->bindings))) {
-+		struct xnselect_binding *binding;
-+		struct xnselector *selector;
-+
-+		binding = link2binding(holder, link);
-+		selector = binding->selector;
-+
-+		__FD_CLR(binding->bit_index,
-+			 &selector->fds[binding->type].expected);
-+		__FD_CLR(binding->bit_index,
-+			 &selector->fds[binding->type].pending);
-+		removeq(&selector->bindings, &binding->slink);
-+		xnlock_put_irqrestore(&nklock, s);
-+
-+		xnfree(binding);
-+		
-+		xnlock_get_irqsave(&nklock, s);
-+	}
++	err = xnselect_bind(&event->select_block,
++			    binding, selector, type,bit_index,
++			    xnsynch_test_flags(&event->synch_base,
++					       RTDM_EVENT_PENDING));
 +	xnlock_put_irqrestore(&nklock, s);
++
++	return err;
 +}
-+EXPORT_SYMBOL(xnselect_destroy);
++EXPORT_SYMBOL(rtdm_event_select_bind);
++#endif /* CONFIG_XENO_OPT_SELECT */
 +
-+static unsigned
-+fd_set_andnot(fd_set *result, fd_set *first, fd_set *second, unsigned n)
+ #ifdef DOXYGEN_CPP /* Only used for doxygen doc generation */
+ /**
+  * @brief Destroy an event
+@@ -825,6 +852,7 @@ void rtdm_event_pulse(rtdm_event_t *even
+  */
+ void rtdm_event_signal(rtdm_event_t *event)
+ {
++	int resched = 0;
+ 	spl_t s;
+ 
+ 	trace_mark(xn_rtdm_event_signal, "event %p", event);
+@@ -833,6 +861,10 @@ void rtdm_event_signal(rtdm_event_t *eve
+ 
+ 	xnsynch_set_flags(&event->synch_base, RTDM_EVENT_PENDING);
+ 	if (xnsynch_flush(&event->synch_base, 0))
++		resched = 1;
++	if (xnselect_signal(&event->select_block, 1))
++		resched = 1;
++	if (resched)
+ 		xnpod_schedule();
+ 
+ 	xnlock_put_irqrestore(&nklock, s);
+@@ -927,9 +959,10 @@ int rtdm_event_timedwait(rtdm_event_t *e
+ 	if (unlikely(testbits(event->synch_base.status, RTDM_SYNCH_DELETED)))
+ 		err = -EIDRM;
+ 	else if (likely(xnsynch_test_flags(&event->synch_base,
+-					   RTDM_EVENT_PENDING)))
++					   RTDM_EVENT_PENDING))) {
+ 		xnsynch_clear_flags(&event->synch_base, RTDM_EVENT_PENDING);
+-	else {
++		xnselect_signal(&event->select_block, 0);
++	} else {
+ 		/* non-blocking mode */
+ 		if (timeout < 0) {
+ 			err = -EWOULDBLOCK;
+@@ -951,10 +984,11 @@ int rtdm_event_timedwait(rtdm_event_t *e
+ 		}
+ 
+ 		if (likely
+-		    (!xnthread_test_info(thread, XNTIMEO | XNRMID | XNBREAK)))
++		    (!xnthread_test_info(thread, XNTIMEO | XNRMID | XNBREAK))) {
+ 			xnsynch_clear_flags(&event->synch_base,
+ 					    RTDM_EVENT_PENDING);
+-		else if (xnthread_test_info(thread, XNTIMEO))
++			xnselect_signal(&event->select_block, 0);
++		} else if (xnthread_test_info(thread, XNTIMEO))
+ 			err = -ETIMEDOUT;
+ 		else if (xnthread_test_info(thread, XNRMID))
+ 			err = -EIDRM;
+@@ -995,6 +1029,7 @@ void rtdm_event_clear(rtdm_event_t *even
+ 	xnlock_get_irqsave(&nklock, s);
+ 
+ 	xnsynch_clear_flags(&event->synch_base, RTDM_EVENT_PENDING);
++	xnselect_signal(&event->select_block, 0);
+ 
+ 	xnlock_put_irqrestore(&nklock, s);
+ }
+@@ -1034,12 +1069,37 @@ void rtdm_sem_init(rtdm_sem_t *sem, unsi
+ 
+ 	sem->value = value;
+ 	xnsynch_init(&sem->synch_base, XNSYNCH_PRIO);
++	xnselect_init(&sem->select_block);
+ 
+ 	xnlock_put_irqrestore(&nklock, s);
+ }
+ 
+ EXPORT_SYMBOL(rtdm_sem_init);
+ 
++#ifdef CONFIG_XENO_OPT_SELECT
++int rtdm_sem_select_bind(rtdm_sem_t *sem,
++			 struct xnselector *selector,
++			 unsigned type,
++			 unsigned bit_index)
 +{
-+	unsigned i, not_empty = 0;
-+
-+	for (i = 0; i < __FDELT(n); i++)
-+		if((result->fds_bits[i] =
-+		    first->fds_bits[i] & ~(second->fds_bits[i])))
-+			not_empty = 1;
-+
-+	if (i < __FDSET_LONGS
-+	    && (result->fds_bits[i] =
-+		first->fds_bits[i] & ~(second->fds_bits[i]) & (__FDMASK(n) - 1)))
-+		not_empty = 1;
-+
-+	return not_empty;
-+}
-+
-+static unsigned
-+fd_set_and(fd_set *result, fd_set *first, fd_set *second, unsigned n)
-+{
-+	unsigned i, not_empty = 0;
-+
-+	for (i = 0; i < __FDELT(n); i++)
-+		if((result->fds_bits[i] =
-+		    first->fds_bits[i] & second->fds_bits[i]))
-+			not_empty = 1;
-+
-+	if (i < __FDSET_LONGS
-+	    && (result->fds_bits[i] =
-+		first->fds_bits[i] & second->fds_bits[i] & (__FDMASK(n) - 1)))
-+		not_empty = 1;
-+
-+	return not_empty;
-+}
-+
-+static void fd_set_zerofill(fd_set *set, unsigned n)
-+{
-+	unsigned i;
-+
-+	i = __FDELT(n);
-+
-+	if (i < __FDSET_LONGS)
-+		set->fds_bits[i] &= (__FDMASK(n) - 1);
-+
-+	for(i++; i < __FDSET_LONGS; i++)
-+		set->fds_bits[i] = 0;
-+}
-+
-+static unsigned fd_set_popcount(fd_set *set, unsigned n)
-+{
-+	unsigned count = 0, i;
-+
-+	for (i = 0; i < __FDELT(n); i++)
-+		if (set->fds_bits[i])
-+			count += hweight_long(set->fds_bits[i]);
-+
-+	if (i < __FDSET_LONGS && (set->fds_bits[i] & (__FDMASK(n) - 1)))
-+		count += hweight_long(set->fds_bits[i] & (__FDMASK(n) - 1));
-+
-+	return count;
-+}
-+
-+/** 
-+ * Initialize a selector structure.
-+ * 
-+ * @param selector The selector structure to be initialized.
-+ * 
-+ * @retval 0
-+ */
-+int xnselector_init(struct xnselector *selector)
-+{
-+	unsigned i;
-+
-+	xnsynch_init(&selector->synchbase, XNSYNCH_FIFO | XNSYNCH_NOPIP);
-+	for (i = 0; i < XNSELECT_MAX_TYPES; i++) {
-+		__FD_ZERO(&selector->fds[i].expected);
-+		__FD_ZERO(&selector->fds[i].pending);
-+	}
-+	initq(&selector->bindings);
-+	return 0;
-+}
-+EXPORT_SYMBOL(xnselector_init);
-+
-+/** 
-+ * Check the state of a number of file descriptors, wait for a state change if
-+ * no descriptor is ready.
-+ * 
-+ * @param selector structure to check for pending events
-+ * @param out_fds The set of descriptors with pending events if a strictly positive number is returned, or the set of descriptors not yet bound if -ECHRNG is returned;
-+ * @param in_fds the set of descriptors which events should be checked
-+ * @param nfds the highest-numbered descriptor in any of the @a in_fds sets, plus 1;
-+ * @param timeout the timeout, whose meaning depends on @a timeout_mode, note
-+ * that xnselect() pass @a timeout and @a timeout_mode unchanged to
-+ * xnsynch_sleep_on, so passing a relative value different from XN_INFINITE as a
-+ * timeout with @a timeout_mode set to XN_RELATIVE, will cause a longer sleep
-+ * than expected if the sleep is interrupted.
-+ * @param timeout_mode the mode of @a timeout.
-+ * 
-+ * @retval -EINVAL if @nfds is negative;
-+ * @retval -ECHRNG if some of the descriptors passed in @a in_fds have not yet
-+ * been registered with xnselect_bind(), @a out_fds contains the set of such
-+ * descriptors;
-+ * @retval -EINTR if @a xnselect was interrupted while waiting;
-+ * @retval 0 in case of timeout.
-+ * @retval the number of file descriptors having received an event.
-+ */
-+int xnselect(struct xnselector *selector,
-+	     fd_set *out_fds[XNSELECT_MAX_TYPES],
-+	     fd_set *in_fds[XNSELECT_MAX_TYPES],
-+	     int nfds,
-+	     xnticks_t timeout, xntmode_t timeout_mode)
-+{
-+	unsigned i, not_empty = 0;
-+	xnthread_t *thread;
++	struct xnselect_binding *binding;
++	int err;
 +	spl_t s;
 +
-+	if ((unsigned) nfds > __FD_SETSIZE)
-+		return -EINVAL;
-+
-+	thread = xnpod_current_thread();	
-+
-+	xnlock_get_irqsave(&nklock, s);
-+	for (i = 0; i < XNSELECT_MAX_TYPES; i++)
-+		if (out_fds[i]
-+		    && fd_set_andnot(out_fds[i], in_fds[i],
-+				     &selector->fds[i].expected, nfds))
-+			not_empty = 1;
-+	xnlock_put_irqrestore(&nklock, s);
-+
-+	if (not_empty) {
-+		for (i = 0; i < XNSELECT_MAX_TYPES; i++)
-+			if (out_fds[i])
-+				fd_set_zerofill(out_fds[i], nfds);
-+		return -ECHRNG;
-+	}
++	binding = xnmalloc(sizeof(*binding));
++	if (!binding)
++		return -ENOMEM;
 +
 +	xnlock_get_irqsave(&nklock, s);
-+	for (i = 0; i < XNSELECT_MAX_TYPES; i++)
-+		if (out_fds[i]
-+		    && fd_set_and(out_fds[i], in_fds[i],
-+				  &selector->fds[i].pending, nfds))
-+			not_empty = 1;
-+	
-+	while (!not_empty) {
-+		xnsynch_sleep_on(&selector->synchbase, timeout, timeout_mode);
-+
-+		for (i = 0; i < XNSELECT_MAX_TYPES; i++)
-+			if (out_fds[i]
-+			    && fd_set_and(out_fds[i], in_fds[i],
-+					  &selector->fds[i].pending, nfds))
-+				not_empty = 1;
-+
-+		if (xnthread_test_info(thread, XNBREAK | XNTIMEO))
-+			break;
-+	}
++	err = xnselect_bind(&sem->select_block,
++			    binding, selector, type, bit_index, sem->value);
 +	xnlock_put_irqrestore(&nklock, s);
 +
-+	if (not_empty) {
-+		unsigned count;
-+
-+		for (i = 0; i < XNSELECT_MAX_TYPES; i++)
-+			if (out_fds[i])
-+				fd_set_zerofill(out_fds[i], nfds);
-+
-+		for (count = 0, i = 0; i < XNSELECT_MAX_TYPES; i++)
-+			if (out_fds[i])
-+				count += fd_set_popcount(out_fds[i], nfds);
-+
-+		return count;
-+	}
-+
-+	if (xnthread_test_info(thread, XNBREAK))
-+		return -EINTR;
-+
-+	return 0; /* Timeout */
++	return err;
 +}
-+EXPORT_SYMBOL(xnselect);
++EXPORT_SYMBOL(rtdm_sem_select_bind);
++#endif /* CONFIG_XENO_OPT_SELECT */
 +
-+/** 
-+ * Destroy a selector block.
-+ *
-+ * All bindings with file descriptor are destroyed.
-+ *
-+ * @param selector the selector block to be destroyed
-+ */
-+void xnselector_destroy(struct xnselector *selector)
+ #ifdef DOXYGEN_CPP /* Only used for doxygen doc generation */
+ /**
+  * @brief Destroy a semaphore
+@@ -1148,8 +1208,8 @@ int rtdm_sem_timeddown(rtdm_sem_t *sem, 
+ 
+ 	if (testbits(sem->synch_base.status, RTDM_SYNCH_DELETED))
+ 		err = -EIDRM;
+-	else if (sem->value > 0)
+-		sem->value--;
++	else if (sem->value > 0 && !--sem->value)
++			xnselect_signal(&sem->select_block, 0);
+ 	else if (timeout < 0) /* non-blocking mode */
+ 		err = -EWOULDBLOCK;
+ 	else {
+@@ -1214,7 +1274,9 @@ void rtdm_sem_up(rtdm_sem_t *sem)
+ 	if (xnsynch_wakeup_one_sleeper(&sem->synch_base))
+ 		xnpod_schedule();
+ 	else
+-		sem->value++;
++		if (sem->value++ == 0
++		    && xnselect_signal(&sem->select_block, 1))
++			xnpod_schedule();
+ 
+ 	xnlock_put_irqrestore(&nklock, s);
+ }
+--- ksrc/skins/rtdm/core.c	(revision 3460)
++++ ksrc/skins/rtdm/core.c	(working copy)
+@@ -49,28 +49,7 @@ EXPORT_SYMBOL(rtdm_tbase);
+ 
+ DEFINE_XNLOCK(rt_fildes_lock);
+ 
+-/**
+- * @brief Resolve file descriptor to device context
+- *
+- * @param[in] fd File descriptor
+- *
+- * @return Pointer to associated device context, or NULL on error
+- *
+- * @note The device context has to be unlocked using rtdm_context_unlock()
+- * when it is no longer referenced.
+- *
+- * Environments:
+- *
+- * This service can be called from:
+- *
+- * - Kernel module initialization/cleanup code
+- * - Interrupt service routine
+- * - Kernel-based task
+- * - User-space task (RT, non-RT)
+- *
+- * Rescheduling: never.
+- */
+-struct rtdm_dev_context *rtdm_context_get(int fd)
++struct rtdm_dev_context *__rtdm_context_get(rtdm_user_info_t *user_info, int fd)
+ {
+ 	struct rtdm_dev_context *context;
+ 	spl_t s;
+@@ -82,7 +61,9 @@ struct rtdm_dev_context *rtdm_context_ge
+ 
+ 	context = fildes_table[fd].context;
+ 	if (unlikely(!context ||
+-		     test_bit(RTDM_CLOSING, &context->context_flags))) {
++		     test_bit(RTDM_CLOSING, &context->context_flags) ||
++		     context->reserved.owner != (user_info
++						 ? user_info->mm : NULL))) {
+ 		xnlock_put_irqrestore(&rt_fildes_lock, s);
+ 		return NULL;
+ 	}
+@@ -94,7 +75,7 @@ struct rtdm_dev_context *rtdm_context_ge
+ 	return context;
+ }
+ 
+-EXPORT_SYMBOL(rtdm_context_get);
++EXPORT_SYMBOL(__rtdm_context_get);
+ 
+ static int create_instance(struct rtdm_device *device,
+ 			   struct rtdm_dev_context **context_ptr,
+@@ -294,6 +275,34 @@ err_out:
+ 
+ EXPORT_SYMBOL(__rt_dev_socket);
+ 
++int __rt_dev_select_bind(rtdm_user_info_t *info, int fd,
++			 struct xnselector *selector,
++			 unsigned type, unsigned index)
 +{
-+	xnholder_t *holder;
-+	spl_t s;
++	struct rtdm_dev_context *context;
++	struct rtdm_operations  *ops;
++	int ret;
 +
-+	xnlock_get_irqsave(&nklock, s);
-+	while ((holder = getq(&selector->bindings))) {
-+		struct xnselect_binding *binding;
-+		struct xnselect *fd;
++	context = __rtdm_context_get(info, fd);
 +
-+		binding = link2binding(holder, slink);
-+		fd = binding->fd;
-+		removeq(&fd->bindings, &binding->link);
-+		xnlock_put_irqrestore(&nklock, s);
++	ret = -EBADF;
++	if (unlikely(!context))
++		goto err_out;
 +
-+		xnfree(binding);
++	ops = context->ops;
 +
-+		xnlock_get_irqsave(&nklock, s);
-+	}
-+	xnlock_put_irqrestore(&nklock, s);
++	ret = ops->select_bind(context, selector, type, index);
 +
-+	if (xnsynch_destroy(&selector->synchbase) == XNSYNCH_RESCHED)
-+		xnpod_schedule();
++	XENO_ASSERT(RTDM, !rthal_local_irq_test(), rthal_local_irq_enable(););
++
++	rtdm_context_unlock(context);
++
++  err_out:
++	return ret;
 +}
-+EXPORT_SYMBOL(xnselector_destroy);
 +
-+/*@}*/
---- ksrc/nucleus/Makefile	(revision 3460)
-+++ ksrc/nucleus/Makefile	(working copy)
-@@ -14,6 +14,8 @@ xeno_nucleus-$(CONFIG_XENO_OPT_MAP) += m
- 
- xeno_nucleus-$(CONFIG_XENO_OPT_REGISTRY) += registry.o
- 
-+xeno_nucleus-$(CONFIG_XENO_OPT_SELECT) += select.o
++EXPORT_SYMBOL(__rt_dev_select_bind);
 +
- EXTRA_CFLAGS += -D__IN_XENOMAI__ -Iinclude/xenomai
+ int __rt_dev_close(rtdm_user_info_t *user_info, int fd)
+ {
+ 	struct rtdm_dev_context *context;
+@@ -312,7 +321,8 @@ again:
  
- else
-@@ -33,6 +35,7 @@ opt_objs-$(CONFIG_XENO_OPT_PERVASIVE) +=
- opt_objs-$(CONFIG_XENO_OPT_PIPE) += pipe.o
- opt_objs-$(CONFIG_XENO_OPT_MAP) += map.o
- opt_objs-$(CONFIG_XENO_OPT_REGISTRY) += registry.o
-+opt_objs-$(CONFIG_XENO_OPT_SELECT) += select.o
+ 	context = fildes_table[fd].context;
  
- xeno_nucleus-objs += $(opt_objs-y)
+-	if (unlikely(!context)) {
++	if (unlikely(!context ||
++		     (user_info && context->reserved.owner != user_info->mm))) {
+ 		xnlock_put_irqrestore(&rt_fildes_lock, s);
+ 		goto err_out;	/* -EBADF */
+ 	}
+@@ -408,7 +418,7 @@ do {									\
+ 	struct rtdm_operations *ops;					\
+ 	int ret;							\
+ 									\
+-	context = rtdm_context_get(fd);					\
++	context = __rtdm_context_get(user_info, fd);			\
+ 	ret = -EBADF;							\
+ 	if (unlikely(!context))						\
+ 		goto err_out;						\
+@@ -517,6 +527,28 @@ ssize_t __rt_dev_sendmsg(rtdm_user_info_
+ EXPORT_SYMBOL(__rt_dev_sendmsg);
  
+ #ifdef DOXYGEN_CPP /* Only used for doxygen doc generation */
++/**
++ * @brief Resolve file descriptor to device context
++ *
++ * @param[in] fd File descriptor
++ *
++ * @return Pointer to associated device context, or NULL on error
++ *
++ * @note The device context has to be unlocked using rtdm_context_unlock()
++ * when it is no longer referenced.
++ *
++ * Environments:
++ *
++ * This service can be called from:
++ *
++ * - Kernel module initialization/cleanup code
++ * - Interrupt service routine
++ * - Kernel-based task
++ * - User-space task (RT, non-RT)
++ *
++ * Rescheduling: never.
++ */
++struct rtdm_dev_context *rtdm_context_get(int fd);
+ 
+ /**
+  * @brief Increment context reference counter
 
---VjZH4JrU7C--
+--fegA2J2lwi--
 
