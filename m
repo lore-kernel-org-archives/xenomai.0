@@ -1,40 +1,119 @@
-Message-ID: <2ff1a98a0802290127t33b4bfe6x29fc6f3391841ad5@domain.hid>
-Date: Fri, 29 Feb 2008 10:27:42 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <47C71CF6.1040701@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <47C71CF6.1040701@domain.hid>
-Subject: Re: [Xenomai-core] Script marking
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <18349.43717.622653.136257@domain.hid>
+Date: Sat, 9 Feb 2008 14:29:41 +0100
+In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D376AB6@domain.hid>
+References: <51CAD0CE1504444DBE77CBBE51A0135D376AB6@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] fpu issue
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Roland Stigge <stigge@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Steven Seeger <sseeger@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Thu, Feb 28, 2008 at 9:43 PM, Roland Stigge <stigge@domain.hid> wrote:
-> Hi,
->
->  at Debian, I noticed that the "run" scripts are not marked as such and
->  therefore produce "lintian errors". Consider the attached patch that I
->  propose.
->
->  Besides, the documentation seems to be installed under
->  /usr/share/doc/xenomai-2.4.2. Shouldn't /usr/share/doc/xenomai be more
->  appropriate? (I implemented the latter in Debian.)
->
->  Further, I updated the package in Debian with the suggested changes.
+Steven Seeger wrote:
+ > I found the source of my fpu issue. A single kernel module with two
+ > tasks was also active. I noticed the failure occurred whenever sound
+ > would play. (This is one of the tasks.) It seems the problem is that the
+ > sound task doesn't use the FPU, so I didn't turn on T_FPU. The tone task
+ > (not in use at that time) does, so it has T_FPU. When I turned on T_FPU
+ > for the sound task, I never saw the problem again. With it off, if I
+ > played sound while running the program, I'd regularly see the
+ > corruption.
+ > 
+ >  
+ > 
+ > Here is the task code:
+ > 
+ >  
+ > 
+ > static void sound_func(void *data)
+ > 
+ > {       
+ > 
+ >     for (;;) //go until suspended or thread deletion
+ > 
+ >     { 
+ > 
+ >         if (play==stop) //time to stop if this happens
+ > 
+ >         {
+ > 
+ >             unsigned long evt = 0;
+ > 
+ >             
+ > 
+ >             play=stop=0; // just in case
+ > 
+ >             rt_event_clear(&sound_event, SOUND, 0);
+ > 
+ >             rt_task_set_periodic(&sound_task, TM_NOW, TM_INFINITE); /*
+ > disable periodic mode */
+ > 
+ >             rt_event_wait(&sound_event, SOUND, &evt, EV_ALL,
+ > TM_INFINITE);
+ > 
+ >             rt_task_set_periodic(&sound_task, TM_NOW,
+ > rt_timer_ns2ticks(ST_AUDIO_PERIOD));
+ > 
+ >         }
+ > 
+ >         
+ > 
+ > #if BUFSIZE != 65536
+ > 
+ >         if (play==BUFSIZE) play=0;
+ > 
+ > #endif
+ > 
+ >         
+ > 
+ >         if(rt_task_wait_period(0)) rt_task_wait_period(0); //wait for
+ > next tick and ignore overruns (do the best we can)
+ > 
+ >         // Since the index is incrementd subtract 2 from the size before
+ > comparing the index
+ > 
+ >         
+ > 
+ >         outb(buf[play++], DAC_ADDRESS); //send the next byte to the dac
+ > 
+ >     }
+ > 
+ > }
+ > 
+ >  
+ > 
+ > The buffer is filled with a linux userland process and an appropriate
+ > wait queue. This same code worked fine in RTAI without the FPU flag.
+ > 
+ >  
+ > 
+ > I've tested this for several minutes.
+ > 
+ >  
+ > 
+ > Any idea?
 
-We trust you, please send patches.
+An idea is to disassemble the kernel task code and the function it calls
+to see if FPU is really never used.
+
+If this task really never calls any function using FPU, it would be nice
+if you could (as we always ask, you may have noticed) reduce your test
+case to a simple code where only FPU operations and every thing which
+causes task switches (blocking calls, and calls waking up other tasks)
+is kept.
 
 -- 
-                                               Gilles Chanteperdrix
+
+
+					    Gilles Chanteperdrix.
 
