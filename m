@@ -1,14 +1,13 @@
-Message-ID: <47ADC480.7010204@domain.hid>
-Date: Sat, 09 Feb 2008 16:19:28 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <47ACD0FF.8000601@domain.hid>
-In-Reply-To: <47ACD0FF.8000601@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH] Optional timer freeze during ptracing
-Reply-To: rpm@xenomai.org
+Message-ID: <18349.51607.459245.139367@domain.hid>
+Date: Sat, 9 Feb 2008 16:41:11 +0100
+In-Reply-To: <47A63D49.4050700@domain.hid>
+References: <18340.31233.591834.293535@domain.hid>
+	<47A63D49.4050700@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] [PATCH 0/5] Support for select v2.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,55 +18,46 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai-core@domain.hid
+Cc: xenomai@xenomai.org
 
 Jan Kiszka wrote:
-> Freezing all Xenomai timers while just a single RT application is under
-> ptrace control can be helpful in certain debugging scenarios, but it can
-> as well be harmful when other parts of the systems have to continue to work.
-> 
-> I brought this concern up back in 2006, and I originally thought we may
-> address this by freezing per process. But this is far too complex for a
-> simple problem like this: Just make the whole thing configurable, and
-> keep it off by default so that -ideally- only users who are aware of the
-> side effects will arm it.
->
+ > Gilles Chanteperdrix wrote:
+ > > Hi,
+ > > 
+ > > after some tests, bug fixes and optimizations, here comes a second version of 
+ > > the patch-set adding select support to xenomai posix skin.
+ > > 
+ > 
+ > Puh, a lot of code, and my brain is still full of KGDB stuff I'm trying
+ > to polish for mainline since days.
+ > 
+ > The approach looks consistent to me. I would just suggest to make the
+ > whole thing configurable, so that it doesn't add overhead to systems
+ > which do not use it.
 
-No, it's the other way around, you know when you don't want a timer to
-be blocked because it serves some purpose that goes beyond the
-application duty, like keeping a RTnet connection alive through which
-you happen to debug; on the other hand, all other timers relate to the
-logic the application implements, so you most often want them to track
-the debugging state so that they don't mess up behind you back when the
-debugger halts the application. Blocking timers during ptracing should
-be on by default, no need to break a known behaviour Xenomai had for
-ages for rare cases when some of them are also used to maintain some
-external activity alive. This is the exception, and as such, those
-timers should be marked as non-blockable in the code that defines them;
-a global knob may then switch them to blockable if needed.
+I am getting back to this select stuff. So I have a question, would you
+agree if the select support was made configurable, but if when this
+support was enabled, support for select was added to vanilla
+rtdm_event_t and rtdm_sem_t ? This would ease maintenance, since it
+would avoid a lot of code duplication, without adding to much overhead
+in my opinion (an empty list test when signaling the objects).
 
-An intermediate approach would be to force the threads ptimer and rtimer
-as blockable ones, and use a global flag to switch the rest as
-non-blockable, albeit this may cause non-related watchdogs to keep
-triggering, which most of the time could be a real pain in the neck when
-debugging.
+ > 
+ > Out of curiosity: Did you already have a chance to compare a
+ > multi-threaded demo application with one based on these new select services?
+ > 
+ > I guess your current test cases are built on top of RTnet, aren't they?
+ > Would be nice, also for regression testing, to have some demo for
+ > /examples, e.g. exploiting the CAN stack (because it has virtual CAN,
+ > thus it is usable without hardware).
 
-> Gilles, you recently stumbled over such a side effect and introduced
-> XNTIMER_NOBLCK (for customized timer instrumentations as far as I
-> understood this). Do you think we still need that knob when we have
-> CONFIG_XENO_OPT_PTRACE_TIMER_FREEZE?
-> 
-> Jan
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
-
+Ok, I had a look at the CAN stack, if I understand correctly when
+receiving, the recv_sem defined in rcan_socket.h is used, and when
+sending, the tx_sem defined in rtcan_dev.h is used. Can you confirm this
+? 
 
 -- 
-Philippe.
+
+
+					    Gilles Chanteperdrix.
 
