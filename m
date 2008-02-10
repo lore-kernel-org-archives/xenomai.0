@@ -1,15 +1,14 @@
-Message-ID: <47AF057A.3070305@domain.hid>
-Date: Sun, 10 Feb 2008 15:08:58 +0100
+Message-ID: <47AF077A.9070602@domain.hid>
+Date: Sun, 10 Feb 2008 15:17:30 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <18350.7135.108901.491437@domain.hid>
-	<18350.7315.555644.171720@domain.hid>
-In-Reply-To: <18350.7315.555644.171720@domain.hid>
+In-Reply-To: <18350.7135.108901.491437@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig78E518D49DE772B62D64C95B"
+	boundary="------------enigCF4FAE78B8D01BC5AADF637B"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [patch 2/4] RTDM support for select-like service.
+Subject: Re: [Xenomai-core] [patch 0/4] Support for select-like services.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -23,44 +22,56 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig78E518D49DE772B62D64C95B
+--------------enigCF4FAE78B8D01BC5AADF637B
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
 Gilles Chanteperdrix wrote:
-> stats:
->  include/rtdm/rtdm.h        |    4 ++
->  include/rtdm/rtdm_driver.h |   30 +++++++++++++++-
->  ksrc/skins/rtdm/core.c     |   84 +++++++++++++++++++++++++++++++-----=
----------
->  ksrc/skins/rtdm/device.c   |   10 +++++
->  ksrc/skins/rtdm/drvlib.c   |   76 ++++++++++++++++++++++++++++++++++++=
-----
->  5 files changed, 170 insertions(+), 34 deletions(-)
+> Hi,
 >=20
+> here comes a third edition of the patchset adding support for select.=20
+>=20
+> The core support now depends on a CONFIG_XENO_OPT_SELECT option, wherea=
+s the
+> posix support depends on a CONFIG_XENO_OPT_POSIX_SELECT option.
+>=20
+> The support for using rtdm_event_t and rtdm_sem_t objects is now built-=
+in to
+> these objects without creating new objects types (only if
+> CONFIG_XENO_OPT_SELECT is enabled).
+>=20
+> The rtdm_context_get modification, allowing to check that the caller of=
+ a service
+> belongs to the same process as the file descriptor it uses, is now made=
+ in
+> __rtdm_context_get while rtdm_context_get passes a NULL first argument =
+to this
+> new service.
+>=20
+> When implementing these modifications, a few questions arise:
+> - RTDM support currently depends on the CONFIG_XENO_OPT_SELECT option, =
+should we
+> add an RTDM specific option ?
 
-/me thinks that going for inline patches on this list is overdue...
+IIRC, the policy is so far that the skin selects the nucleus features it
+wants/needs, so we may better add the visible switch to RTDM as well.
 
-> @@ -1148,8 +1208,8 @@ int rtdm_sem_timeddown(rtdm_sem_t *sem,=20
-> =20
->  	if (testbits(sem->synch_base.status, RTDM_SYNCH_DELETED))
->  		err =3D -EIDRM;
-> -	else if (sem->value > 0)
-> -		sem->value--;
-> +	else if (sem->value > 0 && !--sem->value)
-> +			xnselect_signal(&sem->select_block, 0);
->  	else if (timeout < 0) /* non-blocking mode */
->  		err =3D -EWOULDBLOCK;
->  	else {
+> - in order to avoid numerous #ifdefs, and especially in drivers code, t=
+he new
+> callback added to device operations for binding RTDM file descriptors t=
+o
+> selector blocks is always there even if CONFIG_XENO_OPT_SELECT is disab=
+led. Is
+> it the right thing to do ?
 
-Uuuh, this doesn't look equivalent (for --sem->value < 0).
-
-Otherwise it's OK with me.
+That's ok, otherwise ifdef'ery would crawl into the drivers as well.
+Given the conversion you posted for RTnet, we don't add noticeable bloat
+this way.
 
 Jan
 
 
---------------enig78E518D49DE772B62D64C95B
+--------------enigCF4FAE78B8D01BC5AADF637B
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -69,10 +80,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.4-svn0 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD4DBQFHrwWEniDOoMHTA+kRAkmEAJ9xxONVcP1RN+bJYvw6aw9AZt2hmACXVoWN
-rklxBeLxg7kn0zGbEeikvg==
-=A5gz
+iD8DBQFHrwd6niDOoMHTA+kRAucDAJ9z7HvVeVtx4yxhTakGtJj5bSdEzACdGclh
+eYYKzxthUtn4VQWD6WqpYzo=
+=bsTC
 -----END PGP SIGNATURE-----
 
---------------enig78E518D49DE772B62D64C95B--
+--------------enigCF4FAE78B8D01BC5AADF637B--
 
