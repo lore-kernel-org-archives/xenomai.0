@@ -1,8 +1,8 @@
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18351.6929.602080.809203@domain.hid>
-Date: Sun, 10 Feb 2008 16:41:05 +0100
+Message-ID: <18351.10273.348068.591595@domain.hid>
+Date: Sun, 10 Feb 2008 17:36:49 +0100
 In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D376ACD@slcmail.slc.mew.int>
 References: <51CAD0CE1504444DBE77CBBE51A0135D376AB6@domain.hid>
 	<18349.43717.622653.136257@domain.hid>
@@ -36,17 +36,11 @@ Steven Seeger wrote:
  > My application has 12 threads most of which wait on queues. How am I
  > going to reduce this to a simple case? Most of my threads are userspace
  > except for 2. 
-
-You should start with an example having the 12 same threads as the real
-code, then try removing threads one by one and look if the bug is still
-there. If you need the 12 threads, then send us your example with the 12
-threads.
-
  > 
  > I guess I'll see what I can do. I'll try the disassembler, too.
- > 
- > Steven 
 
+It was a bad idea: if ever your task had used FPU without the FPU bit,
+Xenomai would have suspended this task, with a warning on the console.
 
 -- 
 
