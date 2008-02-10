@@ -1,8 +1,8 @@
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18351.3120.113165.148859@domain.hid>
-Date: Sun, 10 Feb 2008 15:37:36 +0100
+Message-ID: <18351.3223.368586.268621@domain.hid>
+Date: Sun, 10 Feb 2008 15:39:19 +0100
 In-Reply-To: <47AF057A.3070305@domain.hid>
 References: <18350.7135.108901.491437@domain.hid>
 	<18350.7315.555644.171720@domain.hid>
@@ -33,31 +33,10 @@ Jan Kiszka wrote:
  > > 
  > 
  > /me thinks that going for inline patches on this list is overdue...
- > 
- > > @@ -1148,8 +1208,8 @@ int rtdm_sem_timeddown(rtdm_sem_t *sem, 
- > >  
- > >  	if (testbits(sem->synch_base.status, RTDM_SYNCH_DELETED))
- > >  		err = -EIDRM;
- > > -	else if (sem->value > 0)
- > > -		sem->value--;
- > > +	else if (sem->value > 0 && !--sem->value)
- > > +			xnselect_signal(&sem->select_block, 0);
- > >  	else if (timeout < 0) /* non-blocking mode */
- > >  		err = -EWOULDBLOCK;
- > >  	else {
- > 
- > Uuuh, this doesn't look equivalent (for --sem->value < 0).
- > 
- > Otherwise it's OK with me.
 
-Yes, of course, what we need is:
-
-if (sem->value > 0) {
-     if (!--sem->value)
-        xnselect_signal
-} else 
-
-...
+I guess it depends on the mail client, but with my mail client, I get
+plain text attachments inlined in the mail body. I somehow assumed that
+it was the case for everyone else.
 
 -- 
 
