@@ -1,14 +1,14 @@
-Content-class: urn:content-classes:message
+Message-ID: <2ff1a98a0802110810r297a639ej5a061b823a4d551d@domain.hid>
+Date: Mon, 11 Feb 2008 17:10:00 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D376ADB@slcmail.slc.mew.int>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 11 Feb 2008 08:20:32 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D376ADB@slcmail.slc.mew.int>
-In-Reply-To: <47B053A2.9010503@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 References: <51CAD0CE1504444DBE77CBBE51A0135D376AD7@domain.hid>
 	<47B053A2.9010503@domain.hid>
-From: "Steven Seeger" <sseeger@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D376ADB@slcmail.slc.mew.int>
 Subject: Re: [Xenomai-help] overhead
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -19,48 +19,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: Steven Seeger <sseeger@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-The overhead was measured by only comparing cpu usage between tasks from
-the statistics collection stuff. There are some userland tasks running
-at 8khz, so apparently this is a problem for Xenomai on this board. I
-had no problem at all with these tasks in kernel space under rtai.=20
+On Mon, Feb 11, 2008 at 4:20 PM, Steven Seeger
+<sseeger@domain.hid> wrote:
+> The overhead was measured by only comparing cpu usage between tasks from
+>  the statistics collection stuff. There are some userland tasks running
+>  at 8khz, so apparently this is a problem for Xenomai on this board. I
+>  had no problem at all with these tasks in kernel space under rtai.
 
-There are no faults at all under /proc/xenomai/faults.
+user-space adds some overhead compared to kernel-space. Enabling the
+T_FPU bis for a task which does not need also adds the useless
+overhead of saving/restoring FPU upon context switch.
 
-The main way I can tell something is wrong is that if my three fast
-tasks are running (8 khz in kernel space, 8 khz in userspace, and 50 hz
-in userspace) then a lower priority task will timeout and trip a
-watchdog. If I remove the IO routines from the 50hz task, then the
-others can still run.
-
-Steven
-
-
-> -----Original Message-----
-> From: Jan Kiszka [mailto:jan.kiszka@domain.hid]
-> Sent: Monday, February 11, 2008 6:55 AM
-> To: Steven Seeger
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] overhead
->=20
-> Steven Seeger wrote:
-> > Is it normal for Xenomai to have significant overhead in userspace
-> > compared to older software running RTAI with all realtime threads in
-> > kernel modules? My application makes heavy use of inb/outb with
-iopl().
->=20
-> Significant overhead in user land can come from significant task
-> switches or a significant number of syscalls. But direct I/O should
-not
-> bite you. Any suspicious number of faults under /proc/xenomai/faults?
->=20
-> How did you measure the overhead in both systems?
->=20
-> Jan
->=20
-> --
-> Siemens AG, Corporate Technology, CT SE 2
-> Corporate Competence Center Embedded Linux
+-- 
+                                               Gilles Chanteperdrix
 
