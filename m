@@ -1,11 +1,11 @@
-Content-class: urn:content-classes:message
+Message-ID: <43455a600802110459l80199fdkc9d19cf7fe861da2@domain.hid>
+Date: Mon, 11 Feb 2008 18:29:04 +0530
+From: "rakesh bk" <rakeshbk402@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C86C73.F891D51A"
-Date: Sun, 10 Feb 2008 23:04:32 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D376AD7@domain.hid>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: [Xenomai-help] overhead
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_83_23482813.1202734744458"
+Subject: [Xenomai-help] Error while porting xenomai to power pc 750Cxe based
+	SBC
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,105 +15,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: xenomai-help-request@domain.hid, Xenomai-help@domain.hid
 
+------=_Part_83_23482813.1202734744458
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-This is a multi-part message in MIME format.
+The results of your email command are provided below. Attached is your
+original message.
 
-------_=_NextPart_001_01C86C73.F891D51A
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+- Results:
+   Ignoring non-text/plain MIME parts
 
-Is it normal for Xenomai to have significant overhead in userspace
-compared to older software running RTAI with all realtime threads in
-kernel modules? My application makes heavy use of inb/outb with iopl().
+- Unprocessed:
+   I am new to Xenomai , I have ported linux-2.6.14 to our custom board
+based
+   on IBM750Cxe Iam unable to boot my kernel cross compiled with eldk-3.0with
+   enabled xenomai support.If i remove xenomai and ipipe support     the
+kernel
+   boots correctly , but if i enable i get the following oops message .
+   The following patches are applied and arguements of scripts/prepare-
+   kernel.sh is mentioned as follows
+   adeos-ipipe-2.6.14-ppc-1.3-05.patch,
+   Target architecture [default i686]: ppc
+   Adeos patch[default linux-2.6.14/xenomai-2.2.0
+   /ksrc/arch/powerpc/patches/adeos-ipipe-2.6.14-ppc64-1.2-03.patch]:
+   adeos-ipipe-2.6.14-ppc-1.3-05.patch,
+   The following is the config file of the kernel which is sent as an
+   attachement
+   Oops: kernel access of bad area, sig: 11 [#1]
+   PREEMPT
+   NIP: 00000000 LR: A0044AA0 SP: A05B1CA0 REGS: a05b1bf0 TRAP: 0400    Not
+   tainted
+   MSR: 40001032 EE: 0 PR: 0 FP: 0 ME: 1 IR/DR: 11
+   TASK = a05af770[1] 'swapper' THREAD: a05b0000
+   Last syscall: 120
+   GPR00: 00000000 A05B1CA0 A05AF770 00000020 A0356400 00000001 A0382650
 
-=20
+- Ignored:
+   00000003
+   GPR08: A0350000 00000000 A0317C00 00000001 2410C024 B3012797 07FE2800
+   00000001
+   GPR16: 00000000 00000001 EA100000 007FFF00 00000000 A0350000 A0350000
+   A0350000
+   GPR24: A0350000 A05B0000 A05B0000 A0382650 A079E480 00000020 A05B0000
+   A0356400
+   NIP [00000000] 0x0
+   LR [a0044aa0] __do_IRQ+0x124/0x228
+   Call trace:
+    [a000f8e8] __ipipe_do_IRQ+0x20/0x34
+    [a00469a8] __ipipe_sync_stage+0x204/0x208
+    [a0046158] __ipipe_walk_pipeline+0xc8/0xd4
+    [a000f6e4] __ipipe_handle_irq+0x94/0x1e4
+    [a000f86c] __ipipe_grab_irq+0x38/0x94
+    [a0005150] __ipipe_ret_from_except+0x0/0xc
+    [00000020] 0x20
+    [a01db8a8] mdio_read+0x24/0x38
+    [a01db340] check_phy_state+0x34/0x19c
+    [a01dc688] gt64260_eth_open+0x420/0x46c
+    [a0227e14] dev_open+0xb8/0xd8
+    [a0229d50] dev_change_flags+0x6c/0x158
+    [a0379458] ic_open_devs+0x1e8/0x2fc
+    [a037aa18] ip_auto_config+0x74/0x2e0
+    [a035c738] do_initcalls+0x60/0xfc
 
-Steven
+- Done.
 
-=20
+------=_Part_83_23482813.1202734744458
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
+The results of your email command are provided below. Attached is your<br>original message.<br><br>- Results:<br> &nbsp; &nbsp;Ignoring non-text/plain MIME parts<br><br>- Unprocessed:<br> &nbsp; &nbsp;I am new to Xenomai , I have ported linux-2.6.14 to our custom board based<br>
 
-------_=_NextPart_001_01C86C73.F891D51A
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ &nbsp; &nbsp;on IBM750Cxe Iam unable to boot my kernel cross compiled with eldk-3.0 with<br> &nbsp; &nbsp;enabled xenomai support.If i remove xenomai and ipipe support &nbsp; &nbsp; the kernel<br> &nbsp; &nbsp;boots correctly , but if i enable i get the following oops message .<br>
 
-<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
+ &nbsp; &nbsp;The following patches are applied and arguements of scripts/prepare-<br> &nbsp; &nbsp;kernel.sh is mentioned as follows<br> &nbsp; &nbsp;adeos-ipipe-2.6.14-ppc-1.3-05.patch,<br> &nbsp; &nbsp;Target architecture [default i686]: ppc<br>
+ &nbsp; &nbsp;Adeos patch[default linux-2.6.14/xenomai-2.2.0<br> &nbsp; &nbsp;/ksrc/arch/powerpc/patches<div>/adeos-ipipe-2.6.14-ppc64-1.2-03.patch]:<br> &nbsp; &nbsp;adeos-ipipe-2.6.14-ppc-1.3-05.patch,<br> &nbsp; &nbsp;The following is the config file of the kernel which is sent as an<br>
 
-<head>
-<meta http-equiv=3DContent-Type content=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:"MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
-@font-face
-	{font-family:"\@MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:Arial;
-	color:windowtext;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.25in 1.0in 1.25in;}
-div.Section1
-	{page:Section1;}
--->
-</style>
+ &nbsp; &nbsp;attachement<br> &nbsp; &nbsp;Oops: kernel access of bad area, sig: 11 [#1]<br> &nbsp; &nbsp;PREEMPT<br> &nbsp; &nbsp;NIP: 00000000 LR: A0044AA0 SP: A05B1CA0 REGS: a05b1bf0 TRAP: 0400 &nbsp; &nbsp;Not<br> &nbsp; &nbsp;tainted<br> &nbsp; &nbsp;MSR: 40001032 EE: 0 PR: 0 FP: 0 ME: 1 IR/DR: 11<br>
 
-</head>
+ &nbsp; &nbsp;TASK = a05af770[1] &#39;swapper&#39; THREAD: a05b0000<br> &nbsp; &nbsp;Last syscall: 120<br> &nbsp; &nbsp;GPR00: 00000000 A05B1CA0 A05AF770 00000020 A0356400 00000001 A0382650<br><br>- Ignored:<br> &nbsp; &nbsp;00000003<br> &nbsp; &nbsp;GPR08: A0350000 00000000 A0317C00 00000001 2410C024 B3012797 07FE2800<br>
 
-<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
+ &nbsp; &nbsp;00000001<br> &nbsp; &nbsp;GPR16: 00000000 00000001 EA100000 007FFF00 00000000 A0350000 A0350000<br> &nbsp; &nbsp;A0350000<br> &nbsp; &nbsp;GPR24: A0350000 A05B0000 A05B0000 A0382650 A079E480 00000020 A05B0000<br> &nbsp; &nbsp;A0356400<br> &nbsp; &nbsp;NIP [00000000] 0x0<br>
 
-<div class=3DSection1>
+ &nbsp; &nbsp;LR [a0044aa0] __do_IRQ+0x124/0x228<br> &nbsp; &nbsp;Call trace:<br> &nbsp; &nbsp; [a000f8e8] __ipipe_do_IRQ+0x20/0x34<br> &nbsp; &nbsp; [a00469a8] __ipipe_sync_stage+0x204/0x208<br> &nbsp; &nbsp; [a0046158] __ipipe_walk_pipeline+0xc8/0xd4<br> &nbsp; &nbsp; [a000f6e4] __ipipe_handle_irq+0x94/0x1e4<br>
 
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Is it normal for Xenomai to have significant overhead =
-in
-userspace compared to older software running RTAI with all realtime =
-threads in
-kernel modules? My application makes heavy use of inb/outb with =
-iopl().<o:p></o:p></span></font></p>
+ &nbsp; &nbsp; [a000f86c] __ipipe_grab_irq+0x38/0x94<br> &nbsp; &nbsp; [a0005150] __ipipe_ret_from_except+0x0/0xc<br> &nbsp; &nbsp; [00000020] 0x20<br> &nbsp; &nbsp; [a01db8a8] mdio_read+0x24/0x38<br> &nbsp; &nbsp; [a01db340] check_phy_state+0x34/0x19c<br> &nbsp; &nbsp; [a01dc688] gt64260_eth_open+0x420/0x46c<br>
 
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+ &nbsp; &nbsp; [a0227e14] dev_open+0xb8/0xd8<br> &nbsp; &nbsp; [a0229d50] dev_change_flags+0x6c/0x158<br> &nbsp; &nbsp; [a0379458] ic_open_devs+0x1e8/0x2fc<br> &nbsp; &nbsp; [a037aa18] ip_auto_config+0x74/0x2e0<br> &nbsp; &nbsp; [a035c738] do_initcalls+0x60/0xfc<br><br>
+- Done.</div>
 
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Steven<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01C86C73.F891D51A--
+------=_Part_83_23482813.1202734744458--
 
