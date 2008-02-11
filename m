@@ -1,16 +1,19 @@
-Message-ID: <47B08CBF.4080209@domain.hid>
-Date: Mon, 11 Feb 2008 18:58:23 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <51CAD0CE1504444DBE77CBBE51A0135D376AD7@domain.hid>
-	<47B053A2.9010503@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D376ADB@slcmail.slc.mew.int>
-	<2ff1a98a0802110810r297a639ej5a061b823a4d551d@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D376AED@slcmail.slc.mew.int>
-In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D376AED@slcmail.slc.mew.int>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] overhead
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 11 Feb 2008 13:54:20 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D376B0A@slcmail.slc.mew.int>
+In-Reply-To: <47B0B5B0.5050402@domain.hid>
+References: <51CAD0CE1504444DBE77CBBE51A0135D376AFD@slcmail.slc.mew.int>
+	<47B0ADE8.5060504@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D376B02@domain.hid>
+	<47B0B1E0.7030701@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D376B08@domain.hid>
+	<47B0B5B0.5050402@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
+Subject: Re: [Xenomai-help] irq0
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,61 +23,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <sseeger@domain.hid>
+To: jan.kiszka@domain.hid
 Cc: xenomai@xenomai.org
 
-Steven Seeger wrote:
-> Well one of my 8khz tasks in kernel space seems to require T_FPU despite
-> me never using it. I've been able to reproduce my bug within a minute
-> several times without that flag, but if the flag is set, it can run for
-> an hour without a single value being corrupted into NaN. 
-> 
-> I also am getting a lot of page faults with ipipe_handle_irq() in the
-> back trace. I'm also noticing if I have T_WARNSW on for a primary mode
-> only thread, it will receive the signal if I create a Linux-only thread
-> with pthread_create() and that's just weird.
+I'll give it a try a little later today and post my results then.
 
-Hmm? You call pthread_create() from the primary-mode-only thread? Or
-from some third, unrelated one?
+Thanks for the advice.
 
-> 
-> I don't think the problem is IO time. It's definitely context switching
-> and things. IRQ0 handler uses up to 20% of the cpu, and that just seems
-> wrong. It gets worse if I try the other scalability options (tree or
-> hash.) It uses a lot of CPU time even when the tasks are delayed on
-> conditional variables. I don't have periodic timing on, either.
+Steven
 
-What CPU configuration are you using / do you have to use with your
-board? If your selection enforces PIC/PIT, that could explain noticeable
-overhead of the timer. Do you have TSC support on your platform? Is it
-enabled and usable? Check the .config (or post it), have a look at
-/proc/xenomai/timer (latest versions should report clock/timer
-settings), check the TSC clock stability with clocktest from the testsuite.
+> -----Original Message-----
+> From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid]
+> Sent: Monday, February 11, 2008 1:53 PM
+> To: Steven Seeger
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai-help] irq0
+>=20
+> Steven Seeger wrote:
+> > All right. I'll re-use Philippe's patch that disables TSC on geode
+and
+> > compile the libs for use without TSC. However, this will not help my
+> > overhead problems, correct? Won't it make them worse?
+>=20
+> That depends. If your timer IRQ goes off way more often than it
+should,
+> you burn much more power than you gain via the TSC short-cut. Plus, a
+> broken TSC can have much more evil side effects on your timing.
+>=20
+> >
+> > If xenomai is using tsc, then that's a good thing. The timing is all
+> > correct it seems, and the jitter is low.
+>=20
+> If the TSC is correct, yes. But we cannot tell if it's correct. Only
+you
+> can try to systematically analyse all the effects you observed, apply
+> the tests we suggested, collect more data about what is going on. We
+can
+> only help with a better picture of your system.
+>=20
+> Jan
 
-> 
-> I never used to notice such high CPU usage with older versions of
-> Xenomai. I even had an application written that ran all these threads
-> and didn't have a problem with it. 
-
-Older means before 2.4? Or even older than 2.3?
-
-> 
-> I'll hopefully find some time soon to write isolated tests and try to
-> figure out what's going on. The page fault problems (there are more than
-> the one I posted earlier) are really getting annoying, too.
-> 
-> Sadly my contractor is on the verge of scrapping Xenomai for their
-> project because of these problems. :( I really believe in it, but I'm
-> basically working two jobs and don't have all the time I wish I did to
-> help test.
-
-Do they have an alternative ready at hand? Blindly swapping the problems
-rarely helps, first understand, then decide what to do (I know I'm
-barking at the wrong tree... ;) ).
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
 
