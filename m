@@ -1,240 +1,137 @@
-Message-ID: <4783735F.8080201@domain.hid>
-Date: Tue, 08 Jan 2008 13:58:07 +0100
+Message-ID: <47B0C9B6.7080207@domain.hid>
+Date: Mon, 11 Feb 2008 23:18:30 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------020502040301070503040402"
-Subject: [Adeos-main] [PATCH 3/3] 2.6.24-x86: inline root irq thunks
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+References: <18350.7135.108901.491437@domain.hid>	<18350.7315.555644.171720@domain.hid>	<47AF057A.3070305@domain.hid>	<18351.28960.164520.295075@domain.hid>	<47AF781E.4070102@domain.hid>	<18351.31369.697255.825404@domain.hid>	<47AF7F3C.6080805@domain.hid>	<18352.48401.264561.143362@domain.hid>	<47B0C7BD.3020609@domain.hid>
+	<18352.51397.803115.798009@domain.hid>
+In-Reply-To: <18352.51397.803115.798009@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigD773F7D7A2EF2D6D70125F4A"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [patch 2/4] RTDM support for select-like service.
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------020502040301070503040402
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigD773F7D7A2EF2D6D70125F4A
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-This is a rebased and reordered version of [1]. Also this patch survived
-testing over three different boxes (2, 4, and 8-way).
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>  > Gilles Chanteperdrix wrote:
+>  > > Jan Kiszka wrote:
+>  > >  > Gilles Chanteperdrix wrote:
+>  > >  > > Would not it be simpler to put a pointer to the task_struct ?=
+ After all,
+>  > >  > > it already has a pid, comm and mm, and a file descriptor will=
+ not
+>  > >  > > survive a task_struct thanks to automatic closing of file des=
+criptors.
+>  > >  >=20
+>  > >  > Hmm, hmm, hmmmm... Sounds reasonable, should be safe.
+>  > >=20
+>  > > Actually no, we can not do that because a task_struct may well dis=
+appear
+>  > > and the rtdm_process continue to exist as long as another thread u=
+ses the
+>  > > same mm.
+>  >=20
+>  > Because we cleanup on mm exit, not task exit, right? OK, looks like =
+I=20
+>  > originally spent a few more thoughts than this time :-/.
+>  >=20
+>  > >=20
+>  > >  >=20
+>  > >  > >=20
+>  > >  > >  Could you
+>  > >  > >  > live without the check until we have per-process fd tabled=
+, or was it
+>  > >  > >  > essential for the select thing?
+>  > >  > >=20
+>  > >  > > An application which I ported to Xenomai (and which uses the =
+select
+>  > >  > > call) closes all file descriptors in a for loop. The purpose =
+of this
+>  > >  > > loop is, I guess, to avoid leaving a file descriptor opened t=
+hat was
+>  > >  > > passed through exec.
+>  > >  >=20
+>  > >  > OK.
+>  > >  >=20
+>  > >  > So, will you change rtdm_process too? Thanks.
+>  > >=20
+>  > > I commited the select support, without any change to rtdm_context_=
+get or
+>  > > rtdm_process. So, now, how do you prefer this to be fixed, by addi=
+ng an
+>  > > mm struct to the rtdm_process struct ? By the way, after thinking =
+about
+>  > > it I can live without this fix: I just have to stop the loop closi=
+ng
+>  > > file descriptors at 768, so that it will not try to close RTDM fil=
+e
+>  > > descriptors.
+>  >=20
+>  > If you can live with it, I would vote for fixing it by the intended =
+
+>  > redesign via per-process fds.
+>=20
+> Ok.
+>=20
+>  >=20
+>  > >=20
+>  > > While commiting the support for select, I also had a dependency pr=
+oblem
+>  > > in Kconfig: when support for posix select is enabled the posix mod=
+ule
+>  > > uses a function defined in the RTDM module. So, there is one inval=
+id
+>  > > configuration: posix built-in with support for select and rtdm bui=
+lt as
+>  > > a module. I could not find a way to express this condition in the
+>  > > Kconfig language, so I just made a comment depend on this conditio=
+n, but
+>  > > would be happy if anyone found a better solution.
+>  >=20
+>  > I would say:
+>  >=20
+>  > config POSIX
+>  > 	select RTDM if OPT_SELECT
+>=20
+> But in this case, I can not have posix with select and without rtdm.
+
+Then you need to isolate those services that POSIX needs from RTDM. The=20
+above just expresses the dependency you described. In the end this just=20
+shows that we have to define the common fd-ground for both skins in the=20
+core.
 
 Jan
 
-[1] https://mail.gna.org/public/adeos-main/2007-12/msg00061.html
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+--------------enigD773F7D7A2EF2D6D70125F4A
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
---------------020502040301070503040402
-Content-Type: text/x-patch;
- name="inline-irq-thunks.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="inline-irq-thunks.patch"
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
----
- arch/x86/kernel/entry_64.S |   51 +------------------------
- include/asm-x86/ipipe_64.h |   89 +++++++++++++++++++++++++++++++++++++--------
- 2 files changed, 77 insertions(+), 63 deletions(-)
+iD8DBQFHsMm2niDOoMHTA+kRAvbNAKCCju7WoCDsVt0b3NQ9ndaqXpLkTQCaAwnK
+jENjC9SzWimOA0xIiMMRFOI=
+=hzH3
+-----END PGP SIGNATURE-----
 
-Index: linux-2.6.24-rc6-xeno_64/arch/x86/kernel/entry_64.S
-===================================================================
---- linux-2.6.24-rc6-xeno_64.orig/arch/x86/kernel/entry_64.S
-+++ linux-2.6.24-rc6-xeno_64/arch/x86/kernel/entry_64.S
-@@ -582,54 +582,8 @@ END(stub_rt_sigreturn)
- #endif
- 	.endm
- 
--#ifdef CONFIG_IPIPE
--
--	/* %rdi=negated _vector_ number, %rsi=handler, %rdx=regs */
--ENTRY(__ipipe_root_xirq_thunk)
--	movq %rsp, %rax
--	pushq $0
--	pushq %rax
--	pushfq
--	pushq $__KERNEL_CS
--	pushq $1f
--	pushq %rdi
--	XCPT_FRAME
--	SAVE_ARGS
--	movq %rdi, ORIG_RAX(%rdx)	# regs->orig_eax = ~irq_vector
--	movq %rdx, %rdi		     	# regs for handler
--	call *%rsi
--	jmp exit_intr
--	CFI_ENDPROC
--1:
--	cli
--        ret
--END(__ipipe_root_xirq_thunk)
--	
--	/* %rdi=virq number, %rsi=cookie, %rdx=handler */
--ENTRY(__ipipe_root_virq_thunk)
--	movq %rsp, %rax
--	pushq $0
--	pushq %rax
--	pushfq
--	pushq $__KERNEL_CS
--	pushq $1f
--	pushq $-1
--	XCPT_FRAME
--	SAVE_ARGS
--	call irq_enter
--	movq RDI-ARGOFFSET(%rsp), %rdi
--	movq RSI-ARGOFFSET(%rsp), %rsi
--	movq RDX-ARGOFFSET(%rsp), %rdx
--	call *%rdx
--	call irq_exit
--	jmp exit_intr
--	CFI_ENDPROC
--1:
--	cli
--        ret
--END(__ipipe_root_virq_thunk)
--	
- ENTRY(common_interrupt)
-+#ifdef CONFIG_IPIPE
- 	XCPT_FRAME
- 	interrupt __ipipe_handle_irq
- 	testl %eax, %eax
-@@ -643,7 +597,6 @@ ENTRY(common_interrupt)
- 	swapgs
- 	jmp restore_args
- #else /* !CONFIG_IPIPE */
--ENTRY(common_interrupt)
- 	XCPT_FRAME
- 	interrupt do_IRQ
- #endif /* !CONFIG_IPIPE */	
-@@ -655,7 +608,7 @@ ret_from_intr:
- 	leaveq
- 	CFI_DEF_CFA_REGISTER	rsp
- 	CFI_ADJUST_CFA_OFFSET	-8
--exit_intr:
-+ENTRY(exit_intr)
- 	GET_THREAD_INFO(%rcx)
- 	testl $3,CS-ARGOFFSET(%rsp)
- 	je retint_kernel
-Index: linux-2.6.24-rc6-xeno_64/include/asm-x86/ipipe_64.h
-===================================================================
---- linux-2.6.24-rc6-xeno_64.orig/include/asm-x86/ipipe_64.h
-+++ linux-2.6.24-rc6-xeno_64/include/asm-x86/ipipe_64.h
-@@ -51,14 +51,6 @@ void __ipipe_serial_debug(const char *fm
- 
- unsigned __ipipe_get_irq_vector(int irq);
- 
--asmlinkage void __ipipe_root_xirq_thunk(unsigned irq,
--					void (*handler)(unsigned irq, void *cookie),
--					struct pt_regs *regs);
--
--asmlinkage void __ipipe_root_virq_thunk(unsigned irq,
--					void *cookie,
--					void (*handler)(unsigned irq, void *cookie));
--
- static inline unsigned long __ipipe_ffnz(unsigned long ul)
- {
-       __asm__("bsrq %1, %0":"=r"(ul)
-@@ -72,6 +64,76 @@ void __ipipe_ack_edge_irq(unsigned irq, 
- 
- void __ipipe_end_edge_irq(unsigned irq, struct irq_desc *desc);
- 
-+static inline void __ipipe_call_root_xirq_handler(unsigned irq,
-+						  void (*handler)(unsigned, void *))
-+{
-+	struct pt_regs *regs = &__raw_get_cpu_var(__ipipe_tick_regs);
-+
-+	regs->orig_rax = ~__ipipe_get_irq_vector(irq);
-+
-+	__asm__ __volatile__("movq  %%rsp, %%rax\n\t"
-+			     "pushq $0\n\t"
-+			     "pushq %%rax\n\t"
-+			     "pushfq\n\t"
-+			     "pushq %[kernel_cs]\n\t"
-+			     "pushq $__xirq_end\n\t"
-+			     "pushq %[vector]\n\t"
-+			     "subq  $9*8,%%rsp\n\t"
-+			     "movq  %%rdi,8*8(%%rsp)\n\t"
-+			     "movq  %%rsi,7*8(%%rsp)\n\t"
-+			     "movq  %%rdx,6*8(%%rsp)\n\t"
-+			     "movq  %%rcx,5*8(%%rsp)\n\t"
-+			     "movq  %%rax,4*8(%%rsp)\n\t"
-+			     "movq  %%r8,3*8(%%rsp)\n\t"
-+			     "movq  %%r9,2*8(%%rsp)\n\t"
-+			     "movq  %%r10,1*8(%%rsp)\n\t"
-+			     "movq  %%r11,(%%rsp)\n\t"
-+			     "call  *%[handler]\n\t"
-+			     "jmp exit_intr\n\t"
-+			     "__xirq_end: cli\n"
-+			     : /* no output */
-+			     : [kernel_cs] "i" (__KERNEL_CS),
-+			       [vector] "rm" (regs->orig_rax),
-+			       [handler] "rm" (handler), "D" (regs)
-+			     : "rax");
-+}
-+
-+void irq_enter(void);
-+void irq_exit(void);
-+
-+static inline void __ipipe_call_root_virq_handler(unsigned irq,
-+						  void (*handler)(unsigned, void *),
-+						  void *cookie)
-+{
-+	__asm__ __volatile__("movq  %%rsp, %%rax\n\t"
-+			     "pushq $0\n\t"
-+			     "pushq %%rax\n\t"
-+			     "pushfq\n\t"
-+			     "pushq %[kernel_cs]\n\t"
-+			     "pushq $__virq_end\n\t"
-+			     "pushq $-1\n\t"
-+			     "subq  $9*8,%%rsp\n\t"
-+			     "movq  %%rdi,8*8(%%rsp)\n\t"
-+			     "movq  %%rsi,7*8(%%rsp)\n\t"
-+			     "movq  %%rdx,6*8(%%rsp)\n\t"
-+			     "movq  %%rcx,5*8(%%rsp)\n\t"
-+			     "movq  %%rax,4*8(%%rsp)\n\t"
-+			     "movq  %%r8,3*8(%%rsp)\n\t"
-+			     "movq  %%r9,2*8(%%rsp)\n\t"
-+			     "movq  %%r10,1*8(%%rsp)\n\t"
-+			     "movq  %%r11,(%%rsp)\n\t"
-+			     : /* no output */
-+			     : [kernel_cs] "i" (__KERNEL_CS)
-+			     : "rax");
-+	irq_enter();
-+	handler(irq, cookie);
-+	irq_exit();
-+	__asm__ __volatile__("jmp exit_intr\n\t"
-+			     "__virq_end: cli\n"
-+			     : /* no output */
-+			     : /* no input */);
-+}
-+
- /*
-  * When running handlers, enable hw interrupts for all domains but the
-  * one heading the pipeline, so that IRQs can never be significantly
-@@ -82,13 +144,12 @@ void __ipipe_end_edge_irq(unsigned irq, 
- 		local_irq_enable_nohead(ipd);				\
- 		if (ipd == ipipe_root_domain) {				\
- 			if (likely(!ipipe_virtual_irq_p(irq)))		\
--				__ipipe_root_xirq_thunk(~__ipipe_get_irq_vector(irq),	\
--							(ipd)->irqs[irq].handler,	\
--							&__raw_get_cpu_var(__ipipe_tick_regs)); \
-+				__ipipe_call_root_xirq_handler(		\
-+					irq, (ipd)->irqs[irq].handler);	\
- 			else						\
--				__ipipe_root_virq_thunk(irq, \
--							(ipd)->irqs[irq].cookie, \
--							(ipd)->irqs[irq].handler); \
-+				__ipipe_call_root_virq_handler(		\
-+					irq, (ipd)->irqs[irq].handler,	\
-+					(ipd)->irqs[irq].cookie);	\
- 		} else {						\
- 			__clear_bit(IPIPE_SYNC_FLAG, &ipipe_cpudom_var(ipd, status)); \
- 			ipd->irqs[irq].handler(irq, ipd->irqs[irq].cookie); \
-
---------------020502040301070503040402--
+--------------enigD773F7D7A2EF2D6D70125F4A--
 
