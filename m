@@ -1,52 +1,80 @@
-Message-ID: <47C3E312.4090003@domain.hid>
-Date: Tue, 26 Feb 2008 10:59:46 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <47B093D8.2050605@domain.hid>
+Date: Mon, 11 Feb 2008 19:28:40 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <200802181213.29872.leo@domain.hid>	<47C2A484.4050006@domain.hid>	<200802251317.23736.leo@domain.hid>	<47C2B9E5.9090900@domain.hid>	<18371.16698.219209.759123@domain.hid>	<47C3CA72.1090100@domain.hid>
-	<47C3D7A9.6090300@domain.hid> <47C3DE6A.8000809@domain.hid>
-In-Reply-To: <47C3DE6A.8000809@domain.hid>
+References: <47B0371E0200000100192400@domain.hid>
+In-Reply-To: <47B0371E0200000100192400@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Debian package
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-help] T_RRB
+Reply-To: rpm@xenomai.org
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Roland Stigge <stigge@domain.hid>
-Cc: Paul Corner <paul_c@domain.hid>, xenomai@xenomai.org, Leopold Palomo-Avellaneda <leo@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Hubert Talbot <Hubert.Talbot@domain.hid>
+Cc: xenomai@xenomai.org
 
-Roland Stigge wrote:
+Hubert Talbot wrote:
 > Hi,
 > 
-> I hope you don't mind that we move this to the xenomai-core mailing list
-> with CC, since I fear the same questions will be raised again there at
-> some point.
-
-Valid point!
-
+> I'm new to Xenomai.
 > 
-> Jan Kiszka wrote:
->> Now the next question: You are providing i386 packages so far. Do you
->> have plans for x86-64 as well?
+> I am studying xenomai and I would like to kwow how to apply round-robin.
 > 
-> The respective debian/control line currently is:
+> Specifically, what to do with (do I have to?):
 > 
-> Architecture: amd64 arm i386 ia64 powerpc
+> 	- the kernel configuration
 > 
-> At http://packages.qa.debian.org/x/xenomai.html , you can also see the
-> current status of the different architectures' build daemons (i.e., a
-> link to the logs).
+> 		Real-time sub-system/Timing/Enable periodic timing ?
+>
 
-Ah, I see... that powerpc already failed. :->
+Yes. Round-robin scheduling is only available with tick-based timing.
 
-Jan
+> 	- the timer configuration 
+> 
+> 		rt_timer_set_mode(rt_timer_ns2ticks(???))  ?
+> 
+
+rt_timer_set_mode(ns), to switch the default oneshot mode for the native
+API to tick-based.
+
+> 	- the task configuration
+> 
+> 		rt_task_set_periodic(???)  ?
+
+Not this one; it controls whether your task follows a periodic timeline
+using the rt_task_wait_period() service. It's not related to RRB.
+
+> 		rt_task_set_mode(0, T_RRB, 0)    ?
+
+Yes, this one is needed to switch on RRB for the calling task.
+
+> 		rt_task_slice(???)  ?
+> 
+
+And this one allows to set the time quantum alloted to the task (in ticks).
+
+> Thanks in advanced.
+> 
+> Hubert
+> 
+> 
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+> 
+
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Philippe.
 
