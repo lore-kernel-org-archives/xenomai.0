@@ -1,15 +1,11 @@
-Message-ID: <47B0D165.4080709@domain.hid>
-Date: Mon, 11 Feb 2008 23:51:17 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <47B0371E0200000100192400@domain.hid>	<47B093D8.2050605@domain.hid>
-	<47B06F8C0200000100192434@domain.hid>
-In-Reply-To: <47B06F8C0200000100192434@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] =?iso-8859-1?q?R=E9p=2E_=3A_Re=3A__T=5FRRB?=
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C86D10.91F40970"
+Date: Mon, 11 Feb 2008 17:45:31 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D376B33@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
+Subject: [Xenomai-help] pit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,162 +15,188 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Hubert Talbot <Hubert.Talbot@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hubert Talbot wrote:
-> There is something I don't understand.
-> 
-> Does Xenomai really implement RRB?
->
 
-Yes it does, and it even happens to work, provided it is used properly.
+This is a multi-part message in MIME format.
 
-> Here is my code:
-> 
-> //****************************************************
-> #include <sys/mman.h>
-> #include <native/task.h>
-> #include <native/timer.h>
-> #include <native/sem.h>
-> 
-> #define NBTASK 2
-> #define NSEC 	1
-> #define USEC 	1000
-> #define MSEC 	1000000
-> #define SEC 	1000000000
-> 
-> RT_TASK tasks[NBTASK];
-> RT_SEM sem;
-> 
-> void my_sleep(int nSec)
-> {
-> 	struct timeval tv_start, tv_current;
-> 	
-> 	gettimeofday(&tv_start, 0);
-> 	
-> 	do
-> 	{
-> //		rt_task_wait_period(NULL);
-> 		struct timeval;
-> 		gettimeofday(&tv_current, 0);
-> 	} while (tv_current.tv_sec - tv_start.tv_sec <= nSec);
-> }
->
+------_=_NextPart_001_01C86D10.91F40970
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-Xenomai RRB will work for tasks controlled by the Xenomai scheduler. By
-calling gettimeofday(), your tasks switch to a runtime mode where they
-depend on the Linux scheduler, so there is no way for the round-robin
-swap to take place properly at Xenomai level. Your tasks will just run
-in FIFO order due to Linux scheduling.
+I compiled the kernel for 586 and am running the PIT timer. I still get
+the 17000-18000 context switches per second, and now the irq0 handler is
+taking up 11% of the CPU instead of only 5% when the two 8000Hz tasks
+are loaded but delayed on events. I think that the problem isn't with
+pit, but with the tasks being periodic even though they are blocked.=20
 
-The code below will exhibit RRB scheduling controlled by the Xenomai
-core; the point is to use the real-time API to perform the busy-wait,
-and never call into any Linux service in the meantime:
+=20
 
-#include <stdio.h>
-#include <sys/mman.h>
-#include <native/task.h>
-#include <native/timer.h>
-#include <native/sem.h>
+Running in PIT mode with periodic timing on uses only 9.5% of the CPU. I
+show about 9000 context switches per second. (the 2 8000 hz tasks and
+the 1000 hz linux interrupt.)
 
-#define NBTASK 2
-#define NSEC 	1
-#define USEC 	1000
-#define MSEC 	1000000
-#define SEC 	1000000000
-#define PERIOD  (10 * MSEC)
+=20
 
-RT_TASK tasks[NBTASK];
-RT_SEM sem;
+With periodic timing, it's 5.4% when the tasks idle and about 9000
+context switches a second. When one of them becomes active, the irq0
+handler is using 10% of the CPU and the sound task is using about 8%.
+These are two kernel tasks.
 
-static inline unsigned tick_delta(RTIME t0, RTIME t1)
-{
-	return ((unsigned)(t1 - t0) * PERIOD) / SEC;
-}
+=20
 
-void my_sleep(int nSec)
-{
-	RTIME start_ticks, wait_ticks;
-	
-	wait_ticks = (nSec * SEC) / PERIOD;
-	start_ticks = rt_timer_read();
+Userspace stack size is set to 64k. I forgot to mention this to Philippe
+earlier.
 
-	while (rt_timer_read() - start_ticks <= wait_ticks)
-		;
-}
+=20
 
-void task(void *arg)
-{
-	int taskID = (int)(long)arg;
-	RTIME start_date, end_date;
-	
-	rt_sem_p(&sem, TM_INFINITE);
-   	printf("task %d start...\n", taskID);
+Perhaps the problem is the overhead that the timer handler introduces
+being able to support multiple skins with individual timebases. It
+sounds like in order to save some cpu cycles, I may want to turn off
+periodicity while threads are idle and also avoid setting threads
+periodic when they can be driven some other way.=20
 
-	rt_task_slice(NULL, rt_timer_ns2ticks(PERIOD));
-	rt_task_set_mode(0, T_RRB, 0);
+=20
 
-	start_date = rt_timer_read();
-	my_sleep(1);
-	end_date = rt_timer_read();
+Steven
 
-	printf("task %d end (%u sec)\n", taskID, tick_delta(start_date, end_date));
-}
+=20
 
-int main(void)
-{
-	int rc;
-	int i;
-	RTIME tv1, tv2;
 
-	mlockall(MCL_CURRENT | MCL_FUTURE);
-	
-	rc = rt_timer_set_mode(1 * MSEC);
-	if (rc != 0)
-	{
-		printf("failed to rt_timer_set_mode: %d\n", rc);
-		return rc;
-	}
+------_=_NextPart_001_01C86D10.91F40970
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-	rt_sem_create(&sem, "sem", 0, S_FIFO);
-	
-	for (i = 0; i < NBTASK; i++)
-	{
-		char szTaskID[20];
-		sprintf(szTaskID, "Task%02d", i);
-		rt_task_create(&tasks[i],
-				szTaskID,
-				4096,
-				99,
-				T_JOINABLE);
-	}
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns=3D"http://www.w3.org/TR/REC-html40">
 
-	tv1 = rt_timer_read();
+<head>
+<meta http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dus-ascii">
+<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"MS Mincho";
+	panose-1:2 2 6 9 4 2 5 8 3 4;}
+@font-face
+	{font-family:"\@MS Mincho";
+	panose-1:2 2 6 9 4 2 5 8 3 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:Arial;
+	color:windowtext;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.25in 1.0in 1.25in;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
 
-	for (i = 0; i < NBTASK; i++)
-	{
-	   	RT_TASK_INFO info;
-	
-		rt_task_start(&tasks[i], &task, (void *)(long)i);
-	}	
-	
-	rt_sem_broadcast(&sem);
+</head>
 
-	for (i = 0; i < NBTASK; i++)
-	{
-    		rt_task_join(&tasks[i]);
-    	}
+<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
 
-	tv2 = rt_timer_read();
+<div class=3DSection1>
 
-	printf("****** total time: %u (sec)\n\n", tick_delta(tv1, tv2));
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>I compiled the kernel for 586 and am running the PIT =
+timer. I
+still get the 17000-18000 context switches per second, and now the irq0 =
+handler
+is taking up 11% of the CPU instead of only 5% when the two 8000Hz tasks =
+are
+loaded but delayed on events. I think that the problem isn&#8217;t with =
+pit,
+but with the tasks being periodic even though they are blocked. =
+<o:p></o:p></span></font></p>
 
-	rt_sem_delete(&sem);
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
 
-	return 0;
-}
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Running in PIT mode with periodic timing on uses only =
+9.5%
+of the CPU. I show about 9000 context switches per second. (the 2 8000 =
+hz tasks
+and the 1000 hz linux interrupt.)<o:p></o:p></span></font></p>
 
--- 
-Philippe.
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>With periodic timing, it&#8217;s 5.4% when the tasks =
+idle
+and about 9000 context switches a second. When one of them becomes =
+active, the
+irq0 handler is using 10% of the CPU and the sound task is using about =
+8%. These
+are two kernel tasks.<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Userspace stack size is set to 64k. I forgot to =
+mention this
+to Philippe earlier.<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Perhaps the problem is the overhead that the timer =
+handler
+introduces being able to support multiple skins with individual =
+timebases. It
+sounds like in order to save some cpu cycles, I may want to turn off
+periodicity while threads are idle and also avoid setting threads =
+periodic when
+they can be driven some other way. <o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Steven<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+</div>
+
+</body>
+
+</html>
+
+------_=_NextPart_001_01C86D10.91F40970--
 
