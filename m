@@ -1,79 +1,55 @@
-Message-ID: <4786486C.1020907@domain.hid>
-Date: Thu, 10 Jan 2008 17:31:40 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------040301050205050104030008"
-Subject: [Adeos-main] [PATCH] x86-32: micro-optimize mcount trampoline
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: adeos-main <adeos-main@gna.org>
-Cc: Philippe Gerum <rpm@xenomai.org>
-
-This is a multi-part message in MIME format.
---------------040301050205050104030008
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+Message-ID: <18353.20580.55980.279684@domain.hid>
+Date: Tue, 12 Feb 2008 08:53:08 +0100
+In-Reply-To: <18353.17667.156910.185055@domain.hid>
+References: <20080123065221.GB6573@domain.hid>
+	<2ff1a98a0801230204s15e4eefaifdd2c946c44549df@domain.hid>
+	<2ff1a98a0801230515i77f8c22bk866c4cd592a3a9b8@domain.hid>
+	<20080124094150.GA7503@domain.hid>
+	<18351.24380.551907.397687@domain.hid>
+	<47B050A4.4060409@domain.hid>
+	<18353.17667.156910.185055@domain.hid>
+Subject: Re: [Xenomai-core] [Xenomai-help] AT91SAM9260 latency
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>, Juan Antonio Garcia Redondo <juan-antonio.garcia@domain.hid>, jagarcia@domain.hid, xenomai@xenomai.org
 
-Looking at the 64-bit variant and the implementation in glibc, I noticed
-that we can still save some cycles in current mcount_32. With this patch
-applied, the tracer still works and provides consistent output.
+Gilles Chanteperdrix wrote:
+ > 
+ > And another here, whereas if I understand correctly, the mm did not
+ > change. So, this is probably an unwanted effect of the cache flush
+ > "optimization" in the arm patch.
+ > 
+ > I will now try to understand if this second cache flush is really normal.
 
-Jan
+Yes, it is normal: the first context switch, which xnshadow_relax does,
+is a switch to whatever task Linux was running when preempted, not
+necessarily latency (and it turns out to never be latency when we
+capture the worst case) hence the first cache flush. We then re-interrupt
+Linux after this context switch, and switch again to latency, and we get
+a second cache flush.
+
+So, the conclusion is: everything is normal. What we obtain when
+pressing the enter key while latency is running in the background is a
+wakeup of the shell process and this process uses cache, so that the
+next latency context switches need to flush cache.
+
+In other words: pressing the enter key yields the same latency as
+running the cache calibrator because it has the same effect, it fills
+the cache.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
 
 
---------------040301050205050104030008
-Content-Type: text/x-patch;
- name="optimize-x86-32-mcount.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="optimize-x86-32-mcount.patch"
-
----
- arch/x86/kernel/mcount_32.S |    9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
-
-Index: linux-2.6.24-rc6-xeno/arch/x86/kernel/mcount_32.S
-===================================================================
---- linux-2.6.24-rc6-xeno.orig/arch/x86/kernel/mcount_32.S
-+++ linux-2.6.24-rc6-xeno/arch/x86/kernel/mcount_32.S
-@@ -9,17 +9,13 @@ mcount:
- 	cmpl $0,ipipe_trace_enable
- 	je out
- 
--	pushl %ebp
--	movl %esp,%ebp
--
- 	pushl %eax
- 	pushl %ecx
- 	pushl %edx
- 
- 	pushl $0		# no additional value (v)
--	movl (%ebp),%eax
--	movl 0x4(%ebp),%edx	# __CALLER_ADDR0
--	movl 0x4(%eax),%ecx	# __CALLER_ADDR1
-+	movl 4(%ebp),%ecx	# __CALLER_ADDR1
-+	movl 16(%esp),%edx	# __CALLER_ADDR0
- 	movl $0,%eax		# IPIPE_TRACE_FUNC
- 	call __ipipe_trace
- 	popl %eax
-@@ -27,6 +23,5 @@ mcount:
- 	popl %edx
- 	popl %ecx
- 	popl %eax
--	popl %ebp
- out:
- 	ret
-
-
---------------040301050205050104030008--
+					    Gilles Chanteperdrix.
 
