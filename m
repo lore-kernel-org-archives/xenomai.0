@@ -1,17 +1,15 @@
+Message-ID: <47B14C92.204@domain.hid>
+Date: Tue, 12 Feb 2008 08:36:50 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18353.17667.156910.185055@domain.hid>
-Date: Tue, 12 Feb 2008 08:04:35 +0100
-In-Reply-To: <47B050A4.4060409@domain.hid>
-References: <20080123065221.GB6573@domain.hid>
-	<2ff1a98a0801230204s15e4eefaifdd2c946c44549df@domain.hid>
-	<2ff1a98a0801230515i77f8c22bk866c4cd592a3a9b8@domain.hid>
-	<20080124094150.GA7503@domain.hid>
-	<18351.24380.551907.397687@domain.hid>
-	<47B050A4.4060409@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] [Xenomai-help] AT91SAM9260 latency
+References: <18350.7135.108901.491437@domain.hid>	<18350.7315.555644.171720@domain.hid>	<47AF057A.3070305@domain.hid>	<18351.28960.164520.295075@domain.hid>	<47AF781E.4070102@domain.hid>	<18351.31369.697255.825404@domain.hid>	<47AF7F3C.6080805@domain.hid>	<18352.48401.264561.143362@domain.hid>	<47B0C7BD.3020609@domain.hid>	<18352.51397.803115.798009@domain.hid>	<47B0C9B6.7080207@domain.hid>
+	<18352.52347.906633.550225@domain.hid>
+In-Reply-To: <18352.52347.906633.550225@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF0E27ADBEB16B0FB849E5B77"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [patch 2/4] RTDM support for select-like service.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,87 +19,146 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: jagarcia@domain.hid, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
- > Gilles Chanteperdrix wrote:
- > > I-pipe frozen back-tracing service on 2.6.20/ipipe-1.8-04
- > > ------------------------------------------------------------
- > > CPU: 0, Freeze: 450692973 cycles, Trace Points: 1000 (+10)
- > > Calibrated minimum trace-point overhead: 1.000 us
- > 
- > That is interesting. I tells us that we might subtract 1 us
- > _per_tracepoint_ from the given latencies due to the inherent tracer
- > overhead. We have about 50 entries in the critical path, so 50 us
- > compared to 220 us that were measured - roughly 170 us real latency.
- > 
- > What is the clock resolution btw? 500 ns?
- > 
- > So here is the interesting block, starting with the last larger IRQs-on
- > window.
- > 
- > > :   + func                -447+   2.500  xnshadow_relax+0x14 (hisyscall_event+0x210)
- > > :|  + begin   0x80000000  -445+   3.000  xnshadow_relax+0xd4 (hisyscall_event+0x210)
- > > :|  # func                -442+   5.000  schedule_linux_call+0x10 (xnshadow_relax+0x114)
- > > :|  # func                -437+   4.000  rthal_apc_schedule+0x10 (schedule_linux_call+0x1e8)
- > > :|  # func                -433+   5.000  __ipipe_schedule_irq+0x10 (rthal_apc_schedule+0xac)
- > > :|  # func                -428+   4.500  __ipipe_set_irq_pending+0x10 (__ipipe_schedule_irq+0xa4)
- > > :|  # func                -423+   3.500  rpi_push+0x14 (xnshadow_relax+0x11c)
- > > :|  # func                -420+   5.500  xnpod_suspend_thread+0x14 (xnshadow_relax+0x148)
- > > :|  # func                -414+   4.000  xnpod_schedule+0x14 (xnpod_suspend_thread+0x60c)
- > > :|  # [  752] -<?>-    0  -410+   7.000  xnpod_schedule+0xc8 (xnpod_suspend_thread+0x60c)
- > > :|  # func                -403!  56.000  xnheap_finalize_free_inner+0x10 (xnpod_schedule+0x82c)
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF0E27ADBEB16B0FB849E5B77
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-Ok, we get a cache flush here
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>  > Gilles Chanteperdrix wrote:
+>  > > Jan Kiszka wrote:
+>  > >  > Gilles Chanteperdrix wrote:
+>  > >  > > Jan Kiszka wrote:
+>  > >  > >  > Gilles Chanteperdrix wrote:
+>  > >  > >  > > Would not it be simpler to put a pointer to the task_str=
+uct ? After all,
+>  > >  > >  > > it already has a pid, comm and mm, and a file descriptor=
+ will not
+>  > >  > >  > > survive a task_struct thanks to automatic closing of fil=
+e descriptors.
+>  > >  > >  >=20
+>  > >  > >  > Hmm, hmm, hmmmm... Sounds reasonable, should be safe.
+>  > >  > >=20
+>  > >  > > Actually no, we can not do that because a task_struct may wel=
+l disappear
+>  > >  > > and the rtdm_process continue to exist as long as another thr=
+ead uses the
+>  > >  > > same mm.
+>  > >  >=20
+>  > >  > Because we cleanup on mm exit, not task exit, right? OK, looks =
+like I=20
+>  > >  > originally spent a few more thoughts than this time :-/.
+>  > >  >=20
+>  > >  > >=20
+>  > >  > >  >=20
+>  > >  > >  > >=20
+>  > >  > >  > >  Could you
+>  > >  > >  > >  > live without the check until we have per-process fd t=
+abled, or was it
+>  > >  > >  > >  > essential for the select thing?
+>  > >  > >  > >=20
+>  > >  > >  > > An application which I ported to Xenomai (and which uses=
+ the select
+>  > >  > >  > > call) closes all file descriptors in a for loop. The pur=
+pose of this
+>  > >  > >  > > loop is, I guess, to avoid leaving a file descriptor ope=
+ned that was
+>  > >  > >  > > passed through exec.
+>  > >  > >  >=20
+>  > >  > >  > OK.
+>  > >  > >  >=20
+>  > >  > >  > So, will you change rtdm_process too? Thanks.
+>  > >  > >=20
+>  > >  > > I commited the select support, without any change to rtdm_con=
+text_get or
+>  > >  > > rtdm_process. So, now, how do you prefer this to be fixed, by=
+ adding an
+>  > >  > > mm struct to the rtdm_process struct ? By the way, after thin=
+king about
+>  > >  > > it I can live without this fix: I just have to stop the loop =
+closing
+>  > >  > > file descriptors at 768, so that it will not try to close RTD=
+M file
+>  > >  > > descriptors.
+>  > >  >=20
+>  > >  > If you can live with it, I would vote for fixing it by the inte=
+nded=20
+>  > >  > redesign via per-process fds.
+>  > >=20
+>  > > Ok.
+>  > >=20
+>  > >  >=20
+>  > >  > >=20
+>  > >  > > While commiting the support for select, I also had a dependen=
+cy problem
+>  > >  > > in Kconfig: when support for posix select is enabled the posi=
+x module
+>  > >  > > uses a function defined in the RTDM module. So, there is one =
+invalid
+>  > >  > > configuration: posix built-in with support for select and rtd=
+m built as
+>  > >  > > a module. I could not find a way to express this condition in=
+ the
+>  > >  > > Kconfig language, so I just made a comment depend on this con=
+dition, but
+>  > >  > > would be happy if anyone found a better solution.
+>  > >  >=20
+>  > >  > I would say:
+>  > >  >=20
+>  > >  > config POSIX
+>  > >  > 	select RTDM if OPT_SELECT
+>  > >=20
+>  > > But in this case, I can not have posix with select and without rtd=
+m.
+>  >=20
+>  > Then you need to isolate those services that POSIX needs from RTDM. =
+The=20
+>  > above just expresses the dependency you described.=20
+>=20
+> Then I was wrong in what I described: the problem is that if posix is
+> built-in and RTDM is enabled, then RTDM must be built-in.
 
- > > :|  # [    0] -<?>-   -1  -347!  20.000  xnpod_schedule+0xb14 (xnintr_clock_handler+0xa0)
- > > :|   +func                -327+   3.000  __ipipe_walk_pipeline+0x10 (__ipipe_handle_irq+0x124)
- > > :|   +func                -324+   7.500  __ipipe_sync_stage+0x14 (__ipipe_walk_pipeline+0xa8)
- > > :|   #end     0x80000000  -317+   7.000  __ipipe_sync_stage+0x250 (__ipipe_walk_pipeline+0xa8)
- > 
- > OK, the clock starts ticking...
- > 
- > > :|   #func                -310+   2.500  __ipipe_grab_irq+0x10 (__irq_svc+0x28)
- > > :|   #begin   0xffffffff  -307+   7.000  __ipipe_grab_irq+0x20 (__irq_svc+0x28)
- > > :|   #(0x2a)  0x00000012  -300+   5.000  __ipipe_grab_irq+0x2c (__irq_svc+0x28)
- > > :|   #func                -295+   4.000  __ipipe_handle_irq+0x10 (__ipipe_grab_irq+0x104)
- > > :|   #func                -291+   2.500  __ipipe_ack_timerirq+0x10 (__ipipe_handle_irq+0x74)
- > > :|   #func                -289+   3.000  __ipipe_ack_level_irq+0x10 (__ipipe_ack_timerirq+0x30)
- > > :|   #func                -286+   2.000  at91_aic_mask_irq+0x10 (__ipipe_ack_level_irq+0x3c)
- > > :|   #func                -284+   2.000  at91_aic_mask_irq+0x10 (__ipipe_ack_level_irq+0x4c)
- > 
- > (Without looking at the arm code: Is this double invocation of
- > at91_aic_mask_irq correct and required?)
- > 
- > > :|   #func                -282+   4.000  __ipipe_mach_acktimer+0x10 (__ipipe_ack_timerirq+0x40)
- > > :|   #func                -278+   2.000  __ipipe_end_level_irq+0x10 (__ipipe_ack_timerirq+0x50)
- > > :|   #func                -276+   2.500  at91_aic_unmask_irq+0x10 (__ipipe_end_level_irq+0x28)
- > > :|   #func                -273+   3.500  __ipipe_dispatch_wired+0x14 (__ipipe_handle_irq+0x80)
- > > :|  #*func                -270+   3.500  xnintr_clock_handler+0x10 (__ipipe_dispatch_wired+0xe4)
- > > :|  #*func                -266+   9.500  xntimer_tick_aperiodic+0x14 (xnintr_clock_handler+0x34)
- > > :|  #*func                -257+   3.500  xnthread_periodic_handler+0x10 (xntimer_tick_aperiodic+0x354)
- > > :|  #*func                -253+   4.000  xnpod_resume_thread+0x14 (xnthread_periodic_handler+0x34)
- > > :|  #*[  753] -<?>-   99  -249!  15.000  xnpod_resume_thread+0x84 (xnthread_periodic_handler+0x34)
- > 
- > Hmm, comparably costly, this simple resume. Hope it's not the
- > instrumentation (ipipe_trace_pid?) itself.
- > 
- > > :|  #*func                -234+   6.500  xntimer_next_local_shot+0x10 (xntimer_tick_aperiodic+0x7c0)
- > > :|  #*func                -228+   4.000  __ipipe_mach_set_dec+0x10 (xntimer_next_local_shot+0xbc)
- > > :|  #*func                -224+   3.500  xnpod_schedule+0x14 (xnintr_clock_handler+0xa0)
- > > :|  #*[    0] -<?>-   -1  -220!  59.500  xnpod_schedule+0xc8 (xnintr_clock_handler+0xa0)
- > 
- > OK, this is the cache flushing thing, I guess. Expected.
+That should be covered by the kconfig rule automatically.
 
-And another here, whereas if I understand correctly, the mm did not
-change. So, this is probably an unwanted effect of the cache flush
-"optimization" in the arm patch.
+>=20
+> In the end this just=20
+>  > shows that we have to define the common fd-ground for both skins in =
+the=20
+>  > core.
+>=20
+> I also have the choice of defining the service needed
+> (rt_dev_select_bind) as a callback in the posix module, the RTDM module=
 
-I will now try to understand if this second cache flush is really normal.
+> setting this callback when loaded (like what the rtcap module does with=
 
--- 
+> rtnet). But I wanted something simple, so I aimed at Kconfig stuff.
+>=20
+
+If you can live with the callback being NULL, you could also perfectly=20
+wrap some ifdef CONFIG_...RTDM[_MODULE] around the current invocations.=20
+Then you don't need the dependency above. I think I have to look at the=20
+code...
+
+Jan
 
 
-					    Gilles Chanteperdrix.
+--------------enigF0E27ADBEB16B0FB849E5B77
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFHsUySniDOoMHTA+kRAjn7AJ9q1YKbU8L1LmXKCUou178kkB1GbQCeO/UJ
+WlPYqoMTJs1Ww5dqg5sIu+Y=
+=lXDt
+-----END PGP SIGNATURE-----
+
+--------------enigF0E27ADBEB16B0FB849E5B77--
 
