@@ -1,11 +1,18 @@
-Message-ID: <OFBC4D9AEC.79F3468F-ONC12573ED.004C30FC-C12573ED.004C9297@domain.hid>
-From: "G.P.M. Haagh" <g.p.m.haagh@domain.hid>
-Date: Tue, 12 Feb 2008 14:56:57 +0100
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-type: multipart/alternative; 
-	Boundary="0__=4EBBF97EDFDFB66C8f9e8a93df938690918c4EBBF97EDFDFB66C"
-Content-Disposition: inline
-Subject: [Xenomai-help] Which kernel version fits with a xenomai release
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 12 Feb 2008 07:57:22 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D376B55@domain.hid>
+In-Reply-To: <47B1A892.5020707@domain.hid>
+References: <51CAD0CE1504444DBE77CBBE51A0135D376B33@domain.hid>	<47B14FF9.8010207@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D376B4B@slcmail.slc.mew.int>
+	<47B1A023.8090009@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D376B4D@slcmail.slc.mew.int>
+	<47B1A892.5020707@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
+Subject: Re: [Xenomai-help] pit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,49 +22,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
---0__=4EBBF97EDFDFB66C8f9e8a93df938690918c4EBBF97EDFDFB66C
-Content-type: text/plain; charset=US-ASCII
+> For sure, if there are system states where the periodic tasks do not
+> have to run, calling rt_task_set_periodic(..., TM_INFINITE) will help
+to
+> reduce unneeded load.
 
+That's what I thought.
 
-Hoi,
+> I bet the overhead was not measurable because everything lived in
+kernel
+> space, right?
 
-I am a newbie. I have difficulty understanding what Xenomai / Adeos and
-Linux kernel versions fit together and are actually tested.
-How do you find out, where is this documented....
+It was negligible, but I don't know for certain if that's because it was
+in kernel space. It seems to be the case, though.=20
+=20
+> Keep another advantage in mind: going to user space allows you (or
+your
+> contractor) to distribute closed-source applications without
+consulting
+> costly lawyers - if that can help at all... :)
 
-More specific situation:
-      Ubuntu 7.10 (standard with 2.6.22.14 kernel)
-      Dell Optiplex 755 (has very new ethernet controller from Intel not
-coming with 2.6.22/.23 kernels). Ubuntu provides extra kernel e1000-ich9
-module.
+The source code is distributed with each unit. On bad sectors of a flash
+card. But hey, it's there.
 
-Any advise on 'recent' kernel/Xenomai versions to use?
+I'm going out of town but will return next week. I'll be thinking about
+the design and share some ideas with you all. I will also go kernel
+fault hunting for Philippe now that I know what he wants. I appreciate
+everyone's help and feel bad that at this juncture I have to disappear
+for a while. I can tell that you're all anxious to help figure out
+what's going on so we (you) can make Xenomai a wonderful project that
+leads to peace on earth and clean energy. ;)
 
-thanx,
-Gerard Haagh
-
---0__=4EBBF97EDFDFB66C8f9e8a93df938690918c4EBBF97EDFDFB66C
-Content-type: text/html; charset=US-ASCII
-Content-Disposition: inline
-
-<html><body>
-<p>Hoi,<br>
-<br>
-I am a newbie. I have difficulty understanding what Xenomai / Adeos and Linux kernel versions fit together and are actually tested.<br>
-How do you find out, where is this documented....<br>
-<br>
-More specific situation:<br>
-	Ubuntu 7.10 (standard with 2.6.22.14 kernel)<br>
-	Dell Optiplex 755 (has very new ethernet controller from Intel not coming with 2.6.22/.23 kernels). Ubuntu provides extra kernel e1000-ich9 module.<br>
-<br>
-Any advise on 'recent' kernel/Xenomai versions to use?<br>
-<br>
-thanx,<br>
-Gerard Haagh<br>
-<br>
-</body></html>
---0__=4EBBF97EDFDFB66C8f9e8a93df938690918c4EBBF97EDFDFB66C--
+Steven
 
 
