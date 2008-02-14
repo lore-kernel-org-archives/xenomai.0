@@ -1,11 +1,15 @@
-From: "Pedro Mendes" <pcm@domain.hid>
-Date: Wed, 13 Feb 2008 21:45:14 -0000
-Message-ID: <021201c86e89$b73b7080$25b25180$@pt>
+From: =?utf-8?B?67CV7J6s7ZuI?= <lordpark@domain.hid>
+References: <000001c86190$df7e4b40$9e7ae1c0$@edu>
+	<200801281957.10873.Sebastian.Smolorz@domain.hid>
+In-Reply-To: <200801281957.10873.Sebastian.Smolorz@domain.hid>
+Date: Thu, 14 Feb 2008 11:35:14 +0900
+Message-ID: <000601c86eb2$3a7fd7b0$af7f8710$@edu>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_0213_01C86E89.B73B7080"
-Content-Language: pt
-Subject: [Xenomai-help] (no subject)
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Language: ko
+Subject: [Xenomai-help] [Xenomai-Help] Recommanded CAN Board
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,116 +19,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: 'Sebastian Smolorz' <Sebastian.Smolorz@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multipart message in MIME format.
+Hello.
 
-------=_NextPart_000_0213_01C86E89.B73B7080
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+I have problem with my CAN communication board (PCM-3680).=20
 
-Hi all!
+I couldn=E2=80=99t see any response on my board.=20
 
- 
+So, I want to buy another board that work surely in xenomai. (Because I=
+ spent so many times already, and I have no time..TT)
 
-I've been trying to get Xenomai to work with my gumstix but I can't find a
-way to patch the linux kernel correctly. Has anyone installed Xenomai on a
-gumstix? Could you tell me the revision of the buildroot and xenomai
-versions you used pls (and possibly how.)?
+Is there any recommended CAN communication board with pc/104 interface(=
+except PCM-3680)?
 
- 
+How about Ixxat PC-I 04/104 ?
 
-Thanks
+-----Original Message-----
+From: Sebastian Smolorz [mailto:Sebastian.Smolorz@domain.hid
+Sent: Tuesday, January 29, 2008 3:57 AM
+To: =EB=B0=95=EC=9E=AC=ED=9B=88
+Cc: matthias.fuchs@domain.hid; jan.kiszka@domain.hid; lordpark@domain.hid.=
+skku.ac.kr
+Subject: Re: [Xenomai Help request] I have problem with my CAN board. P=
+lz HELP ME.
 
-Pedro
+=EB=B0=95=EC=9E=AC=ED=9B=88 wrote:
+> Hello, I=E2=80=99m Jae Hoon Park in South Korea.
+>
+> In these days, I trying to install my CAN board on my SBC. But, it di=
+dn=E2=80=99t
+> work.
+>
+> , for solving this problem, I spent so much times already.
+>
+> So, I need your help.
 
+Please repost on xenomai@xenomai.org for a broader audience.
 
-------=_NextPart_000_0213_01C86E89.B73B7080
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+> Here is specification of my system
+>
+> CPU : Intel Pentium III 650Mhz
+>
+> RAM : 256MB
+>
+> Mainboard : PCM-9576(Advantech :
+> http://www.advantech.com.tw/products/Socket-370-SBC-with-VGA-LCD-and-=
+3-
+> Ethernet/mod_1-23A1JJ.aspx)
+>
+> CAN Board : PCM-3680
 
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
-xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
+Well ... I remember having had MUCH trouble with the PCM-3680. It took =
+me=20
+months to come to a solution - which was to buy a different board which=
+=20
+worked correctly.
 
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 12 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:"Calibri","sans-serif";
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;}
-@page Section1
-	{size:612.0pt 792.0pt;
-	margin:70.85pt 3.0cm 70.85pt 3.0cm;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-<!--[if gte mso 9]><xml>
- <o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
- <o:shapelayout v:ext=3D"edit">
-  <o:idmap v:ext=3D"edit" data=3D"1" />
- </o:shapelayout></xml><![endif]-->
-</head>
-
-<body lang=3DPT link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal>Hi all!<o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US>I&#8217;ve been trying to get =
-Xenomai to
-work with my gumstix but I can&#8217;t find a way to patch the linux =
-kernel
-correctly. Has anyone installed Xenomai on a gumstix? Could you tell me =
-the
-revision of the buildroot and xenomai versions you used pls (and =
-possibly how&#8230;)?<o:p></o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US>Thanks<o:p></o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US>Pedro<o:p></o:p></span></p>
-
-</div>
-
-</body>
-
-</html>
-
-------=_NextPart_000_0213_01C86E89.B73B7080--
+--=20
+Sebastian
 
 
