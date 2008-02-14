@@ -1,15 +1,14 @@
-From: "Pedro Mendes" <pcm@domain.hid>
-References: <021201c86e89$b73b7080$25b25180$@pt>
-	<18355.61321.710913.187647@domain.hid>
-In-Reply-To: <18355.61321.710913.187647@domain.hid>
-Date: Thu, 14 Feb 2008 13:17:24 -0000
-Message-ID: <003301c86f0b$f06e6830$d14b3890$@pt>
+Message-ID: <2ff1a98a0802140532v36aed06bnff68387cc04cbec9@domain.hid>
+Date: Thu, 14 Feb 2008 14:32:42 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <200802141058.2356@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="US-ASCII"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Language: pt
-Subject: Re: [Xenomai-help] (no subject)
+Content-Disposition: inline
+References: <200802141029.19685@domain.hid> <200802141055.1177@domain.hid>
+	<200802141058.2356@domain.hid>
+Subject: Re: [Xenomai-help] Slow sin function
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,35 +18,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Petr Cervenka <grugh@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Pedro Mendes wrote:
- > Hi all!
- > 
- >  
- > 
- > I've been trying to get Xenomai to work with my gumstix but I can't find
-a
- > way to patch the linux kernel correctly. Has anyone installed Xenomai on
-a
- > gumstix? Could you tell me the revision of the buildroot and xenomai
- > versions you used pls (and possibly how.)?
+On Thu, Feb 14, 2008 at 10:58 AM, Petr Cervenka <grugh@domain.hid> wrote:
+> Hello again.
+>  I have another problem and I'm not sure if it is connected with Xenomai ,
+>  but perhaps you already met similar problem.
+>  Occasionally  the math sin function takes an enormous amount of time
+>  (400-450 us on Athlon A64 X2 4800+). When I detect this and make the sin function
+>  call with the same parameter again, it takes the same (long) time. I
+>  suspect that this function is for some values is unreasonably slow. I'll
+>  try to capture some such values and post them here.
+>  I don't remember such behavior before the transition to newer 64bit linux
+>  distribution (Kubuntu 7.10 amd64 and kernel 2.6.24).
+>  Petr Cervenka
 
-gumstix is based on a PXA, right ?
+I would expect the sin function to be built-in, at least, I think it
+is built-in on x86_32.
 
-Right.
+Now, looking at glibc code, there seem to be a loop in the
+implementation of these functions.
 
- So, it should be supported by Xenomai. Is it supported by mainline kernel,
-or do you need an
-additional patch ? And what happens when you patch the kernel with the
-I-pipe patch, what error message do you get exactly ?
-It is supported by mainline kernel and xenomai patches apply correctly.
-However other patches are used for the gumstix and those are the ones
-failing now. If I apply those first, then those apply correctly and xenomai
-patches fail.
-
-Pedro
-
-
+-- 
+ Gilles Chanteperdrix
 
