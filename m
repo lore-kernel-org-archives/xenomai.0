@@ -1,15 +1,14 @@
-Message-ID: <2ff1a98a0802140557u393d119dk473bc8e901df07c3@domain.hid>
-Date: Thu, 14 Feb 2008 14:57:38 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <003301c86f0b$f06e6830$d14b3890$@pt>
+Message-ID: <47B4564F.6010509@domain.hid>
+Date: Thu, 14 Feb 2008 15:55:11 +0100
+From: Johan Borkhuis <j.borkhuis@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <12460.62.39.72.60.1202995942.squirrel@domain.hid>	
+	<47B44693.6070203@domain.hid>
+	<2ff1a98a0802140551ve405dd7v66419157978a8235@domain.hid>
+In-Reply-To: <2ff1a98a0802140551ve405dd7v66419157978a8235@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <021201c86e89$b73b7080$25b25180$@pt>
-	<18355.61321.710913.187647@domain.hid>
-	<003301c86f0b$f06e6830$d14b3890$@pt>
-Subject: Re: [Xenomai-help] (no subject)
+Subject: Re: [Xenomai-help] Problem of thread creation with Xenomai Posix
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,42 +18,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Pedro Mendes <pcm@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Thu, Feb 14, 2008 at 2:17 PM, Pedro Mendes <pcm@domain.hid> wrote:
-> Pedro Mendes wrote:
->   > Hi all!
->   >
->   >
->   >
->   > I've been trying to get Xenomai to work with my gumstix but I can't find
->  a
->   > way to patch the linux kernel correctly. Has anyone installed Xenomai on
->  a
->   > gumstix? Could you tell me the revision of the buildroot and xenomai
->   > versions you used pls (and possibly how.)?
->
->  gumstix is based on a PXA, right ?
->
->  Right.
->
->
->   So, it should be supported by Xenomai. Is it supported by mainline kernel,
->  or do you need an
->  additional patch ? And what happens when you patch the kernel with the
->  I-pipe patch, what error message do you get exactly ?
->  It is supported by mainline kernel and xenomai patches apply correctly.
->  However other patches are used for the gumstix and those are the ones
->  failing now. If I apply those first, then those apply correctly and xenomai
->  patches fail.
+Gilles Chanteperdrix wrote:
+> When using Xenomai posix skin, pthread_create creates real-time tasks
+> as well. 
 
-Ok. Please send me the URLs where I can download these gumstix
-patches, if possible, I will arrange to avoid the conflicts. In the
-meantime, you can probably fix the rejects by hand, I would be
-surprised if the rejects happened on really critical parts of the
-code.
+Yes, that is what I would expect, as the Xenomai Posix skin is used :-)
+
+> And the main thread is automatically shadowed (by library
+> init code).
+>   
+
+I did not know this. Is this true for all  skins? I did see problems 
+(like the one described here) when I started an application that created 
+a RT-thread without first shadowing the main thread.
+
+Kind regards,
+    Johan Borkhuis
 
 -- 
- Gilles Chanteperdrix
+Johan Borkhuis                                  Dutch Space BV
+email:        j.borkhuis@domain.hid          Newtonweg 1
+phone:        071-5245788                       Leiden
+fax:          071-5245499                       The Netherlands
+
 
