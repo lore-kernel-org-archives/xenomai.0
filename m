@@ -1,13 +1,13 @@
-Date: Thu, 14 Feb 2008 10:58:37 +0100
-From: "Petr Cervenka" <grugh@domain.hid>
+Message-ID: <47B43B64.2050506@domain.hid>
+Date: Thu, 14 Feb 2008 14:00:20 +0100
+From: Sebastian Smolorz <smolorz@domain.hid>
 MIME-Version: 1.0
-Message-ID: <200802141058.2356@domain.hid>
-References: 200802141029.19685@domain.hid> <200802141029.19685@domain.hid>
-	<200802141055.1177@domain.hid>
-In-Reply-To: <200802141055.1177@domain.hid>
-Content-Type: text/plain; charset="windows-1250"
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] Slow sin function
+References: <000001c86190$df7e4b40$9e7ae1c0$@edu>	<200801281957.10873.Sebastian.Smolorz@domain.hid>
+	<000601c86eb2$3a7fd7b0$af7f8710$@edu>
+In-Reply-To: <000601c86eb2$3a7fd7b0$af7f8710$@edu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] [Xenomai-Help] Recommanded CAN Board
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,18 +17,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: =?UTF-8?B?67CV7J6s7ZuI?= <lordpark@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hello again.
-I have another problem and I'm not sure if it is connected with Xenomai ,
-but perhaps you already met similar problem.
-Occasionally  the math sin function takes an enormous amount of time
-(400-450 us on Athlon A64 X2 4800+). When I detect this and make the sin function
-call with the same parameter again, it takes the same (long) time. I
-suspect that this function is for some values is unreasonably slow. I'll
-try to capture some such values and post them here.
-I don't remember such behavior before the transition to newer 64bit linux
-distribution (Kubuntu 7.10 amd64 and kernel 2.6.24).
-Petr Cervenka
+=EB=B0=95=EC=9E=AC=ED=9B=88 wrote:
+> Hello.
+>=20
+> I have problem with my CAN communication board (PCM-3680).=20
+>=20
+> I couldn=E2=80=99t see any response on my board.=20
+>=20
+> So, I want to buy another board that work surely in xenomai. (Because I=
+ spent so many times already, and I have no time..TT)
+>=20
+> Is there any recommended CAN communication board with pc/104 interface(=
+except PCM-3680)?
 
+We use the eNET-CAN card by Phytec (www.phytec.de). We have several of=20
+them and they work flawlessly. I originally developed the RTDM CAN=20
+driver for the SJA1000 for this card. So consider the Xenomai RTDM CAN=20
+driver for it as very well tested. ;-)
+
+--=20
+Sebastian
 
