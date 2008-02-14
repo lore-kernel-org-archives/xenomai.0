@@ -1,15 +1,13 @@
-Message-ID: <2ff1a98a0802140233y515a47d8wf8036ff1623311@domain.hid>
-Date: Thu, 14 Feb 2008 11:33:49 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <200802141053.02165.peter.soetens@domain.hid>
+Date: Thu, 14 Feb 2008 10:58:37 +0100
+From: "Petr Cervenka" <grugh@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <c73373920802130829r496cfa8au24d6048ae9f50fd3@domain.hid>
-	<2ff1a98a0802140142o538a956dva8f7d4f34bfbe415@domain.hid>
-	<200802141053.02165.peter.soetens@domain.hid>
-Subject: Re: [Xenomai-help] Why Xenomai kill my process?
+Message-ID: <200802141058.2356@domain.hid>
+References: 200802141029.19685@domain.hid> <200802141029.19685@domain.hid>
+	<200802141055.1177@domain.hid>
+In-Reply-To: <200802141055.1177@domain.hid>
+Content-Type: text/plain; charset="windows-1250"
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-help] Slow sin function
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,46 +17,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Peter Soetens <peter.soetens@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-On Thu, Feb 14, 2008 at 10:53 AM, Peter Soetens <peter.soetens@domain.hid> wrote:
-> On Thursday 14 February 2008 10:42:23 Gilles Chanteperdrix wrote:
->  > On Wed, Feb 13, 2008 at 5:29 PM, Salvatore De Astis <dev.rinux@domain.hid>
->  wrote:
->  > > Hi,
->  > > I need to implement a multitask application.
->  > > The most important point is to have a 'custom' exit procedure for each
->  > > task. The calling of the exit procedure should happen in asynchronous
->  > > mode. The exit procedure of each task, after the 'custom' code, must call
->  > >  the rt_task_delete()   before leaving.
->  > >
->  > > The following code is a simple example:
->  > > There are two tasks, two semaphores and two other tasks (pending on
->  > > semaphores) whose target is to execute the parent's exit procedure.
->  > > In this case the exit procedure is the my_exit() routine for both tasks,
->  > > but, of course, I'd like to have custom exit procedure for each task.
->  > >  Please read the questions following the code section.
->  > >
->  > > Why the opaque2 is 0 in Pippo's rt_task_delete call? Dmesg shows me
->  > > 3086322608 in __rt_task_create() of Pippo task.
->  > > What's wrong with my code?
->  > >  Does a better method exist to implemet  asyncronous rt_task_delete in
->  > > Xenomai?
->  >
->  > The best way to do what you want to do is to call rt_task_delete from
->  > the task to be deleted itself, because trying to delete a thread from
->  > another thread entails problems which can only be solved by sending a
->  > SIGKILL to the whole application.
->
->  or by using rt_task_join, naturally ! This requires that you create a joinable
->  thread though, using T_JOINABLE in rt_task_spawn.
+Hello again.
+I have another problem and I'm not sure if it is connected with Xenomai ,
+but perhaps you already met similar problem.
+Occasionally  the math sin function takes an enormous amount of time
+(400-450 us on Athlon A64 X2 4800+). When I detect this and make the sin function
+call with the same parameter again, it takes the same (long) time. I
+suspect that this function is for some values is unreasonably slow. I'll
+try to capture some such values and post them here.
+I don't remember such behavior before the transition to newer 64bit linux
+distribution (Kubuntu 7.10 amd64 and kernel 2.6.24).
+Petr Cervenka
 
-I am afraid this will not help. As far as I understand the code, the
-SIGKILL signal is sent to the whole process if xnpod_delete_thread is
-reached before the task answered the pthread_cancel request by
-cleaning itself up properly.
-
--- 
- Gilles Chanteperdrix
 
