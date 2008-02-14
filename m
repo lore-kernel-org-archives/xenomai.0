@@ -1,14 +1,15 @@
-Message-ID: <2ff1a98a0802140551ve405dd7v66419157978a8235@domain.hid>
-Date: Thu, 14 Feb 2008 14:51:14 +0100
+Message-ID: <2ff1a98a0802140557u393d119dk473bc8e901df07c3@domain.hid>
+Date: Thu, 14 Feb 2008 14:57:38 +0100
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <47B44693.6070203@domain.hid>
+In-Reply-To: <003301c86f0b$f06e6830$d14b3890$@pt>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <12460.62.39.72.60.1202995942.squirrel@domain.hid>
-	<47B44693.6070203@domain.hid>
-Subject: Re: [Xenomai-help] Problem of thread creation with Xenomai Posix
+References: <021201c86e89$b73b7080$25b25180$@pt>
+	<18355.61321.710913.187647@domain.hid>
+	<003301c86f0b$f06e6830$d14b3890$@pt>
+Subject: Re: [Xenomai-help] (no subject)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,41 +19,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Johan Borkhuis <j.borkhuis@domain.hid>
+To: Pedro Mendes <pcm@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Thu, Feb 14, 2008 at 2:48 PM, Johan Borkhuis
-<j.borkhuis@domain.hid> wrote:
-> Fabien MAHOT wrote:
->  > Hi,
->  >
->  > I need your help to understand why my application doesn't work correctly.
->  >
->  > I use the Xenomai 2.3.4 kernel with its POSIX skin to develop a real time
->  > application. In this program, I create several threads thanks to a main
->  > thread which has the highest priority (SCHED_FIFO configuration). The aim
->  > is that the main thread stays in execution during the creation of all the
->  > other threads.
->  >
->  > However, in my program, when the main thread calls the posix function
->  > pthread_create to create a new thread, it's preempted by a thread created
->  > previously. In spite of the main thread has the highest priority.
->  >
+On Thu, Feb 14, 2008 at 2:17 PM, Pedro Mendes <pcm@domain.hid> wrote:
+> Pedro Mendes wrote:
+>   > Hi all!
+>   >
+>   >
+>   >
+>   > I've been trying to get Xenomai to work with my gumstix but I can't find
+>  a
+>   > way to patch the linux kernel correctly. Has anyone installed Xenomai on
+>  a
+>   > gumstix? Could you tell me the revision of the buildroot and xenomai
+>   > versions you used pls (and possibly how.)?
 >
-> > I would like to know why I ve got this problem with Xenomai. If you ve got
->  > an idea, please , give me your opinion.
->  >
->  >
->  This is quite easy to explain: the task you create is a real time task.
->  This task will always run before your main task, which is a Linux task.
+>  gumstix is based on a PXA, right ?
 >
->  If you add a call to rt_task_shadow after the mlockall your main task
->  will also become a Xenomai task, and you will see the same behavior as
->  with Linux.
+>  Right.
+>
+>
+>   So, it should be supported by Xenomai. Is it supported by mainline kernel,
+>  or do you need an
+>  additional patch ? And what happens when you patch the kernel with the
+>  I-pipe patch, what error message do you get exactly ?
+>  It is supported by mainline kernel and xenomai patches apply correctly.
+>  However other patches are used for the gumstix and those are the ones
+>  failing now. If I apply those first, then those apply correctly and xenomai
+>  patches fail.
 
-When using Xenomai posix skin, pthread_create creates real-time tasks
-as well. And the main thread is automatically shadowed (by library
-init code).
+Ok. Please send me the URLs where I can download these gumstix
+patches, if possible, I will arrange to avoid the conflicts. In the
+meantime, you can probably fix the rejects by hand, I would be
+surprised if the rejects happened on really critical parts of the
+code.
 
 -- 
  Gilles Chanteperdrix
