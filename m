@@ -1,11 +1,10 @@
-Content-class: urn:content-classes:message
+Message-ID: <12460.62.39.72.60.1202995942.squirrel@domain.hid>
+Date: Thu, 14 Feb 2008 14:32:22 +0100 (CET)
+From: "Fabien MAHOT" <fabien.mahot@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C864E6.50815FA6"
-Date: Fri, 1 Feb 2008 08:22:52 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D37686A@slcmail.slc.mew.int>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: [Xenomai-help] 125 us periodic timer high interrupt cpu usage
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] Problem of thread creation with Xenomai Posix
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,132 +16,168 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
+Hi,
 
-This is a multi-part message in MIME format.
+I need your help to understand why my application doesn't work correctly.
 
-------_=_NextPart_001_01C864E6.50815FA6
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+I use the Xenomai 2.3.4 kernel with its POSIX skin to develop a real time
+application. In this program, I create several threads thanks to a main
+thread which has the highest priority (SCHED_FIFO configuration). The aim
+is that the main thread stays in execution during the creation of all the
+other threads.
 
-I notice about 8% cpu usage if I call rt_timer_set_mode(125000); and
-load up a couple of tasks which do nothing but block on conditional
-variables. (The tasks are using 0%.) I didn't have this issue (as far as
-I know) with RTAI, and I didn't have this issue when using aperiodic
-timing mode. What I need is to have all my tasks locked to some
-timebase, and was told in a previous discussion that this was the way to
-go.
+However, in my program, when the main thread calls the posix function
+pthread_create to create a new thread, it's preempted by a thread created
+previously. In spite of the main thread has the highest priority.
 
-=20
+To illustrate my problem, I wrote a test program. I execute this
+application in my xenomai environment and in a linux environment (linux
+2.6.20 kernel configured preemptive)  :
 
-Is there any reason it should use so much CPU time?
-
-=20
-
-Thanks,
-
-Steven
-
-=20
+My test program : The main function creates Main Thread. After Main Threa=
+d
+creates T1 thread and next T2 thread. Main priority : 30, T1 priority :
+25, T2 priority : 20.
 
 
-------_=_NextPart_001_01C864E6.50815FA6
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+#include <sys/mman.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <string.h>
+#include <stdio.h>
 
-<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
+void console(char * chaine)
+{
+	write(2, chaine, strlen(chaine));
+	fflush(stderr);
+}
 
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:"MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
-@font-face
-	{font-family:"\@MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:Arial;
-	color:windowtext;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.25in 1.0in 1.25in;}
-div.Section1
-	{page:Section1;}
--->
-</style>
+int func(volatile int* i)
+{
+	return (*i)++;
+}
 
-</head>
+void* thread1(void * context) {
+        volatile int i;
+	volatile int result;
 
-<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
+	console("T1 : start\n");
+        while (i < 10000) {
+              result =3D func(&i);
+        }
+	console("T1 : finish\n");
 
-<div class=3DSection1>
+	return NULL;
+}
 
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>I notice about 8% cpu usage if I call
-rt_timer_set_mode(125000); and load up a couple of tasks which do =
-nothing but
-block on conditional variables. (The tasks are using 0%.) I didn&#8217;t =
-have
-this issue (as far as I know) with RTAI, and I didn&#8217;t have this =
-issue
-when using aperiodic timing mode. What I need is to have all my tasks =
-locked to
-some timebase, and was told in a previous discussion that this was the =
-way to
-go.<o:p></o:p></span></font></p>
+void* thread2(void * context) {
+        volatile int i;
+	volatile int result;
 
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+	console("T2 : start\n");
+        while (i < 10000) {
+              result =3D func(&i);
+        }
+	console("T2 : finish\n");
 
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Is there any reason it should use so much CPU =
-time?<o:p></o:p></span></font></p>
+	return NULL;
+}
 
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+void* thread_main(void *arg) {
+    	pthread_attr_t attr;
+    	pthread_t p1;
+    	pthread_t p2;
+    	struct sched_param sch;
+    	struct sched_param sch1;
+    	int result;
 
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Thanks,<o:p></o:p></span></font></p>
+        pthread_attr_init(&attr);
+        pthread_attr_setinheritsched(&attr,PTHREAD_EXPLICIT_SCHED);
+	pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
 
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Steven<o:p></o:p></span></font></p>
+        sch.sched_priority =3D 25;
+        pthread_attr_setschedparam(&attr, &sch);
 
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+	console("M : before pthread_create T1\n");
+        pthread_create(&p1, &attr, thread1, NULL);
+	console("M : after pthread_create T1\n");
 
-</div>
+        sch.sched_priority =3D 20;
+        pthread_attr_setschedparam(&attr, &sch);
 
-</body>
+	console("M : before pthread_create T2\n");
+        result =3D pthread_create(&p2, &attr, thread2, NULL);
+	if (result !=3D 0)
+	{
+		console("creation of thread 2 impossible\n");
+	}
+	console("M : after pthread_create T2\n");
 
-</html>
+        pthread_attr_destroy(&attr);
 
-------_=_NextPart_001_01C864E6.50815FA6--
+        while (1) {
+                sleep(500);
+        }
+	return NULL;
+}
+
+int main(int argc, char** argv) {
+   	pthread_attr_t attr;
+        pthread_t p;
+    	struct sched_param sch;
+
+       	mlockall(MCL_CURRENT|MCL_FUTURE);
+
+        pthread_attr_init(&attr);
+	pthread_attr_setinheritsched(&attr,PTHREAD_EXPLICIT_SCHED);
+        pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+
+        sch.sched_priority =3D 30;
+        pthread_attr_setschedparam(&attr, &sch);
+        pthread_create(&p, &attr, thread_main, NULL);
+        pthread_attr_destroy(&attr);
+
+        while (1) {
+                sleep(500);
+        }
+
+        return 0;
+}
+
+
+
+Result in Linux environment :
+
+M : before pthread_create T1
+M : after pthread_create T1
+M : before pthread_create T2
+M : after pthread_create T2
+T1 : start
+T1 : finish
+T2 : start
+T2 : finish
+
+Result in Xenomai environment :
+
+M : before pthread_create T1
+M : after pthread_create T1
+M : before pthread_create T2
+T1 : start
+T1 : finish
+M : after pthread_create T2
+T2 : start
+T2 : finish
+
+In the Linux environment, the thread creation is correct, Main thread is
+not preempted by T1.
+But in the Xenomai environment, we can see that Main thread is preempted
+by T1 thread during the T2 creation.
+
+I would like to know why I ve got this problem with Xenomai. If you ve go=
+t
+an idea, please , give me your opinion.
+
+Thanks a lot.
+
 
