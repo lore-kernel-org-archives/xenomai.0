@@ -1,16 +1,13 @@
-Message-ID: <2ff1a98a0802140710n2c8860bbw73d9fceadd6c09be@domain.hid>
-Date: Thu, 14 Feb 2008 16:10:52 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <47B4564F.6010509@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Message-Id: <47B415340200000100192592@domain.hid>
+Date: Thu, 14 Feb 2008 10:17:24 -0500
+From: "Hubert Talbot" <Hubert.Talbot@domain.hid>
+References: <mailman.5479.1202920211.28415.xenomai@xenomai.org>
+In-Reply-To: <mailman.5479.1202920211.28415.xenomai@xenomai.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Disposition: inline
-References: <12460.62.39.72.60.1202995942.squirrel@domain.hid>
-	<47B44693.6070203@domain.hid>
-	<2ff1a98a0802140551ve405dd7v66419157978a8235@domain.hid>
-	<47B4564F.6010509@domain.hid>
-Subject: Re: [Xenomai-help] Problem of thread creation with Xenomai Posix
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] Xenomai-2.4.2 vs kernel-2.6.24 (i686)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,28 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Johan Borkhuis <j.borkhuis@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Thu, Feb 14, 2008 at 3:55 PM, Johan Borkhuis
-<j.borkhuis@domain.hid> wrote:
-> Gilles Chanteperdrix wrote:
->  > When using Xenomai posix skin, pthread_create creates real-time tasks
->  > as well.
->
->  Yes, that is what I would expect, as the Xenomai Posix skin is used :-)
->
->
->  > And the main thread is automatically shadowed (by library
->  > init code).
->  >
->
->  I did not know this. Is this true for all  skins? I did see problems
->  (like the one described here) when I started an application that created
->  a RT-thread without first shadowing the main thread.
+Hi,
 
-Posix, psos+, and uitron do it. Other skins do not.
+I try to build kernel 2.6.24 with adeos-ipipe-2.6.24-x86-2.0-03.patch
+and I get this:
 
--- 
- Gilles Chanteperdrix
+  ...
+  AR      arch/x86/lib/lib.a
+  GEN     .version
+  CHK     include/linux/compile.h
+  UPD     include/linux/compile.h
+  CC      init/version.o
+  LD      init/built-in.o
+  LD      .tmp_vmlinux1
+arch/x86/kernel/built-in.o: In function `do_machine_check_vector':
+ipipe.c:(.text+0x128de): undefined reference to `do_machine_check'
+make[1]: *** [.tmp_vmlinux1] Erreur 1
+make[1]: quittant le r=E9pertoire * /usr/src/linux-2.6.24 *
+make: *** [debian/stamp-build-kernel] Erreur 2
+
+real	7m59.559s
+user	6m36.813s
+sys	0m40.419s
+
+
+Just to report the problem...
+
+
+Hubert
 
