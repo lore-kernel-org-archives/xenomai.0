@@ -1,15 +1,13 @@
-Message-ID: <2ff1a98a0802140927p64490a30sff85200b4a5e452f@domain.hid>
-Date: Thu, 14 Feb 2008 18:27:35 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <200802141705.17258@domain.hid>
+Message-ID: <eb7ba1970802141228t3a30f7a9n1bc716f38908c4cf@domain.hid>
+Date: Thu, 14 Feb 2008 21:28:05 +0100
+From: "Garcia Sergio" <sergio.garcia@domain.hid>
+Sender: serginogarcia@domain.hid
+In-Reply-To: <mailman.5600.1202974614.28415.xenomai@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <200802141055.1177@domain.hid> <200802141058.2356@domain.hid>
-	<2ff1a98a0802140532v36aed06bnff68387cc04cbec9@domain.hid>
-	<200802141648.10545@domain.hid> <200802141705.17258@domain.hid>
-Subject: Re: [Xenomai-help] Slow sin function
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_2705_8820784.1203020885974"
+References: <mailman.5600.1202974614.28415.xenomai@xenomai.org>
+Subject: Re: [Xenomai-help] Xenomai-help Digest, Vol 29, Issue 25
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,51 +17,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Petr Cervenka <grugh@domain.hid>
+To: Sebastian.Smolorz@domain.hid
 Cc: xenomai@xenomai.org
 
-On Thu, Feb 14, 2008 at 5:05 PM, Petr Cervenka <grugh@domain.hid> wrote:
-> _
->
->
-> >On Thu, Feb 14, 2008 at 10:58 AM, Petr Cervenka <grugh@domain.hid> wrote:
->  >> Hello again.
->  >>  I have another problem and I'm not sure if it is connected with Xenomai ,
->  >>  but perhaps you already met similar problem.
->  >>  Occasionally  the math sin function takes an enormous amount of time
->  >>  (400-450 us on Athlon A64 X2 4800+). When I detect this and make the sin function
->  >>  call with the same parameter again, it takes the same (long) time. I
->  >>  suspect that this function is for some values is unreasonably slow. I'll
->  >>  try to capture some such values and post them here.
->  >>  I don't remember such behavior before the transition to newer 64bit linux
->  >>  distribution (Kubuntu 7.10 amd64 and kernel 2.6.24).
->  >>  Petr Cervenka
->  >
->  >I would expect the sin function to be built-in, at least, I think it
->  >is built-in on x86_32.
->  >
->  >Now, looking at glibc code, there seem to be a loop in the
->  >implementation of these functions.
->  >
->  >--
->  > Gilles Chanteperdrix
->  >
->  I managed to capture two such numbers:
->  0.93340582292648832662962377071381      (0x00b06be375deed3f)
->  3.9225160069792437411706487182528       (0x5019801250610f40)
->
->  Tried on similar 32bit machine (2.6.19.7), everything is OK there.
->  Any idea how to solve it or who to inform about this problem?
-
-If it is really an issue, it is a glibc issue. So, you should send
-your problem to the glibc people. But check before that the bug has
-not been fixed by a more recent glibc.
+------=_Part_2705_8820784.1203020885974
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 >
->  Short program for trying this problem:
+> From: Sebastian Smolorz [mailto:Sebastian.Smolorz@domain.hid]
+> Sent: Tuesday, January 29, 2008 3:57 AM
+> To: ???
+> Cc: matthias.fuchs@domain.hid; jan.kiszka@domain.hid;
+> lordpark@domain.hid
+> Subject: Re: [Xenomai Help request] I have problem with my CAN board. Plz
+> HELP ME.
+>
+> Well ... I remember having had MUCH trouble with the PCM-3680. It took me
+> months to come to a solution - which was to buy a different board which
+> worked correctly.
+>
+> --
+> Sebastian
 
-I would use cli, sti and rdtsc to make the test more convincing.
 
--- 
- Gilles Chanteperdrix
+I have to admit that I have not used the PCM-3680 with the xenomai driver
+developed by Sebastian,
+but so far I have not seen any issue.  Whereas I have had lost of  hardware
+incompatibilities with:
+
+1.- ESD - pc104/331
+2.- Softing - CAN -AC2-104
+3.- KVASER - pc104+
+
+Which kind of problems did you experience with the PCM3680?
+
+Sergio
+
+------=_Part_2705_8820784.1203020885974
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<div class="gmail_quote"><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">From: Sebastian Smolorz [mailto:<a href="mailto:Sebastian.Smolorz@domain.hid">Sebastian.Smolorz@domain.hid</a>]<br>
+
+Sent: Tuesday, January 29, 2008 3:57 AM<br>
+To: ???<br>
+Cc: <a href="mailto:matthias.fuchs@domain.hid">matthias.fuchs@domain.hid</a>; <a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>; <a href="mailto:lordpark@domain.hid">lordpark@domain.hid</a><br>
+
+Subject: Re: [Xenomai Help request] I have problem with my CAN board. Plz HELP ME.<br>
+<br>
+Well ... I remember having had MUCH trouble with the PCM-3680. It took me<br>
+months to come to a solution - which was to buy a different board which<br>
+worked correctly.<br>
+<br>
+--<br>
+Sebastian</blockquote><div><br>I have to admit that I have not used the PCM-3680 with the xenomai driver developed by Sebastian,<br>but so far I have not seen any issue.&nbsp; Whereas I have had lost of&nbsp; hardware incompatibilities with:<br>
+<br>1.- ESD - pc104/331<br></div></div>2.- Softing - CAN -AC2-104<br>3.- KVASER - pc104+<br><br>Which kind of problems did you experience with the PCM3680?<br><br>Sergio<br><br><br>
+
+------=_Part_2705_8820784.1203020885974--
 
