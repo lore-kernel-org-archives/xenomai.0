@@ -1,11 +1,13 @@
-Content-class: urn:content-classes:message
+Message-ID: <2ff1a98a0802150040p45290422uacb7fc4b6954fa0a@domain.hid>
+Date: Fri, 15 Feb 2008 09:40:32 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <7470.62.39.72.60.1203063044.squirrel@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C864E8.6E522680"
-Date: Fri, 1 Feb 2008 08:38:01 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D376870@domain.hid>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: [Xenomai-help] 125 us part 2
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <7470.62.39.72.60.1203063044.squirrel@domain.hid>
+Subject: Re: [Xenomai-help] Problem of thread creation with Xenomai Posix 2
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,109 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Fabien MAHOT <fabien.mahot@domain.hid>
+Cc: xenomai@xenomai.org
 
+On Fri, Feb 15, 2008 at 9:10 AM, Fabien MAHOT >  OK, we can see that
+there is the same problem. T1 thread prempts Main
+>  Thread during the pthread_create of T2 with Xenomai and not with Linux
+>  standard. I would like to know why.
+>
+>  I don't that there is a difference beetween the posix Linux pthread_create
+>  and the posix Xenomai pthread_create ?
+>
+>  If pthread_create suspends a short time its caller, why we don t have the
+>  same behaviour in the two cases ?
+>
+>  In my opinion, there is a problem with Xenomai, no ?
+>
+>  I hope that you could help me. thank you
 
-This is a multi-part message in MIME format.
+Sorry, I did not make myself clear: it is xenomai implementation of
+pthread_create which suspends its caller. But as I said in my previous
+answer this does not contradict the posix standard as far as I can
+tell. This implementation needs to work around two different glibc
+bugs, which explains how it is implemented.
 
-------_=_NextPart_001_01C864E8.6E522680
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-I forgot to mention that after calling rt_timer_set_mode(125000) a task
-that does nothing but an outb and a rt_task_wait_period(0); will also
-trigger the watchdog (when set to 1 second) as a runaway thread even
-though the timing is correct. I never had a problem with this timing in
-RTAI. The system does seem to lock up.
-
-=20
-
-Steven
-
-=20
-
-
-------_=_NextPart_001_01C864E8.6E522680
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
-
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:"MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
-@font-face
-	{font-family:"\@MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:Arial;
-	color:windowtext;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.25in 1.0in 1.25in;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-
-</head>
-
-<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>I forgot to mention that after calling
-rt_timer_set_mode(125000) a task that does nothing but an outb and a
-rt_task_wait_period(0); will also trigger the watchdog (when set to 1 =
-second)
-as a runaway thread even though the timing is correct. I never had a =
-problem
-with this timing in RTAI. The system does seem to lock =
-up.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Steven<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01C864E8.6E522680--
+-- 
+ Gilles Chanteperdrix
 
