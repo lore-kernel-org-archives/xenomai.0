@@ -1,12 +1,16 @@
-Message-ID: <2ff1a98a0802150142tc2d506ub98d6a6a9c8e2587@domain.hid>
-Date: Fri, 15 Feb 2008 10:42:18 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <7470.62.39.72.60.1203063044.squirrel@domain.hid>
+Message-ID: <c73373920802150145g1dccc94ct6bb814150cfc7e4a@domain.hid>
+Date: Fri, 15 Feb 2008 10:45:38 +0100
+From: "Salvatore De Astis" <dev.rinux@domain.hid>
+In-Reply-To: <c73373920802150133h1eae9705qf4ba7bf61ecfcb6d@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_19475_8355707.1203068538558"
-References: <7470.62.39.72.60.1203063044.squirrel@domain.hid>
-Subject: Re: [Xenomai-help] Problem of thread creation with Xenomai Posix 2
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_4699_24124734.1203068738344"
+References: <c73373920802130829r496cfa8au24d6048ae9f50fd3@domain.hid>
+	<2ff1a98a0802140142o538a956dva8f7d4f34bfbe415@domain.hid>
+	<200802141053.02165.peter.soetens@domain.hid>
+	<2ff1a98a0802140233y515a47d8wf8036ff1623311@domain.hid>
+	<c73373920802150133h1eae9705qf4ba7bf61ecfcb6d@domain.hid>
+Subject: Re: [Xenomai-help] Why Xenomai kill my process?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,119 +20,136 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabien MAHOT <fabien.mahot@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-------=_Part_19475_8355707.1203068538558
+------=_Part_4699_24124734.1203068738344
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-On Fri, Feb 15, 2008 at 9:10 AM, Fabien MAHOT
-<fabien.mahot@domain.hid> wrote:
->  OK, we can see that there is the same problem. T1 thread prempts Main
->  Thread during the pthread_create of T2 with Xenomai and not with Linux
->  standard. I would like to know why.
+Hi at all,
+I'am sure that the same code run fine with Xenomai-2.1.1, kernel
+linux-2.6.15-ipipe-1.2-15.
+Why there are problems now?
+I want underline my purpose: my tasks should be exit in asyncronous way
+executing costom exit routine.
+How can I do this in Xenomai?
+I've considered the use of rt_add_hook() but compiling the code the compiler
+returns these errors:
+warning: implicit declaration of function `rt_task_add_hook'
+undefined reference to `rt_task_add_hook'
+collect2: ld returned 1 exit status
+
+Thanks for help!
+
+Salvatore De Astis
 >
->  I don't that there is a difference beetween the posix Linux pthread_create
->  and the posix Xenomai pthread_create ?
 >
->  If pthread_create suspends a short time its caller, why we don t have the
->  same behaviour in the two cases ?
 >
->  In my opinion, there is a problem with Xenomai, no ?
+> 2008/2/14, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+> >
+> > On Thu, Feb 14, 2008 at 10:53 AM, Peter Soetens <peter.soetens@domain.hid>
+> > wrote:
+> > > On Thursday 14 February 2008 10:42:23 Gilles Chanteperdrix wrote:
+> > >  > On Wed, Feb 13, 2008 at 5:29 PM, Salvatore De Astis <
+> > dev.rinux@domain.hid>
+> > >  wrote:
+> > >  > > Hi,
+> > >  > > I need to implement a multitask application.
+> > >  > > The most important point is to have a 'custom' exit procedure for
+> > each
+> > >  > > task. The calling of the exit procedure should happen in
+> > asynchronous
+> > >  > > mode. The exit procedure of each task, after the 'custom' code,
+> > must call
+> > >  > >  the rt_task_delete()   before leaving.
+> > >  > >
+> > >  > > The following code is a simple example:
+> > >  > > There are two tasks, two semaphores and two other tasks (pending
+> > on
+> > >  > > semaphores) whose target is to execute the parent's exit
+> > procedure.
+> > >  > > In this case the exit procedure is the my_exit() routine for both
+> > tasks,
+> > >  > > but, of course, I'd like to have custom exit procedure for each
+> > task.
+> > >  > >  Please read the questions following the code section.
+> > >  > >
+> > >  > > Why the opaque2 is 0 in Pippo's rt_task_delete call? Dmesg shows
+> > me
+> > >  > > 3086322608 in __rt_task_create() of Pippo task.
+> > >  > > What's wrong with my code?
+> > >  > >  Does a better method exist to implemet  asyncronous
+> > rt_task_delete in
+> > >  > > Xenomai?
+> > >  >
+> > >  > The best way to do what you want to do is to call rt_task_delete
+> > from
+> > >  > the task to be deleted itself, because trying to delete a thread
+> > from
+> > >  > another thread entails problems which can only be solved by sending
+> > a
+> > >  > SIGKILL to the whole application.
+> > >
+> > >  or by using rt_task_join, naturally ! This requires that you create a
+> > joinable
+> > >  thread though, using T_JOINABLE in rt_task_spawn.
+> >
+> >
+> > I am afraid this will not help. As far as I understand the code, the
+> > SIGKILL signal is sent to the whole process if xnpod_delete_thread is
+> > reached before the task answered the pthread_cancel request by
+> > cleaning itself up properly.
+> >
+> > --
+> >
+> > Gilles Chanteperdrix
+> >
+> >
+> > _______________________________________________
+> > Xenomai-help mailing list
+> > Xenomai-help@domain.hid
+> > https://mail.gna.org/listinfo/xenomai-help
+> >
 >
->  I hope that you could help me. thank you
+>
 
-Could you try the attached patch ? It should give you the illusion
-that pthread_create caller is not suspended if your glibc has none of
-the bugs we worked around.
+------=_Part_4699_24124734.1203068738344
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-That said, I really think that you should not rely on this behaviour
-of pthread_create, because it is not garanteed by the posix standard,
-besides, it will not work with broken glibcs. And in fact, a usual
-rule is not to rely on scheduler priorities for mutual exclusion, but
-rather to make it explicit by using mutex or semaphores.
+<br><br><span class="gmail_quote"><br>
+</span>Hi at all,<br>I&#39;am sure that the same code run fine with Xenomai-2.1.1, kernel linux-2.6.15-ipipe-1.2-15. <br>Why there are problems now?<br>I want underline my purpose: my tasks should be exit in asyncronous way executing costom exit routine. <br>
 
--- 
- Gilles Chanteperdrix
+How can I do this in Xenomai?<br>I&#39;ve considered the use of rt_add_hook() but compiling the code the compiler returns these errors:<br>warning: implicit declaration of function `rt_task_add_hook&#39;<br>undefined reference to `rt_task_add_hook&#39;<br>
 
-------=_Part_19475_8355707.1203068538558
-Content-Type: application/octet-stream;
- name=xeno-posix-fix-pthread_create.diff
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_fcojxown0
-Content-Disposition: attachment;
- filename=xeno-posix-fix-pthread_create.diff
+collect2: ld returned 1 exit status<span class="q"><br><br>Thanks for help!<br><br>Salvatore De Astis</span><div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+<span class="q"><br><br></span><div><span class="gmail_quote">2008/2/14, Gilles Chanteperdrix &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org" target="_blank" onclick="return top.js.OpenExtLink(window,event,this)">gilles.chanteperdrix@xenomai.org</a>&gt;:</span><div>
+<span class="e" id="q_1181c7113bdc4af2_3"><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+On Thu, Feb 14, 2008 at 10:53 AM, Peter Soetens &lt;<a href="mailto:peter.soetens@domain.hid" target="_blank" onclick="return top.js.OpenExtLink(window,event,this)">peter.soetens@domain.hid</a>&gt; wrote:<br> &gt; On Thursday 14 February 2008 10:42:23 Gilles Chanteperdrix wrote:<br>
+ &gt;&nbsp;&nbsp;&gt; On Wed, Feb 13, 2008 at 5:29 PM, Salvatore De Astis &lt;<a href="mailto:dev.rinux@domain.hid" target="_blank" onclick="return top.js.OpenExtLink(window,event,this)">dev.rinux@domain.hid</a>&gt;<br>
+ &gt;&nbsp;&nbsp;wrote:<br> &gt;&nbsp;&nbsp;&gt; &gt; Hi,<br> &gt;&nbsp;&nbsp;&gt; &gt; I need to implement a multitask application.<br> &gt;&nbsp;&nbsp;&gt; &gt; The most important point is to have a &#39;custom&#39; exit procedure for each<br> &gt;&nbsp;&nbsp;&gt; &gt; task. The calling of the exit procedure should happen in asynchronous<br>
 
-SW5kZXg6IHNyYy9za2lucy9wb3NpeC90aHJlYWQuYwo9PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ci0tLSBzcmMvc2tpbnMv
-cG9zaXgvdGhyZWFkLmMJKHLpdmlzaW9uIDM1MDMpCisrKyBzcmMvc2tpbnMvcG9zaXgvdGhyZWFk
-LmMJKGNvcGllIGRlIHRyYXZhaWwpCkBAIC0yNSw2ICsyNSw4IEBACiAKIGV4dGVybiBpbnQgX19w
-c2U1MV9tdXhpZDsKIAorc3RhdGljIHB0aHJlYWRfYXR0cl90IGRlZmF1bHRfYXR0cjsKKwogc3Rh
-dGljIHZvaWQgKCpvbGRfc2lnaGFyZGVuX2hhbmRsZXIpKGludCBzaWcpOwogCiBzdGF0aWMgdm9p
-ZCBfX3B0aHJlYWRfc2lnaGFyZGVuX2hhbmRsZXIoaW50IHNpZykKQEAgLTk1LDEyICs5Nyw4IEBA
-IHN0YXRpYyB2b2lkICpfX3B0aHJlYWRfdHJhbXBvbGluZSh2b2lkICoKIAogCW9sZF9zaWdoYXJk
-ZW5faGFuZGxlciA9IHNpZ25hbChTSUdIQVJERU4sICZfX3B0aHJlYWRfc2lnaGFyZGVuX2hhbmRs
-ZXIpOwogCi0JLyogQnJva2VuIHB0aHJlYWQgbGlicyBpZ25vcmUgc29tZSBvZiB0aGUgdGhyZWFk
-IGF0dHJpYnV0ZSBzcGVjcwotCSAgIHBhc3NlZCB0byBwdGhyZWFkX2NyZWF0ZSgzKSwgc28gd2Ug
-Zm9yY2UgdGhlIHNjaGVkdWxpbmcgcG9saWN5Ci0JICAgb25jZSBhZ2FpbiBoZXJlLiAqLwogCXBh
-cmFtLnNjaGVkX3ByaW9yaXR5ID0gaWFyZ3MtPnByaW87CiAJcG9saWN5ID0gaWFyZ3MtPnBvbGlj
-eTsKLQlfX3JlYWxfcHRocmVhZF9zZXRzY2hlZHBhcmFtKHRpZCwgcG9saWN5LCAmcGFyYW0pOwog
-CiAJLyogRG8gX25vdF8gaW5saW5lIHRoZSBjYWxsIHRvIHB0aHJlYWRfc2VsZigpIGluIHRoZSBz
-eXNjYWxsCiAJICAgbWFjcm86IHRoaXMgdHJhc2hlcyB0aGUgc3lzY2FsbCByZWdzIG9uIHNvbWUg
-YXJjaHMuICovCkBAIC0xMTgsNiArMTE2LDExIEBAIHN0YXRpYyB2b2lkICpfX3B0aHJlYWRfdHJh
-bXBvbGluZSh2b2lkICoKIAlfX3JlYWxfc2VtX3Bvc3QoJmlhcmdzLT5zeW5jKTsKIAogCWlmICgh
-ZXJyKSB7CisJCS8qIEJyb2tlbiBwdGhyZWFkIGxpYnMgaWdub3JlIHNvbWUgb2YgdGhlIHRocmVh
-ZCBhdHRyaWJ1dGUgc3BlY3MKKwkJICAgcGFzc2VkIHRvIHB0aHJlYWRfY3JlYXRlKDMpLCBzbyB3
-ZSBmb3JjZSB0aGUgc2NoZWR1bGluZyBwb2xpY3kKKwkJICAgb25jZSBhZ2FpbiBoZXJlLiAqLwor
-CQlfX3JlYWxfcHRocmVhZF9zZXRzY2hlZHBhcmFtKHRpZCwgcG9saWN5LCAmcGFyYW0pOworCiAJ
-CWlmIChwb2xpY3kgIT0gU0NIRURfT1RIRVIpCiAJCQlYRU5PTUFJX1NZU0NBTEwxKF9feG5fc3lz
-X21pZ3JhdGUsIFhFTk9NQUlfWEVOT19ET01BSU4pOwogCQlzdGF0dXMgPSBzdGFydChjb29raWUp
-OwpAQCAtMTM3LDI5ICsxNDAsMjQgQEAgaW50IF9fd3JhcF9wdGhyZWFkX2NyZWF0ZShwdGhyZWFk
-X3QgKnRpZAogCXN0cnVjdCBzY2hlZF9wYXJhbSBwYXJhbTsKIAlwdGhyZWFkX3QgbHRpZDsKIAot
-CWlmICghYXR0cikgewotCQlwb2xpY3kgPSBTQ0hFRF9PVEhFUjsKLQkJaWFyZ3MucHJpbyA9IDA7
-Ci0JfSBlbHNlIHsKLQkJcHRocmVhZF9hdHRyX2dldGluaGVyaXRzY2hlZChhdHRyLCAmaW5oZXJp
-dCk7Ci0JCWlmIChpbmhlcml0ID09IFBUSFJFQURfRVhQTElDSVRfU0NIRUQpIHsKLQkJCXB0aHJl
-YWRfYXR0cl9nZXRzY2hlZHBvbGljeShhdHRyLCAmcG9saWN5KTsKLQkJCXB0aHJlYWRfYXR0cl9n
-ZXRzY2hlZHBhcmFtKGF0dHIsICZwYXJhbSk7Ci0JCX0gZWxzZQotCQkJLyogaW5oZXJpdCA9PSBQ
-VEhSRUFEX0lOSEVSSVRfU0NIRUQgKi8KLQkJCV9fd3JhcF9wdGhyZWFkX2dldHNjaGVkcGFyYW0o
-cHRocmVhZF9zZWxmKCksCi0JCQkJCQkgICAgICZwb2xpY3ksICZwYXJhbSk7Ci0JCWlhcmdzLnBy
-aW8gPSBwYXJhbS5zY2hlZF9wcmlvcml0eTsKLQotCQkvKiBXb3JrIGFyb3VuZCBsaW51eHRocmVh
-ZHMgc2hvcnRjb21pbmc6IGl0IGRvZXNuJ3QgYmVsaWV2ZQotCQkgICB0aGF0IGl0IGNvdWxkIGhh
-dmUgUlQgcG93ZXIgYXMgbm9uLXJvb3QgYW5kIGZhaWxzIHRoZQotCQkgICB0aHJlYWQgY3JlYXRp
-b24gb3ZlcmVhZ2VybHkuICovCi0JCW1lbWNweSgmaWF0dHIsIGF0dHIsIHNpemVvZihwdGhyZWFk
-X2F0dHJfdCkpOwotCQlwYXJhbS5zY2hlZF9wcmlvcml0eSA9IDA7Ci0JCXB0aHJlYWRfYXR0cl9z
-ZXRzY2hlZHBvbGljeSgmaWF0dHIsIFNDSEVEX09USEVSKTsKLQkJcHRocmVhZF9hdHRyX3NldHNj
-aGVkcGFyYW0oJmlhdHRyLCAmcGFyYW0pOwotCQlhdHRyID0gJmlhdHRyOwotCX0KKwlpZiAoIWF0
-dHIpCisJCWF0dHIgPSAmZGVmYXVsdF9hdHRyOworCQkKKwlwdGhyZWFkX2F0dHJfZ2V0aW5oZXJp
-dHNjaGVkKGF0dHIsICZpbmhlcml0KTsKKwlpZiAoaW5oZXJpdCA9PSBQVEhSRUFEX0VYUExJQ0lU
-X1NDSEVEKSB7CisJCXB0aHJlYWRfYXR0cl9nZXRzY2hlZHBvbGljeShhdHRyLCAmcG9saWN5KTsK
-KwkJcHRocmVhZF9hdHRyX2dldHNjaGVkcGFyYW0oYXR0ciwgJnBhcmFtKTsKKwl9IGVsc2UKKwkJ
-LyogaW5oZXJpdCA9PSBQVEhSRUFEX0lOSEVSSVRfU0NIRUQgKi8KKwkJX193cmFwX3B0aHJlYWRf
-Z2V0c2NoZWRwYXJhbShwdGhyZWFkX3NlbGYoKSwKKwkJCQkJICAgICAmcG9saWN5LCAmcGFyYW0p
-OworCWlhcmdzLnByaW8gPSBwYXJhbS5zY2hlZF9wcmlvcml0eTsKKworCS8qIEdldCB0aGUgY3Jl
-YXRlZCB0aHJlYWQgdG8gdGVtcG9yYXJpbHkgaW5oZXJpdCBwdGhyZWFkX2NyZWF0ZSBjYWxsZXIK
-KwkgICBwcmlvcml0eSAqLworCW1lbWNweSgmaWF0dHIsIGF0dHIsIHNpemVvZihwdGhyZWFkX2F0
-dHJfdCkpOworCXB0aHJlYWRfYXR0cl9zZXRpbmhlcml0c2NoZWQoJmlhdHRyLCBQVEhSRUFEX0lO
-SEVSSVRfU0NIRUQpOworCWF0dHIgPSAmaWF0dHI7CiAKIAkvKiBGaXJzdCBzdGFydCBhIG5hdGl2
-ZSBQT1NJWCB0aHJlYWQsIHRoZW4gYXNzb2NpYXRlIGEgWGVub21haSBzaGFkb3cgdG8KIAkgICBp
-dC4gKi8KQEAgLTE3MSw2ICsxNjksMTkgQEAgaW50IF9fd3JhcF9wdGhyZWFkX2NyZWF0ZShwdGhy
-ZWFkX3QgKnRpZAogCV9fcmVhbF9zZW1faW5pdCgmaWFyZ3Muc3luYywgMCwgMCk7CiAKIAllcnIg
-PSBfX3JlYWxfcHRocmVhZF9jcmVhdGUoJmx0aWQsIGF0dHIsICZfX3B0aHJlYWRfdHJhbXBvbGlu
-ZSwgJmlhcmdzKTsKKwlpZiAoZXJyID09IEVQRVJNKSB7CisJCS8qIFdvcmsgYXJvdW5kIGxpbnV4
-dGhyZWFkcyBzaG9ydGNvbWluZzogaXQgZG9lc24ndCBiZWxpZXZlCisJCSAgIHRoYXQgaXQgY291
-bGQgaGF2ZSBSVCBwb3dlciBhcyBub24tcm9vdCBhbmQgZmFpbHMgdGhlCisJCSAgIHRocmVhZCBj
-cmVhdGlvbiBvdmVyZWFnZXJseS4gKi8KKwkJcHRocmVhZF9hdHRyX3NldGluaGVyaXRzY2hlZCgm
-aWF0dHIsIFBUSFJFQURfRVhQTElDSVRfU0NIRUQpOworCQlwYXJhbS5zY2hlZF9wcmlvcml0eSA9
-IDA7CisJCXB0aHJlYWRfYXR0cl9zZXRzY2hlZHBvbGljeSgmaWF0dHIsIFNDSEVEX09USEVSKTsK
-KwkJcHRocmVhZF9hdHRyX3NldHNjaGVkcGFyYW0oJmlhdHRyLCAmcGFyYW0pOworCisJCWVyciA9
-IF9fcmVhbF9wdGhyZWFkX2NyZWF0ZSgmbHRpZCwgYXR0ciwKKwkJCQkJICAgICZfX3B0aHJlYWRf
-dHJhbXBvbGluZSwgJmlhcmdzKTsKKwl9CisKIAlpZiAoIWVycikKIAkJd2hpbGUgKF9fcmVhbF9z
-ZW1fd2FpdCgmaWFyZ3Muc3luYykgJiYgZXJybm8gPT0gRUlOVFIpIDsKIAlfX3JlYWxfc2VtX2Rl
-c3Ryb3koJmlhcmdzLnN5bmMpOwpAQCAtMjU3LDMgKzI2OCw4IEBAIGludCBfX3dyYXBfcHRocmVh
-ZF9raWxsKHB0aHJlYWRfdCB0aHJlYWQKIAogCXJldHVybiBlcnI7CiB9CisKK3N0YXRpYyBfX2F0
-dHJpYnV0ZV9fKChjb25zdHJ1Y3RvcikpIHZvaWQgcHNlNTFfdGhyZWFkX2luaXQodm9pZCkKK3sK
-KwlwdGhyZWFkX2F0dHJfaW5pdCgmZGVmYXVsdF9hdHRyKTsKK30K
-------=_Part_19475_8355707.1203068538558--
+ &gt;&nbsp;&nbsp;&gt; &gt; mode. The exit procedure of each task, after the &#39;custom&#39; code, must call<br> &gt;&nbsp;&nbsp;&gt; &gt;&nbsp;&nbsp;the rt_task_delete()&nbsp;&nbsp; before leaving.<br> &gt;&nbsp;&nbsp;&gt; &gt;<br> &gt;&nbsp;&nbsp;&gt; &gt; The following code is a simple example:<br>
+
+ &gt;&nbsp;&nbsp;&gt; &gt; There are two tasks, two semaphores and two other tasks (pending on<br> &gt;&nbsp;&nbsp;&gt; &gt; semaphores) whose target is to execute the parent&#39;s exit procedure.<br> &gt;&nbsp;&nbsp;&gt; &gt; In this case the exit procedure is the my_exit() routine for both tasks,<br>
+
+ &gt;&nbsp;&nbsp;&gt; &gt; but, of course, I&#39;d like to have custom exit procedure for each task.<br> &gt;&nbsp;&nbsp;&gt; &gt;&nbsp;&nbsp;Please read the questions following the code section.<br> &gt;&nbsp;&nbsp;&gt; &gt;<br> &gt;&nbsp;&nbsp;&gt; &gt; Why the opaque2 is 0 in Pippo&#39;s rt_task_delete call? Dmesg shows me<br>
+
+ &gt;&nbsp;&nbsp;&gt; &gt; 3086322608 in __rt_task_create() of Pippo task.<br> &gt;&nbsp;&nbsp;&gt; &gt; What&#39;s wrong with my code?<br> &gt;&nbsp;&nbsp;&gt; &gt;&nbsp;&nbsp;Does a better method exist to implemet&nbsp;&nbsp;asyncronous rt_task_delete in<br> &gt;&nbsp;&nbsp;&gt; &gt; Xenomai?<br>
+
+ &gt;&nbsp;&nbsp;&gt;<br> &gt;&nbsp;&nbsp;&gt; The best way to do what you want to do is to call rt_task_delete from<br> &gt;&nbsp;&nbsp;&gt; the task to be deleted itself, because trying to delete a thread from<br> &gt;&nbsp;&nbsp;&gt; another thread entails problems which can only be solved by sending a<br>
+
+ &gt;&nbsp;&nbsp;&gt; SIGKILL to the whole application.<br> &gt;<br> &gt;&nbsp;&nbsp;or by using rt_task_join, naturally ! This requires that you create a joinable<br> &gt;&nbsp;&nbsp;thread though, using T_JOINABLE in rt_task_spawn.<br> <br> <br>I am afraid this will not help. As far as I understand the code, the<br>
+
+ SIGKILL signal is sent to the whole process if xnpod_delete_thread is<br> reached before the task answered the pthread_cancel request by<br> cleaning itself up properly.<br> <br> --<br> <br> Gilles Chanteperdrix<br> <br>
+
+<br> _______________________________________________<br> Xenomai-help mailing list<br> <a href="mailto:Xenomai-help@domain.hid" target="_blank" onclick="return top.js.OpenExtLink(window,event,this)">Xenomai-help@domain.hid</a><br>
+ <a href="https://mail.gna.org/listinfo/xenomai-help" target="_blank" onclick="return top.js.OpenExtLink(window,event,this)">https://mail.gna.org/listinfo/xenomai-help</a><br>
+ </blockquote></span></div></div><br>
+</blockquote></div><br>
+
+------=_Part_4699_24124734.1203068738344--
 
