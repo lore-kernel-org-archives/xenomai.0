@@ -1,14 +1,22 @@
-Content-class: urn:content-classes:message
+Message-ID: <2ff1a98a0802150253s404753ffr3bf3e12439e400f6@domain.hid>
+Date: Fri, 15 Feb 2008 11:53:29 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <c73373920802150252t4b22000ct2dd5f291f2478a71@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 1 Feb 2008 15:46:57 -0000
-Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB02AAE515@domain.hid>
-In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D37686A@slcmail.slc.mew.int>
-References: <51CAD0CE1504444DBE77CBBE51A0135D37686A@slcmail.slc.mew.int>
-From: "Daniel Schnell" <daniel.schnell@domain.hid>
-Subject: Re: [Xenomai-help] 125 us periodic timer high interrupt cpu usage
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <c73373920802130829r496cfa8au24d6048ae9f50fd3@domain.hid>
+	<2ff1a98a0802140142o538a956dva8f7d4f34bfbe415@domain.hid>
+	<200802141053.02165.peter.soetens@domain.hid>
+	<2ff1a98a0802140233y515a47d8wf8036ff1623311@domain.hid>
+	<c73373920802150133h1eae9705qf4ba7bf61ecfcb6d@domain.hid>
+	<c73373920802150145g1dccc94ct6bb814150cfc7e4a@domain.hid>
+	<2ff1a98a0802150148g6c7f7e78k19a9a2a2b878ef2b@domain.hid>
+	<c73373920802150215i7c63f77awe0dca6d8f9a0614e@domain.hid>
+	<2ff1a98a0802150218j572f2a2bk6167deb1eb742096@domain.hid>
+	<c73373920802150252t4b22000ct2dd5f291f2478a71@domain.hid>
+Subject: Re: [Xenomai-help] Why Xenomai kill my process?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,43 +26,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <sseeger@domain.hid>, xenomai@xenomai.org
+To: Salvatore De Astis <dev.rinux@domain.hid>
+Cc: xenomai@xenomai.org
 
-Well,
+On Fri, Feb 15, 2008 at 11:52 AM, Salvatore De Astis
+<dev.rinux@domain.hid> wrote:
+> The loop which waits for a flag has a collateral effect: if my thread block
+> itself in its main routine how can I kill it in asyncronous mode?
 
-8000 interrupts/second costs you something.
+Use rt_task_unblock/rt_task_resume to unblock it, and check either
+-EINTR or the deletion flag when returning from the blocking call.
 
-Daniel Schnell
-
-
-________________________________
-
-From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] =
-On Behalf Of Steven Seeger
-Sent: 1. febr=FAar 2008 15:23
-To: xenomai@xenomai.org
-Subject: [Xenomai-help] 125 us periodic timer high interrupt cpu usage
-
-
-
-I notice about 8% cpu usage if I call rt_timer_set_mode(125000); and =
-load up a couple of tasks which do nothing but block on conditional =
-variables. (The tasks are using 0%.) I didn't have this issue (as far as =
-I know) with RTAI, and I didn't have this issue when using aperiodic =
-timing mode. What I need is to have all my tasks locked to some =
-timebase, and was told in a previous discussion that this was the way to =
-go.
-
-=20
-
-Is there any reason it should use so much CPU time?
-
-=20
-
-Thanks,
-
-Steven
-
-=20
-
+-- 
+ Gilles Chanteperdrix
 
