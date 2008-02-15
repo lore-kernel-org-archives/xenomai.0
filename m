@@ -1,13 +1,21 @@
-Message-ID: <47B593DE.2070305@domain.hid>
-Date: Fri, 15 Feb 2008 14:30:06 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <c73373920802150533n4b69c996ief0d542cd760b578@domain.hid>
+Date: Fri, 15 Feb 2008 14:33:04 +0100
+From: "Salvatore De Astis" <dev.rinux@domain.hid>
+In-Reply-To: <2ff1a98a0802150521n1a6688fbm52ecdea910d57702@domain.hid>
 MIME-Version: 1.0
-References: <43455a600802150455p41ea028excec13d73ff4f1114@domain.hid>
-In-Reply-To: <43455a600802150455p41ea028excec13d73ff4f1114@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Error while porting xenomai to power pc 750Cxe
- based	SBC
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_5193_27782468.1203082384445"
+References: <c73373920802130829r496cfa8au24d6048ae9f50fd3@domain.hid>
+	<200802141053.02165.peter.soetens@domain.hid>
+	<2ff1a98a0802140233y515a47d8wf8036ff1623311@domain.hid>
+	<c73373920802150133h1eae9705qf4ba7bf61ecfcb6d@domain.hid>
+	<c73373920802150145g1dccc94ct6bb814150cfc7e4a@domain.hid>
+	<2ff1a98a0802150148g6c7f7e78k19a9a2a2b878ef2b@domain.hid>
+	<c73373920802150215i7c63f77awe0dca6d8f9a0614e@domain.hid>
+	<2ff1a98a0802150218j572f2a2bk6167deb1eb742096@domain.hid>
+	<c73373920802150252t4b22000ct2dd5f291f2478a71@domain.hid>
+	<2ff1a98a0802150521n1a6688fbm52ecdea910d57702@domain.hid>
+Subject: Re: [Xenomai-help] Why Xenomai kill my process?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,37 +25,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rakesh bk <rakeshbk402@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Hello,
+------=_Part_5193_27782468.1203082384445
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-rakesh bk wrote:
-> Hello Everyone
-> 
-> I am new to Xenomai , I have ported linux-2.6.14 to our custom board based
->    on IBM750Cxe Iam unable to boot my kernel cross compiled with
-> eldk-3.0 with
->    enabled xenomai support.If i remove xenomai and ipipe support     the
-> kernel
->    boots correctly , but if i enable i get the following oops message .
->    The following patches are applied and arguements of scripts/prepare-
->    kernel.sh is mentioned as follows
->    adeos-ipipe-2.6.14-ppc-1.3-05.patch,
->    Target architecture [default i686]: ppc
->    Adeos patch[default linux-2.6.14/xenomai-2.2.0
->    /ksrc/arch/powerpc/patches
-> /adeos-ipipe-2.6.14-ppc64-1.2-03.patch]:
->    adeos-ipipe-2.6.14-ppc-1.3-05.patch,
-> 
-> Xenomai: ALTIVEC support enabled in kernel but no hardware found.
->          Disable CONFIG_ALTIVEC in the kernel configuration.
+Thanks Gilles,
+but I am new to Xenomai so can you give me more details?
 
-Please disable CONFIG_ALTIVEC in your kernel configuration as suggested
-by the boot message above.
+2008/2/15, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+>
+> On Fri, Feb 15, 2008 at 11:52 AM, Salvatore De Astis
+>
+> <dev.rinux@domain.hid> wrote:
+>
+> > The loop which waits for a flag has a collateral effect: if my thread
+> block
+> > itself in its main routine how can I kill it in asyncronous mode?
+>
+>
+> Another solution would be to use pthread_cancel().
+>
+> --
+>
+> Gilles Chanteperdrix
+>
 
-Any chance to switch to a more recent version of Linux and Xenomai?
+------=_Part_5193_27782468.1203082384445
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Wolfgang.
+Thanks Gilles,<br>but I am new to Xenomai so can you give me more details?<br><br><div><span class="gmail_quote">2008/2/15, Gilles Chanteperdrix &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt;:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+On Fri, Feb 15, 2008 at 11:52 AM, Salvatore De Astis<br> <br>&lt;<a href="mailto:dev.rinux@domain.hid">dev.rinux@domain.hid</a>&gt; wrote:<br> <br>&gt; The loop which waits for a flag has a collateral effect: if my thread block<br>
+ &gt; itself in its main routine how can I kill it in asyncronous mode?<br> <br> <br>Another solution would be to use pthread_cancel().<br> <br> --<br> <br> Gilles Chanteperdrix<br> </blockquote></div><br>
 
+------=_Part_5193_27782468.1203082384445--
 
