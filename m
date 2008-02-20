@@ -1,14 +1,12 @@
-Message-ID: <2ff1a98a0802220308k5aa66dddi95aad51b8d6178d2@domain.hid>
-Date: Fri, 22 Feb 2008 12:08:55 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <OFBA487F20.21A14F15-ONC12573F7.00329129-C12573F7.00329C76@domain.hid>
+Message-ID: <32609074.1203511813520.JavaMail.ngmail@domain.hid>
+Date: Wed, 20 Feb 2008 13:50:13 +0100 (CET)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
+In-Reply-To: <0B45E93C5FF65740AEAE690BF3848B7AD3816B@rennsmail04.eu.thmulti.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <OFBA487F20.21A14F15-ONC12573F7.00329129-C12573F7.00329C76@domain.hid>
-Subject: Re: [Xenomai-help] Advice needed: Xenomai / USB access from kernel
-	task
+Content-Transfer-Encoding: quoted-printable
+References: <0B45E93C5FF65740AEAE690BF3848B7AD3816B@rennsmail04.eu.thmulti.com>
+Subject: Re: [Xenomai-help] Atomic 64 bit write access on PCIe device
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,32 +16,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "G.P.M. Haagh" <g.p.m.haagh@domain.hid>
-Cc: xenomai@xenomai.org
+To: stephane.fillod@domain.hid, mathias_koehrer@domain.hid, xenomai@xenomai.org
 
-On Fri, Feb 22, 2008 at 10:13 AM, G.P.M. Haagh <g.p.m.haagh@domain.hid> wrote:
->
->
-> One of our trainees has written a LKM that accesses the standard Linux
-> kernel's usb_core facilities from a Xenomai real-time thread running in
-> kernel space.
->  I am doing some follow up on his work and run into problems.
->  I would appreciate some help/advise.
->
->  1)
->  The main question to start with: is it Ok to submit urbs to usb_core
-> (usb_submit_urb) from a Xenomai kernel task (task created in a LKM) ?
+Hi Stephane,
 
-Without looking at the function implementation, it is hard to answer.
-The short answer to this question is "no". In general, it ils not
-possible to call regular Linux services from a Xenomai task. Now, it
-may happen that it is possible, if the said service does not rely on
-any Linux services such as spinlocks, mutex, etc...
+thanks for your mail.
+>=20
+> I'm no expert, but did you tried already using FP instructions, which is
+> a common
+> trick to make use of 64 bits I/O in code optimization (before SIMD era).
+>=20
+> How about the following:
+>=20
+> void do_write64(void *p, unsigned long long x)
+> {
+>         volatile union {
+>                 unsigned long long ull;
+>                 double d;
+>         } u;
+>=20
+>         u.ull =3D x;
+>         *(volatile double *)p =3D u.d;
+> }
+>=20
+> Disassemble that code, you should see some fldl and fstpl.
 
-Note that there is an USB stack for Xenomai, so, using this stack
-could be a better solution:
-http://developer.berlios.de/projects/usb4rt
+First I thought of using the FPU for this issue.
+Hoever, I am not sure if it is allowed to use the FPU here as I think there=
+ are some 64 bit integer values
+that will be modified by fldl (e.g. if they represent some kind of NaN).
+According to Intel's instruction set reference for fld:
 
--- 
-                                               Gilles Chanteperdrix
+"Pushes the source operand onto the FPU register stack. The source operand =
+can be in
+single-precision, double-precision, or double extended-precision floating-p=
+oint
+format. If the source operand is in single-precision or double-precision fl=
+oating-point
+format, it is automatically converted to the double extended-precision floa=
+ting-point
+format before being pushed on the stack."
+
+In my case I have a double precision which will be converted to the double =
+extended-precision
+format.
+Thus, I can imagine that there are some 64 bit long longs that will not be =
+handled correctly.
+
+
+Regards
+
+Mathias
+
+
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
+
+
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT F=DCR ALLE NEUEINSTEIGER
+Jetzt bei Arcor: g=FCnstig und schnell mit DSL - das All-Inclusive-Paket
+f=FCr clevere Doppel-Sparer, nur  29,95 Euro  inkl. DSL- und ISDN-Grundgeb=
+=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
