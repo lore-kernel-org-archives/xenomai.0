@@ -1,14 +1,10 @@
+Message-ID: <23559868.1203495913401.JavaMail.ngmail@domain.hid>
+Date: Wed, 20 Feb 2008 09:25:13 +0100 (CET)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18363.24363.926803.782361@domain.hid>
-Date: Tue, 19 Feb 2008 23:58:51 +0100
-In-Reply-To: <3453.62.39.72.60.1203416373.squirrel@domain.hid>
-References: <15295.81.252.86.91.1203350819.squirrel@domain.hid>
-	<2ff1a98a0802180813t5e2dcd98sc0af6db3f8f3439a@domain.hid>
-	<3453.62.39.72.60.1203416373.squirrel@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] Problem of thread creation with Xenomai Posix 2
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] Atomic 64 bit write access on PCIe device
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,42 +14,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabien MAHOT <fabien.mahot@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Fabien MAHOT wrote:
- > > On Mon, Feb 18, 2008 at 5:06 PM, Fabien MAHOT
- > > <fabien.mahot@domain.hid> wrote:
- > >> Xenomai 2.3.4
- > >
- > > When you reply a mail, please hit the "reply" button, so that the mail
- > > gets properly threaded by mail clients and by the mailing list
- > > archives.
- > >
- > > Now, about your issue, I suspect what you observe is a consequence of
- > > pthread_create behaviour, could you try applying the patch I sent, or
- > > use Xenomai development trunk or v2.4.x branch ?
- > >
- > > --
- > >  Gilles Chanteperdrix
- > >
- > 
- > Ok, I didn't want to use your patch because I would like to have a
- > standard solution... I think I will try with Xenomai 2.4.x
- > 
- > Thank you for your answer
+Hi everybody,
 
-I should have said the "reply all" button instead of simply "reply" ;-)
+perhaps this issue is off-topic, but I expect that there are many experts o=
+n that issue reading the Xenomai list...
+I have a Core2Duo Intel CPU (32 bit mode) and a proprietary PCI Express I/O=
+ board plugged in.
+This PCI Express I/O board has some 64 bit registers that are mapped into a=
+ddress space via mmap.
+Now, I want to write atomically (one PCIe access) to one of the 64 bit regi=
+sters.
+Unfortunately, the Intel CPUs does not have an atomic 64 bit write operatio=
+ns when running the CPU in 32 bit mode.
+When doing something like
 
-I can reproduce the issue you have if I disable the "priority coupling"
-option in kernel configuration menu. With this option enabled, the
-scheduler works as you expect, even without the latest posix skin fixes.
+volatile unsigned long long *ull =3D register_address;
+*ull =3D my_new_register_value;
 
-For more information on priority coupling, read the help in kernel
-configuration menu.
+I see the gcc is generating two 32 bit write accesses. Of course this will =
+not lead to an atomic 64 bit write access.
 
--- 
+Any idea, how I can write 64 bit integers atomically to such an 64 bit regi=
+ster?
 
 
-					    Gilles Chanteperdrix.
+Thanks for any feedback!
+
+Regards
+
+Mathias
+
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
+
+
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT F=DCR ALLE NEUEINSTEIGER
+Jetzt bei Arcor: g=FCnstig und schnell mit DSL - das All-Inclusive-Paket
+f=FCr clevere Doppel-Sparer, nur  29,95 Euro  inkl. DSL- und ISDN-Grundgeb=
+=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
