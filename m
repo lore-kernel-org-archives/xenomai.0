@@ -1,103 +1,86 @@
-Message-ID: <47D7E528.9060704@domain.hid>
-Date: Wed, 12 Mar 2008 15:14:00 +0100
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
-References: <47D6CD29.4020700@domain.hid>	<2ff1a98a0803111127p7868350axa976c68714cf4f05@domain.hid>	<47D6DD05.2040007@domain.hid>
-	<47D6E7D8.90908@domain.hid>
-In-Reply-To: <47D6E7D8.90908@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [Xenomai-help] What have I misunderstood
-	about	condition	variables
-Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-Id: <47BDA1710200000100192821@domain.hid>
+Date: Thu, 21 Feb 2008 16:06:09 -0500
+From: "Hubert Talbot" <Hubert.Talbot@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Subject: [Xenomai-help] Non RT PCI device driver vs interrupts (almost ok)
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Anders Blomdell <anders.blomdell@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>, xenomai-core <xenomai@xenomai.org>
-
-Anders Blomdell wrote:
-> OK, found the bug (not mine!).
-
-No, it's mine. Actually, you fixed two of them, since nested locks would not be
-released properly when entering cond_wait. Will merge, thanks.
-
- I suggest something like this:
-> 
-> --- ksrc/skins/native/cond.c.orig       2008-03-11 20:42:52.000000000 +0100
-> +++ ksrc/skins/native/cond.c    2008-03-11 21:00:10.000000000 +0100
-> @@ -438,13 +438,20 @@
-> 
->  int rt_cond_wait(RT_COND *cond, RT_MUTEX *mutex, RTIME timeout)
->  {
-> -       int err, kicked = 0;
-> +       /* We can't use rt_mutex_release since that might reschedule
-> +          before we do our xnsynch_sleep_on, hence most of of the code
-> +          is duplicated here */
-> +       int err = 0, kicked = 0;
->         xnthread_t *thread;
->         spl_t s;
-> +       int lockcnt;
-> 
->         if (timeout == TM_NONBLOCK)
->                 return -EWOULDBLOCK;
-> 
-> +       if (xnpod_unblockable_p())
-> +               return -EPERM;
-> +
->         xnlock_get_irqsave(&nklock, s);
-> 
->         cond = xeno_h2obj_validate(cond, XENO_COND_MAGIC, RT_COND);
-> @@ -454,10 +461,26 @@
->                 goto unlock_and_exit;
->         }
-> 
-> -       err = rt_mutex_release(mutex);
-> +       mutex = xeno_h2obj_validate(mutex, XENO_MUTEX_MAGIC, RT_MUTEX);
-> 
-> -       if (err)
-> +       if (!mutex) {
-> +               err = xeno_handle_error(mutex, XENO_MUTEX_MAGIC, RT_MUTEX);
-> +               goto unlock_and_exit;
-> +       }
-> +
-> +       if (xnpod_current_thread() != xnsynch_owner(&mutex->synch_base)) {
-> +               err = -EPERM;
->                 goto unlock_and_exit;
-> +       }
-> +
-> +       lockcnt = mutex->lockcnt; /* Leave even if mutex is nested */
-> +
-> +       mutex->lockcnt = 0;
-> +
-> +       if (xnsynch_wakeup_one_sleeper(&mutex->synch_base)) {
-> +               mutex->lockcnt = 1;
-> +               /* Scheduling deferred */
-> +       }
-> 
->         thread = xnpod_current_thread();
-> 
-> @@ -474,6 +497,8 @@
-> 
->         rt_mutex_acquire(mutex, TM_INFINITE);
-> 
-> +       mutex->lockcnt = lockcnt; /* Adjust lockcnt */
-> +
->         if (kicked)
->                 xnthread_set_info(thread, XNKICKED);
-> 
-> 
-> 
-> 
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
 
--- 
-Philippe.
+First of all, I am studying xenomai to show to my manager that this =
+framework=20
+can do the expected job for our realtime applications (me, I believe!). I =
+have to prove
+that with a concrete application (alike the ones we do in general), where =
+the
+need to test xenomai with pci card.
+
+The first step I decided to do is capture interrupt. Eventually, I will =
+want
+to translate driver to rtdm.
+
+I had some difficulties to catch interrupt from realtime task but with
+your confirmation, it is ok now.
+
+However, it seems to be not as precise as expected=20
+(in milliseconds order instead of microsecs).
+
+
+Within a demo application...
+
+
+The main function is as:
+
+- opens board (specifying ISR)
+- enables capturing of digital IO events
+- enables interrupt requests in response to captured DIO edges
+- enables interrupts
+- reads counter
+- disables interrupts
+- closes board
+
+
+And the ISR is as:
+
+- gets interrupts status
+- updates count
+- resets DIO event capture flags
+- enables interrupts
+
+
+
+Doing like that in realtime application, I succeeded to catch interrupts
+but with imprecision.
+
+In rt_task, I have the following:
+
+- rt_intr_wait()
+- gets interrupts status (1)
+- reads counter=20
+- resets DIO event capture flags (2)
+- enables interrupts (3)
+
+
+Can (1) (2) (3) api calls cause the imprecision (primary/secondary mode)?
+
+Should it be better if device driver would be implemented with xenomai-rtdm=
+?
+
+
+Thanks
+
+Hubert
+
+
 
