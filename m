@@ -1,10 +1,12 @@
-Date: Mon, 25 Feb 2008 20:11:13 +0100
-Message-Id: <608290736@domain.hid>
+Date: Wed, 20 Feb 2008 23:58:25 -0500
 MIME-Version: 1.0
-From: Joachim Meyer <Jogi95@domain.hid>
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Xenomai and Virtex II Pro (PPC405)
+Content-Disposition: inline
+Message-Id: <200802202358.25792.ngustavson@domain.hid>
+From: NZG <metalninjadragon@domain.hid>
+Subject: [Xenomai-help] writing from user space through fifo problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,24 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-> The RTAI skin is kernel-space only so far, and it doesn't implement to
-> full set of RTAI services - which would be a lot of work to do...
->=20
-> Take a look at the Native API of Xenomai. It is quite similar to RTAI,
-> but you may find it way more consistent. Unless there is a hard
-> requirement to keep the OS layer of that frame work at RTAI level,
-> adopting to Native services should be the preferred way to go.
->=20
-> Jan
+I've got 2 programs, one Xenomai user space real time thread and one normal=
+=20
+user space program.
 
-Thanks for your Infos. I'll keep in mind.
-Greez
-Joachim
-=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
-Jetzt neu! Sch=FCtzen Sie Ihren PC mit McAfee und WEB.DE. 30 Tage
-kostenlos testen. http://www.pc-sicherheit.web.de/startseite/=3Fmc=3D022220
+My normal user space is trying to pass a structure to my real time program =
+and=20
+failing.
 
+my RT thread reads in a 1ms loop with:
+err =3D rt_pipe_read(control_pipe,k,sizeof(control_t),TM_NONBLOCK);
+
+my regular linux program writes a real time fifo with:
+
+int fd =3D open(dev, O_WRONLY|O_SYNC);
+err =3D write(fd,&c,sizeof(c));
+if(err<=3D0)error(0,-err, "write failed =A0with %d",err);
+close(fd);
+
+The user space program succeeds (write returns no error and doesn't block),=
+=20
+but the RT thread never see's the data, continually returning -EINTR.
+
+Note that if I change the real time thread to TM_INFINITE it works, but blo=
+cks=20
+for course, which isn't what I want, since I only want to pull out data at=
+=20
+the beginning of a constant loop.
+
+Is this the correct behavior?=20
+Does read have to be set up and waiting for the data to recieve it?
+
+thx,
+NZG
 
