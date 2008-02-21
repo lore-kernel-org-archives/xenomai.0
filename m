@@ -1,10 +1,14 @@
-Message-ID: <35d9c6ed0802262122l6565fbd1sb14c21feaa53789b@domain.hid>
-Date: Wed, 27 Feb 2008 13:22:28 +0800
-From: "sarra risto" <sarra.risto@domain.hid>
+Message-ID: <47BD316D.3070801@domain.hid>
+Date: Thu, 21 Feb 2008 09:08:13 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_17882_24732861.1204089748677"
-Subject: [Xenomai-help] rtnet benchmark
+References: <200802202358.25792.ngustavson@domain.hid>
+In-Reply-To: <200802202358.25792.ngustavson@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig58418B6871FDBD9C905C0EA9"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] writing from user space through fifo problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,32 +18,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org, xenomai-commits@domain.hid
+To: NZG <metalninjadragon@domain.hid>
+Cc: xenomai@xenomai.org
 
-------=_Part_17882_24732861.1204089748677
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig58418B6871FDBD9C905C0EA9
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-hi
-I just want to  benchmark rtnet under xenomai and unit tests in order to
-get performance and latency statics, I notice some people use netperf
-software. I mean I am a newcomer, so I didn't find other software to
-benchmark rtnet until now, do we really have other software for this
-purpose, what parameters do we get?
+NZG wrote:
+> I've got 2 programs, one Xenomai user space real time thread and one no=
+rmal=20
+> user space program.
+>=20
+> My normal user space is trying to pass a structure to my real time prog=
+ram and=20
+> failing.
+>=20
+> my RT thread reads in a 1ms loop with:
+> err =3D rt_pipe_read(control_pipe,k,sizeof(control_t),TM_NONBLOCK);
+>=20
+> my regular linux program writes a real time fifo with:
+>=20
+> int fd =3D open(dev, O_WRONLY|O_SYNC);
+> err =3D write(fd,&c,sizeof(c));
+> if(err<=3D0)error(0,-err, "write failed  with %d",err);
+> close(fd);
+>=20
+> The user space program succeeds (write returns no error and doesn't blo=
+ck),=20
+> but the RT thread never see's the data, continually returning -EINTR.
 
-Thank you!
+Are you sure it is EINTR? A first glance at the possible code path,
+specifically at xnpipe_recv, suggests that you cannot reach the line
+returning this error code if TM_NONBLOCK was passed.
 
-------=_Part_17882_24732861.1204089748677
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+What Xenomai version are we talking about BTW? And, as usual:
+self-contained simple test cases are always appreciated. :)
 
-<div>hi</div>
-<div>I just want to&nbsp; benchmark rtnet under xenomai and unit tests in order to&nbsp; get performance and latency statics, I notice some people use netperf software. I mean I am a newcomer, so I didn&#39;t find other software to benchmark rtnet until now, do we really have other software for this purpose, what parameters do we get?</div>
+Jan
 
-<div>&nbsp;</div>
-<div>Thank you!</div>
 
-------=_Part_17882_24732861.1204089748677--
+--------------enig58418B6871FDBD9C905C0EA9
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFHvTF1niDOoMHTA+kRAoVSAJ920tpcwMvOAAckSj7x13oUzVqhDQCZAdSk
+5r/sGEuF9/uVL5vfOWEhsuI=
+=v/4h
+-----END PGP SIGNATURE-----
+
+--------------enig58418B6871FDBD9C905C0EA9--
 
