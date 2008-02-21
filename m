@@ -1,12 +1,9 @@
+Message-ID: <47BD9C23.6000705@domain.hid>
+Date: Thu, 21 Feb 2008 16:43:31 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18361.55221.973671.832995@domain.hid>
-Date: Mon, 18 Feb 2008 20:08:37 +0100
-In-Reply-To: <200802181213.29872.leo@domain.hid>
-References: <200802181213.29872.leo@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] Debian package
+Content-Type: multipart/mixed; boundary="------------000403020702090002000507"
+Subject: [Xenomai-core] [PATCH] Fix POSIX skin build for 2.4.x
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,26 +13,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Leopold Palomo-Avellaneda <leo@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, Paul Corner <paul_c@domain.hid>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai-core@domain.hid
 
-Leopold Palomo-Avellaneda wrote:
- > Hi,
- > 
- > this mail should be sent to Paul, but I would like to share with the xenomai 
- > developers. Probably then should be sent to the xenomai-core list, but I have 
- > looked the list and it has a high traffic ("for me now") and I'm not a 
- > developer. So please, Gilles or Jan (or the admin to the list) accept this 
- > message), I'm not subscriber.
+This is a multi-part message in MIME format.
+--------------000403020702090002000507
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
-Well, I am afraid we can not accept it. I searched the gna.org
-administrative interface and could not find any trace of your mail.
-In my opinion, you can subscribe to the list and disable mail
-distribution, this way you will be able to post without receiving all
-xenomai mails.
+Hi Gilles,
+
+the backport from trunk was borken. This patch makes 2.4.x build again,
+but - BIG-FAT-WARNING - I haven't tested the result.
+
+Jan
 
 -- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
 
-					    Gilles Chanteperdrix.
+--------------000403020702090002000507
+Content-Type: text/x-patch;
+ name="fix-uaccess-tests.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="fix-uaccess-tests.patch"
+
+Index: xenomai-2.4.x/ksrc/skins/posix/syscall.c
+===================================================================
+--- xenomai-2.4.x/ksrc/skins/posix/syscall.c	(Revision 3513)
++++ xenomai-2.4.x/ksrc/skins/posix/syscall.c	(Arbeitskopie)
+@@ -1847,7 +1847,7 @@ static int __mq_send(struct task_struct 
+ 	if (IS_ERR(msg))
+ 		return PTR_ERR(msg);
+ 
+-	if(__xn_copy_from_user(msg->data,
++	if(__xn_copy_from_user(curr, msg->data,
+ 			       (void __user *)__xn_reg_arg2(regs), len)) {
+ 		pse51_mq_finish_send(ufd->kfd, mq, msg);
+ 		return -EFAULT;
+@@ -1903,7 +1903,7 @@ static int __mq_timedsend(struct task_st
+ 	if (IS_ERR(msg))
+ 		return PTR_ERR(msg);
+ 
+-	if(__xn_copy_from_user(msg->data,
++	if(__xn_copy_from_user(curr, msg->data,
+ 			       (void __user *)__xn_reg_arg2(regs), len)) {
+ 		pse51_mq_finish_send(ufd->kfd, mq, msg);
+ 		return -EFAULT;
+@@ -1952,7 +1952,7 @@ static int __mq_receive(struct task_stru
+ 	if (IS_ERR(msg))
+ 		return PTR_ERR(msg);
+ 
+-	if (__xn_copy_to_user((void __user *)__xn_reg_arg2(regs),
++	if (__xn_copy_to_user(curr, (void __user *)__xn_reg_arg2(regs),
+ 			      msg->data, msg->len)) {
+ 		pse51_mq_finish_rcv(ufd->kfd, mq, msg);
+ 		return -EFAULT;
+@@ -2029,7 +2029,7 @@ static int __mq_timedreceive(struct task
+ 	if (IS_ERR(msg))
+ 		return PTR_ERR(msg);
+ 
+-	if (__xn_copy_to_user((void __user *)__xn_reg_arg2(regs),
++	if (__xn_copy_to_user(curr, (void __user *)__xn_reg_arg2(regs),
+ 			      msg->data, msg->len)) {
+ 		pse51_mq_finish_rcv(ufd->kfd, mq, msg);
+ 		return -EFAULT;
+@@ -2041,8 +2041,10 @@ static int __mq_timedreceive(struct task
+ 	if (err)
+ 		return err;
+ 
+-	if (__xn_safe_copy_to_user((void __user *)__xn_reg_arg3(regs),
+-				   &len, sizeof(len)))
++	if (!__xn_access_ok
++	    (curr, VERIFY_WRITE, __xn_reg_arg3(regs), sizeof(len)) ||
++	    __xn_copy_to_user(curr, (void __user *)__xn_reg_arg3(regs),
++			      &len, sizeof(len)))
+ 		return -EFAULT;
+ 
+ 	if (__xn_reg_arg4(regs))
+
+--------------000403020702090002000507--
 
