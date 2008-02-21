@@ -1,86 +1,40 @@
-Message-ID: <47AC3012.6050404@domain.hid>
-Date: Fri, 08 Feb 2008 11:33:54 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <2ff1a98a0802210157l77731f5bi597992c16af5cd3f@domain.hid>
+Date: Thu, 21 Feb 2008 10:57:11 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <203915.70212.qm@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------000405020405060108010607"
-Subject: [Adeos-main] [PATCH] optional ipipe_safe_current
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
-
-This is a multi-part message in MIME format.
---------------000405020405060108010607
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <47BD316D.3070801@domain.hid>
+	<203915.70212.qm@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai maximum latency
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: ayoub zaki <ayoub_zaki@domain.hid>
+Cc: xenomai@xenomai.org
 
->From my cleanup queue:
+On Thu, Feb 21, 2008 at 10:39 AM, ayoub zaki <ayoub_zaki@domain.hid> wrote:
+>
+>  Hi all,
+>
+>  I've just started with Xenomai and I'm wondering if on
+>  a given Platform does Xenomai garantee a Maximum
+>  latency that will never be exeed ?
 
-There is no need to check for IPIPE_NOSTACK_FLAG on archs which always
-provide safe access to current (like x86).
+There is no written garantee as such. What we garantee is to do our
+best to keep the maximum latency as low as possible.
 
-Jan
+And we provide the latency test, to measure the maximum latency of
+your system under the load conditions you define.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
-
---------------000405020405060108010607
-Content-Type: text/x-patch;
- name="optional-ipipe_safe_current.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="optional-ipipe_safe_current.patch"
-
----
- include/asm-x86/ipipe.h |    5 +++--
- include/linux/ipipe.h   |    2 ++
- 2 files changed, 5 insertions(+), 2 deletions(-)
-
-Index: linux-2.6.24-xeno_64/include/asm-x86/ipipe.h
-===================================================================
---- linux-2.6.24-xeno_64.orig/include/asm-x86/ipipe.h
-+++ linux-2.6.24-xeno_64/include/asm-x86/ipipe.h
-@@ -40,10 +40,11 @@ DECLARE_PER_CPU(struct pt_regs, __ipipe_
- #endif
- 
- /*
-- * The logical processor id is read from the PDA, so this is always
-- * safe, regardless of the underlying stack.
-+ * The logical processor id and the current Linux task are read from the PDA,
-+ * so this is always safe, regardless of the underlying stack.
-  */
- #define ipipe_processor_id()	raw_smp_processor_id()
-+#define ipipe_safe_current()	current
- 
- #define prepare_arch_switch(next)		\
- do {						\
-Index: linux-2.6.24-xeno_64/include/linux/ipipe.h
-===================================================================
---- linux-2.6.24-xeno_64.orig/include/linux/ipipe.h
-+++ linux-2.6.24-xeno_64/include/linux/ipipe.h
-@@ -443,6 +443,7 @@ static inline void ipipe_clear_foreign_s
- 	__clear_bit(IPIPE_NOSTACK_FLAG, &ipipe_cpudom_var(ipd, status));
- }
- 
-+#ifndef ipipe_safe_current
- #define ipipe_safe_current()					\
- ({								\
- 	struct task_struct *p;					\
-@@ -450,6 +451,7 @@ static inline void ipipe_clear_foreign_s
- 		     &ipipe_this_cpudom_var(status)) ? &init_task : current; \
- 	p; \
- })
-+#endif
- 
- ipipe_event_handler_t ipipe_catch_event(struct ipipe_domain *ipd,
- 					unsigned event,
-
---------------000405020405060108010607--
+ Gilles Chanteperdrix
 
