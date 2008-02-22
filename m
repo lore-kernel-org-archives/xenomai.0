@@ -1,14 +1,15 @@
-Message-ID: <7289437c0802212358o23986c36vdc116f0824fd1abb@domain.hid>
-Date: Fri, 22 Feb 2008 08:58:32 +0100
-From: "Perrine Martignoni" <perrmart@domain.hid>
-In-Reply-To: <47BD977C.1040209@domain.hid>
+Message-ID: <47BE8E0E.7060104@domain.hid>
+Date: Fri, 22 Feb 2008 09:55:42 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_7302_26159286.1203667112341"
-References: <7289437c0802210658w29e21207q74f1cfdf36d6e17c@domain.hid>
-	<47BD977C.1040209@domain.hid>
-Subject: Re: [Xenomai-help] Kernel access of bad area with rtdm_event_wait()
-	(MPC8347)
+References: <200802202358.25792.ngustavson@domain.hid>	<200802210944.56033.ngustavson@domain.hid>	<47BD9763.1040304@domain.hid>
+	<200802212145.31122.ngustavson@domain.hid>
+In-Reply-To: <200802212145.31122.ngustavson@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-help] writing from user space through fifo problems
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,114 +19,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: NZG <metalninjadragon@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-------=_Part_7302_26159286.1203667112341
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Indeed, I have bad reproduced the problem in the code I suggest to you. But
-your remark makes me understand  that I was in secondary mode and I never
-switched to primary mode so ....
-My issue is understood and solved.
-Thanks
-
-On Thu, Feb 21, 2008 at 4:23 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-
-> Perrine Martignoni wrote:
-> > Hello,
-> >
-> > I work on a MPC8347 processor and I found out a problem with
-> > rtdm_event_wait(). I reproduce the problem with a simple code :
-> >
-> > *driver.c* :
-> > #include <rtdm/rtdm_driver.h>
-> >
-> > MODULE_AUTHOR("P.Martignoni");
-> > MODULE_LICENSE("GPL");
-> >
-> > #define DEV_FILE_NAME       "DspDev"
-> > #define DRV_NAME            "DspDrv"
-> >
-> > #define DEV_FILE_DSP            "dspdev0"
-> >
-> > static rtdm_event_t s_ReadEvent;
-> >
-> > static int Open(struct rtdm_dev_context    *p_Context,
-> >                 rtdm_user_info_t           *p_UserInfo,
-> >                 int                        Oflags)
-> > {
-> >     int ret = 0;
-> >
-> >     rtdm_event_init(&s_ReadEvent,0);
-> >
-> >     // generates an error : Oops : Kernel access of bad area, sig : 11
-> [#1]
-> >     rtdm_event_wait(&s_ReadEvent);
->
-> General advice: switch on XENO_OPT_DEBUG_RTDM (and IPIPE_DEBUG_CONTEXT)
-> to catch service invocations from a wrong context, like here.
->
-> Your mistake: calling a blocking Xenomai services from non-rt context
-> (see your registration of Open in t_IdspDevice).
->
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT SE 2
-> Corporate Competence Center Embedded Linux
+NZG wrote:
+> On Thursday 21 February 2008 10:23:15 am Jan Kiszka wrote:
+>> That's good. This test will also allow you to check it against
+>>  - more recent Xenomai (please check the Changelog for pipe-related
+>>    changes since 2.3.1, I bet there are a few)
+>>  - some other arch, specifically x86 (IIRC, there is still some Linux
+>>    scheduling artifact left in the I-pipe patch for blackfin, but it
+>>    shouldn't make a difference here - well, who knows...)
+> Well, in the process of writing a simple test I kindof found the problem.
+> My user space program is writing and then immediatly closing, which appears to 
+> destroy the data if it hasn't been read by then. Inserting a sleep between 
+> write and close causes it to work.
 >
 
-------=_Part_7302_26159286.1203667112341
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Yes, releasing a fildes flushes the input queue from lingering data
+before closing the user-space side.
 
-Indeed, I have bad reproduced the problem in the code I suggest to you. But your remark makes me understand&nbsp; that I was in secondary mode and I never switched to primary mode so ....<br>My issue is understood and solved.<br>
-Thanks<br><br><div class="gmail_quote">On Thu, Feb 21, 2008 at 4:23 PM, Jan Kiszka &lt;<a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt; wrote:<br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-<div class="Ih2E3d">Perrine Martignoni wrote:<br>
-&gt; Hello,<br>
-&gt;<br>
-&gt; I work on a MPC8347 processor and I found out a problem with<br>
-&gt; rtdm_event_wait(). I reproduce the problem with a simple code :<br>
-&gt;<br>
-&gt; *driver.c* :<br>
-&gt; #include &lt;rtdm/rtdm_driver.h&gt;<br>
-&gt;<br>
-&gt; MODULE_AUTHOR(&quot;P.Martignoni&quot;);<br>
-&gt; MODULE_LICENSE(&quot;GPL&quot;);<br>
-&gt;<br>
-&gt; #define DEV_FILE_NAME &nbsp; &nbsp; &nbsp; &quot;DspDev&quot;<br>
-&gt; #define DRV_NAME &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&quot;DspDrv&quot;<br>
-&gt;<br>
-&gt; #define DEV_FILE_DSP &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&quot;dspdev0&quot;<br>
-&gt;<br>
-&gt; static rtdm_event_t s_ReadEvent;<br>
-&gt;<br>
-&gt; static int Open(struct rtdm_dev_context &nbsp; &nbsp;*p_Context,<br>
-&gt; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; rtdm_user_info_t &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; *p_UserInfo,<br>
-&gt; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; int &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Oflags)<br>
-&gt; {<br>
-&gt; &nbsp; &nbsp; int ret = 0;<br>
-&gt;<br>
-&gt; &nbsp; &nbsp; rtdm_event_init(&amp;s_ReadEvent,0);<br>
-&gt;<br>
-&gt; &nbsp; &nbsp; // generates an error : Oops : Kernel access of bad area, sig : 11 [#1]<br>
-&gt; &nbsp; &nbsp; rtdm_event_wait(&amp;s_ReadEvent);<br>
-<br>
-</div>General advice: switch on XENO_OPT_DEBUG_RTDM (and IPIPE_DEBUG_CONTEXT)<br>
-to catch service invocations from a wrong context, like here.<br>
-<br>
-Your mistake: calling a blocking Xenomai services from non-rt context<br>
-(see your registration of Open in t_IdspDevice).<br>
-<br>
-Jan<br>
-<font color="#888888"><br>
---<br>
-Siemens AG, Corporate Technology, CT SE 2<br>
-Corporate Competence Center Embedded Linux<br>
-</font></blockquote></div><br>
+> I noticed this because my test program was working because it just so happened 
+> to pause until the real time task ended before closing the fd.
+> 
+> I remember doing this before, now that it's figured out, but it's still kind 
+> of problematic because it doesn't appear to be possible to block on user 
+> space writes.
+> 
+> Opening with O_SYNC does not cause it to block, and fsync(fd) doesn't seem to 
+> do anything.
 
-------=_Part_7302_26159286.1203667112341--
+O_SYNC support has to be implemented by the driver, and Xenomai
+implements this for the pipe driver since 2.4-rc1. Therefore, passing
+O_SYNC to open() using 2.3.1 will just lead to a nop.
+
+ anybody have any suggestions on how to know data has been
+> received before closing a pipe after a write? Surely somebody's done this 
+> before.
+> 
+
+The only way I see with 2.3.1 would be to make a non-realtime shadow
+from your user-space thread (rt_task_shadow() with priority 0), then
+have it pend on a Xenomai semaphore signaled by your real-time task when
+it has consumed the packet.
+
+> thanks,
+> NZG
+> 
+> 
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+> 
+
+
+-- 
+Philippe.
 
