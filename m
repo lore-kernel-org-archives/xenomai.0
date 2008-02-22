@@ -1,13 +1,16 @@
-Message-ID: <2ff1a98a0802200055o54fd1a43j265e80594ed08f17@domain.hid>
-Date: Wed, 20 Feb 2008 09:55:27 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <23559868.1203495913401.JavaMail.ngmail@domain.hid>
+Date: Thu, 21 Feb 2008 21:45:31 -0500
+References: <200802202358.25792.ngustavson@domain.hid>
+	<200802210944.56033.ngustavson@domain.hid>
+	<47BD9763.1040304@domain.hid>
+In-Reply-To: <47BD9763.1040304@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-References: <23559868.1203495913401.JavaMail.ngmail@domain.hid>
-Subject: Re: [Xenomai-help] Atomic 64 bit write access on PCIe device
+Message-Id: <200802212145.31122.ngustavson@domain.hid>
+From: NZG <metalninjadragon@domain.hid>
+Subject: Re: [Xenomai-help] writing from user space through fifo problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,34 +20,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Feb 20, 2008 9:25 AM, M. Koehrer <mathias_koehrer@domain.hid> wrote:
-> Hi everybody,
->
-> perhaps this issue is off-topic, but I expect that there are many experts on that issue reading the Xenomai list...
-> I have a Core2Duo Intel CPU (32 bit mode) and a proprietary PCI Express I/O board plugged in.
-> This PCI Express I/O board has some 64 bit registers that are mapped into address space via mmap.
-> Now, I want to write atomically (one PCIe access) to one of the 64 bit registers.
-> Unfortunately, the Intel CPUs does not have an atomic 64 bit write operations when running the CPU in 32 bit mode.
-> When doing something like
->
-> volatile unsigned long long *ull = register_address;
-> *ull = my_new_register_value;
->
-> I see the gcc is generating two 32 bit write accesses. Of course this will not lead to an atomic 64 bit write access.
->
-> Any idea, how I can write 64 bit integers atomically to such an 64 bit register?
->
->
-> Thanks for any feedback!
+On Thursday 21 February 2008 10:23:15 am Jan Kiszka wrote:
+> That's good. This test will also allow you to check it against
+> =A0- more recent Xenomai (please check the Changelog for pipe-related
+> =A0 =A0changes since 2.3.1, I bet there are a few)
+> =A0- some other arch, specifically x86 (IIRC, there is still some Linux
+> =A0 =A0scheduling artifact left in the I-pipe patch for blackfin, but it
+> =A0 =A0shouldn't make a difference here - well, who knows...)
+Well, in the process of writing a simple test I kindof found the problem.
+My user space program is writing and then immediatly closing, which appears=
+ to=20
+destroy the data if it hasn't been read by then. Inserting a sleep between=
+=20
+write and close causes it to work.
 
-Maybe using a spinlock would be possible ?
-I do not think that using inline assembly would work (I would expect
-the assembler to refuse 64 bits instructions when in 32 bits mode).
-Why not compiling the kernel and Xenomai in 64 bits mode ?
+I noticed this because my test program was working because it just so happe=
+ned=20
+to pause until the real time task ended before closing the fd.
 
--- 
-                                               Gilles Chanteperdrix
+I remember doing this before, now that it's figured out, but it's still kin=
+d=20
+of problematic because it doesn't appear to be possible to block on user=20
+space writes.
+
+Opening with O_SYNC does not cause it to block, and fsync(fd) doesn't seem =
+to=20
+do anything. anybody have any suggestions on how to know data has been=20
+received before closing a pipe after a write? Surely somebody's done this=20
+before.
+
+thanks,
+NZG
+
+
+
 
