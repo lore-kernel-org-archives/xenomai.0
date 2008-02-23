@@ -1,14 +1,15 @@
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
-Date: Sat, 23 Feb 2008 01:03:21 +0100
-References: <605030777@domain.hid>
-In-Reply-To: <605030777@domain.hid>
+Message-ID: <47C02848.70604@domain.hid>
+Date: Sat, 23 Feb 2008 15:06:00 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-15"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200802230103.21647.berlemont.hauw@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai and Virtex II Pro (PPC405)
+References: <47BF446E.50300@domain.hid>
+In-Reply-To: <47BF446E.50300@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigB6F1FB0F1A8D9B5E4BAD75B7"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] gpioirqbench: measuring external interrupt
+	latencies
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,41 +19,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigB6F1FB0F1A8D9B5E4BAD75B7
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-> 1: I wanted to use RTAI on an Linux I compiled myself for a ppc405 core on
-> a Virtex II pro. But I realized that the support of xenomai for the ppc405
-> seems a lot better. Has anyone expirience with that and can give me some
-> tips? I use the XUP Board from Xilinx:
-> http://www.xilinx.com/univ/xupv2p.html
+Wolfgang Grandegger wrote:
+> Hello,
+>=20
+> I'm proud to announce "gpioirqbench", a benchmark tool to measure
+> external interrupt latencies. It is derived from Jan's irqbench [1] for=
 
-Correct me if am wrong,but for me, a Virtex II Pro contains 1 (maybe 2) 
-hardwired PPC405 core(s) inside the FPGA. But compared to common AMCC or 
-Freescale PPC micro-controllers, you have to instanciante in VHDL some 
-peripherals / controllers or some glue towards them. You have to build your 
-own micro-controller, haven't you ?
+> the PC. Instead of using the serial or parallel port, it uses GPIO pins=
 
-Consequently, as soon as you make Linux run on it, I can see no reason why you 
-would get trouble with Xenomai. Even if you had to cope with such a 
-predicament, the problem(s) would be bound to be located in ipipe, not in 
-Xenomai. Keep in mind that RTAI seems to be based on ipipe too.  
+> on embedded systems. It measures the time between the generation of an
+> interrupt triggered by a GPIO pin and the reply by either the interrupt=
 
-Anyway, if you encounter troubles, I would advice you to have a look at your 
-IRQ controller; just in case, the PPC405 core is interfaced with an external 
-IRQ controller... maybe someone else has more accurate info on Virtex II pro 
-PPC405...
+> service routine, a kernel-space task or a user-space task. As reply,
+> another GPIO pin will be toggled. The setup consists of two systems, th=
+e
+> log host and the test target. The log host triggers the interrupt on th=
+e
+> test target and measures the latency. This benchmark is primarily for
+> Xenomai/RTDM, but it can also be used for plain Linux or even Linux-rt
+> (with the real-time preemption patch).
 
-Just to reassure you, I had opportunities to work with various AMCC CPU (405, 
-440) and a little bit with FREESCALE components (PQ2, PQ3); everything was 
-fine with Xenomai.
+Nice stuff! Still I have a few conceptual questions: :->
 
-> 2: There is also an framework wich depends on RTAI. Can I use that
-> framework with xenomai and this rtai-skin I read about?
+1. Why do you need a Xenomai measurement host? On first glance, you are
+   just spinning on the reply for the RT target. Why not use plain Linux
+   for this to increase portability? Most beautiful would be a pure
+   userspace approach like for irqbench. What prevents this here?
 
-Which framework ?
+2. Do you see a chance to integrate the target'S GPIO interface into the
+   exiting irqbench backend? That would make it easy to merge the
+   Xenomai version into the tree.
 
-Alexis.
+Jan
 
+
+--------------enigB6F1FB0F1A8D9B5E4BAD75B7
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFHwChLniDOoMHTA+kRAs+jAJ9jUJfmoLU1wkEQXuF3XHYUs/2xngCfdjhy
+IJGENDH9aRF8nr2Xj/CI4UQ=
+=QbjH
+-----END PGP SIGNATURE-----
+
+--------------enigB6F1FB0F1A8D9B5E4BAD75B7--
 
