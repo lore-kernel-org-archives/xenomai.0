@@ -1,14 +1,15 @@
+Message-ID: <47C06CED.6020301@domain.hid>
+Date: Sat, 23 Feb 2008 19:58:53 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18368.27901.764171.630194@domain.hid>
-Date: Sat, 23 Feb 2008 19:59:09 +0100
-In-Reply-To: <47C05FE8.4090908@domain.hid>
-References: <47C020A9.3050704@domain.hid> <47C02194.6010607@domain.hid>
-	<18368.23071.202085.682705@domain.hid>
-	<47C05FE8.4090908@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] [PATCH 1/4] Refactor generic system.h
+References: <47C020A9.3050704@domain.hid>	<47C021F3.20002@domain.hid>	<18368.23813.430770.37223@domain.hid>	<47C06237.6080000@domain.hid>
+	<18368.26367.809400.757141@domain.hid>
+In-Reply-To: <18368.26367.809400.757141@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigCBADC9167739C7E6F12E7FBB"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [PATCH 3/4] Uninline heavy locking functions
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,60 +19,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai-core@domain.hid
 
-Jan Kiszka wrote:
- > Gilles Chanteperdrix wrote:
- > > Jan Kiszka wrote:
- > >  > In order to allow further optimizations of xnlock, I started with
- > >  > refactoring the related system.h. This improves the readability
- > >  > significantly, IMHO. It also happen to reduce the text size of
- > >  > __xnlock_get a bit by avoid redundant rthal_processor_id read-outs.
- > >  > 
- > >  > Another quirk I happen to remove: xnlock debugging depends on
- > >  > XENO_OPT_DEBUG_NUCLEUS, but needlessly we used to pick the debug version
- > >  > of xnlock_t already with XENO_OPT_DEBUG.
- > > 
- > > There is a lot of whitespace change in this patch, which make it hard to
- > > read.
- > 
- > Well, this patch is mostly about whitespace and formatting fixes (among
- > which ifdef reduction falls for me as well). But I can split it up if
- > desired.
- > 
- > > 
- > > Anyway, there are a few things I do not like in this patch:
- > > - macro which make reference to symbols defined elsewhere
- > 
- > You mean XNLOCK_DBG_PREPARE_ACQUIRE vs. XNLOCK_DBG_SPINNING/ACQUIRED?
- > Granted, not nice but so far the most compact approach I found. My goal
- > was to keep the lock implementations as pure as possible (you can easily
- > ignore the debug stuff now when reading xnlock_get/put).
- > 
- > > - functions arguments as macro, I find more readable the #ifdef with the
- > >   different function prototypes, the code can be read without having to
- > >   look at a different place.
- > 
- > I'm open to learn a third way to achieve what we need. I'm just
- > convinced that the old way was far worse.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigCBADC9167739C7E6F12E7FBB
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
 
-I do not see a third approach. Maybe passing all the arguments to
-the function, and count on the optimizer to remove useless arguments
-when inlining ? 
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>  > Gilles Chanteperdrix wrote:
+>  > > Jan Kiszka wrote:
+>  > >  > At least when SMP is enable, already __xnlock_get becomes far t=
+oo
+>  > >  > heavy-weighted for being inlined. xnlock_put is fine now, but l=
+ooking
+>  > >  > closer at the disassembly still revealed a lot of redundancy re=
+lated to
+>  > >  > acquiring and releasing xnlocks. In fact, we are mostly using
+>  > >  > xnlock_get_irqsave and xnlock_put_irqrestore. Both include fidd=
+ling with
+>  > >  > rthal_local_irq_save/restore, also heavy-weighted on SMP.
+>  > >  >=20
+>  > >  > So this patch turns the latter two into uninlined functions whi=
+ch
+>  > >  > reduces the text size or nucleus and skins significantly on x86=
+-64/SMP
+>  > >  > (XENO_OPT_DEBUG_NUCLEUS disabled):
+>  > >=20
+>  > > I think the human idea of how long an inline function can be is fa=
+r more
+>  > > restrictive than what a processor can take. When looking at assemb=
+ly
+>  > > code, you always find the code long, whereas in reality it is not =
+that
+>  > > long for a processor.=20
+>  > >=20
+>  > > Besides, IMO, the proper way to uninline xnlock operations is to l=
+eave
+>  > > the non contended case inline, and to move the spinning out of lin=
+e.
+>  >=20
+>  > This patch is not just about uninlining xnlock, that's only one half=
+ of
+>  > the savings. The other one is irq-disabling via i-pipe. The problem =
+with
+>  > our case is that we have no simple single check to find out that we =
+are
+>  > on a fast ride. Rather, we have to do quite some calculations/lookup=
+s
+>  > before the first check, and we have to perform multiple checks even =
+in
+>  > the best case.
+>=20
+> This is my fault, a tradeoff I made, I thought that the atomic_cmpxchg
+> could be heavy on SMP systems, so I made a first check to see if we are=
 
- > 
- > Please consider for a better suggestion that the number of variants
- > increase with my ticket lock. That's why I tried to stuff things in
- > macros. Hmm, maybe we should simply get rid of the file/line/function
- > stuff completely and switch to IP + ksyms. What do you think?
+> not recursing. But we can do the two operations in one move if we accep=
+t
+> to have a failing atomic_cmpxchg when recursing.
 
-I find the file line approach more precise. print_symbol gives you an
-offset, you have to disassemble to understand what it means, and
-it does not see inline functions.
+I'm unsure about the cache pressure of cmpxchg vs. plain read. I guess
+the existing variant is already better.
 
--- 
+Moreover, the spinning code is only a fraction of the fraction. We
+cannot eliminate the recursion check, and we still have all the
+local_irq_save code. And _all_ this code mostly comes together, thus we
+save so much by uninlining those two functions.
+
+Jan
 
 
-					    Gilles Chanteperdrix.
+--------------enigCBADC9167739C7E6F12E7FBB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFHwGztniDOoMHTA+kRAuTgAJkBrAl8pfRz6tvEBMNXQ37YU8olLACfSxti
+bnwNmTLySFRAu5cJOCE3Os0=
+=nbL9
+-----END PGP SIGNATURE-----
+
+--------------enigCBADC9167739C7E6F12E7FBB--
 
