@@ -1,15 +1,15 @@
-Message-ID: <47C06237.6080000@domain.hid>
-Date: Sat, 23 Feb 2008 19:13:11 +0100
+Message-ID: <47C063F0.8040503@domain.hid>
+Date: Sat, 23 Feb 2008 19:20:32 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <47C020A9.3050704@domain.hid>	<47C021F3.20002@domain.hid>
-	<18368.23813.430770.37223@domain.hid>
-In-Reply-To: <18368.23813.430770.37223@domain.hid>
+References: <47C020A9.3050704@domain.hid>	<47C02491.203@domain.hid>
+	<18368.24026.551410.454239@domain.hid>
+In-Reply-To: <18368.24026.551410.454239@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigE96B0F66A548B62A12136F9C"
+	boundary="------------enig7CFC9B7DFD0722518A94DC1A"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [PATCH 3/4] Uninline heavy locking functions
+Subject: Re: [Xenomai-core] [RFC][PATCH 4/4] Recursive FIFO ticket xnlock
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -23,57 +23,60 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai-core@domain.hid
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE96B0F66A548B62A12136F9C
+--------------enig7CFC9B7DFD0722518A94DC1A
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: quoted-printable
 
 Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
->  > At least when SMP is enable, already __xnlock_get becomes far too
->  > heavy-weighted for being inlined. xnlock_put is fine now, but lookin=
-g
->  > closer at the disassembly still revealed a lot of redundancy related=
- to
->  > acquiring and releasing xnlocks. In fact, we are mostly using
->  > xnlock_get_irqsave and xnlock_put_irqrestore. Both include fiddling =
-with
->  > rthal_local_irq_save/restore, also heavy-weighted on SMP.
+>  > The root of all this: When Nick Piggin posted his first suggestion f=
+or
+>  > ticket spinlocks on LKML, I immediately liked the idea. For details
+>  > check LWN [1], in a nutshell: This algorithm enforces strict FIFO or=
+der
+>  > for the admission to contended spinlocks, thus it improves the
+>  > determinism on SMP systems with more than 2 CPUs.
 >  >=20
->  > So this patch turns the latter two into uninlined functions which
->  > reduces the text size or nucleus and skins significantly on x86-64/S=
-MP
->  > (XENO_OPT_DEBUG_NUCLEUS disabled):
+>  > Meanwhile, ticket spinlocks are mainline (2.6.25). But that version =
+has
+>  > to drawbacks for us: it doesn't support nesting like xnlock does, an=
+d it
+>  > is x86-only so far.
+>  >=20
+>  > So I designed a version for Xenomai which is both nestable and
+>  > arch-independent. It is certainly not as optimal as mainline's versi=
+on,
+>  > but our code path stresses the locking code differently anyway.
+>  >=20
+>  > This thing here /seems/ to work, but I'm lacking CPUs at home to tes=
+t.
+>  > You can't truly stress ticket locks with only a single dual-core :-/=
+=2E
+>  > QEMU runs into a live-lock with -smp 2, this patch applied and two
+>  > moderate latency loops, but that might be an artifact of its
+>  > single-threaded VCPU scheduling. And kvm currently locks up under SM=
+P
+>  > even without any change, but kvm and SMP is a story of its own. Ther=
+e is
+>  > hope: 16-way is waiting at work... :)
 >=20
-> I think the human idea of how long an inline function can be is far mor=
-e
-> restrictive than what a processor can take. When looking at assembly
-> code, you always find the code long, whereas in reality it is not that
-> long for a processor.=20
->=20
-> Besides, IMO, the proper way to uninline xnlock operations is to leave
-> the non contended case inline, and to move the spinning out of line.
+> Xenomai uses a Big Kernel Lock, an approach known to not scale very
+> well. So, if we want to scale correctly on machines with many cpus, we
+> should change our locking strategy first.
 
-This patch is not just about uninlining xnlock, that's only one half of
-the savings. The other one is irq-disabling via i-pipe. The problem with
-our case is that we have no simple single check to find out that we are
-on a fast ride. Rather, we have to do quite some calculations/lookups
-before the first check, and we have to perform multiple checks even in
-the best case.
+Per-cpu IPC objects, per-cpu nklock - I'm all with you! But that's stuff
+for a massive restructuring we could schedule for Xenomai 3.
 
->=20
-> And this is something we should not do without measuring its impact.
-
-For sure, will be done. But I'm very optimistic about the results given
-this massive code size reduction - which should translates in less cache
-misses for the worst-case path. What increase latency most for us
-(special hardware properties aside) is memory access, both data and text.=
-
+This thing here surely does not help to scale RT loads across 16 CPUs or
+more. But it already pays off determinism-wise with 3 or 4 CPUs involved
+in RT jobs with moderate contention on nklock. It is nothing for 2-way
+boxes (except for testing) where the exiting algorithm is more efficient
+(and where you don't have the risk of unfair lock admission anyway).
 
 Jan
 
 
-
---------------enigE96B0F66A548B62A12136F9C
+--------------enig7CFC9B7DFD0722518A94DC1A
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -82,10 +85,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.4-svn0 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFHwGI3niDOoMHTA+kRAjyuAKCC0VEzVyo7pmFD4RI+eZbVPwQosgCfS8a4
-c8hkdo/tVSrH3iR+eFFv3ys=
-=ff2U
+iD8DBQFHwGPwniDOoMHTA+kRAl55AJ9/buGbR2LklaO6WuQUrpBaMYwtRACdFECv
+7ni3b83oYOod8SGcgygiHtQ=
+=fv0l
 -----END PGP SIGNATURE-----
 
---------------enigE96B0F66A548B62A12136F9C--
+--------------enig7CFC9B7DFD0722518A94DC1A--
 
