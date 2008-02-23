@@ -1,14 +1,14 @@
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18368.26112.776987.660255@domain.hid>
-Date: Sat, 23 Feb 2008 19:29:20 +0100
-In-Reply-To: <47C06052.2020406@domain.hid>
-References: <47C020A9.3050704@domain.hid> <47C02113.7070005@domain.hid>
-	<18368.23256.85461.492726@domain.hid>
-	<47C06052.2020406@domain.hid>
+Message-ID: <18368.26367.809400.757141@domain.hid>
+Date: Sat, 23 Feb 2008 19:33:35 +0100
+In-Reply-To: <47C06237.6080000@domain.hid>
+References: <47C020A9.3050704@domain.hid> <47C021F3.20002@domain.hid>
+	<18368.23813.430770.37223@domain.hid>
+	<47C06237.6080000@domain.hid>
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] [PATCH 2/4] Fix and optimize xnlock_put
+Subject: Re: [Xenomai-core] [PATCH 3/4] Uninline heavy locking functions
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -24,29 +24,36 @@ Cc: Xenomai-core@domain.hid
 Jan Kiszka wrote:
  > Gilles Chanteperdrix wrote:
  > > Jan Kiszka wrote:
- > >  > As the #ifdef forest was cut down, I once again looked at xnlock_put.
- > >  > Why do you have this safety check for the owner also in production code?
+ > >  > At least when SMP is enable, already __xnlock_get becomes far too
+ > >  > heavy-weighted for being inlined. xnlock_put is fine now, but looking
+ > >  > closer at the disassembly still revealed a lot of redundancy related to
+ > >  > acquiring and releasing xnlocks. In fact, we are mostly using
+ > >  > xnlock_get_irqsave and xnlock_put_irqrestore. Both include fiddling with
+ > >  > rthal_local_irq_save/restore, also heavy-weighted on SMP.
+ > >  > 
+ > >  > So this patch turns the latter two into uninlined functions which
+ > >  > reduces the text size or nucleus and skins significantly on x86-64/SMP
+ > >  > (XENO_OPT_DEBUG_NUCLEUS disabled):
  > > 
- > > Because only one broken xnlock_put could entail a chain reaction of
- > > broken xnlock sections with code on multiple CPU violating critical
- > > sections. With the test, we prevent the chain reaction. But I agree this
- > > check should not be silent.
+ > > I think the human idea of how long an inline function can be is far more
+ > > restrictive than what a processor can take. When looking at assembly
+ > > code, you always find the code long, whereas in reality it is not that
+ > > long for a processor. 
+ > > 
+ > > Besides, IMO, the proper way to uninline xnlock operations is to leave
+ > > the non contended case inline, and to move the spinning out of line.
  > 
- > When there is a bug, then there is bug and we are hosed. That's why we
- > have debug checks for finding such cases in advance. Here I was talking
- > about such a debug check in a hot path on a _production_ system, and
- > that check even had no fault recovery. That appeared pointless to me.
- > 
- > Just to avoid misunderstandings: This version is not different from the
- > old one if XENO_OPT_DEBUG_NUCLEUS is on, the switch which was introduced
- > to cover specifically lock debugging.
- > 
- > Do you have an idea for some cheap fault recovery for broken locking
- > that we should put in instead?
+ > This patch is not just about uninlining xnlock, that's only one half of
+ > the savings. The other one is irq-disabling via i-pipe. The problem with
+ > our case is that we have no simple single check to find out that we are
+ > on a fast ride. Rather, we have to do quite some calculations/lookups
+ > before the first check, and we have to perform multiple checks even in
+ > the best case.
 
-The fault recovery is to leave the xnlock untouched, in order to avoid
-the chain reaction I was talking about. Anyway, I think even production
-code should contain some sanity checks, and this one looks cheap.
+This is my fault, a tradeoff I made, I thought that the atomic_cmpxchg
+could be heavy on SMP systems, so I made a first check to see if we are
+not recursing. But we can do the two operations in one move if we accept
+to have a failing atomic_cmpxchg when recursing.
 
 
 -- 
