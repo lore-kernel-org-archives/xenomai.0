@@ -1,15 +1,14 @@
-Message-ID: <47C063F0.8040503@domain.hid>
-Date: Sat, 23 Feb 2008 19:20:32 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <47C020A9.3050704@domain.hid>	<47C02491.203@domain.hid>
-	<18368.24026.551410.454239@domain.hid>
-In-Reply-To: <18368.24026.551410.454239@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig7CFC9B7DFD0722518A94DC1A"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [RFC][PATCH 4/4] Recursive FIFO ticket xnlock
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18368.26112.776987.660255@domain.hid>
+Date: Sat, 23 Feb 2008 19:29:20 +0100
+In-Reply-To: <47C06052.2020406@domain.hid>
+References: <47C020A9.3050704@domain.hid> <47C02113.7070005@domain.hid>
+	<18368.23256.85461.492726@domain.hid>
+	<47C06052.2020406@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] [PATCH 2/4] Fix and optimize xnlock_put
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,76 +18,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Xenomai-core@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig7CFC9B7DFD0722518A94DC1A
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka wrote:
+ > Gilles Chanteperdrix wrote:
+ > > Jan Kiszka wrote:
+ > >  > As the #ifdef forest was cut down, I once again looked at xnlock_put.
+ > >  > Why do you have this safety check for the owner also in production code?
+ > > 
+ > > Because only one broken xnlock_put could entail a chain reaction of
+ > > broken xnlock sections with code on multiple CPU violating critical
+ > > sections. With the test, we prevent the chain reaction. But I agree this
+ > > check should not be silent.
+ > 
+ > When there is a bug, then there is bug and we are hosed. That's why we
+ > have debug checks for finding such cases in advance. Here I was talking
+ > about such a debug check in a hot path on a _production_ system, and
+ > that check even had no fault recovery. That appeared pointless to me.
+ > 
+ > Just to avoid misunderstandings: This version is not different from the
+ > old one if XENO_OPT_DEBUG_NUCLEUS is on, the switch which was introduced
+ > to cover specifically lock debugging.
+ > 
+ > Do you have an idea for some cheap fault recovery for broken locking
+ > that we should put in instead?
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > The root of all this: When Nick Piggin posted his first suggestion f=
-or
->  > ticket spinlocks on LKML, I immediately liked the idea. For details
->  > check LWN [1], in a nutshell: This algorithm enforces strict FIFO or=
-der
->  > for the admission to contended spinlocks, thus it improves the
->  > determinism on SMP systems with more than 2 CPUs.
->  >=20
->  > Meanwhile, ticket spinlocks are mainline (2.6.25). But that version =
-has
->  > to drawbacks for us: it doesn't support nesting like xnlock does, an=
-d it
->  > is x86-only so far.
->  >=20
->  > So I designed a version for Xenomai which is both nestable and
->  > arch-independent. It is certainly not as optimal as mainline's versi=
-on,
->  > but our code path stresses the locking code differently anyway.
->  >=20
->  > This thing here /seems/ to work, but I'm lacking CPUs at home to tes=
-t.
->  > You can't truly stress ticket locks with only a single dual-core :-/=
-=2E
->  > QEMU runs into a live-lock with -smp 2, this patch applied and two
->  > moderate latency loops, but that might be an artifact of its
->  > single-threaded VCPU scheduling. And kvm currently locks up under SM=
-P
->  > even without any change, but kvm and SMP is a story of its own. Ther=
-e is
->  > hope: 16-way is waiting at work... :)
->=20
-> Xenomai uses a Big Kernel Lock, an approach known to not scale very
-> well. So, if we want to scale correctly on machines with many cpus, we
-> should change our locking strategy first.
-
-Per-cpu IPC objects, per-cpu nklock - I'm all with you! But that's stuff
-for a massive restructuring we could schedule for Xenomai 3.
-
-This thing here surely does not help to scale RT loads across 16 CPUs or
-more. But it already pays off determinism-wise with 3 or 4 CPUs involved
-in RT jobs with moderate contention on nklock. It is nothing for 2-way
-boxes (except for testing) where the exiting algorithm is more efficient
-(and where you don't have the risk of unfair lock admission anyway).
-
-Jan
+The fault recovery is to leave the xnlock untouched, in order to avoid
+the chain reaction I was talking about. Anyway, I think even production
+code should contain some sanity checks, and this one looks cheap.
 
 
---------------enig7CFC9B7DFD0722518A94DC1A
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+-- 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.4-svn0 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFHwGPwniDOoMHTA+kRAl55AJ9/buGbR2LklaO6WuQUrpBaMYwtRACdFECv
-7ni3b83oYOod8SGcgygiHtQ=
-=fv0l
------END PGP SIGNATURE-----
-
---------------enig7CFC9B7DFD0722518A94DC1A--
+					    Gilles Chanteperdrix.
 
