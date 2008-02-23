@@ -1,79 +1,73 @@
-Message-ID: <478FA839.5070409@domain.hid>
-Date: Thu, 17 Jan 2008 20:10:49 +0100
+Message-ID: <47C06052.2020406@domain.hid>
+Date: Sat, 23 Feb 2008 19:05:06 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------060308020405050100060200"
-Subject: [Adeos-main] [PATCH] cow-pinning: bark on bad pages
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+References: <47C020A9.3050704@domain.hid>	<47C02113.7070005@domain.hid>
+	<18368.23256.85461.492726@domain.hid>
+In-Reply-To: <18368.23256.85461.492726@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig2356CB3C1D01006CA5548371"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [PATCH 2/4] Fix and optimize xnlock_put
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai-core@domain.hid
 
-This is a multi-part message in MIME format.
---------------060308020405050100060200
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig2356CB3C1D01006CA5548371
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
 
-Use Linux standard pattern for walking through the page table hierarchy.
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>  > As the #ifdef forest was cut down, I once again looked at xnlock_put=
+=2E
+>  > Why do you have this safety check for the owner also in production c=
+ode?
+>=20
+> Because only one broken xnlock_put could entail a chain reaction of
+> broken xnlock sections with code on multiple CPU violating critical
+> sections. With the test, we prevent the chain reaction. But I agree thi=
+s
+> check should not be silent.
 
-As we know that the warning I once saw with this applied was related to
-another, already fixed bug, my feeling is far better about this variant
-now. :)
+When there is a bug, then there is bug and we are hosed. That's why we
+have debug checks for finding such cases in advance. Here I was talking
+about such a debug check in a hot path on a _production_ system, and
+that check even had no fault recovery. That appeared pointless to me.
+
+Just to avoid misunderstandings: This version is not different from the
+old one if XENO_OPT_DEBUG_NUCLEUS is on, the switch which was introduced
+to cover specifically lock debugging.
+
+Do you have an idea for some cheap fault recovery for broken locking
+that we should put in instead?
 
 Jan
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
 
---------------060308020405050100060200
-Content-Type: text/x-patch;
- name="bark-on-bad-page.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="bark-on-bad-page.patch"
+--------------enig2356CB3C1D01006CA5548371
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
----
- mm/memory.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-Index: linux-2.6.24-rc8-xeno_64/mm/memory.c
-===================================================================
---- linux-2.6.24-rc8-xeno_64.orig/mm/memory.c
-+++ linux-2.6.24-rc8-xeno_64/mm/memory.c
-@@ -2827,7 +2827,7 @@ static inline int ipipe_pin_pmd_range(st
- 	pmd = pmd_offset(pud, addr);
- 	do {
- 		next = pmd_addr_end(addr, end);
--		if (pmd_none(*pmd) || unlikely(pmd_bad(*pmd)))
-+		if (pmd_none_or_clear_bad(pmd))
- 			continue;
- 		if (ipipe_pin_pte_range(mm, pmd, vma, addr, next))
- 			return -ENOMEM;
-@@ -2845,7 +2845,7 @@ static inline int ipipe_pin_pud_range(st
- 	pud = pud_offset(pgd, addr);
- 	do {
- 		next = pud_addr_end(addr, end);
--		if (pud_none(*pud) || unlikely(pud_bad(*pud)))
-+		if (pud_none_or_clear_bad(pud))
- 			continue;
- 		if (ipipe_pin_pmd_range(mm, pud, vma, addr, next))
- 			return -ENOMEM;
-@@ -2879,7 +2879,7 @@ int ipipe_disable_ondemand_mappings(stru
- 		pgd = pgd_offset(mm, addr);
- 		do {
- 			next = pgd_addr_end(addr, end);
--			if (pgd_none(*pgd) || unlikely(pgd_bad(*pgd)))
-+			if (pgd_none_or_clear_bad(pgd))
- 				continue;
- 			if (ipipe_pin_pud_range(mm, pgd, vma, addr, next)) {
- 				result = -ENOMEM;
+iD8DBQFHwGBTniDOoMHTA+kRAjvxAJ4pBwAoKng/CkMhmU1CWwJaXmz9IwCfW7px
+N3QEwI7uoKJPtTTOq5LYyjE=
+=SIq/
+-----END PGP SIGNATURE-----
 
---------------060308020405050100060200--
+--------------enig2356CB3C1D01006CA5548371--
 
