@@ -1,13 +1,13 @@
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18368.23813.430770.37223@domain.hid>
-Date: Sat, 23 Feb 2008 18:51:01 +0100
-In-Reply-To: <47C021F3.20002@domain.hid>
+Message-ID: <18368.24026.551410.454239@domain.hid>
+Date: Sat, 23 Feb 2008 18:54:34 +0100
+In-Reply-To: <47C02491.203@domain.hid>
 References: <47C020A9.3050704@domain.hid>
-	<47C021F3.20002@domain.hid>
+	<47C02491.203@domain.hid>
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] [PATCH 3/4] Uninline heavy locking functions
+Subject: Re: [Xenomai-core] [RFC][PATCH 4/4] Recursive FIFO ticket xnlock
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,26 +21,31 @@ To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Xenomai-core@domain.hid
 
 Jan Kiszka wrote:
- > At least when SMP is enable, already __xnlock_get becomes far too
- > heavy-weighted for being inlined. xnlock_put is fine now, but looking
- > closer at the disassembly still revealed a lot of redundancy related to
- > acquiring and releasing xnlocks. In fact, we are mostly using
- > xnlock_get_irqsave and xnlock_put_irqrestore. Both include fiddling with
- > rthal_local_irq_save/restore, also heavy-weighted on SMP.
+ > The root of all this: When Nick Piggin posted his first suggestion for
+ > ticket spinlocks on LKML, I immediately liked the idea. For details
+ > check LWN [1], in a nutshell: This algorithm enforces strict FIFO order
+ > for the admission to contended spinlocks, thus it improves the
+ > determinism on SMP systems with more than 2 CPUs.
  > 
- > So this patch turns the latter two into uninlined functions which
- > reduces the text size or nucleus and skins significantly on x86-64/SMP
- > (XENO_OPT_DEBUG_NUCLEUS disabled):
+ > Meanwhile, ticket spinlocks are mainline (2.6.25). But that version has
+ > to drawbacks for us: it doesn't support nesting like xnlock does, and it
+ > is x86-only so far.
+ > 
+ > So I designed a version for Xenomai which is both nestable and
+ > arch-independent. It is certainly not as optimal as mainline's version,
+ > but our code path stresses the locking code differently anyway.
+ > 
+ > This thing here /seems/ to work, but I'm lacking CPUs at home to test.
+ > You can't truly stress ticket locks with only a single dual-core :-/.
+ > QEMU runs into a live-lock with -smp 2, this patch applied and two
+ > moderate latency loops, but that might be an artifact of its
+ > single-threaded VCPU scheduling. And kvm currently locks up under SMP
+ > even without any change, but kvm and SMP is a story of its own. There is
+ > hope: 16-way is waiting at work... :)
 
-I think the human idea of how long an inline function can be is far more
-restrictive than what a processor can take. When looking at assembly
-code, you always find the code long, whereas in reality it is not that
-long for a processor. 
-
-Besides, IMO, the proper way to uninline xnlock operations is to leave
-the non contended case inline, and to move the spinning out of line.
-
-And this is something we should not do without measuring its impact.
+Xenomai uses a Big Kernel Lock, an approach known to not scale very
+well. So, if we want to scale correctly on machines with many cpus, we
+should change our locking strategy first.
 
 -- 
 
