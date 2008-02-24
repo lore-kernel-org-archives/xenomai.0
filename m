@@ -1,10 +1,10 @@
-Message-ID: <47C16C8E.8020700@domain.hid>
-Date: Sun, 24 Feb 2008 14:09:34 +0100
-From: Andras Garzo <garzoand@domain.hid>
+Date: Sun, 24 Feb 2008 14:42:39 +0100
+Message-Id: <606588375@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] BF537-Stamp pushbutton interrupts
+From: Joachim Meyer <Jogi95@domain.hid>
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Xenomai and Virtex II Pro (PPC405)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,83 +14,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: berlemont.hauw@domain.hid
+Cc: xenomai@xenomai.org
 
-Hi all,
+>Correct me if am wrong,but for me, a Virtex II Pro contains 1 (maybe 2)
+>hardwired PPC405 core(s) inside the FPGA. But compared to common AMCC or
+>Freescale PPC micro-controllers, you have to instanciante in VHDL some
+>peripherals / controllers or some glue towards them. You have to build yo=
+ur
+>own micro-controller, haven't you =3F
 
-I'm trying to handle the BF537-STAMP pushbutton interrupts with rtdm, but
-my system hangs when calling rtdm_irq_request with the following message:
+I don't think you have to add any VHDL Code for the ppc (2 of them on my V=
+2)
+But I use a Kernel from here
+http://git.xilinx.com/cgi-bin/gitweb.cgi=3Fp=3Dlinux-2.6-xlnx.git;a=3Dsummary
+because there are already some drivers for my Evaluation Board intergrated=
+.
 
-BUG: failure at arch/blackfin/kernel/bfin_gpio.c:504/set_gpio_maska()!
-Kernel panic - not syncing: BUG!
+>Consequently, as soon as you make Linux run on it, I can see no reason wh=
+y you
+>would get trouble with Xenomai. Even if you had to cope with such a
+>predicament, the problem(s) would be bound to be located in ipipe, not in=
 
-I'm using linux kernel 2.6.22 and Xenomai 2.4.1. It could be a kernel bug?
-The following code worked well on 2.6.19 with Xenomai 2.3.2:
+>Xenomai. Keep in mind that RTAI seems to be based on ipipe too.
 
-#include <linux/list.h>
-#include <linux/init.h>
-#include <linux/types.h>
-#include <linux/interrupt.h>
-#include <linux/module.h>
-#include <linux/fs.h>
-#include <linux/kernel.h>
-#include <linux/time.h>
-#include <asm/irq.h>
-#include <rtdm/rtdm.h>
-#include <rtdm/rtdm_driver.h>
+I already got some trouble. But this could also be because I don't know=20
+what exactly to do. Is there a good Step by Step howto you know=3F I don't
+think one of the howtos at the xenomai site explains how to setup xenomai.=
 
-#define PPSMOD_IRQ IRQ_PF4
+What is this ipipe thing=3F
 
 
-struct ppsmod_dev
-{
-    unsigned int irqnum;
-};
+>Which framework =3F
 
-rtdm_irq_t irq_handle;
+An application, basing on this framework (written by someone at my college=
+,=20
+who isn't here anymore), which bases on rtai, was running on linux on a ce=
+leron.
+This application should be ported to the Virtex 2 Pro by me. So I ask myse=
+lf how=20
+hard it would be, to use Xenomai (perhaps with this "rtai skin=3F=3F") instead=
+ of rtai.=20
 
-static int ppsmod_irqhandler(rtdm_irq_t *handle)
-{
-    printk(KERN_WARNING "ppsmod: PPS interrupt triggered.\n");
-    return IRQ_HANDLED;
-}
-
-static int __init ppsmod_init(void)
-{
-    int alloc_size = sizeof(struct ppsmod_dev);
-    struct ppsmod_dev *dev = (struct ppsmod_dev*)kmalloc(alloc_size, 
-GFP_KERNEL);
-    int ret;
-   
-    printk(KERN_WARNING "ppsmod: module loaded.\n");
-   
-    // installing IRQ handler
-    if(rtdm_irq_request(&irq_handle, PPSMOD_IRQ, &ppsmod_irqhandler, 
-RTDM_IRQTYPE_EDGE, NULL, dev))
-    {
-        printk(KERN_WARNING "ppsmod: PF4 irq is not free.\n");
-        return -EBUSY;
-    }
-    printk(KERN_WARNING "ppsmod: 23231\n");
-    set_irq_type(IRQ_PF4, IRQF_TRIGGER_RISING);
-    rtdm_irq_enable(&irq_handle);
-    printk(KERN_WARNING "ppsmod: PF4 interrupt handler installed.\n");
-   
-
-    return 0;
-}
-
-void __exit ppsmod_exit(void)
-{
-    rtdm_irq_free(&irq_handle);
-    printk(KERN_WARNING "ppsmod: module unloaded.\n");
-}
-
-module_init(ppsmod_init);
-module_exit(ppsmod_exit);
-
-Thanks,
-Andras
-
+Thank you for you answer and help.
+Greetings
+Joachim
+=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
+Unbegrenzter Speicherplatz f=FCr Ihr E-Mail Postfach=3F Jetzt aktivieren!
+http://www.digitaledienste.web.de/freemail/club/lp/=3Flp=3D7
 
 
