@@ -1,45 +1,48 @@
-Message-ID: <47946EBA.2020107@domain.hid>
-Date: Mon, 21 Jan 2008 11:06:50 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [PATCH] x86-64: fix build for CONFIG_PREEMPT
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+Message-ID: <18369.59855.128681.821895@domain.hid>
+Date: Sun, 24 Feb 2008 23:03:59 +0100
+In-Reply-To: <47C1A85D.9030409@domain.hid>
+References: <18369.40812.619977.597263@domain.hid>
+	<47C1A85D.9030409@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] Clockevent/clocksource.
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-Someone (me? :-]) broke CONFIG_PREEMPT for 2.6.24 x86-64. Here is the
-required fix.
+Philippe Gerum wrote:
+ > Gilles Chanteperdrix wrote:
+ > > Hi,
+ > > 
+ > > I would like to implement the (I-pipe) AT91 timer management as
+ > > clocksource/clockevent, however, I have a question, how does one choose
+ > > the "shift" value in struct clocksource and struct clock_event_device ?
+ > > 
+ > 
+ > http://ixlabs.cs.pub.ro/category/projects/linux-kernel-library/
 
-Jan
+Looks like the thing is working. A concern though: the hardware timer
+used on AT91 wraps fast, so if we want the tsc to work correctly, the
+timer needs to tick every 20ms (which makes using the clock events
+framework pretty useless, but it is mostly useful for other reasons: it
+allows me to test Xenomai on ARM in the clock events case). I have set
+the clock event max_delta_ns member to these 20ms, however when
+inserting the nucleus module, the max_delta_ns member is set to
+ULONG_MAX, so my question is: will the nucleus take care of ticking
+every 20ms ?
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
 
----
- arch/x86/kernel/ipipe.c |    2 ++
- 1 file changed, 2 insertions(+)
 
-Index: linux-2.6.24-rc8-xeno_64/arch/x86/kernel/ipipe.c
-===================================================================
---- linux-2.6.24-rc8-xeno_64.orig/arch/x86/kernel/ipipe.c
-+++ linux-2.6.24-rc8-xeno_64/arch/x86/kernel/ipipe.c
-@@ -570,6 +570,8 @@ asmlinkage int __ipipe_syscall_root(stru
- #else /* !CONFIG_X86_32 */
-
- #ifdef CONFIG_PREEMPT
-+asmlinkage void preempt_schedule_irq(void);
-+
- /*
-  * Check the stall bit of the root domain to make sure the existing
-  * preemption opportunity upon in-kernel resumption could be
+					    Gilles Chanteperdrix.
 
