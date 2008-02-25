@@ -1,17 +1,15 @@
-Message-ID: <2ff1a98a0802200933n4a637c80l4647f6a11a45a57a@domain.hid>
-Date: Wed, 20 Feb 2008 18:33:45 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <8616.62.39.72.60.1203528542.squirrel@domain.hid>
+Message-ID: <47C278F3.1060309@domain.hid>
+Date: Mon, 25 Feb 2008 09:14:43 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <15295.81.252.86.91.1203350819.squirrel@domain.hid>
-	<2ff1a98a0802180813t5e2dcd98sc0af6db3f8f3439a@domain.hid>
-	<3453.62.39.72.60.1203416373.squirrel@domain.hid>
-	<18363.24363.926803.782361@domain.hid>
-	<8616.62.39.72.60.1203528542.squirrel@domain.hid>
-Subject: Re: [Xenomai-help] Problem of thread creation with Xenomai Posix 2
+References: <47BED8A502000001001928B7@domain.hid>
+In-Reply-To: <47BED8A502000001001928B7@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig6D8CBB7896ACC8514FF8C202"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Non RT PCI device driver vs interrupts (go with
+ rtdm...)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,35 +19,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabien MAHOT <fabien.mahot@domain.hid>
+To: Hubert Talbot <Hubert.Talbot@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Wed, Feb 20, 2008 at 6:29 PM, Fabien MAHOT
-<fabien.mahot@domain.hid> wrote:
-> > I can reproduce the issue you have if I disable the "priority coupling"
->  > option in kernel configuration menu. With this option enabled, the
->  > scheduler works as you expect, even without the latest posix skin fixes.
->  >
->  > For more information on priority coupling, read the help in kernel
->  > configuration menu.
->  >
->  > --
->  >
->  >
->  >                                           Gilles Chanteperdrix.
->  >
->
->  Thanks a lot, my program works correctly now. There is just the preemption
->  problem during pthread_create. Nonce, I use mutex but I can't add it for
->  all the parts of my application.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig6D8CBB7896ACC8514FF8C202
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-The preemption problem during pthread_create has been fixed in Xenomai
-trunk and v2.4.x branch, so the fix will be included in the next
-release of Xenomai. Note however that there is still a short window
-during which the newly created thread is not yet a real-time thread,
-and thus the priority coupling does not enter in action. But for this
-short window, there is nothing we can do.
+Hubert Talbot wrote:
+> Finally, I got the precision I expected. The problem was on the way the=
+ results were reported.
+>=20
+> However, more the frequency of the pulse generator is raised, less the =
+results are good.
+>=20
+> I think it is time to go with rtdm...
 
--- 
- Gilles Chanteperdrix
+RTDM is no magic bullet /wrt latency or jitter. You should try to=20
+understand what you are measuring first before blindly replacing=20
+something. I'm surely not saying porting to RTDM is a bad idea, but I=20
+may not help you with what you are actually looking for.
+
+What do you mean with "less good"? What frequencies are we talking=20
+about? What is the critical code path (already considered to use some=20
+tracing tool for analysis?)?
+
+Jan
+
+
+--------------enig6D8CBB7896ACC8514FF8C202
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFHwnjzniDOoMHTA+kRAlz1AJ0ZXyjEoPWdSTYmyFEoBmT3UxDhXQCdEynj
+TNqIcN2wsAmT9VHRfmVo3kc=
+=Xm7P
+-----END PGP SIGNATURE-----
+
+--------------enig6D8CBB7896ACC8514FF8C202--
 
