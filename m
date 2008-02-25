@@ -1,10 +1,12 @@
-Date: Mon, 25 Feb 2008 20:09:04 +0100
-Message-Id: <608273840@domain.hid>
+Message-ID: <47C32276.8060509@domain.hid>
+Date: Mon, 25 Feb 2008 21:17:58 +0100
+From: Andras Garzo <garzoand@domain.hid>
 MIME-Version: 1.0
-From: Joachim Meyer <Jogi95@domain.hid>
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Xenomai and Virtex II Pro (PPC405)
+References: <47C16C8E.8020700@domain.hid> <47C1AA67.4030900@domain.hid>
+In-Reply-To: <47C1AA67.4030900@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] BF537-Stamp pushbutton interrupts
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,26 +16,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Klaas Gadeyne <klaas.gadeyne@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-> <http://users.telenet.be/steven.kauffmann/installation/index.htm>
+Thanks for help, now it's working...
+
+Andras
+
+Wolfgang Grandegger wrote:
+> Andras Garzo wrote:
+>   
+>> Hi all,
+>>
+>> I'm trying to handle the BF537-STAMP pushbutton interrupts with rtdm, but
+>> my system hangs when calling rtdm_irq_request with the following message:
+>>
+>> BUG: failure at arch/blackfin/kernel/bfin_gpio.c:504/set_gpio_maska()!
+>> Kernel panic - not syncing: BUG!
+>>
+>> I'm using linux kernel 2.6.22 and Xenomai 2.4.1. It could be a kernel bug?
+>> The following code worked well on 2.6.19 with Xenomai 2.3.2:
+>>
+>> #include <linux/list.h>
+>> #include <linux/init.h>
+>> #include <linux/types.h>
+>> #include <linux/interrupt.h>
+>> #include <linux/module.h>
+>> #include <linux/fs.h>
+>> #include <linux/kernel.h>
+>> #include <linux/time.h>
+>> #include <asm/irq.h>
+>> #include <rtdm/rtdm.h>
+>> #include <rtdm/rtdm_driver.h>
+>>
+>> #define PPSMOD_IRQ IRQ_PF4
+>>
+>>
+>> struct ppsmod_dev
+>> {
+>>     unsigned int irqnum;
+>> };
+>>
+>> rtdm_irq_t irq_handle;
+>>
+>> static int ppsmod_irqhandler(rtdm_irq_t *handle)
+>> {
+>>     printk(KERN_WARNING "ppsmod: PPS interrupt triggered.\n");
+>>     return IRQ_HANDLED;
+>> }
+>>
+>> static int __init ppsmod_init(void)
+>> {
+>>     int alloc_size = sizeof(struct ppsmod_dev);
+>>     struct ppsmod_dev *dev = (struct ppsmod_dev*)kmalloc(alloc_size, 
+>> GFP_KERNEL);
+>>     int ret;
+>>    
+>>     printk(KERN_WARNING "ppsmod: module loaded.\n");
+>>    
+>>     // installing IRQ handler
+>>     if(rtdm_irq_request(&irq_handle, PPSMOD_IRQ, &ppsmod_irqhandler, 
+>> RTDM_IRQTYPE_EDGE, NULL, dev))
+>>     {
+>>         printk(KERN_WARNING "ppsmod: PF4 irq is not free.\n");
+>>         return -EBUSY;
+>>     }
+>>     printk(KERN_WARNING "ppsmod: 23231\n");
+>>     set_irq_type(IRQ_PF4, IRQF_TRIGGER_RISING);
+>>     rtdm_irq_enable(&irq_handle);
+>>     
 >
-> Note that this procedure supposes you have access to the Xilinx EDK...
->=20
-> regards,
->=20
-> Klaas
-
-
-Hi
-The EDK thing is no Problem, but I'ld prefer a Kernel 2.6.x. You have expi=
-erience with that too=3F
-Anyway, beside that your howto is perfect and will help me definetly
-Greez
-Joachim
-=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
-Bis 50 MB Dateianh=E4nge=3F Kein Problem!
-http://www.digitaledienste.web.de/freemail/club/lp/=3Flp=3D7
+> Be aware, that starting with Xenomai v2.4, the interrupt is
+> automatically enabled by rtdm_irq_request().
+>
+> Wolfgang.
+>   
 
 
