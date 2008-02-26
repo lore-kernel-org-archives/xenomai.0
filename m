@@ -1,83 +1,52 @@
-Content-class: urn:content-classes:message
+Message-ID: <47C3E312.4090003@domain.hid>
+Date: Tue, 26 Feb 2008 10:59:46 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 11 Feb 2008 10:43:19 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D376AED@slcmail.slc.mew.int>
-In-Reply-To: <2ff1a98a0802110810r297a639ej5a061b823a4d551d@domain.hid>
-References: <51CAD0CE1504444DBE77CBBE51A0135D376AD7@domain.hid>
-	<47B053A2.9010503@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D376ADB@slcmail.slc.mew.int>
-	<2ff1a98a0802110810r297a639ej5a061b823a4d551d@domain.hid>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: Re: [Xenomai-help] overhead
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <200802181213.29872.leo@domain.hid>	<47C2A484.4050006@domain.hid>	<200802251317.23736.leo@domain.hid>	<47C2B9E5.9090900@domain.hid>	<18371.16698.219209.759123@domain.hid>	<47C3CA72.1090100@domain.hid>
+	<47C3D7A9.6090300@domain.hid> <47C3DE6A.8000809@domain.hid>
+In-Reply-To: <47C3DE6A.8000809@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Debian package
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Roland Stigge <stigge@domain.hid>
+Cc: Paul Corner <paul_c@domain.hid>, xenomai@xenomai.org, Leopold Palomo-Avellaneda <leo@domain.hid>
 
-Well one of my 8khz tasks in kernel space seems to require T_FPU despite
-me never using it. I've been able to reproduce my bug within a minute
-several times without that flag, but if the flag is set, it can run for
-an hour without a single value being corrupted into NaN.=20
+Roland Stigge wrote:
+> Hi,
+> 
+> I hope you don't mind that we move this to the xenomai-core mailing list
+> with CC, since I fear the same questions will be raised again there at
+> some point.
 
-I also am getting a lot of page faults with ipipe_handle_irq() in the
-back trace. I'm also noticing if I have T_WARNSW on for a primary mode
-only thread, it will receive the signal if I create a Linux-only thread
-with pthread_create() and that's just weird.
+Valid point!
 
-I don't think the problem is IO time. It's definitely context switching
-and things. IRQ0 handler uses up to 20% of the cpu, and that just seems
-wrong. It gets worse if I try the other scalability options (tree or
-hash.) It uses a lot of CPU time even when the tasks are delayed on
-conditional variables. I don't have periodic timing on, either.
+> 
+> Jan Kiszka wrote:
+>> Now the next question: You are providing i386 packages so far. Do you
+>> have plans for x86-64 as well?
+> 
+> The respective debian/control line currently is:
+> 
+> Architecture: amd64 arm i386 ia64 powerpc
+> 
+> At http://packages.qa.debian.org/x/xenomai.html , you can also see the
+> current status of the different architectures' build daemons (i.e., a
+> link to the logs).
 
-I never used to notice such high CPU usage with older versions of
-Xenomai. I even had an application written that ran all these threads
-and didn't have a problem with it.=20
+Ah, I see... that powerpc already failed. :->
 
-I'll hopefully find some time soon to write isolated tests and try to
-figure out what's going on. The page fault problems (there are more than
-the one I posted earlier) are really getting annoying, too.
+Jan
 
-Sadly my contractor is on the verge of scrapping Xenomai for their
-project because of these problems. :( I really believe in it, but I'm
-basically working two jobs and don't have all the time I wish I did to
-help test.
-
-And Paul, it is only on x86.=20
-
-Steven
-
-> -----Original Message-----
-> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
-> Sent: Monday, February 11, 2008 9:10 AM
-> To: Steven Seeger
-> Cc: Jan Kiszka; xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] overhead
->=20
-> On Mon, Feb 11, 2008 at 4:20 PM, Steven Seeger
-> <sseeger@domain.hid> wrote:
-> > The overhead was measured by only comparing cpu usage between tasks
-from
-> >  the statistics collection stuff. There are some userland tasks
-running
-> >  at 8khz, so apparently this is a problem for Xenomai on this board.
-I
-> >  had no problem at all with these tasks in kernel space under rtai.
->=20
-> user-space adds some overhead compared to kernel-space. Enabling the
-> T_FPU bis for a task which does not need also adds the useless
-> overhead of saving/restoring FPU upon context switch.
->=20
-> --
->                                                Gilles Chanteperdrix
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
