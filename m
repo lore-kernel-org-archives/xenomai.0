@@ -1,51 +1,32 @@
+Message-ID: <47C3E1C5.6070304@domain.hid>
+Date: Tue, 26 Feb 2008 10:54:13 +0100
+From: Roland Stigge <stigge@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+References: <200802181213.29872.leo@domain.hid> <47C3CA72.1090100@domain.hid>
+	<47C3D7A9.6090300@domain.hid>
+	<200802261028.30101.leo@domain.hid>
+In-Reply-To: <200802261028.30101.leo@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-ID: <18342.6175.696597.309657@domain.hid>
-Date: Sun, 3 Feb 2008 20:38:07 +0100
-In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D3768B0@domain.hid>
-References: <51CAD0CE1504444DBE77CBBE51A0135D3768B0@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] FW:  periodic task question
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Debian package
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <sseeger@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Leopold Palomo-Avellaneda <leo@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, Paul Corner <paul_c@domain.hid>, xenomai@xenomai.org
 
-Steven Seeger wrote:
- > 
- > 
- > > -----Original Message-----
- > > From: Steven Seeger
- > > Sent: Sunday, February 03, 2008 12:01 PM
- > > To: 'Gilles Chanteperdrix'
- > > Subject: RE: [Xenomai-help] periodic task question
- > > 
- > > I guess I don't see the difference here. I lock the mutex first, and
- > then
- > > wait on the conditional. The only time that conditional is ever
- > signaled
- > > is after something else sets playing to non-zero. (This code actually
- > > clears playing after locking that mutex, however I didn't put that in
- > > here.)
+Leopold Palomo-Avellaneda wrote:
+> Also, xenomai could run in a IA64 ..
 
-It was a general advice, not a proposed fix for the bug you observe.
-By locking the mutex when reading or writing the "playing" variable, you
-ensure that nobody else will be changing the "playing" variable while you
-look at it and hence you will not miss any wake up. By running
-rt_cond_wait in a while loop, you cause your thread to go to sleep in
-case of spurious wake up.
+Anyone tested it? I can just declare it in the Debian package. If it's
+untested, maybe I need to dedicate one of the IA64 machines here to
+Xenomai... :-)
 
-
--- 
-
-
-					    Gilles Chanteperdrix.
+Roland
 
