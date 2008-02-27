@@ -1,57 +1,163 @@
 Content-class: urn:content-classes:message
 MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C87948.07760756"
+Date: Wed, 27 Feb 2008 14:52:44 +0100
+Message-ID: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E08F317@domain.hid>
+From: "Markus Osterried" <markus.osterried@domain.hid>
+Subject: [Xenomai-core] Error when exiting pSOS-task with return
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Xenomai-core@domain.hid
+
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01C87948.07760756
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 7 Feb 2008 08:21:45 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D3769E7@domain.hid>
-In-Reply-To: <2ff1a98a0802070720m35614f33p352bab27380fb93e@domain.hid>
-References: <51CAD0CE1504444DBE77CBBE51A0135D3769D5@domain.hid>
-	<2ff1a98a0802070043n7c78e397i9345f3de1229f6bf@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D3769DF@slcmail.slc.mew.int>
-	<DD39B5C3F4963040ADC9768BE7E430CB02AF4D89@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D3769E1@domain.hid>
-	<DD39B5C3F4963040ADC9768BE7E430CB02AF4DB5@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D3769E5@domain.hid>
-	<2ff1a98a0802070720m35614f33p352bab27380fb93e@domain.hid>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: Re: [Xenomai-help] SIGTRAP
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
 
-I thought search-prefix did this, and that's what I have in that
-command.
+Hello,
+=20
+with Xenomai 2.4 on Linux 2.6.18 on PowerPC I have seen the following
+trace:
+=20
+Feb 26 19:37:25 (none) user.err kernel: BUG: sleeping function called
+from invalid context at kernel/rwsem.c:20
+Feb 26 19:37:25 (none) user.warn kernel: in_atomic():0,
+irqs_disabled():1
+Feb 26 19:37:25 (none) user.warn kernel: Call Trace:
+Feb 26 19:37:25 (none) user.warn kernel: [C19BFE50] [C000C114]
+show_stack+0x58/0x188 (unreliable)
+Feb 26 19:37:25 (none) user.warn kernel: [C19BFEA0] [C00128B0]
+__might_sleep+0xdc/0xf0
+Feb 26 19:37:25 (none) user.warn kernel: [C19BFEC0] [C0032304]
+down_read+0x24/0x58
+Feb 26 19:37:25 (none) user.warn kernel: [C19BFED0] [C00192C8]
+exit_mm+0x34/0xec
+Feb 26 19:37:25 (none) user.warn kernel: [C19BFEF0] [C001B000]
+do_exit+0x21c/0x98c
+Feb 26 19:37:25 (none) user.warn kernel: [C19BFF30] [C001B810]
+complete_and_exit+0x0/0x28
+Feb 26 19:37:25 (none) user.warn kernel: [C19BFF40] [C00041A0]
+ret_from_syscall+0x0/0x38
+=20
+=20
+This happens (sometimes) when a pSOS-task exits by returning from its
+main function.
+I have changed the return statement into t_delete(0) and there was no
+error anymore, so this isn't a major issue.
+=20
+But anyway I would like to know whether this is a xenomai bug or it
+isn't allowed to exit a pSOS-task by returning from main function.
+I have seen at end of psos_task_trampoline that there is a
+pthread_exit() instead of a t_delete().
+=20
+Thanks
+Markus
+=20
 
-Steven
+------_=_NextPart_001_01C87948.07760756
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dus-ascii">
+<META content=3D"MSHTML 6.00.2800.1595" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D968462213-27022008>Hello,</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D968462213-27022008></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D968462213-27022008>with =
+Xenomai 2.4 on=20
+Linux 2.6.18 on PowerPC I have seen the following =
+trace:</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN =
+class=3D968462213-27022008></SPAN></FONT><FONT=20
+face=3DArial size=3D2><SPAN =
+class=3D968462213-27022008></SPAN></FONT><FONT face=3DArial=20
+size=3D2><SPAN class=3D968462213-27022008></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
+class=3D968462213-27022008>Feb</SPAN>&nbsp;<SPAN=20
+class=3D968462213-27022008>2</SPAN>6 19:37:25 (none) user.err kernel: =
+BUG:=20
+sleeping function called from invalid context at =
+kernel/rwsem.c:20<BR><SPAN=20
+class=3D968462213-27022008>Feb</SPAN>&nbsp;<SPAN=20
+class=3D968462213-27022008>2</SPAN>6 19:37:25 (none) user.warn kernel:=20
+in_atomic():0, irqs_disabled():1<BR><SPAN=20
+class=3D968462213-27022008>Feb</SPAN>&nbsp;<SPAN=20
+class=3D968462213-27022008>2</SPAN>6 19:37:25 (none) user.warn kernel: =
+Call=20
+Trace:<BR><SPAN class=3D968462213-27022008>Feb</SPAN>&nbsp;<SPAN=20
+class=3D968462213-27022008>2</SPAN>6 19:37:25 (none) user.warn kernel: =
+[C19BFE50]=20
+[C000C114] show_stack+0x58/0x188 (unreliable)<BR><SPAN=20
+class=3D968462213-27022008>Feb</SPAN>&nbsp;<SPAN=20
+class=3D968462213-27022008>2</SPAN>6 19:37:25 (none) user.warn kernel: =
+[C19BFEA0]=20
+[C00128B0] __might_sleep+0xdc/0xf0<BR><SPAN=20
+class=3D968462213-27022008>Feb</SPAN>&nbsp;<SPAN=20
+class=3D968462213-27022008>2</SPAN>6 19:37:25 (none) user.warn kernel: =
+[C19BFEC0]=20
+[C0032304] down_read+0x24/0x58<BR><SPAN=20
+class=3D968462213-27022008>Feb</SPAN>&nbsp;<SPAN=20
+class=3D968462213-27022008>2</SPAN>6 19:37:25 (none) user.warn kernel: =
+[C19BFED0]=20
+[C00192C8] exit_mm+0x34/0xec<BR><SPAN=20
+class=3D968462213-27022008>Feb</SPAN>&nbsp;<SPAN=20
+class=3D968462213-27022008>2</SPAN>6 19:37:25 (none) user.warn kernel: =
+[C19BFEF0]=20
+[C001B000] do_exit+0x21c/0x98c<BR><SPAN=20
+class=3D968462213-27022008>Feb</SPAN>&nbsp;<SPAN=20
+class=3D968462213-27022008>2</SPAN>6 19:37:25 (none) user.warn kernel: =
+[C19BFF30]=20
+[C001B810] complete_and_exit+0x0/0x28<BR><SPAN=20
+class=3D968462213-27022008>Feb</SPAN>&nbsp;<SPAN=20
+class=3D968462213-27022008>2</SPAN>6 19:37:25 (none) user.warn kernel: =
+[C19BFF40]=20
+[C00041A0] ret_from_syscall+0x0/0x38</FONT></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><SPAN class=3D968462213-27022008><FONT face=3DArial size=3D2>This =
+happens=20
+(sometimes) when a pSOS-task exits by returning from its main=20
+function.</FONT></SPAN></DIV>
+<DIV><SPAN class=3D968462213-27022008><FONT face=3DArial size=3D2>I have =
+changed the=20
+return statement into t_delete(0) and there was no error anymore, so =
+this isn't=20
+a major issue.</FONT></SPAN></DIV>
+<DIV><SPAN class=3D968462213-27022008><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D968462213-27022008><FONT face=3DArial size=3D2>But =
+anyway I would=20
+like to know whether this is a xenomai bug or it isn't allowed to exit a =
 
-> -----Original Message-----
-> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
-> Sent: Thursday, February 07, 2008 8:21 AM
-> To: Steven Seeger
-> Cc: Daniel Schnell; xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] SIGTRAP
->=20
-> On Feb 7, 2008 4:18 PM, Steven Seeger
-> <sseeger@domain.hid> wrote:
-> > Thanks for the advice. I think I have this stuff set up correctly,
-but I
-> > am not really sure what solib-absolute-prefix does so mine is set to
-> > /dev/null. :)
->=20
-> solib-absolute-prefix should point to where the unstripped libraries,
-> matching those running on the target, are available. This allows gdb
-> to debug the libraries.
->=20
-> --
->                                                Gilles Chanteperdrix
+pSOS-task by returning from main function.</FONT></SPAN></DIV>
+<DIV><SPAN class=3D968462213-27022008><FONT face=3DArial size=3D2>I have =
+seen&nbsp;at=20
+end of&nbsp;psos_task_trampoline that there is a pthread_exit() instead =
+of a=20
+t_delete().</FONT></SPAN></DIV>
+<DIV><SPAN class=3D968462213-27022008><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D968462213-27022008><FONT face=3DArial=20
+size=3D2>Thanks</FONT></SPAN></DIV>
+<DIV><SPAN class=3D968462213-27022008><FONT face=3DArial=20
+size=3D2>Markus</FONT></SPAN></DIV>
+<DIV><SPAN class=3D968462213-27022008></SPAN>&nbsp;</DIV></BODY></HTML>
+
+------_=_NextPart_001_01C87948.07760756--
 
