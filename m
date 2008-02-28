@@ -1,12 +1,11 @@
-Message-ID: <47C6B43B.6080601@domain.hid>
-Date: Thu, 28 Feb 2008 14:16:43 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <001501c87a09$08a9f6f0$2401a8c0@domain.hid>
-In-Reply-To: <001501c87a09$08a9f6f0$2401a8c0@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] FW: xeno_can: socket buffer overflow for fd=0
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C87A19.B67FE31D"
+Date: Thu, 28 Feb 2008 07:53:43 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D3D0829@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
+Subject: [Xenomai-help] problems solved
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,67 +15,171 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Urs.Eichholzer" <urs.eichholzer@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hi Urs,
 
-Urs.Eichholzer wrote:
-> Dear Xenomai Help
-> 
->  
-> 
-> The write to CAN is fast and have no problem... this can  be performed
-> fast and even in microsecond  resolution
-> 
-> The read to CAN is working... but not fast enough as we expect it should
-> be reading the network... The Xenomai CAN  can  read the network
-> transfers in seconds and  about 40 milliseconds but once the read is
-> performed on a much faster rate... the Xenomai CAN is having errors
-> already... The message is:
-> xeno_can: socket buffer overflow for fd=0
-> 
-> Something like this would be printed on screen and the system scrolls
-> with this message again and again.
-> 
-> Here are some of the remedies I tried but still this problem occurs:
-> 
-> 1.) Increase the buffer size for receive in the menuconfig from 1024 to
-> 4096, same problem.
-> 
-> 2.) Link the CAN drivers statically to the OS, same problem.
-> 
-> 3.) Link the CAN drivers with dynamic loading of driver, same problem.
-> 
-> 4.) Create my own test program, same problem
-> 
-> 5.) Create my own xenomai task based on how a task should be made, same
-> problem...
-> 
-> 
-> I have investigated this and it is coming from the rtdm file of 
-> Xenomai... when it detects  a low buffer resource, it will  trigger this
-> error. But allocating more buffer space to 4096 will not solve this
-> problem. On my investigation, the problem is buried deep in the Xenomai
-> itself for the CAN driver and RTCAN socket. The file which is
-> responsible for this is involved in the Xenomai RTCAN driver support.
+This is a multi-part message in MIME format.
 
-If a RT application does not read the CAN messages from the RX socket
-buffer fast enough, such socket overflows can happen. Check if your
-application switches (accidentally) to secondary mode.
+------_=_NextPart_001_01C87A19.B67FE31D
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-Do you use sockets just for sending messages? Then it helps to disable
-the reception of messages by using sendto
+So, my CPU usage problems with tasks were due to my heavy use of mutex
+recursion. I got it for free in the kernel, so it made sense to do the
+same in userspace. But, syscall overhead was a big problem so I wrapped
+them with a simple class that seems to have solved the issue.
 
-http://www.rts.uni-hannover.de/xenomai/lxr/source/src/utils/can/rtcansend.c#085
+=20
 
-or disable the receive filter:
+The reason I have a lot of mutex recursion is that there are many layers
+of functions that talk to certain pieces of hardware, and you may call
+them at the top or at the bottom. So, the mutex must be protected at
+every step.
 
-http://www.rts.uni-hannover.de/xenomai/lxr/source/src/utils/can/rtcansend.c#252
+=20
 
-It also helps to disable the CAN debugging because the printk's provoke
-further buffer overflows. You can also see the socket buffer overflows
-in /proc/rtcan/sockets.
+This change reduced a 2ms periodic task from 25% cpu usage down to about
+16.7%. A 22% usage 500 us periodic task was reduced to 15%. These two
+tasks work together to move and control a stepper motor and read all of
+its sensors and inputs. The same functionality in the old system with
+RTAI used about 25% of the CPU as measured by RTAI's stats stuff.
+(Perhaps this wasn't very accurate.) So I'm very pleased with the
+results, and feel there can probably be further optimization. (Obviously
+we expect some overhead in userspace.) This usage is down from over 50%
+CPU usage between the two tasks.
 
-Wolfgang.
+=20
+
+Steven
+
+=20
+
+=20
+
+
+------_=_NextPart_001_01C87A19.B67FE31D
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns=3D"http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dus-ascii">
+<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"MS Mincho";
+	panose-1:2 2 6 9 4 2 5 8 3 4;}
+@font-face
+	{font-family:"\@MS Mincho";
+	panose-1:2 2 6 9 4 2 5 8 3 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:Arial;
+	color:windowtext;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.25in 1.0in 1.25in;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+
+</head>
+
+<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
+
+<div class=3DSection1>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>So, my CPU usage problems with tasks were due to my =
+heavy
+use of mutex recursion. I got it for free in the kernel, so it made =
+sense to do
+the same in userspace. But, syscall overhead was a big problem so I =
+wrapped
+them with a simple class that seems to have solved the =
+issue.<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>The reason I have a lot of mutex recursion is that =
+there are
+many layers of functions that talk to certain pieces of hardware, and =
+you may
+call them at the top or at the bottom. So, the mutex must be protected =
+at every
+step.<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>This change reduced a 2ms periodic task from 25% cpu =
+usage
+down to about 16.7%. A 22% usage 500 us periodic task was reduced to =
+15%. These
+two tasks work together to move and control a stepper motor and read all =
+of its
+sensors and inputs. The same functionality in the old system with RTAI =
+used
+about 25% of the CPU as measured by RTAI&#8217;s stats stuff. (Perhaps =
+this
+wasn&#8217;t very accurate.) So I&#8217;m very pleased with the results, =
+and
+feel there can probably be further optimization. (Obviously we expect =
+some
+overhead in userspace.) This usage is down from over 50% CPU usage =
+between the
+two tasks.<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Steven<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>&nbsp;<o:p></o:p></span></font></p>
+
+</div>
+
+</body>
+
+</html>
+
+------_=_NextPart_001_01C87A19.B67FE31D--
 
