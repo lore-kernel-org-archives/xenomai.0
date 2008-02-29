@@ -1,59 +1,46 @@
-Content-class: urn:content-classes:message
+Message-ID: <2ff1a98a0802290706s5af5aba9l2e6a451503bdd8cd@domain.hid>
+Date: Fri, 29 Feb 2008 16:06:52 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <47C80D5C.2020409@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 11 Feb 2008 13:18:48 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D376B00@domain.hid>
-In-Reply-To: <47B0AC03.9050403@domain.hid>
-References: <51CAD0CE1504444DBE77CBBE51A0135D376AD7@domain.hid>	<47B053A2.9010503@domain.hid>	<51CAD0CE1504444DBE77CBBE51A0135D376ADB@slcmail.slc.mew.int>	<2ff1a98a0802110810r297a639ej5a061b823a4d551d@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D376AED@slcmail.slc.mew.int>
-	<47B09B10.5090200@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D376AF6@domain.hid>
-	<47B0AC03.9050403@domain.hid>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: Re: [Xenomai-help] overhead
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <47C71CF6.1040701@domain.hid>
+	<2ff1a98a0802290127t33b4bfe6x29fc6f3391841ad5@domain.hid>
+	<47C80D5C.2020409@domain.hid>
+Subject: Re: [Xenomai-core] Script marking
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: philippe.gerum@domain.hid
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Roland Stigge <stigge@domain.hid>
 Cc: xenomai@xenomai.org
 
-> At least the topmost four/five lines would help. You will find
-> __ipipe_handle_irq within the call frame each time an interrupt is
-> taken, so you need to focus on which handler gets actually called. In
-> the case above, it seems a serial interrupt is involved, and what its
-> handler does might be the root of the issue.
+On Fri, Feb 29, 2008 at 2:49 PM, Roland Stigge <stigge@domain.hid> wrote:
+> Gilles Chanteperdrix wrote:
+>  >>  Further, I updated the package in Debian with the suggested changes.
+>  >
+>  > We trust you, please send patches.
+>
+>  The attached patch (and the latest version of it) can also always be
+>  found at the Debian developer's package page for Xenomai at
+>  http://packages.qa.debian.org/x/xenomai.html .
+>
+>  It applies to the latest Xenomai release (currently 2.4.2), and assumes
+>  that there is _no_ debian/ directory in the original source tree (as
+>  discussed beforehand - Debian maintains the complete debian/* hierarchy
+>  completely - for further questions just ask).
 
-I'll run these tests tonight for you and post the results.
+I see that xenomai packages depends on glibc version >= 2.7.1. Is this
+dependency really needed ? Without this dependency it would be
+possible to compile the Xenomai package for older versions of Debian.
 
-> Creating threads should be kept out of real-time duties, it's just
-> unsafe in terms of latency (Btw, I hope you do reduce the default
-glibc
-> stacksize from 8Mb to something more sensible in a real-time
-application
-> context, given that mlockall is in effect).
-
-I understand this, and this is something I always follow. However, this
-is a linux only pthread not being created in a realtime context. The
-only reason the thread is shadowed is so it can call a few things
-occasionally to lock an RT_MUTEX. None of these mutexes are held at this
-time, and the thread might as well be in secondary mode. (and probably
-is.)
-
-> ipipe_handle_irq will be present in every call frame on behalf of an
-> external or virtual interrupt context, therefore if you get a fault in
-> the interrupt handler like you reported lately, the time spent in the
-> fault recovery code will be charged to the interrupt context.
-
-Thanks for the explanation. I'll be sure to gather some of these
-tonight. I sent you the only one I have privately with the kernel.
-
-Steven
+-- 
+                                               Gilles Chanteperdrix
 
