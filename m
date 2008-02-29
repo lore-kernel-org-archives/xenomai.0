@@ -1,48 +1,176 @@
-Message-Id: <47B0371E0200000100192400@domain.hid>
-Date: Mon, 11 Feb 2008 11:53:02 -0500
-From: "Hubert Talbot" <Hubert.Talbot@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Subject: [Xenomai-help] T_RRB
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Message-ID: <47C80D5C.2020409@domain.hid>
+Date: Fri, 29 Feb 2008 14:49:16 +0100
+From: Roland Stigge <stigge@domain.hid>
+MIME-Version: 1.0
+References: <47C71CF6.1040701@domain.hid>
+	<2ff1a98a0802290127t33b4bfe6x29fc6f3391841ad5@domain.hid>
+In-Reply-To: <2ff1a98a0802290127t33b4bfe6x29fc6f3391841ad5@domain.hid>
+Content-Type: multipart/mixed; boundary="------------070502070405080203090409"
+Subject: Re: [Xenomai-core] Script marking
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi,
+This is a multi-part message in MIME format.
+--------------070502070405080203090409
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-I'm new to Xenomai.
+Gilles Chanteperdrix wrote:
+>>  Further, I updated the package in Debian with the suggested changes.
+> 
+> We trust you, please send patches.
 
-I am studying xenomai and I would like to kwow how to apply round-robin.
+The attached patch (and the latest version of it) can also always be
+found at the Debian developer's package page for Xenomai at
+http://packages.qa.debian.org/x/xenomai.html .
 
-Specifically, what to do with (do I have to?):
+It applies to the latest Xenomai release (currently 2.4.2), and assumes
+that there is _no_ debian/ directory in the original source tree (as
+discussed beforehand - Debian maintains the complete debian/* hierarchy
+completely - for further questions just ask).
 
-	- the kernel configuration
+bye,
+  Roland
 
-		Real-time sub-system/Timing/Enable periodic timing ?
+--------------070502070405080203090409
+Content-Type: text/html;
+ name="xenomai_2.4.2-2.diff.gz"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline;
+ filename="xenomai_2.4.2-2.diff.gz"
 
-	- the timer configuration=20
-
-		rt_timer_set_mode(rt_timer_ns2ticks(???))  ?
-
-	- the task configuration
-
-		rt_task_set_periodic(???)  ?
-		rt_task_set_mode(0, T_RRB, 0)    ?
-		rt_task_slice(???)  ?
-
-Thanks in advanced.
-
-Hubert
-
-
-
+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
+AZwdY9SlWQAA
+--------------070502070405080203090409--
 
