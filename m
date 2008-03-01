@@ -1,190 +1,300 @@
-Message-ID: <7289437c0802210658w29e21207q74f1cfdf36d6e17c@domain.hid>
-Date: Thu, 21 Feb 2008 15:58:11 +0100
-From: "Perrine Martignoni" <perrmart@domain.hid>
+Message-ID: <47C92740.9000203@domain.hid>
+Date: Sat, 01 Mar 2008 10:52:00 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_3824_13521057.1203605891375"
-Subject: [Xenomai-help] Kernel access of bad area with rtdm_event_wait()
-	(MPC8347)
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8C196EF84BE7461CCC3AF152"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATCH] fix initial rpi_push
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Xenomai-core@domain.hid
 
-------=_Part_3824_13521057.1203605891375
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8C196EF84BE7461CCC3AF152
+Content-Type: multipart/mixed;
+ boundary="------------010900050903010404040003"
 
-Hello,
+This is a multi-part message in MIME format.
+--------------010900050903010404040003
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-I work on a MPC8347 processor and I found out a problem with
-rtdm_event_wait(). I reproduce the problem with a simple code :
+[My favorite again... :->]
 
-*driver.c* :
-#include <rtdm/rtdm_driver.h>
+The initial rpi_push in xnshadow_start takes place for the caller's CPU,
+instead of the thread's target CPU.
 
-MODULE_AUTHOR("P.Martignoni");
-MODULE_LICENSE("GPL");
+I haven't fully made up my mind about the practical impact of this bug,
+I just came across it the hard way (rpi_push worked on uninitialized
+data) while kicking CPUs out of the set that Xenomai shall support. At
+least it should cause quite some RPI "confusion" for a while on both
+involved CPUs.
 
-#define DEV_FILE_NAME       "DspDev"
-#define DRV_NAME            "DspDrv"
+Jan
 
-#define DEV_FILE_DSP            "dspdev0"
+--------------010900050903010404040003
+Content-Type: text/x-patch;
+ name="fix-initial-rpi_push.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="fix-initial-rpi_push.patch"
 
-static rtdm_event_t s_ReadEvent;
+---
+ ChangeLog             |    5 ++++
+ include/nucleus/pod.h |    8 +++----
+ ksrc/nucleus/shadow.c |   56 ++++++++++++++++++++++++++-----------------=
+-------
+ 3 files changed, 39 insertions(+), 30 deletions(-)
 
-static int Open(struct rtdm_dev_context    *p_Context,
-                rtdm_user_info_t           *p_UserInfo,
-                int                        Oflags)
-{
-    int ret = 0;
+Index: b/include/nucleus/pod.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/include/nucleus/pod.h
++++ b/include/nucleus/pod.h
+@@ -313,21 +313,21 @@ static inline void xnpod_finalize_zombie
+=20
+ #define xnpod_idle_p()		xnpod_root_p()
+=20
+-static inline void xnpod_renice_root(int prio)
++static inline void xnpod_renice_root(int cpu, int prio)
+ {
+ 	xnthread_t *rootcb;
+ 	spl_t s;
+=20
+ 	xnlock_get_irqsave(&nklock, s);
+-	rootcb =3D xnpod_current_root();
++	rootcb =3D &xnpod_sched_slot(cpu)->rootcb;
+ 	rootcb->cprio =3D prio;
+ 	xnpod_schedule_runnable(rootcb, XNPOD_SCHEDLIFO | XNPOD_NOSWITCH);
+ 	xnlock_put_irqrestore(&nklock, s);
+ }
+=20
+-static inline int xnpod_root_priority(void)
++static inline int xnpod_root_priority(int cpu)
+ {
+-	return xnthread_current_priority(xnpod_current_root());
++	return xnthread_current_priority(&xnpod_sched_slot(cpu)->rootcb);
+ }
+=20
+ int xnpod_init(void);
+Index: b/ksrc/nucleus/shadow.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/ksrc/nucleus/shadow.c
++++ b/ksrc/nucleus/shadow.c
+@@ -198,15 +198,13 @@ static inline void rpi_none(xnthread_t *
+ 	xnarch_memory_barrier();
+ }
+=20
+-static void rpi_push(xnthread_t *thread)
++static void rpi_push(xnthread_t *thread, int cpu)
+ {
+-	struct xnrpi *rpislot;
++	struct xnrpi *rpislot =3D &gatekeeper[cpu].rpislot;
+ 	xnthread_t *top;
+ 	int prio;
+ 	spl_t s;
+=20
+-	rpislot =3D &gatekeeper[rthal_processor_id()].rpislot;
+-
+ 	/* non-RT shadows and RT shadows which disabled RPI cause the
+ 	   root priority to be lowered to its base level. The purpose
+ 	   of the following code is to enqueue the just thread
+@@ -230,18 +228,17 @@ static void rpi_push(xnthread_t *thread)
+ 	} else
+ 		prio =3D XNCORE_IDLE_PRIO;
+=20
+-	if (xnpod_root_priority() !=3D prio)
+-		xnpod_renice_root(prio);
++	if (xnpod_root_priority(cpu) !=3D prio)
++		xnpod_renice_root(cpu, prio);
+ }
+=20
+ static void rpi_pop(xnthread_t *thread)
+ {
+-	struct xnrpi *rpislot;
++	int cpu =3D rthal_processor_id();
++	struct xnrpi *rpislot =3D &gatekeeper[cpu].rpislot;
+ 	int prio;
+ 	spl_t s;
+=20
+-	rpislot =3D &gatekeeper[rthal_processor_id()].rpislot;
+-
+ 	xnlock_get_irqsave(&rpislot->lock, s);
+=20
+ 	/* Make sure we don't try to unlink a shadow which is not
+@@ -267,20 +264,22 @@ static void rpi_pop(xnthread_t *thread)
+=20
+ 	xnlock_put_irqrestore(&rpislot->lock, s);
+=20
+-	if (xnpod_root_priority() !=3D prio)
+-		xnpod_renice_root(prio);
++	if (xnpod_root_priority(cpu) !=3D prio)
++		xnpod_renice_root(cpu, prio);
+ }
+=20
+ static void rpi_update(xnthread_t *thread)
+ {
+-	struct xnrpi *rpislot;
++	int cpu =3D rthal_processor_id();
++	struct xnrpi *rpislot =3D &gatekeeper[cpu].rpislot;
+ 	spl_t s;
+=20
+-	rpislot =3D &gatekeeper[rthal_processor_id()].rpislot;
+ 	xnlock_get_irqsave(&rpislot->lock, s);
++
+ 	sched_removepq(&rpislot->threadq, &thread->xlink);
+ 	rpi_none(thread);
+-	rpi_push(thread);
++	rpi_push(thread, cpu);
++
+ 	xnlock_put_irqrestore(&rpislot->lock, s);
+ }
+=20
+@@ -358,7 +357,7 @@ static void rpi_clear_remote(xnthread_t=20
+ static void rpi_migrate(xnthread_t *thread)
+ {
+ 	rpi_clear_remote(thread);
+-	rpi_push(thread);
++	rpi_push(thread, rthal_processor_id());
+ }
+=20
+ #else  /* !CONFIG_SMP */
+@@ -368,6 +367,7 @@ static void rpi_migrate(xnthread_t *thre
+=20
+ static inline void rpi_switch(struct task_struct *next)
+ {
++	int cpu =3D rthal_processor_id();
+ 	xnthread_t *threadin, *threadout;
+ 	struct xnrpi *rpislot;
+ 	int oldprio, newprio;
+@@ -375,8 +375,8 @@ static inline void rpi_switch(struct tas
+=20
+ 	threadout =3D xnshadow_thread(current);
+ 	threadin =3D xnshadow_thread(next);
+-	rpislot =3D &gatekeeper[rthal_processor_id()].rpislot;
+-	oldprio =3D xnpod_root_priority();
++	rpislot =3D &gatekeeper[cpu].rpislot;
++	oldprio =3D xnpod_root_priority(cpu);
+=20
+ 	if (threadout &&
+ 	    current->state !=3D TASK_RUNNING &&
+@@ -456,7 +456,7 @@ boost_root:
+ 	if (newprio =3D=3D oldprio)
+ 		return;
+=20
+-	xnpod_renice_root(newprio);
++	xnpod_renice_root(cpu, newprio);
+=20
+ 	if (newprio < oldprio)
+ 		/* Subtle: by downgrading the root thread priority,
+@@ -470,8 +470,9 @@ boost_root:
+=20
+ static inline void rpi_clear_local(xnthread_t *thread)
+ {
+-	if (thread =3D=3D NULL && xnpod_root_priority() !=3D XNCORE_IDLE_PRIO)
+-		xnpod_renice_root(XNCORE_IDLE_PRIO);
++	int cpu =3D rthal_processor_id();
++	if (thread =3D=3D NULL && xnpod_root_priority(cpu) !=3D XNCORE_IDLE_PRI=
+O)
++		xnpod_renice_root(cpu, XNCORE_IDLE_PRIO);
+ }
+=20
+ #ifdef CONFIG_SMP
+@@ -483,15 +484,16 @@ void xnshadow_rpi_check(void)
+ 	 * otherwise, we would have to mask them while testing the
+ 	 * queue for emptiness _and_ demoting the boost level.
+ 	 */
+-	struct xnrpi *rpislot =3D &gatekeeper[rthal_processor_id()].rpislot;
++	int cpu =3D rthal_processor_id();
++	struct xnrpi *rpislot =3D &gatekeeper[cpu].rpislot;
+ 	int norpi;
+ =20
+  	xnlock_get(&rpislot->lock);
+  	norpi =3D sched_emptypq_p(&rpislot->threadq);
+  	xnlock_put(&rpislot->lock);
+=20
+-	if (norpi && xnpod_root_priority() !=3D XNCORE_IDLE_PRIO)
+-		xnpod_renice_root(XNCORE_IDLE_PRIO);
++	if (norpi && xnpod_root_priority(cpu) !=3D XNCORE_IDLE_PRIO)
++		xnpod_renice_root(cpu, XNCORE_IDLE_PRIO);
+ }
+=20
+ #endif	/* CONFIG_SMP */
+@@ -502,7 +504,7 @@ void xnshadow_rpi_check(void)
+ #define rpi_init_gk(gk)		do { } while(0)
+ #define rpi_clear_local(t)	do { } while(0)
+ #define rpi_clear_remote(t)	do { } while(0)
+-#define rpi_push(t)		do { } while(0)
++#define rpi_push(t, cpu)	do { } while(0)
+ #define rpi_pop(t)		do { } while(0)
+ #define rpi_update(t)		do { } while(0)
+ #define rpi_switch(n)		do { } while(0)
+@@ -1209,7 +1211,7 @@ void xnshadow_relax(int notify)
+=20
+ 	schedule_linux_call(LO_WAKEUP_REQ, current, 0);
+=20
+-	rpi_push(thread);
++	rpi_push(thread, rthal_processor_id());
+=20
+ 	clear_task_nowakeup(current);
+=20
+@@ -1469,7 +1471,9 @@ void xnshadow_start(xnthread_t *thread)
+ {
+ 	struct task_struct *p =3D xnthread_archtcb(thread)->user_task;
+=20
+-	rpi_push(thread);	/* A shadow always starts in relaxed mode. */
++	/* A shadow always starts in relaxed mode. */
++	rpi_push(thread, xnsched_cpu(thread->sched));
++
+ 	trace_mark(xn_nucleus_shadow_start, "thread %p thread_name %s",
+ 		   thread, xnthread_name(thread));
+ 	xnpod_resume_thread(thread, XNDORMANT);
+Index: b/ChangeLog
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -2,6 +2,11 @@
+=20
+ 	* include/asm-generic/system.h (xnlock_put): Add proper barrier.
+=20
++	* ksrc/nucleus/shadow.c, include/nucleus/pod.h: Let rpi_push,
++	xnpod_renice_root, and xnpod_root_priority work on specified CPU
++	instead of the current one. Issue rpi_push for the new thread's
++	target CPU in xnshadow_start.
++
+ 2008-02-15  Gilles Chanteperdrix  <gilles.chanteperdrix@xenomai.org>
+=20
+ 	* src/skins/posix/thread.c (__wrap_pthread_create): Follow more
 
-    rtdm_event_init(&s_ReadEvent,0);
+--------------010900050903010404040003--
 
-    // generates an error : Oops : Kernel access of bad area, sig : 11 [#1]
-    rtdm_event_wait(&s_ReadEvent);
+--------------enig8C196EF84BE7461CCC3AF152
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-    return ret;
+iD8DBQFHySdAniDOoMHTA+kRAkNOAJ9u17TkTgBet6tg3+g0abGCD/HsKQCbBFvZ
+s2bnWewS/n2q2bux1DqR+Fc=
+=DTlO
+-----END PGP SIGNATURE-----
 
-}
-
-static int Close(struct rtdm_dev_context   *p_Context,
-                 rtdm_user_info_t          *p_UserInfo)
-{
-
-    rtdm_event_destroy(&s_ReadEvent);
-
-    return 0;
-}
-
-/*****************************************************/
-/*               Structures rtdm_device              */
-/*****************************************************/
-static struct rtdm_device t_IdspDevice = {
-    struct_version:     RTDM_DEVICE_STRUCT_VER,
-    device_flags:       RTDM_NAMED_DEVICE,
-    context_size:       0,
-    device_name:        DEV_FILE_DSP,
-
-    open_rt:        NULL,
-    open_nrt:       Open,
-
-    ops:{
-        close_rt:   NULL,
-        close_nrt:  Close,
-        ioctl_rt:   NULL,
-        ioctl_nrt:  NULL,
-        read_rt:    NULL,
-        read_nrt:   NULL,
-        write_rt:   NULL,
-        write_rt:   NULL,
-        recvmsg_rt: NULL,
-        recvmsg_nrt:NULL,
-        sendmsg_rt: NULL,
-        sendmsg_nrt:NULL,
-    },
-    device_class:       RTDM_CLASS_EXPERIMENTAL,
-    device_sub_class:   222,
-    driver_name:        DRV_NAME,
-    peripheral_name:    DEV_FILE_NAME,
-    provider_name:      "-",
-    proc_name:          t_IdspDevice.device_name,
-};
-
-/**************************************/
-/*          Init Driver               */
-/**************************************/
-static int ddsp_Init(void)
-{
-
-    if(rtdm_dev_register(&t_IdspDevice)!=0)
-        rtdm_printk("Enregistrement impossible\n");
-    else
-        rtdm_printk("Initialisation OK\n");
-
-    return 0;
-}
-
-/*************************************/
-/*           Exit Driver             */
-/*************************************/
-static void ddsp_Exit(void)
-{
-
-    if(rtdm_dev_unregister(&t_IdspDevice,0))
-        rtdm_printk("Desabonnement KO\n");
-    else
-        rtdm_printk("Desabonnement OK\n");
-}
-
-module_init(ddsp_Init);
-module_exit(ddsp_Exit);
-
-*App.c* :
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include <sys/mman.h>
-#include <native/task.h>
-
-#define DEV_FILE_DSP            "dspdev0"
-#define TASK_PRIO             50
-
-static RT_TASK s_TaskTest;
-
-int main(int argc, char * argv[])
-{
-    int ret = 0;
-
-    mlockall(MCL_CURRENT | MCL_FUTURE);
-
-    // set the currrent task in rt mode
-    ret = rt_task_shadow(&s_TaskTest,NULL,1,0);
-
-    rt_dev_open(DEV_FILE_DSP, 0);
-
-    return ret;
-}
-
-When I launch this code, I have this error : *Oops : Kernel access of bad
-area, sig 11 [#1]
-
-*I notice that if the rtdm_event_wait() is called in a kernel task, there is
-no problem.
-
-Have you any idea for my issue ?
-
-Thanks in advance.
-
-------=_Part_3824_13521057.1203605891375
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hello, <br><br>I work on a MPC8347 processor and I found out a problem with rtdm_event_wait(). I reproduce the problem with a simple code : <br><br><u>driver.c</u> : <br>#include &lt;rtdm/rtdm_driver.h&gt;<br><br>MODULE_AUTHOR(&quot;P.Martignoni&quot;);<br>
-MODULE_LICENSE(&quot;GPL&quot;);<br><br>#define DEV_FILE_NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;DspDev&quot;<br>#define DRV_NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;DspDrv&quot;<br><br>#define DEV_FILE_DSP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;dspdev0&quot;<br><br>static rtdm_event_t s_ReadEvent;<br>
-<br>static int Open(struct rtdm_dev_context&nbsp;&nbsp;&nbsp; *p_Context, <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rtdm_user_info_t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *p_UserInfo,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Oflags)<br>{&nbsp; <br>&nbsp;&nbsp;&nbsp; int ret = 0;&nbsp;&nbsp; <br><br>&nbsp;&nbsp;&nbsp; rtdm_event_init(&amp;s_ReadEvent,0);<br>
-&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; // generates an error : Oops : Kernel access of bad area, sig : 11 [#1]<br>&nbsp;&nbsp;&nbsp; rtdm_event_wait(&amp;s_ReadEvent);<br><br><br>&nbsp;&nbsp;&nbsp; return ret;<br><br>}<br><br>static int Close(struct rtdm_dev_context&nbsp;&nbsp; *p_Context,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rtdm_user_info_t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *p_UserInfo)<br>{<br><br>&nbsp;&nbsp;&nbsp; rtdm_event_destroy(&amp;s_ReadEvent);<br><br>&nbsp;&nbsp;&nbsp; return 0;<br>}<br><br>/*****************************************************/<br>/*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Structures rtdm_device&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */<br>
-/*****************************************************/<br>static struct rtdm_device t_IdspDevice = {<br>&nbsp;&nbsp;&nbsp; struct_version:&nbsp;&nbsp;&nbsp;&nbsp; RTDM_DEVICE_STRUCT_VER,<br>&nbsp;&nbsp;&nbsp; device_flags:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RTDM_NAMED_DEVICE,<br>&nbsp;&nbsp;&nbsp; context_size:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,<br>
-&nbsp;&nbsp;&nbsp; device_name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DEV_FILE_DSP, <br><br>&nbsp;&nbsp;&nbsp; open_rt:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NULL,<br>&nbsp;&nbsp;&nbsp; open_nrt:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open,<br><br>&nbsp;&nbsp;&nbsp; ops:{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; close_rt:&nbsp;&nbsp; NULL,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; close_nrt:&nbsp; Close,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ioctl_rt:&nbsp;&nbsp; NULL,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ioctl_nrt:&nbsp; NULL,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; read_rt:&nbsp;&nbsp;&nbsp; NULL,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; read_nrt:&nbsp;&nbsp; NULL,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; write_rt:&nbsp;&nbsp; NULL,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; write_rt:&nbsp;&nbsp; NULL,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; recvmsg_rt: NULL, <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; recvmsg_nrt:NULL,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sendmsg_rt: NULL,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sendmsg_nrt:NULL,<br>
-&nbsp;&nbsp;&nbsp; },<br>&nbsp;&nbsp;&nbsp; device_class:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RTDM_CLASS_EXPERIMENTAL,<br>&nbsp;&nbsp;&nbsp; device_sub_class:&nbsp;&nbsp; 222,<br>&nbsp;&nbsp;&nbsp; driver_name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DRV_NAME,<br>&nbsp;&nbsp;&nbsp; peripheral_name:&nbsp;&nbsp;&nbsp; DEV_FILE_NAME,<br>&nbsp;&nbsp;&nbsp; provider_name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;-&quot;,<br>&nbsp;&nbsp;&nbsp; proc_name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t_IdspDevice.device_name,<br>
-};<br><br>/**************************************/<br>/*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Init Driver&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */<br>/**************************************/<br>static int ddsp_Init(void) <br>{<br><br>&nbsp;&nbsp;&nbsp; if(rtdm_dev_register(&amp;t_IdspDevice)!=0) <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rtdm_printk(&quot;Enregistrement impossible\n&quot;);<br>&nbsp;&nbsp;&nbsp; else<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rtdm_printk(&quot;Initialisation OK\n&quot;);<br>&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; return 0;<br>}<br><br>/*************************************/<br>/*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Exit Driver&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */<br>
-/*************************************/<br>static void ddsp_Exit(void) <br>{<br><br>&nbsp;&nbsp;&nbsp; if(rtdm_dev_unregister(&amp;t_IdspDevice,0))<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rtdm_printk(&quot;Desabonnement KO\n&quot;);&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; else<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rtdm_printk(&quot;Desabonnement OK\n&quot;);<br>
-}<br><br>module_init(ddsp_Init);<br>module_exit(ddsp_Exit);<br><br><u>App.c</u> : <br>#include&lt;stdio.h&gt;<br>#include&lt;stdlib.h&gt;<br>#include&lt;string.h&gt;<br>#include &lt;sys/mman.h&gt;<br>#include &lt;native/task.h&gt;<br>
-<br>#define DEV_FILE_DSP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;dspdev0&quot;<br>#define TASK_PRIO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 50<br><br>static RT_TASK s_TaskTest;<br><br>int main(int argc, char * argv[])<br>{<br>&nbsp;&nbsp;&nbsp; int ret = 0;<br><br>&nbsp;&nbsp;&nbsp; mlockall(MCL_CURRENT | MCL_FUTURE);<br>
-&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; // set the currrent task in rt mode<br>&nbsp;&nbsp;&nbsp; ret = rt_task_shadow(&amp;s_TaskTest,NULL,1,0);<br><br>&nbsp;&nbsp;&nbsp; rt_dev_open(DEV_FILE_DSP, 0);<br><br>&nbsp;&nbsp;&nbsp; return ret;<br>}<br><br>When I launch this code, I have this error : <b>Oops : Kernel access of bad area, sig 11 [#1]<br>
-<br></b>I notice that if the rtdm_event_wait() is called in a kernel task, there is no problem.<br><br>Have you any idea for my issue ?<br><br>Thanks in advance.<br><br><br>
-
-------=_Part_3824_13521057.1203605891375--
+--------------enig8C196EF84BE7461CCC3AF152--
 
