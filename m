@@ -1,64 +1,45 @@
-Message-ID: <47BD977C.1040209@domain.hid>
-Date: Thu, 21 Feb 2008 16:23:40 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <7289437c0802210658w29e21207q74f1cfdf36d6e17c@domain.hid>
-In-Reply-To: <7289437c0802210658w29e21207q74f1cfdf36d6e17c@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Kernel access of bad area with rtdm_event_wait()
- (MPC8347)
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Message-ID: <18378.50046.906228.646119@domain.hid>
+Date: Sun, 2 Mar 2008 16:10:54 +0100
+In-Reply-To: <47CA8934.3060405@domain.hid>
+References: <47CA8934.3060405@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] [PATCH 0/6] Fix, refactor,
+	and optimize xnlock services, v2
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Perrine Martignoni <perrmart@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai-core@domain.hid
 
-Perrine Martignoni wrote:
-> Hello,
-> 
-> I work on a MPC8347 processor and I found out a problem with
-> rtdm_event_wait(). I reproduce the problem with a simple code :
-> 
-> *driver.c* :
-> #include <rtdm/rtdm_driver.h>
-> 
-> MODULE_AUTHOR("P.Martignoni");
-> MODULE_LICENSE("GPL");
-> 
-> #define DEV_FILE_NAME       "DspDev"
-> #define DRV_NAME            "DspDrv"
-> 
-> #define DEV_FILE_DSP            "dspdev0"
-> 
-> static rtdm_event_t s_ReadEvent;
-> 
-> static int Open(struct rtdm_dev_context    *p_Context,
->                 rtdm_user_info_t           *p_UserInfo,
->                 int                        Oflags)
-> {
->     int ret = 0;
-> 
->     rtdm_event_init(&s_ReadEvent,0);
-> 
->     // generates an error : Oops : Kernel access of bad area, sig : 11 [#1]
->     rtdm_event_wait(&s_ReadEvent);
+Jan Kiszka wrote:
+ > Hi,
+ > 
+ > here comes version 2 of my xnlock rework. Changes since the first
+ > release:
+ > 
+ >  - Moved xnlock_spin out-of-line instead uninlining the irqsave/restore
+ >    services
 
-General advice: switch on XENO_OPT_DEBUG_RTDM (and IPIPE_DEBUG_CONTEXT)
-to catch service invocations from a wrong context, like here.
+The size changes are not as dramatic as with the first version. Did you
+have any chance to test the latency with your first version?
 
-Your mistake: calling a blocking Xenomai services from non-rt context
-(see your registration of Open in t_IdspDevice).
+ >  - Beautified xnlock_dbg interface (now only static-inlines)
 
-Jan
+Well, I am still not convinced, I still find the debugging version harder
+to read. Is there a problem with implementing the two versions
+separately with a unique #ifdef?
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+
+
+					    Gilles Chanteperdrix.
 
