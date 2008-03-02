@@ -1,15 +1,15 @@
-Message-ID: <47CA839F.90102@domain.hid>
-Date: Sun, 02 Mar 2008 11:38:23 +0100
+Message-ID: <47CA885F.7040805@domain.hid>
+Date: Sun, 02 Mar 2008 11:58:39 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <47C51A34.203@domain.hid>
-In-Reply-To: <47C51A34.203@domain.hid>
+References: <47CA8379.9070009@domain.hid>
+In-Reply-To: <47CA8379.9070009@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig1767F96C39C8C99C8F59ABB3"
+	boundary="------------enig0FFD2517C16996F318319F81"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-help] [PATCH 6/6] Allow xnlock debugging on single-CPU
-	systems
+Subject: Re: [Xenomai-help] [PATCH 0/6] Fix, refactor,
+ and optimize xnlock services, v2
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,262 +22,22 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: xenomai-help <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1767F96C39C8C99C8F59ABB3
-Content-Type: multipart/mixed;
- boundary="------------030107050005000707060200"
-
-This is a multi-part message in MIME format.
---------------030107050005000707060200
+--------------enig0FFD2517C16996F318319F81
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-After all the refactoring, arming xnlock_dbg services also for
-!CONFIG_SMP setups was straightforward.
+Jan Kiszka wrote:
+> Hi,
+>=20
+> here comes version 2 of my xnlock rework. Changes since the first
+> release:
 
---------------030107050005000707060200
-Content-Type: text/x-patch;
- name="xnlock-debugging-for-up.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="xnlock-debugging-for-up.patch"
+Dreck. This should have went to xenomai-core, of course. Reposting...
 
----
- include/asm-generic/bits/pod.h |    4 ++--
- include/asm-generic/system.h   |   31 +++++++++++++++----------------
- ksrc/nucleus/intr.c            |    4 ++--
- ksrc/nucleus/module.c          |   12 ++++++------
- ksrc/nucleus/pod.c             |    4 ++--
- ksrc/skins/posix/signal.c      |    2 +-
- 6 files changed, 28 insertions(+), 29 deletions(-)
+Jan
 
-Index: b/include/asm-generic/bits/pod.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/include/asm-generic/bits/pod.h
-+++ b/include/asm-generic/bits/pod.h
-@@ -295,7 +295,7 @@ unsigned long long xnarch_get_cpu_time(v
-=20
- EXPORT_SYMBOL(xnarch_get_cpu_time);
-=20
--#if defined(CONFIG_SMP) && !defined(CONFIG_XENO_OPT_TICKET_LOCK)
-+#if (defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)) && !defined(CONFIG_XENO=
-_OPT_TICKET_LOCK)
- void __xnlock_spin(xnlock_t *lock /*, */ XNLOCK_DBG_CONTEXT_ARGS)
- {
- 	unsigned int spin_limit;
-@@ -311,6 +311,6 @@ void __xnlock_spin(xnlock_t *lock /*, */
- 		} while(atomic_read(&lock->owner) !=3D ~0);
- }
- EXPORT_SYMBOL(__xnlock_spin);
--#endif /* CONFIG_SMP && !CONFIG_XENO_OPT_TICKET_LOCK */
-+#endif /* (CONFIG_SMP || XENO_DEBUG(NUCLEUS)) && !CONFIG_XENO_OPT_TICKET=
-_LOCK */
-=20
- #endif /* !_XENO_ASM_GENERIC_BITS_POD_H */
-Index: b/include/asm-generic/system.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/include/asm-generic/system.h
-+++ b/include/asm-generic/system.h
-@@ -76,11 +76,11 @@ extern "C" {
- typedef unsigned long spl_t;
-=20
- #define splhigh(x)  rthal_local_irq_save(x)
--#ifdef CONFIG_SMP
-+#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
- #define splexit(x)  rthal_local_irq_restore((x) & 1)
--#else /* !CONFIG_SMP */
-+#else /* !CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
- #define splexit(x)  rthal_local_irq_restore(x)
--#endif /* !CONFIG_SMP */
-+#endif /* !CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
- #define splnone()   rthal_local_irq_enable()
- #define spltest()   rthal_local_irq_test()
- #define splget(x)   rthal_local_irq_flags(x)
-@@ -90,7 +90,7 @@ static inline unsigned xnarch_current_cp
- 	return rthal_processor_id();
- }
-=20
--#if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
-+#if XENO_DEBUG(NUCLEUS)
-=20
- typedef struct {
-=20
-@@ -204,7 +204,7 @@ static inline int xnlock_dbg_release(xnl
- 	return 0;
- }
-=20
--#else /* !(CONFIG_SMP && XENO_DEBUG(NUCLEUS)) */
-+#else /* !XENO_DEBUG(NUCLEUS) */
-=20
- #ifdef CONFIG_XENO_OPT_TICKET_LOCK
- typedef struct {
-@@ -237,7 +237,7 @@ static inline int xnlock_dbg_release(xnl
- 	return 0;
- }
-=20
--#endif /* !(CONFIG_SMP && XENO_DEBUG(NUCLEUS)) */
-+#endif /* !XENO_DEBUG(NUCLEUS) */
-=20
- #define XNARCH_NR_CPUS			RTHAL_NR_CPUS
-=20
-@@ -321,7 +321,7 @@ static inline int xnarch_setimask (int i
- 	return !!s;
- }
-=20
--#ifdef CONFIG_SMP
-+#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
-=20
- #define xnlock_get(lock)		__xnlock_get(lock  XNLOCK_DBG_CONTEXT)
- #define xnlock_get_irqsave(lock,x) \
-@@ -481,17 +481,12 @@ static inline void xnlock_put_irqrestore
- 	rthal_local_irq_restore(flags & 1);
- }
-=20
--static inline int xnarch_send_ipi(xnarch_cpumask_t cpumask)
--{
--	return rthal_send_ipi(RTHAL_SERVICE_IPI0, cpumask);
--}
--
- static inline int xnlock_is_owner(xnlock_t *lock)
- {
- 	return xnlock_owner(lock) =3D=3D xnarch_current_cpu();
- }
-=20
--#else /* !CONFIG_SMP */
-+#else /* !(CONFIG_SMP || XENO_DEBUG(NUCLEUS)) */
-=20
- #define xnlock_init(lock)		do { } while(0)
- #define xnlock_get(lock)		do { } while(0)
-@@ -507,12 +502,16 @@ static inline int xnlock_is_owner(xnlock
- #define DEFINE_XNLOCK(lock)
- #define DEFINE_PRIVATE_XNLOCK(lock)
-=20
--static inline int xnarch_send_ipi (xnarch_cpumask_t cpumask)
-+#endif /* !(CONFIG_SMP || XENO_DEBUG(NUCLEUS)) */
-+
-+static inline int xnarch_send_ipi(xnarch_cpumask_t cpumask)
- {
-+#ifdef CONFIG_SMP
-+	return rthal_send_ipi(RTHAL_SERVICE_IPI0, cpumask);
-+#else /* !CONFIG_SMP */
- 	return 0;
--}
--
- #endif /* !CONFIG_SMP */
-+}
-=20
- #define xnlock_sync_irq(lock, x)			\
- 	do {						\
-Index: b/ksrc/nucleus/intr.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/ksrc/nucleus/intr.c
-+++ b/ksrc/nucleus/intr.c
-@@ -387,7 +387,7 @@ static inline int xnintr_irq_detach(xnin
-=20
- #else /* !CONFIG_XENO_OPT_SHIRQ */
-=20
--#ifdef CONFIG_SMP
-+#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
- typedef struct xnintr_irq {
-=20
- 	DECLARE_XNLOCK(lock);
-@@ -395,7 +395,7 @@ typedef struct xnintr_irq {
- } ____cacheline_aligned_in_smp xnintr_irq_t;
-=20
- static xnintr_irq_t xnirqs[XNARCH_NR_IRQS];
--#endif /* CONFIG_SMP */
-+#endif /* CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
-=20
- static inline xnintr_t *xnintr_shirq_first(unsigned irq)
- {
-Index: b/ksrc/nucleus/module.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/ksrc/nucleus/module.c
-+++ b/ksrc/nucleus/module.c
-@@ -664,7 +664,7 @@ void xnpod_discard_tbase_proc(xntbase_t=20
-=20
- #endif /* CONFIG_XENO_OPT_STATS */
-=20
--#if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
-+#if XENO_DEBUG(NUCLEUS)
-=20
- xnlockinfo_t xnlock_stats[RTHAL_NR_CPUS];
-=20
-@@ -712,7 +712,7 @@ static int lock_read_proc(char *page,
-=20
- EXPORT_SYMBOL(xnlock_stats);
-=20
--#endif /* CONFIG_SMP && XENO_DEBUG(NUCLEUS) */
-+#endif /* XENO_DEBUG(NUCLEUS) */
-=20
- static int latency_read_proc(char *page,
- 			     char **start,
-@@ -1033,9 +1033,9 @@ void xnpod_init_proc(void)
- 		create_proc_entry("timerstat", S_IFDIR, rthal_proc_root);
- #endif /* CONFIG_XENO_OPT_STATS */
-=20
--#if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
-+#if XENO_DEBUG(NUCLEUS)
- 	add_proc_leaf("lock", &lock_read_proc, NULL, NULL, rthal_proc_root);
--#endif /* CONFIG_SMP && XENO_DEBUG(NUCLEUS) */
-+#endif /* XENO_DEBUG(NUCLEUS) */
-=20
- 	add_proc_leaf("latency",
- 		      &latency_read_proc,
-@@ -1087,9 +1087,9 @@ void xnpod_delete_proc(void)
- 	remove_proc_entry("timerstat", rthal_proc_root);
- 	remove_proc_entry("stat", rthal_proc_root);
- #endif /* CONFIG_XENO_OPT_STATS */
--#if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
-+#if XENO_DEBUG(NUCLEUS)
- 	remove_proc_entry("lock", rthal_proc_root);
--#endif /* CONFIG_SMP && XENO_DEBUG(NUCLEUS) */
-+#endif /* XENO_DEBUG(NUCLEUS) */
- }
-=20
- #ifdef CONFIG_XENO_OPT_PERVASIVE
-Index: b/ksrc/nucleus/pod.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/ksrc/nucleus/pod.c
-+++ b/ksrc/nucleus/pod.c
-@@ -3472,7 +3472,7 @@ EXPORT_SYMBOL(xnpod_welcome_thread);
-=20
- EXPORT_SYMBOL(nkpod_struct);
-=20
--#ifdef CONFIG_SMP
-+#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
- EXPORT_SYMBOL(nklock);
--#endif /* CONFIG_SMP */
-+#endif /* CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
- EXPORT_SYMBOL(nklatency);
-Index: b/ksrc/skins/posix/signal.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/ksrc/skins/posix/signal.c
-+++ b/ksrc/skins/posix/signal.c
-@@ -64,7 +64,7 @@ typedef void siginfo_handler_t(int, sigi
- #define SIGRTMAX 64
- static struct sigaction actions[SIGRTMAX];
- static pse51_siginfo_t pse51_infos_pool[PSE51_SIGQUEUE_MAX];
--#ifdef CONFIG_SMP
-+#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
- static xnlock_t pse51_infos_lock =3D XNARCH_LOCK_UNLOCKED;
- #endif
- static xnpqueue_t pse51_infos_free_list;
 
---------------030107050005000707060200--
-
---------------enig1767F96C39C8C99C8F59ABB3
+--------------enig0FFD2517C16996F318319F81
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -286,10 +46,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.4-svn0 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFHyoOfniDOoMHTA+kRAuGIAJ97q8XeYg6jKEQ8Guiqddt8K7atSACfWp/q
-49qpeln9Jzzwe2G3k7CIhos=
-=5Je3
+iD8DBQFHyohkniDOoMHTA+kRAvXqAJ0aT1dhKl4xeUlAmZnhHLFV1V02jwCdHUB1
+aADJFZjl+axKp4w729vapHE=
+=D2Fi
 -----END PGP SIGNATURE-----
 
---------------enig1767F96C39C8C99C8F59ABB3--
+--------------enig0FFD2517C16996F318319F81--
 
