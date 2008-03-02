@@ -1,15 +1,15 @@
-Message-ID: <47CA839B.6090006@domain.hid>
-Date: Sun, 02 Mar 2008 11:38:19 +0100
+Message-ID: <47CA839F.90102@domain.hid>
+Date: Sun, 02 Mar 2008 11:38:23 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <47C51A34.203@domain.hid>
 In-Reply-To: <47C51A34.203@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig54D2CF5D63C6900F24C88432"
+	boundary="------------enig1767F96C39C8C99C8F59ABB3"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-help] [PATCH 5/6] Introduce optional recursive ticket
-	xnlock
+Subject: [Xenomai-help] [PATCH 6/6] Allow xnlock debugging on single-CPU
+	systems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,276 +22,34 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: xenomai-help <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig54D2CF5D63C6900F24C88432
+--------------enig1767F96C39C8C99C8F59ABB3
 Content-Type: multipart/mixed;
- boundary="------------020706050700040301050107"
+ boundary="------------030107050005000707060200"
 
 This is a multi-part message in MIME format.
---------------020706050700040301050107
+--------------030107050005000707060200
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-The origin of this series: When Nick Piggin posted his first suggestion
-for ticket spinlocks on LKML, I immediately liked the idea. For details
-check LWN [1], in a nutshell: This algorithm enforces strict FIFO order
-for the admission to contended spinlocks, thus it improves the
-determinism on SMP systems with more than 2 CPUs.
+After all the refactoring, arming xnlock_dbg services also for
+!CONFIG_SMP setups was straightforward.
 
-Meanwhile, ticket spinlocks are mainline (2.6.25). But that version has
-to drawbacks for us: it doesn't support nesting like xnlock does, and it
-is x86-only so far.
-
-So I designed a version for Xenomai which is both nestable and
-arch-independent. It is certainly not as optimal as mainline's version,
-but our code path stresses the locking code differently anyway, and no
-one denies us to introduce per-arch optimized variants later on (if this
-lock implementation gains broader relevance).
-
-Survived heavy testing on a 4-way box (15, 20, 25, and 30 us latency
-instances across the cores).
-
-[1] http://lwn.net/Articles/267331
-
---------------020706050700040301050107
+--------------030107050005000707060200
 Content-Type: text/x-patch;
- name="ticket-xnlock-v2.patch"
+ name="xnlock-debugging-for-up.patch"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline;
- filename="ticket-xnlock-v2.patch"
+ filename="xnlock-debugging-for-up.patch"
 
 ---
- include/asm-generic/bits/pod.h |    4 -
- include/asm-generic/system.h   |  122 ++++++++++++++++++++++++++++++++++=
-+++----
- ksrc/nucleus/Kconfig           |   12 ++++
- 3 files changed, 126 insertions(+), 12 deletions(-)
+ include/asm-generic/bits/pod.h |    4 ++--
+ include/asm-generic/system.h   |   31 +++++++++++++++----------------
+ ksrc/nucleus/intr.c            |    4 ++--
+ ksrc/nucleus/module.c          |   12 ++++++------
+ ksrc/nucleus/pod.c             |    4 ++--
+ ksrc/skins/posix/signal.c      |    2 +-
+ 6 files changed, 28 insertions(+), 29 deletions(-)
 
-Index: b/include/asm-generic/system.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/include/asm-generic/system.h
-+++ b/include/asm-generic/system.h
-@@ -104,7 +104,12 @@ typedef struct {
-=20
- typedef struct {
-=20
-+#ifdef CONFIG_XENO_OPT_TICKET_LOCK
-+	atomic_t fifo;
-+	int owner;
-+#else
- 	atomic_t owner;
-+#endif
- 	const char *file;
- 	const char *function;
- 	unsigned line;
-@@ -115,7 +120,7 @@ typedef struct {
- } xnlock_t;
-=20
- #define XNARCH_LOCK_UNLOCKED (xnlock_t) {	\
--	{ ~0 },					\
-+	XNLOCK_INIT_VALUE,			\
- 	NULL,					\
- 	NULL,					\
- 	0,					\
-@@ -167,6 +172,8 @@ xnlock_dbg_acquired(xnlock_t *lock, int=20
- 	lock->cpu =3D cpu;
- }
-=20
-+static inline int xnlock_owner(xnlock_t *lock);
-+
- static inline int xnlock_dbg_release(xnlock_t *lock)
- {
- 	extern xnlockinfo_t xnlock_stats[];
-@@ -174,7 +181,7 @@ static inline int xnlock_dbg_release(xnl
- 	int cpu =3D xnarch_current_cpu();
- 	xnlockinfo_t *stats =3D &xnlock_stats[cpu];
-=20
--	if (unlikely(atomic_read(&lock->owner) !=3D cpu)) {
-+	if (unlikely(xnlock_owner(lock) !=3D cpu)) {
- 		rthal_emergency_console();
- 		printk(KERN_ERR "Xenomai: unlocking unlocked nucleus lock %p"
- 				" on CPU #%d\n"
-@@ -199,9 +206,18 @@ static inline int xnlock_dbg_release(xnl
-=20
- #else /* !(CONFIG_SMP && XENO_DEBUG(NUCLEUS)) */
-=20
-+#ifdef CONFIG_XENO_OPT_TICKET_LOCK
-+typedef struct {
-+
-+	atomic_t fifo;
-+	int owner;
-+
-+} xnlock_t;
-+#else
- typedef struct { atomic_t owner; } xnlock_t;
-+#endif
-=20
--#define XNARCH_LOCK_UNLOCKED		(xnlock_t) { { ~0 } }
-+#define XNARCH_LOCK_UNLOCKED		(xnlock_t) { XNLOCK_INIT_VALUE }
-=20
- #define XNLOCK_DBG_CONTEXT
- #define XNLOCK_DBG_CONTEXT_ARGS
-@@ -313,11 +329,6 @@ static inline int xnarch_setimask (int i
- #define xnlock_clear_irqoff(lock)	xnlock_put_irqrestore(lock, 1)
- #define xnlock_clear_irqon(lock)	xnlock_put_irqrestore(lock, 0)
-=20
--static inline void xnlock_init (xnlock_t *lock)
--{
--	*lock =3D XNARCH_LOCK_UNLOCKED;
--}
--
- #define DECLARE_XNLOCK(lock)		xnlock_t lock
- #define DECLARE_EXTERN_XNLOCK(lock)	extern xnlock_t lock
- #define DEFINE_XNLOCK(lock)		xnlock_t lock =3D XNARCH_LOCK_UNLOCKED
-@@ -325,12 +336,97 @@ static inline void xnlock_init (xnlock_t
-=20
- void __xnlock_spin(xnlock_t *lock /*, */ XNLOCK_DBG_CONTEXT_ARGS);
-=20
-+#ifdef CONFIG_XENO_OPT_TICKET_LOCK
-+/* Note: We assume atomic_t is at least 32-bit wide. */
-+#define XNLOCK_HEAD_MASK		0x000000FF
-+#define XNLOCK_HEAD_INC			0x00000001
-+#define XNLOCK_TAIL_MASK		0xFF000000
-+#define XNLOCK_TAIL_SHIFT		24
-+#define XNLOCK_TAIL_INC			0x01000000
-+#define XNLOCK_TICKET_MASK		(XNLOCK_HEAD_MASK | XNLOCK_TAIL_MASK)
-+#define XNLOCK_INIT_VALUE		{ 0x00000001 }, ~0
-+
-+static inline int xnlock_owner(xnlock_t *lock)
-+{
-+	return lock->owner;
-+}
-+
-+static inline int __xnlock_get(xnlock_t *lock /*, */ XNLOCK_DBG_CONTEXT_=
-ARGS)
-+{
-+	unsigned long long start;
-+	int cpu =3D xnarch_current_cpu();
-+	u32 fifo;
-+	u8 ticket;
-+
-+	if (xnlock_owner(lock) =3D=3D cpu)
-+		return 1;
-+
-+	xnlock_dbg_prepare_acquire(&start);
-+
-+	fifo =3D atomic_add_return(XNLOCK_TAIL_INC, &lock->fifo);
-+	ticket =3D fifo >> XNLOCK_TAIL_SHIFT;
-+
-+	/* First check if we are already the owner (head =3D=3D tail). */
-+	if (unlikely((u8)fifo !=3D ticket)) {
-+	 	unsigned int spin_limit;
-+
-+		xnlock_dbg_prepare_spin(&spin_limit);
-+
-+		/*
-+		 * Spin until head equals our ticket. In this case,
-+		 * moving out-of-line does not pay off.
-+		 */
-+		do {
-+			cpu_relax();
-+			xnlock_dbg_spinning(lock, cpu, &spin_limit /*, */
-+					    XNLOCK_DBG_PASS_CONTEXT);
-+		} while ((u8)atomic_read(&lock->fifo) !=3D ticket);
-+	}
-+	lock->owner =3D cpu;
-+
-+	xnlock_dbg_acquired(lock, cpu, &start /*, */ XNLOCK_DBG_PASS_CONTEXT);
-+
-+	return 0;
-+}
-+
-+static inline void xnlock_put(xnlock_t *lock)
-+{
-+	u32 fifo =3D atomic_read(&lock->fifo);
-+
-+	if (xnlock_dbg_release(lock))
-+		return;
-+
-+	lock->owner =3D ~0;
-+
-+	/*
-+	 * Make sure all data written inside the lock is visible to
-+	 * other CPUs before we release the lock.
-+	 */
-+	xnarch_memory_barrier();
-+
-+	/*
-+	 * Carefully calculate the addend so that we confine the
-+	 * XNLOCK_HEAD_INC just to the first byte of fifo.
-+	 */
-+	atomic_add(((fifo + XNLOCK_HEAD_INC) & XNLOCK_TICKET_MASK) - fifo,
-+		   &lock->fifo);
-+}
-+
-+#else /* ! CONFIG_XENO_OPT_TICKET_LOCK */
-+
-+#define XNLOCK_INIT_VALUE		{ ~0 }
-+
-+static inline int xnlock_owner(xnlock_t *lock)
-+{
-+	return atomic_read(&lock->owner);
-+}
-+
- static inline int __xnlock_get(xnlock_t *lock /*, */ XNLOCK_DBG_CONTEXT_=
-ARGS)
- {
- 	unsigned long long start;
- 	int cpu =3D xnarch_current_cpu();
-=20
--	if (atomic_read(&lock->owner) =3D=3D cpu)
-+	if (xnlock_owner(lock) =3D=3D cpu)
- 		return 1;
-=20
- 	xnlock_dbg_prepare_acquire(&start);
-@@ -356,6 +452,12 @@ static inline void xnlock_put(xnlock_t *
-=20
- 	atomic_set(&lock->owner, ~0);
- }
-+#endif /* ! CONFIG_XENO_OPT_TICKET_LOCK */
-+
-+static inline void xnlock_init(xnlock_t *lock)
-+{
-+	*lock =3D XNARCH_LOCK_UNLOCKED;
-+}
-=20
- static inline spl_t
- __xnlock_get_irqsave(xnlock_t *lock /*, */ XNLOCK_DBG_CONTEXT_ARGS)
-@@ -386,7 +488,7 @@ static inline int xnarch_send_ipi(xnarch
-=20
- static inline int xnlock_is_owner(xnlock_t *lock)
- {
--	return atomic_read(&lock->owner) =3D=3D xnarch_current_cpu();
-+	return xnlock_owner(lock) =3D=3D xnarch_current_cpu();
- }
-=20
- #else /* !CONFIG_SMP */
-Index: b/ksrc/nucleus/Kconfig
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/ksrc/nucleus/Kconfig
-+++ b/ksrc/nucleus/Kconfig
-@@ -340,6 +340,18 @@ config XENO_OPT_TIMER_WHEEL_STEP
- 	Set the duration in ns of a timer wheel step. At each step,=20
- 	the timer wheel use the next hash bucket.
-=20
-+config XENO_OPT_TICKET_LOCK
-+	bool "FIFO ticket spinlocks"
-+	depends on SMP
-+	help
-+
-+	Uses a ticket spinlock algorithm which enforces strict FIFO
-+	admission order on contended locks, improving the determinism
-+	of lock acquisitions on large SMP systems. The ticket spinlock
-+	has a higher overhead than the unordered algorithm and should
-+	therefore only be used if there are more than two CPUs, thus
-+	more than one waiter in the worst case.
-+
- endmenu
-=20
- endif
 Index: b/include/asm-generic/bits/pod.h
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
@@ -302,8 +60,9 @@ Index: b/include/asm-generic/bits/pod.h
 =20
  EXPORT_SYMBOL(xnarch_get_cpu_time);
 =20
--#ifdef CONFIG_SMP
-+#if defined(CONFIG_SMP) && !defined(CONFIG_XENO_OPT_TICKET_LOCK)
+-#if defined(CONFIG_SMP) && !defined(CONFIG_XENO_OPT_TICKET_LOCK)
++#if (defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)) && !defined(CONFIG_XENO=
+_OPT_TICKET_LOCK)
  void __xnlock_spin(xnlock_t *lock /*, */ XNLOCK_DBG_CONTEXT_ARGS)
  {
  	unsigned int spin_limit;
@@ -311,14 +70,214 @@ Index: b/include/asm-generic/bits/pod.h
  		} while(atomic_read(&lock->owner) !=3D ~0);
  }
  EXPORT_SYMBOL(__xnlock_spin);
--#endif /* CONFIG_SMP */
-+#endif /* CONFIG_SMP && !CONFIG_XENO_OPT_TICKET_LOCK */
+-#endif /* CONFIG_SMP && !CONFIG_XENO_OPT_TICKET_LOCK */
++#endif /* (CONFIG_SMP || XENO_DEBUG(NUCLEUS)) && !CONFIG_XENO_OPT_TICKET=
+_LOCK */
 =20
  #endif /* !_XENO_ASM_GENERIC_BITS_POD_H */
+Index: b/include/asm-generic/system.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/include/asm-generic/system.h
++++ b/include/asm-generic/system.h
+@@ -76,11 +76,11 @@ extern "C" {
+ typedef unsigned long spl_t;
+=20
+ #define splhigh(x)  rthal_local_irq_save(x)
+-#ifdef CONFIG_SMP
++#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
+ #define splexit(x)  rthal_local_irq_restore((x) & 1)
+-#else /* !CONFIG_SMP */
++#else /* !CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
+ #define splexit(x)  rthal_local_irq_restore(x)
+-#endif /* !CONFIG_SMP */
++#endif /* !CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
+ #define splnone()   rthal_local_irq_enable()
+ #define spltest()   rthal_local_irq_test()
+ #define splget(x)   rthal_local_irq_flags(x)
+@@ -90,7 +90,7 @@ static inline unsigned xnarch_current_cp
+ 	return rthal_processor_id();
+ }
+=20
+-#if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
++#if XENO_DEBUG(NUCLEUS)
+=20
+ typedef struct {
+=20
+@@ -204,7 +204,7 @@ static inline int xnlock_dbg_release(xnl
+ 	return 0;
+ }
+=20
+-#else /* !(CONFIG_SMP && XENO_DEBUG(NUCLEUS)) */
++#else /* !XENO_DEBUG(NUCLEUS) */
+=20
+ #ifdef CONFIG_XENO_OPT_TICKET_LOCK
+ typedef struct {
+@@ -237,7 +237,7 @@ static inline int xnlock_dbg_release(xnl
+ 	return 0;
+ }
+=20
+-#endif /* !(CONFIG_SMP && XENO_DEBUG(NUCLEUS)) */
++#endif /* !XENO_DEBUG(NUCLEUS) */
+=20
+ #define XNARCH_NR_CPUS			RTHAL_NR_CPUS
+=20
+@@ -321,7 +321,7 @@ static inline int xnarch_setimask (int i
+ 	return !!s;
+ }
+=20
+-#ifdef CONFIG_SMP
++#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
+=20
+ #define xnlock_get(lock)		__xnlock_get(lock  XNLOCK_DBG_CONTEXT)
+ #define xnlock_get_irqsave(lock,x) \
+@@ -481,17 +481,12 @@ static inline void xnlock_put_irqrestore
+ 	rthal_local_irq_restore(flags & 1);
+ }
+=20
+-static inline int xnarch_send_ipi(xnarch_cpumask_t cpumask)
+-{
+-	return rthal_send_ipi(RTHAL_SERVICE_IPI0, cpumask);
+-}
+-
+ static inline int xnlock_is_owner(xnlock_t *lock)
+ {
+ 	return xnlock_owner(lock) =3D=3D xnarch_current_cpu();
+ }
+=20
+-#else /* !CONFIG_SMP */
++#else /* !(CONFIG_SMP || XENO_DEBUG(NUCLEUS)) */
+=20
+ #define xnlock_init(lock)		do { } while(0)
+ #define xnlock_get(lock)		do { } while(0)
+@@ -507,12 +502,16 @@ static inline int xnlock_is_owner(xnlock
+ #define DEFINE_XNLOCK(lock)
+ #define DEFINE_PRIVATE_XNLOCK(lock)
+=20
+-static inline int xnarch_send_ipi (xnarch_cpumask_t cpumask)
++#endif /* !(CONFIG_SMP || XENO_DEBUG(NUCLEUS)) */
++
++static inline int xnarch_send_ipi(xnarch_cpumask_t cpumask)
+ {
++#ifdef CONFIG_SMP
++	return rthal_send_ipi(RTHAL_SERVICE_IPI0, cpumask);
++#else /* !CONFIG_SMP */
+ 	return 0;
+-}
+-
+ #endif /* !CONFIG_SMP */
++}
+=20
+ #define xnlock_sync_irq(lock, x)			\
+ 	do {						\
+Index: b/ksrc/nucleus/intr.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/ksrc/nucleus/intr.c
++++ b/ksrc/nucleus/intr.c
+@@ -387,7 +387,7 @@ static inline int xnintr_irq_detach(xnin
+=20
+ #else /* !CONFIG_XENO_OPT_SHIRQ */
+=20
+-#ifdef CONFIG_SMP
++#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
+ typedef struct xnintr_irq {
+=20
+ 	DECLARE_XNLOCK(lock);
+@@ -395,7 +395,7 @@ typedef struct xnintr_irq {
+ } ____cacheline_aligned_in_smp xnintr_irq_t;
+=20
+ static xnintr_irq_t xnirqs[XNARCH_NR_IRQS];
+-#endif /* CONFIG_SMP */
++#endif /* CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
+=20
+ static inline xnintr_t *xnintr_shirq_first(unsigned irq)
+ {
+Index: b/ksrc/nucleus/module.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/ksrc/nucleus/module.c
++++ b/ksrc/nucleus/module.c
+@@ -664,7 +664,7 @@ void xnpod_discard_tbase_proc(xntbase_t=20
+=20
+ #endif /* CONFIG_XENO_OPT_STATS */
+=20
+-#if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
++#if XENO_DEBUG(NUCLEUS)
+=20
+ xnlockinfo_t xnlock_stats[RTHAL_NR_CPUS];
+=20
+@@ -712,7 +712,7 @@ static int lock_read_proc(char *page,
+=20
+ EXPORT_SYMBOL(xnlock_stats);
+=20
+-#endif /* CONFIG_SMP && XENO_DEBUG(NUCLEUS) */
++#endif /* XENO_DEBUG(NUCLEUS) */
+=20
+ static int latency_read_proc(char *page,
+ 			     char **start,
+@@ -1033,9 +1033,9 @@ void xnpod_init_proc(void)
+ 		create_proc_entry("timerstat", S_IFDIR, rthal_proc_root);
+ #endif /* CONFIG_XENO_OPT_STATS */
+=20
+-#if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
++#if XENO_DEBUG(NUCLEUS)
+ 	add_proc_leaf("lock", &lock_read_proc, NULL, NULL, rthal_proc_root);
+-#endif /* CONFIG_SMP && XENO_DEBUG(NUCLEUS) */
++#endif /* XENO_DEBUG(NUCLEUS) */
+=20
+ 	add_proc_leaf("latency",
+ 		      &latency_read_proc,
+@@ -1087,9 +1087,9 @@ void xnpod_delete_proc(void)
+ 	remove_proc_entry("timerstat", rthal_proc_root);
+ 	remove_proc_entry("stat", rthal_proc_root);
+ #endif /* CONFIG_XENO_OPT_STATS */
+-#if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
++#if XENO_DEBUG(NUCLEUS)
+ 	remove_proc_entry("lock", rthal_proc_root);
+-#endif /* CONFIG_SMP && XENO_DEBUG(NUCLEUS) */
++#endif /* XENO_DEBUG(NUCLEUS) */
+ }
+=20
+ #ifdef CONFIG_XENO_OPT_PERVASIVE
+Index: b/ksrc/nucleus/pod.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/ksrc/nucleus/pod.c
++++ b/ksrc/nucleus/pod.c
+@@ -3472,7 +3472,7 @@ EXPORT_SYMBOL(xnpod_welcome_thread);
+=20
+ EXPORT_SYMBOL(nkpod_struct);
+=20
+-#ifdef CONFIG_SMP
++#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
+ EXPORT_SYMBOL(nklock);
+-#endif /* CONFIG_SMP */
++#endif /* CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
+ EXPORT_SYMBOL(nklatency);
+Index: b/ksrc/skins/posix/signal.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/ksrc/skins/posix/signal.c
++++ b/ksrc/skins/posix/signal.c
+@@ -64,7 +64,7 @@ typedef void siginfo_handler_t(int, sigi
+ #define SIGRTMAX 64
+ static struct sigaction actions[SIGRTMAX];
+ static pse51_siginfo_t pse51_infos_pool[PSE51_SIGQUEUE_MAX];
+-#ifdef CONFIG_SMP
++#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
+ static xnlock_t pse51_infos_lock =3D XNARCH_LOCK_UNLOCKED;
+ #endif
+ static xnpqueue_t pse51_infos_free_list;
 
---------------020706050700040301050107--
+--------------030107050005000707060200--
 
---------------enig54D2CF5D63C6900F24C88432
+--------------enig1767F96C39C8C99C8F59ABB3
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -327,10 +286,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.4-svn0 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFHyoObniDOoMHTA+kRAtsHAJ4zwm7to6vRUDP2IOUTjMq32qbqSQCeOR9o
-OIJLQleBU9FFPUkxqHwPYlo=
-=CQMt
+iD8DBQFHyoOfniDOoMHTA+kRAuGIAJ97q8XeYg6jKEQ8Guiqddt8K7atSACfWp/q
+49qpeln9Jzzwe2G3k7CIhos=
+=5Je3
 -----END PGP SIGNATURE-----
 
---------------enig54D2CF5D63C6900F24C88432--
+--------------enig1767F96C39C8C99C8F59ABB3--
 
