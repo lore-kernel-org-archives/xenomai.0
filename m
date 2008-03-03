@@ -1,6 +1,6 @@
-Message-ID: <47CC0295.60501@domain.hid>
-Date: Mon, 03 Mar 2008 14:52:21 +0100
-From: Philippe Gerum <philippe.gerum@domain.hid>
+Message-ID: <47CC2107.8030803@domain.hid>
+Date: Mon, 03 Mar 2008 17:02:15 +0100
+From: Anders Blomdell <anders.blomdell@domain.hid>
 MIME-Version: 1.0
 References: <47C838A9.8040200@domain.hid>	
 	<2ff1a98a0802290958k3457d577j8e2ad01079612320@domain.hid>	
@@ -12,7 +12,6 @@ In-Reply-To: <2ff1a98a0803030527j19166af8pfd5c6c7c1a9c49bf@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] rt_cond_wait doesn't timeout (xenomai 2.4.1)
-Reply-To: philippe.gerum@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -95,20 +94,94 @@ Gilles Chanteperdrix wrote:
 > 
 > Cannot this be that the constant (3) used in rthal_timer_program_shot
 > is a bit too small ?
-> 
+Some more info:
 
-It indeed seems that the default calibration has been overridden using a
-zero value, but the timer object does elapse, so it is unlikely that a
-bad programming prevented the LAPIC from firing this shot. Looking at
-the thread timeout field, it also seems to confirm this, since a zero
-return means that the timer is inactive, i.e. it has been dequeued after
-the tick was processed.
+The problem is somewhat repeatable, running the following program sometimes
+brings back the problem. I'm beginning to think that the problem is that
+'rt_task_delete(NULL);' doesn't release all thread resources (i.e. memory usage
+grows continually [(i = 4999) => VmSize:   342504 kB). What have I misunderstood
+about task deletion?
 
-This said, maybe we could try raising the default calibration
-dynamically to 1 us (> /proc/xenomai/latency), so that the I-pipe would
-be asked to handle the job directly for any earlier shot. Any change in
-behaviour would give us a hint about what goes wrong.
+#include <sys/mman.h>
+#include <native/cond.h>
+#include <native/mutex.h>
+#include <native/task.h>
+#include <native/timer.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+
+static void suicide(void *arg)
+{
+  printf("Suicide\n");
+  rt_task_delete(NULL);
+}
+
+int main(int argc, char *argv[])
+{
+  RT_MUTEX mutex;
+  RT_TASK task_main;
+  RT_TASK task;
+  RT_COND cond;
+  int i;
+
+  mlockall(MCL_CURRENT|MCL_FUTURE);
+
+  rt_task_shadow(&task_main, "main", 1, T_FPU);
+  if (rt_mutex_create(&mutex, NULL)) {
+    fprintf(stderr, "Failed to create mutex\n");
+    exit(1);
+  }
+  if (rt_cond_create (&cond, NULL)) {
+    fprintf(stderr, "Failed to create condition\n");
+    exit(1);
+  }
+
+  if (rt_timer_set_mode(TM_ONESHOT)) {
+    fprintf(stderr, "Failed to set timer mode\n");
+    exit(1);
+  }
+
+  for  (i = 0 ; i < 5000 ; i++) {
+    if (i % 100 == 99) {
+      int fd, N;
+
+      char buf[1000];
+      fd = open("/proc/self/status", O_RDONLY);
+      while ((N = read(fd, buf, 1000)) > 0) {
+        write(1, buf, N);
+      }
+      close(fd);
+    }
+
+    if (rt_task_create(&task, NULL, 0, 1, 0)) {
+      fprintf(stderr, "Failed to create  task\n");
+      exit(1);
+    }
+    if (rt_task_start(&task, &suicide, NULL)) {
+      fprintf(stderr, "Failed to start task\n");
+      exit(1);
+    }
+    rt_mutex_acquire(&mutex, TM_INFINITE);
+    printf("i = %d\n", i);
+    rt_cond_wait(&cond, &mutex, 5000000);
+    printf("wait done\n");
+    rt_mutex_release(&mutex);
+  }
+  exit(0);
+}
+
+
+Regards
+
+/Anders
+
 
 -- 
-Philippe.
+Anders Blomdell                  Email: anders.blomdell@domain.hid
+Department of Automatic Control
+Lund University                  Phone:    +46 46 222 4625
+P.O. Box 118                     Fax:      +46 46 138118
+SE-221 00 Lund, Sweden
 
