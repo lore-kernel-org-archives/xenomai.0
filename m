@@ -1,54 +1,37 @@
-Message-ID: <47BD9763.1040304@domain.hid>
-Date: Thu, 21 Feb 2008 16:23:15 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <2ff1a98a0803040533v29f5455g3b6097dc830d0666@domain.hid>
+Date: Tue, 4 Mar 2008 14:33:09 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <d3f72a390803040449i2111e0a7r5b0acf3d62674931@domain.hid>
 MIME-Version: 1.0
-References: <200802202358.25792.ngustavson@domain.hid>	<47BD316D.3070801@domain.hid>
-	<200802210944.56033.ngustavson@domain.hid>
-In-Reply-To: <200802210944.56033.ngustavson@domain.hid>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] writing from user space through fifo problems
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Disposition: inline
+References: <d3f72a390803040449i2111e0a7r5b0acf3d62674931@domain.hid>
+Subject: Re: [Xenomai-core] USING FLOATING POINT KERNEL SIDE
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: NZG <metalninjadragon@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: axel axel <softaxel@domain.hid>
 Cc: xenomai@xenomai.org
 
-NZG wrote:
->> Are you sure it is EINTR? A first glance at the possible code path,
->> specifically at xnpipe_recv, suggests that you cannot reach the line
->> returning this error code if TM_NONBLOCK was passed.
-> Your right, my mistake sorry.
-> It's returning EAGAIN , which is the same thing as  EWOULDBLOCK in my kernel 
-> headers, which corresponds to the correct value when data i s not available, 
-> but doesn't explain why data is never received.
+On Tue, Mar 4, 2008 at 1:49 PM, axel axel <softaxel@domain.hid> wrote:
+> Hi,
+>
+> i want to use floating point in module with some xenomai task.
+> I understand that i can use floating point if i implement some functions (
+> xnarch_fpu_init...... ).
+>
+> Ok for this but if i try to compile the module, the compiler ( gcc 3.4.3 for
+> arm ) says me there are unresolved symbol like __mulsf3.
 
-OK, that makes more sense.
-
-> 
->> What Xenomai version are we talking about BTW? 
-> 2.3.1 (blackfin 537 build)
-> 
->> And, as usual: 
->> self-contained simple test cases are always appreciated. :)
-> I'll try to put something together tonight.
-
-That's good. This test will also allow you to check it against
- - more recent Xenomai (please check the Changelog for pipe-related
-   changes since 2.3.1, I bet there are a few)
- - some other arch, specifically x86 (IIRC, there is still some Linux
-   scheduling artifact left in the I-pipe patch for blackfin, but it
-   shouldn't make a difference here - well, who knows...)
-
-Jan
+Compile your module with V=1 and you will understand what happens.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+                                               Gilles Chanteperdrix
 
