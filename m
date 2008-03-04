@@ -1,16 +1,10 @@
-Message-ID: <2ff1a98a0803030206j52d5c1eeja568e346fe058213@domain.hid>
-Date: Mon, 3 Mar 2008 11:06:16 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <47CACD33.5000107@domain.hid>
+Message-ID: <d3f72a390803040449i2111e0a7r5b0acf3d62674931@domain.hid>
+Date: Tue, 4 Mar 2008 13:49:36 +0100
+From: "axel axel" <softaxel@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <47CA8934.3060405@domain.hid>
-	<18378.50046.906228.646119@domain.hid>
-	<47CACD33.5000107@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH 0/6] Fix, refactor,
-	and optimize xnlock services, v2
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_25493_31275329.1204634976836"
+Subject: [Xenomai-core] USING FLOATING POINT KERNEL SIDE
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,27 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai-core@domain.hid
+To: xenomai@xenomai.org
 
-On Sun, Mar 2, 2008 at 4:52 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> Gilles Chanteperdrix wrote:
->  >
->  > Well, I am still not convinced, I still find the debugging version harder
->  > to read. Is there a problem with implementing the two versions
->  > separately with a unique #ifdef?
->
->  Well, everything is possible. But we would start to duplicate LOC again,
->  namely both the lock implementations and the debugging services. Just
->  look at the final system.h and pod.h after applying all patches.
->
->  I could try this, but only if it is _really_ desired. I'm convinced it
->  is the wrong way because I consider the readability and consistency of
->  the lock implementation more important than its debug code.
+------=_Part_25493_31275329.1204634976836
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Well, it may happen that we have to debug the debug code. But Ok, I
-agree with your changes.
+Hi,
 
--- 
-                                               Gilles Chanteperdrix
+i want to use floating point in module with some xenomai task.
+I understand that i can use floating point if i implement some functions (
+xnarch_fpu_init...... ).
+
+Ok for this but if i try to compile the module, the compiler ( gcc 3.4.3 for
+arm ) says me there are unresolved symbol like __mulsf3.
+
+Have you ever try a xenomai task that use floating point in kernel space ?
+
+
+Thanks a lot for your help.
+
+
+Roberto Bielli
+
+------=_Part_25493_31275329.1204634976836
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hi,<br><br>i want to use floating point in module with some xenomai task. <br>I understand that i can use floating point if i implement some functions ( xnarch_fpu_init...... ).<br><br>Ok for this but if i try to compile the module, the compiler ( gcc 3.4.3 for arm ) says me there are unresolved symbol like __mulsf3.<br>
+<br>Have you ever try a xenomai task that use floating point in kernel space ?<br><br><br>Thanks a lot for your help.<br><br><br>Roberto Bielli<br>
+
+------=_Part_25493_31275329.1204634976836--
 
