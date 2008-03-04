@@ -1,74 +1,81 @@
-Message-ID: <47E52BB2.5060709@domain.hid>
-Date: Sat, 22 Mar 2008 16:54:26 +0100
-From: Roland Stigge <stigge@domain.hid>
+Date: Tue, 4 Mar 2008 18:12:11 +0100 (CET)
+From: Klaas Gadeyne <klaas.gadeyne@domain.hid>
+Message-ID: <Pine.LNX.4.64.0803041734290.26008@domain.hid>
 MIME-Version: 1.0
-References: <47E4196F.2070303@domain.hid>
-In-Reply-To: <47E4196F.2070303@domain.hid>
-Content-Type: multipart/mixed; boundary="------------080202050005080700080903"
-Subject: Re: [Xenomai-core] [Fwd: Bug#471871: xenomai-runtime: bashism in
- /bin/sh script]
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: [Xenomai-help] Shared IRQ issue with Xeno Peak PCI CAN driver
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai-core@domain.hid
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------080202050005080700080903
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Hi,
 
-Jan Kiszka wrote:
-> Maybe someone with idle cycles left could have a look at this.
+we're having a problem finding a non-shared IRQ for a PEAK systems can
+board in a particular industrial SBC with PCI backplane [*].
+Loading the xeno_can_peak_pci driver fails due to a "so-called" IRQ
+conflict. (see below)
 
-Idle? Preempted, at most!
+However, it seems the IRQ (12) is not assigned, so this shouldn't be a
+problem [**]?
 
-Attached is what I will apply to the Debian version. Feel free to do as
-well...
+zeus:~# uname -a
+Linux zeus 2.6.24-ipipe-2.0-03 #1 PREEMPT Tue Mar 4 14:54:02 CET 2008
+            i686 GNU/Linux
+zeus:~# cat /proc/interrupts
+            CPU0
+   0:     527508    XT-PIC-XT        timer
+   1:        301    XT-PIC-XT        i8042
+   2:          0    XT-PIC-XT        cascade
+  10:        770    XT-PIC-XT        eth0
+  11:       4386    XT-PIC-XT        libata
+  14:       4333    XT-PIC-XT        ide0
+  15:          0    XT-PIC-XT        libata
+NMI:          0   Non-maskable interrupts
+TRM:          0   Thermal event interrupts
+SPU:          0   Spurious interrupts
+ERR:          0
+zeus:~# modprobe xeno_can_peak_pci
+zeus:~# dmesg | tail
+rtcan: registered rtcan0
+PEAK-PCI-CAN: base_addr=f8a62400 conf_addr=f88b0000 irq=12
+IRQ = 12
+ERROR -16: IRQ 12 is busy, check shared interrupt support!
+ERROR -16 while trying to register SJA1000 device!
+Removing PEAK-PCI SJA1000 device rtcan0
+Unregistering SJA1000 device rtcan0
+RTCAN: unregistered rtcan0
+PEAK-PCI-CAN: probe of 0000:04:06.0 failed with error -16
+zeus:~# lspci -vv | tail
+         Capabilities: [b0] Slot ID: 0 slots, First-, chassis 00
 
-bye,
-  Roland
+04:06.0 Network controller: Unknown device 001c:0001 (rev 02)
+         Subsystem: Unknown device 001c:0004
+         Control: I/O- Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop-
+         ParErr- Stepping- SERR- FastB2B-
+         Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium
+         >TAbort- <TAbort- <MAbort- >SERR- <PERR-
+         Interrupt: pin A routed to IRQ 12
+         Region 0: Memory at d0100000 (32-bit, non-prefetchable)
+         [size=64K]
+         Region 1: Memory at d0110000 (32-bit, non-prefetchable)
+         [size=64K]
 
---------------080202050005080700080903
-Content-Type: text/x-diff;
- name="xenomai.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="xenomai.patch"
 
-diff -u scripts.orig/xeno-info scripts/xeno-info
---- scripts.orig/xeno-info	2007-12-09 11:46:37.000000000 +0100
-+++ scripts/xeno-info	2008-03-22 16:50:19.000000000 +0100
-@@ -1,4 +1,4 @@
--#! /bin/sh
-+#! /bin/bash
- #
- # This file has been lifted 'as is' from linux/scripts/ver_linux.
- # Adapted to be run also under the BusyBox. If you want to test it under the BusyBox use
-diff -u scripts.orig/xeno-load.in scripts/xeno-load.in
---- scripts.orig/xeno-load.in	2007-12-09 11:46:37.000000000 +0100
-+++ scripts/xeno-load.in	2008-03-22 16:50:57.000000000 +0100
-@@ -1,4 +1,4 @@
--#! /bin/sh
-+#! /bin/bash
- # Xenomai application loader script.
- # (Processes the .runinfo files)
- # June 2004, <rpm@xenomai.org>
-diff -u scripts.orig/xeno-test.in scripts/xeno-test.in
---- scripts.orig/xeno-test.in	2008-02-20 18:18:46.000000000 +0100
-+++ scripts/xeno-test.in	2008-03-22 16:50:32.000000000 +0100
-@@ -1,4 +1,4 @@
--#! /bin/sh
-+#! /bin/bash
- 
- # Adapted to be run also under the BusyBox. 
- # If you want to test it this way, do: sh xeno-test
+Any hints on how to debug this?  We've already tried everything
+described in the FAQ (I guess), but we don't understand there's a
+conflict even if nothing is listed in /proc/interrupts?
 
---------------080202050005080700080903--
+Thx,
+
+Klaas
+
+[*] Putting the card in another pc works out just fine.
+
 
