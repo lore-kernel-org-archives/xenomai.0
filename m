@@ -1,14 +1,13 @@
-Message-ID: <47CE9A92.10206@domain.hid>
-Date: Wed, 05 Mar 2008 14:05:22 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <2ff1a98a0803050520r6c139665q4612995f0a20e635@domain.hid>
+Date: Wed, 5 Mar 2008 14:20:36 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <7289437c0803050323k3c799667g8c53efce3640be85@domain.hid>
 MIME-Version: 1.0
-References: <Pine.LNX.4.64.0803041734290.26008@domain.hid>
-	<47CE8544.9070800@domain.hid>
-	<Pine.LNX.4.64.0803051337420.394@domain.hid>
-In-Reply-To: <Pine.LNX.4.64.0803051337420.394@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Shared IRQ issue with Xeno Peak PCI CAN driver
+Content-Disposition: inline
+References: <7289437c0803050323k3c799667g8c53efce3640be85@domain.hid>
+Subject: Re: [Xenomai-help] error EPERM on a pthread_mutex_lock
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,41 +17,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Klaas Gadeyne <klaas.gadeyne@domain.hid>
-Cc: xenomai@xenomai.org
+To: Perrine Martignoni <perrmart@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Klaas Gadeyne wrote:
-> On Wed, 5 Mar 2008, Wolfgang Grandegger wrote:
->> Klaas Gadeyne wrote:
->>> Hi,
->>>
->>> we're having a problem finding a non-shared IRQ for a PEAK systems can
->>> board in a particular industrial SBC with PCI backplane [*].
->>> Loading the xeno_can_peak_pci driver fails due to a "so-called" IRQ
->>> conflict. (see below)
->>>
->>> However, it seems the IRQ (12) is not assigned, so this shouldn't be a
->>> problem [**]?
-> 
-> [...]
->>> Any hints on how to debug this?  We've already tried everything
->>> described in the FAQ (I guess), but we don't understand there's a
->>> conflict even if nothing is listed in /proc/interrupts?
->>
->> There are two CAN controllers on the card, right? Therefore you need
->> support for shared interrupts. Actually, requesting the IRQ 12 for the
->> second CAN controller fails because it's already used by the first one.
-> 
-> Thx! (we've just found out ourselves that the difference in behaviour
-> between the 2 pc's was indeed due to different xenomai versions
-> (<http://svn.gna.org/viewcvs/xenomai?rev=3291&view=rev>).
+On Wed, Mar 5, 2008 at 12:23 PM, Perrine Martignoni <perrmart@domain.hid> wrote:
+> Hello,
+>
+> I have a problem with pthread_mutex_lock. I write a module RTDM which calls
+> Linux code containing a pthread_mutex_lock.
+> This returns the EPERM error.
+> I would know if I can do this : lock a mutex which is in Linux code, in
+> xenomai context.
+>  If yes, have you any idea ?
 
-Well, yes. Since commit 3291
+I can understand EPERM if the mutex is a Xenomai mutex locked from a
+non Xenomai context: this will not work. But the other way around, I
+have no clue.
 
-http://svn.gna.org/viewcvs/xenomai?rev=3291&view=rev
-
-the driver does not tolerate that failure any more. Do you prefer the
-old behavior (ignoring the failure and using just the first channel)?
-
-Wolfgang.
+-- 
+                                               Gilles Chanteperdrix
 
