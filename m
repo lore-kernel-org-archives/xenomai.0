@@ -1,14 +1,14 @@
-Message-ID: <47CFBE53.4010707@domain.hid>
-Date: Thu, 06 Mar 2008 10:50:11 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <47CFD700.5070001@domain.hid>
+Date: Thu, 06 Mar 2008 12:35:28 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <47CFBB2E.3010700@domain.hid>
-In-Reply-To: <47CFBB2E.3010700@domain.hid>
+References: <Pine.LNX.4.64.0803041734290.26008@domain.hid>	<47CE8544.9070800@domain.hid>	<Pine.LNX.4.64.0803051337420.394@domain.hid>	<47CE9A92.10206@domain.hid>
+	<Pine.LNX.4.64.0803051410580.394@domain.hid>
+	<47CEA5FD.4080202@domain.hid>
+In-Reply-To: <47CEA5FD.4080202@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Need help with pipes
-Reply-To: rpm@xenomai.org
+Subject: Re: [Xenomai-help] Shared IRQ issue with Xeno Peak PCI CAN driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,60 +18,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Laurent BESSARD <laurent.bessard@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Laurent BESSARD wrote:
-> Hello everybody,
+Jan Kiszka wrote:
+> Klaas Gadeyne wrote:
+>> --- rtcan_sja1000.c     (revision 3533)
+>> +++ rtcan_sja1000.c     (working copy)
+>> @@ -765,7 +765,7 @@
+>>       if (ret) {
+>>          printk(KERN_ERR "ERROR %d: IRQ %d is %s!\n",
+>>                 ret, chip->irq_num, ret == -EBUSY ?
+>> -              "busy, check shared interrupt support" : "invalid");
+>> +              "busy. If you have a card with > 1 channel, check if CONFIG_XENO_OPT_SHIRQ* is set" : "invalid");
+>>          return ret;
+>>       }
+>>
+>> Not kernel coding style, I know :-)
 > 
-> I'm using Xenomai for realtime developments for a couple of time. I have
-> written a program using pipes for Xenomai 2.1.0 and a 2.6.15 Linux
-> kernel compiled with Xenomai support. All worked or seemed to work fine.
-> 
-> Recently, I decided to upgrade my system to Xenomai 2.4.1 and a 2.6.23
-> Linux kernel. But during my program execution, I get a kernel
-> segmentation fault while I try to delete the pipe. After having test any
-> possibility of problem while deleting pipe, I finally find that just
-> creating and then deleting a pipe causes a kernel segmentation fault.
-> 
-> Now I don't know where my problem is located:
->   - There is something I'm doing wrong when I use pipes.
->   - I have mis-installed Xenomai on my system.
->   - It is a known problem with the version of Xenomai I installed.
-> 
-> I attached a sample of code that causes my problem.
-> 
-> Could anybody help me?
+> #ifndef CONFIG_XENO_OPT_SHIRQ
+> 	printk("Enable CONFIG_XENO_OPT_SHIRQ")
+> ?
 
-Does this help?
+No. In the past the config name changed with 2.4 and that was the main
+reason to remove it from the driver. I'm going to update the description
+and error messages as suggested by Klaas, but avoiding the config name.
 
---- ksrc/skins/native/syscall.c	(revision 3534)
-+++ ksrc/skins/native/syscall.c	(working copy)
-@@ -3987,7 +3987,7 @@
- 	[__native_intr_inquire] = {&__rt_intr_inquire, __xn_exec_any},
- 	[__native_pipe_create] = {&__rt_pipe_create, __xn_exec_lostage},
- 	[__native_pipe_bind] = {&__rt_pipe_bind, __xn_exec_conforming},
--	[__native_pipe_delete] = {&__rt_pipe_delete, __xn_exec_any},
-+	[__native_pipe_delete] = {&__rt_pipe_delete, __xn_exec_lostage},
- 	[__native_pipe_read] = {&__rt_pipe_read, __xn_exec_primary},
- 	[__native_pipe_write] = {&__rt_pipe_write, __xn_exec_any},
- 	[__native_pipe_stream] = {&__rt_pipe_stream, __xn_exec_any},
+Thanks,
 
-> Thank you in advance.
-> 
-> Best regards,
-> 
-> Laurent BESSARD
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
-
--- 
-Philippe.
+Wolfgang.
 
