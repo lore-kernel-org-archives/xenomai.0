@@ -1,13 +1,10 @@
-Message-ID: <2ff1a98a0803040533v29f5455g3b6097dc830d0666@domain.hid>
-Date: Tue, 4 Mar 2008 14:33:09 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <d3f72a390803040449i2111e0a7r5b0acf3d62674931@domain.hid>
+Message-ID: <d3f72a390803070526r3867c800u9bfb40ac1eba705e@domain.hid>
+Date: Fri, 7 Mar 2008 14:26:09 +0100
+From: "axel axel" <softaxel@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <d3f72a390803040449i2111e0a7r5b0acf3d62674931@domain.hid>
-Subject: Re: [Xenomai-core] USING FLOATING POINT KERNEL SIDE
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_436_7401719.1204896369520"
+Subject: [Xenomai-core] WIRED INTERRUPT
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,21 +14,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: axel axel <softaxel@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Tue, Mar 4, 2008 at 1:49 PM, axel axel <softaxel@domain.hid> wrote:
-> Hi,
->
-> i want to use floating point in module with some xenomai task.
-> I understand that i can use floating point if i implement some functions (
-> xnarch_fpu_init...... ).
->
-> Ok for this but if i try to compile the module, the compiler ( gcc 3.4.3 for
-> arm ) says me there are unresolved symbol like __mulsf3.
+------=_Part_436_7401719.1204896369520
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Compile your module with V=1 and you will understand what happens.
+Hi,
 
--- 
-                                               Gilles Chanteperdrix
+i used the xenomai kernel side interrupt handler in this mode:
+
+err = rt_intr_create( &rtFujInt, INTFUJITSUNAME, IRQFUJITSU, isrIntFujitsu ,
+NULL, 0 );
+if ( err != 0 )
+{
+   printk( "Impossible to create interrupt handler: %d\n", err );
+   return 1;
+}
+
+STARTIRQ();
+
+
+I saw with the oscilloscope that there is a significant latency ( max ~110us
+on ARM ep9315 ) before executing the first instruction of the handler
+"isrIntFujitsu".
+I listen that eventually i can use WIRED interrupt that is more fast.
+
+How can i use it ?
+
+
+Thanks for all
+
+Roberto Bielli
+
+------=_Part_436_7401719.1204896369520
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<br>Hi,<br><br>i used the xenomai kernel side interrupt handler in this mode:<br><br>err = rt_intr_create( &amp;rtFujInt, INTFUJITSUNAME, IRQFUJITSU, isrIntFujitsu , NULL, 0 );<br>if ( err != 0 )<br>{<br>&nbsp;&nbsp; printk( &quot;Impossible to create interrupt handler: %d\n&quot;, err );<br>
+&nbsp;&nbsp; return 1;<br>}<br><br>STARTIRQ();<br><br><br>I saw with the oscilloscope that there is a significant latency ( max ~110us on ARM ep9315 ) before executing the first instruction of the handler &quot;isrIntFujitsu&quot;.<br>
+I listen that eventually i can use WIRED interrupt that is more fast. <br><br>How can i use it ? <br><br><br>Thanks for all<br><br>Roberto Bielli<br> 
+
+------=_Part_436_7401719.1204896369520--
 
