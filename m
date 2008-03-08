@@ -1,15 +1,17 @@
-Message-ID: <47D2D10E.2050501@domain.hid>
-Date: Sat, 08 Mar 2008 18:46:54 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <e39c9190803081026s88acfe1h7dbef2f26ec7acc5@domain.hid>
+Date: Sat, 8 Mar 2008 19:26:46 +0100
+From: "juanba romance" <juanba.romance@domain.hid>
+In-Reply-To: <47D2D537.7020106@domain.hid>
 MIME-Version: 1.0
-References: <47CFBB2E.3010700@domain.hid> <47CFBE53.4010707@domain.hid>
-	<47D01673.8030909@domain.hid>
-In-Reply-To: <47D01673.8030909@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Need help with pipes
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_33008_33544334.1205000806518"
+References: <e39c9190803080255s7020537co8ea96ab71ed6ecc2@domain.hid>
+	<47D27C0A.2010507@domain.hid>
+	<e39c9190803080624sf49293bwff20317788ad28f7@domain.hid>
+	<e39c9190803080942k302e66a6m75ed94dccd55aaac@domain.hid>
+	<47D2D537.7020106@domain.hid>
+Subject: Re: [Xenomai-help] Posix skin and message queues operation mode
+	misunderstanding
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,37 +21,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Laurent BESSARD <laurent.bessard@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-Laurent BESSARD wrote:
-> Philippe Gerum a =E9crit :
->> Laurent BESSARD wrote:
->> =20
->>> Hello everybody,
->>>
->>> I'm using Xenomai for realtime developments for a couple of time. I have
->>> written a program using pipes for Xenomai 2.1.0 and a 2.6.15 Linux
->>> kernel compiled with Xenomai support. All worked or seemed to work fine.
->>>
->>> Recently, I decided to upgrade my system to Xenomai 2.4.1 and a 2.6.23
->>> Linux kernel. But during my program execution, I get a kernel
->>> segmentation fault while I try to delete the pipe. After having test any
->>> possibility of problem while deleting pipe, I finally find that just
->>> creating and then deleting a pipe causes a kernel segmentation fault.
->>>
->>> Now I don't know where my problem is located:
->>>   - There is something I'm doing wrong when I use pipes.
->>>   - I have mis-installed Xenomai on my system.
->>>   - It is a known problem with the version of Xenomai I installed.
->>>
->>> I attached a sample of code that causes my problem.
->>>
+------=_Part_33008_33544334.1205000806518
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Try this one:
-http://download.gna.org/adeos/patches/v2.6/x86/adeos-ipipe-2.6.24-x86-2.0-0=
-4.patch
+On Sat, Mar 8, 2008 at 7:04 PM, Philippe Gerum <rpm@xenomai.org> wrote:
 
---=20
-Philippe.
+> Yes it does. Maybe contributing the needed support for SIGEV_THREAD to the
+> Xenomai library would spare you way more invasive changes to your code
+> base.
+> After all, honoring SIGEV_THREAD seems to me a matter of running a server
+> thread
+> in the background to poll for notifications, which is what we do in a
+> number of
+> occasions for other skins. Additionally, we don't actually care if this
+> support
+> is only available to userland programs, and not to kernel-based modules.
+>
+> Philippe.
+>
+
+I see, well, imho its a performance issue for our concerns, we developed our
+APIs, in general terms, based on threads dispatching instead of signal
+delivering due to the "historic" limited bandwidth in the signal mechanisms
+under Unix/Linux..whatever.
+
+Right now, we dont have a clear idea about it..  so we move on in a first
+approach with software re-usage issues in mind cause we have already passed
+a validation proccess. Anyway the required modifications seems not to be too
+hard(right now), so before deep inside we will check our application
+prototypes following your current capabilities..
+
+Best regards.
+
+------=_Part_33008_33544334.1205000806518
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+On Sat, Mar 8, 2008 at 7:04 PM, Philippe Gerum &lt;<a href="mailto:rpm@xenomai.org">rpm@xenomai.org</a>&gt; wrote:<br><div class="gmail_quote"><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+<div class="Ih2E3d">Yes it does. Maybe contributing the needed support for SIGEV_THREAD to the<br></div>
+Xenomai library would spare you way more invasive changes to your code base.<br>
+After all, honoring SIGEV_THREAD seems to me a matter of running a server thread<br>
+in the background to poll for notifications, which is what we do in a number of<br>
+occasions for other skins. Additionally, we don&#39;t actually care if this support<br>
+is only available to userland programs, and not to kernel-based modules.<br>
+<div><div></div><br></div><font color="#888888">Philippe.<br>
+</font></blockquote></div><br>I see, well, imho its a performance issue for our concerns, we developed our APIs, in general terms, based on threads dispatching instead of signal delivering due to the &quot;historic&quot; limited bandwidth in the signal mechanisms under Unix/Linux..whatever. <br>
+<br>Right now, we dont have a clear idea about it..&nbsp; so we move on in a first approach with software re-usage issues in mind cause we have already passed a validation proccess. Anyway the required modifications seems not to be too hard(right now), so before deep inside we will check our application prototypes following your current capabilities..&nbsp;  <br>
+<br>Best regards.
+
+------=_Part_33008_33544334.1205000806518--
 
