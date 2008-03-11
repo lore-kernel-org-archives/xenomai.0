@@ -1,20 +1,19 @@
+Message-ID: <2ff1a98a0803110236r13a58c2fl7b142d834336673d@domain.hid>
+Date: Tue, 11 Mar 2008 10:36:03 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <d3f72a390803110152q4af121dxdacde86189088549@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-ID: <18387.2283.891303.192919@domain.hid>
-Date: Sat, 8 Mar 2008 22:45:15 +0100
-In-Reply-To: <e39c9190803081255i6888ce44yd0a14f0b90e57b0b@domain.hid>
-References: <e39c9190803080255s7020537co8ea96ab71ed6ecc2@domain.hid>
-	<47D27C0A.2010507@domain.hid>
-	<e39c9190803080624sf49293bwff20317788ad28f7@domain.hid>
-	<e39c9190803080942k302e66a6m75ed94dccd55aaac@domain.hid>
-	<47D2D537.7020106@domain.hid>
-	<e39c9190803081026s88acfe1h7dbef2f26ec7acc5@domain.hid>
-	<18386.63663.282453.578916@domain.hid>
-	<e39c9190803081255i6888ce44yd0a14f0b90e57b0b@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] Posix skin and message queues operation mode
-	misunderstanding
+Content-Disposition: inline
+References: <d3f72a390803070526r3867c800u9bfb40ac1eba705e@domain.hid>
+	<2ff1a98a0803070539i6cfa19a4t63e56e266fbfba71@domain.hid>
+	<d3f72a390803070630je3a4d4fsaf96b79c0de792ea@domain.hid>
+	<2ff1a98a0803070635g253cfc2cod690f90dd934b62e@domain.hid>
+	<d3f72a390803100122q23e381f9y7cbdf2c14b177415@domain.hid>
+	<2ff1a98a0803100341p1e72d412l27d002b018ddbf9@domain.hid>
+	<d3f72a390803110152q4af121dxdacde86189088549@domain.hid>
+Subject: Re: [Xenomai-help] [Xenomai-core] WIRED INTERRUPT
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,39 +23,139 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: juanba romance <juanba.romance@domain.hid>
-Cc: xenomai@xenomai.org
+To: axel axel <softaxel@domain.hid>, xenomai-help <xenomai@xenomai.org>
 
-juanba romance wrote:
- > >
- > > Xenomai posix skin signals cause the target thread to switch to
- > >
- > secondary mode, so, it may not be a good idea to use them.
- > >                                            Gilles Chanteperdrix.
- > 
- > 
- > I understand that since the first callback instruction up to call the
- > mq_receive xenomai system call, isn't it ?
+On Tue, Mar 11, 2008 at 9:52 AM, axel axel <softaxel@domain.hid> wrote:
+>
+>
+> 2008/3/10, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+> > On Mon, Mar 10, 2008 at 9:22 AM, axel axel <softaxel@domain.hid> wrote:
+> > > I installed trunk but nothing was changed.
+> >
+> >
+> > If you measure the jitter when receiving the semaphore, that's normal:
+> > unlocked context switches improve interrupt latency, not scheduling
+> > latency.
+> >
+> >
+> > >  So i saw in the documentation that i can put an interrupt shield on a
+> task.
+> > >
+> > > But when i use interrupt shield i saw with the oscilloscope that linux
+> > > doesn't work, instead xenomai task and interrupt handler yes, and the
+> jitter
+> > > go down in about 50~us.
+> >
+> >
+> > The interrupt shield only make a difference for tasks running in
+> > secondary mode. So, if you observe a difference, it means that your
+> > task is running in secondary mode. Or you may observe an indirect
+> > effect (Linux interrupts do not run, so they do not fill the cache).
+>
+> Probabily it's an an indirect effect.
+> How does the cache work ?
 
-Yes, it is.
+http://en.wikipedia.org/wiki/Cache
 
- > 
- > We were thinking to customize the real-time operative passing some
- > parameters only under a controlled application state. So at same time we
- > need to connect the real time operative to any "secondary" object, maybe
- > other approaches are preferred..
- > 
- > If the mq_receive returns to the primary domain we can assume the hole along
- > the configuration process timing.
- > 
+ARM cache is usually of type VIVT
 
-I do not understand what you mean. But from my point of view, using
-message queues notification through SIGEV_THREAD or SIGEV_SIGNAL will
-never be nearly as fast as a server thread calling mq_receive in a
-loop.
+>  It's an interrupt chache?
+
+No, I am talking about the memory (data & instruction) cache.
+
+> what does it mean fill the cache with the shield setting in primary mode ?
+>
+>
+>
+> > >
+> > > The problem is:
+> > > - xenomai task wait on the 2ms semaphore, put on/off a led and just wait
+> on
+> > > the previous semaphore, in conclusion there is a little work,
+> > >  but linux hang.
+> > >
+> > >
+> > >
+> > > So i have this situation and the relative c code:
+> > >
+> > > 1. i have a kernel module that handle a xenomai interrupt of 2ms, do
+> some
+> > > work, enable a semaphore;
+> > >
+> > > int isrIntFujitsu( xnintr_t* cookie )
+> > > {
+> > >      word16 i;
+> > >
+> > >     CLEAR_IRQ();
+> > >
+> > >      //-----------------------LED---------------------------------------
+> > >         //    P6 on
+> > >      __raw_writel( __raw_readl( GPIO_PCDR ) | 0x00000020 , GPIO_PCDR );
+> > >
+> > >     //-----------------------------------------------------------------
+> > >
+> > >     physFujMem->cmd.dpBusySync[ 2 ] = TRUE;
+> > >
+> > >     //copiamo l'area dalla dualport del fujitsu
+> > >      for( i=0; i < 24; i++)
+> > >     {
+> > >         *( (word16 * )adrLocalRead + i ) = *( adrPhysRead + i );
+> > >      }
+> > >
+> > >     //Scriviamo nella dualport del fujitsu
+> > >     for( i=0; i < 24; i++)
+> > >      {
+> > >         *( adrPhysWrite + i ) = *( (word16 * )adrLocalWrite + i );
+> > >     }
+> > >
+> > >     physFujMem->cmd.dpBusySync[ 2 ] = FALSE;
+> > >
+> > >             //    P6 off
+> > >      __raw_writel( __raw_readl( GPIO_PCDR ) & 0xFFFFFCF , GPIO_PCDR);
+> > >
+> > >
+> > >          //incrementa il semaforo ( il fujitsu ha alzato un interrupt )
+> > >     rt_sem_v( &rtFujSem );
+> > >
+> > >     return RT_INTR_HANDLED ;
+> > > }
+> > >
+> > >
+> > >
+> > >
+> > > 2. a xenomai task that wait on the same semaphore of kernel xenomai
+> > > interrupt and start his work.
+> > >
+> > > void taskCan (void *cookie)
+> > > {
+> > >     int err;
+> > >
+> > >
+> > >     err = rt_task_set_mode( 0, T_PRIMARY | T_SHIELD ,0);
+> > >      if( err != 0 )
+> > >     {
+> > >         printf( "Impossible to set task mode\n" );
+> > >         fflush( stdout );
+> > >     }
+> > >
+> > >     for (;;)
+> > >     {
+> > >
+> > >         rt_sem_p( &rtSemCan,TM_INFINITE );
+> >
+> >
+> > Could you test the return value of rt_sem_p here ? If it fails, then
+> > you are calling it in a loop, causing the machine to hang. In any
+> > case, you may activate Xenomai watchdog and Linux soft-lockup detector
+> > to detect all kinds of soft lockups.
+>
+> the return value of rt_sem_p is always 0.
+>
+>
+>
+
+
 
 -- 
-
-
-					    Gilles Chanteperdrix.
+ Gilles Chanteperdrix
 
