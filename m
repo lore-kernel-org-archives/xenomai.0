@@ -1,12 +1,13 @@
-Message-ID: <47D6DD05.2040007@domain.hid>
-Date: Tue, 11 Mar 2008 20:27:01 +0100
-From: Anders Blomdell <anders.blomdell@domain.hid>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18391.3867.521099.955604@domain.hid>
+Date: Wed, 12 Mar 2008 00:00:43 +0100
+In-Reply-To: <47D6DD05.2040007@domain.hid>
 References: <47D6CD29.4020700@domain.hid>
 	<2ff1a98a0803111127p7868350axa976c68714cf4f05@domain.hid>
-In-Reply-To: <2ff1a98a0803111127p7868350axa976c68714cf4f05@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+	<47D6DD05.2040007@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Subject: Re: [Xenomai-help] What have I misunderstood about condition
 	variables
 List-Id: Help regarding installation and common use of Xenomai
@@ -18,185 +19,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Anders Blomdell <anders.blomdell@domain.hid>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> On Tue, Mar 11, 2008 at 7:19 PM, Anders Blomdell
->>  To me the symptoms indicate that the high priority producer gets the mutex and
->>  signals it before the consumer has properly started to wait on the condition.
-> 
-> I have not read your program in detail, but what may be your problem
-> is that condition variables are not semaphores: if you signal a
-> condition variable when nobody is waiting the signal is lost. 
-I know this, but the problem is that the program loses signals when it is
-waiting. In the consumer:
+Anders Blomdell wrote:
+ > Gilles Chanteperdrix wrote:
+ > > On Tue, Mar 11, 2008 at 7:19 PM, Anders Blomdell
+ > >>  To me the symptoms indicate that the high priority producer gets the mutex and
+ > >>  signals it before the consumer has properly started to wait on the condition.
+ > > 
+ > > I have not read your program in detail, but what may be your problem
+ > > is that condition variables are not semaphores: if you signal a
+ > > condition variable when nobody is waiting the signal is lost. 
+ > I know this, but the problem is that the program loses signals when it is
+ > waiting. In the consumer:
 
-    rt_mutex_acquire(&mutex, TM_INFINITE);
-    rt_printf("a");
-    rt_task_sleep(1000000000L);
-    rt_printf("b");
-    err = rt_cond_wait(&cond, &mutex, TM_INFINITE);
-    rt_printf("c");
-    rt_mutex_release(&mutex);
-    rt_printf("d %d\n", data);
-
-i.e. after a 'b' has been written, the consumer is waiting on the condition
-(Yes, I know that I access data outside the mutex...).
-
-In the producer:
-
-    rt_printf("B");
-    data++;
-    rt_mutex_release(&mutex);
-    rt_mutex_acquire(&mutex, TM_INFINITE);
-    rt_cond_broadcast(&cond);
-    rt_printf("C");
-    rt_mutex_release(&mutex);
-    rt_task_sleep(100000000L);
-
-i.e. the condition is signalled just before 'C' is written.
-
-To elaborate on the [unexpected] output sequence:
-
-     a		(consumer inside mutex)
-     A		(producer about to enter mutex)
-     b          (consumer starts waiting on condition)
-     B          (producer has entered mutex)
-     C          (producer has signalled condition)
-     ...here I would have expected the consumer to resume...
-     A          (producer has slept for 1 second, outside mutex)
-     B          (producer has entered mutex)
-     C          (producer has signalled condition)
-     c          (consumer has got the second signal on condition)
-     d		(consumer has left mutex)
-
-
-
-> condition variable is supposed to be associated with a condition
-> relying on variable external to the condition variables itself.
-Yes I know all this, but the problem is that a high priority thread waiting for
-the mutex, claims the mutex and signals the condition before the low priority
-thread has started to wait for the condition (even ).
-
->...
-> Note the while loop, instead of a simple if, it is necessary to handle
-> correctly spurious wakeups.
-My problem is the opposite, I don't get the wakeups :-(
-
-The following program is more like my original problem (which was tricky to
-isolate):
-
-#include <native/cond.h>
-#include <native/mutex.h>
-#include <native/task.h>
-#include <native/timer.h>
-#include <rtdk.h>
-#include <sys/mman.h>
-
-RT_TASK main_task, producer_task, consumer_task;
-RT_MUTEX mutex;
-RT_COND cond;
-int waiting, signalled;
-
-static void producer(void *arg)
-{
-  while(1) {
-    rt_task_set_mode(0, T_PRIMARY, 0);
-
-    rt_printf("Producer sleep...\n");
-    rt_task_sleep(1000000000L);
-    rt_printf("...producer slept\n");
-
-    rt_mutex_acquire(&mutex, TM_INFINITE);
-    rt_printf("Producer has entered waiting=%d, signalled=%d\n",
-	      waiting, signalled);
-    if (waiting && !signalled) {
-      rt_cond_broadcast(&cond);
-      signalled = 1;
-      rt_printf("  sent signal\n");
-    }
-    rt_mutex_release(&mutex);
-  }
-}
-
-
-static void consumer(void *arg)
-{
-  while(1) {
-    int err;
-
-    rt_task_set_mode(T_PRIMARY, 0, 0);
-    rt_mutex_acquire(&mutex, TM_INFINITE);
-    rt_task_sleep(1000000000L);
-    waiting = 1;
-    signalled = 0;
-    rt_printf("Consumer about to wait waiting=%d, signalled=%d\n",
-	      waiting, signalled);
-    err = rt_cond_wait(&cond, &mutex, 2000000000L);
-    if (err != 0 && signalled) {
-      rt_printf("Consumer not awoken err=%d, signalled=%d\n",
-		err, signalled);
-    } else {
-      rt_printf("Consumer awoken\n");
-    }
-    rt_mutex_release(&mutex);
-  }
-}
-
-
-int main(int argc, char *argv[])
-{
-  mlockall(MCL_CURRENT|MCL_FUTURE);
-  rt_print_auto_init(1);
-  rt_task_shadow(&main_task, NULL, 1, T_FPU);
-  rt_mutex_create(&mutex, NULL);
-  rt_cond_create (&cond, NULL);
-  rt_task_create(&producer_task, NULL, 0, 50, 0);
-  rt_task_start(&producer_task, &producer, NULL);
-  rt_task_create(&consumer_task, NULL, 0, 20, 0);
-  rt_task_start(&consumer_task, &consumer, &consumer_task);
-  while (1) {
-    rt_task_sleep(1000000000L);
-  }
-  return 0;
-}
-
-And here I get the output:
-
-Producer sleep...
-...producer slept
-Consumer about to wait waiting=1, signalled=0
-Producer has entered waiting=1, signalled=0
-  sent signal
-Producer sleep...
-...producer slept
-Producer has entered waiting=1, signalled=1
-Producer sleep...
-Consumer not awoken err=-110, signalled=1
-...producer slept
-Producer has entered waiting=1, signalled=1
-Producer sleep...
-...producer slept
-Consumer about to wait waiting=1, signalled=0
-Producer has entered waiting=1, signalled=0
-  sent signal
-Producer sleep...
-...producer slept
-Producer has entered waiting=1, signalled=1
-Producer sleep...
-Consumer not awoken err=-110, signalled=1
-...producer slept
-Producer has entered waiting=1, signalled=1
-Producer sleep...
-
-What am I missing?
-
+Sorry for the noise (and thanks for the patch).
 
 -- 
-Anders Blomdell                  Email: anders.blomdell@domain.hid
-Department of Automatic Control
-Lund University                  Phone:    +46 46 222 4625
-P.O. Box 118                     Fax:      +46 46 138118
-SE-221 00 Lund, Sweden
+
+
+					    Gilles Chanteperdrix.
 
