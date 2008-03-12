@@ -1,86 +1,37 @@
-Message-Id: <47BDA1710200000100192821@domain.hid>
-Date: Thu, 21 Feb 2008 16:06:09 -0500
-From: "Hubert Talbot" <Hubert.Talbot@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <2ff1a98a0803120923m76f75bder857abac049c22e4d@domain.hid>
+Date: Wed, 12 Mar 2008 17:23:01 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Subject: [Xenomai-help] Non RT PCI device driver vs interrupts (almost ok)
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] New I-pipe patch for ARM.
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>, xenomai-help <xenomai@xenomai.org>, adeos-main <adeos-main@gna.org>
 
+Hi,
 
-First of all, I am studying xenomai to show to my manager that this =
-framework=20
-can do the expected job for our realtime applications (me, I believe!). I =
-have to prove
-that with a concrete application (alike the ones we do in general), where =
-the
-need to test xenomai with pci card.
+as you may have already noticed, the ARM I-pipe patch for linux 2.6.24
+is available on Adeos download site and in Xenomai svn.
 
-The first step I decided to do is capture interrupt. Eventually, I will =
-want
-to translate driver to rtdm.
+This patch incorporates modifications of all boards code to adapt to
+the ipipe_tickdev system which couples timer requests with Linux
+clockevent/clocksource framework.
 
-I had some difficulties to catch interrupt from realtime task but with
-your confirmation, it is ok now.
+As usual, it is tested only on AT91RM9200 and only compile-tested for
+other boards. So, it would be nice if people could test this new patch
+on their board.
 
-However, it seems to be not as precise as expected=20
-(in milliseconds order instead of microsecs).
+Thanks and regards.
 
-
-Within a demo application...
-
-
-The main function is as:
-
-- opens board (specifying ISR)
-- enables capturing of digital IO events
-- enables interrupt requests in response to captured DIO edges
-- enables interrupts
-- reads counter
-- disables interrupts
-- closes board
-
-
-And the ISR is as:
-
-- gets interrupts status
-- updates count
-- resets DIO event capture flags
-- enables interrupts
-
-
-
-Doing like that in realtime application, I succeeded to catch interrupts
-but with imprecision.
-
-In rt_task, I have the following:
-
-- rt_intr_wait()
-- gets interrupts status (1)
-- reads counter=20
-- resets DIO event capture flags (2)
-- enables interrupts (3)
-
-
-Can (1) (2) (3) api calls cause the imprecision (primary/secondary mode)?
-
-Should it be better if device driver would be implemented with xenomai-rtdm=
-?
-
-
-Thanks
-
-Hubert
-
-
+-- 
+ Gilles Chanteperdrix
 
