@@ -1,20 +1,10 @@
-Message-ID: <d6c8ef150803130719p63589e3ap292ceeabaf1ef59a@domain.hid>
-Date: Thu, 13 Mar 2008 15:19:41 +0100
-From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
-In-Reply-To: <2ff1a98a0803130648x6693b38cp51402c8831dc72b4@domain.hid>
+Date: Thu, 13 Mar 2008 15:55:37 +0100 (CET)
+From: Michael Trimarchi <trimarchimichael@domain.hid>
+In-Reply-To: <2ff1a98a0803130718k1c93d405vc76fc97459acc6ed@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <2ff1a98a0803120923m76f75bder857abac049c22e4d@domain.hid>
-	<d6c8ef150803130409g2a618d30gbede878d6a09e470@domain.hid>
-	<2ff1a98a0803130412h12261b67n3b43912354173107@domain.hid>
-	<d6c8ef150803130423p63a0a43esb37b74efcf009476@domain.hid>
-	<2ff1a98a0803130606u7d6dd7b3mce33a5e30735d11a@domain.hid>
-	<d6c8ef150803130610q5677912ft60865a912ed6fe00@domain.hid>
-	<2ff1a98a0803130621j58f7f320l4cbf44467732bc5b@domain.hid>
-	<d6c8ef150803130636h7f064e2cof5d82676f1e19af@domain.hid>
-	<2ff1a98a0803130648x6693b38cp51402c8831dc72b4@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Message-ID: <258212.32312.qm@domain.hid>
 Subject: Re: [Adeos-main] New I-pipe patch for ARM.
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
@@ -27,15 +17,27 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: adeos-main <adeos-main@gna.org>
 
-On Thu, Mar 13, 2008 at 2:48 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
+Hi,
+--- Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> ha scritto:
+> >  I don't see the patch but
+> >  I think that Gilles use TC0 and TC1 on a chain.
+> >  Is correct?
+>=20
+> No, I use only one TC. I have seen some patches for
+> vanilla Linux
+> which use two TC, but it seems that they use the
+> slow clock, which I
+> find much too slow: 32 kHz give us a resolution
+> around 30 us.
+>=20
 
->  The TC frequency is master clock / 32, which is around 32 MHz, but if
->  the wrap time is less than 20 ms, it is too short. To see if it is
->  really the problem, you should launch latency -p 1000, and see if the
->  network works. If it works, then the problem is TC wrap time.
+I don't understand. The slow clock is of 32khz or not?
+Regards Michael
 
-Well, no "improvements" during latency -p 1000 execution. I still get
-"transmit timed out" and I can see on the Ethernet side arp who-has
-requests from the target board.
+
+
+      Inviato da Yahoo! Mail.
+Il servizio di posta=A0con lo spazio illimitato.
+http://it.docs.yahoo.com/mail/overview/index.html
 
