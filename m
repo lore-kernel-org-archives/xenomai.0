@@ -1,6 +1,6 @@
-Message-ID: <2ff1a98a0803130621j58f7f320l4cbf44467732bc5b@domain.hid>
-Date: Thu, 13 Mar 2008 14:21:18 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+Message-ID: <d6c8ef150803130621u9b1a101g7aa8b7a7483bf618@domain.hid>
+Date: Thu, 13 Mar 2008 14:21:37 +0100
+From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
 In-Reply-To: <d6c8ef150803130610q5677912ft60865a912ed6fe00@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
@@ -21,26 +21,10 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Bosko Radivojevic <bosko.radivojevic@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: adeos-main <adeos-main@gna.org>
 
-On Thu, Mar 13, 2008 at 2:10 PM, Bosko Radivojevic
-<bosko.radivojevic@domain.hid> wrote:
-> On Thu, Mar 13, 2008 at 2:06 PM, Gilles Chanteperdrix
->
-> <gilles.chanteperdrix@xenomai.org> wrote:
->
->
-> >  So, you do not seem to have any IRQ conflict. What is your main clock
->  >  frequency, 100 MHz ?
->
->  Here is what kernel says:
->  Clocks: CPU 198 MHz, master 99 MHz, main 18.432 MHz
-
-The master clock is at 99 MHz, I am afraid the TC wraps too fast. I
-will try and use another sub-multiple of the Main clock frequency, but
-it takes some time that I have not before tuesday.
-
--- 
- Gilles Chanteperdrix
+Little update: I can see "arp who-has" packets transmitted on the
+Ethernet port. I've connected Linux PC on the same Ethernet segment,
+and it has board's MAC in its arp table.
 
