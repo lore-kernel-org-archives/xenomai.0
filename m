@@ -1,16 +1,14 @@
-Message-ID: <d6c8ef150803140241s438d6d5bo6240a406fc988ffa@domain.hid>
-Date: Fri, 14 Mar 2008 10:41:57 +0100
-From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
-In-Reply-To: <2ff1a98a0803131051v43dea811r67b5a81e7d32ba62@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <2ff1a98a0803120923m76f75bder857abac049c22e4d@domain.hid>
-	<d6c8ef150803130409g2a618d30gbede878d6a09e470@domain.hid>
-	<d6c8ef150803131013p152b79fah70d97ee1429e86e9@domain.hid>
-	<2ff1a98a0803131051v43dea811r67b5a81e7d32ba62@domain.hid>
-Subject: Re: [Adeos-main] New I-pipe patch for ARM.
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 14 Mar 2008 11:02:44 +0100
+Message-ID: <4E70056F9205354583FBC4273D5430FFF1AF10@domain.hid>
+References: <4E70056F9205354583FBC4273D5430FFF1AA2A@svr-exc-01.intern.wipotec.de>
+	<2ff1a98a0803070833xc04bf5du3efdc9c46b1badf2@domain.hid>
+From: "Laux Karsten-Olaf" <karsten-olaf.laux@domain.hid>
+Subject: Re: [Adeos-main] AT91SAM9263 and ipipe
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -20,40 +18,85 @@ List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+Cc: adeos-main@gna.org
 
-On Thu, Mar 13, 2008 at 6:51 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
 
->  Ok. The code which does this is __ipipe_mach_demux_irq in
->  arch/arm/mach-at91/gpio.c. Could you check if at least it triggers ?
+> From what I read in the AT91 headers, the difference between SAM9263 =
+and other AT91s is that=20
+> the TC interrupt is shared. Are you sure you do not get problems with =
+this ?
 
-I put the following code into __ipipe_mach_demux_irq() in mach-at91/gpio.c:
+Yepp, this is the "problem". The TCB-clock is not found in =
+at91_ipipe_time.c: the setup-code looks for "at91_tc0", but there is =
+only a "at91_tcb" clock.
 
-[..]
-	void __iomem	*pio;
-	u32		isr;
+Below is a patch which should avoid this problem. The patch was created =
+on base of linux-2.6.24 + adoes-ipipe-2.6.24-arm-1.9.00.
 
-printk (KERN_INFO "__ipipe_mach_demux_irq: irq=%d\n", irq);
-	pio = get_irq_chip_data(irq);
-printk (KERN_INFO "__ipipe_mach_demux_irq: pio=%x\n", pio);
-[..]
-	for (;;) {
-		isr = __raw_readl(pio + PIO_ISR) & __raw_readl(pio + PIO_IMR);
-printk (KERN_INFO "__ipipe_mach_demux_irq: isr=%x\n", isr);
-		if (!isr) {
-printk (KERN_INFO "__ipipe_mach_demux_irq: !isr\n");
-			break;
-		}
-		pin = (unsigned) get_irq_data(irq);
-printk (KERN_INFO "__ipipe_mach_demux_irq: pin: %d\n", pin);
-[...]
 
-And all I get is just once (first time I send a packet):
-__ipipe_mach_demux_irq: irq=3
-__ipipe_mach_demux_irq: pio=c02203d8
-__ipipe_mach_demux_irq: isr=0
-__ipipe_mach_demux_irq: !isr
+Thanks for your hint,
+Karsten.
 
-Maybe pio is wrongly calculated in get_irq_chip_data()?
+
+
+>>>>>>>>>> SNIP >>>>>>>>>>><
+
+--- at91_ipipe_time.c.orig	2008-03-14 08:00:25.000000000 +0100
++++ at91_ipipe_time.c	2008-03-14 08:04:55.000000000 +0100
+@@ -239,7 +239,12 @@
+ EXPORT_SYMBOL(__ipipe_mach_get_tsc);
+=20
+ static struct clocksource clksrc =3D {
++#if !defined(CONFIG_ARCH_AT91SAM9263)
+ 	.name   =3D "at91_tc" __stringify(CONFIG_IPIPE_AT91_TC),
++#else
++	// at91sam9263 only has a single TCB clock
++	.name   =3D "at91_tcb",
++#endif=09
+ 	.rating =3D 250,
+ 	.read   =3D __ipipe_mach_get_tsc,
+ 	.mask   =3D CLOCKSOURCE_MASK(64),
+@@ -325,7 +330,12 @@
+ }
+=20
+ static struct clk *tc, local_tc =3D {
++#if !defined(CONFIG_ARCH_AT91SAM9263)
+ 	.name		=3D "tc" __stringify(CONFIG_IPIPE_AT91_TC) "_clk",
++#else
++	// at91sam9263 only has a single TCB clock
++	.name   	=3D "tcb_clk",
++#endif=09
+ 	.users          =3D 0,
+ 	.type		=3D CLK_TYPE_PERIPHERAL,
+ 	.pmc_mask       =3D 1 << (KERNEL_TIMER_IRQ_NUM),
+
+_____________________________________________________________________
+
+Karsten-Olaf Laux=20
+Electronic and Software Engineering OEM
+
+Wipotec GmbH
+Adam-Hoffmann-Str. 26=20
+67657 Kaiserslautern
+
+T +49.631.34146-0
+F +49.631.34146-8640
+http://www.wipotec.com
+
+Precise, ultra fast weighing solutions - LIVE!
+Interpack D=FCsseldorf | 24.-30.04.2008 | Hall15 - Stand B41=20
+
+Legal information:
+Wipotec Wiege- und Positioniersysteme GmbH
+HRB 2317 Kaiserslautern, Management: T. D=FCppre, U. Wagner
+
+This e-mail may contain confidential and/or privileged information.=20
+If you are not the intended recipient (or have received this e-mail in =
+error)
+please notify the sender immediately and delete this e-mail. Any =
+unauthorized=20
+copying, disclosure or distribution of the material in this e-mail is =
+strictly=20
+forbidden.
+
 
