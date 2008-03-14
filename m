@@ -1,15 +1,11 @@
-Message-ID: <2ff1a98a0803131051v43dea811r67b5a81e7d32ba62@domain.hid>
-Date: Thu, 13 Mar 2008 18:51:13 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <d6c8ef150803131013p152b79fah70d97ee1429e86e9@domain.hid>
+Message-ID: <47DA7CCD.40901@domain.hid>
+Date: Fri, 14 Mar 2008 14:25:33 +0100
+From: Johan Borkhuis <j.borkhuis@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <2ff1a98a0803120923m76f75bder857abac049c22e4d@domain.hid>
-	<d6c8ef150803130409g2a618d30gbede878d6a09e470@domain.hid>
-	<d6c8ef150803131013p152b79fah70d97ee1429e86e9@domain.hid>
-Subject: Re: [Xenomai-help] [Adeos-main] New I-pipe patch for ARM.
+Subject: [Xenomai-help] Moving from 2.6.14(ppc) to 2.6.20(powerpc): illicit
+ calls detected by ipipe
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,23 +15,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bosko Radivojevic <bosko.radivojevic@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>, adeos-main <adeos-main@gna.org>
+To: Xenomai help <xenomai@xenomai.org>
 
-On Thu, Mar 13, 2008 at 6:13 PM, Bosko Radivojevic
-<bosko.radivojevic@domain.hid> wrote:
-> Hi Gilles,
->
->  I booted similar board, but without additional Eths, only "built-in"
->  MACB Ethernet controller (part of AT91SAM9260). Networking here works
->  ok.
->
->  It seems that we have problem with GPIO interrupt handling/dispatching.
+Hello,
 
-Ok. The code which does this is __ipipe_mach_demux_irq in
-arch/arm/mach-at91/gpio.c. Could you check if at least it triggers ?
+I am trying to move from 2.6.14(ppc) to 2.6.20(powerpc). On ppc I am 
+using Xenomai 2.4.1 and I-Pipe version 1.5-03, on powerpc I am using 
+Xenomai 2.4.1, I-Pipe version 1.7-12.
+Most of the system is working, but I am having some problems with one 
+device driver. This is a "standard" Linux driver, that I converted into 
+a Xenomai driver. This driver does a very limited initialization, the 
+main init is done when the device is opened and after some IOCTL calls.
 
+The problem is that I am getting "Detected illicit call from domain 
+'Xenomai' into a service reserved for domain 'Linux' and below." 
+messages from Adeos, which I did not get when using 2.6.14. The code I 
+use is identical, except for some small areas where the API kernel 
+changed between 2.6.14 and 2.6.20. Has there been a change between the 
+versions of Adeos or Xenomai which could cause this change in behavior?
+(BTW: this message is generated when the option IPIPE_DEBUG_CONTEXT is 
+on, when this option is off I get a kernel Oops in kernel/ipipe/core.c:210.
+
+The affected calls are calls like kmalloc and kfree, but also calls like 
+check_mem_region, which uses kmem_cache_zalloc inside the function. 
+Normally these should not be used inside a RT application, but this is 
+the startup phase of the application and there are no RT restraints at 
+this point.
+
+Kind regards,
+    Johan Borkhuis
 
 -- 
- Gilles Chanteperdrix
+Johan Borkhuis                                  Dutch Space BV
+email:        j.borkhuis@domain.hid          Newtonweg 1
+phone:        071-5245788                       Leiden
+fax:          071-5245499                       The Netherlands
+
 
