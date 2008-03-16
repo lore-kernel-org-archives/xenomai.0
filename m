@@ -1,14 +1,12 @@
-Message-ID: <47DAA815.4010804@domain.hid>
-Date: Fri, 14 Mar 2008 17:30:13 +0100
-From: Philippe Gerum <philippe.gerum@domain.hid>
+Message-ID: <47DD3BF9.2@domain.hid>
+Date: Sun, 16 Mar 2008 16:25:45 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <2ff1a98a0803120923m76f75bder857abac049c22e4d@domain.hid>	<d6c8ef150803140404y1febc9e0g7c6ab90497b347d3@domain.hid>	<d6c8ef150803140407j496a8d9ah477b001a49e411bf@domain.hid>
-	<d6c8ef150803140920u59c84733l64d9cf0c8669097c@domain.hid>
-In-Reply-To: <d6c8ef150803140920u59c84733l64d9cf0c8669097c@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Adeos-main] New I-pipe patch for ARM.
-Reply-To: philippe.gerum@domain.hid
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8DE9FD24E2195885DE65341B"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] pgprot_noncached for io-remapping?
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,114 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Bosko Radivojevic <bosko.radivojevic@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>, adeos-main <adeos-main@gna.org>, xenomai-core <xenomai@xenomai.org>
+To: Xenomai-core@domain.hid
 
-Bosko Radivojevic wrote:
-> OK here are a bit more details, output from the module (rt_task_create
-> and rt_task_start lines are printing the return value). It looks like
-> the same problem as Johan reported a few hours ago. Am I right?
->
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8DE9FD24E2195885DE65341B
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Yes, you may not call kmalloc() on behalf of a real-time thread in kernel space.
-If you run on top of rtdm, then rtdm_malloc/free() will work. Otherwise, you may
-pull memory directly from the Xenomai heap using xnmalloc()/xnfree(). Make sure
-to set CONFIG_XENO_OPT_SYS_HEAPSZ accordingly.
-If you happen to use the native skin, then you may create your own private heap
-using rt_heap_create() as well (from module_init context).
+Hi,
 
-> rt_task_create(): 0
-> 
-> I-pipe: Detected illicit call from domain 'Xenomai'
->         into a service reserved for domain 'Linux' and below.
-> 
-> [<c001e0b0>] (dump_stack+0x0/0x14) from [<c00575a8>] (ipipe_check_context+0x80/0
-> x9c)
-> [<c0057528>] (ipipe_check_context+0x0/0x9c) from [<c00a7af0>] (__kmalloc+0x60/0x
-> 108)
->  r4:c3d2fc00
-> [<c00a7a90>] (__kmalloc+0x0/0x108) from [<bf000724>] (ebustxrx+0x30/0x148 [macb2
-> ])
->  r7:00000010 r6:c3d7fb40 r5:bf0015cc r4:c3d2fc00
-> [<bf0006f4>] (ebustxrx+0x0/0x148 [macb2]) from [<bf003b7c>] (bus_fixed_msg_cycle
-> +0x1c/0x3c [rt_bus_driver])
-> [<bf003b60>] (bus_fixed_msg_cycle+0x0/0x3c [rt_bus_driver]) from [<bf004f60>] (R
-> ead_inputs+0x28/0x164 [rt_bus_driver])
-> [<bf004f38>] (Read_inputs+0x0/0x164 [rt_bus_driver]) from [<bf0038d0>] (do_upg+0
-> x44/0x250 [rt_bus_driver])
-> [<bf00388c>] (do_upg+0x0/0x250 [rt_bus_driver]) from [<c005f964>] (xnarch_thread
-> _trampoline+0x28/0x34)
->  r7:00000000 r6:00000000 r5:bf00b508 r4:bf00b508
-> [<c005f93c>] (xnarch_thread_trampoline+0x0/0x34) from [<c005ee14>] (xnpod_schedu
-> le+0x470/0x760)
->  r4:c005f93c
-> 
-> rt_task_start(): 0
-> 
-> 
-> On Fri, Mar 14, 2008 at 12:07 PM, Bosko Radivojevic
-> <bosko.radivojevic@domain.hid> wrote:
->> Sorry, my fingers are faster than my mind. The same happens when I
->>  remove rt_task_set_mode call. In the meantime, I realized that
->>  T_PRIMARY is invalid for kernel based tasks. So... maybe this is a
->>  bug? :)
->>
->>  On Fri, Mar 14, 2008 at 12:04 PM, Bosko Radivojevic
->>
->> <bosko.radivojevic@domain.hid> wrote:
->>
->>
->>> Hi,
->>  >
->>  >  now, I have a problem with our application. It is using native skin,
->>  >  when I start it I get:
->>  >
->>  >  kernel BUG at kernel/ipipe/core.c:322!
->>  >  Xenomai: suspending kernel thread bf00b4e8 ('do_upg') at 0xc001db14
->>  >  after exception #0
->>  >
->>  >  It looks to me that this happens after rt_task_set_mode(0, T_PRIMARY,
->>  >  NULL) call in our module. Maybe something changed from 2.3.x Xenomai
->>  >  to 2.4.x?
->>  >
->>  >  On Wed, Mar 12, 2008 at 5:23 PM, Gilles Chanteperdrix
->>  >
->>  > <gilles.chanteperdrix@xenomai.org> wrote:
->>  >
->>  >
->>  > > Hi,
->>  >  >
->>  >  >  as you may have already noticed, the ARM I-pipe patch for linux 2.6.24
->>  >  >  is available on Adeos download site and in Xenomai svn.
->>  >  >
->>  >  >  This patch incorporates modifications of all boards code to adapt to
->>  >  >  the ipipe_tickdev system which couples timer requests with Linux
->>  >  >  clockevent/clocksource framework.
->>  >  >
->>  >  >  As usual, it is tested only on AT91RM9200 and only compile-tested for
->>  >  >  other boards. So, it would be nice if people could test this new patch
->>  >  >  on their board.
->>  >  >
->>  >  >  Thanks and regards.
->>  >  >
->>  >  >  --
->>  >  >   Gilles Chanteperdrix
->>  >  >
->>  >  >  _______________________________________________
->>  >  >  Adeos-main mailing list
->>  >  >  Adeos-main@domain.hid
->>  >  >  https://mail.gna.org/listinfo/adeos-main
->>  >  >
->>  >
->>
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
-> 
+doesn't this patch [1] have some relevance for us as well? As we use
+xnarch_remap_io_page_range also for non-IO memory, I'm hesitating to
+suggest that we apply this unconditionally at xnarch level. Ideas welcome=
+=2E
+
+Jan
+
+[1] http://permalink.gmane.org/gmane.linux.kernel/653921
 
 
--- 
-Philippe.
+
+--------------enig8DE9FD24E2195885DE65341B
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFH3Tv8niDOoMHTA+kRAoqhAJ0QKxsgRKn8c2V+kVeJD3itTei9YwCdEVAb
+L5P3Y2EIRjQIPkW98W43lAA=
+=4tcc
+-----END PGP SIGNATURE-----
+
+--------------enig8DE9FD24E2195885DE65341B--
 
