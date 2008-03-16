@@ -1,5 +1,5 @@
-Message-ID: <47DD4E9F.4090100@domain.hid>
-Date: Sun, 16 Mar 2008 17:45:19 +0100
+Message-ID: <47DD4EAE.9070307@domain.hid>
+Date: Sun, 16 Mar 2008 17:45:34 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <47DD3BF9.2@domain.hid> <47DD3FB4.5080305@domain.hid>
@@ -20,8 +20,8 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, Xenomai-core@domain.hid
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai-core@domain.hid
 
 Philippe Gerum wrote:
 > Jan Kiszka wrote:
