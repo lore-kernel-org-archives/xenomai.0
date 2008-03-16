@@ -1,96 +1,85 @@
+Message-ID: <47DD4C70.2040208@domain.hid>
+Date: Sun, 16 Mar 2008 17:36:00 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18365.64767.425993.592610@domain.hid>
-Date: Thu, 21 Feb 2008 23:36:47 +0100
-In-Reply-To: <47BDA1710200000100192821@domain.hid>
-References: <47BDA1710200000100192821@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] Non RT PCI device driver vs interrupts (almost
-	ok)
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <47DD3BF9.2@domain.hid> <47DD3FB4.5080305@domain.hid>
+	<47DD424A.7040006@domain.hid> <47DD47F0.5020003@domain.hid>
+In-Reply-To: <47DD47F0.5020003@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigCC46E56F80FD3E1E61178547"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] pgprot_noncached for io-remapping?
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Hubert Talbot <Hubert.Talbot@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: rpm@xenomai.org
+Cc: Xenomai-core@domain.hid
 
-Hubert Talbot wrote:
- > 
- > First of all, I am studying xenomai to show to my manager that this framework 
- > can do the expected job for our realtime applications (me, I believe!). I have to prove
- > that with a concrete application (alike the ones we do in general), where the
- > need to test xenomai with pci card.
- > 
- > The first step I decided to do is capture interrupt. Eventually, I will want
- > to translate driver to rtdm.
- > 
- > I had some difficulties to catch interrupt from realtime task but with
- > your confirmation, it is ok now.
- > 
- > However, it seems to be not as precise as expected 
- > (in milliseconds order instead of microsecs).
- > 
- > 
- > Within a demo application...
- > 
- > 
- > The main function is as:
- > 
- > - opens board (specifying ISR)
- > - enables capturing of digital IO events
- > - enables interrupt requests in response to captured DIO edges
- > - enables interrupts
- > - reads counter
- > - disables interrupts
- > - closes board
- > 
- > 
- > And the ISR is as:
- > 
- > - gets interrupts status
- > - updates count
- > - resets DIO event capture flags
- > - enables interrupts
- > 
- > 
- > 
- > Doing like that in realtime application, I succeeded to catch interrupts
- > but with imprecision.
- > 
- > In rt_task, I have the following:
- > 
- > - rt_intr_wait()
- > - gets interrupts status (1)
- > - reads counter 
- > - resets DIO event capture flags (2)
- > - enables interrupts (3)
- > 
- > 
- > Can (1) (2) (3) api calls cause the imprecision (primary/secondary mode)?
- > 
- > Should it be better if device driver would be implemented with xenomai-rtdm?
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigCC46E56F80FD3E1E61178547
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-If you see milliseconds, then there is a problem somewhere. If you kept
-the Linux driver running, it maybe this driver which disturbs your
-real-time activities, for instance by clearing the interrupt bit by
-reading interrupt status at an unwanted time.
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>> Philippe Gerum wrote:
+>>> Jan Kiszka wrote:
+>>>> Hi,
+>>>>
+>>>> doesn't this patch [1] have some relevance for us as well? As we use=
 
-About the rtdm vs user-space question. In my opinion, if you want to get
-results rapidly, you can go for user-space, there you have better debug
-tools. However, if the driver you write is expected to have a longer
-life than a proof-of-concept, then you should go for RTDM.
+>>>> xnarch_remap_io_page_range also for non-IO memory, I'm hesitating to=
 
-P.S: I get error messages from your mail system telling me that
-messages I send to you can not be delivered.
+>>>> suggest that we apply this unconditionally at xnarch level. Ideas we=
+lcome.
+>>>>
+>>> Yes, I think it makes a lot of sense on powerpc at least, since doing=
+ so will
+>>> set the PAGE_GUARDED bit as well, and we obviously want to avoid any
+>>> out-of-order access of I/O memory.
+>>>
+>>> (I don't see the reason to force the VM_RESERVED and VM_IO on the vma=
+ though,
+>>> since remap_pfn_range will do it anyway.)
+>> No, I was talking about cases where we may pass kmalloc'ed memory to
+>> xnarch_remap_io_page_range. In that case, caching and out-of-order
+>> access may be desired for performance reasons.
+>>
+>=20
+> xnarch_remap_io_page_range is intended for I/O memory only, some assump=
+tions are
+> made on this. rtdm_mmap_buffer() should be fixed; it would be much bett=
+er to
+> define another internal interface at xnarch level to specifically perfo=
+rm
+> kmalloc mapping.
 
--- 
+Yeah, probably. But I think the issue is not just limited to RTDM. The
+xnheap can be kmalloc-hosted as well.
+
+Jan
 
 
-					    Gilles Chanteperdrix.
+--------------enigCC46E56F80FD3E1E61178547
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFH3UxzniDOoMHTA+kRAoBRAJoDc4VQFmZHl7XOnVxKIOSkK+oHpgCfTV3P
+Yiw9i6+JOgt5oEeJhs0NhDY=
+=e1Qh
+-----END PGP SIGNATURE-----
+
+--------------enigCC46E56F80FD3E1E61178547--
 
