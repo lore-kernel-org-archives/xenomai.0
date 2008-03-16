@@ -1,11 +1,14 @@
-Message-ID: <405543936.30034@domain.hid>
-Date: Sat, 15 Mar 2008 08:21:04 +0800
-From: "06121777" <06121777@domain.hid>
-Message-ID: <200803150821038123403@domain.hid>
-Mime-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="=====003_Dragon584101065838_====="
-Subject: [Xenomai-help] AT91RM9200  Real-time kernel canot use  float
+From: "???" <lordpark@domain.hid>
+References: <mailman.129.1205578873.27060.xenomai@xenomai.org>
+In-Reply-To: <mailman.129.1205578873.27060.xenomai@xenomai.org>
+Date: Mon, 17 Mar 2008 08:17:10 +0900
+Message-ID: <000001c887bb$dc7999d0$956ccd70$@edu>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Language: ko
+Subject: [Xenomai-help] [RT-FireWire] Was RT-FireWire project finished?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,43 +18,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
+Hello.
 
-This is a multi-part message in MIME format.
+I want to communicating two systems via ieee1394.
+So, I tried to install RT-FireWire-0.1 on my system, but I couldn't.
+Because the xeno-config file's option was changed after xenomai-2.0.
+RT-FireWire-0.1 didn't update after that, it makes problem.
+To solve this problem, I have to change configure file.
+But, I don't know where I have to change exactly.
+Please, help me ^^.
 
---=====003_Dragon584101065838_=====
-Content-Type: text/plain;
-	charset="gb2312"
-Content-Transfer-Encoding: 7bit
+Ah, one more thing..
+RTnet support Ethernet over RT-Firewire. 
+If I want to this function, do I have to install RT-Firewire first?
+Or Does RTnet provide RT-Firewire driver in their package?
 
-anybody  think about it ? I want to use float in real time kernel,my board is AT91RM9200
-
-
-
-
-06121777
-2008-03-15
-
---=====003_Dragon584101065838_=====
-Content-Type: text/html;
-	charset="gb2312"
-Content-Transfer-Encoding: 7bit
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META http-equiv=Content-Type content="text/html; charset=gb2312">
-<META content="MSHTML 6.00.2900.2838" name=GENERATOR></HEAD>
-<BODY>
-<DIV><FONT face=Verdana><FONT size=2>anybody&nbsp; think about it ? I want to 
-use float in real time kernel,my board is AT91RM9200</FONT></DIV>
-<DIV><FONT size=2></FONT>&nbsp;</DIV>
-<DIV align=left><FONT size=2>
-<HR style="WIDTH: 122px; HEIGHT: 2px" SIZE=2>
-</FONT></DIV>
-<DIV><FONT color=#c0c0c0><FONT size=2>06121777</FONT></DIV>
-<DIV><FONT size=2>2008-03-15</FONT></FONT></DIV></FONT></BODY></HTML>
-
---=====003_Dragon584101065838_=====--
 
 
