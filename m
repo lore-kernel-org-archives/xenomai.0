@@ -1,15 +1,12 @@
-Message-ID: <47DEB97C.6090705@domain.hid>
-Date: Mon, 17 Mar 2008 19:33:32 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <mailman.129.1205578873.27060.xenomai@xenomai.org>
-	<000001c887bb$dc7999d0$956ccd70$@edu>
-In-Reply-To: <000001c887bb$dc7999d0$956ccd70$@edu>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1BD53CF9DC1534264D0E9846"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] [RT-FireWire] Was RT-FireWire project finished?
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18398.47750.301972.827056@domain.hid>
+Date: Mon, 17 Mar 2008 19:37:58 +0100
+In-Reply-To: <000001c885fb$4b60cde0$e22269a0$@bayart@domain.hid>
+References: <000001c885fb$4b60cde0$e22269a0$@bayart@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] building xenomai kernel with debian packages
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,54 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: ??? <lordpark@domain.hid>
+To: Frederik Bayart <frederik.bayart@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1BD53CF9DC1534264D0E9846
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Frederik Bayart wrote:
+ > Hallo,
+ > 
+ > I try to build a xenomai kernel  using linux-source-2.6.22 and
+ > linux-patch-xenomai on debian.
+ > The adeos-ipipe-2.6.22-i386-1.10-12.patch.gz was not available in this
+ > package but I downloaded it from gna.org, put it in the correct directory
+ > and updated /usr/src/kernel-patches/i386/apply/xenomai.
+ > 
+ > The script /usr/src/kernel-patches/i386/apply/xenomai installs the patch
+ > correctly but when I call make menuconfig I don't see the Real-time
+ > sub-system menu.
+ > 
+ > I look into the apply/xenomai script, I see it's just applying patch -p1.
+ > If you are checking out the source from svn and run the prepare-kernel
+ > script, patch -p1 is executed but also additional things are done
+ > (patch_append and patch_link calls).
+ > 
+ > These are not done in the apply/xenomai script, so I think this is the
+ > reason that I don't see the Real-time sub-system menu. If I build the
+ > patched kernel, the latency utility is not working (I installed also
+ > xenomai-runtime and libxenomai1)
+ > 
+ > I like to use the debian packages. So what should I do to see the Real-time
+ > sub-system menu in my kernel config using the debian packages ?
 
-??? wrote:
-> Hello.
->=20
-> I want to communicating two systems via ieee1394.
-> So, I tried to install RT-FireWire-0.1 on my system, but I couldn't.
-> Because the xeno-config file's option was changed after xenomai-2.0.
-> RT-FireWire-0.1 didn't update after that, it makes problem.
-> To solve this problem, I have to change configure file.
-> But, I don't know where I have to change exactly.
-> Please, help me ^^.
+When generating the debian packages the script debian/prepare-patch.sh
+is run. So, I suspect the step you are missing is to run this script.
 
-The code you find in RT-Firewire's SVN repository may behave a bit=20
-better, but will still break when loading rt_serv. Known issue, someone=20
-has to fix it. :-/
-
->=20
-> Ah, one more thing..
-> RTnet support Ethernet over RT-Firewire.=20
-> If I want to this function, do I have to install RT-Firewire first?
-> Or Does RTnet provide RT-Firewire driver in their package?
-
-Nope, RTnet only provides the rt_ieee1394 high-level driver on top of=20
-RT-Firewire.
-
-Jan
+-- 
 
 
---------------enig1BD53CF9DC1534264D0E9846
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFH3rl9niDOoMHTA+kRAvF4AJ0Sa1vU7q8N0fhkwGo9MpVZdsCQCACffSSc
-PIELnQDhDh3+8JhzB/MJnjY=
-=cki+
------END PGP SIGNATURE-----
-
---------------enig1BD53CF9DC1534264D0E9846--
+					    Gilles Chanteperdrix.
 
