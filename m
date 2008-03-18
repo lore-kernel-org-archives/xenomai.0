@@ -1,13 +1,18 @@
-Message-ID: <2ff1a98a0803180723i17d6d6e1p619b9c8948b6e542@domain.hid>
-Date: Tue, 18 Mar 2008 15:23:38 +0100
+Message-ID: <2ff1a98a0803180832u4dffd089p4b9acd1a1a553b32@domain.hid>
+Date: Tue, 18 Mar 2008 16:32:15 +0100
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <d6c8ef150803180527h71adc568o612fec284f8d096@domain.hid>
+In-Reply-To: <d6c8ef150803180622g6883e066v70c21ba846acdaab@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <d6c8ef150803180527h71adc568o612fec284f8d096@domain.hid>
-Subject: Re: [Xenomai-help] Handling irq
+References: <2ff1a98a0803120923m76f75bder857abac049c22e4d@domain.hid>
+	<d6c8ef150803140404y1febc9e0g7c6ab90497b347d3@domain.hid>
+	<d6c8ef150803140407j496a8d9ah477b001a49e411bf@domain.hid>
+	<d6c8ef150803140920u59c84733l64d9cf0c8669097c@domain.hid>
+	<47DAA815.4010804@domain.hid>
+	<d6c8ef150803180622g6883e066v70c21ba846acdaab@domain.hid>
+Subject: Re: [Xenomai-help] [Adeos-main] New I-pipe patch for ARM.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,34 +25,16 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Bosko Radivojevic <bosko.radivojevic@domain.hid>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-On Tue, Mar 18, 2008 at 1:27 PM, Bosko Radivojevic
+On Tue, Mar 18, 2008 at 2:22 PM, Bosko Radivojevic
 <bosko.radivojevic@domain.hid> wrote:
-> Hi,
->
->  First of all, is there any example for enabling, requesting & handling
->  IRQ from Xenomai (user-task or kernel-thread, nevermind)?
+> OK. What about memcpy-ing to kmalloc()-ed memory? Like, kmalloc() is
+>  called outside real-time task, but memcpy-in something to that memory
+>  is done in realtime.
 
-There is an example in user-space, in ksrc/skins/native/snippets/user_irq.c
-
->
->  I'm using AT91SAM9260 based board. I have one peripheral connected to
->  PC12 pin of microcontroller. If wanted to do it from kernel module I
->  would do something like:
->  [..]
->  at91_set_gpio_input(AT91_PIN_PC12, 1);  // I want pullup
->  [..]
->  platform_device_register(..)
->  request_irq(irq, &myhandler, ...);
->
->  I quess it is OK to do at91_set_gpio_input() from kernel, but latter
->  should be done from Xenomai?
-
-You can probably call at91_set_gpio_input from Xenomai context if it
-does not use Linux spinlocks or fiddles with local interruptions, as
-Philippe told you in a previous mail. platform_device_register is not
-related with Xenomai, at all. request_irq should be replaced with a
-Xenomai call, you have the choice to use any skin, but rtdm is the
-preferred one.
+The answer is always the same, look at memcpy implementation and check
+if it is calling spinlock* or local_irq*, or calling functions that do
+so. In fact, Xenomai would not even work if memcpy was not callable
+from real-time context.
 
 -- 
  Gilles Chanteperdrix
