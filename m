@@ -1,59 +1,39 @@
-Content-class: urn:content-classes:message
+Message-ID: <d6c8ef150803180527h71adc568o612fec284f8d096@domain.hid>
+Date: Tue, 18 Mar 2008 13:27:01 +0100
+From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C88E88.2CB40A25"
-Date: Tue, 25 Mar 2008 15:54:49 +0100
-Message-ID: <0B45E93C5FF65740AEAE690BF3848B7AD381CE@rennsmail04.eu.thmulti.com>
-From: "Fillod Stephane" <stephane.fillod@domain.hid>
-Subject: [Xenomai-core] [PATCH] add numaps to
-	/proc/xenomai/registry/native/heaps/*
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Subject: [Xenomai-help] Handling irq
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai-help <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
+Hi,
 
-------_=_NextPart_001_01C88E88.2CB40A25
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+First of all, is there any example for enabling, requesting & handling
+IRQ from Xenomai (user-task or kernel-thread, nevermind)?
 
-Dear Xenomai committers,
+I'm using AT91SAM9260 based board. I have one peripheral connected to
+PC12 pin of microcontroller. If wanted to do it from kernel module I
+would do something like:
+[..]
+at91_set_gpio_input(AT91_PIN_PC12, 1);  // I want pullup
+[..]
+platform_device_register(..)
+request_irq(irq, &myhandler, ...);
 
-Here is attached a misc patch which add numaps to
-/proc/xenomai/registry/native/heaps/*
-I like it :-)
+I quess it is OK to do at91_set_gpio_input() from kernel, but latter
+should be done from Xenomai?
 
-Regards
---=20
-Stephane
-
-------_=_NextPart_001_01C88E88.2CB40A25
-Content-Type: application/octet-stream;
-	name="numaps.patch"
-Content-Transfer-Encoding: base64
-Content-Description: numaps.patch
-Content-Disposition: attachment;
-	filename="numaps.patch"
-
-LS0tIHhlbm9tYWkva3NyYy9za2lucy9uYXRpdmUvaGVhcC5jCTMgSmFuIDIwMDggMDk6NDc6NTQg
-LTAwMDAKKysrIHhlbm9tYWkva3NyYy9za2lucy9uYXRpdmUvaGVhcC5jCTI1IE1hciAyMDA4IDE0
-OjM2OjUwIC0wMDAwCkBAIC02MCwxMCArNjAsMTEgQEAKIAlpbnQgbGVuOwogCXNwbF90IHM7CiAK
-LQlwICs9IHNwcmludGYocCwgInR5cGU9JXM6c2l6ZT0lbHU6dXNlZD0lbHVcbiIsCisJcCArPSBz
-cHJpbnRmKHAsICJ0eXBlPSVzOnNpemU9JWx1OnVzZWQ9JWx1Om51bWFwcz0lZFxuIiwKIAkJICAg
-ICAoaGVhcC0+bW9kZSAmIEhfU0hBUkVEKSA9PSBIX1NIQVJFRCA/ICJzaGFyZWQiIDoKIAkJICAg
-ICAoaGVhcC0+bW9kZSAmIEhfTUFQUEFCTEUpID8gIm1hcHBhYmxlIiA6ICJrZXJuZWwiLAotCQkg
-ICAgIHhuaGVhcF91c2FibGVfbWVtKCZoZWFwLT5oZWFwX2Jhc2UpLCB4bmhlYXBfdXNlZF9tZW0o
-JmhlYXAtPmhlYXBfYmFzZSkpOworCQkgICAgIHhuaGVhcF91c2FibGVfbWVtKCZoZWFwLT5oZWFw
-X2Jhc2UpLCB4bmhlYXBfdXNlZF9tZW0oJmhlYXAtPmhlYXBfYmFzZSksCisJCSAgICAgYXRvbWlj
-X3JlYWQoJmhlYXAtPmhlYXBfYmFzZS5hcmNoZGVwLm51bWFwcykpOwogCiAJeG5sb2NrX2dldF9p
-cnFzYXZlKCZua2xvY2ssIHMpOwogCg==
-
-------_=_NextPart_001_01C88E88.2CB40A25--
+Kind regards,
+Bosko
 
