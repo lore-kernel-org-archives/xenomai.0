@@ -1,12 +1,10 @@
+Message-ID: <bd3df7a40803180236n4e35f6a3m29cd77bda6f3927e@domain.hid>
+Date: Tue, 18 Mar 2008 10:36:40 +0100
+From: "Arnaud Riess" <arnaud.riess@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18398.47750.301972.827056@domain.hid>
-Date: Mon, 17 Mar 2008 19:37:58 +0100
-In-Reply-To: <000001c885fb$4b60cde0$e22269a0$@bayart@domain.hid>
-References: <000001c885fb$4b60cde0$e22269a0$@bayart@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] building xenomai kernel with debian packages
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_14571_21203801.1205833000922"
+Subject: [Xenomai-help] ARM9 and xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,40 +14,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Frederik Bayart <frederik.bayart@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Frederik Bayart wrote:
- > Hallo,
- > 
- > I try to build a xenomai kernel  using linux-source-2.6.22 and
- > linux-patch-xenomai on debian.
- > The adeos-ipipe-2.6.22-i386-1.10-12.patch.gz was not available in this
- > package but I downloaded it from gna.org, put it in the correct directory
- > and updated /usr/src/kernel-patches/i386/apply/xenomai.
- > 
- > The script /usr/src/kernel-patches/i386/apply/xenomai installs the patch
- > correctly but when I call make menuconfig I don't see the Real-time
- > sub-system menu.
- > 
- > I look into the apply/xenomai script, I see it's just applying patch -p1.
- > If you are checking out the source from svn and run the prepare-kernel
- > script, patch -p1 is executed but also additional things are done
- > (patch_append and patch_link calls).
- > 
- > These are not done in the apply/xenomai script, so I think this is the
- > reason that I don't see the Real-time sub-system menu. If I build the
- > patched kernel, the latency utility is not working (I installed also
- > xenomai-runtime and libxenomai1)
- > 
- > I like to use the debian packages. So what should I do to see the Real-time
- > sub-system menu in my kernel config using the debian packages ?
+------=_Part_14571_21203801.1205833000922
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-When generating the debian packages the script debian/prepare-patch.sh
-is run. So, I suspect the step you are missing is to run this script.
+Hello,
 
--- 
+I'm currently using an ARM9 core from freescale (i.MX27) on a
+Phycore-i.MX27board (
+http://www.phytec.com/products/sbc/ARM-XScale/phyCORE-ARM9-i.MX27.html)
+under linux. I need hard real-time response time and I wonder if I can
+install xenomai on my board. Does anybody have info about that?
 
+Thanks for your help!
 
-					    Gilles Chanteperdrix.
+Arnaud
+
+------=_Part_14571_21203801.1205833000922
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hello,<br><br>I&#39;m currently using an ARM9 core from freescale (i.MX27) on a Phycore-i.MX27 board (<a href="http://www.phytec.com/products/sbc/ARM-XScale/phyCORE-ARM9-i.MX27.html">http://www.phytec.com/products/sbc/ARM-XScale/phyCORE-ARM9-i.MX27.html</a>) under linux. I need hard real-time response time and I wonder if I can install xenomai on my board. Does anybody have info about that?<br>
+<br>Thanks for your help!<br><br>Arnaud<br>
+
+------=_Part_14571_21203801.1205833000922--
 
