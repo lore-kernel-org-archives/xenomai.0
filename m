@@ -1,13 +1,13 @@
-Message-ID: <2ff1a98a0803180300g7358e56cw262276645988fa03@domain.hid>
-Date: Tue, 18 Mar 2008 11:00:49 +0100
+Message-ID: <2ff1a98a0803180326h4ef2c65o1f46342751838394@domain.hid>
+Date: Tue, 18 Mar 2008 11:26:35 +0100
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <405543936.30034@domain.hid>
+In-Reply-To: <bd3df7a40803180236n4e35f6a3m29cd77bda6f3927e@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <405543936.30034@domain.hid>
-Subject: Re: [Xenomai-help] AT91RM9200 Real-time kernel canot use float
+References: <bd3df7a40803180236n4e35f6a3m29cd77bda6f3927e@domain.hid>
+Subject: Re: [Xenomai-help] ARM9 and xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,28 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: 06121777 <06121777@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Arnaud Riess <arnaud.riess@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Sat, Mar 15, 2008 at 1:21 AM, 06121777 <06121777@domain.hid> wrote:
+On Tue, Mar 18, 2008 at 10:36 AM, Arnaud Riess <arnaud.riess@domain.hid> wrote:
+> Hello,
 >
->
-> anybody  think about it ? I want to use float in real time kernel,my board
-> is AT91RM9200
+> I'm currently using an ARM9 core from freescale (i.MX27) on a Phycore-i.MX27
+> board
+> (http://www.phytec.com/products/sbc/ARM-XScale/phyCORE-ARM9-i.MX27.html)
+> under linux. I need hard real-time response time and I wonder if I can
+> install xenomai on my board. Does anybody have info about that?
 
-Using soft-float in kernel-space is usually considered a bad idea. But
-if you still want to do it, read on.
+That is an FAQ/
 
-First, you have to realize that an AT91RM9200 has no FPU, so you have
-to use soft float (which means compiling with -msoft-float), which is
-slow. Since you are talking about kernel space, you do not have to
-change the compilation flags, since the kernel is already compiled
-with -msoft-float. At the end of the compilation you will get
-undefined symbols, to resolve these symbols, you may extract them from
-your compiler libgcc. But be careful to only use symbols that do not
-use user-space services (for instance, the function called in case of
-division by 0, called _div0 or something like this, uses abort, so you
-should implement your own _div0).
+Xenomai is not currently ported on IMX27. But IMX21 was ported on old
+versions of the I-pipe (on top of Linux 2.6.14). So, to port it, take
+whatever version of Linux you are using (either vanilla, or Freescale
+BSP), apply whatever I-pipe patch is relevant (actually, you do not
+have much choice, it will be I-pipe for Linux 2.6.20 or I-pipe for
+Linux 2.6.24), then read the wiki page about porting I-pipe on ARM
+[1], and try to follow this guide, adapting the patch for IMX21 if at
+all possible. The guide is not yet up to date for 2.6.24, but will be
+updated shortly.
+
+[1] http://www.xenomai.org/index.php/I-pipe:ArmPorting
 
 -- 
  Gilles Chanteperdrix
