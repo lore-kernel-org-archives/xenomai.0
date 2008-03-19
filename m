@@ -1,12 +1,14 @@
+Message-ID: <d6c8ef150803190410l48c36687odd494d3966407a8@domain.hid>
+Date: Wed, 19 Mar 2008 12:10:37 +0100
+From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
+In-Reply-To: <2ff1a98a0803180723i17d6d6e1p619b9c8948b6e542@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-ID: <18400.53752.538963.384358@domain.hid>
-Date: Wed, 19 Mar 2008 09:42:32 +0100
-In-Reply-To: <16201.81.252.86.91.1205764989.squirrel@domain.hid>
-References: <16201.81.252.86.91.1205764989.squirrel@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] Application crash
+Content-Disposition: inline
+References: <d6c8ef150803180527h71adc568o612fec284f8d096@domain.hid>
+	<2ff1a98a0803180723i17d6d6e1p619b9c8948b6e542@domain.hid>
+Subject: Re: [Xenomai-help] Handling irq
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,33 +18,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabien MAHOT <fabien.mahot@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Fabien MAHOT wrote:
- > Hello,
- > 
- > I ve got a problem with my application. I use the Xenomai 2.3.4 kernel
- > (disable priority coupling option -> deactivate).
- > I wrote a test program to show you the problem.
- > 
- > There are T1 thread with the highest priority and T2 thread.
- > T1 thread sleeps during 5ms and uses the console function to display its
- > current state.
- > T2 uses the console function to display its current state.
- > To use the console function, the threads need lockConsole mutex.
+OK, thanks. I'll try that.
 
-Except the fact that your program relies on correct priorities ordering
-for starting up tasks, which does not always work if priority coupling is
-disabled, your program runs just fine on ARM.
+I have another problem. I have a task (kernel thread) that sleeps and
+wakes up every (almost) 1ms (actually, task is reading sync timers
+from EtherCAT and calculate how long should sleep). It is the only RT
+task. After some time measuring different things it looks to me that
+my task is interrupted from time to time (I can acknowledge that it is
+interrupted every second time in different stages). I've measured time
+needed for one single memcpy (I set one pin on microcontroller to 1
+before memcpy, and set to 0 after it, using __raw_writel). Usually it
+takes a few us, but, some times, time for memcpy just grows to 50us.
+Is it possible that timer interrupt handler is stopping my task? How I
+can mask/disable "all" interrupt handlers during that RT task
+execution?
 
-On what platform are you testing this program ? What does 
-getconf GNU_LIBPTHREAD_VERSION 
-returns on your platform ?
-Could you send me the .config of the kernel you are using ?
+Thanks again! :)
 
--- 
-
-
-					    Gilles.
+Kind regards,
+Bosko
 
