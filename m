@@ -1,14 +1,12 @@
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18401.32383.382321.517340@domain.hid>
-Date: Wed, 19 Mar 2008 21:58:39 +0100
-In-Reply-To: <d6c8ef150803190410l48c36687odd494d3966407a8@domain.hid>
-References: <d6c8ef150803180527h71adc568o612fec284f8d096@domain.hid>
-	<2ff1a98a0803180723i17d6d6e1p619b9c8948b6e542@domain.hid>
-	<d6c8ef150803190410l48c36687odd494d3966407a8@domain.hid>
+Message-ID: <18401.32535.925176.896273@domain.hid>
+Date: Wed, 19 Mar 2008 22:01:11 +0100
+In-Reply-To: <747114@domain.hid>
+References: <747114@domain.hid>
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] Handling irq
+Subject: Re: [Xenomai-help] A second Xenomai on the same PC
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,34 +16,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bosko Radivojevic <bosko.radivojevic@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Andreas Vogt <A_C_V@web.de>
+Cc: xenomai@xenomai.org
 
-Bosko Radivojevic wrote:
- > OK, thanks. I'll try that.
- > 
- > I have another problem. I have a task (kernel thread) that sleeps and
- > wakes up every (almost) 1ms (actually, task is reading sync timers
- > from EtherCAT and calculate how long should sleep). It is the only RT
- > task. After some time measuring different things it looks to me that
- > my task is interrupted from time to time (I can acknowledge that it is
- > interrupted every second time in different stages). I've measured time
- > needed for one single memcpy (I set one pin on microcontroller to 1
- > before memcpy, and set to 0 after it, using __raw_writel). Usually it
- > takes a few us, but, some times, time for memcpy just grows to 50us.
- > Is it possible that timer interrupt handler is stopping my task? How I
- > can mask/disable "all" interrupt handlers during that RT task
- > execution?
+Andreas Vogt wrote:
+ > Hello,
+ > I have install Xenomai 2.4.1 with Linux Kernel 2.6.22.16 and it works fine. Now i want install a second Xenomai on my PC to test a different Configuration. So, it is possible to install a second Kernel with the same Xenomai? Or are there any problems?
+ > Thanks for all your help
 
-Yes, it is possible. But what is also possible is that you get a cache
-flush due to the cache line you are memcpying to being shared with some
-unrelated piece of memory. Only the tracer [1] may tell you what
-happens.
-
-[1] http://www.xenomai.org/index.php/I-pipe:Tracer
-
-What hardware are you using ? If it is an ARM, you have to realize that
-ARM is slow hardware, and that there is little we can do against this.
+Yes, it may be possible if the ABI revision did not change between the
+two versions (for instance if you want to install Xenomai 2.4.2
+kernel-space support with Xenomai 2.4.1 user-space support). Otherwise,
+you can install Xenomai with a different prefix (using the --prefix
+option of Xenomai configure script), this will allow you to have two
+versions of Xenomai user-space support installed.
 
 -- 
 
