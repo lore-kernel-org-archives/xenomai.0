@@ -1,12 +1,16 @@
-From: "Robert McCullough" <rob@domain.hid>
-Date: Wed, 19 Mar 2008 18:05:19 -0400
-Message-ID: <001a01c88a0d$5365af40$9601a8c0@domain.hid>
+Message-ID: <d6c8ef150803200231q42d8dcfev2e5837958b98b4b@domain.hid>
+Date: Thu, 20 Mar 2008 10:31:30 +0100
+From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
+In-Reply-To: <18401.32383.382321.517340@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Non-Real-Time Asynchronous Notification
-Reply-To: rob@domain.hid
+Content-Disposition: inline
+References: <d6c8ef150803180527h71adc568o612fec284f8d096@domain.hid>
+	<2ff1a98a0803180723i17d6d6e1p619b9c8948b6e542@domain.hid>
+	<d6c8ef150803190410l48c36687odd494d3966407a8@domain.hid>
+	<18401.32383.382321.517340@domain.hid>
+Subject: Re: [Xenomai-help] Handling irq
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,62 +20,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Hi,
+On Wed, Mar 19, 2008 at 9:58 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+>  Yes, it is possible. But what is also possible is that you get a cache
+>  flush due to the cache line you are memcpying to being shared with some
+>  unrelated piece of memory. Only the tracer [1] may tell you what
+>  happens.
 
-How do I signal an asynchronous notification from a RTDM real-time task to a
-non-real-time user-space Linux thread?
-Do I use Non-Real-Time Signaling Services (rtdm_nrtsig_init,..)?
-If so, how?
+Yes, sounds reasonable. The 'delaying' happens in all other stages,
+not only in memcpy. How I could disable "all" interrupt handlings
+during my task execution? And, of course, enable them, after it :)
 
-Here is the current code that I am trying to port to RTDM.
+>  [1] http://www.xenomai.org/index.php/I-pipe:Tracer
 
-Current driver code to signal non-real-time Linux thread:
+I've already tried with Tracer, but system just hangs when I load my
+module (with Tracer enabled). I'll try with CONFIG_IPIPE_TRACE_VMALLOC
+enabled.
 
-	// If event
-	if(event){
-		// and signal asynchronous readers 
-		if (kmdpr_device->async_queue)
-			kill_fasync(&kmdpr_device->async_queue, SIGIO,
-POLL_IN);
-	}
+>  What hardware are you using ? If it is an ARM, you have to realize that
+>  ARM is slow hardware, and that there is little we can do against this.
 
-Current non-real-time Linux thread signal hander:
+Yes, ARM9 based, AT91SAM9260.
 
-	// A static function to use for callback by OS
-	static void signal_handler_func(int signo)
-	{
-		l_sighandler->signalHandler(signo);
-	}
-
-	void Kmss::startSignalHandler()
-	{
-		l_sighandler = this;
-
-		struct sigaction action;
-
-		memset(&action, 0, sizeof(action));
-		action.sa_handler = signal_handler_func;
-		action.sa_flags = 0;//SA_RESTART;
-
-		sigaction(SIGIO, &action, NULL);
-		fcntl(_fh, F_SETOWN, getpid());
-		fcntl(_fh, F_SETFL, fcntl(_fh, F_GETFL) | FASYNC);
-	}
-
-	void Kmss::signalHandler(int signo)
-	{
-		kmdpr_events_t events;
-	
-		if (signo==SIGIO)
-		{
-			/* Process events */
-		}
-	}
-
-Best regards, 
-Rob
-
-
+Kind regards,
+Bosko
 
