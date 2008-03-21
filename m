@@ -1,332 +1,180 @@
-Message-ID: <47CA838D.4070702@domain.hid>
-Date: Sun, 02 Mar 2008 11:38:05 +0100
+Message-ID: <47E4196F.2070303@domain.hid>
+Date: Fri, 21 Mar 2008 21:24:15 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <47C51A34.203@domain.hid>
-In-Reply-To: <47C51A34.203@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigDCAF49CD3A4D1A274FCC3D35"
+	boundary="------------enig9270C81F1EE463A17D96967D"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-help] [PATCH 2/6] Whitespace fixes for asm-generic/system.h
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] [Fwd: Bug#471871: xenomai-runtime: bashism in
+	/bin/sh script]
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Xenomai-core@domain.hid
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDCAF49CD3A4D1A274FCC3D35
+--------------enig9270C81F1EE463A17D96967D
 Content-Type: multipart/mixed;
- boundary="------------070205020309070705080107"
+ boundary="------------080704020708030407030607"
 
 This is a multi-part message in MIME format.
---------------070205020309070705080107
-Content-Type: text/plain; charset=ISO-8859-15
+--------------080704020708030407030607
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
-No functional changes.
+Maybe someone with idle cycles left could have a look at this.
 
---------------070205020309070705080107
-Content-Type: text/x-patch;
- name="system-h-whitespace-cleanups.patch"
-Content-Transfer-Encoding: quoted-printable
+Jan
+
+--------------080704020708030407030607
+Content-Type: message/rfc822;
+ name="Bug#471871: xenomai-runtime: bashism in /bin/sh script.eml"
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline;
- filename="system-h-whitespace-cleanups.patch"
+ filename*0="Bug#471871: xenomai-runtime: bashism in /bin/sh script.eml"
 
----
- include/asm-generic/system.h |  145 +++++++++++++++++++++---------------=
--------
- 1 file changed, 73 insertions(+), 72 deletions(-)
+Received: from [70.103.162.29] (helo=master.debian.org)
+	by mx18.web.de with esmtp (WEB.DE 4.109 #226)
+	id 1JcRKc-0004fy-00
+	for jan.kiszka@domain.hid; Thu, 20 Mar 2008 21:25:46 +0100
+Received: from qa by master.debian.org with local (Exim 4.50)
+	id 1JcRKb-0002iN-Ob
+	for jan.kiszka@domain.hid; Thu, 20 Mar 2008 20:25:45 +0000
+Received: from rietz.debian.org ([140.211.166.43]) by master.debian.org
+ with esmtp (Exim 4.50) id 1JcQg7-0005mj-Kn for
+ xenomai@domain.hid; Thu, 20 Mar 2008 19:43:55 +0000
+Received: from debbugs by rietz.debian.org with local (Exim 4.63)
+ (envelope-from <debbugs@domain.hid>) id 1JcQeY-0003wc-QM;
+ Thu, 20 Mar 2008 19:42:19 +0000
+X-Loop: owner@domain.hid
+Subject: Bug#471871: xenomai-runtime: bashism in /bin/sh script
+Reply-To: Raphael Geissert <atomo64@domain.hid>,
+ 471871-maintonly@domain.hid
+Resent-From: Raphael Geissert <atomo64@domain.hid>
+Resent-To: Roland Stigge <stigge@domain.hid>
+Resent-Date: Thu, 20 Mar 2008 19:42:14 +0000
+Resent-Message-Id: <handler.471871.M.120604199410970@domain.hid>
+X-Debian-PR-Message: report 471871
+X-Debian-PR-Package: xenomai-runtime
+X-Debian-PR-Keywords: 
+X-Debian-PR-Source: xenomai
+Received: via spool by maintonly@domain.hid id=M.120604199410970
+ (code M ref -1); Thu, 20 Mar 2008 19:42:14 +0000
+Received: (at maintonly) by bugs.debian.org; 20 Mar 2008 19:39:54 +0000
+X-Spam-Checker-Version: SpamAssassin 3.1.4-bugs.debian.org_2005_01_02
+ (2006-07-26) on rietz.debian.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-12.9 required=4.0 tests=BAYES_00,FOURLA,HAS_PACKAGE,
+ X_DEBBUGS_NO_ACK autolearn=no version=3.1.4-bugs.debian.org_2005_01_02
+Received: from hs-out-0708.google.com ([64.233.178.249]) by
+ rietz.debian.org with esmtp (Exim 4.63) (envelope-from
+ <atomo64@domain.hid>) id 1JcQcD-0002qk-QF for maintonly@domain.hid;
+ Thu, 20 Mar 2008 19:39:53 +0000
+Received: by hs-out-0708.google.com with SMTP id z77so1073758hsz.9 for
+ <maintonly@domain.hid>; Thu, 20 Mar 2008 12:39:53 -0700 (PDT)
+Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=beta;
+ h=domainkey-signature:received:received:from:to:subject:user-agent:x-debbugs-no-ack:mime-version:content-disposition:date:content-type:content-transfer-encoding:message-id;
+ bh=PUm64xSrZS+k3m7HWKHp3hT9wPSLuKeOdoejstTnhE4=; b=m9+01ezZRIM9XaAGg19ucysqGafX4Rl9otsNvCcUD2SIiEXrQGdf62nGV5WpZ5XldoUE3PaQt7Bf6BgbqI07O1oVvRqEtoWMmJRdmijpRFuyNqiy2KO+Xbc8gswuJqSKhgQBXDMRRyVSYX63/fMRcY2CFMxc6AFJ9vmjLg8/998=
+Domainkey-Signature: a=rsa-sha1; c=nofws; d=gmail.com; s=beta;
+ h=from:to:subject:user-agent:x-debbugs-no-ack:mime-version:content-disposition:date:content-type:content-transfer-encoding:message-id;
+ b=K4SoYDH/FsYkt0wGUC14/6+0SoiVHJ+QsEdqaa+HfMyWfMRscj+lCrDYLO0kFncAxjrYWR8iLmww8D5/N4p0WdMK+NOdiPLxDZ87/QWaUt8Ld7HvbPLb0VUhelGQyp2dIrOUDyo3AZPQ8CUKo7AYcuB6062y4IzfA/StaSHtM1I=
+Received: by 10.100.41.9 with SMTP id o9mr6488007ano.42.1206041992913;
+ Thu, 20 Mar 2008 12:39:52 -0700 (PDT)
+Received: from nova.local ( [200.66.22.50]) by mx.google.com with ESMTPS
+ id c39sm3612694anc.25.2008.03.20.12.39.51 (version=TLSv1/SSLv3
+ cipher=OTHER); Thu, 20 Mar 2008 12:39:51 -0700 (PDT)
+From: Raphael Geissert <atomo64@domain.hid>
+To: maintonly@domain.hid
+User-Agent: KMail/1.9.7
+MIME-Version: 1.0
+Content-Disposition: inline
+Date: Thu, 20 Mar 2008 13:39:38 -0600
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Message-Id: <200803201339.41302.atomo64@domain.hid>
+Delivered-To: maintonly@domain.hid
+Resent-Sender: Debian BTS <debbugs@domain.hid>
+Resent-Date: Thu, 20 Mar 2008 19:42:18 +0000
+Delivered-To: xenomai@domain.hid
+Precedence: list
+X-Loop: xenomai@domain.hid
+X-PTS-Package: xenomai
+X-PTS-Keyword: bts
+List-Unsubscribe: <mailto:pts@domain.hid>
+Sender: bounces+20080320-jan.kiszka=web.de@domain.hid
 
-Index: b/include/asm-generic/system.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/include/asm-generic/system.h
-+++ b/include/asm-generic/system.h
-@@ -56,13 +56,13 @@ extern "C" {
-=20
- /* Tracer interface */
- #define xnarch_trace_max_begin(v)		rthal_trace_max_begin(v)
--#define xnarch_trace_max_end(v)		rthal_trace_max_end(v)
-+#define xnarch_trace_max_end(v)			rthal_trace_max_end(v)
- #define xnarch_trace_max_reset()		rthal_trace_max_reset()
- #define xnarch_trace_user_start()		rthal_trace_user_start()
- #define xnarch_trace_user_stop(v)		rthal_trace_user_stop(v)
--#define xnarch_trace_user_freeze(v, once) 	rthal_trace_user_freeze(v, on=
-ce)
-+#define xnarch_trace_user_freeze(v, once)	rthal_trace_user_freeze(v, onc=
-e)
- #define xnarch_trace_special(id, v)		rthal_trace_special(id, v)
--#define xnarch_trace_special_u64(id, v)	rthal_trace_special_u64(id, v)
-+#define xnarch_trace_special_u64(id, v)		rthal_trace_special_u64(id, v)
- #define xnarch_trace_pid(pid, prio)		rthal_trace_pid(pid, prio)
- #define xnarch_trace_panic_freeze()		rthal_trace_panic_freeze()
- #define xnarch_trace_panic_dump()		rthal_trace_panic_dump()
-@@ -94,23 +94,23 @@ static inline unsigned xnarch_current_cp
-=20
- typedef struct {
-=20
--        unsigned long long spin_time;
--        unsigned long long lock_time;
--        const char *file;
--        const char *function;
--        unsigned line;
-+	unsigned long long spin_time;
-+	unsigned long long lock_time;
-+	const char *file;
-+	const char *function;
-+	unsigned line;
-=20
- } xnlockinfo_t;
-=20
- typedef struct {
-=20
--    atomic_t owner;
--    const char *file;
--    const char *function;
--    unsigned line;
--    int cpu;
--    unsigned long long spin_time;
--    unsigned long long lock_date;
-+	atomic_t owner;
-+	const char *file;
-+	const char *function;
-+	unsigned line;
-+	int cpu;
-+	unsigned long long spin_time;
-+	unsigned long long lock_date;
-=20
- } xnlock_t;
-=20
-@@ -194,7 +194,7 @@ static inline void xnlock_dbg_invalid_re
-=20
- typedef struct { atomic_t owner; } xnlock_t;
-=20
--#define XNARCH_LOCK_UNLOCKED (xnlock_t) { { ~0 } }
-+#define XNARCH_LOCK_UNLOCKED		(xnlock_t) { { ~0 } }
-=20
- #define XNLOCK_DBG_CONTEXT
- #define XNLOCK_DBG_CONTEXT_ARGS
-@@ -215,49 +215,48 @@ static inline void xnlock_dbg_invalid_re
-=20
- #endif /* !(CONFIG_SMP && XENO_DEBUG(NUCLEUS)) */
-=20
--#define XNARCH_NR_CPUS               RTHAL_NR_CPUS
-+#define XNARCH_NR_CPUS			RTHAL_NR_CPUS
-=20
--#define XNARCH_NR_IRQS               RTHAL_NR_IRQS
--#define XNARCH_TIMER_IRQ	     RTHAL_TIMER_IRQ
--#define XNARCH_TIMER_DEVICE          RTHAL_TIMER_DEVICE
--#define XNARCH_CLOCK_DEVICE          RTHAL_CLOCK_DEVICE
-+#define XNARCH_NR_IRQS			RTHAL_NR_IRQS
-+#define XNARCH_TIMER_IRQ		RTHAL_TIMER_IRQ
-+#define XNARCH_TIMER_DEVICE		RTHAL_TIMER_DEVICE
-+#define XNARCH_CLOCK_DEVICE		RTHAL_CLOCK_DEVICE
-=20
--#define XNARCH_ROOT_STACKSZ   0	/* Only a placeholder -- no stack */
-+#define XNARCH_ROOT_STACKSZ		0 /* Only a placeholder -- no stack */
-=20
- #define XNARCH_PROMPT "Xenomai: "
--#define xnarch_loginfo(fmt,args...)  printk(KERN_INFO XNARCH_PROMPT fmt =
-, ##args)
--#define xnarch_logwarn(fmt,args...)  printk(KERN_WARNING XNARCH_PROMPT f=
-mt , ##args)
--#define xnarch_logerr(fmt,args...)   printk(KERN_ERR XNARCH_PROMPT fmt ,=
- ##args)
--#define xnarch_printf(fmt,args...)   printk(KERN_INFO XNARCH_PROMPT fmt =
-, ##args)
-+#define xnarch_loginfo(fmt, args...)	printk(KERN_INFO XNARCH_PROMPT fmt,=
- ##args)
-+#define xnarch_logwarn(fmt, args...)	printk(KERN_WARNING XNARCH_PROMPT f=
-mt, ##args)
-+#define xnarch_logerr(fmt, args...)	printk(KERN_ERR XNARCH_PROMPT fmt, #=
-#args)
-+#define xnarch_printf(fmt, args...)	printk(KERN_INFO XNARCH_PROMPT fmt, =
-##args)
-=20
- typedef cpumask_t xnarch_cpumask_t;
-=20
- #ifdef CONFIG_SMP
--#define xnarch_cpu_online_map            cpu_online_map
-+#define xnarch_cpu_online_map			cpu_online_map
- #else
--#define xnarch_cpu_online_map		 cpumask_of_cpu(0)
-+#define xnarch_cpu_online_map			cpumask_of_cpu(0)
- #endif
--#define xnarch_num_online_cpus()          num_online_cpus()
--#define xnarch_cpu_set(cpu, mask)         cpu_set(cpu, (mask))
--#define xnarch_cpu_clear(cpu, mask)       cpu_clear(cpu, (mask))
--#define xnarch_cpus_clear(mask)           cpus_clear(mask)
--#define xnarch_cpu_isset(cpu, mask)       cpu_isset(cpu, (mask))
--#define xnarch_cpus_and(dst, src1, src2)  cpus_and((dst), (src1), (src2)=
-)
--#define xnarch_cpus_equal(mask1, mask2)   cpus_equal((mask1), (mask2))
--#define xnarch_cpus_empty(mask)           cpus_empty(mask)
--#define xnarch_cpumask_of_cpu(cpu)        cpumask_of_cpu(cpu)
--#define xnarch_cpu_test_and_set(cpu,mask) cpu_test_and_set(cpu, (mask))
--
--#define xnarch_first_cpu(mask)            first_cpu(mask)
--#define XNARCH_CPU_MASK_ALL               CPU_MASK_ALL
-+#define xnarch_num_online_cpus()		num_online_cpus()
-+#define xnarch_cpu_set(cpu, mask)		cpu_set(cpu, (mask))
-+#define xnarch_cpu_clear(cpu, mask)		cpu_clear(cpu, (mask))
-+#define xnarch_cpus_clear(mask)			cpus_clear(mask)
-+#define xnarch_cpu_isset(cpu, mask)		cpu_isset(cpu, (mask))
-+#define xnarch_cpus_and(dst, src1, src2)	cpus_and((dst), (src1), (src2))=
+Package: xenomai-runtime
+Severity: important
+Version: 2.4.2-2
+User: debian-release@domain.hid
+Usertags: goal-dash
 
-+#define xnarch_cpus_equal(mask1, mask2)		cpus_equal((mask1), (mask2))
-+#define xnarch_cpus_empty(mask)			cpus_empty(mask)
-+#define xnarch_cpumask_of_cpu(cpu)		cpumask_of_cpu(cpu)
-+#define xnarch_cpu_test_and_set(cpu, mask)	cpu_test_and_set(cpu, (mask))=
+Hello maintainer,
 
-+#define xnarch_first_cpu(mask)			first_cpu(mask)
-+#define XNARCH_CPU_MASK_ALL			CPU_MASK_ALL
-=20
- typedef struct xnarch_heapcb {
-=20
--    atomic_t numaps;	/* # of active user-space mappings. */
-+	atomic_t numaps;	/* # of active user-space mappings. */
-=20
--    int kmflags;	/* Kernel memory flags (0 if vmalloc()). */
-+	int kmflags;		/* Kernel memory flags (0 if vmalloc()). */
-=20
--    void *heapbase;	/* Shared heap memory base. */
-+	void *heapbase;		/* Shared heap memory base. */
-=20
- } xnarch_heapcb_t;
-=20
-@@ -267,7 +266,7 @@ long long xnarch_tsc_to_ns(long long ts)
-=20
- static inline long long xnarch_tsc_to_ns_rounded(long long ts)
- {
--    return (xnarch_llimd(ts, 1000000000, RTHAL_CPU_FREQ/2) + 1) / 2;
-+	return (xnarch_llimd(ts, 1000000000, RTHAL_CPU_FREQ/2) + 1) / 2;
- }
-=20
- long long xnarch_ns_to_tsc(long long ns);
-@@ -276,24 +275,26 @@ unsigned long long xnarch_get_cpu_time(v
-=20
- static inline unsigned long long xnarch_get_cpu_freq(void)
- {
--    return RTHAL_CPU_FREQ;
-+	return RTHAL_CPU_FREQ;
- }
-=20
--#define xnarch_halt(emsg) \
--do { \
--    rthal_emergency_console(); \
--    xnarch_logerr("fatal: %s\n",emsg); \
--    show_stack(NULL,NULL);			\
--    xnarch_trace_panic_dump();			\
--    for (;;) cpu_relax();			\
--} while(0)
-+#define xnarch_halt(emsg)				\
-+	do {						\
-+		rthal_emergency_console();		\
-+		xnarch_logerr("fatal: %s\n", emsg);	\
-+		show_stack(NULL,NULL);			\
-+		xnarch_trace_panic_dump();		\
-+		for (;;)				\
-+			cpu_relax();			\
-+	} while(0)
-=20
- static inline int xnarch_setimask (int imask)
- {
--    spl_t s;
--    splhigh(s);
--    splexit(!!imask);
--    return !!s;
-+	spl_t s;
-+
-+	splhigh(s);
-+	splexit(!!imask);
-+	return !!s;
- }
-=20
- #ifdef CONFIG_SMP
-@@ -306,7 +307,7 @@ static inline int xnarch_setimask (int i
-=20
- static inline void xnlock_init (xnlock_t *lock)
- {
--    *lock =3D XNARCH_LOCK_UNLOCKED;
-+	*lock =3D XNARCH_LOCK_UNLOCKED;
- }
-=20
- #define DECLARE_XNLOCK(lock)		xnlock_t lock
-@@ -375,9 +376,9 @@ static inline void xnlock_put_irqrestore
- 	rthal_local_irq_restore(flags & 1);
- }
-=20
--static inline int xnarch_send_ipi (xnarch_cpumask_t cpumask)
-+static inline int xnarch_send_ipi(xnarch_cpumask_t cpumask)
- {
--    return rthal_send_ipi(RTHAL_SERVICE_IPI0, cpumask);
-+	return rthal_send_ipi(RTHAL_SERVICE_IPI0, cpumask);
- }
-=20
- static inline int xnlock_is_owner(xnlock_t *lock)
-@@ -387,14 +388,14 @@ static inline int xnlock_is_owner(xnlock
-=20
- #else /* !CONFIG_SMP */
-=20
--#define xnlock_init(lock)              do { } while(0)
--#define xnlock_get(lock)               do { } while(0)
--#define xnlock_put(lock)               do { } while(0)
--#define xnlock_get_irqsave(lock,x)     rthal_local_irq_save(x)
--#define xnlock_put_irqrestore(lock,x)  rthal_local_irq_restore(x)
--#define xnlock_clear_irqoff(lock)      rthal_local_irq_disable()
--#define xnlock_clear_irqon(lock)       rthal_local_irq_enable()
--#define xnlock_is_owner(lock)	       1
-+#define xnlock_init(lock)		do { } while(0)
-+#define xnlock_get(lock)		do { } while(0)
-+#define xnlock_put(lock)		do { } while(0)
-+#define xnlock_get_irqsave(lock,x)	rthal_local_irq_save(x)
-+#define xnlock_put_irqrestore(lock,x)	rthal_local_irq_restore(x)
-+#define xnlock_clear_irqoff(lock)	rthal_local_irq_disable()
-+#define xnlock_clear_irqon(lock)	rthal_local_irq_enable()
-+#define xnlock_is_owner(lock)		1
-=20
- #define DECLARE_XNLOCK(lock)
- #define DECLARE_EXTERN_XNLOCK(lock)
-@@ -403,7 +404,7 @@ static inline int xnlock_is_owner(xnlock
-=20
- static inline int xnarch_send_ipi (xnarch_cpumask_t cpumask)
- {
--    return 0;
-+	return 0;
- }
-=20
- #endif /* !CONFIG_SMP */
-@@ -418,7 +419,7 @@ static inline int xnarch_remap_vm_page(s
- 				       unsigned long from,
- 				       unsigned long to)
- {
--    return wrap_remap_vm_page(vma,from,to);
-+	return wrap_remap_vm_page(vma, from, to);
- }
-=20
- static inline int xnarch_remap_io_page_range(struct vm_area_struct *vma,=
+While performing an archive wide checkbashisms (from the 'devscripts' package) 
+check I've found your package containing several /bin/sh scripts making 
+use of a bashism.
 
-@@ -427,7 +428,7 @@ static inline int xnarch_remap_io_page_r
- 					     unsigned long size,
- 					     pgprot_t prot)
- {
--    return wrap_remap_io_page_range(vma,from,to,size,prot);
-+	return wrap_remap_io_page_range(vma, from, to, size, prot);
- }
-=20
- #ifndef xnarch_hisyscall_entry
+checkbashisms' output:
+> possible bashism in ./usr/bin/xeno-load line 130 (should be >word 2>&1):
+>        $sudo kill -SIGINT $children_pids >& /dev/null
+> possible bashism in ./usr/bin/xeno-info line 77 (brace expansion):
+> ls -l /usr/lib/lib{g,stdc}++.so  2>/dev/null | awk -F. \
+> possible bashism in ./usr/bin/xeno-test line 63 (local foo=bar):
+>   local neededApplets="awk basename cut date dd dirname egrep grep head
+> possible bashism in ./usr/bin/xeno-test line 65 (local foo=bar):
+>   local foundAll=1
+> possible bashism in ./usr/bin/xeno-test line 81 (local foo=bar):
+>   local foundAll=1
+> possible bashism in ./usr/bin/xeno-test line 114 (local foo=bar):
+>     local jobsct=$1;
+> possible bashism in ./usr/bin/xeno-test line 123 (cnt=$((cnt + 1)) does not
+> work in dash): jobsct=$((jobsct-1));
+> possible bashism in ./usr/bin/xeno-test line 162 (local foo=bar):
+>     local filter=" grep -E '$whatconf'"
+> possible bashism in ./usr/bin/xeno-test line 277 (local foo=bar):
+>     local file=$1
+> possible bashism in ./usr/bin/xeno-test line 382 (should be 'b = a'):
+>     if test "$res" == "0" ; then
 
---------------070205020309070705080107--
+Not using bash as /bin/sh is likely to lead to errors or unexpected 
+behaviours. 
+Please be aware that although 
+bash is currently the default /bin/sh there's a release goal for Lenny to 
+make dash the default /bin/sh[1].
 
---------------enigDCAF49CD3A4D1A274FCC3D35
+If you want more information about dash as /bin/sh, you can read:
+http://lists.debian.org/debian-release/2008/01/msg00189.html
+https://wiki.ubuntu.com/DashAsBinSh
+
+For more information please refer to the Debian Policy section 10.4 supporting 
+this argument at:
+http://www.debian.org/doc/debian-policy/ch-files.html#s-scripts
+
+HINT: sometimes these bugs are already fixed in Ubuntu, look at the PTS
+
+[1]http://release.debian.org/lenny/goals.txt
+
+Thank you,
+-- 
+Atomo64 - Raphael
+
+Please avoid sending me Word, PowerPoint or Excel attachments.
+See http://www.gnu.org/philosophy/no-word-attachments.html
+
+
+
+
+--------------080704020708030407030607--
+
+--------------enig9270C81F1EE463A17D96967D
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -335,10 +183,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.4-svn0 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFHyoONniDOoMHTA+kRAiAPAJ9P0Pd6FRfKjPCn3qp4j7X7ornPPgCeMeMg
-Rzn85meHHjvyQDKW/grbAwk=
-=S1CO
+iD8DBQFH5BlvniDOoMHTA+kRAh0kAJ4hD8+6hdGWPPOmOlnJaEvjIaamaQCcCpQK
+SCHuzygCGGmqeL1KK7DbRx8=
+=8FDW
 -----END PGP SIGNATURE-----
 
---------------enigDCAF49CD3A4D1A274FCC3D35--
+--------------enig9270C81F1EE463A17D96967D--
 
