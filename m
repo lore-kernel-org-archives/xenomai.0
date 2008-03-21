@@ -1,15 +1,11 @@
-Message-ID: <47E397AE.2010009@domain.hid>
-Date: Fri, 21 Mar 2008 12:10:38 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <d6c8ef150803180527h71adc568o612fec284f8d096@domain.hid>	<2ff1a98a0803180723i17d6d6e1p619b9c8948b6e542@domain.hid>	<d6c8ef150803190410l48c36687odd494d3966407a8@domain.hid>	<18401.32383.382321.517340@domain.hid>	<d6c8ef150803210350o3daefc6ra0de77c72c7401b1@domain.hid>
-	<2ff1a98a0803210354g40137eeds72eb742142856cd@domain.hid>
-In-Reply-To: <2ff1a98a0803210354g40137eeds72eb742142856cd@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig22772BA851289C0955E839D9"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Handling irq
+Message-Id: <47E391790200000100192E6B@nwque-vm-gwia.criq.qc.ca>
+Date: Fri, 21 Mar 2008 10:44:09 -0400
+From: "Hubert Talbot" <Hubert.Talbot@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Subject: [Xenomai-help] =?utf-8?q?R=C3=A9p=2E_=3A_Re=3A__trivial-periodic?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,60 +15,135 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Bosko Radivojevic <bosko.radivojevic@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: gilles.chanteperdrix@xenomai.org
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig22772BA851289C0955E839D9
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Great!=20
 
-Gilles Chanteperdrix wrote:
-> On Fri, Mar 21, 2008 at 11:50 AM, Bosko Radivojevic
-> <bosko.radivojevic@domain.hid> wrote:
->> I have much better results using rtdm_lock_get_irqsave and
->>  rtdm_lock_put_irqrestore. I hope this is the "appropriate method" of
->>  doing it :)
->>
->>  Thanks!
->=20
-> Shutting interrupts off for long periods of time is not a good idea:
-> - it does not scale well, since it does not work for more than one task=
-;
-> - it kills the precision of timers by delaying the timer interrupt.
-> And I am sure we can find many more drawbacks.
+Booting with idle=3Dpoll fixes the problem.
 
-- it only reduces the probability of your problem, it doe not
-   eliminate it completely
+If I disabled ACPI completeley, would it fix the problem too?
 
-You can still be interrupted right after task wakeup, before=20
-rtdm_lock_get_irqsave. And there is still the possibility to be delayed=20
-by interrupts BEFORE your task is even triggered.
+Thanks=20
 
-If you cannot live with this conceptual jitter (which you'll find on any =
-
-RTOS with more than one job running), you have to do ahead-of-time=20
-scheduling with busy waiting until the actual release date. That will=20
-mean disabling IRQs for a really long time + burning a lot of CPU power. =
-
-Kind of last resort, not generally recommended.
-
-Jan
+Hubert
 
 
---------------enig22772BA851289C0955E839D9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+>>> "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org> 21/03/08 6:04 =
+>>>
+On Thu, Mar 20, 2008 at 6:06 PM, Hubert Talbot <Hubert.Talbot@domain.hid> =
+wrote:
+> Hi,
+>
+>  $xenomai_root/examples/native/trivial-periodic output is something like =
+this:
+>
+>  Time since last turn: 1004.067456 ms
+>  Time since last turn: 995.913359 ms
+>  Time since last turn: 999.998131 ms
+>  Time since last turn: 1000.002309 ms
+>  Time since last turn: 1000.040204 ms
+>  Time since last turn: 999.999632 ms
+>  Time since last turn: 1000.040546 ms
+>  Time since last turn: 999.939968 ms
+>  Time since last turn: 1000.039897 ms
+>  Time since last turn: 1000.021035 ms
+>  Time since last turn: 999.958009 ms
+>  Time since last turn: 999.920890 ms
+>  Time since last turn: 999.716995 ms
+>  Time since last turn: 1002.324537 ms
+>  Time since last turn: 997.977492 ms
+>  Time since last turn: 1000.019093 ms
+>
+>  When I move the mouse, results go away from 1000.
+>
+>  Strangely, when I run a stress test with dd if=3D/dev/zero of=3D/dev/nul=
+l,
+>  results stay near to 1000 even if I move the mouse:
+>
+>  Time since last turn: 1000.000142 ms
+>  Time since last turn: 1000.000696 ms
+>  Time since last turn: 999.997329 ms
+>  Time since last turn: 1000.001777 ms
+>  Time since last turn: 1000.000580 ms
+>  Time since last turn: 999.999695 ms
+>  Time since last turn: 1000.000101 ms
+>  Time since last turn: 1000.000017 ms
+>  Time since last turn: 999.999489 ms
+>  Time since last turn: 1000.000937 ms
+>  Time since last turn: 1000.000010 ms
+>  Time since last turn: 999.999418 ms
+>  Time since last turn: 999.999737 ms
+>  Time since last turn: 1000.000531 ms
+>  Time since last turn: 999.999039 ms
+>  Time since last turn: 1000.001454 ms
+>  Time since last turn: 999.999553 ms
+>  Time since last turn: 999.999125 ms
+>  Time since last turn: 1000.001908 ms
+>  Time since last turn: 999.998908 ms
+>  Time since last turn: 1000.000700 ms
+>  Time since last turn: 999.998672 ms
+>
+>
+>  Also, when I run testsuite/latency/run, I got
+>
+>  RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+>  RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat =
+worst
+>  RTD|      -4.940|      -0.964|      17.237|       0|      -4.940|      =
+17.237
+>  RTD|      -4.963|      -1.023|      17.144|       0|      -4.963|      =
+17.237
+>  RTD|      -5.131|      -1.040|      17.283|       0|      -5.131|      =
+17.283
+>  RTD|      -5.146|      -1.029|      17.399|       0|      -5.146|      =
+17.399
+>  RTD|      -5.086|      -1.034|      16.782|       0|      -5.146|      =
+17.399
+>  RTD|      -5.126|      -1.041|      16.996|       0|      -5.146|      =
+17.399
+>  RTD|      -5.095|      -1.039|      17.028|       0|      -5.146|      =
+17.399
+>  RTD|      -5.132|      -3.274|      16.240|       0|      -5.146|      =
+17.399
+>  RTD|      -4.969|      -4.890|      -1.550|       0|      -5.146|      =
+17.399
+>  RTD|      -5.020|      -4.880|      -0.282|       0|      -5.146|      =
+17.399
+>  RTD|      -4.966|      -4.881|      -1.046|       0|      -5.146|      =
+17.399
+>  RTD|      -5.039|      -4.895|      -0.833|       0|      -5.146|      =
+17.399
+>  RTD|      -5.032|      -4.882|      -0.151|       0|      -5.146|      =
+17.399
+>  RTD|      -5.037|      -4.886|      -1.561|       0|      -5.146|      =
+17.399
+>  RTD|      -4.966|      -3.665|      19.858|       0|      -5.146|      =
+19.858
+>  RTD|      -5.145|      -1.029|      17.900|       0|      -5.146|      =
+19.858
+>  RTD|      -5.128|      -1.018|      16.966|       0|      -5.146|      =
+19.858
+>
+>
+>  Negative "lat max" values are the ones when dd if=3D/dev/zero of=3D/dev/=
+null is running.
+>
+>
+>
+>  Is it normal?
+>
+>
+>  Setup:
+>         adeos-ipipe-2.6.23-x86_64-1.4-03.patch
+>         linux-2.6.23
+>         xenomai-2.4.2
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Is it possible that something (like the ACPI processor module) is
+stopping the tsc on your test box ? Can you try and boot with
+idle=3Dpoll on the kernel command line ?
 
-iD8DBQFH45euniDOoMHTA+kRAuu/AJ42LSVP7WX9qQQnQkDx4IMB5U0cnwCggO36
-xwpj0tE6xoIdSjIq1V6F7Wg=
-=w+/d
------END PGP SIGNATURE-----
+--=20
+ Gilles
 
---------------enig22772BA851289C0955E839D9--
 
