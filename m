@@ -1,11 +1,15 @@
-Message-Id: <47E391790200000100192E6B@nwque-vm-gwia.criq.qc.ca>
-Date: Fri, 21 Mar 2008 10:44:09 -0400
-From: "Hubert Talbot" <Hubert.Talbot@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Subject: [Xenomai-help] =?utf-8?q?R=C3=A9p=2E_=3A_Re=3A__trivial-periodic?=
+From: "Robert McCullough" <rob@domain.hid>
+References: <001a01c88a0d$5365af40$9601a8c0@domain.hid>
+	<47E2BB0F.9050704@domain.hid>
+Date: Fri, 21 Mar 2008 10:57:23 -0400
+Message-ID: <001001c88b63$df59b300$9601a8c0@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+In-reply-to: <47E2BB0F.9050704@domain.hid>
+Subject: Re: [Xenomai-help] Non-Real-Time Asynchronous Notification
+Reply-To: rob@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,135 +19,130 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: gilles.chanteperdrix@xenomai.org
+To: jan.kiszka@domain.hid
 Cc: xenomai@xenomai.org
 
-Great!=20
+Hi Jan,
 
-Booting with idle=3Dpoll fixes the problem.
+  --> -----Original Message-----
+  --> From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid]
+  --> Sent: Thursday, March 20, 2008 3:29 PM
+  --> To: rob@domain.hid
+  --> Cc: xenomai@xenomai.org
+  --> Subject: Re: [Xenomai-help] Non-Real-Time Asynchronous Notification
+  --> 
+  --> Robert McCullough wrote:
+  --> > Hi,
+  --> >
+  --> > How do I signal an asynchronous notification from a RTDM real-time
+  --> task to a
+  --> > non-real-time user-space Linux thread?
+  --> > Do I use Non-Real-Time Signaling Services (rtdm_nrtsig_init,..)?
+  --> > If so, how?
+  --> >
+  --> > Here is the current code that I am trying to port to RTDM.
+  --> >
+  --> > Current driver code to signal non-real-time Linux thread:
+  --> >
+  --> > 	// If event
+  --> > 	if(event){
+  --> > 		// and signal asynchronous readers
+  --> > 		if (kmdpr_device->async_queue)
+  --> > 			kill_fasync(&kmdpr_device->async_queue,
+SIGIO,
+  --> > POLL_IN);
+  --> > 	}
+  --> 
+  --> Just push this code in the rtdm_nrtsig handler and trigger the handler
+  --> execution from RT context.
+  --> 
+  --> Jan
 
-If I disabled ACPI completeley, would it fix the problem too?
+[Robert McCullough] 
+Ok, I understand that but how do I specify the file operation fasync in my
+rtdm_device?  How do I replace or update the code marked TODO?
 
-Thanks=20
+Here is a snippet of my current RTDM.
 
-Hubert
+/* TODO replace fasync with Xenomai counterpart */
+int kmdpr_fasync(int fd, struct file *filp, int mode)
+{
+	kmdpr_context_t *ctx = filp->private_data;
+
+	return fasync_helper(fd, filp, mode, &ctx->async_queue);
+}
+
+static int kmdpr_close (struct rtdm_dev_context *context,
+						rtdm_user_info_t *
+user_info)
+{
+	kmdpr_context_t *ctx; /* device context information */
+
+	PRODEBUG(MODULE_NAME, "Close: kmdpr\n");
+
+/* TODO replace fasync with Xenomai counterpart */
+	// remove this filp from the asynchronously notified filp's 
+//	kmdpr_fasync(-1, filp, 0);
 
 
->>> "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org> 21/03/08 6:04 =
->>>
-On Thu, Mar 20, 2008 at 6:06 PM, Hubert Talbot <Hubert.Talbot@domain.hid> =
-wrote:
-> Hi,
->
->  $xenomai_root/examples/native/trivial-periodic output is something like =
-this:
->
->  Time since last turn: 1004.067456 ms
->  Time since last turn: 995.913359 ms
->  Time since last turn: 999.998131 ms
->  Time since last turn: 1000.002309 ms
->  Time since last turn: 1000.040204 ms
->  Time since last turn: 999.999632 ms
->  Time since last turn: 1000.040546 ms
->  Time since last turn: 999.939968 ms
->  Time since last turn: 1000.039897 ms
->  Time since last turn: 1000.021035 ms
->  Time since last turn: 999.958009 ms
->  Time since last turn: 999.920890 ms
->  Time since last turn: 999.716995 ms
->  Time since last turn: 1002.324537 ms
->  Time since last turn: 997.977492 ms
->  Time since last turn: 1000.019093 ms
->
->  When I move the mouse, results go away from 1000.
->
->  Strangely, when I run a stress test with dd if=3D/dev/zero of=3D/dev/nul=
-l,
->  results stay near to 1000 even if I move the mouse:
->
->  Time since last turn: 1000.000142 ms
->  Time since last turn: 1000.000696 ms
->  Time since last turn: 999.997329 ms
->  Time since last turn: 1000.001777 ms
->  Time since last turn: 1000.000580 ms
->  Time since last turn: 999.999695 ms
->  Time since last turn: 1000.000101 ms
->  Time since last turn: 1000.000017 ms
->  Time since last turn: 999.999489 ms
->  Time since last turn: 1000.000937 ms
->  Time since last turn: 1000.000010 ms
->  Time since last turn: 999.999418 ms
->  Time since last turn: 999.999737 ms
->  Time since last turn: 1000.000531 ms
->  Time since last turn: 999.999039 ms
->  Time since last turn: 1000.001454 ms
->  Time since last turn: 999.999553 ms
->  Time since last turn: 999.999125 ms
->  Time since last turn: 1000.001908 ms
->  Time since last turn: 999.998908 ms
->  Time since last turn: 1000.000700 ms
->  Time since last turn: 999.998672 ms
->
->
->  Also, when I run testsuite/latency/run, I got
->
->  RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
->  RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat =
-worst
->  RTD|      -4.940|      -0.964|      17.237|       0|      -4.940|      =
-17.237
->  RTD|      -4.963|      -1.023|      17.144|       0|      -4.963|      =
-17.237
->  RTD|      -5.131|      -1.040|      17.283|       0|      -5.131|      =
-17.283
->  RTD|      -5.146|      -1.029|      17.399|       0|      -5.146|      =
-17.399
->  RTD|      -5.086|      -1.034|      16.782|       0|      -5.146|      =
-17.399
->  RTD|      -5.126|      -1.041|      16.996|       0|      -5.146|      =
-17.399
->  RTD|      -5.095|      -1.039|      17.028|       0|      -5.146|      =
-17.399
->  RTD|      -5.132|      -3.274|      16.240|       0|      -5.146|      =
-17.399
->  RTD|      -4.969|      -4.890|      -1.550|       0|      -5.146|      =
-17.399
->  RTD|      -5.020|      -4.880|      -0.282|       0|      -5.146|      =
-17.399
->  RTD|      -4.966|      -4.881|      -1.046|       0|      -5.146|      =
-17.399
->  RTD|      -5.039|      -4.895|      -0.833|       0|      -5.146|      =
-17.399
->  RTD|      -5.032|      -4.882|      -0.151|       0|      -5.146|      =
-17.399
->  RTD|      -5.037|      -4.886|      -1.561|       0|      -5.146|      =
-17.399
->  RTD|      -4.966|      -3.665|      19.858|       0|      -5.146|      =
-19.858
->  RTD|      -5.145|      -1.029|      17.900|       0|      -5.146|      =
-19.858
->  RTD|      -5.128|      -1.018|      16.966|       0|      -5.146|      =
-19.858
->
->
->  Negative "lat max" values are the ones when dd if=3D/dev/zero of=3D/dev/=
-null is running.
->
->
->
->  Is it normal?
->
->
->  Setup:
->         adeos-ipipe-2.6.23-x86_64-1.4-03.patch
->         linux-2.6.23
->         xenomai-2.4.2
+	ctx = (kmdpr_context_t *)context->dev_private;
+	/*
+	 * Shut Down KMDPR port
+	 */
+	shutdown(ctx);
+	return 0;
+}
 
-Is it possible that something (like the ACPI processor module) is
-stopping the tsc on your test box ? Can you try and boot with
-idle=3Dpoll on the kernel command line ?
+/**
+* This structure describe the kmdpr RTDM device
+*
+*/
+static struct rtdm_device kmdpr_device = {
+	struct_version:	RTDM_DEVICE_STRUCT_VER,
+		 
+	device_flags:		RTDM_NAMED_DEVICE,
+	context_size:		sizeof(kmdpr_context_t),
+	device_name:		DEVICE_NAME,
+		 
+	open_rt:			kmdpr_open,
+	open_nrt: 			kmdpr_open,
+		 
+	ops: {
+		close_rt:		kmdpr_close,
+		close_nrt:		kmdpr_close,
+		
+		ioctl_rt:		kmdpr_ioctl,
+		ioctl_nrt:		kmdpr_ioctl,
 
---=20
- Gilles
+		read_rt:		NULL,
+		read_nrt:		NULL,
+		
+		write_rt:		NULL,
+		write_nrt:		NULL,
+		
+/* TODO replace fasync with Xenomai counterpart 
+		fasync_rt:   	NULL,
+		fasync_nrt:   	kmdpr_fasync,
+*/
+	},
+		 
+	device_class: 		RTDM_CLASS_KMDPR,
+	device_sub_class:	RTDM_SUBCLASS_GENERIC,
+	profile_version:	1,
+	
+	driver_name:		MODULE_NAME,
+	driver_version:     RTDM_DRIVER_VER(MODULE_MAJOR_VER, 
+	
+MODULE_MINOR_VER, 
+	
+MODULE_BUGFIX_VER),
+	peripheral_name:	MODULE_DESC,
+	provider_name:		"Promess Incorporated",
+	proc_name:			kmdpr_device.device_name,
+};
+
+Thanks,
+Rob
+
 
 
