@@ -1,161 +1,190 @@
-Message-ID: <2ff1a98a0803110236r13a58c2fl7b142d834336673d@domain.hid>
-Date: Tue, 11 Mar 2008 10:36:03 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <d3f72a390803110152q4af121dxdacde86189088549@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: multipart/mixed; boundary="5Lrc/xc5LX"
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <d3f72a390803070526r3867c800u9bfb40ac1eba705e@domain.hid>
-	<2ff1a98a0803070539i6cfa19a4t63e56e266fbfba71@domain.hid>
-	<d3f72a390803070630je3a4d4fsaf96b79c0de792ea@domain.hid>
-	<2ff1a98a0803070635g253cfc2cod690f90dd934b62e@domain.hid>
-	<d3f72a390803100122q23e381f9y7cbdf2c14b177415@domain.hid>
-	<2ff1a98a0803100341p1e72d412l27d002b018ddbf9@domain.hid>
-	<d3f72a390803110152q4af121dxdacde86189088549@domain.hid>
-Subject: Re: [Xenomai-help] [Xenomai-core] WIRED INTERRUPT
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Message-ID: <18407.45563.134939.963369@domain.hid>
+Date: Mon, 24 Mar 2008 14:51:55 +0100
+In-Reply-To: <47E4196F.2070303@domain.hid>
+References: <47E4196F.2070303@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] [Fwd: Bug#471871: xenomai-runtime: bashism
+	in	/bin/sh script]
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: axel axel <softaxel@domain.hid>, xenomai-help <xenomai@xenomai.org>
-
-On Tue, Mar 11, 2008 at 9:52 AM, axel axel <softaxel@domain.hid> wrote:
->
->
-> 2008/3/10, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
-> > On Mon, Mar 10, 2008 at 9:22 AM, axel axel <softaxel@domain.hid> wrote:
-> > > I installed trunk but nothing was changed.
-> >
-> >
-> > If you measure the jitter when receiving the semaphore, that's normal:
-> > unlocked context switches improve interrupt latency, not scheduling
-> > latency.
-> >
-> >
-> > >  So i saw in the documentation that i can put an interrupt shield on a
-> task.
-> > >
-> > > But when i use interrupt shield i saw with the oscilloscope that linux
-> > > doesn't work, instead xenomai task and interrupt handler yes, and the
-> jitter
-> > > go down in about 50~us.
-> >
-> >
-> > The interrupt shield only make a difference for tasks running in
-> > secondary mode. So, if you observe a difference, it means that your
-> > task is running in secondary mode. Or you may observe an indirect
-> > effect (Linux interrupts do not run, so they do not fill the cache).
->
-> Probabily it's an an indirect effect.
-> How does the cache work ?
-
-http://en.wikipedia.org/wiki/Cache
-
-ARM cache is usually of type VIVT
-
->  It's an interrupt chache?
-
-No, I am talking about the memory (data & instruction) cache.
-
-> what does it mean fill the cache with the shield setting in primary mode ?
->
->
->
-> > >
-> > > The problem is:
-> > > - xenomai task wait on the 2ms semaphore, put on/off a led and just wait
-> on
-> > > the previous semaphore, in conclusion there is a little work,
-> > >  but linux hang.
-> > >
-> > >
-> > >
-> > > So i have this situation and the relative c code:
-> > >
-> > > 1. i have a kernel module that handle a xenomai interrupt of 2ms, do
-> some
-> > > work, enable a semaphore;
-> > >
-> > > int isrIntFujitsu( xnintr_t* cookie )
-> > > {
-> > >      word16 i;
-> > >
-> > >     CLEAR_IRQ();
-> > >
-> > >      //-----------------------LED---------------------------------------
-> > >         //    P6 on
-> > >      __raw_writel( __raw_readl( GPIO_PCDR ) | 0x00000020 , GPIO_PCDR );
-> > >
-> > >     //-----------------------------------------------------------------
-> > >
-> > >     physFujMem->cmd.dpBusySync[ 2 ] = TRUE;
-> > >
-> > >     //copiamo l'area dalla dualport del fujitsu
-> > >      for( i=0; i < 24; i++)
-> > >     {
-> > >         *( (word16 * )adrLocalRead + i ) = *( adrPhysRead + i );
-> > >      }
-> > >
-> > >     //Scriviamo nella dualport del fujitsu
-> > >     for( i=0; i < 24; i++)
-> > >      {
-> > >         *( adrPhysWrite + i ) = *( (word16 * )adrLocalWrite + i );
-> > >     }
-> > >
-> > >     physFujMem->cmd.dpBusySync[ 2 ] = FALSE;
-> > >
-> > >             //    P6 off
-> > >      __raw_writel( __raw_readl( GPIO_PCDR ) & 0xFFFFFCF , GPIO_PCDR);
-> > >
-> > >
-> > >          //incrementa il semaforo ( il fujitsu ha alzato un interrupt )
-> > >     rt_sem_v( &rtFujSem );
-> > >
-> > >     return RT_INTR_HANDLED ;
-> > > }
-> > >
-> > >
-> > >
-> > >
-> > > 2. a xenomai task that wait on the same semaphore of kernel xenomai
-> > > interrupt and start his work.
-> > >
-> > > void taskCan (void *cookie)
-> > > {
-> > >     int err;
-> > >
-> > >
-> > >     err = rt_task_set_mode( 0, T_PRIMARY | T_SHIELD ,0);
-> > >      if( err != 0 )
-> > >     {
-> > >         printf( "Impossible to set task mode\n" );
-> > >         fflush( stdout );
-> > >     }
-> > >
-> > >     for (;;)
-> > >     {
-> > >
-> > >         rt_sem_p( &rtSemCan,TM_INFINITE );
-> >
-> >
-> > Could you test the return value of rt_sem_p here ? If it fails, then
-> > you are calling it in a loop, causing the machine to hang. In any
-> > case, you may activate Xenomai watchdog and Linux soft-lockup detector
-> > to detect all kinds of soft lockups.
->
-> the return value of rt_sem_p is always 0.
->
->
->
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai-core@domain.hid
 
 
+--5Lrc/xc5LX
+Content-Type: text/plain; charset=us-ascii
+Content-Description: message body and .signature
+Content-Transfer-Encoding: 7bit
+
+Jan Kiszka wrote:
+ > Maybe someone with idle cycles left could have a look at this.
+
+Ok. Here comes an (untested) patch.
 
 -- 
- Gilles Chanteperdrix
+
+
+					    Gilles.
+
+--5Lrc/xc5LX
+Content-Type: text/plain
+Content-Disposition: inline;
+	filename="xeno-sh-scripts.diff"
+Content-Transfer-Encoding: 7bit
+
+Index: scripts/xeno-info
+===================================================================
+--- scripts/xeno-info	(revision 3623)
++++ scripts/xeno-info	(working copy)
+@@ -74,7 +74,7 @@ ldd -v > /dev/null 2>&1 && ldd -v || ldd
+ 'NR==1{print "Dynamic linker (ldd)  ", $NF}'
+ fi
+ 
+-ls -l /usr/lib/lib{g,stdc}++.so  2>/dev/null | awk -F. \
++ls -l /usr/lib/libg++.so /usr/lib/libstdc++.so  2>/dev/null | awk -F. \
+        '{print "Linux C++ Library      " $4"."$5"."$6}'
+ 
+ if test 0 -eq $withBusybox ; then 
+Index: scripts/xeno-load.in
+===================================================================
+--- scripts/xeno-load.in	(revision 3623)
++++ scripts/xeno-load.in	(working copy)
+@@ -127,7 +127,7 @@ children_pids=""
+ cleanup () {
+ 
+     if test \! "x$children_pids" = x; then
+-       $sudo kill -SIGINT $children_pids >& /dev/null
++       $sudo kill -SIGINT $children_pids > /dev/null 2>&1
+        children_pids=""
+        sleep 1
+     fi
+Index: scripts/xeno-test.in
+===================================================================
+--- scripts/xeno-test.in	(revision 3623)
++++ scripts/xeno-test.in	(working copy)
+@@ -60,9 +60,9 @@ pidFile=/var/lock/`basename $0.$$`.pids
+ 
+ checkUtilities() {
+   # Check for needed helper utilities
+-  local neededApplets="awk basename cut date dd dirname egrep grep head
++  neededApplets="awk basename cut date dd dirname egrep grep head
+ 		       kill md5sum mount sleep test top uname zcat"
+-  local foundAll=1
++  foundAll=1
+   for  _j in $neededApplets
+   do
+     if test -z "`which $_j`"; then
+@@ -74,11 +74,17 @@ checkUtilities() {
+     echo "Please build busybox's ash with support for getopts"
+     foundAll=0
+   fi
+-  if test $foundAll -eq 0 ; then exit 3 ; fi
++  if test $foundAll -eq 0 ; then 
++      needApplets=""
++      foundAll=""
++      exit 3
++  fi
++  needApplets=""
++  foundAll=""
+ }
+ 
+ checkHelpers() {
+-  local foundAll=1
++  foundAll=1
+   if test -z "`which script`" -a -n "$logging"; then
+       echo "You will not be able to log (-L option) as script is missing"
+       foundAll=0
+@@ -91,7 +97,11 @@ checkHelpers() {
+       echo "You will not be able to upload (-U option) as curl is missing"
+       foundAll=0
+   fi
+-  if test $foundAll -eq 0 ; then exit 3 ; fi
++  if test $foundAll -eq 0 ; then 
++      foundAll=""
++      exit 3
++  fi
++  foundAll=""
+ }
+ 
+ loudly() {
+@@ -111,7 +121,7 @@ dd_jobs=
+ mkload() { dd if=$device of=/dev/null $* & }
+ 
+ generate_loads() {
+-    local jobsct=$1;
++    jobsct=$1;
+     # if test -z "$1"; then echo Skipping generate_loads; return; fi
+     shift 1
+     if test 0 -eq $withBusybox ; then
+@@ -120,13 +130,14 @@ generate_loads() {
+ 	trap cleanup_load EXIT	# under all exit conditions
+     fi
+     while test $jobsct -ge 1; do 
+-        jobsct=$((jobsct-1)); 
++        jobsct=`expr $jobsct - 1`; 
+         mkload
+         dd_jobs="$dd_jobs $!" ;
+     done
+ 
+     echo dd workload started, pids $dd_jobs stored in $pidFile
+     echo  $dd_jobs > $pidFile
++    jobsct=""
+ }
+ 
+ cleanup_load() {
+@@ -159,7 +170,7 @@ boxinfo() { # static info, show once
+     loudly md5sum /proc/cpuinfo	'# cpuinfo fingerprint'
+ 
+     # how much of the config do we want ?
+-    local filter=" grep -E '$whatconf'"
++    filter=" grep -E '$whatconf'"
+     [ "$verbose" = 1 ] && filter=
+     if test -f /proc/config.gz; then # get the config
+          loudly zcat /proc/config.gz | $filter
+@@ -170,6 +181,7 @@ boxinfo() { # static info, show once
+ 
+     [ -d /proc/adeos ] && for f in /proc/adeos/*; do loudly cat $f; done
+     [ -d /proc/ipipe ] && for f in /proc/ipipe/*; do loudly cat $f; done
++    filter=""
+ }
+ 
+ boxstatus() {     # get dynamic status
+@@ -274,7 +286,7 @@ verbose=
+ dateargs='+%y%m%d.%H%M%S'
+ 
+ sendit() {
+-    local file=$1
++    file=$1
+     if test "$sendit" = 'm' ; then
+ 	echo "mailing $file to $email"
+ 	if test -n "$file" ; then
+@@ -290,6 +302,7 @@ sendit() {
+     else
+ 	echo "sendit unsupported option '$sendit'"
+     fi
++    file=""
+ }
+ 
+ handle_options() {	# called for XENOTEST_OPTS, ARGV
+@@ -379,7 +392,7 @@ if test "$logging" != "" ; then
+     # restart inside a script invocation, passing appropriate args
+     script -c "`dirname $0`/xeno-test $loadpass $latpass $*" $wfile
+     res="$?"
+-    if test "$res" == "0" ; then
++    if test "$res" = "0" ; then
+ 	sendit $wfile
+     fi
+ else
+
+--5Lrc/xc5LX--
 
