@@ -1,48 +1,59 @@
-Message-ID: <2ff1a98a0803180326h4ef2c65o1f46342751838394@domain.hid>
-Date: Tue, 18 Mar 2008 11:26:35 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <bd3df7a40803180236n4e35f6a3m29cd77bda6f3927e@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <bd3df7a40803180236n4e35f6a3m29cd77bda6f3927e@domain.hid>
-Subject: Re: [Xenomai-help] ARM9 and xenomai
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C88E88.2CB40A25"
+Date: Tue, 25 Mar 2008 15:54:49 +0100
+Message-ID: <0B45E93C5FF65740AEAE690BF3848B7AD381CE@rennsmail04.eu.thmulti.com>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
+Subject: [Xenomai-core] [PATCH] add numaps to
+	/proc/xenomai/registry/native/heaps/*
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Arnaud Riess <arnaud.riess@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-On Tue, Mar 18, 2008 at 10:36 AM, Arnaud Riess <arnaud.riess@domain.hid> wrote:
-> Hello,
->
-> I'm currently using an ARM9 core from freescale (i.MX27) on a Phycore-i.MX27
-> board
-> (http://www.phytec.com/products/sbc/ARM-XScale/phyCORE-ARM9-i.MX27.html)
-> under linux. I need hard real-time response time and I wonder if I can
-> install xenomai on my board. Does anybody have info about that?
+This is a multi-part message in MIME format.
 
-That is an FAQ/
+------_=_NextPart_001_01C88E88.2CB40A25
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-Xenomai is not currently ported on IMX27. But IMX21 was ported on old
-versions of the I-pipe (on top of Linux 2.6.14). So, to port it, take
-whatever version of Linux you are using (either vanilla, or Freescale
-BSP), apply whatever I-pipe patch is relevant (actually, you do not
-have much choice, it will be I-pipe for Linux 2.6.20 or I-pipe for
-Linux 2.6.24), then read the wiki page about porting I-pipe on ARM
-[1], and try to follow this guide, adapting the patch for IMX21 if at
-all possible. The guide is not yet up to date for 2.6.24, but will be
-updated shortly.
+Dear Xenomai committers,
 
-[1] http://www.xenomai.org/index.php/I-pipe:ArmPorting
+Here is attached a misc patch which add numaps to
+/proc/xenomai/registry/native/heaps/*
+I like it :-)
 
--- 
- Gilles Chanteperdrix
+Regards
+--=20
+Stephane
+
+------_=_NextPart_001_01C88E88.2CB40A25
+Content-Type: application/octet-stream;
+	name="numaps.patch"
+Content-Transfer-Encoding: base64
+Content-Description: numaps.patch
+Content-Disposition: attachment;
+	filename="numaps.patch"
+
+LS0tIHhlbm9tYWkva3NyYy9za2lucy9uYXRpdmUvaGVhcC5jCTMgSmFuIDIwMDggMDk6NDc6NTQg
+LTAwMDAKKysrIHhlbm9tYWkva3NyYy9za2lucy9uYXRpdmUvaGVhcC5jCTI1IE1hciAyMDA4IDE0
+OjM2OjUwIC0wMDAwCkBAIC02MCwxMCArNjAsMTEgQEAKIAlpbnQgbGVuOwogCXNwbF90IHM7CiAK
+LQlwICs9IHNwcmludGYocCwgInR5cGU9JXM6c2l6ZT0lbHU6dXNlZD0lbHVcbiIsCisJcCArPSBz
+cHJpbnRmKHAsICJ0eXBlPSVzOnNpemU9JWx1OnVzZWQ9JWx1Om51bWFwcz0lZFxuIiwKIAkJICAg
+ICAoaGVhcC0+bW9kZSAmIEhfU0hBUkVEKSA9PSBIX1NIQVJFRCA/ICJzaGFyZWQiIDoKIAkJICAg
+ICAoaGVhcC0+bW9kZSAmIEhfTUFQUEFCTEUpID8gIm1hcHBhYmxlIiA6ICJrZXJuZWwiLAotCQkg
+ICAgIHhuaGVhcF91c2FibGVfbWVtKCZoZWFwLT5oZWFwX2Jhc2UpLCB4bmhlYXBfdXNlZF9tZW0o
+JmhlYXAtPmhlYXBfYmFzZSkpOworCQkgICAgIHhuaGVhcF91c2FibGVfbWVtKCZoZWFwLT5oZWFw
+X2Jhc2UpLCB4bmhlYXBfdXNlZF9tZW0oJmhlYXAtPmhlYXBfYmFzZSksCisJCSAgICAgYXRvbWlj
+X3JlYWQoJmhlYXAtPmhlYXBfYmFzZS5hcmNoZGVwLm51bWFwcykpOwogCiAJeG5sb2NrX2dldF9p
+cnFzYXZlKCZua2xvY2ssIHMpOwogCg==
+
+------_=_NextPart_001_01C88E88.2CB40A25--
 
