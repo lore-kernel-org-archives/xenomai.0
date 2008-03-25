@@ -1,18 +1,12 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <8c12bab70803250638y36c67e0cx6d52aa4a85979720@domain.hid>
+Date: Tue, 25 Mar 2008 14:38:00 +0100
+From: "Asif Iqbal" <a.iqbal@domain.hid>
+Sender: aiqbalrana@domain.hid
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18408.10253.285795.914555@domain.hid>
-Date: Mon, 24 Mar 2008 23:15:41 +0100
-In-Reply-To: <18407.58512.849738.173184@domain.hid>
-References: <16201.81.252.86.91.1205764989.squirrel@domain.hid>
-	<18400.53752.538963.384358@domain.hid>
-	<6621.81.252.86.91.1205927700.squirrel@domain.hid>
-	<2ff1a98a0803190613r7572d87eibef16aecf39ef71a@domain.hid>
-	<10023.62.39.72.60.1205940829.squirrel@domain.hid>
-	<18407.43111.568301.509775@domain.hid>
-	<18407.58512.849738.173184@domain.hid>
-Subject: Re: [Xenomai-help] Application crash
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_16683_30911043.1206452280110"
+Subject: [Xenomai-help] Beginner Help
+Reply-To: a.iqbal@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,48 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabien MAHOT <fabien.mahot@domain.hid>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
- > Gilles Chanteperdrix wrote:
- >  > Fabien MAHOT wrote:
- >  >  > >> Are you sure this is the right .config ? I see that priority coupling
- >  >  > >> is enabled.
- >  >  > >
- >  >  > > I want the priority coupling be enabled. (I have a problem when it was
- >  >  > > disabled : I have a main thread with highest priority which creates other
- >  >  > > threads. When all the threads are created, the main thread reduces its
- >  >  > > priority at the minimum, broadcats a condition and unlock the associated
- >  >  > > mutex to start the other threads . But, after that main thread unlocks the
- >  >  > > mutex, it stays a short while in execution in spite of its priority)
- >  >  > 
- >  >  > ---> I make a mistake, when Main thread reduces its priority at the
- >  >  > minimum (with pthread_setschedparam), it's not preempted by a thread which
- >  >  > has an higher priority and which is ready to run.
- >  >  > 
- >  >  > 
- >  >  > Could you try to run my program on your arm with enabled priority
- >  >  > coupling, please?
- >  > 
- >  > I see that you have the interrupt shield enabled, could you try and
- >  > disable it ? The thread "thread2" never suspends, with the interrupt
- >  > shield enabled, it means that Linux will never heandle its IRQs.
- > 
- > That said, the interrupt shield should not enter in action since the
- > shield bit is not armed for any thread. And indeed, your program runs
- > fine with the same configuration as you (including interrupt shield) on
- > ARM.
- > 
- > I tend to think about an hardware or configuration issue. I will now try
- > to run your example on an x86 with the same configuration as you, to see
- > if it is a configuration issue.
+------=_Part_16683_30911043.1206452280110
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-I have now tested your configuration on a PC. Your example works
-fine. So, it is now official, you have an hardware issue. This may be a
-peculiarity of Geode hardware, or some missing stuff in Xenomai.
+Hello
 
--- 
+I just installed Xenomai on 2.6.24 kernel and played with some examples from
+the cvs repository. I can create a 10 KHz hard real-time loop in an
+amazingly simple way *rt_task_set_periodic.* There is a certain jitter that
+can occasionally go as high as 50us(!) but I have not had any overruns.
 
+Now I would like to do the following:
 
-					    Gilles.
+1) Read data from serial port that is coming from a microcontroller board.
+2) Filter this data using a simple low-pass filter
+3) Share the results through a webserver  (Apache) at a much lower frequency
+@ ca. 1 Hz.
+
+Could you point me to some example source code that resembles my needs, esp.
+step 3?
+
+Thank you.
+
+Asif
+
+------=_Part_16683_30911043.1206452280110
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hello<br><br>I just installed Xenomai on 2.6.24 kernel and played with some examples from the cvs repository. I can create a 10 KHz hard real-time loop in an amazingly simple way <b>rt_task_set_periodic.</b> There is a certain jitter that can occasionally go as high as 50us(!) but I have not had any overruns. <br>
+<br>Now I would like to do the following:<br><br>1) Read data from serial port that is coming from a microcontroller board.<br>2) Filter this data using a simple low-pass filter<br>3) Share the results through a webserver&nbsp; (Apache) at a much lower frequency @ ca. 1 Hz.<br>
+<br>Could you point me to some example source code that resembles my needs, esp. step 3?<br><br>Thank you.<br><br>Asif<br>
+
+------=_Part_16683_30911043.1206452280110--
 
