@@ -1,16 +1,13 @@
-Message-Id: <47EA61620200000100192F21@domain.hid>
-Date: Wed, 26 Mar 2008 14:44:50 -0400
-From: "Hubert Talbot" <Hubert.Talbot@domain.hid>
-References: <47E391790200000100192E6B@nwque-vm-gwia.criq.qc.ca>
-	<2ff1a98a0803210805o4e52cdddkf895c29b8045aba1@domain.hid>
-In-Reply-To: <2ff1a98a0803210805o4e52cdddkf895c29b8045aba1@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <2ff1a98a0803261150q1036103fr9c4152ea818834c1@domain.hid>
+Date: Wed, 26 Mar 2008 19:50:26 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <47EA60980200000100192F1D@nwque-vm-gwia.criq.qc.ca>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Subject: Re: [Xenomai-help]
- =?iso-8859-15?q?R=E9p=2E_=3A_Re=3A__trivial-period?=
- =?iso-8859-15?q?ic?=
+References: <47EA60980200000100192F1D@nwque-vm-gwia.criq.qc.ca>
+Subject: Re: [Xenomai-help] latency test
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,30 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Hubert Talbot <Hubert.Talbot@domain.hid>
 Cc: xenomai@xenomai.org
 
-There is no APM item in menuconfig for x86_64.
-
->>> "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org> 2008-03-21 =
-11:05:18 >>>
-On Fri, Mar 21, 2008 at 3:44 PM, Hubert Talbot <Hubert.Talbot@domain.hid> =
-wrote:
->  >>> "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org> 21/03/08 >  =
-Is it possible that something (like the ACPI processor module) is
->  stopping the tsc on your test box ? Can you try and boot with
->  idle=3Dpoll on the kernel command line ?
-
-> Great!
+On Wed, Mar 26, 2008 at 7:41 PM, Hubert Talbot <Hubert.Talbot@domain.hid> wrote:
+> Hi,
 >
->  Booting with idle=3Dpoll fixes the problem.
+>  800 MHz x86 system.
 >
->  If I disabled ACPI completeley, would it fix the problem too?
+>  How can "lat max" vary to consider we have a reliable realtime system ?
+>
+>  If results are around 40 usec, is it normal that some values are ~75 or ~175
+>  (especially when two other applications send/receive interrupts) ?
 
-As far as I know, only the ACPI processor module may stop the tsc.
-Maybe you also have APM enabled ?
+800 MHz is rather slow, so 75 may be normal (albeit rather high), but
+175 is too much. You probably have a problem with SMIs... Also normal
+high peaks usually happen under load. SMI peaks happen even on an idle
+system.
 
---=20
+>
+>  Does "lat max" depend on processor frequency ?
+
+I think it rather depends on processor class, as a rule of thumb, you
+will probably get much lower latencies on a core 2 duo than on, say, a
+pentium 2.
+
+>
+>  Does interrupt reception (rt_intr_wait) depend on processor frequency ?
+
+The latency test uses the timer interrupt, you control the sampling
+period with the -p argument.
+
+-- 
  Gilles
-
 
