@@ -1,13 +1,11 @@
-From: Wolfgang Denk <wd@domain.hid>
-Mime-version: 1.0
-Content-type: text/plain; charset=ISO-8859-1
-Content-transfer-encoding: 8bit
-In-reply-to: Your message of "Wed, 26 Mar 2008 21:55:29 +0800."
-	<20080326135529.GA11244@domain.hid>
-Date: Wed, 26 Mar 2008 15:08:42 +0100
-Sender: wd@domain.hid
-Message-Id: <20080326140842.542BB243A7@domain.hid>
-Subject: Re: [Xenomai-core] [SOLO] Build fail due to lack file(s)
+Date: Wed, 26 Mar 2008 22:36:44 +0800
+From: jserv@domain.hid
+Message-ID: <20080326143644.GB11244@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=big5
+Content-Disposition: inline
+Subject: [Xenomai-core] [SOLO] [PATCH] Obtain proper prefix for testsuite
+	build
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,29 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: jserv@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-In message <20080326135529.GA11244@domain.hid> you wrote:
-> 
-> After git pull, I found that pSOS(*) emulation interface on top of the
-> Xenomai/SOLO framework was checked in.  However, it fails to build due
-> to lack file(s) in repository.  Here are the compilation results:
+Hello list,
 
-That is to be expected. The README  file  has  a  section  "Available
-emulators/APIs"  which  only  lists VxWorks so far - nothing else has
-been ported yet.
+  Currently, Xenomai/SOLO comes with testsuite for VxWorks emulation.
+The path to Xenomai/SOLO installation is fixed.  The patch attempts to
+obtain the proper prefix during build process.
 
-Patches are welcome, of course :-)
+Regards,
+-jserv
 
-Best regards,
-
-Wolfgang Denk
-
--- 
-DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
-Just because your doctor has a name for your condition  doesn't  mean
-he knows what it is.
+diff --git a/vxworks/testsuite/Makefile b/vxworks/testsuite/Makefile
+index 62430ff..13ca9a0 100644
+--- a/vxworks/testsuite/Makefile
++++ b/vxworks/testsuite/Makefile
+@@ -1,4 +1,4 @@
+-SOLO := /usr/local/solo
++SOLO := $(shell sed -n '/^prefix/'p ../Makefile | cut -c 9-)
+ XENO_CONFIG=$(SOLO)/bin/xeno-config
+ prefix := $(shell $(XENO_CONFIG) --prefix)
 
