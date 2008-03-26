@@ -1,13 +1,23 @@
-Message-ID: <2ff1a98a0803261150q1036103fr9c4152ea818834c1@domain.hid>
-Date: Wed, 26 Mar 2008 19:50:26 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <47EA60980200000100192F1D@nwque-vm-gwia.criq.qc.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <47EA60980200000100192F1D@nwque-vm-gwia.criq.qc.ca>
-Subject: Re: [Xenomai-help] latency test
+Message-ID: <18410.43769.299931.151297@domain.hid>
+Date: Wed, 26 Mar 2008 20:58:49 +0100
+In-Reply-To: <15944.81.252.86.91.1206526011.squirrel@domain.hid>
+References: <16201.81.252.86.91.1205764989.squirrel@domain.hid>
+	<6621.81.252.86.91.1205927700.squirrel@domain.hid>
+	<2ff1a98a0803190613r7572d87eibef16aecf39ef71a@domain.hid>
+	<10023.62.39.72.60.1205940829.squirrel@domain.hid>
+	<18407.43111.568301.509775@domain.hid>
+	<18407.58512.849738.173184@domain.hid>
+	<18408.10253.285795.914555@domain.hid>
+	<3551.81.252.86.91.1206464698.squirrel@domain.hid>
+	<2ff1a98a0803251037y3c0d8735he1fc82895c349c3c@domain.hid>
+	<2786.81.252.86.91.1206522879.squirrel@domain.hid>
+	<2ff1a98a0803260236r409752a3v55cd8dce1305a003@domain.hid>
+	<15944.81.252.86.91.1206526011.squirrel@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] Application crash
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,37 +27,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Hubert Talbot <Hubert.Talbot@domain.hid>
+To: Fabien MAHOT <fabien.mahot@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Wed, Mar 26, 2008 at 7:41 PM, Hubert Talbot <Hubert.Talbot@domain.hid> wrote:
-> Hi,
->
->  800 MHz x86 system.
->
->  How can "lat max" vary to consider we have a reliable realtime system ?
->
->  If results are around 40 usec, is it normal that some values are ~75 or ~175
->  (especially when two other applications send/receive interrupts) ?
+Fabien MAHOT wrote:
+ > 
+ > > It's a lockup then. Could you try enabling the Xenomai watchdog ?
+ > 
+ > yes, but no thread is killed. my application stays frozen
 
-800 MHz is rather slow, so 75 may be normal (albeit rather high), but
-175 is too much. You probably have a problem with SMIs... Also normal
-high peaks usually happen under load. SMI peaks happen even on an idle
-system.
-
->
->  Does "lat max" depend on processor frequency ?
-
-I think it rather depends on processor class, as a rule of thumb, you
-will probably get much lower latencies on a core 2 duo than on, say, a
-pentium 2.
-
->
->  Does interrupt reception (rt_intr_wait) depend on processor frequency ?
-
-The latency test uses the timer interrupt, you control the sampling
-period with the -p argument.
+And you do not get any message on the console ?
 
 -- 
- Gilles
+
+
+					    Gilles.
 
