@@ -1,13 +1,10 @@
-Message-ID: <47EA4F65.7050600@domain.hid>
-Date: Wed, 26 Mar 2008 09:28:05 -0400
-From: "Steven A. Falco" <sfalco@domain.hid>
+Date: Wed, 26 Mar 2008 21:55:29 +0800
+From: jserv@domain.hid
+Message-ID: <20080326135529.GA11244@domain.hid>
 MIME-Version: 1.0
-References: <20080325224919.582BD243A7@domain.hid>
-	<47EA14F7.7040004@domain.hid>
-In-Reply-To: <47EA14F7.7040004@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Xenomai/SOLO - RTOS emulation for standard Linux
+Content-Type: text/plain; charset=big5
+Content-Disposition: inline
+Subject: [Xenomai-core] [SOLO] Build fail due to lack file(s)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,12 +16,24 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
-I'll of course have to make my own tests, but I am curious - do folks
-expect that Xenomai/SOLO will be able to equal the interrupt performance
-of Xenomai/IPIPE?  I guess my intuition says that the IPIPE approach
-would guarantee better interrupt response, but maybe my intuition is
-completely wrong.  I'll try to post some results in a few weeks...
+Hello list,
 
-    Steve Falco
+After git pull, I found that pSOS(*) emulation interface on top of the
+Xenomai/SOLO framework was checked in.  However, it fails to build due
+to lack file(s) in repository.  Here are the compilation results:
 
+<%
+make[1]: Entering directory `/tmp/xenomai-solo/psos'
+/bin/sh ../libtool --tag=CC   --mode=compile gcc -DHAVE_CONFIG_H -I. -I../include  -g -O0 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -fstrict-aliasing -Wno-strict-aliasing -D__SOLO_DEBUG__ -D__XENO__ -D__SOLO__ -Wstrict-prototypes -include xeno_config.h -I../include    -MT libpsos_la-init.lo -MD -MP -MF .deps/libpsos_la-init.Tpo -c -o libpsos_la-init.lo `test -f 'init.c' || echo './'`init.c
+ gcc -DHAVE_CONFIG_H -I. -I../include -g -O0 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -fstrict-aliasing -Wno-strict-aliasing -D__SOLO_DEBUG__ -D__XENO__ -D__SOLO__ -Wstrict-prototypes -include xeno_config.h -I../include -MT libpsos_la-init.lo -MD -MP -MF .deps/libpsos_la-init.Tpo -c init.c -o libpsos_la-init.o
+init.c:30:19: error: queue.h: No such file or directory
+init.c: In function 'PSOS_INIT':
+init.c:46: error: 'psos_queue_table' undeclared (first use in this function)
+init.c:46: error: (Each undeclared identifier is reported only once
+init.c:46: error: for each function it appears in.)
+make[1]: *** [libpsos_la-init.lo] Error 1
+ %>
+
+Thanks,
+-jserv
 
