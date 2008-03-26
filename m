@@ -1,4 +1,4 @@
-Message-ID: <15944.81.252.86.91.1206526011.squirrel@domain.hid>
+Message-ID: <12343.81.252.86.91.1206527718.squirrel@domain.hid>
 In-Reply-To: <2ff1a98a0803260236r409752a3v55cd8dce1305a003@domain.hid>
 References: <16201.81.252.86.91.1205764989.squirrel@domain.hid> 
 	<6621.81.252.86.91.1205927700.squirrel@domain.hid> 
@@ -11,7 +11,7 @@ References: <16201.81.252.86.91.1205764989.squirrel@domain.hid>
 	<2ff1a98a0803251037y3c0d8735he1fc82895c349c3c@domain.hid> 
 	<2786.81.252.86.91.1206522879.squirrel@domain.hid>
 	<2ff1a98a0803260236r409752a3v55cd8dce1305a003@domain.hid>
-Date: Wed, 26 Mar 2008 11:06:51 +0100 (CET)
+Date: Wed, 26 Mar 2008 11:35:18 +0100 (CET)
 From: "Fabien MAHOT" <fabien.mahot@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain;charset=iso-8859-1
@@ -27,11 +27,10 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: xenomai@xenomai.org, Fabien MAHOT <fabien.mahot@domain.hid>
 
 
-> It's a lockup then. Could you try enabling the Xenomai watchdog ?
-
-yes, but no thread is killed. my application stays frozen
+There is no problem of compatibility between Xenomai 2.4.2 and glibc 2.5 =
+?
 
 
