@@ -1,13 +1,15 @@
-Message-ID: <47EA9D6F.2030808@domain.hid>
-Date: Wed, 26 Mar 2008 15:01:03 -0400
-From: "Steven A. Falco" <sfalco@domain.hid>
+Message-ID: <47EAE459.90307@domain.hid>
+Date: Thu, 27 Mar 2008 01:03:37 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <20080325224919.582BD243A7@domain.hid>	<47EA14F7.7040004@domain.hid>
-	<47EA4F65.7050600@domain.hid> <47EA9022.7010504@domain.hid>
-In-Reply-To: <47EA9022.7010504@domain.hid>
+References: <20080326143644.GB11244@domain.hid>
+In-Reply-To: <20080326143644.GB11244@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Xenomai/SOLO - RTOS emulation for standard Linux
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] [SOLO] [PATCH] Obtain proper prefix for
+ testsuite build
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,25 +19,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
+To: jserv@domain.hid
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> But obviously, the co-kernel mode based on the I-pipe is here to stay, and the
-> purpose of Xenomai 3 is to allow the emulators to be usable on top of both
-> real-time cores (i.e. PREEMPT_RT, or I-pipe + nucleus), using a simple
-> recompilation. SOLO is an intermediate step, before both approaches are
-> reconciled with a common emulator code base in Xenomai 3. In other words: two
-> real-time cores, one set of emulators. Well, that's the plan.
+jserv@domain.hid wrote:
+> Hello list,
+> 
+>   Currently, Xenomai/SOLO comes with testsuite for VxWorks emulation.
+> The path to Xenomai/SOLO installation is fixed.  The patch attempts to
+> obtain the proper prefix during build process.
+> 
+> Regards,
+> -jserv
+> 
+> diff --git a/vxworks/testsuite/Makefile b/vxworks/testsuite/Makefile
+> index 62430ff..13ca9a0 100644
+> --- a/vxworks/testsuite/Makefile
+> +++ b/vxworks/testsuite/Makefile
+> @@ -1,4 +1,4 @@
+> -SOLO := /usr/local/solo
+> +SOLO := $(shell sed -n '/^prefix/'p ../Makefile | cut -c 9-)
+>  XENO_CONFIG=$(SOLO)/bin/xeno-config
+>  prefix := $(shell $(XENO_CONFIG) --prefix)
 >
-> I will send a roadmap to Xenomai 3 asap (take this literally, because of hectic
-> schedule here), to explain where we are heading to.
->
->   
-Thanks for the clarification - I was not sure of the intent for SOLO,
-but now it makes sense.  I'm glad that IPIPE is not going away, as my
-application will need hard real time.
 
-    Steve
+This won't work if you build out of the source tree like autoconf/automake
+recommend, since it won't find the instantiated Makefile in the upper directory.
+We could use an autoconf template to patch the prefix into
+testsuite/Makefile.in, but the testsuite/ directory is meant to be movable and
+compilable anywhere the user sees fit. This is basically why the Makefile has
+not been autoconfiscated in the first place.
 
+I guess we will have to leave with the "set your Xenomai install directory for
+scripts and binaries in your PATH variable" rule. I have removed the absolute
+SOLO prefix from the Makefile though, it was a left over from my development
+environment.
+
+Thanks for spotting this.
+
+-- 
+Philippe.
 
