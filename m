@@ -1,14 +1,14 @@
-Message-ID: <47EAE459.90307@domain.hid>
-Date: Thu, 27 Mar 2008 01:03:37 +0100
+Message-ID: <47EAE6FC.5050002@domain.hid>
+Date: Thu, 27 Mar 2008 01:14:52 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <20080326143644.GB11244@domain.hid>
-In-Reply-To: <20080326143644.GB11244@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <20080326135529.GA11244@domain.hid>
+	<47EA5867.8040008@domain.hid>
+In-Reply-To: <47EA5867.8040008@domain.hid>
+Content-Type: text/plain; charset=Big5
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [SOLO] [PATCH] Obtain proper prefix for
- testsuite build
+Subject: Re: [Xenomai-core] [SOLO] Build fail due to lack file(s)
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -19,43 +19,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: jserv@domain.hid
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-jserv@domain.hid wrote:
-> Hello list,
+Philippe Gerum wrote:
+> jserv@domain.hid wrote:
+>> Hello list,
+>>
+>> After git pull, I found that pSOS(*) emulation interface on top of the
+>> Xenomai/SOLO framework was checked in.  However, it fails to build due
+>> to lack file(s) in repository.  Here are the compilation results:
+>>
+>> <%
+>> make[1]: Entering directory `/tmp/xenomai-solo/psos'
+>> /bin/sh ../libtool --tag=CC   --mode=compile gcc -DHAVE_CONFIG_H -I. -I../include  -g -O0 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -fstrict-aliasing -Wno-strict-aliasing -D__SOLO_DEBUG__ -D__XENO__ -D__SOLO__ -Wstrict-prototypes -include xeno_config.h -I../include    -MT libpsos_la-init.lo -MD -MP -MF .deps/libpsos_la-init.Tpo -c -o libpsos_la-init.lo `test -f 'init.c' || echo './'`init.c
+>>  gcc -DHAVE_CONFIG_H -I. -I../include -g -O0 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -fstrict-aliasing -Wno-strict-aliasing -D__SOLO_DEBUG__ -D__XENO__ -D__SOLO__ -Wstrict-prototypes -include xeno_config.h -I../include -MT libpsos_la-init.lo -MD -MP -MF .deps/libpsos_la-init.Tpo -c init.c -o libpsos_la-init.o
+>> init.c:30:19: error: queue.h: No such file or directory
+>> init.c: In function 'PSOS_INIT':
+>> init.c:46: error: 'psos_queue_table' undeclared (first use in this function)
+>> init.c:46: error: (Each undeclared identifier is reported only once
+>> init.c:46: error: for each function it appears in.)
+>> make[1]: *** [libpsos_la-init.lo] Error 1
+>>  %>
+>>
 > 
->   Currently, Xenomai/SOLO comes with testsuite for VxWorks emulation.
-> The path to Xenomai/SOLO installation is fixed.  The patch attempts to
-> obtain the proper prefix during build process.
+> I will commit them later today, and they should appear in the public GIT tree
+> tonight (CET).
 > 
-> Regards,
-> -jserv
-> 
-> diff --git a/vxworks/testsuite/Makefile b/vxworks/testsuite/Makefile
-> index 62430ff..13ca9a0 100644
-> --- a/vxworks/testsuite/Makefile
-> +++ b/vxworks/testsuite/Makefile
-> @@ -1,4 +1,4 @@
-> -SOLO := /usr/local/solo
-> +SOLO := $(shell sed -n '/^prefix/'p ../Makefile | cut -c 9-)
->  XENO_CONFIG=$(SOLO)/bin/xeno-config
->  prefix := $(shell $(XENO_CONFIG) --prefix)
->
 
-This won't work if you build out of the source tree like autoconf/automake
-recommend, since it won't find the instantiated Makefile in the upper directory.
-We could use an autoconf template to patch the prefix into
-testsuite/Makefile.in, but the testsuite/ directory is meant to be movable and
-compilable anywhere the user sees fit. This is basically why the Makefile has
-not been autoconfiscated in the first place.
+The missing files have been committed, so they should be mirrored to the public
+GIT tree in a few hours from now.
 
-I guess we will have to leave with the "set your Xenomai install directory for
-scripts and binaries in your PATH variable" rule. I have removed the absolute
-SOLO prefix from the Makefile though, it was a left over from my development
-environment.
-
-Thanks for spotting this.
+BIG FAT WARNING: The pSOS emulator is in its early development stage, really,
+badly early. It compiles, but is incomplete, and can't reasonably work properly
+yet. If you just want to play with SOLO, you should stick to the VxWorks
+emulator, which is the only one that has been officially announced so far. Of
+course, if you want to help debugging the new pSOS emulator, you are welcome as
+well (but it's still a bit early, though).
 
 -- 
 Philippe.
