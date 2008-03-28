@@ -1,12 +1,20 @@
-Message-ID: <2ff1a98a0803280901t703072fapa0ad8508db79b0c5@domain.hid>
-Date: Fri, 28 Mar 2008 17:01:48 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <d6c8ef150803280435s2fb6a459kcfe68a0dde86b34c@domain.hid>
+Message-ID: <d6c8ef150803280904y30c9fbdfl1545094ad2a7022d@domain.hid>
+Date: Fri, 28 Mar 2008 17:04:46 +0100
+From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
+In-Reply-To: <2ff1a98a0803280848o6ab78800l51b7afb486d6a5d0@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 References: <d6c8ef150803280435s2fb6a459kcfe68a0dde86b34c@domain.hid>
+	<2ff1a98a0803280605j43811112y1c29e61edd0bc53c@domain.hid>
+	<d6c8ef150803280646y4fd12734v862b4f399727a5b5@domain.hid>
+	<2ff1a98a0803280654u35f2da13t16a145ac22c1714f@domain.hid>
+	<2ff1a98a0803280655r665412f5qfa8ada46f630536a@domain.hid>
+	<d6c8ef150803280828v59f764en6bbb543fd6b7b8f7@domain.hid>
+	<2ff1a98a0803280834t38a195eey3fce0bb0c5ef9831@domain.hid>
+	<d6c8ef150803280844o4e2b2f92w1ecf3dcd555942a3@domain.hid>
+	<2ff1a98a0803280848o6ab78800l51b7afb486d6a5d0@domain.hid>
 Subject: Re: [Xenomai-help] Using shared memory, Xenomai 2.4.2
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,25 +25,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bosko Radivojevic <bosko.radivojevic@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-help <xenomai@xenomai.org>
 
->  --- rt_shm.c - kernel module ---
->  RT_TASK rt_shm_task;
->  RT_HEAP heap_desc;
->  void *shared_mem;
->  [..]
->   if (!rt_heap_create (&heap_desc, "MainSHM", 1024, H_SHARED)) {
->     printk ("Error rt_heap_create");
->   }
+Yes, you are absolutely right. I moved rt_heap_create call to module
+initialization. What about patch you've mentioned? :)
 
-This is wrong. rt_heap_create returns 0 when it works and non zero
-when it fails. So, if you do not see the "Error rt_heap_create"
-message in the console, rt_heap_create actually fails.  rt_heap_create
-error codes are documented here:
-
-http://www.xenomai.org/documentation/trunk/html/api/group__native__heap.html#g1d19ad24dc9f94b969aa0f574170bdc4
-
--- 
- Gilles
+On Fri, Mar 28, 2008 at 4:48 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+>
+>  Because, as documented, the heap object creation in kernel space somehow failed.
 
