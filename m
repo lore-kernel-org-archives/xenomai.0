@@ -1,14 +1,13 @@
-Message-ID: <47ECF601.90107@domain.hid>
-Date: Fri, 28 Mar 2008 14:43:29 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <2ff1a98a0803280811n702cf80ble01c121959bbcf21@domain.hid>
+Date: Fri, 28 Mar 2008 16:11:53 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <47ECBCAA.50701@domain.hid>
 MIME-Version: 1.0
-References: <20080328120645.GA31103@domain.hid>
-In-Reply-To: <20080328120645.GA31103@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [SOLO] [PATCH] Missing symbols in pSOS emulation
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+References: <47ECBCAA.50701@domain.hid>
+Subject: Re: [Xenomai-core] Porting Ipipe/Adeos patch to new arm9 board
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,48 +17,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: jserv@domain.hid
+To: Neil Armstrong <narmstrong@domain.hid>
 Cc: xenomai@xenomai.org
 
-jserv@domain.hid wrote:
-> Hello list,
-> 
-> This patch fixes build errors of Xenomai/SOLO pSOS emulation due to
-> missing symbols.
-> 
-> Regards,
-> -jserv
-> 
-> diff --git a/psos/pt.c b/psos/pt.c
-> index 4e42a76..69d41dd 100644
-> --- a/psos/pt.c
-> +++ b/psos/pt.c
-> @@ -44,6 +44,8 @@ pt->bitmap[((n) / (sizeof(u_long) * 8))]
->  #define pt_bitmap_tstbit(pt,n) \
->  (pt_bitmap_pos(pt,n) & pt_block_pos(n))
-> 
-> +struct hash_table psos_pt_table;
-> +
->  static struct psos_pt *get_pt_from_id(u_long ptid, int *err_r)
->  {
->         struct psos_pt *pt = (struct psos_pt *)ptid;
-> diff --git a/psos/rn.c b/psos/rn.c
-> index efe9e27..62529c2 100644
-> --- a/psos/rn.c
-> +++ b/psos/rn.c
-> @@ -29,6 +29,8 @@
-> 
->  #define rn_magic       0x8181efef
-> 
-> +struct hash_table psos_rn_table;
-> +
->  static struct psos_rn *get_rn_from_id(u_long rnid, int *err_r)
->  {
->         struct psos_rn *rn = (struct psos_rn *)rn;
->  
+On Fri, Mar 28, 2008 at 10:38 AM, Neil Armstrong <narmstrong@domain.hid> wrote:
+> Hi,
+>
+>  I need to port the actual ipipe 2.6.24 patch for a new arm926ej-s based
+>  board for my company.
+>  I followed the wiki's howto and helped myself with the integrator and
+>  the s3c24xx patches.
+>  The Soc has 3 decrementers, the arm core is running at 144MHz and the
+>  timers has a 256 ticks prescaler (we need 563 ticks to get 1ms).
+>
+>  I patched the kernel with the arm1 patch (from the ARM website), the
+>  board non-rt patch enabling serial and the macb ethernet controller and
+>  finnally tried to apply the ipipe arm patch and resolving failures.
 
-Merged, thanks.
+At first sight, you call spin_lock_irqsave in __ipipe_mach_set_dec.
+This is illegal, __ipipe_mach_set_dec may (and will) be called from
+real-time context, you should be using the _hw variants. I do not know
+if it is what causes the oops, but it would cause an oops later.
 
 -- 
-Philippe.
+ Gilles
 
