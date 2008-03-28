@@ -1,13 +1,13 @@
-Message-ID: <2ff1a98a0803280818l658f4086ha9fa967cea82cfca@domain.hid>
-Date: Fri, 28 Mar 2008 16:18:02 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <2ff1a98a0803280811n702cf80ble01c121959bbcf21@domain.hid>
+Message-ID: <47ED140B.2040406@domain.hid>
+Date: Fri, 28 Mar 2008 16:51:39 +0100
+From: Neil Armstrong <narmstrong@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 References: <47ECBCAA.50701@domain.hid>
 	<2ff1a98a0803280811n702cf80ble01c121959bbcf21@domain.hid>
+In-Reply-To: <2ff1a98a0803280811n702cf80ble01c121959bbcf21@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigDCB9B5CE06306BB53E8F0BA8"
 Subject: Re: [Xenomai-core] Porting Ipipe/Adeos patch to new arm9 board
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -18,26 +18,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Neil Armstrong <narmstrong@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, Mar 28, 2008 at 4:11 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On Fri, Mar 28, 2008 at 10:38 AM, Neil Armstrong <narmstrong@domain.hid> wrote:
->  > Hi,
->  >
->  >  I need to port the actual ipipe 2.6.24 patch for a new arm926ej-s based
->  >  board for my company.
->  >  I followed the wiki's howto and helped myself with the integrator and
->  >  the s3c24xx patches.
->  >  The Soc has 3 decrementers, the arm core is running at 144MHz and the
->  >  timers has a 256 ticks prescaler (we need 563 ticks to get 1ms).
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigDCB9B5CE06306BB53E8F0BA8
+Content-Type: multipart/mixed;
+ boundary="------------010005060009040804070904"
 
-I am not sure it makes sense to set the timer auto-reload mode when
-the timer is used in one-shot mode: imagine that the timer is
-programmed in one-shot mode, it will tick several time before the
-interrupt handler is called.
+This is a multi-part message in MIME format.
+--------------010005060009040804070904
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
--- 
- Gilles
+First of all, thanks for your aswer,
+Gilles Chanteperdrix a =E9crit :
+>>  I patched the kernel with the arm1 patch (from the ARM website), the
+>>  board non-rt patch enabling serial and the macb ethernet controller a=
+nd
+>>  finnally tried to apply the ipipe arm patch and resolving failures.
+>=20
+> At first sight, you call spin_lock_irqsave in __ipipe_mach_set_dec.
+> This is illegal, __ipipe_mach_set_dec may (and will) be called from
+> real-time context, you should be using the _hw variants. I do not know
+> if it is what causes the oops, but it would cause an oops later.
+I based my board patch on integrator's and s3c24xx code and they use
+spin_lock_irqsave in __ipipe_mach_set_dec, but I found local_irq_save_hw
+used on an AT91 patch.
+Finally the change did nothing, are the integrator and s3c24xx patchs
+up-to-date ?
+
+Should I drop the arm1 patch from ARM ? and start from a fresh vanilla
+kernel ?
+
+> I am not sure it makes sense to set the timer auto-reload mode when
+> the timer is used in one-shot mode: imagine that the timer is
+> programmed in one-shot mode, it will tick several time before the
+> interrupt handler is called.
+>
+Integrator seems using the timer in one-shot mode and changes the
+prescaler with the delay value. But won't I loose to much timer ticks
+between two reloads ?
+
+Neil
+--=20
+Neil Armstrong
+Neotion Sophia Antipolis
+Stagiaire Mars-Septembre 2008 Polytech'Nice-Sophia
+narmstrong@domain.hid (PGP:0x1166F485)
+
+--------------010005060009040804070904
+Content-Type: text/x-vcard; charset=utf-8;
+ name="narmstrong.vcf"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="narmstrong.vcf"
+
+begin:vcard
+fn:Neil Armstrong
+n:Armstrong;Neil
+org:Neotion;Neotion Sophia Antipolis
+email;internet:narmstrong@domain.hid
+title;quoted-printable:Ing=3DC3=3DA9nieur Software Embarqu=3DC3=3DA9
+tel;cell:0667474169
+note:PGP 0x1166F485
+version:2.1
+end:vcard
+
+
+--------------010005060009040804070904--
+
+--------------enigDCB9B5CE06306BB53E8F0BA8
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFH7RQPb5rmahFm9IURAnfBAKC4PJAMD+HAVEjaUSC5JZgTjitDHgCfVa2W
+Lia08qWcACjc6Jst3nM817Q=
+=8euO
+-----END PGP SIGNATURE-----
+
+--------------enigDCB9B5CE06306BB53E8F0BA8--
 
