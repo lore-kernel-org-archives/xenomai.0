@@ -1,10 +1,14 @@
-Date: Fri, 28 Mar 2008 20:06:45 +0800
+Date: Fri, 28 Mar 2008 20:10:32 +0800
 From: jserv@domain.hid
-Message-ID: <20080328120645.GA31103@domain.hid>
+Message-ID: <20080328121032.GB31103@domain.hid>
+References: <20080326143644.GB11244@domain.hid>
+	<47EAE459.90307@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=big5
 Content-Disposition: inline
-Subject: [Xenomai-core] [SOLO] [PATCH] Missing symbols in pSOS emulation
+In-Reply-To: <47EAE459.90307@domain.hid>
+Subject: Re: [Xenomai-core] [SOLO] [PATCH] Obtain proper prefix
+	for	testsuite build
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,41 +18,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hello list,
+On Thu, Mar 27, 2008 at 01:03:37AM +0100, Philippe Gerum wrote:
+> This won't work if you build out of the source tree like autoconf/automake
+> recommend, since it won't find the instantiated Makefile in the upper directory.
+> We could use an autoconf template to patch the prefix into
+> testsuite/Makefile.in, but the testsuite/ directory is meant to be movable and
+> compilable anywhere the user sees fit. This is basically why the Makefile has
+> not been autoconfiscated in the first place.
 
-This patch fixes build errors of Xenomai/SOLO pSOS emulation due to
-missing symbols.
+hi Philippe,
+
+Indeed.  It was just my dirty hack.  Thanks for pointing out the
+details.
+
+> I guess we will have to leave with the "set your Xenomai install directory for
+> scripts and binaries in your PATH variable" rule. I have removed the absolute
+> SOLO prefix from the Makefile though, it was a left over from my development
+> environment.
+
+Good instructions. :-)
 
 Regards,
 -jserv
-
-diff --git a/psos/pt.c b/psos/pt.c
-index 4e42a76..69d41dd 100644
---- a/psos/pt.c
-+++ b/psos/pt.c
-@@ -44,6 +44,8 @@ pt->bitmap[((n) / (sizeof(u_long) * 8))]
- #define pt_bitmap_tstbit(pt,n) \
- (pt_bitmap_pos(pt,n) & pt_block_pos(n))
-
-+struct hash_table psos_pt_table;
-+
- static struct psos_pt *get_pt_from_id(u_long ptid, int *err_r)
- {
-        struct psos_pt *pt = (struct psos_pt *)ptid;
-diff --git a/psos/rn.c b/psos/rn.c
-index efe9e27..62529c2 100644
---- a/psos/rn.c
-+++ b/psos/rn.c
-@@ -29,6 +29,8 @@
-
- #define rn_magic       0x8181efef
-
-+struct hash_table psos_rn_table;
-+
- static struct psos_rn *get_rn_from_id(u_long rnid, int *err_r)
- {
-        struct psos_rn *rn = (struct psos_rn *)rn;
- 
 
