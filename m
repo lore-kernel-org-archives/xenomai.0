@@ -1,11 +1,15 @@
-From: Wolfgang Denk <wd@domain.hid>
-Mime-version: 1.0
-Content-type: text/plain; charset=ISO-8859-1
-Content-transfer-encoding: 8bit
-Date: Fri, 21 Mar 2008 00:11:19 +0100
-Sender: wd@domain.hid
-Message-Id: <20080320231119.631D924A87@domain.hid>
-Subject: [Xenomai-core] Xenomai/SOLO - RTOS emulation for standard Linux
+Message-ID: <47ECC5C1.8040405@domain.hid>
+Date: Fri, 28 Mar 2008 11:17:37 +0100
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
+References: <20080325224919.582BD243A7@domain.hid>
+	<47EA14F7.7040004@domain.hid>
+In-Reply-To: <47EA14F7.7040004@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] Xenomai/SOLO - RTOS emulation for standard Linux
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,59 +19,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: ag-automation@domain.hid, xenomai@xenomai.org
-Cc: OSADL Members <members@domain.hid>
+To: Roland Stigge <stigge@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hello all,
+Roland Stigge wrote:
+> 
+> So if we are talking about Xenomai 3 in the order of years, Xenomai/SOLO
+> as a separate package seems worth considering if it matures reasonably.
+>
 
-DENX Software Engineering is proud to announce Xenomai/SOLO, the new
-RTOS emulator that runs as a normal user-space application on a
-standard Linux kernel. Of course, when timing requirements have to be
-met, a real-time capable Linux kernel with the PREEMPT_RT support
-enabled should be used.
+It is not in the order of years, but likely weeks, to get the four traditional
+RTOS emulators currently available from 2.x running on top of the SOLO core
+(Btw, I've just committed the early version of the pSOS emulator to the GIT tree
+which still needs heavy testing though).
 
-Philippe Gerum, the author of the code, writes:
+Before packaging this, I would recommend to wait for significant test suites to
+be available for all of them; I guess this should be the case by the end of May,
+if the current pace can be sustained.
 
-    Some weeks ago, I started laying the groundwork for porting the
-    Xenomai emulators natively over the PREEMPT_RT kernel. Unlike the
-    co-kernel based Xenomai version, SOLO does not require any kernel
-    support from additional modules or patches. It is fully based on
-    the standard POSIX library, and runs as a regular process
-    controlled by a single image Linux kernel.
+> The other "desktop suitable" approach is the simulator. Both
+> Xenomai/SOLO and the simulator are good candidates for inclusion in the
+> OS distribution since (apart from certain kernel requirements) they can
+> be provided as universal binary packages in userspace.
+> 
+> The problem with xenosim is its dependency upon gcc-2.95.6 sources.
+> Since Debian packages must provide the complete sources for building the
+> binary packages or alternatively/additionally have build dependencies
+> satisfied by other (binary) Debian packages in the distribution, this is
+> not an easy task (without gcc 2.95.x being in Debian anymore). One way
+> to go could be utilizing a newer GCC (4.x) instead of 2.95.x, but that
+> doesn't work with current xenosim. Is it worth it to put porting effort
+> into this spot?
+> 
 
-    As a first step, a VxWorks emulator has just been rebuilt over
-    this new framework.
+The simulator is really a nice tool, but its code instrumenter was written ten
+years ago as a patch against egcs-1.0, then subsequently upgraded a number of
+times, up to 2.95.3. Unfortunately, upgrading this patch to gcc 3.x or even 4.x
+would be a very significant work, because I hooked the instrumentation engine
+right into the C/C++ parser stage, and this area of code has been very deeply
+refactored over the years (actually, even replaced IIRC).
 
-    This framework is not another window-dressing of the existing
-    Xenomai 2.x core, but really something 100% redesigned and
-    rewritten for running on a native real-time Linux implementation,
-    while keeping the opportunity to adapt it back to a co-kernel
-    system. At some point, I'd like to make both the native and
-    co-kernel Xenomai incarnations converge on the basis of this new
-    core interface for Xenomai 3, so that we would be able to share
-    the APIs between them. In short, SOLO is a necessary intermediate
-    step on the road to Xenomai 3.
+To my knowledge, only two people "officially" use the simulator, specifically
+for debugging the Xenomai core, i.e. Gilles and myself, so there is not much
+traction on this side. We just grab some outdated box on which we can rebuild
+xenosim, and we live with it this way.
 
-This work has been co-sponsored by the OSADL (http://www.osadl.org)
-and DENX Software Engineering (http://www.denx.de).
-
-For details, please see the README at
-http://www.denx.de/cgi-bin/gitweb.cgi?p=xenomai-solo.git;a=blob;f=README
-
-You can pull the whole code from
-git://www.denx.de/git/xenomai-solo.git  resp.
-http://www.denx.de/git/xenomai-solo.git  or browse it at
-http://www.denx.de/cgi-bin/gitweb.cgi?p=xenomai-solo.git;a=summary
-
-
-Best regards,
-
-Wolfgang Denk
+I feel it's sort of a shame, since IMHO, event-driven simulation is just the
+ultimate way for efficient debugging and modelling real-time behaviour, but
+well, it would really be a project on its own to revamp it, and lack of time
+bites everyone.
 
 -- 
-DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
-Quote from the Boss... "I didn't say it was your fault.  I said I was
-going to blame it on you."
+Philippe.
 
