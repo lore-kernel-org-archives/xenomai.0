@@ -1,10 +1,16 @@
-Date: Fri, 28 Mar 2008 19:51:58 +0100
-From: Robert Schwebel <r.schwebel@domain.hid>
-Message-ID: <20080328185158.GA9009@domain.hid>
+Message-ID: <47ED372B.8040501@domain.hid>
+Date: Fri, 28 Mar 2008 19:21:31 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-Subject: [Xenomai-core] [PATCH][SOLO] clarify --prefix option
+References: <47CA8934.3060405@domain.hid>	<18378.50046.906228.646119@domain.hid>	<47CACD33.5000107@domain.hid>
+	<2ff1a98a0803030206j52d5c1eeja568e346fe058213@domain.hid>
+In-Reply-To: <2ff1a98a0803030206j52d5c1eeja568e346fe058213@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigA3C6670E7BED438E179A949F"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [PATCH 0/6] Fix, refactor,
+ and optimize xnlock services, v2
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,45 +20,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai-core@domain.hid
 
-Clafifies the description of the --prefix option in the README.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigA3C6670E7BED438E179A949F
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Robert Schwebel <r.schwebel@domain.hid>
+Philippe,
 
----
- README |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+I noticed that you merged patch 1-4. What are the plans for (or concerns =
 
-Index: xenomai-solo/README
-===================================================================
---- xenomai-solo.orig/README	2008-03-28 19:07:27.000000000 +0100
-+++ xenomai-solo/README	2008-03-28 19:11:25.000000000 +0100
-@@ -33,12 +33,13 @@
- 
- Where <options> may be any standard autoconf switch, such as:
- 
----prefix=<install-dir>
-+--prefix=<dir>
- 
--	To specify the installation root directory, under which
--	libraries, include files, scripts and executables will be
--	copied when running "make install". This directory defaults to
--	/usr/local/solo.
-+	To specify the runtime path for the installation of libraries,
-+	include files, scripts and executables. "make install" installs
-+	these files to ${DESTDIR}/<dir>.
-+
-+	This directory defaults to /usr/local/solo.
- 
- or Xenomai-specific knobs:
- 
+about) the ticket xnlock and the UP debugging changes?
 
--- 
- Dipl.-Ing. Robert Schwebel | http://www.pengutronix.de
- Pengutronix - Linux Solutions for Science and Industry
-   Handelsregister:  Amtsgericht Hildesheim, HRA 2686
-     Hannoversche Str. 2, 31134 Hildesheim, Germany
-   Phone: +49-5121-206917-0 |  Fax: +49-5121-206917-9
+Jan
 
+
+--------------enigA3C6670E7BED438E179A949F
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFH7TcrniDOoMHTA+kRAlg5AJ4mG0ffWefzgHqhudieR0ZebyLK0QCeNN8+
+lC38xLxJFG3h/IvrlXy3v2Y=
+=Iw+7
+-----END PGP SIGNATURE-----
+
+--------------enigA3C6670E7BED438E179A949F--
 
