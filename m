@@ -1,67 +1,82 @@
-Message-ID: <47E8B4FC.5010708@domain.hid>
-Date: Tue, 25 Mar 2008 09:17:00 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <47C51F5B.6090903@domain.hid>
-In-Reply-To: <47C51F5B.6090903@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: multipart/mixed; boundary="bPAUd2c2dj"
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Adeos-main] [RFC][PATCH] Reduce pipeline_head access overhead
-Reply-To: rpm@xenomai.org
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>
+Message-ID: <18415.63399.305120.344817@domain.hid>
+Date: Sun, 30 Mar 2008 22:27:19 +0200
+In-Reply-To: <47ED9D05.7060707@domain.hid>
+References: <47ED5DE3.60202@domain.hid>
+	<18413.32341.751841.753799@domain.hid>
+	<18413.34914.638951.575098@domain.hid>
+	<47ED9D05.7060707@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] Kernel crash with Xenomai (caused by fork?)
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Tomas Kalibera <kalibera@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> This patch is in fact part of my xnlock rework (updates on that one will
-> follow the next days). I noticed that the complexity of
-> ipipe_cpudom_var(head_domain, *), normally inlined, is fairly relevant
-> for the text size of Xenomai and may thus impact the WCET as well.
-> 
-> So I applied the same pattern as already used for ipipe_root_cpudom_var
-> also to the head domain, ie. assigned a fixed slot, the topmost, in
-> ipipe_percpu_daddr/darray to the head domain. This gives a nice text
-> size reduction as we no longer need to go via
-> __ipipe_pipeline.next->slot (2 memory accesses, even 3 on x867/SMP +
-> some arithmetics) to look up the address of per-cpu domain variables
-> like "status".
-> 
-> The drawback is that this introduces an inconsistency to the
-> ipipe_*_pipeline_head API: It no longer works for head == root. While
-> this is most probably irrelevant in practice, it remains ugly. I already
-> thought about renaming the modified services (and deprecating the
-> original ones), but for now I would like to focus the discussion on the
-> optimized services.
-> 
-> The patch already survived quite some testing on various real and
-> virtual boxes with Xenomai. Latency reduction is hard to estimate as
-> such comparably small optimizations are within the noise range of fast
-> test boxes. Maybe someone could give this a try on a smaller device (UP
-> should benefit from this patch as well!).
->
 
-The root domain cannot be an invariant pipeline head, by design, so I don't see
-any showstopper regarding this approach. This looks good.
+--bPAUd2c2dj
+Content-Type: text/plain; charset=us-ascii
+Content-Description: message body and .signature
+Content-Transfer-Encoding: 7bit
 
-> Jan
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
+Tomas Kalibera wrote:
+ > Hi Gilles,
+ > 
+ > thanks for looking at it. Your analysis is correct, I don't indeed have 
+ > CONFIG_PREEMPT_RT kernel, but only CONFIG_PREEMPT, sorry for the confusion.
+ > 
+ > I've put the kernel config, sources, and binary on the web, so that you 
+ > can be sure you're really looking on the kernel that is crashing, 
+ > http://www.cs.purdue.edu/homes/tkaliber/crash
 
+After looking at the sources, it appears that kmap_atomic disables
+preemption and kunmap_atomic reenables it. In short, the bug should
+never happen. What could happen is that the preemption count is garbled,
+or that a call to kmap_atomic is not paired with a kunmap_atomic.
+
+To check if the problem comes from the preemption count, could you apply
+the following patch ?
 
 -- 
-Philippe.
+
+
+					    Gilles.
+
+--bPAUd2c2dj
+Content-Type: text/plain
+Content-Disposition: inline;
+	filename="ipipe-kmap_atomic-bug.diff"
+Content-Transfer-Encoding: 7bit
+
+diff --git a/arch/x86/mm/highmem_32.c b/arch/x86/mm/highmem_32.c
+index 1c3bf95..4bb9fc6 100644
+--- a/arch/x86/mm/highmem_32.c
++++ b/arch/x86/mm/highmem_32.c
+@@ -34,6 +34,7 @@ void *kmap_atomic_prot(struct page *page, enum km_type type, pgprot_t prot)
+ 	/* even !CONFIG_PREEMPT needs this, for in_atomic in do_page_fault */
+ 	pagefault_disable();
+ 
++	BUG_ON(type == KM_USER0 && !in_atomic());
+ 	if (!PageHighMem(page))
+ 		return page_address(page);
+ 
+@@ -85,6 +86,7 @@ void *kmap_atomic_pfn(unsigned long pfn, enum km_type type)
+ 
+ 	pagefault_disable();
+ 
++	BUG_ON(type == KM_USER0 && !in_atomic());
+ 	idx = type + KM_TYPE_NR*smp_processor_id();
+ 	vaddr = __fix_to_virt(FIX_KMAP_BEGIN + idx);
+ 	set_pte(kmap_pte-idx, pfn_pte(pfn, kmap_prot));
+
+--bPAUd2c2dj--
 
