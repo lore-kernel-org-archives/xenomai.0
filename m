@@ -1,179 +1,117 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Robert McCullough" <rob@domain.hid>
+References: <001a01c88a0d$5365af40$9601a8c0@domain.hid>
+	<47E2BB0F.9050704@domain.hid>
+	<001001c88b63$df59b300$9601a8c0@domain.hid>
+	<47E41609.2090107@domain.hid>
+Date: Mon, 31 Mar 2008 11:22:50 -0400
+Message-ID: <005d01c89343$15f9e650$9601a8c0@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="GSdH1cMD3I"
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Message-ID: <18417.18921.588809.645062@domain.hid>
-Date: Mon, 31 Mar 2008 22:30:33 +0200
-In-Reply-To: <18417.18371.183857.809430@domain.hid>
-References: <47ED5DE3.60202@domain.hid>
-	<18413.32341.751841.753799@domain.hid>
-	<18413.34914.638951.575098@domain.hid>
-	<47ED9D05.7060707@domain.hid>
-	<18415.63399.305120.344817@domain.hid>
-	<47F062DE.5000709@domain.hid>
-	<18417.18371.183857.809430@domain.hid>
-Subject: Re: [Xenomai-core] Kernel crash with Xenomai (caused by fork?)
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+In-Reply-To: <47E41609.2090107@domain.hid>
+Subject: Re: [Xenomai-help] Non-Real-Time Asynchronous Notification
+Reply-To: rob@domain.hid
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Tomas Kalibera <kalibera@domain.hid>, xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: jan.kiszka@domain.hid
+Cc: xenomai@xenomai.org
+
+Hi Jan,
+
+  --> -----Original Message-----
+  --> From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid]
+  --> Sent: Friday, March 21, 2008 4:10 PM
+  --> To: rob@domain.hid
+  --> Cc: xenomai@xenomai.org
+  --> Subject: Re: [Xenomai-help] Non-Real-Time Asynchronous Notification
+  --> 
+  --> Robert McCullough wrote:
+  --> > Hi Jan,
+  --> >
+  --> >   --> -----Original Message-----
+  --> >   --> From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid]
+  --> >   --> Sent: Thursday, March 20, 2008 3:29 PM
+  --> >   --> To: rob@domain.hid
+  --> >   --> Cc: xenomai@xenomai.org
+  --> >   --> Subject: Re: [Xenomai-help] Non-Real-Time Asynchronous
+  --> Notification
+  --> >   -->
+  --> >   --> Robert McCullough wrote:
+  --> >   --> > Hi,
+  --> >   --> >
+  --> >   --> > How do I signal an asynchronous notification from a RTDM
+  --> real-time
+  --> >   --> task to a
+  --> >   --> > non-real-time user-space Linux thread?
+  --> >   --> > Do I use Non-Real-Time Signaling Services
+  --> (rtdm_nrtsig_init,..)?
+  --> >   --> > If so, how?
+  --> >   --> >
+  --> >   --> > Here is the current code that I am trying to port to RTDM.
+  --> >   --> >
+  --> >   --> > Current driver code to signal non-real-time Linux thread:
+  --> >   --> >
+  --> >   --> > 	// If event
+  --> >   --> > 	if(event){
+  --> >   --> > 		// and signal asynchronous readers
+  --> >   --> > 		if (kmdpr_device->async_queue)
+  --> >   --> >
+kill_fasync(&kmdpr_device->async_queue,
+  --> > SIGIO,
+  --> >   --> > POLL_IN);
+  --> >   --> > 	}
+  --> >   -->
+  --> >   --> Just push this code in the rtdm_nrtsig handler and trigger the
+  --> handler
+  --> >   --> execution from RT context.
+  --> >   -->
+  --> >   --> Jan
+  --> >
+  --> > [Robert McCullough]
+  --> > Ok, I understand that but how do I specify the file operation fasync
+  --> in my
+  --> > rtdm_device?  How do I replace or update the code marked TODO?
+  --> 
+  --> In fact, there is no fasync support available with RTDM, specifically
+  --> as
+  --> using signals under real-time constraints is a bad idea (not only
+  --> because Xenomai has no hard-RT signal support).
+  --> 
+  --> But before suggesting any alternative pattern: What does your
+  --> application actually require to work? How does asynchronous
+  --> driver/application interaction currently look like?
+  --> 
+  --> Jan
+
+[Robert McCullough]
+Here is a little background on how my driver works.
+The driver is the interface/control for an AC servo drive which controls an
+AC motor.  The interface to the drive is done through a dual-ported RAM.
+The I/O from the servo drive is updated and an IRQ is triggered from the
+servo drive through the DP RAM to our MPC5200 at a 4 kHz rate.  In my IRQ
+handler I read, process, and update the I/O in the RAM.  Some of the data
+from the servo drive contains status bits that represent asynchronous
+events/faults from the drive that needs to be passed up to the user
+application.  In my current non-real-time driver I used fasync to send a
+SIGIO signal to the user application whenever one of these events/faults
+changed and then the application would read the status bits with an ioctl
+call and process them.
+
+I hope this clarifies the requirements a little.
+How would you suggest I solve this in my RTDM driver?
+ 
+
+Best regards, 
+Robert McCullough
 
 
---GSdH1cMD3I
-Content-Type: text/plain; charset=us-ascii
-Content-Description: message body and .signature
-Content-Transfer-Encoding: 7bit
 
-Gilles Chanteperdrix wrote:
- > Tomas Kalibera wrote:
- >  > 
- >  > Crashed on the very same line as before
- >  > Tomas
- > 
- > Ok. Let us look for unbalanced kmap_atomics then. Try this patch instead.
-
-Just when I hit the reply button, I realize that I forgot something. So,
-try this one instead.
-
--- 
-
-
-					    Gilles.
-
---GSdH1cMD3I
-Content-Type: text/plain
-Content-Disposition: inline;
-	filename="ipipe-kmap_atomic-bug.3.diff"
-Content-Transfer-Encoding: 7bit
-
-diff --git a/arch/x86/mm/highmem_32.c b/arch/x86/mm/highmem_32.c
-index 1c3bf95..97a5242 100644
---- a/arch/x86/mm/highmem_32.c
-+++ b/arch/x86/mm/highmem_32.c
-@@ -1,6 +1,11 @@
- #include <linux/highmem.h>
- #include <linux/module.h>
- 
-+static struct {
-+	const char *file;
-+	unsigned line;
-+} last_km_user0 [NR_CPUS];
-+
- void *kmap(struct page *page)
- {
- 	might_sleep();
-@@ -26,7 +31,8 @@ void kunmap(struct page *page)
-  * However when holding an atomic kmap is is not legal to sleep, so atomic
-  * kmaps are appropriate for short, tight code paths only.
-  */
--void *kmap_atomic_prot(struct page *page, enum km_type type, pgprot_t prot)
-+void *_kmap_atomic_prot(struct page *page, enum km_type type,
-+			pgprot_t prot, const char *file, unsigned line)
- {
- 	enum fixed_addresses idx;
- 	unsigned long vaddr;
-@@ -39,16 +45,27 @@ void *kmap_atomic_prot(struct page *page, enum km_type type, pgprot_t prot)
- 
- 	idx = type + KM_TYPE_NR*smp_processor_id();
- 	vaddr = __fix_to_virt(FIX_KMAP_BEGIN + idx);
--	BUG_ON(!pte_none(*(kmap_pte-idx)));
-+	if (!pte_none(*(kmap_pte-idx))) {
-+		if (type == KM_USER0)
-+			printk("KM_USER0 already mapped at %s:%d\n",
-+			       last_km_user0[smp_processor_id()].file,
-+			       last_km_user0[smp_processor_id()].line);
-+		BUG();
-+	} else if (type == KM_USER0) {
-+		last_km_user0[smp_processor_id()].file = file;
-+		last_km_user0[smp_processor_id()].line = line;
-+	}
-+
- 	set_pte(kmap_pte-idx, mk_pte(page, prot));
- 	arch_flush_lazy_mmu_mode();
- 
- 	return (void *)vaddr;
- }
- 
--void *kmap_atomic(struct page *page, enum km_type type)
-+void *_kmap_atomic(struct page *page, enum km_type type,
-+		   const char *file, unsigned line)
- {
--	return kmap_atomic_prot(page, type, kmap_prot);
-+	return _kmap_atomic_prot(page, type, kmap_prot, file, line);
- }
- 
- void kunmap_atomic(void *kvaddr, enum km_type type)
-@@ -70,6 +87,10 @@ void kunmap_atomic(void *kvaddr, enum km_type type)
- 		BUG_ON(vaddr >= (unsigned long)high_memory);
- #endif
- 	}
-+	if (type == KM_USER0) {
-+		last_km_user0[smp_processor_id()].file = NULL;
-+		last_km_user0[smp_processor_id()].line = 0;
-+	}
- 
- 	arch_flush_lazy_mmu_mode();
- 	pagefault_enable();
-@@ -78,7 +99,8 @@ void kunmap_atomic(void *kvaddr, enum km_type type)
- /* This is the same as kmap_atomic() but can map memory that doesn't
-  * have a struct page associated with it.
-  */
--void *kmap_atomic_pfn(unsigned long pfn, enum km_type type)
-+void *_kmap_atomic_pfn(unsigned long pfn, enum km_type type,
-+		       const char *file, unsigned line)
- {
- 	enum fixed_addresses idx;
- 	unsigned long vaddr;
-@@ -87,6 +109,16 @@ void *kmap_atomic_pfn(unsigned long pfn, enum km_type type)
- 
- 	idx = type + KM_TYPE_NR*smp_processor_id();
- 	vaddr = __fix_to_virt(FIX_KMAP_BEGIN + idx);
-+	if (!pte_none(*(kmap_pte-idx))) {
-+		if (type == KM_USER0)
-+			printk("KM_USER0 already mapped at %s:%d\n",
-+			       last_km_user0[smp_processor_id()].file,
-+			       last_km_user0[smp_processor_id()].line);
-+		BUG();
-+	} else if (type == KM_USER0) {
-+		last_km_user0[smp_processor_id()].file = file;
-+		last_km_user0[smp_processor_id()].line = line;
-+	}
- 	set_pte(kmap_pte-idx, pfn_pte(pfn, kmap_prot));
- 	arch_flush_lazy_mmu_mode();
- 
-diff --git a/include/asm-x86/highmem.h b/include/asm-x86/highmem.h
-index 13cdcd6..db09f27 100644
---- a/include/asm-x86/highmem.h
-+++ b/include/asm-x86/highmem.h
-@@ -68,10 +68,19 @@ extern void FASTCALL(kunmap_high(struct page *page));
- 
- void *kmap(struct page *page);
- void kunmap(struct page *page);
--void *kmap_atomic_prot(struct page *page, enum km_type type, pgprot_t prot);
--void *kmap_atomic(struct page *page, enum km_type type);
-+void *_kmap_atomic_prot(struct page *page, enum km_type type,
-+			pgprot_t prot, const char *file, unsigned line);
-+#define kmap_atomic_prot(page, type, prot) \
-+	_kmap_atomic_prot(page, type, prot, __FILE__, __LINE__)
-+void *_kmap_atomic(struct page *page, enum km_type type,
-+		   const char *file, unsigned line);
-+#define kmap_atomic(page, type) \
-+	_kmap_atomic(page, type, __FILE__, __LINE__)
- void kunmap_atomic(void *kvaddr, enum km_type type);
--void *kmap_atomic_pfn(unsigned long pfn, enum km_type type);
-+void *_kmap_atomic_pfn(unsigned long pfn, enum km_type type,
-+		       const char *file, unsigned line);
-+#define kmap_atomic_pfn(pfn, type) \
-+	_kmap_atomic_pfn(pfn, type, __FILE__, __LINE__)
- struct page *kmap_atomic_to_page(void *ptr);
- 
- #ifndef CONFIG_PARAVIRT
-
---GSdH1cMD3I--
 
