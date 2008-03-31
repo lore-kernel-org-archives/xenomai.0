@@ -1,101 +1,71 @@
-Message-ID: <4812D399.70802@domain.hid>
-Date: Sat, 26 Apr 2008 09:02:49 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <50566.74.57.109.247.1207002543.squirrel@domain.hid>
+Date: Mon, 31 Mar 2008 18:29:03 -0400 (EDT)
+From: vleves@domain.hid
 MIME-Version: 1.0
-References: <18448.9649.956656.531081@domain.hid>	<18448.9901.799115.445182@domain.hid>	<18448.9967.355128.570111@domain.hid>	<18448.10037.181558.14996@domain.hid>	<48118CC7.4060408@domain.hid>	<2ff1a98a0804250626h7104d6ddg282d35798af77cb9@domain.hid>	<4811DFCB.8080107@domain.hid>	<2ff1a98a0804250650s71a6448do67a55f27c6623af1@domain.hid>	<4811E429.8020505@domain.hid>	<2ff1a98a0804250713l5d0588a2m95f630f39426e3f3@domain.hid>	<4811E8AE.1090000@domain.hid>
-	<18450.22161.142736.225034@domain.hid>
-In-Reply-To: <18450.22161.142736.225034@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [3/9] Define more atomic operations in user-space
-Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] freeze on system() call
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
+Cc: jay@domain.hid
 
-Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->  > Gilles Chanteperdrix wrote:
->  > > On Fri, Apr 25, 2008 at 4:01 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->  > >> Gilles Chanteperdrix wrote:
->  > >>  > On Fri, Apr 25, 2008 at 3:42 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->  > >>  >> Gilles Chanteperdrix wrote:
->  > >>  >>  > On Fri, Apr 25, 2008 at 9:48 AM, Philippe Gerum <rpm@xenomai.org> wrote:
->  > >>  >>  >> Gilles Chanteperdrix wrote:
->  > >>  >>  >>  > This patch implements the _read, _set, and _cmpxchg operations on atomic_long_t
->  > >>  >>  >>  > and atomic_ptr_t in user-space in include/asm-generic/atomic.h which should be
->  > >>  >>  >>  > included at the end of include/asm-*/atomic.h after the definition of the same
->  > >>  >>  >>  > operations for the atomic_t type and atomic64_t type on 64 bits platforms.
->  > >>  >>  >>  >
->  > >>  >>  >>  > These operations are the basic operations used by user-space mutexes. Maybe we
->  > >>  >>  >>  > should add the xnarch_ prefix ?
->  > >>  >>  >>  >
->  > >>  >>  >>
->  > >>  >>  >>  Yes, but more generally, we should rework this to fit the existing atomic
->  > >>  >>  >>  support in include/asm-*/atomic.h, so that we don't end up with sideways to what
->  > >>  >>  >>  has been already designed to support set, get, xchg and the like, in both kernel
->  > >>  >>  >>  and userland context.
->  > >>  >>  >
->  > >>  >>  > That is not exactly sideways... Linux include/asm-generic/atomic.h
->  > >>  >>  > defines operations for atomic_long_t. This file adds two things:
->  > >>  >>  > - support for atomic_long_t in user-space (where we can not include
->  > >>  >>  > linux include/asm-generic/atomic.h)
->  > >>  >>  > - support for a new type atomic_ptr_t both to kernel-space and
->  > >>  >>  > user-space, the aim is to avoid all the casts that would take place if
->  > >>  >>  > we wanted to use atomic_long_t to store pointers.
->  > >>  >>  >
->  > >>  >>  > However for this file to work, it has to be included by asm-*/atomic.h
->  > >>  >>  > after the definition of atomic_t (and atomic64_t on 64 bits
->  > >>  >>  > platforms). So linux includes asm-generic/atomic.h at the end of
->  > >>  >>  > asm/atomic.h, I simply reproduced this scheme with Xenomai
->  > >>  >>  > include/asm-*/atomic.h.
->  > >>  >>  >
->  > >>  >>
->  > >>  >>  Focusing on user-space: 1) xnarch_atomic_xchg is meant to work on long types; 2)
->  > >>  >>  set, get routines are not defined in that scope. If the purpose is to define
->  > >>  >>  integer-type ops to handle pointer-type data atomically (i.e. intptr_t), then I
->  > >>  >>  would rather check whether we actually need non-long support at all in
->  > >>  >>  user-space. In case we don't, I would simply reply on the existing
->  > >>  >>  implementation of asm-*/atomic.h + the set / get extensions you provide.
->  > >>  >
->  > >>  > I use both atomic_t and atomic_ptr_t for the implementation of
->  > >>  > user-space mutexes. The problem is that I am constrained by the size
->  > >>  > of pthread_mutex_t, so the "control block read-write locks"
->  > >>  > implementation use atomic_t.
->  > >>  >
->  > >>
->  > >>  Ok, makes sense. Let's just fix the namespace then, so that we don't get the
->  > >>  feeling of having duplicate sets of operations.
->  > > 
->  > > That said, there is just enough room for replacing the atomic_t with
->  > > an atomic_long_t. So, we can make xnarch_atomic_t a long type. Have
->  > > you anything agains making an xnarch_atomic_ptr_t ?
->  > > 
->  > 
->  > No objection, just let us call it xnarch_atomic_intptr_t to ANSIfy this a bit
->  > more, and clearly state that we need this type to hold a pointer into an integer
->  > value, and operate atomically on it.
-> 
-> Ok. The current type defined in asm-arm/atomic.h is
-> atomic_counter_t. Should I rename this xnarch_atomic_t ?
->
+Hello,
 
-Fine with me.
+A few months ago, my colleague Jerome Pasquero reported a problem with
+calls to system() with the 2.4 branch of Xenomai
+(https://mail.gna.org/public/xenomai-help/2008-01/msg00047.html). I am
+experiencing the same problem with linux 2.6.24.4 and xenomai 2.4.2.
 
-> I ask this now, because I am going to do search and replaces of atomic_
-> all over my changes, so, I prefer to know before.
-> 
+The problem occurs when calling system() or fork() in a realtime task. It
+only seems to occur when the program is linked against other libraries
+(e.g. -lxml2 or -lgtkmm-2.4). The mouse continues to function after the
+call but the system becomes unresponsive and must be rebooted.
+
+The problem can be reproduced by compiling and running the following code=
+:
+
+gcc -lgtkmm-2.4 -lnative `/usr/xenomai/bin/xeno-config --xeno-cflags`
+`/usr/xenomai/bin/xeno-config --xeno-ldflags` -lstdc++ main.cpp
+
+#include <native/task.h>
+#include <sys/mman.h>
+int main(int argc, char* argv[])
+{
+	RT_TASK task;
+	mlockall(MCL_CURRENT | MCL_FUTURE);
+	rt_task_shadow(&task, "stress-gui", 50, 0);
+	system("ls");
+	return 0;
+};
+
+I tried to apply the patch suggested by Jan Kiszka
+(https://mail.gna.org/public/xenomai-help/2008-01/msg00051.html) but I
+wasn't able to find the version of linux kernel and xenomai that the patc=
+h
+was intended for.
+
+I would appreciate your help to resolve or work around this problem. I am
+using the system() calls to insert and remove modules with modprobe and
+rmmod. Is there a better way to accomplish the same result? Is there a wa=
+y
+to terminate a realtime task and resume normal execution? I could then
+execute the modprobe and rmmod commands before and after running the
+realtime tasks.
+
+Thank you,
+
+Vincent Levesque
+vleves@domain.hid
 
 
--- 
-Philippe.
+
+
 
