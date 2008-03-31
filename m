@@ -1,16 +1,17 @@
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="5vqUu/mu+K"
+Content-Type: multipart/mixed; boundary="GSdH1cMD3I"
 Content-Transfer-Encoding: 7bit
-Message-ID: <18417.18371.183857.809430@domain.hid>
-Date: Mon, 31 Mar 2008 22:21:23 +0200
-In-Reply-To: <47F062DE.5000709@domain.hid>
+Message-ID: <18417.18921.588809.645062@domain.hid>
+Date: Mon, 31 Mar 2008 22:30:33 +0200
+In-Reply-To: <18417.18371.183857.809430@domain.hid>
 References: <47ED5DE3.60202@domain.hid>
 	<18413.32341.751841.753799@domain.hid>
 	<18413.34914.638951.575098@domain.hid>
 	<47ED9D05.7060707@domain.hid>
 	<18415.63399.305120.344817@domain.hid>
 	<47F062DE.5000709@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+	<18417.18371.183857.809430@domain.hid>
 Subject: Re: [Xenomai-core] Kernel crash with Xenomai (caused by fork?)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -21,35 +22,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Tomas Kalibera <kalibera@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Tomas Kalibera <kalibera@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 
---5vqUu/mu+K
+--GSdH1cMD3I
 Content-Type: text/plain; charset=us-ascii
 Content-Description: message body and .signature
 Content-Transfer-Encoding: 7bit
 
-Tomas Kalibera wrote:
+Gilles Chanteperdrix wrote:
+ > Tomas Kalibera wrote:
+ >  > 
+ >  > Crashed on the very same line as before
+ >  > Tomas
  > 
- > Crashed on the very same line as before
- > Tomas
+ > Ok. Let us look for unbalanced kmap_atomics then. Try this patch instead.
 
-Ok. Let us look for unbalanced kmap_atomics then. Try this patch instead.
+Just when I hit the reply button, I realize that I forgot something. So,
+try this one instead.
 
 -- 
 
 
 					    Gilles.
 
---5vqUu/mu+K
+--GSdH1cMD3I
 Content-Type: text/plain
 Content-Disposition: inline;
-	filename="ipipe-kmap_atomic-bug.2.diff"
+	filename="ipipe-kmap_atomic-bug.3.diff"
 Content-Transfer-Encoding: 7bit
 
 diff --git a/arch/x86/mm/highmem_32.c b/arch/x86/mm/highmem_32.c
-index 1c3bf95..a78494e 100644
+index 1c3bf95..97a5242 100644
 --- a/arch/x86/mm/highmem_32.c
 +++ b/arch/x86/mm/highmem_32.c
 @@ -1,6 +1,11 @@
@@ -74,7 +78,7 @@ index 1c3bf95..a78494e 100644
  {
  	enum fixed_addresses idx;
  	unsigned long vaddr;
-@@ -39,7 +45,17 @@ void *kmap_atomic_prot(struct page *page, enum km_type type, pgprot_t prot)
+@@ -39,16 +45,27 @@ void *kmap_atomic_prot(struct page *page, enum km_type type, pgprot_t prot)
  
  	idx = type + KM_TYPE_NR*smp_processor_id();
  	vaddr = __fix_to_virt(FIX_KMAP_BEGIN + idx);
@@ -93,7 +97,19 @@ index 1c3bf95..a78494e 100644
  	set_pte(kmap_pte-idx, mk_pte(page, prot));
  	arch_flush_lazy_mmu_mode();
  
-@@ -70,6 +86,10 @@ void kunmap_atomic(void *kvaddr, enum km_type type)
+ 	return (void *)vaddr;
+ }
+ 
+-void *kmap_atomic(struct page *page, enum km_type type)
++void *_kmap_atomic(struct page *page, enum km_type type,
++		   const char *file, unsigned line)
+ {
+-	return kmap_atomic_prot(page, type, kmap_prot);
++	return _kmap_atomic_prot(page, type, kmap_prot, file, line);
+ }
+ 
+ void kunmap_atomic(void *kvaddr, enum km_type type)
+@@ -70,6 +87,10 @@ void kunmap_atomic(void *kvaddr, enum km_type type)
  		BUG_ON(vaddr >= (unsigned long)high_memory);
  #endif
  	}
@@ -104,7 +120,7 @@ index 1c3bf95..a78494e 100644
  
  	arch_flush_lazy_mmu_mode();
  	pagefault_enable();
-@@ -78,7 +98,8 @@ void kunmap_atomic(void *kvaddr, enum km_type type)
+@@ -78,7 +99,8 @@ void kunmap_atomic(void *kvaddr, enum km_type type)
  /* This is the same as kmap_atomic() but can map memory that doesn't
   * have a struct page associated with it.
   */
@@ -114,7 +130,7 @@ index 1c3bf95..a78494e 100644
  {
  	enum fixed_addresses idx;
  	unsigned long vaddr;
-@@ -87,6 +108,16 @@ void *kmap_atomic_pfn(unsigned long pfn, enum km_type type)
+@@ -87,6 +109,16 @@ void *kmap_atomic_pfn(unsigned long pfn, enum km_type type)
  
  	idx = type + KM_TYPE_NR*smp_processor_id();
  	vaddr = __fix_to_virt(FIX_KMAP_BEGIN + idx);
@@ -132,19 +148,23 @@ index 1c3bf95..a78494e 100644
  	arch_flush_lazy_mmu_mode();
  
 diff --git a/include/asm-x86/highmem.h b/include/asm-x86/highmem.h
-index 13cdcd6..57b89f7 100644
+index 13cdcd6..db09f27 100644
 --- a/include/asm-x86/highmem.h
 +++ b/include/asm-x86/highmem.h
-@@ -68,10 +68,16 @@ extern void FASTCALL(kunmap_high(struct page *page));
+@@ -68,10 +68,19 @@ extern void FASTCALL(kunmap_high(struct page *page));
  
  void *kmap(struct page *page);
  void kunmap(struct page *page);
 -void *kmap_atomic_prot(struct page *page, enum km_type type, pgprot_t prot);
+-void *kmap_atomic(struct page *page, enum km_type type);
 +void *_kmap_atomic_prot(struct page *page, enum km_type type,
 +			pgprot_t prot, const char *file, unsigned line);
 +#define kmap_atomic_prot(page, type, prot) \
 +	_kmap_atomic_prot(page, type, prot, __FILE__, __LINE__)
- void *kmap_atomic(struct page *page, enum km_type type);
++void *_kmap_atomic(struct page *page, enum km_type type,
++		   const char *file, unsigned line);
++#define kmap_atomic(page, type) \
++	_kmap_atomic(page, type, __FILE__, __LINE__)
  void kunmap_atomic(void *kvaddr, enum km_type type);
 -void *kmap_atomic_pfn(unsigned long pfn, enum km_type type);
 +void *_kmap_atomic_pfn(unsigned long pfn, enum km_type type,
@@ -155,5 +175,5 @@ index 13cdcd6..57b89f7 100644
  
  #ifndef CONFIG_PARAVIRT
 
---5vqUu/mu+K--
+--GSdH1cMD3I--
 
