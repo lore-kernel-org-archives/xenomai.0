@@ -1,14 +1,11 @@
+Message-ID: <47F2158F.307@domain.hid>
+Date: Tue, 01 Apr 2008 12:59:27 +0200
+From: Mouaiad Alras <Mouaiad.Alras@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <18417.53680.5061.752392@domain.hid>
-Date: Tue, 1 Apr 2008 08:09:52 +0200
-In-Reply-To: <f45855d10803311731l1f511448wc7451eee7bbe6959@domain.hid>
-References: <50566.74.57.109.247.1207002543.squirrel@domain.hid>
-	<18417.28104.771421.524613@domain.hid>
-	<f45855d10803311731l1f511448wc7451eee7bbe6959@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] freeze on system() call
+Subject: [Xenomai-help] difference between "alarm_wait" and
+	"task_wait_period"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,25 +15,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Vincent Levesque <levesquev@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Vincent Levesque wrote:
- > Thanks for the tip. I tried and did indeed get error messages. Unfortunately
- > I haven't been able to redirect these errors to a file or to find any
- > reference to them in /var/log/. The best I could do was to take a picture of
- > the screen: http://www.cim.mcgill.ca/~vleves/oops.jpg<http://www.cim.mcgill.ca/%7Evleves/oops.jpg>.
- > Please let me know if I can do anything else.
+Hello,
+is there any difference between "periodic task" and "periodic alarm 
+triggered task" ??
 
-At first sight, it looks like you have the same issue with kmap_atomic
-as Tomas. Could you try and increase resolution so that we get the
-beginning of the oops ? Enable "Video mode selection support" in
-"Console display driver support" menu, then pass something like
-vga=0x0F01 on kernel command line. Also enable frame pointers in the
-kernel if they are disabled.
-
--- 
+are "task1" and "task2" the same in this example ? :
 
 
-					    Gilles.
+
+void task1_do(void *cookies){
+       while(1){
+            rt_alarm_wait(&alarm1);
+            ......
+        }
+}
+
+int main(void){
+    ......
+    rt_alarm_create(&alarm1,"alarm1");
+    rt_task_create(&task1,"task1",_STK,_PRIO,_MOD);
+    rt_task_start(&task1, &task1_do, NULL);
+    rt_alarm_start(&alarm1,_OFFSET,_INTERVAL);
+    ......
+}
+
+===================================
+
+void task2_do(void *cookies){
+       while(1){
+             rt_task_wait_period(&task2);
+             ......
+       }
+}
+
+int main(void){
+    ......
+    rt_task_create(&task2,"task2",_STK,_PRIO,_MOD);
+    rt_task_set_periodic(&task2,_OFFSET,_INTERVAL);
+    rt_task_start(&task2, &task2_do, NULL);
+    ......
+}
+
+
+
+
+thank you,
 
