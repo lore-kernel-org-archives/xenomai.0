@@ -1,15 +1,13 @@
-Message-ID: <2ff1a98a0804070626w486964a2kd56232bbeaddecaf@domain.hid>
-Date: Mon, 7 Apr 2008 15:26:58 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <2ff1a98a0804070616u297997b3yc5a5cb19fe387ee9@domain.hid>
+Message-ID: <47F23E9E.7060801@domain.hid>
+Date: Tue, 01 Apr 2008 09:54:38 -0400
+From: Tomas Kalibera <kalibera@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <47ED5DE3.60202@domain.hid>	<18413.32341.751841.753799@domain.hid>	<18413.34914.638951.575098@domain.hid>	<47ED9D05.7060707@domain.hid>	<18415.63399.305120.344817@domain.hid>	<47F062DE.5000709@domain.hid>	<18417.18371.183857.809430@domain.hid>	<18417.18921.588809.645062@domain.hid>	<47F17B32.7070505@domain.hid>
+	<18417.52630.8850.939898@domain.hid>
+In-Reply-To: <18417.52630.8850.939898@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <2ff1a98a0804070547w1695b78dp2a3ed1ce87595855@domain.hid>
-	<OF6D5F47BF.2D764233-ONC1257424.0047BBF6-C1257424.00482F9C@retarus.de>
-	<2ff1a98a0804070616u297997b3yc5a5cb19fe387ee9@domain.hid>
-Subject: Re: [Xenomai-core] posix-skin: unexpected scheduler behaviour
+Subject: Re: [Xenomai-core] Kernel crash with Xenomai (caused by fork?)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,39 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Thomas Wiedemann <Thomas.Wiedemann@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Mon, Apr 7, 2008 at 3:16 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On Mon, Apr 7, 2008 at 3:08 PM, Thomas Wiedemann
+Gilles Chanteperdrix wrote:
+> Tomas Kalibera wrote:
+>  > 
+>  > I added a missing underscore and re-tried, and none of the debug 
+>  > messages was printed. I added another one to make sure that there is not 
+>  > a problem with getting printk messages to the serial console. The 
+>  > resulting highmem_32.c and the output is attached.
+>  > 
+>  > T
 >
-> <Thomas.Wiedemann@domain.hid> wrote:
->
-> > "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org> schrieb am
->  >  07.04.2008 14:47:05:
->  >
->  >
->  >  > Forget it, it will not work. What you are trying to do can not work as
->  >  > long as Xenomai and Linux are two distinct schedulers: Xenomai tasks
->  >  > running in secondary mode are suspended from Xenomai scheduler point
->  >  > of view, so, you can yield as much as you want, this will never let
->  >  > them run.
->  >
->  >  But the behaviour is still the same, when i put a
->  >
->  >          pthread_set_mode_np(PTHREAD_PRIMARY, 0);
->  >
->  >  in the thread function. Thereafter, only the xenomai-scheduler is
->  >  responsible for the threads running in primary mode, or am i completely
->  >  wrong?
->
->  The thread remains in primary mode as long as you do not call a
->  secondary mode service, such as pthread_barrier_wait or fprintf.
+> The interesting part of the output is the printk which occurs right
+> before the first bug, what happens afterwards is of little use. Do you
+> get any output before the first bug ?
+>   
+There is no output before the first bug. This is why I added the other 
+printk to make sure there is always one on the path leading to the 
+BUG(). After I did that, the newly added message ("type is NOT 
+KM_USER0") appeared in the serial console log after the bug. This is 
+what made me believe that this is the printk we care about, and why I 
+included the longer output.
 
-Besides, the correct syntax is:
-pthread_set_mode_np(0, PTHREAD_PRIMARY)
+Tomas
 
--- 
- Gilles
 
