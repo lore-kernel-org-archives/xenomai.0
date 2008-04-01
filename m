@@ -1,316 +1,259 @@
-Message-ID: <7289437c0804030734g7c2fea2h9ba93c1e89e8b699@domain.hid>
-Date: Thu, 3 Apr 2008 16:34:47 +0200
-From: "Perrine Martignoni" <perrmart@domain.hid>
-In-Reply-To: <2ff1a98a0804030642i79cf9d98uce4034295d3e2d4d@domain.hid>
+Message-ID: <47F258AD.3000103@domain.hid>
+Date: Tue, 01 Apr 2008 11:45:49 -0400
+From: Tomas Kalibera <kalibera@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_1886_10451397.1207233287778"
-References: <7289437c0804030246v7992ec23kedcc2c8b71dc14f8@domain.hid>
-	<d6c8ef150804030300p3a4c719tca9903aa7663a5d9@domain.hid>
-	<2ff1a98a0804030642i79cf9d98uce4034295d3e2d4d@domain.hid>
-Subject: Re: [Xenomai-help] Question about rtdm_mmap_to_user()
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <47ED5DE3.60202@domain.hid>	
+	<18413.34914.638951.575098@domain.hid>	
+	<47ED9D05.7060707@domain.hid>	
+	<18415.63399.305120.344817@domain.hid>	
+	<47F062DE.5000709@domain.hid>	
+	<18417.18371.183857.809430@domain.hid>	
+	<18417.18921.588809.645062@domain.hid>	
+	<47F17B32.7070505@domain.hid>	
+	<18417.52630.8850.939898@domain.hid>	
+	<47F23E9E.7060801@domain.hid>
+	<2ff1a98a0804010703v7090d7dbhbbff114a51badd6d@domain.hid>
+In-Reply-To: <2ff1a98a0804010703v7090d7dbhbbff114a51badd6d@domain.hid>
+Content-Type: multipart/mixed; boundary="------------000406000303090702080505"
+Subject: Re: [Xenomai-core] Kernel crash with Xenomai (caused by fork?)
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_1886_10451397.1207233287778
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
+--------------000406000303090702080505
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
->Mixing up RTDM and native API usage, though technically feasible, isn't a
-good idea anyway. Better have a look at Hannes' example, >and if that one or
-your own version still doesn't work, post more details (Xenomai version,
-target architecture, test code, etc.).
-
-I found an example in Native-API-Tour.pdf which do this. I try to follow it
-and it doesn't work.
-
-I work on an MPC8347 with linux-2.6.23 and xenomai-2.4.0.
-
-Here is my code :
-
-*In kernel space* : I create a memory heap in init()
-----------------------------------------------------------------------------------------------------------------------------------------------
-#include <rtdm/rtdm_driver.h>
-
-static struct rtdm_device t_MEMDevice = {
-    struct_version:     RTDM_DEVICE_STRUCT_VER,
-    device_flags:       RTDM_NAMED_DEVICE,
-    context_size:       0,
-    device_name:        DEV_FILE_MEMORY,
-
-    open_rt:        NULL,
-    open_nrt:       dmem_Open,
-
-    ops:{
-        close_rt:   NULL,
-        close_nrt:  dmem_Close,
-        ioctl_rt:   dmem_Ioctl,
-        ioctl_nrt:  dmem_Ioctl,
-        read_rt:    NULL,
-        read_nrt:   NULL,
-        write_rt:   NULL,
-        write_rt:   NULL,
-        recvmsg_rt: NULL,
-        recvmsg_nrt:NULL,
-        sendmsg_rt: NULL,
-        sendmsg_nrt:NULL,
-    },
-    device_class:       RTDM_CLASS_EXPERIMENTAL,
-    device_sub_class:   222,
-    driver_name:        DRV_NAME,
-    peripheral_name:    DEV_FILE_NAME,
-    provider_name:      "-",
-    proc_name:          t_MEMDevice.device_name,
-};
-
-static int dmem_Init(void)
-{
-        RT_HEAP Heap;
-        int ret =0;
-        void *p_HeapMem = NULL;
-
-        if((ret = rt_heap_create(&Heap, "HeapTest", 2048, H_MAPPABLE |
-H_SINGLE)))
-        {
-           rtdm_printk("Impossible de creer l'espace memoire Heap : ret =
-%d\n", ret);
-        }
-
-        ret = rt_heap_alloc(&Heap, 0, TM_INFINITE, &p_HeapMem);
-
-        rtdm_printk("**DRIVER p_HeapMem %x \n", p_HeapMem);
-
-        if(ret != 0)
-          rtdm_printk("RETOUR ALLOC ret %d\n",ret);
 
 
-    if(rtdm_dev_register(&t_MEMDevice)!=0)
-        rtdm_printk("Enregistrement impossible du device MEMORY\n");
-    else
-        rtdm_printk("Initialisation OK\n");
+The stack trace starts getting printed even before the kernel boots - 
+the first occurrence is below. It then repeats printing so frequently 
+that the system is unusable (and I could not run the Xenomai task).
 
-    return 0;
-}
+I've attached the highmem_32.c I used.
 
-static void dmem_Exit(void)
-{
-    if(rtdm_dev_unregister(&t_MEMDevice,0))
-        rtdm_printk("Desabonnement KO\n");
-    else
-        rtdm_printk("Desabonnement OK\n");
-}
+Tomas
 
-module_init(dmem_Init);
-module_exit(dmem_Exit);
-----------------------------------------------------------------------------------------------------------------------------------
+...
 
-I see in /proc/xenomai/registry/native/heaps the *HeapTest  *I create. And I
-see that :
-
-* type=kernel:size=3017801728:used=1
-
-In User space :* I want to bind the heap
---------------------------------------------------------------------------------------------------------------------------------
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include <sys/mman.h>
-#include <native/task.h>
-#include <native/heap.h>
-
-#define TASK_PRIO             50
-
-static RT_TASK s_TaskTest;
-
-static void taskTest(void *cookie)
-{
-    void *p_HeapMem = NULL;
-    int i=0;
-    int ret=0;
-    RT_HEAP Heap;
-
-    ret = rt_heap_bind(&Heap, "HeapTest", TM_INFINITE);
-    printf("ret heap_bind %d\n", ret);
-
-    rt_heap_alloc(&Heap, 0, TM_INFINITE, &p_HeapMem);
-
-    printf("p_HeapMem %x \n", p_HeapMem);
-
-}
-
-int main(int argc, char * argv[])
-{
-    int ret = 0;
-
-    mlockall(MCL_CURRENT | MCL_FUTURE);
-
-      // creation de la tache temps reel TaskTest
-    if((ret = rt_task_create(&s_TaskTest, "TaskTest", 0, TASK_PRIO,
-T_JOINABLE))){
-        fprintf(stderr,"failed to create TaskTest, code %d\n",ret);
-        return ret;
-    }
-    // demarrage de la tache temps reel TaskTest
-    if((ret = rt_task_start(&s_TaskTest, &taskTest, (void *)1))){
-        fprintf(stderr,"failed to start TaskTest, code %d\n",ret);
-        return ret;
-    }
-
-    rt_task_join(&s_TaskTest);
-
-    return ret;
-}
+[   14.232387] I-pipe 2.0-03: pipeline enabled.
+[   14.233719] Console: colour VGA+ 80x25
+[   14.233723] console [tty0] enabled
+[   14.235351] console [ttyS0] enabled
+[   14.477149] Dentry cache hash table entries: 131072 (order: 7, 524288 bytes)
+[   14.484474] Inode-cache hash table entries: 65536 (order: 6, 262144 bytes)
+[   14.725139] Memory: 3588720k/4194304k available (2152k kernel code, 78516k reserved, 904k data, 296k init, 2751016k highme
+m)
+[   14.736370] virtual kernel memory layout:
+[   14.736371]     fixmap  : 0xfff52000 - 0xfffff000   ( 692 kB)
+[   14.736371]     pkmap   : 0xff800000 - 0xffc00000   (4096 kB)
+[   14.736372]     vmalloc : 0xf8800000 - 0xff7fe000   ( 111 MB)
+[   14.736373]     lowmem  : 0xc0000000 - 0xf8000000   ( 896 MB)
+[   14.736374]       .init : 0xc0404000 - 0xc044e000   ( 296 kB)
+[   14.736375]       .data : 0xc031a3a6 - 0xc03fc664   ( 904 kB)
+[   14.736375]       .text : 0xc0100000 - 0xc031a3a6   (2152 kB)
+[   14.780692] Checking if this processor honours the WP bit even in supervisor mode... Ok.
+[   14.848936] Calibrating delay using timer specific routine.. 7583.33 BogoMIPS (lpj=3791666)
+[   14.857374] Security Framework initialized
+[   14.861493] SELinux:  Disabled at boot.
+[   14.865360] Mount-cache hash table entries: 512
+[   14.869987] Wrong address passed to kunmap_atomic!
+[   14.874796]        c03ffebc 00000000 00000000 00000003 00000000 c0105fbd c0394b4a 00048000 
+[   14.883277]        00000003 c011aa9e c039a858 c16f8240 c16f8220 f7c12000 c019e9bd 0000007a 
+[   14.891970]        00000044 00000000 c01b7210 f7c11000 00000001 00000001 00000000 c03dbc80 
+[   14.900661] Call Trace:
+[   14.903348]  [<c0105fbd>] show_stack+0x2d/0x40
+[   14.907856]  [<c011aa9e>] kunmap_atomic+0x4e/0xf0
+[   14.912617]  [<c019e9bd>] get_page_from_freelist+0x2ed/0x4d0
+[   14.918333]  [<c01b7210>] do_ccupdate_local+0x0/0x40
+[   14.923358]  [<c019ec47>] __alloc_pages+0x57/0x360
+[   14.928208]  [<c01b7e89>] enable_cpucache+0x29/0xb0
+[   14.933141]  [<c01d15c5>] alloc_vfsmnt+0x95/0xd0
+[   14.937816]  [<c019efec>] get_zeroed_page+0x3c/0x50
+[   14.942750]  [<c01bc8f6>] vfs_kern_mount+0x56/0x120
+[   14.947682]  [<c01bc9d2>] kern_mount_data+0x12/0x20
+[   14.952616]  [<c041842d>] proc_root_init+0x2d/0xb0
+[   14.957464]  [<c0404a6d>] start_kernel+0x2fd/0x3a0
+[   14.962311]  [<c0404140>] unknown_bootoption+0x0/0x1f0
+[   14.967506]  =======================
+[   14.971152] monitor/mwait feature present.
+[   14.975271] CPU: Trace cache: 12K uops, L1 D cache: 16K
+[   14.980553] CPU: L2 cache: 2048K
+[   14.983804] CPU: Physical Processor ID: 0
+...
 
 
-When I put NONBLOCK, I have the error -11 and when I put TM_INFINITE, it
-runs and doesn't stop.
-
-Best Regards,
-Perrine
-
-
-On Thu, Apr 3, 2008 at 3:42 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
-
-> On Thu, Apr 3, 2008 at 12:00 PM, Bosko Radivojevic
-> <bosko.radivojevic@domain.hid> wrote:
-> > Why don't you try rt_heap_* functions? Quick example:
-> >
-> >  Kernel space:
-> >
-> >  RT_HEAP heap_desc;
-> >  void *shared;
-> >
-> >  rt_heap_create (&heap_desc, "MySHM", 2048, H_SHARED);
-> >  rt_heap_alloc (&heap_desc, 0, TM_NONBLOCK, &shared);
-> >  [.. cleanup ..]
-> >  rt_heap_delete (&heap_desc);
-> >  User space:
-> >
-> >  RT_HEAP heap_desc;
-> >  void *shared;
-> >
-> >  rt_heap_bind (&heap_desc, "MySHM", TM_NONBLOCK);
-> >  rt_heap_alloc (&heap_desc, 0, TM_NONBLOCK, &shared);
-> >  [..cleanup..]
-> >  rt_heap_unbind (&heap_desc);
-> >
-> >  ============================================
-> >
-> >  Hope this helps :)
+Gilles Chanteperdrix wrote:
+> Ok. In the mean time, I think I may have found the reason for the
+> crash. Try this patch, you should get a printk and a stack trace
+> instead of the bug.
 >
-> This is a bad example. A good example would check the return values of
-> the services called.
->
-> --
->  Gilles
->
+>   
 
-------=_Part_1886_10451397.1207233287778
-Content-Type: text/html; charset=ISO-8859-1
+
+--------------000406000303090702080505
+Content-Type: text/x-csrc;
+ name="highmem_32.c"
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Content-Disposition: inline;
+ filename="highmem_32.c"
 
-&gt;Mixing up RTDM and native API usage, though technically feasible, isn&#39;t
-a good idea anyway. Better have a look at Hannes&#39; example, &gt;and if that
-one or your own version still doesn&#39;t work, post more details (Xenomai
-version, target architecture, test code, etc.).<br><br>I found an example in <span class="a">Native-API-Tour.pdf</span> which do this. I try to follow it and it doesn&#39;t work.<br><br>I work on an MPC8347 with linux-2.6.23 and xenomai-2.4.0.<br>
-<br>Here is my code : <br><br><b>In kernel space</b> : I create a memory heap in init()<br>----------------------------------------------------------------------------------------------------------------------------------------------<br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">#include &lt;rtdm/rtdm_driver.h&gt;</span><br style="font-family: courier new,monospace;"><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">static struct rtdm_device t_MEMDevice = {</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; struct_version:&nbsp;&nbsp;&nbsp;&nbsp; RTDM_DEVICE_STRUCT_VER,</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; device_flags:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RTDM_NAMED_DEVICE,</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; context_size:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; device_name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DEV_FILE_MEMORY, </span><br style="font-family: courier new,monospace;">
-<br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; open_rt:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NULL,</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; open_nrt:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dmem_Open,</span><br style="font-family: courier new,monospace;">
-<br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; ops:{</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; close_rt:&nbsp;&nbsp; NULL,</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; close_nrt:&nbsp; dmem_Close,</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ioctl_rt:&nbsp;&nbsp; dmem_Ioctl,</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ioctl_nrt:&nbsp; dmem_Ioctl,</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; read_rt:&nbsp;&nbsp;&nbsp; NULL,</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; read_nrt:&nbsp;&nbsp; NULL,</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; write_rt:&nbsp;&nbsp; NULL,</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; write_rt:&nbsp;&nbsp; NULL,</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; recvmsg_rt: NULL, </span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; recvmsg_nrt:NULL,</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sendmsg_rt: NULL,</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sendmsg_nrt:NULL,</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; },</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; device_class:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RTDM_CLASS_EXPERIMENTAL,</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; device_sub_class:&nbsp;&nbsp; 222,</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; driver_name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DRV_NAME,</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; peripheral_name:&nbsp;&nbsp;&nbsp; DEV_FILE_NAME,</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; provider_name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;-&quot;,</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; proc_name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t_MEMDevice.device_name,</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">};</span><br style="font-family: courier new,monospace;"><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">static int dmem_Init(void) </span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">{&nbsp;&nbsp;&nbsp; </span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; RT_HEAP Heap;</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; int ret =0;</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; void *p_HeapMem = NULL;</span><br style="font-family: courier new,monospace;">
-<br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if((ret = rt_heap_create(&amp;Heap, &quot;HeapTest&quot;, 2048, H_MAPPABLE | H_SINGLE)))</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rtdm_printk(&quot;Impossible de creer l&#39;espace memoire Heap : ret = %d\n&quot;, ret);</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } </span><br style="font-family: courier new,monospace;"><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret = rt_heap_alloc(&amp;Heap, 0, TM_INFINITE, &amp;p_HeapMem);</span><br style="font-family: courier new,monospace;">
-<br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; rtdm_printk(&quot;**DRIVER p_HeapMem %x \n&quot;, p_HeapMem);</span><br style="font-family: courier new,monospace;">
-<br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; if(ret != 0)</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; rtdm_printk(&quot;RETOUR ALLOC ret %d\n&quot;,ret);</span><br style="font-family: courier new,monospace;">
-<br style="font-family: courier new,monospace;"><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; if(rtdm_dev_register(&amp;t_MEMDevice)!=0) </span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rtdm_printk(&quot;Enregistrement impossible du device MEMORY\n&quot;);</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; else</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rtdm_printk(&quot;Initialisation OK\n&quot;);</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp; </span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; return 0;</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">}</span><br style="font-family: courier new,monospace;">
-<br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">static void dmem_Exit(void) </span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">{</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; if(rtdm_dev_unregister(&amp;t_MEMDevice,0))</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rtdm_printk(&quot;Desabonnement KO\n&quot;);&nbsp;&nbsp; </span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; else</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rtdm_printk(&quot;Desabonnement OK\n&quot;);</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">}</span><br style="font-family: courier new,monospace;"><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">module_init(dmem_Init);</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">module_exit(dmem_Exit);</span><br style="font-family: courier new,monospace;">----------------------------------------------------------------------------------------------------------------------------------<br>
-<br>I see in /proc/xenomai/registry/native/heaps the <i>HeapTest&nbsp; </i>I create. And I see that : <br><br><b>&nbsp;type=kernel:size=3017801728:used=1<br><br>In User space :</b> I want to bind the heap<br>--------------------------------------------------------------------------------------------------------------------------------<br>
-<span style="font-family: courier new,monospace;">#include&lt;stdio.h&gt;</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">#include&lt;stdlib.h&gt;</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">#include&lt;string.h&gt;</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">#include &lt;sys/mman.h&gt;</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">#include &lt;native/task.h&gt;</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">#include &lt;native/heap.h&gt;</span><br style="font-family: courier new,monospace;">
-<br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">#define TASK_PRIO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 50</span><br style="font-family: courier new,monospace;"><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">static RT_TASK s_TaskTest;</span><br style="font-family: courier new,monospace;"><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">static void taskTest(void *cookie)</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">{</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; void *p_HeapMem = NULL;</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; int i=0;</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; int ret=0;</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; RT_HEAP Heap;</span><br style="font-family: courier new,monospace;"><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; ret = rt_heap_bind(&amp;Heap, &quot;HeapTest&quot;, TM_INFINITE);</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; printf(&quot;ret heap_bind %d\n&quot;, ret);</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; </span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; rt_heap_alloc(&amp;Heap, 0, TM_INFINITE, &amp;p_HeapMem);</span><br style="font-family: courier new,monospace;"><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; printf(&quot;p_HeapMem %x \n&quot;, p_HeapMem);</span><br style="font-family: courier new,monospace;">
-<br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">}</span><br style="font-family: courier new,monospace;"><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">int main(int argc, char * argv[])</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">{</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; int ret = 0;</span><br style="font-family: courier new,monospace;">
-<br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; mlockall(MCL_CURRENT | MCL_FUTURE);</span><br style="font-family: courier new,monospace;"><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp; &nbsp;&nbsp;&nbsp; // creation de la tache temps reel TaskTest&nbsp;&nbsp;&nbsp; </span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; if((ret = rt_task_create(&amp;s_TaskTest, &quot;TaskTest&quot;, 0, TASK_PRIO, T_JOINABLE))){</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; fprintf(stderr,&quot;failed to create TaskTest, code %d\n&quot;,ret);</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; return ret;</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; }</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; // demarrage de la tache temps reel TaskTest</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; if((ret = rt_task_start(&amp;s_TaskTest, &amp;taskTest, (void *)1))){</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; fprintf(stderr,&quot;failed to start TaskTest, code %d\n&quot;,ret);</span><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; return ret;</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; }</span><br style="font-family: courier new,monospace;">
-<br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; rt_task_join(&amp;s_TaskTest);</span><br style="font-family: courier new,monospace;"><br style="font-family: courier new,monospace;">
-<span style="font-family: courier new,monospace;">&nbsp;&nbsp;&nbsp; return ret;</span><br style="font-family: courier new,monospace;"><span style="font-family: courier new,monospace;">}</span><br><br><br>When I put NONBLOCK, I have the error -11 and when I put TM_INFINITE, it runs and doesn&#39;t stop.<br>
-<br>Best Regards, <br>Perrine<br><br><br><div class="gmail_quote">On Thu, Apr 3, 2008 at 3:42 PM, Gilles Chanteperdrix &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt; wrote:<br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-<div class="Ih2E3d">On Thu, Apr 3, 2008 at 12:00 PM, Bosko Radivojevic<br>
-&lt;<a href="mailto:bosko.radivojevic@domain.hid">bosko.radivojevic@domain.hid</a>&gt; wrote:<br>
-</div><div><div></div><div class="Wj3C7c">&gt; Why don&#39;t you try rt_heap_* functions? Quick example:<br>
-&gt;<br>
-&gt; &nbsp;Kernel space:<br>
-&gt;<br>
-&gt; &nbsp;RT_HEAP heap_desc;<br>
-&gt; &nbsp;void *shared;<br>
-&gt;<br>
-&gt; &nbsp;rt_heap_create (&amp;heap_desc, &quot;MySHM&quot;, 2048, H_SHARED);<br>
-&gt; &nbsp;rt_heap_alloc (&amp;heap_desc, 0, TM_NONBLOCK, &amp;shared);<br>
-&gt; &nbsp;[.. cleanup ..]<br>
-&gt; &nbsp;rt_heap_delete (&amp;heap_desc);<br>
-&gt; &nbsp;User space:<br>
-&gt;<br>
-&gt; &nbsp;RT_HEAP heap_desc;<br>
-&gt; &nbsp;void *shared;<br>
-&gt;<br>
-&gt; &nbsp;rt_heap_bind (&amp;heap_desc, &quot;MySHM&quot;, TM_NONBLOCK);<br>
-&gt; &nbsp;rt_heap_alloc (&amp;heap_desc, 0, TM_NONBLOCK, &amp;shared);<br>
-&gt; &nbsp;[..cleanup..]<br>
-&gt; &nbsp;rt_heap_unbind (&amp;heap_desc);<br>
-&gt;<br>
-&gt; &nbsp;============================================<br>
-&gt;<br>
-&gt; &nbsp;Hope this helps :)<br>
-<br>
-</div></div>This is a bad example. A good example would check the return values of<br>
-the services called.<br>
-<br>
---<br>
-<font color="#888888">&nbsp;Gilles<br>
-</font></blockquote></div><br>
+#include <linux/highmem.h>
+#include <linux/module.h>
 
-------=_Part_1886_10451397.1207233287778--
+static struct {
+	const char *file;
+	unsigned line;
+} last_km_user0 [NR_CPUS];
+
+void *kmap(struct page *page)
+{
+	might_sleep();
+	if (!PageHighMem(page))
+		return page_address(page);
+	return kmap_high(page);
+}
+
+void kunmap(struct page *page)
+{
+	if (in_interrupt())
+		BUG();
+	if (!PageHighMem(page))
+		return;
+	kunmap_high(page);
+}
+
+/*
+ * kmap_atomic/kunmap_atomic is significantly faster than kmap/kunmap because
+ * no global lock is needed and because the kmap code must perform a global TLB
+ * invalidation when the kmap pool wraps.
+ *
+ * However when holding an atomic kmap is is not legal to sleep, so atomic
+ * kmaps are appropriate for short, tight code paths only.
+ */
+void *_kmap_atomic_prot(struct page *page, enum km_type type,
+			pgprot_t prot, const char *file, unsigned line)
+{
+	enum fixed_addresses idx;
+	unsigned long vaddr;
+
+	/* even !CONFIG_PREEMPT needs this, for in_atomic in do_page_fault */
+	pagefault_disable();
+
+	if (!PageHighMem(page))
+		return page_address(page);
+
+	idx = type + KM_TYPE_NR*smp_processor_id();
+	vaddr = __fix_to_virt(FIX_KMAP_BEGIN + idx);
+	if (!pte_none(*(kmap_pte-idx))) {
+		if (type == KM_USER0)
+			printk("KM_USER0 already mapped at %s:%d\n",
+			       last_km_user0[smp_processor_id()].file,
+			       last_km_user0[smp_processor_id()].line);
+		BUG();
+	} else if (type == KM_USER0) {
+		last_km_user0[smp_processor_id()].file = file;
+		last_km_user0[smp_processor_id()].line = line;
+	}
+
+	set_pte(kmap_pte-idx, mk_pte(page, prot));
+	arch_flush_lazy_mmu_mode();
+
+	return (void *)vaddr;
+}
+
+void *_kmap_atomic(struct page *page, enum km_type type,
+		   const char *file, unsigned line)
+{
+	return _kmap_atomic_prot(page, type, kmap_prot, file, line);
+}
+
+void kunmap_atomic(void *kvaddr, enum km_type type)
+{
+	unsigned long vaddr = (unsigned long) kvaddr & PAGE_MASK;
+	enum fixed_addresses idx = type + KM_TYPE_NR*smp_processor_id();
+
+	/*
+	 * Force other mappings to Oops if they'll try to access this pte
+	 * without first remap it.  Keeping stale mappings around is a bad idea
+	 * also, in case the page changes cacheability attributes or becomes
+	 * a protected page in a hypervisor.
+	 */
+	if (vaddr == __fix_to_virt(FIX_KMAP_BEGIN+idx))
+		kpte_clear_flush(kmap_pte-idx, vaddr);
+	else {
+#ifdef CONFIG_DEBUG_HIGHMEM
+		BUG_ON(vaddr < PAGE_OFFSET);
+		BUG_ON(vaddr >= (unsigned long)high_memory);
+#endif
+		printk("Wrong address passed to kunmap_atomic!\n");
+		show_stack(NULL, NULL);
+		kpte_clear_flush(kmap_pte-idx, __fix_to_virt(FIX_KMAP_BEGIN+idx));
+	}
+	if (type == KM_USER0) {
+		last_km_user0[smp_processor_id()].file = NULL;
+		last_km_user0[smp_processor_id()].line = 0;
+	}
+
+	arch_flush_lazy_mmu_mode();
+	pagefault_enable();
+}
+
+/* This is the same as kmap_atomic() but can map memory that doesn't
+ * have a struct page associated with it.
+ */
+void *_kmap_atomic_pfn(unsigned long pfn, enum km_type type,
+		       const char *file, unsigned line)
+{
+	enum fixed_addresses idx;
+	unsigned long vaddr;
+
+	pagefault_disable();
+
+	idx = type + KM_TYPE_NR*smp_processor_id();
+	vaddr = __fix_to_virt(FIX_KMAP_BEGIN + idx);
+	if (!pte_none(*(kmap_pte-idx))) {
+		if (type == KM_USER0)
+			printk("KM_USER0 already mapped at %s:%d\n",
+			       last_km_user0[smp_processor_id()].file,
+			       last_km_user0[smp_processor_id()].line);
+		BUG();
+	} else if (type == KM_USER0) {
+		last_km_user0[smp_processor_id()].file = file;
+		last_km_user0[smp_processor_id()].line = line;
+	}
+	set_pte(kmap_pte-idx, pfn_pte(pfn, kmap_prot));
+	arch_flush_lazy_mmu_mode();
+
+	return (void*) vaddr;
+}
+
+struct page *kmap_atomic_to_page(void *ptr)
+{
+	unsigned long idx, vaddr = (unsigned long)ptr;
+	pte_t *pte;
+
+	if (vaddr < FIXADDR_START)
+		return virt_to_page(ptr);
+
+	idx = virt_to_fix(vaddr);
+	pte = kmap_pte - (idx - FIX_KMAP_BEGIN);
+	return pte_page(*pte);
+}
+
+EXPORT_SYMBOL(kmap);
+EXPORT_SYMBOL(kunmap);
+EXPORT_SYMBOL(_kmap_atomic);
+EXPORT_SYMBOL(kunmap_atomic);
+EXPORT_SYMBOL(kmap_atomic_to_page);
+
+--------------000406000303090702080505--
 
