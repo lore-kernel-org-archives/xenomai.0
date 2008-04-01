@@ -1,82 +1,66 @@
-Message-ID: <2ff1a98a0804010703v7090d7dbhbbff114a51badd6d@domain.hid>
-Date: Tue, 1 Apr 2008 16:03:03 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <47F23E9E.7060801@domain.hid>
+Message-ID: <f45855d10803311731l1f511448wc7451eee7bbe6959@domain.hid>
+Date: Mon, 31 Mar 2008 20:31:09 -0400
+From: "Vincent Levesque" <levesquev@domain.hid>
+In-Reply-To: <18417.28104.771421.524613@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_4637_16786750.1207058583761"
-References: <47ED5DE3.60202@domain.hid>
-	<18413.34914.638951.575098@domain.hid>
-	<47ED9D05.7060707@domain.hid>
-	<18415.63399.305120.344817@domain.hid>
-	<47F062DE.5000709@domain.hid>
-	<18417.18371.183857.809430@domain.hid>
-	<18417.18921.588809.645062@domain.hid>
-	<47F17B32.7070505@domain.hid>
-	<18417.52630.8850.939898@domain.hid>
-	<47F23E9E.7060801@domain.hid>
-Subject: Re: [Xenomai-core] Kernel crash with Xenomai (caused by fork?)
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_8763_10913038.1207009869480"
+References: <50566.74.57.109.247.1207002543.squirrel@domain.hid>
+	<18417.28104.771421.524613@domain.hid>
+Subject: Re: [Xenomai-help] freeze on system() call
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Tomas Kalibera <kalibera@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-------=_Part_4637_16786750.1207058583761
+------=_Part_8763_10913038.1207009869480
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-On Tue, Apr 1, 2008 at 3:54 PM, Tomas Kalibera <kalibera@domain.hid> wrote:
+Thanks for the tip. I tried and did indeed get error messages. Unfortunately
+I haven't been able to redirect these errors to a file or to find any
+reference to them in /var/log/. The best I could do was to take a picture of
+the screen: http://www.cim.mcgill.ca/~vleves/oops.jpg<http://www.cim.mcgill.ca/%7Evleves/oops.jpg>.
+Please let me know if I can do anything else.
+
+Thanks,
+
+Vincent Levesque
+vleves@domain.hid
+
+On Mon, Mar 31, 2008 at 7:03 PM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> <vleves@domain.hid>
+> I see you are talking about the mouse, are you running under X-windows ?
+> If yes, could you try to run your example in the console ? This way you
+> could see some kernel oops if one occurs.
 >
-> Gilles Chanteperdrix wrote:
->  > Tomas Kalibera wrote:
->  >  >
->  >  > I added a missing underscore and re-tried, and none of the debug
->  >  > messages was printed. I added another one to make sure that there is not
->  >  > a problem with getting printk messages to the serial console. The
->  >  > resulting highmem_32.c and the output is attached.
->  >  >
->  >  > T
->  >
->  > The interesting part of the output is the printk which occurs right
->  > before the first bug, what happens afterwards is of little use. Do you
->  > get any output before the first bug ?
->  >
->  There is no output before the first bug. This is why I added the other
->  printk to make sure there is always one on the path leading to the
->  BUG(). After I did that, the newly added message ("type is NOT
->  KM_USER0") appeared in the serial console log after the bug. This is
->  what made me believe that this is the printk we care about, and why I
->  included the longer output.
 
-Ok. In the mean time, I think I may have found the reason for the
-crash. Try this patch, you should get a printk and a stack trace
-instead of the bug.
+------=_Part_8763_10913038.1207009869480
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
--- 
- Gilles
+Thanks for the tip. I tried and did indeed get error messages. Unfortunately I haven&#39;t been able to redirect these errors to a file or to find any reference to them in /var/log/. The best I could do was to take a picture of the screen: <a href="http://www.cim.mcgill.ca/%7Evleves/oops.jpg" target="_blank">http://www.cim.mcgill.ca/~vleves/oops.jpg</a>. Please let me know if I can do anything else.<br>
 
-------=_Part_4637_16786750.1207058583761
-Content-Type: application/octet-stream; name=ipipe-kmap_atomic-bug.4.diff
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_feijg4cp0
-Content-Disposition: attachment; filename=ipipe-kmap_atomic-bug.4.diff
 
-ZGlmZiAtLWdpdCBhL2FyY2gveDg2L21tL2hpZ2htZW1fMzIuYyBiL2FyY2gveDg2L21tL2hpZ2ht
-ZW1fMzIuYwppbmRleCAxYzNiZjk1Li5mNGJhZTNiIDEwMDY0NAotLS0gYS9hcmNoL3g4Ni9tbS9o
-aWdobWVtXzMyLmMKKysrIGIvYXJjaC94ODYvbW0vaGlnaG1lbV8zMi5jCkBAIC02OSw2ICs2OSw5
-IEBAIHZvaWQga3VubWFwX2F0b21pYyh2b2lkICprdmFkZHIsIGVudW0ga21fdHlwZSB0eXBlKQog
-CQlCVUdfT04odmFkZHIgPCBQQUdFX09GRlNFVCk7CiAJCUJVR19PTih2YWRkciA+PSAodW5zaWdu
-ZWQgbG9uZyloaWdoX21lbW9yeSk7CiAjZW5kaWYKKwkJcHJpbnRrKCJXcm9uZyBhZGRyZXNzIHBh
-c3NlZCB0byBrdW5tYXBfYXRvbWljIVxuIik7CisJCXNob3dfc3RhY2soTlVMTCwgTlVMTCk7CisJ
-CWtwdGVfY2xlYXJfZmx1c2goa21hcF9wdGUtaWR4LCBfX2ZpeF90b192aXJ0KEZJWF9LTUFQX0JF
-R0lOK2lkeCkpOwogCX0KIAogCWFyY2hfZmx1c2hfbGF6eV9tbXVfbW9kZSgpOwo=
-------=_Part_4637_16786750.1207058583761--
+<br>Thanks,<br><br>Vincent Levesque<br><a href="mailto:vleves@domain.hid" target="_blank">vleves@domain.hid</a><br><br><div class="gmail_quote">On Mon, Mar 31, 2008 at 7:03 PM, Gilles Chanteperdrix &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org" target="_blank">gilles.chanteperdrix@xenomai.org</a>&gt; wrote:<br>
+
+
+<blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><a href="mailto:vleves@domain.hid" target="_blank"></a><br>
+I see you are talking about the mouse, are you running under X-windows ?<br>
+If yes, could you try to run your example in the console ? This way you<br>
+could see some kernel oops if one occurs.<br>
+</blockquote></div><br>
+
+------=_Part_8763_10913038.1207009869480--
 
