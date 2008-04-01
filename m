@@ -1,12 +1,13 @@
-Date: Tue, 1 Apr 2008 12:44:11 +0200
+Date: Tue, 1 Apr 2008 12:44:59 +0200
 From: Robert Schwebel <r.schwebel@domain.hid>
-Message-ID: <20080401104411.GU13814@domain.hid>
+Message-ID: <20080401104459.GV13814@domain.hid>
 References: <20080401103647.GR13814@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-15
 Content-Disposition: inline
 In-Reply-To: <20080401103647.GR13814@domain.hid>
-Subject: [Xenomai-core] [PATCH][SOLO] sparse: clockobj_unmap not declared
+Subject: [Xenomai-core] [PATCH][SOLO] sparse: threadobj_global_rr not
+	declared
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,26 +23,26 @@ Sparse warns about this one:
 
 clockobj.c:245:5: warning: symbol 'clockobj_unmap' was not declared. Should it be static?
 
-Looks like the declaration for clockobj_unmap is missing.
+Looks like the declaration for threadobj_global_rr is missing.
 
 Signed-off-by: Robert Schwebel <r.schwebel@domain.hid>
 
 ---
- include/xenomai/clockobj.h |    2 ++
+ include/xenomai/threadobj.h |    2 ++
  1 file changed, 2 insertions(+)
 
-Index: xenomai-solo/include/xenomai/clockobj.h
+Index: xenomai-solo/include/xenomai/threadobj.h
 ===================================================================
---- xenomai-solo.orig/include/xenomai/clockobj.h	2008-03-30 19:53:51.000000000 +0200
-+++ xenomai-solo/include/xenomai/clockobj.h	2008-03-30 19:54:04.000000000 +0200
-@@ -66,6 +66,8 @@
+--- xenomai-solo.orig/include/xenomai/threadobj.h	2008-03-30 19:57:52.000000000 +0200
++++ xenomai-solo/include/xenomai/threadobj.h	2008-03-30 19:58:14.000000000 +0200
+@@ -79,6 +79,8 @@
  
- int clockobj_destroy(struct clockobj *clkobj);
+ extern int threadobj_async;
  
-+int clockobj_unmap(struct clockobj *clkobj);
++extern int threadobj_global_rr;
 +
  #ifdef __cplusplus
- }
+ extern "C" {
  #endif
 -- 
  Dipl.-Ing. Robert Schwebel | http://www.pengutronix.de
