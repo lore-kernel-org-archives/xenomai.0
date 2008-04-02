@@ -1,8 +1,8 @@
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18419.57862.758026.458669@domain.hid>
-Date: Wed, 2 Apr 2008 21:44:06 +0200
+Message-ID: <18419.58389.729258.162717@domain.hid>
+Date: Wed, 2 Apr 2008 21:52:53 +0200
 In-Reply-To: <47F3E0B3.2030805@domain.hid>
 References: <47ED5DE3.60202@domain.hid> <47F17B32.7070505@domain.hid>
 	<18417.52630.8850.939898@domain.hid>
@@ -37,10 +37,8 @@ Tomas Kalibera wrote:
  > Fix 5 does not help... If you want to inspect the exact kernel I used, 
  > it's again at http://www.cs.purdue.edu/~tkaliber/crash, the one with 
  > "p5" in its name.
- > 
- > Tomas
 
-But... do you get the lock-up without the patch ?
+permission denied to download kernel configuration.
 
 -- 
 
