@@ -1,21 +1,15 @@
-Message-ID: <2ff1a98a0804020142r55bab884x8896c8191f8580d5@domain.hid>
-Date: Wed, 2 Apr 2008 10:42:29 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <47F2A7CC.4050301@domain.hid>
+Message-ID: <47F34C0D.6090809@domain.hid>
+Date: Wed, 02 Apr 2008 11:04:13 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_5061_23674056.1207125749979"
-References: <47ED5DE3.60202@domain.hid>
-	<18417.18371.183857.809430@domain.hid>
-	<18417.18921.588809.645062@domain.hid>
-	<47F17B32.7070505@domain.hid>
-	<18417.52630.8850.939898@domain.hid>
-	<47F23E9E.7060801@domain.hid>
-	<2ff1a98a0804010703v7090d7dbhbbff114a51badd6d@domain.hid>
-	<47F258AD.3000103@domain.hid>
-	<2ff1a98a0804010858kb009b37y764667cf1fa56c6@domain.hid>
-	<47F2A7CC.4050301@domain.hid>
-Subject: Re: [Xenomai-core] Kernel crash with Xenomai (caused by fork?)
+References: <20080402012645.506e53ef.Cornelius.Koepp@domain.hid>
+In-Reply-To: <20080402012645.506e53ef.Cornelius.Koepp@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig02F675164243A57E6BEA8982"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] latencys drifting into negative (Xenomai
+	2.4.2/2.4.3)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -25,45 +19,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Tomas Kalibera <kalibera@domain.hid>
+To: =?ISO-8859-1?Q?Cornelius_K=F6pp?= <Cornelius.Koepp@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_5061_23674056.1207125749979
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig02F675164243A57E6BEA8982
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Apr 1, 2008 at 11:23 PM, Tomas Kalibera <kalibera@domain.hid> wrote:
-> OK, I got rid of old patches and applied only this check (attached). Now,
-> the kernel boots. When I run my Xenomai app, the kernel locks up, without
-> writing anything to console.
->
->  I tried to get some info via SysRq keys, though the only working options
-> were reboot and kill. If I did "kill", the kernel started repeating all the
-> time the message below.
+Cornelius K=F6pp wrote:
+> Hello,
+> I run the latency test from testsuite on several hard and software conf=
+igurations. Running on Xenomai 2.4.2, Linux 2.6.24 the results shows a "s=
+trange" behavior: In Kernel mode (-t1) the latencys constantly linear dec=
+rease. See attached plot 'drifting_latencys_in_kernelmode.png' of latency=
+ test running 48h on Pentium3 700. This effect could be reproduced, even =
+on other hardware (Pentium-M 1400).
 
-Ok. Get rid of old patches and try this new one. This should hopefully
-be the final fix...
+As our P3 boards did not support APIC-based timing (IIRC), your kernel=20
+has correctly disabled the related kernel support. But the Pentium M=20
+should be fine. So could you check if we are seeing some TSC clocks vs.=20
+PIT timer rounding issue by enabling the local APIC on the Pentium M?
 
--- 
- Gilles
+> The usermode (-t0) did not show a drifting, but is influenced by a test=
+ ran in kernelmode before.
 
-------=_Part_5061_23674056.1207125749979
-Content-Type: application/octet-stream; name=ipipe-kmap_atomic-bug.5.diff
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_fejnhsln0
-Content-Disposition: attachment; filename=ipipe-kmap_atomic-bug.5.diff
+What do you mean with "is influenced"?
 
-ZGlmZiAtLWdpdCBhL21tL21lbW9yeS5jIGIvbW0vbWVtb3J5LmMKaW5kZXggZTBlN2EzZC4uMzJk
-NmNiNiAxMDA2NDQKLS0tIGEvbW0vbWVtb3J5LmMKKysrIGIvbW0vbWVtb3J5LmMKQEAgLTU4NCw4
-ICs1ODQsMTQgQEAgYWdhaW46CiAJCQlpZiAoaXNfY293X21hcHBpbmcodm1hLT52bV9mbGFncykp
-IHsKIAkJCQlpZiAoKCh2bWEtPnZtX2ZsYWdzfHNyY19tbS0+ZGVmX2ZsYWdzKSAmIChWTV9MT0NL
-RUR8Vk1fUElOTkVEKSkKIAkJCQkgICAgPT0gKFZNX0xPQ0tFRHxWTV9QSU5ORUQpKSB7CisJCQkJ
-ICAgIAlhcmNoX2xlYXZlX2xhenlfbW11X21vZGUoKTsKKwkJCQkgICAgCXNwaW5fdW5sb2NrKHNy
-Y19wdGwpOworCQkJCSAgICAJcHRlX3VubWFwX25lc3RlZChzcmNfcHRlKTsKKwkJCQkgICAgCWFk
-ZF9tbV9yc3MoZHN0X21tLCByc3NbMF0sIHJzc1sxXSk7CisJCQkJICAgIAlwdGVfdW5tYXBfdW5s
-b2NrKGRzdF9wdGUsIGRzdF9wdGwpOworCQkJCSAgICAJY29uZF9yZXNjaGVkKCk7CiAJCQkJCWRv
-X2Nvd19icmVhayA9IDE7Ci0JCQkJCWJyZWFrOworCQkJCQlnb3RvIGFnYWluOwogCQkJCX0KIAkJ
-CX0KIAkJfQo=
-------=_Part_5061_23674056.1207125749979--
+>=20
+> I talked with Sebastian Smolorz about this and he builds his own indepe=
+ndent kernel-config to check. He got the same drifting-effect with Xenoma=
+i 2.4.2 and Xenomai 2.4.3 running latency over several hours. His kernel-=
+config ist attached as 'config-2.6.24-xenomai-2.4.3__ssm'.
+>=20
+> Our kernel-configs are both based on a config used with Xenomai 2.3.4 a=
+nd Linux 2.6.20.15 without any drifting effects.
+
+2.3.x did not incorporate the new TSC-to-ns conversion. Maybe it is not=20
+a PIC vs. APIC thing, but rather a rounding problem of larger TSC values =
+
+(that naturally show up when the system runs for a longer time).
+
+Jan
+
+
+--------------enig02F675164243A57E6BEA8982
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFH80wTniDOoMHTA+kRAmYkAJ0dAMz9mxsYfmCfiRk5AWFjb4gEGgCfcgMl
+wnpaECZQmbD598ZRPTICz80=
+=BgTS
+-----END PGP SIGNATURE-----
+
+--------------enig02F675164243A57E6BEA8982--
 
