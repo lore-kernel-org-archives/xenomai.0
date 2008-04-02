@@ -1,16 +1,10 @@
-Message-ID: <47F38365.8070008@domain.hid>
-Date: Wed, 02 Apr 2008 15:00:21 +0200
-From: Sebastian Smolorz <smolorz@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <20080402012645.506e53ef.Cornelius.Koepp@domain.hid>	
-	<47F34C0D.6090809@domain.hid> <47F37579.7080601@domain.hid>	
-	<47F37BF8.6000401@domain.hid>
-	<2ff1a98a0804020546v5eaa8ff4q100ad4820d4ad015@domain.hid>
-In-Reply-To: <2ff1a98a0804020546v5eaa8ff4q100ad4820d4ad015@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] latencys drifting into negative (Xenomai
-	2.4.2/2.4.3)
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C894D1.AC5667BA"
+Date: Wed, 2 Apr 2008 16:56:04 +0200
+Message-ID: <0B45E93C5FF65740AEAE690BF3848B7AD381F8@domain.hid>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
+Subject: [Xenomai-core] [PATCH] glibcism in src/skins/posix/thread.c
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,41 +14,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>, =?ISO-8859-1?Q?Cornelius_K=F6pp?= <Cornelius.Koepp@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> On Wed, Apr 2, 2008 at 2:28 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->> Sebastian Smolorz wrote:
->>  > Jan Kiszka wrote:
->>  >>
->>  >> 2.3.x did not incorporate the new TSC-to-ns conversion. Maybe it is
->>  >> not a PIC vs. APIC thing, but rather a rounding problem of larger TSC
->>  >> values (that naturally show up when the system runs for a longer time).
->>  >
->>  > This hint seems to point into the right direction. I tried out a
->>  > modified pod_32.h (xnarch_tsc_to_ns() commented out) so that the old
->>  > implementation in include/asm-generic/bits/pod.h was used. The drifting
->>  > bug disappeared. So there seems so be a buggy x86-specific
->>  > implementation of this routine.
->>
->>  Hmm, maybe even a conceptional issue: the multiply-shift-based
->>  xnarch_tsc_to_ns is not as precise as the still multiply-divide-based
->>  xnarch_ns_to_tsc. So when converting from tsc over ns back to tsc, we
->>  may loose some bits, maybe too many bits...
-> 
-> If you want to know whether llmulshft implementation is broken on x86
-> or if there is a design issue, you can attempt to use the generic
-> implementation on x86.
-> 
+This is a multi-part message in MIME format.
 
-You mean not using rthal_llmulshft() in arith_32.h and instead using 
-__rthal_generic_llmulshft()? I tried this and it's also suffering from 
-the drift although it seems that the drift per time unit is smaller in 
-the generic case. I will try to get some numbers to compare the values 
-returned from rthal_llmulshft(), __rthal_generic_llmulshft() and 
-__rthal_generic_ullimd().
+------_=_NextPart_001_01C894D1.AC5667BA
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
--- 
-Sebastian
+Hi,
+
+Here's attached a patch working around a glibcism. It is necessary=20
+for uClib environment. The patch is against Xenomai 2.4.3.
+
+Cheers
+--=20
+Stephane
+
+------_=_NextPart_001_01C894D1.AC5667BA
+Content-Type: application/octet-stream;
+	name="posix-skin-glibcism.patch"
+Content-Transfer-Encoding: base64
+Content-Description: posix-skin-glibcism.patch
+Content-Disposition: attachment;
+	filename="posix-skin-glibcism.patch"
+
+LS0tIHNyYy9za2lucy9wb3NpeC90aHJlYWQuYwk1IE1hciAyMDA4IDE0OjE1OjQwIC0wMDAwCTEu
+MS4xLjUKKysrIHNyYy9za2lucy9wb3NpeC90aHJlYWQuYwkyIEFwciAyMDA4IDA5OjE0OjQxIC0w
+MDAwCkBAIC0yODIsNiArMjgyLDggQEAKIAljaGFyIHZlcnNbMTI4XTsKIAlwdGhyZWFkX2F0dHJf
+aW5pdCgmZGVmYXVsdF9hdHRyKTsKIAlsaW51eHRocmVhZHMgPQotCQkhY29uZnN0cihfQ1NfR05V
+X0xJQlBUSFJFQURfVkVSU0lPTiwgdmVycywgc2l6ZW9mKHZlcnMpKQotCQl8fCBzdHJzdHIodmVy
+cywgImxpbnV4dGhyZWFkcyIpOworI2lmZGVmIF9DU19HTlVfTElCUFRIUkVBRF9WRVJTSU9OCisJ
+CSFjb25mc3RyKF9DU19HTlVfTElCUFRIUkVBRF9WRVJTSU9OLCB2ZXJzLCBzaXplb2YodmVycykp
+IHx8CisjZW5kaWYKKwkJc3Ryc3RyKHZlcnMsICJsaW51eHRocmVhZHMiKTsKIH0K
+
+------_=_NextPart_001_01C894D1.AC5667BA--
 
