@@ -1,5 +1,5 @@
-Message-ID: <47F3CD1D.1040907@domain.hid>
-Date: Wed, 02 Apr 2008 14:14:53 -0400
+Message-ID: <47F3E0B3.2030805@domain.hid>
+Date: Wed, 02 Apr 2008 15:38:27 -0400
 From: Tomas Kalibera <kalibera@domain.hid>
 MIME-Version: 1.0
 References: <47ED5DE3.60202@domain.hid> <47F17B32.7070505@domain.hid>	
@@ -29,10 +29,12 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 
-Hmm, I checked again and did not find a mistake in the experiment 
-(neither using the old binary nor old sources). I'm doing a clean build 
-from scratch again, so that we can be absolutely sure. I can then run 
-memtest on the machine...
+Hi Gilles,
+
+I've recompiled the kernel again from scratch and got the same lock up. 
+Fix 5 does not help... If you want to inspect the exact kernel I used, 
+it's again at http://www.cs.purdue.edu/~tkaliber/crash, the one with 
+"p5" in its name.
 
 Tomas
 
