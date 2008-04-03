@@ -1,21 +1,14 @@
-Message-ID: <2ff1a98a0804030204m598488e8n51235caec147e942@domain.hid>
-Date: Thu, 3 Apr 2008 11:04:29 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <47F41AD3.2020809@domain.hid>
+Message-ID: <47F4A55B.4060605@domain.hid>
+Date: Thu, 03 Apr 2008 11:37:31 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
+References: <20080401103647.GR13814@domain.hid>
+In-Reply-To: <20080401103647.GR13814@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <47ED5DE3.60202@domain.hid> <47F2A7CC.4050301@domain.hid>
-	<2ff1a98a0804020142r55bab884x8896c8191f8580d5@domain.hid>
-	<47F3A00E.1020700@domain.hid>
-	<2ff1a98a0804020807t4d2cc718x493ae3c48e9a042f@domain.hid>
-	<47F3E0B3.2030805@domain.hid>
-	<18419.57862.758026.458669@domain.hid>
-	<47F3FE7E.6020302@domain.hid>
-	<18420.2520.32895.319766@domain.hid>
-	<47F41AD3.2020809@domain.hid>
-Subject: Re: [Xenomai-core] Kernel crash with Xenomai (caused by fork?)
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH][SOLO] add sparse support
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -25,33 +18,162 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Tomas Kalibera <kalibera@domain.hid>
+To: Robert Schwebel <r.schwebel@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-On Thu, Apr 3, 2008 at 1:46 AM, Tomas Kalibera <kalibera@domain.hid> wrote:
-> Gilles Chanteperdrix wrote:
+Robert Schwebel wrote:
+> This patch adds static analysis support with sparse to the xenomai-solo
+> makefiles. To enable sparse checking, use
+> 
+> 	./configure --with-sparse[=PATH]
+> 
+> and run 'make sparse' afterwards. I don't have a good idea right now how
+> to avoid this extra step; it would be much nicer if every call to
+> $(COMPILE) could be substituted by a sparse call plus the original one,
+> but I didn't find a good method for that yet that also works with the
+> libtool calls.
 >
-> > Of course, we are looking for all bugs. But please tell me: do you get
-> > the lock-up even before fork is called ? If not, could you verify that
-> > at least some Xenomai programs run correctly, for instance latency ?
-> >
-> >
->  The lock up with patch 5 happens before fork is called, but after a
-> real-time task is started by the program. I don't know better now - I'd have
-> to add more logging.  If I run in strace, the lock-up does not happen.
->
->  Thinking about that, it can be a bug in my program. If I understand the
-> concept of Xenomai correctly, I can just write a real-time task that would
-> starve the Linux kernel indefinitely, correct ? My program definitely does
-> have bugs. So I'll do more debugging.
 
-Yes, you can starve Linux, but after 4seconds the Xenomai watchdog
-should trigger. You can also starve Linux with a vanilla Linux
-application running with the SCHED_FIFO scheduling policy, but in this
-case, it is Linux soft lockup detector which should trigger. I see
-that you have the two options enabled, so, the lockup is probably
-another bug.
+I have merged this patch series, adapting the Makefiles so that we don't need
+any support from configure.in to run sparse.
+
+Normally, you should be able to run "make [SPARSE=/path/to/sparse] sparse" to
+start the analysis. Default path is "sparse".
+
+Additionally, this now works with out of tree builds and supports mixed 32/64bit
+environments.
+
+Thanks,
+
+> Signed-off-by: Robert Schwebel <r.schwebel@domain.hid>
+> 
+> ---
+>  Makefile.am         |   18 +++++++++++++++++-
+>  base/Makefile.am    |    6 ++++++
+>  configure.in        |   32 ++++++++++++++++++++++++++++++++
+>  psos/Makefile.am    |    6 ++++++
+>  vxworks/Makefile.am |    5 +++++
+>  5 files changed, 66 insertions(+), 1 deletion(-)
+> 
+> Index: xenomai-solo/base/Makefile.am
+> ===================================================================
+> --- xenomai-solo.orig/base/Makefile.am	2008-03-30 21:29:12.000000000 +0200
+> +++ xenomai-solo/base/Makefile.am	2008-03-30 21:29:46.000000000 +0200
+> @@ -36,3 +36,9 @@
+>  	-DTLSF_USE_LOCKS=1 -DUSE_MMAP=1 -DUSE_SBRK=1
+>  
+>  EXTRA_DIST = tlsf/README
+> +
+> +sparse:
+> +	@for i in $(libxenomai_la_SOURCES) $(libtlsf_la_SOURCES); do \
+> +		$(SPARSE) $(CHECKFLAGS) $$i; \
+> +	done
+> +
+> Index: xenomai-solo/configure.in
+> ===================================================================
+> --- xenomai-solo.orig/configure.in	2008-03-30 21:29:12.000000000 +0200
+> +++ xenomai-solo/configure.in	2008-03-30 21:29:14.000000000 +0200
+> @@ -70,6 +70,38 @@
+>  	esac])
+>  AC_MSG_RESULT(${debug_symbols:-no})
+>  
+> +dnl Sparse check (default: off)
+> +
+> +sparse=
+> +AC_MSG_CHECKING(whether to enable sparse)
+> +AC_ARG_WITH(sparse,
+> +    AC_HELP_STRING([--with-sparse@<:@=PATH@:>@], [activate static code analysis with sparse]),
+> +    [case "$withval" in
+> +    y | yes) sparse=sparse ;;
+> +    n | no)  sparse= ;;
+> +    *) sparse=$withval
+> +    esac],
+> +    [sparse=],[]
+> +)
+> +if test -n "$sparse" ; then
+> +    AC_MSG_RESULT(yes)
+> +    AC_SUBST(SPARSE, $sparse)
+> +    AC_MSG_CHECKING(whether sparse=$sparse is executable)
+> +    if test "`$sparse 2>&1 > /dev/null; echo $?`" = "0"; then
+> +        AC_MSG_RESULT(yes)
+> +        AC_SUBST(SPARSE, $sparse)
+> +    else
+> +        AC_MSG_RESULT(no)
+> +        AC_MSG_ERROR($sparse is not executable)
+> +    fi
+> +else
+> +    AC_MSG_RESULT(no)
+> +    AC_SUBST(SPARSE, true)
+> +fi
+> +
+> +checkflags="-nostdinc -isystem \$(SYSROOT)/usr/include -isystem `$CC -print-file-name=include` -Wbitwise -Wno-transparent-union -D_GNU_SOURCE -D_XOPEN_SOURCE=500 -D_REENTRANT \$(DEFS) \$(DEFAULT_INCLUDES) \$(INCLUDES) \$(AM_CPPFLAGS) \$(CPPFLAGS)"
+> +AC_SUBST(CHECKFLAGS, $checkflags)
+> +
+>  dnl Enable assertions (default: off)
+>  
+>  AC_MSG_CHECKING(whether assertions should be enabled)
+> Index: xenomai-solo/Makefile.am
+> ===================================================================
+> --- xenomai-solo.orig/Makefile.am	2008-03-30 21:29:12.000000000 +0200
+> +++ xenomai-solo/Makefile.am	2008-03-30 21:29:14.000000000 +0200
+> @@ -1,6 +1,15 @@
+>  ACLOCAL_AMFLAGS=-I config
+>  
+> -SUBDIRS = base vxworks psos include config scripts
+> +SRC_SUBDIRS= \
+> +	base \
+> +	vxworks \
+> +	psos
+> +
+> +SUBDIRS = \
+> +	$(SRC_SUBDIRS) \
+> +	include \
+> +	config \
+> +	scripts
+>  
+>  EXTRA_DIST =
+>  
+> @@ -11,3 +20,10 @@
+>  
+>  install-user:
+>  	$(MAKE) install
+> +
+> +sparse:
+> +	@for i in $(SRC_SUBDIRS); do \
+> +		echo; \
+> +		make -C $$i sparse; \
+> +	done
+> +
+> Index: xenomai-solo/psos/Makefile.am
+> ===================================================================
+> --- xenomai-solo.orig/psos/Makefile.am	2008-03-30 21:29:12.000000000 +0200
+> +++ xenomai-solo/psos/Makefile.am	2008-03-30 21:29:14.000000000 +0200
+> @@ -22,3 +22,9 @@
+>  	-I$(top_srcdir)/include
+>  
+>  EXTRA_DIST =
+> +
+> +sparse:
+> +	@for i in $(libpsos_la_SOURCES); do \
+> +		$(SPARSE) $(CHECKFLAGS) $$i; \
+> +	done
+> +
+> Index: xenomai-solo/vxworks/Makefile.am
+> ===================================================================
+> --- xenomai-solo.orig/vxworks/Makefile.am	2008-03-30 21:29:53.000000000 +0200
+> +++ xenomai-solo/vxworks/Makefile.am	2008-03-30 21:30:10.000000000 +0200
+> @@ -24,3 +24,8 @@
+>  	-I$(top_srcdir)/include
+>  
+>  EXTRA_DIST = testsuite
+> +
+> +sparse:
+> +	@for i in $(libvxworks_la_SOURCES); do \
+> +		$(SPARSE) $(CHECKFLAGS) $$i; \
+> +	done
+> 
+
 
 -- 
- Gilles
+Philippe.
 
