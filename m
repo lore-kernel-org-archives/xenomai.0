@@ -1,24 +1,17 @@
-Message-ID: <5436.81.252.86.91.1207213155.squirrel@domain.hid>
-In-Reply-To: <18410.43769.299931.151297@domain.hid>
-References: <16201.81.252.86.91.1205764989.squirrel@domain.hid>
-	<6621.81.252.86.91.1205927700.squirrel@domain.hid>
-	<2ff1a98a0803190613r7572d87eibef16aecf39ef71a@domain.hid>
-	<10023.62.39.72.60.1205940829.squirrel@domain.hid>
-	<18407.43111.568301.509775@domain.hid>
-	<18407.58512.849738.173184@domain.hid>
-	<18408.10253.285795.914555@domain.hid>
-	<3551.81.252.86.91.1206464698.squirrel@domain.hid>
-	<2ff1a98a0803251037y3c0d8735he1fc82895c349c3c@domain.hid>
-	<2786.81.252.86.91.1206522879.squirrel@domain.hid>
-	<2ff1a98a0803260236r409752a3v55cd8dce1305a003@domain.hid>
-	<15944.81.252.86.91.1206526011.squirrel@domain.hid>
-	<18410.43769.299931.151297@domain.hid>
-Date: Thu, 3 Apr 2008 10:59:15 +0200 (CEST)
-From: "Fabien MAHOT" <fabien.mahot@domain.hid>
+Message-ID: <2ff1a98a0804030207sa7a3c44s83fa08db7d0ab3db@domain.hid>
+Date: Thu, 3 Apr 2008 11:07:01 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <f45855d10804022023n5094eb41g477071cc3a280840@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Application crash
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <50566.74.57.109.247.1207002543.squirrel@domain.hid>
+	<18417.28104.771421.524613@domain.hid>
+	<f45855d10803311731l1f511448wc7451eee7bbe6959@domain.hid>
+	<18417.53680.5061.752392@domain.hid>
+	<f45855d10804022023n5094eb41g477071cc3a280840@domain.hid>
+Subject: Re: [Xenomai-help] freeze on system() call
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -28,19 +21,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Vincent Levesque <levesquev@domain.hid>
 Cc: xenomai@xenomai.org
 
-Hello,
+On Thu, Apr 3, 2008 at 5:23 AM, Vincent Levesque <levesquev@domain.hid> wrote:
+> Hi Gilles,
+>
+> Thanks for walking me through this. I did as you suggested and grabbed this
+> more complete screenshot (stitched from two pictures):
+> http://www.cim.mcgill.ca/~vleves/oops-full.jpg.
 
-I found the solution for my application crash. The "Queue Debugging
-Support" kernel option was enabled. When this option is disabled, my
-program works perfectly.
+Could you try the patch attached to this post ?
+https://mail.gna.org/public/xenomai-core/2008-04/msg00044.html
 
-I m not sure that is really the origin of the problem, but without this
-option, I think that thread scheduling is more "clean" (overhead
-problem...)?
-
-bye !
-
+-- 
+ Gilles
 
