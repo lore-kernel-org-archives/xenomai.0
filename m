@@ -1,16 +1,18 @@
-Message-ID: <f45855d10804030904w28c5ea4bm1c4a71f7b37d5ca6@domain.hid>
-Date: Thu, 3 Apr 2008 12:04:41 -0400
-From: "Vincent Levesque" <levesquev@domain.hid>
-In-Reply-To: <2ff1a98a0804030207sa7a3c44s83fa08db7d0ab3db@domain.hid>
+Message-ID: <2ff1a98a0804030908g55e907d9xefb2e5a502c6783d@domain.hid>
+Date: Thu, 3 Apr 2008 18:08:58 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <f45855d10804030904w28c5ea4bm1c4a71f7b37d5ca6@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_2405_17188066.1207238681419"
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 References: <50566.74.57.109.247.1207002543.squirrel@domain.hid>
 	<18417.28104.771421.524613@domain.hid>
 	<f45855d10803311731l1f511448wc7451eee7bbe6959@domain.hid>
 	<18417.53680.5061.752392@domain.hid>
 	<f45855d10804022023n5094eb41g477071cc3a280840@domain.hid>
 	<2ff1a98a0804030207sa7a3c44s83fa08db7d0ab3db@domain.hid>
+	<f45855d10804030904w28c5ea4bm1c4a71f7b37d5ca6@domain.hid>
 Subject: Re: [Xenomai-help] freeze on system() call
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -21,47 +23,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Vincent Levesque <levesquev@domain.hid>
 Cc: xenomai@xenomai.org
 
-------=_Part_2405_17188066.1207238681419
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+On Thu, Apr 3, 2008 at 6:04 PM, Vincent Levesque <levesquev@domain.hid> wrote:
+> Hi Gilles,
+>
+> I tried the patch on both linux-2.6.24.4+xeno-2.4.2 and
+> linux2.6.24.3+xeno-2.4.2 (like Tomas). In both cases I get errors messages
+> when patching:
+>
+> root@domain.hid# patch -p1 < 6.patch
+>  patching file include/linux/mm.h
+> Hunk #1 FAILED at 104.
+> 1 out of 1 hunk FAILED -- saving rejects to file include/linux/mm.h.rej
+> patching file mm/memory.c
+> Hunk #1 FAILED at 584.
+> 1 out of 1 hunk FAILED -- saving rejects to file mm/memory.c.rej
+>
+> Am I using the right version of linux and xenomai? Was I supposed to apply
+> other patches first? I had to fix the patch a bit (line endings were mangled
+> in the email) but I don't think I broke anything.
 
-Hi Gilles,
+What do the rejects look like ?
 
-I tried the patch on both linux-2.6.24.4+xeno-2.4.2 and
-linux2.6.24.3+xeno-2.4.2 (like Tomas). In both cases I get errors messages
-when patching:
+>
+> Out of curiosity, can you reproduce the bug?
 
-root@domain.hid# patch -p1 < 6.patch
-patching file include/linux/mm.h
-Hunk #1 FAILED at 104.
-1 out of 1 hunk FAILED -- saving rejects to file include/linux/mm.h.rej
-patching file mm/memory.c
-Hunk #1 FAILED at 584.
-1 out of 1 hunk FAILED -- saving rejects to file mm/memory.c.rej
+I have not tried yet.
 
-Am I using the right version of linux and xenomai? Was I supposed to apply
-other patches first? I had to fix the patch a bit (line endings were mangled
-in the email) but I don't think I broke anything.
-
-Out of curiosity, can you reproduce the bug?
-
-Thanks,
-
---VL
-
-------=_Part_2405_17188066.1207238681419
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hi Gilles,<br><br>I tried the patch on both linux-2.6.24.4+xeno-2.4.2 and linux2.6.24.3+xeno-2.4.2 (like Tomas). In both cases I get errors messages when patching:<br><br>root@domain.hid# patch -p1 &lt; 6.patch<br>
-patching file include/linux/mm.h<br>Hunk #1 FAILED at 104.<br>1 out of 1 hunk FAILED -- saving rejects to file include/linux/mm.h.rej<br>patching file mm/memory.c<br>Hunk #1 FAILED at 584.<br>1 out of 1 hunk FAILED -- saving rejects to file mm/memory.c.rej<br>
-<br>Am I using the right version of linux and xenomai? Was I supposed to apply other patches first? I had to fix the patch a bit (line endings were mangled in the email) but I don&#39;t think I broke anything. <br><br>Out of curiosity, can you reproduce the bug?<br>
-<br>Thanks,<br><br>--VL<br>
-
-------=_Part_2405_17188066.1207238681419--
+-- 
+ Gilles
 
