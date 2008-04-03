@@ -1,14 +1,19 @@
-Message-ID: <47F4A55B.4060605@domain.hid>
-Date: Thu, 03 Apr 2008 11:37:31 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <47F4CAD1.3090002@domain.hid>
+Date: Thu, 03 Apr 2008 14:17:21 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <20080401103647.GR13814@domain.hid>
-In-Reply-To: <20080401103647.GR13814@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH][SOLO] add sparse support
-Reply-To: rpm@xenomai.org
+References: <20080402012645.506e53ef.Cornelius.Koepp@domain.hid>	
+	<47F34C0D.6090809@domain.hid> <47F37579.7080601@domain.hid>	
+	<47F37BF8.6000401@domain.hid> <47F3AD14.4090306@domain.hid>
+	<2ff1a98a0804020905v7019574ai927f213ab6603e41@domain.hid>
+	<47F3B348.1090102@domain.hid>
+In-Reply-To: <47F3B348.1090102@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig29D5951E23226B67EA68A80A"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] latencys drifting into negative (Xenomai
+	2.4.2/2.4.3)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,162 +23,250 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Robert Schwebel <r.schwebel@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Sebastian Smolorz <smolorz@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>, =?ISO-8859-1?Q?Cornelius_K=F6pp?= <Cornelius.Koepp@domain.hid>
 
-Robert Schwebel wrote:
-> This patch adds static analysis support with sparse to the xenomai-solo
-> makefiles. To enable sparse checking, use
-> 
-> 	./configure --with-sparse[=PATH]
-> 
-> and run 'make sparse' afterwards. I don't have a good idea right now how
-> to avoid this extra step; it would be much nicer if every call to
-> $(COMPILE) could be substituted by a sparse call plus the original one,
-> but I didn't find a good method for that yet that also works with the
-> libtool calls.
->
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig29D5951E23226B67EA68A80A
+Content-Type: multipart/mixed;
+ boundary="------------010405060009030405050907"
 
-I have merged this patch series, adapting the Makefiles so that we don't need
-any support from configure.in to run sparse.
+This is a multi-part message in MIME format.
+--------------010405060009030405050907
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-Normally, you should be able to run "make [SPARSE=/path/to/sparse] sparse" to
-start the analysis. Default path is "sparse".
+Sebastian Smolorz wrote:
+> Gilles Chanteperdrix wrote:
+>> On Wed, Apr 2, 2008 at 5:58 PM, Sebastian Smolorz
+>> <smolorz@domain.hid> wrote:
+>>> Jan Kiszka wrote:
+>>>  > Sebastian Smolorz wrote:
+>>>  >> Jan Kiszka wrote:
+>>>  >>> Cornelius K=F6pp wrote:
+>>>  >>>> I talked with Sebastian Smolorz about this and he builds his ow=
+n
+>>>  >>>> independent kernel-config to check. He got the same=20
+>>> drifting-effect
+>>>  >>>> with Xenomai 2.4.2 and Xenomai 2.4.3 running latency over sever=
+al
+>>>  >>>> hours. His kernel-config ist attached as
+>>>  >>>> 'config-2.6.24-xenomai-2.4.3__ssm'.
+>>>  >>>>
+>>>  >>>> Our kernel-configs are both based on a config used with Xenomai=
+=20
+>>> 2.3.4
+>>>  >>>> and Linux 2.6.20.15 without any drifting effects.
+>>>  >>> 2.3.x did not incorporate the new TSC-to-ns conversion. Maybe it=
+ is
+>>>  >>> not a PIC vs. APIC thing, but rather a rounding problem of=20
+>>> larger TSC
+>>>  >>> values (that naturally show up when the system runs for a longer=
+=20
+>>> time).
+>>>  >> This hint seems to point into the right direction. I tried out a
+>>>  >> modified pod_32.h (xnarch_tsc_to_ns() commented out) so that the =
+old
+>>>  >> implementation in include/asm-generic/bits/pod.h was used. The=20
+>>> drifting
+>>>  >> bug disappeared. So there seems so be a buggy x86-specific
+>>>  >> implementation of this routine.
+>>>  >
+>>>  > Hmm, maybe even a conceptional issue: the multiply-shift-based
+>>>  > xnarch_tsc_to_ns is not as precise as the still multiply-divide-ba=
+sed
+>>>  > xnarch_ns_to_tsc. So when converting from tsc over ns back to tsc,=
+ we
+>>>  > may loose some bits, maybe too many bits...
+>>>  >
+>>>  > It looks like this bites us in the kernel latency tests (-t2 shoul=
+d
+>>>  > suffer as well). Those recalculate their timeouts each round based=
+ on
+>>>  > absolute nanoseconds. In contrast, the periodic user mode task of =
+-t0
+>>>  > uses a periodic timer that is forwarded via a tsc-based interval.
+>>>  >
+>>>  > You (or Cornelius) could try to analyse the calculation path of th=
+e
+>>>  > involved timeouts, specifically to understand why the scheduled=20
+>>> timeout
+>>>  > of the underlying task timer (which is tsc-based) tend to diverge =
 
-Additionally, this now works with out of tree builds and supports mixed 32/64bit
-environments.
+>>> from
+>>>  > the calculated one (ns-based).
+>>>
+>>>  So here comes the explanation. The error is inside the function
+>>>  rthal_llmulshft(). It returns wrong values which are too small - the=
 
-Thanks,
+>>>  higher the given TSC value the bigger the error. The function
+>>>  rtdm_clock_read_monotonic() calls rthal_llmulshft(). As
+>>>  rtdm_clock_read_monotonic() is called every time the latency kernel
+>>>  thread runs [1] the values reported by latency become smaller over=20
+>>> time.
+>>>
+>>>  In contrast, the latency task in user space only uses the conversion=
 
-> Signed-off-by: Robert Schwebel <r.schwebel@domain.hid>
-> 
-> ---
->  Makefile.am         |   18 +++++++++++++++++-
->  base/Makefile.am    |    6 ++++++
->  configure.in        |   32 ++++++++++++++++++++++++++++++++
->  psos/Makefile.am    |    6 ++++++
->  vxworks/Makefile.am |    5 +++++
->  5 files changed, 66 insertions(+), 1 deletion(-)
-> 
-> Index: xenomai-solo/base/Makefile.am
-> ===================================================================
-> --- xenomai-solo.orig/base/Makefile.am	2008-03-30 21:29:12.000000000 +0200
-> +++ xenomai-solo/base/Makefile.am	2008-03-30 21:29:46.000000000 +0200
-> @@ -36,3 +36,9 @@
->  	-DTLSF_USE_LOCKS=1 -DUSE_MMAP=1 -DUSE_SBRK=1
->  
->  EXTRA_DIST = tlsf/README
-> +
-> +sparse:
-> +	@for i in $(libxenomai_la_SOURCES) $(libtlsf_la_SOURCES); do \
-> +		$(SPARSE) $(CHECKFLAGS) $$i; \
-> +	done
-> +
-> Index: xenomai-solo/configure.in
-> ===================================================================
-> --- xenomai-solo.orig/configure.in	2008-03-30 21:29:12.000000000 +0200
-> +++ xenomai-solo/configure.in	2008-03-30 21:29:14.000000000 +0200
-> @@ -70,6 +70,38 @@
->  	esac])
->  AC_MSG_RESULT(${debug_symbols:-no})
->  
-> +dnl Sparse check (default: off)
-> +
-> +sparse=
-> +AC_MSG_CHECKING(whether to enable sparse)
-> +AC_ARG_WITH(sparse,
-> +    AC_HELP_STRING([--with-sparse@<:@=PATH@:>@], [activate static code analysis with sparse]),
-> +    [case "$withval" in
-> +    y | yes) sparse=sparse ;;
-> +    n | no)  sparse= ;;
-> +    *) sparse=$withval
-> +    esac],
-> +    [sparse=],[]
-> +)
-> +if test -n "$sparse" ; then
-> +    AC_MSG_RESULT(yes)
-> +    AC_SUBST(SPARSE, $sparse)
-> +    AC_MSG_CHECKING(whether sparse=$sparse is executable)
-> +    if test "`$sparse 2>&1 > /dev/null; echo $?`" = "0"; then
-> +        AC_MSG_RESULT(yes)
-> +        AC_SUBST(SPARSE, $sparse)
-> +    else
-> +        AC_MSG_RESULT(no)
-> +        AC_MSG_ERROR($sparse is not executable)
-> +    fi
-> +else
-> +    AC_MSG_RESULT(no)
-> +    AC_SUBST(SPARSE, true)
-> +fi
-> +
-> +checkflags="-nostdinc -isystem \$(SYSROOT)/usr/include -isystem `$CC -print-file-name=include` -Wbitwise -Wno-transparent-union -D_GNU_SOURCE -D_XOPEN_SOURCE=500 -D_REENTRANT \$(DEFS) \$(DEFAULT_INCLUDES) \$(INCLUDES) \$(AM_CPPFLAGS) \$(CPPFLAGS)"
-> +AC_SUBST(CHECKFLAGS, $checkflags)
-> +
->  dnl Enable assertions (default: off)
->  
->  AC_MSG_CHECKING(whether assertions should be enabled)
-> Index: xenomai-solo/Makefile.am
-> ===================================================================
-> --- xenomai-solo.orig/Makefile.am	2008-03-30 21:29:12.000000000 +0200
-> +++ xenomai-solo/Makefile.am	2008-03-30 21:29:14.000000000 +0200
-> @@ -1,6 +1,15 @@
->  ACLOCAL_AMFLAGS=-I config
->  
-> -SUBDIRS = base vxworks psos include config scripts
-> +SRC_SUBDIRS= \
-> +	base \
-> +	vxworks \
-> +	psos
-> +
-> +SUBDIRS = \
-> +	$(SRC_SUBDIRS) \
-> +	include \
-> +	config \
-> +	scripts
->  
->  EXTRA_DIST =
->  
-> @@ -11,3 +20,10 @@
->  
->  install-user:
->  	$(MAKE) install
-> +
-> +sparse:
-> +	@for i in $(SRC_SUBDIRS); do \
-> +		echo; \
-> +		make -C $$i sparse; \
-> +	done
-> +
-> Index: xenomai-solo/psos/Makefile.am
-> ===================================================================
-> --- xenomai-solo.orig/psos/Makefile.am	2008-03-30 21:29:12.000000000 +0200
-> +++ xenomai-solo/psos/Makefile.am	2008-03-30 21:29:14.000000000 +0200
-> @@ -22,3 +22,9 @@
->  	-I$(top_srcdir)/include
->  
->  EXTRA_DIST =
-> +
-> +sparse:
-> +	@for i in $(libpsos_la_SOURCES); do \
-> +		$(SPARSE) $(CHECKFLAGS) $$i; \
-> +	done
-> +
-> Index: xenomai-solo/vxworks/Makefile.am
-> ===================================================================
-> --- xenomai-solo.orig/vxworks/Makefile.am	2008-03-30 21:29:53.000000000 +0200
-> +++ xenomai-solo/vxworks/Makefile.am	2008-03-30 21:30:10.000000000 +0200
-> @@ -24,3 +24,8 @@
->  	-I$(top_srcdir)/include
->  
->  EXTRA_DIST = testsuite
-> +
-> +sparse:
-> +	@for i in $(libvxworks_la_SOURCES); do \
-> +		$(SPARSE) $(CHECKFLAGS) $$i; \
-> +	done
-> 
+>>>  from TSC to ns only once when calling rt_timer_inquire [2].
+>>>  timer_info.date is too small, timer_info.tsc is right. So all=20
+>>> calculated
+>>>   deltas in [3] are shifted to a smaller value. This value is constan=
+t
+>>>  during the runtime of lateny in user space because no more conversio=
+n
+>>>  from TSC to ns occurs.
+>>
+>> latency does conversions from tsc to ns, but it converts time
+>> differences, so the error is small relative to the results.
+>=20
+> Of course. I wasn't precise with my last statement. It should be: No=20
+> more conversions from *absolute* TSC values to ns occur.
+>=20
 
+This patch may do the trick: it uses the inverted tsc-to-ns function=20
+instead of the frequency-based one. Be warned, it is totally untested=20
+inside Xenomai, I just ran it in a user space test program. But it may=20
+give an idea.
 
--- 
-Philippe.
+Gilles, not sure if this is related to my quickly hacked test, but with=20
+RTHAL_CPU_FREQ =3D 800MHz and TSC =3D 0x7000000000000000 (or larger) I ge=
+t=20
+an arithmetic exception with the rthal_llimd-based conversion to=20
+nanoseconds. Is there an input range we may have to exclude for rthal_lli=
+md?
+
+Jan
+
+--------------010405060009030405050907
+Content-Type: text/x-patch;
+ name="fixup-scaled-ns2tsc-conversion.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="fixup-scaled-ns2tsc-conversion.patch"
+
+---
+ include/asm-x86/bits/init_32.h |    3 ++-
+ include/asm-x86/bits/init_64.h |    3 ++-
+ include/asm-x86/bits/pod_32.h  |    7 +++++++
+ include/asm-x86/bits/pod_64.h  |    7 +++++++
+ 4 files changed, 18 insertions(+), 2 deletions(-)
+
+Index: b/include/asm-x86/bits/init_32.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/include/asm-x86/bits/init_32.h
++++ b/include/asm-x86/bits/init_32.h
+@@ -73,7 +73,7 @@ int xnarch_calibrate_sched(void)
+=20
+ static inline int xnarch_init(void)
+ {
+-	extern unsigned xnarch_tsc_scale, xnarch_tsc_shift;
++	extern unsigned xnarch_tsc_scale, xnarch_tsc_shift, xnarch_tsc_divide;
+ 	int err;
+=20
+ 	err =3D rthal_init();
+@@ -89,6 +89,7 @@ static inline int xnarch_init(void)
+=20
+ 	xnarch_init_llmulshft(1000000000, RTHAL_CPU_FREQ,
+ 			      &xnarch_tsc_scale, &xnarch_tsc_shift);
++	xnarch_tsc_divide =3D 1 << xnarch_tsc_shift;
+=20
+ 	err =3D xnarch_calibrate_sched();
+=20
+Index: b/include/asm-x86/bits/init_64.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/include/asm-x86/bits/init_64.h
++++ b/include/asm-x86/bits/init_64.h
+@@ -70,7 +70,7 @@ int xnarch_calibrate_sched(void)
+=20
+ static inline int xnarch_init(void)
+ {
+-	extern unsigned xnarch_tsc_scale, xnarch_tsc_shift;
++	extern unsigned xnarch_tsc_scale, xnarch_tsc_shift, xnarch_tsc_divide;
+ 	int err;
+=20
+ 	err =3D rthal_init();
+@@ -86,6 +86,7 @@ static inline int xnarch_init(void)
+=20
+ 	xnarch_init_llmulshft(1000000000, RTHAL_CPU_FREQ,
+ 			      &xnarch_tsc_scale, &xnarch_tsc_shift);
++	xnarch_tsc_divide =3D 1 << xnarch_tsc_shift;
+=20
+ 	err =3D xnarch_calibrate_sched();
+=20
+Index: b/include/asm-x86/bits/pod_32.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/include/asm-x86/bits/pod_32.h
++++ b/include/asm-x86/bits/pod_32.h
+@@ -25,6 +25,7 @@
+=20
+ unsigned xnarch_tsc_scale;
+ unsigned xnarch_tsc_shift;
++unsigned xnarch_tsc_divide;
+=20
+ long long xnarch_tsc_to_ns(long long ts)
+ {
+@@ -32,6 +33,12 @@ long long xnarch_tsc_to_ns(long long ts)
+ }
+ #define XNARCH_TSC_TO_NS
+=20
++long long xnarch_ns_to_tsc(long long ns)
++{
++	return xnarch_llimd(ts, xnarch_tsc_divide, xnarch_tsc_scale);
++}
++#define XNARCH_NS_TO_TSC
++
+ #include <asm-generic/xenomai/bits/pod.h>
+ #include <asm/xenomai/switch.h>
+=20
+Index: b/include/asm-x86/bits/pod_64.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/include/asm-x86/bits/pod_64.h
++++ b/include/asm-x86/bits/pod_64.h
+@@ -24,6 +24,7 @@
+=20
+ unsigned xnarch_tsc_scale;
+ unsigned xnarch_tsc_shift;
++unsigned xnarch_tsc_divide;
+=20
+ long long xnarch_tsc_to_ns(long long ts)
+ {
+@@ -31,6 +32,12 @@ long long xnarch_tsc_to_ns(long long ts)
+ }
+ #define XNARCH_TSC_TO_NS
+=20
++long long xnarch_ns_to_tsc(long long ns)
++{
++	return xnarch_llimd(ts, xnarch_tsc_divide, xnarch_tsc_scale);
++}
++#define XNARCH_NS_TO_TSC
++
+ #include <asm-generic/xenomai/bits/pod.h>
+ #include <asm/xenomai/switch.h>
+=20
+
+--------------010405060009030405050907--
+
+--------------enig29D5951E23226B67EA68A80A
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFH9MrYniDOoMHTA+kRAtI2AJ9jyjuTy8fvSAZ1ZC49wCu5e5XXeACeLyHE
+GWQpshCs6Xo1nkCnWGM+LPU=
+=ACsJ
+-----END PGP SIGNATURE-----
+
+--------------enig29D5951E23226B67EA68A80A--
 
