@@ -1,12 +1,11 @@
-Message-ID: <d6c8ef150804030300p3a4c719tca9903aa7663a5d9@domain.hid>
-Date: Thu, 3 Apr 2008 12:00:17 +0200
-From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
-In-Reply-To: <7289437c0804030246v7992ec23kedcc2c8b71dc14f8@domain.hid>
+Message-ID: <47F4AC62.4090909@domain.hid>
+Date: Thu, 03 Apr 2008 12:07:30 +0200
+From: Hannes Mayer <h.mayer@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 References: <7289437c0804030246v7992ec23kedcc2c8b71dc14f8@domain.hid>
+In-Reply-To: <7289437c0804030246v7992ec23kedcc2c8b71dc14f8@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Question about rtdm_mmap_to_user()
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,31 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Perrine Martignoni <perrmart@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai-help <xenomai@xenomai.org>
 
-Why don't you try rt_heap_* functions? Quick example:
+http://www.captain.at/xenomai-real-time-driver-example.php :-)
 
-Kernel space:
+Perrine Martignoni wrote:
+> Hello,
+> 
+> I try to allocate a buffer in kernel space (with kmalloc) and then map 
+> it into user-space (with rtdm_mmap_to_user).
+> After, I fill in the buffer in user space with the address returned by 
+> rtdm_mmap_to_user, and when I read it into the kernel space with the 
+> kernel address, I don't have the values put in user-space.
+> 
+> What I'm doing wrong ?
+> Have you a simple example of use of rtdm_mmap_to_user ?
+> 
+> Thanks in advance.
+> Best Regards,
+> Perrine
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
-RT_HEAP heap_desc;
-void *shared;
-
-rt_heap_create (&heap_desc, "MySHM", 2048, H_SHARED);
-rt_heap_alloc (&heap_desc, 0, TM_NONBLOCK, &shared);
-[.. cleanup ..]
-rt_heap_delete (&heap_desc);
-User space:
-
-RT_HEAP heap_desc;
-void *shared;
-
-rt_heap_bind (&heap_desc, "MySHM", TM_NONBLOCK);
-rt_heap_alloc (&heap_desc, 0, TM_NONBLOCK, &shared);
-[..cleanup..]
-rt_heap_unbind (&heap_desc);
-
-============================================
-
-Hope this helps :)
 
