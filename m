@@ -1,11 +1,13 @@
-Message-ID: <47F5FEFA.6030102@domain.hid>
-Date: Fri, 04 Apr 2008 12:12:10 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <47F60323.2090100@domain.hid>
+Date: Fri, 04 Apr 2008 12:29:55 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <47F5FC80.3060603@domain.hid>
 In-Reply-To: <47F5FC80.3060603@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigCF4CE8755DD7D199A6D0C197"
+Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-help] problem with trivial-periodic.c example
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -19,6 +21,11 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: =?ISO-8859-1?Q?Thomas_H=E4berle?= <thomas.haeberle@domain.hid>
 Cc: xenomai@xenomai.org
 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigCF4CE8755DD7D199A6D0C197
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
+
 Thomas H=E4berle wrote:
 > Hello!
 >=20
@@ -28,34 +35,25 @@ Thomas H=E4berle wrote:
 > When I try to compile the "trivial-periodic.c" example with
 >  >>> $ ppc_6xx-gcc SimpleTask.c -I $XENOINSTALL/include -L=20
 > $XENOINSTALL/lib -o SimpleTask -Wall
->=20
-> I get the following:
->  >>>
-> /tmp/ccwxJiOz.o(.text+0x30): In function `demo':
-> : undefined reference to `rt_task_set_periodic'
-> /tmp/ccwxJiOz.o(.text+0x34): In function `demo':
-> : undefined reference to `rt_timer_read'
-> /tmp/ccwxJiOz.o(.text+0x4c): In function `demo':
-> : undefined reference to `rt_task_wait_period'
-> /tmp/ccwxJiOz.o(.text+0x50): In function `demo':
-> : undefined reference to `rt_timer_read'
-> /tmp/ccwxJiOz.o(.text+0x160): In function `main':
-> : undefined reference to `rt_task_create'
-> /tmp/ccwxJiOz.o(.text+0x178): In function `main':
-> : undefined reference to `rt_task_start'
-> /tmp/ccwxJiOz.o(.text+0x188): In function `main':
-> : undefined reference to `rt_task_delete'
-> collect2: ld returned 1 exit status
-> <<<
->=20
-> Aren't the functions used in the example in the libraries in the=20
-> "$XENOINSTALL/lib" directory?
-> Or do I have to tell the compiler and/or linker about any of the Xenomai =
 
-> source paths to get this working?
+-lnative
 
-Please use the Makefile in that directory to learn how to build it. You
-may need to define DESTDIR as well.
+Jan
 
-Wolfgang.
+
+--------------enigCF4CE8755DD7D199A6D0C197
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFH9gMjniDOoMHTA+kRAmgRAKCEDA/nT6cmYZcGbGJuFAlz/fCHegCfWY9e
+Nwc9q6g2GypM9fBEHS8OwZk=
+=AFQ3
+-----END PGP SIGNATURE-----
+
+--------------enigCF4CE8755DD7D199A6D0C197--
 
