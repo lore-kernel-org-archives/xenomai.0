@@ -1,15 +1,10 @@
-Message-ID: <d6c8ef150804040018u1b4ed61eg6eccbf5257b88abf@domain.hid>
-Date: Fri, 4 Apr 2008 09:18:57 +0200
-From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
-In-Reply-To: <7289437c0804030552q79d1bb84jf5f40d1a57a443b5@domain.hid>
+Message-ID: <47F5FC80.3060603@domain.hid>
+Date: Fri, 04 Apr 2008 12:01:36 +0200
+From: =?ISO-8859-15?Q?Thomas_H=E4berle?= <thomas.haeberle@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <7289437c0804030246v7992ec23kedcc2c8b71dc14f8@domain.hid>
-	<d6c8ef150804030300p3a4c719tca9903aa7663a5d9@domain.hid>
-	<7289437c0804030552q79d1bb84jf5f40d1a57a443b5@domain.hid>
-Subject: Re: [Xenomai-help] Question about rtdm_mmap_to_user()
+Subject: [Xenomai-help] problem with trivial-periodic.c example
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,45 +14,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Perrine Martignoni <perrmart@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Thu, Apr 3, 2008 at 2:52 PM, Perrine Martignoni <perrmart@domain.hid> wrote:
+Hello!
 
-> >rt_heap_create (&heap_desc, "MySHM", 2048, H_SHARED);
->  >rt_heap_alloc (&heap_desc, 0, TM_NONBLOCK, &shared);
-[..]
-> I tried exactly what you wrote. And it doesn't work. I have error -11. It
-> doesn't find the Heap I created in kernel space.
-> I don't understand why. I put exactly the same name.
+I am running Xenomai 2.3.5 on my MPC5200S on a STK52xx with a Linux 
+2.4.25-DENX kernel (cross-compiling to the target).
 
-rt_heap_create() must be called from kernel module init function. Here
-is copy&paste from my code (with checking return values):
+When I try to compile the "trivial-periodic.c" example with
+ >>> $ ppc_6xx-gcc SimpleTask.c -I $XENOINSTALL/include -L 
+$XENOINSTALL/lib -o SimpleTask -Wall
 
-kernel_module:
-===========
+I get the following:
+ >>>
+/tmp/ccwxJiOz.o(.text+0x30): In function `demo':
+: undefined reference to `rt_task_set_periodic'
+/tmp/ccwxJiOz.o(.text+0x34): In function `demo':
+: undefined reference to `rt_timer_read'
+/tmp/ccwxJiOz.o(.text+0x4c): In function `demo':
+: undefined reference to `rt_task_wait_period'
+/tmp/ccwxJiOz.o(.text+0x50): In function `demo':
+: undefined reference to `rt_timer_read'
+/tmp/ccwxJiOz.o(.text+0x160): In function `main':
+: undefined reference to `rt_task_create'
+/tmp/ccwxJiOz.o(.text+0x178): In function `main':
+: undefined reference to `rt_task_start'
+/tmp/ccwxJiOz.o(.text+0x188): In function `main':
+: undefined reference to `rt_task_delete'
+collect2: ld returned 1 exit status
+<<<
 
-RT_HEAP heap_desc;
-void *shared_mem;
+Aren't the functions used in the example in the libraries in the 
+"$XENOINSTALL/lib" directory?
+Or do I have to tell the compiler and/or linker about any of the Xenomai 
+source paths to get this working?
 
-int init_module (void)
-{
-int ret;
-
-  ret = rt_heap_create (&heap_desc, "MainSHM", 4*1024, H_SHARED);
-  if (ret) {
-    printk ("Error rt_heap_create: %d\n", ret);
-  }
-  ret = rt_heap_alloc (&heap_desc, 0, TM_NONBLOCK, &shared_mem);
-  if (ret) {
-    printk ("Error rt_heap_alloc: %d\n", ret);
-  }
-  printk ("4kB heap memory created, name: MainSHM\n");
-  return 1;
-}
-
-void cleanup_module(void)
-{
-  rt_heap_delete (&heap_desc);
-}
+Thanks & Greetings,
+Thomas
 
