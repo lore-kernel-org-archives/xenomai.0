@@ -1,21 +1,15 @@
-Message-ID: <f45855d10804031056q103ebb20w7739864dc559d7a3@domain.hid>
-Date: Thu, 3 Apr 2008 13:56:48 -0400
-From: "Vincent Levesque" <levesquev@domain.hid>
-In-Reply-To: <2ff1a98a0804031019y2bed711dr483175b911bdcf68@domain.hid>
+Message-ID: <d6c8ef150804040018u1b4ed61eg6eccbf5257b88abf@domain.hid>
+Date: Fri, 4 Apr 2008 09:18:57 +0200
+From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
+In-Reply-To: <7289437c0804030552q79d1bb84jf5f40d1a57a443b5@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_2745_12545535.1207245409007"
-References: <50566.74.57.109.247.1207002543.squirrel@domain.hid>
-	<18417.53680.5061.752392@domain.hid>
-	<f45855d10804022023n5094eb41g477071cc3a280840@domain.hid>
-	<2ff1a98a0804030207sa7a3c44s83fa08db7d0ab3db@domain.hid>
-	<f45855d10804030904w28c5ea4bm1c4a71f7b37d5ca6@domain.hid>
-	<2ff1a98a0804030908g55e907d9xefb2e5a502c6783d@domain.hid>
-	<f45855d10804030931o76c0f07bn43dfe1df08a5c48b@domain.hid>
-	<2ff1a98a0804030935i7fe88539s4e5d3e39be6cabb2@domain.hid>
-	<f45855d10804031016o49cc21a2sf6d332870da725dc@domain.hid>
-	<2ff1a98a0804031019y2bed711dr483175b911bdcf68@domain.hid>
-Subject: Re: [Xenomai-help] freeze on system() call
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <7289437c0804030246v7992ec23kedcc2c8b71dc14f8@domain.hid>
+	<d6c8ef150804030300p3a4c719tca9903aa7663a5d9@domain.hid>
+	<7289437c0804030552q79d1bb84jf5f40d1a57a443b5@domain.hid>
+Subject: Re: [Xenomai-help] Question about rtdm_mmap_to_user()
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,29 +19,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Perrine Martignoni <perrmart@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-------=_Part_2745_12545535.1207245409007
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+On Thu, Apr 3, 2008 at 2:52 PM, Perrine Martignoni <perrmart@domain.hid> wrote:
 
-The patch seems to resolve the problem. Thanks for your help!
+> >rt_heap_create (&heap_desc, "MySHM", 2048, H_SHARED);
+>  >rt_heap_alloc (&heap_desc, 0, TM_NONBLOCK, &shared);
+[..]
+> I tried exactly what you wrote. And it doesn't work. I have error -11. It
+> doesn't find the Heap I created in kernel space.
+> I don't understand why. I put exactly the same name.
 
-Vincent Levesque
-vleves@domain.hid
+rt_heap_create() must be called from kernel module init function. Here
+is copy&paste from my code (with checking return values):
 
+kernel_module:
+===========
 
-> The patch you have got is whitespace damaged. Here comes the good one.
+RT_HEAP heap_desc;
+void *shared_mem;
 
-------=_Part_2745_12545535.1207245409007
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+int init_module (void)
+{
+int ret;
 
-The patch seems to resolve the problem. Thanks for your help!<br><br>Vincent Levesque<br><a href="mailto:vleves@domain.hid">vleves@domain.hid</a><br><div class="gmail_quote"><div>&nbsp;</div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-The patch you have got is whitespace damaged. Here comes the good one.</blockquote></div><br>
+  ret = rt_heap_create (&heap_desc, "MainSHM", 4*1024, H_SHARED);
+  if (ret) {
+    printk ("Error rt_heap_create: %d\n", ret);
+  }
+  ret = rt_heap_alloc (&heap_desc, 0, TM_NONBLOCK, &shared_mem);
+  if (ret) {
+    printk ("Error rt_heap_alloc: %d\n", ret);
+  }
+  printk ("4kB heap memory created, name: MainSHM\n");
+  return 1;
+}
 
-------=_Part_2745_12545535.1207245409007--
+void cleanup_module(void)
+{
+  rt_heap_delete (&heap_desc);
+}
 
