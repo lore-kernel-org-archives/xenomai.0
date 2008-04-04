@@ -1,19 +1,21 @@
-Message-ID: <2ff1a98a0804040709m51a8db6lc23e1714497f824c@domain.hid>
-Date: Fri, 4 Apr 2008 16:09:57 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <47F633B7.70003@domain.hid>
+Message-ID: <47F63C37.60307@domain.hid>
+Date: Fri, 04 Apr 2008 16:33:27 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <20080402012645.506e53ef.Cornelius.Koepp@domain.hid>
-	<47F4CAD1.3090002@domain.hid> <47F4D87F.7080204@domain.hid>
-	<47F551AD.9030509@domain.hid> <47F5E57C.6020309@domain.hid>
-	<47F606AE.6080800@domain.hid>
-	<2ff1a98a0804040618r2717c5efrb852bcbc76e6bd0c@domain.hid>
-	<47F62C46.4080003@domain.hid>
-	<2ff1a98a0804040632w391afda4rf30c8ca09fbb0874@domain.hid>
+References: <20080402012645.506e53ef.Cornelius.Koepp@domain.hid>	
+	<47F4CAD1.3090002@domain.hid> <47F4D87F.7080204@domain.hid>	
+	<47F551AD.9030509@domain.hid> <47F5E57C.6020309@domain.hid>	
+	<47F606AE.6080800@domain.hid>	
+	<2ff1a98a0804040618r2717c5efrb852bcbc76e6bd0c@domain.hid>	
+	<47F62C46.4080003@domain.hid>	
+	<2ff1a98a0804040632w391afda4rf30c8ca09fbb0874@domain.hid>	
 	<47F633B7.70003@domain.hid>
+	<2ff1a98a0804040709m51a8db6lc23e1714497f824c@domain.hid>
+In-Reply-To: <2ff1a98a0804040709m51a8db6lc23e1714497f824c@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig2FAE8B6BE6C7E544E2977FB5"
+Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-core] latencys drifting into negative (Xenomai
 	2.4.2/2.4.3)
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -25,211 +27,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>, =?ISO-8859-1?Q?Cornelius_K=F6pp?= <Cornelius.Koepp@domain.hid>
 
-On Fri, Apr 4, 2008 at 3:57 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->
-> Gilles Chanteperdrix wrote:
->
-> > On Fri, Apr 4, 2008 at 3:25 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> >
-> > > Gilles Chanteperdrix wrote:
-> > >
-> > >
-> > > > On Fri, Apr 4, 2008 at 12:45 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> > > >
-> > > >
-> > > > > Sebastian Smolorz wrote:
-> > > > >
-> > > > >
-> > > > >
-> > > > > > Jan Kiszka wrote:
-> > > > > >
-> > > > > >
-> > > > > >
-> > > > > > > Sebastian Smolorz wrote:
-> > > > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > > > Jan Kiszka wrote:
-> > > > > > > >
-> > > > > > > >
-> > > > > > > >
-> > > > > > > > > This patch may do the trick: it uses the inverted tsc-to-ns
-> > > > > > > > >
-> > > > > > > >
-> > > > > > >
-> > > > > >
-> > > > >
-> > > >
-> > > function
-> > >
-> > > >
-> > > > > instead of the frequency-based one. Be warned, it is totally
-> untested
-> > > > >
-> > > >
-> > > inside
-> > >
-> > > >
-> > > > > Xenomai, I just ran it in a user space test program. But it may give
-> an
-> > > > > idea.
-> > > > >
-> > > > >
-> > > > > >
-> > > > > > >
-> > > > > > > > Your patch needed two minor corrections (ns instead of ts in
-> > > > > > > >
-> > > > > > >
-> > > > > >
-> > > > >
-> > > >
-> > > functions
-> > >
-> > > >
-> > > > > xnarch_ns_to_tsc()) in order to compile. A short run (30 minutes) of
-> > > > >
-> > > >
-> > > latency
-> > >
-> > > >
-> > > > > -t1 seems to prove your bug-fix: There seems to be no drift.
-> > > > >
-> > > > >
-> > > > > >
-> > > > > > > That's good to hear.
-> > > > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > > > If I got your patch correctly, it doesn't make
-> xnarch_tsc_to_ns
-> > > > > > > >
-> > > > > > >
-> > > > > >
-> > > > >
-> > > >
-> > > more
-> > >
-> > > >
-> > > > > precise but introduces a new function xnarch_ns_to_tsc() which is
-> also
-> > > > >
-> > > >
-> > > less
-> > >
-> > > >
-> > > > > precise than the generic xnarch_ns_to_tsc(), right?
-> > > > >
-> > > > >
-> > > > > >
-> > > > > > > Yes. It is now precisely the inverse imprecision, so to say. :)
-> > > > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > > > So isn't there still the danger of getting wrong values when
-> > > > > > > >
-> > > > > > >
-> > > > > >
-> > > > >
-> > > >
-> > > calling
-> > >
-> > > >
-> > > > > xnarch_tsc_to_ns()  not in combination with xnarch_ns_to_tsc()?
-> > > > >
-> > > > >
-> > > > > >
-> > > > > > > Only if the user decides to implement his own conversion.
-> Xenomai
-> > > > > > >
-> > > > > >
-> > > > >
-> > > >
-> > > with
-> > >
-> > > >
-> > > > > all its skins and both in kernel and user space should always run
-> > > > >
-> > > >
-> > > through
-> > >
-> > > >
-> > > > > the xnarch_* path.
-> > > > >
-> > > > >
-> > > > > > OK, would you commit the patch?
-> > > > > >
-> > > > > >
-> > > > > >
-> > > > >  Will do unless someone else has concerns. Gilles, Philippe? ARM and
-> > > > > Blackfin then need to be fixed similarly, full patch attached.
-> > > > >
-> > > > >
-> > > > Well, I am sorry, but I do not like this solution;
-> > > > - the aim of scaled math is to avoid divisions, and with this patch we
-> > > > end up using divisions;
-> > > >
-> > > >
-> > >  Please check again, no new division due to my patch, just different
-> > > parameters for the existing one.
-> > >
-> >
-> > I just checked your patch rapidly, but saw that xnarch_ns_to_tsc was
-> > using llimd, so does use division. My fast_llimd could be used to
-> > replace both the llimd calls in xnarch_tsc_to_ns and xnarch_ns_to_tsc.
-> >
-> >
-> > >
-> > >
-> > >
-> > > > - with scaled math we do wrong calculations, and making a wrong
-> > > > xnarch_ns_to_tsc only works for values which should be passed to
-> > > > xnarch_tsc_to_ns.
-> > > >
-> > > >
-> > >  IMHO, the error is within the range of the clock's precision, if not
-> even
-> > > below. So struggling for mathematically precise conversion of imprecise
-> > > physical values makes no sense to me. Therefore I once proposed the
-> > > scaled-math optimization.
-> > >
-> >
-> > Now that I have understood what really happens, I disagree with this
-> > approach. Take the implementation of clock_gettime (or
-> > rtdm_clock_read, for that matter). They basically do
-> > xnarch_tsc_to_ns(ipipe_read_tsc()). The relative error may be small,
-> > but in the very frequent use case of substracting two results of
-> > consecutive reads of ipipe_read_tsc, the result of the substraction is
-> > essentially garbage, because the result of the substraction may be of
-> > the same order as the absolute error of the conversion. And I insist,
-> > this use case of clock_gettime or rtdm_clock_read is a very realistic
-> > use case.
-> >
->
->  This use case is valid, but I don't see the error scenario you sketch: The
-> error of the conversion is only relevant for large deltas,
-> tsc_to_ns(B)-tsc_to_ns(A)=B-A for any small B-A. Cornelius' test nicely
-> showed constantly increasing deviation, not something that jumped around.
-> Essentially, we are just replacing
->
->         xnarch_llimd(ts, 1000000000, RTHAL_CPU_FREQ);
->
->  with
->
->         xnarch_llimd(ts, xnarch_tsc_scale, 1<<xnarch_tsc_shift);
->
->  which introduces a linearly increasing error of the _absolute_ results, not
-> of relative ones. But if you can prove me wrong, I would take everything
-> back and agree on kicking out the scaled math immediately!
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig2FAE8B6BE6C7E544E2977FB5
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-Right. We are approximating a fraction with another fraction. But my
-first impression remains: I do not like the idea of making
-xnarch_ns_to_tsc wrong because xnarch_tsc_to_ns is wrong.
+Gilles Chanteperdrix wrote:
+> Right. We are approximating a fraction with another fraction. But my
+> first impression remains: I do not like the idea of making
+> xnarch_ns_to_tsc wrong because xnarch_tsc_to_ns is wrong.
 
--- 
- Gilles
+Well, my first impression was originally the same: If we still need=20
+llimd in the ns-to-tsc patch, then we should keep the precise way. But=20
+that was wrong as this thread demonstrated. We have to ensure that=20
+ns_to_tsc(tsc_to_ns(x)) remains x with only minor last-digit errors. So=20
+either use scaled math parameters in both ways or fall back to the=20
+original calculation.
+
+However the final decision for 2.5 is (pro or contra scaled math), at=20
+least for 2.4.x we have to fix things now without turning the upside=20
+down. That means apply my patch or revert scaled-math optimizations for=20
+all archs.
+
+Jan
+
+
+--------------enig2FAE8B6BE6C7E544E2977FB5
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFH9jw8niDOoMHTA+kRAmSlAJ9mKTXXkFYMrDf1U1hK33S+7RdOZACeMGdb
+ic5t/PIu1CJKTlWa/gn5FFg=
+=2UJH
+-----END PGP SIGNATURE-----
+
+--------------enig2FAE8B6BE6C7E544E2977FB5--
 
