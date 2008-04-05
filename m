@@ -1,14 +1,20 @@
-Message-ID: <48031545.6050106@domain.hid>
-Date: Mon, 14 Apr 2008 10:26:45 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <47F79DAD.6040807@domain.hid>
+Date: Sat, 05 Apr 2008 17:41:33 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4802D528.5090404@domain.hid> <48031412.2000409@domain.hid>
-In-Reply-To: <48031412.2000409@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Suspended task resumed without rt_task_resume ?
-Reply-To: rpm@xenomai.org
+References: <001a01c88a0d$5365af40$9601a8c0@domain.hid>
+	<47E2BB0F.9050704@domain.hid>
+	<001001c88b63$df59b300$9601a8c0@domain.hid>
+	<47E41609.2090107@domain.hid>
+	<005d01c89343$15f9e650$9601a8c0@domain.hid>
+	<47F2C02D.6090607@domain.hid>
+	<001001c894c5$84bf5920$9601a8c0@domain.hid>
+In-Reply-To: <001001c894c5$84bf5920$9601a8c0@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigEA2FCF2E0A5A896CF1F44617"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Non-Real-Time Asynchronous Notification
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,62 +24,185 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Tomas Kalibera <kalibera@domain.hid>
+To: rob@domain.hid
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> Tomas Kalibera wrote:
->> Hi,
->>
->> what can, besides an explicit call, resume a suspended task ? I created 
->> and started a child task, then shadowed the current thread with T_SUSP 
->> flag. The child was supposed to call rt_task_resume to wake-up the 
->> parent and let it terminate the process, but, the parent was resumed 
->> before this call. The call to rt_task_suspend in parent returned 0. The 
->> program uses SIGALRM signal. Could this be the cause ?
->>
-> 
-> Yes, but the syscall should be silently restarted by default. This patch should
-> fix the issue:
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigEA2FCF2E0A5A896CF1F44617
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-This one will compile:
+Robert McCullough wrote:
+> Hi Jan,
+>=20
+>   --> -----Original Message-----
+>   --> From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid]
+>   --> Sent: Tuesday, April 01, 2008 7:07 PM
+>   --> To: rob@domain.hid
+>   --> Cc: xenomai@xenomai.org
+>   --> Subject: Re: [Xenomai-help] Non-Real-Time Asynchronous Notificati=
+on
+>   -->=20
+>   --> Robert McCullough wrote:
+>   --> > Hi Jan,
+>   --> >
+>   --> >   --> -----Original Message-----
+>   --> >   --> From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid]
+>   --> >   --> Sent: Friday, March 21, 2008 4:10 PM
+>   --> >   --> To: rob@domain.hid
+>   --> >   --> Cc: xenomai@xenomai.org
+>   --> >   --> Subject: Re: [Xenomai-help] Non-Real-Time Asynchronous
+>   --> Notification
+>   --> >   -->
+>   --> >   --> Robert McCullough wrote:
+>   --> >   --> > Hi Jan,
+>   --> >   --> >
+>   --> >   --> >   --> -----Original Message-----
+>   --> >   --> >   --> From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid=
+]
+>   --> >   --> >   --> Sent: Thursday, March 20, 2008 3:29 PM
+>   --> >   --> >   --> To: rob@domain.hid
+>   --> >   --> >   --> Cc: xenomai@xenomai.org
+>   --> >   --> >   --> Subject: Re: [Xenomai-help] Non-Real-Time Asynchr=
+onous
+>   --> >   --> Notification
+>   --> >   --> >   -->
+>   --> >   --> >   --> Robert McCullough wrote:
+>   --> >   --> >   --> > Hi,
+>   --> >   --> >   --> >
+>   --> >   --> >   --> > How do I signal an asynchronous notification fr=
+om a
+>   --> RTDM
+>   --> >   --> real-time
+>   --> >   --> >   --> task to a
+>   --> >   --> >   --> > non-real-time user-space Linux thread?
+>   --> >   --> >   --> > Do I use Non-Real-Time Signaling Services
+>   --> >   --> (rtdm_nrtsig_init,..)?
+>   --> >   --> >   --> > If so, how?
+>   --> >   --> >   --> >
+>   --> >   --> >   --> > Here is the current code that I am trying to po=
+rt to
+>   --> RTDM.
+>   --> >   --> >   --> >
+>   --> >   --> >   --> > Current driver code to signal non-real-time Lin=
+ux
+>   --> thread:
+>   --> >   --> >   --> >
+>   --> >   --> >   --> > 	// If event
+>   --> >   --> >   --> > 	if(event){
+>   --> >   --> >   --> > 		// and signal asynchronous readers
+>   --> >   --> >   --> > 		if (kmdpr_device->async_queue)
+>   --> >   --> >   --> >
+>   --> > kill_fasync(&kmdpr_device->async_queue,
+>   --> >   --> > SIGIO,
+>   --> >   --> >   --> > POLL_IN);
+>   --> >   --> >   --> > 	}
+>   --> >   --> >   -->
+>   --> >   --> >   --> Just push this code in the rtdm_nrtsig handler an=
+d
+>   --> trigger the
+>   --> >   --> handler
+>   --> >   --> >   --> execution from RT context.
+>   --> >   --> >   -->
+>   --> >   --> >   --> Jan
+>   --> >   --> >
+>   --> >   --> > [Robert McCullough]
+>   --> >   --> > Ok, I understand that but how do I specify the file
+>   --> operation fasync
+>   --> >   --> in my
+>   --> >   --> > rtdm_device?  How do I replace or update the code marke=
+d
+>   --> TODO?
+>   --> >   -->
+>   --> >   --> In fact, there is no fasync support available with RTDM,
+>   --> specifically
+>   --> >   --> as
+>   --> >   --> using signals under real-time constraints is a bad idea (=
+not
+>   --> only
+>   --> >   --> because Xenomai has no hard-RT signal support).
+>   --> >   -->
+>   --> >   --> But before suggesting any alternative pattern: What does =
+your
+>   --> >   --> application actually require to work? How does asynchrono=
+us
+>   --> >   --> driver/application interaction currently look like?
+>   --> >   -->
+>   --> >   --> Jan
+>   --> >
+>   --> > [Robert McCullough]
+>   --> > Here is a little background on how my driver works.
+>   --> > The driver is the interface/control for an AC servo drive which=
 
---- ksrc/skins/native/task.c	(revision 3698)
-+++ ksrc/skins/native/task.c	(working copy)
-@@ -410,11 +410,17 @@
-  * A nesting count is maintained so that rt_task_suspend() and
-  * rt_task_resume() must be used in pairs.
-  *
-+ * Receiving a Linux signal causes the suspended task to resume
-+ * immediately.
-+ *
-  * @param task The descriptor address of the affected task. If @a task
-  * is NULL, the current task is suspended.
-  *
-  * @return 0 is returned upon success. Otherwise:
-  *
-+ * - -EINTR is returned if a Linux signal has been received by the
-+ * suspended task.
-+ *
-  * - -EINVAL is returned if @a task is not a task descriptor.
-  *
-  * - -EPERM is returned if the addressed @a task is not allowed to sleep
-@@ -463,9 +469,12 @@
- 		goto unlock_and_exit;
- 	}
+>   --> controls an
+>   --> > AC motor.  The interface to the drive is done through a dual-po=
+rted
+>   --> RAM.
+>   --> > The I/O from the servo drive is updated and an IRQ is triggered=
+ from
+>   --> the
+>   --> > servo drive through the DP RAM to our MPC5200 at a 4 kHz rate. =
+ In
+>   --> my IRQ
+>   --> > handler I read, process, and update the I/O in the RAM.  Some o=
+f the
+>   --> data
+>   --> > from the servo drive contains status bits that represent
+>   --> asynchronous
+>   --> > events/faults from the drive that needs to be passed up to the =
+user
+>   --> > application.  In my current non-real-time driver I used fasync =
+to
+>   --> send a
+>   --> > SIGIO signal to the user application whenever one of these
+>   --> events/faults
+>   --> > changed and then the application would read the status bits wit=
+h an
+>   --> ioctl
+>   --> > call and process them.
+>   --> >
+>   --> > I hope this clarifies the requirements a little.
+>   --> > How would you suggest I solve this in my RTDM driver?
+>   -->=20
+>   --> Well, a classic pattern is to encapsulate the async event handlin=
+g in
+>   --> one or more dedicated threads that block-wait on those events. Ch=
+eck
+>   --> the
+>   --> RTDM profile for serial devices for such a channel. This has the
+>   --> advantage that you can cleanly specify the handling priority,
+>   --> specifically compared to "normal" operations.
+>   -->=20
+>   --> HTH,
+>   --> Jan
+>=20
+> [Robert McCullough]=20
+> Are you referring to the RTSER_RTIOC_WAIT_EVENT in the serial profile?
+> If so, this can only be called from a real-time user-space task.
+> I need to see the event in a non-real-time user-space task.
+> How would I do this?
 
--	if (task->suspend_depth++ == 0)
-+	if (task->suspend_depth++ == 0) {
- 		xnpod_suspend_thread(&task->thread_base, XNSUSP,
- 				     XN_INFINITE, XN_RELATIVE, NULL);
-+		if (xnthread_test_info(&task->thread_base, XNBREAK))
-+			err = -EINTR;
-+	}
-
-       unlock_and_exit:
+Then you can simply built the signaling on top of Linux mechanisms that=20
+are triggered from the RT domain via a rtdm_nrtsig. You can hook the=20
+non-RT API into the RTDM device by using *_nrt handlers (e.g. ioctl_nrt).=
 
 
--- 
-Philippe.
+Jan
+
+
+--------------enigEA2FCF2E0A5A896CF1F44617
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFH952xniDOoMHTA+kRAgSZAJ9oogGPiuCt6zBpp/NRJTiZaNsSJgCeKHNI
+/ctdAlXwoA/6cgaS6NAwzn4=
+=LjXg
+-----END PGP SIGNATURE-----
+
+--------------enigEA2FCF2E0A5A896CF1F44617--
 
