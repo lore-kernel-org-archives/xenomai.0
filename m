@@ -1,15 +1,12 @@
-Message-ID: <2ff1a98a0804070547w1695b78dp2a3ed1ce87595855@domain.hid>
-Date: Mon, 7 Apr 2008 14:47:05 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <2ff1a98a0804070539n2fcae12s58f6f5565d94737d@domain.hid>
+In-Reply-To: <2ff1a98a0804070547w1695b78dp2a3ed1ce87595855@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <OF4C98FBB1.81F59369-ONC1257421.00355333-C1257424.003F5EB0@domain.hid>
-	<2ff1a98a0804070514y4c632fbdk7fa2aedc7fdd8a31@domain.hid>
-	<2ff1a98a0804070539n2fcae12s58f6f5565d94737d@domain.hid>
-Subject: Re: [Xenomai-core] posix-skin: unexpected scheduler behaviour
+From: Thomas Wiedemann <Thomas.Wiedemann@domain.hid>
+Message-ID: <OF6D5F47BF.2D764233-ONC1257424.0047BBF6-C1257424.00482F9C@retarus.de>
+Date: Mon, 7 Apr 2008 15:08:28 +0200
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-core] Antwort: Re: posix-skin: unexpected scheduler
+	behaviour
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,37 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Thomas Wiedemann <Thomas.Wiedemann@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Mon, Apr 7, 2008 at 2:39 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On Mon, Apr 7, 2008 at 2:14 PM, Gilles Chanteperdrix
->  <gilles.chanteperdrix@xenomai.org> wrote:
->  > On Mon, Apr 7, 2008 at 1:32 PM, Thomas Wiedemann
->  >  <Thomas.Wiedemann@domain.hid> wrote:
->  >  > Hi folks,
->  >  >
->  >  >  i think there is a problem with the xenomai scheduler or the sched_yield()
->  >  >  call, when using the POSIX skin (Xenomai 2.4.3, Linux 2.6.24.4, SMP,
->  >  >  .config is attached).
->  >
->  >  The semantic of sched_yield() is a bit specific: it causes threads
->  >  running in primary mode to yield to other threads running in primary
->  >  mode. To get threads running in secondary mode to yield to other
->  >  threads running in secondary mode, you have to call
->  >  __real_sched_yield().
->
->  That said what we could do is that sched_yield() calls
->  __real_sched_yield() for threads running in secondary mode. Try the
->  attached patch (recompilation of kernel needed).
+"Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org> schrieb am=20
+07.04.2008 14:47:05:
 
-Forget it, it will not work. What you are trying to do can not work as
-long as Xenomai and Linux are two distinct schedulers: Xenomai tasks
-running in secondary mode are suspended from Xenomai scheduler point
-of view, so, you can yield as much as you want, this will never let
-them run.
+> Forget it, it will not work. What you are trying to do can not work as
+> long as Xenomai and Linux are two distinct schedulers: Xenomai tasks
+> running in secondary mode are suspended from Xenomai scheduler point
+> of view, so, you can yield as much as you want, this will never let
+> them run.
 
--- 
- Gilles
+But the behaviour is still the same, when i put a
+
+         pthread=5Fset=5Fmode=5Fnp(PTHREAD=5FPRIMARY, 0);=20
+
+in the thread function. Thereafter, only the xenomai-scheduler is=20
+responsible for the threads running in primary mode, or am i completely=20
+wrong?
+
+
+Thomas Wiedemann
+
+Entwicklungsingenieur / Funktionsentwicklung (EF-F33), Fahrzeug Elektronik
+
+IAV GmbH=20
+Ingenieurgesellschaft Auto und Verkehr
+Kauffahrtei 45
+09120 Chemnitz
+Germany
+
+Telefon:   +49  (371) 2373-4045
+Fax:          +49  (371) 2373-4112
+
+Email: <mailto:thomas.wiedemann@domain.hid>
+Internet: http://www.iav.de
+
+
+IAV GmbH
+Sitz/Registered Office: Berlin
+Registergericht/Registration Court: Amtsgericht Charlottenburg
+Registernummer/Company Registration Number: HRB 21 280
+Gesch=E4ftsf=FChrer/Managing Directors: Kurt Blumenr=F6der, Michael Schubert
+=20
 
