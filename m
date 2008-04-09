@@ -1,21 +1,12 @@
-Message-ID: <6132061f0804090745j2f329396ve4e6a4a00c1f0f9@domain.hid>
-Date: Wed, 9 Apr 2008 11:45:18 -0300
-From: "Breno Carneiro Pinheiro" <brenodee@domain.hid>
-In-Reply-To: <18428.54575.238202.690441@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_24738_1865525.1207752318630"
-References: <16201.81.252.86.91.1205764989.squirrel@domain.hid>
-	<3551.81.252.86.91.1206464698.squirrel@domain.hid>
-	<2ff1a98a0803251037y3c0d8735he1fc82895c349c3c@domain.hid>
-	<2786.81.252.86.91.1206522879.squirrel@domain.hid>
-	<2ff1a98a0803260236r409752a3v55cd8dce1305a003@domain.hid>
-	<15944.81.252.86.91.1206526011.squirrel@domain.hid>
-	<18410.43769.299931.151297@domain.hid>
-	<1159.62.39.72.60.1207731606.squirrel@domain.hid>
-	<14532.81.252.86.91.1207740558.squirrel@domain.hid>
-	<18428.54575.238202.690441@domain.hid>
-Subject: Re: [Xenomai-help] Posix timers increase
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18428.55519.209593.252726@domain.hid>
+Date: Wed, 9 Apr 2008 16:55:27 +0200
+In-Reply-To: <747114@domain.hid>
+References: <747114@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] A second Xenomai on the same PC
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,49 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org, Fabien MAHOT <fabien.mahot@domain.hid>
+To: Andreas Vogt <A_C_V@web.de>
+Cc: xenomai@xenomai.org
 
-------=_Part_24738_1865525.1207752318630
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Andreas Vogt wrote:
+ > Hello,
+ > I have install Xenomai 2.4.1 with Linux Kernel 2.6.22.16 and it works fine. Now i want install a second Xenomai on my PC to test a different Configuration. So, it is possible to install a second Kernel with the same Xenomai? Or are there any problems?
+ > Thanks for all your help
 
-Hi all, I'm trying to embed the
-linux-2.6.24 with xenomai-2.4.3 on powerpc processor. Although when I try
-to execute
-/scripts/prepare-kernel.sh on xenomai directory I unfortunately get the
-message at the end :
+For the kernel, you may use the option CONFIG_LOCALVERSION, so that the
+kernel modules will get installed in another directory, and will not
+override your first installation.
 
-patching file Makefile
-patching file arch/powerpc/Kconfig
-patching file arch/powerpc/boot/Makefile
-patching file arch/powerpc/kernel/Makefile
-patching file arch/powerpc/kernel/asm-offsets.c
-patching file arch/powerpc/kernel/cputable.c
-Hunk #1 succeeded at 1333 (offset -79 lines).
-Hunk #2 succeeded at 1380 (offset -79 lines).
-patching file arch/powerpc/kernel/entry_32.S
+About kernel-space/user-space mismatches, Xenomai handles an ABI
+revision number. So, if you try a bad user/kernel combination, you
+should get an error message when starting your applications.
 
-......
+But you can install two versions of Xenomai user-space support as well,
+if you use the --prefix option of xenomai configure script.
 
-Unable to patch kernel 2.6.24.4 with adeos-ipipe....
+-- 
 
-Have you seen this problem? Could you give me some tips?
 
-Thanks,
-
-Breno
-
-------=_Part_24738_1865525.1207752318630
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-<br><br><pre>Hi all, I&#39;m trying to embed the<br>linux-2.6.24 with xenomai-2.4.3 on powerpc processor. Although when I try<br>to execute<br>/scripts/prepare-kernel.sh on xenomai directory I unfortunately get the<br>message at the end :<br>
-<br>patching file Makefile<br>patching file arch/powerpc/Kconfig<br>patching file arch/powerpc/boot/Makefile<br>patching file arch/powerpc/kernel/Makefile<br>patching file arch/powerpc/kernel/asm-offsets.c<br>patching file arch/powerpc/kernel/cputable.c<br>
-Hunk #1 succeeded at 1333 (offset -79 lines).<br>Hunk #2 succeeded at 1380 (offset -79 lines).<br>patching file arch/powerpc/kernel/entry_32.S<br><br>......<br><br>Unable to patch kernel <a href="http://2.6.24.4">2.6.24.4</a> with adeos-ipipe....<br>
-<br>Have you seen this problem? Could you give me some tips?<br><br>Thanks,<br><br>Breno</pre><br>
-
-------=_Part_24738_1865525.1207752318630--
+					    Gilles.
 
