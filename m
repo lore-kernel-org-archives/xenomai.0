@@ -1,14 +1,12 @@
-Message-ID: <2ff1a98a0804070616u297997b3yc5a5cb19fe387ee9@domain.hid>
-Date: Mon, 7 Apr 2008 15:16:04 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <OF6D5F47BF.2D764233-ONC1257424.0047BBF6-C1257424.00482F9C@retarus.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <2ff1a98a0804070547w1695b78dp2a3ed1ce87595855@domain.hid>
-	<OF6D5F47BF.2D764233-ONC1257424.0047BBF6-C1257424.00482F9C@retarus.de>
-Subject: Re: [Xenomai-core] posix-skin: unexpected scheduler behaviour
+Message-ID: <18428.56663.660915.361180@domain.hid>
+Date: Wed, 9 Apr 2008 17:14:31 +0200
+In-Reply-To: <d3f72a390803270133j5447d15ax5110010ddd803933@domain.hid>
+References: <d3f72a390803270133j5447d15ax5110010ddd803933@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] CATCH EXCEPTION
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,32 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Thomas Wiedemann <Thomas.Wiedemann@domain.hid>
+To: axel axel <softaxel@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Mon, Apr 7, 2008 at 3:08 PM, Thomas Wiedemann
-<Thomas.Wiedemann@domain.hid> wrote:
-> "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org> schrieb am
->  07.04.2008 14:47:05:
->
->
->  > Forget it, it will not work. What you are trying to do can not work as
->  > long as Xenomai and Linux are two distinct schedulers: Xenomai tasks
->  > running in secondary mode are suspended from Xenomai scheduler point
->  > of view, so, you can yield as much as you want, this will never let
->  > them run.
->
->  But the behaviour is still the same, when i put a
->
->          pthread_set_mode_np(PTHREAD_PRIMARY, 0);
->
->  in the thread function. Thereafter, only the xenomai-scheduler is
->  responsible for the threads running in primary mode, or am i completely
->  wrong?
+axel axel wrote:
+ > Hi,
+ > 
+ > i want to catch an exception in realtime tasks ( for example a null pointer
+ > ).
+ > 
+ > i saw that in xenomai there is a function rthal_trap_catch.
+ > But i don't know how works.
 
-The thread remains in primary mode as long as you do not call a
-secondary mode service, such as pthread_barrier_wait or fprintf.
+Well, Xenomai handles exceptions itself, and it is not currently
+user-configurable. In a kernel module launched after xenomai nucleus
+module, you will have to call rthal_trap_catch, passing a pointer to a
+function of yours, which falls back to xenomai exception handler
+when the exception is not of interest to your application.
 
 -- 
- Gilles
+
+
+					    Gilles.
 
