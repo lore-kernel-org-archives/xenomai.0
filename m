@@ -1,10 +1,24 @@
-Message-ID: <6132061f0804082052u67797b3x422ac1b7258401e3@domain.hid>
-Date: Wed, 9 Apr 2008 00:52:10 -0300
-From: "Breno Carneiro Pinheiro" <brenodee@domain.hid>
+Message-ID: <1159.62.39.72.60.1207731606.squirrel@domain.hid>
+In-Reply-To: <18410.43769.299931.151297@domain.hid>
+References: <16201.81.252.86.91.1205764989.squirrel@domain.hid>
+	<6621.81.252.86.91.1205927700.squirrel@domain.hid>
+	<2ff1a98a0803190613r7572d87eibef16aecf39ef71a@domain.hid>
+	<10023.62.39.72.60.1205940829.squirrel@domain.hid>
+	<18407.43111.568301.509775@domain.hid>
+	<18407.58512.849738.173184@domain.hid>
+	<18408.10253.285795.914555@domain.hid>
+	<3551.81.252.86.91.1206464698.squirrel@domain.hid>
+	<2ff1a98a0803251037y3c0d8735he1fc82895c349c3c@domain.hid>
+	<2786.81.252.86.91.1206522879.squirrel@domain.hid>
+	<2ff1a98a0803260236r409752a3v55cd8dce1305a003@domain.hid>
+	<15944.81.252.86.91.1206526011.squirrel@domain.hid>
+	<18410.43769.299931.151297@domain.hid>
+Date: Wed, 9 Apr 2008 11:00:06 +0200 (CEST)
+From: "Fabien MAHOT" <fabien.mahot@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_22871_30144086.1207713130662"
-Subject: [Xenomai-help] Xenomai Patching Problem
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] Posix timers increase
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,46 +30,15 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-------=_Part_22871_30144086.1207713130662
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Hello,
 
-Hi all, I'm trying to embed the
-linux-2.6.24 with xenomai-2.4.3 on powerpc processor. Although when I try
-to execute
-/scripts/prepare-kernel.sh on xenomai directory I unfortunately get the
-message at the end :
+I ve got an application in which I create a lot of posix timers (with
+timer_create). After a while timer_create returns an error. There is no
+available timer. I would like to increase the timer amount. How can I do
+this ? there is a link with "Size of the system heap" kernel configuratio=
+n
+option ?
 
-patching file Makefile
-patching file arch/powerpc/Kconfig
-patching file arch/powerpc/boot/Makefile
-patching file arch/powerpc/kernel/Makefile
-patching file arch/powerpc/kernel/asm-offsets.c
-patching file arch/powerpc/kernel/cputable.c
-Hunk #1 succeeded at 1333 (offset -79 lines).
-Hunk #2 succeeded at 1380 (offset -79 lines).
-patching file arch/powerpc/kernel/entry_32.S
+thanks a lot
 
-......
-
-Unable to patch kernel 2.6.24.4 with adeos-ipipe....
-
-Have you seen this problem? Could you give me some tips?
-
-Thanks,
-
-Breno
-
-------=_Part_22871_30144086.1207713130662
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-<pre>Hi all, I&#39;m trying to embed the<br>linux-2.6.24 with xenomai-2.4.3 on powerpc processor. Although when I try<br>to execute<br>/scripts/prepare-kernel.sh on xenomai directory I unfortunately get the<br>message at the end :<br>
-<br>patching file Makefile<br>patching file arch/powerpc/Kconfig<br>patching file arch/powerpc/boot/Makefile<br>patching file arch/powerpc/kernel/Makefile<br>patching file arch/powerpc/kernel/asm-offsets.c<br>patching file arch/powerpc/kernel/cputable.c<br>
-Hunk #1 succeeded at 1333 (offset -79 lines).<br>Hunk #2 succeeded at 1380 (offset -79 lines).<br>patching file arch/powerpc/kernel/entry_32.S<br><br>......<br><br>Unable to patch kernel <a href="http://2.6.24.4">2.6.24.4</a> with adeos-ipipe....<br>
-<br>Have you seen this problem? Could you give me some tips?<br><br>Thanks,<br><br>Breno<br></pre>
-
-------=_Part_22871_30144086.1207713130662--
 
