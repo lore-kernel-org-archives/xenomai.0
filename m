@@ -1,21 +1,19 @@
-Message-ID: <2ff1a98a0804101116j8189495q4505db2cf8d3f435@domain.hid>
-Date: Thu, 10 Apr 2008 20:16:34 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <2ff1a98a0804101103i12cdf92ehde6110763656116f@domain.hid>
+Message-ID: <47FE993B.1020801@domain.hid>
+Date: Fri, 11 Apr 2008 07:48:27 +0900
+From: Philippe Gerum <philippe.gerum@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_6282_9260199.1207851394396"
-References: <000701c89a75$d349f630$9601a8c0@domain.hid>
-	<18429.6412.785941.128928@domain.hid>
-	<000801c89a89$b7b09820$9601a8c0@domain.hid>
-	<47FD650C.7030709@domain.hid>
-	<2ff1a98a0804100225q6e216a50nb0c7c78c86d8817c@domain.hid>
+References: <000701c89a75$d349f630$9601a8c0@domain.hid>	
+	<18429.6412.785941.128928@domain.hid>	
+	<000801c89a89$b7b09820$9601a8c0@domain.hid>	
+	<47FD650C.7030709@domain.hid>	
+	<2ff1a98a0804100225q6e216a50nb0c7c78c86d8817c@domain.hid>	
 	<47FE25EF.9070204@domain.hid>
 	<2ff1a98a0804100843u4d4c20e5rd33f0b1c94f1e78a@domain.hid>
-	<2ff1a98a0804101026g3fdb4795l59895c0a7be0f5a7@domain.hid>
-	<47FE53F8.2010605@domain.hid>
-	<2ff1a98a0804101103i12cdf92ehde6110763656116f@domain.hid>
+In-Reply-To: <2ff1a98a0804100843u4d4c20e5rd33f0b1c94f1e78a@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] mlockall questions
+Reply-To: philippe.gerum@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,78 +23,121 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jeff koftinoff <jeffk@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-------=_Part_6282_9260199.1207851394396
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Gilles Chanteperdrix wrote:
+> On Thu, Apr 10, 2008 at 4:36 PM, Philippe Gerum
+> <philippe.gerum@domain.hid> wrote:
+>> Gilles Chanteperdrix wrote:
+>>  > On Thu, Apr 10, 2008 at 2:53 AM, Philippe Gerum
+>>  > <philippe.gerum@domain.hid> wrote:
+>>  >> Robert McCullough wrote:
+>>  >>  > Hi Gilles,
+>>  >>  >
+>>  >>  >   --> -----Original Message-----
+>>  >>  >   --> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+>>  >>  >   --> Sent: Wednesday, April 09, 2008 3:29 PM
+>>  >>  >   --> To: rob@domain.hid
+>>  >>  >   --> Cc: xenomai@xenomai.org
+>>  >>  >   --> Subject: Re: [Xenomai-help] mlockall questions
+>>  >>  >   -->
+>>  >>  >   --> Robert McCullough wrote:
+>>  >>  >   -->  > Hi,
+>>  >>  >   -->  >
+>>  >>  >   -->  > I am converting part of a C++ application to real-time.
+>>  >>  >   -->  >
+>>  >>  >   -->  > I noticed that all the Xenomai examples call
+>>  >>  >   -->  > mlockall(MCL_CURRENT|MCL_FUTURE) at the beginning of main before
+>>  >>  >   --> creating
+>>  >>  >   -->  > any real-time threads.
+>>  >>  >   -->  > Is calling mlockall a requirement when using Xenomai?
+>>  >>  >   -->
+>>  >>  >   --> Yes it is.
+>>  >>  >   -->
+>>  >>  > [Robert McCullough]
+>>  >>  > OK.
+>>  >>  >   -->  >
+>>  >>  >   -->  > I have added a couple of Xenomai tasks to my C++ app.
+>>  >>  >   -->  > A) Without calling mlockall my application seems to run fine but I
+>>  >>  >   --> noticed
+>>  >>  >   -->  > in /proc/xenomai/stat that a few page faults occurred.
+>>  >>  >   -->
+>>  >>  >   --> Well normally your application should stop with a message telling you
+>>  >>  >   --> that you have not call mlockall. Do you happen to install a handler
+>>  >>  >   --> for
+>>  >>  >   --> SIGXCPU ?
+>>  >>  > [Robert McCullough]
+>>  >>  > Yes.
+>>  >>  >   -->
+>>  >>  >   -->  > B) When calling mlockall at the beginning of my main() I do not see
+>>  >>  >   --> any page
+>>  >>  >   -->  > faults but some of the C++ threads do not start.
+>>  >>  >   -->  >
+>>  >>  >   -->  > Why would mlockall cause some threads not to start?
+>>  >>  >   -->
+>>  >>  >   --> Well, you should check rt_task_create or pthread_create return
+>>  >>  >   --> value. The usual error is that you run out of memory because of the
+>>  >>  >   --> stack size problem explained in the TROUBLESHOOTING guide.
+>>  >>  >   -->
+>>  >>  >   --> --
+>>  >>  >   -->
+>>  >>  >   -->
+>>  >>  >   -->                                             Gilles.
+>>  >>  > [Robert McCullough]
+>>  >>  > Thanks.
+>>  >>  > Calling "ulimit -s 2048" before my application in my startup script seems to
+>>  >>  > work fine when I am running over nfs to the Denx ELDK with a bash shell.
+>>  >>  > But my application needs to run from a CompactFlash card running BusyBox on
+>>  >>  > a MPC5200 and BusyBox does not seem to support the "ulimit" command.
+>>  >>  > Is there another way to set this stack limit size?
+>>  >>  >
+>>  >>
+>>  >>  - Setting the stack size property into the attribute struct for each new pthread
+>>  >>  your application may create: pthread_attr_setstacksize(&thattr, stacksize);
+>>  >>
+>>  >>  - Or passing the right stack size value to any (non-POSIX) Xenomai API task
+>>  >>  creation service, we do enforce it (e.g. rt_task_create(), taskInit(),
+>>  >>  t_create()...).
+>>  >>
+>>  >>  - Or calling setrlimit(RLIMIT_STACK, ...) to set a global default value for all
+>>  >>  subsequent glibc-originated threads. This is what the ulimit command does, actually.
+>>  >
+>>  > The problem of pthread_attr_setstacksize (or of setting stack size in
+>>  > one of the various thread creation services) is that it does not work
+>>  > for the main thread stack. So, you have to use ulimit or to call
+>>  > setrlimit before running your application, in order to set the main
+>>  > thread stack size.
+>>  >
+>>  > Now about the ulimit builtin in busybox: busybox ash shell supports ulimit.
+>>  >
+>>
+>>  Even if you don't have any shell supporting ulimit, you just need to create a
+>>  small launcher that basically forks/setrlimit+execs your application.
+> 
+> Errr... but you need to call setrlimit before fork, otherwise it is too late...
+>
 
-On Thu, Apr 10, 2008 at 8:03 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
->
-> On Thu, Apr 10, 2008 at 7:52 PM, jeff koftinoff <jeffk@domain.hid> wrote:
->  > Gilles Chanteperdrix wrote:
->  >
->  > >
->  > > It looks we are wrong. The main thread stack remains allocated
->  > > on-demand, even though the process is mlocked. It must be some recent
->  > > kernel evolution
->  > >
->  >
->  >  Hmm.. interesting.  What is the best way to make sure all my stacks are not
->  > allocated on-demand?
->
->  Find attached the example I used to read the stack size of an mlocked process.
->
->  You can run it on your target to see if you get the same result as me.
->
->  Now, I suspect this on-demand allocation only exists for the main
->  thread stack, I will run further tests to confirm this. So, you may:
->  - decide not to use the main thread for real-time duties
->  - memset a large buffer on stack to force the kernel to commit memory.
+#include <sys/resource.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
 
-Forgot the attachment, but here is a better one, which prints the main
-thread stack size as well as a newly created thread stack size. It
-shows that, at least in my configuration, only the main thread stack
-mapping is grown on-demand.
+int main(int argc, char *argv[])
+{
+	if (strcmp(argv[0], "child")) {
+		struct rlimit r = { .rlim_cur = 32768, .rlim_max = 32768 };
+		setrlimit(RLIMIT_STACK, &r);
+		execl(argv[0], "child", NULL);
+	} else {
+		struct rlimit r;
+		if (getrlimit(RLIMIT_STACK, &r) == 0)
+			printf("%s: stack size = %d\n", argv[0], r.rlim_cur);
+	}
+
+	return 0;
+}
 
 -- 
-                                               Gilles
-
-------=_Part_6282_9260199.1207851394396
-Content-Type: text/x-csrc; name=stack_size.c
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_fevni20r0
-Content-Disposition: attachment; filename=stack_size.c
-
-I2luY2x1ZGUgPHVuaXN0ZC5oPgojaW5jbHVkZSA8c3RkbGliLmg+CiNpbmNsdWRlIDxzdGRpby5o
-PgojaW5jbHVkZSA8c3lzL21tYW4uaD4KI2luY2x1ZGUgPHN0cmluZy5oPgojaW5jbHVkZSA8cHRo
-cmVhZC5oPgoKbG9uZyBnZXRfc3RhY2tfc2l6ZSh1bnNpZ25lZCBsb25nIHN0YWNrcHRyKQp7Cglj
-aGFyICpsaW5lID0gTlVMTDsKCXNpemVfdCBsaW5lc3o7CglGSUxFICpmaWxlOwoJaW50IGxlbjsK
-CglmaWxlID0gZm9wZW4oIi9wcm9jL3NlbGYvbWFwcyIsICJyIik7CglpZiAoIWZpbGUpIHsKCQlw
-ZXJyb3IoImZvcGVuKC9wcm9jL3NlbGYvbWFwcykiKTsKCQlleGl0KEVYSVRfRkFJTFVSRSk7Cgl9
-CgoJd2hpbGUgKChsZW4gPSBnZXRsaW5lKCZsaW5lLCAmbGluZXN6LCBmaWxlKSkgIT0gLTEpIHsK
-CQl1bnNpZ25lZCBsb25nIG1hcF9zdGFydCwgbWFwX2VuZDsKCgkJLyogUmVtb3ZlIHRyYWlsaW5n
-IFxyXG4gKGlmIGFueSkgKi8KCQl3aGlsZSAobGluZVtsZW4gLSAxXSA9PSAnXG4nIHx8IGxpbmVb
-bGVuIC0gMV0gPT0gJ1xyJykKCQkJbGluZVstLWxlbl0gPSAnXDAnOwoKCQlpZiAoc3NjYW5mKGxp
-bmUsICIlbHgtJWx4IiwgJm1hcF9zdGFydCwgJm1hcF9lbmQpIDwgMikgewoJCQlwZXJyb3IoInNz
-Y2FuZiIpOwoJCQlleGl0KEVYSVRfRkFJTFVSRSk7CgkJfQoKCQlpZiAoKHVuc2lnbmVkKSAoc3Rh
-Y2twdHIgLSBtYXBfc3RhcnQpID49IChtYXBfZW5kIC0gbWFwX3N0YXJ0KSkKCQkJY29udGludWU7
-CgoJCWZyZWUobGluZSk7CgkJZmNsb3NlKGZpbGUpOwoJCXJldHVybiBtYXBfZW5kIC0gbWFwX3N0
-YXJ0OwoJfQoJaWYgKGxpbmUpCgkJZnJlZShsaW5lKTsKCWZjbG9zZShmaWxlKTsKCglmcHJpbnRm
-KHN0ZGVyciwgIkNvdWxkIG5vdCBmaW5kIHN0YWNrIGluIC9wcm9jL3NlbGYvbWFwc1xuIik7Cgll
-eGl0KEVYSVRfRkFJTFVSRSk7Cn0KCnVuc2lnbmVkIGxvbmcgdGhyZWFkc3RhY2s7CnZvaWQgKnRo
-cmVhZCh2b2lkICpjb29raWUpCnsKCXVuc2lnbmVkIGR1bW15OwoJdGhyZWFkc3RhY2sgPSAodW5z
-aWduZWQgbG9uZykgJmR1bW15OwoKCXBhdXNlKCk7CgoJcmV0dXJuIGNvb2tpZTsKfQoKaW50IG1h
-aW4odm9pZCkKewoJcHRocmVhZF90IHRpZDsKCWludCBlcnI7CgoJaWYgKG1sb2NrYWxsKE1DTF9D
-VVJSRU5UIHwgTUNMX0ZVVFVSRSkpIHsKCQlwZXJyb3IoIm1sb2NrYWxsIik7CgkJZXhpdChFWElU
-X0ZBSUxVUkUpOwoJfQoKCWlmICgoZXJyID0gcHRocmVhZF9jcmVhdGUoJnRpZCwgTlVMTCwgdGhy
-ZWFkLCBOVUxMKSkpIHsKCQlmcHJpbnRmKHN0ZGVyciwgInB0aHJlYWRfY3JlYXRlOiAlc1xuIiwg
-c3RyZXJyb3IoZXJyKSk7CgkJZXhpdChFWElUX0ZBSUxVUkUpOwoJfQoJc2xlZXAoMSk7CgoJcHJp
-bnRmKCJzdGFjazogJWxkS1xuIiwgZ2V0X3N0YWNrX3NpemUoKHVuc2lnbmVkIGxvbmcpICZ0aWQp
-IC8gMTAyNCk7CglwcmludGYoInRocmVhZCBzdGFjazogJWxkS1xuIiwgZ2V0X3N0YWNrX3NpemUo
-dGhyZWFkc3RhY2spIC8gMTAyNCk7CgoJcmV0dXJuIDA7Cn0K
-------=_Part_6282_9260199.1207851394396--
+Philippe.
 
