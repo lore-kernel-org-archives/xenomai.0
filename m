@@ -1,13 +1,14 @@
-Message-ID: <2ff1a98a0804040751k3e074cc3x2532365e104b1f0c@domain.hid>
-Date: Fri, 4 Apr 2008 16:51:59 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <1207310243.47f617a377b13@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <1207310243.47f617a377b13@domain.hid>
-Subject: Re: [Xenomai-help] New I-pipe patch for ARM. (imx1 OK)
+Message-ID: <18432.60367.701502.520266@domain.hid>
+Date: Sat, 12 Apr 2008 19:05:19 +0200
+In-Reply-To: <4800DE84.5040200@domain.hid>
+References: <47FFB7D3.3040000@domain.hid>
+	<18432.49619.109362.265306@domain.hid>
+	<4800DE84.5040200@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] waiting for multiple hardware interrupts
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,26 +18,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: garryt <garryt@domain.hid>
+To: Tomas Kalibera <kalibera@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Fri, Apr 4, 2008 at 1:57 PM, garryt <garryt@domain.hid> wrote:
-> Hello,
->
->  For Your information, I have tested xenomai stable 2.4.3 with adeos patch.
->  1.9-01 and 2.6.24-3 This is OK with my board ( compilation + basic tests )
->  patched according to:
->  https://mail.gna.org/public/xenomai-help/2008-03/msg00043.html
+Tomas Kalibera wrote:
+ > Hi Gilles,
+ > 
+ > thank you for the info. I have additional question: Is it possible to 
+ > wait for multiple interrupts without specific kernel support (RTDM 
+ > driver or kernel-space IRQ handlers or anything) ? I see that without 
+ > kernel support, in native skin, one can in user-space wait for a 
+ > specific hardware interrupt using "rt_intr_wait". I need to wait for 
+ > multiple interrupts in user space. Do I have to create a dedicated 
+ > thread to wait for each interrupt ?
 
-Right, I really need to commit this patch on the v2.4.x branch, thanks
-for reminding me about it.
-
->
->  xeno-test report attached.
-
-Good news !
-
+No, there is currently no Xenomai features to allow you to wait for
+multiple interrupts from a unique user-space thread without a kernel
+module. That said, the rt_event solution could be implemented with
+a really minimal kernel module.
 
 -- 
- Gilles
+
+
+					    Gilles.
 
