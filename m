@@ -1,12 +1,13 @@
+Message-ID: <50879.62.235.129.158.1208014366.squirrel@domain.hid>
+In-Reply-To: <4800B4FA.1050309@domain.hid>
+References: <Pine.LNX.4.64.0804111759280.5433@domain.hid>
+	<4800B4FA.1050309@domain.hid>
+Date: Sat, 12 Apr 2008 17:32:46 +0200 (CEST)
+From: klaas.gadeyne@domain.hid
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18432.49619.109362.265306@domain.hid>
-Date: Sat, 12 Apr 2008 16:06:11 +0200
-In-Reply-To: <47FFB7D3.3040000@domain.hid>
-References: <47FFB7D3.3040000@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] waiting for multiple hardware interrupts
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] rt_task_sleep_until question
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,128 +17,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Tomas Kalibera <kalibera@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Tomas Kalibera wrote:
- > Hi,
- > 
- > is it possible, in user-space, to wait for a set of hardware interrupts 
- > ? Something like UNIX select, which allows to wait for multiple devices 
- > to become ready...
- > 
- > Or do I need to spawn a dedicated thread for each interrupt to wait for ?
+> Klaas Gadeyne wrote:
+>> I've noticed that threads which, in my ignorant opinion, are supposed
+>> to be sleeping, get woken up much earlier than I expect them to be.
+>>
+>> Please find attached a modified version of the trivial-periodic.c
+>> application, which creates a RT_TASK that should sleep as long as
+>> possible (i.e. until unblocked by a signal handler).  However, the
+>> task gets woken up much earlier (and many times) _before_ that time it
+>> seems.
+>>
+>>  head /tmp/app.txt
+>> current_time =3D 1207928393295939429
+>> sleep until 18446744073709551615
+>> [TIMERLOOP] Total errors =3D 1, return code =3D -110
+>> current_time =3D 1207928393296000379
+>> sleep until 18446744073709551615
+>> [TIMERLOOP] Total errors =3D 2, return code =3D -110
+>> current_time =3D 1207928393296005409
+>> sleep until 18446744073709551615
+>> [TIMERLOOP] Total errors =3D 3, return code =3D -110
+>> current_time =3D 1207928393296009604
+>>
+>> What did I overlook here?
+>
+> Probably an overflow issue: (RTIME)~0 will be converted to TSCs, and if
+> your box runs at > 1GHZ, the result of this conversion will by somethin=
+g
+> < (RTIME)~0 due to the overflow. And this can result in an absolute
+> timeout date (in TSC units) before the current date -> ETIMEDOUT. Can
+> you confirm this?
 
-There are two answers to this question: if you use the native skin
-services, and/or the various interrupt you want to wait for belongs to
-the same driver, you may use the native skin event flags services. Each
-interrupt handler would call rt_event_signal to signal a different bit
-in the rt_event object, and you would wait for events with the
-rt_event_wait service.
+I have no linux box at hand, but I noticed that [*]
+xntimer_do_start_aperiodic() passes its xnticks_t interval argument (whic=
+h
+is an unsigned long long) to xnarch_ns_to_tsc, and that one expects a
+(signed) long long.
 
-But Xenomai also has a select service (for now, only the posix skin
-proposes this service), which looks more adapted if each interrupt
-handler belongs to a different driver. If you want to use it, you will
-have to implement a select_bind callback for each RTDM driver you want
-to select from. For instance, if an RTDM driver looks like:
+If I did not make any calculation errors (a very small chance...) in "my"
+case "interval" > LLONG_MAX so there's already an overflow there.
 
-typedef struct mydriver_context {
-    /* ... */
-    rtdm_sem_t pending_sem;
-    /* ... */
-} mydriver_context_t;
+More on monday.  Thx!
 
-int mydriver_irq_handler(rtdm_irq_t *irq)
-{
-    mydriver_context_t *context = /* ... */
+Klaas
 
-    rtdm_sem_up(&context->pending_sem);
-
-    /* ... */
-}
-
-ssize_t mydriver_read(struct rtdm_dev_context *context,
-                      rtdm_user_info_t *user_info,
-                      void *buf, size_t nbyte)
-{
-    /* ... */
-    mydriver_context_t *mydriver_context =
-        (mydriver_context_t *)&context->dev_private;
-    int err;
-     
-    /* ... */
-
-    err = rtdm_sem_down(&mydriver_context->pending_sem);
-   
-    /* ... */
-}
-
-static struct rtdm_device mydriver_device {
-    /* ... */
-
-    .ops = {
-         /* ... */
-         .read_rt = mydriver_read;
-
-    /* ...*/
-};
-
-static int __init mydriver_init(void) 
-{
-     int err = rtdm_dev_register(&mydriver_device);
-     /* ... */
-}
-
-All you have to do is to write:
-int mydriver_select_bind(struct rtdm_dev_context *context,
-                         struct xnselector *selector,
-                         unsigned type,
-                         unsigned index)
-{
-    mydriver_context_t *mydriver_context =
-        (mydriver_context_t *)&context->dev_private;
-    int err;
-
-    if (type == RTDM_SELECTTYPE_READ)
-        err = rtdm_sem_select_bind(&mydriver_context->pending_sem, 
-                                   selector, type, index);
-    else
-        err = -EBADF;
-
-    return err;
-}
-
-And add in mydriver_device declaration:
-
-static struct rtdm_device mydriver_device {
-    /* ... */
-
-    .ops = {
-         /* ... */
-         .select_bind = mydriver_select_bind;
-
-    /* ...*/
-};
-
-You do not have to worry very much about the performance of the
-mydriver_select_bind callback: contrarily to what happens with a Linux
-driver, it will be called only the first time mydriver's file descriptor
-is passed to select, after that, select does all the housekeeping (the
-select block gets updated by each call to rtdm_sem_up and rtdm_sem_down).
-
-I took rtdm_sem_t as an example, but rtdm_event_t also has builtin
-support for (there is an rtdm_event_select_bind service that can be
-called in the implementation of a driver's select_bind callback).
-
-Also note this scheme works well if a driver signals a semaphore (or
-event) whether there is a pending reader or not, as showed in the
-example. For instance, adapting Xenomai serial driver to select would be
-a bit more complicated, because the driver only signals an event if
-there is a pending reader, whereas we want the select block to be
-updated even when there is no thread blocked in the select service.
-
--- 
+[*]
+<http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/nucleus/timer.c?v=
+=3DSVN-2.3.x#095>
+<http://www.rts.uni-hannover.de/xenomai/lxr/source/include/asm-generic/sy=
+stem.h?v=3DSVN-2.3.x#174>
 
 
-					    Gilles.
 
