@@ -1,12 +1,18 @@
-Message-ID: <48024DB6.8060000@domain.hid>
-Date: Sun, 13 Apr 2008 14:15:18 -0400
-From: Tomas Kalibera <kalibera@domain.hid>
 MIME-Version: 1.0
-References: <48024CFC.9030806@domain.hid>
-In-Reply-To: <48024CFC.9030806@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_intr_create, rt_intr_enable returning ENOSYS
+Message-ID: <18434.20091.539340.811557@domain.hid>
+Date: Sun, 13 Apr 2008 20:18:35 +0200
+In-Reply-To: <005301c89d88$918f9b80$0202a8c0@domain.hid>
+References: <001f01c89cc6$f269b250$0202a8c0@domain.hid>
+	<18433.65.910459.873472@domain.hid>
+	<000701c89d68$8857e380$0202a8c0@domain.hid>
+	<48020FEA.20309@domain.hid>
+	<003401c89d78$d187bf70$0202a8c0@domain.hid>
+	<18434.11505.241730.648326@domain.hid>
+	<005301c89d88$918f9b80$0202a8c0@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] Communication between Xenomai and Linux domains
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,22 +22,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: van der Linden <ejvanderlinden@domain.hid>
+Cc: xenomai@xenomai.org
 
-CONFIG_XENO_OPT_NATIVE_INTR ...
-T
+van der Linden wrote:
+ > Gilles,
+ > 
+ > I see the problem.
+ > I think the best (easiest) way is not using the libasound library but using 
+ > the kernel driver directly.
 
-Tomas Kalibera wrote:
-> Hi,
->
-> could anyone advise me under what circumstances would a call to 
-> rt_intr_create from user space return -ENOSYS ?
->
-> I'm probably trying to listen to an interrupt which the Linux kernel 
-> already listens to, could this be the case ?
->
-> Thanks,
-> Tomas
->
+It will not work either. The kernel driver uses some synchronization
+objects such as mutexes, semaphores, spinlocks that only work in Linux
+domain. So, you really need to rewrite a driver using RTDM's own
+synchronization objects.
 
+ > 
+ > Then using "borderline" threads for the non-realtime tasks.
+ > 
+ > If this is right I keep still one question,
+ > 
+ > What can be used as performance measurement tool.
+ > The normal "top" Linux command will only show IRQ's taking almost 100% of 
+ > the cpu loading. I gues that must be the Xenomai schedular but how can I 
+ > display the loading the Xenomai threads realy take?
+
+cat /proc/xenomai/sched or /proc/xenomai/stat but you really have other
+issues to solve before you care about that.
+
+
+-- 
+
+
+					    Gilles.
 
