@@ -1,12 +1,14 @@
-Message-ID: <000701c89d68$8857e380$0202a8c0@domain.hid>
-From: "van der Linden" <ejvanderlinden@domain.hid>
-References: <001f01c89cc6$f269b250$0202a8c0@domain.hid>
-	<18433.65.910459.873472@domain.hid>
-Date: Sun, 13 Apr 2008 15:16:06 +0200
+Message-ID: <48020FEA.20309@domain.hid>
+Date: Sun, 13 Apr 2008 15:51:38 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset="iso-8859-1";
-	reply-type=original
-Content-Transfer-Encoding: 7bit
+References: <001f01c89cc6$f269b250$0202a8c0@domain.hid>	<18433.65.910459.873472@domain.hid>
+	<000701c89d68$8857e380$0202a8c0@domain.hid>
+In-Reply-To: <000701c89d68$8857e380$0202a8c0@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig31DC78963964DF9DD5A4FB00"
+Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-help] Communication between Xenomai and Linux domains
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,82 +19,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: van der Linden <ejvanderlinden@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles, thanks for the answer.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig31DC78963964DF9DD5A4FB00
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Perhaps I may ask a few more questions?
+van der Linden wrote:
+> ...
+> My real-time thread will call the alsa-sound library libasound and use =
+the=20
+> ALSA Linux kernel driver for my sound card.
 
-I have to create an application that is partly real-time (low interrupt 
-latency required) and partly non-real-time (also communicating via UDP 
-etc.).
-Both parts need to communicate (exchange control information). I will create 
-multiple threads in this application.
+I many cases, audio processing is a soft real-time task: quality
+decreases as latency increases, but the world won't stop turning. So
+unless you have very tight latency requirements (can you specify them,
+BTW?), you are probably better off with the -rt (or "PREEMPT-RT")
+patches. They achieve quite low, but generally not guaranteed latencies
+for wide areas of the Linux kernel, including its sound subsystem (the
+Linux audio community is using those patches e.g.).
 
-My real-time thread will call the alsa-sound library libasound and use the 
-ALSA Linux kernel driver for my sound card.
+If this doesn't fly for you (because of too low or actually hard latency
+requirements), you will have to audit the relevant ALSA code paths from
+the library in user land down to the low-level driver, either improve
+them for your scenario on -rt or port a required subset over to
+Xenomai's RTDM driver model.
 
-I gues I have to follow the next steps:
+Xenomai as-is will not improve ALSA latencies. Rather, your thread will
+leave the RT space managed by Xenomai when it starts talking to this laye=
+r.
 
-1. Determine the real-time threads and make them Xenomai threads. Also give 
-them the right priority.
-
-2. Non real-time threads become Linux threads.
-
-3. Now I can follow two paths
-
-4A. Start linux as a prio 0 Xenomai thread (how do you do that?) and use 
-Xenomai IPC methods between Xenomai threads and the Linux threads.
-      Side effect; when a Xenomai thread calls a Linux system call, the 
-Linux system call is executed with the priority of the calling Xenomai 
-thread.
-      Also when a Linux thread calls a Xenomai IPC, it will change from 
-secondary to primary mode.
-      I think calling a Linux system call from Xenomai thread should be 
-avoided because the real-time behaviour can be disturbed.
-
-4B. Start Linux as a seperate ADEOS operating system (besides Xenomai) and 
-communicate with native skin rt pipes between Xenomai threads and Linux 
-threads.
-       Xenomai runs in primary mode, Linux runs in secondary mode.
-       Is the calling of a Linux system calls from a Xenomai thread 
-possible? Can I use the Linux ALSA library lib_asound?
-       So, my (Linux) application starts Xenomai threads and Linux threads. 
-Xenomai threads can communicate with native skin rt pipes.
-
-What do you recommend for a new application 4A or 4B?
-
-What can be used as performance measurement tool. The normal "top" Linux 
-command will only show IRQ's taking almost 100% of the cpu loading.
-I gues that must be the Xenomai schedular but how can I display the loading 
-the seperate Xenomai threads realy take?
-
-Thanks for helping me.
-
-Ernst-jan
+Jan
 
 
-> van der Linden wrote:
-> > Hello,
-> >
-> > I'm quite new to Xenomai.
-> >
-> > Before further exploring Xenomai, I like to know if it is possible to 
-> > communicate between a Xenomai process and a standard Linux process.
-> >
-> > Is there some reading on this subject?
->
-> I answered a similar question yesterday:
-> https://mail.gna.org/public/xenomai-core/2008-04/msg00082.html
->
-> It was about communicating between threads, whereas you ask about
-> communicating between processes. But the answer is pretty much the same;
-> native skin pipes and other Xenomai IPCs may be used to communicate
-> between different processes.
->
-> -- 
->
->
->     Gilles.
-> 
+--------------enig31DC78963964DF9DD5A4FB00
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFIAg/tniDOoMHTA+kRAjaYAJ49md463wU/tY/WxbJVmXI2yiiUOQCfTslz
+p9Og6S0LMxvv2dI5Rv9iBuc=
+=Qcbb
+-----END PGP SIGNATURE-----
+
+--------------enig31DC78963964DF9DD5A4FB00--
 
