@@ -1,14 +1,13 @@
-Message-ID: <48020FEA.20309@domain.hid>
-Date: Sun, 13 Apr 2008 15:51:38 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+Message-ID: <003401c89d78$d187bf70$0202a8c0@domain.hid>
+From: "van der Linden" <ejvanderlinden@domain.hid>
 References: <001f01c89cc6$f269b250$0202a8c0@domain.hid>	<18433.65.910459.873472@domain.hid>
 	<000701c89d68$8857e380$0202a8c0@domain.hid>
-In-Reply-To: <000701c89d68$8857e380$0202a8c0@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig31DC78963964DF9DD5A4FB00"
-Sender: jan.kiszka@domain.hid
+	<48020FEA.20309@domain.hid>
+Date: Sun, 13 Apr 2008 17:12:41 +0200
+MIME-Version: 1.0
+Content-Type: text/plain; format=flowed; charset="iso-8859-1";
+	reply-type=original
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Communication between Xenomai and Linux domains
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -19,54 +18,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: van der Linden <ejvanderlinden@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig31DC78963964DF9DD5A4FB00
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Jan,
 
-van der Linden wrote:
-> ...
-> My real-time thread will call the alsa-sound library libasound and use =
-the=20
-> ALSA Linux kernel driver for my sound card.
+I have two real-time requirements:
 
-I many cases, audio processing is a soft real-time task: quality
-decreases as latency increases, but the world won't stop turning. So
-unless you have very tight latency requirements (can you specify them,
-BTW?), you are probably better off with the -rt (or "PREEMPT-RT")
-patches. They achieve quite low, but generally not guaranteed latencies
-for wide areas of the Linux kernel, including its sound subsystem (the
-Linux audio community is using those patches e.g.).
+1.  I have to get audio from ALSA and deliver it to a custom FPGA driver and 
+vice versa each 5 miliseconds.
+     So, I will set the chunk size for ALSA in such a way I get 5 ms audio 
+samples. From the FPGA I also get chunks of 5ms.
 
-If this doesn't fly for you (because of too low or actually hard latency
-requirements), you will have to audit the relevant ALSA code paths from
-the library in user land down to the low-level driver, either improve
-them for your scenario on -rt or port a required subset over to
-Xenomai's RTDM driver model.
+     There may be some jitter in delivering between ALSA and FPGA but think 
+of one or two miliseconds.
 
-Xenomai as-is will not improve ALSA latencies. Rather, your thread will
-leave the RT space managed by Xenomai when it starts talking to this laye=
-r.
+2. I want to receive 5ms audio from ALSA and after filtering and processing 
+it I have to sent it back to ALSA.
+    This must be done within 10ms.
 
-Jan
+We tested the real-time patches but the interrupt latency was not good 
+enough on our Blackfin 537 DSP (measured with a latency measuring tool).
+With Xenomai installed the latency tool showed very good response. So I want 
+to go the Xenomai way.
 
+So therefor I like to know more about the Xenomai / Linux interaction and 
+the performance measuring method (see original mailing).
 
---------------enig31DC78963964DF9DD5A4FB00
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Ernst-Jan 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.4-svn0 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFIAg/tniDOoMHTA+kRAjaYAJ49md463wU/tY/WxbJVmXI2yiiUOQCfTslz
-p9Og6S0LMxvv2dI5Rv9iBuc=
-=Qcbb
------END PGP SIGNATURE-----
-
---------------enig31DC78963964DF9DD5A4FB00--
 
