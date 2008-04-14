@@ -1,18 +1,13 @@
-From: "Robert McCullough" <rob@domain.hid>
-References: <000701c89a75$d349f630$9601a8c0@domain.hid>
-	<18429.6412.785941.128928@domain.hid>
-	<000801c89a89$b7b09820$9601a8c0@domain.hid>
-	<47FD650C.7030709@domain.hid>
-	<2ff1a98a0804100225q6e216a50nb0c7c78c86d8817c@domain.hid>
-Date: Mon, 14 Apr 2008 15:51:02 -0400
-Message-ID: <000001c89e68$df896510$9601a8c0@domain.hid>
+Message-ID: <4803B821.6050101@domain.hid>
+Date: Mon, 14 Apr 2008 16:01:37 -0400
+From: Tomas Kalibera <kalibera@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
+References: <4802D528.5090404@domain.hid> <48031412.2000409@domain.hid>
+	<48031545.6050106@domain.hid>
+In-Reply-To: <48031545.6050106@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-In-Reply-To: <2ff1a98a0804100225q6e216a50nb0c7c78c86d8817c@domain.hid>
-Subject: Re: [Xenomai-help] mlockall questions
-Reply-To: rob@domain.hid
+Subject: Re: [Xenomai-help] Suspended task resumed without rt_task_resume ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,129 +17,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>, philippe.gerum@domain.hid
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
 
+Hi Philippe,
 
-  --> -----Original Message-----
-  --> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
-  --> Sent: Thursday, April 10, 2008 5:25 AM
-  --> To: philippe.gerum@domain.hid
-  --> Cc: rob@domain.hid; xenomai@xenomai.org
-  --> Subject: Re: [Xenomai-help] mlockall questions
-  --> 
-  --> On Thu, Apr 10, 2008 at 2:53 AM, Philippe Gerum
-  --> <philippe.gerum@domain.hid> wrote:
-  --> >
-  --> > Robert McCullough wrote:
-  --> >  > Hi Gilles,
-  --> >  >
-  --> >  >   --> -----Original Message-----
-  --> >  >   --> From: Gilles Chanteperdrix
-  --> [mailto:gilles.chanteperdrix@xenomai.org]
-  --> >  >   --> Sent: Wednesday, April 09, 2008 3:29 PM
-  --> >  >   --> To: rob@domain.hid
-  --> >  >   --> Cc: xenomai@xenomai.org
-  --> >  >   --> Subject: Re: [Xenomai-help] mlockall questions
-  --> >  >   -->
-  --> >  >   --> Robert McCullough wrote:
-  --> >  >   -->  > Hi,
-  --> >  >   -->  >
-  --> >  >   -->  > I am converting part of a C++ application to real-time.
-  --> >  >   -->  >
-  --> >  >   -->  > I noticed that all the Xenomai examples call
-  --> >  >   -->  > mlockall(MCL_CURRENT|MCL_FUTURE) at the beginning of
-  --> main before
-  --> >  >   --> creating
-  --> >  >   -->  > any real-time threads.
-  --> >  >   -->  > Is calling mlockall a requirement when using Xenomai?
-  --> >  >   -->
-  --> >  >   --> Yes it is.
-  --> >  >   -->
-  --> >  > [Robert McCullough]
-  --> >  > OK.
-  --> >  >   -->  >
-  --> >  >   -->  > I have added a couple of Xenomai tasks to my C++ app.
-  --> >  >   -->  > A) Without calling mlockall my application seems to run
-  --> fine but I
-  --> >  >   --> noticed
-  --> >  >   -->  > in /proc/xenomai/stat that a few page faults occurred.
-  --> >  >   -->
-  --> >  >   --> Well normally your application should stop with a message
-  --> telling you
-  --> >  >   --> that you have not call mlockall. Do you happen to install a
-  --> handler
-  --> >  >   --> for
-  --> >  >   --> SIGXCPU ?
-  --> >  > [Robert McCullough]
-  --> >  > Yes.
-  --> >  >   -->
-  --> >  >   -->  > B) When calling mlockall at the beginning of my main() I
-  --> do not see
-  --> >  >   --> any page
-  --> >  >   -->  > faults but some of the C++ threads do not start.
-  --> >  >   -->  >
-  --> >  >   -->  > Why would mlockall cause some threads not to start?
-  --> >  >   -->
-  --> >  >   --> Well, you should check rt_task_create or pthread_create
-  --> return
-  --> >  >   --> value. The usual error is that you run out of memory
-  --> because of the
-  --> >  >   --> stack size problem explained in the TROUBLESHOOTING guide.
-  --> >  >   -->
-  --> >  >   --> --
-  --> >  >   -->
-  --> >  >   -->
-  --> >  >   -->                                             Gilles.
-  --> >  > [Robert McCullough]
-  --> >  > Thanks.
-  --> >  > Calling "ulimit -s 2048" before my application in my startup
-  --> script seems to
-  --> >  > work fine when I am running over nfs to the Denx ELDK with a bash
-  --> shell.
-  --> >  > But my application needs to run from a CompactFlash card running
-  --> BusyBox on
-  --> >  > a MPC5200 and BusyBox does not seem to support the "ulimit"
-  --> command.
-  --> >  > Is there another way to set this stack limit size?
-  --> >  >
-  --> >
-  --> >  - Setting the stack size property into the attribute struct for
-  --> each new pthread
-  --> >  your application may create: pthread_attr_setstacksize(&thattr,
-  --> stacksize);
-  --> >
-  --> >  - Or passing the right stack size value to any (non-POSIX) Xenomai
-  --> API task
-  --> >  creation service, we do enforce it (e.g. rt_task_create(),
-  --> taskInit(),
-  --> >  t_create()...).
-  --> >
-  --> >  - Or calling setrlimit(RLIMIT_STACK, ...) to set a global default
-  --> value for all
-  --> >  subsequent glibc-originated threads. This is what the ulimit
-  --> command does, actually.
-  --> 
-  --> The problem of pthread_attr_setstacksize (or of setting stack size in
-  --> one of the various thread creation services) is that it does not work
-  --> for the main thread stack. So, you have to use ulimit or to call
-  --> setrlimit before running your application, in order to set the main
-  --> thread stack size.
-  --> 
-  --> Now about the ulimit builtin in busybox: busybox ash shell supports
-  --> ulimit.
-  --> 
-  --> --
-  -->  Gilles
+does your patch fix also the situation when the task is suspended via 
+T_SUSP flag from rt_task_shadow (and calls which start tasks, for that 
+matter) ?
 
-[Robert McCullough] 
-I was able to update my busybox to the latest version and use ulimit.
-Everything is working fine.
-Thanks Gilles and Philippe for all the help and addition investigating.
+Then I've applied your patch to task.c in my kernel tree, recompiled the 
+kernel, and my task is still getting resumed too early, returning 0. 
+Even when I use rt_task_suspend. Could this be caused by something else ?
 
-Best regards, 
-Robert McCullough
+Thanks,
+Tomas
 
+
+
+Philippe Gerum wrote:
+> Philippe Gerum wrote:
+>   
+>> Tomas Kalibera wrote:
+>>     
+>>> Hi,
+>>>
+>>> what can, besides an explicit call, resume a suspended task ? I created 
+>>> and started a child task, then shadowed the current thread with T_SUSP 
+>>> flag. The child was supposed to call rt_task_resume to wake-up the 
+>>> parent and let it terminate the process, but, the parent was resumed 
+>>> before this call. The call to rt_task_suspend in parent returned 0. The 
+>>> program uses SIGALRM signal. Could this be the cause ?
+>>>
+>>>       
+>> Yes, but the syscall should be silently restarted by default. This patch should
+>> fix the issue:
+>>
+>>     
+>
+> This one will compile:
+>
+> --- ksrc/skins/native/task.c	(revision 3698)
+> +++ ksrc/skins/native/task.c	(working copy)
+> @@ -410,11 +410,17 @@
+>   * A nesting count is maintained so that rt_task_suspend() and
+>   * rt_task_resume() must be used in pairs.
+>   *
+> + * Receiving a Linux signal causes the suspended task to resume
+> + * immediately.
+> + *
+>   * @param task The descriptor address of the affected task. If @a task
+>   * is NULL, the current task is suspended.
+>   *
+>   * @return 0 is returned upon success. Otherwise:
+>   *
+> + * - -EINTR is returned if a Linux signal has been received by the
+> + * suspended task.
+> + *
+>   * - -EINVAL is returned if @a task is not a task descriptor.
+>   *
+>   * - -EPERM is returned if the addressed @a task is not allowed to sleep
+> @@ -463,9 +469,12 @@
+>  		goto unlock_and_exit;
+>  	}
+>
+> -	if (task->suspend_depth++ == 0)
+> +	if (task->suspend_depth++ == 0) {
+>  		xnpod_suspend_thread(&task->thread_base, XNSUSP,
+>  				     XN_INFINITE, XN_RELATIVE, NULL);
+> +		if (xnthread_test_info(&task->thread_base, XNBREAK))
+> +			err = -EINTR;
+> +	}
+>
+>        unlock_and_exit:
+>
+>
+>   
 
 
