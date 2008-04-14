@@ -1,20 +1,12 @@
-Message-ID: <47F79DAD.6040807@domain.hid>
-Date: Sat, 05 Apr 2008 17:41:33 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48039113.2000905@domain.hid>
+Date: Mon, 14 Apr 2008 13:14:59 -0400
+From: Tomas Kalibera <kalibera@domain.hid>
 MIME-Version: 1.0
-References: <001a01c88a0d$5365af40$9601a8c0@domain.hid>
-	<47E2BB0F.9050704@domain.hid>
-	<001001c88b63$df59b300$9601a8c0@domain.hid>
-	<47E41609.2090107@domain.hid>
-	<005d01c89343$15f9e650$9601a8c0@domain.hid>
-	<47F2C02D.6090607@domain.hid>
-	<001001c894c5$84bf5920$9601a8c0@domain.hid>
-In-Reply-To: <001001c894c5$84bf5920$9601a8c0@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigEA2FCF2E0A5A896CF1F44617"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Non-Real-Time Asynchronous Notification
+References: <4802A8F4.4090108@domain.hid> <4803073B.3060802@domain.hid>
+In-Reply-To: <4803073B.3060802@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Interrupt propagation question
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,185 +16,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rob@domain.hid
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigEA2FCF2E0A5A896CF1F44617
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
 
-Robert McCullough wrote:
-> Hi Jan,
->=20
->   --> -----Original Message-----
->   --> From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid]
->   --> Sent: Tuesday, April 01, 2008 7:07 PM
->   --> To: rob@domain.hid
->   --> Cc: xenomai@xenomai.org
->   --> Subject: Re: [Xenomai-help] Non-Real-Time Asynchronous Notificati=
-on
->   -->=20
->   --> Robert McCullough wrote:
->   --> > Hi Jan,
->   --> >
->   --> >   --> -----Original Message-----
->   --> >   --> From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid]
->   --> >   --> Sent: Friday, March 21, 2008 4:10 PM
->   --> >   --> To: rob@domain.hid
->   --> >   --> Cc: xenomai@xenomai.org
->   --> >   --> Subject: Re: [Xenomai-help] Non-Real-Time Asynchronous
->   --> Notification
->   --> >   -->
->   --> >   --> Robert McCullough wrote:
->   --> >   --> > Hi Jan,
->   --> >   --> >
->   --> >   --> >   --> -----Original Message-----
->   --> >   --> >   --> From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid=
-]
->   --> >   --> >   --> Sent: Thursday, March 20, 2008 3:29 PM
->   --> >   --> >   --> To: rob@domain.hid
->   --> >   --> >   --> Cc: xenomai@xenomai.org
->   --> >   --> >   --> Subject: Re: [Xenomai-help] Non-Real-Time Asynchr=
-onous
->   --> >   --> Notification
->   --> >   --> >   -->
->   --> >   --> >   --> Robert McCullough wrote:
->   --> >   --> >   --> > Hi,
->   --> >   --> >   --> >
->   --> >   --> >   --> > How do I signal an asynchronous notification fr=
-om a
->   --> RTDM
->   --> >   --> real-time
->   --> >   --> >   --> task to a
->   --> >   --> >   --> > non-real-time user-space Linux thread?
->   --> >   --> >   --> > Do I use Non-Real-Time Signaling Services
->   --> >   --> (rtdm_nrtsig_init,..)?
->   --> >   --> >   --> > If so, how?
->   --> >   --> >   --> >
->   --> >   --> >   --> > Here is the current code that I am trying to po=
-rt to
->   --> RTDM.
->   --> >   --> >   --> >
->   --> >   --> >   --> > Current driver code to signal non-real-time Lin=
-ux
->   --> thread:
->   --> >   --> >   --> >
->   --> >   --> >   --> > 	// If event
->   --> >   --> >   --> > 	if(event){
->   --> >   --> >   --> > 		// and signal asynchronous readers
->   --> >   --> >   --> > 		if (kmdpr_device->async_queue)
->   --> >   --> >   --> >
->   --> > kill_fasync(&kmdpr_device->async_queue,
->   --> >   --> > SIGIO,
->   --> >   --> >   --> > POLL_IN);
->   --> >   --> >   --> > 	}
->   --> >   --> >   -->
->   --> >   --> >   --> Just push this code in the rtdm_nrtsig handler an=
-d
->   --> trigger the
->   --> >   --> handler
->   --> >   --> >   --> execution from RT context.
->   --> >   --> >   -->
->   --> >   --> >   --> Jan
->   --> >   --> >
->   --> >   --> > [Robert McCullough]
->   --> >   --> > Ok, I understand that but how do I specify the file
->   --> operation fasync
->   --> >   --> in my
->   --> >   --> > rtdm_device?  How do I replace or update the code marke=
-d
->   --> TODO?
->   --> >   -->
->   --> >   --> In fact, there is no fasync support available with RTDM,
->   --> specifically
->   --> >   --> as
->   --> >   --> using signals under real-time constraints is a bad idea (=
-not
->   --> only
->   --> >   --> because Xenomai has no hard-RT signal support).
->   --> >   -->
->   --> >   --> But before suggesting any alternative pattern: What does =
-your
->   --> >   --> application actually require to work? How does asynchrono=
-us
->   --> >   --> driver/application interaction currently look like?
->   --> >   -->
->   --> >   --> Jan
->   --> >
->   --> > [Robert McCullough]
->   --> > Here is a little background on how my driver works.
->   --> > The driver is the interface/control for an AC servo drive which=
+Hi,
 
->   --> controls an
->   --> > AC motor.  The interface to the drive is done through a dual-po=
-rted
->   --> RAM.
->   --> > The I/O from the servo drive is updated and an IRQ is triggered=
- from
->   --> the
->   --> > servo drive through the DP RAM to our MPC5200 at a 4 kHz rate. =
- In
->   --> my IRQ
->   --> > handler I read, process, and update the I/O in the RAM.  Some o=
-f the
->   --> data
->   --> > from the servo drive contains status bits that represent
->   --> asynchronous
->   --> > events/faults from the drive that needs to be passed up to the =
-user
->   --> > application.  In my current non-real-time driver I used fasync =
-to
->   --> send a
->   --> > SIGIO signal to the user application whenever one of these
->   --> events/faults
->   --> > changed and then the application would read the status bits wit=
-h an
->   --> ioctl
->   --> > call and process them.
->   --> >
->   --> > I hope this clarifies the requirements a little.
->   --> > How would you suggest I solve this in my RTDM driver?
->   -->=20
->   --> Well, a classic pattern is to encapsulate the async event handlin=
-g in
->   --> one or more dedicated threads that block-wait on those events. Ch=
-eck
->   --> the
->   --> RTDM profile for serial devices for such a channel. This has the
->   --> advantage that you can cleanly specify the handling priority,
->   --> specifically compared to "normal" operations.
->   -->=20
->   --> HTH,
->   --> Jan
->=20
-> [Robert McCullough]=20
-> Are you referring to the RTSER_RTIOC_WAIT_EVENT in the serial profile?
-> If so, this can only be called from a real-time user-space task.
-> I need to see the event in a non-real-time user-space task.
-> How would I do this?
+so I've gone through the sources and made my guesses. When called from 
+user space, rt_intr_create results in a kernel-space handler being 
+installed using kernel-space rt_intr_create. The kernel handler only 
+counts received interrupts, exiting as soon as the count is updated. The 
+kernel handler is called with the interrupt disabled. On return, it uses 
+the I_NOAUTOENA flag from the user space call to rt_intr_create. When 
+the flag is set, the interrupts should stay disabled at hardware level 
+unless explicitly enabled by application.
 
-Then you can simply built the signaling on top of Linux mechanisms that=20
-are triggered from the RT domain via a rtdm_nrtsig. You can hook the=20
-non-RT API into the RTDM device by using *_nrt handlers (e.g. ioctl_nrt).=
+If rt_intr_wait is called from user space, it blocks until interrupt 
+count is >=1, then returns the interrupt count. Enabling/disabling 
+interrupts has thus no direct impact on rt_intr_wait returning - if some 
+interrupts are left to handle, rt_intr_wait will return even if the 
+interrupt is disabled.
 
+As far as my guesses based on the code are correct, rt_intr_enable and 
+rt_intr_disable called from user space should do end up in the 
+interrupts being enabled/disabled at hardware level. A simple example 
+however does not seem to follow this - I disable interrupts, do not 
+enable it, and they're still received. Why could this be happening ? Is 
+there a way to inquire if the interrupt is really disabled, at 
+application level ?
 
-Jan
+Tomas
 
+Philippe Gerum wrote:
+> Tomas Kalibera wrote:
+>   
+>> Hi,
+>>
+>> I'm receiving interrupts in Xenomai user-domain using rt_intr_wait. What 
+>> is the semantics of rt_intr_enable and rt_intr_disable ? And I_NOAUTOENA ?
+>>
+>> I used I_NOAUTOENA when calling rt_intr_create. I thought that after 
+>> returning from rt_intr_wait, the interrupt would be disabled before I 
+>> explicitly call rt_intr_enable. However, next call to rt_intr_wait 
+>> happily returned with the next interrupt, as opposed to blocking 
+>> indefinitely. Why ? Does rt_intr_wait automatically re-enable the 
+>> interrupt ?
+>>
+>> I tried to intentionally loose interrupts - I called rt_intr_enable 
+>> while handling an interrupt intentionally before making the hardware 
+>> generate next one. Still, the next call to rt_intr_wait did return (the 
+>> interrupt was not lost). How could this happen ? If interrupts are 
+>> logged anyway, what the rt_intr_enable/disable does ?
+>>
+>> I read in the API documentation
+>>
+>> "Interrupt receipts are logged if they cannot be delivered immediately 
+>> to some interrupt server task, so that a call to rt_intr_wait() 
+>> <http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__interrupt.html#g222e6a9a681f83b13ed5b51021711f4d> 
+>> might return immediately if an IRQ is already pending on entry of the 
+>> service."
+>>
+>> How does Xenomai find out about this ? I mean, if a "interrupt server 
+>> task" is not presently blocked in rt_intr_wait for a particular 
+>> interrupt, how does Xenomai know that a task is actually an "interrupt 
+>> server task" ? When does this association happen ? Does a call to 
+>> rt_intr_create make Xenomai log interrupts for the domain from which 
+>> rt_intr_create was called ?
+>>
+>>     
+>
+> This call delivers interrupts to the Xenomai domain, only.
+>
+> For the rest, have a look at ksrc/skins/native/syscall.c, __rt_intr_wait, and
+> __rt_intr_handler.
+>
+>   
+>> Thanks !
+>> Tomas
+>>
+>>
+>>
+>>
+>>
+>>
+>> _______________________________________________
+>> Xenomai-help mailing list
+>> Xenomai-help@domain.hid
+>> https://mail.gna.org/listinfo/xenomai-help
+>>
+>>     
+>
+>
+>   
 
---------------enigEA2FCF2E0A5A896CF1F44617
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.4-svn0 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFH952xniDOoMHTA+kRAgSZAJ9oogGPiuCt6zBpp/NRJTiZaNsSJgCeKHNI
-/ctdAlXwoA/6cgaS6NAwzn4=
-=LjXg
------END PGP SIGNATURE-----
-
---------------enigEA2FCF2E0A5A896CF1F44617--
 
