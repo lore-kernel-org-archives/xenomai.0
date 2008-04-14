@@ -1,12 +1,18 @@
-Message-ID: <48039113.2000905@domain.hid>
-Date: Mon, 14 Apr 2008 13:14:59 -0400
-From: Tomas Kalibera <kalibera@domain.hid>
+From: "Robert McCullough" <rob@domain.hid>
+References: <000701c89a75$d349f630$9601a8c0@domain.hid>
+	<18429.6412.785941.128928@domain.hid>
+	<000801c89a89$b7b09820$9601a8c0@domain.hid>
+	<47FD650C.7030709@domain.hid>
+	<2ff1a98a0804100225q6e216a50nb0c7c78c86d8817c@domain.hid>
+Date: Mon, 14 Apr 2008 15:51:02 -0400
+Message-ID: <000001c89e68$df896510$9601a8c0@domain.hid>
 MIME-Version: 1.0
-References: <4802A8F4.4090108@domain.hid> <4803073B.3060802@domain.hid>
-In-Reply-To: <4803073B.3060802@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Interrupt propagation question
+In-Reply-To: <2ff1a98a0804100225q6e216a50nb0c7c78c86d8817c@domain.hid>
+Subject: Re: [Xenomai-help] mlockall questions
+Reply-To: rob@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,97 +22,129 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>, philippe.gerum@domain.hid
 Cc: xenomai@xenomai.org
 
 
-Hi,
 
-so I've gone through the sources and made my guesses. When called from 
-user space, rt_intr_create results in a kernel-space handler being 
-installed using kernel-space rt_intr_create. The kernel handler only 
-counts received interrupts, exiting as soon as the count is updated. The 
-kernel handler is called with the interrupt disabled. On return, it uses 
-the I_NOAUTOENA flag from the user space call to rt_intr_create. When 
-the flag is set, the interrupts should stay disabled at hardware level 
-unless explicitly enabled by application.
+  --> -----Original Message-----
+  --> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+  --> Sent: Thursday, April 10, 2008 5:25 AM
+  --> To: philippe.gerum@domain.hid
+  --> Cc: rob@domain.hid; xenomai@xenomai.org
+  --> Subject: Re: [Xenomai-help] mlockall questions
+  --> 
+  --> On Thu, Apr 10, 2008 at 2:53 AM, Philippe Gerum
+  --> <philippe.gerum@domain.hid> wrote:
+  --> >
+  --> > Robert McCullough wrote:
+  --> >  > Hi Gilles,
+  --> >  >
+  --> >  >   --> -----Original Message-----
+  --> >  >   --> From: Gilles Chanteperdrix
+  --> [mailto:gilles.chanteperdrix@xenomai.org]
+  --> >  >   --> Sent: Wednesday, April 09, 2008 3:29 PM
+  --> >  >   --> To: rob@domain.hid
+  --> >  >   --> Cc: xenomai@xenomai.org
+  --> >  >   --> Subject: Re: [Xenomai-help] mlockall questions
+  --> >  >   -->
+  --> >  >   --> Robert McCullough wrote:
+  --> >  >   -->  > Hi,
+  --> >  >   -->  >
+  --> >  >   -->  > I am converting part of a C++ application to real-time.
+  --> >  >   -->  >
+  --> >  >   -->  > I noticed that all the Xenomai examples call
+  --> >  >   -->  > mlockall(MCL_CURRENT|MCL_FUTURE) at the beginning of
+  --> main before
+  --> >  >   --> creating
+  --> >  >   -->  > any real-time threads.
+  --> >  >   -->  > Is calling mlockall a requirement when using Xenomai?
+  --> >  >   -->
+  --> >  >   --> Yes it is.
+  --> >  >   -->
+  --> >  > [Robert McCullough]
+  --> >  > OK.
+  --> >  >   -->  >
+  --> >  >   -->  > I have added a couple of Xenomai tasks to my C++ app.
+  --> >  >   -->  > A) Without calling mlockall my application seems to run
+  --> fine but I
+  --> >  >   --> noticed
+  --> >  >   -->  > in /proc/xenomai/stat that a few page faults occurred.
+  --> >  >   -->
+  --> >  >   --> Well normally your application should stop with a message
+  --> telling you
+  --> >  >   --> that you have not call mlockall. Do you happen to install a
+  --> handler
+  --> >  >   --> for
+  --> >  >   --> SIGXCPU ?
+  --> >  > [Robert McCullough]
+  --> >  > Yes.
+  --> >  >   -->
+  --> >  >   -->  > B) When calling mlockall at the beginning of my main() I
+  --> do not see
+  --> >  >   --> any page
+  --> >  >   -->  > faults but some of the C++ threads do not start.
+  --> >  >   -->  >
+  --> >  >   -->  > Why would mlockall cause some threads not to start?
+  --> >  >   -->
+  --> >  >   --> Well, you should check rt_task_create or pthread_create
+  --> return
+  --> >  >   --> value. The usual error is that you run out of memory
+  --> because of the
+  --> >  >   --> stack size problem explained in the TROUBLESHOOTING guide.
+  --> >  >   -->
+  --> >  >   --> --
+  --> >  >   -->
+  --> >  >   -->
+  --> >  >   -->                                             Gilles.
+  --> >  > [Robert McCullough]
+  --> >  > Thanks.
+  --> >  > Calling "ulimit -s 2048" before my application in my startup
+  --> script seems to
+  --> >  > work fine when I am running over nfs to the Denx ELDK with a bash
+  --> shell.
+  --> >  > But my application needs to run from a CompactFlash card running
+  --> BusyBox on
+  --> >  > a MPC5200 and BusyBox does not seem to support the "ulimit"
+  --> command.
+  --> >  > Is there another way to set this stack limit size?
+  --> >  >
+  --> >
+  --> >  - Setting the stack size property into the attribute struct for
+  --> each new pthread
+  --> >  your application may create: pthread_attr_setstacksize(&thattr,
+  --> stacksize);
+  --> >
+  --> >  - Or passing the right stack size value to any (non-POSIX) Xenomai
+  --> API task
+  --> >  creation service, we do enforce it (e.g. rt_task_create(),
+  --> taskInit(),
+  --> >  t_create()...).
+  --> >
+  --> >  - Or calling setrlimit(RLIMIT_STACK, ...) to set a global default
+  --> value for all
+  --> >  subsequent glibc-originated threads. This is what the ulimit
+  --> command does, actually.
+  --> 
+  --> The problem of pthread_attr_setstacksize (or of setting stack size in
+  --> one of the various thread creation services) is that it does not work
+  --> for the main thread stack. So, you have to use ulimit or to call
+  --> setrlimit before running your application, in order to set the main
+  --> thread stack size.
+  --> 
+  --> Now about the ulimit builtin in busybox: busybox ash shell supports
+  --> ulimit.
+  --> 
+  --> --
+  -->  Gilles
 
-If rt_intr_wait is called from user space, it blocks until interrupt 
-count is >=1, then returns the interrupt count. Enabling/disabling 
-interrupts has thus no direct impact on rt_intr_wait returning - if some 
-interrupts are left to handle, rt_intr_wait will return even if the 
-interrupt is disabled.
+[Robert McCullough] 
+I was able to update my busybox to the latest version and use ulimit.
+Everything is working fine.
+Thanks Gilles and Philippe for all the help and addition investigating.
 
-As far as my guesses based on the code are correct, rt_intr_enable and 
-rt_intr_disable called from user space should do end up in the 
-interrupts being enabled/disabled at hardware level. A simple example 
-however does not seem to follow this - I disable interrupts, do not 
-enable it, and they're still received. Why could this be happening ? Is 
-there a way to inquire if the interrupt is really disabled, at 
-application level ?
+Best regards, 
+Robert McCullough
 
-Tomas
-
-Philippe Gerum wrote:
-> Tomas Kalibera wrote:
->   
->> Hi,
->>
->> I'm receiving interrupts in Xenomai user-domain using rt_intr_wait. What 
->> is the semantics of rt_intr_enable and rt_intr_disable ? And I_NOAUTOENA ?
->>
->> I used I_NOAUTOENA when calling rt_intr_create. I thought that after 
->> returning from rt_intr_wait, the interrupt would be disabled before I 
->> explicitly call rt_intr_enable. However, next call to rt_intr_wait 
->> happily returned with the next interrupt, as opposed to blocking 
->> indefinitely. Why ? Does rt_intr_wait automatically re-enable the 
->> interrupt ?
->>
->> I tried to intentionally loose interrupts - I called rt_intr_enable 
->> while handling an interrupt intentionally before making the hardware 
->> generate next one. Still, the next call to rt_intr_wait did return (the 
->> interrupt was not lost). How could this happen ? If interrupts are 
->> logged anyway, what the rt_intr_enable/disable does ?
->>
->> I read in the API documentation
->>
->> "Interrupt receipts are logged if they cannot be delivered immediately 
->> to some interrupt server task, so that a call to rt_intr_wait() 
->> <http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__interrupt.html#g222e6a9a681f83b13ed5b51021711f4d> 
->> might return immediately if an IRQ is already pending on entry of the 
->> service."
->>
->> How does Xenomai find out about this ? I mean, if a "interrupt server 
->> task" is not presently blocked in rt_intr_wait for a particular 
->> interrupt, how does Xenomai know that a task is actually an "interrupt 
->> server task" ? When does this association happen ? Does a call to 
->> rt_intr_create make Xenomai log interrupts for the domain from which 
->> rt_intr_create was called ?
->>
->>     
->
-> This call delivers interrupts to the Xenomai domain, only.
->
-> For the rest, have a look at ksrc/skins/native/syscall.c, __rt_intr_wait, and
-> __rt_intr_handler.
->
->   
->> Thanks !
->> Tomas
->>
->>
->>
->>
->>
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->>
->>     
->
->
->   
 
 
