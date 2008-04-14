@@ -1,9 +1,9 @@
-Message-ID: <48031412.2000409@domain.hid>
-Date: Mon, 14 Apr 2008 10:21:38 +0200
+Message-ID: <48031545.6050106@domain.hid>
+Date: Mon, 14 Apr 2008 10:26:45 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4802D528.5090404@domain.hid>
-In-Reply-To: <4802D528.5090404@domain.hid>
+References: <4802D528.5090404@domain.hid> <48031412.2000409@domain.hid>
+In-Reply-To: <48031412.2000409@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -21,19 +21,23 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Tomas Kalibera <kalibera@domain.hid>
 Cc: xenomai@xenomai.org
 
-Tomas Kalibera wrote:
-> Hi,
+Philippe Gerum wrote:
+> Tomas Kalibera wrote:
+>> Hi,
+>>
+>> what can, besides an explicit call, resume a suspended task ? I created 
+>> and started a child task, then shadowed the current thread with T_SUSP 
+>> flag. The child was supposed to call rt_task_resume to wake-up the 
+>> parent and let it terminate the process, but, the parent was resumed 
+>> before this call. The call to rt_task_suspend in parent returned 0. The 
+>> program uses SIGALRM signal. Could this be the cause ?
+>>
 > 
-> what can, besides an explicit call, resume a suspended task ? I created 
-> and started a child task, then shadowed the current thread with T_SUSP 
-> flag. The child was supposed to call rt_task_resume to wake-up the 
-> parent and let it terminate the process, but, the parent was resumed 
-> before this call. The call to rt_task_suspend in parent returned 0. The 
-> program uses SIGALRM signal. Could this be the cause ?
->
+> Yes, but the syscall should be silently restarted by default. This patch should
+> fix the issue:
+> 
 
-Yes, but the syscall should be silently restarted by default. This patch should
-fix the issue:
+This one will compile:
 
 --- ksrc/skins/native/task.c	(revision 3698)
 +++ ksrc/skins/native/task.c	(working copy)
@@ -63,7 +67,7 @@ fix the issue:
 +	if (task->suspend_depth++ == 0) {
  		xnpod_suspend_thread(&task->thread_base, XNSUSP,
  				     XN_INFINITE, XN_RELATIVE, NULL);
-+		if (xnthread_test_info(task, XNBREAK))
++		if (xnthread_test_info(&task->thread_base, XNBREAK))
 +			err = -EINTR;
 +	}
 
