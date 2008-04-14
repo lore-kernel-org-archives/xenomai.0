@@ -1,15 +1,14 @@
-Message-ID: <4803BF9F.6010507@domain.hid>
-Date: Mon, 14 Apr 2008 22:33:35 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4803C398.9000601@domain.hid>
+Date: Mon, 14 Apr 2008 16:50:32 -0400
+From: Tomas Kalibera <kalibera@domain.hid>
 MIME-Version: 1.0
-References: <4802A8F4.4090108@domain.hid> <4803073B.3060802@domain.hid>
-	<48039113.2000905@domain.hid>
-In-Reply-To: <48039113.2000905@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4802D528.5090404@domain.hid> <48031412.2000409@domain.hid>
+	<48031545.6050106@domain.hid> <4803B821.6050101@domain.hid>
+	<4803BF62.7010905@domain.hid>
+In-Reply-To: <4803BF62.7010905@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Interrupt propagation question
-Reply-To: rpm@xenomai.org
+Subject: Re: [Xenomai-help] Suspended task resumed without rt_task_resume ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,116 +18,111 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Tomas Kalibera <kalibera@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-Tomas Kalibera wrote:
-> 
-> Hi,
-> 
-> so I've gone through the sources and made my guesses. When called from
-> user space, rt_intr_create results in a kernel-space handler being
-> installed using kernel-space rt_intr_create. The kernel handler only
-> counts received interrupts, exiting as soon as the count is updated. The
-> kernel handler is called with the interrupt disabled. On return, it uses
-> the I_NOAUTOENA flag from the user space call to rt_intr_create. When
-> the flag is set, the interrupts should stay disabled at hardware level
-> unless explicitly enabled by application.
-> 
-> If rt_intr_wait is called from user space, it blocks until interrupt
-> count is >=1, then returns the interrupt count. Enabling/disabling
-> interrupts has thus no direct impact on rt_intr_wait returning - if some
-> interrupts are left to handle, rt_intr_wait will return even if the
-> interrupt is disabled.
-> 
-> As far as my guesses based on the code are correct, rt_intr_enable and
-> rt_intr_disable called from user space should do end up in the
-> interrupts being enabled/disabled at hardware level. A simple example
-> however does not seem to follow this - I disable interrupts, do not
-> enable it, and they're still received. Why could this be happening ? Is
-> there a way to inquire if the interrupt is really disabled, at
-> application level ?
+
+Philippe Gerum wrote:
+>> does your patch fix also the situation when the task is suspended via
+>> T_SUSP flag from rt_task_shadow (and calls which start tasks, for that
+>> matter) ?
+>>     
 >
+> No, that is a different case; this patches only ensures that rt_task_suspend()
+> shall be automatically restarted upon signal receipt when called for the running
+> task.
+>   
+I thought that the user space call to rt_task_suspend should return 
+-EINTR. So where is the automatic restarting ?
+>> Then I've applied your patch to task.c in my kernel tree, recompiled the
+>> kernel, and my task is still getting resumed too early, returning 0.
+>> Even when I use rt_task_suspend. Could this be caused by something else ?
+>>     
+>
+> No, it does happen due to the shadowed task receiving SIGALRM. If you don't want
+> this to happen, just block the signals before calling rt_task_shadow(). There is
+> no other way, we may not restart the shadow mapping request upon signal receipt
+> anyway.
+>   
+OK, lets forget about rt_task_shadow, I agree the repetition/EINTR 
+semantics would be non-intuitive there. But even rt_task_suspend is 
+interrupted by signal, returning 0, even after applying the patch. I 
+don't quite understand why.
 
-What do
-
-$ cat /proc/interrupts
-and
-$ cat /proc/xenomai/irq
-
-say?
-
-
-> Tomas
-> 
-> Philippe Gerum wrote:
->> Tomas Kalibera wrote:
->>  
->>> Hi,
->>>
->>> I'm receiving interrupts in Xenomai user-domain using rt_intr_wait.
->>> What is the semantics of rt_intr_enable and rt_intr_disable ? And
->>> I_NOAUTOENA ?
->>>
->>> I used I_NOAUTOENA when calling rt_intr_create. I thought that after
->>> returning from rt_intr_wait, the interrupt would be disabled before I
->>> explicitly call rt_intr_enable. However, next call to rt_intr_wait
->>> happily returned with the next interrupt, as opposed to blocking
->>> indefinitely. Why ? Does rt_intr_wait automatically re-enable the
->>> interrupt ?
->>>
->>> I tried to intentionally loose interrupts - I called rt_intr_enable
->>> while handling an interrupt intentionally before making the hardware
->>> generate next one. Still, the next call to rt_intr_wait did return
->>> (the interrupt was not lost). How could this happen ? If interrupts
->>> are logged anyway, what the rt_intr_enable/disable does ?
->>>
->>> I read in the API documentation
->>>
->>> "Interrupt receipts are logged if they cannot be delivered
->>> immediately to some interrupt server task, so that a call to
->>> rt_intr_wait()
->>> <http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__interrupt.html#g222e6a9a681f83b13ed5b51021711f4d>
->>> might return immediately if an IRQ is already pending on entry of the
->>> service."
->>>
->>> How does Xenomai find out about this ? I mean, if a "interrupt server
->>> task" is not presently blocked in rt_intr_wait for a particular
->>> interrupt, how does Xenomai know that a task is actually an
->>> "interrupt server task" ? When does this association happen ? Does a
->>> call to rt_intr_create make Xenomai log interrupts for the domain
->>> from which rt_intr_create was called ?
->>>
->>>     
->>
->> This call delivers interrupts to the Xenomai domain, only.
->>
->> For the rest, have a look at ksrc/skins/native/syscall.c,
->> __rt_intr_wait, and
->> __rt_intr_handler.
->>
->>  
->>> Thanks !
->>> Tomas
->>>
->>>
->>>
->>>
->>>
->>>
->>> _______________________________________________
->>> Xenomai-help mailing list
->>> Xenomai-help@domain.hid
->>> https://mail.gna.org/listinfo/xenomai-help
->>>
->>>     
+Tomas
+>   
+>> Thanks,
+>> Tomas
 >>
 >>
->>   
-> 
-> 
+>>
+>> Philippe Gerum wrote:
+>>     
+>>> Philippe Gerum wrote:
+>>>  
+>>>       
+>>>> Tomas Kalibera wrote:
+>>>>    
+>>>>         
+>>>>> Hi,
+>>>>>
+>>>>> what can, besides an explicit call, resume a suspended task ? I
+>>>>> created and started a child task, then shadowed the current thread
+>>>>> with T_SUSP flag. The child was supposed to call rt_task_resume to
+>>>>> wake-up the parent and let it terminate the process, but, the parent
+>>>>> was resumed before this call. The call to rt_task_suspend in parent
+>>>>> returned 0. The program uses SIGALRM signal. Could this be the cause ?
+>>>>>
+>>>>>       
+>>>>>           
+>>>> Yes, but the syscall should be silently restarted by default. This
+>>>> patch should
+>>>> fix the issue:
+>>>>
+>>>>     
+>>>>         
+>>> This one will compile:
+>>>
+>>> --- ksrc/skins/native/task.c    (revision 3698)
+>>> +++ ksrc/skins/native/task.c    (working copy)
+>>> @@ -410,11 +410,17 @@
+>>>   * A nesting count is maintained so that rt_task_suspend() and
+>>>   * rt_task_resume() must be used in pairs.
+>>>   *
+>>> + * Receiving a Linux signal causes the suspended task to resume
+>>> + * immediately.
+>>> + *
+>>>   * @param task The descriptor address of the affected task. If @a task
+>>>   * is NULL, the current task is suspended.
+>>>   *
+>>>   * @return 0 is returned upon success. Otherwise:
+>>>   *
+>>> + * - -EINTR is returned if a Linux signal has been received by the
+>>> + * suspended task.
+>>> + *
+>>>   * - -EINVAL is returned if @a task is not a task descriptor.
+>>>   *
+>>>   * - -EPERM is returned if the addressed @a task is not allowed to sleep
+>>> @@ -463,9 +469,12 @@
+>>>          goto unlock_and_exit;
+>>>      }
+>>>
+>>> -    if (task->suspend_depth++ == 0)
+>>> +    if (task->suspend_depth++ == 0) {
+>>>          xnpod_suspend_thread(&task->thread_base, XNSUSP,
+>>>                       XN_INFINITE, XN_RELATIVE, NULL);
+>>> +        if (xnthread_test_info(&task->thread_base, XNBREAK))
+>>> +            err = -EINTR;
+>>> +    }
+>>>
+>>>        unlock_and_exit:
+>>>
+>>>
+>>>   
+>>>       
+>>     
+>
+>
+>   
 
-
--- 
-Philippe.
 
