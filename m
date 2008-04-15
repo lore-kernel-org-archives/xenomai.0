@@ -1,10 +1,13 @@
-Date: Tue, 15 Apr 2008 14:26:28 +0200
-Message-Id: <1071035914@domain.hid>
+Message-ID: <4804BF8B.3050103@domain.hid>
+Date: Tue, 15 Apr 2008 16:45:31 +0200
+From: Anders Blomdell <anders.blomdell@domain.hid>
 MIME-Version: 1.0
-From: Jochen Behnke <JK.Behnke@domain.hid>
-Content-Type: text/plain; charset=iso-8859-15
+References: <47FFB7D3.3040000@domain.hid>
+	<18432.49619.109362.265306@domain.hid>
+In-Reply-To: <18432.49619.109362.265306@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] system() call allowed from within RT task ?
+Subject: [Xenomai-help] xeno_16550A and multiple channels
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,34 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-Hello,
+With a PCI multiport I/O-card, configured with:
 
-within my application I use system() calls from within a xenomai task.
-Is this allowed ?
+  modprobe xeno_16550A.ko io=0xd400,0xd080 irq=5,5
 
-The reason I'm asking this, is the following:
-In my application I have multiple xenomai tasks. One of them is time critical (Task_A).
-An other (non time critical) xenomai task (Task_B) is used to pass data back
-and forth between Task_A and normal linux tasks. Task_B uses the system()-call
-to accomplish certain requests.
-I have set the T_WARNSW for Task_A in order to get a SIGXCPU, whenever it switches
-to secondary mode. As long as Task_B is not executing a sytem() call, everything is fine.
-But when for example Task_B executes a system("cp -R dirA dirB") the application terminates
-due to a SIGXCPU signal.
+I can't get cross-link to work. This is what I get:
 
-I'm using 
-- Linux Kernel 2.6.17 (I-PIPE 1.5-02)
-- Xenomai 2.3.0
-- Celeron 600MHz System
+  main : write-file opened
+  main : write-config written
+  main : can't open rtser1 (read), Device or resource busy
+  main : rtser0 (write) -> closed
 
+The reason is that the second call (xeno_16550A.c) to:
 
-Regards
+  err = rtdm_irq_request(&ctx->irq_handle, irq[dev_id],
+			 rt_16550_interrupt,
+			 RTDM_IRQTYPE_SHARED | RTDM_IRQTYPE_EDGE,
+			 context->device->proc_name, ctx);
 
-Jochen
-_________________________________________________________________________
-In 5 Schritten zur eigenen Homepage. Jetzt Domain sichern und gestalten! 
-Nur 3,99 EUR/Monat! http://www.maildomain.web.de/?mc=021114
+returns -16.
 
+This somehow makes sense since rtser0 and rtser1 uses the same interrupt, but
+having multiple channels sharing the same interrupt seems to be a valid usecase
+according to http://www.xenomai.org/index.php/16550A.
+
+Kernel version is 2.6.24.3 and Xenomai version is 2.4.2.
+
+Any ideas of what might be wrong?
+
+/Anders
+
+-- 
+Anders Blomdell                  Email: anders.blomdell@domain.hid
+Department of Automatic Control
+Lund University                  Phone:    +46 46 222 4625
+P.O. Box 118                     Fax:      +46 46 138118
+SE-221 00 Lund, Sweden
 
