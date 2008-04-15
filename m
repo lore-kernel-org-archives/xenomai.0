@@ -1,14 +1,12 @@
-Message-ID: <4804E129.2040605@domain.hid>
-Date: Tue, 15 Apr 2008 13:08:57 -0400
-From: Tomas Kalibera <kalibera@domain.hid>
 MIME-Version: 1.0
-References: <4802A8F4.4090108@domain.hid> <4803073B.3060802@domain.hid>
-	<48039113.2000905@domain.hid> <4803BF9F.6010507@domain.hid>
-	<4803D33B.5050507@domain.hid> <48045AEF.5000005@domain.hid>
-In-Reply-To: <48045AEF.5000005@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Interrupt propagation question
+Message-ID: <18436.57262.245122.638753@domain.hid>
+Date: Tue, 15 Apr 2008 19:02:38 +0200
+In-Reply-To: <1071035914@domain.hid>
+References: <1071035914@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] system() call allowed from within RT task ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,113 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Jochen Behnke <JK.Behnke@domain.hid>
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> The serial interrupt on your box is edge, so it won't be masked on arrival but
-> only acked. That behaviour is therefore normal.
->   
-I see. So to disable/enable interrupts, Xenomai does not talk directly 
-to the controller, but to (non-Xenomai) Linux kernel. Which, as it uses 
-split-handlers, acks edge interrupts, but does not mask them, to 
-minimize the chance they're lost. So if I wanted to do non-split 
-handling in Xenomai primary user-space domain, I'd probably have to 
-modify the kernel anyway to mask edge interrupts, too..
+Jochen Behnke wrote:
+ > Hello,
+ > 
+ > within my application I use system() calls from within a xenomai task.
+ > Is this allowed ?
+ > 
+ > The reason I'm asking this, is the following:
+ > In my application I have multiple xenomai tasks. One of them is time critical (Task_A).
+ > An other (non time critical) xenomai task (Task_B) is used to pass data back
+ > and forth between Task_A and normal linux tasks. Task_B uses the system()-call
+ > to accomplish certain requests.
+ > I have set the T_WARNSW for Task_A in order to get a SIGXCPU, whenever it switches
+ > to secondary mode. As long as Task_B is not executing a sytem() call, everything is fine.
+ > But when for example Task_B executes a system("cp -R dirA dirB") the application terminates
+ > due to a SIGXCPU signal.
+ > 
+ > I'm using 
+ > - Linux Kernel 2.6.17 (I-PIPE 1.5-02)
 
-When I disable IO-APIC in Linux kernel, the serial line uses XT-PIC, and 
-interrupts are enabled/disabled using rt_intr_enable/disable as expected.
+I-pipe 1.5-02 is too old. only more recent I-pipe patches have the
+necessary support to allow real-time applications to call fork (or
+system).
 
-Tomas
 
->   
->> Tomas
->>
->>
->>
->>
->>     
->>>  
->>>       
->>>> Tomas
->>>>
->>>> Philippe Gerum wrote:
->>>>    
->>>>         
->>>>> Tomas Kalibera wrote:
->>>>>  
->>>>>      
->>>>>           
->>>>>> Hi,
->>>>>>
->>>>>> I'm receiving interrupts in Xenomai user-domain using rt_intr_wait.
->>>>>> What is the semantics of rt_intr_enable and rt_intr_disable ? And
->>>>>> I_NOAUTOENA ?
->>>>>>
->>>>>> I used I_NOAUTOENA when calling rt_intr_create. I thought that after
->>>>>> returning from rt_intr_wait, the interrupt would be disabled before I
->>>>>> explicitly call rt_intr_enable. However, next call to rt_intr_wait
->>>>>> happily returned with the next interrupt, as opposed to blocking
->>>>>> indefinitely. Why ? Does rt_intr_wait automatically re-enable the
->>>>>> interrupt ?
->>>>>>
->>>>>> I tried to intentionally loose interrupts - I called rt_intr_enable
->>>>>> while handling an interrupt intentionally before making the hardware
->>>>>> generate next one. Still, the next call to rt_intr_wait did return
->>>>>> (the interrupt was not lost). How could this happen ? If interrupts
->>>>>> are logged anyway, what the rt_intr_enable/disable does ?
->>>>>>
->>>>>> I read in the API documentation
->>>>>>
->>>>>> "Interrupt receipts are logged if they cannot be delivered
->>>>>> immediately to some interrupt server task, so that a call to
->>>>>> rt_intr_wait()
->>>>>> <http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__interrupt.html#g222e6a9a681f83b13ed5b51021711f4d>
->>>>>>
->>>>>> might return immediately if an IRQ is already pending on entry of the
->>>>>> service."
->>>>>>
->>>>>> How does Xenomai find out about this ? I mean, if a "interrupt server
->>>>>> task" is not presently blocked in rt_intr_wait for a particular
->>>>>> interrupt, how does Xenomai know that a task is actually an
->>>>>> "interrupt server task" ? When does this association happen ? Does a
->>>>>> call to rt_intr_create make Xenomai log interrupts for the domain
->>>>>> from which rt_intr_create was called ?
->>>>>>
->>>>>>             
->>>>>>             
->>>>> This call delivers interrupts to the Xenomai domain, only.
->>>>>
->>>>> For the rest, have a look at ksrc/skins/native/syscall.c,
->>>>> __rt_intr_wait, and
->>>>> __rt_intr_handler.
->>>>>
->>>>>  
->>>>>      
->>>>>           
->>>>>> Thanks !
->>>>>> Tomas
->>>>>>
->>>>>>
->>>>>>
->>>>>>
->>>>>>
->>>>>>
->>>>>> _______________________________________________
->>>>>> Xenomai-help mailing list
->>>>>> Xenomai-help@domain.hid
->>>>>> https://mail.gna.org/listinfo/xenomai-help
->>>>>>
->>>>>>             
->>>>>>             
->>>>>         
->>>>>           
->>>>     
->>>>         
->>>   
->>>       
->
->
->   
+-- 
 
+
+					    Gilles.
 
