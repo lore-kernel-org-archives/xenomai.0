@@ -1,13 +1,14 @@
-Message-ID: <4804C64A.4030102@domain.hid>
-Date: Tue, 15 Apr 2008 17:14:18 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4804E129.2040605@domain.hid>
+Date: Tue, 15 Apr 2008 13:08:57 -0400
+From: Tomas Kalibera <kalibera@domain.hid>
 MIME-Version: 1.0
-References: <47FFB7D3.3040000@domain.hid>	<18432.49619.109362.265306@domain.hid>
-	<4804BF8B.3050103@domain.hid>
-In-Reply-To: <4804BF8B.3050103@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4802A8F4.4090108@domain.hid> <4803073B.3060802@domain.hid>
+	<48039113.2000905@domain.hid> <4803BF9F.6010507@domain.hid>
+	<4803D33B.5050507@domain.hid> <48045AEF.5000005@domain.hid>
+In-Reply-To: <48045AEF.5000005@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] xeno_16550A and multiple channels
+Subject: Re: [Xenomai-help] Interrupt propagation question
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,43 +18,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Anders Blomdell <anders.blomdell@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-Anders Blomdell wrote:
-> With a PCI multiport I/O-card, configured with:
-> 
->   modprobe xeno_16550A.ko io=0xd400,0xd080 irq=5,5
-> 
-> I can't get cross-link to work. This is what I get:
-> 
->   main : write-file opened
->   main : write-config written
->   main : can't open rtser1 (read), Device or resource busy
->   main : rtser0 (write) -> closed
-> 
-> The reason is that the second call (xeno_16550A.c) to:
-> 
->   err = rtdm_irq_request(&ctx->irq_handle, irq[dev_id],
-> 			 rt_16550_interrupt,
-> 			 RTDM_IRQTYPE_SHARED | RTDM_IRQTYPE_EDGE,
-> 			 context->device->proc_name, ctx);
-> 
-> returns -16.
-> 
-> This somehow makes sense since rtser0 and rtser1 uses the same interrupt, but
-> having multiple channels sharing the same interrupt seems to be a valid usecase
-> according to http://www.xenomai.org/index.php/16550A.
-> 
-> Kernel version is 2.6.24.3 and Xenomai version is 2.4.2.
-> 
-> Any ideas of what might be wrong?
+Philippe Gerum wrote:
+> The serial interrupt on your box is edge, so it won't be masked on arrival but
+> only acked. That behaviour is therefore normal.
+>   
+I see. So to disable/enable interrupts, Xenomai does not talk directly 
+to the controller, but to (non-Xenomai) Linux kernel. Which, as it uses 
+split-handlers, acks edge interrupts, but does not mask them, to 
+minimize the chance they're lost. So if I wanted to do non-split 
+handling in Xenomai primary user-space domain, I'd probably have to 
+modify the kernel anyway to mask edge interrupts, too..
 
-CONFIG_XENO_OPT_SHIRQ?
+When I disable IO-APIC in Linux kernel, the serial line uses XT-PIC, and 
+interrupts are enabled/disabled using rt_intr_enable/disable as expected.
 
-Jan
+Tomas
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+>   
+>> Tomas
+>>
+>>
+>>
+>>
+>>     
+>>>  
+>>>       
+>>>> Tomas
+>>>>
+>>>> Philippe Gerum wrote:
+>>>>    
+>>>>         
+>>>>> Tomas Kalibera wrote:
+>>>>>  
+>>>>>      
+>>>>>           
+>>>>>> Hi,
+>>>>>>
+>>>>>> I'm receiving interrupts in Xenomai user-domain using rt_intr_wait.
+>>>>>> What is the semantics of rt_intr_enable and rt_intr_disable ? And
+>>>>>> I_NOAUTOENA ?
+>>>>>>
+>>>>>> I used I_NOAUTOENA when calling rt_intr_create. I thought that after
+>>>>>> returning from rt_intr_wait, the interrupt would be disabled before I
+>>>>>> explicitly call rt_intr_enable. However, next call to rt_intr_wait
+>>>>>> happily returned with the next interrupt, as opposed to blocking
+>>>>>> indefinitely. Why ? Does rt_intr_wait automatically re-enable the
+>>>>>> interrupt ?
+>>>>>>
+>>>>>> I tried to intentionally loose interrupts - I called rt_intr_enable
+>>>>>> while handling an interrupt intentionally before making the hardware
+>>>>>> generate next one. Still, the next call to rt_intr_wait did return
+>>>>>> (the interrupt was not lost). How could this happen ? If interrupts
+>>>>>> are logged anyway, what the rt_intr_enable/disable does ?
+>>>>>>
+>>>>>> I read in the API documentation
+>>>>>>
+>>>>>> "Interrupt receipts are logged if they cannot be delivered
+>>>>>> immediately to some interrupt server task, so that a call to
+>>>>>> rt_intr_wait()
+>>>>>> <http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__interrupt.html#g222e6a9a681f83b13ed5b51021711f4d>
+>>>>>>
+>>>>>> might return immediately if an IRQ is already pending on entry of the
+>>>>>> service."
+>>>>>>
+>>>>>> How does Xenomai find out about this ? I mean, if a "interrupt server
+>>>>>> task" is not presently blocked in rt_intr_wait for a particular
+>>>>>> interrupt, how does Xenomai know that a task is actually an
+>>>>>> "interrupt server task" ? When does this association happen ? Does a
+>>>>>> call to rt_intr_create make Xenomai log interrupts for the domain
+>>>>>> from which rt_intr_create was called ?
+>>>>>>
+>>>>>>             
+>>>>>>             
+>>>>> This call delivers interrupts to the Xenomai domain, only.
+>>>>>
+>>>>> For the rest, have a look at ksrc/skins/native/syscall.c,
+>>>>> __rt_intr_wait, and
+>>>>> __rt_intr_handler.
+>>>>>
+>>>>>  
+>>>>>      
+>>>>>           
+>>>>>> Thanks !
+>>>>>> Tomas
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> _______________________________________________
+>>>>>> Xenomai-help mailing list
+>>>>>> Xenomai-help@domain.hid
+>>>>>> https://mail.gna.org/listinfo/xenomai-help
+>>>>>>
+>>>>>>             
+>>>>>>             
+>>>>>         
+>>>>>           
+>>>>     
+>>>>         
+>>>   
+>>>       
+>
+>
+>   
+
 
