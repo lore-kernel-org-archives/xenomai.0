@@ -1,13 +1,10 @@
-Message-ID: <4804E49D.1090602@domain.hid>
-Date: Tue, 15 Apr 2008 19:23:41 +0200
-From: Anders Blomdell <anders.blomdell@domain.hid>
+Date: Tue, 15 Apr 2008 21:17:09 +0200
+Message-Id: <1071861222@domain.hid>
 MIME-Version: 1.0
-References: <47FFB7D3.3040000@domain.hid>	<18432.49619.109362.265306@domain.hid>
-	<4804BF8B.3050103@domain.hid> <4804C64A.4030102@domain.hid>
-In-Reply-To: <4804C64A.4030102@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] xeno_16550A and multiple channels
+From: Jochen Behnke <JK.Behnke@domain.hid>
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] system() call allowed from within RT task ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,66 +14,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Anders Blomdell wrote:
->> With a PCI multiport I/O-card, configured with:
->>
->>   modprobe xeno_16550A.ko io=0xd400,0xd080 irq=5,5
->>
->> I can't get cross-link to work. This is what I get:
->>
->>   main : write-file opened
->>   main : write-config written
->>   main : can't open rtser1 (read), Device or resource busy
->>   main : rtser0 (write) -> closed
->>
->> The reason is that the second call (xeno_16550A.c) to:
->>
->>   err = rtdm_irq_request(&ctx->irq_handle, irq[dev_id],
->> 			 rt_16550_interrupt,
->> 			 RTDM_IRQTYPE_SHARED | RTDM_IRQTYPE_EDGE,
->> 			 context->device->proc_name, ctx);
->>
->> returns -16.
->>
->> This somehow makes sense since rtser0 and rtser1 uses the same interrupt, but
->> having multiple channels sharing the same interrupt seems to be a valid usecase
->> according to http://www.xenomai.org/index.php/16550A.
->>
->> Kernel version is 2.6.24.3 and Xenomai version is 2.4.2.
->>
->> Any ideas of what might be wrong?
-> 
-> CONFIG_XENO_OPT_SHIRQ?
 
-Right, I had forgot to set:
+> -----Urspr=FCngliche Nachricht-----
+> Von: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+> Gesendet: 15.04.08 19:02:58
+> An: Jochen Behnke <JK.Behnke@domain.hid>
+> CC: xenomai@xenomai.org
+> Betreff: Re: [Xenomai-help] system() call allowed from within RT task =3F
 
-  CONFIG_XENO_OPT_SHIRQ=y
+Hello Gilles,
 
-How about a printk to warn if it's not enabled?
+thanks four your quick response.=20
+Which I-pipe/Xenomai version would you recommend =3F
+(probably the latest )
 
-static inline int xnintr_irq_attach(xnintr_t *intr)
-{
-  if (intr->flags & XN_ISR_SHARED) {
-    printk(KERN_WARNING "CONFIG_XENO_OPT_SHIRQ not set\n")
-  }
+Regards
+Jochen
 
-  return xnarch_hook_irq(intr->irq, &xnintr_irq_handler, intr->iack, intr);
-}
+>=20
+> Jochen Behnke wrote:
+>  > Hello,
+>  >=20
+>  > within my application I use system() calls from within a xenomai task=
+.
+>  > Is this allowed =3F
+>  >=20
+>  > The reason I'm asking this, is the following:
+>  > In my application I have multiple xenomai tasks. One of them is time =
+critical (Task=5FA).
+>  > An other (non time critical) xenomai task (Task=5FB) is used to pass da=
+ta back
+>  > and forth between Task=5FA and normal linux tasks. Task=5FB uses the syst=
+em()-call
+>  > to accomplish certain requests.
+>  > I have set the T=5FWARNSW for Task=5FA in order to get a SIGXCPU, wheneve=
+r it switches
+>  > to secondary mode. As long as Task=5FB is not executing a sytem() call,=
+ everything is fine.
+>  > But when for example Task=5FB executes a system("cp -R dirA dirB") the =
+application terminates
+>  > due to a SIGXCPU signal.
+>  >=20
+>  > I'm using=20
+>  > - Linux Kernel 2.6.17 (I-PIPE 1.5-02)
+>=20
+> I-pipe 1.5-02 is too old. only more recent I-pipe patches have the
+> necessary support to allow real-time applications to call fork (or
+> system).
+>=20
+>=20
+> --=20
+>=20
+>=20
+> 					    Gilles.
+>=20
 
-To give bummers like me a hint of what might be wrong.
 
-Thanks
+=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
+Unbegrenzter Speicherplatz f=FCr Ihr E-Mail Postfach=3F Jetzt aktivieren!
+http://freemail.web.de/club/landingpage.htm/=3Fmc=3D025555
 
-Anders
-
--- 
-Anders Blomdell                  Email: anders.blomdell@domain.hid
-Department of Automatic Control
-Lund University                  Phone:    +46 46 222 4625
-P.O. Box 118                     Fax:      +46 46 138118
-SE-221 00 Lund, Sweden
 
