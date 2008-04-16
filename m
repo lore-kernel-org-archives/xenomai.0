@@ -1,13 +1,11 @@
-Message-ID: <2ff1a98a0804160643p215226f8p405edc2855d62eeb@domain.hid>
-Date: Wed, 16 Apr 2008 15:43:28 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <OFE8C7C220.001FDB8A-ONC125742D.004982E9-C125742D.004A8124@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Message-Id: <48061A5C02000001001933E4@domain.hid>
+Date: Wed, 16 Apr 2008 15:25:16 -0400
+From: "Hubert Talbot" <Hubert.Talbot@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-References: <OFE8C7C220.001FDB8A-ONC125742D.004982E9-C125742D.004A8124@domain.hid>
-Subject: Re: [Xenomai-help] ddd hangs system
+Subject: [Xenomai-help] testsuite - information
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,26 +15,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "G.P.M. Haagh" <g.p.m.haagh@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, Apr 16, 2008 at 3:35 PM, G.P.M. Haagh <g.p.m.haagh@domain.hid> wrote:
->
->
-> When I use ddd to debug a rt user space program, my system hangs immediately
-> when pressing 'RUN' after setting a breakpoint.
->  (kernel 2.6.20.1, xenomai 2.3.4, native skin, posix skin)
->
->  ddd ./program
->  open a source file
->  set breakpoint
->  press run
->
->  everything freezes; power cycle needed.
+Hi,
 
-Could you get a console output at this point ? Either using serial
-console, or running your example in text mode ?
+I start clocktest but I don't know how to interpret results.
 
--- 
- Gilles
+In general, is there a place to find description (goal) of tests in =
+testsuite and how to interpret results of each of them?
+
+Thanks
+
+Hubert
+
 
