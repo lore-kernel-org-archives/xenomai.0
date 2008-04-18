@@ -1,13 +1,12 @@
-Message-ID: <d6c8ef150804180808y4d399365gad93fee2f1f9caa0@domain.hid>
-Date: Fri, 18 Apr 2008 17:08:48 +0200
-From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
-In-Reply-To: <2ff1a98a0804180748o4dc88c91of90e8e26c36d32ed@domain.hid>
+Message-ID: <4808C5E4.2000603@domain.hid>
+Date: Fri, 18 Apr 2008 18:01:40 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 References: <d6c8ef150804180733k3e2b2bc0p1255b84e16062f05@domain.hid>
 	<2ff1a98a0804180748o4dc88c91of90e8e26c36d32ed@domain.hid>
+In-Reply-To: <2ff1a98a0804180748o4dc88c91of90e8e26c36d32ed@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Handling interrupt - jitter
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -21,26 +20,40 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-On Fri, Apr 18, 2008 at 4:48 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
+Gilles Chanteperdrix wrote:
+> On Fri, Apr 18, 2008 at 4:33 PM, Bosko Radivojevic
+> <bosko.radivojevic@domain.hid> wrote:
+>> Hi,
+>>
+>>  I'm having (from my perspective) too big jitter on handling
+>>  interrupts. System is: ARM9, AT91SAM9260, Kernel 2.6.20.21, Adeos
+>>  1.8-03, Xenomai-2.4.2, interrupt is generated every 1ms, externally.
+> 
+> It's funny to notice how much you asked for the 2.6.24 patch for
+> actually not using it.
+> 
+>>  Interrupt source (ET1200) is connected to IRQ1 pin (PC15). I'm using
+>>  native skin from user space. Usually, handler 'reacts' after ~110us,
+>>  but, worst case delay is around 250us! Is this performance
+>>  normal/expected on my platform? Why the difference is so huge?
+> 
+>>  Is there anything I can do to get better results (with this hw:)?
+> 
+> 250 us is the user-space dispatch latency you obtain with the
+> "latency" test on a properly loaded target. It is the time for a
+> user-space context switch with a full cache flush. To reduce this
+> latency you have to:
+> - handle interrupts in kernel space, so that you will be limited by
+> interrupt latency, not user-space scheduling latency
+> - use trunk so that user-space context switches involving real-time
+> threads do not happen with hardware interrupts off.
 
->  It's funny to notice how much you asked for the 2.6.24 patch for
->  actually not using it.
+I started to do some external interrupt latency measurements with
+gpioirqbench showing also the effect of handling the interrupt in
+user-space, kernel-space or even the interrupt handler on two PowerPC
+systems. For further information, have a look to
 
-:) Actually, I've tried with the 2.6.24.3, Adeos 1.9-01 & Xenomai
-2.4.3 before I posted my mail, but results are the same. And, yes, I'm
-using it heavily, but because of some other 'compatibility issues' I
-still haven't fully migrated to the 2.6.24. Thank you very much for
-migrating Adeos to 2.6.24, I really appreciate it.
+  http://www.denx.de/wiki/DULG/AN2008_03_Xenomai_gpioirqbench
 
->  - handle interrupts in kernel space, so that you will be limited by
->  interrupt latency, not user-space scheduling latency
->  - use trunk so that user-space context switches involving real-time
->  threads do not happen with hardware interrupts off.
-
-Will I get anything using xenomai-trunk, and still handling interrupt
-from user-space?
-
-Thanks,
-Bosko
+Wolfgang.
 
