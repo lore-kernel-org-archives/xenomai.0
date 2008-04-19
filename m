@@ -1,10 +1,14 @@
-Message-ID: <480A4F7F.4000909@domain.hid>
-Date: Sat, 19 Apr 2008 22:01:03 +0200
-From: Roland Stigge <stigge@domain.hid>
+Message-ID: <480A57BD.2010905@domain.hid>
+Date: Sat, 19 Apr 2008 22:36:13 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Debian lintian warning: symlink-is-self-recursive
+References: <480A4F99.7040701@domain.hid>
+In-Reply-To: <480A4F99.7040701@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig99B52751641B04491A72BDBC"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] Missing manual pages
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,34 +18,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Roland Stigge <stigge@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig99B52751641B04491A72BDBC
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Debian's lintian(1), the package checker, tells me:
+Roland Stigge wrote:
+> Hi,
+>=20
+> recently, a Xenomai developer in Munich remarked that Debian developers=
 
-=========================================================================
-W: libxenomai-dev: symlink-is-self-recursive
-usr/include/xenomai/asm-generic/xenomai .
-N:
-N:   The symbolic link is recursive to a higher directory of the symlink
-N:   itself. This means, that you can infinitely chdir with this symlink.
-N:   This is usually not okay, but sometimes wanted behaviour.
-N:
-W: libxenomai-dev: symlink-is-self-recursive
-usr/include/xenomai/asm-sim/asm .
-W: libxenomai-dev: symlink-is-self-recursive
-usr/include/xenomai/asm-sim/xenomai .
-W: libxenomai-dev: symlink-is-self-recursive
-usr/include/xenomai/asm-x86/xenomai .
-W: libxenomai-dev: symlink-is-self-recursive usr/include/xenomai/xenomai .
-=========================================================================
+> are sometimes nitpickers. Right.
 
-I.e. installing Xenomai created those recursive links which might be
-there for source compatibility reasons. Can they be removed at some
-point or should I accept the above issue as intended for the future?
+While nitpicking can sometimes be useful, though...
 
-Thanks,
+> Debian requires a man page for every
+> executable. Therefore, I wrote the remaining ones. Attached are the
+> following files:
 
-Roland
+=2E.. e.g. when it explains the background of these tests to Xenomai
+beginners. Great!
+
+So, let's do more nitpicking:
+> '\" t
+> .\" ** The above line should force tbl to be a preprocessor **
+> .\" Man page for cyclictest
+> .\"
+> .\" Copyright (C) 2008 Roland Stigge <stigge@domain.hid>
+> .\"
+> .\" You may distribute under the terms of the GNU General Public
+> .\" License as specified in the file COPYING that comes with the
+> .\" Xenomai distribution.
+> .\"
+> .pc
+> .TH CLOCKTEST 1 "2008-04-01" "@PACKAGE_VERSION@" "Xenomai"
+
+Copy&paste error I assume. :)
+
+> clocktest \- Xenomai Clock Test
+> .SH SYNOPSIS
+> .\" The general command line
+> .B clocktest
+> .SH DESCRIPTION
+> \fBclocktest\fP is part of the Xenomai test suite and tests the Clock. =
+For each CPU, it repeatedly prints a time offset (compared to the referen=
+ce gettimeofday()), a drift value, the number of warps and the maximum wa=
+rp in microseconds.
+
+usage: clocktest [options]
+  [-C <clock_id>]              # tested clock, default=3D%d (CLOCK_REALTI=
+ME)
+  [-T <test_duration_seconds>] # default=3D0, so ^C to end
+
+> '\" t
+> .\" ** The above line should force tbl to be a preprocessor **
+> .\" Man page for irqloop
+> .\"
+> .\" Copyright (C) 2008 Roland Stigge <stigge@domain.hid>
+> .\"
+> .\" You may distribute under the terms of the GNU General Public
+> .\" License as specified in the file COPYING that comes with the
+> .\" Xenomai distribution.
+> .\"
+> .pc
+> .TH IRQBENCH 1 "2008-04-19" "@PACKAGE_VERSION@" "Xenomai"
+
+Same as above.
+
+Thanks!
+Jan
+
+
+--------------enig99B52751641B04491A72BDBC
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFIClfFniDOoMHTA+kRAmaSAJ43CaRaDl+wzQFjsWgFWqXrWnnZigCdGLTj
+8tGbjX8DHRewu7wlydl0+aI=
+=owWk
+-----END PGP SIGNATURE-----
+
+--------------enig99B52751641B04491A72BDBC--
 
