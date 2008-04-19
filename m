@@ -1,10 +1,10 @@
-Message-ID: <4808D446.10902@domain.hid>
-Date: Fri, 18 Apr 2008 13:03:02 -0400
-From: "Steven A. Falco" <sfalco@domain.hid>
+Message-ID: <480A4AF3.9010502@domain.hid>
+Date: Sat, 19 Apr 2008 21:41:39 +0200
+From: Roland Stigge <stigge@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Bug in ipipe patch?
+Subject: [Xenomai-core] Debian package xenomai-2.4.3-4 available
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,25 +16,19 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
-I don't know if this has already been reported, but I think there is a
-bug in file:
+[Warning: First in a series of several issues applicable to
+xenomai.org's code.]
 
-    adeos-ipipe-2.6.24-powerpc-DENX-2.1-01.patch
+Hi,
 
-specifically for the file ipipe.c.
+at http://packages.qa.debian.org/x/xenomai.html, you can find the latest
+version of Debian's package "xenomai". The "diff" to xenomai 2.4.3
+applies to the normal Xenomai distribution with an empty debian/ directory.
 
-The macro "EXPORT_SYMBOL_GPL(tasklist_lock)" appears in two places; once
-outside of any ifdef, and once inside the "#else  /* !CONFIG_PPC64 */"
-ifdef.
+Feel free to synchronize the Debian changes back to the mainline Xenomai
+repository, especially the Debian packaging has been fixed.
 
-Consequently, when building for a 32-bit processor, I get a "redefined"
-error:
+Thanks,
 
-/home/sfalco/linux/embedded/ppc3/linux/linux-2.6-denx/arch/powerpc/kernel/ipipe.c:747:
-error: redefinition of '__kstrtab_tasklist_lock'
-/home/sfalco/linux/embedded/ppc3/linux/linux-2.6-denx/arch/powerpc/kernel/ipipe.c:724:
-error: previous definition of '__kstrtab_tasklist_lock' was here
-
-    Steve
-
+Roland
 
