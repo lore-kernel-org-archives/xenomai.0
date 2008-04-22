@@ -1,20 +1,12 @@
-Date: Tue, 22 Apr 2008 16:25:41 +0200 (CEST)
-From: Klaas Gadeyne <klaas.gadeyne@domain.hid>
-In-Reply-To: <480DECDA.3070204@domain.hid>
-Message-ID: <Pine.LNX.4.64.0804221559300.31165@domain.hid>
-References: <Pine.LNX.4.64.0804111759280.5433@domain.hid>
-	<4800B4FA.1050309@domain.hid>
-	<50879.62.235.129.158.1208014366.squirrel@domain.hid>
-	<18432.56533.343662.272421@domain.hid>
-	<Pine.LNX.4.64.0804171657380.18446@domain.hid>
-	<2ff1a98a0804170830v3b2fc392lf320f05a8c7f4e8d@domain.hid>
-	<2ff1a98a0804170846p2dddbea5k3b69dbbc57fb6761@domain.hid>
-	<480775C4.2060302@domain.hid>
-	<Pine.LNX.4.64.0804211731160.26198@domain.hid>
-	<480DECDA.3070204@domain.hid>
+Message-ID: <20080423003208.517khmzxw8o484k0@domain.hid>
+Date: Wed, 23 Apr 2008 00:32:08 +0700
+From: Urs Eichholzer <urs.eichholzer@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Subject: Re: [Xenomai-help] rt_task_sleep_until question
+Content-Type: text/plain;
+	charset=windows-874
+Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] migrate code from xenomai-2.3.0 to xenomai-2.3.4
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,108 +16,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+To: xenomai@xenomai.org
 
-On Tue, 22 Apr 2008, Philippe Gerum wrote:
-> Klaas Gadeyne wrote:
+Hi
 
-[snipping lots of context]
->>>>>>  I noticed that xnpod_suspend_thread offers the possibility to
->>>>> suspend
->>>>>>  a thread "indefinitely" (until unblocked) via the (in the 2.4.x API,
->>>>>>  that is)
->>>>>>
->>>>>>  xnpod_suspend_thread(thread,XNDELAY,XN_INFINITE,XN_RELATIVE,NULL)
->>>>>>
->>>>>>  call.
->>>>>>  However, since TM_INFINITE (and XN_INFINITE) are both defined as
->>>>> being
->>>>>>  zero, calls to rt_task_sleep(TM_INFINITE), are intercepted in the
->>>>>>  implementation of rt_task_sleep [1].  So in the latter case (which I
->>>>>>  would naively---i.e. without looking at API docs--- read as
->>>>> "sleep for
->>>>>>  an infinite amount of time), rt_task_sleep() returns *immediately*.
->>>
->>> This behaviour is explicitly stated in the doc, though. So people
->>> should not be
->>> surprised.
->>
->> That why I added the stuff between the long dashes above :-)  However, if
->> there's even one thing even better than well documented API's, it's
->> well documented _and_ intuitive APIs.
->>
->>>>>>  Would it make sense to change the current behaviour of
->>>>>>  rt_task_sleep(TM_INFINITE) and call
->>>>>>  xnpod_suspend_thread(thread,XNDELAY,XN_INFINITE,XN_RELATIVE,NULL)
->>>>>>  instead of returning 0?
->>>>>>
->>>>>>  One could either do that by
->>>>>>  - altering rt_task_sleep()'s behaviour (not returning zero if
->>>>> delay is
->>>>>> zero)
->>>>>>  - redefining TM_INFINITE
->>>
->>> No way. You don't want to change "magic" values that lightly. This is
->>> why they
->>> are magic in the first place.
->>
->> I know none of them were ideal solutions.  However (AFAIS, that is), *
->> from a user point of view, I would find it convenient to be able to
->>   sleep indefinitely until somebody wakes me up using rt_task_unblock(),
->>   and this is currently not possible.
->> * the nucleus _does_ offer this functionality via the
->>   xnpod_suspend_thread(thread,XNDELAY,XN_INFINITE,XN_RELATIVE,NULL)
->>   call, but I cannot access that functionality in the native skin.
->>
->> So I was wondering if nothing (else) could be done to solve that
->> problem, the concrete use case being a thread which is woken up every
->> time a job has to be done, but which can safely sleep "forever" (until
->> unblocked) if nothing has to be done.
->>
+Can I migrate my code from xenomai-2.3.0 to xenomai-2.3.4 without modification
+on the Linux OS kernel core. Is it possible to modify and patch only the whole
+xenomai source not including the Linux kernel.
+
+Thanks!
+
+Urs
+
+Urs Eichholzer wrote:
+> Hi
 >
-> What's wrong with rt_task_suspend() ?
+> We are using Linux 2.6.19.2 and Xenomai 2.3.0
 
-The current loop code is something like
+Xenomai 2.3.0 is quite old and I recommand to  update to 2.3.5., at lreast
 
-void timerloop_task_proc(void *arg)
-{
-         int ret;
-         int errors = 0;
-         do{
-                 do{
-                         last_occured_alarm = last_alarm_set;
-                         EnterMutex();
-                         TimeDispatch();
-                         LeaveMutex();
-                 }while ((ret = rt_task_sleep_until(last_alarm)) == 0);
-                 if (ret == -ETIMEDOUT){
-                   printf("[TIMERLOOP] Total errors = %d, return code = %d\n",++errors,ret);
-                 }
-         }while (!(stop_timer && ret == -EINTR));
-         printf("End of TimerLoop, code %d, Total errors = %d\n",ret,errors);
-}
+> The problem disapeared when we not changed the baudrate (we try to
+> scan the bus..). What shoult be the time between changing the
+> baudrate?
 
-I could modify that code and put something like
-if (last_alarm == TIMEVAL_MAX) // Nothing else to do, sleep forever
-   rt_task_suspend()
-else
-   rt_task_sleep_until(last_alarm)
+Ah, I see. Does the attached patch help?
 
-However, the one who wants to wake up this thread (e.g. for asking
-this thread to stop) doesn't know in what state the timerthread is.
-It seems clumsy to me if that the one who wants to wake up the thread
-has to try _unblock() first, and the _resume()?
-
-thx,
-
-Klaas
-
-ps.  Note that the original problem I sketched in this thread was due
-to an overflow situation, and that this suggestion to allow to make a
-thread *sleep* forever instead of suspending only tackles _my_
-concrete problem, and doesn't solve the overflow issue.
+Wolfgang.
 
 
+> Thank's
+>
+> Urs
+>
+> From: Wolfgang Grandegger [wg@domain.hid]
+> Sent: Wednesday, April 09, 2008 12:19 AM
+> To: Urs Eichholzer
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai-help] CAN Probleme
+>
+> Hi Urs,
+>
+> Urs Eichholzer wrote:
+>> Hello
+>>
+>> We are just start to use the setup...
+>> We try to read parameters from a device true the CAN. From some
+>> parameters we get proper replay and with other parameters we get the
+>> following message:
+>> rtcan0: btr0=0x05 btr1=0x4f
+>> rtcan0: btr0=0x0a btr1=0x6f
+>> rtcan_mscan_start_xmit: TX buffer not empty
+>
+> Hm, this message is pretty fatal. What version of Linux and Xenomai do
+> you use? What type of parameters do you read when the error message
+> shows up. Can you reproduce the problem with a little example program?
+>
+> Thanks,
+>
+>
+> ----------------------------------------------------------------
+> This message was sent using Samart Web Mail 2005.
+>
+>
+
+
+
+----------------------------------------------------------------
+This message was sent using Samart Web Mail 2005.
 
 
