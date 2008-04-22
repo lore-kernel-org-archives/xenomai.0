@@ -1,24 +1,12 @@
-Message-ID: <480E5107.1060906@domain.hid>
-Date: Tue, 22 Apr 2008 22:56:39 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <Pine.LNX.4.64.0804111759280.5433@domain.hid>
-	<4800B4FA.1050309@domain.hid>
-	<50879.62.235.129.158.1208014366.squirrel@domain.hid>
-	<18432.56533.343662.272421@domain.hid>
-	<Pine.LNX.4.64.0804171657380.18446@domain.hid>
-	<2ff1a98a0804170830v3b2fc392lf320f05a8c7f4e8d@domain.hid>
-	<2ff1a98a0804170846p2dddbea5k3b69dbbc57fb6761@domain.hid>
-	<480775C4.2060302@domain.hid>
-	<Pine.LNX.4.64.0804211731160.26198@domain.hid>
-	<480DECDA.3070204@domain.hid>
-	<Pine.LNX.4.64.0804221559300.31165@domain.hid>
-In-Reply-To: <Pine.LNX.4.64.0804221559300.31165@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] rt_task_sleep_until question
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C8A4CA.B7381520"
+Date: Tue, 22 Apr 2008 18:46:34 -0400
+Message-ID: <51B669A8A7D2914E9AB2B3F40AC6553E646F13@domain.hid>
+From: "Karch, Joshua" <jkarch@domain.hid>
+Subject: [Xenomai-help] Xenomai serial port c++ code and / or xeno--
+	(xenomm-0.0.1) install problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -28,208 +16,170 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Klaas Gadeyne <klaas.gadeyne@domain.hid>
-Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+To: xenomai@xenomai.org
 
-Klaas Gadeyne wrote:
-> On Tue, 22 Apr 2008, Philippe Gerum wrote:
->> Klaas Gadeyne wrote:
-> 
-> [snipping lots of context]
->>>>>>>  I noticed that xnpod_suspend_thread offers the possibility to
->>>>>> suspend
->>>>>>>  a thread "indefinitely" (until unblocked) via the (in the 2.4.x
->>>>>>> API,
->>>>>>>  that is)
->>>>>>>
->>>>>>>  xnpod_suspend_thread(thread,XNDELAY,XN_INFINITE,XN_RELATIVE,NULL)
->>>>>>>
->>>>>>>  call.
->>>>>>>  However, since TM_INFINITE (and XN_INFINITE) are both defined as
->>>>>> being
->>>>>>>  zero, calls to rt_task_sleep(TM_INFINITE), are intercepted in the
->>>>>>>  implementation of rt_task_sleep [1].  So in the latter case
->>>>>>> (which I
->>>>>>>  would naively---i.e. without looking at API docs--- read as
->>>>>> "sleep for
->>>>>>>  an infinite amount of time), rt_task_sleep() returns *immediately*.
->>>>
->>>> This behaviour is explicitly stated in the doc, though. So people
->>>> should not be
->>>> surprised.
->>>
->>> That why I added the stuff between the long dashes above :-) 
->>> However, if
->>> there's even one thing even better than well documented API's, it's
->>> well documented _and_ intuitive APIs.
->>>
->>>>>>>  Would it make sense to change the current behaviour of
->>>>>>>  rt_task_sleep(TM_INFINITE) and call
->>>>>>>  xnpod_suspend_thread(thread,XNDELAY,XN_INFINITE,XN_RELATIVE,NULL)
->>>>>>>  instead of returning 0?
->>>>>>>
->>>>>>>  One could either do that by
->>>>>>>  - altering rt_task_sleep()'s behaviour (not returning zero if
->>>>>> delay is
->>>>>>> zero)
->>>>>>>  - redefining TM_INFINITE
->>>>
->>>> No way. You don't want to change "magic" values that lightly. This is
->>>> why they
->>>> are magic in the first place.
->>>
->>> I know none of them were ideal solutions.  However (AFAIS, that is), *
->>> from a user point of view, I would find it convenient to be able to
->>>   sleep indefinitely until somebody wakes me up using rt_task_unblock(),
->>>   and this is currently not possible.
->>> * the nucleus _does_ offer this functionality via the
->>>   xnpod_suspend_thread(thread,XNDELAY,XN_INFINITE,XN_RELATIVE,NULL)
->>>   call, but I cannot access that functionality in the native skin.
->>>
->>> So I was wondering if nothing (else) could be done to solve that
->>> problem, the concrete use case being a thread which is woken up every
->>> time a job has to be done, but which can safely sleep "forever" (until
->>> unblocked) if nothing has to be done.
->>>
->>
->> What's wrong with rt_task_suspend() ?
-> 
-> The current loop code is something like
-> 
-> void timerloop_task_proc(void *arg)
-> {
->         int ret;
->         int errors = 0;
->         do{
->                 do{
->                         last_occured_alarm = last_alarm_set;
->                         EnterMutex();
->                         TimeDispatch();
->                         LeaveMutex();
->                 }while ((ret = rt_task_sleep_until(last_alarm)) == 0);
->                 if (ret == -ETIMEDOUT){
->                   printf("[TIMERLOOP] Total errors = %d, return code =
-> %d\n",++errors,ret);
->                 }
->         }while (!(stop_timer && ret == -EINTR));
->         printf("End of TimerLoop, code %d, Total errors =
-> %d\n",ret,errors);
-> }
-> 
-> I could modify that code and put something like
-> if (last_alarm == TIMEVAL_MAX) // Nothing else to do, sleep forever
->   rt_task_suspend()
-> else
->   rt_task_sleep_until(last_alarm)
-> 
-> However, the one who wants to wake up this thread (e.g. for asking
-> this thread to stop) doesn't know in what state the timerthread is.
-> It seems clumsy to me if that the one who wants to wake up the thread
-> has to try _unblock() first, and the _resume()?
-> 
+This is a multi-part message in MIME format.
 
-There has been a fair amount of misunderstanding. Past mails were apparently
-aiming at rt_task_sleep's behaviour (e.g. returning 0 on NULL delay etc.), but
-you actually care for rt_task_sleep_until, which is a totally different story
-(the subject line was right though).
+------_=_NextPart_001_01C8A4CA.B7381520
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Handling the special TM_INFINITE value as a valid timeout value for
-rt_task_sleep_until would not introduce the flaws I was concerned about
-regarding rt_task_sleep. We would just change the behaviour when receiving what
-used to be an utterly bugous date spec in the current implementation, and make
-it valid, which is ok -- i.e. I'm not particularly concerned by maintaining
-backward compatible behaviours when receiving utterly insane data specs like "0"
-for an absolute date.
 
-If your loop was truly periodic, you could probably use rt_task_wait_period(),
-but I suspect last_alarm may not try to enforce a strictly periodic timeline, right?
+Hello,
 
-The fact that we don't have any other blocking calls with absolute date specs is
-bothering me actually, and 2.5 will probably see some extensions like
-rt_sem_p_until(), in order to address patterns of this kind.
+I recently installed Xenomai on a PC/104 and began writing a C++ program =
+that makes use of the serial port.  I tried using the Xenomai Serial =
+port example program cross-link.c and I was successful in getting that =
+to run. I edited cross-link.c to read only from a device running at =
+115200 on the serial port.  I have found the standard /dev/ttyS0 serial =
+port to be useless for my application since I get overrun errors on my =
+system. =20
 
-But well, back to rt_task_sleep_until, I see no reason not to handle the corner
-case you described a bit more gracefully. So let's try the Klaas Amendment to
-the native API. Does the following work for you?
+My C++ program reads byte at a time from a serial port, processes the =
+byte, then repeats until a checksummed packet is received.  I have two =
+specific questions as to how to get the serial port to work under =
+Xenomai with c++
 
---- ksrc/skins/native/task.c	(revision 3713)
-+++ ksrc/skins/native/task.c	(working copy)
-@@ -958,8 +958,10 @@
-  * reached.
-  *
-  * @param date The absolute date in clock ticks to wait before
-- * resuming the task (see note). Passing an already elapsed date
-- * causes the task to return immediately with no delay.
-+ * resuming the task (see note). As a special case, TM_INFINITE is an
-+ * acceptable value that makes the caller block indefinitely, until
-+ * rt_task_unblock() is called against it. Otherwise, any wake up date
-+ * in the past causes the task to return immediately with no delay.
-  *
-  * @return 0 is returned upon success. Otherwise:
-  *
-@@ -968,7 +970,8 @@
-  *
-  * - -ETIMEDOUT is returned if @a date has already elapsed.
-  *
-- * - -EWOULDBLOCK is returned if the system timer is inactive.
-+ * - -EWOULDBLOCK is returned if the system timer is inactive, and
-+ *    @date is valid but different from TM_INFINITE.
-  *
-  * - -EPERM is returned if this service was called from a context
-  * which cannot sleep (e.g. interrupt, non-realtime or scheduler
-@@ -990,8 +993,8 @@
+The way I understand port reading is as follows:
 
- int rt_task_sleep_until(RTIME date)
- {
-+	int err = 0, mode = XN_REALTIME;
- 	xnthread_t *self;
--	int err = 0;
- 	spl_t s;
+1) Open device using read_fd =3D rt_dev_open( READ_FILE, 0 ) and set it =
+up
+    err =3D rt_dev_ioctl(read_fd, RTSER_RTIOC_SET_CONFIG, &read_config);
+2) It is necessary to create an RT_TASK analogous to a thread to service =
+the serial port task
+    err =3D rt_task_create(&read_task, "read_task", 0, 51, 0);
+3) for each byte read, activate the read task with rt_task_start
+    err =3D rt_task_start(&read_task,&read_task_proc,NULL);
+    4) Within the Real Time read_task_proc, request one byte at a time =
+within the rt_task_process using
+        err =3D rt_dev_ioctl(read_fd, RTSER_RTIOC_WAIT_EVENT, =
+&rx_event);
+        read =3D rt_dev_read(read_fd, buffer, 1);
+5)  read from the buffer into the user application in non-real time mode
 
- 	if (xnpod_unblockable_p())
-@@ -999,22 +1002,30 @@
+6)  close when done
 
- 	self = xnpod_current_thread();
+The problem I am having with this method is that=20
+int 	rt_task_start (RT_TASK *task, void(*fun)(void *cookie), void =
+*cookie)
+won't accept a pointer to an object method and requires a pointer to an =
+instance to map into the void(*fun)(void *cookie), void *cookie section.
 
--	if (!xnthread_timed_p(self))
--		return -EWOULDBLOCK;
--
- 	xnlock_get_irqsave(&nklock, s);
+With Pthreads, I instantiate a threaded main loop within an object as =
+follows:
+void * serial::thunk(void * param)
+{
+	serial *instance =3D (serial *) param;
+	instance->read_task_proc();
 
--	/* Calling the suspension service on behalf of the current task
--	   implicitely calls the rescheduling procedure. */
-+	if (date == TM_INFINITE)
-+		/* i.e. will resume only upon rt_task_unblock(). */
-+		mode = XN_RELATIVE;
-+	else if (date <= xntbase_get_time(__native_tbase)) {
-+		err = -ETIMEDOUT;
-+		goto unlock_and_exit;
-+	} else if (!xnthread_timed_p(self)) {
-+		err = -EWOULDBLOCK;
-+		goto unlock_and_exit;
-+	}
+}
 
--	if (date > xntbase_get_time(__native_tbase)) {
--		xnpod_suspend_thread(self, XNDELAY, date, XN_REALTIME, NULL);
-+	/*
-+	 * Calling the suspension service on behalf of the current
-+	 * task implicitely calls the rescheduling procedure.
-+	 */
-+	xnpod_suspend_thread(self, XNDELAY, date, mode, NULL);
+Is there a similar way to do this with rt_tasks?  In particular, if a =
+c++ based serial read example were available for byte-at-a-time, that =
+would be very useful.
 
--		if (xnthread_test_info(self, XNBREAK))
--			err = -EINTR;
--	} else
--		err = -ETIMEDOUT;
-+	if (xnthread_test_info(self, XNBREAK))
-+		err = -EINTR;
+Also, xenomm-0.0.1 failed under ./configure with "checking value of =
+TM_UNSET in native/timer.h"-- any ideas on how to get xenomm (xeno--) =
+working?  Is it useful?
 
-+ unlock_and_exit:
-+
- 	xnlock_put_irqrestore(&nklock, s);
+Thank you,
 
- 	return err;
+Joshua Karch
 
--- 
-Philippe.
+
+------_=_NextPart_001_01C8A4CA.B7381520
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Diso-8859-1">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+6.5.7651.59">
+<TITLE>Xenomai serial port c++ code and / or xeno-- (xenomm-0.0.1) =
+install problem</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/plain format -->
+<BR>
+
+<P><FONT SIZE=3D2>Hello,<BR>
+<BR>
+I recently installed Xenomai on a PC/104 and began writing a C++ program =
+that makes use of the serial port.&nbsp; I tried using the Xenomai =
+Serial port example program cross-link.c and I was successful in getting =
+that to run. I edited cross-link.c to read only from a device running at =
+115200 on the serial port.&nbsp; I have found the standard /dev/ttyS0 =
+serial port to be useless for my application since I get overrun errors =
+on my system.&nbsp;<BR>
+<BR>
+My C++ program reads byte at a time from a serial port, processes the =
+byte, then repeats until a checksummed packet is received.&nbsp; I have =
+two specific questions as to how to get the serial port to work under =
+Xenomai with c++<BR>
+<BR>
+The way I understand port reading is as follows:<BR>
+<BR>
+1) Open device using read_fd =3D rt_dev_open( READ_FILE, 0 ) and set it =
+up<BR>
+&nbsp;&nbsp;&nbsp; err =3D rt_dev_ioctl(read_fd, RTSER_RTIOC_SET_CONFIG, =
+&amp;read_config);<BR>
+2) It is necessary to create an RT_TASK analogous to a thread to service =
+the serial port task<BR>
+&nbsp;&nbsp;&nbsp; err =3D rt_task_create(&amp;read_task, =
+&quot;read_task&quot;, 0, 51, 0);<BR>
+3) for each byte read, activate the read task with rt_task_start<BR>
+&nbsp;&nbsp;&nbsp; err =3D =
+rt_task_start(&amp;read_task,&amp;read_task_proc,NULL);<BR>
+&nbsp;&nbsp;&nbsp; 4) Within the Real Time read_task_proc, request one =
+byte at a time within the rt_task_process using<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; err =3D rt_dev_ioctl(read_fd, =
+RTSER_RTIOC_WAIT_EVENT, &amp;rx_event);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; read =3D rt_dev_read(read_fd, =
+buffer, 1);<BR>
+5)&nbsp; read from the buffer into the user application in non-real time =
+mode<BR>
+<BR>
+6)&nbsp; close when done<BR>
+<BR>
+The problem I am having with this method is that<BR>
+int &nbsp;&nbsp;&nbsp; rt_task_start (RT_TASK *task, void(*fun)(void =
+*cookie), void *cookie)<BR>
+won't accept a pointer to an object method and requires a pointer to an =
+instance to map into the void(*fun)(void *cookie), void *cookie =
+section.<BR>
+<BR>
+With Pthreads, I instantiate a threaded main loop within an object as =
+follows:<BR>
+void * serial::thunk(void * param)<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; serial *instance =3D (serial =
+*) param;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+instance-&gt;read_task_proc();<BR>
+<BR>
+}<BR>
+<BR>
+Is there a similar way to do this with rt_tasks?&nbsp; In particular, if =
+a c++ based serial read example were available for byte-at-a-time, that =
+would be very useful.<BR>
+<BR>
+Also, xenomm-0.0.1 failed under ./configure with &quot;checking value of =
+TM_UNSET in native/timer.h&quot;-- any ideas on how to get xenomm =
+(xeno--) working?&nbsp; Is it useful?<BR>
+<BR>
+Thank you,<BR>
+<BR>
+Joshua Karch<BR>
+<BR>
+</FONT>
+</P>
+
+</BODY>
+</HTML>
+------_=_NextPart_001_01C8A4CA.B7381520--
 
