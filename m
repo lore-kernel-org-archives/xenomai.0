@@ -1,7 +1,7 @@
-Date: Wed, 23 Apr 2008 13:27:15 +0200 (CEST)
-From: Klaas Gadeyne <klaas.gadeyne@domain.hid>
-In-Reply-To: <480E5107.1060906@domain.hid>
-Message-ID: <Pine.LNX.4.64.0804231320210.28489@domain.hid>
+Message-ID: <480F1F91.7040502@domain.hid>
+Date: Wed, 23 Apr 2008 13:37:53 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
 References: <Pine.LNX.4.64.0804111759280.5433@domain.hid>
 	<4800B4FA.1050309@domain.hid>
 	<50879.62.235.129.158.1208014366.squirrel@domain.hid>
@@ -14,9 +14,13 @@ References: <Pine.LNX.4.64.0804111759280.5433@domain.hid>
 	<480DECDA.3070204@domain.hid>
 	<Pine.LNX.4.64.0804221559300.31165@domain.hid>
 	<480E5107.1060906@domain.hid>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+	<Pine.LNX.4.64.0804231320210.28489@domain.hid>
+In-Reply-To: <Pine.LNX.4.64.0804231320210.28489@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
 Subject: Re: [Xenomai-help] rt_task_sleep_until question
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,87 +30,112 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Klaas Gadeyne <klaas.gadeyne@domain.hid>
 Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
 
-On Tue, 22 Apr 2008, Philippe Gerum wrote:
+Klaas Gadeyne wrote:
+> On Tue, 22 Apr 2008, Philippe Gerum wrote:
+> 
+> [snipping even more context]
+> 
+>>>> What's wrong with rt_task_suspend() ?
+>>>
+>>> The current loop code is something like
+>>>
+>>> void timerloop_task_proc(void *arg)
+>>> {
+>>>         int ret;
+>>>         int errors = 0;
+>>>         do{
+>>>                 do{
+>>>                         last_occured_alarm = last_alarm_set;
+>>>                         EnterMutex();
+>>>                         TimeDispatch();
+>>>                         LeaveMutex();
+>>>                 }while ((ret = rt_task_sleep_until(last_alarm)) == 0);
+>>>                 if (ret == -ETIMEDOUT){
+>>>                   printf("[TIMERLOOP] Total errors = %d, return code =
+>>> %d\n",++errors,ret);
+>>>                 }
+>>>         }while (!(stop_timer && ret == -EINTR));
+>>>         printf("End of TimerLoop, code %d, Total errors =
+>>> %d\n",ret,errors);
+>>> }
+>>>
+>>> I could modify that code and put something like
+>>> if (last_alarm == TIMEVAL_MAX) // Nothing else to do, sleep forever
+>>>   rt_task_suspend()
+>>> else
+>>>   rt_task_sleep_until(last_alarm)
+>>>
+>>> However, the one who wants to wake up this thread (e.g. for asking
+>>> this thread to stop) doesn't know in what state the timerthread is.
+>>> It seems clumsy to me if that the one who wants to wake up the thread
+>>> has to try _unblock() first, and the _resume()?
+>>>
+>>
+>> There has been a fair amount of misunderstanding. Past mails were
+>> apparently
+>> aiming at rt_task_sleep's behaviour (e.g. returning 0 on NULL delay
+>> etc.), but
+>> you actually care for rt_task_sleep_until, which is a totally
+>> different story
+>> (the subject line was right though).
+> 
+> Sorry about that, during the debugging I ended up playing around with
+> rt_task_sleep() to check if the overflow issues did occur there too.
+> 
+>> Handling the special TM_INFINITE value as a valid timeout value for
+>> rt_task_sleep_until would not introduce the flaws I was concerned about
+>> regarding rt_task_sleep. We would just change the behaviour when
+>> receiving what
+>> used to be an utterly bugous date spec in the current implementation,
+>> and make
+>> it valid, which is ok -- i.e. I'm not particularly concerned by
+>> maintaining
+>> backward compatible behaviours when receiving utterly insane data
+>> specs like "0"
+>> for an absolute date.
+>>
+>> If your loop was truly periodic, you could probably use
+>> rt_task_wait_period(),
+>> but I suspect last_alarm may not try to enforce a strictly periodic
+>> timeline, right?
+>>
+>> The fact that we don't have any other blocking calls with absolute
+>> date specs is
+>> bothering me actually, and 2.5 will probably see some extensions like
+>> rt_sem_p_until(), in order to address patterns of this kind.
+>>
+>> But well, back to rt_task_sleep_until, I see no reason not to handle
+>> the corner
+>> case you described a bit more gracefully. So let's try the Klaas
+>> Amendment to
+>> the native API.
+> 
+> I *really* like the way that sounds ;-)
+> 
+>> Does the following work for you?
+> 
+> [snipped patch]
+> 
+> It does!  Tested on today's 2.4-branch on a 2.6.20.21-ipipe-1.12-03 kernel.
+> Any chance this could still be merged in the 2.4 series?
+> 
 
-[snipping even more context]
+Since this does not change the behaviour of documented and valid use cases, I
+will merge that patch into 2.4.4.
 
->>> What's wrong with rt_task_suspend() ?
->>
->> The current loop code is something like
->>
->> void timerloop_task_proc(void *arg)
->> {
->>         int ret;
->>         int errors = 0;
->>         do{
->>                 do{
->>                         last_occured_alarm = last_alarm_set;
->>                         EnterMutex();
->>                         TimeDispatch();
->>                         LeaveMutex();
->>                 }while ((ret = rt_task_sleep_until(last_alarm)) == 0);
->>                 if (ret == -ETIMEDOUT){
->>                   printf("[TIMERLOOP] Total errors = %d, return code =
->> %d\n",++errors,ret);
->>                 }
->>         }while (!(stop_timer && ret == -EINTR));
->>         printf("End of TimerLoop, code %d, Total errors =
->> %d\n",ret,errors);
->> }
->>
->> I could modify that code and put something like
->> if (last_alarm == TIMEVAL_MAX) // Nothing else to do, sleep forever
->>   rt_task_suspend()
->> else
->>   rt_task_sleep_until(last_alarm)
->>
->> However, the one who wants to wake up this thread (e.g. for asking
->> this thread to stop) doesn't know in what state the timerthread is.
->> It seems clumsy to me if that the one who wants to wake up the thread
->> has to try _unblock() first, and the _resume()?
->>
+> Thx for your patience!
 >
-> There has been a fair amount of misunderstanding. Past mails were apparently
-> aiming at rt_task_sleep's behaviour (e.g. returning 0 on NULL delay etc.), but
-> you actually care for rt_task_sleep_until, which is a totally different story
-> (the subject line was right though).
 
-Sorry about that, during the debugging I ended up playing around with
-rt_task_sleep() to check if the overflow issues did occur there too.
+You are welcome.
 
-> Handling the special TM_INFINITE value as a valid timeout value for
-> rt_task_sleep_until would not introduce the flaws I was concerned about
-> regarding rt_task_sleep. We would just change the behaviour when receiving what
-> used to be an utterly bugous date spec in the current implementation, and make
-> it valid, which is ok -- i.e. I'm not particularly concerned by maintaining
-> backward compatible behaviours when receiving utterly insane data specs like "0"
-> for an absolute date.
->
-> If your loop was truly periodic, you could probably use rt_task_wait_period(),
-> but I suspect last_alarm may not try to enforce a strictly periodic timeline, right?
->
-> The fact that we don't have any other blocking calls with absolute date specs is
-> bothering me actually, and 2.5 will probably see some extensions like
-> rt_sem_p_until(), in order to address patterns of this kind.
->
-> But well, back to rt_task_sleep_until, I see no reason not to handle the corner
-> case you described a bit more gracefully. So let's try the Klaas Amendment to
-> the native API.
+> Klaas
+> 
+> 
 
-I *really* like the way that sounds ;-)
 
-> Does the following work for you?
-
-[snipped patch]
-
-It does!  Tested on today's 2.4-branch on a 2.6.20.21-ipipe-1.12-03 kernel.
-Any chance this could still be merged in the 2.4 series?
-
-Thx for your patience!
-
-Klaas
-
+-- 
+Philippe.
 
