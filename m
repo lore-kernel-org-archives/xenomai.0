@@ -1,12 +1,22 @@
-Message-ID: <480EBE1B.8050601@domain.hid>
-Date: Wed, 23 Apr 2008 00:42:03 -0400
-From: Tomas Kalibera <kalibera@domain.hid>
+Date: Wed, 23 Apr 2008 13:27:15 +0200 (CEST)
+From: Klaas Gadeyne <klaas.gadeyne@domain.hid>
+In-Reply-To: <480E5107.1060906@domain.hid>
+Message-ID: <Pine.LNX.4.64.0804231320210.28489@domain.hid>
+References: <Pine.LNX.4.64.0804111759280.5433@domain.hid>
+	<4800B4FA.1050309@domain.hid>
+	<50879.62.235.129.158.1208014366.squirrel@domain.hid>
+	<18432.56533.343662.272421@domain.hid>
+	<Pine.LNX.4.64.0804171657380.18446@domain.hid>
+	<2ff1a98a0804170830v3b2fc392lf320f05a8c7f4e8d@domain.hid>
+	<2ff1a98a0804170846p2dddbea5k3b69dbbc57fb6761@domain.hid>
+	<480775C4.2060302@domain.hid>
+	<Pine.LNX.4.64.0804211731160.26198@domain.hid>
+	<480DECDA.3070204@domain.hid>
+	<Pine.LNX.4.64.0804221559300.31165@domain.hid>
+	<480E5107.1060906@domain.hid>
 MIME-Version: 1.0
-References: <480A3751.2020609@domain.hid> <480B07B9.7090202@domain.hid>
-In-Reply-To: <480B07B9.7090202@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Interrupt handling questions
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: Re: [Xenomai-help] rt_task_sleep_until question
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,167 +26,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
 
+On Tue, 22 Apr 2008, Philippe Gerum wrote:
 
-Hi Philippe,
+[snipping even more context]
 
-thank you for your detailed answers !
+>>> What's wrong with rt_task_suspend() ?
+>>
+>> The current loop code is something like
+>>
+>> void timerloop_task_proc(void *arg)
+>> {
+>>         int ret;
+>>         int errors = 0;
+>>         do{
+>>                 do{
+>>                         last_occured_alarm = last_alarm_set;
+>>                         EnterMutex();
+>>                         TimeDispatch();
+>>                         LeaveMutex();
+>>                 }while ((ret = rt_task_sleep_until(last_alarm)) == 0);
+>>                 if (ret == -ETIMEDOUT){
+>>                   printf("[TIMERLOOP] Total errors = %d, return code =
+>> %d\n",++errors,ret);
+>>                 }
+>>         }while (!(stop_timer && ret == -EINTR));
+>>         printf("End of TimerLoop, code %d, Total errors =
+>> %d\n",ret,errors);
+>> }
+>>
+>> I could modify that code and put something like
+>> if (last_alarm == TIMEVAL_MAX) // Nothing else to do, sleep forever
+>>   rt_task_suspend()
+>> else
+>>   rt_task_sleep_until(last_alarm)
+>>
+>> However, the one who wants to wake up this thread (e.g. for asking
+>> this thread to stop) doesn't know in what state the timerthread is.
+>> It seems clumsy to me if that the one who wants to wake up the thread
+>> has to try _unblock() first, and the _resume()?
+>>
+>
+> There has been a fair amount of misunderstanding. Past mails were apparently
+> aiming at rt_task_sleep's behaviour (e.g. returning 0 on NULL delay etc.), but
+> you actually care for rt_task_sleep_until, which is a totally different story
+> (the subject line was right though).
 
-I have one more related question. Looking at "handle_edge_irq" in 
-chip.c, with IPIPE patch applied. I don't understand why the edge 
-interrupt handler is allowed to call "mask_ack_irq" with IPIPE. I'd have 
-expected it to be changed to "mask_irq" to prevent double "acking". 
-However, if Xenomai prevented the same interrupt to recur on another 
-CPU, the branch would probably never take place. Does Xenomai do 
-anything like that ?
+Sorry about that, during the debugging I ended up playing around with
+rt_task_sleep() to check if the overflow issues did occur there too.
 
-Thanks,
-Tomas
+> Handling the special TM_INFINITE value as a valid timeout value for
+> rt_task_sleep_until would not introduce the flaws I was concerned about
+> regarding rt_task_sleep. We would just change the behaviour when receiving what
+> used to be an utterly bugous date spec in the current implementation, and make
+> it valid, which is ok -- i.e. I'm not particularly concerned by maintaining
+> backward compatible behaviours when receiving utterly insane data specs like "0"
+> for an absolute date.
+>
+> If your loop was truly periodic, you could probably use rt_task_wait_period(),
+> but I suspect last_alarm may not try to enforce a strictly periodic timeline, right?
+>
+> The fact that we don't have any other blocking calls with absolute date specs is
+> bothering me actually, and 2.5 will probably see some extensions like
+> rt_sem_p_until(), in order to address patterns of this kind.
+>
+> But well, back to rt_task_sleep_until, I see no reason not to handle the corner
+> case you described a bit more gracefully. So let's try the Klaas Amendment to
+> the native API.
 
+I *really* like the way that sounds ;-)
 
-Philippe Gerum wrote:
-> Tomas Kalibera wrote:
->   
->> Hi,
->>
->> I've read the Adeos whitepaper ("Live with Adeos"), API docs, and looked 
->> at the sources, but I still have some interrupt handling questions.
->>
->> First, the optimistic interrupt protection. Live with Adeos says that 
->> Adeos uses optimistic interrupt protection. In optimistic interrupt 
->> protection, the handled interrupt is not masked at entry to interrupt 
->> handler, but only on the second entry, if it really recurs. The 
->> recurring interrupt is handled after the first one is handled. The 
->> "optimism" is in hoping that the interrupt in fact would not recur and 
->> is motivated by saving time on masking/unmasking on the fast path.
->>
->>     
->
-> The important issue in "optimistic" interrupt handling is that one may assume
-> that most of the time, no interrupt will occur during a critical section. That
-> assumption allows to create a virtual interrupt mask where incoming hw
-> interrupts are logged when caught within a critical section, and replayed when
-> that section is exited. Whether you mask such interrupt or not upon the first
-> occurence is an optional detail of the implementation. In Stodolsky's paper,
-> such masking is said to be "non strictly necessary", even if "it tends to
-> simplify the implementation" on their platform.
->
-> We don't do this because all archs the interrupt pipeline is ported to, do not
-> necessarily provide a mean to mask a single interrupt channel efficiently on the
-> fast path ("efficiently" being the key word here). If it's pretty easy on
-> Blackfin, it's quite sub-optimal on platform exhibiting i8259 PICs through the
-> ISA bus for instance. On PowerPC, the decrementer interrupt would have to be
-> processed separately than other interrupt sources for specific
-> masking/unmasking, etc. We could do per-arch optimization of this kind though
-> (and actually, our Blackfin port does it), but I'm unsure this would buy us much
-> on most archs, latency-wise.
->
->   
->> However, the Xenomai API says (in kernel space rt_intr_create) that the 
->> handler is already called with the interrupt masked at hardware level. 
->> Unless the handler returns with RT_INTR_NOENABLE, the interrupt would be 
->> umasked at hardware level when the handler returns. Where is then the 
->> optimistic interrupt protection used ? And, does this really happen for 
->> all I/O interrupts (in particular, not only level triggered, but also 
->> edge triggered) ? And, are the interrupts also acknowledged by Xenomai ?
->>
->>     
->
-> What happens at Xenomai level should not be confused with the interrupt pipeline
-> actions. Xenomai does not do optimistic interrupt protection by itself for its
-> own "client" handlers, it just happens to get interrupts from the pipeline; the
-> fact that the I-pipe may use optimistic interrupt protection for Xenomai (and
-> all other domains) is out of Xenomai's knowledge. Besides, when Xenomai is
-> heading the pipeline, we optimize latency by masking all interrupts at hw level
-> when Xenomai asks for its stage to be stalled, because there is no point in
-> expecting interrupts to be dispatched to any higher priority domain: there is no
-> such domain in that case.
->
->   
->> Live with Adeos says that a domain is stalled before entering an 
->> interrupt handler in the domain, which means that further interrupts are 
->> not delivered to the domain. The domain is automatically unstalled when 
->> the handler finishes. Does the stalling prevent all interrupts from 
->> being delivered to the domain ? Or does it only prevent the interrupt(s) 
->> that are being served by handlers presently running in the domain ?
->>
->>     
->
-> All interrupts.
->
->   
->> Life with Adeos says that disabling an interrupt (rthal_irq_disable) 
->> disables the interrupt at hardware level and also locks out delivery of 
->> the interrupt to the current domain, preventing logged interrupts to be 
->> re-played. Similarly, it says that enabling an interrupt enables the 
->> interrupt at hardware level and unlocks its delivery to the current 
->> domain. Is the "locking delivery to current domain" the same as stalling 
->> the domain which happens when the handler is started ?
->>
->>     
->
-> No, this one is a per-IRQ AND per-domain locking, which may remain in effect
-> independently of some handler running or not. It's there to handle the following
-> case:
->
-> stall_stage()
-> 	-> IRQ
-> 		IRQ logged for domain - not played
-> disable_irq(IRQ)
-> unstall_stage()
-> 	-> without the per-IRQ locking, we would play this specific interrupt
-> 	when unstalling, but we don't want so, because this code pattern relies 		on
-> disable_irq() to prevent that.
->
->   
->> Life with Adeos also suggests that, because a domain is stalled when 
->> handler is invoked and interrupts are logged, handlers do not need to 
->> disable the handled interrupt at hardware level explicitly. But, aren't 
->> the handlers already called with the interrupt disabled at hardware 
->> level ? So how could the logging take place ?
->>
->>     
->
-> Whether interrupts are masked on entry or not by the I-pipe's primary handler
-> depends on the type of interrupt. Edge interrupts are not masked for instance.
->
->   
->> Which is even more puzzling to me, the text suggests that not only the 
->> handled interrupt should not be disabled explicitly, but we should 
->> enable it to allow it being received by Xenomai and logged for the 
->> domain. The example uses rthal_intr_enable, which however would also 
->> unstall the domain, right ?
->>     
->
-> No, it would remove the per-IRQ lock, and unmask the interrupt source at PIC
-> level, but keep the stage stalled.
->
-> In short:
-> - stall/unstall are local, per-domain actions.
-> disable/enable_irq are global, per-IRQ actions (i.e. affecting the PIC state).
->
->  So, wouldn't it  lead to logging of the
->   
->> interrupts, but to reentrant invocation of the handler ?
->>
->> Thanks!
->>
->> Tomas
->>
->>
->>
->>
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->>
->>     
->
->
->   
+> Does the following work for you?
+
+[snipped patch]
+
+It does!  Tested on today's 2.4-branch on a 2.6.20.21-ipipe-1.12-03 kernel.
+Any chance this could still be merged in the 2.4 series?
+
+Thx for your patience!
+
+Klaas
 
 
