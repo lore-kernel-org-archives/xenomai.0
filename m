@@ -1,24 +1,19 @@
-Message-ID: <480F7547.6030305@domain.hid>
-Date: Wed, 23 Apr 2008 19:43:35 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <Pine.LNX.4.64.0804111759280.5433@domain.hid>	
-	<2ff1a98a0804170830v3b2fc392lf320f05a8c7f4e8d@domain.hid>	
-	<2ff1a98a0804170846p2dddbea5k3b69dbbc57fb6761@domain.hid>	
-	<480775C4.2060302@domain.hid>	
-	<Pine.LNX.4.64.0804211731160.26198@domain.hid>	
-	<480DECDA.3070204@domain.hid>	
-	<Pine.LNX.4.64.0804221559300.31165@domain.hid>	
-	<480E5107.1060906@domain.hid>	
-	<Pine.LNX.4.64.0804231320210.28489@domain.hid>	
-	<480F1F91.7040502@domain.hid>
-	<d6c8ef150804230553i4b9a5952pa78dcd543b1c1111@domain.hid>
-In-Reply-To: <d6c8ef150804230553i4b9a5952pa78dcd543b1c1111@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] rt_task_sleep_until question
-Reply-To: rpm@xenomai.org
+Message-ID: <18447.31623.723753.421351@domain.hid>
+Date: Wed, 23 Apr 2008 20:10:15 +0200
+In-Reply-To: <51B669A8A7D2914E9AB2B3F40AC6553E646F19@domain.hid>
+References: <51B669A8A7D2914E9AB2B3F40AC6553E646F13@domain.hid>
+	<18446.32522.986935.299094@domain.hid>
+	<51B669A8A7D2914E9AB2B3F40AC6553E646F15@domain.hid>
+	<2ff1a98a0804230658w57d54addu438948a91faed1d6@domain.hid>
+	<51B669A8A7D2914E9AB2B3F40AC6553E646F17@domain.hid>
+	<2ff1a98a0804230730t44382de9i813b23d235ece2e3@domain.hid>
+	<51B669A8A7D2914E9AB2B3F40AC6553E646F19@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] Xenomai serial port c++ code and / or
+	xeno--(xenomm-0.0.1) install problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -28,135 +23,139 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bosko Radivojevic <bosko.radivojevic@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: "Karch, Joshua" <jkarch@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Bosko Radivojevic wrote:
-> Are there any differences (in performance point of view) between using
-> rt_task_sleep_until (TM_INFINITE) + rt_task_unblock() and
-> rt_task_suspend() + rt_task_resume() ? I'm writting some kind of task
-> manager and I'm using suspend + resume combination.
->
+Karch, Joshua wrote:
+ > Gilles,
+ > 
+ > I've attached my old serial port code that uses the /dev/ttyS0 port.
+ > What I have here is a "read byte on demand" function that uses the
+ > select statement to block until data is ready.  My initial goal was
+ > to replicate this functionality using the Xenomai Serial Driver.  It
+ > seems, however, that the following is not possible under Xenomai.
 
-Internally, this boils down to running the same code.
+It is possible, the serial driver has two things that may help you:
+the RTSER_RTIOC_WAIT_EVENT ioctl, which will work like select.
+the RTSER_SET_TIMEOUT_RX configuration bit, that will let you define a
+timeout for data reception. 
+If you wonder where these things are documented, have a look at:
+http://www.xenomai.org/documentation/branches/v2.4.x/html/api/index.html
 
-> On Wed, Apr 23, 2008 at 1:37 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->> Klaas Gadeyne wrote:
->>  > On Tue, 22 Apr 2008, Philippe Gerum wrote:
->>  >
->>  > [snipping even more context]
->>  >
->>  >>>> What's wrong with rt_task_suspend() ?
->>  >>>
->>  >>> The current loop code is something like
->>  >>>
->>  >>> void timerloop_task_proc(void *arg)
->>  >>> {
->>  >>>         int ret;
->>  >>>         int errors = 0;
->>  >>>         do{
->>  >>>                 do{
->>  >>>                         last_occured_alarm = last_alarm_set;
->>  >>>                         EnterMutex();
->>  >>>                         TimeDispatch();
->>  >>>                         LeaveMutex();
->>  >>>                 }while ((ret = rt_task_sleep_until(last_alarm)) == 0);
->>  >>>                 if (ret == -ETIMEDOUT){
->>  >>>                   printf("[TIMERLOOP] Total errors = %d, return code =
->>  >>> %d\n",++errors,ret);
->>  >>>                 }
->>  >>>         }while (!(stop_timer && ret == -EINTR));
->>  >>>         printf("End of TimerLoop, code %d, Total errors =
->>  >>> %d\n",ret,errors);
->>  >>> }
->>  >>>
->>  >>> I could modify that code and put something like
->>  >>> if (last_alarm == TIMEVAL_MAX) // Nothing else to do, sleep forever
->>  >>>   rt_task_suspend()
->>  >>> else
->>  >>>   rt_task_sleep_until(last_alarm)
->>  >>>
->>  >>> However, the one who wants to wake up this thread (e.g. for asking
->>  >>> this thread to stop) doesn't know in what state the timerthread is.
->>  >>> It seems clumsy to me if that the one who wants to wake up the thread
->>  >>> has to try _unblock() first, and the _resume()?
->>  >>>
->>  >>
->>  >> There has been a fair amount of misunderstanding. Past mails were
->>  >> apparently
->>  >> aiming at rt_task_sleep's behaviour (e.g. returning 0 on NULL delay
->>  >> etc.), but
->>  >> you actually care for rt_task_sleep_until, which is a totally
->>  >> different story
->>  >> (the subject line was right though).
->>  >
->>  > Sorry about that, during the debugging I ended up playing around with
->>  > rt_task_sleep() to check if the overflow issues did occur there too.
->>  >
->>  >> Handling the special TM_INFINITE value as a valid timeout value for
->>  >> rt_task_sleep_until would not introduce the flaws I was concerned about
->>  >> regarding rt_task_sleep. We would just change the behaviour when
->>  >> receiving what
->>  >> used to be an utterly bugous date spec in the current implementation,
->>  >> and make
->>  >> it valid, which is ok -- i.e. I'm not particularly concerned by
->>  >> maintaining
->>  >> backward compatible behaviours when receiving utterly insane data
->>  >> specs like "0"
->>  >> for an absolute date.
->>  >>
->>  >> If your loop was truly periodic, you could probably use
->>  >> rt_task_wait_period(),
->>  >> but I suspect last_alarm may not try to enforce a strictly periodic
->>  >> timeline, right?
->>  >>
->>  >> The fact that we don't have any other blocking calls with absolute
->>  >> date specs is
->>  >> bothering me actually, and 2.5 will probably see some extensions like
->>  >> rt_sem_p_until(), in order to address patterns of this kind.
->>  >>
->>  >> But well, back to rt_task_sleep_until, I see no reason not to handle
->>  >> the corner
->>  >> case you described a bit more gracefully. So let's try the Klaas
->>  >> Amendment to
->>  >> the native API.
->>  >
->>  > I *really* like the way that sounds ;-)
->>  >
->>  >> Does the following work for you?
->>  >
->>  > [snipped patch]
->>  >
->>  > It does!  Tested on today's 2.4-branch on a 2.6.20.21-ipipe-1.12-03 kernel.
->>  > Any chance this could still be merged in the 2.4 series?
->>  >
->>
->>  Since this does not change the behaviour of documented and valid use cases, I
->>  will merge that patch into 2.4.4.
->>
->>  > Thx for your patience!
->>  >
->>
->>  You are welcome.
->>
->>  > Klaas
->>  >
->>  >
->>
->>
->>  --
->>  Philippe.
->>
->>
->>
->>  _______________________________________________
->>  Xenomai-help mailing list
->>  Xenomai-help@domain.hid
->>  https://mail.gna.org/listinfo/xenomai-help
->>
-> 
+With a timeout on reception, you can call read directly, this will save
+you a system call, this matters for latency.
 
+ > What I'm starting to conclude is that I can only receive data from a
+ > serial port within the context of a task, and that printing error
+ > codes from strerr produce "Operation not permitted" If I directly call
+ > read in a manner similar to the linux serial port code (posted below)
+ > by requesting a read from my sensor packet processing thread without
+ > using an RT_TASK.  Here is what my sensor thread used to do to get
+ > data from /dev/ttyS0 
+ > 
+ > 
+ > in the Pthread sensor processing thread...
+ > 
+ > void sensorthreadmainloop()
+ > {
+ >     while(1)
+ >     {
+ > 
+ > 	if(serialport->readbyte())
+ > 			{
+ > 				SENSORID=sensorpacket->processChar(ser->getreadbyte());
+ > 			}
+ > 			else
+ > 			{
+ > 				printf("One Second timeout detected on serial port, sensor data not received\n");
+ > 			}
+ > 			
+ >                         // measure timestamp, process byte, checksum, etc, if timestamp is too
+ >                         //great an error has occurred, etc.  If valid packet is received, send a
+ >                         //condition variable signal to the main loop that data is available
+ >                         //break out of loop if the application requests thread termination
+ >                         .
+ >                         .
+ >                         .
+ >                         //
+ >     }
+ > }
+ > 
+ > It appears that I have to do something else with Xenomai-- set up a real time task which reads bytes from the rtser0 device. 
+ > When data is received, trigger a semaphore/condition variable to the above thread that one byte is ready for processing.
+ > 
+ > What this basically means is that I would have an rt task like the following in the serial port reader code where the task has been pre-initialized and started. 
+ >  
+ > void read_task_proc(void *arg)
+ > {
+ > 	while (1)
+ >         {
+ > 		int read = rt_dev_read(read_fd, inbyte, 2250);
+ > 		if (read <0) {
+ > 			printf("error on rt_dev_read, code %s\n",
+ > 			       strerror(-err));
+ > 			break;
+ > 		}
+ >                 else
+ >                 {
+ >                           //data received, trigger  condition variable
+ > 			  pthread_mutex_lock(&run_mutex);
+ > 		          pthread_cond_signal(&run_cv);
+ > 			  pthread_mutex_unlock(&run_mutex);
+ > 
+ > 		}
+ > 
+ > 	}
+ > 
+ > 
+ > }
+ > 
+ > In my sensor  thread I would have the following:
+ > 
+ > void sensorthreadmainloop()
+ > {
+ >     while(1)
+ >     {
+ > 
+ > 	
+ > 		pthread_mutex_lock(&run_mutex);
+ > 		pthread_cond_wait(&run_cv, &run_mutex);
+ > 		pthread_mutex_unlock(&run_mutex);
+ >                 //if data received
+ > 		SENSORID=sensorpacket->processChar(ser->getreadbyte());
+ > 		//and figure out a way to signal other important information such as timeouts	
+ >                         // measure timestamp, process byte, checksum, etc, if timestamp is too
+ >                         //great an error has occurred, etc.  If valid packet is received, send a
+ >                         //condition variable signal to the main loop that a completed sensor packet is available
+ >                         //break out of loop if the application requests thread termination
+ >                         .
+ >                         .
+ >                         .
+ >                         //
+ >     }
+ > }
+ > If I use a condition variable from a continuously running RT_TASK that reads from the serial port to trigger processing, is that the right way to make this work? 
+ > Can I mix pthreads, mutexes, and tasks together, or should every
+ > thread my program has (and it reads 3 sensors using the above
+ > methods) all use RT_TASKS and specially set up Mutexes/Condition
+ > variables. 
+
+Everything is possible, but let us keep something in mind: if you use
+Xenomai it is because you are not satisfied with Linux natural
+latency. You probably have some treatment to do upon reception of a
+character on the serial line, some time of real-time control loop. If:
+- you transfer control from the real time task receiving characters to a
+  non real-time task to to the treatment;
+- or you call some non real-time services from the task receiving
+  characters; 
+- or you have the real-time task receiving character wait for a non
+  real-time task;
+the real-time task receiving characters from the serial line will depend
+on Linux latencies. In other words, you loose any interest in using
+Xenomai.
 
 -- 
-Philippe.
+
+
+					    Gilles.
 
