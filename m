@@ -1,16 +1,12 @@
-Message-ID: <4810B7B4.9070309@domain.hid>
-Date: Thu, 24 Apr 2008 18:39:16 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <48100D81.9090109@domain.hid> <481048A0.7040101@domain.hid>
-	<4810B072.6050603@domain.hid>
-In-Reply-To: <4810B072.6050603@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] Cannot end interrupt from user space:
- add	rt_intr_end call ?
-Reply-To: rpm@xenomai.org
+Content-Type: text/plain;
+	charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 24 Apr 2008 19:13:34 +0200
+Message-ID: <0B45E93C5FF65740AEAE690BF3848B7AD38252@domain.hid>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
+Subject: Re: [Xenomai-core] [1/9] Support for non cached memory mappings
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,90 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Tomas Kalibera <kalibera@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Tomas Kalibera wrote:
-> 
-> Hi Philippe,
-> 
-> thank you for the patch !
-> 
->> xnarch_end_irq() basically calls the ->unmask() method of the
->> interrupt chip
->> descriptor, which is the same as calling rt_intr_enable(). Before you
->> do that,
->>   
-> If I read the sources correctly, for "edge" and "simple" interrupt,
-> xnarch_end_irq() calls nothing, for "percpu" it calls ->eoi() . For
-> "level", "fasteoi", and "demux", it calls ->unmask().
-> 
-> So calling rt_intr_enable from user space would not always do the same
-> as xnarch_end_irq from the kernel, wouldn't it ?
+Gilles Chanteperdrix wrote:
+>>  Some embedded platforms have small TLB compared to the vm hungriness
+of
+>>  certain real-time tasks. H_HUGETLB would reply on HugeTLB[1] backing
+for
+>>  allocation. Scattered accesses to this memory would benefit in the
+lower
+>>  pressure of minor page-faults/TLB refills, which is a good thing(tm)
+for
+>>  real-time.
 >
+>I do not understand the need for a kernel option and a special
+>filesystem, why does not the kernel use these hugetlb pages upon large
+>allocations ?
 
-No it would not, and this is what we want. The patch makes sure that calling
-rt_intr_enable/disable() will actually unmask/mask the interrupt at PIC level,
-regardless of how the normal ack/handle/end process works for that interrupt.
+You must be speaking of an ideal world, with almighty smart OS ;-)
 
-> Tomas
-> 
-> 
-> 
-> Philippe Gerum wrote:
->> Tomas Kalibera wrote:
->>  
->>> Hi,
->>>
->>> I think that when I handle interrupts from user space, I cannot
->>> correctly use I_NOAUTOENA. The thing is that this flag in fact means
->>> "do not call automatically xnarch_end_irq". The xnarch_end_irq call
->>> usually maps to unmasking the interrupt, but not always - depending
->>> on interrupt type (sometimes in eoi, sometimes is nop).
->>>
->>> I was thinking that it would be nice if I could call something like
->>> "xnarch_end_irq" (i.e. rt_intr_end) from user space, so that I could
->>> correctly use I_NOAUTOENA to control the flow of interrupts.
->>>
->>>     
->>
->> What would this buy you? xnarch_irq_end() would still handle the
->> unmasking logic
->> depending on the interrupt type, because it knows how the interrupt was
->> acknowledged in the first place -- in contrast, the application does
->> not and
->> should not.
->>
->> xnarch_end_irq() basically calls the ->unmask() method of the
->> interrupt chip
->> descriptor, which is the same as calling rt_intr_enable(). Before you
->> do that,
->> you may want to try the attached patch, which makes sure that
->> rt_intr_enable/disable are eagerly routed to unmask/mask on x86 for
->> post-2.6.18
->> kernels. That patch is expected to solve the "rt_intr_disable() not
->> masking
->> IO-APIC interrupt" issue we discussed earlier.
->>
->>  
->>> Cheers,
->>> Tomas
->>>
->>>
->>>
->>> _______________________________________________
->>> Xenomai-core mailing list
->>> Xenomai-core@domain.hid
->>> https://mail.gna.org/listinfo/xenomai-core
->>>
->>>     
->>
->>
->>   
-> 
-> 
+I do not have the answer to your question. I guess we could find=20
+some lengthy discussion over lkml about the virtue and side effects=20
+of automagically using hugetlb upon large allocations. Maybe the kernel
+hackers were not confident enough about hugetlb, and just tolerated an
+optional subsystem requested by evil big iron application. Rem: not all=20
+MMU(hardware) and/or Linux arch(software) have HugeTLB available.
+Maybe they thought that it was not worth it wasting hard to find=20
+contiguous memory, while lazy allocation has so much reward when=20
+a process allocates more memory than it's really using.
 
+As far as I understand, HugeTLB is only an opt-in feature, when
+performance=20
+or predictability is expected. To put it another way in Xenomai world,=20
+HugeTLB can reclaim part of the performance loss when going from kernel=20
+space to user space. In kernel space, RAM is generally covered with a
+BAT=20
+or similar. This is not the case in user space with 4K page allocation.
+Off course, the issue appears only with big working sets.
 
--- 
-Philippe.
+--=20
+Stephane
 
