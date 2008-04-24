@@ -2,12 +2,13 @@ From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18448.9967.355128.570111@domain.hid>
-Date: Thu, 24 Apr 2008 08:21:35 +0200
-In-Reply-To: <18448.9901.799115.445182@domain.hid>
+Message-ID: <18448.10037.181558.14996@domain.hid>
+Date: Thu, 24 Apr 2008 08:22:45 +0200
+In-Reply-To: <18448.9967.355128.570111@domain.hid>
 References: <18448.9649.956656.531081@domain.hid>
 	<18448.9901.799115.445182@domain.hid>
-Subject: [Xenomai-core] [2/9] Define XNARCH_SHARED_HEAP_FLAGS
+	<18448.9967.355128.570111@domain.hid>
+Subject: [Xenomai-core] [3/9] Define more atomic operations in user-space
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,51 +21,103 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai@xenomai.org
 
 
-This patch defines the macro XNARCH_SHARED_HEAP_FLAGS to be set to
-XNHEAP_GFP_NONCACHED on ARM with VIVT cache. I assumed that ARM with VIPT cache
-would not need non-cached mappings when sharing memory between kernel and
-user-space. Please correct me if I am wrong.
+This patch implements the _read, _set, and _cmpxchg operations on atomic_long_t
+and atomic_ptr_t in user-space in include/asm-generic/atomic.h which should be
+included at the end of include/asm-*/atomic.h after the definition of the same
+operations for the atomic_t type and atomic64_t type on 64 bits platforms.
+
+These operations are the basic operations used by user-space mutexes. Maybe we
+should add the xnarch_ prefix ?
 
 ---
- asm-arm/hal.h        |    3 ++-
- asm-generic/system.h |    6 ++++++
- 2 files changed, 8 insertions(+), 1 deletion(-)
+ Makefile.am |    2 -
+ atomic.h    |   68 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 69 insertions(+), 1 deletion(-)
 
-Index: include/asm-generic/system.h
+Index: include/asm-generic/atomic.h
 ===================================================================
---- include/asm-generic/system.h	(revision 3718)
-+++ include/asm-generic/system.h	(working copy)
-@@ -238,6 +238,12 @@ static inline int xnlock_dbg_release(xnl
- #define xnarch_logerr(fmt, args...)	printk(KERN_ERR XNARCH_PROMPT fmt, ##args)
- #define xnarch_printf(fmt, args...)	printk(KERN_INFO XNARCH_PROMPT fmt, ##args)
- 
-+#ifndef RTHAL_SHARED_HEAP_FLAGS
-+#define XNARCH_SHARED_HEAP_FLAGS 0
-+#else /* !RTHAL_SHARED_HEAP_FLAGS */
-+#define XNARCH_SHARED_HEAP_FLAGS RTHAL_SHARED_HEAP_FLAGS
-+#endif /* !RTHAL_SHARED_HEAP_FLAGS */
+--- include/asm-generic/atomic.h	(revision 0)
++++ include/asm-generic/atomic.h	(revision 0)
+@@ -0,0 +1,68 @@
++#ifndef ATOMIC_H
++#define ATOMIC_H
 +
- typedef cpumask_t xnarch_cpumask_t;
- 
- #ifdef CONFIG_SMP
-Index: include/asm-arm/hal.h
++#ifndef __KERNEL__
++#include <bits/wordsize.h>
++#if __WORDSIZE == 64
++typedef atomic64_t atomic_long_t;
++
++static inline long atomic_long_read(atomic_long_t *l)
++{
++        atomic64_t *v = (atomic64_t *)l;
++
++        return (long)atomic64_read(v);
++}
++
++static inline void atomic_long_set(atomic_long_t *l, long i)
++{
++        atomic64_t *v = (atomic64_t *)l;
++
++        atomic64_set(v, i);
++}
++
++#define atomic_long_cmpxchg(l, old, new) \
++        (atomic64_cmpxchg((atomic64_t *)(l), (old), (new)))
++
++#else /* __WORDSIZE == 32 */
++typedef atomic_t atomic_long_t;
++
++static inline long atomic_long_read(atomic_long_t *l)
++{
++        atomic_t *v = (atomic_t *)l;
++
++        return (long)atomic_read(v);
++}
++
++static inline void atomic_long_set(atomic_long_t *l, long i)
++{
++        atomic_t *v = (atomic_t *)l;
++
++        atomic_set(v, i);
++}
++
++#define atomic_long_cmpxchg(l, old, new) \
++        (atomic_cmpxchg((atomic_t *)(l), (old), (new)))
++#endif /* __WORDSIZE == 32 */
++#endif /* __KERNEL__ */
++
++typedef atomic_long_t atomic_ptr_t;
++
++static inline void *atomic_ptr_read(atomic_ptr_t *l)
++{
++        atomic_long_t *v = (atomic_long_t *)l;
++
++        return (void *)atomic_long_read(v);
++}
++
++static inline void atomic_ptr_set(atomic_ptr_t *l, void *i)
++{
++        atomic_long_t *v = (atomic_long_t *)l;
++
++        atomic_long_set(v, (long)i);
++}
++
++#define atomic_ptr_cmpxchg(l, old, new) \
++        (void *)(atomic_long_cmpxchg((atomic_long_t *)(l), \
++                                     (long)(old), (long)(new)))
++
++#endif /* ATOMIC_H */
+Index: include/asm-generic/Makefile.am
 ===================================================================
---- include/asm-arm/hal.h	(revision 3718)
-+++ include/asm-arm/hal.h	(working copy)
-@@ -108,10 +108,11 @@ static inline __attribute_const__ unsign
- #include <asm/processor.h>
- #include <asm/ipipe.h>
- #include <asm/mach/irq.h>
-+#include <asm/cacheflush.h>
+--- include/asm-generic/Makefile.am	(revision 3718)
++++ include/asm-generic/Makefile.am	(working copy)
+@@ -1,5 +1,5 @@
+ includesubdir = $(includedir)/asm-generic
  
- #define RTHAL_TIMER_IRQ   __ipipe_mach_timerint
+-includesub_HEADERS = arith.h features.h hal.h syscall.h system.h wrappers.h
++includesub_HEADERS = arith.h features.h hal.h syscall.h system.h wrappers.h atomic.h
  
--#define RTHAL_SHARED_HEAP_FLAGS XNHEAP_GFP_NONCACHED
-+#define RTHAL_SHARED_HEAP_FLAGS (cache_is_vivt() ? XNHEAP_GFP_NONCACHED : 0)
- 
- #define rthal_grab_control()     do { } while(0)
- #define rthal_release_control()  do { } while(0)
-
+ SUBDIRS = bits
 
 -- 
 
