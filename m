@@ -2,15 +2,11 @@ From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18448.10221.879356.57696@domain.hid>
-Date: Thu, 24 Apr 2008 08:25:49 +0200
-In-Reply-To: <18448.10157.853132.856441@domain.hid>
+Message-ID: <18448.9901.799115.445182@domain.hid>
+Date: Thu, 24 Apr 2008 08:20:29 +0200
+In-Reply-To: <18448.9649.956656.531081@domain.hid>
 References: <18448.9649.956656.531081@domain.hid>
-	<18448.9901.799115.445182@domain.hid>
-	<18448.9967.355128.570111@domain.hid>
-	<18448.10037.181558.14996@domain.hid>
-	<18448.10157.853132.856441@domain.hid>
-Subject: [Xenomai-core] [5/9] Define new syscalls for the posix skin
+Subject: [Xenomai-core] [1/9] Support for non cached memory mappings
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -23,90 +19,171 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai@xenomai.org
 
 
-This patch defines the new syscalls get_heap_addr (more on this syscall later),
-and get_thread_cb. The get_thread_cb syscall is used in user-space to associate
-the thread xnthread_t pointer with each user-space xenomai thread, using POSIX
-TSD.
-
-This is needed for the mutex implementation to allow setting the mutex owner.
-
-However, two things: 
-- I do not know if you should like that much passing kernel-space pointers to
-  user-space;
-- this is implemented as a posix skin service, but should probably be defined as
-  a core syscall, and called in all skin implementations, so as to allow threads
-  from other skins to user Xenomai posix skin services.
+This patch adds architecture independent support for non cached memory
+mappings. This is necessary on ARM architecture with VIVT cache to share a
+mapping between kernel and user-space, but may be used in other situations (who
+knows).
 
 ---
- include/posix/syscall.h  |    3 +++
- src/skins/posix/thread.c |   11 +++++++++++
- 2 files changed, 14 insertions(+)
+ include/asm-generic/wrappers.h |   12 ++++++++----
+ include/native/heap.h          |    1 +
+ include/nucleus/heap.h         |    2 ++
+ ksrc/nucleus/heap.c            |   23 ++++++++++++++++++-----
+ ksrc/skins/native/heap.c       |    8 +++++++-
+ 5 files changed, 36 insertions(+), 10 deletions(-)
 
-Index: include/posix/syscall.h
+Index: include/native/heap.h
 ===================================================================
---- include/posix/syscall.h	(revision 3718)
-+++ include/posix/syscall.h	(working copy)
-@@ -46,6 +46,7 @@
- #define __pse51_mutex_lock            20
- #define __pse51_mutex_timedlock       21
- #define __pse51_mutex_trylock         22
-+#define __pse51_check_init            __pse51_mutex_trylock
- #define __pse51_mutex_unlock          23
- #define __pse51_cond_init             24
- #define __pse51_cond_destroy          25
-@@ -101,6 +102,8 @@
- #define __pse51_thread_getschedparam  75
- #define __pse51_thread_kill           76
- #define __pse51_select                77
-+#define __pse51_get_heap_addr         78
-+#define __pse51_get_thread_cb	      79
+--- include/native/heap.h	(revision 3718)
++++ include/native/heap.h	(working copy)
+@@ -33,6 +33,7 @@
+ #define H_MAPPABLE 0x200	/* Memory is mappable to user-space. */
+ #define H_SINGLE   0x400	/* Manage as single-block area. */
+ #define H_SHARED   (H_MAPPABLE|H_SINGLE) /* I.e. shared memory segment. */
++#define H_NONCACHED 0x800
  
- #ifdef __KERNEL__
- 
-Index: src/skins/posix/thread.c
+ /** Structure containing heap-information useful to users.
+  *
+Index: include/asm-generic/wrappers.h
 ===================================================================
---- src/skins/posix/thread.c	(revision 3718)
-+++ src/skins/posix/thread.c	(working copy)
-@@ -26,6 +26,7 @@
- #include <posix/syscall.h>
+--- include/asm-generic/wrappers.h	(revision 3718)
++++ include/asm-generic/wrappers.h	(working copy)
+@@ -62,7 +62,7 @@ unsigned long __va_to_kva(unsigned long 
  
- extern int __pse51_muxid;
-+extern pthread_key_t pse51_cur_key;
+ #define wrap_remap_vm_page(vma,from,to) ({ \
+     vma->vm_flags |= VM_RESERVED; \
+-    remap_page_range(from,virt_to_phys((void *)__va_to_kva(to)),PAGE_SIZE,PAGE_SHARED); \
++    remap_page_range(from,virt_to_phys((void *)__va_to_kva(to)),PAGE_SIZE,vma->vm_page_prot); \
+ })
+ #define wrap_remap_io_page_range(vma,from,to,size,prot) ({ \
+     vma->vm_flags |= VM_RESERVED; \
+@@ -223,7 +223,7 @@ unsigned long __va_to_kva(unsigned long 
+  * memory. Anyway, this legacy would only hit setups using pre-2.6.11
+  * kernel revisions. */
+ #define wrap_remap_vm_page(vma,from,to) \
+-    remap_pfn_range(vma,from,virt_to_phys((void *)__va_to_kva(to)) >> PAGE_SHIFT,PAGE_SHIFT,PAGE_SHARED)
++    remap_pfn_range(vma,from,virt_to_phys((void *)__va_to_kva(to)) >> PAGE_SHIFT,PAGE_SHIFT,vma->vm_page_prot)
+ #define wrap_remap_io_page_range(vma,from,to,size,prot)  ({		\
+     (vma)->vm_page_prot = pgprot_noncached((vma)->vm_page_prot);	\
+     /* Sets VM_RESERVED | VM_IO | VM_PFNMAP on the vma. */		\
+@@ -236,7 +236,7 @@ unsigned long __va_to_kva(unsigned long 
+ #else /* LINUX_VERSION_CODE < KERNEL_VERSION(2,6,10) */
+ #define wrap_remap_vm_page(vma,from,to) ({ \
+     vma->vm_flags |= VM_RESERVED; \
+-    remap_page_range(from,virt_to_phys((void *)__va_to_kva(to)),PAGE_SIZE,PAGE_SHARED); \
++    remap_page_range(from,virt_to_phys((void *)__va_to_kva(to)),PAGE_SIZE,vma->vm_page_prot); \
+ })
+ #define wrap_remap_io_page_range(vma,from,to,size,prot) ({	\
+       vma->vm_flags |= VM_RESERVED;				\
+@@ -248,7 +248,11 @@ unsigned long __va_to_kva(unsigned long 
+     })
+ #endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,15) */
  
- static pthread_attr_t default_attr;
- static int linuxthreads;
-@@ -41,6 +42,13 @@ static void __pthread_sigharden_handler(
- 	XENOMAI_SYSCALL1(__xn_sys_migrate, XENOMAI_XENO_DOMAIN);
- }
- 
-+static void set_kthread_cb(void)
-+{
-+	void *kthread_cb;
-+	XENOMAI_SKINCALL1(__pse51_muxid, __pse51_get_thread_cb, &kthread_cb);
-+	pthread_setspecific(pse51_cur_key, kthread_cb);
-+}
+-#define wrap_switch_mm(prev,next,task)	\
++#ifndef __GFP_BITS_SHIFT
++#define __GFP_BITS_SHIFT 20
++#endif
 +
- int __wrap_pthread_setschedparam(pthread_t thread,
- 				 int policy, const struct sched_param *param)
- {
-@@ -56,6 +64,7 @@ int __wrap_pthread_setschedparam(pthread
++#define wrap_switch_mm(prev,next,task)		\
+     switch_mm(prev,next,task)
+ #define wrap_enter_lazy_tlb(mm,task)	\
+     enter_lazy_tlb(mm,task)
+Index: include/nucleus/heap.h
+===================================================================
+--- include/nucleus/heap.h	(revision 3718)
++++ include/nucleus/heap.h	(working copy)
+@@ -57,6 +57,8 @@
+ #define XNHEAP_PCONT   1
+ #define XNHEAP_PLIST   2
  
- 	if (!err && promoted) {
- 		old_sigharden_handler = signal(SIGHARDEN, &__pthread_sigharden_handler);
-+		set_kthread_cb();
- 		if (policy != SCHED_OTHER)
- 			XENOMAI_SYSCALL1(__xn_sys_migrate, XENOMAI_XENO_DOMAIN);
- 	}
-@@ -132,6 +141,8 @@ static void *__pthread_trampoline(void *
- 	start = iargs->start;
- 	cookie = iargs->arg;
- 
-+	set_kthread_cb();
++#define XNHEAP_GFP_NONCACHED (1 << __GFP_BITS_SHIFT)
 +
- 	__real_sem_post(&iargs->sync);
+ typedef struct xnextent {
  
- 	if (!err) {
-
+ 	xnholder_t link;
+Index: ksrc/skins/native/heap.c
+===================================================================
+--- ksrc/skins/native/heap.c	(revision 3718)
++++ ksrc/skins/native/heap.c	(working copy)
+@@ -205,6 +205,10 @@ static void __heap_flush_private(xnheap_
+  * operations with I/O devices. The physical address of the
+  * heap can be obtained by a call to rt_heap_inquire().
+  *
++ * - H_NONCACHED causes the heap not to be cached. This is necessary on
++ * platforms such as ARM to share a heap between kernel and user-space.
++ * Note that this flag is not compatible with the H_DMA flag.
++ *
+  * @return 0 is returned upon success. Otherwise:
+  *
+  * - -EEXIST is returned if the @a name is already in use by some
+@@ -260,7 +264,9 @@ int rt_heap_create(RT_HEAP *heap, const 
+ 
+ 		err = xnheap_init_mapped(&heap->heap_base,
+ 					 heapsize,
+-					 (mode & H_DMA) ? GFP_DMA : 0);
++					 ((mode & H_DMA) ? GFP_DMA : 0)
++					 | ((mode & H_NONCACHED) ?
++					    XNHEAP_GFP_NONCACHED : 0));
+ 		if (err)
+ 			return err;
+ 
+Index: ksrc/nucleus/heap.c
+===================================================================
+--- ksrc/nucleus/heap.c	(revision 3718)
++++ ksrc/nucleus/heap.c	(working copy)
+@@ -1097,9 +1097,13 @@ static int xnheap_mmap(struct file *file
+ 
+ 	vaddr = (unsigned long)heap->archdep.heapbase;
+ 
+-	if (!heap->archdep.kmflags) {
++	if (!heap->archdep.kmflags
++	    || heap->archdep.kmflags == XNHEAP_GFP_NONCACHED) {
+ 		unsigned long maddr = vma->vm_start;
+ 
++		if (heap->archdep.kmflags == XNHEAP_GFP_NONCACHED)
++			vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
++
+ 		while (size > 0) {
+ 			if (xnarch_remap_vm_page(vma, maddr, vaddr))
+ 				return -EAGAIN;
+@@ -1174,9 +1178,13 @@ static inline void *__alloc_and_reserve_
+ 
+ 	/* Size must be page-aligned. */
+ 
+-	if (!kmflags) {
+-		ptr = vmalloc(size);
+-
++	if (!kmflags || kmflags == XNHEAP_GFP_NONCACHED) {
++		if (!kmflags)
++			ptr = vmalloc(size);
++		else
++			ptr = __vmalloc(size,
++					GFP_KERNEL | __GFP_HIGHMEM,
++					pgprot_noncached(PAGE_KERNEL));
+ 		if (!ptr)
+ 			return NULL;
+ 
+@@ -1217,7 +1225,7 @@ static inline void __unreserve_and_free_
+ 
+ 	vabase = (unsigned long)ptr;
+ 
+-	if (!kmflags) {
++	if (!kmflags  || kmflags == XNHEAP_GFP_NONCACHED) {
+ 		for (vaddr = vabase; vaddr < vabase + size; vaddr += PAGE_SIZE)
+ 			ClearPageReserved(virt_to_page(__va_to_kva(vaddr)));
+ 
+@@ -1241,6 +1249,11 @@ int xnheap_init_mapped(xnheap_t *heap, u
+ 
+ 	/* Caller must have accounted for internal overhead. */
+ 	heapsize = xnheap_align(heapsize, PAGE_SIZE);
++
++	if ((memflags & XNHEAP_GFP_NONCACHED)
++	    && memflags != XNHEAP_GFP_NONCACHED)
++		return -EINVAL;
++
+ 	heapbase = __alloc_and_reserve_heap(heapsize, memflags);
+ 
+ 	if (!heapbase)
 
 -- 
 
