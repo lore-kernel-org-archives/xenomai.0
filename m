@@ -2,9 +2,9 @@ From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18448.10662.83570.781983@domain.hid>
-Date: Thu, 24 Apr 2008 08:33:10 +0200
-In-Reply-To: <18448.10594.876717.762863@domain.hid>
+Message-ID: <18448.10594.876717.762863@domain.hid>
+Date: Thu, 24 Apr 2008 08:32:02 +0200
+In-Reply-To: <18448.10494.796374.943152@domain.hid>
 References: <18448.9649.956656.531081@domain.hid>
 	<18448.9901.799115.445182@domain.hid>
 	<18448.9967.355128.570111@domain.hid>
@@ -13,8 +13,8 @@ References: <18448.9649.956656.531081@domain.hid>
 	<18448.10221.879356.57696@domain.hid>
 	<18448.10337.610639.200224@domain.hid>
 	<18448.10494.796374.943152@domain.hid>
-	<18448.10594.876717.762863@domain.hid>
-Subject: [Xenomai-core] [9/9] Re-implementation of mutex, user-space support.
+Subject: [Xenomai-core] [8/9] Re-implementation of mutexes,
+	kernel-space support.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -27,18 +27,38 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai@xenomai.org
 
 
-The new implementation. In user-space, without syscall in the common case when a
-mutex is free when locking it, and was not claimed when unlocking it.
+The new implementation of mutexes consists of an atomic_cmpxchg on the mutex
+owner, using the classical test and set raises problems for doing this and
+setting the mutex owner atomically, so we do it all at once.
 
-Note that this change entails a change in behaviour of the mutexes: before this
-change locking a mutex caused the calling thread to switch to primary mode. Now,
-the thread locking a mutex without syscall remains in the same mode.
+The room for storing the mutex owner is allocated in a shared heap, so that it
+can be shared between kernel and user-space. I wonder if we need this at all. If
+it is possible to call atomic_cmpxchg in kernel-space specifying a user-space
+address, a bit like what futex_atomic_cmpxchg_inatomic does on platforms where
+it is implemented, then we do not need it. But since this function is not
+implemented for any of the architectures supported by Xenomai, I preferred to
+stay with the heap implementation.
+
+Further, the owner bit 0 (unused in an xnthread_t * pointer, since it is aligned
+at least on a sizeof(int)), is used to mean that the mutex is claimed, to have
+the atomic_cmpxchg used by the user-space mutex_unlock fail and cause the call
+to the syscall, which will trigger xnsynch_wakeup_one_sleeper.
+
+The implementation of pthread_cond_wait is also slightly modified, the mutex
+condvars counter, used to forbid a call to pthread_mutex_destroy while
+pthread_cond_wait is suspended, disappeared in favour of a locking by
+pthread_cond_wait of the mutex control-block read-write lock.
+
+The function used by pthread_cond_wait to unlock a mutex, possibly saving its
+recursion count also needed to be rewritten.
 
 ---
- Makefile.am |    2
- cond.c      |   21 ++++
- mutex.c     |  262 ++++++++++++++++++++++++++++++++++++++++++++++++++++++------
- 3 files changed, 260 insertions(+), 25 deletions(-)
+ include/posix/pthread.h    |   56 ++++---
+ ksrc/skins/posix/cond.c    |   41 +++--
+ ksrc/skins/posix/mutex.c   |  296 ++++++++++++++++++++++++----------------
+ ksrc/skins/posix/mutex.h   |  123 ++++++++++++----
+ ksrc/skins/posix/syscall.c |  329 +++++++++++++++++++++++++++++++++++++++++++--
+ 5 files changed, 651 insertions(+), 194 deletions(-)
 
 Index: src/skins/posix/mutex.c
 ===================================================================
