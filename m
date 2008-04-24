@@ -2,14 +2,15 @@ From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18448.10157.853132.856441@domain.hid>
-Date: Thu, 24 Apr 2008 08:24:45 +0200
-In-Reply-To: <18448.10037.181558.14996@domain.hid>
+Message-ID: <18448.10221.879356.57696@domain.hid>
+Date: Thu, 24 Apr 2008 08:25:49 +0200
+In-Reply-To: <18448.10157.853132.856441@domain.hid>
 References: <18448.9649.956656.531081@domain.hid>
 	<18448.9901.799115.445182@domain.hid>
 	<18448.9967.355128.570111@domain.hid>
 	<18448.10037.181558.14996@domain.hid>
-Subject: [Xenomai-core] [4/9] Define ARM atomic operations in user-space
+	<18448.10157.853132.856441@domain.hid>
+Subject: [Xenomai-core] [5/9] Define new syscalls for the posix skin
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,262 +23,90 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai@xenomai.org
 
 
-This patch implements the _read, _set, and _cmpxchg operations on the atomic_t
-type in user-space for ARM, using ldrex/strex on ARM v6, and the Linux kernel
-helper kuser_cmpxchg on ARM pre-v6 (so, without syscalls) without SMP. Only the
-SMP case for pre-v6 ARMs still use syscalls, but this case should not be so
-frequent anyway.
+This patch defines the new syscalls get_heap_addr (more on this syscall later),
+and get_thread_cb. The get_thread_cb syscall is used in user-space to associate
+the thread xnthread_t pointer with each user-space xenomai thread, using POSIX
+TSD.
 
-A new macro XNARCH_HAVE_US_ATOMIC_CMPXCHG is defined both in kernel-space and
-user-space, so that the kernel-space can rely on the user-space having
-atomic_cmpxchg defined.
+This is needed for the mutex implementation to allow setting the mutex owner.
 
-The plan is to implement these atomic operations for other platforms, defining
-the XNARCH_HAVE_US_ATOMIC_CMPXCHG macro when this is done. When all platforms
-define XNARCH_HAVE_US_ATOMIC_CMPXCGH, we will be able to remove all the
-#ifdefs.
-
-A question arise about memory barriers. I assumed that atomic_cmpxchg implied a
-barrier, but I am not to sure about that. If that is not the case, we will have
-to implement barriers in user-space as well, and call the in the apropriate
-places in mutexes implementation.
+However, two things: 
+- I do not know if you should like that much passing kernel-space pointers to
+  user-space;
+- this is implemented as a posix skin service, but should probably be defined as
+  a core syscall, and called in all skin implementations, so as to allow threads
+  from other skins to user Xenomai posix skin services.
 
 ---
- atomic.h |  169 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 166 insertions(+), 3 deletions(-)
+ include/posix/syscall.h  |    3 +++
+ src/skins/posix/thread.c |   11 +++++++++++
+ 2 files changed, 14 insertions(+)
 
-Index: include/asm-arm/atomic.h
+Index: include/posix/syscall.h
 ===================================================================
---- include/asm-arm/atomic.h	(revision 3718)
-+++ include/asm-arm/atomic.h	(working copy)
-@@ -23,7 +23,6 @@
- #ifndef _XENO_ASM_ARM_ATOMIC_H
- #define _XENO_ASM_ARM_ATOMIC_H
+--- include/posix/syscall.h	(revision 3718)
++++ include/posix/syscall.h	(working copy)
+@@ -46,6 +46,7 @@
+ #define __pse51_mutex_lock            20
+ #define __pse51_mutex_timedlock       21
+ #define __pse51_mutex_trylock         22
++#define __pse51_check_init            __pse51_mutex_trylock
+ #define __pse51_mutex_unlock          23
+ #define __pse51_cond_init             24
+ #define __pse51_cond_destroy          25
+@@ -101,6 +102,8 @@
+ #define __pse51_thread_getschedparam  75
+ #define __pse51_thread_kill           76
+ #define __pse51_select                77
++#define __pse51_get_heap_addr         78
++#define __pse51_get_thread_cb	      79
  
--
  #ifdef __KERNEL__
  
- #include <linux/bitops.h>
-@@ -35,6 +34,8 @@
- #define xnarch_memory_barrier()  	smp_mb()
+Index: src/skins/posix/thread.c
+===================================================================
+--- src/skins/posix/thread.c	(revision 3718)
++++ src/skins/posix/thread.c	(working copy)
+@@ -26,6 +26,7 @@
+ #include <posix/syscall.h>
  
- #if __LINUX_ARM_ARCH__ >= 6
-+#define XNARCH_HAVE_US_ATOMIC_CMPXCHG
-+
- static inline void atomic_set_mask(unsigned long mask, unsigned long *addr)
- {
-     unsigned long tmp, tmp2;
-@@ -58,6 +59,11 @@ static inline void atomic_set_mask(unsig
-     *addr |= mask;
-     local_irq_restore_hw(flags);
+ extern int __pse51_muxid;
++extern pthread_key_t pse51_cur_key;
+ 
+ static pthread_attr_t default_attr;
+ static int linuxthreads;
+@@ -41,6 +42,13 @@ static void __pthread_sigharden_handler(
+ 	XENOMAI_SYSCALL1(__xn_sys_migrate, XENOMAI_XENO_DOMAIN);
  }
-+
-+#ifndef CONFIG_SMP
-+#define XNARCH_HAVE_US_ATOMIC_CMPXCHG
-+#endif /* CONFIG_SMP */
-+
- #endif /* ARM_ARCH_6 */
  
- #define xnarch_atomic_set(pcounter,i)          atomic_set(pcounter,i)
-@@ -75,9 +81,14 @@ typedef atomic_t atomic_counter_t;
- 
- #include <asm/xenomai/features.h>
- #include <asm/xenomai/syscall.h>
-+#include <nucleus/compiler.h>
- 
- typedef struct { volatile int counter; } atomic_counter_t;
- 
-+typedef atomic_counter_t atomic_t;
-+
-+#define atomic_read(v)	((v)->counter)
-+
- /*
-  * This function doesn't exist, so you'll get a linker error
-  * if something tries to do an invalid xchg().
-@@ -129,6 +140,40 @@ __xchg(volatile void *ptr, unsigned long
-  * Atomic operations lifted from linux/include/asm-arm/atomic.h 
-  */
- #if CONFIG_XENO_ARM_ARCH >= 6
-+#define XNARCH_HAVE_US_ATOMIC_CMPXCHG
-+
-+static __inline__ void atomic_set(atomic_t *v, int i)
++static void set_kthread_cb(void)
 +{
-+	unsigned long tmp;
-+
-+	__asm__ __volatile__("@ atomic_set\n"
-+"1:	ldrex	%0, [%1]\n"
-+"	strex	%0, %2, [%1]\n"
-+"	teq	%0, #0\n"
-+"	bne	1b"
-+	: "=&r" (tmp)
-+	: "r" (&v->counter), "r" (i)
-+	: "cc");
++	void *kthread_cb;
++	XENOMAI_SKINCALL1(__pse51_muxid, __pse51_get_thread_cb, &kthread_cb);
++	pthread_setspecific(pse51_cur_key, kthread_cb);
 +}
 +
-+static __inline__ int atomic_cmpxchg(atomic_t *ptr, int old, int new)
-+{
-+	unsigned long oldval, res;
-+
-+	do {
-+		__asm__ __volatile__("@ atomic_cmpxchg\n"
-+		"ldrex	%1, [%2]\n"
-+		"mov	%0, #0\n"
-+		"teq	%1, %3\n"
-+		"strexeq %0, %4, [%2]\n"
-+		    : "=&r" (res), "=&r" (oldval)
-+		    : "r" (&ptr->counter), "Ir" (old), "r" (new)
-+		    : "cc");
-+	} while (res);
-+
-+	return oldval;
-+}
-+
- static __inline__ int atomic_add_return(int i, atomic_counter_t *v)
+ int __wrap_pthread_setschedparam(pthread_t thread,
+ 				 int policy, const struct sched_param *param)
  {
-     unsigned long tmp;
-@@ -194,7 +239,7 @@ static __inline__ void atomic_clear_mask
-     : "r" (addr), "Ir" (mask)
-     : "cc");
- }
--#else /* ARM_ARCH_6 */
-+#elif CONFIG_SMP
- static __inline__ int atomic_add_return(int i, atomic_counter_t *v)
- {
-     int ret;
-@@ -224,7 +269,122 @@ static inline void atomic_clear_mask(uns
-     XENOMAI_SYSCALL3(__xn_sys_arch,
-                      XENOMAI_SYSARCH_ATOMIC_CLEAR_MASK, mask, addr);
- }
--#endif /* ARM_ARCH_6 */
-+#else /* ARM_ARCH <= 5 && !CONFIG_SMP */
-+#define XNARCH_HAVE_US_ATOMIC_CMPXCHG
-+
-+static __inline__ void atomic_set(atomic_counter_t *ptr, int val)
-+{
-+	ptr->counter = val;
-+}
-+
-+static __inline__ int atomic_cmpxchg(atomic_counter_t *ptr, int old, int new)
-+{
-+        register int asm_old asm("r0") = old;
-+        register int asm_new asm("r1") = new;
-+        register int *asm_ptr asm("r2") = (int *) &ptr->counter;
-+        register int asm_lr asm("lr");
-+	register int asm_tmp asm("r3");
-+
-+	do {
-+		asm volatile ( \
-+			"mov %1, #0xffff0fff\n\t"	\
-+			"mov lr, pc\n\t"		 \
-+			"add pc, %1, #(0xffff0fc0 - 0xffff0fff)\n\t"	\
-+			: "+r"(asm_old), "=&r"(asm_tmp), "=r"(asm_lr)	\
-+			: "r"(asm_new), "r"(asm_ptr) \
-+			: "ip", "cc", "memory");
-+		if (likely(!asm_old))
-+			return old;
-+	} while ((asm_old = *asm_ptr) == old);
-+        return asm_old;
-+}
-+
-+static __inline__ int atomic_add_return(int i, atomic_counter_t *v)
-+{
-+	register int asm_old asm("r0");
-+	register int asm_new asm("r1");
-+	register int *asm_ptr asm("r2") = (int *) &v->counter;
-+        register int asm_lr asm("lr");
-+	register int asm_tmp asm("r3");
-+
-+	asm volatile ( \
-+		"1: @ atomic_add\n\t" \
-+		"ldr	%0, [%4]\n\t" \
-+		"mov	%1, #0xffff0fff\n\t" \
-+		"add	lr, pc, #4\n\t" \
-+		"add	%3, %0, %5\n\t"\
-+		"add	pc, %1, #(0xffff0fc0 - 0xffff0fff)\n\t" \
-+		"bcc	1b" \
-+		: "=&r" (asm_old), "=&r"(asm_tmp), "=r"(asm_lr), "=r"(asm_new) \
-+		: "r" (asm_ptr), "rIL"(i) \
-+		: "ip", "cc", "memory");
-+	return asm_new;
-+}
-+
-+static __inline__ int atomic_sub_return(int i, atomic_counter_t *v)
-+{
-+	register int asm_old asm("r0");
-+	register int asm_new asm("r1");
-+	register int *asm_ptr asm("r2") = (int *) &v->counter;
-+        register int asm_lr asm("lr");
-+	register int asm_tmp asm("r3");
-+
-+	asm volatile ( \
-+		"1: @ atomic_sub\n\t" \
-+		"ldr	%0, [%4]\n\t" \
-+		"mov	%1, #0xffff0fff\n\t" \
-+		"add	lr, pc, #4\n\t" \
-+		"sub	%3, %0, %5\n\t"\
-+		"add	pc, %1, #(0xffff0fc0 - 0xffff0fff)\n\t" \
-+		"bcc	1b" \
-+		: "=&r" (asm_old), "=&r"(asm_tmp), "=r"(asm_lr), "=r"(asm_new) \
-+		: "r" (asm_ptr), "rIL"(i) \
-+		: "ip", "cc", "memory");
-+	return asm_new;
-+}
-+
-+static __inline__ void atomic_set_mask(long mask, atomic_counter_t *v)
-+{
-+	register int asm_old asm("r0");
-+	register int asm_new asm("r1");
-+	register int *asm_ptr asm("r2") = (int *) &v->counter;
-+        register int asm_lr asm("lr");
-+	register int asm_tmp asm("r3");
-+
-+	asm volatile ( \
-+		"1: @ atomic_set_mask\n\t" \
-+		"ldr	%0, [%4]\n\t" \
-+		"mov	%1, #0xffff0fff\n\t" \
-+		"add	lr, pc, #4\n\t" \
-+		"orr	%3, %0, %5\n\t"\
-+		"add	pc, %1, #(0xffff0fc0 - 0xffff0fff)\n\t" \
-+		"bcc	1b" \
-+		: "=&r" (asm_old), "=&r"(asm_tmp), "=r"(asm_lr), "=r"(asm_new) \
-+		: "r" (asm_ptr), "rIL"(mask) \
-+		: "ip", "cc", "memory");
-+}
-+
-+static __inline__ void atomic_clear_mask(long mask, atomic_counter_t *v)
-+{
-+	register int asm_old asm("r0");
-+	register int asm_new asm("r1");
-+	register int *asm_ptr asm("r2") = (int *) &v->counter;
-+        register int asm_lr asm("lr");
-+	register int asm_tmp asm("r3");
-+
-+	asm volatile ( \
-+		"1: @ atomic_clear_mask\n\t" \
-+		"ldr	%0, [%4]\n\t" \
-+		"mov	%1, #0xffff0fff\n\t" \
-+		"add	lr, pc, #4\n\t" \
-+		"bic	%3, %0, %5\n\t" \
-+		"add	pc, %1, #(0xffff0fc0 - 0xffff0fff)\n\t" \
-+		"bcc	1b" \
-+		: "=&r" (asm_old), "=&r"(asm_tmp), "=r"(asm_lr), "=r"(asm_new) \
-+		: "r" (asm_ptr), "rIL"(mask) \
-+		: "ip", "cc", "memory");
-+}
-+#endif /* ARM_ARCH <= 5 && !CONFIG_SMP */
+@@ -56,6 +64,7 @@ int __wrap_pthread_setschedparam(pthread
  
- #define xnarch_memory_barrier()                 __asm__ __volatile__("": : :"memory")
+ 	if (!err && promoted) {
+ 		old_sigharden_handler = signal(SIGHARDEN, &__pthread_sigharden_handler);
++		set_kthread_cb();
+ 		if (policy != SCHED_OTHER)
+ 			XENOMAI_SYSCALL1(__xn_sys_migrate, XENOMAI_XENO_DOMAIN);
+ 	}
+@@ -132,6 +141,8 @@ static void *__pthread_trampoline(void *
+ 	start = iargs->start;
+ 	cookie = iargs->arg;
  
-@@ -241,6 +401,9 @@ static inline void atomic_clear_mask(uns
- 
- typedef unsigned long atomic_flags_t;
- 
-+/* Add support for atomic_long_t and atomic_ptr_t */
-+#include <asm-generic/xenomai/atomic.h>
++	set_kthread_cb();
 +
- #endif /* !_XENO_ASM_ARM_ATOMIC_H */
+ 	__real_sem_post(&iargs->sync);
  
- // vim: ts=4 et sw=4 sts=4
+ 	if (!err) {
+
 
 -- 
 
