@@ -1,10 +1,17 @@
-Message-ID: <4811D596.8070109@domain.hid>
-Date: Fri, 25 Apr 2008 14:59:02 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <2ff1a98a0804250626h7104d6ddg282d35798af77cb9@domain.hid>
+Date: Fri, 25 Apr 2008 15:26:38 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <48118CC7.4060408@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------040508000908080202090902"
-Subject: [Xenomai-core] [2.4.x PATCH] POSIX: Remove mutex/cond_init locking,
-	fix NULL attribute
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <18448.9649.956656.531081@domain.hid>
+	<18448.9901.799115.445182@domain.hid>
+	<18448.9967.355128.570111@domain.hid>
+	<18448.10037.181558.14996@domain.hid>
+	<48118CC7.4060408@domain.hid>
+Subject: Re: [Xenomai-core] [3/9] Define more atomic operations in user-space
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,249 +21,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai-core@domain.hid
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------040508000908080202090902
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+On Fri, Apr 25, 2008 at 9:48 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+> Gilles Chanteperdrix wrote:
+>  > This patch implements the _read, _set, and _cmpxchg operations on atomic_long_t
+>  > and atomic_ptr_t in user-space in include/asm-generic/atomic.h which should be
+>  > included at the end of include/asm-*/atomic.h after the definition of the same
+>  > operations for the atomic_t type and atomic64_t type on 64 bits platforms.
+>  >
+>  > These operations are the basic operations used by user-space mutexes. Maybe we
+>  > should add the xnarch_ prefix ?
+>  >
+>
+>  Yes, but more generally, we should rework this to fit the existing atomic
+>  support in include/asm-*/atomic.h, so that we don't end up with sideways to what
+>  has been already designed to support set, get, xchg and the like, in both kernel
+>  and userland context.
 
-Hi,
+That is not exactly sideways... Linux include/asm-generic/atomic.h
+defines operations for atomic_long_t. This file adds two things:
+- support for atomic_long_t in user-space (where we can not include
+linux include/asm-generic/atomic.h)
+- support for a new type atomic_ptr_t both to kernel-space and
+user-space, the aim is to avoid all the casts that would take place if
+we wanted to use atomic_long_t to store pointers.
 
-trunk check-in #3369 did not just remove some "questionable critical
-sections", it also happen to fix two ugly bugs in the POSIX skin: The
-user was not able to pass NULL attributes down to mutex_init and
-cond_init. Find a backport of that patch for 2.4.x attached.
-
-Jan
+However for this file to work, it has to be included by asm-*/atomic.h
+after the definition of atomic_t (and atomic64_t on 64 bits
+platforms). So linux includes asm-generic/atomic.h at the end of
+asm/atomic.h, I simply reproduced this scheme with Xenomai
+include/asm-*/atomic.h.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
-
---------------040508000908080202090902
-Content-Type: text/x-patch;
- name="cond-mutex-init-fix-NULL-attr-and-remove-critical-sections.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename*0="cond-mutex-init-fix-NULL-attr-and-remove-critical-sections.p";
- filename*1="atch"
-
-Index: xenomai-2.4.x/ksrc/skins/posix/syscall.c
-===================================================================
---- xenomai-2.4.x/ksrc/skins/posix/syscall.c	(Revision 3722)
-+++ xenomai-2.4.x/ksrc/skins/posix/syscall.c	(Arbeitskopie)
-@@ -420,7 +420,6 @@ static int __sem_init(struct task_struct
- 	union __xeno_sem sm, *usm;
- 	unsigned value;
- 	int pshared;
--	spl_t s;
- 
- 	usm = (union __xeno_sem *)__xn_reg_arg1(regs);
- 
-@@ -431,24 +430,18 @@ static int __sem_init(struct task_struct
- 	pshared = (int)__xn_reg_arg2(regs);
- 	value = (unsigned)__xn_reg_arg3(regs);
- 
--	xnlock_get_irqsave(&nklock, s);
--	
- 	__xn_copy_from_user(curr,
- 			    &sm.shadow_sem,
- 			    (void __user *)&usm->shadow_sem,
- 			    sizeof(sm.shadow_sem));
- 
--	if (sem_init(&sm.native_sem, pshared, value) == -1) {
--		xnlock_put_irqrestore(&nklock, s);
-+	if (sem_init(&sm.native_sem, pshared, value) == -1)
- 		return -thread_get_errno();
--	}
- 
- 	__xn_copy_to_user(curr,
- 			  (void __user *)&usm->shadow_sem,
- 			  &sm.shadow_sem, sizeof(usm->shadow_sem));
- 
--	xnlock_put_irqrestore(&nklock, s);
--
- 	return 0;
- }
- 
-@@ -1080,7 +1073,6 @@ static int __pthread_mutex_init(struct t
- {
- 	pthread_mutexattr_t locattr, *attr, *uattrp;
- 	union __xeno_mutex mx, *umx;
--	spl_t s;
- 	int err;
- 
- 	umx = (union __xeno_mutex *)__xn_reg_arg1(regs);
-@@ -1091,19 +1083,16 @@ static int __pthread_mutex_init(struct t
- 	    (curr, VERIFY_WRITE, (void __user *)umx, sizeof(*umx)))
- 		return -EFAULT;
- 
--	if (!__xn_access_ok
--	    (curr, VERIFY_READ, (void __user *)uattrp, sizeof(*uattrp)))
--		return -EFAULT;
--
--	/* We want the initialization to be atomic. */
--	xnlock_get_irqsave(&nklock, s);
--
- 	__xn_copy_from_user(curr,
- 			    &mx.shadow_mutex,
- 			    (void __user *)&umx->shadow_mutex,
- 			    sizeof(mx.shadow_mutex));
- 
- 	if (uattrp) {
-+		if (!__xn_access_ok
-+		    (curr, VERIFY_READ, (void __user *)uattrp, sizeof(*uattrp)))
-+			return -EFAULT;
-+
- 		__xn_copy_from_user(curr,
- 				    &locattr,(void __user *)
- 				    uattrp,
-@@ -1115,17 +1104,13 @@ static int __pthread_mutex_init(struct t
- 
- 	err = pthread_mutex_init(&mx.native_mutex, attr);
- 	
--	if (err) {
--		xnlock_put_irqrestore(&nklock, s);
-+	if (err)
- 		return -err;
--	}
- 
- 	__xn_copy_to_user(curr,
- 			  (void __user *)&umx->shadow_mutex,
- 			  &mx.shadow_mutex, sizeof(umx->shadow_mutex));
- 
--	xnlock_put_irqrestore(&nklock, s);
--
- 	return 0;
- }
- 
-@@ -1134,7 +1119,6 @@ static int __pthread_mutex_destroy(struc
- {
- 	union __xeno_mutex mx, *umx;
- 	int err;
--	spl_t s;
- 
- 	umx = (union __xeno_mutex *)__xn_reg_arg1(regs);
- 
-@@ -1142,8 +1126,6 @@ static int __pthread_mutex_destroy(struc
- 	    (curr, VERIFY_READ, (void __user *)umx, sizeof(*umx)))
- 		return -EFAULT;
- 
--	xnlock_get_irqsave(&nklock, s);
--
- 	__xn_copy_from_user(curr,
- 			    &mx.shadow_mutex,
- 			    (void __user *)&umx->shadow_mutex,
-@@ -1151,17 +1133,13 @@ static int __pthread_mutex_destroy(struc
- 
- 	err = pthread_mutex_destroy(&mx.native_mutex);
- 
--	if (err) {
--		xnlock_put_irqrestore(&nklock, s);
-+	if (err)
- 		return -err;
--	}
- 	
- 	__xn_copy_to_user(curr,
- 			  (void __user *)&umx->shadow_mutex,
- 			  &mx.shadow_mutex, sizeof(umx->shadow_mutex));
- 
--	xnlock_put_irqrestore(&nklock, s);
--
- 	return 0;
- }
- 
-@@ -1410,7 +1388,6 @@ static int __pthread_cond_init(struct ta
- {
- 	pthread_condattr_t locattr, *attr, *uattrp;
- 	union __xeno_cond cnd, *ucnd;
--	spl_t s;
- 	int err;
- 
- 	ucnd = (union __xeno_cond *)__xn_reg_arg1(regs);
-@@ -1421,19 +1398,16 @@ static int __pthread_cond_init(struct ta
- 	    (curr, VERIFY_WRITE, (void __user *)ucnd, sizeof(*ucnd)))
- 		return -EFAULT;
- 
--	if (!__xn_access_ok
--	    (curr, VERIFY_READ, (void __user *)uattrp, sizeof(*uattrp)))
--		return -EFAULT;
--
--	/* We want the initialization to be atomic. */
--	xnlock_get_irqsave(&nklock, s);
--	
- 	__xn_copy_from_user(curr,
- 			    &cnd.shadow_cond,
- 			    (void __user *)&ucnd->shadow_cond,
- 			    sizeof(cnd.shadow_cond));
- 
- 	if (uattrp) {
-+		if (!__xn_access_ok
-+		    (curr, VERIFY_READ, (void __user *)uattrp, sizeof(*uattrp)))
-+			return -EFAULT;
-+
- 		__xn_copy_from_user(curr,
- 				    &locattr,
- 				    (void __user *)uattrp,
-@@ -1443,20 +1417,15 @@ static int __pthread_cond_init(struct ta
- 	} else
- 		attr = NULL;
- 
--	/* Always use default attribute. */
- 	err = pthread_cond_init(&cnd.native_cond, attr);
- 
--	if (err) {
--		xnlock_put_irqrestore(&nklock, s);
-+	if (err)
- 		return -err;
--	}
- 
- 	__xn_copy_to_user(curr,
- 			  (void __user *)&ucnd->shadow_cond,
- 			  &cnd.shadow_cond, sizeof(ucnd->shadow_cond));
- 
--	xnlock_put_irqrestore(&nklock, s);
--
- 	return 0;
- }
- 
-@@ -1465,7 +1434,6 @@ static int __pthread_cond_destroy(struct
- {
- 	union __xeno_cond cnd, *ucnd;
- 	int err;
--	spl_t s;
- 
- 	ucnd = (union __xeno_cond *)__xn_reg_arg1(regs);
- 
-@@ -1473,8 +1441,6 @@ static int __pthread_cond_destroy(struct
- 	    (curr, VERIFY_READ, (void __user *)ucnd, sizeof(*ucnd)))
- 		return -EFAULT;
- 
--	xnlock_get_irqsave(&nklock, s);
--
- 	__xn_copy_from_user(curr,
- 			    &cnd.shadow_cond,
- 			    (void __user *)&ucnd->shadow_cond,
-@@ -1482,17 +1448,13 @@ static int __pthread_cond_destroy(struct
- 
- 	err = pthread_cond_destroy(&cnd.native_cond);
- 
--	if (err) {
--		xnlock_put_irqrestore(&nklock, s);
-+	if (err)
- 		return -err;
--	}
- 
- 	__xn_copy_to_user(curr,
- 			  (void __user *)&ucnd->shadow_cond,
- 			  &cnd.shadow_cond, sizeof(ucnd->shadow_cond));
- 
--	xnlock_put_irqrestore(&nklock, s);
--
- 	return 0;
- }
- 
-
---------------040508000908080202090902--
+ Gilles
 
