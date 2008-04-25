@@ -1,10 +1,12 @@
-Date: Fri, 25 Apr 2008 11:37:30 -0700 (PDT)
-From: George Pitich <george_pitich@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Message-ID: <251241.46467.qm@domain.hid>
-Subject: [Xenomai-help] xenomai installation
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18450.13958.813644.217977@domain.hid>
+Date: Fri, 25 Apr 2008 21:52:38 +0200
+In-Reply-To: <251241.46467.qm@domain.hid>
+References: <251241.46467.qm@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] xenomai installation
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,38 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: George Pitich <george_pitich@domain.hid>
+Cc: xenomai@xenomai.org
 
-I'm pretty much sure this was answered before. If this
-is the case could you please refer me to the post?
+George Pitich wrote:
+ > I'm pretty much sure this was answered before. If this
+ > is the case could you please refer me to the post?
+ > 
+ > I'm getting a bit frustrated in my attempts to install
+ > xenomai. I'm following the readme.install from
+ > xenomai-2.4.3 but to no avail. When I execute make
+ > menuconfig after patching the kernel with
+ > prepare-kernel.sh, Real-time sub-system presents me
+ > with:
 
-I'm getting a bit frustrated in my attempts to install
-xenomai. I'm following the readme.install from
-xenomai-2.4.3 but to no avail. When I execute make
-menuconfig after patching the kernel with
-prepare-kernel.sh, Real-time sub-system presents me
-with:
+Please do the following in Linux kernel configuration:
 
--- NOTE: Xenomai conflicts with PC speaker support.   
---- (menu Device Drivers/Input device
-support/Miscellaneous devices)
---- NOTE: Xenomai needs either X86_LOCAL_APIC enabled
-or HPET_TIMER disabled.               &#9474; &#9474;
---- (menu Processor type and features)).
+ > 
+ > -- NOTE: Xenomai conflicts with PC speaker support.   
+ > --- (menu Device Drivers/Input device
+ > support/Miscellaneous devices)
 
-None of this options is selectable nor configurable.
+disable PC speaker support (you will find it in the Device Drivers/Input
+device support/Miscellaneous devices menu).
 
-By looking into .config, I can see only one xeno
-option CONFIG_XENO_GENERIC_STACKPOOL=y. After
-compiling the kernel and booting it, xenomai build
-looks incomplete. I can't find xenomai LKMs and
-therefore can't run testsuite.
+ > --- NOTE: Xenomai needs either X86_LOCAL_APIC enabled
+ > or HPET_TIMER disabled.               &#9474; &#9474;
+ > --- (menu Processor type and features)).
 
-I hope it is not because of AMD Athlon cpu on the box.
-Many Thanks.
+Enable Local APIC option (if your box has a local APIC, but anything
+recent probably has an APIC), or disable HPET timer option (you will find
+these options in the Processor type and features menu).
+
+-- 
 
 
-      ____________________________________________________________________________________
-Be a better friend, newshound, and 
-know-it-all with Yahoo! Mobile.  Try it now.  http://mobile.yahoo.com/;_ylt=Ahu06i62sR8HDtDypao8Wcj9tAcJ
+					    Gilles.
 
