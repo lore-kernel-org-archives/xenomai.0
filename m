@@ -1,13 +1,12 @@
-From: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
-Date: Wed, 30 Apr 2008 08:13:28 +0200
-References: <1209512080.1662.311.camel@domain.hid>
+Message-ID: <2ff1a98a0804300201u2fa3d6cfgf2cd9f833ce62f4e@domain.hid>
+Date: Wed, 30 Apr 2008 11:01:11 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 In-Reply-To: <1209512080.1662.311.camel@domain.hid>
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-Id: <200804300813.28178.Sebastian.Smolorz@domain.hid>
+Content-Disposition: inline
+References: <1209512080.1662.311.camel@domain.hid>
 Subject: Re: [Xenomai-help] Latency test locking AT91 system
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -19,36 +18,32 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Travis Stratman <tstratman@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: Xenomai Help List <xenomai@xenomai.org>
 
-Travis Stratman wrote:
-> I am working on getting Xenomai running on a board using the AT91SAM9260
-> processor. The actual hardware on the board is very similar to the
-> AT91SAM9260EK.
->
-> I was able to patch and build the kernel and userspace without a
-> problem. However, when I run the latency test, I often see the board
-> lockup. I'm using 2.4.3 and the 2.6.20 adeos patch. I compiled all of
-> the xenomai features that I needed into the kernel rather than building
-> them as modules. I am using a GCC-4.1.1 EABI compiler and enabled the
-> arm-eabi in configure. I have configured with and without the arm-tsc
-> support.
->
-> If I run the xeno-test script, everything seems fine until I get to the
-> latency test, where it hangs, generally after printing "warming up..."
-> but it doesn't always get that far. When I turn debugging on in the
-> kernel configuration, the watchdog will kill the thread. If I run
-> latency on its own, with or without dd load, I can sometimes get it to
-> run and other times it fails before the first data is printed or after
-> the first few tests. Sometimes it just seems to hang and then starts
-> printing again after about 30 seconds or so, usually stopping later.
+On Wed, Apr 30, 2008 at 1:34 AM, Travis Stratman <tstratman@domain.hid> wrote:
+>  The klatency test only works the first time that I run it, all further
+>  tests cause a segmentation fault. Here is the strace of the last few
+>  calls on klatency when it does fail:
+>  gettimeofday({1209511560, 302399}, NULL) = 0
+>  rt_sigaction(SIGINT, {0x88c8, [INT], SA_RESTART|0x4000000}, {SIG_DFL},
+>  8) = 0
+>  rt_sigaction(SIGTERM, {0x88c8, [TERM], SA_RESTART|0x4000000}, {SIG_DFL},
+>  8) = 0
+>  rt_sigaction(SIGHUP, {0x88c8, [HUP], SA_RESTART|0x4000000}, {SIG_DFL},
+>  8) = 0
+>  rt_sigaction(SIGALRM, {0x88c8, [ALRM], SA_RESTART|0x4000000}, {SIG_DFL},
+>  8) = 0
+>  open("/proc/xenomai/registry/native/pipes/klat_pipe", O_RDONLY) = 3
+>  read(3, "#C\0\0\0\0\0\0\220\1\0\0\321q\0\0\0\0\0\0\0\0\0\0\362\204"...,
+>  32) = 32
+>  --- SIGSEGV (Segmentation fault) @ 0 (0) ---
+>  +++ killed by SIGSEGV +++
 
-Please run the latency test with a higher period value, e.g.
-
-latency -p 500
-
-and see if it runs correctly.
+Yes, I discovered this issue recently but did not fix it yet. You have
+to compile the klatency driver as a module and load/unload it for each
+run of the klatency user-space application. If you compile the driver
+as a module and use the run script, all should happen automatically.
 
 -- 
-Sebastian
+ Gilles
 
