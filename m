@@ -1,5 +1,5 @@
-Message-ID: <4818BB0B.6020008@domain.hid>
-Date: Wed, 30 Apr 2008 20:31:39 +0200
+Message-ID: <4818BC25.8040305@domain.hid>
+Date: Wed, 30 Apr 2008 20:36:21 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <51B669A8A7D2914E9AB2B3F40AC6553E646F13@domain.hid>		<51B669A8A7D2914E9AB2B3F40AC6553E646F52@domain.hid>		<18454.9396.476627.446653@domain.hid>		<51B669A8A7D2914E9AB2B3F40AC6553E646F54@domain.hid>		<48162C69.6040101@domain.hid>		<18454.12323.344999.258031@domain.hid>		<51B669A8A7D2914E9AB2B3F40AC6553E646F55@domain.hid>		<48163EE7.5000604@domain.hid>		<18454.17297.451664.334250@domain.hid>		<48164652.5090102@domain.hid>	<2ff1a98a0804290252j1c9dc444kffb345ebaeb123d@domain.hid>	<48187366.2060006@domain.hid>
@@ -40,7 +40,13 @@ Karch, Joshua wrote:
 > tasks with similar (though not exactly same) loop rates-- i.e. None of
 > the tasks are synchronized, though they all run at about 50Hz.  Should I
 > use message queues to do this?
-> 
+>
+
+Btw, that code skeleton was meant to be paired with a peer module in
+kernel/userland that would create the queue. Nothing in this code does this; you
+need to call rt_queue_create() at init to create the queue the consumer task
+will bind to.
+
 > Thank you,
 > 
 > Joshua Karch
@@ -61,16 +67,9 @@ Karch, Joshua wrote:
 > 
 > RT_TASK task_desc;
 > 
-
-We need to know whether an error actually occurred. Nothing guarantees us that
-all stdio buffers would be flushed upon SEGV. Does the executable still behave
-the same way with that patch?
-
 > void fail()
 > {
 >         printf("error\n");
-
-+	exit(99);
 > }
 > 
 > 
