@@ -1,15 +1,23 @@
-Message-ID: <2ff1a98a0804300926x32d69d22k1db49c9fc48c3cc3@domain.hid>
-Date: Wed, 30 Apr 2008 18:26:05 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <1209572150.1662.322.camel@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <1209512080.1662.311.camel@domain.hid>
-	<200804300813.28178.Sebastian.Smolorz@domain.hid>
-	<1209572150.1662.322.camel@domain.hid>
-Subject: Re: [Xenomai-help] Latency test locking AT91 system
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C8AAED.E7B6F8EE"
+Date: Wed, 30 Apr 2008 14:13:35 -0400
+Message-ID: <51B669A8A7D2914E9AB2B3F40AC6553E646F5C@afsexc01.aurora.aero>
+References: <51B669A8A7D2914E9AB2B3F40AC6553E646F13@domain.hid>	
+	<51B669A8A7D2914E9AB2B3F40AC6553E646F52@domain.hid>	
+	<18454.9396.476627.446653@domain.hid>	
+	<51B669A8A7D2914E9AB2B3F40AC6553E646F54@domain.hid>	
+	<48162C69.6040101@domain.hid>	
+	<18454.12323.344999.258031@domain.hid>	
+	<51B669A8A7D2914E9AB2B3F40AC6553E646F55@domain.hid>	
+	<48163EE7.5000604@domain.hid>	
+	<18454.17297.451664.334250@domain.hid>	
+	<48164652.5090102@domain.hid>
+	<2ff1a98a0804290252j1c9dc444kffb345ebaeb123d@domain.hid>
+	<48187366.2060006@domain.hid>
+From: "Karch, Joshua" <jkarch@domain.hid>
+Subject: [Xenomai-help] Segfault Problems with Message Queues
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,61 +27,323 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Travis Stratman <tstratman@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, Apr 30, 2008 at 6:15 PM, Travis Stratman <tstratman@domain.hid> wrote:
-> On Wed, 2008-04-30 at 08:13 +0200, Sebastian Smolorz wrote:
->  > Travis Stratman wrote:
->  > > I am working on getting Xenomai running on a board using the AT91SAM9260
->  > > processor. The actual hardware on the board is very similar to the
->  > > AT91SAM9260EK.
->  > >
->  > > I was able to patch and build the kernel and userspace without a
->  > > problem. However, when I run the latency test, I often see the board
->  > > lockup. I'm using 2.4.3 and the 2.6.20 adeos patch. I compiled all of
->  > > the xenomai features that I needed into the kernel rather than building
->  > > them as modules. I am using a GCC-4.1.1 EABI compiler and enabled the
->  > > arm-eabi in configure. I have configured with and without the arm-tsc
->  > > support.
->  > >
->  > > If I run the xeno-test script, everything seems fine until I get to the
->  > > latency test, where it hangs, generally after printing "warming up..."
->  > > but it doesn't always get that far. When I turn debugging on in the
->  > > kernel configuration, the watchdog will kill the thread. If I run
->  > > latency on its own, with or without dd load, I can sometimes get it to
->  > > run and other times it fails before the first data is printed or after
->  > > the first few tests. Sometimes it just seems to hang and then starts
->  > > printing again after about 30 seconds or so, usually stopping later.
->  >
->  > Please run the latency test with a higher period value, e.g.
->  >
->  > latency -p 500
->  >
->  > and see if it runs correctly.
->
->  Thank you, that seems to have fixed the issue. The entire xeno-test
->  script completes and the latencies seem to be very good.
->
->  I assuming that this is just because the board does not have enough
->  horsepower to run the test at 100 us?
+This is a multi-part message in MIME format.
 
-Well yes. 100 us seems to be close to the limit between what the box
-can bear and what it can not, because, whereas I have been oberving
-the same lockup as you for a long time, it seems to have disappeared
-when running latency without load with trunk and I-pipe patch for
-2.6.24.
+------_=_NextPart_001_01C8AAED.E7B6F8EE
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
->
->  I'm new to this so I'm trying to learn as I go. Is there any specific
->  condition where I would not want to enable the ARM TSC support?
+Hi All,
 
-The option exists in the configure script because the tsc support is a
-relatively recent addition to the I-pipe patch, so we need a way to
-have xenomai compile and work for people using older patches. We do
-not do any run-time detection in order to avoid adding any overhead to
-the function reading the tsc.
+I tried implementing inter-task message queues and following the =
+msg_queue.c example
+(http://www.xenomai.org/documentation/trunk/html/api/msg__queue_8c-exampl=
+e.html)
+and when I try to run the implementation after fixing some of the code =
+(declaring fail() to printf an error, declaring int err, and changing =
+&task_body to &consumer), I get the following error
+msg_queue[3897]: segfault at 00000000 eip b7cf8933 esp bf8dce04 error 6. =
+ This comes out of the rt_queue_alloc function.
 
--- 
- Gilles
+Has the implementation of message passing between userspace tasks =
+changed?  Is there a more recent example?  My end goal is to send non =
+blocking messages from one producer task at 50Hz to two reading tasks =
+tasks with similar (though not exactly same) loop rates-- i.e. None of =
+the tasks are synchronized, though they all run at about 50Hz.  Should I =
+use message queues to do this?
+
+Thank you,
+
+Joshua Karch
+
+Attached is the code I used..
+
+#include <sys/mman.h>
+#include <stdio.h>
+#include <string.h>
+#include <native/task.h>
+#include <native/queue.h>
+
+#define TASK_PRIO  99 /* Highest RT priority */
+#define TASK_MODE  0  /* No flags */
+#define TASK_STKSZ 0  /* Stack size (use default one) */
+
+RT_QUEUE q_desc;
+
+RT_TASK task_desc;
+
+void fail()
+{
+	printf("error\n");
+}
+
+
+void consumer (void *cookie)
+
+{
+    ssize_t len;
+    void *msg;
+    int err;
+
+    /* Bind to a queue which has been created elsewhere, either in
+       kernel or user-space. The call will block us until such queue
+       is created with the expected name. The queue should have been
+       created with the Q_SHARED mode set, which is implicit when
+       creation takes place in user-space. */
+
+    err =3D rt_queue_bind(&q_desc,"SomeQueueName",TM_INFINITE);
+
+    if (err)
+        fail();
+
+    /* Collect each message sent to the queue by the queuer() routine,
+       until the queue is eventually removed from the system by a call
+       to rt_queue_delete(). */
+
+    while ((len =3D rt_queue_receive(&q_desc,&msg,TM_INFINITE)) > 0)
+        {
+        printf("received message> len=3D%d bytes, ptr=3D%p, s=3D%s\n",
+               len,msg,(const char *)msg);
+        rt_queue_free(&q_desc,msg);
+        }
+
+    /* We need to unbind explicitly from the queue in order to
+       properly release the underlying memory mapping. Exiting the
+       process unbinds all mappings automatically. */
+
+    rt_queue_unbind(&q_desc);
+
+    if (len !=3D -EIDRM)
+        /* We received some unexpected error notification. */
+        fail();
+
+    /* ... */
+}
+
+
+int main (int argc, char *argv[])
+
+{
+    static char *messages[] =3D { "hello", "world", NULL };
+    int n, len;
+    void *msg;
+    int err;
+
+    mlockall(MCL_CURRENT|MCL_FUTURE);
+
+    err =3D rt_task_create(&task_desc,
+                         "MyTaskName",
+                         TASK_STKSZ,
+                         TASK_PRIO,
+                         TASK_MODE);
+    if (!err)
+        rt_task_start(&task_desc,&consumer,NULL);
+
+    /* ... */
+
+    for (n =3D 0; messages[n] !=3D NULL; n++)
+        {
+        len =3D strlen(messages[n]) + 1;
+        /* Get a message block of the right size. */
+        msg =3D rt_queue_alloc(&q_desc,len);
+
+        if (!msg)
+            /* No memory available. */
+            fail();
+
+        strcpy((char *)msg,messages[n]);
+        rt_queue_send(&q_desc,msg,len,Q_NORMAL);
+        }
+
+    rt_task_delete(&task_desc);
+}
+
+
+------_=_NextPart_001_01C8AAED.E7B6F8EE
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Diso-8859-1">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+6.5.7651.59">
+<TITLE>Segfault Problems with Message Queues</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/plain format -->
+
+<P><FONT SIZE=3D2>Hi All,<BR>
+<BR>
+I tried implementing inter-task message queues and following the =
+msg_queue.c example<BR>
+(<A =
+HREF=3D"http://www.xenomai.org/documentation/trunk/html/api/msg__queue_8c=
+-example.html">http://www.xenomai.org/documentation/trunk/html/api/msg__q=
+ueue_8c-example.html</A>)<BR>
+and when I try to run the implementation after fixing some of the code =
+(declaring fail() to printf an error, declaring int err, and changing =
+&amp;task_body to &amp;consumer), I get the following error<BR>
+msg_queue[3897]: segfault at 00000000 eip b7cf8933 esp bf8dce04 error =
+6.&nbsp; This comes out of the rt_queue_alloc function.<BR>
+<BR>
+Has the implementation of message passing between userspace tasks =
+changed?&nbsp; Is there a more recent example?&nbsp; My end goal is to =
+send non blocking messages from one producer task at 50Hz to two reading =
+tasks tasks with similar (though not exactly same) loop rates-- i.e. =
+None of the tasks are synchronized, though they all run at about =
+50Hz.&nbsp; Should I use message queues to do this?<BR>
+<BR>
+Thank you,<BR>
+<BR>
+Joshua Karch<BR>
+<BR>
+Attached is the code I used..<BR>
+<BR>
+#include &lt;sys/mman.h&gt;<BR>
+#include &lt;stdio.h&gt;<BR>
+#include &lt;string.h&gt;<BR>
+#include &lt;native/task.h&gt;<BR>
+#include &lt;native/queue.h&gt;<BR>
+<BR>
+#define TASK_PRIO&nbsp; 99 /* Highest RT priority */<BR>
+#define TASK_MODE&nbsp; 0&nbsp; /* No flags */<BR>
+#define TASK_STKSZ 0&nbsp; /* Stack size (use default one) */<BR>
+<BR>
+RT_QUEUE q_desc;<BR>
+<BR>
+RT_TASK task_desc;<BR>
+<BR>
+void fail()<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+printf(&quot;error\n&quot;);<BR>
+}<BR>
+<BR>
+<BR>
+void consumer (void *cookie)<BR>
+<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp; ssize_t len;<BR>
+&nbsp;&nbsp;&nbsp; void *msg;<BR>
+&nbsp;&nbsp;&nbsp; int err;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp; /* Bind to a queue which has been created elsewhere, =
+either in<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; kernel or user-space. The call will =
+block us until such queue<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; is created with the expected name. =
+The queue should have been<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; created with the Q_SHARED mode set, =
+which is implicit when<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; creation takes place in user-space. =
+*/<BR>
+<BR>
+&nbsp;&nbsp;&nbsp; err =3D =
+rt_queue_bind(&amp;q_desc,&quot;SomeQueueName&quot;,TM_INFINITE);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp; if (err)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fail();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp; /* Collect each message sent to the queue by the =
+queuer() routine,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; until the queue is eventually =
+removed from the system by a call<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; to rt_queue_delete(). */<BR>
+<BR>
+&nbsp;&nbsp;&nbsp; while ((len =3D =
+rt_queue_receive(&amp;q_desc,&amp;msg,TM_INFINITE)) &gt; 0)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;received =
+message&gt; len=3D%d bytes, ptr=3D%p, s=3D%s\n&quot;,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp; len,msg,(const char *)msg);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+rt_queue_free(&amp;q_desc,msg);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<BR>
+<BR>
+&nbsp;&nbsp;&nbsp; /* We need to unbind explicitly from the queue in =
+order to<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; properly release the underlying =
+memory mapping. Exiting the<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; process unbinds all mappings =
+automatically. */<BR>
+<BR>
+&nbsp;&nbsp;&nbsp; rt_queue_unbind(&amp;q_desc);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp; if (len !=3D -EIDRM)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* We received some =
+unexpected error notification. */<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fail();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp; /* ... */<BR>
+}<BR>
+<BR>
+<BR>
+int main (int argc, char *argv[])<BR>
+<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp; static char *messages[] =3D { &quot;hello&quot;, =
+&quot;world&quot;, NULL };<BR>
+&nbsp;&nbsp;&nbsp; int n, len;<BR>
+&nbsp;&nbsp;&nbsp; void *msg;<BR>
+&nbsp;&nbsp;&nbsp; int err;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp; mlockall(MCL_CURRENT|MCL_FUTURE);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp; err =3D rt_task_create(&amp;task_desc,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+&quot;MyTaskName&quot;,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+TASK_STKSZ,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+TASK_PRIO,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+TASK_MODE);<BR>
+&nbsp;&nbsp;&nbsp; if (!err)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+rt_task_start(&amp;task_desc,&amp;consumer,NULL);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp; /* ... */<BR>
+<BR>
+&nbsp;&nbsp;&nbsp; for (n =3D 0; messages[n] !=3D NULL; n++)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; len =3D strlen(messages[n]) + =
+1;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* Get a message block of the =
+right size. */<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; msg =3D =
+rt_queue_alloc(&amp;q_desc,len);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (!msg)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* No =
+memory available. */<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+fail();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcpy((char =
+*)msg,messages[n]);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+rt_queue_send(&amp;q_desc,msg,len,Q_NORMAL);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<BR>
+<BR>
+&nbsp;&nbsp;&nbsp; rt_task_delete(&amp;task_desc);<BR>
+}<BR>
+<BR>
+</FONT>
+</P>
+
+</BODY>
+</HTML>
+------_=_NextPart_001_01C8AAED.E7B6F8EE--
 
