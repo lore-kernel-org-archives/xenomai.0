@@ -1,14 +1,15 @@
+Message-ID: <4819F7A6.1010809@domain.hid>
+Date: Thu, 01 May 2008 19:02:30 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="gZBPKLq8pN"
-Content-Transfer-Encoding: 7bit
-Message-ID: <18457.62989.876794.339734@domain.hid>
-Date: Thu, 1 May 2008 18:55:41 +0200
-In-Reply-To: <2220D86D21B55040AB683933DBD97B5A263A38EC01@domain.hid>
-References: <2220D86D21B55040AB683933DBD97B5A263A38E8E0@domain.hid>
-	<2ff1a98a0804290518x59f92346mfdf32c84055a10fe@domain.hid>
-	<2220D86D21B55040AB683933DBD97B5A263A38EC01@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+References: <2220D86D21B55040AB683933DBD97B5A263A38E8E0@domain.hid>	<2ff1a98a0804290518x59f92346mfdf32c84055a10fe@domain.hid>	<2220D86D21B55040AB683933DBD97B5A263A38EC01@domain.hid>
+	<18457.59929.12465.572294@domain.hid>
+In-Reply-To: <18457.59929.12465.572294@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
 Subject: Re: [Xenomai-help] Xenomai on AT91SAM9260
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,153 +19,208 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "=?iso-8859-1?Q?Hans_S=F8ndergaard_(HSO)?=" <HSO@VIAUC.DK>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, =?ISO-8859-1?Q?=22Hans_S=F8ndergaard_=28HSO=29=22?= <HSO@VIAUC.DK>
 
+Gilles Chanteperdrix wrote:
+> Hans S=F8ndergaard (HSO) wrote:
+>  > Hi,
+>  >=20
+>  > Thanks for the answer.
+>  > We are now trying to install Xenomai 2.4.3 using Linux 2.6.24 on AT91S=
+AM9260,
+>  > but have a problem:
+>  >=20
+>  > Is it possible to disable the building of the posix skin when
+>  > configuring the user space libraries for Xenomai?
+>  >=20
+>  > I have tried --disable-posix-skin, but this had no effect.
+>  >=20
+>  > The reason why I ask is that the building of src/skins/posix/init.c
+>  > fails like this:
+>  >=20
+>  > [stk@domain.hid posix]$ arm-linux-uclibc-gcc -DHAVE_CONFIG_H -I. -I../=
+../../src/inc
+>  > lude -I../../../../xenomai-2.4.3/src/skins/posix -O2 -D_GNU_SOURCE -D_=
+REENTRANT
+>  > -Wall -pipe -march=3Darmv5 -D__XENO__ -D__IN_XENO__ -Wstrict-prototype=
+s -I../../..
+>  > /../xenomai-2.4.3/include -I../../../../xenomai-2.4.3/include/posix -M=
+T libpthre
+>  > ad_rt_la-init.lo -MD -MP -MF .deps/libpthread_rt_la-init.Tpo -c ../../=
+../../xeno
+>  > mai-2.4.3/src/skins/posix/init.c  -fPIC -DPIC -o .libs/libpthread_rt_l=
+a-init.o
+>  > In file included from ../../../src/include/asm/xenomai/atomic.h:78,
+>  >                  from ../../../../xenomai-2.4.3/include/nucleus/system=
+.h:27,
+>  >                  from ../../../src/include/asm/xenomai/system.h:135,
+>  >                  from ../../../../xenomai-2.4.3/include/nucleus/types.=
+h:40,
+>  >                  from ../../../../xenomai-2.4.3/include/nucleus/queue.=
+h:25,
+>  >                  from ../../../../xenomai-2.4.3/include/nucleus/timeba=
+se.h:30,
+>  >                  from ../../../../xenomai-2.4.3/include/nucleus/timer.=
+h:27,
+>  >                  from ../../../../xenomai-2.4.3/include/nucleus/thread=
+.h:26,
+>  >                  from ../../../../xenomai-2.4.3/include/posix/pthread.=
+h:150,
+>  >                  from /home/stk/brick/mb9200/buildroot/build_arm/stagi=
+ng_dir/bin
+>  > -ccache/../lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc=
+/sys-inclu
+>  > de/bits/uClibc_mutex.h:16,
+>  >                  from /home/stk/brick/mb9200/buildroot/build_arm/stagi=
+ng_dir/bin
+>  > -ccache/../lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc=
+/sys-inclu
+>  > de/bits/uClibc_stdio.h:120,
+>  >                  from /home/stk/brick/mb9200/buildroot/build_arm/stagi=
+ng_dir/bin
+>  > -ccache/../lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc=
+/sys-inclu
+>  > de/stdio.h:73,
+>  >                  from ../../../../xenomai-2.4.3/src/skins/posix/init.c=
+:20:
+>  > ../../../src/include/asm/xenomai/syscall.h: In function 'xeno_arm_feat=
+ures_check
+>  > ':
+>  > ../../../src/include/asm/xenomai/syscall.h:295: error: 'stderr' undecl=
+ared (firs
+>  > t use in this function)
+>  > ../../../src/include/asm/xenomai/syscall.h:295: error: (Each undeclare=
+d identifi
+>  > er is reported only once
+>  > ../../../src/include/asm/xenomai/syscall.h:295: error: for each functi=
+on it appe
+>  > ars in.)
+>  >=20
+>  > Obviously there is something wrong with the include path used:
+>  > uClibc_mutex.h should not include 'pthread.h' in the Xenomai
+>  > distribution but rather the version in uClibc itself.
+>  >=20
+>  > Why this happens I'm trying to discover.
+>  >=20
+>  > The complete configure I'm using is:
+>  >=20
+>  > ../xenomai-2.4.3/configure --build=3Di686-pc-linux-gnu --host=3Darm-li=
+nux-uclibc --enable-arm-mach=3Dat91sam926x --enable-arm-tsc
+>  >=20
+>  > Thanks in advance.
+>=20
+> Well, I understand that it may not be important to you if you do not
+> intend to use the posix skin, but we should try and solve this issue
+> (which seems to be a uclibc issue). Including posix skin pthread.h
+> instead of libc pthread.h should be no problem, since posix skin
+> pthread.h include the libc pthread.h. The problem here is due to the
+> fact that asm-arm/syscall.h is trying to use stderr whereas we are at
+> the very beginning of stdio.h where stderr is not defined yet.
+>=20
+> I have to admit that I have no idea here other than defining a function
+> in init.c which calls fprintf and to call this function instead of
+> fprintf in asm-arm/syscall.h
+>=20
+> Philippe, any better idea ?
+>=20
 
---gZBPKLq8pN
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Description: message body and .signature
-Content-Transfer-Encoding: quoted-printable
+No, but I do have an almost as ugly one to suggest:
 
-Hans S=F8ndergaard (HSO) wrote:
- >                  from ../../../../xenomai-2.4.3/src/skins/posix/init.c:2=
-0:
- > ../../../src/include/asm/xenomai/syscall.h: In function 'xeno_arm_featur=
-es_check
- > ':
- > ../../../src/include/asm/xenomai/syscall.h:295: error: 'stderr' undeclar=
-ed (firs
- > t use in this function)
- > ../../../src/include/asm/xenomai/syscall.h:295: error: (Each undeclared =
-identifi
- > er is reported only once
- > ../../../src/include/asm/xenomai/syscall.h:295: error: for each function=
- it appe
- > ars in.)
- >=20
- > Obviously there is something wrong with the include path used:
- > uClibc_mutex.h should not include 'pthread.h' in the Xenomai
- > distribution but rather the version in uClibc itself.
- >=20
- > Why this happens I'm trying to discover.
- >=20
- > The complete configure I'm using is:
- >=20
- > ../xenomai-2.4.3/configure --build=3Di686-pc-linux-gnu --host=3Darm-linu=
-x-uclibc --enable-arm-mach=3Dat91sam926x --enable-arm-tsc
+--- include/asm-arm/syscall.h	(revision 3729)
++++ include/asm-arm/syscall.h	(working copy)
+@@ -222,7 +222,6 @@
+ #define XENOMAI_SYSARCH_TSCINFO                 4
 
-The way I see it, the problem is that posix/pthread.h includes
-nucleus/thread.h and nucleus/intr.h to get a few constants
-definitions. And since these include files include other include files,
-we end up with the whole stack of xenomai includes. So, I propose the
-following patch which basically stop including other include files in
-nucleus/thread.h and nucleus/intr.h when included from user-space. The
-only downside of this solution is that application like cyclictest who
-want to use the I-pipe tracer now need to include explicitely
-nucleus/trace.h.
+ #ifndef __KERNEL__
+-#include <stdio.h>
+ #include <stdlib.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+@@ -230,6 +229,8 @@
+ #include <fcntl.h>
+ #include <unistd.h>
+ #include <limits.h>
++#include <error.h>
++#include <errno.h>
+
+ __attribute__((weak)) struct __xn_tscinfo __xn_tscinfo =3D {
+ 	type: -1
+@@ -291,17 +292,15 @@
+ 	err =3D XENOMAI_SYSCALL2(__xn_sys_arch,
+ 			       XENOMAI_SYSARCH_TSCINFO, &__xn_tscinfo);
+ 	if (err) {
+-	  error:
+-		fprintf(stderr, "Xenomai: Your board/configuration does not"
+-			" allow tsc emulation in user-space: %d\n", err);
+-		exit(EXIT_FAILURE);
++	  fail:
++		error(EXIT_FAILURE, err,
++		      "Xenomai: Your board/configuration does not"
++		      " allow tsc emulation in user-space\n");
+ 	}
+
+ 	fd =3D open("/dev/mem", O_RDONLY | O_SYNC);
+-	if (fd =3D=3D -1) {
+-		perror("Xenomai init: open(/dev/mem)");
+-		exit(EXIT_FAILURE);
+-	}
++	if (fd =3D=3D -1)
++		error(EXIT_FAILURE, errno, "Xenomai init: open(/dev/mem)");
+
+ 	page_size =3D sysconf(_SC_PAGESIZE);
+
+@@ -313,10 +312,8 @@
+ 		phys_addr =3D (unsigned long) __xn_tscinfo.u.fr.counter;
+ 		addr =3D mmap(NULL, page_size, PROT_READ, MAP_SHARED,
+ 			    fd, phys_addr & ~(page_size - 1));
+-		if (addr =3D=3D MAP_FAILED) {
+-			perror("Xenomai init: mmap(/dev/mem)");
+-			exit(EXIT_FAILURE);
+-		}
++		if (addr =3D=3D MAP_FAILED)
++			error(EXIT_FAILURE, errno, "Xenomai init: mmap(/dev/mem)");
+
+ 		__xn_tscinfo.u.fr.counter =3D
+ 			((volatile unsigned *)
+@@ -330,10 +327,8 @@
+ 		phys_addr =3D (unsigned long) __xn_tscinfo.u.dec.counter;
+ 		addr =3D mmap(NULL, page_size, PROT_READ, MAP_SHARED,
+ 			    fd, phys_addr & ~(page_size - 1));
+-		if (addr =3D=3D MAP_FAILED) {
+-			perror("Xenomai init: mmap(/dev/mem)");
+-			exit(EXIT_FAILURE);
+-		}
++		if (addr =3D=3D MAP_FAILED)
++			error(EXIT_FAILURE, "Xenomai init: mmap(/dev/mem)");
+
+ 		__xn_tscinfo.u.dec.counter =3D
+ 			((volatile unsigned *)
+@@ -342,18 +337,15 @@
+ 	}
+ #endif /* CONFIG_XENO_ARM_HW_DIRECT_TSC =3D=3D __XN_TSC_TYPE_DECREMENTER */
+ 	case __XN_TSC_TYPE_NONE:
+-		goto error;
++		goto fail;
+ 	=09
+ 	default:
+-		fprintf(stderr,
+-			"Xenomai: kernel/user tsc emulation mismatch.\n");
+-		exit(EXIT_FAILURE);
++		error(EXIT_FAILURE, err,
++		      "Xenomai: kernel/user tsc emulation mismatch.\n");
+ 	}
+
+-	if (close(fd)) {
+-		perror("Xenomai init: close(/dev/mem)");
+-		exit(EXIT_FAILURE);
+-	}
++	if (close(fd))
++		error(EXIT_FAILURE, errno, "Xenomai init: close(/dev/mem)");
+ #endif /* CONFIG_XENO_ARM_HW_DIRECT_TSC */
+ }
+ #define xeno_arch_features_check() xeno_arm_features_check()
 
 --=20
-
-
-					    Gilles.
-
---gZBPKLq8pN
-Content-Type: text/plain
-Content-Disposition: inline;
-	filename="xeno-fix-uclibc-includes.diff"
-Content-Transfer-Encoding: 7bit
-
-Index: include/nucleus/thread.h
-===================================================================
---- include/nucleus/thread.h	(revision 3732)
-+++ include/nucleus/thread.h	(working copy)
-@@ -22,8 +22,6 @@
- #ifndef _XENO_NUCLEUS_THREAD_H
- #define _XENO_NUCLEUS_THREAD_H
- 
--#include <nucleus/timer.h>
--
- /*! @ingroup nucleus 
-   @defgroup nucleus_state_flags Thread state flags.
-   @brief Bits reporting permanent or transient states of thread.
-@@ -130,6 +128,7 @@
- #if defined(__KERNEL__) || defined(__XENO_SIM__)
- 
- #include <nucleus/stat.h>
-+#include <nucleus/timer.h>
- 
- #ifdef __XENO_SIM__
- /* Pseudo-status (must not conflict with other bits) */
-Index: include/nucleus/intr.h
-===================================================================
---- include/nucleus/intr.h	(revision 3732)
-+++ include/nucleus/intr.h	(working copy)
-@@ -22,8 +22,6 @@
- #ifndef _XENO_NUCLEUS_INTR_H
- #define _XENO_NUCLEUS_INTR_H
- 
--#include <nucleus/types.h>
--
- /* Possible return values of ISR. */
- #define XN_ISR_NONE   	 0x1
- #define XN_ISR_HANDLED	 0x2
-@@ -41,6 +39,7 @@
- 
- #if defined(__KERNEL__) || defined(__XENO_SIM__)
- 
-+#include <nucleus/types.h>
- #include <nucleus/stat.h>
- 
- typedef struct xnintr {
-Index: src/skins/posix/rtdm.c
-===================================================================
---- src/skins/posix/rtdm.c	(revision 3732)
-+++ src/skins/posix/rtdm.c	(working copy)
-@@ -18,6 +18,7 @@
-  */
- 
- #include <errno.h>
-+#include <string.h>
- #include <stdarg.h>
- #include <pthread.h>
- #include <fcntl.h>
-Index: src/skins/posix/thread.c
-===================================================================
---- src/skins/posix/thread.c	(revision 3732)
-+++ src/skins/posix/thread.c	(working copy)
-@@ -17,6 +17,7 @@
-  */
- 
- #include <stddef.h>
-+#include <string.h>
- #include <errno.h>
- #include <signal.h>
- #include <unistd.h>
-Index: src/skins/posix/clock.c
-===================================================================
---- src/skins/posix/clock.c	(revision 3732)
-+++ src/skins/posix/clock.c	(working copy)
-@@ -18,6 +18,7 @@
- 
- #include <stdio.h>
- #include <stdlib.h>
-+#include <string.h>
- #include <errno.h>
- #include <pthread.h>		/* For pthread_setcanceltype. */
- #include <posix/syscall.h>
-Index: src/testsuite/cyclic/cyclictest.c
-===================================================================
---- src/testsuite/cyclic/cyclictest.c	(revision 3732)
-+++ src/testsuite/cyclic/cyclictest.c	(working copy)
-@@ -35,6 +35,7 @@
- #include <sys/types.h>
- #include <sys/time.h>
- #include <sys/mman.h>
-+#include <nucleus/trace.h>
- 
- #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
- 
-
---gZBPKLq8pN--
+Philippe.
 
