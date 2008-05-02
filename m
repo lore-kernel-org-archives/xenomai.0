@@ -2,11 +2,15 @@ From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18459.38430.835407.942336@domain.hid>
-Date: Sat, 3 May 2008 00:30:54 +0200
-In-Reply-To: <18459.38249.462320.715909@domain.hid>
+Message-ID: <18459.38644.699369.801548@domain.hid>
+Date: Sat, 3 May 2008 00:34:28 +0200
+In-Reply-To: <18459.38558.684426.240775@domain.hid>
 References: <18459.38249.462320.715909@domain.hid>
-Subject: [Xenomai-core] [Patch 1/7] Support for non cached memory mappings
+	<18459.38430.835407.942336@domain.hid>
+	<18459.38500.720338.652195@domain.hid>
+	<18459.38558.684426.240775@domain.hid>
+Subject: [Xenomai-core] [Patch 4/7] Define ARM atomic operations in
+	user-space
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,215 +23,445 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai@xenomai.org
 
 
-In addition to support for non cached memory mappings, this patch implements
-xnheap_init_mapped and xnheap_destroy_mapped in the !CONFIG_XENO_OPT_PERVASIVE
-case. This avoids a lot of #ifdefs for users of these functions without
-user-space support (posix skin shared memories, and the new semaphore heaps,
-heaps where is allocated the memory used for storing semaphores counters and
-mutexes owner fields).
+The include/asm-arm/atomic.h header now defines the xnarch_memory_barrier in
+addition to user-space atomic operations. The pxa3xx deserves a special
+treatment since it uses the ARMv6 memory barrier operation whereas being an
+ARMv5 for other operations, hence a special --enable-arm-mach=pxa3xx option in
+configure.in.
 
 ---
- include/asm-generic/wrappers.h |   12 +++++---
- include/native/heap.h          |    1
- include/nucleus/heap.h         |    2 +
- ksrc/nucleus/heap.c            |   55 +++++++++++++++++++++++++++++++++++------
- ksrc/skins/native/heap.c       |    8 +++++
- 5 files changed, 66 insertions(+), 12 deletions(-)
+ configure.in             |   13 ++
+ include/asm-arm/atomic.h |  238 +++++++++++++++++++++++++++++++++++++++++------
+ 2 files changed, 222 insertions(+), 29 deletions(-)
 
-Index: include/native/heap.h
+Index: configure.in
 ===================================================================
---- include/native/heap.h	(revision 3738)
-+++ include/native/heap.h	(working copy)
-@@ -33,6 +33,7 @@
- #define H_MAPPABLE 0x200	/* Memory is mappable to user-space. */
- #define H_SINGLE   0x400	/* Manage as single-block area. */
- #define H_SHARED   (H_MAPPABLE|H_SINGLE) /* I.e. shared memory segment. */
-+#define H_NONCACHED 0x800
+--- configure.in	(revision 3738)
++++ configure.in	(working copy)
+@@ -166,6 +166,7 @@ if test $XENO_TARGET_ARCH = arm ; then
+   CONFIX_XENO_ARM_EABI=
  
- /** Structure containing heap-information useful to users.
-  *
-Index: include/asm-generic/wrappers.h
-===================================================================
---- include/asm-generic/wrappers.h	(revision 3738)
-+++ include/asm-generic/wrappers.h	(working copy)
-@@ -62,7 +62,7 @@ unsigned long __va_to_kva(unsigned long 
+   unset CONFIG_XENO_ARM_SA1100
++  unset CONFIG_XENO_CPU_XSC3
+   unset tsc_type
+   unset CONFIG_XENO_ARM_HW_DIRECT_TSC
  
- #define wrap_remap_vm_page(vma,from,to) ({ \
-     vma->vm_flags |= VM_RESERVED; \
--    remap_page_range(from,virt_to_phys((void *)__va_to_kva(to)),PAGE_SIZE,PAGE_SHARED); \
-+    remap_page_range(from,virt_to_phys((void *)__va_to_kva(to)),PAGE_SIZE,vma->vm_page_prot); \
- })
- #define wrap_remap_io_page_range(vma,from,to,size,prot) ({ \
-     vma->vm_flags |= VM_RESERVED; \
-@@ -223,7 +223,7 @@ unsigned long __va_to_kva(unsigned long 
-  * memory. Anyway, this legacy would only hit setups using pre-2.6.11
-  * kernel revisions. */
- #define wrap_remap_vm_page(vma,from,to) \
--    remap_pfn_range(vma,from,virt_to_phys((void *)__va_to_kva(to)) >> PAGE_SHIFT,PAGE_SHIFT,PAGE_SHARED)
-+    remap_pfn_range(vma,from,virt_to_phys((void *)__va_to_kva(to)) >> PAGE_SHIFT,PAGE_SHIFT,vma->vm_page_prot)
- #define wrap_remap_io_page_range(vma,from,to,size,prot)  ({		\
-     (vma)->vm_page_prot = pgprot_noncached((vma)->vm_page_prot);	\
-     /* Sets VM_RESERVED | VM_IO | VM_PFNMAP on the vma. */		\
-@@ -236,7 +236,7 @@ unsigned long __va_to_kva(unsigned long 
- #else /* LINUX_VERSION_CODE < KERNEL_VERSION(2,6,10) */
- #define wrap_remap_vm_page(vma,from,to) ({ \
-     vma->vm_flags |= VM_RESERVED; \
--    remap_page_range(from,virt_to_phys((void *)__va_to_kva(to)),PAGE_SIZE,PAGE_SHARED); \
-+    remap_page_range(from,virt_to_phys((void *)__va_to_kva(to)),PAGE_SIZE,vma->vm_page_prot); \
- })
- #define wrap_remap_io_page_range(vma,from,to,size,prot) ({	\
-       vma->vm_flags |= VM_RESERVED;				\
-@@ -248,7 +248,11 @@ unsigned long __va_to_kva(unsigned long 
-     })
- #endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,15) */
+@@ -173,7 +174,7 @@ if test $XENO_TARGET_ARCH = arm ; then
+   AC_ARG_ENABLE(arm-mach,
+ 	AS_HELP_STRING([--enable-arm-mach], [Select for which machine we are
+ compiling. Valid machines are at91rm9200, at91sam926x, imx, imx21, integrator, 
+-ixp4xx, pxa, s3c2410, sa1100.]),
++ixp4xx, pxa, pxa3xx, s3c2410, sa1100.]),
+ 	[case "$enableval" in
+ 	at91rm9200)   	arch=4
+ 	        	tsc_type=__XN_TSC_TYPE_FREERUNNING;;
+@@ -193,6 +194,9 @@ ixp4xx, pxa, s3c2410, sa1100.]),
+ 	ixp4xx|pxa) 	arch=5
+ 	      		tsc_type=__XN_TSC_TYPE_FREERUNNING;;
  
--#define wrap_switch_mm(prev,next,task)	\
-+#ifndef __GFP_BITS_SHIFT
-+#define __GFP_BITS_SHIFT 20
-+#endif
++	pxa3xx)	        arch=xscale3
++			tsc_type=__XN_TSC_TYPE_FREERUNNING;;
 +
-+#define wrap_switch_mm(prev,next,task)		\
-     switch_mm(prev,next,task)
- #define wrap_enter_lazy_tlb(mm,task)	\
-     enter_lazy_tlb(mm,task)
-Index: include/nucleus/heap.h
-===================================================================
---- include/nucleus/heap.h	(revision 3738)
-+++ include/nucleus/heap.h	(working copy)
-@@ -57,6 +57,8 @@
- #define XNHEAP_PCONT   1
- #define XNHEAP_PLIST   2
+ 	s3c2410) 	arch=4
+ 			tsc_type=__XN_TSC_TYPE_DECREMENTER;;
  
-+#define XNHEAP_GFP_NONCACHED (1 << __GFP_BITS_SHIFT)
+@@ -218,6 +222,9 @@ ixp4xx, pxa, s3c2410, sa1100.]),
+ 		esac
+ 		CONFIG_XENO_ARM_ARCH="$enableval"
+     	])
++  elif test $arch = xscale3; then
++	CONFIG_XENO_ARM_ARCH=5
++	CONFIG_XENO_CPU_XSC3=y
+   else
+ 	CONFIG_XENO_ARM_ARCH=$arch
+   fi
+@@ -226,6 +233,9 @@ ixp4xx, pxa, s3c2410, sa1100.]),
+   AC_MSG_CHECKING(for ARM SA1100 architecture)
+   AC_MSG_RESULT(${CONFIG_XENO_ARM_SA1100:-no})
+ 
++  AC_MSG_CHECKING(for ARM Xscale3 architecture)
++  AC_MSG_RESULT(${CONFIG_XENO_CPU_XSC3:-no})
 +
- typedef struct xnextent {
+   AC_MSG_CHECKING(for TSC emulation in user-space.)
+   if test $tsc_type; then
+ 	AC_ARG_ENABLE(arm-tsc,
+@@ -527,6 +537,7 @@ test x$CONFIG_X86_TSC = xy && AC_DEFINE(
+ test -n "$CONFIG_XENO_ARM_ARCH" && AC_DEFINE_UNQUOTED(CONFIG_XENO_ARM_ARCH,$CONFIG_XENO_ARM_ARCH,[config])
  
- 	xnholder_t link;
-Index: ksrc/skins/native/heap.c
+ test x$CONFIG_XENO_ARM_SA1100 = xy && AC_DEFINE(CONFIG_XENO_ARM_SA1100,1,[config])
++test x$CONFIG_XENO_CPU_XSC3 = xy && AC_DEFINE(CONFIG_XENO_CPU_XSC3,1,[config])
+ test $CONFIG_XENO_ARM_HW_DIRECT_TSC && AC_DEFINE_UNQUOTED(CONFIG_XENO_ARM_HW_DIRECT_TSC,$CONFIG_XENO_ARM_HW_DIRECT_TSC,[config])
+ test x$CONFIG_XENO_ARM_EABI = xy && AC_DEFINE(CONFIG_XENO_ARM_EABI,1,[config])
+ 
+Index: include/asm-arm/atomic.h
 ===================================================================
---- ksrc/skins/native/heap.c	(revision 3738)
-+++ ksrc/skins/native/heap.c	(working copy)
-@@ -205,6 +205,10 @@ static void __heap_flush_private(xnheap_
-  * operations with I/O devices. The physical address of the
-  * heap can be obtained by a call to rt_heap_inquire().
-  *
-+ * - H_NONCACHED causes the heap not to be cached. This is necessary on
-+ * platforms such as ARM to share a heap between kernel and user-space.
-+ * Note that this flag is not compatible with the H_DMA flag.
-+ *
-  * @return 0 is returned upon success. Otherwise:
-  *
-  * - -EEXIST is returned if the @a name is already in use by some
-@@ -260,7 +264,9 @@ int rt_heap_create(RT_HEAP *heap, const 
+--- include/asm-arm/atomic.h	(revision 3738)
++++ include/asm-arm/atomic.h	(working copy)
+@@ -23,7 +23,6 @@
+ #ifndef _XENO_ASM_ARM_ATOMIC_H
+ #define _XENO_ASM_ARM_ATOMIC_H
  
- 		err = xnheap_init_mapped(&heap->heap_base,
- 					 heapsize,
--					 (mode & H_DMA) ? GFP_DMA : 0);
-+					 ((mode & H_DMA) ? GFP_DMA : 0)
-+					 | ((mode & H_NONCACHED) ?
-+					    XNHEAP_GFP_NONCACHED : 0));
- 		if (err)
- 			return err;
- 
-Index: ksrc/nucleus/heap.c
-===================================================================
---- ksrc/nucleus/heap.c	(revision 3738)
-+++ ksrc/nucleus/heap.c	(working copy)
-@@ -1097,9 +1097,13 @@ static int xnheap_mmap(struct file *file
- 
- 	vaddr = (unsigned long)heap->archdep.heapbase;
- 
--	if (!heap->archdep.kmflags) {
-+	if (!heap->archdep.kmflags
-+	    || heap->archdep.kmflags == XNHEAP_GFP_NONCACHED) {
- 		unsigned long maddr = vma->vm_start;
- 
-+		if (heap->archdep.kmflags == XNHEAP_GFP_NONCACHED)
-+			vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-+
- 		while (size > 0) {
- 			if (xnarch_remap_vm_page(vma, maddr, vaddr))
- 				return -EAGAIN;
-@@ -1174,9 +1178,13 @@ static inline void *__alloc_and_reserve_
- 
- 	/* Size must be page-aligned. */
- 
--	if (!kmflags) {
--		ptr = vmalloc(size);
 -
-+	if (!kmflags || kmflags == XNHEAP_GFP_NONCACHED) {
-+		if (!kmflags)
-+			ptr = vmalloc(size);
-+		else
-+			ptr = __vmalloc(size,
-+					GFP_KERNEL | __GFP_HIGHMEM,
-+					pgprot_noncached(PAGE_KERNEL));
- 		if (!ptr)
- 			return NULL;
+ #ifdef __KERNEL__
  
-@@ -1217,7 +1225,7 @@ static inline void __unreserve_and_free_
+ #include <linux/bitops.h>
+@@ -31,11 +30,17 @@
+ #include <asm/system.h>
+ #include <asm/xenomai/features.h>
  
- 	vabase = (unsigned long)ptr;
- 
--	if (!kmflags) {
-+	if (!kmflags  || kmflags == XNHEAP_GFP_NONCACHED) {
- 		for (vaddr = vabase; vaddr < vabase + size; vaddr += PAGE_SIZE)
- 			ClearPageReserved(virt_to_page(__va_to_kva(vaddr)));
- 
-@@ -1241,6 +1249,11 @@ int xnheap_init_mapped(xnheap_t *heap, u
- 
- 	/* Caller must have accounted for internal overhead. */
- 	heapsize = xnheap_align(heapsize, PAGE_SIZE);
++typedef atomic_t atomic_counter_t;
++typedef atomic_t xnarch_atomic_t;
 +
-+	if ((memflags & XNHEAP_GFP_NONCACHED)
-+	    && memflags != XNHEAP_GFP_NONCACHED)
-+		return -EINVAL;
-+
- 	heapbase = __alloc_and_reserve_heap(heapsize, memflags);
+ #define xnarch_atomic_xchg(ptr,v)       xchg(ptr,v)
+ #define xnarch_memory_barrier()  	smp_mb()
  
- 	if (!heapbase)
-@@ -1284,11 +1297,39 @@ int xnheap_destroy_mapped(xnheap_t *heap
- 	return 0;
+ #if __LINUX_ARM_ARCH__ >= 6
+-static inline void atomic_set_mask(unsigned long mask, unsigned long *addr)
++#define XNARCH_HAVE_US_ATOMIC_CMPXCHG
++
++static inline void
++xnarch_atomic_set_mask(unsigned long *addr, unsigned long mask)
+ {
+     unsigned long tmp, tmp2;
+ 
+@@ -50,7 +55,8 @@ static inline void atomic_set_mask(unsig
+     : "cc");
+ }
+ #else /* ARM_ARCH_6 */
+-static inline void atomic_set_mask(unsigned long mask, unsigned long *addr)
++static inline void
++xnarch_atomic_set_mask(unsigned long *addr, unsigned long mask)
+ {
+     unsigned long flags;
+ 
+@@ -58,25 +64,32 @@ static inline void atomic_set_mask(unsig
+     *addr |= mask;
+     local_irq_restore_hw(flags);
+ }
++
++#ifndef CONFIG_SMP
++#define XNARCH_HAVE_US_ATOMIC_CMPXCHG
++#endif /* CONFIG_SMP */
++
+ #endif /* ARM_ARCH_6 */
+ 
+-#define xnarch_atomic_set(pcounter,i)          atomic_set(pcounter,i)
++#define xnarch_atomic_set(pcounter,i)          atomic_set((pcounter),i)
+ #define xnarch_atomic_get(pcounter)            atomic_read(pcounter)
+ #define xnarch_atomic_inc(pcounter)            atomic_inc(pcounter)
+ #define xnarch_atomic_dec(pcounter)            atomic_dec(pcounter)
++#define xnarch_atomic_clear_mask(addr, mask)   atomic_clear_mask((mask), (addr))
++#define xnarch_atomic_cmpxchg(pcounter, old, new) \
++	atomic_cmpxchg((pcounter), (old), (new))
+ #define xnarch_atomic_inc_and_test(pcounter)   atomic_inc_and_test(pcounter)
+ #define xnarch_atomic_dec_and_test(pcounter)   atomic_dec_and_test(pcounter)
+-#define xnarch_atomic_set_mask(pflags,mask)    atomic_set_mask(mask,pflags)
+-#define xnarch_atomic_clear_mask(pflags,mask)  atomic_clear_mask(mask,pflags)
+-
+-typedef atomic_t atomic_counter_t;
+ 
+ #else /* !__KERNEL__ */
+ 
+ #include <asm/xenomai/features.h>
+ #include <asm/xenomai/syscall.h>
++#include <nucleus/compiler.h>
++
++typedef struct { volatile int counter; } xnarch_atomic_t;
+ 
+-typedef struct { volatile int counter; } atomic_counter_t;
++#define xnarch_atomic_get(v)	((v)->counter)
+ 
+ /*
+  * This function doesn't exist, so you'll get a linker error
+@@ -129,12 +142,47 @@ __xchg(volatile void *ptr, unsigned long
+  * Atomic operations lifted from linux/include/asm-arm/atomic.h 
+  */
+ #if CONFIG_XENO_ARM_ARCH >= 6
+-static __inline__ int atomic_add_return(int i, atomic_counter_t *v)
++#define XNARCH_HAVE_US_ATOMIC_CMPXCHG
++
++static __inline__ void xnarch_atomic_set(xnarch_atomic_t *v, int i)
++{
++	unsigned long tmp;
++
++	__asm__ __volatile__("@ xnarch_atomic_set\n"
++"1:	ldrex	%0, [%1]\n"
++"	strex	%0, %2, [%1]\n"
++"	teq	%0, #0\n"
++"	bne	1b"
++	: "=&r" (tmp)
++	: "r" (&v->counter), "r" (i)
++	: "cc");
++}
++
++static __inline__ int
++xnarch_atomic_cmpxchg(xnarch_atomic_t *ptr, int old, int new)
++{
++	unsigned long oldval, res;
++
++	do {
++		__asm__ __volatile__("@ xnarch_atomic_cmpxchg\n"
++		"ldrex	%1, [%2]\n"
++		"mov	%0, #0\n"
++		"teq	%1, %3\n"
++		"strexeq %0, %4, [%2]\n"
++		    : "=&r" (res), "=&r" (oldval)
++		    : "r" (&ptr->counter), "Ir" (old), "r" (new)
++		    : "cc");
++	} while (res);
++
++	return oldval;
++}
++
++static __inline__ int xnarch_atomic_add_return(int i, xnarch_atomic_t *v)
+ {
+     unsigned long tmp;
+     int result;
+ 
+-    __asm__ __volatile__("@ atomic_add_return\n"
++    __asm__ __volatile__("@ xnarch_atomic_add_return\n"
+ "1: ldrex   %0, [%2]\n"
+ "   add     %0, %0, %3\n"
+ "   strex   %1, %0, [%2]\n"
+@@ -147,12 +195,12 @@ static __inline__ int atomic_add_return(
+     return result;
  }
  
--EXPORT_SYMBOL(xnheap_init_mapped);
--EXPORT_SYMBOL(xnheap_destroy_mapped);
-+#else /* !CONFIG_XENO_OPT_PERVASIVE */
-+static void xnheap_free_extent(xnheap_t *heap,
-+			       void *extent, u_long size, void *cookie)
+-static __inline__ int atomic_sub_return(int i, atomic_counter_t *v)
++static __inline__ int xnarch_atomic_sub_return(int i, xnarch_atomic_t *v)
+ {
+     unsigned long tmp;
+     int result;
+ 
+-    __asm__ __volatile__("@ atomic_sub_return\n"
++    __asm__ __volatile__("@ xnarch_atomic_sub_return\n"
+ "1: ldrex   %0, [%2]\n"
+ "   sub     %0, %0, %3\n"
+ "   strex   %1, %0, [%2]\n"
+@@ -165,11 +213,12 @@ static __inline__ int atomic_sub_return(
+     return result;
+ }
+ 
+-static __inline__ void atomic_set_mask(unsigned long mask, unsigned long *addr)
++static __inline__ void
++xnarch_atomic_set_mask(unsigned long *addr, unsigned long mask)
+ {
+     unsigned long tmp, tmp2;
+ 
+-    __asm__ __volatile__("@ atomic_set_mask\n"
++    __asm__ __volatile__("@ xnarch_atomic_set_mask\n"
+ "1: ldrex   %0, [%2]\n"
+ "   orr     %0, %0, %3\n"
+ "   strex   %1, %0, [%2]\n"
+@@ -180,11 +229,12 @@ static __inline__ void atomic_set_mask(u
+     : "cc");
+ }
+ 
+-static __inline__ void atomic_clear_mask(unsigned long mask, unsigned long *addr)
++static __inline__ void
++xnarch_atomic_clear_mask(unsigned long *addr, unsigned long mask)
+ {
+     unsigned long tmp, tmp2;
+ 
+-    __asm__ __volatile__("@ atomic_clear_mask\n"
++    __asm__ __volatile__("@ xnarch_atomic_clear_mask\n"
+ "1: ldrex   %0, [%2]\n"
+ "   bic     %0, %0, %3\n"
+ "   strex   %1, %0, [%2]\n"
+@@ -194,8 +244,9 @@ static __inline__ void atomic_clear_mask
+     : "r" (addr), "Ir" (mask)
+     : "cc");
+ }
+-#else /* ARM_ARCH_6 */
+-static __inline__ int atomic_add_return(int i, atomic_counter_t *v)
++
++#elif CONFIG_SMP
++static __inline__ int xnarch_atomic_add_return(int i, xnarch_atomic_t *v)
+ {
+     int ret;
+ 
+@@ -204,7 +255,7 @@ static __inline__ int atomic_add_return(
+     return ret;
+ }
+ 
+-static __inline__ int atomic_sub_return(int i, atomic_counter_t *v)
++static __inline__ int xnarch_atomic_sub_return(int i, xnarch_atomic_t *v)
+ {
+     int ret;
+ 
+@@ -213,25 +264,153 @@ static __inline__ int atomic_sub_return(
+     return ret;
+ }
+ 
+-static inline void atomic_set_mask(unsigned long mask, unsigned long *addr)
++static inline void
++xnarch_atomic_set_mask(unsigned long *addr, unsigned long mask)
+ {
+     XENOMAI_SYSCALL3(__xn_sys_arch,
+                      XENOMAI_SYSARCH_ATOMIC_SET_MASK, mask, addr);
+ }
+ 
+-static inline void atomic_clear_mask(unsigned long mask, unsigned long *addr)
++static inline void
++xnarch_atomic_clear_mask(unsigned long *addr, unsigned long mask)
+ {
+     XENOMAI_SYSCALL3(__xn_sys_arch,
+                      XENOMAI_SYSARCH_ATOMIC_CLEAR_MASK, mask, addr);
+ }
+-#endif /* ARM_ARCH_6 */
++#else /* ARM_ARCH <= 5 && !CONFIG_SMP */
++#define XNARCH_HAVE_US_ATOMIC_CMPXCHG
++
++static __inline__ void xnarch_atomic_set(xnarch_atomic_t *ptr, int val)
 +{
-+	xnarch_free_host_mem(extent, size);
++	ptr->counter = val;
++}
+ 
+-#define xnarch_memory_barrier()                 __asm__ __volatile__("": : :"memory")
++static __inline__ int
++xnarch_atomic_cmpxchg(xnarch_atomic_t *ptr, int old, int new)
++{
++        register int asm_old asm("r0") = old;
++        register int asm_new asm("r1") = new;
++        register int *asm_ptr asm("r2") = (int *) &ptr->counter;
++        register int asm_lr asm("lr");
++	register int asm_tmp asm("r3");
++
++	do {
++		asm volatile ( \
++			"mov %1, #0xffff0fff\n\t"	\
++			"mov lr, pc\n\t"		 \
++			"add pc, %1, #(0xffff0fc0 - 0xffff0fff)\n\t"	\
++			: "+r"(asm_old), "=&r"(asm_tmp), "=r"(asm_lr)	\
++			: "r"(asm_new), "r"(asm_ptr) \
++			: "ip", "cc", "memory");
++		if (likely(!asm_old))
++			return old;
++	} while ((asm_old = *asm_ptr) == old);
++        return asm_old;
 +}
 +
-+int xnheap_init_mapped(xnheap_t *heap, unsigned len, int flags)
++static __inline__ int xnarch_atomic_add_return(int i, xnarch_atomic_t *v)
 +{
-+	void *heapaddr = xnarch_alloc_host_mem(len);
-+	int err;
- 
-+	if (heapaddr) {
-+		err = xnheap_init(&shm->heapbase,
-+				  heapaddr, len, XNCORE_PAGE_SIZE);
-+		if (err)
-+			xnarch_free_host_mem(heapaddr, len);
++	register int asm_old asm("r0");
++	register int asm_new asm("r1");
++	register int *asm_ptr asm("r2") = (int *) &v->counter;
++        register int asm_lr asm("lr");
++	register int asm_tmp asm("r3");
 +
-+		return err;
-+	}
-+
-+	return -ENOMEM;
++	asm volatile ( \
++		"1: @ xnarch_atomic_add\n\t" \
++		"ldr	%0, [%4]\n\t" \
++		"mov	%1, #0xffff0fff\n\t" \
++		"add	lr, pc, #4\n\t" \
++		"add	%3, %0, %5\n\t"\
++		"add	pc, %1, #(0xffff0fc0 - 0xffff0fff)\n\t" \
++		"bcc	1b" \
++		: "=&r" (asm_old), "=&r"(asm_tmp), "=r"(asm_lr), "=r"(asm_new) \
++		: "r" (asm_ptr), "rIL"(i) \
++		: "ip", "cc", "memory");
++	return asm_new;
 +}
 +
-+void xnheap_destroy_mapped(xnheap_t *heap)
++static __inline__ int xnarch_atomic_sub_return(int i, xnarch_atomic_t *v)
 +{
-+	xnheap_destroy(heap, &xnheap_free_extent, NULL);
-+}
- #endif /* CONFIG_XENO_OPT_PERVASIVE */
- 
-+EXPORT_SYMBOL(xnheap_init_mapped);
-+EXPORT_SYMBOL(xnheap_destroy_mapped);
++	register int asm_old asm("r0");
++	register int asm_new asm("r1");
++	register int *asm_ptr asm("r2") = (int *) &v->counter;
++        register int asm_lr asm("lr");
++	register int asm_tmp asm("r3");
 +
- /*@}*/
++	asm volatile ( \
++		"1: @ xnarch_atomic_sub\n\t" \
++		"ldr	%0, [%4]\n\t" \
++		"mov	%1, #0xffff0fff\n\t" \
++		"add	lr, pc, #4\n\t" \
++		"sub	%3, %0, %5\n\t"\
++		"add	pc, %1, #(0xffff0fc0 - 0xffff0fff)\n\t" \
++		"bcc	1b" \
++		: "=&r" (asm_old), "=&r"(asm_tmp), "=r"(asm_lr), "=r"(asm_new) \
++		: "r" (asm_ptr), "rIL"(i) \
++		: "ip", "cc", "memory");
++	return asm_new;
++}
++
++static __inline__ void xnarch_atomic_set_mask(xnarch_atomic_t *v, long mask)
++{
++	register int asm_old asm("r0");
++	register int asm_new asm("r1");
++	register int *asm_ptr asm("r2") = (int *) &v->counter;
++        register int asm_lr asm("lr");
++	register int asm_tmp asm("r3");
++
++	asm volatile ( \
++		"1: @ xnarch_atomic_set_mask\n\t" \
++		"ldr	%0, [%4]\n\t" \
++		"mov	%1, #0xffff0fff\n\t" \
++		"add	lr, pc, #4\n\t" \
++		"orr	%3, %0, %5\n\t"\
++		"add	pc, %1, #(0xffff0fc0 - 0xffff0fff)\n\t" \
++		"bcc	1b" \
++		: "=&r" (asm_old), "=&r"(asm_tmp), "=r"(asm_lr), "=r"(asm_new) \
++		: "r" (asm_ptr), "rIL"(mask) \
++		: "ip", "cc", "memory");
++}
++
++static __inline__ void xnarch_atomic_clear_mask(xnarch_atomic_t *v, long mask)
++{
++	register int asm_old asm("r0");
++	register int asm_new asm("r1");
++	register int *asm_ptr asm("r2") = (int *) &v->counter;
++        register int asm_lr asm("lr");
++	register int asm_tmp asm("r3");
++
++	asm volatile ( \
++		"1: @ xnarch_atomic_clear_mask\n\t" \
++		"ldr	%0, [%4]\n\t" \
++		"mov	%1, #0xffff0fff\n\t" \
++		"add	lr, pc, #4\n\t" \
++		"bic	%3, %0, %5\n\t" \
++		"add	pc, %1, #(0xffff0fc0 - 0xffff0fff)\n\t" \
++		"bcc	1b" \
++		: "=&r" (asm_old), "=&r"(asm_tmp), "=r"(asm_lr), "=r"(asm_new) \
++		: "r" (asm_ptr), "rIL"(mask) \
++		: "ip", "cc", "memory");
++}
++
++
++#endif /* ARM_ARCH <= 5 && !CONFIG_SMP */
++
++#if CONFIG_XENO_ARM_ARCH >= 7
++#define xnarch_memory_barrier() \
++	__asm__ __volatile__ ("dmb" : : : "memory")
++#elif defined(CONFIG_XENO_CPU_XSC3) || CONFIG_XENO_ARM_ARCH == 6
++#define xnarch_memory_barrier() \
++	__asm__ __volatile__ ("mcr p15, 0, %0, c7, c10, 5" \
++                              : : "r" (0) : "memory")
++#else /* CONFIG_XENO_ARM_ARCH <= 5 */
++#define xnarch_memory_barrier() \
++	__asm__ __volatile__ ("": : :"memory")
++#endif /* CONFIG_XENO_ARM_ARCH <= 5 */
  
- EXPORT_SYMBOL(xnheap_alloc);
+-#define xnarch_atomic_inc(pcounter)             (void) atomic_add_return(1, pcounter)
+-#define xnarch_atomic_dec_and_test(pcounter)    (atomic_sub_return(1, pcounter) == 0)
+-#define xnarch_atomic_set_mask(pflags,mask)     atomic_set_mask(mask,pflags)
+-#define xnarch_atomic_clear_mask(pflags,mask)   atomic_clear_mask(mask,pflags)
++#define xnarch_atomic_inc(pcounter)             (void) xnarch_atomic_add_return(1, pcounter)
++#define xnarch_atomic_dec_and_test(pcounter)    (xnarch_atomic_sub_return(1, pcounter) == 0)
+ 
+ #define cpu_relax()                             xnarch_memory_barrier()
+ #define xnarch_read_memory_barrier()		xnarch_memory_barrier()
+@@ -241,6 +420,9 @@ static inline void atomic_clear_mask(uns
+ 
+ typedef unsigned long atomic_flags_t;
+ 
++/* Add support for xnarch_atomic_intptr_t */
++#include <asm-generic/xenomai/atomic.h>
++
+ #endif /* !_XENO_ASM_ARM_ATOMIC_H */
+ 
+ // vim: ts=4 et sw=4 sts=4
+
 
 -- 
 
