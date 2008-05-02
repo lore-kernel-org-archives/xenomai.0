@@ -1,69 +1,78 @@
-Message-ID: <48201296.50905@domain.hid>
-Date: Tue, 06 May 2008 10:11:02 +0200
-From: Benjamin ZORES <benjamin.zores@domain.hid>
+Message-ID: <481AF29B.4040609@domain.hid>
+Date: Fri, 02 May 2008 12:53:15 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <481AA6B5.9070508@domain.hid> <481AC93E.3030107@domain.hid>
+	<481AD5C2.6030607@domain.hid> <481AD90C.2090902@domain.hid>
+	<481AD9E5.4000102@domain.hid> <481AE18A.2070803@domain.hid>
+	<481AE503.2060609@domain.hid> <481AE850.8090807@domain.hid>
+	<481AF022.7020505@domain.hid>
+In-Reply-To: <481AF022.7020505@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Timing Issues on x86_32 SMP
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-help] MSI Interrupt Crash
+Reply-To: rpm@xenomai.org
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+Jan Kiszka wrote:
+> Philippe Gerum wrote:
+>> Jan Kiszka wrote:
+>>> Philippe Gerum wrote:
+>>>> PS: We really do want to call mask/unmask instead of disable/enable in any case, because ->disable()
+>>>> became a nop in 2.6.21, so we just can't rely on its default action anyway. This is a separate
+>>>> issue, that caused rthal_irq_disable() not to actually mask the interrupt when the I/O APIC is enabled.
+>>> Hmmmm... That makes me scratch my head. Could this change have some
+>>> impact on I-pipe as well? We are currently pulling hairs here as some
+>>> SCSI adapter is flooding us with spurious IRQs during init, but only if
+>>> I-pipe is enabled.
+>>>
+>> __ipipe_enable_irq/__ipipe_disable_irq are not doing the right thing anymore,
+>> but, AFAICT, this would only affect callers of ipipe_virtualize_irq and
+>> ipipe_control_irq, using IPIPE_ENABLE_MASK.
+>>
+>> Btw, are those APIC-based SMP spurious interrupts, or 8259-based ones?
+> 
+> x86-64, APIC, fasteoi. But it is no SMP artifact (maxcpus=1 makes no
+> difference). So far only one machine type is affected. And there is a
+> higher chance to get over the initialization with kernel 2.6.23 than
+> with .24. After that point, everything is fine.
+> 
+> Unfortunately, the box is highly contended (and also horribly slow at
+> boot), so testing and debugging is a lengthy process. Therefore, I'm
+> primarily collecting ideas about potential reasons.
+> 
 
-I'm currently running an x86_32 SMP system and facing some issues with 
-periodic tasks.
-I'd like to get a bit more information on a few assumptions I've made.
+Food for thought - no idea if that will make a difference for you, but I noticed
+that doing it the other way was required for some boxes, so maybe yours is on
+the other side of the fence...
 
-Quick sum-up of my setup:
-- adeos-ipipe-2.6.23-i386-1.12-03
-- xenomai-2.4.3.patch
-- Core 2 Duo x86_32 running in SMP
-- Linux 2.6.23.17
-- Timer frequency: 1000 Hz
-- Tick-less mode activated (CONFIG_NO_HZ)
-- Xenomai Periodic Timing enabled (CONFIG_XENO_OPT_TIMING_PERIODIC)
-- tasks are kernel-based.
+diff --git a/arch/x86/kernel/io_apic_64.c b/arch/x86/kernel/io_apic_64.c
+index bc82e4d..8d74218 100644
+--- a/arch/x86/kernel/io_apic_64.c
++++ b/arch/x86/kernel/io_apic_64.c
+@@ -1500,10 +1500,10 @@ static void ack_apic_level(unsigned int irq)
+ 	 * from being delayed, waiting for a high priority interrupt
+ 	 * handler running in a low priority domain to complete.
+ 	 */
++	__ack_APIC_irq();
+ 	spin_lock(&ioapic_lock);
+ 	__mask_IO_APIC_irq(irq);
+ 	spin_unlock(&ioapic_lock);
+-	__ack_APIC_irq();
+ #endif /* CONFIG_IPIPE */
+ }
 
-I'm trying to schedule a periodic task each 8ms and I'm running into 
-period miss
-(loosing from 5 up to 75, which is quite A LOT). The problem however 
-doesn't appear
-on UP system (or at least when booting the kernel with maxcpus=1 ).
-
-I'd like to have more information regarding timer handling.
-
-First, I create my 8ms periodic task, the following way:
-
-    SRTIME ticks;
-    int period = 8;
-
-    /* need to feed with nano-seconds, then convert to CPU ticks */
-    ticks = rt_timer_ns2ticks(1000000 * period);
-    rt_task_set_periodic (task, TM_NOW, ticks);
-
-Is it the correct way to do ?
-It seems the rt_timer_ns2ticks() function is useless, i.e. it seems that 
-1 tick = 1 ns,
-which sees weird to me.
-
-Also, what does the rt_timer_read() function really return in my context ?
-Jiffies ? Nanoseconds ? Clock ticks ?
- From the different headers and documentation pieces I've read, none 
-seem to be really
-explicit regarding the returned value.
-
-Any help, is really appreciated.
-
-Ben
-
-
-
+-- 
+Philippe.
 
