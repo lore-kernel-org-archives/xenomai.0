@@ -1,18 +1,12 @@
-Message-ID: <481AF29B.4040609@domain.hid>
-Date: Fri, 02 May 2008 12:53:15 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <481AA6B5.9070508@domain.hid> <481AC93E.3030107@domain.hid>
-	<481AD5C2.6030607@domain.hid> <481AD90C.2090902@domain.hid>
-	<481AD9E5.4000102@domain.hid> <481AE18A.2070803@domain.hid>
-	<481AE503.2060609@domain.hid> <481AE850.8090807@domain.hid>
-	<481AF022.7020505@domain.hid>
-In-Reply-To: <481AF022.7020505@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] MSI Interrupt Crash
-Reply-To: rpm@xenomai.org
+Message-ID: <18459.1750.128875.34243@domain.hid>
+Date: Fri, 2 May 2008 14:19:34 +0200
+In-Reply-To: <15468836.10944871209713748048.JavaMail.www@domain.hid>
+References: <15468836.10944871209713748048.JavaMail.www@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] problem patching xenomai with arm
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,57 +16,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: "kerhoas.vincent" <kerhoas.vincent@domain.hid>
 Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->> Jan Kiszka wrote:
->>> Philippe Gerum wrote:
->>>> PS: We really do want to call mask/unmask instead of disable/enable in any case, because ->disable()
->>>> became a nop in 2.6.21, so we just can't rely on its default action anyway. This is a separate
->>>> issue, that caused rthal_irq_disable() not to actually mask the interrupt when the I/O APIC is enabled.
->>> Hmmmm... That makes me scratch my head. Could this change have some
->>> impact on I-pipe as well? We are currently pulling hairs here as some
->>> SCSI adapter is flooding us with spurious IRQs during init, but only if
->>> I-pipe is enabled.
->>>
->> __ipipe_enable_irq/__ipipe_disable_irq are not doing the right thing anymore,
->> but, AFAICT, this would only affect callers of ipipe_virtualize_irq and
->> ipipe_control_irq, using IPIPE_ENABLE_MASK.
->>
->> Btw, are those APIC-based SMP spurious interrupts, or 8259-based ones?
-> 
-> x86-64, APIC, fasteoi. But it is no SMP artifact (maxcpus=1 makes no
-> difference). So far only one machine type is affected. And there is a
-> higher chance to get over the initialization with kernel 2.6.23 than
-> with .24. After that point, everything is fine.
-> 
-> Unfortunately, the box is highly contended (and also horribly slow at
-> boot), so testing and debugging is a lengthy process. Therefore, I'm
-> primarily collecting ideas about potential reasons.
-> 
+kerhoas.vincent wrote:
+ > another detail : my target is a cirrus logic ep9302 ; I've understood that it was possible to put RTAI on it, may I suppose that I can put xenomai too ?
 
-Food for thought - no idea if that will make a difference for you, but I noticed
-that doing it the other way was required for some boxes, so maybe yours is on
-the other side of the fence...
+The support for cirrus logic is not part of the I-pipe patch for ARM. If
+you look in xenomai mailing list archives, you will find a patch, but I
+would advise to only keep the part of this patch specific to the cirrus
+logic processor (keeping everything in include/asm-arm/arch-ep93xx and
+arch/arm/mach-ep93xx) and use this with a newer patch.
 
-diff --git a/arch/x86/kernel/io_apic_64.c b/arch/x86/kernel/io_apic_64.c
-index bc82e4d..8d74218 100644
---- a/arch/x86/kernel/io_apic_64.c
-+++ b/arch/x86/kernel/io_apic_64.c
-@@ -1500,10 +1500,10 @@ static void ack_apic_level(unsigned int irq)
- 	 * from being delayed, waiting for a high priority interrupt
- 	 * handler running in a low priority domain to complete.
- 	 */
-+	__ack_APIC_irq();
- 	spin_lock(&ioapic_lock);
- 	__mask_IO_APIC_irq(irq);
- 	spin_unlock(&ioapic_lock);
--	__ack_APIC_irq();
- #endif /* CONFIG_IPIPE */
- }
+I know that someone recently did the job, maybe he will be kind enough
+to send us the result ?
 
 -- 
-Philippe.
+
+
+					    Gilles.
 
