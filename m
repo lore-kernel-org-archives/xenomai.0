@@ -1,15 +1,10 @@
-Message-ID: <4819F7A6.1010809@domain.hid>
-Date: Thu, 01 May 2008 19:02:30 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <481AA6B5.9070508@domain.hid>
+Date: Thu, 01 May 2008 22:29:25 -0700
+From: jeff koftinoff <jeffk@domain.hid>
 MIME-Version: 1.0
-References: <2220D86D21B55040AB683933DBD97B5A263A38E8E0@domain.hid>	<2ff1a98a0804290518x59f92346mfdf32c84055a10fe@domain.hid>	<2220D86D21B55040AB683933DBD97B5A263A38EC01@domain.hid>
-	<18457.59929.12465.572294@domain.hid>
-In-Reply-To: <18457.59929.12465.572294@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai on AT91SAM9260
-Reply-To: rpm@xenomai.org
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] MSI Interrupt Crash
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,208 +14,127 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, =?ISO-8859-1?Q?=22Hans_S=F8ndergaard_=28HSO=29=22?= <HSO@VIAUC.DK>
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Hans S=F8ndergaard (HSO) wrote:
->  > Hi,
->  >=20
->  > Thanks for the answer.
->  > We are now trying to install Xenomai 2.4.3 using Linux 2.6.24 on AT91S=
-AM9260,
->  > but have a problem:
->  >=20
->  > Is it possible to disable the building of the posix skin when
->  > configuring the user space libraries for Xenomai?
->  >=20
->  > I have tried --disable-posix-skin, but this had no effect.
->  >=20
->  > The reason why I ask is that the building of src/skins/posix/init.c
->  > fails like this:
->  >=20
->  > [stk@domain.hid posix]$ arm-linux-uclibc-gcc -DHAVE_CONFIG_H -I. -I../=
-../../src/inc
->  > lude -I../../../../xenomai-2.4.3/src/skins/posix -O2 -D_GNU_SOURCE -D_=
-REENTRANT
->  > -Wall -pipe -march=3Darmv5 -D__XENO__ -D__IN_XENO__ -Wstrict-prototype=
-s -I../../..
->  > /../xenomai-2.4.3/include -I../../../../xenomai-2.4.3/include/posix -M=
-T libpthre
->  > ad_rt_la-init.lo -MD -MP -MF .deps/libpthread_rt_la-init.Tpo -c ../../=
-../../xeno
->  > mai-2.4.3/src/skins/posix/init.c  -fPIC -DPIC -o .libs/libpthread_rt_l=
-a-init.o
->  > In file included from ../../../src/include/asm/xenomai/atomic.h:78,
->  >                  from ../../../../xenomai-2.4.3/include/nucleus/system=
-.h:27,
->  >                  from ../../../src/include/asm/xenomai/system.h:135,
->  >                  from ../../../../xenomai-2.4.3/include/nucleus/types.=
-h:40,
->  >                  from ../../../../xenomai-2.4.3/include/nucleus/queue.=
-h:25,
->  >                  from ../../../../xenomai-2.4.3/include/nucleus/timeba=
-se.h:30,
->  >                  from ../../../../xenomai-2.4.3/include/nucleus/timer.=
-h:27,
->  >                  from ../../../../xenomai-2.4.3/include/nucleus/thread=
-.h:26,
->  >                  from ../../../../xenomai-2.4.3/include/posix/pthread.=
-h:150,
->  >                  from /home/stk/brick/mb9200/buildroot/build_arm/stagi=
-ng_dir/bin
->  > -ccache/../lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc=
-/sys-inclu
->  > de/bits/uClibc_mutex.h:16,
->  >                  from /home/stk/brick/mb9200/buildroot/build_arm/stagi=
-ng_dir/bin
->  > -ccache/../lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc=
-/sys-inclu
->  > de/bits/uClibc_stdio.h:120,
->  >                  from /home/stk/brick/mb9200/buildroot/build_arm/stagi=
-ng_dir/bin
->  > -ccache/../lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc=
-/sys-inclu
->  > de/stdio.h:73,
->  >                  from ../../../../xenomai-2.4.3/src/skins/posix/init.c=
-:20:
->  > ../../../src/include/asm/xenomai/syscall.h: In function 'xeno_arm_feat=
-ures_check
->  > ':
->  > ../../../src/include/asm/xenomai/syscall.h:295: error: 'stderr' undecl=
-ared (firs
->  > t use in this function)
->  > ../../../src/include/asm/xenomai/syscall.h:295: error: (Each undeclare=
-d identifi
->  > er is reported only once
->  > ../../../src/include/asm/xenomai/syscall.h:295: error: for each functi=
-on it appe
->  > ars in.)
->  >=20
->  > Obviously there is something wrong with the include path used:
->  > uClibc_mutex.h should not include 'pthread.h' in the Xenomai
->  > distribution but rather the version in uClibc itself.
->  >=20
->  > Why this happens I'm trying to discover.
->  >=20
->  > The complete configure I'm using is:
->  >=20
->  > ../xenomai-2.4.3/configure --build=3Di686-pc-linux-gnu --host=3Darm-li=
-nux-uclibc --enable-arm-mach=3Dat91sam926x --enable-arm-tsc
->  >=20
->  > Thanks in advance.
->=20
-> Well, I understand that it may not be important to you if you do not
-> intend to use the posix skin, but we should try and solve this issue
-> (which seems to be a uclibc issue). Including posix skin pthread.h
-> instead of libc pthread.h should be no problem, since posix skin
-> pthread.h include the libc pthread.h. The problem here is due to the
-> fact that asm-arm/syscall.h is trying to use stderr whereas we are at
-> the very beginning of stdio.h where stderr is not defined yet.
->=20
-> I have to admit that I have no idea here other than defining a function
-> in init.c which calls fprintf and to call this function instead of
-> fprintf in asm-arm/syscall.h
->=20
-> Philippe, any better idea ?
->=20
-
-No, but I do have an almost as ugly one to suggest:
-
---- include/asm-arm/syscall.h	(revision 3729)
-+++ include/asm-arm/syscall.h	(working copy)
-@@ -222,7 +222,6 @@
- #define XENOMAI_SYSARCH_TSCINFO                 4
-
- #ifndef __KERNEL__
--#include <stdio.h>
- #include <stdlib.h>
- #include <sys/types.h>
- #include <sys/stat.h>
-@@ -230,6 +229,8 @@
- #include <fcntl.h>
- #include <unistd.h>
- #include <limits.h>
-+#include <error.h>
-+#include <errno.h>
-
- __attribute__((weak)) struct __xn_tscinfo __xn_tscinfo =3D {
- 	type: -1
-@@ -291,17 +292,15 @@
- 	err =3D XENOMAI_SYSCALL2(__xn_sys_arch,
- 			       XENOMAI_SYSARCH_TSCINFO, &__xn_tscinfo);
- 	if (err) {
--	  error:
--		fprintf(stderr, "Xenomai: Your board/configuration does not"
--			" allow tsc emulation in user-space: %d\n", err);
--		exit(EXIT_FAILURE);
-+	  fail:
-+		error(EXIT_FAILURE, err,
-+		      "Xenomai: Your board/configuration does not"
-+		      " allow tsc emulation in user-space\n");
- 	}
-
- 	fd =3D open("/dev/mem", O_RDONLY | O_SYNC);
--	if (fd =3D=3D -1) {
--		perror("Xenomai init: open(/dev/mem)");
--		exit(EXIT_FAILURE);
--	}
-+	if (fd =3D=3D -1)
-+		error(EXIT_FAILURE, errno, "Xenomai init: open(/dev/mem)");
-
- 	page_size =3D sysconf(_SC_PAGESIZE);
-
-@@ -313,10 +312,8 @@
- 		phys_addr =3D (unsigned long) __xn_tscinfo.u.fr.counter;
- 		addr =3D mmap(NULL, page_size, PROT_READ, MAP_SHARED,
- 			    fd, phys_addr & ~(page_size - 1));
--		if (addr =3D=3D MAP_FAILED) {
--			perror("Xenomai init: mmap(/dev/mem)");
--			exit(EXIT_FAILURE);
--		}
-+		if (addr =3D=3D MAP_FAILED)
-+			error(EXIT_FAILURE, errno, "Xenomai init: mmap(/dev/mem)");
-
- 		__xn_tscinfo.u.fr.counter =3D
- 			((volatile unsigned *)
-@@ -330,10 +327,8 @@
- 		phys_addr =3D (unsigned long) __xn_tscinfo.u.dec.counter;
- 		addr =3D mmap(NULL, page_size, PROT_READ, MAP_SHARED,
- 			    fd, phys_addr & ~(page_size - 1));
--		if (addr =3D=3D MAP_FAILED) {
--			perror("Xenomai init: mmap(/dev/mem)");
--			exit(EXIT_FAILURE);
--		}
-+		if (addr =3D=3D MAP_FAILED)
-+			error(EXIT_FAILURE, "Xenomai init: mmap(/dev/mem)");
-
- 		__xn_tscinfo.u.dec.counter =3D
- 			((volatile unsigned *)
-@@ -342,18 +337,15 @@
- 	}
- #endif /* CONFIG_XENO_ARM_HW_DIRECT_TSC =3D=3D __XN_TSC_TYPE_DECREMENTER */
- 	case __XN_TSC_TYPE_NONE:
--		goto error;
-+		goto fail;
- 	=09
- 	default:
--		fprintf(stderr,
--			"Xenomai: kernel/user tsc emulation mismatch.\n");
--		exit(EXIT_FAILURE);
-+		error(EXIT_FAILURE, err,
-+		      "Xenomai: kernel/user tsc emulation mismatch.\n");
- 	}
-
--	if (close(fd)) {
--		perror("Xenomai init: close(/dev/mem)");
--		exit(EXIT_FAILURE);
--	}
-+	if (close(fd))
-+		error(EXIT_FAILURE, errno, "Xenomai init: close(/dev/mem)");
- #endif /* CONFIG_XENO_ARM_HW_DIRECT_TSC */
- }
- #define xeno_arch_features_check() xeno_arm_features_check()
-
---=20
-Philippe.
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<br>
+<div class="moz-text-html" lang="x-western">
+<div class="Section1">
+<p class="MsoNormal"><font color="#444444" face="Verdana" size="2"><span
+ style="font-size: 10pt; font-family: Verdana; color: rgb(68, 68, 68);">Hi
+all,<br>
+&nbsp;<br>
+I am currently writing an rtdm driver for an fpga card.<br>
+I am using the latest Xenomai version from the svn repository and
+kernel
+version 2.6.24.5.<br>
+This runs on a Core2Duo with a debian 64 bit version.<br>
+The driver seems to work fine as long as I use legacy interrupts and
+not MSI's.<o:p></o:p></span></font></p>
+<p class="MsoNormal"><font color="#444444" face="Verdana" size="2"><span
+ style="font-size: 10pt; font-family: Verdana; color: rgb(68, 68, 68);"><br>
+As soon as I use pci_enable_msi before rtdm_irq_request I get:<br>
+&nbsp;<br>
+[ 4260.359093] fpga_driver :MSI Enabled<br>
+[ 4260.359095] fpga_driver :IORESOURCE_IRQ IRQ: 248<br>
+[ 4260.359109] Unable to handle kernel NULL pointer dereference at
+0000000000000000 RIP: <br>
+[ 4260.359113]&nbsp; [&lt;0000000000000000&gt;]<br>
+[ 4260.359117] PGD 3b1f7067 PUD 3b1f6067 PMD 0 <br>
+[ 4260.359121] Oops: 0010 [1] SMP <br>
+[ 4260.359125] CPU 1 <br>
+[ 4260.359127] Modules linked in: fpga_module(P) af_packet binfmt_misc
+rfcomm
+l2cap bluetooth ppdev ipv6 sbs container dock video output sbshc
+battery
+iptable_filter ip_tables x_tables ac coretemp max6650 sbp2 parport_pc
+lp
+parport atl1 mii i2c_core psmouse serio_raw button shpchp iTCO_wdt
+iTCO_vendor_support intel_agp pci_hotplug evdev pcspkr ext3 jbd mbcache
+sg
+sr_mod cdrom ata_generic sd_mod pata_acpi usbhid hid ohci1394 ieee1394
+ahci
+pata_jmicron libata scsi_mod ehci_hcd uhci_hcd usbcore dm_mirror
+dm_snapshot
+dm_mod fan fuse<br>
+[ 4260.359179] Pid: 7016, comm: insmod Tainted:
+P&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.6.24.5 #1<br>
+[ 4260.359181] RIP: 0010:[&lt;0000000000000000&gt;]&nbsp;
+[&lt;0000000000000000&gt;]<br>
+[ 4260.359185] RSP: 0000:ffff81003b23dc80&nbsp; EFLAGS: 00010246<br>
+[ 4260.359187] RAX: ffffffff805dc2c0 RBX: 0000000000000000 RCX:
+ffff810001018780<br>
+[ 4260.359189] RDX: ffff81008099a000 RSI: 0000000000000000 RDI:
+00000000000000f8<br>
+[ 4260.359192] RBP: ffffffff882cc688 R08: 0000000000000000 R09:
+00000000000000c1<br>
+[ 4260.359194] R10: 0000000000000000 R11: 0000000000000000 R12:
+ffff81003ee87800<br>
+[ 4260.359196] R13: ffffffff882cbee0 R14: 0000000000000000 R15:
+000000000000000f<br>
+[ 4260.359198] FS:&nbsp; 00002b43257436e0(0000) GS:ffff81003ec01700(0000)
+knlGS:0000000000000000<br>
+[ 4260.359200] CS:&nbsp; 0010 DS: 0000 ES: 0000 CR0: 000000008005003b<br>
+[ 4260.359202] CR2: 0000000000000000 CR3: 0000000032168000 CR4:
+00000000000006e0<br>
+[ 4260.359204] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
+0000000000000000<br>
+[ 4260.359206] DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7:
+0000000000000400<br>
+[ 4260.359209] Process insmod (pid: 7016, threadinfo ffff81003b23c000,
+task
+ffff810032166fc0)<br>
+[ 4260.359210] Stack:&nbsp; ffffffff8041e0ff ffff81003ee87800
+ffffffff802c8a58
+ffff81003ee87800<br>
+[ 4260.359216]&nbsp; ffff81003ee87800 ffff81003ee87800 ffffffff882ca374
+0000000000000000<br>
+[ 4260.359221]&nbsp; ffffffff882ca521 0000000000000001 ffff81003ee87870
+ffffffff882cc1a0<br>
+[ 4260.359225] Call Trace:<br>
+[ 4260.359231]&nbsp; [&lt;ffffffff8041e0ff&gt;] rthal_irq_enable+0x2f/0x40<br>
+[ 4260.359236]&nbsp; [&lt;ffffffff802c8a58&gt;] rtdm_irq_request+0x48/0x60<br>
+[ 4260.359242]&nbsp; [&lt;ffffffff882ca374&gt;]
+:fpga_module:pci_request_resources+0x104/0x1d0<br>
+[ 4260.359246]&nbsp; [&lt;ffffffff882ca521&gt;]
+:fpga_module:pci_probe+0xe1/0x180<br>
+[ 4260.359250]&nbsp; [&lt;ffffffff8039ec88&gt;] pci_device_probe+0xf8/0x170<br>
+[ 4260.359256]&nbsp; [&lt;ffffffff8040069c&gt;]
+driver_probe_device+0x9c/0x1b0<br>
+[ 4260.359259]&nbsp; [&lt;ffffffff80400969&gt;] __driver_attach+0xc9/0xd0<br>
+[ 4260.359262]&nbsp; [&lt;ffffffff804008a0&gt;] __driver_attach+0x0/0xd0<br>
+[ 4260.359265]&nbsp; [&lt;ffffffff803ff8dd&gt;] bus_for_each_dev+0x4d/0x80<br>
+[ 4260.359270]&nbsp; [&lt;ffffffff803ffcec&gt;] bus_add_driver+0xac/0x220<br>
+[ 4260.359274]&nbsp; [&lt;ffffffff8039ef09&gt;]
+__pci_register_driver+0x69/0xb0<br>
+[ 4260.359280]&nbsp; [&lt;ffffffff88069037&gt;]
+:fpga_module:card_init+0x37/0x64<br>
+[ 4260.359284]&nbsp; [&lt;ffffffff802657be&gt;] sys_init_module+0x18e/0x1a90<br>
+[ 4260.359293]&nbsp; [&lt;ffffffff80389b28&gt;]
+_atomic_dec_and_lock+0x48/0x70<br>
+[ 4260.359298]&nbsp; [&lt;ffffffff80253330&gt;] param_get_int+0x0/0x20<br>
+[ 4260.359304]&nbsp; [&lt;ffffffff8020c3f2&gt;] system_call+0x92/0x97<br>
+[ 4260.359308] <br>
+[ 4260.359310] <br>
+[ 4260.359310] Code:&nbsp; Bad RIP value.<br>
+[ 4260.359313] RIP&nbsp; [&lt;0000000000000000&gt;]<br>
+[ 4260.359315]&nbsp; RSP &lt;ffff81003b23dc80&gt;<br>
+[ 4260.359316] CR2: 0000000000000000<br>
+[ 4260.359325] ---[ end trace 502b14894d3ed93b ]---<br>
+&nbsp;<br>
+Any advice?<br>
+</span></font></p>
+<p class="MsoNormal"><font color="#444444" face="Verdana" size="2"><span
+ style="font-size: 10pt; font-family: Verdana; color: rgb(68, 68, 68);">Jeff
+and Thomas</span></font><font face="Arial" size="2"><span
+ style="font-size: 10pt; font-family: Arial;"><o:p></o:p></span></font></p>
+</div>
+<br>
+</div>
+</body>
+</html>
 
