@@ -1,5 +1,5 @@
-Message-ID: <481AE18A.2070803@domain.hid>
-Date: Fri, 02 May 2008 11:40:26 +0200
+Message-ID: <481AE1A0.1040708@domain.hid>
+Date: Fri, 02 May 2008 11:40:48 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <481AA6B5.9070508@domain.hid> <481AC93E.3030107@domain.hid>
@@ -149,7 +149,7 @@ Jan Kiszka wrote:
 
 What bothers me even more regarding that issue, is that _all_ interrupts
 managed by that chip should have caused the default handlers to be installed
-for the descriptor, so this even means that no interrupt was registered
+for the descriptor, so this even means that not a single interrupt was registered
 to be managed by that descriptor. Weird.
 
 PS: We really do want to call mask/unmask instead of disable/enable in any case, because ->disable()
