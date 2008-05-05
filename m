@@ -1,23 +1,16 @@
+Message-ID: <481F4741.4080207@domain.hid>
+Date: Mon, 05 May 2008 19:43:29 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18482.727.771660.333461@domain.hid>
-Date: Tue, 20 May 2008 00:44:39 +0200
-In-Reply-To: <2ff1a98a0805190616v662c22ddgd63382221d721c8e@domain.hid>
-References: <18459.38249.462320.715909@domain.hid>
-	<18459.38644.699369.801548@domain.hid>
-	<18459.38704.252719.734650@domain.hid>
-	<48305BE4.3040503@domain.hid>
-	<18480.30551.499645.920690@domain.hid>
-	<48307F0A.5040206@domain.hid>
-	<18480.34204.426031.862047@domain.hid>
-	<4830A50D.8040507@domain.hid>
-	<18480.45872.449093.746718@domain.hid>
-	<483178FC.1010300@domain.hid>
-	<2ff1a98a0805190616v662c22ddgd63382221d721c8e@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] [Patch 5/7] Define new syscalls for the system
-	skin
+References: <481F2B6A.802@domain.hid>
+	<481F3110.1050407@domain.hid>	<2ff1a98a0805050912m60cf9d03o308bec827236b10a@domain.hid>	<481F3495.2010906@domain.hid>
+	<481F3B3E.700@domain.hid>
+In-Reply-To: <481F3B3E.700@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig3E76B0E3DA33C9362597D040"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] Houston, we have a circular problem
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -27,59 +20,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org, xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, Xenomai-core@domain.hid
 
-Gilles Chanteperdrix wrote:
- > On Mon, May 19, 2008 at 2:56 PM, Philippe Gerum <rpm@xenomai.org> wrote:
- > > Gilles Chanteperdrix wrote:
- > >> Philippe Gerum wrote:
- > >>  > Gilles Chanteperdrix wrote:
- > >>  > > As far as I understood, the user-space atomic operations, used to
- > >>  > > acquire a free mutex in user-space, are not part of the futex API. In
- > >>  > > our case, we are using xnarch_atomic_* operations to implement portably
- > >>  > > this user-space locking stuff. I think that even setting the bit saying
- > >>  > > that the mutex is currently owned is done in pthread_mutexes
- > >>  > > implementation, not in the Futex API.
- > >>  >
- > >>  > I would fully agree if the futex API did not define PI-based ops, which are
- > >>  > needed for proper real-time operations from userland. You will certainly agree
- > >>  > that PI implies that some kind of ownership exists; and because there can't be
- > >>  > more than a single owner in that case, you end up with an object that can't be
- > >>  > held by more than a single task. So you do have a mutex in disguise, whatever
- > >>  > the way to keep its state is (a bit, an integer, whatever). So there is stronger
- > >>  > semantics attached to that API than to simply manage an event notification scheme.
- > >>  >
- > >>  >  Now, what remains is
- > >>  > > sys_futex(FUTEX_WAIT) and sys_futex(FUTEX_WAKE), this terribly looks like
- > >>  > > xnsync_sleep_on and xnsynch_wakeup_one_sleeper.
- > >>  > >
- > >>  >
- > >>  > Yes, here again I partially agree, except for a significant issue: xnsynch is a
- > >>  > stateless object (that's why we can use it for different syncobjs which are
- > >>  > totally unrelated in their semantics - mutex, queue, region, counting sems,
- > >>  > whatever). I was just wondering if we could make the *tex thingy a bit more
- > >>  > stateful to ease the job for the skins, just in case we would use it for mutexes
- > >>  > only. I have no immediate answer to this question, just asking -- this is my
- > >>  > contribution as a senior member of the peanut gallery.
- > >>
- > >> We can certainly implement an abstraction managing xnarch_atomic_t +
- > >> xnsynch_t, however, it seems that we would have to re-factor all
- > >> mutex/semaphores implementations to use this new abstraction. The
- > >> current approach is to add an xnarch_atomic_cmpxchg in user-space, and
- > >> fall back to an almost unchanged kernel-space support when it fails.
- > >>
- > >
- > > Ok. Let's merge this as it is. Common code will emerge eventually if it happens
- > > to make sense when plugging the feature into the native and VxWorks mutex support.
- > 
- > Ok. I need a few more days though, to adapt it to other architectures than arm.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig3E76B0E3DA33C9362597D040
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-I changed my mind and commited the whole stuff. Instead of implementing
-full atomic operations in user-space for other platforms than ARM, I
-have left this work for others.
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> On Mon, May 5, 2008 at 6:08 PM, Philippe Gerum <rpm@xenomai.org> wrot=
+e:
+>>>>  do_schedule_event() is the culprit when it reads the pending signal=
+s on the
+>>>>  shared queue (XNDEBUG check for rearming the timers),
+>>> A stupid suggestion: if we know that the spinlock is always locked
+>>> when calling do_schedule_event, maybe we can simply avoid the lock
+>>> there ?
+>> Would be the best solution - but I don't think so. After reading a bit=
 
--- 
+>> more into the lockdep output, I think the issue is that _some_other_
+>> task my hold the siglock and then acquire our rq_lock, but not
+>> necessarily along a similar code path we took to acquire the siglock n=
+ow.
+>>
+>=20
+> Actually, this locking around the sigmask retrieval looks overkill, sin=
+ce we
+> only address ptracing signals here, and those should go through the sha=
+red
+> pending set, not through the task's private one. I.e. There should be n=
+o way to
+> get fooled by any asynchronous update of that mask.
+
+This is a debug helper anyway, so we risk (if I got this right) at worst
+a spurious unfreeze of the Xenomai timers. Does not really compare to
+the current deadlock...
+
+I will let my colleagues run the hunk below tomorrow (which works for me)=
+ -
+let's see if they manage to crash it again :P (they are experts in this!)=
+=2E
+
+Jan
+
+Index: xenomai-2.4.x/ksrc/nucleus/shadow.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai-2.4.x/ksrc/nucleus/shadow.c	(Revision 3734)
++++ xenomai-2.4.x/ksrc/nucleus/shadow.c	(Arbeitskopie)
+@@ -2194,9 +2194,7 @@ static inline void do_schedule_event(str
+ 			if (signal_pending(next)) {
+ 				sigset_t pending;
+=20
+-				spin_lock(&wrap_sighand_lock(next));	/* Already interrupt-safe. */
+ 				wrap_get_sigpending(&pending, next);
+-				spin_unlock(&wrap_sighand_lock(next));
+=20
+ 				if (sigismember(&pending, SIGSTOP) ||
+ 				    sigismember(&pending, SIGINT))
 
 
-					    Gilles.
+--------------enig3E76B0E3DA33C9362597D040
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFIH0dGniDOoMHTA+kRApofAJ0ZE4FXQl81KpG1Fy5cUQxvotg7nwCeKk4T
+7xjiU+kzm6P72ozI43ao19Q=
+=OVp+
+-----END PGP SIGNATURE-----
+
+--------------enig3E76B0E3DA33C9362597D040--
 
