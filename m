@@ -1,14 +1,20 @@
-Message-ID: <4830173D.2010904@domain.hid>
-Date: Sun, 18 May 2008 13:47:09 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <2ff1a98a0805050944u6a851c8dyfaeec1f6660f26e@domain.hid>
+Date: Mon, 5 May 2008 18:44:11 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <481F3851.9020003@domain.hid>
 MIME-Version: 1.0
-References: <200805181142.13485.niklaus.giger@domain.hid>
-In-Reply-To: <200805181142.13485.niklaus.giger@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] SOLO: Too limited priorities for vxWorks threads
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+References: <18459.38249.462320.715909@domain.hid>
+	<18459.38430.835407.942336@domain.hid>
+	<18459.38500.720338.652195@domain.hid>
+	<18459.38558.684426.240775@domain.hid>
+	<18459.38644.699369.801548@domain.hid>
+	<2ff1a98a0805050933p380f8c8fod5a8dacc42c694da@domain.hid>
+	<481F3851.9020003@domain.hid>
+Subject: Re: [Xenomai-core] [Patch 4/7] Define ARM atomic operations in
+	user-space
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,58 +24,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-Niklaus Giger wrote:
-> Hi
-> 
-> I just tried to get a sample test program to run under Xenomai-SOLO
-> and run into this panic message:
-> Xenomai/SOLO: current implementation restricts VxWorkspriority levels to range [-2..0]
-> looking at the code I found at taskLib.c
->> 263     {
->> 264             if (wind_prio < 0 || wind_prio > 255) /* In theory. */
->> 265                     return S_taskLib_ILLEGAL_PRIORITY;
->> 266
->> 267             if (wind_prio >= threadobj_max_prio - 1) /* In practice. */
->> 268                     panic("current implementation restricts VxWorks"
->> 269                           "priority levels to range [%d..0]",
->> 270                           threadobj_max_prio - 2);
->> 271             return OK;
-> Therefore I seem to have only the option of priority 0 which is way too limited.
+On Mon, May 5, 2008 at 6:39 PM, Philippe Gerum <rpm@xenomai.org> wrote:
 >
+> Gilles Chanteperdrix wrote:
+>  > On Sat, May 3, 2008 at 12:34 AM, Gilles Chanteperdrix
+>  > <gilles.chanteperdrix@xenomai.org> wrote:
+>  >>  The include/asm-arm/atomic.h header now defines the xnarch_memory_barrier in
+>  >>  addition to user-space atomic operations. The pxa3xx deserves a special
+>  >>  treatment since it uses the ARMv6 memory barrier operation whereas being an
+>  >>  ARMv5 for other operations, hence a special --enable-arm-mach=pxa3xx option in
+>  >>  configure.in.
+>  >
+>  > After a quick look at all architectures xenomai supports, it seems
+>  > that we can implement atomic_cmpxchg for most of them in user-space.
+>  > The only one for which I have a doubt is blackfin. Since linux for
+>  > blackfin is uclinux, can we call cli/sti from user-space ?
+>  >
+>
+>  Nope, these are supervisor's toys on this arch. IIRC, recent Blackfin releases
+>  should be providing fast atomic ops from userland despite this, by using
+>  protected jumps to kernel space for that purpose. I need to check that in the
+>  kernel code, this was a discussion running on the Blackfin dev-list months ago.
 
-No, this means there is a problem. threadobj_max_prio should be 99.
+It looks like the same technique as used on pre-v6 ARM.
 
-> I took a look at vxworks/testsuite/task-1.c and found that it spawns a task
-> with priority 70. Calling "make check" compiled a few more files but did not run
-> any checks.
-> 
-> After calling make in vxworks/testsuite and callling ./task-1 I got the same
-> error.
-> 
-> I am running the (unpatched) Debian kernel 2.6.24-1-686, as I just wanted to
-> run some test without requiring any realtime behaviour. Reading 
-> http://www.denx.de/cgi-bin/gitweb.cgi?p=xenomai-solo.git;a=blob;f=README
-> I found the sentence "SOLO may also be used with non-PREEMPT_RT kernels, likely
-> for basic debugging tasks which do not involve strict real-time requirements"
-> and concluded therefore that I should be able to use for my test a "normal"
-> kernel.
-> 
-> As glibc I use the Debian lenny version 2.7-10.
-> 
-> Best regards
-> 
-> Niklaus Giger
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
-> 
+>  Anyway, I would suggest to exclude Blackfin from the mutex optimization set
+>  right now, then go back to it when we support their latest kernel.
 
+Ok. I was dreaming about removing all the #ifdef
+XNARCH_HAVE_US_ATOMIC_CMPXCHG. But it is probably better to leave it
+after all. If for anything, it will help people doing ports to new
+architectures gradually.
 
 -- 
-Philippe.
+ Gilles
 
