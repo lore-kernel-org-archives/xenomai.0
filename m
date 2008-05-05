@@ -1,72 +1,134 @@
-Message-ID: <2ff1a98a0805300708l6911837r7b89925ca6810792@domain.hid>
-Date: Fri, 30 May 2008 16:08:08 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <13639.81.252.86.91.1212153659.squirrel@domain.hid>
+Message-ID: <5719c6f30805050943p31f3f5eew74d0f7ef3dd2b5a5@domain.hid>
+Date: Mon, 5 May 2008 18:43:52 +0200
+From: "Florent Audebert" <f.audebert@domain.hid>
 MIME-Version: 1.0
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_7373_33317202.1210005832802"
+Subject: [Adeos-main] Advice regarding MIPS port
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
+
+------=_Part_7373_33317202.1210005832802
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <16474.81.252.86.91.1211199249.squirrel@domain.hid>
-	<2405.81.252.86.91.1211549465.squirrel@domain.hid>
-	<2ff1a98a0805230655j35009227h75c63566373ece43@domain.hid>
-	<5871.81.252.86.91.1211789666.squirrel@domain.hid>
-	<18491.29266.196753.611570@domain.hid>
-	<2766.81.252.86.91.1211992159.squirrel@domain.hid>
-	<2ff1a98a0805280931j611ae10er69b968ae8699d63d@domain.hid>
-	<16273.81.252.86.91.1212060383.squirrel@domain.hid>
-	<2ff1a98a0805290614w3d846e6by69b033204f912391@domain.hid>
-	<13639.81.252.86.91.1212153659.squirrel@domain.hid>
-Subject: Re: [Xenomai-help] Problem with time-out ends
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Fabien MAHOT <fabien.mahot@domain.hid>
-Cc: xenomai@xenomai.org
 
-On Fri, May 30, 2008 at 3:20 PM, Fabien MAHOT
-<fabien.mahot@domain.hid> wrote:
->> On Thu, May 29, 2008 at 1:26 PM, Fabien MAHOT
->> <fabien.mahot@domain.hid> wrote:
->>> I succeed to reduce my test program.
->>> Now, I ve got two xenomai threads.
->>> threadDisplay (prio : 70) : locks a mutex (conflict_lock mutex) and
->>> passes
->>> between Xenomai and Linux domain. (call to sleep())
->>> threadTimeOut (prio : 80) : Starts one timeout of 5ms and tries to lock
->>> the mutex taken by threadDisplay. (Priority Inheritance)
->>>
->>> threadTimeOut waits the conflict_lock unlock of threadDisplay. With
->>> priority inheritance, threadTimeOut gives its priority to threadDisplay.
->>> But, threadTimeOut must also do the EndTimeOut() processing. When the
->>> timeout end signal arrives, if threadDisplay is into Linux Domain, the
->>> system crashes.
->>
->> Do you have the same crash if you use vanilla Linux timer services
->> (__real_timer_create, __real_timer_settime, etc...).
->>
->> --
->>  Gilles
->
-> Hello,
->
-> I try with vanilla linux timer. If threadTimeOut sets up one or two
-> timeouts, now, it's ok. But if it sets up more than two timeouts, the
-> system crashes.
-> I ve got the same error kernel traces as Posix timer use.
->
-> (By the way, In which file vanilla timer services are written ?
-> __real_timer_create ... are declared in time.h in xenomai files. I look
-> for in linux and glibc sources but I don t find them.)
+Hi,
 
-Read explanation of the --wrap option in ld documentation.
+I am starting to work on a Xenomai port for MIPS architecture as part
+of an internship at Open Wide (France). It is my first real diving
+into the kernel sources so I'm far from being an expert. The goal of
+this project is to be able to run it on a Broadcom BCM6448 board.
 
+My first objective is to be able to run an Adeos patched kernel. I
+have decided to work with QEMU (mips-malta board emulation) instead of
+my real target since it provides me an easy way to use GDB and thus to
+understand a little bit more what is going on. Furthermore, it
+provides an easy way of testing it for other people since it only
+requires QEMU and no specific real hardware.
+
+I read as much as documents I can (Life with Adeos, Porting Adeos,
+...) and finally started messing with the code. I managed to compile a
+MIPS kernel merging common Adeos code from latest x86 patch and
+adapting (see below) / commenting out. I guess my kernel is far from
+functional. My current issue seems to be related to the timer (see
+attached file).
+
+Here is a list of explicit changes I have done so far :
+
+    - include/asm-mips/irqflags.h : added raw_local_*() and local_irq_*().
+    - include/asm-mips/irq.h : do_IRQ() calls __ipipe_handle_irq()
+instead of generic_handle_irq().
+    - arch/mips/kernel/ipipe.c : created __ipipe_do_IRQ() (used with
+__ipipe_enable_pipeline()) which calls generic_handle_irq().
+
+Do you think my approach is correct ? Are my few changes relevant ? I
+avoided to modify entry.S and genex.S, is this mandatory ?
+
+Any help or thoughts are welcome !
+
+
+Regards,
 
 -- 
- Gilles
+Florent Audebert
+
+------=_Part_7373_33317202.1210005832802
+Content-Type: text/plain; name=adeos-mips-qemu.txt
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_ffva2ivb0
+Content-Disposition: attachment; filename=adeos-mips-qemu.txt
+
+KHFlbXUpIExpbnV4IHZlcnNpb24gMi42LjI0LjQtZzZjMjA3ZWRmLWRpcnR5IChmbG9yZW50QGNv
+aW5jb2luKSAoZ2NjIHZlcnNpb24gMy40LjUpICMxMTAgTW9uIE1heSA1IDE0OjE0OjQzIENFU1Qg
+MjAwOAoKTElOVVggc3RhcnRlZC4uLgpjb25zb2xlIFtlYXJseTBdIGVuYWJsZWQKQ1BVIHJldmlz
+aW9uIGlzOiAwMDAxODAwMCAoTUlQUyA0S2MpCnJlZ2lzdGVyaW5nIFBDSSBjb250cm9sbGVyIHdp
+dGggaW9fbWFwX2Jhc2UgdW5zZXQKRGV0ZXJtaW5lZCBwaHlzaWNhbCBSQU0gbWFwOgogbWVtb3J5
+OiAwMDAwMTAwMCBAIDAwMDAwMDAwIChyZXNlcnZlZCkKIG1lbW9yeTogMDAwZWYwMDAgQCAwMDAw
+MTAwMCAoUk9NIGRhdGEpCiBtZW1vcnk6IDAwNTI1MDAwIEAgMDAwZjAwMDAgKHJlc2VydmVkKQog
+bWVtb3J5OiAwNzllYTAwMCBAIDAwNjE1MDAwICh1c2FibGUpCldhc3RpbmcgNDk4MjQgYnl0ZXMg
+Zm9yIHRyYWNraW5nIDE1NTcgdW51c2VkIHBhZ2VzCkluaXRyZCBub3QgZm91bmQgb3IgZW1wdHkg
+LSBkaXNhYmxpbmcgaW5pdHJkClpvbmUgUEZOIHJhbmdlczoKICBETUEgICAgICAgICAgICAgMCAt
+PiAgICAgNDA5NgogIE5vcm1hbCAgICAgICA0MDk2IC0+ICAgIDMyNzY3Ck1vdmFibGUgem9uZSBz
+dGFydCBQRk4gZm9yIGVhY2ggbm9kZQplYXJseV9ub2RlX21hcFsxXSBhY3RpdmUgUEZOIHJhbmdl
+cwogICAgMDogICAgICAgIDAgLT4gICAgMzI3NjcKQnVpbHQgMSB6b25lbGlzdHMgaW4gWm9uZSBv
+cmRlciwgbW9iaWxpdHkgZ3JvdXBpbmcgb24uICBUb3RhbCBwYWdlczogMzI1MTIKS2VybmVsIGNv
+bW1hbmQgbGluZTogcm9vdD0vZGV2L2hkYTEgY29uc29sZT10dHlTMApQcmltYXJ5IGluc3RydWN0
+aW9uIGNhY2hlIDJrQiwgVklQVCwgMi13YXksIGxpbmVzaXplIDE2IGJ5dGVzLgpQcmltYXJ5IGRh
+dGEgY2FjaGUgMmtCLCAyLXdheSwgVklQVCwgbm8gYWxpYXNlcywgbGluZXNpemUgMTYgYnl0ZXMK
+U3ludGhlc2l6ZWQgY2xlYXIgcGFnZSBoYW5kbGVyICgyNiBpbnN0cnVjdGlvbnMpLgpTeW50aGVz
+aXplZCBjb3B5IHBhZ2UgaGFuZGxlciAoNDYgaW5zdHJ1Y3Rpb25zKS4KU3ludGhlc2l6ZWQgVExC
+IHJlZmlsbCBoYW5kbGVyICgyMCBpbnN0cnVjdGlvbnMpLgpTeW50aGVzaXplZCBUTEIgbG9hZCBo
+YW5kbGVyIGZhc3RwYXRoICgzMiBpbnN0cnVjdGlvbnMpLgpTeW50aGVzaXplZCBUTEIgc3RvcmUg
+aGFuZGxlciBmYXN0cGF0aCAoMzIgaW5zdHJ1Y3Rpb25zKS4KU3ludGhlc2l6ZWQgVExCIG1vZGlm
+eSBoYW5kbGVyIGZhc3RwYXRoICgzMSBpbnN0cnVjdGlvbnMpLgpQSUQgaGFzaCB0YWJsZSBlbnRy
+aWVzOiA1MTIgKG9yZGVyOiA5LCAyMDQ4IGJ5dGVzKQpDUFUgZnJlcXVlbmN5IDIwMC4wMCBNSHoK
+SS1waXBlIDEuOS0wMTogcGlwZWxpbmUgZW5hYmxlZC4KQ29uc29sZTogY29sb3VyIGR1bW15IGRl
+dmljZSA4MHgyNQpEZW50cnkgY2FjaGUgaGFzaCB0YWJsZSBlbnRyaWVzOiAxNjM4NCAob3JkZXI6
+IDQsIDY1NTM2IGJ5dGVzKQpJbm9kZS1jYWNoZSBoYXNoIHRhYmxlIGVudHJpZXM6IDgxOTIgKG9y
+ZGVyOiAzLCAzMjc2OCBieXRlcykKQ1BVIDAgVW5hYmxlIHRvIGhhbmRsZSBrZXJuZWwgcGFnaW5n
+IHJlcXVlc3QgYXQgdmlydHVhbCBhZGRyZXNzIDAwMDAwMDk4LCBlcGMgPT0gODAxODViYzQsIHJh
+ID09IDgwMTg1Yjk4Ck9vcHNbIzFdOgpDcHUgMAokIDAgICA6IDAwMDAwMDAwIDEwMDAyNDAwIDAw
+MDAwMDAwIDgwNWZjMjUwCiQgNCAgIDogODA1YTAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAw
+MDAKJCA4ICAgOiAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMCAwMTZlM2I3NwokMTIgICA6IDgw
+NDZkYmU4IDAwMDAwMDAwIDAwMDAwMDAwIDgwNDcwMDE4CiQxNiAgIDogODA2MDAwMDAgMDAwMDAw
+MDAgMDAwMDAwMDAgMDAwMDAwMDAKJDIwICAgOiAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMCAw
+MDAwMDAwMAokMjQgICA6IDAwMDAwMDAwIDAwMDAwMDAwICAgICAgICAgICAgICAgICAgCiQyOCAg
+IDogODA1OWEwMDAgODA1OWJiNzggMDAwMDAwMDAgODAxODViOTgKSGkgICAgOiAwMDAwMDAwMApM
+byAgICA6IDAwMDAwMDAwCmVwYyAgIDogODAxODViYzQgdGlja19wZXJpb2RpYysweDE0NC8weDE3
+MCAgICAgTm90IHRhaW50ZWQKcmEgICAgOiA4MDE4NWI5OCB0aWNrX3BlcmlvZGljKzB4MTE4LzB4
+MTcwClN0YXR1czogMTAwMDI0MDIgICAgS0VSTkVMIEVYTCAKQ2F1c2UgOiAwMDgwODAwOApCYWRW
+QSA6IDAwMDAwMDk4ClBySWQgIDogMDAwMTgwMDAgKE1JUFMgNEtjKQpNb2R1bGVzIGxpbmtlZCBp
+bjoKUHJvY2VzcyBzd2FwcGVyIChwaWQ6IDAsIHRocmVhZGluZm89ODA1OWEwMDAsIHRhc2s9ODA1
+OWNmYzgpClN0YWNrIDogMDAwMDAwMDEgODA1ZmQzYzAgMDAwMDAwMDAgODA1YTZkNjAgMDAwMDAw
+MDAgMDAwMDAwMDAgMDAwMDAwMDAgMDEzMTJkMDAKICAgICAgICAwMDAwMDAwMCAwMDNkMDkwMCAw
+MDAwMDAwMCAwMTZlMzYwMCAwMDAwMDAwMCAwMTZlMzYwMCA4MDYwMDAwMCA4MDVmZDNjMAogICAg
+ICAgIDgwMTg1YzBjIDgwNWE4MGM0IDAwMDAwMDAwIDgwNWZkNDQwIDAwMDAwMDAxIDAwMDAwMDAw
+IDgwMTRmMTA0IDAwMDAwMDAxCiAgICAgICAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDYgMDAw
+MDAwMDMgODA1OWNmYzggODA1OWNmYzggODAxMDI0ZTggMDAwMDAwMDAKICAgICAgICAwMDAwMDAw
+MCA4MDU5YmM5MCA4MDE5ZDhjOCAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMCA4MDExNDM5YyAw
+MDAwMDAwMAogICAgICAgIC4uLgpDYWxsIFRyYWNlOgpbPDgwMTg1YmM0Pl0gdGlja19wZXJpb2Rp
+YysweDE0NC8weDE3MApbPDgwMTg1YzBjPl0gdGlja19oYW5kbGVfcGVyaW9kaWMrMHgxYy8weDIy
+NApbPDgwMTE0MzljPl0gdGltZXJfaW50ZXJydXB0KzB4MmMvMHg0MApbPDgwMTk4NGIwPl0gaGFu
+ZGxlX0lSUV9ldmVudCsweDRjLzB4MTQ0Cls8ODAxOWIyYjg+XSBoYW5kbGVfbGV2ZWxfaXJxKzB4
+Y2MvMHgxNWMKWzw4MDExNDdhOD5dIHRlc3RfZG9fSVJRKzB4NjgvMHg5NApbPDgwMWEwYzMwPl0g
+X19pcGlwZV9zeW5jX3N0YWdlKzB4NmZjLzB4YjQ4Cls8ODAxOWQ3ZmM+XSBfX2lwaXBlX3Vuc3Rh
+bGxfcm9vdCsweGYwLzB4MTFjCls8ODAxOWQ4Yzg+XSBfX2lwaXBlX3Jlc3RvcmVfcm9vdCsweGEw
+LzB4YWMKWzw4MDFhZjQxMD5dIF9fZnJlZV9wYWdlc19vaysweDUwYy8weDUxOApbPDgwMWIyNjA4
+Pl0gX19mcmVlX3BhZ2VzKzB4YjAvMHhiYwpbPDgwNWQ2NTcwPl0gX19mcmVlX3BhZ2VzX2Jvb3Rt
+ZW0rMHgyNzgvMHgyODgKWzw4MDVkNWM3ND5dIGZyZWVfYWxsX2Jvb3RtZW1fY29yZSsweDIzOC8w
+eDNlYwpbPDgwNWQ1ZmVjPl0gZnJlZV9hbGxfYm9vdG1lbSsweDE4LzB4MjgKWzw4MDVjNDY1MD5d
+IG1lbV9pbml0KzB4NDgvMHgyOTgKWzw4MDViNWVlOD5dIHN0YXJ0X2tlcm5lbCsweDM0MC8weDQz
+OApbPDgwNTFkYzIwPl0ga2VybmVsX2VudHJ5KzB4MC8weDkwCgoKQ29kZTogOGY4MjAwNDAgIGFm
+YTIwMDEwICA4ZmEyMDAxMCA8OGM0MjAwOTg+IDMwNDIwMDE4ICAzODQyMDAxMCAgMmM0MjAwMDEg
+IDBjMDU1ZjEyICAwMDQwMjAyMSAKS2VybmVsIHBhbmljIC0gbm90IHN5bmNpbmc6IEZhdGFsIGV4
+Y2VwdGlvbiBpbiBpbnRlcnJ1cHQK
+------=_Part_7373_33317202.1210005832802--
 
