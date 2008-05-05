@@ -1,23 +1,16 @@
+Message-ID: <481F3B3E.700@domain.hid>
+Date: Mon, 05 May 2008 18:52:14 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+References: <481F2B6A.802@domain.hid> <481F3110.1050407@domain.hid>
+	<2ff1a98a0805050912m60cf9d03o308bec827236b10a@domain.hid>
+	<481F3495.2010906@domain.hid>
+In-Reply-To: <481F3495.2010906@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-ID: <18480.27194.137841.953471@domain.hid>
-Date: Sun, 18 May 2008 19:41:14 +0200
-In-Reply-To: <4830677C.9050401@domain.hid>
-References: <18459.38249.462320.715909@domain.hid>
-	<18459.38430.835407.942336@domain.hid>
-	<18459.38500.720338.652195@domain.hid>
-	<18459.38558.684426.240775@domain.hid>
-	<18459.38644.699369.801548@domain.hid>
-	<18459.38704.252719.734650@domain.hid>
-	<18459.38785.367098.763153@domain.hid>
-	<18459.38879.202210.838294@domain.hid>
-	<48305C5D.3020601@domain.hid>
-	<18480.25075.894860.415321@domain.hid>
-	<4830677C.9050401@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] [Patch 7/7] Re-implementation of mutexes,
- user-space support.
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] Houston, we have a circular problem
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -28,44 +21,28 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: Xenomai-core@domain.hid
 
 Jan Kiszka wrote:
- > Gilles Chanteperdrix wrote:
- > > Philippe Gerum wrote:
- > >  > Gilles Chanteperdrix wrote:
- > >  > > Since binding of the semaphore heaps is now made by xeno_skin_bind, there is
- > >  > > much less modifications in src/skins/posix/init.c. However, I had to do
- > >  > > something really ugly: since binding the semaphore heaps by xeno_skin_bind
- > >  > > requires calls to open, ioctl, mmap, close and munmap, I redefined these symbols
- > >  > > to be the __real_ variants before including bind.h.
- > >  > 
- > >  > Is there any upside to do this instead of simply calling the __real_*
- > >  > placeholders, since we do already provide weak wrappers for those when the
- > >  > linker's wrapping magic is not invoked?
- > > 
- > > The point is that the wrappers and linker magic only take place for
- > > POSIX skins. Other skins have to call the genuine open, ioctl, mmap,
- > > close and munmap services.
- > 
- > What about controlling the desired prefix for generic functions in
- > bind.h via some #define that the caller has to/can set before including
- > the header:
- > 
- > #define POSIX_PREFIX	__real_
- > #include <asm-generic/bits/bind.h>
- > 
- > and there we would have:
- > 
- > POSIX_PREFIX##open(...);
- > 
- > Looks a bit cleaner to me.
+> Gilles Chanteperdrix wrote:
+>> On Mon, May 5, 2008 at 6:08 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+>>>  do_schedule_event() is the culprit when it reads the pending signals on the
+>>>  shared queue (XNDEBUG check for rearming the timers),
+>> A stupid suggestion: if we know that the spinlock is always locked
+>> when calling do_schedule_event, maybe we can simply avoid the lock
+>> there ?
+> 
+> Would be the best solution - but I don't think so. After reading a bit
+> more into the lockdep output, I think the issue is that _some_other_
+> task my hold the siglock and then acquire our rq_lock, but not
+> necessarily along a similar code path we took to acquire the siglock now.
+> 
 
-Well, in this case we end up cluttering the code with the POSIX_PREFIX
-macro, even in the non posix case where no prefix is needed.
+Actually, this locking around the sigmask retrieval looks overkill, since we
+only address ptracing signals here, and those should go through the shared
+pending set, not through the task's private one. I.e. There should be no way to
+get fooled by any asynchronous update of that mask.
 
 -- 
-
-
-					    Gilles.
+Philippe.
 
