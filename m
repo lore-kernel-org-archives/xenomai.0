@@ -1,20 +1,16 @@
-Message-ID: <2ff1a98a0805130533g4133aa4fu90cd310ce807f63@domain.hid>
-Date: Tue, 13 May 2008 14:33:22 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <4829718A.6070900@domain.hid>
+Message-ID: <481F3851.9020003@domain.hid>
+Date: Mon, 05 May 2008 18:39:45 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
+References: <18459.38249.462320.715909@domain.hid>	<18459.38430.835407.942336@domain.hid>	<18459.38500.720338.652195@domain.hid>	<18459.38558.684426.240775@domain.hid>	<18459.38644.699369.801548@domain.hid>
+	<2ff1a98a0805050933p380f8c8fod5a8dacc42c694da@domain.hid>
+In-Reply-To: <2ff1a98a0805050933p380f8c8fod5a8dacc42c694da@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <48295098.10204@domain.hid>
-	<2ff1a98a0805130156m3a8caf44s772f551f9e315a7d@domain.hid>
-	<48295AF4.2090402@domain.hid>
-	<2ff1a98a0805130216n242eddbek3f24810fc7bdd7c4@domain.hid>
-	<48295F82.40404@domain.hid> <4829602A.6050603@domain.hid>
-	<2ff1a98a0805130238j391b3c5dge5f79f8275b42c46@domain.hid>
-	<4829718A.6070900@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH] Flush xnfree backlog after thread
-	deletion in root context
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] [Patch 4/7] Define ARM atomic operations
+	in	user-space
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -24,24 +20,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai-core@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Tue, May 13, 2008 at 12:46 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->
-> Gilles Chanteperdrix wrote:
->  > No, it is supposed to work. The sched->zombie points to this zombie,
->  > which is finalized in xnpod_finish_unlocked_switch
->
->  OK. However, I would still prefer to get xnfreesync out of the critical
->  paths. Is there anything which speaks against my VIRQ idea (except that
->  it still has to be written :) )?
+Gilles Chanteperdrix wrote:
+> On Sat, May 3, 2008 at 12:34 AM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>>  The include/asm-arm/atomic.h header now defines the xnarch_memory_barrier in
+>>  addition to user-space atomic operations. The pxa3xx deserves a special
+>>  treatment since it uses the ARMv6 memory barrier operation whereas being an
+>>  ARMv5 for other operations, hence a special --enable-arm-mach=pxa3xx option in
+>>  configure.in.
+> 
+> After a quick look at all architectures xenomai supports, it seems
+> that we can implement atomic_cmpxchg for most of them in user-space.
+> The only one for which I have a doubt is blackfin. Since linux for
+> blackfin is uclinux, can we call cli/sti from user-space ?
+> 
 
-Ok. Even though I am not sure how it works now, getting thread
-deletion to work with XNARCH_WANT_UNLOCKED_CTXSW was by far the
-hardest part of the work. I am not sure you can have the same control
-over what happens with a VIRQ.
+Nope, these are supervisor's toys on this arch. IIRC, recent Blackfin releases
+should be providing fast atomic ops from userland despite this, by using
+protected jumps to kernel space for that purpose. I need to check that in the
+kernel code, this was a discussion running on the Blackfin dev-list months ago.
+Anyway, I would suggest to exclude Blackfin from the mutex optimization set
+right now, then go back to it when we support their latest kernel.
 
 -- 
- Gilles
+Philippe.
 
