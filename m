@@ -1,67 +1,80 @@
-Date: Tue, 13 May 2008 10:53:13 +0200
-Message-Id: <749025575@domain.hid>
+Message-ID: <481F31E0.3050608@domain.hid>
+Date: Mon, 05 May 2008 18:12:16 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-From: Joachim Meyer <Jogi95@domain.hid>
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Cross-Compile Xenomai
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] [HACK] x86-64: Reenable lockdep over i-pipe
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: adeos-main <adeos-main@gna.org>
+Cc: Xenomai-core@domain.hid
 
-Hi
+Hi,
 
-I try to cross compile Xenomai for an embedded PPC405. 
-I already patched the Linux Kernel and now I try to crosscompile Xenomai like I read in the README:
+not worth to call it a patch, at least not when looking at the second
+file.
 
-2.2 Building for the PowerPC architecture
------------------------------------------
+Lockdep gets unhappy when I-pipe is enabled because
 
-A typical cross-compilation setup, in order to build Xenomai for a
-PowerPC-405-based system:
+ a) TRACE_IRQS_ON/OFF instrumentations in entry_64.S do not correlate
+    with the root's pipeline state. Instead of fixing the latter (which
+    costs extra cycles), the fix relaxes the sanity check.
 
-$ $xenomai_root/scripts/prepare-kernel.sh --arch=powerpc \
-  --adeos=$xenomai_root/ksrc/arch/powerpc/patches/adeos-ipipe-2.6.14-ppc-X.Y-ZZ.patch \
-  --linux=$linux_tree
-$ cd $linux_tree
-$ mkdir ../build-powerpc-405-2.6.14
-$ make ARCH=ppc CROSS_COMPILE=powerpc-405-linux-gnu- O=../build-powerpc-405-2.6.14 xconfig/gconfig/menuconfig 
-# select the kernel and Xenomai options
-$ make ARCH=ppc CROSS_COMPILE=powerpc-405-linux-gnu- O=../build-powerpc-405-2.6.14 bzImage modules 
-# then install as needed
-$ mkdir $build_root && cd $build_root
-$ $xenomai_root/configure --build=i686-linux --host=powerpc-405-linux-gnu
-$ make install
+ b) The exit path of __ipipe_handle_exception reenables Linux IRQs when
+    the were not disabled. I do not understand that case fully yet, so
+    I hacked the alarm away with that cli.
 
-Now, everything seems to be fine but when I try make install, I get errors because I have now root privileges and so I can't create a folder:
+Jan
 
-make[4]: Entering directory `/home/meyer/xenomai/xenroot2/src/skins/native'
-test -z "/usr/xenomai/lib" || mkdir -p -- "/usr/xenomai/lib"
-mkdir: cannot create directory `/usr/xenomai': Permission denied
-make[4]: *** [install-libLTLIBRARIES] Error 1
-make[4]: Leaving directory `/home/meyer/xenomai/xenroot2/src/skins/native'
-make[3]: *** [install-am] Error 2
-make[3]: Leaving directory `/home/meyer/xenomai/xenroot2/src/skins/native'
-make[2]: *** [install-recursive] Error 1
-make[2]: Leaving directory `/home/meyer/xenomai/xenroot2/src/skins'
-make[1]: *** [install-recursive] Error 1
-make[1]: Leaving directory `/home/meyer/xenomai/xenroot2/src'
-make: *** [install-recursive] Error 1
+---
+ arch/x86/kernel/ipipe.c |    1 +
+ kernel/lockdep.c        |    4 ++--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-Can I crosscompile Xenomai without root privileges?
+Index: b/kernel/lockdep.c
+===================================================================
+--- a/kernel/lockdep.c
++++ b/kernel/lockdep.c
+@@ -2028,7 +2028,7 @@ void trace_hardirqs_on(void)
+ 	curr->hardirqs_enabled = 1;
+ 	ip = (unsigned long) __builtin_return_address(0);
+ 
+-	if (DEBUG_LOCKS_WARN_ON(!irqs_disabled()))
++	if (DEBUG_LOCKS_WARN_ON(!irqs_disabled() && !irqs_disabled_hw()))
+ 		return;
+ 	if (DEBUG_LOCKS_WARN_ON(current->hardirq_context))
+ 		return;
+@@ -2064,7 +2064,7 @@ void trace_hardirqs_off(void)
+ 	if (unlikely(!debug_locks || current->lockdep_recursion))
+ 		return;
+ 
+-	if (DEBUG_LOCKS_WARN_ON(!irqs_disabled()))
++	if (DEBUG_LOCKS_WARN_ON(!irqs_disabled() && !irqs_disabled_hw()))
+ 		return;
+ 
+ 	if (curr->hardirqs_enabled) {
+Index: b/arch/x86/kernel/ipipe.c
+===================================================================
+--- a/arch/x86/kernel/ipipe.c
++++ b/arch/x86/kernel/ipipe.c
+@@ -799,6 +799,7 @@ int __ipipe_handle_exception(struct pt_r
+ 	}
+ 
+ 	__ipipe_std_extable[vector](regs, error_code);
++	asm volatile ("cli");
+ 	local_irq_restore(flags);
+ 	__fixup_if(regs);
+ 
 
-Greez
-Joachim
-
-_____________________________________________________________________
-Der WEB.DE SmartSurfer hilft bis zu 70% Ihrer Onlinekosten zu sparen!
-http://smartsurfer.web.de/?mc=100071&distributionid=000000000066
-
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
