@@ -1,13 +1,12 @@
-Message-ID: <482094F1.4080200@domain.hid>
-Date: Tue, 06 May 2008 19:27:13 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <20080506160603.216980@domain.hid>
-In-Reply-To: <20080506160603.216980@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigB83E71AFF6FC94EFA7862714"
-Sender: jan.kiszka@domain.hid
+From: Wolfgang Denk <wd@domain.hid>
+Mime-version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+In-reply-to: Your message of "Tue, 06 May 2008 18:06:03 +0200."
+	<20080506160603.216980@domain.hid>
+Date: Tue, 06 May 2008 21:19:06 +0200
+Sender: wd@domain.hid
+Message-Id: <20080506191906.C9F0A247F5@domain.hid>
 Subject: Re: [Xenomai-help] Pros/Contras Xenomai - CONFIG_PREEMPT_RT
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -21,116 +20,79 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Karl Reichert <Karl-Trampe@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigB83E71AFF6FC94EFA7862714
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hello,
 
-Karl Reichert wrote:
-> Hello all,
->=20
-> I'm currently reading some documents about (standard) linux kernel 2.6.=
-23 and it's latest changes. I saw, that it has high resolution timers ava=
-ilable, which can reduce interrupt latency a lot. It's said that they als=
-o reduced critical sections occurence and their duration, all in all brin=
-ging linux closer to real time requirements.
->=20
-> I also checked the real time patches of Ingo Molnar and Thomas Gleixner=
- (CONFIG_PREEMPT_RT) and the wiki [1] states, that their patches are repl=
-acing most kernel spinlocks with mutexes that support priority inheritanc=
-e, as well as moving all interrupt and software interrupts to kernel thre=
-ads. Latency tests state times of 24us for a Pentium 4, 2.8 GHz with thei=
-r patches applied. [2], [3]
+in message <20080506160603.216980@domain.hid> you wrote:
 >=20
 > I see a lot of advantages from this solution:
-> 1) As their patches do have a good chance to be included in linux kerne=
-l in future, one doesn't has to patch anymore the kernel to get real time=
- behavoir.
-
-The right tool for the right purpose: -rt serves about 80-90% of
-real-time use cases (starting with soft RT, ending with "hard" RT, up to
-a certain degree). Once -rt is mainline (chances fell again that this
-may happen this year, I would currently see it in 2009), you should have
-an easier time setting up the kernel - but that's only one part of the
-full story.
-
-> 2) There is only one API to use. No matter if you are creating a progra=
-m as real time task or not, you can use the same API.
-
-Someone (no names here ;) ) recently told me: "Actually, I would prefer
-to use -RT, because Xenomai will probably tell me how broken (from RT
-POV) my application is." :)
-
-In other words: If you have strict RT requirements, you have to design
-your application very carefully anyway. In that case the "we make
-everything RT" approach of -rt can be counterproductive (it cannot
-fulfill that promise, but it doesn't tell you immediately). In contrast,
-the dual scheduler of Xenomai provides clear separation and communicates
-this to the application (when being asked for).
-
-In case you can live with some uncertainty if all invoked services
-always behave like they do under test conditions, then working against
--rt can be more comfortable, no questions.
-
-> 3) One can use CPU isolation on dual core machines, making one core run=
-ning only real time tasks and the other the rest.
-
-Also here: Beware of traps and pitfalls! If you follow recent CPU
-isolation discussion on LKML, you'll find the missing pieces of mainline
-(and -rt) for full isolation.
-
+>...
 > 4) As they don't use anything like nucleus, there is less overhead.
 
-Depends. The logic required to apply sleeping locks with priority
-inheritance to wide parts of the kernel is far from being trivial or
-light-weight. Recently, some patches with benchmarks popped up to reduce
-the "collateral damage" of this conversions (noticeable I/O slowdown -
-of course only relevant if you do noticeable Linux I/O in parallel to
-your RT load). On the other hand, having only one scheduler, keeps
-caches warmer and can compensate for some of the downsides if you have a
-high context switch rate.
+But then, PREEMPT_RT executes more code in the real-time path, and it
+has measurable impact on non-RT tasks.
 
-However, to my experience, Xenomai provides better RT (worst case)
-performance, generally no longer orders of magnitude better (unless -rt
-runs into problems), but measurable. But the precise difference is
-highly platform dependent, surely not generalizable from "big honking"
-server boxes down to few-10-MHz embedded processors.
+> These are the thoughts running through my mind at the moment. I would lik=
+e to discuss these with you. What do you think about this? Where do you see=
+ pros and contras for xenomai / CONFIG_PREEMPT_RT?
 
->=20
-> These are the thoughts running through my mind at the moment. I would l=
-ike to discuss these with you. What do you think about this? Where do you=
- see pros and contras for xenomai / CONFIG_PREEMPT_RT?
+My biggest concern about PREEMPT_RT is that it delivers  only  proba-
+bilistic  real-time. It is possible to write non-rt kernel code (like
+some devcice drivers) which ruins  RT  behaviour.  That  means,  that
+maximum  latencies  are  only  known  for certain hardware / software
+combinations, and only by measuring the system.  Any  piece  of  code
+that has not been very carefully reviewed and tested can ruin this.
 
-It all depends on _your_ requirements. Make sure you are fully aware
-of them. That's easily said, but not always that easy to fulfill, I
-know. If unsure: Developing against Xenomai will not cause harm to your
-application design, rather the contrary. Pick POSIX as API, and you will
-keep all options open for the future.
+Assume some control application that really requires  hard  real-time
+responses.  Let's  pick  an  example  -  today I saw a sewer cleaning
+vehicle which pumps water at a rate of 4,500 m=B3/h [1]; assume you are
+to control the cut-off valve. The you want to be *really*  sure  that
+the valve closes in time - each and every time.=20
 
-Jan
+Now assume it was a Linux based controller, it has  a  USB  connector
+somewhere  (not so uncommon - many systems use USB storage devices to
+distribute software  updates  or  to  exchange  data),  and  one  day
+somebody has the idea of plugging in his USB camera.
 
-PS: All the above assumes that your kernel (-rt or Xenomai) doesn't
-expose critical bugs in your scenario. You can always run into
-situations where unfixed bugs stop you from using A or B. E.g, we had to
-drop -rt from further consideration for now as neither we nor the
-community was able to understand or fix the show-stopping issues we
-found on our boxes. Also Xenomai ran into bugs, but so far only fixable
-or "work-around-able" ones.
+You may end up with loading and running  a  device  driver  that  has
+never  been  tested for RT behaviour before. And with PREEMPT_RT, you
+run the risk that it will  impact  RT  performance,  eventually  with
+serious consequences.
+
+That's why we chose and recommend Xenomai when it comes to  reliable,
+guaranteed hard real time.
 
 
---------------enigB83E71AFF6FC94EFA7862714
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Another aspect: today, it is probably not so critical any more  which
+system  you  chose:  please  don't  see Xenomai and PREEMPT_RT as two
+contradicting approaches to realtime Linux. Instead, try to see it as
+two independent implementations. Some parts of the community  try  to
+bridge the gaps - RTDM has been ported to PREEMPT_RT [2], and so have
+the  Xenomai  skins  [3].  The  idea  is  that  you  just write POSIX
+compatible application code, which, in combination with RTDM drivers,
+can be run both on Xenomai or PREEMPT_RT. That allows you to focus on
+your  problem  domain  (application  development),  and   chose   the
+implementation  that  fits  your  specific needs best. Some may chose
+PREEMPT_RT because they think an unpatched kernel.org tree is vitally
+important to them, others chose Xenomai because they  must  guarantee
+some  deadlines.  And  at the cost of a recompile/link you can switch
+from one configuration to the other.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.4-svn0 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFIIJT0niDOoMHTA+kRAnp5AJ0Z/MHPAbogfITe6Bplhj988fU9bwCfdnwb
-1xqPOIuw5CJjdmvJWAplOXk=
-=QKiz
------END PGP SIGNATURE-----
+[1] http://www.wiedemann-reichhardt.de/produkte/s2000det-e.htm
+    (Note that I'm picking an example at random. I have no idea which
+    sort of software they use on such vehicles.)
+[2] http://www.osadl.org/?id=3D212
+[3] http://www.denx.de/en/News/WebHome#NewsXenomaiSolo
 
---------------enigB83E71AFF6FC94EFA7862714--
+
+Best regards,
+
+Wolfgang Denk
+
+--=20
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
+Any sufficiently advanced bug is indistinguishable from a feature.
+                                                      - Rich Kulawiec
 
