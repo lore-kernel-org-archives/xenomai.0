@@ -1,10 +1,14 @@
-Message-ID: <5719c6f30805050943p31f3f5eew74d0f7ef3dd2b5a5@domain.hid>
-Date: Mon, 5 May 2008 18:43:52 +0200
-From: "Florent Audebert" <f.audebert@domain.hid>
+Message-ID: <4820B784.3080306@domain.hid>
+Date: Tue, 06 May 2008 21:54:44 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_7373_33317202.1210005832802"
-Subject: [Adeos-main] Advice regarding MIPS port
+References: <5719c6f30805050943p31f3f5eew74d0f7ef3dd2b5a5@domain.hid>
+In-Reply-To: <5719c6f30805050943p31f3f5eew74d0f7ef3dd2b5a5@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig81AF9F2079767D9D3592FF65"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Adeos-main] Advice regarding MIPS port
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -13,122 +17,78 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+To: Florent Audebert <f.audebert@domain.hid>
+Cc: adeos-main@gna.org
 
-------=_Part_7373_33317202.1210005832802
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig81AF9F2079767D9D3592FF65
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Florent Audebert wrote:
+> Hi,
+>=20
+> I am starting to work on a Xenomai port for MIPS architecture as part
 
-I am starting to work on a Xenomai port for MIPS architecture as part
-of an internship at Open Wide (France). It is my first real diving
-into the kernel sources so I'm far from being an expert. The goal of
-this project is to be able to run it on a Broadcom BCM6448 board.
+Cool!
 
-My first objective is to be able to run an Adeos patched kernel. I
-have decided to work with QEMU (mips-malta board emulation) instead of
-my real target since it provides me an easy way to use GDB and thus to
-understand a little bit more what is going on. Furthermore, it
-provides an easy way of testing it for other people since it only
-requires QEMU and no specific real hardware.
+> of an internship at Open Wide (France). It is my first real diving
+> into the kernel sources so I'm far from being an expert. The goal of
+> this project is to be able to run it on a Broadcom BCM6448 board.
+>=20
+> My first objective is to be able to run an Adeos patched kernel. I
+> have decided to work with QEMU (mips-malta board emulation) instead of
+> my real target since it provides me an easy way to use GDB and thus to
+> understand a little bit more what is going on. Furthermore, it
+> provides an easy way of testing it for other people since it only
+> requires QEMU and no specific real hardware.
 
-I read as much as documents I can (Life with Adeos, Porting Adeos,
-...) and finally started messing with the code. I managed to compile a
-MIPS kernel merging common Adeos code from latest x86 patch and
-adapting (see below) / commenting out. I guess my kernel is far from
-functional. My current issue seems to be related to the timer (see
-attached file).
+Yes, a reasonable approach for arch bring-up. Specifically when using
+low-end targets, QEMU is able to provide faster debug round-trip times
+than real hw.
 
-Here is a list of explicit changes I have done so far :
+>=20
+> I read as much as documents I can (Life with Adeos, Porting Adeos,
+> ...) and finally started messing with the code. I managed to compile a
+> MIPS kernel merging common Adeos code from latest x86 patch and
+> adapting (see below) / commenting out. I guess my kernel is far from
+> functional. My current issue seems to be related to the timer (see
+> attached file).
+>=20
+> Here is a list of explicit changes I have done so far :
+>=20
+>     - include/asm-mips/irqflags.h : added raw_local_*() and local_irq_*=
+().
+>     - include/asm-mips/irq.h : do_IRQ() calls __ipipe_handle_irq()
+> instead of generic_handle_irq().
+>     - arch/mips/kernel/ipipe.c : created __ipipe_do_IRQ() (used with
+> __ipipe_enable_pipeline()) which calls generic_handle_irq().
+>=20
+> Do you think my approach is correct ? Are my few changes relevant ? I
+> avoided to modify entry.S and genex.S, is this mandatory ?
 
-    - include/asm-mips/irqflags.h : added raw_local_*() and local_irq_*().
-    - include/asm-mips/irq.h : do_IRQ() calls __ipipe_handle_irq()
-instead of generic_handle_irq().
-    - arch/mips/kernel/ipipe.c : created __ipipe_do_IRQ() (used with
-__ipipe_enable_pipeline()) which calls generic_handle_irq().
+I would be fairly surprised if you get away without touching them on
+MIPS. Maybe you should study changes to those files (or comparable ones)
+on other archs first - offline, but you may use QEMU here as well. Try
+to understand some typical code paths from the hardware to the delivery
+to some domain.
 
-Do you think my approach is correct ? Are my few changes relevant ? I
-avoided to modify entry.S and genex.S, is this mandatory ?
-
-Any help or thoughts are welcome !
+Jan
 
 
-Regards,
+--------------enig81AF9F2079767D9D3592FF65
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
--- 
-Florent Audebert
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-------=_Part_7373_33317202.1210005832802
-Content-Type: text/plain; name=adeos-mips-qemu.txt
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_ffva2ivb0
-Content-Disposition: attachment; filename=adeos-mips-qemu.txt
+iD8DBQFIILeLniDOoMHTA+kRAiyKAJ4i1ni3FvHTF1VZmEJtl4wtBh0w5QCeP/02
+LetYwoIzpVcHtzKdSdf8/JA=
+=Kw/o
+-----END PGP SIGNATURE-----
 
-KHFlbXUpIExpbnV4IHZlcnNpb24gMi42LjI0LjQtZzZjMjA3ZWRmLWRpcnR5IChmbG9yZW50QGNv
-aW5jb2luKSAoZ2NjIHZlcnNpb24gMy40LjUpICMxMTAgTW9uIE1heSA1IDE0OjE0OjQzIENFU1Qg
-MjAwOAoKTElOVVggc3RhcnRlZC4uLgpjb25zb2xlIFtlYXJseTBdIGVuYWJsZWQKQ1BVIHJldmlz
-aW9uIGlzOiAwMDAxODAwMCAoTUlQUyA0S2MpCnJlZ2lzdGVyaW5nIFBDSSBjb250cm9sbGVyIHdp
-dGggaW9fbWFwX2Jhc2UgdW5zZXQKRGV0ZXJtaW5lZCBwaHlzaWNhbCBSQU0gbWFwOgogbWVtb3J5
-OiAwMDAwMTAwMCBAIDAwMDAwMDAwIChyZXNlcnZlZCkKIG1lbW9yeTogMDAwZWYwMDAgQCAwMDAw
-MTAwMCAoUk9NIGRhdGEpCiBtZW1vcnk6IDAwNTI1MDAwIEAgMDAwZjAwMDAgKHJlc2VydmVkKQog
-bWVtb3J5OiAwNzllYTAwMCBAIDAwNjE1MDAwICh1c2FibGUpCldhc3RpbmcgNDk4MjQgYnl0ZXMg
-Zm9yIHRyYWNraW5nIDE1NTcgdW51c2VkIHBhZ2VzCkluaXRyZCBub3QgZm91bmQgb3IgZW1wdHkg
-LSBkaXNhYmxpbmcgaW5pdHJkClpvbmUgUEZOIHJhbmdlczoKICBETUEgICAgICAgICAgICAgMCAt
-PiAgICAgNDA5NgogIE5vcm1hbCAgICAgICA0MDk2IC0+ICAgIDMyNzY3Ck1vdmFibGUgem9uZSBz
-dGFydCBQRk4gZm9yIGVhY2ggbm9kZQplYXJseV9ub2RlX21hcFsxXSBhY3RpdmUgUEZOIHJhbmdl
-cwogICAgMDogICAgICAgIDAgLT4gICAgMzI3NjcKQnVpbHQgMSB6b25lbGlzdHMgaW4gWm9uZSBv
-cmRlciwgbW9iaWxpdHkgZ3JvdXBpbmcgb24uICBUb3RhbCBwYWdlczogMzI1MTIKS2VybmVsIGNv
-bW1hbmQgbGluZTogcm9vdD0vZGV2L2hkYTEgY29uc29sZT10dHlTMApQcmltYXJ5IGluc3RydWN0
-aW9uIGNhY2hlIDJrQiwgVklQVCwgMi13YXksIGxpbmVzaXplIDE2IGJ5dGVzLgpQcmltYXJ5IGRh
-dGEgY2FjaGUgMmtCLCAyLXdheSwgVklQVCwgbm8gYWxpYXNlcywgbGluZXNpemUgMTYgYnl0ZXMK
-U3ludGhlc2l6ZWQgY2xlYXIgcGFnZSBoYW5kbGVyICgyNiBpbnN0cnVjdGlvbnMpLgpTeW50aGVz
-aXplZCBjb3B5IHBhZ2UgaGFuZGxlciAoNDYgaW5zdHJ1Y3Rpb25zKS4KU3ludGhlc2l6ZWQgVExC
-IHJlZmlsbCBoYW5kbGVyICgyMCBpbnN0cnVjdGlvbnMpLgpTeW50aGVzaXplZCBUTEIgbG9hZCBo
-YW5kbGVyIGZhc3RwYXRoICgzMiBpbnN0cnVjdGlvbnMpLgpTeW50aGVzaXplZCBUTEIgc3RvcmUg
-aGFuZGxlciBmYXN0cGF0aCAoMzIgaW5zdHJ1Y3Rpb25zKS4KU3ludGhlc2l6ZWQgVExCIG1vZGlm
-eSBoYW5kbGVyIGZhc3RwYXRoICgzMSBpbnN0cnVjdGlvbnMpLgpQSUQgaGFzaCB0YWJsZSBlbnRy
-aWVzOiA1MTIgKG9yZGVyOiA5LCAyMDQ4IGJ5dGVzKQpDUFUgZnJlcXVlbmN5IDIwMC4wMCBNSHoK
-SS1waXBlIDEuOS0wMTogcGlwZWxpbmUgZW5hYmxlZC4KQ29uc29sZTogY29sb3VyIGR1bW15IGRl
-dmljZSA4MHgyNQpEZW50cnkgY2FjaGUgaGFzaCB0YWJsZSBlbnRyaWVzOiAxNjM4NCAob3JkZXI6
-IDQsIDY1NTM2IGJ5dGVzKQpJbm9kZS1jYWNoZSBoYXNoIHRhYmxlIGVudHJpZXM6IDgxOTIgKG9y
-ZGVyOiAzLCAzMjc2OCBieXRlcykKQ1BVIDAgVW5hYmxlIHRvIGhhbmRsZSBrZXJuZWwgcGFnaW5n
-IHJlcXVlc3QgYXQgdmlydHVhbCBhZGRyZXNzIDAwMDAwMDk4LCBlcGMgPT0gODAxODViYzQsIHJh
-ID09IDgwMTg1Yjk4Ck9vcHNbIzFdOgpDcHUgMAokIDAgICA6IDAwMDAwMDAwIDEwMDAyNDAwIDAw
-MDAwMDAwIDgwNWZjMjUwCiQgNCAgIDogODA1YTAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAw
-MDAKJCA4ICAgOiAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMCAwMTZlM2I3NwokMTIgICA6IDgw
-NDZkYmU4IDAwMDAwMDAwIDAwMDAwMDAwIDgwNDcwMDE4CiQxNiAgIDogODA2MDAwMDAgMDAwMDAw
-MDAgMDAwMDAwMDAgMDAwMDAwMDAKJDIwICAgOiAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMCAw
-MDAwMDAwMAokMjQgICA6IDAwMDAwMDAwIDAwMDAwMDAwICAgICAgICAgICAgICAgICAgCiQyOCAg
-IDogODA1OWEwMDAgODA1OWJiNzggMDAwMDAwMDAgODAxODViOTgKSGkgICAgOiAwMDAwMDAwMApM
-byAgICA6IDAwMDAwMDAwCmVwYyAgIDogODAxODViYzQgdGlja19wZXJpb2RpYysweDE0NC8weDE3
-MCAgICAgTm90IHRhaW50ZWQKcmEgICAgOiA4MDE4NWI5OCB0aWNrX3BlcmlvZGljKzB4MTE4LzB4
-MTcwClN0YXR1czogMTAwMDI0MDIgICAgS0VSTkVMIEVYTCAKQ2F1c2UgOiAwMDgwODAwOApCYWRW
-QSA6IDAwMDAwMDk4ClBySWQgIDogMDAwMTgwMDAgKE1JUFMgNEtjKQpNb2R1bGVzIGxpbmtlZCBp
-bjoKUHJvY2VzcyBzd2FwcGVyIChwaWQ6IDAsIHRocmVhZGluZm89ODA1OWEwMDAsIHRhc2s9ODA1
-OWNmYzgpClN0YWNrIDogMDAwMDAwMDEgODA1ZmQzYzAgMDAwMDAwMDAgODA1YTZkNjAgMDAwMDAw
-MDAgMDAwMDAwMDAgMDAwMDAwMDAgMDEzMTJkMDAKICAgICAgICAwMDAwMDAwMCAwMDNkMDkwMCAw
-MDAwMDAwMCAwMTZlMzYwMCAwMDAwMDAwMCAwMTZlMzYwMCA4MDYwMDAwMCA4MDVmZDNjMAogICAg
-ICAgIDgwMTg1YzBjIDgwNWE4MGM0IDAwMDAwMDAwIDgwNWZkNDQwIDAwMDAwMDAxIDAwMDAwMDAw
-IDgwMTRmMTA0IDAwMDAwMDAxCiAgICAgICAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDYgMDAw
-MDAwMDMgODA1OWNmYzggODA1OWNmYzggODAxMDI0ZTggMDAwMDAwMDAKICAgICAgICAwMDAwMDAw
-MCA4MDU5YmM5MCA4MDE5ZDhjOCAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMCA4MDExNDM5YyAw
-MDAwMDAwMAogICAgICAgIC4uLgpDYWxsIFRyYWNlOgpbPDgwMTg1YmM0Pl0gdGlja19wZXJpb2Rp
-YysweDE0NC8weDE3MApbPDgwMTg1YzBjPl0gdGlja19oYW5kbGVfcGVyaW9kaWMrMHgxYy8weDIy
-NApbPDgwMTE0MzljPl0gdGltZXJfaW50ZXJydXB0KzB4MmMvMHg0MApbPDgwMTk4NGIwPl0gaGFu
-ZGxlX0lSUV9ldmVudCsweDRjLzB4MTQ0Cls8ODAxOWIyYjg+XSBoYW5kbGVfbGV2ZWxfaXJxKzB4
-Y2MvMHgxNWMKWzw4MDExNDdhOD5dIHRlc3RfZG9fSVJRKzB4NjgvMHg5NApbPDgwMWEwYzMwPl0g
-X19pcGlwZV9zeW5jX3N0YWdlKzB4NmZjLzB4YjQ4Cls8ODAxOWQ3ZmM+XSBfX2lwaXBlX3Vuc3Rh
-bGxfcm9vdCsweGYwLzB4MTFjCls8ODAxOWQ4Yzg+XSBfX2lwaXBlX3Jlc3RvcmVfcm9vdCsweGEw
-LzB4YWMKWzw4MDFhZjQxMD5dIF9fZnJlZV9wYWdlc19vaysweDUwYy8weDUxOApbPDgwMWIyNjA4
-Pl0gX19mcmVlX3BhZ2VzKzB4YjAvMHhiYwpbPDgwNWQ2NTcwPl0gX19mcmVlX3BhZ2VzX2Jvb3Rt
-ZW0rMHgyNzgvMHgyODgKWzw4MDVkNWM3ND5dIGZyZWVfYWxsX2Jvb3RtZW1fY29yZSsweDIzOC8w
-eDNlYwpbPDgwNWQ1ZmVjPl0gZnJlZV9hbGxfYm9vdG1lbSsweDE4LzB4MjgKWzw4MDVjNDY1MD5d
-IG1lbV9pbml0KzB4NDgvMHgyOTgKWzw4MDViNWVlOD5dIHN0YXJ0X2tlcm5lbCsweDM0MC8weDQz
-OApbPDgwNTFkYzIwPl0ga2VybmVsX2VudHJ5KzB4MC8weDkwCgoKQ29kZTogOGY4MjAwNDAgIGFm
-YTIwMDEwICA4ZmEyMDAxMCA8OGM0MjAwOTg+IDMwNDIwMDE4ICAzODQyMDAxMCAgMmM0MjAwMDEg
-IDBjMDU1ZjEyICAwMDQwMjAyMSAKS2VybmVsIHBhbmljIC0gbm90IHN5bmNpbmc6IEZhdGFsIGV4
-Y2VwdGlvbiBpbiBpbnRlcnJ1cHQK
-------=_Part_7373_33317202.1210005832802--
+--------------enig81AF9F2079767D9D3592FF65--
 
