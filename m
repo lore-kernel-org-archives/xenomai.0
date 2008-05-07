@@ -1,15 +1,14 @@
-Message-ID: <4821E2D0.4040608@domain.hid>
-Date: Wed, 07 May 2008 19:11:44 +0200
+Message-ID: <4821E5BF.4040101@domain.hid>
+Date: Wed, 07 May 2008 19:24:15 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <51B669A8A7D2914E9AB2B3F40AC6553E646F73@domain.hid>
-	<48200CD1.1060809@domain.hid>
-	<51B669A8A7D2914E9AB2B3F40AC6553E646F78@domain.hid>
-In-Reply-To: <51B669A8A7D2914E9AB2B3F40AC6553E646F78@domain.hid>
+References: <51B669A8A7D2914E9AB2B3F40AC6553E646F7E@afsexc01.aurora.aero>
+In-Reply-To: <51B669A8A7D2914E9AB2B3F40AC6553E646F7E@afsexc01.aurora.aero>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] rt_queue_alloc and ways to manage queue overruns
+Subject: Re: [Xenomai-help] rt_task_send / receive problems various issues
+ and	bug trace
 Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -24,94 +23,130 @@ To: "Karch, Joshua" <jkarch@domain.hid>
 Cc: xenomai@xenomai.org
 
 Karch, Joshua wrote:
-> Phillipe,
 > 
-> Here's my setup in short.
+> Hello,
 > 
-> I have a two-serial port setup where I read at 50 Hz from a sensor task (a navigation sensor) and I send queue messages from that sensor task to log data or CRC/byte errors to two separate log files using lower priority logging tasks.  Concurrently, the 50 Hz serial sensor task feeds state data in the form of a struct of mixed types (floats, ints) to a control law loop that runs at 50Hz (potentially asynchronously).  That control loop processes the data if available and sends a command at 50 Hz to the second serial device discussed yesterday (a motor controller) running on another task. The motor controller takes in a fixed command packet and responds with a fixed packet usually without delay. If no data is received by the motor controller, it will not send data.  If the motor controller doesn't receive data from the control task within 100 msec, the device requires a separate reset packet in order to resume responding to input commands.  At that point, I want a timeout to 
-occur on rt_serial read so that the task will send the appropriate reset packet. That timeout caused the queue to overrun yesterday when I tested that function.  When everything is working perfectly, there should be no timeouts throughout the system. 
+> I'm using rt_task_send from a talker task and rt_task_receive/reply from
+> a listener task.  When I launch the two tasks in the following order:
+> listener task,  talker task,  everything runs normally.
 > 
-> So essentially, my question is this--
+> However, when I launch the talker task first, and then the listener task
+> second, I receive rt_task_send error -22 and after a bit of time the
+> listener task starts up.
+
+-EINVAL is not on the error list for rt_task_send(). Could you confirm this result?
+
+ I know this is logical and to be expected,
+
+No, it's not. rt_task_send() does wait for the receiver to listen to, unless you
+ asked for a non blocking call using TM_NONBLOCK as a timeout.
+
+> however, it appears that issuing the rt_task_send command to a task that
+> hasn't been started occasionally locks up sufficient resources to
+> prevent the listener task from starting. 
+
+Any chance your code enters a tight loop due to rt_task_send() failing repeatedly?
+
+ By controlling task startup
+> order, I was able to circumvent this issue.  Both tasks have similar
+> priorities (50, 51).
 > 
-> Should I use the queue for all data-logging tasks and use semaphores or rt_task send/receive for the two paths from the navigation sensor to the control loop and from the control loop to the motor controller?
->
+> Additionally, I am unable to use rt_task_send with TM_NONBLOCK
+> len = rt_task_send(listen_task,&talk_send,&talk_reply,TM_NONBLOCK);
+> 
+> I get a bug failure and have to reset the machine-- see below:
+> 
 
->From my understanding of your design, you should probably use:
+Please disassemble your "vmlinux" kernel image, the exact one that causes a bug:
+$ objdump -d vmlinux > foo.txt.
+In that large file, search for the "__rt_task_receive" symbol (notice the double
+underscore prefix, we also have the "rt_task_receive" symbol, but we don't need
+this code at the moment), then paste&copy the disassembly code for that
+function. I'll have a look.
 
-- message pipes (RT_PIPE) between the sensor task (RT side) to the regular
-logging tasks (non RT side). The rationale here is that your logging tasks will
-have to run most of their active time in secondary (i.e. plain Linux) mode to
-write the data to disk files, not in real-time mode. If those tasks still need
-to synchronize at some point with the real-time side, such as waiting for an
-event or a semaphore posted from there, make those tasks non-RT shadows, passing
-a zero priority for them when calling rt_task_create(), rt_task_spawn() or
-rt_task_shadow() - whatever you happen to use to create those Xenomai tasks.
+Step #2 is to send a simple piece of code that exhibits the problem. This will
+speed up the debugging and fixing process.
 
-- a real-time queue (RT_QUEUE) between the sensor and the control loop tasks,
-because of the real-time and asynchronous nature of that data path.
-
-- message passing calls (rt_task_send/receive/reply) between the control loop
-and the motor controller, since the real-time protocol they share seems purely
-synchronous.
-
-By using a timeout of 100ms in rt_task_receive(), the motor controller should be
-able to wakeup then abort the serial read of the sensor task by issuing
-rt_task_unblock() (at least, this would be the case if you were reading bytes
-through RTDM's rt_dev_read() call). If rt_dev_read() returns -EINTR, then your
-sensor should send a reset to the device. Any blocking call (except
-rt_task_suspend()) - from the native API may be aborted using rt_task_unblock(),
-and will return -EINTR in that case.
-
-PS: in case it is not done already, you may want to have a look at this document:
-http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Native-API-Tour-rev-C.pdf
-
+> The reason I want to use TM_NONBLOCK is so that I can send a trigger
+> message from the producer task to the consumer task without requiring a
+> reply to trigger the consumer task to act on the data received. I am
+> using the rt_task_send trigger message to gate and synchronize the
+> consumer task. Is a reply required for all rt_task_send? 
+> 
+> It seems if I don't send a reply when rt_task_send has a timeout
+> specified the sending task locks up and the listening task runs rampant,
+> i.e. rt_task_receive no longer blocks and the loop runs with no delay
+> and essentially locks up the machine, since I don't use
+> rt_set_task_periodic on the listening task.
+> 
+> Here is the trace, and it requires a reboot.  I also can attach the
+> code- it is written in c++ with two separate classes as a model of the
+> application I am building.
+> 
 > Thank you,
 > 
 > Joshua Karch
 > 
+> talker task started
+> rt_task_send error
+> len=-22, opcode=0
+> listener task stBUG: unable to handle kernel NULL pointer dereferencearted
+> rt_task_s at virtual address 0000020c
+> end error
+> len=-printing eip: c014f014 110, opcode=0
+> *pde = 00000000
+> Oops: 0000 [#1] PREEMPT
+> Modules linked in: xeno_timerbench nfs ipv6 nfsd lockd nfs_acl sunrpc
+> exportfs dm_snapshot dm_mirror dm_mod loop pcmcia firmware_class
+> serio_raw psmouse yenta_socket rsrc_nonstatic pcmcia_core cs5535_gpio
+> joydev evdev ext3 jbd mbcache usbhid ide_disk generic ohci_hcd ehci_hcd
+> amd74xx usbcore ide_core e100 mii
 > 
-> -----Original Message-----
-> From: Philippe Gerum on behalf of Philippe Gerum
-> Sent: Tue 5/6/2008 3:46 AM
-> To: Karch, Joshua
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] rt_queue_alloc and ways to manage queue overruns
->  
-> Karch, Joshua wrote:
->> Hello,
->>
->> I have tasks that normally run at 50 Hz dealing with serial ports.    I
->> have a command task which sends queue messages to a receive task that
->> communicates with the serial port. The receive task waits indefinitely
->> for a message over rt_queue (with TM_INFINITE) and then proceeds to
->> write to the serial port, then reads a response from the RT serial
->> port.  Occasionally, the device on the receiving end of the port takes
->> longer than the expected 20 msec,( 50Hz response) as I've set the RTSER
->> CONFIG struct to look for a 100 msec timeout.  As a result, the number
->> of queued messages quickly build up.  After that, I run out of
->> allocation space with rt_queue_alloc.
->>
->> Is there some way to check to make sure I am receiving the most current
->> message, and if not, flush all of the queued up messages with
->> rt_queue_free so I can send the latest data to the serial port and not
->> encounter message "buffer" overruns? With the exception of datalogging
->> to disk, I'm very interested in getting to the most current message in a
->> timely manner.
+> Pid: 1973, comm: listen_task Not tainted (2.6.24.4 #12)
+> EIP: 0060:[<c014f014>] EFLAGS: 00010093 CPU: 0
+> EIP is at rt_task_receive+0x113/0x18b
+> EAX: cdc71f28 EBX: fffffd98 ECX: c03c5500 EDX: cd820acc
+> ESI: ffffff97 EDI: cd820610 EBP: cdc71edc ESP: cdc71ec4
+>  DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 0068
+> Process listen_task (pid: 1973, ti=cdc70000 task=cdc6d320
+> task.ti=cdc70000)<0>
+> I-pipe domain Linux
+> Stack: 00000000 cdc71f28 00000000 cdc71ee8 cdc6d320 cdc71fb8 cdc71f4c
+> c01515bf
+>        b7d083ea cdc71f00 c0102cb1 ce46bc70 c03c7e90 cd820620 cdc6d620
+> cd80ff44
+>        c029f55b cdc71f34 00000082 b91264ee 0000002e cdc6d320 b9127ee2
+> 0000002e
+> Call Trace:
+>  [<c01045f1>] show_trace_log_lvl+0x1a/0x2f
+>  [<c01046a3>] show_stack_log_lvl+0x9d/0xa5
+>  [<c0104769>] show_registers+0xbe/0x1fd
+>  [<c01049c1>] die+0x119/0x20a
+>  [<c010ef52>] do_page_fault+0x480/0x57e
+>  [<c010ca34>] __ipipe_handle_exception+0x11e/0x166
+>  [<c02a0e7f>] error_code+0x6f/0x80
+>  [<c01515bf>] __rt_task_receive+0xbe/0x113
+>  [<c0149b0d>] losyscall_event+0x99/0x13d
+>  [<c013f05b>] __ipipe_dispatch_event+0xac/0x16c
+>  [<c010c8b1>] __ipipe_syscall_root+0x6a/0xcf
+>  [<c0103e89>] system_call+0x29/0x4a
+>  =======================
+> Code: 00 00 8d 87 bc 04 00 00 39 c2 0f 95 c0 0f b6 c0 f7 d8 21 d0 31 db
+> 3d 58 02 00 00 74 06 8d 98 98 fd ff ff 8b 45 ec be 97 ff ff ff <8b> 93
+> 74 04 00 00 3b 50 0c 77 23 85 d2 74 19 89 d1 8b b3 70 04
+> EIP: [<c014f014>] rt_task_receive+0x113/0x18b SS:ESP 0068:cdc71ec4
+> ---[ end trace 523bcd2b73b75979 ]---
 > 
-> Maybe a queue is not the right tool to use in your case, you don't seem to
-> really need message buffering. From your description, I would rather think of
-> some kind of "blackboard" abstraction, something that holds a single data with a
-> validity stamp (time-based or not) for instance. There is no such object
-> available in the native API, but this could be easily built out of a semaphore
-> and common memory, using a shared counter to hold the transmit sequence number.
 > 
-> If you actually don't care for buffering, the other way is to use the message
-> passing API (i.e. rt_task_send, rt_task_receive, rt_task_reply) to get
-> synchronous messaging. In that case, the sender would be able to wait for the
-> receiver to get the status from the serial link. The receiver would send that
-> answer back to the initiator using rt_task_reply.
-> This needs XENO_OPT_NATIVE_MPS to be switched on in the kernel config.
 > 
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
 
 -- 
