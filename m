@@ -1,14 +1,14 @@
 Content-class: urn:content-classes:message
 MIME-Version: 1.0
 Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C8B079.29033BD5"
-Date: Wed, 7 May 2008 15:33:00 -0400
-Message-ID: <51B669A8A7D2914E9AB2B3F40AC6553E646F83@domain.hid>
-References: <51B669A8A7D2914E9AB2B3F40AC6553E646F7E@afsexc01.aurora.aero>
-	<4821E5BF.4040101@domain.hid>
+	boundary="----_=_NextPart_001_01C8B07A.0F1F51B9"
+Date: Wed, 7 May 2008 15:35:25 -0400
+Message-ID: <51B669A8A7D2914E9AB2B3F40AC6553E646F86@domain.hid>
+References: <51B669A8A7D2914E9AB2B3F40AC6553E646F7E@afsexc01.aurora.aero><4821E5BF.4040101@domain.hid>
+	<51B669A8A7D2914E9AB2B3F40AC6553E646F83@domain.hid>
 From: "Karch, Joshua" <jkarch@domain.hid>
-Subject: Re: [Xenomai-help] rt_task_send / receive problems various issues
-	and	bug trace
+Subject: Re: [Xenomai-help] rt_task_send / receive problems various
+	issuesand	bug trace
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,16 +18,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: "Karch, Joshua" <jkarch@domain.hid>, rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
 
-------_=_NextPart_001_01C8B079.29033BD5
+------_=_NextPart_001_01C8B07A.0F1F51B9
 Content-Type: text/plain;
 	charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
+Phillipe: small clarification: the following example has replies enabled =
+and TM_NONBLOCK on rt_task_send.  I tried the code two different ways:
+len =3D rt_task_send(listen_task,&talk_send,&talk_reply,TM_NONBLOCK);
+len =3D rt_task_send(listen_task,&talk_send,NULL,TM_NONBLOCK);// also =
+deleted rt_task_reply from listen_task and commented out all appropriate =
+RT_TASK_MCB reply structs
+
+both have the same bug in the end.
+
+Josh
+
+
+-----Original Message-----
+From: xenomai-help-bounces@domain.hid on behalf of Karch, Joshua
+Sent: Wed 5/7/2008 3:33 PM
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai-help] rt_task_send / receive problems various =
+issuesand	bug trace
+=20
 Phillipe,
 
 here is a disassembly of __rt_task_receive and the source code used to =
@@ -557,7 +577,8 @@ db
 Philippe.
 
 
-------_=_NextPart_001_01C8B079.29033BD5
+
+------_=_NextPart_001_01C8B07A.0F1F51B9
 Content-Type: text/html;
 	charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
@@ -569,13 +590,36 @@ Content-Transfer-Encoding: quoted-printable
 charset=3Diso-8859-1">
 <META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
 6.5.7651.59">
-<TITLE>RE: [Xenomai-help] rt_task_send / receive problems various issues =
-and	bug trace</TITLE>
+<TITLE>RE: [Xenomai-help] rt_task_send / receive problems various =
+issuesand	bug trace</TITLE>
 </HEAD>
 <BODY>
 <!-- Converted from text/plain format -->
 
-<P><FONT SIZE=3D2>Phillipe,<BR>
+<P><FONT SIZE=3D2>Phillipe: small clarification: the following example =
+has replies enabled and TM_NONBLOCK on rt_task_send.&nbsp; I tried the =
+code two different ways:<BR>
+len =3D =
+rt_task_send(listen_task,&amp;talk_send,&amp;talk_reply,TM_NONBLOCK);<BR>=
+
+len =3D rt_task_send(listen_task,&amp;talk_send,NULL,TM_NONBLOCK);// =
+also deleted rt_task_reply from listen_task and commented out all =
+appropriate RT_TASK_MCB reply structs<BR>
+<BR>
+both have the same bug in the end.<BR>
+<BR>
+Josh<BR>
+<BR>
+<BR>
+-----Original Message-----<BR>
+From: xenomai-help-bounces@domain.hid on behalf of Karch, Joshua<BR>
+Sent: Wed 5/7/2008 3:33 PM<BR>
+To: rpm@xenomai.org<BR>
+Cc: xenomai@xenomai.org<BR>
+Subject: Re: [Xenomai-help] rt_task_send / receive problems various =
+issuesand&nbsp;&nbsp; bug trace<BR>
+<BR>
+Phillipe,<BR>
 <BR>
 here is a disassembly of __rt_task_receive and the source code used to =
 generate the error.&nbsp; The error happens if I use TM_NONBLOCK, =
@@ -1406,10 +1450,11 @@ listinfo/xenomai-help</A><BR>
 --<BR>
 Philippe.<BR>
 <BR>
+<BR>
 </FONT>
 </P>
 
 </BODY>
 </HTML>
-------_=_NextPart_001_01C8B079.29033BD5--
+------_=_NextPart_001_01C8B07A.0F1F51B9--
 
