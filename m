@@ -1,10 +1,10 @@
-In-Reply-To: <4821A23A.9070508@domain.hid>
+Message-ID: <4821B47C.60300@domain.hid>
+Date: Wed, 07 May 2008 15:54:04 +0200
+From: =?UTF-8?B?U3TDqXBoYW5lIEFOQ0VMT1Q=?= <sancelot@domain.hid>
 MIME-Version: 1.0
-From: Thomas Wiedemann <Thomas.Wiedemann@domain.hid>
-Message-ID: <OFC30B0715.63D93964-ONC1257442.0047EB35-C1257442.00481A33@domain.hid>
-Date: Wed, 7 May 2008 15:07:33 +0200
-Content-Type: text/plain; charset="US-ASCII"
-Subject: [Xenomai-help] Antwort: Re:  rt_pipe_delete buggy
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] kernel version
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,16 +14,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai-help <xenomai@xenomai.org>
 
-> Gilles Chanteperdrix wrote:
-> Yes, you want to do that. This bug has been fixed in 2.4.3.
+May be someone knows ...
 
-The Xenomai homepage still points to 2.4.2 as the latest stable version, 
-maybe someone should fix this ;)
+In reason of some bugs in kernel for my chipset components ,can I use
+kernel 2.6.25 or kernel 2.6.24.7 with 
+adeos-ipipe-2.6.24-x86-2.0-04.patch  ????
 
-Greets,
-Thomas
+Best Regards
+Steph
 
 
