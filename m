@@ -1,9 +1,9 @@
-Message-ID: <482368B8.9070008@domain.hid>
-Date: Thu, 08 May 2008 22:55:20 +0200
+Message-ID: <482369FE.6070508@domain.hid>
+Date: Thu, 08 May 2008 23:00:46 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4823620F.3020904@domain.hid>
-In-Reply-To: <4823620F.3020904@domain.hid>
+References: <4823620F.3020904@domain.hid> <482368B8.9070008@domain.hid>
+In-Reply-To: <482368B8.9070008@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -20,50 +20,57 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: adeos-main <adeos-main@gna.org>
 
-Jan Kiszka wrote:
-> I love KVM - not only because I'm heavily hacking on it now, also
-> because it is so easy to trigger various kinds of guest issues with
-> it (SMP host + threaded virtual CPUs => true SMP guest - and if you
-> want to watch fancy things happen, just load one host core).
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>> I love KVM - not only because I'm heavily hacking on it now, also
+>> because it is so easy to trigger various kinds of guest issues with
+>> it (SMP host + threaded virtual CPUs => true SMP guest - and if you
+>> want to watch fancy things happen, just load one host core).
+>>
+>> Here is one I found that way:
+>>
+>> void fastcall __ipipe_sync_stage(unsigned long syncmask)
+>> {
+>> [ ... ]
+>> 	while ((mask = (ipipe_this_cpudom_var(irqpend_himask) & syncmask)) != 0) {
+>> 		level = __ipipe_ffnz(mask);
+>>
+>> 		while ((submask = ipipe_this_cpudom_var(irqpend_lomask)[level]) != 0) {
+>> 			rank = __ipipe_ffnz(submask);
+>> 			irq = (level << IPIPE_IRQ_ISHIFT) + rank;
+>>
+>> 			if (test_bit(IPIPE_LOCK_FLAG, &ipd->irqs[irq].control)) {
+>> 				__clear_bit(rank, &ipipe_this_cpudom_var(irqpend_lomask)[level]);
+> - 				continue;
+> +				goto rpm_needs_more_neurons;
+>> 			}
+>>
+>> 			__clear_bit(rank, &ipipe_this_cpudom_var(irqpend_lomask)[level]);
+>>
+> + rpm_needs_more_neurons:
+>> 			if (ipipe_this_cpudom_var(irqpend_lomask)[level] == 0)
+>> 				__clear_bit(level, &ipipe_this_cpudom_var(irqpend_himask));
+>> [ ... ]
+>>
+
+Of course, I'm not saying this is the real fix, but that just points at a
+possible issue. I do want those 100 points on my score card.
+
+>> Who sees the deadlock? 100 points for the right answer! But be quick,
+>> I'm already hacking on a fix. :)
+>>
+>> Jan
+>>
+>>
+>>
+>> ------------------------------------------------------------------------
+>>
+>> _______________________________________________
+>> Adeos-main mailing list
+>> Adeos-main@domain.hid
+>> https://mail.gna.org/listinfo/adeos-main
 > 
-> Here is one I found that way:
 > 
-> void fastcall __ipipe_sync_stage(unsigned long syncmask)
-> {
-> [ ... ]
-> 	while ((mask = (ipipe_this_cpudom_var(irqpend_himask) & syncmask)) != 0) {
-> 		level = __ipipe_ffnz(mask);
-> 
-> 		while ((submask = ipipe_this_cpudom_var(irqpend_lomask)[level]) != 0) {
-> 			rank = __ipipe_ffnz(submask);
-> 			irq = (level << IPIPE_IRQ_ISHIFT) + rank;
-> 
-> 			if (test_bit(IPIPE_LOCK_FLAG, &ipd->irqs[irq].control)) {
-> 				__clear_bit(rank, &ipipe_this_cpudom_var(irqpend_lomask)[level]);
-- 				continue;
-+				goto rpm_needs_more_neurons;
-> 			}
-> 
-> 			__clear_bit(rank, &ipipe_this_cpudom_var(irqpend_lomask)[level]);
-> 
-+ rpm_needs_more_neurons:
-> 			if (ipipe_this_cpudom_var(irqpend_lomask)[level] == 0)
-> 				__clear_bit(level, &ipipe_this_cpudom_var(irqpend_himask));
-> [ ... ]
-> 
-> Who sees the deadlock? 100 points for the right answer! But be quick,
-> I'm already hacking on a fix. :)
-> 
-> Jan
-> 
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
 
 
 -- 
