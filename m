@@ -1,14 +1,15 @@
-Message-ID: <48241CF1.8020708@domain.hid>
-Date: Fri, 09 May 2008 11:44:17 +0200
+Message-ID: <48241DA5.2030504@domain.hid>
+Date: Fri, 09 May 2008 11:47:17 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <4824197E.90709@domain.hid>
-In-Reply-To: <4824197E.90709@domain.hid>
+	<2ff1a98a0805090235t2f3c46a2vb19a4ccc7c2157b@domain.hid>
+In-Reply-To: <2ff1a98a0805090235t2f3c46a2vb19a4ccc7c2157b@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH] Unfreeze timers when debugged target
-	exits
+Subject: Re: [Xenomai-core] [PATCH] Unfreeze timers when debugged
+	target	exits
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -19,50 +20,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai-core@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, Xenomai-core@domain.hid
 
-Jan Kiszka wrote:
-> I expressed my skepticism about this global timer freeze before :->, and
-
-Just try debugging periodic code without it...
-
-We should have an opt-out mechanism to hide timers from the auto-freeze feature,
- that is the real issue yet to be fixed.
-
-> now it hit me unpleasantly (Customer: "Is it normal that Xenomai stops
-> working after the gdb session?" Jan [scratching head]: "Hmm, no...").
+Gilles Chanteperdrix wrote:
+> On Fri, May 9, 2008 at 11:29 AM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>> +       if (xnthread_test_info(thread, XNDEBUG))
+>> +               unlock_timers();
+>> +
 > 
-> After more scratching I think I found the reason: The target decided to
-> die after some fault, but Xenomai missed to unfreeze the timers. Patch
-> below fixes that.
-> 
-> Without hearing complains, this also goes into trunk/2.4.x later today.
-> 
-> Jan
-> 
-> ---
->  ksrc/nucleus/shadow.c |    3 +++
->  1 file changed, 3 insertions(+)
-> 
-> Index: b/ksrc/nucleus/shadow.c
-> ===================================================================
-> --- a/ksrc/nucleus/shadow.c
-> +++ b/ksrc/nucleus/shadow.c
-> @@ -2148,6 +2148,9 @@ static inline void do_taskexit_event(str
->  	if (!thread)
->  		return;
->  
-> +	if (xnthread_test_info(thread, XNDEBUG))
-> +		unlock_timers();
-> +
->  	if (xnpod_shadow_p())
->  		xnshadow_relax(0);
->  
+> Will this work if several threads are currently being debugged ?
 > 
 
-This should be ok.
-
+Yes, because we freeze timers when a thread receives a ptracing signal, so any
+remaining thread entering a breakpoint/stepping next will trigger a freeze anew.
 
 -- 
 Philippe.
