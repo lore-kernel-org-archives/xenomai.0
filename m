@@ -1,54 +1,65 @@
+Message-ID: <48241735.1050400@domain.hid>
+Date: Fri, 09 May 2008 11:19:49 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Message-ID: <18470.9287.958484.497706@domain.hid>
-Date: Sun, 11 May 2008 00:40:07 +0200
-In-Reply-To: <4826058B.4090103@domain.hid>
-References: <4e888e043f64dd610bf15a02a955a84b@domain.hid>
-	<4826058B.4090103@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] VxWorks skin problem concerning
-	WIND_TCB	structure
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] [PATCH] avoid deadlock-prone sighand_lock in
+	do_schedule_event
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Xenomai-core@domain.hid
 
-Philippe Gerum wrote:
- > Matthieu wrote:
- > > Im currently porting a VxWorks Application in SuSE Linux patched with
- > > Xenomai. I encounter some problems with the taskLib.h emulation. Indeed,
- > > Ive got an error concerning WIND_TCB structure. I think that not the
- > > whole structure is implemented or maybe its implemented by Xenomai
- > > Native API and not VxWorks skin.
- > >
- > 
- > Implementing the whole WIND_TCB structure is out of scope. Most of the fields
- > you attempt to access in your app are dependent on the VxWorks innards, which is
- > meaningless in an emulation environment. You can emulate the others (or their
- > meaning) fairly easily (e.g. pStackBase and status).
- > 
- > > Here are extracts of Code.c:
- > >  #include <vxworks/vxworks.h>
- > >  WIND_TCB * pTcb;
- > >  pTcb->entry
- > >  pTcb->lockCnt
- > >  pTcb->pSignalInfo->sigt_blocked
+This has been posted earlier already: Fix deadlocks when debugging
+Xenomai applications via gdb by removing any attempt to acquire
+sighand_lock (while holding rq_lock). This patch also cleans up the now
+unused lock wrapper.
 
-... And you may access signal mask with the posix pthread_sigmask
-service (if the first sigset_t pointer is NULL, the "how" argument is
-ignored, and the only effect of the service is to copy the current
-signal mask).
+Unless someone complains, I'm going to merge this later today into trunk
+and 2.4.x.
+
+Jan
+
+---
+ include/asm-generic/wrappers.h |    1 -
+ ksrc/nucleus/shadow.c          |    2 --
+ 2 files changed, 3 deletions(-)
+
+Index: b/include/asm-generic/wrappers.h
+===================================================================
+--- a/include/asm-generic/wrappers.h
++++ b/include/asm-generic/wrappers.h
+@@ -95,7 +95,6 @@ unsigned long __va_to_kva(unsigned long 
+ #define PF_NOFREEZE 0
+ 
+ /* Signals */
+-#define wrap_sighand_lock(p)     ((p)->sigmask_lock)
+ #define wrap_get_sigpending(m,p) sigandsets(m, \
+ 					    &(p)->pending.signal, \
+ 					    &(p)->pending.signal)
+Index: b/ksrc/nucleus/shadow.c
+===================================================================
+--- a/ksrc/nucleus/shadow.c
++++ b/ksrc/nucleus/shadow.c
+@@ -2194,9 +2194,7 @@ static inline void do_schedule_event(str
+ 			if (signal_pending(next)) {
+ 				sigset_t pending;
+ 
+-				spin_lock(&wrap_sighand_lock(next));	/* Already interrupt-safe. */
+ 				wrap_get_sigpending(&pending, next);
+-				spin_unlock(&wrap_sighand_lock(next));
+ 
+ 				if (sigismember(&pending, SIGSTOP) ||
+ 				    sigismember(&pending, SIGINT))
 
 -- 
-
-
-					    Gilles.
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
