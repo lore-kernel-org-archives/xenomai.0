@@ -1,15 +1,13 @@
-Message-ID: <4829AA19.8070405@domain.hid>
-Date: Tue, 13 May 2008 16:47:53 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <2ff1a98a0805130731o5a78e490s77131ee48ee3b741@domain.hid>
+Date: Tue, 13 May 2008 16:31:34 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <48299843.7090307@domain.hid>
 MIME-Version: 1.0
-References: <A3B06EAFE0D9C14096681C935E0B300802110A0C@zue-s-15.zue.zwick.de>	<4829613B.3000500@domain.hid>
-	<0C9896A4B6D338488AD6FFFE58BAEF100276DBF6@domain.hid>
-	<48297566.1010607@domain.hid>
-	<0C9896A4B6D338488AD6FFFE58BAEF100276DC66@domain.hid>
-In-Reply-To: <0C9896A4B6D338488AD6FFFE58BAEF100276DC66@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Interrupt management under rtdm driver
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+References: <48299843.7090307@domain.hid>
+Subject: Re: [Xenomai-help] v2.4.3 bug with system() call
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,28 +17,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: DOURNES Guillaume <Guillaume.DOURNES@lgm.fr>
-Cc: xenomai@xenomai.org
+To: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-DOURNES Guillaume wrote:
-> ***********************
-> Warning: Your file, V02R00.rar, contains more than 32 files after decompression and cannot be scanned.
-> ***********************
-> 
-> 
-> I join to this mail my source code of my driver and my test software. The read and write function of this driver version are already tested, and work as waiting.
-> 
-> I tried to break out the loop. If I break out after 1 loop, the software works, but if I break out after 2 loops, the sofware freeze and the result (printf) of the first loop is not printed.
+On Tue, May 13, 2008 at 3:31 PM, St=E9phane ANCELOT <sancelot@domain.hid> wrot=
+e:
+> Hi,
+>  Using the v2.4.3 +kernel 2.6.24.7 I used the system("touch /tmp/xxx_ok")
+>  call   in a non realtime init context.
+>
+>  The task is only used to allocate some memory heaps.
+>
+>  I setted up some memory debugging features in the kernel :
+>  CONFIG_DEBUG_KERNEL=3Dy
+>  CONFIG_DEBUG_SLAB=3Dy
+>  CONFIG_DEBUG_SLAB_LEAK=3Dy
+>  CONFIG_DEBUG_BUGVERBOSE=3Dy
+>  CONFIG_DEBUG_VM=3Dy
+>  CONFIG_FORCED_INLINING=3Dy
+>  CONFIG_EARLY_PRINTK=3Dy
+>  CONFIG_DEBUG_PAGEALLOC=3Dy
+>
+>   This was not happening with v2.4.2 although that the kernel debugging
+>  flags were not "on"
 
-Didn't have to time to unpack your archive (is the driver so complex?).
-So you may try to continue with debugging: Does the watchdog catch
-something? Is there something on the kernel console after lockup. If
-not, attach a serial line and redirect the console to it. Maybe you see
-an oops.
+It would be nice if you could try the v2.4.2 with debugging options
+on, to know if it is a regression or not.
 
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+--=20
+ Gilles
 
