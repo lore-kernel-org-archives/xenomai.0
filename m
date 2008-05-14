@@ -1,13 +1,15 @@
-Message-ID: <2ff1a98a0805130731o5a78e490s77131ee48ee3b741@domain.hid>
-Date: Tue, 13 May 2008 16:31:34 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <48299843.7090307@domain.hid>
+Message-ID: <482B3EE5.9030702@domain.hid>
+Date: Wed, 14 May 2008 21:35:01 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-References: <48299843.7090307@domain.hid>
-Subject: Re: [Xenomai-help] v2.4.3 bug with system() call
+References: <A3B06EAFE0D9C14096681C935E0B300802110A0C@zue-s-15.zue.zwick.de>	<4829613B.3000500@domain.hid><0C9896A4B6D338488AD6FFFE58BAEF100276DBF6@domain.hid><48297566.1010607@domain.hid><0C9896A4B6D338488AD6FFFE58BAEF100276DC66@domain.hid>	<4829AA19.8070405@domain.hid>	<0C9896A4B6D338488AD6FFFE58BAEF100276DD0C@serveur3.lgm.com>	<4829C8C9.4020300@domain.hid>	<0C9896A4B6D338488AD6FFFE58BAEF100276DDDE@serveur3.lgm.com>
+	<482B3BCF.8090700@domain.hid>
+In-Reply-To: <482B3BCF.8090700@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig4159F92271ED2B4E9605AFF7"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Interrupt management under rtdm driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,33 +19,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: DOURNES Guillaume <Guillaume.DOURNES@lgm.fr>
+Cc: xenomai@xenomai.org
 
-On Tue, May 13, 2008 at 3:31 PM, St=E9phane ANCELOT <sancelot@domain.hid> wrot=
-e:
-> Hi,
->  Using the v2.4.3 +kernel 2.6.24.7 I used the system("touch /tmp/xxx_ok")
->  call   in a non realtime init context.
->
->  The task is only used to allocate some memory heaps.
->
->  I setted up some memory debugging features in the kernel :
->  CONFIG_DEBUG_KERNEL=3Dy
->  CONFIG_DEBUG_SLAB=3Dy
->  CONFIG_DEBUG_SLAB_LEAK=3Dy
->  CONFIG_DEBUG_BUGVERBOSE=3Dy
->  CONFIG_DEBUG_VM=3Dy
->  CONFIG_FORCED_INLINING=3Dy
->  CONFIG_EARLY_PRINTK=3Dy
->  CONFIG_DEBUG_PAGEALLOC=3Dy
->
->   This was not happening with v2.4.2 although that the kernel debugging
->  flags were not "on"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig4159F92271ED2B4E9605AFF7
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-It would be nice if you could try the v2.4.2 with debugging options
-on, to know if it is a regression or not.
+Jan Kiszka wrote:
+> DOURNES Guillaume wrote:
+>> Since I add the watchdog option in my kernel configuration, The softwa=
+re doesn't block.
+>> But I obtain an EPREM (-1) error on the second call of rtdm_event_time=
+dwait, and in dmesg : Xenomai: assertion failed at kernel/xenomai/skins/r=
+tdm/drvlib.c:919 (!xnpod_unblockable_p()).
+>=20
+> See, that is interesting.
+>=20
+>> I don't understand why I have this error, because the rtdm_event_timed=
+wait is used as the 16550A rtserial rtdm driver. And I use this rtserial =
+driver, and it works.
+>> Note that this problem doesn't appears when I call rt_task_suspend jus=
+t after my rtdm_event_timedwait, and I resume the task by a gets.
+>=20
+> After having a look at your driver source meanwhile, the problem is tha=
+t
+> you register your IOCTL handler also for handling invocation from non-R=
+T
+> (precisely: "secondary") context. But rtdm_event_timedwait always
+> requires primary (RT) context. That is something you either have to
+> check in the IOCTL handler before trying to block a caller - or you
+> simply do not register for nrt_ioctl (or use a different handler for th=
+e
+> set of IOCTLs in that context).
+>=20
+> The reason that suspending the caller made this issue go away was that
+> you have several plain Linux services in your RT loop that switches the=
 
---=20
- Gilles
+> caller automatically to secondary mode. Thus the first IOCTL succeeded,=
+
+> but the second failed after re-entering it now as a plain Linux caller.=
+
+
+=2E..But suspending the thread shortly before IOCTL re-entry automaticall=
+y
+switch it back into the right (=3D=3DRT) context.
+
+Jan
+
+
+--------------enig4159F92271ED2B4E9605AFF7
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFIKz7oniDOoMHTA+kRAp5LAJ4xrfxaCfiTic+gbOzSjzNLOz8E+wCeIL0l
+VwEaiM7FzWFOzlFzq4kLKjQ=
+=bAQo
+-----END PGP SIGNATURE-----
+
+--------------enig4159F92271ED2B4E9605AFF7--
 
