@@ -1,20 +1,16 @@
-Message-ID: <2ff1a98a0805210733u39894a17tca5420ae8f7ce5ca@domain.hid>
-Date: Wed, 21 May 2008 16:33:09 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <2336.81.252.86.91.1211379896.squirrel@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <16474.81.252.86.91.1211199249.squirrel@domain.hid>
-	<2ff1a98a0805190532i2fdb4267qc4566d98ab8cd57@domain.hid>
-	<2ff1a98a0805190557j743680d4sb7d9f5c8e97072e@domain.hid>
-	<12036.62.39.72.60.1211212126.squirrel@domain.hid>
-	<2ff1a98a0805190857s1ad98139h9abe63b743dda35@domain.hid>
-	<5481.62.39.72.60.1211293804.squirrel@domain.hid>
-	<18483.10408.141546.420660@domain.hid>
-	<2336.81.252.86.91.1211379896.squirrel@domain.hid>
-Subject: Re: [Xenomai-help] Problem with time-out ends
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 14 May 2008 11:55:34 +0200
+Message-ID: <0C9896A4B6D338488AD6FFFE58BAEF100276DDDE@serveur3.lgm.com>
+References: <A3B06EAFE0D9C14096681C935E0B300802110A0C@zue-s-15.zue.zwick.de>	<4829613B.3000500@domain.hid><0C9896A4B6D338488AD6FFFE58BAEF100276DBF6@domain.hid><48297566.1010607@domain.hid><0C9896A4B6D338488AD6FFFE58BAEF100276DC66@domain.hid>
+	<4829AA19.8070405@domain.hid>
+	<0C9896A4B6D338488AD6FFFE58BAEF100276DD0C@serveur3.lgm.com>
+	<4829C8C9.4020300@domain.hid>
+From: "DOURNES Guillaume" <Guillaume.DOURNES@lgm.fr>
+Subject: Re: [Xenomai-help] Interrupt management under rtdm driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,36 +20,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabien MAHOT <fabien.mahot@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Wed, May 21, 2008 at 4:24 PM, Fabien MAHOT
-<fabien.mahot@domain.hid> wrote:
-> Hello,
->
-> I tried your patch. Now, sem_wait() returns an Interrupt system call error
-> when a time-out end signal arrives. That's good.
->
-> But, with the same test program, the one which tests sem_wait(), my system
-> crashes a while after the same_wait() call. (System freeze --> reboot)
-> After sem_wait() call, there are a mutex unlock and a sleep calls, but I
-> can't say if they are a problem with them :
-> - With mutex unlock call and sleep call: the system crashes between these
-> calls. (printf() calls)
-> - If I cancel mutex unlock, the threads sleeps and the system is good.
-> - If I add a sem_post() in the EndTimeOut handler, sem_wait wakes up the
-> thread but the system crashes before or over mutex unlock processing.
->
-> before your patch, with this program, i had sem_wait problem but no crash
-> of the system.
+Since I add the watchdog option in my kernel configuration, The software =
+doesn't block.
+But I obtain an EPREM (-1) error on the second call of =
+rtdm_event_timedwait, and in dmesg : Xenomai: assertion failed at =
+kernel/xenomai/skins/rtdm/drvlib.c:919 (!xnpod_unblockable_p()).
+I don't understand why I have this error, because the =
+rtdm_event_timedwait is used as the 16550A rtserial rtdm driver. And I =
+use this rtserial driver, and it works.
+Note that this problem doesn't appears when I call rt_task_suspend just =
+after my rtdm_event_timedwait, and I resume the task by a gets.
 
-I have debugged the sem_wait issue by running your program, unloading
-and reloading xenomai posix skin module many times, without any crash
-or any reboot.
+-----Message d'origine-----
+De : Jan Kiszka [mailto:jan.kiszka@domain.hid
+Envoy=E9 : mardi 13 mai 2008 18:59
+=C0 : DOURNES Guillaume
+Cc : xenomai@xenomai.org
+Objet : Re: [Xenomai-help] Interrupt management under rtdm driver
 
-It shows one thing: there is an issue crashing your platform. Have you
-run the Xenomai testsuite to know if this is a general problem ?
+DOURNES Guillaume wrote:
+> Sorry my old archive contained svn files. I send again my cource code.
+>=20
+> I have some syslog message as kernel : Oops : 0000 [#1], or kernel : =
+CPU : 0, or EIP : 0060 [<f8a88de7>] Tainted : PF  VLI, etc.
 
--- 
- Gilles
+Well, if your system locks up while the test runs, it is not likely that =
+any message is pushed to syslog anymore. At best you see something on =
+the console (VGA or serial).
+
+>=20
+> I don't understand the watchdog catch. Can you explain a little more ?
+
+See the help in the kernel configuration: If the the watchdog catches =
+some spinning Xenomai thread, it will suspend it, allowing the rest of =
+the system to run again. This will also generate a log message on the =
+kernel console.
+
+Jan
+
+--
+Siemens AG, Corporate Technology, CT SE 2 Corporate Competence Center =
+Embedded Linux
+
 
