@@ -1,12 +1,10 @@
+Date: Wed, 14 May 2008 14:32:00 +0200
+Message-Id: <752338162@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="M41n2Qq6Uf"
+From: Joachim Meyer <Jogi95@domain.hid>
+Content-Type: text/plain; charset=iso-8859-15
 Content-Transfer-Encoding: 7bit
-Message-ID: <18489.30774.304777.148110@domain.hid>
-Date: Sun, 25 May 2008 16:31:18 +0200
-In-Reply-To: <d6c8ef150805231056n3a9ea030jada65bd5a7c2a2c0@domain.hid>
-References: <d6c8ef150805231056n3a9ea030jada65bd5a7c2a2c0@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] Interrupt priorities and handling problems
+Subject: Re: [Xenomai-help] Cross-Compile Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,69 +14,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bosko Radivojevic <bosko.radivojevic@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
+
+Hi
+
+First I'd like to thank everybody who helped.
+I think it works now (more or less).
+I found someone who had the root passwort, so I could "make devices" for testing.
+The tests in the testsuite also give out some things. 
+
+Can anyone give me hints where to find documents for the following two things:
+
+1. Something about what should be the result of the tests in the testsuite or some documents about the testsuite at all.
+
+I get things like that:
+
+bash-3.00# ./switchbench
+== Sampling period: 100 us
+== Do not interrupt this program
+RTH|     lat min|     lat avg|     lat max|        lost
+RTD|      -25970|       30476|       49003|       12491
+
+bash-3.00# ./latency
+== Sampling period: 100 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+warming up...
+RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
+RTD|      18.000|      19.643|      61.780|       0|      18.000|      61.780
+RTD|      14.780|      20.090|      86.570|       0|      14.780|      86.570
+RTD|      17.890|      19.836|      74.070|       0|      14.780|      86.570
+RTD|      17.870|      21.056|      80.750|       0|      14.780|      86.570
+RTD|      17.870|      19.826|      69.910|       0|      14.780|      86.570
+RTD|      18.000|      19.806|      69.380|       0|      14.780|      86.570
+RTD|      17.870|      19.870|     108.270|       0|      14.780|     108.270
+RTD|      16.580|      19.810|      86.050|       0|      14.780|     108.270
+RTD|      17.870|      19.826|      75.160|       0|      14.780|     108.270
+RTD|      17.870|      19.800|      70.520|       0|      14.780|     108.270
+RTD|      17.870|      19.826|      86.640|       0|      14.780|     108.270
+RTD|      17.870|      19.850|      73.890|       0|      14.780|     108.270
+RTD|      17.870|      19.826|      81.730|       0|      14.780|     108.270
+RTD|      17.870|      19.810|      68.730|       0|      14.780|     108.270
+RTD|      17.870|      19.820|      72.030|       0|      14.780|     108.270
+RTD|      17.870|      19.816|      73.430|       0|      14.780|     108.270
+RTD|      17.870|      21.073|      76.690|       0|      14.780|     108.270
+RTD|      15.430|      19.813|      85.030|       0|      14.780|     108.270
+RTD|      17.870|      19.826|      76.680|       0|      14.780|     108.270
+RTD|      17.870|      19.806|      72.320|       0|      14.780|     108.270
+RTD|      17.870|      19.823|      81.160|       0|      14.780|     108.270
+RTT|  00:00:22  (periodic user-mode task, 100 us period, priority 99)
+
+the result of the cycletest is, that the system freezes.
+
+bash-3.00# modprobe xeno_irqbench
+FATAL: Could not load /lib/modules/2.6.23xlnx/modules.dep: No such file or directory
+
+bash-3.00# ./switchtest
+XSysAce: Queue is plugged
+== Testing FPU check routines...
+Illegal instruction
+
+My PPC405 (on an Virtex 2 pro) has no FPU, I believe.
+I haven't installed any modules yet, but I need modules for xenomai, do I?
 
 
---M41n2Qq6Uf
-Content-Type: text/plain; charset=us-ascii
-Content-Description: message body and .signature
-Content-Transfer-Encoding: 7bit
+2. Some Beginners Howto for programming with Xenomai
 
-Bosko Radivojevic wrote:
- > Hi all!
- > 
- > Before I ask my questions, I'll remind about my environment:
- > AT91SAM9260 based board (ARM), Xenomai 2.4.3, Kernel 2.6.24, I-Pipe
- > 1.9-01. We have external interrupt source connected to PIO line (IRQ1
- > line) which should 'wake up' our code every 1ms. For the sake of
- > performances, we create interrupt handler in kernel space.
- > 
- > 1. Two interrupts instead of one
- > 
- > Somehow, ISR get called twice for every single interrupt, at the
- > falling edge. I've tried to set interrupt source type (setting some
- > registers directly on the microcontroller) but whatever I set, ISR
- > call happens at the falling edge. The second comes right after the
- > first one, but not together.
- > 
- > When I tried to handle interrupt from the userspace, rt_intr_wait() returns
- > 1, so it looks like "second" interrupt comes a little bit later. If I
- > generate more (n) interrupts during handling one, the next
- > rt_intr_wait() returns n*2+1. This +1 is the second interrupt that
- > came right after the handled one.
- > 
- > The quite weird thing is that sometimes (not so often, like every 1
- > hour) ISR is called just once. Where should I start digging?
+Thx 
+Joachim
+_____________________________________________________________________
+Der WEB.DE SmartSurfer hilft bis zu 70% Ihrer Onlinekosten zu sparen!
+http://smartsurfer.web.de/?mc=100071&distributionid=000000000066
 
-Does the following patch help ?
-
--- 
-
-
-					    Gilles.
-
---M41n2Qq6Uf
-Content-Type: text/plain
-Content-Disposition: inline;
-	filename="xeno-arm-use-mask-unmask-instead-of-enable-disable.diff"
-Content-Transfer-Encoding: 7bit
-
-Index: include/asm-arm/wrappers.h
-===================================================================
---- include/asm-arm/wrappers.h	(revision 3873)
-+++ include/asm-arm/wrappers.h	(working copy)
-@@ -64,8 +64,8 @@ typedef irqreturn_t (*rthal_irq_host_han
- extern void (*fp_init)(union fp_state *);
- #else /* >= 2.6.19 */
- #define rthal_irq_desc_lock(irq) (&rthal_irq_descp(irq)->lock)
--#define rthal_irq_chip_enable(irq)   ({ rthal_irq_descp(irq)->chip->enable(irq); 0; })
--#define rthal_irq_chip_disable(irq)  ({ rthal_irq_descp(irq)->chip->disable(irq); 0; })
-+#define rthal_irq_chip_enable(irq)   ({ rthal_irq_descp(irq)->chip->unmask(irq); 0; })
-+#define rthal_irq_chip_disable(irq)  ({ rthal_irq_descp(irq)->chip->mask(irq); 0; })
- #define rthal_irq_chip_end(irq)      ({ rthal_irq_descp(irq)->ipipe_end(irq, rthal_irq_descp(irq)); 0; })
- typedef irq_handler_t rthal_irq_host_handler_t;
- #define rthal_mark_irq_disabled(irq) do {              \
-
---M41n2Qq6Uf--
 
