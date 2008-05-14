@@ -1,19 +1,15 @@
-Message-ID: <2ff1a98a0805190630o6ae730c2mcf624e8feb9649e3@domain.hid>
-Date: Mon, 19 May 2008 15:30:01 +0200
+Message-ID: <2ff1a98a0805140157q65ed8014k6725fc7f0b3a8f64@domain.hid>
+Date: Wed, 14 May 2008 10:57:34 +0200
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <48317AED.7030507@domain.hid>
+In-Reply-To: <482A9E3E.7040608@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-References: <1168701330@domain.hid>
-	<2ff1a98a0805190239x5f8c8445h47d8ca3070dded1c@domain.hid>
-	<4831626B.9080208@domain.hid>
-	<2ff1a98a0805190506g10f8c1bx781434f8bc73d9a1@domain.hid>
-	<48316FCF.3030706@domain.hid>
-	<2ff1a98a0805190536q5bb3be8dg9b35265bc5b1b618@domain.hid>
-	<48317AED.7030507@domain.hid>
-Subject: Re: [Xenomai-help] at91sam9263 and user-space support compile fails
+References: <48299843.7090307@domain.hid>
+	<2ff1a98a0805130731o5a78e490s77131ee48ee3b741@domain.hid>
+	<482A9E3E.7040608@domain.hid>
+Subject: Re: [Xenomai-help] v2.4.3 bug with system() call
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,37 +19,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: paradoxxa <paradoxxa2001@domain.hid>
-Cc: xenomai@xenomai.org
+To: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On Mon, May 19, 2008 at 3:04 PM, paradoxxa <paradoxxa2001@domain.hid> wrote:
-> Gilles Chanteperdrix schrieb:
->>
->> On Mon, May 19, 2008 at 2:17 PM, paradoxxa <paradoxxa2001@domain.hid> wrote:
->>
->>
->> No, you are talking about CONFIG_DEBUG_LL, I am talking about
->> CONFIG_DEBUG_INFO. These are two different options. So, this make at
->> least two options that you changed. Could you check if a kernel with
->> an unmodified defconfig boots ?
->>
->>
+On Wed, May 14, 2008 at 10:09 AM, St=E9phane ANCELOT <sancelot@domain.hid> wro=
+te:
 >
-> The CONFIG_DEBUG_INFO is already set in the defconfig. The CONFIG_DEBUG_LL i
-> set manually.
-> As well I had to changed the  AT91 Master Clock Frequency.
+>  Gilles Chanteperdrix a =E9crit :
 >
-> Here are the logs of a unmodified defconfig boot:
+>  On Tue, May 13, 2008 at 3:31 PM, St=E9phane ANCELOT <sancelot@domain.hid> w=
+rote:
+>
+>
+>  Hi,
+>  Using the v2.4.3 +kernel 2.6.24.7 I used the system("touch /tmp/xxx_ok")
+>  call in a non realtime init context.
+>
+>  The task is only used to allocate some memory heaps.
+>
+>  I setted up some memory debugging features in the kernel :
+>  CONFIG_DEBUG_KERNEL=3Dy
+>  CONFIG_DEBUG_SLAB=3Dy
+>  CONFIG_DEBUG_SLAB_LEAK=3Dy
+>  CONFIG_DEBUG_BUGVERBOSE=3Dy
+>  CONFIG_DEBUG_VM=3Dy
+>  CONFIG_FORCED_INLINING=3Dy
+>  CONFIG_EARLY_PRINTK=3Dy
+>  CONFIG_DEBUG_PAGEALLOC=3Dy
+>
+>  This was not happening with v2.4.2 although that the kernel debugging
+>  flags were not "on"
+>
+>  It would be nice if you could try the v2.4.2 with debugging options
+> on, to know if it is a regression or not.
+>
+>
+>  No time left, going back on v2.4.2. However, I have exactly the same
+> problem, if I use the fork() call inside a program.
 
-Ok. But this is a boot with your old compiler. Could you try a
-defconfig build (with I-pipe AT91 master clock frequency modified)
-with CodeSourcery compiler ?
+Have you tried Jan fix ?
 
-If you can not get CodeSourcery compiler to compile correctly a Linux
-kernel, I can send you the 2007q3 compiler, or you could try to
-compile the kernel with your old compiler, and to compile user-space
-with CodeSourcery compiler.
-
--- 
+--=20
  Gilles
 
