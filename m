@@ -1,15 +1,15 @@
-Message-ID: <4829A948.6080806@domain.hid>
-Date: Tue, 13 May 2008 16:44:24 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <A3B06EAFE0D9C14096681C935E0B300802110A0C@zue-s-15.zue.zwick.de>
-	<4829613B.3000500@domain.hid>
-	<A3B06EAFE0D9C14096681C935E0B300802110F22@domain.hid>
-In-Reply-To: <A3B06EAFE0D9C14096681C935E0B300802110F22@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] gdb + multi-threaded application + Intel dual
- core	processor + Xenomai => frozen system
+Message-ID: <18475.12268.192581.316526@domain.hid>
+Date: Wed, 14 May 2008 20:31:08 +0200
+In-Reply-To: <37a50be5e303037c147613f6a84341e0@domain.hid>
+References: <2ded5d53ed3cbdff58cf25d2523b701f@domain.hid>
+	<37a50be5e303037c147613f6a84341e0@domain.hid>
+Subject: Re: [Xenomai-help]
+ =?utf-8?q?VxWorks_skin_problem_concerning_WIND=5FT?=
+ =?utf-8?q?CBstructure?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,21 +19,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Kaeppeler, Oliver" <Oliver.Kaeppeler@domain.hid>
+To: matthieu.connaulte_xenomai@domain.hid
 Cc: xenomai@xenomai.org
 
-Kaeppeler, Oliver wrote:
-> Hello Jan,
-> 
-> thanks for your answer. We had used Xenomai 2.4.3 in our tests. Now, I also tried the daily snapshot version, but the problem remains.
-> 
-> The problem should be reproducable by the sample program, we attached in our last message...
+Matthie wrote:
+> I still don't have any solution to emulate the fields above listed as I
+> don't know if I can use Linux posix services ?
 
-OK, will give this a try later today.
+Yes, you can use Linux posix services, but they will cause any Xenomai
+thread to switch from primary mode to secondary mode.
 
-Jan
+If you do not understand what I am talking about, you should probably
+read the articles at:
+http://www.xenomai.org/index.php/Publications
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+
+
+					    Gilles.
 
