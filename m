@@ -1,10 +1,15 @@
-Message-ID: <48299843.7090307@domain.hid>
-Date: Tue, 13 May 2008 15:31:47 +0200
-From: =?UTF-8?B?U3TDqXBoYW5lIEFOQ0VMT1Q=?= <sancelot@domain.hid>
+Message-ID: <2ff1a98a0805140817v45065492qe292b872584950cf@domain.hid>
+Date: Wed, 14 May 2008 17:17:33 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <482AFF6C.20903@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] v2.4.3 bug with system() call
+Content-Disposition: inline
+References: <200805112104.56166.karl-trampe@domain.hid> <48276703.2020005@domain.hid>
+	<20080514144900.216230@domain.hid> <482AFF6C.20903@domain.hid>
+Subject: Re: [Xenomai-help] [RTnet-users] Ideas how to measure delays with
+	RTnet
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,88 +19,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org, rtnet-users@domain.hid
 
-Hi,
-Using the v2.4.3 +kernel 2.6.24.7 I used the system("touch /tmp/xxx_ok") 
-call   in a non realtime init context.
+On Wed, May 14, 2008 at 5:04 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>
+> Karl Reichert wrote:
+>  > Jan Kiszka wrote:
+>  >> Karl Reichert wrote:
+>  >>> Hello,
+>  >>>
+>  >>> I have two stations running RTnet, one as a master and one as a slave. I
+>  >> want
+>  >>> to measure the time, which a message, sent from master to slave, takes.
+>  >> But,
+>  >>> I don't want the time of the transmission only, but the complete time of
+>  >> all
+>  >>> software layers this data is processed through.
+>  >>>
+>  >>> _______________     _______________
+>  >>> |           A                 |     |               D                 |
+>  >>> |______________|    |______________|
+>  >>> |           B                 |     |               C                 |
+>  >>> |______________|    |______________|
+>  >>> |   RTnet (Master)    |     |    RTnet (Slave)        |
+>  >>> |______________|    |______________|
+>  >>>             |                                 |
+>  >>>             |______________|
+>  >>>
+>  >>> So, I create the data, that should be send, in Layer A (Master) and send
+>  >> it
+>  >>> over RTnet to Layer D (Slave).
+>  >>>
+>  >>> I want to take the time when the data leaves A and when it arrives D
+>  >> with
+>  >>> rtdm_clock_read(). If I have the offset between master and slave, I can
+>  >>> calculate the time it took to pass A, B, both RTnet stacks, C and D.
+>  >>>
+>  >>> As RTnet keeps track of the offset in it's stack, I want to use this
+>  >> value. Is
+>  >>> it possible via the API? I didn't found anything. Or do I have to
+>  >> manipulate
+>  >>> the stack to pass the offset to the higher layers (C and D)?
+>  >> If RTmac/TDMA is in use, you can obtain the clock offset via
+>  >> RTMAC_RTIOC_TIMEOFFSET from the RTDM device "TDMA<x>" (where "<x>"
+>  >> corresponds to "rteth<x>").
+>  >>
+>  >> Jan
+>  >>
+>  >
+>  > When I try to compile my application (xenomai native skin, user task), I get an error, saying rtdm_driver.h (which contains the prototype for rtdm_clock_read()) is for kernel mode tasks only.
+>
+>  So you are in userland, obviously...
+>
+>
+>  >
+>  > How can I get a timestamp in a xenomai native user task? Is there sth equivalent to rtdm_clock_read()? Or do I have to write a kernel task?
+>
+>  Nope, there is rt_timer_read & Co. for native user-mode applications.
+>
+>  I was about to remark that everything can be found in the API docs - but
+>  it can't! Any volunteer to add the missing functions from native/timer.h
+>  to the docs? Maybe there is just something broken for doxygen. TIA!
 
-The task is only used to allocate some memory heaps.
+The problem is that __KERNEL__ is in the list of PREDEFINED macros,
+and the comments in native/timer.h are in the !__KERNEL__ section.
 
-I setted up some memory debugging features in the kernel :
-CONFIG_DEBUG_KERNEL=y
-CONFIG_DEBUG_SLAB=y
-CONFIG_DEBUG_SLAB_LEAK=y
-CONFIG_DEBUG_BUGVERBOSE=y
-CONFIG_DEBUG_VM=y
-CONFIG_FORCED_INLINING=y
-CONFIG_EARLY_PRINTK=y
-CONFIG_DEBUG_PAGEALLOC=y
-
- This was not happening with v2.4.2 although that the kernel debugging 
-flags were not "on"
-
-here is the bug trace :
-
-------------[ cut here ]------------
-kernel BUG at mm/rmap.c:602!
-invalid opcode: 0000 [#1] PREEMPT DEBUG_PAGEALLOC
-Modules linked in: usb_storage e100 mii
-
-Pid: 1628, comm: creven Not tainted (2.6.24.7-ipipe #3)
-EIP: 0060:[<c017fb49>] EFLAGS: 00010246 CPU: 0
-EIP is at page_dup_rmap+0x19/0x20
-EAX: c115e760 EBX: c115e760 ECX: 08048000 EDX: cc6b1200
-ESI: 09cbb025 EDI: 00000025 EBP: 08048000 ESP: cc709ec4
- DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 0068
-Process creven (pid: 1628, ti=cc708000 task=cc6f6ac0 task.ti=cc708000)<0>
-I-pipe domain Linux
-Stack: 08003875 c017ae62 cc6b1200 cd5d9e70 cc6b4e70 cc6fa080 cc650080 
-08057000
-       08057000 c115e760 cd034120 c9cba120 00000000 00000000 08056fff 
-00000000
-       00000000 c9c6ec80 cc6b1200 00000000 cc6a6ac0 c0115b90 00000000 
-00000000
-Call Trace:
- [<c017ae62>] copy_page_range+0x2b2/0x580
- [<c0115b90>] copy_process+0x7a0/0x1000
- [<c01165a7>] do_fork+0x47/0x210
- [<c0100bb6>] sys_clone+0x36/0x40
- [<c0102b89>] syscall_call+0x7/0xb
- =======================
-Code: 3b 4b 08 0f 93 c0 85 c0 75 ba 5b 89 c8 c3 8d 74 26 00 53 89 c3 83 
-78 08 ff 74 10 f6 40 10 01 74 05 e8 3c f4 ff ff ff 43 08 5b c3 <0f> 0b 
-eb fe 8d 76 00 83 ec 1c 89 5c 24 0c 89 c3 89 74 24 10 89
-EIP: [<c017fb49>] page_dup_rmap+0x19/0x20 SS:ESP 0068:cc709ec4
----[ end trace b9f3cc48844f8a3b ]---
-note: creven[1628] exited with preempt_count 2
-BUG: scheduling while atomic: creven/1628/0x00000003
-Pid: 1628, comm: creven Tainted: G      D 2.6.24.7-ipipe #3
- [<c036bed3>] schedule+0x283/0x390
- [<c036d525>] rwsem_down_failed_common+0x75/0x190
- [<c013cb10>] handle_edge_irq+0xc0/0x150
- [<c036d68d>] rwsem_down_read_failed+0x1d/0x24
- [<c036d6cb>] call_rwsem_down_read_failed+0x7/0xc
- [<c036cb89>] down_read+0x9/0x10
- [<c0118ed4>] exit_mm+0x24/0xd0
- [<c011a632>] do_exit+0x112/0x800
- [<c010410f>] die+0x21f/0x220
- [<c0104523>] do_invalid_op+0x83/0x90
- [<c017fb49>] page_dup_rmap+0x19/0x20
- [<c0111998>] change_page_attr+0x2c8/0x300
- [<c01119ed>] kernel_map_pages+0x1d/0x60
- [<c0170472>] get_page_from_freelist+0x2c2/0x520
- [<c010e78f>] __ipipe_handle_exception+0x7f/0x1c0
- [<c036db5b>] error_code+0x6f/0x7c
- [<c0170000>] setup_per_zone_pages_min+0x1b0/0x1f0
- [<c017fb49>] page_dup_rmap+0x19/0x20
- [<c017ae62>] copy_page_range+0x2b2/0x580
- [<c0115b90>] copy_process+0x7a0/0x1000
- [<c01165a7>] do_fork+0x47/0x210
- [<c0100bb6>] sys_clone+0x36/0x40
- [<c0102b89>] syscall_call+0x7/0xb
- =======================
-Best Regards
-Steph
-
+-- 
+ Gilles
 
