@@ -1,14 +1,16 @@
-Message-ID: <482D8B50.5090502@domain.hid>
-Date: Fri, 16 May 2008 15:25:36 +0200
+Message-ID: <482A831C.6000801@domain.hid>
+Date: Wed, 14 May 2008 08:13:48 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <A3B06EAFE0D9C14096681C935E0B300802110A0C@zue-s-15.zue.zwick.de>	<4829613B.3000500@domain.hid><0C9896A4B6D338488AD6FFFE58BAEF100276DBF6@domain.hid><48297566.1010607@domain.hid><0C9896A4B6D338488AD6FFFE58BAEF100276DC66@domain.hid>	<4829AA19.8070405@domain.hid>	<0C9896A4B6D338488AD6FFFE58BAEF100276DD0C@serveur3.lgm.com>	<4829C8C9.4020300@domain.hid>	<0C9896A4B6D338488AD6FFFE58BAEF100276DDDE@serveur3.lgm.com>	<482B3BCF.8090700@domain.hid>	<482B3EE5.9030702@domain.hid>	<0C9896A4B6D338488AD6FFFE58BAEF100276E025@domain.hid>	<482D33B3.9070700@domain.hid>	<0C9896A4B6D338488AD6FFFE58BAEF100276E212@domain.hid>
-	<482D6FF9.3050008@domain.hid> <482D82EB.3050608@domain.hid>
-	<482D885A.7080706@domain.hid>
-In-Reply-To: <482D885A.7080706@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Serial driver and TX events
+References: <A3B06EAFE0D9C14096681C935E0B300802110A0C@zue-s-15.zue.zwick.de>	<4829613B.3000500@domain.hid>	<A3B06EAFE0D9C14096681C935E0B300802110F22@domain.hid>
+	<4829A948.6080806@domain.hid>
+In-Reply-To: <4829A948.6080806@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigD592717EDF4B4E6B94260002"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] gdb + multi-threaded application + Intel dual
+ core	processor + Xenomai => frozen system
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,38 +20,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Anders Blomdell <anders.blomdell@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: "Kaeppeler, Oliver" <Oliver.Kaeppeler@domain.hid>
+Cc: xenomai@xenomai.org
 
-Anders Blomdell wrote:
-> Jan Kiszka wrote:
->> Anders Blomdell wrote:
->>> Are there any reason why the serial driver could not be changed to give an event
->>> when all characters has left the TX buffer?
->> No, I don't think so. Somehow I have the feeling someone requested this
->> feature before, but I cannot find any reference  or even code ATM.
->> However. Patch would be welcome.
-> OK, I'll see what I can do. Is patch against 2.4.2 OK (pressing deadline -> I do
-> not have the time to uprade right now).
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigD592717EDF4B4E6B94260002
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Such a patch would currently apply against trunk as-is, at least /wrt
-16550A - but I would take care of porting in any case.
+Jan Kiszka wrote:
+> Kaeppeler, Oliver wrote:
+>> Hello Jan,
+>>
+>> thanks for your answer. We had used Xenomai 2.4.3 in our tests. Now, I=
+ also tried the daily snapshot version, but the problem remains.
+>>
+>> The problem should be reproducable by the sample program, we attached =
+in our last message...
+>=20
+> OK, will give this a try later today.
 
-> 
-> My need for it is to make it possible to wait until all characters has left the
-> FIFO (needed for autobaud detection), so perhaps a ioctl RTIOC_DRAIN (similar to
-> RTIOC_PURGE) is a better choice (you decide what you prefer, and I'll try to
-> implement it)
-
-Hmm, for that particular use case I guess it shouldn't be problematic to
-wait the required time after writing some probe character(s).
-
-Otherwise, a blocking RTIOC_DRAIN sounds reasonable. That could become
-an (optional) common feature of all buffering RTDM devices.
+Done, but so far without success, even with your .config. Are you sure
+that you booted the right kernel after the update (and that the update
+actually contained the fix)?
 
 Jan
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+
+--------------enigD592717EDF4B4E6B94260002
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.4-svn0 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFIKoMmniDOoMHTA+kRAv7gAJ0Y2Qv0Cqmz+eDEqYrK0PMONPMtAACfYr65
+HgrCuJYNgVBkAfWeu0T4wqE=
+=B949
+-----END PGP SIGNATURE-----
+
+--------------enigD592717EDF4B4E6B94260002--
 
