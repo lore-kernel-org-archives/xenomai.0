@@ -1,10 +1,16 @@
-Message-ID: <48349D40.9070707@domain.hid>
-Date: Wed, 21 May 2008 18:08:00 -0400
-From: Michael Galea <michaelgalea@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Enable I-PIPE - kernel boot hangs in mpc836x_mds
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 14 May 2008 14:02:44 +0200
+Message-ID: <A3B06EAFE0D9C14096681C935E0B300802142F7B@zue-s-15.zue.zwick.de>
+In-Reply-To: <482A831C.6000801@domain.hid>
+References: <A3B06EAFE0D9C14096681C935E0B300802110A0C@zue-s-15.zue.zwick.de>	<4829613B.3000500@domain.hid>	<A3B06EAFE0D9C14096681C935E0B300802110F22@domain.hid>
+	<4829A948.6080806@domain.hid> <482A831C.6000801@domain.hid>
+From: "Kaeppeler, Oliver" <Oliver.Kaeppeler@domain.hid>
+Subject: Re: [Xenomai-help] gdb + multi-threaded application + Intel dual
+	core	processor + Xenomai => frozen system
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,42 +20,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: jan.kiszka@domain.hid
+Cc: xenomai@xenomai.org
 
-I'm trying to bring xenomai up on an Freescale mpc836x_mds board. I'm 
-using the ipipe-2.6.24-powerpc-2.1-02 branch of the git tree at Denx.
+Hello Jan,
 
-The kernel boots fine with ipipe disabled, nfs root mounting its file 
-system.  But as soon as I enable ipipe in the kernel I get..
+thanks for testing. We fixed the problem now.
 
-...
-RPC: Registered udp transport module.
-RPC: Registered tcp transport module.
-IP-Config: Complete:
-       device=eth0, addr=10.128.10.234, mask=255.0.0.0, gw=10.128.0.253,
-      host=10.128.10.234, domain=, nis-domain=(none),
-      bootserver=10.128.10.10, rootserver=10.128.10.10, rootpath=
-Looking up port of RPC 100003/2 on 10.128.10.10
-irq 33, desc: c02746c0, depth: 0, count: 0, unhandled: 0
-irq 33, desc: c02746c0, depth: 0, count: 0, unhandled: 0
+The problem was that we used the daily snapshot of trunk =
+(http://svn.gna.org/daily/xenomai-snapshot.tar.gz - the bottom most link =
+on https://gna.org/svn/?group=3Dxenomai named "Sourcecode Daily =
+Snapshot"), which does not contain the fix.
+Now we patched it manually based on the patch given in =
+"[Xenomai-core][PATCH] avoid deadlock-prone sighand_lock in =
+do_schedule_event" and everything runs fine.
 
-And it hangs.  Since this is the place where the kernel usually finds 
-its PHY, I might suspect its an issue with that..
+So obviously http://svn.gna.org/daily/xenomai-snapshot.tar.gz doesn't =
+really contain the current trunk.
 
-I'm currently trying to get Denx's 2.6.20 branch running but its 
-freezing after loading the device tree, so I have some issues there.
+Regards,
+Oliver.
+=20
 
-Can anyone having success with this board report what kernel they are using?
+-----Urspr=FCngliche Nachricht-----
+Von: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid
+Gesendet: Mittwoch, 14. Mai 2008 08:14
+An: Kaeppeler, Oliver
+Cc: xenomai@xenomai.org
+Betreff: Re: [Xenomai-help] gdb + multi-threaded application + Intel =
+dual core processor + Xenomai =3D> frozen system
 
-Thanks
+Jan Kiszka wrote:
+> Kaeppeler, Oliver wrote:
+>> Hello Jan,
+>>
+>> thanks for your answer. We had used Xenomai 2.4.3 in our tests. Now, =
+I also tried the daily snapshot version, but the problem remains.
+>>
+>> The problem should be reproducable by the sample program, we attached =
+in our last message...
+>=20
+> OK, will give this a try later today.
 
--- 
-Michael Galea
-30 Whitmore Road
-Woodbridge, Ontario, Canada, L4L 7Z4
-Ph: (905) 266-1745
-Fx: (905) 856-1995
-www.ruggedcom.com
+Done, but so far without success, even with your .config. Are you sure =
+that you booted the right kernel after the update (and that the update =
+actually contained the fix)?
 
+Jan
 
 
