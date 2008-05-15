@@ -1,14 +1,14 @@
-Message-ID: <2ff1a98a0805150228l7d99b025rae68cec2c02e4246@domain.hid>
-Date: Thu, 15 May 2008 11:28:00 +0200
+Message-ID: <2ff1a98a0805150246n39d989d4p346d8959b76b8b3b@domain.hid>
+Date: Thu, 15 May 2008 11:46:59 +0200
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <7df088046ee0bd577cb7040650d79a05@domain.hid>
+In-Reply-To: <2ff1a98a0805150221o5df6f9a2reb49dad9c5e1fe59@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <18475.12268.192581.316526@domain.hid>
-	<7df088046ee0bd577cb7040650d79a05@domain.hid>
-Subject: Re: [Xenomai-help] VxWorks skin problem concerning WIND_TCBstructure
+References: <1164134085@domain.hid>
+	<2ff1a98a0805150221o5df6f9a2reb49dad9c5e1fe59@domain.hid>
+Subject: Re: [Xenomai-help] at91sam9263 and user-space support compile fails
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,41 +18,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: matthieu.connaulte_xenomai@domain.hid
+To: Paradoxxa2001@domain.hid
 Cc: xenomai@xenomai.org
 
-On Thu, May 15, 2008 at 8:10 AM, Matthieu
-<matthieu.connaulte_xenomai@domain.hid> wrote:
-> On Wed, 14 May 2008 20:31:08 +0200, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->> Matthie wrote:
->>> I still don't have any solution to emulate the fields above listed as I
->>> don't know if I can use Linux posix services ?
->>
->> Yes, you can use Linux posix services, but they will cause any Xenomai
->> thread to switch from primary mode to secondary mode.
->>
->> If you do not understand what I am talking about, you should probably
->> read the articles at:
->> http://www.xenomai.org/index.php/Publications
->>
->> --
->>
->>
->>                                           Gilles.
+On Thu, May 15, 2008 at 11:21 AM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On Thu, May 15, 2008 at 10:36 AM,  <Paradoxxa2001@domain.hid> wrote:
+>> It says me that the files memory.h and asm/param.h couldn't be found.
+>> Im wondering why? I also tried it like the example in the README.INSTALL 2.6 Building for ARM
+>> but with the same result. Do anyone know how to fix this?
 >
-> That's the point. Using posix services is pretty much easy, but if this
-> switches the thread to secondary mode, I'm not sure about using it.
+> It looks like a toolchain issue. Are you sure your toolchain is
+> properly installed ? Is there a memory.h or sys/mman.h in the
+> toolchain include dir ?
 
-I can not imagine code using WIND_TCB members for something else than debug.
-
- I think
-> that VxWorks Task Control Block ,implemeted by  WIND RIVER, is keeping the
-> context in hard real-time. That's why I would like to know if there are
-> other possibilities ?
-
-Yes, there are possibilities: fix your code not to use such internal
-data as the WIND_TCB members.
+I routinely compile Xenomai with the two following toolchains for ARM:
+- Snapgear 2005 toolchain:
+http://ftp.snapgear.org/pub/snapgear/tools/arm-linux/arm-linux-tools-20051123.tar.gz
+- CodeSourcery 2007q3 toolchain (no longer available, the current
+toolchain is 2008q1):
+http://www.codesourcery.com/gnu_toolchains/arm/download.html
 
 -- 
  Gilles
