@@ -1,14 +1,14 @@
+Message-ID: <482BD329.7020704@domain.hid>
+Date: Thu, 15 May 2008 08:07:37 +0200
+From: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
 MIME-Version: 1.0
-Date: Thu, 15 May 2008 07:32:41 +0200
-From: Matthieu <matthieu.connaulte_xenomai@domain.hid>
-In-Reply-To: <37a50be5e303037c147613f6a84341e0@domain.hid>
-References: <37a50be5e303037c147613f6a84341e0@domain.hid>
-Message-ID: <75d0df3051f90efb742000fdb9290bec@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] =?utf-8?q?_Re=3A___Re=3A___Re=3A__VxWorks_skin_pro?=
- =?utf-8?q?blem_concerning_WIND=5FTCBstructure?=
-Reply-To: matthieu.connaulte_xenomai@domain.hid
+References: <200805112104.56166.karl-trampe@domain.hid> <48276703.2020005@domain.hid>
+	<20080514144900.216230@domain.hid>
+In-Reply-To: <20080514144900.216230@domain.hid>
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] [RTnet-users] Ideas how to measure delays with
+ RTnet
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,108 +18,112 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Karl Reichert <Karl-Trampe@domain.hid>
+Cc: xenomai@xenomai.org, rtnet-users@domain.hid
 
-On Wed, 14 May 2008 11:23:13 +0200, Matthieu
-<matthieu.connaulte_xenomai@domain.hid> wrote:
->=20
->=20
-> On Tue, 13 May 2008 11:16:56 +0200, Matthieu
-> <matthieu.connaulte_xenomai@domain.hid> wrote:
->> On Sun, 11 May 2008 00:40:07 +0200, Gilles Chanteperdrix
->> <gilles.chanteperdrix@xenomai.org> wrote:
->>> Philippe Gerum wrote:
->>>  > Matthieu wrote:
->>>  > > Im currently porting a VxWorks Application in SuSE Linux patched
->> with
->>>  > > Xenomai. I encounter some problems with the taskLib.h emulation.
->>> Indeed,
->>>  > > Ive got an error concerning WIND_TCB structure. I think that not
->> the
->>>  > > whole structure is implemented or maybe its implemented by Xenom=
-ai
->>>  > > Native API and not VxWorks skin.
->>>  > >
->>>  >
->>>  > Implementing the whole WIND_TCB structure is out of scope. Most of
->> the
->>> fields
->>>  > you attempt to access in your app are dependent on the VxWorks
->> innards,
->>> which is
->>>  > meaningless in an emulation environment. You can emulate the other=
-s
->> (or
->>> their
->>>  > meaning) fairly easily (e.g. pStackBase and status).
->>>  >
->>>  > > Here are extracts of Code.c:
->>>  > >  #include <vxworks/vxworks.h>
->>>  > >  WIND_TCB * pTcb;
->>>  > >  pTcb->entry
->>>  > >  pTcb->lockCnt
->>>  > >  pTcb->pSignalInfo->sigt_blocked
->>>
->>> ... And you may access signal mask with the posix pthread_sigmask
->>> service (if the first sigset_t pointer is NULL, the "how" argument is
->>> ignored, and the only effect of the service is to copy the current
->>> signal mask).
->>>
->>> --
->>>
->>>
->>> 					    Gilles.
->>
->> Thank you for your answers.
->> First, in my investigation, I found out that in vxworks/vxworks.h ther=
-e
->> are
->> different definitions of WIND_TCB while the compilation occur in kerne=
-l
->> mode and xeno_sim or not. What does it mean ?
->> I think I've understood what you say. The problem is how can I emulate
-> the
->> fields I need since I don't know if they can be treated as standard
->> threads
->> with pthread.h and signal.h ? Do I need to use Xenomai specific
->> implementation of such information to get the field value ?
->> The field are
->>  entry         (entry point of task)
->>  lockCnt       (preemtion lock count)
->>  pSignalInfo   (ptr to signal info for task)
->>  pStackBase    (points to bottom of stack)
->>  SafeCnt       (safe_from_delete count)
->>  status        (status of task)
->>  safetyQHead   (safe_from_delete q head)
->>  ptaskVar      (ptr to task variable list)
->>  options       (task option bits)
->>
->> Matthieu
->>
->>
->=20
-> I still don't have any solution to emulate the fields above listed as I
-> don't know if I can use Linux posix services ?
->=20
-> Matthieu
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+Karl Reichert a &eacute;crit&nbsp;:
+<blockquote cite="mid:20080514144900.216230@domain.hid" type="cite">
+  <pre wrap="">Jan Kiszka wrote:
+  </pre>
+  <blockquote type="cite">
+    <pre wrap="">Karl Reichert wrote:
+    </pre>
+    <blockquote type="cite">
+      <pre wrap="">Hello,
 
-Does a Xenomai Task Control Block exist ?
+I have two stations running RTnet, one as a master and one as a slave. I
+      </pre>
+    </blockquote>
+    <pre wrap="">want 
+    </pre>
+    <blockquote type="cite">
+      <pre wrap="">to measure the time, which a message, sent from master to slave, takes.
+      </pre>
+    </blockquote>
+    <pre wrap="">But, 
+    </pre>
+    <blockquote type="cite">
+      <pre wrap="">I don't want the time of the transmission only, but the complete time of
+      </pre>
+    </blockquote>
+    <pre wrap="">all 
+    </pre>
+    <blockquote type="cite">
+      <pre wrap="">software layers this data is processed through.
 
-Matthieu
+_______________	_______________
+|		A		  |	|		D		  |
+|______________|	|______________|
+|		B		  |	|		C		  |
+|______________|	|______________|
+|   RTnet (Master)	  |	|    RTnet (Slave)	  |
+|______________|	|______________|
+		|				  |
+		|______________|
 
->=20
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->=20
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+So, I create the data, that should be send, in Layer A (Master) and send
+      </pre>
+    </blockquote>
+    <pre wrap="">it 
+    </pre>
+    <blockquote type="cite">
+      <pre wrap="">over RTnet to Layer D (Slave).
 
+I want to take the time when the data leaves A and when it arrives D
+      </pre>
+    </blockquote>
+    <pre wrap="">with 
+    </pre>
+    <blockquote type="cite">
+      <pre wrap="">rtdm_clock_read(). If I have the offset between master and slave, I can 
+calculate the time it took to pass A, B, both RTnet stacks, C and D.
 
+As RTnet keeps track of the offset in it's stack, I want to use this
+      </pre>
+    </blockquote>
+    <pre wrap="">value. Is 
+    </pre>
+    <blockquote type="cite">
+      <pre wrap="">it possible via the API? I didn't found anything. Or do I have to
+      </pre>
+    </blockquote>
+    <pre wrap="">manipulate 
+    </pre>
+    <blockquote type="cite">
+      <pre wrap="">the stack to pass the offset to the higher layers (C and D)?
+      </pre>
+    </blockquote>
+    <pre wrap="">If RTmac/TDMA is in use, you can obtain the clock offset via
+RTMAC_RTIOC_TIMEOFFSET from the RTDM device "TDMA&lt;x&gt;" (where "&lt;x&gt;"
+corresponds to "rteth&lt;x&gt;").
+
+Jan
+
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->
+When I try to compile my application (xenomai native skin, user task), I get an error, saying rtdm_driver.h (which contains the prototype for rtdm_clock_read()) is for kernel mode tasks only.
+
+How can I get a timestamp in a xenomai native user task? Is there sth equivalent to rtdm_clock_read()? Or do I have to write a kernel task?
+
+Thanks
+Karl
+  </pre>
+</blockquote>
+Hi,<br>
+A good scopemeter can help. you have to activate com or lpt pins in
+your program before after receive/send funcs and watch the output
+status of it in scopemeter.<br>
+Best Regards<br>
+Steph <br>
+<br>
+<br>
+</body>
+</html>
 
