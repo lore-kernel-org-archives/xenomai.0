@@ -1,13 +1,13 @@
-Message-ID: <482BE97E.2080305@domain.hid>
-Date: Thu, 15 May 2008 09:42:54 +0200
+Message-ID: <482BEA7D.3020807@domain.hid>
+Date: Thu, 15 May 2008 09:47:09 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E025B28A0@domain.hid>
-In-Reply-To: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E025B28A0@domain.hid>
+References: <482193F0.6000401@domain.hid>
+In-Reply-To: <482193F0.6000401@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] bug with tm_evevery()
+Subject: Re: [Xenomai-core] [patch] prevent endless loop in prepare-kernel.sh
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -18,32 +18,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Markus Osterried <markus.osterried@domain.hid>
-Cc: Xenomai-core@domain.hid
+To: "Hillier, Gernot" <gernot.hillier@domain.hid>
+Cc: xenomai@xenomai.org
 
-Markus Osterried wrote:
-> Hello,
->  
-> there is a bug in the pSOS user-space skin, calling the wrong
-> kernel-space function for tm_evevery().
-> The file xenomai/src/skins/psos+/tm.c should be fixed like this:
->  
->  
-> --- xenomai-2.4/src/skins/psos+/tm.c
-> +++ xenomai-2.4/src/skins/psos+/tm.c
-> @@ -71,7 +71,7 @@
->  
->  u_long tm_evevery(u_long ticks, u_long events, u_long *tmid_r)
->  {
-> -       return XENOMAI_SKINCALL3(__psos_muxid, __psos_tm_evwhen, ticks,
-> events, tmid_r);
-> +       return XENOMAI_SKINCALL3(__psos_muxid, __psos_tm_evevery, ticks,
-> events, tmid_r);
->  }
->  
->  u_long tm_getm(unsigned long long *ns_r) /* Xenomai extension. */
->  
->  
+Hillier, Gernot wrote:
+> Hi there!
+> 
+> Just noted that prepare-kernel.sh ends up in an endless loop when you 
+> use "--default" together with an invalid "--arch" parameter.
+> 
+> Here's a small patch. Please apply. TIA!
+> 
+> Index: scripts/prepare-kernel.sh
+> ===================================================================
+> --- scripts/prepare-kernel.sh	(Revision 3753)
+> +++ scripts/prepare-kernel.sh	(Arbeitskopie)
+> @@ -327,6 +327,7 @@
+>      *)
+>         echo "$me: unsupported architecture: $linux_arch" >&2
+>         linux_arch=
+> +      usedefault=
+>         ;;
+>      esac
+>      if test \! x$linux_arch = x; then
+> @@ -384,6 +385,7 @@
+>         fi
+>         if test \! -r "$adeos_patch"; then
+>            echo "$me: cannot read Adeos patch from $adeos_patch" >&2
+> +         usedefault=
+>            adeos_patch=
+>         fi
+>      done
+> 
 
 Merged, thanks.
 
