@@ -1,13 +1,13 @@
-Message-ID: <482BEA7D.3020807@domain.hid>
-Date: Thu, 15 May 2008 09:47:09 +0200
+Message-ID: <482BEC05.1050404@domain.hid>
+Date: Thu, 15 May 2008 09:53:41 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <482193F0.6000401@domain.hid>
-In-Reply-To: <482193F0.6000401@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4821B345.5070001@domain.hid>
+In-Reply-To: <4821B345.5070001@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [patch] prevent endless loop in prepare-kernel.sh
+Subject: Re: [Xenomai-core] [patch] disallow includedir /usr/include
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -19,39 +19,41 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: "Hillier, Gernot" <gernot.hillier@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: Xenomai-core@domain.hid
 
 Hillier, Gernot wrote:
-> Hi there!
+> Hi again!
 > 
-> Just noted that prepare-kernel.sh ends up in an endless loop when you 
-> use "--default" together with an invalid "--arch" parameter.
+> Current SVN head fails to do "make install" when you use --prefix=/usr
+> resulting in the includedir /usr/include:
 > 
-> Here's a small patch. Please apply. TIA!
+> --- SNIP ---
+> make[2]: Entering directory `/home/gernot/xenomai/include'
+> make[3]: Entering directory `/home/gernot/xenomai/include'
+> make[3]: Nothing to be done for `install-exec-am'.
+> rm -f /usr/include/asm
+> rm: cannot remove `/usr/include/asm': Is a directory
+> make[3]: *** [install-data-local] Error 1
+> --- SNAP ---
 > 
-> Index: scripts/prepare-kernel.sh
-> ===================================================================
-> --- scripts/prepare-kernel.sh	(Revision 3753)
-> +++ scripts/prepare-kernel.sh	(Arbeitskopie)
-> @@ -327,6 +327,7 @@
->      *)
->         echo "$me: unsupported architecture: $linux_arch" >&2
->         linux_arch=
-> +      usedefault=
->         ;;
->      esac
->      if test \! x$linux_arch = x; then
-> @@ -384,6 +385,7 @@
->         fi
->         if test \! -r "$adeos_patch"; then
->            echo "$me: cannot read Adeos patch from $adeos_patch" >&2
-> +         usedefault=
->            adeos_patch=
->         fi
->      done
+> As far as I understood Jan, using /usr/include is a bad idea, so I
+> created a patch telling the user what went wrong in a nicer way.
 > 
+> Please apply if you consider it to be the right fix (tm).
+>
 
-Merged, thanks.
+That makes sense, especially since that would prevent people from inadvertently
+trashing their local header space. People who really want to play this game
+should use DESTDIR explicitly instead. Merged, thanks.
+
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+
 
 -- 
 Philippe.
