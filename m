@@ -1,12 +1,15 @@
-Date: Thu, 15 May 2008 14:28:12 +0200
-Message-Id: <1164479754@domain.hid>
+Message-ID: <2ff1a98a0805150612x62f8a1a9te843a27911244e72@domain.hid>
+Date: Thu, 15 May 2008 15:12:32 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <2ff1a98a0805150228l7d99b025rae68cec2c02e4246@domain.hid>
 MIME-Version: 1.0
-From: Paradoxxa2001@domain.hid
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help]
- =?iso-8859-15?q?at91sam9263_and_user-space_support?=
- =?iso-8859-15?q?_compile_fails?=
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <18475.12268.192581.316526@domain.hid>
+	<7df088046ee0bd577cb7040650d79a05@domain.hid>
+	<2ff1a98a0805150228l7d99b025rae68cec2c02e4246@domain.hid>
+Subject: Re: [Xenomai-help] VxWorks skin problem concerning WIND_TCBstructure
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,53 +19,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: matthieu.connaulte_xenomai@domain.hid
+Cc: xenomai@xenomai.org
 
-With the CodeSourcery 2007q3 toolchain it works.
-Thanks a lot!
-
-Thomas
-
------Urspr=FCngliche Nachricht-----
-Von: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-Gesendet: 15.05.08 11:48:43
-An: Paradoxxa2001@domain.hid
-CC: xenomai@xenomai.org
-Betreff: Re: [Xenomai-help] at91sam9263 and user-space support compile fai=
-ls
-
-On Thu, May 15, 2008 at 11:21 AM, Gilles Chanteperdrix
+On Thu, May 15, 2008 at 11:28 AM, Gilles Chanteperdrix
 <gilles.chanteperdrix@xenomai.org> wrote:
-> On Thu, May 15, 2008 at 10:36 AM,  <Paradoxxa2001@domain.hid> wrote:
->> It says me that the files memory.h and asm/param.h couldn't be found.
->> Im wondering why=3F I also tried it like the example in the README.INSTAL=
-L 2.6 Building for ARM
->> but with the same result. Do anyone know how to fix this=3F
+> On Thu, May 15, 2008 at 8:10 AM, Matthieu
+> <matthieu.connaulte_xenomai@domain.hid> wrote:
+>  I think
+>> that VxWorks Task Control Block ,implemeted by  WIND RIVER, is keeping the
+>> context in hard real-time. That's why I would like to know if there are
+>> other possibilities ?
 >
-> It looks like a toolchain issue. Are you sure your toolchain is
-> properly installed =3F Is there a memory.h or sys/mman.h in the
-> toolchain include dir =3F
+> Yes, there are possibilities: fix your code not to use such internal
+> data as the WIND_TCB members.
 
-I routinely compile Xenomai with the two following toolchains for ARM:
-- Snapgear 2005 toolchain:
-http://ftp.snapgear.org/pub/snapgear/tools/arm-linux/arm-linux-tools-20051=
-123.tar.gz
-- CodeSourcery 2007q3 toolchain (no longer available, the current
-toolchain is 2008q1):
-http://www.codesourcery.com/gnu=5Ftoolchains/arm/download.html
+Even VxWorks documentation considers accessing WIND_TCB directly as a
+bad practice. See the doc of taskInfoGet at:
 
---=20
+http://spacegrant.colorado.edu/~dixonc/vxworks/docs/vxworks/ref/taskShow.html
+
+So, what I would agree we can do is implement taskInfoGet.
+
+-- 
  Gilles
-
-=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
-Xenomai-help mailing list
-Xenomai-help@domain.hid
-https://mail.gna.org/listinfo/xenomai-help
-
-
-
-=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
-In 5 Schritten zur eigenen Homepage. Jetzt Domain sichern und gestalten!=20
-Nur 3,99 EUR/Monat! http://www.maildomain.web.de/=3Fmc=3D021114
-
 
