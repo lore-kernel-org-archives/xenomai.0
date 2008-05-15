@@ -1,15 +1,14 @@
-Message-ID: <2ff1a98a0805150612x62f8a1a9te843a27911244e72@domain.hid>
-Date: Thu, 15 May 2008 15:12:32 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <2ff1a98a0805150228l7d99b025rae68cec2c02e4246@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <18475.12268.192581.316526@domain.hid>
-	<7df088046ee0bd577cb7040650d79a05@domain.hid>
-	<2ff1a98a0805150228l7d99b025rae68cec2c02e4246@domain.hid>
-Subject: Re: [Xenomai-help] VxWorks skin problem concerning WIND_TCBstructure
+Date: Thu, 15 May 2008 15:50:56 +0200
+From: Matthieu <matthieu.connaulte_xenomai@domain.hid>
+In-Reply-To: <2ff1a98a0805150612x62f8a1a9te843a27911244e72@domain.hid>
+References: <2ff1a98a0805150612x62f8a1a9te843a27911244e72@domain.hid>
+Message-ID: <955c7c82b3624040fbf69ee97e7177dc@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] =?utf-8?q?_Re=3A__Re=3A_Re=3A_Re=3A_VxWorks_skin_p?=
+ =?utf-8?q?roblem_concerning_WIND=5FTCBstructure?=
+Reply-To: matthieu.connaulte_xenomai@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,28 +18,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: matthieu.connaulte_xenomai@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Thu, May 15, 2008 at 11:28 AM, Gilles Chanteperdrix
+
+
+On Thu, 15 May 2008 15:12:32 +0200, "Gilles Chanteperdrix"
 <gilles.chanteperdrix@xenomai.org> wrote:
-> On Thu, May 15, 2008 at 8:10 AM, Matthieu
-> <matthieu.connaulte_xenomai@domain.hid> wrote:
->  I think
->> that VxWorks Task Control Block ,implemeted by  WIND RIVER, is keeping the
->> context in hard real-time. That's why I would like to know if there are
->> other possibilities ?
+> On Thu, May 15, 2008 at 11:28 AM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>> On Thu, May 15, 2008 at 8:10 AM, Matthieu
+>> <matthieu.connaulte_xenomai@domain.hid> wrote:
+>>  I think
+>>> that VxWorks Task Control Block ,implemeted by  WIND RIVER, is keepin=
+g
+> the
+>>> context in hard real-time. That's why I would like to know if there a=
+re
+>>> other possibilities ?
+>>
+>> Yes, there are possibilities: fix your code not to use such internal
+>> data as the WIND_TCB members.
+>=20
+> Even VxWorks documentation considers accessing WIND_TCB directly as a
+> bad practice. See the doc of taskInfoGet at:
+>=20
 >
-> Yes, there are possibilities: fix your code not to use such internal
-> data as the WIND_TCB members.
+http://spacegrant.colorado.edu/~dixonc/vxworks/docs/vxworks/ref/taskShow.=
+html
+>=20
+> So, what I would agree we can do is implement taskInfoGet.
+>=20
+> --
+>  Gilles
 
-Even VxWorks documentation considers accessing WIND_TCB directly as a
-bad practice. See the doc of taskInfoGet at:
+Well, what a great issue for me...
 
-http://spacegrant.colorado.edu/~dixonc/vxworks/docs/vxworks/ref/taskShow.html
+But can I use other API implements of such kind of Tasks information, as
+it's possible to mix APIs ? I think about Task Status or Thread State Fla=
+gs
+?
 
-So, what I would agree we can do is implement taskInfoGet.
+Matthieu
 
--- 
- Gilles
+
 
