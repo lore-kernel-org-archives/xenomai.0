@@ -1,13 +1,12 @@
-Message-ID: <2ff1a98a0805160701r7abb278ek5d8c2096f4536c72@domain.hid>
-Date: Fri, 16 May 2008 16:01:22 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <1165975808@domain.hid>
+Date: Fri, 16 May 2008 16:34:44 +0200
+Message-Id: <1166036897@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <1165975808@domain.hid>
-Subject: Re: [Xenomai-help] at91sam9263 and user-space support compile fails
+From: Paradoxxa2001@domain.hid
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help]
+ =?iso-8859-15?q?at91sam9263_and_user-space_support?=
+ =?iso-8859-15?q?_compile_fails?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,40 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Paradoxxa2001@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, May 16, 2008 at 3:53 PM,  <Paradoxxa2001@domain.hid> wrote:
-> Finally i got it. Thanks a lot.
-> I flashed this Image to the target and booted it.
-> After the Message "Starting kernel" it seems like the system hung up.
-> Nothing more happens.
->
-> ----------------------------------------------------------------
-> LCD init done, video memory at 0x70000000
-> In:    serial
-> Out:   serial
-> Err:   serial
-> AT91 Ethernet PHY: DP83848 (1)
-> operating at 100M full duplex mode
-> End of Autonegociation
-> MAC: 02:00:11:53:d0:85
-> Hit any key to stop autoboot:  0
-> ## Booting image at 10050000 ...
->   Image Name:   Xenomai Linux Kernel
->   Image Type:   ARM Linux Kernel Image (gzip compressed)
->   Data Size:    1682870 Bytes =  1.6 MB
->   Load Address: 20008000
->   Entry Point:  20008000
->   Verifying Checksum ... OK
->   Uncompressing Kernel Image ... OK
->
-> Starting kernel ...
+OK, i will include the printascii function.
+Thank you for your patience. I appreciate you.
 
-By the way, if your boot loader is uboot, the Linux kernel makefiles
-have a uImage target which produces an image which u-boot can use.
+Thomas
 
+-----Urspr=FCngliche Nachricht-----
+Von: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+Gesendet: 16.05.08 16:13:04
+An: Paradoxxa2001@domain.hid
+Betreff: Re: [Xenomai-help] at91sam9263 and user-space support compile fai=
+ls
 
--- 
+On Fri, May 16, 2008 at 4:07 PM,  <Paradoxxa2001@domain.hid> wrote:
+> Well, when im building it with the other Compiler which comes
+> with the Module (AT91SAM9263) the kernel starts and the system
+> is coming up. With the Compiler which Gills suggested (CodeSourcery)
+> it doesn't work. I don't think the ArmPorting guide helps me here.
+
+The ArmPorting guide explains you how to proceed when your kernel does
+not boot and does not display anything. It is the first tip in the
+"Tips and tricks" section.
+
+--=20
  Gilles
+
+
+
+=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
+In 5 Schritten zur eigenen Homepage. Jetzt Domain sichern und gestalten!=20
+Nur 3,99 EUR/Monat! http://www.maildomain.web.de/=3Fmc=3D021114
+
 
