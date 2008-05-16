@@ -1,14 +1,10 @@
-Message-ID: <2ff1a98a0805160909r19c9ab0fsc0b838bcc306a1ea@domain.hid>
-Date: Fri, 16 May 2008 18:09:58 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <62ac12da32c026b0097185dff53fe0d8@domain.hid>
+Message-ID: <482DBABA.9010408@domain.hid>
+Date: Fri, 16 May 2008 12:47:54 -0400
+From: Tomas Kalibera <kalibera@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <2ff1a98a0805160149w3478755bqa4ffa44dfc7107b0@domain.hid>
-	<62ac12da32c026b0097185dff53fe0d8@domain.hid>
-Subject: Re: [Xenomai-help] VxWorks skin problem concerning WIND_TCBstructure
+Subject: [Xenomai-help] runaway secondary tasks lock up
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,31 +14,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: matthieu.connaulte_xenomai@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, May 16, 2008 at 12:11 PM, Matthieu
-<matthieu.connaulte_xenomai@domain.hid> wrote:
->> I suggest you patch your kernel with the patch Philippe sent, adapt it
->> to suit your needs, maybe changing TASK_DESC as in vxworks taskLib.h,
->> test and debug it, then send us a patch which we will be happy to
->> merge.
->>
->> --
->>  Gilles
->
-> Ok, I was about doing it.
->
-> I still have some questions about the migration of my app, as I don't know
-> Xenomai in details.
->
-> Here is part of my code which aims at defining a procedure to restart a
-> task. If you have time to have a look on it, it would be helpful.
 
-taskRestart is not supported in user-space by the VxWorks skin. So,
-the first thing to do is to check if your application really needs
-this service, and if it does, implement taskRestart.
+Hi,
 
--- 
- Gilles
+I've noticed an interesting difference regarding primary and secondary 
+domain runaway tasks. The primary domain ones are detected by Xenomai 
+watchdog and terminated. The secondary domain ones are not terminated, 
+but cause a system lockup, because a secondary domain task is always run 
+in preference of other tasks  (kernel complains by  BUG: soft lockup - 
+CPU#0 stuck for 11s!). Would there be a way to also detect the secondary 
+domain runaway threads ? Since the kernel itself can do it, it should be 
+possible, right ?
+
+Now, I've discovered that if I assign the secondary domain task priority 
+0, it would not lock up the system. 1 would, 99 would as well. What is 
+the semantics ? Any secondary domain task with priority above zero runs 
+in preference of any (non-Xenomai) Linux thread ?
+
+And asking from the other end, how to write polling (secondary domain) 
+applications in Xenomai ? Should it have priority 0 ?
+
+Thanks,
+Tomas
+
+
 
