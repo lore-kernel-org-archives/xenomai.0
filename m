@@ -1,13 +1,14 @@
-Message-ID: <482A9E3E.7040608@domain.hid>
-Date: Wed, 14 May 2008 10:09:34 +0200
-From: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
 MIME-Version: 1.0
-References: <48299843.7090307@domain.hid>
-	<2ff1a98a0805130731o5a78e490s77131ee48ee3b741@domain.hid>
-In-Reply-To: <2ff1a98a0805130731o5a78e490s77131ee48ee3b741@domain.hid>
-Content-Type: text/html; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] v2.4.3 bug with system() call
+Message-ID: <18477.53751.771867.378280@domain.hid>
+Date: Fri, 16 May 2008 20:27:03 +0200
+In-Reply-To: <482DCA2F.9010609@domain.hid>
+References: <482DBABA.9010408@domain.hid>
+	<18477.50111.565572.591277@domain.hid>
+	<482DCA2F.9010609@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] runaway secondary tasks lock up
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,53 +18,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Tomas Kalibera <kalibera@domain.hid>
+Cc: xenomai@xenomai.org
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
-  <title></title>
-</head>
-<body bgcolor="#ffffff" text="#000000">
-Gilles Chanteperdrix a &eacute;crit&nbsp;:
-<blockquote
- cite="mid:2ff1a98a0805130731o5a78e490s77131ee48ee3b741@domain.hid"
- type="cite">
-  <pre wrap="">On Tue, May 13, 2008 at 3:31 PM, St&eacute;phane ANCELOT <a class="moz-txt-link-rfc2396E" href="mailto:sancelot@domain.hid">&lt;sancelot@domain.hid&gt;</a> wrote:
-  </pre>
-  <blockquote type="cite">
-    <pre wrap="">Hi,
- Using the v2.4.3 +kernel 2.6.24.7 I used the system("touch /tmp/xxx_ok")
- call   in a non realtime init context.
+Tomas Kalibera wrote:
+ > 
+ > Gilles Chanteperdrix wrote:
+ > > Tomas Kalibera wrote:
+ > >  > 
+ > >  > Hi,
+ > >  > 
+ > >  > I've noticed an interesting difference regarding primary and secondary 
+ > >  > domain runaway tasks. The primary domain ones are detected by Xenomai 
+ > >  > watchdog and terminated. The secondary domain ones are not terminated, 
+ > >  > but cause a system lockup, because a secondary domain task is always run 
+ > >  > in preference of other tasks  (kernel complains by  BUG: soft lockup - 
+ > >  > CPU#0 stuck for 11s!). Would there be a way to also detect the secondary 
+ > >  > domain runaway threads ? Since the kernel itself can do it, it should be 
+ > >  > possible, right ?
+ > >
+ > > Yes, but if the Linux kernel does it, why would Xenomai reinvent the wheel ?
+ > >   
+ > Because the wheels behave differently. Xenomai watchdog kills the app 
+ > after 4 seconds, kernel just writes a message. This is not nice for 
+ > debugging large Xenomai applications. You add a debug printf somewhere 
+ > and it makes the system freeze because it switches to secondary domain.  
+ > And when the application just does not have full control over when it 
+ > runs in primary or secondary domain (i.e. a JVM), this is  somewhat 
+ > painful.
 
- The task is only used to allocate some memory heaps.
+I would say the best thing to do then, is to patch the Linux soft-lockup
+detector. It will probably be much easier than re-implemeting the whole
+thing in Xenomai. And it may even be useful to other people not using
+Xenomai.
 
- I setted up some memory debugging features in the kernel :
- CONFIG_DEBUG_KERNEL=y
- CONFIG_DEBUG_SLAB=y
- CONFIG_DEBUG_SLAB_LEAK=y
- CONFIG_DEBUG_BUGVERBOSE=y
- CONFIG_DEBUG_VM=y
- CONFIG_FORCED_INLINING=y
- CONFIG_EARLY_PRINTK=y
- CONFIG_DEBUG_PAGEALLOC=y
+ > >  > 
+ > >  > Now, I've discovered that if I assign the secondary domain task priority 
+ > >  > 0, it would not lock up the system. 1 would, 99 would as well. What is 
+ > >  > the semantics ? Any secondary domain task with priority above zero runs 
+ > >  > in preference of any (non-Xenomai) Linux thread ?
+ > >
+ > > This is not related to Xenomai, that is the semantic of SCHED_FIFO, also
+ > > called fixed priority scheduling.
+ > >   
+ > Thank you for explaining this. It would be nice if the Xenomai API 
+ > documentation could say that the priorities are directly mapped to Linux 
+ > priorities and that SCHED_FIFO is used.
 
-  This was not happening with v2.4.2 although that the kernel debugging
- flags were not "on"
-    </pre>
-  </blockquote>
-  <pre wrap=""><!---->
-It would be nice if you could try the v2.4.2 with debugging options
-on, to know if it is a regression or not.
+I think it is explained in the articles "Life with Adeos" and "Native API
+tour".
 
-  </pre>
-</blockquote>
-No time left, going back on v2.4.2. However, I have exactly the same
-problem, if I use the fork() call inside a program.<br>
-<br>
-<br>
-</body>
-</html>
+-- 
+
+
+					    Gilles.
 
