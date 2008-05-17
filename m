@@ -1,15 +1,17 @@
-Message-ID: <482F4BB1.7060701@domain.hid>
-Date: Sat, 17 May 2008 23:18:41 +0200
+Message-ID: <482F4D8D.6050004@domain.hid>
+Date: Sat, 17 May 2008 23:26:37 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <51B669A8A7D2914E9AB2B3F40AC6553E646F7E@afsexc01.aurora.aero><4821E5BF.4040101@domain.hid>
 	<51B669A8A7D2914E9AB2B3F40AC6553E646F83@domain.hid>
 	<51B669A8A7D2914E9AB2B3F40AC6553E646F86@domain.hid>
-In-Reply-To: <51B669A8A7D2914E9AB2B3F40AC6553E646F86@domain.hid>
-Content-Type: multipart/mixed; boundary="------------010507070601060603000909"
+	<51B669A8A7D2914E9AB2B3F40AC6553E646F94@domain.hid>
+In-Reply-To: <51B669A8A7D2914E9AB2B3F40AC6553E646F94@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] rt_task_send / receive problems various
- issuesand bug trace
+Subject: Re: [Xenomai-help] rt_task_send / receive bug from last week and
+ use of rt_task_inquire
 Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -23,12 +25,78 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: "Karch, Joshua" <jkarch@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------010507070601060603000909
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-
 Karch, Joshua wrote:
+> Phillipe,
+> 
+> I was wondering if you had any progress with the rt_task_send/receive
+> bug?  I was able to get the synchronized serial chain to work from
+> sensor task through an rt_task_send at 50 Hz with a timeout to the
+> control task, which then synchronously sends an rt_task_send with
+> timeout to the motor driver on the second serial port.  When I set the
+> motor driver's timeout to be 100 msec and I unplug the motor driver's
+> serial interface to cause this timeout, I immediately get rt_task_send
+> errors, some bad enough to cause a system crash if and only if the
+> rt_task_send looks for a reply, otherwise, with the reply MCB field set
+> to NULL, rt_task_send fails indefinitely until the program is killed and
+> a segfault occurs.  Clearly, with a 100 msec timeout, this means that up
+> to five rt_task send commands will come from the control law which is
+> chain-linked to the sensor task before a single reply is sent back from
+> the servo controller.
+> 
+> What is the expected behavior of repeatedly issuing rt_task_send when
+> the other task has not replied within a timeout specified by
+> rt_task_send?  The 100 msec timeout is akin to having 3 cars on a
+> highway, with the front one (the servo motor) slamming on the brakes and
+> causing a major collision.  Basically, the servo controller must always
+> respond within 20 msec- the time of execution for the control task in
+> order to prevent the xenomai equivalent of a traffic jam.  Can and
+> should this be avoided by using a function like rt_task_inquire to see
+> if the servo serial driver is blocking on serial read, and if so, not
+> issue an rt_task_send command?  In this way, the synchronous
+> relationship between the serial sensor and the control law will never be
+> broken.
+> 
+> Regardless, bringing the serial port timeout down to 10msec, which is
+> reasonable, resolves this problem for now, though it limits the control
+> law's ability to process while the servo motor serial task has timed out.
+> 
+> That's basically my update.  I'd still much prefer to be able to send a
+> non-blocking trigger message without a reply for all rt_task_send calls
+
+It's ok unless you end up implementing some kind of asynchronous protocol using
+that message passing interface: this won't work. rt_task_send/receive/reply are
+meant to implement synchronous message passing. Just to make sure the
+implementation is well understood:
+
+- passing mcb_r == NULL to rt_task_send() does not mean that you won't wait for
+any answer from the remote task, you will wait for rt_task_reply() to be called;
+that answer will just be discarded before rt_task_send() returns.
+
+- passing timeout == TM_NONBLOCK to rt_task_send() does NOT mean not to wait for
+a reply, but it means to wait for a reply indefinitely UNLESS no server is
+listening to the sender before it issues the request, in which case
+rt_task_send() should return immediately.
+
+In other word, it's purely synchronous stuff. If you need asynchronous message
+passing, then you should use another IPC.
+
+> from the sensor to the control law to regulate the control law's loop
+> rate, and perhaps also do the same for the motor controller, which
+> currently places its response in shared memory.
+> 
+> Thank you,
+> 
+> Josh
+> 
+> 
+> -----Original Message-----
+> From: Karch, Joshua
+> Sent: Wed 5/7/2008 3:35 PM
+> To: Karch, Joshua; rpm@xenomai.org
+> Cc: xenomai@xenomai.org
+> Subject: RE: [Xenomai-help] rt_task_send / receive problems various
+> issuesand   bug trace
+> 
 > Phillipe: small clarification: the following example has replies enabled
 > and TM_NONBLOCK on rt_task_send.  I tried the code two different ways:
 > len = rt_task_send(listen_task,&talk_send,&talk_reply,TM_NONBLOCK);
@@ -37,10 +105,7 @@ Karch, Joshua wrote:
 > RT_TASK_MCB reply structs
 > 
 > both have the same bug in the end.
->
-
-The attached patch fixes the issue.
-
+> 
 > Josh
 > 
 > 
@@ -579,80 +644,11 @@ The attached patch fixes the issue.
 > Philippe.
 > 
 > 
+> 
+> 
+> 
 
 
 -- 
 Philippe.
-
---------------010507070601060603000909
-Content-Type: text/x-diff;
- name="msend-fix-non-blocking.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="msend-fix-non-blocking.patch"
-
-Index: ChangeLog
-===================================================================
---- ChangeLog	(revision 3796)
-+++ ChangeLog	(working copy)
-@@ -1,3 +1,11 @@
-+2008-05-17  Philippe Gerum  <rpm@xenomai.org>
-+
-+	* ksrc/skins/native/task.c (rt_task_send): Apply infinite timeout
-+	to wait for a reply once a remote server has been found, in the
-+	non-blocking call case. NOTE: Passing TM_NONBLOCK does NOT mean
-+	not to wait for a reply, but it means to wait for a reply UNLESS
-+	no server is listening to us before we send the request.
-+
- 2008-05-15  Philippe Gerum  <rpm@xenomai.org>
- 
- 	* src/skins/vxworks, ksrc/skins/vxworks: Add taskInfoGet()
-Index: ksrc/skins/native/task.c
-===================================================================
---- ksrc/skins/native/task.c	(revision 3796)
-+++ ksrc/skins/native/task.c	(working copy)
-@@ -1691,7 +1691,8 @@
-  * remote task eventually replies. Passing TM_NONBLOCK causes the
-  * service to return immediately without waiting if the remote task is
-  * not waiting for messages (i.e. if @a task is not currently blocked
-- * on the rt_task_receive() service).
-+ * on the rt_task_receive() service); however, the caller will wait
-+ * indefinitely for a reply from that remote task if present.
-  *
-  * @return A positive value is returned upon success, representing the
-  * length (in bytes) of the reply message returned by the remote
-@@ -1718,6 +1719,9 @@
-  * from a context which cannot sleep (e.g. interrupt, non-realtime or
-  * scheduler locked).
-  *
-+ * - -ESRCH is returned if @a task cannot be found (when called from
-+ *    user-space only).
-+ *
-  * Environments:
-  *
-  * This service can be called from:
-@@ -1755,10 +1759,17 @@
- 		goto unlock_and_exit;
- 	}
- 
--	if (timeout == TM_NONBLOCK && xnsynch_nsleepers(&task->mrecv) == 0) {
--		/* Can't block and no server listening; just bail out. */
--		err = -EWOULDBLOCK;
--		goto unlock_and_exit;
-+	if (timeout == TM_NONBLOCK) {
-+		if (xnsynch_nsleepers(&task->mrecv) == 0) {
-+			/* Can't block and no server listening; just bail out. */
-+			err = -EWOULDBLOCK;
-+			goto unlock_and_exit;
-+		} else
-+			/*
-+			 * Make sure we'll wait indefinitely once we
-+			 * know that a remote task is listening.
-+			 */
-+			timeout = TM_INFINITE;
- 	}
- 
- 	if (xnpod_unblockable_p()) {
-
---------------010507070601060603000909--
 
