@@ -1,15 +1,15 @@
-Message-ID: <48305BE4.3040503@domain.hid>
-Date: Sun, 18 May 2008 18:40:04 +0200
+Message-ID: <48305C5D.3020601@domain.hid>
+Date: Sun, 18 May 2008 18:42:05 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <18459.38249.462320.715909@domain.hid>	<18459.38430.835407.942336@domain.hid>	<18459.38500.720338.652195@domain.hid>	<18459.38558.684426.240775@domain.hid>	<18459.38644.699369.801548@domain.hid>
-	<18459.38704.252719.734650@domain.hid>
-In-Reply-To: <18459.38704.252719.734650@domain.hid>
+References: <18459.38249.462320.715909@domain.hid>	<18459.38430.835407.942336@domain.hid>	<18459.38500.720338.652195@domain.hid>	<18459.38558.684426.240775@domain.hid>	<18459.38644.699369.801548@domain.hid>	<18459.38704.252719.734650@domain.hid>	<18459.38785.367098.763153@domain.hid>
+	<18459.38879.202210.838294@domain.hid>
+In-Reply-To: <18459.38879.202210.838294@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [Patch 5/7] Define new syscalls for the system
- skin
+Subject: Re: [Xenomai-core] [Patch 7/7] Re-implementation of mutexes,
+ user-space support.
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -24,604 +24,487 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
 Gilles Chanteperdrix wrote:
-> The two syscalls defined in the posix skin now moved to the sys skin, they are
-> used in user-space by include/asm-generic/bits/bind.h and the new header
-> include/asm-generic/bits/current.h. The global and process-specific shared heaps
-> are now part of this patch.
->
+> Since binding of the semaphore heaps is now made by xeno_skin_bind, there is
+> much less modifications in src/skins/posix/init.c. However, I had to do
+> something really ugly: since binding the semaphore heaps by xeno_skin_bind
+> requires calls to open, ioctl, mmap, close and munmap, I redefined these symbols
+> to be the __real_ variants before including bind.h.
 
-Is there any reason why the nucleus should not implement a full-fledged "RT
-futex" support, instead of a toolbox to build them? I'm concerned by skins
-reinventing their own wheel uselessly to get to the same point at the end of the
-day; e.g. cb_lock ops seem to me fairly generic when it comes to handling
-futexes, so I would move them upstream one level more.
+Is there any upside to do this instead of simply calling the __real_*
+placeholders, since we do already provide weak wrappers for those when the
+linker's wrapping magic is not invoked?
 
-In that respect, talking about "semaphore heaps" at nucleus level looks a bit of
-a misnomer: if we mostly bring a service to map non-cacheable memory to
-user-space, then we don't actually provide semaphore support.
-
-> ---
->  include/asm-generic/bits/Makefile.am |    1
->  include/asm-generic/bits/bind.h      |  121 +++++++++++++++++++++++++++++++++++
->  include/asm-generic/bits/current.h   |   14 ++++
->  include/asm-generic/syscall.h        |    2
->  include/nucleus/Makefile.am          |    1
->  include/nucleus/sys_ppd.h            |   37 ++++++++++
->  include/posix/syscall.h              |    1
->  ksrc/nucleus/Kconfig                 |   25 +++++++
->  ksrc/nucleus/module.c                |   19 ++++-
->  ksrc/nucleus/shadow.c                |  103 ++++++++++++++++++++++++++++-
->  src/skins/posix/thread.c             |    4 +
->  11 files changed, 323 insertions(+), 5 deletions(-)
+> Another solution would have been to use __open (which would not have been
+> wrapped) instead of open in bind.h and rely on the fact that the posix skin
+> wrapped syscalls fall back to the __real variants when called for non real-time
+> file descriptors. I do not know however, if this solution would have been
+> portable. In particular, does uclibc also defines __open ?
 > 
-> Index: include/asm-generic/syscall.h
+> ---
+>  Makefile.am |    2
+>  cond.c      |   21 ++++
+>  init.c      |   26 +++++
+>  mutex.c     |  265 ++++++++++++++++++++++++++++++++++++++++++++++++++++++------
+>  4 files changed, 287 insertions(+), 27 deletions(-)
+> 
+> Index: src/skins/posix/init.c
 > ===================================================================
-> --- include/asm-generic/syscall.h	(revision 3738)
-> +++ include/asm-generic/syscall.h	(working copy)
-> @@ -30,6 +30,8 @@
->  #define __xn_sys_info       4	/* xnshadow_get_info(muxid,&info) */
->  #define __xn_sys_arch       5	/* r = xnarch_local_syscall(args) */
->  #define __xn_sys_trace      6	/* r = xntrace_xxx(...) */
-> +#define __xn_sys_sem_heap   7
-> +#define __xn_sys_current    8
+> --- src/skins/posix/init.c	(revision 3738)
+> +++ src/skins/posix/init.c	(working copy)
+> @@ -26,9 +26,23 @@
+>  #include <posix/posix.h>
+>  #include <posix/syscall.h>
+>  #include <rtdm/syscall.h>
+> -#include <asm-generic/bits/bind.h>
+>  #include <asm-generic/bits/mlock_alert.h>
 >  
->  #define XENOMAI_LINUX_DOMAIN  0
->  #define XENOMAI_XENO_DOMAIN   1
-> Index: ksrc/nucleus/Kconfig
-> ===================================================================
-> --- ksrc/nucleus/Kconfig	(revision 3738)
-> +++ ksrc/nucleus/Kconfig	(working copy)
-> @@ -158,6 +158,31 @@ config XENO_OPT_SYS_STACKPOOLSZ
->  	default 0
->  endif	
->  
-> +config XENO_OPT_SEM_HEAPSZ
-> +	int "Size of private semaphores heap (Kb)"
-> +	default 12
-> +	help
+> +/* asm-generic/bits/bind.h uses the following functions, so we redefine them to
+> +   be the __real variants */
+> +#undef open
+> +#undef ioctl
+> +#undef mmap
+> +#undef close
+> +#undef munmap
+> +#define open __real_open
+> +#define ioctl __real_ioctl
+> +#define mmap __real_mmap
+> +#define close __real_close
+> +#define munmap __real_munmap
 > +
-> +	Xenomai implementation of user-space semaphores relies on heaps 
-> +	shared between kernel and user-space. This configuration entry
-> +	allow to set the size of the heap used for private semaphores.
+> +#include <asm-generic/bits/bind.h>
 > +
-> +	Note that each semaphore will allocate 4 or 8 bytes of memory,
-
-It would be nice to tell the folks why such difference (32/64bit arch?)
-
-> +	so, the default of 12 Kb allows creating many semaphores.
+>  int __pse51_muxid = -1;
+>  int __rtdm_muxid = -1;
+>  int __rtdm_fd_start = INT_MAX;
+> @@ -91,5 +105,15 @@ void __init_posix_interface(void)
+>  			exit(EXIT_FAILURE);
+>  		}
+>  		fork_handler_registered = 1;
 > +
-> +config XENO_OPT_GLOBAL_SEM_HEAPSZ
-> +	int "Size of global semaphores heap (Kb)"
-> +	default 12
-> +	help
-> +
-> +	Xenomai implementation of user-space semaphores relies on heaps 
-> +	shared between kernel and user-space. This configuration entry
-> +	allow to set the size of the heap used for semaphores shared 
-> +	between several processes.
-> +
-> +	Note that each semaphore will allocate 4 or 8 bytes of memory,
-> +	so, the default of 12 Kb allows creating many semaphores.
-> +
->  config XENO_OPT_STATS
->  	bool "Statistics collection"
->  	depends on PROC_FS
-> Index: ksrc/nucleus/module.c
-> ===================================================================
-> --- ksrc/nucleus/module.c	(revision 3738)
-> +++ ksrc/nucleus/module.c	(working copy)
-> @@ -28,6 +28,7 @@
->  #include <nucleus/timer.h>
->  #include <nucleus/heap.h>
->  #include <nucleus/version.h>
-> +#include <nucleus/sys_ppd.h>
->  #ifdef CONFIG_XENO_OPT_PIPE
->  #include <nucleus/pipe.h>
->  #endif /* CONFIG_XENO_OPT_PIPE */
-> @@ -50,6 +51,8 @@ u_long xnmod_sysheap_size;
->  
->  int xeno_nucleus_status = -EINVAL;
->  
-> +struct xnsys_ppd __xnsys_global_ppd;
-> +
->  void xnmod_alloc_glinks(xnqueue_t *freehq)
->  {
->  	xngholder_t *sholder, *eholder;
-> @@ -1156,6 +1159,14 @@ int __init __xeno_sys_init(void)
->  	if (err)
->  		goto fail;
->  
-> +	err = xnheap_init_mapped(&__xnsys_global_ppd.sem_heap,
-> +				 CONFIG_XENO_OPT_GLOBAL_SEM_HEAPSZ * 1024,
-> +				 XNARCH_SHARED_HEAP_FLAGS ?:
-> +				 (CONFIG_XENO_OPT_GLOBAL_SEM_HEAPSZ <= 128
-> +				  ? GFP_USER : 0));
-> +	if (err)
-> +		goto cleanup_arch;
-> +	
->  #ifdef __KERNEL__
->  #ifdef CONFIG_PROC_FS
->  	xnpod_init_proc();
-> @@ -1167,7 +1178,7 @@ int __init __xeno_sys_init(void)
->  	err = xnpipe_mount();
->  
->  	if (err)
-> -		goto cleanup_arch;
-> +		goto cleanup_proc;
->  #endif /* CONFIG_XENO_OPT_PIPE */
->  
->  #ifdef CONFIG_XENO_OPT_PERVASIVE
-> @@ -1207,7 +1218,7 @@ int __init __xeno_sys_init(void)
->  #ifdef CONFIG_XENO_OPT_PIPE
->  	xnpipe_umount();
->  
-> -      cleanup_arch:
-> +      cleanup_proc:
->  
->  #endif /* CONFIG_XENO_OPT_PIPE */
->  
-> @@ -1215,6 +1226,8 @@ int __init __xeno_sys_init(void)
->  	xnpod_delete_proc();
->  #endif /* CONFIG_PROC_FS */
->  
-> +      cleanup_arch:
-> +
->  	xnarch_exit();
->  
->  #endif /* __KERNEL__ */
-> @@ -1254,6 +1267,8 @@ void __exit __xeno_sys_exit(void)
->  #endif /* CONFIG_XENO_OPT_PIPE */
->  #endif /* __KERNEL__ */
->  
-> +	xnheap_destroy_mapped(&__xnsys_global_ppd.sem_heap);
-> +
->  	if (nkmsgbuf)
->  		xnarch_free_host_mem(nkmsgbuf, XNPOD_FATAL_BUFSZ);
->  
-> Index: ksrc/nucleus/shadow.c
-> ===================================================================
-> --- ksrc/nucleus/shadow.c	(revision 3738)
-> +++ ksrc/nucleus/shadow.c	(working copy)
-> @@ -51,6 +51,7 @@
->  #include <nucleus/ppd.h>
->  #include <nucleus/trace.h>
->  #include <nucleus/stat.h>
-> +#include <nucleus/sys_ppd.h>
->  #include <asm/xenomai/features.h>
->  #include <asm/xenomai/syscall.h>
->  #include <asm/xenomai/bits/shadow.h>
-> @@ -1558,11 +1559,11 @@ static void stringify_feature_set(u_long
->  
->  static int xnshadow_sys_bind(struct pt_regs *regs)
->  {
-> +	xnshadow_ppd_t *ppd = NULL, *sys_ppd = NULL;
->  	unsigned magic = __xn_reg_arg1(regs);
->  	u_long featdep = __xn_reg_arg2(regs);
->  	u_long abirev = __xn_reg_arg3(regs);
->  	u_long infarg = __xn_reg_arg4(regs);
-> -	xnshadow_ppd_t *ppd = NULL;
->  	xnfeatinfo_t finfo;
->  	u_long featmis;
->  	int muxid, err;
-> @@ -1636,6 +1637,36 @@ static int xnshadow_sys_bind(struct pt_r
->  	   earlier than that, do not refer to nkpod until the latter had a
->  	   chance to call xnpod_init(). */
->  
-> +	xnlock_get_irqsave(&nklock, s);
-> +	sys_ppd = ppd_lookup(0, current->mm);
-> +	xnlock_put_irqrestore(&nklock, s);
-> +
-> +	if (sys_ppd)
-> +		goto muxid_eventcb;
-> +
-> +	sys_ppd = (xnshadow_ppd_t *) muxtable[0].props->eventcb(XNSHADOW_CLIENT_ATTACH,
-> +								 current);
-> +
-> +	if (IS_ERR(sys_ppd)) {
-> +		err = PTR_ERR(sys_ppd);
-> +		goto fail;
-> +	}
-> +
-> +	if (!sys_ppd)
-> +		goto muxid_eventcb;
-> +
-> +
-> +	sys_ppd->key.muxid = 0;
-> +	sys_ppd->key.mm = current->mm;
-> +
-> +	if (ppd_insert(sys_ppd) == -EBUSY) {
-> +		/* In case of concurrent binding (which can not happen with
-> +		   Xenomai libraries), detach right away the second ppd. */
-> +		muxtable[0].props->eventcb(XNSHADOW_CLIENT_DETACH, sys_ppd);
-> +		sys_ppd = NULL;
-> +	}
-> +
-> +  muxid_eventcb:
->  	if (!muxtable[muxid].props->eventcb)
->  		goto eventcb_done;
->  
-> @@ -1652,7 +1683,7 @@ static int xnshadow_sys_bind(struct pt_r
->  
->  	if (IS_ERR(ppd)) {
->  		err = PTR_ERR(ppd);
-> -		goto fail;
-> +		goto fail_destroy_sys_ppd;
->  	}
->  
->  	if (!ppd)
-> @@ -1689,6 +1720,11 @@ static int xnshadow_sys_bind(struct pt_r
->  
->  		err = -ENOSYS;
->  
-> +	  fail_destroy_sys_ppd:
-> +		if (sys_ppd) {
-> +			ppd_remove(sys_ppd);
-> +			muxtable[0].props->eventcb(XNSHADOW_CLIENT_DETACH, sys_ppd);
+> +		if (sizeof(struct __shadow_mutex) > sizeof(pthread_mutex_t)) {
+> +			fprintf(stderr, "sizeof(pthread_mutex_t): %d,"
+> +				" sizeof(shadow_mutex): %d\n",
+> +				sizeof(pthread_mutex_t),
+> +				sizeof(struct __shadow_mutex));
+> +			exit(EXIT_FAILURE);
 > +		}
->  	      fail:
->  		if (!xnarch_atomic_get(&muxtable[muxid].refcnt))
->  			xnarch_atomic_dec(&muxtable[muxid].refcnt);
-> @@ -1856,6 +1892,32 @@ static int xnshadow_sys_trace(struct pt_
+> +
+>  	}
+>  }
+> +
+> Index: src/skins/posix/mutex.c
+> ===================================================================
+> --- src/skins/posix/mutex.c	(revision 3738)
+> +++ src/skins/posix/mutex.c	(working copy)
+> @@ -17,10 +17,15 @@
+>   */
+>  
+>  #include <errno.h>
+> -#include <posix/syscall.h>
+>  #include <pthread.h>
+> +#include <posix/syscall.h>
+> +#include <posix/cb_lock.h>
+> +#include <asm-generic/bits/current.h>
+> +
+> +#define PSE51_MUTEX_MAGIC (0x86860303)
+>  
+>  extern int __pse51_muxid;
+> +extern unsigned long xeno_sem_heap[2];
+>  
+>  int __wrap_pthread_mutexattr_init(pthread_mutexattr_t *attr)
+>  {
+> @@ -73,66 +78,280 @@ int __wrap_pthread_mutexattr_setpshared(
+>  				  __pse51_mutexattr_setpshared, attr, pshared);
+>  }
+>  
+> -int __wrap_pthread_mutex_init(pthread_mutex_t * mutex,
+> -			      const pthread_mutexattr_t * attr)
+> +static xnarch_atomic_intptr_t *get_ownerp(struct __shadow_mutex *shadow)
+> +{
+> +	if (likely(!shadow->attr.pshared))
+> +		return shadow->owner;
+> +	
+> +	return (xnarch_atomic_intptr_t *) (xeno_sem_heap[1] + shadow->owner_offset);
+> +}
+> +
+> +int __wrap_pthread_mutex_init(pthread_mutex_t *mutex,
+> +			      const pthread_mutexattr_t *attr)
+>  {
+>  	union __xeno_mutex *_mutex = (union __xeno_mutex *)mutex;
+> +	struct __shadow_mutex *shadow = &_mutex->shadow_mutex;
+>  	int err;
+>  
+> -	err = -XENOMAI_SKINCALL2(__pse51_muxid,
+> -				 __pse51_mutex_init,&_mutex->shadow_mutex,attr);
+> +#ifdef XNARCH_HAVE_US_ATOMIC_CMPXCHG
+> +	if (unlikely(cb_try_read_lock(&shadow->lock, s)))
+> +		goto checked;
+> +
+> +	err = -XENOMAI_SKINCALL2(__pse51_muxid,__pse51_check_init,shadow,attr);
+> +
+> +	if (err) {
+> +		cb_read_unlock(&shadow->lock, s);
+> +		return err;
+> +	}
+> +
+> +  checked:
+> +	cb_force_write_lock(&shadow->lock, s);
+> +#endif /* XNARCH_HAVE_US_ATOMIC_CMPXCHG */
+> +
+> +	err = -XENOMAI_SKINCALL2(__pse51_muxid,__pse51_mutex_init,shadow,attr);
+> +
+> +	if (!shadow->attr.pshared)
+> +		shadow->owner = (xnarch_atomic_intptr_t *)
+> +			(xeno_sem_heap[0] + shadow->owner_offset);
+> +	
+> +	cb_write_unlock(&shadow->lock, s);
+> +
 >  	return err;
 >  }
 >  
-> +struct heap_info {
-> +	xnheap_t *addr;
-> +	unsigned size;
-> +};
-> +
-> +static int xnshadow_sys_sem_heap(struct pt_regs *regs)
-> +{
-> +	struct heap_info hinfo, __user *us_hinfo;
-> +	unsigned global;
-> +
-> +	global = __xn_reg_arg2(regs);
-> +	us_hinfo = (struct heap_info __user *) __xn_reg_arg1(regs);
-> +	hinfo.addr = &xnsys_ppd_get(global)->sem_heap;
-> +	hinfo.size = xnheap_extentsize(hinfo.addr);
-> +
-> +	return __xn_safe_copy_to_user(us_hinfo, &hinfo, sizeof(*us_hinfo));
-> +}
-> +
-> +static int xnshadow_sys_current(struct pt_regs *regs)
-> +{
-> +	xnthread_t * __user *us_current, *cur = xnshadow_thread(current);
-> +	us_current = (xnthread_t *__user *) __xn_reg_arg1(regs);
-> +
-> +	return __xn_safe_copy_to_user(us_current, &cur, sizeof(*us_current));
-> +}
-> +
->  static xnsysent_t __systab[] = {
->  	[__xn_sys_migrate] = {&xnshadow_sys_migrate, __xn_exec_current},
->  	[__xn_sys_arch] = {&xnshadow_sys_arch, __xn_exec_any},
-> @@ -1864,15 +1926,50 @@ static xnsysent_t __systab[] = {
->  	[__xn_sys_completion] = {&xnshadow_sys_completion, __xn_exec_lostage},
->  	[__xn_sys_barrier] = {&xnshadow_sys_barrier, __xn_exec_lostage},
->  	[__xn_sys_trace] = {&xnshadow_sys_trace, __xn_exec_any},
-> +	[__xn_sys_sem_heap] = {&xnshadow_sys_sem_heap, __xn_exec_any},
-> +	[__xn_sys_current] = {&xnshadow_sys_current, __xn_exec_any},
->  };
->  
-> +static void *xnshadow_sys_event(int event, void *data)
-> +{
-> +	struct xnsys_ppd *p;
+> -int __wrap_pthread_mutex_destroy(pthread_mutex_t * mutex)
+> +int __wrap_pthread_mutex_destroy(pthread_mutex_t *mutex)
+>  {
+>  	union __xeno_mutex *_mutex = (union __xeno_mutex *)mutex;
+> +	struct __shadow_mutex *shadow = &_mutex->shadow_mutex;
 > +	int err;
 > +
-> +	switch(event) {
-> +	case XNSHADOW_CLIENT_ATTACH:
-> +		p = (struct xnsys_ppd *) xnarch_alloc_host_mem(sizeof(*p));
-> +		if (!p)
-> +			return ERR_PTR(-ENOMEM);
+> +	if (unlikely(cb_try_write_lock(&shadow->lock, s)))
+> +		return EINVAL;
+>  
+> -	return -XENOMAI_SKINCALL1(__pse51_muxid,
+> -				  __pse51_mutex_destroy, &_mutex->shadow_mutex);
+> +	err = -XENOMAI_SKINCALL1(__pse51_muxid, __pse51_mutex_destroy, shadow);
 > +
-> +		err = xnheap_init_mapped(&p->sem_heap,
-> +					 CONFIG_XENO_OPT_SEM_HEAPSZ * 1024,
-> +					 XNARCH_SHARED_HEAP_FLAGS ?:
-> +					 (CONFIG_XENO_OPT_SEM_HEAPSZ <= 128
-> +					  ? GFP_USER : 0));
-> +		if (err) {
-> +			xnarch_free_host_mem(p, sizeof(*p));
-> +			return ERR_PTR(err);
-> +		}
+> +	cb_write_unlock(&shadow->lock, s);
 > +
-> +		return &p->ppd;
+> +	return err;
+>  }
+>  
+> -int __wrap_pthread_mutex_lock(pthread_mutex_t * mutex)
+> +int __wrap_pthread_mutex_lock(pthread_mutex_t *mutex)
+>  {
+>  	union __xeno_mutex *_mutex = (union __xeno_mutex *)mutex;
+> -	int err;
+> +	struct __shadow_mutex *shadow = &_mutex->shadow_mutex;
+> +	xnthread_t *cur, *owner;
+> +	int err = 0;
 > +
-> +	case XNSHADOW_CLIENT_DETACH:
-> +		p = ppd2sys((xnshadow_ppd_t *) data);
+> +#ifdef XNARCH_HAVE_US_ATOMIC_CMPXCHG
+> +	cur = xeno_get_current();
+> +	if (!cur)
+> +		return EPERM;
 > +
-> +		xnheap_destroy_mapped(&p->sem_heap);
+> +	if (unlikely(cb_try_read_lock(&shadow->lock, s)))
+> +		return EINVAL;
 > +
-> +		return NULL;
+> +	if (unlikely(shadow->magic != PSE51_MUTEX_MAGIC)) {
+> +		err = -EINVAL;
+> +		goto out;
 > +	}
 > +
-> +	return ERR_PTR(-EINVAL);
-> +}
+> +	owner = xnarch_atomic_intptr_cmpxchg(get_ownerp(shadow), NULL, cur);
+> +	if (likely(!owner)) {
+> +		shadow->lockcnt = 1;
+> +		cb_read_unlock(&shadow->lock, s);
+> +		return 0;
+> +	}
+> +
+> +	if (clear_claimed(owner) == cur)
+> +		switch(shadow->attr.type) {
+> +		case PTHREAD_MUTEX_NORMAL:
+> +			break;
+> +
+> +		case PTHREAD_MUTEX_ERRORCHECK:
+> +			err = -EDEADLK;
+> +			goto out;
+> +
+> +		case PTHREAD_MUTEX_RECURSIVE:
+> +			if (shadow->lockcnt == UINT_MAX) {
+> +				err = -EAGAIN;
+> +				goto out;
+> +			}
+> +
+> +			++shadow->lockcnt;
+> +			goto out;
+> +		}
+> +#endif /* XNARCH_HAVE_US_ATOMIC_CMPXCHG */
 >  
->  static struct xnskin_props __props = {
->  	.name = "sys",
->  	.magic = 0x434F5245,
->  	.nrcalls = sizeof(__systab) / sizeof(__systab[0]),
->  	.systab = __systab,
-> -	.eventcb = NULL,
-> +	.eventcb = xnshadow_sys_event,
->  	.timebasep = NULL,
->  	.module = NULL
->  };
-> Index: include/posix/syscall.h
+>  	do {
+> -		err = XENOMAI_SKINCALL1(__pse51_muxid,
+> -					__pse51_mutex_lock,
+> -					&_mutex->shadow_mutex);
+> +		err = XENOMAI_SKINCALL1(__pse51_muxid,__pse51_mutex_lock,shadow);
+>  	} while (err == -EINTR);
+>  
+> +#ifdef XNARCH_HAVE_US_ATOMIC_CMPXCHG
+> +  out:
+> +	cb_read_unlock(&shadow->lock, s);
+> +#endif /* XNARCH_HAVE_US_ATOMIC_CMPXCHG */
+> +
+>  	return -err;
+>  }
+>  
+> -int __wrap_pthread_mutex_timedlock(pthread_mutex_t * mutex,
+> +int __wrap_pthread_mutex_timedlock(pthread_mutex_t *mutex,
+>  				   const struct timespec *to)
+>  {
+>  	union __xeno_mutex *_mutex = (union __xeno_mutex *)mutex;
+> -	int err;
+> +	struct __shadow_mutex *shadow = &_mutex->shadow_mutex;
+> +	xnthread_t *cur, *owner;
+> +	int err = 0;
+> +
+> +#ifdef XNARCH_HAVE_US_ATOMIC_CMPXCHG
+> +	cur = xeno_get_current();
+> +	if (!cur)
+> +		return EPERM;
+> +
+> +	if (unlikely(cb_try_read_lock(&shadow->lock, s)))
+> +		return EINVAL;
+> +
+> +	if (shadow->magic != PSE51_MUTEX_MAGIC) {
+> +		err = -EINVAL;
+> +		goto out;
+> +	}	
+> +
+> +	owner = xnarch_atomic_intptr_cmpxchg(get_ownerp(shadow), NULL, cur);
+> +	if (likely(!owner)) {
+> +		shadow->lockcnt = 1;
+> +		cb_read_unlock(&shadow->lock, s);
+> +		return 0;
+> +	}
+> +
+> +	if (clear_claimed(owner) == cur)
+> +		switch(shadow->attr.type) {
+> +		case PTHREAD_MUTEX_NORMAL:
+> +			break;
+> +
+> +		case PTHREAD_MUTEX_ERRORCHECK:
+> +			err = -EDEADLK;
+> +			goto out;
+> +
+> +		case PTHREAD_MUTEX_RECURSIVE:
+> +			if (shadow->lockcnt == UINT_MAX) {
+> +				err = -EAGAIN;
+> +				goto out;
+> +			}
+> +
+> +			++shadow->lockcnt;
+> +			goto out;
+> +		}
+> +#endif /* XNARCH_HAVE_US_ATOMIC_CMPXCHG */
+>  
+>  	do {
+>  		err = XENOMAI_SKINCALL2(__pse51_muxid,
+> -					__pse51_mutex_timedlock,
+> -					&_mutex->shadow_mutex, to);
+> +					__pse51_mutex_timedlock, shadow, to);
+>  	} while (err == -EINTR);
+>  
+> +#ifdef XNARCH_HAVE_US_ATOMIC_CMPXCHG
+> +  out:
+> +	cb_read_unlock(&shadow->lock, s);
+> +#endif /* XNARCH_HAVE_US_ATOMIC_CMPXCHG */
+> +
+>  	return -err;
+>  }
+>  
+> -int __wrap_pthread_mutex_trylock(pthread_mutex_t * mutex)
+> +int __wrap_pthread_mutex_trylock(pthread_mutex_t *mutex)
+>  {
+>  	union __xeno_mutex *_mutex = (union __xeno_mutex *)mutex;
+> +	struct __shadow_mutex *shadow = &_mutex->shadow_mutex;
+> +	xnthread_t *cur, *owner;
+> +	int err = 0;
+> +
+> +#ifdef XNARCH_HAVE_US_ATOMIC_CMPXCHG
+> +	cur = xeno_get_current();
+> +	if (!cur)
+> +		return EPERM;
+> +
+> +	if (unlikely(cb_try_read_lock(&shadow->lock, s)))
+> +		return EINVAL;
+> +
+> +	if (unlikely(shadow->magic != PSE51_MUTEX_MAGIC)) {
+> +		err = -EINVAL;
+> +		goto out;
+> +	}	
+> +
+> +	owner = xnarch_atomic_intptr_cmpxchg(get_ownerp(shadow), NULL, cur);
+> +	if (likely(!owner)) {
+> +		shadow->lockcnt = 1;
+> +		cb_read_unlock(&shadow->lock, s);
+> +		return 0;
+> +	}
+> +
+> +	err = -EBUSY;
+> +	if (clear_claimed(owner) == cur
+> +	    && shadow->attr.type == PTHREAD_MUTEX_RECURSIVE) {
+> +		if (shadow->lockcnt == UINT_MAX)
+> +			err = -EAGAIN;
+> +		else {
+> +			++shadow->lockcnt;
+> +			err = 0;
+> +		}
+> +	}
+> +
+> +  out:
+> +	cb_read_unlock(&shadow->lock, s);
+>  
+> -	return -XENOMAI_SKINCALL1(__pse51_muxid,
+> -				  __pse51_mutex_trylock, &_mutex->shadow_mutex);
+> +	return -err;
+> +
+> +#else /* !XNARCH_HAVE_US_ATOMIC_CMPXCHG */
+> +
+> +	return -XENOMAI_SKINCALL1(__pse51_muxid, __pse51_mutex_trylock, shadow);
+> +
+> +#endif /* !XNARCH_HAVE_US_ATOMIC_CMPXCHG */
+>  }
+>  
+> -int __wrap_pthread_mutex_unlock(pthread_mutex_t * mutex)
+> +int __wrap_pthread_mutex_unlock(pthread_mutex_t *mutex)
+>  {
+>  	union __xeno_mutex *_mutex = (union __xeno_mutex *)mutex;
+> +	struct __shadow_mutex *shadow = &_mutex->shadow_mutex;
+>  
+> -	return -XENOMAI_SKINCALL1(__pse51_muxid,
+> -				  __pse51_mutex_unlock, &_mutex->shadow_mutex);
+> +#ifdef XNARCH_HAVE_US_ATOMIC_CMPXCHG
+> +	xnarch_atomic_intptr_t *ownerp;
+> +	xnthread_t *cur;
+> +	int err = 0;
+> +
+> +	cur = xeno_get_current();
+> +	if (!cur)
+> +		return EPERM;
+> +
+> +	if (unlikely(cb_try_read_lock(&shadow->lock, s)))
+> +		return EINVAL;
+> +
+> +	if (unlikely(shadow->magic != PSE51_MUTEX_MAGIC)) {
+> +		err = -EINVAL;
+> +		goto out_err;
+> +	}
+> +
+> +	ownerp = get_ownerp(shadow);
+> +	if (unlikely(clear_claimed(xnarch_atomic_intptr_get(ownerp)) != cur)) {
+> +		err = -EPERM;
+> +		goto out_err;
+> +	}
+> +
+> +	err = 0;
+> +	if (shadow->lockcnt > 1) {
+> +		--shadow->lockcnt;
+> +		goto out;
+> +	}
+> +
+> +	if (likely(xnarch_atomic_intptr_cmpxchg(ownerp, cur, NULL) == cur)) {
+> +	  out:
+> +		cb_read_unlock(&shadow->lock, s);
+> +		return 0;
+> +	}
+> +#endif /* XNARCH_HAVE_US_ATOMIC_CMPXCHG */
+> +
+> +	err = XENOMAI_SKINCALL1(__pse51_muxid, __pse51_mutex_unlock, shadow);
+> +
+> +#ifdef XNARCH_HAVE_US_ATOMIC_CMPXCHG
+> +  out_err:
+> +	cb_read_unlock(&shadow->lock, s);
+> +#endif /* XNARCH_HAVE_US_ATOMIC_CMPXCHG */
+> +
+> +	return -err;
+>  }
+> Index: src/skins/posix/cond.c
 > ===================================================================
-> --- include/posix/syscall.h	(revision 3738)
-> +++ include/posix/syscall.h	(working copy)
-> @@ -46,6 +46,7 @@
->  #define __pse51_mutex_lock            20
->  #define __pse51_mutex_timedlock       21
->  #define __pse51_mutex_trylock         22
-> +#define __pse51_check_init            __pse51_mutex_trylock
->  #define __pse51_mutex_unlock          23
->  #define __pse51_cond_init             24
->  #define __pse51_cond_destroy          25
-> Index: src/skins/posix/thread.c
-> ===================================================================
-> --- src/skins/posix/thread.c	(revision 3738)
-> +++ src/skins/posix/thread.c	(working copy)
-> @@ -24,6 +24,7 @@
->  #include <sys/types.h>
->  #include <semaphore.h>
+> --- src/skins/posix/cond.c	(revision 3738)
+> +++ src/skins/posix/cond.c	(working copy)
+> @@ -19,6 +19,7 @@
+>  #include <errno.h>
 >  #include <posix/syscall.h>
-> +#include <asm-generic/bits/current.h>
+>  #include <pthread.h>
+> +#include <posix/cb_lock.h>
 >  
 >  extern int __pse51_muxid;
 >  
-> @@ -56,6 +57,7 @@ int __wrap_pthread_setschedparam(pthread
+> @@ -95,7 +96,7 @@ static void __pthread_cond_cleanup(void 
+>  			  c->count);
+>  }
 >  
->  	if (!err && promoted) {
->  		old_sigharden_handler = signal(SIGHARDEN, &__pthread_sigharden_handler);
-> +		xeno_set_current();
->  		if (policy != SCHED_OTHER)
->  			XENOMAI_SYSCALL1(__xn_sys_migrate, XENOMAI_XENO_DOMAIN);
->  	}
-> @@ -132,6 +134,8 @@ static void *__pthread_trampoline(void *
->  	start = iargs->start;
->  	cookie = iargs->arg;
->  
-> +	xeno_set_current();
-> +
->  	__real_sem_post(&iargs->sync);
->  
->  	if (!err) {
-> Index: include/asm-generic/bits/current.h
-> ===================================================================
-> --- include/asm-generic/bits/current.h	(revision 0)
-> +++ include/asm-generic/bits/current.h	(revision 0)
-> @@ -0,0 +1,14 @@
-> +#ifndef _XENO_ASM_GENERIC_CURRENT_H
-> +#define _XENO_ASM_GENERIC_CURRENT_H
-> +
-> +#include <pthread.h>
-> +
-> +extern pthread_key_t xeno_current_key;
-> +
-> +extern void xeno_set_current(void);
-> +
-> +static inline void *xeno_get_current(void)
-> +{
-> +	return pthread_getspecific(xeno_current_key);
-> +}
-> +#endif /* _XENO_ASM_GENERIC_CURRENT_H */
-> Index: include/asm-generic/bits/Makefile.am
-> ===================================================================
-> --- include/asm-generic/bits/Makefile.am	(revision 3738)
-> +++ include/asm-generic/bits/Makefile.am	(working copy)
-> @@ -2,6 +2,7 @@ includesubdir = $(includedir)/asm-generi
->  
->  includesub_HEADERS = \
->  	bind.h \
-> +	current.h \
->  	heap.h \
->  	intr.h \
->  	mlock_alert.h \
-> Index: include/nucleus/sys_ppd.h
-> ===================================================================
-> --- include/nucleus/sys_ppd.h	(revision 0)
-> +++ include/nucleus/sys_ppd.h	(revision 0)
-> @@ -0,0 +1,37 @@
-> +#ifndef _XENO_NUCLEUS_SYS_PPD_H
-> +#define _XENO_NUCLEUS_SYS_PPD_H
-> +
-> +#include <nucleus/ppd.h>
-> +#include <nucleus/heap.h>
-> +
-> +struct xnsys_ppd {
-> +	xnshadow_ppd_t ppd;
-> +	xnheap_t sem_heap;
-> +
-> +#define ppd2sys(addr) container_of(addr, struct xnsys_ppd, ppd)
-> +};
-> +
-> +extern struct xnsys_ppd __xnsys_global_ppd;
-> +
-> +#ifdef CONFIG_XENO_OPT_PERVASIVE
-> +
-> +static inline struct xnsys_ppd *xnsys_ppd_get(int global)
-> +{
-> +	xnshadow_ppd_t *ppd;
-> +
-> +	if (global || !(ppd = xnshadow_ppd_get(0)))
-> +		return &__xnsys_global_ppd;
-> +
-> +	return ppd2sys(ppd);
-> +}
-> +
-> +#else /* !CONFIG_XENO_OPT_PERVASIVE */
-> +
-> +static inline struct xnsys_ppd *xnsys_ppd_get(int global)
-> +{
-> +	return &__xnsys_global_ppd;
-> +}
-> +
-> +#endif /* !CONFIG_XENO_OPT_PERVASIVE */
-> +
-> +#endif /* _XENO_NUCLEUS_SYS_PPD_H */
-> Index: include/nucleus/Makefile.am
-> ===================================================================
-> --- include/nucleus/Makefile.am	(revision 3738)
-> +++ include/nucleus/Makefile.am	(working copy)
-> @@ -20,6 +20,7 @@ includesub_HEADERS = \
->  	stat.h \
->  	synch.h \
->  	system.h \
-> +	sys_ppd.h \
->  	thread.h \
->  	timebase.h \
->  	timer.h \
-> Index: include/asm-generic/bits/bind.h
-> ===================================================================
-> --- include/asm-generic/bits/bind.h	(revision 3738)
-> +++ include/asm-generic/bits/bind.h	(working copy)
-> @@ -6,10 +6,89 @@
->  #include <string.h>
->  #include <errno.h>
->  #include <signal.h>
-> +#include <pthread.h>
-> +#include <sys/ioctl.h>
->  #include <asm/xenomai/syscall.h>
->  
-> +__attribute__ ((weak))
-> +pthread_key_t xeno_current_key;
-> +__attribute__ ((weak))
-> +pthread_once_t xeno_init_current_key_once = PTHREAD_ONCE_INIT;
-> +
-> +__attribute__ ((weak))
-> +void xeno_set_current(void)
-> +{
-> +	void *kthread_cb;
-> +	XENOMAI_SYSCALL1(__xn_sys_current, &kthread_cb);
-> +	pthread_setspecific(xeno_current_key, kthread_cb);
-> +}
-> +
-> +static void init_current_key(void)
-> +{
-> +	int err = pthread_key_create(&xeno_current_key, NULL);
-> +	if (err) {
-> +		fprintf(stderr, "Xenomai: error creating TSD key: %s\n",
-> +			strerror(err));
-> +		exit(1);
-> +	}
-> +}
-> +
-> +__attribute__ ((weak))
-> +unsigned long xeno_sem_heap[2] = { 0, 0 };
-> +
->  void xeno_handle_mlock_alert(int sig);
->  
-> +static void *map_sem_heap(unsigned shared)
-> +{
-> +	struct heap_info {
-> +		void *addr;
-> +		unsigned size;
-> +	} hinfo;
-> +	int fd, err;
-> +
-> +	fd = open("/dev/rtheap", O_RDWR, 0);
-> +	if (fd < 0) {
-> +		fprintf(stderr, "Xenomai: open: %m\n");
-> +		return MAP_FAILED;
-> +	}
-> +
-> +	err = XENOMAI_SYSCALL2(__xn_sys_sem_heap, &hinfo, shared);
-> +	if (err < 0) {
-> +		fprintf(stderr, "Xenomai: sys_sem_heap: %m\n");
-> +		return MAP_FAILED;
-> +	}
-> +
-> +	err = ioctl(fd, 0, hinfo.addr);
-> +	if (err < 0) {
-> +		fprintf(stderr, "Xenomai: ioctl: %m\n");
-> +		return MAP_FAILED;
-> +	}
-> +
-> +	hinfo.addr = mmap(NULL, hinfo.size,
-> +			  PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-> +	close(fd);
-> +
-> +	return hinfo.addr;
-> +}
-> +
-> +static void unmap_sem_heap(unsigned long heap_addr, unsigned shared)
-> +{
-> +	struct heap_info {
-> +		void *addr;
-> +		unsigned size;
-> +	} hinfo;
-> +	int err;
-> +
-> +	err = XENOMAI_SYSCALL2(__xn_sys_sem_heap, &hinfo, shared);
-> +	if (err < 0) {
-> +		fprintf(stderr, "Xenomai: sys_sem_heap: %m\n");
-> +		return;
-> +	}
-> +
-> +	munmap((void *) heap_addr, hinfo.size);
-> +}
-> +
-> +
->  static inline int
->  xeno_bind_skin(unsigned skin_magic, const char *skin, const char *module)
+> -int __wrap_pthread_cond_wait(pthread_cond_t * cond, pthread_mutex_t * mutex)
+> +int __wrap_pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex)
 >  {
-> @@ -62,6 +141,27 @@ xeno_bind_skin(unsigned skin_magic, cons
->  	sa.sa_flags = 0;
->  	sigaction(SIGXCPU, &sa, NULL);
+>  	struct pse51_cond_cleanup_t c = {
+>  		.cond = (union __xeno_cond *)cond,
+> @@ -103,6 +104,9 @@ int __wrap_pthread_cond_wait(pthread_con
+>  	};
+>  	int err, oldtype;
 >  
-> +	pthread_once(&xeno_init_current_key_once, &init_current_key);
+> +	if (cb_try_read_lock(&c.mutex->shadow_mutex.lock, s))
+> +		return EINVAL;
 > +
-> +	/* In case we forked, we need to map the new local semaphore heap */
-> +	if (xeno_sem_heap[0])
-> +		unmap_sem_heap(xeno_sem_heap[0], 0);
-> +	xeno_sem_heap[0] = (unsigned long) map_sem_heap(0);
-> +	if (xeno_sem_heap[0] == (unsigned long) MAP_FAILED) {
-> +		perror("Xenomai: mmap(local sem heap)");
-> +		exit(EXIT_FAILURE);
-> +	}
-> +
-> +	/* Even if we forked the global semaphore heap did not change, no need
-> +	  to map it anew */
-> +	if (!xeno_sem_heap[1]) {
-> +		xeno_sem_heap[1] = (unsigned long) map_sem_heap(1);
-> +		if (xeno_sem_heap[1] == (unsigned long) MAP_FAILED) {
-> +			perror("Xenomai: mmap(global sem heap)");
-> +			exit(EXIT_FAILURE);
-> +		}
-> +	}
-> +
->  	return muxid;
->  }
+>  	pthread_cleanup_push(&__pthread_cond_cleanup, &c);
 >  
-> @@ -105,6 +205,27 @@ xeno_bind_skin_opt(unsigned skin_magic, 
->  	xeno_arch_features_check();
->  #endif /* xeno_arch_features_check */
+>  	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+> @@ -118,11 +122,15 @@ int __wrap_pthread_cond_wait(pthread_con
 >  
-> +	pthread_once(&xeno_init_current_key_once, &init_current_key);
-> +
-> +	/* In case we forked, we need to map the new local semaphore heap */
-> +	if (xeno_sem_heap[0])
-> +		unmap_sem_heap(xeno_sem_heap[0], 0);
-> +	xeno_sem_heap[0] = (unsigned long) map_sem_heap(0);
-> +	if (xeno_sem_heap[0] == (unsigned long) MAP_FAILED) {
-> +		perror("Xenomai: mmap(local sem heap)");
-> +		exit(EXIT_FAILURE);
-> +	}
-> +
-> +	/* Even if we forked the global semaphore heap did not change, no need
-> +	  to map it anew */
-> +	if (!xeno_sem_heap[1]) {
-> +		xeno_sem_heap[1] = (unsigned long) map_sem_heap(1);
-> +		if (xeno_sem_heap[1] == (unsigned long) MAP_FAILED) {
-> +			perror("Xenomai: mmap(global sem heap)");
-> +			exit(EXIT_FAILURE);
-> +		}
-> +	}
-> +
->  	return muxid;
->  }
+>  	pthread_cleanup_pop(0);
 >  
+> -	if (err)
+> +	if (err) {
+> +		cb_read_unlock(&c.mutex->shadow_mutex.lock, s);
+>  		return err;
+> +	}
+>  
+>  	__pthread_cond_cleanup(&c);
+>  
+> +	cb_read_unlock(&c.mutex->shadow_mutex.lock, s);
+> +
+>  	pthread_testcancel();
+>  
+>  	return 0;
+> @@ -138,6 +146,9 @@ int __wrap_pthread_cond_timedwait(pthrea
+>  	};
+>  	int err, oldtype;
+>  
+> +	if (cb_try_read_lock(&c.mutex->shadow_mutex.lock, s))
+> +		return EINVAL;
+> +
+>  	pthread_cleanup_push(&__pthread_cond_cleanup, &c);
+>  
+>  	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+> @@ -153,11 +164,15 @@ int __wrap_pthread_cond_timedwait(pthrea
+>  
+>  	pthread_cleanup_pop(0);
+>  
+> -	if (err && err != ETIMEDOUT)
+> +	if (err && err != ETIMEDOUT) {
+> +		cb_read_unlock(&c.mutex->shadow_mutex.lock, s);		
+>  		return err;
+> +	}
+>  
+>  	__pthread_cond_cleanup(&c);
+>  
+> +	cb_read_unlock(&c.mutex->shadow_mutex.lock, s);
+> +
+>  	pthread_testcancel();
+>  
+>  	return err;
+> Index: src/skins/posix/Makefile.am
+> ===================================================================
+> --- src/skins/posix/Makefile.am	(revision 3738)
+> +++ src/skins/posix/Makefile.am	(working copy)
+> @@ -2,6 +2,8 @@ includedir = $(prefix)/include/posix
+>  
+>  lib_LTLIBRARIES = libpthread_rt.la
+>  
+> +CPPFLAGS+=-I$(top_srcdir)/ksrc/skins
+> +
+>  libpthread_rt_la_LDFLAGS = -version-info 1:0:0 -lpthread
+>  
+>  libpthread_rt_la_SOURCES = \
+> 
 > 
 
 
