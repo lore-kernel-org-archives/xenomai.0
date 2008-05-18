@@ -1,5 +1,5 @@
-Message-ID: <483016D8.8050004@domain.hid>
-Date: Sun, 18 May 2008 13:45:28 +0200
+Message-ID: <4830173D.2010904@domain.hid>
+Date: Sun, 18 May 2008 13:47:09 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <200805181142.13485.niklaus.giger@domain.hid>
@@ -38,14 +38,9 @@ Niklaus Giger wrote:
 >> 270                           threadobj_max_prio - 2);
 >> 271             return OK;
 > Therefore I seem to have only the option of priority 0 which is way too limited.
-> 
+>
 
-The SOLO version is purely Linux native, so you only get what the underlying
-kernel provides you, including in terms of available priority scales. Since RT
-threads are members of the SCHED_FIFO class, you get 99 priority levels, unless
-you patch the vanilla kernel to handle more. The way to solve this properly for
-SOLO is to write a patch against PREEMPT_RT that allows wider priority scales,
-and to get it merged upstream.
+No, this means there is a problem. threadobj_max_prio should be 99.
 
 > I took a look at vxworks/testsuite/task-1.c and found that it spawns a task
 > with priority 70. Calling "make check" compiled a few more files but did not run
@@ -61,11 +56,7 @@ and to get it merged upstream.
 > for basic debugging tasks which do not involve strict real-time requirements"
 > and concluded therefore that I should be able to use for my test a "normal"
 > kernel.
->
-
-Which is wrong if you plan to compare latencies. You should at least use
-PREEMPT_RT to do that, otherwise it's meaningless.
-
+> 
 > As glibc I use the Debian lenny version 2.7-10.
 > 
 > Best regards
