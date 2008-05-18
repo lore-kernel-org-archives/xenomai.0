@@ -1,14 +1,13 @@
-Message-ID: <482BEC05.1050404@domain.hid>
-Date: Thu, 15 May 2008 09:53:41 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Sun, 18 May 2008 11:42:13 +0200
 MIME-Version: 1.0
-References: <4821B345.5070001@domain.hid>
-In-Reply-To: <4821B345.5070001@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [patch] disallow includedir /usr/include
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+Message-Id: <200805181142.13485.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] SOLO: Too limited priorities for vxWorks threads
+Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,43 +17,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: "Hillier, Gernot" <gernot.hillier@domain.hid>
-Cc: Xenomai-core@domain.hid
+To: xenomai@xenomai.org
 
-Hillier, Gernot wrote:
-> Hi again!
-> 
-> Current SVN head fails to do "make install" when you use --prefix=/usr
-> resulting in the includedir /usr/include:
-> 
-> --- SNIP ---
-> make[2]: Entering directory `/home/gernot/xenomai/include'
-> make[3]: Entering directory `/home/gernot/xenomai/include'
-> make[3]: Nothing to be done for `install-exec-am'.
-> rm -f /usr/include/asm
-> rm: cannot remove `/usr/include/asm': Is a directory
-> make[3]: *** [install-data-local] Error 1
-> --- SNAP ---
-> 
-> As far as I understood Jan, using /usr/include is a bad idea, so I
-> created a patch telling the user what went wrong in a nicer way.
-> 
-> Please apply if you consider it to be the right fix (tm).
->
+Hi
 
-That makes sense, especially since that would prevent people from inadvertently
-trashing their local header space. People who really want to play this game
-should use DESTDIR explicitly instead. Merged, thanks.
+I just tried to get a sample test program to run under Xenomai-SOLO
+and run into this panic message:
+Xenomai/SOLO: current implementation restricts VxWorkspriority levels to range [-2..0]
+looking at the code I found at taskLib.c
+> 263     {
+> 264             if (wind_prio < 0 || wind_prio > 255) /* In theory. */
+> 265                     return S_taskLib_ILLEGAL_PRIORITY;
+> 266
+> 267             if (wind_prio >= threadobj_max_prio - 1) /* In practice. */
+> 268                     panic("current implementation restricts VxWorks"
+> 269                           "priority levels to range [%d..0]",
+> 270                           threadobj_max_prio - 2);
+> 271             return OK;
+Therefore I seem to have only the option of priority 0 which is way too limited.
 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+I took a look at vxworks/testsuite/task-1.c and found that it spawns a task
+with priority 70. Calling "make check" compiled a few more files but did not run
+any checks.
 
+After calling make in vxworks/testsuite and callling ./task-1 I got the same
+error.
 
--- 
-Philippe.
+I am running the (unpatched) Debian kernel 2.6.24-1-686, as I just wanted to
+run some test without requiring any realtime behaviour. Reading 
+http://www.denx.de/cgi-bin/gitweb.cgi?p=xenomai-solo.git;a=blob;f=README
+I found the sentence "SOLO may also be used with non-PREEMPT_RT kernels, likely
+for basic debugging tasks which do not involve strict real-time requirements"
+and concluded therefore that I should be able to use for my test a "normal"
+kernel.
+
+As glibc I use the Debian lenny version 2.7-10.
+
+Best regards
+
+Niklaus Giger
 
