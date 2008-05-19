@@ -1,27 +1,23 @@
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18482.1009.89042.272689@domain.hid>
-Date: Tue, 20 May 2008 00:49:21 +0200
-In-Reply-To: <48307BDF.1010906@domain.hid>
+Message-ID: <18482.727.771660.333461@domain.hid>
+Date: Tue, 20 May 2008 00:44:39 +0200
+In-Reply-To: <2ff1a98a0805190616v662c22ddgd63382221d721c8e@domain.hid>
 References: <18459.38249.462320.715909@domain.hid>
-	<18459.38430.835407.942336@domain.hid>
-	<18459.38500.720338.652195@domain.hid>
-	<18459.38558.684426.240775@domain.hid>
 	<18459.38644.699369.801548@domain.hid>
 	<18459.38704.252719.734650@domain.hid>
-	<18459.38785.367098.763153@domain.hid>
-	<18459.38879.202210.838294@domain.hid>
-	<48305C5D.3020601@domain.hid>
-	<18480.25075.894860.415321@domain.hid>
-	<4830677C.9050401@domain.hid>
-	<18480.27194.137841.953471@domain.hid>
-	<48306CDD.8050607@domain.hid>
-	<18480.28886.48710.503957@domain.hid>
-	<48307BDF.1010906@domain.hid>
+	<48305BE4.3040503@domain.hid>
+	<18480.30551.499645.920690@domain.hid>
+	<48307F0A.5040206@domain.hid>
+	<18480.34204.426031.862047@domain.hid>
+	<4830A50D.8040507@domain.hid>
+	<18480.45872.449093.746718@domain.hid>
+	<483178FC.1010300@domain.hid>
+	<2ff1a98a0805190616v662c22ddgd63382221d721c8e@domain.hid>
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] [Patch 7/7] Re-implementation of mutexes,
- user-space support.
+Subject: Re: [Xenomai-core] [Patch 5/7] Define new syscalls for the system
+	skin
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -31,65 +27,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: rpm@xenomai.org, xenomai@xenomai.org
 
-Philippe Gerum wrote:
- > Gilles Chanteperdrix wrote:
- > > Jan Kiszka wrote:
- > >  > Gilles Chanteperdrix wrote:
- > >  > > Jan Kiszka wrote:
- > >  > >  > Gilles Chanteperdrix wrote:
- > >  > >  > > Philippe Gerum wrote:
- > >  > >  > >  > Gilles Chanteperdrix wrote:
- > >  > >  > >  > > Since binding of the semaphore heaps is now made by xeno_skin_bind, there is
- > >  > >  > >  > > much less modifications in src/skins/posix/init.c. However, I had to do
- > >  > >  > >  > > something really ugly: since binding the semaphore heaps by xeno_skin_bind
- > >  > >  > >  > > requires calls to open, ioctl, mmap, close and munmap, I redefined these symbols
- > >  > >  > >  > > to be the __real_ variants before including bind.h.
- > >  > >  > >  > 
- > >  > >  > >  > Is there any upside to do this instead of simply calling the __real_*
- > >  > >  > >  > placeholders, since we do already provide weak wrappers for those when the
- > >  > >  > >  > linker's wrapping magic is not invoked?
- > >  > >  > > 
- > >  > >  > > The point is that the wrappers and linker magic only take place for
- > >  > >  > > POSIX skins. Other skins have to call the genuine open, ioctl, mmap,
- > >  > >  > > close and munmap services.
- > >  > >  > 
- > >  > >  > What about controlling the desired prefix for generic functions in
- > >  > >  > bind.h via some #define that the caller has to/can set before including
- > >  > >  > the header:
- > >  > >  > 
- > >  > >  > #define POSIX_PREFIX	__real_
- > >  > >  > #include <asm-generic/bits/bind.h>
- > >  > >  > 
- > >  > >  > and there we would have:
- > >  > >  > 
- > >  > >  > POSIX_PREFIX##open(...);
- > >  > >  > 
- > >  > >  > Looks a bit cleaner to me.
- > >  > > 
- > >  > > Well, in this case we end up cluttering the code with the POSIX_PREFIX
- > >  > > macro, even in the non posix case where no prefix is needed.
- > >  > 
- > >  > Yes, but there are only few spots. The advantage of this strategy is
- > >  > that it is explicit in-place (ie. inside bind.h). That avoids potential
- > >  > collateral damage in the future when other services are added to that
- > >  > helper which shall not be wrapped.
- > > 
- > > Actually, the only important call is open. Since once the file
- > > descriptor has been created with __real_open, all syscall wrappers will
- > > automatically fall back to the __real syscall variants.
- > > 
+Gilles Chanteperdrix wrote:
+ > On Mon, May 19, 2008 at 2:56 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+ > > Gilles Chanteperdrix wrote:
+ > >> Philippe Gerum wrote:
+ > >>  > Gilles Chanteperdrix wrote:
+ > >>  > > As far as I understood, the user-space atomic operations, used to
+ > >>  > > acquire a free mutex in user-space, are not part of the futex API. In
+ > >>  > > our case, we are using xnarch_atomic_* operations to implement portably
+ > >>  > > this user-space locking stuff. I think that even setting the bit saying
+ > >>  > > that the mutex is currently owned is done in pthread_mutexes
+ > >>  > > implementation, not in the Futex API.
+ > >>  >
+ > >>  > I would fully agree if the futex API did not define PI-based ops, which are
+ > >>  > needed for proper real-time operations from userland. You will certainly agree
+ > >>  > that PI implies that some kind of ownership exists; and because there can't be
+ > >>  > more than a single owner in that case, you end up with an object that can't be
+ > >>  > held by more than a single task. So you do have a mutex in disguise, whatever
+ > >>  > the way to keep its state is (a bit, an integer, whatever). So there is stronger
+ > >>  > semantics attached to that API than to simply manage an event notification scheme.
+ > >>  >
+ > >>  >  Now, what remains is
+ > >>  > > sys_futex(FUTEX_WAIT) and sys_futex(FUTEX_WAKE), this terribly looks like
+ > >>  > > xnsync_sleep_on and xnsynch_wakeup_one_sleeper.
+ > >>  > >
+ > >>  >
+ > >>  > Yes, here again I partially agree, except for a significant issue: xnsynch is a
+ > >>  > stateless object (that's why we can use it for different syncobjs which are
+ > >>  > totally unrelated in their semantics - mutex, queue, region, counting sems,
+ > >>  > whatever). I was just wondering if we could make the *tex thingy a bit more
+ > >>  > stateful to ease the job for the skins, just in case we would use it for mutexes
+ > >>  > only. I have no immediate answer to this question, just asking -- this is my
+ > >>  > contribution as a senior member of the peanut gallery.
+ > >>
+ > >> We can certainly implement an abstraction managing xnarch_atomic_t +
+ > >> xnsynch_t, however, it seems that we would have to re-factor all
+ > >> mutex/semaphores implementations to use this new abstraction. The
+ > >> current approach is to add an xnarch_atomic_cmpxchg in user-space, and
+ > >> fall back to an almost unchanged kernel-space support when it fails.
+ > >>
+ > >
+ > > Ok. Let's merge this as it is. Common code will emerge eventually if it happens
+ > > to make sense when plugging the feature into the native and VxWorks mutex support.
  > 
- > Then let's just provide __real_open() as a weak symbol in all libs; that's less
- > error-prone that fiddling with the preprocessor.
+ > Ok. I need a few more days though, to adapt it to other architectures than arm.
 
-For now, I kept a solution based on the preprocessor. If I remember
-correctly, the __real stuff needs to be in a separate object, this
-means that we cannot put __real_open definition in bind.h, we have to
-generate an open_wrapper.lo object and link every library with this
-object. Is this really what we want ?
+I changed my mind and commited the whole stuff. Instead of implementing
+full atomic operations in user-space for other platforms than ARM, I
+have left this work for others.
 
 -- 
 
