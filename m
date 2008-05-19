@@ -1,12 +1,13 @@
+Message-ID: <2ff1a98a0805190239x5f8c8445h47d8ca3070dded1c@domain.hid>
+Date: Mon, 19 May 2008 11:39:21 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <1168701330@domain.hid>
 MIME-Version: 1.0
-Date: Mon, 19 May 2008 10:11:26 +0200
-From: Matthieu <matthieu.connaulte_xenomai@domain.hid>
-Message-ID: <728e254ea628725216c983d66e391cb5@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] VxWorks mode switching signal SIGXCPU and switch
-	operation
-Reply-To: matthieu.connaulte_xenomai@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <1168701330@domain.hid>
+Subject: Re: [Xenomai-help] at91sam9263 and user-space support compile fails
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,82 +17,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Paradoxxa2001@domain.hid
+Cc: xenomai@xenomai.org
 
-Hi
+On Mon, May 19, 2008 at 8:26 AM,  <Paradoxxa2001@domain.hid> wrote:
+> God Morning,
+>
+> I tried "make uImage" already.
+> I got the messages like:
+>
+> uncompressing kernel---
+> crc error
+> --System halted
 
-I'm using vxwork's API.
-Is SIGXCPU signal sent when primary to seconday VxWorks task's mode switc=
-h
-? If it's the case, which implementation would work ?
+Yes, uImage is compressed, but contains the decompression code, it is
+not supposed to be decompressed by uboot. Maybe what you want is "make
+Image".
 
-Use of signal (native Xenomai API) :
+> [<c00236b0>] [<c00236b0>] (name_to_dev_t+0x0/0x28c) (name_to_dev_t+0x0/0x28c) from [<c0009328>] from
+>  [<c0009328>] (prepare_namespace+0x94/0x16c)
+> (prepare_namespace+0x94/0x16c)
+>  r7:c001c070 r7:c001c070 r6:00000000 r6:00000000 r5:c001d85c r5:c001d85c r4:c001d86c r4:c001d86c
+>
+> [<c0009294>] [<c0009294>] (prepare_namespace+0x0/0x16c) (prepare_namespace+0x0/0x16c) from [<c0008a9
+> 8>] from [<c0008a98>] (kernel_init+0x230/0x290)
+> (kernel_init+0x230/0x290)
+>  r5:00000000 r5:00000000 r4:c036a4e0 r4:c036a4e0
+>
+> [<c0008868>] [<c0008868>] (kernel_init+0x0/0x290) (kernel_init+0x0/0x290) from [<c003ddbc>] from [<c
+> 003ddbc>] (do_exit+0x0/0x790)
+> (do_exit+0x0/0x790)
+> Code: Code: 20000220 20000220 e2833001 e2833001 e50b3020 e50b3020 e51b2020 e51b2020 (e5d21000) (e5d2
+> 1000)
 
-     void vx_task_create(...)=20
-     {
-     ...
-     signal(SIGXCPU, xe_signal_thread);
-     ...
-     }
+This does not seem to be related to Xenomai or the compiler. Maybe you
+selected a wrong kernel option ? Have you tried compiling with the
+defconfig for your board ?
 
-     void *xe_signal_thread (void *sig_caught)
-     {
-       /* Mode switching warning */
-     }
-
-     There is missing rt_task_set_mode(0, T_WARNSW, NULL); which I don't
-know where I have to put it because I want all the task to warn in case o=
-f
-a mode switch and I don't what to write this sentense in each task's body
-routine.
-
-
-
-Use of  pthread_sigmask
-
-     static sigset_t sigusr1Mask;
-
-     void vx_task_create(...)=20
-     {
-     ...
-     sigemptyset(&sigusr1Mask);
-     sigaddset(&sigusr1Mask,SIGXCPU);
-     ...
-     }
-
-     void vx_task_start(...) {
-     ...
-     pthread_sigmask (SIG_BLOCK, &sigusr1Mask, NULL);
-     pthread_create (&sig_thr_id, NULL, xe_signal_thread, NULL);
-     ...
-     }
-
-     void *xe_signal_thread (void *arg)
-     {
-       int       sig_caught;    /* signal caught       */
-       sigwait (&signal_mask, &sig_caught);
-       switch (sig_caught)
-       {
-          case SIGXCPU:     /* process SIGXCPU  */
-            /* Mode switching warning */
-            fprintf (stderr, "\nPrimary to secondary mode switch %d\n",
-sig_caught);
-            break;
-          default:         /* should normally not happen */
-            fprintf (stderr, "\nUnexpected signal %d\n", sig_caught);
-            break;
-       }
-     }
-
-     In this case, a thread waiting for the signal will be created with
-each task, I don't thing it's necessary !!
-
-On last thing, how can I force a vxworks task switching in primary mode,
-like in the native API rt_task_set_mode(0, T_WARNSW, NULL);
-
-Thank's in advance
-
-Matthieu
-
-
+-- 
+ Gilles
 
