@@ -1,5 +1,5 @@
-Message-ID: <48318DA5.8020907@domain.hid>
-Date: Mon, 19 May 2008 16:24:37 +0200
+Message-ID: <48318E9F.4060204@domain.hid>
+Date: Mon, 19 May 2008 16:28:47 +0200
 From: paradoxxa <paradoxxa2001@domain.hid>
 MIME-Version: 1.0
 References: <1168701330@domain.hid>	
@@ -52,14 +52,11 @@ Gilles Chanteperdrix schrieb:
 > defconfig build (with I-pipe AT91 master clock frequency modified)
 > with CodeSourcery compiler ?
 >   
-The  output what i get is "Starting Kernel ..."! That was it.
-
 > If you can not get CodeSourcery compiler to compile correctly a Linux
 > kernel, I can send you the 2007q3 compiler, or you could try to
 > compile the kernel with your old compiler, and to compile user-space
 > with CodeSourcery compiler.
 >   
-I tried it with the both compiler. When i execute 
-/usr/xenomai/bin/latency i get the message "sh: 
-/usr/xenomai/bin/latency: not found"
+By the way, how i can figure out if the binary or the compiler is a 
+oabi/eabi file/compiler?
 
