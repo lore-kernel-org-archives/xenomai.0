@@ -1,16 +1,17 @@
 Content-class: urn:content-classes:message
 MIME-Version: 1.0
 Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C8B9B8.68E31000"
-Date: Mon, 19 May 2008 09:57:43 -0400
-Message-ID: <51B669A8A7D2914E9AB2B3F40AC6553E646FAA@afsexc01.aurora.aero>
+	boundary="----_=_NextPart_001_01C8B9B9.29A22BF0"
+Date: Mon, 19 May 2008 09:59:41 -0400
+Message-ID: <51B669A8A7D2914E9AB2B3F40AC6553E646FAB@afsexc01.aurora.aero>
 References: <51B669A8A7D2914E9AB2B3F40AC6553E646F7E@afsexc01.aurora.aero><4821E5BF.4040101@domain.hid>
 	<51B669A8A7D2914E9AB2B3F40AC6553E646F83@domain.hid>
 	<51B669A8A7D2914E9AB2B3F40AC6553E646F86@domain.hid>
-	<482F4BB1.7060701@domain.hid>
+	<51B669A8A7D2914E9AB2B3F40AC6553E646F94@domain.hid>
+	<482F4D8D.6050004@domain.hid>
 From: "Karch, Joshua" <jkarch@domain.hid>
-Subject: Re: [Xenomai-help] rt_task_send / receive problems various
-	issuesand bug trace
+Subject: Re: [Xenomai-help] rt_task_send / receive bug from last week and
+	use of rt_task_inquire
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,30 +26,128 @@ Cc: xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
 
-------_=_NextPart_001_01C8B9B8.68E31000
+------_=_NextPart_001_01C8B9B9.29A22BF0
 Content-Type: text/plain;
 	charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-Philippe,
+Phillipe, =20
 
-Thank you for diagnosing and fixing the problem. I'll recompile xenomai =
-and let you know how it works--=20
+so essentially rt_task_reply is an essential and required part of =
+synchronous messaging, and TM_NONBLOCK only returns immediately if the =
+listening task is not active.  In this case, since a reply is always =
+necessary.  It's probably better for now to use synchronous tasks.  I =
+was able to get the timeout down to 1msec because the servo controller =
+always responds within 500nsec, so I could set the timeout threshold =
+much more aggressively and therefore have approximately 18 msec and =
+change to do control law work.
 
-Regards,
+Sounds good--
 
-Joshua Karch
+Cheers,
+
+Josh
+
 
 
 -----Original Message-----
 From: Philippe Gerum on behalf of Philippe Gerum
-Sent: Sat 5/17/2008 5:18 PM
+Sent: Sat 5/17/2008 5:26 PM
 To: Karch, Joshua
 Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] rt_task_send / receive problems various =
-issuesand bug trace
+Subject: Re: [Xenomai-help] rt_task_send / receive bug from last week =
+and use of rt_task_inquire
 =20
 Karch, Joshua wrote:
+> Phillipe,
+>=20
+> I was wondering if you had any progress with the rt_task_send/receive
+> bug?  I was able to get the synchronized serial chain to work from
+> sensor task through an rt_task_send at 50 Hz with a timeout to the
+> control task, which then synchronously sends an rt_task_send with
+> timeout to the motor driver on the second serial port.  When I set the
+> motor driver's timeout to be 100 msec and I unplug the motor driver's
+> serial interface to cause this timeout, I immediately get rt_task_send
+> errors, some bad enough to cause a system crash if and only if the
+> rt_task_send looks for a reply, otherwise, with the reply MCB field =
+set
+> to NULL, rt_task_send fails indefinitely until the program is killed =
+and
+> a segfault occurs.  Clearly, with a 100 msec timeout, this means that =
+up
+> to five rt_task send commands will come from the control law which is
+> chain-linked to the sensor task before a single reply is sent back =
+from
+> the servo controller.
+>=20
+> What is the expected behavior of repeatedly issuing rt_task_send when
+> the other task has not replied within a timeout specified by
+> rt_task_send?  The 100 msec timeout is akin to having 3 cars on a
+> highway, with the front one (the servo motor) slamming on the brakes =
+and
+> causing a major collision.  Basically, the servo controller must =
+always
+> respond within 20 msec- the time of execution for the control task in
+> order to prevent the xenomai equivalent of a traffic jam.  Can and
+> should this be avoided by using a function like rt_task_inquire to see
+> if the servo serial driver is blocking on serial read, and if so, not
+> issue an rt_task_send command?  In this way, the synchronous
+> relationship between the serial sensor and the control law will never =
+be
+> broken.
+>=20
+> Regardless, bringing the serial port timeout down to 10msec, which is
+> reasonable, resolves this problem for now, though it limits the =
+control
+> law's ability to process while the servo motor serial task has timed =
+out.
+>=20
+> That's basically my update.  I'd still much prefer to be able to send =
+a
+> non-blocking trigger message without a reply for all rt_task_send =
+calls
+
+It's ok unless you end up implementing some kind of asynchronous =
+protocol using
+that message passing interface: this won't work. =
+rt_task_send/receive/reply are
+meant to implement synchronous message passing. Just to make sure the
+implementation is well understood:
+
+- passing mcb_r =3D=3D NULL to rt_task_send() does not mean that you =
+won't wait for
+any answer from the remote task, you will wait for rt_task_reply() to be =
+called;
+that answer will just be discarded before rt_task_send() returns.
+
+- passing timeout =3D=3D TM_NONBLOCK to rt_task_send() does NOT mean not =
+to wait for
+a reply, but it means to wait for a reply indefinitely UNLESS no server =
+is
+listening to the sender before it issues the request, in which case
+rt_task_send() should return immediately.
+
+In other word, it's purely synchronous stuff. If you need asynchronous =
+message
+passing, then you should use another IPC.
+
+> from the sensor to the control law to regulate the control law's loop
+> rate, and perhaps also do the same for the motor controller, which
+> currently places its response in shared memory.
+>=20
+> Thank you,
+>=20
+> Josh
+>=20
+>=20
+> -----Original Message-----
+> From: Karch, Joshua
+> Sent: Wed 5/7/2008 3:35 PM
+> To: Karch, Joshua; rpm@xenomai.org
+> Cc: xenomai@xenomai.org
+> Subject: RE: [Xenomai-help] rt_task_send / receive problems various
+> issuesand   bug trace
+>=20
 > Phillipe: small clarification: the following example has replies =
 enabled
 > and TM_NONBLOCK on rt_task_send.  I tried the code two different ways:
@@ -59,10 +158,7 @@ appropriate
 > RT_TASK_MCB reply structs
 >=20
 > both have the same bug in the end.
->
-
-The attached patch fixes the issue.
-
+>=20
 > Josh
 >=20
 >=20
@@ -622,13 +718,16 @@ db
 > Philippe.
 >=20
 >=20
+>=20
+>=20
+>=20
 
 
 --=20
 Philippe.
 
 
-------_=_NextPart_001_01C8B9B8.68E31000
+------_=_NextPart_001_01C8B9B9.29A22BF0
 Content-Type: text/html;
 	charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
@@ -640,31 +739,150 @@ Content-Transfer-Encoding: quoted-printable
 charset=3Diso-8859-1">
 <META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
 6.5.7651.59">
-<TITLE>RE: [Xenomai-help] rt_task_send / receive problems various =
-issuesand bug trace</TITLE>
+<TITLE>RE: [Xenomai-help] rt_task_send / receive bug from last week and =
+use of rt_task_inquire</TITLE>
 </HEAD>
 <BODY>
 <!-- Converted from text/plain format -->
 
-<P><FONT SIZE=3D2>Philippe,<BR>
+<P><FONT SIZE=3D2>Phillipe,&nbsp;<BR>
 <BR>
-Thank you for diagnosing and fixing the problem. I'll recompile xenomai =
-and let you know how it works--<BR>
+so essentially rt_task_reply is an essential and required part of =
+synchronous messaging, and TM_NONBLOCK only returns immediately if the =
+listening task is not active.&nbsp; In this case, since a reply is =
+always necessary.&nbsp; It's probably better for now to use synchronous =
+tasks.&nbsp; I was able to get the timeout down to 1msec because the =
+servo controller always responds within 500nsec, so I could set the =
+timeout threshold much more aggressively and therefore have =
+approximately 18 msec and change to do control law work.<BR>
 <BR>
-Regards,<BR>
+Sounds good--<BR>
 <BR>
-Joshua Karch<BR>
+Cheers,<BR>
+<BR>
+Josh<BR>
+<BR>
 <BR>
 <BR>
 -----Original Message-----<BR>
 From: Philippe Gerum on behalf of Philippe Gerum<BR>
-Sent: Sat 5/17/2008 5:18 PM<BR>
+Sent: Sat 5/17/2008 5:26 PM<BR>
 To: Karch, Joshua<BR>
 Cc: xenomai@xenomai.org<BR>
-Subject: Re: [Xenomai-help] rt_task_send / receive problems various =
-issuesand bug trace<BR>
+Subject: Re: [Xenomai-help] rt_task_send / receive bug from last week =
+and use of rt_task_inquire<BR>
 <BR>
 Karch, Joshua wrote:<BR>
+&gt; Phillipe,<BR>
+&gt;<BR>
+&gt; I was wondering if you had any progress with the =
+rt_task_send/receive<BR>
+&gt; bug?&nbsp; I was able to get the synchronized serial chain to work =
+from<BR>
+&gt; sensor task through an rt_task_send at 50 Hz with a timeout to =
+the<BR>
+&gt; control task, which then synchronously sends an rt_task_send =
+with<BR>
+&gt; timeout to the motor driver on the second serial port.&nbsp; When I =
+set the<BR>
+&gt; motor driver's timeout to be 100 msec and I unplug the motor =
+driver's<BR>
+&gt; serial interface to cause this timeout, I immediately get =
+rt_task_send<BR>
+&gt; errors, some bad enough to cause a system crash if and only if =
+the<BR>
+&gt; rt_task_send looks for a reply, otherwise, with the reply MCB field =
+set<BR>
+&gt; to NULL, rt_task_send fails indefinitely until the program is =
+killed and<BR>
+&gt; a segfault occurs.&nbsp; Clearly, with a 100 msec timeout, this =
+means that up<BR>
+&gt; to five rt_task send commands will come from the control law which =
+is<BR>
+&gt; chain-linked to the sensor task before a single reply is sent back =
+from<BR>
+&gt; the servo controller.<BR>
+&gt;<BR>
+&gt; What is the expected behavior of repeatedly issuing rt_task_send =
+when<BR>
+&gt; the other task has not replied within a timeout specified by<BR>
+&gt; rt_task_send?&nbsp; The 100 msec timeout is akin to having 3 cars =
+on a<BR>
+&gt; highway, with the front one (the servo motor) slamming on the =
+brakes and<BR>
+&gt; causing a major collision.&nbsp; Basically, the servo controller =
+must always<BR>
+&gt; respond within 20 msec- the time of execution for the control task =
+in<BR>
+&gt; order to prevent the xenomai equivalent of a traffic jam.&nbsp; Can =
+and<BR>
+&gt; should this be avoided by using a function like rt_task_inquire to =
+see<BR>
+&gt; if the servo serial driver is blocking on serial read, and if so, =
+not<BR>
+&gt; issue an rt_task_send command?&nbsp; In this way, the =
+synchronous<BR>
+&gt; relationship between the serial sensor and the control law will =
+never be<BR>
+&gt; broken.<BR>
+&gt;<BR>
+&gt; Regardless, bringing the serial port timeout down to 10msec, which =
+is<BR>
+&gt; reasonable, resolves this problem for now, though it limits the =
+control<BR>
+&gt; law's ability to process while the servo motor serial task has =
+timed out.<BR>
+&gt;<BR>
+&gt; That's basically my update.&nbsp; I'd still much prefer to be able =
+to send a<BR>
+&gt; non-blocking trigger message without a reply for all rt_task_send =
+calls<BR>
+<BR>
+It's ok unless you end up implementing some kind of asynchronous =
+protocol using<BR>
+that message passing interface: this won't work. =
+rt_task_send/receive/reply are<BR>
+meant to implement synchronous message passing. Just to make sure =
+the<BR>
+implementation is well understood:<BR>
+<BR>
+- passing mcb_r =3D=3D NULL to rt_task_send() does not mean that you =
+won't wait for<BR>
+any answer from the remote task, you will wait for rt_task_reply() to be =
+called;<BR>
+that answer will just be discarded before rt_task_send() returns.<BR>
+<BR>
+- passing timeout =3D=3D TM_NONBLOCK to rt_task_send() does NOT mean not =
+to wait for<BR>
+a reply, but it means to wait for a reply indefinitely UNLESS no server =
+is<BR>
+listening to the sender before it issues the request, in which case<BR>
+rt_task_send() should return immediately.<BR>
+<BR>
+In other word, it's purely synchronous stuff. If you need asynchronous =
+message<BR>
+passing, then you should use another IPC.<BR>
+<BR>
+&gt; from the sensor to the control law to regulate the control law's =
+loop<BR>
+&gt; rate, and perhaps also do the same for the motor controller, =
+which<BR>
+&gt; currently places its response in shared memory.<BR>
+&gt;<BR>
+&gt; Thank you,<BR>
+&gt;<BR>
+&gt; Josh<BR>
+&gt;<BR>
+&gt;<BR>
+&gt; -----Original Message-----<BR>
+&gt; From: Karch, Joshua<BR>
+&gt; Sent: Wed 5/7/2008 3:35 PM<BR>
+&gt; To: Karch, Joshua; rpm@xenomai.org<BR>
+&gt; Cc: xenomai@xenomai.org<BR>
+&gt; Subject: RE: [Xenomai-help] rt_task_send / receive problems =
+various<BR>
+&gt; issuesand&nbsp;&nbsp; bug trace<BR>
+&gt;<BR>
 &gt; Phillipe: small clarification: the following example has replies =
 enabled<BR>
 &gt; and TM_NONBLOCK on rt_task_send.&nbsp; I tried the code two =
@@ -680,9 +898,6 @@ appropriate<BR>
 &gt;<BR>
 &gt; both have the same bug in the end.<BR>
 &gt;<BR>
-<BR>
-The attached patch fixes the issue.<BR>
-<BR>
 &gt; Josh<BR>
 &gt;<BR>
 &gt;<BR>
@@ -1591,6 +1806,9 @@ listinfo/xenomai-help</A><BR>
 &gt; Philippe.<BR>
 &gt;<BR>
 &gt;<BR>
+&gt;<BR>
+&gt;<BR>
+&gt;<BR>
 <BR>
 <BR>
 --<BR>
@@ -1601,5 +1819,5 @@ Philippe.<BR>
 
 </BODY>
 </HTML>
-------_=_NextPart_001_01C8B9B8.68E31000--
+------_=_NextPart_001_01C8B9B9.29A22BF0--
 
