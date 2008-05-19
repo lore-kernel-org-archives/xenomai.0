@@ -1,18 +1,12 @@
-Message-ID: <482F4D8D.6050004@domain.hid>
-Date: Sat, 17 May 2008 23:26:37 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Mon, 19 May 2008 08:26:54 +0200
+Message-Id: <1168701330@domain.hid>
 MIME-Version: 1.0
-References: <51B669A8A7D2914E9AB2B3F40AC6553E646F7E@afsexc01.aurora.aero><4821E5BF.4040101@domain.hid>
-	<51B669A8A7D2914E9AB2B3F40AC6553E646F83@domain.hid>
-	<51B669A8A7D2914E9AB2B3F40AC6553E646F86@domain.hid>
-	<51B669A8A7D2914E9AB2B3F40AC6553E646F94@domain.hid>
-In-Reply-To: <51B669A8A7D2914E9AB2B3F40AC6553E646F94@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] rt_task_send / receive bug from last week and
- use of rt_task_inquire
-Reply-To: rpm@xenomai.org
+From: Paradoxxa2001@domain.hid
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help]
+ =?iso-8859-15?q?at91sam9263_and_user-space_support?=
+ =?iso-8859-15?q?_compile_fails?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,633 +16,444 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Karch, Joshua" <jkarch@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Karch, Joshua wrote:
-> Phillipe,
-> 
-> I was wondering if you had any progress with the rt_task_send/receive
-> bug?  I was able to get the synchronized serial chain to work from
-> sensor task through an rt_task_send at 50 Hz with a timeout to the
-> control task, which then synchronously sends an rt_task_send with
-> timeout to the motor driver on the second serial port.  When I set the
-> motor driver's timeout to be 100 msec and I unplug the motor driver's
-> serial interface to cause this timeout, I immediately get rt_task_send
-> errors, some bad enough to cause a system crash if and only if the
-> rt_task_send looks for a reply, otherwise, with the reply MCB field set
-> to NULL, rt_task_send fails indefinitely until the program is killed and
-> a segfault occurs.  Clearly, with a 100 msec timeout, this means that up
-> to five rt_task send commands will come from the control law which is
-> chain-linked to the sensor task before a single reply is sent back from
-> the servo controller.
-> 
-> What is the expected behavior of repeatedly issuing rt_task_send when
-> the other task has not replied within a timeout specified by
-> rt_task_send?  The 100 msec timeout is akin to having 3 cars on a
-> highway, with the front one (the servo motor) slamming on the brakes and
-> causing a major collision.  Basically, the servo controller must always
-> respond within 20 msec- the time of execution for the control task in
-> order to prevent the xenomai equivalent of a traffic jam.  Can and
-> should this be avoided by using a function like rt_task_inquire to see
-> if the servo serial driver is blocking on serial read, and if so, not
-> issue an rt_task_send command?  In this way, the synchronous
-> relationship between the serial sensor and the control law will never be
-> broken.
-> 
-> Regardless, bringing the serial port timeout down to 10msec, which is
-> reasonable, resolves this problem for now, though it limits the control
-> law's ability to process while the servo motor serial task has timed out.
-> 
-> That's basically my update.  I'd still much prefer to be able to send a
-> non-blocking trigger message without a reply for all rt_task_send calls
+God Morning,
 
-It's ok unless you end up implementing some kind of asynchronous protocol using
-that message passing interface: this won't work. rt_task_send/receive/reply are
-meant to implement synchronous message passing. Just to make sure the
-implementation is well understood:
+I tried "make uImage" already.
+I got the messages like:
 
-- passing mcb_r == NULL to rt_task_send() does not mean that you won't wait for
-any answer from the remote task, you will wait for rt_task_reply() to be called;
-that answer will just be discarded before rt_task_send() returns.
+uncompressing kernel---
+crc error
+--System halted
 
-- passing timeout == TM_NONBLOCK to rt_task_send() does NOT mean not to wait for
-a reply, but it means to wait for a reply indefinitely UNLESS no server is
-listening to the sender before it issues the request, in which case
-rt_task_send() should return immediately.
-
-In other word, it's purely synchronous stuff. If you need asynchronous message
-passing, then you should use another IPC.
-
-> from the sensor to the control law to regulate the control law's loop
-> rate, and perhaps also do the same for the motor controller, which
-> currently places its response in shared memory.
-> 
-> Thank you,
-> 
-> Josh
-> 
-> 
-> -----Original Message-----
-> From: Karch, Joshua
-> Sent: Wed 5/7/2008 3:35 PM
-> To: Karch, Joshua; rpm@xenomai.org
-> Cc: xenomai@xenomai.org
-> Subject: RE: [Xenomai-help] rt_task_send / receive problems various
-> issuesand   bug trace
-> 
-> Phillipe: small clarification: the following example has replies enabled
-> and TM_NONBLOCK on rt_task_send.  I tried the code two different ways:
-> len = rt_task_send(listen_task,&talk_send,&talk_reply,TM_NONBLOCK);
-> len = rt_task_send(listen_task,&talk_send,NULL,TM_NONBLOCK);// also
-> deleted rt_task_reply from listen_task and commented out all appropriate
-> RT_TASK_MCB reply structs
-> 
-> both have the same bug in the end.
-> 
-> Josh
-> 
-> 
-> -----Original Message-----
-> From: xenomai-help-bounces@domain.hid on behalf of Karch, Joshua
-> Sent: Wed 5/7/2008 3:33 PM
-> To: rpm@xenomai.org
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] rt_task_send / receive problems various
-> issuesand   bug trace
-> 
-> Phillipe,
-> 
-> here is a disassembly of __rt_task_receive and the source code used to
-> generate the error.  The error happens if I use TM_NONBLOCK, regardless
-> of whether or not I enable a reply.  In the following example, I use
-> rt_send_task with no reply requested (NULL), and all replies commented out.
-> 
-> I got three errors this time, -22, -11, -110, and then finally
-> BUG: unable to handle kernel NULL pointer dereference at virtual address
-> 0000020c
-> printing eip: c014f014 *pde = 00000000
-> I hand typed the above in since I didn't capture it through a serial
-> terminal.
-> 
->>From what I can see here, there's no place for a local loop to form in
-> the talker task. I have the wait period set to the main rate, defined as
-> a 20 msec for this example.  Calling rt_task_send with or without a
-> RT_TASK_MCB receive struct and without a reply from the listener task
-> still results in the bug occurring.  My platform is a Geode, and I'm
-> running 2.6.24-4 with Xenomai 2.4.3
-> 
-> Thank you,
-> 
-> Josh
-> 
-> 
-> 
-> 
-> c0151501 <__rt_task_receive>:
-> c0151501:       55                      push   %ebp
-> c0151502:       89 e5                   mov    %esp,%ebp
-> c0151504:       57                      push   %edi
-> c0151505:       89 d7                   mov    %edx,%edi
-> c0151507:       56                      push   %esi
-> c0151508:       89 c6                   mov    %eax,%esi
-> c015150a:       53                      push   %ebx
-> c015150b:       83 ec 5c                sub    $0x5c,%esp
-> c015150e:       8b 1a                   mov    (%edx),%ebx
-> c0151510:       8b 40 04                mov    0x4(%eax),%eax
-> c0151513:       89 da                   mov    %ebx,%edx
-> c0151515:       83 c2 10                add    $0x10,%edx
-> c0151518:       19 c9                   sbb    %ecx,%ecx
-> c015151a:       39 50 18                cmp    %edx,0x18(%eax)
-> c015151d:       83 d9 00                sbb    $0x0,%ecx
-> c0151520:       85 c9                   test   %ecx,%ecx
-> c0151522:       0f 85 dd 00 00 00       jne    c0151605
-> <__rt_task_receive+0x104>
-> c0151528:       b9 10 00 00 00          mov    $0x10,%ecx
-> c015152d:       89 da                   mov    %ebx,%edx
-> c015152f:       8d 45 dc                lea    0xffffffdc(%ebp),%eax
-> c0151532:       e8 29 a2 08 00          call   c01db760
-> <__copy_from_user_ll_nozero>
-> c0151537:       8b 4d e8                mov    0xffffffe8(%ebp),%ecx
-> c015153a:       85 c9                   test   %ecx,%ecx
-> c015153c:       74 18                   je     c0151556
-> <__rt_task_receive+0x55>
-> c015153e:       8b 55 e4                mov    0xffffffe4(%ebp),%edx
-> c0151541:       8b 46 04                mov    0x4(%esi),%eax
-> c0151544:       01 ca                   add    %ecx,%edx
-> c0151546:       19 db                   sbb    %ebx,%ebx
-> c0151548:       39 50 18                cmp    %edx,0x18(%eax)
-> c015154b:       83 db 00                sbb    $0x0,%ebx
-> c015154e:       85 db                   test   %ebx,%ebx
-> c0151550:       0f 85 af 00 00 00       jne    c0151605
-> <__rt_task_receive+0x104>
-> c0151556:       8b 5f 04                mov    0x4(%edi),%ebx
-> c0151559:       8b 46 04                mov    0x4(%esi),%eax
-> c015155c:       89 da                   mov    %ebx,%edx
-> c015155e:       83 c2 08                add    $0x8,%edx
-> c0151561:       19 c9                   sbb    %ecx,%ecx
-> c0151563:       39 50 18                cmp    %edx,0x18(%eax)
-> c0151566:       83 d9 00                sbb    $0x0,%ecx
-> c0151569:       85 c9                   test   %ecx,%ecx
-> c015156b:       0f 85 94 00 00 00       jne    c0151605
-> <__rt_task_receive+0x104>
-> c0151571:       89 da                   mov    %ebx,%edx
-> c0151573:       b9 08 00 00 00          mov    $0x8,%ecx
-> c0151578:       8d 45 ec                lea    0xffffffec(%ebp),%eax
-> c015157b:       e8 e0 a1 08 00          call   c01db760
-> <__copy_from_user_ll_nozero>
-> c0151580:       8b 5d e4                mov    0xffffffe4(%ebp),%ebx
-> c0151583:       8b 55 e8                mov    0xffffffe8(%ebp),%edx
-> c0151586:       89 5d 98                mov    %ebx,0xffffff98(%ebp)
-> c0151589:       31 db                   xor    %ebx,%ebx
-> c015158b:       85 d2                   test   %edx,%edx
-> c015158d:       74 22                   je     c01515b1
-> <__rt_task_receive+0xb0>
-> c015158f:       83 fa 40                cmp    $0x40,%edx
-> c0151592:       77 05                   ja     c0151599
-> <__rt_task_receive+0x98>
-> c0151594:       8d 5d 9c                lea    0xffffff9c(%ebp),%ebx
-> c0151597:       eb 15                   jmp    c01515ae
-> <__rt_task_receive+0xad>
-> c0151599:       b8 60 b9 3c c0          mov    $0xc03cb960,%eax
-> c015159e:       be f4 ff ff ff          mov    $0xfffffff4,%esi
-> c01515a3:       e8 25 f2 fe ff          call   c01407cd <xnheap_alloc>
-> c01515a8:       85 c0                   test   %eax,%eax
-> c01515aa:       74 5e                   je     c015160a
-> <__rt_task_receive+0x109>
-> c01515ac:       89 c3                   mov    %eax,%ebx
-> c01515ae:       89 5d e4                mov    %ebx,0xffffffe4(%ebp)
-> c01515b1:       8b 55 ec                mov    0xffffffec(%ebp),%edx
-> c01515b4:       8d 45 dc                lea    0xffffffdc(%ebp),%eax
-> c01515b7:       8b 4d f0                mov    0xfffffff0(%ebp),%ecx
-> c01515ba:       e8 42 d9 ff ff          call   c014ef01 <rt_task_receive>
-> c01515bf:       85 c0                   test   %eax,%eax
-> c01515c1:       89 c6                   mov    %eax,%esi
-> c01515c3:       7e 12                   jle    c01515d7
-> <__rt_task_receive+0xd6>
-> c01515c5:       8b 4d e8                mov    0xffffffe8(%ebp),%ecx
-> c01515c8:       85 c9                   test   %ecx,%ecx
-> c01515ca:       74 0b                   je     c01515d7
-> <__rt_task_receive+0xd6>
-> c01515cc:       8b 55 e4                mov    0xffffffe4(%ebp),%edx
-> c01515cf:       8b 45 98                mov    0xffffff98(%ebp),%eax
-> c01515d2:       e8 e9 9f 08 00          call   c01db5c0 <__copy_to_user_ll>
-> c01515d7:       8b 45 98                mov    0xffffff98(%ebp),%eax
-> c01515da:       8d 55 dc                lea    0xffffffdc(%ebp),%edx
-> c01515dd:       b9 10 00 00 00          mov    $0x10,%ecx
-> c01515e2:       89 45 e4                mov    %eax,0xffffffe4(%ebp)
-> c01515e5:       8b 07                   mov    (%edi),%eax
-> c01515e7:       e8 d4 9f 08 00          call   c01db5c0 <__copy_to_user_ll>
-> c01515ec:       85 db                   test   %ebx,%ebx
-> c01515ee:       74 1a                   je     c015160a
-> <__rt_task_receive+0x109>
-> c01515f0:       8d 45 9c                lea    0xffffff9c(%ebp),%eax
-> c01515f3:       39 c3                   cmp    %eax,%ebx
-> c01515f5:       74 13                   je     c015160a
-> <__rt_task_receive+0x109>
-> c01515f7:       89 da                   mov    %ebx,%edx
-> c01515f9:       b8 60 b9 3c c0          mov    $0xc03cb960,%eax
-> c01515fe:       e8 a4 f0 fe ff          call   c01406a7 <xnheap_free>
-> c0151603:       eb 05                   jmp    c015160a
-> <__rt_task_receive+0x109>
-> c0151605:       be f2 ff ff ff          mov    $0xfffffff2,%esi
-> c015160a:       83 c4 5c                add    $0x5c,%esp
-> c015160d:       89 f0                   mov    %esi,%eax
-> c015160f:       5b                      pop    %ebx
-> c0151610:       5e                      pop    %esi
-> c0151611:       5f                      pop    %edi
-> c0151612:       5d                      pop    %ebp
-> c0151613:       c3                      ret   
-> 
-> 
-> 
-> 
-> Associated source code:
-> 
-> 
-> //main.cpp
-> #include "talker.h"
-> #include "listener.h"
-> #include <sys/mman.h>
-> #include <native/task.h>
-> #include <signal.h>
-> 
-> volatile int exitprogram;
-> RT_TASK talk_task, listen_task;
-> 
-> 
-> void catch_signal(int sig)
-> {
->         exitprogram=1;
-> }
-> 
-> int main(int argc, char *argv[])
-> {
->         exitprogram=0;
->        
->         mlockall(MCL_CURRENT | MCL_FUTURE);
->         //wait for ctrl-c
->         signal(SIGTERM, catch_signal);
->         signal(SIGINT, catch_signal);
->         talker *talk = new talker();
->         listener *listen = new listener();
->         talk->startup(&talk_task, &listen_task);
->         sleep(1);
->         listen->startup(&talk_task, &listen_task);
->         pause();
->         sleep(2);
->         rt_task_join(&talk_task);
->         rt_task_join(&listen_task);
->         rt_task_delete(&talk_task);
->         rt_task_delete(&listen_task);
->         return 0;
-> }
-> 
-> //talker.h
-> #ifndef TALKER_H_
-> #define TALKER_H_
-> #include <stdio.h>
-> #include <stdlib.h>
-> #include <sys/time.h>
-> #include <unistd.h>
-> #include <sys/mman.h>
-> #include <native/task.h>
-> #include <native/timer.h>
-> #define TIMEOUT (100000000)
-> #define MAIN_RATE_NS 20000000
-> 
-> 
-> extern volatile int exitprogram;
-> 
-> class talker {
-> public:
->         talker();
->         virtual ~talker();
->         void mainloop();
->         int startup(RT_TASK *talktask, RT_TASK *listentask);
-> 
-> private:
->         RT_TASK *talk_task, *listen_task;
->         void shutdown();
->         int iret;
-> 
-> protected:
->         static void thunk(void * param);
-> };
-> 
-> 
-> 
-> #endif /*TALKER_H_*/
-> 
-> 
-> 
-> //talker.cpp
-> #include "talker.h"
-> 
-> talker::talker()
-> {
-> }
-> talker::~talker()
-> {
-> }
-> 
-> int talker::startup(RT_TASK *talktask, RT_TASK *listentask)
-> {
->         talk_task=talktask;
->         listen_task=listentask;
->         rt_task_create(talk_task, "talk_task", 0, 51, 0);
->         iret= rt_task_start(talk_task,thunk,(void*)(this));
->         return(0);
-> 
-> 
-> }
-> void talker::thunk(void * param)
-> {
->         talker *instance = (talker *) param;
->         instance->mainloop();
-> }
-> void talker::mainloop()
-> {
->         printf("talker task started\n");
->         int len;
->         RT_TASK_MCB talk_send, talk_reply;
-> 
->         rt_task_set_periodic(NULL,TM_NOW,MAIN_RATE_NS);
->         while (1)
->         {
->                 if(exitprogram)
->                         break;
->                 rt_task_wait_period(NULL);
->                 talk_send.opcode = 0x01;
->                 talk_send.data = NULL;
->                 talk_send.size = 0;
->                 talk_reply.size = 0;
->                 talk_reply.data = NULL;
->                 len =
-> rt_task_send(listen_task,&talk_send,&talk_reply,TM_NONBLOCK);
->                 if (len < 0) printf("rt_task_send error\n");
->                 if (talk_reply.opcode != 4)
->                 printf("len=%d, opcode=%d\n", len, talk_reply.opcode);
->         }
->         shutdown();
-> }
-> 
-> void talker::shutdown()
-> {
->     printf("Talker exits with return %d\n",iret);
-> }
-> 
-> 
-> //listener.h
-> #ifndef LISTENER_H_
-> #define LISTENER_H_
-> #include <stdio.h>
-> #include <stdlib.h>
-> #include <sys/time.h>
-> #include <unistd.h>
-> #include <sys/mman.h>
-> #include <native/task.h>
-> #include <native/timer.h>
-> 
-> 
-> 
-> extern volatile int exitprogram;
-> 
-> class listener {
-> public:
->         listener();
->         virtual ~listener();
->         void mainloop();
->         int startup(RT_TASK *talktask, RT_TASK *listentask);
-> 
-> private:
->         RT_TASK *talk_task, *listen_task;
->         void shutdown();
->         int iret;
-> 
-> protected:
->         static void thunk(void * param);
-> };
-> 
-> 
-> 
-> #endif /*LISTENER_H_*/
-> 
-> 
-> //listener.cpp
-> 
-> #include "listener.h"
-> 
-> listener::listener()
-> {
-> }
-> 
-> listener::~listener()
-> {
-> }
-> 
-> int listener::startup(RT_TASK *talktask, RT_TASK *listentask)
-> {
->         talk_task=talktask;
->         listen_task=listentask;
->         rt_task_create(listen_task, "listen_task", 0, 50, 0);
->         iret= rt_task_start(listen_task,thunk,(void*)(this));
->         return(0);
-> 
-> 
-> }
-> 
-> void listener::thunk(void * param)
-> {
->         listener *instance = (listener *) param;
->         instance->mainloop();
-> }
-> 
-> void listener::mainloop()
-> {
->         printf("listener task started\n");
->         unsigned char buf[10];
->         RT_TASK_MCB listen_rcv, listen_reply;
->        
->         while (1)
->         {
->                 int taskid;
->                 if(exitprogram)
->                         break;
->                 listen_rcv.data = (caddr_t)buf;
->                 listen_rcv.size = sizeof(buf);
->                 taskid = rt_task_receive(&listen_rcv,TM_INFINITE);
->                 printf("received data with opcode
-> %d\n",listen_rcv.opcode);    
->                 listen_reply.opcode = 4;
->                 listen_reply.size = 0;
->                 listen_reply.data = NULL;
->                 rt_task_reply(taskid, &listen_reply);
->         }
->         shutdown();
-> }
-> 
-> void listener::shutdown()
-> {
->     printf("listener exits with return %d\n",iret);
-> }
-> 
-> 
-> 
-> 
-> 
-> 
-> -----Original Message-----
-> From: Philippe Gerum on behalf of Philippe Gerum
-> Sent: Wed 5/7/2008 1:24 PM
-> To: Karch, Joshua
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] rt_task_send / receive problems various
-> issues and  bug trace
-> 
-> Karch, Joshua wrote:
->>
->> Hello,
->>
->> I'm using rt_task_send from a talker task and rt_task_receive/reply from
->> a listener task.  When I launch the two tasks in the following order:
->> listener task,  talker task,  everything runs normally.
->>
->> However, when I launch the talker task first, and then the listener task
->> second, I receive rt_task_send error -22 and after a bit of time the
->> listener task starts up.
-> 
-> -EINVAL is not on the error list for rt_task_send(). Could you confirm
-> this result?
-> 
->  I know this is logical and to be expected,
-> 
-> No, it's not. rt_task_send() does wait for the receiver to listen to,
-> unless you
->  asked for a non blocking call using TM_NONBLOCK as a timeout.
-> 
->> however, it appears that issuing the rt_task_send command to a task that
->> hasn't been started occasionally locks up sufficient resources to
->> prevent the listener task from starting.
-> 
-> Any chance your code enters a tight loop due to rt_task_send() failing
-> repeatedly?
-> 
->  By controlling task startup
->> order, I was able to circumvent this issue.  Both tasks have similar
->> priorities (50, 51).
->>
->> Additionally, I am unable to use rt_task_send with TM_NONBLOCK
->> len = rt_task_send(listen_task,&talk_send,&talk_reply,TM_NONBLOCK);
->>
->> I get a bug failure and have to reset the machine-- see below:
->>
-> 
-> Please disassemble your "vmlinux" kernel image, the exact one that
-> causes a bug:
-> $ objdump -d vmlinux > foo.txt.
-> In that large file, search for the "__rt_task_receive" symbol (notice
-> the double
-> underscore prefix, we also have the "rt_task_receive" symbol, but we
-> don't need
-> this code at the moment), then paste&copy the disassembly code for that
-> function. I'll have a look.
-> 
-> Step #2 is to send a simple piece of code that exhibits the problem.
-> This will
-> speed up the debugging and fixing process.
-> 
->> The reason I want to use TM_NONBLOCK is so that I can send a trigger
->> message from the producer task to the consumer task without requiring a
->> reply to trigger the consumer task to act on the data received. I am
->> using the rt_task_send trigger message to gate and synchronize the
->> consumer task. Is a reply required for all rt_task_send?
->>
->> It seems if I don't send a reply when rt_task_send has a timeout
->> specified the sending task locks up and the listening task runs rampant,
->> i.e. rt_task_receive no longer blocks and the loop runs with no delay
->> and essentially locks up the machine, since I don't use
->> rt_set_task_periodic on the listening task.
->>
->> Here is the trace, and it requires a reboot.  I also can attach the
->> code- it is written in c++ with two separate classes as a model of the
->> application I am building.
->>
->> Thank you,
->>
->> Joshua Karch
->>
->> talker task started
->> rt_task_send error
->> len=-22, opcode=0
->> listener task stBUG: unable to handle kernel NULL pointer dereferencearted
->> rt_task_s at virtual address 0000020c
->> end error
->> len=-printing eip: c014f014 110, opcode=0
->> *pde = 00000000
->> Oops: 0000 [#1] PREEMPT
->> Modules linked in: xeno_timerbench nfs ipv6 nfsd lockd nfs_acl sunrpc
->> exportfs dm_snapshot dm_mirror dm_mod loop pcmcia firmware_class
->> serio_raw psmouse yenta_socket rsrc_nonstatic pcmcia_core cs5535_gpio
->> joydev evdev ext3 jbd mbcache usbhid ide_disk generic ohci_hcd ehci_hcd
->> amd74xx usbcore ide_core e100 mii
->>
->> Pid: 1973, comm: listen_task Not tainted (2.6.24.4 #12)
->> EIP: 0060:[<c014f014>] EFLAGS: 00010093 CPU: 0
->> EIP is at rt_task_receive+0x113/0x18b
->> EAX: cdc71f28 EBX: fffffd98 ECX: c03c5500 EDX: cd820acc
->> ESI: ffffff97 EDI: cd820610 EBP: cdc71edc ESP: cdc71ec4
->>  DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 0068
->> Process listen_task (pid: 1973, ti=cdc70000 task=cdc6d320
->> task.ti=cdc70000)<0>
->> I-pipe domain Linux
->> Stack: 00000000 cdc71f28 00000000 cdc71ee8 cdc6d320 cdc71fb8 cdc71f4c
->> c01515bf
->>        b7d083ea cdc71f00 c0102cb1 ce46bc70 c03c7e90 cd820620 cdc6d620
->> cd80ff44
->>        c029f55b cdc71f34 00000082 b91264ee 0000002e cdc6d320 b9127ee2
->> 0000002e
->> Call Trace:
->>  [<c01045f1>] show_trace_log_lvl+0x1a/0x2f
->>  [<c01046a3>] show_stack_log_lvl+0x9d/0xa5
->>  [<c0104769>] show_registers+0xbe/0x1fd
->>  [<c01049c1>] die+0x119/0x20a
->>  [<c010ef52>] do_page_fault+0x480/0x57e
->>  [<c010ca34>] __ipipe_handle_exception+0x11e/0x166
->>  [<c02a0e7f>] error_code+0x6f/0x80
->>  [<c01515bf>] __rt_task_receive+0xbe/0x113
->>  [<c0149b0d>] losyscall_event+0x99/0x13d
->>  [<c013f05b>] __ipipe_dispatch_event+0xac/0x16c
->>  [<c010c8b1>] __ipipe_syscall_root+0x6a/0xcf
->>  [<c0103e89>] system_call+0x29/0x4a
->>  =======================
->> Code: 00 00 8d 87 bc 04 00 00 39 c2 0f 95 c0 0f b6 c0 f7 d8 21 d0 31 db
->> 3d 58 02 00 00 74 06 8d 98 98 fd ff ff 8b 45 ec be 97 ff ff ff <8b> 93
->> 74 04 00 00 3b 50 0c 77 23 85 d2 74 19 89 d1 8b b3 70 04
->> EIP: [<c014f014>] rt_task_receive+0x113/0x18b SS:ESP 0068:cdc71ec4
->> ---[ end trace 523bcd2b73b75979 ]---
->>
->>
->>
->>
->>
->> ------------------------------------------------------------------------
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
-> 
-> 
-> --
-> Philippe.
-> 
-> 
-> 
-> 
-> 
+I saw that the scripts uses zImage to make the uImage. And the uImage is b=
+uilt
+from the arch/arm/boot/compressed/vmlinux. The difference what i saw is th=
+at no=20
+compression is used to build the uImage by the scripts.
 
 
--- 
-Philippe.
+The Kernel with the printascii Function begin to start.=20
+Here are the logs:
+--------------------------------------------------------------------------=
+--------------------
+Starting kernel ...
+
+<5>Linux version 2.6.24-paradoxxa-pm9263 (support@domain.hid) (gcc version=
+ 4.2.3 (Sourcery G++ Lite 2
+008q1-126)) #7 Mon May 19 08:01:12 CEST 2008
+CPU: ARM926EJ-S [41069265] revision 5 (ARMv5TEJ), cr=3D00053177
+Machine: Ronetix PM9263/BB9263
+<4>Ignoring unrecognised tag 0x54410008
+Memory policy: ECC disabled, Data cache writeback
+<7>On node 0 totalpages: 16384
+<7>  DMA zone: 128 pages used for memmap
+<7>  DMA zone: 0 pages reserved
+<7>  DMA zone: 16256 pages, LIFO batch:3
+<7>  Normal zone: 0 pages used for memmap
+<7>  Movable zone: 0 pages used for memmap
+Clocks: CPU 199 MHz, master 99 MHz, main 18.432 MHz
+CPU0: D VIVT write-back cache
+CPU0: I cache: 16384 bytes, associativity 4, 32 byte lines, 128 sets
+CPU0: D cache: 16384 bytes, associativity 4, 32 byte lines, 128 sets
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 16256=
+
+<5>Kernel command line: root=3D/dev/mtdblock4 rootfstype=3Djffs2 fbcon=3Drotate:=
+3 mtdparts=3Dphysmap-flash.0
+:256k(u-boot)ro,64k(u-boot-env)ro,1408k(kernel),-(rootfs);nand:-(nand) ip=3D=
+10.0.0.17:10.0.0.20:10.0.0
+.20:255.255.255.0:PM9263:eth0:off
+<6>AT91: 160 gpio irqs in 5 banks
+PID hash table entries: 256 (order: 8, 1024 bytes)
+<6>I-pipe 1.9-01: pipeline enabled.
+Console: colour dummy device 80x30
+<6>console [tty0] enabled
+<6>console [ttyS0] enabled
+Linux version 2.6.24-paradoxxa-pm9263 (support@domain.hid) (gcc version 4.=
+2.3 (Sourcery G++ Lite 2008
+q1-126)) #7 Mon May 19 08:01:12 CEST 2008
+CPU: ARM926EJ-S [41069265] revision 5 (ARMv5TEJ), cr=3D00053177
+Machine: Ronetix PM9263/BB9263
+Ignoring unrecognised tag 0x54410008
+Memory policy: ECC disabled, Data cache writeback
+Clocks: CPU 199 MHz, master 99 MHz, main 18.432 MHz
+CPU0: D VIVT write-back cache
+CPU0: I cache: 16384 bytes, associativity 4, 32 byte lines, 128 sets
+CPU0: D cache: 16384 bytes, associativity 4, 32 byte lines, 128 sets
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 16256=
+
+Kernel command line: root=3D/dev/mtdblock4 rootfstype=3Djffs2 fbcon=3Drotate:3 m=
+tdparts=3Dphysmap-flash.0:25
+6k(u-boot)ro,64k(u-boot-env)ro,1408k(kernel),-(rootfs);nand:-(nand) ip=3D10.=
+0.0.17:10.0.0.20:10.0.0.20
+:255.255.255.0:PM9263:eth0:off
+AT91: 160 gpio irqs in 5 banks
+PID hash table entries: 256 (order: 8, 1024 bytes)
+I-pipe 1.9-01: pipeline enabled.
+Console: colour dummy device 80x30
+console [tty0] enabled
+console [ttyS0] enabled
+<6>Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
+Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
+<6>Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
+<6>Memory:Memory: 64MB 64MB =3D 64MB total
+ =3D 64MB total
+<5>Memory: 61184KB available (3220K code, 388K data, 108K init)
+Memory: 61184KB available (3220K code, 388K data, 108K init)
+<7>Calibrating delay loop... 99.12 BogoMIPS (lpj=3D495616)
+Mount-cache hash table entries: 512
+Mount-cache hash table entries: 512
+<6>CPU: Testing write buffer coherency: CPU: Testing write buffer coherenc=
+y: ok
+ok
+<6>net=5Fnamespace: 64 bytes
+net=5Fnamespace: 64 bytes
+<6>NET: Registered protocol family 16
+NET: Registered protocol family 16
+<6>usbcore: registered new interface driver usbfs
+usbcore: registered new interface driver usbfs
+<6>usbcore: registered new interface driver hub
+usbcore: registered new interface driver hub
+<6>usbcore: registered new device driver usb
+usbcore: registered new device driver usb
+<6>NET: Registered protocol family 2
+NET: Registered protocol family 2
+<6>Time: at91=5Ftc0 clocksource has been installed.
+Time: at91=5Ftc0 clocksource has been installed.
+<6>IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
+IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
+<6>TCP established hash table entries: 2048 (order: 2, 16384 bytes)
+TCP established hash table entries: 2048 (order: 2, 16384 bytes)
+<6>TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
+TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
+<6>TCP: Hash tables configured (established 2048 bind 2048)
+TCP: Hash tables configured (established 2048 bind 2048)
+<6>TCP reno registered
+TCP reno registered
+<4>NetWinder Floating Point Emulator V0.97 (double precision)
+NetWinder Floating Point Emulator V0.97 (double precision)
+<6>I-pipe: Domain Xenomai registered.
+I-pipe: Domain Xenomai registered.
+<6>Xenomai: hal/arm started.
+Xenomai: hal/arm started.
+<6>Xenomai: real-time nucleus v2.4.3 (Back to Shalla-Bal) loaded.
+Xenomai: real-time nucleus v2.4.3 (Back to Shalla-Bal) loaded.
+<6>Xenomai: starting native API services.
+Xenomai: starting native API services.
+<6>Xenomai: starting POSIX services.
+Xenomai: starting POSIX services.
+<6>Xenomai: starting RTDM services.
+Xenomai: starting RTDM services.
+<6>JFFS2 version 2.2. (NAND) =C2=A9 2001-2006 Red Hat, Inc.
+JFFS2 version 2.2. (NAND) =C2=A9 2001-2006 Red Hat, Inc.
+<6>io scheduler noop registered
+io scheduler noop registered
+<6>io scheduler anticipatory registered (default)
+io scheduler anticipatory registered (default)
+<6>atmel=5Flcdfb atmel=5Flcdfb.0: 4096KiB frame buffer at 70000000 (mapped at =
+c5000000)
+atmel=5Flcdfb atmel=5Flcdfb.0: 4096KiB frame buffer at 70000000 (mapped at c50=
+00000)
+Console: switching to colour frame buffer device 40x30
+Console: switching to colour frame buffer device 40x30
+<6>atmel=5Flcdfb atmel=5Flcdfb.0: fb0: Atmel LCDC at 0x00700000 (mapped at c48=
+50000), irq 26
+atmel=5Flcdfb atmel=5Flcdfb.0: fb0: Atmel LCDC at 0x00700000 (mapped at c48500=
+00), irq 26
+<6>atmel=5Fusart.0: ttyS0 at MMIO 0xfeffee00 (irq =3D 1) is a ATMEL=5FSERIAL
+atmel=5Fusart.0: ttyS0 at MMIO 0xfeffee00 (irq =3D 1) is a ATMEL=5FSERIAL
+<6>atmel=5Fusart.1: ttyS1 at MMIO 0xfff8c000 (irq =3D 7) is a ATMEL=5FSERIAL
+atmel=5Fusart.1: ttyS1 at MMIO 0xfff8c000 (irq =3D 7) is a ATMEL=5FSERIAL
+<6>MACB=5Fmii=5Fbus: probed
+MACB=5Fmii=5Fbus: probed
+<6>eth0: Atmel MACB at 0xfffbc000 irq 21 (02:00:11:53:d0:85)
+eth0: Atmel MACB at 0xfffbc000 irq 21 (02:00:11:53:d0:85)
+<6>eth0: attached PHY driver [Generic PHY] (mii=5Fbus:phy=5Faddr=3Dffffffff:01, =
+irq=3D-1)
+eth0: attached PHY driver [Generic PHY] (mii=5Fbus:phy=5Faddr=3Dffffffff:01, irq=
+=3D-1)
+<6>Uniform Multi-Platform E-IDE driver Revision: 7.00alpha2
+Uniform Multi-Platform E-IDE driver Revision: 7.00alpha2
+<6>ide: Assuming 50MHz system bus speed for PIO modes; override with idebu=
+s=3Dxx
+ide: Assuming 50MHz system bus speed for PIO modes; override with idebus=3Dx=
+x
+<5>physmap platform flash device: 04000000 at 10000000
+physmap platform flash device: 04000000 at 10000000
+<6>physmap-flash.0: Found 1 x16 devices at 0x0 in 16-bit bank
+physmap-flash.0: Found 1 x16 devices at 0x0 in 16-bit bank
+<7>physmap-flash.0: Found an alias at 0x400000 for the chip at 0x0
+<7>physmap-flash.0: Found an alias at 0x800000 for the chip at 0x0
+<7>physmap-flash.0: Found an alias at 0xc00000 for the chip at 0x0
+<7>physmap-flash.0: Found an alias at 0x1000000 for the chip at 0x0
+<7>physmap-flash.0: Found an alias at 0x1400000 for the chip at 0x0
+<7>physmap-flash.0: Found an alias at 0x1800000 for the chip at 0x0
+<7>physmap-flash.0: Found an alias at 0x1c00000 for the chip at 0x0
+<7>physmap-flash.0: Found an alias at 0x2000000 for the chip at 0x0
+<7>physmap-flash.0: Found an alias at 0x2400000 for the chip at 0x0
+<7>physmap-flash.0: Found an alias at 0x2800000 for the chip at 0x0
+<7>physmap-flash.0: Found an alias at 0x2c00000 for the chip at 0x0
+<7>physmap-flash.0: Found an alias at 0x3000000 for the chip at 0x0
+<7>physmap-flash.0: Found an alias at 0x3400000 for the chip at 0x0
+<7>physmap-flash.0: Found an alias at 0x3800000 for the chip at 0x0
+<7>physmap-flash.0: Found an alias at 0x3c00000 for the chip at 0x0
+ Amd/Fujitsu Extended Query Table at 0x0040
+ Amd/Fujitsu Extended Query Table at 0x0040
+<5>number of CFI chips: 1
+number of CFI chips: 1
+<5>cfi=5Fcmdset=5F0002: Disabling erase-suspend-program due to code brokenness=
+.
+cfi=5Fcmdset=5F0002: Disabling erase-suspend-program due to code brokenness.
+<5>4 cmdlinepart partitions found on MTD device physmap-flash.0
+4 cmdlinepart partitions found on MTD device physmap-flash.0
+<5>Creating 4 MTD partitions on "physmap-flash.0":
+Creating 4 MTD partitions on "physmap-flash.0":
+<5>0x00000000-0x00040000 : "u-boot"
+0x00000000-0x00040000 : "u-boot"
+<5>0x00040000-0x00050000 : "u-boot-env"
+0x00040000-0x00050000 : "u-boot-env"
+<5>0x00050000-0x001b0000 : "kernel"
+0x00050000-0x001b0000 : "kernel"
+<5>0x001b0000-0x00400000 : "rootfs"
+0x001b0000-0x00400000 : "rootfs"
+<6>NAND device: Manufacturer ID: 0x2c, Chip ID: 0xda (Micron NAND 256MiB 3=
+,3V 8-bit)
+NAND device: Manufacturer ID: 0x2c, Chip ID: 0xda (Micron NAND 256MiB 3,3V=
+ 8-bit)
+<6>AT91 NAND: 8-bit, Software ECC
+AT91 NAND: 8-bit, Software ECC
+<6>Scanning device for bad blocks
+Scanning device for bad blocks
+<5>Creating 1 MTD partitions on "at91=5Fnand":
+Creating 1 MTD partitions on "at91=5Fnand":
+<5>0x00000000-0x10000000 : "nand"
+0x00000000-0x10000000 : "nand"
+<6>atmel=5Fspi atmel=5Fspi.0: Atmel SPI Controller at 0xfffa4000 (irq 14)
+atmel=5Fspi atmel=5Fspi.0: Atmel SPI Controller at 0xfffa4000 (irq 14)
+<6>mtd=5Fdataflash spi0.0: AT45DB321x (4224 KBytes)
+mtd=5Fdataflash spi0.0: AT45DB321x (4224 KBytes)
+<6>atmel=5Fspi atmel=5Fspi.1: Atmel SPI Controller at 0xfffa8000 (irq 15)
+atmel=5Fspi atmel=5Fspi.1: Atmel SPI Controller at 0xfffa8000 (irq 15)
+<6>at91=5Fcf: irqs det #62, io #56
+at91=5Fcf: irqs det #62, io #56
+<7>ohci=5Fhcd: 2006 August 04 USB 1.1 'Open' Host Controller (OHCI) Driver
+<6>at91=5Fohci at91=5Fohci: AT91 OHCI
+at91=5Fohci at91=5Fohci: AT91 OHCI
+<6>at91=5Fohci at91=5Fohci: new USB bus registered, assigned bus number 1
+at91=5Fohci at91=5Fohci: new USB bus registered, assigned bus number 1
+<6>at91=5Fohci at91=5Fohci: irq 29, io mem 0x00a00000
+at91=5Fohci at91=5Fohci: irq 29, io mem 0x00a00000
+<6>usb usb1: configuration #1 chosen from 1 choice
+usb usb1: configuration #1 chosen from 1 choice
+<6>hub 1-0:1.0: USB hub found
+hub 1-0:1.0: USB hub found
+<6>hub 1-0:1.0: 2 ports detected
+hub 1-0:1.0: 2 ports detected
+<6>mice: PS/2 mouse device common for all mice
+mice: PS/2 mouse device common for all mice
+<6>ads7846 spi1.0: touchscreen, irq 31
+ads7846 spi1.0: touchscreen, irq 31
+<6>input: ADS784x Touchscreen as /class/input/input0
+input: ADS784x Touchscreen as /class/input/input0
+<6>rtc-at91sam9 at91=5Frtt.0: rtc core: registered at91=5Frtt as rtc0
+rtc-at91sam9 at91=5Frtt.0: rtc core: registered at91=5Frtt as rtc0
+<6>Driver for 1-wire Dallas network protocol.
+Driver for 1-wire Dallas network protocol.
+<6>pm926x=5Fw1, gpio pin 95
+pm926x=5Fw1, gpio pin 95
+<6>Registered led device: led0
+Registered led device: led0
+<6>Registered led device: led1
+Registered led device: led1
+<6>usbcore: registered new interface driver usbhid
+usbcore: registered new interface driver usbhid
+<6>drivers/hid/usbhid/hid-core.c: v2.6:USB HID core driver
+drivers/hid/usbhid/hid-core.c: v2.6:USB HID core driver
+<6>Advanced Linux Sound Architecture Driver Version 1.0.15 (Tue Nov 20 19:=
+16:42 2007 UTC).
+Advanced Linux Sound Architecture Driver Version 1.0.15 (Tue Nov 20 19:16:=
+42 2007 UTC).
+<6>ALSA sound/arm/at91-ac97.c:564: ALSA sound/arm/at91-ac97.c:564: AC97C r=
+egs =3D FFFA0000
+AC97C regs =3D FFFA0000
+<6>ALSA sound/arm/at91-ac97.c:565: ALSA sound/arm/at91-ac97.c:565: AC97C i=
+rq  =3D 18
+AC97C irq  =3D 18
+<4>ALSA sound/arm/at91-ac97.c:493: ALSA sound/arm/at91-ac97.c:493: at91-ac=
+97: codec read timeout 1
+at91-ac97: codec read timeout 1
+<4>ALSA sound/arm/at91-ac97.c:493: <4>ALSA sound/arm/at91-ac97.c:493: at91=
+-ac97: codec read timeout
+1
+at91-ac97: codec read timeout 1
+<4>ALSA sound/arm/at91-ac97.c:493: <4>ALSA sound/arm/at91-ac97.c:493: at91=
+-ac97: codec read timeout
+1
+at91-ac97: codec read timeout 1
+<4>ALSA sound/arm/at91-ac97.c:493: <4>ALSA sound/arm/at91-ac97.c:493: at91=
+-ac97: codec read timeout
+1
+at91-ac97: codec read timeout 1
+<6>ASoC version 0.13.1
+<6>ASoC version 0.13.1
+<6>ALSA device list:
+ALSA device list:
+<6>  #0: Atmel AC97 Controller at 0xfffa0000, irq 18
+  #0: Atmel AC97 Controller at 0xfffa0000, irq 18
+<6>TCP cubic registered
+TCP cubic registered
+<6>NET: Registered protocol family 1
+NET: Registered protocol family 1
+<6>NET: Registered protocol family 17
+NET: Registered protocol family 17
+<6>RPC: Registered udp transport module.
+RPC: Registered udp transport module.
+<6>RPC: Registered tcp transport module.
+RPC: Registered tcp transport module.
+<6>rtc-at91sam9 at91=5Frtt.0: setting system clock to 2008-05-19 08:15:34 UT=
+C (1211184934)
+rtc-at91sam9 at91=5Frtt.0: setting system clock to 2008-05-19 08:15:34 UTC (=
+1211184934)
+IP-Config: Complete:IP-Config: Complete:
+      device=3Deth0
+      device=3Deth0, addr=3D10.0.0.17, addr=3D10.0.0.17, mask=3D255.255.255.0, mas=
+k=3D255.255.255.0, gw=3D10.0.0
+.20, gw=3D10.0.0.20,
+     host=3DPM9263, domain=3D, nis-domain=3D(none),
+     host=3DPM9263, domain=3D, nis-domain=3D(none),
+     bootserver=3D10.0.0.20,
+     bootserver=3D10.0.0.20, rootserver=3D10.0.0.20, rootserver=3D10.0.0.20, roo=
+tpath=3D, rootpath=3D
+
+<1>Unable to handle kernel NULL pointer dereference at virtual address 000=
+00001
+Unable to handle kernel NULL pointer dereference at virtual address 000000=
+01
+<1>pgd =3D c0004000
+pgd =3D c0004000
+<1>[00000001] *pgd=3D00000000[00000001] *pgd=3D00000000
+
+Internal error: Oops: 5 [#1]
+Internal error: Oops: 5 [#1]
+Modules linked in:Modules linked in:
+
+CPU: 0    Not tainted  (2.6.24-paradoxxa-pm9263 #7)
+CPU: 0    Not tainted  (2.6.24-paradoxxa-pm9263 #7)
+PC is at name=5Fto=5Fdev=5Ft+0x160/0x28c
+PC is at name=5Fto=5Fdev=5Ft+0x160/0x28c
+LR is at name=5Fto=5Fdev=5Ft+0x13c/0x28c
+LR is at name=5Fto=5Fdev=5Ft+0x13c/0x28c
+pc : [<c0023810>]    lr : [<c00237ec>]    psr: 20000013
+sp : c3c17f2c  ip : c3c17f2c  fp : c3c17f78
+pc : [<c0023810>]    lr : [<c00237ec>]    psr: 20000013
+sp : c3c17f2c  ip : c3c17f2c  fp : c3c17f78
+r10: 00000000  r9 : 00000000  r8 : c3c16000
+r10: 00000000  r9 : 00000000  r8 : c3c16000
+r7 : 00000000  r6 : 00000000  r5 : c001d871  r4 : c3c17f30
+r7 : 00000000  r6 : 00000000  r5 : c001d871  r4 : c3c17f30
+r3 : 00000001  r2 : 00000001  r1 : 0000006d  r0 : 00001730
+r3 : 00000001  r2 : 00000001  r1 : 0000006d  r0 : 00001730
+Flags: nzCv  IRQs on  FIQs on  Mode SVC=5F32  ISA ARM  Segment kernel
+Flags: nzCv  IRQs on  FIQs on  Mode SVC=5F32  ISA ARM  Segment kernel
+Control: 0005317f  Table: 20004000  DAC: 00000017
+Control: 0005317f  Table: 20004000  DAC: 00000017
+Process swapper (pid: 1, stack limit =3D 0xc3c16258)
+Process swapper (pid: 1, stack limit =3D 0xc3c16258)
+Stack: (0xc3c17f2c to 0xc3c18000)
+Stack: (0xc3c17f2c to 0xc3c18000)
+7f20: 7f20:                                                       00000000=
+ 00000000 6264746d 6264746
+d 6b636f6c 6b636f6c c3c10034 c3c10034 c3c17f48 c3c17f48
+
+7f40: 7f40: c004b3fc c004b3fc c006185c c006185c 00000003 00000003 00000000=
+ 00000000 00000000 0000000
+0 00000000 00000000 00000001 00000001 c001d86c c001d86c
+
+7f60: 7f60: c001d85c c001d85c 00000000 00000000 c001c070 c001c070 c3c17f94=
+ c3c17f94 c3c17f7c c3c17f7
+c c0009328 c0009328 c00236c0 c00236c0 c3c17f88 c3c17f88
+
+7f80: 7f80: c036a4e0 c036a4e0 00000000 00000000 c3c17ff4 c3c17ff4 c3c17f98=
+ c3c17f98 c0008a98 c0008a9
+8 c00092a4 c00092a4 00000000 00000000 00000000 00000000
+
+7fa0: 7fa0: 00000000 00000000 c3c17fb0 c3c17fb0 c0024060 c0024060 c0037720=
+ c0037720 00000000 0000000
+0 00000000 00000000 c0008868 c0008868 c003ddbc c003ddbc
+
+7fc0: 7fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000=
+ 00000000 00000000 0000000
+0 00000000 00000000 00000000 00000000 00000000 00000000
+
+7fe0: 7fe0: 00000000 00000000 00000000 00000000 00000000 00000000 c3c17ff8=
+ c3c17ff8 c003ddbc c003ddb
+c c0008878 c0008878 0f73fc8c 0f73fc8c 1f13ac4e 1f13ac4e
+
+Backtrace: Backtrace:
+
+[<c00236b0>] [<c00236b0>] (name=5Fto=5Fdev=5Ft+0x0/0x28c) (name=5Fto=5Fdev=5Ft+0x0/0x2=
+8c) from [<c0009328>] from
+ [<c0009328>] (prepare=5Fnamespace+0x94/0x16c)
+(prepare=5Fnamespace+0x94/0x16c)
+ r7:c001c070 r7:c001c070 r6:00000000 r6:00000000 r5:c001d85c r5:c001d85c r=
+4:c001d86c r4:c001d86c
+
+[<c0009294>] [<c0009294>] (prepare=5Fnamespace+0x0/0x16c) (prepare=5Fnamespace=
++0x0/0x16c) from [<c0008a9
+8>] from [<c0008a98>] (kernel=5Finit+0x230/0x290)
+(kernel=5Finit+0x230/0x290)
+ r5:00000000 r5:00000000 r4:c036a4e0 r4:c036a4e0
+
+[<c0008868>] [<c0008868>] (kernel=5Finit+0x0/0x290) (kernel=5Finit+0x0/0x290) =
+from [<c003ddbc>] from [<c
+003ddbc>] (do=5Fexit+0x0/0x790)
+(do=5Fexit+0x0/0x790)
+Code: Code: 20000220 20000220 e2833001 e2833001 e50b3020 e50b3020 e51b2020=
+ e51b2020 (e5d21000) (e5d2
+1000)
+
+<4>---[ end trace aae4ab6fc1a48acc ]---
+---[ end trace aae4ab6fc1a48acc ]---
+<0>Kernel panic - not syncing: Attempted to kill init!
+Kernel panic - not syncing: Attempted to kill init!
+<6>eth0: link up (100/Full)
+eth0: link up (100/Full)
+
+
+--------------------------------------------------------------------------=
+--------------------
+
+Thomas
+
+
+-----Urspr=FCngliche Nachricht-----
+Von: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+Gesendet: 16.05.08 17:28:23
+An: Paradoxxa2001@domain.hid
+CC: xenomai@xenomai.org
+Betreff: Re: [Xenomai-help] at91sam9263 and user-space support compile fai=
+ls
+
+On Fri, May 16, 2008 at 4:34 PM,  <Paradoxxa2001@domain.hid> wrote:
+> OK, i will include the printascii function.
+> Thank you for your patience. I appreciate you.
+
+You are welcome. Have you tried "make uImage" =3F
+
+--=20
+ Gilles
+
+=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
+Xenomai-help mailing list
+Xenomai-help@domain.hid
+https://mail.gna.org/listinfo/xenomai-help
+
+
+
+=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
+Der WEB.DE SmartSurfer hilft bis zu 70% Ihrer Onlinekosten zu sparen!
+http://smartsurfer.web.de/=3Fmc=3D100071&distributionid=3D000000000066
+
 
