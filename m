@@ -1,8 +1,8 @@
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="q2ZDQV9FBE"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18483.10159.822828.204726@domain.hid>
-Date: Tue, 20 May 2008 21:34:07 +0200
+Message-ID: <18483.10408.141546.420660@domain.hid>
+Date: Tue, 20 May 2008 21:38:16 +0200
 In-Reply-To: <5481.62.39.72.60.1211293804.squirrel@domain.hid>
 References: <16474.81.252.86.91.1211199249.squirrel@domain.hid>
 	<2ff1a98a0805190532i2fdb4267qc4566d98ab8cd57@domain.hid>
@@ -24,66 +24,21 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Fabien MAHOT <fabien.mahot@domain.hid>
 Cc: xenomai@xenomai.org
 
-
---q2ZDQV9FBE
-Content-Type: text/plain; charset=us-ascii
-Content-Description: message body and .signature
-Content-Transfer-Encoding: 7bit
-
 Fabien MAHOT wrote:
- > Thank you,
+ > Result on the screen :
  > 
- > I tried to use rt_fprintf(stderr) or rt_printf(), but there is no debug
- > traces on my Screen. But when I used fprintf(stderr) or printf(), there is
- > no problem, I ve got traces on my screen.
- > Compilation is good, I don't know why it doesn't work.
+ > Start of timeOut
+ > Wait of timeOut end
+ > End of timeOut thread
  > 
- > I also checked the info->si_value.sival_ptr value and it is good.
  > 
- > My StackWrite and StackRead functions don't need a mutex. There is no
- > conflict between them.
  > 
- > Otherwise, I decided to cancel the lock use in EndTimeOut and I use a
- > semaphore to indicate the time-out end to TimeOut thread. But there is a
- > bug.
- > This test program explains it :
- > When TimeOut thread starts a time-out and waits the associated semaphore
- > (sem_wait()). When signal of time-out end arrives, TimeOut thread wakes up
- > whereas there is no sem_post(), and sem_wait returns no error.
+ > The use of a semphore doesn't change my problem, I always have system crash.
 
-The attached patch should fix the issue with sem_wait (or the
-interruption of any system call by a posix skin signal). However, I am
-unable to reproduce the crash.
+Do you observe any crash with Xenomai testsuite ?
 
 -- 
 
 
 					    Gilles.
-
---q2ZDQV9FBE
-Content-Type: text/plain
-Content-Disposition: inline;
-	filename="xeno-posix-set-xnbreak-upon-posix-signal.diff"
-Content-Transfer-Encoding: 7bit
-
-Index: ksrc/skins/posix/signal.c
-===================================================================
---- ksrc/skins/posix/signal.c	(revision 3805)
-+++ ksrc/skins/posix/signal.c	(working copy)
-@@ -1048,7 +1048,13 @@ static void pse51_dispatch_shadow_signal
- {
- 	/* Migrate to secondary mode in order to get the signals delivered by
- 	   Linux. */
-+	xnthread_t *cur = xnpod_current_thread();
-+	int interrupted;
-+
-+	interrupted = xnthread_test_info(cur, XNBREAK);
- 	xnshadow_relax(1);
-+	if (interrupted)
-+		xnthread_set_info(cur, XNBREAK | XNKICKED);
- }
- 
- void pse51_signal_handle_request(pthread_t thread)
-
---q2ZDQV9FBE--
 
