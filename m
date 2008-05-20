@@ -1,21 +1,13 @@
-Message-ID: <2ff1a98a0805200123m2a6456d8ud384a8b9535818a8@domain.hid>
-Date: Tue, 20 May 2008 10:23:56 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <2ff1a98a0805200122r3e4d26d2kf4e6061b544c033e@domain.hid>
+Message-ID: <483294AE.6050208@domain.hid>
+Date: Tue, 20 May 2008 11:06:54 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
+References: <60078.189.4.74.190.1209348044.squirrel@domain.hid>	<481580F2.9090707@domain.hid>	<4815BFDA.1040904@domain.hid>	<4815C3A5.1020606@domain.hid>	<4815C937.6000700@domain.hid>	<4815D4B1.8040207@domain.hid>	<481682B8.4050104@domain.hid>	<4816BF96.6010400@domain.hid>	<57472.150.162.12.153.1209499591.squirrel@domain.hid>	<48180F67.4080809@domain.hid>	<482B8494.7050009@domain.hid>	<482BD2D4.5070408@domain.hid>	<482C922E.1080002@domain.hid>	<482C9719.1080803@domain.hid>	<482CA5B9.3030203@domain.hid>	<482CA862.9070105@domain.hid>
+	<482D988A.8040503@domain.hid> <48328F76.4090603@domain.hid>
+In-Reply-To: <48328F76.4090603@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <1168701330@domain.hid> <48317AED.7030507@domain.hid>
-	<2ff1a98a0805190630o6ae730c2mcf624e8feb9649e3@domain.hid>
-	<48318E9F.4060204@domain.hid>
-	<2ff1a98a0805190734o4de187c1rd872c84ccc0f4a92@domain.hid>
-	<4832731E.5070906@domain.hid>
-	<18482.29993.144891.511723@domain.hid>
-	<48328978.8010101@domain.hid>
-	<2ff1a98a0805200120t72863725p221832d01551fb7e@domain.hid>
-	<2ff1a98a0805200122r3e4d26d2kf4e6061b544c033e@domain.hid>
-Subject: Re: [Xenomai-help] at91sam9263 and user-space support compile fails
+Subject: Re: [Xenomai-help] [Socketcan-users] RT - Socketcan
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,110 +17,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Paradoxxa <paradoxxa2001@domain.hid>
-Cc: xenomai@xenomai.org
+To: Breno <breno@domain.hid>
+Cc: socketcan@domain.hid, xenomai-help <xenomai@xenomai.org>
 
-On Tue, May 20, 2008 at 10:22 AM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On Tue, May 20, 2008 at 10:20 AM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->> On Tue, May 20, 2008 at 10:19 AM, Paradoxxa <paradoxxa2001@domain.hid> wrote:
->>> Gilles Chanteperdrix schrieb:
+Hi Breno,
+
+first I moved this thread to the Xenomai-Help ML, because it's off-topic
+on the Socket-CAN ML. Only questions related to the Socket-CAN API or
+Linux Socket-CAN implementation should be send there.
+
+Wolfgang Grandegger wrote:
+> Breno wrote:
+>> Wolfgang Grandegger wrote:
+> [...deletions...]
+> 
+>>>>>> Wolfgang, that's seems to work perfectly. I got another simple(very
+>>>>>> simple) question. Follow the commands:
+>>>>>> *
+>>>>>> sh-3.00# ./rtcanrecv rtcan1 &
+>>>>>>
+>>>>>> *[1] 950
+>>>>>> *sh-3.00# ./rtcanrecv rtcan1 &*
+>>>>>> *sh-3.00# ./rtcansend rtcan0 -i123 A B C D E F G H*
+>>>>>>
+>>>>>> #0: (2) <0x07b> [8] 00 00 00 00 00 00 00
+>>>>>>
+>>>>>> So, I received correctly the ID message the length but the data is 00.
+>>>>>> Is there any configuration missing?
+>>>>>>     
+>>>>>>         
+>>>>> You have to specify the message bytes correctly.
+>>>>>
+>>>>> ./rtcansend rtcan0 -i0x123 0xA 0xB 0xC 0xD 0xE 0xF
+>>>>>
+>>>>> should work better.
+>>>>>
+>>>>> Wolfgang.
+>>>>>   
+>>>>>       
+>>>> Wolfgang, that's weird! I did your suggestion and I got:
 >>>>
->>>> paradoxxa wrote:
->>>>  > Gilles Chanteperdrix schrieb:
->>>>  > > On Mon, May 19, 2008 at 4:28 PM, paradoxxa <paradoxxa2001@domain.hid>
->>>> wrote:
->>>>  > >    > >> Gilles Chanteperdrix schrieb:
->>>>  > >>      > >>> On Mon, May 19, 2008 at 3:04 PM, paradoxxa
->>>> <paradoxxa2001@domain.hid> wrote:
->>>>  > >>>
->>>>  > >>>        > >>>> Gilles Chanteperdrix schrieb:
->>>>  > >>>>
->>>>  > >>>>          > >>>>> On Mon, May 19, 2008 at 2:17 PM, paradoxxa
->>>> <paradoxxa2001@domain.hid> wrote:
->>>>  > >>>>>
->>>>  > >>>>>
->>>>  > >>>>> No, you are talking about CONFIG_DEBUG_LL, I am talking about
->>>>  > >>>>> CONFIG_DEBUG_INFO. These are two different options. So, this make
->>>> at
->>>>  > >>>>> least two options that you changed. Could you check if a kernel
->>>> with
->>>>  > >>>>> an unmodified defconfig boots ?
->>>>  > >>>>>
->>>>  > >>>>>
->>>>  > >>>>>
->>>>  > >>>>>            > >>>> The CONFIG_DEBUG_INFO is already set in the
->>>> defconfig. The
->>>>  > >>>> CONFIG_DEBUG_LL i
->>>>  > >>>> set manually.
->>>>  > >>>> As well I had to changed the  AT91 Master Clock Frequency.
->>>>  > >>>>
->>>>  > >>>> Here are the logs of a unmodified defconfig boot:
->>>>  > >>>>
->>>>  > >>>>          > >>> Ok. But this is a boot with your old compiler.
->>>> Could you try a
->>>>  > >>> defconfig build (with I-pipe AT91 master clock frequency modified)
->>>>  > >>> with CodeSourcery compiler ?
->>>>  > >>>  If you can not get CodeSourcery compiler to compile correctly a
->>>> Linux
->>>>  > >>> kernel, I can send you the 2007q3 compiler, or you could try to
->>>>  > >>> compile the kernel with your old compiler, and to compile
->>>> user-space
->>>>  > >>> with CodeSourcery compiler.
->>>>  > >>>
->>>>  > >>>        > >> I tried it with the both compiler. When i execute
->>>> /usr/xenomai/bin/latency i
->>>>  > >> get the message "sh: /usr/xenomai/bin/latency: not found"
->>>>  > >>      > >
->>>>  > > Have you tried running file, ldd, or readelf on the binary to see
->>>> what
->>>>  > > it is made of ?
->>>>  > >
->>>>  > >    > >> By the way, how i can figure out if the binary or the
->>>> compiler is a
->>>>  > >> oabi/eabi file/compiler?
->>>>  > >>      > >
->>>>  > > codesourcery compiles for eabi by default. So, you have to enable
->>>> eabi
->>>>  > > in kernel configuration to be able to run binaries generated by
->>>>  > > codesourcery compiler.
->>>>  > >
->>>>  > >    > The eabi was disabled in the kernel configuration. But to enable
->>>> it make  > no changes.
->>>>  >  >  > $ file usr/xenomai/bin/latency
->>>>  > usr/xenomai/bin/latency: ELF 32-bit LSB executable, ARM, version 1  >
->>>> (SYSV), for GNU/Linux 2.6.14, dynamically linked (uses shared libs), not  >
->>>> stripped
->>>>  >  >  > $ ldd usr/xenomai/bin/latency
->>>>  >     not a dynamic executable
+>>>> *sh-3.00# ./rtcansend rtcan0 -i0x123 0xA 0xB 0xC 0xD 0xE 0xF*
+>>>> #0: (2) <0x123> [6] 00 00 00 0d 0e 0f
 >>>>
->>>> This is wrong. ldd should be run on the target, not on the host. Also
->>>> check that /usr/xenomai/lib is in the ld.so.conf on your target (and
->>>> that you have run ldconfig) or use LD_LIBRARY_PATH
->>>>
->>>>  >  > $ readelf --sections /usr/xenomai/bin/latency
->>>>
->>>> I was rather thinking about readelf -d /usr/xenomai/bin/latency
->>>>
->>>>
+>>>> It seems losing some packages, isn't it?
+>>>>     
+>>> Wired, could you try:
 >>>
->>> I actuall don't have ldd and readelf on the target. I did a ldconfig -p. The
->>> Xenomai Libraries were listed there.
+>>> ./rtcansend -v -i0x123 rtcan0 0xA 0xB 0xC 0xD 0xE 0xF
+>>> ./rtcansend -v -i0x123 rtcan0 1 2 3 4 5 6 7 8
+>>>
+>>> Wolfgang.
+>>>
+>>>   
+>> Hi Wolfgang, I got the messages below with verbose enable as you 
+>> suggested me.*
 >>
->> readelf can work on the host. But ldd on the target is the best way to
->> know if the installation worked correctly. If you are looking for ldd,
->> it is compiled as part of the glibc. You may even found it in the
->> toolchain files.
->
-> Actually ldd is a script, it is not compiled.
+>> sh-3.00# ./rtcansend rtcan0 -v -i0x123 0xA 0xB 0xC 0xD 0xE 0xF 0xG*
+>> interface rtcan0
+>> s=1, ifr_name=rtcan0
+>> <0x123> [7] 0a 0b 0c 0d 0e 0f 00
+>> Cleaning up...
+>> #1: (2) <0x123> [7] 00 00 00 0d 0e 0f 00
+>> *sh-3.00# ./rtcansend rtcan0 -v -i0x123 0xA 0xB 0xC 0xD 0xE 0xF 0xG*
+>> interface rtcan0
+>> s=1, ifr_name=rtcan0
+>> <0x123> [7] 0a 0b 0c 0d 0e 0f 00
+>> Cleaning up...
+>> #2: (2) <0x123> [7] 00 00 00 0d 0e 0f 00
+> 
+> The last "00" is OK because 0xG is not a valid hexadecimal number...
+> 
+>> *sh-3.00# ./rtcansend rtcan0 -v -i0x123 1 2 3 4 5 6 7 8            *
+>> interface rtcan0
+>> s=1, ifr_name=rtcan0
+>> <0x123> [8] 01 02 03 04 05 06 07 08
+>> Cleaning up...
+>> #4: (2) <0x123> [8] 00 00 00 04 05 06 07 08
+>>
+>> When you say wired, means I think that it could be a connection problem?
+> 
+> ... but the first 3 are wired and I'm really puzzled why that happens. I
+> have to try myself. I do not believe that it's a connection problem. Do
+> you have a CAN Bus analyzer?
 
-All what it does is launching
+How have you built rtcansend and rtcanrecv? Please use the binaries made
+and installed by "make install".
 
-LD_TRACE_LOADED_OBJECTS=1 /usr/xenomai/bin/latency
+Wolfgang.
 
-So, you do not even need the script.
-
--- 
- Gilles
 
