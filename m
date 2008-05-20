@@ -1,16 +1,21 @@
-Message-ID: <5481.62.39.72.60.1211293804.squirrel@domain.hid>
-In-Reply-To: <2ff1a98a0805190857s1ad98139h9abe63b743dda35@domain.hid>
-References: <16474.81.252.86.91.1211199249.squirrel@domain.hid> 
-	<2ff1a98a0805190532i2fdb4267qc4566d98ab8cd57@domain.hid> 
-	<2ff1a98a0805190557j743680d4sb7d9f5c8e97072e@domain.hid> 
-	<12036.62.39.72.60.1211212126.squirrel@domain.hid>
-	<2ff1a98a0805190857s1ad98139h9abe63b743dda35@domain.hid>
-Date: Tue, 20 May 2008 16:30:04 +0200 (CEST)
-From: "Fabien MAHOT" <fabien.mahot@domain.hid>
+Message-ID: <2ff1a98a0805200816t36a5c1b1la37e31fc437bcd3b@domain.hid>
+Date: Tue, 20 May 2008 17:16:45 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <4832C76D.3040803@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Problem with time-out ends
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <1168701330@domain.hid> <48318E9F.4060204@domain.hid>
+	<2ff1a98a0805190734o4de187c1rd872c84ccc0f4a92@domain.hid>
+	<4832731E.5070906@domain.hid>
+	<18482.29993.144891.511723@domain.hid>
+	<48328978.8010101@domain.hid>
+	<2ff1a98a0805200120t72863725p221832d01551fb7e@domain.hid>
+	<2ff1a98a0805200122r3e4d26d2kf4e6061b544c033e@domain.hid>
+	<2ff1a98a0805200123m2a6456d8ud384a8b9535818a8@domain.hid>
+	<4832C76D.3040803@domain.hid>
+Subject: Re: [Xenomai-help] at91sam9263 and user-space support compile fails
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,191 +25,394 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Paradoxxa <paradoxxa2001@domain.hid>
 Cc: xenomai@xenomai.org
 
-Thank you,
+On Tue, May 20, 2008 at 2:43 PM, Paradoxxa <paradoxxa2001@domain.hid> wrote:
+> Gilles Chanteperdrix schrieb:
+>>
+>> On Tue, May 20, 2008 at 10:22 AM, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>
+>>>
+>>> On Tue, May 20, 2008 at 10:20 AM, Gilles Chanteperdrix
+>>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>>
+>>>>
+>>>> On Tue, May 20, 2008 at 10:19 AM, Paradoxxa <paradoxxa2001@domain.hid>
+>>>> wrote:
+>>>>
+>>>>>
+>>>>> Gilles Chanteperdrix schrieb:
+>>>>>
+>>>>>>
+>>>>>> paradoxxa wrote:
+>>>>>>  > Gilles Chanteperdrix schrieb:
+>>>>>>  > > On Mon, May 19, 2008 at 4:28 PM, paradoxxa <paradoxxa2001@domain.hid>
+>>>>>> wrote:
+>>>>>>  > >    > >> Gilles Chanteperdrix schrieb:
+>>>>>>  > >>      > >>> On Mon, May 19, 2008 at 3:04 PM, paradoxxa
+>>>>>> <paradoxxa2001@domain.hid> wrote:
+>>>>>>  > >>>
+>>>>>>  > >>>        > >>>> Gilles Chanteperdrix schrieb:
+>>>>>>  > >>>>
+>>>>>>  > >>>>          > >>>>> On Mon, May 19, 2008 at 2:17 PM, paradoxxa
+>>>>>> <paradoxxa2001@domain.hid> wrote:
+>>>>>>  > >>>>>
+>>>>>>  > >>>>>
+>>>>>>  > >>>>> No, you are talking about CONFIG_DEBUG_LL, I am talking about
+>>>>>>  > >>>>> CONFIG_DEBUG_INFO. These are two different options. So, this
+>>>>>> make
+>>>>>> at
+>>>>>>  > >>>>> least two options that you changed. Could you check if a
+>>>>>> kernel
+>>>>>> with
+>>>>>>  > >>>>> an unmodified defconfig boots ?
+>>>>>>  > >>>>>
+>>>>>>  > >>>>>
+>>>>>>  > >>>>>
+>>>>>>  > >>>>>            > >>>> The CONFIG_DEBUG_INFO is already set in the
+>>>>>> defconfig. The
+>>>>>>  > >>>> CONFIG_DEBUG_LL i
+>>>>>>  > >>>> set manually.
+>>>>>>  > >>>> As well I had to changed the  AT91 Master Clock Frequency.
+>>>>>>  > >>>>
+>>>>>>  > >>>> Here are the logs of a unmodified defconfig boot:
+>>>>>>  > >>>>
+>>>>>>  > >>>>          > >>> Ok. But this is a boot with your old compiler.
+>>>>>> Could you try a
+>>>>>>  > >>> defconfig build (with I-pipe AT91 master clock frequency
+>>>>>> modified)
+>>>>>>  > >>> with CodeSourcery compiler ?
+>>>>>>  > >>>  If you can not get CodeSourcery compiler to compile correctly
+>>>>>> a
+>>>>>> Linux
+>>>>>>  > >>> kernel, I can send you the 2007q3 compiler, or you could try to
+>>>>>>  > >>> compile the kernel with your old compiler, and to compile
+>>>>>> user-space
+>>>>>>  > >>> with CodeSourcery compiler.
+>>>>>>  > >>>
+>>>>>>  > >>>        > >> I tried it with the both compiler. When i execute
+>>>>>> /usr/xenomai/bin/latency i
+>>>>>>  > >> get the message "sh: /usr/xenomai/bin/latency: not found"
+>>>>>>  > >>      > >
+>>>>>>  > > Have you tried running file, ldd, or readelf on the binary to see
+>>>>>> what
+>>>>>>  > > it is made of ?
+>>>>>>  > >
+>>>>>>  > >    > >> By the way, how i can figure out if the binary or the
+>>>>>> compiler is a
+>>>>>>  > >> oabi/eabi file/compiler?
+>>>>>>  > >>      > >
+>>>>>>  > > codesourcery compiles for eabi by default. So, you have to enable
+>>>>>> eabi
+>>>>>>  > > in kernel configuration to be able to run binaries generated by
+>>>>>>  > > codesourcery compiler.
+>>>>>>  > >
+>>>>>>  > >    > The eabi was disabled in the kernel configuration. But to
+>>>>>> enable
+>>>>>> it make  > no changes.
+>>>>>>  >  >  > $ file usr/xenomai/bin/latency
+>>>>>>  > usr/xenomai/bin/latency: ELF 32-bit LSB executable, ARM, version 1
+>>>>>>  >
+>>>>>> (SYSV), for GNU/Linux 2.6.14, dynamically linked (uses shared libs),
+>>>>>> not  >
+>>>>>> stripped
+>>>>>>  >  >  > $ ldd usr/xenomai/bin/latency
+>>>>>>  >     not a dynamic executable
+>>>>>>
+>>>>>> This is wrong. ldd should be run on the target, not on the host. Also
+>>>>>> check that /usr/xenomai/lib is in the ld.so.conf on your target (and
+>>>>>> that you have run ldconfig) or use LD_LIBRARY_PATH
+>>>>>>
+>>>>>>  >  > $ readelf --sections /usr/xenomai/bin/latency
+>>>>>>
+>>>>>> I was rather thinking about readelf -d /usr/xenomai/bin/latency
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>
+>>>>> I actuall don't have ldd and readelf on the target. I did a ldconfig
+>>>>> -p. The
+>>>>> Xenomai Libraries were listed there.
+>>>>>
+>>>>
+>>>> readelf can work on the host. But ldd on the target is the best way to
+>>>> know if the installation worked correctly. If you are looking for ldd,
+>>>> it is compiled as part of the glibc. You may even found it in the
+>>>> toolchain files.
+>>>>
+>>>
+>>> Actually ldd is a script, it is not compiled.
+>>>
+>>
+>> All what it does is launching
+>>
+>> LD_TRACE_LOADED_OBJECTS=1 /usr/xenomai/bin/latency
+>>
+>> So, you do not even need the script.
+>>
+>>
+>
+>> On Tue, May 20, 2008 at 10:22 AM, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>
+>>>
+>>> On Tue, May 20, 2008 at 10:20 AM, Gilles Chanteperdrix
+>>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>>
+>>>>
+>>>> On Tue, May 20, 2008 at 10:19 AM, Paradoxxa <paradoxxa2001@domain.hid>
+>>>> wrote:
+>>>>
+>>>>>
+>>>>> Gilles Chanteperdrix schrieb:
+>>>>>
+>>>>>>
+>>>>>> paradoxxa wrote:
+>>>>>>  > Gilles Chanteperdrix schrieb:
+>>>>>>  > > On Mon, May 19, 2008 at 4:28 PM, paradoxxa <paradoxxa2001@domain.hid>
+>>>>>> wrote:
+>>>>>>  > >    > >> Gilles Chanteperdrix schrieb:
+>>>>>>  > >>      > >>> On Mon, May 19, 2008 at 3:04 PM, paradoxxa
+>>>>>> <paradoxxa2001@domain.hid> wrote:
+>>>>>>  > >>>
+>>>>>>  > >>>        > >>>> Gilles Chanteperdrix schrieb:
+>>>>>>  > >>>>
+>>>>>>  > >>>>          > >>>>> On Mon, May 19, 2008 at 2:17 PM, paradoxxa
+>>>>>> <paradoxxa2001@domain.hid> wrote:
+>>>>>>  > >>>>>
+>>>>>>  > >>>>>
+>>>>>>  > >>>>> No, you are talking about CONFIG_DEBUG_LL, I am talking about
+>>>>>>  > >>>>> CONFIG_DEBUG_INFO. These are two different options. So, this
+>>>>>> make
+>>>>>> at
+>>>>>>  > >>>>> least two options that you changed. Could you check if a
+>>>>>> kernel
+>>>>>> with
+>>>>>>  > >>>>> an unmodified defconfig boots ?
+>>>>>>  > >>>>>
+>>>>>>  > >>>>>
+>>>>>>  > >>>>>
+>>>>>>  > >>>>>            > >>>> The CONFIG_DEBUG_INFO is already set in the
+>>>>>> defconfig. The
+>>>>>>  > >>>> CONFIG_DEBUG_LL i
+>>>>>>  > >>>> set manually.
+>>>>>>  > >>>> As well I had to changed the  AT91 Master Clock Frequency.
+>>>>>>  > >>>>
+>>>>>>  > >>>> Here are the logs of a unmodified defconfig boot:
+>>>>>>  > >>>>
+>>>>>>  > >>>>          > >>> Ok. But this is a boot with your old compiler.
+>>>>>> Could you try a
+>>>>>>  > >>> defconfig build (with I-pipe AT91 master clock frequency
+>>>>>> modified)
+>>>>>>  > >>> with CodeSourcery compiler ?
+>>>>>>  > >>>  If you can not get CodeSourcery compiler to compile correctly
+>>>>>> a
+>>>>>> Linux
+>>>>>>  > >>> kernel, I can send you the 2007q3 compiler, or you could try to
+>>>>>>  > >>> compile the kernel with your old compiler, and to compile
+>>>>>> user-space
+>>>>>>  > >>> with CodeSourcery compiler.
+>>>>>>  > >>>
+>>>>>>  > >>>        > >> I tried it with the both compiler. When i execute
+>>>>>> /usr/xenomai/bin/latency i
+>>>>>>  > >> get the message "sh: /usr/xenomai/bin/latency: not found"
+>>>>>>  > >>      > >
+>>>>>>  > > Have you tried running file, ldd, or readelf on the binary to see
+>>>>>> what
+>>>>>>  > > it is made of ?
+>>>>>>  > >
+>>>>>>  > >    > >> By the way, how i can figure out if the binary or the
+>>>>>> compiler is a
+>>>>>>  > >> oabi/eabi file/compiler?
+>>>>>>  > >>      > >
+>>>>>>  > > codesourcery compiles for eabi by default. So, you have to enable
+>>>>>> eabi
+>>>>>>  > > in kernel configuration to be able to run binaries generated by
+>>>>>>  > > codesourcery compiler.
+>>>>>>  > >
+>>>>>>  > >    > The eabi was disabled in the kernel configuration. But to
+>>>>>> enable
+>>>>>> it make  > no changes.
+>>>>>>  >  >  > $ file usr/xenomai/bin/latency
+>>>>>>  > usr/xenomai/bin/latency: ELF 32-bit LSB executable, ARM, version 1
+>>>>>>  >
+>>>>>> (SYSV), for GNU/Linux 2.6.14, dynamically linked (uses shared libs),
+>>>>>> not  >
+>>>>>> stripped
+>>>>>>  >  >  > $ ldd usr/xenomai/bin/latency
+>>>>>>  >     not a dynamic executable
+>>>>>>
+>>>>>> This is wrong. ldd should be run on the target, not on the host. Also
+>>>>>> check that /usr/xenomai/lib is in the ld.so.conf on your target (and
+>>>>>> that you have run ldconfig) or use LD_LIBRARY_PATH
+>>>>>>
+>>>>>>  >  > $ readelf --sections /usr/xenomai/bin/latency
+>>>>>>
+>>>>>> I was rather thinking about readelf -d /usr/xenomai/bin/latency
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>
+>>>>> I actuall don't have ldd and readelf on the target. I did a ldconfig
+>>>>> -p. The
+>>>>> Xenomai Libraries were listed there.
+>>>>>
+>>>>
+>>>> readelf can work on the host. But ldd on the target is the best way to
+>>>> know if the installation worked correctly. If you are looking for ldd,
+>>>> it is compiled as part of the glibc. You may even found it in the
+>>>> toolchain files.
+>>>>
+>>>
+>>> Actually ldd is a script, it is not compiled.
+>>>
+>>
+>> All what it does is launching
+>>
+>> LD_TRACE_LOADED_OBJECTS=1 /usr/xenomai/bin/latency
+>>
+>> So, you do not even need the script.
+>>
+>>
+>
+>> On Tue, May 20, 2008 at 10:22 AM, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>
+>>>
+>>> On Tue, May 20, 2008 at 10:20 AM, Gilles Chanteperdrix
+>>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>>
+>>>>
+>>>> On Tue, May 20, 2008 at 10:19 AM, Paradoxxa <paradoxxa2001@domain.hid>
+>>>> wrote:
+>>>>
+>>>>>
+>>>>> Gilles Chanteperdrix schrieb:
+>>>>>
+>>>>>>
+>>>>>> paradoxxa wrote:
+>>>>>>  > Gilles Chanteperdrix schrieb:
+>>>>>>  > > On Mon, May 19, 2008 at 4:28 PM, paradoxxa <paradoxxa2001@domain.hid>
+>>>>>> wrote:
+>>>>>>  > >    > >> Gilles Chanteperdrix schrieb:
+>>>>>>  > >>      > >>> On Mon, May 19, 2008 at 3:04 PM, paradoxxa
+>>>>>> <paradoxxa2001@domain.hid> wrote:
+>>>>>>  > >>>
+>>>>>>  > >>>        > >>>> Gilles Chanteperdrix schrieb:
+>>>>>>  > >>>>
+>>>>>>  > >>>>          > >>>>> On Mon, May 19, 2008 at 2:17 PM, paradoxxa
+>>>>>> <paradoxxa2001@domain.hid> wrote:
+>>>>>>  > >>>>>
+>>>>>>  > >>>>>
+>>>>>>  > >>>>> No, you are talking about CONFIG_DEBUG_LL, I am talking about
+>>>>>>  > >>>>> CONFIG_DEBUG_INFO. These are two different options. So, this
+>>>>>> make
+>>>>>> at
+>>>>>>  > >>>>> least two options that you changed. Could you check if a
+>>>>>> kernel
+>>>>>> with
+>>>>>>  > >>>>> an unmodified defconfig boots ?
+>>>>>>  > >>>>>
+>>>>>>  > >>>>>
+>>>>>>  > >>>>>
+>>>>>>  > >>>>>            > >>>> The CONFIG_DEBUG_INFO is already set in the
+>>>>>> defconfig. The
+>>>>>>  > >>>> CONFIG_DEBUG_LL i
+>>>>>>  > >>>> set manually.
+>>>>>>  > >>>> As well I had to changed the  AT91 Master Clock Frequency.
+>>>>>>  > >>>>
+>>>>>>  > >>>> Here are the logs of a unmodified defconfig boot:
+>>>>>>  > >>>>
+>>>>>>  > >>>>          > >>> Ok. But this is a boot with your old compiler.
+>>>>>> Could you try a
+>>>>>>  > >>> defconfig build (with I-pipe AT91 master clock frequency
+>>>>>> modified)
+>>>>>>  > >>> with CodeSourcery compiler ?
+>>>>>>  > >>>  If you can not get CodeSourcery compiler to compile correctly
+>>>>>> a
+>>>>>> Linux
+>>>>>>  > >>> kernel, I can send you the 2007q3 compiler, or you could try to
+>>>>>>  > >>> compile the kernel with your old compiler, and to compile
+>>>>>> user-space
+>>>>>>  > >>> with CodeSourcery compiler.
+>>>>>>  > >>>
+>>>>>>  > >>>        > >> I tried it with the both compiler. When i execute
+>>>>>> /usr/xenomai/bin/latency i
+>>>>>>  > >> get the message "sh: /usr/xenomai/bin/latency: not found"
+>>>>>>  > >>      > >
+>>>>>>  > > Have you tried running file, ldd, or readelf on the binary to see
+>>>>>> what
+>>>>>>  > > it is made of ?
+>>>>>>  > >
+>>>>>>  > >    > >> By the way, how i can figure out if the binary or the
+>>>>>> compiler is a
+>>>>>>  > >> oabi/eabi file/compiler?
+>>>>>>  > >>      > >
+>>>>>>  > > codesourcery compiles for eabi by default. So, you have to enable
+>>>>>> eabi
+>>>>>>  > > in kernel configuration to be able to run binaries generated by
+>>>>>>  > > codesourcery compiler.
+>>>>>>  > >
+>>>>>>  > >    > The eabi was disabled in the kernel configuration. But to
+>>>>>> enable
+>>>>>> it make  > no changes.
+>>>>>>  >  >  > $ file usr/xenomai/bin/latency
+>>>>>>  > usr/xenomai/bin/latency: ELF 32-bit LSB executable, ARM, version 1
+>>>>>>  >
+>>>>>> (SYSV), for GNU/Linux 2.6.14, dynamically linked (uses shared libs),
+>>>>>> not  >
+>>>>>> stripped
+>>>>>>  >  >  > $ ldd usr/xenomai/bin/latency
+>>>>>>  >     not a dynamic executable
+>>>>>>
+>>>>>> This is wrong. ldd should be run on the target, not on the host. Also
+>>>>>> check that /usr/xenomai/lib is in the ld.so.conf on your target (and
+>>>>>> that you have run ldconfig) or use LD_LIBRARY_PATH
+>>>>>>
+>>>>>>  >  > $ readelf --sections /usr/xenomai/bin/latency
+>>>>>>
+>>>>>> I was rather thinking about readelf -d /usr/xenomai/bin/latency
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>
+>>>>> I actuall don't have ldd and readelf on the target. I did a ldconfig
+>>>>> -p. The
+>>>>> Xenomai Libraries were listed there.
+>>>>>
+>>>>
+>>>> readelf can work on the host. But ldd on the target is the best way to
+>>>> know if the installation worked correctly. If you are looking for ldd,
+>>>> it is compiled as part of the glibc. You may even found it in the
+>>>> toolchain files.
+>>>>
+>>>
+>>> Actually ldd is a script, it is not compiled.
+>>>
+>>
+>> All what it does is launching
+>>
+>> LD_TRACE_LOADED_OBJECTS=1 /usr/xenomai/bin/latency
+>>
+>> So, you do not even need the script.
+>>
+>>
+>
+> I think that doesn't look good:
+>
+> root@domain.hid:~# LD_TRACE_LOADED_OBJECTS=1 /usr/xenomai/bin/latency
+> -sh: /usr/xenomai/bin/latency: not found
 
-I tried to use rt_fprintf(stderr) or rt_printf(), but there is no debug
-traces on my Screen. But when I used fprintf(stderr) or printf(), there i=
-s
-no problem, I ve got traces on my screen.
-Compilation is good, I don't know why it doesn't work.
+I would say there is something wrong with your installation: your
+toolchain links with some library which are not present on your target
+system (for instance you have ld-linux.so.2 on your target whereas the
+binaries generated by your toolchain links to ld-linux.so.3). To know
+if this is the case, could you try to compile a simple "hello world"
+program using the same toolchain as the one you use to compile Xenomai
+user-space libraries ?
 
-I also checked the info->si_value.sival_ptr value and it is good.
-
-My StackWrite and StackRead functions don't need a mutex. There is no
-conflict between them.
-
-Otherwise, I decided to cancel the lock use in EndTimeOut and I use a
-semaphore to indicate the time-out end to TimeOut thread. But there is a
-bug.
-This test program explains it :
-When TimeOut thread starts a time-out and waits the associated semaphore
-(sem_wait()). When signal of time-out end arrives, TimeOut thread wakes u=
-p
-whereas there is no sem_post(), and sem_wait returns no error.
-
-
-/************************************************************************=
-/
-
-#include <sys/mman.h>
-#include <pthread.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <stdarg.h>
-#include <time.h>
-#include <math.h>
-#include <signal.h>
-#include <semaphore.h>
-#include <errno.h>
-
-// Timer
-timer_t timer_h;
-struct sigaction    sa;
-struct sigevent     sig_spec;
-struct itimerspec   tmr_setting;
-
-// Thread start
-pthread_mutex_t start_thread_lock;
-
-// Time-out end
-sem_t  TimeOut_sem;
-
-/************************ Functions ******************************/
-void DeleteTimer(timer_t timer)
-{
-     if (timer!=3DNULL)
-     {
-          timer_delete(timer);
-     }
-}
-
-void EndTimeOut (int signo,siginfo_t *info,void*context)
-{
-     // no sem_post() !
-}
-
-void StartTimeOut (int nb_Sec, int nb_nSec)
-{
-    sa.sa_flags =3D SA_SIGINFO;
-    sa.sa_sigaction =3D EndTimeOut;
-
-    if(sigaction(SIGRTMIN, &(sa), NULL)=3D=3D-1)
-    {
-        printf("sigaction error - errno : %d  -> %s\n",errno,
-strerror(errno));
-    }
-
-    sig_spec.sigev_notify =3D SIGEV_SIGNAL;
-    sig_spec.sigev_signo =3D SIGRTMIN;
-    sig_spec.sigev_value.sival_ptr =3D NULL;
-
-    if (timer_create(CLOCK_REALTIME, &(sig_spec), &(timer_h)) =3D=3D -1)
-    {
-        printf("timer_create error - errno : %d  -> %s\n",errno,
-strerror(errno));
-    }
-
-    tmr_setting.it_value.tv_sec =3D nb_Sec;
-    tmr_setting.it_value.tv_nsec =3D nb_nSec;
-    tmr_setting.it_interval.tv_sec =3D 0;
-    tmr_setting.it_interval.tv_nsec =3D 0;
-
-    if (timer_settime(timer_h, 0, &(tmr_setting),NULL) =3D=3D -1)
-    {
-       printf("timer_settime error - errno : %d  -> %s\n",errno,
-strerror(errno));
-    }
-}
-
-/************************** Threads ********************************/
-void* threadTimeOut(void * arg) {
-
-    pthread_mutex_lock(&start_thread_lock);
-
-    printf("Start of timeOut\n");
-    StartTimeOut(1,500000000);
-
-    printf("Wait of timeOut end\n");
-    if ((sem_wait(&TimeOut_sem)) < 0)
-    {
-        printf("sem_wait error - errno : %d  -> %s\n",errno,
-strerror(errno));
-    }
-
-    printf("End of timeOut thread\n");
-
-    pthread_mutex_unlock(&start_thread_lock);
-
-    while(1)
-    {
-        sleep(10);
-    }
-	return NULL;
-}
-
-/***********************************************************************/
-void cleanup_upon_sig(int sig __attribute__((unused)))
-{
-     DeleteTimer(timer_h);
-     exit(0);
-}
-
-int main(int argc, char** argv) {
-    pthread_attr_t attr;
-    pthread_mutexattr_t attr_proto;
-    pthread_t p1;
-    struct sched_param sch;
-
-    signal(SIGINT, cleanup_upon_sig);
-    signal(SIGTERM, cleanup_upon_sig);
-
-    mlockall(MCL_CURRENT|MCL_FUTURE);
-
-   	// mutex and sem initialisation
-    pthread_mutex_init(&start_thread_lock, NULL);
-    sem_init (&TimeOut_sem, 0,0);
-
-    pthread_attr_init(&attr);
-    pthread_attr_setinheritsched(&attr,PTHREAD_EXPLICIT_SCHED);
-	pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
-
-    // TimeOut thread creation
-    sch.sched_priority =3D 80;
-    pthread_attr_setschedparam(&attr, &sch);
-
-    pthread_mutex_lock(&start_thread_lock);
-    pthread_create(&p1, &attr, threadTimeOut, NULL);
-    pthread_mutex_unlock(&start_thread_lock);
-
-    while (1) {
-        sleep(5);
-    }
-
-    return 0;
-}
-
-
-/************************************************************************=
-************/
-
-Result on the screen :
-
-Start of timeOut
-Wait of timeOut end
-End of timeOut thread
-
-
-
-The use of a semphore doesn't change my problem, I always have system cra=
-sh.
-
-
-
+-- 
+ Gilles
 
