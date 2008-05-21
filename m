@@ -1,9 +1,9 @@
-Date: Tue, 20 May 2008 23:16:02 -0700 (PDT)
+Date: Tue, 20 May 2008 23:48:09 -0700 (PDT)
 From: Yasser Kashfi <yasser_kashfi@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
-Message-ID: <95445.99892.qm@domain.hid>
+Message-ID: <467163.9867.qm@domain.hid>
 Subject: [Xenomai-core] ATA: abnormal status 0x7F on port 0xE50F
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -28,6 +28,7 @@ If any one have an idea please replay.
 
 thanks for your reply.
 regards
+
 
 
 
