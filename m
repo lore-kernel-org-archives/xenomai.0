@@ -1,16 +1,10 @@
-Content-class: urn:content-classes:message
+Message-ID: <48343EA1.9000905@domain.hid>
+Date: Wed, 21 May 2008 11:24:17 -0400
+From: "Steven A. Falco" <sfalco@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 14 May 2008 11:55:34 +0200
-Message-ID: <0C9896A4B6D338488AD6FFFE58BAEF100276DDDE@serveur3.lgm.com>
-References: <A3B06EAFE0D9C14096681C935E0B300802110A0C@zue-s-15.zue.zwick.de>	<4829613B.3000500@domain.hid><0C9896A4B6D338488AD6FFFE58BAEF100276DBF6@domain.hid><48297566.1010607@domain.hid><0C9896A4B6D338488AD6FFFE58BAEF100276DC66@domain.hid>
-	<4829AA19.8070405@domain.hid>
-	<0C9896A4B6D338488AD6FFFE58BAEF100276DD0C@serveur3.lgm.com>
-	<4829C8C9.4020300@domain.hid>
-From: "DOURNES Guillaume" <Guillaume.DOURNES@lgm.fr>
-Subject: Re: [Xenomai-help] Interrupt management under rtdm driver
+Content-Type: multipart/alternative;
+	boundary="------------010502050607030105080805"
+Subject: [Xenomai-help] How do you recommend installing ipipe patches?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,49 +14,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Since I add the watchdog option in my kernel configuration, The software =
-doesn't block.
-But I obtain an EPREM (-1) error on the second call of =
-rtdm_event_timedwait, and in dmesg : Xenomai: assertion failed at =
-kernel/xenomai/skins/rtdm/drvlib.c:919 (!xnpod_unblockable_p()).
-I don't understand why I have this error, because the =
-rtdm_event_timedwait is used as the 16550A rtserial rtdm driver. And I =
-use this rtserial driver, and it works.
-Note that this problem doesn't appears when I call rt_task_suspend just =
-after my rtdm_event_timedwait, and I resume the task by a gets.
+This is a multi-part message in MIME format.
+--------------010502050607030105080805
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
------Message d'origine-----
-De : Jan Kiszka [mailto:jan.kiszka@domain.hid
-Envoy=E9 : mardi 13 mai 2008 18:59
-=C0 : DOURNES Guillaume
-Cc : xenomai@xenomai.org
-Objet : Re: [Xenomai-help] Interrupt management under rtdm driver
+I have a question regarding the ipipe patches.  There appear to be three
+places to get them:
 
-DOURNES Guillaume wrote:
-> Sorry my old archive contained svn files. I send again my cource code.
->=20
-> I have some syslog message as kernel : Oops : 0000 [#1], or kernel : =
-CPU : 0, or EIP : 0060 [<f8a88de7>] Tainted : PF  VLI, etc.
+1) Contained within the Xenomai tar
+2) From the gna adeos downloads page
+3) From the DENX ipipe git
 
-Well, if your system locks up while the test runs, it is not likely that =
-any message is pushed to syslog anymore. At best you see something on =
-the console (VGA or serial).
+I have been getting the patches from the Xenomai tar, but I ran into a
+problem, because I needed to use a newer version of the kernel, to get
+some other powerpc features.  The patch from the Xenomai tar was not new
+enough to apply cleanly.
 
->=20
-> I don't understand the watchdog catch. Can you explain a little more ?
+So, can I use the gna-ipipe patches with the Xenomai tar, or am I better
+off extracting a patch from the DENX ipipe git?
 
-See the help in the kernel configuration: If the the watchdog catches =
-some spinning Xenomai thread, it will suspend it, allowing the rest of =
-the system to run again. This will also generate a log message on the =
-kernel console.
+Even if you recommend the gna-ipipe patches, I'd like to know what git
+commands one would use to extract a patch file from the DENX ipipe git. 
+I assume it is some variant of git-diff, but I am still learning git, so
+a hint would be appreciated.
 
-Jan
+Also, I'm not clear on the best way to set up my local git tree.  Do I
+clone from linux-2.6-denx.git
+<http://git.denx.de/?p=linux-2.6-denx.git;a=summary> or ipipe-2.6.git
+<http://git.denx.de/?p=ipipe-2.6.git;a=summary>?  Whichever I clone
+from, do I create branches to track both of those remote git
+repositories?  Once I apply the ipipe patch to my local git tree, do you
+recommend committing that, perhaps on some other branch?
 
---
-Siemens AG, Corporate Technology, CT SE 2 Corporate Competence Center =
-Embedded Linux
+I guess this boils down to: what is the "best practice" for setting up a
+local git given that I want Xenomai plus a very recent kernel.  I also
+want to be able to apply updates for ipipe, Xenomai, and the kernel, and
+I'm not clear on how that interacts with the ipipe patch model.  Do I
+back out one ipipe patch to apply a newer one, or somehow create a diff
+between two patches?  I'm so confused... :-)
 
+    TIA for any guidance you can offer,
+    Steve
+
+
+--------------010502050607030105080805
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<tt>I have a question regarding the ipipe patches.  There appear to be
+three places to get them:<br>
+<br>
+1) Contained within the Xenomai tar<br>
+2) From the gna adeos downloads page<br>
+3) From the DENX ipipe git<br>
+<br>
+I have been getting the patches from the Xenomai tar, but I ran into a
+problem, because I needed to use a newer version of the kernel, to get
+some other powerpc features.  The patch from the Xenomai tar was not
+new enough to apply cleanly.<br>
+<br>
+So, can I use the gna-ipipe patches with the Xenomai tar, or am I
+better off extracting a patch from the DENX ipipe git?<br>
+<br>
+Even if you recommend </tt><tt>the gna-ipipe patches, I'd like to know
+what git commands one would use to extract a patch file from the </tt><tt>DENX
+ipipe git.  I assume it is some variant of git-diff, but I am still
+learning git, so a hint would be appreciated.<br>
+<br>
+Also, I'm not clear on the best way to set up my local git tree.</tt><tt> 
+Do I clone from <a
+ href="http://git.denx.de/?p=linux-2.6-denx.git;a=summary" target="_top">linux-2.6-denx.git</a>
+or <a href="http://git.denx.de/?p=ipipe-2.6.git;a=summary"
+ target="_top">ipipe-2.6.git</a>?  Whichever I clone from, do I create
+branches to track both of those remote git repositories?</tt><tt>  Once
+I apply the ipipe patch to my local git tree, do you recommend
+committing that, perhaps on some other branch?<br>
+<br>
+I guess this boils down to: what is the "best practice" for setting up
+a local git given that I want Xenomai plus a very recent kernel.  I
+also want to be able to apply updates for ipipe, Xenomai, and the
+kernel, and I'm not clear on how that interacts with the ipipe patch
+model.  Do I back out one ipipe patch to apply a newer one, or somehow
+create a diff between two patches?  I'm so confused... <span
+ class="moz-smiley-s1"><span> :-) </span></span><br>
+<br>
+    TIA for any guidance you can offer,<br>
+    Steve<br>
+<br>
+</tt>
+</body>
+</html>
+
+--------------010502050607030105080805--
 
