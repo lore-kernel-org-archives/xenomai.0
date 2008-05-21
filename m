@@ -1,21 +1,12 @@
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18484.28025.505865.374746@domain.hid>
-Date: Wed, 21 May 2008 20:44:09 +0200
-In-Reply-To: <15059.81.252.86.91.1211386718.squirrel@domain.hid>
-References: <16474.81.252.86.91.1211199249.squirrel@domain.hid>
-	<2ff1a98a0805190532i2fdb4267qc4566d98ab8cd57@domain.hid>
-	<2ff1a98a0805190557j743680d4sb7d9f5c8e97072e@domain.hid>
-	<12036.62.39.72.60.1211212126.squirrel@domain.hid>
-	<2ff1a98a0805190857s1ad98139h9abe63b743dda35@domain.hid>
-	<5481.62.39.72.60.1211293804.squirrel@domain.hid>
-	<18483.10408.141546.420660@domain.hid>
-	<2336.81.252.86.91.1211379896.squirrel@domain.hid>
-	<2ff1a98a0805210733u39894a17tca5420ae8f7ce5ca@domain.hid>
-	<15059.81.252.86.91.1211386718.squirrel@domain.hid>
+Message-ID: <18484.32692.342560.863708@domain.hid>
+Date: Wed, 21 May 2008 22:01:56 +0200
+In-Reply-To: <48343EA1.9000905@domain.hid>
+References: <48343EA1.9000905@domain.hid>
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] Problem with time-out ends
+Subject: Re: [Xenomai-help] How do you recommend installing ipipe patches?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,36 +16,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabien MAHOT <fabien.mahot@domain.hid>
+To: "Steven A. Falco" <sfalco@domain.hid>
 Cc: xenomai@xenomai.org
 
-Fabien MAHOT wrote:
+Steven A. Falco wrote:
+ > I have a question regarding the ipipe patches.  There appear to be three
+ > places to get them:
  > 
- > > I have debugged the sem_wait issue by running your program, unloading
- > > and reloading xenomai posix skin module many times, without any crash
- > > or any reboot.
- > >
- > > It shows one thing: there is an issue crashing your platform. Have you
- > > run the Xenomai testsuite to know if this is a general problem ?
- > >
- > > --
- > >  Gilles
- > >
+ > 1) Contained within the Xenomai tar
+ > 2) From the gna adeos downloads page
+ > 3) From the DENX ipipe git
  > 
- > I ran some Xenomai tests on my target because I haven't installed native
- > skin.
- > 
- > I ran cyclictest, and when I would to quit the execution with CTRL+C, I
- > had a kernel panic - not syncing: Aiee, killing interrupt handler.
- > 
- > what does it mean ? There is a probleme with SIGINT ?
+ > I have been getting the patches from the Xenomai tar, but I ran into a
+ > problem, because I needed to use a newer version of the kernel, to get
+ > some other powerpc features.  The patch from the Xenomai tar was not new
+ > enough to apply cleanly.
 
-Aha, a kernel panic is much better than a silent crash: at least we can
-know what the kernel did not like.
-Any chance to see the messages before the kernel panic ? If you have two
-computers with serial ports and a serial cross-cable, you can use a
-serial console. Otherwise, some users already sent us photographs of the
-panic.
+You can try to pick a newer Xenomai tar, if you stay in the same major
+version (for instance, you had a 2.3.1 tar and choose to go for 2.3.5),
+the newer Xenomai version should not break your application.
+
+ > 
+ > So, can I use the gna-ipipe patches with the Xenomai tar, or am I better
+ > off extracting a patch from the DENX ipipe git?
+
+In general, you can use a newer gna-ipipe patch (there are some
+exceptions of course, but usually, this does not even compile). I see
+the ipipe git mainly as a tool for architectures patch maintainers, but
+of course you can use it, this can be used as a way to switch easily
+between I-pipe revisions.
+
+ > 
+ > Even if you recommend the gna-ipipe patches, I'd like to know what git
+ > commands one would use to extract a patch file from the DENX ipipe git. 
+ > I assume it is some variant of git-diff, but I am still learning git, so
+ > a hint would be appreciated.
+
+Well, you do not have to extract a patch from the git repository, the
+content of the repository is an already patched kernel.
+
+ > 
+ > Also, I'm not clear on the best way to set up my local git tree.  Do I
+ > clone from linux-2.6-denx.git
+ > <http://git.denx.de/?p=linux-2.6-denx.git;a=summary> or ipipe-2.6.git
+ > <http://git.denx.de/?p=ipipe-2.6.git;a=summary>?  Whichever I clone
+ > from, do I create branches to track both of those remote git
+ > repositories?  Once I apply the ipipe patch to my local git tree, do you
+ > recommend committing that, perhaps on some other branch?
+
+You have to clone ipipe-2.6.git. And yes, you have to create a local
+branch which tracks a remote branch or a tag (every I-pipe release is
+tagged).
+
+ > 
+ > I guess this boils down to: what is the "best practice" for setting up a
+ > local git given that I want Xenomai plus a very recent kernel.  I also
+ > want to be able to apply updates for ipipe, Xenomai, and the kernel, and
+ > I'm not clear on how that interacts with the ipipe patch model.  Do I
+ > back out one ipipe patch to apply a newer one, or somehow create a diff
+ > between two patches?  I'm so confused... :-)
+ > 
+ >     TIA for any guidance you can offer,
+ >     Steve
+
 
 -- 
 
