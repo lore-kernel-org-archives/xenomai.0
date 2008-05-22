@@ -1,5 +1,5 @@
-Message-ID: <2ff1a98a0805220809y47663735s3f05e9db51945d29@domain.hid>
-Date: Thu, 22 May 2008 17:09:56 +0200
+Message-ID: <2ff1a98a0805220819i8d73166w4c9a06d9734d0e0c@domain.hid>
+Date: Thu, 22 May 2008 17:19:04 +0200
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 In-Reply-To: <12142.81.252.86.91.1211467896.squirrel@domain.hid>
 MIME-Version: 1.0
@@ -31,20 +31,13 @@ Cc: xenomai@xenomai.org
 
 On Thu, May 22, 2008 at 4:51 PM, Fabien MAHOT
 <fabien.mahot@domain.hid> wrote:
-> Hello,
->
-> Thanks to a serial console, I obtained the kernel traces before the crash
-> when I executed Cyclictest.
-> However, I could not have the same error : kernel panic - not syncing:
-> Aiee, killing interrupt handler. The system crashed like before, without
-> error message.
+> I also tried without your patch, and when I stopped Cyclictest, there was
+> no problem !
 
-I do not understand what you mean. You tell us that you get no traces,
-but then shows some traces.
-
-Anyway, could you enable the Xenomai nucleus debugging ? In
-particular, I would be interested to know if you get the fatal "Error
-relaxing a kicked thread".
+Ah! You put interesting information in the middle of I-pipe tracer
+traces, how do you want me to discover them ? So, this is a bug caused
+by my patch. In my patch, do you get better results if you do not set
+the XNKICKED bit ?
 
 -- 
  Gilles
