@@ -1,15 +1,13 @@
-Message-ID: <4835369F.8040809@domain.hid>
-Date: Thu, 22 May 2008 11:02:23 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <2ff1a98a0805220206v49e4fa07m7b4c3439fb5b42a1@domain.hid>
+Date: Thu, 22 May 2008 11:06:13 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <467163.9867.qm@domain.hid>
 MIME-Version: 1.0
-References: <a0e7fce50805080152p5608bde4q834ac42da095da6e@domain.hid>
-In-Reply-To: <a0e7fce50805080152p5608bde4q834ac42da095da6e@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH] add Blackfin BF52x,
-	BF54x support to adeos
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+References: <467163.9867.qm@domain.hid>
+Subject: Re: [Xenomai-core] ATA: abnormal status 0x7F on port 0xE50F
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,40 +17,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: yi li <liyi.dev@domain.hid>
-Cc: Xenomai-core@domain.hid
+To: Yasser Kashfi <yasser_kashfi@domain.hid>
+Cc: xenomai@xenomai.org
 
-yi li wrote:
-> Hi,
-> 
-> Attached two patches to make xenomai/adeos work with ADI's blackfin
-> process BF52x and BF54x.
-> 
-> The patches are based on xenomai-2.4.0. It has been tested on
-> BF527-EZkit, BF548-Ezkit and BF561-Ezkit, using blackfin uClinux 2008R1
-> branch.
+On Wed, May 21, 2008 at 8:48 AM, Yasser Kashfi <yasser_kashfi@domain.hid> wrote:
+> Hi
+> I try to install xemomai-2.3.5 with kernel 2.6.20.21,
+> after compile the kernel and reboot, I see the
+> following line:
+> ATA: abnormal status 0x7F on port 0xE507
 >
+> I previously worked with older xenomai on kernel
+> 2.6.17 and do not have any problem.
+> If any one have an idea please replay.
+>
+> thanks for your reply.
+> regards
 
-Merged, thanks.
+There is no need to post your question three times to get an answer.
 
-> Adeos patch in xenomai-2.4.0 cannot work with blackfin uClinux 2008R1
-> branch/release. Please use a modified patch at
-> uclinux-dist/bfin_patch/adeos_patch.
-> 
-> Regards,
-> -Li Yi
-> 
-> 
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
-
+Have you tried with a more recent I-pipe patch to see if you get the
+same message ?
 
 -- 
-Philippe.
+ Gilles
 
