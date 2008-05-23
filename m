@@ -1,13 +1,11 @@
-Message-ID: <2ff1a98a0805230748g1e20a40dybc6f30bc6157e5f4@domain.hid>
-Date: Fri, 23 May 2008 16:48:53 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <30723461.6495621211553763904.JavaMail.www@domain.hid>
+Message-ID: <d6c8ef150805231056n3a9ea030jada65bd5a7c2a2c0@domain.hid>
+Date: Fri, 23 May 2008 19:56:34 +0200
+From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <30723461.6495621211553763904.JavaMail.www@domain.hid>
-Subject: Re: [Xenomai-help] I2C Bus and intel PXA255 (or other board)
+Subject: [Xenomai-help] Interrupt priorities and handling problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,34 +15,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "kerhoas.vincent" <kerhoas.vincent@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-On Fri, May 23, 2008 at 4:42 PM, kerhoas.vincent
-<kerhoas.vincent@domain.hid> wrote:
->
-> Hi
->
-> I'm working on a ep9302 board and I'm trying to install xenomai on it. For
-> the moment there isn't a dedicated patch, so I've got to do it by hand. I
-> continue doing it but I'm thinking about another solution.
+Hi all!
 
-As I already told you in the following mail:
-https://mail.gna.org/public/xenomai-help/2008-05/msg00018.html
-A patch already exists for ep9302, though it is not part of the I-pipe patch.
+Before I ask my questions, I'll remind about my environment:
+AT91SAM9260 based board (ARM), Xenomai 2.4.3, Kernel 2.6.24, I-Pipe
+1.9-01. We have external interrupt source connected to PIO line (IRQ1
+line) which should 'wake up' our code every 1ms. For the sake of
+performances, we create interrupt handler in kernel space.
 
->
-> My purpose is creating real time robotic labs ; I was considering (and I'm
-> still considering) a qwerk solution (from charmed lab), but in the worst
-> case I'm now considering korebot solution (from k-team). This robot use
-> Intel PXA255 board, which seems to be ok for xenomai, but this board need
-> I2C to communicate with other board.
->
-> So I'm wondering If there is I2C driver to rewrite for xenomai or there is
-> just special functions to use after patching the kernel ?
+1. Two interrupts instead of one
 
-No, you will have to rewrite a driver for Xenomai.
+Somehow, ISR get called twice for every single interrupt, at the
+falling edge. I've tried to set interrupt source type (setting some
+registers directly on the microcontroller) but whatever I set, ISR
+call happens at the falling edge. The second comes right after the
+first one, but not together.
 
--- 
- Gilles
+When I tried to handle interrupt from the userspace, rt_intr_wait() returns
+1, so it looks like "second" interrupt comes a little bit later. If I
+generate more (n) interrupts during handling one, the next
+rt_intr_wait() returns n*2+1. This +1 is the second interrupt that
+came right after the handled one.
+
+The quite weird thing is that sometimes (not so often, like every 1
+hour) ISR is called just once. Where should I start digging?
+
+
+2. Ethernet activity makes system unpredictable
+
+Delay at interrupt reaction and, more important, duration of handling
+function is pretty the same during long period of time if there is no
+Ethernet activity (DM9000, GPIO IRQ 82). I can understand why we get
+longer delays on interrupt reaction with Ethernet activity, but I
+can't understand why exactly the same code takes more time to
+complete.
+
+We calculate ISR duration by setting one of the pins to 1 at the
+beginning and setting back to 0 at the end, using at91_sys_write
+macros (macros for raw_writel). We use logic port analyzer for
+displaying pins status.
+
+Without Ethernet activity irq handler lasts around 170us. With
+Ethernet activity it lasts up to 280us!
+
+That sync signal is kind of "sign of God" for us and our need is to
+threat it with the highest priority possible. In one of the mails on
+the list, Gilles explained that from I-Pipe 1.8 interrupt priorities
+on ARM are defined at the software level. Is there a way to raise
+priority of "my IRQ" over all others? Ethernet activity, timer & co
+are less important than having good and predictable reactions on our
+interrupt.
+
+Thanks.
 
