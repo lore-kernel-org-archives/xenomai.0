@@ -1,7 +1,7 @@
-Message-ID: <d6c8ef150805231248k794c5338y2277756df03c289a@domain.hid>
-Date: Fri, 23 May 2008 21:48:08 +0200
+Message-ID: <d6c8ef150805231251i50a3e33fq261943ddafbc3a21@domain.hid>
+Date: Fri, 23 May 2008 21:51:10 +0200
 From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
-In-Reply-To: <18487.7736.634161.816552@domain.hid>
+In-Reply-To: <18487.8166.661738.910852@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
@@ -10,6 +10,8 @@ References: <d6c8ef150805231056n3a9ea030jada65bd5a7c2a2c0@domain.hid>
 	<18487.5656.377471.470581@domain.hid>
 	<d6c8ef150805231234m7c65aec5l5fa15c028ce96249@domain.hid>
 	<18487.7736.634161.816552@domain.hid>
+	<d6c8ef150805231248k794c5338y2277756df03c289a@domain.hid>
+	<18487.8166.661738.910852@domain.hid>
 Subject: Re: [Xenomai-help] Interrupt priorities and handling problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -23,17 +25,10 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-On Fri, May 23, 2008 at 9:42 PM, Gilles Chanteperdrix
+On Fri, May 23, 2008 at 9:49 PM, Gilles Chanteperdrix
 <gilles.chanteperdrix@xenomai.org> wrote:
 
-> Then what I have said is irrelevant, your interrupt handler is fully
-> preemptible by Xenomai.
+> Only the tracer can tell.
 
-Great :)
-
-> How are they disabled ? If they are disabled using Linux functions, then
-> they are really enabled for Adeos, that is one of the intended effects
-> of the Adeos patch.
-
-OK, I missed that fact. So, why do I see latency than, at all?
+OK, will do that and send report :)
 
