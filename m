@@ -1,15 +1,14 @@
-Message-ID: <482ADEE6.8080403@domain.hid>
-Date: Wed, 14 May 2008 14:45:26 +0200
-From: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
 MIME-Version: 1.0
-References: <48299843.7090307@domain.hid>	
-	<2ff1a98a0805130731o5a78e490s77131ee48ee3b741@domain.hid>	
-	<482A9E3E.7040608@domain.hid>
-	<2ff1a98a0805140157q65ed8014k6725fc7f0b3a8f64@domain.hid>
-In-Reply-To: <2ff1a98a0805140157q65ed8014k6725fc7f0b3a8f64@domain.hid>
-Content-Type: text/html; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] v2.4.3 bug with system() call (ERRATUM)
+Message-ID: <18487.7736.634161.816552@domain.hid>
+Date: Fri, 23 May 2008 21:42:48 +0200
+In-Reply-To: <d6c8ef150805231234m7c65aec5l5fa15c028ce96249@domain.hid>
+References: <d6c8ef150805231056n3a9ea030jada65bd5a7c2a2c0@domain.hid>
+	<18487.5656.377471.470581@domain.hid>
+	<d6c8ef150805231234m7c65aec5l5fa15c028ce96249@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] Interrupt priorities and handling problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,68 +18,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Bosko Radivojevic <bosko.radivojevic@domain.hid>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
-  <title></title>
-</head>
-<body bgcolor="#ffffff" text="#000000">
-<br>
-<br>
-Gilles Chanteperdrix a &eacute;crit&nbsp;:
-<blockquote
- cite="mid:2ff1a98a0805140157q65ed8014k6725fc7f0b3a8f64@domain.hid"
- type="cite">
-  <pre wrap="">On Wed, May 14, 2008 at 10:09 AM, St&eacute;phane ANCELOT <a class="moz-txt-link-rfc2396E" href="mailto:sancelot@domain.hid">&lt;sancelot@domain.hid&gt;</a> wrote:
-  </pre>
-  <blockquote type="cite">
-    <pre wrap=""> Gilles Chanteperdrix a &eacute;crit :
+Bosko Radivojevic wrote:
+ > > Interrupt priority only matters when two interrupts are pending at the
+ > > same time. If ethernet interrupt is treated at Linux level, then it is
+ > > fully preemptible by Xenomai,
+ > 
+ > Ethernet is handled by Linux (dm9000 driver).
 
- On Tue, May 13, 2008 at 3:31 PM, St&eacute;phane ANCELOT <a class="moz-txt-link-rfc2396E" href="mailto:sancelot@domain.hid">&lt;sancelot@domain.hid&gt;</a> wrote:
+Then what I have said is irrelevant, your interrupt handler is fully
+preemptible by Xenomai.
 
+ > 
+ > > - re-enable interrupts in the ethernet interrupt handler
+ > 
+ > What will happen with interrupted ethernet interrupt handler? :)
+ > 
+ > > But as far as I understood, your problem is not the interrupt latency,
+ > > but rather the ISR duration, and changing the interrupt priority will
+ > > not change this at all.
+ > 
+ > Both latency and duration are my problems. But, I had some explanation
+ > for latency problem (irqs disabled during Eth handler).
 
- Hi,
- Using the v2.4.3 +kernel 2.6.24.7 I used the system("touch /tmp/xxx_ok")
- call in a non realtime init context.
+How are they disabled ? If they are disabled using Linux functions, then
+they are really enabled for Adeos, that is one of the intended effects
+of the Adeos patch.
 
- The task is only used to allocate some memory heaps.
-
- I setted up some memory debugging features in the kernel :
- CONFIG_DEBUG_KERNEL=y
- CONFIG_DEBUG_SLAB=y
- CONFIG_DEBUG_SLAB_LEAK=y
- CONFIG_DEBUG_BUGVERBOSE=y
- CONFIG_DEBUG_VM=y
- CONFIG_FORCED_INLINING=y
- CONFIG_EARLY_PRINTK=y
- CONFIG_DEBUG_PAGEALLOC=y
-
- This was not happening with v2.4.2 although that the kernel debugging
- flags were not "on"
-
- It would be nice if you could try the v2.4.2 with debugging options
-on, to know if it is a regression or not.
+-- 
 
 
- No time left, going back on v2.4.2. However, I have exactly the same
-problem, if I use the fork() call inside a program.
-    </pre>
-  </blockquote>
-  <pre wrap=""><!---->
-Have you tried Jan fix ?
-
-  </pre>
-</blockquote>
-Sorry, for the last post, I tried again the xeno kernel ...which Jan
-fix to use?<br>
-Best Regards<br>
-Steph<br>
-<br>
-<br>
-</body>
-</html>
+					    Gilles.
 
