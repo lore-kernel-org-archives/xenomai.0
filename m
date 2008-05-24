@@ -1,13 +1,10 @@
-Message-ID: <2ff1a98a0805220206v49e4fa07m7b4c3439fb5b42a1@domain.hid>
-Date: Thu, 22 May 2008 11:06:13 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <467163.9867.qm@domain.hid>
+Message-ID: <4838622E.4020108@domain.hid>
+Date: Sat, 24 May 2008 20:45:02 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <467163.9867.qm@domain.hid>
-Subject: Re: [Xenomai-core] ATA: abnormal status 0x7F on port 0xE50F
+Subject: [Xenomai-core] Some issues with Xenomai 2.4.x on DENX Linux 2.4.25
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,28 +14,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Yasser Kashfi <yasser_kashfi@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-On Wed, May 21, 2008 at 8:48 AM, Yasser Kashfi <yasser_kashfi@domain.hid> wrote:
-> Hi
-> I try to install xemomai-2.3.5 with kernel 2.6.20.21,
-> after compile the kernel and reboot, I see the
-> following line:
-> ATA: abnormal status 0x7F on port 0xE507
->
-> I previously worked with older xenomai on kernel
-> 2.6.17 and do not have any problem.
-> If any one have an idea please replay.
->
-> thanks for your reply.
-> regards
+Hello,
 
-There is no need to post your question three times to get an answer.
+the patch below fixes some issues with cross compiling the 
+DENX linuxppc_2_4_devel tree (2.4.25) for the MPC5200. I
+think they are present on Xenomai trunk as well (and even
+a few more).
 
-Have you tried with a more recent I-pipe patch to see if you get the
-same message ?
+Wolfgang.
 
--- 
- Gilles
+Index: include/asm-generic/wrappers.h
+===================================================================
+--- include/asm-generic/wrappers.h	(revision 3869)
++++ include/asm-generic/wrappers.h	(working copy)
+@@ -34,6 +34,7 @@
+ #include <linux/wrapper.h>
+ #include <linux/wait.h>
+ #include <linux/sched.h>
++#include <linux/bitops.h>
+ #include <linux/moduleparam.h>	/* Use the backport. */
+ 
+ /* Compiler */
+@@ -186,6 +187,10 @@ void show_stack(struct task_struct *task
+ #define __deprecated  __attribute__((deprecated))
+ #endif
+ 
++#ifndef BITOP_WORD
++#define BITOP_WORD(nr)	((nr) / BITS_PER_LONG)
++#endif
++
+ #else /* LINUX_VERSION_CODE >= KERNEL_VERSION(2,5,0) */
+ 
+ #define compat_module_param_array(name, type, count, perm) \
+Index: ksrc/arch/generic/compat.c
+===================================================================
+--- ksrc/arch/generic/compat.c	(revision 3869)
++++ ksrc/arch/generic/compat.c	(working copy)
+@@ -1,3 +1,4 @@
++#include <asm/xenomai/wrappers.h>
+ #include <linux/sched.h>
+ #include <linux/completion.h>
+ #include <linux/unistd.h>
+@@ -108,7 +109,7 @@ EXPORT_SYMBOL(kthread_create);
+ EXPORT_SYMBOL(kthread_should_stop);
+ EXPORT_SYMBOL(kthread_stop);
+ 
+-static inline unsigned long __ffs(unsigned long word)
++static inline unsigned long __ffs_compat(unsigned long word)
+ {
+ 	if ((unsigned)(word))
+ 		return ffs(word) - 1;
+@@ -157,5 +158,5 @@ found_first:
+         if (tmp == 0UL)         /* Are any bits set? */
+                 return result + size;   /* Nope. */
+ found_middle:
+-        return result + __ffs(tmp);
++        return result + __ffs_compat(tmp);
+ }
 
