@@ -1,17 +1,14 @@
-Message-ID: <2ff1a98a0805140550p754de215l4ee6ea9f20c19e8e@domain.hid>
-Date: Wed, 14 May 2008 14:50:37 +0200
+Message-ID: <2ff1a98a0805260456i44e3805eu5348067aff755c3f@domain.hid>
+Date: Mon, 26 May 2008 13:56:52 +0200
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <482ADEE6.8080403@domain.hid>
+In-Reply-To: <8c12bab70805260214q785116eai976fe67d399b7040@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <48299843.7090307@domain.hid>
-	<2ff1a98a0805130731o5a78e490s77131ee48ee3b741@domain.hid>
-	<482A9E3E.7040608@domain.hid>
-	<2ff1a98a0805140157q65ed8014k6725fc7f0b3a8f64@domain.hid>
-	<482ADEE6.8080403@domain.hid>
-Subject: Re: [Xenomai-help] v2.4.3 bug with system() call (ERRATUM)
+References: <8c12bab70805260214q785116eai976fe67d399b7040@domain.hid>
+Subject: Re: [Xenomai-help] Running xeno-test leaves behind "dd if /dev/zero
+	of /dev/null"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,61 +18,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: a.iqbal@domain.hid
+Cc: xenomai@xenomai.org
 
-On Wed, May 14, 2008 at 2:45 PM, St=E9phane ANCELOT <sancelot@domain.hid> wrot=
-e:
+On Mon, May 26, 2008 at 11:14 AM, Asif Iqbal <a.iqbal@domain.hid> wrote:
+> Hello there
 >
+> Four days before, I checked out the svn head and compiled with 2.6.25.4
+> kernel. VxWorks skin failed to compile (Really sorry but it didn't come to
+> my mind to record the error). Removed VxWorks and everything worked fine.
 >
->
->  Gilles Chanteperdrix a =E9crit :
->  On Wed, May 14, 2008 at 10:09 AM, St=E9phane ANCELOT <sancelot@domain.hid>
-> wrote:
->
->
->  Gilles Chanteperdrix a =E9crit :
->
->  On Tue, May 13, 2008 at 3:31 PM, St=E9phane ANCELOT <sancelot@domain.hid> w=
-rote:
->
->
->  Hi,
->  Using the v2.4.3 +kernel 2.6.24.7 I used the system("touch /tmp/xxx_ok")
->  call in a non realtime init context.
->
->  The task is only used to allocate some memory heaps.
->
->  I setted up some memory debugging features in the kernel :
->  CONFIG_DEBUG_KERNEL=3Dy
->  CONFIG_DEBUG_SLAB=3Dy
->  CONFIG_DEBUG_SLAB_LEAK=3Dy
->  CONFIG_DEBUG_BUGVERBOSE=3Dy
->  CONFIG_DEBUG_VM=3Dy
->  CONFIG_FORCED_INLINING=3Dy
->  CONFIG_EARLY_PRINTK=3Dy
->  CONFIG_DEBUG_PAGEALLOC=3Dy
->
->  This was not happening with v2.4.2 although that the kernel debugging
->  flags were not "on"
->
->  It would be nice if you could try the v2.4.2 with debugging options
-> on, to know if it is a regression or not.
->
->
->  No time left, going back on v2.4.2. However, I have exactly the same
-> problem, if I use the fork() call inside a program.
->
->  Have you tried Jan fix ?
->
->
->  Sorry, for the last post, I tried again the xeno kernel ...which Jan fix=
- to
-> use?
+> Now whenever I run xeno-test and exit using Ctrl-C, it leaves "dd if
+> /dev/zero of /dev/null" task consuming 100% of the cpu until you manually
+> kill the task. Is it a bug?
 
-That one:
-https://mail.gna.org/public/xenomai-help/2008-05/msg00087.html
+You have to tell us a bit more about your setup. What shell do you
+use, do you have all the applications needed by xeno-test installed ?
 
---=20
+-- 
  Gilles
 
