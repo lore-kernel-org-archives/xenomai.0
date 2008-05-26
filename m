@@ -1,7 +1,7 @@
-Message-ID: <d6c8ef150805260959p3f7326bfmd73e97671773dba9@domain.hid>
-Date: Mon, 26 May 2008 18:59:55 +0200
+Message-ID: <d6c8ef150805261004l58f0c832n735e68dd91eb1123@domain.hid>
+Date: Mon, 26 May 2008 19:04:46 +0200
 From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
-In-Reply-To: <2ff1a98a0805260947q4587700era0e5af4527a26cfc@domain.hid>
+In-Reply-To: <2ff1a98a0805260959wded8f38tf266d11a921f9c04@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
@@ -11,6 +11,7 @@ References: <d6c8ef150805231056n3a9ea030jada65bd5a7c2a2c0@domain.hid>
 	<d6c8ef150805260626o3ba03d42sce1100bab89540a5@domain.hid>
 	<d6c8ef150805260929yeb4e263o618c446cdd96856b@domain.hid>
 	<2ff1a98a0805260947q4587700era0e5af4527a26cfc@domain.hid>
+	<2ff1a98a0805260959wded8f38tf266d11a921f9c04@domain.hid>
 Subject: Re: [Xenomai-help] Interrupt priorities and handling problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -24,18 +25,13 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-On Mon, May 26, 2008 at 6:47 PM, Gilles Chanteperdrix
+On Mon, May 26, 2008 at 6:59 PM, Gilles Chanteperdrix
 <gilles.chanteperdrix@xenomai.org> wrote:
 
-> Which is a second gpio interrupt. I am afraid from this sequence, it
-> appears that the two interrupt are generated at hardware level. Did
-> you try setting up the irq with at91_set_gpio_input ?
+> What about at91_set_deglitch ?
 
-Yes, I'm sure two interrupts are generated at the hardware level. It
-looks on SAM9260 default is Level triggered interrupts, which brings
-two interrupts for the pin 1-to-0 change. Actually, I've tried to
-change SRCTYPE to Rising edge for PB:
-at91_sys_write(AT91_AIC_SMR(3), AT91_AIC_SRCTYPE_RISING);
+Nothing change when add at91_set_deglitch(). Two interrupts always.
 
-But then I see no interrupts at all. :)
+Anyway, do you see any explanation why eth activity influence so much
+RT interrupt handling?
 
