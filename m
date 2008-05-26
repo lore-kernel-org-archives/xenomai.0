@@ -1,13 +1,13 @@
-Message-ID: <8c12bab70805260214q785116eai976fe67d399b7040@domain.hid>
-Date: Mon, 26 May 2008 11:14:37 +0200
-From: "Asif Iqbal" <a.iqbal@domain.hid>
-Sender: aiqbalrana@domain.hid
+Message-ID: <2ff1a98a0805260313l5d99ad3ak2bf19a5e64006e2b@domain.hid>
+Date: Mon, 26 May 2008 12:13:46 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <483A5FAD.40703@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_3648_12392239.1211793277770"
-Subject: [Xenomai-help] Running xeno-test leaves behind "dd if /dev/zero of
-	/dev/null"
-Reply-To: a.iqbal@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <483A5FAD.40703@domain.hid>
+Subject: Re: [Xenomai-help] Latency times on AT91SAM9263
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,34 +17,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Paradoxxa <paradoxxa2001@domain.hid>
+Cc: xenomai@xenomai.org
 
-------=_Part_3648_12392239.1211793277770
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+On Mon, May 26, 2008 at 8:58 AM, Paradoxxa <paradoxxa2001@domain.hid> wrote:
+> Hi all,
+>
+> I have here a AT91SAM9263 with a 2.6.24 kernel, Xenomai 2.4.3 and Adeos
+> Patch 1.9-01.
+> I'm wondering if the latency times are ok. What do you think about it?
+> In the attachment you can find the log files.
 
-Hello there
+This looks rather good, especially since you run with a 100us latency
+which is known to cause lockups on slow ARMs. The latencies I get with
+the machines I have access to are rather near 250us.
 
-Four days before, I checked out the svn head and compiled with
-2.6.25.4kernel. VxWorks skin failed to compile (Really sorry but it
-didn't come to
-my mind to record the error). Removed VxWorks and everything worked fine.
+> /usr/xenomai/bin/switchtest: /lib/libpthread.so.0: version `GLIBC_2.3.3' not
+> found (required by /usr/xenomai/bin/switchtest)
+> /usr/xenomai/bin/switchtest: /lib/libpthread.so.0: version `GLIBC_2.3.3' not
+> found (required by /usr/xenomai/lib/libpthread_rt.so.1)
 
-Now whenever I run xeno-test and exit using Ctrl-C, it leaves "dd if
-/dev/zero of /dev/null" task consuming 100% of the cpu until you manually
-kill the task. Is it a bug?
+You are playing a dangerous game: the glibc on your test platform is
+not the same as the one used by your compiler. When generating your
+test platform root filesystem, you should either use the same glibc
+version as the one used by your toolchain, or you should use front-end
+such as ucfront, which links with the compiled glibc.
 
-Regards,
-Asif
 
-------=_Part_3648_12392239.1211793277770
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hello there<br><br>Four days before, I checked out the svn head and compiled with <a href="http://2.6.25.4">2.6.25.4</a> kernel. VxWorks skin failed to compile (Really sorry but it didn&#39;t come to my mind to record the error). Removed VxWorks and everything worked fine.<br>
-<br>Now whenever I run xeno-test and exit using Ctrl-C, it leaves &quot;dd if /dev/zero of /dev/null&quot; task consuming 100% of the cpu until you manually kill the task. Is it a bug?<br><br>Regards,<br>Asif<br>
-
-------=_Part_3648_12392239.1211793277770--
+-- 
+ Gilles
 
