@@ -1,10 +1,13 @@
-Date: Tue, 6 May 2008 09:37:03 +0200 (CEST)
-From: Klaas Gadeyne <klaas.gadeyne@domain.hid>
-Message-ID: <Pine.LNX.4.64.0805060930140.26449@domain.hid>
+Message-ID: <483B29A6.2000209@domain.hid>
+Date: Mon, 26 May 2008 23:20:38 +0200
+From: Roland Stigge <stigge@domain.hid>
 MIME-Version: 1.0
-Content-Type: MULTIPART/MIXED; BOUNDARY="8323329-1304785219-1210059423=:26449"
-Subject: [Xenomai-core] [PATCH] -ETIMEDOUT return value not described in
- rt_cond_wait API documentation?
+References: <480A4AF3.9010502@domain.hid>	<18489.35854.502315.832894@domain.hid>	<4839907C.4000102@domain.hid>	<18489.37401.679912.195018@domain.hid>	<483AA731.8050404@domain.hid>
+	<18491.4848.804078.354303@domain.hid>
+In-Reply-To: <18491.4848.804078.354303@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Debian package xenomai-2.4.3-4 available
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,51 +17,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai-core@domain.hid
-
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1304785219-1210059423=:26449
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
 Hi,
 
-it seems -ETIMEDOUT is not mentioned as a possible return value of
-rt_cond_wait() in the API docs [1], although it *is* returned in case
-of the timeout having expired [2]?
+Gilles Chanteperdrix wrote:
+> Shipping the xenomai tarball with the debian directory has a real added
+> value: it allows people to build debian package without anything else,
+> this is an unofficial package, of course, but it can be built before the
+> Debian patch is generated.
 
-Attached patch tries to solve this against the 2.4 branch.
+Well, for people who catch the package within the few hours between
+Xenomai release and the Debian version of it. ;-)
 
-regards,
+> IMO, it would make your life easier if you considered the debian
+> directory part of the Xenomai package, and start working from this
+> directory. If you ask for it, we can probably even give you write
+> access to the repository, so that the debian packaging effort is fully
+> integrated to Xenomai.
 
-Klaas
+As discussed earlier this year: Every Debian package is a (small) fork
+of the respective "upstream" release, with own Debian release numbers
+between upstream releases, e.g. 2.4.4-1 and 2.4.4-2. Maintaining this at
+xenomai.org would require branches on every (minor) Xenomai release,
+e.g. 2.4.3 and 2.4.4 (besides me having repository write access),
+because Debian revisions usually come out more often than "upstream"
+versions (as you have seen 2.4.3-1 ... 2.4.3-7). Therefore, I prefer
+maintaining it at Debian like most other packages. We already have
+"trunk" and the stable release branches at xenomai.org. The above would
+require an additional level of branching, maintenance and
+synchronization work.
 
-ps.  This seems to apply to 2.3, 2.4 and trunk.
+Another solution at Debian is called "native" packages where Debian
+revisions and upstream versions are synchronized (i.e. no separate
+Debian revisions). The problem here is that at every point in time,
+Debian can decide to do a new revision (e.g. within a few hours on
+security fixes) which may not be in the interest of other xenomai
+maintainers. E.g. this way, Debian would decide when 2.4.5 and 2.4.6 (or
+2.4.4.1 and 2.4.4.2?) will be released. This doesn't scale well with the
+number of Linux distros. ;)
 
-[1]
-<http://www.xenomai.org/documentation/trunk/html/api/group__cond.html#g3aa51073817be2ffb2a880a7393502e8>
-[2] 
-<http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/skins/native/cond.c#493>
---8323329-1304785219-1210059423=:26449
-Content-Type: TEXT/x-diff; charset=US-ASCII; name=cond_c.patch
-Content-Transfer-Encoding: BASE64
-Content-ID: <Pine.LNX.4.64.0805060937030.26449@domain.hid>
-Content-Description: 
-Content-Disposition: attachment; filename=cond_c.patch
+For non-native packages in Debian (as Xenomai is currently), the debian/
+directory is separated out into the .diff.gz patch which is good for
+seeing how e.g. debian/rules looks like. If I would take the current
+"upstream" tarball and only patch debian/rules in the diff.gz, the
+resulting contents of the file is no recognizable from the patch alone.
+Therefore, this is not common practice in Debian.
 
-SW5kZXg6IGNvbmQuYw0KPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KLS0tIGNv
-bmQuYwkocmV2aXNpb24gMzcxNykNCisrKyBjb25kLmMJKHdvcmtpbmcgY29w
-eSkNCkBAIC00MTYsNiArNDE2LDkgQEANCiAgKiBkZXNjcmlwdG9yLCBpbmNs
-dWRpbmcgaWYgdGhlIGRlbGV0aW9uIG9jY3VycmVkIHdoaWxlIHRoZSBjYWxs
-ZXIgd2FzDQogICogc2xlZXBpbmcgb24gdGhlIHZhcmlhYmxlLg0KICAqDQor
-ICogLSAtRVRJTUVET1VUIGlzIHJldHVybmVkIGlmIEBhIHRpbWVvdXQgZXhw
-aXJlZCBiZWZvcmUgdGhlIGNvbmRpdGlvbg0KKyAqIHZhcmlhYmxlIGhhcyBi
-ZWVuIHNpZ25hbGVkLg0KKyAqDQogICogLSAtRUlOVFIgaXMgcmV0dXJuZWQg
-aWYgcnRfdGFza191bmJsb2NrKCkgaGFzIGJlZW4gY2FsbGVkIGZvciB0aGUN
-CiAgKiB3YWl0aW5nIHRhc2sgYmVmb3JlIHRoZSBjb25kaXRpb24gdmFyaWFi
-bGUgaGFzIGJlZW4gc2lnbmFsZWQuDQogICoNCg==
+Further, it's not only me who works on Debian packages. Sometimes, when
+I'm not available, one of the other 1000 Debian developers will do
+Debian adjustments to the xenomai package in Debian. I guess you don't
+want to give all of them write access to xenomai.org. ;)
 
---8323329-1304785219-1210059423=:26449--
+So you have the choice between the following possibilities:
+
+1) Leave the process as it is (Debian using the upstream tarball,
+stripped from debian/*, and adding an own debian/* in a separately
+shipped patch)
+
+2) Give me (and maybe Debian as a whole) write access to Xenomai.org and
+the right to branch at every "normal" Xenomai release, doing Debian
+revisions. Problem here: Additional work for Debian because not only
+Debian revisions must be done but also synchronization to the v2.4.x
+(stable) brach and trunk. (I.e. changes are most often in 3 places)
+
+3) Give me (and maybe Debian as a whole) write access to Xenomai.org and
+the right to do xenomai releases whenever Debian wants (i.e. "native"
+Debian package)
+
+I guess you prefer (1)? ;-)
+
+bye,
+  Roland
 
