@@ -1,7 +1,7 @@
-Message-ID: <2ff1a98a0805261014o5900fc40i61332fdb19a8ea08@domain.hid>
-Date: Mon, 26 May 2008 19:14:11 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <d6c8ef150805261004l58f0c832n735e68dd91eb1123@domain.hid>
+Message-ID: <d6c8ef150805261016q7250012cxcb0f15aa8ae817fd@domain.hid>
+Date: Mon, 26 May 2008 19:16:14 +0200
+From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
+In-Reply-To: <2ff1a98a0805261014o5900fc40i61332fdb19a8ea08@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
@@ -13,6 +13,7 @@ References: <d6c8ef150805231056n3a9ea030jada65bd5a7c2a2c0@domain.hid>
 	<2ff1a98a0805260947q4587700era0e5af4527a26cfc@domain.hid>
 	<2ff1a98a0805260959wded8f38tf266d11a921f9c04@domain.hid>
 	<d6c8ef150805261004l58f0c832n735e68dd91eb1123@domain.hid>
+	<2ff1a98a0805261014o5900fc40i61332fdb19a8ea08@domain.hid>
 Subject: Re: [Xenomai-help] Interrupt priorities and handling problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -23,25 +24,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bosko Radivojevic <bosko.radivojevic@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-On Mon, May 26, 2008 at 7:04 PM, Bosko Radivojevic
-<bosko.radivojevic@domain.hid> wrote:
-> On Mon, May 26, 2008 at 6:59 PM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->
->> What about at91_set_deglitch ?
->
-> Nothing change when add at91_set_deglitch(). Two interrupts always.
->
-> Anyway, do you see any explanation why eth activity influence so much
-> RT interrupt handling?
+On Mon, May 26, 2008 at 7:14 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
 
-To know this we need to compare a trace taken at maximum time, with
-and without ethernet.
+> To know this we need to compare a trace taken at maximum time, with
+> and without ethernet.
 
-
--- 
- Gilles
+OK. I'll remove freeze call, and capture max with and without eth.
 
