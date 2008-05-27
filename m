@@ -1,13 +1,23 @@
-Content-Type: text/plain; charset="us-ascii"
-Date: Wed, 14 May 2008 16:49:00 +0200
-From: "Karl Reichert" <Karl-Trampe@domain.hid>
-In-Reply-To: <48276703.2020005@domain.hid>
-Message-ID: <20080514144900.216230@domain.hid>
 MIME-Version: 1.0
-References: <200805112104.56166.karl-trampe@domain.hid> <48276703.2020005@domain.hid>
+Content-Type: multipart/mixed; boundary="QPZAJVoumL"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [RTnet-users] Ideas how to measure delays with
- RTnet
+Message-ID: <18491.29266.196753.611570@domain.hid>
+Date: Tue, 27 May 2008 04:30:42 +0200
+In-Reply-To: <5871.81.252.86.91.1211789666.squirrel@domain.hid>
+References: <16474.81.252.86.91.1211199249.squirrel@domain.hid>
+	<5481.62.39.72.60.1211293804.squirrel@domain.hid>
+	<18483.10408.141546.420660@domain.hid>
+	<2336.81.252.86.91.1211379896.squirrel@domain.hid>
+	<2ff1a98a0805210733u39894a17tca5420ae8f7ce5ca@domain.hid>
+	<15059.81.252.86.91.1211386718.squirrel@domain.hid>
+	<18484.28025.505865.374746@domain.hid>
+	<12142.81.252.86.91.1211467896.squirrel@domain.hid>
+	<2ff1a98a0805220819i8d73166w4c9a06d9734d0e0c@domain.hid>
+	<2405.81.252.86.91.1211549465.squirrel@domain.hid>
+	<2ff1a98a0805230655j35009227h75c63566373ece43@domain.hid>
+	<5871.81.252.86.91.1211789666.squirrel@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] Problem with time-out ends
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,60 +27,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rtnet-users@domain.hid
+To: Fabien MAHOT <fabien.mahot@domain.hid>
 Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Karl Reichert wrote:
-> > Hello,
-> > 
-> > I have two stations running RTnet, one as a master and one as a slave. I
-> want 
-> > to measure the time, which a message, sent from master to slave, takes.
-> But, 
-> > I don't want the time of the transmission only, but the complete time of
-> all 
-> > software layers this data is processed through.
-> > 
-> > _______________	_______________
-> > |		A		  |	|		D		  |
-> > |______________|	|______________|
-> > |		B		  |	|		C		  |
-> > |______________|	|______________|
-> > |   RTnet (Master)	  |	|    RTnet (Slave)	  |
-> > |______________|	|______________|
-> > 		|				  |
-> > 		|______________|
-> > 
-> > So, I create the data, that should be send, in Layer A (Master) and send
-> it 
-> > over RTnet to Layer D (Slave).
-> > 
-> > I want to take the time when the data leaves A and when it arrives D
-> with 
-> > rtdm_clock_read(). If I have the offset between master and slave, I can 
-> > calculate the time it took to pass A, B, both RTnet stacks, C and D.
-> > 
-> > As RTnet keeps track of the offset in it's stack, I want to use this
-> value. Is 
-> > it possible via the API? I didn't found anything. Or do I have to
-> manipulate 
-> > the stack to pass the offset to the higher layers (C and D)?
-> 
-> If RTmac/TDMA is in use, you can obtain the clock offset via
-> RTMAC_RTIOC_TIMEOFFSET from the RTDM device "TDMA<x>" (where "<x>"
-> corresponds to "rteth<x>").
-> 
-> Jan
-> 
 
-When I try to compile my application (xenomai native skin, user task), I get an error, saying rtdm_driver.h (which contains the prototype for rtdm_clock_read()) is for kernel mode tasks only.
+--QPZAJVoumL
+Content-Type: text/plain; charset=us-ascii
+Content-Description: message body and .signature
+Content-Transfer-Encoding: 7bit
 
-How can I get a timestamp in a xenomai native user task? Is there sth equivalent to rtdm_clock_read()? Or do I have to write a kernel task?
+Fabien MAHOT wrote:
+ > Ok , I corrected all your remarks. Do you have results with my test
+ > program?  do you have a system crash with the same error message ?
 
-Thanks
-Karl
+Here comes a second attempt of fixing the posix shadow signals issue.
+
 -- 
-von Karl Reichert
 
+
+					    Gilles.
+
+--QPZAJVoumL
+Content-Type: text/plain
+Content-Disposition: inline;
+	filename="xeno-posix-fix-shadow-signal.diff"
+Content-Transfer-Encoding: 7bit
+
+Index: ksrc/skins/posix/signal.c
+===================================================================
+--- ksrc/skins/posix/signal.c	(revision 3883)
++++ ksrc/skins/posix/signal.c	(working copy)
+@@ -301,7 +301,7 @@ int sigismember(const sigset_t * set, in
+ 	return ismember(pse51_set, sig);
+ }
+ 
+-/* Must be called with nklock lock, irqs off, may reschedule. */
++/* Must be called with nklock lock, irqs off. */
+ int pse51_sigqueue_inner(pthread_t thread, pse51_siginfo_t * si)
+ {
+ 	unsigned prio;
+@@ -327,8 +327,19 @@ int pse51_sigqueue_inner(pthread_t threa
+ 	}
+ 
+ #ifdef CONFIG_XENO_OPT_PERVASIVE
+-	if (testbits(thread->threadbase.state, XNSHADOW))
++	if (xnthread_test_state(&thread->threadbase, XNSHADOW)) {
+ 		pse51_schedule_lostage(PSE51_LO_SIGNAL_REQ, thread, 0);
++		if (xnthread_test_state(&thread->threadbase,
++					XNDELAY|XNPEND|XNSUSP|XNRELAX)) {
++			/* Thread is suspended in a syscall, or already relaxed,
++			   we do not need to run the signal dispatcher, the
++			   signal APC will cause the sigwake_event to be
++			   generated, which will kick the thread. */
++			thread->threadbase.signals = 0;
++			return 0;
++		} else
++			return thread == pse51_current_thread();
++	}
+ #endif /* CONFIG_XENO_OPT_PERVASIVE */
+ 
+ 	return thread == pse51_current_thread()
+
+--QPZAJVoumL--
 
