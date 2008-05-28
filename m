@@ -1,11 +1,22 @@
-Content-class: urn:content-classes:message
+Message-ID: <2ff1a98a0805280931j611ae10er69b968ae8699d63d@domain.hid>
+Date: Wed, 28 May 2008 18:31:33 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <2766.81.252.86.91.1211992159.squirrel@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C8CB04.6186A5AC"
-Date: Tue, 10 Jun 2008 08:15:05 -0600
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D470A4E@slcmail.slc.mew.int>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: [Xenomai-help] Q_BROADCAST and queues
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <16474.81.252.86.91.1211199249.squirrel@domain.hid>
+	<15059.81.252.86.91.1211386718.squirrel@domain.hid>
+	<18484.28025.505865.374746@domain.hid>
+	<12142.81.252.86.91.1211467896.squirrel@domain.hid>
+	<2ff1a98a0805220819i8d73166w4c9a06d9734d0e0c@domain.hid>
+	<2405.81.252.86.91.1211549465.squirrel@domain.hid>
+	<2ff1a98a0805230655j35009227h75c63566373ece43@domain.hid>
+	<5871.81.252.86.91.1211789666.squirrel@domain.hid>
+	<18491.29266.196753.611570@domain.hid>
+	<2766.81.252.86.91.1211992159.squirrel@domain.hid>
+Subject: Re: [Xenomai-help] Problem with time-out ends
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,111 +26,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Fabien MAHOT <fabien.mahot@domain.hid>
+Cc: xenomai@xenomai.org
 
+On Wed, May 28, 2008 at 6:29 PM, Fabien MAHOT
+<fabien.mahot@domain.hid> wrote:
+> Problem with time-out ends
+>
+> Hello,
+>
+> thanks a lot for time spent and your patch.
+> Sorry for the carriage returns of my mailer.
+>
+> I tried your patch with test program version that you sent me.
+> (I installed xenomai 2.4.3)
+>
+> And, the system always crashes. But, now, there is no longer error kernel
+> trace on my serial console.
+> I don t obtain result with your check function.
+>
+> When you got the crash, what is your error kernel trace?
+> the same as mine ? Xenomai: fatal: inserting element twice,
+> holder=c7761c78, qslot=c7761160
 
-This is a multi-part message in MIME format.
+No, I do not get this error. Do you get a stack trace with this error ?
+I had an "error relaxing kicked thread".
 
-------_=_NextPart_001_01C8CB04.6186A5AC
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-If you use Q_BROADCAST, and there are no tasks waiting on the queue,
-does the message wait for a receiver in the queue or is it ignored?
-
-=20
-
-Steven
-
-=20
-
-
-------_=_NextPart_001_01C8CB04.6186A5AC
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
-xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
-
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 12 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:"MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
-@font-face
-	{font-family:"MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
-@font-face
-	{font-family:"\@MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:"Calibri","sans-serif";
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.0in 1.0in 1.0in;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-<!--[if gte mso 9]><xml>
- <o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
- <o:shapelayout v:ext=3D"edit">
-  <o:idmap v:ext=3D"edit" data=3D"1" />
- </o:shapelayout></xml><![endif]-->
-</head>
-
-<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal>If you use Q_BROADCAST, and there are no tasks =
-waiting on
-the queue, does the message wait for a receiver in the queue or is it =
-ignored?<o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-<p class=3DMsoNormal>Steven<o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01C8CB04.6186A5AC--
+-- 
+ Gilles
 
