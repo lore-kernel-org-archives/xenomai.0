@@ -1,123 +1,44 @@
-Message-ID: <48236CE2.5050907@domain.hid>
-Date: Thu, 08 May 2008 23:13:06 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <483D1D9A.7010209@domain.hid>
+Date: Wed, 28 May 2008 10:53:46 +0200
+From: Johan Borkhuis <j.borkhuis@domain.hid>
 MIME-Version: 1.0
-References: <4823620F.3020904@domain.hid> <482368B8.9070008@domain.hid>
-	<482369FE.6070508@domain.hid>
-In-Reply-To: <482369FE.6070508@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigCFAECDD8576095BDF90473CC"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Adeos-main] [BUG] ipipe_sync_stage deadlock
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: rpm@xenomai.org
-Cc: adeos-main <adeos-main@gna.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Problem with semaphores in an RTDM driver
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Xenomai help <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigCFAECDD8576095BDF90473CC
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hello,
 
-Philippe Gerum wrote:
-> Philippe Gerum wrote:
->> Jan Kiszka wrote:
->>> I love KVM - not only because I'm heavily hacking on it now, also
->>> because it is so easy to trigger various kinds of guest issues with
->>> it (SMP host + threaded virtual CPUs =3D> true SMP guest - and if you=
+I am trying to use semaphores inside my driver. It is a driver that can 
+be used as standard Linux driver and RTDM driver.
 
->>> want to watch fancy things happen, just load one host core).
->>>
->>> Here is one I found that way:
->>>
->>> void fastcall __ipipe_sync_stage(unsigned long syncmask)
->>> {
->>> [ ... ]
->>> 	while ((mask =3D (ipipe_this_cpudom_var(irqpend_himask) & syncmask))=
- !=3D 0) {
->>> 		level =3D __ipipe_ffnz(mask);
->>>
->>> 		while ((submask =3D ipipe_this_cpudom_var(irqpend_lomask)[level]) !=
-=3D 0) {
->>> 			rank =3D __ipipe_ffnz(submask);
->>> 			irq =3D (level << IPIPE_IRQ_ISHIFT) + rank;
->>>
->>> 			if (test_bit(IPIPE_LOCK_FLAG, &ipd->irqs[irq].control)) {
->>> 				__clear_bit(rank, &ipipe_this_cpudom_var(irqpend_lomask)[level]);=
+However, when I use rt_sem_p or rtdm_sem_timeddown in my read_nrt 
+function I get a -1 return value, indicating EPERM. When I look at the 
+thread state I see a value of 0x00400080, which indicates a standard 
+Linux thread. The rtdm-context is 0x00000001.
+The userspace thread has a thread state of 00300380.
 
->> - 				continue;
->> +				goto rpm_needs_more_neurons;
->>> 			}
->>>
->>> 			__clear_bit(rank, &ipipe_this_cpudom_var(irqpend_lomask)[level]);
->>>
->> + rpm_needs_more_neurons:
->>> 			if (ipipe_this_cpudom_var(irqpend_lomask)[level] =3D=3D 0)
->>> 				__clear_bit(level, &ipipe_this_cpudom_var(irqpend_himask));
->>> [ ... ]
->>>
->=20
-> Of course, I'm not saying this is the real fix, but that just points at=
- a
-> possible issue. I do want those 100 points on my score card.
+What am I doing wrong here? How can I get a semaphore or other sync 
+mechanism to work inside my RTDM driver?
 
-Well, I wasn't asking for a fix, just for spotting the gremlin - so you
-won! :->
+We are using Xenomai 2.4.1 on Linux 2.6.20 for powerpc.
 
-Then let us fix this for real:
+Kind regards,
+    Johan Borkhuis
 
----
- kernel/ipipe/core.c |    8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+-- 
+Johan Borkhuis                                  Dutch Space BV
+email:        j.borkhuis@domain.hid          Newtonweg 1
+phone:        071-5245788                       Leiden
+fax:          071-5245499                       The Netherlands
 
-Index: b/kernel/ipipe/core.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/kernel/ipipe/core.c
-+++ b/kernel/ipipe/core.c
-@@ -957,16 +957,14 @@ void fastcall __ipipe_sync_stage(unsigne
- 			rank =3D __ipipe_ffnz(submask);
- 			irq =3D (level << IPIPE_IRQ_ISHIFT) + rank;
-=20
--			if (test_bit(IPIPE_LOCK_FLAG, &ipd->irqs[irq].control)) {
--				__clear_bit(rank, &ipipe_this_cpudom_var(irqpend_lomask)[level]);
--				continue;
--			}
--
- 			__clear_bit(rank, &ipipe_this_cpudom_var(irqpend_lomask)[level]);
-=20
- 			if (ipipe_this_cpudom_var(irqpend_lomask)[level] =3D=3D 0)
- 				__clear_bit(level, &ipipe_this_cpudom_var(irqpend_himask));
-=20
-+			if (test_bit(IPIPE_LOCK_FLAG, &ipd->irqs[irq].control))
-+				continue;
-+
- 			__set_bit(IPIPE_STALL_FLAG, &ipipe_this_cpudom_var(status));
-=20
- 			if (ipd =3D=3D ipipe_root_domain)
-
-
---------------enigCFAECDD8576095BDF90473CC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.4-svn0 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFII2zlniDOoMHTA+kRAujzAJ9CO+8fm5GwfaKATOJcz54r+4Yk8QCfRz/u
-QqUb1g8n8kSe9g5B+kBJCDY=
-=AHJj
------END PGP SIGNATURE-----
-
---------------enigCFAECDD8576095BDF90473CC--
 
