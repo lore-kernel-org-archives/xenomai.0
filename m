@@ -1,90 +1,49 @@
-Message-ID: <48430361.7070004@domain.hid>
-Date: Sun, 01 Jun 2008 22:15:29 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <d6c8ef150805280216h163bb7ei91894411c3aa7885@domain.hid>
+Date: Wed, 28 May 2008 11:16:25 +0200
+From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
+In-Reply-To: <d6c8ef150805270608g40c15b64w6b4ebb448c33d3a9@domain.hid>
 MIME-Version: 1.0
-References: <18498.60991.572819.581076@domain.hid>	<4842F10D.7060601@domain.hid>	<18498.62016.697156.829501@domain.hid>	<4842F62D.6010008@domain.hid>
-	<18499.473.653868.93704@domain.hid>
-In-Reply-To: <18499.473.653868.93704@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigDEF5014DF24545B0D4F8331F"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] enum rtdm_selecttype
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDEF5014DF24545B0D4F8331F
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <d6c8ef150805231056n3a9ea030jada65bd5a7c2a2c0@domain.hid>
+	<2ff1a98a0805260959wded8f38tf266d11a921f9c04@domain.hid>
+	<d6c8ef150805261004l58f0c832n735e68dd91eb1123@domain.hid>
+	<2ff1a98a0805261014o5900fc40i61332fdb19a8ea08@domain.hid>
+	<d6c8ef150805261016q7250012cxcb0f15aa8ae817fd@domain.hid>
+	<2ff1a98a0805261021s1d369a23ic63451e9b87b68b6@domain.hid>
+	<d6c8ef150805261047y660c853fwb398d344d8b3b540@domain.hid>
+	<d6c8ef150805270431j24e99d94n1bdd56ada3eb5ff9@domain.hid>
+	<2ff1a98a0805270511m1b337537pe8b66d29b494c20b@domain.hid>
+	<d6c8ef150805270608g40c15b64w6b4ebb448c33d3a9@domain.hid>
+Subject: Re: [Xenomai-help] Interrupt priorities and handling problems
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->  > Gilles Chanteperdrix wrote:
->  > > Philippe Gerum wrote:
->  > >  > Gilles Chanteperdrix wrote:
->  > >  > > Hi Jan,
->  > >  > >=20
->  > >  > > when compiling xenomai v2.4.x for ARM with gcc 4.2.1, I get p=
-lenty of
->  > >  > > warnings like:
->  > >  > > xenomai-arm/kernel/xenomai/skins/posix/syscall.c:38:
->  > >  > > xenomai-arm/include/xenomai/rtdm/rtdm_driver.h:206: warning: =
-parameter has incomplete type
->  > >  > >=20
->  > >  > > So it seems gcc 4.2.1 does not like the enum being used in fu=
-nction
->  > >  > > prototypes without being defines. So, could we move the enum =
-definition
->  > >  > > before the functions using it ?
->  > >  > >=20
->  > >  >=20
->  > >  > We can sort this out with a simple forward declaration.
->  > >=20
->  > > That is the way it is done today, but gcc 4.2.1 seems not to like
->  > > it. Maybe recent C standards allow the compiler to pick the smalle=
-st type
->  > > for the enum as C++ does ?
->  > >=20
->  >=20
->  > Or any integral type the implementation sees fit actually. Well, yes=
-, maybe it
->  > is indeed bits of the C++ standard dripping on the C implementation =
-of GCC,
->  > especially if forward decl of enums is not explicitly defined by the=
- C standard.
->=20
-> Actually it is gcc 3.4 which does not like the forward decl, not gcc 4.=
-2
+Gilles,
 
-I'm fine with moving it if that helps to make all compilers happy. Just
-ensure that it remains in the right doxygen group.
+I've found the explanation why I see two interrupts. The problem is
+that I, somehow, cannot use my external source connected to PC15 pin
+as IRQ1 line. On AT91SAM9260 PIO Interrupts are considered as
+'internal source interrupts' and it is not possible to change second
+bit of source type, so it can be level or edge triggered, but not
+rising or falling edge. Now it is quite clear why I get two
+interrupts.
 
-Jan
+I've traced down to __ipipe_grab_irq() what is happening and
+discovered that my interrupt is always coming as irq source = 4 (PIO C
+peripheral) and not as irq source = 30 as expected.
 
+Does anybody here knows anything about this? :)
 
---------------enigDEF5014DF24545B0D4F8331F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.4-svn0 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFIQwNmniDOoMHTA+kRAvdAAJ9eJdq3YTIVc4jdC7feyYCVW6Q2HACfUcqs
-IVPEVO1dqaPc2KNuYUFUUEA=
-=+mr5
------END PGP SIGNATURE-----
-
---------------enigDEF5014DF24545B0D4F8331F--
+Thanx
 
