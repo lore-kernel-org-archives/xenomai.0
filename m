@@ -1,10 +1,10 @@
-Date: Tue, 27 May 2008 18:11:36 +0200
-Message-Id: <781147006@domain.hid>
+From: "Urs.Eichholzer" <urs.eichholzer@domain.hid>
+Date: Wed, 28 May 2008 09:43:57 +0700
+Message-ID: <000501c8c06c$adb72100$2201a8c0@domain.hid>
 MIME-Version: 1.0
-From: Joachim Meyer <Jogi95@domain.hid>
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Cross-Compile Xenomai
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0006_01C8C0A7.5A15F900"
+Subject: [Xenomai-help] General questions
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,112 +16,512 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi
+This is a multi-part message in MIME format.
 
-I finally found time to go on with my xenomai installation. 
-I managed to build the drivers for the testsuite as modules and installed them. But some things still doesn't work, I think. What should i do now?
+------=_NextPart_000_0006_01C8C0A7.5A15F900
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-irqloop sometimes says: 
-------------------------------------------------------------------------
-irqloop: error starting test: Inappropriate ioctl for device
-------------------------------------------------------------------------
-sometimes it runs but nothing happens:
-------------------------------------------------------
-bash-3.00# irqbench/irqloop
-Test mode:    user-space task
-Port type:    serial
-Port address: 0x3f8
-Port IRQ:     4
+Hi all,
+ 
+We have some general questions
+ 
+Our setup is:
+Hardware MPC5200B on Microsys MPX5200
+Linux version: 2.6.19
+Adeos Patch: Compatible with this Linux
+Xenomai version: 2.3.0
+ 
+1.) Is the RT CAN socket deterministic? If I send immediately after
+knowing the code is in 4 mS gap interval, how long does the rt socket
+send this to the connected device from the time I command rt_dev_send to
+the real seding in the Xenomai? Will the Xenomai RT-CAN socket sending
+be interrupted by another task or resource? 
+ 
+2.) Are all task application in Xenomai interruptable (or blockable) by
+another task or resource irregardless of priority? If this happens....
+What is the most time delay it will consume to switch back to my
+rt-application task if it is blocked? Lets say I am sending CAN and at
+the same time 4 more rt-application are running...
+ 
+3.) Is the highest priority application task can also be blocked by
+another process or resource? Will this task yield to another task or
+resource if it will be needed? For how long this task switching will
+occur so that my application takes control again?
+ 
+4.) Where is rt_timer_read gets its timer value? Is this a predetermined
+resolution set in the Xenomai-OS? Is there any relationship of this
+timer value in real system pulse?  
+ 
+5.) Is there a way that I can send directly to the RT socket buffer so
+that the xenomai can directly send the message without going to the
+rt_dev_send on the opened socket? Or is this way impossible and the only
+way to send in real-time is through RT CAN socket?
+ 
+6.)  Is an rt application which runs in a periodic task mode will really
+executed in periodic intervals? What if the end of the code is not yet
+reached and the periodic interval is triggered? Will the task just
+continues or will it resign? And then what will happen? Is the periodic
+interval will not resign its code when the interval and the code running
+overlapped? Will the application code be blocked or will still remain in
+running state?
+ 
+7.)  Is there a general protection for a running code that it will be
+unblockable for all task and resource for certain lines to be executed?
+It is like I will enter to a critical code section and after sending my
+CAN message will leave the critical section so that my application will
+be able to send immediately and will not be blocked....
+ 
+8.) Why is it that the RT socket CAN of xenomai is still collecting the
+incoming frames of an opened socket handle even if it is not requesting
+for a read? If the socket will not read, the buffer is becoming full and
+will trigger the message buffer full (message discarded). Isn't it that
+the xenomai should throw away this frame and free the buffer since the
+default timeout will be triggered? The buffer is still being used until
+the message overflows when the socket will not read instead of handling
+the timeout... It is like as if the CAN device handler will pass the
+received CAN message to ALL referenced opened handle eveif it is not
+requesting to read the message. Isn't it that if a timeout is already
+defined, it should throw away and clear the buffer instead of
+continously buffering the "unwanted" frames of the opened socket handle?
 
-Received IRQs:     0
-Acknowledged IRQs: 0
-bash-3.00#
-------------------------------------------------------
-I tried different Port IRQs but it has no effect.
+ 
+ 
+My question might be related or not related to my problem. But I need at
+least some of the answers so I can use effectively use the Xenomai task
+and have the scheduling in real-time that is accurate to the needed
+specification of the project I needed. Please give some recommendation
+and comments on things what we might use to address the need of our
+real-time project application...
+ 
+Best Regards
+ 
+Urs 
+ 
 
-switchtest
------------------------------------------------------
-bash-3.00# switchtest/switchtest -n
-== Threads: sleeper-0 rtk-1 rtk-2 rtup-3 rtup-4 rtus-5 rtus-6 rtuo-7 rtuo-8
-RTT|  00:00:01
-RTH|ctx switches|-------total
-RTD|        1791|        1791
-RTD|        1785|        3576
-RTD|        1800|        5376
-RTD|        1797|        7173
-RTD|        1800|        8973
-RTD|        1803|       10776
-RTD|        1788|       12564
-RTD|        1809|       14373
-RTD|        1530|       15903
-bash-3.00#
--------------------------------------------------------------
-I stopped it with ctrl+c because it never stops, does it?
+------=_NextPart_000_0006_01C8C0A7.5A15F900
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-switchbench
-----------------------------------------------------
-bash-3.00# switchbench/switchbench
-== Sampling period: 100 us
-== Do not interrupt this program
-RTH|     lat min|     lat avg|     lat max|        lost
-RTD|      -31150|        2833|       51573|       93825
-bash-3.00#
----------------------------------------------------
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
+xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns=3D"http://www.w3.org/TR/REC-html40">
 
-latency
-------------------------------------------------------------
-bash-3.00# latency/latency -
-== Sampling period: 100 us
-== Test mode: periodic user-mode task
-== All results in microseconds
-warming up...
-RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      15.390|      19.706|      54.080|       0|      15.390|      54.080
-RTD|      12.130|      20.150|      81.790|       0|      12.130|      81.790
-RTD|      15.350|      19.943|      70.800|       0|      12.130|      81.790
-RTD|      15.390|      20.760|      85.400|       0|      12.130|      85.400
-RTD|      15.390|      19.886|      68.830|       0|      12.130|      85.400
-RTD|      15.390|      19.906|      70.750|       0|      12.130|      85.400
-RTD|      15.390|      19.890|      68.960|       0|      12.130|      85.400
-RTD|      15.350|      19.986|      71.450|       0|      12.130|      85.400
-RTD|      15.390|      19.890|      75.100|       0|      12.130|      85.400
-RTD|      15.350|      19.913|      72.440|       0|      12.130|      85.400
-RTD|      15.390|      19.893|      70.720|       0|      12.130|      85.400
----|------------|------------|------------|--------|-------------------------
-RTS|      12.130|      19.993|      85.400|       0|    00:00:12/00:00:12
-bash-3.00#
----------------------------------------------------------------------------------------
-also stopped with ctrl+c
-
-latency -t1
-------------------------------------------------------------------------------------
-bash-3.00# latency/latency -t1
-== Sampling period: 100 us
-== Test mode: in-kernel periodic task
-== All results in microseconds
-latency: failed to start in-kernel timer benchmark, code -25
----|------------|------------|------------|--------|-------------------------
-RTS|  267928.028|  805352.732|      32.768|       0|    00:00:40/00:00:40
-bash-3.00#
-------------------------------------------------------------------------------------
-Doesn't it work as module?
-
-cyclictest 
--------------------------------------------------------------------------
-bash-3.00# cyclic/cyclictest -l 50000
-0.00 0.06 0.07 2/19 551
-
-T: 0 (  551) P: 0 I:    1000 C:   50000 Min:-50463972 Act:-50463972 Max: -993974
-bash-3.00#
---------------------------------------------------------------------------
-
-Greez & Thanks
-Joachim
+<head>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Dus-ascii">
 
 
-_________________________________________________________________________
-In 5 Schritten zur eigenen Homepage. Jetzt Domain sichern und gestalten! 
-Nur 3,99 EUR/Monat! http://www.maildomain.web.de/?mc=021114
+<meta name=3DProgId content=3DWord.Document>
+<meta name=3DGenerator content=3D"Microsoft Word 10">
+<meta name=3DOriginator content=3D"Microsoft Word 10">
+<link rel=3DFile-List href=3D"cid:filelist.xml@domain.hid">
+<!--[if gte mso 9]><xml>
+ <o:OfficeDocumentSettings>
+  <o:DoNotRelyOnCSS/>
+ </o:OfficeDocumentSettings>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:SpellingState>Clean</w:SpellingState>
+  <w:GrammarState>Clean</w:GrammarState>
+  <w:DocumentKind>DocumentEmail</w:DocumentKind>
+  <w:EnvelopeVis/>
+  <w:Compatibility>
+   <w:BreakWrappedTables/>
+   <w:SnapToGridInCell/>
+   <w:ApplyBreakingRules/>
+   <w:WrapTextWithPunct/>
+   <w:UseAsianBreakRules/>
+  </w:Compatibility>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]-->
+<style>
+<!--
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;
+	text-underline:single;}
+p.MsoAutoSig, li.MsoAutoSig, div.MsoAutoSig
+	{margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	mso-style-noshow:yes;
+	mso-ansi-font-size:10.0pt;
+	mso-bidi-font-size:10.0pt;
+	font-family:Arial;
+	mso-ascii-font-family:Arial;
+	mso-hansi-font-family:Arial;
+	mso-bidi-font-family:Arial;
+	color:windowtext;}
+span.SpellE
+	{mso-style-name:"";
+	mso-spl-e:yes;}
+span.GramE
+	{mso-style-name:"";
+	mso-gram-e:yes;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:1.0in 1.25in 1.0in 1.25in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */=20
+ table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0in 5.4pt 0in 5.4pt;
+	mso-para-margin:0in;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";}
+</style>
+<![endif]-->
+</head>
+
+<body lang=3DEN-GB link=3Dblue vlink=3Dpurple =
+style=3D'tab-interval:.5in'>
+
+<div class=3DSection1>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'>Hi
+all,<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier =
+New"'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'>We
+have some general questions<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier =
+New"'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'>Our
+setup is:<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'>Hardware
+MPC5200B on <span class=3DSpellE>Microsys</span> =
+MPX5200<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'>Linux
+version: 2.6.19<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><span
+class=3DSpellE><font size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>Adeos</span></font></span><font size=3D2
+face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'>
+Patch: Compatible with this Linux<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><span
+class=3DSpellE><font size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>Xenomai</span></font></span><font size=3D2
+face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'>
+version: 2.3.0<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier =
+New"'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'>1.)
+Is the RT CAN socket deterministic? If I send immediately after knowing =
+the
+code is in 4 <span class=3DSpellE>mS</span> gap interval, how long does =
+the <span
+class=3DSpellE><span class=3DGramE>rt</span></span> socket send this to =
+the
+connected device from the time I command <span =
+class=3DSpellE>rt_dev_send</span>
+to the real <span class=3DSpellE>seding</span> in the <span =
+class=3DSpellE>Xenomai</span>?
+Will the <span class=3DSpellE>Xenomai</span> RT-CAN socket sending be =
+interrupted
+by another task or resource? <o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'><span
+style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'>2.)
+Are all task application in <span class=3DSpellE>Xenomai</span> <span
+class=3DSpellE>interruptable</span> (or <span =
+class=3DSpellE>blockable</span>) by
+another task or resource irregardless of priority? <span =
+class=3DGramE>If this
+happens....</span> What is the most time delay it will consume to switch =
+back
+to my <span class=3DSpellE>rt</span>-application task if it is blocked? =
+<span
+class=3DGramE>Lets</span> say I am sending CAN and at the same time 4 =
+more <span
+class=3DSpellE>rt</span>-application are =
+running...<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'><span
+style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'>3.)
+Is the highest priority application task can also be blocked by another =
+process
+or resource? Will this task yield to another task or resource if it will =
+be
+needed? For how long this task switching will occur so that my =
+application
+takes control again?<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'><span
+style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><span
+class=3DGramE><font size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>4.) Where is <span =
+class=3DSpellE>rt_timer_read</span></span></font></span><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'>
+gets its timer value? Is this a predetermined resolution set in the =
+<span
+class=3DSpellE>Xenomai</span>-OS? Is there any relationship of this =
+timer value
+in real system pulse?<span style=3D'mso-spacerun:yes'>&nbsp; =
+</span><o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'><span
+style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'>5.)
+Is there a way that I can send directly to the RT socket buffer so that =
+the <span
+class=3DSpellE>xenomai</span> can directly send the message without =
+going to the <span
+class=3DSpellE>rt_dev_send</span> on the opened socket? Or <span =
+class=3DGramE>is</span>
+this way impossible and the only way to send in real-time is through RT =
+CAN socket?<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'><span
+style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'>6.)<span
+style=3D'mso-spacerun:yes'>&nbsp; </span>Is an <span =
+class=3DSpellE><span
+class=3DGramE>rt</span></span> application which runs in a periodic task =
+mode
+will really executed in periodic intervals? What if the end of the code =
+is not
+yet reached and the periodic interval is triggered? Will the task just
+continues or will it resign? And then what will happen? Is the periodic
+interval will not resign its code when the interval and the code running
+overlapped? Will the application code be blocked or will still remain in
+running state?<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'><span
+style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'>7.)<span
+style=3D'mso-spacerun:yes'>&nbsp; </span>Is there a general protection =
+for a
+running code that it will be <span class=3DSpellE>unblockable</span> for =
+all task
+and resource for certain lines to be executed? It is like I will enter =
+to a
+critical code section and after sending my CAN message will leave the =
+critical
+section so that my application will be able to send immediately and will =
+not be
+blocked....<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'><span
+style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><span
+class=3DGramE><font size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>8.) Why is it that the RT socket CAN of <span
+class=3DSpellE>xenomai</span></span></font></span><font size=3D2 =
+face=3D"Courier New"><span
+style=3D'font-size:10.0pt;font-family:"Courier New"'> is still =
+collecting the
+incoming frames of an opened socket handle even if it is not requesting =
+for a
+read? If the socket will not read, the buffer is becoming full and will =
+trigger
+the message buffer full (message discarded). Isn't it that the <span
+class=3DSpellE>xenomai</span> should throw away this frame and free the =
+buffer
+since the default timeout will be triggered? The buffer is still being =
+used
+until the message overflows when the socket will not read instead of =
+handling
+the timeout... It is like as if the CAN device handler will pass the =
+received
+CAN message to ALL referenced opened handle <span =
+class=3DSpellE>eveif</span> it
+is not requesting to read the message. Isn't it that if a timeout is =
+already
+defined, it should throw away and clear the buffer instead of <span
+class=3DSpellE>continously</span> buffering the &quot;unwanted&quot; =
+frames of
+the opened socket handle? <o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'><span
+style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'><span
+style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'>My
+question might be related or not related to my problem. But I need at =
+least
+some of the answers so I can use effectively use the <span =
+class=3DSpellE>Xenomai</span>
+task and have the scheduling in real-time that is accurate to the needed
+specification of the project I needed. Please give some recommendation =
+and
+comments on things what we might use to address the need of our =
+real-time
+project application...<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal =
+style=3D'mso-layout-grid-align:none;text-autospace:none'><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'><span
+style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
+
+<p class=3DMsoAutoSig><font size=3D3 face=3D"Times New Roman"><span =
+lang=3DDE-CH
+style=3D'font-size:12.0pt;mso-ansi-language:DE-CH;mso-no-proof:yes'>Best =
+Regards<o:p></o:p></span></font></p>
+
+<p class=3DMsoAutoSig><font size=3D3 face=3D"Times New Roman"><span =
+lang=3DDE-CH
+style=3D'font-size:12.0pt;mso-ansi-language:DE-CH;mso-no-proof:yes'><o:p>=
+&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoAutoSig><font size=3D3 face=3D"Times New Roman"><span =
+lang=3DDE-CH
+style=3D'font-size:12.0pt;mso-ansi-language:DE-CH;mso-no-proof:yes'>Urs =
+<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D3 face=3D"Times New Roman"><span =
+lang=3DDE
+style=3D'font-size:12.0pt;mso-ansi-language:DE'><o:p>&nbsp;</o:p></span><=
+/font></p>
+
+</div>
+
+</body>
+
+</html>
+
+------=_NextPart_000_0006_01C8C0A7.5A15F900--
 
 
