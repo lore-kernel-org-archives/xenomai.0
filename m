@@ -1,60 +1,46 @@
-Message-ID: <4842D7FB.9020400@domain.hid>
-Date: Sun, 01 Jun 2008 19:10:19 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <483D1FEE.7050203@domain.hid>
+Date: Wed, 28 May 2008 11:03:42 +0200
+From: Sebastian Smolorz <smolorz@domain.hid>
 MIME-Version: 1.0
-References: <483D6466.5080207@domain.hid>
-In-Reply-To: <483D6466.5080207@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <483D1D9A.7010209@domain.hid>
+In-Reply-To: <483D1D9A.7010209@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] Xenomai 2.4.x user space build problem with
-	uint64_t
-Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Problem with semaphores in an RTDM driver
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Johan Borkhuis <j.borkhuis@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Wolfgang Grandegger wrote:
-> Hello,
+Johan Borkhuis wrote:
+> I am trying to use semaphores inside my driver. It is a driver that can 
+> be used as standard Linux driver and RTDM driver.
 > 
-> the following patch fixes a problem building the Xenomai user
-> space applications for the MPC5200 using the ELDK 4.2. It can't 
-> find the type uint64_t:
-> 
-> Index: include/asm-powerpc/fptest.h
-> ===================================================================
-> --- include/asm-powerpc/fptest.h	(revision 3891)
-> +++ include/asm-powerpc/fptest.h	(working copy)
-> @@ -5,6 +5,7 @@
->  #include <linux/module.h>
->  #else /* !__KERNEL__ */
->  #include <stdio.h>
-> +#include <stdint.h>
->  #define printk printf
->  #endif /* !__KERNEL__ */
->  
+> However, when I use rt_sem_p or rtdm_sem_timeddown in my read_nrt 
+> function I get a -1 return value, indicating EPERM.
 
-Merged, thanks.
+Your read_nrt function is only for non real-time tasks. So if you use a 
+call to a service which requires primary execution mode of Xenomai it 
+consequentially fails.
 
-> TIA,
+> When I look at the 
+> thread state I see a value of 0x00400080, which indicates a standard 
+> Linux thread. The rtdm-context is 0x00000001.
+> The userspace thread has a thread state of 00300380.
 > 
-> Wolfgang.
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
-> 
+> What am I doing wrong here? How can I get a semaphore or other sync 
+> mechanism to work inside my RTDM driver?
 
+Use RTDM services inside the *_rt functions and plain Linux services 
+inside the *_nrt functions of your driver.
 
 -- 
-Philippe.
+Sebastian
 
