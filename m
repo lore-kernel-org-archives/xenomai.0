@@ -1,13 +1,15 @@
-Message-ID: <2ff1a98a0806050041v1f1dc987y156907af4fa88c72@domain.hid>
-Date: Thu, 5 Jun 2008 09:41:16 +0200
+Message-ID: <2ff1a98a0805280714y73a3c2efg80629f156f511f70@domain.hid>
+Date: Wed, 28 May 2008 16:14:10 +0200
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <1212614370.21088.23.camel@domain.hid>
+In-Reply-To: <2ff1a98a0805280621k63327808ne547d0ebba6d51aa@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <1212614370.21088.23.camel@domain.hid>
-Subject: Re: [Xenomai-help] Saving floating point registers inside ISR
+References: <df6ee85f837d916e8fffc4e64803ea79@domain.hid>
+	<2ff1a98a0805280621k63327808ne547d0ebba6d51aa@domain.hid>
+Subject: Re: [Xenomai-help] 32 bits Xenomai application over x86-64
+	architecture
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,62 +19,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Henry Bausley <hbausley@domain.hid>
+To: matthieu.connaulte_xenomai@domain.hid
 Cc: xenomai@xenomai.org
 
-On Wed, Jun 4, 2008 at 11:19 PM, Henry Bausley <hbausley@domain.hid> wrote:
->
-> I am converting a 440EP power pc FSM Labs RT-Linux application to a
-> Xenomai 2.4.2 posix application. Previously we saved the floating point
-> registers in the ISR.  I had the following code with RTLinux.
-
-Maybe what kills your box is an exception: when a user-space task has
-not used the FPU, or when a kernel-space task did not set the XNFPU
-bit, any use of floating point instructions triggers an exception. You
-should normally get a clear message in the kernel logs. So, you should
-try and call rthal_enable_fpu right before rthal_save_fpu. Note
-however that when doing so, you break Xenomai and Linux FPU "state
-machine". So, what you should really do is save the exception bit,
-enable it before calling rthal_save_fpu, then restore it after
-rthal_restore_fpu.
-
-You can use for instance
-#define rthal_save_fp_bit() ({                           \
-    register unsigned long _msr;                        \
-    __asm__ __volatile__ ( "mfmsr %0" : "=r"(_msr) );   \
-    __asm__ __volatile__ ( "mtmsrd %0"                  \
-                           : /* no output */            \
-                           : "r"(_msr | MSR_FP)         \
-                           : "memory" );                \
-    _msr & MSR_FP;
-})
-
-#define rthal_restore_fp_bit(msr)  ({ \
-    register unsigned long _msr;                        \
-    __asm__ __volatile__ ( "mfmsr %0" : "=r"(_msr) );   \
-    __asm__ __volatile__ ( "mtmsrd %0"                  \
-                           : /* no output */            \
-                           : "r"((_msr & ~MSR_FP) | (msr))         \
-                           : "memory" );                \
-})
-
-Then you would do:
-
-int phase_intr(xnintr_t *cookie)
-{
- unsigned long fp_bit;
- rthal_fpenv_t fpustate;
-
- fp_bit = rthal_save_fp_bit();
- rthal_save_fpu(&fpustate);
-
- phase();
-
- rthal_restore_fpu(&fpustate);
- rthal_restore_fp_bit(fp_bit);
-
- return (XN_ISR_HANDLED);
-}
+On Wed, May 28, 2008 at 3:21 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> So, you are left with two solutions: either be full 64 bits, or
+> implement the 32 bits syscalls wrappers for Xenomai.
+Or be full 32 bits, but this means reinstalling a 32 bits distribution.
 
 -- 
  Gilles
