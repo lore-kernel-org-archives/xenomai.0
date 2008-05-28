@@ -1,12 +1,14 @@
+Message-ID: <a0e7fce50805280019s521ae7d4h3f8354028db6448b@domain.hid>
+Date: Wed, 28 May 2008 15:19:17 +0800
+From: "yi li" <liyi.dev@domain.hid>
+In-Reply-To: <4835369F.8040809@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18492.18991.176536.636654@domain.hid>
-Date: Tue, 27 May 2008 19:51:43 +0200
-In-Reply-To: <483BFF5C.20600@domain.hid>
-References: <483BFF5C.20600@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] [PATCH] rt_pipe_receive documentation
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_4938_3373553.1211959157118"
+References: <a0e7fce50805080152p5608bde4q834ac42da095da6e@domain.hid>
+	<4835369F.8040809@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] add Blackfin BF52x,
+	BF54x support to adeos
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,19 +18,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Sebastian Smolorz <smolorz@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: Xenomai-core@domain.hid
 
-Sebastian Smolorz wrote:
- > Hi,
- > 
- > rt_pipe_receive() doesn't return -EIDRM any more. The patches for trunk 
- > and v2.4.x correct the API documentation in this regard.
+------=_Part_4938_3373553.1211959157118
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Both applied, thanks.
+Hi Philippe,
 
--- 
+Attached patch adds other two fixes to make adeos work on BF548. The
+patch is based on previous adeos-bf54x.patch. Please have a look.
 
+Regards,
 
-					    Gilles.
+-Yi
+
+On Thu, May 22, 2008 at 5:02 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+
+>
+> Merged, thanks.
+>
+
+------=_Part_4938_3373553.1211959157118
+Content-Type: text/x-diff; name=adeos-bf54x_2.patch
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_fgrlld710
+Content-Disposition: attachment; filename=adeos-bf54x_2.patch
+
+ZGlmZiAtdXByTiAteCAuc3ZuIGxpbnV4LWtlcm5lbC9hcmNoL2JsYWNrZmluL21hY2gtY29tbW9u
+L2ludHMtcHJpb3JpdHkuYyBsaW51eC1rZXJuZWwuMi9hcmNoL2JsYWNrZmluL21hY2gtY29tbW9u
+L2ludHMtcHJpb3JpdHkuYwotLS0gbGludXgta2VybmVsL2FyY2gvYmxhY2tmaW4vbWFjaC1jb21t
+b24vaW50cy1wcmlvcml0eS5jCTIwMDgtMDUtMjggMTQ6NDQ6NTYuMDAwMDAwMDAwICswODAwCisr
+KyBsaW51eC1rZXJuZWwuMi9hcmNoL2JsYWNrZmluL21hY2gtY29tbW9uL2ludHMtcHJpb3JpdHku
+YwkyMDA4LTA1LTI4IDE1OjE0OjUxLjAwMDAwMDAwMCArMDgwMApAQCAtMTAyNCw0NiArMTAyNCw5
+NiBAQCBpbnQgX19pbml0IGluaXRfYXJjaF9pcnEodm9pZCkKICMgZW5kaWYKICNlbGlmIGRlZmlu
+ZWQoQ09ORklHX0JGNTR4KQogCQkJY2FzZSBJUlFfUElOVDA6CisjaWZkZWYgQ09ORklHX0lQSVBF
+CisJCQkJX19zZXRfaXJxX2RlbXV4X2hhbmRsZXIoaXJxLCBiZmluX2RlbXV4X2dwaW9faXJxLAor
+CQkJCQkJMSwgIkdQSU8gZGVtdXgiKTsKKyNlbHNlIC8qICFDT05GSUdfSVBJUEUgKi8KIAkJCQlz
+ZXRfaXJxX2NoYWluZWRfaGFuZGxlcihpcnEsCiAJCQkJCQkJYmZpbl9kZW11eF9ncGlvX2lycSk7
+CisjZW5kaWYKIAkJCQlicmVhazsKIAkJCWNhc2UgSVJRX1BJTlQxOgorI2lmZGVmIENPTkZJR19J
+UElQRQorCQkJCV9fc2V0X2lycV9kZW11eF9oYW5kbGVyKGlycSwgYmZpbl9kZW11eF9ncGlvX2ly
+cSwKKwkJCQkJCTEsICJHUElPIGRlbXV4Iik7CisjZWxzZSAvKiAhQ09ORklHX0lQSVBFICovCiAJ
+CQkJc2V0X2lycV9jaGFpbmVkX2hhbmRsZXIoaXJxLAogCQkJCQkJCWJmaW5fZGVtdXhfZ3Bpb19p
+cnEpOworI2VuZGlmCiAJCQkJYnJlYWs7CiAJCQljYXNlIElSUV9QSU5UMjoKKyNpZmRlZiBDT05G
+SUdfSVBJUEUKKwkJCQlfX3NldF9pcnFfZGVtdXhfaGFuZGxlcihpcnEsIGJmaW5fZGVtdXhfZ3Bp
+b19pcnEsCisJCQkJCQkxLCAiR1BJTyBkZW11eCIpOworI2Vsc2UgLyogIUNPTkZJR19JUElQRSAq
+LwogCQkJCXNldF9pcnFfY2hhaW5lZF9oYW5kbGVyKGlycSwKIAkJCQkJCQliZmluX2RlbXV4X2dw
+aW9faXJxKTsKKyNlbmRpZgogCQkJCWJyZWFrOwogCQkJY2FzZSBJUlFfUElOVDM6CisjaWZkZWYg
+Q09ORklHX0lQSVBFCisJCQkJX19zZXRfaXJxX2RlbXV4X2hhbmRsZXIoaXJxLCBiZmluX2RlbXV4
+X2dwaW9faXJxLAorCQkJCQkJMSwgIkdQSU8gZGVtdXgiKTsKKyNlbHNlIC8qICFDT05GSUdfSVBJ
+UEUgKi8KIAkJCQlzZXRfaXJxX2NoYWluZWRfaGFuZGxlcihpcnEsCiAJCQkJCQkJYmZpbl9kZW11
+eF9ncGlvX2lycSk7CisjZW5kaWYKIAkJCQlicmVhazsKICNlbGlmIGRlZmluZWQoQ09ORklHX0JG
+NTJ4KQogCQkJY2FzZSBJUlFfUE9SVEZfSU5UQToKKyNpZmRlZiBDT05GSUdfSVBJUEUKKwkJCQlf
+X3NldF9pcnFfZGVtdXhfaGFuZGxlcihpcnEsIGJmaW5fZGVtdXhfZ3Bpb19pcnEsCisJCQkJCQkx
+LCAiR1BJTyBkZW11eCIpOworI2Vsc2UgLyogIUNPTkZJR19JUElQRSAqLwogCQkJCXNldF9pcnFf
+Y2hhaW5lZF9oYW5kbGVyKGlycSwKIAkJCQkJCQliZmluX2RlbXV4X2dwaW9faXJxKTsKKyNlbmRp
+ZgogCQkJCWJyZWFrOwogCQkJY2FzZSBJUlFfUE9SVEdfSU5UQToKKyNpZmRlZiBDT05GSUdfSVBJ
+UEUKKwkJCQlfX3NldF9pcnFfZGVtdXhfaGFuZGxlcihpcnEsIGJmaW5fZGVtdXhfZ3Bpb19pcnEs
+CisJCQkJCQkxLCAiR1BJTyBkZW11eCIpOworI2Vsc2UgLyogIUNPTkZJR19JUElQRSAqLwogCQkJ
+CXNldF9pcnFfY2hhaW5lZF9oYW5kbGVyKGlycSwKIAkJCQkJCQliZmluX2RlbXV4X2dwaW9faXJx
+KTsKKyNlbmRpZgogCQkJCWJyZWFrOwogCQkJY2FzZSBJUlFfUE9SVEhfSU5UQToKKyNpZmRlZiBD
+T05GSUdfSVBJUEUKKwkJCQlfX3NldF9pcnFfZGVtdXhfaGFuZGxlcihpcnEsIGJmaW5fZGVtdXhf
+Z3Bpb19pcnEsCisJCQkJCQkxLCAiR1BJTyBkZW11eCIpOworI2Vsc2UgLyogIUNPTkZJR19JUElQ
+RSAqLwogCQkJCXNldF9pcnFfY2hhaW5lZF9oYW5kbGVyKGlycSwKIAkJCQkJCQliZmluX2RlbXV4
+X2dwaW9faXJxKTsKKyNlbmRpZgogCQkJCWJyZWFrOwogI2VsaWYgZGVmaW5lZChDT05GSUdfQkY1
+NjEpCiAJCQljYXNlIElSUV9QUk9HMF9JTlRBOgorI2lmZGVmIENPTkZJR19JUElQRQorCQkJCV9f
+c2V0X2lycV9kZW11eF9oYW5kbGVyKGlycSwgYmZpbl9kZW11eF9ncGlvX2lycSwKKwkJCQkJCTEs
+ICJHUElPIGRlbXV4Iik7CisjZWxzZSAvKiAhQ09ORklHX0lQSVBFICovCiAJCQkJc2V0X2lycV9j
+aGFpbmVkX2hhbmRsZXIoaXJxLAogCQkJCQkJCWJmaW5fZGVtdXhfZ3Bpb19pcnEpOworI2VuZGlm
+CiAJCQkJYnJlYWs7CiAJCQljYXNlIElSUV9QUk9HMV9JTlRBOgorI2lmZGVmIENPTkZJR19JUElQ
+RQorCQkJCV9fc2V0X2lycV9kZW11eF9oYW5kbGVyKGlycSwgYmZpbl9kZW11eF9ncGlvX2lycSwK
+KwkJCQkJCTEsICJHUElPIGRlbXV4Iik7CisjZWxzZSAvKiAhQ09ORklHX0lQSVBFICovCiAJCQkJ
+c2V0X2lycV9jaGFpbmVkX2hhbmRsZXIoaXJxLAogCQkJCQkJCWJmaW5fZGVtdXhfZ3Bpb19pcnEp
+OworI2VuZGlmCiAJCQkJYnJlYWs7CiAJCQljYXNlIElSUV9QUk9HMl9JTlRBOgorI2lmZGVmIENP
+TkZJR19JUElQRQorCQkJCV9fc2V0X2lycV9kZW11eF9oYW5kbGVyKGlycSwgYmZpbl9kZW11eF9n
+cGlvX2lycSwKKwkJCQkJCTEsICJHUElPIGRlbXV4Iik7CisjZWxzZSAvKiAhQ09ORklHX0lQSVBF
+ICovCiAJCQkJc2V0X2lycV9jaGFpbmVkX2hhbmRsZXIoaXJxLAogCQkJCQkJCWJmaW5fZGVtdXhf
+Z3Bpb19pcnEpOworI2VuZGlmCiAJCQkJYnJlYWs7CiAjZW5kaWYKIAkJCWRlZmF1bHQ6CmRpZmYg
+LXVwck4gLXggLnN2biBsaW51eC1rZXJuZWwvaW5jbHVkZS9hc20tYmxhY2tmaW4vaXBpcGUuaCBs
+aW51eC1rZXJuZWwuMi9pbmNsdWRlL2FzbS1ibGFja2Zpbi9pcGlwZS5oCi0tLSBsaW51eC1rZXJu
+ZWwvaW5jbHVkZS9hc20tYmxhY2tmaW4vaXBpcGUuaAkyMDA4LTA1LTI4IDE0OjQ0OjU2LjAwMDAw
+MDAwMCArMDgwMAorKysgbGludXgta2VybmVsLjIvaW5jbHVkZS9hc20tYmxhY2tmaW4vaXBpcGUu
+aAkyMDA4LTA1LTI4IDE1OjE0OjUxLjAwMDAwMDAwMCArMDgwMApAQCAtMjYwLDYgKzI2MCw3IEBA
+IGludCBpcGlwZV9zdGFydF9pcnFfdGhyZWFkKHVuc2lnbmVkIGlycSwKICNkZWZpbmUgYmZpbl93
+cml0ZV9USU1FUl9ESVNBQkxFKHZhbCkJYmZpbl93cml0ZV9USU1FUl9ESVNBQkxFMCh2YWwpCiAj
+ZGVmaW5lIGJmaW5fd3JpdGVfVElNRVJfRU5BQkxFKHZhbCkJYmZpbl93cml0ZV9USU1FUl9FTkFC
+TEUwKHZhbCkKICNkZWZpbmUgYmZpbl93cml0ZV9USU1FUl9TVEFUVVModmFsKQliZmluX3dyaXRl
+X1RJTUVSX1NUQVRVUzAodmFsKQorI2RlZmluZSBiZmluX3JlYWRfVElNRVJfU1RBVFVTKHZhbCkJ
+YmZpbl9yZWFkX1RJTUVSX1NUQVRVUzAodmFsKQogI2VuZGlmCiAKICNlbHNlIC8qICFDT05GSUdf
+SVBJUEUgKi8K
+------=_Part_4938_3373553.1211959157118--
 
