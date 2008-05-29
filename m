@@ -1,10 +1,22 @@
-From: "Urs.Eichholzer" <urs.eichholzer@domain.hid>
-Date: Wed, 28 May 2008 09:43:57 +0700
-Message-ID: <000501c8c06c$adb72100$2201a8c0@domain.hid>
+Message-ID: <16273.81.252.86.91.1212060383.squirrel@domain.hid>
+In-Reply-To: <2ff1a98a0805280931j611ae10er69b968ae8699d63d@domain.hid>
+References: <16474.81.252.86.91.1211199249.squirrel@domain.hid> 
+	<15059.81.252.86.91.1211386718.squirrel@domain.hid> 
+	<18484.28025.505865.374746@domain.hid> 
+	<12142.81.252.86.91.1211467896.squirrel@domain.hid> 
+	<2ff1a98a0805220819i8d73166w4c9a06d9734d0e0c@domain.hid> 
+	<2405.81.252.86.91.1211549465.squirrel@domain.hid> 
+	<2ff1a98a0805230655j35009227h75c63566373ece43@domain.hid> 
+	<5871.81.252.86.91.1211789666.squirrel@domain.hid> 
+	<18491.29266.196753.611570@domain.hid> 
+	<2766.81.252.86.91.1211992159.squirrel@domain.hid>
+	<2ff1a98a0805280931j611ae10er69b968ae8699d63d@domain.hid>
+Date: Thu, 29 May 2008 13:26:23 +0200 (CEST)
+From: "Fabien MAHOT" <fabien.mahot@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_0006_01C8C0A7.5A15F900"
-Subject: [Xenomai-help] General questions
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Problem with time-out ends
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,514 +26,285 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
+I succeed to reduce my test program.
+Now, I ve got two xenomai threads.
+threadDisplay (prio : 70) : locks a mutex (conflict_lock mutex) and passe=
+s
+between Xenomai and Linux domain. (call to sleep())
+threadTimeOut (prio : 80) : Starts one timeout of 5ms and tries to lock
+the mutex taken by threadDisplay. (Priority Inheritance)
 
-------=_NextPart_000_0006_01C8C0A7.5A15F900
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+threadTimeOut waits the conflict_lock unlock of threadDisplay. With
+priority inheritance, threadTimeOut gives its priority to threadDisplay.
+But, threadTimeOut must also do the EndTimeOut() processing. When the
+timeout end signal arrives, if threadDisplay is into Linux Domain, the
+system crashes.
 
-Hi all,
- 
-We have some general questions
- 
-Our setup is:
-Hardware MPC5200B on Microsys MPX5200
-Linux version: 2.6.19
-Adeos Patch: Compatible with this Linux
-Xenomai version: 2.3.0
- 
-1.) Is the RT CAN socket deterministic? If I send immediately after
-knowing the code is in 4 mS gap interval, how long does the rt socket
-send this to the connected device from the time I command rt_dev_send to
-the real seding in the Xenomai? Will the Xenomai RT-CAN socket sending
-be interrupted by another task or resource? 
- 
-2.) Are all task application in Xenomai interruptable (or blockable) by
-another task or resource irregardless of priority? If this happens....
-What is the most time delay it will consume to switch back to my
-rt-application task if it is blocked? Lets say I am sending CAN and at
-the same time 4 more rt-application are running...
- 
-3.) Is the highest priority application task can also be blocked by
-another process or resource? Will this task yield to another task or
-resource if it will be needed? For how long this task switching will
-occur so that my application takes control again?
- 
-4.) Where is rt_timer_read gets its timer value? Is this a predetermined
-resolution set in the Xenomai-OS? Is there any relationship of this
-timer value in real system pulse?  
- 
-5.) Is there a way that I can send directly to the RT socket buffer so
-that the xenomai can directly send the message without going to the
-rt_dev_send on the opened socket? Or is this way impossible and the only
-way to send in real-time is through RT CAN socket?
- 
-6.)  Is an rt application which runs in a periodic task mode will really
-executed in periodic intervals? What if the end of the code is not yet
-reached and the periodic interval is triggered? Will the task just
-continues or will it resign? And then what will happen? Is the periodic
-interval will not resign its code when the interval and the code running
-overlapped? Will the application code be blocked or will still remain in
-running state?
- 
-7.)  Is there a general protection for a running code that it will be
-unblockable for all task and resource for certain lines to be executed?
-It is like I will enter to a critical code section and after sending my
-CAN message will leave the critical section so that my application will
-be able to send immediately and will not be blocked....
- 
-8.) Why is it that the RT socket CAN of xenomai is still collecting the
-incoming frames of an opened socket handle even if it is not requesting
-for a read? If the socket will not read, the buffer is becoming full and
-will trigger the message buffer full (message discarded). Isn't it that
-the xenomai should throw away this frame and free the buffer since the
-default timeout will be triggered? The buffer is still being used until
-the message overflows when the socket will not read instead of handling
-the timeout... It is like as if the CAN device handler will pass the
-received CAN message to ALL referenced opened handle eveif it is not
-requesting to read the message. Isn't it that if a timeout is already
-defined, it should throw away and clear the buffer instead of
-continously buffering the "unwanted" frames of the opened socket handle?
+this my test program :
 
- 
- 
-My question might be related or not related to my problem. But I need at
-least some of the answers so I can use effectively use the Xenomai task
-and have the scheduling in real-time that is accurate to the needed
-specification of the project I needed. Please give some recommendation
-and comments on things what we might use to address the need of our
-real-time project application...
- 
-Best Regards
- 
-Urs 
- 
+#########################################################################=
+###
 
-------=_NextPart_000_0006_01C8C0A7.5A15F900
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+#include <sys/mman.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <stdarg.h>
+#include <time.h>
+#include <math.h>
+#include <signal.h>
+#include <errno.h>
 
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
-xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
+// Timer
+timer_t timer_h;
+struct sigaction    sa;
+struct sigevent     sig_spec;
+struct itimerspec   tmr_setting;
+// Thread start
+pthread_cond_t  start_signal;
+pthread_mutex_t main_start_lock;
+bool bMainStart =3D false;
+// Conflict mutex
+pthread_mutex_t  conflict_lock;
 
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
+/************************ Check Functions ******************************/
+void check(const char *file, int line, const char *service,
+                                             int status, int err)
+{
+    if (status >=3D 0)
+        return;
+
+    fprintf(stderr, "%s:%d: %s: %s\n", file, line, service, strerror(err)=
+);
+    exit(EXIT_FAILURE);
+}
+
+#define check_pthread(expr)                \
+    ({                                                \
+        int _status =3D (expr);                 \
+        check(__FILE__, __LINE__, #expr, -_status, _status);        \
+    })
+
+#define check_unix(expr) \
+    check(__FILE__, __LINE__, #expr, (expr), errno)
+
+/************************ Functions ******************************/
+void DeleteTimer(timer_t timer)
+{
+    if (timer!=3DNULL)
+        check_unix(timer_delete(timer));
+}
+
+void EndTimeOut (int signo,siginfo_t *info,void*context)
+{
+}
+
+void StartTimeOut (int nb_Sec, int nb_nSec)
+{
+    sa.sa_flags =3D SA_SIGINFO;
+    sa.sa_sigaction =3D EndTimeOut;
+
+    check_unix(sigaction(SIGRTMIN, &sa, NULL));
+
+    sig_spec.sigev_notify =3D SIGEV_SIGNAL;
+    sig_spec.sigev_signo =3D SIGRTMIN;
+    sig_spec.sigev_value.sival_ptr =3D NULL;
+
+    check_unix(timer_create(CLOCK_REALTIME, &sig_spec,
+                            &timer_h));
+
+    tmr_setting.it_value.tv_sec =3D nb_Sec;
+    tmr_setting.it_value.tv_nsec =3D nb_nSec;
+    tmr_setting.it_interval.tv_sec =3D 0;
+    tmr_setting.it_interval.tv_nsec =3D 0;
+
+    check_unix(timer_settime(timer_h, 0,
+                             &tmr_setting,NULL));
+}
+
+/************************** Threads ********************************/
+void* threadTimeOut(void * arg)
+{
+    check_pthread(pthread_mutex_lock(&main_start_lock));
+    while (!bMainStart)
+        check_pthread(pthread_cond_wait(&start_signal, &main_start_lock))=
+;
+    check_pthread(pthread_mutex_unlock(&main_start_lock));
+
+    printf("threadTimeOut : Start of a timeout\n");
+    StartTimeOut(0,500000000);
+
+    // threadTimeOut waits the conflict_lock unlock of threadDisplay
+    // With priority inheritance, threadTimeOut gives its priority to
+    // threadDisplay. But, threadTimeOut must also do the EndTimeOut()
+    // processing. When the timeout end signal arrives, the system crashe=
+s.
+    check_pthread(pthread_mutex_lock(&conflict_lock));
+    printf("threadTimeOut : Hold conflict_lock\n");
+
+    while (1)
+    {
+        sleep(10);
+    }
+    return NULL;
+}
+
+void* threadDisplay(void * arg) {
+    int i=3D0;
+
+    // threadDisplay locks conflict_lock. Like this, when threadTimeOut
+    // wants conflict_lock, it must give its priority to threadDisplay.
+    check_pthread(pthread_mutex_lock(&conflict_lock));
+    printf("threadDisplay : Hold conflict_lock\n");
+
+    check_pthread(pthread_mutex_lock(&main_start_lock));
+    while (!bMainStart)
+        check_pthread(pthread_cond_wait(&start_signal, &main_start_lock))=
+;
+    check_pthread(pthread_mutex_unlock(&main_start_lock));
+    printf("threadDisplay : start\n");
+
+    check_unix(sleep(10));  // Pass into Linux Domain
+
+    printf("threadDisplay : end\n");
+
+    check_pthread(pthread_mutex_unlock(&conflict_lock));
+    while (1)
+    {
+          sleep(10);
+    }
+    return NULL;
+}
+
+/***********************************************************************/
+void cleanup_upon_sig(int sig __attribute__((unused)))
+{
+    DeleteTimer(timer_h);
+    exit(0);
+}
+
+int main(int argc, char** argv) {
+    pthread_attr_t attr;
+    pthread_mutexattr_t attr_proto;
+    pthread_t p1;
+    pthread_t p2;
+    struct sched_param sch;
+
+    check_unix(signal(SIGINT, cleanup_upon_sig));
+    check_unix(signal(SIGTERM, cleanup_upon_sig));
+
+    check_unix(mlockall(MCL_CURRENT|MCL_FUTURE));
+
+    // mutex and sem initialisation
+    check_pthread(pthread_cond_init(&start_signal, NULL));
+    check_pthread(pthread_mutex_init(&main_start_lock, NULL));
+    check_pthread(pthread_mutexattr_init(&attr_proto));
+    check_pthread(pthread_mutexattr_setprotocol(&attr_proto,PTHREAD_PRIO_=
+INHERIT));
+    check_pthread(pthread_mutex_init(&conflict_lock, &attr_proto));
+
+    check_pthread(pthread_attr_init(&attr));
+    check_pthread(pthread_attr_setinheritsched(&attr,PTHREAD_EXPLICIT_SCH=
+ED));
+    check_pthread(pthread_attr_setschedpolicy(&attr, SCHED_FIFO));
+
+    // TimeOut thread creation
+    sch.sched_priority =3D 80;
+    check_pthread(pthread_attr_setschedparam(&attr, &sch));
+    check_pthread(pthread_create(&p1, &attr, threadTimeOut, NULL));
+
+    // Display thread creation
+    sch.sched_priority =3D 70;
+    check_pthread(pthread_attr_setschedparam(&attr, &sch));
+    check_pthread(pthread_create(&p2, &attr, threadDisplay, NULL));
+
+    check_pthread(pthread_attr_destroy(&attr));
+
+    printf("Main condition broadcast\n");
+    // Start of all threads
+    check_pthread(pthread_mutex_lock(&main_start_lock));
+    bMainStart =3D true;
+    check_pthread(pthread_cond_broadcast(&start_signal));
+    check_pthread(pthread_mutex_unlock(&main_start_lock));
+
+    while (1)
+    {
+        sleep(5);
+    }
+
+    return 0;
+}
+
+#########################################################################=
+####
+
+result on the console :
+
+threadDisplay : Hold conflict_lock
+Main condition broadcast
+threadTimeOut : Start of a timeout
+threadDisplay : start
+			<---- the system crashes
 
 
-<meta name=3DProgId content=3DWord.Document>
-<meta name=3DGenerator content=3D"Microsoft Word 10">
-<meta name=3DOriginator content=3D"Microsoft Word 10">
-<link rel=3DFile-List href=3D"cid:filelist.xml@domain.hid">
-<!--[if gte mso 9]><xml>
- <o:OfficeDocumentSettings>
-  <o:DoNotRelyOnCSS/>
- </o:OfficeDocumentSettings>
-</xml><![endif]--><!--[if gte mso 9]><xml>
- <w:WordDocument>
-  <w:SpellingState>Clean</w:SpellingState>
-  <w:GrammarState>Clean</w:GrammarState>
-  <w:DocumentKind>DocumentEmail</w:DocumentKind>
-  <w:EnvelopeVis/>
-  <w:Compatibility>
-   <w:BreakWrappedTables/>
-   <w:SnapToGridInCell/>
-   <w:ApplyBreakingRules/>
-   <w:WrapTextWithPunct/>
-   <w:UseAsianBreakRules/>
-  </w:Compatibility>
-  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
- </w:WordDocument>
-</xml><![endif]-->
-<style>
-<!--
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{mso-style-parent:"";
-	margin:0in;
-	margin-bottom:.0001pt;
-	mso-pagination:widow-orphan;
-	font-size:12.0pt;
-	font-family:"Times New Roman";
-	mso-fareast-font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;
-	text-underline:single;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;
-	text-underline:single;}
-p.MsoAutoSig, li.MsoAutoSig, div.MsoAutoSig
-	{margin:0in;
-	margin-bottom:.0001pt;
-	mso-pagination:widow-orphan;
-	font-size:12.0pt;
-	font-family:"Times New Roman";
-	mso-fareast-font-family:"Times New Roman";}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	mso-style-noshow:yes;
-	mso-ansi-font-size:10.0pt;
-	mso-bidi-font-size:10.0pt;
-	font-family:Arial;
-	mso-ascii-font-family:Arial;
-	mso-hansi-font-family:Arial;
-	mso-bidi-font-family:Arial;
-	color:windowtext;}
-span.SpellE
-	{mso-style-name:"";
-	mso-spl-e:yes;}
-span.GramE
-	{mso-style-name:"";
-	mso-gram-e:yes;}
-@page Section1
-	{size:595.3pt 841.9pt;
-	margin:1.0in 1.25in 1.0in 1.25in;
-	mso-header-margin:.5in;
-	mso-footer-margin:.5in;
-	mso-paper-source:0;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-<!--[if gte mso 10]>
-<style>
- /* Style Definitions */=20
- table.MsoNormalTable
-	{mso-style-name:"Table Normal";
-	mso-tstyle-rowband-size:0;
-	mso-tstyle-colband-size:0;
-	mso-style-noshow:yes;
-	mso-style-parent:"";
-	mso-padding-alt:0in 5.4pt 0in 5.4pt;
-	mso-para-margin:0in;
-	mso-para-margin-bottom:.0001pt;
-	mso-pagination:widow-orphan;
-	font-size:10.0pt;
-	font-family:"Times New Roman";}
-</style>
-<![endif]-->
-</head>
+#########################################################################=
+####
 
-<body lang=3DEN-GB link=3Dblue vlink=3Dpurple =
-style=3D'tab-interval:.5in'>
+Error kernel traces :
 
-<div class=3DSection1>
+Xenomai: fatal: removing non-linked element, holder=3Dc7741c84,
+qslot=3Dc04fbfc0 at include/xenomai/nucleus/queue.h:728
+ CPU  PID    PRI      TIMEOUT  STAT      NAME
+>  0  0       -1      0        00500080  ROOT
+   0  2830     0      0        00300380  testTimer13_bis
+   0  2832    80      0        00300180  testTimer13_bis
+   0  2833    70      0        00300380  testTimer13_bis
+Master time base: clock=3D59161137551
+c043dd60 00000000 00000000 c7741c84 000000b1 c01037d1 c03bcfed c04fbfc0
+c04fbfc0 c013f6e1 c03b8f16 c773c000 c04fbfc0 c03b9014 000002d8 00000086
+c7741a20 ffffffff 00000002 00000001 c7741220 c04f5884 c0135c49 c043de38
+Call Trace:
+ [<c01037d1>] show_stack+0x27/0x2b
+ [<c013f6e1>] rpi_update+0x166/0x22e
+ [<c0135c49>] xnpod_resume_thread+0x119/0x527
+ [<c0136160>] xnpod_unblock_thread+0x48/0x79
+ [<c01401af>] sigwake_event+0xa1/0x104
+ [<c012f475>] __ipipe_dispatch_event+0xb1/0x174
+ [<c014010e>] sigwake_event+0x0/0x104
+ [<c0118981>] signal_wake_up+0x3f/0x53
+ [<c01192f9>] specific_send_sig_info+0x83/0x8e
+ [<c011945e>] send_sig_info+0x3f/0x85
+ [<c0149b73>] pse51_signal_handle_request+0x6d/0xd9
+ [<c012fb9a>] rthal_apc_handler+0x0/0x2d
+ [<c014f9bd>] pse51_lostage_handle_request+0x2b/0x53
+ [<c012fbbd>] rthal_apc_handler+0x23/0x2d
+ [<c012ebc4>] __xirq_end+0x2a/0x37
+ [<c012fb9a>] rthal_apc_handler+0x0/0x2d
+ [<c012ebd1>] __virq_end+0x0/0xa7
+ [<c0130060>] hal_read_proc+0x55/0x6c
+ [<c01087ef>] __ipipe_handle_irq+0x11c/0x13c
+ [<c010125b>] default_idle+0x27/0x39
+ [<c0101234>] default_idle+0x0/0x39
+ [<c0102841>] common_interrupt+0x21/0x40
+ [<c0101234>] default_idle+0x0/0x39
+ [<c010125b>] default_idle+0x27/0x39
+ [<c0100b7c>] cpu_idle+0x42/0x6b
+ [<c043e9dc>] start_kernel+0x23b/0x240
+ [<c043e323>] unknown_bootoption+0x0/0x195
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'>Hi
-all,<o:p></o:p></span></font></p>
+I hope that my test program is easy to understand and that you also have
+the crash.
 
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier =
-New"'><o:p>&nbsp;</o:p></span></font></p>
+Thanks
 
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'>We
-have some general questions<o:p></o:p></span></font></p>
 
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier =
-New"'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'>Our
-setup is:<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'>Hardware
-MPC5200B on <span class=3DSpellE>Microsys</span> =
-MPX5200<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'>Linux
-version: 2.6.19<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><span
-class=3DSpellE><font size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;
-font-family:"Courier New"'>Adeos</span></font></span><font size=3D2
-face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'>
-Patch: Compatible with this Linux<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><span
-class=3DSpellE><font size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;
-font-family:"Courier New"'>Xenomai</span></font></span><font size=3D2
-face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'>
-version: 2.3.0<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier =
-New"'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'>1.)
-Is the RT CAN socket deterministic? If I send immediately after knowing =
-the
-code is in 4 <span class=3DSpellE>mS</span> gap interval, how long does =
-the <span
-class=3DSpellE><span class=3DGramE>rt</span></span> socket send this to =
-the
-connected device from the time I command <span =
-class=3DSpellE>rt_dev_send</span>
-to the real <span class=3DSpellE>seding</span> in the <span =
-class=3DSpellE>Xenomai</span>?
-Will the <span class=3DSpellE>Xenomai</span> RT-CAN socket sending be =
-interrupted
-by another task or resource? <o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'><span
-style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'>2.)
-Are all task application in <span class=3DSpellE>Xenomai</span> <span
-class=3DSpellE>interruptable</span> (or <span =
-class=3DSpellE>blockable</span>) by
-another task or resource irregardless of priority? <span =
-class=3DGramE>If this
-happens....</span> What is the most time delay it will consume to switch =
-back
-to my <span class=3DSpellE>rt</span>-application task if it is blocked? =
-<span
-class=3DGramE>Lets</span> say I am sending CAN and at the same time 4 =
-more <span
-class=3DSpellE>rt</span>-application are =
-running...<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'><span
-style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'>3.)
-Is the highest priority application task can also be blocked by another =
-process
-or resource? Will this task yield to another task or resource if it will =
-be
-needed? For how long this task switching will occur so that my =
-application
-takes control again?<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'><span
-style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><span
-class=3DGramE><font size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;
-font-family:"Courier New"'>4.) Where is <span =
-class=3DSpellE>rt_timer_read</span></span></font></span><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'>
-gets its timer value? Is this a predetermined resolution set in the =
-<span
-class=3DSpellE>Xenomai</span>-OS? Is there any relationship of this =
-timer value
-in real system pulse?<span style=3D'mso-spacerun:yes'>&nbsp; =
-</span><o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'><span
-style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'>5.)
-Is there a way that I can send directly to the RT socket buffer so that =
-the <span
-class=3DSpellE>xenomai</span> can directly send the message without =
-going to the <span
-class=3DSpellE>rt_dev_send</span> on the opened socket? Or <span =
-class=3DGramE>is</span>
-this way impossible and the only way to send in real-time is through RT =
-CAN socket?<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'><span
-style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'>6.)<span
-style=3D'mso-spacerun:yes'>&nbsp; </span>Is an <span =
-class=3DSpellE><span
-class=3DGramE>rt</span></span> application which runs in a periodic task =
-mode
-will really executed in periodic intervals? What if the end of the code =
-is not
-yet reached and the periodic interval is triggered? Will the task just
-continues or will it resign? And then what will happen? Is the periodic
-interval will not resign its code when the interval and the code running
-overlapped? Will the application code be blocked or will still remain in
-running state?<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'><span
-style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'>7.)<span
-style=3D'mso-spacerun:yes'>&nbsp; </span>Is there a general protection =
-for a
-running code that it will be <span class=3DSpellE>unblockable</span> for =
-all task
-and resource for certain lines to be executed? It is like I will enter =
-to a
-critical code section and after sending my CAN message will leave the =
-critical
-section so that my application will be able to send immediately and will =
-not be
-blocked....<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'><span
-style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><span
-class=3DGramE><font size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;
-font-family:"Courier New"'>8.) Why is it that the RT socket CAN of <span
-class=3DSpellE>xenomai</span></span></font></span><font size=3D2 =
-face=3D"Courier New"><span
-style=3D'font-size:10.0pt;font-family:"Courier New"'> is still =
-collecting the
-incoming frames of an opened socket handle even if it is not requesting =
-for a
-read? If the socket will not read, the buffer is becoming full and will =
-trigger
-the message buffer full (message discarded). Isn't it that the <span
-class=3DSpellE>xenomai</span> should throw away this frame and free the =
-buffer
-since the default timeout will be triggered? The buffer is still being =
-used
-until the message overflows when the socket will not read instead of =
-handling
-the timeout... It is like as if the CAN device handler will pass the =
-received
-CAN message to ALL referenced opened handle <span =
-class=3DSpellE>eveif</span> it
-is not requesting to read the message. Isn't it that if a timeout is =
-already
-defined, it should throw away and clear the buffer instead of <span
-class=3DSpellE>continously</span> buffering the &quot;unwanted&quot; =
-frames of
-the opened socket handle? <o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'><span
-style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'><span
-style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'>My
-question might be related or not related to my problem. But I need at =
-least
-some of the answers so I can use effectively use the <span =
-class=3DSpellE>Xenomai</span>
-task and have the scheduling in real-time that is accurate to the needed
-specification of the project I needed. Please give some recommendation =
-and
-comments on things what we might use to address the need of our =
-real-time
-project application...<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'mso-layout-grid-align:none;text-autospace:none'><font
-size=3D2 face=3D"Courier New"><span =
-style=3D'font-size:10.0pt;font-family:"Courier New"'><span
-style=3D'mso-spacerun:yes'>&nbsp;</span><o:p></o:p></span></font></p>
-
-<p class=3DMsoAutoSig><font size=3D3 face=3D"Times New Roman"><span =
-lang=3DDE-CH
-style=3D'font-size:12.0pt;mso-ansi-language:DE-CH;mso-no-proof:yes'>Best =
-Regards<o:p></o:p></span></font></p>
-
-<p class=3DMsoAutoSig><font size=3D3 face=3D"Times New Roman"><span =
-lang=3DDE-CH
-style=3D'font-size:12.0pt;mso-ansi-language:DE-CH;mso-no-proof:yes'><o:p>=
-&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoAutoSig><font size=3D3 face=3D"Times New Roman"><span =
-lang=3DDE-CH
-style=3D'font-size:12.0pt;mso-ansi-language:DE-CH;mso-no-proof:yes'>Urs =
-<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D3 face=3D"Times New Roman"><span =
-lang=3DDE
-style=3D'font-size:12.0pt;mso-ansi-language:DE'><o:p>&nbsp;</o:p></span><=
-/font></p>
-
-</div>
-
-</body>
-
-</html>
-
-------=_NextPart_000_0006_01C8C0A7.5A15F900--
 
 
