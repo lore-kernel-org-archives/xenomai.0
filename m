@@ -1,14 +1,22 @@
-Message-ID: <2ff1a98a0806110516h46fa524br98b2b8409beedc7d@domain.hid>
-Date: Wed, 11 Jun 2008 14:16:31 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <14821321.1213179993177.JavaMail.ngmail@domain.hid>
+Message-ID: <8933.62.39.72.60.1212042982.squirrel@domain.hid>
+In-Reply-To: <2ff1a98a0805280931j611ae10er69b968ae8699d63d@domain.hid>
+References: <16474.81.252.86.91.1211199249.squirrel@domain.hid> 
+	<15059.81.252.86.91.1211386718.squirrel@domain.hid> 
+	<18484.28025.505865.374746@domain.hid> 
+	<12142.81.252.86.91.1211467896.squirrel@domain.hid> 
+	<2ff1a98a0805220819i8d73166w4c9a06d9734d0e0c@domain.hid> 
+	<2405.81.252.86.91.1211549465.squirrel@domain.hid> 
+	<2ff1a98a0805230655j35009227h75c63566373ece43@domain.hid> 
+	<5871.81.252.86.91.1211789666.squirrel@domain.hid> 
+	<18491.29266.196753.611570@domain.hid> 
+	<2766.81.252.86.91.1211992159.squirrel@domain.hid>
+	<2ff1a98a0805280931j611ae10er69b968ae8699d63d@domain.hid>
+Date: Thu, 29 May 2008 08:36:22 +0200 (CEST)
+From: "Fabien MAHOT" <fabien.mahot@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <14821321.1213179993177.JavaMail.ngmail@domain.hid>
-Subject: Re: [Xenomai-help] Are xmm-registers saved with a (task) context
-	switch
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Problem with time-out ends
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,28 +26,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Wed, Jun 11, 2008 at 12:26 PM, M. Koehrer <mathias_koehrer@domain.hid> wrote:
-> Hi!
+> On Wed, May 28, 2008 at 6:29 PM, Fabien MAHOT
+> <fabien.mahot@domain.hid> wrote:
+>> Problem with time-out ends
+>>
+>> Hello,
+>>
+>> thanks a lot for time spent and your patch.
+>> Sorry for the carriage returns of my mailer.
+>>
+>> I tried your patch with test program version that you sent me.
+>> (I installed xenomai 2.4.3)
+>>
+>> And, the system always crashes. But, now, there is no longer error
+>> kernel
+>> trace on my serial console.
+>> I don t obtain result with your check function.
+>>
+>> When you got the crash, what is your error kernel trace?
+>> the same as mine ? Xenomai: fatal: inserting element twice,
+>> holder=3Dc7761c78, qslot=3Dc7761160
 >
-> I want to use the xmm0 register (from the SSE2 extension of a Core2Duo CPU) to do atomic 64bit write/read accesses in
-> 32 bit x86 mode.
-> My question is: Will the xmm[0..7] registers be saved with a task context switch when running Xenomai real time tasks in user
-> space or do I have to take care to save them on the stack before using (and restoring them afterwards).
-> Is it save to use these registers or will they be used by Xenomai (or Linux)  internally?
+> No, I do not get this error. Do you get a stack trace with this error ?
+> I had an "error relaxing kicked thread".
 >
-> Thanks for any answer on that question.
+> --
+>  Gilles
+>
 
-The xmm register are saved by the FPU switching routines. Note
-however, that depending on the x86 you are using the xmm registers are
-aliased to the FPU register or are separate registers. So, on machines
-where the xmm registers are aliased to normal FPU registers, you have
-to do the save restore on your own if you want to use MMX, SSE, or
-SSE2 and use FPU instructions in the same thread.
+OK. No, I didn't get stack traces with this error.
 
 
--- 
- Gilles
 
