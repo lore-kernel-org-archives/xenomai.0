@@ -1,11 +1,15 @@
-Message-ID: <d6c8ef150806121541m4b31aa79hbaf62e23d50d742f@domain.hid>
-Date: Fri, 13 Jun 2008 00:41:02 +0200
-From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
+Message-ID: <2ff1a98a0805290219i27d49624yb13996ed078bb31d@domain.hid>
+Date: Thu, 29 May 2008 11:19:31 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <483E6EF8.6090501@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-Subject: [Xenomai-help] Change propagation using rt_heap ?
+References: <483D0AB7.4010303@domain.hid>
+	<2ff1a98a0805280101q4e1cc3d9oe73b3de64316f07b@domain.hid>
+	<483E6EF8.6090501@domain.hid>
+Subject: Re: [Xenomai-help] valgrind
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,46 +19,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>, valgrind-users@domain.hid
 
-Hi all,
+On Thu, May 29, 2008 at 10:53 AM, St=E9phane ANCELOT <sancelot@domain.hid> wro=
+te:
+>
+>
+> Gilles Chanteperdrix a =E9crit :
+>>
+>> On Wed, May 28, 2008 at 9:33 AM, St=E9phane ANCELOT <sancelot@domain.hid>
+>> wrote:
+>>
+>>>
+>>> Hi,
+>>> I tried xenomai integration in valgrind .
+>>>
+>>> I have got some problems with __native_muxid  .
+>>>
+>>> Is there an easy way to retrieve this value (is it a const?) or is it a
+>>> variable I have to store and reuse ?
+>>>
+>>
+>> The muxid is returned by the "xn_sys_bind" system skin syscall. So,
+>> you have to get it at run-time.
+>>
+>>
+>
+> OK, but unfortunately, in valgrind, there is a static syscall_table
+> containing all  syscalls numbers.
 
-I have a quite strange problem. After some hours of trying to
-understand what I'm doing wrong, I think that my problem is, actually,
-some kind of 'change propagation' between kernel and user space when
-using rt_heap_*
+You have to modify valgrind to allow Xenomai dynamic syscall table scheme.
 
-In kernel space module, I create and allocate memory:
-rt_heap_create(&heap_desc, "Name", Size, H_SHARED);
-rt_heap_alloc (&heap_desc, 0, TM_NONBLOCK, &memory);
+>
+> In order solving this problem, I may setup  a static range of syscalls fo=
+r
+> xenomai  and route to concerned valgrind syscall  at execution ?
+> What are the xenomai syscall ranges ?
 
-In userspace I bind and allocate memory:
-rt_heap_bind (&heap_desc, "Name", TM_NONBLOCK);
-rt_heap_alloc (&heap_desc, 0, TM_NONBLOCK, &memory_start);
+It depends on the platform, but what we know for sure is that Xenomai
+syscall ranges are out of Linux syscall ranges. You will find Xenomai
+syscall number mangling scheme in include/asm-yourplatform/syscall.h,
+and the syscall numbers of a given skin in include/yourskin/syscall.h.
 
-I'm updating some regions of that memory from ISR. Also, I have one
-small kernel thread (linux kernel thread, created with
-kthread_create()) that sends, from time to time, through rt_pipe a
-notification to userspace program (ISR is setting a flag, etc). When
-userspace program receives notification via rt_pipe_receive() it reads
-some parts of the rt_heap memory.
-
-It looks this way:
-
-ISR update memory -> ISR set a flag -> KernelThread reads flag ->
-KernelThread sends notification over rt_pipe -> userspace waits in
-select() -> userspace reads memory
-
-If this way between first and the last stage is 'very fast' I get,
-from time to time, (like every 3rd userspace read) inconsistency.
-Userspace is actually reading the previous value of memory region,
-like before ISR's update. For the proof of concept, I added usleep
-(500000) [0.5 secs] before memory read in usersapce and, after
-30minutes, I'm unable to detect reported problem. I noticed that
-usleep (100000) is not enough.
-
-My question is: is this behavior expected?
-
-ps. Platform is AT91SAM9260, Xenomai 2.4.4, kernel 2.6.24
-pps. From the ISR perspective, values are updated 'immediately'
+--=20
+ Gilles
 
