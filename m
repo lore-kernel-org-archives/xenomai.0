@@ -1,11 +1,22 @@
+Message-ID: <16785.81.252.86.91.1212498293.squirrel@domain.hid>
+In-Reply-To: <2ff1a98a0806030553i9561d2ayb6dceaf33bab60d5@domain.hid>
+References: <16474.81.252.86.91.1211199249.squirrel@domain.hid> 
+	<2ff1a98a0805280931j611ae10er69b968ae8699d63d@domain.hid> 
+	<16273.81.252.86.91.1212060383.squirrel@domain.hid> 
+	<2ff1a98a0805290614w3d846e6by69b033204f912391@domain.hid> 
+	<13639.81.252.86.91.1212153659.squirrel@domain.hid> 
+	<18496.31292.674733.417262@domain.hid> 
+	<6543.62.39.72.60.1212483756.squirrel@domain.hid> 
+	<2ff1a98a0806030212k15afec22qde7a44e2d7e6caaf@domain.hid> 
+	<2ff1a98a0806030510u49102575l792550f46b3b3f5f@domain.hid> 
+	<8158.62.39.72.60.1212497328.squirrel@domain.hid>
+	<2ff1a98a0806030553i9561d2ayb6dceaf33bab60d5@domain.hid>
+Date: Tue, 3 Jun 2008 15:04:53 +0200 (CEST)
+From: "Fabien MAHOT" <fabien.mahot@domain.hid>
 MIME-Version: 1.0
-Date: Wed, 28 May 2008 14:50:37 +0200
-From: Matthieu <matthieu.connaulte_xenomai@domain.hid>
-Message-ID: <df6ee85f837d916e8fffc4e64803ea79@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain;charset=iso-8859-1
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] 32 bits Xenomai application over x86-64 architecture
-Reply-To: matthieu.connaulte_xenomai@domain.hid
+Subject: Re: [Xenomai-help] Problem with time-out ends
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,29 +26,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi,
+> On Tue, Jun 3, 2008 at 2:48 PM, Fabien MAHOT
+> <fabien.mahot@domain.hid> wrote:
+>>> On Tue, Jun 3, 2008 at 11:12 AM, Gilles Chanteperdrix
+>>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>>> On Tue, Jun 3, 2008 at 11:02 AM, Fabien MAHOT
+>>>> <fabien.mahot@domain.hid> wrote:
+>>>>> Hello,
+>>>>>
+>>>>> I tried your new patch and, now there is no longer issue of priorit=
+y
+>>>>> inheritance with a mutex. Thanks a lot for that.
+>>>>>
+>>>>> However, there are still problems with my big application. It still
+>>>>> crashes.
+>>>>>
+>>>>> From the test program that you corrected (with check functions), I
+>>>>> succeeded to reproduce them.
+>>>>>
+>>>>> Write function returns "Interrrupt system call" error (EINTR). this
+>>>>> is
+>>>>> normal.
+>>>>>
+>>>>> but I ve got the same error message with pthread_mutex_unlock. In t=
+he
+>>>>> specification of this function, there is a note about that : "These
+>>>>> functions shall not return an error code of [EINTR]." (these
+>>>>> functions
+>>>>> are
+>>>>> pthread_mutex_lock, pthread_mutex_unlock, pthread_mutex_trylock)
+>>>>
+>>>> Actually I do not know how this can happen, since the EINTR error is
+>>>> trapped inside pthread_mutex_lock. Will try your example.
+>>>
+>>> Ah, I see, it is pthread_mutex_unlock which returns EINTR, not
+>>> pthread_mutex_lock. I will change this. In the meantime, you can
+>>> simply ignore the EINTR error: the mutex unlock succeeeded even if it
+>>> returns EINTR.
+>>>
+>>> --
+>>>  Gilles
+>>>
+>>
+>> OK, thank you.
+>>
+>> And do you have an idea about the bug traces ?
+>
+> No, I have no idea where this 512 come from. Do you still get it if
+> you do not call timer_delete in the signal handler ?
+>
+> --
+>  Gilles
+>
 
-I'm on a x86-64 architecture and I try to compile a 32 bits application. =
-I
-use gcc with m32 option. I found out that Xenomai libraries are 64 bits
-libraries since, by default, the compilation of Xenomai Kernel keep the
-arch configuration. My problem is that there is no way I link a 64 bits
-library to a 32 bits application. I can't change the 32 bits environment =
-of
-my application. Well, I investigate mail archives and I found some thread=
-s
-about installing Xenomai in 32 bits over a 64 bits arch, but I didn't fou=
-nd
-any issue. So my question is what can I do ? Use a configure the kernel
-with option like --arch=3Dx86 ? Patch my kernel with 32 bits option for A=
-deos
-Kernel (prepare-kernel.sh --arch=3Di386 ) ? Reinstall my SuSE Linux ? Is
-there any wrapper that allow me to use 32 bits application over 64 bits
-Xenomai installation ?
-
-Matthieu
-
+yes, I still get it without timer_delete call in the signal handler
 
 
