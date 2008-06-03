@@ -1,22 +1,14 @@
-Message-ID: <2ff1a98a0806030510u49102575l792550f46b3b3f5f@domain.hid>
-Date: Tue, 3 Jun 2008 14:10:13 +0200
+Message-ID: <2ff1a98a0806030549v28404c7fve261b90c313735c5@domain.hid>
+Date: Tue, 3 Jun 2008 14:49:10 +0200
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <2ff1a98a0806030212k15afec22qde7a44e2d7e6caaf@domain.hid>
+In-Reply-To: <4845166E.3000203@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <16474.81.252.86.91.1211199249.squirrel@domain.hid>
-	<18491.29266.196753.611570@domain.hid>
-	<2766.81.252.86.91.1211992159.squirrel@domain.hid>
-	<2ff1a98a0805280931j611ae10er69b968ae8699d63d@domain.hid>
-	<16273.81.252.86.91.1212060383.squirrel@domain.hid>
-	<2ff1a98a0805290614w3d846e6by69b033204f912391@domain.hid>
-	<13639.81.252.86.91.1212153659.squirrel@domain.hid>
-	<18496.31292.674733.417262@domain.hid>
-	<6543.62.39.72.60.1212483756.squirrel@domain.hid>
-	<2ff1a98a0806030212k15afec22qde7a44e2d7e6caaf@domain.hid>
-Subject: Re: [Xenomai-help] Problem with time-out ends
+References: <4845166E.3000203@domain.hid>
+Subject: Re: [Xenomai-help] xeno-test on AT91SAM9263 irqloop and switchtest
+	problem?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,38 +18,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabien MAHOT <fabien.mahot@domain.hid>
+To: Paradoxxa <paradoxxa2001@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Tue, Jun 3, 2008 at 11:12 AM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On Tue, Jun 3, 2008 at 11:02 AM, Fabien MAHOT
-> <fabien.mahot@domain.hid> wrote:
->> Hello,
->>
->> I tried your new patch and, now there is no longer issue of priority
->> inheritance with a mutex. Thanks a lot for that.
->>
->> However, there are still problems with my big application. It still crashes.
->>
->> From the test program that you corrected (with check functions), I
->> succeeded to reproduce them.
->>
->> Write function returns "Interrrupt system call" error (EINTR). this is
->> normal.
->>
->> but I ve got the same error message with pthread_mutex_unlock. In the
->> specification of this function, there is a note about that : "These
->> functions shall not return an error code of [EINTR]." (these functions are
->> pthread_mutex_lock, pthread_mutex_unlock, pthread_mutex_trylock)
+On Tue, Jun 3, 2008 at 12:01 PM, Paradoxxa <paradoxxa2001@domain.hid> wrote:
+> Hi all,
 >
-> Actually I do not know how this can happen, since the EINTR error is
-> trapped inside pthread_mutex_lock. Will try your example.
+> I have here a AT91SAM9263 with a 2.6.24 kernel, Xenomai 2.4.3 and Adeos
+> Patch 1.9-01 and run the xeno-test. It seems there are a Problem with the
+> irqloop and the switchtest applications.
+> In the attachment you can find the log files.
 
-Ah, I see, it is pthread_mutex_unlock which returns EINTR, not
-pthread_mutex_lock. I will change this. In the meantime, you can
-simply ignore the EINTR error: the mutex unlock succeeeded even if it
-returns EINTR.
+Despite what the doc says, the irqloop test requires a PC parallel
+port, so will probably only work on x86.
 
 -- 
  Gilles
