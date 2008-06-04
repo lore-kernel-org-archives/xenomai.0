@@ -1,14 +1,14 @@
-Message-ID: <48470FC7.9090706@domain.hid>
-Date: Wed, 04 Jun 2008 23:57:27 +0200
+Message-ID: <4847120F.7040905@domain.hid>
+Date: Thu, 05 Jun 2008 00:07:11 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <14864600.1212570529651.JavaMail.ngmail@domain.hid>
-In-Reply-To: <14864600.1212570529651.JavaMail.ngmail@domain.hid>
+References: <1212614370.21088.23.camel@domain.hid>
+In-Reply-To: <1212614370.21088.23.camel@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig3D87A3F8DBF63402B347A0D9"
+	boundary="------------enigCE846FEC7EE93B90B9C9D49C"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] RT Application on isolated core
+Subject: Re: [Xenomai-help] Saving floating point registers inside ISR
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,44 +18,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
+To: Henry Bausley <hbausley@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig3D87A3F8DBF63402B347A0D9
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enigCE846FEC7EE93B90B9C9D49C
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-M. Koehrer wrote:
-> Hi!
+Henry Bausley wrote:
+> I am converting a 440EP power pc FSM Labs RT-Linux application to a
+> Xenomai 2.4.2 posix application. Previously we saved the floating point=
+
+> registers in the ISR.  I had the following code with RTLinux.
 >=20
-> I am doing some experiments on a Core2Duo CPU and I have some question =
-on it.
-> My setup is the following:
-> I have Xenomai 2.3.3 and kernel 2.6.20.4, SMP enabled.
-> I start the kernel with the option isolcpus=3D1 which works as all linu=
-x tasks run on
-> CPU 0 (i.e. core 0).
-> Now, I start a very small Xenomai (native skin) application with on rea=
-l time task=20
-> on CPU 1 (core 1).=20
-> This application realizes an endless loop that does some dummy math ope=
-rations=20
-> (to burn CPU power...).
+> //---------------------------------------------------------------------=
+--------
+> int phase_intr(xnintr_t *cookie)
+> {
+>   rthal_fpenv_t fpustate;
 
-Won't work as there is no such thing as perfect CPU isolation with
-Linux, at least so far. Please see related discussion and patches on LKML=
-=2E
+Do you know how large this structure is? And do you know how much stack
+space is still free when entering here, in the worst case? That may
+differ from RTLinux, probably running on some older kernel.
 
-There is currently a thread running regarding the removal of isolcpus -
-cpusets are supposed to be used now. But more needs to be done, I'm just
-lacking references to the postings (somewhere in February). Google
-should help.
+>=20
+>   rthal_save_fpu(&fpustate);
+>=20
+>   phase();
+>=20
+>   =EF=BB=BFrthal_restore_fpu(&fpustate);
+>   return (XN_ISR_HANDLED);
+> }
+>=20
+> with xenomai if we do the the same thing the system hangs.
+>=20
+>=20
+> However if we make the location where we save the registers global, or
+> declare it static inside the ISR we don't have a problem.  I don't want=
+
+
+That should ring the bell above...
+
+> to do that since there are cases when the interrupt can be re-entered.
+> Does anyone have any ideas?
+>=20
+> rthal_fpenv_t fpustate;
+>=20
+> =EF=BB=BF//------------------------------------------------------------=
+-----------------
+> int phase_intr(xnintr_t *cookie)
+> {
+>=20
+>   rthal_save_fpu(&fpustate);
+>=20
+>   phase();
+>=20
+>   =EF=BB=BFrthal_restore_fpu(&fpustate);
+>   return (XN_ISR_HANDLED);
+> }
+>=20
+
+If the stack size is not the problem here, compare to disassembly of the
+involved versions, local vs. global fpustate, and then the one from RTLin=
+ux.
 
 Jan
 
 
---------------enig3D87A3F8DBF63402B347A0D9
+--------------enigCE846FEC7EE93B90B9C9D49C
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -64,10 +95,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.4-svn0 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFIRw/RniDOoMHTA+kRAob+AJ9yPnnSdfVYoK+b7hDBdtfl7FJAxwCfTTa9
-4j900ZBsz9OKS/xs2x57Kb8=
-=QliL
+iD8DBQFIRxIPniDOoMHTA+kRAjEfAJsGhykE3wy8OLMeCwL2QWiAaaeVEwCfXaiK
+YcrHUdUJnPIfIG6Gmpupj1s=
+=wrS2
 -----END PGP SIGNATURE-----
 
---------------enig3D87A3F8DBF63402B347A0D9--
+--------------enigCE846FEC7EE93B90B9C9D49C--
 
