@@ -1,15 +1,10 @@
-Message-ID: <2ff1a98a0805280714y73a3c2efg80629f156f511f70@domain.hid>
-Date: Wed, 28 May 2008 16:14:10 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <2ff1a98a0805280621k63327808ne547d0ebba6d51aa@domain.hid>
+Date: Thu, 5 Jun 2008 07:51:31 -0700 (PDT)
+From: =?iso-8859-1?Q?Margarete_S=E1?= <margarete_sa@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <df6ee85f837d916e8fffc4e64803ea79@domain.hid>
-	<2ff1a98a0805280621k63327808ne547d0ebba6d51aa@domain.hid>
-Subject: Re: [Xenomai-help] 32 bits Xenomai application over x86-64
-	architecture
+Content-Type: multipart/alternative; boundary="0-111157366-1212677491=:23697"
+Message-ID: <957541.23697.qm@domain.hid>
+Subject: [Xenomai-help] C++ e Xenomai 2.4.0
+Reply-To: margarete_sa@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,15 +14,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: matthieu.connaulte_xenomai@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, May 28, 2008 at 3:21 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> So, you are left with two solutions: either be full 64 bits, or
-> implement the 32 bits syscalls wrappers for Xenomai.
-Or be full 32 bits, but this means reinstalling a 32 bits distribution.
+--0-111157366-1212677491=:23697
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 
--- 
- Gilles
+Hello!
+I am starting to use the Xenomai-2.4 and I have a application in C++.So, I =
+need to run some methods of class as a task of XEnomai. I did a test&nbsp; =
+and&nbsp; initially there was no problem. Do you really agree with this? Is=
+ there any problem to use C++ and Xenomai 2.4.0 ?
+
+Thank you for help!
+Best regards,
+Margarete S=E1&nbsp;&nbsp; &nbsp;
+UFBA - Brazil=0A=0A=0A      Abra sua conta no Yahoo! Mail, o =FAnico sem li=
+mite de espa=E7o para armazenamento!=0Ahttp://br.mail.yahoo.com/
+--0-111157366-1212677491=:23697
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<table cellspacing=3D'0' cellpadding=3D'0' border=3D'0' background=3D'none'=
+ style=3D'font-family:arial;font-size:10pt;color:rgb(51, 51, 51);background=
+-color:rgb(255, 255, 255);width:100%;'><tr><td valign=3D'top' style=3D'font=
+: inherit;'>Hello!<br>I am starting to use the Xenomai-2.4 and I have a app=
+lication in C++.So, I need to run some methods of class as a task of XEnoma=
+i. I did a test&nbsp; and&nbsp; initially there was no problem. Do you real=
+ly agree with this? Is there any problem to use C++ and Xenomai 2.4.0 ?<br>=
+<br>Thank you for help!<br>Best regards,<br>Margarete S=E1&nbsp;&nbsp; &nbs=
+p;<br>UFBA - Brazil</td></tr></table><br>=0A=0A=0A      <hr size=3D1>Abra s=
+ua conta no <a href=3D"http://br.rd.yahoo.com/mail/taglines/mail/*http://br=
+.mail.yahoo.com/">Yahoo! Mail</a>, o =FAnico sem limite de espa=E7o para ar=
+mazenamento! =0A
+--0-111157366-1212677491=:23697--
 
