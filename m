@@ -1,13 +1,12 @@
-Message-ID: <4847120F.7040905@domain.hid>
-Date: Thu, 05 Jun 2008 00:07:11 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <1212614370.21088.23.camel@domain.hid>
+Message-ID: <2ff1a98a0806050041v1f1dc987y156907af4fa88c72@domain.hid>
+Date: Thu, 5 Jun 2008 09:41:16 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 In-Reply-To: <1212614370.21088.23.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigCE846FEC7EE93B90B9C9D49C"
-Sender: jan.kiszka@domain.hid
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <1212614370.21088.23.camel@domain.hid>
 Subject: Re: [Xenomai-help] Saving floating point registers inside ISR
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -21,84 +20,60 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Henry Bausley <hbausley@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigCE846FEC7EE93B90B9C9D49C
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-Henry Bausley wrote:
+On Wed, Jun 4, 2008 at 11:19 PM, Henry Bausley <hbausley@domain.hid> wrote:
+>
 > I am converting a 440EP power pc FSM Labs RT-Linux application to a
-> Xenomai 2.4.2 posix application. Previously we saved the floating point=
-
+> Xenomai 2.4.2 posix application. Previously we saved the floating point
 > registers in the ISR.  I had the following code with RTLinux.
->=20
-> //---------------------------------------------------------------------=
---------
-> int phase_intr(xnintr_t *cookie)
-> {
->   rthal_fpenv_t fpustate;
 
-Do you know how large this structure is? And do you know how much stack
-space is still free when entering here, in the worst case? That may
-differ from RTLinux, probably running on some older kernel.
+Maybe what kills your box is an exception: when a user-space task has
+not used the FPU, or when a kernel-space task did not set the XNFPU
+bit, any use of floating point instructions triggers an exception. You
+should normally get a clear message in the kernel logs. So, you should
+try and call rthal_enable_fpu right before rthal_save_fpu. Note
+however that when doing so, you break Xenomai and Linux FPU "state
+machine". So, what you should really do is save the exception bit,
+enable it before calling rthal_save_fpu, then restore it after
+rthal_restore_fpu.
 
->=20
->   rthal_save_fpu(&fpustate);
->=20
->   phase();
->=20
->   =EF=BB=BFrthal_restore_fpu(&fpustate);
->   return (XN_ISR_HANDLED);
-> }
->=20
-> with xenomai if we do the the same thing the system hangs.
->=20
->=20
-> However if we make the location where we save the registers global, or
-> declare it static inside the ISR we don't have a problem.  I don't want=
+You can use for instance
+#define rthal_save_fp_bit() ({                           \
+    register unsigned long _msr;                        \
+    __asm__ __volatile__ ( "mfmsr %0" : "=r"(_msr) );   \
+    __asm__ __volatile__ ( "mtmsrd %0"                  \
+                           : /* no output */            \
+                           : "r"(_msr | MSR_FP)         \
+                           : "memory" );                \
+    _msr & MSR_FP;
+})
 
+#define rthal_restore_fp_bit(msr)  ({ \
+    register unsigned long _msr;                        \
+    __asm__ __volatile__ ( "mfmsr %0" : "=r"(_msr) );   \
+    __asm__ __volatile__ ( "mtmsrd %0"                  \
+                           : /* no output */            \
+                           : "r"((_msr & ~MSR_FP) | (msr))         \
+                           : "memory" );                \
+})
 
-That should ring the bell above...
+Then you would do:
 
-> to do that since there are cases when the interrupt can be re-entered.
-> Does anyone have any ideas?
->=20
-> rthal_fpenv_t fpustate;
->=20
-> =EF=BB=BF//------------------------------------------------------------=
------------------
-> int phase_intr(xnintr_t *cookie)
-> {
->=20
->   rthal_save_fpu(&fpustate);
->=20
->   phase();
->=20
->   =EF=BB=BFrthal_restore_fpu(&fpustate);
->   return (XN_ISR_HANDLED);
-> }
->=20
+int phase_intr(xnintr_t *cookie)
+{
+ unsigned long fp_bit;
+ rthal_fpenv_t fpustate;
 
-If the stack size is not the problem here, compare to disassembly of the
-involved versions, local vs. global fpustate, and then the one from RTLin=
-ux.
+ fp_bit = rthal_save_fp_bit();
+ rthal_save_fpu(&fpustate);
 
-Jan
+ phase();
 
+ rthal_restore_fpu(&fpustate);
+ rthal_restore_fp_bit(fp_bit);
 
---------------enigCE846FEC7EE93B90B9C9D49C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+ return (XN_ISR_HANDLED);
+}
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.4-svn0 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFIRxIPniDOoMHTA+kRAjEfAJsGhykE3wy8OLMeCwL2QWiAaaeVEwCfXaiK
-YcrHUdUJnPIfIG6Gmpupj1s=
-=wrS2
------END PGP SIGNATURE-----
-
---------------enigCE846FEC7EE93B90B9C9D49C--
+-- 
+ Gilles
 
