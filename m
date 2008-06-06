@@ -1,12 +1,13 @@
-Message-ID: <484813B8.9040307@domain.hid>
-Date: Thu, 05 Jun 2008 09:26:32 -0700
-From: Thomas Lockhart <Thomas.Lockhart@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <3d3b73870806050759q607e6648p2eeb6568f4fde97c@domain.hid>
-In-Reply-To: <3d3b73870806050759q607e6648p2eeb6568f4fde97c@domain.hid>
 Content-Type: multipart/alternative;
-	boundary="------------050001020201050906010605"
-Subject: Re: [Xenomai-help] C++ and Xenomai 2.4.0
+	boundary="----_=_NextPart_001_01C8C82F.A7694277"
+Date: Fri, 6 Jun 2008 19:46:07 -0400
+Message-ID: <51B669A8A7D2914E9AB2B3F40AC6553E64700A@afsexc01.aurora.aero>
+References: <51B669A8A7D2914E9AB2B3F40AC6553E646FC3@domain.hid><2ff1a98a0805290621r361ceb3dh601e41768983fb27@domain.hid><51B669A8A7D2914E9AB2B3F40AC6553E646FC5@domain.hid><2ff1a98a0805290654w33623528yf34c610f11015220@domain.hid><51B669A8A7D2914E9AB2B3F40AC6553E646FC7@domain.hid><2ff1a98a0805290730m2fb0aa02o50c4b317f83aaa00@domain.hid><51B669A8A7D2914E9AB2B3F40AC6553E646FD6@domain.hid>
+	<18495.46374.740367.243739@domain.hid>
+From: "Karch, Joshua" <jkarch@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai and SDL NET sockets 1.2
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,56 +17,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Hugo Braga <hugovaz@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
---------------050001020201050906010605
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
 
->  I need to run some methods of class as a task of Xenomai. I did a
->  test  and  initially there was no problem. Do you really agree with
->  this? Is there any problem to use C++ and Xenomai 2.4.0 ?
-
-No.
-
-                         - Tom
-
--- 
-Thomas Lockhart
-Supervisor, Distributed and Real-time Group
-Instrument Software and Science Data Systems
-Caltech/JPL
+------_=_NextPart_001_01C8C82F.A7694277
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
 
---------------050001020201050906010605
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Gilles,
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
-</head>
-<body bgcolor="#ffffff" text="#000000">
-<span style="white-space: pre;">&gt; I need to run some methods of
-class as a task of Xenomai. I did a<br>
-&gt; test&nbsp; and&nbsp; initially there was no problem. Do you really agree with<br>
-&gt; this? Is there any problem to use C++ and Xenomai 2.4.0 ?</span><br>
-<br>
-No.<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Tom<br>
-<br>
--- <br>
-Thomas Lockhart<br>
-Supervisor, Distributed and Real-time Group<br>
-Instrument Software and Science Data Systems<br>
-Caltech/JPL<br>
-<br>
-</body>
-</html>
+by the way, I resolved the program by declaring the SDL net sockets on =
+the heap.  The socketsets were too big for Xenomai to handle in a task, =
+so I declared them in the main and passed them in as parameters and =
+everything worked.
 
---------------050001020201050906010605--
+Cheers
+
+Josh
+
+-----Original Message-----
+From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+Sent: Fri 5/30/2008 4:04 AM
+To: Karch, Joshua
+Cc: xenomai@xenomai.org
+Subject: RE: [Xenomai-help] Xenomai and SDL NET sockets 1.2
+=20
+Karch, Joshua wrote:
+ >=20
+ > Gilles,
+ >=20
+ > I've been given a potential lead in this situation-- stacksize.  What =
+is the default stacksize?  This might be the cause of segfaults.
+ >=20
+ > Take care,
+
+It depends on the version of Xenomai and on the skin you use. So you
+would better set the stack size you really need.
+
+--=20
+
+
+					    Gilles.
+
+
+------_=_NextPart_001_01C8C82F.A7694277
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Diso-8859-1">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+6.5.7651.59">
+<TITLE>RE: [Xenomai-help] Xenomai and SDL NET sockets 1.2</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/plain format -->
+<BR>
+
+<P><FONT SIZE=3D2>Gilles,<BR>
+<BR>
+by the way, I resolved the program by declaring the SDL net sockets on =
+the heap.&nbsp; The socketsets were too big for Xenomai to handle in a =
+task, so I declared them in the main and passed them in as parameters =
+and everything worked.<BR>
+<BR>
+Cheers<BR>
+<BR>
+Josh<BR>
+<BR>
+-----Original Message-----<BR>
+From: Gilles Chanteperdrix [<A =
+HREF=3D"mailto:gilles.chanteperdrix@xenomai.org">mailto:gilles.chanteperdri=
+x@domain.hid</A>]<BR>
+Sent: Fri 5/30/2008 4:04 AM<BR>
+To: Karch, Joshua<BR>
+Cc: xenomai@xenomai.org<BR>
+Subject: RE: [Xenomai-help] Xenomai and SDL NET sockets 1.2<BR>
+<BR>
+Karch, Joshua wrote:<BR>
+&nbsp;&gt;<BR>
+&nbsp;&gt; Gilles,<BR>
+&nbsp;&gt;<BR>
+&nbsp;&gt; I've been given a potential lead in this situation-- =
+stacksize.&nbsp; What is the default stacksize?&nbsp; This might be the =
+cause of segfaults.<BR>
+&nbsp;&gt;<BR>
+&nbsp;&gt; Take care,<BR>
+<BR>
+It depends on the version of Xenomai and on the skin you use. So you<BR>
+would better set the stack size you really need.<BR>
+<BR>
+--<BR>
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; =
+Gilles.<BR>
+<BR>
+</FONT>
+</P>
+
+</BODY>
+</HTML>
+------_=_NextPart_001_01C8C82F.A7694277--
 
