@@ -1,14 +1,12 @@
-Message-ID: <4846CA07.6000802@domain.hid>
-Date: Wed, 04 Jun 2008 18:59:51 +0200
-From: Philippe Gerum <philippe.gerum@domain.hid>
+Message-ID: <484C17E1.20808@domain.hid>
+Date: Sun, 08 Jun 2008 19:33:21 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E025B28C5@domain.hid>	<2ff1a98a0806040640s544b34d9rb11d833dd616bfae@domain.hid>	<E5E9C6CC7DC8844A8DA7A9EFE7B5350E025B28C6@domain.hid>	<2ff1a98a0806040754u8c3efd6u3121786c8fea43e@domain.hid>
-	<E5E9C6CC7DC8844A8DA7A9EFE7B5350E025B28C8@domain.hid>
-In-Reply-To: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E025B28C8@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] system hangs with "ifconfig eth0 down"
-Reply-To: philippe.gerum@domain.hid
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: [Xenomai-core] Xenomai v2.4.4
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,58 +16,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Markus Osterried <markus.osterried@domain.hid>
-Cc: Xenomai-core@domain.hid
+To: xenomai-core <xenomai@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Markus Osterried wrote:
-> Hi,
-> 
-> our kernel (along with the device drivers) is specifically adapted to
-> our embedded system, it would be a huge bunch of work to change the
-> kernel.
-> I think to do the ipipe backport is a lot easier.
->
 
-http://www.denx.de/cgi-bin/gitweb.cgi?p=ipipe-2.6.git;a=shortlog;h=refs/heads/ipipe-2.6.24-noarch
+Here is the fourth maintenance release for the v2.4.x branch.  Short
+log follows:
 
-Have a look at recent Gilles's fixes impacting mm/, including the kmap_atomic() one.
+	[nucleus]
 
-> Markus
-> 
-> 
-> -----Original Message-----
-> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org] 
-> Sent: Mittwoch, 4. Juni 2008 16:55
-> To: Markus Osterried
-> Cc: Xenomai-core@domain.hid
-> Subject: Re: [Xenomai-core] system hangs with "ifconfig eth0 down"
-> 
-> On Wed, Jun 4, 2008 at 4:35 PM, Markus Osterried
-> <markus.osterried@domain.hid> wrote:
->> Hi,
->>
->> thank you for the fast response.
->> Can you give me a hint which patch this is?
->> We use kernel 2.6.18 and ipipe 1.5-01, which I think is the latest for
-> 
->> this kernel.
->> We could backport the ipipe patch, but we don't want to change the 
->> kernel.
->> Thanks.
-> 
-> Could you try with the latest kernel first ? We will tell you what to
-> backport if this solves your issue.
-> 
-> --
->  Gilles
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
-> 
+	* Prevent drifts between large calculated versus measured dates.
+	* Fix potential deadlock on SMP when ptracing shadow threads.
+	* Thaw timers when a ptraced shadow thread exits.
+	* Fix race introduced by xnsynch ownership preemption.
+	* Fix RPI update.
+	* Fix priority propagation issue with mixed interfaces.
+	* Fix compilation issues with uClibc.
 
+	[native]
+
+	* Output outstanding number of heap mappings from the registry.
+	* Fix tiny memory leak for rt_task_self().
+	* Ensure rt_task_suspend() returns -EINTR upon signal receipt.
+	* Allow rt_task_sleep_until() to sleep indefinitely
+          (TM_INFINITE).
+	* Fix rt_task_send() in the non-blocking case (TM_NONBLOCK).
+	* Documentation updates.
+
+	[posix]
+
+	* Fix pthread_cond_init(), pthread_mutex_init() for NULL
+          attributes.
+	* Restart silently upon EINTR error.
+	* Fix signal handling when directed at shadow threads.
+	* Fix recursion count of mutex after suspension on a condvar.
+
+	[psos]
+
+	* Fix calendar date to ticks conversion.
+	* Return ERR_NOBUF when	required.
+	* Fix system call number of tm_evevery service.
+
+	[vxworks]
+
+	* Make sem_give() a conforming syscall.
+	* Make semaphore support callable from non-VxWorks tasks.
+	* Rework mutex support.
+	* Provide taskInfoGet() service.
+	* Fix byte count in msgQReceive() wrapper.
+
+	[powerpc]
+
+	* Upgrade to kernel 2.6.25.
+	* Add legacy ppc/ branch support to 2.6.20.
+
+	[arm]
+
+	* Upgrade to kernel 2.6.25.
+
+	[blackfin]
+
+	* Resync on 2008R1 (kernel 2.6.22). Add support for bf54x and
+          bf52x.
+
+	[x86]
+
+	* Upgrade to kernel 2.6.25.
+
+See the ChangeLog for details.
+
+http://download.gna.org/xenomai/stable/xenomai-2.4.4.tar.bz2
 
 -- 
 Philippe.
+
 
