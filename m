@@ -1,14 +1,10 @@
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18509.34281.184033.126406@domain.hid>
-Date: Mon, 9 Jun 2008 21:35:05 +0200
-In-Reply-To: <484D2F1E.8060109@domain.hid>
-References: <484C17E1.20808@domain.hid>
-	<18508.6580.612681.20967@domain.hid>
-	<484D2EA3.5040505@domain.hid> <484D2F1E.8060109@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] Xenomai v2.4.4
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C8CADE.F74EB106"
+Date: Tue, 10 Jun 2008 11:47:16 +0200
+Message-ID: <0B45E93C5FF65740AEAE690BF3848B7AD382BA@rennsmail04.eu.thmulti.com>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
+Subject: [Xenomai-core] (no subject)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,39 +14,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Roland Stigge <stigge@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Roland Stigge wrote:
- > Roland Stigge wrote:
- > > By the way: lintian(1) detects several empty *.map files which weren't
- > > empty in 2.4.3.
- > 
- > i.e.
- > 
- > arm_2hal_8c__incl.map
- > blackfin_2hal_8c__incl.map
- > blackfin_2nmi_8c__incl.map
- > generic_2hal_8c__incl.map
- > generic_2nmi_8c__incl.map
- > hal__32_8c__incl.map
- > hal__64_8c__incl.map
- > hal-common_8c__incl.map
- > ia64_2hal_8c__incl.map
- > nmi__32_8c__incl.map
- > powerpc_2hal_8c__incl.map
- > rtdm_8h__incl.map
- > smi_8c__incl.map
- > 
- > in doc/generated/html/api/
+This is a multi-part message in MIME format.
 
-It looks like these map files contain no href in the 2.4.3 release, so,
-there is nothing "clickable" and I think we do not loose anything. I
-wonder why Doxygen needs these empty files though.
+------_=_NextPart_001_01C8CADE.F74EB106
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
+Hi,
 
--- 
+Please find attached a patch against 2.4.4 which brings into=20
+documentation the struct rt_heap_info of the native skin. This patch=20
+also allows DMA rt heaps bigger than 128KB (already in trunk).
 
+Cheers
+--=20
+Stephane
 
-					    Gilles.
+------_=_NextPart_001_01C8CADE.F74EB106
+Content-Type: application/octet-stream;
+	name="rt_heap_info_doc.patch"
+Content-Transfer-Encoding: base64
+Content-Description: rt_heap_info_doc.patch
+Content-Disposition: attachment;
+	filename="rt_heap_info_doc.patch"
+
+SW5kZXg6IGluY2x1ZGUvYXNtLWdlbmVyaWMvd3JhcHBlcnMuaAo9PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09ClJDUyBmaWxl
+OiAvaG9tZS9jb25mL3RucC9saW51eHBwYy94ZW5vbWFpL2luY2x1ZGUvYXNtLWdlbmVyaWMvd3Jh
+cHBlcnMuaCx2CnJldHJpZXZpbmcgcmV2aXNpb24gMS4xLjEuNQpyZXRyaWV2aW5nIHJldmlzaW9u
+IDEuNApkaWZmIC11IC1yMS4xLjEuNSAtcjEuNAotLS0gaW5jbHVkZS9hc20tZ2VuZXJpYy93cmFw
+cGVycy5oCTI5IE1heSAyMDA4IDE3OjAwOjA5IC0wMDAwCTEuMS4xLjUKKysrIGluY2x1ZGUvYXNt
+LWdlbmVyaWMvd3JhcHBlcnMuaAk5IEp1biAyMDA4IDA5OjM3OjE0IC0wMDAwCTEuNApAQCAtMjcs
+NiArMjcsNyBAQAogCiAjaW5jbHVkZSA8bGludXgvdmVyc2lvbi5oPgogI2luY2x1ZGUgPGxpbnV4
+L21vZHVsZS5oPgorI2luY2x1ZGUgPGxpbnV4L3NsYWIuaD4KICNpbmNsdWRlIDxhc20vaW8uaD4K
+IAogI2lmIExJTlVYX1ZFUlNJT05fQ09ERSA8IEtFUk5FTF9WRVJTSU9OKDIsNSwwKQpAQCAtMzEx
+LDYgKzMxMiwxMCBAQAogI2luY2x1ZGUgPGxpbnV4L21hcmtlci5oPgogI2VuZGlmIC8qIExJTlVY
+X1ZFUlNJT05fQ09ERSA+PSBLRVJORUxfVkVSU0lPTigyLDYsMjQpICovCiAKKyNpZiBMSU5VWF9W
+RVJTSU9OX0NPREUgPCBLRVJORUxfVkVSU0lPTigyLDYsMjIpCisjZGVmaW5lIEtNQUxMT0NfTUFY
+X1NJWkUgMTMxMDcyCisjZW5kaWYgLyogIUtNQUxMT0NfTUFYX1NJWkUgKi8KKwogI2lmIExJTlVY
+X1ZFUlNJT05fQ09ERSA8IEtFUk5FTF9WRVJTSU9OKDIsNiwwKQogc3RhdGljIGlubGluZSB1bnNp
+Z25lZCBsb25nIGh3ZWlnaHRfbG9uZyh1bnNpZ25lZCBsb25nIHcpCiB7CkluZGV4OiBpbmNsdWRl
+L25hdGl2ZS9oZWFwLmgKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PQpSQ1MgZmlsZTogL2hvbWUvY29uZi90bnAvbGludXhw
+cGMveGVub21haS9pbmNsdWRlL25hdGl2ZS9oZWFwLmgsdgpyZXRyaWV2aW5nIHJldmlzaW9uIDEu
+MS4xLjMKcmV0cmlldmluZyByZXZpc2lvbiAxLjMKZGlmZiAtdSAtcjEuMS4xLjMgLXIxLjMKLS0t
+IGluY2x1ZGUvbmF0aXZlL2hlYXAuaAkyNSBOb3YgMjAwNyAxNjo1MDowNCAtMDAwMAkxLjEuMS4z
+CisrKyBpbmNsdWRlL25hdGl2ZS9oZWFwLmgJMyBKYW4gMjAwOCAwOTo0NzoxMCAtMDAwMAkxLjMK
+QEAgLTM0LDYgKzM0LDEwIEBACiAjZGVmaW5lIEhfU0lOR0xFICAgMHg0MDAJLyogTWFuYWdlIGFz
+IHNpbmdsZS1ibG9jayBhcmVhLiAqLwogI2RlZmluZSBIX1NIQVJFRCAgIChIX01BUFBBQkxFfEhf
+U0lOR0xFKSAvKiBJLmUuIHNoYXJlZCBtZW1vcnkgc2VnbWVudC4gKi8KIAorLyoqIFN0cnVjdHVy
+ZSBjb250YWluaW5nIGhlYXAtaW5mb3JtYXRpb24gdXNlZnVsIHRvIHVzZXJzLgorICoKKyAqICBA
+c2VlIHJ0X2hlYXBfaW5xdWlyZSgpCisgKi8KIHR5cGVkZWYgc3RydWN0IHJ0X2hlYXBfaW5mbyB7
+CiAKICAgICBpbnQgbndhaXRlcnM7CQkvKiAhPCBOdW1iZXIgb2YgcGVuZGluZyB0YXNrcy4gKi8K
+SW5kZXg6IGtzcmMvbnVjbGV1cy9oZWFwLmMKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpSQ1MgZmlsZTogL2hvbWUvY29u
+Zi90bnAvbGludXhwcGMveGVub21haS9rc3JjL251Y2xldXMvaGVhcC5jLHYKcmV0cmlldmluZyBy
+ZXZpc2lvbiAxLjEuMS42CnJldHJpZXZpbmcgcmV2aXNpb24gMS40CmRpZmYgLXUgLXIxLjEuMS42
+IC1yMS40Ci0tLSBrc3JjL251Y2xldXMvaGVhcC5jCTIyIE1hciAyMDA4IDEyOjA1OjM4IC0wMDAw
+CTEuMS4xLjYKKysrIGtzcmMvbnVjbGV1cy9oZWFwLmMJMjUgTWFyIDIwMDggMDk6MjQ6NDAgLTAw
+MDAJMS40CkBAIC0xMTg0LDcgKzExODQsMTEgQEAKIAkJICogc3BhY2UuIEFzc3VtZSB0aGF0IHdl
+IGNhbiB3YWl0IHRvIGdldCB0aGUgcmVxdWlyZWQgbWVtb3J5LgogCQkgKi8KIAotCQlwdHIgPSBr
+bWFsbG9jKHNpemUsIGttZmxhZ3MgfCBHRlBfS0VSTkVMKTsKKwkJaWYgKHNpemUgPD0gS01BTExP
+Q19NQVhfU0laRSkKKwkJCXB0ciA9IGttYWxsb2Moc2l6ZSwga21mbGFncyB8IEdGUF9LRVJORUwp
+OworCQllbHNlCisJCQlwdHIgPSAodm9pZCopIF9fZ2V0X2ZyZWVfcGFnZXMoa21mbGFncyB8IEdG
+UF9LRVJORUwsCisJCQkJCQkgICAgICAgZ2V0X29yZGVyKHNpemUpKTsKIAogCQlpZiAoIXB0cikK
+IAkJCXJldHVybiBOVUxMOwpAQCAtMTIxNiw3ICsxMjIwLDEwIEBACiAJCWZvciAodmFkZHIgPSB2
+YWJhc2U7IHZhZGRyIDwgdmFiYXNlICsgc2l6ZTsgdmFkZHIgKz0gUEFHRV9TSVpFKQogCQkJQ2xl
+YXJQYWdlUmVzZXJ2ZWQodmlydF90b19wYWdlKHZhZGRyKSk7CiAKLQkJa2ZyZWUocHRyKTsKKwkJ
+aWYgKHNpemUgPD0gS01BTExPQ19NQVhfU0laRSkKKwkJCWtmcmVlKHB0cik7CisJCWVsc2UKKwkJ
+CWZyZWVfcGFnZXMoKHVuc2lnbmVkIGxvbmcpcHRyLCBnZXRfb3JkZXIoc2l6ZSkpOwogCX0KIH0K
+IApJbmRleDoga3NyYy9za2lucy9uYXRpdmUvaGVhcC5jCj09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KUkNTIGZpbGU6IC9o
+b21lL2NvbmYvdG5wL2xpbnV4cHBjL3hlbm9tYWkva3NyYy9za2lucy9uYXRpdmUvaGVhcC5jLHYK
+cmV0cmlldmluZyByZXZpc2lvbiAxLjEuMS42CnJldHJpZXZpbmcgcmV2aXNpb24gMS45CmRpZmYg
+LXUgLXIxLjEuMS42IC1yMS45Ci0tLSBrc3JjL3NraW5zL25hdGl2ZS9oZWFwLmMJMjUgTWFyIDIw
+MDggMTU6MDY6MjMgLTAwMDAJMS4xLjEuNgorKysga3NyYy9za2lucy9uYXRpdmUvaGVhcC5jCTkg
+SnVuIDIwMDggMDk6Mzc6NTggLTAwMDAJMS45CkBAIC0yMDIsOCArMjAyLDggQEAKICAqCiAgKiAt
+IEhfRE1BIGNhdXNlcyB0aGUgYmxvY2sgcG9vbCBhc3NvY2lhdGVkIHRvIHRoZSBoZWFwIHRvIGJl
+CiAgKiBhbGxvY2F0ZWQgaW4gcGh5c2ljYWxseSBjb250aWd1b3VzIG1lbW9yeSwgc3VpdGFibGUg
+Zm9yIERNQQotICogb3BlcmF0aW9ucyB3aXRoIEkvTyBkZXZpY2VzLiBBIDEyOEtiIGxpbWl0IGV4
+aXN0cyBmb3IgQGEgaGVhcHNpemUKLSAqIHdoZW4gdGhpcyBmbGFnIGlzIHBhc3NlZC4KKyAqIG9w
+ZXJhdGlvbnMgd2l0aCBJL08gZGV2aWNlcy4gQGEgaGVhcHNpemUgYmV5b25kIDEyOEtpQiB3aWxs
+CisgKiBiZSByb3VuZGVkIHVwIHRvIGEgdHdvIGV4cG9ub25lbnQgYWxsb2NhdGlvbi4KICAqCiAg
+KiBAcmV0dXJuIDAgaXMgcmV0dXJuZWQgdXBvbiBzdWNjZXNzLiBPdGhlcndpc2U6CiAgKgo=
+
+------_=_NextPart_001_01C8CADE.F74EB106--
 
