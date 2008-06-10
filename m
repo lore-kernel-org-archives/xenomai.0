@@ -1,22 +1,15 @@
-Message-ID: <2ff1a98a0805280931j611ae10er69b968ae8699d63d@domain.hid>
-Date: Wed, 28 May 2008 18:31:33 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <2766.81.252.86.91.1211992159.squirrel@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <16474.81.252.86.91.1211199249.squirrel@domain.hid>
-	<15059.81.252.86.91.1211386718.squirrel@domain.hid>
-	<18484.28025.505865.374746@domain.hid>
-	<12142.81.252.86.91.1211467896.squirrel@domain.hid>
-	<2ff1a98a0805220819i8d73166w4c9a06d9734d0e0c@domain.hid>
-	<2405.81.252.86.91.1211549465.squirrel@domain.hid>
-	<2ff1a98a0805230655j35009227h75c63566373ece43@domain.hid>
-	<5871.81.252.86.91.1211789666.squirrel@domain.hid>
-	<18491.29266.196753.611570@domain.hid>
-	<2766.81.252.86.91.1211992159.squirrel@domain.hid>
-Subject: Re: [Xenomai-help] Problem with time-out ends
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
+Date: Tue, 10 Jun 2008 08:19:06 -0600
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D470A4F@slcmail.slc.mew.int>
+In-Reply-To: <484E8D0E.10606@domain.hid>
+References: <51CAD0CE1504444DBE77CBBE51A0135D470A4D@slcmail.slc.mew.int>
+	<484E8D0E.10606@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
+Subject: Re: [Xenomai-help] native queue and timeout
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,32 +19,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabien MAHOT <fabien.mahot@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-On Wed, May 28, 2008 at 6:29 PM, Fabien MAHOT
-<fabien.mahot@domain.hid> wrote:
-> Problem with time-out ends
->
-> Hello,
->
-> thanks a lot for time spent and your patch.
-> Sorry for the carriage returns of my mailer.
->
-> I tried your patch with test program version that you sent me.
-> (I installed xenomai 2.4.3)
->
-> And, the system always crashes. But, now, there is no longer error kernel
-> trace on my serial console.
-> I don t obtain result with your check function.
->
-> When you got the crash, what is your error kernel trace?
-> the same as mine ? Xenomai: fatal: inserting element twice,
-> holder=c7761c78, qslot=c7761160
-
-No, I do not get this error. Do you get a stack trace with this error ?
-I had an "error relaxing kicked thread".
-
--- 
- Gilles
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSBbbWFp
+bHRvOnBoaWxpcHBlLmdlcnVtQGdtYWlsLmNvbV0gT24gQmVoYWxmIE9mDQo+IFBoaWxpcHBlIEdl
+cnVtDQo+IFNlbnQ6IFR1ZXNkYXksIEp1bmUgMTAsIDIwMDggODoxOCBBTQ0KPiBUbzogU3RldmVu
+IFNlZWdlcg0KPiBDYzogeGVub21haS1oZWxwQGduYS5vcmcNCj4gU3ViamVjdDogUmU6IFtYZW5v
+bWFpLWhlbHBdIG5hdGl2ZSBxdWV1ZSBhbmQgdGltZW91dA0KPiANCj4gSWYgcnVubmluZyB0aGUg
+dHJ1bmsvLCB0aGVuIHlvdSBuZWVkIHRvIGZ1bGx5IHJlYnVpbGQgdGhlIFhlbm9tYWkNCj4gdXNl
+cmxhbmQgbGlicw0KPiBhcyB3ZWxsOyB0aGUgQUJJIGhhcyBjaGFuZ2VkIGluIHRoYXQgYXJlYS4N
+Cg0KUGhpbGlwcGUsDQoNCkkgaGF2ZSBkb25lIHRoaXMgYXMgd2VsbC4gSSBzaG91bGQgaGF2ZSBz
+cGVjaWZpZWQuIEkgYW0gcnVubmluZyAvdHJ1bmssIGJ0dy4NCg0KSSB3aWxsIGRvdWJsZSBjaGVj
+ayB0aGF0IEkgY29waWVkIHRoZSBsaWJzIHByb3Blcmx5LiANCg0KU3RldmVuDQoNCg==
 
