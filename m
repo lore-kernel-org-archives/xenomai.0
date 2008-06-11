@@ -1,10 +1,11 @@
-Message-ID: <14821321.1213179993177.JavaMail.ngmail@domain.hid>
-Date: Wed, 11 Jun 2008 12:26:33 +0200 (CEST)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Date: Wed, 11 Jun 2008 11:18:34 +0200
+From: Matthieu <matthieu.connaulte_xenomai@domain.hid>
+Message-ID: <e2ba8ccba8e14750cb4a9dbdafcc5be7@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] Are xmm-registers saved with a (task) context switch
+Subject: Re: [Xenomai-help] xenomai scheduler's ticks period
+Reply-To: matthieu.connaulte_xenomai@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,34 +17,41 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi!
+So, do I have to understand that all skins have their own scheduler ?
+To schedule at 1ms, specifying option tick_arg=3D1000 to xeno_vxworks mod=
+ule
+doesn't ! I thing
+that I do it in a bad way, endeed I added "options xeno_vxworks
+tick_arg=3D1000" to /etc/modprobe.conf/local ... (In fact I must add this
+module manually, it isn't loaded automatically while a vxworks instructio=
+n
+need to execute).
 
-I want to use the xmm0 register (from the SSE2 extension of a Core2Duo CPU)=
- to do atomic 64bit write/read accesses in
-32 bit x86 mode.
-My question is: Will the xmm[0..7] registers be saved with a task context s=
-witch when running Xenomai real time tasks in user
-space or do I have to take care to save them on the stack before using (and=
- restoring them afterwards).
-Is it save to use these registers or will they be used by Xenomai (or Linux=
-)  internally?
+Matthieu
 
-Thanks for any answer on that question.
+On Tue, 10 Jun 2008 11:43:39 +0200, "Gilles Chanteperdrix"
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On Tue, Jun 10, 2008 at 10:43 AM, Matthieu
+> <matthieu.connaulte_xenomai@domain.hid> wrote:
+>> Hi
+>>
+>> Is it possible to change the value of the xenomai scheduler's ticks
+> period
+>> ? I would like the tasks to be scheduled each 1 millisecond for exempl=
+e.
+> I
+>> found out xnpod_tick_announce, but I didn't find any documentation and=
+ I
+>> didn't find the sources.
+>
+> Xenomai scheduler has no tick period. If you want, you may change a
+> skin period, either by using Kconfig options, or by using module
+> parameters. You will find documentation about the module parameters
+> either by using modinfo or in the text file documenting the skin you
+> want to use.
+>
+> --
+>  Gilles
 
 
-Regards
-
-Mathias
-
-
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
-
-
-Jetzt komfortabel bei Arcor-Digital TV einsteigen: Mehr Happy Ends, mehr He=
-rzschmerz, mehr Fernsehen! Erleben Sie 50 digitale TV Programme und optiona=
-l 60 Pay TV Sender, einen elektronischen Programmf=FChrer mit Movie Star Be=
-wertungen von TV Movie. Au=DFerdem, aktuelle Filmhits und spannende Dokus i=
-n der Arcor-Videothek. Infos unter www.arcor.de/tv
 
