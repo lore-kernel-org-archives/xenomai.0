@@ -1,14 +1,14 @@
-Message-ID: <2ff1a98a0806110535h6ce1a4a4vb577fc76a22f7a38@domain.hid>
-Date: Wed, 11 Jun 2008 14:35:39 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <21830053.6301213172618935.JavaMail.root@domain.hid>
+Message-ID: <28245271.1213187856046.JavaMail.ngmail@domain.hid>
+Date: Wed, 11 Jun 2008 14:37:36 +0200 (CEST)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
+In-Reply-To: <2ff1a98a0806110518ob7cb5b5h7c0471e3c3ce8c09@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <26287316.6271213172573467.JavaMail.root@domain.hid>
-	<21830053.6301213172618935.JavaMail.root@domain.hid>
-Subject: Re: [Xenomai-help] Debugging realtime tasks
+Content-Transfer-Encoding: quoted-printable
+References: <2ff1a98a0806110518ob7cb5b5h7c0471e3c3ce8c09@domain.hid>
+	<14821321.1213179993177.JavaMail.ngmail@domain.hid>
+	<2ff1a98a0806110516h46fa524br98b2b8409beedc7d@domain.hid>
+Subject: Re: [Xenomai-help] Are xmm-registers saved with a (task) context
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,34 +18,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Andreas Erler <a.erler@domain.hid>
-Cc: "." <xenomai@xenomai.org>
+To: gilles.chanteperdrix@xenomai.org, mathias_koehrer@domain.hid
+Cc: xenomai@xenomai.org
 
-On Wed, Jun 11, 2008 at 10:23 AM, Andreas Erler
-<a.erler@domain.hid> wrote:
-> Hi,
->
-> I want to debug a userspace task created with: rt_task_create(&demo_task, "trivial", 0, 99, 0);
-> When I set a breakpoint somewhere in the demo_task function I get the following message and gdbserver exits:
->
-> Child terminated with signal = 5
->
-> Child terminated with signal = 0x5 (SIGTRAP)
-> GDBserver exiting
->
-> Is it generally possible to debug realtime tasks or not?
-> If yes, what I'm doing wrong here?
+Hi Gilles,
 
-Yes, it is supposed to work. A common problem with using gdbserver
-with gdb is not using the same version, you should use absolutely the
-same  version of gdb and gdbserver.
+thanks for your response.
+With the MMX registers, you are right. They are actually aliased with the F=
+PU registers.
+However, the XMM registers (SSE, SSE2) are not aliased.=20
+The aliased MMX registers AND the not-aliased XMM registers are available w=
+ith today's CPUs,
+i.e. you still have to take card when using MMX registers.
+(All information according to Intel's 64 and IA-32 Architectures
+Software Developer=92s Manual, Volume 1, Chapters 9,10,11)
 
-If you use the same version of gdb and gdbserver and still have the
-problem, could you post an example, and tell us where to put the
-breakpoint ?
+>From your mail before I assume that the (not-aliased) XMM registers are sav=
+ed with the switching routine
+and can be used without have to save/restore them.
 
-You should also tell us which version of Xenomai you use, and on which platform.
+Regards
 
--- 
- Gilles
+Mathias
+
+
+> > The xmm register are saved by the FPU switching routines. Note
+> > however, that depending on the x86 you are using the xmm registers are
+> > aliased to the FPU register or are separate registers. So, on machines
+> > where the xmm registers are aliased to normal FPU registers, you have
+> > to do the save restore on your own if you want to use MMX, SSE, or
+> > SSE2 and use FPU instructions in the same thread.
+>=20
+> This probably applies to very old CPUs, xmm are separate registers now.
+>=20
+
+
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
+
+
+Jetzt komfortabel bei Arcor-Digital TV einsteigen: Mehr Happy Ends, mehr He=
+rzschmerz, mehr Fernsehen! Erleben Sie 50 digitale TV Programme und optiona=
+l 60 Pay TV Sender, einen elektronischen Programmf=FChrer mit Movie Star Be=
+wertungen von TV Movie. Au=DFerdem, aktuelle Filmhits und spannende Dokus i=
+n der Arcor-Videothek. Infos unter www.arcor.de/tv
 
