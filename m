@@ -1,22 +1,13 @@
-Message-ID: <8933.62.39.72.60.1212042982.squirrel@domain.hid>
-In-Reply-To: <2ff1a98a0805280931j611ae10er69b968ae8699d63d@domain.hid>
-References: <16474.81.252.86.91.1211199249.squirrel@domain.hid> 
-	<15059.81.252.86.91.1211386718.squirrel@domain.hid> 
-	<18484.28025.505865.374746@domain.hid> 
-	<12142.81.252.86.91.1211467896.squirrel@domain.hid> 
-	<2ff1a98a0805220819i8d73166w4c9a06d9734d0e0c@domain.hid> 
-	<2405.81.252.86.91.1211549465.squirrel@domain.hid> 
-	<2ff1a98a0805230655j35009227h75c63566373ece43@domain.hid> 
-	<5871.81.252.86.91.1211789666.squirrel@domain.hid> 
-	<18491.29266.196753.611570@domain.hid> 
-	<2766.81.252.86.91.1211992159.squirrel@domain.hid>
-	<2ff1a98a0805280931j611ae10er69b968ae8699d63d@domain.hid>
-Date: Thu, 29 May 2008 08:36:22 +0200 (CEST)
-From: "Fabien MAHOT" <fabien.mahot@domain.hid>
+Message-ID: <2ff1a98a0806110528l1d50fd75g79348cca81b94e29@domain.hid>
+Date: Wed, 11 Jun 2008 14:28:37 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <e2ba8ccba8e14750cb4a9dbdafcc5be7@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Problem with time-out ends
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <e2ba8ccba8e14750cb4a9dbdafcc5be7@domain.hid>
+Subject: Re: [Xenomai-help] xenomai scheduler's ticks period
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,38 +17,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: matthieu.connaulte_xenomai@domain.hid
 Cc: xenomai@xenomai.org
 
-> On Wed, May 28, 2008 at 6:29 PM, Fabien MAHOT
-> <fabien.mahot@domain.hid> wrote:
->> Problem with time-out ends
->>
->> Hello,
->>
->> thanks a lot for time spent and your patch.
->> Sorry for the carriage returns of my mailer.
->>
->> I tried your patch with test program version that you sent me.
->> (I installed xenomai 2.4.3)
->>
->> And, the system always crashes. But, now, there is no longer error
->> kernel
->> trace on my serial console.
->> I don t obtain result with your check function.
->>
->> When you got the crash, what is your error kernel trace?
->> the same as mine ? Xenomai: fatal: inserting element twice,
->> holder=3Dc7761c78, qslot=3Dc7761160
->
-> No, I do not get this error. Do you get a stack trace with this error ?
-> I had an "error relaxing kicked thread".
->
-> --
->  Gilles
->
+On Wed, Jun 11, 2008 at 11:18 AM, Matthieu
+<matthieu.connaulte_xenomai@domain.hid> wrote:
+> So, do I have to understand that all skins have their own scheduler ?
 
-OK. No, I didn't get stack traces with this error.
+Starting with Xenomai 2.4, every skin has its own tick source, yes.
 
+> To schedule at 1ms, specifying option tick_arg=1000 to xeno_vxworks module
+> doesn't ! I thing
+> that I do it in a bad way, endeed I added "options xeno_vxworks
+> tick_arg=1000" to /etc/modprobe.conf/local ... (In fact I must add this
+> module manually, it isn't loaded automatically while a vxworks instruction
+> need to execute).
 
+We never even thought about auto module loading usually people know
+which module they need. Note that it seems that the module
+auto-loading feature is somewhat deprecated by kernel people, since it
+is now possible to disable it, and the udev daemon loads all possible
+modules at boot time instead of waiting that a module is really needed
+before loading it, thereby killing module auto-loading.
+
+However you should note that /etc/modprobe.conf/something will only
+work if you use "modprobe" to load module. If you use insmod, the
+arguments should be passed on insmod command line.
+
+If you use modprobe and the tick_arg parameter does not work, could
+you post the example program showing the issue you met?
+
+-- 
+ Gilles
 
