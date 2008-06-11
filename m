@@ -1,16 +1,11 @@
-Message-ID: <2754253.1213189750006.JavaMail.ngmail@domain.hid>
-Date: Wed, 11 Jun 2008 15:09:10 +0200 (CEST)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
-In-Reply-To: <2ff1a98a0806110545u52fc2606s147fe01003a1e1cb@domain.hid>
+Date: Wed, 11 Jun 2008 16:38:15 +0200 (CEST)
+From: Andreas Erler <a.erler@domain.hid>
+Message-ID: <30475381.6441213195095254.JavaMail.root@domain.hid>
+In-Reply-To: <3686298.6421213193405988.JavaMail.root@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-References: <2ff1a98a0806110545u52fc2606s147fe01003a1e1cb@domain.hid>
-	<14821321.1213179993177.JavaMail.ngmail@domain.hid>
-	<2ff1a98a0806110516h46fa524br98b2b8409beedc7d@domain.hid>
-	<2ff1a98a0806110518ob7cb5b5h7c0471e3c3ce8c09@domain.hid>
-	<28245271.1213187856046.JavaMail.ngmail@domain.hid>
-Subject: Re: [Xenomai-help] Are xmm-registers saved with a (task) context
+Subject: Re: [Xenomai-help] Debugging realtime tasks
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,36 +15,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: gilles.chanteperdrix@xenomai.org, mathias_koehrer@domain.hid
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "." <xenomai@xenomai.org>
 
-Hi Gilles.
-> Ok. My memories were a bit imprecise. The whole question boils down to
-> know whether the "fxsave" instruction saves the XMM registers. I think
-> it does, but you would probably better check in the documentation.
+Hello Gilles,
 
-Ok, I have looked in the Intel documentation
-for the FXSAVE operation:
-"Saves the current state of the x87 FPU, MMX technology, XMM, and MXCSR reg=
-isters
-to a 512-byte memory location specified in the destination operand."
+thank you, you were right!
+I've used gdbserver 6.6 on my target and gdb 6.8 on my host.
+I now have on both machines the same versions and voil=C3=A0 it works :-)
 
-Thus means, every thing is fine and I can used the XMM registers without ri=
-sk.
+Thank you very much,
+Andy
 
-Thanks for the support.
+----- Urspr=C3=BCngliche Mail -----
+Von: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+An: "Andreas Erler" <a.erler@domain.hid>
+CC: "." <xenomai@xenomai.org>
+Gesendet: Mittwoch, 11. Juni 2008 14:35:39 GMT +01:00 Amsterdam/Berlin/Bern=
+/Rom/Stockholm/Wien
+Betreff: Re: [Xenomai-help] Debugging realtime tasks
 
-Mathias
+On Wed, Jun 11, 2008 at 10:23 AM, Andreas Erler
+<a.erler@domain.hid> wrote:
+> Hi,
+>
+> I want to debug a userspace task created with: rt_task_create(&demo_task,=
+ "trivial", 0, 99, 0);
+> When I set a breakpoint somewhere in the demo_task function I get the fol=
+lowing message and gdbserver exits:
+>
+> Child terminated with signal =3D 5
+>
+> Child terminated with signal =3D 0x5 (SIGTRAP)
+> GDBserver exiting
+>
+> Is it generally possible to debug realtime tasks or not?
+> If yes, what I'm doing wrong here?
 
+Yes, it is supposed to work. A common problem with using gdbserver
+with gdb is not using the same version, you should use absolutely the
+same  version of gdb and gdbserver.
+
+If you use the same version of gdb and gdbserver and still have the
+problem, could you post an example, and tell us where to put the
+breakpoint ?
+
+You should also tell us which version of Xenomai you use, and on which plat=
+form.
 
 --=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
-
-
-Jetzt komfortabel bei Arcor-Digital TV einsteigen: Mehr Happy Ends, mehr He=
-rzschmerz, mehr Fernsehen! Erleben Sie 50 digitale TV Programme und optiona=
-l 60 Pay TV Sender, einen elektronischen Programmf=FChrer mit Movie Star Be=
-wertungen von TV Movie. Au=DFerdem, aktuelle Filmhits und spannende Dokus i=
-n der Arcor-Videothek. Infos unter www.arcor.de/tv
+ Gilles
 
