@@ -1,15 +1,13 @@
-Message-ID: <2ff1a98a0805290219i27d49624yb13996ed078bb31d@domain.hid>
-Date: Thu, 29 May 2008 11:19:31 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <483E6EF8.6090501@domain.hid>
+Message-ID: <d6c8ef150806121601p4e9f197cofd2485d7ae79ed9d@domain.hid>
+Date: Fri, 13 Jun 2008 01:01:03 +0200
+From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
+In-Reply-To: <d6c8ef150806121541m4b31aa79hbaf62e23d50d742f@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <483D0AB7.4010303@domain.hid>
-	<2ff1a98a0805280101q4e1cc3d9oe73b3de64316f07b@domain.hid>
-	<483E6EF8.6090501@domain.hid>
-Subject: Re: [Xenomai-help] valgrind
+References: <d6c8ef150806121541m4b31aa79hbaf62e23d50d742f@domain.hid>
+Subject: Re: [Xenomai-help] Change propagation using rt_heap ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,49 +17,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>, valgrind-users@domain.hid
+To: xenomai-help <xenomai@xenomai.org>
 
-On Thu, May 29, 2008 at 10:53 AM, St=E9phane ANCELOT <sancelot@domain.hid> wro=
-te:
->
->
-> Gilles Chanteperdrix a =E9crit :
->>
->> On Wed, May 28, 2008 at 9:33 AM, St=E9phane ANCELOT <sancelot@domain.hid>
->> wrote:
->>
->>>
->>> Hi,
->>> I tried xenomai integration in valgrind .
->>>
->>> I have got some problems with __native_muxid  .
->>>
->>> Is there an easy way to retrieve this value (is it a const?) or is it a
->>> variable I have to store and reuse ?
->>>
->>
->> The muxid is returned by the "xn_sys_bind" system skin syscall. So,
->> you have to get it at run-time.
->>
->>
->
-> OK, but unfortunately, in valgrind, there is a static syscall_table
-> containing all  syscalls numbers.
+In the meantime, I have found in discussion on March 28, Gilles mail saying:
 
-You have to modify valgrind to allow Xenomai dynamic syscall table scheme.
+> The arm-specific bug will happen later (once the shared memory is
+> mapped). Because the kernel-space and user-space will get different
+> caches for the same memory area. The solution to this issue is to map
+> the heap without cache, but to get this, you need modifications of
+> Xenomai that only exist on my computer for now. So, if you are
+> interested, I will send a patch.
 
->
-> In order solving this problem, I may setup  a static range of syscalls fo=
-r
-> xenomai  and route to concerned valgrind syscall  at execution ?
-> What are the xenomai syscall ranges ?
-
-It depends on the platform, but what we know for sure is that Xenomai
-syscall ranges are out of Linux syscall ranges. You will find Xenomai
-syscall number mangling scheme in include/asm-yourplatform/syscall.h,
-and the syscall numbers of a given skin in include/yourskin/syscall.h.
-
---=20
- Gilles
+Am I experiencing this arm-specific bug? I'll try with xenomai-trunk,
+I see that H_NONCACHED flag is existing there. Are there any
+performance problems using rt_heap with this?
 
