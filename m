@@ -1,11 +1,10 @@
-Date: Wed, 11 Jun 2008 16:38:15 +0200 (CEST)
-From: Andreas Erler <a.erler@domain.hid>
-Message-ID: <30475381.6441213195095254.JavaMail.root@domain.hid>
-In-Reply-To: <3686298.6421213193405988.JavaMail.root@domain.hid>
+Message-ID: <2f7417810806120147u8b30070h8d7f5006d8504d4f@domain.hid>
+Date: Thu, 12 Jun 2008 10:47:37 +0200
+From: quinty <webquinty2@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Debugging realtime tasks
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_19860_15405847.1213260457853"
+Subject: [Xenomai-help] Problems install xemosim .............
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,54 +14,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "." <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hello Gilles,
+------=_Part_19860_15405847.1213260457853
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-thank you, you were right!
-I've used gdbserver 6.6 on my target and gdb 6.8 on my host.
-I now have on both machines the same versions and voil=C3=A0 it works :-)
+Hello,
 
-Thank you very much,
-Andy
+I use xenomai 2.4.2 with powerpc (MPC5200) and xenosim 2.4.2.
+I executed ./configure without problems, make and make install.
 
------ Urspr=C3=BCngliche Mail -----
-Von: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-An: "Andreas Erler" <a.erler@domain.hid>
-CC: "." <xenomai@xenomai.org>
-Gesendet: Mittwoch, 11. Juni 2008 14:35:39 GMT +01:00 Amsterdam/Berlin/Bern=
-/Rom/Stockholm/Wien
-Betreff: Re: [Xenomai-help] Debugging realtime tasks
+But if I press a icon or selected a option from menu, always, I have the
+same problem:
+"...Error: Unknown option '-image'..."
 
-On Wed, Jun 11, 2008 at 10:23 AM, Andreas Erler
-<a.erler@domain.hid> wrote:
-> Hi,
->
-> I want to debug a userspace task created with: rt_task_create(&demo_task,=
- "trivial", 0, 99, 0);
-> When I set a breakpoint somewhere in the demo_task function I get the fol=
-lowing message and gdbserver exits:
->
-> Child terminated with signal =3D 5
->
-> Child terminated with signal =3D 0x5 (SIGTRAP)
-> GDBserver exiting
->
-> Is it generally possible to debug realtime tasks or not?
-> If yes, what I'm doing wrong here?
+By other hand, I have some doubts about this program, xenosim. I try to look
+for information but
+I can not find a manual or tutorial of this program.
 
-Yes, it is supposed to work. A common problem with using gdbserver
-with gdb is not using the same version, you should use absolutely the
-same  version of gdb and gdbserver.
+1.- This program is to test or debug xenomai task.
+2.- What options have this program to debug a program??, for example,
+breakpoints, trace and watch variables.
+3.- Can I use it for test my xenomai task in a PowerPc (MPC5200)???
 
-If you use the same version of gdb and gdbserver and still have the
-problem, could you post an example, and tell us where to put the
-breakpoint ?
+Best regards.
+John Martin.
+Automation and Reasearch.
+Spain.
 
-You should also tell us which version of Xenomai you use, and on which plat=
-form.
+------=_Part_19860_15405847.1213260457853
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
---=20
- Gilles
+Hello,<br><br>I use xenomai 2.4.2 with powerpc (MPC5200) and xenosim <a href="http://2.4.2.">2.4.2.</a><br>I executed ./configure without problems, make and make install.<br><br>But if I press a icon or selected a option from menu, always, I have the same problem:<br>
+&quot;...Error: Unknown option &#39;-image&#39;...&quot;<br><br>By other hand, I have some doubts about this program, xenosim. I try to look for information but<br>I can not find a manual or tutorial of this program.<br><br>
+1.- This program is to test or debug xenomai task.<br>2.- What options have this program to debug a program??, for example, breakpoints, trace and watch variables.<br>3.- Can I use it for test my xenomai task in a PowerPc (MPC5200)???<br>
+<br>Best regards.<br>John Martin.<br>Automation and Reasearch.<br>Spain.<br><br><br>
+
+------=_Part_19860_15405847.1213260457853--
 
