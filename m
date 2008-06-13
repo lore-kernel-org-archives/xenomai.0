@@ -1,14 +1,15 @@
-Message-ID: <48523E11.40702@domain.hid>
-Date: Fri, 13 Jun 2008 11:29:53 +0200
-From: Sebastian Smolorz <smolorz@domain.hid>
+Message-ID: <2ff1a98a0806130237n4a8a1b0dn7196101b7af3266d@domain.hid>
+Date: Fri, 13 Jun 2008 11:37:28 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <d6c8ef150806121637r12b3c09cq4754396958b7353c@domain.hid>
 MIME-Version: 1.0
-References: <4850DC9D.4010607@domain.hid>	<2ff1a98a0806120208n48d15ed6m4e67b582dced1ba3@domain.hid>
-	<48510808.9020304@domain.hid> <485174A7.7040505@domain.hid>
-	<485227E2.3030603@domain.hid> <48523BE4.8070403@domain.hid>
-In-Reply-To: <48523BE4.8070403@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] High latencies on Core2Duo
+Content-Disposition: inline
+References: <d6c8ef150806121541m4b31aa79hbaf62e23d50d742f@domain.hid>
+	<d6c8ef150806121601p4e9f197cofd2485d7ae79ed9d@domain.hid>
+	<d6c8ef150806121637r12b3c09cq4754396958b7353c@domain.hid>
+Subject: Re: [Xenomai-help] Change propagation using rt_heap ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,24 +19,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: philippe.gerum@domain.hid
-Cc: xenomai@xenomai.org
+To: Bosko Radivojevic <bosko.radivojevic@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> Sebastian Smolorz wrote:
->> Philippe Gerum wrote:
->>> Could you run another trace with that patch applied? TIA,
->>
->> Here it comes.
->>
-> 
-> Thanks. Is the latency spot regularly happening at the same place after a few runs,
-> or rather randomly?
+On Fri, Jun 13, 2008 at 1:37 AM, Bosko Radivojevic
+<bosko.radivojevic@domain.hid> wrote:
+> ... H_NONCACHED is the answer, at least for me.
+>
+> So, ... when could we expect Xenomai 2.5.0? :)
 
+I warned you here:
+https://mail.gna.org/public/xenomai-help/2008-03/msg00153.html
 
-I can for sure activate it with a kernel compilation with make -j2. 
-Without load, it is more or less random and more seldom.
+And even sent you a preliminary patch.
+
+Now I do not know if the nocache thing qualifies for addition to the
+stable branch. Is this a new feature or a bug fix ? I do not know.
 
 -- 
-Sebastian
+ Gilles
 
