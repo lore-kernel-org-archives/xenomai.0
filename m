@@ -1,5 +1,5 @@
-Message-ID: <2ff1a98a0806130237n4a8a1b0dn7196101b7af3266d@domain.hid>
-Date: Fri, 13 Jun 2008 11:37:28 +0200
+Message-ID: <2ff1a98a0806130240o20bd8d5ercf3df8e81beb899d@domain.hid>
+Date: Fri, 13 Jun 2008 11:40:33 +0200
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 In-Reply-To: <d6c8ef150806121637r12b3c09cq4754396958b7353c@domain.hid>
 MIME-Version: 1.0
@@ -28,13 +28,7 @@ On Fri, Jun 13, 2008 at 1:37 AM, Bosko Radivojevic
 >
 > So, ... when could we expect Xenomai 2.5.0? :)
 
-I warned you here:
-https://mail.gna.org/public/xenomai-help/2008-03/msg00153.html
-
-And even sent you a preliminary patch.
-
-Now I do not know if the nocache thing qualifies for addition to the
-stable branch. Is this a new feature or a bug fix ? I do not know.
+Needless to say,  H_NONCACHED has some consequences on performances.
 
 -- 
  Gilles
