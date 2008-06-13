@@ -1,10 +1,12 @@
 Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C8CADE.F74EB106"
-Date: Tue, 10 Jun 2008 11:47:16 +0200
-Message-ID: <0B45E93C5FF65740AEAE690BF3848B7AD382BA@rennsmail04.eu.thmulti.com>
-From: "Fillod Stephane" <stephane.fillod@domain.hid>
-Subject: [Xenomai-core] (no subject)
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C8CD60.62B79D32"
+Date: Fri, 13 Jun 2008 16:18:43 +0200
+Message-ID: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E025B28D9@domain.hid>
+From: "Markus Osterried" <markus.osterried@domain.hid>
+Subject: [Xenomai-core] pSOS skin: bug in tm_ticks_to_date() and
+	tm_date_to_ticks()
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,92 +16,180 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Xenomai-core@domain.hid
 
 This is a multi-part message in MIME format.
 
-------_=_NextPart_001_01C8CADE.F74EB106
+------_=_NextPart_001_01C8CD60.62B79D32
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Hello,
+=20
+there is a bug in the pSOS kernel-space skin, calculating calendar time
+to ticks and vice versa.
+The file xenomai/ksrc/skins/psos+/tm.c should be fixed like this:
+=20
+=20
+=20
+--- xenomai-2.4/ksrc/skins/psos+/tm.c
++++ xenomai-2.4/ksrc/skins/psos+/tm.c
+@@ -204,8 +204,8 @@
+   /* Add one day for leap year after February. */
+   *count +=3D 1;
+=20
+- for (n =3D month - 1; month > 0; month--)
+-  *count +=3D tm_month_sizes[month - 1];
++ for (n =3D 0; n < month-1; n++)
++  *count +=3D tm_month_sizes[n];
+=20
+  *count +=3D day - 1;
+  *count *=3D 24;
+@@ -223,9 +223,10 @@
+ static void tm_ticks_to_date(u_long *date,
+         u_long *time, u_long *ticks, xnticks_t count)
+ {
+- u_long year, month, day, hour, min, sec, allsecs, rem;
++ u_long year, month, day, hour, min, sec, rem;
++ xnticks_t allsecs;
+=20
+- allsecs =3D (u_long)xnarch_ulldiv(count,
+xntbase_get_ticks2sec(psos_tbase), &rem);
++ allsecs =3D xnarch_ulldiv(count, xntbase_get_ticks2sec(psos_tbase),
+&rem);
+=20
+  year =3D 0;
+=20
+@@ -257,14 +258,14 @@
+   month++;
+  }
+=20
+- day =3D allsecs / tm_secbyday;
+- allsecs -=3D (day * tm_secbyday);
+- day++;   /* Days are 1-based. */
+- hour =3D (allsecs / tm_secbyhour);
+- allsecs -=3D (hour * tm_secbyhour);
+- min =3D (allsecs / tm_secbymin);
+- allsecs -=3D (min * tm_secbymin);
+  sec =3D allsecs;
++ day =3D sec / tm_secbyday;
++ sec -=3D (day * tm_secbyday);
++ day++;   /* Days are 1-based. */
++ hour =3D (sec / tm_secbyhour);
++ sec -=3D (hour * tm_secbyhour);
++ min =3D (sec / tm_secbymin);
++ sec -=3D (min * tm_secbymin);
+=20
+  *date =3D (year << 16) | (month << 8) | day;
+  *time =3D (hour << 16) | (min << 8) | sec;
 
-Please find attached a patch against 2.4.4 which brings into=20
-documentation the struct rt_heap_info of the native skin. This patch=20
-also allows DMA rt heaps bigger than 128KB (already in trunk).
+=20
+=20
+Thank you
+Markus
+=20
 
-Cheers
---=20
-Stephane
+------_=_NextPart_001_01C8CD60.62B79D32
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-------_=_NextPart_001_01C8CADE.F74EB106
-Content-Type: application/octet-stream;
-	name="rt_heap_info_doc.patch"
-Content-Transfer-Encoding: base64
-Content-Description: rt_heap_info_doc.patch
-Content-Disposition: attachment;
-	filename="rt_heap_info_doc.patch"
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dus-ascii">
+<META content=3D"MSHTML 6.00.2800.1595" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D696244110-13052008>Hello,</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D696244110-13052008></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D696244110-13052008>there =
+is a bug in=20
+the pSOS&nbsp;<SPAN class=3D332311114-13062008>kernel</SPAN>-space skin, =
+cal<SPAN=20
+class=3D332311114-13062008>culating calendar time to ticks and vice=20
+versa.</SPAN></SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D696244110-13052008><SPAN=20
+class=3D332311114-13062008></SPAN></SPAN></FONT><FONT face=3DArial =
+size=3D2><SPAN=20
+class=3D696244110-13052008>The file xenomai/<SPAN=20
+class=3D332311114-13062008>k</SPAN>src/skins/psos+/tm.c should be fixed =
+like=20
+this:</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D696244110-13052008></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D696244110-13052008></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D696244110-13052008></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3D"Courier New" size=3D2><SPAN =
+class=3D696244110-13052008>---=20
+xenomai-2.4/ksrc/skins/psos+/tm.c<BR>+++ =
+xenomai-2.4/ksrc/skins/psos+/tm.c<BR>@@=20
+-204,8 +204,8 @@<BR>&nbsp;&nbsp;&nbsp;/* Add one day for leap year after =
 
-SW5kZXg6IGluY2x1ZGUvYXNtLWdlbmVyaWMvd3JhcHBlcnMuaAo9PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09ClJDUyBmaWxl
-OiAvaG9tZS9jb25mL3RucC9saW51eHBwYy94ZW5vbWFpL2luY2x1ZGUvYXNtLWdlbmVyaWMvd3Jh
-cHBlcnMuaCx2CnJldHJpZXZpbmcgcmV2aXNpb24gMS4xLjEuNQpyZXRyaWV2aW5nIHJldmlzaW9u
-IDEuNApkaWZmIC11IC1yMS4xLjEuNSAtcjEuNAotLS0gaW5jbHVkZS9hc20tZ2VuZXJpYy93cmFw
-cGVycy5oCTI5IE1heSAyMDA4IDE3OjAwOjA5IC0wMDAwCTEuMS4xLjUKKysrIGluY2x1ZGUvYXNt
-LWdlbmVyaWMvd3JhcHBlcnMuaAk5IEp1biAyMDA4IDA5OjM3OjE0IC0wMDAwCTEuNApAQCAtMjcs
-NiArMjcsNyBAQAogCiAjaW5jbHVkZSA8bGludXgvdmVyc2lvbi5oPgogI2luY2x1ZGUgPGxpbnV4
-L21vZHVsZS5oPgorI2luY2x1ZGUgPGxpbnV4L3NsYWIuaD4KICNpbmNsdWRlIDxhc20vaW8uaD4K
-IAogI2lmIExJTlVYX1ZFUlNJT05fQ09ERSA8IEtFUk5FTF9WRVJTSU9OKDIsNSwwKQpAQCAtMzEx
-LDYgKzMxMiwxMCBAQAogI2luY2x1ZGUgPGxpbnV4L21hcmtlci5oPgogI2VuZGlmIC8qIExJTlVY
-X1ZFUlNJT05fQ09ERSA+PSBLRVJORUxfVkVSU0lPTigyLDYsMjQpICovCiAKKyNpZiBMSU5VWF9W
-RVJTSU9OX0NPREUgPCBLRVJORUxfVkVSU0lPTigyLDYsMjIpCisjZGVmaW5lIEtNQUxMT0NfTUFY
-X1NJWkUgMTMxMDcyCisjZW5kaWYgLyogIUtNQUxMT0NfTUFYX1NJWkUgKi8KKwogI2lmIExJTlVY
-X1ZFUlNJT05fQ09ERSA8IEtFUk5FTF9WRVJTSU9OKDIsNiwwKQogc3RhdGljIGlubGluZSB1bnNp
-Z25lZCBsb25nIGh3ZWlnaHRfbG9uZyh1bnNpZ25lZCBsb25nIHcpCiB7CkluZGV4OiBpbmNsdWRl
-L25hdGl2ZS9oZWFwLmgKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PQpSQ1MgZmlsZTogL2hvbWUvY29uZi90bnAvbGludXhw
-cGMveGVub21haS9pbmNsdWRlL25hdGl2ZS9oZWFwLmgsdgpyZXRyaWV2aW5nIHJldmlzaW9uIDEu
-MS4xLjMKcmV0cmlldmluZyByZXZpc2lvbiAxLjMKZGlmZiAtdSAtcjEuMS4xLjMgLXIxLjMKLS0t
-IGluY2x1ZGUvbmF0aXZlL2hlYXAuaAkyNSBOb3YgMjAwNyAxNjo1MDowNCAtMDAwMAkxLjEuMS4z
-CisrKyBpbmNsdWRlL25hdGl2ZS9oZWFwLmgJMyBKYW4gMjAwOCAwOTo0NzoxMCAtMDAwMAkxLjMK
-QEAgLTM0LDYgKzM0LDEwIEBACiAjZGVmaW5lIEhfU0lOR0xFICAgMHg0MDAJLyogTWFuYWdlIGFz
-IHNpbmdsZS1ibG9jayBhcmVhLiAqLwogI2RlZmluZSBIX1NIQVJFRCAgIChIX01BUFBBQkxFfEhf
-U0lOR0xFKSAvKiBJLmUuIHNoYXJlZCBtZW1vcnkgc2VnbWVudC4gKi8KIAorLyoqIFN0cnVjdHVy
-ZSBjb250YWluaW5nIGhlYXAtaW5mb3JtYXRpb24gdXNlZnVsIHRvIHVzZXJzLgorICoKKyAqICBA
-c2VlIHJ0X2hlYXBfaW5xdWlyZSgpCisgKi8KIHR5cGVkZWYgc3RydWN0IHJ0X2hlYXBfaW5mbyB7
-CiAKICAgICBpbnQgbndhaXRlcnM7CQkvKiAhPCBOdW1iZXIgb2YgcGVuZGluZyB0YXNrcy4gKi8K
-SW5kZXg6IGtzcmMvbnVjbGV1cy9oZWFwLmMKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpSQ1MgZmlsZTogL2hvbWUvY29u
-Zi90bnAvbGludXhwcGMveGVub21haS9rc3JjL251Y2xldXMvaGVhcC5jLHYKcmV0cmlldmluZyBy
-ZXZpc2lvbiAxLjEuMS42CnJldHJpZXZpbmcgcmV2aXNpb24gMS40CmRpZmYgLXUgLXIxLjEuMS42
-IC1yMS40Ci0tLSBrc3JjL251Y2xldXMvaGVhcC5jCTIyIE1hciAyMDA4IDEyOjA1OjM4IC0wMDAw
-CTEuMS4xLjYKKysrIGtzcmMvbnVjbGV1cy9oZWFwLmMJMjUgTWFyIDIwMDggMDk6MjQ6NDAgLTAw
-MDAJMS40CkBAIC0xMTg0LDcgKzExODQsMTEgQEAKIAkJICogc3BhY2UuIEFzc3VtZSB0aGF0IHdl
-IGNhbiB3YWl0IHRvIGdldCB0aGUgcmVxdWlyZWQgbWVtb3J5LgogCQkgKi8KIAotCQlwdHIgPSBr
-bWFsbG9jKHNpemUsIGttZmxhZ3MgfCBHRlBfS0VSTkVMKTsKKwkJaWYgKHNpemUgPD0gS01BTExP
-Q19NQVhfU0laRSkKKwkJCXB0ciA9IGttYWxsb2Moc2l6ZSwga21mbGFncyB8IEdGUF9LRVJORUwp
-OworCQllbHNlCisJCQlwdHIgPSAodm9pZCopIF9fZ2V0X2ZyZWVfcGFnZXMoa21mbGFncyB8IEdG
-UF9LRVJORUwsCisJCQkJCQkgICAgICAgZ2V0X29yZGVyKHNpemUpKTsKIAogCQlpZiAoIXB0cikK
-IAkJCXJldHVybiBOVUxMOwpAQCAtMTIxNiw3ICsxMjIwLDEwIEBACiAJCWZvciAodmFkZHIgPSB2
-YWJhc2U7IHZhZGRyIDwgdmFiYXNlICsgc2l6ZTsgdmFkZHIgKz0gUEFHRV9TSVpFKQogCQkJQ2xl
-YXJQYWdlUmVzZXJ2ZWQodmlydF90b19wYWdlKHZhZGRyKSk7CiAKLQkJa2ZyZWUocHRyKTsKKwkJ
-aWYgKHNpemUgPD0gS01BTExPQ19NQVhfU0laRSkKKwkJCWtmcmVlKHB0cik7CisJCWVsc2UKKwkJ
-CWZyZWVfcGFnZXMoKHVuc2lnbmVkIGxvbmcpcHRyLCBnZXRfb3JkZXIoc2l6ZSkpOwogCX0KIH0K
-IApJbmRleDoga3NyYy9za2lucy9uYXRpdmUvaGVhcC5jCj09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KUkNTIGZpbGU6IC9o
-b21lL2NvbmYvdG5wL2xpbnV4cHBjL3hlbm9tYWkva3NyYy9za2lucy9uYXRpdmUvaGVhcC5jLHYK
-cmV0cmlldmluZyByZXZpc2lvbiAxLjEuMS42CnJldHJpZXZpbmcgcmV2aXNpb24gMS45CmRpZmYg
-LXUgLXIxLjEuMS42IC1yMS45Ci0tLSBrc3JjL3NraW5zL25hdGl2ZS9oZWFwLmMJMjUgTWFyIDIw
-MDggMTU6MDY6MjMgLTAwMDAJMS4xLjEuNgorKysga3NyYy9za2lucy9uYXRpdmUvaGVhcC5jCTkg
-SnVuIDIwMDggMDk6Mzc6NTggLTAwMDAJMS45CkBAIC0yMDIsOCArMjAyLDggQEAKICAqCiAgKiAt
-IEhfRE1BIGNhdXNlcyB0aGUgYmxvY2sgcG9vbCBhc3NvY2lhdGVkIHRvIHRoZSBoZWFwIHRvIGJl
-CiAgKiBhbGxvY2F0ZWQgaW4gcGh5c2ljYWxseSBjb250aWd1b3VzIG1lbW9yeSwgc3VpdGFibGUg
-Zm9yIERNQQotICogb3BlcmF0aW9ucyB3aXRoIEkvTyBkZXZpY2VzLiBBIDEyOEtiIGxpbWl0IGV4
-aXN0cyBmb3IgQGEgaGVhcHNpemUKLSAqIHdoZW4gdGhpcyBmbGFnIGlzIHBhc3NlZC4KKyAqIG9w
-ZXJhdGlvbnMgd2l0aCBJL08gZGV2aWNlcy4gQGEgaGVhcHNpemUgYmV5b25kIDEyOEtpQiB3aWxs
-CisgKiBiZSByb3VuZGVkIHVwIHRvIGEgdHdvIGV4cG9ub25lbnQgYWxsb2NhdGlvbi4KICAqCiAg
-KiBAcmV0dXJuIDAgaXMgcmV0dXJuZWQgdXBvbiBzdWNjZXNzLiBPdGhlcndpc2U6CiAgKgo=
+February. */<BR>&nbsp;&nbsp;&nbsp;*count +=3D 1;<BR>&nbsp;<BR>-&nbsp;for =
+(n =3D=20
+month - 1; month &gt; 0; month--)<BR>-&nbsp;&nbsp;*count +=3D =
+tm_month_sizes[month=20
+- 1];<BR>+&nbsp;for (n =3D 0; n &lt; month-1; =
+n++)<BR>+&nbsp;&nbsp;*count +=3D=20
+tm_month_sizes[n];<BR>&nbsp;<BR>&nbsp;&nbsp;*count +=3D day -=20
+1;<BR>&nbsp;&nbsp;*count *=3D 24;<BR>@@ -223,9 +223,10 =
+@@<BR>&nbsp;static void=20
+tm_ticks_to_date(u_long=20
+*date,<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u_long *time, =
+u_long=20
+*ticks, xnticks_t count)<BR>&nbsp;{<BR>-&nbsp;u_long year, month, day, =
+hour,=20
+min, sec, allsecs, rem;<BR>+&nbsp;u_long year, month, day, hour, min, =
+sec,=20
+rem;<BR>+&nbsp;xnticks_t allsecs;<BR>&nbsp;<BR>-&nbsp;allsecs =3D=20
+(u_long)xnarch_ulldiv(count, xntbase_get_ticks2sec(psos_tbase),=20
+&amp;rem);<BR>+&nbsp;allsecs =3D xnarch_ulldiv(count,=20
+xntbase_get_ticks2sec(psos_tbase), =
+&amp;rem);<BR>&nbsp;<BR>&nbsp;&nbsp;year =3D=20
+0;<BR>&nbsp;<BR>@@ -257,14 +258,14=20
+@@<BR>&nbsp;&nbsp;&nbsp;month++;<BR>&nbsp;&nbsp;}<BR>&nbsp;<BR>-&nbsp;day=
+ =3D=20
+allsecs / tm_secbyday;<BR>-&nbsp;allsecs -=3D (day *=20
+tm_secbyday);<BR>-&nbsp;day++;&nbsp;&nbsp;&nbsp;/* Days are 1-based.=20
+*/<BR>-&nbsp;hour =3D (allsecs / tm_secbyhour);<BR>-&nbsp;allsecs -=3D =
+(hour *=20
+tm_secbyhour);<BR>-&nbsp;min =3D (allsecs / =
+tm_secbymin);<BR>-&nbsp;allsecs -=3D=20
+(min * tm_secbymin);<BR>&nbsp;&nbsp;sec =3D allsecs;<BR>+&nbsp;day =3D =
+sec /=20
+tm_secbyday;<BR>+&nbsp;sec -=3D (day *=20
+tm_secbyday);<BR>+&nbsp;day++;&nbsp;&nbsp;&nbsp;/* Days are 1-based.=20
+*/<BR>+&nbsp;hour =3D (sec / tm_secbyhour);<BR>+&nbsp;sec -=3D (hour *=20
+tm_secbyhour);<BR>+&nbsp;min =3D (sec / tm_secbymin);<BR>+&nbsp;sec -=3D =
+(min *=20
+tm_secbymin);<BR>&nbsp;<BR>&nbsp;&nbsp;*date =3D (year &lt;&lt; 16) | =
+(month=20
+&lt;&lt; 8) | day;<BR>&nbsp;&nbsp;*time =3D (hour &lt;&lt; 16) | (min =
+&lt;&lt; 8)=20
+| sec;<BR></SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D696244110-13052008></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D696244110-13052008></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D696244110-13052008><SPAN=20
+class=3D332311114-13062008>Thank you</SPAN></SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D696244110-13052008><SPAN=20
+class=3D332311114-13062008>Markus</SPAN></SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D696244110-13052008><SPAN=20
+class=3D332311114-13062008></SPAN></SPAN></FONT><FONT face=3DArial =
+size=3D2><SPAN=20
+class=3D696244110-13052008></SPAN></FONT><FONT face=3DArial =
+size=3D2><SPAN=20
+class=3D696244110-13052008></SPAN></FONT><FONT face=3DArial =
+size=3D2><SPAN=20
+class=3D696244110-13052008></SPAN></FONT>&nbsp;</DIV></DIV></BODY></HTML>=
 
-------_=_NextPart_001_01C8CADE.F74EB106--
+
+------_=_NextPart_001_01C8CD60.62B79D32--
 
