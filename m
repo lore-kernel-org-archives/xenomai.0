@@ -1,13 +1,10 @@
+Message-ID: <e4ef24880806151540r477dbe2bq6162a7b781c60f7e@domain.hid>
+Date: Sun, 15 Jun 2008 15:40:09 -0700
+From: "Rob Gubler" <rgubler@domain.hid>
 MIME-Version: 1.0
-Date: Mon, 23 Jun 2008 19:52:12 +0200
-From: Matthieu <matthieu.connaulte_xenomai@domain.hid>
-In-Reply-To: <485FDADB.60705@domain.hid>
-References: <485FDADB.60705@domain.hid>
-Message-ID: <79d394791426e089eda84f208d108ce1@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] xenomai scheduler's ticks period
-Reply-To: matthieu.connaulte_xenomai@domain.hid
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_22286_30652198.1213569609905"
+Subject: [Xenomai-help] CPU affinity on a per thread basis
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,70 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Mon, 23 Jun 2008 19:18:19 +0200, Philippe Gerum <rpm@xenomai.org> wrot=
-e:
-> Gilles Chanteperdrix wrote:
->> Philippe Gerum wrote:
->>> Gilles Chanteperdrix wrote:
->>>> Philippe Gerum wrote:
->>>>> Matthieu wrote:
->>>>>
->>>>>> I have a segmentation fault error when I use modprobe xeno_vxworks
->>>>>> tick_arg=3D0 (tick_arg=3D1000 works)
->>>>>>
->>>>> Any kernel log?
->>>>>
->>>> wind_sysclk_init uses its argument for a division.
->>>>
->>> --- ksrc/skins/vxworks/sysLib.c	(revision 3975)
->>> +++ ksrc/skins/vxworks/sysLib.c	(working copy)
->>> @@ -39,12 +39,12 @@
->>>  int wind_sysclk_init(u_long period)
->>>  {
->>>  	extern u_long sync_time;
->>> -	u_long init_rate =3D ONE_BILLION / period;
->>> +	u_long init_rate =3D period ? ONE_BILLION / period : XN_APERIODIC_T=
-ICK;
->>>  	int err;
->>>
->>>  	err =3D xntbase_alloc("vxworks", period, sync_time ? 0 : XNTBISO,
->>>  			    &wind_tbase);
->>> -	if (err)
->>> +	if (err || period =3D=3D 0)
->>>  		return err;
->>>
->>>  	err =3D sysClkRateSet(init_rate);
->>
->> Ok, but what about sysClkRateGet then ? It is needed for conversion
->> between durations and ticks count. It will not work since sysClkRateSe=
-t
->> was not called, and we can not call sysClkRateSet since it would start
->> the timer.
->>
->>
->=20
-> We don't have to care about this. If people want to override the system
-> timer,
-> then they should deal with the xntbase interface themselves. What is
-> provided is
-> a mean to disable internal timing so that it does not conflict with the
-> user-provided stuff, nothing more.
->=20
-> --
-> Philippe.
->=20
+------=_Part_22286_30652198.1213569609905
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Thank you for all, I'll test it tomorrow. I understand that these
-modifications are sufficient and I will have no problem with "modprobe
-xeno_vxworks tick_arg=3D0" command and with tickAnnounce vxworks schedule=
-r in
-my own rtdm linux module driver. (I'm about using a rtdm driver as Philip=
-pe
-suggest me, directly in a rtdm_irq_handler_t interrupt handler).
+Hello,
 
-Matthieu
+I am using Xenomai 2.4.  I'd like to explicitly control which CPU a
+particular thread executes on.  The Xenomai POSIX skin documentation says to
+achieve this with
+pthread_attr_setaffinity_np(...)<%28http://www.xenomai.org/documentation/trunk/html/api/group__posix__threadattr.html#gc79718c596b9cb0fdff961eede1f5995%29>my
+thread needs to be created in the kernel space. I just want to verify
+that this can not be accomplished in a user space thread?
 
+I found a post<https://mail.gna.org/public/xenomai-help/2007-05/msg00300.html>a
+year or so ago about this that mentions CPU affinity using
+sched_setaffinity(...).  My understanding though is that this particular
+call sets the affinity for the entire process/task and doesn't allow thread
+specific CPU affinity control.  Is this true?
 
+Lastly, is it possible to limit the Linux kernel to run on only a single CPU
+to free all other CPUs for Xenomai specific tasks?
+
+Thanks,
+
+Rob
+
+------=_Part_22286_30652198.1213569609905
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hello,<br><br>I am using Xenomai 2.4.&nbsp; I&#39;d like to explicitly control which CPU a particular thread executes on.&nbsp; The Xenomai POSIX skin documentation says to achieve this with <a href="%28http://www.xenomai.org/documentation/trunk/html/api/group__posix__threadattr.html#gc79718c596b9cb0fdff961eede1f5995%29">pthread_attr_setaffinity_np(...)</a> my thread needs to be created in the kernel space. I just want to verify that this can not be accomplished in a user space thread?<br>
+<br>I found a <a href="https://mail.gna.org/public/xenomai-help/2007-05/msg00300.html">post</a> a year or so ago about this that mentions CPU affinity using sched_setaffinity(...).&nbsp; My understanding though is that this particular call sets the affinity for the entire process/task and doesn&#39;t allow thread specific CPU affinity control.&nbsp; Is this true?<br>
+<br>Lastly, is it possible to limit the Linux kernel to run on only a single CPU to free all other CPUs for Xenomai specific tasks?<br><br>Thanks,<br><br>Rob<br>
+
+------=_Part_22286_30652198.1213569609905--
 
