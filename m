@@ -1,10 +1,14 @@
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"
-Date: Thu, 26 Jun 2008 12:03:40 +0200
-From: "Karl Reichert" <Karl-Trampe@domain.hid>
-Message-ID: <20080626100340.308320@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Problems with Threads and RTnet
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18517.41596.577449.774168@domain.hid>
+Date: Mon, 16 Jun 2008 01:15:08 +0200
+In-Reply-To: <e4ef24880806151610s634307efi73c47695eadde067@domain.hid>
+References: <e4ef24880806151540r477dbe2bq6162a7b781c60f7e@domain.hid>
+	<18517.40944.439081.634345@domain.hid>
+	<e4ef24880806151610s634307efi73c47695eadde067@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] CPU affinity on a per thread basis
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,44 +18,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rtnet-users@domain.hid
+To: Rob Gubler <rgubler@domain.hid>
 Cc: xenomai@xenomai.org
 
-> Karl Reichert wrote:
-> > Hello list,
-> > 
-> > I have some problems with RTnet and threads. I create two thread via
-> rt_task_spawn(), one is sending and one is receiving (non-blocking) frames
-> over rtnet.
-> > 
-> > Each task is existed with return (I also tried rt_task_delete()) and the
-> main-function is waiting for task-termination via rt_task_join().
-> > 
-> > When I run this program the first time, everything is fine. When I run
-> it a second time without rebooting, I can't receive any more frames
-> (returnvalue -1).
-> > 
-> > So it seems that the termination of the tasks and the main-function from
-> the first run failed to free the "RTnet resources", too.
-> > 
-> > Any idea, what I'am doing wrong?
-> 
-> What version of Xenomai are you running ? Do not you get error messages 
-> in the console ?
-> 
-> -- 
->                                                   Gilles.
+Rob Gubler wrote:
+ > On Sun, Jun 15, 2008 at 4:04 PM, Gilles Chanteperdrix <
+ > gilles.chanteperdrix@xenomai.org> wrote:
+ > 
+ > > Rob Gubler wrote:
+ > >  > Hello,
+ > >  >
+ > >  > I am using Xenomai 2.4.  I'd like to explicitly control which CPU a
+ > >  > particular thread executes on.  The Xenomai POSIX skin documentation
+ > > says to
+ > >  > achieve this with
+ > >  > pthread_attr_setaffinity_np(...)<%28
+ > > http://www.xenomai.org/documentation/trunk/html/api/group__posix__threadattr.html#gc79718c596b9cb0fdff961eede1f5995%29
+ > > >my
+ > >  > thread needs to be created in the kernel space. I just want to verify
+ > >  > that this can not be accomplished in a user space thread?
+ > >  >
+ > >  > I found a post<
+ > > https://mail.gna.org/public/xenomai-help/2007-05/msg00300.html>a
+ > >  > year or so ago about this that mentions CPU affinity using
+ > >  > sched_setaffinity(...).  My understanding though is that this particular
+ > >  > call sets the affinity for the entire process/task and doesn't allow
+ > > thread
+ > >  > specific CPU affinity control.  Is this true?
+ > >
+ > > The posix skin documentation only documents the kernel-space service,
+ > > because there is no special need to implement these services in
+ > > kernel-space: the libc already implements both
+ > > pthread_attr_setaffinity_np and pthread_setaffinity_np
+ > >
+ > 
+ > 
+ > Thanks Gilles.  Did you mean:  "The posix skin documentation only documents
+ > the kernel-space service, because there is no special need to implement
+ > these services in **user-space** ..."  ??
 
-I'm running Xenomai 2.4.3 with Rtnet 0.9.10
-
-And sorry for the mistake, rt_dev_recv() returns with -110 which means "connection timeout". There might be some problems with the socket, but I don't have a clue, what's going on.
-
-I do not get any error messages in console. Neither dmesg nor /var/log/sys reports an error.
-
-Best regards,
-Karl
+Yes, in user-space, because they already exist there.
 
 -- 
-von Karl Reichert
 
+
+					    Gilles.
 
