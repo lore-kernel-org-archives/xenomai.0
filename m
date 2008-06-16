@@ -1,71 +1,187 @@
-Message-ID: <e4ef24880806151833n4e36005coadc1087c29f5b1cb@domain.hid>
-Date: Sun, 15 Jun 2008 18:33:09 -0700
-From: "Rob Gubler" <rgubler@domain.hid>
+Message-ID: <48568E78.5000606@domain.hid>
+Date: Mon, 16 Jun 2008 18:02:00 +0200
+From: Pierangelo Masarati <masarati@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_22787_357324.1213579989452"
-Subject: [Xenomai-help] Thread scheduling on mult-processor systems
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+Content-Type: multipart/mixed; boundary="------------060304000304010704030606"
+Subject: [Adeos-main]  latency fix for 2.6.25?
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
 
-------=_Part_22787_357324.1213579989452
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
+--------------060304000304010704030606
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-Hello,
+Dear ADEOS users,
 
-I am trying execute 2 threads on 2 separate processors.  To do this I
-created 2 threads, each using the FIFO scheduler where both threads have the
-same priority defined by sched_get_priority_max(SCHED_FIFO).  Each thread is
-initialized to run on a specific CPU with a call to
-pthread_setaffinity_np(...); Thread 1 on CPU 0, and Thread 2 on CPU 1.  I
-verified each thread was assigned correctly by calling
-pthread_getaffinity_np(...), and also by looking at /proc/xenomai/sched,
-while the program was running.
+2.6.25 seems to show abnormal latencies on hardware that showed good 
+performances up to 2.6.24.  We think we traced down the issue to x86's 
+process_xx.c, which disappeared after regressing default_idle() to 
+2.6.24.  The related changes are described in the attached patch.
 
-For the purposes of testing, both threads do the same thing:
+Sincerely, p.
 
-        for(unsigned long i = 0; i != 9000000; i++)
-        {
-                if(!(i % 50000))
-                {
-                        std::cout << "tick" << std::endl;
-                }
 
-                sched_yield();
-        }
-
-        std::cout << "elapsed time: " << [elapsed time];
-
-My hope was that when these threads would execute simultaneously, they would
-truly run in parallel on their respective processor.  But, what I am
-noticing is the elapsed time when both threads run is 12 seconds, while when
-only one thread runs is 6 seconds.  So, I haven't seem to have bought any
-performance improvements by assigning  the thread to run on a specific
-processor.
-
- Where have I gone wrong in my line of thinking?
-
--Rob
-
-------=_Part_22787_357324.1213579989452
-Content-Type: text/html; charset=ISO-8859-1
+--------------060304000304010704030606
+Content-Type: text/x-patch;
+ name="process_xx-2.6.25.patch"
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Content-Disposition: inline;
+ filename="process_xx-2.6.25.patch"
 
-Hello,<br><br>I am trying execute 2 threads on 2 separate processors.&nbsp; To do this I created 2 threads, each using the FIFO scheduler where both threads have the same priority defined by sched_get_priority_max(SCHED_FIFO).&nbsp; Each thread is initialized to run on a specific CPU with a call to pthread_setaffinity_np(...); Thread 1 on CPU 0, and Thread 2 on CPU 1.&nbsp; I verified each thread was assigned correctly by calling pthread_getaffinity_np(...), and also by looking at /proc/xenomai/sched, while the program was running.<br>
-<br>For the purposes of testing, both threads do the same thing:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(unsigned long i = 0; i != 9000000; i++)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if(!(i % 50000))<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; std::cout &lt;&lt; &quot;tick&quot; &lt;&lt; std::endl;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sched_yield();<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; std::cout &lt;&lt; &quot;elapsed time: &quot; &lt;&lt; [elapsed time];<br><br>My hope was that when these threads would execute simultaneously, they would truly run in parallel on their respective processor.&nbsp; But, what I am noticing is the elapsed time when both threads run is 12 seconds, while when only one thread runs is 6 seconds.&nbsp; So, I haven&#39;t seem to have bought any performance improvements by assigning&nbsp; the thread to run on a specific processor.<br>
-<br>&nbsp;Where have I gone wrong in my line of thinking?&nbsp; <br><br>-Rob<br><br>
+--- process_32.c.orig	2008-04-17 04:49:44.000000000 +0200
++++ process_32.c	2008-06-16 09:38:20.000000000 +0200
+@@ -111,20 +111,25 @@ void default_idle(void)
+ 		 */
+ 		smp_mb();
+ 
+-		local_irq_disable();
++		local_irq_disable_hw();
+ 		if (!need_resched()) {
++#ifndef CONFIG_IPIPE
+ 			ktime_t t0, t1;
+ 			u64 t0n, t1n;
+ 
+ 			t0 = ktime_get();
+ 			t0n = ktime_to_ns(t0);
++#endif
+ 			safe_halt();	/* enables interrupts racelessly */
++#ifndef CONFIG_IPIPE
+ 			local_irq_disable();
+ 			t1 = ktime_get();
+ 			t1n = ktime_to_ns(t1);
+ 			sched_clock_idle_wakeup_event(t1n - t0n);
+-		}
+-		local_irq_enable();
++			local_irq_enable(); /* This will force enable_hw as well. */
++#endif
++		} else
++			local_irq_enable_hw();
+ 		current_thread_info()->status |= TS_POLLING;
+ 	} else {
+ 		/* loop is done by the caller */
+@@ -203,6 +208,7 @@ void cpu_idle(void)
+ 				play_dead();
+ 
+ 			__get_cpu_var(irq_stat).idle_timestamp = jiffies;
++ 			ipipe_suspend_domain();
+ 			idle();
+ 		}
+ 		tick_nohz_restart_sched_tick();
+@@ -269,6 +275,11 @@ static int __cpuinit mwait_usable(const 
+ 
+ void __cpuinit select_idle_routine(const struct cpuinfo_x86 *c)
+ {
++#ifdef CONFIG_IPIPE
++#define default_to_mwait force_mwait
++#else
++#define default_to_mwait 1
++#endif
+ 	static int selected;
+ 
+ 	if (selected)
+@@ -284,7 +295,7 @@ void __cpuinit select_idle_routine(const
+ 		 * Skip, if setup has overridden idle.
+ 		 * One CPU supports mwait => All CPUs supports mwait
+ 		 */
+-		if (!pm_idle) {
++		if (!pm_idle && default_to_mwait) {
+ 			printk(KERN_INFO "using mwait in idle threads.\n");
+ 			pm_idle = mwait_idle;
+ 		}
+--- process_64.c.orig	2008-04-17 04:49:44.000000000 +0200
++++ process_64.c	2008-06-16 09:38:20.000000000 +0200
+@@ -53,6 +53,8 @@
+ 
+ asmlinkage extern void ret_from_fork(void);
+ 
++asmlinkage extern void thread_return(void);
++
+ unsigned long kernel_thread_flags = CLONE_VM | CLONE_UNTRACED;
+ 
+ unsigned long boot_option_idle_override = 0;
+@@ -105,20 +107,25 @@ void default_idle(void)
+ 	 * test NEED_RESCHED:
+ 	 */
+ 	smp_mb();
+-	local_irq_disable();
++	local_irq_disable_hw();
+ 	if (!need_resched()) {
++#ifndef CONFIG_IPIPE
+ 		ktime_t t0, t1;
+ 		u64 t0n, t1n;
+ 
+ 		t0 = ktime_get();
+ 		t0n = ktime_to_ns(t0);
++#endif
+ 		safe_halt();	/* enables interrupts racelessly */
++#ifndef CONFIG_IPIPE
+ 		local_irq_disable();
+ 		t1 = ktime_get();
+ 		t1n = ktime_to_ns(t1);
+ 		sched_clock_idle_wakeup_event(t1n - t0n);
+-	}
+-	local_irq_enable();
++		local_irq_enable(); /* This will force enable_hw as well. */
++#endif
++	} else
++		local_irq_enable_hw();
+ 	current_thread_info()->status |= TS_POLLING;
+ }
+ 
+@@ -185,6 +192,7 @@ void cpu_idle(void)
+ 			 */
+ 			local_irq_disable();
+ 			enter_idle();
++ 			ipipe_suspend_domain();
+ 			idle();
+ 			/* In many cases the interrupt that ended idle
+ 			   has already called exit_idle. But some idle
+@@ -265,6 +273,11 @@ static int __cpuinit mwait_usable(const 
+ 
+ void __cpuinit select_idle_routine(const struct cpuinfo_x86 *c)
+ {
++#ifdef CONFIG_IPIPE
++#define default_to_mwait force_mwait
++#else
++#define default_to_mwait 1
++#endif
+ 	static int selected;
+ 
+ 	if (selected)
+@@ -280,7 +293,7 @@ void __cpuinit select_idle_routine(const
+ 		 * Skip, if setup has overridden idle.
+ 		 * One CPU supports mwait => All CPUs supports mwait
+ 		 */
+-		if (!pm_idle) {
++ 		if (!pm_idle && default_to_mwait) {
+ 			printk(KERN_INFO "using mwait in idle threads.\n");
+ 			pm_idle = mwait_idle;
+ 		}
+@@ -483,6 +496,7 @@ int copy_thread(int nr, unsigned long cl
+ 	p->thread.sp = (unsigned long) childregs;
+ 	p->thread.sp0 = (unsigned long) (childregs+1);
+ 	p->thread.usersp = me->thread.usersp;
++ 	p->thread.rip = (unsigned long) thread_return;
+ 
+ 	set_tsk_thread_flag(p, TIF_FORK);
+ 
+@@ -602,7 +616,7 @@ __switch_to(struct task_struct *prev_p, 
+ {
+ 	struct thread_struct *prev = &prev_p->thread,
+ 				 *next = &next_p->thread;
+-	int cpu = smp_processor_id();
++	int cpu = raw_smp_processor_id();
+ 	struct tss_struct *tss = &per_cpu(init_tss, cpu);
+ 
+ 	/* we're going to use this soon, after a few expensive things */
 
-------=_Part_22787_357324.1213579989452--
+--------------060304000304010704030606--
 
