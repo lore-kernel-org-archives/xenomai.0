@@ -1,12 +1,10 @@
-Message-ID: <4868EE0C.7050003@domain.hid>
-Date: Mon, 30 Jun 2008 16:30:36 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <e4ef24880806151833n4e36005coadc1087c29f5b1cb@domain.hid>
+Date: Sun, 15 Jun 2008 18:33:09 -0700
+From: "Rob Gubler" <rgubler@domain.hid>
 MIME-Version: 1.0
-References: <16474.81.252.86.91.1211199249.squirrel@domain.hid>	<2766.81.252.86.91.1211992159.squirrel@domain.hid>	<2ff1a98a0805280931j611ae10er69b968ae8699d63d@domain.hid>	<16273.81.252.86.91.1212060383.squirrel@domain.hid>	<2ff1a98a0805290614w3d846e6by69b033204f912391@domain.hid>	<13639.81.252.86.91.1212153659.squirrel@domain.hid>	<18496.31292.674733.417262@domain.hid>	<3380.62.39.72.60.1213367793.squirrel@domain.hid>	<2ff1a98a0806130843u17a146c5g38daf88bcd5ab7f6@domain.hid>	<3842.81.252.86.91.1213598456.squirrel@domain.hid>	<2ff1a98a0806160233o1e37d876xc5210aa16ade0f70@domain.hid>	<7379.62.39.72.60.1213803323.squirrel@domain.hid>
-	<4867AA72.8080108@domain.hid>
-In-Reply-To: <4867AA72.8080108@domain.hid>
-Content-Type: multipart/mixed; boundary="------------080604070004030303030805"
-Subject: Re: [Xenomai-help] Problem with time-out ends
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_22787_357324.1213579989452"
+Subject: [Xenomai-help] Thread scheduling on mult-processor systems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,76 +14,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabien MAHOT <fabien.mahot@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------080604070004030303030805
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+------=_Part_22787_357324.1213579989452
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Gilles Chanteperdrix wrote:
-> Fabien MAHOT wrote:
->> Hello,
->>
->> I would like to know if you find something about my problem? Do you have
->> more clues with the "frame pointers" debug?
-> 
-> Hi Fabien,
-> 
-> I found something. Could you try the attached patch, to see if we are
-> spotting the right bug ?
+Hello,
 
-Ok. Here comes a better patch. To be applied to the I-pipe patched kernel.
+I am trying execute 2 threads on 2 separate processors.  To do this I
+created 2 threads, each using the FIFO scheduler where both threads have the
+same priority defined by sched_get_priority_max(SCHED_FIFO).  Each thread is
+initialized to run on a specific CPU with a call to
+pthread_setaffinity_np(...); Thread 1 on CPU 0, and Thread 2 on CPU 1.  I
+verified each thread was assigned correctly by calling
+pthread_getaffinity_np(...), and also by looking at /proc/xenomai/sched,
+while the program was running.
 
--- 
-                                                  Gilles.
+For the purposes of testing, both threads do the same thing:
 
---------------080604070004030303030805
-Content-Type: text/plain;
- name="ipipe-longer-atomicswitch.diff"
+        for(unsigned long i = 0; i != 9000000; i++)
+        {
+                if(!(i % 50000))
+                {
+                        std::cout << "tick" << std::endl;
+                }
+
+                sched_yield();
+        }
+
+        std::cout << "elapsed time: " << [elapsed time];
+
+My hope was that when these threads would execute simultaneously, they would
+truly run in parallel on their respective processor.  But, what I am
+noticing is the elapsed time when both threads run is 12 seconds, while when
+only one thread runs is 6 seconds.  So, I haven't seem to have bought any
+performance improvements by assigning  the thread to run on a specific
+processor.
+
+ Where have I gone wrong in my line of thinking?
+
+-Rob
+
+------=_Part_22787_357324.1213579989452
+Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="ipipe-longer-atomicswitch.diff"
+Content-Disposition: inline
 
-diff --git a/kernel/sched.c b/kernel/sched.c
-index a4bf7d3..0865f23 100644
---- a/kernel/sched.c
-+++ b/kernel/sched.c
-@@ -2488,6 +2488,8 @@ context_switch(struct rq *rq, struct task_struct
-*prev,
+Hello,<br><br>I am trying execute 2 threads on 2 separate processors.&nbsp; To do this I created 2 threads, each using the FIFO scheduler where both threads have the same priority defined by sched_get_priority_max(SCHED_FIFO).&nbsp; Each thread is initialized to run on a specific CPU with a call to pthread_setaffinity_np(...); Thread 1 on CPU 0, and Thread 2 on CPU 1.&nbsp; I verified each thread was assigned correctly by calling pthread_getaffinity_np(...), and also by looking at /proc/xenomai/sched, while the program was running.<br>
+<br>For the purposes of testing, both threads do the same thing:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(unsigned long i = 0; i != 9000000; i++)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if(!(i % 50000))<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; std::cout &lt;&lt; &quot;tick&quot; &lt;&lt; std::endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sched_yield();<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; std::cout &lt;&lt; &quot;elapsed time: &quot; &lt;&lt; [elapsed time];<br><br>My hope was that when these threads would execute simultaneously, they would truly run in parallel on their respective processor.&nbsp; But, what I am noticing is the elapsed time when both threads run is 12 seconds, while when only one thread runs is 6 seconds.&nbsp; So, I haven&#39;t seem to have bought any performance improvements by assigning&nbsp; the thread to run on a specific processor.<br>
+<br>&nbsp;Where have I gone wrong in my line of thinking?&nbsp; <br><br>-Rob<br><br>
 
-     barrier();
-
-+    prev->state &= ~TASK_ATOMICSWITCH;
-+
-     if (task_hijacked(prev))
-         return 1;
-     /*
-@@ -4161,11 +4163,9 @@ need_resched:
-     rcu_qsctr_inc(cpu);
-     prev = rq->curr;
-     switch_count = &prev->nivcsw;
--     if (unlikely(prev->state & TASK_ATOMICSWITCH)) {
--         prev->state &= ~TASK_ATOMICSWITCH;
-+     if (unlikely(prev->state & TASK_ATOMICSWITCH))
-         /* Pop one disable level -- one still remains. */
-         preempt_enable();
--     }
-
-     release_kernel_lock(prev);
- need_resched_nonpreemptible:
-@@ -4216,8 +4216,10 @@ need_resched_nonpreemptible:
-          */
-         cpu = smp_processor_id();
-         rq = cpu_rq(cpu);
--    } else
-+    } else {
-+        prev->state &= ~TASK_ATOMICSWITCH;
-         spin_unlock_irq(&rq->lock);
-+    }
-
-     hrtick_set(rq);
-
---------------080604070004030303030805--
+------=_Part_22787_357324.1213579989452--
 
