@@ -1,42 +1,38 @@
-Message-ID: <4858E524.7040902@domain.hid>
-Date: Wed, 18 Jun 2008 12:36:20 +0200
-From: Pierangelo Masarati <masarati@domain.hid>
+Message-ID: <3842.81.252.86.91.1213598456.squirrel@domain.hid>
+In-Reply-To: <2ff1a98a0806130843u17a146c5g38daf88bcd5ab7f6@domain.hid>
+References: <16474.81.252.86.91.1211199249.squirrel@domain.hid> 
+	<5871.81.252.86.91.1211789666.squirrel@domain.hid> 
+	<18491.29266.196753.611570@domain.hid> 
+	<2766.81.252.86.91.1211992159.squirrel@domain.hid> 
+	<2ff1a98a0805280931j611ae10er69b968ae8699d63d@domain.hid> 
+	<16273.81.252.86.91.1212060383.squirrel@domain.hid> 
+	<2ff1a98a0805290614w3d846e6by69b033204f912391@domain.hid> 
+	<13639.81.252.86.91.1212153659.squirrel@domain.hid> 
+	<18496.31292.674733.417262@domain.hid> 
+	<3380.62.39.72.60.1213367793.squirrel@domain.hid>
+	<2ff1a98a0806130843u17a146c5g38daf88bcd5ab7f6@domain.hid>
+Date: Mon, 16 Jun 2008 08:40:56 +0200 (CEST)
+From: "Fabien MAHOT" <fabien.mahot@domain.hid>
 MIME-Version: 1.0
-References: <48568E78.5000606@domain.hid>
-	<485695AE.7030509@domain.hid>	<485794CC.3030102@domain.hid>	<485799E6.2060602@domain.hid>
-	<48579C9B.1070402@domain.hid> <4857B41B.5060300@domain.hid>
-	<4857B670.9060107@domain.hid>
-In-Reply-To: <4857B670.9060107@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] latency fix for 2.6.25?
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: rpm@xenomai.org
-Cc: adeos-main@gna.org
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Problem with time-out ends
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
+Hello,
 
->>> Ok, you were talking about the _previous_ implementation, right?
->> Yes.  It's been running for a few hours today, so your fix seems to be 
->> fine; in any case, the tests will run overnight, and I'll let you know 
->> tomorrow.  I believe this issue could not be easily pointed out by just 
->> a simple latency check.
->>
-> 
-> Agreed, we need to create a load that makes races on seqlocks more likely, and
-> ideally with lots of readers delaying a single writer.
+I enabled debug traces for rtc drivers.
 
-The testing of your fix ran overnight without problems, so we'd consider 
-it fine.  Another possible fix to preserve linux timings is to use 
-local_irq_disable_hw() after halt.  It seems to create no significant 
-latency.
+cordially
 
-Sincerely, p.
 
