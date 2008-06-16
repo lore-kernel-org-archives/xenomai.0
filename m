@@ -1,75 +1,46 @@
-Message-ID: <48762472.3000901@domain.hid>
-Date: Thu, 10 Jul 2008 17:02:10 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48562EC1.9000507@domain.hid>
+Date: Mon, 16 Jun 2008 11:13:37 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <48760BCD.3080505@domain.hid> <48761DC0.3080901@domain.hid>
-In-Reply-To: <48761DC0.3080901@domain.hid>
+References: <4850DC9D.4010607@domain.hid>	<2ff1a98a0806120208n48d15ed6m4e67b582dced1ba3@domain.hid>
+	<48510808.9020304@domain.hid> <485174A7.7040505@domain.hid>
+	<485227E2.3030603@domain.hid> <48523BE4.8070403@domain.hid>
+	<48523E11.40702@domain.hid> <4854CF37.20001@domain.hid>
+	<485627D1.7060702@domain.hid>
+In-Reply-To: <485627D1.7060702@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 2/2] Provide owner name via
-	rt_mutex_inquire
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] High latencies on Core2Duo
+Reply-To: rpm@xenomai.org
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Sebastian Smolorz <smolorz@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> This can be helpful for debugging the (futile) release attempts of
->> mutexes by tasks that do not own them.
->>
->> Returning the RT_TASK reference may appear more consistent on first
->> sight, but it cannot be guaranteed that the owner is actually a native
->> task. Therefore this patch uses the symbolic name.
->>
->> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->> ---
->>  include/native/mutex.h    |    3 +++
->>  ksrc/skins/native/mutex.c |    5 +++++
->>  2 files changed, 8 insertions(+)
->>
->> Index: b/include/native/mutex.h
->> ===================================================================
->> --- a/include/native/mutex.h
->> +++ b/include/native/mutex.h
->> @@ -38,6 +38,9 @@ typedef struct rt_mutex_info {
->>  
->>      char name[XNOBJECT_NAME_LEN]; /**< Symbolic name. */
->>  
->> +    char owner[XNOBJECT_NAME_LEN]; /**< Symbolic name of the current
->> owner,
->> +                        empty if unlocked. */
->> +
->>  } RT_MUTEX_INFO;
->>  
->>  typedef struct rt_mutex_placeholder {
->> Index: b/ksrc/skins/native/mutex.c
->> ===================================================================
->> --- a/ksrc/skins/native/mutex.c
->> +++ b/ksrc/skins/native/mutex.c
->> @@ -597,6 +597,11 @@ int rt_mutex_inquire(RT_MUTEX *mutex, RT
->>      strcpy(info->name, mutex->name);
->>      info->lockcnt = mutex->lockcnt;
->>      info->nwaiters = xnsynch_nsleepers(&mutex->synch_base);
->> +    if (mutex->lockcnt)
->> +        strcpy(info->owner,
->> +               xnthread_name(xnsynch_owner(&mutex->synch_base)));
+Sebastian Smolorz wrote:
+> Philippe Gerum wrote:
+>> Could you try booting with idle=poll just to make sure that we don't
+>> get trapped
+>> into long wakeup latency from some idling instruction? We explicitly
+>> avoid mwait
+>> unless forced to use it by a bootparam, but maybe something goes wrong
+>> with the
+>> default idle code as well.
 > 
-> xnthread_name is not necessarily null terminated, so I would suggest to
+> Attached is a new trace, I've booted with idle=poll. The latency spots
+> are still there. Maybe Gilles is right and the SMI disabling code needs
+> an adaption to new chipsets.
+> 
 
-In fact, that is lethal for other users as well (trace points and proc
-dumps come to my mind) and should be fixed ASAP.
-
-Jan
+Looking at the trace, Gilles is very likely right indeed.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Philippe.
 
