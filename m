@@ -1,12 +1,13 @@
-Message-ID: <486A9516.6000703@domain.hid>
-Date: Tue, 01 Jul 2008 22:35:34 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <48563519.1060300@domain.hid>
+Date: Mon, 16 Jun 2008 11:40:41 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <200807010043.33331.leo@domain.hid>
-In-Reply-To: <200807010043.33331.leo@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <e4ef24880806151833n4e36005coadc1087c29f5b1cb@domain.hid>
+In-Reply-To: <e4ef24880806151833n4e36005coadc1087c29f5b1cb@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] IRQs and PCIs
+Subject: Re: [Xenomai-help] Thread scheduling on mult-processor systems
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,45 +17,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Leopold Palomo Avellaneda <leo@domain.hid>
+To: Rob Gubler <rgubler@domain.hid>
 Cc: xenomai@xenomai.org
 
-Leopold Palomo Avellaneda wrote:
-> Hi,
+Rob Gubler wrote:
+> Hello,
 > 
-> maybe is an off toppic, but probably some like me has this issue. I have a 
-> mainboard with several PCI and two PCIe. I can configure the PCIe to use with 
-> rtnet and xenomai without any important problem.
+> I am trying execute 2 threads on 2 separate processors.  To do this I
+> created 2 threads, each using the FIFO scheduler where both threads have
+> the same priority defined by sched_get_priority_max(SCHED_FIFO).  Each
+> thread is initialized to run on a specific CPU with a call to
+> pthread_setaffinity_np(...); Thread 1 on CPU 0, and Thread 2 on CPU 1. 
+> I verified each thread was assigned correctly by calling
+> pthread_getaffinity_np(...), and also by looking at /proc/xenomai/sched,
+> while the program was running.
 > 
-> The mobo has an eth and firewire and vga incorporated, so the pci are free. 
-> But now, I would like to add a pci network card. I have three:
-> - on for our environtment
-> - two for the rtnet (two robot controlers)
+> For the purposes of testing, both threads do the same thing:
 > 
-> and then I would like to have 4
-> - one for another network
+>         for(unsigned long i = 0; i != 9000000; i++)
+>         {
+>                 if(!(i % 50000))
+>                 {
+>                         std::cout << "tick" << std::endl;
+>                 }
 > 
-> The problem that I have and I don't know how to solve is that the new pci 
-> network card share an irq with another device. So, in my case, I have  
-> problems with this. With rtnet, I solve this using pcie devices, but now I 
-> cannot.
+>                 sched_yield();
+>         }
 > 
-> I have configure the xenomai kernel following the FAQ, and I have tested to 
-> assign an IRQ in the BIOS. But I have not be able to make the interface 
-> works. I have delays in the interface, and google says ;-) that is a problems 
-> of sharing IRQs with the eth. And I believe in that ...
+>         std::cout << "elapsed time: " << [elapsed time];
 > 
-> So, thinking that I would like to use this eth in a normal environment (not 
-> rtnet,) but in a box using xenomai, some of you have some "magical" idea, 
-> kernel parameter, etc to solve this issue?
+> My hope was that when these threads would execute simultaneously, they
+> would truly run in parallel on their respective processor.  But, what I
+> am noticing is the elapsed time when both threads run is 12 seconds,
+> while when only one thread runs is 6 seconds.  So, I haven't seem to
+> have bought any performance improvements by assigning  the thread to run
+> on a specific processor.
 > 
-> Thanks in advance,
+>  Where have I gone wrong in my line of thinking? 
+> 
 
-Well, maybe you can configure the cards controlled by rtnet to actually
-share their irq ? Maybe this would free irqs for other cards ?
+Most of the code executed in this loop involves serialization, hence the result.
 
 -- 
-
-
-					    Gilles.
+Philippe.
 
