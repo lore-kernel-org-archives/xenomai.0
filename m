@@ -1,5 +1,5 @@
-Message-ID: <48579B85.7030501@domain.hid>
-Date: Tue, 17 Jun 2008 13:09:57 +0200
+Message-ID: <48579C9B.1070402@domain.hid>
+Date: Tue, 17 Jun 2008 13:14:35 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <48568E78.5000606@domain.hid> <485695AE.7030509@domain.hid>
@@ -47,13 +47,14 @@ Philippe Gerum wrote:
 >> Apart from not disturbing Linux, your fix should work, since it doesn't 
 >> touch the hw flag.  The problem with the patch is likely that: CPU i 
 >> gets the seqlock after hlt,
-> 
-> I don't see any seqlock in the idling code. Did you mean the spinlock in
-> sched_clock_idle_wakeup_event()?
 >
 
-You likely refer to ktime_get_ts(); fortunately, we should not lock out interrupts.
+Ok, you were talking about the _previous_ implementation, right? Ok, I must be a
+bit slow today; Yes, the issue was very likely the one you described.
 
+> I don't see any seqlock in the idling code. Did you mean the spinlock in
+> sched_clock_idle_wakeup_event()?
+> 
 >  and can be preempted by the RTOS; CPU k
 >> tries to acquire the lock before hlt, i.e. with hw flags disabled,
 > 
