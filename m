@@ -1,13 +1,17 @@
-Message-ID: <485A1CEC.404@domain.hid>
-Date: Thu, 19 Jun 2008 10:46:36 +0200
-From: Benjamin ZORES <benjamin.zores@domain.hid>
+Message-ID: <485943D0.2000506@domain.hid>
+Date: Wed, 18 Jun 2008 19:20:16 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4859299A.2010802@domain.hid> <48592D6D.2010104@domain.hid>
-In-Reply-To: <48592D6D.2010104@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] [PowerPC] Registers Corruption at Context Switch
-Reply-To: xenomai-core <xenomai@xenomai.org>
+References: <4856B7AE.9030805@domain.hid> <4857682B.8060900@domain.hid>
+	<4857BBCD.6020902@domain.hid> <48593525.2040103@domain.hid>
+	<48594232.5020505@domain.hid>
+In-Reply-To: <48594232.5020505@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] Compile-time bug,
+	and problem with PPC440 ethernet
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,85 +21,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: "Steven A. Falco" <sfalco@domain.hid>
+Cc: xenomai@xenomai.org
 
-Philippe Gerum a =E9crit :
->> FYI, I'm running on PowerPC 603e core with Linux 2.6.23, Adeos 2.0-09=20
->> (latest) and Xenomai 2.3.4 (latest).
->>    =20
-read Xenomai 2.4.4 here, of course ...
->
-> See arch/powerpc/switch_32.S, rthal_switch_threads(), for the part that=
- does the
-> actual stack switching.
->
-> Note that this code is obfuscated by the fact that we have to handle so=
--called
-> "hybrid" switching, between Xenomai kernel threads (which do not rely o=
-n a
-> task_struct), and Linux tasks (Xenomai userland, Linux kthreads, or reg=
-ular
-> userland Linux). Fortunately, what is saved on the stack in any case is=
- easy to
-> find out.
->  =20
-Ok, I've dig a bit more at sources and found out something strange.
+Steven A. Falco wrote:
+> 
+>>> I am using the patch that came with Xenomai 2.4.4, namely:
+>>> adeos-ipipe-2.6.25-powerpc-DENX-2.2-02.patch
+>>>
+>>>     
+>>
+>> I can't reproduce this issue on a 440EP board, but I still have to to put my
+>> hands on a 440EPX to check this. However, both should be using the common 44x
+>> PIC support, so I don't expect big changes here.
+>>
+>> Are you using the powerpc/ branch, or legacy ppc/ one for building the sequoia
+>> kernel?
+>>   
+> 
+> ARCH=powerpc.
 
-In xenomai arch/powerpc/xenomai/switch_32.S in rthal_thread_switch() we=20
-have:
+Ah. So it's the UIC support that likely breaks. Could you try this patch?
 
-********
-#ifdef CONFIG_SMP
-    sync
-#endif /* CONFIG_SMP */
+diff --git a/arch/powerpc/sysdev/uic.c b/arch/powerpc/sysdev/uic.c
+index dd40f64..4eff1ab 100644
+--- a/arch/powerpc/sysdev/uic.c
++++ b/arch/powerpc/sysdev/uic.c
+@@ -111,7 +111,6 @@ static void uic_mask_ack_irq(unsigned int virq)
 
-    lwz    r1,KSP(r4)    /* Load new stack pointer */
+ 	sr = 1 << (31-src);
+ 	spin_lock_irqsave(&uic->lock, flags);
+-	ipipe_irq_lock(virq);
+ 	er = mfdcr(uic->dcrbase + UIC_ER);
+ 	er &= ~sr;
+ 	mtdcr(uic->dcrbase + UIC_ER, er);
 
-    mr    r3,r2
-    lwz    r0,PGDIR(r4)
-        cmpwi   r0, 0
-        beq-    same_current
+In case it is not enough, try removing all the ipipe_irq_lock/unlock calls from
+arch/powerpc/sysdev/uic.c. If that works eventually, I'll sort the mess out later.
 
-    tophys(r0,r4)
-    CLR_TOP32(r0)
-    mtspr    SPRN_SPRG3,r0    /* Update current THREAD phys addr */
-    addi    r2,r4,-THREAD    /* Update current */
+  I started with the DENX-v2.6.25-stable branch from the
+> DENX linux-2.6-denx git tree, then applied Xenomai-2.4.4 using its
+> install script.  The toolchain is eldk-4.2 for ppc_4xxFP.
+> 
+> Is there some debugging I can turn on to help you track this down?  I
+> can also add additional printk statements.
+> 
+> In a case of "bad timing", I will be going on vacation tomorrow, so I
+> will do what I can to gather more data today.  Otherwise, I'll have to
+> pick this up next Thursday (26th). :-(
+> 
+>     Thanks,
+>     Steve
+> 
 
-same_current:
-**********
 
-While, in arch/powerpc/kernel/entry_32.S in _switch() we have:
-
-**********
-#ifdef CONFIG_SMP
-    /* We need a sync somewhere here to make sure that if the
-     * previous task gets rescheduled on another CPU, it sees all
-     * stores it has performed on this one.
-     */
-    sync
-#endif /* CONFIG_SMP */
-
-    tophys(r0,r4)
-    CLR_TOP32(r0)
-    mtspr    SPRN_SPRG3,r0    /* Update current THREAD phys addr */
-    lwz    r1,KSP(r4)    /* Load new stack pointer */
-
-    /* save the old current 'last' for return value */
-    mr    r3,r2
-    addi    r2,r4,-THREAD    /* Update current */
-************
-
-As we can see, the code differs from kernel, as
-
-    tophys(r0,r4)
-    CLR_TOP32(r0)
-    mtspr    SPRN_SPRG3,r0    /* Update current THREAD phys addr */
-
-is done _before_ loading new stack pointer in kernel and _after_ doing=20
-so in xenomai.
-
-Is there a good reason for that or is this unintended ??
-
-Ben
-
+-- 
+Philippe.
 
