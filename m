@@ -1,10 +1,11 @@
-Message-ID: <6132061f0806190723x7f1716f4v1b3f3831c78717f6@domain.hid>
-Date: Thu, 19 Jun 2008 11:23:34 -0300
-From: "Breno Carneiro Pinheiro" <brenodee@domain.hid>
+Message-ID: <2F8EE677D406514ABE53EF9C0934A666042ABE80@domain.hid>
+From: Laurent.POYART@fr.thalesgroup.com
+Date: Thu, 19 Jun 2008 15:29:15 +0200
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_4135_19363633.1213885414184"
-Subject: [Xenomai-help] Xenomai App question
+Content-Type: text/plain;
+	charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Problem using xenomai threads with eclipse
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,198 +17,261 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-------=_Part_4135_19363633.1213885414184
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Hi,
+I have tested with gdb in text mode and my Pc still freezes without any
+message. I saw in the mailing list that there was some problems under =
+title
+"gdb + multi-threaded-applications + intel dual core" (which is my =
+case) and
+someone told to disable the dual core capability in the BIOS . I made =
+this
+test and I have no more the problem. I'm going to use this =
+configuration as
+it is not my final target.
 
- Hi all,
+Regards.
+L.Poyart
 
-I'm implementing  an predictive control application to run on my powerpc
-(MPC5200 - 400Mhz) with Xenomai patch. Now that I have it done, I wonder
-estimate the computation time of some parts in my code.
-I trying to use the Native/Xenomai API to get it but the results are weirds.
-My task code is below:
-
-
-void Simulator (void* c)
-{
-
-    unsigned char n;
-    unsigned long overrun;
-    FILE *stream;
-    unsigned int i;
-
-    float v, t;
-    n    = 20;
-    v    = (float) V;
-    t    = (float) T;
-    alfa = (float) sqrt(29);
-    stream = fopen("time.dat", "w+t"); // where I print the results
-
-
-
-    for(i=na_mfd;i<nref;i++)
-    {
-        *infoTempo = rt_timer_ticks2ns(rt_timer_read());
-       fprintf(stream, "%lld\n",infoTempo);*
-
-       // ------------- My control Code ---------------//
-        x_sys[i]    = (float) (x_sys[i-1] + V*cos(teta_sys[i-1]+fi[i-1])*T);
-
-        y_sys[i]    = (float) (y_sys[i-1] + V*sin(teta_sys[i-1]+fi[i-1])*T);
-
-        teta_sys[i] = (float) (teta_sys[i-1] + (V*sin(fi[i-1])*T)/LE);
-        y[0] = x_sys[i-1];
-        y[1] = y_sys[i-1];
-        abs2local(&y[0], &y[1], &x_sys[i], &y_sys[i], &teta_sys[i]);
-        y[0] = teta_sys[i];
-        purePursuit(r, &x_sys[i], &y_sys[i], &teta_sys[i], xref, yref, &n,
-&nref, &alfa, &dg, &t, &v);
-        processFreeResponseOP(R, B, f, y, du, h, na_mfd, nb_mfd, nout, nin);
-
-        processCommand(K, r, f, du, 0, h, na_mfd, nb_mfd, nout, nin, n);
-        #ifdef DEBUG
-        printArray(f, TAILREF, "Resposta Livre:");
-        printArray(du, nb_mfd*nin, "du:");
-        #endif
-        fi[i] = fi[i-1] + du[nb_mfd-1];
-        infoTempo = rt_timer_ticks2ns(rt_timer_read());
-
-//------------------------------------------------------------------------------//
-
-
-    }
-    fclose(stream);
-
-}
-
-That's the only one task I have on my system. I wonder compute the time to
-process every single step of *for* loop. What you think?
-
-Besides this, I'm looking some documents that say:
-
-The selection
-of the proper operation mode (oneshot or periodic) of the timer is made at
-build time using the configuration switch
-named *CONFIG_XENO_OPT_TIMING_PERIOD* from the nucleus section. A
-zero value causes the native skin to operate in oneshot mode; otherwise,
-periodic
-mode is used according to the given duration of the clock tick, expressed in
-nanoseconds. If support for periodic timing has been disabled at
-configuration
-level (i.e. *CONFIG_XENO_OPT_TIMING_PERIODIC* is unset), the timer mode
-always defaults to oneshot.
-
-What is *CONFIG_XENO_OPT_TIMING_PERIOD*? And where configure it?
-
-I hope someone have some time for that.
-
-Thanks a lot,
-
-Breno
-*
-*
-
-------=_Part_4135_19363633.1213885414184
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
-
-
-  
-  
-
-Hi all,<br>
-<br>
-I&#39;m implementing&nbsp; an predictive control application to run on my
-powerpc (MPC5200 - 400Mhz) with Xenomai patch. Now that I have it done, I wonder estimate
-the computation time of some parts in my code.<br>
-I trying to use the Native/Xenomai API to get it but the results are
-weirds. My task code is below:<br>
-<br>
-<br>
-void Simulator (void* c)<br>
-{<br>
-<br>
-&nbsp;&nbsp; &nbsp;unsigned char n; <br>
-&nbsp;&nbsp;&nbsp; unsigned long overrun;<br>
-&nbsp;&nbsp; &nbsp;FILE *stream; <br>
-&nbsp;&nbsp; &nbsp;unsigned int i; <br>
-&nbsp;&nbsp; &nbsp; <br>
-&nbsp;&nbsp; &nbsp;float v, t; <br>
-&nbsp;&nbsp; &nbsp;n&nbsp;&nbsp;&nbsp; = 20; <br>
-&nbsp;&nbsp; &nbsp;v&nbsp;&nbsp;&nbsp; = (float) V; <br>
-&nbsp;&nbsp; &nbsp;t&nbsp;&nbsp;&nbsp; = (float) T; <br>
-&nbsp;&nbsp; &nbsp;alfa = (float) sqrt(29);<br>
-&nbsp;&nbsp; &nbsp;stream = fopen(&quot;time.dat&quot;, &quot;w+t&quot;); // where I print the results<br><br>
-&nbsp;&nbsp; <br>
-&nbsp;&nbsp; &nbsp; <br>
-&nbsp;&nbsp; &nbsp;for(i=na_mfd;i&lt;nref;i++) <br>
-&nbsp;&nbsp; &nbsp;{<br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;<b>infoTempo = rt_timer_ticks2ns(rt_timer_read());<br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; fprintf(stream, &quot;%lld\n&quot;,infoTempo);</b><br>
-&nbsp;<br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; // ------------- My control Code ---------------//<br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;x_sys[i]&nbsp;&nbsp;&nbsp; = (float) (x_sys[i-1] +
-V*cos(teta_sys[i-1]+fi[i-1])*T); <br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;y_sys[i]&nbsp;&nbsp;&nbsp; = (float) (y_sys[i-1] +
-V*sin(teta_sys[i-1]+fi[i-1])*T); <br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;teta_sys[i] = (float) (teta_sys[i-1] + (V*sin(fi[i-1])*T)/LE); <br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;y[0] = x_sys[i-1]; <br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;y[1] = y_sys[i-1]; <br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;abs2local(&amp;y[0], &amp;y[1], &amp;x_sys[i], &amp;y_sys[i],
-&amp;teta_sys[i]); <br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;y[0] = teta_sys[i]; <br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;purePursuit(r, &amp;x_sys[i], &amp;y_sys[i], &amp;teta_sys[i],
-xref, yref, &amp;n, &amp;nref, &amp;alfa, &amp;dg, &amp;t, &amp;v); <br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;processFreeResponseOP(R, B, f, y, du, h, na_mfd, nb_mfd, nout,
-nin); <br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;processCommand(K, r, f, du, 0, h, na_mfd, nb_mfd, nout, nin,
-n); <br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;#ifdef DEBUG <br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; printArray(f, TAILREF, &quot;Resposta Livre:&quot;); <br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; printArray(du, nb_mfd*nin, &quot;du:&quot;); <br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;#endif <br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;fi[i] = fi[i-1] + du[nb_mfd-1];<br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;infoTempo = rt_timer_ticks2ns(rt_timer_read());<br>
-&nbsp;&nbsp; &nbsp; //------------------------------------------------------------------------------//&nbsp;  <br>
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;<br>
-&nbsp;&nbsp; &nbsp;} <br>
-&nbsp;&nbsp; &nbsp;fclose(stream);<br>
-<br>
-}<br>
-<br>
-That&#39;s the only one task I have on my system. I wonder compute the time
-to process every single step of <b>for</b> loop. What you think?<br>
-<br>
-Besides this, I&#39;m looking some documents that say:<br>
-<br>
-The selection<br>
-of the proper operation mode (oneshot or periodic) of the timer is made
-at build time using the configuration switch<br>
-named <b>CONFIG_XENO_OPT_TIMING_PERIOD</b> from the nucleus section. A<br>
-zero value causes the native skin to operate in oneshot mode;
-otherwise, periodic<br>
-mode is used according to the given duration of the clock tick,
-expressed in<br>
-nanoseconds. If support for periodic timing has been disabled at
-configuration<br>
-level (i.e. <b>CONFIG_XENO_OPT_TIMING_PERIODIC</b> is unset), the
-timer mode<br>
-always defaults to oneshot.<br>
-<br>
-What is <b>CONFIG_XENO_OPT_TIMING_PERIOD</b>? And where configure it? <br>
-<br>
-I hope someone have some time for that.<br>
-<br>
-Thanks a lot,<br>
-<br>
-Breno<br>
-<b><br>
-</b>
-
-------=_Part_4135_19363633.1213885414184--
+> -----Message d'origine-----
+> De : Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+> Envoy=E9 : jeudi 19 juin 2008 02:16
+> =C0 : Laurent.POYART@fr.thalesgroup.com
+> Cc : xenomai@xenomai.org
+> Objet : Re: [Xenomai-help] Problem using xenomai threads with eclipse
+>=20
+>=20
+> Laurent.POYART@fr.thalesgroup.com wrote:
+> > Hi,
+> >=20
+> > I'm compiling a xenomai user land application using eclipse=20
+> CDT 3.2.2  and
+> > my Pc hangs when I run it using debug (gbd).=20
+> >=20
+> > Context:
+> >=20
+> > Linux kernel : 2.6.23
+> > Xenomai : 2.4.1
+> > Architecture: Pentium Dual Core (PC).
+> > Xenomai Configuration : priority coupling.
+> > Linker options: -Wl,--wrap,pthread_create -Wl,-soname=3Dpthread_rt
+> > (only pthread_create is wrapped)
+> >=20
+> > The application code is the following (the problem is=20
+> described after the
+> > source code):
+> >=20
+> > #include<iostream>
+> > #include<cassert>
+> > using namespace std;
+> >=20
+> > #include <sys/mman.h>
+> > #include <pthread.h>
+> > #include <semaphore.h>
+> > #include <mqueue.h>
+> > #include <errno.h>
+> >=20
+> > // Lock used to make the thread wait for start enable
+> > sem_t s_SemThreadStartEnable;
+> >=20
+> > // For Test
+> > sem_t s_SemThreadTest;
+> > =20
+> > // Thread function for the Xenomai RT Thread=20
+> > void* mythreadfunctionrt(void* arg)
+> > {
+> > 	// Wait start Enable (not wrapped =3D> linux syscall)
+> >     int result =3D sem_wait(&s_SemThreadStartEnable);
+> >     assert(result =3D=3D 0);
+> >=20
+> >     // Enter Thread Loop
+> > 	while(1)
+> > 	{
+> > 		// Wait for lock test (is not available =3D> must=20
+> preempt the
+> > thread)
+> > 		result =3D sem_wait(&s_SemThreadTest);
+> > 		assert(result =3D=3D 0);
+> > 	=09
+> > 		// Never reach this point because lock is never released
+> > 	}	  =20
+> > 	=09
+> > 	return(0);=09
+> > }
+> >=20
+> > // Thread function for the linux Thread (not RT)
+> > void* mythreadfunction(void* arg)
+> > {
+> > 	mq_attr mqAttributs;
+> > 	mqAttributs.mq_flags =3D 0;
+> > 	mqAttributs.mq_maxmsg =3D 1;=20
+> > 	mqAttributs.mq_msgsize =3D  sizeof(void*);=09
+> > 	mqAttributs.mq_curmsgs =3D 0;
+> > 	// generates name
+> > 	mqd_t handle =3D mq_open("/OEmqTest",(O_RDWR | O_CREAT),(S_IRWXU |
+> > S_IRWXG),&mqAttributs);
+> > 	assert(handle >=3D 0);
+> > =09
+> > 	while(1)
+> > 	{
+> > 		 // Pend on the message queue (message is a=20
+> pointer size =3D
+> > sizeof(void*))	=09
+> > 		 char* pt_obj =3D 0;
+> > 		 cout << "block on mqueue reception" << endl;
+> > 		 int result =3D
+> > mq_receive(handle,(char*)&pt_obj,sizeof(void*),0);
+> > 		 assert(result =3D=3D 0);
+> > 	}	  =20
+> > 	=09
+> > 	return(0);=09
+> > }
+> >=20
+> > // =
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > // Function   : AppStartTask
+> > // Goal    : Application Start Task
+> > // =
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > void*  AppStartTask(void *p_arg)
+> > {
+> >     // =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  LINUX =
+THREAD (NOT RT) =
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> >     // =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  REAL TIME =
+PRIORITY =3D> 12 / SCHED=20
+> FIFO =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > 	 cout << "Create Linux Thread" << endl;=09
+> >     // Thread Attributs Init
+> > 	pthread_t mythread;
+> > 	pthread_attr_t threadAttributs;
+> > 	int result =3D pthread_attr_init(&threadAttributs);=09
+> > 	assert(result =3D=3D 0);
+> > 	struct sched_param  scheduleParams;
+> > 	scheduleParams.sched_priority =3D 12;
+> > 	result =3D
+> > pthread_attr_setschedparam(&threadAttributs,&scheduleParams);
+> > 	assert(result =3D=3D 0);
+> > 	pthread_attr_setschedpolicy (&threadAttributs,SCHED_FIFO);
+> > 	assert(result =3D=3D 0);
+> > 	pthread_attr_setinheritsched
+> > (&threadAttributs,PTHREAD_EXPLICIT_SCHED);
+> > 	assert(result =3D=3D 0);
+> >     result =3D __real_pthread_create(&mythread,
+> >     						=09
+> &threadAttributs,
+> >     						=09
+> mythreadfunction,
+> >     							0);
+> >     assert(result =3D=3D 0);
+> >=20
+> >     // Lock that enable RT thread loop
+> >     sem_init(&s_SemThreadStartEnable,false,0);	=09
+> // not available
+> >=20
+> >     // Test Lock
+> >     sem_init(&s_SemThreadTest,false,0);		=09
+> 	// not
+> > available
+> >    =20
+> >     // =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  XENOMAI =
+THREAD  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> >     // =3D=3D=3D=3D=3D=3D=3D  REAL TIME PRIORITY =3D> 11 / SCHED =
+FIFO =3D=3D=3D=3D=3D=3D=3D
+> > 	 cout << "Create Xenomai Thread" << endl;   =20
+> >     pthread_t mythreadrt;//
+> > 	pthread_attr_t threadAttributsrt;
+> > 	int resultrt =3D pthread_attr_init(&threadAttributsrt);
+> > 	assert(resultrt =3D=3D 0);
+> > 	struct sched_param  scheduleParamsrt;
+> > 	scheduleParamsrt.sched_priority =3D 11;
+> > 	resultrt =3D
+> > pthread_attr_setschedparam(&threadAttributsrt,&scheduleParamsrt);
+> > 	assert(resultrt =3D=3D 0);
+> > 	result =3D pthread_attr_setschedpolicy
+> > (&threadAttributsrt,SCHED_FIFO);
+> > 	assert(resultrt =3D=3D 0);
+> > 	resultrt =3D pthread_attr_setinheritsched
+> > (&threadAttributsrt,PTHREAD_EXPLICIT_SCHED);
+> > 	assert(resultrt =3D=3D 0);
+> >     resultrt =3D pthread_create(&mythreadrt,
+> >     						=09
+> &threadAttributsrt,
+> >     						=09
+> mythreadfunctionrt,
+> >     							0);
+> > ////// NOTE : NO PROBLEM IF A REPLACE pthread_create by
+> > __real_pthread_create
+> >    =20
+> >     assert(resultrt =3D=3D 0);
+> >   =20
+> >    =20
+> >     // Enable Thread Start
+> > 	cout << "Enable Thread Loop Start" << endl;   =20
+> >     resultrt =3D sem_post(&s_SemThreadStartEnable);
+> >     assert(result =3D=3D 0);
+> >    =20
+> > 	// Suspend AppTask
+> >     sem_t lockEnd;
+> >     sem_init(&lockEnd,false,0);		// not available
+> > 	cout << "Infinite wait end app" << endl;    =20
+> >     sem_wait(&lockEnd);
+> >=20
+> >     return(0);
+> > }
+> >=20
+> > // Function   : Main
+> > int main(int argc,char* argv[])
+> > {
+> > 	// Mlock All for Xenomai
+> > 	mlockall(MCL_CURRENT | MCL_FUTURE);
+> > =09
+> > 	AppStartTask(0);=09
+> >=20
+> > 	return 0;
+> > }
+> >=20
+> > Problem description:
+> > when I run the application with eclipse using "run" command=20
+> (no debug using
+> > gdb) the application run correctly and I can stop it from eclipse.
+> > The console output is:
+> > Create Linux Thread
+> > block on mqueue reception
+> > Create Xenomai Thread
+> > Enable Thread Loop Start
+> > Infinite wait end app
+> >=20
+> > when I launch the application with eclipse using "debug"=20
+> command (gdb is
+> > run). The console output is the same but when I stop the=20
+> application, the PC
+> > hangs (I need to push the reset button).
+> >=20
+> > this problem doesn't occur when I only use linux standard=20
+> threads (all
+> > __real_pthread_create).
+> >=20
+> > Do you have any idea? I'm I doing something totally wrong=20
+> in my example.
+>=20
+> When running under gdb, a lot of signals are sent, so, you should be=20
+> prepared to restart syscalls when EINTR is returned, instead=20
+> of simply=20
+> failing with assert. However, assert should not cause your=20
+> system to freeze.
+>=20
+> Can you get any kernel messages, either by redirecting the=20
+> console to a=20
+> serial driver, or by running your example (with gdb) in plain=20
+> text mode ?
+>=20
+> --=20
+>=20
+>=20
+> 					    Gilles.
+>=20
 
