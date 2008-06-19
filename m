@@ -1,12 +1,14 @@
-Message-ID: <48599D4E.4040100@domain.hid>
-Date: Thu, 19 Jun 2008 01:42:06 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <485AB64D.4020009@domain.hid>
+Date: Thu, 19 Jun 2008 21:41:01 +0200
+From: Anders Blomdell <anders.blomdell@domain.hid>
 MIME-Version: 1.0
-References: <op.ucxy4dpbt06gyn@domain.hid>
-In-Reply-To: <op.ucxy4dpbt06gyn@domain.hid>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai-help] problems with configure and --enable-linux-build
+References: <A3B06EAFE0D9C14096681C935E0B300802110A0C@zue-s-15.zue.zwick.de>	<4829613B.3000500@domain.hid><0C9896A4B6D338488AD6FFFE58BAEF100276DBF6@domain.hid><48297566.1010607@domain.hid><0C9896A4B6D338488AD6FFFE58BAEF100276DC66@domain.hid>	<4829AA19.8070405@domain.hid>	<0C9896A4B6D338488AD6FFFE58BAEF100276DD0C@serveur3.lgm.com>	<4829C8C9.4020300@domain.hid>	<0C9896A4B6D338488AD6FFFE58BAEF100276DDDE@serveur3.lgm.com>	<482B3BCF.8090700@domain.hid>	<482B3EE5.9030702@domain.hid>	<0C9896A4B6D338488AD6FFFE58BAEF100276E025@domain.hid>	<482D33B3.9070700@domain.hid>	<0C9896A4B6D338488AD6FFFE58BAEF100276E212@domain.hid>	<482D6FF9.3050008@domain.hid>
+	<482D82EB.3050608@domain.hid>	<482D885A.7080706@domain.hid>
+	<482D8B50.5090502@domain.hid> <482DCAD0.1010408@domain.hid>
+In-Reply-To: <482DCAD0.1010408@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Weird rt_dev_socket behaviour
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,61 +18,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Axel Beierlein <belatronix@domain.hid>
-Cc: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
+To: xenomai-help <xenomai@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
-Axel Beierlein wrote:
-> Hello,
-> 
-> I try to install the actual Xenomai Version 2.4.4.
-> I get my kernel sources (2.4.25) from the denx git and my target system  
-> was an ppc and my host an PC with ubuntu 804. The cross compiler is based  
-> on the denx eldk41 for freescale ppc´s.
-> Patching the kernel with the adeos patch was succesful. I call the config  
-> script from my build directory with the following line:
-> 
-> ../xenomai-2.4.4/configure --build=i486-linux-gnu --host=powerpc-linux  
-> --enable-linux-build=~/\ linuxppc_2_4_devel CC=ppc_6xx-gcc CXX=ppc_6xx-g++  
-> LD=ppc_6xx-ld
-> 
-> $ARCH and $CROSS_COMPILE is already set by the eldk!
-> 
-> but when i call
-> 
-> make DESTDIR=<destdir> install
-> 
-> i get the error
-> 
-> find: /home/axl/build_root/linux/include/asm: No such file or directory
-> scripts/mkdep -- init/*.c > .depend
-> gcc -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer  
-> -I/home/axl/build_root/linux/arch/ppc -o scripts/split-include  
-> scripts/split-include.c
-> make[1]: *** Keine Regel vorhanden, um das Target  
-> »include/linux/autoconf.h«,
->    benötigt von »include/config/MARKER«, zu erstellen.  Schluss.
-> 
-> when i call configure without --enable-linux-build, there are no problems.
-> 
-> So i have a look at the copied linux sources in the build-tree and i must  
-> see that configure doesn't copied all necessary files from the kernel  
-> source directory like the file /linux/include/linux/autoconf.h.
-> 
-> The symbolic link asm to asm-ppc is missing as well.
-> 
-> So where is my mistake or is there a bug in configure?
+With xenomai-2.4.2 and rtnet-0.9.10, is it expected that the following code:
 
-The configure script expects the source linux dir to be an unconfigured 
-linux dir, the same you would use with the O option of Linux makefile, 
-so I find it normal that the asm link is not copied.
+  ...
+  mlockall(MCL_CURRENT|MCL_FUTURE);
+  rt_task_shadow(&task_self, NULL, 1, T_FPU);
+  fd = rt_dev_socket(AF_PACKET, SOCK_DGRAM, 0);
+  if (fd < 0) {
+    fprintf(stderr, "failed to create socket %d\n", fd);
+    exit(1);
+  }
+  ...
 
-The problem you have is that the linux dir of Xenomai is unconfigured, 
-you should run make oldconfig at least to take into account a .config 
-file. Then, the compilation should run fine. This is showed in the 
-section 2.5 of README.INSTALL.
+fails with the message "failed to create socket -12", while the following works
+as expected:
+
+  ...
+  mlockall(MCL_CURRENT|MCL_FUTURE);
+  rt_task_shadow(&task_self, NULL, 1, T_FPU);
+  rt_task_set_mode(T_PRIMARY, 0, 0);
+  fd = rt_dev_socket(AF_PACKET, SOCK_DGRAM, 0);
+  if (fd < 0) {
+    fprintf(stderr, "failed to create socket %d\n", fd);
+    exit(1);
+  }
+  ...
+
+Regards
+
+Anders Blomdell
+
 
 -- 
-
-
-					    Gilles.
+Anders Blomdell                  Email: anders.blomdell@domain.hid
+Department of Automatic Control
+Lund University                  Phone:    +46 46 222 4625
+P.O. Box 118                     Fax:      +46 46 138118
+SE-221 00 Lund, Sweden
 
