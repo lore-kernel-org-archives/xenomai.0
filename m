@@ -1,13 +1,10 @@
-Message-ID: <485B9F6A.6080304@domain.hid>
-Date: Fri, 20 Jun 2008 14:15:38 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <485E48A0.6050706@domain.hid>
+Date: Sun, 22 Jun 2008 14:42:08 +0200
+From: Antoine Nourry <nourry@domain.hid>
 MIME-Version: 1.0
-References: <2F8EE677D406514ABE53EF9C0934A666042ABE7E@anubis2.clb.tcfr.thales>
-	<485B8CD3.3020702@domain.hid>
-In-Reply-To: <485B8CD3.3020702@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem using xenomai threads with eclipse
+Subject: [Xenomai-help] DAQ SYSTEM COMPATIBILITY
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,31 +14,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org, Laurent.POYART@fr.thalesgroup.com
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Laurent.POYART@fr.thalesgroup.com wrote:
-> 
->>Hi,
->>
->>I'm compiling a xenomai user land application using eclipse CDT 3.2.2  and
->>my Pc hangs when I run it using debug (gbd). 
->>
->>Context:
->>
->>Linux kernel : 2.6.23
->>Xenomai : 2.4.1
->>Architecture: Pentium Dual Core (PC).
-> 
-> 
-> We recently fixed some gdb issues, so it is probably wise to check with
-> an up-to-date version of Xenomai first.
+Hi all,
+i need to buy an USB DAQ system and use it with Xenomai. I have an eye 
+on the National Instruments USB 6218 which is provided with linux drivers.
+How can we now if an hardware will be usable with Xenomai ? Do we need 
+the driver sources in order to be able to rewrite it for real time 
+purposes ?
 
-Right. I missed that point. Generally, if you want to report a problem,
-please check with the latest release if you have the problem as well, it
-will save everybody's time.
+Thanks,
+Antoine
 
--- 
-                                                 Gilles Chanteperdrix
 
