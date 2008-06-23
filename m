@@ -1,11 +1,26 @@
+Message-ID: <485F6E04.8000009@domain.hid>
+Date: Mon, 23 Jun 2008 11:33:56 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Mon, 23 Jun 2008 10:14:19 +0200
-From: Matthieu <matthieu.connaulte_xenomai@domain.hid>
-Message-ID: <b3ff56212c0949c864c7170fd01e8254@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] xenomai scheduler's ticks period
-Reply-To: matthieu.connaulte_xenomai@domain.hid
+References: <16474.81.252.86.91.1211199249.squirrel@domain.hid>
+	<2ff1a98a0805220819i8d73166w4c9a06d9734d0e0c@domain.hid>
+	<2405.81.252.86.91.1211549465.squirrel@domain.hid>
+	<2ff1a98a0805230655j35009227h75c63566373ece43@domain.hid>
+	<5871.81.252.86.91.1211789666.squirrel@domain.hid>
+	<18491.29266.196753.611570@domain.hid>
+	<2766.81.252.86.91.1211992159.squirrel@domain.hid>
+	<2ff1a98a0805280931j611ae10er69b968ae8699d63d@domain.hid>
+	<16273.81.252.86.91.1212060383.squirrel@domain.hid>
+	<2ff1a98a0805290614w3d846e6by69b033204f912391@domain.hid>
+	<13639.81.252.86.91.1212153659.squirrel@domain.hid>
+	<18496.31292.674733.417262@domain.hid>
+	<3380.62.39.72.60.1213367793.squirrel@domain.hid>
+	<485E654D.3050202@domain.hid>
+	<17010.62.39.72.60.1214205782.squirrel@domain.hid>
+In-Reply-To: <17010.62.39.72.60.1214205782.squirrel@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Problem with time-out ends
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,28 +30,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Fabien MAHOT <fabien.mahot@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi
+Fabien MAHOT wrote:
+> OK, thanks for your help.
 
-I would like to know if there is a sheduler per CPUs or one scheduler for
-all CPUs ? I understand that there is one sheduler per skin for all CPUs,
-so it's only to be sure...
+Your program does not cause any oops on my test board. Do you get these
+errors on an SMP or UP system ?
 
-Well, my application has two working mode. One with a PCI hardware that
-send an interrupt to tickAnnounce the Scheduler ; one with no hardware an=
-d
-something that will simulate this hardware interrupt (something like a
-periodic xenomai real-time task that send this same interrupt). So I need
-to use an interrupt to tickAnnounce vxworks scheduler. I think that I hav=
-e
-to disabe the periodic tick (but I don't know how), and I need an interru=
-pt
-handler that send a tickAnnounce. It is during the execution that the
-presence of the PCI hardware is tested and whether a hardware interrupt o=
-r
-software interrupt is used. Can somebody explain me if it's possible, and
-in that case, how can I disable the automatic vxworks tick ?
-
-
+-- 
+                                                 Gilles Chanteperdrix
 
