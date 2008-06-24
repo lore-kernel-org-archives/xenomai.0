@@ -1,12 +1,13 @@
-Message-ID: <48611E40.5010000@domain.hid>
-Date: Tue, 24 Jun 2008 18:18:08 +0200
+Message-ID: <48612393.1090405@domain.hid>
+Date: Tue, 24 Jun 2008 18:40:51 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <001801c8d614$6ddb55c0$9601a8c0@domain.hid>
-In-Reply-To: <001801c8d614$6ddb55c0$9601a8c0@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4861045E.4010106@domain.hid>
+	<14a573dd7f3ed8e10e00a083480c4622@domain.hid>
+In-Reply-To: <14a573dd7f3ed8e10e00a083480c4622@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] soft lockup after 11s
+Subject: Re: [Xenomai-help] xenomai scheduler's ticks period
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,43 +17,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rob@domain.hid
-Cc: xenomai@xenomai.org
+To: matthieu.connaulte_xenomai@domain.hid
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Robert McCullough wrote:
-> Hi,
+Matthieu wrote:
 > 
->  
+> On Tue, 24 Jun 2008 16:27:42 +0200, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>> Matthieu wrote:
+>>> Let me know if I've done something wrong ...
+>> rt_timer_read belongs to the native skin, not to the vxworks skin !
+>>
+>> --
+>>                                                   Gilles.
 > 
-> I am using Linux 2.6.23.14 and Xenomai 2.4.2 on a MPC5200.
-> 
->  
-> 
-> My problem is this:
-> 
->  
-> 
-> My RTDM driver communicates to a slave device via a dual-ported RAM (DPR)
-> interface.  In my module_init() I have to give the slave a SAVE command via
-> the DPR.
-> 
-> The SAVE command stores the slave's parameters to a non-volatile memory
-> (FLASH or EEPROM).  I then wait in a loop for a flag in the DPR to be set
-> stating the command is complete.
-> 
-> The SAVE command takes about 22 seconds to complete.  Before the command
-> completes I get a "BUG:  soft lock-up - CPU#0 stuck for 11s!" message.
-> 
-> How would I solve this problem?
+> Ok, but I don't really see why does mixing vxworks task with a xenomai
+> instruction that not depends on vxworks scheduler is a problem. if I just
+> get time, does the task switch to xenomai scheduler ?. However, if it's
+> really a problem, what can I use to get a pricise time, as I can't use
+> getTick anymore. Philippe suggested xntbase time base services ?
 
-Since module_init() is a non real-time context, you can safely call
-schedule() in the loop.
-
-> Is there a way to increase this 11 second timeout?
-
-You can disable the soft-lockup detector feature, a driver which loops
-for 22 seconds without yielding to the OS is a bit hard for the OS, to
-say the least.
+You can use rt_timer_read(), but you should not assume that this returns
+a nanoseconds count, this depends on the timing configuration of the
+native skin.
 
 -- 
                                                  Gilles.
