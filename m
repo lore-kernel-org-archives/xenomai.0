@@ -1,16 +1,10 @@
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
-Date: Tue, 24 Jun 2008 00:52:18 +0200
-References: <485E48A0.6050706@domain.hid>
-	<200806230031.32512.berlemont.hauw@domain.hid>
-	<485F7999.8040502@domain.hid>
-In-Reply-To: <485F7999.8040502@domain.hid>
+Date: Tue, 24 Jun 2008 12:13:12 +0200
+From: "Axel Beierlein" <belatronix@domain.hid>
+Content-Type: text/plain; format=flowed; delsp=yes; charset=iso-8859-15
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200806240052.18509.berlemont.hauw@domain.hid>
-Subject: Re: [Xenomai-help] Daq System Compatibility
+Message-ID: <op.uc8z0alst06gyn@domain.hid>
+Subject: [Xenomai-help] compiling probs
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,24 +14,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
 
-Hi,
+Hello,
 
-> Do we absolutely need the native driver sources or can we find the
-> necessary answers for making a new real-time driver in documentation and
-> hardware specifications ?
+when i try to compile the module examples from the xenomai source  
+directory i get many <in file included> like this
 
-It depends on the size of the documentation and the accuracy of its details ;) 
-I had a quick look at NI web site, I only found a global datasheet.
+In file included from  
+/home/xx/linuxppc_2_4_25/include/asm/xenomai/hal.h:50,
+                  from  
+/home/xx/linuxppc_2_4_25/include/asm-generic/xenomai/system.h:39,
+                  from  
+/home/xx/linuxppc_2_4_25/include/asm/xenomai/system.h:29,
+                  from  
+/home/xx/linuxppc_2_4_25/include/xenomai/nucleus/types.h:39,
+                  from  
+/home/xx/linuxppc_2_4_25/include/xenomai/nucleus/queue.h:24,
+                  from  
+/home/xx/linuxppc_2_4_25/include/xenomai/nucleus/timer.h:23,
+                  from  
+/home/xx/linuxppc_2_4_25/include/xenomai/nucleus/thread.h:23,
+                  from  
+/home/xx/linuxppc_2_4_25/include/xenomai/nucleus/pod.h:34,
+                  from  
+/home/xx/linuxppc_2_4_25/include/xenomai/nucleus/xenomai.h:23,
+                  from  
+/home/xx/linuxppc_2_4_25/include/xenomai/rtdm/rtdm_driver.h:36,
+                  from heartbeat-x86.c:21:
 
-> Anyway, it seems to be a harsh task to write a new driver according to
-> many comments.
+also a type qualifier warning.
 
-Comedi is supposed to make this task easier. 
+/home/xx/linuxppc_2_4_25/include/asm/time.h:60: warning: type qualifiers  
+ignored on function return type
 
-Best regards.
+Did anyone know what i make wrong?
 
-Alexis.
+I use xenomai 2.3.5 and the Kernelsource 2.4.25 from the Denx repository  
+with the ELDK4.1.
+
+my make to build the modules is like <make XENO=$DESTDIR/root/xenomai  
+CC=ppc_6xx-gcc> where DESTDIR is set to the Path where the rootfs is.
+
+
+Axel
+
 
 
