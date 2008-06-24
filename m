@@ -1,12 +1,10 @@
-Message-ID: <4860D6A5.4060800@domain.hid>
-Date: Tue, 24 Jun 2008 13:12:37 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Content-Type: text/plain; charset="us-ascii"
+Date: Tue, 24 Jun 2008 14:36:02 +0200
+From: "Karl Reichert" <Karl-Trampe@domain.hid>
+Message-ID: <20080624123602.114820@domain.hid>
 MIME-Version: 1.0
-References: <op.uc8z0alst06gyn@domain.hid>
-In-Reply-To: <op.uc8z0alst06gyn@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] compiling probs
+Subject: [Xenomai-help] error creating a task with rt_task_spawn
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,59 +14,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Axel Beierlein <belatronix@domain.hid>
-Cc: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
+To: xenomai@xenomai.org
 
-Axel Beierlein wrote:
-> Hello,
-> 
-> when i try to compile the module examples from the xenomai source  
-> directory i get many <in file included> like this
-> 
-> In file included from  
-> /home/xx/linuxppc_2_4_25/include/asm/xenomai/hal.h:50,
->                   from  
-> /home/xx/linuxppc_2_4_25/include/asm-generic/xenomai/system.h:39,
->                   from  
-> /home/xx/linuxppc_2_4_25/include/asm/xenomai/system.h:29,
->                   from  
-> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/types.h:39,
->                   from  
-> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/queue.h:24,
->                   from  
-> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/timer.h:23,
->                   from  
-> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/thread.h:23,
->                   from  
-> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/pod.h:34,
->                   from  
-> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/xenomai.h:23,
->                   from  
-> /home/xx/linuxppc_2_4_25/include/xenomai/rtdm/rtdm_driver.h:36,
->                   from heartbeat-x86.c:21:
-> 
-> also a type qualifier warning.
-> 
-> /home/xx/linuxppc_2_4_25/include/asm/time.h:60: warning: type qualifiers  
-> ignored on function return type
-> 
-> Did anyone know what i make wrong?
-> 
-> I use xenomai 2.3.5 and the Kernelsource 2.4.25 from the Denx repository  
-> with the ELDK4.1.
-> 
-> my make to build the modules is like <make XENO=$DESTDIR/root/xenomai  
-> CC=ppc_6xx-gcc> where DESTDIR is set to the Path where the rootfs is.
+Hello,
 
-Is your kernel configured and built?
-Does adding ARCH=ppc help?
-Is module support enabled in the kernel?
-What ELDK version do you use?
+I'm trying to create and start a new thread via rt_task_spawn() but I always get error -3. ("Unknown error: -3")
 
-It works fine here.
-
-Wolfgang.
+Any idea?
 
 
+Thanks in advance
+Karl
+
+
+
+
+
+#include "main.h"
+
+#include <stdio.h>
+#include <signal.h>
+#include <native/task.h>
+#include <native/timer.h>
+#include <native/mutex.h>
+#include <sys/mman.h>
+
+int i,j,x;
+RT_TASK *rx_tsk;
+
+int ret1;
+int ret2;
+
+void rx_task(void *cookie);
+void cleanup(int dummy);
+
+int main (int argc, char* argv[])
+{
+	i = 0;
+   
+   if ( -1 == mlockall (MCL_CURRENT | MCL_FUTURE) ) {
+        perror("mlockall: ");
+        return -1;
+   }
+
+	ret1 = rt_task_spawn(rx_tsk, "rx_task", 0, 1, T_FPU|T_CPU(1), &rx_task, NULL);
+	if( ret1 != 0 )
+	{
+      switch(ret1)
+      {
+         case -ENOMEM: printf("no memory!\n");
+            break;
+         case -EEXIST: printf("already registered!\n");
+            break;
+         case -EPERM: printf("asychron context!\n");
+            break;
+         default: printf("Unknown error: %i\n", ret1);
+            break;
+      }
+      return -2;
+	}
+
+	for(;i<10000;)
+	{
+		x=i/23%2;
+		i++;
+		
+	}
+		
+	ret2 = rt_task_delete(rx_tsk);
+	if( 0 != ret2 )
+	{
+		printf("delete error: %i\n", ret2);
+      return -3;
+	}
+
+	return 0;
+}
+
+void rx_task(void *cookie)
+{
+	j=0;
+	j++;
+	while(1);
+}
+
+-- 
+von Karl Reichert
 
 
