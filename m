@@ -1,12 +1,10 @@
-Message-ID: <4861E6B4.2000909@domain.hid>
-Date: Wed, 25 Jun 2008 08:33:24 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Date: Wed, 25 Jun 2008 09:33:56 +0200
+Message-Id: <838862596@domain.hid>
 MIME-Version: 1.0
-References: <E1KBFpL-0002d2-CR@www3.emo.freenet-rz.de>
-In-Reply-To: <E1KBFpL-0002d2-CR@www3.emo.freenet-rz.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+From: Joachim Meyer <Jogi95@domain.hid>
+Content-Type: text/plain; charset=iso-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] compiling probs
+Subject: [Xenomai-help] latency in kernel mode
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,77 +14,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: belatronix@domain.hid
-Cc: Xenomai-help@domain.hid
+To: xenomai@xenomai.org
 
-belatronix@domain.hid wrote:
-> ----- original Nachricht --------
-> 
-> Betreff: Re: [Xenomai-help] compiling probs
-> Gesendet: Di 24 Jun 2008 13:12:26 CEST
-> Von: "Wolfgang Grandegger"<wg@domain.hid>
-> 
->> Axel Beierlein wrote:
->>> Hello,
->>>
->>> when i try to compile the module examples from the xenomai source  
->>> directory i get many <in file included> like this
->>>
->>> In file included from  
->>> /home/xx/linuxppc_2_4_25/include/asm/xenomai/hal.h:50,
->>>                   from  
->>> /home/xx/linuxppc_2_4_25/include/asm-generic/xenomai/system.h:39,
->>>                   from  
->>> /home/xx/linuxppc_2_4_25/include/asm/xenomai/system.h:29,
->>>                   from  
->>> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/types.h:39,
->>>                   from  
->>> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/queue.h:24,
->>>                   from  
->>> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/timer.h:23,
->>>                   from  
->>> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/thread.h:23,
->>>                   from  
->>> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/pod.h:34,
->>>                   from  
->>> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/xenomai.h:23,
->>>                   from  
->>> /home/xx/linuxppc_2_4_25/include/xenomai/rtdm/rtdm_driver.h:36,
->>>                   from heartbeat-x86.c:21:
->>>
->>> also a type qualifier warning.
->>>
->>> /home/xx/linuxppc_2_4_25/include/asm/time.h:60: warning: type qualifiers 
->>> ignored on function return type
->>>
->>> Did anyone know what i make wrong?
->>>
->>> I use xenomai 2.3.5 and the Kernelsource 2.4.25 from the Denx repository 
->>> with the ELDK4.1.
->>>
->>> my make to build the modules is like <make XENO=$DESTDIR/root/xenomai  
->>> CC=ppc_6xx-gcc> where DESTDIR is set to the Path where the rootfs is.
->> Is your kernel configured and built?
-> Yes, the kernel is configured and built
->> Does adding ARCH=ppc help?
-> No, ARCH=ppc is already set by the eldk_init script
->> Is module support enabled in the kernel?
-> Yes, it is enabled
->> What ELDK version do you use?
->>
-> As i said before, i use the ELDK4.1
+Hi
 
-For Linux 2.4 you should use ELDK 3.1.1 because the GLIBC uses 2.4 includes.
+I still don't know what to do with the latency test in kernel mode. Every others test works fine except for the IRQ test, but I was told this is normal for an non x86 architecture. Can anybody give me a hint what I can do? What would probably be the problem? How important is it, that that test won't work? Should I ignore it and start with programming some real-time-stuff? But if I start now and get problems later I would always think, the failed test could be the reason for the problem too....
 
->> It works fine here.
->>
-> Here not
-> 
->> Wolfgang.
->>
-> Any other Ideas?
+Here's the output:
+---------------------------------------------------------------------------------------------
+bash-3.00# cd /usr/xenomai/testsuite/latency/
+bash-3.00# ./run -- -t1
+*
+*
+* Type ^C to stop this application.
+*
+*
+== Sampling period: 100 us
+== Test mode: in-kernel periodic task
+== All results in microseconds
+latency: failed to start in-kernel timer benchmark, code -25
+---|------------|------------|------------|--------|-------------------------
+RTS|  267928.028|  805352.732|      32.768|       0|    00:00:10/00:00:10
+bash-3.00#
+----------------------------------------------------------------------------------------------
 
-See above. I will try if I get the error with ELDK 4.1.
+Thanks for your help and patience.
+Joachim
+____________________________________________________________________
+Ihre Messenger, Communities und E-Mails jetzt in einem Programm!
+WEB.DE MultiMessenger http://www.produkte.web.de/messenger/?did=3071
 
-Wolfgang.
 
