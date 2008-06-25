@@ -1,13 +1,13 @@
-Message-ID: <e4ef24880806151610s634307efi73c47695eadde067@domain.hid>
-Date: Sun, 15 Jun 2008 16:10:57 -0700
-From: "Rob Gubler" <rgubler@domain.hid>
-In-Reply-To: <18517.40944.439081.634345@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_22333_21849041.1213571457446"
-References: <e4ef24880806151540r477dbe2bq6162a7b781c60f7e@domain.hid>
-	<18517.40944.439081.634345@domain.hid>
-Subject: Re: [Xenomai-help] CPU affinity on a per thread basis
+Date: Wed, 25 Jun 2008 10:06:08 +0200
+From: Matthieu <matthieu.connaulte_xenomai@domain.hid>
+In-Reply-To: <c93c27ad0d08dde74d76078062909dec@domain.hid>
+References: <c93c27ad0d08dde74d76078062909dec@domain.hid>
+Message-ID: <3ce71a0b60f0e9f5f568ac85f5f5b85b@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] xenomai scheduler's ticks period
+Reply-To: matthieu.connaulte_xenomai@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,79 +17,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-------=_Part_22333_21849041.1213571457446
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+On Tue, 24 Jun 2008 19:10:24 +0200, Matthieu
+<matthieu.connaulte_xenomai@domain.hid> wrote:
+> On Tue, 24 Jun 2008 18:40:51 +0200, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>> Matthieu wrote:
+>>>
+>>> On Tue, 24 Jun 2008 16:27:42 +0200, Gilles Chanteperdrix
+>>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>>> Matthieu wrote:
+>>>>> Let me know if I've done something wrong ...
+>>>> rt_timer_read belongs to the native skin, not to the vxworks skin !
+>>>>
+>>>> --
+>>>>                                                   Gilles.
+>>>
+>>> Ok, but I don't really see why does mixing vxworks task with a xenoma=
+i
+>>> instruction that not depends on vxworks scheduler is a problem. if I
+>> just
+>>> get time, does the task switch to xenomai scheduler ?. However, if it=
+'s
+>>> really a problem, what can I use to get a pricise time, as I can't us=
+e
+>>> getTick anymore. Philippe suggested xntbase time base services ?
+>>
+>> You can use rt_timer_read(), but you should not assume that this retur=
+ns
+>> a nanoseconds count, this depends on the timing configuration of the
+>> native skin.
+>>
+>> --
+>>
+>                                            Gilles.
+> Ok, but in fact, that's not my problem : I don't understand why the loo=
+p
+> doesn't stop on taskDelay(1), as there is no tick on vxworks scheduler
+> (due
+> to tick_arg=3D0) ?
+>=20
+> Matthieu
+>=20
+>=20
 
-On Sun, Jun 15, 2008 at 4:04 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+I've tested a programme with a task that suspend itself, and a main loop
+that resume the task when it is suspended. The task has to be rescheldue =
+to
+continue its execution but the tick_arg value has no influence on the tim=
+e
+the task waits for rescheduling. That's make me think the vxworks schedul=
+er
+isn't rhythmed by this tick. Could you explain me what's going on ?
 
-> Rob Gubler wrote:
->  > Hello,
->  >
->  > I am using Xenomai 2.4.  I'd like to explicitly control which CPU a
->  > particular thread executes on.  The Xenomai POSIX skin documentation
-> says to
->  > achieve this with
->  > pthread_attr_setaffinity_np(...)<%28
-> http://www.xenomai.org/documentation/trunk/html/api/group__posix__threadattr.html#gc79718c596b9cb0fdff961eede1f5995%29
-> >my
->  > thread needs to be created in the kernel space. I just want to verify
->  > that this can not be accomplished in a user space thread?
->  >
->  > I found a post<
-> https://mail.gna.org/public/xenomai-help/2007-05/msg00300.html>a
->  > year or so ago about this that mentions CPU affinity using
->  > sched_setaffinity(...).  My understanding though is that this particular
->  > call sets the affinity for the entire process/task and doesn't allow
-> thread
->  > specific CPU affinity control.  Is this true?
->
-> The posix skin documentation only documents the kernel-space service,
-> because there is no special need to implement these services in
-> kernel-space: the libc already implements both
-> pthread_attr_setaffinity_np and pthread_setaffinity_np
->
+thank you in advance
+
+Matthieu
 
 
-Thanks Gilles.  Did you mean:  "The posix skin documentation only documents
-the kernel-space service, because there is no special need to implement
-these services in **user-space** ..."  ??
 
--Rob
-
-------=_Part_22333_21849041.1213571457446
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-<br><br><div class="gmail_quote">On Sun, Jun 15, 2008 at 4:04 PM, Gilles Chanteperdrix &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt; wrote:<br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-<div class="Ih2E3d">Rob Gubler wrote:<br>
-&nbsp;&gt; Hello,<br>
-&nbsp;&gt;<br>
-&nbsp;&gt; I am using Xenomai 2.4. &nbsp;I&#39;d like to explicitly control which CPU a<br>
-&nbsp;&gt; particular thread executes on. &nbsp;The Xenomai POSIX skin documentation says to<br>
-&nbsp;&gt; achieve this with<br>
-</div>&nbsp;&gt; pthread_attr_setaffinity_np(...)&lt;%28<a href="http://www.xenomai.org/documentation/trunk/html/api/group__posix__threadattr.html#gc79718c596b9cb0fdff961eede1f5995%29" target="_blank">http://www.xenomai.org/documentation/trunk/html/api/group__posix__threadattr.html#gc79718c596b9cb0fdff961eede1f5995%29</a>&gt;my<br>
-
-<div class="Ih2E3d">&nbsp;&gt; thread needs to be created in the kernel space. I just want to verify<br>
-&nbsp;&gt; that this can not be accomplished in a user space thread?<br>
-&nbsp;&gt;<br>
-</div>&nbsp;&gt; I found a post&lt;<a href="https://mail.gna.org/public/xenomai-help/2007-05/msg00300.html" target="_blank">https://mail.gna.org/public/xenomai-help/2007-05/msg00300.html</a>&gt;a<br>
-<div class="Ih2E3d">&nbsp;&gt; year or so ago about this that mentions CPU affinity using<br>
-&nbsp;&gt; sched_setaffinity(...). &nbsp;My understanding though is that this particular<br>
-&nbsp;&gt; call sets the affinity for the entire process/task and doesn&#39;t allow thread<br>
-&nbsp;&gt; specific CPU affinity control. &nbsp;Is this true?<br>
-<br>
-</div>The posix skin documentation only documents the kernel-space service,<br>
-because there is no special need to implement these services in<br>
-kernel-space: the libc already implements both<br>
-pthread_attr_setaffinity_np and pthread_setaffinity_np<br></blockquote><div><br><br>Thanks Gilles.&nbsp; Did you mean:&nbsp; &quot;The posix skin documentation only documents the kernel-space service, 
-because there is no special need to implement these services in <b>*user-space*</b> ...&quot;&nbsp; ??<br><br>-Rob <br></div></div><br>
-
-------=_Part_22333_21849041.1213571457446--
 
