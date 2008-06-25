@@ -1,12 +1,14 @@
-Message-ID: <48626A92.70409@domain.hid>
-Date: Wed, 25 Jun 2008 17:56:02 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Date: Thu, 26 Jun 2008 00:33:14 +0200
+References: <1214406057.48625da9bf316@domain.hid>
+In-Reply-To: <1214406057.48625da9bf316@domain.hid>
 MIME-Version: 1.0
-References: <20080625154936.18590@domain.hid>
-In-Reply-To: <20080625154936.18590@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problems with Threads and RTnet
+Content-Disposition: inline
+Message-Id: <200806260033.15193.berlemont.hauw@domain.hid>
+Subject: Re: [Xenomai-help] Comedi over RTDM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,25 +18,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Karl Reichert <Karl-Trampe@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Karl Reichert wrote:
-> Hello list,
-> 
-> I have some problems with RTnet and threads. I create two thread via rt_task_spawn(), one is sending and one is receiving (non-blocking) frames over rtnet.
-> 
-> Each task is existed with return (I also tried rt_task_delete()) and the main-function is waiting for task-termination via rt_task_join().
-> 
-> When I run this program the first time, everything is fine. When I run it a second time without rebooting, I can't receive any more frames (returnvalue -1).
-> 
-> So it seems that the termination of the tasks and the main-function from the first run failed to free the "RTnet resources", too.
-> 
-> Any idea, what I'am doing wrong?
+Hi,
 
-What version of Xenomai are you running ? Do not you get error messages 
-in the console ?
+> Alex told me that a Comedi port to RTDM exists.
+>
+> What does this mean ? If i'm able to write a driver for Comedi, this one
+> will work with RTDM and thus with Xenomai ?
+>
+> I can't see where is the link between both and can't neither find
+> information on that port.
+>
+> does anybody have recent examples of driver working with Comedi/RTDM ?
+>
 
--- 
-                                                  Gilles.
+Originally, Comedi is a framework for acquisition drivers which can be used in 
+a common Linux system and in some specific real-time context.
+
+This project was initiated by David Schleed. Have a look at the Comedi 
+website: www.comedi.org. Many documents detail the main ideas.
+
+A little while after the development of RTDM by Jan Kiszka, I started to work 
+on a literal porting of Comedi over RTDM during my free time. I faced no 
+specific issues for the porting of the kernel side of Comedi. But, on the 
+user side, as far as I remember, things were different. I had some 
+difficulties to ensure the real-time context considering the use of common 
+Linux API in the Comedi library (malloc).
+
+So I sent a mail to the Comedi mailing-list to tell that I was interested in 
+writing a reviewed Comedi port for RTDM (here is a link 
+http://osdir.com/ml/comedi/2006-04/msg00017.html).
+
+This task took a long time as I can only work on it during my spare-time 
+(roughly one or two hours per day; my job is not related with Comedi). 
+
+Eventually (at last), the "comedi-rtdm-dev" branch reached a stable state (a 
+few weeks ago). The "comedi-rtdm-dev" consists of a kernel framework and a 
+user-space library. Right now, the critical issue is the recovery of the 
+original Comedi drivers. And, more critically, the integration of new drivers 
+for new devices.
+
+On that last point, I hope some external contributions will help the 
+Comedi4RTDM drivers set to grow as I have no acquisition cards and no way to 
+get some.
+
+By the way, if anyone is interested in Comedi, feel free to help me and / or 
+criticize / improve the code I wrote.
+
+Best regards.
+
+Alexis.
+
 
