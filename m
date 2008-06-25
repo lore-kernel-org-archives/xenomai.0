@@ -1,10 +1,10 @@
-Message-ID: <4861F7F1.7080805@domain.hid>
-Date: Wed, 25 Jun 2008 09:46:57 +0200
-From: Sebastian Smolorz <smolorz@domain.hid>
+Message-ID: <4861F67F.7090805@domain.hid>
+Date: Wed, 25 Jun 2008 09:40:47 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <838862596@domain.hid>
 In-Reply-To: <838862596@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] latency in kernel mode
 List-Id: Help regarding installation and common use of Xenomai
@@ -20,11 +20,6 @@ To: Joachim Meyer <Jogi95@domain.hid>
 Cc: xenomai@xenomai.org
 
 Joachim Meyer wrote:
-> I still don't know what to do with the latency test in kernel mode.
-[...]
-> Here's the output:
-> ---------------------------------------------------------------------------------------------
-> bash-3.00# cd /usr/xenomai/testsuite/latency/
 > bash-3.00# ./run -- -t1
 > *
 > *
@@ -35,9 +30,21 @@ Joachim Meyer wrote:
 > == Test mode: in-kernel periodic task
 > == All results in microseconds
 > latency: failed to start in-kernel timer benchmark, code -25
+> ---|------------|------------|------------|--------|-------------------------
+> RTS|  267928.028|  805352.732|      32.768|       0|    00:00:10/00:00:10
+> bash-3.00#
+> ----------------------------------------------------------------------------------------------
+> 
+> Thanks for your help and patience.
 
-Did you compile and load the kernel driver xeno_timerbench.ko?
+Enable the timerbench driver in kernel configuration. If you want to
+enable several testing drivers and everything to work "out of thebox",
+enable them as module, and do not load the modules by yourself, let the
+run script load the apropriate module. Otherwise, specify the correct
+testing driver index to the test you run.
 
 -- 
-Sebastian
+
+
+					    Gilles.
 
