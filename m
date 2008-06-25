@@ -1,12 +1,13 @@
-Message-ID: <4861F67F.7090805@domain.hid>
-Date: Wed, 25 Jun 2008 09:40:47 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Wed, 25 Jun 2008 10:18:15 +0200
+From: "Axel Beierlein" <belatronix@domain.hid>
+Content-Type: text/plain; format=flowed; delsp=yes; charset=iso-8859-15
 MIME-Version: 1.0
-References: <838862596@domain.hid>
-In-Reply-To: <838862596@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <E1KBFpL-0002d2-CR@www3.emo.freenet-rz.de>
+	<4861E6B4.2000909@domain.hid>
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] latency in kernel mode
+Message-ID: <op.udapcpq7t06gyn@domain.hid>
+In-Reply-To: <4861E6B4.2000909@domain.hid>
+Subject: Re: [Xenomai-help] compiling probs
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,35 +17,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Joachim Meyer <Jogi95@domain.hid>
-Cc: xenomai@xenomai.org
+To: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
 
-Joachim Meyer wrote:
-> bash-3.00# ./run -- -t1
-> *
-> *
-> * Type ^C to stop this application.
-> *
-> *
-> == Sampling period: 100 us
-> == Test mode: in-kernel periodic task
-> == All results in microseconds
-> latency: failed to start in-kernel timer benchmark, code -25
-> ---|------------|------------|------------|--------|-------------------------
-> RTS|  267928.028|  805352.732|      32.768|       0|    00:00:10/00:00:10
-> bash-3.00#
-> ----------------------------------------------------------------------------------------------
-> 
-> Thanks for your help and patience.
+Am 25.06.2008, 08:33 Uhr, schrieb Wolfgang Grandegger <wg@domain.hid>:
 
-Enable the timerbench driver in kernel configuration. If you want to
-enable several testing drivers and everything to work "out of thebox",
-enable them as module, and do not load the modules by yourself, let the
-run script load the apropriate module. Otherwise, specify the correct
-testing driver index to the test you run.
+> belatronix@domain.hid wrote:
+>> ----- original Nachricht --------
+>>  Betreff: Re: [Xenomai-help] compiling probs
+>> Gesendet: Di 24 Jun 2008 13:12:26 CEST
+>> Von: "Wolfgang Grandegger"<wg@domain.hid>
+>>
+>>> Axel Beierlein wrote:
+>>>> Hello,
+>>>>
+>>>> when i try to compile the module examples from the xenomai source   
+>>>> directory i get many <in file included> like this
+>>>>
+>>>> In file included from   
+>>>> /home/xx/linuxppc_2_4_25/include/asm/xenomai/hal.h:50,
+>>>>                   from   
+>>>> /home/xx/linuxppc_2_4_25/include/asm-generic/xenomai/system.h:39,
+>>>>                   from   
+>>>> /home/xx/linuxppc_2_4_25/include/asm/xenomai/system.h:29,
+>>>>                   from   
+>>>> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/types.h:39,
+>>>>                   from   
+>>>> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/queue.h:24,
+>>>>                   from   
+>>>> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/timer.h:23,
+>>>>                   from   
+>>>> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/thread.h:23,
+>>>>                   from   
+>>>> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/pod.h:34,
+>>>>                   from   
+>>>> /home/xx/linuxppc_2_4_25/include/xenomai/nucleus/xenomai.h:23,
+>>>>                   from   
+>>>> /home/xx/linuxppc_2_4_25/include/xenomai/rtdm/rtdm_driver.h:36,
+>>>>                   from heartbeat-x86.c:21:
+>>>>
+>>>> also a type qualifier warning.
+>>>>
+>>>> /home/xx/linuxppc_2_4_25/include/asm/time.h:60: warning: type  
+>>>> qualifiers ignored on function return type
+>>>>
+>>>> Did anyone know what i make wrong?
+>>>>
+>>>> I use xenomai 2.3.5 and the Kernelsource 2.4.25 from the Denx  
+>>>> repository with the ELDK4.1.
+>>>>
+>>>> my make to build the modules is like <make  
+>>>> XENO=$DESTDIR/root/xenomai  CC=ppc_6xx-gcc> where DESTDIR is set to  
+>>>> the Path where the rootfs is.
+>>> Is your kernel configured and built?
+>> Yes, the kernel is configured and built
+>>> Does adding ARCH=ppc help?
+>> No, ARCH=ppc is already set by the eldk_init script
+>>> Is module support enabled in the kernel?
+>> Yes, it is enabled
+>>> What ELDK version do you use?
+>>>
+>> As i said before, i use the ELDK4.1
+>
+> For Linux 2.4 you should use ELDK 3.1.1 because the GLIBC uses 2.4  
+> includes.
+>
+>>> It works fine here.
+>>>
+>> Here not
+>>
+>>> Wolfgang.
+>>>
+>> Any other Ideas?
+>
+> See above. I will try if I get the error with ELDK 4.1.
+>
+> Wolfgang.
 
--- 
+Thats it! With ELDK 3.1.1 it works already fine by me.
 
+Thank you.
 
-					    Gilles.
+Axel
 
