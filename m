@@ -1,11 +1,12 @@
-Date: Wed, 25 Jun 2008 21:01:55 -0700 (PDT)
-From: indra sakti <sakti7387@domain.hid>
-In-Reply-To: <20080625154936.18590@domain.hid>
+Date: Thu, 26 Jun 2008 09:38:45 +0200 (CEST)
+From: Klaas Gadeyne <klaas.gadeyne@domain.hid>
+In-Reply-To: <200806260033.15193.berlemont.hauw@domain.hid>
+Message-ID: <Pine.LNX.4.64.0806260935460.11764@domain.hid>
+References: <1214406057.48625da9bf316@domain.hid>
+	<200806260033.15193.berlemont.hauw@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-383778557-1214452915=:15559"
-Message-ID: <587878.15559.qm@domain.hid>
-Subject: [Xenomai-help] how to make my own application in Xenomai
-Reply-To: sakti7387@domain.hid
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: Re: [Xenomai-help] Comedi over RTDM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,34 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Alexis Berlemont <berlemont.hauw@domain.hid>
+Cc: xenomai@xenomai.org
 
---0-383778557-1214452915=:15559
-Content-Type: text/plain; charset=us-ascii
+Hi Alexis,
 
-Hello..
+On Thu, 26 Jun 2008, Alexis Berlemont wrote:
+[...]
+> Eventually (at last), the "comedi-rtdm-dev" branch reached a stable state (a
+> few weeks ago). The "comedi-rtdm-dev" consists of a kernel framework and a
+> user-space library. Right now, the critical issue is the recovery of the
+> original Comedi drivers. And, more critically, the integration of new drivers
+> for new devices.
 
-I'm a newbie using xenomai domain, and i still don't understand how to write an application in user-space so that xenomai domain recognize it. Do we should use xenomai library and makefile like in the example folder? Can someone explain me?
+Is your port xenomai-version independent yet?  Or maybe better, which version do you use to test things?
 
-Sorry, i'm not really experienced in linux kernel and anything about it.. 
+> On that last point, I hope some external contributions will help the
+> Comedi4RTDM drivers set to grow as I have no acquisition cards and no way to
+> get some.
 
-Thanx..
+What effort/steps does it take to port an existing driver into comedi-rtdm-dev?
 
+regards,
 
-
---Indra--
-
-
-
-
+Klaas
 
 
-      
---0-383778557-1214452915=:15559
-Content-Type: text/html; charset=us-ascii
 
-<table cellspacing='0' cellpadding='0' border='0' ><tr><td valign='top' style='font: inherit;'>Hello..<br><br>I'm a newbie using xenomai domain, and i still don't understand how to write an application in user-space so that xenomai domain recognize it. Do we should use xenomai library and makefile like in the example folder? Can someone explain me?<br><br>Sorry, i'm not really experienced in linux kernel and anything about it.. <br><br>Thanx..<br><br><br><br>--Indra--<br><br><br><br></td></tr></table><br>
-
-      
---0-383778557-1214452915=:15559--
 
