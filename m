@@ -1,14 +1,12 @@
-Message-ID: <48635CB3.6000606@domain.hid>
-Date: Thu, 26 Jun 2008 11:09:07 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <48633A2F.8080702@domain.hid>
+Date: Thu, 26 Jun 2008 08:41:51 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1214406057.48625da9bf316@domain.hid>	<200806260033.15193.berlemont.hauw@domain.hid>
-	<Pine.LNX.4.64.0806260935460.11764@domain.hid>
-In-Reply-To: <Pine.LNX.4.64.0806260935460.11764@domain.hid>
+References: <587878.15559.qm@domain.hid>
+In-Reply-To: <587878.15559.qm@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Comedi over RTDM
-Reply-To: rpm@xenomai.org
+Subject: Re: [Xenomai-help] how to make my own application in Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,27 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Klaas Gadeyne <klaas.gadeyne@domain.hid>
+To: sakti7387@domain.hid
 Cc: xenomai@xenomai.org
 
-Klaas Gadeyne wrote:
-> Hi Alexis,
+indra sakti wrote:
+> Hello..
 > 
-> On Thu, 26 Jun 2008, Alexis Berlemont wrote:
-> [...]
->> Eventually (at last), the "comedi-rtdm-dev" branch reached a stable state (a
->> few weeks ago). The "comedi-rtdm-dev" consists of a kernel framework and a
->> user-space library. Right now, the critical issue is the recovery of the
->> original Comedi drivers. And, more critically, the integration of new drivers
->> for new devices.
-> 
-> Is your port xenomai-version independent yet?  Or maybe better, which version do you use to test things?
-> 
+> I'm a newbie using xenomai domain, and i still don't understand how
+> to write an application in user-space so that xenomai domain
+> recognize it. Do we should use xenomai library and makefile like in
+> the example folder? Can someone explain me?
 
-Sidenote: there is a plan to have Alex's work merged into the upcoming 2.5. This
-will allow us to complete the jigsaw puzzle on the Xenomai side, paving the way
-to a comprehensive RTDM-based real-time device driver suite.
+For examples using the native API, please read:
+http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Native-API-Tour-rev-C.pdf
+
+For the posix skin, see doc/txt/pse51-skin.txt.
+
+> Sorry, i'm not really experienced in linux kernel and anything about
+> it..
+
+You should spend your time reading documentations before your start
+asking questions on mailing lists, then.
 
 -- 
-Philippe.
+
+
+					    Gilles.
 
