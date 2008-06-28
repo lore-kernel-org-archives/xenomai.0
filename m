@@ -1,18 +1,18 @@
-Message-ID: <48639497.3020706@domain.hid>
-Date: Thu, 26 Jun 2008 15:07:35 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <48667CE8.60305@domain.hid>
+Date: Sat, 28 Jun 2008 20:03:20 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4856B7AE.9030805@domain.hid> <4857682B.8060900@domain.hid>
-	<4857BBCD.6020902@domain.hid> <48593525.2040103@domain.hid>
-	<48594232.5020505@domain.hid> <485943D0.2000506@domain.hid>
-	<48594CC9.4030408@domain.hid> <485A15D7.1000809@domain.hid>
-	<48639233.7040803@domain.hid>
-In-Reply-To: <48639233.7040803@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Compile-time bug,
-	and problem with PPC440 ethernet
-Reply-To: rpm@xenomai.org
+References: <E1KCdDN-0007XY-Dw@domain.hid>
+In-Reply-To: <E1KCdDN-0007XY-Dw@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigC11D10CD5A771748AA503F29"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [Xenomai-commits] r3998 - in /trunk: ./
+ doc/doxygen/ doc/txt/ include/ include/asm-generic/ include/comedi/
+ include/compat/linux/ ksrc/drivers/ ksrc/drivers/comedi/ ksrc/skins/
+ ksrc/skins/comedi/ src/skins/ src/skins/comedi/ src/utils/
+ src/utils/comedi/
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,90 +22,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: "Steven A. Falco" <sfalco@domain.hid>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Steven A. Falco wrote:
-> 
->>> Beautiful.  The patch works!  I now get DHCP replies.
->>>
->>> Is this the patch you will put into the official tree, or do you still
->>> need to do more?
->>>
->>>     
->>
->> One thing, could you confirm that your network card relies on edge interrupts
->> (and not level)?
->>
->> Aside of that, it should be ok. It's the same IRQ lock out issue fixed in the
->> ppc/ branch recently.
->>
->>   
-> 
-> Sorry for the delay in getting back to you - vacation. 
-> 
-> The ethernet interrupts on the PPC440 are level-sensitive.  I gather
-> that is not what you were expecting, so I wonder what the implications are.
->
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigC11D10CD5A771748AA503F29
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Nothing bad. This just means that the bug was due to unbalanced locking, which
-is only ok when trying to decrease the lock count uselessly.
+Philippe Gerum wrote:
+> Author: rpm
+> Date: Sat Jun 28 18:23:51 2008
+> New Revision: 3998
+>=20
+> URL: http://svn.gna.org/viewcvs/xenomai?rev=3D3998&view=3Drev
+> Log:
+> Merge COMEDI over RTDM framework
+>=20
+> Added:
+=2E..
+>     trunk/ksrc/skins/comedi/
+>     trunk/ksrc/skins/comedi/Config.h
+>     trunk/ksrc/skins/comedi/Config.in
+>     trunk/ksrc/skins/comedi/Kconfig
+>     trunk/ksrc/skins/comedi/Makefile
+>     trunk/ksrc/skins/comedi/buffer.c
+>     trunk/ksrc/skins/comedi/command.c
+>     trunk/ksrc/skins/comedi/device.c
+>     trunk/ksrc/skins/comedi/driver.c
+>     trunk/ksrc/skins/comedi/driver_facilities.c
+>     trunk/ksrc/skins/comedi/instruction.c
+>     trunk/ksrc/skins/comedi/interface.c
+>     trunk/ksrc/skins/comedi/os_facili. ties.c
+>     trunk/ksrc/skins/comedi/subdevice.c
+>     trunk/ksrc/skins/comedi/transfer.c
+>     trunk/src/skins/comedi/
+>     trunk/src/skins/comedi/Makefile.am
+>     trunk/src/skins/comedi/Makefile.in
+>     trunk/src/skins/comedi/async.c
+>     trunk/src/skins/comedi/descriptor.c
+>     trunk/src/skins/comedi/info.c
+>     trunk/src/skins/comedi/range.c
+>     trunk/src/skins/comedi/sync.c
+>     trunk/src/skins/comedi/sys.c
 
-> After looking at it more closely, I don't really understand this fix. 
-> uic_mask_ack_irq() is just uic_mask_irq() followed by uic_ack_irq(). 
-> So, why do you remove the ipipe_irq_lock() from uic_mask_ack_irq() and
-> not from uic_mask_irq()?
+Why did these parts went in as a skin? As far as I can see, comedi4rtdm
+is a pure driver stack, _using_ the RTDM skin. I didn't find any Xenomai
+nucleus reference on first glance, so the whole thing should, in theory,
+be directly portable over Native-RTDM - another sign that it isn't a
+skin. IMHO, it should rather populate only ksrc/drivers and, e.g.,
+src/drvlibs/comedi.
 
-We don't want to lock the pipeline for a given interrupt when acknowledging that
-interrupt -- when present uic_mask_ack_irq() will always supersede separate
-mask+ack calls for acknowledging IRQs.
-
-However, we want non ack-related masking/unmasking to alter the pipeline state
-for the interrupt in question. And those routines are not involved in IRQ
-acknowledge at all.
-
-  Also, since uic_unmask_irq() always calls
-> ipipe_irq_unlock(), doesn't that mean you can wind up with more unlocks
-> than locks (since uic_mask_ack_irq/uic_unmask_irq are no longer balanced)?
->
-
-That is explicitly allowed by the pipeline code.
-
->>> Also, please include my compile-time patch, if that is acceptible.
->>>
->>>     
->>
->> I recently committed a different fix for the same issue after you reported it.
->> This should work without requiring additional #ifdef'ing as well. Thanks for the
->> heads up.
->>
->> --- a/include/asm-powerpc/ipipe.h
->> +++ b/include/asm-powerpc/ipipe.h
->> @@ -62,8 +62,6 @@
->>  		local_irq_enable_hw(); x;				\
->>  	} )
->>
->> -#define ipipe_update_tick_evtdev(evtdev)	do { } while (0)
->> -
->>  struct ipipe_domain;
->>
->>  struct ipipe_sysinfo {
->> @@ -209,4 +207,6 @@ do {									\
->>
->>  #endif /* CONFIG_IPIPE */
->>
->> +#define ipipe_update_tick_evtdev(evtdev)	do { } while (0)
->> +
->>  #endif /* !__ASM_POWERPC_IPIPE_H */
->>   
-> 
-> Ok - thanks.  I'll apply that fix instead.
-> 
->     Steve
-> 
-> 
+Jan
 
 
--- 
-Philippe.
+--------------enigC11D10CD5A771748AA503F29
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkhmfO4ACgkQniDOoMHTA+lBDgCeKK3J35EC+31jnP7tzEQ+OJ4A
+hfIAn1n2ieob5LFxb0Hzkv7g/zk8Fg/7
+=aIMx
+-----END PGP SIGNATURE-----
+
+--------------enigC11D10CD5A771748AA503F29--
 
