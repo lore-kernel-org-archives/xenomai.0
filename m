@@ -1,45 +1,87 @@
-Message-ID: <489033C8.6000105@domain.hid>
-Date: Wed, 30 Jul 2008 11:26:32 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Leopold Palomo Avellaneda <leo@domain.hid>
+Date: Tue, 1 Jul 2008 00:43:29 +0200
 MIME-Version: 1.0
-References: <487E1BE8.1000306@domain.hid>	
-	<f5e14e470807200925h3ac5d321x1a6d7629dd03fb0e@domain.hid>	
-	<488DD994.8020501@domain.hid> <488F2749.9010605@domain.hid>	
-	<f5e14e470807291515j19e7d34v3b9a1579bc10377f@domain.hid>	
-	<489026E5.1010801@domain.hid>
-	<f5e14e470807300222q55dce280p4635265037d4350a@domain.hid>
-In-Reply-To: <f5e14e470807300222q55dce280p4635265037d4350a@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: multipart/signed; boundary="nextPart8269032.1ADHaBy0Y0";
+	protocol="application/pgp-signature"; micalg=pgp-sha1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Error propagating ISR to Linux domain
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-Id: <200807010043.33331.leo@domain.hid>
+Subject: [Xenomai-help] IRQs and PCIs
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Ulrich Schwab <uli.schwab@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Ulrich Schwab wrote:
-> On Wed, Jul 30, 2008 at 10:31 AM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->> ...  you loose the RT response, as was (correctly) said in my first answer.
-> You are right, of course.
-> It was my error not to mention this in the original post.
-> 
-> For me this is just the solution to avoid the infinte loop when irqs are shared.
-> Until now it was always possible to avoid shared irqs (between RT and non-RT)
-> by changing the position of the PCI card.
+--nextPart8269032.1ADHaBy0Y0
+Content-Type: text/plain;
+  charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-It looks like some people can not avoid the shared IRQ between RT and
-non RT. It is amazing that with APIC/IO-APIC PCs have something like 255
-irqs, but that the PCs still manage to put several peripherals on the
-same IRQ.
+Hi,
 
--- 
-                                                 Gilles.
+maybe is an off toppic, but probably some like me has this issue. I have a=
+=20
+mainboard with several PCI and two PCIe. I can configure the PCIe to use wi=
+th=20
+rtnet and xenomai without any important problem.
+
+The mobo has an eth and firewire and vga incorporated, so the pci are free.=
+=20
+But now, I would like to add a pci network card. I have three:
+=2D on for our environtment
+=2D two for the rtnet (two robot controlers)
+
+and then I would like to have 4
+=2D one for another network
+
+The problem that I have and I don't know how to solve is that the new pci=20
+network card share an irq with another device. So, in my case, I have =20
+problems with this. With rtnet, I solve this using pcie devices, but now I=
+=20
+cannot.
+
+I have configure the xenomai kernel following the FAQ, and I have tested to=
+=20
+assign an IRQ in the BIOS. But I have not be able to make the interface=20
+works. I have delays in the interface, and google says ;-) that is a proble=
+ms=20
+of sharing IRQs with the eth. And I believe in that ...
+
+So, thinking that I would like to use this eth in a normal environment (not=
+=20
+rtnet,) but in a box using xenomai, some of you have some "magical" idea,=20
+kernel parameter, etc to solve this issue?
+
+Thanks in advance,
+
+Regards,
+
+Leo
+
+
+=2D-=20
+=2D-
+Linux User 152692
+PGP: 0xF944807E
+Catalonia
+
+--nextPart8269032.1ADHaBy0Y0
+Content-Type: application/pgp-signature; name=signature.asc 
+Content-Description: This is a digitally signed message part.
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+iD8DBQBIaWGVaC7AnPlEgH4RAoWrAKCUW+x+m5sVxrtS9vVVlbRZvkTrGQCfVqX+
+CRNmuZ1Vw5LIQt1DX1oakJE=
+=RwJO
+-----END PGP SIGNATURE-----
+
+--nextPart8269032.1ADHaBy0Y0--
 
