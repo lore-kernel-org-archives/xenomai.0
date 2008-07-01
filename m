@@ -1,14 +1,12 @@
-Message-ID: <486A3D87.3070702@domain.hid>
-Date: Tue, 01 Jul 2008 16:21:59 +0200
+Message-ID: <486A9516.6000703@domain.hid>
+Date: Tue, 01 Jul 2008 22:35:34 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <176721864.20080701150033@domain.hid>
-	<486A3915.7010506@domain.hid>
-	<17310289306.20080701161704@domain.hid>
-In-Reply-To: <17310289306.20080701161704@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <200807010043.33331.leo@domain.hid>
+In-Reply-To: <200807010043.33331.leo@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai and TSC
+Subject: Re: [Xenomai-help] IRQs and PCIs
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,21 +16,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Guido Moritz <guido.moritz@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Leopold Palomo Avellaneda <leo@domain.hid>
+Cc: xenomai@xenomai.org
 
-Guido Moritz wrote:
-> Thank you for this fast reply.
+Leopold Palomo Avellaneda wrote:
+> Hi,
 > 
-> So I would like to enable TSC. But unfortunately it seems as if I am
-> to stupid to understand the FAQ and what you mean with "selecting the processor
->  in kernel configuration which fits your processor". Please give me a
->  more detailed hint how to solve this. I'm sorry but I'm a newbie...
+> maybe is an off toppic, but probably some like me has this issue. I have a 
+> mainboard with several PCI and two PCIe. I can configure the PCIe to use with 
+> rtnet and xenomai without any important problem.
+> 
+> The mobo has an eth and firewire and vga incorporated, so the pci are free. 
+> But now, I would like to add a pci network card. I have three:
+> - on for our environtment
+> - two for the rtnet (two robot controlers)
+> 
+> and then I would like to have 4
+> - one for another network
+> 
+> The problem that I have and I don't know how to solve is that the new pci 
+> network card share an irq with another device. So, in my case, I have  
+> problems with this. With rtnet, I solve this using pcie devices, but now I 
+> cannot.
+> 
+> I have configure the xenomai kernel following the FAQ, and I have tested to 
+> assign an IRQ in the BIOS. But I have not be able to make the interface 
+> works. I have delays in the interface, and google says ;-) that is a problems 
+> of sharing IRQs with the eth. And I believe in that ...
+> 
+> So, thinking that I would like to use this eth in a normal environment (not 
+> rtnet,) but in a box using xenomai, some of you have some "magical" idea, 
+> kernel parameter, etc to solve this issue?
+> 
+> Thanks in advance,
 
-The kernel configuration proposes you several processor. Instead of 
-selecting "Intel 386" or another processor without a TSC, just select 
-the procesor you really have (AMD Athlon).
+Well, maybe you can configure the cards controlled by rtnet to actually
+share their irq ? Maybe this would free irqs for other cards ?
 
 -- 
-                                                  Gilles.
+
+
+					    Gilles.
 
