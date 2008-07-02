@@ -1,15 +1,10 @@
-From: Leopold Palomo Avellaneda <leo@domain.hid>
-Date: Wed, 2 Jul 2008 01:18:11 +0200
-References: <200807010043.33331.leo@domain.hid>
-	<200807012255.24978.leo@domain.hid>
-	<486A9AD1.8030802@domain.hid>
-In-Reply-To: <486A9AD1.8030802@domain.hid>
+Date: Wed, 02 Jul 2008 14:41:44 +0200
+Message-Id: <853493434@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart8218490.YHBmd9rESy";
-	protocol="application/pgp-signature"; micalg=pgp-sha1
+From: Joachim Meyer <Jogi95@domain.hid>
+Content-Type: text/plain; charset=iso-8859-15
 Content-Transfer-Encoding: 7bit
-Message-Id: <200807020118.11621.leo@domain.hid>
-Subject: Re: [Xenomai-help] IRQs and PCIs
+Subject: Re: [Xenomai-help] latency in kernel mode
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,99 +14,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, smolorz@domain.hid
 Cc: xenomai@xenomai.org
 
---nextPart8218490.YHBmd9rESy
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Sorry, for my late answer.
 
-A Dimarts 01 Juliol 2008, Gilles Chanteperdrix va escriure:
-> Leopold Palomo Avellaneda wrote:
-> > A Dimarts 01 Juliol 2008, Gilles Chanteperdrix va escriure:
-> >> Leopold Palomo Avellaneda wrote:
-> >>> A Dimarts 01 Juliol 2008, Gilles Chanteperdrix va escriure:
-> >>>> Leopold Palomo Avellaneda wrote:
-> >>>>> Hi,
-> >>>>>
-> >>>>> maybe is an off toppic, but probably some like me has this issue. I
-> >>>>> have a mainboard with several PCI and two PCIe. I can configure the
-> >>>>> PCIe to use with rtnet and xenomai without any important problem.
-> >>>>>
-> >>>>> The mobo has an eth and firewire and vga incorporated, so the pci a=
-re
-> >>>>> free. But now, I would like to add a pci network card. I have three:
-> >>>>> - on for our environtment
-> >>>>> - two for the rtnet (two robot controlers)
-> >>>>>
-> >>>>> and then I would like to have 4
-> >>>>> - one for another network
-> >>>>>
-> >>>>> The problem that I have and I don't know how to solve is that the n=
-ew
-> >>>>> pci network card share an irq with another device. So, in my case, I
-> >>>>> have problems with this. With rtnet, I solve this using pcie device=
-s,
-> >>>>> but now I cannot.
-> >>>>>
-> >>>>> I have configure the xenomai kernel following the FAQ, and I have
-> >>>>> tested to assign an IRQ in the BIOS. But I have not be able to make
-> >>>>> the interface works. I have delays in the interface, and google says
-> >>>>> ;-) that is a problems of sharing IRQs with the eth. And I believe =
-in
-> >>>>> that ...
-> >>>>>
-> >>>>> So, thinking that I would like to use this eth in a normal
-> >>>>> environment (not rtnet,) but in a box using xenomai, some of you ha=
-ve
-> >>>>> some "magical" idea, kernel parameter, etc to solve this issue?
-> >>>>>
-> >>>>> Thanks in advance,
-> >>>>
-> >>>> Well, maybe you can configure the cards controlled by rtnet to
-> >>>> actually share their irq ? Maybe this would free irqs for other cards
-> >>>> ?
-> >>>
-> >>> it's no problem the rtnet card. I bought two pci-e and they have the
-> >>> MSI and irq 1275. It's the normal pci.
-> >>>
-> >>> Today I have done it work with the irqpoll option. But I don't know if
-> >>> this could make problems to the realtime.
-> >>
-> >> If you are not talking about a card use by rtnet, then there is no irq
-> >> sharing problem.
-> >
-> > nops, because the card that use rtnet has its own module, not a "normal"
-> > kernel module a rtnet. But, what happens if I have a card, that uses
-> > comedi and rtdm and I need the irqpoll parameter?
->
-> What I meant is that you can share IRQs between real-time drivers, you
-> can share IRQs between non real-time drivers, but you can not share IRQs
-> between real-time and non real-time drivers.
+I enabled the timerbench module, and installed it with the other modules (IRQ Benchmark and Context Switch).
+The Switchtest test works, so I think the modules are correct installed and the tests are able to load them.
+Does this mean the timerbench module isn't ok? Or are there other possible reasons, why the latency test still says:
 
-ok, I see. Thanks.
+bash-3.00# ./run -- -t 1
+*
+*
+* Type ^C to stop this application.
+*
+*
+== Sampling period: 100 us
+== Test mode: in-kernel periodic task
+== All results in microseconds
+latency: failed to start in-kernel timer benchmark, code -25
+---|------------|------------|------------|--------|-------------------------
+RTS|  267928.028|  805352.732|      32.768|       0|    00:00:07/00:00:07
+bash-3.00#
 
+I just want to add that I'm using a ppc405 on an Xilinx Virtex2pro (XUP Board), Linux v2.6.23xlnx, a rootFS from eldk4.1 and Xenomai 2.4.2.
 
-Leo
-=2D-=20
-=2D-
-Linux User 152692
-PGP: 0xF944807E
-Catalonia
+Are there any other importent options in compiling the kernel. I thought perhaps there are good default values, which will do it for me in the beginning. 
+My Real-time sub-system config: 
+[*] Xenomai
+ <*> Nucleus
+ [*] Pervasive real-time support in user-space
+ [ ] Interuppt shield support
+ [*] Priority coupling support
+ [*] optimize as pipeline head
+ (32) number of pipe devices
+ (512) Number of registry slots
+ (128) Size of the system heap (Kb)
+ [*] Statistics collection
+ [ ] Debug Support
+ [ ] Shared interuppts
+ Timing --> [ ] Enable periodic timing
+                  (0) Scheduling latency (ns)
+ Scalability --> [ ] 0(1) scheduler
+                       Timer indexing method (Linear) --> (X) Linear
+                                                                               ( ) Tree
+                                                                               ( ) Hash
+Machine --> No options!
+Interfaces --> Not in the mood to print all of this, but if it would help, i 'would do it.
+Drivers --> only the three testing drivers as modules
 
---nextPart8218490.YHBmd9rESy
-Content-Type: application/pgp-signature; name=signature.asc 
-Content-Description: This is a digitally signed message part.
+Another Question I have is about the Output of my switchbench test:
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (GNU/Linux)
+bash-3.00# ./run -- -n 5000
+*
+*
+* Type ^C to stop this application.
+*
+*
+== Sampling period: 100 us
+== Do not interrupt this program
+RTH|       lat min|     lat avg|     lat max|        lost
+RTD|      -29560|        5810|       49723|        4352
+bash-3.00#
 
-iD8DBQBIarszaC7AnPlEgH4RAgkIAJ9X74BCPj9/U4yD7NDHoLo/5KMYRgCfYiri
-2agmmT+0CrX2v8PPJQR+ha4=
-=TMsH
------END PGP SIGNATURE-----
+Is it normal that the lost number is that high? If not, what can i do?
 
---nextPart8218490.YHBmd9rESy--
+Thanks for all your help.
+Joachim
+_________________________________________________________________________
+In 5 Schritten zur eigenen Homepage. Jetzt Domain sichern und gestalten! 
+Nur 3,99 EUR/Monat! http://www.maildomain.web.de/?mc=021114
+
 
