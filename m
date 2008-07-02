@@ -1,14 +1,10 @@
-Message-ID: <486BC7AD.3060108@domain.hid>
-Date: Wed, 02 Jul 2008 20:23:41 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <6132061f0807021209t1489f66cscac1e7f8be50bff5@domain.hid>
+Date: Wed, 2 Jul 2008 16:09:18 -0300
+From: "Breno Carneiro Pinheiro" <brenodee@domain.hid>
 MIME-Version: 1.0
-References: <51B669A8A7D2914E9AB2B3F40AC6553E647060@domain.hid>
-	<486BC042.5030300@domain.hid>
-	<51B669A8A7D2914E9AB2B3F40AC6553E647061@domain.hid>
-In-Reply-To: <51B669A8A7D2914E9AB2B3F40AC6553E647061@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] remote gdb debugging and Xenomai
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_3672_5333700.1215025758052"
+Subject: [Xenomai-help] pipe.c
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,27 +14,110 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Karch, Joshua" <jkarch@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Karch, Joshua wrote:
-> Gilles,
-> 
-> Regarding GDB, from what I saw in README.INSTALL,  I have to get the
-> GDB sources and compile a custom version of GDB/GDB server for my
-> target machine, right?
+------=_Part_3672_5333700.1215025758052
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_3673_6733617.1215025758053"
 
-I was referring to Xenomai README.INSTALL explaining how to enable debug
-symbols in Xenomai libraries.
+------=_Part_3673_6733617.1215025758053
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
- I simply apt-get installed gdb on this machine
-> so I don't have a custom version.
+Hi all, I'm trying to compile and then run the pipe.c example on my MPC5200
+board but I got so many errors on cross-compiling process.  The code has two
+parts (user and kernel space). Firstly I separated the kernel space to get
+the kernel module .
+The Makefile and code used are attached. If anyone have already tried, let
+me know. I'm  missing something likely.
 
-The problem is that if you have gdb 6.5 on the host and gdbserver 6.4 on
-the target it will not work. You have to use exactly the same version.
+Thanks,
 
--- 
+Breno
 
+------=_Part_3673_6733617.1215025758053
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-					    Gilles.
+Hi all, I&#39;m trying to compile and then run the pipe.c example on my MPC5200 board but I got so many errors on cross-compiling process.&nbsp; The code has two parts (user and kernel space). Firstly I separated the kernel space to get the kernel module .<br>
+The Makefile and code used are attached. If anyone have already tried, let me know. I&#39;m&nbsp; missing something likely.<br><br>Thanks,<br><br>Breno<br>
+
+------=_Part_3673_6733617.1215025758053--
+
+------=_Part_3672_5333700.1215025758052
+Content-Type: text/x-csrc; name=pipe.c
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_fi6ardti0
+Content-Disposition: attachment; filename=pipe.c
+
+I2luY2x1ZGUgPHN5cy90eXBlcy5oPgojaW5jbHVkZSAiZmNudGwuaCIKI2luY2x1ZGUgInN0cmlu
+Zy5oIgojaW5jbHVkZSAic3RkaW8uaCIKI2luY2x1ZGUgPG5hdGl2ZS9waXBlLmg+CiNpbmNsdWRl
+IDxsaW51eC9tb2R1bGUuaD4KI2luY2x1ZGUgPG5hdGl2ZS90YXNrLmg+CgovKiBLZXJuZWwtc2lk
+ZSAqLwojZGVmaW5lIFBJUEVfTUlOT1IgMAojZGVmaW5lIFBJUEVfTUlOT1IgMAojZGVmaW5lIFRB
+U0tfUFJJTyAgMiAgICAgICAgICAgICAgIC8qIEhpZ2hlc3QgUlQgcHJpb3JpdHkgKi8KI2RlZmlu
+ZSBUQVNLX01PREUgIFRfRlBVfFRfQ1BVKDApICAvKiBVc2VzIEZQVSwgYm91bmQgdG8gQ1BVICMw
+ICovCiNkZWZpbmUgVEFTS19TVEtTWiA0MDk2ICAgICAgICAgICAgLyogU3RhY2sgc2l6ZSAoaW4g
+Ynl0ZXMpICovCgpSVF9UQVNLIHRhc2tfZGVzYzsKUlRfUElQRSBwaXBlX2Rlc2M7Cgp2b2lkIHRh
+c2tfYm9keSAodm9pZCAqY29va2llKSB7CiAgICBSVF9QSVBFX01TRyAqbXNnb3V0LCAqbXNnaW47
+CiAgICBpbnQgbGVuID0gc2l6ZW9mKCJIZWxsbyIpOwogICAgLyogR2V0IGEgbWVzc2FnZSBibG9j
+ayBvZiB0aGUgcmlnaHQgc2l6ZSBpbiBvcmRlciB0byBpbml0aWF0ZSB0aGUKICAgICAgIG1lc3Nh
+Z2Utb3JpZW50ZWQgZGlhbG9nIHdpdGggdGhlIHVzZXItc3BhY2UgcHJvY2Vzcy4gU2VuZGluZyBh
+CiAgICAgICBjb250aW51b3VzIHN0cmVhbSBvZiBieXRlcyBpcyBhbHNvIHBvc3NpYmxlIHVzaW5n
+CiAgICAgICBydF9waXBlX3N0cmVhbSgpLCBpbiB3aGljaCBjYXNlIG5vIG1lc3NhZ2UgYnVmZmVy
+IG5lZWRzIHRvIGJlCiAgICAgICBwcmVhbGxvY2F0ZWQuICovCiAgICBtc2dvdXQgPSBydF9waXBl
+X2FsbG9jKGxlbik7CgogICAgaWYgKG1zZ291dCkgewoKCQkvLyBTZW5kIHByb21wdCBtZXNzYWdl
+ICJIZWxsbyIKCQlzdHJjcHkoIFBfTVNHUFRSKG1zZ291dCksICJIZWxsbyIpOwoJCS8vcnRfcGlw
+ZV9zZW5kKCZwaXBlX2Rlc2MsIG1zZ291dCwgbGVuLCBQX05PUk1BTCk7CgkJaWYgKHJ0X3BpcGVf
+c2VuZCgmcGlwZV9kZXNjLCBtc2dvdXQsIGxlbiwgMCkgIT0gbGVuKSB7CgkJCXJ0X3BpcGVfZnJl
+ZShtc2dvdXQpOwoJCX0KCgkJLy8gVGhlbiB3YWl0IGZvciB0aGUgcmVwbHkgc3RyaW5nICJXb3Js
+ZCI6CgkJcnRfcGlwZV9yZWNlaXZlKCZwaXBlX2Rlc2MsICZtc2dpbiwgVE1fSU5GSU5JVEUpOwoJ
+CXByaW50aygicmVjZWl2ZWQgbXNnPiAlcywgc2l6ZT0lZFxuIixQX01TR1BUUihtc2dpbiksUF9N
+U0dTSVpFKG1zZ2luKSk7CgkJLy8gRnJlZSB0aGUgcmVjZWl2ZWQgbWVzc2FnZSBidWZmZXIuCgkJ
+cnRfcGlwZV9mcmVlKG1zZ2luKTsKCgl9IGVsc2UgewoJCXByaW50aygiRVJST1I6IHJ0X3BpcGVf
+YWxsb2NcbiIpOwoJfQp9CgppbnQgX19pbml0IGluaXRfbW9kdWxlICh2b2lkKSB7CglpbnQgZXJy
+OwoJZXJyID0gcnRfcGlwZV9jcmVhdGUoJnBpcGVfZGVzYywgInBpcGV0ZXN0IiwgUElQRV9NSU5P
+Uik7CglpZiAoIWVycikgewoJCWVyciA9IHJ0X3Rhc2tfY3JlYXRlKCZ0YXNrX2Rlc2MsICJNeVRh
+c2tOYW1lIiwgVEFTS19TVEtTWiwgVEFTS19QUklPLCBUQVNLX01PREUpOwoJCWlmICghZXJyKSB7
+CgkJCXJ0X3Rhc2tfc3RhcnQoJnRhc2tfZGVzYywgJnRhc2tfYm9keSwgTlVMTCk7CgkJfSBlbHNl
+IHsKCQkJcHJpbnRrKCJFUlJPUjogY2Fubm90IGNyZWF0ZSB0YXNrXG4iKTsKCQkJcmV0dXJuIDA7
+CgkJfQovKgkJLy8gc2luY2UgZnVzaW9uIDAuNy4zIHlvdSBjYW4gYWxzbyB1c2UgcnRfdGFza19z
+cGF3bgoJCWVyciA9IHJ0X3Rhc2tfc3Bhd24oJnRhc2tfZGVzYywgIk1ZVGFzayIsIFRBU0tfU1RL
+U1osIFRBU0tfUFJJTywgMCwgJnRhc2tfYm9keSwgTlVMTCk7CgkJaWYgKGVycikgewoJCQlwcmlu
+dGsoImVycm9yIHJ0X3Rhc2tfc3Bhd25cbiIpOwoJCQlyZXR1cm4gMDsKCQl9CQoqLwoJfSBlbHNl
+IHsKCQlwcmludGsoIkVSUk9SOiBjYW5ub3QgY3JlYXRlIHBpcGVcbiIpOwoJfQoJcHJpbnRrKCJJ
+TklUIERPTkVcbiIpOwoJcmV0dXJuIDA7Cn0KCnZvaWQgX19leGl0IGNsZWFudXBfbW9kdWxlICh2
+b2lkKSB7CiAgICBydF9waXBlX2RlbGV0ZSgmcGlwZV9kZXNjKTsKICAgIHJ0X3Rhc2tfZGVsZXRl
+KCZ0YXNrX2Rlc2MpOwogICAgcHJpbnRrKCJDTEVBTlVQIERPTkVcbiIpOwp9CgoK
+------=_Part_3672_5333700.1215025758052
+Content-Type: application/octet-stream; name=Makefile
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_fi6at1ce1
+Content-Disposition: attachment; filename=Makefile
+
+IyMjIyMjIENPTkZJR1VSQVRJT04gIyMjIyMjCgojIyMgTGlzdCBvZiBhcHBsaWNhdGlvbnMgdG8g
+YmUgYnVpbGQKI0FQUExJQ0FUSU9OUyA9IHRyaXZpYWwtcGVyaW9kaWMgc2lneGNwdSBydHByaW50
+CkFQUExJQ0FUSU9OUyA9CiMjIyBOb3RlOiB0byBvdmVycmlkZSB0aGUgc2VhcmNoIHBhdGggZm9y
+IHRoZSB4ZW5vLWNvbmZpZyBzY3JpcHQsIHVzZSAibWFrZSBYRU5PPS4uLiIKCgojIyMgTGlzdCBv
+ZiBtb2R1bGVzIHRvIGJlIGJ1aWxkCk1PRFVMRVMgPSBwaXBlCgojIyMgTm90ZTogdG8gb3ZlcnJp
+ZGUgdGhlIGtlcm5lbCBzb3VyY2UgcGF0aCwgdXNlICJtYWtlIEtTUkM9Li4uIgoKIyMjIyMjIFNQ
+RUNJQUwgVEFSR0VUIFJVTEVTICMjIyMjIwojdGFza190ZXN0X25hdGl2ZTogdGFza190ZXN0X25h
+dGl2ZS5jCiMJJChDQykgJChDRkxBR1MpICQ/ICQoTERGTEFHUykgLWxydGRrIC1vICRACiMJJChD
+QykgJChDRkxBR1MpICQ/ICQoTERGTEFHUykgLWxwc29zIC1vICRACgojIyMjIyMgS0VSTkVMIE1P
+RFVMRSBCVUlMRCAobm8gY2hhbmdlIHJlcXVpcmVkIG5vcm1hbGx5KSAjIyMjIyMKaWZuZXEgKCQo
+TU9EVUxFUyksKQoKIyMjIERlZmF1bHQgdG8gc291cmNlcyBvZiBjdXJyZW50bHkgcnVubmluZyBr
+ZXJuZWwKI0tTUkMgPz0gL2xpYi9tb2R1bGVzLyQoc2hlbGwgdW5hbWUgLXIpL2J1aWxkCktTUkMg
+Pz0gL2hvbWUvYnJlbm8vRUxESy9wcGNfNnh4L3Vzci9zcmMvRGVueC1rZXJuZWwtdHJlZS0zCgpP
+QkpTICAgICA6PSAke3BhdHN1YnN0ICUsICUubywgJChNT0RVTEVTKX0KQ0xFQU5NT0QgOj0gJHtw
+YXRzdWJzdCAlLCAuJSosICQoTU9EVUxFUyl9ClBXRCAgICAgIDo9ICQoc2hlbGwgaWYgWyAiJCRQ
+V0QiICE9ICIiIF07IHRoZW4gZWNobyAkJFBXRDsgZWxzZSBwd2Q7IGZpKQoKb2JqLW0gICAgICAg
+IDo9ICQoT0JKUykKRVhUUkFfQ0ZMQUdTIDo9IC1JJChLU1JDKS9pbmNsdWRlL3hlbm9tYWkgLUkk
+KEtTUkMpL2luY2x1ZGUveGVub21haS9wb3NpeCAtSS9ob21lL2JyZW5vL0VMREsvcHBjXzZ4eC91
+c3IvaW5jbHVkZSAkKEFERF9DRkxBR1MpCgphbGw6OgoJJChNQUtFKSAtQyAkKEtTUkMpIFNVQkRJ
+UlM9JChQV0QpIG1vZHVsZXMKCiMjIFRhcmdldCBmb3IgY2FwdHVyaW5nIDIuNCBtb2R1bGUgQ0ZM
+QUdTCm1vZHVsZXM6CglAZWNobyAiJChDRkxBR1MpIgoKY2xlYW46OgoJJChSTSkgJChDTEVBTk1P
+RCkgKi5vICoua28gKi5tb2QuYyBNb2R1bGUqLnN5bXZlcnMKCSQoUk0pIC1SIC50bXAqCgplbmRp
+Zgo=
+------=_Part_3672_5333700.1215025758052--
 
