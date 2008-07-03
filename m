@@ -1,10 +1,14 @@
-Date: Sat, 19 Jul 2008 09:08:50 -0700 (PDT)
-From: egemen kaleli <menege1@domain.hid>
+Message-ID: <486CF261.5010804@domain.hid>
+Date: Thu, 03 Jul 2008 17:38:09 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-170109710-1216483730=:70740"
-Message-ID: <465416.70740.qm@domain.hid>
-Subject: [Xenomai-help] creating .lib file
-Reply-To: menege1@domain.hid
+References: <486CE4C5.8050309@domain.hid> <486CEF87.6060504@domain.hid>
+	<486CF1C5.9020704@domain.hid>
+In-Reply-To: <486CF1C5.9020704@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] How can I make Xenomai share a mii bus with the
+ kernel?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,28 +18,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
---0-170109710-1216483730=:70740
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
+Philippe Gerum wrote:
+> Gilles Chanteperdrix wrote:
+>> Michael Galea wrote:
+>>> I wonder if someone can suggest an approach to the following problem.
+>>>
+>>> We need to use xenomai to manage devices on the mii bus.  The mii bus 
+>>> has PHYs managed by linux. What is the best way of providing access to 
+>>> both linux and xenomai?
+>>>
+>>> I know that before xenomai "loads", I can simply access the mii bus from 
+>>> linux.  But after xenomai loads, is the right answer to make the linux 
+>>> function that reads the phy migrate into the xenomai domain and contend 
+>>> for the bus there?
+>> What protects this access to the bus, is this a mutex or a spinlock ? If 
+>> a spinlock, then simply make it an ipipe_spinlock, it will provide 
+>> mutual exclusion between all domains.
+>>
+> 
+> It's a spinlock_bh, but you can't tell actually, since there is a callback
+> mechanism to perform the actual read depending on the bus implementation.
+> Additionally, genphy_read may trigger an update from the link status and so on.
+> I'm afraid this kind of sport may well resemble playing Russian roulette with a
+> fully loaded gun. This said, if all executed code paths can be identified and
+> fixed, why not (having fun).
 
-hello,
-=A0
-I wrote a pci driver with rtdm.I created a user file which contains functio=
-ns that use rtdm api.I need to transform this=A0 .c file into .lib file.
-=A0
-Eventually in make file=A0=A0I must define it.For example native and rtdm l=
-ibs are defined as -lnative and -lrtdm.How can I do it?=0A=0A=0A      
---0-170109710-1216483730=:70740
-Content-Type: text/html; charset=us-ascii
+I was talking about the actual implementation by the hardware driver, 
+not the generic part. This probably depends on the driver.
 
-<table cellspacing='0' cellpadding='0' border='0' ><tr><td valign='top' style='font: inherit;'><P>hello,</P>
-<P>&nbsp;</P>
-<P>I wrote a pci driver with rtdm.I created a user file which contains functions that use rtdm api.I need to transform this&nbsp; .c file into .lib file.</P>
-<P>&nbsp;</P>
-<P>Eventually in make file&nbsp;&nbsp;I must define it.For example native and rtdm libs are defined as -lnative and -lrtdm.How can I do it?</P></td></tr></table><br>
 
-      
---0-170109710-1216483730=:70740--
+-- 
+                                                  Gilles.
 
