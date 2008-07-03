@@ -1,15 +1,13 @@
-Message-ID: <487CB3F3.8060907@domain.hid>
-Date: Tue, 15 Jul 2008 16:28:03 +0200
-From: Stefan Kisdaroczi <kisda@domain.hid>
+Message-ID: <486CEF87.6060504@domain.hid>
+Date: Thu, 03 Jul 2008 17:25:59 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <487B8B3E.8020805@domain.hid>
-	<487B91F6.3070909@domain.hid>	<487BA305.6040401@domain.hid>
-	<487BB89B.6010604@domain.hid> <487BF171.2090902@domain.hid>
-In-Reply-To: <487BF171.2090902@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig5EBF7535FC84842510D9140E"
-Subject: Re: [Xenomai-help] rt_task_bind() and timeout values
+References: <486CE4C5.8050309@domain.hid>
+In-Reply-To: <486CE4C5.8050309@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] How can I make Xenomai share a mii bus with the
+ kernel?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,71 +17,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Michael Galea <michaelgalea@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig5EBF7535FC84842510D9140E
-Content-Type: multipart/mixed;
- boundary="------------010608060806000409000701"
+Michael Galea wrote:
+> I wonder if someone can suggest an approach to the following problem.
+> 
+> We need to use xenomai to manage devices on the mii bus.  The mii bus 
+> has PHYs managed by linux. What is the best way of providing access to 
+> both linux and xenomai?
+> 
+> I know that before xenomai "loads", I can simply access the mii bus from 
+> linux.  But after xenomai loads, is the right answer to make the linux 
+> function that reads the phy migrate into the xenomai domain and contend 
+> for the bus there?
 
-This is a multi-part message in MIME format.
---------------010608060806000409000701
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+What protects this access to the bus, is this a mutex or a spinlock ? If 
+a spinlock, then simply make it an ipipe_spinlock, it will provide 
+mutual exclusion between all domains.
 
-Hi,
+I do not think it can be a mutex anyway, since it may certainly possible 
+for a driver to have a function that reads the mii status in a timer 
+handler to maintain the IFF_RUNNING bit state of the ethernet interface.
 
-Stefan Kisdaroczi schrieb:
-> Hi Philippe,
->=20
-> the attached patch fixed the problem for me.
-> However, i think that in the "break case" still EACCES is returned.
-> Can the break be replaced with a "return ETIMEDOUT" ?
-> [...]
-
-I have tried it. A new patch is attached. I tested it first without chang=
-ing
-the ">=3D" to "<=3D", and the call returned immediately as expected but n=
-ow with
-ETIMEDOUT instead of EACCESS. After changing the ">=3D" to "<=3D" it seem=
-s to
-work like it should.
-
-best regards
-kisda
-
---------------010608060806000409000701
-Content-Type: text/plain;
- name="xnregistry_bind_timeout.patch"
-Content-Transfer-Encoding: base64
-Content-Disposition: inline;
- filename="xnregistry_bind_timeout.patch"
-
-LS0tIHhlbm9tYWkvbnVjbGV1cy9yZWdpc3RyeS5jLm9sZAkyMDA4LTA3LTE1IDAwOjM2OjEw
-LjAwMDAwMDAwMCArMDIwMAorKysgeGVub21haS9udWNsZXVzL3JlZ2lzdHJ5LmMJMjAwOC0w
-Ny0xNSAxNToyODoyMy4wMDAwMDAwMDAgKzAyMDAKQEAgLTczMyw4ICs3MzMsMTAgQEAgaW50
-IHhucmVnaXN0cnlfYmluZChjb25zdCBjaGFyICprZXksIHhudAogCQlpZiAodGltZW91dCAh
-PSBYTl9JTkZJTklURSkgewogCQkJeG50aWNrc190IG5vdyA9IHhudGJhc2VfZ2V0X3RpbWUo
-dGJhc2UpOwogCi0JCQlpZiAoc3RpbWUgKyB0aW1lb3V0ID49IG5vdykKLQkJCQlicmVhazsK
-KwkJCWlmIChzdGltZSArIHRpbWVvdXQgPD0gbm93KSB7CisJCQkJZXJyID0gLUVUSU1FRE9V
-VDsKKwkJCQlnb3RvIHVubG9ja19hbmRfZXhpdDsKKwkJCX0JCQogCiAJCQl0aW1lb3V0IC09
-IChub3cgLSBzdGltZSk7CiAJCQlzdGltZSA9IG5vdzsK
---------------010608060806000409000701--
-
---------------enig5EBF7535FC84842510D9140E
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFIfLP4IPTw9rIdn6oRAvWrAKCDU//+ZMLBHbEIHI28VbBppZ7wIgCfdIyD
-uAcrYUO9VuKE/2UKiUOA1RQ=
-=toiq
------END PGP SIGNATURE-----
-
---------------enig5EBF7535FC84842510D9140E--
+-- 
+                                                  Gilles.
 
