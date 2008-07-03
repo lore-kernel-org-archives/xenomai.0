@@ -1,15 +1,15 @@
-Content-class: urn:content-classes:message
+Message-ID: <486D377A.2050709@domain.hid>
+Date: Thu, 03 Jul 2008 16:32:58 -0400
+From: Michael Galea <michaelgalea@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 31 Jul 2008 12:45:52 +0200
-Message-ID: <406CC9939904F143B9D42CEEA3E56E563AC093@domain.hid>
-References: <406CC9939904F143B9D42CEEA3E56E563AC067@domain.hid>	<48918FF9.6030804@domain.hid>
-	<406CC9939904F143B9D42CEEA3E56E563AC08E@oab1mx1.oneaccess.intra>
-	<489194FD.8000004@domain.hid>
-From: "Filip Van Rillaer" <Filip.VanRillaer@domain.hid>
-Subject: Re: [Xenomai-help] xnpipe EPOLLIN starvation
+References: <486CE4C5.8050309@domain.hid> <486CEF87.6060504@domain.hid>
+	<486CF1C5.9020704@domain.hid> <486CF261.5010804@domain.hid>
+	<486CF405.4070206@domain.hid>
+In-Reply-To: <486CF405.4070206@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] How can I make Xenomai share a mii bus with the
+ kernel?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,61 +22,58 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-Hello Gilles,
+Philippe Gerum wrote:
+> Gilles Chanteperdrix wrote:
+>> Philippe Gerum wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Michael Galea wrote:
+>>>>> I wonder if someone can suggest an approach to the following problem.
+>>>>>
+>>>>> We need to use xenomai to manage devices on the mii bus.  The mii
+>>>>> bus has PHYs managed by linux. What is the best way of providing
+>>>>> access to both linux and xenomai?
+>>>>>
+>>>>> I know that before xenomai "loads", I can simply access the mii bus
+>>>>> from linux.  But after xenomai loads, is the right answer to make
+>>>>> the linux function that reads the phy migrate into the xenomai
+>>>>> domain and contend for the bus there?
+>>>> What protects this access to the bus, is this a mutex or a spinlock ?
+>>>> If a spinlock, then simply make it an ipipe_spinlock, it will provide
+>>>> mutual exclusion between all domains.
+>>>>
+>>> It's a spinlock_bh, but you can't tell actually, since there is a
+>>> callback
+>>> mechanism to perform the actual read depending on the bus implementation.
+>>> Additionally, genphy_read may trigger an update from the link status
+>>> and so on.
+>>> I'm afraid this kind of sport may well resemble playing Russian
+>>> roulette with a
+>>> fully loaded gun. This said, if all executed code paths can be
+>>> identified and
+>>> fixed, why not (having fun).
+>> I was talking about the actual implementation by the hardware driver,
+>> not the generic part. This probably depends on the driver.
+>>
+>>
+> 
+> The drivers don't do much, except IRQ handling. Most of them route their
+> requests to the generic PHY layer, therefore a parallel implementation would be
+> needed. Still, concurrency on the bus would not be solved.
+> 
 
-Thanks, but unfortunately it doesn't cure the problem.
+My boards driver, ucc_geth_mii, seems to do even less. A write looks like.
 
-Best regards,
-Filip=20
+/* Setting up the MII Mangement Address Register */
+out_be32(&regs->miimadd, (mii_id << MIIMADD_PHY_ADDRESS_SHIFT) | regnum);
 
------Original Message-----
-From: Philippe Gerum [mailto:rpm@xenomai.org
-Sent: 31 July 2008 12:34
-To: Filip Van Rillaer
-Cc: Gilles Chanteperdrix; xenomai@xenomai.org
-Subject: Re: [Xenomai-help] xnpipe EPOLLIN starvation
+/* Setting up the MII Mangement Control Register with the value */
+out_be32(&regs->miimcon, value);
 
-Filip Van Rillaer wrote:
-> Hello Gilles,
->=20
-> EPOLLET is indeed enabled.
-> The first time EPOLLIN is received in the 2nd domain, I do a read (it=20
-> receives 1 byte in a buffer of 256).  So the read is exhausted and I=20
-> expect that the next time data arrives I should get the EPOLLIN (as it
+/* Wait till MII management write is complete */
+while ((in_be32(&regs->miimind)) & MIIMIND_BUSY) cpu_relax();
 
-> BECOMES readable).  But even adding another read (which returns=20
-> -EAGAIN) did not make it possible to receive the EPOLLIN when a little
+I imagine that this is what would have to move to a "parallel 
+implementation" part.  Could I use the ipipe_spinlock to ensure 
+exclusion between xenomai and linux for the bus?
 
-> bit later data is written at the Xenomai side of the xnpipe.
->=20
-
-Does this help?
-
---- ksrc/nucleus/pipe.c	(revision 4044)
-+++ ksrc/nucleus/pipe.c	(working copy)
-@@ -1029,9 +1029,12 @@
- {
- 	xnpipe_state_t *state =3D (xnpipe_state_t *)file->private_data;
- 	unsigned r_mask =3D 0, w_mask =3D 0;
-+	spl_t s;
-
- 	poll_wait(file, &state->readq, pt);
-
-+	xnlock_get_irqsave(&nklock, s);
-+
- 	if (testbits(state->status, XNPIPE_KERN_CONN))
- 		w_mask |=3D (POLLOUT | POLLWRNORM);
-
-@@ -1046,6 +1049,8 @@
- 		 */
- 		xnpipe_enqueue_wait(state, XNPIPE_USER_WREAD);
-
-+	xnlock_put_irqrestore(&nklock, s);
-+
- 	/*
- 	 * A descriptor is always ready for writing with the current
- 	 * implementation, so there is no need to have/handle the
-
---
-Philippe.
 
