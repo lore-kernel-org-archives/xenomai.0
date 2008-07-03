@@ -1,12 +1,14 @@
-Message-ID: <488990B0.3010209@domain.hid>
-Date: Fri, 25 Jul 2008 10:37:04 +0200
-From: Sebastian Smolorz <smolorz@domain.hid>
+Message-ID: <486CF3AB.6050103@domain.hid>
+Date: Thu, 03 Jul 2008 17:43:39 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <894886ec0807242231t44d37de6q4c23b02ae67d3bb8@domain.hid>
-In-Reply-To: <894886ec0807242231t44d37de6q4c23b02ae67d3bb8@domain.hid>
+References: <486CE4C5.8050309@domain.hid> <486CEF87.6060504@domain.hid>
+	<486CF31B.2040100@domain.hid>
+In-Reply-To: <486CF31B.2040100@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] nofastsem
+Subject: Re: [Xenomai-help] How can I make Xenomai share a mii bus with the
+ kernel?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,26 +18,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Rob Wheeler <wheeler@domain.hid>
+To: Michael Galea <michaelgalea@domain.hid>
 Cc: xenomai@xenomai.org
 
-Rob Wheeler wrote:
-> I've been running revision 4007 from the Xenomai svn trunk
-> successfully, and I recently tried building and running a more recent
-> revision (4060).  The kernel and user code all build fine, but when I
-> try to run a Xenomai application I get a message saying the userland
-> wants fastsem and the kernel has nofastsem.  I'm not able to locate an
-> option in the kernel (2.6.24.3) to enable fastsem, nor do I see an
-> option in Xenomai's menuconfig to allow nofastsem.  What am I missing?
+Michael Galea wrote:
+> Gilles Chanteperdrix wrote:
+>> Michael Galea wrote:
+>>> I wonder if someone can suggest an approach to the following problem.
+>>>
+>>> We need to use xenomai to manage devices on the mii bus.  The mii bus 
+>>> has PHYs managed by linux. What is the best way of providing access to 
+>>> both linux and xenomai?
+>>>
+>>> I know that before xenomai "loads", I can simply access the mii bus 
+>>> from linux.  But after xenomai loads, is the right answer to make the 
+>>> linux function that reads the phy migrate into the xenomai domain and 
+>>> contend for the bus there?
+>> What protects this access to the bus, is this a mutex or a spinlock ? If 
+>> a spinlock, then simply make it an ipipe_spinlock, it will provide 
+>> mutual exclusion between all domains.
+>>
+>> I do not think it can be a mutex anyway, since it may certainly possible 
+>> for a driver to have a function that reads the mii status in a timer 
+>> handler to maintain the IFF_RUNNING bit state of the ethernet interface.
+>>
+> Thanks, access to the bus is provided by a spinlock in 
+> drivers/net/phy/phy.c, so I will try ipipe_spinlock (when I get hardware 
+> :-)).
+> 
+> I assume that I can make it an ipipe_spinlock and use that from linux 
+> even before xenomai is loaded.
 
-There is a new option since rev. 4043 called XENO_FASTSEM. It is set by 
-default for x86_32. Have a look at your kernel config file and search 
-for that term. Please make sure that you build your xenomai-patched 
-kernel and you userland libs and applications with the same revision of 
-xenomai and don't forget to install them all on your target.
-
-BTW, for which architecture are you building xenomai?
+No, this is not the spinlock I am talking about. I am talking about the 
+spinlock (if it exists) used by the driver's mii read method.
 
 -- 
-Sebastian
+                                                  Gilles.
 
