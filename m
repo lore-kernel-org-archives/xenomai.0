@@ -1,58 +1,67 @@
-Message-ID: <4859424F.1030400@domain.hid>
-Date: Wed, 18 Jun 2008 19:13:51 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <486E6486.5060000@domain.hid>
+Date: Fri, 04 Jul 2008 19:57:26 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <48568E78.5000606@domain.hid>	<485695AE.7030509@domain.hid>	<485794CC.3030102@domain.hid>	<485799E6.2060602@domain.hid>	<48579C9B.1070402@domain.hid>
-	<4857B41B.5060300@domain.hid>	<4857B670.9060107@domain.hid>
-	<4858E524.7040902@domain.hid>
-In-Reply-To: <4858E524.7040902@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Adeos-main] latency fix for 2.6.25?
-Reply-To: rpm@xenomai.org
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Pierangelo Masarati <masarati@domain.hid>
-Cc: adeos-main@gna.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig0621C02526644B8FF23FE0F4"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATCH] comedi: Fix include for do_div
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Alexis Berlemont <berlemont.hauw@domain.hid>
+Cc: Xenomai-core@domain.hid
 
-Pierangelo Masarati wrote:
-> Philippe Gerum wrote:
-> 
->>>> Ok, you were talking about the _previous_ implementation, right?
->>> Yes.  It's been running for a few hours today, so your fix seems to be 
->>> fine; in any case, the tests will run overnight, and I'll let you know 
->>> tomorrow.  I believe this issue could not be easily pointed out by just 
->>> a simple latency check.
->>>
->> Agreed, we need to create a load that makes races on seqlocks more likely, and
->> ideally with lots of readers delaying a single writer.
-> 
-> The testing of your fix ran overnight without problems, so we'd consider 
-> it fine.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig0621C02526644B8FF23FE0F4
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Ok, thanks. Will issue -03 asap.
+Required with 2.6.26 where there is no more calc64. And asm/div64.h is
+what you actually want.
 
-  Another possible fix to preserve linux timings is to use
-> local_irq_disable_hw() after halt.  It seems to create no significant 
-> latency.
-> 
+Jan
 
-The only way to fully preserve the timings would involve running
-sched_clock_idle_wakeup_event() with hw interrupts off, which grabs a spinlock
-on the current runqueue; I'm worried about latencies introduced by sporadic
-contention on that lock due to task migrations.
+PS: Kernel-style reformatting would be nice - one day... :->
 
-OTOH, the scheduler tick handler implements a counter-measure against underflows
-of the per-runqueue clocks, so even if the RTOS preempts often or for a long
-time the idling code, it should resync reasonably well. Hopefully.
 
--- 
-Philippe.
+Index: ksrc/drivers/comedi/instruction.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/drivers/comedi/instruction.c	(Revision 4017)
++++ ksrc/drivers/comedi/instruction.c	(Arbeitskopie)
+@@ -25,7 +25,7 @@
+ #include <linux/module.h>
+ #include <linux/ioport.h>
+ #include <linux/mman.h>
+-#include <linux/calc64.h>
++#include <asm/div64.h>
+ #include <asm/io.h>
+ #include <asm/errno.h>
+=20
+
+
+--------------enig0621C02526644B8FF23FE0F4
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkhuZIkACgkQniDOoMHTA+mgogCZAUZOllZFtBl6LIp+44z88IF+
+yKAAn3m5YXftN0A5IdFuhqjFtz+OETgd
+=RuLG
+-----END PGP SIGNATURE-----
+
+--------------enig0621C02526644B8FF23FE0F4--
 
