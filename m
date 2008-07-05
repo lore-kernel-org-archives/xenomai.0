@@ -1,10 +1,13 @@
-Message-ID: <6132061f0807021209t1489f66cscac1e7f8be50bff5@domain.hid>
-Date: Wed, 2 Jul 2008 16:09:18 -0300
-From: "Breno Carneiro Pinheiro" <brenodee@domain.hid>
+Message-ID: <486F4C47.5030205@domain.hid>
+Date: Sat, 05 Jul 2008 12:26:15 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_3672_5333700.1215025758052"
-Subject: [Xenomai-help] pipe.c
+References: <1215251268.3029.13.camel@domain.hid>
+In-Reply-To: <1215251268.3029.13.camel@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Unhandled irq 33
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,110 +17,218 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Vivek Berodhia <vivek.berodhia@domain.hid>
+Cc: xenomai@xenomai.org
 
-------=_Part_3672_5333700.1215025758052
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_3673_6733617.1215025758053"
+Vivek Berodhia wrote:
+> Dear All,
+> 
+> Help me,
+> I am facing a problem during booting with xenomai kernel "unhandled
+> irq33".
+>         
+> Kernel Configuration. 
+>         
+>         ARCH= powerpc
+>         CROSS_COMPILE=gcc-6xx-
+>         target machine = mpc8323
+>         
+> following is serial port capture of problem..please help me..
+>
 
-------=_Part_3673_6733617.1215025758053
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Your software kit is obsolete. Upgrading to Xenomai 2.4.4 is strongly
+recommended. At the very least, upgrade your I-pipe support to 2.1-04 first, and
+in any case, enable CONFIG_DEBUG_BUGVERBOSE to get sensible backtraces.
 
-Hi all, I'm trying to compile and then run the pipe.c example on my MPC5200
-board but I got so many errors on cross-compiling process.  The code has two
-parts (user and kernel space). Firstly I separated the kernel space to get
-the kernel module .
-The Makefile and code used are attached. If anyone have already tried, let
-me know. I'm  missing something likely.
+http://download.gna.org/adeos/patches/v2.6/powerpc/older/adeos-ipipe-2.6.24-powerpc-DENX-2.1-04.patch
 
-Thanks,
+If the problem persists, switch off the Xenomai support from the kernel
+configuration, then retry. If nothing improves, try disabling the I-pipe
+support, basically booting a standard kernel. Please make sure to send us the
+output of /proc/interrupts along with the kernel log when you get a bootable
+config, so that we can try to figure out what went wrong with the previous ones.
 
-Breno
+>         
+>         TFTP from server 192.168.4.51; our IP address is 192.168.4.251
+>         Filename 'uImage'.
+>         Load address: 0x200000
+>         Loading:
+>         #################################################################
+>                  ################################################
+>         done
+>         Bytes transferred = 1658616 (194ef8 hex)
+>         Using FSL UEC0 device
+>         TFTP from server 192.168.4.51; our IP address is 192.168.4.251
+>         Filename 'my.dtb'.
+>         Load address: 0x400000
+>         Loading: #
+>         done
+>         Bytes transferred = 8192 (2000 hex)
+>         ## Booting image at 00200000 ...
+>            Image Name:   Linux-2.6.24.2
+>            Image Type:   PowerPC Linux Kernel Image (gzip compressed)
+>            Data Size:    1658552 Bytes =  1.6 MB
+>            Load Address: 00000000
+>            Entry Point:  00000000
+>            Verifying Checksum ... OK
+>            Uncompressing Kernel Image ... OK
+>            Booting using the fdt at 0x400000
+>         WARNING: could not set linux,stdout-path FDT_ERR_NOTFOUND.
+>         Using MPC832x RDB machine description
+>         Linux version 2.6.24.2 (root@domain.hid) (gcc version 4.2.2) #1
+>         Sat Jul 5
+>         11:10:57 IST 2008
+>         console [udbg0] enabled
+>         setup_arch: bootmem
+>         mpc832x_rdb_setup_arch()
+>         Found MPC83xx PCI host bridge at 0x00000000e0008500. Firmware
+>         bus
+>         number: 0->0
+>         arch: exit
+>         Zone PFN ranges:
+>           DMA             0 ->    16384
+>           Normal      16384 ->    16384
+>         Movable zone start PFN for each node
+>         early_node_map[1] active PFN ranges
+>             0:        0 ->    16384
+>         Built 1 zonelists in Zone order, mobility grouping on.  Total
+>         pages:
+>         16256
+>         Kernel command line: nfsroot=192.168.4.51:/opt/eldk/nfs2
+>         ip=192.168.4.251:192.168.4.51:192.168.4.254:255.255.255.0:Coral_Router:eth1:off root=0
+>         IPIC (128 IRQ sources) at fdefb700
+>         PID hash table entries: 256 (order: 8, 1024 bytes)
+>         clocksource: timebase mult[7800001] shift[22] registered
+>         I-pipe 2.1-00: pipeline enabled.
+>         Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
+>         Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
+>         Memory: 61120k/65536k available (3344k kernel code, 4356k
+>         reserved, 152k
+>         data, 238k bss, 148k init)
+>         SLUB: Genslabs=11, HWalign=32, Order=0-1, MinObjects=4, CPUs=1,
+>         Nodes=1
+>         Mount-cache hash table entries: 512
+>         device-tree: Duplicate name in /, renamed to "chosen#1"
+>         net_namespace: 64 bytes
+>         NET: Registered protocol family 16
+>                      
+>         PCI: Probing PCI hardware
+>         SCSI subsystem initialized
+>         usbcore: registered new interface driver usbfs
+>         usbcore: registered new interface driver hub
+>         usbcore: registered new device driver usb
+>         Time: timebase clocksource has been installed.
+>         NET: Registered protocol family 2
+>         IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
+>         TCP established hash table entries: 2048 (order: 2, 16384 bytes)
+>         TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
+>         TCP: Hash tables configured (established 2048 bind 2048)
+>         TCP reno registered
+>         I-pipe: Domain Xenomai registered.
+>         Xenomai: hal/powerpc started.
+>         Xenomai: real-time nucleus v2.4.2 (One Big Rush) loaded.
+>         Xenomai: starting native API services.
+>         Xenomai: starting POSIX services.
+>         Xenomai: starting RTDM services.
+>         io scheduler noop registered
+>         io scheduler anticipatory registered (default)
+>         io scheduler deadline registered
+>         io scheduler cfq registered
+>         Generic RTC Driver v1.07
+>         Serial: 8250/16550 driver $Revision: 1.90 $ 4 ports, IRQ sharing
+>         disabled
+>         serial8250.0: ttyS0 at MMIO 0xe0004500 (irq = 18) is a 16550A
+>         console handover: boot [udbg0] -> real [ttyS0]
+>         serial8250.0: ttyS1 at MMIO 0xe0004600 (irq = 19) is a 16550A
+>         RAMDISK driver initialized: 16 RAM disks of 32768K size 1024
+>         blocksize
+>         loop: module loaded
+>         Intel(R) PRO/1000 Network Driver - version 7.3.20-k2
+>         Copyright (c) 1999-2006 Intel Corporation.
+>         UCC Ethernet Controller MII Bus: probed
+>         ucc_geth: QE UCC Gigabit Ethernet Controller
+>         Driver 'sd' needs updating - please use bus_type methods
+>         mpc83xx_spi.1: MPC83xx SPI Controller driver at 0xc50084c0 (irq
+>         = 20)
+>         usbmon: debugfs is not available
+>         Initializing USB Mass Storage driver...
+>         usbcore: registered new interface driver usb-storage
+>         USB Mass Storage support registered.
+>         i2c /dev entries driver
+>         WDT driver for MPC83xx initialized. mode:reset timeout=65535 (32
+>         seconds)
+>         mmc_spi spi1216.0: SD/MMC host mmc0, no DMA, no WP, no poweroff
+>         TCP cubic registered
+>         irq 33, desc: c034cf04, depth: 0, count: 0, unhandled: 0
+>         irq 33, desc: c034cf04, depth: 0, count: 0, unhandled: 0
+>         ->handle_irq():  c0019c0c, ->chip(): c03ae368, ->action():
+>         00000000
+>              IRQ_LEVEL set
+>            IRQ_NOPROBE set
+>          IRQ_NOREQUEST set
+>         illegal vector 33 received!
+>         ------------[ cut here ]------------
+>         Kernel BUG at c00504b0 [verbose debug info unavailable]
+>         Oops: Exception in kernel mode, sig: 5 [#1]
+>         MPC832x RDB
+>         Modules linked in:
+>         NIP: c00504b0 LR: c00504b0 CTR: c01a0c04
+>         REGS: c3935a30 TRAP: 0700   Not tainted  (2.6.24.2)
+>         MSR: 00021032 <ME,IR,DR>  CR: 24222024  XER: 00000000
+>         TASK = c385c7a0[761] 'mpc83xx_spi.1' THREAD: c3934000
+>         GPR00: c00504b0 c3935ae0 c385c7a0 0000001f 00001267 ffffffff
+>         c01a30f0
+>         00004000 
+>         GPR08: 00000001 c0354f70 00000003 c0350000 44222022 fffffd7f
+>         03ffd000
+>         00800000 
+>         GPR16: ffffffff 80000000 c0370000 c0370000 c0380d20 c0380d44
+>         c0380d40
+>         fffffffd 
+>         GPR24: 00000000 c0369b04 000004a0 00000420 c0385484 00000021
+>         c02db248
+>         c034cf04 
+>         Call Trace:
+>         [c3935ae0] [c00504b0]  (unreliable)
+>         [c3935b00] [c00515e8] 
+>         [c3935b10] [c00094e4] 
+>         [c3935b20] [c0009820] 
+>         [c3935b50] [c0009a98] 
+>         [c3935b60] [c0011630] 
+>         --- Exception: 501[c3935c20] [0000114a]  (unreliable)
+>         [c3935c70] [c0053a74] 
+>         [c3935c80] [c0028108] 
+>         [c3935d00] [c0028328] 
+>         [c3935d50] [c00503c8] 
+>         [c3935d70] [c00515e8] 
+>         [c3935d80] [c00094e4] 
+>         [c3935d90] [c0009820] 
+>         [c3935dc0] [c0009a98] 
+>         [c3935dd0] [c0011630] 
+>         --- Exception: 501[c3935e90] [fffffd7f]  (unreliable)
+>         [c3935ea0] [c02a8a7c] 
+>         [c3935ee0] [c01e0200] 
+>         [c3935f00] [c01dfbec] 
+>         [c3935f50] [c0039e0c] 
+>         [c3935f90] [c003a0f8] 
+>         [c3935fd0] [c003e738] 
+>         [c3935ff0] [c0010b1c] 
+>         Instruction dump:
+>         3d20c037 57ab103a 392954d8 3c60c02e 7d6b4a14 7fa4eb78 396b0040
+>         3863b2f8 
+>         812b0008 39290001 912b0008 4bfd7de1 <0fe00000> 48000000 3c80c02e
+>         7fc3f378 
+>         ---[ end trace e55df3d7b6b0ab0d ]---
+>         
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+> 
 
-------=_Part_3673_6733617.1215025758053
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-Hi all, I&#39;m trying to compile and then run the pipe.c example on my MPC5200 board but I got so many errors on cross-compiling process.&nbsp; The code has two parts (user and kernel space). Firstly I separated the kernel space to get the kernel module .<br>
-The Makefile and code used are attached. If anyone have already tried, let me know. I&#39;m&nbsp; missing something likely.<br><br>Thanks,<br><br>Breno<br>
-
-------=_Part_3673_6733617.1215025758053--
-
-------=_Part_3672_5333700.1215025758052
-Content-Type: text/x-csrc; name=pipe.c
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_fi6ardti0
-Content-Disposition: attachment; filename=pipe.c
-
-I2luY2x1ZGUgPHN5cy90eXBlcy5oPgojaW5jbHVkZSAiZmNudGwuaCIKI2luY2x1ZGUgInN0cmlu
-Zy5oIgojaW5jbHVkZSAic3RkaW8uaCIKI2luY2x1ZGUgPG5hdGl2ZS9waXBlLmg+CiNpbmNsdWRl
-IDxsaW51eC9tb2R1bGUuaD4KI2luY2x1ZGUgPG5hdGl2ZS90YXNrLmg+CgovKiBLZXJuZWwtc2lk
-ZSAqLwojZGVmaW5lIFBJUEVfTUlOT1IgMAojZGVmaW5lIFBJUEVfTUlOT1IgMAojZGVmaW5lIFRB
-U0tfUFJJTyAgMiAgICAgICAgICAgICAgIC8qIEhpZ2hlc3QgUlQgcHJpb3JpdHkgKi8KI2RlZmlu
-ZSBUQVNLX01PREUgIFRfRlBVfFRfQ1BVKDApICAvKiBVc2VzIEZQVSwgYm91bmQgdG8gQ1BVICMw
-ICovCiNkZWZpbmUgVEFTS19TVEtTWiA0MDk2ICAgICAgICAgICAgLyogU3RhY2sgc2l6ZSAoaW4g
-Ynl0ZXMpICovCgpSVF9UQVNLIHRhc2tfZGVzYzsKUlRfUElQRSBwaXBlX2Rlc2M7Cgp2b2lkIHRh
-c2tfYm9keSAodm9pZCAqY29va2llKSB7CiAgICBSVF9QSVBFX01TRyAqbXNnb3V0LCAqbXNnaW47
-CiAgICBpbnQgbGVuID0gc2l6ZW9mKCJIZWxsbyIpOwogICAgLyogR2V0IGEgbWVzc2FnZSBibG9j
-ayBvZiB0aGUgcmlnaHQgc2l6ZSBpbiBvcmRlciB0byBpbml0aWF0ZSB0aGUKICAgICAgIG1lc3Nh
-Z2Utb3JpZW50ZWQgZGlhbG9nIHdpdGggdGhlIHVzZXItc3BhY2UgcHJvY2Vzcy4gU2VuZGluZyBh
-CiAgICAgICBjb250aW51b3VzIHN0cmVhbSBvZiBieXRlcyBpcyBhbHNvIHBvc3NpYmxlIHVzaW5n
-CiAgICAgICBydF9waXBlX3N0cmVhbSgpLCBpbiB3aGljaCBjYXNlIG5vIG1lc3NhZ2UgYnVmZmVy
-IG5lZWRzIHRvIGJlCiAgICAgICBwcmVhbGxvY2F0ZWQuICovCiAgICBtc2dvdXQgPSBydF9waXBl
-X2FsbG9jKGxlbik7CgogICAgaWYgKG1zZ291dCkgewoKCQkvLyBTZW5kIHByb21wdCBtZXNzYWdl
-ICJIZWxsbyIKCQlzdHJjcHkoIFBfTVNHUFRSKG1zZ291dCksICJIZWxsbyIpOwoJCS8vcnRfcGlw
-ZV9zZW5kKCZwaXBlX2Rlc2MsIG1zZ291dCwgbGVuLCBQX05PUk1BTCk7CgkJaWYgKHJ0X3BpcGVf
-c2VuZCgmcGlwZV9kZXNjLCBtc2dvdXQsIGxlbiwgMCkgIT0gbGVuKSB7CgkJCXJ0X3BpcGVfZnJl
-ZShtc2dvdXQpOwoJCX0KCgkJLy8gVGhlbiB3YWl0IGZvciB0aGUgcmVwbHkgc3RyaW5nICJXb3Js
-ZCI6CgkJcnRfcGlwZV9yZWNlaXZlKCZwaXBlX2Rlc2MsICZtc2dpbiwgVE1fSU5GSU5JVEUpOwoJ
-CXByaW50aygicmVjZWl2ZWQgbXNnPiAlcywgc2l6ZT0lZFxuIixQX01TR1BUUihtc2dpbiksUF9N
-U0dTSVpFKG1zZ2luKSk7CgkJLy8gRnJlZSB0aGUgcmVjZWl2ZWQgbWVzc2FnZSBidWZmZXIuCgkJ
-cnRfcGlwZV9mcmVlKG1zZ2luKTsKCgl9IGVsc2UgewoJCXByaW50aygiRVJST1I6IHJ0X3BpcGVf
-YWxsb2NcbiIpOwoJfQp9CgppbnQgX19pbml0IGluaXRfbW9kdWxlICh2b2lkKSB7CglpbnQgZXJy
-OwoJZXJyID0gcnRfcGlwZV9jcmVhdGUoJnBpcGVfZGVzYywgInBpcGV0ZXN0IiwgUElQRV9NSU5P
-Uik7CglpZiAoIWVycikgewoJCWVyciA9IHJ0X3Rhc2tfY3JlYXRlKCZ0YXNrX2Rlc2MsICJNeVRh
-c2tOYW1lIiwgVEFTS19TVEtTWiwgVEFTS19QUklPLCBUQVNLX01PREUpOwoJCWlmICghZXJyKSB7
-CgkJCXJ0X3Rhc2tfc3RhcnQoJnRhc2tfZGVzYywgJnRhc2tfYm9keSwgTlVMTCk7CgkJfSBlbHNl
-IHsKCQkJcHJpbnRrKCJFUlJPUjogY2Fubm90IGNyZWF0ZSB0YXNrXG4iKTsKCQkJcmV0dXJuIDA7
-CgkJfQovKgkJLy8gc2luY2UgZnVzaW9uIDAuNy4zIHlvdSBjYW4gYWxzbyB1c2UgcnRfdGFza19z
-cGF3bgoJCWVyciA9IHJ0X3Rhc2tfc3Bhd24oJnRhc2tfZGVzYywgIk1ZVGFzayIsIFRBU0tfU1RL
-U1osIFRBU0tfUFJJTywgMCwgJnRhc2tfYm9keSwgTlVMTCk7CgkJaWYgKGVycikgewoJCQlwcmlu
-dGsoImVycm9yIHJ0X3Rhc2tfc3Bhd25cbiIpOwoJCQlyZXR1cm4gMDsKCQl9CQoqLwoJfSBlbHNl
-IHsKCQlwcmludGsoIkVSUk9SOiBjYW5ub3QgY3JlYXRlIHBpcGVcbiIpOwoJfQoJcHJpbnRrKCJJ
-TklUIERPTkVcbiIpOwoJcmV0dXJuIDA7Cn0KCnZvaWQgX19leGl0IGNsZWFudXBfbW9kdWxlICh2
-b2lkKSB7CiAgICBydF9waXBlX2RlbGV0ZSgmcGlwZV9kZXNjKTsKICAgIHJ0X3Rhc2tfZGVsZXRl
-KCZ0YXNrX2Rlc2MpOwogICAgcHJpbnRrKCJDTEVBTlVQIERPTkVcbiIpOwp9CgoK
-------=_Part_3672_5333700.1215025758052
-Content-Type: application/octet-stream; name=Makefile
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_fi6at1ce1
-Content-Disposition: attachment; filename=Makefile
-
-IyMjIyMjIENPTkZJR1VSQVRJT04gIyMjIyMjCgojIyMgTGlzdCBvZiBhcHBsaWNhdGlvbnMgdG8g
-YmUgYnVpbGQKI0FQUExJQ0FUSU9OUyA9IHRyaXZpYWwtcGVyaW9kaWMgc2lneGNwdSBydHByaW50
-CkFQUExJQ0FUSU9OUyA9CiMjIyBOb3RlOiB0byBvdmVycmlkZSB0aGUgc2VhcmNoIHBhdGggZm9y
-IHRoZSB4ZW5vLWNvbmZpZyBzY3JpcHQsIHVzZSAibWFrZSBYRU5PPS4uLiIKCgojIyMgTGlzdCBv
-ZiBtb2R1bGVzIHRvIGJlIGJ1aWxkCk1PRFVMRVMgPSBwaXBlCgojIyMgTm90ZTogdG8gb3ZlcnJp
-ZGUgdGhlIGtlcm5lbCBzb3VyY2UgcGF0aCwgdXNlICJtYWtlIEtTUkM9Li4uIgoKIyMjIyMjIFNQ
-RUNJQUwgVEFSR0VUIFJVTEVTICMjIyMjIwojdGFza190ZXN0X25hdGl2ZTogdGFza190ZXN0X25h
-dGl2ZS5jCiMJJChDQykgJChDRkxBR1MpICQ/ICQoTERGTEFHUykgLWxydGRrIC1vICRACiMJJChD
-QykgJChDRkxBR1MpICQ/ICQoTERGTEFHUykgLWxwc29zIC1vICRACgojIyMjIyMgS0VSTkVMIE1P
-RFVMRSBCVUlMRCAobm8gY2hhbmdlIHJlcXVpcmVkIG5vcm1hbGx5KSAjIyMjIyMKaWZuZXEgKCQo
-TU9EVUxFUyksKQoKIyMjIERlZmF1bHQgdG8gc291cmNlcyBvZiBjdXJyZW50bHkgcnVubmluZyBr
-ZXJuZWwKI0tTUkMgPz0gL2xpYi9tb2R1bGVzLyQoc2hlbGwgdW5hbWUgLXIpL2J1aWxkCktTUkMg
-Pz0gL2hvbWUvYnJlbm8vRUxESy9wcGNfNnh4L3Vzci9zcmMvRGVueC1rZXJuZWwtdHJlZS0zCgpP
-QkpTICAgICA6PSAke3BhdHN1YnN0ICUsICUubywgJChNT0RVTEVTKX0KQ0xFQU5NT0QgOj0gJHtw
-YXRzdWJzdCAlLCAuJSosICQoTU9EVUxFUyl9ClBXRCAgICAgIDo9ICQoc2hlbGwgaWYgWyAiJCRQ
-V0QiICE9ICIiIF07IHRoZW4gZWNobyAkJFBXRDsgZWxzZSBwd2Q7IGZpKQoKb2JqLW0gICAgICAg
-IDo9ICQoT0JKUykKRVhUUkFfQ0ZMQUdTIDo9IC1JJChLU1JDKS9pbmNsdWRlL3hlbm9tYWkgLUkk
-KEtTUkMpL2luY2x1ZGUveGVub21haS9wb3NpeCAtSS9ob21lL2JyZW5vL0VMREsvcHBjXzZ4eC91
-c3IvaW5jbHVkZSAkKEFERF9DRkxBR1MpCgphbGw6OgoJJChNQUtFKSAtQyAkKEtTUkMpIFNVQkRJ
-UlM9JChQV0QpIG1vZHVsZXMKCiMjIFRhcmdldCBmb3IgY2FwdHVyaW5nIDIuNCBtb2R1bGUgQ0ZM
-QUdTCm1vZHVsZXM6CglAZWNobyAiJChDRkxBR1MpIgoKY2xlYW46OgoJJChSTSkgJChDTEVBTk1P
-RCkgKi5vICoua28gKi5tb2QuYyBNb2R1bGUqLnN5bXZlcnMKCSQoUk0pIC1SIC50bXAqCgplbmRp
-Zgo=
-------=_Part_3672_5333700.1215025758052--
+-- 
+Philippe.
 
