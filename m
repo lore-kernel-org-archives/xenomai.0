@@ -1,10 +1,13 @@
-Message-ID: <1215424051.4871e6334fba5@domain.hid>
-Date: Mon, 07 Jul 2008 11:47:31 +0200
-From: nourry@domain.hid
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Date: Mon, 7 Jul 2008 11:49:46 +0200
+From: Matthieu <matthieu.connaulte_xenomai@domain.hid>
+In-Reply-To: <4871CA89.8060703@domain.hid>
+References: <4871CA89.8060703@domain.hid>
+Message-ID: <5883386fa4d9312cda538cb80f032180@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] USB device with Hard Real Time
+Subject: Re: [Xenomai-help] xenomai scheduler's ticks period
+Reply-To: matthieu.connaulte_xenomai@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,34 +19,66 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi All,
-i wanted to know if anyone has ever used USB4RT Stack successfully with X=
-enomai
-?
+Hi
 
-At last, i think i've found the right DAQ device (cf DAQ system compatibi=
-lty
-subject), all driver sources and documentation are provided, and technica=
+Well I'm going to try to be clear :
+
+I work on a project that aims at migrating VxWorks tasks from PPC boards =
+on
+VME crate to X86 Computer ruuning with Linux. The cost of using Xenomai A=
+PI
+instead of vxworks skin seems very costly. The idea is to keep the maximu=
+m
+of mechanisms.
+
+As there is no implementation of vxworks periodic task instruction, the
+idea was to use watchdogs. In fact, as watchdogs are counting from ticks,
+it's easy to make tasks periodic if the period of the task is a multiple =
+of
+the tick period. So each task starts it's watchdog, executes some routine=
+,
+and suspends itself. The watchdog, when the specified delay ticks elapsed=
+,
+resumes the task. And so on...
+
+The use of multiple PPC boards, with periodic tasks that need to be
+synchronized, has required the use of an hardware interrupt, spread to al=
 l
-specifications meet our requirements.
+CPUs, and which handler tickAnnouce() vxworks. I know that this mechanism
+isn't still necessary as there is only one vxworks tick on Xenomai, even =
+if
+I work with many CPUs. But in the new configuration, I have a PCI card th=
+at
+will send this interrupt. So I need to stop the automatic vxworks tick wi=
+th
+tick_arg=3D0 and to handle this interrupt to tickAnnouce() manually. As I
+will don't have this card all the day, I need to simulate this mecanism,
+and I need to create something that will tickAnnouce() at a periodic time=
+.
 
-here is the product : http://www.labjack.com/labjack_ue9.php
-(it also works with Ethernet)
+I created a module that, in on case, will handle the interrupt, and on an
+other case, will create a xenomai rt_task that tickAnnouce. And this
+doesn't work. I want the ioctl method send the period to the module in
+order to modify the period of the tick.
 
-Now i have to be sure i can use USB with real time, latest README file in=
- USB4RT
-package mention kernel 2.6.17, has anyone used it with more recent kernel
-version ?
+I still have created this driver has you see but it doesn't work. I'm goi=
+ng
+to test your modifications. Thank you for that.
 
-Can we find Adeos IPIPE patch for 2.6.17 ? I only found 2.6.25 or 24 on
-repositories for x86, i also found 2.6.17 or 18 patch in a post by Ph. Ge=
-rum but
-i would prefer to find the official directory !
+I will also need to get a precise time, and Gilles suggest me to use
+xntbase, but xntbase_get_time(&nktbase); isn't recognized. I will see mor=
+e
+information in the timebase programming documentation I think.
+(http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__tim=
+ebase.html
+?)
 
-To Alex : can i show you the source drivers in order to discuss the porta=
-bility
-to Comedi over RTMD ?
+I hope these information will help you in understanding what i want to
+archieve.
 
-Thanks to all and see you !
-Antoine
+Thank you again for you help
+
+Matthieu
+
+
 
