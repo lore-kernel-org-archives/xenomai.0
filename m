@@ -1,10 +1,13 @@
-Date: Mon, 07 Jul 2008 17:45:11 +0200
-From: "Petr Cervenka" <grugh@domain.hid>
+Message-ID: <48723D5D.6020008@domain.hid>
+Date: Mon, 07 Jul 2008 17:59:25 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Message-ID: <200807071745.31720@domain.hid>
-Content-Type: text/plain; charset="windows-1250"
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] Kernel panic: not syncing
+References: <200807071745.31720@domain.hid>
+In-Reply-To: <200807071745.31720@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Kernel panic: not syncing
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,54 +17,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Petr Cervenka <grugh@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hello,
-I'm not sure if I'm not off topic.
-We use Linux 2.6.24 and Xenomai 2.4.1. Occasionally (once in few days) we get an kernel panic and I don't know If it's our fault or a problem of kernel/xenomai/adeos/configuration/hw/...
-If you have any questions, i'll try to answer them. Any help is welcome.
-Petr Cervenka
+Petr Cervenka wrote:
+> Hello,
+> I'm not sure if I'm not off topic.
+> We use Linux 2.6.24 and Xenomai 2.4.1. Occasionally (once in few days) we get an kernel panic and I don't know If it's our fault or a problem of kernel/xenomai/adeos/configuration/hw/...
+> If you have any questions, i'll try to answer them. Any help is welcome.
 
-I will try to reproduce the log (visible part of it). I can mail you snapshots for details, if needed:
----------------------------------------------------------------
-<IRQ> profile_tick+0x5e/0xa0
-tick_sched_timer+0x85/0x170
-hrtimer_interrupt+0x12f/0x1e0
-smp_apic_timer_interrupt+0x37/0x60
-__ipipe_sync_stage+0x350/0x355
-smp_apic_timer_interrupt+0x0/0x60
-__xirq_end+0x0/0x85
-smp_apic_timer_interrupt+0x0/0x60
-__ipipe_handle_irq+0x91/0x250
-default_idle+0x0/0x40
-common_interrupt+0x61/0x7d
-<EOI> default_idle+0x29/0x40
-cpu_idle+0x8b/0x120
-start_kernel+0x2ba/0x350
-_sinittext+0x120/0x130
+It is an I-pipe issue, probably. We have to somewhat forge the register frame
+passed to the Linux tick handler, since we may delay that call. Some register
+values the profiling code attempts to dereference to find the preempted code may
+be wrong in our case.
 
-Code: 48 8b 11 48 89 d0 48 c1 e8 16 48 85 c0 75 1b 48 8b 51 08 48
+Could you 1) send back a disassembly of the profile_tick routine in your kernel
+image, then apply the following patch to check whether it improves the situation
+as well? TIA,
 
-RIP profile_pc+0x46/0x80
-RSP <ffffffff80664da0>
-CR2: 0000000040090fb8
----[ end trace ccd2184e479f15c8 ]---
-Kernel panic - not syncing: Aiee, killing interrupt handler!
+--- 2.6.24-x86-2.0-03/arch/x86/kernel/ipipe.c~	2008-02-11 10:48:24.000000000 +0100
++++ 2.6.24-x86-2.0-03/arch/x86/kernel/ipipe.c	2008-07-07 17:55:36.000000000 +0200
+@@ -933,12 +933,7 @@
+ 		tick_regs->eip = regs.eip;
+ 		tick_regs->ebp = regs.ebp;
+ #else /* !CONFIG_X86_32 */
+-		tick_regs->ss = regs->ss;
+-		tick_regs->rsp = regs->rsp;
+-		tick_regs->eflags = regs->eflags;
+-		tick_regs->cs = regs->cs;
+-		tick_regs->rip = regs->rip;
+-		tick_regs->rbp = regs->rbp;
++		*tick_regs = *regs;
+ #endif /* !CONFIG_X86_32 */
+ 	}
 
-Another one is similar, with following differencies:
-----------------------------------------------------------------------
-<IRQ> scheduler_tick+0xf8/0x140
-... /* same part as before */
-smp_apic_timer_interrupt+0x0/0x60
-ipipe_suspend_domain+0xb2/0xf0
-__ipipe_walk_pipeline+0xee/0x150
-__ipipe_handle_irq+0x81/0x250
-common_interrupt+0x61/0x7d
-<EOI>
-
-Code: 0f 0b eb fe 66 66 66 2e 0f 1f 84 00 00 00 00 00 41 57 41 56
-
-RIP run_posix_cpu_timers+0x810/0x280
-...
-
+-- 
+Philippe.
 
