@@ -1,16 +1,10 @@
-Message-ID: <4873464B.9090703@domain.hid>
-Date: Tue, 08 Jul 2008 12:49:47 +0200
+Message-ID: <48760BC4.9070400@domain.hid>
+Date: Thu, 10 Jul 2008 15:16:52 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <486E6486.5060000@domain.hid>
-	<200807072312.57613.berlemont.hauw@domain.hid>
-	<48731B11.80906@domain.hid> <1215513338.487342fa9659c@domain.hid>
-In-Reply-To: <1215513338.487342fa9659c@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigF82F6B19578467C2A199EDD9"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [PATCH] comedi: Fix include for do_div
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] [PATCH 1/2] Include RT_MUTEX_INFO in doxygen
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,51 +14,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: berlemont.hauw@domain.hid
-Cc: Xenomai-core@domain.hid
+To: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF82F6B19578467C2A199EDD9
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ include/native/mutex.h |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-berlemont.hauw@domain.hid wrote:
-> Hi,
->=20
->> Sorry, but the committed fix is bogus for 2.6.26. I would suggest just=
-
->> to pick up what I proposed, kernel headers do the same since ages
->> (including 2.4).
->=20
-> Argh... I am an [CENSORED].
->=20
-> I missed everything, I was in another dimension. I had a too quick look=
- at your
-> fix (I saw linux/div64 instead of asm/div64) so I decided to put a temp=
-orary fix
-> (as I was running out of time to get some 2.6.26-rcx sources).
->=20
-> I will fix that tonight.
->=20
-> Sorry I will be more careful (next time, I directly apply your patch).
-
-(Please don't - I may post patches from other dimensions as well.) :)
-
-
-
---------------enigF82F6B19578467C2A199EDD9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkhzRk4ACgkQniDOoMHTA+nc5wCfXa1tGPXcdybFAog1IUanBHvJ
-4UUAn0hiIkLMWX2Wk5/bDx7e8EfDo783
-=MZID
------END PGP SIGNATURE-----
-
---------------enigF82F6B19578467C2A199EDD9--
+Index: b/include/native/mutex.h
+===================================================================
+--- a/include/native/mutex.h
++++ b/include/native/mutex.h
+@@ -26,13 +26,17 @@
+ 
+ struct rt_task;
+ 
++/** Structure containing mutex information useful to users.
++ *
++ *  @see rt_mutex_inquire()
++ */
+ typedef struct rt_mutex_info {
+ 
+-	int lockcnt;		/* !< Lock nesting level (> 0 means "locked"). */
++	int lockcnt;		/**< Lock nesting level (> 0 means "locked"). */
+ 
+-	int nwaiters;		/* !< Number of pending tasks. */
++	int nwaiters;		/**< Number of pending tasks. */
+ 
+-	char name[XNOBJECT_NAME_LEN]; /* !< Symbolic name. */
++	char name[XNOBJECT_NAME_LEN]; /**< Symbolic name. */
+ 
+ } RT_MUTEX_INFO;
+ 
 
