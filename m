@@ -1,12 +1,10 @@
-Message-ID: <487691BE.9030705@domain.hid>
-Date: Fri, 11 Jul 2008 00:48:30 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4876C37B.70205@domain.hid>
+Date: Fri, 11 Jul 2008 04:20:43 +0200
+From: Guillaume Millet <millet@domain.hid>
 MIME-Version: 1.0
-References: <6132061f0807101229h3491ded2rea10723aab99f48@domain.hid>
-In-Reply-To: <6132061f0807101229h3491ded2rea10723aab99f48@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Real time clock
+Subject: [Xenomai-help] use of RTAI-Lab or equivalent, with Scicos and Comedi
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,18 +14,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Breno Carneiro Pinheiro <brenodee@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Breno Carneiro Pinheiro wrote:
-> Hi all, on my Lite5200 board features is said that  it's available  an
-> Real-Time Clock with one-second resolution. What does exactly it means?
+Hello,
 
-What part exactly of "a real-time clock with one second resolution is
-available" do you not understand ?
+is there a project similar to RTAI-Lab 
+(https://www.rtai.org/index.php?module=pagemaster&PAGE_user_op=view_page&PAGE_id=8&MMN_position=23:23, 
+tutorial on https://www.rtai.org/RTAILAB/RTAI-Lab-tutorial.pdf) with 
+block diagrams for Scicos and acquisition devices supported by Comedi ?
+I know the existence of Comedi over RTDM, but I haven't seen Xenomai 
+blocks for Scicos. Could RTAI-Lab be used with Xenomai ? Sorry if my 
+question is stupid, I am a newbie in real-time development.
 
--- 
+Thanks in advance.
 
-
-					    Gilles.
+Guillaume
 
