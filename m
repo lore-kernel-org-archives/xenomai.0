@@ -1,14 +1,10 @@
-Message-ID: <487BB89B.6010604@domain.hid>
-Date: Mon, 14 Jul 2008 22:35:39 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <6132061f0807141723u5125f946m324749aa81fbdcc6@domain.hid>
+Date: Mon, 14 Jul 2008 21:23:56 -0300
+From: "Breno Carneiro Pinheiro" <brenodee@domain.hid>
 MIME-Version: 1.0
-References: <487B8B3E.8020805@domain.hid> <487B91F6.3070909@domain.hid>
-	<487BA305.6040401@domain.hid>
-In-Reply-To: <487BA305.6040401@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_task_bind() and timeout values
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_77250_26740994.1216081437437"
+Subject: [Xenomai-help] rtsocketcan in kernel space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,90 +14,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Stefan Kisdaroczi wrote:
-> Hi Philippe,
-> 
-> Philippe Gerum schrieb:
->> Stefan Kisdaroczi wrote:
->>> Hi all,
->>>
->>> If I call rt_task_bind() with a timeout value other than TM_NONBLOCK or
->>> TM_INFINITE
->>> it works not as expected (by me).
->>>
->>> System: Debian Lenny with Xenomai 2.4.3 and Kernel 2.6.24.
->>>
->>> The attached example calls 3 times rt_task_bind() for a nonexistent
->>> task:
->>>
->>> 1. dont wait: rt_task_bind(&task,"SomeTaskName",TM_NONBLOCK)
->>>   -> returns -11 (EWOULDBLOCK) -> OK
->>>
->>> 2. wait 5 secs: rt_task_bind(&task,"SomeTaskName",5000000000LL);
->>>   -> returns immediately -13 (EACCES) without waiting -> ?
->>>   -> I expected ETIMEDOUT after 5 seconds
->>>
->>
->> "SomeTaskName" was found in the registry, but suddenly disappeared
->> while in the
->> process of returning its handle (we do post-validation after binding).
->> That task
->> has probably exited prematurely.
-> 
-> There was and is no task with this name. This happens on a freshly
-> rebooted box
-> with any name i choose. Can someone please try my small example from the
-> first
-> mail on his box. Thank you.
->
+------=_Part_77250_26740994.1216081437437
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Can't test right now, unfortunately, and I'll be travelling tomorrow.
+Is it possible to write an application using rtsocketcan to run on kernel
+space? I mean, buid a kernel module using functions from rtsocketcan API.
 
-I suspect some weird issue with xnregistry_bind(). Please make sure to disable
-CONFIG_XENO_OPT_NATIVE_REGISTRY, and apply this trivial trace point. The only
-reason to get EACCES would be to receive a success code from xnregistry_bind(),
-which we should not. I'd be interested to know the result codes for each call
-your snippet does. TIA,
+Does anyone have an example?
 
---- ksrc/nucleus/registry.c	(revision 4044)
-+++ ksrc/nucleus/registry.c	(working copy)
-@@ -776,6 +776,8 @@
+Thanks in advance
 
- 	xnlock_put_irqrestore(&nklock, s);
+Breno
 
-+	printk(KERN_INFO "%s: ret=%d\n", __FUNCTION__, err);
-+
- 	return err;
- }
+------=_Part_77250_26740994.1216081437437
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
+Is it possible to write an application using rtsocketcan to run on kernel space? I mean, buid a kernel module using functions from rtsocketcan API.<br><br>Does anyone have an example?<br><br>Thanks in advance<br><br>Breno<br>
 
->>> 3. wait forever: rt_task_bind(&task,"SomeTaskName",TM_INFINITE);
->>>   -> blocks a expected -> OK
->>>
->>> I have the same problem with rt_queue_bind() calls.
->>>
->>> Do i expect something wrong?
->>>
->>> Thanks for your help!
->>>
->>> kisda
->>>
->>>
->>> ------------------------------------------------------------------------
->>>
->>> _______________________________________________
->>> Xenomai-help mailing list
->>> Xenomai-help@domain.hid
->>> https://mail.gna.org/listinfo/xenomai-help
->>
->>
-> 
-> 
-
-
--- 
-Philippe.
+------=_Part_77250_26740994.1216081437437--
 
