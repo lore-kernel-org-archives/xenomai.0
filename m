@@ -1,11 +1,13 @@
-From: Leopold Palomo Avellaneda <leo@domain.hid>
-Date: Tue, 15 Jul 2008 23:46:17 +0200
+Message-ID: <6132061f0807151602j50626e9bse74d5b578418fd56@domain.hid>
+Date: Tue, 15 Jul 2008 20:02:48 -0300
+From: "Breno Carneiro Pinheiro" <brenodee@domain.hid>
+In-Reply-To: <200807150803.52326.Sebastian.Smolorz@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart20972483.SjcGyqNBLa";
-	protocol="application/pgp-signature"; micalg=pgp-sha1
-Content-Transfer-Encoding: 7bit
-Message-Id: <200807152346.21863.leo@domain.hid>
-Subject: [Xenomai-help] OT. A question about constraints in realtime
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_14602_6654939.1216162968609"
+References: <6132061f0807141723u5125f946m324749aa81fbdcc6@domain.hid>
+	<200807150803.52326.Sebastian.Smolorz@domain.hid>
+Subject: Re: [Xenomai-help] rtsocketcan in kernel space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,103 +17,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
+Cc: xenomai@xenomai.org
 
---nextPart20972483.SjcGyqNBLa
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+------=_Part_14602_6654939.1216162968609
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-Dear people,
+Thanks Sebastian. Btw, I'd like to know whether  it's possible to change the
+task's period or task's priority on-line. I mean, is there a way to change
+the period or priority using rt_task_set_priority or rt_task_set_periodic
+calls?
 
-first of all this is an Off topic, so please don't be angry with me. If you=
-=20
-don't want to answer, move this message to /dev/null. But I have a problem=
-=20
-with a device and maybe some people in this list could give me some idea.
+Thanks a lot,
 
-I'm working in a robotics lab and we have a device (a haptic from Sensable)=
-=20
-that it's connected to the parallel port. Of course that the Sensable compa=
-ny=20
-doesn't not publish open source drivers, etc. By now it's an sterile=20
-discussion.
+Breno
 
-Anyway, they provide a driver that it's a lib (.so). Also there's some libr=
-ary=20
-that can act with the device using that driver. Excepting the driver, for t=
-he=20
-other parts I have some source code.
+2008/7/15 Sebastian Smolorz <Sebastian.Smolorz@domain.hid>:
 
-I have had several problems with this driver. Firstly, the driver only can=
-=20
-works if the parport module detects the EPP mode. Sadly, the linux parport=
-=20
-module is more or less unmaintained and fails in many boxes to detect the E=
-PP=20
-mode, although the bios is configured to.
+> Breno Carneiro Pinheiro wrote:
+> > Is it possible to write an application using rtsocketcan to run on kernel
+> > space? I mean, buid a kernel module using functions from rtsocketcan API.
+>
+> RTDM provides an inter-driver API, see:
+>
+> http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__interdrv.html
+>
+> This is for calling RTDM driver functions from kernel space. But ask
+> yourself
+> whether it is really necessary for you to write an application in kernel
+> space. User space applications are highly recommended.
+>
+> --
+> Sebastian
+>
 
-After that, you can read encoders of the device (using the driver) but when=
-=20
-you send forces to the engines, it suffers some kind of chattering and the=
-=20
-driver disable the force because the loop of control expend too much time.=
-=20
+------=_Part_14602_6654939.1216162968609
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Asking in some forum I have arrived to the conclusion that the driver has s=
-ome=20
-kind of timer and if it doesn't not receive any order in 1ms, then the forc=
-e=20
-is disabled.
+<div dir="ltr">Thanks Sebastian. Btw, I&#39;d like to know whether&nbsp; it&#39;s possible to change the task&#39;s period or task&#39;s priority on-line. I mean, is there a way to change the period or priority using rt_task_set_priority or rt_task_set_periodic calls?<br>
+<br>Thanks a lot,<br><br>Breno<br><br><div class="gmail_quote">2008/7/15 Sebastian Smolorz &lt;<a href="mailto:Sebastian.Smolorz@domain.hid">Sebastian.Smolorz@domain.hid</a>&gt;:<br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+<div class="Ih2E3d">Breno Carneiro Pinheiro wrote:<br>
+&gt; Is it possible to write an application using rtsocketcan to run on kernel<br>
+&gt; space? I mean, buid a kernel module using functions from rtsocketcan API.<br>
+<br>
+</div>RTDM provides an inter-driver API, see:<br>
+<a href="http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__interdrv.html" target="_blank">http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__interdrv.html</a><br>
+<br>
+This is for calling RTDM driver functions from kernel space. But ask yourself<br>
+whether it is really necessary for you to write an application in kernel<br>
+space. User space applications are highly recommended.<br>
+<br>
+--<br>
+<font color="#888888">Sebastian<br>
+</font></blockquote></div><br></div>
 
-So, my question are:
-=2D Why the windows driver works so well? the scheduler in Windows do that =
-if a=20
-task need to have a constraint of 1ms they give it the control and that's=20
-all?
-=2D Why a linux driver doesn't not work? the load of the box is quiet norma=
-l.=20
-I'm not compiling or solving eigen systems. Or is possible that some device=
-=20
-is breaking some access to the parport, or whatever?
-=2D I have tried to use the realtime kernel -rt but same result.=20
-=2D Can I do something with xenomai to avoid it?
-
-The sensable people claims that their driver works with some versions of Li=
-nux=20
-(till fedora 4 and some suse) but I'm not be able to run it in a debian etc=
-h.=20
-I don't know if the distros provide a kernel with some kind of modification=
-s=20
-that solve it, but I don't think so.
-
-
-Well, thanks in advance and I'm sorry for the noise. Really, the realtime=20
-stuff is something not obvious...
-
-Best regards,
-
-Leo
-
-
-=2D-=20
-=2D-
-Linux User 152692
-PGP: 0xF944807E
-Catalonia
-
---nextPart20972483.SjcGyqNBLa
-Content-Type: application/pgp-signature; name=signature.asc 
-Content-Description: This is a digitally signed message part.
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.9 (GNU/Linux)
-
-iEYEABECAAYFAkh9GqoACgkQaC7AnPlEgH4wkwCeOme4MLDkwQ2jrA5Ax+Rp/9rf
-degAn3ut3DqUCU60b16Waia7OMNFrrIg
-=WPvk
------END PGP SIGNATURE-----
-
---nextPart20972483.SjcGyqNBLa--
+------=_Part_14602_6654939.1216162968609--
 
