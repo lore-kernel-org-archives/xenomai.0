@@ -1,13 +1,13 @@
+Message-ID: <487DB064.9010301@domain.hid>
+Date: Wed, 16 Jul 2008 10:25:08 +0200
+From: Sebastian Smolorz <smolorz@domain.hid>
 MIME-Version: 1.0
-Date: Wed, 16 Jul 2008 08:41:12 +0200
-From: Matthieu <matthieu.connaulte_xenomai@domain.hid>
-In-Reply-To: <487CF556.5090309@domain.hid>
-References: <487CF556.5090309@domain.hid>
-Message-ID: <b1ff76438a96cc50798c2d82c0d50e09@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] xenomai scheduler's ticks period
-Reply-To: matthieu.connaulte_xenomai@domain.hid
+References: <6132061f0807141723u5125f946m324749aa81fbdcc6@domain.hid>	<200807150803.52326.Sebastian.Smolorz@domain.hid>
+	<6132061f0807151602j50626e9bse74d5b578418fd56@domain.hid>
+In-Reply-To: <6132061f0807151602j50626e9bse74d5b578418fd56@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] rtsocketcan in kernel space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,83 +17,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Breno Carneiro Pinheiro <brenodee@domain.hid>
 Cc: xenomai@xenomai.org
 
+Breno Carneiro Pinheiro wrote:
+> Thanks Sebastian. Btw, I'd like to know whether  it's possible to change the
+> task's period or task's priority on-line. I mean, is there a way to change
+> the period or priority using rt_task_set_priority or rt_task_set_periodic
+> calls?
 
+All this is described in the API documentation, see:
+http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__task.html
 
-On Tue, 15 Jul 2008 21:07:02 +0200, Philippe Gerum <rpm@xenomai.org> wrot=
-e:
-> Matthieu wrote:
->> Hi,
->>
->> I would like to know if you finally plan to implement
-> xntbase_bind/unbind ?
->>
->=20
-> Why?
+In short: Yes, it is possible.
 
-You told in one of your answers :
-
-Normally, solving your issue would require to make the master timebase
-paced by your PCI card, which would in turn provide the correct timing fo=
-r
-the VxWorks timebase (as the timebase doc states, periodic timebases are
-cascaded from the master aperiodic one). However, doing so would also
-require to adapt the Xenomai HAL code accordingly, and a PCI hw that is
-oneshot programmable as well.
-
-If you want to hack the Xenomai timer sub-system in order to only affect
-the VxWorks timebase, what you actually need is to control the coupling
-between the master timebase (paced by decrementer) and the slave VxWorks
-one, so that decrementer ticks may be prevented from kicking the VxWorks
-timebase. This way, you would be able to call tickAnnounce() freely to
-announce any incoming VxWorks tick (i.e. from your PCI handler).
-
-In short, when paced by the PCI interrupt, you will need to:
-
-- call xntslave_stop(base2slave(wind_tbase))
-- call tickAnnounce() from your PCI IRQ handler
-
-When paced normally (simulation, "somebody stole by PCI card" mode), just
-leave the burden to the system timer (i.e. ppc decrementer) as usual, by
-coupling the VxWorks slave timebase to the master one anew:
-
-- call xntslave_start(base2slave(wind_tbase),  xnarch_get_cpu_time() +
-period, period); /* period is given in nanoseconds, depends on the master
-timebase */
-
-In any case, you don't need to change the VxWorks tick period.
-Starting/stopping the VxWorks timebase should do the trick. NOTE: this is=
- a
-hack exposing Xenomai internals -- we should probably encapsulate this in=
-to
-new xntbase_bind/unbind calls if this does eventually works for you.
-
-...End of quote.
-
-Well, it works for me. So do you intend to implement xntbase_bind/unbind
-calls or do I use directly xntslave_start/stop ? Both solutions are ok fo=
-r
-me ...
-
-=20
->> Matthieu
->>
->>
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->>
->=20
->=20
-> --
-> Philippe.
-
-
-Matthieu
-
-
+-- 
+Sebastian
 
