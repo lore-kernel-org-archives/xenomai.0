@@ -1,13 +1,16 @@
-From: Vivek Berodhia <vivek.berodhia@domain.hid>
-In-Reply-To: <1215513734.22331.11.camel@domain.hid>
-References: <1215251268.3029.13.camel@domain.hid>
-	<486F4C47.5030205@domain.hid>  <1215513734.22331.11.camel@domain.hid>
-Content-Type: text/plain
-Date: Thu, 17 Jul 2008 15:02:37 +0530
-Message-Id: <1216287157.2591.34.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <487F1D25.5080508@domain.hid>
+Date: Thu, 17 Jul 2008 12:21:25 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <48732793.7090605@domain.hid> <487331AE.5070009@domain.hid>
+	<48733483.2050204@domain.hid> <200807091719.17625@domain.hid>
+	<4874E1D8.6020307@domain.hid> <200807111518.16150@domain.hid>
+	<200807151642.18829@domain.hid> <487CBC4A.5050309@domain.hid>
+	<200807161039.8828@domain.hid>
+In-Reply-To: <200807161039.8828@domain.hid>
+Content-Type: text/plain; charset=windows-1250
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Unhandled irq 33
+Subject: Re: [Xenomai-help] Kernel panic: not syncing
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,235 +20,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Petr Cervenka <grugh@domain.hid>
 Cc: xenomai@xenomai.org
 
-help - 
-
-thanks in advance
-On Tue, 2008-07-08 at 16:59 +0530, Vivek Berodhia wrote:
-> I have applied the patch suggested by you as well as upgraded my xenomai
-> to 2.4.4,but it's not working.My standard kernel without xenomai and
-> ipipe is booting well.
->    Point to be noted that it doesn't boot when IPIPE is enabled even if
-> xenomai is disabled.A capture file is enclosed having captures of
-> working and crashing kernels and .config file for working kernel.
+Petr Cervenka wrote:
+> Jan Kizska wrote:
+>> Petr Cervenka wrote:
+>>> I captured also the second type of kernel panic. This one seems to
+> happen during "advanced" configuration of out system. This means lot of
+> work in a low priority (5) xenomai task (WORK_TASK_2056) for a short time.
+>>> Another question is, what does mean "(P)" after the name of our rtdm
+> module (pci171x_rtdm(P))?
+>> That it either does not comply to the GPL or that the author forgot to
+>> announce its compliance via MODULE_LICENSE().
+>>
+>>> [ 7815.694296] ------------[ cut here ]------------
+>>> [ 7815.699111] kernel BUG at kernel/posix-cpu-timers.c:1295!
+>>> [ 7815.704715] invalid opcode: 0000 [1] PREEMPT SMP 
+>>> [ 7815.709672] CPU 0 
+>>> [ 7815.711777] Modules linked in: rt_e1000 rt_r8169 rtpacket rtnet
+> ppdev pci171x_rtdm(P) container ac video output sbs sbshc dock battery
+> parport_pc lp parport psmouse serio_raw pcspkr k8temp i2c_nforce2 button
+> i2c_core af_packet ipv6 evdev ext3 jbd mbcache sg sd_mod ide_cd cdrom
+> sata_nv floppy ata_generic libata ohci_hcd forcedeth ehci_hcd scsi_mod
+> amd74xx ide_core usbcore fan fuse
+>>> [ 7815.747844] Pid: 6481, comm: WORK_TASK_2056 Tainted: P       
+> 2.6.24-adeos #1
+>>> [ 7815.755321] RIP: 0010:[<ffffffff80256e20>]  [<ffffffff80256e20>]
+> run_posix_cpu_timers+0x810/0x820
+>>> [ 7815.764629] RSP: 0000:ffffffff80664d70  EFLAGS: 00010246
+>>> [ 7815.770122] RAX: ffff81000100a7c0 RBX: ffff81003e082780 RCX:
+> ffffffff805a03a0
+>>> [ 7815.777573] RDX: 0000000000000000 RSI: ffff81003e082780 RDI:
+> ffff81003e082780
+>>> [ 7815.785080] RBP: ffff8100010087a0 R08: 0000000000000004 R09:
+> 0000000000000010
+>>> [ 7815.792566] R10: 0000000000000005 R11: ffffffff80258ee0 R12:
+> ffff81000100a5c0
+>>> [ 7815.800001] R13: 00000719439890f1 R14: 0000000000000000 R15:
+> ffffffff80664d90
+>>> [ 7815.807436] FS:  0000000040112950(0063) GS:ffffffff805d6000(0000)
+> knlGS:0000000000000000
+>>> [ 7815.815909] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>> [ 7815.821915] CR2: 00002b83d55aec80 CR3: 000000003dff8000 CR4:
+> 00000000000006e0
+>>> [ 7815.829357] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
+> 0000000000000000
+>>> [ 7815.836786] DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7:
+> 0000000000000400
+>>> [ 7815.844238] Process WORK_TASK_2056 (pid: 6481, threadinfo
+> ffff810013f78000, task ffff81003e082780)
+>>> [ 7815.853584] Stack:  ffff810001013180 00000718f7bcb1dd
+> ffffffff80664db0 ffffffff80238af8
+>>> [ 7815.862131]  ffffffff80664d90 ffffffff80664d90 00000719439890f1
+> ffff81000100a6c0
+>>> [ 7815.869974]  ffff8100010087a0 ffff81000100a5c0 00000719439890f1
+> 0000000000000000
+>>> [ 7815.877667] Call Trace:
+>>> [ 7815.880441]  <IRQ>  [<ffffffff80238af8>] scheduler_tick+0xf8/0x140
+>>> [ 7815.886908]  [<ffffffff8025e89b>] tick_sched_timer+0x7b/0x170
+>>> [ 7815.892929]  [<ffffffff8025900f>] hrtimer_interrupt+0x12f/0x1e0
+>>> [ 7815.899137]  [<ffffffff80220857>] smp_apic_timer_interrupt+0x37/0x60
+>>> [ 7815.905752]  [<ffffffff8020c9f1>] common_interrupt+0x61/0x7d
+>>> [ 7815.911779]  [<ffffffff802777e0>] __ipipe_sync_stage+0x350/0x355
+>>> [ 7815.918085]  [<ffffffff80220820>] smp_apic_timer_interrupt+0x0/0x60
+>>> [ 7815.924655]  [<ffffffff802777e5>] __xirq_end+0x0/0x85
+>>> [ 7815.929964]  [<ffffffff80220820>] smp_apic_timer_interrupt+0x0/0x60
+>>> [ 7815.936587]  [<ffffffff80226b01>] __ipipe_handle_irq+0x91/0x250
+>>> [ 7815.942774]  [<ffffffff8020c9f1>] common_interrupt+0x61/0x7d
+>>> [ 7815.948673]  <EOI> 
+>>> [ 7815.950909] 
+>>> [ 7815.950909] Code: 0f 0b eb fe 66 66 66 2e 0f 1f 84 00 00 00 00 00 41
+> 57 41 56 
+>>> [ 7815.960491] RIP  [<ffffffff80256e20>]
+> run_posix_cpu_timers+0x810/0x820
+>>> [ 7815.967284]  RSP <ffffffff80664d70>
+>>> [ 7815.970982] ---[ end trace d192885d9858c4b2 ]---
+>>> [ 7815.975820] Kernel panic - not syncing: Aiee, killing interrupt
+> handler! 
+>> That's now a totally different spot, and it makes me wonder if can
+>> reproduce all this troubles with vanilla Xenomai and without your driver
+>> being loaded...
+>>
 > 
-> One important thing is that irq33 that is shown up during crash time is
-> not related to irq33(0x21) alloted to geth driver as i have tried to
-> boot the kernel with geth driver disabled,same error persisted.
-> 
-> Thanks & Regards
-> VIVEK BERODHIA
->  On Sat, 2008-07-05 at 12:26 +0200, Philippe Gerum wrote:
-> > Vivek Berodhia wrote:
-> > > Dear All,
-> > > 
-> > > Help me,
-> > > I am facing a problem during booting with xenomai kernel "unhandled
-> > > irq33".
-> > >         
-> > > Kernel Configuration. 
-> > >         
-> > >         ARCH= powerpc
-> > >         CROSS_COMPILE=gcc-6xx-
-> > >         target machine = mpc8323
-> > >         
-> > > following is serial port capture of problem..please help me..
-> > >
-> > 
-> > Your software kit is obsolete. Upgrading to Xenomai 2.4.4 is strongly
-> > recommended. At the very least, upgrade your I-pipe support to 2.1-04 first, and
-> > in any case, enable CONFIG_DEBUG_BUGVERBOSE to get sensible backtraces.
-> > 
-> > http://download.gna.org/adeos/patches/v2.6/powerpc/older/adeos-ipipe-2.6.24-powerpc-DENX-2.1-04.patch
-> > 
-> > If the problem persists, switch off the Xenomai support from the kernel
-> > configuration, then retry. If nothing improves, try disabling the I-pipe
-> > support, basically booting a standard kernel. Please make sure to send us the
-> > output of /proc/interrupts along with the kernel log when you get a bootable
-> > config, so that we can try to figure out what went wrong with the previous ones.
-> > 
-> > >         
-> > >         TFTP from server 192.168.4.51; our IP address is 192.168.4.251
-> > >         Filename 'uImage'.
-> > >         Load address: 0x200000
-> > >         Loading:
-> > >         #################################################################
-> > >                  ################################################
-> > >         done
-> > >         Bytes transferred = 1658616 (194ef8 hex)
-> > >         Using FSL UEC0 device
-> > >         TFTP from server 192.168.4.51; our IP address is 192.168.4.251
-> > >         Filename 'my.dtb'.
-> > >         Load address: 0x400000
-> > >         Loading: #
-> > >         done
-> > >         Bytes transferred = 8192 (2000 hex)
-> > >         ## Booting image at 00200000 ...
-> > >            Image Name:   Linux-2.6.24.2
-> > >            Image Type:   PowerPC Linux Kernel Image (gzip compressed)
-> > >            Data Size:    1658552 Bytes =  1.6 MB
-> > >            Load Address: 00000000
-> > >            Entry Point:  00000000
-> > >            Verifying Checksum ... OK
-> > >            Uncompressing Kernel Image ... OK
-> > >            Booting using the fdt at 0x400000
-> > >         WARNING: could not set linux,stdout-path FDT_ERR_NOTFOUND.
-> > >         Using MPC832x RDB machine description
-> > >         Linux version 2.6.24.2 (root@domain.hid) (gcc version 4.2.2) #1
-> > >         Sat Jul 5
-> > >         11:10:57 IST 2008
-> > >         console [udbg0] enabled
-> > >         setup_arch: bootmem
-> > >         mpc832x_rdb_setup_arch()
-> > >         Found MPC83xx PCI host bridge at 0x00000000e0008500. Firmware
-> > >         bus
-> > >         number: 0->0
-> > >         arch: exit
-> > >         Zone PFN ranges:
-> > >           DMA             0 ->    16384
-> > >           Normal      16384 ->    16384
-> > >         Movable zone start PFN for each node
-> > >         early_node_map[1] active PFN ranges
-> > >             0:        0 ->    16384
-> > >         Built 1 zonelists in Zone order, mobility grouping on.  Total
-> > >         pages:
-> > >         16256
-> > >         Kernel command line: nfsroot=192.168.4.51:/opt/eldk/nfs2
-> > >         ip=192.168.4.251:192.168.4.51:192.168.4.254:255.255.255.0:Coral_Router:eth1:off root=0
-> > >         IPIC (128 IRQ sources) at fdefb700
-> > >         PID hash table entries: 256 (order: 8, 1024 bytes)
-> > >         clocksource: timebase mult[7800001] shift[22] registered
-> > >         I-pipe 2.1-00: pipeline enabled.
-> > >         Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
-> > >         Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
-> > >         Memory: 61120k/65536k available (3344k kernel code, 4356k
-> > >         reserved, 152k
-> > >         data, 238k bss, 148k init)
-> > >         SLUB: Genslabs=11, HWalign=32, Order=0-1, MinObjects=4, CPUs=1,
-> > >         Nodes=1
-> > >         Mount-cache hash table entries: 512
-> > >         device-tree: Duplicate name in /, renamed to "chosen#1"
-> > >         net_namespace: 64 bytes
-> > >         NET: Registered protocol family 16
-> > >                      
-> > >         PCI: Probing PCI hardware
-> > >         SCSI subsystem initialized
-> > >         usbcore: registered new interface driver usbfs
-> > >         usbcore: registered new interface driver hub
-> > >         usbcore: registered new device driver usb
-> > >         Time: timebase clocksource has been installed.
-> > >         NET: Registered protocol family 2
-> > >         IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
-> > >         TCP established hash table entries: 2048 (order: 2, 16384 bytes)
-> > >         TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
-> > >         TCP: Hash tables configured (established 2048 bind 2048)
-> > >         TCP reno registered
-> > >         I-pipe: Domain Xenomai registered.
-> > >         Xenomai: hal/powerpc started.
-> > >         Xenomai: real-time nucleus v2.4.2 (One Big Rush) loaded.
-> > >         Xenomai: starting native API services.
-> > >         Xenomai: starting POSIX services.
-> > >         Xenomai: starting RTDM services.
-> > >         io scheduler noop registered
-> > >         io scheduler anticipatory registered (default)
-> > >         io scheduler deadline registered
-> > >         io scheduler cfq registered
-> > >         Generic RTC Driver v1.07
-> > >         Serial: 8250/16550 driver $Revision: 1.90 $ 4 ports, IRQ sharing
-> > >         disabled
-> > >         serial8250.0: ttyS0 at MMIO 0xe0004500 (irq = 18) is a 16550A
-> > >         console handover: boot [udbg0] -> real [ttyS0]
-> > >         serial8250.0: ttyS1 at MMIO 0xe0004600 (irq = 19) is a 16550A
-> > >         RAMDISK driver initialized: 16 RAM disks of 32768K size 1024
-> > >         blocksize
-> > >         loop: module loaded
-> > >         Intel(R) PRO/1000 Network Driver - version 7.3.20-k2
-> > >         Copyright (c) 1999-2006 Intel Corporation.
-> > >         UCC Ethernet Controller MII Bus: probed
-> > >         ucc_geth: QE UCC Gigabit Ethernet Controller
-> > >         Driver 'sd' needs updating - please use bus_type methods
-> > >         mpc83xx_spi.1: MPC83xx SPI Controller driver at 0xc50084c0 (irq
-> > >         = 20)
-> > >         usbmon: debugfs is not available
-> > >         Initializing USB Mass Storage driver...
-> > >         usbcore: registered new interface driver usb-storage
-> > >         USB Mass Storage support registered.
-> > >         i2c /dev entries driver
-> > >         WDT driver for MPC83xx initialized. mode:reset timeout=65535 (32
-> > >         seconds)
-> > >         mmc_spi spi1216.0: SD/MMC host mmc0, no DMA, no WP, no poweroff
-> > >         TCP cubic registered
-> > >         irq 33, desc: c034cf04, depth: 0, count: 0, unhandled: 0
-> > >         irq 33, desc: c034cf04, depth: 0, count: 0, unhandled: 0
-> > >         ->handle_irq():  c0019c0c, ->chip(): c03ae368, ->action():
-> > >         00000000
-> > >              IRQ_LEVEL set
-> > >            IRQ_NOPROBE set
-> > >          IRQ_NOREQUEST set
-> > >         illegal vector 33 received!
-> > >         ------------[ cut here ]------------
-> > >         Kernel BUG at c00504b0 [verbose debug info unavailable]
-> > >         Oops: Exception in kernel mode, sig: 5 [#1]
-> > >         MPC832x RDB
-> > >         Modules linked in:
-> > >         NIP: c00504b0 LR: c00504b0 CTR: c01a0c04
-> > >         REGS: c3935a30 TRAP: 0700   Not tainted  (2.6.24.2)
-> > >         MSR: 00021032 <ME,IR,DR>  CR: 24222024  XER: 00000000
-> > >         TASK = c385c7a0[761] 'mpc83xx_spi.1' THREAD: c3934000
-> > >         GPR00: c00504b0 c3935ae0 c385c7a0 0000001f 00001267 ffffffff
-> > >         c01a30f0
-> > >         00004000 
-> > >         GPR08: 00000001 c0354f70 00000003 c0350000 44222022 fffffd7f
-> > >         03ffd000
-> > >         00800000 
-> > >         GPR16: ffffffff 80000000 c0370000 c0370000 c0380d20 c0380d44
-> > >         c0380d40
-> > >         fffffffd 
-> > >         GPR24: 00000000 c0369b04 000004a0 00000420 c0385484 00000021
-> > >         c02db248
-> > >         c034cf04 
-> > >         Call Trace:
-> > >         [c3935ae0] [c00504b0]  (unreliable)
-> > >         [c3935b00] [c00515e8] 
-> > >         [c3935b10] [c00094e4] 
-> > >         [c3935b20] [c0009820] 
-> > >         [c3935b50] [c0009a98] 
-> > >         [c3935b60] [c0011630] 
-> > >         --- Exception: 501[c3935c20] [0000114a]  (unreliable)
-> > >         [c3935c70] [c0053a74] 
-> > >         [c3935c80] [c0028108] 
-> > >         [c3935d00] [c0028328] 
-> > >         [c3935d50] [c00503c8] 
-> > >         [c3935d70] [c00515e8] 
-> > >         [c3935d80] [c00094e4] 
-> > >         [c3935d90] [c0009820] 
-> > >         [c3935dc0] [c0009a98] 
-> > >         [c3935dd0] [c0011630] 
-> > >         --- Exception: 501[c3935e90] [fffffd7f]  (unreliable)
-> > >         [c3935ea0] [c02a8a7c] 
-> > >         [c3935ee0] [c01e0200] 
-> > >         [c3935f00] [c01dfbec] 
-> > >         [c3935f50] [c0039e0c] 
-> > >         [c3935f90] [c003a0f8] 
-> > >         [c3935fd0] [c003e738] 
-> > >         [c3935ff0] [c0010b1c] 
-> > >         Instruction dump:
-> > >         3d20c037 57ab103a 392954d8 3c60c02e 7d6b4a14 7fa4eb78 396b0040
-> > >         3863b2f8 
-> > >         812b0008 39290001 912b0008 4bfd7de1 <0fe00000> 48000000 3c80c02e
-> > >         7fc3f378 
-> > >         ---[ end trace e55df3d7b6b0ab0d ]---
-> > >         
-> > > 
-> > > 
-> > > _______________________________________________
-> > > Xenomai-help mailing list
-> > > Xenomai-help@domain.hid
-> > > https://mail.gna.org/listinfo/xenomai-help
-> > > 
-> > 
-> > 
+> We measure data from our unit connected through rtnet or with a PCI card. It's independent if we use one way or another, these kernel panics appear in both setups. So rtnet and our module are not involved.
+> But it does depend on the measuring frequency and the amount of measured data in every cycle.
 
+We likely see some race that causes weird memory corruptions. Its
+probability often increases when the code execution frequency raises.
+
+However, reducing the test case is very important now to reduce the
+search domain for this issue. E.g. try to fake peripheral access as far
+as possible, unloading the unused driver and only leaving the test
+program behind that is executable on arbitrary Xenomai installation
+(maybe finally on one of my boxes...).
+
+TiA,
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
