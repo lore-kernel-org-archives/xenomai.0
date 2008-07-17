@@ -1,11 +1,13 @@
-From: =?ISO-8859-1?Q?Schl=E4gl?= "Manfred jun." <manfred.schlaegl@domain.hid>
-Content-Type: text/plain
-Date: Thu, 17 Jul 2008 10:12:04 +0200
-Message-Id: <1216282324.3472.29.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Generel problem with realtime-tops(like adeos) over
-	linux-kernel
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 17 Jul 2008 10:44:13 +0200
+Message-ID: <0B45E93C5FF65740AEAE690BF3848B7AD38309@domain.hid>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
+Subject: Re: [Xenomai-help] Generel problem with realtime-tops(like adeos)
+	overlinux-kernel
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,49 +17,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: =?iso-8859-1?Q?Schl=E4gl_=22Manfred_jun=2E?= <manfred.schlaegl@domain.hid>, xenomai@xenomai.org
 
-Hi!
+Schl=E4gl "Manfred jun. wrote:
+[...]
+>works fine without adeos, but with adeos there may be a relative long=20
+>interruption between validation and processing. The hardware may =
+overrun and=20
+>process_hardware_data is called without valid data...
 
-I think we've discovered a generell logical problem with realtime-tops
-like adeos over the linux-kernel.
+You're right. But I hope everybody is already aware of this side effect
+of adeos.
 
-The basic-assumption of such an system is: Linux is not a
-realtime-system, so it is not able to provide realtime to it's services,
-so no linux-service is able to use realtime-capabilities, so no
-linux-service has realtime-requirements.
->From this it follows that we are able use a top like adeos (send
-interrupts later, always interrupt the linux-kernel).
+>I think it is possible that there could be many such (latent) problems
+>in linux-kernel. For example USB which itself has =
+realtime-requirements,
+>or eventually mtd (lost data as cause of wrong flash-write/erase
+>timings), ...
 
-But... Linux is able to provide hard-realtime while interrupts are
-locked. And many services(driver) use this.
+This is indeed the case with MTD, and some zealously "optimized" =
+timeouts that are too short. The other time sensitive cases can =
+generally be=20
+addressed with bigger buffering or explicit adeos/ipipe irq locking: =
+local_irq_disable() vs. local_irq_disable_hw(). Of course, the latter =
+comes=20
+at some RT latency expense.
 
-abstract example:
-{{{
-spin_lock_irqsave
-if(hardware_data_valid())
-	process_hardware_data()
-spin_lock_irqrestore
-}}}
-works fine without adeos, but with adeos there may be a relative long
-interruption between validation and processing. The hardware may overrun
-and process_hardware_data is called without valid data...
-
-In our case we have this problem while the rx-interrupt of our
-ethernet-driver. The dma is running permanently and generates an overrun
-between the error-checking(which would catch the overrun) part and the
-data-processing part of the handler.
-
-I think it is possible that there could be many such (latent) problems
-in linux-kernel. For example USB which itself has realtime-requirements,
-or eventually mtd (lost data as cause of wrong flash-write/erase
-timings), ...
-
-So ... what do you think about that.
-
-Best regards
-Manfred Schlaegl
-
-
-
+Best Regards,
+--=20
+Stephane
 
