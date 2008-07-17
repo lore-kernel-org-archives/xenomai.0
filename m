@@ -1,35 +1,51 @@
-Message-ID: <486CF5BE.9050907@domain.hid>
-Date: Thu, 03 Jul 2008 17:52:30 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5719c6f30807170812w30599c3ay19fd5b476b89d0f0@domain.hid>
+Date: Thu, 17 Jul 2008 17:12:11 +0200
+From: "Florent Audebert" <f.audebert@domain.hid>
+In-Reply-To: <485B8332.90908@domain.hid>
 MIME-Version: 1.0
-References: <486CE4C5.8050309@domain.hid> <486CEF87.6060504@domain.hid>
-	<486CF1C5.9020704@domain.hid> <486CF261.5010804@domain.hid>
-	<486CF405.4070206@domain.hid>
-In-Reply-To: <486CF405.4070206@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] How can I make Xenomai share a mii bus with the
- kernel?
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+Content-Disposition: inline
+References: <5719c6f30805050943p31f3f5eew74d0f7ef3dd2b5a5@domain.hid>
+	<4820B784.3080306@domain.hid>
+	<5719c6f30806190900v5fea670amef6954efaae59882@domain.hid>
+	<485B8332.90908@domain.hid>
+Subject: Re: [Adeos-main] Advice regarding MIPS port
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: adeos-main@gna.org
 
-Philippe Gerum wrote:
-> The drivers don't do much, except IRQ handling. Most of them route their
-> requests to the generic PHY layer, therefore a parallel implementation would be
-> needed. Still, concurrency on the bus would not be solved.
+Hi,
 
-My reference ethernet driver is some proprietary crap, so I should stop 
-assuming too much about its compliance to any Linux programming good rule...
+I'm still on my the way with the MIPS port. My kernel is now booting
+and I'm able to register a domain. I was successful catching various
+interrupts (only printk'ing in the handler) using
+ipipe_virtualize_irq().
+
+Next, I would like to test syscalls grabbing. I tried registering an
+handler with something like this in my test module :
+
+ipipe_catch_event(ipipe_root_domain,
+                           IPIPE_EVENT_SYSCALL,
+                           (ipipe_event_handler_t)adeos_sys_handler);
+
+Before testing on MIPS, I'm trying my module on X86 arch and it does
+not work. I searched in Xenomai sources and didn't spot anything
+specific when using ipipe_catch_event(). I'm obviously missing
+something... What is the common way of using ipipe_catch_event() ?
+
+This issue aside, do you have any advice concerning other tests cases ?
+
+
+Regards,
 
 -- 
-                                                  Gilles.
+Florent Audebert
 
