@@ -1,16 +1,13 @@
-Message-ID: <487FC09B.4030202@domain.hid>
-Date: Thu, 17 Jul 2008 23:58:51 +0200
+Message-ID: <48804E28.80906@domain.hid>
+Date: Fri, 18 Jul 2008 10:02:48 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <487B8B3E.8020805@domain.hid> <487B91F6.3070909@domain.hid>
-	<487BA305.6040401@domain.hid> <487BB89B.6010604@domain.hid>
-	<487BF171.2090902@domain.hid> <487C42CB.5080405@domain.hid>
-	<487DCCA4.60509@domain.hid> <487E6557.8060109@domain.hid>
-	<487F26A5.1040908@domain.hid>
-In-Reply-To: <487F26A5.1040908@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_task_bind() and timeout values
+References: <1216282324.3472.29.camel@domain.hid>
+In-Reply-To: <1216282324.3472.29.camel@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Generel problem with realtime-tops(like adeos)
+ over	linux-kernel
 Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -21,170 +18,161 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
+To: =?ISO-8859-1?Q?=22Schl=E4gl_=5C=22Manfred_jun=2E=5C=22=22?= <manfred.schlaegl@domain.hid>
 Cc: xenomai@xenomai.org
 
-Stefan Kisdaroczi wrote:
-> your new patch works with TM_NONBLOCK und user timeouts,
-> but bind now fails for TM_INFINITE: it returns immediately with
-> ETIMEDOUT...
+Schl=E4gl Manfred jun. wrote:
+> Hi!
+>=20
+> I think we've discovered a generell logical problem with realtime-tops
+> like adeos over the linux-kernel.
+>=20
+> The basic-assumption of such an system is: Linux is not a
+> realtime-system, so it is not able to provide realtime to it's services,
+> so no linux-service is able to use realtime-capabilities, so no
+> linux-service has realtime-requirements.
+>>From this it follows that we are able use a top like adeos (send
+> interrupts later, always interrupt the linux-kernel).
+>=20
+> But... Linux is able to provide hard-realtime while interrupts are
+> locked. And many services(driver) use this.
+>=20
+> abstract example:
+> {{{
+> spin_lock_irqsave
+> if(hardware_data_valid())
+> 	process_hardware_data()
+> spin_lock_irqrestore
+> }}}
+
+Well, real-time is not about allowing this handler to perform un-preempted,=
+ but
+rather to guarantee that the highest priority code will always get the CPU =
+at
+any point in time. If that handler is the most time-critical work to do on =
+your
+box, that's fine. But if it's not, this code is wrong, because it basically
+wrecks real-time behaviour.
+
+Actually, your basic assumption is flawed on a regular SMP kernel: what if =
+the
+lock is currently held by a task running on another CPU, that ends up being
+preempted by an IRQ, or any higher priority task? Unless running a RT-capab=
+le
+system, common spinlock loops are entered with hw interrupts off, therefore=
+, you
+end up locking interrupts for an undefined amount of time on your local CPU,
+before being able to enter your critical section. So much for predictabilit=
+y,
+both for entering that critical section, but above all for any other code t=
+hat
+would want to get the local CPU attention asap while your code is waiting f=
+or
+the lock.
+
+Masking interrupts may solve the preeemption issue on a uniprocessor box, b=
+ut
+this does not guarantee that any other time-critical part of the system
+requiring immediate attention, because of its higher priority, will get the=
+ CPU
+on time. Therefore, I don't see how this construct could be used to enforce
+real-time, precisely because it completely ignores priorities.
+
+> works fine without adeos,
+
+In fact, it does not work in a reliable manner, without actual RTOS support.
+The point is not about Adeos, which is only an enabler for real-time suppor=
+t,
+which in turn brings proper preemption and priority management.
+
+> but with adeos there may be a relative long
+> interruption between validation and processing. The hardware may overrun
+> and process_hardware_data is called without valid data...
+>=20
+> In our case we have this problem while the rx-interrupt of our
+> ethernet-driver. The dma is running permanently and generates an overrun
+> between the error-checking(which would catch the overrun) part and the
+> data-processing part of the handler.
+>=20
+> I think it is possible that there could be many such (latent) problems
+> in linux-kernel. For example USB which itself has realtime-requirements,
+> or eventually mtd (lost data as cause of wrong flash-write/erase
+> timings), ...
+
+The whole idea underlying dual RT/non-RT systems, is that RT processes
+1) share the available CPU horsepower between them all according to arbitra=
+ry
+priorities, 2) should be part of a software system that leaves some cycles =
+to
+the non-RT processes whenever possible.
+
+The example you described says basically: 1) any time-critical driver may l=
+ock
+interrupts out in order to complete its duty un-preempted, 2) all time-crit=
+ical
+drivers have to perform their duty without stepping on each others toes wit=
+h the
+rather limited help of a single giant traffic light (i.e. hw interrupt mask=
+ing,
+and no priority scheme).
+
+When designing such a system, you would have to think about the potential d=
+amage
+high priority tasks may cause to low priority tasks, because of preemption,=
+ or
+absence therereof. But again, you would have to do that with all kinds of RT
+frameworks. This is something which could only be sorted out at coding desi=
+gn
+level, which means that you would have to review the locking scheme for all
+time-critical sections you want to care of in any case.
+
+Once identified, those sections can be fixed individually, including with A=
+deos.
+If they happen to be too complex for using a different kind of (ironed,
+Adeos-aware) lock, then maybe they do not qualify for being atomic in the f=
+irst
+place.
+
+Practically, if you don't want to put your MTD flash at risk on a dual RT/G=
+POS
+design, use VxWorks, but in that case, do not run the MTD task along with o=
+ther
+tasks that may preempt it for a dangerously long time. Back to square #1, I=
+'m
+afraid, you have to know what your RT constraints are.
+
+>=20
+> So ... what do you think about that.
 >
 
-Yeah, I should not be working at night. The nucleus does not like the idea of an
-infinite timeout value in absolute mode. I need to think a bit about the
-consequences of allowing this at core level, so we would not have to expect the
-same issue with any interface converting relative timeouts to absolute ones.
+Native preemption turns spinlocks into rt-mutexes, which allows the code fl=
+ow to
+be diverted from the critical section for an undefined amount of time when =
+the
+CPU has to turn its attention to a higher priority task. So your spinlock
+actually gives you no guarantee beyond proper serialization of the section =
+in
+question. Therefore, the issue you raised is not a co-kernel problem, it si=
+mply
+expresses a general question about any RT design: which activity has highest
+priority and lowest response time required? I don't think your are going to=
+ get
+away with that problem only relying on hw interrupt masking.
 
-The work around for the registry issue is this one, but I don't like it actually:
+To sum up, if a system has multiple time-critical duties to perform, well, I
+see no other option than enumerating them, and building a sane priority des=
+ign
+accordingly. Depending on multi-domain execution the Adeos way, or native
+preemption makes no difference here. At the end of the day, both of them wi=
+ll
+bring predictability to my RT code, whilst a non-RT kernel will certainly
+cause me headaches.
 
--        xnsynch_sleep_on(&registry_hash_synch, timeout, XN_REALTIME);
-+        xnsynch_sleep_on(&registry_hash_synch, timeout, timeout == XN_INFINITE
-? XN_RELATIVE : XN_REALTIME);
-
-More later.
-
-> Philippe Gerum schrieb:
->> Stefan Kisdaroczi wrote:
->>> Hi,
->>>
->>> your patch didnt work. The bind_calls are now blocking infinite (at
->>> least much too long, still waiting...)
->>> To compile i had to change following line in your patch:
->>> -    if (timeout != TM_NONBLOCK && timeout != TM_INFINITE)
->>> +    if (timeout != XN_NONBLOCK && timeout != XN_INFINITE)
->>>
->>
->> Ok, fair enough. This one has been tested. No kidding.
->>
->> --- ksrc/nucleus/registry.c    (revision 4050)
->> +++ ksrc/nucleus/registry.c    (revision 4051)
->> @@ -711,7 +711,6 @@
->>      xnobject_t *object;
->>      xnthread_t *thread;
->>      xntbase_t *tbase;
->> -    xnticks_t stime;
->>      int err = 0;
->>      spl_t s;
->>
->> @@ -723,7 +722,8 @@
->>
->>      xnlock_get_irqsave(&nklock, s);
->>
->> -    stime = xntbase_get_time(tbase);
->> +    if (timeout != XN_INFINITE && timeout != XN_NONBLOCK)
->> +        timeout += xntbase_get_time(tbase);
->>
->>      for (;;) {
->>          object = registry_hash_find(key);
->> @@ -738,18 +738,8 @@
->>              goto unlock_and_exit;
->>          }
->>
->> -        if (timeout != XN_INFINITE) {
->> -            xnticks_t now = xntbase_get_time(tbase);
->> -
->> -            if (stime + timeout >= now)
->> -                break;
->> -
->> -            timeout -= (now - stime);
->> -            stime = now;
->> -        }
->> -
->>          thread->registry.waitkey = key;
->> -        xnsynch_sleep_on(&registry_hash_synch, timeout, XN_RELATIVE);
->> +        xnsynch_sleep_on(&registry_hash_synch, timeout, XN_REALTIME);
->>
->>          if (xnthread_test_info(thread, XNTIMEO)) {
->>              err = -ETIMEDOUT;
->>
->>> I will use following patch for the moment, this works.
->>>
->>> --- xenomai/nucleus/registry.c.old    2008-07-15 00:36:10.000000000
->>> +0200
->>> +++ xenomai/nucleus/registry.c    2008-07-15 15:28:23.000000000 +0200
->>> @@ -733,8 +733,10 @@ int xnregistry_bind(const char *key, xnt
->>>          if (timeout != XN_INFINITE) {
->>>              xnticks_t now = xntbase_get_time(tbase);
->>>
->>> -            if (stime + timeout >= now)
->>> -                break;
->>> +            if (stime + timeout <= now) {
->>> +                err = -ETIMEDOUT;
->>> +                goto unlock_and_exit;
->>> +            }      
->>>              timeout -= (now - stime);
->>>              stime = now;
->>>
->>>
->>> Philippe Gerum schrieb:
->>>> Stefan Kisdaroczi wrote:
->>>>> Hi Philippe,
->>>>>
->>>>> the attached patch fixed the problem for me.
->>>> Good spot. Now it's official, since four years that feature exists or
->>>> so, nobody
->>>> actually used registry timeouts... Oh, well...
->>>>
->>>>> However, i think that in the "break case" still EACCES is returned.
->>>>> Can the break be replaced with a "return ETIMEDOUT" ?
->>>>>
->>>> Yes, normally we should do that along with your patch. Actually, the
->>>> most
->>>> appropriate fix would be to use an absolute timeout value internally,
->>>> since the
->>>> nucleus allows it.
->>>>
->>>> --- ksrc/nucleus/registry.c    (revision 4044)
->>>> +++ ksrc/nucleus/registry.c    (working copy)
->>>> @@ -711,7 +711,6 @@
->>>>      xnobject_t *object;
->>>>      xnthread_t *thread;
->>>>      xntbase_t *tbase;
->>>> -    xnticks_t stime;
->>>>      int err = 0;
->>>>      spl_t s;
->>>>
->>>> @@ -723,7 +722,8 @@
->>>>
->>>>      xnlock_get_irqsave(&nklock, s);
->>>>
->>>> -    stime = xntbase_get_time(tbase);
->>>> +    if (timeout != TM_NONBLOCK && timeout != TM_INFINITE)
->>>> +        timeout += xntbase_get_time(tbase);
->>>>
->>>>      for (;;) {
->>>>          object = registry_hash_find(key);
->>>> @@ -738,18 +738,8 @@
->>>>              goto unlock_and_exit;
->>>>          }
->>>>
->>>> -        if (timeout != XN_INFINITE) {
->>>> -            xnticks_t now = xntbase_get_time(tbase);
->>>> -
->>>> -            if (stime + timeout >= now)
->>>> -                break;
->>>> -
->>>> -            timeout -= (now - stime);
->>>> -            stime = now;
->>>> -        }
->>>> -
->>>>          thread->registry.waitkey = key;
->>>> -        xnsynch_sleep_on(&registry_hash_synch, timeout, XN_RELATIVE);
->>>> +        xnsynch_sleep_on(&registry_hash_synch, timeout, XN_ABSOLUTE);
->>>>
->>>>          if (xnthread_test_info(thread, XNTIMEO)) {
->>>>              err = -ETIMEDOUT;
->>>>  --
->>>> Philippe.
->>>>
->>>>
->>>
->>
->>
-> 
-> 
-
-
--- 
+--=20
 Philippe.
+
+
+
+
+
 
