@@ -1,13 +1,10 @@
-Message-ID: <4881F602.9020800@domain.hid>
-Date: Sat, 19 Jul 2008 16:11:14 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Sat, 19 Jul 2008 09:08:50 -0700 (PDT)
+From: egemen kaleli <menege1@domain.hid>
 MIME-Version: 1.0
-References: <3451.132.206.72.194.1216322618.squirrel@domain.hid>
-In-Reply-To: <3451.132.206.72.194.1216322618.squirrel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Freeze on system()/fork() call (xenomai 2.4.4)
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/alternative; boundary="0-170109710-1216483730=:70740"
+Message-ID: <465416.70740.qm@domain.hid>
+Subject: [Xenomai-help] creating .lib file
+Reply-To: menege1@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,47 +14,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: vleves@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-vleves@domain.hid wrote:
-> Hello,
-> 
-> A few months ago I reported that my installation of xenomai 2.4.2 would
-> freeze when calling fork() or system() under certain conditions:
-> 
-> https://mail.gna.org/public/xenomai-help/2008-04/msg00002.html
-> 
-> Gilles Chanteperdrix gave me a patch that seemed to resolve the issue. I
-> now tried to upgrade to Xenomai 2.4.4 and it seems to suffer from the same
-> problem. Is this issue expected to be resolved in the near future or
-> should I look for a permanent work-around in my programs?
->
+--0-170109710-1216483730=:70740
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-This was not a Xenomai issue, but an Adeos one.
+hello,
+=A0
+I wrote a pci driver with rtdm.I created a user file which contains functio=
+ns that use rtdm api.I need to transform this=A0 .c file into .lib file.
+=A0
+Eventually in make file=A0=A0I must define it.For example native and rtdm l=
+ibs are defined as -lnative and -lrtdm.How can I do it?=0A=0A=0A      
+--0-170109710-1216483730=:70740
+Content-Type: text/html; charset=us-ascii
 
-Assuming that your arch is x86, Gilles's fix was merged back in April:
-http://download.gna.org/adeos/patches/v2.6/x86/older/adeos-ipipe-2.6.24-x86-2.0-05.patch
+<table cellspacing='0' cellpadding='0' border='0' ><tr><td valign='top' style='font: inherit;'><P>hello,</P>
+<P>&nbsp;</P>
+<P>I wrote a pci driver with rtdm.I created a user file which contains functions that use rtdm api.I need to transform this&nbsp; .c file into .lib file.</P>
+<P>&nbsp;</P>
+<P>Eventually in make file&nbsp;&nbsp;I must define it.For example native and rtdm libs are defined as -lnative and -lrtdm.How can I do it?</P></td></tr></table><br>
 
-The latest update for the 2.6.24 baseline you may want to grab is this one:
-http://download.gna.org/adeos/patches/v2.6/x86/older/adeos-ipipe-2.6.24-x86-2.0-08.patch
-
-You may also want to have a look at the Xenomai FAQ about picking the proper
-I-pipe patch for any given Xenomai release:
-http://www.xenomai.org/index.php/FAQs
-
-> Thank you,
-> 
-> Vincent Levesque
-> vleves@domain.hid
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
-
-
--- 
-Philippe.
+      
+--0-170109710-1216483730=:70740--
 
