@@ -1,16 +1,10 @@
-Message-ID: <48847272.3080605@domain.hid>
-Date: Mon, 21 Jul 2008 13:26:42 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Mon, 21 Jul 2008 14:54:58 +0200 (MEST)
+Message-Id: <200807211254.m6LCswrS024819@domain.hid>
+From: "Christian Volk" <linux.kernel@domain.hid>
 MIME-Version: 1.0
-References: <48733483.2050204@domain.hid> <200807091719.17625@domain.hid>
-	<4874E1D8.6020307@domain.hid> <200807111518.16150@domain.hid>
-	<200807151642.18829@domain.hid> <487CBC4A.5050309@domain.hid>
-	<200807161039.8828@domain.hid> <487F1D25.5080508@domain.hid>
-	<200807211258.30164@domain.hid>
-In-Reply-To: <200807211258.30164@domain.hid>
-Content-Type: text/plain; charset=windows-1250
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Kernel panic: not syncing
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] Errors while compiling the testsuite
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,84 +14,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Petr Cervenka <grugh@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Petr Cervenka wrote:
-> Jan Kiszka wrote:
->> We likely see some race that causes weird memory corruptions. Its
->> probability often increases when the code execution frequency raises.
->>
->> However, reducing the test case is very important now to reduce the
->> search domain for this issue. E.g. try to fake peripheral access as far
->> as possible, unloading the unused driver and only leaving the test
->> program behind that is executable on arbitrary Xenomai installation
->> (maybe finally on one of my boxes...).
->>
-> I'm not sure if I will be able to reduce the software. It's dependent on hardware and it's controlled from another windows computer with GUI and control application. And to check if the error is still there usually takes couple of days.
-> I ran a test during last weekend (and nothing wrong happened). But the /proc/xenomai/stat output is strange. Probably some type cast error, because 18446744071739514846 = 0xFFFFFFFF8A939FDE and the appropriate value perhaps should be 0x000000008A939FDE = 2324930526.
-> 
-> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
->   0  0      0          18446744071739514846 0     00500088   69.8  ROOT/0
->   1  0      0          18446744071675175740 0     00500080   23.2  ROOT/1
->   0  5299   0          351459     0     00300182    0.0  LOGGER_TASK_1804289383
->   0  5100   8          283613     0     00300186    0.0
->   0  5317   0          40591      0     00300182    0.0
->   0  5034   2          2330696    0     00300184    0.0  MAIN_TASK_2056
->   0  5318   5          18446744071736105613 3     00300180   29.5  REG_TASK_2056
->   0  5319   28         36         0     00300182    0.0  WORK_TASK_2056
->   0  5321   38926      39159      0     00300380    0.0  CERECV_2056
->   0  5323   1159385    2438330    0     00300181    0.0  CESEND_2056
->   1  5710   0          18446744071675175740 0     00300184   76.8  HARDWARE_KERNEL
->   0  0      0          18446744071964064315 0     00000000    0.7  IRQ520: [timer]
->   1  0      0          232145209  0     00000000    0.0  IRQ520: [timer] 
+Hi all,
 
-OK, at least this bug is a bit easier to fix. Please try this patch
-(which also takes the chance and extends the range of our stat counters
-a bit):
+while building xenomai, i get an "unresolved reference error" in clocktest.=
+c
+Here are the appropriate lines from the output:
 
-Index: xenomai/include/nucleus/stat.h
-===================================================================
---- xenomai/include/nucleus/stat.h	(Revision 4060)
-+++ xenomai/include/nucleus/stat.h	(Arbeitskopie)
-@@ -84,20 +84,20 @@ do { \
+Making all in clocktest
+make[3]: Entering directory `/home/develop/Download/xenomai-2.4.4/src/tests=
+uite/clocktest'
+/opt/powerpc-linux-uclibc/bin/powerpc-generic-linux-uclibc-gcc-4.2.3 -DHAVE=
+_CONFIG_H -I. -I../../../src/include  -I../../../include/posix -O2 -D_GNU_S=
+OURCE -D_REENTRANT -Wall -pipe -D__XENO__ -D__IN_XENO__ -Wstrict-prototypes=
+ -I../../../include    -MT clocktest-clocktest.o -MD -MP -MF .deps/clocktes=
+t-clocktest.Tpo -c -o clocktest-clocktest.o `test -f 'clocktest.c' || echo =
+'./'`clocktest.c
+clocktest.c: In function 'check_time_warps':
+clocktest.c:129: warning: implicit declaration of function 'pthread_spin_lo=
+ck'
+clocktest.c:133: warning: implicit declaration of function 'pthread_spin_un=
+lock'
+clocktest.c: In function 'main':
+clocktest.c:203: warning: implicit declaration of function 'pthread_spin_in=
+it'
+mv -f .deps/clocktest-clocktest.Tpo .deps/clocktest-clocktest.Po
+/bin/sh ../../../libtool --tag=3DCC   --mode=3Dlink /opt/powerpc-linux-ucli=
+bc/bin/powerpc-generic-linux-uclibc-gcc-4.2.3   -Wl,@/home/develop/Download=
+/xenomai-2.4.4/src/skins/posix/posix.wrappers   -o clocktest clocktest-cloc=
+ktest.o ../../skins/posix/libpthread_rt.la -lpthread -lrt
+mkdir .libs
+/opt/powerpc-linux-uclibc/bin/powerpc-generic-linux-uclibc-gcc-4.2.3 -Wl,@/=
+home/develop/Download/xenomai-2.4.4/src/skins/posix/posix.wrappers -o .libs=
+/clocktest clocktest-clocktest.o  ../../skins/posix/.libs/libpthread_rt.so =
+-lpthread -lrt -Wl,--rpath -Wl,/usr/xenomai/lib
+clocktest-clocktest.o: In function `main':
+clocktest.c:(.text+0x10c): undefined reference to `pthread_spin_init'
+clocktest-clocktest.o: In function `check_time_warps':
+clocktest.c:(.text+0x36c): undefined reference to `pthread_spin_lock'
+clocktest.c:(.text+0x3b8): undefined reference to `pthread_spin_unlock'
+clocktest.c:(.text+0x3c8): undefined reference to `pthread_spin_lock'
+clocktest.c:(.text+0x3f0): undefined reference to `pthread_spin_unlock'
+clocktest.c:(.text+0x44c): undefined reference to `pthread_spin_unlock'
+collect2: ld returned 1 exit status
+make[3]: *** [clocktest] Fehler 1
+make[3]: Leaving directory `/home/develop/Download/xenomai-2.4.4/src/testsu=
+ite/clocktest'
+
+This happens when I try to compile for powerpc with uclibc.
+
+Can anyone tell me where to search for the error??
+
+The second question I have is, while configuring i need to specify --build =
+and --host. The --host option means the architecture I'm compiling Xenomai =
+for and --build means the system I'm building on. But what are the values I=
+ have to specify there??
+Could someone pleas give me an example??
+
+Thanks in advance.
+
+regards,
+
+Christian=20
  
- 
- typedef struct xnstat_counter {
--	int counter;
-+	unsigned long counter;
- } xnstat_counter_t;
- 
--static inline int xnstat_counter_inc(xnstat_counter_t *c)
-+static inline unsigned long xnstat_counter_inc(xnstat_counter_t *c)
- {
- 	return c->counter++;
- }
- 
--static inline int xnstat_counter_get(xnstat_counter_t *c)
-+static inline unsigned long xnstat_counter_get(xnstat_counter_t *c)
- {
- 	return c->counter;
- }
- 
--static inline void xnstat_counter_set(xnstat_counter_t *c, int value)
-+static inline void xnstat_counter_set(xnstat_counter_t *c, unsigned long value)
- {
- 	c->counter = value;
- }
-
-> 
-> My theory is, that a occasional "longer" work or system call usage in the real-time task corrupts the rest of the system (under some special circumstances).
-
-Yes, some nasty memory corruption is probably the reason. And that is
-always hard to track down, specifically if it happens very
-unpredictably. Nevertheless, if the issue continues to bug you, you will
-not get around reducing the test case and trying to increase its
-occurrence probability.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
 
