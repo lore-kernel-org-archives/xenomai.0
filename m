@@ -1,10 +1,13 @@
-Date: Mon, 21 Jul 2008 14:54:58 +0200 (MEST)
-Message-Id: <200807211254.m6LCswrS024819@domain.hid>
-From: "Christian Volk" <linux.kernel@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Date: Mon, 21 Jul 2008 16:41:52 +0200
+From: Matthieu <matthieu.connaulte_xenomai@domain.hid>
+In-Reply-To: <783552d428d22a5abdf49c868190b52d@domain.hid>
+References: <783552d428d22a5abdf49c868190b52d@domain.hid>
+Message-ID: <b1eafd0be71fdcb22fed5aa2c2395df4@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] Errors while compiling the testsuite
+Subject: Re: [Xenomai-help] xenomai scheduler's ticks period
+Reply-To: matthieu.connaulte_xenomai@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,66 +19,46 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi all,
 
-while building xenomai, i get an "unresolved reference error" in clocktest.=
-c
-Here are the appropriate lines from the output:
+On Thu, 17 Jul 2008 09:49:19 +0200, Matthieu
+<matthieu.connaulte_xenomai@domain.hid> wrote:
+> Hi,
+>=20
+> I have a problem with xntbase_update(wind_tbase,1000000); because it
+> doesn't give me a 1ms period. The period is given as a count of
+> nanoseconds
+> as it is said in the API documentation. I search solution around
+> tick/nanoseconds conversion or periodic/aperiodic timebase but I didn't
+> solve my problem. Moreover, when I call this instruction,
+> /proc/xenomai/timebases gives me a vxworks resolution of 1000000, what =
+is
+> correct, but the period seem's to be 0.452ms . Could you tell me what
+I've
+> done wrong ?
+>=20
+> Thank you.
+>=20
+> Matthieu.
+>=20
+>=20
 
-Making all in clocktest
-make[3]: Entering directory `/home/develop/Download/xenomai-2.4.4/src/tests=
-uite/clocktest'
-/opt/powerpc-linux-uclibc/bin/powerpc-generic-linux-uclibc-gcc-4.2.3 -DHAVE=
-_CONFIG_H -I. -I../../../src/include  -I../../../include/posix -O2 -D_GNU_S=
-OURCE -D_REENTRANT -Wall -pipe -D__XENO__ -D__IN_XENO__ -Wstrict-prototypes=
- -I../../../include    -MT clocktest-clocktest.o -MD -MP -MF .deps/clocktes=
-t-clocktest.Tpo -c -o clocktest-clocktest.o `test -f 'clocktest.c' || echo =
-'./'`clocktest.c
-clocktest.c: In function 'check_time_warps':
-clocktest.c:129: warning: implicit declaration of function 'pthread_spin_lo=
-ck'
-clocktest.c:133: warning: implicit declaration of function 'pthread_spin_un=
-lock'
-clocktest.c: In function 'main':
-clocktest.c:203: warning: implicit declaration of function 'pthread_spin_in=
-it'
-mv -f .deps/clocktest-clocktest.Tpo .deps/clocktest-clocktest.Po
-/bin/sh ../../../libtool --tag=3DCC   --mode=3Dlink /opt/powerpc-linux-ucli=
-bc/bin/powerpc-generic-linux-uclibc-gcc-4.2.3   -Wl,@/home/develop/Download=
-/xenomai-2.4.4/src/skins/posix/posix.wrappers   -o clocktest clocktest-cloc=
-ktest.o ../../skins/posix/libpthread_rt.la -lpthread -lrt
-mkdir .libs
-/opt/powerpc-linux-uclibc/bin/powerpc-generic-linux-uclibc-gcc-4.2.3 -Wl,@/=
-home/develop/Download/xenomai-2.4.4/src/skins/posix/posix.wrappers -o .libs=
-/clocktest clocktest-clocktest.o  ../../skins/posix/.libs/libpthread_rt.so =
--lpthread -lrt -Wl,--rpath -Wl,/usr/xenomai/lib
-clocktest-clocktest.o: In function `main':
-clocktest.c:(.text+0x10c): undefined reference to `pthread_spin_init'
-clocktest-clocktest.o: In function `check_time_warps':
-clocktest.c:(.text+0x36c): undefined reference to `pthread_spin_lock'
-clocktest.c:(.text+0x3b8): undefined reference to `pthread_spin_unlock'
-clocktest.c:(.text+0x3c8): undefined reference to `pthread_spin_lock'
-clocktest.c:(.text+0x3f0): undefined reference to `pthread_spin_unlock'
-clocktest.c:(.text+0x44c): undefined reference to `pthread_spin_unlock'
-collect2: ld returned 1 exit status
-make[3]: *** [clocktest] Fehler 1
-make[3]: Leaving directory `/home/develop/Download/xenomai-2.4.4/src/testsu=
-ite/clocktest'
+Hi,
 
-This happens when I try to compile for powerpc with uclibc.
+As I have no news, I would like to know if there is any solution to this
+problem ?
 
-Can anyone tell me where to search for the error??
+PS : I also have no return concerning xntbase_bind/unbind implementation.
+Is it still planned ?
 
-The second question I have is, while configuring i need to specify --build =
-and --host. The --host option means the architecture I'm compiling Xenomai =
-for and --build means the system I'm building on. But what are the values I=
- have to specify there??
-Could someone pleas give me an example??
+Thank you in advance for your answers
 
-Thanks in advance.
+Matthieu
 
-regards,
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
-Christian=20
- 
+
 
