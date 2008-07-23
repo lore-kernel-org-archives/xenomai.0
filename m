@@ -1,13 +1,13 @@
-Message-ID: <486CF31B.2040100@domain.hid>
-Date: Thu, 03 Jul 2008 11:41:15 -0400
-From: Michael Galea <michaelgalea@domain.hid>
+Message-ID: <48873F7E.7000108@domain.hid>
+Date: Wed, 23 Jul 2008 16:26:06 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <486CE4C5.8050309@domain.hid> <486CEF87.6060504@domain.hid>
-In-Reply-To: <486CEF87.6060504@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <5D63919D95F87E4D9D34FF7748CE2C2A0137F4FC@ARVMAIL1.mra.roland-man.biz>
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A0137F4FC@ARVMAIL1.mra.roland-man.biz>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] How can I make Xenomai share a mii bus with the
- kernel?
+Subject: Re: [Xenomai-help] Thread policy and priority in secondary mode
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,36 +17,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: roderik.wildenburg@domain.hid
 Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Michael Galea wrote:
->> I wonder if someone can suggest an approach to the following problem.
+roderik.wildenburg@domain.hid wrote:
+>> __real_pthread_setschedparam(). Note: this will propagate the 
+>> priority to the underlying Xenomai thread as well.
 >>
->> We need to use xenomai to manage devices on the mii bus.  The mii bus 
->> has PHYs managed by linux. What is the best way of providing access to 
->> both linux and xenomai?
->>
->> I know that before xenomai "loads", I can simply access the mii bus 
->> from linux.  But after xenomai loads, is the right answer to make the 
->> linux function that reads the phy migrate into the xenomai domain and 
->> contend for the bus there?
 > 
-> What protects this access to the bus, is this a mutex or a spinlock ? If 
-> a spinlock, then simply make it an ipipe_spinlock, it will provide 
-> mutual exclusion between all domains.
-> 
-> I do not think it can be a mutex anyway, since it may certainly possible 
-> for a driver to have a function that reads the mii status in a timer 
-> handler to maintain the IFF_RUNNING bit state of the ethernet interface.
-> 
-Thanks, access to the bus is provided by a spinlock in 
-drivers/net/phy/phy.c, so I will try ipipe_spinlock (when I get hardware 
-:-)).
+> Does this mean that the Xenomai thread will run with the new (Linux)
+> priority when it returns to primary mode ?
 
-I assume that I can make it an ipipe_spinlock and use that from linux 
-even before xenomai is loaded.
+Yes. However, the propagation only occurs when the skin and Linux have
+compatible priority scales, which is the case with the POSIX skin.
 
-Thanks
+> And the other way round :
+> when a posix thread switches to secondary mode (without using
+> __real_pthread_setschedparam), does it run in Linux with the priority
+> set in Xenomai (with pthread_setschedparam)?
+
+Yes.
+
+> Or better : what is the Linux-prority when a Xenomai thread (posix or or
+> any other Xenomai thread)switches to secondaary mode ?
+>
+
+It depends on the skin. When the priority scales are compatible (i.e. a given
+priority level exists in both and scales are both upwarding, like POSIX skin <->
+Linux, and native skin <-> Linux), you get the same priority level in both
+modes, and changing the priority from one mode affects the other mode as well.
+
+When they are not compatible, the skin-based priority is "normalized" and
+applied to the Linux side when needed (e.g. when VxWorks taskPrioritySet() is
+invoked), but __real_pthread_setschedparam does not trigger the converse
+propagation (since 2.4.4 actually, because experience showed that propagating in
+that case made little sense, and would beget weird behaviours). The way priority
+levels are normalized depends on the skin.
+
+> Best regrads
+> Roderik
+> 
+> Achtung: Neue E-Mail-Adresse! Attention: New e-mail-address! roderik.wildenburg@domain.hid
+> --------------------------------------------------------
+> manroland AG
+> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Rall, Paul Steidle   
+> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592
+> USt-Ident-Nr. DE 250200933
+> 
+
+
+-- 
+Philippe.
 
