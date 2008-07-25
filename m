@@ -1,12 +1,13 @@
-Content-Class: urn:content-classes:message
+Message-ID: <48899AB5.4080306@domain.hid>
+Date: Fri, 25 Jul 2008 11:19:49 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 25 Jul 2008 09:40:52 +0200
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A0137F8FD@ARVMAIL1.mra.roland-man.biz>
-From: <roderik.wildenburg@domain.hid>
+References: <5D63919D95F87E4D9D34FF7748CE2C2A0137F8FD@ARVMAIL1.mra.roland-man.biz>
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A0137F8FD@ARVMAIL1.mra.roland-man.biz>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Thread policy and priority in secondary mode
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,70 +17,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: roderik.wildenburg@domain.hid
+Cc: xenomai@xenomai.org
 
-> >> __real_pthread_setschedparam(). Note: this will propagate the=20
-> >> priority to the underlying Xenomai thread as well.
-> >>
-> >=20
-> > Does this mean that the Xenomai thread will run with the new (Linux)
-> > priority when it returns to primary mode ?
->=20
-> Yes. However, the propagation only occurs when the skin and Linux have
-> compatible priority scales, which is the case with the POSIX skin.
->=20
-> > And the other way round :
-> > when a posix thread switches to secondary mode (without using
-> > __real_pthread_setschedparam), does it run in Linux with=20
-> the priority
-> > set in Xenomai (with pthread_setschedparam)?
->=20
-> Yes.
->=20
-> > Or better : what is the Linux-prority when a Xenomai thread=20
-> (posix or or
-> > any other Xenomai thread)switches to secondaary mode ?
-> >
->=20
-> It depends on the skin. When the priority scales are=20
-> compatible (i.e. a given
-> priority level exists in both and scales are both upwarding,=20
-> like POSIX skin <->
-> Linux, and native skin <-> Linux), you get the same priority=20
-> level in both
-> modes, and changing the priority from one mode affects the=20
-> other mode as well.
->=20
-> When they are not compatible, the skin-based priority is=20
-> "normalized" and
-> applied to the Linux side when needed (e.g. when VxWorks=20
-> taskPrioritySet() is
-> invoked), but __real_pthread_setschedparam does not trigger=20
-> the converse
-> propagation (since 2.4.4 actually, because experience showed=20
-> that propagating in
-> that case made little sense, and would beget weird=20
-> behaviours). The way priority
-> levels are normalized depends on the skin.
->=20
+roderik.wildenburg@domain.hid wrote:
+>>>> __real_pthread_setschedparam(). Note: this will propagate the 
+>>>> priority to the underlying Xenomai thread as well.
+>>>>
+>>> Does this mean that the Xenomai thread will run with the new (Linux)
+>>> priority when it returns to primary mode ?
+>> Yes. However, the propagation only occurs when the skin and Linux have
+>> compatible priority scales, which is the case with the POSIX skin.
+>>
+>>> And the other way round :
+>>> when a posix thread switches to secondary mode (without using
+>>> __real_pthread_setschedparam), does it run in Linux with 
+>> the priority
+>>> set in Xenomai (with pthread_setschedparam)?
+>> Yes.
+>>
+>>> Or better : what is the Linux-prority when a Xenomai thread 
+>> (posix or or
+>>> any other Xenomai thread)switches to secondaary mode ?
+>>>
+>> It depends on the skin. When the priority scales are 
+>> compatible (i.e. a given
+>> priority level exists in both and scales are both upwarding, 
+>> like POSIX skin <->
+>> Linux, and native skin <-> Linux), you get the same priority 
+>> level in both
+>> modes, and changing the priority from one mode affects the 
+>> other mode as well.
+>>
+>> When they are not compatible, the skin-based priority is 
+>> "normalized" and
+>> applied to the Linux side when needed (e.g. when VxWorks 
+>> taskPrioritySet() is
+>> invoked), but __real_pthread_setschedparam does not trigger 
+>> the converse
+>> propagation (since 2.4.4 actually, because experience showed 
+>> that propagating in
+>> that case made little sense, and would beget weird 
+>> behaviours). The way priority
+>> levels are normalized depends on the skin.
+>>
+> 
+> Do you know how a Linux priority, set with pthread_setschedparam
+> (real_pthread_setschedparam),
+> correlates with the priorities shown by "ps l". In our case we realized
+> that ps does not show the priority set with pthread_setschedparam. Is
+> there a command which shows the "real" priority ?
+>
 
-Do you know how a Linux priority, set with pthread_setschedparam
-(real_pthread_setschedparam),
-correlates with the priorities shown by "ps l". In our case we realized
-that ps does not show the priority set with pthread_setschedparam. Is
-there a command which shows the "real" priority ?
+Try this:
+ ps -eo pid,tid,class,rtprio,pri,stat,comm
 
-Best regrads
-Roderik
+The priority level you want to look at is listed under the RTPRIO column, not
+the PRI one.
 
-Achtung: Neue E-Mail-Adresse! Attention: New e-mail-address! =
-roderik.wildenburg@domain.hid
---------------------------------------------------------
-manroland AG
-Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle  =20
-Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592
-USt-Ident-Nr. DE 250200933
+Xenomai-wise, do
+$ cat /proc/xenomai/sched
+The first value of the PRI field (== ps's RTPRIO) is the priority value
+according to the nucleus core (0-257 range); when skin priority levels have to
+be normalized to fit the Linux scale, a second value between parenthesis is
+appended, giving the original, non-converted, level set by the skin.
+
+> Best regrads
+> Roderik
+> 
+> Achtung: Neue E-Mail-Adresse! Attention: New e-mail-address! roderik.wildenburg@domain.hid
+> --------------------------------------------------------
+> manroland AG
+> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Rall, Paul Steidle   
+> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592
+> USt-Ident-Nr. DE 250200933
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+> 
+
+
+-- 
+Philippe.
 
