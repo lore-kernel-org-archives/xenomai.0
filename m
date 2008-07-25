@@ -1,13 +1,12 @@
-Message-ID: <48899AB5.4080306@domain.hid>
-Date: Fri, 25 Jul 2008 11:19:49 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <48898A23.9030308@domain.hid>
+Date: Fri, 25 Jul 2008 10:09:07 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
 References: <5D63919D95F87E4D9D34FF7748CE2C2A0137F8FD@ARVMAIL1.mra.roland-man.biz>
 In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A0137F8FD@ARVMAIL1.mra.roland-man.biz>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Thread policy and priority in secondary mode
-Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -67,39 +66,20 @@ roderik.wildenburg@domain.hid wrote:
 > correlates with the priorities shown by "ps l". In our case we realized
 > that ps does not show the priority set with pthread_setschedparam. Is
 > there a command which shows the "real" priority ?
->
 
-Try this:
- ps -eo pid,tid,class,rtprio,pri,stat,comm
+With 2.6 you can list the priority with:
 
-The priority level you want to look at is listed under the RTPRIO column, not
-the PRI one.
+# ps -meo pid,tid,class,rtprio,ni,pri,psr,pcpu,stat,wchan:14,comm
 
-Xenomai-wise, do
-$ cat /proc/xenomai/sched
-The first value of the PRI field (== ps's RTPRIO) is the priority value
-according to the nucleus core (0-257 range); when skin priority levels have to
-be normalized to fit the Linux scale, a second value between parenthesis is
-appended, giving the original, non-converted, level set by the skin.
+But it's normally not available with the busybox ps command. Then you 
+can look into /proc/<id>/stat directly. Here is the kernel's printk 
+statement:
 
-> Best regrads
-> Roderik
-> 
-> Achtung: Neue E-Mail-Adresse! Attention: New e-mail-address! roderik.wildenburg@domain.hid
-> --------------------------------------------------------
-> manroland AG
-> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Rall, Paul Steidle   
-> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592
-> USt-Ident-Nr. DE 250200933
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
+  http://lxr.linux.no/linux/fs/proc/array.c#L472
 
+Unfortunately, this will not work for 2.4 either. The only simple way I 
+see is to write a little program using sched_getscheduler() to read the 
+RT priority and policy for the specified pid.
 
--- 
-Philippe.
+Wolfgang.
 
