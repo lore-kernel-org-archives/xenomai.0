@@ -1,12 +1,13 @@
-Message-ID: <48918FF9.6030804@domain.hid>
-Date: Thu, 31 Jul 2008 12:12:09 +0200
+Message-ID: <48918B9E.6040407@domain.hid>
+Date: Thu, 31 Jul 2008 11:53:34 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <406CC9939904F143B9D42CEEA3E56E563AC067@domain.hid>
-In-Reply-To: <406CC9939904F143B9D42CEEA3E56E563AC067@domain.hid>
+References: <200807311144.19719@domain.hid>
+In-Reply-To: <200807311144.19719@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] xnpipe EPOLLIN starvation
+Subject: Re: [Xenomai-help] compile error: asm/mach_apic.h: No such file or
+ directory
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,39 +17,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Filip Van Rillaer <Filip.VanRillaer@domain.hid>
+To: Petr Cervenka <grugh@domain.hid>
 Cc: xenomai@xenomai.org
 
-Filip Van Rillaer wrote:
-> Hi,
->  
-> I am transferring data from the Xenomai domain to the 2nd domain with
-> the xenomai pipe.  In the 2nd domain I am using the epoll interface to
-> wait for the arrival of new data.  The first time that data are written
-> in the pipe at the Xenomai side, the 2nd domain receives the EPOLLIN (an
-> that's OK).  But the 2nd time data are written in the pipe at the
-> Xenomai side, the 2nd domain is NOT receiving EPOLLIN and therefore dies
-> forever.
->  
-> I am not familiar at all with the Xenomai internals, but I tried to
-> gather some information: it look like when the first characters are
-> written at the Xenomai side, the xnpipe_wakeup_proc calls
-> xnpipe_dequeue_wait and this way it is removed forever from the
-> waiters-queue.
-> When I remove the "else"-instruction in xnpipe_poll so that
-> xnpipe_wakeup_proc is called un-conditionally, then it works as expected
-> ... however I have no idea if this patch is correct.  So please comment.
->  
-> FYI:
-> URL: http://svn.gna.org/svn/xenomai/trunk
-> Repository Root: http://svn.gna.org/svn/xenomai
-> Repository UUID: c6d672ea-8702-0410-b560-f74c916a59fe
-> Revision: 4047
+Petr Cervenka wrote:
+> Hello,
+> I tried to use kernel-2.6.26, xenomai-2.4.4 and adeos-ipipe-2.6.26-rc7-x86-2.0-09.patch.
+> When I attempted to compile the kernel, i got the following error:
+> 
+>   CC      kernel/xenomai/arch/generic/hal.o
+> In file included from include/asm/xenomai/hal.h:75,
+>                  from kernel/xenomai/arch/generic/hal.c:47:
+> include/asm/xenomai/hal_64.h:124:27: error: asm/mach_apic.h: No such file or directory
+> make[4]: *** [kernel/xenomai/arch/generic/hal.o] Error 1
+> make[3]: *** [kernel/xenomai/arch/generic] Error 2
+> make[2]: *** [kernel/xenomai/arch] Error 2
+> make[1]: *** [kernel/xenomai] Error 2
+> make: *** [kernel] Error 2
+> 
+> my configuration:
+> X86_64_SMP=y
+> X86_LOCAL_APIC=y
+> 
+> Am I the first one who tried 2.6.26 on 64-bit PC? ;-)
 
-Are you sure you are not having a problem with "edge-triggered" versus
-"level-triggered" notification ?
-http://www.kegel.com/c10k.html#nb.edge
-http://www.kegel.com/c10k.html#nb
+I just compiled 2.6.26 on 64 bits PC yesterday, and the kernel runs just
+fine. I would guess you have selected a type of machine that nobody else
+selected. Could you post your full .config here ?
 
 -- 
                                                  Gilles.
