@@ -1,13 +1,12 @@
-Message-ID: <4891E83A.9060208@domain.hid>
-Date: Thu, 31 Jul 2008 18:28:42 +0200
+Message-ID: <4891E772.8070308@domain.hid>
+Date: Thu, 31 Jul 2008 18:25:22 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <48760BCD.3080505@domain.hid>
-In-Reply-To: <48760BCD.3080505@domain.hid>
+References: <48760BC4.9070400@domain.hid>
+In-Reply-To: <48760BC4.9070400@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 2/2] Provide owner name via
-	rt_mutex_inquire
+Subject: Re: [Xenomai-core] [PATCH 1/2] Include RT_MUTEX_INFO in doxygen
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -22,54 +21,38 @@ To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> This can be helpful for debugging the (futile) release attempts of
-> mutexes by tasks that do not own them.
-> 
-> Returning the RT_TASK reference may appear more consistent on first
-> sight, but it cannot be guaranteed that the owner is actually a native
-> task. Therefore this patch uses the symbolic name.
-> 
 > Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
-> 
+> ---
+>  include/native/mutex.h |   10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+>
 
-Applied to the trunk/, thanks.
+Applied, thanks.
 
-PS: no 2.4.x backport due to the ABI breakage this involves.
-
----
->  include/native/mutex.h    |    3 +++
->  ksrc/skins/native/mutex.c |    5 +++++
->  2 files changed, 8 insertions(+)
-> 
 > Index: b/include/native/mutex.h
 > ===================================================================
 > --- a/include/native/mutex.h
 > +++ b/include/native/mutex.h
-> @@ -38,6 +38,9 @@ typedef struct rt_mutex_info {
+> @@ -26,13 +26,17 @@
 >  
->  	char name[XNOBJECT_NAME_LEN]; /**< Symbolic name. */
+>  struct rt_task;
 >  
-> +	char owner[XNOBJECT_NAME_LEN]; /**< Symbolic name of the current owner,
-> +					    empty if unlocked. */
-> +
+> +/** Structure containing mutex information useful to users.
+> + *
+> + *  @see rt_mutex_inquire()
+> + */
+>  typedef struct rt_mutex_info {
+>  
+> -	int lockcnt;		/* !< Lock nesting level (> 0 means "locked"). */
+> +	int lockcnt;		/**< Lock nesting level (> 0 means "locked"). */
+>  
+> -	int nwaiters;		/* !< Number of pending tasks. */
+> +	int nwaiters;		/**< Number of pending tasks. */
+>  
+> -	char name[XNOBJECT_NAME_LEN]; /* !< Symbolic name. */
+> +	char name[XNOBJECT_NAME_LEN]; /**< Symbolic name. */
+>  
 >  } RT_MUTEX_INFO;
->  
->  typedef struct rt_mutex_placeholder {
-> Index: b/ksrc/skins/native/mutex.c
-> ===================================================================
-> --- a/ksrc/skins/native/mutex.c
-> +++ b/ksrc/skins/native/mutex.c
-> @@ -597,6 +597,11 @@ int rt_mutex_inquire(RT_MUTEX *mutex, RT
->  	strcpy(info->name, mutex->name);
->  	info->lockcnt = mutex->lockcnt;
->  	info->nwaiters = xnsynch_nsleepers(&mutex->synch_base);
-> +	if (mutex->lockcnt)
-> +		strcpy(info->owner,
-> +		       xnthread_name(xnsynch_owner(&mutex->synch_base)));
-> +	else
-> +		info->owner[0] = 0;
->  
->        unlock_and_exit:
 >  
 > 
 > _______________________________________________
