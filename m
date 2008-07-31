@@ -1,12 +1,13 @@
-Message-ID: <48918ACA.9090006@domain.hid>
-Date: Thu, 31 Jul 2008 11:50:02 +0200
+Message-ID: <489194FD.8000004@domain.hid>
+Date: Thu, 31 Jul 2008 12:33:33 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <406CC9939904F143B9D42CEEA3E56E563ABBC9@domain.hid>
-In-Reply-To: <406CC9939904F143B9D42CEEA3E56E563ABBC9@domain.hid>
+References: <406CC9939904F143B9D42CEEA3E56E563AC067@domain.hid>	<48918FF9.6030804@domain.hid>
+	<406CC9939904F143B9D42CEEA3E56E563AC08E@oab1mx1.oneaccess.intra>
+In-Reply-To: <406CC9939904F143B9D42CEEA3E56E563AC08E@oab1mx1.oneaccess.intra>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] V2.4.4 on blackfin
+Subject: Re: [Xenomai-help] xnpipe EPOLLIN starvation
 Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -21,35 +22,43 @@ To: Filip Van Rillaer <Filip.VanRillaer@domain.hid>
 Cc: xenomai@xenomai.org
 
 Filip Van Rillaer wrote:
->  
-> Hello, 
->  
-> << 
+> Hello Gilles,
 > 
-> rt_event_wait seems not to work properly if one specifies a timeout :
-> the functioncall returns after the specified of time, but it returns 0,
-> instead of -ETIMEDOUT. 
-> 
->>>
-> 
-> In the mean time I found the bug : ksrc/skins/native/syscall.c:
-> 
-> the last line of the function __rt_event_wait should be
-> 
-> return err;
-> 
-> instead of
-> 
-> return 0;
+> EPOLLET is indeed enabled.
+> The first time EPOLLIN is received in the 2nd domain, I do a read (it
+> receives 1 byte in a buffer of 256).  So the read is exhausted and I
+> expect that the next time data arrives I should get the EPOLLIN (as it
+> BECOMES readable).  But even adding another read (which returns -EAGAIN)
+> did not make it possible to receive the EPOLLIN when a little bit later
+> data is written at the Xenomai side of the xnpipe.
 > 
 
-Fixed in the development trunk/, thanks.
+Does this help?
 
-PS: please, next time send a patch; it is easier to read and apply, and most
-importantly, maintainers usually raise the priority of your mail when they see
-one attached/inlined.
+--- ksrc/nucleus/pipe.c	(revision 4044)
++++ ksrc/nucleus/pipe.c	(working copy)
+@@ -1029,9 +1029,12 @@
+ {
+ 	xnpipe_state_t *state = (xnpipe_state_t *)file->private_data;
+ 	unsigned r_mask = 0, w_mask = 0;
++	spl_t s;
 
-TIA,
+ 	poll_wait(file, &state->readq, pt);
+
++	xnlock_get_irqsave(&nklock, s);
++
+ 	if (testbits(state->status, XNPIPE_KERN_CONN))
+ 		w_mask |= (POLLOUT | POLLWRNORM);
+
+@@ -1046,6 +1049,8 @@
+ 		 */
+ 		xnpipe_enqueue_wait(state, XNPIPE_USER_WREAD);
+
++	xnlock_put_irqrestore(&nklock, s);
++
+ 	/*
+ 	 * A descriptor is always ready for writing with the current
+ 	 * implementation, so there is no need to have/handle the
 
 -- 
 Philippe.
