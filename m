@@ -1,6 +1,6 @@
-Message-ID: <48918B9E.6040407@domain.hid>
-Date: Thu, 31 Jul 2008 11:53:34 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <48918D17.2080006@domain.hid>
+Date: Thu, 31 Jul 2008 11:59:51 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <200807311144.19719@domain.hid>
 In-Reply-To: <200807311144.19719@domain.hid>
@@ -8,6 +8,7 @@ Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] compile error: asm/mach_apic.h: No such file or
  directory
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -40,11 +41,30 @@ Petr Cervenka wrote:
 > X86_LOCAL_APIC=y
 > 
 > Am I the first one who tried 2.6.26 on 64-bit PC? ;-)
+>
 
-I just compiled 2.6.26 on 64 bits PC yesterday, and the kernel runs just
-fine. I would guess you have selected a type of machine that nobody else
-selected. Could you post your full .config here ?
+Nope, but you probably did not read the ChangeLog for v2.4.x, right?
+TssTssTss... Here you should find:
+
+2008-06-23  Philippe Gerum  <rpm@xenomai.org>
+
+	* include/asm-x86, ksrc/nucleus/heap.c, ksrc/nucleus/pipe.c: Adapt
+	to 2.6.26-rc7.
+
+IOW, you need to pull from the v2.4.x maintenance branch (or even trunk/ if you
+like living on the bleeding edge) to use 2.6.26/x86, or wait for Xenomai 2.4.5.
+
+
+> Petr Cervenka
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+> 
+
 
 -- 
-                                                 Gilles.
+Philippe.
 
