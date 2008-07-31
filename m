@@ -1,87 +1,84 @@
-Message-ID: <486D3379.9080402@domain.hid>
-Date: Thu, 03 Jul 2008 16:15:53 -0400
-From: Michael Galea <michaelgalea@domain.hid>
+Message-ID: <4891E83A.9060208@domain.hid>
+Date: Thu, 31 Jul 2008 18:28:42 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <486CE4C5.8050309@domain.hid> <486CEF9D.6060604@domain.hid>
-In-Reply-To: <486CEF9D.6060604@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <48760BCD.3080505@domain.hid>
+In-Reply-To: <48760BCD.3080505@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] How can I make Xenomai share a mii bus with the
- kernel?
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [PATCH 2/2] Provide owner name via
+	rt_mutex_inquire
+Reply-To: rpm@xenomai.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> Michael Galea wrote:
->> I wonder if someone can suggest an approach to the following problem.
->>
->> We need to use xenomai to manage devices on the mii bus.  The mii bus 
->> has PHYs managed by linux. What is the best way of providing access to 
->> both linux and xenomai?
->>
->> I know that before xenomai "loads", I can simply access the mii bus from 
->> linux.  But after xenomai loads, is the right answer to make the linux 
->> function that reads the phy migrate into the xenomai domain and contend 
->> for the bus there?
->>
+Jan Kiszka wrote:
+> This can be helpful for debugging the (futile) release attempts of
+> mutexes by tasks that do not own them.
 > 
-> Problem is that Xenomai does not really compete with Linux, it preempts it
-> bluntly and rudely when it needs so, regardless of the Linux locking. So regular
-> Linux users of the PHY layer would start having problems, and your board would
-> happily jump out of the window.
+> Returning the RT_TASK reference may appear more consistent on first
+> sight, but it cannot be guaranteed that the owner is actually a native
+> task. Therefore this patch uses the symbolic name.
 > 
-> Therefore, you would have to analyze and fix every callee from net/phy (and on)
-> to use Xenomai locking, instead of plain Linux locking constructs, at the very
-> least. Aside of the fact that this may be quite time-consuming and error-prone,
-> this would also de facto make the critical sections defined in the phy code
-> non-preemptible RT-wise, which may have some impact on the worst-case latency as
-> well. Sorry, this is co-kernel neighbourhood: we fancy behaving as masochistic
-> zombies around here.
-> 
-> Question: Is the Xenomai code calling into the phy layer a real-time beast, with
-> actual deadlines to be met, or not?
-> 
-Yes, it is.  We will be notified via interrupt that the part needs 
-servicing and have to access it from xenomai.  Linux could be using the 
-bus but mii operations are very quick, and for us, quite rare after boot.
-
-> If yes, then you have no other choice than "ironing" the phy management code, so
-> that it can be entered from both the Linux and real-time spaces in a mutually
-> exclusive manner.
-> 
-The system in question is Freescale 8360 based and the mii bus is used 
-to manage 5 Marvell 88e1111 Ethernet PHYs, never more, never less.  On 
-my system its ucc_geth_phy that manages the bus.  I have looked at that 
-and at the Marvell PHY driver source and neither use it doesn't use 
-spinlocks.  Is that enough to predict that "ironing" the code is just an 
-  ipipe_spinlock?
-
-Where can I learn more about ipipe_spinlock?  I can only see the 
-prototype in spinlock_types.h.
-
-
-> If there are no deadlines (lucky you), then you probably want to issue a request
-> (_not_ a function call, but some kind of APC) to the Linux space from your
-> Xenomai task (see rthal_apc_alloc and friends). But in the latter case, the
-> Xenomai task would lose any RT properties, because your code would likely want
-> to wait for completion of that request on the Linux side, most of the time.
-> 
-> The description above assumes your code lives in kernel space. In case that code
-> could live in userland, then you could use a more straightforward
-> implementation, based on a small RTDM driver forwarding PHY requests and sending
-> back the results to userland. Since Xenomai tasks in user-space may switch
-> automatically back and forth between the Linux and Xenomai domains, you would
-> not need to handle the quirks of APC handling. Still, you would not have any RT
-> guarantees for the call site, but maybe that's acceptable.
+> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 > 
 
+Applied to the trunk/, thanks.
+
+PS: no 2.4.x backport due to the ABI breakage this involves.
+
+---
+>  include/native/mutex.h    |    3 +++
+>  ksrc/skins/native/mutex.c |    5 +++++
+>  2 files changed, 8 insertions(+)
+> 
+> Index: b/include/native/mutex.h
+> ===================================================================
+> --- a/include/native/mutex.h
+> +++ b/include/native/mutex.h
+> @@ -38,6 +38,9 @@ typedef struct rt_mutex_info {
+>  
+>  	char name[XNOBJECT_NAME_LEN]; /**< Symbolic name. */
+>  
+> +	char owner[XNOBJECT_NAME_LEN]; /**< Symbolic name of the current owner,
+> +					    empty if unlocked. */
+> +
+>  } RT_MUTEX_INFO;
+>  
+>  typedef struct rt_mutex_placeholder {
+> Index: b/ksrc/skins/native/mutex.c
+> ===================================================================
+> --- a/ksrc/skins/native/mutex.c
+> +++ b/ksrc/skins/native/mutex.c
+> @@ -597,6 +597,11 @@ int rt_mutex_inquire(RT_MUTEX *mutex, RT
+>  	strcpy(info->name, mutex->name);
+>  	info->lockcnt = mutex->lockcnt;
+>  	info->nwaiters = xnsynch_nsleepers(&mutex->synch_base);
+> +	if (mutex->lockcnt)
+> +		strcpy(info->owner,
+> +		       xnthread_name(xnsynch_owner(&mutex->synch_base)));
+> +	else
+> +		info->owner[0] = 0;
+>  
+>        unlock_and_exit:
+>  
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+> 
+
+
+-- 
+Philippe.
 
