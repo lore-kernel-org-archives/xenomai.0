@@ -1,206 +1,167 @@
-From: Vivek Berodhia <vivek.berodhia@domain.hid>
-Content-Type: text/plain
-Date: Sat, 05 Jul 2008 15:17:48 +0530
-Message-Id: <1215251268.3029.13.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <005b01c8f615$db466930$09201fac@domain.hid>
+From: "Atsushi Katagiri" <a-katagiri@domain.hid>
+References: <001b01c8f600$0c5a5a60$09201fac@domain.hid>
+	<4896B492.4000404@domain.hid>
+Date: Mon, 4 Aug 2008 18:38:31 +0900
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Unhandled irq 33
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [PATCH] Buffer over flow in /proc/xenomai/stat
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-Dear All,
+Yes, I actually encountered this bug and my Linux was crashed by NULL pointer dereference.
 
-Help me,
-I am facing a problem during booting with xenomai kernel "unhandled
-irq33".
-        
-Kernel Configuration. 
-        
-        ARCH= powerpc
-        CROSS_COMPILE=gcc-6xx-
-        target machine = mpc8323
-        
-following is serial port capture of problem..please help me..
-        
-        
-        TFTP from server 192.168.4.51; our IP address is 192.168.4.251
-        Filename 'uImage'.
-        Load address: 0x200000
-        Loading:
-        #################################################################
-                 ################################################
-        done
-        Bytes transferred = 1658616 (194ef8 hex)
-        Using FSL UEC0 device
-        TFTP from server 192.168.4.51; our IP address is 192.168.4.251
-        Filename 'my.dtb'.
-        Load address: 0x400000
-        Loading: #
-        done
-        Bytes transferred = 8192 (2000 hex)
-        ## Booting image at 00200000 ...
-           Image Name:   Linux-2.6.24.2
-           Image Type:   PowerPC Linux Kernel Image (gzip compressed)
-           Data Size:    1658552 Bytes =  1.6 MB
-           Load Address: 00000000
-           Entry Point:  00000000
-           Verifying Checksum ... OK
-           Uncompressing Kernel Image ... OK
-           Booting using the fdt at 0x400000
-        WARNING: could not set linux,stdout-path FDT_ERR_NOTFOUND.
-        Using MPC832x RDB machine description
-        Linux version 2.6.24.2 (root@domain.hid) (gcc version 4.2.2) #1
-        Sat Jul 5
-        11:10:57 IST 2008
-        console [udbg0] enabled
-        setup_arch: bootmem
-        mpc832x_rdb_setup_arch()
-        Found MPC83xx PCI host bridge at 0x00000000e0008500. Firmware
-        bus
-        number: 0->0
-        arch: exit
-        Zone PFN ranges:
-          DMA             0 ->    16384
-          Normal      16384 ->    16384
-        Movable zone start PFN for each node
-        early_node_map[1] active PFN ranges
-            0:        0 ->    16384
-        Built 1 zonelists in Zone order, mobility grouping on.  Total
-        pages:
-        16256
-        Kernel command line: nfsroot=192.168.4.51:/opt/eldk/nfs2
-        ip=192.168.4.251:192.168.4.51:192.168.4.254:255.255.255.0:Coral_Router:eth1:off root=0
-        IPIC (128 IRQ sources) at fdefb700
-        PID hash table entries: 256 (order: 8, 1024 bytes)
-        clocksource: timebase mult[7800001] shift[22] registered
-        I-pipe 2.1-00: pipeline enabled.
-        Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
-        Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
-        Memory: 61120k/65536k available (3344k kernel code, 4356k
-        reserved, 152k
-        data, 238k bss, 148k init)
-        SLUB: Genslabs=11, HWalign=32, Order=0-1, MinObjects=4, CPUs=1,
-        Nodes=1
-        Mount-cache hash table entries: 512
-        device-tree: Duplicate name in /, renamed to "chosen#1"
-        net_namespace: 64 bytes
-        NET: Registered protocol family 16
-                     
-        PCI: Probing PCI hardware
-        SCSI subsystem initialized
-        usbcore: registered new interface driver usbfs
-        usbcore: registered new interface driver hub
-        usbcore: registered new device driver usb
-        Time: timebase clocksource has been installed.
-        NET: Registered protocol family 2
-        IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
-        TCP established hash table entries: 2048 (order: 2, 16384 bytes)
-        TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
-        TCP: Hash tables configured (established 2048 bind 2048)
-        TCP reno registered
-        I-pipe: Domain Xenomai registered.
-        Xenomai: hal/powerpc started.
-        Xenomai: real-time nucleus v2.4.2 (One Big Rush) loaded.
-        Xenomai: starting native API services.
-        Xenomai: starting POSIX services.
-        Xenomai: starting RTDM services.
-        io scheduler noop registered
-        io scheduler anticipatory registered (default)
-        io scheduler deadline registered
-        io scheduler cfq registered
-        Generic RTC Driver v1.07
-        Serial: 8250/16550 driver $Revision: 1.90 $ 4 ports, IRQ sharing
-        disabled
-        serial8250.0: ttyS0 at MMIO 0xe0004500 (irq = 18) is a 16550A
-        console handover: boot [udbg0] -> real [ttyS0]
-        serial8250.0: ttyS1 at MMIO 0xe0004600 (irq = 19) is a 16550A
-        RAMDISK driver initialized: 16 RAM disks of 32768K size 1024
-        blocksize
-        loop: module loaded
-        Intel(R) PRO/1000 Network Driver - version 7.3.20-k2
-        Copyright (c) 1999-2006 Intel Corporation.
-        UCC Ethernet Controller MII Bus: probed
-        ucc_geth: QE UCC Gigabit Ethernet Controller
-        Driver 'sd' needs updating - please use bus_type methods
-        mpc83xx_spi.1: MPC83xx SPI Controller driver at 0xc50084c0 (irq
-        = 20)
-        usbmon: debugfs is not available
-        Initializing USB Mass Storage driver...
-        usbcore: registered new interface driver usb-storage
-        USB Mass Storage support registered.
-        i2c /dev entries driver
-        WDT driver for MPC83xx initialized. mode:reset timeout=65535 (32
-        seconds)
-        mmc_spi spi1216.0: SD/MMC host mmc0, no DMA, no WP, no poweroff
-        TCP cubic registered
-        irq 33, desc: c034cf04, depth: 0, count: 0, unhandled: 0
-        irq 33, desc: c034cf04, depth: 0, count: 0, unhandled: 0
-        ->handle_irq():  c0019c0c, ->chip(): c03ae368, ->action():
-        00000000
-             IRQ_LEVEL set
-           IRQ_NOPROBE set
-         IRQ_NOREQUEST set
-        illegal vector 33 received!
-        ------------[ cut here ]------------
-        Kernel BUG at c00504b0 [verbose debug info unavailable]
-        Oops: Exception in kernel mode, sig: 5 [#1]
-        MPC832x RDB
-        Modules linked in:
-        NIP: c00504b0 LR: c00504b0 CTR: c01a0c04
-        REGS: c3935a30 TRAP: 0700   Not tainted  (2.6.24.2)
-        MSR: 00021032 <ME,IR,DR>  CR: 24222024  XER: 00000000
-        TASK = c385c7a0[761] 'mpc83xx_spi.1' THREAD: c3934000
-        GPR00: c00504b0 c3935ae0 c385c7a0 0000001f 00001267 ffffffff
-        c01a30f0
-        00004000 
-        GPR08: 00000001 c0354f70 00000003 c0350000 44222022 fffffd7f
-        03ffd000
-        00800000 
-        GPR16: ffffffff 80000000 c0370000 c0370000 c0380d20 c0380d44
-        c0380d40
-        fffffffd 
-        GPR24: 00000000 c0369b04 000004a0 00000420 c0385484 00000021
-        c02db248
-        c034cf04 
-        Call Trace:
-        [c3935ae0] [c00504b0]  (unreliable)
-        [c3935b00] [c00515e8] 
-        [c3935b10] [c00094e4] 
-        [c3935b20] [c0009820] 
-        [c3935b50] [c0009a98] 
-        [c3935b60] [c0011630] 
-        --- Exception: 501[c3935c20] [0000114a]  (unreliable)
-        [c3935c70] [c0053a74] 
-        [c3935c80] [c0028108] 
-        [c3935d00] [c0028328] 
-        [c3935d50] [c00503c8] 
-        [c3935d70] [c00515e8] 
-        [c3935d80] [c00094e4] 
-        [c3935d90] [c0009820] 
-        [c3935dc0] [c0009a98] 
-        [c3935dd0] [c0011630] 
-        --- Exception: 501[c3935e90] [fffffd7f]  (unreliable)
-        [c3935ea0] [c02a8a7c] 
-        [c3935ee0] [c01e0200] 
-        [c3935f00] [c01dfbec] 
-        [c3935f50] [c0039e0c] 
-        [c3935f90] [c003a0f8] 
-        [c3935fd0] [c003e738] 
-        [c3935ff0] [c0010b1c] 
-        Instruction dump:
-        3d20c037 57ab103a 392954d8 3c60c02e 7d6b4a14 7fa4eb78 396b0040
-        3863b2f8 
-        812b0008 39290001 912b0008 4bfd7de1 <0fe00000> 48000000 3c80c02e
-        7fc3f378 
-        ---[ end trace e55df3d7b6b0ab0d ]---
-        
+I think this is a very simple bug.
+It happens "everytime" we open /proc/xenomai/stat,
+because the last iter->nentries++; (line 466) surely reaches the value of the count,
+and the next iteration, line 449, surely overwrites zero on out of the kmalloced area.
+
+If you doubt of it, please try the next debug code.
+
+Regards,
+Atsushi KATAGIRI
+
+--- xenomai-2.4.4-org/ksrc/nucleus/module.c 2008-06-02 00:44:48.000000000 +0900
++++ xenomai-2.4.4/ksrc/nucleus/module.c 2008-08-04 17:54:12.000000000 +0900
+@@ -382,6 +382,8 @@
+  iter = kmalloc(sizeof(*iter)
+          + (count - 1) * sizeof(struct stat_seq_info),
+          GFP_KERNEL);
++ printk("iter=%x size=%d count=%d\n",iter,(int)(sizeof(*iter)
++         + (count - 1) * sizeof(struct stat_seq_info)),count); //+++++debug
+  if (!iter)
+   return -ENOMEM;
+ 
+@@ -437,17 +439,29 @@
+   xnlock_put_irqrestore(&nklock, s);
+  }
+ 
++ int nentries_old = -1; //+++++debug
++
+  /* Iterate over all IRQ numbers, ... */
+  for (irq = 0; irq < XNARCH_NR_IRQS; irq++) {
+   xnintr_t *prev = NULL;
+   int cpu = 0;
+   int err;
+ 
++//  if (iter->nentries >= count)
++//   break;
++
+   /* ...over all shared IRQs on all CPUs */
+   while (1) {
+    stat_info = &iter->stat_info[iter->nentries];
+    stat_info->cpu = cpu;
+ 
++//+++++debug----->
++   if(nentries_old != iter->nentries){
++    printk("stat_info=%x nentries=%d\n",stat_info,(int)(iter->nentries));
++    nentries_old = iter->nentries;
++   }
++//+++++debug<-----
++
+    err = xnintr_query(irq, &cpu, &prev, intr_rev,
+         stat_info->name,
+         &stat_info->csw,
+@@ -464,7 +478,9 @@
+    stat_info->pf = 0;
+ 
+    iter->nentries++;
+-  };
++//   if (iter->nentries >= count)
++//    break;
++  }
+  }
+ 
+  seq = file->private_data;
+
+----- Original Message ----- 
+From: "Philippe Gerum" <rpm@xenomai.org>
+To: "Atsushi Katagiri" <a-katagiri@domain.hid>
+Cc: <xenomai@xenomai.org>
+Sent: Monday, August 04, 2008 4:49 PM
+Subject: Re: [Xenomai-core] [PATCH] Buffer over flow in /proc/xenomai/stat
+
+
+Atsushi Katagiri wrote:
+> Hello all.
+> 
+> This is a small patch that fixes a serious bug.
+> 
+> When we open /proc/xenomai/stat, function stat_seq_open kmalloc the area, write the data and increment iter->nentries.
+> The last increment of this value reaches "count",
+> and at the next iteration "stat_info->cpu = cpu;"  overwrites zero on illegal address!
+>
+
+Did you actually see this bug happen?
+
+This code takes a snapshot of the IRQ and thread lists, that are identified by
+two fingerprint values (intr_rev, thrq_rev). The only way to have iter->nentries
+greater than count at some point, would be to see more IRQ/thread descriptors
+being linked to their respective lists on-the-fly while we scan them. But in
+that case, the current fingerprint value would stop matching the snapshot value
+as well, causing the loops to restart, re-allocating sufficient space to hold
+all the data.
+
+If you did see this bug happen, please tell us a bit more about your setup.
+
+> Here is my proposal of the fix..
+> 
+> =====patch start=====>
+> diff -Nur xenomai-2.4.4-org/ksrc/nucleus/module.c xenomai-2.4.4/ksrc/nucleus/module.c
+> --- xenomai-2.4.4-org/ksrc/nucleus/module.c 2008-06-02 00:44:48.000000000 +0900
+> +++ xenomai-2.4.4/ksrc/nucleus/module.c 2008-07-29 09:46:45.000000000 +0900
+> @@ -443,6 +443,9 @@
+>    int cpu = 0;
+>    int err;
+>  
+> +  if (iter->nentries >= count)
+> +   break;
+> +
+>    /* ...over all shared IRQs on all CPUs */
+>    while (1) {
+>     stat_info = &iter->stat_info[iter->nentries];
+> @@ -464,7 +467,9 @@
+>     stat_info->pf = 0;
+>  
+>     iter->nentries++;
+> -  };
+> +   if (iter->nentries >= count)
+> +    break;
+> +  }
+>   }
+>  
+>   seq = file->private_data;
+> <=====patch end=====
+> 
+> I hope someone who knows this function well will solve the problem.
+> 
+> Regards,
+> 
+> Atsushi KATAGIRI
+> Software Engineer
+> A&D Company, Limited
+> Tokyo, Japan
+> 
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+> 
+
+
+-- 
+Philippe.
 
 
