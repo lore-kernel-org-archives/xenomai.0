@@ -1,11 +1,13 @@
-From: stefano.franzoni@domain.hid
-Date: Mon, 4 Aug 2008 16:49:35 +0200
+Message-ID: <48971838.40202@domain.hid>
+Date: Mon, 04 Aug 2008 16:54:48 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-type: text/plain; charset=UTF-8
-Content-transfer-encoding: base64
-Message-Id: <20080804144936.45B241C066@domain.hid>
-Subject: [Xenomai-help] xenomai version 2.4.4 with linux kernel 2.6.25.11
-	under ubuntu problem
+References: <20080804144936.45B241C066@domain.hid>
+In-Reply-To: <20080804144936.45B241C066@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] xenomai version 2.4.4 with linux kernel
+ 2.6.25.11 under ubuntu problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,33 +17,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: stefano.franzoni@domain.hid
+Cc: xenomai@xenomai.org
 
-DQpEZWFyDQoNCkkgYW0gdHJ5aW5nIHRvIGluc3RhbGwgWGVub21haSB1bmRlciBVYnVudHUgZm9s
-bG93aW5nIHRoaXMgZ3VpZGU6DQpodHRwOi8vd3d3Lnhlbm9tYWkub3JnL2luZGV4LnBocC9YZW5v
-bWFpX3F1aWNrX2J1aWxkX3F1aWRlDQoNCkkgaGF2ZSBzdWNjZXNzZnVsbHkgcGF0Y2hlZCB0aGUg
-a2VybmVsIHdpdGggeGVub21haSBhbmQgY29tcGlsZWQgaXQuDQoNCkkgaGF2ZSBjcmVhdGVkIGEg
-bmV3IGVudHJ5IGluIGdydWIvbWVudS5sc3QNCg0KdGl0bGUga2VybmVsIDIuNi4yNS4xMSB3aXRo
-IHhlbm9tYWkgMi40LjQgYW5kIFVidW50dSA4LjA0DQpyb290IChoZDAsMikNCmtlcm5lbCAvYm9v
-dC92bWxpbnV6LTIuNi4yNS4xMS14ZW5vbWFpLTIuNC40IHJvb3Q9L2Rldi9oZGIzIHJvDQp6ZW5v
-X251Y2xldXMueGVub21haV9naWQ9MTAwNA0KDQpJIGhhdmUgb25lIGhhcmQgZGlzayB3aXRoIHR3
-byBwYXJ0aXRpb25zIGFuZCBJIGFtIHdvcmtpbmcgb24gaGRiMy4NCg0KQXQgdGhlIHJlYm9vdCBv
-ZiB0aGUgUEMgSSBzZWUgdGhlIG1lc3NhZ2U6DQoNCmNhbm5vdCBvcGVuIHJvb3QgZGV2aWNlICJo
-ZGIzIiBvciB1bmtub3duLWJsb2NrKDAsMCkNCnBsZWFzZSBhcHBlbmQgYSBjb3JyZWN0IHJvb3Q9
-IGJvb3Qgb3B0aW9uOyBoZXJlIGFyZSB0aGUgYXZhaWxhYmxlDQpwYXJ0aXRpb25zOg0KMDEwMCA2
-NTUzNiByYW0wIChkcml2ZXI/KQ0KMDEwMSA2NTUzNiByYW0xIChkcml2ZXI/KQ0K4oCmDQowMTBm
-IDY1NTM2IHJhbTE1IChkcml2ZXI/KQ0KDQprZXJuZWwgcGFuaWMgLSBub3Qgc3luY2luZzogVkZT
-IHVuYWJsZSB0byBtb3VudCByb290IGZzIG9uDQp1bmtub3duLWJsb2NrKDAsMCkNCg0KLSBJIGhh
-dmUgaW5jbHVkZWQgaW4gdGhlIGtlcm5lbCwgbm90IGFzIG1vZHVsZSB0aGUgRmlsZSBTeXN0ZW0g
-RVhUMy4NCi0gSSBoYXZlIGFsc28gaW5jbHVkZWQgaW4gdGhlIGtlcm5lbCwgbm90IGFzIG1vZHVs
-ZSwgdGhlDQpBVEEvQVRBUEkvTUZNL1JMTCBTdXBwb3J0IC0+IEVuaGFuY2VkIElERS9NRk0NCg0K
-QW55IHN1Z2dlc3Rpb25zPw0KDQpUaGFua3MgaW4gYWR2YW5jZQ0KDQotLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQpTdGVmYW5v
-IEZyYW56b25pDQpTb2Z3YXJlIFJlc2VhcmNoDQpNYXJwb3NzIFMucC5BLiAtIHZpYSBTYWxpY2V0
-byAxMw0KNDAwMTAgQmVudGl2b2dsaW8gKEJPKSAtIEl0YWx5DQp3d3cubWFycG9zcy5jb20NCg0K
-VGVsOiArMzkgMDUxIDg5OTYzMw0KRmF4OiArMzkgMDUxIDg5OTgwMg0Kc3RlZmFuby5mcmFuem9u
-aUBtYXJwb3NzLmNvbQ0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ==
+stefano.franzoni@domain.hid wrote:
+> - I have also included in the kernel, not as module, the
+> ATA/ATAPI/MFM/RLL Support -> Enhanced IDE/MFM
+> 
+> Any suggestions?
 
+You also need to enable the actual IDE controller used by your computer
+(the Enhanced IDE/MFM setting is just an option that will make the IDE
+controllers visible, but as such it does not cause any
+controller-specific code to be compiled). If in doubt, enable all IDE
+controllers, boot, read the logs, then only keep the controller which
+you really use.
 
+Note that if you have a sufficiently recent hardware, your IDE
+controller will in fact be a SATA controller, and your root partition
+will become /dev/sda3, this requires a few changes in /etc/fstab that
+are unfortunately incompatible with a previous installation.
+
+-- 
+                                                 Gilles.
 
