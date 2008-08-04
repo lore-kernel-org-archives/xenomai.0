@@ -1,14 +1,11 @@
-Message-ID: <489451FA.2020805@domain.hid>
-Date: Sat, 02 Aug 2008 14:24:26 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: stefano.franzoni@domain.hid
+Date: Mon, 4 Aug 2008 16:49:35 +0200
 MIME-Version: 1.0
-References: <Pine.LNX.4.64.0804111759280.5433@domain.hid><4800B4FA.1050309@domain.hid><50879.62.235.129.158.1208014366.squirrel@domain.hid><18432.56533.343662.272421@domain.hid><Pine.LNX.4.64.0804171657380.18446@domain.hid><2ff1a98a0804170830v3b2fc392lf320f05a8c7f4e8d@domain.hid><2ff1a98a0804170846p2dddbea5k3b69dbbc57fb6761@domain.hid><480775C4.2060302@domain.hid><Pine.LNX.4.64.0804211731160.26198@domain.hid>	<480DECDA.3070204@domain.hid>	<34db01c8f42b$57a4d350$0109220a@domain.hid>
-	<48940F10.9060506@domain.hid>
-In-Reply-To: <48940F10.9060506@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Recurring Interrupts
-Reply-To: rpm@xenomai.org
+Content-type: text/plain; charset=UTF-8
+Content-transfer-encoding: base64
+Message-Id: <20080804144936.45B241C066@domain.hid>
+Subject: [Xenomai-help] xenomai version 2.4.4 with linux kernel 2.6.25.11
+	under ubuntu problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,72 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Henry Bausley <hbausley@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> Henry Bausley wrote:
->> How do I setup xenomai so that my ISR can be re-entered even if I am 
->> currently in it.
->>
-> 
-> Try this:
-> 
-
-The following is needed to allow the same interrupt to recurse as well.
-
-> int your_isr(xnintr_t *intr)
-> {
-> 	unsigned long flags;
->
-
-+	xnintr_enable(intr);
-
-> 	xnlock_clear_irqon(&nklock);
-> 
-> 	... your code ...
-> 
-> 	xnlock_get_irqsave(&nklock, flags); /* must re-lock on exit */
-
-+	return XN_ISR_HANDLED | XN_ISR_NOENABLE;
-> }
-
-> 
-> We do take a per-IRQ lock internally as well, but this is a no-brainer for the
-> issue at stake.
-> 
-> NOTE: this solution is only valid in uniprocessor mode. SMP would run into
-> deadlocks; we would need to provide internal support to allow this.
-> 
->> I have an external edge interrupt wired and it occurs every 250usec.  There 
->> are instances
->> when the interrupt can occur while I am currently in my ISR.
->>
->> If another interrupt occurs while I am currently in my ISR I want my ISR to 
->> be called again
->> so I can flag that the condition occurred then exit the re-entered ISR and 
->> continue executing
->> the originally called ISR.
->>
->>
->> I am using a board based off the AMCC 440EP Yosemite and a Denx Kit with 
->> 2.6.24 and Xenomai 2.4.2
->> This something I did with previously with RT Linux.  I have converted a 
->> large project from FSM RT Linux
->> to Xenomai and everything is functioning except this last item.
->>
->>
->>
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->>
-> 
-> 
+DQpEZWFyDQoNCkkgYW0gdHJ5aW5nIHRvIGluc3RhbGwgWGVub21haSB1bmRlciBVYnVudHUgZm9s
+bG93aW5nIHRoaXMgZ3VpZGU6DQpodHRwOi8vd3d3Lnhlbm9tYWkub3JnL2luZGV4LnBocC9YZW5v
+bWFpX3F1aWNrX2J1aWxkX3F1aWRlDQoNCkkgaGF2ZSBzdWNjZXNzZnVsbHkgcGF0Y2hlZCB0aGUg
+a2VybmVsIHdpdGggeGVub21haSBhbmQgY29tcGlsZWQgaXQuDQoNCkkgaGF2ZSBjcmVhdGVkIGEg
+bmV3IGVudHJ5IGluIGdydWIvbWVudS5sc3QNCg0KdGl0bGUga2VybmVsIDIuNi4yNS4xMSB3aXRo
+IHhlbm9tYWkgMi40LjQgYW5kIFVidW50dSA4LjA0DQpyb290IChoZDAsMikNCmtlcm5lbCAvYm9v
+dC92bWxpbnV6LTIuNi4yNS4xMS14ZW5vbWFpLTIuNC40IHJvb3Q9L2Rldi9oZGIzIHJvDQp6ZW5v
+X251Y2xldXMueGVub21haV9naWQ9MTAwNA0KDQpJIGhhdmUgb25lIGhhcmQgZGlzayB3aXRoIHR3
+byBwYXJ0aXRpb25zIGFuZCBJIGFtIHdvcmtpbmcgb24gaGRiMy4NCg0KQXQgdGhlIHJlYm9vdCBv
+ZiB0aGUgUEMgSSBzZWUgdGhlIG1lc3NhZ2U6DQoNCmNhbm5vdCBvcGVuIHJvb3QgZGV2aWNlICJo
+ZGIzIiBvciB1bmtub3duLWJsb2NrKDAsMCkNCnBsZWFzZSBhcHBlbmQgYSBjb3JyZWN0IHJvb3Q9
+IGJvb3Qgb3B0aW9uOyBoZXJlIGFyZSB0aGUgYXZhaWxhYmxlDQpwYXJ0aXRpb25zOg0KMDEwMCA2
+NTUzNiByYW0wIChkcml2ZXI/KQ0KMDEwMSA2NTUzNiByYW0xIChkcml2ZXI/KQ0K4oCmDQowMTBm
+IDY1NTM2IHJhbTE1IChkcml2ZXI/KQ0KDQprZXJuZWwgcGFuaWMgLSBub3Qgc3luY2luZzogVkZT
+IHVuYWJsZSB0byBtb3VudCByb290IGZzIG9uDQp1bmtub3duLWJsb2NrKDAsMCkNCg0KLSBJIGhh
+dmUgaW5jbHVkZWQgaW4gdGhlIGtlcm5lbCwgbm90IGFzIG1vZHVsZSB0aGUgRmlsZSBTeXN0ZW0g
+RVhUMy4NCi0gSSBoYXZlIGFsc28gaW5jbHVkZWQgaW4gdGhlIGtlcm5lbCwgbm90IGFzIG1vZHVs
+ZSwgdGhlDQpBVEEvQVRBUEkvTUZNL1JMTCBTdXBwb3J0IC0+IEVuaGFuY2VkIElERS9NRk0NCg0K
+QW55IHN1Z2dlc3Rpb25zPw0KDQpUaGFua3MgaW4gYWR2YW5jZQ0KDQotLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQpTdGVmYW5v
+IEZyYW56b25pDQpTb2Z3YXJlIFJlc2VhcmNoDQpNYXJwb3NzIFMucC5BLiAtIHZpYSBTYWxpY2V0
+byAxMw0KNDAwMTAgQmVudGl2b2dsaW8gKEJPKSAtIEl0YWx5DQp3d3cubWFycG9zcy5jb20NCg0K
+VGVsOiArMzkgMDUxIDg5OTYzMw0KRmF4OiArMzkgMDUxIDg5OTgwMg0Kc3RlZmFuby5mcmFuem9u
+aUBtYXJwb3NzLmNvbQ0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ==
 
 
--- 
-Philippe.
 
