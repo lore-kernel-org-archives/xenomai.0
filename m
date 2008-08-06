@@ -1,14 +1,13 @@
-Date: Tue, 26 Aug 2008 10:07:08 +0200
-From: "Petr Cervenka" <grugh@domain.hid>
+Message-ID: <489994E7.1060607@domain.hid>
+Date: Wed, 06 Aug 2008 14:11:19 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Message-ID: <200808261007.17504@domain.hid>
-References: 0808251743.26012@domain.hid> <200808251743.26012@domain.hid>
-	<48B2E323.1060600@domain.hid> <200808260929.2847@domain.hid>
-	<200808260935.5720@domain.hid>
-In-Reply-To: <200808260935.5720@domain.hid>
-Content-Type: text/plain; charset="windows-1250"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai-help] rt_queue_delete returns -EBUSY
+References: <1251450790@domain.hid>
+In-Reply-To: <1251450790@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] unwanted switch to secondary mode on call
+	to	rt_dev_ioctl
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,39 +17,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Jochen Behnke <JK.Behnke@domain.hid>
 Cc: xenomai@xenomai.org
 
->Petr Cervenka wrote:
->> Hello,
->> I tried xenomai 2.4.5, hoping that my problems with real-time queue
-will disappear. But there is another (perhaps very trivial) error.
->> Function call rt_queue_delete always returns -EBUSY (at least for me).
-You don't have to bind it from another task or use it at all.
->> I hope that I have used it in the right way.
->
->Actually, if your code still creates and deletes queues dynamically
-during the
->normal operations, this is clearly not the best approach. Those calls are
-VERY
->costly, and very much prone to unbounded latency.
->
->I.e. They switch to secondary mode, allocate/deallocate ranges of kernel
-memory,
->create/delete internal Xenomai heap objects, and eventually map/unmap
-those
->memory ranges to/from your user-space process.
+Jochen Behnke wrote:
+> My configuration Processor Celeron 400Hz xenomai 2.4.2 Kernel 2.6.24
 
-Dynamic creation of the queues is used only on time non-critical path (client connection, reconfiguration, ...).
-I use one central queue and a listening server.
-Then I have a set o clients which try to connect to the server. They create input and output queues  and send its identifiers to the server through the central queue.
-Server binds those queues (in slow task ) and start to send and receive data  (in fast task).
-Similar system is used for reconfiguration, spec. commands, etc..
-Only the slow tasks are involved (I hope so).
-Petr Cervenka
+This is a bit outdated. You should use Xenomai 2.4.4, the latest stable
+release of the 2.4 branch.
 
->-- 
->Philippe.
->
+> 
+> I have no idea what is going wrong, any hint is appreciated. Thanks.
 
+Please show us the driver and application sources.
+
+-- 
+                                                 Gilles.
 
