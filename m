@@ -1,67 +1,90 @@
-Date: Mon, 01 Sep 2008 11:44:25 +0200
-From: "stephane ancelot" <sancelot@domain.hid>
-Content-Type: text/plain; format=flowed; delsp=yes; charset=utf-8
+Message-ID: <489CAECD.6080703@domain.hid>
+Date: Fri, 08 Aug 2008 22:38:37 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <131064.26848.qm@domain.hid>
-Message-ID: <op.ugsqobwznuwxn3@domain.hid>
-In-Reply-To: <131064.26848.qm@domain.hid>
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] Kernel 2.6.26 Hung With Xenomai 2.4.5
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <489C96FA.7050400@domain.hid>
+In-Reply-To: <489C96FA.7050400@domain.hid>
+Content-Type: multipart/mixed; boundary="------------010205070303040101050009"
+Subject: Re: [Xenomai-help] Xenomai kernel user-space problem running
+	testsuite
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: yasser_kashfi@domain.hid, xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Michael Galea <michaelgalea@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+This is a multi-part message in MIME format.
+--------------010205070303040101050009
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-I noticed some problems, if you disable the apic in kernel (lapic=3Dno)
+Michael Galea wrote:
+> I'm just starting with xenomai and am having troubles getting xenomai 
+> user space to talk to my kernel.
+> 
+> I build the kernel and user-space xenomai code and try to run `latency` 
+> from the test suite and get
+> mpc8360mds:# /usr/local/xenomai/bin/latency
+> Xenomai: incompatible feature set
+> (required="fastsem", present="nofastsem", missing="fastsem").
+> 
+> 
+> I have built xenomai from svn into my 2.6.26 powerpc kernel and it looks 
+>   good on the next boot, i.e. `dmesg |grep xeno -i` returns:
+> I-pipe: Domain Xenomai registered.
+> Xenomai: hal/powerpc started.
+> Xenomai: real-time nucleus v2.5-devel (Flying In A Blue Dream) loaded.
+> Xenomai: starting native API services.
+> Xenomai: starting POSIX services.
+> Xenomai: starting RTDM services.
+> 
+> The user-space builds and installs over NFS just fine:
+> 
+> ./configure --host=ppc-unknown-linux-gnu --prefix=/usr/local/xenomai \
+>    CC=ppc_6xx-gcc CXX=ppc_6xx-g++ LD=ppc_6xx-ld
+> make
+> make DESTDIR=/opt/ppcrootmds/ install
+> 
+> 
+> I can't see any fastsem options in the kernel.  Does anyone have any 
+> advice?
 
-My kernel keeps stable while I am not going into xenomai interrupt driver=
- =20
-context.
+It is supposed to be set by the Kconfig, but it looks like I forgot to
+add it, so, you may try the attached patch.
 
-In interrupt driver context, at the moment , for unknown reasons, my =20
-driver is called but this is a spurious interrupt and the interrupt is no=
-t =20
-shared ....
-
-
-Best Regards
-Steph
-
-Le Thu, 28 Aug 2008 11:16:30 +0200, Yasser Kashfi =20
-<yasser_kashfi@domain.hid> a =C3=A9crit:
-
-> Hi
-> I have a bad problem, please advise me if you have an solution.
-> I worked with older xenomai on Linux kernel 2.6.17 from one year ago an=
-d =20
-> do not have any problem. but now, I decide to install xenomai-2.4.5 wit=
-h =20
-> Linux kernel 2.6.24 or 2.6.25 or 2.6.26 on SUSE.
-> after compile and install all things :), when boot the new kernel, I =20
-> some times see the cursor stop flashing and kernel hung. another =20
-> problem, when I run the my program (xenomai user space task ) see kerne=
-l =20
-> oop and kernel panic :( .
->
-> I glad to see your comments.
->
->
->
->
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
->
->
+-- 
 
 
+					    Gilles.
+
+--------------010205070303040101050009
+Content-Type: text/x-diff;
+ name="xeno-powerpc-enable-kernel-fastsem.diff"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="xeno-powerpc-enable-kernel-fastsem.diff"
+
+Index: ksrc/arch/powerpc/Kconfig
+===================================================================
+--- ksrc/arch/powerpc/Kconfig	(revision 4080)
++++ ksrc/arch/powerpc/Kconfig	(working copy)
+@@ -2,6 +2,10 @@ config XENO_GENERIC_STACKPOOL
+ 	bool
+ 	default y
+ 
++config XENO_FASTSEM
++	bool
++	default y
++
+ source "kernel/xenomai/nucleus/Kconfig"
+ 
+ menu "Machine"
+
+--------------010205070303040101050009--
 
