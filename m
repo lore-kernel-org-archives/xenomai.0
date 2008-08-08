@@ -1,111 +1,64 @@
-Message-ID: <48AB32B8.5040403@domain.hid>
-Date: Tue, 19 Aug 2008 22:53:12 +0200
-From: Bernhard Pfund <bernhard@domain.hid>
+Message-ID: <489C96FA.7050400@domain.hid>
+Date: Fri, 08 Aug 2008 14:56:58 -0400
+From: Michael Galea <michaelgalea@domain.hid>
 MIME-Version: 1.0
-References: <20080812075358.4cg1ix9945msccsc@domain.hid>	<48A12EA8.4070601@domain.hid>
-	<48A34D75.9090509@domain.hid>	<48A359D4.9090002@domain.hid>
-	<48A3D20B.2080509@domain.hid>	<48A3D595.9040607@domain.hid>	<20080814125307.1uviqgmj95no4k0k@domain.hid>	<48A43555.3070701@domain.hid>
-	<48A45084.3000208@domain.hid>	<48A46408.7010602@domain.hid>
-	<48A6B8EC.8020302@domain.hid>	<48AA9DAA.3040801@domain.hid>
-	<20080819123133.n9ool6j5d5msowk8@domain.hid>
-	<48AAD622.8030402@domain.hid>
-In-Reply-To: <48AAD622.8030402@domain.hid>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Adeos-main] [RTnet-users] e1000 & MSI
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: rpm@xenomai.org
-Cc: adeos-main <adeos-main@gna.org>, RTnet-users@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Xenomai kernel user-space problem running testsuite
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> bernhard@domain.hid wrote:
->> Zitat von Philippe Gerum <rpm@xenomai.org>:
->>
->>> Bernhard Pfund wrote:
->>>> Philippe Gerum wrote:
->>>>> Bernhard Pfund wrote:
->>>>>>> I see no option aside of ironing the inner code that reads/writes the PCI
->>>>>>> config, so here is an ugly yet possible solution for x86, that might work
->>>>>>> (totally untested):
->>>>>>>
->>>>>>> diff --git a/arch/x86/pci/common.c b/arch/x86/pci/common.c
->>>>>>> index 6e64aaf..7f32101 100644
->>>>>>> --- a/arch/x86/pci/common.c
->>>>>>> +++ b/arch/x86/pci/common.c
->>>>>>> @@ -75,7 +75,7 @@ int pcibios_scanned;
->>>>>>>   * This interrupt-safe spinlock protects all accesses to PCI
->>>>>>>   * configuration space.
->>>>>>>   */
->>>>>>> -DEFINE_SPINLOCK(pci_config_lock);
->>>>>>> +IPIPE_DEFINE_SPINLOCK(pci_config_lock);
->>>>>>>
->>>>>>>  static int __devinit can_skip_ioresource_align(const struct   
->>>>>>> dmi_system_id *d)
->>>>>>>  {
->>>>>>> diff --git a/drivers/pci/access.c b/drivers/pci/access.c
->>>>>>> index 39bb96b..9a74083 100644
->>>>>>> --- a/drivers/pci/access.c
->>>>>>> +++ b/drivers/pci/access.c
->>>>>>> @@ -12,7 +12,7 @@
->>>>>>>   * configuration space.
->>>>>>>   */
->>>>>>>
->>>>>>> -static DEFINE_SPINLOCK(pci_lock);
->>>>>>> +static IPIPE_DEFINE_SPINLOCK(pci_lock);
->>>>>>>
->>>>>>>  /*
->>>>>>>   *  Wrappers for all PCI configuration access functions.  They   
->>>>>>> just check
->>>>>>>
->>>>>> This results in:
->>>>>>
->>>>>> arch/x86/pci/common.c:78: error: conflicting types for ‘pci_config_lock’
->>>>>> arch/x86/pci/pci.h:84: error: previous declaration of ‘pci_config_lock’
->>>>>> was here
->>>>>>
->>>>>> Didn't look into it, just tried ;)
->>>>>>
->>>>> Just change the declaration in pci.h the same way.
->>>>>
->>>> Ok, thanx! Seems to work for now, no extensive testing done (yet)
->>>> though. What's the plan for the future? Will this change find its way
->>>> into the official patch?
->>>>
->>> This change could be merged into the 2.6.26 patch provided it does   
->>> not raise any
->>> pathological latency when enabling MSI. I would rather ask people to refrain
->>> from using MSI until it is fixed (once again) in later releases,   
->>> than suffering
->>> random latency peaks. 2.6.27 and beyond is another issue; this will need a
->>> different approach than simply ironing the PCI lock in any case.
->>>
->>> We need more test data for 2.6.26 + this patch.
->>>
->> Let me know if I can be of any help. I'm in an early stage of the  
->> project, so there's some time available for MSI experiments...
->>
-> 
-> Thanks. Basically, we need to know the impact of this patch under high load for
-> at least four hours runtime, with significant interrupt traffic to/from MSI
-> devices in parallel.
-> 
+I'm just starting with xenomai and am having troubles getting xenomai 
+user space to talk to my kernel.
 
-Hmm, I think I actually have a setup that could do the trick. One GBit
-NIC under control of RTnet and another in the Linux domain, both PCIe
-devices. MSIs are enabled in the kernel (2.6.26.2), without MSI they
-would share the same IRQ.
+I build the kernel and user-space xenomai code and try to run `latency` 
+from the test suite and get
+mpc8360mds:# /usr/local/xenomai/bin/latency
+Xenomai: incompatible feature set
+(required="fastsem", present="nofastsem", missing="fastsem").
 
-I could connect them to the same physical network and ping flood both
-cards from a second system, for 24h if necessary.
 
-How would you measure the effect of the patch?
+I have built xenomai from svn into my 2.6.26 powerpc kernel and it looks 
+  good on the next boot, i.e. `dmesg |grep xeno -i` returns:
+I-pipe: Domain Xenomai registered.
+Xenomai: hal/powerpc started.
+Xenomai: real-time nucleus v2.5-devel (Flying In A Blue Dream) loaded.
+Xenomai: starting native API services.
+Xenomai: starting POSIX services.
+Xenomai: starting RTDM services.
 
-HTH::Bernhard
+The user-space builds and installs over NFS just fine:
+
+./configure --host=ppc-unknown-linux-gnu --prefix=/usr/local/xenomai \
+   CC=ppc_6xx-gcc CXX=ppc_6xx-g++ LD=ppc_6xx-ld
+make
+make DESTDIR=/opt/ppcrootmds/ install
+
+
+I can't see any fastsem options in the kernel.  Does anyone have any 
+advice?
+
+Thanks
+-- 
+Michael Galea
+30 Whitmore Road
+Woodbridge, Ontario, Canada, L4L 7Z4
+Ph: (905) 266-1745
+Fx: (905) 856-1995
+www.ruggedcom.com
+
+NOTICE OF CONFIDENTIALITY:
+This e-mail and any attachments may contain confidential and privileged 
+information. If you are not the intended recipient, please notify the 
+sender immediately by return e-mail and delete this e-mail and any 
+copies. Any dissemination or use of this information by a person other 
+than the intended recipient is unauthorized and may be illegal.
 
