@@ -1,91 +1,64 @@
-Message-ID: <20080825154815.06ghghvqglws8ogc@domain.hid>
-Date: Mon, 25 Aug 2008 15:48:15 +0200
-From: bernhard@domain.hid
-References: <20080812075358.4cg1ix9945msccsc@domain.hid>
-	<48A12EA8.4070601@domain.hid> <48A34D75.9090509@domain.hid>
-	<48A359D4.9090002@domain.hid> <48A3D20B.2080509@domain.hid>
-	<48A3D595.9040607@domain.hid>
-	<20080814125307.1uviqgmj95no4k0k@domain.hid>
-	<48A43555.3070701@domain.hid> <48A45084.3000208@domain.hid>
-	<48A46408.7010602@domain.hid> <48A6B8EC.8020302@domain.hid>
-	<48AA9DAA.3040801@domain.hid>
-	<20080819123133.n9ool6j5d5msowk8@domain.hid>
-	<48AAD622.8030402@domain.hid> <48AB32B8.5040403@domain.hid>
-	<48ABE629.5090303@domain.hid>
-	<20080825141624.3hk4ndxf9xwcgkcg@domain.hid>
-	<48B2AC6E.9060100@domain.hid>
-In-Reply-To: <48B2AC6E.9060100@domain.hid>
+Message-ID: <489CA27B.1040201@domain.hid>
+Date: Fri, 08 Aug 2008 21:46:03 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset=ISO-8859-1;
-	DelSp="Yes";
-	format="flowed"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Adeos-main] [RTnet-users] e1000 & MSI
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>, rpm@xenomai.org, RTnet-users@domain.hid
+References: <489C96FA.7050400@domain.hid>
+In-Reply-To: <489C96FA.7050400@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai kernel user-space problem running
+	testsuite
+Reply-To: rpm@xenomai.org
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Michael Galea <michaelgalea@domain.hid>
+Cc: xenomai@xenomai.org
 
-Zitat von Jan Kiszka <jan.kiszka@domain.hid>:
+Michael Galea wrote:
+> I'm just starting with xenomai and am having troubles getting xenomai 
+> user space to talk to my kernel.
+> 
+> I build the kernel and user-space xenomai code and try to run `latency` 
+> from the test suite and get
+> mpc8360mds:# /usr/local/xenomai/bin/latency
+> Xenomai: incompatible feature set
+> (required="fastsem", present="nofastsem", missing="fastsem").
+> 
+> 
+> I have built xenomai from svn into my 2.6.26 powerpc kernel and it looks 
+>   good on the next boot, i.e. `dmesg |grep xeno -i` returns:
+> I-pipe: Domain Xenomai registered.
+> Xenomai: hal/powerpc started.
+> Xenomai: real-time nucleus v2.5-devel (Flying In A Blue Dream) loaded.
+> Xenomai: starting native API services.
+> Xenomai: starting POSIX services.
+> Xenomai: starting RTDM services.
+> 
+> The user-space builds and installs over NFS just fine:
+> 
+> ./configure --host=ppc-unknown-linux-gnu --prefix=/usr/local/xenomai \
+>    CC=ppc_6xx-gcc CXX=ppc_6xx-g++ LD=ppc_6xx-ld
+> make
+> make DESTDIR=/opt/ppcrootmds/ install
+> 
+> 
+> I can't see any fastsem options in the kernel.  Does anyone have any 
+> advice?
 
-> bernhard@domain.hid wrote:
->> Zitat von Philippe Gerum <rpm@xenomai.org>:
->>
->>> The risk in ironing those PCI locks is to run with hw interrupts
->>> disabled for a
->>> long time, inducing pathological latencies, so running RTAI's  =20
->>> latency test in
->>> the background should help detecting those peaks.
->>>
->>> However, we may find nothing bad if the kernel uses the MMConfig
->>> access method
->>> to the PCI space since this is basically fast mmio there. But since
->>> you seem to
->>> be running on x86_32, we may want to check whether BIOS or direct
->>> access to the
->>> PCI config does not raise the typical latency too much, as well (I'm
->>>  unsure that
->>> PCI_GOBIOS will give us decent results though).
->>>
->>> To sum up: with different settings for the PCI config access method in "=
-Bus
->>> options" (by order of criticality, MMConfig then Direct, then maybe
->>> BIOS), does
->>> the latency tool report pathological peaks?
->>>
->>
->> Hi Philippe
->>
->> I played with the different PCI configurations and the results are
->> devastating. Latencies (and jitter) skyrocket after some minutes of
->> testing and peak at several milliseconds. I didn't do the regression
->> with 'normal' INTs though, but that's something up next. Additionally
->> MMCONFIG produced some strange msg at boot.
->
-> Could you catch some path traces with the ipipe latency tracer when this
-> happens? See [1] for details. Dunno if RTAI's latency tool is prepared
-> to support you here (triggering a trace on new peaks), but
-> CONFIG_IPIPE_TRACE_IRQSOFF should already suffice in this case - if the
-> latency is due to IRQ disabling over PCI code.
->
-> Thanks,
-> Jan
->
-> [1] http://www.xenomai.org/index.php/I-pipe:Tracer
+The trunk/ contains bleeding edge code. The powerpc port there is currently in a
+state of flux, due to the introduction of fast user-space mutexes in the Xenomai
+nucleus.
 
-I'll have a look. Should be no problem to modify the RTAI testsuite to =20
-trigger traces in the event of a new peak. Just moved back to INTs, so =20
-I have to rebuild... Will test and report.
+Please use the latest stable version such as 2.4.4, or our maintenance branch
+instead: http://svn.gna.org/viewcvs/xenomai/branches/v2.4.x/.
 
-Bernhard
-
-
+-- 
+Philippe.
 
