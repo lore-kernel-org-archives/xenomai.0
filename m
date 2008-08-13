@@ -1,17 +1,20 @@
-Message-ID: <48AB1FA7.9090302@domain.hid>
-Date: Tue, 19 Aug 2008 21:31:51 +0200
+Message-ID: <48A2BEF7.20707@domain.hid>
+Date: Wed, 13 Aug 2008 13:01:11 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <001b01c8f600$0c5a5a60$09201fac@domain.hid>	<4896B492.4000404@domain.hid>	<005b01c8f615$db466930$09201fac@domain.hid>	<4896D6CC.1040103@domain.hid>	<4896D85D.2010004@domain.hid>
-	<48A2BD34.2020601@domain.hid>	<48A2DC45.9040900@domain.hid>
-	<48A9C977.9040106@domain.hid> <48AA8BCD.6050508@domain.hid>
-	<48AA8D27.8020103@domain.hid>
-In-Reply-To: <48AA8D27.8020103@domain.hid>
+References: <48733483.2050204@domain.hid>
+	<200807091719.17625@domain.hid>	<4874E1D8.6020307@domain.hid>
+	<200807111518.16150@domain.hid>	<200807151642.18829@domain.hid>
+	<487CBC4A.5050309@domain.hid>	<200807161039.8828@domain.hid>
+	<487F1D25.5080508@domain.hid>	<200807211258.30164@domain.hid>
+	<48847272.3080605@domain.hid>
+In-Reply-To: <48847272.3080605@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigDA9DFABBA629532425C58F71"
+	boundary="------------enig1C0A079257338349FCC10FF6"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [PATCH] rework xnintr_query
+Subject: [Xenomai-core] [PATCH] Fix stat overruns on 64-bit (was:
+ [Xenomai-help] Kernel panic: not syncing)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,309 +24,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDA9DFABBA629532425C58F71
+--------------enig1C0A079257338349FCC10FF6
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->>> -	head =3D snprintf(name, XNOBJECT_NAME_LEN, "IRQ%d: ", irq);
->>> -	name +=3D head;
->>> -	strncpy(name, intr->name, XNOBJECT_NAME_LEN-head);
->>> +	head =3D snprintf(name_buf, XNOBJECT_NAME_LEN, "IRQ%d: ", irq);
->>> +	strncpy(name_buf + head, intr->name, XNOBJECT_NAME_LEN-head);
->> -	strncpy(name_buf + head, intr->name, XNOBJECT_NAME_LEN-head);
->> +	strncpy(name_buf + head, intr->name, XNOBJECT_NAME_LEN-1-head);
->> +	name_buf[XNOBJECT_NAME_LEN-1] =3D '\0';
+Jan Kiszka wrote:
+> Petr Cervenka wrote:
+>> I ran a test during last weekend (and nothing wrong happened). But the=
+ /proc/xenomai/stat output is strange. Probably some type cast error, bec=
+ause 18446744071739514846 =3D 0xFFFFFFFF8A939FDE and the appropriate valu=
+e perhaps should be 0x000000008A939FDE =3D 2324930526.
 >>
->> Object names should always be null-terminated.
+>> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+>>   0  0      0          18446744071739514846 0     00500088   69.8  ROO=
+T/0
+>>   1  0      0          18446744071675175740 0     00500080   23.2  ROO=
+T/1
+>>   0  5299   0          351459     0     00300182    0.0  LOGGER_TASK_1=
+804289383
+>>   0  5100   8          283613     0     00300186    0.0
+>>   0  5317   0          40591      0     00300182    0.0
+>>   0  5034   2          2330696    0     00300184    0.0  MAIN_TASK_205=
+6
+>>   0  5318   5          18446744071736105613 3     00300180   29.5  REG=
+_TASK_2056
+>>   0  5319   28         36         0     00300182    0.0  WORK_TASK_205=
+6
+>>   0  5321   38926      39159      0     00300380    0.0  CERECV_2056
+>>   0  5323   1159385    2438330    0     00300181    0.0  CESEND_2056
+>>   1  5710   0          18446744071675175740 0     00300184   76.8  HAR=
+DWARE_KERNEL
+>>   0  0      0          18446744071964064315 0     00000000    0.7  IRQ=
+520: [timer]
+>>   1  0      0          232145209  0     00000000    0.0  IRQ520: [time=
+r]=20
 >=20
-> Yes, and what is the point of not doing everything with only one
-> snprintf ? strncpy uselessly burns CPU cycles by filling the destinatio=
-n
-> buffers with zeros if source is smaller than destination.
->=20
+> OK, at least this bug is a bit easier to fix. Please try this patch
+> (which also takes the chance and extends the range of our stat counters=
 
-All valid remarks, so here is a second revision of the patch.
+> a bit):
+>=20
+> Index: xenomai/include/nucleus/stat.h
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> --- xenomai/include/nucleus/stat.h	(Revision 4060)
+> +++ xenomai/include/nucleus/stat.h	(Arbeitskopie)
+> @@ -84,20 +84,20 @@ do { \
+> =20
+> =20
+>  typedef struct xnstat_counter {
+> -	int counter;
+> +	unsigned long counter;
+>  } xnstat_counter_t;
+> =20
+> -static inline int xnstat_counter_inc(xnstat_counter_t *c)
+> +static inline unsigned long xnstat_counter_inc(xnstat_counter_t *c)
+>  {
+>  	return c->counter++;
+>  }
+> =20
+> -static inline int xnstat_counter_get(xnstat_counter_t *c)
+> +static inline unsigned long xnstat_counter_get(xnstat_counter_t *c)
+>  {
+>  	return c->counter;
+>  }
+> =20
+> -static inline void xnstat_counter_set(xnstat_counter_t *c, int value)
+> +static inline void xnstat_counter_set(xnstat_counter_t *c, unsigned lo=
+ng value)
+>  {
+>  	c->counter =3D value;
+>  }
+
+OK to apply those bits?
 
 Jan
 
----
- include/nucleus/intr.h |   25 +++++++++++-----
- ksrc/nucleus/intr.c    |   76 +++++++++++++++++++++++++++++++-----------=
--------
- ksrc/nucleus/module.c  |   47 ++++++++++--------------------
- 3 files changed, 84 insertions(+), 64 deletions(-)
 
-Index: b/include/nucleus/intr.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/include/nucleus/intr.h
-+++ b/include/nucleus/intr.h
-@@ -69,11 +69,23 @@ typedef struct xnintr {
-=20
- } xnintr_t;
-=20
-+typedef struct xnintr_iterator {
-+
-+    int cpu;		/* !< Current CPU in iteration. */
-+
-+    unsigned long hits;	/* !< Current hit counter. */
-+
-+    xnticks_t exectime;	/* !< Used CPU time in current accounting period=
-=2E */
-+
-+    xnticks_t account_period; /* !< Length of accounting period. */
-+
-+    int list_rev;	/* !< System-wide xnintr list revision (internal use).=
- */
-+
-+    xnintr_t *prev;	/* !< Previously visited xnintr object (internal use=
-). */
-+
-+} xnintr_iterator_t;
-+
- extern xnintr_t nkclock;
--#ifdef CONFIG_XENO_OPT_STATS
--extern int xnintr_count;
--extern int xnintr_list_rev;
--#endif
-=20
- #ifdef __cplusplus
- extern "C" {
-@@ -108,9 +120,8 @@ int xnintr_disable(xnintr_t *intr);
- xnarch_cpumask_t xnintr_affinity(xnintr_t *intr,
-                                  xnarch_cpumask_t cpumask);
-=20
--int xnintr_query(int irq, int *cpu, xnintr_t **prev, int revision, char =
-*name,
--		 unsigned long *hits, xnticks_t *exectime,
--		 xnticks_t *account_period);
-+int xnintr_query_init(xnintr_iterator_t *iterator);
-+int xnintr_query_next(int irq, xnintr_iterator_t *iterator, char *name_b=
-uf);
-=20
- #ifdef __cplusplus
- }
-Index: b/ksrc/nucleus/intr.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/ksrc/nucleus/intr.c
-+++ b/ksrc/nucleus/intr.c
-@@ -42,9 +42,9 @@
- DEFINE_PRIVATE_XNLOCK(intrlock);
-=20
- #ifdef CONFIG_XENO_OPT_STATS
--xnintr_t nkclock;	/* Only for statistics */
--int xnintr_count =3D 1;	/* Number of attached xnintr objects + nkclock *=
-/
--int xnintr_list_rev;	/* Modification counter of xnintr list */
-+xnintr_t nkclock;	     /* Only for statistics */
-+static int xnintr_count =3D 1; /* Number of attached xnintr objects + nk=
-clock */
-+static int xnintr_list_rev;  /* Modification counter of xnintr list */
-=20
- /* Both functions update xnintr_list_rev at the very end.
-  * This guarantees that module.c::stat_seq_open() won't get
-@@ -899,55 +899,77 @@ int xnintr_irq_proc(unsigned int irq, ch
- #endif /* CONFIG_PROC_FS */
-=20
- #ifdef CONFIG_XENO_OPT_STATS
--int xnintr_query(int irq, int *cpu, xnintr_t **prev, int revision, char =
-*name,
--		 unsigned long *hits, xnticks_t *exectime,
--		 xnticks_t *account_period)
-+int xnintr_query_init(xnintr_iterator_t *iterator)
-+{
-+	iterator->cpu =3D -1;
-+	iterator->prev =3D NULL;
-+
-+	/* The order is important here: first xnintr_list_rev then
-+	 * xnintr_count.  On the other hand, xnintr_attach/detach()
-+	 * update xnintr_count first and then xnintr_list_rev.  This
-+	 * should guarantee that we can't get an up-to-date
-+	 * xnintr_list_rev and old xnintr_count here. The other way
-+	 * around is not a problem as xnintr_query() will notice this
-+	 * fact later.  Should xnintr_list_rev change later,
-+	 * xnintr_query() will trigger an appropriate error below. */
-+
-+	iterator->list_rev =3D xnintr_list_rev;
-+	xnarch_memory_barrier();
-+
-+	return xnintr_count;
-+}
-+
-+int xnintr_query_next(int irq, xnintr_iterator_t *iterator, char *name_b=
-uf)
- {
- 	xnintr_t *intr;
- 	xnticks_t last_switch;
--	int head;
--	int cpu_no =3D *cpu;
-+	int cpu_no =3D iterator->cpu + 1;
- 	int err =3D 0;
- 	spl_t s;
-=20
-+	if (cpu_no =3D=3D xnarch_num_online_cpus())
-+		cpu_no =3D 0;
-+	iterator->cpu =3D cpu_no;
-+
- 	xnlock_get_irqsave(&intrlock, s);
-=20
--	if (revision !=3D xnintr_list_rev) {
-+	if (iterator->list_rev !=3D xnintr_list_rev) {
- 		err =3D -EAGAIN;
- 		goto unlock_and_exit;
- 	}
-=20
--	if (*prev)
--		intr =3D xnintr_shirq_next(*prev);
--	else if (irq =3D=3D XNARCH_TIMER_IRQ)
--		intr =3D &nkclock;
--	else
--		intr =3D xnintr_shirq_first(irq);
-+	if (!iterator->prev) {
-+		if (irq =3D=3D XNARCH_TIMER_IRQ)
-+			intr =3D &nkclock;
-+		else
-+			intr =3D xnintr_shirq_first(irq);
-+	} else
-+		intr =3D xnintr_shirq_next(iterator->prev);
-=20
- 	if (!intr) {
-+		cpu_no =3D -1;
-+		iterator->prev =3D NULL;
- 		err =3D -ENODEV;
- 		goto unlock_and_exit;
- 	}
-=20
--	head =3D snprintf(name, XNOBJECT_NAME_LEN, "IRQ%d: ", irq);
--	name +=3D head;
--	strncpy(name, intr->name, XNOBJECT_NAME_LEN-head);
-+	snprintf(name_buf, XNOBJECT_NAME_LEN, "IRQ%d: %s", irq, intr->name);
-=20
--	*hits =3D xnstat_counter_get(&intr->stat[cpu_no].hits);
-+	iterator->hits =3D xnstat_counter_get(&intr->stat[cpu_no].hits);
-=20
- 	last_switch =3D xnpod_sched_slot(cpu_no)->last_account_switch;
-=20
--	*exectime       =3D intr->stat[cpu_no].account.total;
--	*account_period =3D last_switch - intr->stat[cpu_no].account.start;
-+	iterator->exectime =3D intr->stat[cpu_no].account.total;
-+	iterator->account_period =3D
-+		last_switch - intr->stat[cpu_no].account.start;
-=20
--	intr->stat[cpu_no].account.total  =3D 0;
-+	intr->stat[cpu_no].account.total =3D 0;
- 	intr->stat[cpu_no].account.start =3D last_switch;
-=20
--	if (++cpu_no =3D=3D xnarch_num_online_cpus()) {
--		cpu_no =3D 0;
--		*prev  =3D intr;
--	}
--	*cpu =3D cpu_no;
-+	/* Proceed to next entry in shared IRQ chain when all CPUs
-+	 * have been visited for this one. */
-+	if (cpu_no + 1 =3D=3D xnarch_num_online_cpus())
-+		iterator->prev =3D intr;
-=20
-      unlock_and_exit:
- 	xnlock_put_irqrestore(&intrlock, s);
-Index: b/ksrc/nucleus/module.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/ksrc/nucleus/module.c
-+++ b/ksrc/nucleus/module.c
-@@ -352,7 +352,9 @@ static int stat_seq_open(struct inode *i
- 	struct seq_file *seq;
- 	xnholder_t *holder;
- 	struct stat_seq_info *stat_info;
--	int err, count, thrq_rev, intr_rev, irq;
-+	xnintr_iterator_t intr_iter;
-+	int err, count, thrq_rev, irq;
-+	int intr_count;
- 	spl_t s;
-=20
- 	if (!xnpod_active_p())
-@@ -368,18 +370,8 @@ static int stat_seq_open(struct inode *i
-=20
- 	xnlock_put_irqrestore(&nklock, s);
-=20
--	/* The order is important here: first xnintr_list_rev then
--	 * xnintr_count.  On the other hand, xnintr_attach/detach()
--	 * update xnintr_count first and then xnintr_list_rev.  This
--	 * should guarantee that we can't get an up-to-date
--	 * xnintr_list_rev and old xnintr_count here. The other way
--	 * around is not a problem as xnintr_query() will notice this
--	 * fact later.  Should xnintr_list_rev change later,
--	 * xnintr_query() will trigger an appropriate error below. */
--
--	intr_rev =3D xnintr_list_rev;
--	xnarch_memory_barrier();
--	count +=3D xnintr_count * RTHAL_NR_CPUS;
-+	intr_count =3D xnintr_query_init(&intr_iter);
-+	count +=3D intr_count * RTHAL_NR_CPUS;
-=20
- 	if (iter)
- 		kfree(iter);
-@@ -442,35 +434,30 @@ static int stat_seq_open(struct inode *i
- 	}
-=20
- 	/* Iterate over all IRQ numbers, ... */
--	for (irq =3D 0; irq < XNARCH_NR_IRQS; irq++) {
--		xnintr_t *prev =3D NULL;
--		int cpu =3D 0, _cpu;
--		int err;
--
-+	for (irq =3D 0; irq < XNARCH_NR_IRQS; irq++)
- 		/* ...over all shared IRQs on all CPUs */
- 		while (1) {
- 			stat_info =3D &iter->stat_info[iter->nentries];
--			_cpu =3D cpu;
-=20
--			err =3D xnintr_query(irq, &cpu, &prev, intr_rev,
--					   stat_info->name,
--					   &stat_info->csw,
--					   &stat_info->exectime,
--					   &stat_info->account_period);
--			if (err =3D=3D -EAGAIN)
--				goto restart_unlocked;
--			if (err)
-+			err =3D xnintr_query_next(irq, &intr_iter,
-+						stat_info->name);
-+			if (err) {
-+				if (err =3D=3D -EAGAIN)
-+					goto restart_unlocked;
- 				break; /* line unused or end of chain */
-+			}
-=20
--			stat_info->cpu =3D _cpu;
-+			stat_info->cpu =3D intr_iter.cpu;
-+			stat_info->csw =3D intr_iter.hits;
-+			stat_info->exectime =3D intr_iter.exectime;
-+			stat_info->account_period =3D intr_iter.account_period;
- 			stat_info->pid =3D 0;
- 			stat_info->state =3D  0;
- 			stat_info->ssw =3D 0;
- 			stat_info->pf =3D 0;
-=20
- 			iter->nentries++;
--		};
--	}
-+		}
-=20
- 	seq =3D file->private_data;
- 	seq->private =3D iter;
-
-
---------------enigDA9DFABBA629532425C58F71
+--------------enig1C0A079257338349FCC10FF6
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -332,10 +114,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkirH6gACgkQniDOoMHTA+nztgCghGttxGPPNLxqEp4GZHac7MUb
-o30AnjvKpeUgQ/6+QAQAQOJ8ktvkL76I
-=zW/6
+iEYEARECAAYFAkiivvcACgkQniDOoMHTA+kDxACdEgaVcMN9pHx0TjdxirkQ0yHO
+yFgAmwYY9EcPi+3UDNbzt5hTiNMjKKmU
+=P7Dp
 -----END PGP SIGNATURE-----
 
---------------enigDA9DFABBA629532425C58F71--
+--------------enig1C0A079257338349FCC10FF6--
 
