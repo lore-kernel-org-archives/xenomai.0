@@ -1,13 +1,17 @@
-Message-ID: <48A454A2.6080003@domain.hid>
-Date: Thu, 14 Aug 2008 17:52:02 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <48A46408.7010602@domain.hid>
+Date: Thu, 14 Aug 2008 18:57:44 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <20080812075358.4cg1ix9945msccsc@domain.hid>	<48A12EA8.4070601@domain.hid>	<48A34D75.9090509@domain.hid>	<48A359D4.9090002@domain.hid>	<48A3D20B.2080509@domain.hid>	<48A3D595.9040607@domain.hid>	<20080814125307.1uviqgmj95no4k0k@domain.hid>	<48A43555.3070701@domain.hid>
-	<48A45084.3000208@domain.hid>
+References: <20080812075358.4cg1ix9945msccsc@domain.hid>	<48A12EA8.4070601@domain.hid>
+	<48A34D75.9090509@domain.hid>	<48A359D4.9090002@domain.hid>
+	<48A3D20B.2080509@domain.hid>	<48A3D595.9040607@domain.hid>
+	<20080814125307.1uviqgmj95no4k0k@domain.hid>
+	<48A43555.3070701@domain.hid> <48A45084.3000208@domain.hid>
 In-Reply-To: <48A45084.3000208@domain.hid>
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Adeos-main] [RTnet-users]   e1000 & MSI
+Subject: Re: [Adeos-main] [RTnet-users] e1000 & MSI
+Reply-To: rpm@xenomai.org
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,7 +21,7 @@ List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: Bernhard Pfund <bernhard@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>, rpm@xenomai.org, RTnet-users@domain.hid
+Cc: adeos-main <adeos-main@gna.org>, RTnet-users@domain.hid
 
 Bernhard Pfund wrote:
 >> I see no option aside of ironing the inner code that reads/writes the PCI
@@ -63,10 +67,14 @@ ck
 > was here
 >=20
 > Didn't look into it, just tried ;)
+>
 
-You probably need to replace the DECLARE_SPINLOCK in pci.h with
-IPIPE_DECLARE_SPINLOCK...
+Just change the declaration in pci.h the same way.
+
+> Bernhard
+>=20
+
 
 --=20
-                                                 Gilles.
+Philippe.
 
