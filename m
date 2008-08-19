@@ -1,20 +1,14 @@
-Message-ID: <48A2BEF7.20707@domain.hid>
-Date: Wed, 13 Aug 2008 13:01:11 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48AB241D.9000308@domain.hid>
+Date: Tue, 19 Aug 2008 21:50:53 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <48733483.2050204@domain.hid>
-	<200807091719.17625@domain.hid>	<4874E1D8.6020307@domain.hid>
-	<200807111518.16150@domain.hid>	<200807151642.18829@domain.hid>
-	<487CBC4A.5050309@domain.hid>	<200807161039.8828@domain.hid>
-	<487F1D25.5080508@domain.hid>	<200807211258.30164@domain.hid>
-	<48847272.3080605@domain.hid>
-In-Reply-To: <48847272.3080605@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1C0A079257338349FCC10FF6"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH] Fix stat overruns on 64-bit (was:
- [Xenomai-help] Kernel panic: not syncing)
+References: <48AAF7DB.1080603@domain.hid> <48AB1B29.4040001@domain.hid>
+	<48AB1EE6.8070003@domain.hid>
+In-Reply-To: <48AB1EE6.8070003@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [BUG] Lock stealing is borken
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -24,100 +18,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1C0A079257338349FCC10FF6
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> Petr Cervenka wrote:
->> I ran a test during last weekend (and nothing wrong happened). But the=
- /proc/xenomai/stat output is strange. Probably some type cast error, bec=
-ause 18446744071739514846 =3D 0xFFFFFFFF8A939FDE and the appropriate valu=
-e perhaps should be 0x000000008A939FDE =3D 2324930526.
->>
->> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
->>   0  0      0          18446744071739514846 0     00500088   69.8  ROO=
-T/0
->>   1  0      0          18446744071675175740 0     00500080   23.2  ROO=
-T/1
->>   0  5299   0          351459     0     00300182    0.0  LOGGER_TASK_1=
-804289383
->>   0  5100   8          283613     0     00300186    0.0
->>   0  5317   0          40591      0     00300182    0.0
->>   0  5034   2          2330696    0     00300184    0.0  MAIN_TASK_205=
-6
->>   0  5318   5          18446744071736105613 3     00300180   29.5  REG=
-_TASK_2056
->>   0  5319   28         36         0     00300182    0.0  WORK_TASK_205=
-6
->>   0  5321   38926      39159      0     00300380    0.0  CERECV_2056
->>   0  5323   1159385    2438330    0     00300181    0.0  CESEND_2056
->>   1  5710   0          18446744071675175740 0     00300184   76.8  HAR=
-DWARE_KERNEL
->>   0  0      0          18446744071964064315 0     00000000    0.7  IRQ=
-520: [timer]
->>   1  0      0          232145209  0     00000000    0.0  IRQ520: [time=
-r]=20
->=20
-> OK, at least this bug is a bit easier to fix. Please try this patch
-> (which also takes the chance and extends the range of our stat counters=
+> Philippe Gerum wrote:
+>> Jan Kiszka wrote:
+>>> Hi,
+>>>
+>>> bad news, everyone :(. According to the result of some lengthy debug
+>>> session with a customer and several ad-hoc lttng instrumentations, we
+>>> have a fatal bug in the nucleus' implementation of the lock stealing
+>>> algorithm. Consider this scenario:
+>>>
+>>> 1. Thread A acquires Mutex X successfully, ie. it leaves the (in this
+>>>    case) rt_mutex_acquire service, and its XNWAKEN flag is therefore
+>>>    cleared.
+>>>
+>>> 2. Thread A blocks on some further Mutex Y (in our case it was a
+>>>    semaphore, but that doesn't matter).
+>>>
+>>> 3. Thread B signals the availability of Mutex Y to Thread A, thus it
+>>>    also set XNWAKEN in Thread A. But Thread A is not yet scheduled on
+>>>    its CPU.
+>>>
+>>> 4. Thread C tries to acquire Mutex X, finds it assigned to Thread A, but
+>>>    also notices that the XNWAKEN flag of Thread A is set. Thus it steals
+>>>    the mutex although Thread A already entered the critical section -
+>>>    and hell breaks loose...
+>>>
+>> See commit #3795, and change log entry from 2008-05-15. Unless I misunderstood
+>> your description, this bug was fixed in 2.4.4.
+> 
+> Oh, fatally missed that fix.
+> 
+> Anyway, the patch looks a bit unclean to me. Either you are lacking
+> wwake = NULL in xnpod_suspend_thread, or the whole information encoded
+> in XNWAKEN can already be covered by wwake directly.
+> 
 
-> a bit):
->=20
-> Index: xenomai/include/nucleus/stat.h
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> --- xenomai/include/nucleus/stat.h	(Revision 4060)
-> +++ xenomai/include/nucleus/stat.h	(Arbeitskopie)
-> @@ -84,20 +84,20 @@ do { \
-> =20
-> =20
->  typedef struct xnstat_counter {
-> -	int counter;
-> +	unsigned long counter;
->  } xnstat_counter_t;
-> =20
-> -static inline int xnstat_counter_inc(xnstat_counter_t *c)
-> +static inline unsigned long xnstat_counter_inc(xnstat_counter_t *c)
->  {
->  	return c->counter++;
->  }
-> =20
-> -static inline int xnstat_counter_get(xnstat_counter_t *c)
-> +static inline unsigned long xnstat_counter_get(xnstat_counter_t *c)
->  {
->  	return c->counter;
->  }
-> =20
-> -static inline void xnstat_counter_set(xnstat_counter_t *c, int value)
-> +static inline void xnstat_counter_set(xnstat_counter_t *c, unsigned lo=
-ng value)
->  {
->  	c->counter =3D value;
->  }
+Clearing wwake has to be done when returning from xnsynch_sleep_on, only when
+the code knows that ownership is eventually granted to the caller; making such a
+decision in xnpod_suspend_thread() would be wrong.
 
-OK to apply those bits?
+The awake bit has been kept mainly because the nucleus commonly uses bitmasks to
+get fast access to thread status & information. It's not mandatory to have this
+one in, it's just conforming to the rest of the implementation.
 
-Jan
-
-
---------------enig1C0A079257338349FCC10FF6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkiivvcACgkQniDOoMHTA+kDxACdEgaVcMN9pHx0TjdxirkQ0yHO
-yFgAmwYY9EcPi+3UDNbzt5hTiNMjKKmU
-=P7Dp
------END PGP SIGNATURE-----
-
---------------enig1C0A079257338349FCC10FF6--
+-- 
+Philippe.
 
