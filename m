@@ -1,14 +1,11 @@
-Message-ID: <48AAD751.2040603@domain.hid>
-Date: Tue, 19 Aug 2008 16:23:13 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <C1C62166118DFA4A8BBA01A2411F0D170BF3D1BE92@domain.hid>
-	<488A073F.1090403@domain.hid>
-	<C1C62166118DFA4A8BBA01A2411F0D170BF3DB1DB6@domain.hid>
-In-Reply-To: <C1C62166118DFA4A8BBA01A2411F0D170BF3DB1DB6@domain.hid>
-Content-Type: text/plain; charset=windows-1256
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem with time-out ends
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C90217.B0FB3F54"
+Date: Tue, 19 Aug 2008 18:21:52 +0200
+Message-ID: <406CC9939904F143B9D42CEEA3E56E56431F57@domain.hid>
+From: "Filip Van Rillaer" <Filip.VanRillaer@domain.hid>
+Subject: [Xenomai-help] uClinux write to pipe returning -ENOMEM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,52 +15,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: BARRE Sebastien <sbarre@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-BARRE Sebastien wrote:
-> Hi,
-> 
-> As you asked me I've patched a 2.6.26 kernel using latest Adeos patch, I try to compile the kernel and the result is :
-> 
-> calisto linux-2.6.26 # make
->   CHK     include/linux/version.h
->   CHK     include/linux/utsrelease.h
->   CALL    scripts/checksyscalls.sh
->   CHK     include/linux/compile.h
->   CC      kernel/xenomai/nucleus/heap.o
-> In file included from include/asm/xenomai/system.h:2,
->                  from include/xenomai/nucleus/types.h:39,
->                  from include/xenomai/nucleus/stat.h:24,
->                  from include/xenomai/nucleus/thread.h:130,
->                  from include/xenomai/nucleus/pod.h:34,
->                  from kernel/xenomai/nucleus/heap.c:66:
-> include/asm/xenomai/system_32.h:46: error: field 'fpuenv' has incomplete type
-> kernel/xenomai/nucleus/heap.c: In function 'xnheap_mount':
-> kernel/xenomai/nucleus/heap.c:1140: error: implicit declaration of function 'class_device_create'
-> kernel/xenomai/nucleus/heap.c:1142: warning: assignment makes pointer from integer without a cast
-> kernel/xenomai/nucleus/heap.c: In function 'xnheap_umount':
-> kernel/xenomai/nucleus/heap.c:1160: error: implicit declaration of function 'class_device_destroy'
-> make[3]: *** [kernel/xenomai/nucleus/heap.o] Error 1
-> make[2]: *** [kernel/xenomai/nucleus] Error 2
-> make[1]: *** [kernel/xenomai] Error 2
-> make: *** [kernel] Error 2
-> calisto linux-2.6.26 #
-> 
-> Xenomai 2.4.4 seems not to be compatible with 2.6.26 ...
-> 
-> What do you think ?
+This is a multi-part message in MIME format.
 
-Yes, sorry, that is a known issue:
-https://mail.gna.org/public/xenomai-help/2008-08/msg00035.html
+------_=_NextPart_001_01C90217.B0FB3F54
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-Seeing your response time, I think you can wait a few days for the 2.4.5
-release, which will support 2.6.26.
+Hello,
+=20
+I am opening the uClinux side of a Xenomai pipe like (so in blocking
+mode):
+FdPipe =3D open(PipeName, O_RDWR);
+After some writes to FdPipe I get the returnvalue -ENOMEM.
+I can understand that the internal buffer gets full as my application is
+writing data faster than the Xenomai side is consuming, but I don't
+expect to see a returnvalue -ENOMEM : the calling writing-thread should
+block, isn't it?  Please comment.
+=20
+(When adding the O_SYNC flag things get even worse)
+=20
+Why is the code for xnpipe_write saying:
+if (!mh)=20
+  /* Cannot sleep. */   <--- ???????????????????
+  return -ENOMEM;
+=20
+I am using svn version 4105.
+=20
+Best regards,
+Filip
 
-Please do not drop the CC.
+------_=_NextPart_001_01C90217.B0FB3F54
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-Regards.
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dus-ascii">
+<META content=3D"MSHTML 6.00.6000.16705" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D804051116-19082008>Hello,</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D804051116-19082008></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D804051116-19082008>I am =
+opening the=20
+uClinux side of a Xenomai&nbsp;pipe&nbsp;like (so in blocking=20
+mode):</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D804051116-19082008>FdPipe =
+=3D=20
+open(PipeName, O_RDWR);</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D804051116-19082008>After =
+some writes to=20
+FdPipe I get the returnvalue -ENOMEM.</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D804051116-19082008>I can =
+understand=20
+that the internal buffer gets full as my application is writing data =
+faster than=20
+the Xenomai side is consuming, but I don't expect to see a returnvalue =
+-ENOMEM :=20
+the calling writing-thread should block, isn't it?&nbsp; Please=20
+comment.</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D804051116-19082008></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D804051116-19082008>(When =
+adding the=20
+O_SYNC flag things get even worse)</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D804051116-19082008></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D804051116-19082008>Why is =
+the code for=20
+xnpipe_write saying:</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D804051116-19082008>if =
+(!mh)=20
+</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D804051116-19082008>&nbsp; =
+/* Cannot=20
+sleep. */&nbsp;&nbsp; &lt;--- ???????????????????</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D804051116-19082008>&nbsp; =
+return=20
+-ENOMEM;</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D804051116-19082008></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D804051116-19082008>I am =
+using=20
+svn&nbsp;version 4105.</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN =
+class=3D804051116-19082008></SPAN></FONT><FONT=20
+face=3DArial size=3D2><SPAN =
+class=3D804051116-19082008></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D804051116-19082008>Best=20
+regards,</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D804051116-19082008>Filip</SPAN></FONT></DIV></BODY></HTML>
 
--- 
-                                                 Gilles.
+------_=_NextPart_001_01C90217.B0FB3F54--
 
