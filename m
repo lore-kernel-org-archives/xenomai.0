@@ -1,16 +1,10 @@
-Message-ID: <48B56C06.1030808@domain.hid>
-Date: Wed, 27 Aug 2008 17:00:22 +0200
+Message-ID: <48AAF14F.2020204@domain.hid>
+Date: Tue, 19 Aug 2008 18:14:07 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <48B5592B.1090005@domain.hid> <48B55F7C.5030901@domain.hid>
-	<48B56685.4060500@domain.hid> <48B56876.3090601@domain.hid>
-	<48B568FD.9010905@domain.hid> <48B56A0C.9060006@domain.hid>
-	<48B56AF6.6080509@domain.hid>
-In-Reply-To: <48B56AF6.6080509@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RFC][PATCH 2/3] Switch to handle-based fast
-	mutex owners
+Subject: [Xenomai-core] [PATCH 2/2] Report registry slot usage via /proc
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,71 +14,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> Jan Kiszka wrote:
->>>>>
->>>>>> -#define test_claimed(owner) ((long) (owner) & 1)
->>>>>> -#define clear_claimed(owner) ((xnthread_t *) ((long) (owner) & ~1))
->>>>>> -#define set_claimed(owner, bit) \
->>>>>> -        ((xnthread_t *) ((long) clear_claimed(owner) | !!(bit)))
->>>>>> +#define __CLAIMED_BIT		XN_HANDLE_SPARE3
->>>>>> +
->>>>>> +#define test_claimed(owner)	xnhandle_test_spare(owner, __CLAIMED_BIT)
->>>>>> +#define clear_claimed(owner)	xnhandle_mask_spare(owner)
->>>>>> +#define set_claimed(owner, bit) ({ \
->>>>>> +	xnhandle_t __tmp = xnhandle_mask_spare(owner); \
->>>>>> +	if (bit) \
->>>>>> +		xnhandle_set_spare(__tmp, __CLAIMED_BIT); \
->>>>>> +	__tmp; \
->>>>>> +})
->>>>> I liked doing this with no conditional.
->>>> You mean let the caller pass 'bit' as 0 or __CLAIMED_BIT (the latter
->>>> would require some renaming then, I guess)?
->>>>
->>>>>> +	xnarch_atomic_set(mutex->owner,
->>>>>> +		 	  set_claimed(xnthread_handle(owner),
->>>>>> +				      xnsynch_nsleepers(&mutex->synchbase)));
->>>>> Ok. I think you have spotted a bug here. This should be mutex->sleepers
->>>>> instead of xnsynch_nsleepers.
->>>> OK. Will you fix? I will rebase then.
->>>>
->>>>>> +	/* Consistency check for owner handle - is the object a thread? */
->>>>>> +	if (unlikely(xnthread_handle(owner) != clear_claimed(ownerh))) {
->>>>>> +		err = -EINVAL;
->>>>>> +		goto error;
->>>>>>  	}
->>>>> What is this ?
->>>> This ensures that we are not dereferences some arbitrary registry object
->>>> due to a borken handle in the mutex variable: The the object registered
->>>> on this handle is an xnthread, we will find the very same handle value
->>>> at the well-known place in the object. Kind of magic for xnthread
->>>> objects (instead of adding a magic field to them).
->>> Yes, but the point is: how can the handle be borken ? It looks like a
->>> useless check to me.
->> This is user memory. Everything can be borken. And I don't want to
->> create yet another source for user-triggered kernel bugs (including
->> silent ones) like with our heap management structures that are
->> corruptible by userland. That's headache guarantee.
-> 
-> No, we assume that the user application will only clobber our heap if it
-> is broken too. Add this with a XENO_DEBUG option if you want (not
-> XENO_DEBUG(POSIX)).
+Some customer ran into the problem of lacking registry slots without
+prior warning. We are lacking some report mechanism, specifically for
+unexported entries (every user object requires one for its handle).
 
-No problem for me. This check is almost 100% identical (specifically
-overhead-wise) to the usual object magic checks after querying the
-registry, and as those are unconditionally performed, I saw no need to
-handle this case differently.
+This patch introduces /proc/xenomai/registry_usage in the form
 
-Jan
+slots=512:used=1:exported=0
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+to address the deficit.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ ksrc/nucleus/registry.c |   41 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+
+Index: b/ksrc/nucleus/registry.c
+===================================================================
+--- a/ksrc/nucleus/registry.c
++++ b/ksrc/nucleus/registry.c
+@@ -60,6 +60,8 @@ static int registry_hash_entries;
+ 
+ static xnsynch_t registry_hash_synch;
+ 
++static unsigned registry_exported_objects;
++
+ #ifdef CONFIG_XENO_EXPORT_REGISTRY
+ 
+ #include <linux/workqueue.h>
+@@ -82,6 +84,35 @@ static int registry_proc_apc;
+ 
+ #endif /* CONFIG_XENO_EXPORT_REGISTRY */
+ 
++#ifdef CONFIG_PROC_FS
++static int
++registry_usage_read_proc(char *page, char **start, off_t off,
++			 int count, int *eof, void *data)
++{
++	int len;
++
++	if (!xnpod_active_p())
++		return -ESRCH;
++
++	len = sprintf(page, "slots=%u:used=%u:exported=%u\n",
++		      CONFIG_XENO_OPT_REGISTRY_NRSLOTS,
++		      CONFIG_XENO_OPT_REGISTRY_NRSLOTS -
++		      countq(&registry_obj_freeq),
++		      registry_exported_objects);
++
++	len -= off;
++	if (len <= off + count)
++		*eof = 1;
++	*start = page + off;
++	if (len > count)
++		len = count;
++	if (len < 0)
++		len = 0;
++
++	return len;
++}
++#endif /* CONFIG_PROC_FS */
++
+ int xnregistry_init(void)
+ {
+ 	static const int primes[] = {
+@@ -117,6 +148,11 @@ int xnregistry_init(void)
+ 	initq(&registry_obj_procq);
+ #endif /* CONFIG_XENO_EXPORT_REGISTRY */
+ 
++#ifdef CONFIG_PROC_FS
++	rthal_add_proc_leaf("registry_usage", registry_usage_read_proc,
++			    NULL, NULL, rthal_proc_root);
++#endif /* CONFIG_PROC_FS */
++
+ 	initq(&registry_obj_freeq);
+ 	initq(&registry_obj_busyq);
+ 	registry_obj_stamp = 0;
+@@ -136,6 +172,9 @@ int xnregistry_init(void)
+ 					     registry_hash_entries);
+ 
+ 	if (!registry_hash_table) {
++#ifdef CONFIG_PROC_FS
++		remove_proc_entry("registry_usage", rthal_proc_root);
++#endif /* CONFIG_PROC_FS */
+ #ifdef CONFIG_XENO_EXPORT_REGISTRY
+ 		rthal_apc_free(registry_proc_apc);
+ 		remove_proc_entry("registry", rthal_proc_root);
+@@ -272,6 +311,7 @@ static DECLARE_WORK_FUNC(registry_proc_c
+ 		if (object->proc != XNOBJECT_PROC_RESERVED1)
+ 			goto unexport;
+ 
++		registry_exported_objects++;
+ 		++pnode->entries;
+ 		object->proc = XNOBJECT_PROC_RESERVED2;
+ 		appendq(&registry_obj_busyq, holder);
+@@ -329,6 +369,7 @@ static DECLARE_WORK_FUNC(registry_proc_c
+ 		continue;
+ 
+ 	unexport:
++		registry_exported_objects--;
+ 		entries = --pnode->entries;
+ 		entry = object->proc;
+ 		object->proc = NULL;
 
