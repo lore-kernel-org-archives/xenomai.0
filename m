@@ -1,77 +1,85 @@
-Message-ID: <48940F10.9060506@domain.hid>
-Date: Sat, 02 Aug 2008 09:38:56 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <48AB1EE6.8070003@domain.hid>
+Date: Tue, 19 Aug 2008 21:28:38 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <Pine.LNX.4.64.0804111759280.5433@domain.hid><4800B4FA.1050309@domain.hid><50879.62.235.129.158.1208014366.squirrel@domain.hid><18432.56533.343662.272421@domain.hid><Pine.LNX.4.64.0804171657380.18446@domain.hid><2ff1a98a0804170830v3b2fc392lf320f05a8c7f4e8d@domain.hid><2ff1a98a0804170846p2dddbea5k3b69dbbc57fb6761@domain.hid><480775C4.2060302@domain.hid><Pine.LNX.4.64.0804211731160.26198@domain.hid>	<480DECDA.3070204@domain.hid>
-	<34db01c8f42b$57a4d350$0109220a@domain.hid>
-In-Reply-To: <34db01c8f42b$57a4d350$0109220a@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Recurring Interrupts
-Reply-To: rpm@xenomai.org
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <48AAF7DB.1080603@domain.hid> <48AB1B29.4040001@domain.hid>
+In-Reply-To: <48AB1B29.4040001@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF1B6005D952ABAB7A76447CB"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [BUG] Lock stealing is borken
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Henry Bausley <hbausley@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: rpm@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-Henry Bausley wrote:
-> How do I setup xenomai so that my ISR can be re-entered even if I am 
-> currently in it.
->
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF1B6005D952ABAB7A76447CB
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Try this:
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>> Hi,
+>>
+>> bad news, everyone :(. According to the result of some lengthy debug
+>> session with a customer and several ad-hoc lttng instrumentations, we
+>> have a fatal bug in the nucleus' implementation of the lock stealing
+>> algorithm. Consider this scenario:
+>>
+>> 1. Thread A acquires Mutex X successfully, ie. it leaves the (in this
+>>    case) rt_mutex_acquire service, and its XNWAKEN flag is therefore
+>>    cleared.
+>>
+>> 2. Thread A blocks on some further Mutex Y (in our case it was a
+>>    semaphore, but that doesn't matter).
+>>
+>> 3. Thread B signals the availability of Mutex Y to Thread A, thus it
+>>    also set XNWAKEN in Thread A. But Thread A is not yet scheduled on
+>>    its CPU.
+>>
+>> 4. Thread C tries to acquire Mutex X, finds it assigned to Thread A, b=
+ut
+>>    also notices that the XNWAKEN flag of Thread A is set. Thus it stea=
+ls
+>>    the mutex although Thread A already entered the critical section -
+>>    and hell breaks loose...
+>>
+>=20
+> See commit #3795, and change log entry from 2008-05-15. Unless I misund=
+erstood
+> your description, this bug was fixed in 2.4.4.
 
-int your_isr(xnintr_t *intr)
-{
-	unsigned long flags;
+Oh, fatally missed that fix.
 
-	xnlock_clear_irqon(&nklock);
+Anyway, the patch looks a bit unclean to me. Either you are lacking
+wwake =3D NULL in xnpod_suspend_thread, or the whole information encoded
+in XNWAKEN can already be covered by wwake directly.
 
-	... your code ...
-
-	xnlock_get_irqsave(&nklock, flags); /* must re-lock on exit */
-}
-
-We do take a per-IRQ lock internally as well, but this is a no-brainer for the
-issue at stake.
-
-NOTE: this solution is only valid in uniprocessor mode. SMP would run into
-deadlocks; we would need to provide internal support to allow this.
-
-> I have an external edge interrupt wired and it occurs every 250usec.  There 
-> are instances
-> when the interrupt can occur while I am currently in my ISR.
-> 
-> If another interrupt occurs while I am currently in my ISR I want my ISR to 
-> be called again
-> so I can flag that the condition occurred then exit the re-entered ISR and 
-> continue executing
-> the originally called ISR.
-> 
-> 
-> I am using a board based off the AMCC 440EP Yosemite and a Denx Kit with 
-> 2.6.24 and Xenomai 2.4.2
-> This something I did with previously with RT Linux.  I have converted a 
-> large project from FSM RT Linux
-> to Xenomai and everything is functioning except this last item.
-> 
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
+Jan
 
 
--- 
-Philippe.
+--------------enigF1B6005D952ABAB7A76447CB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkirHuwACgkQniDOoMHTA+meyQCbB3E240kW6AtduvNX7FuPQkkm
+OokAnRnrxGY+IJjYXeXs9SwtmoDT6MNn
+=Zvem
+-----END PGP SIGNATURE-----
+
+--------------enigF1B6005D952ABAB7A76447CB--
 
