@@ -1,15 +1,16 @@
-Message-ID: <48ABEF11.6060307@domain.hid>
-Date: Wed, 20 Aug 2008 12:16:49 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <48AC23B6.3030902@domain.hid>
+Date: Wed, 20 Aug 2008 16:01:26 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <406CC9939904F143B9D42CEEA3E56E56431F57@domain.hid>
-	<48AAF55E.9000206@domain.hid>
-	<406CC9939904F143B9D42CEEA3E56E56431FCD@oab1mx1.oneaccess.intra>
-In-Reply-To: <406CC9939904F143B9D42CEEA3E56E56431FCD@oab1mx1.oneaccess.intra>
+References: <C1C62166118DFA4A8BBA01A2411F0D170BF3D1BE92@domain.hid>
+	<488A073F.1090403@domain.hid>
+	<C1C62166118DFA4A8BBA01A2411F0D170BF3DB1DB6@domain.hid>
+	<48ABDA75.70901@domain.hid>
+	<C1C62166118DFA4A8BBA01A2411F0D170E9BD4FF66@domain.hid>
+In-Reply-To: <C1C62166118DFA4A8BBA01A2411F0D170E9BD4FF66@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] uClinux write to pipe returning -ENOMEM
-Reply-To: rpm@xenomai.org
+Subject: Re: [Xenomai-help] Problem with time-out ends
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,57 +20,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Filip Van Rillaer <Filip.VanRillaer@domain.hid>
-Cc: xenomai@xenomai.org
+To: BARRE Sebastien <sbarre@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Filip Van Rillaer wrote:
-> Hello,
+BARRE Sebastien wrote:
+> I tryed Xenomai 2.4.5 (linux 2.6.26) : The test program
+> "testTimer12_corrected" still froze the system without any kernel
+> message on the console. Then I need to reboot.
 > 
-> My current test-setup is as follows:
-> 1) user-program reads test-samples from a file in non-RT and does a blocking write to the Xenomai-pipe
-> 2) a RT-program that implements a V34 modem is listening to the Xenomai-pipe and will send the data over a telephone line.
-> ---> so it is the intention that at startup the Xenomai-pipe buffer gets filled up and from than in stationary state the data should stream at the speed of the V34 modem connection.
->
+> Would it be interresting to apply one of the patches you sent me
+> before, "xeno-fix-harden-bug.diff" or
+> "ipipe-longer-atomicswitch.diff", on the 2.4.5 ? Xenomai 2.4.4 (linux
+> 2.6.25) with these two patches applied seems to work correctly...
 
-A typical work-around to emulate blocking Linux -> Xenomai pipe I/O would be:
+One of the patches is the real fix and is already included in the I-pipe
+patch. The other was a quick attempt to check if we had found the real
+culprit and there is no way this patch could be merged, it was just a
+quick attempt.
 
-RT_SEM bsync;
-
-int pipe_i_handler(RT_PIPE *pipe, int event)
-{
-	if (event == P_EVENT_INPUT && buffer_filled_up_p)
-		/* Hold userland until buffer drains. */
-		rt_sem_p(&bsync, TM_INFINITE);
-	...
-}
-
-void drain_buffer(void)
-{
-	send_v34();
-	rt_sem_v(&bsync);
-}
-
-void init_kernel_code(void)
-{
-	rt_sem_create(&bsync, "bsync", 0, S_PULSE);
-}
-
-===
-
-void userland(void)
-{
-	/* Make this regular Linux thread a non-RT Xenomai task, so it may block on
-Xenomai synchronization objects. */
-
-	rt_task_shadow(NULL, __FUNCTION__, 0, 0);
-
-	for (;;) {
-		/* This may hang in pipe_i_handler() due to flow control. */
-		write(pipefd, buf, len);
-		...
-	}
-}
+Now, we have to find out why the fix we commited does not work.
 
 -- 
-Philippe.
+                                                 Gilles.
 
