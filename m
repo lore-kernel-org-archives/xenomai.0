@@ -1,5 +1,5 @@
-Message-ID: <48ABE84B.7070803@domain.hid>
-Date: Wed, 20 Aug 2008 11:47:55 +0200
+Message-ID: <48ABEF11.6060307@domain.hid>
+Date: Wed, 20 Aug 2008 12:16:49 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <406CC9939904F143B9D42CEEA3E56E56431F57@domain.hid>
@@ -29,81 +29,46 @@ Filip Van Rillaer wrote:
 > 1) user-program reads test-samples from a file in non-RT and does a blocking write to the Xenomai-pipe
 > 2) a RT-program that implements a V34 modem is listening to the Xenomai-pipe and will send the data over a telephone line.
 > ---> so it is the intention that at startup the Xenomai-pipe buffer gets filled up and from than in stationary state the data should stream at the speed of the V34 modem connection.
-> 
-> The RT-side is using rt_pipe_monitor to be warned when new data from the non-RT write arrives (so no polling).  The RT-side will 'remember' that data from the non-RT side are available and (sometimes a lot) later when enough data have been sent over the telephone line, read new data from the Xenomai pipe.
-> 
-> Any idea how I can get around this problem?
 >
 
-Well, yes. /Me fixing my mess.
+A typical work-around to emulate blocking Linux -> Xenomai pipe I/O would be:
 
-> Concerning O_SYNC I get the fatal error message:
->  Xenomai: fatal: inserting element twice, holder=00b19cfc, qslot=00b1ab84 at kernel/xenomai/nucleus/pipe.c:96
+RT_SEM bsync;
 
-Oh dear...
+int pipe_i_handler(RT_PIPE *pipe, int event)
+{
+	if (event == P_EVENT_INPUT && buffer_filled_up_p)
+		/* Hold userland until buffer drains. */
+		rt_sem_p(&bsync, TM_INFINITE);
+	...
+}
 
->   CPU  PID    PRI      TIMEOUT  STAT      NAME
->  >  0  0       -1      0        00400080  ROOT
->     0  112     99      999616310 00300186  RTTask
-> I think that this happens around the same time that I get the -ENOMEM when I am not using the O_SYNC flag.
-> 
+void drain_buffer(void)
+{
+	send_v34();
+	rt_sem_v(&bsync);
+}
 
-Ok, once again, I need to reproduce this first. More later,
+void init_kernel_code(void)
+{
+	rt_sem_create(&bsync, "bsync", 0, S_PULSE);
+}
 
-> Best regards,
-> Filip
->  
-> 
-> -----Original Message-----
-> From: Philippe Gerum [mailto:rpm@xenomai.org] 
-> Sent: 19 August 2008 18:31
-> To: Filip Van Rillaer
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] uClinux write to pipe returning -ENOMEM
-> 
-> Filip Van Rillaer wrote:
->> Hello,
->>  
->> I am opening the uClinux side of a Xenomai pipe like (so in blocking mode):
->> FdPipe = open(PipeName, O_RDWR);
->> After some writes to FdPipe I get the returnvalue -ENOMEM.
->> I can understand that the internal buffer gets full as my application 
->> is writing data faster than the Xenomai side is consuming, but I don't 
->> expect to see a returnvalue -ENOMEM : the calling writing-thread 
->> should block, isn't it?  Please comment.
->>
-> 
-> RT is assumed to consume asap and will preempt the non-RT write() caller immediately upon data receipt, unless the RT code uses some kind of timed polling, which is considered useless and inefficient, since you can ask a RT thread to wait for incoming data in a blocking way.
-> 
->> (When adding the O_SYNC flag things get even worse)
->>  
-> 
-> That is the point that would actually need fixing: what happens with O_SYNC, what is worsening exactly?
-> 
->> Why is the code for xnpipe_write saying:
->> if (!mh)
->>   /* Cannot sleep. */   <--- ???????????????????
->>   return -ENOMEM;
->>  
->> I am using svn version 4105.
->>  
->> Best regards,
->> Filip
->>
->>
->> ----------------------------------------------------------------------
->> --
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
-> 
-> 
-> --
-> Philippe.
-> 
+===
 
+void userland(void)
+{
+	/* Make this regular Linux thread a non-RT Xenomai task, so it may block on
+Xenomai synchronization objects. */
+
+	rt_task_shadow(NULL, __FUNCTION__, 0, 0);
+
+	for (;;) {
+		/* This may hang in pipe_i_handler() due to flow control. */
+		write(pipefd, buf, len);
+		...
+	}
+}
 
 -- 
 Philippe.
