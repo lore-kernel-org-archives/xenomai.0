@@ -1,12 +1,13 @@
-Message-ID: <48ABE0C6.2010602@domain.hid>
-Date: Wed, 20 Aug 2008 11:15:50 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48ADC224.9030409@domain.hid>
+Date: Thu, 21 Aug 2008 21:29:40 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <48AB4256.6050200@domain.hid> <48ABDD08.8060707@domain.hid>
-In-Reply-To: <48ABDD08.8060707@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <48ADC134.7060605@domain.hid>
+In-Reply-To: <48ADC134.7060605@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] Clean up XNWAKEN / wwake tracking
+Subject: Re: [Xenomai-core] Fast userspace locks for native skin
+Reply-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,27 +17,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, Xenomai-core@domain.hid
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> +	/* We are awake, no one must steal our lock anymore. */
->> +	thread->wwake = NULL;
->> +
+Jan Kiszka wrote:
+> Hi Gilles,
 > 
-> This is wrong, whether or not no one must steal our lock anymore will be
-> decided at the "redo" label, when we "test and set", the synch owner.
-> 
+> do you - or anyone else - happen to have some patches under preparation
+> to extend also the native skin with the newly added CONFIG_XENO_FASTSEM
+> support? Just to avoid duplicate work (we are about to work on this).
 
-Maybe I should have added "(in case we actually got it)". If not, that
-assignment is a nop. If we redo the whole thing, we would have cleared
-XNWAKEN in xnpod_suspend_thread before suspension, so the effect should
-be the same.
-
-Jan
+Not yet. But the fastsem work is largely unfinished in other areas: for
+instance, semaphores are not implemented yet.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
