@@ -1,14 +1,13 @@
-Message-ID: <48AD6368.7020504@domain.hid>
-Date: Thu, 21 Aug 2008 14:45:28 +0200
+Message-ID: <48AD78C9.1050405@domain.hid>
+Date: Thu, 21 Aug 2008 16:16:41 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <C1C62166118DFA4A8BBA01A2411F0D170BF3D1BE92@domain.hid>	<488A073F.1090403@domain.hid>	<C1C62166118DFA4A8BBA01A2411F0D170BF3DB1DB6@domain.hid>	<48ABDA75.70901@domain.hid>	<C1C62166118DFA4A8BBA01A2411F0D170E9BD4FF66@domain.hid>
-	<48AC23B6.3030902@domain.hid> <48AC4A2A.8080304@domain.hid>
-	<C1C62166118DFA4A8BBA01A2411F0D170E9BD4FFDD@PRI-MBX-101.dom1.vinci-energies.net>
-In-Reply-To: <C1C62166118DFA4A8BBA01A2411F0D170E9BD4FFDD@PRI-MBX-101.dom1.vinci-energies.net>
+References: <OF8AF7B8AE.31B3D7A5-ONC12574AC.004DF0CC-C12574AC.004E0846@domain.hid>
+In-Reply-To: <OF8AF7B8AE.31B3D7A5-ONC12574AC.004DF0CC-C12574AC.004E0846@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem with time-out ends
+Subject: Re: [Xenomai-help] problems patching the kernel 2.6.25.11 with
+ xenomai 2.4.4 under ubuntu
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,15 +17,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: BARRE Sebastien <sbarre@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: juergen.lanner@domain.hid
+Cc: xenomai@xenomai.org
 
-BARRE Sebastien wrote:
-> I have applied the "ipipe_longer_atomicswitch.diff" mannually to sched.c file. Unfortunatly, this doesn't change anything,
-> the test program still freeze the system.
+juergen.lanner@domain.hid wrote:
+> Shouldn't there be all the xenomai specific settings there?
+> What went wrong?
+> How do they usually come into the .config file?
 
-Why did you need to apply the patch manually ?
+In your report I read:
+Xenomai conflicts with PC speaker support.
+(menu Device Drivers/Input device support/Miscellaneous devices)
+Xenomai needs either X86_LOCAL_APIC enabled or HPET_TIMER
+disabled.(menu Processor type and features)
 
+So, what do you think ?
 
 -- 
                                                  Gilles.
