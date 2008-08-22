@@ -1,16 +1,10 @@
-Message-ID: <48ADA5FF.5030703@domain.hid>
-Date: Thu, 21 Aug 2008 19:29:35 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Fri, 22 Aug 2008 00:59:39 -0700 (PDT)
+From: Stankiewicz Bredkjaer <stan.bred@domain.hid>
 MIME-Version: 1.0
-References: <C1C62166118DFA4A8BBA01A2411F0D170BF3D1BE92@domain.hid>	<488A073F.1090403@domain.hid>	<C1C62166118DFA4A8BBA01A2411F0D170BF3DB1DB6@domain.hid>	<48ABDA75.70901@domain.hid>	<C1C62166118DFA4A8BBA01A2411F0D170E9BD4FF66@domain.hid>
-	<48AC23B6.3030902@domain.hid> <48AC4A2A.8080304@domain.hid>
-	<C1C62166118DFA4A8BBA01A2411F0D170E9BD4FFDD@PRI-MBX-101.dom1.vinci-energies.net>
-	<48AD6368.7020504@domain.hid>
-	<C1C62166118DFA4A8BBA01A2411F0D170E9BD5002E@PRI-MBX-101.dom1.vinci-energies.net>
-In-Reply-To: <C1C62166118DFA4A8BBA01A2411F0D170E9BD5002E@PRI-MBX-101.dom1.vinci-energies.net>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem with time-out ends
+Content-Type: multipart/alternative; boundary="0-222585231-1219391979=:81823"
+Message-ID: <215341.81823.qm@domain.hid>
+Subject: [Xenomai-help] ARM926EJ-S and Xenomai
+Reply-To: stan.bred@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,29 +14,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: BARRE Sebastien <sbarre@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-BARRE Sebastien wrote:
-> Yes, I recompiled the kernel, copied the bzImage on my target, and rebooted it.
-> 
-> I had to apply the patch mannually because it doesn't work with the patch command. I had the message :
-> 
-> patch: **** malformed patch at line 6: *prev,
+--0-222585231-1219391979=:81823
+Content-Type: text/plain; charset=us-ascii
 
-Ok. Could you try something else:
+Hi all,
 
-in the function gatekeeper_thread, could you replace:
+As a newbie with no experience with Xenomai, I would like to know if Texas Instruments Davinci Evaluation boards, especially the ARM926EJ arch. have been already ported?
+I'm working with the Davinci dm6467 board and it is delivered with a montavista patched 2.6.10 Linux kernel on which I would like to install Xenomai. Is it possible?
+Is there something i have to know prior installing Xenomai on the Board?
 
-if (xnthread_user_task(thread)->state == TASK_INTERRUPTIBLE) {
+Any answer will be appreciated.
 
-with
+Regards,
 
-if (xnthread_user_task(thread)->state == TASK_INTERRUPTIBLE |
-TASK_ATOMICSWITCH) {
+Stan
 
-Or comment out the if and the closing brace ?
 
--- 
-                                                 Gilles.
+
+
+      
+--0-222585231-1219391979=:81823
+Content-Type: text/html; charset=us-ascii
+
+<table cellspacing="0" cellpadding="0" border="0" ><tr><td valign="top" style="font: inherit;">Hi all,<br><br>As a newbie with no experience with Xenomai, I would like to know if Texas Instruments Davinci Evaluation boards, especially the ARM926EJ arch. have been already ported?<br>I'm working with the Davinci dm6467 board and it is delivered with a montavista patched 2.6.10 Linux kernel on which I would like to install Xenomai. Is it possible?<br>Is there something i have to know prior installing Xenomai on the Board?<br><br>Any answer will be appreciated.<br><br>Regards,<br><br>Stan<br><br></td></tr></table><br>
+
+      
+--0-222585231-1219391979=:81823--
 
