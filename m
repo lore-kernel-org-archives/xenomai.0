@@ -1,11 +1,15 @@
-Date: Fri, 22 Aug 2008 07:45:46 -0700 (PDT)
-From: Stankiewicz Bredkjaer <stan.bred@domain.hid>
-In-Reply-To: <d6c8ef150808220431q3c72b246r74bf39e3187a87a7@domain.hid>
+Message-ID: <48AF03A0.9000909@domain.hid>
+Date: Fri, 22 Aug 2008 20:21:20 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-1212899228-1219416346=:20698"
-Message-ID: <814460.20698.qm@domain.hid>
-Subject: Re: [Xenomai-help] ARM926EJ-S and Xenomai
-Reply-To: stan.bred@domain.hid
+References: <406CC9939904F143B9D42CEEA3E56E56431F57@domain.hid>
+	<48AAF55E.9000206@domain.hid>
+	<406CC9939904F143B9D42CEEA3E56E56431FCD@oab1mx1.oneaccess.intra>
+In-Reply-To: <406CC9939904F143B9D42CEEA3E56E56431FCD@oab1mx1.oneaccess.intra>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] uClinux write to pipe returning -ENOMEM
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,57 +19,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bosko Radivojevic <bosko.radivojevic@domain.hid>
+To: Filip Van Rillaer <Filip.VanRillaer@domain.hid>
 Cc: xenomai@xenomai.org
 
---0-1212899228-1219416346=:20698
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
+Filip Van Rillaer wrote:
+> Hello,
+> 
+> My current test-setup is as follows:
+> 1) user-program reads test-samples from a file in non-RT and does a blocking write to the Xenomai-pipe
+> 2) a RT-program that implements a V34 modem is listening to the Xenomai-pipe and will send the data over a telephone line.
+> ---> so it is the intention that at startup the Xenomai-pipe buffer gets filled up and from than in stationary state the data should stream at the speed of the V34 modem connection.
+> 
+> The RT-side is using rt_pipe_monitor to be warned when new data from the non-RT write arrives (so no polling).  The RT-side will 'remember' that data from the non-RT side are available and (sometimes a lot) later when enough data have been sent over the telephone line, read new data from the Xenomai pipe.
+> 
+> Any idea how I can get around this problem?
+> 
+> Concerning O_SYNC I get the fatal error message:
+>  Xenomai: fatal: inserting element twice, holder=00b19cfc, qslot=00b1ab84 at kernel/xenomai/nucleus/pipe.c:96
+>   CPU  PID    PRI      TIMEOUT  STAT      NAME
+>  >  0  0       -1      0        00400080  ROOT
+>     0  112     99      999616310 00300186  RTTask
+> I think that this happens around the same time that I get the -ENOMEM when I am not using the O_SYNC flag.
+>
 
-Hi=A0 Bosko,
-yeah Atmel's AT91SAM926x is similar to the one I'm using.
-I am sure checking to see what I have to change and what not.
-I'll let you know, if I'm stuck anywhere.
+Fixed in both the -devel and maintenance branches.
 
-Thanks for the hints.
+> Best regards,
+> Filip
+>  
+> 
+> -----Original Message-----
+> From: Philippe Gerum [mailto:rpm@xenomai.org] 
+> Sent: 19 August 2008 18:31
+> To: Filip Van Rillaer
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai-help] uClinux write to pipe returning -ENOMEM
+> 
+> Filip Van Rillaer wrote:
+>> Hello,
+>>  
+>> I am opening the uClinux side of a Xenomai pipe like (so in blocking mode):
+>> FdPipe = open(PipeName, O_RDWR);
+>> After some writes to FdPipe I get the returnvalue -ENOMEM.
+>> I can understand that the internal buffer gets full as my application 
+>> is writing data faster than the Xenomai side is consuming, but I don't 
+>> expect to see a returnvalue -ENOMEM : the calling writing-thread 
+>> should block, isn't it?  Please comment.
+>>
+> 
+> RT is assumed to consume asap and will preempt the non-RT write() caller immediately upon data receipt, unless the RT code uses some kind of timed polling, which is considered useless and inefficient, since you can ask a RT thread to wait for incoming data in a blocking way.
+> 
+>> (When adding the O_SYNC flag things get even worse)
+>>  
+> 
+> That is the point that would actually need fixing: what happens with O_SYNC, what is worsening exactly?
+> 
+>> Why is the code for xnpipe_write saying:
+>> if (!mh)
+>>   /* Cannot sleep. */   <--- ???????????????????
+>>   return -ENOMEM;
+>>  
+>> I am using svn version 4105.
+>>  
+>> Best regards,
+>> Filip
+>>
+>>
+>> ----------------------------------------------------------------------
+>> --
+>>
+>> _______________________________________________
+>> Xenomai-help mailing list
+>> Xenomai-help@domain.hid
+>> https://mail.gna.org/listinfo/xenomai-help
+> 
+> 
+> --
+> Philippe.
+> 
 
-Regards,
 
-Stan.
-
-
---- On Fri, 8/22/08, Bosko Radivojevic <bosko.radivojevic@domain.hid> wrote:
-From: Bosko Radivojevic <bosko.radivojevic@domain.hid>
-Subject: Re: [Xenomai-help] ARM926EJ-S and Xenomai
-To: stan.bred@domain.hid
-Date: Friday, August 22, 2008, 9:31 PM
-
-Hi Stan,
-
-ARM926EJ CPU is fully supported both by vanilla Linux and by I-Pipe
-Adeos (on which Xenomai relies). Gilles is right, a lot of changes
-happen in Linux kernel between 2.6.10 and the newest 2.6.26 version.
-In the meantime, a lot of davinci drivers are incorporated in 2.6.26
-version. Besides that, I saw a few new patches that have good chance
-to be part of 2.6.27.
-
->From my point of view, besides maybe some not so big changes on the
-linux side, you'll have to add board support to the Xenomai. There are
-similar (with the same CPU) boards supported, like Atmel's
-AT91SAM926x. As Gilles said, you can copy&paste a lot of code from
-Linux drivers (timer, gpio, etc) :)
-
-If you need some help, please ask.
-
-Sincerely,
-Bosko
-=0A=0A=0A      
---0-1212899228-1219416346=:20698
-Content-Type: text/html; charset=us-ascii
-
-<table cellspacing="0" cellpadding="0" border="0" ><tr><td valign="top" style="font: inherit;">Hi&nbsp; Bosko,<br><pre>yeah Atmel's AT91SAM926x is similar to the one I'm using.<br>I am sure checking to see what I have to change and what not.<br>I'll let you know, if I'm stuck anywhere.<br><br>Thanks for the hints.<br><br>Regards,<br><br>Stan.<br></pre><br><br>--- On <b>Fri, 8/22/08, Bosko Radivojevic <i>&lt;bosko.radivojevic@domain.hid&gt;</i></b> wrote:<br><blockquote style="border-left: 2px solid rgb(16, 16, 255); margin-left: 5px; padding-left: 5px;">From: Bosko Radivojevic &lt;bosko.radivojevic@domain.hid&gt;<br>Subject: Re: [Xenomai-help] ARM926EJ-S and Xenomai<br>To: stan.bred@domain.hid<br>Date: Friday, August 22, 2008, 9:31 PM<br><br><pre>Hi Stan,<br><br>ARM926EJ CPU is fully supported both by vanilla Linux and by I-Pipe<br>Adeos (on which Xenomai relies). Gilles is right, a lot of changes<br>happen in Linux kernel between 2.6.10 and the newest
- 2.6.26 version.<br>In the meantime, a lot of davinci drivers are incorporated in 2.6.26<br>version. Besides that, I saw a few new patches that have good chance<br>to be part of 2.6.27.<br><br>From my point of view, besides maybe some not so big changes on the<br>linux side, you'll have to add board support to the Xenomai. There are<br>similar (with the same CPU) boards supported, like Atmel's<br>AT91SAM926x. As Gilles said, you can copy&amp;paste a lot of code from<br>Linux drivers (timer, gpio, etc) :)<br><br>If you need some help, please ask.<br><br>Sincerely,<br>Bosko<br></pre></blockquote></td></tr></table><br>
-
-      
---0-1212899228-1219416346=:20698--
+-- 
+Philippe.
 
