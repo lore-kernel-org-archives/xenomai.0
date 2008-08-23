@@ -1,13 +1,12 @@
-Message-ID: <48AEE945.8000503@domain.hid>
-Date: Fri, 22 Aug 2008 18:28:53 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <48AFCB3F.6070902@domain.hid>
+Date: Sat, 23 Aug 2008 10:33:03 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <48AEE3AB.6070001@domain.hid>
-In-Reply-To: <48AEE3AB.6070001@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 2/2] Unify asm-x86/atomic.h
-Reply-To: gilles.chanteperdrix@xenomai.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig64F1B48783B0941A593EAA75"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Racy pse51_mutex_check_init?
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,18 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai-core@domain.hid
 
-Jan Kiszka wrote:
-> ...and also automatically fixes the missing LOCK prefix for
-> pthread_mutex_* services on x86_32 SMP.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig64F1B48783B0941A593EAA75
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-This looks to me as a half-way unification. Can we not totally get rid
-of atomic_32.h and atomic_64.h ? I mean since we are using unsigned long
-as atomic_t on both platforms, there should not be much difference
-(except maybe the inline asm).
+Hi Gilles,
 
--- 
-                                                 Gilles.
+trying to understand the cb_read/write lock usage, some question came up
+here: What prevents that the mutexq iteration in pse51_mutex_check_init
+races against pse51_mutex_destroy_internal?
+
+If nothing, then I wonder if we actually have to iterate over the whole
+queue to find out whether a given object has been initialized and
+registered already or not. Can't this be encoded differently?
+
+BTW, shadow_mutex.mutex is a kernel pointer sitting in a user-reachable
+memory region? Why not using a handle here, like the native skin does?
+Won't that allow to resolve the issue above as well?
+
+Jan
+
+
+--------------enig64F1B48783B0941A593EAA75
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkivy0IACgkQniDOoMHTA+kSFACdFejMrdmostbEXwNC64QRm4rH
+dIoAn2KDGbnYcEyz97HlG3u1bVQTpaYX
+=QwWW
+-----END PGP SIGNATURE-----
+
+--------------enig64F1B48783B0941A593EAA75--
 
