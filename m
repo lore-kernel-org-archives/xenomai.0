@@ -1,5 +1,5 @@
-Message-ID: <48AFF0BF.2000207@domain.hid>
-Date: Sat, 23 Aug 2008 13:13:03 +0200
+Message-ID: <48AFF17F.1080803@domain.hid>
+Date: Sat, 23 Aug 2008 13:16:15 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <48AFCB3F.6070902@domain.hid> <48AFE498.2060805@domain.hid>
@@ -64,8 +64,8 @@ Gilles Chanteperdrix wrote:
 > use it...
 > 
 
-I understand that, but names could be generated internally from the object
-address, or the registry updated to allow hashing bit patterns as well.
+The thing is that, without built-in registry support, you have no /proc export
+of any status data either.
 
 -- 
 Philippe.
