@@ -1,14 +1,11 @@
-Message-ID: <48B292D0.6060404@domain.hid>
-Date: Mon, 25 Aug 2008 13:09:04 +0200
+Message-ID: <48B2994A.1050708@domain.hid>
+Date: Mon, 25 Aug 2008 13:36:42 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <48AEE3AB.6070001@domain.hid>	<48AEE945.8000503@domain.hid>	<48AFCD61.8040203@domain.hid>	<48AFE515.70003@domain.hid>
-	<48AFEA3B.4070702@domain.hid>	<48B265A4.5040003@domain.hid>
-	<48B266B9.50100@domain.hid> <48B28A21.40309@domain.hid>
-In-Reply-To: <48B28A21.40309@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 2/2] Unify asm-x86/atomic.h
+Subject: [Xenomai-core] Native skin: user space handles sharable between
+	processes?
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,25 +15,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Xenomai-core@domain.hid
+To: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> +#include <asm/atomic.h>
->>> +
->>> +#if BITS_PER_LONG != 32
->>> +#error Upgrade to kernel 2.6!
->>> +#endif
->> I am not well versed with the 2.4 support. But are we sure we support no
->> 64 bits architecture with 2.4 ? What about ppc64 ?
->>
-> 
-> No other 2.4 port will be merged, so this should be ok. ppc64 is 2.6 only for us.
+Hi,
 
-Fine, so I merged my patch.
+what is the policy for the user space handles the native skin generates:
+Can the user share them between processes via putting them into shared
+memory (like it is allowed for some POSIX objects)?
 
+I'm wondering if I have to use the POSIX pattern to resolve the address
+of a fast mutex: If shared, look to global heap, otherwise use
+process-local heap. If native handle structures were only valid within a
+single context, I could use absolute pointers instead, saving some code
+and data.
+
+Thanks,
 Jan
 
 -- 
