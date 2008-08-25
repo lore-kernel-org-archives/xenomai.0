@@ -1,5 +1,5 @@
-Message-ID: <48B2E194.3040905@domain.hid>
-Date: Mon, 25 Aug 2008 18:45:08 +0200
+Message-ID: <48B2E31A.2020109@domain.hid>
+Date: Mon, 25 Aug 2008 18:51:38 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <48B2D1C4.5010306@domain.hid> <48B2E115.4070107@domain.hid>
@@ -34,12 +34,9 @@ Philippe Gerum wrote:
 > I think so, we might lose some debug information, but that's the price for much
 > better performances. I can't imagine any sane code iterating lockcnt-times
 > blindly to unlock a mutex it owns until it is free. Nah, of course not...
-> 
-> Btw, I guess that the /proc information about mutexes would have to be reworked
-> as well.
 
-Haven't looked into this yet (or haven't stumbled over any issue). What
-conflict / lack of data do you have in mind here?
+Hmm, we could rename 'lockcnt' to 'locked' so that no one can stumble
+accidentally over this change...
 
 Jan
 
