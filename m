@@ -1,20 +1,10 @@
-Content-class: urn:content-classes:message
+Date: Mon, 25 Aug 2008 17:43:59 +0200
+From: "Petr Cervenka" <grugh@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 25 Aug 2008 08:30:53 +0200
-Message-ID: <406CC9939904F143B9D42CEEA3E56E564324F6@domain.hid>
-References: <406CC9939904F143B9D42CEEA3E56E56431F57@domain.hid>
-	<48AAF55E.9000206@domain.hid>
-	<406CC9939904F143B9D42CEEA3E56E56431FCD@oab1mx1.oneaccess.intra>
-	<48ABEF11.6060307@domain.hid>
-	<406CC9939904F143B9D42CEEA3E56E56432116@domain.hid>
-	<48AC6BA0.9010306@domain.hid>
-	<406CC9939904F143B9D42CEEA3E56E56432274@domain.hid>
-	<48AF0378.3030001@domain.hid>
-From: "Filip Van Rillaer" <Filip.VanRillaer@domain.hid>
-Subject: Re: [Xenomai-help] uClinux write to pipe returning -ENOMEM
+Message-ID: <200808251743.26012@domain.hid>
+Content-Type: text/plain; charset="windows-1250"
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-help] rt_queue_delete returns -EBUSY
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,28 +14,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hello Philippe,
+Hello,
+I tried xenomai 2.4.5, hoping that my problems with real-time queue will disappear. But there is another (perhaps very trivial) error.
+Function call rt_queue_delete always returns -EBUSY (at least for me). You don't have to bind it from another task or use it at all.
+I hope that I have used it in the right way.
+Petr Cervenka
 
-<<
-Both the maintenance and the -devel branches have been updated with
-changes that make the non-RT write side block until enough memory is
-available from the pool (unless O_NONBLOCK is set). The work-around will
-still work, but the return value from the NOBUF event handler is now
-discarded; the nucleus will retry to get memory automatically.
->>
-Thanks.
+Simple example:
 
-<<
-cookie args are prone to clutter the API and introduce useless overhead
-for carrying them, therefore we don't want to=20
-add more of them. The preferred way is something like: ...
->>
-Yes, you are right, I will update my code following your advice.  Thanks
-for investigating my case.
+#include <stdlib.h>
 
-Best regards,
-Filip
+#include <sys/mman.h>       // mlockall
+#include <native/task.h>
+#include <native/queue.h>
+
+RT_TASK  main_task;
+RT_QUEUE queue;
+
+int main(int argc, char** argv) {
+    int res;
+    
+    mlockall(MCL_CURRENT | MCL_FUTURE);
+    
+    res = rt_task_shadow(&main_task, "MAIN_TASK", 5, T_FPU);
+    if (res < 0) {
+        fprintf(stderr, "rt_task_shadow() failed: %d (%s)\n", res, strerror(-res));
+        goto cleanup_end;
+    }
+    
+    res = rt_queue_create(&queue, "QUEUE", 1024, Q_UNLIMITED, Q_FIFO | Q_SHARED);
+    if (res < 0) {
+        fprintf(stderr, "rt_queue_create() failed: %d (%s)\n", res, strerror(-res));
+        goto cleanup_task;
+    }
+    
+cleanup_queue:
+    res = rt_queue_delete(&queue);
+    if (res < 0) {
+        fprintf(stderr, "rt_queue_delete() failed: %d (%s)\n", res, strerror(-res));
+    }
+cleanup_task:
+cleanup_end:
+    return res;
+} 
+
 
