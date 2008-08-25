@@ -1,6 +1,6 @@
-Message-ID: <48B2AC6E.9060100@domain.hid>
-Date: Mon, 25 Aug 2008 14:58:22 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48B2BE8F.5070206@domain.hid>
+Date: Mon, 25 Aug 2008 16:15:43 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <20080812075358.4cg1ix9945msccsc@domain.hid>	<48A12EA8.4070601@domain.hid>
 	<48A34D75.9090509@domain.hid>	<48A359D4.9090002@domain.hid>
@@ -13,6 +13,7 @@ In-Reply-To: <20080825141624.3hk4ndxf9xwcgkcg@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Adeos-main] [RTnet-users] e1000 & MSI
+Reply-To: rpm@xenomai.org
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -22,7 +23,7 @@ List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: bernhard@domain.hid
-Cc: adeos-main <adeos-main@gna.org>, rpm@xenomai.org, RTnet-users@domain.hid
+Cc: adeos-main <adeos-main@gna.org>, RTnet-users@domain.hid
 
 bernhard@domain.hid wrote:
 > Zitat von Philippe Gerum <rpm@xenomai.org>:
@@ -55,19 +56,41 @@ bernhard@domain.hid wrote:
 > testing and peak at several milliseconds. I didn't do the regression  
 > with 'normal' INTs though, but that's something up next. Additionally  
 > MMCONFIG produced some strange msg at boot.
+> 
+> I suspect I'm going to use INTs for my current project :(
+> 
+> Bernhard
+> 
+> 
+> PCI_GOMMCONFIG
+> --------------
+> 
+> I get the following dmesg:
+> 
+> ACPI: bus type pci registered
+> PCI: MCFG configuration 0: base f0000000 segment 0 buses 0 - 31
+> PCI: Not using MMCONFIG.
+> PCI: Fatal: No config space access function found
 
-Could you catch some path traces with the ipipe latency tracer when this
-happens? See [1] for details. Dunno if RTAI's latency tool is prepared
-to support you here (triggering a trace on new peaks), but
-CONFIG_IPIPE_TRACE_IRQSOFF should already suffice in this case - if the
-latency is due to IRQ disabling over PCI code.
+Your hw does not seem to have PCI Express support, hence MMConfig access method
+is not available. The kernel is expected to downgrade to direct access method.
 
-Thanks,
-Jan
+> [....]
+> 
+> 
+> PCI_GODIRECT
+> ------------
+> 
+> Here desg looks better:
+> 
+> ACPI: bus type pci registered
+> PCI: Using configuration type 1 for base access
 
-[1] http://www.xenomai.org/index.php/I-pipe:Tracer
+Direct access type 1 is done through in/out{b, w, l} commands, which is not
+cheap. Well, if it proves that we don't face any unknown issue with direct
+access, only getting virtualized masking/unmasking of MSI driven interrupts
+would save the day.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Philippe.
 
