@@ -1,13 +1,12 @@
-Message-ID: <48B2E40B.4070401@domain.hid>
-Date: Mon, 25 Aug 2008 18:55:39 +0200
+Message-ID: <48B313B5.9050308@domain.hid>
+Date: Mon, 25 Aug 2008 22:19:01 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <48B2D1C4.5010306@domain.hid> <48B2E115.4070107@domain.hid>
-	<48B2E194.3040905@domain.hid> <48B2E37E.5040004@domain.hid>
-In-Reply-To: <48B2E37E.5040004@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Fast native mutexes vs. RT_MUTEX_INFO.lockcnt
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigFD8D658A5E5440EDBF81BB57"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] xnregistry_fetch & friends
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,42 +16,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> Jan Kiszka wrote:
->>>> Hi,
->>>>
->>>> next issue on my way towards fast native mutexes: as mutexes are now
->>>> mostly acquired in user space, the recursion counter lockcnt will only
->>>> be maintained in the context of the owning thread (at best: its process)
->>>> in user space. No update on the kernel-side lockcnt will take place
->>>> anymore, thus rt_mutex_inquire can only return 0 or 1, no > 1. Is it OK
->>>> to break the ABI here?
->>>>
->>> I think so, we might lose some debug information, but that's the price for much
->>> better performances. I can't imagine any sane code iterating lockcnt-times
->>> blindly to unlock a mutex it owns until it is free. Nah, of course not...
->>>
->>> Btw, I guess that the /proc information about mutexes would have to be reworked
->>> as well.
->> Haven't looked into this yet (or haven't stumbled over any issue). What
->> conflict / lack of data do you have in mind here?
->>
-> 
-> Basically, exporting the lock owner and the locking depth is likely no more
-> possible for userland optimized mutexes.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigFD8D658A5E5440EDBF81BB57
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Ah, that's also visible at that place. But the owner is still available
-as userland writes its own xnthread_t into the lock variable. We just
-face the same issue as with RT_MUTEX_INFO.
+Hi,
+
+trying to select a sane kernel-side looking scheme for fast native
+mutexes, I had a closer look at the registry usage in that skin (and
+many others). The typical pattern is
+
+object =3D xnregistry_fetch(handle);
+perform_operation(object);
+
+There is no lock around those two, both services do nklock acquisition
+only internally. So this is a bit racy against concurrent object
+destruction and memory releasing / object reconstruction. Well, I guess
+the rational is: we test against object magics and the underlying memory
+is normally not vanishing (immediately) on destruction, right? Remains
+just object reconstruction. Not a real-life issue?
+
+But then I wonder
+
+ a) why xnregistry_fetch uses nklock at all (even for totally uncritical
+    XNOBJECT_SELF!)
+
+ b) what the ideas/plans on unused xnregistry_put/get are.
 
 Jan
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+
+--------------enigFD8D658A5E5440EDBF81BB57
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkizE7oACgkQniDOoMHTA+nhGQCfVQDkd59z78VESWHvbWY0rHzv
+S6wAn2ooHDejtQJOD5SrqcaHKsPUy601
+=07ew
+-----END PGP SIGNATURE-----
+
+--------------enigFD8D658A5E5440EDBF81BB57--
 
