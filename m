@@ -1,5 +1,5 @@
-Message-ID: <48B2DCCC.4010303@domain.hid>
-Date: Mon, 25 Aug 2008 18:24:44 +0200
+Message-ID: <48B2E323.1060600@domain.hid>
+Date: Mon, 25 Aug 2008 18:51:47 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <200808251743.26012@domain.hid>
@@ -26,7 +26,13 @@ Petr Cervenka wrote:
 > Function call rt_queue_delete always returns -EBUSY (at least for me). You don't have to bind it from another task or use it at all.
 > I hope that I have used it in the right way.
 
-Classic chicken-and-egg issue. Ok, will fix.
+Actually, if your code still creates and deletes queues dynamically during the
+normal operations, this is clearly not the best approach. Those calls are VERY
+costly, and very much prone to unbounded latency.
+
+I.e. They switch to secondary mode, allocate/deallocate ranges of kernel memory,
+create/delete internal Xenomai heap objects, and eventually map/unmap those
+memory ranges to/from your user-space process.
 
 > Petr Cervenka
 > 
