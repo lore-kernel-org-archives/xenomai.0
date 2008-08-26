@@ -1,14 +1,15 @@
-Message-ID: <48B42D29.6030701@domain.hid>
-Date: Tue, 26 Aug 2008 18:19:53 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48B42DB6.4050704@domain.hid>
+Date: Tue, 26 Aug 2008 18:22:14 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <48B3ED52.7080101@domain.hid> <48B3EFFC.8020408@domain.hid>
-	<48B42A68.3020400@domain.hid>
-In-Reply-To: <48B42A68.3020400@domain.hid>
+	<48B42A68.3020400@domain.hid> <48B42D29.6030701@domain.hid>
+In-Reply-To: <48B42D29.6030701@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [RESEND][PATCH 6/6] Report registry slot usage
  via	/proc
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,27 +19,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Some customer ran into the problem of lacking registry slots without
->> prior warning. We are lacking some report mechanism, specifically for
->> unexported (anonymous) entries (every native user object requires one
->> for its handle).
->>
->> This patch introduces /proc/xenomai/registry_usage in the form
->>
+Jan Kiszka wrote:
+> Philippe Gerum wrote:
+>> Jan Kiszka wrote:
+>>> Some customer ran into the problem of lacking registry slots without
+>>> prior warning. We are lacking some report mechanism, specifically for
+>>> unexported (anonymous) entries (every native user object requires one
+>>> for its handle).
+>>>
+>>> This patch introduces /proc/xenomai/registry_usage in the form
+>>>
+>> Eeek. /proc/xenomai/registry/status or /usage. Otherwise, ok.
 > 
-> Eeek. /proc/xenomai/registry/status or /usage. Otherwise, ok.
+> There was a reason, there was a reason... Ah! That subdir depends on
+> CONFIG_XENO_EXPORT_REGISTRY. Needs more refactoring then... :-]
+>
 
-There was a reason, there was a reason... Ah! That subdir depends on
-CONFIG_XENO_EXPORT_REGISTRY. Needs more refactoring then... :-]
-
-Jan
+Ok, I'm freezing this one, waiting for next iteration.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Philippe.
 
