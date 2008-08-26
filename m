@@ -1,13 +1,12 @@
-Message-ID: <489994E7.1060607@domain.hid>
-Date: Wed, 06 Aug 2008 14:11:19 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1251450790@domain.hid>
-In-Reply-To: <1251450790@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] unwanted switch to secondary mode on call
-	to	rt_dev_ioctl
+Date: Tue, 26 Aug 2008 11:45:29 +0200
+From: Matthieu <matthieu.connaulte_xenomai@domain.hid>
+Message-ID: <f5413a21c1a563b4f7eeac16c004811f@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] =?utf-8?q?Problem_with_tcb=2Ehandle_and_taskDesc?=
+	=?utf-8?q?=2Etd=5Ftid?=
+Reply-To: matthieu.connaulte_xenomai@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,20 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jochen Behnke <JK.Behnke@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Jochen Behnke wrote:
-> My configuration Processor Celeron 400Hz xenomai 2.4.2 Kernel 2.6.24
+Hi
 
-This is a bit outdated. You should use Xenomai 2.4.4, the latest stable
-release of the 2.4 branch.
+I would like to understand the coherence between the task identifier of t=
+he
+task control block and the task id given by taskDesk (function
+taskInfoGet()). In fact, I init a task with taskInit, I get the tid using
+tid=3Dtcb.handle. The use of taskInfoGet(tid, taskDesc) gives me a
+taskDesk.td_tid different from the tid.
 
-> 
-> I have no idea what is going wrong, any hint is appreciated. Thanks.
+I want to test if the task is suspended using taskIsSuspended(tid) or
+taskIsSuspended(taskDesc.td_tid), but both get me  a 3d0001 errno (code
+error of WIND_OBJ_ERR_BASE S_objLib_OBJ_ID_ERROR). The PID given by
+/proc/xenomai/stat also has no connection. Idem with a ps -AfL
 
-Please show us the driver and application sources.
+Thank you in advance for your explanations
 
--- 
-                                                 Gilles.
+Matthieu
+
+
 
