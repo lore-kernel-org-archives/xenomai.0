@@ -1,13 +1,13 @@
-Message-ID: <48B42950.7010001@domain.hid>
-Date: Tue, 26 Aug 2008 18:03:28 +0200
+Message-ID: <48B42A68.3020400@domain.hid>
+Date: Tue, 26 Aug 2008 18:08:08 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <48B3ED52.7080101@domain.hid> <48B407BD.2070204@domain.hid>
-In-Reply-To: <48B407BD.2070204@domain.hid>
+References: <48B3ED52.7080101@domain.hid> <48B3EFFC.8020408@domain.hid>
+In-Reply-To: <48B3EFFC.8020408@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 0/6] Registry-related
-	cleanups	and	improvements
+Subject: Re: [Xenomai-core] [RESEND][PATCH 6/6] Report registry slot usage
+ via	/proc
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -18,45 +18,123 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Here comes the complete series of patches to improve the Xenomai
->> registry. #1, #5, and #6 are resends of already posted patches, the
->> middle part is fresh from the editor. The series reduces overhead
->> and simplifies the registry code. Overall diffstat:
->>
->>  include/asm-generic/hal.h  |   10 +-
->>  include/nucleus/registry.h |   10 --
->>  ksrc/arch/generic/hal.c    |   18 +--
->>  ksrc/arch/generic/nmi.c    |    6 -
->>  ksrc/arch/x86/nmi_32.c     |    6 -
->>  ksrc/nucleus/module.c      |   58 ++++-------
->>  ksrc/nucleus/registry.c    |  223 ++++++++++++++++++++++-----------------------
->>  ksrc/skins/native/alarm.c  |   22 +---
->>  ksrc/skins/native/buffer.c |   15 ---
->>  ksrc/skins/native/cond.c   |   14 --
->>  ksrc/skins/native/event.c  |   15 ---
->>  ksrc/skins/native/heap.c   |   14 --
->>  ksrc/skins/native/intr.c   |   17 ---
->>  ksrc/skins/native/mutex.c  |   15 ---
->>  ksrc/skins/native/pipe.c   |   14 --
->>  ksrc/skins/native/queue.c  |   12 --
->>  ksrc/skins/native/sem.c    |   14 --
->>  ksrc/skins/native/task.c   |   16 ---
->>  18 files changed, 182 insertions(+), 317 deletions(-)
->>
->> So a net gain of more than 130 LOC.
->>
->> The series passed basic tests on my virtual target.
+Jan Kiszka wrote:
+> Some customer ran into the problem of lacking registry slots without
+> prior warning. We are lacking some report mechanism, specifically for
+> unexported (anonymous) entries (every native user object requires one
+> for its handle).
 > 
-> Ok. Now that we have discussed the potential xnsynch issue, the patches
-> are Ok for me.
+> This patch introduces /proc/xenomai/registry_usage in the form
+>
+
+Eeek. /proc/xenomai/registry/status or /usage. Otherwise, ok.
+
+> slots=512:used=1:exported=0
+> 
+> to address this deficit.
+> 
+> ---
+>  ksrc/nucleus/registry.c |   41 +++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 41 insertions(+)
+> 
+> Index: b/ksrc/nucleus/registry.c
+> ===================================================================
+> --- a/ksrc/nucleus/registry.c
+> +++ b/ksrc/nucleus/registry.c
+> @@ -60,6 +60,8 @@ static int registry_hash_entries;
+>  
+>  static xnsynch_t registry_hash_synch;
+>  
+> +static unsigned registry_exported_objects;
+> +
+>  #ifdef CONFIG_XENO_EXPORT_REGISTRY
+>  
+>  #include <linux/workqueue.h>
+> @@ -82,6 +84,35 @@ static int registry_proc_apc;
+>  
+>  #endif /* CONFIG_XENO_EXPORT_REGISTRY */
+>  
+> +#ifdef CONFIG_PROC_FS
+> +static int
+> +registry_usage_read_proc(char *page, char **start, off_t off,
+> +			 int count, int *eof, void *data)
+> +{
+> +	int len;
+> +
+> +	if (!xnpod_active_p())
+> +		return -ESRCH;
+> +
+> +	len = sprintf(page, "slots=%u:used=%u:exported=%u\n",
+> +		      CONFIG_XENO_OPT_REGISTRY_NRSLOTS,
+> +		      CONFIG_XENO_OPT_REGISTRY_NRSLOTS -
+> +		      countq(&registry_obj_freeq),
+> +		      registry_exported_objects);
+> +
+> +	len -= off;
+> +	if (len <= off + count)
+> +		*eof = 1;
+> +	*start = page + off;
+> +	if (len > count)
+> +		len = count;
+> +	if (len < 0)
+> +		len = 0;
+> +
+> +	return len;
+> +}
+> +#endif /* CONFIG_PROC_FS */
+> +
+>  int xnregistry_init(void)
+>  {
+>  	static const int primes[] = {
+> @@ -117,6 +148,11 @@ int xnregistry_init(void)
+>  	initq(&registry_obj_procq);
+>  #endif /* CONFIG_XENO_EXPORT_REGISTRY */
+>  
+> +#ifdef CONFIG_PROC_FS
+> +	rthal_add_proc_leaf("registry_usage", registry_usage_read_proc,
+> +			    NULL, NULL, rthal_proc_root);
+> +#endif /* CONFIG_PROC_FS */
+> +
+>  	initq(&registry_obj_freeq);
+>  	initq(&registry_obj_busyq);
+>  	registry_obj_stamp = 0;
+> @@ -136,6 +172,9 @@ int xnregistry_init(void)
+>  						  registry_hash_entries);
+>  
+>  	if (!registry_hash_table) {
+> +#ifdef CONFIG_PROC_FS
+> +		remove_proc_entry("registry_usage", rthal_proc_root);
+> +#endif /* CONFIG_PROC_FS */
+>  #ifdef CONFIG_XENO_EXPORT_REGISTRY
+>  		rthal_apc_free(registry_proc_apc);
+>  		remove_proc_entry("registry", rthal_proc_root);
+> @@ -269,6 +308,7 @@ static DECLARE_WORK_FUNC(registry_proc_c
+>  		if (object->proc != XNOBJECT_PROC_RESERVED1)
+>  			goto unexport;
+>  
+> +		registry_exported_objects++;
+>  		++pnode->entries;
+>  		object->proc = XNOBJECT_PROC_RESERVED2;
+>  		appendq(&registry_obj_busyq, holder);
+> @@ -326,6 +366,7 @@ static DECLARE_WORK_FUNC(registry_proc_c
+>  		continue;
+>  
+>  	unexport:
+> +		registry_exported_objects--;
+>  		entries = --pnode->entries;
+>  		entry = object->proc;
+>  		object->proc = NULL;
+> 
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 > 
 
-Ok, I'll merge then.
 
 -- 
 Philippe.
