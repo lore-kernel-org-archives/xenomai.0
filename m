@@ -1,14 +1,15 @@
 Resent-To: xenomai-core <xenomai@xenomai.org>
-Resent-Message-Id: <48B3F2C0.8070207@domain.hid>
-Message-ID: <48B3EF34.90001@domain.hid>
-Date: Tue, 26 Aug 2008 13:55:32 +0200
+Resent-Message-Id: <48B3F2C0.1000005@domain.hid>
+Message-ID: <48B3EEC9.2040605@domain.hid>
+Date: Tue, 26 Aug 2008 13:53:45 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <48B3ED52.7080101@domain.hid>
 In-Reply-To: <48B3ED52.7080101@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH 4/6] Eliminate xnobjhash
+Subject: [Xenomai-core] [PATCH 3/6] Native skin: Use key-less registry
+	entries
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,196 +21,324 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai-core <xenomai@xenomai.org>
 
-Hook up xnobject directly to the hash table instead of establishing
-dynamically created xnobjhash redirections.
+Make use of the new key-less property of xnregistry_enter, cleaning up
+most pointless pseudo name creations for anonymous objects.
 
 ---
- include/nucleus/registry.h |   10 +-----
- ksrc/nucleus/registry.c    |   73 +++++++++++++++++++--------------------------
- 2 files changed, 33 insertions(+), 50 deletions(-)
+ ksrc/skins/native/alarm.c  |   22 +++++++++-------------
+ ksrc/skins/native/buffer.c |   15 ++-------------
+ ksrc/skins/native/cond.c   |   14 ++------------
+ ksrc/skins/native/event.c  |   15 ++-------------
+ ksrc/skins/native/heap.c   |   14 ++------------
+ ksrc/skins/native/intr.c   |   17 +++--------------
+ ksrc/skins/native/mutex.c  |   15 ++-------------
+ ksrc/skins/native/pipe.c   |   14 ++------------
+ ksrc/skins/native/queue.c  |   12 +-----------
+ ksrc/skins/native/sem.c    |   14 ++------------
+ ksrc/skins/native/task.c   |   16 ++--------------
+ 11 files changed, 29 insertions(+), 139 deletions(-)
 
-Index: b/include/nucleus/registry.h
+Index: b/ksrc/skins/native/alarm.c
 ===================================================================
---- a/include/nucleus/registry.h
-+++ b/include/nucleus/registry.h
-@@ -55,6 +55,8 @@ typedef struct xnobject {
+--- a/ksrc/skins/native/alarm.c
++++ b/ksrc/skins/native/alarm.c
+@@ -212,24 +212,20 @@ int rt_alarm_create(RT_ALARM *alarm,
+ #endif /* CONFIG_XENO_OPT_PERVASIVE */
  
-     u_long cstamp;	/* !< Creation stamp. */
+ 	if (name) {
+-#ifdef CONFIG_XENO_OPT_REGISTRY
+-		/* <!> Since xnregister_enter() may reschedule, only register
+-		   complete objects, so that the registry cannot return
+-		   handles to half-baked objects... */
+-
+-		xnpnode_t *pnode = &__alarm_pnode;
+-
+ 		if (!*name) {
+-			/* Since this is an anonymous object (empty name on entry)
+-			   from user-space, it gets registered under an unique
+-			   internal name but is not exported through /proc. */
++			/* To improve readability in timer_base /proc
++			   output. */
+ 			xnobject_create_name(alarm->name, sizeof(alarm->name),
+ 					     (void *)alarm);
+-			pnode = NULL;
+ 		}
  
-+    struct xnobject *hnext;	/* !< Next in h-table */
+-		err =
+-		    xnregistry_enter(alarm->name, alarm, &alarm->handle, pnode);
++#ifdef CONFIG_XENO_OPT_REGISTRY
++		/* <!> Since xnregister_enter() may reschedule, only register
++		   complete objects, so that the registry cannot return
++		   handles to half-baked objects... */
 +
- #ifdef CONFIG_PROC_FS
++		err = xnregistry_enter((*name) ? alarm->name : "", alarm,
++				       &alarm->handle, &__alarm_pnode);
  
-     struct xnpnode *pnode; /* !< /proc information class. */
-@@ -65,14 +67,6 @@ typedef struct xnobject {
- 
- } xnobject_t;
- 
--typedef struct xnobjhash {
--
--    xnobject_t *object;
--
--    struct xnobjhash *next;	/* !< Next in h-table */
--
--} xnobjhash_t;
--
- #ifdef __cplusplus
- extern "C" {
- #endif
-Index: b/ksrc/nucleus/registry.c
+ 		if (err)
+ 			rt_alarm_delete(alarm);
+Index: b/ksrc/skins/native/buffer.c
 ===================================================================
---- a/ksrc/nucleus/registry.c
-+++ b/ksrc/nucleus/registry.c
-@@ -54,7 +54,7 @@ static xnqueue_t registry_obj_busyq;	/*
+--- a/ksrc/skins/native/buffer.c
++++ b/ksrc/skins/native/buffer.c
+@@ -221,20 +221,9 @@ int rt_buffer_create(RT_BUFFER *bf, cons
+ 	 * handles to half-baked objects...
+ 	 */
+ 	if (name) {
+-		xnpnode_t *pnode = &__buffer_pnode;
++		ret = xnregistry_enter(bf->name, bf, &bf->handle,
++				       &__buffer_pnode);
  
- static u_long registry_obj_stamp;
- 
--static xnobjhash_t **registry_hash_table;
-+static xnobject_t **registry_hash_table;
- 
- static int registry_hash_entries;
- 
-@@ -132,8 +132,8 @@ int xnregistry_init(void)
- 	registry_hash_entries =
- 	    primes[obj_hash_max(CONFIG_XENO_OPT_REGISTRY_NRSLOTS / 100)];
- 	registry_hash_table =
--	    (xnobjhash_t **) xnarch_alloc_host_mem(sizeof(xnobjhash_t *) *
--					     registry_hash_entries);
-+	    (xnobject_t **) xnarch_alloc_host_mem(sizeof(xnobject_t *) *
-+						  registry_hash_entries);
- 
- 	if (!registry_hash_table) {
- #ifdef CONFIG_XENO_EXPORT_REGISTRY
-@@ -153,45 +153,42 @@ int xnregistry_init(void)
- 
- void xnregistry_cleanup(void)
- {
--	xnobjhash_t *ecurr, *enext;
-+	xnobject_t *ecurr, *enext;
- 	int n;
- 
-+#ifdef CONFIG_XENO_EXPORT_REGISTRY
- 	for (n = 0; n < registry_hash_entries; n++) {
- 		for (ecurr = registry_hash_table[n]; ecurr; ecurr = enext) {
--			enext = ecurr->next;
-+			enext = ecurr->hnext;
- 
--#ifdef CONFIG_XENO_EXPORT_REGISTRY
--			if (ecurr->object && ecurr->object->pnode) {
--				remove_proc_entry(ecurr->object->key,
--						  ecurr->object->pnode->dir);
-+			if (ecurr->pnode) {
-+				remove_proc_entry(ecurr->key,
-+						  ecurr->pnode->dir);
- 
--				if (--ecurr->object->pnode->entries <= 0) {
--					remove_proc_entry(ecurr->object->pnode->
-+				if (--ecurr->pnode->entries <= 0) {
-+					remove_proc_entry(ecurr->pnode->
- 							  type,
--							  ecurr->object->pnode->
-+							  ecurr->pnode->
- 							  root->dir);
--					ecurr->object->pnode->dir = NULL;
-+					ecurr->pnode->dir = NULL;
- 
--					if (--ecurr->object->pnode->root->
-+					if (--ecurr->pnode->root->
- 					    entries <= 0) {
- 						remove_proc_entry(ecurr->
--								  object->
- 								  pnode->root->
- 								  name,
- 								  registry_proc_root);
--						ecurr->object->pnode->root->
-+						ecurr->pnode->root->
- 						    dir = NULL;
- 					}
- 				}
- 			}
--#endif /* CONFIG_XENO_EXPORT_REGISTRY */
+-		if (!*name) {
+-			/*
+-			 * Since this is an anonymous object (empty
+-			 * name on entry) from user-space, it gets
+-			 * registered under an unique internal name
+-			 * but is not exported through /proc.
+-			 */
+-			xnobject_create_name(bf->name, sizeof(bf->name), bf);
+-			pnode = NULL;
+-		}
 -
--			xnfree(ecurr);
- 		}
+-		ret = xnregistry_enter(bf->name, bf, &bf->handle, pnode);
+ 		if (ret)
+ 			rt_buffer_delete(bf);
  	}
-+#endif /* CONFIG_XENO_EXPORT_REGISTRY */
+Index: b/ksrc/skins/native/cond.c
+===================================================================
+--- a/ksrc/skins/native/cond.c
++++ b/ksrc/skins/native/cond.c
+@@ -180,18 +180,8 @@ int rt_cond_create(RT_COND *cond, const
+ 	   half-baked objects... */
  
- 	xnarch_free_host_mem(registry_hash_table,
--		       sizeof(xnobjhash_t *) * registry_hash_entries);
-+		       sizeof(xnobject_t *) * registry_hash_entries);
+ 	if (name) {
+-		xnpnode_t *pnode = &__cond_pnode;
+-
+-		if (!*name) {
+-			/* Since this is an anonymous object (empty name on entry)
+-			   from user-space, it gets registered under an unique
+-			   internal name but is not exported through /proc. */
+-			xnobject_create_name(cond->name, sizeof(cond->name),
+-					     (void *)cond);
+-			pnode = NULL;
+-		}
+-
+-		err = xnregistry_enter(cond->name, cond, &cond->handle, pnode);
++		err = xnregistry_enter(cond->name, cond, &cond->handle,
++				       &__cond_pnode);
  
- 	xnsynch_destroy(&registry_hash_synch);
+ 		if (err)
+ 			rt_cond_delete(cond);
+Index: b/ksrc/skins/native/event.c
+===================================================================
+--- a/ksrc/skins/native/event.c
++++ b/ksrc/skins/native/event.c
+@@ -204,19 +204,8 @@ int rt_event_create(RT_EVENT *event,
+ 	   half-baked objects... */
  
-@@ -448,25 +445,19 @@ static unsigned registry_hash_crunch(con
+ 	if (name) {
+-		xnpnode_t *pnode = &__event_pnode;
+-
+-		if (!*name) {
+-			/* Since this is an anonymous object (empty name on entry)
+-			   from user-space, it gets registered under an unique
+-			   internal name but is not exported through /proc. */
+-			xnobject_create_name(event->name, sizeof(event->name),
+-					     (void *)event);
+-			pnode = NULL;
+-		}
+-
+-		err =
+-		    xnregistry_enter(event->name, event, &event->handle, pnode);
++		err = xnregistry_enter(event->name, event, &event->handle,
++				       &__event_pnode);
  
- static inline int registry_hash_enter(const char *key, xnobject_t *object)
- {
--	xnobjhash_t *enew, *ecurr;
-+	xnobject_t *ecurr;
- 	unsigned s;
+ 		if (err)
+ 			rt_event_delete(event);
+Index: b/ksrc/skins/native/heap.c
+===================================================================
+--- a/ksrc/skins/native/heap.c
++++ b/ksrc/skins/native/heap.c
+@@ -310,18 +310,8 @@ int rt_heap_create(RT_HEAP *heap, const
+ 	   half-baked objects... */
  
- 	object->key = key;
- 	s = registry_hash_crunch(key);
+ 	if (name) {
+-		xnpnode_t *pnode = &__heap_pnode;
+-
+-		if (!*name) {
+-			/* Since this is an anonymous object (empty name on entry)
+-			   from user-space, it gets registered under an unique
+-			   internal name but is not exported through /proc. */
+-			xnobject_create_name(heap->name, sizeof(heap->name),
+-					     (void *)heap);
+-			pnode = NULL;
+-		}
+-
+-		err = xnregistry_enter(heap->name, heap, &heap->handle, pnode);
++		err = xnregistry_enter(heap->name, heap, &heap->handle,
++				       &__heap_pnode);
  
--	for (ecurr = registry_hash_table[s]; ecurr != NULL; ecurr = ecurr->next) {
--		if (ecurr->object == object || !strcmp(key, ecurr->object->key))
-+	for (ecurr = registry_hash_table[s]; ecurr != NULL; ecurr = ecurr->hnext) {
-+		if (ecurr == object || !strcmp(key, ecurr->key))
- 			return -EEXIST;
+ 		if (err)
+ 			rt_heap_delete(heap);
+Index: b/ksrc/skins/native/intr.c
+===================================================================
+--- a/ksrc/skins/native/intr.c
++++ b/ksrc/skins/native/intr.c
+@@ -284,20 +284,9 @@ int rt_intr_create(RT_INTR *intr,
+ 	/* <!> Since xnregister_enter() may reschedule, only register
+ 	   complete objects, so that the registry cannot return handles to
+ 	   half-baked objects... */
+-	if (!err && name) {
+-		xnpnode_t *pnode = &__intr_pnode;
+-
+-		if (!*name) {
+-			/* Since this is an anonymous object (empty name on entry)
+-			 * from user-space, it gets registered under an unique
+-			 * internal name but is not exported through /proc. */
+-			xnobject_create_name(intr->name, sizeof(intr->name),
+-				(void *)intr);
+-			pnode = NULL;
+-		}
+-
+-		err = xnregistry_enter(intr->name, intr, &intr->handle, pnode);
+-	}	
++	if (!err && name)
++		err = xnregistry_enter(intr->name, intr, &intr->handle,
++				       &__intr_pnode);
+ 	
+ #endif /* CONFIG_XENO_OPT_REGISTRY */
+ 
+Index: b/ksrc/skins/native/mutex.c
+===================================================================
+--- a/ksrc/skins/native/mutex.c
++++ b/ksrc/skins/native/mutex.c
+@@ -191,19 +191,8 @@ int rt_mutex_create(RT_MUTEX *mutex, con
+ 	   half-baked objects... */
+ 
+ 	if (name) {
+-		xnpnode_t *pnode = &__mutex_pnode;
+-
+-		if (!*name) {
+-			/* Since this is an anonymous object (empty name on entry)
+-			   from user-space, it gets registered under an unique
+-			   internal name but is not exported through /proc. */
+-			xnobject_create_name(mutex->name, sizeof(mutex->name),
+-					     (void *)mutex);
+-			pnode = NULL;
+-		}
+-
+-		err =
+-		    xnregistry_enter(mutex->name, mutex, &mutex->handle, pnode);
++		err = xnregistry_enter(mutex->name, mutex, &mutex->handle,
++				       &__mutex_pnode);
+ 
+ 		if (err)
+ 			rt_mutex_delete(mutex);
+Index: b/ksrc/skins/native/pipe.c
+===================================================================
+--- a/ksrc/skins/native/pipe.c
++++ b/ksrc/skins/native/pipe.c
+@@ -338,18 +338,8 @@ int rt_pipe_create(RT_PIPE *pipe, const
+ 	   half-baked objects... */
+ 
+ 	if (name) {
+-		xnpnode_t *pnode = &__pipe_pnode;
+-
+-		if (!*name) {
+-			/* Since this is an anonymous object (empty name on entry)
+-			   from user-space, it gets registered under an unique
+-			   internal name but is not exported through /proc. */
+-			xnobject_create_name(pipe->name, sizeof(pipe->name),
+-					     (void *)pipe);
+-			pnode = NULL;
+-		}
+-
+-		err = xnregistry_enter(pipe->name, pipe, &pipe->handle, pnode);
++		err = xnregistry_enter(pipe->name, pipe, &pipe->handle,
++				       &__pipe_pnode);
+ 
+ 		if (err)
+ 			rt_pipe_delete(pipe);
+Index: b/ksrc/skins/native/queue.c
+===================================================================
+--- a/ksrc/skins/native/queue.c
++++ b/ksrc/skins/native/queue.c
+@@ -274,17 +274,7 @@ int rt_queue_create(RT_QUEUE *q,
+ 	   half-baked objects... */
+ 
+ 	if (name) {
+-		xnpnode_t *pnode = &__queue_pnode;
+-
+-		if (!*name) {
+-			/* Since this is an anonymous object (empty name on entry)
+-			   from user-space, it gets registered under an unique
+-			   internal name but is not exported through /proc. */
+-			xnobject_create_name(q->name, sizeof(q->name), q);
+-			pnode = NULL;
+-		}
+-
+-		err = xnregistry_enter(q->name, q, &q->handle, pnode);
++		err = xnregistry_enter(q->name, q, &q->handle, &__queue_pnode);
+ 
+ 		if (err)
+ 			rt_queue_delete(q);
+Index: b/ksrc/skins/native/sem.c
+===================================================================
+--- a/ksrc/skins/native/sem.c
++++ b/ksrc/skins/native/sem.c
+@@ -203,18 +203,8 @@ int rt_sem_create(RT_SEM *sem, const cha
+ 	   half-baked objects... */
+ 
+ 	if (name) {
+-		xnpnode_t *pnode = &__sem_pnode;
+-
+-		if (!*name) {
+-			/* Since this is an anonymous object (empty name on entry)
+-			   from user-space, it gets registered under an unique
+-			   internal name but is not exported through /proc. */
+-			xnobject_create_name(sem->name, sizeof(sem->name),
+-					     (void *)sem);
+-			pnode = NULL;
+-		}
+-
+-		err = xnregistry_enter(sem->name, sem, &sem->handle, pnode);
++		err = xnregistry_enter(sem->name, sem, &sem->handle,
++				       &__sem_pnode);
+ 
+ 		if (err)
+ 			rt_sem_delete(sem);
+Index: b/ksrc/skins/native/task.c
+===================================================================
+--- a/ksrc/skins/native/task.c
++++ b/ksrc/skins/native/task.c
+@@ -248,15 +248,8 @@ int rt_task_create(RT_TASK *task,
+ 
+ 	bflags = mode & (XNFPU | XNSHADOW | XNSHIELD | XNSUSP);
+ 
+-	if (name) {
+-		if (!*name)
+-			/* i.e. Anonymous object which must be accessible from
+-			   user-space. */
+-			xnobject_create_name(task->rname, sizeof(task->rname),
+-					     task);
+-		else
+-			xnobject_copy_name(task->rname, name);
+-	}
++	if (name)
++		xnobject_copy_name(task->rname, name);
+ 
+ 	if (xnpod_init_thread(&task->thread_base, __native_tbase,
+ 			      name, prio, bflags, stksize, &__xeno_task_ops) != 0)
+@@ -304,11 +297,6 @@ int rt_task_create(RT_TASK *task,
+ 				       NULL);
+ 		if (err)
+ 			xnpod_delete_thread(&task->thread_base);
+-		else if (!*name)
+-			/* /proc/xenomai/sched will dump no name for the anonymous
+-			   task, but the registry still has a stable reference
+-			   into the TCB to set up a handle for the task. */
+-			xnthread_clear_name(&task->thread_base);
  	}
+ #endif /* CONFIG_XENO_OPT_REGISTRY */
  
--	enew = (xnobjhash_t *) xnmalloc(sizeof(*enew));
--
--	if (!enew)
--		return -ENOMEM;
--
--	enew->object = object;
--	enew->next = registry_hash_table[s];
--	registry_hash_table[s] = enew;
-+	object->hnext = registry_hash_table[s];
-+	registry_hash_table[s] = object;
- 
- 	return 0;
- }
-@@ -474,17 +465,15 @@ static inline int registry_hash_enter(co
- static inline int registry_hash_remove(xnobject_t *object)
- {
- 	unsigned s = registry_hash_crunch(object->key);
--	xnobjhash_t *ecurr, *eprev;
-+	xnobject_t *ecurr, *eprev;
- 
- 	for (ecurr = registry_hash_table[s], eprev = NULL;
--	     ecurr != NULL; eprev = ecurr, ecurr = ecurr->next) {
--		if (ecurr->object == object) {
-+	     ecurr != NULL; eprev = ecurr, ecurr = ecurr->hnext) {
-+		if (ecurr == object) {
- 			if (eprev)
--				eprev->next = ecurr->next;
-+				eprev->hnext = ecurr->hnext;
- 			else
--				registry_hash_table[s] = ecurr->next;
--
--			xnfree(ecurr);
-+				registry_hash_table[s] = ecurr->hnext;
- 
- 			return 0;
- 		}
-@@ -495,12 +484,12 @@ static inline int registry_hash_remove(x
- 
- static xnobject_t *registry_hash_find(const char *key)
- {
--	xnobjhash_t *ecurr;
-+	xnobject_t *ecurr;
- 
- 	for (ecurr = registry_hash_table[registry_hash_crunch(key)];
--	     ecurr != NULL; ecurr = ecurr->next) {
--		if (!strcmp(key, ecurr->object->key))
--			return ecurr->object;
-+	     ecurr != NULL; ecurr = ecurr->hnext) {
-+		if (!strcmp(key, ecurr->key))
-+			return ecurr;
- 	}
- 
- 	return NULL;
 
 
