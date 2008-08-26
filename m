@@ -1,15 +1,12 @@
-Message-ID: <48B4387D.7060701@domain.hid>
-Date: Tue, 26 Aug 2008 19:08:13 +0200
+Message-ID: <48B46C89.6000505@domain.hid>
+Date: Tue, 26 Aug 2008 22:50:17 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <48B3ED52.7080101@domain.hid> <48B3EFFC.8020408@domain.hid>
-	<48B42A68.3020400@domain.hid> <48B42D29.6030701@domain.hid>
-	<48B42DB6.4050704@domain.hid>
-In-Reply-To: <48B42DB6.4050704@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RESEND][PATCH 6/6] Report registry slot usage
- via	/proc
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig9417DA268C627F212B06A340"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [RESEND][PATCH] Refactor xnintr query
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,170 +16,302 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> Jan Kiszka wrote:
->>>> Some customer ran into the problem of lacking registry slots without
->>>> prior warning. We are lacking some report mechanism, specifically for
->>>> unexported (anonymous) entries (every native user object requires one
->>>> for its handle).
->>>>
->>>> This patch introduces /proc/xenomai/registry_usage in the form
->>>>
->>> Eeek. /proc/xenomai/registry/status or /usage. Otherwise, ok.
->> There was a reason, there was a reason... Ah! That subdir depends on
->> CONFIG_XENO_EXPORT_REGISTRY. Needs more refactoring then... :-]
->>
-> 
-> Ok, I'm freezing this one, waiting for next iteration.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig9417DA268C627F212B06A340
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Here it comes (previous version was also lacking a cleanup):
+[ Trying the keep my queue short... ]
+
+This version, posted earlier already, should address all remarks brought
+up. OK to commit?
 
 ---
- ksrc/nucleus/registry.c |   68 ++++++++++++++++++++++++++++++++++++++++--------
- 1 file changed, 57 insertions(+), 11 deletions(-)
+ include/nucleus/intr.h |   25 +++++++++++-----
+ ksrc/nucleus/intr.c    |   76 +++++++++++++++++++++++++++++++-----------=
+-------
+ ksrc/nucleus/module.c  |   47 ++++++++++--------------------
+ 3 files changed, 84 insertions(+), 64 deletions(-)
 
-Index: b/ksrc/nucleus/registry.c
-===================================================================
---- a/ksrc/nucleus/registry.c
-+++ b/ksrc/nucleus/registry.c
-@@ -60,6 +60,8 @@ static int registry_hash_entries;
- 
- static xnsynch_t registry_hash_synch;
- 
-+static unsigned registry_exported_objects;
+Index: b/include/nucleus/intr.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/include/nucleus/intr.h
++++ b/include/nucleus/intr.h
+@@ -69,11 +69,23 @@ typedef struct xnintr {
+=20
+ } xnintr_t;
+=20
++typedef struct xnintr_iterator {
 +
- #ifdef CONFIG_XENO_EXPORT_REGISTRY
- 
- #include <linux/workqueue.h>
-@@ -76,12 +78,41 @@ static xnqueue_t registry_obj_procq;	/*
- static DECLARE_WORK_NODATA(registry_proc_work, &registry_proc_callback);
- #endif /* !CONFIG_PREEMPT_RT */
- 
--static struct proc_dir_entry *registry_proc_root;
--
- static int registry_proc_apc;
- 
- #endif /* CONFIG_XENO_EXPORT_REGISTRY */
- 
-+#ifdef CONFIG_PROC_FS
-+static struct proc_dir_entry *registry_proc_root;
++    int cpu;		/* !< Current CPU in iteration. */
 +
-+static int
-+registry_usage_read_proc(char *page, char **start, off_t off,
-+			 int count, int *eof, void *data)
-+{
-+	int len;
++    unsigned long hits;	/* !< Current hit counter. */
 +
-+	if (!xnpod_active_p())
-+		return -ESRCH;
++    xnticks_t exectime;	/* !< Used CPU time in current accounting period=
+=2E */
 +
-+	len = sprintf(page, "slots=%u:used=%u:exported=%u\n",
-+		      CONFIG_XENO_OPT_REGISTRY_NRSLOTS,
-+		      CONFIG_XENO_OPT_REGISTRY_NRSLOTS -
-+		      countq(&registry_obj_freeq),
-+		      registry_exported_objects);
++    xnticks_t account_period; /* !< Length of accounting period. */
 +
-+	len -= off;
-+	if (len <= off + count)
-+		*eof = 1;
-+	*start = page + off;
-+	if (len > count)
-+		len = count;
-+	if (len < 0)
-+		len = 0;
++    int list_rev;	/* !< System-wide xnintr list revision (internal use).=
+ */
 +
-+	return len;
-+}
-+#endif /* CONFIG_PROC_FS */
++    xnintr_t *prev;	/* !< Previously visited xnintr object (internal use=
+). */
 +
- int xnregistry_init(void)
- {
- 	static const int primes[] = {
-@@ -100,22 +131,28 @@ int xnregistry_init(void)
- 	if (registry_obj_slots == NULL)
- 		return -ENOMEM;
- 
-+#ifdef CONFIG_PROC_FS
-+	registry_proc_root = create_proc_entry("registry",
-+					       S_IFDIR, rthal_proc_root);
-+	if (!registry_proc_root)
-+		return -ENOMEM;
++} xnintr_iterator_t;
 +
-+	rthal_add_proc_leaf("usage", registry_usage_read_proc,
-+			    NULL, NULL, registry_proc_root);
-+
- #ifdef CONFIG_XENO_EXPORT_REGISTRY
- 	registry_proc_apc =
- 	    rthal_apc_alloc("registry_export", &registry_proc_schedule, NULL);
- 
--	if (registry_proc_apc < 0)
-+	if (registry_proc_apc < 0) {
-+		remove_proc_entry("usage", registry_proc_root);
-+		remove_proc_entry("registry", rthal_proc_root);
- 		return registry_proc_apc;
--
--	registry_proc_root = create_proc_entry("registry",
--					       S_IFDIR, rthal_proc_root);
--	if (!registry_proc_root) {
--		rthal_apc_free(registry_proc_apc);
--		return -ENOMEM;
- 	}
- 
- 	initq(&registry_obj_procq);
- #endif /* CONFIG_XENO_EXPORT_REGISTRY */
-+#endif /* CONFIG_PROC_FS */
- 
- 	initq(&registry_obj_freeq);
- 	initq(&registry_obj_busyq);
-@@ -136,10 +173,13 @@ int xnregistry_init(void)
- 						  registry_hash_entries);
- 
- 	if (!registry_hash_table) {
-+#ifdef CONFIG_PROC_FS
-+		remove_proc_entry("usage", registry_proc_root);
-+		remove_proc_entry("registry", rthal_proc_root);
- #ifdef CONFIG_XENO_EXPORT_REGISTRY
- 		rthal_apc_free(registry_proc_apc);
--		remove_proc_entry("registry", rthal_proc_root);
- #endif /* CONFIG_XENO_EXPORT_REGISTRY */
-+#endif /* CONFIG_PROC_FS */
- 		return -ENOMEM;
- 	}
- 
-@@ -195,9 +235,13 @@ void xnregistry_cleanup(void)
- #ifdef CONFIG_XENO_EXPORT_REGISTRY
- 	rthal_apc_free(registry_proc_apc);
- 	flush_scheduled_work();
--	remove_proc_entry("registry", rthal_proc_root);
- #endif /* CONFIG_XENO_EXPORT_REGISTRY */
- 
-+#ifdef CONFIG_PROC_FS
-+	remove_proc_entry("usage", registry_proc_root);
-+	remove_proc_entry("registry", rthal_proc_root);
-+#endif /* CONFIG_PROC_FS */
-+
- 	xnarch_free_host_mem(registry_obj_slots,
- 			     CONFIG_XENO_OPT_REGISTRY_NRSLOTS * sizeof(xnobject_t));
+ extern xnintr_t nkclock;
+-#ifdef CONFIG_XENO_OPT_STATS
+-extern int xnintr_count;
+-extern int xnintr_list_rev;
+-#endif
+=20
+ #ifdef __cplusplus
+ extern "C" {
+@@ -108,9 +120,8 @@ int xnintr_disable(xnintr_t *intr);
+ xnarch_cpumask_t xnintr_affinity(xnintr_t *intr,
+                                  xnarch_cpumask_t cpumask);
+=20
+-int xnintr_query(int irq, int *cpu, xnintr_t **prev, int revision, char =
+*name,
+-		 unsigned long *hits, xnticks_t *exectime,
+-		 xnticks_t *account_period);
++int xnintr_query_init(xnintr_iterator_t *iterator);
++int xnintr_query_next(int irq, xnintr_iterator_t *iterator, char *name_b=
+uf);
+=20
+ #ifdef __cplusplus
  }
-@@ -269,6 +313,7 @@ static DECLARE_WORK_FUNC(registry_proc_c
- 		if (object->proc != XNOBJECT_PROC_RESERVED1)
- 			goto unexport;
- 
-+		registry_exported_objects++;
- 		++pnode->entries;
- 		object->proc = XNOBJECT_PROC_RESERVED2;
- 		appendq(&registry_obj_busyq, holder);
-@@ -326,6 +371,7 @@ static DECLARE_WORK_FUNC(registry_proc_c
- 		continue;
- 
- 	unexport:
-+		registry_exported_objects--;
- 		entries = --pnode->entries;
- 		entry = object->proc;
- 		object->proc = NULL;
+Index: b/ksrc/nucleus/intr.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/ksrc/nucleus/intr.c
++++ b/ksrc/nucleus/intr.c
+@@ -42,9 +42,9 @@
+ DEFINE_PRIVATE_XNLOCK(intrlock);
+=20
+ #ifdef CONFIG_XENO_OPT_STATS
+-xnintr_t nkclock;	/* Only for statistics */
+-int xnintr_count =3D 1;	/* Number of attached xnintr objects + nkclock *=
+/
+-int xnintr_list_rev;	/* Modification counter of xnintr list */
++xnintr_t nkclock;	     /* Only for statistics */
++static int xnintr_count =3D 1; /* Number of attached xnintr objects + nk=
+clock */
++static int xnintr_list_rev;  /* Modification counter of xnintr list */
+=20
+ /* Both functions update xnintr_list_rev at the very end.
+  * This guarantees that module.c::stat_seq_open() won't get
+@@ -899,55 +899,77 @@ int xnintr_irq_proc(unsigned int irq, ch
+ #endif /* CONFIG_PROC_FS */
+=20
+ #ifdef CONFIG_XENO_OPT_STATS
+-int xnintr_query(int irq, int *cpu, xnintr_t **prev, int revision, char =
+*name,
+-		 unsigned long *hits, xnticks_t *exectime,
+-		 xnticks_t *account_period)
++int xnintr_query_init(xnintr_iterator_t *iterator)
++{
++	iterator->cpu =3D -1;
++	iterator->prev =3D NULL;
++
++	/* The order is important here: first xnintr_list_rev then
++	 * xnintr_count.  On the other hand, xnintr_attach/detach()
++	 * update xnintr_count first and then xnintr_list_rev.  This
++	 * should guarantee that we can't get an up-to-date
++	 * xnintr_list_rev and old xnintr_count here. The other way
++	 * around is not a problem as xnintr_query() will notice this
++	 * fact later.  Should xnintr_list_rev change later,
++	 * xnintr_query() will trigger an appropriate error below. */
++
++	iterator->list_rev =3D xnintr_list_rev;
++	xnarch_memory_barrier();
++
++	return xnintr_count;
++}
++
++int xnintr_query_next(int irq, xnintr_iterator_t *iterator, char *name_b=
+uf)
+ {
+ 	xnintr_t *intr;
+ 	xnticks_t last_switch;
+-	int head;
+-	int cpu_no =3D *cpu;
++	int cpu_no =3D iterator->cpu + 1;
+ 	int err =3D 0;
+ 	spl_t s;
+=20
++	if (cpu_no =3D=3D xnarch_num_online_cpus())
++		cpu_no =3D 0;
++	iterator->cpu =3D cpu_no;
++
+ 	xnlock_get_irqsave(&intrlock, s);
+=20
+-	if (revision !=3D xnintr_list_rev) {
++	if (iterator->list_rev !=3D xnintr_list_rev) {
+ 		err =3D -EAGAIN;
+ 		goto unlock_and_exit;
+ 	}
+=20
+-	if (*prev)
+-		intr =3D xnintr_shirq_next(*prev);
+-	else if (irq =3D=3D XNARCH_TIMER_IRQ)
+-		intr =3D &nkclock;
+-	else
+-		intr =3D xnintr_shirq_first(irq);
++	if (!iterator->prev) {
++		if (irq =3D=3D XNARCH_TIMER_IRQ)
++			intr =3D &nkclock;
++		else
++			intr =3D xnintr_shirq_first(irq);
++	} else
++		intr =3D xnintr_shirq_next(iterator->prev);
+=20
+ 	if (!intr) {
++		cpu_no =3D -1;
++		iterator->prev =3D NULL;
+ 		err =3D -ENODEV;
+ 		goto unlock_and_exit;
+ 	}
+=20
+-	head =3D snprintf(name, XNOBJECT_NAME_LEN, "IRQ%d: ", irq);
+-	name +=3D head;
+-	strncpy(name, intr->name, XNOBJECT_NAME_LEN-head);
++	snprintf(name_buf, XNOBJECT_NAME_LEN, "IRQ%d: %s", irq, intr->name);
+=20
+-	*hits =3D xnstat_counter_get(&intr->stat[cpu_no].hits);
++	iterator->hits =3D xnstat_counter_get(&intr->stat[cpu_no].hits);
+=20
+ 	last_switch =3D xnpod_sched_slot(cpu_no)->last_account_switch;
+=20
+-	*exectime       =3D intr->stat[cpu_no].account.total;
+-	*account_period =3D last_switch - intr->stat[cpu_no].account.start;
++	iterator->exectime =3D intr->stat[cpu_no].account.total;
++	iterator->account_period =3D
++		last_switch - intr->stat[cpu_no].account.start;
+=20
+-	intr->stat[cpu_no].account.total  =3D 0;
++	intr->stat[cpu_no].account.total =3D 0;
+ 	intr->stat[cpu_no].account.start =3D last_switch;
+=20
+-	if (++cpu_no =3D=3D xnarch_num_online_cpus()) {
+-		cpu_no =3D 0;
+-		*prev  =3D intr;
+-	}
+-	*cpu =3D cpu_no;
++	/* Proceed to next entry in shared IRQ chain when all CPUs
++	 * have been visited for this one. */
++	if (cpu_no + 1 =3D=3D xnarch_num_online_cpus())
++		iterator->prev =3D intr;
+=20
+      unlock_and_exit:
+ 	xnlock_put_irqrestore(&intrlock, s);
+Index: b/ksrc/nucleus/module.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/ksrc/nucleus/module.c
++++ b/ksrc/nucleus/module.c
+@@ -352,7 +352,9 @@ static int stat_seq_open(struct inode *i
+ 	struct seq_file *seq;
+ 	xnholder_t *holder;
+ 	struct stat_seq_info *stat_info;
+-	int err, count, thrq_rev, intr_rev, irq;
++	xnintr_iterator_t intr_iter;
++	int err, count, thrq_rev, irq;
++	int intr_count;
+ 	spl_t s;
+=20
+ 	if (!xnpod_active_p())
+@@ -368,18 +370,8 @@ static int stat_seq_open(struct inode *i
+=20
+ 	xnlock_put_irqrestore(&nklock, s);
+=20
+-	/* The order is important here: first xnintr_list_rev then
+-	 * xnintr_count.  On the other hand, xnintr_attach/detach()
+-	 * update xnintr_count first and then xnintr_list_rev.  This
+-	 * should guarantee that we can't get an up-to-date
+-	 * xnintr_list_rev and old xnintr_count here. The other way
+-	 * around is not a problem as xnintr_query() will notice this
+-	 * fact later.  Should xnintr_list_rev change later,
+-	 * xnintr_query() will trigger an appropriate error below. */
+-
+-	intr_rev =3D xnintr_list_rev;
+-	xnarch_memory_barrier();
+-	count +=3D xnintr_count * RTHAL_NR_CPUS;
++	intr_count =3D xnintr_query_init(&intr_iter);
++	count +=3D intr_count * RTHAL_NR_CPUS;
+=20
+ 	if (iter)
+ 		kfree(iter);
+@@ -442,35 +434,30 @@ static int stat_seq_open(struct inode *i
+ 	}
+=20
+ 	/* Iterate over all IRQ numbers, ... */
+-	for (irq =3D 0; irq < XNARCH_NR_IRQS; irq++) {
+-		xnintr_t *prev =3D NULL;
+-		int cpu =3D 0, _cpu;
+-		int err;
+-
++	for (irq =3D 0; irq < XNARCH_NR_IRQS; irq++)
+ 		/* ...over all shared IRQs on all CPUs */
+ 		while (1) {
+ 			stat_info =3D &iter->stat_info[iter->nentries];
+-			_cpu =3D cpu;
+=20
+-			err =3D xnintr_query(irq, &cpu, &prev, intr_rev,
+-					   stat_info->name,
+-					   &stat_info->csw,
+-					   &stat_info->exectime,
+-					   &stat_info->account_period);
+-			if (err =3D=3D -EAGAIN)
+-				goto restart_unlocked;
+-			if (err)
++			err =3D xnintr_query_next(irq, &intr_iter,
++						stat_info->name);
++			if (err) {
++				if (err =3D=3D -EAGAIN)
++					goto restart_unlocked;
+ 				break; /* line unused or end of chain */
++			}
+=20
+-			stat_info->cpu =3D _cpu;
++			stat_info->cpu =3D intr_iter.cpu;
++			stat_info->csw =3D intr_iter.hits;
++			stat_info->exectime =3D intr_iter.exectime;
++			stat_info->account_period =3D intr_iter.account_period;
+ 			stat_info->pid =3D 0;
+ 			stat_info->state =3D  0;
+ 			stat_info->ssw =3D 0;
+ 			stat_info->pf =3D 0;
+=20
+ 			iter->nentries++;
+-		};
+-	}
++		}
+=20
+ 	seq =3D file->private_data;
+ 	seq->private =3D iter;
+
+
+--------------enig9417DA268C627F212B06A340
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAki0bI0ACgkQniDOoMHTA+loKQCfR7g8IAtbUTfGZBBf8QnlBMXC
+60YAn3cwoLhFtvHrQQ31kf4VAO2vRszb
+=BTvT
+-----END PGP SIGNATURE-----
+
+--------------enig9417DA268C627F212B06A340--
 
