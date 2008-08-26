@@ -1,14 +1,14 @@
 Resent-To: xenomai-core <xenomai@xenomai.org>
-Resent-Message-Id: <48B3F2C0.6030705@domain.hid>
-Message-ID: <48B3EF73.7020801@domain.hid>
-Date: Tue, 26 Aug 2008 13:56:35 +0200
+Resent-Message-Id: <48B3F2C0.8070207@domain.hid>
+Message-ID: <48B3EF34.90001@domain.hid>
+Date: Tue, 26 Aug 2008 13:55:32 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <48B3ED52.7080101@domain.hid>
 In-Reply-To: <48B3ED52.7080101@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [RESEND][PATCH 5/6] Avoid add_proc_leaf duplicates
+Subject: [Xenomai-core] [PATCH 4/6] Eliminate xnobjhash
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,251 +20,196 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai-core <xenomai@xenomai.org>
 
-For unknown (historical?) reasons, there are 3 identical implementations
-of add_proc_leaf services in Xenomai right now. This patch switches them
-all to the rthal provided version.
+Hook up xnobject directly to the hash table instead of establishing
+dynamically created xnobjhash redirections.
 
 ---
- include/asm-generic/hal.h |   10 +++----
- ksrc/arch/generic/hal.c   |   18 +++++++-------
- ksrc/arch/generic/nmi.c   |    6 ++--
- ksrc/arch/x86/nmi_32.c    |    6 ++--
- ksrc/nucleus/module.c     |   58 +++++++++++++++-------------------------------
- ksrc/nucleus/registry.c   |   31 +++---------------------
- 6 files changed, 44 insertions(+), 85 deletions(-)
+ include/nucleus/registry.h |   10 +-----
+ ksrc/nucleus/registry.c    |   73 +++++++++++++++++++--------------------------
+ 2 files changed, 33 insertions(+), 50 deletions(-)
 
-Index: b/include/asm-generic/hal.h
+Index: b/include/nucleus/registry.h
 ===================================================================
---- a/include/asm-generic/hal.h
-+++ b/include/asm-generic/hal.h
-@@ -459,11 +459,11 @@ void rthal_timer_release(int cpu);
+--- a/include/nucleus/registry.h
++++ b/include/nucleus/registry.h
+@@ -55,6 +55,8 @@ typedef struct xnobject {
  
- extern struct proc_dir_entry *rthal_proc_root;
+     u_long cstamp;	/* !< Creation stamp. */
  
--struct proc_dir_entry *__rthal_add_proc_leaf(const char *name,
--					     read_proc_t rdproc,
--					     write_proc_t wrproc,
--					     void *data,
--					     struct proc_dir_entry *parent);
-+struct proc_dir_entry *rthal_add_proc_leaf(const char *name,
-+					   read_proc_t rdproc,
-+					   write_proc_t wrproc,
-+					   void *data,
-+					   struct proc_dir_entry *parent);
- #endif /* CONFIG_PROC_FS */
- 
- #ifdef CONFIG_IPIPE_TRACE
-Index: b/ksrc/arch/generic/hal.c
-===================================================================
---- a/ksrc/arch/generic/hal.c
-+++ b/ksrc/arch/generic/hal.c
-@@ -723,11 +723,11 @@ static int apc_read_proc(char *page,
-     return len;
- }
- 
--struct proc_dir_entry *__rthal_add_proc_leaf(const char *name,
--                                             read_proc_t rdproc,
--                                             write_proc_t wrproc,
--                                             void *data,
--                                             struct proc_dir_entry *parent)
-+struct proc_dir_entry *rthal_add_proc_leaf(const char *name,
-+                                           read_proc_t rdproc,
-+                                           write_proc_t wrproc,
-+                                           void *data,
-+                                           struct proc_dir_entry *parent)
- {
-     int mode = wrproc ? 0644 : 0444;
-     struct proc_dir_entry *entry;
-@@ -756,12 +756,12 @@ static int rthal_proc_register(void)
- 
-     rthal_proc_root->owner = THIS_MODULE;
- 
--    __rthal_add_proc_leaf("hal", &hal_read_proc, NULL, NULL, rthal_proc_root);
-+    rthal_add_proc_leaf("hal", &hal_read_proc, NULL, NULL, rthal_proc_root);
- 
--    __rthal_add_proc_leaf("faults",
--                          &faults_read_proc, NULL, NULL, rthal_proc_root);
-+    rthal_add_proc_leaf("faults",
-+                        &faults_read_proc, NULL, NULL, rthal_proc_root);
- 
--    __rthal_add_proc_leaf("apc", &apc_read_proc, NULL, NULL, rthal_proc_root);
-+    rthal_add_proc_leaf("apc", &apc_read_proc, NULL, NULL, rthal_proc_root);
- 
-     rthal_nmi_proc_register();
- 
-Index: b/ksrc/arch/generic/nmi.c
-===================================================================
---- a/ksrc/arch/generic/nmi.c
-+++ b/ksrc/arch/generic/nmi.c
-@@ -108,9 +108,9 @@ static int maxlat_write_proc(struct file
- 
- void rthal_nmi_proc_register(void)
- {
--    __rthal_add_proc_leaf("nmi_maxlat",
--                          &maxlat_read_proc,
--                          &maxlat_write_proc, NULL, rthal_proc_root);
-+    rthal_add_proc_leaf("nmi_maxlat",
-+                        &maxlat_read_proc,
-+                        &maxlat_write_proc, NULL, rthal_proc_root);
- }
- 
- void rthal_nmi_proc_unregister(void)
-Index: b/ksrc/arch/x86/nmi_32.c
-===================================================================
---- a/ksrc/arch/x86/nmi_32.c
-+++ b/ksrc/arch/x86/nmi_32.c
-@@ -232,9 +232,9 @@ int rthal_nmi_request(void (*emergency)
- 	nmi_watchdog_tick = &rthal_nmi_watchdog_tick;
- 
++    struct xnobject *hnext;	/* !< Next in h-table */
++
  #ifdef CONFIG_PROC_FS
--	__rthal_add_proc_leaf("nmi_early_shots",
--			      &earlyshots_read_proc,
--			      NULL, NULL, rthal_proc_root);
-+	rthal_add_proc_leaf("nmi_early_shots",
-+			    &earlyshots_read_proc,
-+			    NULL, NULL, rthal_proc_root);
- #endif /* CONFIG_PROC_FS */
  
- 	return 0;
-Index: b/ksrc/nucleus/module.c
-===================================================================
---- a/ksrc/nucleus/module.c
-+++ b/ksrc/nucleus/module.c
-@@ -987,29 +987,6 @@ static int affinity_write_proc(struct fi
- 	return count;
- }
+     struct xnpnode *pnode; /* !< /proc information class. */
+@@ -65,14 +67,6 @@ typedef struct xnobject {
  
--static struct proc_dir_entry *add_proc_leaf(const char *name,
--					    read_proc_t rdproc,
--					    write_proc_t wrproc,
--					    void *data,
--					    struct proc_dir_entry *parent)
--{
--	int mode = wrproc ? 0644 : 0444;
--	struct proc_dir_entry *entry;
+ } xnobject_t;
+ 
+-typedef struct xnobjhash {
 -
--	entry = create_proc_entry(name, mode, parent);
+-    xnobject_t *object;
 -
--	if (!entry)
--		return NULL;
+-    struct xnobjhash *next;	/* !< Next in h-table */
 -
--	entry->nlink = 1;
--	entry->data = data;
--	entry->read_proc = rdproc;
--	entry->write_proc = wrproc;
--	entry->owner = THIS_MODULE;
+-} xnobjhash_t;
 -
--	return entry;
--}
--
- static struct proc_dir_entry *add_proc_fops(const char *name,
- 					    struct file_operations *fops,
- 					    size_t size,
-@@ -1046,26 +1023,31 @@ void xnpod_init_proc(void)
- #endif /* CONFIG_XENO_OPT_STATS */
- 
- #if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
--	add_proc_leaf("lock", &lock_read_proc, NULL, NULL, rthal_proc_root);
-+	rthal_add_proc_leaf("lock", &lock_read_proc, NULL, NULL,
-+			    rthal_proc_root);
- #endif /* CONFIG_SMP && XENO_DEBUG(NUCLEUS) */
- 
--	add_proc_leaf("latency",
--		      &latency_read_proc,
--		      &latency_write_proc, NULL, rthal_proc_root);
-+	rthal_add_proc_leaf("latency",
-+			    &latency_read_proc,
-+			    &latency_write_proc, NULL, rthal_proc_root);
- 
--	add_proc_leaf("version", &version_read_proc, NULL, NULL,
--		      rthal_proc_root);
-+	rthal_add_proc_leaf("version", &version_read_proc, NULL, NULL,
-+			    rthal_proc_root);
- 
--	add_proc_leaf("timer", &timer_read_proc, NULL, NULL, rthal_proc_root);
-+	rthal_add_proc_leaf("timer", &timer_read_proc, NULL, NULL,
-+			    rthal_proc_root);
- 
--	add_proc_leaf("timebases", &timebase_read_proc, NULL, NULL, rthal_proc_root);
-+	rthal_add_proc_leaf("timebases", &timebase_read_proc, NULL, NULL,
-+			    rthal_proc_root);
- 
--	add_proc_leaf("irq", &irq_read_proc, NULL, NULL, rthal_proc_root);
-+	rthal_add_proc_leaf("irq", &irq_read_proc, NULL, NULL,
-+			    rthal_proc_root);
- 
--	add_proc_leaf("heap", &heap_read_proc, NULL, NULL, rthal_proc_root);
-+	rthal_add_proc_leaf("heap", &heap_read_proc, NULL, NULL,
-+			    rthal_proc_root);
- 
--	add_proc_leaf("affinity", &affinity_read_proc, &affinity_write_proc,
--		      NULL, rthal_proc_root);
-+	rthal_add_proc_leaf("affinity", &affinity_read_proc,
-+			    &affinity_write_proc, NULL, rthal_proc_root);
- 
- #ifdef CONFIG_XENO_OPT_PERVASIVE
- 	iface_proc_root =
-@@ -1129,9 +1111,9 @@ static int iface_read_proc(char *page,
- 
- void xnpod_declare_iface_proc(struct xnskin_slot *iface)
- {
--	add_proc_leaf(iface->props->name,
--		      &iface_read_proc, NULL, iface,
--		      iface_proc_root);
-+	rthal_add_proc_leaf(iface->props->name,
-+			    &iface_read_proc, NULL, iface,
-+			    iface_proc_root);
- }
- 
- void xnpod_discard_iface_proc(const char *iface_name)
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
 Index: b/ksrc/nucleus/registry.c
 ===================================================================
 --- a/ksrc/nucleus/registry.c
 +++ b/ksrc/nucleus/registry.c
-@@ -225,29 +225,6 @@ static inline xnobject_t *registry_valid
-    like are hopefully properly handled due to a careful
-    synchronization of operations across domains. */
+@@ -54,7 +54,7 @@ static xnqueue_t registry_obj_busyq;	/*
  
--static struct proc_dir_entry *add_proc_leaf(const char *name,
--					    read_proc_t rdproc,
--					    write_proc_t wrproc,
--					    void *data,
--					    struct proc_dir_entry *parent)
--{
--	int mode = wrproc ? 0644 : 0444;
--	struct proc_dir_entry *entry;
--
--	entry = create_proc_entry(name, mode, parent);
--
--	if (!entry)
--		return NULL;
--
--	entry->nlink = 1;
--	entry->data = data;
--	entry->read_proc = rdproc;
--	entry->write_proc = wrproc;
--	entry->owner = THIS_MODULE;
--
--	return entry;
--}
--
- static struct proc_dir_entry *add_proc_link(const char *name,
- 					    link_proc_t *link_proc,
- 					    void *data,
-@@ -332,10 +309,10 @@ static DECLARE_WORK_FUNC(registry_proc_c
- 						     object->objaddr, dir);
- 		else
- 			/* Entry allows to get/set object properties. */
--			object->proc = add_proc_leaf(object->key,
--						     pnode->read_proc,
--						     pnode->write_proc,
--						     object->objaddr, dir);
-+			object->proc = rthal_add_proc_leaf(object->key,
-+							   pnode->read_proc,
-+							   pnode->write_proc,
-+							   object->objaddr, dir);
- 	      fail:
- 		xnlock_get_irqsave(&nklock, s);
+ static u_long registry_obj_stamp;
  
+-static xnobjhash_t **registry_hash_table;
++static xnobject_t **registry_hash_table;
+ 
+ static int registry_hash_entries;
+ 
+@@ -132,8 +132,8 @@ int xnregistry_init(void)
+ 	registry_hash_entries =
+ 	    primes[obj_hash_max(CONFIG_XENO_OPT_REGISTRY_NRSLOTS / 100)];
+ 	registry_hash_table =
+-	    (xnobjhash_t **) xnarch_alloc_host_mem(sizeof(xnobjhash_t *) *
+-					     registry_hash_entries);
++	    (xnobject_t **) xnarch_alloc_host_mem(sizeof(xnobject_t *) *
++						  registry_hash_entries);
+ 
+ 	if (!registry_hash_table) {
+ #ifdef CONFIG_XENO_EXPORT_REGISTRY
+@@ -153,45 +153,42 @@ int xnregistry_init(void)
+ 
+ void xnregistry_cleanup(void)
+ {
+-	xnobjhash_t *ecurr, *enext;
++	xnobject_t *ecurr, *enext;
+ 	int n;
+ 
++#ifdef CONFIG_XENO_EXPORT_REGISTRY
+ 	for (n = 0; n < registry_hash_entries; n++) {
+ 		for (ecurr = registry_hash_table[n]; ecurr; ecurr = enext) {
+-			enext = ecurr->next;
++			enext = ecurr->hnext;
+ 
+-#ifdef CONFIG_XENO_EXPORT_REGISTRY
+-			if (ecurr->object && ecurr->object->pnode) {
+-				remove_proc_entry(ecurr->object->key,
+-						  ecurr->object->pnode->dir);
++			if (ecurr->pnode) {
++				remove_proc_entry(ecurr->key,
++						  ecurr->pnode->dir);
+ 
+-				if (--ecurr->object->pnode->entries <= 0) {
+-					remove_proc_entry(ecurr->object->pnode->
++				if (--ecurr->pnode->entries <= 0) {
++					remove_proc_entry(ecurr->pnode->
+ 							  type,
+-							  ecurr->object->pnode->
++							  ecurr->pnode->
+ 							  root->dir);
+-					ecurr->object->pnode->dir = NULL;
++					ecurr->pnode->dir = NULL;
+ 
+-					if (--ecurr->object->pnode->root->
++					if (--ecurr->pnode->root->
+ 					    entries <= 0) {
+ 						remove_proc_entry(ecurr->
+-								  object->
+ 								  pnode->root->
+ 								  name,
+ 								  registry_proc_root);
+-						ecurr->object->pnode->root->
++						ecurr->pnode->root->
+ 						    dir = NULL;
+ 					}
+ 				}
+ 			}
+-#endif /* CONFIG_XENO_EXPORT_REGISTRY */
+-
+-			xnfree(ecurr);
+ 		}
+ 	}
++#endif /* CONFIG_XENO_EXPORT_REGISTRY */
+ 
+ 	xnarch_free_host_mem(registry_hash_table,
+-		       sizeof(xnobjhash_t *) * registry_hash_entries);
++		       sizeof(xnobject_t *) * registry_hash_entries);
+ 
+ 	xnsynch_destroy(&registry_hash_synch);
+ 
+@@ -448,25 +445,19 @@ static unsigned registry_hash_crunch(con
+ 
+ static inline int registry_hash_enter(const char *key, xnobject_t *object)
+ {
+-	xnobjhash_t *enew, *ecurr;
++	xnobject_t *ecurr;
+ 	unsigned s;
+ 
+ 	object->key = key;
+ 	s = registry_hash_crunch(key);
+ 
+-	for (ecurr = registry_hash_table[s]; ecurr != NULL; ecurr = ecurr->next) {
+-		if (ecurr->object == object || !strcmp(key, ecurr->object->key))
++	for (ecurr = registry_hash_table[s]; ecurr != NULL; ecurr = ecurr->hnext) {
++		if (ecurr == object || !strcmp(key, ecurr->key))
+ 			return -EEXIST;
+ 	}
+ 
+-	enew = (xnobjhash_t *) xnmalloc(sizeof(*enew));
+-
+-	if (!enew)
+-		return -ENOMEM;
+-
+-	enew->object = object;
+-	enew->next = registry_hash_table[s];
+-	registry_hash_table[s] = enew;
++	object->hnext = registry_hash_table[s];
++	registry_hash_table[s] = object;
+ 
+ 	return 0;
+ }
+@@ -474,17 +465,15 @@ static inline int registry_hash_enter(co
+ static inline int registry_hash_remove(xnobject_t *object)
+ {
+ 	unsigned s = registry_hash_crunch(object->key);
+-	xnobjhash_t *ecurr, *eprev;
++	xnobject_t *ecurr, *eprev;
+ 
+ 	for (ecurr = registry_hash_table[s], eprev = NULL;
+-	     ecurr != NULL; eprev = ecurr, ecurr = ecurr->next) {
+-		if (ecurr->object == object) {
++	     ecurr != NULL; eprev = ecurr, ecurr = ecurr->hnext) {
++		if (ecurr == object) {
+ 			if (eprev)
+-				eprev->next = ecurr->next;
++				eprev->hnext = ecurr->hnext;
+ 			else
+-				registry_hash_table[s] = ecurr->next;
+-
+-			xnfree(ecurr);
++				registry_hash_table[s] = ecurr->hnext;
+ 
+ 			return 0;
+ 		}
+@@ -495,12 +484,12 @@ static inline int registry_hash_remove(x
+ 
+ static xnobject_t *registry_hash_find(const char *key)
+ {
+-	xnobjhash_t *ecurr;
++	xnobject_t *ecurr;
+ 
+ 	for (ecurr = registry_hash_table[registry_hash_crunch(key)];
+-	     ecurr != NULL; ecurr = ecurr->next) {
+-		if (!strcmp(key, ecurr->object->key))
+-			return ecurr->object;
++	     ecurr != NULL; ecurr = ecurr->hnext) {
++		if (!strcmp(key, ecurr->key))
++			return ecurr;
+ 	}
+ 
+ 	return NULL;
 
 
