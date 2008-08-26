@@ -1,16 +1,14 @@
-Message-ID: <48B40037.1030708@domain.hid>
-Date: Tue, 26 Aug 2008 15:08:07 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48B42950.7010001@domain.hid>
+Date: Tue, 26 Aug 2008 18:03:28 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <48B313B5.9050308@domain.hid>
-	<48B32E0C.7000105@domain.hid>	<48B33926.9060808@domain.hid>
-	<48B3B999.6000707@domain.hid>	<48B3BE60.4020709@domain.hid>
-	<48B3C1B3.2050404@domain.hid> <48B3C443.9000704@domain.hid>
-	<48B3FBBE.4050204@domain.hid>
-In-Reply-To: <48B3FBBE.4050204@domain.hid>
+References: <48B3ED52.7080101@domain.hid> <48B407BD.2070204@domain.hid>
+In-Reply-To: <48B407BD.2070204@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] xnregistry_fetch & friends
+Subject: Re: [Xenomai-core] [PATCH 0/6] Registry-related
+	cleanups	and	improvements
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,38 +19,45 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
->> BTW, I'm also preparing a patch to overcome hash chain registrations for
->> anonymous (handle-only) objects as I need more of them (one for each
->> thread) for fast mutexes - to avoid fiddling with kernel pointers in
->> userland.
+>> Here comes the complete series of patches to improve the Xenomai
+>> registry. #1, #5, and #6 are resends of already posted patches, the
+>> middle part is fresh from the editor. The series reduces overhead
+>> and simplifies the registry code. Overall diffstat:
+>>
+>>  include/asm-generic/hal.h  |   10 +-
+>>  include/nucleus/registry.h |   10 --
+>>  ksrc/arch/generic/hal.c    |   18 +--
+>>  ksrc/arch/generic/nmi.c    |    6 -
+>>  ksrc/arch/x86/nmi_32.c     |    6 -
+>>  ksrc/nucleus/module.c      |   58 ++++-------
+>>  ksrc/nucleus/registry.c    |  223 ++++++++++++++++++++++-----------------------
+>>  ksrc/skins/native/alarm.c  |   22 +---
+>>  ksrc/skins/native/buffer.c |   15 ---
+>>  ksrc/skins/native/cond.c   |   14 --
+>>  ksrc/skins/native/event.c  |   15 ---
+>>  ksrc/skins/native/heap.c   |   14 --
+>>  ksrc/skins/native/intr.c   |   17 ---
+>>  ksrc/skins/native/mutex.c  |   15 ---
+>>  ksrc/skins/native/pipe.c   |   14 --
+>>  ksrc/skins/native/queue.c  |   12 --
+>>  ksrc/skins/native/sem.c    |   14 --
+>>  ksrc/skins/native/task.c   |   16 ---
+>>  18 files changed, 182 insertions(+), 317 deletions(-)
+>>
+>> So a net gain of more than 130 LOC.
+>>
+>> The series passed basic tests on my virtual target.
 > 
-> Ok. You will have a problem mangling a registry handle with the claimed
-> bit. Or maybe we can assume that the bit 31 is not used or something ?
-
-That's precisely my plan, use the highest bit (2^32 registry slots are
-fairly unlikely even on 64 bit).
-
+> Ok. Now that we have discussed the potential xnsynch issue, the patches
+> are Ok for me.
 > 
-> And by the way, I had an idea of removing the duplication of the owner
-> field between an xnsynch and a mutex object, this would allow saving a
-> syscall when a situation of mutex stealing happened. Using a handle
-> would prevent this. But I am not so sure it is a good idea now (namely
-> because it would move some compare-and-swap the owner logic to the
-> xnsynch API).
 
-How could you save one of the two syscalls on lock stealing? By
-introducing another bit in the fast lock word that indicates something
-like XNWAKEN? On first sight, this shouldn't require moving everything
-into xnsynch (though generic fast locks were not that bad...) nor
-interfere with handle-based lock words.
-
-Jan
+Ok, I'll merge then.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Philippe.
 
