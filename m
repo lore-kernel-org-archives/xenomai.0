@@ -1,5 +1,5 @@
-Message-ID: <48B56685.4060500@domain.hid>
-Date: Wed, 27 Aug 2008 16:36:53 +0200
+Message-ID: <48B5615C.6050704@domain.hid>
+Date: Wed, 27 Aug 2008 16:14:52 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <48B5592B.1090005@domain.hid> <48B55F7C.5030901@domain.hid>
@@ -22,66 +22,23 @@ To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
+> To improve robustness of the fast mutex implementation in POSIX (and
+> later on in native), it is better to track the mutex owner by handle
+> instead of kernel object pointer. Therefore, this patch changes
+> __xn_sys_current (xeno_set_current) so that it returns
+> xnthread_handle(current_thread). It furthermore converts the POSIX mutex
+> implementation to pick up and store the lock owner as handle in the
+> kernel/user-shared mutex. Finally it ensures that at least POSIX threads
+> always have an (anonymous) handle assigned.
+> 
+> As the value stored in the mutex variable is now an integer, we can
+> switch over to xnarch_atomic_t, removing all atomic_intptr users.
 
-> -#define test_claimed(owner) ((long) (owner) & 1)
-> -#define clear_claimed(owner) ((xnthread_t *) ((long) (owner) & ~1))
-> -#define set_claimed(owner, bit) \
-> -        ((xnthread_t *) ((long) clear_claimed(owner) | !!(bit)))
-> +#define __CLAIMED_BIT		XN_HANDLE_SPARE3
-> +
-> +#define test_claimed(owner)	xnhandle_test_spare(owner, __CLAIMED_BIT)
-> +#define clear_claimed(owner)	xnhandle_mask_spare(owner)
-> +#define set_claimed(owner, bit) ({ \
-> +	xnhandle_t __tmp = xnhandle_mask_spare(owner); \
-> +	if (bit) \
-> +		xnhandle_set_spare(__tmp, __CLAIMED_BIT); \
-> +	__tmp; \
-> +})
+Ok. I do not know if this should be part of this patch, or in another
+one, but we should call xeno_set_current in the trampolines of all
+skins, so that they can use the native and posix mutexes.
 
-I liked doing this with no conditional.
-
-> +	xnarch_atomic_set(mutex->owner,
-> +		 	  set_claimed(xnthread_handle(owner),
-> +				      xnsynch_nsleepers(&mutex->synchbase)));
-
-Ok. I think you have spotted a bug here. This should be mutex->sleepers
-instead of xnsynch_nsleepers.
-
-> +	/* Consistency check for owner handle - is the object a thread? */
-> +	if (unlikely(xnthread_handle(owner) != clear_claimed(ownerh))) {
-> +		err = -EINVAL;
-> +		goto error;
->  	}
-
-What is this ?
-
-
-> Index: b/ksrc/skins/posix/thread.c
-> ===================================================================
-> --- a/ksrc/skins/posix/thread.c
-> +++ b/ksrc/skins/posix/thread.c
-> @@ -28,6 +28,7 @@
->   * 
->   *@{*/
->  
-> +#include <nucleus/registry.h>
->  #include <posix/thread.h>
->  #include <posix/cancel.h>
->  #include <posix/timer.h>
-> @@ -229,6 +230,13 @@ int pthread_create(pthread_t *tid,
->  	appendq(thread->container, &thread->link);
->  	xnlock_put_irqrestore(&nklock, s);
->  
-> +#ifdef CONFIG_XENO_OPT_REGISTRY
-> +	/* We need an anonymous registry entry to obtain a handle for fast
-> +	   mutex locking. */
-> +	xnregistry_enter("", &thread->threadbase,
-> +			 &xnthread_handle(&thread->threadbase), NULL);
-> +#endif /* CONFIG_XENO_OPT_REGISTRY */
-> +
-
-Since we need this for all threads (I want a thread from any skin to be
-able to use the posix skin mutexes), why doing it in the skin ?
+This is another thing that I have left in a state of flux...
 
 -- 
                                                  Gilles.
