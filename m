@@ -1,5 +1,5 @@
-Message-ID: <48B5D8EC.90009@domain.hid>
-Date: Thu, 28 Aug 2008 00:45:00 +0200
+Message-ID: <48B5DDBC.4030201@domain.hid>
+Date: Thu, 28 Aug 2008 01:05:32 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <48B5592B.1090005@domain.hid>
@@ -74,13 +74,54 @@ Jan Kiszka wrote:
 > stealing yet. In theory, everything still appears to be fine to me. This
 > approach basically restores the state we find when some thread just
 > acquired the lock in user space.
+> 
+> Jan
+> 
+> ---
+>  ksrc/skins/posix/mutex.c |   10 +++++++---
+>  ksrc/skins/posix/mutex.h |   17 +++++++++++------
+>  2 files changed, 18 insertions(+), 9 deletions(-)
+> 
+> Index: b/ksrc/skins/posix/mutex.c
+> ===================================================================
+> --- a/ksrc/skins/posix/mutex.c
+> +++ b/ksrc/skins/posix/mutex.c
+> @@ -117,7 +117,6 @@ int pse51_mutex_init_internal(struct __s
+>  	mutex->attr = *attr;
+>  	mutex->owner = ownerp;
+>  	mutex->owningq = kq;
+> -	mutex->sleepers = 0;
+>  	xnarch_atomic_set(ownerp, XN_NO_HANDLE);
+>  
+>  	xnlock_get_irqsave(&nklock, s);
+> @@ -305,14 +304,12 @@ int pse51_mutex_timedlock_break(struct _
+>  		/* Attempting to relock a normal mutex, deadlock. */
+>  		xnlock_get_irqsave(&nklock, s);
+>  		for (;;) {
+> -			++mutex->sleepers;
+>  			if (timed)
+>  				xnsynch_sleep_on(&mutex->synchbase,
+>  						 abs_to, XN_REALTIME);
+>  			else
+>  				xnsynch_sleep_on(&mutex->synchbase,
+>  						 XN_INFINITE, XN_RELATIVE);
+> -			--mutex->sleepers;
+>  
+>  			if (xnthread_test_info(cur, XNBREAK)) {
+>  				err = -EINTR;
+> @@ -329,6 +326,13 @@ int pse51_mutex_timedlock_break(struct _
+>  				break;
+>  			}
+>  		}
+> +		if (!xnsynch_nsleepers(&mutex->synchbase)) {
+> +			xnarch_atomic_set
+> +				(mutex->owner,
+> +				 clear_claimed
+> +					(xnarch_atomic_get(mutex->owner)));
+> +			xnsynch_set_owner(&mutex->synchbase, NULL);
+> +		}
 
-Yes, I did not think about the stealing when writing my test, but I
-think it could be a good idea to add it to the test, especially if you
-want to port the test to the native API.
-
-I let Philippe decide here. He is the one who did the stealing stuff and
-probably knows better.
+I think an atomic_cmpxchg would be better here.
 
 -- 
 					    Gilles.
