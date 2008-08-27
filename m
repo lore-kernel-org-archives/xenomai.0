@@ -1,16 +1,11 @@
-Message-ID: <48B574BB.4040602@domain.hid>
-Date: Wed, 27 Aug 2008 17:37:31 +0200
+Message-ID: <48B56963.9080505@domain.hid>
+Date: Wed, 27 Aug 2008 16:49:07 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <48B5592B.1090005@domain.hid> <48B55F7C.5030901@domain.hid>
-	<48B56685.4060500@domain.hid> <48B56876.3090601@domain.hid>
-	<48B568FD.9010905@domain.hid> <48B56A0C.9060006@domain.hid>
-	<48B56AF6.6080509@domain.hid> <48B56C06.1030808@domain.hid>
-	<48B56D05.6020509@domain.hid> <48B56E69.9000100@domain.hid>
-	<48B56F78.6050405@domain.hid> <48B57046.70207@domain.hid>
-	<48B572D0.2000801@domain.hid> <48B5741D.7050207@domain.hid>
-	<48B5746C.1000201@domain.hid>
-In-Reply-To: <48B5746C.1000201@domain.hid>
+	<48B5615C.6050704@domain.hid> <48B566EC.1020804@domain.hid>
+	<48B56837.5030006@domain.hid>
+In-Reply-To: <48B56837.5030006@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [RFC][PATCH 2/3] Switch to handle-based fast
@@ -31,32 +26,35 @@ Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
 >> Gilles Chanteperdrix wrote:
 >>> Jan Kiszka wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> Jan Kiszka wrote:
->>>>>> File descriptors are all identically structured objects, so at worst you
->>>>>> ruin some other app's day. But the registry contains arbitrary objects
->>>>>> with different internal layout. If you start assuming object_a * is
->>>>>> object_b * and use the pointer etc. included in a as if they have the
->>>>>> meaning of b, you quickly ruin the kernel's day as well. Therefore,
->>>>>> native, e.g., does magic checks after fetching from the registry. As I
->>>>>> said, this test here works differently, but it has the same effect and
->>>>>> impact.
->>>>> By the way, would not it make sense to have separate hash tables for
->>>>> separate objects types ? I mean then we would not need any validation,
->>>>> and several object types could use the same name.
->>>> From that POV a good idea. The only issue I see is a management problem:
->>>> How many mutex, thread, queue, whatever slots do you want in your
->>>> system? One knob for them all? Or countless knobs for all object types
->>>> of all skins? That's hairy, I'm afraid.
->>> xnmalloc, the pool size is the limit.
->> You mean kind of "xnrealloc", including atomically copying potentially
->> large descriptor tables over? Sounds not that attractive.
+>>>> To improve robustness of the fast mutex implementation in POSIX (and
+>>>> later on in native), it is better to track the mutex owner by handle
+>>>> instead of kernel object pointer. Therefore, this patch changes
+>>>> __xn_sys_current (xeno_set_current) so that it returns
+>>>> xnthread_handle(current_thread). It furthermore converts the POSIX mutex
+>>>> implementation to pick up and store the lock owner as handle in the
+>>>> kernel/user-shared mutex. Finally it ensures that at least POSIX threads
+>>>> always have an (anonymous) handle assigned.
+>>>>
+>>>> As the value stored in the mutex variable is now an integer, we can
+>>>> switch over to xnarch_atomic_t, removing all atomic_intptr users.
+>>> Ok. I do not know if this should be part of this patch, or in another
+>>> one, but we should call xeno_set_current in the trampolines of all
+>>> skins, so that they can use the native and posix mutexes.
+>>>
+>>> This is another thing that I have left in a state of flux...
+>> Find it below (PATCH 4/3).
+>>
+>> BTW, should we better invoke pthread_exit in xeno_set_current in case of 
+>> a failure?
 > 
-> No, I mean the hash table contains pointers, and the objects are
-> allocated dynamically...
+> I prefer my application to die. This way I would know that something
+> went wrong. And by the way, how could this syscall fail ? I mean if
+> xenomai or the posix skin are not loaded, we would have known it earlier.
 
-Handle lookup is not going through hash tables. It's index based (like
-file descriptors).
+So far this syscall can trigger a thread handle registration if the
+current thread has no handle yet. But that could go away if all skins
+ensure that there is at least an anonymous handle for their threads
+after creation.
 
 Jan
 
