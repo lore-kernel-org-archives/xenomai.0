@@ -1,11 +1,11 @@
-Message-ID: <48B56A0C.9060006@domain.hid>
-Date: Wed, 27 Aug 2008 16:51:56 +0200
+Message-ID: <48B57626.8070404@domain.hid>
+Date: Wed, 27 Aug 2008 17:43:34 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <48B5592B.1090005@domain.hid> <48B55F7C.5030901@domain.hid>
-	<48B56685.4060500@domain.hid> <48B56876.3090601@domain.hid>
-	<48B568FD.9010905@domain.hid>
-In-Reply-To: <48B568FD.9010905@domain.hid>
+	<48B56685.4060500@domain.hid> <48B570AF.4090900@domain.hid>
+	<48B57281.2090109@domain.hid>
+In-Reply-To: <48B57281.2090109@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [RFC][PATCH 2/3] Switch to handle-based fast
@@ -26,51 +26,21 @@ Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
 >> Gilles Chanteperdrix wrote:
 >>> Jan Kiszka wrote:
->>>
->>>> -#define test_claimed(owner) ((long) (owner) & 1)
->>>> -#define clear_claimed(owner) ((xnthread_t *) ((long) (owner) & ~1))
->>>> -#define set_claimed(owner, bit) \
->>>> -        ((xnthread_t *) ((long) clear_claimed(owner) | !!(bit)))
->>>> +#define __CLAIMED_BIT		XN_HANDLE_SPARE3
->>>> +
->>>> +#define test_claimed(owner)	xnhandle_test_spare(owner, __CLAIMED_BIT)
->>>> +#define clear_claimed(owner)	xnhandle_mask_spare(owner)
->>>> +#define set_claimed(owner, bit) ({ \
->>>> +	xnhandle_t __tmp = xnhandle_mask_spare(owner); \
->>>> +	if (bit) \
->>>> +		xnhandle_set_spare(__tmp, __CLAIMED_BIT); \
->>>> +	__tmp; \
->>>> +})
->>> I liked doing this with no conditional.
->> You mean let the caller pass 'bit' as 0 or __CLAIMED_BIT (the latter
->> would require some renaming then, I guess)?
->>
 >>>> +	xnarch_atomic_set(mutex->owner,
 >>>> +		 	  set_claimed(xnthread_handle(owner),
 >>>> +				      xnsynch_nsleepers(&mutex->synchbase)));
 >>> Ok. I think you have spotted a bug here. This should be mutex->sleepers
 >>> instead of xnsynch_nsleepers.
->> OK. Will you fix? I will rebase then.
->>
->>>> +	/* Consistency check for owner handle - is the object a thread? */
->>>> +	if (unlikely(xnthread_handle(owner) != clear_claimed(ownerh))) {
->>>> +		err = -EINVAL;
->>>> +		goto error;
->>>>  	}
->>> What is this ?
->> This ensures that we are not dereferences some arbitrary registry object
->> due to a borken handle in the mutex variable: The the object registered
->> on this handle is an xnthread, we will find the very same handle value
->> at the well-known place in the object. Kind of magic for xnthread
->> objects (instead of adding a magic field to them).
+>> BTW, why do you need to track sleepers separately in POSIX? Native
+>> doesn't do so, e.g.
 > 
-> Yes, but the point is: how can the handle be borken ? It looks like a
-> useless check to me.
+> Because of the "syscall-needed-when-unlocking-stolen-mutex" issue I
+> already explained (sleepers - xnsynch_nsleepers is precisely the count
+> of pending threads which have been awake then robbed the mutex).
 
-This is user memory. Everything can be borken. And I don't want to
-create yet another source for user-triggered kernel bugs (including
-silent ones) like with our heap management structures that are
-corruptible by userland. That's headache guarantee.
+Hmm, sounds like the new lock owner should better clear the 'claimed'
+bit then, not the old one on return from unlock. Or where is the
+pitfall? How does the futex algorithm handle this scenario?
 
 Jan
 
