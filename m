@@ -1,11 +1,11 @@
-Message-ID: <48B56963.9080505@domain.hid>
-Date: Wed, 27 Aug 2008 16:49:07 +0200
+Message-ID: <48B56A0C.9060006@domain.hid>
+Date: Wed, 27 Aug 2008 16:51:56 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <48B5592B.1090005@domain.hid> <48B55F7C.5030901@domain.hid>
-	<48B5615C.6050704@domain.hid> <48B566EC.1020804@domain.hid>
-	<48B56837.5030006@domain.hid>
-In-Reply-To: <48B56837.5030006@domain.hid>
+	<48B56685.4060500@domain.hid> <48B56876.3090601@domain.hid>
+	<48B568FD.9010905@domain.hid>
+In-Reply-To: <48B568FD.9010905@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [RFC][PATCH 2/3] Switch to handle-based fast
@@ -26,35 +26,51 @@ Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
 >> Gilles Chanteperdrix wrote:
 >>> Jan Kiszka wrote:
->>>> To improve robustness of the fast mutex implementation in POSIX (and
->>>> later on in native), it is better to track the mutex owner by handle
->>>> instead of kernel object pointer. Therefore, this patch changes
->>>> __xn_sys_current (xeno_set_current) so that it returns
->>>> xnthread_handle(current_thread). It furthermore converts the POSIX mutex
->>>> implementation to pick up and store the lock owner as handle in the
->>>> kernel/user-shared mutex. Finally it ensures that at least POSIX threads
->>>> always have an (anonymous) handle assigned.
->>>>
->>>> As the value stored in the mutex variable is now an integer, we can
->>>> switch over to xnarch_atomic_t, removing all atomic_intptr users.
->>> Ok. I do not know if this should be part of this patch, or in another
->>> one, but we should call xeno_set_current in the trampolines of all
->>> skins, so that they can use the native and posix mutexes.
 >>>
->>> This is another thing that I have left in a state of flux...
->> Find it below (PATCH 4/3).
+>>>> -#define test_claimed(owner) ((long) (owner) & 1)
+>>>> -#define clear_claimed(owner) ((xnthread_t *) ((long) (owner) & ~1))
+>>>> -#define set_claimed(owner, bit) \
+>>>> -        ((xnthread_t *) ((long) clear_claimed(owner) | !!(bit)))
+>>>> +#define __CLAIMED_BIT		XN_HANDLE_SPARE3
+>>>> +
+>>>> +#define test_claimed(owner)	xnhandle_test_spare(owner, __CLAIMED_BIT)
+>>>> +#define clear_claimed(owner)	xnhandle_mask_spare(owner)
+>>>> +#define set_claimed(owner, bit) ({ \
+>>>> +	xnhandle_t __tmp = xnhandle_mask_spare(owner); \
+>>>> +	if (bit) \
+>>>> +		xnhandle_set_spare(__tmp, __CLAIMED_BIT); \
+>>>> +	__tmp; \
+>>>> +})
+>>> I liked doing this with no conditional.
+>> You mean let the caller pass 'bit' as 0 or __CLAIMED_BIT (the latter
+>> would require some renaming then, I guess)?
 >>
->> BTW, should we better invoke pthread_exit in xeno_set_current in case of 
->> a failure?
+>>>> +	xnarch_atomic_set(mutex->owner,
+>>>> +		 	  set_claimed(xnthread_handle(owner),
+>>>> +				      xnsynch_nsleepers(&mutex->synchbase)));
+>>> Ok. I think you have spotted a bug here. This should be mutex->sleepers
+>>> instead of xnsynch_nsleepers.
+>> OK. Will you fix? I will rebase then.
+>>
+>>>> +	/* Consistency check for owner handle - is the object a thread? */
+>>>> +	if (unlikely(xnthread_handle(owner) != clear_claimed(ownerh))) {
+>>>> +		err = -EINVAL;
+>>>> +		goto error;
+>>>>  	}
+>>> What is this ?
+>> This ensures that we are not dereferences some arbitrary registry object
+>> due to a borken handle in the mutex variable: The the object registered
+>> on this handle is an xnthread, we will find the very same handle value
+>> at the well-known place in the object. Kind of magic for xnthread
+>> objects (instead of adding a magic field to them).
 > 
-> I prefer my application to die. This way I would know that something
-> went wrong. And by the way, how could this syscall fail ? I mean if
-> xenomai or the posix skin are not loaded, we would have known it earlier.
+> Yes, but the point is: how can the handle be borken ? It looks like a
+> useless check to me.
 
-So far this syscall can trigger a thread handle registration if the
-current thread has no handle yet. But that could go away if all skins
-ensure that there is at least an anonymous handle for their threads
-after creation.
+This is user memory. Everything can be borken. And I don't want to
+create yet another source for user-triggered kernel bugs (including
+silent ones) like with our heap management structures that are
+corruptible by userland. That's headache guarantee.
 
 Jan
 
