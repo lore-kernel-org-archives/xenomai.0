@@ -1,10 +1,19 @@
-Message-ID: <48AAF7DB.1080603@domain.hid>
-Date: Tue, 19 Aug 2008 18:42:03 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48B5DFE2.1080901@domain.hid>
+Date: Thu, 28 Aug 2008 01:14:42 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+References: <48B5592B.1090005@domain.hid>
+	<48B55F7C.5030901@domain.hid>	<48B56685.4060500@domain.hid>
+	<48B570AF.4090900@domain.hid>	<48B57281.2090109@domain.hid>
+	<48B57626.8070404@domain.hid>	<48B576F2.5010409@domain.hid>
+	<48B57BE0.8000701@domain.hid> <48B57D32.60504@domain.hid>
+	<48B599DD.6070306@domain.hid> <48B5A4AB.3030909@domain.hid>
+	<48B5B9FC.2050900@domain.hid>
+In-Reply-To: <48B5B9FC.2050900@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [BUG] Lock stealing is borken
+Subject: Re: [Xenomai-core] [RFC][PATCH 2/3] Switch to handle-based fast
+	mutex owners
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,37 +23,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi,
+Jan Kiszka wrote:
+> @@ -329,6 +326,13 @@ int pse51_mutex_timedlock_break(struct _
+>  				break;
+>  			}
+>  		}
+> +		if (!xnsynch_nsleepers(&mutex->synchbase)) {
+> +			xnarch_atomic_set
+> +				(mutex->owner,
+> +				 clear_claimed
+> +					(xnarch_atomic_get(mutex->owner)));
+> +			xnsynch_set_owner(&mutex->synchbase, NULL);
+> +		}
+>  		xnlock_put_irqrestore(&nklock, s);
 
-bad news, everyone :(. According to the result of some lengthy debug
-session with a customer and several ad-hoc lttng instrumentations, we
-have a fatal bug in the nucleus' implementation of the lock stealing
-algorithm. Consider this scenario:
-
-1. Thread A acquires Mutex X successfully, ie. it leaves the (in this
-   case) rt_mutex_acquire service, and its XNWAKEN flag is therefore
-   cleared.
-
-2. Thread A blocks on some further Mutex Y (in our case it was a
-   semaphore, but that doesn't matter).
-
-3. Thread B signals the availability of Mutex Y to Thread A, thus it
-   also set XNWAKEN in Thread A. But Thread A is not yet scheduled on
-   its CPU.
-
-4. Thread C tries to acquire Mutex X, finds it assigned to Thread A, but
-   also notices that the XNWAKEN flag of Thread A is set. Thus it steals
-   the mutex although Thread A already entered the critical section -
-   and hell breaks loose...
-
-Looks like the XNWAKEN flag is misplaced in the owner's thread flags.
-Can we safely move it into the synch object?
-
-Jan
+I do not like this at all. I mean, unless I am mistaken, we loose more
+than we gain, we are adding a couple of atomic, hence heavy, operations
+in a common case for handling a corner case. I still prefer emitting a
+system call in the corner case.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
