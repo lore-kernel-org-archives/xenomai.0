@@ -1,14 +1,14 @@
-Message-ID: <48B56936.10603@domain.hid>
-Date: Wed, 27 Aug 2008 16:48:22 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Resent-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Resent-Message-Id: <48B55FE5.50001@domain.hid>
+Message-ID: <48B55FC7.60201@domain.hid>
+Date: Wed, 27 Aug 2008 16:08:07 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <48B5592B.1090005@domain.hid> <48B55F7C.5030901@domain.hid>
-	<48B56685.4060500@domain.hid> <48B56876.3090601@domain.hid>
-In-Reply-To: <48B56876.3090601@domain.hid>
+References: <48B5592B.1090005@domain.hid>
+In-Reply-To: <48B5592B.1090005@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RFC][PATCH 2/3] Switch to handle-based fast
-	mutex owners
+Subject: [Xenomai-core] [RFC][PATCH 3/3] Remove xnarch_atomic_intptr wrappers
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,86 +18,136 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>
->>> -#define test_claimed(owner) ((long) (owner) & 1)
->>> -#define clear_claimed(owner) ((xnthread_t *) ((long) (owner) & ~1))
->>> -#define set_claimed(owner, bit) \
->>> -        ((xnthread_t *) ((long) clear_claimed(owner) | !!(bit)))
->>> +#define __CLAIMED_BIT		XN_HANDLE_SPARE3
->>> +
->>> +#define test_claimed(owner)	xnhandle_test_spare(owner, __CLAIMED_BIT)
->>> +#define clear_claimed(owner)	xnhandle_mask_spare(owner)
->>> +#define set_claimed(owner, bit) ({ \
->>> +	xnhandle_t __tmp = xnhandle_mask_spare(owner); \
->>> +	if (bit) \
->>> +		xnhandle_set_spare(__tmp, __CLAIMED_BIT); \
->>> +	__tmp; \
->>> +})
->> I liked doing this with no conditional.
-> 
-> You mean let the caller pass 'bit' as 0 or __CLAIMED_BIT (the latter
-> would require some renaming then, I guess)?
-> 
->>> +	xnarch_atomic_set(mutex->owner,
->>> +		 	  set_claimed(xnthread_handle(owner),
->>> +				      xnsynch_nsleepers(&mutex->synchbase)));
->> Ok. I think you have spotted a bug here. This should be mutex->sleepers
->> instead of xnsynch_nsleepers.
-> 
-> OK. Will you fix? I will rebase then.
-> 
->>> +	/* Consistency check for owner handle - is the object a thread? */
->>> +	if (unlikely(xnthread_handle(owner) != clear_claimed(ownerh))) {
->>> +		err = -EINVAL;
->>> +		goto error;
->>>  	}
->> What is this ?
-> 
-> This ensures that we are not dereferences some arbitrary registry object
-> due to a borken handle in the mutex variable: The the object registered
-> on this handle is an xnthread, we will find the very same handle value
-> at the well-known place in the object. Kind of magic for xnthread
-> objects (instead of adding a magic field to them).
-> 
->>
->>> Index: b/ksrc/skins/posix/thread.c
->>> ===================================================================
->>> --- a/ksrc/skins/posix/thread.c
->>> +++ b/ksrc/skins/posix/thread.c
->>> @@ -28,6 +28,7 @@
->>>   * 
->>>   *@{*/
->>>  
->>> +#include <nucleus/registry.h>
->>>  #include <posix/thread.h>
->>>  #include <posix/cancel.h>
->>>  #include <posix/timer.h>
->>> @@ -229,6 +230,13 @@ int pthread_create(pthread_t *tid,
->>>  	appendq(thread->container, &thread->link);
->>>  	xnlock_put_irqrestore(&nklock, s);
->>>  
->>> +#ifdef CONFIG_XENO_OPT_REGISTRY
->>> +	/* We need an anonymous registry entry to obtain a handle for fast
->>> +	   mutex locking. */
->>> +	xnregistry_enter("", &thread->threadbase,
->>> +			 &xnthread_handle(&thread->threadbase), NULL);
->>> +#endif /* CONFIG_XENO_OPT_REGISTRY */
->>> +
->> Since we need this for all threads (I want a thread from any skin to be
->> able to use the posix skin mutexes), why doing it in the skin ?
-> 
-> Some skins register their threads unconditionally, some based on names,
-> some not at all. The "not at all" case has to be fixed, but we need to
-> respect the other two as well.
+No more users, no more use cases in sight, let's get rid of it.
 
-Ok. But we need to add the register in all skins then.
+---
+ include/asm-arm/atomic.h        |    3 ---
+ include/asm-blackfin/atomic.h   |    2 --
+ include/asm-generic/Makefile.am |    2 +-
+ include/asm-generic/Makefile.in |    2 +-
+ include/asm-generic/atomic.h    |   24 ------------------------
+ include/asm-ia64/atomic.h       |    2 --
+ include/asm-powerpc/atomic.h    |    2 --
+ include/asm-x86/atomic.h        |    2 --
+ 8 files changed, 2 insertions(+), 37 deletions(-)
 
--- 
-                                                 Gilles.
+Index: b/include/asm-arm/atomic.h
+===================================================================
+--- a/include/asm-arm/atomic.h
++++ b/include/asm-arm/atomic.h
+@@ -412,9 +412,6 @@ static __inline__ void xnarch_atomic_cle
+ 
+ typedef unsigned long atomic_flags_t;
+ 
+-/* Add support for xnarch_atomic_intptr_t */
+-#include <asm-generic/xenomai/atomic.h>
+-
+ #endif /* !_XENO_ASM_ARM_ATOMIC_H */
+ 
+ // vim: ts=4 et sw=4 sts=4
+Index: b/include/asm-blackfin/atomic.h
+===================================================================
+--- a/include/asm-blackfin/atomic.h
++++ b/include/asm-blackfin/atomic.h
+@@ -42,8 +42,6 @@
+ typedef atomic_t atomic_counter_t;
+ typedef atomic_t xnarch_atomic_t;
+ 
+-#include <asm-generic/xenomai/atomic.h>
+-
+ #else /* !__KERNEL__ */
+ 
+ #include <asm/xenomai/syscall.h>
+Index: b/include/asm-generic/Makefile.am
+===================================================================
+--- a/include/asm-generic/Makefile.am
++++ b/include/asm-generic/Makefile.am
+@@ -1,5 +1,5 @@
+ includesubdir = $(includedir)/asm-generic
+ 
+-includesub_HEADERS = arith.h atomic.h features.h hal.h syscall.h system.h wrappers.h
++includesub_HEADERS = arith.h features.h hal.h syscall.h system.h wrappers.h
+ 
+ SUBDIRS = bits
+Index: b/include/asm-generic/Makefile.in
+===================================================================
+--- a/include/asm-generic/Makefile.in
++++ b/include/asm-generic/Makefile.in
+@@ -226,7 +226,7 @@ target_vendor = @target_vendor@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ includesubdir = $(includedir)/asm-generic
+-includesub_HEADERS = arith.h atomic.h features.h hal.h syscall.h system.h wrappers.h
++includesub_HEADERS = arith.h features.h hal.h syscall.h system.h wrappers.h
+ SUBDIRS = bits
+ all: all-recursive
+ 
+Index: b/include/asm-generic/atomic.h
+===================================================================
+--- a/include/asm-generic/atomic.h
++++ /dev/null
+@@ -1,24 +0,0 @@
+-#ifndef _XENO_ASM_GENERIC_ATOMIC_H
+-#define _XENO_ASM_GENERIC_ATOMIC_H
+-
+-typedef xnarch_atomic_t xnarch_atomic_intptr_t;
+-
+-static inline void *xnarch_atomic_intptr_get(xnarch_atomic_intptr_t *l)
+-{
+-        xnarch_atomic_t *v = (xnarch_atomic_t *)l;
+-
+-        return (void *)xnarch_atomic_get(v);
+-}
+-
+-static inline void xnarch_atomic_intptr_set(xnarch_atomic_intptr_t *l, void *i)
+-{
+-        xnarch_atomic_t *v = (xnarch_atomic_t *)l;
+-
+-        xnarch_atomic_set(v, (long)i);
+-}
+-
+-#define xnarch_atomic_intptr_cmpxchg(l, old, newval) \
+-        (void *)(xnarch_atomic_cmpxchg((xnarch_atomic_t *)(l), \
+-				       (long)(old), (long)(newval)))
+-
+-#endif /* _XENO_ASM_GENERIC_ATOMIC_H */
+Index: b/include/asm-ia64/atomic.h
+===================================================================
+--- a/include/asm-ia64/atomic.h
++++ b/include/asm-ia64/atomic.h
+@@ -71,8 +71,6 @@ static inline void atomic_clear_mask(uns
+ #define xnarch_atomic_cmpxchg(pcounter,old,new) \
+ 	cmpxchg((&(pcounter)->counter),(old),(new))
+ 
+-#include <asm-generic/xenomai/atomic.h>
+-
+ #else /* !__KERNEL__ */
+ 
+ #include <asm/xenomai/features.h>
+Index: b/include/asm-powerpc/atomic.h
+===================================================================
+--- a/include/asm-powerpc/atomic.h
++++ b/include/asm-powerpc/atomic.h
+@@ -262,6 +262,4 @@ xnarch_atomic_cmpxchg(xnarch_atomic_t *p
+ 
+ typedef unsigned long atomic_flags_t;
+ 
+-#include <asm-generic/xenomai/atomic.h>
+-
+ #endif /* !_XENO_ASM_POWERPC_ATOMIC_H */
+Index: b/include/asm-x86/atomic.h
+===================================================================
+--- a/include/asm-x86/atomic.h
++++ b/include/asm-x86/atomic.h
+@@ -136,6 +136,4 @@ xnarch_atomic_cmpxchg(xnarch_atomic_t *v
+ 
+ #endif /* __KERNEL__ */
+ 
+-#include <asm-generic/xenomai/atomic.h>
+-
+ #endif /* !_XENO_ASM_X86_ATOMIC_64_H */
+
 
