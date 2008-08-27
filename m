@@ -1,14 +1,14 @@
-Message-ID: <48AA8D27.8020103@domain.hid>
-Date: Tue, 19 Aug 2008 11:06:47 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <48B51FD0.1030300@domain.hid>
+Date: Wed, 27 Aug 2008 11:35:12 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <001b01c8f600$0c5a5a60$09201fac@domain.hid>	<4896B492.4000404@domain.hid>	<005b01c8f615$db466930$09201fac@domain.hid>	<4896D6CC.1040103@domain.hid>	<4896D85D.2010004@domain.hid>
-	<48A2BD34.2020601@domain.hid>	<48A2DC45.9040900@domain.hid>
-	<48A9C977.9040106@domain.hid> <48AA8BCD.6050508@domain.hid>
-In-Reply-To: <48AA8BCD.6050508@domain.hid>
+References: <48B3ED52.7080101@domain.hid>
+In-Reply-To: <48B3ED52.7080101@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] rework xnintr_query
+Subject: Re: [Xenomai-core] [PATCH 0/6] Registry-related cleanups
+	and	improvements
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,26 +18,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
->> -	head = snprintf(name, XNOBJECT_NAME_LEN, "IRQ%d: ", irq);
->> -	name += head;
->> -	strncpy(name, intr->name, XNOBJECT_NAME_LEN-head);
->> +	head = snprintf(name_buf, XNOBJECT_NAME_LEN, "IRQ%d: ", irq);
->> +	strncpy(name_buf + head, intr->name, XNOBJECT_NAME_LEN-head);
-> 
-> -	strncpy(name_buf + head, intr->name, XNOBJECT_NAME_LEN-head);
-> +	strncpy(name_buf + head, intr->name, XNOBJECT_NAME_LEN-1-head);
-> +	name_buf[XNOBJECT_NAME_LEN-1] = '\0';
-> 
-> Object names should always be null-terminated.
+Jan Kiszka wrote:
+> Here comes the complete series of patches to improve the Xenomai
+> registry. #1, #5, and #6 are resends of already posted patches, the
+> middle part is fresh from the editor. The series reduces overhead
+> and simplifies the registry code. Overall diffstat:
+>
 
-Yes, and what is the point of not doing everything with only one
-snprintf ? strncpy uselessly burns CPU cycles by filling the destination
-buffers with zeros if source is smaller than destination.
+Merged, thanks.
+
+>  include/asm-generic/hal.h  |   10 +-
+>  include/nucleus/registry.h |   10 --
+>  ksrc/arch/generic/hal.c    |   18 +--
+>  ksrc/arch/generic/nmi.c    |    6 -
+>  ksrc/arch/x86/nmi_32.c     |    6 -
+>  ksrc/nucleus/module.c      |   58 ++++-------
+>  ksrc/nucleus/registry.c    |  223 ++++++++++++++++++++++-----------------------
+>  ksrc/skins/native/alarm.c  |   22 +---
+>  ksrc/skins/native/buffer.c |   15 ---
+>  ksrc/skins/native/cond.c   |   14 --
+>  ksrc/skins/native/event.c  |   15 ---
+>  ksrc/skins/native/heap.c   |   14 --
+>  ksrc/skins/native/intr.c   |   17 ---
+>  ksrc/skins/native/mutex.c  |   15 ---
+>  ksrc/skins/native/pipe.c   |   14 --
+>  ksrc/skins/native/queue.c  |   12 --
+>  ksrc/skins/native/sem.c    |   14 --
+>  ksrc/skins/native/task.c   |   16 ---
+>  18 files changed, 182 insertions(+), 317 deletions(-)
+> 
+> So a net gain of more than 130 LOC.
+> 
+> The series passed basic tests on my virtual target.
+> 
+> Jan
+> 
+
 
 -- 
-                                                 Gilles.
+Philippe.
 
