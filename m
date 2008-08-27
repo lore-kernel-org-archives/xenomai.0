@@ -1,10 +1,16 @@
-Message-ID: <48AAF14F.2020204@domain.hid>
-Date: Tue, 19 Aug 2008 18:14:07 +0200
+Message-ID: <48B57BE0.8000701@domain.hid>
+Date: Wed, 27 Aug 2008 18:08:00 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+References: <48B5592B.1090005@domain.hid> <48B55F7C.5030901@domain.hid>
+	<48B56685.4060500@domain.hid> <48B570AF.4090900@domain.hid>
+	<48B57281.2090109@domain.hid> <48B57626.8070404@domain.hid>
+	<48B576F2.5010409@domain.hid>
+In-Reply-To: <48B576F2.5010409@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH 2/2] Report registry slot usage via /proc
+Subject: Re: [Xenomai-core] [RFC][PATCH 2/3] Switch to handle-based fast
+	mutex owners
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,108 +20,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Some customer ran into the problem of lacking registry slots without
-prior warning. We are lacking some report mechanism, specifically for
-unexported entries (every user object requires one for its handle).
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> Gilles Chanteperdrix wrote:
+>>>>> Jan Kiszka wrote:
+>>>>>> +	xnarch_atomic_set(mutex->owner,
+>>>>>> +		 	  set_claimed(xnthread_handle(owner),
+>>>>>> +				      xnsynch_nsleepers(&mutex->synchbase)));
+>>>>> Ok. I think you have spotted a bug here. This should be mutex->sleepers
+>>>>> instead of xnsynch_nsleepers.
+>>>> BTW, why do you need to track sleepers separately in POSIX? Native
+>>>> doesn't do so, e.g.
+>>> Because of the "syscall-needed-when-unlocking-stolen-mutex" issue I
+>>> already explained (sleepers - xnsynch_nsleepers is precisely the count
+>>> of pending threads which have been awake then robbed the mutex).
+>> Hmm, sounds like the new lock owner should better clear the 'claimed'
+>> bit then, not the old one on return from unlock. Or where is the
+>> pitfall? How does the futex algorithm handle this scenario?
+> 
+> Ok. Please read my explanation again, I have already explained this in
+> another mail.
 
-This patch introduces /proc/xenomai/registry_usage in the form
+I did this, but I'm unable to derive the answer for my question from it.
+Let's go through it in more details:
 
-slots=512:used=1:exported=0
+When we pass a mutex to a new owner, we set its reference in the fast
+lock variable + set the claimed bit if there are more waiters. Instead,
+I would simple set that bit if there is a new owner. That owner will
+then pick up the mutex eventually and clear 'claimed' on exit from it
+lock service (if there are no further waiters then). If the new owner is
+not able to run and we steal the lock, we simple keep the 'claimed' bit
+as is. On exit from the stolen lock we find it set, thus we are forced
+to issue a syscall as it should be.
 
-to address the deficit.
+OK, what happens if some waiter wants to leave the party while we are
+holding the stolen lock? Then the sleeper number must be correct - that
+is one pitfall!
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
- ksrc/nucleus/registry.c |   41 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
+I will have to dig into this more deeply, considering more cases. But
+the additional "sleepers" field remains at least misplaced IMHO.
+xnsynch_sleepers should better be fixed to respect lock stealing, as
+lock stealing is an xnsynch property, nothing POSIX-specific.
 
-Index: b/ksrc/nucleus/registry.c
-===================================================================
---- a/ksrc/nucleus/registry.c
-+++ b/ksrc/nucleus/registry.c
-@@ -60,6 +60,8 @@ static int registry_hash_entries;
- 
- static xnsynch_t registry_hash_synch;
- 
-+static unsigned registry_exported_objects;
-+
- #ifdef CONFIG_XENO_EXPORT_REGISTRY
- 
- #include <linux/workqueue.h>
-@@ -82,6 +84,35 @@ static int registry_proc_apc;
- 
- #endif /* CONFIG_XENO_EXPORT_REGISTRY */
- 
-+#ifdef CONFIG_PROC_FS
-+static int
-+registry_usage_read_proc(char *page, char **start, off_t off,
-+			 int count, int *eof, void *data)
-+{
-+	int len;
-+
-+	if (!xnpod_active_p())
-+		return -ESRCH;
-+
-+	len = sprintf(page, "slots=%u:used=%u:exported=%u\n",
-+		      CONFIG_XENO_OPT_REGISTRY_NRSLOTS,
-+		      CONFIG_XENO_OPT_REGISTRY_NRSLOTS -
-+		      countq(&registry_obj_freeq),
-+		      registry_exported_objects);
-+
-+	len -= off;
-+	if (len <= off + count)
-+		*eof = 1;
-+	*start = page + off;
-+	if (len > count)
-+		len = count;
-+	if (len < 0)
-+		len = 0;
-+
-+	return len;
-+}
-+#endif /* CONFIG_PROC_FS */
-+
- int xnregistry_init(void)
- {
- 	static const int primes[] = {
-@@ -117,6 +148,11 @@ int xnregistry_init(void)
- 	initq(&registry_obj_procq);
- #endif /* CONFIG_XENO_EXPORT_REGISTRY */
- 
-+#ifdef CONFIG_PROC_FS
-+	rthal_add_proc_leaf("registry_usage", registry_usage_read_proc,
-+			    NULL, NULL, rthal_proc_root);
-+#endif /* CONFIG_PROC_FS */
-+
- 	initq(&registry_obj_freeq);
- 	initq(&registry_obj_busyq);
- 	registry_obj_stamp = 0;
-@@ -136,6 +172,9 @@ int xnregistry_init(void)
- 					     registry_hash_entries);
- 
- 	if (!registry_hash_table) {
-+#ifdef CONFIG_PROC_FS
-+		remove_proc_entry("registry_usage", rthal_proc_root);
-+#endif /* CONFIG_PROC_FS */
- #ifdef CONFIG_XENO_EXPORT_REGISTRY
- 		rthal_apc_free(registry_proc_apc);
- 		remove_proc_entry("registry", rthal_proc_root);
-@@ -272,6 +311,7 @@ static DECLARE_WORK_FUNC(registry_proc_c
- 		if (object->proc != XNOBJECT_PROC_RESERVED1)
- 			goto unexport;
- 
-+		registry_exported_objects++;
- 		++pnode->entries;
- 		object->proc = XNOBJECT_PROC_RESERVED2;
- 		appendq(&registry_obj_busyq, holder);
-@@ -329,6 +369,7 @@ static DECLARE_WORK_FUNC(registry_proc_c
- 		continue;
- 
- 	unexport:
-+		registry_exported_objects--;
- 		entries = --pnode->entries;
- 		entry = object->proc;
- 		object->proc = NULL;
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
