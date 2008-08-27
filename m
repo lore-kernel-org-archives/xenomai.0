@@ -1,16 +1,17 @@
-Message-ID: <48B5DFE2.1080901@domain.hid>
-Date: Thu, 28 Aug 2008 01:14:42 +0200
+Message-ID: <48B5E6E6.10007@domain.hid>
+Date: Thu, 28 Aug 2008 01:44:38 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <48B5592B.1090005@domain.hid>
-	<48B55F7C.5030901@domain.hid>	<48B56685.4060500@domain.hid>
-	<48B570AF.4090900@domain.hid>	<48B57281.2090109@domain.hid>
-	<48B57626.8070404@domain.hid>	<48B576F2.5010409@domain.hid>
-	<48B57BE0.8000701@domain.hid> <48B57D32.60504@domain.hid>
-	<48B599DD.6070306@domain.hid> <48B5A4AB.3030909@domain.hid>
-	<48B5B9FC.2050900@domain.hid>
-In-Reply-To: <48B5B9FC.2050900@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <48B5592B.1090005@domain.hid> <48B55F7C.5030901@domain.hid>
+	<48B56685.4060500@domain.hid> <48B56876.3090601@domain.hid>
+	<48B568FD.9010905@domain.hid> <48B56A0C.9060006@domain.hid>
+	<48B56AF6.6080509@domain.hid> <48B56C06.1030808@domain.hid>
+	<48B56D05.6020509@domain.hid> <48B56E69.9000100@domain.hid>
+	<48B56F78.6050405@domain.hid> <48B57046.70207@domain.hid>
+	<48B572D0.2000801@domain.hid> <48B5741D.7050207@domain.hid>
+	<48B5746C.1000201@domain.hid> <48B574BB.4040602@domain.hid>
+In-Reply-To: <48B574BB.4040602@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [RFC][PATCH 2/3] Switch to handle-based fast
 	mutex owners
@@ -27,23 +28,40 @@ To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> @@ -329,6 +326,13 @@ int pse51_mutex_timedlock_break(struct _
->  				break;
->  			}
->  		}
-> +		if (!xnsynch_nsleepers(&mutex->synchbase)) {
-> +			xnarch_atomic_set
-> +				(mutex->owner,
-> +				 clear_claimed
-> +					(xnarch_atomic_get(mutex->owner)));
-> +			xnsynch_set_owner(&mutex->synchbase, NULL);
-> +		}
->  		xnlock_put_irqrestore(&nklock, s);
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Jan Kiszka wrote:
+>>>>> Gilles Chanteperdrix wrote:
+>>>>>> Jan Kiszka wrote:
+>>>>>>> File descriptors are all identically structured objects, so at worst you
+>>>>>>> ruin some other app's day. But the registry contains arbitrary objects
+>>>>>>> with different internal layout. If you start assuming object_a * is
+>>>>>>> object_b * and use the pointer etc. included in a as if they have the
+>>>>>>> meaning of b, you quickly ruin the kernel's day as well. Therefore,
+>>>>>>> native, e.g., does magic checks after fetching from the registry. As I
+>>>>>>> said, this test here works differently, but it has the same effect and
+>>>>>>> impact.
+>>>>>> By the way, would not it make sense to have separate hash tables for
+>>>>>> separate objects types ? I mean then we would not need any validation,
+>>>>>> and several object types could use the same name.
+>>>>> From that POV a good idea. The only issue I see is a management problem:
+>>>>> How many mutex, thread, queue, whatever slots do you want in your
+>>>>> system? One knob for them all? Or countless knobs for all object types
+>>>>> of all skins? That's hairy, I'm afraid.
+>>>> xnmalloc, the pool size is the limit.
+>>> You mean kind of "xnrealloc", including atomically copying potentially
+>>> large descriptor tables over? Sounds not that attractive.
+>> No, I mean the hash table contains pointers, and the objects are
+>> allocated dynamically...
+> 
+> Handle lookup is not going through hash tables. It's index based (like
+> file descriptors).
 
-I do not like this at all. I mean, unless I am mistaken, we loose more
-than we gain, we are adding a couple of atomic, hence heavy, operations
-in a common case for handling a corner case. I still prefer emitting a
-system call in the corner case.
+Ok, but using hash tables instead of static tables allow you to have
+more objects in the hash than hash buckets, and a "registry slot"
+occupies simply a bit in a multi-level bitfield when free, so you can
+have preposterous registry slots limits like 2048 or 4096.
 
 -- 
 					    Gilles.
