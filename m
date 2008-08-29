@@ -1,13 +1,10 @@
-Message-ID: <48B7A6F1.602@domain.hid>
-Date: Fri, 29 Aug 2008 09:36:17 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <1743f3b40808290145s26f4fa4dp82abee4b8a66fcbf@domain.hid>
+Date: Fri, 29 Aug 2008 10:45:34 +0200
+From: "Antonio Del Cinque" <adelcinque@domain.hid>
 MIME-Version: 1.0
-References: <959374811@domain.hid>
-In-Reply-To: <959374811@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Compiling Problems for Virtex II pro Board
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_3730_30085536.1219999534516"
+Subject: [Xenomai-help] RTDM driver examples compile problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,85 +14,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Joachim Meyer <Jogi95@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Joachim Meyer wrote:
-> Hi Phillipe
-> 
-> Once you gave me a patch to add adeos support to the 2.6.23 Kernel from Xilinx (see old Mail below).
-> I managed to install Xenomai correctly that time. I didn't made any further tests than those from the testsuite, but they worked fine.
-> Here's my Question:
-> 
-> What should I do if I want to use a newer Kernel Version at any time? It would be nice to get rid of my dependency to Kernel 2.6.23, because of the special patch. 
-> Can you give me any information what I can do? Is it hard to fix a normal adeos patch so it works for the Xilinx tree?
->
+------=_Part_3730_30085536.1219999534516
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Adeos/powerpc patches are based on the DENX kernel tree, and looking at the
-Xilinx tree, more conflicts are raised over time. I won't say that it's hard to
-adapt the patch to the Xilinx tree, but the merge issues are not trivial
-anymore, like they were in 2.6.23.
+Hi all,
+I'm trying to port Xenomai to the new PowerPC-based MPC5121e micro from
+Freescale. I'm using the toolchain included in the LTIB (Linux Target Image
+Builder) envirnoment from Freescale.
+I've got problems when compiling the RTDM xenomai examples. It seems that a
+"-m64" option is used, which is not supported, but I cannot see how to
+disable it. I'm not an expert (really a newbie!) so excuse me, maybe this is
+not an issue at all. The output is:
 
-What would help is that more Xilinx bits are sent/merged to mainline or DENX trees.
+make -C ../linux-2.6.24
+SUBDIRS=/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0
+modules
+make[1]: Entering directory
+`/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/linux-2.6.24'
+  CC [M]
+/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/heartbeat.o
+  CC [M]
+/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/tut01-skeleton-drv.o
+  CC [M]
+/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/tut02-skeleton-drv.o
+cc1: error: unrecognized command line option "-mno-red-zone"
+cc1: error: unrecognized command line option "-mcmodel=kernel"
+cc1: error: unrecognized command line option "-maccumulate-outgoing-args"
+/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/heartbeat.c:1:
+error: -m64 not supported in this configuration
+cc1: error: unrecognized command line option "-mno-red-zone"
+cc1: error: unrecognized command line option "-mcmodel=kernel"
+cc1: error: unrecognized command line option "-maccumulate-outgoing-args"
+/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/tut02-skeleton-drv.c:1:
+error: -m64 not supported in this configuration
+cc1: error: unrecognized command line option "-mno-red-zone"
+cc1: error: unrecognized command line option "-mcmodel=kernel"
+cc1: error: unrecognized command line option "-maccumulate-outgoing-args"
+/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/tut01-skeleton-drv.c:1:
+error: -m64 not supported in this configuration
+make[2]: ***
+[/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/heartbeat.o]
+Error 1
+make[2]: *** Waiting for unfinished jobs....
+make[2]: ***
+[/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/tut02-skeleton-drv.o]
+Error 1
+make[2]: ***
+[/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/tut01-skeleton-drv.o]
+Error 1
+make[1]: ***
+[_module_/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0]
+Error 2
+make[1]: Leaving directory
+`/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/linux-2.6.24'
+make: *** [all] Error 2
+error: Bad exit status from
+/home/antonio/tools/ltib-mpc5121ads-20080528/tmp/rpm-tmp.55885 (%build)
 
-> Greetings & THX
-> Joachim
-> 
-> Joachim Meyer wrote:
->> HI
->>
->> I tried to patch my Kernel 2.6.23 with the aedos patch. But I got the error listet at the end. I was using a Kernel from the Xilinx git tree because there are all the driver included I need. Next I tried to use a the last 2.6.23 Kernel from DENX, which succeded and they also support the ml300 Board but the support for the Xilinx on-chip ethernet is missing. I need that support. So what can I do?
->> The Xenomai patch doesn't only work with the DENX Kernels, right?
-> 
-> No, but for anything beyond 2.6.20, the DENX tree is our reference
-> kernel. So you are -mostly- on your own when using other trees.
-> 
->> But where can I look for the error?
-> 
-> arch/powerpc/kernel/entry.S. But the Xilinx PIC code also has to be
-> adapted to Adeos, which is not done by the original patch, otherwise
-> this won't work.
-> 
->> Greetings & Thx for all help
->> Joachim
->>
->> error:
->> -------------------------------------------------------------------------------------------------------------------------------------------
->> meyer@domain.hid> ./prepare-kernel.sh
->> Linux tree [default /lib/modules/2.6.13-15.18-bigsmp/source]: ~/xenomai/test/linux-2.6-xlnx.git
->> prepare-kernel.sh: cannot access Linux tree in ~/xenomai/test/linux-2.6-xlnx.git
->> Linux tree [default /usr/src]: /home/meyer/xenomai/test/linux-2.6-xlnx.git
->> Target architecture [default i686]: ppc
->> Adeos patch [default /home/meyer/xenomai/xenomai-2.4.2/ksrc/arch/powerpc/patches/adeos-ipipe-2.6.23-ppc-DENX-1.6-03.patch]:
->> patching file Makefile
->> patching file arch/powerpc/kernel/cputable.c
->> Hunk #1 succeeded at 1298 (offset -89 lines).
->> Hunk #2 succeeded at 1327 (offset -89 lines).
->> patching file arch/powerpc/kernel/idle.c
->> patching file arch/powerpc/kernel/io.c
->> patching file arch/powerpc/kernel/irq.c
->> patching file arch/powerpc/kernel/process.c
->> Hunk #2 succeeded at 333 with fuzz 2 (offset -11 lines).
->> Hunk #3 succeeded at 973 (offset -11 lines).
->> patching file arch/ppc/Kconfig
->> Hunk #1 succeeded at 980 (offset -32 lines).
->> patching file arch/ppc/boot/Makefile
->> patching file arch/ppc/kernel/Makefile
->> patching file arch/ppc/kernel/entry.S
->> Hunk #5 FAILED at 726.
->> 1 out of 6 hunks FAILED -- saving rejects to file arch/ppc/kernel/entry.S.rej
-> 
-> Try this patch instead, it fixes the rejects and also makes
-> arch/ppc/syslib/xilinx-pic.c Adeos-aware:
-> http://download.gna.org/adeos/patches/tmp/adeos-ipipe-2.6.23-ppc-xlnx-1.6-03.patch
-> 
-> Note: this is a quick hack for the XILINX boards. In theory, this should
-> work. In practice, I have no idea if it does. The difference between
-> theory and practice is usually called luck as far as I'm concerned. You
-> have been warned.
-> 
+Thanks
+Antonio
 
+------=_Part_3730_30085536.1219999534516
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
--- 
-Philippe.
+<div dir="ltr">Hi all,<br>I&#39;m trying to port Xenomai to the new PowerPC-based MPC5121e micro from Freescale. I&#39;m using the toolchain included in the LTIB (Linux Target Image Builder) envirnoment from Freescale. <br>
+I&#39;ve got problems when compiling the RTDM xenomai examples. It seems that a &quot;-m64&quot; option is used, which is not supported, but I cannot see how to disable it. I&#39;m not an expert (really a newbie!) so excuse me, maybe this is not an issue at all. The output is:<br>
+<br>make -C ../linux-2.6.24 SUBDIRS=/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0 modules<br>make[1]: Entering directory `/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/linux-2.6.24&#39;<br>
+&nbsp; CC [M]&nbsp; /home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/heartbeat.o<br>&nbsp; CC [M]&nbsp; /home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/tut01-skeleton-drv.o<br>&nbsp; CC [M]&nbsp; /home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/tut02-skeleton-drv.o<br>
+cc1: error: unrecognized command line option &quot;-mno-red-zone&quot;<br>cc1: error: unrecognized command line option &quot;-mcmodel=kernel&quot;<br>cc1: error: unrecognized command line option &quot;-maccumulate-outgoing-args&quot;<br>
+/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/heartbeat.c:1: error: -m64 not supported in this configuration<br>cc1: error: unrecognized command line option &quot;-mno-red-zone&quot;<br>cc1: error: unrecognized command line option &quot;-mcmodel=kernel&quot;<br>
+cc1: error: unrecognized command line option &quot;-maccumulate-outgoing-args&quot;<br>/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/tut02-skeleton-drv.c:1: error: -m64 not supported in this configuration<br>
+cc1: error: unrecognized command line option &quot;-mno-red-zone&quot;<br>cc1: error: unrecognized command line option &quot;-mcmodel=kernel&quot;<br>cc1: error: unrecognized command line option &quot;-maccumulate-outgoing-args&quot;<br>
+/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/tut01-skeleton-drv.c:1: error: -m64 not supported in this configuration<br>make[2]: *** [/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/heartbeat.o] Error 1<br>
+make[2]: *** Waiting for unfinished jobs....<br>make[2]: *** [/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/tut02-skeleton-drv.o] Error 1<br>make[2]: *** [/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0/tut01-skeleton-drv.o] Error 1<br>
+make[1]: *** [_module_/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.0] Error 2<br>make[1]: Leaving directory `/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/linux-2.6.24&#39;<br>make: *** [all] Error 2<br>
+error: Bad exit status from /home/antonio/tools/ltib-mpc5121ads-20080528/tmp/rpm-tmp.55885 (%build)<br><br>Thanks<br>Antonio<br></div>
+
+------=_Part_3730_30085536.1219999534516--
 
