@@ -1,17 +1,15 @@
-Message-ID: <48B7D180.3070709@domain.hid>
-Date: Fri, 29 Aug 2008 12:37:52 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48B7D1F1.2080205@domain.hid>
+Date: Fri, 29 Aug 2008 12:39:45 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <48B5592B.1090005@domain.hid>	<48B55F7C.5030901@domain.hid>	<48B56685.4060500@domain.hid>	<48B570AF.4090900@domain.hid>	<48B57281.2090109@domain.hid>	<48B57626.8070404@domain.hid>	<48B576F2.5010409@domain.hid>	<48B57BE0.8000701@domain.hid>	<48B57D32.60504@domain.hid>	<48B599DD.6070306@domain.hid>	<48B5A4AB.3030909@domain.hid>	<48B5B9FC.2050900@domain.hid>	<48B5D8EC.90009@domain.hid>	<48B6776E.6030502@domain.hid>
-	<48B6984B.80804@domain.hid>	<48B79A05.7060203@domain.hid>
-	<48B79EAB.8000109@domain.hid>	<48B7A3AF.6010802@domain.hid>
-	<48B7A550.2030001@domain.hid> <48B7C31B.1050605@domain.hid>
-	<48B7C438.9020000@domain.hid>
+References: <48B5592B.1090005@domain.hid>	<48B55F7C.5030901@domain.hid>	<48B56685.4060500@domain.hid>	<48B570AF.4090900@domain.hid>	<48B57281.2090109@domain.hid>	<48B57626.8070404@domain.hid>	<48B576F2.5010409@domain.hid>	<48B57BE0.8000701@domain.hid>	<48B57D32.60504@domain.hid>	<48B599DD.6070306@domain.hid>	<48B5A4AB.3030909@domain.hid>	<48B5B9FC.2050900@domain.hid>	<48B5D8EC.90009@domain.hid>	<48B6776E.6030502@domain.hid>	<48B6984B.80804@domain.hid>	<48B79A05.7060203@domain.hid>	<48B79EAB.8000109@domain.hid>	<48B7A3AF.6010802@domain.hid>	<48B7A550.2030001@domain.hid>
+	<48B7C31B.1050605@domain.hid> <48B7C438.9020000@domain.hid>
 In-Reply-To: <48B7C438.9020000@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [RFC][PATCH 2/3] Switch to handle-based
  fast	mutex owners
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,7 +20,7 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
@@ -121,23 +119,15 @@ Gilles Chanteperdrix wrote:
 > 
 > Well, yes, now that you mention it, calling xnsynch_sleep_on does not
 > seem obvious for the implementation of a trylock.
+>
 
-Once the dust settles here, I will have a look at the stable series as
-well, providing a fix for the "old" mutexes.
+Don't even try calling xnsynch_sleep_on with a nonblocking-type timeout.
 
-> 
 > And by the way, I think that with the mutex/xnsynch shared owner, we can
 > implement stealing without a syscall.
+> 
 
-Probably. But it will definitely need full fast locking support inside
-xnsynch, which is basically about defining and maintaining a generic
-user-shared lock word from within xnsynch services that has at least a
-'claimed' and a 'assignment pending' bit. Looks like we will not run out
-of work soon... ;)
-
-Jan
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Philippe.
 
