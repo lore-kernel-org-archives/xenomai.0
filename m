@@ -1,13 +1,14 @@
-Message-ID: <acb0c1690808291407x70ee253embb3659de01cb94dc@domain.hid>
-Date: Fri, 29 Aug 2008 18:07:42 -0300
-From: "Paulo Matias" <thotypous@domain.hid>
-Sender: syscoder@domain.hid
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Date: Sat, 30 Aug 2008 23:41:30 +0200
+References: <1743f3b40808290145s26f4fa4dp82abee4b8a66fcbf@domain.hid>
+In-Reply-To: <1743f3b40808290145s26f4fa4dp82abee4b8a66fcbf@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Subject: [Xenomai-help] Ethernet & PS/2 interfering with Parallel Port
-	Interrupts (IRQ 7)
+Message-Id: <200808302341.30890.berlemont.hauw@domain.hid>
+Subject: Re: [Xenomai-help] RTDM driver examples compile problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,97 +22,33 @@ To: xenomai@xenomai.org
 
 Hi,
 
-First of all, thank you all for the excellent work on Xenomai.
+> I'm trying to port Xenomai to the new PowerPC-based MPC5121e micro from
+> Freescale. I'm using the toolchain included in the LTIB (Linux Target Image
+> Builder) envirnoment from Freescale.
+> I've got problems when compiling the RTDM xenomai examples. It seems that a
+> "-m64" option is used, which is not supported, but I cannot see how to
+> disable it. I'm not an expert (really a newbie!) so excuse me, maybe this
+> is not an issue at all. The output is:
+>
+> make -C ../linux-2.6.24
+> SUBDIRS=/home/antonio/tools/ltib-mpc5121ads-20080528/rpm/BUILD/rtdm-test-1.
+>0 modules
 
-I was testing the following example code:
-http://www.captain.at/xenomai-parallel-port-interrupt.php
+It seems the options "-m64, -mno-red-zone, etc." are x86-64 specific (then not 
+adapted for your powerpc card).
 
-This example code increases a counter every time a parallel port
-interrupt occurs.
+Why not filling the ARCH and CROSS_COMPILE variables ? like this:
 
-However, driving the parallel port pin 10 with a logic pulser, I found
-that sometimes the example program was increasing the counter above
-the number of pulses I was actually driving to the port.
+make -C ../linux-xxwx SUBDIRS=xxx ARCH=powerpc CROSS_COMPILE=powerpc-linux- 
+modules.
 
-Investigating the problem further, I found that unplugging mouse and
-Ethernet cable made the problem to cease.
+ARCH is you CPU family
+CROSS_COMPILE has to be set with your compiler prefix (for example, with a 
+compiler named powerpc-linux-gcc, CROSS_COMPILE must be powerpc-linux-).
 
-To confirm the problem really existed, I plugged pin 10 to the ground
-to ensure no interrupts would be driven to the parallel port. Then, I
-directed a ping flood ("ping -f") from another computer against the
-computer that was running Xenomai. The result was an increase of
-roughly one interrupt per second (or faster) into the counter of the
-example program running in the Xenomai machine.
+You can find many howtos on it on internet: for example:
+http://www.denx.de/wiki/view/DULG/LinuxConfiguration#Section_6.2.
 
-Moving a PS/2 mouse causes an interrupt being catch by the example
-program sometimes (perhaps one interrupt at each half minute). I had
-tested an USB mouse and an USB drive too, and it seems to cause the
-same problem, although rarely.
+Alexis.
 
-Just to be sure it was not a hardware problem, I tested the parallel
-port using this program running under FreeDOS -
-http://parallelport.pastebin.com/f103d2e6a - compiled with OpenWatcom.
-It did ran correctly and didn't presented the problem. I was running
-Ethernet packet driver and mouse TSRs under FreeDOS when I did the
-test.
-
-
-Some details about my system follows:
-
-Linux 2.6.25.8 & Xenomai-2.4.4
-
-# uname -a
-Linux xenomai 2.6.25-xenomai #1 SMP PREEMPT Tue Aug 19 10:26:44 BRT
-2008 i686 AMD Athlon(TM)Processor AuthenticAMD GNU/Linux
-# cat /proc/xenomai/irq
-IRQ         CPU0
-  7:        7921         parint
-230:           0         [IPI]
-233:      983297         [timer]
-234:           0         [critical sync]
-258:         111         [virtual]
-# cat /proc/xenomai/registry/native/interrupts/parint
-hits=4, pending=0, mode=0x200
-+Int
-# ls /proc/irq/7
-smp_affinity  spurious
-# cat /proc/irq/7/spurious
-count 0
-unhandled 0
-last_unhandled 0 ms
-# cat /proc/irq/7/smp_affinity
-ffff
-# cat /proc/interrupts
-           CPU0
-  0:         95    XT-PIC-XT        timer
-  1:      15673    XT-PIC-XT        i8042
-  2:          0    XT-PIC-XT        cascade
-  6:          0    XT-PIC-XT        ohci_hcd:usb2
-  7:         35    XT-PIC-XT
-  9:      65897    XT-PIC-XT        ohci_hcd:usb1, CMI8738-MC6
- 10:    1196033    XT-PIC-XT        eth0
- 12:      30791    XT-PIC-XT        i8042
- 14:       8908    XT-PIC-XT        pata_ali
- 15:         58    XT-PIC-XT        pata_ali
-NMI:          0   Non-maskable interrupts
-LOC:    1408542   Local timer interrupts
-RES:          0   Rescheduling interrupts
-CAL:          0   function call interrupts
-TLB:          0   TLB shootdowns
-TRM:          0   Thermal event interrupts
-SPU:          0   Spurious interrupts
-ERR:         37
-MIS:          0
-
-
-Note: "parint" is the name of the example program I'm running.
-
-I hope someone can help me discovering what is going wrong here.
-
-Thanks a lot!
-
-
-Best regards,
-
-Paulo Matias
 
