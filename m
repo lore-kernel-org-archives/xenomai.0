@@ -1,90 +1,103 @@
-Message-ID: <489CAECD.6080703@domain.hid>
-Date: Fri, 08 Aug 2008 22:38:37 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Resent-To: xenomai-core <xenomai@xenomai.org>
+Resent-Message-Id: <48BBB22C.2010602@domain.hid>
+Message-ID: <48BBAE63.8010008@domain.hid>
+Date: Mon, 01 Sep 2008 10:57:07 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <489C96FA.7050400@domain.hid>
-In-Reply-To: <489C96FA.7050400@domain.hid>
-Content-Type: multipart/mixed; boundary="------------010205070303040101050009"
-Subject: Re: [Xenomai-help] Xenomai kernel user-space problem running
-	testsuite
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <48BBA9E6.5070400@domain.hid>
+In-Reply-To: <48BBA9E6.5070400@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] [RFC][PATCH 6/9] Add XNSYNCH_FWDROB
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Michael Galea <michaelgalea@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
---------------010205070303040101050009
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Intermediate helper as long as skins implement fast locking and related
+owner tracking on their own: Add 'forward XN_ROBBED state' to the caller
+of xnsynch_sleep_on so that the correct owner can be looked up there.
 
-Michael Galea wrote:
-> I'm just starting with xenomai and am having troubles getting xenomai 
-> user space to talk to my kernel.
-> 
-> I build the kernel and user-space xenomai code and try to run `latency` 
-> from the test suite and get
-> mpc8360mds:# /usr/local/xenomai/bin/latency
-> Xenomai: incompatible feature set
-> (required="fastsem", present="nofastsem", missing="fastsem").
-> 
-> 
-> I have built xenomai from svn into my 2.6.26 powerpc kernel and it looks 
->   good on the next boot, i.e. `dmesg |grep xeno -i` returns:
-> I-pipe: Domain Xenomai registered.
-> Xenomai: hal/powerpc started.
-> Xenomai: real-time nucleus v2.5-devel (Flying In A Blue Dream) loaded.
-> Xenomai: starting native API services.
-> Xenomai: starting POSIX services.
-> Xenomai: starting RTDM services.
-> 
-> The user-space builds and installs over NFS just fine:
-> 
-> ./configure --host=ppc-unknown-linux-gnu --prefix=/usr/local/xenomai \
->    CC=ppc_6xx-gcc CXX=ppc_6xx-g++ LD=ppc_6xx-ld
-> make
-> make DESTDIR=/opt/ppcrootmds/ install
-> 
-> 
-> I can't see any fastsem options in the kernel.  Does anyone have any 
-> advice?
+---
+ include/nucleus/synch.h |    3 ++-
+ ksrc/nucleus/pod.c      |    6 ++++--
+ ksrc/nucleus/synch.c    |   18 +++++++++++++-----
+ 3 files changed, 19 insertions(+), 8 deletions(-)
 
-It is supposed to be set by the Kconfig, but it looks like I forgot to
-add it, so, you may try the attached patch.
-
--- 
-
-
-					    Gilles.
-
---------------010205070303040101050009
-Content-Type: text/x-diff;
- name="xeno-powerpc-enable-kernel-fastsem.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="xeno-powerpc-enable-kernel-fastsem.diff"
-
-Index: ksrc/arch/powerpc/Kconfig
+Index: b/include/nucleus/synch.h
 ===================================================================
---- ksrc/arch/powerpc/Kconfig	(revision 4080)
-+++ ksrc/arch/powerpc/Kconfig	(working copy)
-@@ -2,6 +2,10 @@ config XENO_GENERIC_STACKPOOL
- 	bool
- 	default y
+--- a/include/nucleus/synch.h
++++ b/include/nucleus/synch.h
+@@ -30,10 +30,11 @@
+ #define XNSYNCH_NOPIP   0x0
+ #define XNSYNCH_PIP     0x2
+ #define XNSYNCH_DREORD  0x4
++#define XNSYNCH_FWDROB  0x8
  
-+config XENO_FASTSEM
-+	bool
-+	default y
-+
- source "kernel/xenomai/nucleus/Kconfig"
+ #if defined(__KERNEL__) || defined(__XENO_SIM__)
  
- menu "Machine"
+-#define XNSYNCH_CLAIMED 0x8	/* Claimed by other thread(s) w/ PIP */
++#define XNSYNCH_CLAIMED 0x10	/* Claimed by other thread(s) w/ PIP */
+ 
+ /* Spare flags usable by upper interfaces */
+ #define XNSYNCH_SPARE0  0x01000000
+Index: b/ksrc/nucleus/synch.c
+===================================================================
+--- a/ksrc/nucleus/synch.c
++++ b/ksrc/nucleus/synch.c
+@@ -231,12 +231,20 @@ redo:
+ 	if (xnthread_test_info(thread, XNROBBED)) {
+ 		/* Somebody stole us the ownership while we were ready
+ 		   to run, waiting for the CPU: we need to wait again
+-		   for the resource. */
+-		if (timeout_mode != XN_RELATIVE || timeout == XN_INFINITE)
+-			goto redo;
++		   for the resource, here or at caller site. */
++		if (timeout_mode != XN_RELATIVE || timeout == XN_INFINITE) {
++			if (testbits(synch->status, XNSYNCH_FWDROB))
++				goto unlock_and_exit;
++			else
++				goto redo;
++		}
+ 		timeout = xntimer_get_timeout_stopped(&thread->rtimer);
+-		if (timeout > 1) /* Otherwise, it's too late. */
+-			goto redo;
++		if (timeout > 1) { /* Otherwise, it's too late. */
++			if (testbits(synch->status, XNSYNCH_FWDROB))
++				goto unlock_and_exit;
++			else
++				goto redo;
++		}
+ 		xnthread_set_info(thread, XNTIMEO);
+ 	}
+ 
+Index: b/ksrc/nucleus/pod.c
+===================================================================
+--- a/ksrc/nucleus/pod.c
++++ b/ksrc/nucleus/pod.c
+@@ -1400,13 +1400,15 @@ void xnpod_suspend_thread(xnthread_t *th
+ 						"(thread=%s, mask=%lx)?!",
+ 						thread->name, mask);
+ 				);
+-			xnthread_clear_info(thread, XNRMID | XNTIMEO);
++			xnthread_clear_info(thread,
++					    XNRMID | XNTIMEO | XNROBBED);
+ 			xnthread_set_info(thread, XNBREAK);
+ 			goto unlock_and_exit;
+ 		}
+ #endif /* CONFIG_XENO_OPT_PERVASIVE */
+ 
+-		xnthread_clear_info(thread, XNRMID | XNTIMEO | XNBREAK | XNWAKEN | XNROBBED);
++		xnthread_clear_info(thread, XNRMID | XNTIMEO | XNBREAK |
++					    XNWAKEN | XNROBBED);
+ 	}
+ 
+ 	/* Don't start the timer for a thread indefinitely delayed by
 
---------------010205070303040101050009--
 
