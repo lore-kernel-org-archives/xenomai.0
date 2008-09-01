@@ -1,53 +1,43 @@
-Message-ID: <489D9DAA.1050902@domain.hid>
-Date: Sat, 09 Aug 2008 15:37:46 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <48BBD8E4.6010702@domain.hid>
+Date: Mon, 01 Sep 2008 13:58:28 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <489C96FA.7050400@domain.hid>
-In-Reply-To: <489C96FA.7050400@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <48BBA9E6.5070400@domain.hid> <48BBAB67.90707@domain.hid>
+In-Reply-To: <48BBAB67.90707@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai kernel user-space problem running
-	testsuite
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [PATCH 2/9] Switch to handle-based fast mutex
+ owners
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Michael Galea <michaelgalea@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Michael Galea wrote:
-> I'm just starting with xenomai and am having troubles getting xenomai 
-> user space to talk to my kernel.
+Jan Kiszka wrote:
+> To improve robustness of the fast mutex implementation in POSIX (and
+> later on in native), it is better to track the mutex owner by handle
+> instead of kernel object pointer. Therefore, this patch changes
+> __xn_sys_current (xeno_set_current) so that it returns
+> xnthread_handle(current_thread). It furthermore converts the POSIX mutex
+> implementation to pick up and store the lock owner as handle in the
+> kernel/user-shared mutex. Finally it ensures that all skins (except for
+> RTDM which must not mess around with foreign skins anyway) add their
+> threads to the registry so that at least anonymous handles are
+> available.
 > 
-> I build the kernel and user-space xenomai code and try to run `latency` 
-> from the test suite and get
-> mpc8360mds:# /usr/local/xenomai/bin/latency
-> Xenomai: incompatible feature set
-> (required="fastsem", present="nofastsem", missing="fastsem").
-> 
-> 
-> I have built xenomai from svn into my 2.6.26 powerpc kernel and it looks 
->   good on the next boot, i.e. `dmesg |grep xeno -i` returns:
-> I-pipe: Domain Xenomai registered.
-> Xenomai: hal/powerpc started.
-> Xenomai: real-time nucleus v2.5-devel (Flying In A Blue Dream) loaded.
-> Xenomai: starting native API services.
-> Xenomai: starting POSIX services.
-> Xenomai: starting RTDM services.
-> 
-> The user-space builds and installs over NFS just fine:
-> 
-> ./configure --host=ppc-unknown-linux-gnu --prefix=/usr/local/xenomai \
->    CC=ppc_6xx-gcc CXX=ppc_6xx-g++ LD=ppc_6xx-ld
+> As the value stored in the mutex variable is now an integer, we can
+> switch over to xnarch_atomic_t, removing all atomic_intptr users.
 
-FYI, with the ELDK the following command already works:
+The current implementation allows RTDM threads to use POSIX skin
+mutexes. I do not see why this should change.
 
-   ./configure --host=ppc-linux --prefix=/usr/local/xenomai
-
-Wolfgang.
+-- 
+                                                 Gilles.
 
