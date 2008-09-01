@@ -1,14 +1,14 @@
 Resent-To: xenomai-core <xenomai@xenomai.org>
-Resent-Message-Id: <48BBB22E.3070101@domain.hid>
-Message-ID: <48BBABA1.1010608@domain.hid>
-Date: Mon, 01 Sep 2008 10:45:21 +0200
+Resent-Message-Id: <48BBB22E.2010408@domain.hid>
+Message-ID: <48BBAA50.7060608@domain.hid>
+Date: Mon, 01 Sep 2008 10:39:44 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <48BBA9E6.5070400@domain.hid>
 In-Reply-To: <48BBA9E6.5070400@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH 3/9] Remove xnarch_atomic_intptr wrappers
+Subject: [Xenomai-core] [PATCH 1/9] Always register threads by their base
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,133 +20,476 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai-core <xenomai@xenomai.org>
 
-No more users, no more use cases in sight, let's get rid of it.
+In order to use xnthread_handle(thread) for the fast mutex lock
+variable, we have to ensure that all skins pass the generic object on
+xnregistry_enter. The following patch ensures this for preexisting
+registrations.
 
 ---
- include/asm-arm/atomic.h        |    3 ---
- include/asm-blackfin/atomic.h   |    2 --
- include/asm-generic/Makefile.am |    2 +-
- include/asm-generic/Makefile.in |    2 +-
- include/asm-generic/atomic.h    |   24 ------------------------
- include/asm-ia64/atomic.h       |    2 --
- include/asm-powerpc/atomic.h    |    2 --
- include/asm-x86/atomic.h        |    2 --
- 8 files changed, 2 insertions(+), 37 deletions(-)
+ ksrc/skins/native/syscall.c  |   56 +++++++++++++++++++++++++------------------
+ ksrc/skins/native/task.c     |    2 -
+ ksrc/skins/psos+/syscall.c   |   14 +++++-----
+ ksrc/skins/psos+/task.c      |    7 +++--
+ ksrc/skins/vxworks/syscall.c |   28 +++++++++++----------
+ ksrc/skins/vxworks/taskLib.c |    4 +--
+ 6 files changed, 63 insertions(+), 48 deletions(-)
 
-Index: b/include/asm-arm/atomic.h
+Index: b/ksrc/skins/native/syscall.c
 ===================================================================
---- a/include/asm-arm/atomic.h
-+++ b/include/asm-arm/atomic.h
-@@ -412,9 +412,6 @@ static __inline__ void xnarch_atomic_cle
+--- a/ksrc/skins/native/syscall.c
++++ b/ksrc/skins/native/syscall.c
+@@ -52,7 +52,8 @@ int __native_muxid;
+ static int __rt_bind_helper(struct task_struct *p,
+ 			    struct pt_regs *regs,
+ 			    xnhandle_t *handlep,
+-			    unsigned magic, void **objaddrp)
++			    unsigned magic, void **objaddrp,
++			    unsigned long objoffs)
+ {
+ 	char name[XNOBJECT_NAME_LEN];
+ 	RTIME timeout;
+@@ -82,7 +83,7 @@ static int __rt_bind_helper(struct task_
  
- typedef unsigned long atomic_flags_t;
+ 	/* Also validate the type of the bound object. */
  
--/* Add support for xnarch_atomic_intptr_t */
--#include <asm-generic/xenomai/atomic.h>
--
- #endif /* !_XENO_ASM_ARM_ATOMIC_H */
+-	if (xeno_test_magic(objaddr, magic)) {
++	if (xeno_test_magic(objaddr + objoffs, magic)) {
+ 		if (objaddrp)
+ 			*objaddrp = objaddr;
+ 	} else
+@@ -223,7 +224,9 @@ static int __rt_task_bind(struct pt_regs
+ 	RT_TASK_PLACEHOLDER ph;
+ 	int err;
  
- // vim: ts=4 et sw=4 sts=4
-Index: b/include/asm-blackfin/atomic.h
+-	err = __rt_bind_helper(p, regs, &ph.opaque, XENO_TASK_MAGIC, NULL);
++	err =
++	    __rt_bind_helper(p, regs, &ph.opaque, XENO_TASK_MAGIC, NULL,
++			     -offsetof(RT_TASK, thread_base));
+ 
+ 	if (err)
+ 		return err;
+@@ -253,7 +256,7 @@ static int __rt_task_start(struct pt_reg
+ 				     sizeof(ph)))
+ 		return -EFAULT;
+ 
+-	task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++	task = thread2rtask((xnthread_t *)xnregistry_fetch(ph.opaque));
+ 
+ 	if (!task)
+ 		return -ESRCH;
+@@ -279,7 +282,7 @@ static int __rt_task_suspend(struct pt_r
+ 					     sizeof(ph)))
+ 			return -EFAULT;
+ 
+-		task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++		task = thread2rtask((xnthread_t *)xnregistry_fetch(ph.opaque));
+ 	} else
+ 		task = __rt_task_current(p);
+ 
+@@ -302,7 +305,7 @@ static int __rt_task_resume(struct pt_re
+ 				     sizeof(ph)))
+ 		return -EFAULT;
+ 
+-	task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++	task = thread2rtask((xnthread_t *)xnregistry_fetch(ph.opaque));
+ 
+ 	if (!task)
+ 		return -ESRCH;
+@@ -326,7 +329,7 @@ static int __rt_task_delete(struct pt_re
+ 					     sizeof(ph)))
+ 			return -EFAULT;
+ 
+-		task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++		task = thread2rtask((xnthread_t *)xnregistry_fetch(ph.opaque));
+ 	} else
+ 		task = __rt_task_current(p);
+ 
+@@ -364,7 +367,7 @@ static int __rt_task_set_periodic(struct
+ 					     sizeof(ph)))
+ 			return -EFAULT;
+ 
+-		task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++		task = thread2rtask((xnthread_t *)xnregistry_fetch(ph.opaque));
+ 	} else
+ 		task = __rt_task_current(p);
+ 
+@@ -418,7 +421,7 @@ static int __rt_task_set_priority(struct
+ 					     sizeof(ph)))
+ 			return -EFAULT;
+ 
+-		task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++		task = thread2rtask((xnthread_t *)xnregistry_fetch(ph.opaque));
+ 	} else
+ 		task = __rt_task_current(p);
+ 
+@@ -473,7 +476,7 @@ static int __rt_task_unblock(struct pt_r
+ 				     sizeof(ph)))
+ 		return -EFAULT;
+ 
+-	task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++	task = thread2rtask((xnthread_t *)xnregistry_fetch(ph.opaque));
+ 
+ 	if (!task)
+ 		return -ESRCH;
+@@ -500,7 +503,7 @@ static int __rt_task_inquire(struct pt_r
+ 					     sizeof(ph)))
+ 			return -EFAULT;
+ 
+-		task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++		task = thread2rtask((xnthread_t *)xnregistry_fetch(ph.opaque));
+ 	} else
+ 		task = __rt_task_current(p);
+ 
+@@ -541,7 +544,7 @@ static int __rt_task_notify(struct pt_re
+ 					     sizeof(ph)))
+ 			return -EFAULT;
+ 
+-		task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++		task = thread2rtask((xnthread_t *)xnregistry_fetch(ph.opaque));
+ 	} else
+ 		task = __rt_task_current(p);
+ 
+@@ -627,7 +630,7 @@ static int __rt_task_slice(struct pt_reg
+ 					     sizeof(ph)))
+ 			return -EFAULT;
+ 
+-		task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++		task = thread2rtask((xnthread_t *)xnregistry_fetch(ph.opaque));
+ 	} else
+ 		task = __rt_task_current(current);
+ 
+@@ -667,7 +670,7 @@ static int __rt_task_send(struct pt_regs
+ 					     sizeof(ph)))
+ 			return -EFAULT;
+ 
+-		task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++		task = thread2rtask((xnthread_t *)xnregistry_fetch(ph.opaque));
+ 	} else
+ 		task = __rt_task_current(current);
+ 
+@@ -1104,7 +1107,9 @@ static int __rt_sem_bind(struct pt_regs
+ 	RT_SEM_PLACEHOLDER ph;
+ 	int err;
+ 
+-	err = __rt_bind_helper(current, regs, &ph.opaque, XENO_SEM_MAGIC, NULL);
++	err =
++	    __rt_bind_helper(current, regs, &ph.opaque, XENO_SEM_MAGIC,
++			     NULL, 0);
+ 
+ 	if (err)
+ 		return err;
+@@ -1324,7 +1329,8 @@ static int __rt_event_bind(struct pt_reg
+ 	int err;
+ 
+ 	err =
+-	    __rt_bind_helper(current, regs, &ph.opaque, XENO_EVENT_MAGIC, NULL);
++	    __rt_bind_helper(current, regs, &ph.opaque, XENO_EVENT_MAGIC,
++			     NULL, 0);
+ 
+ 	if (err)
+ 		return err;
+@@ -1567,7 +1573,8 @@ static int __rt_mutex_bind(struct pt_reg
+ 	int err;
+ 
+ 	err =
+-	    __rt_bind_helper(current, regs, &ph.opaque, XENO_MUTEX_MAGIC, NULL);
++	    __rt_bind_helper(current, regs, &ph.opaque, XENO_MUTEX_MAGIC,
++			     NULL, 0);
+ 
+ 	if (err)
+ 		return err;
+@@ -1758,7 +1765,8 @@ static int __rt_cond_bind(struct pt_regs
+ 	int err;
+ 
+ 	err =
+-	    __rt_bind_helper(current, regs, &ph.opaque, XENO_COND_MAGIC, NULL);
++	    __rt_bind_helper(current, regs, &ph.opaque, XENO_COND_MAGIC,
++			     NULL, 0);
+ 
+ 	if (err)
+ 		return err;
+@@ -2008,7 +2016,7 @@ static int __rt_queue_bind(struct pt_reg
+ 
+ 	err =
+ 	    __rt_bind_helper(p, regs, &ph.opaque, XENO_QUEUE_MAGIC,
+-			     (void **)&q);
++			     (void **)&q, 0);
+ 
+ 	if (err)
+ 		goto unlock_and_exit;
+@@ -2507,7 +2515,7 @@ static int __rt_heap_bind(struct pt_regs
+ 
+ 	err =
+ 	    __rt_bind_helper(p, regs, &ph.opaque, XENO_HEAP_MAGIC,
+-			     (void **)&heap);
++			     (void **)&heap, 0);
+ 
+ 	if (err)
+ 		goto unlock_and_exit;
+@@ -3018,7 +3026,7 @@ static int __rt_intr_bind(struct pt_regs
+ 	RT_INTR_PLACEHOLDER ph;
+ 	int err;
+ 
+-	err = __rt_bind_helper(p, regs, &ph.opaque, XENO_INTR_MAGIC, NULL);
++	err = __rt_bind_helper(p, regs, &ph.opaque, XENO_INTR_MAGIC, NULL, 0);
+ 
+ 	if (err)
+ 		return err;
+@@ -3275,7 +3283,7 @@ static int __rt_pipe_bind(struct pt_regs
+ 	RT_PIPE_PLACEHOLDER ph;
+ 	int err;
+ 
+-	err = __rt_bind_helper(p, regs, &ph.opaque, XENO_PIPE_MAGIC, NULL);
++	err = __rt_bind_helper(p, regs, &ph.opaque, XENO_PIPE_MAGIC, NULL, 0);
+ 
+ 	if (err)
+ 		return err;
+@@ -3551,7 +3559,9 @@ static int __rt_buffer_bind(struct pt_re
+ 	RT_BUFFER_PLACEHOLDER ph;
+ 	int ret;
+ 
+-	ret = __rt_bind_helper(current, regs, &ph.opaque, XENO_BUFFER_MAGIC, NULL);
++	ret =
++	    __rt_bind_helper(current, regs, &ph.opaque, XENO_BUFFER_MAGIC,
++			     NULL, 0);
+ 	if (ret)
+ 		return ret;
+ 
+Index: b/ksrc/skins/native/task.c
 ===================================================================
---- a/include/asm-blackfin/atomic.h
-+++ b/include/asm-blackfin/atomic.h
-@@ -42,8 +42,6 @@
- typedef atomic_t atomic_counter_t;
- typedef atomic_t xnarch_atomic_t;
+--- a/ksrc/skins/native/task.c
++++ b/ksrc/skins/native/task.c
+@@ -292,7 +292,7 @@ int rt_task_create(RT_TASK *task,
  
--#include <asm-generic/xenomai/atomic.h>
--
- #else /* !__KERNEL__ */
- 
- #include <asm/xenomai/syscall.h>
-Index: b/include/asm-generic/Makefile.am
+ 	if (name) {
+ 		err = xnregistry_enter(task->rname,
+-				       task,
++				       &task->thread_base,
+ 				       &xnthread_handle(&task->thread_base),
+ 				       NULL);
+ 		if (err)
+Index: b/ksrc/skins/psos+/syscall.c
 ===================================================================
---- a/include/asm-generic/Makefile.am
-+++ b/include/asm-generic/Makefile.am
-@@ -1,5 +1,5 @@
- includesubdir = $(includedir)/asm-generic
+--- a/ksrc/skins/psos+/syscall.c
++++ b/ksrc/skins/psos+/syscall.c
+@@ -131,7 +131,7 @@ static int __t_start(struct pt_regs *reg
+ 	psostask_t *task;
  
--includesub_HEADERS = arith.h atomic.h features.h hal.h syscall.h system.h wrappers.h
-+includesub_HEADERS = arith.h features.h hal.h syscall.h system.h wrappers.h
+ 	handle = __xn_reg_arg1(regs);
+-	task = (psostask_t *)xnregistry_fetch(handle);
++	task = thread2psostask((xnthread_t *)xnregistry_fetch(handle));
  
- SUBDIRS = bits
-Index: b/include/asm-generic/Makefile.in
+ 	if (!task)
+ 		return ERR_OBJID;
+@@ -162,7 +162,7 @@ static int __t_delete(struct pt_regs *re
+ 	handle = __xn_reg_arg1(regs);
+ 
+ 	if (handle)
+-		task = (psostask_t *)xnregistry_fetch(handle);
++		task = thread2psostask((xnthread_t *)xnregistry_fetch(handle));
+ 	else
+ 		task = __psos_task_current(current);
+ 
+@@ -182,7 +182,7 @@ static int __t_suspend(struct pt_regs *r
+ 	psostask_t *task;
+ 
+ 	if (handle)
+-		task = (psostask_t *)xnregistry_fetch(handle);
++		task = thread2psostask((xnthread_t *)xnregistry_fetch(handle));
+ 	else
+ 		task = __psos_task_current(current);
+ 
+@@ -202,7 +202,7 @@ static int __t_resume(struct pt_regs *re
+ 	psostask_t *task;
+ 
+ 	if (handle)
+-		task = (psostask_t *)xnregistry_fetch(handle);
++		task = thread2psostask((xnthread_t *)xnregistry_fetch(handle));
+ 	else
+ 		task = __psos_task_current(current);
+ 
+@@ -284,7 +284,7 @@ static int __t_setpri(struct pt_regs *re
+ 	psostask_t *task;
+ 
+ 	if (handle)
+-		task = (psostask_t *)xnregistry_fetch(handle);
++		task = thread2psostask((xnthread_t *)xnregistry_fetch(handle));
+ 	else
+ 		task = __psos_task_current(current);
+ 
+@@ -314,7 +314,7 @@ static int __ev_send(struct pt_regs *reg
+ 	u_long events;
+ 
+ 	if (handle)
+-		task = (psostask_t *)xnregistry_fetch(handle);
++		task = thread2psostask((xnthread_t *)xnregistry_fetch(handle));
+ 	else
+ 		task = __psos_task_current(current);
+ 
+@@ -1317,7 +1317,7 @@ static int __as_send(struct pt_regs *reg
+ 	psostask_t *task;
+ 
+ 	if (handle)
+-		task = (psostask_t *)xnregistry_fetch(handle);
++		task = thread2psostask((xnthread_t *)xnregistry_fetch(handle));
+ 	else
+ 		task = __psos_task_current(current);
+ 
+Index: b/ksrc/skins/psos+/task.c
 ===================================================================
---- a/include/asm-generic/Makefile.in
-+++ b/include/asm-generic/Makefile.in
-@@ -226,7 +226,7 @@ target_vendor = @target_vendor@
- top_builddir = @top_builddir@
- top_srcdir = @top_srcdir@
- includesubdir = $(includedir)/asm-generic
--includesub_HEADERS = arith.h atomic.h features.h hal.h syscall.h system.h wrappers.h
-+includesub_HEADERS = arith.h features.h hal.h syscall.h system.h wrappers.h
- SUBDIRS = bits
- all: all-recursive
+--- a/ksrc/skins/psos+/task.c
++++ b/ksrc/skins/psos+/task.c
+@@ -161,8 +161,11 @@ u_long t_create(const char *name,
  
-Index: b/include/asm-generic/atomic.h
+ #ifdef CONFIG_XENO_OPT_REGISTRY
+ 	{
+-		u_long err = xnregistry_enter(task->name,
+-					      task, &xnthread_handle(&task->threadbase), NULL);
++		u_long err =
++			xnregistry_enter(task->name,
++					 &task->threadbase,
++					 &xnthread_handle(&task->threadbase),
++					 NULL);
+ 		if (err) {
+ 			t_delete((u_long)task);
+ 			return err;
+Index: b/ksrc/skins/vxworks/syscall.c
 ===================================================================
---- a/include/asm-generic/atomic.h
-+++ /dev/null
-@@ -1,24 +0,0 @@
--#ifndef _XENO_ASM_GENERIC_ATOMIC_H
--#define _XENO_ASM_GENERIC_ATOMIC_H
--
--typedef xnarch_atomic_t xnarch_atomic_intptr_t;
--
--static inline void *xnarch_atomic_intptr_get(xnarch_atomic_intptr_t *l)
--{
--        xnarch_atomic_t *v = (xnarch_atomic_t *)l;
--
--        return (void *)xnarch_atomic_get(v);
--}
--
--static inline void xnarch_atomic_intptr_set(xnarch_atomic_intptr_t *l, void *i)
--{
--        xnarch_atomic_t *v = (xnarch_atomic_t *)l;
--
--        xnarch_atomic_set(v, (long)i);
--}
--
--#define xnarch_atomic_intptr_cmpxchg(l, old, newval) \
--        (void *)(xnarch_atomic_cmpxchg((xnarch_atomic_t *)(l), \
--				       (long)(old), (long)(newval)))
--
--#endif /* _XENO_ASM_GENERIC_ATOMIC_H */
-Index: b/include/asm-ia64/atomic.h
+--- a/ksrc/skins/vxworks/syscall.c
++++ b/ksrc/skins/vxworks/syscall.c
+@@ -146,7 +146,8 @@ out:
+ 
+ static int __wind_task_activate(struct pt_regs *regs)
+ {
+-	WIND_TCB *pTcb = (WIND_TCB *)xnregistry_fetch(__xn_reg_arg1(regs));
++	WIND_TCB *pTcb = thread2wind_task(
++		(xnthread_t *)xnregistry_fetch(__xn_reg_arg1(regs)));
+ 
+ 	if (!pTcb)
+ 		return S_objLib_OBJ_ID_ERROR;
+@@ -167,7 +168,7 @@ static int __wind_task_deleteforce(struc
+ 	WIND_TCB *pTcb;
+ 
+ 	if (handle)
+-		pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++		pTcb = thread2wind_task((xnthread_t *)xnregistry_fetch(handle));
+ 	else
+ 		pTcb = __wind_task_current(current);
+ 
+@@ -190,7 +191,7 @@ static int __wind_task_delete(struct pt_
+ 	WIND_TCB *pTcb;
+ 
+ 	if (handle)
+-		pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++		pTcb = thread2wind_task((xnthread_t *)xnregistry_fetch(handle));
+ 	else
+ 		pTcb = __wind_task_current(current);
+ 
+@@ -213,7 +214,7 @@ static int __wind_task_suspend(struct pt
+ 	WIND_TCB *pTcb;
+ 
+ 	if (handle)
+-		pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++		pTcb = thread2wind_task((xnthread_t *)xnregistry_fetch(handle));
+ 	else
+ 		pTcb = __wind_task_current(current);
+ 
+@@ -232,7 +233,8 @@ static int __wind_task_suspend(struct pt
+ 
+ static int __wind_task_resume(struct pt_regs *regs)
+ {
+-	WIND_TCB *pTcb = (WIND_TCB *)xnregistry_fetch(__xn_reg_arg1(regs));
++	WIND_TCB *pTcb = thread2wind_task(
++		(xnthread_t *)xnregistry_fetch(__xn_reg_arg1(regs)));
+ 
+ 	if (!pTcb)
+ 		return S_objLib_OBJ_ID_ERROR;
+@@ -275,7 +277,7 @@ static int __wind_task_priorityset(struc
+ 	WIND_TCB *pTcb;
+ 
+ 	if (handle)
+-		pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++		pTcb = thread2wind_task((xnthread_t *)xnregistry_fetch(handle));
+ 	else
+ 		pTcb = __wind_task_current(current);
+ 
+@@ -299,7 +301,7 @@ static int __wind_task_priorityget(struc
+ 	int prio;
+ 
+ 	if (handle)
+-		pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++		pTcb = thread2wind_task((xnthread_t *)xnregistry_fetch(handle));
+ 	else
+ 		pTcb = __wind_task_current(current);
+ 
+@@ -374,7 +376,7 @@ static int __wind_task_verifyid(struct p
+ 	xnhandle_t handle = __xn_reg_arg1(regs);
+ 	WIND_TCB *pTcb;
+ 
+-	pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++	pTcb = (thread2wind_task((xnthread_t *)xnregistry_fetch(handle)));
+ 
+ 	if (!pTcb)
+ 		return S_objLib_OBJ_ID_ERROR;
+@@ -574,7 +576,7 @@ static int __wind_taskinfo_name(struct p
+ 	const char *name;
+ 	WIND_TCB *pTcb;
+ 
+-	pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++	pTcb = thread2wind_task((xnthread_t *)xnregistry_fetch(handle));
+ 
+ 	if (!pTcb)
+ 		return S_objLib_OBJ_ID_ERROR;
+@@ -618,7 +620,7 @@ static int __wind_taskinfo_status(struct
+ 
+ 	xnlock_get_irqsave(&nklock, s);
+ 
+-	pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++	pTcb = thread2wind_task((xnthread_t *)xnregistry_fetch(handle));
+ 
+ 	if (!pTcb || pTcb->magic != WIND_TASK_MAGIC) {
+ 		xnlock_put_irqrestore(&nklock, s);
+@@ -643,7 +645,7 @@ static int __wind_taskinfo_get(struct pt
+ 	WIND_TCB *pTcb;
+ 	int err;
+ 
+-	pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++	pTcb = thread2wind_task((xnthread_t *)xnregistry_fetch(handle));
+ 	if (!pTcb)
+ 		return S_objLib_OBJ_ID_ERROR;
+ 
+@@ -673,7 +675,7 @@ static int __wind_errno_taskset(struct p
+  		return 0;
+  	}
+  
+- 	pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++ 	pTcb = thread2wind_task((xnthread_t *)xnregistry_fetch(handle));
+ 	if (!pTcb)
+ 		return S_objLib_OBJ_ID_ERROR;
+ 
+@@ -696,7 +698,7 @@ static int __wind_errno_taskget(struct p
+  	if (!handle)
+  		errcode = wind_errnoget();
+  	else {
+- 		pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++ 		pTcb = thread2wind_task((xnthread_t *)xnregistry_fetch(handle));
+  		if (!pTcb)
+  			return S_objLib_OBJ_ID_ERROR;
+  
+Index: b/ksrc/skins/vxworks/taskLib.c
 ===================================================================
---- a/include/asm-ia64/atomic.h
-+++ b/include/asm-ia64/atomic.h
-@@ -71,8 +71,6 @@ static inline void atomic_clear_mask(uns
- #define xnarch_atomic_cmpxchg(pcounter,old,new) \
- 	cmpxchg((&(pcounter)->counter),(old),(new))
+--- a/ksrc/skins/vxworks/taskLib.c
++++ b/ksrc/skins/vxworks/taskLib.c
+@@ -171,8 +171,8 @@ STATUS taskInit(WIND_TCB *pTcb,
+ 	xnlock_put_irqrestore(&nklock, s);
  
--#include <asm-generic/xenomai/atomic.h>
--
- #else /* !__KERNEL__ */
- 
- #include <asm/xenomai/features.h>
-Index: b/include/asm-powerpc/atomic.h
-===================================================================
---- a/include/asm-powerpc/atomic.h
-+++ b/include/asm-powerpc/atomic.h
-@@ -262,6 +262,4 @@ xnarch_atomic_cmpxchg(xnarch_atomic_t *p
- 
- typedef unsigned long atomic_flags_t;
- 
--#include <asm-generic/xenomai/atomic.h>
--
- #endif /* !_XENO_ASM_POWERPC_ATOMIC_H */
-Index: b/include/asm-x86/atomic.h
-===================================================================
---- a/include/asm-x86/atomic.h
-+++ b/include/asm-x86/atomic.h
-@@ -136,6 +136,4 @@ xnarch_atomic_cmpxchg(xnarch_atomic_t *v
- 
- #endif /* __KERNEL__ */
- 
--#include <asm-generic/xenomai/atomic.h>
--
- #endif /* !_XENO_ASM_X86_ATOMIC_64_H */
+ #ifdef CONFIG_XENO_OPT_REGISTRY
+-	if (xnregistry_enter(pTcb->name,
+-			     pTcb, &xnthread_handle(&pTcb->threadbase), NULL)) {
++	if (xnregistry_enter(pTcb->name, &pTcb->threadbase,
++			     &xnthread_handle(&pTcb->threadbase), NULL)) {
+ 		wind_errnoset(S_objLib_OBJ_ID_ERROR);
+ 		taskDeleteForce((TASK_ID) pTcb);
+ 		return ERROR;
 
 
