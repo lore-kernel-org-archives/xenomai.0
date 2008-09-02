@@ -1,11 +1,11 @@
-Message-ID: <48BD5BC3.4040903@domain.hid>
-Date: Tue, 02 Sep 2008 17:29:07 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48BD5D26.4010807@domain.hid>
+Date: Tue, 02 Sep 2008 17:35:02 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <48BD409B.8000309@domain.hid> <48BD4577.3000307@domain.hid>
 	<48BD4CE2.4020406@domain.hid> <48BD5180.4080509@domain.hid>
-	<48BD54FE.8010406@domain.hid>
-In-Reply-To: <48BD54FE.8010406@domain.hid>
+	<48BD54FE.8010406@domain.hid> <48BD5BC3.4040903@domain.hid>
+In-Reply-To: <48BD5BC3.4040903@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [PATCH] POSIX: Fix race when setting claimed bit
@@ -18,114 +18,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Gilles Chanteperdrix wrote:
->>>> Jan Kiszka wrote:
->>>>> Patch 2 of my fast lock series actually also contained an attempt to fix
->>>>> a race I spotted in the code that atomically sets the claimed bit. I
->>>>> forgot about this fact and even, worse, I only replace the original race
->>>>> with another one.
->>>>>
->>>>> So here comes a new attempt to fix the issue that the lock owner and/or
->>>>> the claimed bit can change between trylock and the cmpxchg under nklock.
->>>>> Please have a look and cross-check the logic.
->>>>>
->>>>> The patch applies on top of vanilla SVN, so my series has to be rebased
->>>>> and the fix has to be ported to native as well - where we just found it
->>>>> in the field.
->>>> Ok. Got it.
->>>>
->>>>> Jan
->>>>>
->>>>> ---
->>>>>  ksrc/skins/posix/mutex.h |   11 ++++++-----
->>>>>  1 file changed, 6 insertions(+), 5 deletions(-)
->>>>>
->>>>> Index: b/ksrc/skins/posix/mutex.h
->>>>> ===================================================================
->>>>> --- a/ksrc/skins/posix/mutex.h
->>>>> +++ b/ksrc/skins/posix/mutex.h
->>>>> @@ -134,17 +134,18 @@ static inline int pse51_mutex_timedlock_
->>>>>  	/* Set bit 0, so that mutex_unlock will know that the mutex is claimed.
->>>>>  	   Hold the nklock, for mutual exclusion with slow mutex_unlock. */
->>>>>  	xnlock_get_irqsave(&nklock, s);
->>>>> +	owner = xnarch_atomic_intptr_get(mutex->owner);
->>>> Bad, this makes two atomic ops. So, I would rather propose:
->>> Err, how many archs perform special dances for atomic_read?
->> powerpc, arm >= 6
-> 
-> None of both. All atomic_read for arm use plain ((v)->counter), powerpc
-> simply uses assembly to avoid volatile atomic_t types. Do you happen to
-> confuse atomic_read and set here?
-> 
->>>>>  	while(!test_claimed(owner)) {
->>>> - while(!test_claimed(owner)) {
->>>> + do {
->>>>> -		old = xnarch_atomic_intptr_cmpxchg(mutex->owner,
->>>>> -						   owner, set_claimed(owner, 1));
->>>>> -		if (likely(old == owner))
->>>>> -			break;
->>>>> -		if (old == NULL) {
->>>>> +		if (owner == NULL) {
->>>>>  			/* Owner called fast mutex_unlock
->>>>>  			   (on another cpu) */
->>>>>  			xnlock_put_irqrestore(&nklock, s);
->>>>>  			goto retry_lock;
->>>>>  		}
->>>>> +		old = xnarch_atomic_intptr_cmpxchg(mutex->owner,
->>>>> +						   owner, set_claimed(owner, 1));
->>>>> +		if (likely(old == owner))
->>>>> +			break;
->>>>>  		owner = old;
->>>> -  	}
->>>> +       } while (!test_claimed(owner))
->>> Your version slows down the contended case by performing redundant
->>> atomic cmpxchgs. My version puts minimal additional overhead in the
->>> !test_claimed case, but introduces no further atomic ops and avoids to
->>> much traffic on mutex->owner's cacheline when there are >1 waiters.
->> But your version slows down the common case where the owner will not
->> have changed... I do not care for making the uncommon case slower as
->> long as the common case is fast.
-> 
-> The tiny slowdown (a simple, typically cached read and test) is
+> OTOH, we can safe some text size which is precious as well. So I'm
+> convinced to go your way (with a modification):
 
-Two tests, in fact, when reordering the alternative code a bit.
+My approach sucks: we get a silly atomic_cmpxchg if the mutex is already
+claimed, which is as least as much a common case as a currently
+unclaimed mutex. Need to think a bit. But I think a good solution is to
+re-read only if the mutex has been seen as already claimed.
 
-> negligible compared to the full slow path, even if there is only one
-> waiter. Atomic ops are heavier, sleeping is much heavier.
-
-OTOH, we can safe some text size which is precious as well. So I'm
-convinced to go your way (with a modification):
-
----
- ksrc/skins/posix/mutex.h |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-Index: b/ksrc/skins/posix/mutex.h
-===================================================================
---- a/ksrc/skins/posix/mutex.h
-+++ b/ksrc/skins/posix/mutex.h
-@@ -134,7 +134,7 @@ static inline int pse51_mutex_timedlock_
- 	/* Set bit 0, so that mutex_unlock will know that the mutex is claimed.
- 	   Hold the nklock, for mutual exclusion with slow mutex_unlock. */
- 	xnlock_get_irqsave(&nklock, s);
--	while(!test_claimed(owner)) {
-+	do {
- 		old = xnarch_atomic_intptr_cmpxchg(mutex->owner,
- 						   owner, set_claimed(owner, 1));
- 		if (likely(old == owner))
-@@ -146,7 +146,7 @@ static inline int pse51_mutex_timedlock_
- 			goto retry_lock;
- 		}
- 		owner = old;
--	}
-+	} while (!test_claimed(owner));
- 
- 	xnsynch_set_owner(&mutex->synchbase, clear_claimed(owner));
- 	++mutex->sleepers;
+-- 
+                                                 Gilles.
 
