@@ -1,15 +1,10 @@
-Message-ID: <48BBF741.6010700@domain.hid>
-Date: Mon, 01 Sep 2008 16:08:01 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Mon, 1 Sep 2008 22:15:44 -0700 (PDT)
+From: Yasser Kashfi <yasser_kashfi@domain.hid>
 MIME-Version: 1.0
-References: <48BBA9E6.5070400@domain.hid> <48BBAB67.90707@domain.hid>
-	<48BBD8E4.6010702@domain.hid> <48BBF299.7060205@domain.hid>
-	<48BBF59A.6060208@domain.hid> <48BBF627.9040907@domain.hid>
-In-Reply-To: <48BBF627.9040907@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 2/9] Switch to handle-based fast mutex
- owners
+Content-Type: text/plain; charset=us-ascii
+Message-ID: <971398.39540.qm@domain.hid>
+Subject: [Xenomai-core] RT_HEAP Problem
+Reply-To: yasser_kashfi@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,51 +14,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Gilles Chanteperdrix wrote:
->>>> Jan Kiszka wrote:
->>>>> To improve robustness of the fast mutex implementation in POSIX (and
->>>>> later on in native), it is better to track the mutex owner by handle
->>>>> instead of kernel object pointer. Therefore, this patch changes
->>>>> __xn_sys_current (xeno_set_current) so that it returns
->>>>> xnthread_handle(current_thread). It furthermore converts the POSIX mutex
->>>>> implementation to pick up and store the lock owner as handle in the
->>>>> kernel/user-shared mutex. Finally it ensures that all skins (except for
->>>>> RTDM which must not mess around with foreign skins anyway) add their
->>>>> threads to the registry so that at least anonymous handles are
->>>>> available.
->>>>>
->>>>> As the value stored in the mutex variable is now an integer, we can
->>>>> switch over to xnarch_atomic_t, removing all atomic_intptr users.
->>>> The current implementation allows RTDM threads to use POSIX skin
->>>> mutexes. I do not see why this should change.
->>> Such mixup might technically be possible now. But there is neither a
->>> need nor does it make the resulting driver more portable. I don't want
->>> to introduce needless thread registration to RTDM just to cover
->>> theoretical use cases that should not exist in the first place.
->>>
->>> Nevertheless, some sanity check will have to be added to the
->>> to-be-written generic xnsynch support to catch missing thread handles.
->>> That make sense for checking future skin implementation as well.
->> That is overhead in the hot path, whereas adding the thread registration
->> takes place in a non hot path.
-> 
-> It will be a debug check.
+Hi
+I have a problem with rt_heap; I write a simple program:
+############################
+#include <sys/mman.h>
+#include <native/heap.h>
 
-On the other hand: Once we really have generic fast xnsynch support,
-this discussion should become pointless - RTDM will use them for its own
-mutexes as well. So let's look at this patch only for the current
-situation where there is no need for RTDM threads to have a handle as
-they must not mess with foreign skin objects.
+RT_HEAP M_HEAP;
+int main(void) {
+	int ret;
+	int * tmp;
+	
+	/* no memory-swapping for this programm */
+	mlockall(MCL_CURRENT | MCL_FUTURE);
+	
+	ret = rt_heap_create(&M_HEAP, "M_HEAP", 5 * 1024 * 1024 , 0);
+	if (ret) {
+		fprintf(stderr, "fail to create heap, code %d\n", ret);
+		return ret;
+	}
 
-Jan
+	sleep(10);
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+	ret = rt_heap_delete(&M_HEAP);
+	if (ret) {
+		fprintf(stderr, "fail to delete heap, code %d\n", ret);
+		return;
+	}
+	
+	return 0;
+
+}
+#######################
+this program previously worked on another PC. but now when I execute it on the new PC, It cause the kernel panic ( Unable to handle null pointer reference ...). same kernel is run on two PC, and not seems any difference.  but now I print memory status (/proc/meminfo). a huge difference is found! 
+in first pc ( that program worked ) total vmalloc = totol memory = 510 M and highmem = 0, but on second pc ( that kernel panic ) total vmalloc = 119M but total memory = 1 G and highmem = 122.
+have everyone any idea? 
+
+I glade to see your comments.
+
+
+      
+
 
