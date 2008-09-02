@@ -1,65 +1,50 @@
-Message-ID: <48A000B2.2040502@domain.hid>
-Date: Mon, 11 Aug 2008 11:04:50 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <48BD5F17.6050707@domain.hid>
+Date: Tue, 02 Sep 2008 17:43:19 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <f52fe4ab0808102210q1602ec37rf885178fe0ae41ea@domain.hid>
-In-Reply-To: <f52fe4ab0808102210q1602ec37rf885178fe0ae41ea@domain.hid>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai-help] Error : Compiling 2.6.15 with xenomai-2.3.4
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <48BD409B.8000309@domain.hid> <48BD4577.3000307@domain.hid>
+	<48BD4CE2.4020406@domain.hid> <48BD5180.4080509@domain.hid>
+	<48BD54FE.8010406@domain.hid> <48BD5BC3.4040903@domain.hid>
+	<48BD5D26.4010807@domain.hid>
+In-Reply-To: <48BD5D26.4010807@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH] POSIX: Fix race when setting claimed bit
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: =?UTF-8?B?6Z+p6I+y?= <feiyeahfar@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-韩菲 wrote:
-> Hello :
-> I've got errors when I compiled linux kernel 2.6.15 with
-> adeos-ipipe-2.6.15-arm-1.5-08.patch, my gcc version is 3.4.1, my target
-> board is at91rm9200(arm) which is said to be supported by xenomai-2.3.4,
-
-No, it is not clear from the documentation, but at91rm9200 is not
-supported by the 2.6.15 patch, you should pick the 2.6.20 one. However,
-why picking this version of Xenomai ? There are more recent ones in the
-same branch, and there is a more recent branch (v2.4.x). If you are
-starting a new development and have no particular constraint to stay
-with an old kernel, I suggest you go with Xenomai 2.4.4, using the
-2.6.26 kernel.
-
-> I've changed arch and cross-compile in Makefile. Here are my steps:
-> # zcat 2.6.15-at91.patch.gz |patch -p1
-> # xenomai_root=/usr/local/arm/xenomai-2.3.4
-> # linux_tree=/usr/local/arm/linux-2.6.15
-> # $xenomai_root/scripts/prepare-kernel.sh --arch=arm \
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> OTOH, we can safe some text size which is precious as well. So I'm
+>> convinced to go your way (with a modification):
 > 
-> --adeos=$xenomai_root/ksrc/arch/arm/patches/adeos-ipipe-2.6.15-arm-1.5-08.patch
-> \
->   --linux=$linux_tree
-> # make at91rm9200dk_defconfig
-> # make menuconfig
-> # make zImage
-> Then  I  got  errors:
-> arch/arm/kernel/built-in.o(.text+0x6174): In function
-> `__ipipe_init_platform':
-> : undefined reference to `__ipipe_mach_ticks_per_jiffy'
-> arch/arm/kernel/built-in.o(.text+0x61c8): In function `ipipe_get_sysinfo':
-> : undefined reference to `__ipipe_mach_ticks_per_jiffy'
-> arch/arm/kernel/built-in.o(.text+0x61cc): In function `ipipe_get_sysinfo':
-> : undefined reference to `__ipipe_mach_timerint'
-> arch/arm/kernel/built-in.o(.text+0x6244): In function `$a':
-> : undefined reference to `__ipipe_mach_get_tsc'
+> My approach sucks: we get a silly atomic_cmpxchg if the mutex is already
+> claimed, which is as least as much a common case as a currently
+> unclaimed mutex. Need to think a bit. But I think a good solution is to
+> re-read only if the mutex has been seen as already claimed.
 
-Your version of binutils is outdated, you will run into problem, see the
-arm linux FAQ. Also, 3.4.1 is a too old version of gcc, I think the
-oldest version supported to build the linux kernel is 3.4.4.
+That makes no difference as then we will go through the cmpxchg path anyway.
+
+There is _no_ way around re-reading under nklock, all we can avoid is
+atomic cmpxchg in the case of >1 waiters. But that would come at the
+price of more complexity for all waiter.
+
+However, let's find some solution. I bet things will look different
+again when we start fiddling with a generic lock + the additional bit to
+replace XNWAKEN.
+
+Jan
 
 -- 
-                                                 Gilles.
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
