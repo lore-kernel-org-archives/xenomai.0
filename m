@@ -1,14 +1,15 @@
-Resent-To: xenomai-core <xenomai@xenomai.org>
-Resent-Message-Id: <48BD2472.4030509@domain.hid>
-Message-ID: <48BCF4D9.8030100@domain.hid>
-Date: Tue, 02 Sep 2008 10:10:01 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48BD3209.7080303@domain.hid>
+Date: Tue, 02 Sep 2008 14:31:05 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <200808312323.29665.berlemont.hauw@domain.hid>
-In-Reply-To: <200808312323.29665.berlemont.hauw@domain.hid>
+References: <48BBA9E6.5070400@domain.hid> <48BBAB67.90707@domain.hid>
+	<48BBD8E4.6010702@domain.hid> <48BBF299.7060205@domain.hid>
+	<48BBF59A.6060208@domain.hid> <48BBF627.9040907@domain.hid>
+In-Reply-To: <48BBF627.9040907@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] skin RTDM in user mode
+Subject: Re: [Xenomai-core] [PATCH 2/9] Switch to handle-based fast mutex
+ owners
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,97 +19,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Alexis Berlemont <berlemont.hauw@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi Alexis,
-
-Alexis Berlemont wrote:
-> Hi,
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Jan Kiszka wrote:
+>>>>> To improve robustness of the fast mutex implementation in POSIX (and
+>>>>> later on in native), it is better to track the mutex owner by handle
+>>>>> instead of kernel object pointer. Therefore, this patch changes
+>>>>> __xn_sys_current (xeno_set_current) so that it returns
+>>>>> xnthread_handle(current_thread). It furthermore converts the POSIX mutex
+>>>>> implementation to pick up and store the lock owner as handle in the
+>>>>> kernel/user-shared mutex. Finally it ensures that all skins (except for
+>>>>> RTDM which must not mess around with foreign skins anyway) add their
+>>>>> threads to the registry so that at least anonymous handles are
+>>>>> available.
+>>>>>
+>>>>> As the value stored in the mutex variable is now an integer, we can
+>>>>> switch over to xnarch_atomic_t, removing all atomic_intptr users.
+>>>> The current implementation allows RTDM threads to use POSIX skin
+>>>> mutexes. I do not see why this should change.
+>>> Such mixup might technically be possible now. But there is neither a
+>>> need nor does it make the resulting driver more portable. I don't want
+>>> to introduce needless thread registration to RTDM just to cover
+>>> theoretical use cases that should not exist in the first place.
+>>>
+>>> Nevertheless, some sanity check will have to be added to the
+>>> to-be-written generic xnsynch support to catch missing thread handles.
+>>> That make sense for checking future skin implementation as well.
+>> That is overhead in the hot path, whereas adding the thread registration
+>> takes place in a non hot path.
 > 
-> In ksrc/skins/rtdm/API.CHANGES text file, the TODO list indicates that someone 
-> may be working on the development of the user-side RTDM skin (for user-space 
-> drivers).
-> 
-> Is anyone working on that ?
+> It will be a debug check.
 
-Not that I know.
-
-> 
-> I was wondering what was to be done:
-> 
-> - Is it just the porting of the kernel RTDM API (rtdm_task_*, etc.) ?
-
-Nope.
-
-> - Or do you expect a more complete solution like fuse or fusd ? 
-
-There are a few tricky parts when you want a seamless driver API,
-allowing to test or even use RTDM drivers in userspace:
-
- - IRQ handling (means: forwarding, acknowledging, sharing).
-   You won't be able to achieve 100% equivalent functionality here, of
-   course.
-
- - Managing the driver context.
-   When in kernel space, driver code can run in RTDM tasks (that trivial
-   to port), in IRQ context (=> probably some carrier task then) or
-   caller context - and here the problem starts. Single-user drivers
-   could simply run as library within the context of the user, but for
-   shared drivers we need some framework that deals with accessing user
-   data which we could easily in kernel space, but not when the driver
-   has its own process or should run within multiple user space
-   contexts.
-
- - Providing a framework for required Linux kernel services (e.g. DMA
-   handling - yet not even addressed for uio...).
-
- - <things I do not remember anymore>
-
-> 
-> The last few weeks, I was thinking on a complete solution which would allow to 
-> compile and execute an RTDM driver seamlessly on both mode (user and kernel).
-> 
-> That would imply:
-> - the porting of the kernel RTDM API on user mode;
-> - the development of a specific layer so as to redirect the RTDM syscalls 
-> (open, read, write, close, ioctl) to a user-space process. For that point, I 
-> think there are two alternatives: either extending the RTDM skin API (with 
-> hidden syscalls for the user-space driver to retrieve the syscalls to 
-> execute) or developing a kernel RTDM driver + a library.
-> - the development of an external library (or header) to implement the minimal 
-> Linux API which is used in common RTDM drivers (like vmalloc, kmalloc, 
-> ioremap). (And for PCI, USB, DMA, etc. API, ???)
-
-USB does not belong into this list (we rather need an RTDM-based USB
-stack for realtime use cases), but the rest is exactly the point.
-
-> 
-> Compared to fuse or fusd, which I consider as user-specific frameworks. The 
-> main advantage of such a solution would be the ability to (nearly) seamlessly 
-> execute the driver on both spaces. The main issue would be to keep in mind 
-> the performance aspect (especially for rtdm_copy_*_user, on that point there 
-> are many possibilities I began to investigate).
-
-At least single-user drivers (which are only accessed by one process at
-a time) should not suffer from too much systematical overhead. But I
-would not focus too much on performance, because critical drivers belong
-into the kernel anyway, but rather on seamless portability (=>
-recompilation without modifications, except for the makefile). If you
-were able to test the full functionality of some RTDM driver in user
-space, at _lot_ would already be gained!
-
-> 
-> Do you consider such a work as interesting ?
-
-Definitely, yes! I just postponed this long-planned topic due to shifted
-priorities. Any contribution, even if just addressing parts of the
-ultimate goal, would be highly appreciated!
-
-Jan
+Ok. But the other points remain.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
-
+                                                 Gilles.
 
