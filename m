@@ -1,62 +1,46 @@
-Message-ID: <48C0EE6F.3090001@domain.hid>
-Date: Fri, 05 Sep 2008 10:31:43 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48BCEA5F.6000409@domain.hid>
+Date: Tue, 02 Sep 2008 09:25:19 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <48BD409B.8000309@domain.hid>
-In-Reply-To: <48BD409B.8000309@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH] POSIX: Fix race when setting claimed bit - v2
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <C4E2375D.857%samf48@domain.hid>
+In-Reply-To: <C4E2375D.857%samf48@domain.hid>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-help] Xenomai kernel compile issue
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Sam Ferguson <samf48@domain.hid>
+Cc: xenomai@xenomai.org
 
-[ The refactored version according to our discussion. ]
+Sam Ferguson wrote:
+> Hello, I’m trying to compile Xenomai by following the Xenomai Quick build
+> guide found on this page: <
+> http://www.xenomai.org/index.php/Xenomai_quick_build_quide> however I run
+> across a compiling error shown here:
+> igvc@domain.hid$ sudo cp /boot/config-2.6.25.11
+> .config
+> igvc@domain.hid$ sudo make menuconfig
+> scripts/kconfig/mconf arch/x86/Kconfig
+> #
+> # configuration written to .config
+> #
+> 
+> 
+> *** End of Linux kernel configuration.
+> *** Execute 'make' to build the kernel or try 'make help'.
+> 
+> igvc@domain.hid$ sudo make
 
-This patch fixes the race when the claimed bit changes between the lock
-less check an the entry of the nklock-protected section.
+You do not need to compile as root. It is actually safer to compile as a
+simple user. Could you post your .config ?
 
----
- ksrc/skins/posix/mutex.h |    9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
-
-Index: b/ksrc/skins/posix/mutex.h
-===================================================================
---- a/ksrc/skins/posix/mutex.h
-+++ b/ksrc/skins/posix/mutex.h
-@@ -134,11 +134,16 @@ static inline int pse51_mutex_timedlock_
- 	/* Set bit 0, so that mutex_unlock will know that the mutex is claimed.
- 	   Hold the nklock, for mutual exclusion with slow mutex_unlock. */
- 	xnlock_get_irqsave(&nklock, s);
--	while(!test_claimed(owner)) {
-+	if (test_claimed(owner)) {
-+		old = xnarch_atomic_intptr_get(mutex->owner);
-+		goto test_no_owner;
-+	}
-+	do {
- 		old = xnarch_atomic_intptr_cmpxchg(mutex->owner,
- 						   owner, set_claimed(owner, 1));
- 		if (likely(old == owner))
- 			break;
-+	  test_no_owner:
- 		if (old == NULL) {
- 			/* Owner called fast mutex_unlock
- 			   (on another cpu) */
-@@ -146,7 +151,7 @@ static inline int pse51_mutex_timedlock_
- 			goto retry_lock;
- 		}
- 		owner = old;
--	}
-+	} while (!test_claimed(owner));
- 
- 	xnsynch_set_owner(&mutex->synchbase, clear_claimed(owner));
- 	++mutex->sleepers;
+-- 
+					    Gilles.
 
