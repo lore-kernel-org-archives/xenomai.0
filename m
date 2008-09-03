@@ -1,126 +1,107 @@
-Message-ID: <48C112D9.8030201@domain.hid>
-Date: Fri, 05 Sep 2008 13:07:05 +0200
-From: Johan Visser <johan.visser@domain.hid>
+Message-ID: <48BE7B64.8090501@domain.hid>
+Date: Wed, 03 Sep 2008 13:56:20 +0200
+From: Giulio Gaio <giulio.gaio@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------000104020309000904030205"
-Subject: [Xenomai-core] mailinglist problem
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
-
-This is a multi-part message in MIME format.
---------------000104020309000904030205
-Content-Type: multipart/alternative;
- boundary="------------030302060301020907080306"
-
-
---------------030302060301020907080306
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] mpc8641d smp hangs on boot
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Hi
-This message realy does not belong here I know, but i am not getting any 
-response from the manager of this list!!
-I am getting an E-mail from the list that mails are being bounced and 
-therfore i am suspended from the list.
-I have looked in to our mail server, it does not even get there.... so 
-they must be bounced befor that, if at all.
-I have no clue what to do.
-So far every few days i reconfirm my membership and that helps for a 
-number of days.....
-But this is not normal for a subscriber to a mailinglist!
-I also have subscrubtions to many other mailing lists, but the only one 
-complaining  and causing me problems is the Xenomai list.
-( both core and help )
-
-any one ?
-
-
-----------------------------------------------------
-Stork Plastics Machinery B.V. Alfred Marshallstraat 2, 7559 SE Hengelo, the Netherlands.
-Supplies and executions to the conditions and stipulations filed with the Chamber of Commerce (Trade register Enschede nr. 06041991) except as otherwise provided in writing.
-DISCLAIMER:
-The information contained in this communication is confidential and may be legally privileged. It is intended solely for the use of the individual or entity to whom it is addressed and others authorized to receive it. If you are not the intended recipient, you are hereby notified that any disclosure, copying, distribution, or taking any action in reliance of the contents of this information is strictly prohibited and may be unlawful. Stork Plastics Machinery is neither liable for the proper and complete transmission of the information contained in this communication nor for any delay in its receipt. 
-
---------------030302060301020907080306
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-</head>
-<body bgcolor="#ffffff" text="#000000">
-<font face="Arial">Hi<br>
-This message realy does not belong here I know, but i am not getting
-any response from the manager of this list!!<br>
-I am getting an E-mail from the list that mails are being bounced and
-therfore i am suspended from the list.<br>
-I have looked in to our mail server, it does not even get there.... so
-they must be bounced befor that, if at all.<br>
-I have no clue what to do.<br>
-So far every few days i reconfirm my membership and that helps for a
-number of days.....<br>
-But this is not normal for a subscriber to a mailinglist!<br>
-I also have subscrubtions to many other mailing lists, but the only one
-complaining&nbsp; and causing me problems is the Xenomai list.<br>
-( both core and help ) <br>
-<br>
-any one ?<br>
-<br>
-</font>
-<pre class="moz-signature" cols="72">
-</pre>
-
-<br>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
-  <title></title>
-</head>
-<body>
-<hr>
-<small><b>Stork Plastics Machinery B.V. Alfred Marshallstraat 2, 7559 SE Hengelo, the Netherlands.</b><br>
-Supplies and executions to the conditions and stipulations filed with the Chamber of Commerce (Trade register Enschede nr. 06041991) except as otherwise provided in writing.<br>
-<b>DISCLAIMER:</b><br>
-The information contained in this communication is confidential and may be legally privileged.  It is intended solely for the use of the individual or entity to whom it is addressed and others authorized to receive it. If you are not the intended recipient, you are hereby notified that any disclosure, copying, distribution, or taking any action in reliance of the contents of this information is strictly prohibited and may be unlawful. Stork Plastics Machinery is neither liable for the proper and complete transmission of the information contained in this communication nor for any delay in its receipt.</small>
-</body>
-</html>
-<br>
-</body>
-</html>
-
---------------030302060301020907080306--
-
---------------000104020309000904030205
-Content-Type: text/x-vcard; charset=utf-8;
- name="johan_visser.vcf"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="johan_visser.vcf"
-
-begin:vcard
-fn:Johan Visser
-n:Visser;Johan
-org:Stork Plastics Machinery B.V.;software
-adr:;;A. Marshallstraat 2;Hengelo;;7559 SE;Netherlands
-email;internet:johan.visser@domain.hid
-tel;work:++31 74 2405113
-tel;fax:++31 74 2405009
-tel;cell:++31 653731518
-x-mozilla-html:TRUE
-url:http://www.storkspm.com
-version:2.1
-end:vcard
+Hi all,
+i have some problems with smp on mpc8641d (which equips a vme cpu board 
+mvme7100).
+I'm using linux-2.6.20 (which is the only version supported by the board 
+manifacturer) patched with xenomai 2.4.3.
+The cpu (which performs a tftpboot) boots fine in up mode.
+Instead, when enabling smp, it freezes after enabling the ipipe ("I-pipe 
+1.7-13: pipeline enabled");
+I have inserted in the kernel code some printk's to find the point of 
+freezing and i have found that it is located in kernel/printk.c in the 
+acquire_console_sem() just before down(&console_sem). See the console 
+output below of the boot.
 
 
---------------000104020309000904030205--
+Linux/PowerPC load: console=ttyS0,9600 root=/dev/nfs ip=::::::dhcp
+Finalizing device tree... flat tree at 0x799000
+Using MVME7100 machine description
+Total memory = 1024MB; using 2048kB for hash table (at 8fe00000)
+Linux version 2.6.20-xeno-2.4.3 (giulio@domain.hid) (gcc version 4.1.3 
+20070929 (prerelease) (Ubuntu 4.1.2-16ubuntu2)) #27 SMP PR8
+kernel/printk.c - acquire_console_sem(): before BUG_ON(in_interrupt());
+kernel/printk.c - acquire_console_sem(): after BUG_ON(in_interrupt());
+kernel/printk.c - acquire_console_sem(): before  if (console_suspended)
+kernel/printk.c - acquire_console_sem(): before down(&console_sem);
+kernel/printk.c - acquire_console_sem(): after down(&console_sem);
+kernel/printk.c - acquire_console_sem(): after console_may_schedule = 1;
+Found FSL PCI host bridge at 0x00000000f1008000.Firmware bus number: 0->255
+Found FSL PCI host bridge at 0x00000000f1009000.Firmware bus number: 0->255
+MVME7100 board from Emerson Network Power - Embedded Computing
+L2 cache enabled. L2CTL reg: 0xb0000000
+Zone PFN ranges:
+  DMA             0 ->   262144
+  Normal     262144 ->   262144
+  HighMem    262144 ->   262144
+early_node_map[1] active PFN ranges
+    0:        0 ->   262144
+Built 1 zonelists.  Total pages: 260096
+Kernel command line: console=ttyS0,9600 root=/dev/nfs ip=::::::dhcp
+linux/init/main.c - start_kernel(): before sort_main_extable();
+linux/init/main.c - start_kernel(): before trap_init();
+linux/init/main.c - start_kernel(): before rcu_init();
+linux/init/main.c - start_kernel(): before init_IRQ();
+mpic: Setting up MPIC " MPIC     " version 1.2 at f1040000, max 2 CPUs
+mpic: ISU size: 16, shift: 4, mask: f
+mpic: Initializing for 80 sources
+linux/init/main.c - start_kernel(): before pidhash_init();
+PID hash table entries: 4096 (order: 12, 16384 bytes)
+linux/init/main.c - start_kernel(): before init_timers();
+linux/init/main.c - start_kernel(): before hrtimers_init();
+linux/init/main.c - start_kernel(): before softirq_init();
+linux/init/main.c - start_kernel(): before timekeeping_init();
+linux/init/main.c - start_kernel(): before time_init();
+linux/init/main.c - start_kernel(): before ipipe_init();
+I-pipe 1.7-13: pipeline enabled.
+linux/init/main.c - start_kernel(): before profile_init();
+linux/init/main.c - start_kernel(): before if (!irqs_disabled());
+linux/init/main.c  - start_kernel(): before local_irq_enable();
+linux/init/main.c - start_kernel(): before console_init();
+drivers/char/tty_io.c - console_init(void): before disable_early_printk()
+arch/powerpc/kernel/udbg.c - disable_early_printk(): before 
+unregister_console()
+kernel/printk.c - unregister_console(): before acquire_console_sem();
+kernel/printk.c - acquire_console_sem(): before BUG_ON(in_interrupt());
+kernel/printk.c - acquire_console_sem(): after BUG_ON(in_interrupt());
+kernel/printk.c - acquire_console_sem(): before  if (console_suspended)
+kernel/printk.c -  : before down(&console_sem);
+-------------- CPU freezed ---------------
+
+
+I have found on the net that there are patches for printk.c due possible 
+racing conditions during the boot in smp configuration (see 
+http://www.ussg.iu.edu/hypermail/linux/kernel/0804.1/0258.html).
+So this could be the problem.
+But it could be also that the printk's, which i inserted, determined 
+that the freezing point was in one of the printk.c functions and there 
+is a more general problem of locking/unlocking resources in smp 
+configuration.
+
+In the end, in my case, vanilla linux-2.60.20-smp works, 
+linux-2.60.20-smp-xenomai doesn't work, linux-2.60.20-up-xenomai works.
+
+So my question (and my doubt) is: has anyone worked with mpc8641d with 
+linux-2.60.20 smp and xenomai?
+
+Any help will be appreciated.
+
+    Giulio Gaio
+
 
