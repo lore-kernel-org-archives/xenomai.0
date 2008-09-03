@@ -1,12 +1,12 @@
-From: "Stephan Adler" <stephan.adler@domain.hid>
-Date: Wed, 3 Sep 2008 11:06:45 +0200
-Message-ID: <000801c90da4$63f46b10$2bdd4130$@adler@domain.hid>
+Message-ID: <48BE4846.1050307@domain.hid>
+Date: Wed, 03 Sep 2008 10:18:14 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Content-Language: de
-Subject: [Xenomai-help] Xenomai 2.4. and C++ (again)
+References: <C4E37C03.874%samf48@domain.hid>
+In-Reply-To: <C4E37C03.874%samf48@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai kernel compile issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,43 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Xenomai help <xenomai@xenomai.org>
 
-Hi!
+Sam Ferguson wrote:
+> Ok it must be a kernel patch issue.  When I patched it initially it seemed
+> to go through, it returned me to the terminal with no errors.  So I tried to
+> patch the kernel doing by running the script from xenomai.  Here is what
+> happens:
+> 
+> igvc@domain.hid$ scripts/prepare-kernel.sh
 
-I am currently trying to run some C++ code as an Xenomai task. I wasn't =
-aware that there are any problems with C++ until I found out today that =
-some function calls in my C++ code break the real-time determinism of =
-the task. Xenomai will not be able to interrupt the task although it =
-should (as a higher-priority task should become active). The functions =
-in question use the std::vector and std::string class.
+Please use the latest release of xenomai.
 
-After I became aware of that behavior I searched a little and found out =
-that there is a C++ Wrapper class called Xeno-- and that the problems =
-that occurred in my case seem to be well known.
+> Linux tree [default /lib/modules/2.6.24-19-generic/source]:
+> /lib/modules/2.6.24-19-generic/build
+> Target architecture [default i686]:
+> Adeos patch [default /dev/null]:
+> /usr/src/xenomai-2.4.4/ksrc/arch/x86/patches/adeos-ipipe-2.6.26-x86-2.0-09.p
+> atch
 
-Unfortunately I couldn't find any documentation what C++ calls are known =
-to cause such a behavior.=20
+If you are trying to patch a 2.6.24 kernel with the Adeos patch for
+2.6.26, it will not work.
 
-As I can not use the Xeno-- Wrapper for several reasons. I wonder if =
-some user on this list has some experience with C++ and could provide a =
-list of functions / practices to avoid to make C++ code work as =
-expected.=20
+Please do not forget to CC the list.
 
-Some facts about the project:
-
-- I use Xenomai 2.4.3
-
-- Yes - I do call mlockall() before creating any task
-
-- as far as I know no dynamic memory operations are done in the =
-functions I use (I am not sure about every detail how std::vector / =
-std::string work - but I don't explicitly generate new objects / delete =
-them)
-
-Thanks a lot
-Stephan Adler
-
-
+-- 
+					    Gilles.
 
 
