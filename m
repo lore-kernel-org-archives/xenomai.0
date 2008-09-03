@@ -1,16 +1,12 @@
-Message-ID: <48BE2B29.6070608@domain.hid>
-Date: Wed, 03 Sep 2008 08:14:01 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: "Stephan Adler" <stephan.adler@domain.hid>
+Date: Wed, 3 Sep 2008 11:06:45 +0200
+Message-ID: <000801c90da4$63f46b10$2bdd4130$@adler@domain.hid>
 MIME-Version: 1.0
-References: <ff1d78710809020250g57e6d871kf9284a46ae4685ec@domain.hid>	
-	<48BD13F1.2010300@domain.hid>
-	<ff1d78710809020518o6bc21376k6d06544754b85aa@domain.hid>
-In-Reply-To: <ff1d78710809020518o6bc21376k6d06544754b85aa@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigE27B9BE05323520969A2E534"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Kernel Oops calling rt_dev_close
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Language: de
+Subject: [Xenomai-help] Xenomai 2.4. and C++ (again)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,62 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Kauffmann <steven.kauffmann@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE27B9BE05323520969A2E534
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi!
 
-Steven Kauffmann wrote:
-> On Tue, Sep 2, 2008 at 12:22 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->> Steven Kauffmann wrote:
->>> Hi all,
->>>
->>> I'm getting Kernel oops when calling rt_dev_close in my application
->>> [*]. The application creates a new real-time task and in this task
->>> rt_dev_recvfrom is waiting for incoming CAN messages.
->>>
->>> In the close function of the application I first call rt_dev_close an=
-d
->>> after that I kill the thread with rt_task_delete. I also wait for the=
+I am currently trying to run some C++ code as an Xenomai task. I wasn't =
+aware that there are any problems with C++ until I found out today that =
+some function calls in my C++ code break the real-time determinism of =
+the task. Xenomai will not be able to interrupt the task although it =
+should (as a higher-priority task should become active). The functions =
+in question use the std::vector and std::string class.
 
->>> termination of this thread with rt_task_join. But when rt_dev_close i=
-s
->>> called, the kernel oops occurs.
->> Do you have a (small) test case for this issue? Does it work with a
->> virtual CAN device as well? That would be the fastest way to track dow=
-n
->> the issue.
->=20
-> The test case (see attached file) reproduces the kernel oops.
->=20
-> The kernel oops also occurs when using the virtual CAN device.
+After I became aware of that behavior I searched a little and found out =
+that there is a C++ Wrapper class called Xeno-- and that the problems =
+that occurred in my case seem to be well known.
 
-Fixed both in SVN HEAD and 2.4.x. I also happen to fix a nasty 64-bit
-issue of RTDM at this chance.
+Unfortunately I couldn't find any documentation what C++ calls are known =
+to cause such a behavior.=20
 
-But you now have to fix your test case as well: read_can() will enter a
-tight endless loop when you close the socket underneath it and don't
-check for the error rt_dev_recvfrom returns.
+As I can not use the Xeno-- Wrapper for several reasons. I wonder if =
+some user on this list has some experience with C++ and could provide a =
+list of functions / practices to avoid to make C++ code work as =
+expected.=20
 
-Jan
+Some facts about the project:
+
+- I use Xenomai 2.4.3
+
+- Yes - I do call mlockall() before creating any task
+
+- as far as I know no dynamic memory operations are done in the =
+functions I use (I am not sure about every detail how std::vector / =
+std::string work - but I don't explicitly generate new objects / delete =
+them)
+
+Thanks a lot
+Stephan Adler
 
 
---------------enigE27B9BE05323520969A2E534
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAki+Ky4ACgkQniDOoMHTA+nm6QCeI98xPZIvKd7akE9fcKWbQE7F
-Fr4AnA8REGSpwUpznilXUK+Glkmox8Hd
-=9dfN
------END PGP SIGNATURE-----
-
---------------enigE27B9BE05323520969A2E534--
 
