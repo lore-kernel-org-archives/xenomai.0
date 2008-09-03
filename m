@@ -1,5 +1,5 @@
-Message-ID: <48BE8A25.3070209@domain.hid>
-Date: Wed, 03 Sep 2008 14:59:17 +0200
+Message-ID: <48BE8A6A.70400@domain.hid>
+Date: Wed, 03 Sep 2008 15:00:26 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <OF0AD08B39.2057B561-ONC12574B9.00291268-C12574B9.0035A8A3@domain.hid>
@@ -44,6 +44,9 @@ Gilles Chanteperdrix wrote:
 
 Maybe we should update our TROUBLESHOOTING guide and FAQ: there is a new
 option that should be avoided IMO: CONFIG_CPU_IDLE.
+
+And by the way, configuring the kernel without CONFIG_ACPI is not a good
+idea. The only dangerous option in ACPI is CONFIG_ACPI_PROCESSOR.
 
 -- 
                                                  Gilles.
