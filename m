@@ -1,12 +1,16 @@
-Message-ID: <48BD905A.2080008@domain.hid>
-Date: Tue, 02 Sep 2008 21:13:30 +0200
-From: Theo Veenker <Theo.Veenker@domain.hid>
+Message-ID: <48BE2B29.6070608@domain.hid>
+Date: Wed, 03 Sep 2008 08:14:01 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <48BD5968.6050309@domain.hid> <48BD7ACC.7060100@domain.hid>
-In-Reply-To: <48BD7ACC.7060100@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] using a pcmcia parallel port card
+References: <ff1d78710809020250g57e6d871kf9284a46ae4685ec@domain.hid>	
+	<48BD13F1.2010300@domain.hid>
+	<ff1d78710809020518o6bc21376k6d06544754b85aa@domain.hid>
+In-Reply-To: <ff1d78710809020518o6bc21376k6d06544754b85aa@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigE27B9BE05323520969A2E534"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Kernel Oops calling rt_dev_close
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,46 +20,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Steven Kauffmann <steven.kauffmann@domain.hid>
 Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Theo Veenker wrote:
->> Hi,
->>
->> I'm trying to access a pcmcia parallel port (Trans Digital TDC303)
->> from a kernel space module. When I insert the card into the laptop
->> pcmcia_cs recognizes it and reports I/O address 0x3378. I tried
->> to access the device at that address like you would access LPT1
->> at 0x378. That didn't work; I assume the card is not actually at
->> that address or not enabled or something.
->>
->> Does anyone have a clue how to use a pcmcia parallel port card
->> with xenomai (or any other pcmcia card for that matter)?
-> 
-> I would think your problem is not the pcmcia card (after all, nowadays,
-> a pcmcia driver is probably just a special kind of pci driver), your
-> problem is likely that you try to access this PCMCIA parallel port as if
-> it was the classical builtin ISA based parallel port, and it is not.
-> Does linux use the same driver for this parallel port as for the vanilla
-> parallel port ?
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigE27B9BE05323520969A2E534
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Thanks. So modern PC cards are not ISA like?
+Steven Kauffmann wrote:
+> On Tue, Sep 2, 2008 at 12:22 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>> Steven Kauffmann wrote:
+>>> Hi all,
+>>>
+>>> I'm getting Kernel oops when calling rt_dev_close in my application
+>>> [*]. The application creates a new real-time task and in this task
+>>> rt_dev_recvfrom is waiting for incoming CAN messages.
+>>>
+>>> In the close function of the application I first call rt_dev_close an=
+d
+>>> after that I kill the thread with rt_task_delete. I also wait for the=
 
-I believe the vanilla port requires parport or parport_pc (a guess, I
-never used this) and the particular pcmcia card I have is handled by
-parport_cs (also handles the similar Quatech SPP-100).
+>>> termination of this thread with rt_task_join. But when rt_dev_close i=
+s
+>>> called, the kernel oops occurs.
+>> Do you have a (small) test case for this issue? Does it work with a
+>> virtual CAN device as well? That would be the fastest way to track dow=
+n
+>> the issue.
+>=20
+> The test case (see attached file) reproduces the kernel oops.
+>=20
+> The kernel oops also occurs when using the virtual CAN device.
 
-Meanwhile I investigated a little further and found out by peeking at
-the target I/O address (0x3378) and above/below, that the card is indeed
-visible at that address. When card not inserted I see 0xFF, when inserted
-I see data looking similar to what I see at 0x378. Maybe you are right
-and the device cannot be accessed this way; in that case I hope someone
-can hint me where to go. But first I'm going to try to find out if the
-device isn't simply in the wrong mode (mode other than SPP). I'll let
-you know.
+Fixed both in SVN HEAD and 2.4.x. I also happen to fix a nasty 64-bit
+issue of RTDM at this chance.
 
-Theo
+But you now have to fix your test case as well: read_can() will enter a
+tight endless loop when you close the socket underneath it and don't
+check for the error rt_dev_recvfrom returns.
 
+Jan
+
+
+--------------enigE27B9BE05323520969A2E534
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAki+Ky4ACgkQniDOoMHTA+nm6QCeI98xPZIvKd7akE9fcKWbQE7F
+Fr4AnA8REGSpwUpznilXUK+Glkmox8Hd
+=9dfN
+-----END PGP SIGNATURE-----
+
+--------------enigE27B9BE05323520969A2E534--
 
