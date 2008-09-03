@@ -1,12 +1,12 @@
-Content-class: urn:content-classes:message
+Message-ID: <48BE6419.2020706@domain.hid>
+Date: Wed, 03 Sep 2008 12:16:57 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 3 Sep 2008 11:39:13 +0200
-Message-ID: <0B45E93C5FF65740AEAE690BF3848B7AD38364@domain.hid>
-From: "Fillod Stephane" <stephane.fillod@domain.hid>
-Subject: [Xenomai-core] native rt_timer questions
+References: <0B45E93C5FF65740AEAE690BF3848B7AD38364@domain.hid>
+In-Reply-To: <0B45E93C5FF65740AEAE690BF3848B7AD38364@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] native rt_timer questions
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,68 +16,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Fillod Stephane <stephane.fillod@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi!
+Fillod Stephane wrote:
+> Hi!
+> 
+> Why rt_timer functions, esp. rt_timer_tsc(), are not inlined in
+> user-space 
+> (with CONFIG_XENO_HW_DIRECT_TSC) ? Is it because some policy insists 
+> that every library function must have an overridable symbol?
+> Even a branch is worrisome when doing repetitive micro-measurements.
+> What about a patch along the following? or an extern inline?
+> 
+> --- include/native/timer.h     15 May 2008 07:40:30 -0000
+> +++ include/native/timer.h     3 Sep 2008 09:10:31 -0000
+> @@ -46,7 +52,7 @@
+>  extern "C" {
+>  #endif
+> -#if (defined(__KERNEL__)  || defined(__XENO_SIM__)) &&
+> !defined(DOXYGEN_CPP)
+> +#if (defined(__KERNEL__)  || defined(__XENO_SIM__) ||
+> defined(__NATIVE_INLINE)) && !defined(DOXYGEN_CPP)
+>  static inline SRTIME rt_timer_ns2tsc(SRTIME ns)
+>  {
+>         return xnarch_ns_to_tsc(ns);
 
-Why rt_timer functions, esp. rt_timer_tsc(), are not inlined in
-user-space=20
-(with CONFIG_XENO_HW_DIRECT_TSC) ? Is it because some policy insists=20
-that every library function must have an overridable symbol?
-Even a branch is worrisome when doing repetitive micro-measurements.
-What about a patch along the following? or an extern inline?
+I am afraid we do not want this on every architecture. On ARM where the
+tsc is an emulation and contains a fair number of instructions using a
+fair number of registers (still faster than a syscall, of course), I
+think we do want an out of line function.
 
---- include/native/timer.h     15 May 2008 07:40:30 -0000
-+++ include/native/timer.h     3 Sep 2008 09:10:31 -0000
-@@ -46,7 +52,7 @@
- extern "C" {
- #endif
--#if (defined(__KERNEL__)  || defined(__XENO_SIM__)) &&
-!defined(DOXYGEN_CPP)
-+#if (defined(__KERNEL__)  || defined(__XENO_SIM__) ||
-defined(__NATIVE_INLINE)) && !defined(DOXYGEN_CPP)
- static inline SRTIME rt_timer_ns2tsc(SRTIME ns)
- {
-        return xnarch_ns_to_tsc(ns);
+> 
+> BTW, I had the bad surprise of rt_timer_read() doing a syscall, which
+> is costly when doing fine measurement. Should it be documented?
 
-BTW, I had the bad surprise of rt_timer_read() doing a syscall, which
-is costly when doing fine measurement. Should it be documented?
+I suggested once to use the tsc as well for the implementation of
+clock_gettime(CLOCK_REALTIME) (the posix equivalent of rt_timer_read()),
+but was told at the time that we may want, one day, to provide syscalls
+to compensate for clock drifts, so reading the system clock should
+remain a syscall.
 
-
-The native rt_timer functions are documented in two locations:
-http://www.xenomai.org/documentation/branches/v2.4.x/html/api/include_2n
-ative_2timer_8h.html
-http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__nat
-ive__timer.html
-
-Could they be gathered, maybe with the here below patch (untested, no
-doxy expert):
-
---- include/native/timer.h     15 May 2008 07:40:30 -0000
-+++ include/native/timer.h     3 Sep 2008 09:10:31 -0000
-@@ -17,6 +17,8 @@
-  * You should have received a copy of the GNU General Public License
-  * along with this program; if not, write to the Free Software
-  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-02111-1307, USA.
-+ *
-+ * \ingroup native_timer
-  */
-
- #ifndef _XENO_TIMER_H
-@@ -26,6 +28,10 @@
-
- #define TM_ONESHOT XN_APERIODIC_TICK
-
-+/** Structure containing timer-information useful to users.
-+ *
-+ *  @see rt_timer_inquire()
-+ */
- typedef struct rt_timer_info {
-
-     RTIME period;      /* !< Current status (unset, aperiodic, period).
-*/
-
---=20
-Stephane
+-- 
+                                                 Gilles.
 
