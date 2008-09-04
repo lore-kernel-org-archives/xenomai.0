@@ -1,12 +1,12 @@
-Message-ID: <48BE6419.2020706@domain.hid>
-Date: Wed, 03 Sep 2008 12:16:57 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <48BF8AA6.6090702@domain.hid>
+Date: Thu, 04 Sep 2008 09:13:42 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <0B45E93C5FF65740AEAE690BF3848B7AD38364@domain.hid>
-In-Reply-To: <0B45E93C5FF65740AEAE690BF3848B7AD38364@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] native rt_timer questions
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigFF35ECC5E85E76FB8C5F3E62"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] First thoughts on fast xnsynch
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,47 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Fillod Stephane <stephane.fillod@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Fillod Stephane wrote:
-> Hi!
-> 
-> Why rt_timer functions, esp. rt_timer_tsc(), are not inlined in
-> user-space 
-> (with CONFIG_XENO_HW_DIRECT_TSC) ? Is it because some policy insists 
-> that every library function must have an overridable symbol?
-> Even a branch is worrisome when doing repetitive micro-measurements.
-> What about a patch along the following? or an extern inline?
-> 
-> --- include/native/timer.h     15 May 2008 07:40:30 -0000
-> +++ include/native/timer.h     3 Sep 2008 09:10:31 -0000
-> @@ -46,7 +52,7 @@
->  extern "C" {
->  #endif
-> -#if (defined(__KERNEL__)  || defined(__XENO_SIM__)) &&
-> !defined(DOXYGEN_CPP)
-> +#if (defined(__KERNEL__)  || defined(__XENO_SIM__) ||
-> defined(__NATIVE_INLINE)) && !defined(DOXYGEN_CPP)
->  static inline SRTIME rt_timer_ns2tsc(SRTIME ns)
->  {
->         return xnarch_ns_to_tsc(ns);
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigFF35ECC5E85E76FB8C5F3E62
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-I am afraid we do not want this on every architecture. On ARM where the
-tsc is an emulation and contains a fair number of instructions using a
-fair number of registers (still faster than a syscall, of course), I
-think we do want an out of line function.
+Hi Gilles,
 
-> 
-> BTW, I had the bad surprise of rt_timer_read() doing a syscall, which
-> is costly when doing fine measurement. Should it be documented?
+I spent a few brain cycles on the design of a generic fast-lock via
+xnsynch. The first thing was defining the lock word and going through
+its use cases.
 
-I suggested once to use the tsc as well for the implementation of
-clock_gettime(CLOCK_REALTIME) (the posix equivalent of rt_timer_read()),
-but was told at the time that we may want, one day, to provide syscalls
-to compensate for clock drifts, so reading the system clock should
-remain a syscall.
+You suggested to realize lock stealing directly in user space, but I
+don't see now how this should work reasonably. Our problem is that we
+would have to atomically check for the woken state AND compare the
+current priority against the owner ones. Imaginable only if we replicate
+the priorities into the lock word - but this makes things at least
+horribly complicated (e.g. when priorities change). So I think we have
+to drop this goal. Or what did you have in mind?
 
--- 
-                                                 Gilles.
+Jan
+
+
+--------------enigFF35ECC5E85E76FB8C5F3E62
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAki/iqoACgkQniDOoMHTA+kByACfdIU054/S9A2t1Rsh7aN0GAsU
+1o8Anj1+RdL4BVUBbqy0VlYtTZN621mx
+=WOFl
+-----END PGP SIGNATURE-----
+
+--------------enigFF35ECC5E85E76FB8C5F3E62--
 
