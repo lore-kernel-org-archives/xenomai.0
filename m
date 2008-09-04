@@ -1,50 +1,80 @@
-Message-ID: <48C1221D.5030102@domain.hid>
-Date: Fri, 05 Sep 2008 14:12:13 +0200
+Message-ID: <48C0041A.5020001@domain.hid>
+Date: Thu, 04 Sep 2008 17:51:54 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <48C112D9.8030201@domain.hid>
-In-Reply-To: <48C112D9.8030201@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] mailinglist problem
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <op.uguvqlusnuwxn3@domain.hid> <op.ugx5nqgunuwxn3@domain.hid>
+	<48BFA4C1.1040800@domain.hid> <op.ugyoorx2nuwxn3@domain.hid>
+In-Reply-To: <op.ugyoorx2nuwxn3@domain.hid>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-help] spurious interrupt with latest release
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Johan Visser <johan.visser@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+Cc: xenomai@xenomai.org
 
-Johan Visser wrote:
-> Hi
-> This message realy does not belong here I know, but i am not getting any 
-> response from the manager of this list!!
-> I am getting an E-mail from the list that mails are being bounced and 
-> therfore i am suspended from the list.
-> I have looked in to our mail server, it does not even get there.... so 
-> they must be bounced befor that, if at all.
-> I have no clue what to do.
-> So far every few days i reconfirm my membership and that helps for a 
-> number of days.....
-> But this is not normal for a subscriber to a mailinglist!
-> I also have subscrubtions to many other mailing lists, but the only one 
-> complaining  and causing me problems is the Xenomai list.
-> ( both core and help )
+stephane ancelot wrote:
+> Le Thu, 04 Sep 2008 11:05:05 +0200, Gilles Chanteperdrix  
+> <gilles.chanteperdrix@xenomai.org> a écrit:
 > 
-> any one ?
+>> stephane ancelot wrote:
+>>> Hi,
+>>> Finally since I did not understand why this happened and to inhibit any
+>>> driver writing related problems,I made the following architecture :
+>>>
+>>> a single 5ms task triggs a PLX 9050 INTCSR software register to activate
+>>> INTA  (level irq)
+>>>
+>>> the rtdm interupt handler checks if IT comes from the PLX, disable PLX  
+>>> IT,
+>>> resets the software register , reenable PLX it,
+>>> and ack irq rtdm
+>>>
+>>> However at random time , I have always spurious interrupt in this  
+>>> handler.
+>>> The time it occurs is random .
+>>>
+>>> attached my kernel config.gz
+>> Hi,
+>>
+>> Did you check the differences in masking/acking/unmasking interrupts for
+>> the interrupt controller you use between the I-pipe patch that works and
+>> the I-pipe patch that does not work ?
+>>
+> 
+> I know that it rocks with
+> kernel 2.6.24.2 and  adeos-ipipe-2.6.24-x86-2.0-03.patch
+> 
+> it does not with :
+> kernel 2.6.26.2 and adeos-ipipe-2.6.26-x86-2.0-09.patch
 
-Hi,
+Well, it would be nice to try 2.6.25.
 
-you are not the first one to complain. I need to talk about this with
-gna.org administrators, but did not find time to do it. I will probably
-do it this week-end.
+> Having a look at the patch I did not manage to find big differencies only  
+> in entry_32.S sysenter for enabling hw it, but I am not sure if this part  
+> of code may be related to my problem
+> 
+> The routed IRQ number is 18d
+> 
+> enabling ipipe and kernel debugging options does not help.
+> 
+> 
+> It would be useful , if I could reproduce the problem using a standard  
+> component of the PC to trig an IT like the PLX soft register, in order  
+> produce a regression test and some people being able to reproduce  
+> it.Supposing the same problem should appear :-)
 
-Regards.
+And if you run cat /proc/interrupts on the two kernels, do you observe
+any difference, as for instance, irqs changing from edge to level, or
+from local-apic to IO-apic or to fasteoi, or whatever ?
 
 -- 
                                                  Gilles.
+
 
