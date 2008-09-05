@@ -1,12 +1,16 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Date: Mon, 22 Sep 2008 22:10:07 +0200
+Message-ID: <48C1028F.1000303@domain.hid>
+Date: Fri, 05 Sep 2008 11:57:35 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="utf-8"
+References: <48BBA9E6.5070400@domain.hid> <48BBAB67.90707@domain.hid>
+	<48C0EF18.2030400@domain.hid> <48C0FEA6.2050807@domain.hid>
+	<48C0FFF6.1020305@domain.hid> <48C100FD.8020908@domain.hid>
+	<48C1022F.6040903@domain.hid>
+In-Reply-To: <48C1022F.6040903@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200809222210.07837.niklaus.giger@domain.hid>
-Subject: [Xenomai-core] [PATCH] vxworks: Adding tests for lstLib
+Subject: Re: [Xenomai-core] [PATCH 2/9] Switch to handle-based fast mutex
+ owners	- v2
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,243 +20,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-While testing I found that the behaviour of lstLib is not mimicked
-correctly by Xenomai-Solo.
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Jan Kiszka wrote:
+>>>>> @@ -230,18 +230,20 @@ static inline int mutex_save_count(xnthr
+>>>>>  
+>>>>>  	mutex = shadow->mutex;
+>>>>>  
+>>>>> -	if (clear_claimed(xnarch_atomic_intptr_get(mutex->owner)) != cur)
+>>>>> +	if (clear_claimed(xnarch_atomic_get(mutex->owner)) !=
+>>>>> +	    xnthread_handle(cur))
+>>>>>  		return EPERM;
+>>>>>  
+>>>>>  	*count_ptr = shadow->lockcnt;
+>>>>>  
+>>>>> -	if (likely(xnarch_atomic_intptr_cmpxchg(mutex->owner, cur, NULL) == cur))
+>>>>> +	if (likely(xnarch_atomic_cmpxchg(mutex->owner, cur, XN_NO_HANDLE) ==
+>>>>> +		   xnthread_handle(cur)))
+>>>>>  		return 0;
+>>>>>  
+>>>>>  	owner = xnsynch_wakeup_one_sleeper(&mutex->synchbase);
+>>>>> -	xnarch_atomic_intptr_set
+>>>>> -		(mutex->owner,
+>>>>> -		 set_claimed(owner,xnsynch_nsleepers(&mutex->synchbase)));
+>>>>> +	xnarch_atomic_set(mutex->owner,
+>>>>> +			  set_claimed(xnthread_handle(owner),
+>>>>> +				      xnsynch_nsleepers(&mutex->synchbase)));
+>>>> Ok. Can we avoid xnthread_handle() everywhere by storing its result in a
+>>>> local variable and reusing this local variable, here and in the other
+>>>> functions where xnthread_handle is used multiple times ?
+>>> True for 'cur' here (will fix), but the other case have already been
+>>> optimized as far as possible (i.e. within the respective scope).
+>> I have found several other spots where xnthread_handle is called
+>> multiple times in the same function. mutex_unlock comes to my mind.
+> 
+> Please point me to the concrete spot. I went again through all
+> xnthread_handle instances in this patch, checking that they aren't
+> needed due to owner changes, but only found the one above. Specifically
+> pthread_mutex_unlock, pse51_mutex_unlock_internal and
+> __pthread_mutex_unlock have only a single reference or reference
+> different threads.
 
-I wrote a simple testsuite which passed all assertions on my
-vxWorks 6.6 system. It compiles under xxWorks and xenomai-solo.
+Ok. I had grepped xnthread_handle and found that it was used twice in
+mutex_unlock, but did not checked if it was used for the same thread.
 
-I do not object, if you remove the conditional __SOLO__. Personally I 
-appreciate if I am able to run my testsuits without manual changes under 
-xenomai-solo and vxworks.
 
-At the moment they fail miserably under xenomai-solo.
-
-It does not test splitting/merging lists.
-
-Signed-off-by: Niklaus Giger <niklaus.giger@domain.hid>
----
- vxworks/testsuite/Makefile |    2 +-
- vxworks/testsuite/lst-1.c  |  190 
-++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 191 insertions(+), 1 deletions(-)
- create mode 100644 vxworks/testsuite/lst-1.c
-
-diff --git a/vxworks/testsuite/Makefile b/vxworks/testsuite/Makefile
-index 4967151..d1ce203 100644
---- a/vxworks/testsuite/Makefile
-+++ b/vxworks/testsuite/Makefile
-@@ -5,7 +5,7 @@ ifeq ($(prefix),)
- $(error Please add <xenomai-install-path>/bin to your PATH variable)
- endif
- 
--TESTS := task-1 task-2 msgQ-1 msgQ-2 msgQ-3 wd-1 sem-1 sem-2 sem-3 sem-4
-+TESTS := task-1 task-2 msgQ-1 msgQ-2 msgQ-3 wd-1 sem-1 sem-2 sem-3 sem-4 
-lst-1
- 
- CFLAGS := $(shell $(XENO_CONFIG) --cflags) -g
- LDFLAGS := -lvxworks $(shell $(XENO_CONFIG) --ldflags)
-diff --git a/vxworks/testsuite/lst-1.c b/vxworks/testsuite/lst-1.c
-new file mode 100644
-index 0000000..2b19511
---- /dev/null
-+++ b/vxworks/testsuite/lst-1.c
-@@ -0,0 +1,190 @@
-+#ifdef __SOLO__
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <xenomai/traceobj.h>
-+#include <vxworks/errnoLib.h>
-+#include <vxworks/taskLib.h>
-+#include <vxworks/lstLib.h>
-+
-+static struct traceobj trobj;
-+
-+static int tseq[] = {
-+	10, 11, 12, 13, 20,
-+	1, 14, 15, 2, 3, 4,
-+	5, 6, 7, 8, 16, 17, 18,
-+	9, 21, 19
-+};
-+#else
-+#include <stdio.h>
-+#include <unistd.h>
-+#include <stdlib.h>
-+#include <errnoLib.h>
-+#include <taskLib.h>
-+#include <semLib.h>
-+
-+#define traceobj_init(a, b, c)
-+#define traceobj_enter(trobj)
-+#define traceobj_exit(trobj)
-+#define traceobj_join(trobj)
-+
-+static int nrPassed;
-+
-+#define traceobj_assert(obj, cond) \
-+  if (cond)   nrPassed ++; \
-+  else printf("assert failed at %s line %d\n", __FUNCTION__, __LINE__);\
-+
-+#define traceobj_mark(a, b)
-+#define traceobj_verify(a, b, c)
-+#endif
-+
-+void rootTask(long a0, long a1, long a2, long a3, long a4,
-+	      long a5, long a6, long a7, long a8, long a9)
-+{
-+	int ret;
-+
-+	traceobj_enter(&trobj);
-+
-+	traceobj_mark(&trobj, 1);
-+
-+    LIST list;
-+    NODE  first, second, third, fourth;
-+    traceobj_assert(&trobj, 0 == lstNth (0, 1));
-+/*
-+    traceobj_assert(&trobj, 0 == lstFirst(0));
-+    traceobj_assert(&trobj, 0 == lstLast(0));
-+ */
-+    lstInit(&list);
-+    traceobj_assert(&trobj, 0 == lstCount(&list));
-+    traceobj_assert(&trobj, 0 == lstFirst(&list));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 0));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 1));
-+
-+    lstAdd(&list, &first);
-+    traceobj_assert(&trobj, 1 == lstCount(&list));
-+    traceobj_assert(&trobj, &first == lstFirst(&list));
-+    traceobj_assert(&trobj, &first == lstLast(&list));
-+    traceobj_assert(&trobj, 0 == lstPrevious (&first));
-+    traceobj_assert(&trobj, 0 == lstNext     (&first));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 0));
-+    traceobj_assert(&trobj, &first == lstNth (&list, 1));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 2));
-+
-+    lstAdd(&list, &second);
-+    traceobj_assert(&trobj, 2 == lstCount(&list));
-+    traceobj_assert(&trobj, &first == lstFirst(&list));
-+    traceobj_assert(&trobj, &second == lstLast(&list));
-+    traceobj_assert(&trobj, 0 == lstPrevious (&first)); // breaks here under 
-xenomai-solo
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 0));
-+    traceobj_assert(&trobj, &first  == lstNth (&list, 1));
-+    traceobj_assert(&trobj, &second == lstNth (&list, 2));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 3));
-+
-+    lstAdd(&list, &third);
-+    traceobj_assert(&trobj, 3 == lstCount(&list));
-+    traceobj_assert(&trobj, 0 == lstPrevious (&first));
-+    traceobj_assert(&trobj, &third == lstLast(&list));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 0));
-+    traceobj_assert(&trobj, &first  == lstNth (&list, 1));
-+    traceobj_assert(&trobj, &second == lstNth (&list, 2));
-+    traceobj_assert(&trobj, &third  == lstNth (&list, 3));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 4));
-+
-+    lstAdd(&list, &fourth);
-+    traceobj_assert(&trobj, 4 == lstCount(&list));
-+    traceobj_assert(&trobj, 0 == lstPrevious (&first));
-+    traceobj_assert(&trobj, &fourth == lstLast(&list));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 0));
-+    traceobj_assert(&trobj, &first  == lstNth (&list, 1));
-+    traceobj_assert(&trobj, &second == lstNth (&list, 2));
-+    traceobj_assert(&trobj, &third  == lstNth (&list, 3));
-+    traceobj_assert(&trobj, &fourth == lstNth (&list, 4));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 5));
-+
-+    lstDelete(&list, &third);
-+    traceobj_assert(&trobj, 3 == lstCount(&list));
-+    traceobj_assert(&trobj, 0 == lstPrevious (&first));
-+    traceobj_assert(&trobj, &fourth == lstLast(&list));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 0));
-+    traceobj_assert(&trobj, &first  == lstNth (&list, 1));
-+    traceobj_assert(&trobj, &second == lstNth (&list, 2));
-+    traceobj_assert(&trobj, &fourth == lstNth (&list, 3));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 4));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 5));
-+
-+    lstInsert(&list, &second, &third);
-+    traceobj_assert(&trobj, 4 == lstCount(&list));
-+    traceobj_assert(&trobj, 0 == lstPrevious (&first));
-+    traceobj_assert(&trobj, &fourth == lstLast(&list));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 0));
-+    traceobj_assert(&trobj, &first  == lstNth (&list, 1));
-+    traceobj_assert(&trobj, &second == lstNth (&list, 2));
-+    traceobj_assert(&trobj, &third  == lstNth (&list, 3));
-+    traceobj_assert(&trobj, &fourth == lstNth (&list, 4));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 5));
-+
-+    traceobj_assert(&trobj, &fourth == lstNStep(&second, 2));
-+    traceobj_assert(&trobj, 4 == lstCount(&list));
-+    traceobj_assert(&trobj, 0 == lstPrevious (&first));
-+    traceobj_assert(&trobj, &fourth == lstLast(&list));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 0));
-+    traceobj_assert(&trobj, &first  == lstNth (&list, 1));
-+    traceobj_assert(&trobj, &second == lstNth (&list, 2));
-+    traceobj_assert(&trobj, &third  == lstNth (&list, 3));
-+    traceobj_assert(&trobj, &fourth == lstNth (&list, 4));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 5));
-+
-+    traceobj_assert(&trobj, 1 == lstFind(&list, &first ));
-+    traceobj_assert(&trobj, 2 == lstFind(&list, &second));
-+    traceobj_assert(&trobj, 3 == lstFind(&list, &third ));
-+    traceobj_assert(&trobj, 4 == lstFind(&list, &fourth));
-+    traceobj_assert(&trobj, 4 == lstCount(&list));
-+    traceobj_assert(&trobj, 0 == lstPrevious (&first));
-+    traceobj_assert(&trobj, &fourth == lstLast(&list));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 0));
-+    traceobj_assert(&trobj, &first  == lstNth (&list, 1));
-+    traceobj_assert(&trobj, &second == lstNth (&list, 2));
-+    traceobj_assert(&trobj, &third  == lstNth (&list, 3));
-+    traceobj_assert(&trobj, &fourth == lstNth (&list, 4));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 5));
-+
-+    traceobj_assert(&trobj, &first == lstGet(&list));
-+    traceobj_assert(&trobj, 3 == lstCount(&list));
-+    traceobj_assert(&trobj, 0 == lstPrevious (&first));
-+    traceobj_assert(&trobj, 0 == lstPrevious (&second));
-+    traceobj_assert(&trobj, &fourth == lstLast(&list));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 0));
-+    traceobj_assert(&trobj, &second == lstNth (&list, 1));
-+    traceobj_assert(&trobj, &third  == lstNth (&list, 2));
-+    traceobj_assert(&trobj, &fourth == lstNth (&list, 3));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 4));
-+    traceobj_assert(&trobj, 0 == lstNth (&list, 5));
-+
-+
-+
-+#ifndef __SOLO__
-+    printf("\npeerTask done passed %d \n", nrPassed);
-+#endif
-+	traceobj_assert(&trobj, ret == OK);
-+
-+	traceobj_exit(&trobj);
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	int ret = OK;
-+
-+	traceobj_init(&trobj, argv[0], sizeof(tseq) / sizeof(int));
-+
-+#ifdef __SOLO__
-+	ret = kernelInit(rootTask, argc, argv);
-+#endif
-+	traceobj_assert(&trobj, ret == OK);
-+
-+	traceobj_mark(&trobj, 20);
-+
-+	traceobj_join(&trobj);
-+
-+	traceobj_verify(&trobj, tseq, sizeof(tseq) / sizeof(int));
-+
-+	exit(0);
-+}
 -- 
-1.6.0.1
-
-
+                                                 Gilles.
 
