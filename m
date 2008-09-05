@@ -1,14 +1,15 @@
-Message-ID: <48D68F2A.4010102@domain.hid>
-Date: Sun, 21 Sep 2008 20:15:06 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48C100FD.8020908@domain.hid>
+Date: Fri, 05 Sep 2008 11:50:53 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <48B7984D.8060402@domain.hid> <48D68EF5.7010903@domain.hid>
-In-Reply-To: <48D68EF5.7010903@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigDF63DC99A1D027482ABB5F17"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [PATCH] Fix rt_mutex_acquire_until doc
+References: <48BBA9E6.5070400@domain.hid> <48BBAB67.90707@domain.hid>
+	<48C0EF18.2030400@domain.hid> <48C0FEA6.2050807@domain.hid>
+	<48C0FFF6.1020305@domain.hid>
+In-Reply-To: <48C0FFF6.1020305@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH 2/9] Switch to handle-based fast mutex
+ owners	- v2
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,38 +19,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai-core@domain.hid
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDF63DC99A1D027482ABB5F17
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> @@ -230,18 +230,20 @@ static inline int mutex_save_count(xnthr
+>>>  
+>>>  	mutex = shadow->mutex;
+>>>  
+>>> -	if (clear_claimed(xnarch_atomic_intptr_get(mutex->owner)) != cur)
+>>> +	if (clear_claimed(xnarch_atomic_get(mutex->owner)) !=
+>>> +	    xnthread_handle(cur))
+>>>  		return EPERM;
+>>>  
+>>>  	*count_ptr = shadow->lockcnt;
+>>>  
+>>> -	if (likely(xnarch_atomic_intptr_cmpxchg(mutex->owner, cur, NULL) == cur))
+>>> +	if (likely(xnarch_atomic_cmpxchg(mutex->owner, cur, XN_NO_HANDLE) ==
+>>> +		   xnthread_handle(cur)))
+>>>  		return 0;
+>>>  
+>>>  	owner = xnsynch_wakeup_one_sleeper(&mutex->synchbase);
+>>> -	xnarch_atomic_intptr_set
+>>> -		(mutex->owner,
+>>> -		 set_claimed(owner,xnsynch_nsleepers(&mutex->synchbase)));
+>>> +	xnarch_atomic_set(mutex->owner,
+>>> +			  set_claimed(xnthread_handle(owner),
+>>> +				      xnsynch_nsleepers(&mutex->synchbase)));
+>> Ok. Can we avoid xnthread_handle() everywhere by storing its result in a
+>> local variable and reusing this local variable, here and in the other
+>> functions where xnthread_handle is used multiple times ?
+> 
+> True for 'cur' here (will fix), but the other case have already been
+> optimized as far as possible (i.e. within the respective scope).
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Copy&paste error?
->> (Note that diff misses the context, it's rt_mutex_acquire_until.)
->=20
-> This one is already applied, right ?
->=20
+I have found several other spots where xnthread_handle is called
+multiple times in the same function. mutex_unlock comes to my mind.
 
-Jep.
-
-
---------------enigDF63DC99A1D027482ABB5F17
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkjWjysACgkQniDOoMHTA+mD6ACeND6URPUZ2geDTMA3BfuB2cRh
-lRAAn0TLJ1c7r/4k0cS8TijtFxJcfHc6
-=T2lL
------END PGP SIGNATURE-----
-
---------------enigDF63DC99A1D027482ABB5F17--
+-- 
+                                                 Gilles.
 
