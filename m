@@ -1,11 +1,11 @@
-Date: Sat, 06 Sep 2008 09:32:31 -0700
-From: Sam Ferguson <samf48@domain.hid>
-Message-ID: <C4E7FEAF.8C9%samf48@domain.hid>
-In-Reply-To: <48BF8123.5070406@domain.hid>
-Mime-version: 1.0
-Content-type: text/plain;
-	charset="US-ASCII"
-Content-transfer-encoding: 7bit
+Message-ID: <48C2B543.7000307@domain.hid>
+Date: Sat, 06 Sep 2008 18:52:19 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <C4E7FEAF.8C9%samf48@domain.hid>
+In-Reply-To: <C4E7FEAF.8C9%samf48@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Xenomai kernel compile issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,38 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Sam Ferguson <samf48@domain.hid>
 Cc: Xenomai help <xenomai@xenomai.org>
 
-No, I get the same error as before. Am I using the right patch?  I have an
-HP laptop with an AMD chipset in it, should I be using i386 or x86.  I've
-tried both now with the same problem as before.  I start the script, then
-after 2 seconds it returns me to the terminal.  I am now using xenomai-2.4.5
-and linux-2.6.26.3 with no luck.  Is there a log file generated from the
-prepare-kernel.sh script I can look at?
+Sam Ferguson wrote:
+> No, I get the same error as before. Am I using the right patch?  I have an
+> HP laptop with an AMD chipset in it, should I be using i386 or x86.  I've
 
+i386 is the old branch, x86 the new one, so the one you should choose
+depends on the kernel version you are using. If you are using 2.6.26,
+you should definitely use x86.
 
-On 9/3/08 11:33 PM, "Gilles Chanteperdrix"
-<gilles.chanteperdrix@xenomai.org> wrote:
+> tried both now with the same problem as before.  I start the script, then
+> after 2 seconds it returns me to the terminal.  I am now using xenomai-2.4.5
+> and linux-2.6.26.3 with no luck.  Is there a log file generated from the
+> prepare-kernel.sh script I can look at?
 
-> Sam Ferguson wrote:
->> Ok, so I updated my kernel and tried again, the script doesn't error out but
->> it also doesn't say that it finished. Here's what happens:
->> igvc@domain.hid$ sudo scripts/prepare-kernel.sh
->> Linux tree [default /lib/modules/2.6.24-19-generic/source]:
->> /usr/src/linux-2.6.26.3
->> Target architecture [default i686]:
->> Adeos patch [default
->> /usr/src/xenomai-2.4.4/ksrc/arch/x86/patches/adeos-ipipe-2.6.26-x86-2.0-09.p
->> atch]: 
-> 
-> There was two suggestions in my post:
-> - please use the proper patch for the kernel version you are using,
-> which you have followed;
-> - please use the latest revision in the 2.4.x branch, that is xenomai
-> 2.4.5, which you have not followed;
-> 
-> But the important question is: does it compile now ?
+You can run prepare-kernel --verbose to see a bit more what the script
+is doing.
 
+But could you send me your .config file and the exact steps you follow
+in private so that I can try to reproduce your issue ?
 
+-- 
+					    Gilles.
 
