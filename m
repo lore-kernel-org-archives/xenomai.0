@@ -1,12 +1,12 @@
-Message-ID: <48C294E5.6010305@domain.hid>
-Date: Sat, 06 Sep 2008 16:34:13 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <48C1053E.4010507@domain.hid> <48C290D8.4000708@domain.hid>
-In-Reply-To: <48C290D8.4000708@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Oops with ifconfig on Sequioa AMCC 440EPX board
+Date: Sat, 06 Sep 2008 09:32:31 -0700
+From: Sam Ferguson <samf48@domain.hid>
+Message-ID: <C4E7FEAF.8C9%samf48@domain.hid>
+In-Reply-To: <48BF8123.5070406@domain.hid>
+Mime-version: 1.0
+Content-type: text/plain;
+	charset="US-ASCII"
+Content-transfer-encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai kernel compile issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,77 +16,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Wolfgang Grandegger wrote:
-> Wolfgang Grandegger wrote:
->> Hello,
->>
->> I get the following Oops with a Xenomai patch kernel when configuring
->> the EEPRO100 on the PCI slot:
->>
->>  -bash-3.2# ifconfig eth2 172.16.0.20
->> ------------[ cut here ]------------
->> Badness at c0025db0 [verbose debug info unavailable]
->> NIP: c0025db0 LR: c01b5658 CTR: c0190738
->> REGS: cfaa9d20 TRAP: 0700   Not tainted  (2.6.26.3-dirty)
->> MSR: 00029000 <EE,ME>  CR: 44002044  XER: 00000004
->> TASK = cf82b5a0[1052] 'ifconfig' THREAD: cfaa8000
->> NIP [c0025db0] local_bh_enable+0x84/0x9c
->> LR [c01b5658] dev_set_rx_mode+0x34/0x48
->> Call Trace:
->> [cfaa9dd0] [c01b54bc] __dev_set_rx_mode+0x40/0xb8 (unreliable)
->> [cfaa9de0] [c01b5658] dev_set_rx_mode+0x34/0x48
->> [cfaa9e00] [c01b83f8] dev_open+0xd8/0x114
->> [cfaa9e10] [c01b7244] dev_change_flags+0x8c/0x1b8
->> [cfaa9e30] [c01f7f58] devinet_ioctl+0x63c/0x77c
->> [cfaa9ea0] [c01f86f8] inet_ioctl+0xcc/0xf8
->> [cfaa9eb0] [c01aa878] sock_ioctl+0x60/0x2ec
->> [cfaa9ed0] [c00ba598] vfs_ioctl+0x34/0x98
->> [cfaa9ee0] [c00ba8fc] do_vfs_ioctl+0x300/0x430
->> [cfaa9f10] [c00baa6c] sys_ioctl+0x40/0x74
->> [cfaa9f40] [c000e1ac] ret_from_syscall+0x0/0x3c
->> Instruction dump:
->> 80010014 83e1000c 7c0803a6 38210010 4e800020 4bfdde81 4bffffdc 3d20c02f
->> 39297ba0 80090154 7c000034 5400d97e <0f000000> 2f800000 419eff94 38000001
->> -bash-3.2#
->> Message from syslogd@ at Thu Jan  1 01:01:21 1970 ...
->> sequoia666 kernel: ------------[ cut here ]------------
->>
->> -bash-3.2# uname -a
->> Linux sequoia666 2.6.26.3-dirty
->> -bash-3.2# cat /proc/ipipe/version
->> 2.2-04
->> -bash-3.2# cat /proc/xenomai/version
->> 2.4.5
->>
->> The NIP is at:
->>
->> (gdb) l *0xc0025db0
->> 0xc0025db0 is in local_bh_enable (kernel/softirq.c:141).
->> 136	#ifdef CONFIG_TRACE_IRQFLAGS
->> 137		unsigned long flags;
->> 138	
->> 139		WARN_ON_ONCE(in_irq());
->> 140	#endif
->> 141		WARN_ON_ONCE(irqs_disabled());
->> 142	
->> 143	#ifdef CONFIG_TRACE_IRQFLAGS
->> 144		local_irq_save(flags);
->> 145	#endif
->>
->> Any idea where the problem could be?
+No, I get the same error as before. Am I using the right patch?  I have an
+HP laptop with an AMD chipset in it, should I be using i386 or x86.  I've
+tried both now with the same problem as before.  I start the script, then
+after 2 seconds it returns me to the terminal.  I am now using xenomai-2.4.5
+and linux-2.6.26.3 with no luck.  Is there a log file generated from the
+prepare-kernel.sh script I can look at?
+
+
+On 9/3/08 11:33 PM, "Gilles Chanteperdrix"
+<gilles.chanteperdrix@xenomai.org> wrote:
+
+> Sam Ferguson wrote:
+>> Ok, so I updated my kernel and tried again, the script doesn't error out but
+>> it also doesn't say that it finished. Here's what happens:
+>> igvc@domain.hid$ sudo scripts/prepare-kernel.sh
+>> Linux tree [default /lib/modules/2.6.24-19-generic/source]:
+>> /usr/src/linux-2.6.26.3
+>> Target architecture [default i686]:
+>> Adeos patch [default
+>> /usr/src/xenomai-2.4.4/ksrc/arch/x86/patches/adeos-ipipe-2.6.26-x86-2.0-09.p
+>> atch]: 
 > 
-> I got a bit further with this problem. It is related to cascaded UIC
-> interrupts. The following patch inspired by qe_ic.c fixes the oops but
-> it still hangs the system if using the EEPRO100 with RTnet.
+> There was two suggestions in my post:
+> - please use the proper patch for the kernel version you are using,
+> which you have followed;
+> - please use the latest revision in the 2.4.x branch, that is xenomai
+> 2.4.5, which you have not followed;
+> 
+> But the important question is: does it compile now ?
 
-If there are cascaded irqs, maybe you should do like the I-pipe for arm
-does: decode the parent irq and trigger the cascaded irq ahead of the
-pipeline ?
 
-
--- 
-					    Gilles.
 
