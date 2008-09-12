@@ -1,12 +1,10 @@
-Message-ID: <48CA3B5E.40804@domain.hid>
-Date: Fri, 12 Sep 2008 11:50:22 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <48CAACEF.3010902@domain.hid>
+Date: Fri, 12 Sep 2008 19:54:55 +0200
+From: Pavel Bartusek <pavel.bartusek@domain.hid>
 MIME-Version: 1.0
-References: <20080911223132.2FB4832675A@ws1-8.us4.outblaze.com>
-In-Reply-To: <20080911223132.2FB4832675A@ws1-8.us4.outblaze.com>
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Image building, porting issues
+Subject: [Xenomai-help] Xenomai for SH4
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,16 +14,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?Marco_Ant=F4nio_Possamai?= <marco.possamai@domain.hid>
-Cc: Xenomai-help@domain.hid
+To: xenomai@xenomai.org
 
-Marco Ant=F4nio Possamai wrote:
-> $ export CROSS_COMPILE=3Dppc_6xx
+Hello,
 
-This should probably look like CROSS_COMPILE=3Dppc_6xx- instead.
+I'd like to use Xenomai on SH4 architecture and it seems it is not in
+the list of supported architectures now. There were some attempt in the
+past to port Xenomai to SH4 architecture
+(http://article.gmane.org/gmane.linux.real-time.xenomai.users/858/match=3D=
+xenomai+sh4)
+Unfortunately, it seems it the patch hasn't been integrated to the
+mainstream Xenomai. Does somebody have the patch or is somebody working
+on the port  for SH4 now ?
 
-Regards.
+Thanks for your answers
+Pavel Bart=C5=AF=C5=A1ek
 
---=20
-                                                 Gilles.
+
+
 
