@@ -1,12 +1,10 @@
-Message-ID: <48C524A6.3000704@domain.hid>
-Date: Mon, 08 Sep 2008 15:12:06 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <48CA7E5D.3080608@domain.hid>
+Date: Fri, 12 Sep 2008 16:36:13 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <48C51DE7.2040207@domain.hid>
-In-Reply-To: <48C51DE7.2040207@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Mailing list problems.
+Subject: [Xenomai-core] __pse51_get_current_prio
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,21 +14,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai core <Xenomai-core@domain.hid>, Xenomai help <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Hi,
-> 
-> for those of you who have problems with xenomai mailing lists
-> repetitively stopping delivery to their addresses after too many
-> bounces, we have signalled this problem to gna.org, the people hosting
-> xenomai mailing lists, and hope this will be resolved soon.
-> 
-> So, please be patient.
+Hi Gilles,
 
-Ok. The issue should be solved before tomorrow night. So, if you still
-have the issue after tomorrow night, please tell us.
+we've integrated your unit_mutex and our native test, but now we
+stumbled over that __pse51_get_current_prio special syscall to check the
+dynamic thread priority (during pi tests). I guess that service only
+exists in your private patch queue? What are your plans about this in
+case we want to push the mutex test into mainline? Or should we check
+the thread prio indirectly (by waking up a lower-prio thread)?
+
+Jan
 
 -- 
-                                                 Gilles.
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
