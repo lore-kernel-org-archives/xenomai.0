@@ -1,13 +1,11 @@
-Message-ID: <48CE287D.9080800@domain.hid>
-Date: Mon, 15 Sep 2008 11:18:53 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Mon, 15 Sep 2008 20:42:54 +0200
 MIME-Version: 1.0
-References: <200809141519.01180.niklaus.giger@domain.hid>
-In-Reply-To: <200809141519.01180.niklaus.giger@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Deviation in Xenomai-Solo from vxWorks behaviour
-Reply-To: rpm@xenomai.org
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_vyqzIpEHIxeHf5s"
+Message-Id: <200809152042.55704.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] Xenomai-Solo: bug in vxWorks taskSpawn with twice
+	the same name
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,99 +15,134 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Niklaus Giger <niklaus.giger@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Niklaus Giger wrote:
-> Hi
-> 
-> The attached program works fine under vxWorks 6.6 (powerpc).
-> Running it under the current xenomai-solo (trunk) on my GNU/Debian
-> x86 system it gets stuck at line 82:
-> 
-> Here is the output from vxWorks
->> timex tSysMain
->> assert passed at tSysMain line 66
->> assert passed at tSysMain line 67
->> assert passed at tSysMain line 70
->> assert passed at tSysMain line 71
->> assert passed at tSysMain line 74
->> assert passed at tSysMain line 75
->> assert passed at tSysMain line 77
->> assert passed at tSysMain line 78
->> assert passed at tSysMain line 79
->> assert passed at tSysMain line 80
->> assert passed at tSysMain line 82
->> assert passed at tSysMain line 83
->> tSysMain done
->> timex: time of execution = 600 +/- 2 (0%) millisecs
-> whereas my gdb reports the following
->> Starting program:
->> /home/hcu/celsius/project/metaFrame/bin/BSys/mak/xeno_vx-solo/debug/tst
->> [Thread debugging using libthread_db enabled]
->> [New Thread 0xb7c056c0 (LWP 32206)]
->> [New Thread 0xb7f02b90 (LWP 32210)]
->> [New Thread 0xb7ef1b90 (LWP 32213)]
->> assert passed at testTask line 66
->> assert passed at testTask line 67
->> assert passed at testTask line 70
->> assert passed at testTask line 71
->> assert passed at testTask line 74
->> assert passed at testTask line 75
->> assert passed at testTask line 77
->> assert passed at testTask line 78
->> assert passed at testTask line 79
->> assert passed at testTask line 80
->> ^C
->> Program received signal SIGINT, Interrupt.
->> [Switching to Thread 0xb7c056c0 (LWP 32206)]
->> 0xb7f05424 in __kernel_vsyscall ()
->> (gdb) t 3
->> [Switching to thread 3 (Thread 0xb7ef1b90 (LWP 32213))]#0  0xb7f05424 in
->> __kernel_vsyscall () (gdb) i s
->> #0  0xb7f05424 in __kernel_vsyscall ()
->> #1  0xb7e9b025 in pthread_cond_wait@domain.hid () from
->> /lib/i686/cmov/libpthread.so.0 #2  0xb7eaff2f in syncobj_pend
->> (sobj=0x83fd0d0, timeout=0x0, syns=0xb7ef12a4) at syncobj.c:152 #3 
->> 0xb7ebff80 in xsem_take (sem=0x83fd0c8, timeout=-1) at semLib.c:83 #4 
->> 0xb7ec0837 in semTake (sem_id=138399944, timeout=-1) at semLib.c:404 #5 
->> 0x08048a8d in testTask (a1=0, a2=0, a3=0, a4=0, a5=0, a6=0, a7=0, a8=0,
->> a9=0, a10=0) at ../../BSys/src/tst_main.cpp:82 #6  0xb7ec116b in
->> task_trampoline (arg=0x83fcee8) at taskLib.c:255 #7  0xb7e974c0 in
->> start_thread () from /lib/i686/cmov/libpthread.so.0 #8  0xb7ceb55e in clone
->> () from /lib/i686/cmov/libc.so.6
-> It looks like under xenomai a failing semTake(aSemaphore, nWaitTime))
-> erroneously decrements the counter instead of leaving .
+--Boundary-00=_vyqzIpEHIxeHf5s
+Content-Type: text/plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hi
+
+Thanks a lot to Philippe for fixing the previous bug so quickly! Never got
+fixed a bug as fast by WindRIver despite having paid quite a lot of money
+for it!
+
+Now my testsuite passes almost all tests but crashes, when it spawns
+twice a task with the same name. E.g. I get the following output:
+> testTask done t1 0x901a0f4 t2 0x901a2b4
+> Xenomai/SOLO: duplicate task name: Test
+> assert passed at task1 line 24
+> assert passed at task1 line 24
+> assert passed at task1 line 26
+> assert passed at task1 line 26
 >
+> Command terminated by signal 11
 
-You were 100% right. The patch below fixes up the sema4 count as required, thanks.
+Attached my simple test case.
 
-diff --git a/vxworks/semLib.c b/vxworks/semLib.c
-index 3588160..62f9326 100644
---- a/vxworks/semLib.c
-+++ b/vxworks/semLib.c
-@@ -81,12 +81,15 @@ static STATUS xsem_take(struct wind_sem *sem, int timeout)
- 		timespec = NULL;
-
- 	ret = syncobj_pend(&sem->u.xsem.sobj, timespec, &syns);
--	if (ret == -ETIMEDOUT)
--		ret = S_objLib_OBJ_TIMEOUT;
--	else if (ret == -EINTR)
--		ret = OK;	/* Flushed. */
--	else if (ret == -EIDRM)
-+	if (ret == -EIDRM)
- 		return S_objLib_OBJ_DELETED;
-+	if (ret) {
-+		sem->u.xsem.value++;
-+		if (ret == -ETIMEDOUT)
-+			ret = S_objLib_OBJ_TIMEOUT;
-+		else if (ret == -EINTR)
-+			ret = OK;	/* Flushed. */
-+	}
- done:
- 	syncobj_unlock(&sem->u.xsem.sobj, &syns);
+Best regards
 
 -- 
-Philippe.
+NIklaus Giger
 
+
+--Boundary-00=_vyqzIpEHIxeHf5s
+Content-Type: text/x-c++src;
+  charset="utf-8";
+  name="tst_main.cpp"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="tst_main.cpp"
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+
+#define assert(cond) \
+  if (!cond) printf("assert failed at %s line %d\n", __FUNCTION__, __LINE__); \
+  else  printf("assert passed at %s line %d\n", __FUNCTION__, __LINE__);
+
+
+#if defined(__SOLO__) || defined(_WRS_VXWORKS_MAJOR)
+// #include <vxWorks.h>
+#include <semLib.h>
+#include <taskLib.h>
+#include <tickLib.h>
+#include <kernelLib.h>
+
+void testTask(long a1, long a2, long a3, long a4, long a5,
+	long a6, long a7, long a8, long a9, long a10);
+bool finished;
+
+  extern "C" void task1(long int, long int, long int, long int, long int, long int, long int, long int, long int, long int)
+  {
+	assert(1);
+	taskDelay(30);	
+	assert(2);
+	finished = true;
+  }
+
+#endif
+
+/**
+ *  Main functions
+ */
+#if defined(PLAT_VXWORKS) || defined(_WRS_VXWORKS_MAJOR)
+  extern "C" int tSysMain(const char* arg)
+  {
+    const char* argv[2];
+    argv[0]  = "undefined";
+    argv[1]  = arg;
+    int argc = sizeof(argv) / sizeof(char*);
+#else
+
+  int main(int argc, char *const argv[])
+  {
+#endif
+
+#ifdef __SOLO__
+
+    kernelInit(testTask, argc, argv);
+    while(!finished) { sleep(1); }
+    exit(0);
+}
+
+void testTask(long a1, long a2, long a3, long a4, long a5,
+	long a6, long a7, long a8, long a9, long a10)
+{
+   int argc=0; char *const argv[]={0};
+#endif
+   int t1 =taskSpawn("Test", // name of new task (stored at pStackBase)
+                     90, // priority of new task
+                     0, // task option word
+                     20*1024, // size (bytes) of stack needed plus name
+                     task1,  // entry point of new task
+                     0, // first argument
+                     0,0,0,0,0,0,0,0,0);   // unused parameters
+
+   int t2 =taskSpawn("Test", // name of new task (stored at pStackBase)
+                     90, // priority of new task
+                     0, // task option word
+                     20*1024, // size (bytes) of stack needed plus name
+                     task1,  // entry point of new task
+                     0, // first argument
+                     0,0,0,0,0,0,0,0,0);   // unused parameters
+
+  printf("%s done t1 0x%x t2 0x%x\n", __FUNCTION__, t1, t2);
+  while (!finished) sleep(1);
+#ifdef __SOLO__
+  finished = true;
+  return;
+#else
+  return 0;
+#endif
+}
+
+
+//  ___________________________________________________________________________
+
+--Boundary-00=_vyqzIpEHIxeHf5s--
 
