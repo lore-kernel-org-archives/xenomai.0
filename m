@@ -1,15 +1,10 @@
-Message-ID: <48CB967B.3080203@domain.hid>
-Date: Sat, 13 Sep 2008 12:31:23 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <48CE3096.7040502@domain.hid>
+Date: Mon, 15 Sep 2008 11:53:26 +0200
+From: Harco Kuppens <h.kuppens@domain.hid>
 MIME-Version: 1.0
-References: <48CAACEF.3010902@domain.hid>
-	<219129.74725.qm@domain.hid>
-	<48CB648F.2090509@domain.hid>
-In-Reply-To: <48CB648F.2090509@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] compile error xenomai 2.4.5
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/alternative;
+	boundary="------------050800000900050101000500"
+Subject: [Xenomai-help] probably error in api document
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,75 +14,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: "hooman >> \"Hooman, J.\"" <Jozef.Hooman@domain.hid>
 
-Jan Kiszka wrote:
-> [ Don't start new topics by replying to unrelated ones! ]
->=20
-> George Pitich wrote:
->> Tried to compile linux 2.6.26.5 kernel with xenomai 2.4.5 (also ran ./co=
-nfigure --disable-x86-tsc --enable-x86-sep)
->>
->> ./prepare-kernel.sh  --arch=3Di386 --adeos=3D/usr/src/xenomai-2.4.5/ksrc=
-/arch/x86/patches/adeos-ipipe-2.6.26-x86-2.0-09.patch --linux=3D/usr/src/li=
-nux-2.6.26.5
->>
->> make gave the error:
->>
->> arch/x86/xenomai/hal_32.c: In function =E2rthal_latency_above_max=E2:
->> arch/x86/xenomai/hal_32.c:139: error: implicit declaration of function =
-=E2die_nmi=E2
->> make[1]: *** [arch/x86/xenomai/hal_32.o] Error 1
->> make: *** [arch/x86/xenomai] Error 2
->=20
-> That's an issue of the 2.6.26 ipipe patch. Philippe, you dropped the
-> nmi_32.h hunk:
->
+This is a multi-part message in MIME format.
+--------------050800000900050101000500
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-No I didn't, but the die_nmi() prototype is now different between the 32 an=
-d 64bit
-implementations; the i386 decl is missing. Here is the proper fix:
+Hi,
 
-diff --git a/include/asm-x86/nmi.h b/include/asm-x86/nmi.h
-index 765a6d6..f0fc7c5 100644
---- a/include/asm-x86/nmi.h
-+++ b/include/asm-x86/nmi.h
-@@ -42,6 +42,7 @@ extern void die_nmi(char *str, struct pt_regs *regs, int =
-do_panic);
- extern void nmi_watchdog_default(void);
- #else
- #define nmi_watchdog_default() do {} while (0)
-+extern void die_nmi(struct pt_regs *regs, const char *msg);
- #endif
+I noticed in the Xenomai native API that  the longer rt_create_intr :
 
- extern int check_nmi_watchdog(void);
+    int rt_intr_create 
+<http://www.xenomai.org/documentation/trunk/html/api/group__interrupt.html#ga0a9d98556ec838008f408a56e79d304> 
+(RT_INTR *intr, const char *name, unsigned irq, rt_isr_t isr, rt_iack_t 
+iack, int mode)
+
+says in its documentation :
+
+    This service can be called from:
+
+        * Kernel module initialization/cleanup code
+        * Kernel-based task
+        * *User-space task*
+
+I find it strange that it could be called from a user-space task.
+I looked in /usr/xenomai/include/native/intr.h but there it really is 
+defined when __KERNEL__ is defined.
+
+So I guess this is an error in the  API documention?
+
+Best Regards,
+Harco Kuppens
 
 
-> diff --git a/include/asm-x86/nmi_32.h b/include/asm-x86/nmi_32.h
-> index 70a958a..da25e1c 100644
-> --- a/include/asm-x86/nmi_32.h
-> +++ b/include/asm-x86/nmi_32.h
-> @@ -29,7 +29,8 @@ extern void setup_apic_nmi_watchdog (void *);
->  extern void stop_apic_nmi_watchdog (void *);
->  extern void disable_timer_nmi_watchdog(void);
->  extern void enable_timer_nmi_watchdog(void);
-> -extern int nmi_watchdog_tick (struct pt_regs * regs, unsigned reason);
-> +extern int (*nmi_watchdog_tick)(struct pt_regs * regs, unsigned reason);
-> +extern void die_nmi(struct pt_regs *, const char *msg);
->=20
->  extern atomic_t nmi_active;
->  extern unsigned int nmi_watchdog;
->=20
-> Should be merged into the unified nmi.h now.
->=20
-> George, in the meantime you can simply disable NMI watchdog support in
-> Xenomai, and then the build should succeed again.
->=20
-> Jan
->=20
+--------------050800000900050101000500
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+Hi,<br>
+<br>
+I noticed in the Xenomai native API that&nbsp; the longer rt_create_intr :<br>
+<br>
+&nbsp;&nbsp;&nbsp; int&nbsp;<a class="el"
+ href="http://www.xenomai.org/documentation/trunk/html/api/group__interrupt.html#ga0a9d98556ec838008f408a56e79d304">rt_intr_create</a>
+(RT_INTR *intr, const char *name, unsigned irq, rt_isr_t isr, rt_iack_t
+iack, int mode)<br>
+<br>
+says in its documentation :<br>
+<blockquote>
+  <p>This service can be called from:</p>
+  <p></p>
+  <ul>
+    <li>Kernel module initialization/cleanup code</li>
+    <li>Kernel-based task</li>
+    <li><b>User-space task</b></li>
+  </ul>
+</blockquote>
+I find it strange that it could be called from a user-space task.<br>
+I looked in /usr/xenomai/include/native/intr.h but there it really is
+defined when __KERNEL__ is defined.<br>
+<br>
+So I guess this is an error in the&nbsp; API documention?<br>
+<br>
+Best Regards,<br>
+Harco Kuppens<br>
+<br>
+</body>
+</html>
 
---=20
-Philippe.
+--------------050800000900050101000500--
 
