@@ -1,11 +1,10 @@
-Date: Wed, 17 Sep 2008 12:31:49 -0700 (PDT)
-From: egemen kaleli <menege1@domain.hid>
+Date: Wed, 17 Sep 2008 22:23:57 +0200
+Message-Id: <998139537@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-1331476365-1221679909=:61569"
-Message-ID: <147394.61569.qm@domain.hid>
-Subject: [Xenomai-help] more than one process cannot access to the device
-	through rtdm
-Reply-To: menege1@domain.hid
+From: Joachim Meyer <Jogi95@domain.hid>
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] FW: Re: FW: Re:  Xilinx and Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,29 +14,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: wd@domain.hid
+Cc: xenomai@xenomai.org
 
---0-1331476365-1221679909=:61569
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hi Wolfgang
 
-I have developed an driver with rtdm. I can write to the=A0device and read =
-it in a same process.
-But when I want to=A0=A0write to it in a process and read it from an anothe=
-r process I failed.
-thanks for any help=A0in advance.More than one process can not access=A0to =
-the device.=A0
-=A0
-Egemen=A0Kaleli.=A0=0A=0A=0A      
---0-1331476365-1221679909=:61569
-Content-Type: text/html; charset=us-ascii
+> Why don't you just use the sources from our repo? It's just  mainline
+> plus  local  additions. As long as you don't use any of the boards we
+> added you should get the same as  in  mainline  -  but  matching  the
+> Xenomai patches.
 
-<table cellspacing="0" cellpadding="0" border="0" ><tr><td valign="top" style="font: inherit;"><DIV>I have developed an driver with rtdm. I can write to the&nbsp;device and read it in a same process.</DIV>
-<DIV>But when I want to&nbsp;&nbsp;write to it in a process and read it from an another process I failed.</DIV>
-<DIV>thanks for any help&nbsp;in advance.More than one process can not access&nbsp;to the device.&nbsp;</DIV>
-<DIV>&nbsp;</DIV>
-<DIV>Egemen&nbsp;Kaleli.&nbsp;</DIV></td></tr></table><br>
+That's a good question. I think I was irritated from the fact that I didn't find any Xilinx-defconfigs though there aren't any at the mainline tree either. 
+So thanks, I'll give it a try tomorrow.
 
-      
---0-1331476365-1221679909=:61569--
+Cheers,
+Joachim
+
+
+_________________________________________________________________________
+In 5 Schritten zur eigenen Homepage. Jetzt Domain sichern und gestalten! 
+Nur 3,99 EUR/Monat! http://www.maildomain.web.de/?mc=021114
+
 
