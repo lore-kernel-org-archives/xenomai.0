@@ -1,54 +1,73 @@
-Content-class: urn:content-classes:message
+Message-ID: <48D27AA4.2040509@domain.hid>
+Date: Thu, 18 Sep 2008 17:58:28 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 22 Sep 2008 11:15:58 +0200
-Message-ID: <0B45E93C5FF65740AEAE690BF3848B7AD38398@domain.hid>
-From: "Fillod Stephane" <stephane.fillod@domain.hid>
-Subject: Re: [Xenomai-help] Interrupt latency questions
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Antonio Del Cinque <adelcinque@domain.hid>, xenomai@xenomai.org
+References: <mailman.1448.1221743175.22433.adeos-main@gna.org>	
+	<217b7eb20809180614u28d04ef8vc63fadb0b7db1ae9@domain.hid>	
+	<48D255E0.7000603@domain.hid>	
+	<217b7eb20809180722w423f78b2qb4d7db0bfb248953@domain.hid>	
+	<48D264B6.6080504@domain.hid>	
+	<217b7eb20809180807j9bf19ecnb43d69355d2e4ff6@domain.hid>	
+	<48D26F8F.8030401@domain.hid>	
+	<217b7eb20809180817p15cb4161o8ef6482fe835f143@domain.hid>	
+	<48D272B9.2080304@domain.hid>
+	<217b7eb20809180855r77889497y9e599c525bc4f6a8@domain.hid>
+In-Reply-To: <217b7eb20809180855r77889497y9e599c525bc4f6a8@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Adeos-main] adeos-ipipe-2.6.19-arm-1.7-00 on iMX31: init
+ doesn't complete!
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Hank <hank007@domain.hid>
+Cc: adeos-main@gna.org
 
-Antonio Del Cinque wrote:
-[...]
->Then I open an ssh connection with the target, and run a "cat /dev/zero
-> file". The target=20
->is mounted on an NFS root filesystem, so this generates a high number
-of=20
->fast ethernet interrupts. Now the oscilloscope shows 15 uS jitter in
-the worst case,=20
->and a visible variance. I would assume this effect as increased max
-latency.
+Hank wrote:
+> On 9/18/08, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+>> Hank wrote:
+>>> On 9/18/08, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>> wrote:
+>>>> Hank wrote:
+>>>>> Well, some of the tricks helped during initial stages but other don't
+>>>> seem
+>>>>> to apply now as there is no crash here!
+>>>> Oh yes ? Are you sure the timer is ticking correctly ?
+>>>>
+>>>> --
+>>>>                                                 Gilles.
+>>>
+>>> Yes. Also, forced it to a soft lockup crash in ret_to_user() and trace
+>>> showed timer interrupt ticking and updating process timers all the way
+>> up!
+>>
+>> I am afraid I can not help much. The patch you use is too old, I fixed
+>> some bugs recently in the traps interception code which should lead to a
+>> clear crash instead of some lockup. I also added support for VFP.
+>>
+>> So, do you observe the same phenomenon with a vanilla 2.6.26 and the
+>> latest patch (AFAIK Litekit is supported by mainline) ?
+>>
+>> I also suspect a bug when using Xenomai with NO_HZ on ARM. So, you may
+>> try to disable NO_HZ.
+>>
+>> --
+>>                                                 Gilles.
+> 
+> 
+> Thanks Gilles. Well, looks like your suspicions about VFP were right! I
+> certainly didn't test it recently without VFP. It just booted to shell after
+> disabling VFP.
 
-This figure has already been seen with SoC in the range of the e300,=20
-and sometime worse.
+Ok. If you intend to use VFP, you have to use the latest version of
+Xenomai (not released yet), and the latest I-pipe patch. Otherwise, you
+will run into problems.
 
->The ethernet interrupt is handled only in Linux domain by the original
-vanilla handler,=20
->but Linux should be stalled/preempted when the timer interrupt occurs.
-So I assume=20
->that latency is to be justified by the time it takes to adeos to record
-an=20
->ethernet interrupt event in the i-logs when the timer interrupt is
-executing or ready to
->execute. Is this correct?=20
-
-Cache miss and TLB miss are also good latency killers.
-To some extent, long DMA transfers can bog down the system bus.
-
->Is there any way to lower max latency for the timer interrupt?
-
-Has anybody tried to play with cache locking?
-
---=20
-Stephane
+-- 
+                                                 Gilles.
 
