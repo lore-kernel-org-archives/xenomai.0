@@ -1,13 +1,14 @@
-Message-ID: <217b7eb20809180614u28d04ef8vc63fadb0b7db1ae9@domain.hid>
-Date: Thu, 18 Sep 2008 18:14:21 +0500
-From: Hank <hank007@domain.hid>
-In-Reply-To: <mailman.1448.1221743175.22433.adeos-main@gna.org>
+Message-ID: <48D25507.3060102@domain.hid>
+Date: Thu, 18 Sep 2008 15:17:59 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_25111_11587806.1221743661691"
 References: <mailman.1448.1221743175.22433.adeos-main@gna.org>
-Subject: [Adeos-main] adeos-ipipe-2.6.19-arm-1.7-00 on iMX31: init doesn't
-	complete!
+	<217b7eb20809180614u28d04ef8vc63fadb0b7db1ae9@domain.hid>
+In-Reply-To: <217b7eb20809180614u28d04ef8vc63fadb0b7db1ae9@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Adeos-main] adeos-ipipe-2.6.19-arm-1.7-00 on iMX31: init
+ doesn't complete!
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -16,218 +17,19 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+To: Hank <hank007@domain.hid>
+Cc: adeos-main@gna.org
 
-------=_Part_25111_11587806.1221743661691
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_25112_31070354.1221743661691"
+Hank wrote:
+> Hello Guys,
+> I'm porting xenomai to Freescale iMX31 processor (on iMX31 LiteKit) as per
+> porting guidelines. In the first phase, applied
+> adeos-ipipe-2.6.19-arm-1.7-00 patch found in xenomai-2.4.4 to kernel
+> 2.6.19.2 and have implemented required machine specific code. Everything
+> went smooth and after fixing a few bugs, kernel booted but with a problem -
+> init doesn't complete. Following are last few kernel boot log messages:
 
-------=_Part_25112_31070354.1221743661691
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hello Guys,
-I'm porting xenomai to Freescale iMX31 processor (on iMX31 LiteKit) as per
-porting guidelines. In the first phase, applied
-adeos-ipipe-2.6.19-arm-1.7-00 patch found in xenomai-2.4.4 to kernel
-2.6.19.2 and have implemented required machine specific code. Everything
-went smooth and after fixing a few bugs, kernel booted but with a problem -
-init doesn't complete. Following are last few kernel boot log messages:
-
-
-Looking up port of RPC 100003/2 on 192.168.1.25
-Looking up port of RPC 100005/1 on 192.168.1.25
-VFS: Mounted root (nfs filesystem).
-Freeing init memory: 120K
-====== No More Messages =======
-
-
-As one might suspect, It's not a lockup or freeze - the console is
-responsive and echoes back. The kernel is apparently up as it can be ping'ed
-from outside. If IPIPE is disabled, kernel boots OK into the shell.
-
-Have tried booting with init=/bin/sh and even with a statically/dynamically
-linked simple app but same response. printk debugging shows that
-run_init_process() goes upto kernel_execve() call, do_execve() completes
-without error but while switching to
-user space, it's lost!
-
-PS: I've even tried applying adeos-ipipe-2.6.20-arm-1.8-03.patch (I know the
-kernel version difference, but I somehow happened to fix all the failed
-HUNKS!). Unfortunately, the response is exactly the same as with 1.7.
-Any help would be highly appreciated.
-
-Attached is complete kernel boot log for reference.
-
-Thanks
-
-------=_Part_25112_31070354.1221743661691
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-<p>Hello Guys,</p>
-<div>I&#39;m porting&nbsp;xenomai to Freescale iMX31 processor (on iMX31 LiteKit) as per porting guidelines. In the first phase, applied adeos-ipipe-2.6.19-arm-1.7-00 patch found in xenomai-2.4.4 to kernel <a onclick="return top.js.OpenExtLink(window,event,this)" href="http://2.6.19.2/" target="_blank">2.6.19.2</a> and have implemented required machine specific code. Everything went smooth and after fixing a few bugs, kernel booted but with a problem - init doesn&#39;t complete. Following are last few kernel boot log messages:</div>
-
-<div>&nbsp;</div>
-<div>&nbsp;</div>
-<div>Looking up port of RPC 100003/2 on <a onclick="return top.js.OpenExtLink(window,event,this)" href="http://192.168.1.25/" target="_blank">192.168.1.25</a><br>Looking up port of RPC 100005/1 on <a onclick="return top.js.OpenExtLink(window,event,this)" href="http://192.168.1.25/" target="_blank">192.168.1.25</a><br>
-VFS: Mounted root (nfs filesystem).<br>Freeing init memory: 120K<br>====== No More Messages =======</div>
-<p><br>As one might suspect, It&#39;s not a lockup or freeze - the console is responsive and echoes back. The kernel is apparently up as it can be ping&#39;ed from outside. If IPIPE is disabled, kernel boots OK into the shell.</p>
-
-<p>Have tried booting with init=/bin/sh and even with a statically/dynamically linked simple app but same response. printk debugging shows that run_init_process()&nbsp;goes upto kernel_execve() call, do_execve() completes without error but while switching to<br>
-user space, it&#39;s lost!</p>
-<p>PS: I&#39;ve even tried applying adeos-ipipe-2.6.20-arm-1.8-03.patch (I know the kernel version difference, but I somehow happened to fix all the failed HUNKS!). Unfortunately, the response is exactly the same as with 1.7.</p>
-
-<div>Any help would be highly appreciated.</div>
-<div>&nbsp;</div>
-<div>Attached is complete kernel boot log for reference.</div>
-<div>&nbsp;</div>
-<div>Thanks</div>
-<div>&nbsp;</div>
-
-------=_Part_25112_31070354.1221743661691--
-
-------=_Part_25111_11587806.1221743661691
-Content-Type: text/plain; name=kernlog.txt
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_fl9g681k
-Content-Disposition: attachment; filename=kernlog.txt
-
-VW5jb21wcmVzc2luZyBMaW51eC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4u
-Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4u
-Li4uLi4uLi4uLi4uLi4uLiBkb25lLCBib290aW5nIHRoZSBrZXJuZWwuDQpMaW51eCB2ZXJzaW9u
-IDIuNi4xOS4yIChoYW5rQGxpbnV4KSAoZ2NjIHZlcnNpb24gNC4xLjEpICMxOSBXZWQgU2VwIDE3
-IDExOjE1OjU1IEJTVCAyMDA4DQoNCkNQVTogU29tZSBSYW5kb20gVjYgUHJvY2Vzc29yIFs0MTA3
-YjM2NF0gcmV2aXNpb24gNCAoQVJNdjZURUopLCBjcj0wMGM1Mzg3Zg0KDQpNYWNoaW5lOiBGcmVl
-c2NhbGUgaS5NWDMxIGxpdGVraXQNCg0KTWVtb3J5IHBvbGljeTogRUNDIGRpc2FibGVkLCBEYXRh
-IGNhY2hlIHdyaXRlYmFjaw0KDQpDUFUwOiBEIFZJUFQgd3JpdGUtYmFjayBjYWNoZQ0KDQpDUFUw
-OiBJIGNhY2hlOiAxNjM4NCBieXRlcywgYXNzb2NpYXRpdml0eSA0LCAzMiBieXRlIGxpbmVzLCAx
-Mjggc2V0cw0KDQpDUFUwOiBEIGNhY2hlOiAxNjM4NCBieXRlcywgYXNzb2NpYXRpdml0eSA0LCAz
-MiBieXRlIGxpbmVzLCAxMjggc2V0cw0KDQpCdWlsdCAxIHpvbmVsaXN0cy4gIFRvdGFsIHBhZ2Vz
-OiAyODQ0OA0KDQpLZXJuZWwgY29tbWFuZCBsaW5lOiBub2luaXRyZCBjb25zb2xlPXR0eW14YzAg
-cm9vdD0vZGV2L25mcyBuZnNyb290PTE5Mi4xNjguMS4yNTovdGZ0cGJvb3Qvcm9vdGZzIHJ3IGlu
-aXQ9L2xpbnV4cmMgaXA9ZGhjcA0KDQpNWEMgSVJRIGluaXRpYWxpemVkDQoNClBJRCBoYXNoIHRh
-YmxlIGVudHJpZXM6IDUxMiAob3JkZXI6IDksIDIwNDggYnl0ZXMpDQoNCkNsb2NrIGlucHV0IHNv
-dXJjZSBpcyAyNjAwMDAwMA0KDQpBY3R1YWwgQ0xPQ0tfVElDS19SQVRFIGlzIDE2NjI1MDAwIEh6
-DQoNCkktcGlwZSAxLjctMDA6IHBpcGVsaW5lIGVuYWJsZWQuDQoNCkNvbnNvbGU6IGNvbG91ciBk
-dW1teSBkZXZpY2UgODB4MzANCg0KRGVudHJ5IGNhY2hlIGhhc2ggdGFibGUgZW50cmllczogMTYz
-ODQgKG9yZGVyOiA0LCA2NTUzNiBieXRlcykNCg0KSW5vZGUtY2FjaGUgaGFzaCB0YWJsZSBlbnRy
-aWVzOiA4MTkyIChvcmRlcjogMywgMzI3NjggYnl0ZXMpDQoNCk1lbW9yeTogMTEyTUIgPSAxMTJN
-QiB0b3RhbA0KDQpNZW1vcnk6IDEwOTk1MktCIGF2YWlsYWJsZSAoMjgwOEsgY29kZSwgNzUxSyBk
-YXRhLCAxMjBLIGluaXQpDQoNCk1vdW50LWNhY2hlIGhhc2ggdGFibGUgZW50cmllczogNTEyDQoN
-CkNQVTogVGVzdGluZyB3cml0ZSBidWZmZXIgY29oZXJlbmN5OiBvaw0KDQpORVQ6IFJlZ2lzdGVy
-ZWQgcHJvdG9jb2wgZmFtaWx5IDE2DQoNCk1YQyBHUElPIGhhcmR3YXJlDQoNCnN5c3RlbV9yZXYg
-aXM6IDB4MjANCg0KICBYWFhYWFhYWFhYWFhYWFhYWFhYWCBwbGwgPSAxOTAzMjAwMDAsIHVzYl9w
-ZGYgPSAxLCB1c2JfcHJlcGRmID0gMSwgcmV0dmFsID0gNDc1ODAwMDANCg0KSXJxIGluaXQgZm9y
-IGV0aDANCg0KTDIgY2FjaGU6IFdCDQoNCmtvYmplY3RfYWRkIGZhaWxlZCBmb3IgTVgzMUFEUy9N
-WDMxTElURSBQQyAoLTEzKQ0KDQpbPGMwMDJhZjY4Pl0gKGR1bXBfc3RhY2srMHgwLzB4MTQpIGZy
-b20gWzxjMDEzZjMyMD5dIChrb2JqZWN0X2FkZCsweDE1Yy8weDE5YykNCg0KWzxjMDEzZjFjND5d
-IChrb2JqZWN0X2FkZCsweDAvMHgxOWMpIGZyb20gWzxjMDE3NTA1OD5dIChkZXZpY2VfYWRkKzB4
-ODgvMHg0YTgpDQoNCls8YzAxNzRmZDA+XSAoZGV2aWNlX2FkZCsweDAvMHg0YTgpIGZyb20gWzxj
-MDE3OTA4MD5dIChwbGF0Zm9ybV9kZXZpY2VfYWRkKzB4MTAwLzB4MTU4KQ0KDQpbPGMwMTc4Zjgw
-Pl0gKHBsYXRmb3JtX2RldmljZV9hZGQrMHgwLzB4MTU4KSBmcm9tIFs8YzAxNzkwZmM+XSAocGxh
-dGZvcm1fZGV2aWNlX3JlZ2lzdGVyKzB4MjQvMHgyOCkNCg0KIHI3ID0gMDAwMDAwMDAgIHI2ID0g
-QzA0QjgwMDAgIHI1ID0gQzAwMjE1RjggIHI0ID0gQzAyRUJFRTgNCg0KWzxjMDE3OTBkOD5dIChw
-bGF0Zm9ybV9kZXZpY2VfcmVnaXN0ZXIrMHgwLzB4MjgpIGZyb20gWzxjMDAxMDliOD5dIChteGNf
-aW5pdF9kZXZpY2VzKzB4YTAvMHhkOCkNCg0KIHI0ID0gQzAwMjFEODQgDQoNCls8YzAwMTA5MTg+
-XSAobXhjX2luaXRfZGV2aWNlcysweDAvMHhkOCkgZnJvbSBbPGMwMDI2MGM4Pl0gKGluaXQrMHg5
-Yy8weDI5MCkNCg0KWzxjMDAyNjAyYz5dIChpbml0KzB4MC8weDI5MCkgZnJvbSBbPGMwMDQ4NTY0
-Pl0gKGRvX2V4aXQrMHgwLzB4ODIwKQ0KDQogcjcgPSAwMDAwMDAwMCAgcjYgPSAwMDAwMDAwMCAg
-cjUgPSAwMDAwMDAwMCAgcjQgPSAwMDAwMDAwMA0KDQpVc2luZyBTRE1BIEkuQVBJDQoNCk1YQyBE
-TUEgQVBJIGluaXRpYWxpemVkDQoNCnVzYjogSG9zdCAxIHJlZ2lzdGVyZWQNCg0KdXNiOiBIb3N0
-IDIgcmVnaXN0ZXJlZA0KDQp1c2I6IE9URyBIUyBIb3N0IHJlZ2lzdGVyZWQNCg0KdXNiOiBPVEcg
-SFMgR2FkZ2V0IHJlZ2lzdGVyZWQNCg0KR2VuZXJpYyBQSFk6IFJlZ2lzdGVyZWQgbmV3IGRyaXZl
-cg0KDQpTQ1NJIHN1YnN5c3RlbSBpbml0aWFsaXplZA0KDQoNCg0Kc3BpX2FjdGl2ZSAxDQoNCkNT
-UEk6IG14Y19zcGktMiBwcm9iZWQNCg0KdXNiY29yZTogcmVnaXN0ZXJlZCBuZXcgaW50ZXJmYWNl
-IGRyaXZlciB1c2Jmcw0KDQp1c2Jjb3JlOiByZWdpc3RlcmVkIG5ldyBpbnRlcmZhY2UgZHJpdmVy
-IGh1Yg0KDQp1c2Jjb3JlOiByZWdpc3RlcmVkIG5ldyBkZXZpY2UgZHJpdmVyIHVzYg0KDQpNWEMg
-STJDIGRyaXZlcg0KDQptYzEzNzgzIFJldiAzLjMgRmluVmVyIDAgZGV0ZWN0ZWQNCg0KRGV2aWNl
-IHNwaTIuMCBwcm9iZWQNCg0KUE1JQyBDaGFyYWN0ZXIgZGV2aWNlOiBzdWNjZXNzZnVsbHkgbG9h
-ZGVkDQoNClBNSUMgUlRDIHN1Y2Nlc3NmdWxseSBwcm9iZWQNCg0KUE1JQyBMaWdodCBzdWNjZXNz
-ZnVsbHkgbG9hZGVkDQoNClBNSUMgUG93ZXIgc3VjY2Vzc2Z1bGx5IHByb2JlZA0KDQpORVQ6IFJl
-Z2lzdGVyZWQgcHJvdG9jb2wgZmFtaWx5IDINCg0KSVAgcm91dGUgY2FjaGUgaGFzaCB0YWJsZSBl
-bnRyaWVzOiAxMDI0IChvcmRlcjogMCwgNDA5NiBieXRlcykNCg0KVENQIGVzdGFibGlzaGVkIGhh
-c2ggdGFibGUgZW50cmllczogNDA5NiAob3JkZXI6IDIsIDE2Mzg0IGJ5dGVzKQ0KDQpUQ1AgYmlu
-ZCBoYXNoIHRhYmxlIGVudHJpZXM6IDIwNDggKG9yZGVyOiAxLCA4MTkyIGJ5dGVzKQ0KDQpUQ1A6
-IEhhc2ggdGFibGVzIGNvbmZpZ3VyZWQgKGVzdGFibGlzaGVkIDQwOTYgYmluZCAyMDQ4KQ0KDQpU
-Q1AgcmVubyByZWdpc3RlcmVkDQoNCkxvdy1MZXZlbCBQTSBEcml2ZXIgbW9kdWxlIGxvYWRlZA0K
-DQpGcmVlc2NhbGUgaS5NWDMxIER5bmFtaWMgUG93ZXIgTWFuYWdlbWVudC4NCg0KSS1waXBlOiBE
-b21haW4gWGVub21haSByZWdpc3RlcmVkLg0KDQpYZW5vbWFpOiBoYWwvYXJtIHN0YXJ0ZWQuDQoN
-Clhlbm9tYWk6IHJlYWwtdGltZSBudWNsZXVzIHYyLjQuNCAoTWFkZSBPZiBUZWFycykgbG9hZGVk
-Lg0KDQpYZW5vbWFpOiBzdGFydGluZyBuYXRpdmUgQVBJIHNlcnZpY2VzLg0KDQpYZW5vbWFpOiBz
-dGFydGluZyBQT1NJWCBzZXJ2aWNlcy4NCg0KWGVub21haTogc3RhcnRpbmcgUlRETSBzZXJ2aWNl
-cy4NCg0KSkZGUzIgdmVyc2lvbiAyLjIuIChOQU5EKSAoQykgMjAwMS0yMDA2IFJlZCBIYXQsIElu
-Yy4NCg0KaW8gc2NoZWR1bGVyIG5vb3AgcmVnaXN0ZXJlZA0KDQppbyBzY2hlZHVsZXIgYW50aWNp
-cGF0b3J5IHJlZ2lzdGVyZWQNCg0KaW8gc2NoZWR1bGVyIGRlYWRsaW5lIHJlZ2lzdGVyZWQNCg0K
-aW8gc2NoZWR1bGVyIGNmcSByZWdpc3RlcmVkIChkZWZhdWx0KQ0KDQpGUzQ1My80IGRyaXZlciwg
-KGMpIDIwMDUgRnJlZXNjYWxlIFNlbWljb25kdWN0b3IsIEluYy4NCg0KbXhjX2lwdSBteGNfaXB1
-OiBXYXJuaW5nOiBjaGFubmVsIGFscmVhZHkgaW5pdGlhbGl6ZWQNCg0KQ29uc29sZTogc3dpdGNo
-aW5nIHRvIGNvbG91ciBmcmFtZSBidWZmZXIgZGV2aWNlIDEwMHgzMA0KDQpteGNmYjogZmIgcmVn
-aXN0ZXJlZCwgdXNpbmcgbW9kZSBQcm9tYXRlLVdWR0ENCg0KUmVhbCBUSW1lIGNsb2NrIERyaXZl
-ciB2MS4wIA0KDQpNWEMgV2F0Y2hEb2cgRHJpdmVyIDIuMA0KDQpNWEMgV2F0Y2hkb2cgIyAwIFRp
-bWVyOiBpbml0aWFsIHRpbWVvdXQgNjAgc2VjDQoNClNlcmlhbDogTVhDIEludGVybmFsIFVBUlQg
-ZHJpdmVyDQoNCm14Y2ludHVhcnQuMDogdHR5bXhjMCBhdCBNTUlPIDB4NDNmOTAwMDAgKGlycSA9
-IDQ1KSBpcyBhIEZyZWVzY2FsZSBNWEMNCg0KbXhjaW50dWFydC4xOiB0dHlteGMxIGF0IE1NSU8g
-MHg0M2Y5NDAwMCAoaXJxID0gMzIpIGlzIGEgRnJlZXNjYWxlIE1YQw0KDQpteGNpbnR1YXJ0LjI6
-IHR0eW14YzIgYXQgTU1JTyAweDUwMDBjMDAwIChpcnEgPSAxOCkgaXMgYSBGcmVlc2NhbGUgTVhD
-DQoNCm14Y2ludHVhcnQuNDogdHR5bXhjNCBhdCBNTUlPIDB4NDNmYjQwMDAgKGlycSA9IDQ3KSBp
-cyBhIEZyZWVzY2FsZSBNWEMNCg0KUkFNRElTSyBkcml2ZXIgaW5pdGlhbGl6ZWQ6IDE2IFJBTSBk
-aXNrcyBvZiAxNjM4NEsgc2l6ZSAxMDI0IGJsb2Nrc2l6ZQ0KDQpsb29wOiBsb2FkZWQgKG1heCA4
-IGRldmljZXMpDQoNClNNU0MgTEFOODNDMTg1OiBSZWdpc3RlcmVkIG5ldyBkcml2ZXINCg0KY3M4
-OXgwOmNzODl4MF9wcm9iZSgweDApDQoNCmNzODl4MDogbm8gY3M4OTAwIG9yIGNzODkyMCBkZXRl
-Y3RlZC4gIEJlIHN1cmUgdG8gZGlzYWJsZSBQblAgd2l0aCBTRVRVUA0KDQpMaW51eCB2aWRlbyBj
-YXB0dXJlIGludGVyZmFjZTogdjIuMDANCg0KTVhDIFZpZGVvIE91dHB1dCBNWEMgVmlkZW8gT3V0
-cHV0LjA6IFJlZ2lzdGVyZWQgZGV2aWNlIHZpZGVvMTYNCg0KTVhDIE1URCBub3IgRHJpdmVyIDIu
-MA0KDQpteGNfbm9yX2ZsYXNoLjA6IEZvdW5kIDEgeDE2IGRldmljZXMgYXQgMHgwIGluIDE2LWJp
-dCBiYW5rDQoNClN1cHBvcnQgZm9yIGNvbW1hbmQgc2V0IDAwMDMgbm90IHByZXNlbnQNCg0KZ2Vu
-X3Byb2JlOiBObyBzdXBwb3J0ZWQgVmVuZG9yIENvbW1hbmQgU2V0IGZvdW5kDQoNCm14Y19ub3Jf
-Zmxhc2g6IHByb2JlIG9mIG14Y19ub3JfZmxhc2guMCBmYWlsZWQgd2l0aCBlcnJvciAtNQ0KDQpN
-WEMgTVREIG5hbmQgRHJpdmVyIDIuMA0KDQpOQU5EIGRldmljZTogTWFudWZhY3R1cmVyIElEOiAw
-eDIwLCBDaGlwIElEOiAweDc2IChTVCBNaWNybyBOQU5EIDY0TWlCIDMsM1YgOC1iaXQpDQoNClNj
-YW5uaW5nIGRldmljZSBmb3IgYmFkIGJsb2Nrcw0KDQpCYWQgZXJhc2VibG9jayA3OTMgYXQgMHgw
-MGM2NDAwMA0KDQpDcmVhdGluZyA0IE1URCBwYXJ0aXRpb25zIG9uICJOQU5EIDY0TWlCIDMsM1Yg
-OC1iaXQiOg0KDQoweDAwMDAwMDAwLTB4MDAyMDAwMDAgOiAibmFuZC5rZXJuZWwiDQoNCjB4MDAy
-MDAwMDAtMHgwNDAwMDAwMCA6ICJuYW5kLnJvb3RmcyINCg0KMHgwMDAwMDAwMC0weDA0MDAwMDAw
-IDogIjxOVUxMPiINCg0KMHgwMDAwMDAwMC0weDA0MDAwMDAwIDogIjxOVUxMPiINCg0KdXNibW9u
-OiBkZWJ1Z2ZzIGlzIG5vdCBhdmFpbGFibGUNCg0KSW5pdGlhbGl6aW5nIFVTQiBNYXNzIFN0b3Jh
-Z2UgZHJpdmVyLi4uDQoNCnVzYmNvcmU6IHJlZ2lzdGVyZWQgbmV3IGludGVyZmFjZSBkcml2ZXIg
-dXNiLXN0b3JhZ2UNCg0KVVNCIE1hc3MgU3RvcmFnZSBzdXBwb3J0IHJlZ2lzdGVyZWQuDQoNCk1Y
-QyBrZXlwYWQgbG9hZGVkDQoNCmlucHV0OiBteGNrcGQgYXMgL2NsYXNzL2lucHV0L2lucHV0MA0K
-DQppMmMgL2RldiBlbnRyaWVzIGRyaXZlcg0KDQpEcml2ZXIgZm9yIDEtd2lyZSBEYWxsYXMgbmV0
-d29yayBwcm90b2NvbC4NCg0KU2VyaWFsOiBNWEMgT1dpcmUgZHJpdmVyDQoNCklQVSBQb3N0LWZp
-bHRlciBsb2FkaW5nDQoNClNTSSBtb2R1bGUgbG9hZGVkIHN1Y2Nlc3NmdWxseQ0KDQpQTUlDIEF1
-ZGlvIGRyaXZlciBsb2FkaW5nLi4uDQoNClBNSUMgQmF0dGVyeSBzdWNjZXNzZnVsbHkgcHJvYmVk
-DQoNClBNSUMgQ29ubmVjdGl2aXR5IGRyaXZlciBsb2FkaW5nLi4NCg0KRFBUQyBjb250cm9sbGVy
-IGluaXRpYWxpemVkDQoNCkRWRlMgY29udHJvbGxlciBpbml0aWFsaXplZA0KDQpEVkZTIGZyZXF1
-ZW5jeSAjMDogNTMyMDAwMDAwDQoNCkRWRlMgZnJlcXVlbmN5ICMxOiAyNjYwMDAwMDANCg0KRFZG
-UyBmcmVxdWVuY3kgIzI6IDEzMzAwMDAwMA0KDQpEVkZTIGZyZXF1ZW5jeSAjMzogMTMzMDAwMDAw
-DQoNClJORyBEcml2ZXI6IExvYWRpbmcNCg0KU0VDOiBteGNfc2VjX21vZF9pbml0KCkgY2FsbGVk
-IA0KDQpNWEMgTU1DL1NEIGRyaXZlcg0KDQpteGNtY2ktMCBmb3VuZA0KDQpBZHZhbmNlZCBMaW51
-eCBTb3VuZCBBcmNoaXRlY3R1cmUgRHJpdmVyIFZlcnNpb24gMS4wLjEzIChUdWUgTm92IDI4IDE0
-OjA3OjI0IDIwMDYgVVRDKS4NCg0KQ29udHJvbCBBTFNBIGNvbXBvbmVudCByZWdpc3RlcmVkDQoN
-CkFMU0EgZGV2aWNlIGxpc3Q6DQoNCiAgIzA6IE1YQyBGcmVlc2NhbGUgd2l0aCBQTUlDDQoNCm9w
-cm9maWxlOiB1c2luZyBhcm0vYXJtMTENCg0KVENQIGN1YmljIHJlZ2lzdGVyZWQNCg0KTkVUOiBS
-ZWdpc3RlcmVkIHByb3RvY29sIGZhbWlseSAxDQoNCk5FVDogUmVnaXN0ZXJlZCBwcm90b2NvbCBm
-YW1pbHkgMTcNCg0KaWVlZTgwMjExOiA4MDIuMTEgZGF0YS9tYW5hZ2VtZW50L2NvbnRyb2wgc3Rh
-Y2ssIGdpdC0xLjEuMTMNCg0KaWVlZTgwMjExOiBDb3B5cmlnaHQgKEMpIDIwMDQtMjAwNSBJbnRl
-bCBDb3Jwb3JhdGlvbiA8amtldHJlbm9AbGludXguaW50ZWwuY29tPg0KDQpQb3dlciBNYW5hZ2Vt
-ZW50IGZvciBGcmVlc2NhbGUgTVgzMQ0KDQpWRlAgc3VwcG9ydCB2MC4zOiBpbXBsZW1lbnRvciA0
-MSBhcmNoaXRlY3R1cmUgMSBwYXJ0IDIwIHZhcmlhbnQgYiByZXYgMg0KDQppbnB1dDogbXhjX3Rz
-IGFzIC9jbGFzcy9pbnB1dC9pbnB1dDENCg0KbXhjIGlucHV0IHRvdWNoc2NyZWVuIGxvYWRlZA0K
-DQpldGgwOiBTTVNDOTExeC85MjF4IGlkZW50aWZpZWQgYXQgMHhjN2EwMDAwMCwgSVJROiA5MA0K
-DQpldGgwOiBTTVNDOTExeCBNQUMgQWRkcmVzczogMDA6MDg6ZWU6MDE6ZTI6NTcNCg0KZXRoMDog
-bGluayBkb3duDQoNClNlbmRpbmcgREhDUCByZXF1ZXN0cyAuPDY+ZXRoMDogbGluayB1cCwgMTAw
-TWJwcywgZnVsbC1kdXBsZXgsIGxwYSAweDQ1RTENCg0KLiwgT0sNCg0KSVAtQ29uZmlnOiBHb3Qg
-REhDUCBhbnN3ZXIgZnJvbSAwLjAuMC4wLCBteSBhZGRyZXNzIGlzIDE5Mi4xNjguMS4yMA0KDQpJ
-UC1Db25maWc6IENvbXBsZXRlOg0KDQogICAgICBkZXZpY2U9ZXRoMCwgYWRkcj0xOTIuMTY4LjEu
-MjAsIG1hc2s9MjU1LjI1NS4yNTUuMCwgZ3c9MTkyLjE2OC4xLjEwNSwNCg0KICAgICBob3N0PTE5
-Mi4xNjguMS4yMCwgZG9tYWluPWRldi5sb2NhbCwgbmlzLWRvbWFpbj0obm9uZSksDQoNCiAgICAg
-Ym9vdHNlcnZlcj0wLjAuMC4wLCByb290c2VydmVyPTE5Mi4xNjguMS4yNSwgcm9vdHBhdGg9DQoN
-Ckxvb2tpbmcgdXAgcG9ydCBvZiBSUEMgMTAwMDAzLzIgb24gMTkyLjE2OC4xLjI1DQoNCkxvb2tp
-bmcgdXAgcG9ydCBvZiBSUEMgMTAwMDA1LzEgb24gMTkyLjE2OC4xLjI1DQoNClZGUzogTW91bnRl
-ZCByb290IChuZnMgZmlsZXN5c3RlbSkuDQoNCkZyZWVpbmcgaW5pdCBtZW1vcnk6IDEyMEsNCg==
-
-------=_Part_25111_11587806.1221743661691--
+Did you try to follow the second advice in the "Tips and tricks" section ?
+-- 
+                                                 Gilles.
 
