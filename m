@@ -1,55 +1,187 @@
-Message-ID: <48C3F669.2020405@domain.hid>
-Date: Sun, 07 Sep 2008 17:42:33 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <48D2184F.3000009@domain.hid>
+Date: Thu, 18 Sep 2008 10:58:55 +0200
+From: Harco Kuppens <h.kuppens@domain.hid>
 MIME-Version: 1.0
-References: <785469.16674.qm@domain.hid>
-In-Reply-To: <785469.16674.qm@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Start Xenomai User-Space Task as Service
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <48CE8CE7.6030209@domain.hid> <48D177B1.7000009@domain.hid>
+In-Reply-To: <48D177B1.7000009@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="------------070504010208070101030906"
+Subject: Re: [Xenomai-help] keyboard interrupt
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: yasser_kashfi@domain.hid
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Yasser Kashfi wrote:
-> Hi everyone,
-> 
-> I have a problem with xenomai user-space task. I write a very simple
-> xenomai user-space task with one real-time thread, and try to start
-> it as service.
+This is a multi-part message in MIME format.
+--------------070504010208070101030906
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-What does "start as a service" mean?
+Hi Jan,
+
+Thank you for your answer! But I still have some things I do not really 
+understand.
+
+In Life with Adeos  
+<http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Life-with-Adeos-rev-B.pdf> 
+I read :
+
+    The stage of the pipeline occupied by any given domain can be
+    stalled, which means that
+    the next incoming interrupt will not be delivered to the domain's
+    handler, and will be
+    prevented from flowing down to the lowest priority domain(s) in the
+    same move. While a
+    stage is stalled, pending interrupts accumulate in the domain's
+    interrupt log, and
+    eventually get played when the stage is unstalled, by an internal
+    operation called
+    synchronization.
 
 
-> I do it properly. but when change this program with
-> another xenomai user-space task with 10 real-time threads and some
-> FIFO, queue, ... ; the task can not start and fail.
+and further on :
 
-What do you mean it fails? What function call returns what return value?
+    When a domain has finished processing all the pending interrupts it
+    has received, it then
+    calls a special Adeos service which yields the CPU to the next
+    domain down the pipeline,
+    so the latter can process in turn the pending events it has been
+    notified of, and this cycle
+    continues down to the lowest priority domain of the pipeline.
 
-> also this problem
-> appear when system reboot and try to stop this task.
 
-What problem? Obviously it is not the "service" which does not start,
-so, what is it ?
+So from reading this I would suspect that multiple IRQs could be 
+buffered (= interrupt log) between Xenomai and Linux so that Xenomai can 
+finish it realtime jobs. Only when xenomai is done with its jobs the 
+IRQs from the buffer are passed  to Linux
+But from your answer I suspect that it only holds for different IRQs, 
+and when an IRQ X is on the pipeline not another newer IRQ X can over 
+the pipeline until the first one is dealed with.
+Thus when the 'end-of-IRQ' signal is given.
+Who however gives this 'end-of-IRQ' signal? linux or the pipeline?
+What exactly is this 'end-of-IRQ'  signal? 
+Because interrupt are virtualized in the pipeline I would suspect  this 
+is something used in the pipeline?
 
-> although when
-> system is up and I run (service my-service [start/stop]) it work
-> without any problem.
-> 
-> I glad to see your comments. Best regards.
 
-To really help you we need more than this mail. The program which fails,
-any log, any oops ?
 
--- 
-					    Gilles.
+> IRQ sharing between deterministic and non-deterministic code (here:
+> Xenomai and vanilla Linux) will never work, that's an inherent design
+> issue, nothing Xenomai or ipipe-specific.
+>
+>   
+with inherent design, I would guess you mean the intel hardware design I 
+suppose?
+but than I would suspect that the 'end-of-IRQ' signal is something in 
+the hardware
+
+please help me out this world of confusion :)
+
+cheers
+Harco
+> Jan
+>
+>   
+
+
+--------------070504010208070101030906
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+Hi Jan,<br>
+<br>
+Thank you for your answer! But I still have some things I do not really
+understand.<br>
+<br>
+In <a
+ href="http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Life-with-Adeos-rev-B.pdf"
+ class="external text"
+ title="http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Life-with-Adeos-rev-B.pdf"
+ rel="nofollow">Life with Adeos&nbsp;</a><span class="ft4"> I read :<br>
+<br>
+</span>
+<blockquote><span class="ft4">The stage of the pipeline occupied by any
+given domain can be stalled, which means that</span><br>
+  <span class="ft4">the next incoming interrupt will not be delivered
+to the domain's handler, and will be</span><br>
+  <span class="ft4">prevented from flowing down to the lowest priority
+domain(s) in the same move. While a</span><br>
+  <span class="ft4">stage is stalled, pending interrupts accumulate in
+the domain's interrupt log, and</span><br>
+  <span class="ft4">eventually get played when the stage is unstalled,
+by an internal operation called</span><br>
+  <span class="ft4">synchronization.<br>
+  <br>
+  </span></blockquote>
+<span class="ft4"></span><br>
+<span class="ft4"></span>and further on :<br>
+<br>
+<blockquote><span class="ft4">When a domain has finished processing all
+the pending interrupts it has received, it then</span><br>
+  <span class="ft4">calls a special Adeos service which yields the CPU
+to the next domain
+down the pipeline,</span><br>
+  <span class="ft4">so the latter can process in turn the pending
+events it has been
+notified of, and this cycle</span><br>
+  <span class="ft4"> </span><span class="ft6">continues down to the
+lowest priority domain
+of the pipeline.</span><br>
+  <span class="ft6"></span></blockquote>
+<span class="ft6"> </span><br>
+So from reading this I would suspect that multiple IRQs could be
+buffered (=<span class="ft4"> interrupt log)</span> between Xenomai and
+Linux so that Xenomai can finish it realtime jobs. Only when xenomai is
+done with its jobs the IRQs from the buffer are passed&nbsp; to Linux<br>
+But from your answer I suspect that it only holds for different IRQs,
+and when an IRQ X is on the pipeline not another newer IRQ X can over
+the pipeline until the first one is dealed with.<br>
+Thus when the 'end-of-IRQ' signal is given. <br>
+Who however gives this 'end-of-IRQ' signal? linux or the pipeline?<br>
+What exactly is this 'end-of-IRQ'&nbsp; signal?&nbsp; <br>
+Because interrupt are virtualized in the pipeline I would suspect&nbsp; this
+is something used in the pipeline?<br>
+<br>
+<br>
+<br>
+<blockquote cite="mid:48D177B1.7000009@domain.hid" type="cite">
+  <pre wrap="">
+IRQ sharing between deterministic and non-deterministic code (here:
+Xenomai and vanilla Linux) will never work, that's an inherent design
+issue, nothing Xenomai or ipipe-specific.
+
+  </pre>
+</blockquote>
+with inherent design, I would guess you mean the intel hardware design
+I suppose?<br>
+but than I would suspect that the 'end-of-IRQ' signal is something in
+the hardware <br>
+<br>
+please help me out this world of confusion :)<br>
+<br>
+cheers<br>
+Harco<br>
+<blockquote cite="mid:48D177B1.7000009@domain.hid" type="cite">
+  <pre wrap="">Jan
+
+  </pre>
+</blockquote>
+<br>
+</body>
+</html>
+
+--------------070504010208070101030906--
 
