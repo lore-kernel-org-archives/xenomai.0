@@ -1,5 +1,5 @@
-Message-ID: <48D25507.3060102@domain.hid>
-Date: Thu, 18 Sep 2008 15:17:59 +0200
+Message-ID: <48D255E0.7000603@domain.hid>
+Date: Thu, 18 Sep 2008 15:21:36 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <mailman.1448.1221743175.22433.adeos-main@gna.org>
@@ -28,8 +28,17 @@ Hank wrote:
 > 2.6.19.2 and have implemented required machine specific code. Everything
 > went smooth and after fixing a few bugs, kernel booted but with a problem -
 > init doesn't complete. Following are last few kernel boot log messages:
+> 
+> 
+> Looking up port of RPC 100003/2 on 192.168.1.25
+> Looking up port of RPC 100005/1 on 192.168.1.25
+> VFS: Mounted root (nfs filesystem).
+> Freeing init memory: 120K
 
-Did you try to follow the second advice in the "Tips and tricks" section ?
+Since you are booting via NFS, wireshark may help ?
+
+Do you have the same problem if you disable support for VFP ?
+
 -- 
                                                  Gilles.
 
