@@ -1,13 +1,12 @@
-Message-ID: <48D3C364.2000204@domain.hid>
-Date: Fri, 19 Sep 2008 17:21:08 +0200
+Message-ID: <48D3D3A9.5030504@domain.hid>
+Date: Fri, 19 Sep 2008 18:30:33 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <7ed3bc8b0809171347j6744978ck69959990435942ea@domain.hid>		<48D176F0.7060805@domain.hid>	<7ed3bc8b0809181700qdcaa43dpd78d020b13afe306@domain.hid>	<48D34A49.5090202@domain.hid>
-	<48D34D46.7050207@domain.hid>
-In-Reply-To: <48D34D46.7050207@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+References: <48D3A531.6090302@domain.hid>
+In-Reply-To: <48D3A531.6090302@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai IRQ Disable
+Subject: Re: [Xenomai-help] Scilab/Scicos code generator for Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,41 +16,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stuart O Anderson <soa@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Claudio Scordino <claudio@domain.hid>
+Cc: simone.mannori@domain.hid, xenomai@xenomai.org, Roberto Bucher <roberto.bucher@domain.hid>, paolo gai <pj@domain.hid>, bruno@domain.hid
 
-Jan Kiszka wrote:
-> Jan Kiszka wrote:
->> Stuart O Anderson wrote:
->>> Oh - I forgot to mention - when I boot the machine, about 50% of the
->>> time it comes up with the keyboard and mouse locked by the time it
->>> gets to a login screen.  The rest of the time it's fine until I run my
->>> rtnet program.  I suspect this is because some interrupt is randomly
->>> getting assigned on boot to one processor or the other, and when it's
->>> the wrong one things break?
+Claudio Scordino wrote:
+> Dear all,
+> 
+> My name is Claudio Scordino from Evidence 
+> (http://www.evidence.eu.com). In collaboration with the Scilab Group 
+> Digiteo (previously INRIA Roquencourt), and SUPSI Lugano, we developed 
+> a software integration between the following software packages:
+> 
+> - the Xenomai environment with the POSIX skin
+> - the Scilab/Scicos code generator
+> - a modified version of CANFestival
+> 
+> The result is now that we can use the Scilab/Scicos code generator to 
+> automatically generate application code for Xenomai!
 
-That's why I would like to make things more deterministic by freezing
-the cpu affinity. Also, if the issue is a race between cpus, one could
-narrow it down a bit by pushing all Xenomai load on one cpu e.g.
+Cool.
 
->>>
->>> ipipe version: 2.0-08
->>> kernel config: attached
->>> varying versions: will try this when I have more time
->>> playing with affinities: I'm trying to find documentation for
->>> /proc/xenomai/affinity - do you know where it is located?
->> Don't think we have any, however the usage is straightforward: This is a
->> bitmask describing the CPUs on which Xenomai threads and IRQs that will
->> be created in the future shall be bound to. Just set it before firing up
->> RTnet and your application.
->>
->> BTW, I found a hint on an "IRQ19 issue" in my archive, but I still need
->> to interview my colleague on details.
+> 
+> We believe that this opens new possibilities for the usage of Xenomai 
+> in industrial applications, especially when these tools are used to 
+> implement control algorithms, fast prototyping systems and hardware in 
+> the loop simulations... all made using free open source tools!
 
-We had such an issue with a SCSI RAID controller. Even after deep
-debugging inside ipipe, the problem looked like a race during hardware
-initialization and finally disappeared after reconfiguring the SCSI
-controller's firmware. So we closed the issue.
+Even cooler. ;)
+
+> 
+> We also developed a set of custom Scicos blocks that integrates with 
+> CANFestival for sending CANopen commands to control remote I/Os 
+> peripherals. These blocks can be inserted inside Scicos designs, and 
+> the generated code will control directly the remote peripheral.
+
+I browsed your pages a few days ago and found some CAN driver patch.
+Maybe you want to submit a polished :) version for inclusion into
+mainline - so that your users don't have to patch Xenomai for this.
+
+> 
+> In addition, we implemented a set of blocks which make available a UDP 
+> connection to exchange data between the Xenomai target and a Scilab 
+> simulation running on the PC. This allows, for example, remote display 
+> of data, as well as communication and data exhange for hardware in the 
+> loop, monitoring and remote control.
+> 
+> If interested, the following links contain some description of the 
+> project, as well as source code to download, and a wiki page with 
+> installing instructions.
+> 
+> - http://www.evidence.eu.com/content/view/301/388/ - Xenomai and 
+> Scilab/Scicos for Industrial COTS PC and remote CANopen I/O
+> 
+> - http://www.evidence.eu.com/content/view/175/216 - Scilab/Scicos code 
+> generator for FLEX and Xenomai
+> 
+> We added these links to our Wiki too in the "Embedded Linux" section.
+
+I think a link from the Xenomai wiki to your project would be
+appropriate as well.
+
+BTW, did you already have a look at the recently merged COMEDI-over-RTDM
+framework (2.5-SVN)? Do you plan to add support for it as well?
 
 Jan
 
