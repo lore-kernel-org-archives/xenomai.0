@@ -1,10 +1,11 @@
-Message-ID: <48D6A80F.1080206@domain.hid>
-Date: Sun, 21 Sep 2008 22:01:19 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Sun, 21 Sep 2008 22:26:13 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Handle SIGILL when kernel compiled without Xenomai.
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_m3q1IvyCGJ0tDYw"
+Message-Id: <200809212226.14177.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] xenomai-solo-vxWorks: Calling semGive twice on a
+	binary semaphore should not return an error
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,122 +17,119 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai-core <xenomai@xenomai.org>
 
+--Boundary-00=_m3q1IvyCGJ0tDYw
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Hi,
+Hi
 
-on some (all ?) platforms, we get a SIGILL when trying to emit the first 
-Xenomai syscall, instead of the -ENOSYS return value. This patches 
-handles the SIGILL by printing an error message and exiting.
+Examining errors in my big testsuite I discovered that giving a second
+time a binary semaphore xenomai returns an error where vxWorks reports OK.
 
-Index: include/asm-generic/bits/bind.h
-===================================================================
---- include/asm-generic/bits/bind.h	(revision 4175)
-+++ include/asm-generic/bits/bind.h	(working copy)
-@@ -9,6 +9,7 @@
- #include <signal.h>
- #include <pthread.h>
- #include <fcntl.h>
-+#include <setjmp.h>
- #include <sys/ioctl.h>
- #include <sys/mman.h>
- #include <asm/xenomai/syscall.h>
-@@ -17,6 +18,8 @@ __attribute__ ((weak))
- pthread_key_t xeno_current_key;
- __attribute__ ((weak))
- pthread_once_t xeno_init_current_key_once = PTHREAD_ONCE_INIT;
-+__attribute__ ((weak))
-+jmp_buf xeno_sigill_jmpbuf;
- 
- __attribute__ ((weak))
- void xeno_set_current(void)
-@@ -99,13 +102,28 @@ static void unmap_sem_heap(unsigned long
- }
- #endif /* CONFIG_XENO_FASTSEM */
- 
-+void __attribute__((weak)) xeno_sigill_handler(int sig)
-+{
-+	siglongjmp(xeno_sigill_jmpbuf, 1);
-+}
-+
- static inline int
- xeno_bind_skin(unsigned skin_magic, const char *skin, const char *module)
- {
-+	sighandler_t old_sigill_handler;
- 	struct sigaction sa;
- 	xnfeatinfo_t finfo;
- 	int muxid;
- 
-+	old_sigill_handler = signal(SIGILL, xeno_sigill_handler);
-+	if (old_sigill_handler == SIG_ERR) {
-+		perror("signal(SIGILL)");
-+		exit(1);
-+	}
-+
-+	if (sigsetjmp(xeno_sigill_jmpbuf, 1))
-+		goto enosys;
-+
- 	muxid = XENOMAI_SYSBIND(skin_magic,
- 				XENOMAI_FEAT_DEP, XENOMAI_ABI_REV, &finfo);
- 	switch (muxid) {
-@@ -126,7 +144,7 @@ xeno_bind_skin(unsigned skin_magic, cons
- 
- 	case -ENOSYS:
- 	case -ESRCH:
--
-+	enosys:
- 		fprintf(stderr,
- 			"Xenomai: %s skin or CONFIG_XENO_OPT_PERVASIVE disabled.\n"
- 			"(modprobe %s?)\n", skin, module);
-@@ -139,6 +157,8 @@ xeno_bind_skin(unsigned skin_magic, cons
- 		exit(1);
- 	}
- 
-+	signal(SIGILL, old_sigill_handler);
-+
- #ifdef xeno_arch_features_check
- 	xeno_arch_features_check();
- #endif /* xeno_arch_features_check */
-@@ -180,9 +200,19 @@ xeno_bind_skin(unsigned skin_magic, cons
- static inline int
- xeno_bind_skin_opt(unsigned skin_magic, const char *skin, const char *module)
- {
-+	sighandler_t old_sigill_handler;
- 	xnfeatinfo_t finfo;
- 	int muxid;
- 
-+	old_sigill_handler = signal(SIGILL, xeno_sigill_handler);
-+	if (old_sigill_handler == SIG_ERR) {
-+		perror("signal(SIGILL)");
-+		exit(1);
-+	}
-+
-+	if (sigsetjmp(xeno_sigill_jmpbuf, 1))
-+		goto enosys;
-+
- 	muxid = XENOMAI_SYSBIND(skin_magic,
- 				XENOMAI_FEAT_DEP, XENOMAI_ABI_REV, &finfo);
- 	switch (muxid) {
-@@ -203,7 +233,7 @@ xeno_bind_skin_opt(unsigned skin_magic, 
- 
- 	case -ENOSYS:
- 	case -ESRCH:
--
-+	enosys:
- 		return -1;
- 	}
- 
-@@ -213,6 +243,8 @@ xeno_bind_skin_opt(unsigned skin_magic, 
- 		exit(1);
- 	}
- 
-+	signal(SIGILL, old_sigill_handler);
-+
- #ifdef xeno_arch_features_check
- 	xeno_arch_features_check();
- #endif /* xeno_arch_features_check */
+See the attached test case.
+> sudo  ../../bin/BSys/mak/xeno_vx-solo/debug/tst
+> assert passed at testTask line 65
+> assert passed at testTask line 66
+> assert failed at testTask line 67
+> testTask done
+> Xenomai/SOLO: failed to remove registry mount point /mnt/xenomai/4569
+> (errno=16)
 
-
+Best regards
 
 -- 
-					    Gilles.
+NIklaus Giger
+
+
+--Boundary-00=_m3q1IvyCGJ0tDYw
+Content-Type: text/x-c++src;
+  charset="us-ascii";
+  name="tst_main.cpp"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="tst_main.cpp"
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+
+#define assert(cond) \
+  if (!cond) printf("assert failed at %s line %d\n", __FUNCTION__, __LINE__); \
+  else  printf("assert passed at %s line %d\n", __FUNCTION__, __LINE__);
+
+
+#if defined(__SOLO__) || defined(_WRS_VXWORKS_MAJOR)
+// #include <vxWorks.h>
+#include <semLib.h>
+#include <taskLib.h>
+#include <tickLib.h>
+#include <kernelLib.h>
+#include <errnoLib.h>
+
+void testTask(long a1, long a2, long a3, long a4, long a5,
+	long a6, long a7, long a8, long a9, long a10);
+bool finished;
+
+  extern "C" void task1(long int, long int, long int, long int, long int, long int, long int, long int, long int, long int)
+  {
+	assert(1);
+	taskDelay(30);	
+	assert(2);
+	finished = true;
+  }
+
+#endif
+
+/**
+ *  Main functions
+ */
+#if defined(PLAT_VXWORKS) || defined(_WRS_VXWORKS_MAJOR)
+  extern "C" int tSysMain(const char* arg)
+  {
+    const char* argv[2];
+    argv[0]  = "undefined";
+    argv[1]  = arg;
+    int argc = sizeof(argv) / sizeof(char*);
+#else
+
+  int main(int argc, char *const argv[])
+  {
+#endif
+
+#ifdef __SOLO__
+
+    kernelInit(testTask, argc, argv);
+    while(!finished) { sleep(1); }
+    exit(0);
+}
+
+void testTask(long a1, long a2, long a3, long a4, long a5,
+	long a6, long a7, long a8, long a9, long a10)
+{
+   int argc=0; char *const argv[]={0};
+#endif
+
+   // Initialisierung
+   SEM_ID testBSem1 = semBCreate (0, SEM_EMPTY);
+
+   assert(semTake(testBSem1, 10) == ERROR);  // Empty
+   assert(semGive(testBSem1) == OK);
+   assert(semGive(testBSem1) == OK);    // wie VxWorks
+
+  printf("%s done\n", __FUNCTION__);
+#ifdef __SOLO__
+  finished = true;
+  return;
+#else
+  return 0;
+#endif
+}
+
+
+//  ___________________________________________________________________________
+
+--Boundary-00=_m3q1IvyCGJ0tDYw--
 
