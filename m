@@ -1,22 +1,12 @@
-Message-ID: <48D27AA4.2040509@domain.hid>
-Date: Thu, 18 Sep 2008 17:58:28 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <48D61DDE.4060605@domain.hid>
+Date: Sun, 21 Sep 2008 12:11:42 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <mailman.1448.1221743175.22433.adeos-main@gna.org>	
-	<217b7eb20809180614u28d04ef8vc63fadb0b7db1ae9@domain.hid>	
-	<48D255E0.7000603@domain.hid>	
-	<217b7eb20809180722w423f78b2qb4d7db0bfb248953@domain.hid>	
-	<48D264B6.6080504@domain.hid>	
-	<217b7eb20809180807j9bf19ecnb43d69355d2e4ff6@domain.hid>	
-	<48D26F8F.8030401@domain.hid>	
-	<217b7eb20809180817p15cb4161o8ef6482fe835f143@domain.hid>	
-	<48D272B9.2080304@domain.hid>
-	<217b7eb20809180855r77889497y9e599c525bc4f6a8@domain.hid>
-In-Reply-To: <217b7eb20809180855r77889497y9e599c525bc4f6a8@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] adeos-ipipe-2.6.19-arm-1.7-00 on iMX31: init
- doesn't complete!
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig34BA5FC9D931267DEC2CDCBA"
+Sender: jan.kiszka@domain.hid
+Subject: [Adeos-main] [PATCH] Detect leaking stalls of topmost domain - v2
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -25,49 +15,207 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Hank <hank007@domain.hid>
-Cc: adeos-main@gna.org
+To: adeos-main <adeos-main@gna.org>
 
-Hank wrote:
-> On 9/18/08, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
->> Hank wrote:
->>> On 9/18/08, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->> wrote:
->>>> Hank wrote:
->>>>> Well, some of the tricks helped during initial stages but other don't
->>>> seem
->>>>> to apply now as there is no crash here!
->>>> Oh yes ? Are you sure the timer is ticking correctly ?
->>>>
->>>> --
->>>>                                                 Gilles.
->>>
->>> Yes. Also, forced it to a soft lockup crash in ret_to_user() and trace
->>> showed timer interrupt ticking and updating process timers all the way
->> up!
->>
->> I am afraid I can not help much. The patch you use is too old, I fixed
->> some bugs recently in the traps interception code which should lead to a
->> clear crash instead of some lockup. I also added support for VFP.
->>
->> So, do you observe the same phenomenon with a vanilla 2.6.26 and the
->> latest patch (AFAIK Litekit is supported by mainline) ?
->>
->> I also suspect a bug when using Xenomai with NO_HZ on ARM. So, you may
->> try to disable NO_HZ.
->>
->> --
->>                                                 Gilles.
-> 
-> 
-> Thanks Gilles. Well, looks like your suspicions about VFP were right! I
-> certainly didn't test it recently without VFP. It just booted to shell after
-> disabling VFP.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig34BA5FC9D931267DEC2CDCBA
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Ok. If you intend to use VFP, you have to use the latest version of
-Xenomai (not released yet), and the latest I-pipe patch. Otherwise, you
-will run into problems.
+Here comes an improved version of my debugging helper for leaking
+top-most domain stalls. This version is now also NMI-safe, no longer
+causing false positives from this context.
 
--- 
-                                                 Gilles.
+The instrumentation can detect infamous bug pattern like this:
+
+function()
+{
+	stall_topmost_domain();
+	...
+	if (condition)
+		return;
+	...
+	unstall_topmost_domain();
+}
+
+The result is often a locked-up system, specifically the root domain no
+longer receives IRQs. Unless you find the bug quickly by code
+inspection, debugging/instrumenting can take quite some time.
+
+Also, this patch can help with these patterns:
+
+	stall_topmost_domain();
+	...
+	blocking_or_rescheduling_in_lowprio_domain();
+	...
+	unstall_topmost_domain();
+
+One example of this was just fixed in Xenomai's cleanup code.
+
+To catch such issues earlier, I therefore propose the following
+extension of ipipe_check_context. It is based on the assumption that the
+topmost domain should never be stalled when lower domains execute that
+check. This specifically takes care of not breaking Xenomai's IRQ shield
+(a mid-prio domain that intentionally blocks Linux IRQs).
+
+
+---
+ include/linux/hardirq.h      |   19 +++++++++++++++++--
+ include/linux/ipipe.h        |   20 ++++++++++++++++++++
+ include/linux/ipipe_percpu.h |    1 +
+ kernel/ipipe/core.c          |   21 ++++++++++++++++-----
+ 4 files changed, 54 insertions(+), 7 deletions(-)
+
+Index: b/kernel/ipipe/core.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/kernel/ipipe/core.c
++++ b/kernel/ipipe/core.c
+@@ -1561,13 +1561,16 @@ void __init ipipe_init_proc(void)
+ #ifdef CONFIG_IPIPE_DEBUG_CONTEXT
+=20
+ DEFINE_PER_CPU(int, ipipe_percpu_context_check) =3D { 1 };
++DEFINE_PER_CPU(int, ipipe_saved_context_check_state);
+=20
+ void ipipe_check_context(struct ipipe_domain *border_ipd)
+ {
+ 	/* Note: We don't make the per_cpu access atomic. We assume that code
+ 	   which temporarily disables the check does this in atomic context
+ 	   only. */
+-	if (likely(ipipe_current_domain->priority <=3D border_ipd->priority) ||=
+
++	if (likely(ipipe_current_domain->priority <=3D border_ipd->priority &&
++		   !test_bit(IPIPE_STALL_FLAG,
++			     &ipipe_head_cpudom_var(status))) ||
+ 	    !per_cpu(ipipe_percpu_context_check, ipipe_processor_id()))
+ 		return;
+=20
+@@ -1575,10 +1578,18 @@ void ipipe_check_context(struct ipipe_do
+=20
+ 	ipipe_trace_panic_freeze();
+ 	ipipe_set_printk_sync(ipipe_current_domain);
+-	printk(KERN_ERR "I-pipe: Detected illicit call from domain '%s'\n"
+-	       KERN_ERR "        into a service reserved for domain '%s' and "
+-			"below.\n",
+-	       ipipe_current_domain->name, border_ipd->name);
++
++	if (ipipe_current_domain->priority > border_ipd->priority)
++		printk(KERN_ERR "I-pipe: Detected illicit call from domain "
++				"'%s'\n"
++		       KERN_ERR "        into a service reserved for domain "
++				"'%s' and below.\n",
++		       ipipe_current_domain->name, border_ipd->name);
++	else
++		printk(KERN_ERR "I-pipe: Detected stalled topmost domain, "
++				"probably caused by a bug.\n"
++				"        A critical section may have been "
++				"left unterminated.\n");
+ 	dump_stack();
+ 	ipipe_trace_panic_dump();
+ }
+Index: b/include/linux/hardirq.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/include/linux/hardirq.h
++++ b/include/linux/hardirq.h
+@@ -161,7 +161,22 @@ extern void irq_enter(void);
+  */
+ extern void irq_exit(void);
+=20
+-#define nmi_enter()		do { if (ipipe_root_domain_p) { lockdep_off(); __ir=
+q_enter(); } } while (0)
+-#define nmi_exit()		do { if (ipipe_root_domain_p) { __irq_exit(); lockde=
+p_on(); } } while (0)
++#define nmi_enter() 					\
++	do {						\
++		ipipe_nmi_enter();			\
++		if (ipipe_root_domain_p) {		\
++			lockdep_off();			\
++			__irq_enter();			\
++		}					\
++	} while (0)
++
++#define nmi_exit()					\
++	do {						\
++		if (ipipe_root_domain_p) {		\
++			__irq_exit();			\
++			lockdep_on();			\
++		}					\
++		ipipe_nmi_exit();			\
++	} while (0)
+=20
+ #endif /* LINUX_HARDIRQ_H */
+Index: b/include/linux/ipipe.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/include/linux/ipipe.h
++++ b/include/linux/ipipe.h
+@@ -566,6 +566,22 @@ static inline void ipipe_context_check_o
+ 		per_cpu(ipipe_percpu_context_check, cpu) =3D 0;
+ }
+=20
++static inline void ipipe_nmi_enter(void)
++{
++	int cpu =3D ipipe_processor_id();
++
++	per_cpu(ipipe_saved_context_check_state, cpu) =3D
++		ipipe_disable_context_check(cpu);
++}
++
++static inline void ipipe_nmi_exit(void)
++{
++	int cpu =3D ipipe_processor_id();
++
++	ipipe_restore_context_check
++		(cpu, per_cpu(ipipe_saved_context_check_state, cpu));
++}
++
+ #else	/* !CONFIG_IPIPE_DEBUG_CONTEXT */
+=20
+ static inline int ipipe_disable_context_check(int cpu)
+@@ -577,6 +593,10 @@ static inline void ipipe_restore_context
+=20
+ static inline void ipipe_context_check_off(void) { }
+=20
++static inline void ipipe_nmi_enter(void) { }
++
++static inline void ipipe_nmi_exit(void) { }
++
+ #endif	/* !CONFIG_IPIPE_DEBUG_CONTEXT */
+=20
+ #endif	/* !__LINUX_IPIPE_H */
+Index: b/include/linux/ipipe_percpu.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/include/linux/ipipe_percpu.h
++++ b/include/linux/ipipe_percpu.h
+@@ -58,6 +58,7 @@ DECLARE_PER_CPU(struct ipipe_domain *, i
+=20
+ #ifdef CONFIG_IPIPE_DEBUG_CONTEXT
+ DECLARE_PER_CPU(int, ipipe_percpu_context_check);
++DECLARE_PER_CPU(int, ipipe_saved_context_check_state);
+ #endif
+=20
+ #define ipipe_percpu(var, cpu)		per_cpu(var, cpu)
+
+
+--------------enig34BA5FC9D931267DEC2CDCBA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkjWHeEACgkQniDOoMHTA+kn8ACeKthzmWh+/BlZS2tgmkrm+5jy
+rHQAnjdHBkjQutY3Fixkej0fCc3TtIO5
+=4p3L
+-----END PGP SIGNATURE-----
+
+--------------enig34BA5FC9D931267DEC2CDCBA--
 
