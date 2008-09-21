@@ -1,12 +1,12 @@
-Message-ID: <48D68E02.2090106@domain.hid>
-Date: Sun, 21 Sep 2008 20:10:10 +0200
+Message-ID: <48D68EF5.7010903@domain.hid>
+Date: Sun, 21 Sep 2008 20:14:13 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <0B45E93C5FF65740AEAE690BF3848B7AD38364@domain.hid>
-In-Reply-To: <0B45E93C5FF65740AEAE690BF3848B7AD38364@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <48B7984D.8060402@domain.hid>
+In-Reply-To: <48B7984D.8060402@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] native rt_timer questions
+Subject: Re: [Xenomai-core] [PATCH] Fix rt_mutex_acquire_until doc
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,21 +16,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Fillod Stephane <stephane.fillod@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai-core@domain.hid
 
-Fillod Stephane wrote:
-> The native rt_timer functions are documented in two locations:
-> http://www.xenomai.org/documentation/branches/v2.4.x/html/api/include_2n
-> ative_2timer_8h.html
-> http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__nat
-> ive__timer.html
-> 
-> Could they be gathered, maybe with the here below patch (untested, no
-> doxy expert):
+Jan Kiszka wrote:
+> Copy&paste error?
+> (Note that diff misses the context, it's rt_mutex_acquire_until.)
 
-Fixed, thanks ! But your MUA mangles patches (by adding newlines), so,
-you should rather send them as attachments.
+This one is already applied, right ?
 
 -- 
 					    Gilles.
