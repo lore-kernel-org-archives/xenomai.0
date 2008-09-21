@@ -1,11 +1,11 @@
 From: Niklaus Giger <niklaus.giger@domain.hid>
-Date: Sun, 21 Sep 2008 22:26:13 +0200
+Date: Sun, 21 Sep 2008 22:34:06 +0200
 MIME-Version: 1.0
 Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_m3q1IvyCGJ0tDYw"
-Message-Id: <200809212226.14177.niklaus.giger@domain.hid>
-Subject: [Xenomai-core] xenomai-solo-vxWorks: Calling semGive twice on a
-	binary semaphore should not return an error
+  boundary="Boundary-00=_++q1IowGQNaujNT"
+Message-Id: <200809212234.06587.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] xenomai-solo vxWorks: know whether a task is safe or
+	not
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,7 +17,7 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai-core <xenomai@xenomai.org>
 
---Boundary-00=_m3q1IvyCGJ0tDYw
+--Boundary-00=_++q1IowGQNaujNT
 Content-Type: text/plain;
   charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -25,17 +25,14 @@ Content-Disposition: inline
 
 Hi
 
-Examining errors in my big testsuite I discovered that giving a second
-time a binary semaphore xenomai returns an error where vxWorks reports OK.
+For various reasons we were forced to examine under vxWorks 5.5 the private
+WIND_TCB safeCnt field to determine whether a task was "safe" or not.
 
-See the attached test case.
-> sudo  ../../bin/BSys/mak/xeno_vx-solo/debug/tst
-> assert passed at testTask line 65
-> assert passed at testTask line 66
-> assert failed at testTask line 67
-> testTask done
-> Xenomai/SOLO: failed to remove registry mount point /mnt/xenomai/4569
-> (errno=16)
+With the attached patch I try to add a taskIsSafe procedure to xenomai-solo.
+It is probably not free from race condition, as I do not know how to access
+a pthread_mutex.
+
+Would such (may be improved) patch find its way into the "official" trunk?
 
 Best regards
 
@@ -43,93 +40,77 @@ Best regards
 NIklaus Giger
 
 
---Boundary-00=_m3q1IvyCGJ0tDYw
-Content-Type: text/x-c++src;
+--Boundary-00=_++q1IowGQNaujNT
+Content-Type: text/x-patch;
   charset="us-ascii";
-  name="tst_main.cpp"
+  name="taskIsSafe.diff"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: attachment;
-	filename="tst_main.cpp"
+	filename="taskIsSafe.diff"
 
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
+diff --git a/include/vxworks/taskInfo.h b/include/vxworks/taskInfo.h
+index 61315d5..27b3cc6 100644
+--- a/include/vxworks/taskInfo.h
++++ b/include/vxworks/taskInfo.h
+@@ -50,6 +50,8 @@ TASK_ID taskNameToId(const char *name);
+ 
+ TASK_ID taskIdDefault(TASK_ID task_id);
+     
++BOOL taskIsSafe(TASK_ID task_id);
++
+ BOOL taskIsReady(TASK_ID task_id);
+ 
+ BOOL taskIsSuspended (TASK_ID task_id);
+diff --git a/vxworks/taskLib.c b/vxworks/taskLib.c
+index f6253b2..7dd52ae 100644
+--- a/vxworks/taskLib.c
++++ b/vxworks/taskLib.c
+@@ -595,7 +595,7 @@ STATUS taskSafe(void)
+ 	}
+ 
+ 	pthread_mutex_lock(&current->safelock);
+-
++	current->safeCnt = 1;
+ 	return OK;
+ }
+ 
+@@ -615,11 +615,24 @@ STATUS taskUnsafe(void)
+ 		return ERROR;
+ 	}
+ 
++	current->safeCnt = 0;
+ 	pthread_mutex_unlock(&current->safelock);
+ 
+ 	return OK;
+ }
+ 
++BOOL taskIsSafe(TASK_ID tid)
++{
++	struct wind_task *task = find_wind_task(tid);
++
++	if (task == NULL) {
++		errno = S_objLib_OBJ_ID_ERROR;
++		return ERROR;
++	}
++
++	return (task->safeCnt > 0);
++}
++
+ STATUS taskIdVerify(TASK_ID tid)
+ {
+ 	struct wind_task *task = find_wind_task(tid);
+diff --git a/vxworks/taskLib.h b/vxworks/taskLib.h
+index 299d059..f743270 100644
+--- a/vxworks/taskLib.h
++++ b/vxworks/taskLib.h
+@@ -42,6 +42,7 @@ struct wind_task_args {
+ struct wind_task {
+ 
+ 	pthread_mutex_t safelock;
++	int	safeCnt;
+ 	sem_t barrier;
+ 
+ 	struct WIND_TCB *tcb;
 
-
-#define assert(cond) \
-  if (!cond) printf("assert failed at %s line %d\n", __FUNCTION__, __LINE__); \
-  else  printf("assert passed at %s line %d\n", __FUNCTION__, __LINE__);
-
-
-#if defined(__SOLO__) || defined(_WRS_VXWORKS_MAJOR)
-// #include <vxWorks.h>
-#include <semLib.h>
-#include <taskLib.h>
-#include <tickLib.h>
-#include <kernelLib.h>
-#include <errnoLib.h>
-
-void testTask(long a1, long a2, long a3, long a4, long a5,
-	long a6, long a7, long a8, long a9, long a10);
-bool finished;
-
-  extern "C" void task1(long int, long int, long int, long int, long int, long int, long int, long int, long int, long int)
-  {
-	assert(1);
-	taskDelay(30);	
-	assert(2);
-	finished = true;
-  }
-
-#endif
-
-/**
- *  Main functions
- */
-#if defined(PLAT_VXWORKS) || defined(_WRS_VXWORKS_MAJOR)
-  extern "C" int tSysMain(const char* arg)
-  {
-    const char* argv[2];
-    argv[0]  = "undefined";
-    argv[1]  = arg;
-    int argc = sizeof(argv) / sizeof(char*);
-#else
-
-  int main(int argc, char *const argv[])
-  {
-#endif
-
-#ifdef __SOLO__
-
-    kernelInit(testTask, argc, argv);
-    while(!finished) { sleep(1); }
-    exit(0);
-}
-
-void testTask(long a1, long a2, long a3, long a4, long a5,
-	long a6, long a7, long a8, long a9, long a10)
-{
-   int argc=0; char *const argv[]={0};
-#endif
-
-   // Initialisierung
-   SEM_ID testBSem1 = semBCreate (0, SEM_EMPTY);
-
-   assert(semTake(testBSem1, 10) == ERROR);  // Empty
-   assert(semGive(testBSem1) == OK);
-   assert(semGive(testBSem1) == OK);    // wie VxWorks
-
-  printf("%s done\n", __FUNCTION__);
-#ifdef __SOLO__
-  finished = true;
-  return;
-#else
-  return 0;
-#endif
-}
-
-
-//  ___________________________________________________________________________
-
---Boundary-00=_m3q1IvyCGJ0tDYw--
+--Boundary-00=_++q1IowGQNaujNT--
 
