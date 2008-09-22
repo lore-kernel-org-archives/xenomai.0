@@ -1,17 +1,12 @@
 From: Niklaus Giger <niklaus.giger@domain.hid>
-Date: Mon, 22 Sep 2008 21:45:22 +0200
-References: <200809212234.06587.niklaus.giger@domain.hid>
-	<48D7C506.8000109@domain.hid>
-In-Reply-To: <48D7C506.8000109@domain.hid>
+Date: Mon, 22 Sep 2008 21:51:46 +0200
 MIME-Version: 1.0
 Content-Type: text/plain;
-  charset="iso-8859-1"
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Message-Id: <200809222145.23158.niklaus.giger@domain.hid>
-Subject: Re: [Xenomai-core]
- =?iso-8859-1?q?xenomai-solo_vxWorks=3A_know_whethe?=
- =?iso-8859-1?q?r_a_task_is_safe_or=09not?=
+Message-Id: <200809222151.46401.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] [PATCH] Adding some .gitignore
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,122 +16,238 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Am Montag 22 September 2008 18.17:10 schrieb Philippe Gerum:
-> Niklaus Giger wrote:
-> > Hi
-> >
-> > For various reasons we were forced to examine under vxWorks 5.5 the
-> > private WIND_TCB safeCnt field to determine whether a task was "safe" or
-> > not.
-> >
-> > With the attached patch I try to add a taskIsSafe procedure to
-> > xenomai-solo. It is probably not free from race condition, as I do not
-> > know how to access a pthread_mutex.
-> >
-> > Would such (may be improved) patch find its way into the "official"
-> > trunk?
->
-> Assuming that VxWorks tracks the locking depth in safeCnt, that
-> implementation would not properly account for nested locking (safelock is a
-> recursive mutex). Additionally, since WIND_TCB is something of a
-> semi-public structure in 5.x and earlier versions, we could just track the
-> safe counter there as well, instead of adding a non-standard taskIsSafe()
-> call; we already do that for the status field anyway. Here is a possible
-> implementation:
+After a ./configure in my git clone, git status cluttered my screen withe a lot 
+of uninteresting files. In order to get rid of them I created the attached 
+.gitignore files.
 
-This implementation is okay for me, too. It seems to work, as far I could
-test it.
+Signed-off-by: Niklaus Giger <niklaus.giger@domain.hid>
 
-I however still have some issues because we used sometimes (for historical 
-reasons in order to emulate a pre-vxWorks home grown cooperative mulit-tasking 
-operation system) a taskInit/taskActivate/taskRestart combination. 
+---
+ .gitignore                   |   47 
+++++++++++++++++++++++++++++++++++++++++++
+ base/.gitignore              |    8 +++++++
+ config/.gitignore            |    9 ++++++++
+ include/.gitignore           |    8 +++++++
+ include/psos/.gitignore      |    8 +++++++
+ include/vxworks/.gitignore   |    8 +++++++
+ include/xenomai/.gitignore   |    8 +++++++
+ psos/.gitignore              |    8 +++++++
+ scripts/.gitignore           |    9 ++++++++
+ vxworks/.gitignore           |    8 +++++++
+ vxworks/testsuite/.gitignore |   10 +++++++++
+ 11 files changed, 131 insertions(+), 0 deletions(-)
+ create mode 100644 .gitignore
+ create mode 100644 base/.gitignore
+ create mode 100644 config/.gitignore
+ create mode 100644 include/.gitignore
+ create mode 100644 include/psos/.gitignore
+ create mode 100644 include/vxworks/.gitignore
+ create mode 100644 include/xenomai/.gitignore
+ create mode 100644 psos/.gitignore
+ create mode 100644 scripts/.gitignore
+ create mode 100644 vxworks/.gitignore
+ create mode 100644 vxworks/testsuite/.gitignore
 
-Would it be a lot of work for you to add taskRestart to xenomai-solo?
-
-Best regards
-
-Niklaus 
-
-> diff --git a/include/vxworks/taskLib.h b/include/vxworks/taskLib.h
-> index 510dabb..6334396 100644
-> --- a/include/vxworks/taskLib.h
-> +++ b/include/vxworks/taskLib.h
-> @@ -49,6 +49,7 @@ typedef struct WIND_TCB {
->  	void *opaque;
->  	int magic;
->  	int status;
-> +	int safeCnt;
->  	int flags;
->  	FUNCPTR entry;
->  } WIND_TCB;
-> diff --git a/vxworks/taskLib.c b/vxworks/taskLib.c
-> index f6253b2..a9e12e7 100644
-> --- a/vxworks/taskLib.c
-> +++ b/vxworks/taskLib.c
-> @@ -283,7 +283,6 @@ static STATUS __taskInit(struct wind_task *task,
->  	int ret;
->
->  	ret = check_task_priority(prio);
-> -
->  	if (ret) {
->  		errno = ret;
->  		return ERROR;
-> @@ -307,6 +306,7 @@ static STATUS __taskInit(struct wind_task *task,
->  	tcb->magic = task_magic;
->  	tcb->opaque = task;
->  	tcb->status = WIND_SUSPEND;
-> +	tcb->safeCnt = 0;
->  	tcb->flags = flags;
->  	tcb->entry = entry;
->
-> @@ -588,13 +588,13 @@ STATUS taskSafe(void)
->  	}
->
->  	current = wind_task_current();
-> -
->  	if (current == NULL) {
->  		errno = S_objLib_OBJ_NO_METHOD;
->  		return ERROR;
->  	}
->
->  	pthread_mutex_lock(&current->safelock);
-> +	current->tcb->safeCnt++;
->
->  	return OK;
->  }
-> @@ -602,6 +602,7 @@ STATUS taskSafe(void)
->  STATUS taskUnsafe(void)
->  {
->  	struct wind_task *current;
-> +	int ret;
->
->  	if (threadobj_async_p()) {
->  		errno = S_intLib_NOT_ISR_CALLABLE;
-> @@ -609,13 +610,14 @@ STATUS taskUnsafe(void)
->  	}
->
->  	current = wind_task_current();
-> -
->  	if (current == NULL) {
->  		errno = S_objLib_OBJ_NO_METHOD;
->  		return ERROR;
->  	}
->
-> -	pthread_mutex_unlock(&current->safelock);
-> +	ret = pthread_mutex_unlock(&current->safelock);
-> +	if (ret == 0)
-> +		current->tcb->safeCnt--;
->
->  	return OK;
->  }
-
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..af911eb
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,47 @@
++#
++# NOTE! Don't add files that are generated in specific
++# subdirectories here. Add them in the ".gitignore" file
++# in that subdirectory instead.
++#
++# Normal rules
++#
++
++*.rej
++*.orig
++*.a
++*.o
++*~
++*.la
++*.lo
++
++#
++# Top-level generic files
++#
++
++#
++# Generated files
++#
++/conf2*
++*.depend
++.deps
++.libs
++*.lineno
++libtool
++config.log
++/Makefile
++stamp-h1
++xeno_config.h
++config.status
++
++# for output of format-patch
++00*
++
++# stgit generated dirs
++patches-*
++
++# quilt's files
++patches
++series
++
++# cscope files
++cscope.*
+diff --git a/base/.gitignore b/base/.gitignore
+new file mode 100644
+index 0000000..13daaa8
+--- /dev/null
++++ b/base/.gitignore
+@@ -0,0 +1,8 @@
++#
++# NOTE! Don't add files that are generated in specific
++# subdirectories here. Add them in the ".gitignore" file
++# in that subdirectory instead.
++#
++# Generated files
++#
++/Makefile
+diff --git a/config/.gitignore b/config/.gitignore
+new file mode 100644
+index 0000000..e96352c
+--- /dev/null
++++ b/config/.gitignore
+@@ -0,0 +1,9 @@
++#
++# NOTE! Don't add files that are generated in specific
++# subdirectories here. Add them in the ".gitignore" file
++# in that subdirectory instead.
++#
++# Generated files
++#
++/Makefile
++*.lineno
+diff --git a/include/.gitignore b/include/.gitignore
+new file mode 100644
+index 0000000..13daaa8
+--- /dev/null
++++ b/include/.gitignore
+@@ -0,0 +1,8 @@
++#
++# NOTE! Don't add files that are generated in specific
++# subdirectories here. Add them in the ".gitignore" file
++# in that subdirectory instead.
++#
++# Generated files
++#
++/Makefile
+diff --git a/include/psos/.gitignore b/include/psos/.gitignore
+new file mode 100644
+index 0000000..13daaa8
+--- /dev/null
++++ b/include/psos/.gitignore
+@@ -0,0 +1,8 @@
++#
++# NOTE! Don't add files that are generated in specific
++# subdirectories here. Add them in the ".gitignore" file
++# in that subdirectory instead.
++#
++# Generated files
++#
++/Makefile
+diff --git a/include/vxworks/.gitignore b/include/vxworks/.gitignore
+new file mode 100644
+index 0000000..13daaa8
+--- /dev/null
++++ b/include/vxworks/.gitignore
+@@ -0,0 +1,8 @@
++#
++# NOTE! Don't add files that are generated in specific
++# subdirectories here. Add them in the ".gitignore" file
++# in that subdirectory instead.
++#
++# Generated files
++#
++/Makefile
+diff --git a/include/xenomai/.gitignore b/include/xenomai/.gitignore
+new file mode 100644
+index 0000000..13daaa8
+--- /dev/null
++++ b/include/xenomai/.gitignore
+@@ -0,0 +1,8 @@
++#
++# NOTE! Don't add files that are generated in specific
++# subdirectories here. Add them in the ".gitignore" file
++# in that subdirectory instead.
++#
++# Generated files
++#
++/Makefile
+diff --git a/psos/.gitignore b/psos/.gitignore
+new file mode 100644
+index 0000000..13daaa8
+--- /dev/null
++++ b/psos/.gitignore
+@@ -0,0 +1,8 @@
++#
++# NOTE! Don't add files that are generated in specific
++# subdirectories here. Add them in the ".gitignore" file
++# in that subdirectory instead.
++#
++# Generated files
++#
++/Makefile
+diff --git a/scripts/.gitignore b/scripts/.gitignore
+new file mode 100644
+index 0000000..d618ccb
+--- /dev/null
++++ b/scripts/.gitignore
+@@ -0,0 +1,9 @@
++#
++# NOTE! Don't add files that are generated in specific
++# subdirectories here. Add them in the ".gitignore" file
++# in that subdirectory instead.
++#
++# Generated files
++#
++/Makefile
++xeno-config
+diff --git a/vxworks/.gitignore b/vxworks/.gitignore
+new file mode 100644
+index 0000000..13daaa8
+--- /dev/null
++++ b/vxworks/.gitignore
+@@ -0,0 +1,8 @@
++#
++# NOTE! Don't add files that are generated in specific
++# subdirectories here. Add them in the ".gitignore" file
++# in that subdirectory instead.
++#
++# Generated files
++#
++/Makefile
+diff --git a/vxworks/testsuite/.gitignore b/vxworks/testsuite/.gitignore
+new file mode 100644
+index 0000000..089bf31
+--- /dev/null
++++ b/vxworks/testsuite/.gitignore
+@@ -0,0 +1,10 @@
++msgQ-1
++msgQ-2
++msgQ-3
++sem-1
++sem-2
++sem-3
++task-1
++task-2
++wd-1
++
 -- 
-NIklaus Giger
-Wieshoschet 6
-CH-8753 Mollis
-+41  (0)55 612 20 54 P
-+41  (0)55 618 64 68 G
+1.6.0.1
+
 
