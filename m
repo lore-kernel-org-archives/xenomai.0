@@ -1,14 +1,13 @@
-Message-ID: <48D7551F.3070505@domain.hid>
-Date: Mon, 22 Sep 2008 10:19:43 +0200
+Message-ID: <48D7B05D.5060101@domain.hid>
+Date: Mon, 22 Sep 2008 16:49:01 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <48CE7BD7.6060504@domain.hid>
-	<48D620DB.2070101@domain.hid>	<48D688EE.7010404@domain.hid>
-	<48D68D6D.9070909@domain.hid> <48D69A7A.7090302@domain.hid>
-In-Reply-To: <48D69A7A.7090302@domain.hid>
+References: <200809212226.14177.niklaus.giger@domain.hid>
+In-Reply-To: <200809212226.14177.niklaus.giger@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RFC][PATCH] Factor out xnsynch_acquire/release
+Subject: Re: [Xenomai-core] xenomai-solo-vxWorks: Calling semGive twice on
+ a	binary semaphore should not return an error
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -19,54 +18,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Niklaus Giger <niklaus.giger@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
+Niklaus Giger wrote:
+> Hi
 > 
->> [1]http://thread.gmane.org/gmane.linux.real-time.xenomai.devel/5412/focus=5405
->>
-> always-put-xnthread-base-into-registry.patch:
-> 	I understand the need, but I will cowardly let Philippe decide whether
-> he likes the implementation details.
->
+> Examining errors in my big testsuite I discovered that giving a second
+> time a binary semaphore xenomai returns an error where vxWorks reports OK.
+> 
 
-I'm ok with the basic purpose of those changes, but if they are aimed at
-allowing direct lookups from the xnsynch code into the registry so that base
-object pointers can be safely assumed to be returned for threads, I would define
-specialized xnthread_register() and xnthread_lookup() calls to explicitly state
-that we do want to index struct xnthread pointers, and not any random type as
-the registry would otherwise permit.
+Thanks for reporting. That patch should fix this issue:
 
-Also, for readability purpose, please factor the outer lookup code as much as
-possible.
+diff --git a/vxworks/semLib.c b/vxworks/semLib.c
+index 62f9326..6467354 100644
+--- a/vxworks/semLib.c
++++ b/vxworks/semLib.c
+@@ -104,8 +104,11 @@ static STATUS xsem_give(struct wind_sem *sem)
+ 	if (syncobj_lock(&sem->u.xsem.sobj, &syns))
+ 		return S_objLib_OBJ_ID_ERROR;
 
-e.g.
-static inline RT_TASK *lookup_task(xnhandle_t handle)
-{
-	return thread2rtask(xnthread_lookup(handle));
-}
+-	if (sem->u.xsem.value >= sem->u.xsem.maxvalue)
+-		ret = S_semLib_INVALID_OPERATION;
++	if (sem->u.xsem.value >= sem->u.xsem.maxvalue) {
++		if (sem->u.xsem.maxvalue == INT_MAX)
++			/* No wrap around. */
++			ret = S_semLib_INVALID_OPERATION;
++	}
+ 	else if (++sem->u.xsem.value <= 0)
+ 		syncobj_post(&sem->u.xsem.sobj);
 
-> handle-base-xn_sys_current-1.patch:
-> 	In some places (pse51_mutex_timedlock_inner for instances) you use
-> XN_NO_HANDLE, in others (pse51_mutex_timedlock for instances) you use
-> NULL, are the two equivalents ? If yes, should not we always use the
-> same consistently ? Otherwise looks ok.
+> See the attached test case.
+>> sudo  ../../bin/BSys/mak/xeno_vx-solo/debug/tst
+>> assert passed at testTask line 65
+>> assert passed at testTask line 66
+>> assert failed at testTask line 67
+>> testTask done
+>> Xenomai/SOLO: failed to remove registry mount point /mnt/xenomai/4569
+>> (errno=16)
 > 
-> remove-xnarch_atomic_intptr.patch:
-> 	Ok.
+> Best regards
 > 
-> spread-xeno_set_current.patch:
-> 	Ok. This is even a bug fix.
 > 
-> xnsynch refactoring:
-> 	things have moved too much to see what has really changed in
-> xnsynch_wakeup_one_sleeper and xnsynch_sleep_on. But is not there a
-> common behaviour between the old and new services that could be factored
-> ? But otherwise I agree with the general idea of the patch, this is what
-> we had discussed with Philippe.
 > 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
 
 -- 
