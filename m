@@ -1,11 +1,14 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Date: Sun, 21 Sep 2008 22:34:06 +0200
+Message-ID: <48D752BA.3000403@domain.hid>
+Date: Mon, 22 Sep 2008 10:09:30 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_++q1IowGQNaujNT"
-Message-Id: <200809212234.06587.niklaus.giger@domain.hid>
-Subject: [Xenomai-core] xenomai-solo vxWorks: know whether a task is safe or
-	not
+References: <48CE7BD7.6060504@domain.hid>
+	<48D620DB.2070101@domain.hid>	<48D688EE.7010404@domain.hid>
+	<48D68D6D.9070909@domain.hid> <48D69A7A.7090302@domain.hid>
+In-Reply-To: <48D69A7A.7090302@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [RFC][PATCH] Factor out xnsynch_acquire/release
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,102 +18,171 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
---Boundary-00=_++q1IowGQNaujNT
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+> 
+>> [1]http://thread.gmane.org/gmane.linux.real-time.xenomai.devel/5412/focus=5405
+>>
+> always-put-xnthread-base-into-registry.patch:
+> 	I understand the need, but I will cowardly let Philippe decide whether
+> he likes the implementation details.
+> 
+> handle-base-xn_sys_current-1.patch:
+> 	In some places (pse51_mutex_timedlock_inner for instances) you use
+> XN_NO_HANDLE, in others (pse51_mutex_timedlock for instances) you use
+> NULL, are the two equivalents ? If yes, should not we always use the
+> same consistently ? Otherwise looks ok.
 
-Hi
+I fail to find the NULL spots - which pse51_mutex_timedlock do you mean?
 
-For various reasons we were forced to examine under vxWorks 5.5 the private
-WIND_TCB safeCnt field to determine whether a task was "safe" or not.
+> 
+> remove-xnarch_atomic_intptr.patch:
+> 	Ok.
+> 
+> spread-xeno_set_current.patch:
+> 	Ok. This is even a bug fix.
+> 
+> xnsynch refactoring:
+> 	things have moved too much to see what has really changed in
+> xnsynch_wakeup_one_sleeper and xnsynch_sleep_on. But is not there a
+> common behaviour between the old and new services that could be factored
+> ? But otherwise I agree with the general idea of the patch, this is what
+> we had discussed with Philippe.
 
-With the attached patch I try to add a taskIsSafe procedure to xenomai-solo.
-It is probably not free from race condition, as I do not know how to access
-a pthread_mutex.
+Yes, the diff is unfortunate due to a reordering of the function within
+synch.c. Here is a direct diff of both services:
 
-Would such (may be improved) patch find its way into the "official" trunk?
+--- a	2008-09-22 10:06:56.000000000 +0200
++++ b	2008-09-22 10:07:39.000000000 +0200
+@@ -1,112 +1,47 @@
+ void xnsynch_sleep_on(xnsynch_t *synch, xnticks_t timeout,
+ 		      xntmode_t timeout_mode)
+ {
+-	xnthread_t *thread = xnpod_current_thread(), *owner;
++	xnthread_t *thread = xnpod_current_thread();
+ 	spl_t s;
+ 
++	XENO_BUGON(NUCLEUS, testbits(synch->status, XNSYNCH_OWNER));
++
+ 	xnlock_get_irqsave(&nklock, s);
+ 
+ 	trace_mark(xn_nucleus_synch_sleepon,
+ 		   "thread %p thread_name %s synch %p",
+ 		   thread, xnthread_name(thread), synch);
+ 
+-	if (!testbits(synch->status, XNSYNCH_PRIO)) { /* i.e. FIFO */
++	if (!testbits(synch->status, XNSYNCH_PRIO)) /* i.e. FIFO */
+ 		appendpq(&synch->pendq, &thread->plink);
+-		xnpod_suspend_thread(thread, XNPEND, timeout, timeout_mode, synch);
+-		goto unlock_and_exit;
+-	}
+-
+-	if (!testbits(synch->status, XNSYNCH_PIP)) { /* i.e. no ownership */
+-		insertpqf(&synch->pendq, &thread->plink, thread->cprio);
+-		xnpod_suspend_thread(thread, XNPEND, timeout, timeout_mode, synch);
+-		goto unlock_and_exit;
+-	}
+-
+-redo:
+-	owner = synch->owner;
+-
+-	if (!owner) {
+-		synch->owner = thread;
+-		xnthread_clear_info(thread, XNRMID | XNTIMEO | XNBREAK);
+-		goto unlock_and_exit;
+-	}
+-
+-	if (thread->cprio > owner->cprio) {
+-		if (xnthread_test_info(owner, XNWAKEN) && owner->wwake == synch) {
+-			/* Ownership is still pending, steal the resource. */
+-			synch->owner = thread;
+-			xnthread_clear_info(thread, XNRMID | XNTIMEO | XNBREAK);
+-			xnthread_set_info(owner, XNROBBED);
+-			goto unlock_and_exit;
+-		}
+-
+-		if (!xnthread_test_state(owner, XNBOOST)) {
+-			owner->bprio = owner->cprio;
+-			xnthread_set_state(owner, XNBOOST);
+-		}
+-
+-		if (testbits(synch->status, XNSYNCH_CLAIMED))
+-			removepq(&owner->claimq, &synch->link);
+-		else
+-			__setbits(synch->status, XNSYNCH_CLAIMED);
+-
+-		insertpqf(&owner->claimq, &synch->link, thread->cprio);
+-		insertpqf(&synch->pendq, &thread->plink, thread->cprio);
+-		xnsynch_renice_thread(owner, thread->cprio);
+-	} else
++	else /* i.e. priority-sorted */
+ 		insertpqf(&synch->pendq, &thread->plink, thread->cprio);
+ 
+ 	xnpod_suspend_thread(thread, XNPEND, timeout, timeout_mode, synch);
+ 
+-	if (xnthread_test_info(thread, XNRMID | XNTIMEO | XNBREAK))
+-		goto unlock_and_exit;
+-
+-	if (xnthread_test_info(thread, XNROBBED)) {
+-		/* Somebody stole us the ownership while we were ready
+-		   to run, waiting for the CPU: we need to wait again
+-		   for the resource. */
+-		if (timeout_mode != XN_RELATIVE || timeout == XN_INFINITE)
+-			goto redo;
+-		timeout = xntimer_get_timeout_stopped(&thread->rtimer);
+-		if (timeout > 1) /* Otherwise, it's too late. */
+-			goto redo;
+-		xnthread_set_info(thread, XNTIMEO);
+-	}
+-
+-      unlock_and_exit:
+-
+-	thread->wwake = NULL;
+-	xnthread_clear_info(thread, XNWAKEN);
+-
+ 	xnlock_put_irqrestore(&nklock, s);
+ }
+ 
+ xnthread_t *xnsynch_wakeup_one_sleeper(xnsynch_t *synch)
+ {
+-	xnthread_t *thread = NULL, *lastowner;
++	xnthread_t *thread = NULL;
+ 	xnpholder_t *holder;
+ 	spl_t s;
+ 
++	XENO_BUGON(NUCLEUS, testbits(synch->status, XNSYNCH_OWNER));
++
+ 	xnlock_get_irqsave(&nklock, s);
+ 
+-	lastowner = synch->owner;
+ 	holder = getpq(&synch->pendq);
+ 
+ 	if (holder) {
+ 		thread = link2thread(holder, plink);
+ 		thread->wchan = NULL;
+-		thread->wwake = synch;
+-		synch->owner = thread;
+-		xnthread_set_info(thread, XNWAKEN);
+ 		trace_mark(xn_nucleus_synch_wakeup_one,
+ 			   "thread %p thread_name %s synch %p",
+ 			   thread, xnthread_name(thread), synch);
+ 		xnpod_resume_thread(thread, XNPEND);
+-	} else
+-		synch->owner = NULL;
+-
+-	if (testbits(synch->status, XNSYNCH_CLAIMED))
+-		xnsynch_clear_boost(synch, lastowner);
++	}
+ 
+ 	xnlock_put_irqrestore(&nklock, s);
+ 
 
-Best regards
+Jan
 
 -- 
-NIklaus Giger
-
-
---Boundary-00=_++q1IowGQNaujNT
-Content-Type: text/x-patch;
-  charset="us-ascii";
-  name="taskIsSafe.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="taskIsSafe.diff"
-
-diff --git a/include/vxworks/taskInfo.h b/include/vxworks/taskInfo.h
-index 61315d5..27b3cc6 100644
---- a/include/vxworks/taskInfo.h
-+++ b/include/vxworks/taskInfo.h
-@@ -50,6 +50,8 @@ TASK_ID taskNameToId(const char *name);
- 
- TASK_ID taskIdDefault(TASK_ID task_id);
-     
-+BOOL taskIsSafe(TASK_ID task_id);
-+
- BOOL taskIsReady(TASK_ID task_id);
- 
- BOOL taskIsSuspended (TASK_ID task_id);
-diff --git a/vxworks/taskLib.c b/vxworks/taskLib.c
-index f6253b2..7dd52ae 100644
---- a/vxworks/taskLib.c
-+++ b/vxworks/taskLib.c
-@@ -595,7 +595,7 @@ STATUS taskSafe(void)
- 	}
- 
- 	pthread_mutex_lock(&current->safelock);
--
-+	current->safeCnt = 1;
- 	return OK;
- }
- 
-@@ -615,11 +615,24 @@ STATUS taskUnsafe(void)
- 		return ERROR;
- 	}
- 
-+	current->safeCnt = 0;
- 	pthread_mutex_unlock(&current->safelock);
- 
- 	return OK;
- }
- 
-+BOOL taskIsSafe(TASK_ID tid)
-+{
-+	struct wind_task *task = find_wind_task(tid);
-+
-+	if (task == NULL) {
-+		errno = S_objLib_OBJ_ID_ERROR;
-+		return ERROR;
-+	}
-+
-+	return (task->safeCnt > 0);
-+}
-+
- STATUS taskIdVerify(TASK_ID tid)
- {
- 	struct wind_task *task = find_wind_task(tid);
-diff --git a/vxworks/taskLib.h b/vxworks/taskLib.h
-index 299d059..f743270 100644
---- a/vxworks/taskLib.h
-+++ b/vxworks/taskLib.h
-@@ -42,6 +42,7 @@ struct wind_task_args {
- struct wind_task {
- 
- 	pthread_mutex_t safelock;
-+	int	safeCnt;
- 	sem_t barrier;
- 
- 	struct WIND_TCB *tcb;
-
---Boundary-00=_++q1IowGQNaujNT--
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
