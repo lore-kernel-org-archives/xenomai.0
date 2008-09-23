@@ -1,13 +1,16 @@
-Message-ID: <48D80630.4020500@domain.hid>
-Date: Mon, 22 Sep 2008 22:55:12 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <48D8AC60.3020908@domain.hid>
+Date: Tue, 23 Sep 2008 10:44:16 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <420196.99125.qm@domain.hid>
-	<48C3F4F2.5030208@domain.hid>
-In-Reply-To: <48C3F4F2.5030208@domain.hid>
+References: <48CE7BD7.6060504@domain.hid>
+	<48D620DB.2070101@domain.hid>	<48D688EE.7010404@domain.hid>
+	<48D68D6D.9070909@domain.hid> <48D69A7A.7090302@domain.hid>
+	<48D752BA.3000403@domain.hid> <48D754D8.30205@domain.hid>
+	<48D75DE5.9020805@domain.hid> <48D7E6E7.9050302@domain.hid>
+In-Reply-To: <48D7E6E7.9050302@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] RT_HEAP Problem
+Subject: Re: [Xenomai-core] [RFC][PATCH] Factor out xnsynch_acquire/release
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,144 +20,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: yasser_kashfi@domain.hid
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 Gilles Chanteperdrix wrote:
-> Yasser Kashfi wrote:
->> Hi
->> Thanks Gilles for your notes. The problem is solved.
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> Gilles Chanteperdrix wrote:
+>>>>> Jan Kiszka wrote:
+>>>>>
+>>>>>> [1]http://thread.gmane.org/gmane.linux.real-time.xenomai.devel/5412/focus=5405
+>>>>>>
+>>>>> always-put-xnthread-base-into-registry.patch:
+>>>>> 	I understand the need, but I will cowardly let Philippe decide whether
+>>>>> he likes the implementation details.
+>>>>>
+>>>>> handle-base-xn_sys_current-1.patch:
+>>>>> 	In some places (pse51_mutex_timedlock_inner for instances) you use
+>>>>> XN_NO_HANDLE, in others (pse51_mutex_timedlock for instances) you use
+>>>>> NULL, are the two equivalents ? If yes, should not we always use the
+>>>>> same consistently ? Otherwise looks ok.
+>>>> I fail to find the NULL spots - which pse51_mutex_timedlock do you mean?
+>>> A few excerpts:
+>> Ah, you mean checking against non-zero - that can be changed of course.
+>> Updated patch below, hope I caught them all.
 > 
-> Well... not exactly, it shows that the problem is using highmem, but we
-> should now modify xenomai so that it supports using highmem.
-> 
+> Ok. Looks good to me. Minus the bug in mutex_save_count, but this can be
+> changed later.
 
+??? Which bug?
 
-Hi Yasser,
-
-here is a patch which is supposed to fix this issue with highmem. Could 
-you apply it and use the same kernel configuration as you used initially
-? 
-
-Thanks in advance.
-
-Index: include/asm-generic/wrappers.h
-===================================================================
---- include/asm-generic/wrappers.h	(revision 4175)
-+++ include/asm-generic/wrappers.h	(working copy)
-@@ -64,12 +64,9 @@
- 
- /* VM */
- 
--/* We don't support MMU-less architectures over 2.4 */
--unsigned long __va_to_kva(unsigned long va);
--
- #define wrap_remap_vm_page(vma,from,to) ({ \
-     vma->vm_flags |= VM_RESERVED; \
--    remap_page_range(from,virt_to_phys((void *)__va_to_kva(to)),PAGE_SIZE,vma->vm_page_prot); \
-+    remap_page_range(from,page_to_phys(vmalloc_to_page((void *)to)),PAGE_SIZE,vma->vm_page_prot); \
- })
- #define wrap_remap_io_page_range(vma,from,to,size,prot) ({ \
-     vma->vm_flags |= VM_RESERVED; \
-@@ -344,10 +341,7 @@ unsigned long find_next_bit(const unsign
- 
- /* VM */
- 
--#ifdef CONFIG_MMU
--unsigned long __va_to_kva(unsigned long va);
--#else /* !CONFIG_MMU */
--#define __va_to_kva(va) (va)
-+#ifndef CONFIG_MMU
- #define pgprot_noncached(p) (p)
- #endif /* CONFIG_MMU */
- 
-@@ -372,7 +366,7 @@ unsigned long __va_to_kva(unsigned long 
-  * memory. Anyway, this legacy would only hit setups using pre-2.6.11
-  * kernel revisions. */
- #define wrap_remap_vm_page(vma,from,to) \
--    remap_pfn_range(vma,from,virt_to_phys((void *)__va_to_kva(to)) >> PAGE_SHIFT,PAGE_SHIFT,vma->vm_page_prot)
-+    remap_pfn_range(vma,from,page_to_pfn(vmalloc_to_page((void *)to)),PAGE_SHIFT,vma->vm_page_prot)
- #define wrap_remap_io_page_range(vma,from,to,size,prot)  ({		\
-     (vma)->vm_page_prot = pgprot_noncached((vma)->vm_page_prot);	\
-     /* Sets VM_RESERVED | VM_IO | VM_PFNMAP on the vma. */		\
-@@ -385,7 +379,7 @@ unsigned long __va_to_kva(unsigned long 
- #else /* LINUX_VERSION_CODE < KERNEL_VERSION(2,6,10) */
- #define wrap_remap_vm_page(vma,from,to) ({ \
-     vma->vm_flags |= VM_RESERVED; \
--    remap_page_range(from,virt_to_phys((void *)__va_to_kva(to)),PAGE_SIZE,vma->vm_page_prot); \
-+    remap_page_range(from,page_to_phys(vmalloc_to_page((void *)to)),PAGE_SIZE,vma->vm_page_prot); \
- })
- #define wrap_remap_io_page_range(vma,from,to,size,prot) ({	\
-       vma->vm_flags |= VM_RESERVED;				\
-Index: ksrc/nucleus/heap.c
-===================================================================
---- ksrc/nucleus/heap.c	(revision 4175)
-+++ ksrc/nucleus/heap.c	(working copy)
-@@ -1010,44 +1010,6 @@ static int xnheap_ioctl(struct inode *in
- 	return err;
- }
- 
--#ifdef CONFIG_MMU
--
--unsigned long __va_to_kva(unsigned long va)
--{
--	pgd_t *pgd;
--	pmd_t *pmd;
--	pte_t *ptep, pte;
--	unsigned long kva = 0;
--
--	pgd = pgd_offset_k(va);	/* Page directory in kernel map. */
--
--	if (!pgd_none(*pgd) && !pgd_bad(*pgd)) {
--#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 11)
--		/* Page middle directory -- account for PAE. */
--		pmd = pmd_offset(pud_offset(pgd, va), va);
--#else
--		/* Page middle directory. */
--		pmd = pmd_offset(pgd, va);
--#endif
--
--		if (!pmd_none(*pmd)) {
--			ptep = pte_offset_kernel(pmd, va);	/* Page table entry. */
--			pte = *ptep;
--
--			if (pte_present(pte)) {	/* Valid? */
--				kva = (unsigned long)page_address(pte_page(pte));	/* Page address. */
--				kva |= (va & (PAGE_SIZE - 1));	/* Add offset within page. */
--			}
--		}
--	}
--
--	return kva;
--}
--
--EXPORT_SYMBOL(__va_to_kva);
--
--#endif /* CONFIG_MMU */
--
- static int xnheap_mmap(struct file *file, struct vm_area_struct *vma)
- {
- 	unsigned long offset, size, vaddr;
-@@ -1175,7 +1137,7 @@ static inline void *__alloc_and_reserve_
- 		vabase = (unsigned long)ptr;
- 
- 		for (vaddr = vabase; vaddr < vabase + size; vaddr += PAGE_SIZE)
--			SetPageReserved(virt_to_page(__va_to_kva(vaddr)));
-+			SetPageReserved(vmalloc_to_page((void *)vaddr));
- 	} else {
- 		/*
- 		 * Otherwise, we have been asked for some kmalloc()
-@@ -1211,7 +1173,7 @@ static inline void __unreserve_and_free_
- 
- 	if (!kmflags  || kmflags == XNHEAP_GFP_NONCACHED) {
- 		for (vaddr = vabase; vaddr < vabase + size; vaddr += PAGE_SIZE)
--			ClearPageReserved(virt_to_page(__va_to_kva(vaddr)));
-+			ClearPageReserved(vmalloc_to_page((void *)vaddr));
- 
- 		vfree(ptr);
- 	} else {
-
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
