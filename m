@@ -1,16 +1,13 @@
-Message-ID: <48D91738.40900@domain.hid>
-Date: Tue, 23 Sep 2008 18:20:08 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48D9364B.70505@domain.hid>
+Date: Tue, 23 Sep 2008 20:32:43 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <48D8FEE6.3090109@domain.hid> <48D90034.1070602@domain.hid>
-	<48D903AA.5090404@domain.hid> <48D90ADC.2020406@domain.hid>
-	<48D90C78.7090100@domain.hid> <48D90D2E.9010608@domain.hid>
-	<48D90E12.909@domain.hid> <48D9103C.1070304@domain.hid>
-In-Reply-To: <48D9103C.1070304@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+References: <899865CA54E4444DAF2E3639C04C5F48E4DA6A@trillian.at.omicron.at>
+	<48D66DC4.8030706@domain.hid>
+In-Reply-To: <48D66DC4.8030706@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [BUG] vmalloc_sync_one complains about
-	__ipipe_pin_range_globally
+Subject: Re: [Adeos-main] FW: [PATCH] repost: ARM FCSE
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -19,36 +16,32 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>, Philippe Gerum <rpm@xenomai.org>
+To: Richard Cochran <richard.cochran@domain.hid>
+Cc: adeos-main@gna.org
 
 Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> Jan Kiszka wrote:
->>>>>> Gilles Chanteperdrix wrote:
->>>>>>> Jan Kiszka wrote:
->>>>>>>>                 BUG_ON(pgd_page_vaddr(*pgd) != pgd_page_vaddr(*pgd_ref));
->>>>> Ok. Maybe printing pgd_page_vaddr(*pgd) and pgd_page_vaddr(*pgd_ref)
->>>>> would help ?
->>>> I don't see yet where you want to go. As I said, the issue is rare. I
->>>> rather think we need to approach it theoretically.
->>> Well the bug happens when the two virtual addresses are different (so, I
->>> do not think my original remark applies). So, I want to see what the two
->>> addresses look like, for instance if they are not 0 or ~0.
->> OK, will forward the request.
+> Richard Cochran wrote:
+>> I posted this patch today on linux-arm-kernel, but I repeat it
+>> here because there does not seem to be too much interest on that
+>> list for the ARM FCSE.
+>>
+>> I also tried to combine this patch with ipipe for kernel 2.6.20
+>> running on the Intel IXDP465, but after booting I soon get a BUG.
+>>
+>> Anyhow, perhaps the ARM people might take a look at combining
+>> ipipe with FCSE...
 > 
-> Ok. Something else: x86_32 and vmalloc_sync_all use spinlock_irqsave,
-> so, maybe __ipipe_pin_range_globally should use irqsave as well ?
+> Ok. Six monthes later, I finally gave a try to your patch on at91rm9200,
+> which supports FCSE as well.
+> 
+> When booting, I get random segmentation faults (either with or without
+> the I-pipe), assertion which fails in glibc, and such things.
 
-Hmm. In 2.6.24 this lock was not used with irqsave, but in 2.6.26 it is.
-One would have to check if this is a bug fix or due to other changes.
+A small update: I get the same random failures with a vanilla kernel
+(without I-pipe patch at all).
 
-Jan
+I will now investigate pmd_populate.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
