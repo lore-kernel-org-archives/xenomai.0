@@ -1,65 +1,89 @@
-Message-ID: <48E8AFB4.4040208@domain.hid>
-Date: Sun, 05 Oct 2008 14:14:44 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48D89DC5.80908@domain.hid>
+Date: Tue, 23 Sep 2008 09:41:57 +0200
+From: Edouard TISSERANT <edouard.tisserant@domain.hid>
 MIME-Version: 1.0
-References: <E1KmEP8-0003wS-5y@domain.hid>
-In-Reply-To: <E1KmEP8-0003wS-5y@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig0761B403DF16D1DFE89FA659"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [Xenomai-commits] r4210 - in /trunk:
-	ChangeLog	src/skins/native/task.c
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <48D3A531.6090302@domain.hid>
+In-Reply-To: <48D3A531.6090302@domain.hid>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Scilab/Scicos code generator for Xenomai
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Claudio Scordino <claudio@domain.hid>
+Cc: paolo gai <pj@domain.hid>, xenomai@xenomai.org, canfestival-devel@domain.hid, Roberto Bucher <roberto.bucher@domain.hid>, simone.mannori@domain.hid, bruno@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0761B403DF16D1DFE89FA659
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hello Claudio.
 
-Gilles Chanteperdrix wrote:
-> Author: gch
-> Date: Sat Oct  4 23:11:09 2008
-> New Revision: 4210
->=20
-> URL: http://svn.gna.org/viewcvs/xenomai?rev=3D4210&view=3Drev
-> Log:
-> Call __real_pthread_setschedparam in order to inform the libc of the sc=
-heduling parameters change.
+I just discovered your mail. Really great work !
 
-Well, I dropped this idea after realizing that it will kick us out of
-primary mode in all cases. This change is an improvement (/wrt Linux
-scheduling accuracy) for borderline threads, but it will cause
-regressions for primary-only threads. I have no idea right now how to
-make both happy, at least without explicit pthread_setschedparam
-invocations by the user application.
+Why didn't you post this scoop also on the canfestival-devel mailing 
+list ? I nearly missed it.
 
-Jan
+Let me try and see if all this can interoperate with Beremiz project [1] 
+as well.
 
+I will also add a link to this project on canfestival.org.
 
---------------enig0761B403DF16D1DFE89FA659
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Best regards,
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+Edouard TISSERANT
 
-iEYEARECAAYFAkjor7gACgkQniDOoMHTA+m63QCdF5b9JLcZBAcEh18nhHlNNG1l
-um8AnRzvjLBtHstYRxruRvAtSCRLRrzv
-=ldsY
------END PGP SIGNATURE-----
+[1] www.beremiz.org
 
---------------enig0761B403DF16D1DFE89FA659--
+Claudio Scordino wrote:
+> Dear all,
+>
+> My name is Claudio Scordino from Evidence 
+> (http://www.evidence.eu.com). In collaboration with the Scilab Group 
+> Digiteo (previously INRIA Roquencourt), and SUPSI Lugano, we developed 
+> a software integration between the following software packages:
+>
+> - the Xenomai environment with the POSIX skin
+> - the Scilab/Scicos code generator
+> - a modified version of CANFestival
+>
+> The result is now that we can use the Scilab/Scicos code generator to 
+> automatically generate application code for Xenomai!
+>
+> We believe that this opens new possibilities for the usage of Xenomai 
+> in industrial applications, especially when these tools are used to 
+> implement control algorithms, fast prototyping systems and hardware in 
+> the loop simulations... all made using free open source tools!
+>
+> We also developed a set of custom Scicos blocks that integrates with 
+> CANFestival for sending CANopen commands to control remote I/Os 
+> peripherals. These blocks can be inserted inside Scicos designs, and 
+> the generated code will control directly the remote peripheral.
+>
+> In addition, we implemented a set of blocks which make available a UDP 
+> connection to exchange data between the Xenomai target and a Scilab 
+> simulation running on the PC. This allows, for example, remote display 
+> of data, as well as communication and data exhange for hardware in the 
+> loop, monitoring and remote control.
+>
+> If interested, the following links contain some description of the 
+> project, as well as source code to download, and a wiki page with 
+> installing instructions.
+>
+> - http://www.evidence.eu.com/content/view/301/388/ - Xenomai and 
+> Scilab/Scicos for Industrial COTS PC and remote CANopen I/O
+>
+> - http://www.evidence.eu.com/content/view/175/216 - Scilab/Scicos code 
+> generator for FLEX and Xenomai
+>
+> We added these links to our Wiki too in the "Embedded Linux" section.
+>
+> Best regards,
+>
+>              Claudio Scordino
+>
+>   
+
 
