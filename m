@@ -1,12 +1,12 @@
-Message-ID: <48DC9F01.2030500@domain.hid>
-Date: Fri, 26 Sep 2008 10:36:17 +0200
+Message-ID: <48DC9F3C.8050008@domain.hid>
+Date: Fri, 26 Sep 2008 10:37:16 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <200809212234.06587.niklaus.giger@domain.hid>
 	<48D7C506.8000109@domain.hid>
 	<200809222145.23158.niklaus.giger@domain.hid>
 In-Reply-To: <200809222145.23158.niklaus.giger@domain.hid>
-Content-Type: multipart/mixed; boundary="------------080805040005090804080909"
+Content-Type: multipart/mixed; boundary="------------090503030504050007010608"
 Subject: Re: [Xenomai-core] xenomai-solo vxWorks: know whether a task is
  safe or not
 Reply-To: rpm@xenomai.org
@@ -23,7 +23,7 @@ To: Niklaus Giger <niklaus.giger@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 This is a multi-part message in MIME format.
---------------080805040005090804080909
+--------------090503030504050007010608
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 
@@ -61,7 +61,7 @@ Niklaus Giger wrote:
 > 
 
 I must admit that I always considered the task restart interface as a pure
-manifestation of the Evil, so it absence in SOLO might not be totally
+manifestation of the Evil, so its absence from SOLO might not be totally
 fortuitous. Trashing your system with that stuff is way to easy.
 
 Anyway, here is a possible implementation based on - cough, cough... -
@@ -74,7 +74,8 @@ Please let me know how that works for you.
 -- 
 Philippe.
 
---------------080805040005090804080909
+
+--------------090503030504050007010608
 Content-Type: text/x-diff;
  name="solo-vxworks-add-task-restart.patch"
 Content-Transfer-Encoding: 7bit
@@ -319,5 +320,6 @@ index 299d059..46718e1 100644
  
  #endif /* _VXWORKS_TASKLIB_H */
 
---------------080805040005090804080909--
+
+--------------090503030504050007010608--
 
