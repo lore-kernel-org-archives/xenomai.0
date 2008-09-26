@@ -1,50 +1,38 @@
-Message-ID: <48F38E25.4060205@domain.hid>
-Date: Mon, 13 Oct 2008 20:06:29 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <f5e14e470809260406v3352ef88nf8eb21f727a8a1c6@domain.hid>
+Date: Fri, 26 Sep 2008 13:06:33 +0200
+From: "Ulrich Schwab" <uli.schwab@domain.hid>
+In-Reply-To: <597724.70868.qm@domain.hid>
 MIME-Version: 1.0
-References: <48F34E5A.60209@domain.hid> <48F3527E.6020908@domain.hid>
-	<48F35470.70600@domain.hid> <48F35785.6090503@domain.hid>
-In-Reply-To: <48F35785.6090503@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [BUG?] mem leak on slab size-1024 with Xenomai
- processes
-Reply-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Disposition: inline
+References: <597724.70868.qm@domain.hid>
+Subject: Re: [Xenomai-help] CONFIG_XENO_OPT_NATIVE_INTR?
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: menege1@domain.hid
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> Jan Kiszka wrote:
->>>> Sigh, this is not my day: Can anyone confirm that we are leaking memory
->>>> with current SVN head? I'm seeing a constant increase on slab
->>>> "size-1024" on a x86_64 box when running arbitrary Xenomai apps in a loop.
->>>>
->>>> [ Besides that, I have an occasional deadlock in xnpipe_wakeup_proc due
->>>> to an inconsistent xnpipe_sleepq - likely a different story... :-/ ]
->>>>
->>> Any luck with CONFIG_XENOMAI_OPT_DEBUG_QUEUES on?
->> As usual no luck: the bug disappeared (likely some race). Will dig into
->> that next after fixing this leak:
->>
->> xnshadow_sys_event()
->> XNSHADOW_CLIENT_ATTACH -> xnarch_alloc_host_mem(xnsys_ppd)
->> XNSHADOW_CLIENT_DETACH -> ???
-> 
-> That was the key, now fixed with #4218.
+On Fri, Sep 26, 2008 at 2:15 AM, egemen kaleli <menege1@domain.hid> wrote:
+> Hello,
+>
+> When I want to call "rt_intr_create(&intr_timer,"MyIrq",irq,I_NOAUTOENA)"
+> function it returns  -ENOSYS.CONFIG_XENO_OPT_NATIVE_INTR is off in default.I
+> want to make it on.How can I do it?Which files and directories should  I
+> look for?Any help will be greatly appreciated.
+Usually You only need to handle irqs in a driver, and a xenomai driver
+is doing it with the RTDM skin
+and the system call: rtdm_irq_request  (see the API docs)
+This is the reason CONFIG_XENO_OPT_NATIVE_INTR is off by default
+If You want to switch it on anyway, You can do it in the kernel config
+page for the native skin.
 
-Ok. I think this one is mine. Sorry.
-
--- 
-					    Gilles.
+Ulrich Schwab
 
