@@ -1,59 +1,45 @@
-Message-ID: <48F461A6.6010600@domain.hid>
-Date: Tue, 14 Oct 2008 11:08:54 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48DD05F2.4040203@domain.hid>
+Date: Fri, 26 Sep 2008 17:55:30 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <48F3C3E4.4020801@domain.hid> <48F45847.3030704@domain.hid>
-In-Reply-To: <48F45847.3030704@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+References: <2b490f270809260610w4573446x507ef059d4b3ca0b@domain.hid>
+In-Reply-To: <2b490f270809260610w4573446x507ef059d4b3ca0b@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] __thread instead of pthread_get/setspecific
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Segmentation Fault
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Dehann Fourie <dehann.fourie@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Hi,
->>
->> looking into the "xeno_in_primary_mode" thing I wondered how to make the
->> thread state quickly retrievable. Going via pthread_getspecific as we do
->> for xeno_get_current appears logical - but not optimal. Though
->> getspecific is optimized for speed, it remains a function call, a few
->> sanity checks, and only finally a TLS variable access. That could be
->> achieved in a much lighter way by using a __thread variable.
->>
->> But can we assume that all target we support also support the __thread
->> storage class? TLS is surely mandatory now: I assume pthread_getspecific
->> would become non-RT safe without it, right? Is there anything we
->> can/must check for during configure to verify __thread support?
+Dehann Fourie wrote:
+> Hi,
 > 
-> I really think that this optimization is not worth the trouble. Anyway,
+> I'm having trouble with a segmentation fault in my real-time application.
+> The problem seems to occur when I use large amounts of memory. The
+> application works fine when I don't try to populate the large arrays.
+> 
+> I have tried changing parameters in the real time create call, but this
+> didn't work. The error message is:
+> 
+> Xenomai: Switching nav to secondary mode after exception #14 from user-space
+> at 0x804ad13 (pid 1938)
+> nav [1938]; segfault at 26756e50 eip 0804ad13 esp b762ac28 error 6
+> Segmentation fault
+> 
+> This is from text mode.
 
-As long as we cannot specify the amount of "trouble", it's hard to
-decide. Me current feeling is that it should rather simplify the
-implementation + save us quite a few ops in the fast path (even more
-with upcoming thread-mode check).
-
-> I have one question: is an implementation guaranteed to support more
-> than one __thread variable? Because from ARM implementation I would say
-> that ARM has only one __thread variable.
-
-That would be weird - there is no such limitation known to me. Anyway,
-you could easily verify this with a simple test program I guess. /me
-also wonders how the glibc/NPTL is maintaining certain per-thread
-variables (and there are surely > 1) internally.
-
-Jan
+You do not give us much information about your configuration. However,
+have you tried gdb ? In case of segmentation faults, it should stop you
+right at the point where the segmentation occurs.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
