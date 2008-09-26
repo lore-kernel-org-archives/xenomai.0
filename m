@@ -1,13 +1,10 @@
-Message-ID: <48DC9F92.2050401@domain.hid>
-Date: Fri, 26 Sep 2008 10:38:42 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Fri, 26 Sep 2008 12:01:02 +0200
+From: "stephane ancelot" <sancelot@domain.hid>
+Content-Type: text/plain; format=flowed; delsp=yes; charset=utf-8
 MIME-Version: 1.0
-References: <200809222151.46401.niklaus.giger@domain.hid>
-In-Reply-To: <200809222151.46401.niklaus.giger@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] Adding some .gitignore
-Reply-To: rpm@xenomai.org
+Message-ID: <op.uh2130rinuwxn3@domain.hid>
+Subject: [Xenomai-core] rt_sem_create bug when registring in proc
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,244 +14,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Niklaus Giger <niklaus.giger@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Niklaus Giger wrote:
-> After a ./configure in my git clone, git status cluttered my screen withe a lot 
-> of uninteresting files. In order to get rid of them I created the attached 
-> .gitignore files.
->
+Hi,
+I have the following kernel bug, when using a string name in  
+rt_sem_create. using NULL as name do not report this problem.
 
-Merged, thanks.
+BUG: unable to handle kernel paging request at virtual address de82a268
+printing eip: c025d51a *pde = 1dd3e067 *pte = 00000000
+Oops: 0000 [#1] PREEMPT
+Modules linked in: xxxxxx(P) elok_s(P) e100 mii
 
-> Signed-off-by: Niklaus Giger <niklaus.giger@domain.hid>
-> 
-> ---
->  .gitignore                   |   47 
-> ++++++++++++++++++++++++++++++++++++++++++
->  base/.gitignore              |    8 +++++++
->  config/.gitignore            |    9 ++++++++
->  include/.gitignore           |    8 +++++++
->  include/psos/.gitignore      |    8 +++++++
->  include/vxworks/.gitignore   |    8 +++++++
->  include/xenomai/.gitignore   |    8 +++++++
->  psos/.gitignore              |    8 +++++++
->  scripts/.gitignore           |    9 ++++++++
->  vxworks/.gitignore           |    8 +++++++
->  vxworks/testsuite/.gitignore |   10 +++++++++
->  11 files changed, 131 insertions(+), 0 deletions(-)
->  create mode 100644 .gitignore
->  create mode 100644 base/.gitignore
->  create mode 100644 config/.gitignore
->  create mode 100644 include/.gitignore
->  create mode 100644 include/psos/.gitignore
->  create mode 100644 include/vxworks/.gitignore
->  create mode 100644 include/xenomai/.gitignore
->  create mode 100644 psos/.gitignore
->  create mode 100644 scripts/.gitignore
->  create mode 100644 vxworks/.gitignore
->  create mode 100644 vxworks/testsuite/.gitignore
-> 
-> diff --git a/.gitignore b/.gitignore
-> new file mode 100644
-> index 0000000..af911eb
-> --- /dev/null
-> +++ b/.gitignore
-> @@ -0,0 +1,47 @@
-> +#
-> +# NOTE! Don't add files that are generated in specific
-> +# subdirectories here. Add them in the ".gitignore" file
-> +# in that subdirectory instead.
-> +#
-> +# Normal rules
-> +#
-> +
-> +*.rej
-> +*.orig
-> +*.a
-> +*.o
-> +*~
-> +*.la
-> +*.lo
-> +
-> +#
-> +# Top-level generic files
-> +#
-> +
-> +#
-> +# Generated files
-> +#
-> +/conf2*
-> +*.depend
-> +.deps
-> +.libs
-> +*.lineno
-> +libtool
-> +config.log
-> +/Makefile
-> +stamp-h1
-> +xeno_config.h
-> +config.status
-> +
-> +# for output of format-patch
-> +00*
-> +
-> +# stgit generated dirs
-> +patches-*
-> +
-> +# quilt's files
-> +patches
-> +series
-> +
-> +# cscope files
-> +cscope.*
-> diff --git a/base/.gitignore b/base/.gitignore
-> new file mode 100644
-> index 0000000..13daaa8
-> --- /dev/null
-> +++ b/base/.gitignore
-> @@ -0,0 +1,8 @@
-> +#
-> +# NOTE! Don't add files that are generated in specific
-> +# subdirectories here. Add them in the ".gitignore" file
-> +# in that subdirectory instead.
-> +#
-> +# Generated files
-> +#
-> +/Makefile
-> diff --git a/config/.gitignore b/config/.gitignore
-> new file mode 100644
-> index 0000000..e96352c
-> --- /dev/null
-> +++ b/config/.gitignore
-> @@ -0,0 +1,9 @@
-> +#
-> +# NOTE! Don't add files that are generated in specific
-> +# subdirectories here. Add them in the ".gitignore" file
-> +# in that subdirectory instead.
-> +#
-> +# Generated files
-> +#
-> +/Makefile
-> +*.lineno
-> diff --git a/include/.gitignore b/include/.gitignore
-> new file mode 100644
-> index 0000000..13daaa8
-> --- /dev/null
-> +++ b/include/.gitignore
-> @@ -0,0 +1,8 @@
-> +#
-> +# NOTE! Don't add files that are generated in specific
-> +# subdirectories here. Add them in the ".gitignore" file
-> +# in that subdirectory instead.
-> +#
-> +# Generated files
-> +#
-> +/Makefile
-> diff --git a/include/psos/.gitignore b/include/psos/.gitignore
-> new file mode 100644
-> index 0000000..13daaa8
-> --- /dev/null
-> +++ b/include/psos/.gitignore
-> @@ -0,0 +1,8 @@
-> +#
-> +# NOTE! Don't add files that are generated in specific
-> +# subdirectories here. Add them in the ".gitignore" file
-> +# in that subdirectory instead.
-> +#
-> +# Generated files
-> +#
-> +/Makefile
-> diff --git a/include/vxworks/.gitignore b/include/vxworks/.gitignore
-> new file mode 100644
-> index 0000000..13daaa8
-> --- /dev/null
-> +++ b/include/vxworks/.gitignore
-> @@ -0,0 +1,8 @@
-> +#
-> +# NOTE! Don't add files that are generated in specific
-> +# subdirectories here. Add them in the ".gitignore" file
-> +# in that subdirectory instead.
-> +#
-> +# Generated files
-> +#
-> +/Makefile
-> diff --git a/include/xenomai/.gitignore b/include/xenomai/.gitignore
-> new file mode 100644
-> index 0000000..13daaa8
-> --- /dev/null
-> +++ b/include/xenomai/.gitignore
-> @@ -0,0 +1,8 @@
-> +#
-> +# NOTE! Don't add files that are generated in specific
-> +# subdirectories here. Add them in the ".gitignore" file
-> +# in that subdirectory instead.
-> +#
-> +# Generated files
-> +#
-> +/Makefile
-> diff --git a/psos/.gitignore b/psos/.gitignore
-> new file mode 100644
-> index 0000000..13daaa8
-> --- /dev/null
-> +++ b/psos/.gitignore
-> @@ -0,0 +1,8 @@
-> +#
-> +# NOTE! Don't add files that are generated in specific
-> +# subdirectories here. Add them in the ".gitignore" file
-> +# in that subdirectory instead.
-> +#
-> +# Generated files
-> +#
-> +/Makefile
-> diff --git a/scripts/.gitignore b/scripts/.gitignore
-> new file mode 100644
-> index 0000000..d618ccb
-> --- /dev/null
-> +++ b/scripts/.gitignore
-> @@ -0,0 +1,9 @@
-> +#
-> +# NOTE! Don't add files that are generated in specific
-> +# subdirectories here. Add them in the ".gitignore" file
-> +# in that subdirectory instead.
-> +#
-> +# Generated files
-> +#
-> +/Makefile
-> +xeno-config
-> diff --git a/vxworks/.gitignore b/vxworks/.gitignore
-> new file mode 100644
-> index 0000000..13daaa8
-> --- /dev/null
-> +++ b/vxworks/.gitignore
-> @@ -0,0 +1,8 @@
-> +#
-> +# NOTE! Don't add files that are generated in specific
-> +# subdirectories here. Add them in the ".gitignore" file
-> +# in that subdirectory instead.
-> +#
-> +# Generated files
-> +#
-> +/Makefile
-> diff --git a/vxworks/testsuite/.gitignore b/vxworks/testsuite/.gitignore
-> new file mode 100644
-> index 0000000..089bf31
-> --- /dev/null
-> +++ b/vxworks/testsuite/.gitignore
-> @@ -0,0 +1,10 @@
-> +msgQ-1
-> +msgQ-2
-> +msgQ-3
-> +sem-1
-> +sem-2
-> +sem-3
-> +task-1
-> +task-2
-> +wd-1
-> +
+Pid: 4, comm: events/0 Tainted: P        (2.6.24.2-ipipe #3)
+EIP: 0060:[<c025d51a>] EFLAGS: 00010246 CPU: 0
+EIP is at strlen+0xa/0x20
+EAX: 00000000 EBX: 00008124 ECX: ffffffff EDX: de82a268
+ESI: de82a268 EDI: de82a268 EBP: 00000001 ESP: ddc27e8c
+  DS: 007b ES: 007b FS: 0000 GS: 0000 SS: 0068
+Process events/0 (pid: 4, ti=ddc26000 task=ddc19ab0 task.ti=ddc26000)<0>
+I-pipe domain Linux
+Stack: ddc27ebc c01e445b dde783c0 c0257d2a dde78140 de82a268 de82a268  
+c016e7a0
+        c048aebc 00000000 c01e46d4 00000001 dde78140 c04fbac4 c016338c  
+00000200
+        00000000 ffffffff ffffffff 0000007b 00000002 00000000 dde783c0  
+dde78140
+Call Trace:
+  [<c01e445b>] proc_create+0x4b/0x110
+  [<c0257d2a>] idr_get_new+0xa/0x30
+  [<c016e7a0>] __sem_read_proc+0x0/0x130
+  [<c01e46d4>] create_proc_entry+0x44/0x90
+  [<c016338c>] registry_proc_callback+0xa1c/0xb00
+  [<c01130c1>] update_curr+0x71/0x100
+  [<c0113148>] update_curr+0xf8/0x100
+  [<c01132ef>] set_next_entity+0x1f/0x50
+  [<c0162970>] registry_proc_callback+0x0/0xb00
+  [<c0129516>] run_workqueue+0xb6/0x1a0
+  [<c039ff8f>] schedule+0x1df/0x3d0
+  [<c0129e9d>] worker_thread+0x6d/0xa0
+  [<c012d670>] autoremove_wake_function+0x0/0x50
+  [<c0129e30>] worker_thread+0x0/0xa0
+  [<c012d302>] kthread+0x42/0x70
+  [<c012d2c0>] kthread+0x0/0x70
+  [<c010398b>] kernel_thread_helper+0x7/0x1c
+  =======================
+Code: 00 56 89 c6 89 d0 88 c4 ac 38 e0 74 09 84 c0 75 f7 be 01 00 00 00 89  
+f0 48 5e c3 8d b6 00 00 00 00 57 b9 ff ff ff ff 89 c7 31 c0 <f2> ae f7 d1  
+49 5f 89 c8 c3 8d b6 00 00 00 00 8d bc 27 00 00 00
+EIP: [<c025d51a>] strlen+0xa/0x20 SS:ESP 0068:ddc27e8c
+---[ end trace 614a6309c2874abe ]---
 
-
--- 
-Philippe.
+Best regards
+S.Ancelot
 
