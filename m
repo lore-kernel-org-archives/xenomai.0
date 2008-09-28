@@ -1,16 +1,12 @@
-Message-ID: <48DF9972.1040503@domain.hid>
-Date: Sun, 28 Sep 2008 16:49:22 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Sun, 28 Sep 2008 23:21:24 +0200
 MIME-Version: 1.0
-References: <48D6A80F.1080206@domain.hid> <48D75663.8000402@domain.hid>
-	<48D7BA7F.6030801@domain.hid> <48DF9543.8010608@domain.hid>
-	<48DF9725.2070705@domain.hid>
-In-Reply-To: <48DF9725.2070705@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Handle SIGILL when kernel compiled without
-	Xenomai.
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+Message-Id: <200809282321.25635.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] Problems using rt_intr_wait on PowerPC
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,43 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->> Gilles Chanteperdrix wrote:
->>> Philippe Gerum wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> Hi,
->>>>>
->>>>> on some (all ?) platforms, we get a SIGILL when trying to emit the first 
->>>>> Xenomai syscall, instead of the -ENOSYS return value. This patches 
->>>>> handles the SIGILL by printing an error message and exiting.
->>>>>
->>>> This is an issue for archs that encode the syscall number into the trap opcode
->>>> like ARM using the OABI, others will get -ENOSYS as expected, so this should
->>>> move to the arch-specific code.
->>> Actually, I get a SIGILL on ARM compiled with EABI as well.
->> It seems the ARM folks decided to send SIGILL with EABI to conform to the OABI
->> behaviour, despite they did not formally need that. Only invalid calls in the
->> 9f00xx..9f07ff range are expected to return -ENOSYS. Too bad that our syscall
->> marker is out of that range.
->>
->>  Moving this
->>> code to the arch dependent code looks hard, since we need to setup the
->>> jump buffer in the very function which issues the syscall (Ok, we could
->>> use a macro). But what would you think of a SIGILL handler which does
->>> not longjmp (like Jan suggested, simply print an error message and exit,
->>> even if xeno_bind_skin_opt was called) ?
->>>
->> Fine with me.
-> 
-> Ok. Commited in trunk. Do I commit in v2.4.x branch?
-> 
+Hi
 
-Yep. Thanks.
+Based on the user_irq.c I created a simple test program for my PPC405GPr 
+board.
+
+We have a FPGA which generates an interrupt every millisecond.
+It seems to work as simple test (fire it once and assure that it
+sets the interrupt-bit).
+
+When I connect it to the irq_server however (letting the main task
+sleep 1 second) I get around 2321964 error and not a single OK from 
+rt_intr_wait.
+Also my debug LED flicker very fast.
+The FPGA is connected to the External Interrupt 0, which has the number 25.
+
+I think that I either got the polarity/level/edge register wrong or
+I am playing with the wrong interrupt.
+
+Could anybody tell me, whether I used the correct interrupt number?
+Does Linux somewhere overwrite the values for the UIC polarity/level, etc
+settings written by U-Boot (e.g. for my board in board_early_init_f)
+
+Any hints are welcome.
+
+Best regards
 
 -- 
-Philippe.
+NIklaus Giger
+
 
