@@ -1,130 +1,87 @@
-Message-ID: <48F4ACF2.3000408@domain.hid>
-Date: Tue, 14 Oct 2008 16:30:10 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <f5e14e470809290631o7cf6cdeaja3157ff86b0d9a6a@domain.hid>
+Date: Mon, 29 Sep 2008 15:31:10 +0200
+From: "Ulrich Schwab" <uli.schwab@domain.hid>
+In-Reply-To: <798633.86049.qm@domain.hid>
 MIME-Version: 1.0
-References: <48F3C3E4.4020801@domain.hid>
-	<48F45847.3030704@domain.hid>	<48F461A6.6010600@domain.hid>
-	<48F4634B.3030002@domain.hid>	<48F465DD.6020505@domain.hid>
-	<48F46954.6050704@domain.hid> <48F473A2.1050104@domain.hid>
-	<48F48E2E.2050004@domain.hid> <48F49540.3060507@domain.hid>
-	<48F49637.2030000@domain.hid> <48F497B2.4080404@domain.hid>
-	<48F4987F.1060901@domain.hid> <48F499EF.9010205@domain.hid>
-	<48F49DCE.2070308@domain.hid> <48F4A234.9030309@domain.hid>
-In-Reply-To: <48F4A234.9030309@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] __thread instead of pthread_get/setspecific
-Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain; charset=ISO-8859-9
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+References: <f5e14e470809290400x6b48f63fm7adcc35e460313fb@domain.hid>
+	<798633.86049.qm@domain.hid>
+Subject: Re: [Xenomai-help] Fw: Re:  CONFIG_XENO_OPT_NATIVE_INTR?
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Ack. There are rt_printf (rtdk) and the task-self services of vxworks,
->>> vrtx and native skins. So if I get an OK for the proposal, I'll convert
->>> the rest, too.
->> And I really do not understand how the keys can be chosen at
->> compilation-time, especially in the situation where multiple libraries
->> allocate __thread objects separately: how does the compiler know which
->> key to give for each library ?
-> 
-> The keys are known at linking time when a) their context is module-local
-> and b) their TLS storage can be appended to main's TLS area (and that
-> can only happen during initial linking, of course).
-> 
-> 
-> BTW, another advantage of TLS over getspecific /wrt task-self is that it
-> overcomes its laziness: its now cheap and easy to set self in the thread
-> trampoline.
-> 
-> Philippe, could it be that vrtx's sc_tinquiry implementation is broken?
-> I only find the corresponding pthread_setspecific in the lib
-> constructor. That pattern totally disagrees with native and vxworks.
->
-
-Oh my... I killed this dead O/S once again!
-
---- src/skins/vrtx/task.c	(revision 4211)
-+++ src/skins/vrtx/task.c	(working copy)
-@@ -80,6 +80,7 @@
- 	struct sched_param param;
- 	int policy;
- 	long err;
-+	TCB *tcb;
-
- 	/* Backup the arg struct, it might vanish after completion. */
- 	memcpy(&_iargs, iargs, sizeof(_iargs));
-@@ -94,6 +95,15 @@
- 	/* vrtx_task_delete requires asynchronous cancellation */
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-
-+	tcb = (TCB *) malloc(sizeof(*tcb));
-+	if (tcb == NULL) {
-+		fprintf(stderr, "Xenomai: failed to allocate local TCB?!\n");
-+		err = -ENOMEM;
-+		goto fail;
-+	}
-+
-+	pthread_setspecific(__vrtx_tskey, tcb);
-+
- 	old_sigharden_handler = signal(SIGHARDEN, &vrtx_task_sigharden);
-
- 	bulk.a1 = (u_long)iargs->tid;
-@@ -116,9 +126,7 @@
-
- 	if (!err)
- 		_iargs.entry(_iargs.param);
--
--      fail:
--
-+fail:
- 	pthread_exit((void *)err);
- }
-
-Index: src/skins/vrtx/init.c
-===================================================================
---- src/skins/vrtx/init.c	(revision 4211)
-+++ src/skins/vrtx/init.c	(working copy)
-@@ -39,8 +39,6 @@
- static __attribute__ ((constructor))
- void __init_xeno_interface(void)
- {
--	TCB *tcb;
--
- 	__vrtx_muxid =
- 	    xeno_bind_skin(VRTX_SKIN_MAGIC, "vrtx", "xeno_vrtx");
- 	__vrtx_muxid = __xn_mux_shifted_id(__vrtx_muxid);
-@@ -51,13 +49,4 @@
- 		fprintf(stderr, "Xenomai: failed to allocate new TSD key?!\n");
- 		exit(1);
- 	}
--
--	tcb = (TCB *) malloc(sizeof(*tcb));
--
--	if (!tcb) {
--		fprintf(stderr, "Xenomai: failed to allocate local TCB?!\n");
--		exit(1);
--	}
--
--	pthread_setspecific(__vrtx_tskey, tcb);
- }
-
-
-> Jan
-> 
-
-
--- 
-Philippe.
-
+VGhpcyBpcyBhbHNvIGFuIG9wdGlvbiBmb3IgYW55IGRyaXZlciB0byB1c2Ugc2hhcmVkIG1lbS4g
+SWYgdGhpcyBtYWtlcwpzZW5zZSBpbiBZb3VyIGFwcGxpY2F0aW9uLCBvbmx5IFlvdSBjYW4gdGVs
+bC4KSXNzdWVzIG1pZ2h0IGJlIHJhY2UgY29uZGl0aW9ucyBpbiBjb25jdXJyZW50IGFjY2VzcyB0
+byB0aGUgc2hhcmVkIG1lbS4KVGhleSBzaG91bGQgdGhlcmVmb3JlIGJlIHByb3RlY3RlZCBieSBh
+IG11dGV4IG9yIHNlbWFwaG9yZS4KClVscmljaAoKT24gTW9uLCBTZXAgMjksIDIwMDggYXQgMToz
+NSBQTSwgZWdlbWVuIGthbGVsaSA8bWVuZWdlMUB5YWhvby5jb20+IHdyb3RlOgo+IHllcyBJIHNl
+ZSBidXQgSSB3YW50IHRvIGhhbmRsZSBpbnRlcnJ1cHQgaW4gZHJpdmVyIHNpZGUuU28gaXQgaXMg
+bm90Cj4gcG9zc2libGUgIGEgdXNlciBwcm9ncmFtIHRvIGNhbGwgYW55IGZ1bmN0aW9uLkkgaGF2
+ZSBjb21lIHVwIHdpdGggYSBpZGVhCj4gdGhhdCBpcyB1c2luZyBydGRtIG1lbW9yeSBtYXAgc28g
+dGhhdCBpbnRlcnJ1cHQgaGFuZGxlciBjYW4gcGFzcyBhIGNsb2NrCj4gdGljayB0byB0aGUgdXNl
+ciBzcGFjZS4gRG8geW91IHNlZSBhIGRpc2FkdmFudGFnZSBpZiBJIHVzZSBtbWFwPwo+Cj4gLS0t
+IE9uIE1vbiwgOS8yOS8wOCwgVWxyaWNoIFNjaHdhYiA8dWxpLnNjaHdhYkBnb29nbGVtYWlsLmNv
+bT4gd3JvdGU6Cj4KPiBGcm9tOiBVbHJpY2ggU2Nod2FiIDx1bGkuc2Nod2FiQGdvb2dsZW1haWwu
+Y29tPgo+IFN1YmplY3Q6IFJlOiBGdzogUmU6IFtYZW5vbWFpLWhlbHBdIENPTkZJR19YRU5PX09Q
+VF9OQVRJVkVfSU5UUj8KPiBUbzogbWVuZWdlMUB5YWhvby5jb20KPiBDYzogeGVub21haS1oZWxw
+QGduYS5vcmcKPiBEYXRlOiBNb25kYXksIFNlcHRlbWJlciAyOSwgMjAwOCwgMjowMCBQTQo+Cj4g
+Rmlyc3Qgb2YgYWxsLCBwbGVhc2UgZG8gbm90IGRyb3AgdGhlIGxpc3QgZnJvbSByZWNlaXZpbmcg
+WW91ciBtYWlscywKPiB0aGlzIHdheSBub2JvZHkgZWxzZSBjYW4gYW5zd2VyIFlvdXIgcXVlc3Rp
+b25zLgo+Cj4gT25lIGV4YW1wbGUgaXM6Cj4gQSB1c2VyIHByb2dyYW0gY2FuIGNhbGwgcnRfZGV2
+X2lvY3RsIG9uIHRoZSBvcGVuIGZpbGUgZGVzY3JpcHRvcgo+IGFzc29jaWF0ZWQgd2l0aCBZb3Vy
+IHRpbWVyIGhhcmR3YXJlLgo+IEluIHRoZSBkcml2ZXIgaW9jdGwgZW50cnkgLSB3aGljaCBpcyBl
+eGVjdXRlZCBpbiB0aGUgY29udGV4dCBvZiB0aGUKPiB1c2VyIHRhc2sgLSBpdCBjYW4gYmxvY2sg
+YW5kIGJlIHVuYmxvY2tlZAo+IGZyb20gd2l0aGluIHRoZSBpc3Igd2hlbiB0aGUgZGVzaXJlZCBj
+b25kaXRpb24gaXMgbWV0Lgo+Cj4gVWxyaWNoCj4gT24gU3VuLCBTZXAgMjgsIDIwMDggYXQgMTE6
+MzcgQU0sIGVnZW1lbiBrYWxlbGkgPG1lbmVnZTFAeWFob28uY29tPgo+IHdyb3RlOgo+Pgo+Pgo+
+PiAtLS0gT24gU3VuLCA5LzI4LzA4LCBlZ2VtZW4ga2FsZWxpIDxtZW5lZ2UxQHlhaG9vLmNvbT4g
+d3JvdGU6Cj4+Cj4+IEZyb206IGVnZW1lbiBrYWxlbGkgPG1lbmVnZTFAeWFob28uY29tPgo+PiBT
+dWJqZWN0OiBSZTogW1hlbm9tYWktaGVscF0gQ09ORklHX1hFTk9fT1BUX05BVElWRV9JTlRSPwo+
+PiBUbzogbWVuZWdlMUB5YWhvby5jb20KPj4gRGF0ZTogU3VuZGF5LCBTZXB0ZW1iZXIgMjgsIDIw
+MDgsIDEyOjMxIFBNCj4+Cj4+IN1mIEkgd2FudCB0byBoYW5kbGUgYSBoYXJkd2FyZSB0aW1lciBp
+bnRlcnJ1cHQgaW4ga2VybmVsIG1vZHVsZSAsaG93IGNhbgo+IEkKPj4gbWFrZSB1c2VyIHNwYWNl
+IGF3YXJlIG9mIGhhcHBlbmluZyBhbiBpbnRlcnJ1cHQgc28gdGhhdCBJIGNhbiBwYXNzIGEgY2xv
+Y2sKPj4gdGljayB0byB1c2VyIHByb2dyYW0gZnJvbSBrZXJuZWwgZHJpdmVyIHRocm91Z2ggdGlt
+ZXIgaW50ZXJydXB0Lgo+Pgo+PiAtLS0gT24gRnJpLCA5LzI2LzA4LCBlZ2VtZW4ga2FsZWxpIDxt
+ZW5lZ2UxQHlhaG9vLmNvbT4gd3JvdGU6Cj4+Cj4+IEZyb206IGVnZW1lbiBrYWxlbGkgPG1lbmVn
+ZTFAeWFob28uY29tPgo+PiBTdWJqZWN0OiBSZTogW1hlbm9tYWktaGVscF0gQ09ORklHX1hFTk9f
+T1BUX05BVElWRV9JTlRSPwo+PiBUbzogIlVscmljaCBTY2h3YWIiIDx1bGkuc2Nod2FiQGdvb2ds
+ZW1haWwuY29tPgo+PiBEYXRlOiBGcmlkYXksIFNlcHRlbWJlciAyNiwgMjAwOCwgNToxMyBQTQo+
+Pgo+PiB0aGFua3MgZm9yIGhlbHAuQ2FuIEkgdXNlIHJ0ZG0gaW50ZXJydXB0IGhhbmRsZXIgaW4g
+dXNlciBzcGFjZT9pbiBmYWN0ICAgSQo+PiB3YW50IHRvIGNyZWF0ZSAgYSBoYW5kbGVyIGluIGtl
+cm5lbCBzcGFjZSx0aGlzIGhhbmRsZXIgc2hvdWxkIHBhc3MgZGF0YQo+PiB0by9mcm9tIHVzZXIg
+c3BhY2UuQnUgdCBpdCBpcyBub3QgcG9zc2libGUgYXMgIEkga25vdyBmcm9tIGxpbnV4IGRldmlj
+ZQo+PiBkcml2ZXJzIC5TbyBJIHdhbnQgdG8gY3JlYXRlIGEgdXNlciBzcGFjZSBoYW5kbGVyLgo+
+PiBBUEkgaXMgbm90IGV4cGxhbmF0b3J5IGFuZCBkb2VzbnQgaGF2ZSBlbm91Z2ggZXhhbXBsZSBh
+Ym91dCBpbnRlcnJ1cHQKPj4gbWFuYWdlbWVudCxlc3BlY2lhbGx5IHJ0ZG0gaW50ZXJydXB0IG1h
+bmFnZW1lbnQgYXMgd2VsbC4KPj4KPj4gLS0tIE9uIEZyaSwgOS8yNi8wOCwgVWxyaWNoIFNjaHdh
+YiA8dWxpLnNjaHdhYkBnb29nbGVtYWlsLmNvbT4KPiB3cm90ZToKPj4KPj4gRnJvbTogVWxyaWNo
+IFNjaHdhYiA8dWxpLnNjaHdhYkBnb29nbGVtYWlsLmNvbT4KPj4gU3ViamVjdDogUmU6IFtYZW5v
+bWFpLWhlbHBdIENPTkZJR19YRU5PX09QVF9OQVRJVkVfSU5UUj8KPj4gVG86IG1lbmVnZTFAeWFo
+b28uY29tCj4+IENjOiB4ZW5vbWFpLWhlbHBAZ25hLm9yZwo+PiBEYXRlOiBGcmlkYXksIFNlcHRl
+bWJlciAyNiwgMjAwOCwgMjowNiBQTQo+Pgo+PiBPbiBGcmksIFNlcCAyNiwgMjAwOCBhdCAyOjE1
+IEFNLCBlZ2VtZW4ga2FsZWxpIDxtZW5lZ2UxQHlhaG9vLmNvbT4KPiB3cm90ZToKPj4+IEhlbGxv
+LAo+Pj4KPj4+IFdoZW4gSSB3YW50IHRvIGNhbGwKPj4KPiAicnRfaW50cl9jcmVhdGUoJmludHJf
+dGltZXIsIk15SXJxIixpcnEsSV9OT0FVVE9FTkEpIgo+Pj4gZnVuY3Rpb24gaXQgcmV0dXJucyAg
+LUVOT1NZUy5DT05GSUdfWEVOT19PUFRfTkFUSVZFX0lOVFIgaXMgb2ZmIGluCj4+IGRlZmF1bHQu
+SQo+Pj4gd2FudCB0byBtYWtlIGl0IG9uLkhvdyBjYW4gSSBkbyBpdD9XaGljaCBmaWxlcyBhbmQg
+ZGlyZWN0b3JpZXMgc2hvdWxkCj4gSQo+Pj4gbG9vayBmb3I/QW55IGhlbHAgd2lsbCBiZSBncmVh
+dGx5IGFwcHJlY2lhdGVkLgo+PiBVc3VhbGx5IFlvdSBvbmx5IG5lZWQgdG8gaGFuZGxlIGlycXMg
+aW4gYSBkcml2ZXIsIGFuZCBhIHhlbm9tYWkgZHJpdmVyCj4+IGlzIGRvaW5nIGl0IHdpdGggdGhl
+IFJURE0gc2tpbgo+PiBhbmQgdGhlIHN5c3RlbSBjYWxsOiBydGRtX2lycV9yZXF1ZXN0ICAoc2Vl
+IHRoZSBBUEkgZG9jcykKPj4gVGhpcyBpcyB0aGUgcmVhc29uIENPTkZJR19YRU5PX09QVF9OQVRJ
+VkVfSU5UUiBpcyBvZmYgYnkKPj4gIGRlZmF1bHQKPj4gSWYgWW91IHdhbnQgdG8gc3dpdGNoIGl0
+IG9uIGFueXdheSwgWW91IGNhbiBkbyBpdCBpbiB0aGUga2VybmVsIGNvbmZpZwo+PiBwYWdlIGZv
+ciB0aGUgbmF0aXZlIHNraW4uCj4+Cj4+IFVscmljaCBTY2h3YWIKPj4KPj4KPj4KPj4KPgo+Cg==
 
