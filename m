@@ -1,12 +1,14 @@
-Date: Mon, 29 Sep 2008 08:23:00 +0200
-From: "stephane ancelot" <sancelot@domain.hid>
-Content-Type: text/plain; format=flowed; delsp=yes; charset=utf-8
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Date: Tue, 30 Sep 2008 00:45:49 +0200
+References: <200809282321.25635.niklaus.giger@domain.hid>
+In-Reply-To: <200809282321.25635.niklaus.giger@domain.hid>
 MIME-Version: 1.0
-References: <op.uh2130rinuwxn3@domain.hid> <48DF93F4.6070607@domain.hid>
-Message-ID: <op.uh8b0maknuwxn3@domain.hid>
-In-Reply-To: <48DF93F4.6070607@domain.hid>
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] rt_sem_create bug when registring in proc
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200809300045.49328.berlemont.hauw@domain.hid>
+Subject: Re: [Xenomai-core] Problems using rt_intr_wait on PowerPC
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,100 +18,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
-
-Le Sun, 28 Sep 2008 16:25:56 +0200, Philippe Gerum <rpm@xenomai.org> a =20
-=C3=A9crit:
-
-> stephane ancelot wrote:
->> Hi,
->> I have the following kernel bug, when using a string name in
->> rt_sem_create. using NULL as name do not report this problem.
->>
->> BUG: unable to handle kernel paging request at virtual address de82a26=
-8
->> printing eip: c025d51a *pde =3D 1dd3e067 *pte =3D 00000000
->> Oops: 0000 [#1] PREEMPT
->> Modules linked in: xxxxxx(P) elok_s(P) e100 mii
->>
->
-> You did not specify the Xenomai version in use. Looking at this output,=
- =20
-> you may
-> want to search the bug in your proprietary module code first; it seems =
-=20
-> that you
-> passed a string laid into the data segment of a module that has been =20
-> unloaded,
-> without removing the semaphore it had initially created.
->
+To: xenomai@xenomai.org
 
 Hi,
 
-You are right, the semaphore was created in a thread meanwhile a bad code=
-d =20
-init module was unloading it. (return missing in init routine ) thanks.
-Best Regards
-Steph
-
-
-
-
->> Pid: 4, comm: events/0 Tainted: P        (2.6.24.2-ipipe #3)
->> EIP: 0060:[<c025d51a>] EFLAGS: 00010246 CPU: 0
->> EIP is at strlen+0xa/0x20
->> EAX: 00000000 EBX: 00008124 ECX: ffffffff EDX: de82a268
->> ESI: de82a268 EDI: de82a268 EBP: 00000001 ESP: ddc27e8c
->>   DS: 007b ES: 007b FS: 0000 GS: 0000 SS: 0068
->> Process events/0 (pid: 4, ti=3Dddc26000 task=3Dddc19ab0 task.ti=3Dddc2=
-6000)<0>
->> I-pipe domain Linux
->> Stack: ddc27ebc c01e445b dde783c0 c0257d2a dde78140 de82a268 de82a268
->> c016e7a0
->>         c048aebc 00000000 c01e46d4 00000001 dde78140 c04fbac4 c016338c
->> 00000200
->>         00000000 ffffffff ffffffff 0000007b 00000002 00000000 dde783c0
->> dde78140
->> Call Trace:
->>   [<c01e445b>] proc_create+0x4b/0x110
->>   [<c0257d2a>] idr_get_new+0xa/0x30
->>   [<c016e7a0>] __sem_read_proc+0x0/0x130
->>   [<c01e46d4>] create_proc_entry+0x44/0x90
->>   [<c016338c>] registry_proc_callback+0xa1c/0xb00
->>   [<c01130c1>] update_curr+0x71/0x100
->>   [<c0113148>] update_curr+0xf8/0x100
->>   [<c01132ef>] set_next_entity+0x1f/0x50
->>   [<c0162970>] registry_proc_callback+0x0/0xb00
->>   [<c0129516>] run_workqueue+0xb6/0x1a0
->>   [<c039ff8f>] schedule+0x1df/0x3d0
->>   [<c0129e9d>] worker_thread+0x6d/0xa0
->>   [<c012d670>] autoremove_wake_function+0x0/0x50
->>   [<c0129e30>] worker_thread+0x0/0xa0
->>   [<c012d302>] kthread+0x42/0x70
->>   [<c012d2c0>] kthread+0x0/0x70
->>   [<c010398b>] kernel_thread_helper+0x7/0x1c
->>   =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->> Code: 00 56 89 c6 89 d0 88 c4 ac 38 e0 74 09 84 c0 75 f7 be 01 00 00 0=
-0 =20
->> 89
->> f0 48 5e c3 8d b6 00 00 00 00 57 b9 ff ff ff ff 89 c7 31 c0 <f2> ae f7=
- =20
->> d1
->> 49 5f 89 c8 c3 8d b6 00 00 00 00 8d bc 27 00 00 00
->> EIP: [<c025d51a>] strlen+0xa/0x20 SS:ESP 0068:ddc27e8c
->> ---[ end trace 614a6309c2874abe ]---
->>
->> Best regards
->> S.Ancelot
->>
->> _______________________________________________
->> Xenomai-core mailing list
->> Xenomai-core@domain.hid
->> https://mail.gna.org/listinfo/xenomai-core
->>
+> Based on the user_irq.c I created a simple test program for my PPC405GPr
+> board.
 >
+> We have a FPGA which generates an interrupt every millisecond.
+> It seems to work as simple test (fire it once and assure that it
+> sets the interrupt-bit).
 >
+> When I connect it to the irq_server however (letting the main task
+> sleep 1 second) I get around 2321964 error and not a single OK from
+> rt_intr_wait.
+> Also my debug LED flicker very fast.
+> The FPGA is connected to the External Interrupt 0, which has the number 25.
+>
+> I think that I either got the polarity/level/edge register wrong or
+> I am playing with the wrong interrupt.
+>
+> Could anybody tell me, whether I used the correct interrupt number?
+
+I think you are OK on that point. Just beware that your 405GPr can work in two 
+modes:
+- 7 external interrupts and x GPIO lines 
+- 13 external interrupts and x-6 GPIO lines
+However, I think the IRQ 25 is the external interrupt 0 in both cases. That 
+issue is detailed in the AMCC user manual.
+
+> Does Linux somewhere overwrite the values for the UIC polarity/level, etc
+> settings written by U-Boot (e.g. for my board in board_early_init_f)
+
+That may be the case. Have a look at the 
+header "linux/include/asm-ppc/ppc4xx_pic.h" (if you are using the old ppc 
+branch). If you are using the powerpc branch, check whether the 
+function "uic_set_irq_type()" is called.
+
+For example, if you are using the sycamore eval board (and the old ppc 
+branch), all the external interrupts are configured in level mode with 
+negative polarity (arch/ppc/platforms/4xx/sycamore.c).
+
+Alexis.
 
 
 
