@@ -1,12 +1,10 @@
 From: Niklaus Giger <niklaus.giger@domain.hid>
-Date: Tue, 30 Sep 2008 00:59:42 +0200
-References: <200809282321.25635.niklaus.giger@domain.hid>
-In-Reply-To: <200809282321.25635.niklaus.giger@domain.hid>
+Date: Tue, 30 Sep 2008 21:48:44 +0200
 MIME-Version: 1.0
 Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_f3V4IKb6L2X5WUx"
-Message-Id: <200809300059.43864.niklaus.giger@domain.hid>
-Subject: Re: [Xenomai-core] Problems using rt_intr_wait on PowerPC
+  boundary="Boundary-00=_dKo4I3M1nBpeAy4"
+Message-Id: <200809302148.45123.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] Updated ksrc/skins/native/snippet/user_irq.c
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,101 +14,223 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
---Boundary-00=_f3V4IKb6L2X5WUx
+--Boundary-00=_dKo4I3M1nBpeAy4
 Content-Type: text/plain;
-  charset="iso-8859-1"
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 Hi
 
-I still could not figure out, what is going wrong. It seem that no
-interrupt is coming through. I would appreciate if anybody could take
-a look at the attached program.
+While I struggled to test the Xenomai interrupt handling on my PPC405 system, 
+I finally found at least a nice example to see that a few things are indeed 
+working fine.
 
-Since yesterday I fixed the following two errors:
-rt_intr_create returned ENOSYS, as CONFIG_XENO_OPT_NATIVE_INTR was
-not enabled.
+I attach the modified user_irq.c, which I used to add a custom interrupt
+handling routine to the ethernet receive interrupt and propagating it
+afterwards to the Linux kernel.
 
-Secondly I erronously ignored the -EIDRM return value from rt_intr_wait.
+I think it is quite a neat example and should be able to run on a variety of 
+platforms if the user selects an appropriate IRQ.
 
-I am puzzled that (as seen on this input) that  rt_intr_enable returns ENODEV.
-It seems that is used to check the validity include/asm-powerpc/wrappers.h
-but I cannot figure out the reason why it fails.
-> main: counter1 0 errors 0 irq_number 25
-> main: rt_intr_create returns 0 ENOSYS ist 38
-> main: rt_task_create returns 0
-> main: before enabling interrupts
-> enableInt: rt_intr_enable failed -19 ENODEV 19
-> irq_server: Starting. intrDesc 0x10048184 cookie 0xbeef
-> main: rt_task_start returns 0
-> enableInt: rt_intr_enable failed -19 ENODEV 19
-> main: counter 0 errors 0 done
-> irq_server: deleted interrupt object descriptor -43
-> cleanup: counter 0 errors 0 done
-What I see however in /proc/interrupts that my interrupt 25
-does not show up, e.g. 
->  cat /proc/interrupts
->            CPU0
->  16:       2371   UIC   Level     serial
->  17:       8996   UIC   Level     MAL TX EOB
->  18:      14879   UIC   Level     MAL RX EOB
->  19:          0   UIC   Level     MAL SERR
->  20:          0   UIC   Level     MAL TX DE
->  21:          0   UIC   Level     MAL RX DE
->  22:          0   UIC   Level     EMAC
-> BAD:          0
-I am a little bit confused about what I have to do to get my interrupt
-handler working.
+Is the attached patch good enough or did I made any mistakes?
 
 Best regards
-
-Am Sonntag 28 September 2008 23.21:24 schrieb Niklaus Giger:
-> Hi
->
-> Based on the user_irq.c I created a simple test program for my PPC405GPr
-> board.
->
-> We have a FPGA which generates an interrupt every millisecond.
-> It seems to work as simple test (fire it once and assure that it
-> sets the interrupt-bit).
->
-> When I connect it to the irq_server however (letting the main task
-> sleep 1 second) I get around 2321964 error and not a single OK from
-> rt_intr_wait.
-> Also my debug LED flicker very fast.
-Th
-> The FPGA is connected to the External Interrupt 0, which has the number 25.
->
-> I think that I either got the polarity/level/edge register wrong or
-> I am playing with the wrong interrupt.
->
-> Could anybody tell me, whether I used the correct interrupt number?
-> Does Linux somewhere overwrite the values for the UIC polarity/level, etc
-> settings written by U-Boot (e.g. for my board in board_early_init_f)
->
-> Any hints are welcome.
->
-> Best regards
 
 -- 
 NIklaus Giger
 
 
---Boundary-00=_f3V4IKb6L2X5WUx
-Content-Type: text/x-csrc;
-  charset="iso-8859-1";
-  name="tick_interrupt.c"
+--Boundary-00=_dKo4I3M1nBpeAy4
+Content-Type: text/x-patch;
+  charset="us-ascii";
+  name="user_irq.diff"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: attachment;
-	filename="tick_interrupt.c"
+	filename="user_irq.diff"
+
+Index: ksrc/skins/native/snippets/user_irq.c
+===================================================================
+--- ksrc/skins/native/snippets/user_irq.c	(Revision 4192)
++++ ksrc/skins/native/snippets/user_irq.c	(Arbeitskopie)
+@@ -1,57 +1,111 @@
++/*
++ * (c) 2008 Niklaus Giger, niklaus.giger@domain.hid
++ *
++ * A small example which shows how to use the native xenomai skin to
++ * catch an interrupt and forward it afterwards to the Linux kernel.
++ *
++ * Take some care to choose the interrupt you want to use.
++ * Use one, which shows up in /proc/interrupts and which has quite few
++ * occurences. E.g. I did choose 18 as my /proc/interrupts looked like
++ * 	     CPU0
++ * 16:        194   UIC   Level     serial
++ * 17:       7932   UIC   Level     MAL TX EOB
++ * 18:      12895   UIC   Level     MAL RX EOB
++ * After running the interrupt service routine we will forward the interrupt to
++ * the linux kernel. Therefore no harm should be done by intercepting it.
++ *
++ */
++#define IRQ_NR    18
++
+ #include <sys/mman.h>
+ #include <native/task.h>
+ #include <native/intr.h>
++#include <unistd.h>
++#include <stdlib.h>
+ 
+-#define IRQ_NUMBER 7  /* Intercept interrupt #7 */
+ #define TASK_PRIO  99 /* Highest RT priority */
+ #define TASK_MODE  0  /* No flags */
+ #define TASK_STKSZ 0  /* Stack size (use default one) */
+ 
++void cleanup (void);
++
+ RT_INTR intr_desc;
+-
+ RT_TASK server_desc;
+ 
++static int counter;
++
+ void irq_server (void *cookie)
+-
+ {
+-    for (;;) {
++	int j;
++	for (;;) {
+ 
+-       /* Wait for the next interrupt on channel #7. */
+-       err = rt_intr_wait(&intr_desc,TM_INFINITE);
+-
+-       if (!err) {
+-           /* Process interrupt. */
+-       }
+-    }
++		/* Wait for the next interrupt. */
++		j = rt_intr_wait(&intr_desc,TM_INFINITE);
++		if (j == -EIDRM) {
++			printf("%s: interrupt descriptor deleted. Exit?\n",
++				__FUNCTION__);
++			return;
++		}
++		if (j<0) {
++			printf("%s: error %d occured. We will exit\n",
++				__FUNCTION__, j);
++			return;
++		}
++		/* j is the nr of times the interrupt occured */
++		counter+= j;
++		/* Process interrupt.
++		 * Do you have any LED where you can see your progress ?
++		 *sysLedSet(counter);
++		 */
++	}
+ }
+ 
+ int main (int argc, char *argv[])
+-
+ {
+-    int err;
++	int err;
++	atexit(cleanup);
++	mlockall(MCL_CURRENT|MCL_FUTURE);
+ 
+-    mlockall(MCL_CURRENT|MCL_FUTURE);
+-
+-    /* ... */
+-
+-    err = rt_intr_create(&intr_desc,"MyIrq",IRQ_NUMBER,0);
+-
+-    /* ... */
+-
+-    err = rt_task_create(&server_desc,
+-			 "MyIrqServer",
+-			 TASK_STKSZ,
+-			 TASK_PRIO,
+-			 TASK_MODE);
+-    if (!err)
+-	rt_task_start(&server_desc,&irq_server,NULL);
+-
+-    /* ... */
++	/* Do not forget to pass I_PROPAGATE as the last parameter
++	 * or your Linux will hang or not function properly.
++	 * You have be warned!!
++	 */
++	err = rt_intr_create(&intr_desc,"myIrq",IRQ_NR, I_PROPAGATE);
++	if (err == -ENOSYS) {
++		printf("%s: rt_intr_create returned ENOSYS\n", __FUNCTION__);
++		printf("Did your forget to set CONFIG_XENO_OPT_NATIVE_INTR\n");
++		printf("in the kernel config under:\n");
++		printf("Real-Time Subsystem..Interfaces..Native-API..\n");
++		return 2;
++	}
++	if (err) {
++		printf("%s: rt_intr_create failed with error %d\n",
++			__FUNCTION__, err);
++		return 2;
++	}
++	err = rt_task_create(&server_desc,
++				"MyIrqServer",
++				TASK_STKSZ,
++				TASK_PRIO,
++				TASK_MODE);
++	if (err) {
++		printf("%s: rt_task_create failed with error %d\n",
++			__FUNCTION__, err);
++		return 2;
++	}
++	printf("ISR test program: Started successfully the irq task\n");
++	printf("Please generate some interrupts on IRQ %d.\n",
++		IRQ_NR);
++	printf("Number of interrupts serviced will be shown in 10 seconds.\n");
++	err = rt_task_start(&server_desc,&irq_server, 0xbeef);
++	sleep(10); /* or do you prefer pause() to wait for Ctrl-C ? */
++	printf("All okay. Did see %d interrupts\n", counter);
++	return 0;
+ }
+ 
+ void cleanup (void)
+-
+ {
+-    rt_intr_delete(&intr_desc);
+-    rt_task_delete(&server_desc);
++	rt_intr_delete(&intr_desc);
++	rt_task_delete(&server_desc);
++	printf("Cleaning up. Did see %d interrupts\n", counter);
+ }
+
+--Boundary-00=_dKo4I3M1nBpeAy4
+Content-Type: text/x-csrc;
+  charset="us-ascii";
+  name="user_irq.c"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="user_irq.c"
+
+/*
+ * (c) 2008 Niklaus Giger, niklaus.giger@domain.hid
+ *
+ * A small example which shows how to use the native xenomai skin to
+ * catch an interrupt and forward it afterwards to the Linux kernel.
+ *
+ * Take some care to choose the interrupt you want to use.
+ * Use one, which shows up in /proc/interrupts and which has quite few
+ * occurences. E.g. I did choose 18 as my /proc/interrupts looked like
+ * 	     CPU0
+ * 16:        194   UIC   Level     serial
+ * 17:       7932   UIC   Level     MAL TX EOB
+ * 18:      12895   UIC   Level     MAL RX EOB
+ * After running the interrupt service routine we will forward the interrupt to
+ * the linux kernel. Therefore no harm should be done by intercepting it.
+ *
+ */
+#define IRQ_NR    18
 
 #include <sys/mman.h>
 #include <native/task.h>
 #include <native/intr.h>
-#include <bsp_def.h>
 #include <unistd.h>
 #include <stdlib.h>
 
@@ -118,68 +238,60 @@ Content-Disposition: attachment;
 #define TASK_MODE  0  /* No flags */
 #define TASK_STKSZ 0  /* Stack size (use default one) */
 
-RT_INTR intr_desc;
-
-RT_TASK server_desc;
-static int counter, errCounter;
-int s_tickResetValue  = TICK_INT_ENABLE | TICK_INT_RESET | TICK_START | TICK_INTERVAL_1000_US;
-int s_tickEnableValue = TICK_INT_ENABLE                  | TICK_START | TICK_INTERVAL_1000_US;
 void cleanup (void);
 
-void enableInt()
-{
-	int err;
-	sys_set_tick_control_register_value(TICK_INT_RESET);
-	sys_set_tick_control_register_value(s_tickResetValue);
-	sys_set_tick_control_register_value(s_tickEnableValue);
-	err = rt_intr_enable(&intr_desc);
-	printf("%s: rt_intr_enable failed %d ENODEV %d\n", __FUNCTION__, err, ENODEV);
-}
+RT_INTR intr_desc;
+RT_TASK server_desc;
+
+static int counter;
 
 void irq_server (void *cookie)
 {
-	int err;
-	printf("%s: Starting. intrDesc %p cookie %p\n", __FUNCTION__, &intr_desc, cookie);
+	int j;
 	for (;;) {
 
-		/* Wait for the next interrupt on channel #7. */
-		err = rt_intr_wait(&intr_desc,TM_INFINITE);
-		if (err == -EIDRM) { printf("%s: deleted interrupt object descriptor %d\n", __FUNCTION__, err); return; }
-		if (err) errCounter++; 
-		else {
-			/* Process interrupt. */
-			counter++;
-			sys_set_tick_control_register_value(s_tickResetValue);
-			sys_set_tick_control_register_value(s_tickEnableValue);
-		}
-		sysLedSet((errCounter+counter)/1000);
-		if ((counter + errCounter) > 800000) 
-		{
-			printf("%s: Done. counter1 %d errors %d\n", __FUNCTION__, counter, errCounter);
+		/* Wait for the next interrupt. */
+		j = rt_intr_wait(&intr_desc,TM_INFINITE);
+		if (j == -EIDRM) {
+			printf("%s: interrupt descriptor deleted. Exit?\n",
+				__FUNCTION__);
 			return;
 		}
+		if (j<0) {
+			printf("%s: error %d occured. We will exit\n",
+				__FUNCTION__, j);
+			return;
+		}
+		/* j is the nr of times the interrupt occured */
+		counter+= j;
+		/* Process interrupt.
+		 * Do you have any LED where you can see your progress ?
+		 *sysLedSet(counter);
+		 */
 	}
 }
 
 int main (int argc, char *argv[])
 {
 	int err;
-	int irq_number;
 	atexit(cleanup);
 	mlockall(MCL_CURRENT|MCL_FUTURE);
-	bsp_init();
-	irq_number = sys_get_imc_interrupt_vector(IMC_BUS_INTERRUPT_0);
 
-	counter = 0;
-	errCounter = 0;
-	sysLedSet(3);
-
-	printf("%s: counter1 %d errors %d irq_number %d\n", __FUNCTION__, counter, errCounter,irq_number);
-	err = rt_intr_create(&intr_desc,"Ext Int 0",irq_number, 0);
-	printf("%s: rt_intr_create returns %d ENOSYS ist %d\n", __FUNCTION__, err, ENOSYS);
+	/* Do not forget to pass I_PROPAGATE as the last parameter
+	 * or your Linux will hang or not function properly.
+	 * You have be warned!!
+	 */
+	err = rt_intr_create(&intr_desc,"myIrq",IRQ_NR, I_PROPAGATE);
+	if (err == -ENOSYS) {
+		printf("%s: rt_intr_create returned ENOSYS\n", __FUNCTION__);
+		printf("Did your forget to set CONFIG_XENO_OPT_NATIVE_INTR\n");
+		printf("in the kernel config under:\n");
+		printf("Real-Time Subsystem..Interfaces..Native-API..\n");
+		return 2;
+	}
 	if (err) {
-		printf("%s: rt_intr_create failed %d ENOSYS ist %d\n", __FUNCTION__, err, ENOSYS);
-		printErrno(-err);
+		printf("%s: rt_intr_create failed with error %d\n",
+			__FUNCTION__, err);
 		return 2;
 	}
 	err = rt_task_create(&server_desc,
@@ -187,19 +299,18 @@ int main (int argc, char *argv[])
 				TASK_STKSZ,
 				TASK_PRIO,
 				TASK_MODE);
-	printf("%s: rt_task_create returns %d\n", __FUNCTION__, err);
 	if (err) {
-		printf("%s: rt_task_create failed %d\n", __FUNCTION__, err);
-		printErrno(-err);
+		printf("%s: rt_task_create failed with error %d\n",
+			__FUNCTION__, err);
 		return 2;
 	}
-	printf("%s: before enabling interrupts\n", __FUNCTION__);
-	enableInt();
+	printf("ISR test program: Started successfully the irq task\n");
+	printf("Please generate some interrupts on IRQ %d.\n",
+		IRQ_NR);
+	printf("Number of interrupts serviced will be shown in 10 seconds.\n");
 	err = rt_task_start(&server_desc,&irq_server, 0xbeef);
-	printf("%s: rt_task_start returns %d\n", __FUNCTION__, err);
-	enableInt();
-	sleep(1);
-	printf("%s: counter %d errors %d done\n", __FUNCTION__, counter, errCounter);
+	sleep(10); /* or do you prefer pause() to wait for Ctrl-C ? */
+	printf("All okay. Did see %d interrupts\n", counter);
 	return 0;
 }
 
@@ -207,8 +318,8 @@ void cleanup (void)
 {
 	rt_intr_delete(&intr_desc);
 	rt_task_delete(&server_desc);
-	printf("%s: counter %d errors %d done\n", __FUNCTION__, counter, errCounter);
+	printf("Cleaning up. Did see %d interrupts\n", counter);
 }
 
---Boundary-00=_f3V4IKb6L2X5WUx--
+--Boundary-00=_dKo4I3M1nBpeAy4--
 
