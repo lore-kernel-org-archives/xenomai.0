@@ -1,12 +1,13 @@
-Message-ID: <48E13433.5060106@domain.hid>
-Date: Mon, 29 Sep 2008 16:01:55 -0400
-From: "Steven A. Falco" <sfalco@domain.hid>
+Message-ID: <48E20246.7060406@domain.hid>
+Date: Tue, 30 Sep 2008 12:41:10 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <48E12C7D.4050802@domain.hid>
-In-Reply-To: <48E12C7D.4050802@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <48C1053E.4010507@domain.hid>
+In-Reply-To: <48C1053E.4010507@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Ipipe causes PCI / USB crash
+Subject: Re: [Xenomai-help] Oops with ifconfig on Sequioa AMCC 440EPX board
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,60 +17,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Steven A. Falco" <sfalco@domain.hid>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Steven A. Falco wrote:
-> I have a Sequoia (PPC440EPx) evaluation board, with an Agere USB interface
-> plugged into the PCI bus.  The kernel is DENX 2.6.26.1 with Ipipe 2.2-04
-> from the xenomai-2.4.5 release.
+Wolfgang Grandegger wrote:
+> Hello,
+> 
+> I get the following Oops with a Xenomai patch kernel when configuring
+> the EEPRO100 on the PCI slot:
+> 
+>  -bash-3.2# ifconfig eth2 172.16.0.20
+> ------------[ cut here ]------------
+> Badness at c0025db0 [verbose debug info unavailable]
+> NIP: c0025db0 LR: c01b5658 CTR: c0190738
+> REGS: cfaa9d20 TRAP: 0700   Not tainted  (2.6.26.3-dirty)
+> MSR: 00029000 <EE,ME>  CR: 44002044  XER: 00000004
+> TASK = cf82b5a0[1052] 'ifconfig' THREAD: cfaa8000
+> NIP [c0025db0] local_bh_enable+0x84/0x9c
+> LR [c01b5658] dev_set_rx_mode+0x34/0x48
+> Call Trace:
+> [cfaa9dd0] [c01b54bc] __dev_set_rx_mode+0x40/0xb8 (unreliable)
+> [cfaa9de0] [c01b5658] dev_set_rx_mode+0x34/0x48
+> [cfaa9e00] [c01b83f8] dev_open+0xd8/0x114
+> [cfaa9e10] [c01b7244] dev_change_flags+0x8c/0x1b8
+> [cfaa9e30] [c01f7f58] devinet_ioctl+0x63c/0x77c
+> [cfaa9ea0] [c01f86f8] inet_ioctl+0xcc/0xf8
+> [cfaa9eb0] [c01aa878] sock_ioctl+0x60/0x2ec
+> [cfaa9ed0] [c00ba598] vfs_ioctl+0x34/0x98
+> [cfaa9ee0] [c00ba8fc] do_vfs_ioctl+0x300/0x430
+> [cfaa9f10] [c00baa6c] sys_ioctl+0x40/0x74
+> [cfaa9f40] [c000e1ac] ret_from_syscall+0x0/0x3c
+> Instruction dump:
+> 80010014 83e1000c 7c0803a6 38210010 4e800020 4bfdde81 4bffffdc 3d20c02f
+> 39297ba0 80090154 7c000034 5400d97e <0f000000> 2f800000 419eff94 38000001
+> -bash-3.2#
+> Message from syslogd@ at Thu Jan  1 01:01:21 1970 ...
+> sequoia666 kernel: ------------[ cut here ]------------
+> 
+> -bash-3.2# uname -a
+> Linux sequoia666 2.6.26.3-dirty
+> -bash-3.2# cat /proc/ipipe/version
+> 2.2-04
+> -bash-3.2# cat /proc/xenomai/version
+> 2.4.5
+> 
+> The NIP is at:
+> 
+> (gdb) l *0xc0025db0
+> 0xc0025db0 is in local_bh_enable (kernel/softirq.c:141).
+> 136	#ifdef CONFIG_TRACE_IRQFLAGS
+> 137		unsigned long flags;
+> 138	
+> 139		WARN_ON_ONCE(in_irq());
+> 140	#endif
+> 141		WARN_ON_ONCE(irqs_disabled());
+> 142	
+> 143	#ifdef CONFIG_TRACE_IRQFLAGS
+> 144		local_irq_save(flags);
+> 145	#endif
+> 
+> Any idea where the problem could be?
+> 
 
-I tried turning on more debugging, and captured the following crash.  Line 1290
-of buffer.c is in the following routine:
+As you pointed out, there was an issue with cascaded UICs. The following patch
+should fix it (will be merged in the upcoming 2.2-05):
 
-static inline void check_irqs_on(void)
-{
-#ifdef irqs_disabled
-	BUG_ON(irqs_disabled());     <----- line 1290
-#endif
-}
+diff --git a/arch/powerpc/sysdev/uic.c b/arch/powerpc/sysdev/uic.c
+index 4eff1ab..bd91669 100644
+--- a/arch/powerpc/sysdev/uic.c
++++ b/arch/powerpc/sysdev/uic.c
+@@ -241,7 +241,16 @@ void uic_irq_cascade(unsigned int virq, struct irq_desc *desc)
+ 	src = 32 - ffs(msr);
 
-where irqs_disabled() is defined as __ipipe_test_root()
+ 	subvirq = irq_linear_revmap(uic->irqhost, src);
++#ifdef CONFIG_IPIPE
++	{
++		struct pt_regs regs;    /* Contents not used. */
++		ipipe_trace_irq_entry(subvirq);
++		__ipipe_handle_irq(subvirq, &regs);
++		ipipe_trace_irq_exit(subvirq);
++	}
++#else
+ 	generic_handle_irq(subvirq);
++#endif
 
+ uic_irq_ret:
+ 	spin_lock(&desc->lock);
 
-kernel BUG at /n/maytag/proj/hydra/sw/sfalco/linux-2.6-denx/fs/buffer.c:1290!
-Oops: Exception in kernel mode, sig: 5 [#1]
-Hydra_temp
-Modules linked in:
-NIP: c00d7b48 LR: c00d7d7c CTR: c010701c
-REGS: ced5da40 TRAP: 0700   Not tainted  (2.6.26.1-00044-g93df51c-dirty)
-MSR: 00029000 <EE,ME>  CR: 44028082  XER: 20000000
-TASK = cf8c79c0[967] 'snmpd' THREAD: ced5c000
-GPR00: 00000001 ced5daf0 cf8c79c0 cf410680 00000001 00000000 00017201 00000400
-GPR08: cec87a00 c0380000 0000000b 00017201 44028082 10213ff4 cf5b2b80 1f9eef0f
-GPR16: 00000040 bfd60d24 ced5de8c ced5dd88 cf5a73f8 cf5a73f8 00000000 00017201
-GPR24: cf410680 ced5dc70 24028084 00000400 cf5a73f8 00000000 c037a898 cf5b2b80
-NIP [c00d7b48] __find_get_block+0x28/0x238
-LR [c00d7d7c] __getblk+0x24/0x2b0
-Call Trace:
-[ced5daf0] [ced5dba0] 0xced5dba0 (unreliable)
-[ced5db40] [c00d7d7c] __getblk+0x24/0x2b0
-[ced5dba0] [c0100ab4] ext3_getblk+0xcc/0x204
-[ced5dc00] [c0101d00] ext3_bread+0x18/0xb8
-[ced5dc20] [c0104b48] dx_probe+0x58/0x378
-[ced5dc50] [c01050e0] ext3_find_entry+0x278/0x634
-[ced5dd10] [c0107064] ext3_lookup+0x48/0x128
-[ced5dd40] [c00b8868] do_lookup+0x16c/0x1f0
-[ced5dd70] [c00ba45c] __link_path_walk+0x57c/0xda8
-[ced5dde0] [c00bacd0] path_walk+0x48/0xc8
-[ced5de10] [c00baf4c] do_path_lookup+0x68/0x16c
-[ced5de40] [c00bbc30] __path_lookup_intent_open+0x58/0xc4
-[ced5de70] [c00bbfc8] do_filp_open+0x88/0x7d0
-[ced5df20] [c00adac8] do_sys_open+0x5c/0xfc
-[ced5df40] [c000ea4c] ret_from_syscall+0x0/0x3c
-Instruction dump:
-813f000c 4bffffac 9421ffb0 7c0802a6 7d800026 bf210034 90010054 91810030
-3d20c038 8009a898 3bc9a898 540007fe <0f000000> 38000008 7c0903a6 3d20c03c
----[ end trace 8408831a88b0a69c ]---
-
+-- 
+Philippe.
 
