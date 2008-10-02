@@ -1,9 +1,9 @@
-Message-ID: <48E4EE52.2000202@domain.hid>
-Date: Thu, 02 Oct 2008 17:52:50 +0200
+Message-ID: <48E4F16B.5000309@domain.hid>
+Date: Thu, 02 Oct 2008 18:06:03 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <48E4EE00.5080409@domain.hid>
-In-Reply-To: <48E4EE00.5080409@domain.hid>
+References: <48E4EE00.5080409@domain.hid> <48E4EE52.2000202@domain.hid>
+In-Reply-To: <48E4EE52.2000202@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] rt_task_set_priority vs. Linux priority
@@ -19,14 +19,19 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Quick question $customer stumbled over: Shouldn't the user space part of
-> rt_task_set_priority also (or rather?) adjust the Linux priority of the
-> caller? My impression is yes. Actually, translating the native priority
-> to sched_setscheduler parameters and calling that service would be
-> better, no?
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Quick question $customer stumbled over: Shouldn't the user space part of
+>> rt_task_set_priority also (or rather?) adjust the Linux priority of the
+>> caller? My impression is yes. Actually, translating the native priority
+>> to sched_setscheduler parameters and calling that service would be
+>> better, no?
+> 
+> I believe Philippe already fixed that in trunk.
 
-I believe Philippe already fixed that in trunk.
+Actually, this does not seem to be fixed in trunk. However, you should
+use pthread_setschedparam instead of sched_setscheduler: ISTR that
+sched_setscheduler sets the priorites of all threads.
 
 -- 
                                                  Gilles.
