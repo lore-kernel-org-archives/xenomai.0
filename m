@@ -1,68 +1,52 @@
-Message-ID: <490999BE.8060709@domain.hid>
-Date: Thu, 30 Oct 2008 12:25:50 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <894886ec0810012230j57e2f87n343a5b07bbdbd46@domain.hid>
+Date: Wed, 1 Oct 2008 22:30:07 -0700
+From: "Rob Wheeler" <wheeler@domain.hid>
 MIME-Version: 1.0
-References: <49085904.8080302@domain.hid> <4908FF4D.4050706@domain.hid>
-In-Reply-To: <4908FF4D.4050706@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] RT-Socket-CAN: correct bug with filter
-	registration
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Disposition: inline
+Subject: [Xenomai-help] clock drift
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>, Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Wolfgang Grandegger wrote:
->> Hi Jan and Sebastian,
->>
->> attached is the patch fixing the filter problem. I'm going to apply it
->> to the trunk as well if there are no complaints.
->>
->> Wolfgang.
->>
->> Index: ChangeLog
->> ===================================================================
->> --- ChangeLog	(revision 4287)
->> +++ ChangeLog	(working copy)
->> @@ -1,3 +1,9 @@
->> +2008-10-29  Wolfgang Grandegger  <wg@domain.hid>
->> +
->> +	* ksrc/drivers/can/rtcan_raw_filter.c(rtcan_raw_mount_filter):
->> +	Applying the filter mask required for fast filter checks got lost
->> +	somehow with commit 2202.
->> +
->>  2008-10-28  Gilles Chanteperdrix  <gilles.chanteperdrix@xenomai.org>
->>  
->>  	* ksrc/nucleus/thread.c (xnthread_init): Change initialization
->> Index: ksrc/drivers/can/rtcan_raw_filter.c
->> ===================================================================
->> --- ksrc/drivers/can/rtcan_raw_filter.c	(revision 4287)
->> +++ ksrc/drivers/can/rtcan_raw_filter.c	(working copy)
->> @@ -62,6 +62,9 @@
->>  	recv_filter->can_id = filter->can_id;
->>  	recv_filter->can_mask = filter->can_mask & ~CAN_INV_FILTER;
->>      }
->> +
->> +    /* Apply mask for fast filter check */
->> +    recv_filter->can_id &= recv_filter->can_mask;
->>  }
->>  
->>  
-> 
-> Ack from me, too. Please commit to trunk and 2.4.x.
+Hello,
 
-I just applied it to both branches.
+I was recently debugging a problem in our code base and tracked the
+issue down to differences between calling gettimeofday() from our
+non-realtime code and calling clock_gettime() from our realtime
+control loop.  A little poking around with Google led me to clocktest
+program in the Xenomai testsuite.  We are routinely seeing differences
+of around 4 minutes (~240 seconds) between gettimeofday() and
+clock_gettime() immediately after a reboot.  The clocks continue to
+drift apart (or together) at the rate of about 50us/s.
 
-Thanks,
+My question is, is this large of a disparity between clocks normal?
+Are there any tricks or techniques for getting the clocks to be
+synchronized?  In our application we have a realtime control loop
+reading data from motor control boards at a rate of 1KHz.  The data is
+timestamped by the realtime loop.  The non-realtime code can doing
+more heavyweight computation on that data.  It uses the timestamp to
+correlate the data with other data read from non-realtime sensors
+(cameras, laser scanners, etc...).  Some of this data may even be
+collected on other computers running on the robot (and connected via
+gigabit Ethernet).  What do others do to synchronize time between
+realtime, non-realtime, and other network attached computers?
 
-Wolfgang.
+A little more about my setup:
+  kernel - 2.6.24.3
+  xenomai - v2.4.5
+  adeos patch - adeos-ipipe-2.6.24-x86-2.0-07.patch
+  processor - 2.5 GHz Core 2 Duo
+
+Thanks for any info you can provide...
+
+-R
 
