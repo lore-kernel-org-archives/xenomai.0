@@ -1,16 +1,13 @@
-Message-ID: <48E57C15.5000301@domain.hid>
-Date: Fri, 03 Oct 2008 03:57:41 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <899865CA54E4444DAF2E3639C04C5F48E4DA6A@trillian.at.omicron.at>		<48D66DC4.8030706@domain.hid>
-	<48D9364B.70505@domain.hid>		<48DE72FE.4070809@domain.hid>
-	<48E48A06.70408@domain.hid>	<d6c8ef150810021504w3acb045fg1a6c59161b9b28d1@domain.hid>
-	<48E54C6B.6060700@domain.hid>
-In-Reply-To: <48E54C6B.6060700@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 3 Oct 2008 09:20:58 +0200
+Message-ID: <899865CA54E4444DAF2E3639C04C5F48E4DB5D@trillian.at.omicron.at>
+In-Reply-To: <48E52912.7030200@domain.hid>
+From: "Richard Cochran" <richard.cochran@domain.hid>
 Subject: Re: [Adeos-main] FW: [PATCH] repost: ARM FCSE
-Reply-To: rpm@xenomai.org
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -20,20 +17,38 @@ List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: adeos-main@gna.org
+Cc: adeos-main@gna.org, Sebastian Smolorz <ssm@domain.hid>
 
-Gilles Chanteperdrix wrote:
-> Bosko Radivojevic wrote:
->> Great! I'll test the patch as soon as possible, but, unfortunately,
->> not before 12th October.
-> 
-> Ok. No problem, I have a 926 now, so should be able to test it. And we
-> merged the FCSE patch with the I-pipe patch, so the next release of the
-> I-pipe patch should allow using FCSE.
-> 
+Gilles,
 
-http://download.gna.org/adeos/patches/v2.6/arm/adeos-ipipe-2.6.26-arm-1.11-00.patch
+I have found that on both 2.6.21 and 2.6.26, I need to add an include
+of <linux/sched.h> to fcse.h in order to get the definition of
+struct mm_struct.
 
--- 
-Philippe.
+Richard
+
+> -----Original Message-----
+> From: Gilles Chanteperdrix=20
+> Sent: Thursday, October 02, 2008 10:04 PM
+> Subject: Re: [Adeos-main] FW: [PATCH] repost: ARM FCSE
+>=20
+>=20
+> Richard Cochran wrote:
+> > In any case, I found one huge error in the patch...you=20
+> mangled my name
+> > ;)
+>=20
+> Here is a better one, with this error fixed, as well as a fix in
+> switch_mm which makes that now, we really do not flush the cache.
+> Previous version flushed the cache at each switch due to an=20
+> error in the
+> register we checked.
+>=20
+> I have tested this version with Xenomai, and we get lower=20
+> latencies (we
+> gained 100us).
+>=20
+> --=20
+> 					    Gilles.
+>=20
 
