@@ -1,75 +1,49 @@
-Message-ID: <48D62445.6090305@domain.hid>
-Date: Sun, 21 Sep 2008 12:39:01 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48E78101.6070101@domain.hid>
+Date: Sat, 04 Oct 2008 16:43:13 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <7ed3bc8b0809171347j6744978ck69959990435942ea@domain.hid>	
-	<48D176F0.7060805@domain.hid>	
-	<894886ec0809181640t3d413a73h5c02da73dc3000c9@domain.hid>	
-	<48D34936.7090206@domain.hid>
-	<894886ec0809191008m3b1eac19s45a1d67316eba626@domain.hid>
-In-Reply-To: <894886ec0809191008m3b1eac19s45a1d67316eba626@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig711A3A8DAC8CDCCC01536AAB"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Xenomai IRQ Disable
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <48E76494.9030901@domain.hid> <48E778B3.8040004@domain.hid>
+	<48E77F57.9010604@domain.hid>
+In-Reply-To: <48E77F57.9010604@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] gdb lockup on multi-threaded process exit
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Rob Wheeler <wheeler@domain.hid>
-Cc: soa@domain.hid, xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig711A3A8DAC8CDCCC01536AAB
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Hi,
+>>>
+>>> I'm banging my head against this issue for several days now, first
+>>> trying to sort out an unrelated bug I also came across at this chance,
+>>> then trying to understand what happens, and finally getting mad about
+>>> why this may only happen with Xenomai:
+>> I have not tried to understand your problem (yet). But do you happen to
+>> work with the latest TASK_ATOMICSWITCH changes? If yes, could you try to
+>> revert them?
+> 
+> Yes, I'm on latest trunk. During my debug endeavour, I haven't seen this
+> task state being involved. Also, if I got this correctly, it only
+> concerns the secondary->primary migration, and that one appears to be
+> out of scope here. Nevertheless, it's easy to verify if you tell me
+> which revision(s) I should revert.
 
-Rob Wheeler wrote:
-> On Thu, Sep 18, 2008 at 11:39 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:=
+Should be:
+4bc557d998f7cfac0a069d0c47e28510ef270cb2
+and:
+acaccc82ead113f33f8f717fdafea14dba8b885d
 
->> Rob Wheeler wrote:
->>> I'm having similar issues with IRQs and keyboard/mouse configurations=
-=2E
->>>  For me, if I use a combination mouse/keyboard device then the kernel=
-
->>> has issues.  So I have to use the most simplistic form of USB keyboar=
-d
->>> I can locate.  Also, it seems to be dependent on which USB port I plu=
-g
->>> into.  Finally, I need to use the 'irqpoll' option to the kernel,
->>> otherwise I can't boot with even a simple USB keyboard.
->> Are these effects limited to I-pipe-patched kernels? Or do you have th=
-e
->> same issues with the corresponding vanilla Linux?
->=20
-> Just the I-pipe patched kernel.  The vanilla kernel operates fine with
-> devices in any of the four USB ports.
-
-Also here: could you provide /proc/interrupt outputs?
-
-Thanks,
-Jan
-
-
---------------enig711A3A8DAC8CDCCC01536AAB
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkjWJEUACgkQniDOoMHTA+m4aACeMDQiMCbZ+WelTo8n1R9EXIeN
-8fUAnA6WsusgA5GASo27pVpA4IVkD8SG
-=Dr1j
------END PGP SIGNATURE-----
-
---------------enig711A3A8DAC8CDCCC01536AAB--
+-- 
+					    Gilles.
 
