@@ -1,119 +1,147 @@
-Message-ID: <1743f3b40809230122u177e9aaeyb0cbc53f81793929@domain.hid>
-Date: Tue, 23 Sep 2008 10:22:03 +0200
-From: "Antonio Del Cinque" <adelcinque@domain.hid>
-In-Reply-To: <0B45E93C5FF65740AEAE690BF3848B7AD38398@domain.hid>
+Message-ID: <48E8C406.2040104@domain.hid>
+Date: Sun, 05 Oct 2008 15:41:26 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_73934_13292152.1222158123368"
-References: <0B45E93C5FF65740AEAE690BF3848B7AD38398@domain.hid>
-Subject: Re: [Xenomai-help] Interrupt latency questions
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <E1KmEP8-0003wS-5y@domain.hid>
+	<48E8AFB4.4040208@domain.hid>	<48E8B29D.5040705@domain.hid>
+	<48E8B704.8030403@domain.hid> <48E8B91B.1060502@domain.hid>
+	<48E8BF4A.2030409@domain.hid> <48E8C1BC.3050800@domain.hid>
+	<48E8C270.4080208@domain.hid>
+In-Reply-To: <48E8C270.4080208@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig4F5D48CEE34A0859FA7A1A37"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [Xenomai-commits] r4210 - in /trunk:	ChangeLog
+ src/skins/native/task.c
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Fillod Stephane <stephane.fillod@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_73934_13292152.1222158123368
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig4F5D48CEE34A0859FA7A1A37
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thank you,
-I think your considerations are the right ones.
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Jan Kiszka wrote:
+>>>>> Gilles Chanteperdrix wrote:
+>>>>>> Jan Kiszka wrote:
+>>>>>>> Gilles Chanteperdrix wrote:
+>>>>>>>> Author: gch
+>>>>>>>> Date: Sat Oct  4 23:11:09 2008
+>>>>>>>> New Revision: 4210
+>>>>>>>>
+>>>>>>>> URL: http://svn.gna.org/viewcvs/xenomai?rev=3D4210&view=3Drev
+>>>>>>>> Log:
+>>>>>>>> Call __real_pthread_setschedparam in order to inform the libc of=
+ the scheduling parameters change.
+>>>>>>> Well, I dropped this idea after realizing that it will kick us ou=
+t of
+>>>>>>> primary mode in all cases. This change is an improvement (/wrt Li=
+nux
+>>>>>>> scheduling accuracy) for borderline threads, but it will cause
+>>>>>>> regressions for primary-only threads. I have no idea right now ho=
+w to
+>>>>>>> make both happy, at least without explicit pthread_setschedparam
+>>>>>>> invocations by the user application.
+>>>>>> Well, we discussed this on the xenomai mailing list, you did not a=
+nswer,
+>>>>>> so we assumed you agreed.
+>>>>> I do not find any hint in that thread that we agreed on changing th=
+e
+>>>>> implementation. Rather I took back my suggestion to do it like #421=
+0.
+>>>>> And you proposed to install some signal for syncing glibc /wrt
+>>>>> priorities. When changing something, then I would say explore this =
+path
+>>>>> first.
+>>>> We are used to hear you when you do disagree... So, since you did no=
+t
+>>>> answer Philippe mail who said "it is certainly debatable", we assume=
+d
+>>>> you agreed. But we certainly were wrong.
+>> I may have misunderstood that this early statement in the discussion w=
+as
+>> still valid after we dug deeper into the topic.
+>>
+>>>>> Turning rt_task_set_priority into secondary-mode service is a criti=
+cal
+>>>>> change, and only the last resort if we consider its current
+>>>>> implementation as totally broken - I wouldn't say it is like that. =
+It's
+>>>>> partially and, unfortunately, silently broken, ie. lacking document=
+ation
+>>>>> about its limitations. But its perfectly OK for primary-only users.=
 
-The DMA controller is not generating any interrupt, so I assume it is not
-actually working. I'm trying to verify that the jitter is caused by
-cache/TLB misses. I don't have much reference on how to lock the cache, so
-I'll just try to have the cache dirty in any other way to see if it causes
-the same jitter.
+>>>> No, an important invariant of Xenomai is that the priority scales ar=
+e
+>>>> synchronized between Xenomai and Linux. So, if Linux does not see th=
+e
+>>>> same priority as Xenomai, the implementation is broken. Imagine for
+>>>> instance that your primary-only thread posts an NPTL semaphore, know=
+ing
+>>>> that a switch will not occur so that it will not leave primary mode.=
+ If
+>>>> the glibc does not see the correct priority, then a mode switch may
+>>>> occur whereas it should not. This is a bit far-fetched, but who know=
+s
+>>>> what else may happen if the priorities are not synchronized. We
+>>>> absolutely want the priorities to be synchronized.
+>> I understand the deep desire to keep the priorities in sync for those
+>> threads that go to secondary mode (or at least accept occasional switc=
+hes).
+>>
+>> But no one will (OK: should) seriously build a primary-only design bas=
+ed
+>> on assumptions about the glibc locking and syscall behavior. Practice
+>> teaches that this is doomed to break - at latest on next glibc update
+>> (or what other standard third-party lib). Primary-only means only safe=
 
-Antonio
+>> Xenomai services or well-audited library calls. So turning some Xenoma=
+i
+>> service into an unsafe one remains a critical step, even if it fixes
+>> other use cases.
+>>
+>>> Ok. I am looking at the SIGWINCH change.
+>>>
+>> Great, TiA.
+>=20
+> I am not optimistic. I see no way for now to change this without
+> breaking the ABI.
 
-On Mon, Sep 22, 2008 at 11:15 AM, Fillod Stephane <
-stephane.fillod@domain.hid> wrote:
+Well, both the current change as well as a potential signal-based prio
+update would be 2.5 material IMHO. So ABI breakage is not an issue. I
+wouldn't touch 2.4 unless there is a transparent fix feasible (which I
+doubt as well).
 
-> Antonio Del Cinque wrote:
-> [...]
-> >Then I open an ssh connection with the target, and run a "cat /dev/zero
-> > file". The target
-> >is mounted on an NFS root filesystem, so this generates a high number
-> of
-> >fast ethernet interrupts. Now the oscilloscope shows 15 uS jitter in
-> the worst case,
-> >and a visible variance. I would assume this effect as increased max
-> latency.
->
-> This figure has already been seen with SoC in the range of the e300,
-> and sometime worse.
->
-> >The ethernet interrupt is handled only in Linux domain by the original
-> vanilla handler,
-> >but Linux should be stalled/preempted when the timer interrupt occurs.
-> So I assume
-> >that latency is to be justified by the time it takes to adeos to record
-> an
-> >ethernet interrupt event in the i-logs when the timer interrupt is
-> executing or ready to
-> >execute. Is this correct?
->
-> Cache miss and TLB miss are also good latency killers.
-> To some extent, long DMA transfers can bog down the system bus.
->
-> >Is there any way to lower max latency for the timer interrupt?
->
-> Has anybody tried to play with cache locking?
->
-> --
-> Stephane
->
+Jan
 
-------=_Part_73934_13292152.1222158123368
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-<div dir="ltr">Thank you,<br>I think your considerations are the right ones.<br><br>The DMA controller is not generating any interrupt, so I assume it is not actually working. I&#39;m trying to verify that the jitter is caused by cache/TLB misses. I don&#39;t have much reference on how to lock the cache, so I&#39;ll just try to have the cache dirty in any other way to see if it causes the same jitter.<br>
-<br>Antonio<br><br><div class="gmail_quote">On Mon, Sep 22, 2008 at 11:15 AM, Fillod Stephane <span dir="ltr">&lt;<a href="mailto:stephane.fillod@domain.hid">stephane.fillod@domain.hid</a>&gt;</span> wrote:<br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-Antonio Del Cinque wrote:<br>
-[...]<br>
-<div class="Ih2E3d">&gt;Then I open an ssh connection with the target, and run a &quot;cat /dev/zero<br>
-&gt; file&quot;. The target<br>
-&gt;is mounted on an NFS root filesystem, so this generates a high number<br>
-of<br>
-&gt;fast ethernet interrupts. Now the oscilloscope shows 15 uS jitter in<br>
-the worst case,<br>
-&gt;and a visible variance. I would assume this effect as increased max<br>
-latency.<br>
-<br>
-</div>This figure has already been seen with SoC in the range of the e300,<br>
-and sometime worse.<br>
-<div class="Ih2E3d"><br>
-&gt;The ethernet interrupt is handled only in Linux domain by the original<br>
-vanilla handler,<br>
-&gt;but Linux should be stalled/preempted when the timer interrupt occurs.<br>
-So I assume<br>
-&gt;that latency is to be justified by the time it takes to adeos to record<br>
-an<br>
-&gt;ethernet interrupt event in the i-logs when the timer interrupt is<br>
-executing or ready to<br>
-&gt;execute. Is this correct?<br>
-<br>
-</div>Cache miss and TLB miss are also good latency killers.<br>
-To some extent, long DMA transfers can bog down the system bus.<br>
-<div class="Ih2E3d"><br>
-&gt;Is there any way to lower max latency for the timer interrupt?<br>
-<br>
-</div>Has anybody tried to play with cache locking?<br>
-<br>
---<br>
-<font color="#888888">Stephane<br>
-</font></blockquote></div><br></div>
+--------------enig4F5D48CEE34A0859FA7A1A37
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-------=_Part_73934_13292152.1222158123368--
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkjoxAYACgkQniDOoMHTA+ktYACfTsTsaap7HvlkxfeFpKnzmbwA
+AvoAn0wSIaNSyCVkj8dlk+TumLi246Jh
+=cQQu
+-----END PGP SIGNATURE-----
+
+--------------enig4F5D48CEE34A0859FA7A1A37--
 
