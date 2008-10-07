@@ -1,13 +1,23 @@
-Message-ID: <48EB4FD8.30006@domain.hid>
-Date: Tue, 07 Oct 2008 14:02:32 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <48EB6922.7040702@domain.hid>
+Date: Tue, 07 Oct 2008 15:50:26 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <0B45E93C5FF65740AEAE690BF3848B7AD38398@domain.hid>	<1743f3b40809230122u177e9aaeyb0cbc53f81793929@domain.hid>	<48D8A7EC.7000502@domain.hid>
-	<1743f3b40810060744v7d55f706m62b46a1e27498524@domain.hid>
-In-Reply-To: <1743f3b40810060744v7d55f706m62b46a1e27498524@domain.hid>
+References: <b054e88e0809290735x19e1618eh6facc56ee6baef18@domain.hid>	
+	<48E3541E.8090808@domain.hid>	
+	<b054e88e0810030957l3e25a1beo8866a3e8f79d9e9b@domain.hid>	
+	<48E66224.7060709@domain.hid>	
+	<b054e88e0810031129o1638c19cr1a1d096da5169aee@domain.hid>	
+	<b054e88e0810060529u7c5189qd2853385e7ac64ce@domain.hid>	
+	<48EA1127.6030405@domain.hid>	
+	<b054e88e0810060628r7d4f18bnb78b33c6dda0048b@domain.hid>	
+	<48EB4B64.4020209@domain.hid> <48EB4BD8.10207@domain.hid>
+	<b054e88e0810070639w1e2feb84i693c1dc0621f2dad@domain.hid>
+In-Reply-To: <b054e88e0810070639w1e2feb84i693c1dc0621f2dad@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Interrupt latency questions
+Subject: Re: [Xenomai-help] Error while building Xenomai on Powerpc with
+ instrument function entries enabled
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,80 +27,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Antonio Del Cinque <adelcinque@domain.hid>
-Cc: xenomai@xenomai.org
+To: Giammarco Zacheo <g.zacheo@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Hello,
-
-Antonio Del Cinque wrote:
-> Hi,
-> sorry, I needed time to implement your suggestions, but finally I got
-> some results. I checked for cache related issues, and found that latency
-> is highly related to cache misses.
+Giammarco Zacheo wrote:
+> It boots either with I-pipe support enabled and disabled.
 > 
-> I found the way to disable the instruction cache (the e300 powerpc core
-> has a 32 KB i-cache and a 32 KB d-cache, but I couldn't disable the
-> d-cache because of segmentation faults), and I changed the test to
-> measure interrupt latency.
+> I can also boot with latency tracing enabled, if 'Instrument function
+> entries' is not enabled.
+>
 
-What system are you exactly using. Your latency figures are already
-really good.
+Ok, so back to square #1. It's indeed a problem with mcount() referring to
+unmapped memory at early init time. The difference must be in the Efika setup
+code, since an Icecube boots fine with the function entry tracing knob on.
 
-> Now I have a Xenomai real time task. The task is periodic (I used
-> rt_task_set_periodic() and rt_task_wait_period()) and, at every period,
-> it toggles a GPIO pin configured as an output, by calling the GPIO rtdm
-> driver ioctl command. The pin is short circuited with another pin which
-> is configured as an input, generating an interrupt in the powerpc. The
-> interrupt routine, registerd via rtdm_irq_request() in the same GPIO
-> rtdm driver, toggles another GPIO pin configured as an output, so I see
-> the two IO pins on the oscilloscope, the first generating the interrupt,
-> and the second indicating that the interrupt routine has been executed.
-
-I have done similar tests with gpioirqbench:
-
-  http://www.denx.de/wiki/DULG/AN2008_03_Xenomai_gpioirqbench
-
-> When the cache is enabled I see a latency between 2 and 5 uS with no
-> load, but if I create a non real time load the latency raises (for
-> example to 12 uS with the cache calibrator running), and this is non
-> deterministic, since it dependes on the cache use.
-
-Additionally try to run "while ls; do ls /bin; done" in a telnet session.
-
-> When I disable the i-cache the latency goes to 16 uS with no load, this
-> is 11 to 14 uS over latency! Non real time task now only sligthly affect
-> the latency, but I have the following problem: if I start real time
-> tasks (for example I run
-> /usr/local/xenomai/share/xenomai/testsuite/cyclic/run) the GPIO
-> interrupt latency is not commonly affected, but occasionally it gets to
-> 50 uS. I can't explain this. Could you help me?
-
-Running the systems with caches disabled does make little sense because
-it would make the system very very slow (apart from the fact that it's
-not easily possible with Linux).
-
-> The delay is not continuos, it jumps from 16-20 to 38-50 uS. Now the
-> i-cache is disabled, so it seems another interrupt routine, running in
-> Xenomai domain, gets interleaved with the GPIO interrupt rountine.
+> Giammarco
 > 
-> Is there any way to track these kind of latency in the ipipe, a kind of
-> worst latency case tracker? I see only "virtual" IRQs 512 and 515
-> running in Xenomai domain. I cannot see where they are set up. I guess
-> one of them is the system timer, and I know this is commonly driven by
-> the powerpc decrementer. Is the GPIO interrupt latency due to the system
-> timer interrupt? If this is the case, where can I disable the system
-> timer in Xenomai, or modify the interrupt routine? I must run in
-> interrupt context because of latency requirements (they asked me for
-> deterministic latencies under 20 uS).
+> On Tue, Oct 7, 2008 at 1:45 PM, Philippe Gerum <rpm@xenomai.org
+> <mailto:rpm@xenomai.org>> wrote:
+> 
+>     Philippe Gerum wrote:
+>     > Giammarco Zacheo wrote:
+>     >> Thank you. There's no hurry actually, just reporting the bug.
+>     >>
+>     >> If there's something I can do to help...
+>     >>
+>     >
+>     > I have no efika board at hand, but just booted a plain lite5200
+>     IceCube
+>     > successfully, with all tracing options enabled. This is a
+>     DENX-originated kernel
+>     > (tagged "DENX-v2.6.26-stable") from the usual place.
+>     >
+>     > Looking again to the trace output you got, I wonder now if the
+>     device tree file
+>     > you are using is ok. Could you confirm that your board boots with
+>     the I-pipe
+>     > support fully disabled?
+>     >
+> 
+>     And if so, does it still boot with the I-pipe support enabled and
+>     the I-pipe
+>     latency tracing option disabled?
+> 
+>     --
+>     Philippe.
+> 
+> 
 
-As I see it, the main latencies are caused by cache refills. If the
-latencies are not good enough, choose a faster system (more MHz, bigger
-L1 or L2 cache or faster memory) but 20 us is very challenging already
-for a PC. Moving your task to kernel space or even to the ISR gives
-better result, of course, as you can see from:
 
-  http://www.denx.de/wiki/DULG/AN2008_03_Xenomai_gpioirqbench
-
-Wolfgang.
-
+-- 
+Philippe.
 
