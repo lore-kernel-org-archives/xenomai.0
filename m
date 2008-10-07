@@ -1,22 +1,21 @@
-Message-ID: <894886ec0810061251m360c0c8ek4d642fd4ee19d00b@domain.hid>
-Date: Mon, 6 Oct 2008 12:51:28 -0700
-From: "Rob Wheeler" <wheeler@domain.hid>
-In-Reply-To: <48EA2E4B.3060206@domain.hid>
+Message-ID: <48EB4B64.4020209@domain.hid>
+Date: Tue, 07 Oct 2008 13:43:32 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
+References: <b054e88e0809290735x19e1618eh6facc56ee6baef18@domain.hid>	
+	<48E3541E.8090808@domain.hid>	
+	<b054e88e0810030957l3e25a1beo8866a3e8f79d9e9b@domain.hid>	
+	<48E66224.7060709@domain.hid>	
+	<b054e88e0810031129o1638c19cr1a1d096da5169aee@domain.hid>	
+	<b054e88e0810060529u7c5189qd2853385e7ac64ce@domain.hid>	
+	<48EA1127.6030405@domain.hid>
+	<b054e88e0810060628r7d4f18bnb78b33c6dda0048b@domain.hid>
+In-Reply-To: <b054e88e0810060628r7d4f18bnb78b33c6dda0048b@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <7ed3bc8b0809171347j6744978ck69959990435942ea@domain.hid>
-	<48D176F0.7060805@domain.hid>
-	<894886ec0809181640t3d413a73h5c02da73dc3000c9@domain.hid>
-	<48D34936.7090206@domain.hid>
-	<894886ec0809191008m3b1eac19s45a1d67316eba626@domain.hid>
-	<48D62445.6090305@domain.hid>
-	<894886ec0810012245i679ab8f7o44ae6f50efcc853f@domain.hid>
-	<48E494BF.3030600@domain.hid>
-	<894886ec0810030900w7ddee1enee8d12529ba910d8@domain.hid>
-	<48EA2E4B.3060206@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai IRQ Disable
+Subject: Re: [Xenomai-help] Error while building Xenomai on Powerpc with
+ instrument function entries enabled
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,35 +25,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: soa@domain.hid, Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: Giammarco Zacheo <g.zacheo@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Hi Philippe,
+Giammarco Zacheo wrote:
+> Thank you. There's no hurry actually, just reporting the bug.
+> 
+> If there's something I can do to help...
+> 
 
-Unfortunately, disabling CONFIG_PCI_MSI had no noticeable affect on my issue.
+I have no efika board at hand, but just booted a plain lite5200 IceCube
+successfully, with all tracing options enabled. This is a DENX-originated kernel
+(tagged "DENX-v2.6.26-stable") from the usual place.
 
-Thanks for the suggestion.  Anything else I should try?
+Looking again to the trace output you got, I wonder now if the device tree file
+you are using is ok. Could you confirm that your board boots with the I-pipe
+support fully disabled?
 
--R
-
-On Mon, Oct 6, 2008 at 8:27 AM, Philippe Gerum <rpm@xenomai.org> wrote:
-> Rob Wheeler wrote:
->> On Thu, Oct 2, 2008 at 2:30 AM, Philippe Gerum <rpm@xenomai.org> wrote:
->>> Please send the .config file, and confirm that we are still talking about the
->>> adeos-ipipe-2.6.24-x86-2.0-07 patch over 2.6.24.3.
->>
->> Philippe,
->>
->> I've attached my config file and yes it is 2.0-07 over 2.6.24.3.  I'll
->> try your suggested experiment of patching with ipipe and disabling
->> xenomai and report the results soon.
->>
->
-> 2.6.24 suffers the known problem of reading the PCI config inside critical
-> I-pipe paths, so could you try disabling CONFIG_PCI_MSI from your config and
-> boot without irqpoll? TIA,
->
-> --
-> Philippe.
->
+-- 
+Philippe.
 
