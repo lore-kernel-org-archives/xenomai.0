@@ -1,12 +1,12 @@
-Message-ID: <48EC5C57.8090909@domain.hid>
-Date: Wed, 08 Oct 2008 09:08:07 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-References: <OF18FABCEE.31B1EBFE-ONC12574DC.001E5390-C12574DC.001F8407@domain.hid>
-In-Reply-To: <OF18FABCEE.31B1EBFE-ONC12574DC.001E5390-C12574DC.001F8407@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] question concerning xeno-test, latency, cyclic
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 8 Oct 2008 11:49:01 +0200
+Message-ID: <4B2EEE69E41E524EB7FCDC62A15D68D8018D013A@ARVMAIL1.mra.roland-man.biz>
+From: <thomas.debes@domain.hid>
+Subject: [Xenomai-help] rtdm_iomap_to_user on PPC
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,43 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: juergen.lanner@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-juergen.lanner@domain.hid wrote:
-> Wed Sep 3 11:01:54 CEST 2008
-> running: md5sum /proc/cpuinfo # cpuinfo fingerprint
-> 16c62e2579214d8da356a8085a11bac1 /proc/cpuinfo
-> CONFIG_PREEMPT_NOTIFIERS=y
-> # CONFIG_PREEMPT_NONE is not set
-> CONFIG_PREEMPT_VOLUNTARY=y
-> # CONFIG_PREEMPT is not set
-> CONFIG_IPIPE=y
-> CONFIG_IPIPE_DOMAINS=4
-> CONFIG_IPIPE_COMPAT=y
-> CONFIG_PM=y
-> CONFIG_PM_LEGACY=y
+Hello,
 
-You should disable PM and PM_LEGACY.
+in the following thread I was asking for a solution to use
+rtdm_iomap_to_user() on PPC (MPC5200, Denx 2.4.25)
 
-> CONFIG_PM_DEBUG=y
-> # CONFIG_PM_VERBOSE is not set
-> # CONFIG_PM_TRACE_RTC is not set
-> CONFIG_PM_SLEEP_SMP=y
+https://mail.gna.org/public/xenomai-help/2008-05/msg00153.html
 
-Give its name, you should really disable PM_SLEEP_SMP
+As suggested by Philippe I tried the current 2.4.5 stable release, but
+the problem still remains. The call to rtdm_iomap_to_user returns
+success (0) but any access to the mapped memory section ends in freezing
+the whole system.
 
-> CONFIG_PM_SLEEP=y
-> CONFIG_PM_STD_PARTITION=""
-> # CONFIG_ACPI is not set
+Thanks for your help!
 
-You should enable ACPI (but not ACPI_PROCESSOR)
+Thomas
 
-> # CONFIG_CPU_FREQ is not set
-> # CONFIG_IPIPE_DEBUG is not set
-> # CONFIG_DEBUG_SPINLOCK is not set
-> # CONFIG_DEBUG_SPINLOCK_SLEEP is not set
-
--- 
-					    Gilles.
+Achtung: Neue E-Mail-Adresse! Attention: New e-mail-address! =
+thomas.debes@domain.hid
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
