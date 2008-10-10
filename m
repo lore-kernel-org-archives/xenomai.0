@@ -1,16 +1,9 @@
-Message-ID: <22085002.1223638963339.JavaMail.ngmail@domain.hid>
-Date: Fri, 10 Oct 2008 13:42:43 +0200 (CEST)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
-In-Reply-To: <48EF1B17.807@domain.hid>
+Date: Fri, 10 Oct 2008 13:50:36 +0000 (GMT)
+From: Gabriele Moabiti <gabmoa@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-References: <48EF1B17.807@domain.hid>
-	<3298865.1223620599925.JavaMail.ngmail@domain.hid>
-	<48EE2BF6.60300@domain.hid>	<15875130.1223557641586.JavaMail.ngmail@domain.hid>
-	<8227750.1223626784795.JavaMail.ngmail@domain.hid>
-Subject: Re: [Xenomai-help] Bug with Xenomai and xeno_heap: Eeek!
- page_mapcount(page) went negative!
+Content-Type: multipart/alternative; boundary="0-1742083866-1223646636=:70429"
+Message-ID: <39918.70429.qm@domain.hid>
+Subject: Re: [Xenomai-help] trap exceptions in user
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,51 +13,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: gilles.chanteperdrix@xenomai.org
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Hello Gilles,
+--0-1742083866-1223646636=:70429
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-thanks! Now it works fine!=20
-Great support.=20
+=0A=0A> Xenomai uses rthal_trap_catch, so, you can use Xenomai code as an e=
+xample.=0A=0ANamed=0AKD: kernel driver (ring 0).=0AUD: user space task (rin=
+g 3).=0A=0A- KD reserve 16 MB  of memory (note: virtual and physical contig=
+uous)=0A=0A- I use rthal_trap_catch to customize exceptions (redirected to =
+"custom_except" function)=0A  The "custom_except" function print the number=
+ of exception and recall the xenomai standard one.=0A=0A- KD has an rtdm in=
+terface to map the 16 MB memory on user space with rtdm_iomap_to_user.=0A=
+=0A- UD starts and It maps with the rtdm (rtdm_iomap_to_user)=0A=0A- UD cop=
+y a binary asm x86 test fpu (some instructions to generate exceptions for t=
+ests) in the 16 MB memory mapped=0A=0A- UD start the real time task=0A=0ANo=
+w here is a the problem.=0AIf I invoke an exception (int 3, floating point =
+exception and so on) outside the 16 MB mapped memory "custom_except" is cal=
+led ok.=0AIf the same code is invoked into the 16 MB mapped memory the prog=
+ram crash (and this is ok) reporting the description of the exception in th=
+e terminal (also this is ok) but "custom_except" is not called!=0A=0AIs the=
+re something wrong using the mapped memory in this mode?=0A=0ANOTE:=0AI am =
+using xenomai 2.4.0rc1 with kernel 2.6.23=0A=0A=0A      Scopri il blog di Y=
+ahoo! Mail:=0ATrucchi, novit=C3=A0 e scrivi la tua opinione.=0Ahttp://www.y=
+mailblogit.com/blog
+--0-1742083866-1223646636=:70429
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Best regards
-
-Mathias
-
-> Yes, thanks. This is a bug which should have been fixed since then. But=
-=20
-> here is a patch for your version. Could you try it?
->=20
->=20
-> diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index 816cf71..568cd8d 100644
-> --- a/include/linux/mm.h
-> +++ b/include/linux/mm.h
-> @@ -109,7 +109,7 @@ extern unsigned int kobjsize(const void *objp);
->  #define VM_CAN_NONLINEAR 0x08000000=09/* Has ->fault & does nonlinear pa=
-ges
-> */
->  #define VM_MIXEDMAP=090x10000000=09/* Can contain "struct page" and pure=
- PFN
-> pages */
-> =20
-> -#define VM_PINNED=090x10000000=09/* Disable faults for the vma */
-> +#define VM_PINNED=090x20000000=09/* Disable faults for the vma */
-> =20
->  #ifndef VM_STACK_DEFAULT_FLAGS=09=09/* arch can override this */
->  #define VM_STACK_DEFAULT_FLAGS VM_DATA_DEFAULT_FLAGS
->=20
-
-
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
-
-
-Jetzt komfortabel bei Arcor-Digital TV einsteigen: Mehr Happy Ends, mehr He=
-rzschmerz, mehr Fernsehen! Erleben Sie 50 digitale TV Programme und optiona=
-l 60 Pay TV Sender, einen elektronischen Programmf=FChrer mit Movie Star Be=
-wertungen von TV Movie. Au=DFerdem, aktuelle Filmhits und spannende Dokus i=
-n der Arcor-Videothek. Infos unter www.arcor.de/tv
+<html><head><style type=3D"text/css"><!-- DIV {margin:0px;} --></style></he=
+ad><body><div style=3D"font-family:arial,helvetica,sans-serif;font-size:10p=
+t"><div style=3D"font-family: arial,helvetica,sans-serif; font-size: 10pt;"=
+><br><div style=3D"font-family: arial,helvetica,sans-serif; font-size: 10pt=
+;">&gt; Xenomai uses rthal_trap_catch, so, you can use Xenomai code as an e=
+xample.<br><br>Named<br>KD: kernel driver (ring 0).<br>UD: user space task =
+(ring 3).<br><br>- KD reserve 16 MB&nbsp; of memory (note: virtual and phys=
+ical contiguous)<br><br>- I use rthal_trap_catch to customize exceptions (r=
+edirected to "custom_except" function)<br>&nbsp; The "custom_except" functi=
+on print the number of exception and recall the xenomai standard one.<br><b=
+r>- KD has an rtdm interface to map the 16 MB memory on user space with rtd=
+m_iomap_to_user.<br><br>- UD starts and It maps with the rtdm (rtdm_iomap_t=
+o_user)<br><br>- UD copy a binary asm x86 test fpu (some instructions to
+ generate exceptions for tests) in the 16 MB memory mapped<br><br>- UD star=
+t the real time task<br><br>Now here is a the problem.<br>If I invoke an ex=
+ception (int 3, floating point exception and so on) outside the 16 MB mappe=
+d memory "custom_except" is called ok.<br>If the same code is invoked into =
+the 16 MB mapped memory the program crash (and this is ok) reporting the de=
+scription of the exception in the terminal (also this is ok) but "custom_ex=
+cept" is not called!<br><br>Is there something wrong using the mapped memor=
+y in this mode?<br><br>NOTE:<br>I am using xenomai 2.4.0rc1 with kernel 2.6=
+.23<br><br></div></div></div><br>=0A=0A=0A=0A      <hr size=3D1><font face=
+=3D"Arial" size=3D"2">Scopri il <a href=3D"http://us.rd.yahoo.com/mail/it/t=
+aglines/yahoo/ymail/SIG=3D11djrg460/**http%3A%2F%2Fwww.ymailblogit.com%2Fbl=
+og%2F"> Blog di Yahoo! Mail</a>: trucchi, novit=C3=A0, consigli... e scrivi=
+ la tua opinione!</font></body></html>
+--0-1742083866-1223646636=:70429--
 
