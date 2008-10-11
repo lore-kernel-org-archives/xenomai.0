@@ -1,12 +1,13 @@
-Message-ID: <49098078.7000402@domain.hid>
-Date: Thu, 30 Oct 2008 10:38:00 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48F11C12.20104@domain.hid>
+Date: Sat, 11 Oct 2008 23:35:14 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <939CEF84-66F5-4B05-A491-74091D527EC4@domain.hid>
-In-Reply-To: <939CEF84-66F5-4B05-A491-74091D527EC4@domain.hid>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] sock_sendmsg() causes crash
+References: <333188.51777.qm@domain.hid>
+In-Reply-To: <333188.51777.qm@domain.hid>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-help] trap exceptions in user
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,39 +17,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Alphan Ulusoy <alphan@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gabriele Moabiti <gabmoa@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Alphan Ulusoy wrote:
-> Hi all,
->=20
-> I' am trying to send small UDP datagrams in a real-time system. I can't
-> get a satisfactory performance when I send these packets from a
-> userspace Xenomai task using sendto() call.
->=20
-> That's why I tried to code a small kernel module to make some
-> measurements. However; whenever
->     =95 A xenomai task
->     =95 An alarm function
->     =95 A thread created with kthread_run() form a xenomai task
-> that includes the sock_sendmsg() call runs, system crashes. However, if
-> a write a regular kernel module, the it works just fine...
->=20
-> Below you can find the code and the crash dump.
->=20
-> Does anyone have any suggestions? Is there any other way that I can sen=
-d
-> a UDP packet from a kernel Xenomai task?
+Gabriele Moabiti wrote:
+> 
+>>Yes, but I still think this is useless. If your user-space code expects
+>>to be running from 1MB to 16MB, it expects this for virtual addresses,
+>>not for physical addresses. So, I really think you should mmap the 1MB
+>>to 16MB region by passing the start address to mmap with the MMAP_FIXED
+>>flag.
+> 
+> I know my way to solve this problem is very strange but there are some
+> reasons.
+> It is done for compatibility reasons (DMA and a strange architecture
+> with custom gdt entries needed by the asm blob...)
+> In this application I don't need contiguous physical addresses so I will
+> try the mmap fixed way.
+> I didn't only want to fork the driver but it is not a big problem...
+> 
+>>You should trace the exception path in the I-pipe patch to find the
+>>point where your exception handling callback is not called.
+> 
+> will it be a large print work or there are another ways to do that? :)
+> 
 
-I think Philippe already suggested that you should start reading a bit
-about the co-kernel model and its implications.
+You may want to have a look at the I-pipe tracer:
 
-Also, you may want to look at RTnet if you have to send UDP packets
-under RT constraints.
+http://www.xenomai.org/index.php/I-pipe:Tracer
 
-Jan
+>     Gabriele
+> 
+> 
+> ------------------------------------------------------------------------
+> Scopri il Blog di Yahoo! Mail
+> <http://us.rd.yahoo.com/mail/it/taglines/yahoo/ymail/SIG=11djrg460/**http%3A%2F%2Fwww.ymailblogit.com%2Fblog%2F>:
+> trucchi, novità, consigli... e scrivi la tua opinione!
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
---=20
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+
+-- 
+Philippe.
 
