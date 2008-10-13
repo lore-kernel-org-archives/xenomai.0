@@ -1,14 +1,15 @@
-Message-ID: <48F35A40.9040306@domain.hid>
-Date: Mon, 13 Oct 2008 16:25:04 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48F38E25.4060205@domain.hid>
+Date: Mon, 13 Oct 2008 20:06:29 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <48F33543.6070303@domain.hid>
-	<48F3380B.6040503@domain.hid>	<48F33AEC.9080608@domain.hid>
-	<48F33C4F.4020001@domain.hid>
-In-Reply-To: <48F33C4F.4020001@domain.hid>
+References: <48F34E5A.60209@domain.hid> <48F3527E.6020908@domain.hid>
+	<48F35470.70600@domain.hid> <48F35785.6090503@domain.hid>
+In-Reply-To: <48F35785.6090503@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Fast mutexes vs. automatic mode switch
+Subject: Re: [Xenomai-core] [BUG?] mem leak on slab size-1024 with Xenomai
+ processes
+Reply-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,33 +19,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
+Jan Kiszka wrote:
 > Jan Kiszka wrote:
->> As we are already fighting hard to avoid new explicit mode-switch use
->> cases, rather get rid of old ones, I thought it would be better to keep
->> existing semantic across the fast mutex changes.
+>> Philippe Gerum wrote:
+>>> Jan Kiszka wrote:
+>>>> Sigh, this is not my day: Can anyone confirm that we are leaking memory
+>>>> with current SVN head? I'm seeing a constant increase on slab
+>>>> "size-1024" on a x86_64 box when running arbitrary Xenomai apps in a loop.
+>>>>
+>>>> [ Besides that, I have an occasional deadlock in xnpipe_wakeup_proc due
+>>>> to an inconsistent xnpipe_sleepq - likely a different story... :-/ ]
+>>>>
+>>> Any luck with CONFIG_XENOMAI_OPT_DEBUG_QUEUES on?
+>> As usual no luck: the bug disappeared (likely some race). Will dig into
+>> that next after fixing this leak:
 >>
->> Regarding those shared maps: they are per process, aren't they? But here
->> we need per thread memory. I'm currently thinking of a memory piece that
->> the caller of xeno_set_current provides (or some service that is called
->> together with the latter one, or some extended services - to keep APIs
->> clean). Then, on mode switches, the kernel will carefully
->> (xn_copy_to_user) update it.
+>> xnshadow_sys_event()
+>> XNSHADOW_CLIENT_ATTACH -> xnarch_alloc_host_mem(xnsys_ppd)
+>> XNSHADOW_CLIENT_DETACH -> ???
 > 
-> We can allocate a piece of memory on the shared heap, and attach it to a
-> thread using a pthread_key.
+> That was the key, now fixed with #4218.
 
-What would be the advantage of using a heap chunk over doing xn_copy_*?
-I haven't looked into details yet but, in contrast to the mutex stuff, I
-don't expect that we will have to access that data from within critical
-regions.
-
-Jan
+Ok. I think this one is mine. Sorry.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
