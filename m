@@ -1,93 +1,56 @@
-Message-ID: <48DA015F.4090508@domain.hid>
-Date: Wed, 24 Sep 2008 10:59:11 +0200
-From: Mathieu Maret <mathieu.maret@domain.hid>
+Message-ID: <48F3380B.6040503@domain.hid>
+Date: Mon, 13 Oct 2008 13:59:07 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <48F33543.6070303@domain.hid>
+In-Reply-To: <48F33543.6070303@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Error with Xenosim
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Fast mutexes vs. automatic mode switch
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hello everybody!
-I install Xenosim 2.4.5 with Xenomai 2.4.3 with the Linux Kernel 2.6.23. 
-(Debian 4.0)
-I can run Xenosim but when i try to create a new project, I get an Error.
+Jan Kiszka wrote:
+> Hi,
+> 
+> while preparing my reworked fast mutex patches for submission, reviewing
+> them once again, I realized a conception problem that the fast path can
+> introduce: So far every pthread_mutex_lock or rt_mutex_acquire forced
+> the caller into primary mode in case it was in secondary before. Now
+> this will only happen if the mutex is contended!
 
-Here is the log of the Error :
+Yes, I had already thought about that, and even mentioned it on the
+mailing list I believe.
 
-unknown option "-image"
-unknown option "-image"
-    while executing
-"$data(w:hlist) add $vpath -text $text -data $curpath -image $img"
-    (procedure "tixDirList:ListHierachy" line 10)
-    invoked from within
-"tixDirList:ListHierachy $w $npath $vpath"
-    (procedure "tixDirList:LoadDir" line 13)
-    invoked from within
-"tixDirList:LoadDir $w $npath $vpath"
-    (procedure "tixDirList:SetValue" line 5)
-    invoked from within
-"tixDirList:SetValue $w $npath [tixFSInternal $npath]"
-    (procedure "tixDirList:chdir" line 5)
-    invoked from within
-"tixDirList:chdir $w $value"
-    (procedure "tixDirList:config-value" line 4)
-    invoked from within
-"tixDirList:config-value 
-.tixapp_filedialog_tixExFileSelectDialog.fsbox.lf.pane.1.dirlist 
-/home/mmaret"
-    invoked from within
-"tixDirList  $dpane.dirlist  -command   [list 
-tixExFileSelectBox:Cmd-DirList $w] -browsecmd [list 
-tixExFileSelectBox:Browse-DirList $w]"
-    (procedure "tixExFileSelectBox:ConstructWidget" line 32)
-    invoked from within
-"tixExFileSelectBox:ConstructWidget 
-.tixapp_filedialog_tixExFileSelectDialog.fsbox"
-    invoked from within
-"tixExFileSelectBox $w.fsbox -dialog $w  -command $data(-command)"
-    (procedure "tixExFileSelectDialog:ConstructWidget" line 5)
-    invoked from within
-"tixExFileSelectDialog:ConstructWidget 
-.tixapp_filedialog_tixExFileSelectDialog"
-    invoked from within
-"$type .tixapp_filedialog_$type"
-    (procedure "tixAppContext:filedialog" line 12)
-    invoked from within
-"tixAppContext:filedialog tix tixExFileSelectDialog"
-    invoked from within
-"tix filedialog tixExFileSelectDialog"
-    (procedure "Workspace:newProject" line 44)
-    invoked from within
-"Workspace:newProject .c0x81176d0"
-    invoked from within
-".c0x81176d0.mbar.project.m invoke active"
-    ("uplevel" body line 1)
-    invoked from within
-"uplevel #0 [list $w invoke active]"
-    (procedure "tk::MenuInvoke" line 50)
-    invoked from within
-"tk::MenuInvoke .c0x81176d0.mbar.project.m 1"
-    (command bound to event)
+> 
+> Let's consider the fairly typical use case of a two threads
+> synchronizing a critical section with the help of a mutex. One thread is
+> high-prio, always in primary mode, the other is low-prio, constantly
+> transiting between primary (while holding the lock) and secondary (while
+> interacting with Linux). If the low-prio acquires the uncontended lock,
+> it will now remain in secondary mode thanks to the new mutex fast path.
+> That means if the high-prio requests the lock as well, prio-inheritance
+> will no longer work as the owner is not in the right mode!
+> 
+> I guess what we need is mode detection for the caller in the mutex fast
+> path. If the possible new owner is in secondary mode, the syscall path
+> needs to be taken to trigger a migration reliably. That in turn means we
+> need a syscall-less detection of the current execution mode. Any
+> spontaneous ideas on this?
 
+Is not it even simpler for the oscillating thread to switch to primary
+mode when it accesses such a mutex? Otherwise we have kernel/user shared
+ maps, so allocating a few bytes there should be enough.
 
-
-Tcl/Tk and Tix 8.4 are installed
-(with corresponding -dev package)
-
-Any Idea about the error?
-(I can bypass the error by specifying the bin as an argument to xenosim 
-or by modifying the .mvmrc file but it's still better with a graphic 
-interface :) )
-
-Any Idea about the Error?
-Thanks a lot!
+-- 
+                                                 Gilles.
 
