@@ -1,40 +1,47 @@
-Date: Thu, 25 Sep 2008 17:15:47 -0700 (PDT)
-From: egemen kaleli <menege1@domain.hid>
+Message-ID: <48F35470.70600@domain.hid>
+Date: Mon, 13 Oct 2008 16:00:16 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-2106863180-1222388147=:70868"
-Message-ID: <597724.70868.qm@domain.hid>
-Subject: [Xenomai-help] CONFIG_XENO_OPT_NATIVE_INTR?
-Reply-To: menege1@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <48F34E5A.60209@domain.hid> <48F3527E.6020908@domain.hid>
+In-Reply-To: <48F3527E.6020908@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [BUG?] mem leak on slab size-1024 with Xenomai
+ processes
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: rpm@xenomai.org
+Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai-core <xenomai@xenomai.org>
 
---0-2106863180-1222388147=:70868
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>> Sigh, this is not my day: Can anyone confirm that we are leaking memory
+>> with current SVN head? I'm seeing a constant increase on slab
+>> "size-1024" on a x86_64 box when running arbitrary Xenomai apps in a loop.
+>>
+>> [ Besides that, I have an occasional deadlock in xnpipe_wakeup_proc due
+>> to an inconsistent xnpipe_sleepq - likely a different story... :-/ ]
+>>
+> 
+> Any luck with CONFIG_XENOMAI_OPT_DEBUG_QUEUES on?
 
-Hello,
+As usual no luck: the bug disappeared (likely some race). Will dig into
+that next after fixing this leak:
 
-When I want to call "rt_intr_create(&intr_timer,"MyIrq",irq,I_NOAUTOENA)" f=
-unction it returns=A0 -ENOSYS.CONFIG_XENO_OPT_NATIVE_INTR is off in default=
-.I want to make it on.How can I do it?Which files and directories should=A0=
- I look for?Any help will be greatly appreciated.
+xnshadow_sys_event()
+XNSHADOW_CLIENT_ATTACH -> xnarch_alloc_host_mem(xnsys_ppd)
+XNSHADOW_CLIENT_DETACH -> ???
 
-egemen.
+Jan
 
-=0A=0A=0A      
---0-2106863180-1222388147=:70868
-Content-Type: text/html; charset=us-ascii
-
-<table cellspacing="0" cellpadding="0" border="0" ><tr><td valign="top" style="font: inherit;">Hello,<br><br>When I want to call "rt_intr_create(&amp;intr_timer,"MyIrq",irq,I_NOAUTOENA)" function it returns&nbsp; -ENOSYS.CONFIG_XENO_OPT_NATIVE_INTR is off in default.I want to make it on.How can I do it?Which files and directories should&nbsp; I look for?Any help will be greatly appreciated.<br><br>egemen.<br><br></td></tr></table><br>
-
-      
---0-2106863180-1222388147=:70868--
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
