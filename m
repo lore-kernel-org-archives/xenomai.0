@@ -1,5 +1,5 @@
-Message-ID: <48F46954.6050704@domain.hid>
-Date: Tue, 14 Oct 2008 11:41:40 +0200
+Message-ID: <48F46D3E.2040507@domain.hid>
+Date: Tue, 14 Oct 2008 11:58:22 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <48F3C3E4.4020801@domain.hid> <48F45847.3030704@domain.hid>
@@ -22,18 +22,64 @@ To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> It will always remain orders of magnitude heavier than __thread
-> variables which are a) inlined and b) should only need two memory
-> accesses at worst. Moreover, it is clearly the future, while the
-> importance of pthread_getspecific will decrease over the time. The
-> __thread storage class is C99 standard (though its implementation
-> remains a separate topic).
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Jan Kiszka wrote:
+>>>>> Hi,
+>>>>>
+>>>>> looking into the "xeno_in_primary_mode" thing I wondered how to make the
+>>>>> thread state quickly retrievable. Going via pthread_getspecific as we do
+>>>>> for xeno_get_current appears logical - but not optimal. Though
+>>>>> getspecific is optimized for speed, it remains a function call, a few
+>>>>> sanity checks, and only finally a TLS variable access. That could be
+>>>>> achieved in a much lighter way by using a __thread variable.
+>>>>>
+>>>>> But can we assume that all target we support also support the __thread
+>>>>> storage class? TLS is surely mandatory now: I assume pthread_getspecific
+>>>>> would become non-RT safe without it, right? Is there anything we
+>>>>> can/must check for during configure to verify __thread support?
+>>>> I really think that this optimization is not worth the trouble. Anyway,
+>>> As long as we cannot specify the amount of "trouble", it's hard to
+>>> decide. Me current feeling is that it should rather simplify the
+>>> implementation + save us quite a few ops in the fast path (even more
+>>> with upcoming thread-mode check).
+>> The trouble is to make some reliable detections in the configure script,
+>> so that the user will know early that Xenomai can not work with its
+>> current toolchain. And to make this detection work with uclibc as well
+>> as with glibc, gcc 4 versus gcc 3, etc...
+> 
+> Will work out a test program for configure.
 
-You are exagerating a bit: pthread_getspecific is pretty efficient
-already (from the few things that I have timed on ARM, it is the only
-one which takes under the microsecond). That you will gain something
-with __thread is not guaranteed by the C99 standard either: in fact the
-implementation could use exactly the same functions.
+glibc does that:
+
+AC_ARG_WITH([__thread],
+            AC_HELP_STRING([--without-__thread],
+                           [do not use TLS features even when supporting them]),
+            [use__thread=$withval],
+            [use__thread=yes])
+
+dnl Check whether the compiler supports the __thread keyword.
+if test "x$use__thread" != xno; then
+  AC_CACHE_CHECK([for __thread], libc_cv_gcc___thread,
+  [cat > conftest.c <<\EOF
+__thread int a = 42;
+EOF
+  if AC_TRY_COMMAND([${CC-cc} $CFLAGS $CPPFLAGS -c conftest.c >&AS_MESSAGE_LOG_F
+D]); then
+    libc_cv_gcc___thread=yes
+  else
+    libc_cv_gcc___thread=no
+  fi
+  rm -f conftest*])
+  if test "$libc_cv_gcc___thread" = yes; then
+    AC_DEFINE(HAVE___THREAD)
+  fi
+else
+  libc_cv_gcc___thread=no
+fi
+
+
 
 -- 
                                                  Gilles.
