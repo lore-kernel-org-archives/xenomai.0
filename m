@@ -1,6 +1,6 @@
-Message-ID: <48F49DCE.2070308@domain.hid>
-Date: Tue, 14 Oct 2008 15:25:34 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <48F4A234.9030309@domain.hid>
+Date: Tue, 14 Oct 2008 15:44:20 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <48F3C3E4.4020801@domain.hid>
 	<48F45847.3030704@domain.hid>	<48F461A6.6010600@domain.hid>
@@ -9,7 +9,8 @@ References: <48F3C3E4.4020801@domain.hid>
 	<48F48E2E.2050004@domain.hid> <48F49540.3060507@domain.hid>
 	<48F49637.2030000@domain.hid> <48F497B2.4080404@domain.hid>
 	<48F4987F.1060901@domain.hid> <48F499EF.9010205@domain.hid>
-In-Reply-To: <48F499EF.9010205@domain.hid>
+	<48F49DCE.2070308@domain.hid>
+In-Reply-To: <48F49DCE.2070308@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] __thread instead of pthread_get/setspecific
@@ -22,19 +23,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Ack. There are rt_printf (rtdk) and the task-self services of vxworks,
-> vrtx and native skins. So if I get an OK for the proposal, I'll convert
-> the rest, too.
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Ack. There are rt_printf (rtdk) and the task-self services of vxworks,
+>> vrtx and native skins. So if I get an OK for the proposal, I'll convert
+>> the rest, too.
+> 
+> And I really do not understand how the keys can be chosen at
+> compilation-time, especially in the situation where multiple libraries
+> allocate __thread objects separately: how does the compiler know which
+> key to give for each library ?
 
-And I really do not understand how the keys can be chosen at
-compilation-time, especially in the situation where multiple libraries
-allocate __thread objects separately: how does the compiler know which
-key to give for each library ?
+The keys are known at linking time when a) their context is module-local
+and b) their TLS storage can be appended to main's TLS area (and that
+can only happen during initial linking, of course).
+
+
+BTW, another advantage of TLS over getspecific /wrt task-self is that it
+overcomes its laziness: its now cheap and easy to set self in the thread
+trampoline.
+
+Philippe, could it be that vrtx's sc_tinquiry implementation is broken?
+I only find the corresponding pthread_setspecific in the lib
+constructor. That pattern totally disagrees with native and vxworks.
+
+Jan
 
 -- 
-                                                 Gilles.
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
