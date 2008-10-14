@@ -1,70 +1,94 @@
-Message-ID: <f5e14e470809290400x6b48f63fm7adcc35e460313fb@domain.hid>
-Date: Mon, 29 Sep 2008 13:00:38 +0200
-From: "Ulrich Schwab" <uli.schwab@domain.hid>
-In-Reply-To: <162458.39257.qm@domain.hid>
+Message-ID: <48F4987F.1060901@domain.hid>
+Date: Tue, 14 Oct 2008 15:02:55 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-9
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
-References: <162458.39257.qm@domain.hid>
-Subject: Re: [Xenomai-help] Fw: Re:  CONFIG_XENO_OPT_NATIVE_INTR?
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <48F3C3E4.4020801@domain.hid>
+	<48F45847.3030704@domain.hid>	<48F461A6.6010600@domain.hid>
+	<48F4634B.3030002@domain.hid>	<48F465DD.6020505@domain.hid>
+	<48F46954.6050704@domain.hid> <48F473A2.1050104@domain.hid>
+	<48F48E2E.2050004@domain.hid> <48F49540.3060507@domain.hid>
+	<48F49637.2030000@domain.hid> <48F497B2.4080404@domain.hid>
+In-Reply-To: <48F497B2.4080404@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] __thread instead of pthread_get/setspecific
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: menege1@domain.hid
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Rmlyc3Qgb2YgYWxsLCBwbGVhc2UgZG8gbm90IGRyb3AgdGhlIGxpc3QgZnJvbSByZWNlaXZpbmcg
-WW91ciBtYWlscywKdGhpcyB3YXkgbm9ib2R5IGVsc2UgY2FuIGFuc3dlciBZb3VyIHF1ZXN0aW9u
-cy4KCk9uZSBleGFtcGxlIGlzOgpBIHVzZXIgcHJvZ3JhbSBjYW4gY2FsbCBydF9kZXZfaW9jdGwg
-b24gdGhlIG9wZW4gZmlsZSBkZXNjcmlwdG9yCmFzc29jaWF0ZWQgd2l0aCBZb3VyIHRpbWVyIGhh
-cmR3YXJlLgpJbiB0aGUgZHJpdmVyIGlvY3RsIGVudHJ5IC0gd2hpY2ggaXMgZXhlY3V0ZWQgaW4g
-dGhlIGNvbnRleHQgb2YgdGhlCnVzZXIgdGFzayAtIGl0IGNhbiBibG9jayBhbmQgYmUgdW5ibG9j
-a2VkCmZyb20gd2l0aGluIHRoZSBpc3Igd2hlbiB0aGUgZGVzaXJlZCBjb25kaXRpb24gaXMgbWV0
-LgoKVWxyaWNoCk9uIFN1biwgU2VwIDI4LCAyMDA4IGF0IDExOjM3IEFNLCBlZ2VtZW4ga2FsZWxp
-IDxtZW5lZ2UxQHlhaG9vLmNvbT4gd3JvdGU6Cj4KPgo+IC0tLSBPbiBTdW4sIDkvMjgvMDgsIGVn
-ZW1lbiBrYWxlbGkgPG1lbmVnZTFAeWFob28uY29tPiB3cm90ZToKPgo+IEZyb206IGVnZW1lbiBr
-YWxlbGkgPG1lbmVnZTFAeWFob28uY29tPgo+IFN1YmplY3Q6IFJlOiBbWGVub21haS1oZWxwXSBD
-T05GSUdfWEVOT19PUFRfTkFUSVZFX0lOVFI/Cj4gVG86IG1lbmVnZTFAeWFob28uY29tCj4gRGF0
-ZTogU3VuZGF5LCBTZXB0ZW1iZXIgMjgsIDIwMDgsIDEyOjMxIFBNCj4KPiDdZiBJIHdhbnQgdG8g
-aGFuZGxlIGEgaGFyZHdhcmUgdGltZXIgaW50ZXJydXB0IGluIGtlcm5lbCBtb2R1bGUgLGhvdyBj
-YW4gSQo+IG1ha2UgdXNlciBzcGFjZSBhd2FyZSBvZiBoYXBwZW5pbmcgYW4gaW50ZXJydXB0IHNv
-IHRoYXQgSSBjYW4gcGFzcyBhIGNsb2NrCj4gdGljayB0byB1c2VyIHByb2dyYW0gZnJvbSBrZXJu
-ZWwgZHJpdmVyIHRocm91Z2ggdGltZXIgaW50ZXJydXB0Lgo+Cj4gLS0tIE9uIEZyaSwgOS8yNi8w
-OCwgZWdlbWVuIGthbGVsaSA8bWVuZWdlMUB5YWhvby5jb20+IHdyb3RlOgo+Cj4gRnJvbTogZWdl
-bWVuIGthbGVsaSA8bWVuZWdlMUB5YWhvby5jb20+Cj4gU3ViamVjdDogUmU6IFtYZW5vbWFpLWhl
-bHBdIENPTkZJR19YRU5PX09QVF9OQVRJVkVfSU5UUj8KPiBUbzogIlVscmljaCBTY2h3YWIiIDx1
-bGkuc2Nod2FiQGdvb2dsZW1haWwuY29tPgo+IERhdGU6IEZyaWRheSwgU2VwdGVtYmVyIDI2LCAy
-MDA4LCA1OjEzIFBNCj4KPiB0aGFua3MgZm9yIGhlbHAuQ2FuIEkgdXNlIHJ0ZG0gaW50ZXJydXB0
-IGhhbmRsZXIgaW4gdXNlciBzcGFjZT9pbiBmYWN0ICAgSQo+IHdhbnQgdG8gY3JlYXRlICBhIGhh
-bmRsZXIgaW4ga2VybmVsIHNwYWNlLHRoaXMgaGFuZGxlciBzaG91bGQgcGFzcyBkYXRhCj4gdG8v
-ZnJvbSB1c2VyIHNwYWNlLkJ1IHQgaXQgaXMgbm90IHBvc3NpYmxlIGFzICBJIGtub3cgZnJvbSBs
-aW51eCBkZXZpY2UKPiBkcml2ZXJzIC5TbyBJIHdhbnQgdG8gY3JlYXRlIGEgdXNlciBzcGFjZSBo
-YW5kbGVyLgo+IEFQSSBpcyBub3QgZXhwbGFuYXRvcnkgYW5kIGRvZXNudCBoYXZlIGVub3VnaCBl
-eGFtcGxlIGFib3V0IGludGVycnVwdAo+IG1hbmFnZW1lbnQsZXNwZWNpYWxseSBydGRtIGludGVy
-cnVwdCBtYW5hZ2VtZW50IGFzIHdlbGwuCj4KPiAtLS0gT24gRnJpLCA5LzI2LzA4LCBVbHJpY2gg
-U2Nod2FiIDx1bGkuc2Nod2FiQGdvb2dsZW1haWwuY29tPiB3cm90ZToKPgo+IEZyb206IFVscmlj
-aCBTY2h3YWIgPHVsaS5zY2h3YWJAZ29vZ2xlbWFpbC5jb20+Cj4gU3ViamVjdDogUmU6IFtYZW5v
-bWFpLWhlbHBdIENPTkZJR19YRU5PX09QVF9OQVRJVkVfSU5UUj8KPiBUbzogbWVuZWdlMUB5YWhv
-by5jb20KPiBDYzogeGVub21haS1oZWxwQGduYS5vcmcKPiBEYXRlOiBGcmlkYXksIFNlcHRlbWJl
-ciAyNiwgMjAwOCwgMjowNiBQTQo+Cj4gT24gRnJpLCBTZXAgMjYsIDIwMDggYXQgMjoxNSBBTSwg
-ZWdlbWVuIGthbGVsaSA8bWVuZWdlMUB5YWhvby5jb20+IHdyb3RlOgo+PiBIZWxsbywKPj4KPj4g
-V2hlbiBJIHdhbnQgdG8gY2FsbAo+ICJydF9pbnRyX2NyZWF0ZSgmaW50cl90aW1lciwiTXlJcnEi
-LGlycSxJX05PQVVUT0VOQSkiCj4+IGZ1bmN0aW9uIGl0IHJldHVybnMgIC1FTk9TWVMuQ09ORklH
-X1hFTk9fT1BUX05BVElWRV9JTlRSIGlzIG9mZiBpbgo+IGRlZmF1bHQuSQo+PiB3YW50IHRvIG1h
-a2UgaXQgb24uSG93IGNhbiBJIGRvIGl0P1doaWNoIGZpbGVzIGFuZCBkaXJlY3RvcmllcyBzaG91
-bGQgIEkKPj4gbG9vayBmb3I/QW55IGhlbHAgd2lsbCBiZSBncmVhdGx5IGFwcHJlY2lhdGVkLgo+
-IFVzdWFsbHkgWW91IG9ubHkgbmVlZCB0byBoYW5kbGUgaXJxcyBpbiBhIGRyaXZlciwgYW5kIGEg
-eGVub21haSBkcml2ZXIKPiBpcyBkb2luZyBpdCB3aXRoIHRoZSBSVERNIHNraW4KPiBhbmQgdGhl
-IHN5c3RlbSBjYWxsOiBydGRtX2lycV9yZXF1ZXN0ICAoc2VlIHRoZSBBUEkgZG9jcykKPiBUaGlz
-IGlzIHRoZSByZWFzb24gQ09ORklHX1hFTk9fT1BUX05BVElWRV9JTlRSIGlzIG9mZiBieQo+ICBk
-ZWZhdWx0Cj4gSWYgWW91IHdhbnQgdG8gc3dpdGNoIGl0IG9uIGFueXdheSwgWW91IGNhbiBkbyBp
-dCBpbiB0aGUga2VybmVsIGNvbmZpZwo+IHBhZ2UgZm9yIHRoZSBuYXRpdmUgc2tpbi4KPgo+IFVs
-cmljaCBTY2h3YWIKPgo+Cj4KPgo=
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Jan Kiszka wrote:
+>>>>> Gilles Chanteperdrix wrote:
+>>>>>> Jan Kiszka wrote:
+>>>>>>> It will always remain orders of magnitude heavier than __thread
+>>>>>>> variables which are a) inlined and b) should only need two memory
+>>>>>>> accesses at worst. Moreover, it is clearly the future, while the
+>>>>>>> importance of pthread_getspecific will decrease over the time. The
+>>>>>>> __thread storage class is C99 standard (though its implementation
+>>>>>>> remains a separate topic).
+>>>>>> You are exagerating a bit: pthread_getspecific is pretty efficient
+>>>>>> already (from the few things that I have timed on ARM, it is the only
+>>>>>> one which takes under the microsecond). That you will gain something
+>>>>>> with __thread is not guaranteed by the C99 standard either: in fact the
+>>>>>> implementation could use exactly the same functions.
+>>>>> As long as we do not loose anything (performance or portability),
+>>>> You loose portability. But I agree that we do not care much.
+>>> The fallback remains - must remain in order to obtain true optimization
+>>> from the TLS-based version without locking out some corner-case usage.
+>>> Find a proposal below (on top of handle-based xeno_get_current).
+>>>
+>>> We have to set initial-exec as TLS model, otherwise we end up with a
+>>> dynamic lookup similar (maybe still faster, dunno) to the pthread
+>>> service. This model requires start-time linking, will not work with
+>>> dlopen (I strongly assume the linker will bail out). But I consider
+>>> runtime loading of Xenomai libs as a uncommon corner case, and the user
+>>> can still re-enable it via --without-__thread.
+>> glibc has a separate test to know whether the tsl_model attribute is
+>> supported:
+>>
+>> if test "$libc_cv_gcc___thread" = yes; then
+>>   dnl Check whether the compiler supports the tls_model attribute.
+>>   AC_CACHE_CHECK([for tls_model attribute], libc_cv_gcc_tls_model_attr, [dnl
+>>   cat > conftest.c <<\EOF
+>> extern __thread int a __attribute__((tls_model ("initial-exec")));
+>> EOF
+>>   if AC_TRY_COMMAND([${CC-cc} $CFLAGS $CPPFLAGS -S -Werror conftest.c
+>>> &AS_MESSA
+>> GE_LOG_FD]); then
+>>     libc_cv_gcc_tls_model_attr=yes
+>>   else
+>>     libc_cv_gcc_tls_model_attr=no
+>>   fi
+>>   rm -f conftest*])
+>>   if test "$libc_cv_gcc_tls_model_attr" = yes; then
+>>     AC_DEFINE(HAVE_TLS_MODEL_ATTRIBUTE)
+>>   fi
+>> fi
+>>
+> 
+> OK, but for us the question is if we want __thread without initial-exec
+> at all. If not (I think so), I could add -Werror to the __thread test
+> and that should combine both tests into a single one, sufficient for our
+> use case.
+
+Yes, my point was that if an implementation supports __thread, it does
+not necessarily mean that it supports the tls_model attribute. We should
+fallback to pthread_key if either one is not supported. However, other
+parts of Xenomai skins use pthread_specific, so, if we implement
+something based on __thread, I think we should factor it and use it
+everywhere.
+
+-- 
+                                                 Gilles.
 
