@@ -1,5 +1,5 @@
-Message-ID: <48F49D21.2030402@domain.hid>
-Date: Tue, 14 Oct 2008 15:22:41 +0200
+Message-ID: <48F49DCE.2070308@domain.hid>
+Date: Tue, 14 Oct 2008 15:25:34 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <48F3C3E4.4020801@domain.hid>
@@ -26,12 +26,14 @@ To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> So if I get an OK for the proposal, I'll convert the rest, too.
+> Ack. There are rt_printf (rtdk) and the task-self services of vxworks,
+> vrtx and native skins. So if I get an OK for the proposal, I'll convert
+> the rest, too.
 
->From my point of view, it really is a micro-optimization, which
-uselessly clutters code and configure script. But I really have no
-concrete objection, especially since you say that __thread is the
-future, not pthread_getspecific.
+And I really do not understand how the keys can be chosen at
+compilation-time, especially in the situation where multiple libraries
+allocate __thread objects separately: how does the compiler know which
+key to give for each library ?
 
 -- 
                                                  Gilles.
