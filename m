@@ -1,15 +1,16 @@
-Message-ID: <48F7B85C.9050809@domain.hid>
-Date: Thu, 16 Oct 2008 23:55:40 +0200
+Message-ID: <48F7B86D.8090204@domain.hid>
+Date: Thu, 16 Oct 2008 23:55:57 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <20081016154620.320953568@domain.hid>	<20081016154620.523981771@domain.hid>
-	<48F7957A.3070506@domain.hid>
-In-Reply-To: <48F7957A.3070506@domain.hid>
+References: <20081016154620.320953568@domain.hid>	<20081016154621.318326730@domain.hid>
+	<48F79C8E.3070900@domain.hid>
+In-Reply-To: <48F79C8E.3070900@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig6CC54F60CD9D1A4978A61D20"
+	boundary="------------enigC83D3E8B66805CBD69E71BE5"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [PATCH 01/12] Generic thread registration
+Subject: Re: [Xenomai-core] [PATCH 06/12] Lockless fast
+	path	for	xnsynch_acquire/release
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -23,23 +24,25 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6CC54F60CD9D1A4978A61D20
+--------------enigC83D3E8B66805CBD69E71BE5
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
 Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
 >=20
-> Why the funky last parameter added to __rt_bind_helper ?
+> Ok. Though I do not see the point of the FASTSEM/FASTSYNCH rename.
+> FASTSEM is short, and we are not much interested in getting anything
+> else than semaphores faster.
 
-As __rt_bind_helper can now be called with an xnthread object address,
-thus we take its offset inside RT_TASK into account. It is not a nice
-interface, I know, but I didn't find a better one.
+We aren't optimizing semaphores (at least not yet), we are optimizing
+mutexes only. And if we ever optimize also semaphores, FASTSYNCH will
+luckily still fit. :)
 
 Jan
 
 
---------------enig6CC54F60CD9D1A4978A61D20
+--------------enigC83D3E8B66805CBD69E71BE5
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -48,10 +51,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.8 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkj3uFwACgkQniDOoMHTA+laZwCdGp3ZtLw18ZXAn3E+ZM/ECgkO
-t5gAnRBXIu/6nxgu5tlb71UICC25zsBm
-=hb9S
+iEYEARECAAYFAkj3uG0ACgkQniDOoMHTA+ny/QCeNr9W649+TRcQiXWtMZn6qtlO
+yd8AniNAzi7MiOY+mI4FKXAQr1tE9ii3
+=anK6
 -----END PGP SIGNATURE-----
 
---------------enig6CC54F60CD9D1A4978A61D20--
+--------------enigC83D3E8B66805CBD69E71BE5--
 
