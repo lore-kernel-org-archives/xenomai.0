@@ -1,11 +1,11 @@
 Resent-To: xenomai-core <xenomai@xenomai.org>
-Resent-Message-Id: <48F764A5.2080300@domain.hid>
-Message-Id: <20081016154620.683296579@domain.hid>
-Date: Thu, 16 Oct 2008 17:46:22 +0200
+Resent-Message-Id: <48F764A5.4040303@domain.hid>
+Message-Id: <20081016154620.523981771@domain.hid>
+Date: Thu, 16 Oct 2008 17:46:21 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 References: <20081016154620.320953568@domain.hid>
-Content-Disposition: inline; filename=handle-based-xeno_get_current.patch
-Subject: [Xenomai-core] [PATCH 02/12] Handle-based xeno_get_current service
+Content-Disposition: inline; filename=generic-thread-registration.patch
+Subject: [Xenomai-core] [PATCH 01/12] Generic thread registration
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,851 +18,666 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
-To avoid sharing kernel object pointers with user space, a handle-based
-approach is installed by this patch. It also reserves a few bits of the
-handle value for special use (like the claimed bit of fast xnsynch).
-Furthermore, the patch ensures that threads are registered at least
-anonymously to allow them being used with fast xnsynch objects.
+Lay groundwork for registering every thread at least anonymously with
+the Xenomai registry when required (e.g. handle-based fast xnsynch
+support). Wrap the operations appropriately, also saving a few #ifdefs.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- include/asm-generic/bits/bind.h    |    9 ++++-
- include/asm-generic/bits/current.h |    5 +--
- include/nucleus/types.h            |   13 +++++++
- ksrc/nucleus/shadow.c              |   16 +++++++--
- ksrc/skins/native/Kconfig          |    1 
- ksrc/skins/native/task.c           |    8 +---
- ksrc/skins/posix/Kconfig           |    1 
- ksrc/skins/posix/cb_lock.h         |   15 ++++++---
- ksrc/skins/posix/cond.c            |   12 ++++---
- ksrc/skins/posix/mutex.c           |   21 +++++++-----
- ksrc/skins/posix/mutex.h           |   61 +++++++++++++++++++++++--------------
- ksrc/skins/posix/syscall.c         |   11 +++---
- ksrc/skins/posix/thread.c          |   12 +++++++
- ksrc/skins/psos+/Kconfig           |    2 -
- ksrc/skins/rtai/Kconfig            |    1 
- ksrc/skins/rtai/task.c             |   10 ++++++
- ksrc/skins/rtdm/drvlib.c           |    8 ++++
- ksrc/skins/uitron/Kconfig          |    1 
- ksrc/skins/uitron/task.c           |   11 ++++++
- ksrc/skins/vrtx/Kconfig            |    2 -
- ksrc/skins/vrtx/task.c             |   17 +++++++++-
- ksrc/skins/vxworks/Kconfig         |    2 -
- src/skins/posix/mutex.c            |   41 ++++++++++++------------
- 23 files changed, 199 insertions(+), 81 deletions(-)
+ include/nucleus/registry.h   |    1 
+ include/nucleus/thread.h     |   25 +++++++++++++++++
+ ksrc/nucleus/thread.c        |    2 +
+ ksrc/skins/native/syscall.c  |   61 ++++++++++++++++++++++++++-----------------
+ ksrc/skins/native/task.c     |   13 ---------
+ ksrc/skins/psos+/syscall.c   |   19 ++++++++-----
+ ksrc/skins/psos+/task.c      |   20 +++-----------
+ ksrc/skins/vxworks/syscall.c |   31 ++++++++++++---------
+ ksrc/skins/vxworks/taskLib.c |   10 -------
+ 9 files changed, 102 insertions(+), 80 deletions(-)
 
-Index: b/include/asm-generic/bits/current.h
+Index: b/ksrc/skins/native/syscall.c
 ===================================================================
---- a/include/asm-generic/bits/current.h
-+++ b/include/asm-generic/bits/current.h
-@@ -2,14 +2,15 @@
- #define _XENO_ASM_GENERIC_CURRENT_H
- 
- #include <pthread.h>
-+#include <nucleus/types.h>
- 
- extern pthread_key_t xeno_current_key;
- 
- extern void xeno_set_current(void);
- 
--static inline void *xeno_get_current(void)
-+static inline xnhandle_t xeno_get_current(void)
+--- a/ksrc/skins/native/syscall.c
++++ b/ksrc/skins/native/syscall.c
+@@ -52,7 +52,8 @@ int __native_muxid;
+ static int __rt_bind_helper(struct task_struct *p,
+ 			    struct pt_regs *regs,
+ 			    xnhandle_t *handlep,
+-			    unsigned magic, void **objaddrp)
++			    unsigned magic, void **objaddrp,
++			    unsigned long objoffs)
  {
--	return pthread_getspecific(xeno_current_key);
-+	return (xnhandle_t)pthread_getspecific(xeno_current_key);
- }
+ 	char name[XNOBJECT_NAME_LEN];
+ 	RTIME timeout;
+@@ -82,7 +83,7 @@ static int __rt_bind_helper(struct task_
  
- #endif /* _XENO_ASM_GENERIC_CURRENT_H */
-Index: b/include/nucleus/types.h
-===================================================================
---- a/include/nucleus/types.h
-+++ b/include/nucleus/types.h
-@@ -61,6 +61,19 @@ typedef unsigned long xnhandle_t;
+ 	/* Also validate the type of the bound object. */
  
- #define XN_NO_HANDLE ((xnhandle_t)0)
- 
-+#define XN_HANDLE_SPARE0	((xnhandle_t)0x10000000)
-+#define XN_HANDLE_SPARE1	((xnhandle_t)0x20000000)
-+#define XN_HANDLE_SPARE2	((xnhandle_t)0x40000000)
-+#define XN_HANDLE_SPARE3	((xnhandle_t)0x80000000)
-+#define XN_HANDLE_SPARE_MASK	((xnhandle_t)0xf0000000)
-+
-+#define xnhandle_mask_spare(handle)  ((handle) & ~XN_HANDLE_SPARE_MASK)
-+#define xnhandle_test_spare(handle, bits)  (!!((handle) & (bits)))
-+#define xnhandle_set_spare(handle, bits) \
-+	do { (handle) |= (bits); } while (0)
-+#define xnhandle_clear_spare(handle, bits) \
-+	do { (handle) &= ~(bits); } while (0)
-+
- struct xnintr;
- 
- typedef int (*xnisr_t)(struct xnintr *intr);
-Index: b/ksrc/nucleus/shadow.c
-===================================================================
---- a/ksrc/nucleus/shadow.c
-+++ b/ksrc/nucleus/shadow.c
-@@ -1908,13 +1908,21 @@ static int xnshadow_sys_sem_heap(struct
- 	return __xn_safe_copy_to_user(us_hinfo, &hinfo, sizeof(*us_hinfo));
- }
- 
-+#ifdef CONFIG_XENO_OPT_REGISTRY
- static int xnshadow_sys_current(struct pt_regs *regs)
- {
--	xnthread_t * __user *us_current, *cur = xnshadow_thread(current);
--	us_current = (xnthread_t *__user *) __xn_reg_arg1(regs);
-+	xnthread_t *cur = xnshadow_thread(current);
-+	xnhandle_t __user *us_handle;
- 
--	return __xn_safe_copy_to_user(us_current, &cur, sizeof(*us_current));
-+	if (!cur)
-+		return -EPERM;
-+
-+	us_handle = (xnhandle_t __user *) __xn_reg_arg1(regs);
-+
-+	return __xn_safe_copy_to_user(us_handle, &xnthread_handle(cur),
-+				      sizeof(*us_handle));
- }
-+#endif /* CONFIG_XENO_OPT_REGISTRY */
- 
- static xnsysent_t __systab[] = {
- 	[__xn_sys_migrate] = {&xnshadow_sys_migrate, __xn_exec_current},
-@@ -1925,7 +1933,9 @@ static xnsysent_t __systab[] = {
- 	[__xn_sys_barrier] = {&xnshadow_sys_barrier, __xn_exec_lostage},
- 	[__xn_sys_trace] = {&xnshadow_sys_trace, __xn_exec_any},
- 	[__xn_sys_sem_heap] = {&xnshadow_sys_sem_heap, __xn_exec_any},
-+#ifdef CONFIG_XENO_OPT_REGISTRY
- 	[__xn_sys_current] = {&xnshadow_sys_current, __xn_exec_any},
-+#endif /* CONFIG_XENO_OPT_REGISTRY */
- };
- 
- static void *xnshadow_sys_event(int event, void *data)
-Index: b/ksrc/skins/posix/cb_lock.h
-===================================================================
---- a/ksrc/skins/posix/cb_lock.h
-+++ b/ksrc/skins/posix/cb_lock.h
-@@ -3,15 +3,22 @@
- 
- #include <asm/xenomai/atomic.h>
- #include <nucleus/compiler.h>
-+#include <nucleus/types.h>
- 
- #ifndef __KERNEL__
- typedef void xnthread_t;
- #endif /* __KERNEL__ */
- 
--#define test_claimed(owner) ((long) (owner) & 1)
--#define clear_claimed(owner) ((xnthread_t *) ((long) (owner) & ~1))
--#define set_claimed(owner, bit) \
--        ((xnthread_t *) ((long) clear_claimed(owner) | !!(bit)))
-+#define __CLAIMED_BIT		XN_HANDLE_SPARE3
-+
-+#define test_claimed(owner)	xnhandle_test_spare(owner, __CLAIMED_BIT)
-+#define clear_claimed(owner)	xnhandle_mask_spare(owner)
-+#define set_claimed(owner, bit) ({ \
-+	xnhandle_t __tmp = xnhandle_mask_spare(owner); \
-+	if (bit) \
-+		xnhandle_set_spare(__tmp, __CLAIMED_BIT); \
-+	__tmp; \
-+})
- 
- #ifdef CONFIG_XENO_FASTSEM
- 
-Index: b/ksrc/skins/posix/cond.c
-===================================================================
---- a/ksrc/skins/posix/cond.c
-+++ b/ksrc/skins/posix/cond.c
-@@ -230,18 +230,20 @@ static inline int mutex_save_count(xnthr
- 
- 	mutex = shadow->mutex;
- 
--	if (clear_claimed(xnarch_atomic_intptr_get(mutex->owner)) != cur)
-+	if (clear_claimed(xnarch_atomic_get(mutex->owner)) !=
-+	    xnthread_handle(cur))
- 		return EPERM;
- 
- 	*count_ptr = shadow->lockcnt;
- 
--	if (likely(xnarch_atomic_intptr_cmpxchg(mutex->owner, cur, NULL) == cur))
-+	if (likely(xnarch_atomic_cmpxchg(mutex->owner, cur, XN_NO_HANDLE) ==
-+		   xnthread_handle(cur)))
- 		return 0;
- 
- 	owner = xnsynch_wakeup_one_sleeper(&mutex->synchbase);
--	xnarch_atomic_intptr_set
--		(mutex->owner,
--		 set_claimed(owner,xnsynch_nsleepers(&mutex->synchbase)));
-+	xnarch_atomic_set(mutex->owner,
-+			  set_claimed(xnthread_handle(owner),
-+				      xnsynch_nsleepers(&mutex->synchbase)));
- 
- 	/* Do not reschedule here, releasing the mutex and suspension must be
- 	   done atomically in pthread_cond_*wait. */
-Index: b/ksrc/skins/posix/mutex.c
-===================================================================
---- a/ksrc/skins/posix/mutex.c
-+++ b/ksrc/skins/posix/mutex.c
-@@ -82,7 +82,7 @@ int pse51_mutex_check_init(struct __shad
- 
- int pse51_mutex_init_internal(struct __shadow_mutex *shadow,
- 			      pse51_mutex_t *mutex,
--			      xnarch_atomic_intptr_t *ownerp,
-+			      xnarch_atomic_t *ownerp,
- 			      const pthread_mutexattr_t *attr)
- {
- 	xnflags_t synch_flags = XNSYNCH_PRIO | XNSYNCH_NOPIP;
-@@ -118,7 +118,7 @@ int pse51_mutex_init_internal(struct __s
- 	mutex->owner = ownerp;
- 	mutex->owningq = kq;
- 	mutex->sleepers = 0;
--	xnarch_atomic_intptr_set(ownerp, NULL);
-+	xnarch_atomic_set(ownerp, XN_NO_HANDLE);
- 
- 	xnlock_get_irqsave(&nklock, s);
- 	appendq(&kq->mutexq, &mutex->link);
-@@ -159,7 +159,7 @@ int pthread_mutex_init(pthread_mutex_t *
- 	    &((union __xeno_mutex *)mx)->shadow_mutex;
- 	DECLARE_CB_LOCK_FLAGS(s);
- 	pse51_mutex_t *mutex;
--	xnarch_atomic_intptr_t *ownerp;
-+	xnarch_atomic_t *ownerp;
- 	int err;
- 
- 	if (!attr)
-@@ -185,9 +185,9 @@ int pthread_mutex_init(pthread_mutex_t *
- 	if (!mutex)
- 		return ENOMEM;
- 
--	ownerp = (xnarch_atomic_intptr_t *)
-+	ownerp = (xnarch_atomic_t *)
- 		xnheap_alloc(&xnsys_ppd_get(attr->pshared)->sem_heap,
--			     sizeof(xnarch_atomic_intptr_t));
-+			     sizeof(xnarch_atomic_t));
- 	if (!ownerp) {
- 		xnfree(mutex);
- 		return EAGAIN;
-@@ -266,7 +266,7 @@ int pthread_mutex_destroy(pthread_mutex_
- 		return EPERM;
- 	}
- 
--	if (xnarch_atomic_intptr_get(mutex->owner)) {
-+	if (xnarch_atomic_get(mutex->owner) != XN_NO_HANDLE) {
- 		cb_write_unlock(&shadow->lock, s);
- 		return EBUSY;
- 	}
-@@ -290,6 +290,10 @@ int pse51_mutex_timedlock_break(struct _
- 	spl_t s;
- 	int err;
- 
-+	/* We need a valid thread handle for the fast lock. */
-+	if (xnthread_handle(cur) == XN_NO_HANDLE)
-+		return -EPERM;
-+
- 	err = pse51_mutex_timedlock_internal(cur, shadow, 1, timed, abs_to);
- 	if (err != -EBUSY)
- 		goto unlock_and_return;
-@@ -392,7 +396,7 @@ int pthread_mutex_trylock(pthread_mutex_
- 		return -PTR_ERR(owner);
- 
- 	err = EBUSY;
--	if (clear_claimed(owner) == cur) {
-+	if (owner == cur) {
- 		pse51_mutex_t *mutex = shadow->mutex;
- 
- 		if (mutex->attr.type == PTHREAD_MUTEX_RECURSIVE) {
-@@ -573,7 +577,8 @@ int pthread_mutex_unlock(pthread_mutex_t
- 
- 	mutex = shadow->mutex;
- 	
--	if (clear_claimed(xnarch_atomic_intptr_get(mutex->owner)) != cur) {
-+	if (clear_claimed(xnarch_atomic_get(mutex->owner)) !=
-+	    xnthread_handle(cur)) {
- 		err = EPERM;
- 		goto out;
- 	}
-Index: b/ksrc/skins/posix/mutex.h
-===================================================================
---- a/ksrc/skins/posix/mutex.h
-+++ b/ksrc/skins/posix/mutex.h
-@@ -34,7 +34,7 @@ union __xeno_mutex {
- 		xnarch_atomic_t lock;
- 		union {
- 			unsigned owner_offset;
--			xnarch_atomic_intptr_t *owner;
-+			xnarch_atomic_t *owner;
- 		};
- 		struct pse51_mutexattr attr;
- #endif /* CONFIG_XENO_FASTSEM */
-@@ -54,7 +54,7 @@ typedef struct pse51_mutex {
- #define link2mutex(laddr)                                               \
- 	((pse51_mutex_t *)(((char *)laddr) - offsetof(pse51_mutex_t, link)))
- 
--	xnarch_atomic_intptr_t *owner;
-+	xnarch_atomic_t *owner;
- 	pthread_mutexattr_t attr;
- 	unsigned sleepers;
- 	pse51_kqueues_t *owningq;
-@@ -77,7 +77,7 @@ int pse51_mutex_check_init(struct __shad
- 
- int pse51_mutex_init_internal(struct __shadow_mutex *shadow,
- 			      pse51_mutex_t *mutex,
--			      xnarch_atomic_intptr_t *ownerp,
-+			      xnarch_atomic_t *ownerp,
- 			      const pthread_mutexattr_t *attr);
- 
- void pse51_mutex_destroy_internal(pse51_mutex_t *mutex,
-@@ -88,6 +88,7 @@ pse51_mutex_trylock_internal(xnthread_t
- 			     struct __shadow_mutex *shadow, unsigned count)
- {
- 	pse51_mutex_t *mutex = shadow->mutex;
-+	xnhandle_t ownerh;
- 	xnthread_t *owner;
- 
- 	if (xnpod_unblockable_p())
-@@ -101,9 +102,14 @@ pse51_mutex_trylock_internal(xnthread_t
- 		return ERR_PTR(-EPERM);
- #endif /* XENO_DEBUG(POSIX) */
- 
--	owner = xnarch_atomic_intptr_cmpxchg(mutex->owner, NULL, cur);
--	if (unlikely(owner != NULL))
-+	ownerh = xnarch_atomic_cmpxchg(mutex->owner, XN_NO_HANDLE,
-+				       xnthread_handle(cur));
-+	if (unlikely(ownerh != XN_NO_HANDLE)) {
-+		owner = xnthread_lookup(clear_claimed(ownerh));
-+		if (!owner)
-+			return ERR_PTR(-EINVAL);
- 		return owner;
-+	}
- 
- 	shadow->lockcnt = count;
- 	return NULL;
-@@ -118,7 +124,8 @@ static inline int pse51_mutex_timedlock_
- 
- {
- 	pse51_mutex_t *mutex;
--	xnthread_t *owner, *old;
-+	xnthread_t *owner;
-+	xnhandle_t ownerh, old;
- 	spl_t s;
- 	int err;
- 
-@@ -128,32 +135,39 @@ static inline int pse51_mutex_timedlock_
- 		return PTR_ERR(owner);
- 
- 	mutex = shadow->mutex;
--	if (clear_claimed(owner) == cur)
-+	if (owner == cur)
- 		return -EBUSY;
- 
- 	/* Set bit 0, so that mutex_unlock will know that the mutex is claimed.
- 	   Hold the nklock, for mutual exclusion with slow mutex_unlock. */
- 	xnlock_get_irqsave(&nklock, s);
--	if (test_claimed(owner)) {
--		old = xnarch_atomic_intptr_get(mutex->owner);
-+	if (test_claimed(ownerh)) {
-+		old = xnarch_atomic_get(mutex->owner);
- 		goto test_no_owner;
- 	}
- 	do {
--		old = xnarch_atomic_intptr_cmpxchg(mutex->owner,
--						   owner, set_claimed(owner, 1));
--		if (likely(old == owner))
-+		old = xnarch_atomic_cmpxchg(mutex->owner, ownerh,
-+					    set_claimed(ownerh, 1));
-+		if (likely(old == ownerh))
- 			break;
- 	  test_no_owner:
--		if (old == NULL) {
-+		if (old == XN_NO_HANDLE) {
- 			/* Owner called fast mutex_unlock
- 			   (on another cpu) */
- 			xnlock_put_irqrestore(&nklock, s);
- 			goto retry_lock;
- 		}
--		owner = old;
--	} while (!test_claimed(owner));
-+		ownerh = old;
-+	} while (!test_claimed(ownerh));
-+
-+	owner = xnthread_lookup(clear_claimed(ownerh));
-+
-+	if (unlikely(!owner)) {
-+		err = -EINVAL;
-+		goto error;
-+	}
- 
--	xnsynch_set_owner(&mutex->synchbase, clear_claimed(owner));
-+	xnsynch_set_owner(&mutex->synchbase, owner);
- 	++mutex->sleepers;
- 	if (timed)
- 		xnsynch_sleep_on(&mutex->synchbase, abs_to, XN_REALTIME);
-@@ -174,7 +188,8 @@ static inline int pse51_mutex_timedlock_
- 		goto error;
- 	}
- 
--	xnarch_atomic_intptr_set(mutex->owner,set_claimed(cur, mutex->sleepers));
-+	ownerh = set_claimed(xnthread_handle(cur), mutex->sleepers);
-+	xnarch_atomic_set(mutex->owner, ownerh);
- 	shadow->lockcnt = count;
- 	xnlock_put_irqrestore(&nklock, s);
- 
-@@ -182,9 +197,9 @@ static inline int pse51_mutex_timedlock_
- 
-   error:
- 	if (!mutex->sleepers)
--		xnarch_atomic_intptr_set
-+		xnarch_atomic_set
- 			(mutex->owner,
--			 clear_claimed(xnarch_atomic_intptr_get(mutex->owner)));
-+			 clear_claimed(xnarch_atomic_get(mutex->owner)));
- 	xnlock_put_irqrestore(&nklock, s);
+-	if (xeno_test_magic(objaddr, magic)) {
++	if (xeno_test_magic(objaddr + objoffs, magic)) {
+ 		if (objaddrp)
+ 			*objaddrp = objaddr;
+ 	} else
+@@ -93,6 +94,11 @@ static int __rt_bind_helper(struct task_
  	return err;
  }
-@@ -192,16 +207,18 @@ static inline int pse51_mutex_timedlock_
- static inline void pse51_mutex_unlock_internal(xnthread_t *cur,
- 					       pse51_mutex_t *mutex)
+ 
++static RT_TASK *__rt_task_lookup(xnhandle_t threadh)
++{
++	return thread2rtask(xnthread_lookup(threadh));
++}
++
+ static RT_TASK *__rt_task_current(struct task_struct *p)
  {
-+	xnhandle_t ownerh;
- 	xnthread_t *owner;
- 	spl_t s;
- 
--	if (likely(xnarch_atomic_intptr_cmpxchg(mutex->owner, cur, NULL) == cur))
-+	if (likely(xnarch_atomic_cmpxchg(mutex->owner, cur, XN_NO_HANDLE) ==
-+		   xnthread_handle(cur)))
- 		return;
- 
- 	xnlock_get_irqsave(&nklock, s);
- 	owner = xnsynch_wakeup_one_sleeper(&mutex->synchbase);
--	xnarch_atomic_intptr_set(mutex->owner,
--				 set_claimed(owner, mutex->sleepers));
-+	ownerh = set_claimed(xnthread_handle(owner), mutex->sleepers);
-+	xnarch_atomic_set(mutex->owner, ownerh);
- 	if (owner)
- 		xnpod_schedule();
- 	xnlock_put_irqrestore(&nklock, s);
-Index: b/ksrc/skins/posix/syscall.c
-===================================================================
---- a/ksrc/skins/posix/syscall.c
-+++ b/ksrc/skins/posix/syscall.c
-@@ -1060,7 +1060,8 @@ static int __pthread_mutex_unlock(struct
- 
- 	mutex = shadow->mutex;
- 
--	if (clear_claimed(xnarch_atomic_intptr_get(mutex->owner)) != cur) {
-+	if (clear_claimed(xnarch_atomic_get(mutex->owner)) !=
-+	    xnthread_handle(cur)) {
- 		err = -EPERM;
- 		goto out;
- 	}
-@@ -1119,7 +1120,7 @@ static int __pthread_mutex_init(struct p
- 	pthread_mutexattr_t locattr, *attr, *uattrp;
- 	union __xeno_mutex mx, *umx;
- 	pse51_mutex_t *mutex;
--	xnarch_atomic_intptr_t *ownerp;
-+	xnarch_atomic_t *ownerp;
+ 	xnthread_t *thread = xnshadow_thread(p);
+@@ -223,7 +229,9 @@ static int __rt_task_bind(struct pt_regs
+ 	RT_TASK_PLACEHOLDER ph;
  	int err;
  
- 	umx = (union __xeno_mutex *)__xn_reg_arg1(regs);
-@@ -1144,9 +1145,9 @@ static int __pthread_mutex_init(struct p
- 	if (!mutex)
- 		return -ENOMEM;
+-	err = __rt_bind_helper(p, regs, &ph.opaque, XENO_TASK_MAGIC, NULL);
++	err =
++	    __rt_bind_helper(p, regs, &ph.opaque, XENO_TASK_MAGIC, NULL,
++			     -offsetof(RT_TASK, thread_base));
  
--	ownerp = (xnarch_atomic_intptr_t *)
-+	ownerp = (xnarch_atomic_t *)
- 		xnheap_alloc(&xnsys_ppd_get(attr->pshared)->sem_heap,
--			     sizeof(xnarch_atomic_intptr_t));
-+			     sizeof(xnarch_atomic_t));
- 	if (!ownerp) {
- 		xnfree(mutex);
- 		return -EAGAIN;
-@@ -1185,7 +1186,7 @@ static int __pthread_mutex_destroy(struc
- 	if (pse51_kqueues(mutex->attr.pshared) != mutex->owningq)
- 		return -EPERM;
+ 	if (err)
+ 		return err;
+@@ -253,7 +261,7 @@ static int __rt_task_start(struct pt_reg
+ 				     sizeof(ph)))
+ 		return -EFAULT;
  
--	if (xnarch_atomic_intptr_get(mutex->owner))
-+	if (xnarch_atomic_get(mutex->owner) != XN_NO_HANDLE)
- 		return -EBUSY;
+-	task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++	task = __rt_task_lookup(ph.opaque);
  
- 	pse51_mark_deleted(shadow);
-Index: b/src/skins/posix/mutex.c
-===================================================================
---- a/src/skins/posix/mutex.c
-+++ b/src/skins/posix/mutex.c
-@@ -31,12 +31,12 @@ extern int __pse51_muxid;
+ 	if (!task)
+ 		return -ESRCH;
+@@ -279,7 +287,7 @@ static int __rt_task_suspend(struct pt_r
+ 					     sizeof(ph)))
+ 			return -EFAULT;
  
- extern unsigned long xeno_sem_heap[2];
+-		task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++		task = __rt_task_lookup(ph.opaque);
+ 	} else
+ 		task = __rt_task_current(p);
  
--static xnarch_atomic_intptr_t *get_ownerp(struct __shadow_mutex *shadow)
-+static xnarch_atomic_t *get_ownerp(struct __shadow_mutex *shadow)
- {
- 	if (likely(!shadow->attr.pshared))
- 		return shadow->owner;
- 	
--	return (xnarch_atomic_intptr_t *) (xeno_sem_heap[1] + shadow->owner_offset);
-+	return (xnarch_atomic_t *) (xeno_sem_heap[1] + shadow->owner_offset);
- }
- #endif /* CONFIG_XENO_FASTSEM */
+@@ -302,7 +310,7 @@ static int __rt_task_resume(struct pt_re
+ 				     sizeof(ph)))
+ 		return -EFAULT;
  
-@@ -117,7 +117,7 @@ int __wrap_pthread_mutex_init(pthread_mu
+-	task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++	task = __rt_task_lookup(ph.opaque);
  
- #ifdef CONFIG_XENO_FASTSEM
- 	if (!shadow->attr.pshared)
--		shadow->owner = (xnarch_atomic_intptr_t *)
-+		shadow->owner = (xnarch_atomic_t *)
- 			(xeno_sem_heap[0] + shadow->owner_offset);
- 	
- 	cb_write_unlock(&shadow->lock, s);
-@@ -149,10 +149,10 @@ int __wrap_pthread_mutex_lock(pthread_mu
- 	int err = 0;
+ 	if (!task)
+ 		return -ESRCH;
+@@ -326,7 +334,7 @@ static int __rt_task_delete(struct pt_re
+ 					     sizeof(ph)))
+ 			return -EFAULT;
  
- #ifdef CONFIG_XENO_FASTSEM
--	xnthread_t *cur, *owner;
-+	xnhandle_t cur, owner;
+-		task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++		task = __rt_task_lookup(ph.opaque);
+ 	} else
+ 		task = __rt_task_current(p);
  
- 	cur = xeno_get_current();
--	if (!cur)
-+	if (cur == XN_NO_HANDLE)
- 		return EPERM;
+@@ -364,7 +372,7 @@ static int __rt_task_set_periodic(struct
+ 					     sizeof(ph)))
+ 			return -EFAULT;
  
- 	if (unlikely(cb_try_read_lock(&shadow->lock, s)))
-@@ -163,8 +163,8 @@ int __wrap_pthread_mutex_lock(pthread_mu
- 		goto out;
- 	}
+-		task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++		task = __rt_task_lookup(ph.opaque);
+ 	} else
+ 		task = __rt_task_current(p);
  
--	owner = xnarch_atomic_intptr_cmpxchg(get_ownerp(shadow), NULL, cur);
--	if (likely(!owner)) {
-+	owner = xnarch_atomic_cmpxchg(get_ownerp(shadow), XN_NO_HANDLE, cur);
-+	if (likely(owner == XN_NO_HANDLE)) {
- 		shadow->lockcnt = 1;
- 		cb_read_unlock(&shadow->lock, s);
- 		return 0;
-@@ -210,10 +210,10 @@ int __wrap_pthread_mutex_timedlock(pthre
- 	int err = 0;
+@@ -418,7 +426,7 @@ static int __rt_task_set_priority(struct
+ 					     sizeof(ph)))
+ 			return -EFAULT;
  
- #ifdef CONFIG_XENO_FASTSEM
--	xnthread_t *cur, *owner;
-+	xnhandle_t cur, owner;
+-		task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++		task = __rt_task_lookup(ph.opaque);
+ 	} else
+ 		task = __rt_task_current(p);
  
- 	cur = xeno_get_current();
--	if (!cur)
-+	if (cur == XN_NO_HANDLE)
- 		return EPERM;
+@@ -473,7 +481,7 @@ static int __rt_task_unblock(struct pt_r
+ 				     sizeof(ph)))
+ 		return -EFAULT;
  
- 	if (unlikely(cb_try_read_lock(&shadow->lock, s)))
-@@ -224,8 +224,8 @@ int __wrap_pthread_mutex_timedlock(pthre
- 		goto out;
- 	}	
+-	task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++	task = __rt_task_lookup(ph.opaque);
  
--	owner = xnarch_atomic_intptr_cmpxchg(get_ownerp(shadow), NULL, cur);
--	if (likely(!owner)) {
-+	owner = xnarch_atomic_cmpxchg(get_ownerp(shadow), XN_NO_HANDLE, cur);
-+	if (likely(owner == XN_NO_HANDLE)) {
- 		shadow->lockcnt = 1;
- 		cb_read_unlock(&shadow->lock, s);
- 		return 0;
-@@ -271,10 +271,10 @@ int __wrap_pthread_mutex_trylock(pthread
- 	int err = 0;
+ 	if (!task)
+ 		return -ESRCH;
+@@ -500,7 +508,7 @@ static int __rt_task_inquire(struct pt_r
+ 					     sizeof(ph)))
+ 			return -EFAULT;
  
- #ifdef CONFIG_XENO_FASTSEM
--	xnthread_t *cur, *owner;
-+	xnhandle_t cur, owner;
+-		task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++		task = __rt_task_lookup(ph.opaque);
+ 	} else
+ 		task = __rt_task_current(p);
  
- 	cur = xeno_get_current();
--	if (!cur)
-+	if (cur == XN_NO_HANDLE)
- 		return EPERM;
+@@ -541,7 +549,7 @@ static int __rt_task_notify(struct pt_re
+ 					     sizeof(ph)))
+ 			return -EFAULT;
  
- 	if (unlikely(cb_try_read_lock(&shadow->lock, s)))
-@@ -285,8 +285,8 @@ int __wrap_pthread_mutex_trylock(pthread
- 		goto out;
- 	}	
+-		task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++		task = __rt_task_lookup(ph.opaque);
+ 	} else
+ 		task = __rt_task_current(p);
  
--	owner = xnarch_atomic_intptr_cmpxchg(get_ownerp(shadow), NULL, cur);
--	if (likely(!owner)) {
-+	owner = xnarch_atomic_cmpxchg(get_ownerp(shadow), XN_NO_HANDLE, cur);
-+	if (likely(owner == XN_NO_HANDLE)) {
- 		shadow->lockcnt = 1;
- 		cb_read_unlock(&shadow->lock, s);
- 		return 0;
-@@ -325,11 +325,11 @@ int __wrap_pthread_mutex_unlock(pthread_
- 	int err = 0;
+@@ -627,7 +635,7 @@ static int __rt_task_slice(struct pt_reg
+ 					     sizeof(ph)))
+ 			return -EFAULT;
  
- #ifdef CONFIG_XENO_FASTSEM
--	xnarch_atomic_intptr_t *ownerp;
--	xnthread_t *cur;
-+	xnarch_atomic_t *ownerp;
-+	xnhandle_t cur, owner;
+-		task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++		task = __rt_task_lookup(ph.opaque);
+ 	} else
+ 		task = __rt_task_current(current);
  
- 	cur = xeno_get_current();
--	if (!cur)
-+	if (cur == XN_NO_HANDLE)
- 		return EPERM;
+@@ -667,7 +675,7 @@ static int __rt_task_send(struct pt_regs
+ 					     sizeof(ph)))
+ 			return -EFAULT;
  
- 	if (unlikely(cb_try_read_lock(&shadow->lock, s)))
-@@ -341,7 +341,8 @@ int __wrap_pthread_mutex_unlock(pthread_
- 	}
+-		task = (RT_TASK *)xnregistry_fetch(ph.opaque);
++		task = __rt_task_lookup(ph.opaque);
+ 	} else
+ 		task = __rt_task_current(current);
  
- 	ownerp = get_ownerp(shadow);
--	if (unlikely(clear_claimed(xnarch_atomic_intptr_get(ownerp)) != cur)) {
-+	owner = clear_claimed(xnarch_atomic_get(ownerp));
-+	if (unlikely(owner != cur)) {
- 		err = -EPERM;
- 		goto out_err;
- 	}
-@@ -352,7 +353,7 @@ int __wrap_pthread_mutex_unlock(pthread_
- 		goto out;
- 	}
+@@ -1104,7 +1112,9 @@ static int __rt_sem_bind(struct pt_regs
+ 	RT_SEM_PLACEHOLDER ph;
+ 	int err;
  
--	if (likely(xnarch_atomic_intptr_cmpxchg(ownerp, cur, NULL) == cur)) {
-+	if (likely(xnarch_atomic_cmpxchg(ownerp, cur, XN_NO_HANDLE) == cur)) {
- 	  out:
- 		cb_read_unlock(&shadow->lock, s);
- 		return 0;
-Index: b/ksrc/skins/posix/thread.c
-===================================================================
---- a/ksrc/skins/posix/thread.c
-+++ b/ksrc/skins/posix/thread.c
-@@ -234,6 +234,18 @@ int pthread_create(pthread_t *tid,
- 	thread->hkey.mm = NULL;
- #endif /* CONFIG_XENO_OPT_PERVASIVE */
+-	err = __rt_bind_helper(current, regs, &ph.opaque, XENO_SEM_MAGIC, NULL);
++	err =
++	    __rt_bind_helper(current, regs, &ph.opaque, XENO_SEM_MAGIC,
++			     NULL, 0);
  
-+#ifdef CONFIG_XENO_FASTSEM
-+	/* We need an anonymous registry entry to obtain a handle for fast
-+	   mutex locking. */
-+	{
-+		int err = xnthread_register(&thread->threadbase, "");
-+		if (err) {
-+			thread_destroy(thread);
-+			return err;
-+		}
-+	}
-+#endif /* CONFIG_XENO_FASTSEM */
-+
- 	*tid = thread;		/* Must be done before the thread is started. */
+ 	if (err)
+ 		return err;
+@@ -1324,7 +1334,8 @@ static int __rt_event_bind(struct pt_reg
+ 	int err;
  
- 	if (start)		/* Do not start shadow threads (i.e. start == NULL). */
-Index: b/ksrc/skins/posix/Kconfig
-===================================================================
---- a/ksrc/skins/posix/Kconfig
-+++ b/ksrc/skins/posix/Kconfig
-@@ -1,5 +1,6 @@
- menuconfig XENO_SKIN_POSIX
- 	depends on XENO_OPT_NUCLEUS 
-+	select XENO_OPT_REGISTRY if XENO_FASTSEM
- 	tristate "POSIX API"
- 	default y
- 	help
-Index: b/include/asm-generic/bits/bind.h
-===================================================================
---- a/include/asm-generic/bits/bind.h
-+++ b/include/asm-generic/bits/bind.h
-@@ -22,7 +22,14 @@ __attribute__ ((weak))
- void xeno_set_current(void)
- {
- 	void *kthread_cb;
--	XENOMAI_SYSCALL1(__xn_sys_current, &kthread_cb);
-+	int err;
-+
-+	err = XENOMAI_SYSCALL1(__xn_sys_current, &kthread_cb);
-+	if (err) {
-+		fprintf(stderr, "Xenomai: error obtaining handle for current "
-+			"thread: %s\n", strerror(err));
-+		exit(1);
-+	}
- 	pthread_setspecific(xeno_current_key, kthread_cb);
- }
+ 	err =
+-	    __rt_bind_helper(current, regs, &ph.opaque, XENO_EVENT_MAGIC, NULL);
++	    __rt_bind_helper(current, regs, &ph.opaque, XENO_EVENT_MAGIC,
++			     NULL, 0);
  
-Index: b/ksrc/skins/native/Kconfig
-===================================================================
---- a/ksrc/skins/native/Kconfig
-+++ b/ksrc/skins/native/Kconfig
-@@ -1,5 +1,6 @@
- menuconfig XENO_SKIN_NATIVE
- 	depends on XENO_OPT_NUCLEUS
-+	select XENO_OPT_REGISTRY if XENO_FASTSEM
- 	tristate "Native API"
- 	default y
- 	help
+ 	if (err)
+ 		return err;
+@@ -1567,7 +1578,8 @@ static int __rt_mutex_bind(struct pt_reg
+ 	int err;
+ 
+ 	err =
+-	    __rt_bind_helper(current, regs, &ph.opaque, XENO_MUTEX_MAGIC, NULL);
++	    __rt_bind_helper(current, regs, &ph.opaque, XENO_MUTEX_MAGIC,
++			     NULL, 0);
+ 
+ 	if (err)
+ 		return err;
+@@ -1758,7 +1770,8 @@ static int __rt_cond_bind(struct pt_regs
+ 	int err;
+ 
+ 	err =
+-	    __rt_bind_helper(current, regs, &ph.opaque, XENO_COND_MAGIC, NULL);
++	    __rt_bind_helper(current, regs, &ph.opaque, XENO_COND_MAGIC,
++			     NULL, 0);
+ 
+ 	if (err)
+ 		return err;
+@@ -2008,7 +2021,7 @@ static int __rt_queue_bind(struct pt_reg
+ 
+ 	err =
+ 	    __rt_bind_helper(p, regs, &ph.opaque, XENO_QUEUE_MAGIC,
+-			     (void **)&q);
++			     (void **)&q, 0);
+ 
+ 	if (err)
+ 		goto unlock_and_exit;
+@@ -2507,7 +2520,7 @@ static int __rt_heap_bind(struct pt_regs
+ 
+ 	err =
+ 	    __rt_bind_helper(p, regs, &ph.opaque, XENO_HEAP_MAGIC,
+-			     (void **)&heap);
++			     (void **)&heap, 0);
+ 
+ 	if (err)
+ 		goto unlock_and_exit;
+@@ -3018,7 +3031,7 @@ static int __rt_intr_bind(struct pt_regs
+ 	RT_INTR_PLACEHOLDER ph;
+ 	int err;
+ 
+-	err = __rt_bind_helper(p, regs, &ph.opaque, XENO_INTR_MAGIC, NULL);
++	err = __rt_bind_helper(p, regs, &ph.opaque, XENO_INTR_MAGIC, NULL, 0);
+ 
+ 	if (err)
+ 		return err;
+@@ -3275,7 +3288,7 @@ static int __rt_pipe_bind(struct pt_regs
+ 	RT_PIPE_PLACEHOLDER ph;
+ 	int err;
+ 
+-	err = __rt_bind_helper(p, regs, &ph.opaque, XENO_PIPE_MAGIC, NULL);
++	err = __rt_bind_helper(p, regs, &ph.opaque, XENO_PIPE_MAGIC, NULL, 0);
+ 
+ 	if (err)
+ 		return err;
+@@ -3551,7 +3564,9 @@ static int __rt_buffer_bind(struct pt_re
+ 	RT_BUFFER_PLACEHOLDER ph;
+ 	int ret;
+ 
+-	ret = __rt_bind_helper(current, regs, &ph.opaque, XENO_BUFFER_MAGIC, NULL);
++	ret =
++	    __rt_bind_helper(current, regs, &ph.opaque, XENO_BUFFER_MAGIC,
++			     NULL, 0);
+ 	if (ret)
+ 		return ret;
+ 
 Index: b/ksrc/skins/native/task.c
 ===================================================================
 --- a/ksrc/skins/native/task.c
 +++ b/ksrc/skins/native/task.c
-@@ -283,11 +283,9 @@ int rt_task_create(RT_TASK *task,
+@@ -46,7 +46,6 @@
+ 
+ #include <nucleus/pod.h>
+ #include <nucleus/heap.h>
+-#include <nucleus/registry.h>
+ #include <native/task.h>
+ #include <native/timer.h>
+ 
+@@ -80,11 +79,6 @@ static void __task_delete_hook(xnthread_
+ 	xnsynch_destroy(&task->msendq);
+ #endif /* CONFIG_XENO_OPT_NATIVE_MPS */
+ 
+-#ifdef CONFIG_XENO_OPT_REGISTRY
+-	if (xnthread_handle(&task->thread_base) != XN_NO_HANDLE)
+-		xnregistry_remove(xnthread_handle(&task->thread_base));
+-#endif /* CONFIG_XENO_OPT_REGISTRY */
+-
+ 	xnsynch_destroy(&task->safesynch);
+ 
+ 	removeq(&__xeno_task_q, &task->link);
+@@ -285,20 +279,15 @@ int rt_task_create(RT_TASK *task,
+ 	appendq(&__xeno_task_q, &task->link);
+ 	xnlock_put_irqrestore(&nklock, s);
+ 
+-#ifdef CONFIG_XENO_OPT_REGISTRY
+ 	/* <!> Since xnregister_enter() may reschedule, only register
  	   complete objects, so that the registry cannot return handles to
  	   half-baked objects... */
  
--	if (name) {
--		err = xnthread_register(&task->thread_base, task->rname);
--		if (err)
--			xnpod_delete_thread(&task->thread_base);
--	}
-+	err = xnthread_register(&task->thread_base, name ? task->rname : "");
-+	if (err)
-+		xnpod_delete_thread(&task->thread_base);
+ 	if (name) {
+-		err = xnregistry_enter(task->rname,
+-				       task,
+-				       &xnthread_handle(&task->thread_base),
+-				       NULL);
++		err = xnthread_register(&task->thread_base, task->rname);
+ 		if (err)
+ 			xnpod_delete_thread(&task->thread_base);
+ 	}
+-#endif /* CONFIG_XENO_OPT_REGISTRY */
  
  	return err;
  }
-Index: b/ksrc/skins/psos+/Kconfig
+Index: b/ksrc/skins/psos+/syscall.c
 ===================================================================
---- a/ksrc/skins/psos+/Kconfig
-+++ b/ksrc/skins/psos+/Kconfig
-@@ -2,7 +2,7 @@ menuconfig XENO_SKIN_PSOS
- 	depends on XENO_OPT_NUCLEUS
- 	select XENO_OPT_TIMING_PERIODIC
- 	tristate "pSOS+ emulator"
--	select XENO_OPT_REGISTRY if XENO_OPT_PERVASIVE
-+	select XENO_OPT_REGISTRY if XENO_OPT_PERVASIVE || XENO_FASTSEM
- 	help
+--- a/ksrc/skins/psos+/syscall.c
++++ b/ksrc/skins/psos+/syscall.c
+@@ -44,6 +44,11 @@
  
- 	This API skin emulates WindRiver's pSOS+ operating system.
-Index: b/ksrc/skins/uitron/Kconfig
-===================================================================
---- a/ksrc/skins/uitron/Kconfig
-+++ b/ksrc/skins/uitron/Kconfig
-@@ -2,6 +2,7 @@ menuconfig XENO_SKIN_UITRON
- 	depends on XENO_OPT_NUCLEUS
- 	select XENO_OPT_TIMING_PERIODIC
- 	select XENO_OPT_MAP
-+	select XENO_OPT_REGISTRY if XENO_FASTSEM
- 	tristate "uITRON API"
- 	help
+ int __psos_muxid;
  
-Index: b/ksrc/skins/uitron/task.c
++static inline psostask_t *__psos_task_lookup(xnhandle_t taskh)
++{
++	return thread2psostask(xnthread_lookup(taskh));
++}
++
+ static psostask_t *__psos_task_current(struct task_struct *p)
+ {
+ 	xnthread_t *thread = xnshadow_thread(p);
+@@ -131,7 +136,7 @@ static int __t_start(struct pt_regs *reg
+ 	psostask_t *task;
+ 
+ 	handle = __xn_reg_arg1(regs);
+-	task = (psostask_t *)xnregistry_fetch(handle);
++	task = __psos_task_lookup(handle);
+ 
+ 	if (!task)
+ 		return ERR_OBJID;
+@@ -162,7 +167,7 @@ static int __t_delete(struct pt_regs *re
+ 	handle = __xn_reg_arg1(regs);
+ 
+ 	if (handle)
+-		task = (psostask_t *)xnregistry_fetch(handle);
++		task = __psos_task_lookup(handle);
+ 	else
+ 		task = __psos_task_current(current);
+ 
+@@ -182,7 +187,7 @@ static int __t_suspend(struct pt_regs *r
+ 	psostask_t *task;
+ 
+ 	if (handle)
+-		task = (psostask_t *)xnregistry_fetch(handle);
++		task = __psos_task_lookup(handle);
+ 	else
+ 		task = __psos_task_current(current);
+ 
+@@ -202,7 +207,7 @@ static int __t_resume(struct pt_regs *re
+ 	psostask_t *task;
+ 
+ 	if (handle)
+-		task = (psostask_t *)xnregistry_fetch(handle);
++		task = __psos_task_lookup(handle);
+ 	else
+ 		task = __psos_task_current(current);
+ 
+@@ -284,7 +289,7 @@ static int __t_setpri(struct pt_regs *re
+ 	psostask_t *task;
+ 
+ 	if (handle)
+-		task = (psostask_t *)xnregistry_fetch(handle);
++		task = __psos_task_lookup(handle);
+ 	else
+ 		task = __psos_task_current(current);
+ 
+@@ -314,7 +319,7 @@ static int __ev_send(struct pt_regs *reg
+ 	u_long events;
+ 
+ 	if (handle)
+-		task = (psostask_t *)xnregistry_fetch(handle);
++		task = __psos_task_lookup(handle);
+ 	else
+ 		task = __psos_task_current(current);
+ 
+@@ -1317,7 +1322,7 @@ static int __as_send(struct pt_regs *reg
+ 	psostask_t *task;
+ 
+ 	if (handle)
+-		task = (psostask_t *)xnregistry_fetch(handle);
++		task = __psos_task_lookup(handle);
+ 	else
+ 		task = __psos_task_current(current);
+ 
+Index: b/ksrc/skins/psos+/task.c
 ===================================================================
---- a/ksrc/skins/uitron/task.c
-+++ b/ksrc/skins/uitron/task.c
-@@ -16,7 +16,6 @@
-  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+--- a/ksrc/skins/psos+/task.c
++++ b/ksrc/skins/psos+/task.c
+@@ -17,7 +17,6 @@
+  * 02111-1307, USA.
   */
  
 -#include <nucleus/registry.h>
- #include <nucleus/pod.h>
- #include <nucleus/heap.h>
- #include <uitron/task.h>
-@@ -151,6 +150,16 @@ ER cre_tsk(ID tskid, T_CTSK *pk_ctsk)
- 	xnlock_put_irqrestore(&nklock, s);
- 	task->magic = uITRON_TASK_MAGIC;
+ #include <psos+/task.h>
+ #include <psos+/tm.h>
  
-+#ifdef CONFIG_XENO_FASTSEM
-+	/* We need an anonymous registry entry to obtain a handle for fast
-+	   mutex locking. */
-+	if (xnthread_register(&task->threadbase, "")) {
-+		xnmap_remove(ui_task_idmap, tskid);
-+		xnpod_abort_thread(&task->threadbase);
-+		return E_NOMEM;
-+	}
-+#endif /* CONFIG_XENO_FASTSEM */
+@@ -45,11 +44,6 @@ static void psostask_delete_hook(xnthrea
+ 	if (xnthread_get_magic(thread) != PSOS_SKIN_MAGIC)
+ 		return;
+ 
+-#ifdef CONFIG_XENO_OPT_REGISTRY
+-	if (xnthread_handle(thread) != XN_NO_HANDLE)
+-		xnregistry_remove(xnthread_handle(thread));
+-#endif /* CONFIG_XENO_OPT_REGISTRY */
+-
+ 	task = thread2psostask(thread);
+ 
+ 	removeq(&psostaskq, &task->link);
+@@ -95,6 +89,7 @@ u_long t_create(const char *name,
+ {
+ 	xnflags_t bflags = 0;
+ 	psostask_t *task;
++	u_long err;
+ 	spl_t s;
+ 	int n;
+ 
+@@ -159,16 +154,11 @@ u_long t_create(const char *name,
+ 	*tid_r = (u_long)task;
+ 	xnlock_put_irqrestore(&nklock, s);
+ 
+-#ifdef CONFIG_XENO_OPT_REGISTRY
+-	{
+-		u_long err = xnregistry_enter(task->name,
+-					      task, &xnthread_handle(&task->threadbase), NULL);
+-		if (err) {
+-			t_delete((u_long)task);
+-			return err;
+-		}
++	err = xnthread_register(&task->threadbase, task->name);
++	if (err) {
++		t_delete((u_long)task);
++		return err;
+ 	}
+-#endif /* CONFIG_XENO_OPT_REGISTRY */
+ 
+ 	xnarch_create_display(&task->threadbase, task->name, psostask);
+ 
+Index: b/ksrc/skins/vxworks/syscall.c
+===================================================================
+--- a/ksrc/skins/vxworks/syscall.c
++++ b/ksrc/skins/vxworks/syscall.c
+@@ -42,6 +42,11 @@
+ 
+ int __wind_muxid;
+ 
++static inline WIND_TCB *__wind_lookup_task(xnhandle_t threadh)
++{
++	return thread2wind_task(xnthread_lookup(threadh));
++}
 +
- 	return E_OK;
+ static WIND_TCB *__wind_task_current(struct task_struct *p)
+ {
+ 	xnthread_t *thread = xnshadow_thread(p);
+@@ -146,7 +151,7 @@ out:
+ 
+ static int __wind_task_activate(struct pt_regs *regs)
+ {
+-	WIND_TCB *pTcb = (WIND_TCB *)xnregistry_fetch(__xn_reg_arg1(regs));
++	WIND_TCB *pTcb = __wind_lookup_task(__xn_reg_arg1(regs));
+ 
+ 	if (!pTcb)
+ 		return S_objLib_OBJ_ID_ERROR;
+@@ -167,7 +172,7 @@ static int __wind_task_deleteforce(struc
+ 	WIND_TCB *pTcb;
+ 
+ 	if (handle)
+-		pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++		pTcb = __wind_lookup_task(handle);
+ 	else
+ 		pTcb = __wind_task_current(current);
+ 
+@@ -190,7 +195,7 @@ static int __wind_task_delete(struct pt_
+ 	WIND_TCB *pTcb;
+ 
+ 	if (handle)
+-		pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++		pTcb = __wind_lookup_task(handle);
+ 	else
+ 		pTcb = __wind_task_current(current);
+ 
+@@ -213,7 +218,7 @@ static int __wind_task_suspend(struct pt
+ 	WIND_TCB *pTcb;
+ 
+ 	if (handle)
+-		pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++		pTcb = __wind_lookup_task(handle);
+ 	else
+ 		pTcb = __wind_task_current(current);
+ 
+@@ -232,7 +237,7 @@ static int __wind_task_suspend(struct pt
+ 
+ static int __wind_task_resume(struct pt_regs *regs)
+ {
+-	WIND_TCB *pTcb = (WIND_TCB *)xnregistry_fetch(__xn_reg_arg1(regs));
++	WIND_TCB *pTcb = __wind_lookup_task(__xn_reg_arg1(regs));
+ 
+ 	if (!pTcb)
+ 		return S_objLib_OBJ_ID_ERROR;
+@@ -275,7 +280,7 @@ static int __wind_task_priorityset(struc
+ 	WIND_TCB *pTcb;
+ 
+ 	if (handle)
+-		pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++		pTcb = __wind_lookup_task(handle);
+ 	else
+ 		pTcb = __wind_task_current(current);
+ 
+@@ -299,7 +304,7 @@ static int __wind_task_priorityget(struc
+ 	int prio;
+ 
+ 	if (handle)
+-		pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++		pTcb = __wind_lookup_task(handle);
+ 	else
+ 		pTcb = __wind_task_current(current);
+ 
+@@ -374,7 +379,7 @@ static int __wind_task_verifyid(struct p
+ 	xnhandle_t handle = __xn_reg_arg1(regs);
+ 	WIND_TCB *pTcb;
+ 
+-	pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++	pTcb = __wind_lookup_task(handle);
+ 
+ 	if (!pTcb)
+ 		return S_objLib_OBJ_ID_ERROR;
+@@ -574,7 +579,7 @@ static int __wind_taskinfo_name(struct p
+ 	const char *name;
+ 	WIND_TCB *pTcb;
+ 
+-	pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++	pTcb = __wind_lookup_task(handle);
+ 
+ 	if (!pTcb)
+ 		return S_objLib_OBJ_ID_ERROR;
+@@ -618,7 +623,7 @@ static int __wind_taskinfo_status(struct
+ 
+ 	xnlock_get_irqsave(&nklock, s);
+ 
+-	pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++	pTcb = __wind_lookup_task(handle);
+ 
+ 	if (!pTcb || pTcb->magic != WIND_TASK_MAGIC) {
+ 		xnlock_put_irqrestore(&nklock, s);
+@@ -643,7 +648,7 @@ static int __wind_taskinfo_get(struct pt
+ 	WIND_TCB *pTcb;
+ 	int err;
+ 
+-	pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++	pTcb = __wind_lookup_task(handle);
+ 	if (!pTcb)
+ 		return S_objLib_OBJ_ID_ERROR;
+ 
+@@ -673,7 +678,7 @@ static int __wind_errno_taskset(struct p
+  		return 0;
+  	}
+  
+- 	pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++ 	pTcb = __wind_lookup_task(handle);
+ 	if (!pTcb)
+ 		return S_objLib_OBJ_ID_ERROR;
+ 
+@@ -696,7 +701,7 @@ static int __wind_errno_taskget(struct p
+  	if (!handle)
+  		errcode = wind_errnoget();
+  	else {
+- 		pTcb = (WIND_TCB *)xnregistry_fetch(handle);
++ 		pTcb = __wind_lookup_task(handle);
+  		if (!pTcb)
+  			return S_objLib_OBJ_ID_ERROR;
+  
+Index: b/ksrc/skins/vxworks/taskLib.c
+===================================================================
+--- a/ksrc/skins/vxworks/taskLib.c
++++ b/ksrc/skins/vxworks/taskLib.c
+@@ -170,14 +170,11 @@ STATUS taskInit(WIND_TCB *pTcb,
+ 	appendq(&wind_tasks_q, &pTcb->link);
+ 	xnlock_put_irqrestore(&nklock, s);
+ 
+-#ifdef CONFIG_XENO_OPT_REGISTRY
+-	if (xnregistry_enter(pTcb->name,
+-			     pTcb, &xnthread_handle(&pTcb->threadbase), NULL)) {
++	if (xnthread_register(&pTcb->threadbase, pTcb->name)) {
+ 		wind_errnoset(S_objLib_OBJ_ID_ERROR);
+ 		taskDeleteForce((TASK_ID) pTcb);
+ 		return ERROR;
+ 	}
+-#endif /* CONFIG_XENO_OPT_REGISTRY */
+ 
+ 	return OK;
+ }
+@@ -618,11 +615,6 @@ static void wind_task_delete_hook(xnthre
+ 	if (xnthread_get_magic(thread) != VXWORKS_SKIN_MAGIC)
+ 		return;
+ 
+-#ifdef CONFIG_XENO_OPT_REGISTRY
+-	if (xnthread_handle(thread) != XN_NO_HANDLE)
+-	    xnregistry_remove(xnthread_handle(thread));
+-#endif /* CONFIG_XENO_OPT_REGISTRY */
+-
+ 	task = thread2wind_task(thread);
+ 
+ 	xnsynch_destroy(&task->safesync);
+Index: b/include/nucleus/registry.h
+===================================================================
+--- a/include/nucleus/registry.h
++++ b/include/nucleus/registry.h
+@@ -35,7 +35,6 @@
+ #if defined(__KERNEL__) || defined(__XENO_SIM__)
+ 
+ #include <nucleus/synch.h>
+-#include <nucleus/thread.h>
+ 
+ struct xnpnode;
+ 
+Index: b/include/nucleus/thread.h
+===================================================================
+--- a/include/nucleus/thread.h
++++ b/include/nucleus/thread.h
+@@ -130,6 +130,7 @@
+ 
+ #include <nucleus/stat.h>
+ #include <nucleus/timer.h>
++#include <nucleus/registry.h>
+ 
+ #ifdef __XENO_SIM__
+ /* Pseudo-status (must not conflict with other bits) */
+@@ -392,6 +393,30 @@ static inline xnticks_t xnthread_get_per
+ 	return period;
  }
  
-Index: b/ksrc/skins/rtai/Kconfig
-===================================================================
---- a/ksrc/skins/rtai/Kconfig
-+++ b/ksrc/skins/rtai/Kconfig
-@@ -1,5 +1,6 @@
- menuconfig XENO_SKIN_RTAI
- 	depends on XENO_OPT_NUCLEUS
-+	select XENO_OPT_REGISTRY if XENO_FASTSEM
- 	tristate "RTAI emulator"
- 	help
- 
-Index: b/ksrc/skins/rtai/task.c
-===================================================================
---- a/ksrc/skins/rtai/task.c
-+++ b/ksrc/skins/rtai/task.c
-@@ -152,6 +152,16 @@ int rt_task_init(RT_TASK *task,
- 	task->magic = RTAI_TASK_MAGIC;
- 	appendq(&__rtai_task_q, &task->link);
- 
-+#ifdef CONFIG_XENO_FASTSEM
-+	/* We need an anonymous registry entry to obtain a handle for fast
-+	   mutex locking. */
-+	err = xnthread_register(&task->thread_base, "");
-+	if (err) {
-+		xnpod_abort_thread(&task->thread_base);
-+		goto unlock_and_exit;
-+	}
-+#endif /* CONFIG_XENO_FASTSEM */
++#ifdef CONFIG_XENO_OPT_REGISTRY
++static inline int xnthread_register(xnthread_t *thread, const char *name)
++{
++	return xnregistry_enter(name, thread, &xnthread_handle(thread), NULL);
++}
 +
- 	/* Add a switch hook only if a signal function has been declared
- 	   at least once for some created task. */
- 
-Index: b/ksrc/skins/vrtx/Kconfig
-===================================================================
---- a/ksrc/skins/vrtx/Kconfig
-+++ b/ksrc/skins/vrtx/Kconfig
-@@ -3,7 +3,7 @@ menuconfig XENO_SKIN_VRTX
- 	select XENO_OPT_TIMING_PERIODIC
- 	select XENO_OPT_MAP
- 	tristate "VRTX emulator"
--	select XENO_OPT_REGISTRY if XENO_OPT_PERVASIVE
-+	select XENO_OPT_REGISTRY if XENO_OPT_PERVASIVE || CONFIG_XENO_FASTSEM
- 	help
- 
- 	This API skin emulates Mentor Graphics's VRTX operating
-Index: b/ksrc/skins/vrtx/task.c
-===================================================================
---- a/ksrc/skins/vrtx/task.c
-+++ b/ksrc/skins/vrtx/task.c
-@@ -188,12 +188,25 @@ int sc_tecreate_inner(vrtxtask_t *task,
- 	if (mode & 0x10)
- 		bmode |= XNRRB;
- 
--	*errp = RET_OK;
--
- 	xnlock_get_irqsave(&nklock, s);
- 	appendq(&vrtx_task_q, &task->link);
- 	xnlock_put_irqrestore(&nklock, s);
- 
-+#ifdef CONFIG_XENO_FASTSEM
-+	/* We need an anonymous registry entry to obtain a handle for fast
-+	   mutex locking. */
-+	{
-+		int err = xnthread_register(&task->threadbase, "");
-+		if (err) {
-+			xnpod_abort_thread(&task->threadbase);
-+			*errp = ER_MEM;
-+			return -1;
-+		}
-+	}
-+#endif /* CONFIG_XENO_FASTSEM */
++static inline xnthread_t *xnthread_lookup(xnhandle_t threadh)
++{
++	xnthread_t *thread = xnregistry_fetch(threadh);
 +
-+	*errp = RET_OK;
++	return (thread && xnthread_handle(thread) == threadh) ? thread : NULL;
++}
++#else /* !CONFIG_XENO_OPT_REGISTRY */
++static inline int xnthread_register(xnthread_t *thread, const char *name)
++{
++	return 0;
++}
 +
- 	xnpod_start_thread(&task->threadbase,
- 			   bmode, 0, XNPOD_ALL_CPUS, &vrtxtask_trampoline,
- 			   task);
-Index: b/ksrc/skins/vxworks/Kconfig
-===================================================================
---- a/ksrc/skins/vxworks/Kconfig
-+++ b/ksrc/skins/vxworks/Kconfig
-@@ -2,7 +2,7 @@ menuconfig XENO_SKIN_VXWORKS
- 	depends on XENO_OPT_NUCLEUS
- 	select XENO_OPT_TIMING_PERIODIC
- 	tristate "VxWorks emulator"
--	select XENO_OPT_REGISTRY if XENO_OPT_PERVASIVE
-+	select XENO_OPT_REGISTRY if XENO_OPT_PERVASIVE || XENO_FASTSEM
- 	help
- 
- 	This API skin emulates WindRiver's VxWorks operating system.
-Index: b/ksrc/skins/rtdm/drvlib.c
-===================================================================
---- a/ksrc/skins/rtdm/drvlib.c
-+++ b/ksrc/skins/rtdm/drvlib.c
-@@ -145,6 +145,14 @@ int rtdm_task_init(rtdm_task_t *task, co
- 	if (err)
- 		return err;
- 
-+#ifdef CONFIG_XENO_FASTSEM
-+	/* We need an anonymous registry entry to obtain a handle for fast
-+	   mutex locking. */
-+	err = xnthread_register(task, "");
-+	if (err)
-+		goto cleanup_out;
-+#endif /* CONFIG_XENO_FASTSEM */
++static inline xnthread_t *xnthread_lookup(xnhandle_t threadh)
++{
++	return NULL;
++}
++#endif /* !CONFIG_XENO_OPT_REGISTRY */
 +
- 	if (period > 0) {
- 		err = xnpod_set_thread_periodic(task, XN_INFINITE,
- 						xntbase_ns2ticks_ceil
+ #ifdef __cplusplus
+ }
+ #endif
+Index: b/ksrc/nucleus/thread.c
+===================================================================
+--- a/ksrc/nucleus/thread.c
++++ b/ksrc/nucleus/thread.c
+@@ -136,6 +136,8 @@ void xnthread_cleanup_tcb(xnthread_t *th
+ #endif
+ 
+ #ifdef CONFIG_XENO_OPT_REGISTRY
++	if (thread->registry.handle != XN_NO_HANDLE)
++		xnregistry_remove(thread->registry.handle);
+ 	thread->registry.handle = XN_NO_HANDLE;
+ #endif /* CONFIG_XENO_OPT_REGISTRY */
+ }
 
 
