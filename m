@@ -1,14 +1,13 @@
-Message-ID: <48FB19F7.1030107@domain.hid>
-Date: Sun, 19 Oct 2008 13:28:55 +0200
+Message-ID: <48F76068.7050903@domain.hid>
+Date: Thu, 16 Oct 2008 17:40:24 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <48F9F12F.7090708@domain.hid> <48FB15A8.30703@domain.hid>
-	<48FB17BD.7010904@domain.hid> <48FB1891.3060609@domain.hid>
-In-Reply-To: <48FB1891.3060609@domain.hid>
+References: <20081016145757.935266172@domain.hid>
+In-Reply-To: <20081016145757.935266172@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 1/1] Use SIGWINCH to trigger priority
-	change in user-space.
+Subject: Re: [Xenomai-core] [PATCH 0/2] Fix and improve task/thread inquire
+ services
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,43 +17,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>, Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
 Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> I wonder if we shouldn't switch the signal hooking strategy: So far we
->>> install the handler at shadow thread creation time, saving a potentially
->>> installed handler of the application for redirection of
->>> Xenomai-unrelated events. But that only works if the application
->>> installed the handler before it creates the first shadow thread, right?
->>> If the app decides to install/change the SIGWINCH handler later on
->>> (without taking care of our handler), we will loose.
->>>
->>> Suggestion: As this is fragile and cannot be solved transparently, lets
->>> document this signal requirement of Xenomai, e.g. in all task/thread
->>> creation functions of the skins. Tell the user that Xenomai will install
->>> a custom SIGWINCH handler and that, if the app wants to override it, it
->>> has to make sure to _first_ call into a Xenomai-provided handler and
->>> check if that one wants to handle the event. I'm thinking of something
->>> like int xeno_sigwinch_handler(int sig, siginfo_t *si, void *ctxt),
->>> where the return code is non-zero in case the signal was processed.
->>>
->>> With this policy in place, we can switch the signal handler installation
->>> above to __attribute__ ((construtor)) and save us all the changes
->>> regarding sigshadow_install below.
->> You mean to push the burden of identifying the signal source and calling
->> the proper handler on the user. With the current approach we take care
->> of that burden, I think it is better. But I agree that this should be
->> documented somewhere.
-> 
-> Nope, the burden will still be Xenomai's, encoded in
-> xeno_sigwinch_handler. The app will only have to check for its return code.
+> This series fixes the issues around rt_task_inquire I posted yesterday.
+> Additionally, it introduces an analogous services pthread_inquire_np for
+> the POSIX skin. That allows, among other things, to implement test cases
+> for the upcoming fast xnsynch/mutex patches.
 
-Actually, I have no real preference. Philippe, since you designed the
-original code, could you tell us what you had in mind?
+Ok. Since this applies only for debugging purpose, and displaying
+whether a task is in primary mode may be use badly by users, maybe we
+should make this service a shadow syscall, and not export any interface
+to use it. This would further avoid duplication between the native and
+posix skins.
+
+Philippe, what do you think ?
 
 -- 
-					    Gilles.
+                                                 Gilles.
 
