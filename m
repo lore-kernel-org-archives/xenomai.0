@@ -1,13 +1,14 @@
-Message-ID: <48F797E1.7060007@domain.hid>
-Date: Thu, 16 Oct 2008 21:37:05 +0200
+Message-ID: <48F79835.9080908@domain.hid>
+Date: Thu, 16 Oct 2008 21:38:29 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <20081016154620.320953568@domain.hid>
-	<20081016154620.843131502@domain.hid>
-In-Reply-To: <20081016154620.843131502@domain.hid>
+	<20081016154621.002143824@domain.hid>
+In-Reply-To: <20081016154621.002143824@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 03/12] Remove xnarch_atomic_intptr
+Subject: Re: [Xenomai-core] [PATCH 04/12] Spread xeno_set_current under all
+ skins
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
