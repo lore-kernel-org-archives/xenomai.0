@@ -1,14 +1,14 @@
-Message-ID: <48F7A2A8.6020807@domain.hid>
-Date: Thu, 16 Oct 2008 22:23:04 +0200
+Message-ID: <48F7A3AB.8060808@domain.hid>
+Date: Thu, 16 Oct 2008 22:27:23 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <20081016154620.320953568@domain.hid>
-	<20081016154621.960994053@domain.hid>
-In-Reply-To: <20081016154621.960994053@domain.hid>
+	<20081016154622.117667989@domain.hid>
+In-Reply-To: <20081016154622.117667989@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 10/12] Report current shadow thread mode
- to	user space
+Subject: Re: [Xenomai-core] [PATCH 11/12] Ensure mode switch in mutex fast
+ paths
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -23,9 +23,7 @@ Cc: xenomai@xenomai.org
 
 Jan Kiszka wrote:
 
-Ok. I still liked the solution of using a piece of shared heap. This was
-more general and would have allowed us to use this piece of shared heap
-for future purposes.
+Ok.
 
 -- 
 					    Gilles.
