@@ -1,12 +1,11 @@
-Message-ID: <48F73680.8020103@domain.hid>
-Date: Thu, 16 Oct 2008 14:41:36 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <5D63919D95F87E4D9D34FF7748CE2C2A0155D80B@ARVMAIL1.mra.roland-man.biz>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A0155D80B@ARVMAIL1.mra.roland-man.biz>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] how to build a Xenomai posix library ?
+From: ken barnett <kbb@domain.hid>
+Date: Thu, 16 Oct 2008 12:52:25 +0000 (UTC)
+Message-ID: <loom.20081016T124807-588@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Sender: news <news@domain.hid>
+Subject: [Xenomai-help] Need some help getting past an
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,41 +15,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: roderik.wildenburg@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-roderik.wildenburg@domain.hid wrote:
->>>> roderik.wildenburg@domain.hid wrote:
->>> *shmfd =3D shm_open(LOGSHMNAME, oflags, 0);
->> a shm name should contain one slash at the beginning and no=20
->> other slash,
->> for best portability.
->=20
-> As I expected, reducing the number of slashes to one does not change the =
-behavior.
+Hope you can help.
 
-I never said it would.
+My configuration is as follows:
+PXA25xx ADS card w/ NO PCI bridge
+Linux-2.6.24.5 kernel
+Xenomai 2.4.5 stable
 
->=20
->> If you want to create a shared memory, you should pass the=20
->> O_CREAT flag.
->=20
-> As mentioned above, an other process creates the shared memory.
+The Xenomai port to the kernel is as follows:
 
-Is it also linked with xenomai posix skin?
+./prepare-kernel.sh linux=../../linux-2.6.24.5
+--adeos=adeos-ipipe-2.6.24-arm-1.9-00.patch
+--adeos=adeos-ipipe-2.6.24-arm-1.9-01.patch --arch=arm
 
-> What I still don=B4t understand is, what influence the wrapper defines ha=
-ve on linking.
-> With wrappers : aplication works fine. Without wrappers : application doe=
-s not work !?
+./xenomai-2.4.5/scripts/prepare-kernel.sh --linux=linux-2.6.24.5
+--adeos=./xenomai-2.4.5/ksrc/arch/arm/patches/
+adeos-ipipe-2.6.24-arm-1.9-01.patch
 
-I would say that with wrappers, you are in fact using the vanilla linux
-shared memory, by passing __wrap_shm_open, you really use xenomai posix
-skin services.
+I used 2 patches  but have tried to use either/or with the 
+same indications.
 
-If that is the case, when using the wrapped version, you should see the
-shared memory appear under /dev/shm.
+configure CC=arm-linux-gcc --enable-arm-eabi
+--prefix=/home/dvdb-lite/rootfs/usr/xenomai --host=arm-linux 
+--enable-arm-arch=pxa
 
---=20
-                                                 Gilles.
+See attached for the output log.
+
+Step 1:
+Looking at post from July 05, 2008 - 12:26: it states to turn on full debug to
+get the best output so that output file is attached also as debug1.log
+
+Step 2
+Then it stated to turn off Xenomai all together:
+The log looks the same but is also attached as debug2.log
+
+Step 3
+Turn off ipipe altogether
+The kernel/card is back to working.
+
+Hop you can help,
+Thanks,
+Ken
+
+
+
 
