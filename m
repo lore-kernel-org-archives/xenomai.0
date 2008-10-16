@@ -1,11 +1,12 @@
 Resent-To: xenomai-core <xenomai@xenomai.org>
-Resent-Message-Id: <48F764A5.2090508@domain.hid>
-Message-Id: <20081016154621.157659985@domain.hid>
-Date: Thu, 16 Oct 2008 17:46:25 +0200
+Resent-Message-Id: <48F764A5.2050301@domain.hid>
+Message-Id: <20081016154621.960994053@domain.hid>
+Date: Thu, 16 Oct 2008 17:46:30 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 References: <20081016154620.320953568@domain.hid>
-Content-Disposition: inline; filename=factor-out-xnsynch_acquire-release.patch
-Subject: [Xenomai-core] [PATCH 05/12] Factor out xnsynch_acquire/release
+Content-Disposition: inline; filename=report-shadow-mode-to-userspace.patch
+Subject: [Xenomai-core] [PATCH 10/12] Report current shadow thread mode to
+	user space
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,915 +19,761 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
-This patch addresses the increasing divergence of owner-tracking vs.
-owner-less xnsynch objects.
+With this patch applied, the Xenomai skin libraries are able to obtain
+the execution mode the current thread without issuing a syscall. The
+kernel-user interface looks as follows:
 
-Services dealing with the former will include the new, lockless xnsynch
-prologue for optimizing its fastpath. At the the same time, this
-additional code should not disturb too much in those cases where we do
-not track ownership (condition variables, events, semaphores etc.).
-Moreover, I noticed that some of the existing code assumes XNSYNCH_NOPIP
-means no ownership, which is surely not true. The already visible effect
-is that lock stealing is needlessly restricted to XNSYNCH_PIP.
+ - On thread creation (which triggers xnshadow_map), user space passes a
+   pointer to an unsigned long.
 
-Going through the API, I dug out three diverging services and replaced
-them with two new ones:
+ - Before going primary and after completing the switch to secondary
+   mode, the nucleus writes 0 or XNRELAX to that unsigned long. The mode
+   updates use __xn_put_user, so they are fail-safe (write errors are
+   ignored, only an initial access_wok check is reported back).
 
-Owner-less xnsynch objects:
- - xnsynch_sleep_on
- - xnsynch_wakeup_one_sleeper
- - xnsynch_wakeup_this_sleeper
-
-Owner-tracking xnsynch objects:
- - xnsynch_acquire
- - xnsynch_release
-
-The latter type of objects are marked with the new flag XNSYNCH_OWNER,
-used only for debugging and code documentation purposes in the current
-implementation.
+ - User space can check its state by calling xeno_get_current_mode().
+   An optional light-weight version based on __thread is also provided.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- include/nucleus/synch.h     |   16 +
- include/rtdm/rtdm_driver.h  |    2 
- ksrc/nucleus/synch.c        |  418 +++++++++++++++++++++++++++++---------------
- ksrc/skins/native/cond.c    |    2 
- ksrc/skins/native/mutex.c   |    7 
- ksrc/skins/native/task.c    |    5 
- ksrc/skins/posix/cond.c     |    2 
- ksrc/skins/posix/mutex.c    |   10 -
- ksrc/skins/posix/mutex.h    |    6 
- ksrc/skins/rtai/sem.c       |   10 -
- ksrc/skins/rtdm/drvlib.c    |   15 -
- ksrc/skins/vrtx/mx.c        |    6 
- ksrc/skins/vxworks/semLib.c |    6 
- 13 files changed, 326 insertions(+), 179 deletions(-)
+ include/asm-generic/bits/bind.h    |   29 +++++++++++++++++++++++++----
+ include/asm-generic/bits/current.h |   20 ++++++++++++++++++++
+ include/native/syscall.h           |    1 +
+ include/nucleus/shadow.h           |    3 ++-
+ include/nucleus/thread.h           |    4 ++++
+ include/psos+/syscall.h            |    8 ++++++++
+ include/vrtx/syscall.h             |    1 +
+ include/vxworks/syscall.h          |    1 +
+ ksrc/nucleus/shadow.c              |   22 ++++++++++++++++++++--
+ ksrc/skins/native/syscall.c        |    3 ++-
+ ksrc/skins/posix/syscall.c         |   14 +++++++++-----
+ ksrc/skins/psos+/syscall.c         |   34 +++++++++++++++++++++-------------
+ ksrc/skins/uitron/syscall.c        |    8 ++++++--
+ ksrc/skins/vrtx/syscall.c          |    4 +++-
+ ksrc/skins/vxworks/syscall.c       |    4 +++-
+ src/skins/native/task.c            |   10 ++++++++++
+ src/skins/posix/thread.c           |   33 +++++++++++++++++++++++++++++++--
+ src/skins/psos+/task.c             |   16 +++++++++++++---
+ src/skins/uitron/task.c            |   11 +++++++++--
+ src/skins/vrtx/task.c              |    6 ++++++
+ src/skins/vxworks/taskLib.c        |    6 ++++++
+ 21 files changed, 201 insertions(+), 37 deletions(-)
 
-Index: b/include/nucleus/synch.h
+Index: b/include/native/syscall.h
 ===================================================================
---- a/include/nucleus/synch.h
-+++ b/include/nucleus/synch.h
-@@ -30,10 +30,11 @@
- #define XNSYNCH_NOPIP   0x0
- #define XNSYNCH_PIP     0x2
- #define XNSYNCH_DREORD  0x4
-+#define XNSYNCH_OWNER   0x8
+--- a/include/native/syscall.h
++++ b/include/native/syscall.h
+@@ -134,6 +134,7 @@ struct rt_arg_bulk {
+ 	u_long a3;
+ 	u_long a4;
+ 	u_long a5;
++	u_long a6;
+ };
  
- #if defined(__KERNEL__) || defined(__XENO_SIM__)
- 
--#define XNSYNCH_CLAIMED 0x8	/* Claimed by other thread(s) w/ PIP */
-+#define XNSYNCH_CLAIMED 0x10	/* Claimed by other thread(s) w/ PIP */
- 
- /* Spare flags usable by upper interfaces */
- #define XNSYNCH_SPARE0  0x01000000
-@@ -105,13 +106,18 @@ void xnsynch_sleep_on(xnsynch_t *synch,
- 
- struct xnthread *xnsynch_wakeup_one_sleeper(xnsynch_t *synch);
- 
--struct xnthread *xnsynch_peek_pendq(xnsynch_t *synch);
--
- xnpholder_t *xnsynch_wakeup_this_sleeper(xnsynch_t *synch,
- 					 xnpholder_t *holder);
- 
--int xnsynch_flush(xnsynch_t *synch,
--		  xnflags_t reason);
-+void xnsynch_acquire(xnsynch_t *synch,
-+		     xnticks_t timeout,
-+		     xntmode_t timeout_mode);
-+
-+struct xnthread *xnsynch_release(xnsynch_t *synch);
-+
-+struct xnthread *xnsynch_peek_pendq(xnsynch_t *synch);
-+
-+int xnsynch_flush(xnsynch_t *synch, xnflags_t reason);
- 
- void xnsynch_release_all_ownerships(struct xnthread *thread);
- 
-Index: b/ksrc/nucleus/synch.c
+ #ifdef __KERNEL__
+Index: b/include/nucleus/shadow.h
 ===================================================================
---- a/ksrc/nucleus/synch.c
-+++ b/ksrc/nucleus/synch.c
-@@ -59,6 +59,12 @@
-  * - XNSYNCH_PRIO causes the threads waiting for the resource to pend
-  * in priority order. Otherwise, FIFO ordering is used (XNSYNCH_FIFO).
-  *
-+ * - XNSYNCH_OWNER indicates that the synchronization object shall
-+ * track its owning thread (required if XNSYNCH_PIP is selected). Note
-+ * that setting this flag implies the use xnsynch_acquire and
-+ * xnsynch_release instead of xnsynch_sleep_on and
-+ * xnsynch_wakeup_one_sleeper/xnsynch_wakeup_this_sleeper.
-+ *
-  * - XNSYNCH_PIP causes the priority inheritance mechanism to be
-  * automatically activated when a priority inversion is detected among
-  * threads using this object. Otherwise, no priority inheritance takes
-@@ -89,7 +95,7 @@ void xnsynch_init(xnsynch_t *synch, xnfl
- 	initph(&synch->link);
+--- a/include/nucleus/shadow.h
++++ b/include/nucleus/shadow.h
+@@ -69,7 +69,8 @@ void xnshadow_grab_events(void);
+ void xnshadow_release_events(void);
  
- 	if (flags & XNSYNCH_PIP)
--		flags |= XNSYNCH_PRIO;	/* Obviously... */
-+		flags |= XNSYNCH_PRIO | XNSYNCH_OWNER;	/* Obviously... */
+ int xnshadow_map(struct xnthread *thread,
+-		 xncompletion_t __user *u_completion);
++		 xncompletion_t __user *u_completion,
++		 unsigned long __user *u_mode);
  
- 	synch->status = flags & ~XNSYNCH_CLAIMED;
- 	synch->owner = NULL;
-@@ -98,6 +104,209 @@ void xnsynch_init(xnsynch_t *synch, xnfl
- 	xnarch_init_display_context(synch);
+ void xnshadow_unmap(struct xnthread *thread);
+ 
+Index: b/include/nucleus/thread.h
+===================================================================
+--- a/include/nucleus/thread.h
++++ b/include/nucleus/thread.h
+@@ -248,6 +248,10 @@ typedef struct xnthread {
+ 
+ 	void *cookie;		/* Cookie to pass to the entry routine */
+ 
++#ifdef CONFIG_XENO_OPT_PERVASIVE
++	unsigned long __user *u_mode;	/* Thread mode variable in userland. */
++#endif /* CONFIG_XENO_OPT_PERVASIVE */
++
+     XNARCH_DECL_DISPLAY_CONTEXT();
+ 
+ } xnthread_t;
+Index: b/ksrc/nucleus/shadow.c
+===================================================================
+--- a/ksrc/nucleus/shadow.c
++++ b/ksrc/nucleus/shadow.c
+@@ -1079,6 +1079,8 @@ redo:
+ 		/* Grab the request token. */
+ 		return -ERESTARTSYS;
+ 
++	__xn_put_user(0, thread->u_mode);
++
+ 	preempt_disable();
+ 
+ 	/* Assume that we might have been migrated while waiting for
+@@ -1250,6 +1252,8 @@ void xnshadow_relax(int notify)
+ 	/* "current" is now running into the Linux domain on behalf of the
+ 	   root thread. */
+ 
++	__xn_put_user(XNRELAX, thread->u_mode);
++
+ 	trace_mark(xn_nucleus_shadow_relaxed,
+ 		  "thread %p thread_name %s comm %s",
+ 		  thread, xnthread_name(thread), current->comm);
+@@ -1264,7 +1268,9 @@ void xnshadow_exit(void)
  }
  
-+/*!
-+ * \fn void xnsynch_sleep_on(xnsynch_t *synch, xnticks_t timeout,
-+ *                           xntmode_t timeout_mode);
-+ * \brief Sleep on an ownerless synchronization object.
+ /*!
+- * \fn int xnshadow_map(xnthread_t *thread, xncompletion_t __user *u_completion)
++ * \fn int xnshadow_map(xnthread_t *thread,
++ *                      xncompletion_t __user *u_completion,
++ *                      unsigned long __user *u_mode)
+  * @internal
+  * \brief Create a shadow thread context.
+  *
+@@ -1288,6 +1294,11 @@ void xnshadow_exit(void)
+  * immediately started and "current" immediately resumes in the Xenomai
+  * domain from this service.
+  *
++ * @param: u_mode is the address of a mode variable in user space that
++ * will reflect the current thread mode (primary or secondary). The
++ * nucleus will try to update the variable before switching to secondary
++ * or after switching from primary mode.
 + *
-+ * Makes the calling thread sleep on the specified synchronization
-+ * object, waiting for it to be signaled.
-+ *
-+ * This service should be called by upper interfaces wanting the
-+ * current thread to pend on the given resource. It must not be used
-+ * with synchronization objects that are supposed to track ownership
-+ * (XNSYNCH_OWNER).
-+ *
-+ * @param synch The descriptor address of the synchronization object
-+ * to sleep on.
-+ *
-+ * @param timeout The timeout which may be used to limit the time the
-+ * thread pends on the resource. This value is a wait time given in
-+ * ticks (see note). It can either be relative, absolute monotonic, or
-+ * absolute adjustable depending on @a timeout_mode. Passing XN_INFINITE
-+ * @b and setting @a mode to XN_RELATIVE specifies an unbounded wait. All
-+ * other values are used to initialize a watchdog timer.
-+ *
-+ * @param timeout_mode The mode of the @a timeout parameter. It can
-+ * either be set to XN_RELATIVE, XN_ABSOLUTE, or XN_REALTIME (see also
-+ * xntimer_start()).
-+ *
-+ * Environments:
-+ *
-+ * This service can be called from:
-+ *
-+ * - Kernel module initialization/cleanup code
-+ * - Kernel-based task
-+ * - User-space task
-+ *
-+ * Rescheduling: always.
-+ *
-+ * @note The @a timeout value will be interpreted as jiffies if the
-+ * current thread is bound to a periodic time base (see
-+ * xnpod_init_thread), or nanoseconds otherwise.
-+ */
+  * @return 0 is returned on success. Otherwise:
+  *
+  * - -ERESTARTSYS is returned if the current Linux task has received a
+@@ -1313,7 +1324,8 @@ void xnshadow_exit(void)
+  *
+  */
+ 
+-int xnshadow_map(xnthread_t *thread, xncompletion_t __user *u_completion)
++int xnshadow_map(xnthread_t *thread, xncompletion_t __user *u_completion,
++		 unsigned long __user *u_mode)
+ {
+ 	xnarch_cpumask_t affinity;
+ 	unsigned muxid, magic;
+@@ -1325,6 +1337,9 @@ int xnshadow_map(xnthread_t *thread, xnc
+ 	if (xnthread_test_state(thread, XNMAPPED))
+ 		return -EINVAL;
+ 
++	if (!access_wok(u_mode, sizeof(*u_mode)))
++		return -EFAULT;
 +
-+void xnsynch_sleep_on(xnsynch_t *synch, xnticks_t timeout,
-+		      xntmode_t timeout_mode)
-+{
-+	xnthread_t *thread = xnpod_current_thread();
-+	spl_t s;
+ #ifdef CONFIG_MMU
+ 	if (!(current->mm->def_flags & VM_LOCKED))
+ 		send_sig(SIGXCPU, current, 1);
+@@ -1385,6 +1400,9 @@ int xnshadow_map(xnthread_t *thread, xnc
+ 	if (err)
+ 		return err;
+ 
++	thread->u_mode = u_mode;
++	__xn_put_user(XNRELAX, u_mode);
 +
-+	XENO_BUGON(NUCLEUS, testbits(synch->status, XNSYNCH_OWNER));
-+
-+	xnlock_get_irqsave(&nklock, s);
-+
-+	trace_mark(xn_nucleus_synch_sleepon,
-+		   "thread %p thread_name %s synch %p",
-+		   thread, xnthread_name(thread), synch);
-+
-+	if (!testbits(synch->status, XNSYNCH_PRIO)) /* i.e. FIFO */
-+		appendpq(&synch->pendq, &thread->plink);
-+	else /* i.e. priority-sorted */
-+		insertpqf(&synch->pendq, &thread->plink, thread->cprio);
-+
-+	xnpod_suspend_thread(thread, XNPEND, timeout, timeout_mode, synch);
-+
-+	xnlock_put_irqrestore(&nklock, s);
-+}
-+
-+/*!
-+ * \fn xnthread_t *xnsynch_wakeup_one_sleeper(xnsynch_t *synch);
-+ * \brief Give the resource ownership to the next waiting thread.
-+ *
-+ * This service wakes up the thread which is currently leading the
-+ * synchronization object's pending list. The sleeping thread is
-+ * unblocked from its pending state, but no reschedule is performed.
-+ *
-+ * This service should be called by upper interfaces wanting to signal
-+ * the given resource so that a single waiter is resumed. It must not
-+ * be used with synchronization objects that are supposed to track
-+ * ownership (XNSYNCH_OWNER not set).
-+ *
-+ * @param synch The descriptor address of the synchronization object
-+ * whose ownership is changed.
-+ *
-+ * @return The descriptor address of the unblocked thread.
-+ *
-+ * Side-effects:
-+ *
-+ * - The effective priority of the previous resource owner might be
-+ * lowered to its base priority value as a consequence of the priority
-+ * inheritance boost being cleared.
-+ *
-+ * - The synchronization object ownership is transfered to the
-+ * unblocked thread.
-+ *
-+ * Environments:
-+ *
-+ * This service can be called from:
-+ *
-+ * - Kernel module initialization/cleanup code
-+ * - Interrupt service routine
-+ * - Kernel-based task
-+ * - User-space task
-+ *
-+ * Rescheduling: never.
-+ */
-+
-+xnthread_t *xnsynch_wakeup_one_sleeper(xnsynch_t *synch)
-+{
-+	xnthread_t *thread = NULL;
-+	xnpholder_t *holder;
-+	spl_t s;
-+
-+	XENO_BUGON(NUCLEUS, testbits(synch->status, XNSYNCH_OWNER));
-+
-+	xnlock_get_irqsave(&nklock, s);
-+
-+	holder = getpq(&synch->pendq);
-+
-+	if (holder) {
-+		thread = link2thread(holder, plink);
-+		thread->wchan = NULL;
-+		trace_mark(xn_nucleus_synch_wakeup_one,
-+			   "thread %p thread_name %s synch %p",
-+			   thread, xnthread_name(thread), synch);
-+		xnpod_resume_thread(thread, XNPEND);
-+	}
-+
-+	xnlock_put_irqrestore(&nklock, s);
-+
-+	xnarch_post_graph_if(synch, 0, emptypq_p(&synch->pendq));
-+
-+	return thread;
-+}
-+
-+/*!
-+ * \fn void xnsynch_wakeup_this_sleeper(xnsynch_t *synch, xnpholder_t *holder);
-+ * \brief Give the resource ownership to a given waiting thread.
-+ *
-+ * This service wakes up a specific thread which is currently pending on
-+ * the given synchronization object. The sleeping thread is unblocked
-+ * from its pending state, but no reschedule is performed.
-+ *
-+ * This service should be called by upper interfaces wanting to signal
-+ * the given resource so that a specific waiter is resumed. It must not
-+ * be used with synchronization objects that are supposed to track
-+ * ownership (XNSYNCH_OWNER not set).
-+ *
-+ * @param synch The descriptor address of the synchronization object
-+ * whose ownership is changed.
-+ *
-+ * @param holder The link holder address of the thread to unblock
-+ * (&thread->plink) which MUST be currently linked to the
-+ * synchronization object's pending queue (i.e. synch->pendq).
-+ *
-+ * @return The link address of the unblocked thread in the
-+ * synchronization object's pending queue.
-+ *
-+ * Side-effects:
-+ *
-+ * - The effective priority of the previous resource owner might be
-+ * lowered to its base priority value as a consequence of the priority
-+ * inheritance boost being cleared.
-+ *
-+ * - The synchronization object ownership is transfered to the
-+ * unblocked thread.
-+ *
-+ * Environments:
-+ *
-+ * This service can be called from:
-+ *
-+ * - Kernel module initialization/cleanup code
-+ * - Interrupt service routine
-+ * - Kernel-based task
-+ * - User-space task
-+ *
-+ * Rescheduling: never.
-+ */
-+
-+xnpholder_t *xnsynch_wakeup_this_sleeper(xnsynch_t *synch, xnpholder_t *holder)
-+{
-+	xnthread_t *thread;
-+	xnpholder_t *nholder;
-+	spl_t s;
-+
-+	XENO_BUGON(NUCLEUS, testbits(synch->status, XNSYNCH_OWNER));
-+
-+	xnlock_get_irqsave(&nklock, s);
-+
-+	nholder = poppq(&synch->pendq, holder);
-+
-+	thread = link2thread(holder, plink);
-+	thread->wchan = NULL;
-+	trace_mark(xn_nucleus_synch_wakeup_this,
-+		   "thread %p thread_name %s synch %p",
-+		   thread, xnthread_name(thread), synch);
-+	xnpod_resume_thread(thread, XNPEND);
-+
-+	xnlock_put_irqrestore(&nklock, s);
-+
-+	xnarch_post_graph_if(synch, 0, emptypq_p(&synch->pendq));
-+
-+	return nholder;
-+}
-+
+ 	err = xnshadow_harden();
+ 
+ 	xnarch_trace_pid(xnarch_user_pid(xnthread_archtcb(thread)),
+Index: b/ksrc/skins/native/syscall.c
+===================================================================
+--- a/ksrc/skins/native/syscall.c
++++ b/ksrc/skins/native/syscall.c
+@@ -191,7 +191,8 @@ static int __rt_task_create(struct pt_re
+ 		if (__xn_safe_copy_to_user((void __user *)bulk.a1, &ph, sizeof(ph)))
+ 			err = -EFAULT;
+ 		else {
+-			err = xnshadow_map(&task->thread_base, u_completion);
++			err = xnshadow_map(&task->thread_base, u_completion,
++					   (unsigned long __user *)bulk.a6);
+ 			if (!err)
+ 				goto out;
+ 		}
+Index: b/ksrc/skins/posix/syscall.c
+===================================================================
+--- a/ksrc/skins/posix/syscall.c
++++ b/ksrc/skins/posix/syscall.c
+@@ -180,7 +180,8 @@ static int __pthread_create(struct pt_re
+ 	if (err)
+ 		return -err;	/* Conventionally, our error codes are negative. */
+ 
+-	err = xnshadow_map(&k_tid->threadbase, NULL);
++	err = xnshadow_map(&k_tid->threadbase, NULL,
++			   (unsigned long __user *)__xn_reg_arg2(regs));
+ 
+ 	if (!err && !__pthread_hash(&hkey, k_tid))
+ 		err = -ENOMEM;
+@@ -196,7 +197,8 @@ static int __pthread_create(struct pt_re
+ #define __pthread_detach  __pse51_call_not_available
+ 
+ static pthread_t __pthread_shadow(struct task_struct *p,
+-				  struct pse51_hkey *hkey)
++				  struct pse51_hkey *hkey,
++				  unsigned long __user *u_mode)
+ {
+ 	pthread_attr_t attr;
+ 	pthread_t k_tid;
+@@ -211,7 +213,7 @@ static pthread_t __pthread_shadow(struct
+ 	if (err)
+ 		return ERR_PTR(-err);
+ 
+-	err = xnshadow_map(&k_tid->threadbase, NULL);
++	err = xnshadow_map(&k_tid->threadbase, NULL, u_mode);
+ 
+ 	if (!err && !__pthread_hash(hkey, k_tid))
+ 		err = -EAGAIN;
+@@ -227,11 +229,13 @@ static pthread_t __pthread_shadow(struct
+ static int __pthread_setschedparam(struct pt_regs *regs)
+ {
+ 	int policy, err, promoted = 0;
++	unsigned long __user *u_mode;
+ 	struct sched_param param;
+ 	struct pse51_hkey hkey;
+ 	pthread_t k_tid;
+ 
+ 	policy = __xn_reg_arg2(regs);
++	u_mode = (unsigned long __user *)__xn_reg_arg4(regs);
+ 
+ 	if (__xn_safe_copy_from_user(&param,
+ 				     (void __user *)__xn_reg_arg3(regs), sizeof(param)))
+@@ -241,10 +245,10 @@ static int __pthread_setschedparam(struc
+ 	hkey.mm = current->mm;
+ 	k_tid = __pthread_find(&hkey);
+ 
+-	if (!k_tid && __xn_reg_arg1(regs) == __xn_reg_arg4(regs)) {
++	if (!k_tid && u_mode) {
+ 		/* If the syscall applies to "current", and the latter is not
+ 		   a Xenomai thread already, then shadow it. */
+-		k_tid = __pthread_shadow(current, &hkey);
++		k_tid = __pthread_shadow(current, &hkey, u_mode);
+ 		if (IS_ERR(k_tid))
+ 			return PTR_ERR(k_tid);
+ 
+Index: b/ksrc/skins/psos+/syscall.c
+===================================================================
+--- a/ksrc/skins/psos+/syscall.c
++++ b/ksrc/skins/psos+/syscall.c
+@@ -60,11 +60,14 @@ static psostask_t *__psos_task_current(s
+ }
+ 
  /*
-  * xnsynch_renice_thread() -- This service is used by the PIP code to
-  * raise/lower a thread's priority. The thread's base priority value
-@@ -125,19 +334,20 @@ static void xnsynch_renice_thread(xnthre
- }
- 
- /*! 
-- * \fn void xnsynch_sleep_on(xnsynch_t *synch, xnticks_t timeout,
-- *                           xntmode_t timeout_mode)
-- *
-- * \brief Sleep on a synchronization object.
-- *
-- * Makes the calling thread sleep on the specified synchronization
-- * object, waiting for it to be signaled.
-+ * \fn void xnsynch_acquire(xnsynch_t *synch, xnticks_t timeout,
-+ *                          xntmode_t timeout_mode);
-+ * \brief Acquire the ownership of a synchronization object.
-  *
-  * This service should be called by upper interfaces wanting the
-- * current thread to pend on the given resource.
-+ * current thread to acquire the ownership of the given resource. If
-+ * the resource is already assigned to a thread, the caller is
-+ * suspended.
-+ *
-+ * This service must be used only with synchronization objects that
-+ * track ownership (XNSYNCH_OWNER set.
-  *
-  * @param synch The descriptor address of the synchronization object
-- * to sleep on.
-+ * to acquire.
-  *
-  * @param timeout The timeout which may be used to limit the time the
-  * thread pends on the resource. This value is a wait time given in
-@@ -158,36 +368,24 @@ static void xnsynch_renice_thread(xnthre
-  * - Kernel-based task
-  * - User-space task
-  *
-- * Rescheduling: always.
-+ * Rescheduling: possible.
-  *
-  * @note The @a timeout value will be interpreted as jiffies if the
-  * current thread is bound to a periodic time base (see
-  * xnpod_init_thread), or nanoseconds otherwise.
+- * int __t_create(const char *name,
+- *                u_long prio,
+- *                u_long flags,
++ * int __t_create(struct psos_arg_bulk *bulk,
+  *                u_long *tid_r,
+  *                xncompletion_t *completion)
++ * bulk = {
++ * a1: const char *name;
++ * a2: u_long prio;
++ * a3: u_long flags;
++ * a4: unsigned long *mode;
   */
  
--void xnsynch_sleep_on(xnsynch_t *synch, xnticks_t timeout,
--		      xntmode_t timeout_mode)
-+void xnsynch_acquire(xnsynch_t *synch, xnticks_t timeout,
-+		     xntmode_t timeout_mode)
- {
- 	xnthread_t *thread = xnpod_current_thread(), *owner;
- 	spl_t s;
+ static int __t_create(struct pt_regs *regs)
+@@ -73,10 +76,15 @@ static int __t_create(struct pt_regs *re
+ 	struct task_struct *p = current;
+ 	u_long prio, flags, tid, err;
+ 	char name[XNOBJECT_NAME_LEN];
++	struct psos_arg_bulk bulk;
+ 	psostask_t *task;
  
--	xnlock_get_irqsave(&nklock, s);
-+	XENO_BUGON(NUCLEUS, !testbits(synch->status, XNSYNCH_OWNER));
- 
--	trace_mark(xn_nucleus_synch_sleepon,
--		   "thread %p thread_name %s synch %p",
--		   thread, xnthread_name(thread), synch);
-+	xnlock_get_irqsave(&nklock, s);
- 
--	if (!testbits(synch->status, XNSYNCH_PRIO)) { /* i.e. FIFO */
--		appendpq(&synch->pendq, &thread->plink);
--		xnpod_suspend_thread(thread, XNPEND, timeout, timeout_mode, synch);
--		goto unlock_and_exit;
--	}
--
--	if (!testbits(synch->status, XNSYNCH_PIP)) { /* i.e. no ownership */
--		insertpqf(&synch->pendq, &thread->plink, thread->cprio);
--		xnpod_suspend_thread(thread, XNPEND, timeout, timeout_mode, synch);
--		goto unlock_and_exit;
--	}
-+	trace_mark(xn_nucleus_synch_acquire, "synch %p", synch);
- 
- redo:
- 	owner = synch->owner;
-@@ -198,6 +396,12 @@ redo:
- 		goto unlock_and_exit;
- 	}
- 
-+	if (!testbits(synch->status, XNSYNCH_PRIO)) { /* i.e. FIFO */
-+		appendpq(&synch->pendq, &thread->plink);
-+		xnpod_suspend_thread(thread, XNPEND, timeout, timeout_mode, synch);
-+		goto unlock_and_exit;
-+	}
++	if (__xn_safe_copy_from_user(&bulk, (void __user *)__xn_reg_arg1(regs),
++				     sizeof(bulk)))
++		return -EFAULT;
 +
- 	if (thread->cprio > owner->cprio) {
- 		if (xnthread_test_info(owner, XNWAKEN) && owner->wwake == synch) {
- 			/* Ownership is still pending, steal the resource. */
-@@ -207,19 +411,22 @@ redo:
- 			goto unlock_and_exit;
- 		}
+ 	/* Get task name. */
+-	if (__xn_safe_strncpy_from_user(name, (const char __user *)__xn_reg_arg1(regs),
++	if (__xn_safe_strncpy_from_user(name, (const char __user *)bulk.a1,
+ 					sizeof(name) - 1) < 0)
+ 		return -EFAULT;
  
--		if (!xnthread_test_state(owner, XNBOOST)) {
--			owner->bprio = owner->cprio;
--			xnthread_set_state(owner, XNBOOST);
+@@ -85,12 +93,12 @@ static int __t_create(struct pt_regs *re
+ 	p->comm[sizeof(p->comm) - 1] = '\0';
+ 
+ 	/* Task priority. */
+-	prio = __xn_reg_arg2(regs);
++	prio = bulk.a2;
+ 	/* Task flags. Force FPU support in user-space. This will lead
+ 	   to a no-op if the platform does not support it. */
+-	flags = __xn_reg_arg3(regs) | T_SHADOW | T_FPU;
++	flags = bulk.a3 | T_SHADOW | T_FPU;
+ 	/* Completion descriptor our parent thread is pending on. */
+-	u_completion = (xncompletion_t __user *)__xn_reg_arg5(regs);
++	u_completion = (xncompletion_t __user *)__xn_reg_arg3(regs);
+ 
+ 	err = t_create(name, prio, 0, 0, flags, &tid);
+ 
+@@ -100,14 +108,14 @@ static int __t_create(struct pt_regs *re
+ 		 * about the new thread id, so we can manipulate its
+ 		 * TCB pointer freely. */
+ 		tid = xnthread_handle(&task->threadbase);
+-		if (__xn_safe_copy_to_user((void __user *)__xn_reg_arg4(regs), &tid,
++		if (__xn_safe_copy_to_user((void __user *)__xn_reg_arg2(regs), &tid,
+ 					   sizeof(tid)))
+ 			return -EFAULT;
+-		else {
+-			err = xnshadow_map(&task->threadbase, u_completion);	/* May be NULL */
+-			if (!err)
+-				goto out;
 -		}
-+		insertpqf(&synch->pendq, &thread->plink, thread->cprio);
- 
--		if (testbits(synch->status, XNSYNCH_CLAIMED))
--			removepq(&owner->claimq, &synch->link);
--		else
--			__setbits(synch->status, XNSYNCH_CLAIMED);
-+		if (testbits(synch->status, XNSYNCH_PIP)) {
-+			if (!xnthread_test_state(owner, XNBOOST)) {
-+				owner->bprio = owner->cprio;
-+				xnthread_set_state(owner, XNBOOST);
-+			}
 +
-+			if (testbits(synch->status, XNSYNCH_CLAIMED))
-+				removepq(&owner->claimq, &synch->link);
-+			else
-+				__setbits(synch->status, XNSYNCH_CLAIMED);
++		err = xnshadow_map(&task->threadbase, u_completion,
++				   (unsigned long __user *)bulk.a4);
++		if (!err)
++			goto out;
  
--		insertpqf(&owner->claimq, &synch->link, thread->cprio);
--		insertpqf(&synch->pendq, &thread->plink, thread->cprio);
--		xnsynch_renice_thread(owner, thread->cprio);
-+			insertpqf(&owner->claimq, &synch->link, thread->cprio);
-+			xnsynch_renice_thread(owner, thread->cprio);
-+		}
- 	} else
- 		insertpqf(&synch->pendq, &thread->plink, thread->cprio);
- 
-@@ -335,17 +542,17 @@ void xnsynch_renice_sleeper(xnthread_t *
+ 		t_delete((u_long)task);
  	}
- }
- 
--/*! 
-- * \fn xnthread_t *xnsynch_wakeup_one_sleeper(xnsynch_t *synch);
-+/*!
-+ * \fn xnthread_t *xnsynch_release(xnsynch_t *synch);
-  * \brief Give the resource ownership to the next waiting thread.
-  *
-- * This service gives the ownership of a synchronization object to the
-- * thread which is currently leading the object's pending list. The
-- * sleeping thread is unblocked, but no action is taken regarding the
-- * previous owner of the resource.
-+ * This service releases the ownership of the given synchronization
-+ * object. The thread which is currently leading the object's pending
-+ * list, if any, is unblocked from its pending state. However, no
-+ * reschedule is performed.
-  *
-- * This service should be called by upper interfaces wanting to signal
-- * the given resource so that a single waiter is resumed.
-+ * This service must be used only with synchronization objects that
-+ * track ownership (XNSYNCH_OWNER set.
-  *
-  * @param synch The descriptor address of the synchronization object
-  * whose ownership is changed.
-@@ -373,38 +580,41 @@ void xnsynch_renice_sleeper(xnthread_t *
-  * Rescheduling: never.
+Index: b/ksrc/skins/vrtx/syscall.c
+===================================================================
+--- a/ksrc/skins/vrtx/syscall.c
++++ b/ksrc/skins/vrtx/syscall.c
+@@ -48,6 +48,7 @@ static int __muxid;
+  * a1: int tid;
+  * a2: int prio;
+  * a3: int mode;
++ * a4: unsigned long *shadow_mode;
+  * }
   */
  
--xnthread_t *xnsynch_wakeup_one_sleeper(xnsynch_t *synch)
-+struct xnthread *xnsynch_release(xnsynch_t *synch)
+@@ -89,7 +90,8 @@ static int __sc_tecreate(struct pt_regs
+ 					   &tid, sizeof(tid)))
+ 			err = -EFAULT;
+ 		else {
+-			err = xnshadow_map(&task->threadbase, u_completion);
++			err = xnshadow_map(&task->threadbase, u_completion,
++					   (unsigned long __user *)bulk.a4);
+ 			if (!err)
+ 				goto done;
+ 		}
+Index: b/ksrc/skins/vxworks/syscall.c
+===================================================================
+--- a/ksrc/skins/vxworks/syscall.c
++++ b/ksrc/skins/vxworks/syscall.c
+@@ -66,6 +66,7 @@ static WIND_TCB *__wind_task_current(str
+  * a2: int prio;
+  * a3: int flags;
+  * a4: pthread_self();
++ * a5: unsigned long *mode;
+  * }
+  */
+ 
+@@ -124,7 +125,8 @@ static int __wind_task_init(struct pt_re
+ 					   sizeof(ph)))
+ 			err = -EFAULT;
+ 		else {
+-			err = xnshadow_map(&task->threadbase, u_completion);
++			err = xnshadow_map(&task->threadbase, u_completion,
++					   (unsigned long __user *)bulk.a5);
+ 			if (!err)
+ 				goto out;
+ 		}
+Index: b/ksrc/skins/uitron/syscall.c
+===================================================================
+--- a/ksrc/skins/uitron/syscall.c
++++ b/ksrc/skins/uitron/syscall.c
+@@ -31,13 +31,15 @@
+ int __ui_muxid;
+ 
+ /*
+- * int __uitron_cre_tsk(ID tskid, T_CTSK *pk_ctsk, xncompletion_t *completion)
++ * int __uitron_cre_tsk(ID tskid, T_CTSK *pk_ctsk, xncompletion_t *completion,
++ *                      unsigned long *mode)
+  */
+ 
+ static int __ui_cre_tsk(struct pt_regs *regs)
  {
--	xnthread_t *thread = NULL, *lastowner;
-+	xnthread_t *newowner, *lastowner;
- 	xnpholder_t *holder;
- 	spl_t s;
+ 	xncompletion_t __user *u_completion;
+ 	struct task_struct *p = current;
++	unsigned long __user *u_mode;
+ 	uitask_t *task;
+ 	T_CTSK pk_ctsk;
+ 	ID tskid;
+@@ -54,6 +56,8 @@ static int __ui_cre_tsk(struct pt_regs *
+ 	/* Completion descriptor our parent thread is pending on. */
+ 	u_completion = (xncompletion_t __user *)__xn_reg_arg3(regs);
  
-+	XENO_BUGON(NUCLEUS, !testbits(synch->status, XNSYNCH_OWNER));
++	u_mode = (unsigned long __user *)__xn_reg_arg4(regs);
 +
- 	xnlock_get_irqsave(&nklock, s);
+ 	err = cre_tsk(tskid, &pk_ctsk);
  
--	lastowner = synch->owner;
-+	trace_mark(xn_nucleus_synch_release, "synch %p", synch);
+ 	if (likely(err == E_OK)) {
+@@ -74,7 +78,7 @@ static int __ui_cre_tsk(struct pt_regs *
+ 		 * recycled before we could map it; however, the risk
+ 		 * is mitigated by consistency checks performed in
+ 		 * xnshadow_map(). */
+-		return xnshadow_map(&task->threadbase, u_completion);	/* May be NULL */
++		return xnshadow_map(&task->threadbase, u_completion, u_mode);
+ 	}
+ 
+       fail:
+Index: b/include/asm-generic/bits/bind.h
+===================================================================
+--- a/include/asm-generic/bits/bind.h
++++ b/include/asm-generic/bits/bind.h
+@@ -17,6 +17,8 @@
+ #ifdef HAVE___THREAD
+ __thread xnhandle_t xeno_current __attribute__ ((tls_model ("initial-exec"))) =
+ 	XN_NO_HANDLE;
++__thread unsigned long
++xeno_current_mode __attribute__ ((tls_model ("initial-exec")));
+ 
+ static inline void __xeno_set_current(xnhandle_t current)
+ {
+@@ -26,17 +28,36 @@ static inline void __xeno_set_current(xn
+ __attribute__ ((weak))
+ pthread_key_t xeno_current_key;
+ __attribute__ ((weak))
+-pthread_once_t xeno_init_current_key_once = PTHREAD_ONCE_INIT;
++pthread_key_t xeno_current_mode_key;
++__attribute__ ((weak))
++pthread_once_t xeno_init_current_keys_once = PTHREAD_ONCE_INIT;
+ 
+ static inline void __xeno_set_current(xnhandle_t current)
+ {
+ 	pthread_setspecific(xeno_current_key, (void *)current);
+ }
+ 
+-static void init_current_key(void)
++unsigned long *xeno_init_current_mode(void)
++{
++	unsigned long *mode = malloc(sizeof(unsigned long));
++	pthread_setspecific(xeno_current_mode_key, mode);
++	return mode;
++}
 +
- 	holder = getpq(&synch->pendq);
++static void cleanup_current_mode(void *ptr)
++{
++	free(ptr);
++}
++
++static void init_current_keys(void)
+ {
+ 	int err = pthread_key_create(&xeno_current_key, NULL);
++	if (err)
++		goto error_exit;
++
++	err = pthread_key_create(&xeno_current_mode_key, cleanup_current_mode);
+ 	if (err) {
++	  error_exit:
+ 		fprintf(stderr, "Xenomai: error creating TSD key: %s\n",
+ 			strerror(err));
+ 		exit(1);
+@@ -192,7 +213,7 @@ xeno_bind_skin(unsigned skin_magic, cons
+ 	sigaction(SIGXCPU, &sa, NULL);
  
- 	if (holder) {
--		thread = link2thread(holder, plink);
--		thread->wchan = NULL;
--		thread->wwake = synch;
--		synch->owner = thread;
--		xnthread_set_info(thread, XNWAKEN);
--		trace_mark(xn_nucleus_synch_wakeup_one,
--			   "thread %p thread_name %s synch %p",
--			   thread, xnthread_name(thread), synch);
--		xnpod_resume_thread(thread, XNPEND);
--	} else
--		synch->owner = NULL;
-+		newowner = link2thread(holder, plink);
-+		newowner->wchan = NULL;
-+		newowner->wwake = synch;
-+		lastowner = synch->owner;
-+		synch->owner = newowner;
-+		xnthread_set_info(newowner, XNWAKEN);
-+		xnpod_resume_thread(newowner, XNPEND);
+ #ifndef HAVE___THREAD
+-	pthread_once(&xeno_init_current_key_once, &init_current_key);
++	pthread_once(&xeno_init_current_keys_once, &init_current_keys);
+ #endif /* !HAVE___THREAD */
  
--	if (testbits(synch->status, XNSYNCH_CLAIMED))
--		xnsynch_clear_boost(synch, lastowner);
-+		if (testbits(synch->status, XNSYNCH_CLAIMED))
-+			xnsynch_clear_boost(synch, lastowner);
-+	} else {
-+		newowner = NULL;
-+		synch->owner = NULL;
+ #ifdef CONFIG_XENO_FASTSYNCH
+@@ -270,7 +291,7 @@ xeno_bind_skin_opt(unsigned skin_magic,
+ #endif /* xeno_arch_features_check */
+ 
+ #ifndef HAVE___THREAD
+-	pthread_once(&xeno_init_current_key_once, &init_current_key);
++	pthread_once(&xeno_init_current_keys_once, &init_current_keys);
+ #endif /* !HAVE___THREAD */
+ 
+ #ifdef CONFIG_XENO_FASTSYNCH
+Index: b/include/asm-generic/bits/current.h
+===================================================================
+--- a/include/asm-generic/bits/current.h
++++ b/include/asm-generic/bits/current.h
+@@ -6,18 +6,38 @@
+ 
+ #ifdef HAVE___THREAD
+ extern __thread xnhandle_t xeno_current __attribute__ ((tls_model ("initial-exec")));
++extern __thread unsigned long
++xeno_current_mode __attribute__ ((tls_model ("initial-exec")));
+ 
+ static inline xnhandle_t xeno_get_current(void)
+ {
+ 	return xeno_current;
+ }
++
++static inline unsigned long xeno_get_current_mode(void)
++{
++	return xeno_current_mode;
++}
++
++static inline unsigned long *xeno_init_current_mode(void)
++{
++	return &xeno_current_mode;
++}
+ #else /* ! HAVE___THREAD */
+ extern pthread_key_t xeno_current_key;
++extern pthread_key_t xeno_current_mode_key;
+ 
+ static inline xnhandle_t xeno_get_current(void)
+ {
+ 	return (xnhandle_t)pthread_getspecific(xeno_current_key);
+ }
++
++static inline unsigned long xeno_get_current_mode(void)
++{
++	return *(unsigned long *)pthread_getspecific(xeno_current_mode_key);
++}
++
++extern unsigned long *xeno_init_current_mode(void);
+ #endif /* ! HAVE___THREAD */
+ 
+ extern void xeno_set_current(void);
+Index: b/src/skins/native/task.c
+===================================================================
+--- a/src/skins/native/task.c
++++ b/src/skins/native/task.c
+@@ -89,6 +89,12 @@ static void *rt_task_trampoline(void *co
+ 	bulk.a3 = (u_long)iargs->prio;
+ 	bulk.a4 = (u_long)iargs->mode;
+ 	bulk.a5 = (u_long)pthread_self();
++	bulk.a6 = (u_long)xeno_init_current_mode();
++
++	if (!bulk.a6) {
++		err = -ENOMEM;
++		goto fail;
 +	}
  
- 	xnlock_put_irqrestore(&nklock, s);
+ 	err = XENOMAI_SKINCALL2(__native_muxid,
+ 				__native_task_create, &bulk,
+@@ -205,6 +211,10 @@ int rt_task_shadow(RT_TASK *task, const
+ 	bulk.a3 = (u_long)prio;
+ 	bulk.a4 = (u_long)mode;
+ 	bulk.a5 = (u_long)pthread_self();
++	bulk.a6 = (u_long)xeno_init_current_mode();
++
++	if (!bulk.a6)
++		return -ENOMEM;
  
- 	xnarch_post_graph_if(synch, 0, emptypq_p(&synch->pendq));
- 
--	return thread;
-+	return newowner;
- }
- 
- /*! 
-@@ -446,80 +656,6 @@ xnthread_t *xnsynch_peek_pendq(xnsynch_t
- }
- 
- /*! 
-- * \fn void xnsynch_wakeup_this_sleeper(xnsynch_t *synch, xnpholder_t *holder);
-- * \brief Give the resource ownership to a given waiting thread.
-- *
-- * This service gives the ownership of a given synchronization object
-- * to a specific thread which is currently pending on it. The sleeping
-- * thread is unblocked from its pending state. No action is taken
-- * regarding the previous resource owner.
-- *
-- * This service should be called by upper interfaces wanting to signal
-- * the given resource so that a specific waiter is resumed.
-- *
-- * @param synch The descriptor address of the synchronization object
-- * whose ownership is changed.
-- *
-- * @param holder The link holder address of the thread to unblock
-- * (&thread->plink) which MUST be currently linked to the
-- * synchronization object's pending queue (i.e. synch->pendq).
-- *
-- * @return The link address of the unblocked thread in the
-- * synchronization object's pending queue.
-- *
-- * Side-effects:
-- *
-- * - The effective priority of the previous resource owner might be
-- * lowered to its base priority value as a consequence of the priority
-- * inheritance boost being cleared.
-- *
-- * - The synchronization object ownership is transfered to the
-- * unblocked thread.
-- *
-- * Environments:
-- *
-- * This service can be called from:
-- *
-- * - Kernel module initialization/cleanup code
-- * - Interrupt service routine
-- * - Kernel-based task
-- * - User-space task
-- *
-- * Rescheduling: never.
-- */
--
--xnpholder_t *xnsynch_wakeup_this_sleeper(xnsynch_t *synch, xnpholder_t *holder)
--{
--	xnthread_t *thread, *lastowner;
--	xnpholder_t *nholder;
--	spl_t s;
--
--	xnlock_get_irqsave(&nklock, s);
--
--	lastowner = synch->owner;
--	nholder = poppq(&synch->pendq, holder);
--
--	thread = link2thread(holder, plink);
--	thread->wchan = NULL;
--	thread->wwake = synch;
--	synch->owner = thread;
--	xnthread_set_info(thread, XNWAKEN);
--	trace_mark(xn_nucleus_synch_wakeup_all,
--		   "thread %p thread_name %s synch %p",
--		   thread, xnthread_name(thread), synch);
--	xnpod_resume_thread(thread, XNPEND);
--
--	if (testbits(synch->status, XNSYNCH_CLAIMED))
--		xnsynch_clear_boost(synch, lastowner);
--
--	xnlock_put_irqrestore(&nklock, s);
--
--	xnarch_post_graph_if(synch, 0, emptypq_p(&synch->pendq));
--
--	return nholder;
--}
--
--/*! 
-  * \fn void xnsynch_flush(xnsynch_t *synch, xnflags_t reason);
-  * \brief Unblock all waiters pending on a resource.
-  *
-@@ -679,12 +815,12 @@ void xnsynch_release_all_ownerships(xnth
- 
- 	for (holder = getheadpq(&thread->claimq); holder != NULL;
- 	     holder = nholder) {
--		/* Since xnsynch_wakeup_one_sleeper() alters the claim
-+		/* Since xnsynch_release() alters the claim
- 		   queue, we need to be conservative while scanning
- 		   it. */
- 		xnsynch_t *synch = link2synch(holder);
- 		nholder = nextpq(&thread->claimq, holder);
--		xnsynch_wakeup_one_sleeper(synch);
-+		xnsynch_release(synch);
- 		if (synch->cleanup)
- 			synch->cleanup(synch);
- 	}
-@@ -701,3 +837,5 @@ EXPORT_SYMBOL(xnsynch_sleep_on);
- EXPORT_SYMBOL(xnsynch_wakeup_one_sleeper);
- EXPORT_SYMBOL(xnsynch_wakeup_this_sleeper);
- EXPORT_SYMBOL(xnsynch_peek_pendq);
-+EXPORT_SYMBOL(xnsynch_acquire);
-+EXPORT_SYMBOL(xnsynch_release);
-Index: b/include/rtdm/rtdm_driver.h
+ 	err = XENOMAI_SKINCALL2(__native_muxid, __native_task_create, &bulk,
+ 				NULL);
+Index: b/src/skins/posix/thread.c
 ===================================================================
---- a/include/rtdm/rtdm_driver.h
-+++ b/include/rtdm/rtdm_driver.h
-@@ -1134,7 +1134,7 @@ static inline void rtdm_mutex_unlock(rtd
- 
- 	trace_mark(xn_rtdm_mutex_unlock, "mutex %p", mutex);
- 
--	if (unlikely(xnsynch_wakeup_one_sleeper(&mutex->synch_base) != NULL))
-+	if (unlikely(xnsynch_release(&mutex->synch_base) != NULL))
- 		xnpod_schedule();
- }
- 
-Index: b/ksrc/skins/native/cond.c
-===================================================================
---- a/ksrc/skins/native/cond.c
-+++ b/ksrc/skins/native/cond.c
-@@ -421,7 +421,7 @@ int rt_cond_wait_inner(RT_COND *cond, RT
- 
- 	mutex->lockcnt = 0;
- 
--	if (xnsynch_wakeup_one_sleeper(&mutex->synch_base)) {
-+	if (xnsynch_release(&mutex->synch_base)) {
- 		mutex->lockcnt = 1;
- 		/* Scheduling deferred */
- 	}
-Index: b/ksrc/skins/native/mutex.c
-===================================================================
---- a/ksrc/skins/native/mutex.c
-+++ b/ksrc/skins/native/mutex.c
-@@ -170,7 +170,8 @@ int rt_mutex_create(RT_MUTEX *mutex, con
- 	if (xnpod_asynch_p())
- 		return -EPERM;
- 
--	xnsynch_init(&mutex->synch_base, XNSYNCH_PRIO | XNSYNCH_PIP);
-+	xnsynch_init(&mutex->synch_base,
-+		     XNSYNCH_PRIO | XNSYNCH_PIP | XNSYNCH_OWNER);
- 	mutex->handle = 0;	/* i.e. (still) unregistered mutex. */
- 	mutex->magic = XENO_MUTEX_MAGIC;
- 	mutex->lockcnt = 0;
-@@ -309,7 +310,7 @@ int rt_mutex_acquire_inner(RT_MUTEX *mut
- 		goto unlock_and_exit;
- 	}
- 
--	xnsynch_sleep_on(&mutex->synch_base, timeout, timeout_mode);
-+	xnsynch_acquire(&mutex->synch_base, timeout, timeout_mode);
- 
- 	if (xnthread_test_info(thread, XNRMID))
- 		err = -EIDRM;	/* Mutex deleted while pending. */
-@@ -523,7 +524,7 @@ int rt_mutex_release(RT_MUTEX *mutex)
- 	if (--mutex->lockcnt > 0)
- 		goto unlock_and_exit;
- 
--	if (xnsynch_wakeup_one_sleeper(&mutex->synch_base)) {
-+	if (xnsynch_release(&mutex->synch_base)) {
- 		mutex->lockcnt = 1;
- 		xnpod_schedule();
- 	}
-Index: b/ksrc/skins/native/task.c
-===================================================================
---- a/ksrc/skins/native/task.c
-+++ b/ksrc/skins/native/task.c
-@@ -269,7 +269,8 @@ int rt_task_create(RT_TASK *task,
- 
- #ifdef CONFIG_XENO_OPT_NATIVE_MPS
- 	xnsynch_init(&task->mrecv, XNSYNCH_FIFO);
--	xnsynch_init(&task->msendq, XNSYNCH_PRIO | XNSYNCH_PIP);
-+	xnsynch_init(&task->msendq,
-+		     XNSYNCH_PRIO | XNSYNCH_PIP | XNSYNCH_OWNER);
- 	xnsynch_set_owner(&task->msendq, &task->thread_base);
- 	task->flowgen = 0;
- #endif /* CONFIG_XENO_OPT_NATIVE_MPS */
-@@ -1773,7 +1774,7 @@ ssize_t rt_task_send(RT_TASK *task,
- 	   client in the case required by the priority inheritance
- 	   protocol (i.e. prio(client) > prio(server)). */
- 
--	xnsynch_sleep_on(&task->msendq, timeout, XN_RELATIVE);
-+	xnsynch_acquire(&task->msendq, timeout, XN_RELATIVE);
- 
- 	/* At this point, the server task might have exited right
- 	 * after having replied to us, so do not make optimistic
-Index: b/ksrc/skins/posix/cond.c
-===================================================================
---- a/ksrc/skins/posix/cond.c
-+++ b/ksrc/skins/posix/cond.c
-@@ -240,7 +240,7 @@ static inline int mutex_save_count(xnthr
- 		   xnthread_handle(cur)))
- 		return 0;
- 
--	owner = xnsynch_wakeup_one_sleeper(&mutex->synchbase);
-+	owner = xnsynch_release(&mutex->synchbase);
- 	xnarch_atomic_set(mutex->owner,
- 			  set_claimed(xnthread_handle(owner),
- 				      xnsynch_nsleepers(&mutex->synchbase)));
-Index: b/ksrc/skins/posix/mutex.c
-===================================================================
---- a/ksrc/skins/posix/mutex.c
-+++ b/ksrc/skins/posix/mutex.c
-@@ -85,7 +85,7 @@ int pse51_mutex_init_internal(struct __s
- 			      xnarch_atomic_t *ownerp,
- 			      const pthread_mutexattr_t *attr)
+--- a/src/skins/posix/thread.c
++++ b/src/skins/posix/thread.c
+@@ -47,11 +47,23 @@ int __wrap_pthread_setschedparam(pthread
+ 				 int policy, const struct sched_param *param)
  {
--	xnflags_t synch_flags = XNSYNCH_PRIO | XNSYNCH_NOPIP;
-+	xnflags_t synch_flags = XNSYNCH_PRIO | XNSYNCH_OWNER;
- 	struct xnsys_ppd *sys_ppd;
- 	pse51_kqueues_t *kq;
- 	spl_t s;
-@@ -307,11 +307,11 @@ int pse51_mutex_timedlock_break(struct _
- 		for (;;) {
- 			++mutex->sleepers;
- 			if (timed)
--				xnsynch_sleep_on(&mutex->synchbase,
--						 abs_to, XN_REALTIME);
-+				xnsynch_acquire(&mutex->synchbase,
-+						abs_to, XN_REALTIME);
- 			else
--				xnsynch_sleep_on(&mutex->synchbase,
--						 XN_INFINITE, XN_RELATIVE);
-+				xnsynch_acquire(&mutex->synchbase,
-+						XN_INFINITE, XN_RELATIVE);
- 			--mutex->sleepers;
+ 	pthread_t myself = pthread_self();
++	unsigned long *mode_buf = NULL;
+ 	int err, promoted;
  
- 			if (xnthread_test_info(cur, XNBREAK)) {
-Index: b/ksrc/skins/posix/mutex.h
-===================================================================
---- a/ksrc/skins/posix/mutex.h
-+++ b/ksrc/skins/posix/mutex.h
-@@ -170,9 +170,9 @@ static inline int pse51_mutex_timedlock_
- 	xnsynch_set_owner(&mutex->synchbase, owner);
- 	++mutex->sleepers;
- 	if (timed)
--		xnsynch_sleep_on(&mutex->synchbase, abs_to, XN_REALTIME);
-+		xnsynch_acquire(&mutex->synchbase, abs_to, XN_REALTIME);
- 	else
--		xnsynch_sleep_on(&mutex->synchbase, XN_INFINITE, XN_RELATIVE);
-+		xnsynch_acquire(&mutex->synchbase, XN_INFINITE, XN_RELATIVE);
- 	--mutex->sleepers;
++	if (thread == myself) {
++#ifdef HAVE___THREAD
++		mode_buf = xeno_init_current_mode();
++#else /* !HAVE___THREAD */
++		mode_buf = malloc(sizeof(*mode_buf));
++
++		if (!mode_buf)
++			return ENOMEM;
++#endif /* !HAVE___THREAD */
++	}
++
+ 	err = -XENOMAI_SKINCALL5(__pse51_muxid,
+ 				 __pse51_thread_setschedparam,
+-				 thread, policy, param, myself, &promoted);
++				 thread, policy, param, mode_buf, &promoted);
  
- 	if (xnthread_test_info(cur, XNBREAK)) {
-@@ -216,7 +216,7 @@ static inline void pse51_mutex_unlock_in
- 		return;
+ 	if (err == EPERM)
+ 		return __real_pthread_setschedparam(thread, policy, param);
+@@ -60,10 +72,17 @@ int __wrap_pthread_setschedparam(pthread
  
- 	xnlock_get_irqsave(&nklock, s);
--	owner = xnsynch_wakeup_one_sleeper(&mutex->synchbase);
-+	owner = xnsynch_release(&mutex->synchbase);
- 	ownerh = set_claimed(xnthread_handle(owner), mutex->sleepers);
- 	xnarch_atomic_set(mutex->owner, ownerh);
- 	if (owner)
-Index: b/ksrc/skins/rtai/sem.c
-===================================================================
---- a/ksrc/skins/rtai/sem.c
-+++ b/ksrc/skins/rtai/sem.c
-@@ -28,7 +28,7 @@ void rt_typed_sem_init(SEM * sem, int va
- 	int mode = XNSYNCH_PRIO;
+ 	if (!err && promoted) {
+ 		old_sigharden_handler = signal(SIGHARDEN, &__pthread_sigharden_handler);
++#ifndef HAVE___THREAD
++		pthread_setspecific(xeno_current_mode_key, mode_buf);
++#endif /* !HAVE___THREAD */
+ 		xeno_set_current();
+ 		if (policy != SCHED_OTHER)
+ 			XENOMAI_SYSCALL1(__xn_sys_migrate, XENOMAI_XENO_DOMAIN);
+ 	}
++#ifndef HAVE___THREAD
++	else
++		free(mode_buf);
++#endif /* !HAVE___THREAD */
  
- 	if ((type & RES_SEM) == RES_SEM) {
--		mode |= XNSYNCH_PIP;
-+		mode |= XNSYNCH_PIP | XNSYNCH_OWNER;
- 		value = 0;	/* We will use this as a lock count. */
- 	} else {
- 		if ((type & BIN_SEM) && value > 1)
-@@ -98,7 +98,7 @@ int rt_sem_signal(SEM * sem)
- 			goto unlock_and_exit;
- 
- 		sem->owner =
--		    thread2rtask(xnsynch_wakeup_one_sleeper(&sem->synch_base));
-+		    thread2rtask(xnsynch_release(&sem->synch_base));
- 
- 		if (sem->owner != NULL)
- 			xnpod_schedule();
-@@ -141,12 +141,12 @@ int rt_sem_wait(SEM * sem)
- 			err = ++sem->count;
- 			goto unlock_and_exit;
- 		}
-+		xnsynch_acquire(&sem->synch_base, XN_INFINITE, XN_RELATIVE);
- 	} else if (sem->count > 0) {
- 		err = sem->count--;
- 		goto unlock_and_exit;
--	}
--
--	xnsynch_sleep_on(&sem->synch_base, XN_INFINITE, XN_RELATIVE);
-+	} else
-+		xnsynch_sleep_on(&sem->synch_base, XN_INFINITE, XN_RELATIVE);
- 
- 	if (xnthread_test_info(&task->thread_base, XNRMID))
- 		err = SEM_ERR;	/* Semaphore deleted while pending. */
-Index: b/ksrc/skins/rtdm/drvlib.c
-===================================================================
---- a/ksrc/skins/rtdm/drvlib.c
-+++ b/ksrc/skins/rtdm/drvlib.c
-@@ -1390,7 +1390,8 @@ void rtdm_mutex_init(rtdm_mutex_t *mutex
- 	/* Make atomic for re-initialisation support */
- 	xnlock_get_irqsave(&nklock, s);
- 
--	xnsynch_init(&mutex->synch_base, XNSYNCH_PRIO | XNSYNCH_PIP);
-+	xnsynch_init(&mutex->synch_base,
-+		     XNSYNCH_PRIO | XNSYNCH_PIP | XNSYNCH_OWNER);
- 
- 	xnlock_put_irqrestore(&nklock, s);
+ 	return err;
  }
-@@ -1534,14 +1535,14 @@ int rtdm_mutex_timedlock(rtdm_mutex_t *m
- restart:
- 		if (timeout_seq && (timeout > 0)) {
- 			/* timeout sequence */
--			xnsynch_sleep_on(&mutex->synch_base, *timeout_seq,
--					 XN_ABSOLUTE);
-+			xnsynch_acquire(&mutex->synch_base, *timeout_seq,
-+					XN_ABSOLUTE);
- 		} else {
- 			/* infinite or relative timeout */
--			xnsynch_sleep_on(&mutex->synch_base,
--					 xntbase_ns2ticks_ceil
--					 (xnthread_time_base(curr_thread),
--					  timeout), XN_RELATIVE);
-+			xnsynch_acquire(&mutex->synch_base,
-+					xntbase_ns2ticks_ceil
-+					(xnthread_time_base(curr_thread),
-+					 timeout), XN_RELATIVE);
- 		}
+@@ -116,6 +135,7 @@ static void *__pthread_trampoline(void *
+ 	struct sched_param param;
+ 	void *status = NULL;
+ 	int parent_prio, policy;
++	unsigned long *mode_buf;
+ 	long err;
  
- 		if (unlikely(xnthread_test_info(curr_thread,
-Index: b/ksrc/skins/vrtx/mx.c
+ 	old_sigharden_handler = signal(SIGHARDEN, &__pthread_sigharden_handler);
+@@ -123,10 +143,18 @@ static void *__pthread_trampoline(void *
+ 	param.sched_priority = iargs->prio;
+ 	policy = iargs->policy;
+ 	parent_prio = iargs->parent_prio;
++	mode_buf = xeno_init_current_mode();
++
++	if (!mode_buf) {
++		status = (void *)ENOMEM;
++		iargs->ret = ENOMEM;
++		goto out;
++	}
+ 
+ 	/* Do _not_ inline the call to pthread_self() in the syscall
+ 	   macro: this trashes the syscall regs on some archs. */
+-	err = XENOMAI_SKINCALL1(__pse51_muxid, __pse51_thread_create, tid);
++	err = XENOMAI_SKINCALL2(__pse51_muxid, __pse51_thread_create, tid,
++				mode_buf);
+ 	iargs->ret = -err;
+ 
+ 	/* We must save anything we'll need to use from *iargs on our own
+@@ -159,6 +187,7 @@ static void *__pthread_trampoline(void *
+ 	} else
+ 		status = (void *)-err;
+ 
++out:
+ 	pthread_exit(status);
+ }
+ 
+Index: b/include/vrtx/syscall.h
 ===================================================================
---- a/ksrc/skins/vrtx/mx.c
-+++ b/ksrc/skins/vrtx/mx.c
-@@ -161,7 +161,7 @@ int sc_mcreate(unsigned int opt, int *er
- 	inith(&mx->link);
- 	mx->mid = mid;
- 	mx->owner = NULL;
--	xnsynch_init(&mx->synchbase, bflags | XNSYNCH_DREORD);
-+	xnsynch_init(&mx->synchbase, bflags | XNSYNCH_DREORD | XNSYNCH_OWNER);
+--- a/include/vrtx/syscall.h
++++ b/include/vrtx/syscall.h
+@@ -85,6 +85,7 @@ struct vrtx_arg_bulk {
+     u_long a1;
+     u_long a2;
+     u_long a3;
++    u_long a4;
+ };
  
- 	xnlock_get_irqsave(&nklock, s);
- 	appendq(&vrtx_mx_q, &mx->link);
-@@ -192,7 +192,7 @@ void sc_mpost(int mid, int *errp)
- 	}
- 
- 	/* Undefined behaviour if the poster does not own the mutex. */
--	mx->owner = xnsynch_wakeup_one_sleeper(&mx->synchbase);
-+	mx->owner = xnsynch_release(&mx->synchbase);
- 
- 	*errp = RET_OK;
- 
-@@ -267,7 +267,7 @@ void sc_mpend(int mid, unsigned long tim
- 		if (timeout)
- 			task->vrtxtcb.TCBSTAT |= TBSDELAY;
- 
--		xnsynch_sleep_on(&mx->synchbase, timeout, XN_RELATIVE);
-+		xnsynch_acquire(&mx->synchbase, timeout, XN_RELATIVE);
- 
- 		if (xnthread_test_info(&task->threadbase, XNBREAK))
- 			*errp = -EINTR;
-Index: b/ksrc/skins/vxworks/semLib.c
+ #ifdef __KERNEL__
+Index: b/include/vxworks/syscall.h
 ===================================================================
---- a/ksrc/skins/vxworks/semLib.c
-+++ b/ksrc/skins/vxworks/semLib.c
-@@ -138,7 +138,7 @@ SEM_ID semCCreate(int flags, int count)
+--- a/include/vxworks/syscall.h
++++ b/include/vxworks/syscall.h
+@@ -77,6 +77,7 @@ struct wind_arg_bulk {
+     u_long a2;
+     u_long a3;
+     u_long a4;
++    u_long a5;
+ };
  
- SEM_ID semMCreate(int flags)
+ #ifdef __KERNEL__
+Index: b/src/skins/vrtx/task.c
+===================================================================
+--- a/src/skins/vrtx/task.c
++++ b/src/skins/vrtx/task.c
+@@ -118,6 +118,12 @@ static void *vrtx_task_trampoline(void *
+ 	bulk.a1 = (u_long)iargs->tid;
+ 	bulk.a2 = (u_long)iargs->prio;
+ 	bulk.a3 = (u_long)iargs->mode;
++	bulk.a4 = (u_long)xeno_init_current_mode();
++
++	if (!bulk.a4) {
++		err = -ENOMEM;
++		goto fail;
++	}
+ 
+ 	err = XENOMAI_SKINCALL3(__vrtx_muxid,
+ 				__vrtx_tecreate,
+Index: b/src/skins/vxworks/taskLib.c
+===================================================================
+--- a/src/skins/vxworks/taskLib.c
++++ b/src/skins/vxworks/taskLib.c
+@@ -118,6 +118,12 @@ static void *wind_task_trampoline(void *
+ 	bulk.a2 = (u_long)iargs->prio;
+ 	bulk.a3 = (u_long)iargs->flags;
+ 	bulk.a4 = (u_long)pthread_self();
++	bulk.a5 = (u_long)xeno_init_current_mode();
++
++	if (!bulk.a5) {
++		err = -ENOMEM;
++		goto fail;
++	}
+ 
+ 	err = XENOMAI_SKINCALL3(__vxworks_muxid,
+ 				__vxworks_task_init,
+Index: b/include/psos+/syscall.h
+===================================================================
+--- a/include/psos+/syscall.h
++++ b/include/psos+/syscall.h
+@@ -74,6 +74,14 @@
+ /* Xenomai extension: get raw count of jiffies */
+ #define __psos_tm_getc      46
+ 
++struct psos_arg_bulk {
++
++    u_long a1;
++    u_long a2;
++    u_long a3;
++    u_long a4;
++};
++
+ #ifdef __KERNEL__
+ 
+ #ifdef __cplusplus
+Index: b/src/skins/psos+/task.c
+===================================================================
+--- a/src/skins/psos+/task.c
++++ b/src/skins/psos+/task.c
+@@ -72,6 +72,7 @@ static void *psos_task_trampoline(void *
+ 	struct psos_task_iargs *iargs = (struct psos_task_iargs *)cookie;
+ 	void (*entry)(u_long, u_long, u_long, u_long);
+ 	u_long dummy_args[4] = { 0, 0, 0, 0 }, *targs;
++	struct psos_arg_bulk bulk;
+ 	struct sched_param param;
+ 	int policy;
+ 	long err;
+@@ -83,10 +84,19 @@ static void *psos_task_trampoline(void *
+ 
+ 	old_sigharden_handler = signal(SIGHARDEN, &psos_task_sigharden);
+ 
+-	err = XENOMAI_SKINCALL5(__psos_muxid,
++	bulk.a1 = (u_long)iargs->name;
++	bulk.a2 = (u_long)iargs->prio;
++	bulk.a3 = (u_long)iargs->flags;
++	bulk.a4 = (u_long)xeno_init_current_mode();
++
++	if (!bulk.a4) {
++		err = -ENOMEM;
++		goto fail;
++	}
++
++	err = XENOMAI_SKINCALL3(__psos_muxid,
+ 				__psos_t_create,
+-				iargs->name, iargs->prio, iargs->flags,
+-				iargs->tid_r, iargs->completionp);
++				&bulk, iargs->tid_r, iargs->completionp);
+ 	if (err)
+ 		goto fail;
+ 
+Index: b/src/skins/uitron/task.c
+===================================================================
+--- a/src/skins/uitron/task.c
++++ b/src/skins/uitron/task.c
+@@ -68,6 +68,7 @@ static void *uitron_task_trampoline(void
  {
--	int bflags = 0;
-+	int bflags = XNSYNCH_OWNER;
+ 	struct uitron_task_iargs *iargs = (struct uitron_task_iargs *)cookie;
+ 	struct sched_param param;
++	unsigned long *mode;
+ 	void (*entry)(INT);
+ 	int policy;
+ 	long err;
+@@ -83,10 +84,16 @@ static void *uitron_task_trampoline(void
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+ 	old_sigharden_handler = signal(SIGHARDEN, &uitron_task_sigharden);
  
- 	error_check(flags & ~WIND_SEMM_OPTION_MASK, S_semLib_INVALID_QUEUE_TYPE,
- 		    return 0);
-@@ -346,7 +346,7 @@ static STATUS semm_take(wind_sem_t *sem,
- 	error_check(to == XN_NONBLOCK, S_objLib_OBJ_UNAVAILABLE,
- 		    return ERROR);
+-	err = XENOMAI_SKINCALL3(__uitron_muxid,
++	mode = xeno_init_current_mode();
++	if (!mode) {
++		err = -ENOMEM;
++		goto fail;
++	}
++
++	err = XENOMAI_SKINCALL4(__uitron_muxid,
+ 				__uitron_cre_tsk,
+ 				iargs->tskid, iargs->pk_ctsk,
+-				iargs->completionp);
++				iargs->completionp, mode);
+ 	if (err)
+ 		goto fail;
  
--	xnsynch_sleep_on(&sem->synchbase, to, XN_RELATIVE);
-+	xnsynch_acquire(&sem->synchbase, to, XN_RELATIVE);
- 
- 	error_check(xnthread_test_info(cur, XNBREAK),
- 		    -EINTR, return ERROR);
-@@ -385,7 +385,7 @@ static STATUS semm_give(wind_sem_t *sem)
- 	if (--sem->count > 0)
- 		return OK;
- 
--	if (xnsynch_wakeup_one_sleeper(&sem->synchbase)) {
-+	if (xnsynch_release(&sem->synchbase)) {
- 		sem->count = 1;
- 		resched = 1;
- 	}
 
 
