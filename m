@@ -1,11 +1,13 @@
 Resent-To: xenomai-core <xenomai@xenomai.org>
-Resent-Message-Id: <48F764A5.1030600@domain.hid>
-Message-Id: <20081016154621.488387180@domain.hid>
-Date: Thu, 16 Oct 2008 17:46:27 +0200
+Resent-Message-Id: <48F764A5.7020501@domain.hid>
+Message-Id: <20081016154621.802426487@domain.hid>
+Date: Thu, 16 Oct 2008 17:46:29 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 References: <20081016154620.320953568@domain.hid>
-Content-Disposition: inline; filename=switch-posix-to-fast-xnsynch.patch
-Subject: [Xenomai-core] [PATCH 07/12] Convert POSIX skin to fast xnsynch
+Content-Disposition: inline;
+	filename=optionally-replace-pthread_getspecific-with-tls.patch
+Subject: [Xenomai-core] [PATCH 09/12] Optionally replace pthread_getspecific
+	with TLS variables
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,709 +20,460 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
-Migrates the existing fast mutex implementation of the POSIX skin to
-fast xnsynch services, also fixing the build for arch that do not
-support fast mutexes.
+On architectures that support the __thread storage class and the
+initial-exec TLS model, several use cases of pthread_get/setspecific can
+be optimized. On x86, e.g., we are able to implement xeno_get_current()
+via just two instructions instead of a call into glibc and all the
+included pthread_key lookup. The minor downside of initial-exec TLS is
+that libraries using such variables are excluded from dlopen.
 
-Lock stealing via pthread_trylock is not considered by this patch,
-keeping this services lockless and syscall-less until we identify the
-need for using the steal mechanism also for this case.
+This patch adds the required check to configure, also installing a
+switch (--without-__thread) in order to disable the support if dlopen
+compatibility should be required. It adds a __thread-variant for
+xeno_get_current and self-references of the current Native, VRTX and
+VxWorks tasks.
+
+RTDK's rt_printf services are intentionally not converted as they are
+heavy-weighted anyway and depend on the pthread_key destructor
+mechanism.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- ksrc/skins/posix/cond.c    |   18 ++---
- ksrc/skins/posix/mutex.c   |   92 ++++++++++++++++++++--------
- ksrc/skins/posix/mutex.h   |  143 +++++++--------------------------------------
- ksrc/skins/posix/syscall.c |   22 ++----
- src/skins/posix/mutex.c    |   55 ++++++++---------
- 5 files changed, 132 insertions(+), 198 deletions(-)
+ configure.in                       |   23 +++++++++++++++++++
+ include/asm-generic/bits/bind.h    |   44 ++++++++++++++++++++++++++-----------
+ include/asm-generic/bits/current.h |   13 +++++++++-
+ src/skins/native/init.c            |    8 +++++-
+ src/skins/native/task.c            |   21 +++++++++++++++++
+ src/skins/vrtx/init.c              |    8 +++++-
+ src/skins/vrtx/task.c              |   14 ++++++++++-
+ src/skins/vxworks/init.c           |    8 +++++-
+ src/skins/vxworks/taskLib.c        |   20 +++++++++++++++-
+ 9 files changed, 137 insertions(+), 22 deletions(-)
 
-Index: b/ksrc/skins/posix/cond.c
+Index: b/configure.in
 ===================================================================
---- a/ksrc/skins/posix/cond.c
-+++ b/ksrc/skins/posix/cond.c
-@@ -223,27 +223,23 @@ static inline int mutex_save_count(xnthr
- 				   unsigned *count_ptr)
- {
- 	pse51_mutex_t *mutex;
--	xnthread_t *owner;
+--- a/configure.in
++++ b/configure.in
+@@ -762,6 +762,29 @@ LIBS="$LIBS -lrt"
+ AC_CHECK_FUNCS([shm_open shm_unlink])
+ LIBS="$save_LIBS"
  
- 	if (!pse51_obj_active(shadow, PSE51_MUTEX_MAGIC, struct __shadow_mutex))
- 		 return EINVAL;
- 
- 	mutex = shadow->mutex;
- 
--	if (clear_claimed(xnarch_atomic_get(mutex->owner)) !=
--	    xnthread_handle(cur))
-+#ifdef CONFIG_XENO_FASTSYNCH
-+	if (xnsynch_fast_owner_check(mutex->synchbase.fastlock,
-+				     xnthread_handle(cur)) != 0)
-+#else /* !CONFIG_XENO_FASTSYNCH */
-+	if (xnsynch_owner(&mutex->synchbase) != cur)
-+#endif /* !CONFIG_XENO_FASTSYNCH */
- 		return EPERM;
- 
- 	*count_ptr = shadow->lockcnt;
- 
--	if (likely(xnarch_atomic_cmpxchg(mutex->owner, cur, XN_NO_HANDLE) ==
--		   xnthread_handle(cur)))
--		return 0;
--
--	owner = xnsynch_release(&mutex->synchbase);
--	xnarch_atomic_set(mutex->owner,
--			  set_claimed(xnthread_handle(owner),
--				      xnsynch_nsleepers(&mutex->synchbase)));
-+	xnsynch_release(&mutex->synchbase);
- 
- 	/* Do not reschedule here, releasing the mutex and suspension must be
- 	   done atomically in pthread_cond_*wait. */
-Index: b/ksrc/skins/posix/mutex.c
++AC_ARG_WITH([__thread],
++	    AC_HELP_STRING([--without-__thread],
++			   [do not use TLS features (allows for dlopen'ing Xenomai libs)]),
++	    [use__thread=$withval],
++	    [use__thread=yes])
++
++dnl Check whether the compiler supports the __thread keyword.
++if test "x$use__thread" != xno; then
++	AC_CACHE_CHECK([for __thread], libc_cv_gcc___thread,
++	[cat > conftest.c <<\EOF
++__thread int a __attribute__ ((tls_model ("initial-exec"))) = 42;
++EOF
++	if AC_TRY_COMMAND([${CC-cc} $CFLAGS $CPPFLAGS -c -Werror conftest.c >&AS_MESSAGE_LOG_FD]); then
++		libc_cv_gcc___thread=yes
++	else
++		libc_cv_gcc___thread=no
++	fi
++	rm -f conftest*])
++	if test "$libc_cv_gcc___thread" = yes; then
++		AC_DEFINE(HAVE___THREAD,1,[config])
++	fi
++fi
++
+ dnl
+ dnl Build the Makefiles
+ dnl
+Index: b/include/asm-generic/bits/bind.h
 ===================================================================
---- a/ksrc/skins/posix/mutex.c
-+++ b/ksrc/skins/posix/mutex.c
-@@ -102,9 +102,9 @@ int pse51_mutex_init_internal(struct __s
- 	shadow->magic = PSE51_MUTEX_MAGIC;
- 	shadow->mutex = mutex;
- 	shadow->lockcnt = 0;
-+	xnarch_atomic_set(&shadow->lock, -1);
+--- a/include/asm-generic/bits/bind.h
++++ b/include/asm-generic/bits/bind.h
+@@ -11,26 +11,26 @@
+ #include <fcntl.h>
+ #include <sys/ioctl.h>
+ #include <sys/mman.h>
++#include <nucleus/types.h>
+ #include <asm/xenomai/syscall.h>
  
- #ifdef CONFIG_XENO_FASTSYNCH
--	xnarch_atomic_set(&shadow->lock, -1);
- 	shadow->attr = *attr;
- 	shadow->owner_offset = xnheap_mapped_offset(&sys_ppd->sem_heap, ownerp);
- #endif /* CONFIG_XENO_FASTSYNCH */
-@@ -112,13 +112,10 @@ int pse51_mutex_init_internal(struct __s
- 	if (attr->protocol == PTHREAD_PRIO_INHERIT)
- 		synch_flags |= XNSYNCH_PIP;
++#ifdef HAVE___THREAD
++__thread xnhandle_t xeno_current __attribute__ ((tls_model ("initial-exec"))) =
++	XN_NO_HANDLE;
++
++static inline void __xeno_set_current(xnhandle_t current)
++{
++	xeno_current = current;
++}
++#else /* !HAVE___THREAD */
+ __attribute__ ((weak))
+ pthread_key_t xeno_current_key;
+ __attribute__ ((weak))
+ pthread_once_t xeno_init_current_key_once = PTHREAD_ONCE_INIT;
  
--	xnsynch_init(&mutex->synchbase, synch_flags, NULL);
-+	xnsynch_init(&mutex->synchbase, synch_flags, ownerp);
- 	inith(&mutex->link);
- 	mutex->attr = *attr;
--	mutex->owner = ownerp;
- 	mutex->owningq = kq;
--	mutex->sleepers = 0;
--	xnarch_atomic_set(ownerp, XN_NO_HANDLE);
- 
- 	xnlock_get_irqsave(&nklock, s);
- 	appendq(&kq->mutexq, &mutex->link);
-@@ -159,7 +156,7 @@ int pthread_mutex_init(pthread_mutex_t *
- 	    &((union __xeno_mutex *)mx)->shadow_mutex;
- 	DECLARE_CB_LOCK_FLAGS(s);
- 	pse51_mutex_t *mutex;
--	xnarch_atomic_t *ownerp;
-+	xnarch_atomic_t *ownerp = NULL;
- 	int err;
- 
- 	if (!attr)
-@@ -185,6 +182,7 @@ int pthread_mutex_init(pthread_mutex_t *
- 	if (!mutex)
- 		return ENOMEM;
- 
-+#ifdef CONFIG_XENO_FASTSYNCH
- 	ownerp = (xnarch_atomic_t *)
- 		xnheap_alloc(&xnsys_ppd_get(attr->pshared)->sem_heap,
- 			     sizeof(xnarch_atomic_t));
-@@ -192,6 +190,7 @@ int pthread_mutex_init(pthread_mutex_t *
- 		xnfree(mutex);
- 		return EAGAIN;
- 	}
-+#endif /* CONFIG_XENO_FASTSYNCH */
- 
- 	cb_force_write_lock(&shadow->lock, s);
- 	err = pse51_mutex_init_internal(shadow, mutex, ownerp, attr);
-@@ -199,7 +198,9 @@ int pthread_mutex_init(pthread_mutex_t *
- 
- 	if (err) {
- 		xnfree(mutex);
-+#ifdef CONFIG_XENO_FASTSYNCH
- 		xnheap_free(&xnsys_ppd_get(attr->pshared)->sem_heap, ownerp);
-+#endif /* CONFIG_XENO_FASTSYNCH */
- 	}
- 	return -err;
- }
-@@ -216,8 +217,10 @@ void pse51_mutex_destroy_internal(pse51_
- 	xnsynch_destroy(&mutex->synchbase);
- 	xnlock_put_irqrestore(&nklock, s);
- 
--	if (mutex->attr.pshared)
--		xnheap_free(&xnsys_ppd_get(1)->sem_heap, mutex->owner);
-+#ifdef CONFIG_XENO_FASTSYNCH
-+	xnheap_free(&xnsys_ppd_get(mutex->attr.pshared)->sem_heap,
-+		    mutex->synchbase.fastlock);
-+#endif /* CONFIG_XENO_FASTSYNCH */
- 	/* We do not free the owner if the mutex is not pshared, because when
- 	   this function is called from pse51_mutexq_cleanup, the sem_heap has
- 	   been destroyed, and we have no way to find it back. */
-@@ -266,7 +269,12 @@ int pthread_mutex_destroy(pthread_mutex_
- 		return EPERM;
- 	}
- 
--	if (xnarch_atomic_get(mutex->owner) != XN_NO_HANDLE) {
-+#ifdef CONFIG_XENO_FASTSYNCH
-+	if (xnsynch_fast_owner_check(mutex->synchbase.fastlock,
-+				     XN_NO_HANDLE) != 0) {
-+#else /* CONFIG_XENO_FASTSYNCH */
-+	if (shadow->lockcnt) {
-+#endif
- 		cb_write_unlock(&shadow->lock, s);
- 		return EBUSY;
- 	}
-@@ -274,9 +282,6 @@ int pthread_mutex_destroy(pthread_mutex_
- 	pse51_mark_deleted(shadow);
- 	cb_write_unlock(&shadow->lock, s);
- 
--	if (!mutex->attr.pshared)
--		xnheap_free(&xnsys_ppd_get(mutex->attr.pshared)->sem_heap,
--			    mutex->owner);
- 	pse51_mutex_destroy_internal(mutex, pse51_kqueues(mutex->attr.pshared));
- 	
- 	return 0;
-@@ -305,14 +310,12 @@ int pse51_mutex_timedlock_break(struct _
- 		/* Attempting to relock a normal mutex, deadlock. */
- 		xnlock_get_irqsave(&nklock, s);
- 		for (;;) {
--			++mutex->sleepers;
- 			if (timed)
- 				xnsynch_acquire(&mutex->synchbase,
- 						abs_to, XN_REALTIME);
- 			else
- 				xnsynch_acquire(&mutex->synchbase,
- 						XN_INFINITE, XN_RELATIVE);
--			--mutex->sleepers;
- 
- 			if (xnthread_test_info(cur, XNBREAK)) {
- 				err = -EINTR;
-@@ -384,19 +387,48 @@ int pthread_mutex_trylock(pthread_mutex_
+-__attribute__ ((weak))
+-void xeno_set_current(void)
++static inline void __xeno_set_current(xnhandle_t current)
  {
- 	struct __shadow_mutex *shadow =
- 	    &((union __xeno_mutex *)mx)->shadow_mutex;
--	xnthread_t *owner, *cur = xnpod_current_thread();
-+	xnthread_t *cur = xnpod_current_thread();
-+	pse51_mutex_t *mutex = shadow->mutex;
- 	DECLARE_CB_LOCK_FLAGS(s);
- 	int err;
- 
-+	if (xnpod_unblockable_p())
-+		return EPERM;
-+
- 	if (unlikely(cb_try_read_lock(&shadow->lock, s)))
- 		return EINVAL;
- 
--	owner = pse51_mutex_trylock_internal(cur, shadow, 1);
--	if (likely(!owner) || IS_ERR(owner))
--		return -PTR_ERR(owner);
-+	if (!pse51_obj_active(shadow, PSE51_MUTEX_MAGIC,
-+			      struct __shadow_mutex)) {
-+		err = EINVAL;
-+		goto unlock_and_return;
-+	}
-+
-+#if XENO_DEBUG(POSIX)
-+	if (mutex->owningq != pse51_kqueues(mutex->attr.pshared)) {
-+		err = EPERM;
-+		goto unlock_and_return;
-+	}
-+#endif /* XENO_DEBUG(POSIX) */
- 
--	err = EBUSY;
--	if (owner == cur) {
-+#ifdef CONFIG_XENO_FASTSYNCH
-+	err = -xnsynch_fast_acquire(mutex->synchbase.fastlock,
-+				    xnthread_handle(cur));
-+#else /* !CONFIG_XENO_FASTSYNCH */
-+	{
-+		xnthread_t *owner = xnsynch_owner(&mutex->synchbase);
-+		if (!owner)
-+			err = 0;
-+		else if (owner == cur)
-+			err = EBUSY;
-+		else
-+			err = EAGAIN;
-+	}
-+#endif /* !CONFIG_XENO_FASTSYNCH */
-+
-+	if (likely(!err))
-+		shadow->lockcnt = 1;
-+	else if (err == EBUSY) {
- 		pse51_mutex_t *mutex = shadow->mutex;
- 
- 		if (mutex->attr.type == PTHREAD_MUTEX_RECURSIVE) {
-@@ -409,6 +441,7 @@ int pthread_mutex_trylock(pthread_mutex_
- 		}
- 	}
- 
-+  unlock_and_return:
- 	cb_read_unlock(&shadow->lock, s);
- 
- 	return err;
-@@ -564,7 +597,7 @@ int pthread_mutex_unlock(pthread_mutex_t
- 	int err;
- 
- 	if (xnpod_root_p() || xnpod_interrupt_p())
--		return -EPERM;
-+		return EPERM;
- 
- 	if (unlikely(cb_try_read_lock(&shadow->lock, s)))
- 		return EINVAL;
-@@ -576,14 +609,16 @@ int pthread_mutex_unlock(pthread_mutex_t
- 	}
- 
- 	mutex = shadow->mutex;
--	
--	if (clear_claimed(xnarch_atomic_get(mutex->owner)) !=
--	    xnthread_handle(cur)) {
--		err = EPERM;
-+
-+#ifdef CONFIG_XENO_FASTSYNCH
-+	err = -xnsynch_fast_owner_check(mutex->synchbase.fastlock,
-+					xnthread_handle(cur));
-+#else /* !CONFIG_XENO_FASTSYNCH */
-+	err = (xnsynch_owner(&mutex->synchbase) == cur) ? 0 : EPERM;
-+#endif /* !CONFIG_XENO_FASTSYNCH */
-+	if (err)
- 		goto out;
--	}
- 
--	err = 0;
- 	if (shadow->lockcnt > 1) {
- 		/* Mutex is recursive */
- 		--shadow->lockcnt;
-@@ -591,7 +626,8 @@ int pthread_mutex_unlock(pthread_mutex_t
- 		return 0;
- 	}
- 
--	pse51_mutex_unlock_internal(cur, mutex);
-+	if (xnsynch_release(&mutex->synchbase))
-+		xnpod_schedule();
- 
-   out:
- 	cb_read_unlock(&shadow->lock, s);
-Index: b/ksrc/skins/posix/mutex.h
-===================================================================
---- a/ksrc/skins/posix/mutex.h
-+++ b/ksrc/skins/posix/mutex.h
-@@ -30,8 +30,8 @@ union __xeno_mutex {
- 		unsigned magic;
- 		unsigned lockcnt;
- 		struct pse51_mutex *mutex;
--#ifdef CONFIG_XENO_FASTSYNCH
- 		xnarch_atomic_t lock;
-+#ifdef CONFIG_XENO_FASTSYNCH
- 		union {
- 			unsigned owner_offset;
- 			xnarch_atomic_t *owner;
-@@ -54,9 +54,7 @@ typedef struct pse51_mutex {
- #define link2mutex(laddr)                                               \
- 	((pse51_mutex_t *)(((char *)laddr) - offsetof(pse51_mutex_t, link)))
- 
--	xnarch_atomic_t *owner;
- 	pthread_mutexattr_t attr;
--	unsigned sleepers;
- 	pse51_kqueues_t *owningq;
- } pse51_mutex_t;
- 
-@@ -83,145 +81,52 @@ int pse51_mutex_init_internal(struct __s
- void pse51_mutex_destroy_internal(pse51_mutex_t *mutex,
- 				  pse51_kqueues_t *q);
- 
--static inline xnthread_t *
--pse51_mutex_trylock_internal(xnthread_t *cur,
--			     struct __shadow_mutex *shadow, unsigned count)
-+/* must be called with nklock locked, interrupts off. */
-+static inline int pse51_mutex_timedlock_internal(xnthread_t *cur,
-+						 struct __shadow_mutex *shadow,
-+						 unsigned count,
-+						 int timed,
-+						 xnticks_t abs_to)
-+
- {
- 	pse51_mutex_t *mutex = shadow->mutex;
--	xnhandle_t ownerh;
--	xnthread_t *owner;
- 
- 	if (xnpod_unblockable_p())
--		return ERR_PTR(-EPERM);
-+		return -EPERM;
- 
- 	if (!pse51_obj_active(shadow, PSE51_MUTEX_MAGIC, struct __shadow_mutex))
--		return ERR_PTR(-EINVAL);
-+		return -EINVAL;
- 
- #if XENO_DEBUG(POSIX)
- 	if (mutex->owningq != pse51_kqueues(mutex->attr.pshared))
--		return ERR_PTR(-EPERM);
-+		return -EPERM;
- #endif /* XENO_DEBUG(POSIX) */
- 
--	ownerh = xnarch_atomic_cmpxchg(mutex->owner, XN_NO_HANDLE,
--				       xnthread_handle(cur));
--	if (unlikely(ownerh != XN_NO_HANDLE)) {
--		owner = xnthread_lookup(clear_claimed(ownerh));
--		if (!owner)
--			return ERR_PTR(-EINVAL);
--		return owner;
--	}
--
--	shadow->lockcnt = count;
--	return NULL;
--}
--
--/* must be called with nklock locked, interrupts off. */
--static inline int pse51_mutex_timedlock_internal(xnthread_t *cur,
--						 struct __shadow_mutex *shadow,
--						 unsigned count,
--						 int timed,
--						 xnticks_t abs_to)
--
--{
--	pse51_mutex_t *mutex;
--	xnthread_t *owner;
--	xnhandle_t ownerh, old;
--	spl_t s;
+-	void *kthread_cb;
 -	int err;
 -
--  retry_lock:
--	owner = pse51_mutex_trylock_internal(cur, shadow, count);
--	if (likely(!owner) || IS_ERR(owner))
--		return PTR_ERR(owner);
--
--	mutex = shadow->mutex;
--	if (owner == cur)
-+#ifdef CONFIG_XENO_FASTSYNCH
-+	if (xnsynch_fast_owner_check(mutex->synchbase.fastlock,
-+				     xnthread_handle(cur)) == 0)
-+#else /* !CONFIG_XENO_FASTSYNCH */
-+	if (xnsynch_owner(&mutex->synchbase) == cur)
-+#endif /* !CONFIG_XENO_FASTSYNCH */
- 		return -EBUSY;
- 
--	/* Set bit 0, so that mutex_unlock will know that the mutex is claimed.
--	   Hold the nklock, for mutual exclusion with slow mutex_unlock. */
--	xnlock_get_irqsave(&nklock, s);
--	if (test_claimed(ownerh)) {
--		old = xnarch_atomic_get(mutex->owner);
--		goto test_no_owner;
+-	err = XENOMAI_SYSCALL1(__xn_sys_current, &kthread_cb);
+-	if (err) {
+-		fprintf(stderr, "Xenomai: error obtaining handle for current "
+-			"thread: %s\n", strerror(err));
+-		exit(1);
 -	}
--	do {
--		old = xnarch_atomic_cmpxchg(mutex->owner, ownerh,
--					    set_claimed(ownerh, 1));
--		if (likely(old == ownerh))
--			break;
--	  test_no_owner:
--		if (old == XN_NO_HANDLE) {
--			/* Owner called fast mutex_unlock
--			   (on another cpu) */
--			xnlock_put_irqrestore(&nklock, s);
--			goto retry_lock;
--		}
--		ownerh = old;
--	} while (!test_claimed(ownerh));
--
--	owner = xnthread_lookup(clear_claimed(ownerh));
--
--	if (unlikely(!owner)) {
--		err = -EINVAL;
--		goto error;
--	}
--
--	xnsynch_set_owner(&mutex->synchbase, owner);
--	++mutex->sleepers;
- 	if (timed)
- 		xnsynch_acquire(&mutex->synchbase, abs_to, XN_REALTIME);
- 	else
- 		xnsynch_acquire(&mutex->synchbase, XN_INFINITE, XN_RELATIVE);
--	--mutex->sleepers;
- 
--	if (xnthread_test_info(cur, XNBREAK)) {
--		err = -EINTR;
--		goto error;
--	}
--	if (xnthread_test_info(cur, XNRMID)) {
--		err = -EINVAL;
--		goto error;
--	}
--	if (xnthread_test_info(cur, XNTIMEO)) {
--		err = -ETIMEDOUT;
--		goto error;
-+	if (unlikely(xnthread_test_info(cur, XNBREAK | XNRMID | XNTIMEO))) {
-+		if (xnthread_test_info(cur, XNBREAK))
-+			return -EINTR;
-+		else if (xnthread_test_info(cur, XNTIMEO))
-+			return -ETIMEDOUT;
-+		else /* XNRMID */
-+			return -EINVAL;
- 	}
- 
--	ownerh = set_claimed(xnthread_handle(cur), mutex->sleepers);
--	xnarch_atomic_set(mutex->owner, ownerh);
- 	shadow->lockcnt = count;
--	xnlock_put_irqrestore(&nklock, s);
- 
- 	return 0;
--
--  error:
--	if (!mutex->sleepers)
--		xnarch_atomic_set
--			(mutex->owner,
--			 clear_claimed(xnarch_atomic_get(mutex->owner)));
--	xnlock_put_irqrestore(&nklock, s);
--	return err;
--}
--
--static inline void pse51_mutex_unlock_internal(xnthread_t *cur,
--					       pse51_mutex_t *mutex)
--{
--	xnhandle_t ownerh;
--	xnthread_t *owner;
--	spl_t s;
--
--	if (likely(xnarch_atomic_cmpxchg(mutex->owner, cur, XN_NO_HANDLE) ==
--		   xnthread_handle(cur)))
--		return;
--
--	xnlock_get_irqsave(&nklock, s);
--	owner = xnsynch_release(&mutex->synchbase);
--	ownerh = set_claimed(xnthread_handle(owner), mutex->sleepers);
--	xnarch_atomic_set(mutex->owner, ownerh);
--	if (owner)
--		xnpod_schedule();
--	xnlock_put_irqrestore(&nklock, s);
+-	pthread_setspecific(xeno_current_key, kthread_cb);
++	pthread_setspecific(xeno_current_key, (void *)current);
  }
  
- #endif /* __KERNEL__ */
-Index: b/ksrc/skins/posix/syscall.c
-===================================================================
---- a/ksrc/skins/posix/syscall.c
-+++ b/ksrc/skins/posix/syscall.c
-@@ -1060,13 +1060,10 @@ static int __pthread_mutex_unlock(struct
- 
- 	mutex = shadow->mutex;
- 
--	if (clear_claimed(xnarch_atomic_get(mutex->owner)) !=
--	    xnthread_handle(cur)) {
--		err = -EPERM;
-+	err = (xnsynch_owner(&mutex->synchbase) == cur) ? 0 : -EPERM;
-+	if (err)
- 		goto out;
--	}
- 
--	err = 0;
- 	if (shadow->lockcnt > 1) {
- 		/* Mutex is recursive */
- 		--shadow->lockcnt;
-@@ -1080,8 +1077,9 @@ static int __pthread_mutex_unlock(struct
- 
- 		return 0;
+ static void init_current_key(void)
+@@ -42,6 +42,22 @@ static void init_current_key(void)
+ 		exit(1);
  	}
--	
--	pse51_mutex_unlock_internal(cur, mutex);
+ }
++#endif /* !HAVE___THREAD */
 +
-+	if (xnsynch_release(&mutex->synchbase))
-+		xnpod_schedule();
++__attribute__ ((weak))
++void xeno_set_current(void)
++{
++	xnhandle_t current;
++	int err;
++
++	err = XENOMAI_SYSCALL1(__xn_sys_current, &current);
++	if (err) {
++		fprintf(stderr, "Xenomai: error obtaining handle for current "
++			"thread: %s\n", strerror(err));
++		exit(1);
++	}
++	__xeno_set_current(current);
++}
  
-   out:
- 	cb_read_unlock(&shadow->lock, s);
-@@ -1186,13 +1184,11 @@ static int __pthread_mutex_destroy(struc
- 	if (pse51_kqueues(mutex->attr.pshared) != mutex->owningq)
- 		return -EPERM;
+ #ifdef CONFIG_XENO_FASTSYNCH
+ __attribute__ ((weak))
+@@ -175,7 +191,9 @@ xeno_bind_skin(unsigned skin_magic, cons
+ 	sa.sa_flags = 0;
+ 	sigaction(SIGXCPU, &sa, NULL);
  
--	if (xnarch_atomic_get(mutex->owner) != XN_NO_HANDLE)
-+	if (xnsynch_fast_owner_check(mutex->synchbase.fastlock,
-+				     XN_NO_HANDLE) != 0)
- 		return -EBUSY;
++#ifndef HAVE___THREAD
+ 	pthread_once(&xeno_init_current_key_once, &init_current_key);
++#endif /* !HAVE___THREAD */
  
- 	pse51_mark_deleted(shadow);
--	if (!mutex->attr.pshared)
--		xnheap_free(&xnsys_ppd_get(mutex->attr.pshared)->sem_heap,
--			    mutex->owner);
- 	pse51_mutex_destroy_internal(mutex, mutex->owningq);
+ #ifdef CONFIG_XENO_FASTSYNCH
+ 	/* In case we forked, we need to map the new local semaphore heap */
+@@ -251,7 +269,9 @@ xeno_bind_skin_opt(unsigned skin_magic,
+ 	xeno_arch_features_check();
+ #endif /* xeno_arch_features_check */
  
- 	return __xn_safe_copy_to_user((void __user *)&umx->shadow_mutex,
-@@ -1262,7 +1258,6 @@ static int __pthread_mutex_timedlock(str
++#ifndef HAVE___THREAD
+ 	pthread_once(&xeno_init_current_key_once, &init_current_key);
++#endif /* !HAVE___THREAD */
  
- static int __pthread_mutex_unlock(struct pt_regs *regs)
- {
--	xnthread_t *cur = xnpod_current_thread();
- 	union __xeno_mutex mx, *umx;
- 
- 	if (xnpod_root_p())
-@@ -1275,7 +1270,8 @@ static int __pthread_mutex_unlock(struct
- 				     offsetof(struct __shadow_mutex, lock)))
- 		return -EFAULT;
- 
--	pse51_mutex_unlock_internal(cur, mx.shadow_mutex.mutex);
-+	if (xnsynch_release(&mx.shadow_mutex.mutex->synchbase))
-+		xnpod_schedule();
- 
- 	return 0;
- }
-Index: b/src/skins/posix/mutex.c
+ #ifdef CONFIG_XENO_FASTSYNCH
+ 	/* In case we forked, we need to map the new local semaphore heap */
+Index: b/include/asm-generic/bits/current.h
 ===================================================================
---- a/src/skins/posix/mutex.c
-+++ b/src/skins/posix/mutex.c
-@@ -19,6 +19,7 @@
- #include <errno.h>
+--- a/include/asm-generic/bits/current.h
++++ b/include/asm-generic/bits/current.h
+@@ -4,13 +4,22 @@
  #include <pthread.h>
- #include <limits.h>
-+#include <nucleus/synch.h>
- #include <posix/mutex.h>
- #include <posix/syscall.h>
- #include <posix/cb_lock.h>
-@@ -146,10 +147,10 @@ int __wrap_pthread_mutex_lock(pthread_mu
+ #include <nucleus/types.h>
+ 
+-extern pthread_key_t xeno_current_key;
++#ifdef HAVE___THREAD
++extern __thread xnhandle_t xeno_current __attribute__ ((tls_model ("initial-exec")));
+ 
+-extern void xeno_set_current(void);
++static inline xnhandle_t xeno_get_current(void)
++{
++	return xeno_current;
++}
++#else /* ! HAVE___THREAD */
++extern pthread_key_t xeno_current_key;
+ 
+ static inline xnhandle_t xeno_get_current(void)
  {
- 	union __xeno_mutex *_mutex = (union __xeno_mutex *)mutex;
- 	struct __shadow_mutex *shadow = &_mutex->shadow_mutex;
--	int err = 0;
-+	int err;
- 
- #ifdef CONFIG_XENO_FASTSYNCH
--	xnhandle_t cur, owner;
-+	xnhandle_t cur;
- 
- 	cur = xeno_get_current();
- 	if (cur == XN_NO_HANDLE)
-@@ -163,14 +164,15 @@ int __wrap_pthread_mutex_lock(pthread_mu
- 		goto out;
- 	}
- 
--	owner = xnarch_atomic_cmpxchg(get_ownerp(shadow), XN_NO_HANDLE, cur);
--	if (likely(owner == XN_NO_HANDLE)) {
-+	err = xnsynch_fast_acquire(get_ownerp(shadow), cur);
+ 	return (xnhandle_t)pthread_getspecific(xeno_current_key);
+ }
++#endif /* ! HAVE___THREAD */
 +
-+	if (likely(!err)) {
- 		shadow->lockcnt = 1;
- 		cb_read_unlock(&shadow->lock, s);
- 		return 0;
- 	}
++extern void xeno_set_current(void);
  
--	if (clear_claimed(owner) == cur)
-+	if (err == -EBUSY)
- 		switch(shadow->attr.type) {
- 		case PTHREAD_MUTEX_NORMAL:
- 			break;
-@@ -184,8 +186,8 @@ int __wrap_pthread_mutex_lock(pthread_mu
- 				err = -EAGAIN;
- 				goto out;
- 			}
+ #endif /* _XENO_ASM_GENERIC_CURRENT_H */
+Index: b/src/skins/native/init.c
+===================================================================
+--- a/src/skins/native/init.c
++++ b/src/skins/native/init.c
+@@ -27,16 +27,18 @@
+ #include <asm-generic/bits/bind.h>
+ #include <asm-generic/bits/mlock_alert.h>
+ 
+-pthread_key_t __native_tskey;
 -
- 			++shadow->lockcnt;
-+			err = 0;
- 			goto out;
- 		}
- #endif /* CONFIG_XENO_FASTSYNCH */
-@@ -207,10 +209,10 @@ int __wrap_pthread_mutex_timedlock(pthre
- {
- 	union __xeno_mutex *_mutex = (union __xeno_mutex *)mutex;
- 	struct __shadow_mutex *shadow = &_mutex->shadow_mutex;
--	int err = 0;
-+	int err;
+ int __native_muxid = -1;
+ void native_timer_init(int);
  
- #ifdef CONFIG_XENO_FASTSYNCH
--	xnhandle_t cur, owner;
-+	xnhandle_t cur;
- 
- 	cur = xeno_get_current();
- 	if (cur == XN_NO_HANDLE)
-@@ -224,14 +226,15 @@ int __wrap_pthread_mutex_timedlock(pthre
- 		goto out;
- 	}	
- 
--	owner = xnarch_atomic_cmpxchg(get_ownerp(shadow), XN_NO_HANDLE, cur);
--	if (likely(owner == XN_NO_HANDLE)) {
-+	err = xnsynch_fast_acquire(get_ownerp(shadow), cur);
++#ifndef HAVE___THREAD
++pthread_key_t __native_tskey;
 +
-+	if (likely(!err)) {
- 		shadow->lockcnt = 1;
- 		cb_read_unlock(&shadow->lock, s);
- 		return 0;
- 	}
- 
--	if (clear_claimed(owner) == cur)
-+	if (err == -EBUSY)
- 		switch(shadow->attr.type) {
- 		case PTHREAD_MUTEX_NORMAL:
- 			break;
-@@ -268,10 +271,10 @@ int __wrap_pthread_mutex_trylock(pthread
+ static void __flush_tsd(void *tsd)
  {
- 	union __xeno_mutex *_mutex = (union __xeno_mutex *)mutex;
- 	struct __shadow_mutex *shadow = &_mutex->shadow_mutex;
--	int err = 0;
-+	int err;
+ 	/* Free the task descriptor allocated by rt_task_self(). */
+ 	free(tsd);
+ }
++#endif /* !HAVE___THREAD */
  
- #ifdef CONFIG_XENO_FASTSYNCH
--	xnhandle_t cur, owner;
-+	xnhandle_t cur;
+ static __attribute__ ((constructor))
+ void __init_xeno_interface(void)
+@@ -50,10 +52,12 @@ void __init_xeno_interface(void)
+ 	
+ 	__native_muxid = __xn_mux_shifted_id(__native_muxid);
  
- 	cur = xeno_get_current();
- 	if (cur == XN_NO_HANDLE)
-@@ -285,23 +288,23 @@ int __wrap_pthread_mutex_trylock(pthread
- 		goto out;
- 	}	
++#ifndef HAVE___THREAD
+ 	/* Allocate a TSD key for indexing self task pointers. */
  
--	owner = xnarch_atomic_cmpxchg(get_ownerp(shadow), XN_NO_HANDLE, cur);
--	if (likely(owner == XN_NO_HANDLE)) {
-+	err = xnsynch_fast_acquire(get_ownerp(shadow), cur);
-+
-+	if (likely(!err)) {
- 		shadow->lockcnt = 1;
- 		cb_read_unlock(&shadow->lock, s);
- 		return 0;
+ 	if (pthread_key_create(&__native_tskey, &__flush_tsd) != 0) {
+ 		fprintf(stderr, "Xenomai: failed to allocate new TSD key?!\n");
+ 		exit(1);
  	}
++#endif /* !HAVE___THREAD */
+ }
+Index: b/src/skins/native/task.c
+===================================================================
+--- a/src/skins/native/task.c
++++ b/src/skins/native/task.c
+@@ -29,7 +29,14 @@
+ #include <asm-generic/bits/current.h>
+ #include "wrappers.h"
  
--	err = -EBUSY;
--	if (clear_claimed(owner) == cur
--	    && shadow->attr.type == PTHREAD_MUTEX_RECURSIVE) {
-+	if (err == -EBUSY && shadow->attr.type == PTHREAD_MUTEX_RECURSIVE) {
- 		if (shadow->lockcnt == UINT_MAX)
- 			err = -EAGAIN;
- 		else {
- 			++shadow->lockcnt;
- 			err = 0;
- 		}
--	}
-+	} else
-+		err = -EBUSY;
++#ifdef HAVE___THREAD
++__thread RT_TASK __native_self __attribute__ ((tls_model ("initial-exec"))) = {
++	.opaque = XN_NO_HANDLE,
++	.opaque2 = 0
++};
++#else /* !HAVE___THREAD */
+ extern pthread_key_t __native_tskey;
++#endif /* !HAVE___THREAD */
  
-   out:
- 	cb_read_unlock(&shadow->lock, s);
-@@ -322,11 +325,11 @@ int __wrap_pthread_mutex_unlock(pthread_
+ extern int __native_muxid;
+ 
+@@ -91,6 +98,10 @@ static void *rt_task_trampoline(void *co
+ 
+ 	xeno_set_current();
+ 
++#ifdef HAVE___THREAD
++	__native_self = *iargs->task;
++#endif /* HAVE___THREAD */
++
+ 	/* Wait on the barrier for the task to be started. The barrier
+ 	   could be released in order to process Linux signals while the
+ 	   Xenomai shadow is still dormant; in such a case, resume wait. */
+@@ -316,6 +327,15 @@ RT_TASK *rt_task_self(void)
  {
- 	union __xeno_mutex *_mutex = (union __xeno_mutex *)mutex;
- 	struct __shadow_mutex *shadow = &_mutex->shadow_mutex;
--	int err = 0;
-+	int err;
+ 	RT_TASK *self;
  
- #ifdef CONFIG_XENO_FASTSYNCH
- 	xnarch_atomic_t *ownerp;
--	xnhandle_t cur, owner;
-+	xnhandle_t cur;
- 
- 	cur = xeno_get_current();
- 	if (cur == XN_NO_HANDLE)
-@@ -341,19 +344,17 @@ int __wrap_pthread_mutex_unlock(pthread_
- 	}
- 
- 	ownerp = get_ownerp(shadow);
--	owner = clear_claimed(xnarch_atomic_get(ownerp));
--	if (unlikely(owner != cur)) {
--		err = -EPERM;
++#ifdef HAVE___THREAD
++	self = &__native_self;
 +
-+	err = xnsynch_fast_owner_check(ownerp, cur);
-+	if (unlikely(err))
- 		goto out_err;
--	}
++	if (self->opaque == XN_NO_HANDLE)
++		return NULL;
++
++#else /* !HAVE___THREAD */
++	RT_TASK *self;
++
+ 	self = (RT_TASK *)pthread_getspecific(__native_tskey);
  
--	err = 0;
- 	if (shadow->lockcnt > 1) {
- 		--shadow->lockcnt;
- 		goto out;
+ 	if (self)
+@@ -330,6 +350,7 @@ RT_TASK *rt_task_self(void)
  	}
  
--	if (likely(xnarch_atomic_cmpxchg(ownerp, cur, XN_NO_HANDLE) == cur)) {
-+	if (likely(xnsynch_fast_release(ownerp, cur))) {
- 	  out:
- 		cb_read_unlock(&shadow->lock, s);
- 		return 0;
+ 	pthread_setspecific(__native_tskey, self);
++#endif /* !HAVE___THREAD */
+ 
+ 	return self;
+ }
+Index: b/src/skins/vxworks/init.c
+===================================================================
+--- a/src/skins/vxworks/init.c
++++ b/src/skins/vxworks/init.c
+@@ -26,15 +26,17 @@
+ #include <asm-generic/bits/bind.h>
+ #include <asm-generic/bits/mlock_alert.h>
+ 
+-pthread_key_t __vxworks_tskey;
+-
+ int __vxworks_muxid = -1;
+ 
++#ifndef HAVE___THREAD
++pthread_key_t __vxworks_tskey;
++
+ static void __flush_tsd(void *tsd)
+ {
+ 	/* Free the task descriptor allocated by taskIdSelf(). */
+ 	free(tsd);
+ }
++#endif /* !HAVE___THREAD */
+ 
+ static __attribute__ ((constructor))
+ void __init_xeno_interface(void)
+@@ -43,10 +45,12 @@ void __init_xeno_interface(void)
+ 					 "vxworks", "xeno_vxworks");
+ 	__vxworks_muxid = __xn_mux_shifted_id(__vxworks_muxid);
+ 
++#ifndef HAVE___THREAD
+ 	/* Allocate a TSD key for indexing self task pointers. */
+ 
+ 	if (pthread_key_create(&__vxworks_tskey, &__flush_tsd) != 0) {
+ 		fprintf(stderr, "Xenomai: failed to allocate new TSD key?!\n");
+ 		exit(1);
+ 	}
++#endif /* !HAVE___THREAD */
+ }
+Index: b/src/skins/vxworks/taskLib.c
+===================================================================
+--- a/src/skins/vxworks/taskLib.c
++++ b/src/skins/vxworks/taskLib.c
+@@ -30,7 +30,14 @@
+ #include <asm-generic/bits/current.h>
+ #include "wrappers.h"
+ 
++#ifdef HAVE___THREAD
++__thread WIND_TCB
++__vxworks_self __attribute__ ((tls_model ("initial-exec"))) = {
++	.handle = XN_NO_HANDLE
++};
++#else /* !HAVE___THREAD */
+ extern pthread_key_t __vxworks_tskey;
++#endif /* !HAVE___THREAD */
+ 
+ extern int __vxworks_muxid;
+ 
+@@ -120,6 +127,10 @@ static void *wind_task_trampoline(void *
+ 
+ 	xeno_set_current();
+ 
++#ifdef HAVE___THREAD
++	__vxworks_self = *iargs->pTcb;
++#endif /* HAVE___THREAD */
++
+ 	/* Wait on the barrier for the task to be started. The barrier
+ 	   could be released in order to process Linux signals while the
+ 	   Xenomai shadow is still dormant; in such a case, resume wait. */
+@@ -309,9 +320,15 @@ STATUS taskResume(TASK_ID task_id)
+ 
+ TASK_ID taskIdSelf(void)
+ {
+-	WIND_TCB *self = (WIND_TCB *)pthread_getspecific(__vxworks_tskey);
++#ifdef HAVE___THREAD
++	return __vxworks_self.handle;
++
++#else /* !HAVE___THREAD */
++	WIND_TCB *self;
+ 	int err;
+ 
++	self = (WIND_TCB *)pthread_getspecific(__vxworks_tskey);
++
+ 	if (self)
+ 		return self->handle;
+ 
+@@ -332,6 +349,7 @@ TASK_ID taskIdSelf(void)
+ 	pthread_setspecific(__vxworks_tskey, self);
+ 
+ 	return self->handle;
++#endif /* !HAVE___THREAD */
+ }
+ 
+ STATUS taskPrioritySet(TASK_ID task_id, int prio)
+Index: b/src/skins/vrtx/init.c
+===================================================================
+--- a/src/skins/vrtx/init.c
++++ b/src/skins/vrtx/init.c
+@@ -26,15 +26,17 @@
+ #include <asm-generic/bits/bind.h>
+ #include <asm-generic/bits/mlock_alert.h>
+ 
+-pthread_key_t __vrtx_tskey;
+-
+ int __vrtx_muxid = -1;
+ 
++#ifndef HAVE___THREAD
++pthread_key_t __vrtx_tskey;
++
+ static void __flush_tsd(void *tsd)
+ {
+ 	/* Free the TCB struct. */
+ 	free(tsd);
+ }
++#endif /* !HAVE___THREAD */
+ 
+ static __attribute__ ((constructor))
+ void __init_xeno_interface(void)
+@@ -43,10 +45,12 @@ void __init_xeno_interface(void)
+ 	    xeno_bind_skin(VRTX_SKIN_MAGIC, "vrtx", "xeno_vrtx");
+ 	__vrtx_muxid = __xn_mux_shifted_id(__vrtx_muxid);
+ 
++#ifndef HAVE___THREAD
+ 	/* Allocate a TSD key for indexing self task pointers. */
+ 
+ 	if (pthread_key_create(&__vrtx_tskey, &__flush_tsd) != 0) {
+ 		fprintf(stderr, "Xenomai: failed to allocate new TSD key?!\n");
+ 		exit(1);
+ 	}
++#endif /* !HAVE___THREAD */
+ }
+Index: b/src/skins/vrtx/task.c
+===================================================================
+--- a/src/skins/vrtx/task.c
++++ b/src/skins/vrtx/task.c
+@@ -29,7 +29,11 @@
+ #include <vrtx/vrtx.h>
+ #include <asm-generic/bits/current.h>
+ 
++#ifdef HAVE___THREAD
++__thread TCB __vrtx_tcb __attribute__ ((tls_model ("initial-exec")));
++#else /* !HAVE___THREAD */
+ extern pthread_key_t __vrtx_tskey;
++#endif /* !HAVE___THREAD */
+ 
+ extern int __vrtx_muxid;
+ 
+@@ -81,7 +85,9 @@ static void *vrtx_task_trampoline(void *
+ 	struct sched_param param;
+ 	int policy;
+ 	long err;
++#ifndef HAVE___THREAD
+ 	TCB *tcb;
++#endif /* !HAVE___THREAD */
+ 
+ 	/* Backup the arg struct, it might vanish after completion. */
+ 	memcpy(&_iargs, iargs, sizeof(_iargs));
+@@ -96,6 +102,7 @@ static void *vrtx_task_trampoline(void *
+ 	/* vrtx_task_delete requires asynchronous cancellation */
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+ 
++#ifndef HAVE___THREAD
+ 	tcb = (TCB *) malloc(sizeof(*tcb));
+ 	if (tcb == NULL) {
+ 		fprintf(stderr, "Xenomai: failed to allocate local TCB?!\n");
+@@ -104,6 +111,7 @@ static void *vrtx_task_trampoline(void *
+ 	}
+ 
+ 	pthread_setspecific(__vrtx_tskey, tcb);
++#endif /* !HAVE___THREAD */
+ 
+ 	old_sigharden_handler = signal(SIGHARDEN, &vrtx_task_sigharden);
+ 
+@@ -224,7 +232,11 @@ TCB *sc_tinquiry(int pinfo[], int tid, i
+ {
+ 	TCB *tcb;
+ 
+-	tcb = (TCB *) pthread_getspecific(__vrtx_tskey);	/* Cannot fail. */
++#ifdef HAVE___THREAD
++	tcb = &__vrtx_tcb;
++#else /* !HAVE___THREAD */
++	tcb = (TCB *) pthread_getspecific(__vrtx_tskey); /* Cannot fail. */
++#endif /* !HAVE___THREAD */
+ 
+ 	*errp = XENOMAI_SKINCALL3(__vrtx_muxid,
+ 				  __vrtx_tinquiry, pinfo, tcb, tid);
 
 
