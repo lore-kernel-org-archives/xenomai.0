@@ -1,14 +1,9 @@
-Message-ID: <48F4F197.2030207@domain.hid>
-Date: Tue, 14 Oct 2008 21:23:03 +0200
+Resent-To: xenomai-core <xenomai@xenomai.org>
+Resent-Message-Id: <48F7649D.1030700@domain.hid>
+Message-Id: <20081016154620.320953568@domain.hid>
+Date: Thu, 16 Oct 2008 17:46:20 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <48F3B4D7.7070109@domain.hid> <48F4B453.9050700@domain.hid>
-In-Reply-To: <48F4B453.9050700@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig789B44AD02B75034EA2EFF15"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] xnpipe: what's up with xnpipe_setup?
+Subject: [Xenomai-core] [PATCH 00/12] Generic fast xnsynch support & more
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,63 +13,128 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig789B44AD02B75034EA2EFF15
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Here comes a significantly reworked patch series to improve fast mutex
+support of Xenomai.
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Hi,
->>
->> xnpipe_setup and the callbacks it sets is dead code for in-tree Xenoma=
-i
->> users. Going back to, well, fusion-0.6.9 (the oldest version we have i=
-n
->> LXR), it used to be dead meat already at that time. Can we remove it?
->>
->=20
-> We can and should emulate the close handler using the input one, so we =
-may get
-> rid of the former.
->=20
-> We need some way to fire a callback in a skin implementation when userl=
-and
-> connects, this is what the open handler was for; this may be required f=
-or
-> implementing more complex data channels over the generic message pipe c=
-ode. Ok,
-> we could also divert the input handler for that purpose as well, and it=
- makes
-> little sense to keep a full interface just for that case.
->=20
-> Go ahead, remove that code, but if a skin developer ever comes and comp=
-lains
-> about the terminal ugliness of our input handler looking like a kitchen=
- sink in
-> a near future, I will ruthlessly direct him to YOU. Ah! Fair enough?
+This approach now introduces a generic fast xnsynch core and converts
+the existing POSIX implementation over. It also comes with a second
+user, the Native skin. Additionally, it improves xeno_get_current via
+a TLS variable and addresses the issue that threads in secondary mode
+acquiring an uncontended mutex need to be migrated first.
 
-Yeah, just blame the street cleaner...
+At this chance, the TLS optimization is also applied on self-lookups of
+task handles (Native, VRTX and VxWorks). And I included my
+SMP-by-default patch for user libs which is highly recommended to reduce
+the risk of accidental code breakage on SMP with the new mutex code.
 
 Jan
 
+---
+ include/asm-generic/atomic.h               |   24 -
+ xenomai/README.INSTALL                     |    2 
+ xenomai/configure.in                       |   45 +-
+ xenomai/include/asm-arm/atomic.h           |    3 
+ xenomai/include/asm-blackfin/atomic.h      |    2 
+ xenomai/include/asm-generic/Makefile.am    |    2 
+ xenomai/include/asm-generic/Makefile.in    |    2 
+ xenomai/include/asm-generic/bits/bind.h    |   82 +++-
+ xenomai/include/asm-generic/bits/current.h |   36 +
+ xenomai/include/asm-generic/features.h     |   24 -
+ xenomai/include/asm-ia64/atomic.h          |    2 
+ xenomai/include/asm-powerpc/atomic.h       |    2 
+ xenomai/include/asm-x86/atomic.h           |    2 
+ xenomai/include/native/mutex.h             |   23 -
+ xenomai/include/native/syscall.h           |    1 
+ xenomai/include/nucleus/registry.h         |    1 
+ xenomai/include/nucleus/shadow.h           |    3 
+ xenomai/include/nucleus/synch.h            |   70 +++
+ xenomai/include/nucleus/thread.h           |   29 +
+ xenomai/include/nucleus/types.h            |   13 
+ xenomai/include/psos+/syscall.h            |    8 
+ xenomai/include/rtdm/rtdm_driver.h         |    2 
+ xenomai/include/vrtx/syscall.h             |    1 
+ xenomai/include/vxworks/syscall.h          |    1 
+ xenomai/ksrc/arch/arm/Kconfig              |    2 
+ xenomai/ksrc/arch/powerpc/Kconfig          |    2 
+ xenomai/ksrc/arch/x86/Kconfig              |    2 
+ xenomai/ksrc/drivers/testing/switchtest.c  |    2 
+ xenomai/ksrc/nucleus/pipe.c                |    2 
+ xenomai/ksrc/nucleus/registry.c            |    4 
+ xenomai/ksrc/nucleus/select.c              |    2 
+ xenomai/ksrc/nucleus/shadow.c              |   38 +-
+ xenomai/ksrc/nucleus/synch.c               |  534 ++++++++++++++++++++---------
+ xenomai/ksrc/nucleus/thread.c              |    2 
+ xenomai/ksrc/skins/native/Kconfig          |    1 
+ xenomai/ksrc/skins/native/alarm.c          |    2 
+ xenomai/ksrc/skins/native/buffer.c         |    4 
+ xenomai/ksrc/skins/native/cond.c           |   18 
+ xenomai/ksrc/skins/native/event.c          |    2 
+ xenomai/ksrc/skins/native/heap.c           |    2 
+ xenomai/ksrc/skins/native/intr.c           |    2 
+ xenomai/ksrc/skins/native/mutex.c          |  327 ++++++++++-------
+ xenomai/ksrc/skins/native/queue.c          |    2 
+ xenomai/ksrc/skins/native/sem.c            |    2 
+ xenomai/ksrc/skins/native/syscall.c        |  132 +++++--
+ xenomai/ksrc/skins/native/task.c           |   28 -
+ xenomai/ksrc/skins/posix/Kconfig           |    1 
+ xenomai/ksrc/skins/posix/cb_lock.h         |   21 -
+ xenomai/ksrc/skins/posix/cond.c            |   34 -
+ xenomai/ksrc/skins/posix/intr.c            |    2 
+ xenomai/ksrc/skins/posix/mq.c              |    4 
+ xenomai/ksrc/skins/posix/mutex.c           |  121 ++++--
+ xenomai/ksrc/skins/posix/mutex.h           |  136 +------
+ xenomai/ksrc/skins/posix/sem.c             |    2 
+ xenomai/ksrc/skins/posix/syscall.c         |   61 +--
+ xenomai/ksrc/skins/posix/thread.c          |   14 
+ xenomai/ksrc/skins/psos+/Kconfig           |    2 
+ xenomai/ksrc/skins/psos+/event.c           |    2 
+ xenomai/ksrc/skins/psos+/queue.c           |    2 
+ xenomai/ksrc/skins/psos+/rn.c              |    2 
+ xenomai/ksrc/skins/psos+/sem.c             |    2 
+ xenomai/ksrc/skins/psos+/syscall.c         |   53 +-
+ xenomai/ksrc/skins/psos+/task.c            |   20 -
+ xenomai/ksrc/skins/rtai/Kconfig            |    1 
+ xenomai/ksrc/skins/rtai/sem.c              |   12 
+ xenomai/ksrc/skins/rtai/task.c             |   10 
+ xenomai/ksrc/skins/rtdm/drvlib.c           |   27 -
+ xenomai/ksrc/skins/uitron/Kconfig          |    1 
+ xenomai/ksrc/skins/uitron/flag.c           |    2 
+ xenomai/ksrc/skins/uitron/mbx.c            |    3 
+ xenomai/ksrc/skins/uitron/sem.c            |    3 
+ xenomai/ksrc/skins/uitron/syscall.c        |    8 
+ xenomai/ksrc/skins/uitron/task.c           |   11 
+ xenomai/ksrc/skins/vrtx/Kconfig            |    2 
+ xenomai/ksrc/skins/vrtx/event.c            |    2 
+ xenomai/ksrc/skins/vrtx/mb.c               |    2 
+ xenomai/ksrc/skins/vrtx/mx.c               |    7 
+ xenomai/ksrc/skins/vrtx/queue.c            |    2 
+ xenomai/ksrc/skins/vrtx/sem.c              |    2 
+ xenomai/ksrc/skins/vrtx/syscall.c          |    4 
+ xenomai/ksrc/skins/vrtx/task.c             |   17 
+ xenomai/ksrc/skins/vxworks/Kconfig         |    2 
+ xenomai/ksrc/skins/vxworks/module.c        |    2 
+ xenomai/ksrc/skins/vxworks/msgQLib.c       |    2 
+ xenomai/ksrc/skins/vxworks/semLib.c        |    8 
+ xenomai/ksrc/skins/vxworks/syscall.c       |   37 +-
+ xenomai/ksrc/skins/vxworks/taskLib.c       |   12 
+ xenomai/src/skins/native/cond.c            |   30 +
+ xenomai/src/skins/native/init.c            |    8 
+ xenomai/src/skins/native/mutex.c           |  105 +++++
+ xenomai/src/skins/native/task.c            |   44 ++
+ xenomai/src/skins/posix/mutex.c            |  192 +++++-----
+ xenomai/src/skins/posix/thread.c           |   33 +
+ xenomai/src/skins/psos+/task.c             |   34 +
+ xenomai/src/skins/uitron/task.c            |   29 +
+ xenomai/src/skins/vrtx/init.c              |   19 -
+ xenomai/src/skins/vrtx/task.c              |   37 +-
+ xenomai/src/skins/vxworks/init.c           |    8 
+ xenomai/src/skins/vxworks/taskLib.c        |   29 +
+ 99 files changed, 1809 insertions(+), 909 deletions(-)
 
---------------enig789B44AD02B75034EA2EFF15
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkj08ZsACgkQniDOoMHTA+l23wCfY0NDIk4H1tVVODtDfzjGcNqR
-Zg8An2Xn7SjyoHmsAuD+sex6bRdxlKVM
-=BxtP
------END PGP SIGNATURE-----
-
---------------enig789B44AD02B75034EA2EFF15--
 
