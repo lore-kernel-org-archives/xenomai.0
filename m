@@ -1,13 +1,14 @@
-Message-ID: <48F7A064.20404@domain.hid>
-Date: Thu, 16 Oct 2008 22:13:24 +0200
+Message-ID: <48F7A1A2.3050201@domain.hid>
+Date: Thu, 16 Oct 2008 22:18:42 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <20081016154620.320953568@domain.hid>
-	<20081016154621.644116499@domain.hid>
-In-Reply-To: <20081016154621.644116499@domain.hid>
+	<20081016154621.802426487@domain.hid>
+In-Reply-To: <20081016154621.802426487@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 08/12] Use fast xnsynch with native skin
+Subject: Re: [Xenomai-core] [PATCH 09/12] Optionally replace
+ pthread_getspecific with TLS variables
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,10 +23,9 @@ Cc: xenomai@xenomai.org
 
 Jan Kiszka wrote:
 
-Same remark for the #ifdefs. I also do not understand your modification
-of rt_cond_wait_inner, this code is very tense; posix and native had the
-same bug in this area at different times, so this change should probably
-be made separately.
+The real downside here is a lot of #ifdef clutter. What about the idea
+of defining an API to abstract the differences between
+pthread_get/setspecific and __thread and have #ifdef only in one header ?
 
 -- 
 					    Gilles.
