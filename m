@@ -1,15 +1,12 @@
-Message-ID: <48F878DF.2030207@domain.hid>
-Date: Fri, 17 Oct 2008 13:37:03 +0200
+Message-ID: <48F884EE.2030801@domain.hid>
+Date: Fri, 17 Oct 2008 14:28:30 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20081016154620.320953568@domain.hid>	<20081016154621.644116499@domain.hid>	<48F7A064.20404@domain.hid>
-	<48F7C5D1.3010500@domain.hid>	<48F855DB.3070300@domain.hid>
-	<48F86F6A.1010801@domain.hid> <48F86FED.2010409@domain.hid>
-	<48F8738E.8070709@domain.hid> <48F8753C.5000901@domain.hid>
-In-Reply-To: <48F8753C.5000901@domain.hid>
+References: <20081016154620.320953568@domain.hid>
+In-Reply-To: <20081016154620.320953568@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 08/12] Use fast xnsynch with native skin
+Subject: Re: [Xenomai-core] [PATCH 00/12] Generic fast xnsynch support & more
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -23,14 +20,28 @@ To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
 Jan Kiszka wrote:
-> But that is what cond_wait is about: releasing the associated lock to
-> whoever gets it - either directly or via lock-stealing. I see no problem
-> here. Moreover, lockcnt is never used (and must not!) as an indication
-> if a lock is free. It is a pure helper for the lock owner to track
-> recursion. And it is also no longer consistent between kernel and user
-> side, another reason to allow only the lock owner to play with it.
+> Here comes a significantly reworked patch series to improve fast mutex
+> support of Xenomai.
+> 
+> This approach now introduces a generic fast xnsynch core and converts
+> the existing POSIX implementation over. It also comes with a second
+> user, the Native skin. Additionally, it improves xeno_get_current via
+> a TLS variable and addresses the issue that threads in secondary mode
+> acquiring an uncontended mutex need to be migrated first.
+> 
+> At this chance, the TLS optimization is also applied on self-lookups of
+> task handles (Native, VRTX and VxWorks). And I included my
+> SMP-by-default patch for user libs which is highly recommended to reduce
+> the risk of accidental code breakage on SMP with the new mutex code.
 
-Right.
+A minor remark. This is the third round of patches for fast mutexes, and
+ each round, you submit even more changes to review than the previous
+round. If I doubted of your honesty, I could think that you are trying
+to dilute some questionable changes into more changes so that they get
+unnoticed.
+
+Could we focus on a small set of changes, reach consensus, merge them,
+and then move to the next set of changes?
 
 -- 
                                                  Gilles.
