@@ -1,14 +1,10 @@
-Message-ID: <48F8A908.4010407@domain.hid>
-Date: Fri, 17 Oct 2008 17:02:32 +0200
+Resent-To: xenomai-core <xenomai@xenomai.org>
+Resent-Message-Id: <48F8B484.9010803@domain.hid>
+Message-Id: <20081017154601.562580026@domain.hid>
+Date: Fri, 17 Oct 2008 17:46:12 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <20081016154620.320953568@domain.hid>	<20081016154621.802426487@domain.hid>	<48F7A1A2.3050201@domain.hid>
-	<48F7BF9A.4070305@domain.hid>
-In-Reply-To: <48F7BF9A.4070305@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 09/12] Optionally replace
- pthread_getspecific with TLS variables
+References: <20081017154559.420723261@domain.hid>
+Subject: [Xenomai-core] [PATCH 13/13] Catch inconsistent SMP feature support
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,36 +14,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>
->> The real downside here is a lot of #ifdef clutter. What about the idea
->> of defining an API to abstract the differences between
->> pthread_get/setspecific and __thread and have #ifdef only in one header ?
-> 
-> Sometimes you only store a value that way, sometimes you also have to
-> provide the object that is stored. Then its initialisation is fairly
-> specific.
-> 
-> Everything can be abstracted, but I'm not that optimistic that the
-> result will be better readable, just look at the patched users. Or what
-> abstractions do you have in mind?
 
-I tried, but I failed. The usage differences in the skins are to
-significant to define a generic per-thread wrapper that fits at least a
-subset of use cases.
+With fast xnsynch/mutex support in place, the importance of getting the
+user space library configuration right increases significantly. If the
+user fails to provide --enable-smp, (s)he risks to break the mutex fast
+path in a very subtle way.
 
-Anyway, I was at least able to eliminate two #ifdefs by converting the
-xeno_current_key initialization from pthread_once to a constructor
-function (that is under #ifdef anyway). Updates will follow.
+This patch catches the case that the kernel support SMP while userland
+does not.
 
-Jan
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ include/asm-generic/features.h |   40 ++++++++++++++++++++++++----------------
+ 1 file changed, 24 insertions(+), 16 deletions(-)
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Index: b/include/asm-generic/features.h
+===================================================================
+--- a/include/asm-generic/features.h
++++ b/include/asm-generic/features.h
+@@ -26,13 +26,14 @@
+ #endif /* __KERNEL__ */
+ 
+ #define __xn_feat_smp         0x80000000
+-#define __xn_feat_fastsynch   0x40000000
+-#define __xn_feat_nofastsynch 0x20000000
++#define __xn_feat_nosmp       0x40000000
++#define __xn_feat_fastsynch   0x20000000
++#define __xn_feat_nofastsynch 0x10000000
+ 
+ #ifdef CONFIG_SMP
+ #define __xn_feat_smp_mask __xn_feat_smp
+ #else
+-#define __xn_feat_smp_mask 0
++#define __xn_feat_smp_mask __xn_feat_nosmp
+ #endif
+ 
+ #ifdef CONFIG_XENO_FASTSYNCH
+@@ -41,22 +42,29 @@
+ #define __xn_feat_fastsynch_mask __xn_feat_nofastsynch
+ #endif
+ 
+-#define __xn_feat_generic_mask     (__xn_feat_smp_mask | __xn_feat_fastsynch_mask)
+-
+-#define __xn_feat_generic_man_mask (__xn_feat_fastsynch | __xn_feat_nofastsynch)
++/* List of generic features kernel or userland may support */
++#define __xn_feat_generic_mask \
++	(__xn_feat_smp_mask | __xn_feat_fastsynch_mask)
++
++/* List of features both sides have to agree on:
++   If userland supports it, the kernel has to provide it, too. */
++#define __xn_feat_generic_man_mask \
++	(__xn_feat_fastsynch | __xn_feat_nofastsynch | __xn_feat_nosmp)
+ 
+ static inline const char *get_generic_feature_label (unsigned feature)
+ {
+-    switch (feature) {
+-    	case __xn_feat_smp:
+-	    return "smp";
+-        case __xn_feat_fastsynch:
+-	    return "fastsynch";
+-        case __xn_feat_nofastsynch:
+-	    return "nofastsynch";
+-    	default:
+-	    return 0;
+-    }
++	switch (feature) {
++	case __xn_feat_smp:
++		return "smp";
++	case __xn_feat_nosmp:
++		return "nosmp";
++	case __xn_feat_fastsynch:
++		return "fastsynch";
++	case __xn_feat_nofastsynch:
++		return "nofastsynch";
++	default:
++		return 0;
++	}
+ }
+ 
+ #endif /* !_XENO_ASM_GENERIC_FEATURES_H */
+
 
