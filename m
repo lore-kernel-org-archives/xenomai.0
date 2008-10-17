@@ -1,14 +1,14 @@
-Message-ID: <48F8939F.30109@domain.hid>
-Date: Fri, 17 Oct 2008 15:31:11 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48F894C0.7040205@domain.hid>
+Date: Fri, 17 Oct 2008 15:36:00 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <20081016154620.320953568@domain.hid>
-	<48F884EE.2030801@domain.hid> <48F888A2.7010404@domain.hid>
-	<48F88A37.7050509@domain.hid>
+References: <20081016154620.320953568@domain.hid>	<48F884EE.2030801@domain.hid>
+	<48F888A2.7010404@domain.hid> <48F88A37.7050509@domain.hid>
 In-Reply-To: <48F88A37.7050509@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [PATCH 00/12] Generic fast xnsynch support & more
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,7 +19,7 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
 Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
@@ -58,23 +58,11 @@ Gilles Chanteperdrix wrote:
 > The problem is that it took me about one hour reviewing your 12 patches
 > (I know, I am a slow guy), and that I am not even sure that I saw all
 > the changes.
-
-I appreciate your effort very much, and you already provided valuable
-input. But I feel it is much better to have the full picture instead of
-scattered bits. And this 12 patches belong together until none of their
-features are merged.
-
 > 
 > The lockcnt change in patch 8 for instance is not even mentioned in the
 > patch comments, and it is only because I originally did not understand
 > the change in rt_cond_wait_inner that I now know about this change.
-
-Sorry for that, but it fell under the table on which all the other
-significant changes were already lying. Moreover, I originally felt it
-was only a minor cleanup as I simply aligned the code to the POSIX
-implementation in this regard. Nevertheless, the next posting will
-contain a separate patch for this.
-
+> 
 >>> Could we focus on a small set of changes, reach consensus, merge them,
 >>> and then move to the next set of changes?
 >> No problem. Maybe I missed or forgot the clear OK for patches 1..4 to
@@ -82,12 +70,10 @@ contain a separate patch for this.
 >> with merging patch 5 without having written to following ones.
 > 
 > I think Philippe should merge the patches.
+> 
 
-Also fine.
-
-Jan
+Ack.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Philippe.
 
