@@ -1,10 +1,12 @@
-Resent-To: xenomai-core <xenomai@xenomai.org>
-Resent-Message-Id: <48F8B484.2060903@domain.hid>
-Message-Id: <20081017154601.403145579@domain.hid>
-Date: Fri, 17 Oct 2008 17:46:11 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48F8C03C.6060202@domain.hid>
+Date: Fri, 17 Oct 2008 18:41:32 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <20081017154559.420723261@domain.hid>
-Subject: [Xenomai-core] [PATCH 12/13] Ensure mode switch in mutex fast paths
+In-Reply-To: <20081017154559.420723261@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH 00/13] Generic fast xnsynch support & more
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,203 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
+Jan Kiszka wrote:
+> Hopefully the last round, addressing remarks brought up on the last
+> posting. The changes are:
+> 
+> [Patches 7-9]
+>  - define xnsynch_owner_check as xnsynch-implementation-independent way
+>    to check provided and current synch owner match (reduces #ifdefs)
+> 
+> [Patches 6 and 9]
+>  - push lockcnt changes to native mutexes into separate patch (patch
+> 
+> [Patch 2]
+>  - switch creation of xeno_current_key etc. from pthread_once to a
+>    constructor
+>  - translate pthread_getspecific == NULL into XN_NO_HANDLE
+>    (funnily, this shrinks the code on x86-64)
+> 
+> [Patch 13]
+>  - detect SMP feature inconsistency between kernel and userland
+>    (but keep SMP off by default for now)
+> 
+> Note that this series (as well as the latter) depends on the VRTX fix of
+> Philippe which is not yet merged into SVN trunk.
+> 
+> Jan
+> 
+> PS: Hope this series is compatible with more mail clients /wrt
+> commenting on the inlined patches.
 
-With the help of xeno_get_current_mode(), this patch ensures that shadow
-threads in secondary mode will be switched to primary again in case they
-acquire an uncontended native or POSIX mutex, thus would otherwise only
-pick the user space fast path. This prevents potential priority
-inversions that the fast mutex optimizations introduced.
+Ok. Let's be done with it. I am ok with the whole stack.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
- src/skins/native/mutex.c |   31 ++++++++-------
- src/skins/posix/mutex.c  |   94 +++++++++++++++++++++++++++--------------------
- 2 files changed, 71 insertions(+), 54 deletions(-)
-
-Index: b/src/skins/native/mutex.c
-===================================================================
---- a/src/skins/native/mutex.c
-+++ b/src/skins/native/mutex.c
-@@ -18,6 +18,7 @@
- 
- #include <limits.h>
- #include <nucleus/synch.h>
-+#include <nucleus/thread.h>
- #include <native/syscall.h>
- #include <native/mutex.h>
- #include <asm-generic/bits/current.h>
-@@ -78,22 +79,24 @@ static int rt_mutex_acquire_inner(RT_MUT
- 	if (!cur)
- 		return -EPERM;
- 
--	err = xnsynch_fast_acquire(mutex->fastlock, cur);
--	if (likely(!err)) {
--		mutex->lockcnt = 1;
--		return 0;
--	}
--
--	if (err == -EBUSY) {
--		if (mutex->lockcnt == UINT_MAX)
--			return -EAGAIN;
-+	if (likely(!(xeno_get_current_mode() & XNRELAX))) {
-+		err = xnsynch_fast_acquire(mutex->fastlock, cur);
-+		if (likely(!err)) {
-+			mutex->lockcnt = 1;
-+			return 0;
-+		}
-+
-+		if (err == -EBUSY) {
-+			if (mutex->lockcnt == UINT_MAX)
-+				return -EAGAIN;
-+
-+			mutex->lockcnt++;
-+			return 0;
-+		}
- 
--		mutex->lockcnt++;
--		return 0;
-+		if (timeout == TM_NONBLOCK && mode == XN_RELATIVE)
-+			return -EWOULDBLOCK;
- 	}
--
--	if (timeout == TM_NONBLOCK && mode == XN_RELATIVE)
--		return -EWOULDBLOCK;
- #endif /* CONFIG_XENO_FASTSYNCH */
- 
- 	err = XENOMAI_SKINCALL3(__native_muxid,
-Index: b/src/skins/posix/mutex.c
-===================================================================
---- a/src/skins/posix/mutex.c
-+++ b/src/skins/posix/mutex.c
-@@ -164,31 +164,33 @@ int __wrap_pthread_mutex_lock(pthread_mu
- 		goto out;
- 	}
- 
--	err = xnsynch_fast_acquire(get_ownerp(shadow), cur);
-+	if (likely(!(xeno_get_current_mode() & XNRELAX))) {
-+		err = xnsynch_fast_acquire(get_ownerp(shadow), cur);
- 
--	if (likely(!err)) {
--		shadow->lockcnt = 1;
--		cb_read_unlock(&shadow->lock, s);
--		return 0;
--	}
-+		if (likely(!err)) {
-+			shadow->lockcnt = 1;
-+			cb_read_unlock(&shadow->lock, s);
-+			return 0;
-+		}
- 
--	if (err == -EBUSY)
--		switch(shadow->attr.type) {
--		case PTHREAD_MUTEX_NORMAL:
--			break;
-+		if (err == -EBUSY)
-+			switch(shadow->attr.type) {
-+			case PTHREAD_MUTEX_NORMAL:
-+				break;
- 
--		case PTHREAD_MUTEX_ERRORCHECK:
--			err = -EDEADLK;
--			goto out;
-+			case PTHREAD_MUTEX_ERRORCHECK:
-+				err = -EDEADLK;
-+				goto out;
- 
--		case PTHREAD_MUTEX_RECURSIVE:
--			if (shadow->lockcnt == UINT_MAX) {
--				err = -EAGAIN;
-+			case PTHREAD_MUTEX_RECURSIVE:
-+				if (shadow->lockcnt == UINT_MAX) {
-+					err = -EAGAIN;
-+					goto out;
-+				}
-+				++shadow->lockcnt;
-+				err = 0;
- 				goto out;
- 			}
--			++shadow->lockcnt;
--			err = 0;
--			goto out;
- 		}
- #endif /* CONFIG_XENO_FASTSYNCH */
- 
-@@ -226,32 +228,34 @@ int __wrap_pthread_mutex_timedlock(pthre
- 		goto out;
- 	}	
- 
--	err = xnsynch_fast_acquire(get_ownerp(shadow), cur);
-+	if (likely(!(xeno_get_current_mode() & XNRELAX))) {
-+		err = xnsynch_fast_acquire(get_ownerp(shadow), cur);
- 
--	if (likely(!err)) {
--		shadow->lockcnt = 1;
--		cb_read_unlock(&shadow->lock, s);
--		return 0;
--	}
-+		if (likely(!err)) {
-+			shadow->lockcnt = 1;
-+			cb_read_unlock(&shadow->lock, s);
-+			return 0;
-+		}
- 
--	if (err == -EBUSY)
--		switch(shadow->attr.type) {
--		case PTHREAD_MUTEX_NORMAL:
--			break;
-+		if (err == -EBUSY)
-+			switch(shadow->attr.type) {
-+			case PTHREAD_MUTEX_NORMAL:
-+				break;
- 
--		case PTHREAD_MUTEX_ERRORCHECK:
--			err = -EDEADLK;
--			goto out;
-+			case PTHREAD_MUTEX_ERRORCHECK:
-+				err = -EDEADLK;
-+				goto out;
- 
--		case PTHREAD_MUTEX_RECURSIVE:
--			if (shadow->lockcnt == UINT_MAX) {
--				err = -EAGAIN;
-+			case PTHREAD_MUTEX_RECURSIVE:
-+				if (shadow->lockcnt == UINT_MAX) {
-+					err = -EAGAIN;
-+					goto out;
-+				}
-+
-+				++shadow->lockcnt;
- 				goto out;
- 			}
--
--			++shadow->lockcnt;
--			goto out;
--		}
-+	}
- #endif /* CONFIG_XENO_FASTSYNCH */
- 
- 	do {
-@@ -286,7 +290,17 @@ int __wrap_pthread_mutex_trylock(pthread
- 	if (unlikely(shadow->magic != PSE51_MUTEX_MAGIC)) {
- 		err = -EINVAL;
- 		goto out;
--	}	
-+	}
-+
-+	if (unlikely(xeno_get_current_mode() & XNRELAX)) {
-+		do {
-+			err = -XENOMAI_SYSCALL1(__xn_sys_migrate,
-+						XENOMAI_XENO_DOMAIN);
-+		} while (err == EINTR);
-+
-+		if (err)
-+			goto out;
-+	}
- 
- 	err = xnsynch_fast_acquire(get_ownerp(shadow), cur);
- 
-
+-- 
+                                                 Gilles.
 
