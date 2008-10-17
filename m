@@ -1,10 +1,10 @@
 Resent-To: xenomai-core <xenomai@xenomai.org>
-Resent-Message-Id: <48F8B484.7080504@domain.hid>
-Message-Id: <20081017154600.274014128@domain.hid>
-Date: Fri, 17 Oct 2008 17:46:04 +0200
+Resent-Message-Id: <48F8B484.6060000@domain.hid>
+Message-Id: <20081017154600.758329139@domain.hid>
+Date: Fri, 17 Oct 2008 17:46:07 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 References: <20081017154559.420723261@domain.hid>
-Subject: [Xenomai-core] [PATCH 05/13] Factor out xnsynch_acquire/release
+Subject: [Xenomai-core] [PATCH 08/13] Convert POSIX skin to fast xnsynch
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,915 +18,694 @@ To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
 
-This patch addresses the increasing divergence of owner-tracking vs.
-owner-less xnsynch objects.
+Migrates the existing fast mutex implementation of the POSIX skin to
+fast xnsynch services, also fixing the build for arch that do not
+support fast mutexes.
 
-Services dealing with the former will include the new, lockless xnsynch
-prologue for optimizing its fastpath. At the the same time, this
-additional code should not disturb too much in those cases where we do
-not track ownership (condition variables, events, semaphores etc.).
-Moreover, I noticed that some of the existing code assumes XNSYNCH_NOPIP
-means no ownership, which is surely not true. The already visible effect
-is that lock stealing is needlessly restricted to XNSYNCH_PIP.
-
-Going through the API, I dug out three diverging services and replaced
-them with two new ones:
-
-Owner-less xnsynch objects:
- - xnsynch_sleep_on
- - xnsynch_wakeup_one_sleeper
- - xnsynch_wakeup_this_sleeper
-
-Owner-tracking xnsynch objects:
- - xnsynch_acquire
- - xnsynch_release
-
-The latter type of objects are marked with the new flag XNSYNCH_OWNER,
-used only for debugging and code documentation purposes in the current
-implementation.
+Lock stealing via pthread_trylock is not considered by this patch,
+keeping this services lockless and syscall-less until we identify the
+need for using the steal mechanism also for this case.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- include/nucleus/synch.h     |   16 +
- include/rtdm/rtdm_driver.h  |    2 
- ksrc/nucleus/synch.c        |  418 +++++++++++++++++++++++++++++---------------
- ksrc/skins/native/cond.c    |    2 
- ksrc/skins/native/mutex.c   |    7 
- ksrc/skins/native/task.c    |    5 
- ksrc/skins/posix/cond.c     |    2 
- ksrc/skins/posix/mutex.c    |   10 -
- ksrc/skins/posix/mutex.h    |    6 
- ksrc/skins/rtai/sem.c       |   10 -
- ksrc/skins/rtdm/drvlib.c    |   15 -
- ksrc/skins/vrtx/mx.c        |    6 
- ksrc/skins/vxworks/semLib.c |    6 
- 13 files changed, 326 insertions(+), 179 deletions(-)
+ ksrc/skins/posix/cond.c    |   13 ----
+ ksrc/skins/posix/mutex.c   |   87 +++++++++++++++++++---------
+ ksrc/skins/posix/mutex.h   |  138 ++++++---------------------------------------
+ ksrc/skins/posix/syscall.c |   22 ++-----
+ src/skins/posix/mutex.c    |   55 +++++++++--------
+ 5 files changed, 117 insertions(+), 198 deletions(-)
 
-Index: b/include/nucleus/synch.h
-===================================================================
---- a/include/nucleus/synch.h
-+++ b/include/nucleus/synch.h
-@@ -30,10 +30,11 @@
- #define XNSYNCH_NOPIP   0x0
- #define XNSYNCH_PIP     0x2
- #define XNSYNCH_DREORD  0x4
-+#define XNSYNCH_OWNER   0x8
- 
- #if defined(__KERNEL__) || defined(__XENO_SIM__)
- 
--#define XNSYNCH_CLAIMED 0x8	/* Claimed by other thread(s) w/ PIP */
-+#define XNSYNCH_CLAIMED 0x10	/* Claimed by other thread(s) w/ PIP */
- 
- /* Spare flags usable by upper interfaces */
- #define XNSYNCH_SPARE0  0x01000000
-@@ -105,13 +106,18 @@ void xnsynch_sleep_on(xnsynch_t *synch,
- 
- struct xnthread *xnsynch_wakeup_one_sleeper(xnsynch_t *synch);
- 
--struct xnthread *xnsynch_peek_pendq(xnsynch_t *synch);
--
- xnpholder_t *xnsynch_wakeup_this_sleeper(xnsynch_t *synch,
- 					 xnpholder_t *holder);
- 
--int xnsynch_flush(xnsynch_t *synch,
--		  xnflags_t reason);
-+void xnsynch_acquire(xnsynch_t *synch,
-+		     xnticks_t timeout,
-+		     xntmode_t timeout_mode);
-+
-+struct xnthread *xnsynch_release(xnsynch_t *synch);
-+
-+struct xnthread *xnsynch_peek_pendq(xnsynch_t *synch);
-+
-+int xnsynch_flush(xnsynch_t *synch, xnflags_t reason);
- 
- void xnsynch_release_all_ownerships(struct xnthread *thread);
- 
-Index: b/ksrc/nucleus/synch.c
-===================================================================
---- a/ksrc/nucleus/synch.c
-+++ b/ksrc/nucleus/synch.c
-@@ -59,6 +59,12 @@
-  * - XNSYNCH_PRIO causes the threads waiting for the resource to pend
-  * in priority order. Otherwise, FIFO ordering is used (XNSYNCH_FIFO).
-  *
-+ * - XNSYNCH_OWNER indicates that the synchronization object shall
-+ * track its owning thread (required if XNSYNCH_PIP is selected). Note
-+ * that setting this flag implies the use xnsynch_acquire and
-+ * xnsynch_release instead of xnsynch_sleep_on and
-+ * xnsynch_wakeup_one_sleeper/xnsynch_wakeup_this_sleeper.
-+ *
-  * - XNSYNCH_PIP causes the priority inheritance mechanism to be
-  * automatically activated when a priority inversion is detected among
-  * threads using this object. Otherwise, no priority inheritance takes
-@@ -89,7 +95,7 @@ void xnsynch_init(xnsynch_t *synch, xnfl
- 	initph(&synch->link);
- 
- 	if (flags & XNSYNCH_PIP)
--		flags |= XNSYNCH_PRIO;	/* Obviously... */
-+		flags |= XNSYNCH_PRIO | XNSYNCH_OWNER;	/* Obviously... */
- 
- 	synch->status = flags & ~XNSYNCH_CLAIMED;
- 	synch->owner = NULL;
-@@ -98,6 +104,209 @@ void xnsynch_init(xnsynch_t *synch, xnfl
- 	xnarch_init_display_context(synch);
- }
- 
-+/*!
-+ * \fn void xnsynch_sleep_on(xnsynch_t *synch, xnticks_t timeout,
-+ *                           xntmode_t timeout_mode);
-+ * \brief Sleep on an ownerless synchronization object.
-+ *
-+ * Makes the calling thread sleep on the specified synchronization
-+ * object, waiting for it to be signaled.
-+ *
-+ * This service should be called by upper interfaces wanting the
-+ * current thread to pend on the given resource. It must not be used
-+ * with synchronization objects that are supposed to track ownership
-+ * (XNSYNCH_OWNER).
-+ *
-+ * @param synch The descriptor address of the synchronization object
-+ * to sleep on.
-+ *
-+ * @param timeout The timeout which may be used to limit the time the
-+ * thread pends on the resource. This value is a wait time given in
-+ * ticks (see note). It can either be relative, absolute monotonic, or
-+ * absolute adjustable depending on @a timeout_mode. Passing XN_INFINITE
-+ * @b and setting @a mode to XN_RELATIVE specifies an unbounded wait. All
-+ * other values are used to initialize a watchdog timer.
-+ *
-+ * @param timeout_mode The mode of the @a timeout parameter. It can
-+ * either be set to XN_RELATIVE, XN_ABSOLUTE, or XN_REALTIME (see also
-+ * xntimer_start()).
-+ *
-+ * Environments:
-+ *
-+ * This service can be called from:
-+ *
-+ * - Kernel module initialization/cleanup code
-+ * - Kernel-based task
-+ * - User-space task
-+ *
-+ * Rescheduling: always.
-+ *
-+ * @note The @a timeout value will be interpreted as jiffies if the
-+ * current thread is bound to a periodic time base (see
-+ * xnpod_init_thread), or nanoseconds otherwise.
-+ */
-+
-+void xnsynch_sleep_on(xnsynch_t *synch, xnticks_t timeout,
-+		      xntmode_t timeout_mode)
-+{
-+	xnthread_t *thread = xnpod_current_thread();
-+	spl_t s;
-+
-+	XENO_BUGON(NUCLEUS, testbits(synch->status, XNSYNCH_OWNER));
-+
-+	xnlock_get_irqsave(&nklock, s);
-+
-+	trace_mark(xn_nucleus_synch_sleepon,
-+		   "thread %p thread_name %s synch %p",
-+		   thread, xnthread_name(thread), synch);
-+
-+	if (!testbits(synch->status, XNSYNCH_PRIO)) /* i.e. FIFO */
-+		appendpq(&synch->pendq, &thread->plink);
-+	else /* i.e. priority-sorted */
-+		insertpqf(&synch->pendq, &thread->plink, thread->cprio);
-+
-+	xnpod_suspend_thread(thread, XNPEND, timeout, timeout_mode, synch);
-+
-+	xnlock_put_irqrestore(&nklock, s);
-+}
-+
-+/*!
-+ * \fn xnthread_t *xnsynch_wakeup_one_sleeper(xnsynch_t *synch);
-+ * \brief Give the resource ownership to the next waiting thread.
-+ *
-+ * This service wakes up the thread which is currently leading the
-+ * synchronization object's pending list. The sleeping thread is
-+ * unblocked from its pending state, but no reschedule is performed.
-+ *
-+ * This service should be called by upper interfaces wanting to signal
-+ * the given resource so that a single waiter is resumed. It must not
-+ * be used with synchronization objects that are supposed to track
-+ * ownership (XNSYNCH_OWNER not set).
-+ *
-+ * @param synch The descriptor address of the synchronization object
-+ * whose ownership is changed.
-+ *
-+ * @return The descriptor address of the unblocked thread.
-+ *
-+ * Side-effects:
-+ *
-+ * - The effective priority of the previous resource owner might be
-+ * lowered to its base priority value as a consequence of the priority
-+ * inheritance boost being cleared.
-+ *
-+ * - The synchronization object ownership is transfered to the
-+ * unblocked thread.
-+ *
-+ * Environments:
-+ *
-+ * This service can be called from:
-+ *
-+ * - Kernel module initialization/cleanup code
-+ * - Interrupt service routine
-+ * - Kernel-based task
-+ * - User-space task
-+ *
-+ * Rescheduling: never.
-+ */
-+
-+xnthread_t *xnsynch_wakeup_one_sleeper(xnsynch_t *synch)
-+{
-+	xnthread_t *thread = NULL;
-+	xnpholder_t *holder;
-+	spl_t s;
-+
-+	XENO_BUGON(NUCLEUS, testbits(synch->status, XNSYNCH_OWNER));
-+
-+	xnlock_get_irqsave(&nklock, s);
-+
-+	holder = getpq(&synch->pendq);
-+
-+	if (holder) {
-+		thread = link2thread(holder, plink);
-+		thread->wchan = NULL;
-+		trace_mark(xn_nucleus_synch_wakeup_one,
-+			   "thread %p thread_name %s synch %p",
-+			   thread, xnthread_name(thread), synch);
-+		xnpod_resume_thread(thread, XNPEND);
-+	}
-+
-+	xnlock_put_irqrestore(&nklock, s);
-+
-+	xnarch_post_graph_if(synch, 0, emptypq_p(&synch->pendq));
-+
-+	return thread;
-+}
-+
-+/*!
-+ * \fn void xnsynch_wakeup_this_sleeper(xnsynch_t *synch, xnpholder_t *holder);
-+ * \brief Give the resource ownership to a given waiting thread.
-+ *
-+ * This service wakes up a specific thread which is currently pending on
-+ * the given synchronization object. The sleeping thread is unblocked
-+ * from its pending state, but no reschedule is performed.
-+ *
-+ * This service should be called by upper interfaces wanting to signal
-+ * the given resource so that a specific waiter is resumed. It must not
-+ * be used with synchronization objects that are supposed to track
-+ * ownership (XNSYNCH_OWNER not set).
-+ *
-+ * @param synch The descriptor address of the synchronization object
-+ * whose ownership is changed.
-+ *
-+ * @param holder The link holder address of the thread to unblock
-+ * (&thread->plink) which MUST be currently linked to the
-+ * synchronization object's pending queue (i.e. synch->pendq).
-+ *
-+ * @return The link address of the unblocked thread in the
-+ * synchronization object's pending queue.
-+ *
-+ * Side-effects:
-+ *
-+ * - The effective priority of the previous resource owner might be
-+ * lowered to its base priority value as a consequence of the priority
-+ * inheritance boost being cleared.
-+ *
-+ * - The synchronization object ownership is transfered to the
-+ * unblocked thread.
-+ *
-+ * Environments:
-+ *
-+ * This service can be called from:
-+ *
-+ * - Kernel module initialization/cleanup code
-+ * - Interrupt service routine
-+ * - Kernel-based task
-+ * - User-space task
-+ *
-+ * Rescheduling: never.
-+ */
-+
-+xnpholder_t *xnsynch_wakeup_this_sleeper(xnsynch_t *synch, xnpholder_t *holder)
-+{
-+	xnthread_t *thread;
-+	xnpholder_t *nholder;
-+	spl_t s;
-+
-+	XENO_BUGON(NUCLEUS, testbits(synch->status, XNSYNCH_OWNER));
-+
-+	xnlock_get_irqsave(&nklock, s);
-+
-+	nholder = poppq(&synch->pendq, holder);
-+
-+	thread = link2thread(holder, plink);
-+	thread->wchan = NULL;
-+	trace_mark(xn_nucleus_synch_wakeup_this,
-+		   "thread %p thread_name %s synch %p",
-+		   thread, xnthread_name(thread), synch);
-+	xnpod_resume_thread(thread, XNPEND);
-+
-+	xnlock_put_irqrestore(&nklock, s);
-+
-+	xnarch_post_graph_if(synch, 0, emptypq_p(&synch->pendq));
-+
-+	return nholder;
-+}
-+
- /*
-  * xnsynch_renice_thread() -- This service is used by the PIP code to
-  * raise/lower a thread's priority. The thread's base priority value
-@@ -125,19 +334,20 @@ static void xnsynch_renice_thread(xnthre
- }
- 
- /*! 
-- * \fn void xnsynch_sleep_on(xnsynch_t *synch, xnticks_t timeout,
-- *                           xntmode_t timeout_mode)
-- *
-- * \brief Sleep on a synchronization object.
-- *
-- * Makes the calling thread sleep on the specified synchronization
-- * object, waiting for it to be signaled.
-+ * \fn void xnsynch_acquire(xnsynch_t *synch, xnticks_t timeout,
-+ *                          xntmode_t timeout_mode);
-+ * \brief Acquire the ownership of a synchronization object.
-  *
-  * This service should be called by upper interfaces wanting the
-- * current thread to pend on the given resource.
-+ * current thread to acquire the ownership of the given resource. If
-+ * the resource is already assigned to a thread, the caller is
-+ * suspended.
-+ *
-+ * This service must be used only with synchronization objects that
-+ * track ownership (XNSYNCH_OWNER set.
-  *
-  * @param synch The descriptor address of the synchronization object
-- * to sleep on.
-+ * to acquire.
-  *
-  * @param timeout The timeout which may be used to limit the time the
-  * thread pends on the resource. This value is a wait time given in
-@@ -158,36 +368,24 @@ static void xnsynch_renice_thread(xnthre
-  * - Kernel-based task
-  * - User-space task
-  *
-- * Rescheduling: always.
-+ * Rescheduling: possible.
-  *
-  * @note The @a timeout value will be interpreted as jiffies if the
-  * current thread is bound to a periodic time base (see
-  * xnpod_init_thread), or nanoseconds otherwise.
-  */
- 
--void xnsynch_sleep_on(xnsynch_t *synch, xnticks_t timeout,
--		      xntmode_t timeout_mode)
-+void xnsynch_acquire(xnsynch_t *synch, xnticks_t timeout,
-+		     xntmode_t timeout_mode)
- {
- 	xnthread_t *thread = xnpod_current_thread(), *owner;
- 	spl_t s;
- 
--	xnlock_get_irqsave(&nklock, s);
-+	XENO_BUGON(NUCLEUS, !testbits(synch->status, XNSYNCH_OWNER));
- 
--	trace_mark(xn_nucleus_synch_sleepon,
--		   "thread %p thread_name %s synch %p",
--		   thread, xnthread_name(thread), synch);
-+	xnlock_get_irqsave(&nklock, s);
- 
--	if (!testbits(synch->status, XNSYNCH_PRIO)) { /* i.e. FIFO */
--		appendpq(&synch->pendq, &thread->plink);
--		xnpod_suspend_thread(thread, XNPEND, timeout, timeout_mode, synch);
--		goto unlock_and_exit;
--	}
--
--	if (!testbits(synch->status, XNSYNCH_PIP)) { /* i.e. no ownership */
--		insertpqf(&synch->pendq, &thread->plink, thread->cprio);
--		xnpod_suspend_thread(thread, XNPEND, timeout, timeout_mode, synch);
--		goto unlock_and_exit;
--	}
-+	trace_mark(xn_nucleus_synch_acquire, "synch %p", synch);
- 
- redo:
- 	owner = synch->owner;
-@@ -198,6 +396,12 @@ redo:
- 		goto unlock_and_exit;
- 	}
- 
-+	if (!testbits(synch->status, XNSYNCH_PRIO)) { /* i.e. FIFO */
-+		appendpq(&synch->pendq, &thread->plink);
-+		xnpod_suspend_thread(thread, XNPEND, timeout, timeout_mode, synch);
-+		goto unlock_and_exit;
-+	}
-+
- 	if (thread->cprio > owner->cprio) {
- 		if (xnthread_test_info(owner, XNWAKEN) && owner->wwake == synch) {
- 			/* Ownership is still pending, steal the resource. */
-@@ -207,19 +411,22 @@ redo:
- 			goto unlock_and_exit;
- 		}
- 
--		if (!xnthread_test_state(owner, XNBOOST)) {
--			owner->bprio = owner->cprio;
--			xnthread_set_state(owner, XNBOOST);
--		}
-+		insertpqf(&synch->pendq, &thread->plink, thread->cprio);
- 
--		if (testbits(synch->status, XNSYNCH_CLAIMED))
--			removepq(&owner->claimq, &synch->link);
--		else
--			__setbits(synch->status, XNSYNCH_CLAIMED);
-+		if (testbits(synch->status, XNSYNCH_PIP)) {
-+			if (!xnthread_test_state(owner, XNBOOST)) {
-+				owner->bprio = owner->cprio;
-+				xnthread_set_state(owner, XNBOOST);
-+			}
-+
-+			if (testbits(synch->status, XNSYNCH_CLAIMED))
-+				removepq(&owner->claimq, &synch->link);
-+			else
-+				__setbits(synch->status, XNSYNCH_CLAIMED);
- 
--		insertpqf(&owner->claimq, &synch->link, thread->cprio);
--		insertpqf(&synch->pendq, &thread->plink, thread->cprio);
--		xnsynch_renice_thread(owner, thread->cprio);
-+			insertpqf(&owner->claimq, &synch->link, thread->cprio);
-+			xnsynch_renice_thread(owner, thread->cprio);
-+		}
- 	} else
- 		insertpqf(&synch->pendq, &thread->plink, thread->cprio);
- 
-@@ -335,17 +542,17 @@ void xnsynch_renice_sleeper(xnthread_t *
- 	}
- }
- 
--/*! 
-- * \fn xnthread_t *xnsynch_wakeup_one_sleeper(xnsynch_t *synch);
-+/*!
-+ * \fn xnthread_t *xnsynch_release(xnsynch_t *synch);
-  * \brief Give the resource ownership to the next waiting thread.
-  *
-- * This service gives the ownership of a synchronization object to the
-- * thread which is currently leading the object's pending list. The
-- * sleeping thread is unblocked, but no action is taken regarding the
-- * previous owner of the resource.
-+ * This service releases the ownership of the given synchronization
-+ * object. The thread which is currently leading the object's pending
-+ * list, if any, is unblocked from its pending state. However, no
-+ * reschedule is performed.
-  *
-- * This service should be called by upper interfaces wanting to signal
-- * the given resource so that a single waiter is resumed.
-+ * This service must be used only with synchronization objects that
-+ * track ownership (XNSYNCH_OWNER set.
-  *
-  * @param synch The descriptor address of the synchronization object
-  * whose ownership is changed.
-@@ -373,38 +580,41 @@ void xnsynch_renice_sleeper(xnthread_t *
-  * Rescheduling: never.
-  */
- 
--xnthread_t *xnsynch_wakeup_one_sleeper(xnsynch_t *synch)
-+struct xnthread *xnsynch_release(xnsynch_t *synch)
- {
--	xnthread_t *thread = NULL, *lastowner;
-+	xnthread_t *newowner, *lastowner;
- 	xnpholder_t *holder;
- 	spl_t s;
- 
-+	XENO_BUGON(NUCLEUS, !testbits(synch->status, XNSYNCH_OWNER));
-+
- 	xnlock_get_irqsave(&nklock, s);
- 
--	lastowner = synch->owner;
-+	trace_mark(xn_nucleus_synch_release, "synch %p", synch);
-+
- 	holder = getpq(&synch->pendq);
- 
- 	if (holder) {
--		thread = link2thread(holder, plink);
--		thread->wchan = NULL;
--		thread->wwake = synch;
--		synch->owner = thread;
--		xnthread_set_info(thread, XNWAKEN);
--		trace_mark(xn_nucleus_synch_wakeup_one,
--			   "thread %p thread_name %s synch %p",
--			   thread, xnthread_name(thread), synch);
--		xnpod_resume_thread(thread, XNPEND);
--	} else
--		synch->owner = NULL;
-+		newowner = link2thread(holder, plink);
-+		newowner->wchan = NULL;
-+		newowner->wwake = synch;
-+		lastowner = synch->owner;
-+		synch->owner = newowner;
-+		xnthread_set_info(newowner, XNWAKEN);
-+		xnpod_resume_thread(newowner, XNPEND);
- 
--	if (testbits(synch->status, XNSYNCH_CLAIMED))
--		xnsynch_clear_boost(synch, lastowner);
-+		if (testbits(synch->status, XNSYNCH_CLAIMED))
-+			xnsynch_clear_boost(synch, lastowner);
-+	} else {
-+		newowner = NULL;
-+		synch->owner = NULL;
-+	}
- 
- 	xnlock_put_irqrestore(&nklock, s);
- 
- 	xnarch_post_graph_if(synch, 0, emptypq_p(&synch->pendq));
- 
--	return thread;
-+	return newowner;
- }
- 
- /*! 
-@@ -446,80 +656,6 @@ xnthread_t *xnsynch_peek_pendq(xnsynch_t
- }
- 
- /*! 
-- * \fn void xnsynch_wakeup_this_sleeper(xnsynch_t *synch, xnpholder_t *holder);
-- * \brief Give the resource ownership to a given waiting thread.
-- *
-- * This service gives the ownership of a given synchronization object
-- * to a specific thread which is currently pending on it. The sleeping
-- * thread is unblocked from its pending state. No action is taken
-- * regarding the previous resource owner.
-- *
-- * This service should be called by upper interfaces wanting to signal
-- * the given resource so that a specific waiter is resumed.
-- *
-- * @param synch The descriptor address of the synchronization object
-- * whose ownership is changed.
-- *
-- * @param holder The link holder address of the thread to unblock
-- * (&thread->plink) which MUST be currently linked to the
-- * synchronization object's pending queue (i.e. synch->pendq).
-- *
-- * @return The link address of the unblocked thread in the
-- * synchronization object's pending queue.
-- *
-- * Side-effects:
-- *
-- * - The effective priority of the previous resource owner might be
-- * lowered to its base priority value as a consequence of the priority
-- * inheritance boost being cleared.
-- *
-- * - The synchronization object ownership is transfered to the
-- * unblocked thread.
-- *
-- * Environments:
-- *
-- * This service can be called from:
-- *
-- * - Kernel module initialization/cleanup code
-- * - Interrupt service routine
-- * - Kernel-based task
-- * - User-space task
-- *
-- * Rescheduling: never.
-- */
--
--xnpholder_t *xnsynch_wakeup_this_sleeper(xnsynch_t *synch, xnpholder_t *holder)
--{
--	xnthread_t *thread, *lastowner;
--	xnpholder_t *nholder;
--	spl_t s;
--
--	xnlock_get_irqsave(&nklock, s);
--
--	lastowner = synch->owner;
--	nholder = poppq(&synch->pendq, holder);
--
--	thread = link2thread(holder, plink);
--	thread->wchan = NULL;
--	thread->wwake = synch;
--	synch->owner = thread;
--	xnthread_set_info(thread, XNWAKEN);
--	trace_mark(xn_nucleus_synch_wakeup_all,
--		   "thread %p thread_name %s synch %p",
--		   thread, xnthread_name(thread), synch);
--	xnpod_resume_thread(thread, XNPEND);
--
--	if (testbits(synch->status, XNSYNCH_CLAIMED))
--		xnsynch_clear_boost(synch, lastowner);
--
--	xnlock_put_irqrestore(&nklock, s);
--
--	xnarch_post_graph_if(synch, 0, emptypq_p(&synch->pendq));
--
--	return nholder;
--}
--
--/*! 
-  * \fn void xnsynch_flush(xnsynch_t *synch, xnflags_t reason);
-  * \brief Unblock all waiters pending on a resource.
-  *
-@@ -679,12 +815,12 @@ void xnsynch_release_all_ownerships(xnth
- 
- 	for (holder = getheadpq(&thread->claimq); holder != NULL;
- 	     holder = nholder) {
--		/* Since xnsynch_wakeup_one_sleeper() alters the claim
-+		/* Since xnsynch_release() alters the claim
- 		   queue, we need to be conservative while scanning
- 		   it. */
- 		xnsynch_t *synch = link2synch(holder);
- 		nholder = nextpq(&thread->claimq, holder);
--		xnsynch_wakeup_one_sleeper(synch);
-+		xnsynch_release(synch);
- 		if (synch->cleanup)
- 			synch->cleanup(synch);
- 	}
-@@ -701,3 +837,5 @@ EXPORT_SYMBOL(xnsynch_sleep_on);
- EXPORT_SYMBOL(xnsynch_wakeup_one_sleeper);
- EXPORT_SYMBOL(xnsynch_wakeup_this_sleeper);
- EXPORT_SYMBOL(xnsynch_peek_pendq);
-+EXPORT_SYMBOL(xnsynch_acquire);
-+EXPORT_SYMBOL(xnsynch_release);
-Index: b/include/rtdm/rtdm_driver.h
-===================================================================
---- a/include/rtdm/rtdm_driver.h
-+++ b/include/rtdm/rtdm_driver.h
-@@ -1134,7 +1134,7 @@ static inline void rtdm_mutex_unlock(rtd
- 
- 	trace_mark(xn_rtdm_mutex_unlock, "mutex %p", mutex);
- 
--	if (unlikely(xnsynch_wakeup_one_sleeper(&mutex->synch_base) != NULL))
-+	if (unlikely(xnsynch_release(&mutex->synch_base) != NULL))
- 		xnpod_schedule();
- }
- 
-Index: b/ksrc/skins/native/cond.c
-===================================================================
---- a/ksrc/skins/native/cond.c
-+++ b/ksrc/skins/native/cond.c
-@@ -421,7 +421,7 @@ int rt_cond_wait_inner(RT_COND *cond, RT
- 
- 	mutex->lockcnt = 0;
- 
--	if (xnsynch_wakeup_one_sleeper(&mutex->synch_base)) {
-+	if (xnsynch_release(&mutex->synch_base)) {
- 		mutex->lockcnt = 1;
- 		/* Scheduling deferred */
- 	}
-Index: b/ksrc/skins/native/mutex.c
-===================================================================
---- a/ksrc/skins/native/mutex.c
-+++ b/ksrc/skins/native/mutex.c
-@@ -170,7 +170,8 @@ int rt_mutex_create(RT_MUTEX *mutex, con
- 	if (xnpod_asynch_p())
- 		return -EPERM;
- 
--	xnsynch_init(&mutex->synch_base, XNSYNCH_PRIO | XNSYNCH_PIP);
-+	xnsynch_init(&mutex->synch_base,
-+		     XNSYNCH_PRIO | XNSYNCH_PIP | XNSYNCH_OWNER);
- 	mutex->handle = 0;	/* i.e. (still) unregistered mutex. */
- 	mutex->magic = XENO_MUTEX_MAGIC;
- 	mutex->lockcnt = 0;
-@@ -309,7 +310,7 @@ int rt_mutex_acquire_inner(RT_MUTEX *mut
- 		goto unlock_and_exit;
- 	}
- 
--	xnsynch_sleep_on(&mutex->synch_base, timeout, timeout_mode);
-+	xnsynch_acquire(&mutex->synch_base, timeout, timeout_mode);
- 
- 	if (xnthread_test_info(thread, XNRMID))
- 		err = -EIDRM;	/* Mutex deleted while pending. */
-@@ -523,7 +524,7 @@ int rt_mutex_release(RT_MUTEX *mutex)
- 	if (--mutex->lockcnt > 0)
- 		goto unlock_and_exit;
- 
--	if (xnsynch_wakeup_one_sleeper(&mutex->synch_base)) {
-+	if (xnsynch_release(&mutex->synch_base)) {
- 		mutex->lockcnt = 1;
- 		xnpod_schedule();
- 	}
-Index: b/ksrc/skins/native/task.c
-===================================================================
---- a/ksrc/skins/native/task.c
-+++ b/ksrc/skins/native/task.c
-@@ -269,7 +269,8 @@ int rt_task_create(RT_TASK *task,
- 
- #ifdef CONFIG_XENO_OPT_NATIVE_MPS
- 	xnsynch_init(&task->mrecv, XNSYNCH_FIFO);
--	xnsynch_init(&task->msendq, XNSYNCH_PRIO | XNSYNCH_PIP);
-+	xnsynch_init(&task->msendq,
-+		     XNSYNCH_PRIO | XNSYNCH_PIP | XNSYNCH_OWNER);
- 	xnsynch_set_owner(&task->msendq, &task->thread_base);
- 	task->flowgen = 0;
- #endif /* CONFIG_XENO_OPT_NATIVE_MPS */
-@@ -1773,7 +1774,7 @@ ssize_t rt_task_send(RT_TASK *task,
- 	   client in the case required by the priority inheritance
- 	   protocol (i.e. prio(client) > prio(server)). */
- 
--	xnsynch_sleep_on(&task->msendq, timeout, XN_RELATIVE);
-+	xnsynch_acquire(&task->msendq, timeout, XN_RELATIVE);
- 
- 	/* At this point, the server task might have exited right
- 	 * after having replied to us, so do not make optimistic
 Index: b/ksrc/skins/posix/cond.c
 ===================================================================
 --- a/ksrc/skins/posix/cond.c
 +++ b/ksrc/skins/posix/cond.c
-@@ -240,7 +240,7 @@ static inline int mutex_save_count(xnthr
- 		   xnthread_handle(cur)))
- 		return 0;
+@@ -223,27 +223,18 @@ static inline int mutex_save_count(xnthr
+ 				   unsigned *count_ptr)
+ {
+ 	pse51_mutex_t *mutex;
+-	xnthread_t *owner;
  
--	owner = xnsynch_wakeup_one_sleeper(&mutex->synchbase);
-+	owner = xnsynch_release(&mutex->synchbase);
- 	xnarch_atomic_set(mutex->owner,
- 			  set_claimed(xnthread_handle(owner),
- 				      xnsynch_nsleepers(&mutex->synchbase)));
+ 	if (!pse51_obj_active(shadow, PSE51_MUTEX_MAGIC, struct __shadow_mutex))
+ 		 return EINVAL;
+ 
+ 	mutex = shadow->mutex;
+ 
+-	if (clear_claimed(xnarch_atomic_get(mutex->owner)) !=
+-	    xnthread_handle(cur))
++	if (xnsynch_owner_check(&mutex->synchbase, cur) != 0)
+ 		return EPERM;
+ 
+ 	*count_ptr = shadow->lockcnt;
+ 
+-	if (likely(xnarch_atomic_cmpxchg(mutex->owner, cur, XN_NO_HANDLE) ==
+-		   xnthread_handle(cur)))
+-		return 0;
+-
+-	owner = xnsynch_release(&mutex->synchbase);
+-	xnarch_atomic_set(mutex->owner,
+-			  set_claimed(xnthread_handle(owner),
+-				      xnsynch_nsleepers(&mutex->synchbase)));
++	xnsynch_release(&mutex->synchbase);
+ 
+ 	/* Do not reschedule here, releasing the mutex and suspension must be
+ 	   done atomically in pthread_cond_*wait. */
 Index: b/ksrc/skins/posix/mutex.c
 ===================================================================
 --- a/ksrc/skins/posix/mutex.c
 +++ b/ksrc/skins/posix/mutex.c
-@@ -85,7 +85,7 @@ int pse51_mutex_init_internal(struct __s
- 			      xnarch_atomic_t *ownerp,
- 			      const pthread_mutexattr_t *attr)
- {
--	xnflags_t synch_flags = XNSYNCH_PRIO | XNSYNCH_NOPIP;
-+	xnflags_t synch_flags = XNSYNCH_PRIO | XNSYNCH_OWNER;
- 	struct xnsys_ppd *sys_ppd;
- 	pse51_kqueues_t *kq;
- 	spl_t s;
-@@ -307,11 +307,11 @@ int pse51_mutex_timedlock_break(struct _
+@@ -102,9 +102,9 @@ int pse51_mutex_init_internal(struct __s
+ 	shadow->magic = PSE51_MUTEX_MAGIC;
+ 	shadow->mutex = mutex;
+ 	shadow->lockcnt = 0;
++	xnarch_atomic_set(&shadow->lock, -1);
+ 
+ #ifdef CONFIG_XENO_FASTSYNCH
+-	xnarch_atomic_set(&shadow->lock, -1);
+ 	shadow->attr = *attr;
+ 	shadow->owner_offset = xnheap_mapped_offset(&sys_ppd->sem_heap, ownerp);
+ #endif /* CONFIG_XENO_FASTSYNCH */
+@@ -112,13 +112,10 @@ int pse51_mutex_init_internal(struct __s
+ 	if (attr->protocol == PTHREAD_PRIO_INHERIT)
+ 		synch_flags |= XNSYNCH_PIP;
+ 
+-	xnsynch_init(&mutex->synchbase, synch_flags, NULL);
++	xnsynch_init(&mutex->synchbase, synch_flags, ownerp);
+ 	inith(&mutex->link);
+ 	mutex->attr = *attr;
+-	mutex->owner = ownerp;
+ 	mutex->owningq = kq;
+-	mutex->sleepers = 0;
+-	xnarch_atomic_set(ownerp, XN_NO_HANDLE);
+ 
+ 	xnlock_get_irqsave(&nklock, s);
+ 	appendq(&kq->mutexq, &mutex->link);
+@@ -159,7 +156,7 @@ int pthread_mutex_init(pthread_mutex_t *
+ 	    &((union __xeno_mutex *)mx)->shadow_mutex;
+ 	DECLARE_CB_LOCK_FLAGS(s);
+ 	pse51_mutex_t *mutex;
+-	xnarch_atomic_t *ownerp;
++	xnarch_atomic_t *ownerp = NULL;
+ 	int err;
+ 
+ 	if (!attr)
+@@ -185,6 +182,7 @@ int pthread_mutex_init(pthread_mutex_t *
+ 	if (!mutex)
+ 		return ENOMEM;
+ 
++#ifdef CONFIG_XENO_FASTSYNCH
+ 	ownerp = (xnarch_atomic_t *)
+ 		xnheap_alloc(&xnsys_ppd_get(attr->pshared)->sem_heap,
+ 			     sizeof(xnarch_atomic_t));
+@@ -192,6 +190,7 @@ int pthread_mutex_init(pthread_mutex_t *
+ 		xnfree(mutex);
+ 		return EAGAIN;
+ 	}
++#endif /* CONFIG_XENO_FASTSYNCH */
+ 
+ 	cb_force_write_lock(&shadow->lock, s);
+ 	err = pse51_mutex_init_internal(shadow, mutex, ownerp, attr);
+@@ -199,7 +198,9 @@ int pthread_mutex_init(pthread_mutex_t *
+ 
+ 	if (err) {
+ 		xnfree(mutex);
++#ifdef CONFIG_XENO_FASTSYNCH
+ 		xnheap_free(&xnsys_ppd_get(attr->pshared)->sem_heap, ownerp);
++#endif /* CONFIG_XENO_FASTSYNCH */
+ 	}
+ 	return -err;
+ }
+@@ -216,8 +217,10 @@ void pse51_mutex_destroy_internal(pse51_
+ 	xnsynch_destroy(&mutex->synchbase);
+ 	xnlock_put_irqrestore(&nklock, s);
+ 
+-	if (mutex->attr.pshared)
+-		xnheap_free(&xnsys_ppd_get(1)->sem_heap, mutex->owner);
++#ifdef CONFIG_XENO_FASTSYNCH
++	xnheap_free(&xnsys_ppd_get(mutex->attr.pshared)->sem_heap,
++		    mutex->synchbase.fastlock);
++#endif /* CONFIG_XENO_FASTSYNCH */
+ 	/* We do not free the owner if the mutex is not pshared, because when
+ 	   this function is called from pse51_mutexq_cleanup, the sem_heap has
+ 	   been destroyed, and we have no way to find it back. */
+@@ -266,7 +269,12 @@ int pthread_mutex_destroy(pthread_mutex_
+ 		return EPERM;
+ 	}
+ 
+-	if (xnarch_atomic_get(mutex->owner) != XN_NO_HANDLE) {
++#ifdef CONFIG_XENO_FASTSYNCH
++	if (xnsynch_fast_owner_check(mutex->synchbase.fastlock,
++				     XN_NO_HANDLE) != 0) {
++#else /* CONFIG_XENO_FASTSYNCH */
++	if (xnsynch_owner_check(&mutex->synchbase, NULL) {
++#endif
+ 		cb_write_unlock(&shadow->lock, s);
+ 		return EBUSY;
+ 	}
+@@ -274,9 +282,6 @@ int pthread_mutex_destroy(pthread_mutex_
+ 	pse51_mark_deleted(shadow);
+ 	cb_write_unlock(&shadow->lock, s);
+ 
+-	if (!mutex->attr.pshared)
+-		xnheap_free(&xnsys_ppd_get(mutex->attr.pshared)->sem_heap,
+-			    mutex->owner);
+ 	pse51_mutex_destroy_internal(mutex, pse51_kqueues(mutex->attr.pshared));
+ 	
+ 	return 0;
+@@ -305,14 +310,12 @@ int pse51_mutex_timedlock_break(struct _
+ 		/* Attempting to relock a normal mutex, deadlock. */
+ 		xnlock_get_irqsave(&nklock, s);
  		for (;;) {
- 			++mutex->sleepers;
+-			++mutex->sleepers;
  			if (timed)
--				xnsynch_sleep_on(&mutex->synchbase,
--						 abs_to, XN_REALTIME);
-+				xnsynch_acquire(&mutex->synchbase,
-+						abs_to, XN_REALTIME);
+ 				xnsynch_acquire(&mutex->synchbase,
+ 						abs_to, XN_REALTIME);
  			else
--				xnsynch_sleep_on(&mutex->synchbase,
--						 XN_INFINITE, XN_RELATIVE);
-+				xnsynch_acquire(&mutex->synchbase,
-+						XN_INFINITE, XN_RELATIVE);
- 			--mutex->sleepers;
+ 				xnsynch_acquire(&mutex->synchbase,
+ 						XN_INFINITE, XN_RELATIVE);
+-			--mutex->sleepers;
  
  			if (xnthread_test_info(cur, XNBREAK)) {
+ 				err = -EINTR;
+@@ -384,19 +387,48 @@ int pthread_mutex_trylock(pthread_mutex_
+ {
+ 	struct __shadow_mutex *shadow =
+ 	    &((union __xeno_mutex *)mx)->shadow_mutex;
+-	xnthread_t *owner, *cur = xnpod_current_thread();
++	xnthread_t *cur = xnpod_current_thread();
++	pse51_mutex_t *mutex = shadow->mutex;
+ 	DECLARE_CB_LOCK_FLAGS(s);
+ 	int err;
+ 
++	if (xnpod_unblockable_p())
++		return EPERM;
++
+ 	if (unlikely(cb_try_read_lock(&shadow->lock, s)))
+ 		return EINVAL;
+ 
+-	owner = pse51_mutex_trylock_internal(cur, shadow, 1);
+-	if (likely(!owner) || IS_ERR(owner))
+-		return -PTR_ERR(owner);
++	if (!pse51_obj_active(shadow, PSE51_MUTEX_MAGIC,
++			      struct __shadow_mutex)) {
++		err = EINVAL;
++		goto unlock_and_return;
++	}
+ 
+-	err = EBUSY;
+-	if (owner == cur) {
++#if XENO_DEBUG(POSIX)
++	if (mutex->owningq != pse51_kqueues(mutex->attr.pshared)) {
++		err = EPERM;
++		goto unlock_and_return;
++	}
++#endif /* XENO_DEBUG(POSIX) */
++
++#ifdef CONFIG_XENO_FASTSYNCH
++	err = -xnsynch_fast_acquire(mutex->synchbase.fastlock,
++				    xnthread_handle(cur));
++#else /* !CONFIG_XENO_FASTSYNCH */
++	{
++		xnthread_t *owner = xnsynch_owner(&mutex->synchbase);
++		if (!owner)
++			err = 0;
++		else if (owner == cur)
++			err = EBUSY;
++		else
++			err = EAGAIN;
++	}
++#endif /* !CONFIG_XENO_FASTSYNCH */
++
++	if (likely(!err))
++		shadow->lockcnt = 1;
++	else if (err == EBUSY) {
+ 		pse51_mutex_t *mutex = shadow->mutex;
+ 
+ 		if (mutex->attr.type == PTHREAD_MUTEX_RECURSIVE) {
+@@ -409,6 +441,7 @@ int pthread_mutex_trylock(pthread_mutex_
+ 		}
+ 	}
+ 
++  unlock_and_return:
+ 	cb_read_unlock(&shadow->lock, s);
+ 
+ 	return err;
+@@ -564,7 +597,7 @@ int pthread_mutex_unlock(pthread_mutex_t
+ 	int err;
+ 
+ 	if (xnpod_root_p() || xnpod_interrupt_p())
+-		return -EPERM;
++		return EPERM;
+ 
+ 	if (unlikely(cb_try_read_lock(&shadow->lock, s)))
+ 		return EINVAL;
+@@ -576,14 +609,11 @@ int pthread_mutex_unlock(pthread_mutex_t
+ 	}
+ 
+ 	mutex = shadow->mutex;
+-	
+-	if (clear_claimed(xnarch_atomic_get(mutex->owner)) !=
+-	    xnthread_handle(cur)) {
+-		err = EPERM;
++
++	err = -xnsynch_owner_check(&mutex->synchbase, cur);
++	if (err)
+ 		goto out;
+-	}
+ 
+-	err = 0;
+ 	if (shadow->lockcnt > 1) {
+ 		/* Mutex is recursive */
+ 		--shadow->lockcnt;
+@@ -591,7 +621,8 @@ int pthread_mutex_unlock(pthread_mutex_t
+ 		return 0;
+ 	}
+ 
+-	pse51_mutex_unlock_internal(cur, mutex);
++	if (xnsynch_release(&mutex->synchbase))
++		xnpod_schedule();
+ 
+   out:
+ 	cb_read_unlock(&shadow->lock, s);
 Index: b/ksrc/skins/posix/mutex.h
 ===================================================================
 --- a/ksrc/skins/posix/mutex.h
 +++ b/ksrc/skins/posix/mutex.h
-@@ -170,9 +170,9 @@ static inline int pse51_mutex_timedlock_
- 	xnsynch_set_owner(&mutex->synchbase, owner);
- 	++mutex->sleepers;
- 	if (timed)
--		xnsynch_sleep_on(&mutex->synchbase, abs_to, XN_REALTIME);
-+		xnsynch_acquire(&mutex->synchbase, abs_to, XN_REALTIME);
- 	else
--		xnsynch_sleep_on(&mutex->synchbase, XN_INFINITE, XN_RELATIVE);
-+		xnsynch_acquire(&mutex->synchbase, XN_INFINITE, XN_RELATIVE);
- 	--mutex->sleepers;
+@@ -30,8 +30,8 @@ union __xeno_mutex {
+ 		unsigned magic;
+ 		unsigned lockcnt;
+ 		struct pse51_mutex *mutex;
+-#ifdef CONFIG_XENO_FASTSYNCH
+ 		xnarch_atomic_t lock;
++#ifdef CONFIG_XENO_FASTSYNCH
+ 		union {
+ 			unsigned owner_offset;
+ 			xnarch_atomic_t *owner;
+@@ -54,9 +54,7 @@ typedef struct pse51_mutex {
+ #define link2mutex(laddr)                                               \
+ 	((pse51_mutex_t *)(((char *)laddr) - offsetof(pse51_mutex_t, link)))
  
- 	if (xnthread_test_info(cur, XNBREAK)) {
-@@ -216,7 +216,7 @@ static inline void pse51_mutex_unlock_in
- 		return;
+-	xnarch_atomic_t *owner;
+ 	pthread_mutexattr_t attr;
+-	unsigned sleepers;
+ 	pse51_kqueues_t *owningq;
+ } pse51_mutex_t;
  
- 	xnlock_get_irqsave(&nklock, s);
--	owner = xnsynch_wakeup_one_sleeper(&mutex->synchbase);
-+	owner = xnsynch_release(&mutex->synchbase);
- 	ownerh = set_claimed(xnthread_handle(owner), mutex->sleepers);
- 	xnarch_atomic_set(mutex->owner, ownerh);
- 	if (owner)
-Index: b/ksrc/skins/rtai/sem.c
-===================================================================
---- a/ksrc/skins/rtai/sem.c
-+++ b/ksrc/skins/rtai/sem.c
-@@ -28,7 +28,7 @@ void rt_typed_sem_init(SEM * sem, int va
- 	int mode = XNSYNCH_PRIO;
+@@ -83,145 +81,47 @@ int pse51_mutex_init_internal(struct __s
+ void pse51_mutex_destroy_internal(pse51_mutex_t *mutex,
+ 				  pse51_kqueues_t *q);
  
- 	if ((type & RES_SEM) == RES_SEM) {
--		mode |= XNSYNCH_PIP;
-+		mode |= XNSYNCH_PIP | XNSYNCH_OWNER;
- 		value = 0;	/* We will use this as a lock count. */
- 	} else {
- 		if ((type & BIN_SEM) && value > 1)
-@@ -98,7 +98,7 @@ int rt_sem_signal(SEM * sem)
- 			goto unlock_and_exit;
+-static inline xnthread_t *
+-pse51_mutex_trylock_internal(xnthread_t *cur,
+-			     struct __shadow_mutex *shadow, unsigned count)
++/* must be called with nklock locked, interrupts off. */
++static inline int pse51_mutex_timedlock_internal(xnthread_t *cur,
++						 struct __shadow_mutex *shadow,
++						 unsigned count,
++						 int timed,
++						 xnticks_t abs_to)
++
+ {
+ 	pse51_mutex_t *mutex = shadow->mutex;
+-	xnhandle_t ownerh;
+-	xnthread_t *owner;
  
- 		sem->owner =
--		    thread2rtask(xnsynch_wakeup_one_sleeper(&sem->synch_base));
-+		    thread2rtask(xnsynch_release(&sem->synch_base));
+ 	if (xnpod_unblockable_p())
+-		return ERR_PTR(-EPERM);
++		return -EPERM;
  
- 		if (sem->owner != NULL)
- 			xnpod_schedule();
-@@ -141,12 +141,12 @@ int rt_sem_wait(SEM * sem)
- 			err = ++sem->count;
- 			goto unlock_and_exit;
- 		}
-+		xnsynch_acquire(&sem->synch_base, XN_INFINITE, XN_RELATIVE);
- 	} else if (sem->count > 0) {
- 		err = sem->count--;
- 		goto unlock_and_exit;
+ 	if (!pse51_obj_active(shadow, PSE51_MUTEX_MAGIC, struct __shadow_mutex))
+-		return ERR_PTR(-EINVAL);
++		return -EINVAL;
+ 
+ #if XENO_DEBUG(POSIX)
+ 	if (mutex->owningq != pse51_kqueues(mutex->attr.pshared))
+-		return ERR_PTR(-EPERM);
++		return -EPERM;
+ #endif /* XENO_DEBUG(POSIX) */
+ 
+-	ownerh = xnarch_atomic_cmpxchg(mutex->owner, XN_NO_HANDLE,
+-				       xnthread_handle(cur));
+-	if (unlikely(ownerh != XN_NO_HANDLE)) {
+-		owner = xnthread_lookup(clear_claimed(ownerh));
+-		if (!owner)
+-			return ERR_PTR(-EINVAL);
+-		return owner;
 -	}
 -
--	xnsynch_sleep_on(&sem->synch_base, XN_INFINITE, XN_RELATIVE);
-+	} else
-+		xnsynch_sleep_on(&sem->synch_base, XN_INFINITE, XN_RELATIVE);
+-	shadow->lockcnt = count;
+-	return NULL;
+-}
+-
+-/* must be called with nklock locked, interrupts off. */
+-static inline int pse51_mutex_timedlock_internal(xnthread_t *cur,
+-						 struct __shadow_mutex *shadow,
+-						 unsigned count,
+-						 int timed,
+-						 xnticks_t abs_to)
+-
+-{
+-	pse51_mutex_t *mutex;
+-	xnthread_t *owner;
+-	xnhandle_t ownerh, old;
+-	spl_t s;
+-	int err;
+-
+-  retry_lock:
+-	owner = pse51_mutex_trylock_internal(cur, shadow, count);
+-	if (likely(!owner) || IS_ERR(owner))
+-		return PTR_ERR(owner);
+-
+-	mutex = shadow->mutex;
+-	if (owner == cur)
++	if (xnsynch_owner_check(&mutex->synchbase, cur) == 0)
+ 		return -EBUSY;
  
- 	if (xnthread_test_info(&task->thread_base, XNRMID))
- 		err = SEM_ERR;	/* Semaphore deleted while pending. */
-Index: b/ksrc/skins/rtdm/drvlib.c
-===================================================================
---- a/ksrc/skins/rtdm/drvlib.c
-+++ b/ksrc/skins/rtdm/drvlib.c
-@@ -1390,7 +1390,8 @@ void rtdm_mutex_init(rtdm_mutex_t *mutex
- 	/* Make atomic for re-initialisation support */
- 	xnlock_get_irqsave(&nklock, s);
+-	/* Set bit 0, so that mutex_unlock will know that the mutex is claimed.
+-	   Hold the nklock, for mutual exclusion with slow mutex_unlock. */
+-	xnlock_get_irqsave(&nklock, s);
+-	if (test_claimed(ownerh)) {
+-		old = xnarch_atomic_get(mutex->owner);
+-		goto test_no_owner;
+-	}
+-	do {
+-		old = xnarch_atomic_cmpxchg(mutex->owner, ownerh,
+-					    set_claimed(ownerh, 1));
+-		if (likely(old == ownerh))
+-			break;
+-	  test_no_owner:
+-		if (old == XN_NO_HANDLE) {
+-			/* Owner called fast mutex_unlock
+-			   (on another cpu) */
+-			xnlock_put_irqrestore(&nklock, s);
+-			goto retry_lock;
+-		}
+-		ownerh = old;
+-	} while (!test_claimed(ownerh));
+-
+-	owner = xnthread_lookup(clear_claimed(ownerh));
+-
+-	if (unlikely(!owner)) {
+-		err = -EINVAL;
+-		goto error;
+-	}
+-
+-	xnsynch_set_owner(&mutex->synchbase, owner);
+-	++mutex->sleepers;
+ 	if (timed)
+ 		xnsynch_acquire(&mutex->synchbase, abs_to, XN_REALTIME);
+ 	else
+ 		xnsynch_acquire(&mutex->synchbase, XN_INFINITE, XN_RELATIVE);
+-	--mutex->sleepers;
  
--	xnsynch_init(&mutex->synch_base, XNSYNCH_PRIO | XNSYNCH_PIP);
-+	xnsynch_init(&mutex->synch_base,
-+		     XNSYNCH_PRIO | XNSYNCH_PIP | XNSYNCH_OWNER);
+-	if (xnthread_test_info(cur, XNBREAK)) {
+-		err = -EINTR;
+-		goto error;
+-	}
+-	if (xnthread_test_info(cur, XNRMID)) {
+-		err = -EINVAL;
+-		goto error;
+-	}
+-	if (xnthread_test_info(cur, XNTIMEO)) {
+-		err = -ETIMEDOUT;
+-		goto error;
++	if (unlikely(xnthread_test_info(cur, XNBREAK | XNRMID | XNTIMEO))) {
++		if (xnthread_test_info(cur, XNBREAK))
++			return -EINTR;
++		else if (xnthread_test_info(cur, XNTIMEO))
++			return -ETIMEDOUT;
++		else /* XNRMID */
++			return -EINVAL;
+ 	}
  
- 	xnlock_put_irqrestore(&nklock, s);
+-	ownerh = set_claimed(xnthread_handle(cur), mutex->sleepers);
+-	xnarch_atomic_set(mutex->owner, ownerh);
+ 	shadow->lockcnt = count;
+-	xnlock_put_irqrestore(&nklock, s);
+ 
+ 	return 0;
+-
+-  error:
+-	if (!mutex->sleepers)
+-		xnarch_atomic_set
+-			(mutex->owner,
+-			 clear_claimed(xnarch_atomic_get(mutex->owner)));
+-	xnlock_put_irqrestore(&nklock, s);
+-	return err;
+-}
+-
+-static inline void pse51_mutex_unlock_internal(xnthread_t *cur,
+-					       pse51_mutex_t *mutex)
+-{
+-	xnhandle_t ownerh;
+-	xnthread_t *owner;
+-	spl_t s;
+-
+-	if (likely(xnarch_atomic_cmpxchg(mutex->owner, cur, XN_NO_HANDLE) ==
+-		   xnthread_handle(cur)))
+-		return;
+-
+-	xnlock_get_irqsave(&nklock, s);
+-	owner = xnsynch_release(&mutex->synchbase);
+-	ownerh = set_claimed(xnthread_handle(owner), mutex->sleepers);
+-	xnarch_atomic_set(mutex->owner, ownerh);
+-	if (owner)
+-		xnpod_schedule();
+-	xnlock_put_irqrestore(&nklock, s);
  }
-@@ -1534,14 +1535,14 @@ int rtdm_mutex_timedlock(rtdm_mutex_t *m
- restart:
- 		if (timeout_seq && (timeout > 0)) {
- 			/* timeout sequence */
--			xnsynch_sleep_on(&mutex->synch_base, *timeout_seq,
--					 XN_ABSOLUTE);
-+			xnsynch_acquire(&mutex->synch_base, *timeout_seq,
-+					XN_ABSOLUTE);
- 		} else {
- 			/* infinite or relative timeout */
--			xnsynch_sleep_on(&mutex->synch_base,
--					 xntbase_ns2ticks_ceil
--					 (xnthread_time_base(curr_thread),
--					  timeout), XN_RELATIVE);
-+			xnsynch_acquire(&mutex->synch_base,
-+					xntbase_ns2ticks_ceil
-+					(xnthread_time_base(curr_thread),
-+					 timeout), XN_RELATIVE);
- 		}
  
- 		if (unlikely(xnthread_test_info(curr_thread,
-Index: b/ksrc/skins/vrtx/mx.c
+ #endif /* __KERNEL__ */
+Index: b/ksrc/skins/posix/syscall.c
 ===================================================================
---- a/ksrc/skins/vrtx/mx.c
-+++ b/ksrc/skins/vrtx/mx.c
-@@ -161,7 +161,7 @@ int sc_mcreate(unsigned int opt, int *er
- 	inith(&mx->link);
- 	mx->mid = mid;
- 	mx->owner = NULL;
--	xnsynch_init(&mx->synchbase, bflags | XNSYNCH_DREORD);
-+	xnsynch_init(&mx->synchbase, bflags | XNSYNCH_DREORD | XNSYNCH_OWNER);
+--- a/ksrc/skins/posix/syscall.c
++++ b/ksrc/skins/posix/syscall.c
+@@ -1060,13 +1060,10 @@ static int __pthread_mutex_unlock(struct
  
- 	xnlock_get_irqsave(&nklock, s);
- 	appendq(&vrtx_mx_q, &mx->link);
-@@ -192,7 +192,7 @@ void sc_mpost(int mid, int *errp)
+ 	mutex = shadow->mutex;
+ 
+-	if (clear_claimed(xnarch_atomic_get(mutex->owner)) !=
+-	    xnthread_handle(cur)) {
+-		err = -EPERM;
++	err = (xnsynch_owner(&mutex->synchbase) == cur) ? 0 : -EPERM;
++	if (err)
+ 		goto out;
+-	}
+ 
+-	err = 0;
+ 	if (shadow->lockcnt > 1) {
+ 		/* Mutex is recursive */
+ 		--shadow->lockcnt;
+@@ -1080,8 +1077,9 @@ static int __pthread_mutex_unlock(struct
+ 
+ 		return 0;
  	}
+-	
+-	pse51_mutex_unlock_internal(cur, mutex);
++
++	if (xnsynch_release(&mutex->synchbase))
++		xnpod_schedule();
  
- 	/* Undefined behaviour if the poster does not own the mutex. */
--	mx->owner = xnsynch_wakeup_one_sleeper(&mx->synchbase);
-+	mx->owner = xnsynch_release(&mx->synchbase);
+   out:
+ 	cb_read_unlock(&shadow->lock, s);
+@@ -1186,13 +1184,11 @@ static int __pthread_mutex_destroy(struc
+ 	if (pse51_kqueues(mutex->attr.pshared) != mutex->owningq)
+ 		return -EPERM;
  
- 	*errp = RET_OK;
+-	if (xnarch_atomic_get(mutex->owner) != XN_NO_HANDLE)
++	if (xnsynch_fast_owner_check(mutex->synchbase.fastlock,
++				     XN_NO_HANDLE) != 0)
+ 		return -EBUSY;
  
-@@ -267,7 +267,7 @@ void sc_mpend(int mid, unsigned long tim
- 		if (timeout)
- 			task->vrtxtcb.TCBSTAT |= TBSDELAY;
+ 	pse51_mark_deleted(shadow);
+-	if (!mutex->attr.pshared)
+-		xnheap_free(&xnsys_ppd_get(mutex->attr.pshared)->sem_heap,
+-			    mutex->owner);
+ 	pse51_mutex_destroy_internal(mutex, mutex->owningq);
  
--		xnsynch_sleep_on(&mx->synchbase, timeout, XN_RELATIVE);
-+		xnsynch_acquire(&mx->synchbase, timeout, XN_RELATIVE);
+ 	return __xn_safe_copy_to_user((void __user *)&umx->shadow_mutex,
+@@ -1262,7 +1258,6 @@ static int __pthread_mutex_timedlock(str
  
- 		if (xnthread_test_info(&task->threadbase, XNBREAK))
- 			*errp = -EINTR;
-Index: b/ksrc/skins/vxworks/semLib.c
-===================================================================
---- a/ksrc/skins/vxworks/semLib.c
-+++ b/ksrc/skins/vxworks/semLib.c
-@@ -138,7 +138,7 @@ SEM_ID semCCreate(int flags, int count)
- 
- SEM_ID semMCreate(int flags)
+ static int __pthread_mutex_unlock(struct pt_regs *regs)
  {
--	int bflags = 0;
-+	int bflags = XNSYNCH_OWNER;
+-	xnthread_t *cur = xnpod_current_thread();
+ 	union __xeno_mutex mx, *umx;
  
- 	error_check(flags & ~WIND_SEMM_OPTION_MASK, S_semLib_INVALID_QUEUE_TYPE,
- 		    return 0);
-@@ -346,7 +346,7 @@ static STATUS semm_take(wind_sem_t *sem,
- 	error_check(to == XN_NONBLOCK, S_objLib_OBJ_UNAVAILABLE,
- 		    return ERROR);
+ 	if (xnpod_root_p())
+@@ -1275,7 +1270,8 @@ static int __pthread_mutex_unlock(struct
+ 				     offsetof(struct __shadow_mutex, lock)))
+ 		return -EFAULT;
  
--	xnsynch_sleep_on(&sem->synchbase, to, XN_RELATIVE);
-+	xnsynch_acquire(&sem->synchbase, to, XN_RELATIVE);
+-	pse51_mutex_unlock_internal(cur, mx.shadow_mutex.mutex);
++	if (xnsynch_release(&mx.shadow_mutex.mutex->synchbase))
++		xnpod_schedule();
  
- 	error_check(xnthread_test_info(cur, XNBREAK),
- 		    -EINTR, return ERROR);
-@@ -385,7 +385,7 @@ static STATUS semm_give(wind_sem_t *sem)
- 	if (--sem->count > 0)
- 		return OK;
+ 	return 0;
+ }
+Index: b/src/skins/posix/mutex.c
+===================================================================
+--- a/src/skins/posix/mutex.c
++++ b/src/skins/posix/mutex.c
+@@ -19,6 +19,7 @@
+ #include <errno.h>
+ #include <pthread.h>
+ #include <limits.h>
++#include <nucleus/synch.h>
+ #include <posix/mutex.h>
+ #include <posix/syscall.h>
+ #include <posix/cb_lock.h>
+@@ -146,10 +147,10 @@ int __wrap_pthread_mutex_lock(pthread_mu
+ {
+ 	union __xeno_mutex *_mutex = (union __xeno_mutex *)mutex;
+ 	struct __shadow_mutex *shadow = &_mutex->shadow_mutex;
+-	int err = 0;
++	int err;
  
--	if (xnsynch_wakeup_one_sleeper(&sem->synchbase)) {
-+	if (xnsynch_release(&sem->synchbase)) {
- 		sem->count = 1;
- 		resched = 1;
+ #ifdef CONFIG_XENO_FASTSYNCH
+-	xnhandle_t cur, owner;
++	xnhandle_t cur;
+ 
+ 	cur = xeno_get_current();
+ 	if (cur == XN_NO_HANDLE)
+@@ -163,14 +164,15 @@ int __wrap_pthread_mutex_lock(pthread_mu
+ 		goto out;
  	}
+ 
+-	owner = xnarch_atomic_cmpxchg(get_ownerp(shadow), XN_NO_HANDLE, cur);
+-	if (likely(owner == XN_NO_HANDLE)) {
++	err = xnsynch_fast_acquire(get_ownerp(shadow), cur);
++
++	if (likely(!err)) {
+ 		shadow->lockcnt = 1;
+ 		cb_read_unlock(&shadow->lock, s);
+ 		return 0;
+ 	}
+ 
+-	if (clear_claimed(owner) == cur)
++	if (err == -EBUSY)
+ 		switch(shadow->attr.type) {
+ 		case PTHREAD_MUTEX_NORMAL:
+ 			break;
+@@ -184,8 +186,8 @@ int __wrap_pthread_mutex_lock(pthread_mu
+ 				err = -EAGAIN;
+ 				goto out;
+ 			}
+-
+ 			++shadow->lockcnt;
++			err = 0;
+ 			goto out;
+ 		}
+ #endif /* CONFIG_XENO_FASTSYNCH */
+@@ -207,10 +209,10 @@ int __wrap_pthread_mutex_timedlock(pthre
+ {
+ 	union __xeno_mutex *_mutex = (union __xeno_mutex *)mutex;
+ 	struct __shadow_mutex *shadow = &_mutex->shadow_mutex;
+-	int err = 0;
++	int err;
+ 
+ #ifdef CONFIG_XENO_FASTSYNCH
+-	xnhandle_t cur, owner;
++	xnhandle_t cur;
+ 
+ 	cur = xeno_get_current();
+ 	if (cur == XN_NO_HANDLE)
+@@ -224,14 +226,15 @@ int __wrap_pthread_mutex_timedlock(pthre
+ 		goto out;
+ 	}	
+ 
+-	owner = xnarch_atomic_cmpxchg(get_ownerp(shadow), XN_NO_HANDLE, cur);
+-	if (likely(owner == XN_NO_HANDLE)) {
++	err = xnsynch_fast_acquire(get_ownerp(shadow), cur);
++
++	if (likely(!err)) {
+ 		shadow->lockcnt = 1;
+ 		cb_read_unlock(&shadow->lock, s);
+ 		return 0;
+ 	}
+ 
+-	if (clear_claimed(owner) == cur)
++	if (err == -EBUSY)
+ 		switch(shadow->attr.type) {
+ 		case PTHREAD_MUTEX_NORMAL:
+ 			break;
+@@ -268,10 +271,10 @@ int __wrap_pthread_mutex_trylock(pthread
+ {
+ 	union __xeno_mutex *_mutex = (union __xeno_mutex *)mutex;
+ 	struct __shadow_mutex *shadow = &_mutex->shadow_mutex;
+-	int err = 0;
++	int err;
+ 
+ #ifdef CONFIG_XENO_FASTSYNCH
+-	xnhandle_t cur, owner;
++	xnhandle_t cur;
+ 
+ 	cur = xeno_get_current();
+ 	if (cur == XN_NO_HANDLE)
+@@ -285,23 +288,23 @@ int __wrap_pthread_mutex_trylock(pthread
+ 		goto out;
+ 	}	
+ 
+-	owner = xnarch_atomic_cmpxchg(get_ownerp(shadow), XN_NO_HANDLE, cur);
+-	if (likely(owner == XN_NO_HANDLE)) {
++	err = xnsynch_fast_acquire(get_ownerp(shadow), cur);
++
++	if (likely(!err)) {
+ 		shadow->lockcnt = 1;
+ 		cb_read_unlock(&shadow->lock, s);
+ 		return 0;
+ 	}
+ 
+-	err = -EBUSY;
+-	if (clear_claimed(owner) == cur
+-	    && shadow->attr.type == PTHREAD_MUTEX_RECURSIVE) {
++	if (err == -EBUSY && shadow->attr.type == PTHREAD_MUTEX_RECURSIVE) {
+ 		if (shadow->lockcnt == UINT_MAX)
+ 			err = -EAGAIN;
+ 		else {
+ 			++shadow->lockcnt;
+ 			err = 0;
+ 		}
+-	}
++	} else
++		err = -EBUSY;
+ 
+   out:
+ 	cb_read_unlock(&shadow->lock, s);
+@@ -322,11 +325,11 @@ int __wrap_pthread_mutex_unlock(pthread_
+ {
+ 	union __xeno_mutex *_mutex = (union __xeno_mutex *)mutex;
+ 	struct __shadow_mutex *shadow = &_mutex->shadow_mutex;
+-	int err = 0;
++	int err;
+ 
+ #ifdef CONFIG_XENO_FASTSYNCH
+ 	xnarch_atomic_t *ownerp;
+-	xnhandle_t cur, owner;
++	xnhandle_t cur;
+ 
+ 	cur = xeno_get_current();
+ 	if (cur == XN_NO_HANDLE)
+@@ -341,19 +344,17 @@ int __wrap_pthread_mutex_unlock(pthread_
+ 	}
+ 
+ 	ownerp = get_ownerp(shadow);
+-	owner = clear_claimed(xnarch_atomic_get(ownerp));
+-	if (unlikely(owner != cur)) {
+-		err = -EPERM;
++
++	err = xnsynch_fast_owner_check(ownerp, cur);
++	if (unlikely(err))
+ 		goto out_err;
+-	}
+ 
+-	err = 0;
+ 	if (shadow->lockcnt > 1) {
+ 		--shadow->lockcnt;
+ 		goto out;
+ 	}
+ 
+-	if (likely(xnarch_atomic_cmpxchg(ownerp, cur, XN_NO_HANDLE) == cur)) {
++	if (likely(xnsynch_fast_release(ownerp, cur))) {
+ 	  out:
+ 		cb_read_unlock(&shadow->lock, s);
+ 		return 0;
 
 
