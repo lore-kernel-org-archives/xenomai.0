@@ -1,10 +1,10 @@
 Resent-To: xenomai-core <xenomai@xenomai.org>
-Resent-Message-Id: <48F8B484.9010803@domain.hid>
-Message-Id: <20081017154601.562580026@domain.hid>
-Date: Fri, 17 Oct 2008 17:46:12 +0200
+Resent-Message-Id: <48F8B484.9070803@domain.hid>
+Message-Id: <20081017154600.116228654@domain.hid>
+Date: Fri, 17 Oct 2008 17:46:03 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 References: <20081017154559.420723261@domain.hid>
-Subject: [Xenomai-core] [PATCH 13/13] Catch inconsistent SMP feature support
+Subject: [Xenomai-core] [PATCH 04/13] Spread xeno_set_current under all skins
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,83 +18,200 @@ To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
 
-With fast xnsynch/mutex support in place, the importance of getting the
-user space library configuration right increases significantly. If the
-user fails to provide --enable-smp, (s)he risks to break the mutex fast
-path in a very subtle way.
-
-This patch catches the case that the kernel support SMP while userland
-does not.
+Spread xeno_set_current under all user space supporting skins.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- include/asm-generic/features.h |   40 ++++++++++++++++++++++++----------------
- 1 file changed, 24 insertions(+), 16 deletions(-)
+ src/skins/native/task.c     |   13 +++++++++++--
+ src/skins/psos+/task.c      |   18 ++++++++++++++----
+ src/skins/uitron/task.c     |   18 +++++++++++++-----
+ src/skins/vrtx/task.c       |    3 +++
+ src/skins/vxworks/taskLib.c |    3 +++
+ 5 files changed, 44 insertions(+), 11 deletions(-)
 
-Index: b/include/asm-generic/features.h
+Index: b/src/skins/native/task.c
 ===================================================================
---- a/include/asm-generic/features.h
-+++ b/include/asm-generic/features.h
-@@ -26,13 +26,14 @@
- #endif /* __KERNEL__ */
+--- a/src/skins/native/task.c
++++ b/src/skins/native/task.c
+@@ -26,6 +26,7 @@
+ #include <limits.h>
+ #include <native/syscall.h>
+ #include <native/task.h>
++#include <asm-generic/bits/current.h>
+ #include "wrappers.h"
  
- #define __xn_feat_smp         0x80000000
--#define __xn_feat_fastsynch   0x40000000
--#define __xn_feat_nofastsynch 0x20000000
-+#define __xn_feat_nosmp       0x40000000
-+#define __xn_feat_fastsynch   0x20000000
-+#define __xn_feat_nofastsynch 0x10000000
+ extern pthread_key_t __native_tskey;
+@@ -88,6 +89,8 @@ static void *rt_task_trampoline(void *co
+ 	if (err)
+ 		goto fail;
  
- #ifdef CONFIG_SMP
- #define __xn_feat_smp_mask __xn_feat_smp
- #else
--#define __xn_feat_smp_mask 0
-+#define __xn_feat_smp_mask __xn_feat_nosmp
- #endif
- 
- #ifdef CONFIG_XENO_FASTSYNCH
-@@ -41,22 +42,29 @@
- #define __xn_feat_fastsynch_mask __xn_feat_nofastsynch
- #endif
- 
--#define __xn_feat_generic_mask     (__xn_feat_smp_mask | __xn_feat_fastsynch_mask)
--
--#define __xn_feat_generic_man_mask (__xn_feat_fastsynch | __xn_feat_nofastsynch)
-+/* List of generic features kernel or userland may support */
-+#define __xn_feat_generic_mask \
-+	(__xn_feat_smp_mask | __xn_feat_fastsynch_mask)
++	xeno_set_current();
 +
-+/* List of features both sides have to agree on:
-+   If userland supports it, the kernel has to provide it, too. */
-+#define __xn_feat_generic_man_mask \
-+	(__xn_feat_fastsynch | __xn_feat_nofastsynch | __xn_feat_nosmp)
+ 	/* Wait on the barrier for the task to be started. The barrier
+ 	   could be released in order to process Linux signals while the
+ 	   Xenomai shadow is still dormant; in such a case, resume wait. */
+@@ -169,6 +172,7 @@ int rt_task_shadow(RT_TASK *task, const
+ 	struct sched_param param;
+ 	struct rt_arg_bulk bulk;
+ 	RT_TASK task_desc;
++	int err;
  
- static inline const char *get_generic_feature_label (unsigned feature)
- {
--    switch (feature) {
--    	case __xn_feat_smp:
--	    return "smp";
--        case __xn_feat_fastsynch:
--	    return "fastsynch";
--        case __xn_feat_nofastsynch:
--	    return "nofastsynch";
--    	default:
--	    return 0;
--    }
-+	switch (feature) {
-+	case __xn_feat_smp:
-+		return "smp";
-+	case __xn_feat_nosmp:
-+		return "nosmp";
-+	case __xn_feat_fastsynch:
-+		return "fastsynch";
-+	case __xn_feat_nofastsynch:
-+		return "nofastsynch";
-+	default:
-+		return 0;
-+	}
+ 	if (task == NULL)
+ 		task = &task_desc; /* Discarded. */
+@@ -191,8 +195,13 @@ int rt_task_shadow(RT_TASK *task, const
+ 	bulk.a4 = (u_long)mode;
+ 	bulk.a5 = (u_long)pthread_self();
+ 
+-	return XENOMAI_SKINCALL2(__native_muxid, __native_task_create, &bulk,
+-				 NULL);
++	err = XENOMAI_SKINCALL2(__native_muxid, __native_task_create, &bulk,
++				NULL);
++
++	if (!err)
++		xeno_set_current();
++
++	return err;
  }
  
- #endif /* !_XENO_ASM_GENERIC_FEATURES_H */
+ int rt_task_bind(RT_TASK *task, const char *name, RTIME timeout)
+Index: b/src/skins/psos+/task.c
+===================================================================
+--- a/src/skins/psos+/task.c
++++ b/src/skins/psos+/task.c
+@@ -26,6 +26,7 @@
+ #include <memory.h>
+ #include <string.h>
+ #include <psos+/psos.h>
++#include <asm-generic/bits/current.h>
+ 
+ extern int __psos_muxid;
+ 
+@@ -89,6 +90,8 @@ static void *psos_task_trampoline(void *
+ 	if (err)
+ 		goto fail;
+ 
++	xeno_set_current();
++
+ 	/* Wait on the barrier for the task to be started. The barrier
+ 	   could be released in order to process Linux signals while the
+ 	   Xenomai shadow is still dormant; in such a case, resume wait. */
+@@ -173,14 +176,21 @@ u_long t_shadow(const char *name, /* Xen
+ 		u_long flags,
+ 		u_long *tid_r)
+ {
++	int err;
++
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+ 
+ 	old_sigharden_handler = signal(SIGHARDEN, &psos_task_sigharden);
+ 
+-	return XENOMAI_SKINCALL5(__psos_muxid,
+-				 __psos_t_create,
+-				 name, prio, flags,
+-				 tid_r, NULL);
++	err = XENOMAI_SKINCALL5(__psos_muxid,
++				__psos_t_create,
++				name, prio, flags,
++				tid_r, NULL);
++
++	if (!err)
++		xeno_set_current();
++
++	return err;
+ }
+ 
+ u_long t_start(u_long tid,
+Index: b/src/skins/uitron/task.c
+===================================================================
+--- a/src/skins/uitron/task.c
++++ b/src/skins/uitron/task.c
+@@ -25,6 +25,7 @@
+ #include <limits.h>
+ #include <asm/xenomai/system.h>
+ #include <uitron/uitron.h>
++#include <asm-generic/bits/current.h>
+ 
+ extern int __uitron_muxid;
+ 
+@@ -89,6 +90,8 @@ static void *uitron_task_trampoline(void
+ 	if (err)
+ 		goto fail;
+ 
++	xeno_set_current();
++
+ 	/* iargs->pk_ctsk might not be valid anymore, after our parent
+ 	   was released from the completion sync, so do not
+ 	   dereference this pointer. */
+@@ -150,7 +153,7 @@ ER cre_tsk(ID tskid, T_CTSK *pk_ctsk)
+ ER shd_tsk(ID tskid, T_CTSK *pk_ctsk) /* Xenomai extension. */
+ {
+ 	struct sched_param param;
+-	int policy;
++	int policy, err;
+ 	
+ 	/* Make sure the POSIX library caches the right priority. */
+ 	policy = uitron_task_set_posix_priority(pk_ctsk->itskpri, &param);
+@@ -160,10 +163,15 @@ ER shd_tsk(ID tskid, T_CTSK *pk_ctsk) /*
+ 
+ 	old_sigharden_handler = signal(SIGHARDEN, &uitron_task_sigharden);
+ 
+-	return XENOMAI_SKINCALL3(__uitron_muxid,
+-				 __uitron_cre_tsk,
+-				 tskid, pk_ctsk,
+-				 NULL);
++	err = XENOMAI_SKINCALL3(__uitron_muxid,
++				__uitron_cre_tsk,
++				tskid, pk_ctsk,
++				NULL);
++
++	if (!err)
++		xeno_set_current();
++
++	return err;
+ }
+ 
+ ER del_tsk(ID tskid)
+Index: b/src/skins/vrtx/task.c
+===================================================================
+--- a/src/skins/vrtx/task.c
++++ b/src/skins/vrtx/task.c
+@@ -27,6 +27,7 @@
+ #include <errno.h>
+ #include <limits.h>
+ #include <vrtx/vrtx.h>
++#include <asm-generic/bits/current.h>
+ 
+ extern pthread_key_t __vrtx_tskey;
+ 
+@@ -116,6 +117,8 @@ static void *vrtx_task_trampoline(void *
+ 	if (err)
+ 		goto fail;
+ 
++	xeno_set_current();
++
+ 	/* Wait on the barrier for the task to be started. The barrier
+ 	   could be released in order to process Linux signals while the
+ 	   Xenomai shadow is still dormant; in such a case, resume wait. */
+Index: b/src/skins/vxworks/taskLib.c
+===================================================================
+--- a/src/skins/vxworks/taskLib.c
++++ b/src/skins/vxworks/taskLib.c
+@@ -27,6 +27,7 @@
+ #include <errno.h>
+ #include <limits.h>
+ #include <vxworks/vxworks.h>
++#include <asm-generic/bits/current.h>
+ #include "wrappers.h"
+ 
+ extern pthread_key_t __vxworks_tskey;
+@@ -117,6 +118,8 @@ static void *wind_task_trampoline(void *
+ 	if (err)
+ 		goto fail;
+ 
++	xeno_set_current();
++
+ 	/* Wait on the barrier for the task to be started. The barrier
+ 	   could be released in order to process Linux signals while the
+ 	   Xenomai shadow is still dormant; in such a case, resume wait. */
 
 
