@@ -1,13 +1,10 @@
 Resent-To: xenomai-core <xenomai@xenomai.org>
-Resent-Message-Id: <48F756EB.5010602@domain.hid>
-Message-Id: <20081016145758.149651905@domain.hid>
-Date: Thu, 16 Oct 2008 16:57:58 +0200
+Resent-Message-Id: <48F8B484.3030106@domain.hid>
+Message-Id: <20081017154600.919533248@domain.hid>
+Date: Fri, 17 Oct 2008 17:46:08 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
-References: <20081016145757.935266172@domain.hid>
-Content-Disposition: inline;
-	filename=fix-status-reported-by-rt_task_inquire.patch
-Subject: [Xenomai-core] [PATCH 1/2] Fix status values reported by
-	rt_task_inquire
+References: <20081017154559.420723261@domain.hid>
+Subject: [Xenomai-core] [PATCH 09/13] Use fast xnsynch with native skin
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,118 +17,924 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
-So far rt_task_inquire simply copied the nucleus thread status, leaking
-lots of undocumented or incorrectly described state values to the user.
-This patch first of all fixes the T_* documentation, adds further
-informative states, and then ensures that only those are reported back
-in RT_TASK_INFO.status. This includes correct reporting of T_PRIMARY and
-T_JOINABLE.
+
+Implement a fast path for rt_mutex_acquire/release, making use of fast
+xnsynch services. Just as for the POSIX skin, lock stealing via trylock
+is sacrificed for a syscall-less user space implementation.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- include/native/task.h       |   38 +++++++++++++++++++++++---------------
- ksrc/skins/native/syscall.c |    7 +++++++
- ksrc/skins/native/task.c    |    5 ++++-
- 3 files changed, 34 insertions(+), 16 deletions(-)
+ include/native/mutex.h      |   23 ++-
+ ksrc/skins/native/cond.c    |   11 -
+ ksrc/skins/native/mutex.c   |  298 ++++++++++++++++++++++++++------------------
+ ksrc/skins/native/syscall.c |   70 ++++++++--
+ src/skins/native/cond.c     |   30 ++++
+ src/skins/native/mutex.c    |  102 +++++++++++++--
+ 6 files changed, 382 insertions(+), 152 deletions(-)
 
-Index: b/include/native/task.h
+Index: b/include/native/mutex.h
 ===================================================================
---- a/include/native/task.h
-+++ b/include/native/task.h
-@@ -28,7 +28,6 @@
+--- a/include/native/mutex.h
++++ b/include/native/mutex.h
+@@ -32,7 +32,7 @@ struct rt_task;
+  */
+ typedef struct rt_mutex_info {
  
- /* Creation flags. */
- #define T_FPU     XNFPU
--#define T_SUSP    XNSUSP
- /* <!> High bits must not conflict with XNFPU|XNSHADOW|XNSHIELD|XNSUSP. */
- #define T_CPU(cpu) (1 << (24 + (cpu & 7))) /* Up to 8 cpus [0-7] */
- #define T_CPUMASK  0xff000000
-@@ -40,22 +39,31 @@
-   @{
+-	int lockcnt;		/**< Lock nesting level (> 0 means "locked"). */
++	int locked;		/**< > 0 if mutex is locked. */
+ 
+ 	int nwaiters;		/**< Number of pending tasks. */
+ 
+@@ -44,7 +44,15 @@ typedef struct rt_mutex_info {
+ } RT_MUTEX_INFO;
+ 
+ typedef struct rt_mutex_placeholder {
++
+ 	xnhandle_t opaque;
++
++#ifdef CONFIG_XENO_FASTSYNCH
++	xnarch_atomic_t *fastlock;
++
++	int lockcnt;
++#endif /* CONFIG_XENO_FASTSYNCH */
++
+ } RT_MUTEX_PLACEHOLDER;
+ 
+ #if (defined(__KERNEL__) || defined(__XENO_SIM__)) && !defined(DOXYGEN_CPP)
+@@ -54,6 +62,8 @@ typedef struct rt_mutex_placeholder {
+ 
+ #define XENO_MUTEX_MAGIC 0x55550505
+ 
++#define RT_MUTEX_EXPORTED	XNSYNCH_SPARE0	/* Mutex registered by name */
++
+ typedef struct __rt_mutex {
+ 
+ 	unsigned magic;		/* !< Magic code - must be first */
+@@ -74,7 +84,7 @@ typedef struct __rt_mutex {
+ 
+ #define rlink2mutex(ln)		container_of(ln, RT_MUTEX, rlink)
+ 
+-    xnqueue_t *rqueue;		/* !< Backpointer to resource queue. */
++	xnqueue_t *rqueue;	/* !< Backpointer to resource queue. */
+ 
+ } RT_MUTEX;
+ 
+@@ -93,9 +103,8 @@ static inline void __native_mutex_flush_
+ 	xeno_flush_rq(RT_MUTEX, rq, mutex);
+ }
+ 
+-int rt_mutex_acquire_inner(RT_MUTEX *mutex,
+-			   xntmode_t timeout_mode,
+-			   RTIME timeout);
++int rt_mutex_acquire_inner(RT_MUTEX *mutex, RTIME timeout,
++			   xntmode_t timeout_mode);
+ 
+ #else /* !CONFIG_XENO_OPT_NATIVE_MUTEX */
+ 
+@@ -138,6 +147,10 @@ static inline int rt_mutex_unbind (RT_MU
+ extern "C" {
+ #endif
+ 
++int rt_mutex_create_inner(RT_MUTEX *mutex, const char *name,
++			  xnarch_atomic_t *fastlock);
++int rt_mutex_delete_inner(RT_MUTEX *mutex);
++
+ /* Public interface. */
+ 
+ int rt_mutex_create(RT_MUTEX *mutex,
+Index: b/ksrc/skins/native/cond.c
+===================================================================
+--- a/ksrc/skins/native/cond.c
++++ b/ksrc/skins/native/cond.c
+@@ -378,7 +378,7 @@ int rt_cond_broadcast(RT_COND *cond)
+ int rt_cond_wait_inner(RT_COND *cond, RT_MUTEX *mutex,
+ 		       xntmode_t timeout_mode, RTIME timeout)
+ {
+-	int err = 0, kicked = 0;
++	int err, kicked = 0;
+ 	xnthread_t *thread;
+ 	int lockcnt;
+ 	spl_t s;
+@@ -407,15 +407,14 @@ int rt_cond_wait_inner(RT_COND *cond, RT
+ 
+ 	thread = xnpod_current_thread();
+ 
+-	if (thread != xnsynch_owner(&mutex->synch_base)) {
+-		err = -EPERM;
++	err = xnsynch_owner_check(&mutex->synch_base, thread);
++
++	if (err)
+ 		goto unlock_and_exit;
+-	}
+ 
+ 	/*
+ 	 * We can't use rt_mutex_release since that might reschedule
+-	 * before enter xnsynch_sleep_on, hence most of the code is
+-	 * duplicated here.
++	 * before enter xnsynch_sleep_on.
+ 	 */
+ 	lockcnt = mutex->lockcnt; /* Leave even if mutex is nested */
+ 
+Index: b/ksrc/skins/native/mutex.c
+===================================================================
+--- a/ksrc/skins/native/mutex.c
++++ b/ksrc/skins/native/mutex.c
+@@ -57,29 +57,42 @@ static int __mutex_read_proc(char *page,
+ 			     off_t off, int count, int *eof, void *data)
+ {
+ 	RT_MUTEX *mutex = (RT_MUTEX *)data;
++#ifdef CONFIG_XENO_FASTSYNCH
++	xnhandle_t lock_state;
++#endif /* CONFIG_XENO_FASTSYNCH */
++	xnthread_t *owner;
+ 	char *p = page;
+ 	int len;
+ 	spl_t s;
+ 
+ 	xnlock_get_irqsave(&nklock, s);
+ 
+-	if (xnsynch_owner(&mutex->synch_base) != NULL) {
+-		xnpholder_t *holder;
++#ifndef CONFIG_XENO_FASTSYNCH
++	owner = xnsynch_owner(&mutex->synch_base);
++#else /* CONFIG_XENO_FASTSYNCH */
++	lock_state = xnarch_atomic_get(mutex->synch_base.fastlock);
++
++	owner = (lock_state == XN_NO_HANDLE) ? NULL :
++		xnthread_lookup(xnsynch_fast_mask_claimed(lock_state));
+ 
++	if (!owner && lock_state != XN_NO_HANDLE)
++		p += sprintf(p, "=<DAMAGED HANDLE!>");
++	else
++#endif /* CONFIG_XENO_FASTSYNCH */
++	if (owner) {
+ 		/* Locked mutex -- dump owner and waiters, if any. */
++		xnpholder_t *holder;
+ 
+-		p += sprintf(p, "=locked by %s depth=%d\n",
+-			     xnthread_name(xnsynch_owner(&mutex->synch_base)),
+-			     mutex->lockcnt);
++		p += sprintf(p, "=locked by %s\n", xnthread_name(owner));
+ 
+ 		holder = getheadpq(xnsynch_wait_queue(&mutex->synch_base));
+ 
+ 		while (holder) {
+ 			xnthread_t *sleeper = link2thread(holder, plink);
++
+ 			p += sprintf(p, "+%s\n", xnthread_name(sleeper));
+-			holder =
+-			    nextpq(xnsynch_wait_queue(&mutex->synch_base),
+-				   holder);
++			holder = nextpq(xnsynch_wait_queue(&mutex->synch_base),
++					holder);
+ 		}
+ 	} else
+ 		/* Mutex unlocked. */
+@@ -120,49 +133,8 @@ static xnpnode_t __mutex_pnode = {
+ 
+ #endif /* CONFIG_XENO_EXPORT_REGISTRY */
+ 
+-/**
+- * @fn int rt_mutex_create(RT_MUTEX *mutex,const char *name)
+- *
+- * @brief Create a mutex.
+- *
+- * Create a mutual exclusion object that allows multiple tasks to
+- * synchronize access to a shared resource. A mutex is left in an
+- * unlocked state after creation.
+- *
+- * @param mutex The address of a mutex descriptor Xenomai will use to
+- * store the mutex-related data.  This descriptor must always be valid
+- * while the mutex is active therefore it must be allocated in
+- * permanent memory.
+- *
+- * @param name An ASCII string standing for the symbolic name of the
+- * mutex. When non-NULL and non-empty, this string is copied to a safe
+- * place into the descriptor, and passed to the registry package if
+- * enabled for indexing the created mutex.
+- *
+- * @return 0 is returned upon success. Otherwise:
+- *
+- * - -ENOMEM is returned if the system fails to get enough dynamic
+- * memory from the global real-time heap in order to register the
+- * mutex.
+- *
+- * - -EEXIST is returned if the @a name is already in use by some
+- * registered object.
+- *
+- * - -EPERM is returned if this service was called from an
+- * asynchronous context.
+- *
+- * Environments:
+- *
+- * This service can be called from:
+- *
+- * - Kernel module initialization/cleanup code
+- * - Kernel-based task
+- * - User-space task
+- *
+- * Rescheduling: possible.
+- */
+-
+-int rt_mutex_create(RT_MUTEX *mutex, const char *name)
++int rt_mutex_create_inner(RT_MUTEX *mutex, const char *name,
++			  xnarch_atomic_t *fastlock)
+ {
+ 	int err = 0;
+ 	spl_t s;
+@@ -171,7 +143,7 @@ int rt_mutex_create(RT_MUTEX *mutex, con
+ 		return -EPERM;
+ 
+ 	xnsynch_init(&mutex->synch_base,
+-		     XNSYNCH_PRIO | XNSYNCH_PIP | XNSYNCH_OWNER, NULL);
++		     XNSYNCH_PRIO | XNSYNCH_PIP | XNSYNCH_OWNER, fastlock);
+ 	mutex->handle = 0;	/* i.e. (still) unregistered mutex. */
+ 	mutex->magic = XENO_MUTEX_MAGIC;
+ 	mutex->lockcnt = 0;
+@@ -196,7 +168,7 @@ int rt_mutex_create(RT_MUTEX *mutex, con
+ 				       &__mutex_pnode);
+ 
+ 		if (err)
+-			rt_mutex_delete(mutex);
++			rt_mutex_delete_inner(mutex);
+ 	}
+ #endif /* CONFIG_XENO_OPT_REGISTRY */
+ 
+@@ -204,22 +176,32 @@ int rt_mutex_create(RT_MUTEX *mutex, con
+ }
+ 
+ /**
+- * @fn int rt_mutex_delete(RT_MUTEX *mutex)
++ * @fn int rt_mutex_create(RT_MUTEX *mutex,const char *name)
+  *
+- * @brief Delete a mutex.
++ * @brief Create a mutex.
+  *
+- * Destroy a mutex and release all the tasks currently pending on it.
+- * A mutex exists in the system since rt_mutex_create() has been
+- * called to create it, so this service must be called in order to
+- * destroy it afterwards.
++ * Create a mutual exclusion object that allows multiple tasks to
++ * synchronize access to a shared resource. A mutex is left in an
++ * unlocked state after creation.
+  *
+- * @param mutex The descriptor address of the affected mutex.
++ * @param mutex The address of a mutex descriptor Xenomai will use to
++ * store the mutex-related data.  This descriptor must always be valid
++ * while the mutex is active therefore it must be allocated in
++ * permanent memory.
++ *
++ * @param name An ASCII string standing for the symbolic name of the
++ * mutex. When non-NULL and non-empty, this string is copied to a safe
++ * place into the descriptor, and passed to the registry package if
++ * enabled for indexing the created mutex.
+  *
+  * @return 0 is returned upon success. Otherwise:
+  *
+- * - -EINVAL is returned if @a mutex is not a mutex descriptor.
++ * - -ENOMEM is returned if the system fails to get enough dynamic
++ * memory from the global real-time heap in order to register the
++ * mutex.
+  *
+- * - -EIDRM is returned if @a mutex is a deleted mutex descriptor.
++ * - -EEXIST is returned if the @a name is already in use by some
++ * registered object.
+  *
+  * - -EPERM is returned if this service was called from an
+  * asynchronous context.
+@@ -235,7 +217,30 @@ int rt_mutex_create(RT_MUTEX *mutex, con
+  * Rescheduling: possible.
   */
  
--#define T_BLOCKED  XNPEND     /**< See #XNPEND    */
--#define T_DELAYED  XNDELAY    /**< See #XNDELAY   */
--#define T_READY    XNREADY    /**< See #XNREADY   */
--#define T_DORMANT  XNDORMANT  /**< See #XNDORMANT */
--#define T_STARTED  XNSTARTED  /**< See #XNSTARTED */
--#define T_BOOST    XNBOOST    /**< See #XNBOOST   */
--#define T_LOCK     XNLOCK     /**< See #XNLOCK    */
--#define T_RRB      XNRRB      /**< See #XNRRB     */
--#define T_NOSIG    XNASDI     /**< See #XNASDI    */ 
--#define T_SHIELD   XNSHIELD   /**< See #XNSHIELD  */ 
--#define T_WARNSW   XNTRAPSW   /**< See #XNTRAPSW  */ 
--#define T_RPIOFF   XNRPIOFF   /**< See #XNRPIOFF  */ 
--#define T_PRIMARY  0x00000200	/* Recycle internal bits status which */
--#define T_JOINABLE 0x00000400	/* won't be passed to the nucleus.  */
-+#define T_SUSP       XNSUSP	/**< Suspended. */
-+#define T_BLOCKED    XNPEND	/**< Sleep-wait for a resource. */
-+#define T_DELAYED    XNDELAY	/**< Delayed. */
-+#define T_READY      XNREADY	/**< Linked to the ready queue. */
-+#define T_DORMANT    XNDORMANT	/**< Not started yet or killed. */
-+#define T_STARTED    XNSTARTED	/**< Thread has been started. */
-+/* Reuses XNRELAX flag, but invertedly. */
-+#define T_PRIMARY    0x00000200	/**< Running under Xenomai control (primary mode). */
-+#define T_HELD       XNHELD	/**< Held thread from suspended partition. */
-+#define T_BOOST      XNBOOST	/**< Undergoes a PIP boost. */
-+#define T_DEBUG      XNDEBUG	/**< Hit a debugger breakpoint (user space only). */
-+#define T_LOCK       XNLOCK	/**< Holds the scheduler lock (i.e. not preemptible). */
-+#define T_RRB        XNRRB	/**< Undergoes a round-robin scheduling. */
-+#define T_NOSIG      XNASDI	/**< ASR are disabled. */
-+#define T_SHIELD     XNSHIELD	/**< IRQ shield is enabled (user space only). */
-+#define T_WARNSW     XNTRAPSW	/**< Trap execution mode switches. */
-+#define T_RPIOFF     XNRPIOFF	/**< Stop priority coupling (user space only). */
-+#define T_USERSPACE  XNSHADOW	/**< User space task. */
-+/* Reuses XNROOT (ROOT is not an addressable task). */
-+#define T_JOINABLE   0x00400000	/**< Task electable for rt_task_join. */
- /*! @} */ /* Ends doxygen-group native_task_status */
- 
-+/* Used to save the T_JOINABLE state after initialization. */
-+#define __T_JOINABLE XNTHREAD_INFO_SPARE0
+-int rt_mutex_delete(RT_MUTEX *mutex)
++int rt_mutex_create(RT_MUTEX *mutex, const char *name)
++{
++	xnarch_atomic_t *fastlock = NULL;
++	int err;
 +
- /* Task hook types. */
- #define T_HOOK_START  XNHOOK_THREAD_START
- #define T_HOOK_SWITCH XNHOOK_THREAD_SWITCH
++#ifdef CONFIG_XENO_FASTSYNCH
++	/* Allocate lock memory for in-kernel use */
++	fastlock = xnmalloc(sizeof(xnarch_atomic_t));
++
++	if (!fastlock)
++		return -ENOMEM;
++#endif /* CONFIG_XENO_FASTSYNCH */
++
++	err = rt_mutex_create_inner(mutex, name, fastlock);
++
++#ifdef CONFIG_XENO_FASTSYNCH
++	if (err)
++		xnfree(fastlock);
++#endif /* CONFIG_XENO_FASTSYNCH */
++
++	return err;
++}
++
++int rt_mutex_delete_inner(RT_MUTEX *mutex)
+ {
+ 	int err = 0, rc;
+ 	spl_t s;
+@@ -275,59 +280,109 @@ int rt_mutex_delete(RT_MUTEX *mutex)
+ 	return err;
+ }
+ 
+-int rt_mutex_acquire_inner(RT_MUTEX *mutex, xntmode_t timeout_mode, RTIME timeout)
++/**
++ * @fn int rt_mutex_delete(RT_MUTEX *mutex)
++ *
++ * @brief Delete a mutex.
++ *
++ * Destroy a mutex and release all the tasks currently pending on it.
++ * A mutex exists in the system since rt_mutex_create() has been
++ * called to create it, so this service must be called in order to
++ * destroy it afterwards.
++ *
++ * @param mutex The descriptor address of the affected mutex.
++ *
++ * @return 0 is returned upon success. Otherwise:
++ *
++ * - -EINVAL is returned if @a mutex is not a mutex descriptor.
++ *
++ * - -EIDRM is returned if @a mutex is a deleted mutex descriptor.
++ *
++ * - -EPERM is returned if this service was called from an
++ * asynchronous context.
++ *
++ * Environments:
++ *
++ * This service can be called from:
++ *
++ * - Kernel module initialization/cleanup code
++ * - Kernel-based task
++ * - User-space task
++ *
++ * Rescheduling: possible.
++ */
++
++int rt_mutex_delete(RT_MUTEX *mutex)
++{
++	int err;
++
++	err = rt_mutex_delete_inner(mutex);
++
++#ifdef CONFIG_XENO_FASTSYNCH
++	if (!err)
++		xnfree(mutex->synch_base.fastlock);
++#endif /* CONFIG_XENO_FASTSYNCH */
++
++	return err;
++}
++
++int rt_mutex_acquire_inner(RT_MUTEX *mutex, RTIME timeout,
++			   xntmode_t timeout_mode)
+ {
+ 	xnthread_t *thread;
+-	int err = 0;
+-	spl_t s;
+ 
+ 	if (xnpod_unblockable_p())
+ 		return -EPERM;
+ 
+-	xnlock_get_irqsave(&nklock, s);
+-
+ 	mutex = xeno_h2obj_validate(mutex, XENO_MUTEX_MAGIC, RT_MUTEX);
+ 
+-	if (!mutex) {
+-		err = xeno_handle_error(mutex, XENO_MUTEX_MAGIC, RT_MUTEX);
+-		goto unlock_and_exit;
+-	}
++	if (!mutex)
++		return xeno_handle_error(mutex, XENO_MUTEX_MAGIC, RT_MUTEX);
+ 
+ 	thread = xnpod_current_thread();
+ 
+-	if (xnsynch_owner(&mutex->synch_base) == NULL) {
+-		xnsynch_set_owner(&mutex->synch_base, thread);
+-		goto grab_mutex;
+-	}
+-
+-	if (xnsynch_owner(&mutex->synch_base) == thread) {
++	if (xnsynch_owner_check(&mutex->synch_base, thread) == 0) {
+ 		mutex->lockcnt++;
+-		goto unlock_and_exit;
++		return 0;
+ 	}
+ 
+-	if (timeout == TM_NONBLOCK) {
+-		err = -EWOULDBLOCK;
+-		goto unlock_and_exit;
++	if (timeout == TM_NONBLOCK && timeout_mode == XN_RELATIVE) {
++#ifdef CONFIG_XENO_FASTSYNCH
++		if (xnsynch_fast_acquire(mutex->synch_base.fastlock,
++					 xnthread_handle(thread)) == 0) {
++			mutex->lockcnt = 1;
++			return 0;
++		} else
++			return -EWOULDBLOCK;
++
++#else /* !CONFIG_XENO_FASTSYNCH */
++		int err = 0;
++		spl_t s;
++
++		xnlock_get_irqsave(&nklock, s);
++		if (xnsynch_owner(&mutex->synch_base) == NULL)
++			mutex->lockcnt = 1;
++		else
++			err = -EWOULDBLOCK;
++		xnlock_put_irqrestore(&nklock, s);
++		return err;
++#endif /* !CONFIG_XENO_FASTSYNCH */
+ 	}
+ 
+ 	xnsynch_acquire(&mutex->synch_base, timeout, timeout_mode);
+ 
+-	if (xnthread_test_info(thread, XNRMID))
+-		err = -EIDRM;	/* Mutex deleted while pending. */
+-	else if (xnthread_test_info(thread, XNTIMEO))
+-		err = -ETIMEDOUT;	/* Timeout. */
+-	else if (xnthread_test_info(thread, XNBREAK))
+-		err = -EINTR;	/* Unblocked. */
+-	else {
+-	      grab_mutex:
+-		mutex->lockcnt = 1;
++	if (unlikely(xnthread_test_info(thread, XNBREAK | XNRMID | XNTIMEO))) {
++		if (xnthread_test_info(thread, XNBREAK))
++			return -EINTR;
++		else if (xnthread_test_info(thread, XNTIMEO))
++			return -ETIMEDOUT;
++		else /* XNRMID */
++			return -EIDRM;
+ 	}
+ 
+-      unlock_and_exit:
+-
+-	xnlock_put_irqrestore(&nklock, s);
++	mutex->lockcnt = 1;
+ 
+-	return err;
++	return 0;
+ }
+ 
+ /**
+@@ -396,7 +451,7 @@ int rt_mutex_acquire_inner(RT_MUTEX *mut
+ 
+ int rt_mutex_acquire(RT_MUTEX *mutex, RTIME timeout)
+ {
+-	return rt_mutex_acquire_inner(mutex, XN_RELATIVE, timeout);
++	return rt_mutex_acquire_inner(mutex, timeout, XN_RELATIVE);
+ }
+ 
+ /**
+@@ -462,7 +517,7 @@ int rt_mutex_acquire(RT_MUTEX *mutex, RT
+ 
+ int rt_mutex_acquire_until(RT_MUTEX *mutex, RTIME timeout)
+ {
+-	return rt_mutex_acquire_inner(mutex, XN_REALTIME, timeout);
++	return rt_mutex_acquire_inner(mutex, timeout, XN_REALTIME);
+ }
+ 
+ /**
+@@ -499,37 +554,28 @@ int rt_mutex_acquire_until(RT_MUTEX *mut
+ 
+ int rt_mutex_release(RT_MUTEX *mutex)
+ {
+-	int err = 0;
+-	spl_t s;
++	xnthread_t *thread = xnpod_current_thread();
++	int err;
+ 
+ 	if (xnpod_unblockable_p())
+ 		return -EPERM;
+ 
+-	xnlock_get_irqsave(&nklock, s);
+-
+ 	mutex = xeno_h2obj_validate(mutex, XENO_MUTEX_MAGIC, RT_MUTEX);
+ 
+-	if (!mutex) {
+-		err = xeno_handle_error(mutex, XENO_MUTEX_MAGIC, RT_MUTEX);
+-		goto unlock_and_exit;
+-	}
++	if (!mutex)
++		return xeno_handle_error(mutex, XENO_MUTEX_MAGIC, RT_MUTEX);
+ 
+-	if (xnpod_current_thread() != xnsynch_owner(&mutex->synch_base)) {
+-		err = -EPERM;
+-		goto unlock_and_exit;
+-	}
++	err = xnsynch_owner_check(&mutex->synch_base, thread);
++	if (err)
++		return err;
+ 
+ 	if (--mutex->lockcnt > 0)
+-		goto unlock_and_exit;
++		return 0;
+ 
+ 	if (xnsynch_release(&mutex->synch_base))
+ 		xnpod_schedule();
+ 
+-      unlock_and_exit:
+-
+-	xnlock_put_irqrestore(&nklock, s);
+-
+-	return err;
++	return 0;
+ }
+ 
+ /**
+@@ -565,6 +611,10 @@ int rt_mutex_release(RT_MUTEX *mutex)
+ 
+ int rt_mutex_inquire(RT_MUTEX *mutex, RT_MUTEX_INFO *info)
+ {
++#ifdef CONFIG_XENO_FASTSYNCH
++	xnhandle_t lock_state;
++#endif /* CONFIG_XENO_FASTSYNCH */
++	xnthread_t *owner;
+ 	int err = 0;
+ 	spl_t s;
+ 
+@@ -578,11 +628,21 @@ int rt_mutex_inquire(RT_MUTEX *mutex, RT
+ 	}
+ 
+ 	strcpy(info->name, mutex->name);
+-	info->lockcnt = mutex->lockcnt;
+ 	info->nwaiters = xnsynch_nsleepers(&mutex->synch_base);
+-	if (xnsynch_owner(&mutex->synch_base))
+-		strcpy(info->owner,
+-		       xnthread_name(xnsynch_owner(&mutex->synch_base)));
++
++#ifndef CONFIG_XENO_FASTSYNCH
++	owner = xnsynch_owner(&mutex->synch_base);
++#else /* CONFIG_XENO_FASTSYNCH */
++	lock_state = xnarch_atomic_get(mutex->synch_base.fastlock);
++	info->locked = (lock_state != XN_NO_HANDLE);
++	owner = (info->locked) ?
++		xnthread_lookup(xnsynch_fast_mask_claimed(lock_state)) : NULL;
++	if (!owner && info->locked)
++		strcpy(info->owner, "<DAMAGED HANDLE!>");
++	else
++#endif /* CONFIG_XENO_FASTSYNCH */
++	if (owner)
++		strcpy(info->owner, xnthread_name(owner));
+ 	else
+ 		info->owner[0] = 0;
+ 
 Index: b/ksrc/skins/native/syscall.c
 ===================================================================
 --- a/ksrc/skins/native/syscall.c
 +++ b/ksrc/skins/native/syscall.c
-@@ -159,6 +159,8 @@ static int __rt_task_create(struct pt_re
- 	prio = bulk.a3;
- 	/* Task init mode & CPU affinity. */
- 	mode = bulk.a4 & (T_CPUMASK | T_SUSP | T_SHIELD);
-+	if (bulk.a4 & T_JOINABLE)
-+		mode |= __T_JOINABLE;
+@@ -24,6 +24,7 @@
+ #include <nucleus/heap.h>
+ #include <nucleus/shadow.h>
+ #include <nucleus/registry.h>
++#include <nucleus/sys_ppd.h>
+ #include <native/syscall.h>
+ #include <native/task.h>
+ #include <native/timer.h>
+@@ -1532,6 +1533,8 @@ static int __rt_event_inquire(struct pt_
+ static int __rt_mutex_create(struct pt_regs *regs)
+ {
+ 	char name[XNOBJECT_NAME_LEN];
++	xnarch_atomic_t *fastlock = NULL;
++	xnheap_t *sem_heap;
+ 	RT_MUTEX_PLACEHOLDER ph;
+ 	RT_MUTEX *mutex;
+ 	int err;
+@@ -1546,22 +1549,45 @@ static int __rt_mutex_create(struct pt_r
+ 	} else
+ 		*name = '\0';
  
- 	task = (RT_TASK *)xnmalloc(sizeof(*task));
++	sem_heap = &xnsys_ppd_get(*name != '\0')->sem_heap;
++
+ 	mutex = (RT_MUTEX *)xnmalloc(sizeof(*mutex));
  
-@@ -516,6 +518,11 @@ static int __rt_task_inquire(struct pt_r
+ 	if (!mutex)
+ 		return -ENOMEM;
+ 
+-	err = rt_mutex_create(mutex, name);
++#ifdef CONFIG_XENO_FASTSYNCH
++	fastlock = xnheap_alloc(sem_heap, sizeof(xnarch_atomic_t));
++
++	if (!fastlock) {
++		xnfree(mutex);
++		return -ENOMEM;
++	}
++#endif /* CONFIG_XENO_FASTSYNCH */
++
++	err = rt_mutex_create_inner(mutex, name, fastlock);
+ 
+ 	if (err == 0) {
+ 		mutex->cpid = current->pid;
+ 		/* Copy back the registry handle to the ph struct. */
+ 		ph.opaque = mutex->handle;
++#ifdef CONFIG_XENO_FASTSYNCH
++		/* The lock address will be finished in user space. */
++		ph.fastlock =
++			(void *)xnheap_mapped_offset(sem_heap, fastlock);
++		if (*name != '\0')
++			xnsynch_set_flags(&mutex->synch_base,
++					  RT_MUTEX_EXPORTED);
++#endif /* CONFIG_XENO_FASTSYNCH */
+ 		if (__xn_safe_copy_to_user((void __user *)__xn_reg_arg1(regs), &ph,
+ 					   sizeof(ph)))
+ 			err = -EFAULT;
+-	} else
++	} else {
++#ifdef CONFIG_XENO_FASTSYNCH
++		xnheap_free(&xnsys_ppd_get(*name != '\0')->sem_heap, fastlock);
++#endif /* CONFIG_XENO_FASTSYNCH */
+ 		xnfree(mutex);
++	}
+ 
+ 	return err;
+ }
+@@ -1575,15 +1601,22 @@ static int __rt_mutex_create(struct pt_r
+ static int __rt_mutex_bind(struct pt_regs *regs)
+ {
+ 	RT_MUTEX_PLACEHOLDER ph;
++	RT_MUTEX *mutex;
+ 	int err;
+ 
+ 	err =
+ 	    __rt_bind_helper(current, regs, &ph.opaque, XENO_MUTEX_MAGIC,
+-			     NULL, 0);
++			     (void **)&mutex, 0);
+ 
  	if (err)
  		return err;
  
-+	if (info.status & __T_JOINABLE) {
-+		info.status &= ~__T_JOINABLE;
-+		info.status |= T_JOINABLE;
++#ifdef CONFIG_XENO_FASTSYNCH
++	ph.fastlock =
++		(void *)xnheap_mapped_offset(&xnsys_ppd_get(1)->sem_heap,
++					     mutex->synch_base.fastlock);
++#endif /* CONFIG_XENO_FASTSYNCH */
++
+ 	if (__xn_safe_copy_to_user((void __user *)__xn_reg_arg1(regs), &ph,
+ 			      sizeof(ph)))
+ 		return -EFAULT;
+@@ -1610,10 +1643,17 @@ static int __rt_mutex_delete(struct pt_r
+ 	if (!mutex)
+ 		return -ESRCH;
+ 
+-	err = rt_mutex_delete(mutex);
++	err = rt_mutex_delete_inner(mutex);
+ 
+-	if (!err && mutex->cpid)
++	if (!err && mutex->cpid) {
++#ifdef CONFIG_XENO_FASTSYNCH
++		int global = xnsynch_test_flags(&mutex->synch_base,
++						RT_MUTEX_EXPORTED);
++		xnheap_free(&xnsys_ppd_get(global)->sem_heap,
++			    mutex->synch_base.fastlock);
++#endif /* CONFIG_XENO_FASTSYNCH */
+ 		xnfree(mutex);
++	}
+ 
+ 	return err;
+ }
+@@ -1626,13 +1666,14 @@ static int __rt_mutex_delete(struct pt_r
+ 
+ static int __rt_mutex_acquire(struct pt_regs *regs)
+ {
+-	RT_MUTEX_PLACEHOLDER ph;
++	RT_MUTEX_PLACEHOLDER __user *ph;
+ 	xntmode_t timeout_mode;
++	xnhandle_t mutexh;
+ 	RT_MUTEX *mutex;
+ 	RTIME timeout;
+ 
+-	if (__xn_safe_copy_from_user(&ph, (void __user *)__xn_reg_arg1(regs),
+-				     sizeof(ph)))
++	ph = (RT_MUTEX_PLACEHOLDER __user *)__xn_reg_arg1(regs);
++	if (__xn_safe_copy_from_user(&mutexh, &ph->opaque, sizeof(mutexh)))
+ 		return -EFAULT;
+ 
+ 	timeout_mode = __xn_reg_arg2(regs);
+@@ -1641,12 +1682,12 @@ static int __rt_mutex_acquire(struct pt_
+ 				     sizeof(timeout)))
+ 		return -EFAULT;
+ 
+-	mutex = (RT_MUTEX *)xnregistry_fetch(ph.opaque);
++	mutex = (RT_MUTEX *)xnregistry_fetch(mutexh);
+ 
+ 	if (!mutex)
+ 		return -ESRCH;
+ 
+-	return rt_mutex_acquire_inner(mutex, timeout_mode, timeout);
++	return rt_mutex_acquire_inner(mutex, timeout, timeout_mode);
+ }
+ 
+ /*
+@@ -1655,14 +1696,15 @@ static int __rt_mutex_acquire(struct pt_
+ 
+ static int __rt_mutex_release(struct pt_regs *regs)
+ {
+-	RT_MUTEX_PLACEHOLDER ph;
++	RT_MUTEX_PLACEHOLDER __user *ph;
++	xnhandle_t mutexh;
+ 	RT_MUTEX *mutex;
+ 
+-	if (__xn_safe_copy_from_user(&ph, (void __user *)__xn_reg_arg1(regs),
+-				     sizeof(ph)))
++	ph = (RT_MUTEX_PLACEHOLDER __user *)__xn_reg_arg1(regs);
++	if (__xn_safe_copy_from_user(&mutexh, &ph->opaque, sizeof(mutexh)))
+ 		return -EFAULT;
+ 
+-	mutex = (RT_MUTEX *)xnregistry_fetch(ph.opaque);
++	mutex = (RT_MUTEX *)xnregistry_fetch(mutexh);
+ 
+ 	if (!mutex)
+ 		return -ESRCH;
+Index: b/src/skins/native/cond.c
+===================================================================
+--- a/src/skins/native/cond.c
++++ b/src/skins/native/cond.c
+@@ -41,16 +41,46 @@ int rt_cond_delete(RT_COND *cond)
+ 
+ int rt_cond_wait(RT_COND *cond, RT_MUTEX *mutex, RTIME timeout)
+ {
++#ifdef CONFIG_XENO_FASTSYNCH
++	int saved_lockcnt, err;
++
++	saved_lockcnt = mutex->lockcnt;
++
++	err = XENOMAI_SKINCALL4(__native_muxid,
++				__native_cond_wait, cond, mutex,
++				XN_RELATIVE, &timeout);
++
++	mutex->lockcnt = saved_lockcnt;
++
++	return err;
++
++#else /* !CONFIG_XENO_FASTSYNCH */
+ 	return XENOMAI_SKINCALL4(__native_muxid,
+ 				 __native_cond_wait, cond, mutex,
+ 				 XN_RELATIVE, &timeout);
++#endif /* !CONFIG_XENO_FASTSYNCH */
+ }
+ 
+ int rt_cond_wait_until(RT_COND *cond, RT_MUTEX *mutex, RTIME timeout)
+ {
++#ifdef CONFIG_XENO_FASTSYNCH
++	int saved_lockcnt, err;
++
++	saved_lockcnt = mutex->lockcnt;
++
++	err = XENOMAI_SKINCALL4(__native_muxid,
++				__native_cond_wait, cond, mutex,
++				XN_REALTIME, &timeout);
++
++	mutex->lockcnt = saved_lockcnt;
++
++	return err;
++
++#else /* !CONFIG_XENO_FASTSYNCH */
+ 	return XENOMAI_SKINCALL4(__native_muxid,
+ 				 __native_cond_wait, cond, mutex,
+ 				 XN_REALTIME, &timeout);
++#endif /* !CONFIG_XENO_FASTSYNCH */
+ }
+ 
+ int rt_cond_signal(RT_COND *cond)
+Index: b/src/skins/native/mutex.c
+===================================================================
+--- a/src/skins/native/mutex.c
++++ b/src/skins/native/mutex.c
+@@ -16,21 +16,51 @@
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
+ 
++#include <limits.h>
++#include <nucleus/synch.h>
+ #include <native/syscall.h>
+ #include <native/mutex.h>
++#include <asm-generic/bits/current.h>
+ 
+ extern int __native_muxid;
++extern unsigned long xeno_sem_heap[2];
+ 
+ int rt_mutex_create(RT_MUTEX *mutex, const char *name)
+ {
+-	return XENOMAI_SKINCALL2(__native_muxid,
+-				 __native_mutex_create, mutex, name);
++	int err;
++
++	err = XENOMAI_SKINCALL2(__native_muxid,
++				__native_mutex_create, mutex, name);
++
++#ifdef CONFIG_XENO_FASTSYNCH
++	if (!err) {
++		mutex->fastlock = (xnarch_atomic_t *)
++			(xeno_sem_heap[(name && *name) ? 1 : 0] +
++			 (unsigned long)mutex->fastlock);
++		mutex->lockcnt = 0;
++	}
++#endif /* CONFIG_XENO_FASTSYNCH */
++
++	return err;
+ }
+ 
+ int rt_mutex_bind(RT_MUTEX *mutex, const char *name, RTIME timeout)
+ {
+-	return XENOMAI_SKINCALL3(__native_muxid,
+-				 __native_mutex_bind, mutex, name, &timeout);
++	int err;
++
++	err = XENOMAI_SKINCALL3(__native_muxid,
++				__native_mutex_bind, mutex, name, &timeout);
++
++#ifdef CONFIG_XENO_FASTSYNCH
++	if (!err) {
++		mutex->fastlock = (xnarch_atomic_t *)
++			(xeno_sem_heap[(name && *name) ? 1 : 0] +
++			 (unsigned long)mutex->fastlock);
++		mutex->lockcnt = 0;
++	}
++#endif /* CONFIG_XENO_FASTSYNCH */
++
++	return err;
+ }
+ 
+ int rt_mutex_delete(RT_MUTEX *mutex)
+@@ -38,20 +68,76 @@ int rt_mutex_delete(RT_MUTEX *mutex)
+ 	return XENOMAI_SKINCALL1(__native_muxid, __native_mutex_delete, mutex);
+ }
+ 
++static int rt_mutex_acquire_inner(RT_MUTEX *mutex, RTIME timeout, xntmode_t mode)
++{
++	int err;
++#ifdef CONFIG_XENO_FASTSYNCH
++	xnhandle_t cur;
++
++	cur = xeno_get_current();
++	if (!cur)
++		return -EPERM;
++
++	err = xnsynch_fast_acquire(mutex->fastlock, cur);
++	if (likely(!err)) {
++		mutex->lockcnt = 1;
++		return 0;
 +	}
 +
- 	if (__xn_safe_copy_to_user((void __user *)__xn_reg_arg2(regs),
- 				   &info, sizeof(info)))
- 		return -EFAULT;
-Index: b/ksrc/skins/native/task.c
-===================================================================
---- a/ksrc/skins/native/task.c
-+++ b/ksrc/skins/native/task.c
-@@ -1129,7 +1129,10 @@ int rt_task_inquire(RT_TASK *task, RT_TA
- 	strcpy(info->name, xnthread_name(&task->thread_base));
- 	info->bprio = xnthread_base_priority(&task->thread_base);
- 	info->cprio = xnthread_current_priority(&task->thread_base);
--	info->status = xnthread_state_flags(&task->thread_base);
-+	info->status = xnthread_state_flags(&task->thread_base) &
-+		~(XNZOMBIE | XNRESTART | XNMAPPED | XNFPU | XNROOT | XNSWLOCK
-+		  | 0x0f000000);
-+	info->status ^= T_PRIMARY; /* we use XNRELAX invertedly */
- 	info->relpoint = xntimer_get_date(&task->thread_base.ptimer);
- 	raw_exectime = xnthread_get_exectime(&task->thread_base);
- 	if (task->thread_base.sched->runthread == &task->thread_base)
++	if (err == -EBUSY) {
++		if (mutex->lockcnt == UINT_MAX)
++			return -EAGAIN;
++
++		mutex->lockcnt++;
++		return 0;
++	}
++
++	if (timeout == TM_NONBLOCK && mode == XN_RELATIVE)
++		return -EWOULDBLOCK;
++#endif /* CONFIG_XENO_FASTSYNCH */
++
++	err = XENOMAI_SKINCALL3(__native_muxid,
++				__native_mutex_acquire, mutex, mode, &timeout);
++
++#ifdef CONFIG_XENO_FASTSYNCH
++	if (!err)
++		mutex->lockcnt = 1;
++#endif /* CONFIG_XENO_FASTSYNCH */
++
++	return err;
++}
++
+ int rt_mutex_acquire(RT_MUTEX *mutex, RTIME timeout)
+ {
+-	return XENOMAI_SKINCALL3(__native_muxid,
+-				 __native_mutex_acquire, mutex, XN_RELATIVE, &timeout);
++	return rt_mutex_acquire_inner(mutex, timeout, XN_RELATIVE);
+ }
+ 
+ int rt_mutex_acquire_until(RT_MUTEX *mutex, RTIME timeout)
+ {
+-	return XENOMAI_SKINCALL3(__native_muxid,
+-				 __native_mutex_acquire, mutex, XN_REALTIME, &timeout);
++	return rt_mutex_acquire_inner(mutex, timeout, XN_REALTIME);
+ }
+ 
+ int rt_mutex_release(RT_MUTEX *mutex)
+ {
++#ifdef CONFIG_XENO_FASTSYNCH
++	xnhandle_t cur;
++
++	cur = xeno_get_current();
++	if (!cur)
++		return -EPERM;
++
++	if (unlikely(xnsynch_fast_owner_check(mutex->fastlock, cur) != 0))
++		return -EPERM;
++
++	if (mutex->lockcnt > 1) {
++		mutex->lockcnt--;
++		return 0;
++	}
++
++	if (likely(xnsynch_fast_release(mutex->fastlock, cur)))
++		return 0;
++#endif /* CONFIG_XENO_FASTSYNCH */
++
+ 	return XENOMAI_SKINCALL1(__native_muxid, __native_mutex_release, mutex);
+ }
+ 
 
 
