@@ -1,10 +1,10 @@
 Resent-To: xenomai-core <xenomai@xenomai.org>
-Resent-Message-Id: <48F8B484.9070803@domain.hid>
-Message-Id: <20081017154600.116228654@domain.hid>
-Date: Fri, 17 Oct 2008 17:46:03 +0200
+Resent-Message-Id: <48F8B484.2030907@domain.hid>
+Message-Id: <20081017154559.958281215@domain.hid>
+Date: Fri, 17 Oct 2008 17:46:02 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 References: <20081017154559.420723261@domain.hid>
-Subject: [Xenomai-core] [PATCH 04/13] Spread xeno_set_current under all skins
+Subject: [Xenomai-core] [PATCH 03/13] Remove xnarch_atomic_intptr
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,200 +18,134 @@ To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
 
-Spread xeno_set_current under all user space supporting skins.
+No more users, no more use cases in sight, let's get rid of it.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- src/skins/native/task.c     |   13 +++++++++++--
- src/skins/psos+/task.c      |   18 ++++++++++++++----
- src/skins/uitron/task.c     |   18 +++++++++++++-----
- src/skins/vrtx/task.c       |    3 +++
- src/skins/vxworks/taskLib.c |    3 +++
- 5 files changed, 44 insertions(+), 11 deletions(-)
+ include/asm-arm/atomic.h        |    3 ---
+ include/asm-blackfin/atomic.h   |    2 --
+ include/asm-generic/Makefile.am |    2 +-
+ include/asm-generic/Makefile.in |    2 +-
+ include/asm-generic/atomic.h    |   24 ------------------------
+ include/asm-ia64/atomic.h       |    2 --
+ include/asm-powerpc/atomic.h    |    2 --
+ include/asm-x86/atomic.h        |    2 --
+ 8 files changed, 2 insertions(+), 37 deletions(-)
 
-Index: b/src/skins/native/task.c
+Index: b/include/asm-arm/atomic.h
 ===================================================================
---- a/src/skins/native/task.c
-+++ b/src/skins/native/task.c
-@@ -26,6 +26,7 @@
- #include <limits.h>
- #include <native/syscall.h>
- #include <native/task.h>
-+#include <asm-generic/bits/current.h>
- #include "wrappers.h"
+--- a/include/asm-arm/atomic.h
++++ b/include/asm-arm/atomic.h
+@@ -412,9 +412,6 @@ static __inline__ void xnarch_atomic_cle
  
- extern pthread_key_t __native_tskey;
-@@ -88,6 +89,8 @@ static void *rt_task_trampoline(void *co
- 	if (err)
- 		goto fail;
+ typedef unsigned long atomic_flags_t;
  
-+	xeno_set_current();
-+
- 	/* Wait on the barrier for the task to be started. The barrier
- 	   could be released in order to process Linux signals while the
- 	   Xenomai shadow is still dormant; in such a case, resume wait. */
-@@ -169,6 +172,7 @@ int rt_task_shadow(RT_TASK *task, const
- 	struct sched_param param;
- 	struct rt_arg_bulk bulk;
- 	RT_TASK task_desc;
-+	int err;
+-/* Add support for xnarch_atomic_intptr_t */
+-#include <asm-generic/xenomai/atomic.h>
+-
+ #endif /* !_XENO_ASM_ARM_ATOMIC_H */
  
- 	if (task == NULL)
- 		task = &task_desc; /* Discarded. */
-@@ -191,8 +195,13 @@ int rt_task_shadow(RT_TASK *task, const
- 	bulk.a4 = (u_long)mode;
- 	bulk.a5 = (u_long)pthread_self();
- 
--	return XENOMAI_SKINCALL2(__native_muxid, __native_task_create, &bulk,
--				 NULL);
-+	err = XENOMAI_SKINCALL2(__native_muxid, __native_task_create, &bulk,
-+				NULL);
-+
-+	if (!err)
-+		xeno_set_current();
-+
-+	return err;
- }
- 
- int rt_task_bind(RT_TASK *task, const char *name, RTIME timeout)
-Index: b/src/skins/psos+/task.c
+ // vim: ts=4 et sw=4 sts=4
+Index: b/include/asm-blackfin/atomic.h
 ===================================================================
---- a/src/skins/psos+/task.c
-+++ b/src/skins/psos+/task.c
-@@ -26,6 +26,7 @@
- #include <memory.h>
- #include <string.h>
- #include <psos+/psos.h>
-+#include <asm-generic/bits/current.h>
+--- a/include/asm-blackfin/atomic.h
++++ b/include/asm-blackfin/atomic.h
+@@ -42,8 +42,6 @@
+ typedef atomic_t atomic_counter_t;
+ typedef atomic_t xnarch_atomic_t;
  
- extern int __psos_muxid;
+-#include <asm-generic/xenomai/atomic.h>
+-
+ #else /* !__KERNEL__ */
  
-@@ -89,6 +90,8 @@ static void *psos_task_trampoline(void *
- 	if (err)
- 		goto fail;
- 
-+	xeno_set_current();
-+
- 	/* Wait on the barrier for the task to be started. The barrier
- 	   could be released in order to process Linux signals while the
- 	   Xenomai shadow is still dormant; in such a case, resume wait. */
-@@ -173,14 +176,21 @@ u_long t_shadow(const char *name, /* Xen
- 		u_long flags,
- 		u_long *tid_r)
- {
-+	int err;
-+
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
- 
- 	old_sigharden_handler = signal(SIGHARDEN, &psos_task_sigharden);
- 
--	return XENOMAI_SKINCALL5(__psos_muxid,
--				 __psos_t_create,
--				 name, prio, flags,
--				 tid_r, NULL);
-+	err = XENOMAI_SKINCALL5(__psos_muxid,
-+				__psos_t_create,
-+				name, prio, flags,
-+				tid_r, NULL);
-+
-+	if (!err)
-+		xeno_set_current();
-+
-+	return err;
- }
- 
- u_long t_start(u_long tid,
-Index: b/src/skins/uitron/task.c
+ #include <asm/xenomai/syscall.h>
+Index: b/include/asm-generic/Makefile.am
 ===================================================================
---- a/src/skins/uitron/task.c
-+++ b/src/skins/uitron/task.c
-@@ -25,6 +25,7 @@
- #include <limits.h>
- #include <asm/xenomai/system.h>
- #include <uitron/uitron.h>
-+#include <asm-generic/bits/current.h>
+--- a/include/asm-generic/Makefile.am
++++ b/include/asm-generic/Makefile.am
+@@ -1,5 +1,5 @@
+ includesubdir = $(includedir)/asm-generic
  
- extern int __uitron_muxid;
+-includesub_HEADERS = arith.h atomic.h features.h hal.h syscall.h system.h wrappers.h
++includesub_HEADERS = arith.h features.h hal.h syscall.h system.h wrappers.h
  
-@@ -89,6 +90,8 @@ static void *uitron_task_trampoline(void
- 	if (err)
- 		goto fail;
- 
-+	xeno_set_current();
-+
- 	/* iargs->pk_ctsk might not be valid anymore, after our parent
- 	   was released from the completion sync, so do not
- 	   dereference this pointer. */
-@@ -150,7 +153,7 @@ ER cre_tsk(ID tskid, T_CTSK *pk_ctsk)
- ER shd_tsk(ID tskid, T_CTSK *pk_ctsk) /* Xenomai extension. */
- {
- 	struct sched_param param;
--	int policy;
-+	int policy, err;
- 	
- 	/* Make sure the POSIX library caches the right priority. */
- 	policy = uitron_task_set_posix_priority(pk_ctsk->itskpri, &param);
-@@ -160,10 +163,15 @@ ER shd_tsk(ID tskid, T_CTSK *pk_ctsk) /*
- 
- 	old_sigharden_handler = signal(SIGHARDEN, &uitron_task_sigharden);
- 
--	return XENOMAI_SKINCALL3(__uitron_muxid,
--				 __uitron_cre_tsk,
--				 tskid, pk_ctsk,
--				 NULL);
-+	err = XENOMAI_SKINCALL3(__uitron_muxid,
-+				__uitron_cre_tsk,
-+				tskid, pk_ctsk,
-+				NULL);
-+
-+	if (!err)
-+		xeno_set_current();
-+
-+	return err;
- }
- 
- ER del_tsk(ID tskid)
-Index: b/src/skins/vrtx/task.c
+ SUBDIRS = bits
+Index: b/include/asm-generic/Makefile.in
 ===================================================================
---- a/src/skins/vrtx/task.c
-+++ b/src/skins/vrtx/task.c
-@@ -27,6 +27,7 @@
- #include <errno.h>
- #include <limits.h>
- #include <vrtx/vrtx.h>
-+#include <asm-generic/bits/current.h>
+--- a/include/asm-generic/Makefile.in
++++ b/include/asm-generic/Makefile.in
+@@ -226,7 +226,7 @@ target_vendor = @target_vendor@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ includesubdir = $(includedir)/asm-generic
+-includesub_HEADERS = arith.h atomic.h features.h hal.h syscall.h system.h wrappers.h
++includesub_HEADERS = arith.h features.h hal.h syscall.h system.h wrappers.h
+ SUBDIRS = bits
+ all: all-recursive
  
- extern pthread_key_t __vrtx_tskey;
- 
-@@ -116,6 +117,8 @@ static void *vrtx_task_trampoline(void *
- 	if (err)
- 		goto fail;
- 
-+	xeno_set_current();
-+
- 	/* Wait on the barrier for the task to be started. The barrier
- 	   could be released in order to process Linux signals while the
- 	   Xenomai shadow is still dormant; in such a case, resume wait. */
-Index: b/src/skins/vxworks/taskLib.c
+Index: b/include/asm-generic/atomic.h
 ===================================================================
---- a/src/skins/vxworks/taskLib.c
-+++ b/src/skins/vxworks/taskLib.c
-@@ -27,6 +27,7 @@
- #include <errno.h>
- #include <limits.h>
- #include <vxworks/vxworks.h>
-+#include <asm-generic/bits/current.h>
- #include "wrappers.h"
+--- a/include/asm-generic/atomic.h
++++ /dev/null
+@@ -1,24 +0,0 @@
+-#ifndef _XENO_ASM_GENERIC_ATOMIC_H
+-#define _XENO_ASM_GENERIC_ATOMIC_H
+-
+-typedef xnarch_atomic_t xnarch_atomic_intptr_t;
+-
+-static inline void *xnarch_atomic_intptr_get(xnarch_atomic_intptr_t *l)
+-{
+-        xnarch_atomic_t *v = (xnarch_atomic_t *)l;
+-
+-        return (void *)xnarch_atomic_get(v);
+-}
+-
+-static inline void xnarch_atomic_intptr_set(xnarch_atomic_intptr_t *l, void *i)
+-{
+-        xnarch_atomic_t *v = (xnarch_atomic_t *)l;
+-
+-        xnarch_atomic_set(v, (long)i);
+-}
+-
+-#define xnarch_atomic_intptr_cmpxchg(l, old, newval) \
+-        (void *)(xnarch_atomic_cmpxchg((xnarch_atomic_t *)(l), \
+-				       (long)(old), (long)(newval)))
+-
+-#endif /* _XENO_ASM_GENERIC_ATOMIC_H */
+Index: b/include/asm-ia64/atomic.h
+===================================================================
+--- a/include/asm-ia64/atomic.h
++++ b/include/asm-ia64/atomic.h
+@@ -71,8 +71,6 @@ static inline void atomic_clear_mask(uns
+ #define xnarch_atomic_cmpxchg(pcounter,old,new) \
+ 	cmpxchg((&(pcounter)->counter),(old),(new))
  
- extern pthread_key_t __vxworks_tskey;
-@@ -117,6 +118,8 @@ static void *wind_task_trampoline(void *
- 	if (err)
- 		goto fail;
+-#include <asm-generic/xenomai/atomic.h>
+-
+ #else /* !__KERNEL__ */
  
-+	xeno_set_current();
-+
- 	/* Wait on the barrier for the task to be started. The barrier
- 	   could be released in order to process Linux signals while the
- 	   Xenomai shadow is still dormant; in such a case, resume wait. */
+ #include <asm/xenomai/features.h>
+Index: b/include/asm-powerpc/atomic.h
+===================================================================
+--- a/include/asm-powerpc/atomic.h
++++ b/include/asm-powerpc/atomic.h
+@@ -262,6 +262,4 @@ xnarch_atomic_cmpxchg(xnarch_atomic_t *p
+ 
+ typedef unsigned long atomic_flags_t;
+ 
+-#include <asm-generic/xenomai/atomic.h>
+-
+ #endif /* !_XENO_ASM_POWERPC_ATOMIC_H */
+Index: b/include/asm-x86/atomic.h
+===================================================================
+--- a/include/asm-x86/atomic.h
++++ b/include/asm-x86/atomic.h
+@@ -136,6 +136,4 @@ xnarch_atomic_cmpxchg(xnarch_atomic_t *v
+ 
+ #endif /* __KERNEL__ */
+ 
+-#include <asm-generic/xenomai/atomic.h>
+-
+ #endif /* !_XENO_ASM_X86_ATOMIC_64_H */
 
 
