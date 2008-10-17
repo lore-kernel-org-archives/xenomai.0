@@ -1,11 +1,11 @@
-Message-ID: <48F8B93C.7000908@domain.hid>
-Date: Fri, 17 Oct 2008 18:11:40 +0200
+Resent-To: xenomai-core <xenomai@xenomai.org>
+Resent-Message-Id: <48F8B484.90305@domain.hid>
+Message-Id: <20081017154601.082404492@domain.hid>
+Date: Fri, 17 Oct 2008 17:46:09 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
 References: <20081017154559.420723261@domain.hid>
-In-Reply-To: <20081017154559.420723261@domain.hid>
-Content-Type: multipart/mixed; boundary="------------090209090702050406050608"
-Subject: Re: [Xenomai-core] [PATCH 00/13] Generic fast xnsynch support & more
+Subject: [Xenomai-core] [PATCH 10/13] Optionally replace pthread_getspecific
+	with TLS variables
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,743 +16,471 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>
+
+
+On architectures that support the __thread storage class and the
+initial-exec TLS model, several use cases of pthread_get/setspecific can
+be optimized. On x86, e.g., we are able to implement xeno_get_current()
+via just two instructions instead of a call into glibc and all the
+included pthread_key lookup. The minor downside of initial-exec TLS is
+that libraries using such variables are excluded from dlopen.
+
+This patch adds the required check to configure, also installing a
+switch (--without-__thread) in order to disable the support if dlopen
+compatibility should be required. It adds a __thread-variant for
+xeno_get_current and self-references of the current Native, VRTX and
+VxWorks tasks.
+
+RTDK's rt_printf services are intentionally not converted as they are
+heavy-weighted anyway and depend on the pthread_key destructor
+mechanism.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ configure.in                       |   23 ++++++++++++++++++++
+ include/asm-generic/bits/bind.h    |   41 +++++++++++++++++++++++++------------
+ include/asm-generic/bits/current.h |   14 ++++++++++--
+ src/skins/native/init.c            |   23 ++++++++++++--------
+ src/skins/native/task.c            |   21 ++++++++++++++++++
+ src/skins/vrtx/init.c              |   20 +++++++++++-------
+ src/skins/vrtx/task.c              |   14 +++++++++++-
+ src/skins/vxworks/init.c           |   20 +++++++++++-------
+ src/skins/vxworks/taskLib.c        |   20 +++++++++++++++++-
+ 9 files changed, 156 insertions(+), 40 deletions(-)
+
+Index: b/configure.in
+===================================================================
+--- a/configure.in
++++ b/configure.in
+@@ -762,6 +762,29 @@ LIBS="$LIBS -lrt"
+ AC_CHECK_FUNCS([shm_open shm_unlink])
+ LIBS="$save_LIBS"
+ 
++AC_ARG_WITH([__thread],
++	    AC_HELP_STRING([--without-__thread],
++			   [do not use TLS features (allows for dlopen'ing Xenomai libs)]),
++	    [use__thread=$withval],
++	    [use__thread=yes])
++
++dnl Check whether the compiler supports the __thread keyword.
++if test "x$use__thread" != xno; then
++	AC_CACHE_CHECK([for __thread], libc_cv_gcc___thread,
++	[cat > conftest.c <<\EOF
++__thread int a __attribute__ ((tls_model ("initial-exec"))) = 42;
++EOF
++	if AC_TRY_COMMAND([${CC-cc} $CFLAGS $CPPFLAGS -c -Werror conftest.c >&AS_MESSAGE_LOG_FD]); then
++		libc_cv_gcc___thread=yes
++	else
++		libc_cv_gcc___thread=no
++	fi
++	rm -f conftest*])
++	if test "$libc_cv_gcc___thread" = yes; then
++		AC_DEFINE(HAVE___THREAD,1,[config])
++	fi
++fi
++
+ dnl
+ dnl Build the Makefiles
+ dnl
+Index: b/include/asm-generic/bits/bind.h
+===================================================================
+--- a/include/asm-generic/bits/bind.h
++++ b/include/asm-generic/bits/bind.h
+@@ -11,24 +11,23 @@
+ #include <fcntl.h>
+ #include <sys/ioctl.h>
+ #include <sys/mman.h>
++#include <nucleus/types.h>
+ #include <asm/xenomai/syscall.h>
+ 
+-__attribute__ ((weak))
+-pthread_key_t xeno_current_key;
++#ifdef HAVE___THREAD
++__thread xnhandle_t xeno_current __attribute__ ((tls_model ("initial-exec"))) =
++	XN_NO_HANDLE;
+ 
+-__attribute__ ((weak))
+-void xeno_set_current(void)
++static inline void __xeno_set_current(xnhandle_t current)
+ {
+-	void *kthread_cb;
+-	int err;
++	xeno_current = current;
++}
++#else /* !HAVE___THREAD */
++pthread_key_t xeno_current_key;
+ 
+-	err = XENOMAI_SYSCALL1(__xn_sys_current, &kthread_cb);
+-	if (err) {
+-		fprintf(stderr, "Xenomai: error obtaining handle for current "
+-			"thread: %s\n", strerror(err));
+-		exit(1);
+-	}
+-	pthread_setspecific(xeno_current_key, kthread_cb);
++static inline void __xeno_set_current(xnhandle_t current)
++{
++	pthread_setspecific(xeno_current_key, (void *)current);
+ }
+ 
+ static __attribute__ ((constructor))
+@@ -41,6 +40,22 @@ void init_current_key(void)
+ 		exit(1);
+ 	}
+ }
++#endif /* !HAVE___THREAD */
++
++__attribute__ ((weak))
++void xeno_set_current(void)
++{
++	xnhandle_t current;
++	int err;
++
++	err = XENOMAI_SYSCALL1(__xn_sys_current, &current);
++	if (err) {
++		fprintf(stderr, "Xenomai: error obtaining handle for current "
++			"thread: %s\n", strerror(err));
++		exit(1);
++	}
++	__xeno_set_current(current);
++}
+ 
+ #ifdef CONFIG_XENO_FASTSYNCH
+ __attribute__ ((weak))
+Index: b/include/asm-generic/bits/current.h
+===================================================================
+--- a/include/asm-generic/bits/current.h
++++ b/include/asm-generic/bits/current.h
+@@ -4,9 +4,16 @@
+ #include <pthread.h>
+ #include <nucleus/types.h>
+ 
+-extern pthread_key_t xeno_current_key;
++#ifdef HAVE___THREAD
++extern __thread xnhandle_t xeno_current __attribute__ ((tls_model ("initial-exec")));
+ 
+-extern void xeno_set_current(void);
++static inline xnhandle_t xeno_get_current(void)
++{
++	return xeno_current;
++}
++
++#else /* ! HAVE___THREAD */
++extern pthread_key_t xeno_current_key;
+ 
+ static inline xnhandle_t xeno_get_current(void)
+ {
+@@ -17,5 +24,8 @@ static inline xnhandle_t xeno_get_curren
+ 
+ 	return (xnhandle_t)val;
+ }
++#endif /* ! HAVE___THREAD */
++
++void xeno_set_current(void);
+ 
+ #endif /* _XENO_ASM_GENERIC_CURRENT_H */
+Index: b/src/skins/native/init.c
+===================================================================
+--- a/src/skins/native/init.c
++++ b/src/skins/native/init.c
+@@ -27,11 +27,12 @@
+ #include <asm-generic/bits/bind.h>
+ #include <asm-generic/bits/mlock_alert.h>
+ 
+-pthread_key_t __native_tskey;
+-
+ int __native_muxid = -1;
+ void native_timer_init(int);
+ 
++#ifndef HAVE___THREAD
++pthread_key_t __native_tskey;
++
+ static void __flush_tsd(void *tsd)
+ {
+ 	/* Free the task descriptor allocated by rt_task_self(). */
+@@ -39,6 +40,17 @@ static void __flush_tsd(void *tsd)
+ }
+ 
+ static __attribute__ ((constructor))
++void __init_native_tskey(void)
++	/* Allocate a TSD key for indexing self task pointers. */
++
++	if (pthread_key_create(&__native_tskey, &__flush_tsd) != 0) {
++		fprintf(stderr, "Xenomai: failed to allocate new TSD key?!\n");
++		exit(1);
++	}
++}
++#endif /* !HAVE___THREAD */
++
++static __attribute__ ((constructor))
+ void __init_xeno_interface(void)
+ {
+ 	__native_muxid =
+@@ -49,11 +61,4 @@ void __init_xeno_interface(void)
+ #endif /* CONFIG_XENO_HW_DIRECT_TSC */
+ 	
+ 	__native_muxid = __xn_mux_shifted_id(__native_muxid);
+-
+-	/* Allocate a TSD key for indexing self task pointers. */
+-
+-	if (pthread_key_create(&__native_tskey, &__flush_tsd) != 0) {
+-		fprintf(stderr, "Xenomai: failed to allocate new TSD key?!\n");
+-		exit(1);
+-	}
+ }
+Index: b/src/skins/native/task.c
+===================================================================
+--- a/src/skins/native/task.c
++++ b/src/skins/native/task.c
+@@ -29,7 +29,14 @@
+ #include <asm-generic/bits/current.h>
+ #include "wrappers.h"
+ 
++#ifdef HAVE___THREAD
++__thread RT_TASK __native_self __attribute__ ((tls_model ("initial-exec"))) = {
++	.opaque = XN_NO_HANDLE,
++	.opaque2 = 0
++};
++#else /* !HAVE___THREAD */
+ extern pthread_key_t __native_tskey;
++#endif /* !HAVE___THREAD */
+ 
+ extern int __native_muxid;
+ 
+@@ -91,6 +98,10 @@ static void *rt_task_trampoline(void *co
+ 
+ 	xeno_set_current();
+ 
++#ifdef HAVE___THREAD
++	__native_self = *iargs->task;
++#endif /* HAVE___THREAD */
++
+ 	/* Wait on the barrier for the task to be started. The barrier
+ 	   could be released in order to process Linux signals while the
+ 	   Xenomai shadow is still dormant; in such a case, resume wait. */
+@@ -316,6 +327,15 @@ RT_TASK *rt_task_self(void)
+ {
+ 	RT_TASK *self;
+ 
++#ifdef HAVE___THREAD
++	self = &__native_self;
++
++	if (self->opaque == XN_NO_HANDLE)
++		return NULL;
++
++#else /* !HAVE___THREAD */
++	RT_TASK *self;
++
+ 	self = (RT_TASK *)pthread_getspecific(__native_tskey);
+ 
+ 	if (self)
+@@ -330,6 +350,7 @@ RT_TASK *rt_task_self(void)
+ 	}
+ 
+ 	pthread_setspecific(__native_tskey, self);
++#endif /* !HAVE___THREAD */
+ 
+ 	return self;
+ }
+Index: b/src/skins/vxworks/init.c
+===================================================================
+--- a/src/skins/vxworks/init.c
++++ b/src/skins/vxworks/init.c
+@@ -26,10 +26,11 @@
+ #include <asm-generic/bits/bind.h>
+ #include <asm-generic/bits/mlock_alert.h>
+ 
+-pthread_key_t __vxworks_tskey;
+-
+ int __vxworks_muxid = -1;
+ 
++#ifndef HAVE___THREAD
++pthread_key_t __vxworks_tskey;
++
+ static void __flush_tsd(void *tsd)
+ {
+ 	/* Free the task descriptor allocated by taskIdSelf(). */
+@@ -37,12 +38,8 @@ static void __flush_tsd(void *tsd)
+ }
+ 
+ static __attribute__ ((constructor))
+-void __init_xeno_interface(void)
++void __init_vxworks_tskey(void)
+ {
+-	__vxworks_muxid = xeno_bind_skin(VXWORKS_SKIN_MAGIC,
+-					 "vxworks", "xeno_vxworks");
+-	__vxworks_muxid = __xn_mux_shifted_id(__vxworks_muxid);
+-
+ 	/* Allocate a TSD key for indexing self task pointers. */
+ 
+ 	if (pthread_key_create(&__vxworks_tskey, &__flush_tsd) != 0) {
+@@ -50,3 +47,12 @@ void __init_xeno_interface(void)
+ 		exit(1);
+ 	}
+ }
++#endif /* !HAVE___THREAD */
++
++static __attribute__ ((constructor))
++void __init_xeno_interface(void)
++{
++	__vxworks_muxid = xeno_bind_skin(VXWORKS_SKIN_MAGIC,
++					 "vxworks", "xeno_vxworks");
++	__vxworks_muxid = __xn_mux_shifted_id(__vxworks_muxid);
++}
+Index: b/src/skins/vxworks/taskLib.c
+===================================================================
+--- a/src/skins/vxworks/taskLib.c
++++ b/src/skins/vxworks/taskLib.c
+@@ -30,7 +30,14 @@
+ #include <asm-generic/bits/current.h>
+ #include "wrappers.h"
+ 
++#ifdef HAVE___THREAD
++__thread WIND_TCB
++__vxworks_self __attribute__ ((tls_model ("initial-exec"))) = {
++	.handle = XN_NO_HANDLE
++};
++#else /* !HAVE___THREAD */
+ extern pthread_key_t __vxworks_tskey;
++#endif /* !HAVE___THREAD */
+ 
+ extern int __vxworks_muxid;
+ 
+@@ -120,6 +127,10 @@ static void *wind_task_trampoline(void *
+ 
+ 	xeno_set_current();
+ 
++#ifdef HAVE___THREAD
++	__vxworks_self = *iargs->pTcb;
++#endif /* HAVE___THREAD */
++
+ 	/* Wait on the barrier for the task to be started. The barrier
+ 	   could be released in order to process Linux signals while the
+ 	   Xenomai shadow is still dormant; in such a case, resume wait. */
+@@ -309,9 +320,15 @@ STATUS taskResume(TASK_ID task_id)
+ 
+ TASK_ID taskIdSelf(void)
+ {
+-	WIND_TCB *self = (WIND_TCB *)pthread_getspecific(__vxworks_tskey);
++#ifdef HAVE___THREAD
++	return __vxworks_self.handle;
++
++#else /* !HAVE___THREAD */
++	WIND_TCB *self;
+ 	int err;
+ 
++	self = (WIND_TCB *)pthread_getspecific(__vxworks_tskey);
++
+ 	if (self)
+ 		return self->handle;
+ 
+@@ -332,6 +349,7 @@ TASK_ID taskIdSelf(void)
+ 	pthread_setspecific(__vxworks_tskey, self);
+ 
+ 	return self->handle;
++#endif /* !HAVE___THREAD */
+ }
+ 
+ STATUS taskPrioritySet(TASK_ID task_id, int prio)
+Index: b/src/skins/vrtx/init.c
+===================================================================
+--- a/src/skins/vrtx/init.c
++++ b/src/skins/vrtx/init.c
+@@ -26,10 +26,11 @@
+ #include <asm-generic/bits/bind.h>
+ #include <asm-generic/bits/mlock_alert.h>
+ 
+-pthread_key_t __vrtx_tskey;
+-
+ int __vrtx_muxid = -1;
+ 
++#ifndef HAVE___THREAD
++pthread_key_t __vrtx_tskey;
++
+ static void __flush_tsd(void *tsd)
+ {
+ 	/* Free the TCB struct. */
+@@ -37,12 +38,8 @@ static void __flush_tsd(void *tsd)
+ }
+ 
+ static __attribute__ ((constructor))
+-void __init_xeno_interface(void)
++void __init_vrtx_tskey(void)
+ {
+-	__vrtx_muxid =
+-	    xeno_bind_skin(VRTX_SKIN_MAGIC, "vrtx", "xeno_vrtx");
+-	__vrtx_muxid = __xn_mux_shifted_id(__vrtx_muxid);
+-
+ 	/* Allocate a TSD key for indexing self task pointers. */
+ 
+ 	if (pthread_key_create(&__vrtx_tskey, &__flush_tsd) != 0) {
+@@ -50,3 +47,12 @@ void __init_xeno_interface(void)
+ 		exit(1);
+ 	}
+ }
++#endif /* !HAVE___THREAD */
++
++static __attribute__ ((constructor))
++void __init_xeno_interface(void)
++{
++	__vrtx_muxid =
++	    xeno_bind_skin(VRTX_SKIN_MAGIC, "vrtx", "xeno_vrtx");
++	__vrtx_muxid = __xn_mux_shifted_id(__vrtx_muxid);
++}
+Index: b/src/skins/vrtx/task.c
+===================================================================
+--- a/src/skins/vrtx/task.c
++++ b/src/skins/vrtx/task.c
+@@ -29,7 +29,11 @@
+ #include <vrtx/vrtx.h>
+ #include <asm-generic/bits/current.h>
+ 
++#ifdef HAVE___THREAD
++__thread TCB __vrtx_tcb __attribute__ ((tls_model ("initial-exec")));
++#else /* !HAVE___THREAD */
+ extern pthread_key_t __vrtx_tskey;
++#endif /* !HAVE___THREAD */
+ 
+ extern int __vrtx_muxid;
+ 
+@@ -81,7 +85,9 @@ static void *vrtx_task_trampoline(void *
+ 	struct sched_param param;
+ 	int policy;
+ 	long err;
++#ifndef HAVE___THREAD
+ 	TCB *tcb;
++#endif /* !HAVE___THREAD */
+ 
+ 	/* Backup the arg struct, it might vanish after completion. */
+ 	memcpy(&_iargs, iargs, sizeof(_iargs));
+@@ -96,6 +102,7 @@ static void *vrtx_task_trampoline(void *
+ 	/* vrtx_task_delete requires asynchronous cancellation */
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+ 
++#ifndef HAVE___THREAD
+ 	tcb = (TCB *) malloc(sizeof(*tcb));
+ 	if (tcb == NULL) {
+ 		fprintf(stderr, "Xenomai: failed to allocate local TCB?!\n");
+@@ -104,6 +111,7 @@ static void *vrtx_task_trampoline(void *
+ 	}
+ 
+ 	pthread_setspecific(__vrtx_tskey, tcb);
++#endif /* !HAVE___THREAD */
+ 
+ 	old_sigharden_handler = signal(SIGHARDEN, &vrtx_task_sigharden);
+ 
+@@ -224,7 +232,11 @@ TCB *sc_tinquiry(int pinfo[], int tid, i
+ {
+ 	TCB *tcb;
+ 
+-	tcb = (TCB *) pthread_getspecific(__vrtx_tskey);	/* Cannot fail. */
++#ifdef HAVE___THREAD
++	tcb = &__vrtx_tcb;
++#else /* !HAVE___THREAD */
++	tcb = (TCB *) pthread_getspecific(__vrtx_tskey); /* Cannot fail. */
++#endif /* !HAVE___THREAD */
+ 
+ 	*errp = XENOMAI_SKINCALL3(__vrtx_muxid,
+ 				  __vrtx_tinquiry, pinfo, tcb, tid);
 
-This is a multi-part message in MIME format.
---------------090209090702050406050608
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-
-Jan Kiszka wrote:
-> Hopefully the last round, addressing remarks brought up on the last
-> posting. The changes are:
-> 
-> [Patches 7-9]
->  - define xnsynch_owner_check as xnsynch-implementation-independent way
->    to check provided and current synch owner match (reduces #ifdefs)
-> 
-> [Patches 6 and 9]
->  - push lockcnt changes to native mutexes into separate patch (patch
-> 
-> [Patch 2]
->  - switch creation of xeno_current_key etc. from pthread_once to a
->    constructor
->  - translate pthread_getspecific == NULL into XN_NO_HANDLE
->    (funnily, this shrinks the code on x86-64)
-> 
-> [Patch 13]
->  - detect SMP feature inconsistency between kernel and userland
->    (but keep SMP off by default for now)
-> 
-> Note that this series (as well as the latter) depends on the VRTX fix of
-> Philippe which is not yet merged into SVN trunk.
-> 
-> Jan
-> 
-> PS: Hope this series is compatible with more mail clients /wrt
-> commenting on the inlined patches.
-> 
-
-Again forgot to attach the testbench we derived from Gilles' unit test.
-It currently depends on my infamous inquire patches. Compile with
--D__POSIX_SKIN__ and the usual wrapping for the posix skin, or against
-the native lib otherwise.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
-
---------------090209090702050406050608
-Content-Type: text/x-c++src;
- name="mutex-testbench.c"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="mutex-testbench.c"
-
-/*
- * Functional testing of the mutex implementation for native & posix skins.
- *
- * Copyright (C) Gilles Chanteperdrix  <gilles.chanteperdrix@xenomai.org>,
- *               Marion Deveaud <marion.deveaud@domain.hid>,
- *               Jan Kiszka <jan.kiszka@domain.hid>
- *
- * Released under the terms of GPLv2.
- */
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <stdarg.h>
-#include <sys/mman.h>
-#include <pthread.h>
-#include <native/timer.h>
-
-#ifdef __POSIX_SKIN__
-#include <posix/syscall.h>
-#else /* __NATIVE_SKIN__ */
-#include <native/task.h>
-#include <native/mutex.h>
-#include <native/sem.h>
-#include <native/cond.h>
-#endif
-
-#define MUTEX_CREATE	1
-#define MUTEX_LOCK	2
-#define MUTEX_TRYLOCK	3
-#define MUTEX_UNLOCK	4
-#define MUTEX_DESTROY	5
-#define COND_CREATE	6
-#define COND_SIGNAL	7
-#define COND_WAIT	8
-#define COND_DESTROY	9
-#define THREAD_DETACH	10
-#define THREAD_CREATE	11
-
-#define NS_PER_MS	1000000
-
-#ifdef __POSIX_SKIN__
-typedef pthread_mutex_t mutex_t;
-typedef	pthread_t thread_t;
-typedef pthread_cond_t cond_t;
-#else /* __NATIVE_SKIN__ */
-typedef RT_MUTEX mutex_t;
-typedef RT_TASK thread_t;
-typedef RT_COND cond_t;
-#endif /* __NATIVE_SKIN__ */
-
-void ms_sleep(int time)
-{
-#ifdef __POSIX_SKIN__
-	struct timespec ts;
-
-	ts.tv_sec = 0;
-	ts.tv_nsec = time*NS_PER_MS;
-
-	nanosleep(&ts, NULL);
-#else /* __NATIVE_SKIN__ */
-	rt_task_sleep(time*NS_PER_MS);
-#endif /* __NATIVE_SKIN__ */
-}
-
-void check_current_prio(int expected_prio)
-{
-	int current_prio;
-#ifdef __POSIX_SKIN__
-# ifdef __pse51_get_current_prio
-	extern unsigned __pse51_muxid;
-
-        XENOMAI_SKINCALL1(__pse51_muxid, __pse51_get_current_prio, &current_prio);
-# else /* !__pse51_get_current_prio */
-	current_prio = expected_prio;
-# endif /* !__pse51_get_current_prio */
-
-#else /* __NATIVE_SKIN__ */
-	int ret;
-	RT_TASK_INFO task_info;
-
-	if ((ret = rt_task_inquire(NULL, &task_info)) < 0) {
-		fprintf(stderr, "Task inquire: %i (%s)\n", -ret, strerror(-ret));
-		exit(EXIT_FAILURE);
-	}
-	current_prio = task_info.cprio;
-#endif /* __NATIVE_SKIN__ */
-
-	if (current_prio != expected_prio) {
-		fprintf(stderr, "current prio (%d) != expected prio (%d)\n",
-			current_prio, expected_prio);
-		exit(EXIT_FAILURE);
-	}
-}
-
-void check_current_mode(int expected_primary_mode)
-{
-	int current_in_primary, ret;
-#ifdef __POSIX_SKIN__
-	pthread_info_t thread_info;
-
-	if ((ret = pthread_inquire_np(pthread_self(), &thread_info)) > 0) {
-		fprintf(stderr, "Thread inquire: %i (%s)\n", ret, strerror(ret));
-		exit(EXIT_FAILURE);
-	}
-	current_in_primary = !!(thread_info.status & PTHREAD_PRIMARY);
-#else /* __NATIVE_SKIN__ */
-	RT_TASK_INFO task_info;
-
-	if ((ret = rt_task_inquire(NULL, &task_info)) < 0) {
-		fprintf(stderr, "Task inquire: %i (%s)\n", -ret, strerror(-ret));
-		exit(EXIT_FAILURE);
-	}
-	current_in_primary = !!(task_info.status & T_PRIMARY);
-#endif /* __NATIVE_SKIN__ */
-
-	if (current_in_primary != expected_primary_mode) {
-		fprintf(stderr, "current mode (%d) != expected mode (%d)\n",
-			current_in_primary, expected_primary_mode);
-		exit(EXIT_FAILURE);
-	}
-}
-
-void yield(void)
-{
-#ifdef __POSIX_SKIN__
-	sched_yield();
-#else /* __NATIVE_SKIN__ */
-	rt_task_yield();
-#endif /* __NATIVE_SKIN__ */
-}
-
-int dispatch(const char *service_name, int service_type, int check, ...)
-{
-	thread_t *thread;
-	cond_t *cond;
-	void *handler;
-	va_list ap;
-	int status;
-#ifdef __POSIX_SKIN__
-	struct sched_param param;
-	pthread_attr_t threadattr;
-	pthread_mutexattr_t mutexattr;
-	pthread_mutex_t *mutex;
-#else /* __NATIVE_SKIN__ */
-	int prio;
-#endif /* __NATIVE_SKIN__ */
-
-	va_start(ap, check);
-	switch (service_type) {
-	case MUTEX_CREATE:
-#ifdef __POSIX_SKIN__
-		mutex = va_arg(ap, pthread_mutex_t *);
-		pthread_mutexattr_init(&mutexattr);
-		if (va_arg(ap, int) != 0)
-			pthread_mutexattr_setprotocol(&mutexattr,
-						      PTHREAD_PRIO_INHERIT);
-		pthread_mutexattr_settype(&mutexattr, va_arg(ap, int));
-		status = pthread_mutex_init(mutex, &mutexattr);
-#else /* __NATIVE_SKIN__ */
-		status = -rt_mutex_create(va_arg(ap, RT_MUTEX *), NULL);
-#endif /* __NATIVE_SKIN__ */
-		break;
-
-	case MUTEX_LOCK:
-#ifdef __POSIX_SKIN__
-		status = pthread_mutex_lock(va_arg(ap, pthread_mutex_t *));
-#else /* __NATIVE_SKIN__ */
-		status =
-		    -rt_mutex_acquire(va_arg(ap, RT_MUTEX *), TM_INFINITE);
-#endif /* __NATIVE_SKIN__ */
-		break;
-
-	case MUTEX_TRYLOCK:
-#ifdef __POSIX_SKIN__
-		status = pthread_mutex_trylock(va_arg(ap, pthread_mutex_t *));
-#else /* __NATIVE_SKIN__ */
-		status =
-		    -rt_mutex_acquire(va_arg(ap, RT_MUTEX *), TM_NONBLOCK);
-#endif /* __NATIVE_SKIN__ */
-		break;
-
-	case MUTEX_UNLOCK:
-#ifdef __POSIX_SKIN__
-		status = pthread_mutex_unlock(va_arg(ap, pthread_mutex_t *));
-#else /* __NATIVE_SKIN__ */
-		status = -rt_mutex_release(va_arg(ap, RT_MUTEX *));
-#endif /* __NATIVE_SKIN__ */
-		break;
-
-	case MUTEX_DESTROY:
-#ifdef __POSIX_SKIN__
-		status = pthread_mutex_destroy(va_arg(ap, pthread_mutex_t *));
-#else /* __NATIVE_SKIN__ */
-		status = -rt_mutex_delete(va_arg(ap, RT_MUTEX *));
-#endif /* __NATIVE_SKIN__ */
-		break;
-
-	case COND_CREATE:
-#ifdef __POSIX_SKIN__
-		status = pthread_cond_init(va_arg(ap, pthread_cond_t *), NULL);
-#else /* __NATIVE_SKIN__ */
-		status = -rt_cond_create(va_arg(ap, RT_COND *), NULL);
-#endif /* __NATIVE_SKIN__ */
-		break;
-
-	case COND_SIGNAL:
-#ifdef __POSIX_SKIN__
-		status = pthread_cond_signal(va_arg(ap, pthread_cond_t *));
-#else /* __NATIVE_SKIN__ */
-		status = -rt_cond_signal(va_arg(ap, RT_COND *));
-#endif /* __NATIVE_SKIN__ */
-		break;
-	
-	case COND_WAIT:
-#ifdef __POSIX_SKIN__
-		cond = va_arg(ap, pthread_cond_t *);
-		status =
-		    pthread_cond_wait(cond, va_arg(ap, pthread_mutex_t *));
-#else /* __NATIVE_SKIN__ */
-		cond = va_arg(ap, RT_COND *);
-		status =
-		    -rt_cond_wait(cond, va_arg(ap, RT_MUTEX *), TM_INFINITE);
-#endif /* __NATIVE_SKIN__ */
-		break;
-
-	case COND_DESTROY:
-#ifdef __POSIX_SKIN__
-		status = pthread_cond_destroy(va_arg(ap, pthread_cond_t *));
-#else /* __NATIVE_SKIN__ */
-		status = -rt_cond_delete(va_arg(ap, RT_COND *));
-#endif /* __NATIVE_SKIN__ */
-		break;
-
-#ifdef __POSIX_SKIN__
-	case THREAD_DETACH:
-		status = pthread_detach(pthread_self());
-		break;
-#else /* __NATIVE_SKIN__ */
-	case THREAD_DETACH:
-		return 0;
-#endif /* __NATIVE_SKIN__ */
-
-	case THREAD_CREATE:
-#ifdef __POSIX_SKIN__
-		thread = va_arg(ap, pthread_t *);
-		pthread_attr_init(&threadattr);
-		pthread_attr_setschedpolicy(&threadattr, SCHED_FIFO);
-		param.sched_priority = va_arg(ap, int);
-		pthread_attr_setschedparam(&threadattr, &param);
-		pthread_attr_setinheritsched(&threadattr,
-					     PTHREAD_EXPLICIT_SCHED);
-		handler = va_arg(ap, void *);
-		status = pthread_create(thread, &threadattr, handler,
-					va_arg(ap, void *));
-#else /* __NATIVE_SKIN__ */
-		thread = va_arg(ap, RT_TASK *);
-		prio = va_arg(ap, int);
-		handler = va_arg(ap, void *);
-		status = -rt_task_spawn(thread, NULL, 0, prio, 0, handler,
-					va_arg(ap, void *));
-#endif /* __NATIVE_SKIN__ */
-		break;
-
-	default:
-		fprintf(stderr, "Unknown service %i.\n", service_type);
-		exit(EXIT_FAILURE);
-	}
-	va_end(ap);
-
-	if (status > 0 && check) {
-		fprintf(stderr, "%s: %i (%s)\n", 
-			service_name, status, strerror(status));
-		exit(EXIT_FAILURE);
-	}
-	return status;
-}
-
-void *waiter(void *cookie)
-{
-	mutex_t *mutex = (mutex_t *) cookie;
-	unsigned long long start, diff;
-
-	dispatch("waiter pthread_detach", THREAD_DETACH, 1);
-	start = rt_timer_tsc();
-	dispatch("waiter mutex_lock", MUTEX_LOCK, 1, mutex);
-	diff = rt_timer_tsc2ns(rt_timer_tsc() - start);
-	if (diff < 10000000) {
-		fprintf(stderr, "waiter, waited %Ld.%03u us\n",
-			diff / 1000, (unsigned) (diff % 1000));
-		exit(EXIT_FAILURE);
-	}
-	ms_sleep(11);
-	dispatch("waiter mutex_unlock", MUTEX_UNLOCK, 1, mutex);
-
-	return cookie;
-}
-
-void simple_wait(void)
-{
-	unsigned long long start, diff;
-	mutex_t mutex;
-	thread_t waiter_tid;
-
-	fprintf(stderr, "simple_wait\n");
-
-	dispatch("simple mutex_init", MUTEX_CREATE, 1, &mutex, 0, 0);
-	dispatch("simple mutex_lock 1", MUTEX_LOCK, 1, &mutex);
-	dispatch("simple thread_create", THREAD_CREATE, 1, &waiter_tid, 2,
-		 waiter, &mutex);
-	ms_sleep(10);
-	dispatch("simple mutex_unlock 1", MUTEX_UNLOCK, 1, &mutex);
-	yield();
-
-	start = rt_timer_tsc();
-	dispatch("simple mutex_lock 2", MUTEX_LOCK, 1, &mutex);
-	diff = rt_timer_tsc2ns(rt_timer_tsc() - start);
-	if (diff < 10000000) {
-		fprintf(stderr, "main, waited %Ld.%03u us\n",
-			diff / 1000, (unsigned) (diff % 1000));
-		exit(EXIT_FAILURE);
-	}
-
-	dispatch("simple mutex_unlock 2", MUTEX_UNLOCK, 1, &mutex);
-	dispatch("simple mutex_destroy", MUTEX_DESTROY, 1, &mutex);
-}
-
-void recursive_wait(void)
-{
-	unsigned long long start, diff;
-	mutex_t mutex;
-	thread_t waiter_tid;
-
-	fprintf(stderr, "recursive_wait\n");
-
-	dispatch("rec mutex_init", MUTEX_CREATE, 1, &mutex, 0,
-		 PTHREAD_MUTEX_RECURSIVE);
-	dispatch("rec mutex_lock 1", MUTEX_LOCK, 1, &mutex);
-	dispatch("rec mutex_lock 2", MUTEX_LOCK, 1, &mutex);
-
-	dispatch("rec thread_create", THREAD_CREATE, 1, &waiter_tid, 2,
-		 waiter, &mutex);
-
-	dispatch("rec mutex_unlock 2", MUTEX_UNLOCK, 1, &mutex); 
-	ms_sleep(10);
-	dispatch("rec mutex_unlock 1", MUTEX_UNLOCK, 1, &mutex);
-	yield();
-
-	start = rt_timer_tsc();
-	dispatch("rec mutex_lock 3", MUTEX_LOCK, 1, &mutex);
-	diff = rt_timer_tsc2ns(rt_timer_tsc() - start);
-
-	if (diff < 10000000) {
-		fprintf(stderr, "main, waited %Ld.%03u us\n",
-			diff / 1000, (unsigned) (diff % 1000));
-		exit(EXIT_FAILURE);
-	}
-	dispatch("rec mutex_unlock 3", MUTEX_UNLOCK, 1, &mutex);
-	dispatch("rec mutex_destroy", MUTEX_DESTROY, 1, &mutex);
-}
-
-void errorcheck_wait(void)
-{
-#ifdef __POSIX_SKIN__
-	/* This test only makes sense under POSIX */
-	unsigned long long start, diff;
-	mutex_t mutex;
-	thread_t waiter_tid;
-	int err;
-
-	fprintf(stderr, "errorcheck_wait\n");
-
-	dispatch("errorcheck mutex_init", MUTEX_CREATE, 1, &mutex, 0,
-		 PTHREAD_MUTEX_ERRORCHECK);
-	dispatch("errorcheck mutex_lock 1", MUTEX_LOCK, 1, &mutex);
-
-	err = pthread_mutex_lock(&mutex);
-	if (err != EDEADLK) {
-		fprintf(stderr, "errorcheck mutex_lock 2: %s\n",
-			strerror(err));
-		exit(EXIT_FAILURE);
-	}
-
-	dispatch("errorcheck thread_create", THREAD_CREATE, 1, &waiter_tid, 2,
-		 waiter, &mutex);
-	ms_sleep(10);
-	dispatch("errorcheck mutex_unlock 1", MUTEX_UNLOCK, 1, &mutex);
-	yield();
-	err = pthread_mutex_unlock(&mutex);
-	if (err != EPERM) {
-		fprintf(stderr, "errorcheck mutex_unlock 2: %s\n",
-			strerror(err));
-		exit(EXIT_FAILURE);
-	}
-
-	start = rt_timer_tsc();
-	dispatch("errorcheck mutex_lock 3", MUTEX_LOCK, 1, &mutex);
-	diff = rt_timer_tsc2ns(rt_timer_tsc() - start);
-	if (diff < 10000000) {
-		fprintf(stderr, "main, waited %Ld.%03u us\n",
-			diff / 1000, (unsigned) (diff % 1000));
-		exit(EXIT_FAILURE);
-	}
-	dispatch("errorcheck mutex_unlock 3", MUTEX_UNLOCK, 1, &mutex);
-	dispatch("errorcheck mutex_destroy", MUTEX_DESTROY, 1, &mutex);
-#endif /* __POSIX_SKIN__ */
-}
-
-void mode_switch(void)
-{
-	mutex_t mutex;
-
-	fprintf(stderr, "mode_switch\n");
-
-	dispatch("switch mutex_init", MUTEX_CREATE, 1, &mutex, 1, 0);
-
-	check_current_mode(0);
-
-	dispatch("switch mutex_lock", MUTEX_LOCK, 1, &mutex);
-
-	check_current_mode(1);
-
-	dispatch("switch mutex_unlock", MUTEX_UNLOCK, 1, &mutex);
-	dispatch("switch mutex_destroy", MUTEX_DESTROY, 1, &mutex);
-}
-
-void pi_wait(void)
-{
-	unsigned long long start, diff;
-	mutex_t mutex;
-	thread_t waiter_tid;
-
-	fprintf(stderr, "pi_wait\n");
-
-	dispatch("pi mutex_init", MUTEX_CREATE, 1, &mutex, 1, 0);
-	dispatch("pi mutex_lock 1", MUTEX_LOCK, 1, &mutex);
-
-	check_current_prio(2);
-
-	/* Give waiter a higher priority than main thread */
-	dispatch("pi thread_create", THREAD_CREATE, 1, &waiter_tid, 3, waiter,
-		 &mutex);
-	ms_sleep(10);
-
-	check_current_prio(3);
-
-	dispatch("pi mutex_unlock 1", MUTEX_UNLOCK, 1, &mutex);
-	yield();
-
-	check_current_prio(2);
-
-	start = rt_timer_tsc();
-	dispatch("pi mutex_lock 2", MUTEX_LOCK, 1, &mutex);
-	diff = rt_timer_tsc2ns(rt_timer_tsc() - start);
-	if (diff < 10000000) {
-		fprintf(stderr, "main, waited %Ld.%03u us\n",
-			diff / 1000, (unsigned) (diff % 1000));
-		exit(EXIT_FAILURE);
-	}
-	dispatch("pi mutex_unlock 2", MUTEX_UNLOCK, 1, &mutex);
-	dispatch("pi mutex_destroy", MUTEX_DESTROY, 1, &mutex);
-}
-
-void lock_stealing(void)
-{
-	mutex_t mutex;
-	thread_t lowprio_tid;
-	int trylock_result;
-
-	/* Main thread acquires the mutex and starts a waiter with lower
-	   priority. Then main thread releases the mutex, but locks it again
-	   without giving the waiter a chance to get it beforehand. */
-
-	fprintf(stderr, "lock_stealing\n");
-
-	dispatch("lock_stealing mutex_init", MUTEX_CREATE, 1, &mutex, 1, 0);
-	dispatch("lock_stealing mutex_lock 1", MUTEX_LOCK, 1, &mutex);
-
-	/* Main thread should have higher priority */
-	dispatch("lock_stealing thread_create 1", THREAD_CREATE, 1,
-		 &lowprio_tid, 1, waiter, &mutex);
-
-	/* Give lowprio thread 1 more ms to block on the mutex */
-	ms_sleep(6);
-
-	dispatch("lock_stealing mutex_unlock 1", MUTEX_UNLOCK, 1, &mutex);
-
-	/* Try to stealing the lock from low prio task */
-	trylock_result = dispatch("lock_stealing mutex_trylock",
-				  MUTEX_TRYLOCK, 0, &mutex);
-	if (trylock_result == 0) {
-		ms_sleep(6);
-
-		dispatch("lock_stealing mutex_unlock 2", MUTEX_UNLOCK, 1,
-			 &mutex);
-
-		/* Let waiter_lowprio a chance to run */
-		ms_sleep(20);
-
-		dispatch("lock_stealing mutex_lock 3", MUTEX_LOCK, 1, &mutex);
-
-		/* Restart the waiter */
-		dispatch("lock_stealing thread_create 2", THREAD_CREATE, 1,
-			 &lowprio_tid, 1, waiter, &mutex);
-
-		ms_sleep(6);
-
-		dispatch("lock_stealing mutex_unlock 3", MUTEX_UNLOCK, 1, &mutex);
-#ifdef __POSIX_SKIN__
-	} else if (trylock_result != EBUSY) {
-#else /* __NATIVE_SKIN__ */
-	} else if (trylock_result != EWOULDBLOCK) {
-#endif /* __NATIVE_SKIN__ */
-		fprintf(stderr, "lock_stealing mutex_trylock: %i (%s)\n",
-			trylock_result, strerror(trylock_result));
-		exit(EXIT_FAILURE);
-	}
-
-	/* Stealing the lock (again) from low prio task */
-	dispatch("lock_stealing mutex_lock 4", MUTEX_LOCK, 1, &mutex);
-
-	ms_sleep(6);
-
-	dispatch("lock_stealing mutex_unlock 4", MUTEX_UNLOCK, 1, &mutex);
-
-	/* Let waiter_lowprio a chance to run */
-	ms_sleep(20);
-
-	dispatch("lock_stealing mutex_destroy", MUTEX_DESTROY, 1, &mutex);
-
-	if (trylock_result != 0)
-		fprintf(stderr,
-			"lock_stealing mutex_trylock: not supported\n");
-}
-
-struct cond_mutex {
-	mutex_t *mutex;
-	cond_t *cond;
-};
-
-void *cond_signaler(void *cookie)
-{
-	struct cond_mutex *cm = (struct cond_mutex *) cookie;
-	unsigned long long start, diff;
-
-	dispatch("cond_signaler pthread_detach", THREAD_DETACH, 1);
-
-	start = rt_timer_tsc();
-	dispatch("cond_signaler mutex_lock 1", MUTEX_LOCK, 1, cm->mutex);
-	diff = rt_timer_tsc2ns(rt_timer_tsc() - start);
-
-	if (diff < 10000000) {
-		fprintf(stderr,
-			"cond_signaler, mutex_lock waited %Ld.%03u us\n",
-			diff / 1000, (unsigned) (diff % 1000));
-		exit(EXIT_FAILURE);
-	}
-	ms_sleep(10);
-	dispatch("cond_signaler cond_signal", COND_SIGNAL, 1, cm->cond);
-	dispatch("cond_signaler mutex_unlock 2", MUTEX_UNLOCK, 1, cm->mutex);
-	yield();
-
-	start = rt_timer_tsc();
-	dispatch("cond_signaler mutex_lock 2", MUTEX_LOCK, 1, cm->mutex);
-	diff = rt_timer_tsc2ns(rt_timer_tsc() - start);
-	if (diff < 10000000) {
-		fprintf(stderr,
-			"cond_signaler, mutex_lock 2 waited %Ld.%03u us\n",
-			diff / 1000, (unsigned) (diff % 1000));
-		exit(EXIT_FAILURE);
-	}
-	dispatch("cond_signaler mutex_unlock 2", MUTEX_UNLOCK, 1, cm->mutex);
-
-	return cookie;
-}
-
-void simple_condwait(void)
-{
-	unsigned long long start, diff;
-	mutex_t mutex;
-	cond_t cond;
-	struct cond_mutex cm = {
-		.mutex = &mutex,
-		.cond = &cond,
-	};
-	thread_t cond_signaler_tid;
-
-	fprintf(stderr, "simple_condwait\n");
-
-	dispatch("simple_condwait mutex_init", MUTEX_CREATE, 1, &mutex);
-	dispatch("simple_condwait cond_init", COND_CREATE, 1, &cond);
-	dispatch("simple_condwait mutex_lock", MUTEX_LOCK, 1, &mutex);
-	dispatch("simple_condwait thread_create", THREAD_CREATE, 1,
-		 &cond_signaler_tid, 2, cond_signaler, &cm);
-
-	ms_sleep(11);
-	start = rt_timer_tsc();
-	dispatch("simple_condwait cond_wait", COND_WAIT, 1, &cond, &mutex);
-	diff = rt_timer_tsc2ns(rt_timer_tsc() - start);
-	if (diff < 10000000) {
-		fprintf(stderr, "main, waited %Ld.%03u us\n",
-			diff / 1000, (unsigned) (diff % 1000));
-		exit(EXIT_FAILURE);
-	}
-	ms_sleep(10);
-	dispatch("simple_condwait mutex_unlock", MUTEX_UNLOCK, 1, &mutex);
-	yield();
-
-	dispatch("simple_condwait mutex_destroy", MUTEX_DESTROY, 1, &mutex);
-	dispatch("simple_condwait cond_destroy", COND_DESTROY, 1, &cond);
-}
-
-void recursive_condwait(void)
-{
-	unsigned long long start, diff;
-	mutex_t mutex;
-	cond_t cond;
-	struct cond_mutex cm = {
-		.mutex = &mutex,
-		.cond = &cond,
-	};
-	thread_t cond_signaler_tid;
-
-	fprintf(stderr, "recursive_condwait\n");
-
-	dispatch("rec_condwait mutex_init", MUTEX_CREATE, 1, &mutex, 0,
-		 PTHREAD_MUTEX_RECURSIVE);
-	dispatch("rec_condwait cond_init", COND_CREATE, 1, &cond);
-	dispatch("rec_condwait mutex_lock 1", MUTEX_LOCK, 1, &mutex);
-	dispatch("rec_condwait mutex_lock 2", MUTEX_LOCK, 1, &mutex);
-	dispatch("rec_condwait thread_create", THREAD_CREATE, 1,
-		 &cond_signaler_tid, 2, cond_signaler, &cm);
-
-	ms_sleep(10);
-	start = rt_timer_tsc();
-	dispatch("rec_condwait cond_wait", COND_WAIT, 1, &cond, &mutex);
-	diff = rt_timer_tsc2ns(rt_timer_tsc() - start);
-	if (diff < 10000000) {
-		fprintf(stderr, "main, waited %Ld.%03u us\n",
-			diff / 1000, (unsigned) (diff % 1000));
-		exit(EXIT_FAILURE);
-	}
-	dispatch("rec_condwait mutex_unlock 1", MUTEX_UNLOCK, 1, &mutex);
-	ms_sleep(10);
-	dispatch("rec_condwait mutex_unlock 2", MUTEX_UNLOCK, 1, &mutex);
-	yield();
-
-	dispatch("rec_condwait mutex_destroy", MUTEX_DESTROY, 1, &mutex);
-	dispatch("rec_condwait cond_destroy", COND_DESTROY, 1, &cond);
-}
-
-int main(void)
-{
-#ifdef __POSIX_SKIN__
-	struct sched_param sparam;
-#else /* __NATIVE_SKIN__ */
-	RT_TASK main_tid;
-#endif /* __NATIVE_SKIN__ */
-
-	mlockall(MCL_CURRENT | MCL_FUTURE);
-
-	/* Set scheduling parameters for the current process */
-#ifdef __POSIX_SKIN__
-	sparam.sched_priority = 2;
-	sched_setscheduler(0, SCHED_FIFO, &sparam);
-#else /* __NATIVE_SKIN__ */
-	rt_task_shadow(&main_tid, "main_task", 2, 0);
-#endif /* __NATIVE_SKIN__ */
-
-	/* Call test routines */
-	simple_wait();
-	recursive_wait();
-	errorcheck_wait();
-	mode_switch();
-	pi_wait();
-	lock_stealing();
-	simple_condwait();
-	recursive_condwait();
-	fprintf(stderr, "Test OK\n");
-	return 0;
-}
-
---------------090209090702050406050608--
 
