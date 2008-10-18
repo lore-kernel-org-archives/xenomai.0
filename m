@@ -1,14 +1,12 @@
-Message-ID: <48FA1849.5090200@domain.hid>
-Date: Sat, 18 Oct 2008 19:09:29 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <48FA2F42.1010206@domain.hid>
+Date: Sat, 18 Oct 2008 20:47:30 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <48F9F12F.7090708@domain.hid> <48F9F438.7010209@domain.hid>
-In-Reply-To: <48F9F438.7010209@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <20081017154559.420723261@domain.hid>
+In-Reply-To: <20081017154559.420723261@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 1/1] Use SIGWINCH to trigger priority
- change in user-space.
-Reply-To: rpm@xenomai.org
+Subject: Re: [Xenomai-core] [PATCH 00/13] Generic fast xnsynch support & more
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,24 +16,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Gilles Chanteperdrix wrote:
->> Hi,
->>
->> here is a patch which implements the idea discussed previously of 
->> re-using SIGWINCH to trigger priority changes in user-space. There is 
->> only one patch, but the files should have been put in a logical order
->> to make review easier.
-> 
-> Since there are chances of conflicts with Jan patches series, I will
-> rebase this patch after Jan patches have been commited.
-> 
+Jan Kiszka wrote:
+> PS: Hope this series is compatible with more mail clients /wrt
+> commenting on the inlined patches.
 
-I'm reviewing those now, this should not be long.
+I tested and it is true I could reply to your patches. However, your
+mailer does not put any Content-type of Content-encoding info. This may
+be a problem for some.
 
 -- 
-Philippe.
+					    Gilles.
 
