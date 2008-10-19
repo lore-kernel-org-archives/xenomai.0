@@ -1,10 +1,13 @@
-Message-ID: <48E9C418.6010800@domain.hid>
-Date: Mon, 06 Oct 2008 09:54:00 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48FB0FEA.4040309@domain.hid>
+Date: Sun, 19 Oct 2008 12:46:02 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+References: <48E37266.2040006@domain.hid>
+In-Reply-To: <48E37266.2040006@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [PATCH] Stall root domain during NMI execution
+Subject: Re: [Adeos-main] [RFC][PATCH] Rework async printk conditions
+Reply-To: rpm@xenomai.org
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -13,206 +16,82 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: adeos-main <adeos-main@gna.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: adeos-main <adeos-main@gna.org>
 
-During to my work on KVM, specifically its NMI emulation support, I
-happen to come across this ipipe issue: As we continue to call a lot of
-Linux code from NMI context, and that code may fiddle with the
-virtualized IRQ flags (printk does e.g.), we have to ensure that root's
-pipeline state is maintained properly.
+Jan Kiszka wrote:
+> Some ad-hoc instrumentation of Xenomai code running over the root domain
+> but with the head domain stalled (nklock held) triggered the new
+> topmost-stalled warning for me.
+> 
+> So I reworked the condition for doing async (ipipe-buffered) printk as
+> follows:
+>  no oops in progress AND
+>  domain did not request sync printk AND
+>  (domain != root OR
+>    (domain == root AND some higher domain stalled))
+> 
+> Makes sense?
+>
 
-Otherwise "interesting" things can happen. When we incorrectly reenable
-IRQs over the root domain, we also unconditionally call
-local_irq_enable_hw() - hell may break loose (with my KVM environment,
-we even end up with recursive NMIs on certain Intel CPUs). Granted,
-calling printk from NMI context is generally already an error condition,
-but we should not worsen the situation. Patch below fixes the effects I
-observed.
+Yes it does. Merged, thanks.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
- arch/x86/kernel/ipipe.c      |    2 
- include/linux/ipipe.h        |  119 +++++++++++++++++++++++--------------------
- include/linux/ipipe_percpu.h |    2 
- 3 files changed, 68 insertions(+), 55 deletions(-)
+> Jan
+> 
+> ---
+>  kernel/printk.c |   24 ++++++++++++++++++++----
+>  1 file changed, 20 insertions(+), 4 deletions(-)
+> 
+> Index: b/kernel/printk.c
+> ===================================================================
+> --- a/kernel/printk.c
+> +++ b/kernel/printk.c
+> @@ -641,17 +641,33 @@ void __ipipe_flush_printk (unsigned virq
+>  
+>  asmlinkage int printk(const char *fmt, ...)
+>  {
+> -  	int r, fbytes, oldcount, cs = -1;
+> -    	unsigned long flags;
+> +	int r, fbytes, oldcount;
+> +	int sprintk = 1;
+> +	int cs = -1;
+> +	unsigned long flags;
+>  	va_list args;
+>  
+>  	va_start(args, fmt);
+>  
+> -	if (test_bit(IPIPE_SPRINTK_FLAG,&ipipe_current_domain->flags) ||
+> +	if (test_bit(IPIPE_SPRINTK_FLAG, &ipipe_current_domain->flags) ||
+>  	    oops_in_progress)
+>  		cs = ipipe_disable_context_check(ipipe_processor_id());
+> +	else if (ipipe_current_domain == ipipe_root_domain) {
+> +		struct ipipe_domain *dom;
+>  
+> -	if (ipipe_current_domain == ipipe_root_domain || cs != -1) {
+> +		local_irq_save_hw(flags);
+> +		list_for_each_entry(dom, &__ipipe_pipeline, p_link) {
+> +			if (dom == ipipe_root_domain)
+> +				break;
+> +			if (test_bit(IPIPE_STALL_FLAG,
+> +				     &ipipe_cpudom_var(dom, status)))
+> +				sprintk = 0;
+> +		}
+> +		local_irq_restore_hw(flags);
+> +	} else
+> +		sprintk = 0;
+> +
+> +	if (sprintk) {
+>  		r = vprintk(fmt, args);
+>  		if (cs != -1)
+>  			ipipe_restore_context_check(ipipe_processor_id(), cs);
+> 
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
+> 
 
-Index: b/include/linux/ipipe.h
-===================================================================
---- a/include/linux/ipipe.h
-+++ b/include/linux/ipipe.h
-@@ -31,6 +31,41 @@
- #include <linux/ipipe_compat.h>
- #include <asm/ipipe.h>
- 
-+#ifdef CONFIG_IPIPE_DEBUG_CONTEXT
-+
-+#include <linux/cpumask.h>
-+#include <asm/system.h>
-+
-+static inline int ipipe_disable_context_check(int cpu)
-+{
-+	return xchg(&per_cpu(ipipe_percpu_context_check, cpu), 0);
-+}
-+
-+static inline void ipipe_restore_context_check(int cpu, int old_state)
-+{
-+	per_cpu(ipipe_percpu_context_check, cpu) = old_state;
-+}
-+
-+static inline void ipipe_context_check_off(void)
-+{
-+	int cpu;
-+	for_each_online_cpu(cpu)
-+		per_cpu(ipipe_percpu_context_check, cpu) = 0;
-+}
-+
-+#else	/* !CONFIG_IPIPE_DEBUG_CONTEXT */
-+
-+static inline int ipipe_disable_context_check(int cpu)
-+{
-+	return 0;
-+}
-+
-+static inline void ipipe_restore_context_check(int cpu, int old_state) { }
-+
-+static inline void ipipe_context_check_off(void) { }
-+
-+#endif	/* !CONFIG_IPIPE_DEBUG_CONTEXT */
-+
- #ifdef CONFIG_IPIPE
- 
- /*
-@@ -512,6 +547,32 @@ static inline void local_irq_restore_nos
- 
- #define ipipe_root_domain_p		(ipipe_current_domain == ipipe_root_domain)
- 
-+static inline void ipipe_nmi_enter(void)
-+{
-+	int cpu = ipipe_processor_id();
-+
-+	per_cpu(ipipe_nmi_saved_root, cpu) = ipipe_root_cpudom_var(status);
-+	__set_bit(IPIPE_STALL_FLAG, &ipipe_root_cpudom_var(status));
-+
-+#ifdef CONFIG_IPIPE_DEBUG_CONTEXT
-+	per_cpu(ipipe_saved_context_check_state, cpu) =
-+		ipipe_disable_context_check(cpu);
-+#endif /* CONFIG_IPIPE_DEBUG_CONTEXT */
-+}
-+
-+static inline void ipipe_nmi_exit(void)
-+{
-+	int cpu = ipipe_processor_id();
-+
-+#ifdef CONFIG_IPIPE_DEBUG_CONTEXT
-+	ipipe_restore_context_check
-+		(cpu, per_cpu(ipipe_saved_context_check_state, cpu));
-+#endif /* CONFIG_IPIPE_DEBUG_CONTEXT */
-+
-+	if (!test_bit(IPIPE_STALL_FLAG, &per_cpu(ipipe_nmi_saved_root, cpu)))
-+		__clear_bit(IPIPE_STALL_FLAG, &ipipe_root_cpudom_var(status));
-+}
-+
- #else	/* !CONFIG_IPIPE */
- 
- #define ipipe_init()			do { } while(0)
-@@ -536,6 +597,9 @@ static inline void local_irq_restore_nos
- #define ipipe_root_domain_p		1
- #define ipipe_safe_current		current
- 
-+#define ipipe_nmi_enter()		do { } while ()
-+#define ipipe_nmi_exit()		do { } while ()
-+
- #define local_irq_disable_head()	local_irq_disable()
- 
- #define local_irq_save_full(vflags, rflags)	do { (void)(vflags); local_irq_save(rflags); } while(0)
-@@ -544,59 +608,4 @@ static inline void local_irq_restore_nos
- 
- #endif	/* CONFIG_IPIPE */
- 
--#ifdef CONFIG_IPIPE_DEBUG_CONTEXT
--
--#include <linux/cpumask.h>
--#include <asm/system.h>
--
--static inline int ipipe_disable_context_check(int cpu)
--{
--	return xchg(&per_cpu(ipipe_percpu_context_check, cpu), 0);
--}
--
--static inline void ipipe_restore_context_check(int cpu, int old_state)
--{
--	per_cpu(ipipe_percpu_context_check, cpu) = old_state;
--}
--
--static inline void ipipe_context_check_off(void)
--{
--	int cpu;
--	for_each_online_cpu(cpu)
--		per_cpu(ipipe_percpu_context_check, cpu) = 0;
--}
--
--static inline void ipipe_nmi_enter(void)
--{
--	int cpu = ipipe_processor_id();
--
--	per_cpu(ipipe_saved_context_check_state, cpu) =
--		ipipe_disable_context_check(cpu);
--}
--
--static inline void ipipe_nmi_exit(void)
--{
--	int cpu = ipipe_processor_id();
--
--	ipipe_restore_context_check
--		(cpu, per_cpu(ipipe_saved_context_check_state, cpu));
--}
--
--#else	/* !CONFIG_IPIPE_DEBUG_CONTEXT */
--
--static inline int ipipe_disable_context_check(int cpu)
--{
--	return 0;
--}
--
--static inline void ipipe_restore_context_check(int cpu, int old_state) { }
--
--static inline void ipipe_context_check_off(void) { }
--
--static inline void ipipe_nmi_enter(void) { }
--
--static inline void ipipe_nmi_exit(void) { }
--
--#endif	/* !CONFIG_IPIPE_DEBUG_CONTEXT */
--
- #endif	/* !__LINUX_IPIPE_H */
-Index: b/include/linux/ipipe_percpu.h
-===================================================================
---- a/include/linux/ipipe_percpu.h
-+++ b/include/linux/ipipe_percpu.h
-@@ -56,6 +56,8 @@ DECLARE_PER_CPU(struct ipipe_percpu_doma
- 
- DECLARE_PER_CPU(struct ipipe_domain *, ipipe_percpu_domain);
- 
-+DECLARE_PER_CPU(unsigned long, ipipe_nmi_saved_root);
-+
- #ifdef CONFIG_IPIPE_DEBUG_CONTEXT
- DECLARE_PER_CPU(int, ipipe_percpu_context_check);
- DECLARE_PER_CPU(int, ipipe_saved_context_check_state);
-Index: b/arch/x86/kernel/ipipe.c
-===================================================================
---- a/arch/x86/kernel/ipipe.c
-+++ b/arch/x86/kernel/ipipe.c
-@@ -52,6 +52,8 @@ int __ipipe_tick_irq = TIMER_IRQ;
- 
- DEFINE_PER_CPU(struct pt_regs, __ipipe_tick_regs);
- 
-+DEFINE_PER_CPU(unsigned long, ipipe_nmi_saved_root);
-+
- #ifdef CONFIG_SMP
- 
- static cpumask_t __ipipe_cpu_sync_map;
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Philippe.
 
