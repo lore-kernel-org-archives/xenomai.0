@@ -1,13 +1,12 @@
-Message-ID: <48FB0FEA.4040309@domain.hid>
-Date: Sun, 19 Oct 2008 12:46:02 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <48FB16DE.903@domain.hid>
+Date: Sun, 19 Oct 2008 13:15:42 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <48E37266.2040006@domain.hid>
-In-Reply-To: <48E37266.2040006@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [RFC][PATCH] Rework async printk conditions
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigA240CF506F8144542AA29D94"
+Sender: jan.kiszka@domain.hid
+Subject: [Adeos-main] [PATCH] Fix IPIPE-disabled build
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -16,82 +15,54 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: adeos-main <adeos-main@gna.org>
 
-Jan Kiszka wrote:
-> Some ad-hoc instrumentation of Xenomai code running over the root domain
-> but with the head domain stalled (nklock held) triggered the new
-> topmost-stalled warning for me.
-> 
-> So I reworked the condition for doing async (ipipe-buffered) printk as
-> follows:
->  no oops in progress AND
->  domain did not request sync printk AND
->  (domain != root OR
->    (domain == root AND some higher domain stalled))
-> 
-> Makes sense?
->
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigA240CF506F8144542AA29D94
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Yes it does. Merged, thanks.
+I messed up the disabled build, please merge this fix.
 
-> Jan
-> 
-> ---
->  kernel/printk.c |   24 ++++++++++++++++++++----
->  1 file changed, 20 insertions(+), 4 deletions(-)
-> 
-> Index: b/kernel/printk.c
-> ===================================================================
-> --- a/kernel/printk.c
-> +++ b/kernel/printk.c
-> @@ -641,17 +641,33 @@ void __ipipe_flush_printk (unsigned virq
->  
->  asmlinkage int printk(const char *fmt, ...)
->  {
-> -  	int r, fbytes, oldcount, cs = -1;
-> -    	unsigned long flags;
-> +	int r, fbytes, oldcount;
-> +	int sprintk = 1;
-> +	int cs = -1;
-> +	unsigned long flags;
->  	va_list args;
->  
->  	va_start(args, fmt);
->  
-> -	if (test_bit(IPIPE_SPRINTK_FLAG,&ipipe_current_domain->flags) ||
-> +	if (test_bit(IPIPE_SPRINTK_FLAG, &ipipe_current_domain->flags) ||
->  	    oops_in_progress)
->  		cs = ipipe_disable_context_check(ipipe_processor_id());
-> +	else if (ipipe_current_domain == ipipe_root_domain) {
-> +		struct ipipe_domain *dom;
->  
-> -	if (ipipe_current_domain == ipipe_root_domain || cs != -1) {
-> +		local_irq_save_hw(flags);
-> +		list_for_each_entry(dom, &__ipipe_pipeline, p_link) {
-> +			if (dom == ipipe_root_domain)
-> +				break;
-> +			if (test_bit(IPIPE_STALL_FLAG,
-> +				     &ipipe_cpudom_var(dom, status)))
-> +				sprintk = 0;
-> +		}
-> +		local_irq_restore_hw(flags);
-> +	} else
-> +		sprintk = 0;
-> +
-> +	if (sprintk) {
->  		r = vprintk(fmt, args);
->  		if (cs != -1)
->  			ipipe_restore_context_check(ipipe_processor_id(), cs);
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
-> 
+Jan
+
+---
+ include/linux/ipipe.h |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+Index: b/include/linux/ipipe.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/include/linux/ipipe.h
++++ b/include/linux/ipipe.h
+@@ -611,8 +611,8 @@ void ipipe_kgdb_set_irq_handler(int irq,
+ #define ipipe_processor_id()		smp_processor_id()
+ #define ipipe_safe_current()		current
+=20
+-#define ipipe_nmi_enter()		do { } while ()
+-#define ipipe_nmi_exit()		do { } while ()
++#define ipipe_nmi_enter()		do { } while (0)
++#define ipipe_nmi_exit()		do { } while (0)
+=20
+ #define local_irq_disable_head()	local_irq_disable()
+=20
 
 
--- 
-Philippe.
+--------------enigA240CF506F8144542AA29D94
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkj7Ft4ACgkQniDOoMHTA+n8kwCggPE63buJSIVZujVhnBIlxcl2
+2PAAnjEfGOQV1gi53nIctn9YflKg7apL
+=CRci
+-----END PGP SIGNATURE-----
+
+--------------enigA240CF506F8144542AA29D94--
 
