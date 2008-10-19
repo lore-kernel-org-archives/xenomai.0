@@ -1,9 +1,13 @@
-Date: Fri, 10 Oct 2008 17:57:49 +0000 (GMT)
-From: Gabriele Moabiti <gabmoa@domain.hid>
+Message-ID: <48FB7299.4040004@domain.hid>
+Date: Sun, 19 Oct 2008 19:47:05 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-396205436-1223661469=:45338"
-Message-ID: <563079.45338.qm@domain.hid>
-Subject: Re: [Xenomai-help] trap exceptions in user
+References: <4B2EEE69E41E524EB7FCDC62A15D68D8018D014F@ARVMAIL1.mra.roland-man.biz>
+	<200810190258.16939.berlemont.hauw@domain.hid>
+In-Reply-To: <200810190258.16939.berlemont.hauw@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] rtdm_iomap_to_user on PPC
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -13,43 +17,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Alexis Berlemont <berlemont.hauw@domain.hid>
+Cc: xenomai@xenomai.org
 
---0-396205436-1223661469=:45338
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Alexis Berlemont wrote:
+> Hi,
+>=20
+> On Friday 17 October 2008 06:46, thomas.debes@domain.hid wrote:
+>> No comments or ideas? Providing this feature is essential for our CPCI
+>> drivers. We have to port some Linux applications to Xenomai which use th=
+at
+>> mmap stuff intensely.
+>>
+>> Thanks again!
+>>
+>> Thomas
+>>
+>>> -----Urspr=FCngliche Nachricht-----
+>>> Von: xenomai-help-bounces@domain.hid
+>>> [mailto:xenomai-help-bounces@domain.hid] Im Auftrag von
+>>> thomas.debes@domain.hid
+>>> Gesendet: Mittwoch, 8. Oktober 2008 11:49
+>>> An: xenomai@xenomai.org
+>>> Betreff: [Xenomai-help] rtdm_iomap_to_user on PPC
+>>>
+>>> Hello,
+>>>
+>>> in the following thread I was asking for a solution to use
+>>> rtdm_iomap_to_user() on PPC (MPC5200, Denx 2.4.25)
+>=20
+>=20
+> In 2.4 kernel, rtdm_iomap_to_user() is based on the function remap_page_r=
+ange=20
+> (with vma->vm_flags |=3D VM_RESERVED).
+>=20
+> Once, I had to develop a classical Linux driver (for PPC) which provided =
+mmap=20
+> functionalites so as to let a user application mmap a buffer allocated th=
+anks=20
+> to __get_free_pages().
+>=20
+> On a 2.6 kernel, I used remap_pfn_range() and it works great but on 2.4 k=
+ernel=20
+> the function remap_page_range() did not work as I expected. I had a quick=
+=20
+> look on its implementation and I found that instead of mapping my buffer =
+it=20
+> mapped newly allocated zeroed pages (if my memories are correct).
+>=20
+> If I remember well, these pages were allocated in lazy mode. That could=20
+> explain the freeze of your whole system: in case a RT application in prim=
+ary=20
+> mode tries to access the mmapped buffer.
 
-=0A> =0A> my_rt_task_func()=0A> {=0A>     int 3 // This is trapped by the c=
-ustom exception routine (forwarded to xenomai handler). The terminal write=
-=0A>             // trace/breakpoint trap=0A> }=0A=0A> This does not tell m=
-e how the thread running "my_rt_task_func" is created.=0A=0AIn user space w=
-ith the standard=0A=0A        rt_task_create(&task_desc, "MyTaskName", TASK=
-_STKSZ, TASK_PRIO, TASK_MODE);=0A        rt_task_start(&task_desc, &my_rt_t=
-ask_func, NULL);=0A=0A    Gabriele=0A=0A=0A=0A      Scopri il blog di Yahoo=
-! Mail:=0ATrucchi, novit=C3=A0 e scrivi la tua opinione.=0Ahttp://www.ymail=
-blogit.com/blog
---0-396205436-1223661469=:45338
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Well, normally, the fault should cause the RT application to switch to
+secondary mode and be handled gracefully from there, unless there is a
+bug hidden in Xenomai or I-pipe. Besides, RT applications usually use
+"mlockall", so the kernel should make all the pages present and not rely
+on further faults (at least, is it how it works on 2.6).
 
-<html><head><style type=3D"text/css"><!-- DIV {margin:0px;} --></style></he=
-ad><body><div style=3D"font-family:arial,helvetica,sans-serif;font-size:10p=
-t"><div style=3D"font-family: arial,helvetica,sans-serif; font-size: 10pt;"=
-><div style=3D"font-family: arial,helvetica,sans-serif; font-size: 10pt;"><=
-br>&gt; <br>&gt; my_rt_task_func()<br>&gt; {<br>&gt;&nbsp; &nbsp;  int 3 //=
- This is trapped by the custom exception routine (forwarded to xenomai hand=
-ler). The terminal write<br>&gt;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  =
-// trace/breakpoint trap<br>&gt; }<br><br>&gt; This does not tell me how th=
-e thread running "my_rt_task_func" is created.<br><br>In user space with th=
-e standard<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; rt_task_create(&amp=
-;task_desc, "MyTaskName", TASK_STKSZ, TASK_PRIO, TASK_MODE);<br>&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rt_task_start(&amp;task_desc, &amp;my_rt_ta=
-sk_func, NULL);<br><br>&nbsp;&nbsp;&nbsp; Gabriele<br></div></div></div><br=
->=0A=0A=0A=0A      <hr size=3D1><font face=3D"Arial" size=3D"2">Scopri il <=
-a href=3D"http://us.rd.yahoo.com/mail/it/taglines/yahoo/ymail/SIG=3D11djrg4=
-60/**http%3A%2F%2Fwww.ymailblogit.com%2Fblog%2F"> Blog di Yahoo! Mail</a>: =
-trucchi, novit=C3=A0, consigli... e scrivi la tua opinione!</font></body></=
-html>
---0-396205436-1223661469=:45338--
+--=20
+					    Gilles.
 
