@@ -1,13 +1,12 @@
-Message-ID: <48FB74B6.9090206@domain.hid>
-Date: Sun, 19 Oct 2008 19:56:06 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <48FBB337.7080503@domain.hid>
+Date: Mon, 20 Oct 2008 00:22:47 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <48FB693B.2080104@domain.hid> <48FB6D40.5090903@domain.hid>
-	<48FB73C4.4090408@domain.hid>
-In-Reply-To: <48FB73C4.4090408@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [PATCH] x86: Don't instrument vdso functions
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigC7EE7DE07328938B8F5975DA"
+Sender: jan.kiszka@domain.hid
+Subject: [Adeos-main] [PATCH] x86-32: Cleanup redundant NMI wrapping
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -16,22 +15,65 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: rpm@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: adeos-main <adeos-main@gna.org>
 
-Philippe Gerum wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> The mcount instrumentation is currently leaking into vdso functions.
->>> Patch below fixes this (bits taken from 2.6.27).
->> What are these vdso functions? Functions called from user-space?
->>
-> 
-> Yes. Bits of kernel code mapped into user-space to eliminate the need for
-> reaching them via syscalls.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigC7EE7DE07328938B8F5975DA
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-They have copied it from ARM or Blackfin!
+We are now doing the housekeeping in nmi_enter/exit, so this hunk can
+safely be reverted.
 
--- 
-					    Gilles.
+---
+ arch/x86/kernel/traps_32.c |    6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+Index: b/arch/x86/kernel/traps_32.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/arch/x86/kernel/traps_32.c
++++ b/arch/x86/kernel/traps_32.c
+@@ -836,21 +836,17 @@ static int ignore_nmis;
+=20
+ notrace __kprobes void do_nmi(struct pt_regs *regs, long error_code)
+ {
+-	int cpu, cs;
++	int cpu;
+=20
+ 	nmi_enter();
+=20
+ 	cpu =3D smp_processor_id();
+=20
+-	cs =3D ipipe_disable_context_check(cpu);
+-=20
+ 	++nmi_count(cpu);
+=20
+ 	if (!ignore_nmis)
+ 		default_do_nmi(regs);
+=20
+- 	ipipe_restore_context_check(cpu, cs);
+-=20
+ 	nmi_exit();
+ }
+=20
+
+
+--------------enigC7EE7DE07328938B8F5975DA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkj7szwACgkQniDOoMHTA+lSLQCdEzjb4vX8pqvHd0x7wa4rSE2n
+XgEAn0ZZmIBIglMNE42hfh/QpYsI5R0a
+=r6En
+-----END PGP SIGNATURE-----
+
+--------------enigC7EE7DE07328938B8F5975DA--
 
