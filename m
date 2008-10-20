@@ -1,15 +1,16 @@
-Message-ID: <4908FF4D.4050706@domain.hid>
-Date: Thu, 30 Oct 2008 01:26:53 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48FCD485.2060606@domain.hid>
+Date: Mon, 20 Oct 2008 20:57:09 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <49085904.8080302@domain.hid>
-In-Reply-To: <49085904.8080302@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigD77AC68784EC3CBB6942032F"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [PATCH] RT-Socket-CAN: correct bug with filter
-	registration
+References: <48F9F12F.7090708@domain.hid>	<48FB15A8.30703@domain.hid>	<48FB17BD.7010904@domain.hid>	<48FB1891.3060609@domain.hid>
+	<48FB19F7.1030107@domain.hid>	<48FB5BD5.1060205@domain.hid>
+	<48FB5F1C.401@domain.hid> <48FC405E.8010603@domain.hid>
+	<48FC440E.90000@domain.hid>
+In-Reply-To: <48FC440E.90000@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH 1/1] Use SIGWINCH to trigger
+ priority	change in user-space.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,75 +20,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>, Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD77AC68784EC3CBB6942032F
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Philippe Gerum wrote:
+>>>> Well, what about merging the solutions: trap the signal from the library
+>>>> constructor by default for people relying on #1, AND document the shadow signal
+>>>> handler for people who can do #2?
+>>> For me, merging the two, would mean keep sigshadow_install called upon
+>>> thread creation, but export xeno_sigwinch_handler to be callable from
+>>> user signals.
+>>>
+>>> This way, if people install their signal handler before the first thread
+>>> creation, they have nothing to worry about. If they install their signal
+>>> handler at a later time, they have to take care of calling
+>>> xeno_sigwinch_handler and look at its return value.
+>> Jan, do you agree? The main argument is that people may use third-party
+>> libraries such as, say, libreadline or libqt which intercept the
+>> SIGWINCH signal, and that we do not want to recompile these libraries to
+>> run with Xenomai.
+> 
+> Yes, I'm fine with the current approach + doc + xeno_sigwinch_handler.
 
-Wolfgang Grandegger wrote:
-> Hi Jan and Sebastian,
->=20
-> attached is the patch fixing the filter problem. I'm going to apply it
-> to the trunk as well if there are no complaints.
->=20
-> Wolfgang.
->=20
-> Index: ChangeLog
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> --- ChangeLog	(revision 4287)
-> +++ ChangeLog	(working copy)
-> @@ -1,3 +1,9 @@
-> +2008-10-29  Wolfgang Grandegger  <wg@domain.hid>
-> +
-> +	* ksrc/drivers/can/rtcan_raw_filter.c(rtcan_raw_mount_filter):
-> +	Applying the filter mask required for fast filter checks got lost
-> +	somehow with commit 2202.
-> +
->  2008-10-28  Gilles Chanteperdrix  <gilles.chanteperdrix@xenomai.org>
-> =20
->  	* ksrc/nucleus/thread.c (xnthread_init): Change initialization
-> Index: ksrc/drivers/can/rtcan_raw_filter.c
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> --- ksrc/drivers/can/rtcan_raw_filter.c	(revision 4287)
-> +++ ksrc/drivers/can/rtcan_raw_filter.c	(working copy)
-> @@ -62,6 +62,9 @@
->  	recv_filter->can_id =3D filter->can_id;
->  	recv_filter->can_mask =3D filter->can_mask & ~CAN_INV_FILTER;
->      }
-> +
-> +    /* Apply mask for fast filter check */
-> +    recv_filter->can_id &=3D recv_filter->can_mask;
->  }
-> =20
-> =20
+Ok. Since I am going to paste the doc in four different places, I'd 
+better get it right from the beginning. Here is my prose:
 
-Ack from me, too. Please commit to trunk and 2.4.x.
-
-Thanks for spotting this, Sebastian!
-
-Jan
+ * @note: When creating or shadowing a Xenomai thread in user-space, for the
+ * first time, Xenomai installs a handler for the SIGWINCH signal. If you had
+ * installed a handler before that, it will be automatically called by Xenomai
+ * for SIGWINCH signals that it has not sent.
+ *
+ * If, however, you install a signal handler for SIGWINCH after creating
+ * or shadowing the first Xenomai thread, you have to explicitely call the
+ * function xeno_sigwinch_handler at the beginning of your signal handler,
+ * using its return to know if the signal was in fact an internal signal of
+ * Xenomai (in which case it returns 1), or if you should handle the signal (in
+ * which case it returns 0). xeno_sigwinch_handler prototype is:
+ *
+ * <b>int xeno_sigwinch_handler(int sig, siginfo_t *si, void *ctxt);</b>
+ *
+ * Which means that you should register your handler with sigaction, using the
+ * SA_SIGINFO flag, and pass all the arguments you received to
+ * xeno_sigwinch_handler.
 
 
---------------enigD77AC68784EC3CBB6942032F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkkI/1MACgkQniDOoMHTA+kUJQCfZBizfvZWUxMHHmx44KkGHab+
-9QsAn1vhrw3BdHocEYUJHApTUkwAIQme
-=8lZe
------END PGP SIGNATURE-----
-
---------------enigD77AC68784EC3CBB6942032F--
+-- 
+					    Gilles.
 
