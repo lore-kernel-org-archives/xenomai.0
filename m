@@ -1,45 +1,62 @@
-Message-ID: <48E7CDA7.1010102@domain.hid>
-Date: Sat, 04 Oct 2008 22:10:15 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <48FCE40C.1080100@domain.hid>
+Date: Mon, 20 Oct 2008 22:03:24 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <2b490f270809260610w4573446x507ef059d4b3ca0b@domain.hid>	<48DD05F2.4040203@domain.hid>
-	<2b490f270809301326jd381307md432bd4cdfe36d3b@domain.hid>
-In-Reply-To: <2b490f270809301326jd381307md432bd4cdfe36d3b@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Segmentation Fault
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <48FCDC52.1070507@domain.hid>
+In-Reply-To: <48FCDC52.1070507@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigC644689300E2EF2032F7EDB0"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] Warning when compiling trunk.
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Dehann Fourie <dehann.fourie@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Dehann Fourie wrote:
-> Hi,
-> 
-> Sorry for the lack of information, I'm still bit of a new guy. I have found
-> the following (I do use a mlockall(current | future)):
-> 
-> When i declare larger arrays in the real-time task I get the segmentation
-> fault. This is when I declare as follows
-> double arr[10000]; //some KB sized value
-> 
-> When I use malloc I don't get the problem. My question now is where does the
-> first one declare the memory. I am assuming that the malloc declares strait
-> into the RAM, becuase there I am safe to declare a couple of MB?
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigC644689300E2EF2032F7EDB0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-It depends on where you declare double arr[10000]. If this is outside of
-any scope, then it ends up in an anonmous map. If this is declared in a
-function, then it ends up on the current thread stack, so, in this case
-the current thread stack has to be large enough to allow such an
-allocation (in your case, sizeof(arr) == 80000, that is around 80Kbytes).
+Gilles Chanteperdrix wrote:
+> I get this warning when compiling trunk:
+>=20
+> checking for __thread... rm: cannot remove `conftest1.dir': Is a direct=
+ory
+> yes
+>=20
 
--- 
-					    Gilles.
+That simple, it's a typo in this line:
+
+http://www.rts.uni-hannover.de/xenomai/lxr/source/configure.in?v=3DSVN-tr=
+unk#394
+
+Also, that rm should be done outside the if block to play safe.
+
+Jan
+
+
+--------------enigC644689300E2EF2032F7EDB0
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.8 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkj85A0ACgkQniDOoMHTA+mNEQCfUhgNedwzWBZ+vFPRK/WNP/T/
+U84An0MOL7e7A4JhifPnpqxRnrkwPKyo
+=Xf8D
+-----END PGP SIGNATURE-----
+
+--------------enigC644689300E2EF2032F7EDB0--
 
