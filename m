@@ -1,14 +1,15 @@
-Message-ID: <48F76362.4010104@domain.hid>
-Date: Thu, 16 Oct 2008 17:53:06 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <48FCF2E2.8050809@domain.hid>
+Date: Mon, 20 Oct 2008 23:06:42 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20081016145757.935266172@domain.hid>
-	<48F76068.7050903@domain.hid>
-In-Reply-To: <48F76068.7050903@domain.hid>
+References: <48FCDC52.1070507@domain.hid>
+	<48FCE40C.1080100@domain.hid>	<48FCEB70.7030808@domain.hid>
+	<48FCEC25.2040200@domain.hid>	<48FCED48.5050608@domain.hid>
+	<48FCF14C.8050103@domain.hid>
+In-Reply-To: <48FCF14C.8050103@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 0/2] Fix and improve task/thread inquire
- services
+Subject: Re: [Xenomai-core] Warning when compiling trunk.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,34 +19,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
 Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
->> This series fixes the issues around rt_task_inquire I posted yesterday.
->> Additionally, it introduces an analogous services pthread_inquire_np for
->> the POSIX skin. That allows, among other things, to implement test cases
->> for the upcoming fast xnsynch/mutex patches.
+>> Gilles Chanteperdrix wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Jan Kiszka wrote:
+>>>>> Gilles Chanteperdrix wrote:
+>>>>>> I get this warning when compiling trunk:
+>>>>>>
+>>>>>> checking for __thread... rm: cannot remove `conftest1.dir': Is a directory
+>>>>>> yes
+>>>>>>
+>>>>> That simple, it's a typo in this line:
+>>>>>
+>>>>> http://www.rts.uni-hannover.de/xenomai/lxr/source/configure.in?v=SVN-trunk#394
+>>>>>
+>>>>> Also, that rm should be done outside the if block to play safe.
+>>>> Ok. But once this is fixed, I get a segmentation fault with __thread on
+>>>> ARM in rt_task_trampoline. I am currently testing the SIGWINCH thing,
+>>>> and if __thread is disabled, there is no segfault.
+>>> If a #ifdef 0 xeno_set_current, there is no segfault.
+>>>
+>> Interesting. What about removing the initial-exec attributes? Is
+>> __thread otherwise know to work on your platform?
 > 
-> Ok. Since this applies only for debugging purpose, and displaying
-> whether a task is in primary mode may be use badly by users, maybe we
-> should make this service a shadow syscall, and not export any interface
-> to use it. This would further avoid duplication between the native and
-> posix skins.
+> Yes. This is a race condition, the real bug is, IMHO:
+> 	__native_self = *iargs->task;
+> When the segfault happens iargs->task is NULL. I suspect you are not
+> supposed to use iargs after the __native_task_create syscall.
 
-Debugging is not the holy, exclusive business of Xenomai hackers.
+Yes, that was the problem.
 
-The inquire services are useful in libraries as well, when you want to
-check if the caller complies to the call convention ("don't use in
-primary mode", "caller's priority must not exceed X" or whatever).
-
-That said, I'm open for unifying the code, maybe introducing some
-xnthread_inquire.
-
-Jan
+However, another problem, should not the __thread variables be given the
+weak attribute too? If a native thread tries to use a pthread mutex, I
+want pthread_mutex_lock to obtain the current xnhandle_t set by the
+native skin, not an inexistant one that should have been set by the
+posix skin but obviously has not.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
