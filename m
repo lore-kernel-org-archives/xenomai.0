@@ -1,5 +1,5 @@
-Message-ID: <48FD0AD9.2010907@domain.hid>
-Date: Tue, 21 Oct 2008 00:48:57 +0200
+Message-ID: <48FD11B4.30201@domain.hid>
+Date: Tue, 21 Oct 2008 01:18:12 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <48FCDC52.1070507@domain.hid>
@@ -35,7 +35,9 @@ Jan Kiszka wrote:
 > 
 > It doesn't trigger. Can you reproduce on x86?
 
-I think it will trigger more easily on UP. Did you try on UP ?
+Beware, I just noticed that I commited my fix. I thought I had commited
+only files where I made changes for SIGWINCH, but it happens that I had
+also made changes for SIGWINCH in src/skins/native/task.c
 
 -- 
 					    Gilles.
