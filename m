@@ -1,81 +1,55 @@
-Message-ID: <48EF600C.3060306@domain.hid>
-Date: Fri, 10 Oct 2008 16:00:44 +0200
+Message-ID: <48FCF14C.8050103@domain.hid>
+Date: Mon, 20 Oct 2008 22:59:56 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <39918.70429.qm@domain.hid>
-In-Reply-To: <39918.70429.qm@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <48FCDC52.1070507@domain.hid> <48FCE40C.1080100@domain.hid>
+	<48FCEB70.7030808@domain.hid> <48FCEC25.2040200@domain.hid>
+	<48FCED48.5050608@domain.hid>
+In-Reply-To: <48FCED48.5050608@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] trap exceptions in user
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Warning when compiling trunk.
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Gabriele Moabiti <gabmoa@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Gabriele Moabiti wrote:
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> Gilles Chanteperdrix wrote:
+>>>>> I get this warning when compiling trunk:
+>>>>>
+>>>>> checking for __thread... rm: cannot remove `conftest1.dir': Is a directory
+>>>>> yes
+>>>>>
+>>>> That simple, it's a typo in this line:
+>>>>
+>>>> http://www.rts.uni-hannover.de/xenomai/lxr/source/configure.in?v=SVN-trunk#394
+>>>>
+>>>> Also, that rm should be done outside the if block to play safe.
+>>> Ok. But once this is fixed, I get a segmentation fault with __thread on
+>>> ARM in rt_task_trampoline. I am currently testing the SIGWINCH thing,
+>>> and if __thread is disabled, there is no segfault.
+>> If a #ifdef 0 xeno_set_current, there is no segfault.
+>>
 > 
->> Xenomai uses rthal_trap_catch, so, you can use Xenomai code as an
->> example.
-> 
-> Named KD: kernel driver (ring 0). UD: user space task (ring 3).
-> 
-> - KD reserve 16 MB  of memory (note: virtual and physical contiguous)
-> 
-> 
-> - I use rthal_trap_catch to customize exceptions (redirected to
-> "custom_except" function) The "custom_except" function print the
-> number of exception and recall the xenomai standard one.
+> Interesting. What about removing the initial-exec attributes? Is
+> __thread otherwise know to work on your platform?
 
-Where does custom_except leaves, in kernel-space or user-space ?
-
-> 
-> - KD has an rtdm interface to map the 16 MB memory on user space with
-> rtdm_iomap_to_user.
-> 
-> - UD starts and It maps with the rtdm (rtdm_iomap_to_user)
-
-This is completely useless. You can use an anonymous mapping in
-user-space, you will not need the help from an rtdm driver. And your
-mapping needs to be executable (you need to pass PROT_EXEC to mmap).
-
-> 
-> - UD copy a binary asm x86 test fpu (some instructions to generate
-> exceptions for tests) in the 16 MB memory mapped
-
-If you do that, your binary needs to be relocatable, that is its code
-must not depend on the address at which it is loaded. Are you sure your
-binary blob has this property ?
-
-> 
-> - UD start the real time task
-> 
-> Now here is a the problem. If I invoke an exception (int 3, floating
-> point exception and so on) outside the 16 MB mapped memory
-> "custom_except" is called ok. If the same code is invoked into the 16
-> MB mapped memory the program crash (and this is ok) reporting the
-> description of the exception in the terminal (also this is ok) but
-> "custom_except" is not called!
-
-Who reports the exception, then ? Are you sure the exception reported is
-the one you expect ? IOW, are you sure the problem is not that your
-memory mapping is not executable ?
-
-> 
-> Is there something wrong using the mapped memory in this mode?
-> 
-> NOTE: I am using xenomai 2.4.0rc1 with kernel 2.6.23
-
-Is this a joke ? Why choosing a release candidate of a release which
-happened since then ? Why not using the latest stable release ?
-
+Yes. This is a race condition, the real bug is, IMHO:
+	__native_self = *iargs->task;
+When the segfault happens iargs->task is NULL. I suspect you are not
+supposed to use iargs after the __native_task_create syscall.
 
 -- 
-                                                 Gilles.
+					    Gilles.
 
