@@ -1,66 +1,121 @@
-Message-ID: <48E4B927.6010706@domain.hid>
-Date: Thu, 02 Oct 2008 14:05:59 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <48FCD554.5030306@domain.hid>
+Date: Mon, 20 Oct 2008 21:00:36 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <48E4A6C3.3080508@domain.hid>
-In-Reply-To: <48E4A6C3.3080508@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] cross-compiling
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <48F9F12F.7090708@domain.hid>	<48FB15A8.30703@domain.hid>	<48FB17BD.7010904@domain.hid>	<48FB1891.3060609@domain.hid>
+	<48FB19F7.1030107@domain.hid>	<48FB5BD5.1060205@domain.hid>
+	<48FB5F1C.401@domain.hid> <48FC405E.8010603@domain.hid>
+	<48FC440E.90000@domain.hid> <48FCD485.2060606@domain.hid>
+In-Reply-To: <48FCD485.2060606@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8A5712EBF9F0D3425BD45093"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [PATCH 1/1] Use SIGWINCH to trigger
+ priority	change in user-space.
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Malek <souf_oued@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Malek wrote:
-> Hi all,
-> 
-> 1)
-> I am newbe in Xenomai, i try to cross-compile xenomai using Buildroot, my 
-> configuration is:
-> Xenomai 2.4.5
-> GCC 4.2.4
-> uClibc 0.9.29
-> Binutils 2.18.50.0.1
-> Busybox
-> 
-> Xenomai: ./configure -disable-smp --disable-x86-sep --enable-x86-tsc
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8A5712EBF9F0D3425BD45093
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-I do not understand what you mean, for cross-compiling, you should pass
-a --host option to configure. If you do not pass a --host option, the
-build machine compiler is used.
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Philippe Gerum wrote:
+>>>>> Well, what about merging the solutions: trap the signal from the li=
+brary
+>>>>> constructor by default for people relying on #1, AND document the s=
+hadow signal
+>>>>> handler for people who can do #2?
+>>>> For me, merging the two, would mean keep sigshadow_install called up=
+on
+>>>> thread creation, but export xeno_sigwinch_handler to be callable fro=
+m
+>>>> user signals.
+>>>>
+>>>> This way, if people install their signal handler before the first th=
+read
+>>>> creation, they have nothing to worry about. If they install their si=
+gnal
+>>>> handler at a later time, they have to take care of calling
+>>>> xeno_sigwinch_handler and look at its return value.
+>>> Jan, do you agree? The main argument is that people may use third-par=
+ty
+>>> libraries such as, say, libreadline or libqt which intercept the
+>>> SIGWINCH signal, and that we do not want to recompile these libraries=
+ to
+>>> run with Xenomai.
+>> Yes, I'm fine with the current approach + doc + xeno_sigwinch_handler.=
 
-> 
-> but every time I get this error:
-> 
-> ead_rt_la-shm.lo -MD -MP -MF .deps/libpthread_rt_la-shm.Tpo -c shm.c  -fPIC 
-> -DPIC -o .libs/libpthread_rt_la-shm.o
-> shm.c: In function '__wrap_mmap':
-> shm.c:98: error: impossible register constraint in 'asm'
-> shm.c:98: error: impossible register constraint in 'asm'
-> shm.c:98: error: impossible register constraint in 'asm'
-> make[4]: *** [libpthread_rt_la-shm.lo] Erreur 1
-> 
-> Is there a solution to this problem ?
+>=20
+> Ok. Since I am going to paste the doc in four different places, I'd=20
+> better get it right from the beginning. Here is my prose:
+>=20
+>  * @note: When creating or shadowing a Xenomai thread in user-space, fo=
+r the
+>  * first time, Xenomai installs a handler for the SIGWINCH signal. If y=
+ou had
+>  * installed a handler before that, it will be automatically called by =
+Xenomai
+>  * for SIGWINCH signals that it has not sent.
+>  *
+>  * If, however, you install a signal handler for SIGWINCH after creatin=
+g
+>  * or shadowing the first Xenomai thread, you have to explicitely call =
+the
 
-Probably, but you do not give us enough information, what architecture
-is your build machine ? What version of the compiler, etc...
+explicitly
+(I regularly mistype this as well...)
 
-> 
-> 2)
-> Is there an option to disable some skins (--disable-vxworks...) ?
+>  * function xeno_sigwinch_handler at the beginning of your signal handl=
+er,
+>  * using its return to know if the signal was in fact an internal signa=
+l of
+>  * Xenomai (in which case it returns 1), or if you should handle the si=
+gnal (in
+>  * which case it returns 0). xeno_sigwinch_handler prototype is:
+>  *
+>  * <b>int xeno_sigwinch_handler(int sig, siginfo_t *si, void *ctxt);</b=
+>
+>  *
+>  * Which means that you should register your handler with sigaction, us=
+ing the
+>  * SA_SIGINFO flag, and pass all the arguments you received to
+>  * xeno_sigwinch_handler.
+>=20
+>=20
 
-No, it is useless, the compilation of Xenomai user-space support is
-really fast, so, you simply have to not copy on your target the
-libraries that you do not use.
+Sounds good to me.
 
--- 
-                                                 Gilles.
+Jan
+
+
+--------------enig8A5712EBF9F0D3425BD45093
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.8 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkj81VQACgkQniDOoMHTA+kWEACbBQ/RlyqQWlF9q6wA6myQf/iJ
+LpcAn25F6LsauG6DLyyXSV6mhHJ0mQR6
+=KWXg
+-----END PGP SIGNATURE-----
+
+--------------enig8A5712EBF9F0D3425BD45093--
 
