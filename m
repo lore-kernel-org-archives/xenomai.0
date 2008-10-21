@@ -1,14 +1,12 @@
-Message-ID: <48FE01D1.3070805@domain.hid>
-Date: Tue, 21 Oct 2008 18:22:41 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <48FE40AB.1090608@domain.hid>
+Date: Tue, 21 Oct 2008 22:50:51 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <loom.20081016T124807-588@domain.hid>
-	<1224605536.10407.15.camel@domain.hid>
-In-Reply-To: <1224605536.10407.15.camel@domain.hid>
+In-Reply-To: <loom.20081016T124807-588@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Reducing Kernel Mode Interrupt Latency
-Reply-To: rpm@xenomai.org
+Subject: Re: [Xenomai-help] Need some help getting past an
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,52 +16,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Henry Bausley <hbausley@domain.hid>
+To: ken barnett <kbb@domain.hid>
 Cc: xenomai@xenomai.org
 
-Henry Bausley wrote:
-> Is there any way the kernel mode interrupt handling maximum times can be
-> decreased.  I very much need to reduce my kernel mode interrupt
-> latencies.  I know my hardware is capable of better performance based
-> upon measurements done with RT Linux.  Below is our timing comparison,
-> all times are the maximums.
+ken barnett wrote:
+> Hope you can help.
 > 
+> My configuration is as follows:
+> PXA25xx ADS card w/ NO PCI bridge
+> Linux-2.6.24.5 kernel
+> Xenomai 2.4.5 stable
 > 
-> Xenomai 2.4.5 interrupt handler  w/ Kernel 2.6.26 powerpc, gcc 4.2
-> -------------------------------------------------------------------
-> AMCC 440EP - 24.5 usec
-> AMCC 460EX - 16.5 usec
+> The Xenomai port to the kernel is as follows:
 > 
+> ./prepare-kernel.sh linux=../../linux-2.6.24.5
+> --adeos=adeos-ipipe-2.6.24-arm-1.9-00.patch
+> --adeos=adeos-ipipe-2.6.24-arm-1.9-01.patch --arch=arm
 > 
-> FSM Labs RT-Linux 2.2 w/ Kernel 2.6.14 ppc, gcc 3.3
-> ---------------------------------------------------
-> AMCC 440EP - 10.0 usec
-> AMCC 460EX - Not Available, would require 10's of thousands of dollars
-> to WindRiver
+> ./xenomai-2.4.5/scripts/prepare-kernel.sh --linux=linux-2.6.24.5
+> --adeos=./xenomai-2.4.5/ksrc/arch/arm/patches/
+> adeos-ipipe-2.6.24-arm-1.9-01.patch
 > 
+> I used 2 patches  but have tried to use either/or with the 
+> same indications.
+> 
+> configure CC=arm-linux-gcc --enable-arm-eabi
+> --prefix=/home/dvdb-lite/rootfs/usr/xenomai --host=arm-linux 
+> --enable-arm-arch=pxa
+> 
+> See attached for the output log.
+> 
+> Step 1:
+> Looking at post from July 05, 2008 - 12:26: it states to turn on full debug to
+> get the best output so that output file is attached also as debug1.log
+> 
+> Step 2
+> Then it stated to turn off Xenomai all together:
+> The log looks the same but is also attached as debug2.log
+> 
+> Step 3
+> Turn off ipipe altogether
+> The kernel/card is back to working.
+> 
+> Hop you can help,
 
-It would be interesting to know the figures for 2.6.14 ppc w/o RTLinux + Xenomai
-2.4.5.
-
-Aside of this, I'm working on an experimental patch which implements unmasked
-context switches on the Linux side. I stole this idea from Gilles, who
-drastically decreased latency on ARM this way. This will not decrease the
-user-space latency on powerpc, but this might help in-kernel interrupt latency,
-by allowing interrupts to be taken while changing the MMU context.
-
-I'll post that stuff this week if it happens to decrease the in-kernel latency
-significantly.
-
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
-
+Could you try the latest patch for 2.6.26?
 
 -- 
-Philippe.
+					    Gilles.
 
