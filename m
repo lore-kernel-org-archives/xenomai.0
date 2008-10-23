@@ -1,13 +1,12 @@
-Message-ID: <48FDFC38.4060807@domain.hid>
-Date: Tue, 21 Oct 2008 17:58:48 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Thu, 23 Oct 2008 12:00:01 +0200
 MIME-Version: 1.0
-References: <48F1D15F.3010902@domain.hid>
-	<200810210045.16020.berlemont.hauw@domain.hid>
-In-Reply-To: <200810210045.16020.berlemont.hauw@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Comedi buffer management.
+Content-Disposition: inline
+Message-Id: <200810231200.02851.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] [PATCH] vxWorks/lstLib: Check for nil-pointer
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,40 +16,117 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Alexis Berlemont <berlemont.hauw@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Alexis Berlemont wrote:
-> Hi Gilles,
-> 
-> Sorry for answering so late. I was unable to regularly check my private mails 
-> the last week; I missed yours.
-> 
->> I commited in trunk a fix of Xenomai heap management for the highmem
->> case. What the patch does is essentially replacing __va_to_kva (which
->> does not work correctly with highmem) with vmalloc_to_page, which is
->> available on all linux versions Xenomai supports.
->>
->> However, I found that comedi buffer management also uses __va_to_kva. We
->> can fix SetPageReserved and ClearPageReserved easily to use
->> vmalloc_to_page, however, I do not see what pg_list is used for, so do
->> not really know how to fix it. Here is a proposed patch:
-> 
-> If I remember well, pg_list may be used by some PCI/PCIe DMA components which 
-> can dump acquired data to physically non-contiguous buffers. In such cases, 
-> the driver has to provide a list of the pages addresses into which the DMA 
-> controller can trigger shots.
-> 
-> Many thanks for your fix. 
+Here some trivial fixes with their respective tests to handle the case of nil pointers corrrectly.
 
-No problem, really, I actually did not fix pg_list. It will not work
-with highmem. What do the DMA needs? physical adresses? Then you need to
-replace page_address(vmalloc_to_page(vaddr)) with
-page_to_phys(vmalloc_to_page(vaddr))
+Signed-off-by: Niklaus Giger <niklaus.giger@domain.hid>
+---
+ include/vxworks/lstLib.h  |    6 +++---
+ vxworks/lstLib.c          |    4 +++-
+ vxworks/testsuite/lst-1.c |   17 +++++++----------
+ 3 files changed, 13 insertions(+), 14 deletions(-)
 
-Or you may store the struct page, and let the drivers do what they want
-with it.
+diff --git a/include/vxworks/lstLib.h b/include/vxworks/lstLib.h
+index b78c2c3..38f0598 100644
+--- a/include/vxworks/lstLib.h
++++ b/include/vxworks/lstLib.h
+@@ -65,7 +65,7 @@ static inline void lstDelete(LIST *l, NODE *n)
 
--- 
-                                                 Gilles.
+ static inline NODE *lstFirst(LIST *l)
+ {
+-	if (list_empty(&l->list))
++	if (l == NULL || list_empty(&l->list))
+ 		return NULL;
+
+ 	return list_first_entry(&l->list, struct NODE, link);
+@@ -75,7 +75,7 @@ static inline NODE *lstGet(LIST *l)
+ {
+ 	struct NODE *n;
+
+-	if (list_empty(&l->list))
++	if (l == NULL || list_empty(&l->list))
+ 		return NULL;
+
+ 	n = list_pop_entry(&l->list, struct NODE, link);
+@@ -100,7 +100,7 @@ static inline void lstInsert(LIST *l, NODE *nprev, NODE *n)
+
+ static inline NODE *lstLast(LIST *l)
+ {
+-	if (list_empty(&l->list))
++	if (l == NULL || list_empty(&l->list))
+ 		return NULL;
+
+ 	return list_last_entry(&l->list, struct NODE, link);
+diff --git a/vxworks/lstLib.c b/vxworks/lstLib.c
+index 58358f0..56880b4 100644
+--- a/vxworks/lstLib.c
++++ b/vxworks/lstLib.c
+@@ -44,7 +44,7 @@ NODE *lstNth(LIST *l, int nodenum)
+ 	struct holder *holder;
+ 	int nth;
+
+-	if (nodenum <= 0)
++	if (l == 0 || nodenum <= 0)
+ 		return NULL;
+
+ 	if (nodenum <= l->count >> 2) { /* nodenum is 1-based. */
+@@ -89,6 +89,8 @@ int lstFind(LIST *l, NODE *n)
+ {
+ 	struct holder *holder;
+ 	int nth = 1;
++	if (l == 0)
++		return ERROR;
+
+ 	list_for_each(holder, &l->list) {
+ 		if (holder == &n->link)
+diff --git a/vxworks/testsuite/lst-1.c b/vxworks/testsuite/lst-1.c
+index 8b42692..d95d8b8 100644
+--- a/vxworks/testsuite/lst-1.c
++++ b/vxworks/testsuite/lst-1.c
+@@ -12,16 +12,15 @@ void rootTask(long a0, long a1, long a2, long a3, long a4,
+ {
+ 	NODE first, second, third, fourth;
+ 	LIST list;
+-	int ret;
+
+ 	traceobj_enter(&trobj);
+
+-/*
+-  traceobj_assert(&trobj, 0 == lstNth (0, 1));
+-  traceobj_assert(&trobj, 0 == lstFirst(0));
+-  traceobj_assert(&trobj, 0 == lstLast(0));
+-*/
+- 	lstInit(&list);
++	traceobj_assert(&trobj, 0 == lstNth (0, 1));
++	traceobj_assert(&trobj, 0 == lstFirst(0));
++	traceobj_assert(&trobj, 0 == lstLast(0));
++	traceobj_assert(&trobj, 0 == lstGet(0));
++
++	lstInit(&list);
+ 	traceobj_assert(&trobj, 0 == lstCount(&list));
+ 	traceobj_assert(&trobj, NULL == lstFirst(&list));
+ 	traceobj_assert(&trobj, 0 == lstNth(&list, 0));
+@@ -41,7 +40,7 @@ void rootTask(long a0, long a1, long a2, long a3, long a4,
+ 	traceobj_assert(&trobj, 2 == lstCount(&list));
+ 	traceobj_assert(&trobj, &first == lstFirst(&list));
+ 	traceobj_assert(&trobj, &second == lstLast(&list));
+-	traceobj_assert(&trobj, NULL == lstPrevious(&first)); // breaks here under xenomai-solo
++	traceobj_assert(&trobj, NULL == lstPrevious(&first));
+ 	traceobj_assert(&trobj, 0 == lstNth(&list, 0));
+ 	traceobj_assert(&trobj, &first  == lstNth(&list, 1));
+ 	traceobj_assert(&trobj, &second == lstNth(&list, 2));
+@@ -127,8 +126,6 @@ void rootTask(long a0, long a1, long a2, long a3, long a4,
+ 	traceobj_assert(&trobj, 0 == lstNth(&list, 4));
+ 	traceobj_assert(&trobj, 0 == lstNth(&list, 5));
+
+-	traceobj_assert(&trobj, ret == OK);
+-
+ 	traceobj_exit(&trobj);
+ }
+
+--
+1.6.0.2
+
+
 
