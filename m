@@ -1,12 +1,14 @@
-Message-ID: <49050219.4050805@domain.hid>
-Date: Mon, 27 Oct 2008 00:49:45 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4905D964.7060805@domain.hid>
+Date: Mon, 27 Oct 2008 16:08:20 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <66014.68232.qm@domain.hid>
-In-Reply-To: <66014.68232.qm@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <loom.20081016T124807-588@domain.hid>
+	<1224605536.10407.15.camel@domain.hid>
+In-Reply-To: <1224605536.10407.15.camel@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] trap exceptions in user
+Subject: Re: [Xenomai-help] Reducing Kernel Mode Interrupt Latency
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,35 +18,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gabriele Moabiti <gabmoa@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, Xenomai help <xenomai@xenomai.org>
+To: Henry Bausley <hbausley@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gabriele Moabiti wrote:
-> Gilles Chanteperdrix wrote:
->> Gabriele Moabiti wrote:
->>> (...) I consider now ManageCustomExceptions a function that do
->>> nothing. (...) INT 0 (divide error) or 16 (fpu exception) The
->>> system hangs.
->> It will not work. It is because you have to handle the exception. 
->> Otherwise, when returning to user-space, your programs tries the
->> faulty exception again, triggers the handler, which does nothing,
->> and loops indefinitely...
->> 
+Henry Bausley wrote:
+> Is there any way the kernel mode interrupt handling maximum times can be
+> decreased.  I very much need to reduce my kernel mode interrupt
+> latencies.  I know my hardware is capable of better performance based
+> upon measurements done with RT Linux.  Below is our timing comparison,
+> all times are the maximums.
 > 
-> so the int 1 and 3 are instead signed as traps with the old CS:EIP
-> points past instruction causing exception...
 > 
-> Sorry for the question (I have always done it directly in asm
-> reprogramming customizing the IDT), do I have to change the eip of
-> the pt_regs structure passed to the function?
+> Xenomai 2.4.5 interrupt handler  w/ Kernel 2.6.26 powerpc, gcc 4.2
+> -------------------------------------------------------------------
+> AMCC 440EP - 24.5 usec
+> AMCC 460EX - 16.5 usec
+>
 
-Errr no. You probably know better than me the details of exception
-handling (I trust Linux and/or Xenomai exception handling for my
-everyday usage), however, if your code contains an instruction which
-uses FPU, you should enable FPU and let the program retry that
-instruction, otherwise, if you skip this instruction, you will never
-know its result.
+While running long performances tests on a Sequoia board here (I'm still
+investigating the latency trace data and evaluating optimizations), I've never
+been able to reproduce such worst case latency values.
+
+The figures I have on the 440EPx (w/ 2.6.26 + Xenomai 2.4.5 + I-pipe 2.2-07 +
+ELDK-4.2 toolchain) are:
+
+klatency: 15.2 us
+latency -t2 : 17.1 us
+
+latency -t1: 26.1 us
+latency -t0: 34.9 us
+
+/proc/xenomai/latency reset to 0 (no timer shot anticipation)
+continuous process creation loop and interrupt flood on entry.
+
+The figure you are most likely interested in - the one that actually compares
+with RTLinux's latency test - is given by the klatency test, i.e. pure in-kernel
+timer handler, no user-space Xenomai thread). Could you tell us a bit more about
+your kernel config, and the kind of stress you put on the system? TIA,
+
+> 
+> FSM Labs RT-Linux 2.2 w/ Kernel 2.6.14 ppc, gcc 3.3
+> ---------------------------------------------------
+> AMCC 440EP - 10.0 usec
+> AMCC 460EX - Not Available, would require 10's of thousands of dollars
+> to WindRiver
+> 
+> 
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+> 
+
 
 -- 
-					    Gilles.
+Philippe.
 
