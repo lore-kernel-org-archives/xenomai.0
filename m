@@ -1,10 +1,10 @@
-Message-ID: <48FC68C3.4020604@domain.hid>
-Date: Mon, 20 Oct 2008 13:17:23 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <49076E08.5060708@domain.hid>
+Date: Tue, 28 Oct 2008 20:54:48 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH] udev rules: stricter file permissions
+Subject: [Xenomai-core] llimd.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,29 +14,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Don't allow the world to access special Xenomai devices. Suggest to use
-a separate group for managing access (udev will fall back to root if
-group does not exist).
 
-Index: xenomai/ksrc/nucleus/udev/rtheap.rules
-===================================================================
---- xenomai/ksrc/nucleus/udev/rtheap.rules	(Revision 4265)
-+++ xenomai/ksrc/nucleus/udev/rtheap.rules	(Arbeitskopie)
-@@ -1,2 +1,2 @@
- # real-time heap device (Xenomai:rtheap)
--KERNEL=="rtheap", MODE="0666"
-+KERNEL=="rtheap", MODE="0660", GROUP=="xenomai"
-Index: xenomai/ksrc/nucleus/udev/rtpipe.rules
-===================================================================
---- xenomai/ksrc/nucleus/udev/rtpipe.rules	(Revision 4265)
-+++ xenomai/ksrc/nucleus/udev/rtpipe.rules	(Arbeitskopie)
-@@ -1,2 +1,2 @@
- # real-time pipe devices (Xenomai:rtpipe)
--KERNEL=="rtp[0-9]*", MODE="0666"
-+KERNEL=="rtp[0-9]*", MODE="0660", GROUP="xenomai"
+Hi Jan,
+
+I see that the implementation of rthal_llmulshft seems to account for
+the first argument sign. Does it work ? Namely, in the generic
+implementation will __rthal_u96shift propagate the sign bit ?
+
+If yes, do you see a way llimd could be made to work the same way ? This
+way we would avoid inline ullimd twice in llimd code.
+
+Regards.
+
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
