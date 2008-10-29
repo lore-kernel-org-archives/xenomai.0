@@ -1,13 +1,13 @@
-Message-ID: <49085EB0.9040408@domain.hid>
-Date: Wed, 29 Oct 2008 14:01:36 +0100
-From: Sebastian Smolorz <smolorz@domain.hid>
+Message-ID: <490869D4.8040506@domain.hid>
+Date: Wed, 29 Oct 2008 14:49:08 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <49085904.8080302@domain.hid>
-In-Reply-To: <49085904.8080302@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <49083C20.6060306@domain.hid>
+In-Reply-To: <49083C20.6060306@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] RT-Socket-CAN: correct bug with filter
- registration
+Subject: Re: [Xenomai-core] rtdm_mmap_to_user() remapping problem on powerpc
+ arch.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,47 +17,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: "Matteo Facchinetti @ Sirius Electronic Systems S.R.L." <matteo.facchinetti@domain.hid>
+Cc: xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
-> Hi Jan and Sebastian,
+Matteo Facchinetti @ Sirius Electronic Systems S.R.L. wrote:
+> Hi all,
 > 
-> attached is the patch fixing the filter problem. I'm going to apply it
-> to the trunk as well if there are no complaints.
+> I'm using framework RTDM to develop my driver on embedded system mpc5200 
+> based.
+> (kernel 2.6.24.4 (powerpc arch) - xenomai 2.4.3).
+> 
+> I've need to use rtdm_mmap_to_user() to share a kmalloc() kernel memory 
+> in userspace.
+> For this, I'm using the example in  
+> http://www.captain.at/xenomai-real-time-driver-example.php.
+> 
+> Running a similar example I've discovered a problem in kmalloc remapping.
+> The only way that I've found, to make remapping correctly, is to 
+> allocate an entire kernel mem page with __get_freepage() instead of 
+> kmalloc().
+> 
+> I think that could be a bug in powerpc arch.
+> what do you think about?
 
-No complaints from my side.
-
-> 
-> Wolfgang.
-> 
-> Index: ChangeLog
-> ===================================================================
-> --- ChangeLog	(revision 4287)
-> +++ ChangeLog	(working copy)
-> @@ -1,3 +1,9 @@
-> +2008-10-29  Wolfgang Grandegger  <wg@domain.hid>
-> +
-> +	* ksrc/drivers/can/rtcan_raw_filter.c(rtcan_raw_mount_filter):
-> +	Applying the filter mask required for fast filter checks got lost
-> +	somehow with commit 2202.
-> +
->  2008-10-28  Gilles Chanteperdrix  <gilles.chanteperdrix@xenomai.org>
->  
->  	* ksrc/nucleus/thread.c (xnthread_init): Change initialization
-> Index: ksrc/drivers/can/rtcan_raw_filter.c
-> ===================================================================
-> --- ksrc/drivers/can/rtcan_raw_filter.c	(revision 4287)
-> +++ ksrc/drivers/can/rtcan_raw_filter.c	(working copy)
-> @@ -62,6 +62,9 @@
->  	recv_filter->can_id = filter->can_id;
->  	recv_filter->can_mask = filter->can_mask & ~CAN_INV_FILTER;
->      }
-> +
-> +    /* Apply mask for fast filter check */
-> +    recv_filter->can_id &= recv_filter->can_mask;
->  }
+There are two known problems with memory mapping:
+- one when using high memory (more than 1GB RAM), for which a proposed
+fix is here:
+https://mail.gna.org/public/xenomai-core/2008-09/msg00118.html
+- one specifically on power pc, fixed here:
+https://mail.gna.org/public/xenomai-help/2008-10/msg00096.html
 
 -- 
-Sebastian
+                                                 Gilles.
 
