@@ -1,12 +1,11 @@
-Message-ID: <49083C20.6060306@domain.hid>
-Date: Wed, 29 Oct 2008 11:34:08 +0100
-From: "Matteo Facchinetti @ Sirius Electronic Systems S.R.L."
-	<matteo.facchinetti@domain.hid>
+Message-ID: <49085904.8080302@domain.hid>
+Date: Wed, 29 Oct 2008 13:37:24 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] rtdm_mmap_to_user() remapping problem on powerpc
-	arch.
+Subject: [Xenomai-core] [PATCH] RT-Socket-CAN: correct bug with filter
+	registration
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,27 +15,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
 
-Hi all,
+Hi Jan and Sebastian,
 
-I'm using framework RTDM to develop my driver on embedded system mpc5200 
-based.
-(kernel 2.6.24.4 (powerpc arch) - xenomai 2.4.3).
+attached is the patch fixing the filter problem. I'm going to apply it
+to the trunk as well if there are no complaints.
 
-I've need to use rtdm_mmap_to_user() to share a kmalloc() kernel memory 
-in userspace.
-For this, I'm using the example in  
-http://www.captain.at/xenomai-real-time-driver-example.php.
+Wolfgang.
 
-Running a similar example I've discovered a problem in kmalloc remapping.
-The only way that I've found, to make remapping correctly, is to 
-allocate an entire kernel mem page with __get_freepage() instead of 
-kmalloc().
-
-I think that could be a bug in powerpc arch.
-what do you think about?
-
-
+Index: ChangeLog
+===================================================================
+--- ChangeLog	(revision 4287)
++++ ChangeLog	(working copy)
+@@ -1,3 +1,9 @@
++2008-10-29  Wolfgang Grandegger  <wg@domain.hid>
++
++	* ksrc/drivers/can/rtcan_raw_filter.c(rtcan_raw_mount_filter):
++	Applying the filter mask required for fast filter checks got lost
++	somehow with commit 2202.
++
+ 2008-10-28  Gilles Chanteperdrix  <gilles.chanteperdrix@xenomai.org>
+ 
+ 	* ksrc/nucleus/thread.c (xnthread_init): Change initialization
+Index: ksrc/drivers/can/rtcan_raw_filter.c
+===================================================================
+--- ksrc/drivers/can/rtcan_raw_filter.c	(revision 4287)
++++ ksrc/drivers/can/rtcan_raw_filter.c	(working copy)
+@@ -62,6 +62,9 @@
+ 	recv_filter->can_id = filter->can_id;
+ 	recv_filter->can_mask = filter->can_mask & ~CAN_INV_FILTER;
+     }
++
++    /* Apply mask for fast filter check */
++    recv_filter->can_id &= recv_filter->can_mask;
+ }
+ 
+ 
 
 
