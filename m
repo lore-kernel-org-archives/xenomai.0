@@ -1,13 +1,12 @@
-Message-ID: <49077D56.8040908@domain.hid>
-Date: Tue, 28 Oct 2008 22:00:06 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <49083C20.6060306@domain.hid>
+Date: Wed, 29 Oct 2008 11:34:08 +0100
+From: "Matteo Facchinetti @ Sirius Electronic Systems S.R.L."
+	<matteo.facchinetti@domain.hid>
 MIME-Version: 1.0
-References: <49076E08.5060708@domain.hid>
-In-Reply-To: <49076E08.5060708@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] llimd.
+Subject: [Xenomai-core] rtdm_mmap_to_user() remapping problem on powerpc
+	arch.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,50 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Hi Jan,
-> 
-> I see that the implementation of rthal_llmulshft seems to account for
-> the first argument sign. Does it work ? Namely, in the generic
-> implementation will __rthal_u96shift propagate the sign bit ?
+Hi all,
 
-Yes, this works (given there is no overflow, of course). If you consider
-a high word of 0xfffffff0 and a (right) shift of 8, we effectively cut
-off all the leading 1s: high << (32-8) = 0xf0000000. But this only works
-because we replace a right shift with a left shift (plus some OR'ing
-later on). If we had to do a real right shift, we would also have to
-take signed vs. unsigned into account (ie. shift in zeros or the sign
-bit from the left?).
+I'm using framework RTDM to develop my driver on embedded system mpc5200 
+based.
+(kernel 2.6.24.4 (powerpc arch) - xenomai 2.4.3).
 
-> 
-> If yes, do you see a way llimd could be made to work the same way ? This
-> way we would avoid inline ullimd twice in llimd code.
+I've need to use rtdm_mmap_to_user() to share a kmalloc() kernel memory 
+in userspace.
+For this, I'm using the example in  
+http://www.captain.at/xenomai-real-time-driver-example.php.
 
-As the basic building block here is a multiplication, we cannot get
-around telling apart signed from unsigned (or converting signed into
-unsigned): the underlying multiplication logic is different.
+Running a similar example I've discovered a problem in kmalloc remapping.
+The only way that I've found, to make remapping correctly, is to 
+allocate an entire kernel mem page with __get_freepage() instead of 
+kmalloc().
 
-But what about this approach:
+I think that could be a bug in powerpc arch.
+what do you think about?
 
-static inline __attribute__((__const__)) long long
-__rthal_generic_llimd (long long op, unsigned m, unsigned d)
-{
-	int signed = 0;
-	long long ret;
 
-	if (op < 0LL) {
-		op = -op;
-		signed = 1;
-	}
-	ret = __rthal_generic_ullimd(op, m, d);
-	return signed ? -ret : ret;
-}
 
-However, I guess writing this in assembly for archs that suffer should
-be more efficient.
-
-Jan
 
