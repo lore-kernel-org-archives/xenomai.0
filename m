@@ -1,12 +1,10 @@
-Date: Wed, 29 Oct 2008 16:19:54 +0100
-From: Tom Schouten <tom@domain.hid>
-Message-ID: <20081029151954.GB13565@domain.hid>
-References: <20081029141527.GA13565@domain.hid> <490873B2.2020809@domain.hid>
+Message-ID: <b054e88e0810291200l51eb2c84g2c3a6277d35e0344@domain.hid>
+Date: Wed, 29 Oct 2008 20:00:43 +0100
+From: "Giammarco Zacheo" <g.zacheo@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <490873B2.2020809@domain.hid>
-Subject: Re: [Xenomai-help] rt_sem_p() -> -ESRCH
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_15263_31306338.1225306843224"
+Subject: [Xenomai-help] testsuite/clocktest hangs
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,26 +14,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-On Wed, Oct 29, 2008 at 03:31:14PM +0100, Philippe Gerum wrote:
-> Tom Schouten wrote:
-> > Hello list,
-> > 
-> > What's the meaning of rt_sem_p() returning -ESRCH (No such process) ?
-> > This return value doesn't seem to be in the list of documented values..
-> > 
-> > This appeared after upgrading to current SVN trunk.
-> >
-> 
-> There is likely a mismatch between your userland support and the kernel bits.
-> The ABI changed once more in the trunk recently, did you rebuild the userland
-> Xenomai libs to match the new one?
->
+------=_Part_15263_31306338.1225306843224
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Yes, they are both at the same version.  (btw current svn revision 4288 has 
-a missing header file in the test suite: outofline.h)
+Hi all,
+  I am running some tests on my mpc5200b board running Xenomai 2.4.5 with
+kernel DENX-2.6.25. When I run the clocktest program, it hangs after a
+variable period of time. Xenomai's watchdog recognizes it as a runaway task,
+and gdb tells that thread 1 is hanging at nanosleep(). Same behaviour with
+DENX-2.6.26
 
-I'll see if I can make a simple example to reproduce the failure.
+Here's the output of gdb:
+
+Program received signal SIGINT, Interrupt.
+[Switching to Thread 0x48024d90 (LWP 352)]
+0x0fe1ebb8 in nanosleep () from /lib/libc.so.6
+(gdb) thread 1
+[Switching to thread 1 (Thread 0x48024d90 (LWP 352))]#0  0x0fe1ebb8 in
+nanosleep () from /lib/libc.so.6
+(gdb) bt
+#0  0x0fe1ebb8 in nanosleep () from /lib/libc.so.6
+#1  0x0fe4bea0 in usleep () from /lib/libc.so.6
+#2  0x1000259c in main (argc=1, argv=0xbfa6eb84) at clocktest.c:243
+(gdb)
+
+Thank you
+
+Giammarco
+
+------=_Part_15263_31306338.1225306843224
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<div dir="ltr">Hi all,<br>&nbsp; I am running some tests on my mpc5200b board running Xenomai 2.4.5 with kernel DENX-2.6.25. When I run the clocktest program, it hangs after a variable period of time. Xenomai&#39;s watchdog recognizes it as a runaway task, and gdb tells that thread 1 is hanging at nanosleep(). Same behaviour with DENX-2.6.26<br>
+
+
+<br>Here&#39;s the output of gdb:<br><br>Program received signal SIGINT, Interrupt.<br>[Switching to Thread 0x48024d90 (LWP 352)]<br>0x0fe1ebb8 in nanosleep () from /lib/libc.so.6<br>(gdb) thread 1<br>[Switching to thread 1 (Thread 0x48024d90 (LWP 352))]#0&nbsp; 0x0fe1ebb8 in nanosleep () from /lib/libc.so.6<br>
+
+
+(gdb) bt<br>#0&nbsp; 0x0fe1ebb8 in nanosleep () from /lib/libc.so.6<br>#1&nbsp; 0x0fe4bea0 in usleep () from /lib/libc.so.6<br>#2&nbsp; 0x1000259c in main (argc=1, argv=0xbfa6eb84) at clocktest.c:243<br>(gdb) <br><br>Thank you<br><br>Giammarco<br>
+</div>
+
+------=_Part_15263_31306338.1225306843224--
 
