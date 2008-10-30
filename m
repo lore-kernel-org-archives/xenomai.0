@@ -1,12 +1,12 @@
-Message-ID: <49097EFE.4000606@domain.hid>
-Date: Thu, 30 Oct 2008 10:31:42 +0100
+Message-ID: <49098078.7000402@domain.hid>
+Date: Thu, 30 Oct 2008 10:38:00 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <f8b4363d0810300151p7782d43au76e009d9ce9f9303@domain.hid>
-In-Reply-To: <f8b4363d0810300151p7782d43au76e009d9ce9f9303@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [Total Newbie] Module xeno_native not found
+References: <939CEF84-66F5-4B05-A491-74091D527EC4@domain.hid>
+In-Reply-To: <939CEF84-66F5-4B05-A491-74091D527EC4@domain.hid>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] sock_sendmsg() causes crash
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,43 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Antino Kim <antinokim@domain.hid>
+To: Alphan Ulusoy <alphan@domain.hid>
 Cc: xenomai@xenomai.org
 
-Antino Kim wrote:
-> Hello,
-> 
-> I'm a total newbie in using Linux kernel and Xenomai.
-> Around 4am, I was able to successfully compile a Xenomai patched
-> vanilla Linux kernel and install Xenomai! I thought all the trouble
-> was over...
-> When I tried running a example program, I got the following error message:
-> 
-> 
-> /usr/src/xenomai-2.4.5/examples/native$ ./trivial-periodic
-> Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
-> (modprobe xeno_native?)
-> 
-> /usr/src/xenomai-2.4.5/examples/native$ modprobe xeno_native
-> FATAL: Module xeno_native not found.
+Alphan Ulusoy wrote:
+> Hi all,
+>=20
+> I' am trying to send small UDP datagrams in a real-time system. I can't
+> get a satisfactory performance when I send these packets from a
+> userspace Xenomai task using sendto() call.
+>=20
+> That's why I tried to code a small kernel module to make some
+> measurements. However; whenever
+>     =95 A xenomai task
+>     =95 An alarm function
+>     =95 A thread created with kthread_run() form a xenomai task
+> that includes the sock_sendmsg() call runs, system crashes. However, if
+> a write a regular kernel module, the it works just fine...
+>=20
+> Below you can find the code and the crash dump.
+>=20
+> Does anyone have any suggestions? Is there any other way that I can sen=
+d
+> a UDP packet from a kernel Xenomai task?
 
-By default, the native skin is built into the kernel, thus there is no
-module.
+I think Philippe already suggested that you should start reading a bit
+about the co-kernel model and its implications.
 
-> 
-> 
-> I will be willing to provide more information if needed, but my gut
-> feeling tells me it should be a very simple (and obvious) problem to
-> experienced users. I would really appreciate any help. Thanks.
-
-You may face some issue that Xenomai is unable to work due to kernel
-configuration conflicts. Please check the kernel console for messages
-regarding Xenomai (dmesg or syslog). If you do not find the reason on
-your own, we will need your .config for further help.
+Also, you may want to look at RTnet if you have to send UDP packets
+under RT constraints.
 
 Jan
 
--- 
+--=20
 Siemens AG, Corporate Technology, CT SE 2
 Corporate Competence Center Embedded Linux
 
