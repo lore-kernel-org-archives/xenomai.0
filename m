@@ -1,81 +1,128 @@
-Date: Fri, 10 Oct 2008 16:02:09 +0000 (GMT)
-From: Gabriele Moabiti <gabmoa@domain.hid>
+Message-ID: <490ABF6D.5090806@domain.hid>
+Date: Fri, 31 Oct 2008 09:18:53 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-1111212992-1223654529=:87674"
-Message-ID: <129381.87674.qm@domain.hid>
-Subject: Re: [Xenomai-help] trap exceptions in user
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <49076E08.5060708@domain.hid> <49077D56.8040908@domain.hid>
+	<49098653.7060709@domain.hid>
+In-Reply-To: <49098653.7060709@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigD5894495DBA88403E68EBC61"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] llimd.
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai help <xenomai@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
---0-1111212992-1223654529=:87674
-Content-Type: text/plain; charset=utf-8
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigD5894495DBA88403E68EBC61
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-=0A=0A=0A=0A>> It's a long story... I know anonymous mapping is better but =
-I have need physical contiguos memory=0A>> (not for the test of course). Th=
-e binary blob has fixed addresses between 1 to 16 MB so I have mapped the =
-=0A>To do this with RTDM, you should use rtdm_mmap_to_user, not=0A>rtdm_iom=
-ap_to_user. And to do this with an anonymous mapping, you simply=0A>need to=
- pass the address where you want the mmap to occur to mmap, and=0A>pass MAP=
-_FIXED to mmap flags, this is all documented in mmap manual.=0A=0AI did't s=
-pecify I have passed mem=3Dxxx to kernel to take the upper 16MB so I have t=
-o use rtdm_iomap_to_user.=0AI think the RTDM mapping works.=0A=0A>> I start=
- UD from the terminal and the terminal always report the right error.=0A>=
-=0A>Ok. Probably the I-pipe patch only calls your callback for real-time=0A=
->tasks. Is the thread which runs the binary blob created with xenomai=0A>se=
-rvices ?=0A=0Amy_rt_task_func()=0A{=0A    int 3 // This is trapped by the c=
-ustom exception routine (forwarded to xenomai handler). The terminal write=
-=0A            // trace/breakpoint trap=0A}=0A=0Amy_rt_task_func()=0A{=0A  =
-  call *asm_part=0A}=0A=0Aasm_part --- (it has been copied in the first 16 =
-MB of user task mapped to the 16 MB kernel memory)=0A=0Aint 3 // This is no=
-t trapped by the custom exception routine however the a trace/breakpoint tr=
-ap is raised and=0A       //  it is written in terminal=0A---=0A=0A    Gabr=
-iele=0A=0A=0A      Scopri il blog di Yahoo! Mail:=0ATrucchi, novit=C3=A0 e =
-scrivi la tua opinione.=0Ahttp://www.ymailblogit.com/blog
---0-1111212992-1223654529=:87674
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Hi Jan,
+>>>
+>>> I see that the implementation of rthal_llmulshft seems to account for=
 
-<html><head><style type=3D"text/css"><!-- DIV {margin:0px;} --></style></he=
-ad><body><div style=3D"font-family:arial,helvetica,sans-serif;font-size:10p=
-t"><div><br></div><div style=3D"font-family: arial,helvetica,sans-serif; fo=
-nt-size: 10pt;"><br><div style=3D"font-family: arial,helvetica,sans-serif; =
-font-size: 10pt;">&gt;&gt; It's a long story... I know anonymous mapping is=
- better but I have need physical contiguos memory<br>&gt;&gt; (not for the =
-test of course). The binary blob has fixed addresses between 1 to 16 MB so =
-I have mapped the <br>&gt;To do this with RTDM, you should use rtdm_mmap_to=
-_user, not<br>&gt;rtdm_iomap_to_user. And to do this with an anonymous mapp=
-ing, you simply<br>&gt;need to pass the address where you want the mmap to =
-occur to mmap, and<br>&gt;pass MAP_FIXED to mmap flags, this is all documen=
-ted in mmap manual.<br><br>I did't specify I have passed mem=3Dxxx to kerne=
-l to take the upper 16MB so I have to use rtdm_iomap_to_user.<br>I think th=
-e
- RTDM mapping works.<br><br>&gt;&gt; I start UD from the terminal and the t=
-erminal always report the right error.<br>&gt;<br>&gt;Ok. Probably the I-pi=
-pe patch only calls your callback for real-time<br>&gt;tasks. Is the thread=
- which runs the binary blob created with xenomai<br>&gt;services ?<br><br>m=
-y_rt_task_func()<br>{<br>&nbsp;&nbsp;&nbsp; int 3 // This is trapped by the=
- custom exception routine (forwarded to xenomai handler). The terminal writ=
-e<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; // trace/brea=
-kpoint trap<br>}<br><br>my_rt_task_func()<br>=0A{<br>=0A&nbsp;&nbsp;&nbsp; =
-call *asm_part<br>=0A}<br>=0A<br>asm_part --- (it has been copied in the fi=
-rst 16 MB of user task mapped to the 16 MB kernel memory)<br><br>int 3 // T=
-his is not trapped by the custom exception routine however the a trace/brea=
-kpoint trap is raised and<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //&nbsp; =
-it is written in terminal<br>---<br><br>&nbsp;&nbsp;&nbsp; Gabriele<br><br>=
-</div></div></div><br>=0A=0A=0A=0A      <hr size=3D1><font face=3D"Arial" s=
-ize=3D"2">Scopri il <a href=3D"http://us.rd.yahoo.com/mail/it/taglines/yaho=
-o/ymail/SIG=3D11djrg460/**http%3A%2F%2Fwww.ymailblogit.com%2Fblog%2F"> Blog=
- di Yahoo! Mail</a>: trucchi, novit=C3=A0, consigli... e scrivi la tua opin=
-ione!</font></body></html>
---0-1111212992-1223654529=:87674--
+>>> the first argument sign. Does it work ? Namely, in the generic
+>>> implementation will __rthal_u96shift propagate the sign bit ?
+>> Yes, this works (given there is no overflow, of course). If you consid=
+er
+>> a high word of 0xfffffff0 and a (right) shift of 8, we effectively cut=
+
+>> off all the leading 1s: high << (32-8) =3D 0xf0000000. But this only w=
+orks
+>> because we replace a right shift with a left shift (plus some OR'ing
+>> later on). If we had to do a real right shift, we would also have to
+>> take signed vs. unsigned into account (ie. shift in zeros or the sign
+>> bit from the left?).
+>>
+>>> If yes, do you see a way llimd could be made to work the same way ? T=
+his
+>>> way we would avoid inline ullimd twice in llimd code.
+>> As the basic building block here is a multiplication, we cannot get
+>> around telling apart signed from unsigned (or converting signed into
+>> unsigned): the underlying multiplication logic is different.
+>>
+>> But what about this approach:
+>>
+>> static inline __attribute__((__const__)) long long
+>> __rthal_generic_llimd (long long op, unsigned m, unsigned d)
+>> {
+>> 	int signed =3D 0;
+>> 	long long ret;
+>>
+>> 	if (op < 0LL) {
+>> 		op =3D -op;
+>> 		signed =3D 1;
+>> 	}
+>> 	ret =3D __rthal_generic_ullimd(op, m, d);
+>> 	return signed ? -ret : ret;
+>> }
+>>
+>> However, I guess writing this in assembly for archs that suffer should=
+
+>> be more efficient.
+>=20
+> Hi Jan,
+>=20
+> You may have noticed that we played a bit with arithmetic operations
+> (namely, we use an llimd without division to make the reverse of
+> llmulshft), and it pays off on slow machines, such as ARM, where the
+> division is done in software.
+>=20
+> At this chance, I looked at the code generated by this soluion, and I a=
+m
+> not sure that it is better: on ARM, and I suspect this is true on other=
+
+> architectures, the operations needed to negate a long long clobbers the=
+
+> code conditions, which means we can not make these operations
+> conditionals without a conditional jump, so the hand-coded assembler is=
+
+> not better than what the compiler does: it uses two conditional jumps
+> whereas the original solution uses only one. Of course we could set sig=
+n
+> to -1 or 1, and multiply by sign at the end, but the multiplication is
+> probably even heavier than conditional jump.
+
+Yes, on the archs that matter here (32-bit).
+
+>=20
+> So, would you have any idea of a better solution ?
+
+In an assembly version, one could save 'sign' in form of a jump target
+that should be taken after __rthal_generic_ullimd (ie. jump to the
+negation, or jump over it). Specifically when that address is kept in a
+register, I think smart branch prediction units will be able to do the
+right forecast.
+
+Jan
+
+
+--------------enigD5894495DBA88403E68EBC61
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkkKv3cACgkQniDOoMHTA+nKXQCfRz1T0hxRmCjjM0W+Ulu8R4j3
+JIEAoILJHswDPbInfgswOAxdlj7g8cO+
+=WWMS
+-----END PGP SIGNATURE-----
+
+--------------enigD5894495DBA88403E68EBC61--
 
