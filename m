@@ -1,10 +1,11 @@
-Message-ID: <490AE1B7.6090302@domain.hid>
-Date: Fri, 31 Oct 2008 11:45:11 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <490AEB70.2000206@domain.hid>
+Date: Fri, 31 Oct 2008 12:26:40 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <49076E08.5060708@domain.hid>	<49077D56.8040908@domain.hid>	<49098653.7060709@domain.hid>	<490ABF6D.5090806@domain.hid>
 	<490AD875.2040101@domain.hid> <490ADE23.9000609@domain.hid>
-In-Reply-To: <490ADE23.9000609@domain.hid>
+	<490AE1B7.6090302@domain.hid>
+In-Reply-To: <490AE1B7.6090302@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] llimd.
@@ -17,105 +18,111 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
 Gilles Chanteperdrix wrote:
 > Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Gilles Chanteperdrix wrote:
->>>> Jan Kiszka wrote:
->>>>> Gilles Chanteperdrix wrote:
->>>>>> Hi Jan,
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> Gilles Chanteperdrix wrote:
+>>>>> Jan Kiszka wrote:
+>>>>>> Gilles Chanteperdrix wrote:
+>>>>>>> Hi Jan,
+>>>>>>>
+>>>>>>> I see that the implementation of rthal_llmulshft seems to account for
+>>>>>>> the first argument sign. Does it work ? Namely, in the generic
+>>>>>>> implementation will __rthal_u96shift propagate the sign bit ?
+>>>>>> Yes, this works (given there is no overflow, of course). If you consider
+>>>>>> a high word of 0xfffffff0 and a (right) shift of 8, we effectively cut
+>>>>>> off all the leading 1s: high << (32-8) = 0xf0000000. But this only works
+>>>>>> because we replace a right shift with a left shift (plus some OR'ing
+>>>>>> later on). If we had to do a real right shift, we would also have to
+>>>>>> take signed vs. unsigned into account (ie. shift in zeros or the sign
+>>>>>> bit from the left?).
 >>>>>>
->>>>>> I see that the implementation of rthal_llmulshft seems to account for
->>>>>> the first argument sign. Does it work ? Namely, in the generic
->>>>>> implementation will __rthal_u96shift propagate the sign bit ?
->>>>> Yes, this works (given there is no overflow, of course). If you consider
->>>>> a high word of 0xfffffff0 and a (right) shift of 8, we effectively cut
->>>>> off all the leading 1s: high << (32-8) = 0xf0000000. But this only works
->>>>> because we replace a right shift with a left shift (plus some OR'ing
->>>>> later on). If we had to do a real right shift, we would also have to
->>>>> take signed vs. unsigned into account (ie. shift in zeros or the sign
->>>>> bit from the left?).
+>>>>>>> If yes, do you see a way llimd could be made to work the same way ? This
+>>>>>>> way we would avoid inline ullimd twice in llimd code.
+>>>>>> As the basic building block here is a multiplication, we cannot get
+>>>>>> around telling apart signed from unsigned (or converting signed into
+>>>>>> unsigned): the underlying multiplication logic is different.
+>>>>>>
+>>>>>> But what about this approach:
+>>>>>>
+>>>>>> static inline __attribute__((__const__)) long long
+>>>>>> __rthal_generic_llimd (long long op, unsigned m, unsigned d)
+>>>>>> {
+>>>>>> 	int signed = 0;
+>>>>>> 	long long ret;
+>>>>>>
+>>>>>> 	if (op < 0LL) {
+>>>>>> 		op = -op;
+>>>>>> 		signed = 1;
+>>>>>> 	}
+>>>>>> 	ret = __rthal_generic_ullimd(op, m, d);
+>>>>>> 	return signed ? -ret : ret;
+>>>>>> }
+>>>>>>
+>>>>>> However, I guess writing this in assembly for archs that suffer should
+>>>>>> be more efficient.
+>>>>> Hi Jan,
 >>>>>
->>>>>> If yes, do you see a way llimd could be made to work the same way ? This
->>>>>> way we would avoid inline ullimd twice in llimd code.
->>>>> As the basic building block here is a multiplication, we cannot get
->>>>> around telling apart signed from unsigned (or converting signed into
->>>>> unsigned): the underlying multiplication logic is different.
+>>>>> You may have noticed that we played a bit with arithmetic operations
+>>>>> (namely, we use an llimd without division to make the reverse of
+>>>>> llmulshft), and it pays off on slow machines, such as ARM, where the
+>>>>> division is done in software.
 >>>>>
->>>>> But what about this approach:
->>>>>
->>>>> static inline __attribute__((__const__)) long long
->>>>> __rthal_generic_llimd (long long op, unsigned m, unsigned d)
->>>>> {
->>>>> 	int signed = 0;
->>>>> 	long long ret;
->>>>>
->>>>> 	if (op < 0LL) {
->>>>> 		op = -op;
->>>>> 		signed = 1;
->>>>> 	}
->>>>> 	ret = __rthal_generic_ullimd(op, m, d);
->>>>> 	return signed ? -ret : ret;
->>>>> }
->>>>>
->>>>> However, I guess writing this in assembly for archs that suffer should
->>>>> be more efficient.
->>>> Hi Jan,
+>>>>> At this chance, I looked at the code generated by this soluion, and I am
+>>>>> not sure that it is better: on ARM, and I suspect this is true on other
+>>>>> architectures, the operations needed to negate a long long clobbers the
+>>>>> code conditions, which means we can not make these operations
+>>>>> conditionals without a conditional jump, so the hand-coded assembler is
+>>>>> not better than what the compiler does: it uses two conditional jumps
+>>>>> whereas the original solution uses only one. Of course we could set sign
+>>>>> to -1 or 1, and multiply by sign at the end, but the multiplication is
+>>>>> probably even heavier than conditional jump.
+>>>> Yes, on the archs that matter here (32-bit).
 >>>>
->>>> You may have noticed that we played a bit with arithmetic operations
->>>> (namely, we use an llimd without division to make the reverse of
->>>> llmulshft), and it pays off on slow machines, such as ARM, where the
->>>> division is done in software.
->>>>
->>>> At this chance, I looked at the code generated by this soluion, and I am
->>>> not sure that it is better: on ARM, and I suspect this is true on other
->>>> architectures, the operations needed to negate a long long clobbers the
->>>> code conditions, which means we can not make these operations
->>>> conditionals without a conditional jump, so the hand-coded assembler is
->>>> not better than what the compiler does: it uses two conditional jumps
->>>> whereas the original solution uses only one. Of course we could set sign
->>>> to -1 or 1, and multiply by sign at the end, but the multiplication is
->>>> probably even heavier than conditional jump.
->>> Yes, on the archs that matter here (32-bit).
+>>>>> So, would you have any idea of a better solution ?
+>>>> In an assembly version, one could save 'sign' in form of a jump target
+>>>> that should be taken after __rthal_generic_ullimd (ie. jump to the
+>>>> negation, or jump over it). Specifically when that address is kept in a
+>>>> register, I think smart branch prediction units will be able to do the
+>>>> right forecast.
+>>> Good idea, there is even a gcc extension which allows to do this in the
+>>> generic section:
 >>>
->>>> So, would you have any idea of a better solution ?
->>> In an assembly version, one could save 'sign' in form of a jump target
->>> that should be taken after __rthal_generic_ullimd (ie. jump to the
->>> negation, or jump over it). Specifically when that address is kept in a
->>> register, I think smart branch prediction units will be able to do the
->>> right forecast.
->> Good idea, there is even a gcc extension which allows to do this in the
->> generic section:
->>
->> static inline __attribute__((__const__)) long long
->> __rthal_generic_llimd (long long op, unsigned m, unsigned d)
->> {
->>  	void *epilogue;
->>  	long long ret;
->>
->>  	if (op < 0LL) {
->>  		op = -op;
->>  		epilogue = &&ret_neg;
->>  	} else
->> 		epilogue = &&ret_unchanged;
->>  	ret = __rthal_generic_ullimd(op, m, d);
->> 	goto *epilogue;
->> ret_unchanged:
->> 	return ret;
->> ret_neg:
->>  	return -ret;
->> }
+>>> static inline __attribute__((__const__)) long long
+>>> __rthal_generic_llimd (long long op, unsigned m, unsigned d)
+>>> {
+>>>  	void *epilogue;
+>>>  	long long ret;
+>>>
+>>>  	if (op < 0LL) {
+>>>  		op = -op;
+>>>  		epilogue = &&ret_neg;
+>>>  	} else
+>>> 		epilogue = &&ret_unchanged;
+>>>  	ret = __rthal_generic_ullimd(op, m, d);
+>>> 	goto *epilogue;
+>>> ret_unchanged:
+>>> 	return ret;
+>>> ret_neg:
+>>>  	return -ret;
+>>> }
+>> This works as expected on ARM, however, gcc 4.0 on x86 generates two
+>> calls to __rthal_generic_ullimd with the indirect jump after each one.
+>> It seems it has stopped half-way when "optimizing"...
 > 
-> This works as expected on ARM, however, gcc 4.0 on x86 generates two
-> calls to __rthal_generic_ullimd with the indirect jump after each one.
-> It seems it has stopped half-way when "optimizing"...
+> Actually, gcc does the right thing if the implementation of
+> __rthal_generic_ullimd is not trivial.
 
-Actually, gcc does the right thing if the implementation of
-__rthal_generic_ullimd is not trivial.
+I think in that case un-inlining __rthal_generic_ullimd, keeping only
+the two different call paths inlined, should be better anyway.
+
+Jan
 
 -- 
-                                                 Gilles.
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
