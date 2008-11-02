@@ -1,45 +1,33 @@
-Message-ID: <49330CD3.4090700@domain.hid>
-Date: Sun, 30 Nov 2008 22:59:47 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <490E36DA.6020603@domain.hid>
+Date: Mon, 03 Nov 2008 00:25:14 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <493306F5.2080605@domain.hid>
-In-Reply-To: <493306F5.2080605@domain.hid>
+References: <490B121E.5090203@domain.hid>
+In-Reply-To: <490B121E.5090203@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pthread cancelation and scheduling magics
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+Subject: Re: [Adeos-main] I-pipe for 2.6.27
+Reply-To: rpm@xenomai.org
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Sebastian Smolorz <smolorz@domain.hid>
+Cc: adeos-main <adeos-main@gna.org>
 
-Wolfgang Grandegger wrote:
-> Hello,
+Sebastian Smolorz wrote:
+> Hello Philippe,
 > 
-> I have written the attached test program to cancel Xenomai POSIX
-> threads. The "calc_task" does some busy work, which the higher priority
-> task "ctrl_task" interrupts and aborts after some time. The program does
-> not behave like I expect and it also behaves differently on my PowerPC
-> and ARM test system. The "calc_task" continues after calling
-> pthread_cancel() in "ctrl_task". On ARM, the behaviour is even more
-> wired. Is there anything wrong in my test program or anything else I
-> should care of?
+> do you plan to update I-pipe to Kernel 2.6.27 for x86?
+> 
 
-First, you should know that PTHREAD_CANCEL_ASYNCHRONOUS is evil, it will
-almost inevitably leave things in an unknown state when canceling a
-thread, you would better use PTHREAD_CANCEL_DEFERRED and ensure that
-your thread has some cancellation point, if it has not, use
-pthread_testcancel.
-
-Second, your program will only work if root thread priority coupling is
-enabled. Is it enabled in your case?
+Yes, I have one brewing here, which requires updates to the Xenomai core as
+well. ETA: this week.
 
 -- 
-					    Gilles.
+Philippe.
 
