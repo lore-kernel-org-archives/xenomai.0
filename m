@@ -1,46 +1,36 @@
-Message-ID: <4933FE5A.5060501@domain.hid>
-Date: Mon, 01 Dec 2008 16:10:18 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <490EB9E6.3070708@domain.hid>
+Date: Mon, 03 Nov 2008 09:44:22 +0100
+From: Sebastian Smolorz <smolorz@domain.hid>
 MIME-Version: 1.0
-References: <493306F5.2080605@domain.hid>
-	<49330CD3.4090700@domain.hid>	<4933BAE2.3000502@domain.hid>
-	<4933F1A4.8060209@domain.hid> <4933F18F.7080103@domain.hid>
-In-Reply-To: <4933F18F.7080103@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <490B121E.5090203@domain.hid>
+	<490E36DA.6020603@domain.hid>
+In-Reply-To: <490E36DA.6020603@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pthread cancelation and scheduling magics
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+Subject: Re: [Adeos-main] I-pipe for 2.6.27
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: rpm@xenomai.org
+Cc: adeos-main <adeos-main@gna.org>
 
-Gilles Chanteperdrix wrote:
->>> Now, the question is, do you realistically plan to write an application
->>> which makes no syscall in its real-time loop?
->> Unlikely, but it may happen in case of programming errors. Anyhow, the
->> pthreads will run legacy code and it would be a pain to add
->> pthread_testcancel where necessary. But maybe there is a more elegant
->> and simple solution to do a defined exit/abort.
+Philippe Gerum wrote:
+> Sebastian Smolorz wrote:
+>> Hello Philippe,
+>>
+>> do you plan to update I-pipe to Kernel 2.6.27 for x86?
+>>
 > 
-> In case of programming error, enable the xenomai watchdog, it will
-> forcibly kill the problematic thread.
+> Yes, I have one brewing here, which requires updates to the Xenomai core as
+> well. ETA: this week.
 
-To give you a more complete answer: most blocking functions are
-cancellation points in the PTHREAD_CANCEL_DEFERRED case, so, you
-probably do not need to add pthread_testcancel at all. The only
-exception is pthread_mutex_lock: this way, cancellation happens for well
-defined mutex states, and you may install cleanup handlers with
-pthread_cleanup_push/pthread_cleanup_pop if ever a thread may be
-destroyed while holding a mutex. With PTHREAD_CANCEL_ASYNCHRONOUS, the
-situation is not that clean.
+Great, thanks.
 
 -- 
-                                                 Gilles.
+Sebastian
 
