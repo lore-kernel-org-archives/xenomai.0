@@ -1,18 +1,12 @@
-Message-ID: <49109BFC.3080000@domain.hid>
-Date: Tue, 04 Nov 2008 20:01:16 +0100
+Message-ID: <4910A0BD.8020808@domain.hid>
+Date: Tue, 04 Nov 2008 20:21:33 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51CAD0CE1504444DBE77CBBE51A0135D533259@domain.hid>	
-	<490ECE11.208@domain.hid>	
-	<51CAD0CE1504444DBE77CBBE51A0135D53325A@slcmail.slc.mew.int>	
-	<490F2F23.2080307@domain.hid>
-	<67b6b3430811031237v4cfba0c9sf63e40a697f3da58@domain.hid>
-	<49101BFF.3060908@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D5332B4@domain.hid>
-In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D5332B4@domain.hid>
+References: <843a47610811040527v582d1aa0oce35d4278b6c6af9@domain.hid>
+In-Reply-To: <843a47610811040527v582d1aa0oce35d4278b6c6af9@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] fpu context switch issue
+Subject: Re: [Xenomai-help] Masking / Disabling the local timer interrupt
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,15 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <sseeger@domain.hid>
+To: Matthew Fornero <mfornero.lists@domain.hid>
 Cc: xenomai@xenomai.org
 
-Steven Seeger wrote:
-> Hi Gilles. Please let me know if this is ok. This is the datasheet for
-> the part. 
+Matthew Fornero wrote:
+> Hello,
+> 
+> I have an application on x86 that uses an external event (either an
+> interrupt or a DMA write to a specific memory location) to trigger code
+> execution, and I believe the local timer interrupt is contributing a
+> significant amount of jitter. This is a bit of a unique case where the only
+> code that should be executing on that core is triggered by the event, so
+> there is no need for anything timer based.
+> 
+> I'm using a dual core processor with a quiet system, and have placed all of
+> the "moveable" interrupts on CPU 0 (0-NR_IRQs using ipipe_set_irq_affinity).
+> Looking at /proc/xenomai/irq and /proc/interrupts shows only the local timer
+> interrupt increment on CPU 1. When using the DMA write to trigger execution,
+> placing "sti"/"cli" around the polling routine improves the jitter
+> substantially.
+> 
+> Based on the above, is there some way to do one of the following:
+> 
+> 1). Make a user space task higher priority than the timer interrupt
+> 
+> or
+> 
+> 2). A proper way to disable the local timer (vs. disabling all interrupts)
+> on specific cores, as these cores would only need to run event based
+> routines.
 
-Ok, thanks. Unfortunately, the text about finit or fninit is not very
-detailed. I will try to send a patch anyway.
+You can disable Xenomai timer interrupt by calling xnpod_stop_timer in
+kernel-space. However, what you see in /proc/interrupt is not Xenomai
+timer it is Linux', and it causes a bit of jitter (the time for the
+I-pipe to mask, ack and return from interrupt). Disabling it would
+require butchery in Linux code, but maybe simply masking the timer
+interrupt could work.
 
 -- 
 					    Gilles.
