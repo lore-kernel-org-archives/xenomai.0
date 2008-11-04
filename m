@@ -1,5 +1,5 @@
-Message-ID: <49100825.9000502@domain.hid>
-Date: Tue, 04 Nov 2008 09:30:29 +0100
+Message-ID: <49101BFF.3060908@domain.hid>
+Date: Tue, 04 Nov 2008 10:55:11 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <51CAD0CE1504444DBE77CBBE51A0135D533259@domain.hid>	
@@ -31,59 +31,10 @@ Mark Saiia wrote:
 > In order to get it to run, I had to remove modprobe xeno_native from my
 > start-up script.  I don't know if that is an expected requirement prior to
 > running the test.
-> 
-> == Testing FPU check routines...
-> r0: 1 != 2
-> r1: 1 != 2
-> r2: 1 != 2
-> r3: 1 != 2
-> r4: 1 != 2
-> r5: 1 != 2
-> r6: 1 != 2
-> r7: 1 != 2
-> == FPU check routines: OK.
-> == Threads: sleeper_ufps-0 rtk-1 rtk-2 rtk_fp-3 rtk_fp-4 rtk_fp_ufpp-5
-> rtk_fp_ufpp-6 rtup-7 rtup-8 rtup_ufpp-9 rtup_ufpp-10 rtus-11 rtus-12
-> rtus_ufps-13 rtus_ufps-14 rtuo-15 rtuo-16 rtuo_ufpp-17 rtuo_ufpp-18
-> rtuo_ufps-19 rtuo_ufps-20 rtuo_ufpp_ufps-21 rtuo_ufpp_ufps-22
-> RTT|  00:00:01
-> RTH|ctx switches|-------total
-> RTD|       17250|       17250
-> RTD|       17250|       34500
-> RTD|       17250|       51750
-> RTD|       17250|       69000
-> RTD|       17273|       86273
-> RTD|       17273|      103546
-> RTD|       17273|      120819
-> RTD|       17250|      138069
-> RTD|       17250|      155319
-> RTD|       17273|      172592
-> RTD|       17250|      189842
-> RTD|       17250|      207092
-> RTD|       17273|      224365
-> RTD|       17273|      241638
-> RTD|       17273|      258911
-> RTD|       17250|      276161
-> RTD|       17250|      293411
-> RTD|       17250|      310661
-> RTD|       17273|      327934
-> RTD|       17273|      345207
-> RTD|       17250|      362457
-> 
-> Thanks in advance for any help.
-> 
-> Mark Saiia
 
-
-Hi,
-
-It seems you do not get the same error with switchtest as you get with
-your test program. I had a look at linux fpu handling, and it seems to
-be very different from Xenomai fpu handling. I need to dig a little bit
-more, but will send you a patch soon.
-
-Regards.
+Just to understand what I am doing, would you, or anybody else, have a
+datasheet from AMD with the details of Geode FPU handling ?
 
 -- 
-					    Gilles.
+                                                 Gilles.
 
