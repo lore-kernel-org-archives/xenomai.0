@@ -1,16 +1,13 @@
-Message-ID: <49101BFF.3060908@domain.hid>
-Date: Tue, 04 Nov 2008 10:55:11 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <49101EBE.9090007@domain.hid>
+Date: Tue, 04 Nov 2008 11:06:54 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <51CAD0CE1504444DBE77CBBE51A0135D533259@domain.hid>	
-	<490ECE11.208@domain.hid>	
-	<51CAD0CE1504444DBE77CBBE51A0135D53325A@slcmail.slc.mew.int>	
-	<490F2F23.2080307@domain.hid>
-	<67b6b3430811031237v4cfba0c9sf63e40a697f3da58@domain.hid>
-In-Reply-To: <67b6b3430811031237v4cfba0c9sf63e40a697f3da58@domain.hid>
+References: <490F0C59.9060506@domain.hid> <490F0D1E.3080509@domain.hid>
+	<491004C8.8040406@domain.hid>
+In-Reply-To: <491004C8.8040406@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] fpu context switch issue
+Subject: Re: [Xenomai-help] Using Xenomai in early boot phase.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,21 +17,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Mark Saiia <mark.saiia@domain.hid>
-Cc: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Mark Saiia wrote:
-> Hello,
+Wolfgang Grandegger wrote:
+> Philippe Gerum wrote:
+>> Wolfgang Grandegger wrote:
+>>> Hello,
+>>>
+>>> I want to use a Xenomai task overtaking the duties of a watchdog running
+>>> under Linux as soon as the Xenomai layer is available during boot up. Is
+>>>   there a function or variable I could inspect? With 2.3.x, I called
+>>> rtdm_init_task() until it returned without error but with 2.4.x it
+>>> results in a kernel crash :-(.
+>>>
+>> What is the value of CONFIG_XENO_OPT_SYS_STACKPOOLSZ?
 > 
-> The switchtest output is as follows.  This was run on 2.4.5 with 2.6.26.3
-> AMD Geode LX800 board.
-> In order to get it to run, I had to remove modprobe xeno_native from my
-> start-up script.  I don't know if that is an expected requirement prior to
-> running the test.
+>   #
+>   # Nucleus options
+>   #
+>   CONFIG_XENO_OPT_PERVASIVE=y
+>   CONFIG_XENO_OPT_SYS_STACKPOOLSZ=32
+>   # CONFIG_XENO_OPT_PRIOCPL is not set
+>   CONFIG_XENO_OPT_PIPE=y
 
-Just to understand what I am doing, would you, or anybody else, have a
-datasheet from AMD with the details of Geode FPU handling ?
+Some more input on that issue. Here is the oops and the NIP location:
 
--- 
-                                                 Gilles.
+XLB Arb cnf: 8000a006
+mpc5xxx_ide: Setting up IDE interface ide0...
+Probing IDE interface ide0...
+Oops: kernel access of bad area, sig: 11
+NIP: C0113364 XER: 20000000 LR: C0113320 SP: C047DB30 REGS: c047da80 TRAP: 0300    Not tainted
+MSR: 00001032 EE: 0 PR: 0 FP: 0 ME: 1 IR/DR: 11
+DAR: 0000003C, DSISR: 20000000
+TASK = c047c000[1] 'swapper' Last syscall: 120
+last math 00000000 last altivec 00000000
+GPR00: 00000003 C047DB30 C047C000 00000009 FFFFFFF7 C01CF395 C0220000 00000000
+GPR08: 00000038 C01ECC00 C02445F4 00000000 00000000 100803B0 07FCF000 08099000
+GPR16: C0220000 FFFFFF7F C0230000 FFF75F97 C022B3C0 00000000 C01ECC0C C0230000
+GPR24: 00000000 00000000 00000010 C02446F4 3B9A0000 00000000 00000000 C0244590
+Call backtrace:
+C0113320 C0111F00 C010DD0C C013D810 C00DA48C C001EAB4 C001A70C
+C001A598 C001A254 C00079C0 C000D63C C0024C50 C00243AC C000D298
+C000D508 C0005CF4 0039FBC0 C00F0A4C C00F0EA0 C00F15C0 C00F210C
+C02149C8 C0214A14 C020A64C C00039A0 C0008678
+Kernel panic: Aiee, killing interrupt handler!
+In interrupt handler - not syncing
+ <0>Rebooting in 180 seconds..
+
+$ ppc_6xx-gdb vmlinux:
+...
+(gdb) l *0xC0113364
+0xc0113364 is in __xntimer_init (queue.h:51).
+46              holder->last = holder;
+47              holder->next = holder;
+48      }
+49
+50      static inline void ath(xnholder_t *head, xnholder_t *holder)
+51      {
+52              /* Inserts the new element right after the heading one  */
+53              holder->last = head;
+54              holder->next = head->next;
+55              holder->next->last = holder;
+
+Wolfgang.
 
