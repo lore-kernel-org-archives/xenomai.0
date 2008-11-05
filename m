@@ -1,16 +1,10 @@
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
-Date: Tue, 4 Nov 2008 23:38:46 +0100
-References: <9c789a000811031222oab34c08n32d94f83288154f3@domain.hid>
-	<9c789a000811032341l94ad3can622a31d3088230dc@domain.hid>
-	<9c789a000811040012n2f776c44m51e34f5139f6066b@domain.hid>
-In-Reply-To: <9c789a000811040012n2f776c44m51e34f5139f6066b@domain.hid>
+Message-ID: <49119A02.9020407@domain.hid>
+Date: Wed, 05 Nov 2008 14:05:06 +0100
+From: =?ISO-8859-1?Q?C=E9dric_Schaffter?= <cedric.schaffter@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200811042338.47072.berlemont.hauw@domain.hid>
-Subject: Re: [Xenomai-help] SegFault on Comedi-rtdm for Xenomai!!
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: Quoted-Printable
+Subject: [Xenomai-help] rt_intr_create issues
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,56 +14,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>, Cristian Axenie <cristian.axenie@domain.hid>
+To: xenomai@xenomai.org
 
-Hi,
+Hi List!
 
-> >> Where did you get the modules ni_mite.ko ni_pcimio.ko ? Did you perform
-> >> the
-> >> porting or did you use the version I made (as POC) ? If you use mine,
-> >> take great care: as I have no NI acquisition card, I was unable to
-> >> validate the drivers (that is the reason why the driver is not in the
-> >> trunk). I just ported them so as to find some flaws in the reworked
-> >> Comedi kernel API.
-> >>
-> >> >I used the modules generated in the comedi-rtdm-dev directory in
-> >>
-> >> comedi_drivers/ni_drivers/ after configure, make and make install for my
-> >> linux-2.6.24 kernel with Xenomai.I haven't ported them just use >them as
-> >> they were. My porting job refers to a bigger application written with
-> >> Comedi / RTAI specific functions and the posibility to use Comedi for
-> >> Xenomai corresponding functions to ensure the port.
+I'm writing a programm where I need to use interruptions.
 
-OK. You are not supposed to use the branch comedi-rtdm-dev. The comedi4rtdm 
-code has been integrated in the trunk.
+To create it, I use the function "rt_intr_create(RT_INTR *intr, const=20
+char *name, unsigned irq, rt_isr_t isr, rt_iack_t iack, int mode)".
 
-> > Could send more data on that point ? Did you get an OOPS in the kernel
-> >
-> > traces ?
+I included this header : #include <native/intr.h>.
 
-> >> > no OOPS just segmentation fault and there is no error log or something
-> >>
-> >> in /var/log/lastlog .
-> >
-> > insmod comedi.ko
-> >
-> >> /mnt/usb1 # insmod ni_mite.ko
-> >> Available NI device IDs: 0x2a70
-> >> /mnt/usb1 # insmod ni_pci~1.ko
-> >> /mnt/usb1 # lsmod
-> >> Module                  Size  Used by    Not tainted
-> >> ni_pcimio 33512 0 - Live 0xc9897000
-> >> ni_mite 4548 1 ni_pcimio, Live 0xc9076000
-> >> comedi 32656 1 ni_pcimio, Live 0xc9881000
->
->     /mnt/usb2/comedi~2 # ./cmd_read
->      Segmentation fault
+When I compile, I get these error messages :
 
-Could you check whether you have the same problem with the trunk code ? The NI 
-driver is not integrated into the trunk; it was not validated.
-Instead of using the NI driver, you could use the fake driver 
-(XENO_DRIVERS_COMEDI_FAKE).
+*error 'RT_INTR_HANDLED' undeclared
+error too many arguments to function 'rt_intr_create'.*
 
-Alexis.
+When I observe the file intr.h, I see there are two rt_intr_create (the=20
+one with six arguments which I need and an other one with only four).
 
+I tried to specifiy four parameters as requested by the other=20
+*rt_intr_create* and it works, so I don't think there is a problem with=20
+my include paths.
+
+Does someone already have these issues or can help me?
+
+In this file there is an other instruction that I don't understand :
+"#if (defined(__KERNEL__) || defined(__XENO_SIM__)) && !defined(DOXYGEN_C=
+PP)
+
+
+Best regards,
+C=E9dric Schaffter
 
