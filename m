@@ -1,12 +1,14 @@
-Message-ID: <4911B86C.2040400@domain.hid>
-Date: Wed, 05 Nov 2008 16:14:52 +0100
-From: =?ISO-8859-1?Q?C=E9dric_Schaffter?= <cedric.schaffter@domain.hid>
+Message-ID: <4912F652.3020608@domain.hid>
+Date: Thu, 06 Nov 2008 14:51:14 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <49119A02.9020407@domain.hid> <49119FE3.9050701@domain.hid>
-In-Reply-To: <49119FE3.9050701@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: Quoted-Printable
-Subject: Re: [Xenomai-help] rt_intr_create issues
+References: <843a47610811040527v582d1aa0oce35d4278b6c6af9@domain.hid>	
+	<4910A0BD.8020808@domain.hid>
+	<843a47610811051556y3b73ae28gebcdf0eeb2a8b800@domain.hid>
+In-Reply-To: <843a47610811051556y3b73ae28gebcdf0eeb2a8b800@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Masking / Disabling the local timer interrupt
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,54 +18,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Matthew Fornero <matthew.fornero@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix a =E9crit :
-> C=E9dric Schaffter wrote:
->  =20
->> Hi List!
+Matthew Fornero wrote:
+> On Tue, Nov 4, 2008 at 2:21 PM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>> Matthew Fornero wrote:
+>>> Hello,
+>>>
+>>> I have an application on x86 that uses an external event (either an
+>>> interrupt or a DMA write to a specific memory location) to trigger code
+>>> execution, and I believe the local timer interrupt is contributing a
+>>> significant amount of jitter. This is a bit of a unique case where the only
+>>> code that should be executing on that core is triggered by the event, so
+>>> there is no need for anything timer based.
+>>>
+>>> I'm using a dual core processor with a quiet system, and have placed all of
+>>> the "moveable" interrupts on CPU 0 (0-NR_IRQs using ipipe_set_irq_affinity).
+>>> Looking at /proc/xenomai/irq and /proc/interrupts shows only the local timer
+>>> interrupt increment on CPU 1. When using the DMA write to trigger execution,
+>>> placing "sti"/"cli" around the polling routine improves the jitter
+>>> substantially.
+>>>
+>>> Based on the above, is there some way to do one of the following:
+>>>
+>>> 1). Make a user space task higher priority than the timer interrupt
+>>>
+>>> or
+>>>
+>>> 2). A proper way to disable the local timer (vs. disabling all interrupts)
+>>> on specific cores, as these cores would only need to run event based
+>>> routines.
+>> You can disable Xenomai timer interrupt by calling xnpod_stop_timer in
+>> kernel-space. However, what you see in /proc/interrupt is not Xenomai
+>> timer it is Linux', and it causes a bit of jitter (the time for the
+>> I-pipe to mask, ack and return from interrupt). Disabling it would
+>> require butchery in Linux code, but maybe simply masking the timer
+>> interrupt could work.
 >>
->> I'm writing a programm where I need to use interruptions.
->>
->> To create it, I use the function "rt_intr_create(RT_INTR *intr, const=20
->> char *name, unsigned irq, rt_isr_t isr, rt_iack_t iack, int mode)".
->>
->> I included this header : #include <native/intr.h>.
->>
->> When I compile, I get these error messages :
->>
->> *error 'RT_INTR_HANDLED' undeclared
->> error too many arguments to function 'rt_intr_create'.*
->>
->> When I observe the file intr.h, I see there are two rt_intr_create (th=
-e=20
->> one with six arguments which I need and an other one with only four).
->>
->> I tried to specifiy four parameters as requested by the other=20
->> *rt_intr_create* and it works, so I don't think there is a problem wit=
-h=20
->> my include paths.
->>
->> Does someone already have these issues or can help me?
->>
->> In this file there is an other instruction that I don't understand :
->> "#if (defined(__KERNEL__) || defined(__XENO_SIM__)) && !defined(DOXYGE=
-N_CPP)
->>    =20
->
-> __KERNEL__ is defined when compiling a kernel-space module;
-> __XENO_SIM__ is defined when compiling for xenomai simulator (which is
-> probably not your case);
-> DOXYGEN_CPP is defined when generating Xenomai documentation with doxyg=
-en.
->
->  =20
+>> --
+>>                                            Gilles.
+> 
+> I could not find any reference to the function xnpod_stop_timer in the
+> xenomai code (searched through the cross-reference).
+> I tried using xnarch_stop_timer(cpu), but this seems to disable the
+> timers across all CPUs, rather than just the one passed.
+> What I'd really like to do is simply mask the interrupt temporarily
+> while my critical section is executing (the DMA polling routine)-- is
+> there any way to do this? I can go into the local APIC and change the
+> mask bits, but using some sort of API seems like it'd be cleaner.
 
-Thanks Gilles and Sebastian !
+xnpod_stop_timer no longer exists ! The function to disable irqs is
+rt_intr_disable if you use the native skin.
 
-Now it's clear.
-
-Best regards,
-C=E9dric
-
+-- 
+                                                 Gilles.
 
