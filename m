@@ -1,9 +1,16 @@
-Date: Thu, 6 Nov 2008 14:02:07 +0000 (GMT)
-From: Gabriele Moabiti <gabmoa@domain.hid>
+Message-ID: <49130097.3090701@domain.hid>
+Date: Thu, 06 Nov 2008 15:35:03 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-1939125318-1225980127=:36286"
-Message-ID: <184467.36286.qm@domain.hid>
-Subject: Re: [Xenomai-help] the exception saga - system hangs
+References: <843a47610811040527v582d1aa0oce35d4278b6c6af9@domain.hid>	
+	<4910A0BD.8020808@domain.hid>	
+	<843a47610811051556y3b73ae28gebcdf0eeb2a8b800@domain.hid>	
+	<4912F652.3020608@domain.hid>
+	<843a47610811060627w47a8ed32ma6881328a4713162@domain.hid>
+In-Reply-To: <843a47610811060627w47a8ed32ma6881328a4713162@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Masking / Disabling the local timer interrupt
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -13,51 +20,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Matthew Fornero <matthew.fornero@domain.hid>
+Cc: xenomai@xenomai.org
 
---0-1939125318-1225980127=:36286
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Matthew Fornero wrote:
+> On Thu, Nov 6, 2008 at 8:51 AM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>> Matthew Fornero wrote:
+>>> On Tue, Nov 4, 2008 at 2:21 PM, Gilles Chanteperdrix
+>>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>>> Matthew Fornero wrote:
+>>>>> Hello,
+>>>>>
+>>>>> I have an application on x86 that uses an external event (either an
+>>>>> interrupt or a DMA write to a specific memory location) to trigger code
+>>>>> execution, and I believe the local timer interrupt is contributing a
+>>>>> significant amount of jitter. This is a bit of a unique case where the only
+>>>>> code that should be executing on that core is triggered by the event, so
+>>>>> there is no need for anything timer based.
+>>>>>
+>>>>> I'm using a dual core processor with a quiet system, and have placed all of
+>>>>> the "moveable" interrupts on CPU 0 (0-NR_IRQs using ipipe_set_irq_affinity).
+>>>>> Looking at /proc/xenomai/irq and /proc/interrupts shows only the local timer
+>>>>> interrupt increment on CPU 1. When using the DMA write to trigger execution,
+>>>>> placing "sti"/"cli" around the polling routine improves the jitter
+>>>>> substantially.
+>>>>>
+>>>>> Based on the above, is there some way to do one of the following:
+>>>>>
+>>>>> 1). Make a user space task higher priority than the timer interrupt
+>>>>>
+>>>>> or
+>>>>>
+>>>>> 2). A proper way to disable the local timer (vs. disabling all interrupts)
+>>>>> on specific cores, as these cores would only need to run event based
+>>>>> routines.
+>>>> You can disable Xenomai timer interrupt by calling xnpod_stop_timer in
+>>>> kernel-space. However, what you see in /proc/interrupt is not Xenomai
+>>>> timer it is Linux', and it causes a bit of jitter (the time for the
+>>>> I-pipe to mask, ack and return from interrupt). Disabling it would
+>>>> require butchery in Linux code, but maybe simply masking the timer
+>>>> interrupt could work.
+>>>>
+>>>> --
+>>>>                                            Gilles.
+>>> I could not find any reference to the function xnpod_stop_timer in the
+>>> xenomai code (searched through the cross-reference).
+>>> I tried using xnarch_stop_timer(cpu), but this seems to disable the
+>>> timers across all CPUs, rather than just the one passed.
+>>> What I'd really like to do is simply mask the interrupt temporarily
+>>> while my critical section is executing (the DMA polling routine)-- is
+>>> there any way to do this? I can go into the local APIC and change the
+>>> mask bits, but using some sort of API seems like it'd be cleaner.
+>> xnpod_stop_timer no longer exists ! The function to disable irqs is
+>> rt_intr_disable if you use the native skin.
+>>
+>> --
+>>                                                 Gilles.
+>>
+> 
+> A couple of follow ups:
+> 
+> 1). I have not been able to find the RT_INTR pointer associated with
+> the local APIC timer interrupt-- is there some documentation on this?
+> Basically, I would need something to pass to rt_intr_disable
 
-=0A>>     __asm__ __volatile__("nop; movl %dr7, %eax;nop");=0A>=0A>This pie=
-ce of inline assembly is incorrect, you should mark as output=0A>register t=
-he registers you clobber.=0A=0A*ops* I'm not very skilled in Gnu asm=0AThe =
-user task asm istruction is used only to raise an exception (CPL=3D0 only),=
-=0Abut I can change the example:=0A=0Ainsted of the that asm line i write =
-=0A__asm__ __volatile__(nop; clts;nop;);=0A=0Aand in the kernel module I ch=
-ange the check=0A=0A- if (*istr =3D=3D 0x210f && (*(istr+1) & 0xFF) =3D=3D =
-0xf8) { // movl %dr7, %eax=0A-      regs->x86reg_ip+=3D3;=0A+if (*istr =3D=
-=3D 0x060f) { /* clts */=0A+    regs->x86reg_ip+=3D2;=0A=0Athe behaviour is=
- always the same... after some loops system hang=0A(tested with turned on a=
-nd off all debug options of xenomai)=0A=0A Gabriele=0A=0A=0A      Unisciti =
-alla community di Io fotografo e video, il nuovo corso di fotografia di Gaz=
-zetta dello sport:=0Ahttp://www.flickr.com/groups/iofotografoevideo
---0-1939125318-1225980127=:36286
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Right, I was going to suggest to use xnintr_disable, but it will not
+work either since there is no xnintr object associated with the local
+clock. You have to use xnarch_disable_irq and pass the irq number of the
+local APIC timer interrupt.
 
-<html><head><style type=3D"text/css"><!-- DIV {margin:0px;} --></style></he=
-ad><body><div style=3D"font-family:arial,helvetica,sans-serif;font-size:10p=
-t"><div style=3D"font-family: arial,helvetica,sans-serif; font-size: 10pt;"=
-><div style=3D"font-family: arial,helvetica,sans-serif; font-size: 10pt;"><=
-div style=3D"font-family: arial,helvetica,sans-serif; font-size: 10pt;"><br=
->&gt;&gt;&nbsp; &nbsp;  __asm__ __volatile__("nop; movl %dr7, %eax;nop");<b=
-r>&gt;<br>&gt;This piece of inline assembly is incorrect, you should mark a=
-s output<br>&gt;register the registers you clobber.<br><br>*ops* I'm not ve=
-ry skilled in Gnu asm<br>The user task asm istruction is used only to raise=
- an exception (CPL=3D0 only),<br>but I can change the example:<br><br>inste=
-d of the that asm line i write <br>__asm__ __volatile__(nop; clts;nop;);<br=
-><br>and in the kernel module I change the check<br><br>- if (*istr =3D=3D =
-0x210f &amp;&amp; (*(istr+1) &amp; 0xFF) =3D=3D 0xf8) { // movl %dr7,
- %eax<br>-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; regs-&gt;x86reg_ip+=3D3;<br>+if (*=
-istr =3D=3D 0x060f) { /* clts */<br>+&nbsp;&nbsp;&nbsp; regs-&gt;x86reg_ip+=
-=3D2;<br><br>the behaviour is always the same... after some loops system ha=
-ng<br>(tested with turned on and off all debug options of xenomai)<br><br>&=
-nbsp;Gabriele<br><br></div></div></div></div><br>=0A=0A=0A=0A      <hr size=
-=3D1><font face=3D"Arial" size=3D"2">Scopri la community di Io fotografo e =
-video<br>=0A<a href=3Dhttp://us.rd.yahoo.com/SIG=3D11ud6kror/**http%3A%2F%2=
-Fwww.flickr.com%2Fgroups%2Fiofotografoevideo%2F>Il nuovo corso</a> di Gazze=
-tta dello sport per diventare veri fotografi!</font></body></html>
---0-1939125318-1225980127=:36286--
+> 
+> 2). rt_intr_disable looks like it will disable the interrupt across
+> all CPUs. Is there any way to disable the Xenomai local APIC timer
+> handler on just a single CPU?
+
+No, rt_intr_disable, xnintr_disable, xnarch_disable_irq only disable an
+interrupt on the interrupt controller attached to the current cpu.
+
+-- 
+                                                 Gilles.
 
