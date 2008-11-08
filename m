@@ -1,14 +1,12 @@
-Message-ID: <4915C4D3.8030304@domain.hid>
-Date: Sat, 08 Nov 2008 17:56:51 +0100
+Message-ID: <4915CF4A.9030805@domain.hid>
+Date: Sat, 08 Nov 2008 18:41:30 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51CAD0CE1504444DBE77CBBE51A0135D533259@domain.hid>		<490ECE11.208@domain.hid>		<51CAD0CE1504444DBE77CBBE51A0135D53325A@slcmail.slc.mew.int>		<490F2F23.2080307@domain.hid>	<67b6b3430811031237v4cfba0c9sf63e40a697f3da58@domain.hid>
-	<49100825.9000502@domain.hid>
-In-Reply-To: <49100825.9000502@domain.hid>
+References: <9c789a000811080803s26f3007bp390e34428bb36b26@domain.hid>
+In-Reply-To: <9c789a000811080803s26f3007bp390e34428bb36b26@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] fpu context switch issue
-Reply-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] SegFault on all demo apps!!
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,118 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Mark Saiia <mark.saiia@domain.hid>
+To: Cristian Axenie <cristian.axenie@domain.hid>
 Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Mark Saiia wrote:
->> Hello,
->>
->> The switchtest output is as follows.  This was run on 2.4.5 with 2.6.26.3
->> AMD Geode LX800 board.
->> In order to get it to run, I had to remove modprobe xeno_native from my
->> start-up script.  I don't know if that is an expected requirement prior to
->> running the test.
->>
->> == Testing FPU check routines...
->> r0: 1 != 2
->> r1: 1 != 2
->> r2: 1 != 2
->> r3: 1 != 2
->> r4: 1 != 2
->> r5: 1 != 2
->> r6: 1 != 2
->> r7: 1 != 2
->> == FPU check routines: OK.
->> == Threads: sleeper_ufps-0 rtk-1 rtk-2 rtk_fp-3 rtk_fp-4 rtk_fp_ufpp-5
->> rtk_fp_ufpp-6 rtup-7 rtup-8 rtup_ufpp-9 rtup_ufpp-10 rtus-11 rtus-12
->> rtus_ufps-13 rtus_ufps-14 rtuo-15 rtuo-16 rtuo_ufpp-17 rtuo_ufpp-18
->> rtuo_ufps-19 rtuo_ufps-20 rtuo_ufpp_ufps-21 rtuo_ufpp_ufps-22
->> RTT|  00:00:01
->> RTH|ctx switches|-------total
->> RTD|       17250|       17250
->> RTD|       17250|       34500
->> RTD|       17250|       51750
->> RTD|       17250|       69000
->> RTD|       17273|       86273
->> RTD|       17273|      103546
->> RTD|       17273|      120819
->> RTD|       17250|      138069
->> RTD|       17250|      155319
->> RTD|       17273|      172592
->> RTD|       17250|      189842
->> RTD|       17250|      207092
->> RTD|       17273|      224365
->> RTD|       17273|      241638
->> RTD|       17273|      258911
->> RTD|       17250|      276161
->> RTD|       17250|      293411
->> RTD|       17250|      310661
->> RTD|       17273|      327934
->> RTD|       17273|      345207
->> RTD|       17250|      362457
->>
->> Thanks in advance for any help.
->>
->> Mark Saiia
-> 
-> 
-> Hi,
-> 
-> It seems you do not get the same error with switchtest as you get with
-> your test program. I had a look at linux fpu handling, and it seems to
-> be very different from Xenomai fpu handling. I need to dig a little bit
-> more, but will send you a patch soon.
+Cristian Axenie wrote:
+> WHAT AM I MISSING, I SEE PLENTY OF No such file or directory !! WHERE SHOULD
+> I FOUND THOSE MISSING FILES, SIMLINKS....
 
-Here comes the promised patch.
+No need to shout, we hear you.
 
-Index: include/asm-x86/bits/pod_32.h
-===================================================================
---- include/asm-x86/bits/pod_32.h	(revision 4355)
-+++ include/asm-x86/bits/pod_32.h	(working copy)
-@@ -194,16 +194,37 @@ static inline void xnarch_init_thread(xn
- static inline void xnarch_init_fpu(xnarchtcb_t * tcb)
- {
- 	struct task_struct *task = tcb->user_task;
-+	x86_fpu_state *fpup = tcb->fpup;
- 	/* Initialize the FPU for a task. This must be run on behalf of the
- 	   task. */
- 
--	__asm__ __volatile__("clts; fninit");
-+	if (cpu_has_fxsr) {
-+		struct i837_fxsave_struct *fx = &fpup->fxsave;
- 
--	if (cpu_has_xmm) {
--		unsigned long __mxcsr = 0x1f80UL & 0xffbfUL;
--		__asm__ __volatile__("ldmxcsr %0"::"m"(__mxcsr));
--	}
-+		memset(fx, 0, sizeof(*fx));
-+		fx->cwd = 0x37f;
-+		if (cpu_has_xmm) {
-+			unsigned long __mxcsr = 0x1f80UL & 0xffbfUL;
-+			fx->mxcsr = __mxcsr;
-+		}
-+
-+		clts();
-+
-+		__asm__ __volatile__("fxrstor %0": /* no output */ :"m"(*fx));
-+	} else {
-+		struct i387_fsave_struct *fp = &fpup->fsave;
-+
-+		memset(fp, 0, sizeof(*fp));
-+		fp->cwd = 0xffff037fu;
-+		fp->swd = 0xffff0000u;
-+		fp->twd = 0xffffffffu;
-+		fp->fos = 0xffff0000u;
-+		
-+		clts();
- 
-+		__asm__ __volatile__("frstor %0": /* no output */ :"m"(*fp));
-+	}
-+	
- 	if (task) {
- 		/* Real-time shadow FPU initialization: tell Linux that this
- 		   thread initialized its FPU hardware. The fpu usage bit is
+The error you are seeing are errors that comes from ld.so looking for
+libs at various places before actually finding them. This is normal, and
+certainly not what causes segmentation faults.
+
+What could cause segmentation faults is the fact that the kernel you are
+running would not really be patched with Xenomai. To know this, try
+cat /proc/xenomai/version
+on your board. If there is no such file, then you are not running Xenomai.
+
+Another cause of problems could be that you enabled a problematic option.
+
+In fact, to know really where the fault happens, you should be using
+gdb, not strace.
 
 
 
