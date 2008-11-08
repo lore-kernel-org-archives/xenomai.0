@@ -1,11 +1,11 @@
-Content-Transfer-Encoding: 7bit
-Content-Type: multipart/alternative; boundary="_----------=_1226098613258870"
+Message-ID: <1226138210.49156262a5050@domain.hid>
+Date: Sat,  8 Nov 2008 10:56:50 +0100
+From: Dhouib Saadia <dhouib@domain.hid>
 MIME-Version: 1.0
-From: =?iso-8859-1?B?TWFyY28gQW509G5pbyBQb3NzYW1haQ==?=
-	<marco.possamai@domain.hid>
-Date: Fri, 7 Nov 2008 19:56:53 -0300
-Message-Id: <20081107225653.D614C47808F@ws1-5.us4.outblaze.com>
-Subject: [Xenomai-help] Problems with uImage
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] adeos patch failed with 2.6.27-rc9 from
+	git.xilinx.com
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,149 +15,150 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: XENOMAI <Xenomai-help@domain.hid>
-
-This is a multi-part message in MIME format.
-
---_----------=_1226098613258870
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
-
-Hi, all. I'm having some trouble trying to build uImage. Here's the steps
-I took in order to get it built. It didn't quite work, unfortunately:
-
-$ export CROSS_COMPILE=3Dppc_6xx-
-
-$ git clone git://git.denx.de/linux-2.6-denx.git
-$ export KDIR=3D$PWD/linux-2.6-denx
-
-$ svn co http://svn.gna.org/svn/xenomai/branches/v2.4.x xenomai-2.4.x
-$ export XDIR=3D$PWD/xenomai-2.4.x
-
-$ cd $KDIR
-$ git checkout origin/DENX-v2.6.25-stable
-$ git checkout -b origin/DENX-v2.6.25-stable
-
-$ cd $XDIR
-$ scripts/prepare-kernel.sh --linux=3D$KDIR --verbose --arch=3Dpowerpc
-
-Adeos patch [default
-/home/user/linux-2.6-denx/xenomai-2.4.x/ksrc/arch/powerpc/patches/adeos-ipi=
-pe-2.6.25-powerpc-DENX-2.2-03.patch]:
-
-$ cd $KDIR
-$ make ARCH=3Dpowerpc mpc5200_defconfig
-$ make ARCH=3Dpowerpc menuconfig
-
-... enable RT-Socket-CAN and MSCAN driver ...
-<*> RT-Socket-CAN, CAN raw socket interface
-[*]   Enable debug output (NEW)
-[ ]   Enable TX loopback to local sockets (NEW)
-(1024) Size of receive ring buffers (must be 2^N) (NEW)
-(4)   Maximum number of devices (NEW)
-(16)  Maximum number of receive filters per device (NEW)
-< >   Virtual CAN bus driver (NEW)
-<*>   MSCAN driver for MPC52xx
-[*]     Enable CAN 1 (NEW)
-[*]     Enable CAN 2 (NEW)
-(66000000) Clock Frequency in Hz (NEW)
-Pin Configuration (CAN 1 on I2C1 pins, CAN 2 on TMR01 pin
-...
-
-$ make ARCH=3Dpowerpc uImage
-
-It starts building alright, but when it gets to the mscan part it
-crashes, echoing the following:
-
-CC      drivers/xenomai/can/rtcan_raw_filter.o
-LD      drivers/xenomai/can/xeno_can.o
-CC      drivers/xenomai/can/mscan/rtcan_mscan.o
-drivers/xenomai/can/mscan/rtcan_mscan.c: In function 'mscan_gpio_config':
-drivers/xenomai/can/mscan/rtcan_mscan.c:705: error: implicit declaration
-of function 'mpc52xx_find_and_map'
-make[4]: ** [drivers/xenomai/can/mscan/rtcan_mscan.o] Erro 1
-make[3]: ** [drivers/xenomai/can/mscan] Erro 2
-make[2]: ** [drivers/xenomai/can] Erro 2
-make[1]: ** [drivers/xenomai] Erro 2
-make: ** [drivers] Erro 2
-
-How can I correct it? I've managed to succesfully build the image before
-on a different PC using the same steps.
-
-I'd really appreciate some help. Thanks in advance!
+To: xenomai@xenomai.org
 
 
-Marco Ant=F4nio Possamai
+Hi,
+I have installed successfully the latest version of linux (2.6.27-rc
+from git.xilinx.com) on xupv2p platform embedding a ppc405 processor.
+Then I want to install xenomai. I downloaded the latest version
+(xenomai-2.4.5) and the latest adeos patch
+(adeos-ipipe-2.6.26-powerpc-DENX-2.2-07.patch).
+I run the prepare_kernel.sh script:
+path to linux tree: /home/dhouib/xupv2p/linux-2.6-xlnx
+adeos patch: =20
+/home/dhouib/xupv2p/xenomai-2.4.5/ksrc/arch/powerpc/patches/adeos-ipipe-2=
+.6.26-powerpc-DENX-2.2-07.patch
 
-Universidade Federal de Santa Catarina
+Then the patch was not applied correctly!
+there was the following errors:
+patching file include/linux/kernel.h
+Hunk #1 FAILED at 14.
+Hunk #2 succeeded at 111 with fuzz 1 (offset -2 lines).
+1 out of 2 hunks FAILED -- saving rejects to file include/linux/kernel.h.=
+rej
+patching file include/linux/linkage.h
+Hunk #1 succeeded at 95 (offset 6 lines).
+patching file include/linux/mm.h
+Hunk #1 succeeded at 114 with fuzz 2 (offset 5 lines).
+patching file include/linux/preempt.h
+Hunk #1 FAILED at 9.
+1 out of 1 hunk FAILED -- saving rejects to file include/linux/preempt.h.=
+rej
+patching file include/linux/sched.h
+Hunk #3 succeeded at 296 (offset 2 lines).
+Hunk #4 succeeded at 1301 (offset -6 lines).
+Hunk #5 FAILED at 1524.
+1 out of 5 hunks FAILED -- saving rejects to file include/linux/sched.h.r=
+ej
+patching file include/linux/spinlock.h
+Hunk #1 succeeded at 90 (offset 1 line).
+Hunk #2 succeeded at 105 (offset 1 line).
+Hunk #3 succeeded at 194 (offset 1 line).
+Hunk #4 FAILED at 286.
+Hunk #5 FAILED at 300.
+Hunk #6 succeeded at 344 (offset 37 lines).
+Hunk #7 succeeded at 358 (offset 37 lines).
+Hunk #8 FAILED at 399.
+Hunk #9 succeeded at 466 (offset 46 lines).
+3 out of 9 hunks FAILED -- saving rejects to file
+include/linux/spinlock.h.rej
+patching file include/linux/spinlock_types.h
+patching file init/Kconfig
+patching file init/main.c
+Hunk #1 succeeded at 552 (offset 4 lines).
+Hunk #2 succeeded at 608 (offset 1 line).
+Hunk #3 succeeded at 777 (offset 5 lines).
+patching file kernel/Makefile
+Hunk #1 succeeded at 79 (offset 15 lines).
+patching file kernel/exit.c
+Hunk #1 succeeded at 1074 (offset 32 lines).
+patching file kernel/fork.c
+Hunk #1 succeeded at 463 (offset 6 lines).
+Hunk #2 succeeded at 856 with fuzz 2.
+Hunk #3 succeeded at 1245 (offset -4 lines).
+patching file kernel/ipipe/Kconfig
+patching file kernel/ipipe/Kconfig.debug
+patching file kernel/ipipe/Makefile
+patching file kernel/ipipe/core.c
+patching file kernel/ipipe/tracer.c
+patching file kernel/irq/chip.c
+Hunk #1 succeeded at 349 (offset -4 lines).
+Hunk #2 succeeded at 428 (offset -4 lines).
+Hunk #3 succeeded at 478 (offset -4 lines).
+Hunk #4 succeeded at 521 (offset -4 lines).
+Hunk #5 succeeded at 614 (offset -4 lines).
+Hunk #6 succeeded at 644 (offset -4 lines).
+Hunk #7 succeeded at 679 (offset -4 lines).
+Hunk #8 succeeded at 703 (offset -4 lines).
+patching file kernel/irq/handle.c
+patching file kernel/lockdep.c
+Hunk #1 succeeded at 2190 (offset 158 lines).
+Hunk #2 succeeded at 2233 (offset 165 lines).
+patching file kernel/panic.c
+patching file kernel/power/disk.c
+Hunk #1 succeeded at 207 with fuzz 2 (offset 13 lines).
+Hunk #2 succeeded at 241 with fuzz 2 (offset 14 lines).
+Hunk #3 FAILED at 317.
+Hunk #4 succeeded at 356 with fuzz 2 (offset 22 lines).
+1 out of 4 hunks FAILED -- saving rejects to file kernel/power/disk.c.rej
+patching file kernel/printk.c
+Hunk #1 succeeded at 572 (offset -114 lines).
+Hunk #2 succeeded at 632 (offset -114 lines).
+Hunk #3 succeeded at 698 (offset -114 lines).
+patching file kernel/sched.c
+Hunk #1 succeeded at 2221 (offset 133 lines).
+Hunk #2 succeeded at 2579 (offset 141 lines).
+Hunk #3 succeeded at 2633 (offset 146 lines).
+Hunk #4 succeeded at 4364 with fuzz 2 (offset 324 lines).
+Hunk #5 FAILED at 4381.
+Hunk #6 succeeded at 4434 (offset 265 lines).
+Hunk #7 succeeded at 4480 with fuzz 2 (offset 266 lines).
+Hunk #8 succeeded at 5180 (offset 302 lines).
+Hunk #9 succeeded at 5510 (offset 315 lines).
+Hunk #10 succeeded at 9288 (offset 396 lines).
+1 out of 10 hunks FAILED -- saving rejects to file kernel/sched.c.rej
+patching file kernel/signal.c
+Hunk #1 succeeded at 493 (offset -2 lines).
+patching file kernel/spinlock.c
+patching file kernel/time/tick-common.c
+Hunk #2 succeeded at 167 (offset 2 lines).
+patching file kernel/time/tick-sched.c
+Hunk #1 succeeded at 491 (offset 22 lines).
+Hunk #2 succeeded at 598 (offset 22 lines).
+patching file kernel/timer.c
+Hunk #1 succeeded at 982 (offset -8 lines).
+patching file lib/Kconfig.debug
+Hunk #1 succeeded at 128 (offset 3 lines).
+patching file lib/bust_spinlocks.c
+patching file lib/ioremap.c
+patching file lib/smp_processor_id.c
+Hunk #1 succeeded at 12 with fuzz 2 (offset -1 lines).
+patching file lib/spinlock_debug.c
+patching file mm/memory.c
+Hunk #1 FAILED at 51.
+Hunk #2 succeeded at 483 (offset 4 lines).
+Hunk #3 succeeded at 517 (offset 4 lines).
+Hunk #4 succeeded at 557 (offset 4 lines).
+Hunk #5 succeeded at 602 (offset 4 lines).
+Hunk #6 succeeded at 643 (offset 4 lines).
+Hunk #7 succeeded at 1790 (offset 73 lines).
+Hunk #8 succeeded at 3065 (offset 122 lines).
+1 out of 8 hunks FAILED -- saving rejects to file mm/memory.c.rej
+patching file mm/mlock.c
+Hunk #1 succeeded at 171 (offset -2 lines).
+patching file mm/vmalloc.c
+prepare-kernel.sh: Unable to patch kernel 2.6.27-rc9 with
+adeos-ipipe-2.6.26-powerpc-DENX-2.2-07.patch.
 
---=20
-Be Yourself @ mail.com!
-Choose From 200+ Email Addresses
-Get a Free Account at www.mail.com
 
+Could you help me to apply the patch?
+Thanks
 
---_----------=_1226098613258870
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/html; charset="iso-8859-1"
+Saadia
 
-
-<div>
-
-<p>Hi, all. I'm having some trouble trying to build uImage. Here's the step=
-s I took in order to get it built. It didn't quite work, unfortunately:<br>=
-</p><p>$ export CROSS_COMPILE=3Dppc_6xx-<br><br>$ git clone git://git.denx.=
-de/linux-2.6-denx.git<br>$ export KDIR=3D$PWD/linux-2.6-denx<br><br>$ svn c=
-o http://svn.gna.org/svn/xenomai/branches/v2.4.x xenomai-2.4.x<br>$ export =
-XDIR=3D$PWD/xenomai-2.4.x<br><br>$ cd $KDIR<br>$ git checkout origin/DENX-v=
-2.6.25-stable<br>$ git checkout -b origin/DENX-v2.6.25-stable<br><br>$ cd $=
-XDIR<br>$ scripts/prepare-kernel.sh --linux=3D$KDIR --verbose --arch=3Dpowe=
-rpc<br><br>Adeos patch [default /home/user/linux-2.6-denx/xenomai-2.4.x/ksr=
-c/arch/powerpc/patches/adeos-ipipe-2.6.25-powerpc-DENX-2.2-03.patch]:<br><b=
-r>$ cd $KDIR<br>$ make ARCH=3Dpowerpc mpc5200_defconfig<br>$ make ARCH=3Dpo=
-werpc menuconfig<br><br>&nbsp; ... enable RT-Socket-CAN and MSCAN driver ..=
-.<br>&nbsp; &lt;*&gt; RT-Socket-CAN, CAN raw socket interface<br>&nbsp; [*]=
-&nbsp;&nbsp; Enable debug output (NEW)<br>&nbsp; [ ]&nbsp;&nbsp; Enable TX =
-loopback to local sockets (NEW)<br>&nbsp; (1024) Size of receive ring buffe=
-rs (must be 2^N) (NEW)<br>&nbsp; (4)&nbsp;&nbsp; Maximum number of devices =
-(NEW)<br>&nbsp; (16)&nbsp; Maximum number of receive filters per device (NE=
-W)<br>&nbsp; &lt; &gt;&nbsp;&nbsp; Virtual CAN bus driver (NEW)<br>&nbsp; &=
-lt;*&gt;&nbsp;&nbsp; MSCAN driver for MPC52xx<br>&nbsp; [*]&nbsp;&nbsp;&nbs=
-p;&nbsp; Enable CAN 1 (NEW)<br>&nbsp; [*]&nbsp;&nbsp;&nbsp;&nbsp; Enable CA=
-N 2 (NEW)<br>&nbsp; (66000000) Clock Frequency in Hz (NEW)<br>&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Pin Configuration (CAN 1 on I2C1 =
-pins, CAN 2 on TMR01 pin <br>&nbsp; ...<br><br>$ make ARCH=3Dpowerpc uImage=
-<br></p><p>It starts building alright, but when it gets to the mscan part i=
-t crashes, echoing the following:<br></p><p>&nbsp;
-CC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; drivers/xenomai/can/rtcan_raw_filter.o<br>=
-&nbsp; LD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; drivers/xenomai/can/xeno_can.o<br>&=
-nbsp; CC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; drivers/xenomai/can/mscan/rtcan_msca=
-n.o<br>drivers/xenomai/can/mscan/rtcan_mscan.c: In function 'mscan_gpio_con=
-fig':<br>drivers/xenomai/can/mscan/rtcan_mscan.c:705: error: implicit decla=
-ration of function 'mpc52xx_find_and_map'<br>make[4]: ** [drivers/xenomai/c=
-an/mscan/rtcan_mscan.o] Erro 1<br>make[3]: ** [drivers/xenomai/can/mscan] E=
-rro 2<br>make[2]: ** [drivers/xenomai/can] Erro 2<br>make[1]: ** [drivers/x=
-enomai] Erro 2<br>make: ** [drivers] Erro 2<br></p><p>How can I correct it?=
- I've managed to succesfully build the image before on a different PC using=
- the same steps.<br>
-</p><p>I'd really appreciate some help. Thanks in advance!<br></p><p><br></=
-p><pre>Marco Ant=F4nio Possamai
-
-Universidade Federal de Santa Catarina
-</pre>
-
-
-</div>
-<BR>
-
---=20
-<div> Be Yourself @ mail.com!<br>
-Choose From 200+ Email Addresses<br>
-Get a <b>Free</b> Account at <a href=3D"http://www.mail.com/Product.aspx" t=
-arget=3D"_blank">www.mail.com</a>!</div>
-
---_----------=_1226098613258870--
-
+-------------------------------------------------------------------------=
+-------
+Universit=E9 de Bretagne sud                               http://www.uni=
+v-ubs.fr/
 
