@@ -1,12 +1,10 @@
-Message-ID: <217b7eb20811091134h77fbd77bm2e880708b21e5b06@domain.hid>
-Date: Sun, 9 Nov 2008 19:34:04 +0000
-From: Hank <hank007@domain.hid>
-In-Reply-To: <mailman.10531.1226258953.25037.xenomai@xenomai.org>
+Message-ID: <491749A1.7060609@domain.hid>
+Date: Sun, 09 Nov 2008 21:35:45 +0100
+From: Newsgroup <newsgroup@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_80920_2358105.1226259244940"
-References: <mailman.10531.1226258953.25037.xenomai@xenomai.org>
-Subject: [Xenomai-help] Xenomai skins init errors
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] Compile Kernel 2.6.26 with adeos patch failed
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,53 +16,38 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-------=_Part_80920_2358105.1226259244940
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Hello,
 
-Hi
+ive got a problem compiling the patched 2.6.26.7 linux kernel with the
+adeos-ipipe patch.
 
-I'm Porting Xenomai to Freescale imx31 platform. Have previously been using
-ipipe 1.7 + xenomai 2.4.4. Now migrated to ipipe 1.9 and latest Xenomai
-snapshot. The kernel is 2.6.24. Ipipe seems to OK but getting errors on
-xenomai skins initialization:
+after calling the prepare-kernel.sh script and "make menuconfig" i try
+to build the kernel.
+
+This error occurs:
+
+scripts/kconfig/conf -s arch/x86/Kconfig
+CHK include/linux/version.h
+CHK include/linux/utsrelease.h
+CALL scripts/checksyscalls.sh
+CHK include/linux/compile.h
+CC arch/x86/kernel/ipipe.o
+arch/x86/kernel/ipipe.c: In Funktion =C2=BB__ipipe_divert_exception=C2=AB=
+:
+arch/x86/kernel/ipipe.c:810: Fehler: =C2=BBex_do_device_not_available=C2=AB
+nicht deklariert (erste Benutzung in dieser Funktion)
+arch/x86/kernel/ipipe.c:810: Fehler: (Jeder nicht deklarierte Bezeichner
+wird nur einmal aufgef=C31/4hrt
+arch/x86/kernel/ipipe.c:810: Fehler: f=C31/4r jede Funktion in der er
+auftritt.)
+make[1]: *** [arch/x86/kernel/ipipe.o] Fehler 1
+make: *** [arch/x86/kernel] Fehler 2
+
+can anyone able to help me?
+
+Greets
+
+Maveric
 
 
------------------------------------------------------------
-I-pipe: Domain Xenomai registered.
-
-Xenomai: hal/arm started.
-
-Xenomai: real-time nucleus v2.5-devel (Flying In A Blue Dream) loaded.
-
-Xenomai: native skin init failed, code -38.
-
-Xenomai: starting POSIX services.
-
-Xenomai: POSIX skin init failed, code -38.
-
-Xenomai: RTDM skin init failed, code -38.
-----------------------------------------------------------
-
-
-Will appreciate any hint on this one!
-
-Hank
-
-------=_Part_80920_2358105.1226259244940
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hi<br><div class="gmail_quote"><br>I&#39;m Porting Xenomai to Freescale imx31 platform. Have previously been using ipipe 1.7 + xenomai <a href="http://2.4.4." target="_blank">2.4.4.</a> Now migrated to ipipe 1.9 and latest Xenomai snapshot. The kernel is <a href="http://2.6.24." target="_blank">2.6.24.</a> Ipipe seems to OK but getting errors on xenomai skins initialization:<br>
-
-<br><br>-----------------------------------------------------------<br>I-pipe: Domain Xenomai registered.<br><br>Xenomai: hal/arm started.<br><br>Xenomai: real-time nucleus v2.5-devel (Flying In A Blue Dream) loaded.<br>
-<br>
-Xenomai: native skin init failed, code -38.<br><br>Xenomai: starting POSIX services.<br><br>Xenomai: POSIX skin init failed, code -38.<br><br>Xenomai: RTDM skin init failed, code -38.<br>----------------------------------------------------------<br>
-
-<br><br>Will appreciate any hint on this one!<br><br>Hank<br><br>
-<br></div>
-
-------=_Part_80920_2358105.1226259244940--
 
