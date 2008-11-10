@@ -1,13 +1,17 @@
-Message-ID: <49182AA7.6000800@domain.hid>
-Date: Mon, 10 Nov 2008 13:35:51 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <49184157.5010603@domain.hid>
+Date: Mon, 10 Nov 2008 15:12:39 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <491805AE.1060809@domain.hid>	<52e18582a48da6c08ed88bbce325aed8.squirrel@domain.hid>
-	<491829F9.2050305@domain.hid>
-In-Reply-To: <491829F9.2050305@domain.hid>
+References: <9c789a000811080803s26f3007bp390e34428bb36b26@domain.hid>	
+	<4916BC63.20304@domain.hid>	
+	<9c789a000811090446l5d172120mc6791c220373b118@domain.hid>	
+	<49171204.705@domain.hid>
+	<9c789a000811100152m68bf3cc5o74df47c2e5066df0@domain.hid>
+In-Reply-To: <9c789a000811100152m68bf3cc5o74df47c2e5066df0@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Mode switch when using RT heap on ARM
+Subject: Re: [Xenomai-help] SegFault on all demo apps!!
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,25 +21,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Cristian Axenie <cristian.axenie@domain.hid>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-Wolfgang Grandegger wrote:
-> Gilles Chanteperdrix wrote:
->> Wolfgang Grandegger wrote:
->>> Hello,
->>>
->>> I realized that accessing memory allocated with rt_heap_alloc() causes
->>> mode switches on ARM i.mx31. The attached patch provides a demo program
->>> to demonstrate the problem, which actually does *not* show up on my
->>> PowerPC TQM5200 board.
->> On ARM, we normally map the heaps uncacheable, this should not be
->> necessary on ARMv6, but I am afraid we then get the fault on first access.
+Cristian Axenie wrote:
 > 
-> Is each cache-line of the heap not touched automatically when the heap
-> gets created? I thought it's necessary for other archs as well.
+> 
+> 
+> 
+>     I understand that. The point is that you don't need Comedi for
+>     validating the
+>     environment, since you are stuck in the very early stages it seems.
+>     What you
+>     need is to get the plain latency test running, first of all. Therefore,
+>     downgrading to 2.4.5 for the purpose of testing is the way to
+>     determine whether
+>     this is a Xenomai trunk/ vs stable/ issue, or a bad interaction
+>     between any
+>     Xenomai version and the standard libraries used on your board.
+> 
+>  
+> I tested the demo apps on the kernel-2.6.24 and Xenomai 2.4.5 and I get
+> the same results .
+> So is it possible to be an incompatibility between the standard libs
+> (glibc..) on the target and the standard libs from the host where I
+> build my kernel and installed Xenomai ?
+> Would be a good solution to create a new filesystem using the same
+> libraries (on the host), should this approach eliminate the possibility
+> of incompatibility that generates the SegFault?
+>
 
-s/cache-line/page/
+Normally, you should be using the same libs on both sides, either for linking
+your apps or running your target. The cross-compiler will use the proper target
+libs to link your app against as available with the same ELDK it is part of, and
+I assume you booted your target over the ELDK root fs suitable for your arch as
+well. If this is not the case, e.g. if you have populated your target root fs
+with your own recipe using buildroot or other means, then you may have
+introduced the issue.
 
-Wolfgang.
+First of all, I would try booting the board on the NFS-mounted root fs the ELDK
+provides for your arch, and run the Xenomai testsuite from there.
+
+Please keep the list CCed; this conversation may help other people.
+
+> 
+> Best,
+> 
+> Cristian
+> 
+> 
+> 
+
+
+-- 
+Philippe.
 
