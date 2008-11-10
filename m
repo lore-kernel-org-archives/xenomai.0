@@ -1,12 +1,12 @@
-Message-ID: <490E36DA.6020603@domain.hid>
-Date: Mon, 03 Nov 2008 00:25:14 +0100
+Message-ID: <49184F13.7050309@domain.hid>
+Date: Mon, 10 Nov 2008 16:11:15 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <490B121E.5090203@domain.hid>
-In-Reply-To: <490B121E.5090203@domain.hid>
+References: <49184D78.2070204@domain.hid>
+In-Reply-To: <49184D78.2070204@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] I-pipe for 2.6.27
+Subject: Re: [Adeos-main] [BUG] build failure with newest i-pipe version
 Reply-To: rpm@xenomai.org
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
@@ -20,13 +20,15 @@ To: Sebastian Smolorz <smolorz@domain.hid>
 Cc: adeos-main <adeos-main@gna.org>
 
 Sebastian Smolorz wrote:
-> Hello Philippe,
+> Hi Philippe,
 > 
-> do you plan to update I-pipe to Kernel 2.6.27 for x86?
+> patching 2.6.27 with the i-pipe patch from Xenomai release 2.4.6 (i.e. 
+> adeos-ipipe-2.6.27-x86-2.1-01.patch) causes a build failure of the 
+> kernel when configuring i-pipe out. The reason is in line 271 of 
+> kernel/panic.c. ipipe_processor_id() is not known at this point.
 > 
 
-Yes, I have one brewing here, which requires updates to the Xenomai core as
-well. ETA: this week.
+Ok, will fix, thanks.
 
 -- 
 Philippe.
