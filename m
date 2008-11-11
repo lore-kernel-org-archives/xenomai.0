@@ -1,14 +1,20 @@
-Message-ID: <4919D065.3040304@domain.hid>
-Date: Tue, 11 Nov 2008 19:35:17 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <67b6b3430811111432o1ca14e87w7ccab4ab95dd591e@domain.hid>
+Date: Tue, 11 Nov 2008 14:32:43 -0800
+From: "Mark Saiia" <mark.saiia@domain.hid>
+In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D53344A@slcmail.slc.mew.int>
 MIME-Version: 1.0
-References: <491955B7.4080805@domain.hid>
-In-Reply-To: <491955B7.4080805@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [BUG] boot failure with
-	adeos-ipipe-2.6.27-x86-2.1-01.patch
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_139220_21117660.1226442763561"
+References: <51CAD0CE1504444DBE77CBBE51A0135D533259@domain.hid>
+	<490ECE11.208@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D53325A@slcmail.slc.mew.int>
+	<490F2F23.2080307@domain.hid>
+	<67b6b3430811031237v4cfba0c9sf63e40a697f3da58@domain.hid>
+	<49100825.9000502@domain.hid> <4915C4D3.8030304@domain.hid>
+	<67b6b3430811101607k75eaa084ga387c453096d2710@domain.hid>
+	<1c74c6152ff1b52eaa3dd84f4b912b29.squirrel@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D53344A@slcmail.slc.mew.int>
+Subject: Re: [Xenomai-help] fpu context switch issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,72 +24,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sebastian Smolorz <smolorz@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>, adeos-main <adeos-main@gna.org>
+To: Steven Seeger <sseeger@domain.hid>
+Cc: xenomai@xenomai.org
 
-Sebastian Smolorz wrote:
-> Hello Philippe,
-> 
-> here comes a more serious bug than the one from yesterday. When I try to
->  boot a system patched with the latest ipipe on a PIII the attached boot
-> log will show up. config also attached.
->
+------=_Part_139220_21117660.1226442763561
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-This bug affects all UP configurations that do not enable any spinlock debugging
-option. Fixed in 2.6.27-x86-2.1-02. Given the severity of this bug, 2.4.6.1 is
-due soon, with the fixed patch.
+I applied the patch to Xenomai-2.4.5 with kernel 2.6.26.3 and observed the
+erroneous behavior.  I did the same with linux-2.6.27.5 and Xenomai r4372
+and noticed the same behavior.  Please let me know if I can run additional
+tests, if you need any more information, or how to potentially fix this
+issue.
 
-http://download.gna.org/adeos/patches/v2.6/x86/adeos-ipipe-2.6.27-x86-2.1-02.patch
+Thank you,
 
-Thanks,
+Mark
 
-diff --git a/include/linux/spinlock.h b/include/linux/spinlock.h
-index daa90f8..2044388 100644
---- a/include/linux/spinlock.h
-+++ b/include/linux/spinlock.h
-@@ -255,6 +255,14 @@ do {									\
- 		flags = _spin_lock_irqsave((spinlock_t *)(lock));	\
- 	else __bad_spinlock_type();					\
- } while (0)
-+#define PICK_SPINLOCK_IRQSAVE_NESTED(lock, flags, subclass)		\
-+do {									\
-+	if (TYPE_EQUAL((lock), __ipipe_spinlock_t)) {			\
-+		(flags) = __ipipe_spin_lock_irqsave(&((__ipipe_spinlock_t
-*)(lock))->__raw_lock); \
-+	} else if (TYPE_EQUAL(lock, spinlock_t))			\
-+		flags = _spin_lock_irqsave_nested((spinlock_t *)(lock), subclass); \
-+	else __bad_spinlock_type();					\
-+} while (0)
- #else
- #define PICK_SPINLOCK_IRQSAVE(lock, flags)				\
- do {									\
-@@ -312,13 +320,13 @@ do {									\
- #define spin_lock_irqsave_nested(lock, flags, subclass)			\
- 	do {								\
- 		typecheck(unsigned long, flags);			\
--		flags = _spin_lock_irqsave_nested(lock, subclass);	\
-+		PICK_SPINLOCK_IRQSAVE_NESTED(lock, flags, subclass);	\
- 	} while (0)
- #else
- #define spin_lock_irqsave_nested(lock, flags, subclass)			\
- 	do {								\
- 		typecheck(unsigned long, flags);			\
--		flags = _spin_lock_irqsave(lock);			\
-+		PICK_SPINLOCK_IRQSAVE(lock, flags);			\
- 	} while (0)
- #endif
+------=_Part_139220_21117660.1226442763561
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-@@ -327,7 +335,7 @@ do {									\
- #define spin_lock_irqsave(lock, flags)			\
- 	do {						\
- 		typecheck(unsigned long, flags);	\
--		_spin_lock_irqsave(lock, flags);	\
-+		PICK_SPINLOCK_IRQSAVE(lock, flags);	\
- 	} while (0)
- #define read_lock_irqsave(lock, flags)			\
- 	do {						\
+<br>I applied the patch to Xenomai-2.4.5 with kernel <a href="http://2.6.26.3">2.6.26.3</a> and observed the erroneous behavior.&nbsp; I did the same with linux-2.6.27.5 and Xenomai r4372 and noticed the same behavior.&nbsp; Please let me know if I can run additional tests, if you need any more information, or how to potentially fix this issue.<br>
+<br>Thank you,<br><br>Mark<br><br>
 
-
--- 
-Philippe.
+------=_Part_139220_21117660.1226442763561--
 
