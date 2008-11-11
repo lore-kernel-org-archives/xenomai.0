@@ -1,21 +1,18 @@
-Message-ID: <491A09B0.2080703@domain.hid>
-Date: Tue, 11 Nov 2008 23:39:44 +0100
+Message-ID: <491A0B3A.9020702@domain.hid>
+Date: Tue, 11 Nov 2008 23:46:18 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51CAD0CE1504444DBE77CBBE51A0135D533259@domain.hid>	
-	<490ECE11.208@domain.hid>	
-	<51CAD0CE1504444DBE77CBBE51A0135D53325A@slcmail.slc.mew.int>	
-	<490F2F23.2080307@domain.hid>	
-	<67b6b3430811031237v4cfba0c9sf63e40a697f3da58@domain.hid>	
-	<49100825.9000502@domain.hid> <4915C4D3.8030304@domain.hid>	
-	<67b6b3430811101607k75eaa084ga387c453096d2710@domain.hid>	
-	<1c74c6152ff1b52eaa3dd84f4b912b29.squirrel@domain.hid>	
-	<51CAD0CE1504444DBE77CBBE51A0135D53344A@slcmail.slc.mew.int>
-	<67b6b3430811111432o1ca14e87w7ccab4ab95dd591e@domain.hid>
-In-Reply-To: <67b6b3430811111432o1ca14e87w7ccab4ab95dd591e@domain.hid>
+References: <491805AE.1060809@domain.hid>
+	<52e18582a48da6c08ed88bbce325aed8.squirrel@domain.hid>
+	<491829F9.2050305@domain.hid>
+	<c54f288fee2b8a5ee68a00c27056c6ed.squirrel@domain.hid>
+	<491883AF.4080901@domain.hid>
+	<38dc4158684af6886f4e464c964a557d.squirrel@domain.hid>
+	<4918940F.30201@domain.hid>
+In-Reply-To: <4918940F.30201@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] fpu context switch issue
+Subject: Re: [Xenomai-help] Mode switch when using RT heap on ARM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,22 +22,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Mark Saiia <mark.saiia@domain.hid>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Mark Saiia wrote:
-> I applied the patch to Xenomai-2.4.5 with kernel 2.6.26.3 and observed the
-> erroneous behavior.  I did the same with linux-2.6.27.5 and Xenomai r4372
-> and noticed the same behavior.  Please let me know if I can run additional
-> tests, if you need any more information, or how to potentially fix this
-> issue.
+Wolfgang Grandegger wrote:
+> Gilles Chanteperdrix wrote:
+>> Wolfgang Grandegger wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Wolfgang Grandegger wrote:
+>>>>> Gilles Chanteperdrix wrote:
+>>>>>> Wolfgang Grandegger wrote:
+>>>>>>> Hello,
+>>>>>>>
+>>>>>>> I realized that accessing memory allocated with rt_heap_alloc()
+>>>>>>> causes
+>>>>>>> mode switches on ARM i.mx31. The attached patch provides a demo
+>>>>>>> program
+>>>>>>> to demonstrate the problem, which actually does *not* show up on my
+>>>>>>> PowerPC TQM5200 board.
+>>>>>> On ARM, we normally map the heaps uncacheable, this should not be
+>>>>>> necessary on ARMv6, but I am afraid we then get the fault on first
+>>>>>> access.
+>>>>> Is each cache-line of the heap not touched automatically when the heap
+>>>>> gets created? I thought it's necessary for other archs as well.
+>>>> No, the thing which comes near to this is the workaround in I-pipe of
+>>>> the
+>>>> way pages are write-protected upon fork. But this happens only upon
+>>>> fork.
+>>>> I am not sure I understand all the subtleties of ARM memory management,
+>>>> but I think this fault on first write is the way the "dirty" bit is
+>>>> implemented.
+>>> Well, it seems not to be that simple. My attached rtheap example program
+>>> behaves the following way:
+>>>
+>>> - Heap-mode=0: I see plenty of mode switches also for read-only:
+>> Maybe that is expected on ARM ? But what I do not understand is that you
+>> get 300 modes switches where as your example makes two faults every 10ms
+>> during 10 seconds, so, you should see something like 1000 modes switches.
+> 
+> And even more because the program writes/reads at the beginning and end
+> of the buffer. I realized that as well. Not every read/write seems to
+> provoke a mode switch.
+> 
+>>>   # cat /proc/xenomai/stat ;sleep 10; cat /proc/xenomai/stat
+>>>   CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+>>>     0  0      0          2951       0     00400080   99.7  ROOT
+>>>     0  929    102        398        3     00300184    0.0  rtheap
+>>>     0  0      0          23005      0     00000000    0.1  IRQ29: [timer]
+>>>   CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+>>>     0  0      0          4287       0     00400080   99.4  ROOT
+>>>     0  929    435        1734       3     00300184    0.4  rtheap
+>>>     0  0      0          25010      0     00000000    0.1  IRQ29: [timer]
+>>>
+>>> - Heap-mode=H_NONCACHED: I see just 2 mode switches but the system
+>>>   gets very slow:
+>> That is expected. But where do you get the 2 mode switches ?
+> 
+> When the task writes to the heap memory for the first time. And I just
+> realized that the write/read to the end of the buffer makes real
+> trouble. The task seems to hang (or wait for something):
+> 
+> -bash-3.2# cat sched
+> CPU  PID    PRI      PERIOD     TIMEOUT    TIMEBASE  STAT       NAME
+>   0  0       99      0          0          master    R          ROOT
+>   0  1114    99      100000000  0          master    X          rtheap
+> 
+> At the same time the system gets slow.
+> 
+> So far I understood from your comments that rtheap is not really usable
+> on ARM, right? What other option do I have?
 
-So, fninit is not the culprit. What could happen is that we do not
-really get an FPU fault upon first access to the FPU. To know this, we
-should test the state of the ts bit before the first use of FPU in each
-thread.
+I need to double check, but I am almost sure that we do not get faults
+with uncacheable heaps on ARM < 6, because we use such heaps for fast
+mutexes.
 
-I will send a patch to do this.
+So, what you observe is probably an ARMv6 or VIPT cache effect.
+
+Now, from your program, it seems that you use rtheaps as real-time
+allocator. This is overkill, rtheaps are designed to share memory
+between kernel-space and user-space. For other usages, you probably do
+not need rtheaps.
+
+Nevertheless, I agree that they need fixing on ARMv6.
 
 -- 
 					    Gilles.
