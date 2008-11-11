@@ -1,16 +1,14 @@
-Content-class: urn:content-classes:message
+Message-ID: <4919D065.3040304@domain.hid>
+Date: Tue, 11 Nov 2008 19:35:17 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 11 Nov 2008 10:43:41 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D53344A@slcmail.slc.mew.int>
-In-Reply-To: <1c74c6152ff1b52eaa3dd84f4b912b29.squirrel@domain.hid>
-References: <51CAD0CE1504444DBE77CBBE51A0135D533259@domain.hid><490ECE11.208@domain.hid><51CAD0CE1504444DBE77CBBE51A0135D53325A@slcmail.slc.mew.int><490F2F23.2080307@domain.hid><67b6b3430811031237v4cfba0c9sf63e40a697f3da58@domain.hid><49100825.9000502@domain.hid>
-	<4915C4D3.8030304@domain.hid><67b6b3430811101607k75eaa084ga387c453096d2710@domain.hid>
-	<1c74c6152ff1b52eaa3dd84f4b912b29.squirrel@domain.hid>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: Re: [Xenomai-help] fpu context switch issue
+References: <491955B7.4080805@domain.hid>
+In-Reply-To: <491955B7.4080805@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] [BUG] boot failure with
+	adeos-ipipe-2.6.27-x86-2.1-01.patch
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,43 +18,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Mark Saiia <mark.saiia@domain.hid>
-Cc: xenomai@xenomai.org
+To: Sebastian Smolorz <smolorz@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>, adeos-main <adeos-main@gna.org>
 
-The problem was you declared x86_fpu_state instead of x86_fpustate. No
-big deal.
+Sebastian Smolorz wrote:
+> Hello Philippe,
+> 
+> here comes a more serious bug than the one from yesterday. When I try to
+>  boot a system patched with the latest ipipe on a PIII the attached boot
+> log will show up. config also attached.
+>
 
-Steven
+This bug affects all UP configurations that do not enable any spinlock debugging
+option. Fixed in 2.6.27-x86-2.1-02. Given the severity of this bug, 2.4.6.1 is
+due soon, with the fixed patch.
 
-> -----Original Message-----
-> From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-
-> bounces@domain.hid] On Behalf Of Gilles Chanteperdrix
-> Sent: Tuesday, November 11, 2008 4:21 AM
-> To: Mark Saiia
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] fpu context switch issue
->=20
->=20
-> Mark Saiia wrote:
-> > Hello,
-> >
-> > The patch would not apply cleanly(rejected Hunk) against 2.4.5
-> > w/linux2.6.26.3 or svn 4368 w/linux2.6.26.7.
-> > (...)
-> > Please let me know, if I did anything incorrectly, or if the patch
-> was not
-> > completely posted.
->=20
-> No, I probably made the patch against 2.6.27, I did not test it. Could
-> you
-> try the patch you made ?
->=20
-> --
->                     Gilles.
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+http://download.gna.org/adeos/patches/v2.6/x86/adeos-ipipe-2.6.27-x86-2.1-02.patch
+
+Thanks,
+
+diff --git a/include/linux/spinlock.h b/include/linux/spinlock.h
+index daa90f8..2044388 100644
+--- a/include/linux/spinlock.h
++++ b/include/linux/spinlock.h
+@@ -255,6 +255,14 @@ do {									\
+ 		flags = _spin_lock_irqsave((spinlock_t *)(lock));	\
+ 	else __bad_spinlock_type();					\
+ } while (0)
++#define PICK_SPINLOCK_IRQSAVE_NESTED(lock, flags, subclass)		\
++do {									\
++	if (TYPE_EQUAL((lock), __ipipe_spinlock_t)) {			\
++		(flags) = __ipipe_spin_lock_irqsave(&((__ipipe_spinlock_t
+*)(lock))->__raw_lock); \
++	} else if (TYPE_EQUAL(lock, spinlock_t))			\
++		flags = _spin_lock_irqsave_nested((spinlock_t *)(lock), subclass); \
++	else __bad_spinlock_type();					\
++} while (0)
+ #else
+ #define PICK_SPINLOCK_IRQSAVE(lock, flags)				\
+ do {									\
+@@ -312,13 +320,13 @@ do {									\
+ #define spin_lock_irqsave_nested(lock, flags, subclass)			\
+ 	do {								\
+ 		typecheck(unsigned long, flags);			\
+-		flags = _spin_lock_irqsave_nested(lock, subclass);	\
++		PICK_SPINLOCK_IRQSAVE_NESTED(lock, flags, subclass);	\
+ 	} while (0)
+ #else
+ #define spin_lock_irqsave_nested(lock, flags, subclass)			\
+ 	do {								\
+ 		typecheck(unsigned long, flags);			\
+-		flags = _spin_lock_irqsave(lock);			\
++		PICK_SPINLOCK_IRQSAVE(lock, flags);			\
+ 	} while (0)
+ #endif
+
+@@ -327,7 +335,7 @@ do {									\
+ #define spin_lock_irqsave(lock, flags)			\
+ 	do {						\
+ 		typecheck(unsigned long, flags);	\
+-		_spin_lock_irqsave(lock, flags);	\
++		PICK_SPINLOCK_IRQSAVE(lock, flags);	\
+ 	} while (0)
+ #define read_lock_irqsave(lock, flags)			\
+ 	do {						\
+
+
+-- 
+Philippe.
 
