@@ -1,6 +1,6 @@
-Message-ID: <491AAED6.50909@domain.hid>
-Date: Wed, 12 Nov 2008 11:24:22 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <491AB4E4.2090901@domain.hid>
+Date: Wed, 12 Nov 2008 11:50:12 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
 References: <491805AE.1060809@domain.hid>	<52e18582a48da6c08ed88bbce325aed8.squirrel@domain.hid>	<491829F9.2050305@domain.hid>	<c54f288fee2b8a5ee68a00c27056c6ed.squirrel@domain.hid>	<491883AF.4080901@domain.hid>	<38dc4158684af6886f4e464c964a557d.squirrel@domain.hid>	<4918940F.30201@domain.hid>
 	<491A0B3A.9020702@domain.hid> <491A99E9.9020300@domain.hid>
@@ -108,9 +108,18 @@ Philippe Gerum wrote:
 > and unlock syscalls, as one would have to in order to implement the allocator
 > fully in userland.
 
-But maybe in this case, we should use some memory from an anonymous
-mapping, instead of using memory from a shared heap ?
+OK, on ARM things seems to be worse because slow uncachable memory needs
+to be used.
 
--- 
-                                                 Gilles.
+> This may change with the upcoming 2.5 which introduces fast synchs though, but
+> obviously, treading on the underlying memory should not cause bad side-effects
+> like unwanted mode switches in the first place. For the rest, we could rebase
+> the TLSF allocator on fast synchs in 2.5, and provide this as part of the rtdk,
+> but we would need a nucleus-based, skin-agnostic interface to fast synchs as well.
+
+Sounds good. I vote for it. I remember that Jan posted a TLSF allocator
+for the nucleus some time ago. Either I port it to user-space or I will
+use a simple allocater like RTnet's alloc_rtskb() for the time being.
+
+Wolfgang.
 
