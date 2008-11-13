@@ -1,15 +1,12 @@
-Message-ID: <491C689E.4050208@domain.hid>
-Date: Thu, 13 Nov 2008 18:49:18 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <491C6A95.9000802@domain.hid>
+Date: Thu, 13 Nov 2008 18:57:41 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <223a70540811122148o73ae3d2ex1689b5d03f77f825@domain.hid>
-	<491C5B24.60202@domain.hid>
-In-Reply-To: <491C5B24.60202@domain.hid>
+References: <491805AE.1060809@domain.hid>
+In-Reply-To: <491805AE.1060809@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem compiling patched kernel:
- multiple	definitions of mcount
-Reply-To: rpm@xenomai.org
+Subject: Re: [Xenomai-help] Mode switch when using RT heap on ARM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,43 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: James Doebbler <jamesdoebbler@domain.hid>, xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> James Doebbler wrote:
->> Hello,
->>  I am trying to patch and install a kernel using Xenomai (on Ubuntu
->> 8.10).  I am using a vanilla linux-2.6.27 kernel and the latest
->> xenomai version (2.4.6.1).  I had some earlier problems that I
->> resolved by using the latest adeos patch (now I see that has been
->> fixed in 2.4.6.1), but I've been running into another problem.  I get
->> an error when compiling due to multiple definitions of mcount in the
->> entry_32.S and mcount_32.S files.  I looked at the code and decided
->> that disabling function tracing (CONFIG_FTRACE) in the kernel config
->> would eliminate the kernel function tracing and the ipipe function
->> tracing from stepping on each others' toes.  The kernel seems to be
->> compiling okay now (still in progress).  I just wanted to ask if this
->> is a bug or expected, and if the action I took was appropriate.  Do I
->> lose anything by disabling kernel function tracing?
+Wolfgang Grandegger wrote:
+> Hello,
 > 
-> OK, that experience confirms my first glance on the latest patch /wrt
-> FTRACE integration: unfinished.
+> I realized that accessing memory allocated with rt_heap_alloc() causes
+> mode switches on ARM i.mx31. The attached patch provides a demo program
+> to demonstrate the problem, which actually does *not* show up on my
+> PowerPC TQM5200 board.
 
-Not quite. Not addressed would be more appropriate.
+Ok. I ran your test on an ARMv5 using an old version of Xenomai, and I
+only get a fault on first write to the heap, being either cached or non
+cached.
 
- The solution will be using the FTRACE
-> mcount functions for the ipipe tracer - should be feasible, except for
-> dynamic FRTRACE, ie. the thing that killed puppies and e1000 NICs. :)
-> 
-> Hope I'll find some time to look into this, but I can't promise when.
-> For now, if you want FTRACE (probably not, when you don't know it yet),
-> disable CONFIG_IPIPE_TRACE.
-> 
-> Jan
-> 
-
+I will now run the tests on AT91RM9200 with a more recent version of
+xenomai to confirm that we get the same effect, but if we do, this means
+that we are facing an armv6 specific issue and that for a workaround, we
+need to understand armv6 memory management.
 
 -- 
-Philippe.
+                                                 Gilles.
 
