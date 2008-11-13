@@ -1,21 +1,14 @@
-Message-ID: <491C0B50.6030507@domain.hid>
-Date: Thu, 13 Nov 2008 12:11:12 +0100
+Message-ID: <491C5844.2060306@domain.hid>
+Date: Thu, 13 Nov 2008 17:39:32 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51CAD0CE1504444DBE77CBBE51A0135D533259@domain.hid>	
-	<490ECE11.208@domain.hid>	
-	<51CAD0CE1504444DBE77CBBE51A0135D53325A@slcmail.slc.mew.int>	
-	<490F2F23.2080307@domain.hid>	
-	<67b6b3430811031237v4cfba0c9sf63e40a697f3da58@domain.hid>	
-	<49100825.9000502@domain.hid> <4915C4D3.8030304@domain.hid>	
-	<67b6b3430811101607k75eaa084ga387c453096d2710@domain.hid>	
-	<1c74c6152ff1b52eaa3dd84f4b912b29.squirrel@domain.hid>	
-	<51CAD0CE1504444DBE77CBBE51A0135D53344A@slcmail.slc.mew.int>
-	<67b6b3430811111432o1ca14e87w7ccab4ab95dd591e@domain.hid>
-In-Reply-To: <67b6b3430811111432o1ca14e87w7ccab4ab95dd591e@domain.hid>
+References: <c024fefc0811120041l71143d5dic1980a06d89a1317@domain.hid>	
+	<491B367A.1050207@domain.hid>
+	<c024fefc0811130016u526a45a9q4f587679e75c381c@domain.hid>
+In-Reply-To: <c024fefc0811130016u526a45a9q4f587679e75c381c@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] fpu context switch issue
+Subject: Re: [Xenomai-help] Xenomai Kernel Module & Watchdogs
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,49 +18,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Mark Saiia <mark.saiia@domain.hid>
-Cc: xenomai@xenomai.org
+To: Adrian Boeing <aboeing@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Mark Saiia wrote:
-> I applied the patch to Xenomai-2.4.5 with kernel 2.6.26.3 and observed the
-> erroneous behavior.  I did the same with linux-2.6.27.5 and Xenomai r4372
-> and noticed the same behavior.  Please let me know if I can run additional
-> tests, if you need any more information, or how to potentially fix this
-> issue.
+Adrian Boeing wrote:
+> Hi Gilles,
 > 
-> Thank you,
+> Thank you for your reply.
+> 
+> Not necessarily, the same priority scale is available in kernel-space
+>> and user-space. However, are you aware that Xenomai already has a
+>> watchdog? It is selectable in Linux configuration once linux sources
+>> have been prepared.
+> 
+> 
+> Yes, I saw it mentioned in an older version of the documentation, however I
+> was unable to find the option. (The documentation mentions 'expert mode' in
+> the 'general' menu - I was not able to find it.)
 
-Could you try the following patch ?
+You need to enable xenomai debugging.
+
+> 
+> I would like to create a watchdog that watches my other real & non-realtime
+> threads to make sure they are not starved/stuck/error etc. and reset them if
+> necessary.
+> 
+> The documentation on 'alarm' mentions "Create an alarm object from kernel
+> space". So I assumed they must be created in a kernel module.
+
+No, as can be seen in the documentation, there are two rt_alarm_create
+functions, one for user-space, one for kernel-space
+
+> 
+> 
+>> 2. How do I create a kernel module? (what is the compiler command?)
+>>
+>> This question is off-topic on Xenomai mailing list, it is not related to
+>> xenomai at all. But you have to get the module compiled by Linux kernel
+>> makefiles. See Documentation/kbuild/modules.txt in the kernel sources.
+> 
+> 
+> Thanks for the hints. One of the examples in the Xenomai documentation is
+> "kernel_task.c"
+> How should I compile and run this example? I assumed it was a kernel module.
+> 
+> This is how I compile it at the moment:
+> gcc -I/usr/include/xenomai -D_GNU_SOURCE -D_REENTRANT -D__XENO__
+> -L/usr/lib -lpthread  -lnative -Xlinker -rpath -Xlinker /usr/lib  -c kmod.c
+> 
+> Try to run it:
+> sudo insmod ./kmod.o
+> 
+> I get this error:
+> insmod: error inserting './kmod.o': -1 Invalid module format
+
+I repeat myself: "you have to get the module compiled by Linux kernel
+makefiles. See Documentation/kbuild/modules.txt in the kernel sources."
+
+Please do not drop the mailing list from the CC.
 
 -- 
                                                  Gilles.
-
-diff --git a/arch/x86/kernel/traps_32.c b/arch/x86/kernel/traps_32.c
-index f422387..f9f213a 100644
---- a/arch/x86/kernel/traps_32.c
-+++ b/arch/x86/kernel/traps_32.c
-@@ -1159,6 +1159,8 @@ asmlinkage void math_state_restore(void)
- 	struct task_struct *tsk = thread->task;
- 	unsigned long flags;
-
-+ 	local_irq_save_hw_cond(flags);
-+#ifndef CONFIG_IPIPE
- 	if (!tsk_used_math(tsk)) {
- 		local_irq_enable();
- 		/*
-@@ -1173,8 +1175,11 @@ asmlinkage void math_state_restore(void)
- 		}
- 		local_irq_disable();
- 	}
--
-- 	local_irq_save_hw_cond(flags);
-+#else /* CONFIG_IPIPE */
-+	if (!tsk_used_math(tsk))
-+		/* No alloc, can not fail. */
-+		init_fpu(tsk)
-+#endif /* CONFIG_IPIPE */
- 	clts();				/* Allow maths ops (or we recurse) */
- 	restore_fpu(tsk);
- 	thread->status |= TS_USEDFPU;	/* So we fnsave on switch_to() */
-
 
