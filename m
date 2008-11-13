@@ -1,14 +1,13 @@
-Message-ID: <491C5844.2060306@domain.hid>
-Date: Thu, 13 Nov 2008 17:39:32 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <491C5B24.60202@domain.hid>
+Date: Thu, 13 Nov 2008 17:51:48 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <c024fefc0811120041l71143d5dic1980a06d89a1317@domain.hid>	
-	<491B367A.1050207@domain.hid>
-	<c024fefc0811130016u526a45a9q4f587679e75c381c@domain.hid>
-In-Reply-To: <c024fefc0811130016u526a45a9q4f587679e75c381c@domain.hid>
+References: <223a70540811122148o73ae3d2ex1689b5d03f77f825@domain.hid>
+In-Reply-To: <223a70540811122148o73ae3d2ex1689b5d03f77f825@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai Kernel Module & Watchdogs
+Subject: Re: [Xenomai-help] Problem compiling patched kernel: multiple
+	definitions of mcount
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,65 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Adrian Boeing <aboeing@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: James Doebbler <jamesdoebbler@domain.hid>
+Cc: xenomai@xenomai.org
 
-Adrian Boeing wrote:
-> Hi Gilles,
-> 
-> Thank you for your reply.
-> 
-> Not necessarily, the same priority scale is available in kernel-space
->> and user-space. However, are you aware that Xenomai already has a
->> watchdog? It is selectable in Linux configuration once linux sources
->> have been prepared.
-> 
-> 
-> Yes, I saw it mentioned in an older version of the documentation, however I
-> was unable to find the option. (The documentation mentions 'expert mode' in
-> the 'general' menu - I was not able to find it.)
+James Doebbler wrote:
+> Hello,
+>  I am trying to patch and install a kernel using Xenomai (on Ubuntu
+> 8.10).  I am using a vanilla linux-2.6.27 kernel and the latest
+> xenomai version (2.4.6.1).  I had some earlier problems that I
+> resolved by using the latest adeos patch (now I see that has been
+> fixed in 2.4.6.1), but I've been running into another problem.  I get
+> an error when compiling due to multiple definitions of mcount in the
+> entry_32.S and mcount_32.S files.  I looked at the code and decided
+> that disabling function tracing (CONFIG_FTRACE) in the kernel config
+> would eliminate the kernel function tracing and the ipipe function
+> tracing from stepping on each others' toes.  The kernel seems to be
+> compiling okay now (still in progress).  I just wanted to ask if this
+> is a bug or expected, and if the action I took was appropriate.  Do I
+> lose anything by disabling kernel function tracing?
 
-You need to enable xenomai debugging.
+OK, that experience confirms my first glance on the latest patch /wrt
+FTRACE integration: unfinished. The solution will be using the FTRACE
+mcount functions for the ipipe tracer - should be feasible, except for
+dynamic FRTRACE, ie. the thing that killed puppies and e1000 NICs. :)
 
-> 
-> I would like to create a watchdog that watches my other real & non-realtime
-> threads to make sure they are not starved/stuck/error etc. and reset them if
-> necessary.
-> 
-> The documentation on 'alarm' mentions "Create an alarm object from kernel
-> space". So I assumed they must be created in a kernel module.
+Hope I'll find some time to look into this, but I can't promise when.
+For now, if you want FTRACE (probably not, when you don't know it yet),
+disable CONFIG_IPIPE_TRACE.
 
-No, as can be seen in the documentation, there are two rt_alarm_create
-functions, one for user-space, one for kernel-space
-
-> 
-> 
->> 2. How do I create a kernel module? (what is the compiler command?)
->>
->> This question is off-topic on Xenomai mailing list, it is not related to
->> xenomai at all. But you have to get the module compiled by Linux kernel
->> makefiles. See Documentation/kbuild/modules.txt in the kernel sources.
-> 
-> 
-> Thanks for the hints. One of the examples in the Xenomai documentation is
-> "kernel_task.c"
-> How should I compile and run this example? I assumed it was a kernel module.
-> 
-> This is how I compile it at the moment:
-> gcc -I/usr/include/xenomai -D_GNU_SOURCE -D_REENTRANT -D__XENO__
-> -L/usr/lib -lpthread  -lnative -Xlinker -rpath -Xlinker /usr/lib  -c kmod.c
-> 
-> Try to run it:
-> sudo insmod ./kmod.o
-> 
-> I get this error:
-> insmod: error inserting './kmod.o': -1 Invalid module format
-
-I repeat myself: "you have to get the module compiled by Linux kernel
-makefiles. See Documentation/kbuild/modules.txt in the kernel sources."
-
-Please do not drop the mailing list from the CC.
+Jan
 
 -- 
-                                                 Gilles.
+Siemens AG, Corporate Technology, CT SE 2 ES-OS
+Corporate Competence Center Embedded Linux
 
