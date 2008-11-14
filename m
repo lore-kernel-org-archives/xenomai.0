@@ -1,5 +1,5 @@
-Message-ID: <491E01CC.5090207@domain.hid>
-Date: Fri, 14 Nov 2008 23:55:08 +0100
+Message-ID: <491E01D5.8050407@domain.hid>
+Date: Fri, 14 Nov 2008 23:55:17 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <20081114202924.E81061BF28D@ws1-10.us4.outblaze.com>
