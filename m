@@ -1,12 +1,13 @@
-Message-ID: <491DEDCA.1030809@domain.hid>
-Date: Fri, 14 Nov 2008 22:29:46 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <491E01CC.5090207@domain.hid>
+Date: Fri, 14 Nov 2008 23:55:08 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <20081114202924.E81061BF28D@ws1-10.us4.outblaze.com>
 In-Reply-To: <20081114202924.E81061BF28D@ws1-10.us4.outblaze.com>
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] Icecube booting image problems
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -116,16 +117,40 @@ b.h
 > I'm sending a picture of it, it seems readable.
 >=20
 > Like I said, it freezes right after uncompressing the image.
->=20
+>
+
+Could be a load image address that is too low for the inflated size of your
+kernel. Try increasing it at the u-boot prompt before booting.
+
 >=20
 > I've also tried loading the zImage and the uImage files, but those
 > return some 'Bad Magic Word' error, is this some kind of joke? Hehehe.
+>=20
+>=20
+> Thank you all for the attention,
+>=20
+>=20
+> Marco Ant=F4nio Possamai
+>=20
+> Universidade Federal de Santa Catarina
+>=20
+>=20
+> --=20
+> Be Yourself @ mail.com!
+> Choose From 200+ Email Addresses
+> Get a *Free* Account at www.mail.com <http://www.mail.com/Product.aspx>!
+>=20
+> ------------------------------------------------------------------------
+>=20
+>=20
+> ------------------------------------------------------------------------
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
-Does your plain kernel without I-pipe and Xenomai support boot? If not,
-your question is off-topic here. Please consult on the Linuxppc-dev
-mailing list.
 
-Wolfgang.
-
-
+--=20
+Philippe.
 
