@@ -1,12 +1,16 @@
-Message-ID: <491C8AE3.5080109@domain.hid>
-Date: Thu, 13 Nov 2008 21:15:31 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <c024fefc0811131650l1b6bca81xeefcff87a398df59@domain.hid>
+Date: Fri, 14 Nov 2008 09:50:06 +0900
+From: "Adrian Boeing" <me@domain.hid>
+Sender: aboeing@domain.hid
+In-Reply-To: <491C5844.2060306@domain.hid>
 MIME-Version: 1.0
-References: <491805AE.1060809@domain.hid> <491C6ED8.6030903@domain.hid>
-In-Reply-To: <491C6ED8.6030903@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Mode switch when using RT heap on ARM
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_928_3686671.1226623806757"
+References: <c024fefc0811120041l71143d5dic1980a06d89a1317@domain.hid>
+	<491B367A.1050207@domain.hid>
+	<c024fefc0811130016u526a45a9q4f587679e75c381c@domain.hid>
+	<491C5844.2060306@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai Kernel Module & Watchdogs
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,99 +21,91 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Wolfgang Grandegger wrote:
->> Hello,
->>
->> I realized that accessing memory allocated with rt_heap_alloc() causes
->> mode switches on ARM i.mx31. The attached patch provides a demo program
->> to demonstrate the problem, which actually does *not* show up on my
->> PowerPC TQM5200 board.
-> 
-> Index: xenomai-2.4.x/examples/native/rtheap.c
-> ===================================================================
-> --- /dev/null
-> +++ xenomai-2.4.x/examples/native/rtheap.c
-> @@ -0,0 +1,164 @@
-> +#include <stdio.h>
-> +#include <signal.h>
-> +#include <unistd.h>
-> +#include <sys/mman.h>
-> +
-> +#include <native/task.h>
-> +#include <native/timer.h>
-> +#include <native/heap.h>
-> +
-> +#define USE_HEAP
-> +//#define USE_SIGXCPU
-> +
-> +#define HEAP_SIZE (1024*1024)
-> +#define HEAP_MODE 0		/* Local heap. */
-> +
-> +RT_HEAP heap_desc;
-> +RT_TASK demo_task;
-> +
-> +
-> +static int block_sizes[] = {16, 20, 90, 150, 310, 800, 1000};
-> +
-> +/* NOTE: error handling omitted. */
-> +
-> +void demo(void *arg)
-> +{
-> +	RTIME now, previous;
-> +	void *block;
-> +	int sizes = sizeof(block_sizes) / sizeof(int);
-> +	int count = 0;
-> +	int size, err;
-> +	int *ptr;
-> +
-> +#ifdef USE_SIGXCPU
-> +	/* Ask Xenomai to warn us upon switches to secondary mode. */
-> +	rt_task_set_mode(0, T_WARNSW, NULL);
-> +#endif
-> +
-> +	/*
-> +	 * Arguments: &task (NULL=self),
-> +	 *            start time,
-> +	 *            period (here: 1 s)
-> +	 */
-> +	rt_task_set_periodic(NULL, TM_NOW, 10000000);
-> +	previous = rt_timer_read();
-> +
-> +	while (1) {
-> +		rt_task_wait_period(NULL);
-> +		now = rt_timer_read();
-> +
-> +		size = block_sizes[count % sizes];
-> +#ifdef USE_HEAP
-> +		/*
-> +		 * Request a 16-bytes block, asking for a non-blocking call
-> +		 * since only Xenomai tasks may block.
-> +		 */
-> +		err = rt_heap_alloc(&heap_desc, size, TM_NONBLOCK, &block);
-> +		if (err) {
-> +			printf("rt_heap_alloc() failed with %d\n", err);
-> +			break;
-> +		}
-> +
-> +		ptr = (int *)block;
-> +		*ptr = 0xdeadbeef;
-> +		if (*ptr != 0xdeadbeef) {
-> +			printf("Write/read test to heap failed\n");
-> +			break;
-> +		}
-> +
-> +		ptr = (int *)(block + size - sizeof(int));
-> 
-> This is not guaranteed to be aligned on an int. Could you try:
-> 
-> 		ptr = (int *)(((unsigned long) block + size - sizeof(int)) & ~3);
+------=_Part_928_3686671.1226623806757
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-With aligned accesses rtheap reports just3 mode switches in both modes,
-0 and H_NONCACHED. But already one mode switch is too much!
+Hi Giles,
 
-Wolfgang.
+You need to enable xenomai debugging.
+>
 
+Ok, thanks.
+
+
+
+> I repeat myself: "you have to get the module compiled by Linux kernel
+> makefiles. See Documentation/kbuild/modules.txt in the kernel sources."
+>
+
+Yes, sorry. The problem I am having was in including Xenomai into the kernel
+module.
+I have figured out how to do this, below is the solution:
+
+If I compile a vanilla linux kernel, I do this:
+
+hello.c:
+#include <linux/module.h>
+#include <linux/kernel.h>
+
+int init_module(void) {
+ printk(KERN_INFO "Hello World 1.\n");
+ return 0;
+}
+
+void cleanup_module(void) {
+ printk(KERN_INFO "Goodbye world 1.\n");
+}
+
+Makefile:
+obj-m += hello.o
+
+all:
+        make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+
+commands:
+make
+sudo insmod ./hello.ko
+lsmod |grep hello
+
+To include xenomai calls, add:
+#include <nucleus/module.h>
+#include <native/task.h>
+
+to the kernel module 'hello.c' source listed above.
+
+and modify the makefile to include
+EXTRA_CFLAGS = -I/usr/include/xenomai -D_GNU_SOURCE -D_REENTRANT -D__XENO__
+
+And it works now.
+
+Please do not drop the mailing list from the CC.
+
+Sorry, missed it.
+
+------=_Part_928_3686671.1226623806757
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hi Giles,<br><br><div class="gmail_quote"><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><div>You need to enable xenomai debugging.</div>
+</blockquote><div><br>Ok, thanks. <br><br> </div><div>&nbsp;</div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">I repeat myself: &quot;you have to get the module compiled by Linux kernel<br>
+
+
+<div>makefiles. See Documentation/kbuild/modules.txt in the kernel sources.&quot;</div></blockquote><div><br>Yes, sorry. The problem I am having was in including Xenomai into the kernel module.<br>
+I have figured out how to do this, below is the solution:<br><br>If I compile a vanilla linux kernel, I do this:<br><br>hello.c:<br>#include &lt;linux/module.h&gt;<br>#include &lt;linux/kernel.h&gt;<br><br>int init_module(void) {<br>
+
+&nbsp;printk(KERN_INFO &quot;Hello World 1.\n&quot;);<br>&nbsp;return 0;<br>}<br><br>void cleanup_module(void) {<br>&nbsp;printk(KERN_INFO &quot;Goodbye world 1.\n&quot;);<br>}<br><br>Makefile:<br>obj-m += hello.o<br><br>all:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules<br>
+
+<br>commands:<br>make<br>sudo insmod ./hello.ko<br>lsmod |grep hello<br><br>To include xenomai calls, add:<br>#include &lt;nucleus/module.h&gt;<br>#include &lt;native/task.h&gt;<br><br>to the kernel module &#39;hello.c&#39; source listed above.<br>
+
+<br>and modify the makefile to include <br>EXTRA_CFLAGS = -I/usr/include/xenomai -D_GNU_SOURCE -D_REENTRANT -D__XENO__<br><br>And it works now.<br><br>
+</div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Please do not drop the mailing list from the CC.</blockquote><div>Sorry, missed it.</div>
+
+</div>
+
+------=_Part_928_3686671.1226623806757--
 
