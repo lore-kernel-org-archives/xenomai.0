@@ -1,11 +1,10 @@
-Message-ID: <4919D652.1090901@domain.hid>
-Date: Tue, 11 Nov 2008 20:00:34 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <491F6162.2090301@domain.hid>
+Date: Sun, 16 Nov 2008 00:55:14 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Xenomai v2.4.6.1
-Reply-To: rpm@xenomai.org
+Subject: [Xenomai-core] [patch] fault mmaped area upon rtdm_mmap_to_user.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,23 +14,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
+Hi Jan,
 
-As a card-carrying all time member of the brown-paper-bag cohort, I released a
-terminally messed up I-pipe patch for 2.6.27/x86 (2.1-01), as part of Xenomai
-2.4.6. This  bug affects most uniprocessor configurations, both for x86_32 and
-64bit archs.
+I have just commited a modification of the nucleus heap which allows
+faulting newly mapped pages. However, I noticed that we should modify
+rtdm_mmap_to_user as in the attached patch.
 
-Xenomai 2.4.6 can be fixed using the following drop in replacement for the
-bugous I-pipe patch:
-http://download.gna.org/adeos/patches/v2.6/x86/adeos-ipipe-2.6.27-x86-2.1-02.patch
+At this chance, I also noticed that there is no way to ask for uncached
+memory to rtdm_mmap_to_user, how do you think we should change
+rtdm_mmap_to_user to allow this?
 
-Otherwise, you may just want to download Xenomai 2.4.6.1 instead, which does
-include the fixed I-pipe patch.
-http://download.gna.org/xenomai/stable/xenomai-2.4.6.1.tar.bz2
+Regards.
+
+Index: ksrc/skins/rtdm/drvlib.c
+===================================================================
+--- ksrc/skins/rtdm/drvlib.c	(revision 4390)
++++ ksrc/skins/rtdm/drvlib.c	(working copy)
+@@ -1781,6 +1781,7 @@ static int rtdm_mmap_buffer(struct file
+ {
+ 	struct rtdm_mmap_data *mmap_data = filp->private_data;
+ 	unsigned long vaddr, paddr, maddr, size;
++	int ret;
+
+ 	vma->vm_ops = mmap_data->vm_ops;
+ 	vma->vm_private_data = mmap_data->vm_private_data;
+@@ -1810,15 +1811,25 @@ static int rtdm_mmap_buffer(struct file
+ 			vaddr += PAGE_SIZE;
+ 			mapped_size += PAGE_SIZE;
+ 		}
+-		return 0;
++#ifdef xnarch_fault_range
++		xnarch_fault_range(vma);
++#endif /* xnarch_fault_range */
++		ret = 0;
+ 	} else
+ #endif /* CONFIG_MMU */
+ 	if (mmap_data->src_paddr)
+-	  	return xnarch_remap_io_page_range(filp, vma, maddr, paddr,
+-						  size, PAGE_SHARED);
+-	else
+-		return xnarch_remap_kmem_page_range(vma, maddr, paddr,
+-						    size, PAGE_SHARED);
++	  	ret = xnarch_remap_io_page_range(filp, vma, maddr, paddr,
++						 size, PAGE_SHARED);
++	else {
++		ret = xnarch_remap_kmem_page_range(vma, maddr, paddr,
++						   size, PAGE_SHARED);
++#ifdef xnarch_fault_range
++		if (!ret)
++			xnarch_fault_range(vma);
++#endif /* xnarch_fault_range */
++	}
++
++	return ret;
+ }
+
+ static struct file_operations rtdm_mmap_fops = {
+
 
 -- 
-Philippe.
+					    Gilles.
 
