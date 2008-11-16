@@ -1,10 +1,15 @@
-Message-ID: <491F6162.2090301@domain.hid>
-Date: Sun, 16 Nov 2008 00:55:14 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <491FF78D.9000609@domain.hid>
+Date: Sun, 16 Nov 2008 11:35:57 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [patch] fault mmaped area upon rtdm_mmap_to_user.
+References: <E1L1XPO-0006Xh-1s@domain.hid>
+In-Reply-To: <E1L1XPO-0006Xh-1s@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig6D9AD1656EA459B3A0803AF8"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [Xenomai-commits] r4392 -
+	/trunk/include/asm-x86/arith_64.h
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,67 +19,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi Jan,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig6D9AD1656EA459B3A0803AF8
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-I have just commited a modification of the nucleus heap which allows
-faulting newly mapped pages. However, I noticed that we should modify
-rtdm_mmap_to_user as in the attached patch.
+Gilles Chanteperdrix wrote:
+> Author: gch
+> Date: Sun Nov 16 03:30:40 2008
+> New Revision: 4392
+>=20
+> URL: http://svn.gna.org/viewcvs/xenomai?rev=3D4392&view=3Drev
+> Log:
+> Implement nodiv_ullimd on x86_64
+>=20
+> Modified:
+>     trunk/include/asm-x86/arith_64.h
 
-At this chance, I also noticed that there is no way to ask for uncached
-memory to rtdm_mmap_to_user, how do you think we should change
-rtdm_mmap_to_user to allow this?
+Nice. This solves the user-triggerable kernel oops due to idiv overflows
+in the original version (rt_task_sleep_until(1LL<<63);). I happened to
+receive such a bug report on Friday and was about to consider
+alternative solutions beyond limit checks.
 
-Regards.
+But how accurate is this conversion? I mean how many bits can we lose
+when doing xnarch_ns_to_tsc(xnarch_tsc_to_ns(x))?
 
-Index: ksrc/skins/rtdm/drvlib.c
-===================================================================
---- ksrc/skins/rtdm/drvlib.c	(revision 4390)
-+++ ksrc/skins/rtdm/drvlib.c	(working copy)
-@@ -1781,6 +1781,7 @@ static int rtdm_mmap_buffer(struct file
- {
- 	struct rtdm_mmap_data *mmap_data = filp->private_data;
- 	unsigned long vaddr, paddr, maddr, size;
-+	int ret;
+Final question: Already prepared a 32-bit version? :)
 
- 	vma->vm_ops = mmap_data->vm_ops;
- 	vma->vm_private_data = mmap_data->vm_private_data;
-@@ -1810,15 +1811,25 @@ static int rtdm_mmap_buffer(struct file
- 			vaddr += PAGE_SIZE;
- 			mapped_size += PAGE_SIZE;
- 		}
--		return 0;
-+#ifdef xnarch_fault_range
-+		xnarch_fault_range(vma);
-+#endif /* xnarch_fault_range */
-+		ret = 0;
- 	} else
- #endif /* CONFIG_MMU */
- 	if (mmap_data->src_paddr)
--	  	return xnarch_remap_io_page_range(filp, vma, maddr, paddr,
--						  size, PAGE_SHARED);
--	else
--		return xnarch_remap_kmem_page_range(vma, maddr, paddr,
--						    size, PAGE_SHARED);
-+	  	ret = xnarch_remap_io_page_range(filp, vma, maddr, paddr,
-+						 size, PAGE_SHARED);
-+	else {
-+		ret = xnarch_remap_kmem_page_range(vma, maddr, paddr,
-+						   size, PAGE_SHARED);
-+#ifdef xnarch_fault_range
-+		if (!ret)
-+			xnarch_fault_range(vma);
-+#endif /* xnarch_fault_range */
-+	}
-+
-+	return ret;
- }
-
- static struct file_operations rtdm_mmap_fops = {
+Jan
 
 
--- 
-					    Gilles.
+
+--------------enig6D9AD1656EA459B3A0803AF8
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkkf95EACgkQniDOoMHTA+nAeACfTYuifWynrLcIFngq5mVmqle+
+NDoAni75/oZTjmkq4KP2rxrWChHP0k56
+=b0Dg
+-----END PGP SIGNATURE-----
+
+--------------enig6D9AD1656EA459B3A0803AF8--
 
