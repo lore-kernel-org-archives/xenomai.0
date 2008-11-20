@@ -1,11 +1,22 @@
-Message-ID: <c024fefc0811200055r309fbedar73531c856f27565a@domain.hid>
-Date: Thu, 20 Nov 2008 17:55:54 +0900
-From: "Adrian Boeing" <me@domain.hid>
-Sender: aboeing@domain.hid
+Message-ID: <6d17f533257138813c350472d9527033.squirrel@domain.hid>
+In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D533618@domain.hid>
+References: <51CAD0CE1504444DBE77CBBE51A0135D533259@domain.hid>
+	<49100825.9000502@domain.hid> <4915C4D3.8030304@domain.hid>
+	<67b6b3430811101607k75eaa084ga387c453096d2710@domain.hid>
+	<1c74c6152ff1b52eaa3dd84f4b912b29.squirrel@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D53344A@slcmail.slc.mew.int>
+	<67b6b3430811111432o1ca14e87w7ccab4ab95dd591e@domain.hid>
+	<491C0B50.6030507@domain.hid>
+	<67b6b3430811131959r6bc22545wd4e3df613c15fc7b@domain.hid>
+	<491D39E8.3090105@domain.hid>
+	<67b6b3430811170927t74f809edg1b0c6aaf1a9d2709@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D533618@domain.hid>
+Date: Thu, 20 Nov 2008 13:43:51 +0100 (CET)
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_148434_30447442.1227171354031"
-Subject: [Xenomai-help] Interprocess Mutex
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-help] fpu context switch issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,33 +26,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Steven Seeger <sseeger@domain.hid>
+Cc: xenomai@xenomai.org
 
-------=_Part_148434_30447442.1227171354031
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-Hi,
+Steven Seeger wrote:
+> Have there been any thoughts on this issue? We have reverted back to
+> 2.6.23.12 with r3415 for now. Our apps (including the test I posted
+> earlier) work in this older environment. We'd like to use the newer
+> environment because many other bugs have been fixed.
+>
+>
+>
+> BTW, the older environment works correctly on both our geode boards.
 
-Is it possible to create an inter-process mutex between kernel space and
-user space?
-If so, how is this done with the native API?
+We need to know whether the issue comes from Xenomai or from the I-pipe.
+So, to know this, we need you to test the 2.6.23 I-pipe patch with Xenomai
+2.4.6.1. Unless I am mistaken and forgot to post a mail, I have already
+asked you this.
 
-The system has one real-time kernel process which communicates with other
-processes via shared memory.
+-- 
+                    Gilles.
 
-Thanks,
--Adrian
-
-------=_Part_148434_30447442.1227171354031
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hi,<br><br>Is it possible to create an inter-process mutex between kernel space and user space?<br>If so, how is this done with the native API?<br><br>The system has one real-time kernel process which communicates with other processes via shared memory.<br>
-
-<br>Thanks,<br>-Adrian
-
-------=_Part_148434_30447442.1227171354031--
 
