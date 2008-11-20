@@ -1,22 +1,12 @@
-Message-ID: <6d17f533257138813c350472d9527033.squirrel@domain.hid>
-In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D533618@domain.hid>
-References: <51CAD0CE1504444DBE77CBBE51A0135D533259@domain.hid>
-	<49100825.9000502@domain.hid> <4915C4D3.8030304@domain.hid>
-	<67b6b3430811101607k75eaa084ga387c453096d2710@domain.hid>
-	<1c74c6152ff1b52eaa3dd84f4b912b29.squirrel@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D53344A@slcmail.slc.mew.int>
-	<67b6b3430811111432o1ca14e87w7ccab4ab95dd591e@domain.hid>
-	<491C0B50.6030507@domain.hid>
-	<67b6b3430811131959r6bc22545wd4e3df613c15fc7b@domain.hid>
-	<491D39E8.3090105@domain.hid>
-	<67b6b3430811170927t74f809edg1b0c6aaf1a9d2709@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D533618@domain.hid>
-Date: Thu, 20 Nov 2008 13:43:51 +0100 (CET)
+Message-ID: <3f7e4e30c68612bf269e955922cf6f82.squirrel@domain.hid>
+In-Reply-To: <c024fefc0811200055r309fbedar73531c856f27565a@domain.hid>
+References: <c024fefc0811200055r309fbedar73531c856f27565a@domain.hid>
+Date: Thu, 20 Nov 2008 13:48:31 +0100 (CET)
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain;charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai-help] fpu context switch issue
+Subject: Re: [Xenomai-help] Interprocess Mutex
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,24 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <sseeger@domain.hid>
+To: Adrian Boeing <me@domain.hid>
 Cc: xenomai@xenomai.org
 
 
-Steven Seeger wrote:
-> Have there been any thoughts on this issue? We have reverted back to
-> 2.6.23.12 with r3415 for now. Our apps (including the test I posted
-> earlier) work in this older environment. We'd like to use the newer
-> environment because many other bugs have been fixed.
+Adrian Boeing wrote:
+> Hi,
 >
+> Is it possible to create an inter-process mutex between kernel space and
+> user space?
+> If so, how is this done with the native API?
 >
->
-> BTW, the older environment works correctly on both our geode boards.
+> The system has one real-time kernel process which communicates with other
+> processes via shared memory.
 
-We need to know whether the issue comes from Xenomai or from the I-pipe.
-So, to know this, we need you to test the 2.6.23 I-pipe patch with Xenomai
-2.4.6.1. Unless I am mistaken and forgot to post a mail, I have already
-asked you this.
+See rt_mutex_bind:
+http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__mutex.html#g39b3a0e7f6f6ee41b8068ed59e25d1d1
+or, for the posix skin, pthread_mutexattr_setpshared:
+http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__posix__mutex.html#g73bd8697b91e0ee9a63c30052ac9f72f
+Note that for sharing a mutex with the posix skin, the pthread_mutex_t
+structure needs to reside on a shared memory.
 
 -- 
                     Gilles.
