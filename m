@@ -1,13 +1,25 @@
-Message-ID: <90cf07d8d7a97433c26e9b773ae87423.squirrel@domain.hid>
-In-Reply-To: <492429F8.2090309@domain.hid>
-References: <42B0FA09DE79461986CBEE046DEF3B87@domain.hid>
-	<492429F8.2090309@domain.hid>
-Date: Thu, 20 Nov 2008 14:24:30 +0100 (CET)
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai-help] Does Valgrind work with Xenomai?
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 20 Nov 2008 06:51:47 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D533634@domain.hid>
+In-Reply-To: <6d17f533257138813c350472d9527033.squirrel@domain.hid>
+References: <51CAD0CE1504444DBE77CBBE51A0135D533259@domain.hid>
+	<49100825.9000502@domain.hid> <4915C4D3.8030304@domain.hid>
+	<67b6b3430811101607k75eaa084ga387c453096d2710@domain.hid>
+	<1c74c6152ff1b52eaa3dd84f4b912b29.squirrel@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D53344A@slcmail.slc.mew.int>
+	<67b6b3430811111432o1ca14e87w7ccab4ab95dd591e@domain.hid>
+	<491C0B50.6030507@domain.hid>
+	<67b6b3430811131959r6bc22545wd4e3df613c15fc7b@domain.hid>
+	<491D39E8.3090105@domain.hid>
+	<67b6b3430811170927t74f809edg1b0c6aaf1a9d2709@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D533618@domain.hid>
+	<6d17f533257138813c350472d9527033.squirrel@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
+Subject: Re: [Xenomai-help] fpu context switch issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,61 +29,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org, rob@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
+I believe that you did already post this. Just so you know the situation
+I don't work at Mark's company anymore. I just help them out from time
+to time. I'm about 800 miles away now so I don't know everything that
+he's done. I'll be sure to hound him about it today.
 
-Philippe Gerum wrote:
-> Robert McCullough wrote:
->> Hi,
->>
->>
->>
->> I currently have a C++ application that is using 5 RTDM drivers, 2
->> Xenomai real-time user-space threads and several non-real-time Linux
->> threads.
->>
->> This application seems to have a memory leak because after running for
->> several hours the OOM-Killer kills this application.
->>
->> I am looking for a memory leak detection tool to help find the leak.
->>
->>
->>
->> Two years ago in the following mail it was mentioned that making
->> Valgrind aware of Xenomai syscalls was on the todo list.
->>
->> http://article.gmane.org/gmane.linux.real-time.xenomai.users/1805
->>
->>
->>
->> Has this been done?
->>
->
-> No news.
->
->> Does Valgrind work with Xenomai?
->>
->
-> Nope.
+Thanks,
+Steven
 
-Another way around, at least if you are using the posix skin, is to
-compile your application for Linux without Xenomai. If you are using a
-legacy API, you can do this with Xenomai/SOLO. If you are using the native
-API, then maybe you can ask gently Philippe to write a native skin for
-Xenomai/SOLO.
-
-Now, about valgrind, I spent some time thinking about it. A first
-modification of valgrind, is to allow dynamic syscall tables, such as what
-Xenomai use. This should be an easy task.
-
-The next task is to rewrite all xenomai syscalls in valgrind language
-(that is mainly to identify memory reads and writes), this is not a hard
-task, but a rather long one. So, my idea (which remains an idea for now)
-was to write the interface of the syscalls in IDL, and to generate
-automatically the code for valgrind.
-
--- 
-                    Gilles.
+> -----Original Message-----
+> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+> Sent: Thursday, November 20, 2008 5:44 AM
+> To: Steven Seeger
+> Cc: Mark Saiia; Gilles Chanteperdrix; xenomai@xenomai.org
+> Subject: RE: [Xenomai-help] fpu context switch issue
+>=20
+>=20
+> Steven Seeger wrote:
+> > Have there been any thoughts on this issue? We have reverted back to
+> > 2.6.23.12 with r3415 for now. Our apps (including the test I posted
+> > earlier) work in this older environment. We'd like to use the newer
+> > environment because many other bugs have been fixed.
+> >
+> >
+> >
+> > BTW, the older environment works correctly on both our geode boards.
+>=20
+> We need to know whether the issue comes from Xenomai or from the
+I-pipe.
+> So, to know this, we need you to test the 2.6.23 I-pipe patch with
+> Xenomai
+> 2.4.6.1. Unless I am mistaken and forgot to post a mail, I have
+already
+> asked you this.
+>=20
+> --
+>                     Gilles.
 
 
