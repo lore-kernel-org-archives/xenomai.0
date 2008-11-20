@@ -1,12 +1,12 @@
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
-Date: Wed, 19 Nov 2008 00:56:12 +0100
+Message-ID: <49256843.1090303@domain.hid>
+Date: Thu, 20 Nov 2008 14:38:11 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
+References: <200811190056.12595.berlemont.hauw@domain.hid>
+In-Reply-To: <200811190056.12595.berlemont.hauw@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200811190056.12595.berlemont.hauw@domain.hid>
-Subject: [Xenomai-core] Unstable driver integration policy
+Subject: Re: [Xenomai-core] Unstable driver integration policy
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,21 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Alexis Berlemont <berlemont.hauw@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi,
+Hi Alexis,
 
-I would like to find a way to populate the Comedi drivers set.
+Alexis Berlemont wrote:
+> Hi,
+> 
+> I would like to find a way to populate the Comedi drivers set.
+> 
+> However, I am stuck by a simple fact: I have no acquisition board to validate 
+> a least driver...
+> 
+> Starting from here, I am trying to find out what should be the proper method 
+> to provide non-validated drivers to anybody inclined to test them. 
+> 
+> Do you think creating a specific subversion branch for this stuff would be a 
+> good idea ?
 
-However, I am stuck by a simple fact: I have no acquisition board to validate 
-a least driver...
+Given the well-known fact that (too) few people look beyond what we
+deliver as releases and also assuming that your drivers should have no
+side-effects (unless when actually used), I would rather suggest to
+develop for SVN head, merge and deliver, but mark each driver
+"experimental" until people with real hw confirm that it works as expected.
 
-Starting from here, I am trying to find out what should be the proper method 
-to provide non-validated drivers to anybody inclined to test them. 
+Jan
 
-Do you think creating a specific subversion branch for this stuff would be a 
-good idea ?
-
-Alexis.
-
+-- 
+Siemens AG, Corporate Technology, CT SE 2 ES-OS
+Corporate Competence Center Embedded Linux
 
