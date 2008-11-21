@@ -1,13 +1,21 @@
-Message-ID: <4926E5C6.8030502@domain.hid>
-Date: Fri, 21 Nov 2008 17:45:58 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <67b6b3430811210903l75b9fb6aj31e30fd4af749094@domain.hid>
+Date: Fri, 21 Nov 2008 09:03:40 -0800
+From: "Mark Saiia" <mark.saiia@domain.hid>
+In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D533634@domain.hid>
 MIME-Version: 1.0
-References: <A820268933E41D449CC13B5E097C1E2F0363CE11@domain.hid>
-In-Reply-To: <A820268933E41D449CC13B5E097C1E2F0363CE11@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] External PCIe device: MSI interrupt install
-	hangs up the CPU
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_104328_2464064.1227287020061"
+References: <51CAD0CE1504444DBE77CBBE51A0135D533259@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D53344A@slcmail.slc.mew.int>
+	<67b6b3430811111432o1ca14e87w7ccab4ab95dd591e@domain.hid>
+	<491C0B50.6030507@domain.hid>
+	<67b6b3430811131959r6bc22545wd4e3df613c15fc7b@domain.hid>
+	<491D39E8.3090105@domain.hid>
+	<67b6b3430811170927t74f809edg1b0c6aaf1a9d2709@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D533618@domain.hid>
+	<6d17f533257138813c350472d9527033.squirrel@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D533634@domain.hid>
+Subject: Re: [Xenomai-help] fpu context switch issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,110 +25,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Rubio, Martial" <Martial.Rubio@domain.hid>
-Cc: jeanfrancois.gilot@domain.hid, xenomai@xenomai.org, "Dupeyrou,
-	Gilles" <Gilles.Dupeyrou@domain.hid>
+To: Steven Seeger <sseeger@domain.hid>
+Cc: xenomai@xenomai.org
 
-Rubio, Martial wrote:
-> Hello everybody
->  
-> I'm working with following config : 
->  
-> CPU (0=>3) AMD Dual Core AMD Opteron 
-> Linux version 2.6.25-pae
+------=_Part_104328_2464064.1227287020061
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-2.6.25 comes with the risk of missing relevant fixes that went into .26
-and later. Do you have a chance to update? 2.6.27 is a bit fresh,
-2.6.26.7 + ipipe-2.0-16 would be a conservative approach right now.
+I finally had a chance to patch 2.6.23.12 w/ Xenomai-2.4.5.  Both the simple
+test and larger apps worked incorrectly (i.e. had the same floating point
+issues as described before).   What should the next step be?
 
-> Xenomai : hal / i386
-> Xenomai : real time nucleus v2.4.5
->  
-> Here's below the state of /proc/interrupts :
->  
-> in red fonts the range of PCIe(xpress)-MSI vectors :
 
-Uuh, please don't expect the reader to have HTML rendering on for a
-typically text-only medium like mail. Yeah, it tends to be the other way
-around inside companies, I know...
+Thanks,
 
->  
-> hurle-bise [anaisvs](34):more /proc/interrupts
->            CPU0       CPU1       CPU2       CPU3
->   0:        146          0          0          0    XT-PIC-XT
-> timer
->   1:       1039          0          0          0    XT-PIC-XT
-> i8042
->   2:          0          0          0          0    XT-PIC-XT
-> cascade
->   4:          5          0          0          0    XT-PIC-XT
->   5:          2          0          0          0    XT-PIC-XT
-> ehci_hcd:usb2
->   6:          5          0          0          0    XT-PIC-XT
-> floppy
->   7:      16300          0          0          0    XT-PIC-XT
-> ohci_hcd:usb1
->  10:     155104          0          0          0    XT-PIC-XT
-> ioc0, sata_nv, sata_nv, ohci1394
->  11:      47305          0          0          0    XT-PIC-XT
-> sata_nv, HDA Intel
->  14:          0          0          0          0    XT-PIC-XT
-> pata_amd
->  15:          0          0          0          0    XT-PIC-XT
-> pata_amd
-> 212:          0          9        487    1942504   PCI-MSI-edge
-> eth0
-> 213:          0          0          0          0   PCI-MSI-edge
-> shpchp
-> NMI:          0          0          0          0   Non-maskable
-> interrupts
-> LOC:    3722798    3722767    3722730    3722768   Local timer
-> interrupts
-> RES:      39386      37672      23570      25780   Rescheduling
-> interrupts
-> CAL:       1112       1273       1280        250   function call
-> interrupts
-> TLB:       6144       8510       6271       9025   TLB shootdowns
-> TRM:          0          0          0          0   Thermal event
-> interrupts
-> SPU:          0          0          0          0   Spurious interrupts
-> ERR:          1
-> MIS:          0
->  
-> I try to install a new MSI interrupt via rtdm package (rtdm_irq_request)
-> with
-> a vector number (211) given by the call to pci_msi_enable for the new
-> PCIe device.
+Mark
 
-Is that driver prepared to possibly receive an immediate IRQ after
-registration? Of course, that can only happen if the device's hardware
-is not explicitly configured to disable IRQ delivery. I'm asking as it
-is a common mistake to mixup IRQ arming and proper driver state
-initialization.
 
->  
-> The system hangs up immediatly (sometimes I can catch the stack trace
-> with dmesg
-> the last reference seems to be in rt_hal package)
 
-You should try to capture a full trace via a serial console e.g., see
-linux/Documentation/serial-console.txt.
+On Thu, Nov 20, 2008 at 5:51 AM, Steven Seeger <
+sseeger@domain.hid> wrote:
 
->  
-> If I replace (for debug only!!!) this vector number by an unused
-> "classical" vector number (for instance
-> 14 or 15) ... no problem.
->  
-> Have you allready test this kind of configuration ... if so a little
-> help from your part would be
-> greatly appreciated!
+> I believe that you did already post this. Just so you know the situation
+> I don't work at Mark's company anymore. I just help them out from time
+> to time. I'm about 800 miles away now so I don't know everything that
+> he's done. I'll be sure to hound him about it today.
+>
+> Thanks,
+> Steven
+>
+> > -----Original Message-----
+> > From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+> > Sent: Thursday, November 20, 2008 5:44 AM
+> > To: Steven Seeger
+> > Cc: Mark Saiia; Gilles Chanteperdrix; xenomai@xenomai.org
+> > Subject: RE: [Xenomai-help] fpu context switch issue
+> >
+> >
+> > Steven Seeger wrote:
+> > > Have there been any thoughts on this issue? We have reverted back to
+> > > 2.6.23.12 with r3415 for now. Our apps (including the test I posted
+> > > earlier) work in this older environment. We'd like to use the newer
+> > > environment because many other bugs have been fixed.
+> > >
+> > >
+> > >
+> > > BTW, the older environment works correctly on both our geode boards.
+> >
+> > We need to know whether the issue comes from Xenomai or from the
+> I-pipe.
+> > So, to know this, we need you to test the 2.6.23 I-pipe patch with
+> > Xenomai
+> > 2.4.6.1. Unless I am mistaken and forgot to post a mail, I have
+> already
+> > asked you this.
+> >
+> > --
+> >                     Gilles.
+>
+>
 
-Another test around MSI: try to disable CONFIG_PCI_MSI and check if
-something changes.
+------=_Part_104328_2464064.1227287020061
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Jan
+I finally had a chance to patch <a href="http://2.6.23.12">2.6.23.12</a> w/ Xenomai-2.4.5.&nbsp; Both the
+simple test and larger apps worked incorrectly (i.e. had the same floating point
+issues as described before).&nbsp;&nbsp; What should the next step be?<br><br><br>Thanks,<br><br>Mark<br><br><br><br><div class="gmail_quote">On Thu, Nov 20, 2008 at 5:51 AM, Steven Seeger <span dir="ltr">&lt;<a href="mailto:sseeger@domain.hid">sseeger@domain.hid</a>&gt;</span> wrote:<br>
+<blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">I believe that you did already post this. Just so you know the situation<br>
+I don&#39;t work at Mark&#39;s company anymore. I just help them out from time<br>
+to time. I&#39;m about 800 miles away now so I don&#39;t know everything that<br>
+he&#39;s done. I&#39;ll be sure to hound him about it today.<br>
+<br>
+Thanks,<br>
+<div class="Ih2E3d">Steven<br>
+<br>
+&gt; -----Original Message-----<br>
+&gt; From: Gilles Chanteperdrix [mailto:<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>]<br>
+</div><div class="Ih2E3d">&gt; Sent: Thursday, November 20, 2008 5:44 AM<br>
+&gt; To: Steven Seeger<br>
+</div><div><div></div><div class="Wj3C7c">&gt; Cc: Mark Saiia; Gilles Chanteperdrix; <a href="mailto:xenomai@xenomai.org">xenomai@xenomai.org</a><br>
+&gt; Subject: RE: [Xenomai-help] fpu context switch issue<br>
+&gt;<br>
+&gt;<br>
+&gt; Steven Seeger wrote:<br>
+&gt; &gt; Have there been any thoughts on this issue? We have reverted back to<br>
+&gt; &gt; <a href="http://2.6.23.12" target="_blank">2.6.23.12</a> with r3415 for now. Our apps (including the test I posted<br>
+&gt; &gt; earlier) work in this older environment. We&#39;d like to use the newer<br>
+&gt; &gt; environment because many other bugs have been fixed.<br>
+&gt; &gt;<br>
+&gt; &gt;<br>
+&gt; &gt;<br>
+&gt; &gt; BTW, the older environment works correctly on both our geode boards.<br>
+&gt;<br>
+&gt; We need to know whether the issue comes from Xenomai or from the<br>
+I-pipe.<br>
+&gt; So, to know this, we need you to test the 2.6.23 I-pipe patch with<br>
+&gt; Xenomai<br>
+&gt; <a href="http://2.4.6.1" target="_blank">2.4.6.1</a>. Unless I am mistaken and forgot to post a mail, I have<br>
+already<br>
+&gt; asked you this.<br>
+&gt;<br>
+&gt; --<br>
+&gt; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Gilles.<br>
+<br>
+</div></div></blockquote></div><br>
 
--- 
-Siemens AG, Corporate Technology, CT SE 2 ES-OS
-Corporate Competence Center Embedded Linux
+------=_Part_104328_2464064.1227287020061--
 
