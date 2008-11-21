@@ -1,15 +1,11 @@
-Message-ID: <4926E5B5.1030507@domain.hid>
-Date: Fri, 21 Nov 2008 17:45:41 +0100
+Message-ID: <4926E9C5.9020506@domain.hid>
+Date: Fri, 21 Nov 2008 18:03:01 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <49268B11.5090105@domain.hid>
-	<49269929.5010804@domain.hid>	<49269FF8.9000209@domain.hid>
-	<4926CCEF.8050106@domain.hid> <4926CDB3.2000601@domain.hid>
-	<4926D25C.6060506@domain.hid> <4926E494.8000602@domain.hid>
-In-Reply-To: <4926E494.8000602@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] Catch multiple xnshadow_map attempts
+Subject: [Xenomai-core] [PATCH] Refactor management of auto-shadowing,
+	TLS and dlopen
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,90 +15,145 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
+Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> Philippe Gerum wrote:
->>>> Jan Kiszka wrote:
->>>>> Philippe Gerum wrote:
->>>>>> Jan Kiszka wrote:
->>>>>>> My customer managed to find another hidden door to Xenomai's hell:
->>>>>>> Trying to create a Xenomai POSIX thread from within a native thread. A
->>>>>>> think the other way around would "work" as well. The precise scenario
->>>>>>> was native thread -> dlopen(libs that's linked against libpthread_rt) ->
->>>>>>> __init_posix_interface -> __wrap_pthread_setschedparam -> oops. That
->>>>>>> scenario revealed two more issues in fact.
->>>>>>>
->>>>>>> Here is a patch to remove this hell gate by catching xnshadow_map
->>>>>>> invocations from withing already mapped shadow thread.
->>>>>>>
->>>>>> Any reason why the XNMAPPED predicate did not work in your case?
->>>>> Sorry, which one? Keep in mind that the thread thrown at the second
->>>>> xnshadow_map is a virgin one, just allocated from scratch.
->>>>>
->>>> Ok, got it, it's the converse case, so let's deal for that:
->>>>
->>>> --- ksrc/nucleus/shadow.c	(revision 4411)
->>>> +++ ksrc/nucleus/shadow.c	(working copy)
->>>> @@ -1331,7 +1331,7 @@
->>>>   * case, the real-time mapping operation has failed globally, and no
->>>>   * Xenomai resource remains attached to it.
->>>>   *
->>>> - * - -EINVAL is returned if the thread control block does not bear the
->>>> + * - -EBUSY is returned if the thread control block does not bear the
->>>>   * XNSHADOW bit, or if the thread has already been mapped.
->>>>   *
->>>>   * Environments:
->>>> @@ -1354,8 +1354,8 @@
->>>>  	if (!xnthread_test_state(thread, XNSHADOW))
->>>>  		return -EINVAL;
->>>>
->>>> -	if (xnthread_test_state(thread, XNMAPPED))
->>>> -		return -EINVAL;
->>>> +	if (xnshadow_thread(current) || xnthread_test_state(thread, XNMAPPED))
->>>> +		return -EBUSY;
->>>>
->>>>  	if (!access_wok(u_mode, sizeof(*u_mode)))
->>>>  		return -EFAULT;
->>>>
->>> --- ksrc/nucleus/shadow.c	(revision 4411)
->>> +++ ksrc/nucleus/shadow.c	(working copy)
->>> @@ -1332,8 +1332,10 @@
->>>   * Xenomai resource remains attached to it.
->>>   *
->>>   * - -EINVAL is returned if the thread control block does not bear the
->>> - * XNSHADOW bit, or if the thread has already been mapped.
->>> + * XNSHADOW bit.
->>>   *
->>> + * - -EBUSY is returned if the thread has already been mapped.
->>> + *
->>>   * Environments:
->> The code now returns -EBUSY if someone passes down an already touched
->> xnthread object - for me a clear case of EINVAL (the object should be a
->> virgin one).
-> 
-> That's precisely a case for EBUSY; someone is attempting to reuse a TCB.
-> 
->  EBUSY should be dedicated to the case that the current
->> _Linux_task_ is already mapped (to some other xnthread object). I think
->> my patch is clearer in this respect.
->>
-> 
-> My intent regarding XNMAPPED was precisely to catch that case on the xnthread
-> struct, returning -EINVAL was a bad idea: this did not convey the right
-> information. Your addition completes that test by checking the task_struct side
-> as well. EINVAL should be kept for out-of-bound / badly specified input param;
-> in the XNMAPPED case, the xnthread struct is ok, but in the wrong state. This is
-> what EBUSY is supposed to say.
-
-Well, OK. But then clarify in the doc that EBUSY is about both the
-thread structure and the current Linux task.
+This patch implements my suggestion to replace configures's
+--without-__thread switch with a more focused one: --enable-dlopen-skins
+When enabled, initial-exec TLS support is turned off as well as
+auto-shadowing done by the POSIX skin lib. This avoids bad interaction
+with the context of dlopen and the already running process in general,
+while also clarifying the actual choice here.
 
 Jan
 
+PS: Patch might be best applied in two steps, but I was too lazy to
+split up now.
+
+---
+ ChangeLog              |    6 ++++++
+ configure.in           |   19 +++++++++++++------
+ src/skins/posix/init.c |   45 +++++++++++++++++++++++++++++----------------
+ 3 files changed, 48 insertions(+), 22 deletions(-)
+
+Index: xenomai/configure.in
+===================================================================
+--- xenomai.orig/configure.in
++++ xenomai/configure.in
+@@ -763,14 +763,21 @@ AC_CHECK_FUNCS([shm_open shm_unlink])
+ LIBS="$save_LIBS"
+ 
+ XENO_DLOPEN_CONSTRAINT=
+-AC_ARG_WITH([__thread],
+-	    AC_HELP_STRING([--without-__thread],
+-			   [do not use TLS features (allows for dlopen'ing Xenomai libs)]),
+-	    [use__thread=$withval],
+-	    [use__thread=yes])
++AC_MSG_CHECKING(whether to enable dlopen support for skin libraries)
++AC_ARG_ENABLE(dlopen-skins,
++	AC_HELP_STRING([--enable-dlopen-skins], [Disable TLS features and automatic
++main thread mapping by the POSIX skin to allows dlopen'ing Xenomai libs.]),
++	[case "$enableval" in
++	y | yes) CONFIG_XENO_LIBS_DLOPEN=y ;;
++	*) unset CONFIG_XENO_LIBS_DLOPEN ;;
++	esac])
++AC_MSG_RESULT(${CONFIG_XENO_LIBS_DLOPEN:-no})
++if test x$CONFIG_XENO_LIBS_DLOPEN = xy; then
++	AC_DEFINE(CONFIG_XENO_LIBS_DLOPEN,1,[config])
++fi
+ 
+ dnl Check whether the compiler supports the __thread keyword.
+-if test "x$use__thread" != xno; then
++if test "x$CONFIG_XENO_LIBS_DLOPEN" != xy; then
+ 	AC_CACHE_CHECK([for __thread], libc_cv_gcc___thread,
+ 	[cat > conftest.c <<\EOF
+ __thread int a __attribute__ ((tls_model ("initial-exec"))) = 42;
+Index: xenomai/src/skins/posix/init.c
+===================================================================
+--- xenomai.orig/src/skins/posix/init.c
++++ xenomai/src/skins/posix/init.c
+@@ -47,7 +47,6 @@ void pse51_clock_init(int);
+ static __attribute__ ((constructor))
+ void __init_posix_interface(void)
+ {
+-	struct sched_param parm;
+ 	int muxid, err;
+ 
+ 	muxid =
+@@ -67,28 +66,42 @@ void __init_posix_interface(void)
+ 								 __rtdm_fdcount);
+ 	}
+ 
+-	/* Shadow the main thread. mlock the whole memory for the time of the
+-	   syscall, in order to avoid the SIGXCPU signal. */
++#ifdef CONFIG_XENO_LIBS_DLOPEN
++	/* Don't use auto-shadowing if we are likely invoked from dlopen, but
++	   take care of auto-mlockall. */
++#ifndef CONFIG_XENO_POSIX_AUTO_MLOCKALL
+ 	if (mlockall(MCL_CURRENT | MCL_FUTURE)) {
+ 		perror("Xenomai Posix skin init: mlockall");
+ 		exit(EXIT_FAILURE);
+ 	}
+-
+-	parm.sched_priority = 0;
+-	err = __wrap_pthread_setschedparam(pthread_self(), SCHED_OTHER,
+-					   &parm);
+-	if (err) {
+-		fprintf(stderr, "Xenomai Posix skin init: "
+-			"pthread_setschedparam: %s\n", strerror(err));
+-		exit(EXIT_FAILURE);
+-	}
++#endif /* !CONFIG_XENO_POSIX_AUTO_MLOCKALL */
++#else /* !CONFIG_XENO_LIBS_DLOPEN */
++	{
++		struct sched_param parm = { .sched_priority = 0 };
++
++		/* Shadow the main thread. mlock the whole memory for the time
++		   of the syscall, in order to avoid the SIGXCPU signal. */
++		if (mlockall(MCL_CURRENT | MCL_FUTURE)) {
++			perror("Xenomai Posix skin init: mlockall");
++			exit(EXIT_FAILURE);
++		}
++
++		err = __wrap_pthread_setschedparam(pthread_self(), SCHED_OTHER,
++						   &parm);
++		if (err) {
++			fprintf(stderr, "Xenomai Posix skin init: "
++				"pthread_setschedparam: %s\n", strerror(err));
++			exit(EXIT_FAILURE);
++		}
+ 
+ #ifndef CONFIG_XENO_POSIX_AUTO_MLOCKALL
+-	if (munlockall()) {
+-		perror("Xenomai Posix skin init: munlockall");
+-		exit(EXIT_FAILURE);
+-	}
++		if (munlockall()) {
++			perror("Xenomai Posix skin init: munlockall");
++			exit(EXIT_FAILURE);
++		}
+ #endif /* !CONFIG_XENO_POSIX_AUTO_MLOCKALL */
++	}
++#endif /* !CONFIG_XENO_LIBS_DLOPEN */
+ 
+ 	if (!fork_handler_registered) {
+ 		err = pthread_atfork(NULL, NULL, &__init_posix_interface);
+Index: xenomai/ChangeLog
+===================================================================
+--- xenomai.orig/ChangeLog
++++ xenomai/ChangeLog
+@@ -1,5 +1,11 @@
+ 2008-11-21  Jan Kiszka  <jan.kiszka@domain.hid>
+ 
++	* configure.in: Convert --without-__thread into
++	--enable-dlopen-skins.
++
++	* src/skins/posix/init.c: Don't perform auto-shadowing if we may
++	be loaded via dlopen.
++
+ 	* configure.in, src/skins/*/Makefile.am: Mark libs with nodlopen
+ 	if initial-exec __thread variables are used.
+ 
 -- 
 Siemens AG, Corporate Technology, CT SE 2 ES-OS
 Corporate Competence Center Embedded Linux
