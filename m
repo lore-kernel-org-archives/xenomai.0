@@ -1,9 +1,9 @@
 Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C94E55.6E5D66D6"
-Date: Mon, 24 Nov 2008 17:55:18 +0100
-Message-ID: <A820268933E41D449CC13B5E097C1E2F0363CE13@domain.hid>
-In-Reply-To: <4926E5C6.8030502@domain.hid>
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C94EFF.9A743F6C"
+Date: Tue, 25 Nov 2008 14:13:27 +0100
+Message-ID: <A820268933E41D449CC13B5E097C1E2F0363CE15@domain.hid>
+In-Reply-To: <A820268933E41D449CC13B5E097C1E2F0363CE13@domain.hid>
 From: "Rubio, Martial" <Martial.Rubio@domain.hid>
 Subject: Re: [Xenomai-help] External PCIe device: MSI interrupt install
 	hangs up the CPU
@@ -22,10 +22,60 @@ Cc: jeanfrancois.gilot@domain.hid, xenomai@xenomai.org, "Dupeyrou,
 
 This is a multi-part message in MIME format.
 
-------_=_NextPart_001_01C94E55.6E5D66D6
+------_=_NextPart_001_01C94EFF.9A743F6C
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+
+Hello ...
+
+...  I apologize : pci_bus_read_config_word is an old 32-bit access
+routine ...=20
+Sorry for my great haste.
+
+If I disable CONFIG_PCI_MSI, eth0 is plugged now on a classical PCI IRQ
+vector=20
+And the init part of PEV1100 (my external PCIe device) does not work
+(it's normal)
+
+So CONFIG_PCI_MSI is mandatory .
+
+About PEV1100 after pci_msi_enable (allways in init part) no source of
+interrupt is still enabled ...
+So registration can be done (rtdm ...) .
+
+BUT : are the MSI interrupts (eth0 & PEV1100) are rightly dispatched ???
+
+By viewing attached file, the last function seems to be
+__ipipe_restore_root
+And a few lines before irq_tick_handler+0x0/0x14
+[vxworks_tick_time_module]*
+As if an interrupt source of PEV1100 has allready been enabled
+(obviously no).
+
+I think that MSI interrupt management is unable to make a difference
+between
+eth0 and another PCIe device MSI(coming from vector 212 OR vector 211).
+
+If I'm lucky is it fixed in 2.6.26.7 + ipipe-2.0-16 ?
+
+*vxworks_tick_time_module : it's my PEV1100 interrupt handler (you know
+now why I'm using
+Xenomai with Vx skins and in a first time working with a hal/i386 arch :
+32 bit)
+
+Best regards
+
+Martial
+
+
+-----Original Message-----
+From: Rubio, Martial=20
+Sent: Monday, November 24, 2008 5:55 PM
+To: 'Jan Kiszka'
+Cc: xenomai@xenomai.org; jeanfrancois.gilot@domain.hid; Dupeyrou, Gilles
+Subject: RE: External PCIe device: MSI interrupt install hangs up the
+CPU
 
 Hello everybody ...
 
@@ -33,11 +83,9 @@ Find attached text files which seems to be very useful about my CPU
 hanging
 
 Perharps a problem of detection of an external dev PCIe with only MSI
-64-bit access
-Capability (pci_bus_read_config_dword instead of
-pci_bus_read_config_word in pci/msi.c)
-with a machine which has been configured in a 32-bit mode (mandatory in
-my case) ?
+64-bit access Capability (pci_bus_read_config_dword instead of
+pci_bus_read_config_word in pci/msi.c) with a machine which has been
+configured in a 32-bit mode (mandatory in my case) ?
 
 What do you think of that? ... And if TRUE what to do (it's a question
 for J.F)
@@ -47,7 +95,7 @@ Regards to all
 Martial
 
 -----Original Message-----
-From: Jan Kiszka [mailto:jan.kiszka@domain.hid
+From: Jan Kiszka [mailto:jan.kiszka@domain.hid]
 Sent: Friday, November 21, 2008 5:46 PM
 To: Rubio, Martial
 Cc: xenomai@xenomai.org; jeanfrancois.gilot@domain.hid; Dupeyrou, Gilles
@@ -120,7 +168,7 @@ around inside companies, I know...
 > ERR:          1
 > MIS:          0
 > =20
-> I try to install a new MSI interrupt via rtdm package=20
+> I try to install a new MSI interrupt via rtdm package
 > (rtdm_irq_request) with a vector number (211) given by the call to=20
 > pci_msi_enable for the new PCIe device.
 
@@ -154,54 +202,7 @@ Jan
 Siemens AG, Corporate Technology, CT SE 2 ES-OS Corporate Competence
 Center Embedded Linux
 
-------_=_NextPart_001_01C94E55.6E5D66D6
-Content-Type: application/octet-stream;
-	name="memory.map"
-Content-Transfer-Encoding: base64
-Content-Description: memory.map
-Content-Disposition: attachment;
-	filename="memory.map"
-
-MDAwMDAwMDAtMDAwOWQ3ZmYgOiBTeXN0ZW0gUkFNCjAwMDlkODAwLTAwMDlmZmZmIDogcmVzZXJ2
-ZWQKMDAwYTAwMDAtMDAwYmZmZmYgOiBWaWRlbyBSQU0gYXJlYQowMDBjMDAwMC0wMDBjZDNmZiA6
-IFZpZGVvIFJPTQowMDBmMDAwMC0wMDBmZmZmZiA6IFN5c3RlbSBST00KMDAxMDAwMDAtNmZlZWZm
-ZmYgOiBTeXN0ZW0gUkFNCiAgMDAxMDAwMDAtMDAyZWQ3YjggOiBLZXJuZWwgY29kZQogIDAwMmVk
-N2I5LTAwM2VlNzNiIDogS2VybmVsIGRhdGEKICAwMDQzMDAwMC0wMDU0OWVjZiA6IEtlcm5lbCBi
-c3MKNmZlZjAwMDAtNmZlZmRmZmYgOiBBQ1BJIFRhYmxlcwo2ZmVmZTAwMC02ZmY3ZmZmZiA6IEFD
-UEkgTm9uLXZvbGF0aWxlIFN0b3JhZ2UKNmZmODAwMDAtNmZmZmZmZmYgOiByZXNlcnZlZAo3MDAw
-MDAwMC03MDAwM2ZmZiA6IDAwMDA6MDA6MDYuMQogIDcwMDAwMDAwLTcwMDAzZmZmIDogSUNIIEhE
-IGF1ZGlvCjcwMDA0MDAwLTcwMDA0ZmZmIDogMDAwMDowMDowMi4wCiAgNzAwMDQwMDAtNzAwMDRm
-ZmYgOiBvaGNpX2hjZAo3MDAwNTAwMC03MDAwNTBmZiA6IDAwMDA6MDA6MDIuMQogIDcwMDA1MDAw
-LTcwMDA1MGZmIDogZWhjaV9oY2QKNzAwMDU0MDAtNzAwMDU0MGYgOiAwMDAwOjAwOjA4LjAKICA3
-MDAwNTQwMC03MDAwNTQwZiA6IGZvcmNlZGV0aAo3MDAwNTgwMC03MDAwNThmZiA6IDAwMDA6MDA6
-MDguMAogIDcwMDA1ODAwLTcwMDA1OGZmIDogZm9yY2VkZXRoCjcwMDA1YzAwLTcwMDA1YzBmIDog
-MDAwMDowMDowOS4wCiAgNzAwMDVjMDAtNzAwMDVjMGYgOiBmb3JjZWRldGgKNzAwMDYwMDAtNzAw
-MDZmZmYgOiAwMDAwOjAwOjA1LjAKICA3MDAwNjAwMC03MDAwNmZmZiA6IHNhdGFfbnYKNzAwMDcw
-MDAtNzAwMDdmZmYgOiAwMDAwOjAwOjA1LjEKICA3MDAwNzAwMC03MDAwN2ZmZiA6IHNhdGFfbnYK
-NzAwMDgwMDAtNzAwMDhmZmYgOiAwMDAwOjAwOjA1LjIKICA3MDAwODAwMC03MDAwOGZmZiA6IHNh
-dGFfbnYKNzAwMDkwMDAtNzAwMDlmZmYgOiAwMDAwOjAwOjA4LjAKICA3MDAwOTAwMC03MDAwOWZm
-ZiA6IGZvcmNlZGV0aAo3MDAwYTAwMC03MDAwYTBmZiA6IDAwMDA6MDA6MDkuMAogIDcwMDBhMDAw
-LTcwMDBhMGZmIDogZm9yY2VkZXRoCjcwMDBiMDAwLTcwMDBiZmZmIDogMDAwMDowMDowOS4wCiAg
-NzAwMGIwMDAtNzAwMGJmZmYgOiBmb3JjZWRldGgKNzAxMDAwMDAtNzAxZmZmZmYgOiBQQ0kgQnVz
-ICMwMQogIDcwMTAwMDAwLTcwMTAzZmZmIDogMDAwMDowMTowNS4wCiAgNzAxMDQwMDAtNzAxMDQ3
-ZmYgOiAwMDAwOjAxOjA1LjAKICAgIDcwMTA0MDAwLTcwMTA0N2ZmIDogb2hjaTEzOTQKNzAyMDAw
-MDAtNzAyZmZmZmYgOiBQQ0kgQnVzICMwMwogIDcwMjAwMDAwLTcwMjAwMDdmIDogMDAwMDowMzow
-MC4xCiAgICA3MDIwMDAwMC03MDIwMDAyNyA6IHNocGNocAo3MDMwMDAwMC03MmZmZmZmZiA6IFBD
-SSBCdXMgIzA2CiAgNzEwMDAwMDAtNzFmZmZmZmYgOiAwMDAwOjA2OjAwLjAKICA3MjAwMDAwMC03
-MmZmZmZmZiA6IDAwMDA6MDY6MDAuMAo4MDAwMDAwMC04ZmZmZmZmZiA6IFBDSSBCdXMgIzA2CiAg
-ODAwMDAwMDAtOGZmZmZmZmYgOiAwMDAwOjA2OjAwLjAKICAgIDgwMDAwMDAwLThmZmZmZmZmIDog
-dmVzYWZiCjkwMDAwMDAwLTkwMDAwZmZmIDogMDAwMDo4MDowMS4wCjkwMTAwMDAwLWJmZmZmZmZm
-IDogUENJIEJ1cyAjODEKICA5MDEwMDAwMC05MDExZmZmZiA6IDAwMDA6ODE6MDAuMAogIDkwMjAw
-MDAwLWJmZmZmZmZmIDogUENJIEJ1cyAjODIKICAgIDkwMjAwMDAwLWJmZmZmZmZmIDogUENJIEJ1
-cyAjODUKICAgICAgYTAwMDAwMDAtYmZmZmZmZmYgOiAwMDAwOjg1OjAwLjAKYzAwMDAwMDAtYzAx
-ZmZmZmYgOiBQQ0kgQnVzICM4NgogIGMwMDAwMDAwLWMwMDBmZmZmIDogMDAwMDo4NjowMC4wCiAg
-ICBjMDAwMDAwMC1jMDAwZmZmZiA6IG1wdAogIGMwMDEwMDAwLWMwMDEzZmZmIDogMDAwMDo4Njow
-MC4wCiAgICBjMDAxMDAwMC1jMDAxM2ZmZiA6IG1wdAplMDAwMDAwMC1lZmZmZmZmZiA6IHJlc2Vy
-dmVkCmZlYzAwMDAwLWZlYzBmZmZmIDogcmVzZXJ2ZWQKZmVlMDAwMDAtZmVlMDBmZmYgOiByZXNl
-cnZlZApmZmYwMDAwMC1mZmZmZmZmZiA6IHJlc2VydmVkCjEwMDAwMDAwMC0yOGZmZmZmZmYgOiBT
-eXN0ZW0gUkFNCg==
-
-------_=_NextPart_001_01C94E55.6E5D66D6
+------_=_NextPart_001_01C94EFF.9A743F6C
 Content-Type: application/octet-stream;
 	name="boot.messages"
 Content-Transfer-Encoding: base64
@@ -675,5 +676,5 @@ ODE+XSBfX2lwaXBlX3Jlc3RvcmVfcm9vdCsweDFhLzB4M2YgU1M6RVNQIDAwNjg6ZDk0ZTdjZDQK
 LS0tWyBlbmQgdHJhY2UgYmE5MTkxNTUyNDdkZTU0OSBdLS0tCm5vdGU6IHRpY2tbMTI0OTJdIGV4
 aXRlZCB3aXRoIHByZWVtcHRfY291bnQgMgo=
 
-------_=_NextPart_001_01C94E55.6E5D66D6--
+------_=_NextPart_001_01C94EFF.9A743F6C--
 
