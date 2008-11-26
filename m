@@ -1,13 +1,14 @@
-Message-ID: <1225976575.4912eaff644c6@domain.hid>
-Date: Thu, 06 Nov 2008 14:02:55 +0100
-From: garryt <garryt@domain.hid>
-References: <1225962826.4912b54a14c23@domain.hid>
-	<4912B760.5000600@domain.hid>
-In-Reply-To: <4912B760.5000600@domain.hid>
+Message-ID: <492D2958.40006@domain.hid>
+Date: Wed, 26 Nov 2008 11:47:52 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
-	boundary="-MOQ1225976575eb28271a6c486650f2ebf01bec42f48d"
-Subject: Re: [Xenomai-help] xenomai installation issue.
+References: <51CAD0CE1504444DBE77CBBE51A0135D533259@domain.hid>		<51CAD0CE1504444DBE77CBBE51A0135D53344A@slcmail.slc.mew.int>		<67b6b3430811111432o1ca14e87w7ccab4ab95dd591e@domain.hid>		<491C0B50.6030507@domain.hid>		<67b6b3430811131959r6bc22545wd4e3df613c15fc7b@domain.hid>		<491D39E8.3090105@domain.hid>		<67b6b3430811170927t74f809edg1b0c6aaf1a9d2709@domain.hid>		<51CAD0CE1504444DBE77CBBE51A0135D533618@domain.hid>		<6d17f533257138813c350472d9527033.squirrel@domain.hid>		<51CAD0CE1504444DBE77CBBE51A0135D533634@domain.hid>	<67b6b3430811210903l75b9fb6aj31e30fd4af749094@domain.hid>
+	<4926EAE5.8070604@domain.hid>
+In-Reply-To: <4926EAE5.8070604@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] fpu context switch issue
+Reply-To: gilles.chanteperdrix@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,157 +18,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Mark Saiia <mark.saiia@domain.hid>
+Cc: xenomai@xenomai.org
 
-This message is in MIME format.
+Gilles Chanteperdrix wrote:
+> Mark Saiia wrote:
+>> I finally had a chance to patch 2.6.23.12 w/ Xenomai-2.4.5.  Both the simple
+>> test and larger apps worked incorrectly (i.e. had the same floating point
+>> issues as described before).   What should the next step be?
+> 
+> The next step is for me to look at the differences between 2.4.5 and the
+> version of Xenomai which works for you and try and imagine what could be
+> the problem.
 
----MOQ1225976575eb28271a6c486650f2ebf01bec42f48d
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Ok. The version you are talking about (r3415) is rather old. Could you
+try to do a bisection in Xenomai revisions to tell me which commit
+causes the bug you observe ?
 
-Oups,
-
-It seems i only reply to you and not to the list.
-For information:
-Here is the log (if someone has the same problem).
-
-These new options didn't solve the issue.
-
-
-
-Quoting Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
-
-> garryt wrote:
-> > Hello,
-> >
-> > I am facing issue with the installation of xenomai on x86_64 system.
-> Obviously i
-> > should have configured something not as required, but i cannot figure=
- what.
-> > This is a widespread optiplex DELL PC.(I hope someone successfully
-> installed
-> > xenomai on this and might help :)
-> >
-> > Compilation works fine, then after few minutes system hangs (for exam=
-ple
-> when
-> > using xeno-test..).
-> >
-> > I have search around the net, look at the TROUBLESHOOTING guide, modi=
-fy
-> kernel
-> > compilation options to reflect as close as possible to the hw ( Core2=
- Duo
-> > processor) and try different configuration (2.6.24 / 2.6.25 ) and IPI=
-PE
-> patches,
-> > but still have issues.
-> >
-> > Here is attached an archive with latest traces and configuration opti=
-ons.
->
-> Could you try enabling CONFIG_ACPI (the only dangerous ACPI option is
-> CONFIG_ACPI_PROCESSOR), could you also try to disable CONFIG_AUDITSYSCA=
-LL ?
->
-> --
->                                                  Gilles.
->
-
-
-
----MOQ1225976575eb28271a6c486650f2ebf01bec42f48d
-Content-Type: application/octet-stream; name="logs"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="logs"
-
-bXRycjogdHlwZSBtaXNtYXRjaCBmb3IgZDAwMDAwMDAsMTAwMDAwMDAgb2xkOiB3cml0ZS1iYWNr
-IG5ldzogd3JpdGUtY29tYmluaW5nDQpYZW5vbWFpOiBQT1NJWDogZGVzdHJveWVkIHRocmVhZCBm
-ZmZmODEwMDdjYjgwNjMwDQpYZW5vbWFpOiBQT1NJWDogZGVzdHJveWVkIHRocmVhZCBmZmZmODEw
-MDdjYjgwNjMwDQpYZW5vbWFpOiBQT1NJWDogZGVzdHJveWVkIHRocmVhZCBmZmZmODEwMDdjYjgw
-NjMwDQpYZW5vbWFpOiBQT1NJWDogZGVzdHJveWVkIHRocmVhZCBmZmZmODEwMDdjYjgwNjMwDQpD
-bG9ja3NvdXJjZSB0c2MgdW5zdGFibGUgKGRlbHRhID0gNzM5OTY4NjgzIG5zKQ0KQlVHOiB1bmFi
-bGUgdG8gaGFuZGxlIGtlcm5lbCBOVUxMIHBvaW50ZXIgZGVyZWZlcmVuY2UgYXQgMDAwMDAwMDAw
-MDAwMDAwOA0KSVA6IFs8ZmZmZmZmZmY4MDI3YjFkNj5dIF9feG50aW1lcl9pbml0KzB4MjgwLzB4
-M2EyDQpQR0QgN2NjNjMwNjcgUFVEIDcxNGIxMDY3IFBNRCAwIA0KT29wczogMDAwMiBbMV0gU01Q
-IA0KQ1BVIDAgDQpNb2R1bGVzIGxpbmtlZCBpbjo8Mz5YZW5vbWFpOiBzdHVjayBvbiBudWNsZXVz
-IGxvY2sgZmZmZmZmZmY4MDUzMGE2MA0KICAgICAgIHdhaXRlciA9IGtlcm5lbC94ZW5vbWFpL251
-Y2xldXMvaW50ci5jOjEwNSAoeG5pbnRyX2Nsb2NrX2hhbmRsZXIoKSwgQ1BVICMxKQ0KICAgICAg
-IG93bmVyICA9IGtlcm5lbC94ZW5vbWFpL251Y2xldXMvdGltZXIuYzo3OTEgKF9feG50aW1lcl9p
-bml0KCksIENQVSAjMCkNCiBmZmZmODEwMDdlMDlmZWI4PDM+SS1waXBlOiBEZXRlY3RlZCBpbGxp
-Y2l0IGNhbGwgZnJvbSBkb21haW4gJ1hlbm9tYWknDQogICAgICAgIGludG8gYSBzZXJ2aWNlIHJl
-c2VydmVkIGZvciBkb21haW4gJ0xpbnV4JyBhbmQgYmVsb3cuDQpQaWQ6IDQzNzEsIGNvbW06IGRk
-IE5vdCB0YWludGVkIDIuNi4yNS4xOSAjNQ0KDQpDYWxsIFRyYWNlOg0KIDxJUlE+ICBbPGZmZmZm
-ZmZmODAyNjU1MGY+XSBpcGlwZV9jaGVja19jb250ZXh0KzB4ZDUvMHhkZA0KIFs8ZmZmZmZmZmY4
-MDIyYjBkYz5dIGNwdV9jbG9jaysweDI3LzB4YTANCiBbPGZmZmZmZmZmODAyNjExMDY+XSBnZXRf
-dGltZXN0YW1wKzB4OS8weGYNCiBbPGZmZmZmZmZmODAyMGYzZWU+XSBkb19zb2Z0aXJxKzB4NWUv
-MHhhYw0KIFs8ZmZmZmZmZmY4MDI2MTEzMD5dIHRvdWNoX3NvZnRsb2NrdXBfd2F0Y2hkb2crMHgy
-NC8weDJkDQogWzxmZmZmZmZmZjgwMjBkNTRmPl0gX3Nob3dfc3RhY2srMHhjOC8weGY5DQogWzxm
-ZmZmZmZmZjgwMjZjZGI0Pl0geG5pbnRyX2Nsb2NrX2hhbmRsZXIrMHhlZS8weDMzZQ0KIFs8ZmZm
-ZmZmZmY4MDI2Njk4MT5dIF9faXBpcGVfZGlzcGF0Y2hfd2lyZWQrMHgxMWUvMHgxNjANCiBbPGZm
-ZmZmZmZmODAyMWI5ODY+XSBfX2lwaXBlX2hhbmRsZV9pcnErMHg5NS8weDFjNg0KIFs8ZmZmZmZm
-ZmY4MDIwYzMxMT5dIGNvbW1vbl9pbnRlcnJ1cHQrMHg2MS8weDdkDQogPEVPST4gIFs8ZmZmZmZm
-ZmY4MDIxYmM5Yz5dIF9faXBpcGVfc3lzY2FsbF9yb290KzB4MWMvMHgxNTYNCiBbPGZmZmZmZmZm
-ODAyZmY4YmQ+XSB2ZnNfd3JpdGUrMHgxMjEvMHgxNTYNCiBbPGZmZmZmZmZmODA0NWI1MjM+XSBf
-X2lwaXBlX3N5c2NhbGxfcm9vdF90aHVuaysweDM1LzB4NmENCiBbPGZmZmZmZmZmODAyMGJjZjQ+
-XSBzeXN0ZW1fY2FsbF9hZnRlcl9zd2FwZ3MrMHg1NC8weDk0DQoNCiBmZmZmZmZmZjgwYjgzZjYw
-IDAwMDAwMDAwMzU1NjFlNWUgMDAwMDAwMDAwMDAwMDE2Mg0KIGZmZmZmZmZmODBiODQ1MDggZmZm
-ZmZmZmY4MGI1MTI4OCAwMDAwMDAwMDAwMDAwMDAwIGZmZmZmZmZmODAyNmNkYjQNCiBmZmZmZmZm
-ZjgwNGRiMmFmIGZmZmY4MTAwMDAwMDAzMTcgZmZmZmZmZmY4MDQ3OGMxMCBmZmZmZmZmZjAwMDAw
-MDAwDQpDYWxsIFRyYWNlOg0KIDxJUlE+ICBbPGZmZmZmZmZmODAyNmNkYjQ+XSB4bmludHJfY2xv
-Y2tfaGFuZGxlcisweGVlLzB4MzNlDQogWzxmZmZmZmZmZjgwMjY2OTgxPl0gX19pcGlwZV9kaXNw
-YXRjaF93aXJlZCsweDExZS8weDE2MA0KIFs8ZmZmZmZmZmY4MDIxYjk4Nj5dIF9faXBpcGVfaGFu
-ZGxlX2lycSsweDk1LzB4MWM2DQogWzxmZmZmZmZmZjgwMjBjMzExPl0gY29tbW9uX2ludGVycnVw
-dCsweDYxLzB4N2QNCiA8RU9JPiAgWzxmZmZmZmZmZjgwMjFiYzljPl0gX19pcGlwZV9zeXNjYWxs
-X3Jvb3QrMHgxYy8weDE1Ng0KIFs8ZmZmZmZmZmY4MDJmZjhiZD5dIHZmc193cml0ZSsweDEyMS8w
-eDE1Ng0KIFs8ZmZmZmZmZmY4MDQ1YjUyMz5dIF9faXBpcGVfc3lzY2FsbF9yb290X3RodW5rKzB4
-MzUvMHg2YQ0KIFs8ZmZmZmZmZmY4MDIwYmNmND5dIHN5c3RlbV9jYWxsX2FmdGVyX3N3YXBncysw
-eDU0LzB4OTQNCg0KIHhlbm9fdGltZXJiZW5jaCBpOTE1IGRybSBpcHY2IGRtX3NuYXBzaG90IGRt
-X21pcnJvciBkbV9tb2QgbG9vcCBzbmRfaGRhX2ludGVsIHNuZF9wY21fb3NzIHNuZF9wY20gc25k
-X21peGVyX29zcyBzbmRfc2VxX2R1bW15IHNuZF9zZXFfb3NzIHNuZF9zZXFfbWlkaV9ldmVudCBz
-bmRfc2VxIHNuZF90aW1lciBzbmRfc2VxX2RldmljZSBzZyBzZXJpb19yYXcgaWRlX3BjaV9nZW5l
-cmljIHNuZCBpMmNfaTgwMSBwY3Nwa3Igc291bmRjb3JlIHNuZF9wYWdlX2FsbG9jIHBzbW91c2Ug
-aTJjX2NvcmUgZTEwMDBlIGlkZV9jb3JlIHNyX21vZCBpbnRlbF9hZ3AgY2Ryb20gZGNkYmFzIGV2
-ZGV2IGV4dDMgamJkIG1iY2FjaGUgc2RfbW9kIHVzYmhpZCBoaWQgYXRhX3BpaXggM2M1OXggbWlp
-IGF0YV9nZW5lcmljIGxpYmF0YSBlaGNpX2hjZCB1aGNpX2hjZCBzY3NpX21vZCBbbGFzdCB1bmxv
-YWRlZDogeGVub19zd2l0Y2h0ZXN0XQ0KUGlkOiA0NTM5LCBjb21tOiBkaXNwbGF5LTQ1MzggTm90
-IHRhaW50ZWQgMi42LjI1LjE5ICM1DQpSSVA6IDAwMTA6WzxmZmZmZmZmZjgwMjdiMWQ2Pl0gIFs8
-ZmZmZmZmZmY4MDI3YjFkNj5dIF9feG50aW1lcl9pbml0KzB4MjgwLzB4M2EyDQpSU1A6IDAwMTg6
-ZmZmZjgxMDA3MTQ3ZGNhOCAgRUZMQUdTOiAwMDA1MDAwMg0KUkFYOiBmZmZmODEwMDdjYjgwYTA4
-IFJCWDogZmZmZjgxMDA3Y2I4MDk4OCBSQ1g6IGZmZmY4MTAwNzE0YjEwMjgNClJEWDogMDAwMDAw
-MDAwMDAwMDAwMCBSU0k6IGZmZmZmZmZmODA1MzBiMTAgUkRJOiAwMDAwMDAwMDAwMDAwMDAwDQpS
-QlA6IGZmZmZmZmZmODA1MzBhYzAgUjA4OiAwMDAwMDAwMDM1MWY5NTc4IFIwOTogMDAwMDAwMDAw
-MDAwMTAwMA0KUjEwOiBmZmZmODEwMDdjYjgwZTMwIFIxMTogZmZmZjgxMDA3Y2I4MGMzMCBSMTI6
-IDAwMDAwMDAwMDAwMDAwMDANClIxMzogZmZmZmZmZmY4MDUzMGFjMCBSMTQ6IDAwMDAwMDAwMDAz
-MDAwMDAgUjE1OiAwMDAwMDAwMDAwMDAxMDAwDQpGUzogIDAwMDAwMDAwNDFkZmU5NjAoMDA2Mykg
-R1M6ZmZmZmZmZmY4MDU2MjAwMCgwMDAwKSBrbmxHUzowMDAwMDAwMDAwMDAwMDAwDQpDUzogIDAw
-MTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDNiDQpDUjI6IDAwMDAwMDAw
-MDAwMDAwMDggQ1IzOiAwMDAwMDAwMDcxNGJiMDAwIENSNDogMDAwMDAwMDAwMDAwMDZlMA0KRFIw
-OiAwMDAwMDAwMDAwMDAwMDAwIERSMTogMDAwMDAwMDAwMDAwMDAwMCBEUjI6IDAwMDAwMDAwMDAw
-MDAwMDANCkRSMzogMDAwMDAwMDAwMDAwMDAwMCBEUjY6IDAwMDAwMDAwZmZmZjBmZjAgRFI3OiAw
-MDAwMDAwMDAwMDAwNDAwDQpQcm9jZXNzIGRpc3BsYXktNDUzOCAocGlkOiA0NTM5LCB0aHJlYWRp
-bmZvIGZmZmY4MTAwNzE0N2MwMDAsIHRhc2sgZmZmZjgxMDA3MTQzNjAwMCkNClN0YWNrOiAgZmZm
-ZjgxMDA3MTQ3ZGNiOCAwMDAwMDAwMjAwMDAwMDAyIDAwMDAwMDAwMDAwMDAwNjQgZmZmZjgxMDA3
-MTQ3ZGNjMA0KIGZmZmY4MTAwNzE0N2RjYzAgZmZmZjgxMDA3Y2I4MGI2MCBmZmZmODEwMDdjYjgw
-NjUwIGZmZmZmZmZmODAyN2EyNzQNCiBmZmZmODEwMDcxNDdkZGUwIDAwMDAwMDAwMDAzMDAwMDAg
-ZmZmZjgxMDA3Y2I4MDY1MCAwMDAwMDAwMDAwMzAwMDAwDQpDYWxsIFRyYWNlOg0KIFs8ZmZmZmZm
-ZmY4MDI3YTI3ND5dID8geG50aHJlYWRfaW5pdCsweDY4LzB4MmRjDQogWzxmZmZmZmZmZjgwMjc1
-YTI1Pl0gPyB4bnBvZF9pbml0X3RocmVhZCsweDRiLzB4MzQwDQogWzxmZmZmZmZmZjgwMjhmNDZl
-Pl0gPyBydF90YXNrX2NyZWF0ZSsweGM0LzB4NDhkDQogWzxmZmZmZmZmZjgwMjZhNDI5Pl0gPyB4
-bmhlYXBfYWxsb2MrMHg1NTIvMHg1NjgNCiBbPGZmZmZmZmZmODAzN2VmNmY+XSA/IF9fdXBfcmVh
-ZCsweDEzLzB4OGENCiBbPGZmZmZmZmZmODAyOTgwMmY+XSA/IF9fcnRfdGFza19jcmVhdGUrMHgx
-MzYvMHgxZDYNCiBbPGZmZmZmZmZmODAyN2ZlZDM+XSA/IGxvc3lzY2FsbF9ldmVudCsweGIyLzB4
-MTg5DQogWzxmZmZmZmZmZjgwMjY2NzUxPl0gPyBfX2lwaXBlX2Rpc3BhdGNoX2V2ZW50KzB4Y2Qv
-MHgxZGYNCiBbPGZmZmZmZmZmODAyMWJkMTc+XSA/IF9faXBpcGVfc3lzY2FsbF9yb290KzB4OTcv
-MHgxNTYNCiBbPGZmZmZmZmZmODA0NWI1MjM+XSA/IF9faXBpcGVfc3lzY2FsbF9yb290X3RodW5r
-KzB4MzUvMHg2YQ0KIFs8ZmZmZmZmZmY4MDIwYmNmND5dID8gc3lzdGVtX2NhbGxfYWZ0ZXJfc3dh
-cGdzKzB4NTQvMHg5NA0KDQoNCkNvZGU6IDAwIDAwIDg5IDA1IGM5IDU4IDJiIDAwIGViIDA0IDQ4
-IDgzIGNmIDAyIDQ4IDhkIDc1IDUwIDQ4IDhkIDgzIDgwIDAwIDAwIDAwIDQ4IDhiIDRlIDA4IDQ4
-IDhiIDExIDQ4IDg5IDQ4IDA4IDQ4IDg5IDkzIDgwIDAwIDAwIDAwIDw0OD4gODkgNDIgMDggNDgg
-ODkgMDEgZmYgNDYgMTAgZmYgNDUgNjggNDAgZjYgYzcgMDIgMGYgODUgZDggMDAgDQpSSVAgIFs8
-ZmZmZmZmZmY4MDI3YjFkNj5dIF9feG50aW1lcl9pbml0KzB4MjgwLzB4M2EyDQogUlNQIDxmZmZm
-ODEwMDcxNDdkY2E4Pg0KQ1IyOiAwMDAwMDAwMDAwMDAwMDA4DQotLS1bIGVuZCB0cmFjZSA5YTQ1
-ZWZkYzc5NGNjMjY0IF0tLS0NCg==
-
----MOQ1225976575eb28271a6c486650f2ebf01bec42f48d--
+-- 
+                                                 Gilles.
 
