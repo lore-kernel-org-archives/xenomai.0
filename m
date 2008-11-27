@@ -1,5 +1,5 @@
-Message-ID: <492EC2FC.5030808@domain.hid>
-Date: Thu, 27 Nov 2008 16:55:40 +0100
+Message-ID: <492EF786.4040303@domain.hid>
+Date: Thu, 27 Nov 2008 20:39:50 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <20081127175234.163sujmgcgcgs4gk@domain.hid>
@@ -20,28 +20,66 @@ To: Mehmet Alphan Ulusoy <alphan@domain.hid>
 Cc: xenomai@xenomai.org
 
 Mehmet Alphan Ulusoy wrote:
-> I have a problem where when I want to terminate a xenomai user space  
-> task, the task becomes a zombie and I can not re-run it since some of  
-> the resources (like mutexes) it uses are already there and can't be  
-> created again.
-> 
-> The scenario is as follows:
-> 
-> - A process running on the computer forks to create a child.
-> - The child executes the user space task using the system() call.  
-> (child does not return). I suppose userTask is the child of the child  
-> process now.
-> - After a while it attempts to terminate the task by calling "pkill  
-> -SIGTERM userTask"  using the system() call again.
-> - The task, not always but sooner or later -above steps are repeated  
-> for a number of times-, becomes a zombie.
-> - The user space task has a signal handler for SIGTERM and SIGINT signals.
-> - The signal handler is as follows:
+> void terminateGracefully(int sig)
+> {
+>      int err;
+> 	    while (( err = rt_task_delete(&tid)) != 0)
+> 	    {
+> 	        printf("Error deleting task. Code %d.\n");
+> 	    }
+> 	    while (( err = rt_alarm_delete(&aid)) != 0)
+> 	    {
+> 	        printf("Error deleting alarm. Code %d.\n");
+> 	    }
+> 	    while (( err = rt_pipe_delete(&pidMon)) != 0)
+> 	    {
+> 	        printf("Error deleting pipe. Code %d.\n");
+> 	    }
+> 	    while (( err = close(sid)) != 0)
+> 	    {
+> 	        printf("Error deleting socket. Code %d.\n");
+> 	    }
+> 	}
 
-You need to handle SIGCHLD in the father.
+This code is seriously broken. You risk an infinite loop which may brick
+your box, if ever it happens over a thread with the SCHED_FIFO policy.
+All these calls are not async signal safe, so should not be called in a
+signal handler. Almost the only thing permitted in a signal handler is
+to call sem_post, or to set a flag used by your application when a
+syscall returns EINTR.
 
-See http://en.wikipedia.org/wiki/Zombie_process
+> - The child process which makes the system() call has a signal handler  
+> installed for SIGCHILD signal and calls wait() to collect their exit  
+> status.
+
+The handler for SIGCHLD should be installed in the parent process, not
+the children.
+
+> 
+> signal(SIGCHLD, waitChild);
+> 
+> void waitChild(int sig)
+> {
+> 
+>      int status =0;
+> 
+>      wait(&status);
+> 
+> }
+
+That is incorrect, you may receive SIGCHLD only once for several
+children termination, so, you should call wait4 in non blocking mode
+until it returns EWOULDBLOCK.
+
+Or you should ignore explicitely SIGCHLD altogether, passing SIG_IGN to
+signal or sigaction, Linux will then take care correctly of terminated
+children.
+
+> Is there a specific order to follow while deleting real-time entities?  
+> Is the system() call or "pkill -SIGTERM" the problem?
+
+why using system, why not using the kill service directly?
 
 -- 
-                                                 Gilles.
+					    Gilles.
 
