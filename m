@@ -1,5 +1,5 @@
-Message-ID: <4933099B.6000906@domain.hid>
-Date: Sun, 30 Nov 2008 22:46:03 +0100
+Message-ID: <49330CD3.4090700@domain.hid>
+Date: Sun, 30 Nov 2008 22:59:47 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <493306F5.2080605@domain.hid>
@@ -31,14 +31,14 @@ Wolfgang Grandegger wrote:
 > wired. Is there anything wrong in my test program or anything else I
 > should care of?
 
-Hi Wolfgang,
+First, you should know that PTHREAD_CANCEL_ASYNCHRONOUS is evil, it will
+almost inevitably leave things in an unknown state when canceling a
+thread, you would better use PTHREAD_CANCEL_DEFERRED and ensure that
+your thread has some cancellation point, if it has not, use
+pthread_testcancel.
 
-before I delve into your program, did you read:
-http://www.xenomai.org/documentation/trunk/html/api/group__posix__cancel.html
-and
-http://www.opengroup.org/onlinepubs/000095399/functions/xsh_chap02_09.html#tag_02_09_05
-?
-
+Second, your program will only work if root thread priority coupling is
+enabled. Is it enabled in your case?
 
 -- 
 					    Gilles.
