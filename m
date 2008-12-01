@@ -1,13 +1,13 @@
-Message-ID: <4933F18F.7080103@domain.hid>
-Date: Mon, 01 Dec 2008 15:15:43 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <006901c953c4$11e18ea0$0f01a8c0@domain.hid>
+From: "Daniele Pagani" <danielepagani@domain.hid>
+References: <002701c953bd$0899eec0$0f01a8c0@domain.hid>
+	<4933F0A8.4020406@domain.hid>
+Date: Mon, 1 Dec 2008 15:49:51 +0100
 MIME-Version: 1.0
-References: <493306F5.2080605@domain.hid> <49330CD3.4090700@domain.hid>
-	<4933BAE2.3000502@domain.hid> <4933F1A4.8060209@domain.hid>
-In-Reply-To: <4933F1A4.8060209@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; format=flowed; charset="iso-8859-1";
+	reply-type=original
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pthread cancelation and scheduling magics
+Subject: Re: [Xenomai-help] xenomai on Blackfin BF537
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,59 +17,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
-> Gilles Chanteperdrix wrote:
->> Gilles Chanteperdrix wrote:
->>> Wolfgang Grandegger wrote:
->>>> Hello,
->>>>
->>>> I have written the attached test program to cancel Xenomai POSIX
->>>> threads. The "calc_task" does some busy work, which the higher priority
->>>> task "ctrl_task" interrupts and aborts after some time. The program does
->>>> not behave like I expect and it also behaves differently on my PowerPC
->>>> and ARM test system. The "calc_task" continues after calling
->>>> pthread_cancel() in "ctrl_task". On ARM, the behaviour is even more
->>>> wired. Is there anything wrong in my test program or anything else I
->>>> should care of?
->>> First, you should know that PTHREAD_CANCEL_ASYNCHRONOUS is evil, it will
->>> almost inevitably leave things in an unknown state when canceling a
->>> thread, you would better use PTHREAD_CANCEL_DEFERRED and ensure that
->>> your thread has some cancellation point, if it has not, use
->>> pthread_testcancel.
->>>
->>> Second, your program will only work if root thread priority coupling is
->>> enabled. Is it enabled in your case?
->> Actually, even with priority coupling I am not sure it can not work. The
->> problem is the way do_sigwake_event signal threads: it make them switch
->> to secondary mode only if they pass through a syscall. Since the
->> "calc_task" thread does not issue any syscall, it will never check see
->> that it should relax to handle the cancelation signal.
+Dear Philippe,
+
+thank you very much for your very fast answer.
+
+Anyway, please consider that I'm newbie about the matter,
+so,
+where I need to write these lines?
+
+I find in:
+/mnt/uClinux-dist-2008R1.5-RC3/staging/usr/bin
+the xeno-config command.
+
+Then, I run:
+./xeno-config --xeno-cflags
+./xeno-config --xeno-ldflags
+
+Then, what I need to do?
+Do I need to recompile the kernel?
+
+Best regards,
+Daniele.
+
+----- Original Message ----- 
+From: "Philippe Gerum" <rpm@xenomai.org>
+To: "Daniele Pagani" <danielepagani@domain.hid>
+Cc: <xenomai@xenomai.org>
+Sent: Monday, December 01, 2008 3:11 PM
+Subject: Re: [Xenomai-help] xenomai on Blackfin BF537
+
+
+> Daniele Pagani wrote:
+>>
+>> Dear Sirs,
+>> I'm using Xenomai with uclinux-dist-2008R1.5 on bf537.
+>>
+>> Then, it is possible to use native api with a fdpic elf format?
+>>
+>> I receive warning like "relocation references a different segment".
+>>
+>> I compile with bfin-linux-uclibc-gcc .... -lnative.
+>>
+>
+> We do use the fdpic format for all libs on blackfin.
+>
+> xeno-config --cflags
+> xeno-config --ldflags
+>
+> should be used to get the proper compilation/link flags.
+>
+>> In my code I create 2 real time tasks.
+>>
+>> All works fine when I use flat format, but now I need to use fdpic elf
+>> format and I receive errors.x
+>>
+>> Best regards,
+>> Daniele.
+>>
+>>
+>> ------------------------------------------------------------------------
+>>
+>> _______________________________________________
+>> Xenomai-help mailing list
+>> Xenomai-help@domain.hid
+>> https://mail.gna.org/listinfo/xenomai-help
+>
+>
+> -- 
+> Philippe.
+>
+>
+>
+> -- 
+> No virus found in this incoming message.
+> Checked by AVG.
+> Version: 7.5.552 / Virus Database: 270.9.12/1821 - Release Date: 
+> 30/11/2008 17.53
+>
 > 
-> calc_task() calls clock_gettime() permanently, which does a syscall as
-> long as vDSO is not used, which might be the case on PowerPC. This would
-> explain why cancelation of "calc_task" works on ARM.
 
-For architectures with a high-resolution counter,
-clock_gettime(CLOCK_MONOTONIC) is a xenomai service which uses the
-counter and does not issue any syscall, this includes arm unless you
-configured xenomai with --enable-arm-arch=generic or with
---disable-arm-tsc, and this probably includes powerpc.
-
-> 
->> Now, the question is, do you realistically plan to write an application
->> which makes no syscall in its real-time loop?
-> 
-> Unlikely, but it may happen in case of programming errors. Anyhow, the
-> pthreads will run legacy code and it would be a pain to add
-> pthread_testcancel where necessary. But maybe there is a more elegant
-> and simple solution to do a defined exit/abort.
-
-In case of programming error, enable the xenomai watchdog, it will
-forcibly kill the problematic thread.
-
--- 
-                                                 Gilles.
 
