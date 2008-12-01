@@ -1,12 +1,10 @@
-Message-ID: <4933E726.3090906@domain.hid>
-Date: Mon, 01 Dec 2008 14:31:18 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <002701c953bd$0899eec0$0f01a8c0@domain.hid>
+From: "Daniele Pagani" <danielepagani@domain.hid>
+Date: Mon, 1 Dec 2008 14:59:29 +0100
 MIME-Version: 1.0
-References: <493306F5.2080605@domain.hid> <49330CD3.4090700@domain.hid>
-In-Reply-To: <49330CD3.4090700@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pthread cancelation and scheduling magics
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0024_01C953C5.690E0900"
+Subject: Re: [Xenomai-help] xenomai on Blackfin BF537
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,43 +14,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Wolfgang Grandegger wrote:
->> Hello,
->>
->> I have written the attached test program to cancel Xenomai POSIX
->> threads. The "calc_task" does some busy work, which the higher priority
->> task "ctrl_task" interrupts and aborts after some time. The program does
->> not behave like I expect and it also behaves differently on my PowerPC
->> and ARM test system. The "calc_task" continues after calling
->> pthread_cancel() in "ctrl_task". On ARM, the behaviour is even more
->> wired. Is there anything wrong in my test program or anything else I
->> should care of?
-> 
-> First, you should know that PTHREAD_CANCEL_ASYNCHRONOUS is evil, it will
-> almost inevitably leave things in an unknown state when canceling a
-> thread, you would better use PTHREAD_CANCEL_DEFERRED and ensure that
-> your thread has some cancellation point, if it has not, use
-> pthread_testcancel.
+This is a multi-part message in MIME format.
 
-Actually I want to do a defined exit in case on a fatal error condition.
-Normally I just would printf an error message and call exit to abort the
-whole application. Things are more tricky with Xenomai. For error
-logging and debugging, I'm using rt_printk() (RTDK) and I want to see
-all messages till the fatal error occurred, which requires stopping all
-activity/tasks of the scheduler. My idea was to cancel all non-active
-tasks, wait for a few hundredth milliseconds before calling finally
-exit. Maybe there is a simpler method to achieve such a defined abort.
+------=_NextPart_000_0024_01C953C5.690E0900
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-> Second, your program will only work if root thread priority coupling is
-> enabled. Is it enabled in your case?
 
-Where can I read more about this thread priority coupling? I see
-different ROOT priorities when using USE_EXPLICIT_SCHED.
+Dear Sirs,
+I'm using Xenomai with uclinux-dist-2008R1.5 on bf537.
 
-Wolfgang,
+Then, it is possible to use native api with a fdpic elf format?
+
+I receive warning like "relocation references a different segment".
+
+I compile with bfin-linux-uclibc-gcc .... -lnative.
+
+In my code I create 2 real time tasks.
+
+All works fine when I use flat format, but now I need to use fdpic elf =
+format and I receive errors.x
+
+Best regards,
+Daniele.
+
+
+------=_NextPart_000_0024_01C953C5.690E0900
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Diso-8859-1">
+<META content=3D"MSHTML 6.00.6000.16414" name=3DGENERATOR>
+<STYLE></STYLE>
+</HEAD>
+<BODY bgColor=3D#ffffff>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>Dear Sirs,</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2>I'm using Xenomai with =
+uclinux-dist-2008R1.5 on=20
+bf537.</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>Then, it is possible to use native api =
+with a fdpic=20
+elf format?</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>I receive warning like "relocation =
+references a=20
+different segment".</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>I compile with bfin-linux-uclibc-gcc =
+....=20
+-lnative.</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>In my code I create 2 real time =
+tasks.</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>All works fine when I use flat format, =
+but now I=20
+need to use fdpic elf format and I receive errors.x</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>Best regards,</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2>Daniele.</DIV>
+<DIV><BR></DIV></FONT></BODY></HTML>
+
+------=_NextPart_000_0024_01C953C5.690E0900--
 
 
