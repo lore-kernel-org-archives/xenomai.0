@@ -1,42 +1,54 @@
-Message-ID: <4958FC75.3020606@domain.hid>
-Date: Mon, 29 Dec 2008 16:36:05 +0000
+Message-ID: <4933BAE2.3000502@domain.hid>
+Date: Mon, 01 Dec 2008 11:22:26 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20081223190649.26094.61372.stgit@domain.hid>
-	<49513A4F.2060700@domain.hid> <49518900.5040504@domain.hid>
-	<4951E402.8000702@domain.hid> <4958DF63.5060005@domain.hid>
-In-Reply-To: <4958DF63.5060005@domain.hid>
+References: <493306F5.2080605@domain.hid> <49330CD3.4090700@domain.hid>
+In-Reply-To: <49330CD3.4090700@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH v2 0/5] NMI watchdog fixes / enhancements
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] pthread cancelation and scheduling magics
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Regarding this thread, I would appreciate if we could just stay on
->>> topic. If you don't have the time for the patches, then it's absolutely
->>> OK, just leave them alone.
->> I am reluctant to test patches which are explicitely labeled as
->> "untested", and prefer to wait the tested ones. Trunk is already broken
->> enough, that is my point.
+Gilles Chanteperdrix wrote:
+> Wolfgang Grandegger wrote:
+>> Hello,
 >>
+>> I have written the attached test program to cancel Xenomai POSIX
+>> threads. The "calc_task" does some busy work, which the higher priority
+>> task "ctrl_task" interrupts and aborts after some time. The program does
+>> not behave like I expect and it also behaves differently on my PowerPC
+>> and ARM test system. The "calc_task" continues after calling
+>> pthread_cancel() in "ctrl_task". On ARM, the behaviour is even more
+>> wired. Is there anything wrong in my test program or anything else I
+>> should care of?
 > 
-> Oh, that was a misunderstanding due to my unfortunate changelog.
-> Untested referred to a specific config set and a last-minute change of
-> the previous version.
+> First, you should know that PTHREAD_CANCEL_ASYNCHRONOUS is evil, it will
+> almost inevitably leave things in an unknown state when canceling a
+> thread, you would better use PTHREAD_CANCEL_DEFERRED and ensure that
+> your thread has some cancellation point, if it has not, use
+> pthread_testcancel.
+> 
+> Second, your program will only work if root thread priority coupling is
+> enabled. Is it enabled in your case?
 
-Ok. Forget about solving the issue on ARM, I have to solve it now.
+Actually, even with priority coupling I am not sure it can not work. The
+problem is the way do_sigwake_event signal threads: it make them switch
+to secondary mode only if they pass through a syscall. Since the
+"calc_task" thread does not issue any syscall, it will never check see
+that it should relax to handle the cancelation signal.
+
+Now, the question is, do you realistically plan to write an application
+which makes no syscall in its real-time loop?
 
 -- 
                                                  Gilles.
