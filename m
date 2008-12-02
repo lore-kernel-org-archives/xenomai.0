@@ -1,85 +1,61 @@
-Message-ID: <491F432D.80702@domain.hid>
-Date: Sat, 15 Nov 2008 22:46:21 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <49359483.4060201@domain.hid>
+Date: Tue, 02 Dec 2008 21:03:15 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigF2955742AA2BCC5EE6C0F49F"
-Sender: jan.kiszka@domain.hid
-Subject: [Adeos-main] [PATCH] x86: Fix root state corruptions
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: adeos-main <adeos-main@gna.org>
-Cc: Philippe Gerum <rpm@xenomai.org>
+References: <493306F5.2080605@domain.hid>	<49330CD3.4090700@domain.hid>	<4933BAE2.3000502@domain.hid>	<4933F1A4.8060209@domain.hid>	<4933F18F.7080103@domain.hid>
+	<4933FE5A.5060501@domain.hid>	<49355B5D.8070802@domain.hid>
+	<49355A59.4050600@domain.hid>	<49357C02.1090001@domain.hid>
+	<49358003.1080705@domain.hid> <4935919D.2080602@domain.hid>
+In-Reply-To: <4935919D.2080602@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] pthread cancelation and scheduling magics
+Reply-To: rpm@xenomai.org
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF2955742AA2BCC5EE6C0F49F
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Wolfgang Grandegger wrote:
+> -bash-3.2# cat stat sched
+> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+>   0  0      0          12563      0     00500080   99.9  ROOT
+>   0  1407   1          1          0     00300380    0.0  cancel-test
+>   0  1409   1          3          1     00300380    0.0  ctrl_func
+>   0  1410   1          3          0     00300380    0.0  calc_func
+>   0  0      0          4373414    0     00000000    0.1  IRQ512: [timer]
+> CPU  PID    PRI      PERIOD     TIMEOUT    TIMEBASE  STAT       NAME
+>   0  0       39      0          0          master    R          ROOT
+>   0  1407     0      0          0          master    X          cancel-test
+>   0  1409    39      0          0          master    X          ctrl_func
+>   0  1410    38      0          0          master    X          calc_func
+> 
+> When does this priority coupling happen.
 
-Only fair: I touched this code a few times recently while
-re-enabling KGDB support, but I didn't noticed this lethal bug. Now I
-had to hunt it for half a day.
+Each time a thread switches from primary to secondary mode, it is enqueued by
+decreasing priority order into a list tracking relaxed threads for the given
+CPU. The root thread for that CPU dynamically inherits the priority of the
+topmost thread queued to the relax/RPI list. This list is updated as soon as:
+- a primary mode thread is relaxed (enqueued)
+- a relaxed thread goes back to primary mode (dequeued)
+- a relaxed thread blocks on a linux service (dequeued)
+- a relaxed thread resumes from a linux service (enqueued)
+When no more threads are linked to the RPI list, the root thread priority is
+downgraded to -1.
 
-What was wrong should be obvious. Its effect was a spuriously unstalled
-root domain once in a while after we handled a fault over a non-root
-domain. Fortunately this is a corner case - unless you use the FPU in
-userspace (initial usage fault...).
+In effect, this couples the Xenomai priority scale to the linux one, so that
+switching to secondary mode does not allow lower priority threads still in
+primary mode to preempt.
 
-Patch is (still) against 2.6.26, but it is required for all recent
-i386/x86_64/x86 ipipe versions, from 2.6.23 to 2.6.27.
+CONFIG_XENO_OPT_PRIOCPL controls whether such coupling should happen at all.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
- arch/x86/kernel/ipipe.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-Index: b/arch/x86/kernel/ipipe.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/arch/x86/kernel/ipipe.c
-+++ b/arch/x86/kernel/ipipe.c
-@@ -751,7 +751,7 @@ int __ipipe_handle_exception(struct pt_r
- 	if (!ipipe_root_domain_p &&
- 	    __ipipe_xlate_signo[vector] >=3D 0 &&
- 	    !kgdb_handle_exception(vector, __ipipe_xlate_signo[vector], error_c=
-ode, regs)) {
--		if (!flags)
-+		if (flags & X86_EFLAGS_IF)
- 			__clear_bit(IPIPE_STALL_FLAG,
- 				    &ipipe_root_cpudom_var(status));
- 		return 1;
-@@ -759,7 +759,7 @@ int __ipipe_handle_exception(struct pt_r
- #endif /* CONFIG_KGDB */
-=20
- 	if (unlikely(ipipe_trap_notify(vector, regs))) {
--		if (!flags)
-+		if (flags & X86_EFLAGS_IF)
- 			__clear_bit(IPIPE_STALL_FLAG,
- 				    &ipipe_root_cpudom_var(status));
- 		return 1;
-
-
---------------enigF2955742AA2BCC5EE6C0F49F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkkfQzIACgkQniDOoMHTA+myRQCeLTXlaRhuOSmtC15zlXsU7PJJ
-NSUAn0urm24JChopn1qI0/zswaPzcTxS
-=qvqB
------END PGP SIGNATURE-----
-
---------------enigF2955742AA2BCC5EE6C0F49F--
+-- 
+Philippe.
 
