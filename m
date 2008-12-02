@@ -1,16 +1,12 @@
-Message-ID: <49355A59.4050600@domain.hid>
-Date: Tue, 02 Dec 2008 16:55:05 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <49356C83.8050909@domain.hid>
+Date: Tue, 02 Dec 2008 18:12:35 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <493306F5.2080605@domain.hid>
-	<49330CD3.4090700@domain.hid>	<4933BAE2.3000502@domain.hid>
-	<4933F1A4.8060209@domain.hid>
-	<4933F18F.7080103@domain.hid> <4933FE5A.5060501@domain.hid>
-	<49355B5D.8070802@domain.hid>
-In-Reply-To: <49355B5D.8070802@domain.hid>
+References: <4934EB57.9080305@domain.hid>
+In-Reply-To: <4934EB57.9080305@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pthread cancelation and scheduling magics
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Calling comedi from a RT task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,41 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: =?ISO-8859-1?Q?Patrick_Gr=E4bel?= <graebel@domain.hid>
+Cc: xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
-> Hi Gilles,
-> 
-> Gilles Chanteperdrix wrote:
->> Gilles Chanteperdrix wrote:
->>>>> Now, the question is, do you realistically plan to write an application
->>>>> which makes no syscall in its real-time loop?
->>>> Unlikely, but it may happen in case of programming errors. Anyhow, the
->>>> pthreads will run legacy code and it would be a pain to add
->>>> pthread_testcancel where necessary. But maybe there is a more elegant
->>>> and simple solution to do a defined exit/abort.
->>> In case of programming error, enable the xenomai watchdog, it will
->>> forcibly kill the problematic thread.
->> To give you a more complete answer: most blocking functions are
->> cancellation points in the PTHREAD_CANCEL_DEFERRED case, so, you
->> probably do not need to add pthread_testcancel at all. The only
->> exception is pthread_mutex_lock: this way, cancellation happens for well
->> defined mutex states, and you may install cleanup handlers with
->> pthread_cleanup_push/pthread_cleanup_pop if ever a thread may be
->> destroyed while holding a mutex. With PTHREAD_CANCEL_ASYNCHRONOUS, the
->> situation is not that clean.
-> 
-> Well, there seems something wrong with it, also PTHREAD_CANCEL_DEFERRED
-> with pthread_testcancel does not work reliably and consistently and it
-> still behaves different on my ARM and PowerPC systems. I have attached
-> my revised test program allowing to enable/disable various method of
-> thread creation, setup and cancellation. They all work fine with the
-> Linux POSIX libraries. With Xenomai, only a few work as expected on my
-> ARM and PowerPC test systems.
+Patrick Gr=E4bel wrote:
+> Hi,
+>=20
+> I am using Xenomai 2.3.1 and comedi with driver "ni_pcimio". I am able
+> to create a RT task that triggers each msec. But calling the comedi API
+> kicks me out of RT as indicated by /proc/xenomai/stat (column MSW). The
+> modules loaded are:
+>=20
+> comedi_fc   3584 1 ni_pcimio
+> kcomedilib 20868 0
+> comedi     33248 6 ni_pcimio, ni_tio, comedi_fc, mite, 8255, kcomedilib
+> licModule  44272 1 kcomedilib
+>=20
+> The comedi modules are from a 2.6.20-14-ipipe/comedi/driver directory.
+> How do I use the comedi API so that the task will stay realtime? What d=
+o
+> I have to check?
 
-Could you explain us exactly what happens ?
+You should have a look at the RT-capable comedi stack that currently
+only lives in Xenomai SVN trunk. How to get your device supported by
+that stack, ie. how to port the existing driver to RT-comedi, that's
+something Alexis can tell you more about. And/or have a look at the fake
+and loop drivers that are already included.
 
--- 
-                                                 Gilles.
+Jan
+
+--=20
+Siemens AG, Corporate Technology, CT SE 2 ES-OS
+Corporate Competence Center Embedded Linux
 
