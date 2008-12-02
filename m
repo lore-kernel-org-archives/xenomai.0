@@ -1,41 +1,36 @@
-Message-ID: <491A061A.2030804@domain.hid>
-Date: Tue, 11 Nov 2008 23:24:26 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4934EB57.9080305@domain.hid>
+Date: Tue, 02 Dec 2008 09:01:27 +0100
+From: =?ISO-8859-15?Q?Patrick_Gr=E4bel?= <graebel@domain.hid>
 MIME-Version: 1.0
-References: <217b7eb20811100730r38bc0e7dq3d907d4c67563a97@domain.hid>
-	<419ae825986960cff2d9b2316d59b81b.squirrel@domain.hid>
-In-Reply-To: <419ae825986960cff2d9b2316d59b81b.squirrel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] ipipe 1.9 vs 1.11
-Reply-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Hank <hank007@domain.hid>
-Cc: adeos-main@gna.org
+Subject: [Xenomai-help] Calling comedi from a RT task
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Hank wrote:
->> Hi
->>
->> Any comments on how different are the two releases? We are currently using
->> 1.9 and need to understand the advantages of moving to 1.11.
-> 
-> You can see the differences by looking at git logs. I do not know if there
-> is a web access. But generally, it is better to pick the latest version,
-> this way, you do not see bugs that were already corrected.
 
-There is a web access:
-http://git.denx.de/?p=ipipe-2.6.git;a=log;h=f8d71a1092efb4efafbf50292b97e8c9ec4f08d9
+Hi,
 
-There were many changes. Notably fixes for ARMv6. So, you should use 1.11.
+I am using Xenomai 2.3.1 and comedi with driver "ni_pcimio". I am able
+to create a RT task that triggers each msec. But calling the comedi API
+kicks me out of RT as indicated by /proc/xenomai/stat (column MSW). The
+modules loaded are:
 
--- 
-					    Gilles.
+comedi_fc   3584 1 ni_pcimio
+kcomedilib 20868 0
+comedi     33248 6 ni_pcimio, ni_tio, comedi_fc, mite, 8255, kcomedilib
+licModule  44272 1 kcomedilib
+
+The comedi modules are from a 2.6.20-14-ipipe/comedi/driver directory.
+How do I use the comedi API so that the task will stay realtime? What do
+I have to check?
+
 
