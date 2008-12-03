@@ -1,6 +1,6 @@
-Message-ID: <4936DBC1.6030303@domain.hid>
-Date: Wed, 03 Dec 2008 20:19:29 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4936DBC6.9080805@domain.hid>
+Date: Wed, 03 Dec 2008 20:19:34 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <493306F5.2080605@domain.hid>
 	<49330CD3.4090700@domain.hid>	<4933BAE2.3000502@domain.hid>
@@ -12,8 +12,8 @@ References: <493306F5.2080605@domain.hid>
 	<4936C9CA.1090507@domain.hid> <4936C897.1000406@domain.hid>
 	<4936D1E7.4070006@domain.hid>
 	<4936D0B9.6070102@domain.hid> <4936D63F.50501@domain.hid>
-	<4936D63B.3050603@domain.hid>
-In-Reply-To: <4936D63B.3050603@domain.hid>
+	<4936D63B.3050603@domain.hid> <4936DBC1.6030303@domain.hid>
+In-Reply-To: <4936DBC1.6030303@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] pthread cancelation and scheduling magics
@@ -26,73 +26,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Wolfgang Grandegger wrote:
->> Gilles Chanteperdrix wrote:
->>> Wolfgang Grandegger wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> Wolfgang Grandegger wrote:
->>>>>> Running under gdb shows:
->>>>>>
->>>>>>   Program received signal SIGSEGV, Segmentation fault.
->>>>>>   [Switching to Thread 0x4885d4b0 (LWP 1127)]
->>>>>>   0x0ff49100 in pthread_cancel () from /lib/libpthread.so.0
->>>>>>   (gdb) where
->>>>>>   #0  0x0ff49100 in pthread_cancel () from /lib/libpthread.so.0
->>>>>>   #1  0x10001d64 in ctrl_func (parm=0x0) at cancel-test.c:104
->>>>>>   #2  0x0ffa98e4 in __pthread_trampoline ()
->>>>>>      from /home/wolf/xenomai/lib/libpthread_rt.so.1
->>>>>>   #3  0x0ff42a6c in start_thread () from /lib/libpthread.so.0
->>>>>>   #4  0x0fdd18a0 in clone () from /lib/libc.so.6
->>>>>>   Backtrace stopped: previous frame inner to this frame (corrupt stack?)
->>>>>>
->>>>>> Is pthread_cancel used from the Linux pthread library? And
->>>>>> pthread_testcancel() as well?
->>>>> Yes, and I guess, as you said, that it happens because calc_func is dead
->>>>> when you try and cancel it.
->>>> Yep, but it should not crash.
->>> The spec says:
->>> The pthread_cancel() function may fail if:
->>>
->>> [ESRCH]
->>>     No thread could be found corresponding to that specified by the
->>> given thread ID.
->>>
->>>
->>> So, it is a "may", returning ESRCH, as Xenomai does in kernel-space, is
->>> not mandatory.
->> I also got the return value ESRCH in another test. Nevertheless, a crash
->> is not the expected behaviour, to say the least. Here pthread_cancel()
->> obvoiusly get's interrupted and the calc_thread continues. Is it
->> possible that pthread_cancel() switches to secondary mode?
+Wolfgang Grandegger wrote:
+> Gilles Chanteperdrix wrote:
+>> Wolfgang Grandegger wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Wolfgang Grandegger wrote:
+>>>>> Gilles Chanteperdrix wrote:
+>>>>>> Wolfgang Grandegger wrote:
+>>>>>>> Running under gdb shows:
+>>>>>>>
+>>>>>>>   Program received signal SIGSEGV, Segmentation fault.
+>>>>>>>   [Switching to Thread 0x4885d4b0 (LWP 1127)]
+>>>>>>>   0x0ff49100 in pthread_cancel () from /lib/libpthread.so.0
+>>>>>>>   (gdb) where
+>>>>>>>   #0  0x0ff49100 in pthread_cancel () from /lib/libpthread.so.0
+>>>>>>>   #1  0x10001d64 in ctrl_func (parm=0x0) at cancel-test.c:104
+>>>>>>>   #2  0x0ffa98e4 in __pthread_trampoline ()
+>>>>>>>      from /home/wolf/xenomai/lib/libpthread_rt.so.1
+>>>>>>>   #3  0x0ff42a6c in start_thread () from /lib/libpthread.so.0
+>>>>>>>   #4  0x0fdd18a0 in clone () from /lib/libc.so.6
+>>>>>>>   Backtrace stopped: previous frame inner to this frame (corrupt stack?)
+>>>>>>>
+>>>>>>> Is pthread_cancel used from the Linux pthread library? And
+>>>>>>> pthread_testcancel() as well?
+>>>>>> Yes, and I guess, as you said, that it happens because calc_func is dead
+>>>>>> when you try and cancel it.
+>>>>> Yep, but it should not crash.
+>>>> The spec says:
+>>>> The pthread_cancel() function may fail if:
+>>>>
+>>>> [ESRCH]
+>>>>     No thread could be found corresponding to that specified by the
+>>>> given thread ID.
+>>>>
+>>>>
+>>>> So, it is a "may", returning ESRCH, as Xenomai does in kernel-space, is
+>>>> not mandatory.
+>>> I also got the return value ESRCH in another test. Nevertheless, a crash
+>>> is not the expected behaviour, to say the least. Here pthread_cancel()
+>>> obvoiusly get's interrupted and the calc_thread continues. Is it
+>>> possible that pthread_cancel() switches to secondary mode?
+>> pthread_cancel switches to secondary mode if it has to send a signal (if
+>> cancellation is in asynchronous mode, this happens when the target
+>> thread is blocked inside a blocking call). But this should not be a
+>> problem with RPI.
 > 
-> pthread_cancel switches to secondary mode if it has to send a signal (if
-> cancellation is in asynchronous mode, this happens when the target
-> thread is blocked inside a blocking call). But this should not be a
-> problem with RPI.
+> I disabled priority coupling in the kernel and it did not help or harm.
+> This test uses PTHREAD_CANCEL_DEFERRED, which is  also the default, if
+> I understood correctly.
 
-I disabled priority coupling in the kernel and it did not help or harm.
-This test uses PTHREAD_CANCEL_DEFERRED, which is  also the default, if
-I understood correctly.
+You should definitely enable priority coupling. Even if you use
+PTHREAD_CANCEL_DEFERRED, when you call a blocking call, the cancellation
+is switched for the time of the blocking call to asynchronous. But since
+you do not call any blocking call, I agree that pthread_cancel should
+not switch to secondary mode, it should just set a bit in some TCB
+attached to the target thread.
 
-> But the problem you should focus on is why the scheduler does not let
-> pthread_cancel run earlier.
+> 
+>> But the problem you should focus on is why the scheduler does not let
+>> pthread_cancel run earlier.
+> 
+> Don't know what you mean. The calc_func gets preempted and the ctrl_func
+> calls pthread_cancel as expected...
+> 
+>   calc_func: at count 20
+>   calc_func: at count 21
+>   calc_func: at count 22
+>   ctrl_func: cancel at count 23
+>   ^^^^^^^^^
+>   calc_func: at count 23
+> 
+> But then it stops somehow in pthread_cancel and calc_func continues to run.
 
-Don't know what you mean. The calc_func gets preempted and the ctrl_func
-calls pthread_cancel as expected...
+Yes, but since "ctrl_func: stopped at count 23" does not appear, it
+means that ctrl_func is somehow blocked in pthread_cancel.
 
-  calc_func: at count 20
-  calc_func: at count 21
-  calc_func: at count 22
-  ctrl_func: cancel at count 23
-  ^^^^^^^^^
-  calc_func: at count 23
+Does the test work if calc_func calls nanosleep instead of
+create_load_100ms ?
 
-But then it stops somehow in pthread_cancel and calc_func continues to run.
 
-Wolfgang.
-
+-- 
+                                                 Gilles.
 
