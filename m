@@ -1,23 +1,11 @@
-Message-ID: <4936E5EB.9080404@domain.hid>
-Date: Wed, 03 Dec 2008 21:02:51 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <843a47610812031439g309ec9b5h898e636327c841cf@domain.hid>
+Date: Wed, 3 Dec 2008 17:39:19 -0500
+From: "Matthew Fornero" <matthew.fornero@domain.hid>
+Sender: mfornero@domain.hid
 MIME-Version: 1.0
-References: <493306F5.2080605@domain.hid>
-	<49330CD3.4090700@domain.hid>	<4933BAE2.3000502@domain.hid>
-	<4933F1A4.8060209@domain.hid>
-	<4933F18F.7080103@domain.hid> <4933FE5A.5060501@domain.hid>
-	<49355B5D.8070802@domain.hid> <49355A59.4050600@domain.hid>
-	<49357C02.1090001@domain.hid> <49365C69.5040807@domain.hid>
-	<49366B2B.4050705@domain.hid> <493689EB.8000300@domain.hid>
-	<4936C9CA.1090507@domain.hid> <4936C897.1000406@domain.hid>
-	<4936D1E7.4070006@domain.hid>
-	<4936D0B9.6070102@domain.hid> <4936D63F.50501@domain.hid>
-	<4936D63B.3050603@domain.hid> <4936DBC1.6030303@domain.hid>
-	<4936DBC6.9080805@domain.hid> <4936E5EA.1060008@domain.hid>
-In-Reply-To: <4936E5EA.1060008@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pthread cancelation and scheduling magics
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_134511_12218985.1228343959284"
+Subject: [Xenomai-help] Busy Loop Hang
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -27,102 +15,170 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
-> Gilles Chanteperdrix wrote:
->> Wolfgang Grandegger wrote:
->>> Gilles Chanteperdrix wrote:
->>>> Wolfgang Grandegger wrote:
->>>>> Gilles Chanteperdrix wrote:
->>>>>> Wolfgang Grandegger wrote:
->>>>>>> Gilles Chanteperdrix wrote:
->>>>>>>> Wolfgang Grandegger wrote:
->>>>>>>>> Running under gdb shows:
->>>>>>>>>
->>>>>>>>>   Program received signal SIGSEGV, Segmentation fault.
->>>>>>>>>   [Switching to Thread 0x4885d4b0 (LWP 1127)]
->>>>>>>>>   0x0ff49100 in pthread_cancel () from /lib/libpthread.so.0
->>>>>>>>>   (gdb) where
->>>>>>>>>   #0  0x0ff49100 in pthread_cancel () from /lib/libpthread.so.0
->>>>>>>>>   #1  0x10001d64 in ctrl_func (parm=0x0) at cancel-test.c:104
->>>>>>>>>   #2  0x0ffa98e4 in __pthread_trampoline ()
->>>>>>>>>      from /home/wolf/xenomai/lib/libpthread_rt.so.1
->>>>>>>>>   #3  0x0ff42a6c in start_thread () from /lib/libpthread.so.0
->>>>>>>>>   #4  0x0fdd18a0 in clone () from /lib/libc.so.6
->>>>>>>>>   Backtrace stopped: previous frame inner to this frame (corrupt stack?)
->>>>>>>>>
->>>>>>>>> Is pthread_cancel used from the Linux pthread library? And
->>>>>>>>> pthread_testcancel() as well?
->>>>>>>> Yes, and I guess, as you said, that it happens because calc_func is dead
->>>>>>>> when you try and cancel it.
->>>>>>> Yep, but it should not crash.
->>>>>> The spec says:
->>>>>> The pthread_cancel() function may fail if:
->>>>>>
->>>>>> [ESRCH]
->>>>>>     No thread could be found corresponding to that specified by the
->>>>>> given thread ID.
->>>>>>
->>>>>>
->>>>>> So, it is a "may", returning ESRCH, as Xenomai does in kernel-space, is
->>>>>> not mandatory.
->>>>> I also got the return value ESRCH in another test. Nevertheless, a crash
->>>>> is not the expected behaviour, to say the least. Here pthread_cancel()
->>>>> obvoiusly get's interrupted and the calc_thread continues. Is it
->>>>> possible that pthread_cancel() switches to secondary mode?
->>>> pthread_cancel switches to secondary mode if it has to send a signal (if
->>>> cancellation is in asynchronous mode, this happens when the target
->>>> thread is blocked inside a blocking call). But this should not be a
->>>> problem with RPI.
->>> I disabled priority coupling in the kernel and it did not help or harm.
->>> This test uses PTHREAD_CANCEL_DEFERRED, which is  also the default, if
->>> I understood correctly.
->> You should definitely enable priority coupling. Even if you use
->> PTHREAD_CANCEL_DEFERRED, when you call a blocking call, the cancellation
->> is switched for the time of the blocking call to asynchronous. But since
->> you do not call any blocking call, I agree that pthread_cancel should
->> not switch to secondary mode, it should just set a bit in some TCB
->> attached to the target thread.
->>
->>>> But the problem you should focus on is why the scheduler does not let
->>>> pthread_cancel run earlier.
->>> Don't know what you mean. The calc_func gets preempted and the ctrl_func
->>> calls pthread_cancel as expected...
->>>
->>>   calc_func: at count 20
->>>   calc_func: at count 21
->>>   calc_func: at count 22
->>>   ctrl_func: cancel at count 23
->>>   ^^^^^^^^^
->>>   calc_func: at count 23
->>>
->>> But then it stops somehow in pthread_cancel and calc_func continues to run.
->> Yes, but since "ctrl_func: stopped at count 23" does not appear, it
->> means that ctrl_func is somehow blocked in pthread_cancel.
->>
->> Does the test work if calc_func calls nanosleep instead of
->> create_load_100ms ?
-> 
-> Yes.
+------=_Part_134511_12218985.1228343959284
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-So, pthread_cancel works even for threads running in primary mode, when
-they issue xenomai syscalls.
+Hello,
 
-> 
-> I'm getting closer now, I think, I hope. pthread_cancel seems only to
-> work if calc_thread runs in secondary mode. If I set policy and priority
-> at the beginning of the thread function, nor pthread_setschedparam nor
-> clock_gettime switches to primary mode and therefore calc_thread runs in
-> secondary mode. If I add explicit
-> pthread_set_mode_np(0, PTHREAD_PRIMARY), pthread_cancel is not able to
-> terminate the calc_thread anymore, even with pthread_testcancel.
+I've created the following test case to illustrate linux and any tasks
+in the secondary domain hanging while executing a busy loop on one CPU
+in an SMP system.
 
-That is not expected. But this brings me back to my initial question, do
-you have to work with a real world application that runs without issuing
-any syscall ?
+Xenomai 2.4.5, Linux 2.6.26.5, x86_64
+Tests on quad-core AMD Opteron and dual-core Intel Core 2
+kernel booted with isolcpus=1-31
 
--- 
-					    Gilles.
+Task 1 (busy loop): Priority 99, CPU 1
+polls rt_timer_tsc until a timeout value is reached (1 ms)
+increments a counter (master counter)
+updates a global variable for the elapsed time
+every four minutes, goes to sleep with rt_task_sleep
+
+Task 2 (print loop): Priority 1, CPU 0
+sets itself up as periodic using rt_task_set_periodic (1 sec)
+goes to sleep with rt_task_wait_period
+increments a counter (slave counter)
+prints out: (1) the slave counter (2) the master counter (3) the
+elapsed time since the start of the test
+
+After some period of time (usually a couple minutes) the system will
+appear to lock up. Linux (X or any terminals) will stop responding.
+Once the busy loop goes to sleep, linux will begin responding again.
+During the time that linux is unresponsive, the print loop does not
+execute, which can be seen from looking at the slave counter values:
+
+Slave Cnt: 195 Master Cnt: 194994 Elapsed Time: 194.999156932 s
+Slave Cnt: 196 Master Cnt: 195994 Elapsed Time: 195.999183809 s
+Slave Cnt: 197 Master Cnt: 196994 Elapsed Time: 196.999211373 s
+<-------- linux hangs
+Slave Cnt: 201 Master Cnt: 240898 Elapsed Time: 242.999124197 s
+<-------- linux comes back
+Slave Cnt: 202 Master Cnt: 241898 Elapsed Time: 243.999151533 s
+Slave Cnt: 203 Master Cnt: 242898 Elapsed Time: 244.999178747 s
+
+On the quad-core system, I see the same behavior if I run the print
+loop on CPU 2 or 3 (CPUs isolated by the isolcpus kernel parameter).
+
+While the busy loop example is fairly trivial, our systems will use a
+similar setup for a real application:
+
+We'd like to be able to dedicate CPU(s) in an SMP system to polling
+some memory location while waiting for a flag to be DMA'd. Once the
+flag is detected, the task would process the data, and then begin
+polling for the flag again. Adding sleep states to the task increases
+our minimum cycle time, so is undesirable. Ideally, CPU 0 having
+"idle" time would be all that's required for the linux kernel and RT
+tasks that switch to the secondary domain to continue running.
+
+I've attached the test code and makefile.
+--
+Matthew Fornero
+
+------=_Part_134511_12218985.1228343959284
+Content-Type: application/octet-stream; name=Makefile
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_foai19kz1
+Content-Disposition: attachment; filename=Makefile
+
+IyMjIyMjIENPTkZJR1VSQVRJT04gIyMjIyMjCgojIyMgTGlzdCBvZiBhcHBsaWNhdGlvbnMgdG8g
+YmUgYnVpbGQKQVBQTElDQVRJT05TID0gYnVzeWxvb3AKCiMjIyBOb3RlOiB0byBvdmVycmlkZSB0
+aGUgc2VhcmNoIHBhdGggZm9yIHRoZSB4ZW5vLWNvbmZpZyBzY3JpcHQsIHVzZSAibWFrZSBYRU5P
+PS4uLiIKCgojIyMgTGlzdCBvZiBtb2R1bGVzIHRvIGJlIGJ1aWxkCk1PRFVMRVMgPQoKIyMjIE5v
+dGU6IHRvIG92ZXJyaWRlIHRoZSBrZXJuZWwgc291cmNlIHBhdGgsIHVzZSAibWFrZSBLU1JDPS4u
+LiIKCgoKIyMjIyMjIFVTRVIgU1BBQ0UgQlVJTEQgKG5vIGNoYW5nZSByZXF1aXJlZCBub3JtYWxs
+eSkgIyMjIyMjCmlmZXEgKCQoS0VSTkVMUkVMRUFTRSksKQppZm5lcSAoJChBUFBMSUNBVElPTlMp
+LCkKCiMjIyBEZWZhdWx0IFhlbm9tYWkgaW5zdGFsbGF0aW9uIHBhdGgKWEVOTyA/PSAvdXNyL3hl
+bm9tYWkKClhFTk9DT05GSUc9JChzaGVsbCBQQVRIPSQoWEVOTyk6JChYRU5PKS9iaW46JChQQVRI
+KSB3aGljaCB4ZW5vLWNvbmZpZyAyPi9kZXYvbnVsbCkKCiMjIyBTYW5pdHkgY2hlY2sKaWZlcSAo
+JChYRU5PQ09ORklHKSwpCmFsbDo6CglAZWNobyAiPj4+IEludm9rZSBtYWtlIGxpa2UgdGhpczog
+XCJtYWtlIFhFTk89L3BhdGgvdG8veGVuby1jb25maWdcIiA8PDwiCglAZWNobwplbmRpZgoKCkND
+PSQoc2hlbGwgJChYRU5PQ09ORklHKSAtLWNjKQoKQ0ZMQUdTPSQoc2hlbGwgJChYRU5PQ09ORklH
+KSAtLXhlbm8tY2ZsYWdzKSAkKE1ZX0NGTEFHUykKCkxERkxBR1M9JChzaGVsbCAkKFhFTk9DT05G
+SUcpIC0teGVuby1sZGZsYWdzKSAkKE1ZX0xERkxBR1MpIC1sbmF0aXZlCgojIFRoaXMgaW5jbHVk
+ZXMgdGhlIGxpYnJhcnkgcGF0aCBvZiBnaXZlbiBYZW5vbWFpIGludG8gdGhlIGJpbmFyeSB0byBt
+YWtlIGxpdmUKIyBlYXNpZXIgZm9yIGJlZ2lubmVycyBpZiBYZW5vbWFpJ3MgbGlicyBhcmUgbm90
+IGluIGFueSBkZWZhdWx0IHNlYXJjaCBwYXRoLgpMREZMQUdTKz0tWGxpbmtlciAtcnBhdGggLVhs
+aW5rZXIgJChzaGVsbCAkKFhFTk9DT05GSUcpIC0tbGliZGlyKQoKYWxsOjogJChBUFBMSUNBVElP
+TlMpCgpjbGVhbjo6CgkkKFJNKSAkKEFQUExJQ0FUSU9OUykgKi5vCgplbmRpZgplbmRpZgoKCgoj
+IyMjIyMgU1BFQ0lBTCBUQVJHRVQgUlVMRVMgIyMjIyMjCnJ0cHJpbnQ6IHJ0cHJpbnQuYwoJJChD
+QykgJChDRkxBR1MpICQ/ICQoTERGTEFHUykgLWxydGRrIC1vICRACgoKCiMjIyMjIyBLRVJORUwg
+TU9EVUxFIEJVSUxEIChubyBjaGFuZ2UgcmVxdWlyZWQgbm9ybWFsbHkpICMjIyMjIwppZm5lcSAo
+JChNT0RVTEVTKSwpCgojIyMgRGVmYXVsdCB0byBzb3VyY2VzIG9mIGN1cnJlbnRseSBydW5uaW5n
+IGtlcm5lbApLU1JDID89IC9saWIvbW9kdWxlcy8kKHNoZWxsIHVuYW1lIC1yKS9idWlsZAoKT0JK
+UyAgICAgOj0gJHtwYXRzdWJzdCAlLCAlLm8sICQoTU9EVUxFUyl9CkNMRUFOTU9EIDo9ICR7cGF0
+c3Vic3QgJSwgLiUqLCAkKE1PRFVMRVMpfQpQV0QgICAgICA6PSAkKHNoZWxsIGlmIFsgIiQkUFdE
+IiAhPSAiIiBdOyB0aGVuIGVjaG8gJCRQV0Q7IGVsc2UgcHdkOyBmaSkKCiMjIyBLZXJuZWwgMi42
+CmlmZXEgKCQoZmluZHN0cmluZyAyLjYsJChLU1JDKSksMi42KQoKb2JqLW0gICAgICAgIDo9ICQo
+T0JKUykKRVhUUkFfQ0ZMQUdTIDo9IC1JJChLU1JDKS9pbmNsdWRlL3hlbm9tYWkgLUkkKEtTUkMp
+L2luY2x1ZGUveGVub21haS9wb3NpeCAkKEFERF9DRkxBR1MpCgphbGw6OgoJJChNQUtFKSAtQyAk
+KEtTUkMpIFNVQkRJUlM9JChQV0QpIG1vZHVsZXMKCiMjIyBLZXJuZWwgMi40CmVsc2UKCkFSQ0gg
+ICAgPz0gJChzaGVsbCB1bmFtZSAtaSkKSU5DTFVERSA6PSAtSSQoS1NSQykvaW5jbHVkZS94ZW5v
+bWFpIC1JJChLU1JDKS9pbmNsdWRlL3hlbm9tYWkvY29tcGF0IC1JJChLU1JDKS9pbmNsdWRlL3hl
+bm9tYWkvcG9zaXgKQ0ZMQUdTICArPSAkKHNoZWxsICQoTUFLRSkgLXMgLUMgJChLU1JDKSBDQz0k
+KENDKSBBUkNIPSQoQVJDSCkgU1VCRElSUz0kKFBXRCkgbW9kdWxlcykgJChJTkNMVURFKQoKYWxs
+OjogJChPQkpTKQoKZW5kaWYKCiMjIFRhcmdldCBmb3IgY2FwdHVyaW5nIDIuNCBtb2R1bGUgQ0ZM
+QUdTCm1vZHVsZXM6CglAZWNobyAiJChDRkxBR1MpIgoKY2xlYW46OgoJJChSTSkgJChDTEVBTk1P
+RCkgKi5vICoua28gKi5tb2QuYyBNb2R1bGUqLnN5bXZlcnMKCSQoUk0pIC1SIC50bXAqCgplbmRp
+Zgo=
+------=_Part_134511_12218985.1228343959284
+Content-Type: text/plain; name=busyloop.c
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_foaj904e2
+Content-Disposition: attachment; filename=busyloop.c
+
+I2luY2x1ZGUgPHN0ZGlvLmg+CiNpbmNsdWRlIDxzaWduYWwuaD4KI2luY2x1ZGUgPHVuaXN0ZC5o
+PgojaW5jbHVkZSA8c3lzL21tYW4uaD4KCiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPgojaW5jbHVk
+ZSA8bmF0aXZlL3RpbWVyLmg+CgppbnQgZW5kID0wOwp1bnNpZ25lZCBsb25nIG1hc3Rlcl9jbnQg
+PSAwOwpSVF9UQVNLIGJ1c3lfdGFzaywgcHJpbnRfdGFzazsKClJUSU1FIGN1cnJlbnQsIHN0YXJ0
+OwoKLyogTk9URTogZXJyb3IgaGFuZGxpbmcgb21pdHRlZC4gKi8KCnZvaWQgYnVzeWxvb3Aodm9p
+ZCAqYXJnKQp7CiAgICAgUlRJTUUgbm93LCB3YWl0X3RpbWUsIG5leHQsIHNsZWVwX3RpbWUsIHBy
+ZXZpb3VzOwoKICAgICBzbGVlcF90aW1lID0gcnRfdGltZXJfbnMydHNjKDEwMDAwMDAwMDApOyAv
+LyAxIHNlY29uZAogICAgIHdhaXRfdGltZSA9IHJ0X3RpbWVyX25zMnRzYygxMDAwMDAwKTsgLy8g
+MSBtcwogICAgIG5vdyA9IHJ0X3RpbWVyX3RzYygpOyAvLyBnZXQgdGhlIGN1cnJlbnQgdHNjCiAg
+ICAgbmV4dCA9IG5vdyArIHdhaXRfdGltZTsgLy8gdGltZW91dCB2YWx1ZQogICAgIHN0YXJ0ID0g
+bm93OyAvL3N0YXJ0IHRpbWUgb2YgdGhlIHRhc2sKICAgICB3aGlsZSAoIWVuZCkgewoJICB3aGls
+ZShub3cgPCBuZXh0KSB7CgkgICAgICAgbm93ID0gcnRfdGltZXJfdHNjKCk7CgkgICAgICAgaWYg
+KG5vdyA8IHByZXZpb3VzKXsgLy9yb2xsb3Zlclt1bmxpa2VseS4uLl0KCQkgICAgYnJlYWs7Cgkg
+ICAgICAgfQoJICAgCgkgIH0KCSAgY3VycmVudCA9IG5vdzsgLy8gdXBkYXRlIHRoZSBnbG9iYWwg
+dmFyaWFibGVzIGZvciBwcmludGluZwoJICBwcmV2aW91cyA9IG5vdzsgLy8gdXBkYXRlIGZvciBy
+b2xsZXZlciBjaGVja2luZwoJICBtYXN0ZXJfY250Kys7IC8vIGluY3JlbWVudCB0aGUgY291bnRl
+cgoJICBuZXh0ID0gbm93ICsgd2FpdF90aW1lOyAvLyBmaW5kIHRoZSBuZXh0IHRpbWVvdXQKCSAg
+aWYobWFzdGVyX2NudCAlIDI0MDAwMCA9PSAwKXsgCgkgICAgICAgLy8gYnJlYWsgdGhlIGJ1c3kg
+bG9vcCBldmVyeSB+IDQgbWludXRlcywgc2VlIGlmIGxpbnV4IGNvbWVzIGJhY2sKCSAgICAgICBy
+dF90YXNrX3NsZWVwKHNsZWVwX3RpbWUpOwoJICAgICAgIG5vdyA9IHJ0X3RpbWVyX3RzYygpOwoJ
+ICAgICAgIG5leHQgPSBub3cgKyB3YWl0X3RpbWU7CgkgICAgICAgcHJldmlvdXMgPSBub3c7Cgkg
+IH0KICAgICB9Cn0KCnZvaWQgcHJpbnRsb29wKHZvaWQgKmFyZykKewoKICAgICB1bnNpZ25lZCBs
+b25nIG9sZF9tYXN0ZXJfY250LCBzbGF2ZV9jbnQ7CgogICAgIHNsYXZlX2NudCA9IDA7CgogICAg
+IHJ0X3Rhc2tfc2V0X3BlcmlvZGljKE5VTEwsIFRNX05PVywgMTAwMDAwMDAwMCk7IC8vIDEgc2Vj
+CgogICAgIG9sZF9tYXN0ZXJfY250ID0gbWFzdGVyX2NudDsKICAgICB3aGlsZSAoIWVuZCkgewoJ
+ICBydF90YXNrX3dhaXRfcGVyaW9kKE5VTEwpOwoJICBzbGF2ZV9jbnQrKzsKCSAgLyoKCSAgICog
+Tk9URTogcHJpbnRmIG1heSBoYXZlIHVuZXhwZWN0ZWQgaW1wYWN0IG9uIHRoZSB0aW1pbmcgb2YK
+CSAgICogICAgICAgeW91ciBwcm9ncmFtLiBJdCBpcyB1c2VkIGhlcmUgaW4gdGhlIGNyaXRpY2Fs
+IGxvb3AKCSAgICogICAgICAgb25seSBmb3IgZGVtb25zdHJhdGlvbiBwdXJwb3Nlcy4KCSAgICov
+CgkJCgkgIGlmKG1hc3Rlcl9jbnQgIT0gb2xkX21hc3Rlcl9jbnQpewoJICAgICAgIHByaW50Zigi
+U2xhdmUgQ250OiAlbGQgTWFzdGVyIENudDogJWxkIEVsYXBzZWQgVGltZTogJWxkLiUwNmxkIHNc
+biIsCgkJICAgICAgc2xhdmVfY250LAoJCSAgICAgIG1hc3Rlcl9jbnQsCgkJICAgICAgKGxvbmcp
+cnRfdGltZXJfdHNjMm5zKGN1cnJlbnQgLSBzdGFydCkgLyAxMDAwMDAwMDAwLAoJCSAgICAgIChs
+b25nKXJ0X3RpbWVyX3RzYzJucyhjdXJyZW50IC0gc3RhcnQpICUgMTAwMDAwMDAwMCk7CgkgICAg
+ICAgb2xkX21hc3Rlcl9jbnQgPSBtYXN0ZXJfY250OwoJICB9CiAgICAgfQp9Cgp2b2lkIGNhdGNo
+X3NpZ25hbChpbnQgc2lnKQp7CiAgICAgZW5kPTE7Cn0KCmludCBtYWluKGludCBhcmdjLCBjaGFy
+KiBhcmd2W10pCnsKICAgICBzaWduYWwoU0lHVEVSTSwgY2F0Y2hfc2lnbmFsKTsKICAgICBzaWdu
+YWwoU0lHSU5ULCBjYXRjaF9zaWduYWwpOwoKICAgICAvKiBBdm9pZHMgbWVtb3J5IHN3YXBwaW5n
+IGZvciB0aGlzIHByb2dyYW0gKi8KICAgICBtbG9ja2FsbChNQ0xfQ1VSUkVOVHxNQ0xfRlVUVVJF
+KTsKCiAgICAgLyoKICAgICAgKiBBcmd1bWVudHM6ICZ0YXNrLAogICAgICAqICAgICAgICAgICAg
+bmFtZSwKICAgICAgKiAgICAgICAgICAgIHN0YWNrIHNpemUgKDA9ZGVmYXVsdCksCiAgICAgICog
+ICAgICAgICAgICBwcmlvcml0eSwKICAgICAgKiAgICAgICAgICAgIG1vZGUgKEZQVSwgc3RhcnQg
+c3VzcGVuZGVkLCAuLi4pCiAgICAgICovCiAgICAgcnRfdGFza19jcmVhdGUoJmJ1c3lfdGFzaywg
+ImJ1c3kiLCAwLCA5OSwgVF9DUFUoMSkpOwogICAgIHJ0X3Rhc2tfY3JlYXRlKCZwcmludF90YXNr
+LCAicHJpbnQiLCAwLCAxLCBUX0NQVSgwKSk7CgogICAgIC8qCiAgICAgICogQXJndW1lbnRzOiAm
+dGFzaywKICAgICAgKiAgICAgICAgICAgIHRhc2sgZnVuY3Rpb24sCiAgICAgICogICAgICAgICAg
+ICBmdW5jdGlvbiBhcmd1bWVudAogICAgICAqLwogICAgIHJ0X3Rhc2tfc3RhcnQoJmJ1c3lfdGFz
+aywgJmJ1c3lsb29wLCBOVUxMKTsKICAgICBydF90YXNrX3N0YXJ0KCZwcmludF90YXNrLCAmcHJp
+bnRsb29wLCBOVUxMKTsKCiAgICAgcGF1c2UoKTsKCiAgICAgcnRfdGFza19kZWxldGUoJmJ1c3lf
+dGFzayk7CiAgICAgLy9ydF90YXNrX2RlbGV0ZSgmcHJpbnRfdGFzayk7Cn0K
+------=_Part_134511_12218985.1228343959284--
 
