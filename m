@@ -1,11 +1,14 @@
-Message-ID: <843a47610812031439g309ec9b5h898e636327c841cf@domain.hid>
-Date: Wed, 3 Dec 2008 17:39:19 -0500
-From: "Matthew Fornero" <matthew.fornero@domain.hid>
-Sender: mfornero@domain.hid
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Date: Thu, 4 Dec 2008 00:55:02 +0100
+References: <4934EB57.9080305@domain.hid> <49356C83.8050909@domain.hid>
+In-Reply-To: <49356C83.8050909@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_134511_12218985.1228343959284"
-Subject: [Xenomai-help] Busy Loop Hang
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200812040055.02455.berlemont.hauw@domain.hid>
+Subject: Re: [Xenomai-help] Calling comedi from a RT task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,168 +20,40 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-------=_Part_134511_12218985.1228343959284
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Hi,
 
-Hello,
+> >
+> > I am using Xenomai 2.3.1 and comedi with driver "ni_pcimio". I am able
+> > to create a RT task that triggers each msec. But calling the comedi API
+> > kicks me out of RT as indicated by /proc/xenomai/stat (column MSW). The
+> > modules loaded are:
+> >
+> > comedi_fc   3584 1 ni_pcimio
+> > kcomedilib 20868 0
+> > comedi     33248 6 ni_pcimio, ni_tio, comedi_fc, mite, 8255, kcomedilib
+> > licModule  44272 1 kcomedilib
+> >
+> > The comedi modules are from a 2.6.20-14-ipipe/comedi/driver directory.
+> > How do I use the comedi API so that the task will stay realtime? What do
+> > I have to check?
+>
+> You should have a look at the RT-capable comedi stack that currently
+> only lives in Xenomai SVN trunk. How to get your device supported by
+> that stack, ie. how to port the existing driver to RT-comedi, that's
+> something Alexis can tell you more about. 
 
-I've created the following test case to illustrate linux and any tasks
-in the secondary domain hanging while executing a busy loop on one CPU
-in an SMP system.
+If you consider porting the ni_pcimio driver to the RTDM version of Comedi, 
+please tell me; I am trying to do the same thing. You could save my time or I 
+could save yours ;). Anyway, your help would be very valuable as I have no 
+acquisition card...
 
-Xenomai 2.4.5, Linux 2.6.26.5, x86_64
-Tests on quad-core AMD Opteron and dual-core Intel Core 2
-kernel booted with isolcpus=1-31
+> And/or have a look at the fake 
+> and loop drivers that are already included.
 
-Task 1 (busy loop): Priority 99, CPU 1
-polls rt_timer_tsc until a timeout value is reached (1 ms)
-increments a counter (master counter)
-updates a global variable for the elapsed time
-every four minutes, goes to sleep with rt_task_sleep
+You can also have a look at the doxygen documentation available in the SVN 
+trunk. The section "Comedi API -> Driver API" (driverfacilities) should help 
+you.
 
-Task 2 (print loop): Priority 1, CPU 0
-sets itself up as periodic using rt_task_set_periodic (1 sec)
-goes to sleep with rt_task_wait_period
-increments a counter (slave counter)
-prints out: (1) the slave counter (2) the master counter (3) the
-elapsed time since the start of the test
+> Jan
 
-After some period of time (usually a couple minutes) the system will
-appear to lock up. Linux (X or any terminals) will stop responding.
-Once the busy loop goes to sleep, linux will begin responding again.
-During the time that linux is unresponsive, the print loop does not
-execute, which can be seen from looking at the slave counter values:
-
-Slave Cnt: 195 Master Cnt: 194994 Elapsed Time: 194.999156932 s
-Slave Cnt: 196 Master Cnt: 195994 Elapsed Time: 195.999183809 s
-Slave Cnt: 197 Master Cnt: 196994 Elapsed Time: 196.999211373 s
-<-------- linux hangs
-Slave Cnt: 201 Master Cnt: 240898 Elapsed Time: 242.999124197 s
-<-------- linux comes back
-Slave Cnt: 202 Master Cnt: 241898 Elapsed Time: 243.999151533 s
-Slave Cnt: 203 Master Cnt: 242898 Elapsed Time: 244.999178747 s
-
-On the quad-core system, I see the same behavior if I run the print
-loop on CPU 2 or 3 (CPUs isolated by the isolcpus kernel parameter).
-
-While the busy loop example is fairly trivial, our systems will use a
-similar setup for a real application:
-
-We'd like to be able to dedicate CPU(s) in an SMP system to polling
-some memory location while waiting for a flag to be DMA'd. Once the
-flag is detected, the task would process the data, and then begin
-polling for the flag again. Adding sleep states to the task increases
-our minimum cycle time, so is undesirable. Ideally, CPU 0 having
-"idle" time would be all that's required for the linux kernel and RT
-tasks that switch to the secondary domain to continue running.
-
-I've attached the test code and makefile.
---
-Matthew Fornero
-
-------=_Part_134511_12218985.1228343959284
-Content-Type: application/octet-stream; name=Makefile
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_foai19kz1
-Content-Disposition: attachment; filename=Makefile
-
-IyMjIyMjIENPTkZJR1VSQVRJT04gIyMjIyMjCgojIyMgTGlzdCBvZiBhcHBsaWNhdGlvbnMgdG8g
-YmUgYnVpbGQKQVBQTElDQVRJT05TID0gYnVzeWxvb3AKCiMjIyBOb3RlOiB0byBvdmVycmlkZSB0
-aGUgc2VhcmNoIHBhdGggZm9yIHRoZSB4ZW5vLWNvbmZpZyBzY3JpcHQsIHVzZSAibWFrZSBYRU5P
-PS4uLiIKCgojIyMgTGlzdCBvZiBtb2R1bGVzIHRvIGJlIGJ1aWxkCk1PRFVMRVMgPQoKIyMjIE5v
-dGU6IHRvIG92ZXJyaWRlIHRoZSBrZXJuZWwgc291cmNlIHBhdGgsIHVzZSAibWFrZSBLU1JDPS4u
-LiIKCgoKIyMjIyMjIFVTRVIgU1BBQ0UgQlVJTEQgKG5vIGNoYW5nZSByZXF1aXJlZCBub3JtYWxs
-eSkgIyMjIyMjCmlmZXEgKCQoS0VSTkVMUkVMRUFTRSksKQppZm5lcSAoJChBUFBMSUNBVElPTlMp
-LCkKCiMjIyBEZWZhdWx0IFhlbm9tYWkgaW5zdGFsbGF0aW9uIHBhdGgKWEVOTyA/PSAvdXNyL3hl
-bm9tYWkKClhFTk9DT05GSUc9JChzaGVsbCBQQVRIPSQoWEVOTyk6JChYRU5PKS9iaW46JChQQVRI
-KSB3aGljaCB4ZW5vLWNvbmZpZyAyPi9kZXYvbnVsbCkKCiMjIyBTYW5pdHkgY2hlY2sKaWZlcSAo
-JChYRU5PQ09ORklHKSwpCmFsbDo6CglAZWNobyAiPj4+IEludm9rZSBtYWtlIGxpa2UgdGhpczog
-XCJtYWtlIFhFTk89L3BhdGgvdG8veGVuby1jb25maWdcIiA8PDwiCglAZWNobwplbmRpZgoKCkND
-PSQoc2hlbGwgJChYRU5PQ09ORklHKSAtLWNjKQoKQ0ZMQUdTPSQoc2hlbGwgJChYRU5PQ09ORklH
-KSAtLXhlbm8tY2ZsYWdzKSAkKE1ZX0NGTEFHUykKCkxERkxBR1M9JChzaGVsbCAkKFhFTk9DT05G
-SUcpIC0teGVuby1sZGZsYWdzKSAkKE1ZX0xERkxBR1MpIC1sbmF0aXZlCgojIFRoaXMgaW5jbHVk
-ZXMgdGhlIGxpYnJhcnkgcGF0aCBvZiBnaXZlbiBYZW5vbWFpIGludG8gdGhlIGJpbmFyeSB0byBt
-YWtlIGxpdmUKIyBlYXNpZXIgZm9yIGJlZ2lubmVycyBpZiBYZW5vbWFpJ3MgbGlicyBhcmUgbm90
-IGluIGFueSBkZWZhdWx0IHNlYXJjaCBwYXRoLgpMREZMQUdTKz0tWGxpbmtlciAtcnBhdGggLVhs
-aW5rZXIgJChzaGVsbCAkKFhFTk9DT05GSUcpIC0tbGliZGlyKQoKYWxsOjogJChBUFBMSUNBVElP
-TlMpCgpjbGVhbjo6CgkkKFJNKSAkKEFQUExJQ0FUSU9OUykgKi5vCgplbmRpZgplbmRpZgoKCgoj
-IyMjIyMgU1BFQ0lBTCBUQVJHRVQgUlVMRVMgIyMjIyMjCnJ0cHJpbnQ6IHJ0cHJpbnQuYwoJJChD
-QykgJChDRkxBR1MpICQ/ICQoTERGTEFHUykgLWxydGRrIC1vICRACgoKCiMjIyMjIyBLRVJORUwg
-TU9EVUxFIEJVSUxEIChubyBjaGFuZ2UgcmVxdWlyZWQgbm9ybWFsbHkpICMjIyMjIwppZm5lcSAo
-JChNT0RVTEVTKSwpCgojIyMgRGVmYXVsdCB0byBzb3VyY2VzIG9mIGN1cnJlbnRseSBydW5uaW5n
-IGtlcm5lbApLU1JDID89IC9saWIvbW9kdWxlcy8kKHNoZWxsIHVuYW1lIC1yKS9idWlsZAoKT0JK
-UyAgICAgOj0gJHtwYXRzdWJzdCAlLCAlLm8sICQoTU9EVUxFUyl9CkNMRUFOTU9EIDo9ICR7cGF0
-c3Vic3QgJSwgLiUqLCAkKE1PRFVMRVMpfQpQV0QgICAgICA6PSAkKHNoZWxsIGlmIFsgIiQkUFdE
-IiAhPSAiIiBdOyB0aGVuIGVjaG8gJCRQV0Q7IGVsc2UgcHdkOyBmaSkKCiMjIyBLZXJuZWwgMi42
-CmlmZXEgKCQoZmluZHN0cmluZyAyLjYsJChLU1JDKSksMi42KQoKb2JqLW0gICAgICAgIDo9ICQo
-T0JKUykKRVhUUkFfQ0ZMQUdTIDo9IC1JJChLU1JDKS9pbmNsdWRlL3hlbm9tYWkgLUkkKEtTUkMp
-L2luY2x1ZGUveGVub21haS9wb3NpeCAkKEFERF9DRkxBR1MpCgphbGw6OgoJJChNQUtFKSAtQyAk
-KEtTUkMpIFNVQkRJUlM9JChQV0QpIG1vZHVsZXMKCiMjIyBLZXJuZWwgMi40CmVsc2UKCkFSQ0gg
-ICAgPz0gJChzaGVsbCB1bmFtZSAtaSkKSU5DTFVERSA6PSAtSSQoS1NSQykvaW5jbHVkZS94ZW5v
-bWFpIC1JJChLU1JDKS9pbmNsdWRlL3hlbm9tYWkvY29tcGF0IC1JJChLU1JDKS9pbmNsdWRlL3hl
-bm9tYWkvcG9zaXgKQ0ZMQUdTICArPSAkKHNoZWxsICQoTUFLRSkgLXMgLUMgJChLU1JDKSBDQz0k
-KENDKSBBUkNIPSQoQVJDSCkgU1VCRElSUz0kKFBXRCkgbW9kdWxlcykgJChJTkNMVURFKQoKYWxs
-OjogJChPQkpTKQoKZW5kaWYKCiMjIFRhcmdldCBmb3IgY2FwdHVyaW5nIDIuNCBtb2R1bGUgQ0ZM
-QUdTCm1vZHVsZXM6CglAZWNobyAiJChDRkxBR1MpIgoKY2xlYW46OgoJJChSTSkgJChDTEVBTk1P
-RCkgKi5vICoua28gKi5tb2QuYyBNb2R1bGUqLnN5bXZlcnMKCSQoUk0pIC1SIC50bXAqCgplbmRp
-Zgo=
-------=_Part_134511_12218985.1228343959284
-Content-Type: text/plain; name=busyloop.c
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_foaj904e2
-Content-Disposition: attachment; filename=busyloop.c
-
-I2luY2x1ZGUgPHN0ZGlvLmg+CiNpbmNsdWRlIDxzaWduYWwuaD4KI2luY2x1ZGUgPHVuaXN0ZC5o
-PgojaW5jbHVkZSA8c3lzL21tYW4uaD4KCiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPgojaW5jbHVk
-ZSA8bmF0aXZlL3RpbWVyLmg+CgppbnQgZW5kID0wOwp1bnNpZ25lZCBsb25nIG1hc3Rlcl9jbnQg
-PSAwOwpSVF9UQVNLIGJ1c3lfdGFzaywgcHJpbnRfdGFzazsKClJUSU1FIGN1cnJlbnQsIHN0YXJ0
-OwoKLyogTk9URTogZXJyb3IgaGFuZGxpbmcgb21pdHRlZC4gKi8KCnZvaWQgYnVzeWxvb3Aodm9p
-ZCAqYXJnKQp7CiAgICAgUlRJTUUgbm93LCB3YWl0X3RpbWUsIG5leHQsIHNsZWVwX3RpbWUsIHBy
-ZXZpb3VzOwoKICAgICBzbGVlcF90aW1lID0gcnRfdGltZXJfbnMydHNjKDEwMDAwMDAwMDApOyAv
-LyAxIHNlY29uZAogICAgIHdhaXRfdGltZSA9IHJ0X3RpbWVyX25zMnRzYygxMDAwMDAwKTsgLy8g
-MSBtcwogICAgIG5vdyA9IHJ0X3RpbWVyX3RzYygpOyAvLyBnZXQgdGhlIGN1cnJlbnQgdHNjCiAg
-ICAgbmV4dCA9IG5vdyArIHdhaXRfdGltZTsgLy8gdGltZW91dCB2YWx1ZQogICAgIHN0YXJ0ID0g
-bm93OyAvL3N0YXJ0IHRpbWUgb2YgdGhlIHRhc2sKICAgICB3aGlsZSAoIWVuZCkgewoJICB3aGls
-ZShub3cgPCBuZXh0KSB7CgkgICAgICAgbm93ID0gcnRfdGltZXJfdHNjKCk7CgkgICAgICAgaWYg
-KG5vdyA8IHByZXZpb3VzKXsgLy9yb2xsb3Zlclt1bmxpa2VseS4uLl0KCQkgICAgYnJlYWs7Cgkg
-ICAgICAgfQoJICAgCgkgIH0KCSAgY3VycmVudCA9IG5vdzsgLy8gdXBkYXRlIHRoZSBnbG9iYWwg
-dmFyaWFibGVzIGZvciBwcmludGluZwoJICBwcmV2aW91cyA9IG5vdzsgLy8gdXBkYXRlIGZvciBy
-b2xsZXZlciBjaGVja2luZwoJICBtYXN0ZXJfY250Kys7IC8vIGluY3JlbWVudCB0aGUgY291bnRl
-cgoJICBuZXh0ID0gbm93ICsgd2FpdF90aW1lOyAvLyBmaW5kIHRoZSBuZXh0IHRpbWVvdXQKCSAg
-aWYobWFzdGVyX2NudCAlIDI0MDAwMCA9PSAwKXsgCgkgICAgICAgLy8gYnJlYWsgdGhlIGJ1c3kg
-bG9vcCBldmVyeSB+IDQgbWludXRlcywgc2VlIGlmIGxpbnV4IGNvbWVzIGJhY2sKCSAgICAgICBy
-dF90YXNrX3NsZWVwKHNsZWVwX3RpbWUpOwoJICAgICAgIG5vdyA9IHJ0X3RpbWVyX3RzYygpOwoJ
-ICAgICAgIG5leHQgPSBub3cgKyB3YWl0X3RpbWU7CgkgICAgICAgcHJldmlvdXMgPSBub3c7Cgkg
-IH0KICAgICB9Cn0KCnZvaWQgcHJpbnRsb29wKHZvaWQgKmFyZykKewoKICAgICB1bnNpZ25lZCBs
-b25nIG9sZF9tYXN0ZXJfY250LCBzbGF2ZV9jbnQ7CgogICAgIHNsYXZlX2NudCA9IDA7CgogICAg
-IHJ0X3Rhc2tfc2V0X3BlcmlvZGljKE5VTEwsIFRNX05PVywgMTAwMDAwMDAwMCk7IC8vIDEgc2Vj
-CgogICAgIG9sZF9tYXN0ZXJfY250ID0gbWFzdGVyX2NudDsKICAgICB3aGlsZSAoIWVuZCkgewoJ
-ICBydF90YXNrX3dhaXRfcGVyaW9kKE5VTEwpOwoJICBzbGF2ZV9jbnQrKzsKCSAgLyoKCSAgICog
-Tk9URTogcHJpbnRmIG1heSBoYXZlIHVuZXhwZWN0ZWQgaW1wYWN0IG9uIHRoZSB0aW1pbmcgb2YK
-CSAgICogICAgICAgeW91ciBwcm9ncmFtLiBJdCBpcyB1c2VkIGhlcmUgaW4gdGhlIGNyaXRpY2Fs
-IGxvb3AKCSAgICogICAgICAgb25seSBmb3IgZGVtb25zdHJhdGlvbiBwdXJwb3Nlcy4KCSAgICov
-CgkJCgkgIGlmKG1hc3Rlcl9jbnQgIT0gb2xkX21hc3Rlcl9jbnQpewoJICAgICAgIHByaW50Zigi
-U2xhdmUgQ250OiAlbGQgTWFzdGVyIENudDogJWxkIEVsYXBzZWQgVGltZTogJWxkLiUwNmxkIHNc
-biIsCgkJICAgICAgc2xhdmVfY250LAoJCSAgICAgIG1hc3Rlcl9jbnQsCgkJICAgICAgKGxvbmcp
-cnRfdGltZXJfdHNjMm5zKGN1cnJlbnQgLSBzdGFydCkgLyAxMDAwMDAwMDAwLAoJCSAgICAgIChs
-b25nKXJ0X3RpbWVyX3RzYzJucyhjdXJyZW50IC0gc3RhcnQpICUgMTAwMDAwMDAwMCk7CgkgICAg
-ICAgb2xkX21hc3Rlcl9jbnQgPSBtYXN0ZXJfY250OwoJICB9CiAgICAgfQp9Cgp2b2lkIGNhdGNo
-X3NpZ25hbChpbnQgc2lnKQp7CiAgICAgZW5kPTE7Cn0KCmludCBtYWluKGludCBhcmdjLCBjaGFy
-KiBhcmd2W10pCnsKICAgICBzaWduYWwoU0lHVEVSTSwgY2F0Y2hfc2lnbmFsKTsKICAgICBzaWdu
-YWwoU0lHSU5ULCBjYXRjaF9zaWduYWwpOwoKICAgICAvKiBBdm9pZHMgbWVtb3J5IHN3YXBwaW5n
-IGZvciB0aGlzIHByb2dyYW0gKi8KICAgICBtbG9ja2FsbChNQ0xfQ1VSUkVOVHxNQ0xfRlVUVVJF
-KTsKCiAgICAgLyoKICAgICAgKiBBcmd1bWVudHM6ICZ0YXNrLAogICAgICAqICAgICAgICAgICAg
-bmFtZSwKICAgICAgKiAgICAgICAgICAgIHN0YWNrIHNpemUgKDA9ZGVmYXVsdCksCiAgICAgICog
-ICAgICAgICAgICBwcmlvcml0eSwKICAgICAgKiAgICAgICAgICAgIG1vZGUgKEZQVSwgc3RhcnQg
-c3VzcGVuZGVkLCAuLi4pCiAgICAgICovCiAgICAgcnRfdGFza19jcmVhdGUoJmJ1c3lfdGFzaywg
-ImJ1c3kiLCAwLCA5OSwgVF9DUFUoMSkpOwogICAgIHJ0X3Rhc2tfY3JlYXRlKCZwcmludF90YXNr
-LCAicHJpbnQiLCAwLCAxLCBUX0NQVSgwKSk7CgogICAgIC8qCiAgICAgICogQXJndW1lbnRzOiAm
-dGFzaywKICAgICAgKiAgICAgICAgICAgIHRhc2sgZnVuY3Rpb24sCiAgICAgICogICAgICAgICAg
-ICBmdW5jdGlvbiBhcmd1bWVudAogICAgICAqLwogICAgIHJ0X3Rhc2tfc3RhcnQoJmJ1c3lfdGFz
-aywgJmJ1c3lsb29wLCBOVUxMKTsKICAgICBydF90YXNrX3N0YXJ0KCZwcmludF90YXNrLCAmcHJp
-bnRsb29wLCBOVUxMKTsKCiAgICAgcGF1c2UoKTsKCiAgICAgcnRfdGFza19kZWxldGUoJmJ1c3lf
-dGFzayk7CiAgICAgLy9ydF90YXNrX2RlbGV0ZSgmcHJpbnRfdGFzayk7Cn0K
-------=_Part_134511_12218985.1228343959284--
 
