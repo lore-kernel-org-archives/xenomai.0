@@ -1,16 +1,14 @@
-Message-ID: <49359483.4060201@domain.hid>
-Date: Tue, 02 Dec 2008 21:03:15 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <49363D9C.7010201@domain.hid>
+Date: Wed, 03 Dec 2008 09:04:44 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <493306F5.2080605@domain.hid>	<49330CD3.4090700@domain.hid>	<4933BAE2.3000502@domain.hid>	<4933F1A4.8060209@domain.hid>	<4933F18F.7080103@domain.hid>
-	<4933FE5A.5060501@domain.hid>	<49355B5D.8070802@domain.hid>
-	<49355A59.4050600@domain.hid>	<49357C02.1090001@domain.hid>
-	<49358003.1080705@domain.hid> <4935919D.2080602@domain.hid>
-In-Reply-To: <4935919D.2080602@domain.hid>
+References: <493306F5.2080605@domain.hid> <49330CD3.4090700@domain.hid>
+	<4933BAE2.3000502@domain.hid> <4933F1A4.8060209@domain.hid>
+	<4933F18F.7080103@domain.hid>
+In-Reply-To: <4933F18F.7080103@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] pthread cancelation and scheduling magics
-Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,42 +18,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-Wolfgang Grandegger wrote:
-> -bash-3.2# cat stat sched
-> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
->   0  0      0          12563      0     00500080   99.9  ROOT
->   0  1407   1          1          0     00300380    0.0  cancel-test
->   0  1409   1          3          1     00300380    0.0  ctrl_func
->   0  1410   1          3          0     00300380    0.0  calc_func
->   0  0      0          4373414    0     00000000    0.1  IRQ512: [timer]
-> CPU  PID    PRI      PERIOD     TIMEOUT    TIMEBASE  STAT       NAME
->   0  0       39      0          0          master    R          ROOT
->   0  1407     0      0          0          master    X          cancel-test
->   0  1409    39      0          0          master    X          ctrl_func
->   0  1410    38      0          0          master    X          calc_func
+Gilles Chanteperdrix wrote:
+> Wolfgang Grandegger wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Wolfgang Grandegger wrote:
+>>>>> Hello,
+>>>>>
+>>>>> I have written the attached test program to cancel Xenomai POSIX
+>>>>> threads. The "calc_task" does some busy work, which the higher priority
+>>>>> task "ctrl_task" interrupts and aborts after some time. The program does
+>>>>> not behave like I expect and it also behaves differently on my PowerPC
+>>>>> and ARM test system. The "calc_task" continues after calling
+>>>>> pthread_cancel() in "ctrl_task". On ARM, the behaviour is even more
+>>>>> wired. Is there anything wrong in my test program or anything else I
+>>>>> should care of?
+>>>> First, you should know that PTHREAD_CANCEL_ASYNCHRONOUS is evil, it will
+>>>> almost inevitably leave things in an unknown state when canceling a
+>>>> thread, you would better use PTHREAD_CANCEL_DEFERRED and ensure that
+>>>> your thread has some cancellation point, if it has not, use
+>>>> pthread_testcancel.
+>>>>
+>>>> Second, your program will only work if root thread priority coupling is
+>>>> enabled. Is it enabled in your case?
+>>> Actually, even with priority coupling I am not sure it can not work. The
+>>> problem is the way do_sigwake_event signal threads: it make them switch
+>>> to secondary mode only if they pass through a syscall. Since the
+>>> "calc_task" thread does not issue any syscall, it will never check see
+>>> that it should relax to handle the cancelation signal.
+>> calc_task() calls clock_gettime() permanently, which does a syscall as
+>> long as vDSO is not used, which might be the case on PowerPC. This would
+>> explain why cancelation of "calc_task" works on ARM.
 > 
-> When does this priority coupling happen.
+> For architectures with a high-resolution counter,
+> clock_gettime(CLOCK_MONOTONIC) is a xenomai service which uses the
+> counter and does not issue any syscall, this includes arm unless you
+> configured xenomai with --enable-arm-arch=generic or with
+> --disable-arm-tsc, and this probably includes powerpc.
+> 
 
-Each time a thread switches from primary to secondary mode, it is enqueued by
-decreasing priority order into a list tracking relaxed threads for the given
-CPU. The root thread for that CPU dynamically inherits the priority of the
-topmost thread queued to the relax/RPI list. This list is updated as soon as:
-- a primary mode thread is relaxed (enqueued)
-- a relaxed thread goes back to primary mode (dequeued)
-- a relaxed thread blocks on a linux service (dequeued)
-- a relaxed thread resumes from a linux service (enqueued)
-When no more threads are linked to the RPI list, the root thread priority is
-downgraded to -1.
+clock_gettime() is wrapped to __wrap_clock_gettime(), which does a syscall:
 
-In effect, this couples the Xenomai priority scale to the linux one, so that
-switching to secondary mode does not allow lower priority threads still in
-primary mode to preempt.
+http://www.rts.uni-hannover.de/xenomai/lxr/source/src/skins/posix/clock.c?v=SVN-trunk#058
 
-CONFIG_XENO_OPT_PRIOCPL controls whether such coupling should happen at all.
+Have I missed something?
 
--- 
-Philippe.
+Wolfgang.
 
