@@ -1,13 +1,12 @@
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
-Date: Thu, 4 Dec 2008 00:55:02 +0100
-References: <4934EB57.9080305@domain.hid> <49356C83.8050909@domain.hid>
-In-Reply-To: <49356C83.8050909@domain.hid>
+Message-ID: <4937A50F.6050502@domain.hid>
+Date: Thu, 04 Dec 2008 10:38:23 +0100
+From: =?ISO-8859-1?Q?Patrick_Gr=E4bel?= <graebel@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200812040055.02455.berlemont.hauw@domain.hid>
+References: <4934EB57.9080305@domain.hid> <49356C83.8050909@domain.hid>
+	<200812040055.02455.berlemont.hauw@domain.hid>
+In-Reply-To: <200812040055.02455.berlemont.hauw@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] Calling comedi from a RT task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -20,40 +19,38 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi,
+Hi!
 
-> >
-> > I am using Xenomai 2.3.1 and comedi with driver "ni_pcimio". I am able
-> > to create a RT task that triggers each msec. But calling the comedi API
-> > kicks me out of RT as indicated by /proc/xenomai/stat (column MSW). The
-> > modules loaded are:
-> >
-> > comedi_fc   3584 1 ni_pcimio
-> > kcomedilib 20868 0
-> > comedi     33248 6 ni_pcimio, ni_tio, comedi_fc, mite, 8255, kcomedilib
-> > licModule  44272 1 kcomedilib
-> >
-> > The comedi modules are from a 2.6.20-14-ipipe/comedi/driver directory.
-> > How do I use the comedi API so that the task will stay realtime? What do
-> > I have to check?
->
-> You should have a look at the RT-capable comedi stack that currently
-> only lives in Xenomai SVN trunk. How to get your device supported by
-> that stack, ie. how to port the existing driver to RT-comedi, that's
-> something Alexis can tell you more about. 
+At the moment I have not much time to look into the APIs, but we have
+some cards to test with: NI 6220, Adv 1751 and Adv 1720 (and maybe
+more). Of course I would test drivers for you, if there are any prototype=
+s.
 
-If you consider porting the ni_pcimio driver to the RTDM version of Comedi, 
-please tell me; I am trying to do the same thing. You could save my time or I 
-could save yours ;). Anyway, your help would be very valuable as I have no 
-acquisition card...
+What's the effort on porting? Is there much to do or do I have to
+programm a driver from scratch? How do I have to imagine the structure
+of the whole project?
 
-> And/or have a look at the fake 
-> and loop drivers that are already included.
+Xenomai ------------> Comedi API    -> driver (e. g. ni_pcimio)
+        |
+        ---> RTDM --> Comedi RT API (part of Xenomai) -> RT driver
 
-You can also have a look at the doxygen documentation available in the SVN 
-trunk. The section "Comedi API -> Driver API" (driverfacilities) should help 
-you.
+Is the Comedi API that is part of the Xenomai hierachy a Real Time
+substitute for the Comedi API of the original Comedi project? So porting
+is only a litte more than a simple recompile?
 
-> Jan
+Is this correct? I would welcome any comments on this.
 
+Greetings
+Patrick Graebel
+
+--=20
+
+Universit=E4t Kassel
+Fachbereich Elektrotechnik/Informatik
+Fachgebiet Fahrzeugsysteme und Grundlagen der Elektrotechnik
+Wilhelmsh=F6her Allee 73
+34121 Kassel
+
+E-Mail: graebel@domain.hid, Telefon: 0561 804-6264
+GnuPG Fingerprint: 65B0 6282 5934 E2DC ADEB 6C2C CCEE 55FA 2C63 4E5C
 
