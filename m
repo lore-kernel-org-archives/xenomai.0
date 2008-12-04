@@ -1,21 +1,11 @@
-Message-ID: <4937FA5B.6070703@domain.hid>
-Date: Thu, 04 Dec 2008 16:42:19 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <493306F5.2080605@domain.hid>	<49330CD3.4090700@domain.hid>	<4933BAE2.3000502@domain.hid>	<4933F1A4.8060209@domain.hid>	<4933F18F.7080103@domain.hid>
-	<4933FE5A.5060501@domain.hid>	<49355B5D.8070802@domain.hid>
-	<49355A59.4050600@domain.hid>	<49357C02.1090001@domain.hid>
-	<49365C69.5040807@domain.hid>	<49366B2B.4050705@domain.hid>
-	<493689EB.8000300@domain.hid>	<4936C9CA.1090507@domain.hid>
-	<4936C897.1000406@domain.hid>	<4936D1E7.4070006@domain.hid>	<4936D0B9.6070102@domain.hid>
-	<4936D63F.50501@domain.hid>	<4936D63B.3050603@domain.hid>
-	<4936DBC1.6030303@domain.hid>	<4936DBC6.9080805@domain.hid>
-	<4936E5EA.1060008@domain.hid>	<4936E5EB.9080404@domain.hid>
-	<4937F76D.7040906@domain.hid> <4937F961.1080605@domain.hid>
-In-Reply-To: <4937F961.1080605@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pthread cancelation and scheduling magics
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C9562B.E183060E"
+Date: Thu, 4 Dec 2008 17:18:02 +0100
+Message-ID: <A820268933E41D449CC13B5E097C1E2F0363CE31@domain.hid>
+From: "Rubio, Martial" <Martial.Rubio@domain.hid>
+Subject: [Xenomai-help] xntslave_start,xntslave_stop
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,126 +15,248 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
+Cc: "Dupeyrou, Gilles" <Gilles.Dupeyrou@domain.hid>, =?iso-8859-1?Q?Jean-Fran=E7ois_Gilot?= <jfg@domain.hid>
 
-Gilles Chanteperdrix wrote:
-> Wolfgang Grandegger wrote:
->> Gilles Chanteperdrix wrote:
->>> Wolfgang Grandegger wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> Wolfgang Grandegger wrote:
->>>>>> Gilles Chanteperdrix wrote:
->>>>>>> Wolfgang Grandegger wrote:
->>>>>>>> Gilles Chanteperdrix wrote:
->>>>>>>>> Wolfgang Grandegger wrote:
->>>>>>>>>> Gilles Chanteperdrix wrote:
->>>>>>>>>>> Wolfgang Grandegger wrote:
->>>>>>>>>>>> Running under gdb shows:
->>>>>>>>>>>>
->>>>>>>>>>>>   Program received signal SIGSEGV, Segmentation fault.
->>>>>>>>>>>>   [Switching to Thread 0x4885d4b0 (LWP 1127)]
->>>>>>>>>>>>   0x0ff49100 in pthread_cancel () from /lib/libpthread.so.0
->>>>>>>>>>>>   (gdb) where
->>>>>>>>>>>>   #0  0x0ff49100 in pthread_cancel () from /lib/libpthread.so.0
->>>>>>>>>>>>   #1  0x10001d64 in ctrl_func (parm=0x0) at cancel-test.c:104
->>>>>>>>>>>>   #2  0x0ffa98e4 in __pthread_trampoline ()
->>>>>>>>>>>>      from /home/wolf/xenomai/lib/libpthread_rt.so.1
->>>>>>>>>>>>   #3  0x0ff42a6c in start_thread () from /lib/libpthread.so.0
->>>>>>>>>>>>   #4  0x0fdd18a0 in clone () from /lib/libc.so.6
->>>>>>>>>>>>   Backtrace stopped: previous frame inner to this frame (corrupt stack?)
->>>>>>>>>>>>
->>>>>>>>>>>> Is pthread_cancel used from the Linux pthread library? And
->>>>>>>>>>>> pthread_testcancel() as well?
->>>>>>>>>>> Yes, and I guess, as you said, that it happens because calc_func is dead
->>>>>>>>>>> when you try and cancel it.
->>>>>>>>>> Yep, but it should not crash.
->>>>>>>>> The spec says:
->>>>>>>>> The pthread_cancel() function may fail if:
->>>>>>>>>
->>>>>>>>> [ESRCH]
->>>>>>>>>     No thread could be found corresponding to that specified by the
->>>>>>>>> given thread ID.
->>>>>>>>>
->>>>>>>>>
->>>>>>>>> So, it is a "may", returning ESRCH, as Xenomai does in kernel-space, is
->>>>>>>>> not mandatory.
->>>>>>>> I also got the return value ESRCH in another test. Nevertheless, a crash
->>>>>>>> is not the expected behaviour, to say the least. Here pthread_cancel()
->>>>>>>> obvoiusly get's interrupted and the calc_thread continues. Is it
->>>>>>>> possible that pthread_cancel() switches to secondary mode?
->>>>>>> pthread_cancel switches to secondary mode if it has to send a signal (if
->>>>>>> cancellation is in asynchronous mode, this happens when the target
->>>>>>> thread is blocked inside a blocking call). But this should not be a
->>>>>>> problem with RPI.
->>>>>> I disabled priority coupling in the kernel and it did not help or harm.
->>>>>> This test uses PTHREAD_CANCEL_DEFERRED, which is  also the default, if
->>>>>> I understood correctly.
->>>>> You should definitely enable priority coupling. Even if you use
->>>>> PTHREAD_CANCEL_DEFERRED, when you call a blocking call, the cancellation
->>>>> is switched for the time of the blocking call to asynchronous. But since
->>>>> you do not call any blocking call, I agree that pthread_cancel should
->>>>> not switch to secondary mode, it should just set a bit in some TCB
->>>>> attached to the target thread.
->>>>>
->>>>>>> But the problem you should focus on is why the scheduler does not let
->>>>>>> pthread_cancel run earlier.
->>>>>> Don't know what you mean. The calc_func gets preempted and the ctrl_func
->>>>>> calls pthread_cancel as expected...
->>>>>>
->>>>>>   calc_func: at count 20
->>>>>>   calc_func: at count 21
->>>>>>   calc_func: at count 22
->>>>>>   ctrl_func: cancel at count 23
->>>>>>   ^^^^^^^^^
->>>>>>   calc_func: at count 23
->>>>>>
->>>>>> But then it stops somehow in pthread_cancel and calc_func continues to run.
->>>>> Yes, but since "ctrl_func: stopped at count 23" does not appear, it
->>>>> means that ctrl_func is somehow blocked in pthread_cancel.
->>>>>
->>>>> Does the test work if calc_func calls nanosleep instead of
->>>>> create_load_100ms ?
->>>> Yes.
->>> So, pthread_cancel works even for threads running in primary mode, when
->>> they issue xenomai syscalls.
->>>
->>>> I'm getting closer now, I think, I hope. pthread_cancel seems only to
->>>> work if calc_thread runs in secondary mode. If I set policy and priority
->>>> at the beginning of the thread function, nor pthread_setschedparam nor
->>>> clock_gettime switches to primary mode and therefore calc_thread runs in
->>>> secondary mode. If I add explicit
->>>> pthread_set_mode_np(0, PTHREAD_PRIMARY), pthread_cancel is not able to
->>>> terminate the calc_thread anymore, even with pthread_testcancel.
->>> That is not expected. But this brings me back to my initial question, do
->>> you have to work with a real world application that runs without issuing
->>> any syscall ?
->> If a add long nanosleeps, e.g. 100, 10 or 1 ms, cancellation works but
->> it fails with short nanosleeps. A syscall seems not sufficient. I have
->> the impression that pthread_cancel needs some time in secondary mode to
-> 
-> When calling nanosleep, the threads spends on time in secondary mode. I
-> think the problem is rather that only asynchronous cancelation (meaning
-> cancelation with a signal) works. Setting the cancelation bit somehow
-> gets lost.
-> 
->> do it's duties, e.g. mark the thread as canceled. Would it make sense to
->> wrap pthread_cancel, and friends to the corresponding kernel functions
->> in ksrc/skins/posix?
->> Is there a way to force a thread switching to secondary mode?
-> 
-> No, there is no way to force a thread to switch to secondary mode, the
-> xnshadow_relax call explicitely requires to be called by the target
-> thread. Before I wrap pthread_cancel, I would really like to understand
-> why setting a bit with pthread_cancel and testing it with
-> pthread_testcancel does not work.
-> 
-> What is the trace of your test when run:
-> - on ARM
+This is a multi-part message in MIME format.
 
-by the way, could not there be a NPTL vs linuxthreads difference between
-ARM and powerpc ?
+------_=_NextPart_001_01C9562B.E183060E
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
--- 
-                                                 Gilles.
+Hello everybody ...
+=20
+In preamble... find below Philippe's reply (in 08/2008) about HW =
+implementation of VxWorks's announcetick
+(MSI/PCI interrupt) :
+=20
+If you want to hack the Xenomai timer sub-system in order to only affect =
+the VxWorks timebase, what you actually need is to control the coupling =
+between the master timebase (paced by decrementer) and the slave VxWorks =
+one, so that decrementer ticks may be prevented from kicking the VxWorks =
+timebase. This way, you would be able to call tickAnnounce() freely to =
+announce any incoming VxWorks tick (i.e. from your PCI handler).
+
+In short, when paced by the PCI interrupt, you will need to:
+
+- call xntslave_stop(base2slave(wind_tbase))
+
+- call tickAnnounce() from your PCI IRQ handler
+
+When paced normally (simulation, "somebody stole by PCI card" mode), =
+just leave the burden to the system timer (i.e. ppc decrementer) as =
+usual, by coupling the VxWorks slave timebase to the master one anew:
+
+- call xntslave_start(base2slave(wind_tbase), xnarch_get_cpu_time() + =
+period, period); /* period is given in nanoseconds, depends on the =
+master timebase */
+
+In any case, you don't need to change the VxWorks tick period. =
+Starting/stopping the VxWorks timebase should do the trick.
+
+ NOTE: this is a hack exposing Xenomai internals -- we should probably =
+encapsulate this into new xntbase_bind/unbind calls if this does =
+eventually works for you.
+
+=20
+
+=20
+
+=20
+
+My probleme is the following one :
+
+I tried to use xntslave_start/stop in my rtdm module, but it seems that, =
+despite xntslave_start/stop instructions are present in my System.map, =
+the linker don't archive :
+
+> grep xntslave_start /boot/System.map-2.6.25-pae=20
+
+c01629b9 T xntslave_start=20
+
+> depmod -F /boot/System.map-2.6.25-pae -e vxworks_tick_time_module.ko=20
+
+WARNING: vxworks_tick_time_module.ko needs unknown symbol xntslave_start =
+
+
+WARNING: vxworks_tick_time_module.ko needs unknown symbol xntslave_stop=20
+
+I think I've missed something but ... what ?
+
+And a subsidiary question : If I'm using xntbase_start/stop instead of =
+xntslave_start/stop
+
+is the behaviour the same one ? (xntbase_xxxx can be  linked !!!)
+
+Regards
+
+Martial
+
+
+------_=_NextPart_001_01C9562B.E183060E
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Diso-8859-1">
+<META content=3D"MSHTML 6.00.3790.3959" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D125115115-04122008>Hello =
+everybody=20
+...</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D125115115-04122008></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D125115115-04122008>In =
+preamble... find=20
+below Philippe's reply (in 08/2008) about HW implementation of VxWorks's =
+
+announcetick</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN =
+class=3D125115115-04122008>(MSI/PCI interrupt)=20
+:</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D125115115-04122008></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D125115115-04122008>
+<P class=3DMsoNormal><FONT face=3D"Times New Roman" size=3D3><SPAN =
+lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt">If you want to hack the Xenomai timer =
+sub-system in=20
+order to only affect the VxWorks timebase, what you actually need is to =
+control=20
+the coupling between the master timebase (paced by decrementer) and the =
+slave=20
+VxWorks one, so that decrementer ticks may be prevented from kicking the =
+VxWorks=20
+timebase. This way, you would be able to call tickAnnounce() freely to =
+announce=20
+any incoming VxWorks tick (i.e. from your PCI handler).<?xml:namespace =
+prefix =3D=20
+o ns =3D "urn:schemas-microsoft-com:office:office" =
+/><o:p></o:p></SPAN></FONT></P>
+<P class=3DMsoNormal><FONT face=3D"Times New Roman" size=3D3><SPAN =
+lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt"><o:p></o:p></SPAN></FONT></P>
+<P class=3DMsoNormal><FONT face=3D"Times New Roman" size=3D3><SPAN =
+lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt">In short, when paced by the PCI interrupt, you =
+will need=20
+to:<o:p></o:p></SPAN></FONT></P>
+<P class=3DMsoNormal style=3D"TEXT-INDENT: 35.4pt"><FONT face=3D"Times =
+New Roman"=20
+size=3D3><SPAN lang=3DEN-GB style=3D"FONT-SIZE: 12pt">- call=20
+xntslave_stop(base2slave(wind_tbase))</SPAN></FONT></P>
+<P class=3DMsoNormal style=3D"TEXT-INDENT: 35.4pt"><FONT face=3D"Times =
+New Roman"=20
+size=3D3><SPAN lang=3DEN-GB style=3D"FONT-SIZE: =
+12pt"></SPAN></FONT><FONT=20
+face=3D"Times New Roman" size=3D3><SPAN lang=3DEN-GB style=3D"FONT-SIZE: =
+12pt">- call=20
+tickAnnounce() from your PCI IRQ handler<o:p></o:p></SPAN></FONT></P>
+<P class=3DMsoNormal><FONT face=3D"Times New Roman" size=3D3><SPAN =
+lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt"><o:p></o:p></SPAN></FONT></P>
+<P class=3DMsoNormal><FONT face=3D"Times New Roman" size=3D3><SPAN =
+lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt">When paced normally (simulation, "somebody =
+stole by PCI=20
+card" mode), just leave the burden to the system timer (i.e. ppc =
+decrementer) as=20
+usual, by coupling the VxWorks slave timebase to the master one=20
+anew:<o:p></o:p></SPAN></FONT></P>
+<P class=3DMsoNormal style=3D"TEXT-INDENT: 35.4pt"><FONT face=3D"Times =
+New Roman"=20
+size=3D3><SPAN lang=3DEN-GB style=3D"FONT-SIZE: 12pt">- call=20
+xntslave_start(base2slave(wind_tbase), xnarch_get_cpu_time() + period, =
+period);=20
+/* period is given in nanoseconds, depends on the master timebase=20
+*/<o:p></o:p></SPAN></FONT></P>
+<P class=3DMsoNormal><FONT face=3D"Times New Roman" size=3D3><SPAN =
+lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt"><o:p></o:p></SPAN></FONT></P>
+<P class=3DMsoNormal><FONT face=3D"Times New Roman" size=3D3><SPAN =
+lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt">In any case, you don't need to change the =
+VxWorks tick=20
+period. Starting/stopping the VxWorks timebase should do the=20
+trick.</SPAN></FONT></P>
+<P class=3DMsoNormal><FONT face=3D"Times New Roman" size=3D3><SPAN =
+lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt">&nbsp;NOTE: this is a hack exposing Xenomai =
+internals --=20
+we should probably encapsulate this into new xntbase_bind/unbind calls =
+if this=20
+does eventually works for you.</SPAN></FONT></P>
+<P class=3DMsoNormal><FONT face=3D"Times New Roman" size=3D3><SPAN =
+lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt"></SPAN></FONT>&nbsp;</P>
+<P class=3DMsoNormal><FONT face=3D"Times New Roman" size=3D3><SPAN =
+lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt"></SPAN></FONT>&nbsp;</P>
+<P class=3DMsoNormal><FONT face=3D"Times New Roman" size=3D3><SPAN =
+lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt"></SPAN></FONT>&nbsp;</P>
+<P class=3DMsoNormal><FONT face=3D"Times New Roman"><SPAN lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt"><SPAN class=3D125115115-04122008>My probleme =
+is the=20
+following one :</SPAN></SPAN></FONT></P><FONT><SPAN lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt"><SPAN class=3D125115115-04122008>
+<P class=3DMsoNormal><SPAN lang=3DEN-GB style=3D"FONT-SIZE: 12pt"><FONT=20
+face=3D"Times New Roman">I tried to use xntslave_start/stop in my rtdm =
+module, but=20
+it seems that, despite xntslave_start/stop instructions are present in =
+my=20
+System.map, the linker don't archive :<o:p></o:p></FONT></SPAN></P>
+<P class=3DMsoNormal style=3D"TEXT-INDENT: 35.4pt"><SPAN lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt"><FONT face=3D"Times New Roman">&gt; grep =
+xntslave_start=20
+/boot/System.map-2.6.25-pae <o:p></o:p></FONT></SPAN></P>
+<P class=3DMsoNormal style=3D"TEXT-INDENT: 35.4pt"><SPAN lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt"><FONT face=3D"Times New Roman">c01629b9 T =
+xntslave_start=20
+<o:p></o:p></FONT></SPAN></P>
+<P class=3DMsoNormal style=3D"TEXT-INDENT: 35.4pt"><SPAN lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt"><FONT face=3D"Times New Roman">&gt; depmod -F=20
+/boot/System.map-2.6.25-pae -e vxworks_tick_time_module.ko=20
+<o:p></o:p></FONT></SPAN></P>
+<P class=3DMsoNormal style=3D"TEXT-INDENT: 35.4pt"><SPAN lang=3DEN-GB=20
+style=3D"FONT-SIZE: 12pt"><FONT face=3D"Times New Roman">WARNING:=20
+vxworks_tick_time_module.ko needs unknown symbol xntslave_start=20
+<o:p></o:p></FONT></SPAN></P>
+<P class=3DMsoNormal style=3D"TEXT-INDENT: 35.4pt"><FONT=20
+face=3D"Times New Roman"><SPAN lang=3DEN-GB style=3D"FONT-SIZE: =
+12pt">WARNING:=20
+vxworks_tick_time_module.ko needs unknown symbol xntslave_stop=20
+</SPAN></FONT></P>
+<P class=3DMsoNormal style=3D"TEXT-INDENT: 35.4pt"><FONT=20
+face=3D"Times New Roman"><SPAN lang=3DEN-GB style=3D"FONT-SIZE: =
+12pt"><SPAN=20
+class=3D125115115-04122008>I think I've missed something but ... what=20
+?</SPAN></SPAN></FONT></P>
+<P class=3DMsoNormal style=3D"TEXT-INDENT: 35.4pt"><FONT=20
+face=3D"Times New Roman"><SPAN lang=3DEN-GB style=3D"FONT-SIZE: =
+12pt"><SPAN=20
+class=3D125115115-04122008>And a subsidiary question : If I'm using=20
+xntbase_start/stop instead of =
+xntslave_start/stop</SPAN></SPAN></FONT></P>
+<P class=3DMsoNormal style=3D"TEXT-INDENT: 35.4pt"><FONT=20
+face=3D"Times New Roman"><SPAN lang=3DEN-GB style=3D"FONT-SIZE: =
+12pt"><SPAN=20
+class=3D125115115-04122008>is the behaviour the same one ? =
+(xntbase_xxxx&nbsp;can=20
+be &nbsp;linked !!!)</SPAN></SPAN></FONT></P>
+<P class=3DMsoNormal style=3D"TEXT-INDENT: 35.4pt"><FONT=20
+face=3D"Times New Roman"><SPAN lang=3DEN-GB style=3D"FONT-SIZE: =
+12pt"><SPAN=20
+class=3D125115115-04122008>Regards</SPAN></SPAN></FONT></P>
+<P class=3DMsoNormal style=3D"TEXT-INDENT: 35.4pt"><FONT=20
+face=3D"Times New Roman"><SPAN lang=3DEN-GB style=3D"FONT-SIZE: =
+12pt"><SPAN=20
+class=3D125115115-04122008>Martial</SPAN></SPAN></FONT></SPAN></SPAN></FO=
+NT></P></SPAN></FONT></DIV></BODY></HTML>
+
+------_=_NextPart_001_01C9562B.E183060E--
 
