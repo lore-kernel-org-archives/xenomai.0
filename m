@@ -1,27 +1,10 @@
-Message-ID: <49394193.6080205@domain.hid>
-Date: Fri, 05 Dec 2008 15:58:27 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <000b01c956eb$c9128ff0$0f01a8c0@domain.hid>
+From: "Daniele Pagani" <danielepagani@domain.hid>
+Date: Fri, 5 Dec 2008 16:11:42 +0100
 MIME-Version: 1.0
-References: <493306F5.2080605@domain.hid>
-	<49330CD3.4090700@domain.hid>	<4933BAE2.3000502@domain.hid>
-	<4933F1A4.8060209@domain.hid>
-	<4933F18F.7080103@domain.hid> <4933FE5A.5060501@domain.hid>
-	<49355B5D.8070802@domain.hid> <49355A59.4050600@domain.hid>
-	<49357C02.1090001@domain.hid> <49365C69.5040807@domain.hid>
-	<49366B2B.4050705@domain.hid> <493689EB.8000300@domain.hid>
-	<4936C9CA.1090507@domain.hid> <4936C897.1000406@domain.hid>
-	<4936D1E7.4070006@domain.hid>
-	<4936D0B9.6070102@domain.hid> <4936D63F.50501@domain.hid>
-	<4936D63B.3050603@domain.hid> <4936DBC1.6030303@domain.hid>
-	<4936DBC6.9080805@domain.hid> <4936E5EA.1060008@domain.hid>
-	<4936E5EB.9080404@domain.hid> <4937F76D.7040906@domain.hid>
-	<4937F961.1080605@domain.hid> <493805E3.30404@domain.hid>
-	<49380498.9040505@domain.hid> <49380A1C.2000701@domain.hid>
-	<49380D18.8000107@domain.hid>
-In-Reply-To: <49380D18.8000107@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pthread cancelation and scheduling magics
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0008_01C956F4.29B8DDC0"
+Subject: Re: [Xenomai-help] Blackfin BF537 userspace - kernelspace strategy
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -31,137 +14,138 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Wolfgang Grandegger wrote:
->> Gilles Chanteperdrix wrote:
->>> Wolfgang Grandegger wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> Wolfgang Grandegger wrote:
->>>>>> Gilles Chanteperdrix wrote:
->>>> [...deletions...]
->>>>>>> That is not expected. But this brings me back to my initial question, do
->>>>>>> you have to work with a real world application that runs without issuing
->>>>>>> any syscall ?
->>>>>> If a add long nanosleeps, e.g. 100, 10 or 1 ms, cancellation works but
->>>>>> it fails with short nanosleeps. A syscall seems not sufficient. I have
->>>>>> the impression that pthread_cancel needs some time in secondary mode to
->>>>> When calling nanosleep, the threads spends on time in secondary mode. I
->>>> What do you mean? nanosleep switches to secondary mode?
->>> I meant spends "no" time in secondary mode. nanosleep does not switch to
->>> secondary mode.
->>>
->>>>> think the problem is rather that only asynchronous cancelation (meaning
->>>>> cancelation with a signal) works. Setting the cancelation bit somehow
->>>>> gets lost.
->>>>>
->>>>>> do it's duties, e.g. mark the thread as canceled. Would it make sense to
->>>>>> wrap pthread_cancel, and friends to the corresponding kernel functions
->>>>>> in ksrc/skins/posix?
->>>>>> Is there a way to force a thread switching to secondary mode?
->>>>> No, there is no way to force a thread to switch to secondary mode, the
->>>>> xnshadow_relax call explicitely requires to be called by the target
->>>>> thread. Before I wrap pthread_cancel, I would really like to understand
->>>>> why setting a bit with pthread_cancel and testing it with
->>>>> pthread_testcancel does not work.
->>>>>
->>>>> What is the trace of your test when run:
->>>>> - on ARM
->>>>> - with root thread priority inheritance,
->>>>> - with USE_EXPLICIT_SCHED and USE_TEST_CANCEL, and CANCEL_TYPE set to
->>>>> PTHREAD_CANCEL_DEFERRED
->>>>> - posting a semaphore in ctrl_func before calling nanosleep, and waiting
->>>>> for that semaphore in main before creating the calc_func thread.
->>>> The calc_thread is not canceled and a segmentation fault happens.
->>>> Canceling the calc_thread does *not* work if it's running in primrary
->>>> mode, nor on ARM, nor on PowerPC. It does work when calc_thread does run
->>>> in secondary mode, which happened with USE_EXPLICIT_SCHED not set. If
->>>> you want do to some tests, I could send you my revised test program.
->>>> My conclusion is that pthread_cancel can not be used to cancel busy
->>>> realtime threads. I'm going to re-write the program using the native
->>>> skin and rt_task_delete.
->>> Yes, but what interests me is how it fails, that is seeing the trace of
->>> your program.
->> With pthread_cancel you do not see too much because the rt_printf
->> messages do not get printed:
-> 
-> As a temporary quirk, could you try, in rtdk, to install a handler for
-> SIGSEGV which flushes the print buffers ?
+This is a multi-part message in MIME format.
 
-Here it comes... With
+------=_NextPart_000_0008_01C956F4.29B8DDC0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-void sigsegv_handler(int sig)
-{
-	printf("%s: signal %d catched\n", __func__, sig);
-	rt_print_cleanup();
-	exit(2);
-}
 
-I get:
+Dear sirs,
 
--bash-3.2# ./cancel-test
-Real-Time debugging started
-ctrl_func: started at count 0
-Now starting calc_thread (ctrl_started=1)
-calc_func: counting till 50
-sigsegv_handler: signal 11 catched
-ctrl_func: sleeping for 2sec 500000000ns
-calc_func: at count 0
-calc_func: at count 1
-calc_func: at count 2
-calc_func: at count 3
-calc_func: at count 4
-calc_func: at count 5
-calc_func: at count 6
-calc_func: at count 7
-calc_func: at count 8
-calc_func: at count 9
-calc_func: at count 10
-calc_func: at count 11
-calc_func: at count 12
-calc_func: at count 13
-calc_func: at count 14
-calc_func: at count 15
-calc_func: at count 16
-calc_func: at count 17
-calc_func: at count 18
-calc_func: at count 19
-calc_func: at count 20
-calc_func: at count 21
-calc_func: at count 22
-calc_func: at count 23
-ctrl_func: cancel at count 24
-calc_func: at count 24
-calc_func: at count 25
-calc_func: at count 26
-calc_func: at count 27
-calc_func: at count 28
-calc_func: at count 29
-calc_func: at count 30
-calc_func: at count 31
-calc_func: at count 32
-calc_func: at count 33
-calc_func: at count 34
-calc_func: at count 35
-calc_func: at count 36
-calc_func: at count 37
-calc_func: at count 38
-calc_func: at count 39
-calc_func: at count 40
-calc_func: at count 41
-calc_func: at count 42
-calc_func: at count 43
-calc_func: at count 44
-calc_func: at count 45
-calc_func: at count 46
-calc_func: at count 47
-calc_func: at count 48
-calc_func: at count 49
-calc_func: stopped at count 50
+I'm using uClinux with Xenomai on BF537 and it works fine.
 
-Wolfgang.
+But, I need to understand the best strategy to use about Linux/Xenomai =
+and userspace/kernelspace.
 
+I'm using sport driver for audio input/ouput and my application does =
+audio alghoritms on these buffers (I'm working fine with 16x2 sample =
+@48khz that is something like 2ms of audio latency time).
+
+The driver is developed in Linux environment (without real time), using =
+2d-dma buffering and dma_copy in function read/write.
+
+Then, I develop, in userspace, application using Xenomai native library =
+with function such as:
+rt_task_create
+rt_task_start
+
+and inside the real time task I'm using read/write function according to =
+the char device driver sport. The priority of the task is set to 99.
+
+Anyway, when I'm using this configuration, sometimes a calling to a =
+webserver (that is running on the same machine) could cause an error on =
+the audio output, so I think that something is not in real time =
+environment.
+
+So the question is, what I need to do?
+
+1) write real time driver (very difficult now for me)
+
+2) write userspace application with real time interrupt and dma =
+management? If yes, I don't understand if in Xenomai context I can set =
+the Blackfin register from a userspace application or if in Xenomai =
+context has no sense to speak about user/kernel space.=20
+
+Sorry for my confusion.
+
+Best regards,
+Daniele.
+
+
+
+------=_NextPart_000_0008_01C956F4.29B8DDC0
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Diso-8859-1">
+<META content=3D"MSHTML 6.00.6000.16414" name=3DGENERATOR>
+<STYLE></STYLE>
+</HEAD>
+<BODY bgColor=3D#ffffff>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>Dear sirs,</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>I'm using uClinux with Xenomai on BF537 =
+and it=20
+works fine.</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>But, I need to understand the best =
+strategy to use=20
+about Linux/Xenomai and userspace/kernelspace.</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>I'm using sport driver for audio =
+input/ouput and my=20
+application does audio alghoritms on these buffers (I'm working fine =
+with 16x2=20
+sample @48khz that is something like 2ms of audio=20
+latency&nbsp;time).</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>The driver is developed in Linux =
+environment=20
+(without real time), using 2d-dma buffering and dma_copy in function=20
+read/write.</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>Then, I develop, in userspace, =
+application using=20
+Xenomai native library with function such as:</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2>rt_task_create</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2>rt_task_start</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>and inside the real time task I'm using =
+read/write=20
+function according to the char device driver sport. The priority of the =
+task is=20
+set to 99.</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>Anyway, when I'm using this =
+configuration,=20
+sometimes a calling to a webserver (that is running on the same machine) =
+could=20
+cause an error on the audio output, so I think that something is not in =
+real=20
+time environment.</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>So the question is, what I need to =
+do?</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>1) write real time driver (very =
+difficult now for=20
+me)</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>2) write userspace application with =
+real time=20
+interrupt and dma&nbsp;management? If yes, I don't understand if in =
+Xenomai=20
+context I can set the Blackfin register from a userspace application or =
+if in=20
+Xenomai context has no sense to speak about user/kernel space. =
+</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>Sorry for my confusion.</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>Best regards,</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2>Daniele.</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2>&nbsp;</DIV>
+<DIV><BR></DIV></FONT></BODY></HTML>
+
+------=_NextPart_000_0008_01C956F4.29B8DDC0--
 
 
