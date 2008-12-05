@@ -1,5 +1,5 @@
-Message-ID: <49395BE6.3080107@domain.hid>
-Date: Fri, 05 Dec 2008 17:50:46 +0100
+Message-ID: <49395CA5.1040409@domain.hid>
+Date: Fri, 05 Dec 2008 17:53:57 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <493943B6.2040500@domain.hid> <493946AD.3040003@domain.hid>
@@ -45,31 +45,26 @@ Jan Kiszka wrote:
 >> find the tests under sim/skins/posix/testsuite), that is why there is no
 >> reason to return any error code.
 > 
-> ...which is bogus IMHO.
-
-What is bogus ? Not to return an error when something works ?
-
-> Expecting to read the doc when something does
+> ...which is bogus IMHO. Expecting to read the doc when something does
 > not work as expected is ok. But more or less silently failing even if it
 > is documented that it will somehow fail is not what Xenomai is usually
 > known for.
 > 
 > That said, I still don't see (looking at TRUNK) how SCHED_RR should work
 > even under periodic mode. Guess I have to enable and test it.
-
-It would work if __wrap_pthread_create called
-__wrap_pthread_setschedparam which would issue a syscall passing the
-policy and priority to kernel-space. I am almost sure that it used to
-work, but it may happen that recent changes regarding the way priority
-is handled broke it.
-
 > 
 > But I guess the best we can do is to finally remove this limitation by
 > allowing the use to create a periodic tick timer over aperiodic mode if
 > there is a need for RR scheduling.
 
-Yes, a very low priority change on the todo list. Someone needing this
-in a real-world application would boost the priority.
+In ksrc/skins/posix/syscall.c, function __pthread_create:
+
+        pthread_attr_init(&attr);
+        attr.policy = p->policy;
+        param.sched_priority = p->rt_priority;
+        attr.detachstate = PTHREAD_CREATE_DETACHED;
+
+So, the priority and policy are taken from the underlying Linux thread.
 
 -- 
                                                  Gilles.
