@@ -1,40 +1,79 @@
-Message-ID: <217b7eb20811100730r38bc0e7dq3d907d4c67563a97@domain.hid>
-Date: Mon, 10 Nov 2008 15:30:04 +0000
-From: Hank <hank007@domain.hid>
+Message-ID: <49396D91.8000101@domain.hid>
+Date: Fri, 05 Dec 2008 19:06:09 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_97068_10129872.1226331004878"
-Subject: [Adeos-main] ipipe 1.9 vs 1.11
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
-
-------=_Part_97068_10129872.1226331004878
+References: <493943B6.2040500@domain.hid>
+	<493946AD.3040003@domain.hid>	<4939599E.7090208@domain.hid>
+	<49395CA5.1040409@domain.hid> <493967D3.6020805@domain.hid>
+In-Reply-To: <493967D3.6020805@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Subject: Re: [Xenomai-core] SCHED_RR
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Jan Kiszka wrote:
+>>>>> Hi Gilles,
+>>>>>
+>>>>> here is a trivial test case on my desk that points to SCHED_RR issues of
+>>>>> the POSIX skin: simple pthread_create with an attribute block that has
+>>>>> SCHED_RR set, but neither SCHED_RR nor the priority reach the new thread.
+>>>>>
+>>>>> The way the scheduling policy and parameters get to that user space
+>>>>> thread leads via __real_pthread_setschedparam after
+>>>>> __pse51_thread_create. This triggers do_setsched_event in shadow.c. But
+>>>>> here we filter out all policies except for SCHED_FIFO. So neither the
+>>>>> priority nor the required XNRRB flag make it to the target therefore.
+>>>>>
+>>>>> Even worse, we are running aperiodic timer mode, so this would not have
+>>>>> worked anyway due to the scheduler limitations. Fortunately, it turned
+>>>>> out that the customer is fine with SCHED_FIFO as well, but the broken
+>>>>> priorities and/or lacking error codes on creation are annoying + the
+>>>>> fact that it likely wouldn't work even with periodic timer mode.
+>>>> The fact that it does not work with aperiodic timer is documented.
+>>>> However, this used to work and was tested with periodic timer (you can
+>>>> find the tests under sim/skins/posix/testsuite), that is why there is no
+>>>> reason to return any error code.
+>>> ...which is bogus IMHO. Expecting to read the doc when something does
+>>> not work as expected is ok. But more or less silently failing even if it
+>>> is documented that it will somehow fail is not what Xenomai is usually
+>>> known for.
+>>>
+>>> That said, I still don't see (looking at TRUNK) how SCHED_RR should work
+>>> even under periodic mode. Guess I have to enable and test it.
+>>>
+>>> But I guess the best we can do is to finally remove this limitation by
+>>> allowing the use to create a periodic tick timer over aperiodic mode if
+>>> there is a need for RR scheduling.
+>> In ksrc/skins/posix/syscall.c, function __pthread_create:
+>>
+>>         pthread_attr_init(&attr);
+>>         attr.policy = p->policy;
+>>         param.sched_priority = p->rt_priority;
+>>         attr.detachstate = PTHREAD_CREATE_DETACHED;
+>>
+>> So, the priority and policy are taken from the underlying Linux thread.
+> 
+> Yep, but its prio/policy is set *after* the chunk above. Maybe it is
+> already a sufficient hot-fix to move __real_pthread_setschedparam before
+> __pse51_thread_create if this has no unwanted side effects.
 
-Any comments on how different are the two releases? We are currently using
-1.9 and need to understand the advantages of moving to 1.11.
+Useless. Since do_setsched_event ignores the priority change, everything
+should work as expected.
 
-Thanks
-
--Hank
-
-------=_Part_97068_10129872.1226331004878
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hi<br><br>Any comments on how different are the two releases? We are currently using 1.9 and need to understand the advantages of moving to 1.11.<br><br>Thanks<br><br>-Hank<br clear="all"><br>
-
-------=_Part_97068_10129872.1226331004878--
+-- 
+                                                 Gilles.
 
