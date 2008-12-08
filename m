@@ -1,13 +1,14 @@
-Message-ID: <493D3E4F.2040206@domain.hid>
-Date: Mon, 08 Dec 2008 16:33:35 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Mon, 08 Dec 2008 17:18:49 +0100
+From: "Petr Cervenka" <grugh@domain.hid>
 MIME-Version: 1.0
-References: <6fca2a340812080606y1ae8def3vb81b9093476d6104@domain.hid>
-In-Reply-To: <6fca2a340812080606y1ae8def3vb81b9093476d6104@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] SMP support for two ppc405 cores?
-Reply-To: rpm@xenomai.org
+Message-ID: <200812081718.8273@domain.hid>
+References: <200812081707.22246@domain.hid> <200812081708.3537@domain.hid>
+	<200812081709.17083@domain.hid> <200812081710.4784@domain.hid>
+	<200812081711.32480@domain.hid> <200812081712.4953@domain.hid>
+	<200812081713.10238@domain.hid> <200812081714.30317@domain.hid>
+In-Reply-To: <200812081714.30317@domain.hid>
+Content-Type: multipart/mixed; boundary="-------=_609B25C2.695A770E"
+Subject: [Xenomai-help] Kernel panic: not syncing - part 2
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,44 +18,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?sa=E2dia_dhouib?= <dhouib@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-sa=E2dia dhouib wrote:
-> Hi,
-> I work on an xilinx development board (xupv2p) which has two ppc405 cores.
-> I want to know if xenomai can schedule tasks on the two cores ?
+This is a multi-part message in MIME format
 
-Xenomai depends on Linux to support SMP first.
+---------=_609B25C2.695A770E
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Since there is no cache coherency on this board, supporting SMP (sort of,
-sub-optimal form) is a braindamage albeit possible task, but I doubt the Xi=
-linx
-kernel tree provides it already. Does it?
-
-So the answer is likely no, Xenomai won't support your board in full dual c=
-ore
-mode, since Xenomai assumes cache coherency is available in SMP mode.
-
-Now, you could port Xenomai to your board without Linux underneath, but you
-would still be hit by the cache coherency issue.
-
-> And is there some document that explains how is SMP implemented in Xenoma=
-i.
-
-Well, ... No.
-
-> Thanks a lot
->=20
->=20
-> ------------------------------------------------------------------------
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+Hello again,
+I have though, that all my troubles with this kernel panic (see https://mail.gna.org/public/xenomai-help/2008-07/msg00054.html) are over, but suddenly it reappeared.
+The full log is in attachment. I used snapshot of screen, OCR program and manual correction, so expect possible errors in log.
+I haven't seen the error for months, I was believed that it was caused the combination of other two problems (hopefully already solved or evaded). But this kernel panic emerged  during the weekend test, when we tested usability of a new motherboard for our purposes.
+It's perhaps not critical for me, but if you have any advices or questions, I'm listening.
+Thanks
+Petr
 
 
---=20
-Philippe.
+---------=_609B25C2.695A770E
+Content-Type: text/plain; name="kernel_panic.txt"
+Content-Transfer-Encoding: base64
+
+MDYuMTIuMDggMDc6MzU6MTM+ICogUmVsb2FkaW5nIHN5c3RlbSBsb2cgZGFlbW9uLi4uIA0K
+MDcuMTIuMDggMDc6MzU6MDc+ICogUmVsb2FkaW5nIHN5c3RlbSBsb2cgZGFlbW9uLi4uIA0K
+MDcuMTIuMDggMTY6MzQ6NDc+IFsxODc0MDAuMTA2Nzg2XSBCVUc6IHVuYWJsZSB0byBoYW5k
+bGUga2VybmVsIHBhZ2luZyByZXF1ZXN0IGF0IDAwMDAwMDAwNDFiY2FkZjggDQpbMTg3NDAw
+LjEwNjg5OV0gSVA6IFs8ZmZmZmZmZmY4MDIxMDFiNj4gcHJvZmlsZV9wYysweDQ2LzB4ODAg
+DQpbMTg3NDAwLjExMTg2Nl0gUEdEIDZlOWEwMDY3IFBVRCA2ZTE0ZDA2NyBQTkQgMCANClsx
+ODc0MDAuMTEwODY2XSBPb3BzIDAwMDAgWzFdIFBSRUVNUFQgU01QIA0KWzE4NzQwMC4xMTA4
+NjZdIENQVSAwIA0KWzE4NzQwMC4xMTA4NjZdIE1vZHVsZXMgbGlua2VkIGluOiBwcGRldiBl
+MTAwMCByODE2OSBydF9lMTAwMCBydF9yODE2OSBydHBhY2tldCBjb250YWluZXIgcnRuZXQg
+YWMgdmlkZW8gb3V0cHV0IHNicyBzYnNoYyBiYXR0ZXJ5IGFmX3BhY2tldCBwYXJwb3J0X3Bj
+IGlwIHBhcnBvciANCnQgazh0ZW1wIGJ1dHRvbiBpcHY2IGV2ZGV2IGV4dDMgamJkIG1iYWNo
+ZSB1c2JoaWQgaGlkIHNnIHNkX21vZCBhdGFfZ2VuZXJpYyBhaGNpIGxpYmF0YSBzY3NpX21v
+ZCBkb2NrIGZvcmNlZGV0aCBhbWQ3NHh4IGlkZV9jb3JlIGVoY2lfaGNkIG9oY2lfaGNkIHVz
+YmNvcmUgZmFuIA0KdGhlcm1hbF9zeXMgZnVzZSBbbGFzdCB1bmxvYWRlZDogZTEwMDBdIA0K
+WzE4NzQwMC4xMTA4NjZdIFBpZDogMzA5LCBjb21tOiBnYXRla2VlcHBlci8wIE5vdCB0YWlu
+dGVkIDIuNi4yNi4zl2FkZW9zICM2IA0KWzE4NzQwMC4xMTA2NjZdIFJJUDogMDAxMDpbPGZm
+ZmZmZmZmODAyMTAxYjY+XSBbPGZmZmZmZmZmODAyMTAxYjY+XSBwcm9maWxlX3BjKzB4NDYv
+MHg4MCANClsxODc0MDAuMTEwODY2XSBSU1AgMDAxODpmZmZmODEwMDZkZmFiYjk4IEVGTEFH
+UzogMDAwMTAyMDINClsxODc0MDAuMTEwODY2XSBSQVg7IDAwMDAwMDAwMDAwMDAwMDEgUkJY
+OiBmZmZmODEwMDAxMDExNzQwIFJDWDogMDAwMDAwMDA0MWJjYWRmOA0KWzE4NzQwMC4xMTA4
+NjZdIFJEWDogZmZmZjgxMDA4MDk5MTAwMCBSU0k6IDAwMDAwMDAwMDAwMDAwMDAgUkRJOiBm
+ZmZmZmZmZjgwNDljNDRhDQpbMTg3NDAwLjExMDg2Nl0gUkJQOiBmZmZmZmZmZjgwNDljNDRh
+IFIwODogMDAwMDAwMDAwMDAwMDAwMSBSMDk6IDAwMDAwMDAwMDAwMDAwMTANClsxODc0MDAu
+MTEwODY2XSBSMTA6IDAwMDAwMDAwMDAwMDAwMDEgUjExOiBmZmZmZmZmZjgwMjIyM2FPIFIx
+MjogMDAwMGExYjlhODUyODkxMQ0KWzE4NzQwMC4xMTA4NjZdIFIxMzogZmZmZjgxMDAwMTAx
+MzM2MCBSMTQ6IDAwMDAwMDAwMDAwMDAwMDEgUjE1OiA3ZmZmZmZmZmZmZmZmZmZmDQpbMTg3
+NDAwLjExMDg2Nl0gRlM6ICAwMDAwMDAwMDRsYmNiOTUwKDAwMDApIEdTOmZmZmZmZmZmODA1
+ZmMwMDAoMDAwMCkga24xR1M6MDAwMDAwMDAwMDAwMDAwMA0KWzE4NzQwMC4xMTA4NjZdIENT
+OiAwMDEwIERTOiAwMDE4IEVTOiAwMDE4IENSMDogMDAwMDAwMDA4MDA1MDAzYg0KWzE4NzQw
+MC4xMTA4NjZdIENSMjogMDAwMDAwMDA0MWJjYWRmOCBDUjM6IDAwMDAwMDAwNmUzNTQwMDAg
+Q1I0OiAwMDAwMDAwMDAwMDAwNmUwDQpbMTg3NDAwLjExMDg2Nl0gRFIwOiAwMDAwMDAwMDAw
+MDAwMDAwIERSMTogMDAwMDAwMDAwMDAwMDAwMCBEUjI6IDAwMDAwMDAwMDAwMDAwMDANClsx
+ODc0MDAuMTEwODY2XSBEUjM6IDAwMDAwMDAwMDAwMDAwMDAgRFI2OiAwMDAwMDAwMGZmZmYw
+ZmYwIERSNzogMDAwMDAwMDAwMDAwMDQwMA0KWzE4NzQwMC4xMTA2NjZdIFByb2Nlc3MgZ2F0
+ZWtlZXBlci8wIChwaWQ6IDMwOS4gdGhyZWFkaW5mbyBmZmZmODEwMDZkZmFhMDAwLCB0YXNr
+IGZmZmY4MTAwNmZiNzYzZTApDQpbMTg3NDAwLjExMDg2Nl0gU3RhY2s6IGZmZmY4MTAwNmZi
+NzYzZTAgZmZmZjgxMDAwMTAxMTc0MCAwMDAwMDAwMDAwMDAwMDAxIGZmZmZmZmZmODAyM2E1
+YWUNClsxODc0MDAuMTEwODY2XSAgZmZmZjgxMDAwMTAxMzM2MCAxZjExMTEwMDAxMDEzNDYw
+IGYxMTE4MTAwMDEwMTE3NDAgMTExZjExZjE4MDI1MDc3Mw0KWzE4NzQwMC4xMTA4NjZdICBm
+ZmZmODEwMDAxMDEzNDYwIGZmZmZmZmZmODAyNTg3MDAgZmZmZjgxMDAwMU8xMzNiOCBmZmZm
+ZmZmZjgwMjUxMTU0DQpbMTg3NDAwLjExMDg2Nl0gQ2FsbCBUcmFjZTogDQpbMTg3NDAwLjEx
+MDg2Nl0gIFs8ZmZmZmZmZmY4MDIzYTVhZT5dID8gcHJvZmlsZV90aWNrKzB4NWUvMHhhMCAN
+ClsxODc0MDAuMTEwODY2XSAgWzxmZmZmZmZmZjgwMjU4NzczPl0gPyB0aWNrX3NjaGVkX3Rp
+bWVyKzB4NzMvMHhlMA0KWzE4NzQwMC4xMTA4NjZdICBbPGZmZmZmZmZmODAyNTg3MDA+XSA/
+IHRpY2tfc2NoZWRfdGltZXIrMHgwLzB4ZTANClsxODc0MDAuMTEwODY2XSAgWzxmZmZmZmZm
+ZjgwMjUxMTU0Pl0gPyBfX3J1bl9ocnRpbWVyKzB4OTQvMHhiMA0KWzE4NzQwMC4xMTA4NjZd
+ICBbPGZmZmZmZmZmODAyNTFlMjg+XSA/IGhydGltZXJfaW50ZXJydXB0KzB4MTA4LzB4MTgw
+DQpbMTg3NDAwLjExMDg2Nl0gIFs8ZmZmZmZmZmY4MDIxZDZhYz5dID8gc21wX2FwaWNfdGlt
+ZXJfaW50ZXJydXB0KzB4NmMvMHhiMCANClsxODc0MDAuMTEwMDY2XSAgWzxmZmZmZmZmZjgw
+MjcxYjU3Pl0gPyBfX2lwaXBlX3N5bmNfc3RhZ2UrMHgzMTcvT3gzMWMgDQpbMTg3NDAwLjEx
+MDY2Nl0gIFs8ZmZmZmZmZmY4MDIxZDY0MD5dID8gc21wX2FwaWNfdGltZXJfaW50ZXJydXB0
+KzB4MC8weGIwDQpbMTg3NDAwLjExMDA2Nl0gIFs8ZmZmZmZmZmY4MDI3MWI1Yz5dID8gX194
+aXJxX2VuZCsweDAvMFg4NiANClsxODc0MDAuMTEwNjY2XSAgWzxmZmZmZmZmZjgwMjFkNjQw
+Pl0gPyBzbXBfYXBpY19pbnRlcnJ1cHQrMHgwLzB4YjAgDQpbMTg3NDAwLjExMDY2Nl0gIFs8
+ZmZmZmZmZmY4MDIyZTc3NT5dID8gdXBkYXRlX2N1cnJfcnQrMHhiNS8weDJkMCANClsxODc0
+MDAuMTEwODY2XSAgWzxmZmZmZmZmZjgwMjcxZmFlPl0gPyBfX2lwaXBlX3Vuc3RhbGxfcm9v
+dCsweDVlLzB4NjAgDQpbMTg3NDAwLjExMDg2Nl0gIFs8ZmZmZmZmZmY4MDQ5Yzk3Yj5dID8g
+X3NwaW5fdW5sb2NLX2lycSswWGIvMFg0MCANClsxODc0MDAuMTEwODY2XSAgWzxmZmZmZmZm
+ZjgwMjJkMDhiPl0gPyBmaW5pc2hfdGFza19zd2l0Y2grMHgzYi8weEMwIA0KWzE4NzQwMC4x
+MTA4NjZdICBbPGZmZmZmZmZmODA0OWE2YjU+XSA/IHRocmVhZF9yZXR1cm4rMHg3YS8weDVj
+NQ0KWzE4NzQwMC4xMTA4NjZdICBbPGZmZmZmZmZmODAyODNlYTQ+XSA/IGdhdGVrZWVwZXJf
+dHJlYWQrMHgxMDQvMHgyNDANClsxODc0MDAuMTEwODY2XSAgWzxmZmZmZmZmZjgwMjJkOTEw
+Pl0gPyBkZWZhdWx0X3dha2VfZnVuY3Rpb24rMHgwLzB4MTANClsxODc0MDAuMTEwODY2XSAg
+WzxmZmZmZmZmZjgwMjgzZGEwPl0gPyBnYXRla2VlcGVyX3RocmVhZCsweDAvMHgyNDANClsx
+ODc0MDAuMTEwODY2XSAgWzxmZmZmZmZmZjgwMjRlMDliPl0gPyBrdGhyZWFkKzB4NGIvMHg4
+MA0KWzE4NzQwMC4xMTA4NjZdICBbPGZmZmZmZmZmODAyMGQyMzg+XSA/IGNoaWxkX3JpcCsw
+eGEvT3gxMg0KWzE4NzQwMC4xMTA4NjZdICBbPGZmZmZmZmZmODAyNGUwNTA+XSA/IGt0aHJl
+YWQrMHgwLzB4ODANClsxODc0MDAuMTEwODY2XSAgWzxmZmZmZmZmZjgwMjBkMjJlPl0gPyBj
+aGlsZF9yaXArMHgwLzB4MTINClsxODc0MDAuMTEwODY2XQ0KWzE4NzQwMC4xMTA4NjZdIENv
+ZGU6IDgwIDAwIDAwIDAwIDc0IDEyIDQ4IDg5IGU4IDQ4IDhiIDVjIDI0IDA4IDQ4IDhiIDZj
+IDI0IDEwIDQ4IDgzIGM0IDE4IGMzIDQ4IDg5IGVmIGU4IDY1IGNjIDA0IDAwIDg1IGNPIDc0
+IGUyIDQ4IDhiIDhiIDk4IDAwIDAwIDAwIDw0OD4gOGIgMQ0KMSA0MCA4OSBkMCA0OCBjMSBl
+OCAxNiA0OCA4NSBjMCA3NSAxYiA0OCA4YiA1MSAwOCA0OCA4OSANClsxMDc0MDAuMTEwODY2
+XSBSSVAgIFs8ZmZmZmZmZmY4MDIxMDFiNj5dIHByb2ZpbGVfcGMrMHg0Ni8weDgwIA0KWzEw
+NzQwMC4xMTA4NjZdICBSU1AgPGZmZmY4MTAwNmRmYWJiOTg+IA0KWzE4NzQwMC4xMTA4NjZd
+IENSMjogMDAwMDAwMDA0MWJjYWRmOCANClsxODc0MDAuMTEwODY2XSAtLS1bIGVuZCB0cmFj
+ZSBlNzU5Yzg2NGY5NTlmYjE1IF0tLS0gDQpbMTg3NDAwLjExMDg2Nl0gS2VybmVsIHBhbmlj
+IC0gbm90IHN5bmNpbmc6IEFpZWUsIGtpbGxpbmcgaW50ZXJydXB0IGhhbmRsZXIgDQo=
+
+---------=_609B25C2.695A770E--
 
