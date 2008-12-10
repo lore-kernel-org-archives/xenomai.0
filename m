@@ -1,12 +1,15 @@
-Message-ID: <493E44D6.2090107@domain.hid>
-Date: Tue, 09 Dec 2008 11:13:42 +0100
+Message-ID: <493FA528.3060307@domain.hid>
+Date: Wed, 10 Dec 2008 12:16:56 +0100
 From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <493E3ED4.7090405@domain.hid> <493E4113.3090708@domain.hid>
-In-Reply-To: <493E4113.3090708@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <493306F5.2080605@domain.hid>	<49330CD3.4090700@domain.hid>	<4933BAE2.3000502@domain.hid>	<4933F1A4.8060209@domain.hid>	<4933F18F.7080103@domain.hid>
+	<4933FE5A.5060501@domain.hid>	<49355B5D.8070802@domain.hid>
+	<49355A59.4050600@domain.hid>	<49357C02.1090001@domain.hid>
+	<49358003.1080705@domain.hid> <493BF43B.4080208@domain.hid>
+In-Reply-To: <493BF43B.4080208@domain.hid>
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Debugging RT threads with GDB on ARM/PowerPC
+Subject: Re: [Xenomai-help] pthread cancelation and scheduling magics
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,33 +19,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> Wolfgang Grandegger wrote:
->> Hello,
->>
->> I understood that GDB can be used to debug Xenomai real-time
->> applications but it seems not to work with my application on PowerPC or
->> ARM. The applications looses determinism quickly, mainly because RT
->> threads switch to secondary mode somehow. Have I missed something? Are
->> there any known issues with GDB on ARM or PowerPC?
->>
+Wolfgang Grandegger wrote:
+> Hi Gilles,
 > 
-> Using GDB means that you lose determinism, by essence. Debugging time can't be
-> for free anyway. Additionally, GDB is based on ptrace(), ptrace() makes heavy
-> use of Linux signals to control the debuggee, so as a matter of fact, the
-> application under debug has to switch to secondary mode each time GDB takes
-> control over it, which means, most of the time as soon as you are actually
-> debugging it. The same goes for breakpointing, since this triggers faults, hence
-> needs a switch to Linux mode as well, because ptrace() would not be happy to
-> process the breakpoint in the middle of a primary context.
+> Gilles Chanteperdrix wrote:
+>> Wolfgang Grandegger wrote:
 > 
-> This is not a ppc or arm issue. This is common to all archs.
+>>> I'm also puzzled why pthread_setschedparam() does make a mode switch
+>>> to secondary mode (sometimes).
+>> That is normal. The glibc caches threads priority value, so we have to
+>> call __real_pthread_setschedparam to update them. This issue has been
+>> solved differently on trunk, but unfortunately, we can not backport this
+>> modification on v2.4.x branch.
+> 
+> To get you right. With v2.4.x it is not possible with the POSIX skin to
+> change the priority of a real-time thread in the primary mode without
+> loosing determinism (because it will switch to secondary mode). What
+> options do I have?
 
-OK, that's what I suspected. After the first GDB intervention, real-time
-is lost. Thanks for clarification.
+I gave Xenomai trunk a try and pthread_setschedparam() does not switch
+to secondary mode any more on my PowerPC test system. Nice, I just get
+an Oops in thread_delete from time to time. More on that issue later.
+For my ARM i.mx31 system, a need a few patches to get the Xenomai src's
+compiled:
+
+Index: include/asm-generic/bits/bind.h
+===================================================================
+--- include/asm-generic/bits/bind.h	(revision 4450)
++++ include/asm-generic/bits/bind.h	(working copy)
+@@ -72,7 +72,7 @@
+ 	err = XENOMAI_SYSCALL1(__xn_sys_current, &current);
+ 	if (err) {
+ 		fprintf(stderr, "Xenomai: error obtaining handle for current "
+-			"thread: %s\n", strerror(err));
++			"thread: %s\n", strerror(-err));
+ 		exit(1);
+ 	}
+ 	__xeno_set_current(current);
+Index: include/asm-arm/syscall.h
+===================================================================
+--- include/asm-arm/syscall.h	(revision 4450)
++++ include/asm-arm/syscall.h	(working copy)
+@@ -228,7 +228,7 @@
+ 	volatile unsigned long long *const tscp = __xn_tscinfo.u.fr.tsc;
+ 	volatile unsigned *const counterp = __xn_tscinfo.u.fr.counter;
+         const unsigned mask = __xn_tscinfo.u.fr.mask;
+-	register unsigned long long after, before;
++	register unsigned long long result;
+         unsigned counter;
+ 
+         __asm__ ("ldmia %1, %M0\n": "=r"(result): "r"(tscp), "m"(*tscp));
+
+
+When I then start my application or cyclictest I get:
+
+-bash-3.2# ./cyclictest -n 
+Xenomai: error obtaining handle for current thread: Operation not permitted
+
+As the latency program works fine, it seems to be a problem with the
+POSIX skin. Any idea what it is?
+
+TIA,
 
 Wolfgang.
 
