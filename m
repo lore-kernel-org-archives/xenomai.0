@@ -1,15 +1,15 @@
 From: Roberto Bucher <roberto.bucher@domain.hid>
-Date: Thu, 11 Dec 2008 09:47:49 +0100
+Date: Thu, 11 Dec 2008 11:19:40 +0100
 References: <200812090832.43063.roberto.bucher@domain.hid>
-	<842971F5-4763-4765-835F-2E72AF407455@domain.hid>
-	<4940CFB7.5060701@domain.hid>
-In-Reply-To: <4940CFB7.5060701@domain.hid>
+	<200812091044.41645.roberto.bucher@domain.hid>
+	<4940CF82.2070709@domain.hid>
+In-Reply-To: <4940CF82.2070709@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain;
   charset="iso-8859-15"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Message-Id: <200812110947.49774.roberto.bucher@domain.hid>
+Message-Id: <200812111119.40464.roberto.bucher@domain.hid>
 Subject: Re: [Adeos-main] Problems with last adeos patches
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
@@ -19,44 +19,41 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: adeos-main <adeos-main@gna.org>
 
-Ok! I'll try the following steps:
+Some results:
 
-a) login from a network terminal with my system in graphical mode
-b) login from a network terminal with my system in non graphical mode
-c) modify the X11.org file to have for example vesa driver
+1) I changed the nvidia driver from 177.80 to 177.82: problem still remains
+2) I changed the driver to "vesa" in the xorg.conf file: X starts but the 
+problem remains!
+3) I connect using ssh -X from another terminal to the RT linux machine. I 
+can't reproduce the problem. When I start scilab on the RT machine the RT 
+system freezes and the connection fails.
 
-Some additional info:
+I installed the kernel 2.6.25.20 with patch  derived from adeos-ipipe-2.6.25-
+x86-2.0-09.patch and the system seems to work fine.
 
-- kernel 2.6.25.X seems to be ok (it doesn't have the same problem with 
-scilab)
-- kernel 2.6.27.8 with patch seems to be ok on a UP machine with Intel 
-graphics card
+Thanks in advance
 
-Best regards
+Roberto 
 
-Roberto
-
-On Thursday 11 December 2008 09:30:47 Jan Kiszka wrote:
-> Parashkev Penev wrote:
-> > Hi,
+On Thursday 11 December 2008 09:29:54 Jan Kiszka wrote:
+> Roberto Bucher wrote:
+> > Attached you can find my config. Basically, this is the same config the
+> > works with version 2.6.24.7 (the only differencies are given by the new
+> > CONFIG_XXX of the new linux version).
 > >
-> > I also have this issue. I am using the 2.6.26 kernel + adeos. The
-> > .config file is the default from the CentOS 5.2/Redhat 5.2 with ACPI,
-> > CPU frequency scaling, and APM turned off. The video card is an Nvidia,
-> > using the nv module on one of the machines. the other one has an ATI
-> > using the ati-glfrx. I haven't tried with vesa yet.
+> > I have a nvidia card and I use the commercial NVIDIA driver 177.80 under
+> > X in Ubuntu 8.10.
 >
-> Cross-checking with an open source driver would be good, though seeing
-> the issue with two likely quite different binary blobs suggest that they
-> are likely not to blame here.
+> Thanks for the .config, will see if it triggers anything strange as well
+> (ideally in kvm...), though I don't have nvidia nor its binary drivers
+> around.
 >
-> > Let me know if you ned something else. (Those are laptops, thus no
-> > serial console).
->
-> netconsole? Also here: Getting hold of an oops is very important,
-> specifically if the problem turns out to be not easily reproducible for us.
+> Still some questions remain: Have you seen the problem without the
+> nvidia driver, too? And is there a chance to capture the kernel console
+> via serial or netconsole? Seeing an oops would help a lot.
 >
 > Jan
 >
