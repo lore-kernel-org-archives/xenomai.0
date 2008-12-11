@@ -1,12 +1,13 @@
-Content-class: urn:content-classes:message
+Message-ID: <49413128.5070704@domain.hid>
+Date: Thu, 11 Dec 2008 16:26:32 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 11 Dec 2008 16:08:09 +0100
-Message-ID: <0B45E93C5FF65740AEAE690BF3848B7AD3849E@rennsmail04.eu.thmulti.com>
-From: "Fillod Stephane" <stephane.fillod@domain.hid>
-Subject: Re: [Xenomai-help] rt_heap_create problem
+References: <493306F5.2080605@domain.hid>	<49330CD3.4090700@domain.hid>	<4933BAE2.3000502@domain.hid>	<4933F1A4.8060209@domain.hid>	<4933F18F.7080103@domain.hid>	<4933FE5A.5060501@domain.hid>	<49355B5D.8070802@domain.hid>	<49355A59.4050600@domain.hid>	<49357C02.1090001@domain.hid>	<49358003.1080705@domain.hid>
+	<493BF43B.4080208@domain.hid> <493FA528.3060307@domain.hid>
+In-Reply-To: <493FA528.3060307@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] pthread cancelation and scheduling magics
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,20 +17,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?iso-8859-1?Q?Hans_S=F8ndergaard_=28HSO=29?= <HSO@VIAUC.DK>, xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Hans S=F8ndergaard (HSO) wrote:
-> I use Xenimai 2.4.3 and Linux 2.6.24 on an AT91SAM9260 processor based =
-on ARM926EJ-S.
-> My problem is that the code snippet below gives an error -2.
+Wolfgang Grandegger wrote:
+> Wolfgang Grandegger wrote:
+>> Hi Gilles,
+>>
+>> Gilles Chanteperdrix wrote:
+>>> Wolfgang Grandegger wrote:
+>>>> I'm also puzzled why pthread_setschedparam() does make a mode switch
+>>>> to secondary mode (sometimes).
+>>> That is normal. The glibc caches threads priority value, so we have to
+>>> call __real_pthread_setschedparam to update them. This issue has been
+>>> solved differently on trunk, but unfortunately, we can not backport this
+>>> modification on v2.4.x branch.
+>> To get you right. With v2.4.x it is not possible with the POSIX skin to
+>> change the priority of a real-time thread in the primary mode without
+>> loosing determinism (because it will switch to secondary mode). What
+>> options do I have?
+> 
+> I gave Xenomai trunk a try and pthread_setschedparam() does not switch
+> to secondary mode any more on my PowerPC test system. Nice, I just get
+> an Oops in thread_delete from time to time. More on that issue later.
+> For my ARM i.mx31 system, a need a few patches to get the Xenomai src's
+> compiled:
+> 
+> Index: include/asm-generic/bits/bind.h
+> ===================================================================
+> --- include/asm-generic/bits/bind.h	(revision 4450)
+> +++ include/asm-generic/bits/bind.h	(working copy)
+> @@ -72,7 +72,7 @@
+>  	err = XENOMAI_SYSCALL1(__xn_sys_current, &current);
+>  	if (err) {
+>  		fprintf(stderr, "Xenomai: error obtaining handle for current "
+> -			"thread: %s\n", strerror(err));
+> +			"thread: %s\n", strerror(-err));
+>  		exit(1);
+>  	}
+>  	__xeno_set_current(current);
+> Index: include/asm-arm/syscall.h
+> ===================================================================
+> --- include/asm-arm/syscall.h	(revision 4450)
+> +++ include/asm-arm/syscall.h	(working copy)
+> @@ -228,7 +228,7 @@
+>  	volatile unsigned long long *const tscp = __xn_tscinfo.u.fr.tsc;
+>  	volatile unsigned *const counterp = __xn_tscinfo.u.fr.counter;
+>          const unsigned mask = __xn_tscinfo.u.fr.mask;
+> -	register unsigned long long after, before;
+> +	register unsigned long long result;
+>          unsigned counter;
+>  
+>          __asm__ ("ldmia %1, %M0\n": "=r"(result): "r"(tscp), "m"(*tscp));
+> 
+> 
+> When I then start my application or cyclictest I get:
+> 
+> -bash-3.2# ./cyclictest -n 
+> Xenomai: error obtaining handle for current thread: Operation not permitted
+> 
+> As the latency program works fine, it seems to be a problem with the
+> POSIX skin. Any idea what it is?
 
-What does mean error -2 ?  Isn't it ENOENT /* No such file or directory =
-*/ ?
+First of all, are you sure that all parts were properly updated and in
+sync now?
 
-A rough guess would lead to /dev/rtheap missing. Can you check?
-You may also make use of strace to get more clues.
+The error means that something went wrong during the
+__wrap_pthread_setschedparam execution on __init_posix_interface. More
+precisely, we lack the shadow thread for the current (main) thread for
+unknown reasons.
 
-Regards
---=20
-Stephane
+Could you fire up gdb, step through this and check (looking at
+/proc/xenomai/sched) what happens on ARM here? x86 was fine the last
+time I checked (will recheck later today).
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT SE 26
+Corporate Competence Center Embedded Linux
 
