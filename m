@@ -1,12 +1,14 @@
-Message-ID: <493E20BE.4070600@domain.hid>
-Date: Tue, 09 Dec 2008 08:39:42 +0100
+Message-ID: <4940CF82.2070709@domain.hid>
+Date: Thu, 11 Dec 2008 09:29:54 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <200812090832.43063.roberto.bucher@domain.hid>
-In-Reply-To: <200812090832.43063.roberto.bucher@domain.hid>
+	<493E20BE.4070600@domain.hid>
+	<200812091044.41645.roberto.bucher@domain.hid>
+In-Reply-To: <200812091044.41645.roberto.bucher@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig697D5DD5D39D2062EA5733A6"
+	boundary="------------enigACC748BA2F643AC2C0F7ECB4"
 Sender: jan.kiszka@domain.hid
 Subject: Re: [Adeos-main] Problems with last adeos patches
 List-Id: General discussion about Adeos <adeos-main.gna.org>
@@ -18,52 +20,38 @@ List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: Roberto Bucher <roberto.bucher@domain.hid>
-Cc: adeos-main@gna.org
+Cc: adeos-main <adeos-main@gna.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig697D5DD5D39D2062EA5733A6
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enigACC748BA2F643AC2C0F7ECB4
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
 Roberto Bucher wrote:
-> Hi
+> Attached you can find my config. Basically, this is the same config the=
+ works=20
+> with version 2.6.24.7 (the only differencies are given by the new CONFI=
+G_XXX of=20
+> the new linux version).
 >=20
-> I have some problems with the last patches for kernel 2.6.26.x and 2.6.=
-27.x.
->=20
-> I found first the problem using the RTAI patch, but then I tryed the or=
-iginal=20
-> adeos patch and the problem remains and I can reproduce it every time.
->=20
-> When I start scilab-gtk from a patched kernel, RTAI or Adeos, the syste=
-m=20
-> freezes completely.
-> This problem doesn't happen with a 2.6.24.x kernel or with a non patche=
-d=20
-> 2.6.27.x kernel.
->=20
-> Paolo Mantegazza and other RTAI users have the same problem, but Paolo =
-for=20
-> example is not able to reproduce it in the same matter. By him for exam=
-ple the=20
-> problem happens sometimes after launching Acrobat Reader. On my system =
-it=20
-> happens sometimes when I try to download a file from the web too.
->=20
-> The probem persists with the last 2.6.27-x86-2.2-01.patch. I didn't try=
- a=20
-> 2.6.25.x kernel, but it seems to be ok (after Paolo Mantegazza).
->=20
-> Any idea?
+> I have a nvidia card and I use the commercial NVIDIA driver 177.80 unde=
+r X in=20
+> Ubuntu 8.10.
 
-Some questions: Could you provide your .config? How is your X configured
-(which driver, any acceleration etc.), or did you see the problem also
-without X? Did you try to catch potential oopses via serial console?
+Thanks for the .config, will see if it triggers anything strange as well
+(ideally in kvm...), though I don't have nvidia nor its binary drivers
+around.
+
+Still some questions remain: Have you seen the problem without the
+nvidia driver, too? And is there a chance to capture the kernel console
+via serial or netconsole? Seeing an oops would help a lot.
 
 Jan
 
+PS: Please keep the list in CC.
 
---------------enig697D5DD5D39D2062EA5733A6
+
+--------------enigACC748BA2F643AC2C0F7ECB4
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -72,10 +60,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.8 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkk+IL4ACgkQniDOoMHTA+kIaQCeIU6iCnidvmUo8FzakP09loaR
-55EAnjdmH+o93o+vNezVGnhfWuERmvWG
-=UoH8
+iEYEARECAAYFAklAz4IACgkQniDOoMHTA+n83wCfeCzx+Z7+FEg8OphdwK14KF5R
+eTEAn3/7GM/djgG/hEeanI38HrwNueTF
+=PQgT
 -----END PGP SIGNATURE-----
 
---------------enig697D5DD5D39D2062EA5733A6--
+--------------enigACC748BA2F643AC2C0F7ECB4--
 
