@@ -1,14 +1,15 @@
 Resent-To: xenomai-core <xenomai@xenomai.org>
-Resent-Message-Id: <49466BAA.5010608@domain.hid>
+Resent-Message-Id: <49466BAA.6000804@domain.hid>
 From: Jan Kiszka <jan.kiszka@domain.hid>
 Date: Mon, 15 Dec 2008 15:34:36 +0100
-Message-ID: <20081215143436.15493.98981.stgit@domain.hid>
+Message-ID: <20081215143436.15493.67040.stgit@domain.hid>
 In-Reply-To: <20081215143435.15493.94798.stgit@domain.hid>
 References: <20081215143435.15493.94798.stgit@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH 4/6] Mark libs nodlopen on initial-exec TLS
+Subject: [Xenomai-core] [PATCH 5/6] Replace --without-__tread with
+	--enable-dlopen-skins
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,147 +21,47 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
-Mark libs with nodlopen if initial-exec __thread variables are used
-because dlopen and this TLS model are in conflict.
+In practice, you only want to disable __thread support when Xenomai skin
+libraries should be loadable via dlopen. Therefore rename the related
+configure switch accordingly.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
 
- configure.in                  |    3 +++
- src/skins/native/Makefile.am  |    2 +-
- src/skins/posix/Makefile.am   |    2 +-
- src/skins/psos+/Makefile.am   |    2 +-
- src/skins/rtai/Makefile.am    |    2 +-
- src/skins/rtdm/Makefile.am    |    2 +-
- src/skins/uitron/Makefile.am  |    2 +-
- src/skins/vrtx/Makefile.am    |    2 +-
- src/skins/vxworks/Makefile.am |    2 +-
- 9 files changed, 11 insertions(+), 8 deletions(-)
+ configure.in |   19 +++++++++++++------
+ 1 files changed, 13 insertions(+), 6 deletions(-)
 
 diff --git a/configure.in b/configure.in
-index 0a03057..6558ebf 100644
+index 6558ebf..ff6bf66 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -764,6 +764,7 @@ LIBS="$LIBS -lrt"
- AC_CHECK_FUNCS([shm_open shm_unlink])
+@@ -765,14 +765,21 @@ AC_CHECK_FUNCS([shm_open shm_unlink])
  LIBS="$save_LIBS"
  
-+XENO_DLOPEN_CONSTRAINT=
- AC_ARG_WITH([__thread],
- 	    AC_HELP_STRING([--without-__thread],
- 			   [do not use TLS features (allows for dlopen'ing Xenomai libs)]),
-@@ -784,6 +785,7 @@ EOF
- 	rm -f conftest*])
- 	if test "$libc_cv_gcc___thread" = yes; then
- 		AC_DEFINE(HAVE___THREAD,1,[config])
-+		XENO_DLOPEN_CONSTRAINT="-Wl,-z -Wl,nodlopen"
- 	fi
- fi
+ XENO_DLOPEN_CONSTRAINT=
+-AC_ARG_WITH([__thread],
+-	    AC_HELP_STRING([--without-__thread],
+-			   [do not use TLS features (allows for dlopen'ing Xenomai libs)]),
+-	    [use__thread=$withval],
+-	    [use__thread=yes])
++AC_MSG_CHECKING(whether to enable dlopen support for skin libraries)
++AC_ARG_ENABLE(dlopen-skins,
++	AC_HELP_STRING([--enable-dlopen-skins], [Disable TLS features and automatic
++main thread mapping by the POSIX skin to allows dlopen'ing Xenomai libs.]),
++	[case "$enableval" in
++	y | yes) CONFIG_XENO_LIBS_DLOPEN=y ;;
++	*) unset CONFIG_XENO_LIBS_DLOPEN ;;
++	esac])
++AC_MSG_RESULT(${CONFIG_XENO_LIBS_DLOPEN:-no})
++if test x$CONFIG_XENO_LIBS_DLOPEN = xy; then
++	AC_DEFINE(CONFIG_XENO_LIBS_DLOPEN,1,[config])
++fi
  
-@@ -805,6 +807,7 @@ AC_SUBST(XENO_USER_CFLAGS)
- AC_SUBST(XENO_USER_LDFLAGS)
- AC_SUBST(XENO_USER_APP_CFLAGS)
- AC_SUBST(XENO_USER_APP_LDFLAGS)
-+AC_SUBST(XENO_DLOPEN_CONSTRAINT)
- AC_SUBST([CONFIG_STATUS_DEPENDENCIES],
-         ['$(top_srcdir)/src/skins/posix/posix.wrappers'])
- AC_SUBST(XENO_POSIX_WRAPPERS)
-diff --git a/src/skins/native/Makefile.am b/src/skins/native/Makefile.am
-index a1f61d9..3497f90 100644
---- a/src/skins/native/Makefile.am
-+++ b/src/skins/native/Makefile.am
-@@ -1,6 +1,6 @@
- lib_LTLIBRARIES = libnative.la
- 
--libnative_la_LDFLAGS = -version-info 3:0:0 -lpthread
-+libnative_la_LDFLAGS = @XENO_DLOPEN_CONSTRAINT@ -version-info 3:0:0 -lpthread
- 
- libnative_la_SOURCES = \
- 	alarm.c \
-diff --git a/src/skins/posix/Makefile.am b/src/skins/posix/Makefile.am
-index 2d42a28..d6a0912 100644
---- a/src/skins/posix/Makefile.am
-+++ b/src/skins/posix/Makefile.am
-@@ -4,7 +4,7 @@ lib_LTLIBRARIES = libpthread_rt.la
- 
- CPPFLAGS+=-I$(top_srcdir)/ksrc/skins
- 
--libpthread_rt_la_LDFLAGS = -version-info 1:0:0 -lpthread
-+libpthread_rt_la_LDFLAGS = @XENO_DLOPEN_CONSTRAINT@ -version-info 1:0:0 -lpthread
- 
- libpthread_rt_la_SOURCES = \
- 	init.c \
-diff --git a/src/skins/psos+/Makefile.am b/src/skins/psos+/Makefile.am
-index a579ebe..3e4464d 100644
---- a/src/skins/psos+/Makefile.am
-+++ b/src/skins/psos+/Makefile.am
-@@ -1,6 +1,6 @@
- lib_LTLIBRARIES = libpsos.la
- 
--libpsos_la_LDFLAGS = -version-info 0:0:0 -lpthread
-+libpsos_la_LDFLAGS = @XENO_DLOPEN_CONSTRAINT@ -version-info 0:0:0 -lpthread
- 
- libpsos_la_SOURCES = \
- 	asr.c \
-diff --git a/src/skins/rtai/Makefile.am b/src/skins/rtai/Makefile.am
-index 8a92859..bae83c1 100644
---- a/src/skins/rtai/Makefile.am
-+++ b/src/skins/rtai/Makefile.am
-@@ -1,6 +1,6 @@
- lib_LTLIBRARIES = librtai.la
- 
--librtai_la_LDFLAGS = -version-info 0:0:0
-+librtai_la_LDFLAGS = @XENO_DLOPEN_CONSTRAINT@ -version-info 0:0:0
- 
- librtai_la_SOURCES = init.c \
- 	shm.c
-diff --git a/src/skins/rtdm/Makefile.am b/src/skins/rtdm/Makefile.am
-index 00099be..73f97cf 100644
---- a/src/skins/rtdm/Makefile.am
-+++ b/src/skins/rtdm/Makefile.am
-@@ -1,6 +1,6 @@
- lib_LTLIBRARIES = librtdm.la
- 
--librtdm_la_LDFLAGS = -version-info 1:0:0 -lpthread
-+librtdm_la_LDFLAGS = @XENO_DLOPEN_CONSTRAINT@ -version-info 1:0:0 -lpthread
- 
- librtdm_la_SOURCES = \
- 	core.c \
-diff --git a/src/skins/uitron/Makefile.am b/src/skins/uitron/Makefile.am
-index 3736a9b..a7ff65a 100644
---- a/src/skins/uitron/Makefile.am
-+++ b/src/skins/uitron/Makefile.am
-@@ -1,6 +1,6 @@
- lib_LTLIBRARIES = libuitron.la
- 
--libuitron_la_LDFLAGS = -version-info 0:0:0 -lpthread
-+libuitron_la_LDFLAGS = @XENO_DLOPEN_CONSTRAINT@ -version-info 0:0:0 -lpthread
- 
- libuitron_la_SOURCES = \
- 	flag.c \
-diff --git a/src/skins/vrtx/Makefile.am b/src/skins/vrtx/Makefile.am
-index a5517f3..6233548 100644
---- a/src/skins/vrtx/Makefile.am
-+++ b/src/skins/vrtx/Makefile.am
-@@ -1,6 +1,6 @@
- lib_LTLIBRARIES = libvrtx.la
- 
--libvrtx_la_LDFLAGS = -version-info 0:0:0 -lpthread
-+libvrtx_la_LDFLAGS = @XENO_DLOPEN_CONSTRAINT@ -version-info 0:0:0 -lpthread
- 
- libvrtx_la_SOURCES = \
- 	event.c \
-diff --git a/src/skins/vxworks/Makefile.am b/src/skins/vxworks/Makefile.am
-index 7a57055..b7b74e6 100644
---- a/src/skins/vxworks/Makefile.am
-+++ b/src/skins/vxworks/Makefile.am
-@@ -1,6 +1,6 @@
- lib_LTLIBRARIES = libvxworks.la
- 
--libvxworks_la_LDFLAGS = -version-info 1:0:0 -lpthread
-+libvxworks_la_LDFLAGS = @XENO_DLOPEN_CONSTRAINT@ -version-info 1:0:0 -lpthread
- 
- libvxworks_la_SOURCES = \
- 	errnoLib.c \
+ dnl Check whether the compiler supports the __thread keyword.
+-if test "x$use__thread" != xno; then
++if test "x$CONFIG_XENO_LIBS_DLOPEN" != xy; then
+ 	AC_CACHE_CHECK([for __thread], libc_cv_gcc___thread,
+ 	[cat > conftest.c <<\EOF
+ __thread int a __attribute__ ((tls_model ("initial-exec"))) = 42;
 
 
