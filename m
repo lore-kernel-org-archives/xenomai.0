@@ -1,5 +1,5 @@
 From: Roberto Bucher <roberto.bucher@domain.hid>
-Date: Mon, 15 Dec 2008 18:59:54 +0100
+Date: Mon, 15 Dec 2008 19:19:10 +0100
 References: <200812090832.43063.roberto.bucher@domain.hid>
 	<200812140905.08103.roberto.bucher@domain.hid>
 	<49468ED1.3030504@domain.hid>
@@ -9,7 +9,7 @@ Content-Type: text/plain;
   charset="iso-8859-15"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Message-Id: <200812151859.55021.roberto.bucher@domain.hid>
+Message-Id: <200812151919.10849.roberto.bucher@domain.hid>
 Subject: Re: [Adeos-main] Problems with last adeos patches
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
@@ -22,7 +22,8 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: adeos-main <adeos-main@gna.org>
 
-I'll try it ASAP.
+I've unchecked the CONFIG_MTRR flag in kernel, but the behaviour is exactly the 
+same (scilab->freeze)
 
 Roberto
 
