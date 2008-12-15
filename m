@@ -1,16 +1,13 @@
-Message-ID: <494672E2.1030903@domain.hid>
-Date: Mon, 15 Dec 2008 16:08:18 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <494684E5.9070807@domain.hid>
+Date: Mon, 15 Dec 2008 17:25:09 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <20081215143435.15493.94798.stgit@domain.hid>
-	<20081215143436.15493.65646.stgit@domain.hid>
-	<49466DBF.9030403@domain.hid> <49466EA0.3070108@domain.hid>
-	<4946715C.9080709@domain.hid>
-In-Reply-To: <4946715C.9080709@domain.hid>
+In-Reply-To: <20081215143435.15493.94798.stgit@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 3/6] POSIX: Optimize
- pthread_setschedparam fast path
+Subject: Re: [Xenomai-core] [PATCH  0/6] Various fixes and cleanups
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,59 +17,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> diff --git a/src/skins/posix/thread.c b/src/skins/posix/thread.c
->> index 2ecb64f..46c49bf 100644
->> --- a/src/skins/posix/thread.c
->> +++ b/src/skins/posix/thread.c
->> @@ -37,11 +37,10 @@ static int linuxthreads;
->>  int __wrap_pthread_setschedparam(pthread_t thread,
->>  				 int policy, const struct sched_param *param)
->>  {
->> -	pthread_t myself = pthread_self();
->>  	unsigned long *mode_buf = NULL;
->>  	int err, promoted;
->>  
->> -	if (thread == myself) {
->> +	if (xeno_get_current() != XN_NO_HANDLE && thread == pthread_self()) {
+Jan Kiszka wrote:
+> Here is a queue of patches that piled up on my side. Most have been
+> posted earlier already, find details in the descriptions. I have some
+> more that will be posted later this week.
 > 
-> Should not this be xeno_get_current() == XN_NO_HANDLE ? The thread has a
-> chance to be promoted only if it is not already shadowed.
+> All patches are also available at
+> git://git.kiszka.org/xenomai.git assorted-queue
+> 
+> Jan
+> 
+> PS: BTW, I started mirroring the Xenomai SVN on my server. So far I pull
+> from SVN on 1:00, 12:00 and 18:00 (CET), maybe I will subscribe some
+> robot to the svn-commit list later. Feel free to make use of this
+> service as you like. For me it is a tool to keep control over my
+> various patch queues, and using only git (+stg) for this simplified
+> things significantly.
+>
 
-Oh, hell. Friday-evening-on-the-train hack that hasn't been checked as
-it was so obvious...
+I'm git-based on my side as well. At some point we should get rid of SVN altogether.
 
---------->
+> --
+> Siemens AG, Corporate Technology, CT SE 26
+> Corporate Competence Center Embedded Linux
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+> 
 
-Optimize __wrap_pthread_setschedparam without HAVE___THREAD for the case
-that an already mapped shadow is modifying its own scheduling
-parameters.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
-
- src/skins/posix/thread.c |    3 +--
- 1 files changed, 1 insertions(+), 2 deletions(-)
-
-diff --git a/src/skins/posix/thread.c b/src/skins/posix/thread.c
-index 2ecb64f..5e04082 100644
---- a/src/skins/posix/thread.c
-+++ b/src/skins/posix/thread.c
-@@ -37,11 +37,10 @@ static int linuxthreads;
- int __wrap_pthread_setschedparam(pthread_t thread,
- 				 int policy, const struct sched_param *param)
- {
--	pthread_t myself = pthread_self();
- 	unsigned long *mode_buf = NULL;
- 	int err, promoted;
- 
--	if (thread == myself) {
-+	if (xeno_get_current() == XN_NO_HANDLE && thread == pthread_self()) {
- #ifdef HAVE___THREAD
- 		mode_buf = xeno_init_current_mode();
- #else /* !HAVE___THREAD */
+-- 
+Philippe.
 
