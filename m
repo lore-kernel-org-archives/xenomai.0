@@ -1,14 +1,10 @@
-Message-ID: <49468AE2.6000800@domain.hid>
-Date: Mon, 15 Dec 2008 17:50:42 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4947AE91.8010000@domain.hid>
+Date: Tue, 16 Dec 2008 14:35:13 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <20081215143435.15493.94798.stgit@domain.hid>
-	<494684E5.9070807@domain.hid> <4946872D.8000009@domain.hid>
-In-Reply-To: <4946872D.8000009@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH  0/6] Various fixes and cleanups
-Reply-To: rpm@xenomai.org
+Subject: [Xenomai-core] xnpipe: Racy input_handler business
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,61 +14,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->> Jan Kiszka wrote:
->>> Here is a queue of patches that piled up on my side. Most have been
->>> posted earlier already, find details in the descriptions. I have some
->>> more that will be posted later this week.
->>>
->>> All patches are also available at
->>> git://git.kiszka.org/xenomai.git assorted-queue
->>>
->>> Jan
->>>
->>> PS: BTW, I started mirroring the Xenomai SVN on my server. So far I pull
->>> from SVN on 1:00, 12:00 and 18:00 (CET), maybe I will subscribe some
->>> robot to the svn-commit list later. Feel free to make use of this
->>> service as you like. For me it is a tool to keep control over my
->>> various patch queues, and using only git (+stg) for this simplified
->>> things significantly.
->>>
->> I'm git-based on my side as well. At some point we should get rid of SVN altogether.
->>
-> 
-> That would be great. As I don't feel brave enough for a "git svn
-> dcommit" from my cloned tree, I still have to apply patches on a real
-> SVN repository whenever I have to commit on my own.
->
+Hi,
 
-100% same case here...
+someone just dumped another kernel oops on my desk which points to the
+xnpipe subsystem: xnpipe_release was called, invoking
+__pipe_input_handler ie. the registered input_handler of the native pipe
+services. And that handler tried to call an invalid monitor callback
+(but no one ever set a monitor handler).
 
-> Once we switched to git, please also let us discuss how to deal with
-> ChangeLog in the future. Describing modifications twice or more is not
-> very efficient (nor motivating for a lazy developer). If we want some
-> high-level description in that file, then let's define what to be logged
-> there, and how. Its current level of details appears to be overkill
-> IMHO.
+So I looked at how the nucleus deals with input_handler registration,
+deregistration, and invocation where it also passes some cookie that
+points to the native pipe object here. Looks like that code is racy /wrt
+concurrent cleanup of kernel and user side.
 
-YMMV, it saved my day a few times when bisecting. It should document changes
-that affect previous assumptions on the way the damn thing used to work and does
-not anymore, and/or create/remove side-effects, and/or update some interface,
-and/or fix the core logic in a way or another. This is not to say that it
-actually always does that though.
+What is the intended locking policy when dereferencing the tuple of
+xnpipe_state_t.input_handler and xnpipe_state_t.cookie? Sometimes the
+handler is called under nklock, sometimes only both values are obtained
+and then nklock is dropped before invoking the handler (which is bogus
+as cookie may become invalid in the meantime). Even worse,
+xnpipe_release does not care at all about locking when calling
+input_handler as its last duty - and that's obviously where my customer
+just caught an oops.
 
- I would prefer to focus on more verbose git commit logs.
-> 
+In other words: Can't we always hold nklock while checking for
+input_handler != NULL and then invoking it with the corresponding
+cookie? This will just require us to properly clear input_handler on
+xnpipe_disconnect.
 
-ChangeLog would disappear completely in favor of more detailed git logs. There
-is indeed no point in duplicating information.
-
-> Jan
-> 
-
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT SE 26
+Corporate Competence Center Embedded Linux
 
