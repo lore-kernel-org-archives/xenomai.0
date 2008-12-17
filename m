@@ -1,15 +1,11 @@
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
-Date: Wed, 17 Dec 2008 01:11:48 +0100
-References: <38108.155.253.35.73.1229336092.squirrel@domain.hid>
-	<54299.155.253.35.73.1229341330.squirrel@domain.hid>
-In-Reply-To: <54299.155.253.35.73.1229341330.squirrel@domain.hid>
+Date: Wed, 17 Dec 2008 15:24:18 +0200 (EET)
+From: "Rus V. Brushkoff" <rus@domain.hid>
+In-Reply-To: <Pine.LNX.4.64.0812132112260.17624@domain.hid>
+Message-ID: <Pine.LNX.4.64.0812171513040.22184@domain.hid>
+References: <Pine.LNX.4.64.0812132112260.17624@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200812170111.48941.berlemont.hauw@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai-Comedi: How to?
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Subject: Re: [Xenomai-help] rt_heaps and PCI adress space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,45 +17,32 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi,
->
-> let me introduce, I am Nicola Pedrocchi, a researcher from the Institute
->
-> > of Industrial Technology and Automation of the National Research Council
-> > of Italy.
-> > I have to develop a real-time acquisition from an anologic sensor using a
-> > NI board and I wish to use Linux-Xenomai as RTOS and Comedi as driver.
-> >
-> > However,  I have not very well understood the organization of the project
-> > xenomai-comedi (sorry!! I am really new in using Linux-Xenomai :( )
-> >
-> > My doubts are:
-> > 1) What I need :) ???
-> > ...If I have understood correctly, I must use a stable version of
-> > Xenomai, download comedi-rdtm-dev from the xenomai repository and compile
-> > it, is it correct? (I tried, but I have some problems in building phase
-> > concerning undefined reference in the modules linkage...I will post them
-> > in a next mail in the case it is the correct road) Or I have to compile
-> > the xenomai-trunk where comedi files there are already? Or I have to
-> > compile the originary comedi files obtained from www.comedi.org?
+On Sat, 13 Dec 2008, Rus V. Brushkoff wrote:
 
-You have to compile the xenomai trunk for now.
+Replying to myself:
 
-> > 2) looking for national instruments drivers, I found them in
-> > comedi-rtdm-dev, however I read the threads of the mailing list and in my
-> > understanding, they are experimental and not tested yet, is it correct?
+: - Can I supply to hardware (RT_HEAP_INFO).phys_addr after creating heap with
+:H_DMA flag as I suplly it from pci_alloc_consistent() call ? Is it will be PCI
+:bus addr ?
 
-Yes. I have on my TODO list, the delivery of a beta version of the ni_pcimio 
-driver into the xenomai trunk. This driver will match the features range 
-provided by the legacy version (www.comedi.org).
+Seems like this value need to be passed to pci_map_single/dma_map_single
 
-However, you should not use the comedi-rtdm-dev version, that was just a POC 
-for the modified Comedi API.
+: - Someone created H_SHARED heap between kernel and user space - all is working
+:perfect. Is it possible to supply to rt_heap_alloc() address of already
+:allocated block ? For example - there is some block allocated/mapped from PCI
+:hardware by ioremap(). So is it possible to write some kind of
+:rt_heap_alloc_fixed(RT_HEAP *heap, size_t size, RTIME timeout, void
+:*existing_buffer) that all the writes from userspace to this heap will write to
+:kernel space at existing_buffer addr, and reads from userspace will read from
+:this existing_buffer ? Please comment if 'not' - why, if 'yes' - how ? ;)
 
-The trunk version will be available soon. 
+ No it is impossible, as rt_heap_alloc use special data structures for 
+heaps, where buffers (pages) are only part of them. May be with special 
+allocator written - where headers and page maps allocated in one region 
+memory and pages located in another - it will be possible.
 
-Best regards.
+:
+:
 
-Alexis.
-
+		Rus
 
