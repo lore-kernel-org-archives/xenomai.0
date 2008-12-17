@@ -1,15 +1,15 @@
-Message-ID: <BAY135-W24B610EE040424CA85E6A5C6F40@domain.hid>
-From: Thomas Schaefer <thomas_schaefer_canada@domain.hid>
-Date: Mon, 15 Dec 2008 14:29:52 -0700
-In-Reply-To: <4946A913.1000201@domain.hid>
-References: <BAY135-W17043C9D8D088770CB0748C6F40@domain.hid>
-	<49468135.6060602@domain.hid>
-	<BAY135-W2875D734AB22FC0E2FD238C6F40@domain.hid>
-	<4946A913.1000201@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Date: Wed, 17 Dec 2008 01:11:48 +0100
+References: <38108.155.253.35.73.1229336092.squirrel@domain.hid>
+	<54299.155.253.35.73.1229341330.squirrel@domain.hid>
+In-Reply-To: <54299.155.253.35.73.1229341330.squirrel@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] BUG: soft lockup
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200812170111.48941.berlemont.hauw@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai-Comedi: How to?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,48 +19,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: gilles.chanteperdrix@xenomai.org
-Cc: jan.kiszka@domain.hid, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
+Hi,
+>
+> let me introduce, I am Nicola Pedrocchi, a researcher from the Institute
+>
+> > of Industrial Technology and Automation of the National Research Council
+> > of Italy.
+> > I have to develop a real-time acquisition from an anologic sensor using a
+> > NI board and I wish to use Linux-Xenomai as RTOS and Comedi as driver.
+> >
+> > However,  I have not very well understood the organization of the project
+> > xenomai-comedi (sorry!! I am really new in using Linux-Xenomai :( )
+> >
+> > My doubts are:
+> > 1) What I need :) ???
+> > ...If I have understood correctly, I must use a stable version of
+> > Xenomai, download comedi-rdtm-dev from the xenomai repository and compile
+> > it, is it correct? (I tried, but I have some problems in building phase
+> > concerning undefined reference in the modules linkage...I will post them
+> > in a next mail in the case it is the correct road) Or I have to compile
+> > the xenomai-trunk where comedi files there are already? Or I have to
+> > compile the originary comedi files obtained from www.comedi.org?
 
-Hi Gilles=2C
-=20
->>=20
->>>> The kernel runs fine without the Xenomai patch.
->>>> I also tried the version in the current svn repository with the same r=
-esult.
->>>> Please let me know you what I can do to help to fix this or what
->>>> additional info I should provide.
->>> Does this problem also occurs when you
->>> - disable CONFIG_XENOMAI?
->>> - boot with maxcpus=3D2=2C and then maxcpus=3D1?
->>=20
->> Disabling CONFIG_XENOMAI doesn't help but using maxcpus=3D2 or maxcpus=
-=3D1 makes it boot again.
->=20
-> Could you try the following patch?
->=20
-> --- linux/include/asm-x86/irq_vectors.h~ 2008-12-09 18:05:38.000000000 +0=
-100
-> +++ linux/include/asm-x86/irq_vectors.h 2008-12-15 19:48:53.000000000 +01=
-00
-> @@ -80=2C7 +80=2C7 @@
-> #ifdef CONFIG_IPIPE
-> #define INVALIDATE_TLB_VECTOR_END 0xf2
-> #define INVALIDATE_TLB_VECTOR_START 0xf0 /* f0-f2 used for TLB flush */
-> -#define NUM_INVALIDATE_TLB_VECTORS 4 /* f3-f7 used by I-pipe */
-> +#define NUM_INVALIDATE_TLB_VECTORS 3 /* f3-f7 used by I-pipe */
-> #else /* !CONFIG_IPIPE */
-> #define INVALIDATE_TLB_VECTOR_END 0xf7
-> #define INVALIDATE_TLB_VECTOR_START 0xf0 /* f0-f7 used for TLB flush */
->=20
-> --=20
-> Gilles.
-=20
-With the patch applied Linux seems to start correctly.
-=20
-Regards=2C
-Thomas
-_________________________________________________________________
+You have to compile the xenomai trunk for now.
+
+> > 2) looking for national instruments drivers, I found them in
+> > comedi-rtdm-dev, however I read the threads of the mailing list and in my
+> > understanding, they are experimental and not tested yet, is it correct?
+
+Yes. I have on my TODO list, the delivery of a beta version of the ni_pcimio 
+driver into the xenomai trunk. This driver will match the features range 
+provided by the legacy version (www.comedi.org).
+
+However, you should not use the comedi-rtdm-dev version, that was just a POC 
+for the modified Comedi API.
+
+The trunk version will be available soon. 
+
+Best regards.
+
+Alexis.
 
 
