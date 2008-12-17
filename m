@@ -1,12 +1,9 @@
-Message-ID: <4947B958.7030100@domain.hid>
-Date: Tue, 16 Dec 2008 15:21:12 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <4947AE91.8010000@domain.hid>
-In-Reply-To: <4947AE91.8010000@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH] xnpipe: Fix racy callback handlers
+From: Andreas Glatz <andreasglatz@domain.hid>
+Content-Type: multipart/mixed; boundary="=-qiO0VnPUW/tH2zYWF1UD"
+Date: Wed, 17 Dec 2008 10:13:25 -0500
+Message-Id: <1229526805.23203.27.camel@domain.hid>
+Mime-Version: 1.0
+Subject: [Xenomai-core] vprintk and xenomai (ipipe)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,260 +13,125 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Hi,
-> 
-> someone just dumped another kernel oops on my desk which points to the
-> xnpipe subsystem: xnpipe_release was called, invoking
-> __pipe_input_handler ie. the registered input_handler of the native pipe
-> services. And that handler tried to call an invalid monitor callback
-> (but no one ever set a monitor handler).
-> 
-> So I looked at how the nucleus deals with input_handler registration,
-> deregistration, and invocation where it also passes some cookie that
-> points to the native pipe object here. Looks like that code is racy /wrt
-> concurrent cleanup of kernel and user side.
-> 
-> What is the intended locking policy when dereferencing the tuple of
-> xnpipe_state_t.input_handler and xnpipe_state_t.cookie? Sometimes the
-> handler is called under nklock, sometimes only both values are obtained
-> and then nklock is dropped before invoking the handler (which is bogus
-> as cookie may become invalid in the meantime). Even worse,
-> xnpipe_release does not care at all about locking when calling
-> input_handler as its last duty - and that's obviously where my customer
-> just caught an oops.
-> 
-> In other words: Can't we always hold nklock while checking for
-> input_handler != NULL and then invoking it with the corresponding
-> cookie? This will just require us to properly clear input_handler on
-> xnpipe_disconnect.
-> 
 
-Here is an attempt to fix the bugs. Compile-tested. The assumption is
-still that we can (and must) call all handlers under nklock.
+--=-qiO0VnPUW/tH2zYWF1UD
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
------------->
+Hi,
 
-Invocation of input, output and alloc handler must take place under
-nklock to properly synchronize with xnpipe_disconnect. Change all
-callers to comply with this policy.
+I'm using linux-2.6.26 with Freescale patches and the
+adeos-ipipe-2.6.26-powerpc-DENX-2.2-04.patch from xenomai-2.4.5 on a
+Freescale PowerPC MPC8360.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
+I was calling 'vprintk' (kernel/printk.c) from within a Xenomai task
+which lead to a Linux freeze. 
 
- ksrc/nucleus/pipe.c |   96 ++++++++++++++++++++++-----------------------------
- 1 files changed, 42 insertions(+), 54 deletions(-)
+After some investigation, I found out that just 'printk' is "Ipipe
+aware" (printk is implemented differently if CONFIG_IPIPE is defined)
+but not 'vprintk'. 
 
-diff --git a/ksrc/nucleus/pipe.c b/ksrc/nucleus/pipe.c
-index b592437..1f8ebf7 100644
---- a/ksrc/nucleus/pipe.c
-+++ b/ksrc/nucleus/pipe.c
-@@ -331,6 +331,10 @@ int xnpipe_disconnect(int minor)
+I rearranged the code (see patch) which actually does the job and makes
+'vprintk' "Ipipe aware", too. The original 'vprintk' funktion was
+renamed '__vprintk'.
+
+I tested the code. My kernel boots fine and I can call vprintk from
+within a Xenomai task. Do you have any concerns with this approach?
+
+Andreas  
+
  
- 	xnpipe_minor_free(minor);
- 
-+	state->output_handler = NULL;
-+	state->input_handler = NULL;
-+	state->alloc_handler = NULL;
-+
- 	xnlock_put_irqrestore(&nklock, s);
- 
- 	if (need_sched)
-@@ -674,14 +678,14 @@ static int xnpipe_release(struct inode *inode, struct file *file)
- 		}
- 	}
- 
--	xnlock_put_irqrestore(&nklock, s);
--
- 	if (state->asyncq) {	/* Clear the async queue */
--		xnlock_get_irqsave(&nklock, s);
- 		removeq(&xnpipe_asyncq, &state->alink);
- 		__clrbits(state->status, XNPIPE_USER_SIGIO);
- 		xnlock_put_irqrestore(&nklock, s);
-+
- 		fasync_helper(-1, file, 0, &state->asyncq);
-+
-+		xnlock_get_irqsave(&nklock, s);
- 	}
- 
- 	xnpipe_cleanup_user_conn(state);
-@@ -689,6 +693,9 @@ static int xnpipe_release(struct inode *inode, struct file *file)
- 	if (state->input_handler)
- 		state->input_handler(MINOR(inode->i_rdev),
- 				     NULL, -EPIPE, state->cookie);
-+
-+	xnlock_put_irqrestore(&nklock, s);
-+
- 	return err;
- }
- 
-@@ -798,11 +805,9 @@ static ssize_t xnpipe_write(struct file *file,
- 			    const char *buf, size_t count, loff_t *ppos)
- {
- 	xnpipe_state_t *state = (xnpipe_state_t *)file->private_data;
--	xnpipe_alloc_handler *alloc_handler;
--	xnpipe_io_handler *input_handler;
- 	struct xnpipe_mh *mh;
--	void *cookie;
- 	int pollnum;
-+	int err;
- 	spl_t s;
- 
- 	if (count == 0)
-@@ -818,19 +823,16 @@ static ssize_t xnpipe_write(struct file *file,
- 		return -EPIPE;
- 	}
- 
--	alloc_handler = state->alloc_handler;
--	input_handler = state->input_handler;
--	cookie = state->cookie;
--
-       retry:
- 	pollnum = countq(&state->inq) + countq(&state->outq);
--	xnlock_put_irqrestore(&nklock, s);
- 
--	if (alloc_handler)
-+	if (state->alloc_handler) {
- 		mh = (struct xnpipe_mh *)
--		    alloc_handler(xnminor_from_state(state),
--				  count + sizeof(*mh), cookie);
--	else {
-+		    state->alloc_handler(xnminor_from_state(state),
-+					 count + sizeof(*mh), state->cookie);
-+		xnlock_put_irqrestore(&nklock, s);
-+	} else {
-+		xnlock_put_irqrestore(&nklock, s);
- 		mh = (struct xnpipe_mh *)xnmalloc(count + sizeof(*mh));
- 		if (mh == NULL &&
- 		    count + sizeof(*mh) > xnheap_max_contiguous(&kheap))
-@@ -858,17 +860,22 @@ static ssize_t xnpipe_write(struct file *file,
- 	xnpipe_m_size(mh) = count;
- 	xnpipe_m_rdoff(mh) = 0;
- 
--	if (copy_from_user(xnpipe_m_data(mh), buf, count)) {
--		if (alloc_handler == NULL)
-+	err = copy_from_user(xnpipe_m_data(mh), buf, count);
-+
-+	xnlock_get_irqsave(&nklock, s);
-+
-+	if (err) {
-+		if (state->alloc_handler == NULL)
- 			xnfree(mh);
--		else if (input_handler)
--			input_handler(xnminor_from_state(state), mh,
--				      -EFAULT, state->cookie);
-+		else if (state->input_handler)
-+			state->input_handler(xnminor_from_state(state), mh,
-+					     -EFAULT, state->cookie);
-+
-+		xnlock_put_irqrestore(&nklock, s);
-+
- 		return -EFAULT;
- 	}
- 
--	xnlock_get_irqsave(&nklock, s);
--
- 	appendq(&state->inq, &mh->link);
- 
- 	/* If a Xenomai thread is waiting on this input queue, wake it
-@@ -878,26 +885,20 @@ static ssize_t xnpipe_write(struct file *file,
- 	    xnsynch_wakeup_one_sleeper(&state->synchbase) != NULL)
- 		xnpod_schedule();
- 
--	xnlock_put_irqrestore(&nklock, s);
--
--	if (input_handler) {
--		int err =
--		    input_handler(xnminor_from_state(state), mh, 0, cookie);
--
--		if (err != 0)
-+	if (state->input_handler) {
-+		err = state->input_handler(xnminor_from_state(state), mh, 0,
-+					   state->cookie);
-+		if (err)
- 			count = (size_t) err;
- 	}
- 
--	if (file->f_flags & O_SYNC) {
--		xnlock_get_irqsave(&nklock, s);
--		if (!emptyq_p(&state->inq)) {
--			if (xnpipe_wait(state, XNPIPE_USER_WSYNC, s,
--					emptyq_p(&state->inq)))
--				count = -ERESTARTSYS;
--		}
--		xnlock_put_irqrestore(&nklock, s);
-+	if (file->f_flags & O_SYNC && !emptyq_p(&state->inq)) {
-+		if (xnpipe_wait(state, XNPIPE_USER_WSYNC, s, 0))
-+			count = -ERESTARTSYS;
- 	}
- 
-+	xnlock_put_irqrestore(&nklock, s);
-+
- 	return (ssize_t) count;
- }
- 
-@@ -905,11 +906,9 @@ static int xnpipe_ioctl(struct inode *inode,
- 			struct file *file, unsigned int cmd, unsigned long arg)
- {
- 	xnpipe_state_t *state = (xnpipe_state_t *)file->private_data;
--	xnpipe_io_handler *io_handler;
- 	int err = 0, n, minor;
- 	struct xnpipe_mh *mh;
- 	xnholder_t *holder;
--	void *cookie;
- 	spl_t s;
- 
- 	minor = xnminor_from_state(state);
-@@ -936,21 +935,16 @@ static int xnpipe_ioctl(struct inode *inode,
- 		   design problem anyway. */
- 
- 		n = 0;
--		io_handler = state->output_handler;
--		cookie = state->cookie;
- 
- 		xnlock_get_irqsave(&nklock, s);
- 
- 		while ((holder = getq(&state->outq)) != NULL) {
--			xnlock_put_irqrestore(&nklock, s);
--
- 			mh = link2mh(holder);
- 			n += xnpipe_m_size(mh);
- 
--			if (io_handler)
--				io_handler(minor, mh, 0, cookie);
--
--			xnlock_get_irqsave(&nklock, s);
-+			if (state->output_handler)
-+				state->output_handler(minor, mh, 0,
-+						      state->cookie);
- 		}
- 
- 		state->ionrd -= n;
-@@ -959,23 +953,17 @@ static int xnpipe_ioctl(struct inode *inode,
- 	case XNPIPEIOC_IFLUSH:
- 
- 		n = 0;
--		io_handler = state->input_handler;
--		cookie = state->cookie;
- 
- 		xnlock_get_irqsave(&nklock, s);
- 
- 		while ((holder = getq(&state->inq)) != NULL) {
--			xnlock_put_irqrestore(&nklock, s);
--
- 			mh = link2mh(holder);
- 			n += xnpipe_m_size(mh);
- 
- 			if (state->input_handler)
--				state->input_handler(minor, mh, 0, cookie);
-+				state->input_handler(minor, mh, 0, state->cookie);
- 			else if (state->alloc_handler == NULL)
- 				xnfree(mh);
--
--			xnlock_get_irqsave(&nklock, s);
- 		}
- 
- 	kick_wsync:
+
+--=-qiO0VnPUW/tH2zYWF1UD
+Content-Disposition: attachment; filename=vprintk.patch
+Content-Type: text/x-patch; name=vprintk.patch; charset=UTF-8
+Content-Transfer-Encoding: base64
+
+LS0tIGxpbnV4LXNvdXJjZS0yLjYuMjYva2VybmVsL3ByaW50ay5jCTIwMDgtMTItMTAgMTg6MDY6
+MDMuMDAwMDAwMDAwIC0wNTAwDQorKysgbGludXgtc291cmNlLTIuNi4yNi5tb2Qva2VybmVsL3By
+aW50ay5jCTIwMDgtMTItMTcgMDk6NDA6MjQuMDAwMDAwMDAwIC0wNTAwDQpAQCAtNTgzLDQxICs1
+ODMsNiBAQA0KIAlyZXR1cm4gMDsNCiB9DQogDQotI2lmZGVmIENPTkZJR19JUElQRQ0KLQ0KLXN0
+YXRpYyBpcGlwZV9zcGlubG9ja190IF9faXBpcGVfcHJpbnRrX2xvY2sgPSBJUElQRV9TUElOX0xP
+Q0tfVU5MT0NLRUQ7DQotDQotc3RhdGljIGludCBfX2lwaXBlX3ByaW50a19maWxsOw0KLQ0KLXN0
+YXRpYyBjaGFyIF9faXBpcGVfcHJpbnRrX2J1ZltfX0xPR19CVUZfTEVOXTsNCi0NCi12b2lkIF9f
+aXBpcGVfZmx1c2hfcHJpbnRrICh1bnNpZ25lZCB2aXJxLCB2b2lkICpjb29raWUpDQotew0KLQlj
+aGFyICpwID0gX19pcGlwZV9wcmludGtfYnVmOw0KLQlpbnQgbGVuLCBsbWF4LCBvdXQgPSAwOw0K
+LQl1bnNpZ25lZCBsb25nIGZsYWdzOw0KLQ0KLQlnb3RvIHN0YXJ0Ow0KLQ0KLQlkbyB7DQotCQlz
+cGluX3VubG9ja19pcnFyZXN0b3JlKCZfX2lwaXBlX3ByaW50a19sb2NrLCBmbGFncyk7DQotIHN0
+YXJ0Og0KLQkJbG1heCA9IF9faXBpcGVfcHJpbnRrX2ZpbGw7DQotCQl3aGlsZSAob3V0IDwgbG1h
+eCkgew0KLQkJCWxlbiA9IHN0cmxlbihwKSArIDE7DQotCQkJcHJpbnRrKCIlcyIscCk7DQotCQkJ
+cCArPSBsZW47DQotCQkJb3V0ICs9IGxlbjsNCi0JCX0NCi0JCXNwaW5fbG9ja19pcnFzYXZlKCZf
+X2lwaXBlX3ByaW50a19sb2NrLCBmbGFncyk7DQotCX0NCi0Jd2hpbGUgKF9faXBpcGVfcHJpbnRr
+X2ZpbGwgIT0gbG1heCk7DQotDQotCV9faXBpcGVfcHJpbnRrX2ZpbGwgPSAwOw0KLQ0KLQlzcGlu
+X3VubG9ja19pcnFyZXN0b3JlKCZfX2lwaXBlX3ByaW50a19sb2NrLCBmbGFncyk7DQotfQ0KLQ0K
+IC8qKg0KICAqIHByaW50ayAtIHByaW50IGEga2VybmVsIG1lc3NhZ2UNCiAgKiBAZm10OiBmb3Jt
+YXQgc3RyaW5nDQpAQCAtNjQwLDQ4ICs2MDUsNiBAQA0KICAqIFNlZSBhbHNvOg0KICAqIHByaW50
+ZigzKQ0KICAqLw0KLQ0KLWFzbWxpbmthZ2UgaW50IHByaW50ayhjb25zdCBjaGFyICpmbXQsIC4u
+LikNCi17DQotICAJaW50IHIsIGZieXRlcywgb2xkY291bnQsIGNzID0gLTE7DQotICAgIAl1bnNp
+Z25lZCBsb25nIGZsYWdzOw0KLQl2YV9saXN0IGFyZ3M7DQotDQotCXZhX3N0YXJ0KGFyZ3MsIGZt
+dCk7DQotDQotCWlmICh0ZXN0X2JpdChJUElQRV9TUFJJTlRLX0ZMQUcsJmlwaXBlX2N1cnJlbnRf
+ZG9tYWluLT5mbGFncykgfHwNCi0JICAgIG9vcHNfaW5fcHJvZ3Jlc3MpDQotCQljcyA9IGlwaXBl
+X2Rpc2FibGVfY29udGV4dF9jaGVjayhpcGlwZV9wcm9jZXNzb3JfaWQoKSk7DQotDQotCWlmIChp
+cGlwZV9jdXJyZW50X2RvbWFpbiA9PSBpcGlwZV9yb290X2RvbWFpbiB8fCBjcyAhPSAtMSkgew0K
+LQkJciA9IHZwcmludGsoZm10LCBhcmdzKTsNCi0JCWlmIChjcyAhPSAtMSkNCi0JCQlpcGlwZV9y
+ZXN0b3JlX2NvbnRleHRfY2hlY2soaXBpcGVfcHJvY2Vzc29yX2lkKCksIGNzKTsNCi0JCWdvdG8g
+b3V0Ow0KLQl9DQotDQotCXNwaW5fbG9ja19pcnFzYXZlKCZfX2lwaXBlX3ByaW50a19sb2NrLCBm
+bGFncyk7DQotDQotCW9sZGNvdW50ID0gX19pcGlwZV9wcmludGtfZmlsbDsNCi0JZmJ5dGVzID0g
+X19MT0dfQlVGX0xFTiAtIG9sZGNvdW50Ow0KLQ0KLQlpZiAoZmJ5dGVzID4gMSkJew0KLQkJciA9
+IHZzY25wcmludGYoX19pcGlwZV9wcmludGtfYnVmICsgX19pcGlwZV9wcmludGtfZmlsbCwNCi0J
+CQkgICAgICAgZmJ5dGVzLCBmbXQsIGFyZ3MpICsgMTsgLyogYWNjb3VudCBmb3IgdGhlIG51bGwg
+Ynl0ZSAqLw0KLQkJX19pcGlwZV9wcmludGtfZmlsbCArPSByOw0KLQl9IGVsc2UNCi0JCXIgPSAw
+Ow0KLQ0KLQlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZfX2lwaXBlX3ByaW50a19sb2NrLCBmbGFn
+cyk7DQotDQotCWlmIChvbGRjb3VudCA9PSAwKQ0KLQkJaXBpcGVfdHJpZ2dlcl9pcnEoX19pcGlw
+ZV9wcmludGtfdmlycSk7DQotb3V0Og0KLQl2YV9lbmQoYXJncyk7DQotDQotCXJldHVybiByOw0K
+LX0NCi0jZWxzZSAvKiAhQ09ORklHX0lQSVBFICovDQogYXNtbGlua2FnZSBpbnQgcHJpbnRrKGNv
+bnN0IGNoYXIgKmZtdCwgLi4uKQ0KIHsNCiAJdmFfbGlzdCBhcmdzOw0KQEAgLTY5Myw3ICs2MTYs
+NiBAQA0KIA0KIAlyZXR1cm4gcjsNCiB9DQotI2VuZGlmIC8qIENPTkZJR19JUElQRSAqLw0KIA0K
+IC8qIGNwdSBjdXJyZW50bHkgaG9sZGluZyBsb2didWZfbG9jayAqLw0KIHN0YXRpYyB2b2xhdGls
+ZSB1bnNpZ25lZCBpbnQgcHJpbnRrX2NwdSA9IFVJTlRfTUFYOw0KQEAgLTc0OSw3ICs2NzEsMTEg
+QEANCiAJCQlLRVJOX0NSSVQgIkJVRzogcmVjZW50IHByaW50ayByZWN1cnNpb24hXG4iOw0KIHN0
+YXRpYyBpbnQgcHJpbnRrX3JlY3Vyc2lvbl9idWc7DQogDQorI2lmZGVmIENPTkZJR19JUElQRQ0K
+K2FzbWxpbmthZ2UgaW50IF9fdnByaW50ayhjb25zdCBjaGFyICpmbXQsIHZhX2xpc3QgYXJncykN
+CisjZWxzZSAvKiAhQ09ORklHX0lQSVBFICovDQogYXNtbGlua2FnZSBpbnQgdnByaW50ayhjb25z
+dCBjaGFyICpmbXQsIHZhX2xpc3QgYXJncykNCisjZW5kaWYgLyogIUNPTkZJR19JUElQRSAqLw0K
+IHsNCiAJc3RhdGljIGludCBsb2dfbGV2ZWxfdW5rbm93biA9IDE7DQogCXN0YXRpYyBjaGFyIHBy
+aW50a19idWZbMTAyNF07DQpAQCAtODc0LDYgKzgwMCw3OCBAQA0KIAlwcmVlbXB0X2VuYWJsZSgp
+Ow0KIAlyZXR1cm4gcHJpbnRlZF9sZW47DQogfQ0KKw0KKyNpZmRlZiBDT05GSUdfSVBJUEUNCitz
+dGF0aWMgaXBpcGVfc3BpbmxvY2tfdCBfX2lwaXBlX3ByaW50a19sb2NrID0gSVBJUEVfU1BJTl9M
+T0NLX1VOTE9DS0VEOw0KKw0KK3N0YXRpYyBpbnQgX19pcGlwZV9wcmludGtfZmlsbDsNCisNCitz
+dGF0aWMgY2hhciBfX2lwaXBlX3ByaW50a19idWZbX19MT0dfQlVGX0xFTl07DQorDQordm9pZCBf
+X2lwaXBlX2ZsdXNoX3ByaW50ayAodW5zaWduZWQgdmlycSwgdm9pZCAqY29va2llKQ0KK3sNCisJ
+Y2hhciAqcCA9IF9faXBpcGVfcHJpbnRrX2J1ZjsNCisJaW50IGxlbiwgbG1heCwgb3V0ID0gMDsN
+CisJdW5zaWduZWQgbG9uZyBmbGFnczsNCisNCisJZ290byBzdGFydDsNCisNCisJZG8gew0KKwkJ
+c3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmX19pcGlwZV9wcmludGtfbG9jaywgZmxhZ3MpOw0KKyBz
+dGFydDoNCisJCWxtYXggPSBfX2lwaXBlX3ByaW50a19maWxsOw0KKwkJd2hpbGUgKG91dCA8IGxt
+YXgpIHsNCisJCQlsZW4gPSBzdHJsZW4ocCkgKyAxOw0KKwkJCXByaW50aygiJXMiLHApOw0KKwkJ
+CXAgKz0gbGVuOw0KKwkJCW91dCArPSBsZW47DQorCQl9DQorCQlzcGluX2xvY2tfaXJxc2F2ZSgm
+X19pcGlwZV9wcmludGtfbG9jaywgZmxhZ3MpOw0KKwl9DQorCXdoaWxlIChfX2lwaXBlX3ByaW50
+a19maWxsICE9IGxtYXgpOw0KKw0KKwlfX2lwaXBlX3ByaW50a19maWxsID0gMDsNCisNCisJc3Bp
+bl91bmxvY2tfaXJxcmVzdG9yZSgmX19pcGlwZV9wcmludGtfbG9jaywgZmxhZ3MpOw0KK30NCisN
+Cithc21saW5rYWdlIGludCB2cHJpbnRrKGNvbnN0IGNoYXIgKmZtdCwgdmFfbGlzdCBhcmdzKQ0K
+K3sNCisgIAlpbnQgciwgZmJ5dGVzLCBvbGRjb3VudCwgY3MgPSAtMTsNCisgICAgCXVuc2lnbmVk
+IGxvbmcgZmxhZ3M7DQorDQorCWlmICh0ZXN0X2JpdChJUElQRV9TUFJJTlRLX0ZMQUcsJmlwaXBl
+X2N1cnJlbnRfZG9tYWluLT5mbGFncykgfHwNCisJICAgIG9vcHNfaW5fcHJvZ3Jlc3MpDQorCQlj
+cyA9IGlwaXBlX2Rpc2FibGVfY29udGV4dF9jaGVjayhpcGlwZV9wcm9jZXNzb3JfaWQoKSk7DQor
+DQorCWlmIChpcGlwZV9jdXJyZW50X2RvbWFpbiA9PSBpcGlwZV9yb290X2RvbWFpbiB8fCBjcyAh
+PSAtMSkgew0KKwkJciA9IF9fdnByaW50ayhmbXQsIGFyZ3MpOw0KKwkJaWYgKGNzICE9IC0xKQ0K
+KwkJCWlwaXBlX3Jlc3RvcmVfY29udGV4dF9jaGVjayhpcGlwZV9wcm9jZXNzb3JfaWQoKSwgY3Mp
+Ow0KKwkJZ290byBvdXQ7DQorCX0NCisNCisJc3Bpbl9sb2NrX2lycXNhdmUoJl9faXBpcGVfcHJp
+bnRrX2xvY2ssIGZsYWdzKTsNCisNCisJb2xkY291bnQgPSBfX2lwaXBlX3ByaW50a19maWxsOw0K
+KwlmYnl0ZXMgPSBfX0xPR19CVUZfTEVOIC0gb2xkY291bnQ7DQorDQorCWlmIChmYnl0ZXMgPiAx
+KQl7DQorCQlyID0gdnNjbnByaW50ZihfX2lwaXBlX3ByaW50a19idWYgKyBfX2lwaXBlX3ByaW50
+a19maWxsLA0KKwkJCSAgICAgICBmYnl0ZXMsIGZtdCwgYXJncykgKyAxOyAvKiBhY2NvdW50IGZv
+ciB0aGUgbnVsbCBieXRlICovDQorCQlfX2lwaXBlX3ByaW50a19maWxsICs9IHI7DQorCX0gZWxz
+ZQ0KKwkJciA9IDA7DQorDQorCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJl9faXBpcGVfcHJpbnRr
+X2xvY2ssIGZsYWdzKTsNCisNCisJaWYgKG9sZGNvdW50ID09IDApDQorCQlpcGlwZV90cmlnZ2Vy
+X2lycShfX2lwaXBlX3ByaW50a192aXJxKTsNCitvdXQ6DQorCXJldHVybiByOw0KK30NCisjZW5k
+aWYgLyogQ09ORklHX0lQSVBFICovDQorDQogRVhQT1JUX1NZTUJPTChwcmludGspOw0KIEVYUE9S
+VF9TWU1CT0wodnByaW50ayk7DQogDQo=
+
+
+--=-qiO0VnPUW/tH2zYWF1UD--
 
