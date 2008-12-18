@@ -1,13 +1,12 @@
-From: Marcin =?iso-8859-2?q?Pi=B1tek?= <rtos@domain.hid>
-Date: Thu, 18 Dec 2008 16:53:42 +0100
+Message-ID: <d6c8ef150812180814l65d9296dwc2c6a923d2a69504@domain.hid>
+Date: Thu, 18 Dec 2008 17:14:10 +0100
+From: "Bosko Radivojevic" <bosko.radivojevic@domain.hid>
+In-Reply-To: <200812181653.42193.rtos@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-2"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200812181653.42193.rtos@domain.hid>
-Subject: [Xenomai-help] ARM9-based board
-Reply-To: rtos@domain.hid
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_19282_3489489.1229616850462"
+References: <200812181653.42193.rtos@domain.hid>
+Subject: Re: [Xenomai-help] ARM9-based board
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,31 +16,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: rtos@domain.hid
+Cc: xenomai@xenomai.org
 
-Hello,
-I have used the Xenomai on the PC for last 2 years and I think its great 
-system but lately I have decided that my application requires something 
-smaller then PC. I would like to use some board with ARM9 processor and I 
-even tried to make some experiments with one of these but it appeard that 
-there's a lot of problems with this. I believe that most of these problems 
-occured because the board designers haven't predicted that some users would 
-like to change the system (migrate to new kernel version, use root file 
-system on NFS partition) and nobody can help me with this.
-So I have this question to you: could you please recommend me some board that 
-you use or used and you already know that it is ok? This the list of my 
-requirements:
-- ARM9 processor
-- GNU/Linux (kernel 2.6.x) with Xenomai 2.4.x has to work with this board
-- Ethernet
-- USB
-- I need to run Real-Time Serial Driver with serial port to communicate with 
-my special hardware
-- at the development stage I would like to run system from NFS partition on my 
-PC (this configuration has to be tested!, this was the biggest problem that I 
-had with previous board)
-I think it's quite common application and some of you probably already do such 
-a things with your board?
-best regards
-Marcin
+------=_Part_19282_3489489.1229616850462
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+
+SGksCgpJJ20gdXNpbmcgYXQ5MXNhbTkyNjAgYmFzZWQgYm9hcmQuIEkndmUgc3RhcnRlZCB3aXRo
+IEF0bWVsJ3MgZXZhbHVhdGlvbgpib2FyZCBBVDkxU0FNOTI2MC1FSy4gQm90aCBMaW51eCBhbmQg
+WGVub21haSBzdXBwb3J0IGlzIGdyZWF0LgoKT24gVGh1LCBEZWMgMTgsIDIwMDggYXQgNDo1MyBQ
+TSwgTWFyY2luIFBpsXRlayA8cnRvc0BvMi5wbD4gd3JvdGU6Cgo+IEhlbGxvLAo+IEkgaGF2ZSB1
+c2VkIHRoZSBYZW5vbWFpIG9uIHRoZSBQQyBmb3IgbGFzdCAyIHllYXJzIGFuZCBJIHRoaW5rIGl0
+cyBncmVhdAo+IHN5c3RlbSBidXQgbGF0ZWx5IEkgaGF2ZSBkZWNpZGVkIHRoYXQgbXkgYXBwbGlj
+YXRpb24gcmVxdWlyZXMgc29tZXRoaW5nCj4gc21hbGxlciB0aGVuIFBDLiBJIHdvdWxkIGxpa2Ug
+dG8gdXNlIHNvbWUgYm9hcmQgd2l0aCBBUk05IHByb2Nlc3NvciBhbmQgSQo+IGV2ZW4gdHJpZWQg
+dG8gbWFrZSBzb21lIGV4cGVyaW1lbnRzIHdpdGggb25lIG9mIHRoZXNlIGJ1dCBpdCBhcHBlYXJk
+IHRoYXQKPiB0aGVyZSdzIGEgbG90IG9mIHByb2JsZW1zIHdpdGggdGhpcy4gSSBiZWxpZXZlIHRo
+YXQgbW9zdCBvZiB0aGVzZSBwcm9ibGVtcwo+IG9jY3VyZWQgYmVjYXVzZSB0aGUgYm9hcmQgZGVz
+aWduZXJzIGhhdmVuJ3QgcHJlZGljdGVkIHRoYXQgc29tZSB1c2VycyB3b3VsZAo+IGxpa2UgdG8g
+Y2hhbmdlIHRoZSBzeXN0ZW0gKG1pZ3JhdGUgdG8gbmV3IGtlcm5lbCB2ZXJzaW9uLCB1c2Ugcm9v
+dCBmaWxlCj4gc3lzdGVtIG9uIE5GUyBwYXJ0aXRpb24pIGFuZCBub2JvZHkgY2FuIGhlbHAgbWUg
+d2l0aCB0aGlzLgo+IFNvIEkgaGF2ZSB0aGlzIHF1ZXN0aW9uIHRvIHlvdTogY291bGQgeW91IHBs
+ZWFzZSByZWNvbW1lbmQgbWUgc29tZSBib2FyZAo+IHRoYXQKPiB5b3UgdXNlIG9yIHVzZWQgYW5k
+IHlvdSBhbHJlYWR5IGtub3cgdGhhdCBpdCBpcyBvaz8gVGhpcyB0aGUgbGlzdCBvZiBteQo+IHJl
+cXVpcmVtZW50czoKPiAtIEFSTTkgcHJvY2Vzc29yCj4gLSBHTlUvTGludXggKGtlcm5lbCAyLjYu
+eCkgd2l0aCBYZW5vbWFpIDIuNC54IGhhcyB0byB3b3JrIHdpdGggdGhpcyBib2FyZAo+IC0gRXRo
+ZXJuZXQKPiAtIFVTQgo+IC0gSSBuZWVkIHRvIHJ1biBSZWFsLVRpbWUgU2VyaWFsIERyaXZlciB3
+aXRoIHNlcmlhbCBwb3J0IHRvIGNvbW11bmljYXRlCj4gd2l0aAo+IG15IHNwZWNpYWwgaGFyZHdh
+cmUKPiAtIGF0IHRoZSBkZXZlbG9wbWVudCBzdGFnZSBJIHdvdWxkIGxpa2UgdG8gcnVuIHN5c3Rl
+bSBmcm9tIE5GUyBwYXJ0aXRpb24gb24KPiBteQo+IFBDICh0aGlzIGNvbmZpZ3VyYXRpb24gaGFz
+IHRvIGJlIHRlc3RlZCEsIHRoaXMgd2FzIHRoZSBiaWdnZXN0IHByb2JsZW0gdGhhdAo+IEkKPiBo
+YWQgd2l0aCBwcmV2aW91cyBib2FyZCkKPiBJIHRoaW5rIGl0J3MgcXVpdGUgY29tbW9uIGFwcGxp
+Y2F0aW9uIGFuZCBzb21lIG9mIHlvdSBwcm9iYWJseSBhbHJlYWR5IGRvCj4gc3VjaAo+IGEgdGhp
+bmdzIHdpdGggeW91ciBib2FyZD8KPiBiZXN0IHJlZ2FyZHMKPiBNYXJjaW4KPgo+IF9fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gWGVub21haS1oZWxwIG1h
+aWxpbmcgbGlzdAo+IFhlbm9tYWktaGVscEBnbmEub3JnCj4gaHR0cHM6Ly9tYWlsLmduYS5vcmcv
+bGlzdGluZm8veGVub21haS1oZWxwCj4K
+------=_Part_19282_3489489.1229616850462
+Content-Type: text/html; charset=ISO-8859-2
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+
+SGksPGJyPjxicj5JJiMzOTttIHVzaW5nIGF0OTFzYW05MjYwIGJhc2VkIGJvYXJkLiBJJiMzOTt2
+ZSBzdGFydGVkIHdpdGggQXRtZWwmIzM5O3MgZXZhbHVhdGlvbiBib2FyZCBBVDkxU0FNOTI2MC1F
+Sy4gQm90aCBMaW51eCBhbmQgWGVub21haSBzdXBwb3J0IGlzIGdyZWF0Ljxicj48YnI+PGRpdiBj
+bGFzcz0iZ21haWxfcXVvdGUiPk9uIFRodSwgRGVjIDE4LCAyMDA4IGF0IDQ6NTMgUE0sIE1hcmNp
+biBQabF0ZWsgPHNwYW4gZGlyPSJsdHIiPiZsdDtydG9zQG8yLnBsJmd0Ozwvc3Bhbj4gd3JvdGU6
+PGJyPgo8YmxvY2txdW90ZSBjbGFzcz0iZ21haWxfcXVvdGUiIHN0eWxlPSJib3JkZXItbGVmdDog
+MXB4IHNvbGlkIHJnYigyMDQsIDIwNCwgMjA0KTsgbWFyZ2luOiAwcHQgMHB0IDBwdCAwLjhleDsg
+cGFkZGluZy1sZWZ0OiAxZXg7Ij5IZWxsbyw8YnI+CkkgaGF2ZSB1c2VkIHRoZSBYZW5vbWFpIG9u
+IHRoZSBQQyBmb3IgbGFzdCAyIHllYXJzIGFuZCBJIHRoaW5rIGl0cyBncmVhdDxicj4Kc3lzdGVt
+IGJ1dCBsYXRlbHkgSSBoYXZlIGRlY2lkZWQgdGhhdCBteSBhcHBsaWNhdGlvbiByZXF1aXJlcyBz
+b21ldGhpbmc8YnI+CnNtYWxsZXIgdGhlbiBQQy4gSSB3b3VsZCBsaWtlIHRvIHVzZSBzb21lIGJv
+YXJkIHdpdGggQVJNOSBwcm9jZXNzb3IgYW5kIEk8YnI+CmV2ZW4gdHJpZWQgdG8gbWFrZSBzb21l
+IGV4cGVyaW1lbnRzIHdpdGggb25lIG9mIHRoZXNlIGJ1dCBpdCBhcHBlYXJkIHRoYXQ8YnI+CnRo
+ZXJlJiMzOTtzIGEgbG90IG9mIHByb2JsZW1zIHdpdGggdGhpcy4gSSBiZWxpZXZlIHRoYXQgbW9z
+dCBvZiB0aGVzZSBwcm9ibGVtczxicj4Kb2NjdXJlZCBiZWNhdXNlIHRoZSBib2FyZCBkZXNpZ25l
+cnMgaGF2ZW4mIzM5O3QgcHJlZGljdGVkIHRoYXQgc29tZSB1c2VycyB3b3VsZDxicj4KbGlrZSB0
+byBjaGFuZ2UgdGhlIHN5c3RlbSAobWlncmF0ZSB0byBuZXcga2VybmVsIHZlcnNpb24sIHVzZSBy
+b290IGZpbGU8YnI+CnN5c3RlbSBvbiBORlMgcGFydGl0aW9uKSBhbmQgbm9ib2R5IGNhbiBoZWxw
+IG1lIHdpdGggdGhpcy48YnI+ClNvIEkgaGF2ZSB0aGlzIHF1ZXN0aW9uIHRvIHlvdTogY291bGQg
+eW91IHBsZWFzZSByZWNvbW1lbmQgbWUgc29tZSBib2FyZCB0aGF0PGJyPgp5b3UgdXNlIG9yIHVz
+ZWQgYW5kIHlvdSBhbHJlYWR5IGtub3cgdGhhdCBpdCBpcyBvaz8gVGhpcyB0aGUgbGlzdCBvZiBt
+eTxicj4KcmVxdWlyZW1lbnRzOjxicj4KLSBBUk05IHByb2Nlc3Nvcjxicj4KLSBHTlUvTGludXgg
+KGtlcm5lbCAyLjYueCkgd2l0aCBYZW5vbWFpIDIuNC54IGhhcyB0byB3b3JrIHdpdGggdGhpcyBi
+b2FyZDxicj4KLSBFdGhlcm5ldDxicj4KLSBVU0I8YnI+Ci0gSSBuZWVkIHRvIHJ1biBSZWFsLVRp
+bWUgU2VyaWFsIERyaXZlciB3aXRoIHNlcmlhbCBwb3J0IHRvIGNvbW11bmljYXRlIHdpdGg8YnI+
+Cm15IHNwZWNpYWwgaGFyZHdhcmU8YnI+Ci0gYXQgdGhlIGRldmVsb3BtZW50IHN0YWdlIEkgd291
+bGQgbGlrZSB0byBydW4gc3lzdGVtIGZyb20gTkZTIHBhcnRpdGlvbiBvbiBteTxicj4KUEMgKHRo
+aXMgY29uZmlndXJhdGlvbiBoYXMgdG8gYmUgdGVzdGVkISwgdGhpcyB3YXMgdGhlIGJpZ2dlc3Qg
+cHJvYmxlbSB0aGF0IEk8YnI+CmhhZCB3aXRoIHByZXZpb3VzIGJvYXJkKTxicj4KSSB0aGluayBp
+dCYjMzk7cyBxdWl0ZSBjb21tb24gYXBwbGljYXRpb24gYW5kIHNvbWUgb2YgeW91IHByb2JhYmx5
+IGFscmVhZHkgZG8gc3VjaDxicj4KYSB0aGluZ3Mgd2l0aCB5b3VyIGJvYXJkPzxicj4KYmVzdCBy
+ZWdhcmRzPGJyPgpNYXJjaW48YnI+Cjxicj4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX188YnI+Clhlbm9tYWktaGVscCBtYWlsaW5nIGxpc3Q8YnI+CjxhIGhy
+ZWY9Im1haWx0bzpYZW5vbWFpLWhlbHBAZ25hLm9yZyI+WGVub21haS1oZWxwQGduYS5vcmc8L2E+
+PGJyPgo8YSBocmVmPSJodHRwczovL21haWwuZ25hLm9yZy9saXN0aW5mby94ZW5vbWFpLWhlbHAi
+IHRhcmdldD0iX2JsYW5rIj5odHRwczovL21haWwuZ25hLm9yZy9saXN0aW5mby94ZW5vbWFpLWhl
+bHA8L2E+PGJyPgo8L2Jsb2NrcXVvdGU+PC9kaXY+PGJyPgo=
+------=_Part_19282_3489489.1229616850462--
 
