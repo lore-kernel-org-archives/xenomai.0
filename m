@@ -1,11 +1,10 @@
-Date: Wed, 17 Dec 2008 15:24:18 +0200 (EET)
-From: "Rus V. Brushkoff" <rus@domain.hid>
-In-Reply-To: <Pine.LNX.4.64.0812132112260.17624@domain.hid>
-Message-ID: <Pine.LNX.4.64.0812171513040.22184@domain.hid>
-References: <Pine.LNX.4.64.0812132112260.17624@domain.hid>
+In-Reply-To: <492C12C0.20600@domain.hid>
+From: stefano.franzoni@domain.hid
+Date: Thu, 18 Dec 2008 12:15:38 +0100
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Subject: Re: [Xenomai-help] rt_heaps and PCI adress space
+Content-type: text/plain; charset=US-ASCII
+Message-Id: <20081218111539.501A51C066@domain.hid>
+Subject: [Xenomai-help] Window Resize issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,34 +14,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Sat, 13 Dec 2008, Rus V. Brushkoff wrote:
+Dear experts
 
-Replying to myself:
+we have 2 systems with Ubuntu Linux 2.6.25.11 and Xenomai 2.4.4.
 
-: - Can I supply to hardware (RT_HEAP_INFO).phys_addr after creating heap with
-:H_DMA flag as I suplly it from pci_alloc_consistent() call ? Is it will be PCI
-:bus addr ?
+One has an Intel(R) Pentium(R) M processor 1.73GHz and the other one has
+Pentium III (Coppermine) 1GHz.
+The Xenomai installation seems to be ok and also native application tests
+give right results.
 
-Seems like this value need to be passed to pci_map_single/dma_map_single
+The issue, on both the systems, is that if I run, for example,
+trivial-periodic sample in a windows and I resize the window the rt task
+aborts and the application exits.
 
-: - Someone created H_SHARED heap between kernel and user space - all is working
-:perfect. Is it possible to supply to rt_heap_alloc() address of already
-:allocated block ? For example - there is some block allocated/mapped from PCI
-:hardware by ioremap(). So is it possible to write some kind of
-:rt_heap_alloc_fixed(RT_HEAP *heap, size_t size, RTIME timeout, void
-:*existing_buffer) that all the writes from userspace to this heap will write to
-:kernel space at existing_buffer addr, and reads from userspace will read from
-:this existing_buffer ? Please comment if 'not' - why, if 'yes' - how ? ;)
+Any suggestion?
+Thanks in advance
 
- No it is impossible, as rt_heap_alloc use special data structures for 
-heaps, where buffers (pages) are only part of them. May be with special 
-allocator written - where headers and page maps allocated in one region 
-memory and pages located in another - it will be possible.
+Stefano
 
-:
-:
-
-		Rus
 
