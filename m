@@ -1,14 +1,16 @@
-Message-ID: <38995.155.253.35.60.1229699424.squirrel@domain.hid>
-In-Reply-To: <200812170111.48941.berlemont.hauw@domain.hid>
-References: <38108.155.253.35.73.1229336092.squirrel@domain.hid>
-	<54299.155.253.35.73.1229341330.squirrel@domain.hid>
-	<200812170111.48941.berlemont.hauw@domain.hid>
-Date: Fri, 19 Dec 2008 16:10:24 +0100 (CET)
-From: "Nicola Pedrocchi" <nicola.pedrocchi@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
+From: "Charlton, John" <john.charlton@domain.hid>
+Date: Fri, 19 Dec 2008 10:16:09 -0500
+Message-ID: <CF7FB0793253794F9F45991443E5FE2003C951B97F@us194mx002.tycoelectronics.net>
+References: <8b216e9e0812180831n6ebf4ff1gcb990864ba112eab@domain.hid>
+	<494A7ED0.8090008@domain.hid>
+	<8b216e9e0812180943v1ecc3fcasb45732cd9a58cde2@domain.hid>
+	<494A8F3E.9090906@domain.hid>
+In-Reply-To: <494A8F3E.9090906@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Xenomai-Comedi: How to?
+MIME-Version: 1.0
+Subject: [Xenomai-help] Xenomai OpenEmbedded cross compile test applications
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,118 +20,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org, Alexis Berlemont <berlemont.hauw@domain.hid>
-Cc: matteo.danesi@domain.hid, diego.parazzoli@domain.hid
+To: Xenomai help <xenomai@xenomai.org>
+Cc: "openembedded-devel@domain.hid" <openembedded-devel@domain.hid>
 
-Thak you very much Alexis,
+Using the cross compile environment for OpenEmbedded i686 angstrom of xenom=
+ai-2.4.4 described below I built the xenomai test application trivial-perio=
+dic in xenomai-2.4.4/examples/native.  I copied the executable to the targe=
+t system.  Since there is no /etc/ld.so.conf.d directory in the OE root fil=
+e system, I made one and put the xenomai library path in the xenomai.conf f=
+ile.  The xenomai.conf file just has the one directory: /usr/local/lib whic=
+h does not even exist in the target file system.  I modified xenomai.conf t=
+o: /usr/xenomai/lib where the xenomai library files are actually located.  =
+I also copied xenomai.conf to /etc and set LD_LIBRARY_PATH=3D/usr/xenomai/l=
+ib.
 
- I have compiled the trunk as you say and everithing seems ok.
+When I execute the trivail-periodic application on the target (NANO-7240) t=
+he console hangs and nothing happens.  I also ran trivial-periodic on a non=
+ cross compiled laptop build of xenomai and it runs as expected displaying =
+the times on the console output. I login to the target using ssh and it is =
+alive.  The trivial-periodic process shows up in the ps list as:
+ 3077 root            Z   [trivial-periodi]
+So it is a zombie.  I can kill it with kill -9 3077 and that releases the c=
+onsole.
+Any help on this issue is welcome.
 
-In order to test comedi I was used to associate a driver to a device with
-the command
-# comedi_config <devicefilenae> <driver>
+Also, how do I run the xenomai/src/testsuite applications in a target (non =
+build) environment?
 
-When I try to execute this command the output is:
-"Xenomai: incompatible ABI revision level (neede=3D1, current =3D 2)".
-... is it correct?
+Background:
+I have applied the xenomai 2.4.4 patch to kernel 2.6.25.11.  I built the ke=
+rnel and installed it on a ext2 flash partition and it boots on the target =
+system. The /proc/xenomai directory shows up so xenomai seems to be running=
+.  I built the xenomai user mode with the following commands:
 
-What I have to do to test Comedi?
-What are the step I have to do in order to test the NI board I have
-available?
-....I read the API documentation in
-http://www.xenomai.org/documentation/trunk/html/api/index.html however I
-am in lack of the correct logic to write a simple program to test my
-experimental set-up.
+Set the following:
+export XENOMAI_ROOT=3D/home/us075929/projects/oe/xenomai-2.4.4
+export XENOMAI_BUILD=3D/home/us075929/projects/oe/build-xenomai-2.4.4
 
-Should you/someone help me posting a very simple "hello world" program to
-test the basic functionalities of xenomai-comedi?
+cd $XENOMAI_BUILD
+$XENOMAI_ROOT/configure --disable-x86-tsc --host=3Di686-angstrom-linux
 
-Thanks in advance!!!
-Have a good weekend
-best regards,
-Nicola
+I am not sure what tsc refers to.  The only two parameters in my kernal con=
+figuration that come up are 'time stamp counter' and 'touch screen device s=
+upport' both of which are disabled.  Since TSC is enabled by default and st=
+rong binding I disabled it in the xenomai configuration.
 
+The xenomai configure goes smoothly.  I then install xenomai user support t=
+o a staging directory as follows:
 
+export DESTDIR=3D/home/us075929/projects/oe/staging-linux-2.6.25.11
 
+cd $XENOMAI_BUILD
+make install
 
+The $DESTDIR/dev and $DESDIR/usr/xenomai are installed as expected.  I copy=
+ those directories to the target root file system, boot the target and run =
+the trivial-periodic application as described above.
 
-
-
-> Hi,
->>
->> let me introduce, I am Nicola Pedrocchi, a researcher from the Institu=
-te
->>
->> > of Industrial Technology and Automation of the National Research
->> Council
->> > of Italy.
->> > I have to develop a real-time acquisition from an anologic sensor
->> using a
->> > NI board and I wish to use Linux-Xenomai as RTOS and Comedi as drive=
-r.
->> >
->> > However,  I have not very well understood the organization of the
->> project
->> > xenomai-comedi (sorry!! I am really new in using Linux-Xenomai :( )
->> >
->> > My doubts are:
->> > 1) What I need :) ???
->> > ...If I have understood correctly, I must use a stable version of
->> > Xenomai, download comedi-rdtm-dev from the xenomai repository and
->> compile
->> > it, is it correct? (I tried, but I have some problems in building
->> phase
->> > concerning undefined reference in the modules linkage...I will post
->> them
->> > in a next mail in the case it is the correct road) Or I have to
->> compile
->> > the xenomai-trunk where comedi files there are already? Or I have to
->> > compile the originary comedi files obtained from www.comedi.org?
->
-> You have to compile the xenomai trunk for now.
->
->> > 2) looking for national instruments drivers, I found them in
->> > comedi-rtdm-dev, however I read the threads of the mailing list and =
-in
->> my
->> > understanding, they are experimental and not tested yet, is it
->> correct?
->
-> Yes. I have on my TODO list, the delivery of a beta version of the
-> ni_pcimio
-> driver into the xenomai trunk. This driver will match the features rang=
-e
-> provided by the legacy version (www.comedi.org).
->
-> However, you should not use the comedi-rtdm-dev version, that was just =
-a
-> POC
-> for the modified Comedi API.
->
-> The trunk version will be available soon.
->
-> Best regards.
->
-> Alexis.
->
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->
-
-
--------------------------------------------------
-Eng. Nicola Pedrocchi, PhD
--------------------------------------------------
-phone : +39  02 23699978
-mobile: +39 328  9159914
-mail  : nicola.pedrocchi@domain.hid
-mail  : nicola.pedrocchi@domain.hid
-mail  : nicolapedrocchi@domain.hid
-web   : http://robotics.ing.unibs.it
-                      Thak you for correcting me!
--------------------------------------------------
-
+--John
 
