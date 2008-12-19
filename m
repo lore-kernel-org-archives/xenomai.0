@@ -1,10 +1,10 @@
-Message-ID: <4947ED98.9080107@domain.hid>
-Date: Tue, 16 Dec 2008 19:04:08 +0100
+Message-ID: <494B6A26.1040001@domain.hid>
+Date: Fri, 19 Dec 2008 10:32:22 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [PATCH] x86-2.6.27: Port I-pipe tracer over ftrace
+Subject: [Adeos-main] [RFC][PATCH] x86-64: Enable root domain IRQ migration
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,362 +15,184 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: adeos-main <adeos-main@gna.org>
 
-This is a port of the I-pipe trace over 2.6.27's new ftrace
-infrastructure. It basically off-loads us from maintaining the mcount
-stubs. But it also adds some small additional overhead when enabled, and
-you should know that playing with /proc/sys/kernel/ftrace_enabled while
-using the I-pipe trace may disable the function trace points. Besides
-that, all seems to be fine again, ready to be used.
+Currently, I-pipe breaks the setting of IRQ affinities through Linux,
+the root domain. This is because migrating IRQs while they are active is
+a tricky business on x86, requiring special measures within the IRQ ack
+path. And as this path is now used by non-root domains, the migration
+code had to be deactivated.
 
-The patch also contains a bunch of tracer-related cleanups, so the patch
-actually shrinks.
+The following patch is a proof of concept for x86-64 how to overcome
+this unfortunate limitation (if you want to isolate RT from non-RT
+CPUs). The approach works without adding code to critical paths. First
+tests inside KVM indicate that things work as expected, but more testing
+on real iron is scheduled, e.g. to check MSI IRQs which I don't have in
+my KVM environment.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+Feedback welcome.
+
+Jan
 
 ---
- Makefile                        |    4 --
- arch/x86/kernel/Makefile        |    1 
- arch/x86/kernel/cpu/common_64.c |    4 +-
- arch/x86/kernel/head64.c        |    2 -
- arch/x86/kernel/ipipe.c         |    5 --
- arch/x86/kernel/mcount_32.S     |   27 ---------------
- arch/x86/kernel/mcount_64.S     |   41 -----------------------
- arch/x86/kernel/smpboot.c       |    2 -
- include/linux/linkage.h         |    4 --
- kernel/ipipe/Kconfig.debug      |    6 ---
- kernel/ipipe/tracer.c           |   69 +++++++++++++++++++++++++++++++++++++---
- kernel/trace/Kconfig            |    1 
- 12 files changed, 71 insertions(+), 95 deletions(-)
+ arch/x86/kernel/io_apic_64.c |   42 +++++++++++++++++++++++++++++++++++++-----
+ include/asm-x86/ipipe_64.h   |   16 ++++++++++++++--
+ include/linux/irq.h          |    3 +++
+ 3 files changed, 54 insertions(+), 7 deletions(-)
 
-Index: b/Makefile
+Index: b/arch/x86/kernel/io_apic_64.c
 ===================================================================
---- a/Makefile
-+++ b/Makefile
-@@ -525,10 +525,6 @@ endif
- # Arch Makefiles may override this setting
- KBUILD_CFLAGS += $(call cc-option, -fno-stack-protector)
- 
--ifdef CONFIG_IPIPE_TRACE_MCOUNT
--KBUILD_CFLAGS	+= -pg
--endif
--
- ifdef CONFIG_FRAME_POINTER
- KBUILD_CFLAGS	+= -fno-omit-frame-pointer -fno-optimize-sibling-calls
- else
-Index: b/arch/x86/kernel/Makefile
-===================================================================
---- a/arch/x86/kernel/Makefile
-+++ b/arch/x86/kernel/Makefile
-@@ -79,7 +79,6 @@ obj-$(CONFIG_KGDB)		+= kgdb.o
- obj-$(CONFIG_VM86)		+= vm86_32.o
- obj-$(CONFIG_EARLY_PRINTK)	+= early_printk.o
- obj-$(CONFIG_IPIPE)		+= ipipe.o
--obj-$(CONFIG_IPIPE_TRACE_MCOUNT)	+= mcount_$(BITS).o
- 
- obj-$(CONFIG_HPET_TIMER) 	+= hpet.o
- 
-Index: b/arch/x86/kernel/ipipe.c
-===================================================================
---- a/arch/x86/kernel/ipipe.c
-+++ b/arch/x86/kernel/ipipe.c
-@@ -1009,8 +1009,3 @@ EXPORT_PER_CPU_SYMBOL_GPL(cpu_tlbstate);
- #if defined(CONFIG_SMP) || defined(CONFIG_DEBUG_SPINLOCK)
- EXPORT_SYMBOL(tasklist_lock);
- #endif /* CONFIG_SMP || CONFIG_DEBUG_SPINLOCK */
--
--#ifdef CONFIG_IPIPE_TRACE_MCOUNT
--void notrace mcount(void);
--EXPORT_SYMBOL(mcount);
--#endif /* CONFIG_IPIPE_TRACE_MCOUNT */
-Index: b/arch/x86/kernel/mcount_32.S
-===================================================================
---- a/arch/x86/kernel/mcount_32.S
-+++ /dev/null
-@@ -1,27 +0,0 @@
--/*
-- *  linux/arch/x86/mcount_32.S
-- *
-- *  Copyright (C) 2005, 2007 Jan Kiszka
-- */
--
--.globl mcount
--mcount:
--	cmpl $0,ipipe_trace_enable
--	je out
--
--	pushl %eax
--	pushl %ecx
--	pushl %edx
--
--	pushl $0		# no additional value (v)
--	movl 4(%ebp),%ecx	# __CALLER_ADDR1
--	movl 16(%esp),%edx	# __CALLER_ADDR0
--	movl $0,%eax		# IPIPE_TRACE_FUNC
--	call __ipipe_trace
--	popl %eax
--
--	popl %edx
--	popl %ecx
--	popl %eax
--out:
--	ret
-Index: b/arch/x86/kernel/mcount_64.S
-===================================================================
---- a/arch/x86/kernel/mcount_64.S
-+++ /dev/null
-@@ -1,41 +0,0 @@
--/*
-- *   linux/arch/x86/kernel/mcount_64.S
-- *
-- *   Copyright (C) 2002 Free Software Foundation, Inc.
-- *   Contributed by Andreas Jaeger <aj@domain.hid>.
-- *   Slightly adapted by Philippe Gerum for the I-pipe tracer.
-- */
--
--#include <linux/linkage.h>
--
--	.code64
--
--ENTRY(mcount)
--	cmpl	$0,ipipe_trace_enable
--	jz	out
--	subq	$56,%rsp
--	movq	%rax,(%rsp)
--	movq	%rcx,8(%rsp)
--	movq	%rdx,16(%rsp)
--	movq	%rsi,24(%rsp)
--	movq	%rdi,32(%rsp)
--	movq	%r8,40(%rsp)
--	movq	%r9,48(%rsp)
--
--	movq	$0,%rcx		/* No additional value. */
--	movq	8(%rbp),%rdx    /* Parent rip. */
--	movq	56(%rsp),%rsi   /* Caller rip. */
--	movq	$0,%rdi		/* IPIPE_TRACE_FN */
--	call    __ipipe_trace
--
--	movq	48(%rsp),%r9
--	movq	40(%rsp),%r8
--	movq	32(%rsp),%rdi
--	movq	24(%rsp),%rsi
--	movq	16(%rsp),%rdx
--	movq	8(%rsp),%rcx
--	movq	(%rsp),%rax
--	addq	$56,%rsp
--out:	
--	ret
--END(mcount)
-Index: b/kernel/ipipe/Kconfig.debug
-===================================================================
---- a/kernel/ipipe/Kconfig.debug
-+++ b/kernel/ipipe/Kconfig.debug
-@@ -39,6 +39,7 @@ config IPIPE_TRACE_ENABLE
- config IPIPE_TRACE_MCOUNT
- 	bool "Instrument function entries"
- 	default y
-+	select FTRACE
- 	---help---
- 	  When enabled, records every kernel function entry in the tracer
- 	  log. While this slows down the system noticeably, it provides
-@@ -80,9 +81,4 @@ config IPIPE_TRACE_PANIC
- 	  as well as ordinary kernel oopses. You can control the number
- 	  of printed back trace points via /proc/ipipe/trace.
- 
--config IPIPE_TRACE_ENABLE_VALUE
--	int
--	default 0 if !IPIPE_TRACE_ENABLE
--	default 1 if IPIPE_TRACE_ENABLE
--
- endif
-Index: b/kernel/ipipe/tracer.c
-===================================================================
---- a/kernel/ipipe/tracer.c
-+++ b/kernel/ipipe/tracer.c
-@@ -32,6 +32,7 @@
- #include <linux/utsrelease.h>
- #include <linux/sched.h>
- #include <linux/ipipe.h>
-+#include <linux/ftrace.h>
- #include <asm/uaccess.h>
- 
- #define IPIPE_TRACE_PATHS           4 /* <!> Do not lower below 3 */
-@@ -1292,9 +1293,57 @@ static int __ipipe_wr_trigger(struct fil
- 	return count;
+--- a/arch/x86/kernel/io_apic_64.c
++++ b/arch/x86/kernel/io_apic_64.c
+@@ -174,7 +174,6 @@ static inline void io_apic_modify(unsign
+ 	writel(value, &io_apic->data);
  }
  
-+#ifdef CONFIG_IPIPE_TRACE_MCOUNT
-+static void notrace
-+ipipe_trace_function(unsigned long ip, unsigned long parent_ip)
-+{
-+	if (!ipipe_trace_enable)
-+		return;
-+	__ipipe_trace(IPIPE_TRACE_FUNC, ip, parent_ip, 0);
-+}
-+
-+static struct ftrace_ops ipipe_trace_ops = {
-+	.func = ipipe_trace_function
-+};
-+
-+static int __ipipe_wr_enable(struct file *file, const char __user *buffer,
-+			     unsigned long count, void *data)
-+{
-+	char *end, buf[16];
-+	int val;
-+	int n;
-+
-+	n = (count > sizeof(buf) - 1) ? sizeof(buf) - 1 : count;
-+
-+	if (copy_from_user(buf, buffer, n))
-+		return -EFAULT;
-+
-+	buf[n] = '\0';
-+	val = simple_strtol(buf, &end, 0);
-+
-+	if (((*end != '\0') && !isspace(*end)) || (val < 0))
-+		return -EINVAL;
-+
-+	mutex_lock(&out_mutex);
-+
-+	if (ipipe_trace_enable) {
-+		if (!val)
-+			unregister_ftrace_function(&ipipe_trace_ops);
-+	} else if (val) {
-+		ftrace_enabled = 1;
-+		register_ftrace_function(&ipipe_trace_ops);
-+	}
-+	ipipe_trace_enable = val;
-+
-+	mutex_unlock(&out_mutex);
-+
-+	return count;
-+}
-+#endif /* CONFIG_IPIPE_TRACE_MCOUNT */
-+
- extern struct proc_dir_entry *ipipe_proc_root;
- 
--static void __init
-+static struct proc_dir_entry * __init
- __ipipe_create_trace_proc_val(struct proc_dir_entry *trace_dir,
-                               const char *name, int *value_ptr)
+-#ifndef CONFIG_IPIPE
+ static bool io_apic_level_ack_pending(unsigned int irq)
  {
-@@ -1307,6 +1356,7 @@ __ipipe_create_trace_proc_val(struct pro
- 		entry->write_proc = __ipipe_wr_proc_val;
- 		entry->owner = THIS_MODULE;
- 	}
-+	return entry;
+ 	struct irq_pin_list *entry;
+@@ -203,7 +202,6 @@ static bool io_apic_level_ack_pending(un
+ 
+ 	return false;
  }
+-#endif /* !CONFIG_IPIPE */
  
- void __init __ipipe_init_tracer(void)
-@@ -1337,7 +1387,6 @@ void __init __ipipe_init_tracer(void)
- 		per_cpu(trace_path, cpu) = tp_buf;
- 	}
- #endif /* CONFIG_IPIPE_TRACE_VMALLOC */
--	ipipe_trace_enable = CONFIG_IPIPE_TRACE_ENABLE_VALUE;
- 
- 	/* Calculate minimum overhead of __ipipe_trace() */
- 	local_irq_disable_hw();
-@@ -1354,6 +1403,14 @@ void __init __ipipe_init_tracer(void)
- 	local_irq_enable_hw();
- 	trace_overhead = ipipe_tsc2ns(min);
- 
-+#ifdef CONFIG_IPIPE_TRACE_ENABLE
-+	ipipe_trace_enable = 1;
-+#ifdef CONFIG_IPIPE_TRACE_MCOUNT
-+	ftrace_enabled = 1;
-+	register_ftrace_function(&ipipe_trace_ops);
-+#endif /* CONFIG_IPIPE_TRACE_MCOUNT */
-+#endif /* CONFIG_IPIPE_TRACE_ENABLE */
-+
- 	trace_dir = create_proc_entry("trace", S_IFDIR, ipipe_proc_root);
- 
- 	entry = create_proc_entry("max", 0644, trace_dir);
-@@ -1379,6 +1436,10 @@ void __init __ipipe_init_tracer(void)
- 	                              &back_trace);
- 	__ipipe_create_trace_proc_val(trace_dir, "verbose",
- 	                              &verbose_trace);
--	__ipipe_create_trace_proc_val(trace_dir, "enable",
--	                              &ipipe_trace_enable);
-+	entry = __ipipe_create_trace_proc_val(trace_dir, "enable",
-+					      &ipipe_trace_enable);
-+#ifdef CONFIG_IPIPE_TRACE_MCOUNT
-+	if (entry)
-+		entry->write_proc = __ipipe_wr_enable;
-+#endif /* CONFIG_IPIPE_TRACE_MCOUNT */
- }
-Index: b/kernel/trace/Kconfig
-===================================================================
---- a/kernel/trace/Kconfig
-+++ b/kernel/trace/Kconfig
-@@ -107,6 +107,7 @@ config DYNAMIC_FTRACE
- 	depends on BROKEN
- 	depends on FTRACE
- 	depends on HAVE_DYNAMIC_FTRACE
-+	depends on !IPIPE_TRACE_MCOUNT
- 	default y
- 	help
-          This option will modify all the calls to ftrace dynamically
-Index: b/arch/x86/kernel/cpu/common_64.c
-===================================================================
---- a/arch/x86/kernel/cpu/common_64.c
-+++ b/arch/x86/kernel/cpu/common_64.c
-@@ -506,7 +506,7 @@ static int __init nonx32_setup(char *str
- }
- __setup("noexec32=", nonx32_setup);
- 
--notrace void pda_init(int cpu)
-+void pda_init(int cpu)
- {
- 	struct x8664_pda *pda = cpu_pda(cpu);
- 
-@@ -595,7 +595,7 @@ DEFINE_PER_CPU(struct orig_ist, orig_ist
-  * 'CPU state barrier', nothing should get across.
-  * A lot of state is already set up in PDA init.
-  */
--notrace void __cpuinit cpu_init(void)
-+void __cpuinit cpu_init(void)
- {
- 	int cpu = stack_smp_processor_id();
- 	struct tss_struct *t = &per_cpu(init_tss, cpu);
-Index: b/arch/x86/kernel/head64.c
-===================================================================
---- a/arch/x86/kernel/head64.c
-+++ b/arch/x86/kernel/head64.c
-@@ -72,7 +72,7 @@ static void __init copy_bootdata(char *r
- 	}
- }
- 
--void __init notrace x86_64_start_kernel(char * real_mode_data)
-+void __init x86_64_start_kernel(char * real_mode_data)
- {
- 	int i;
- 
-Index: b/arch/x86/kernel/smpboot.c
-===================================================================
---- a/arch/x86/kernel/smpboot.c
-+++ b/arch/x86/kernel/smpboot.c
-@@ -282,7 +282,7 @@ static void __cpuinit smp_callin(void)
  /*
-  * Activate a secondary processor.
-  */
--static void notrace __cpuinit start_secondary(void *unused)
-+static void __cpuinit start_secondary(void *unused)
- {
- 	/*
- 	 * Don't put *anything* before cpu_init(), SMP booting is too
-Index: b/include/linux/linkage.h
-===================================================================
---- a/include/linux/linkage.h
-+++ b/include/linux/linkage.h
-@@ -95,8 +95,4 @@
- #define ATTRIB_NORET  __attribute__((noreturn))
- #define NORET_AND     noreturn,
+  * Synchronize the IO-APIC and the CPU by doing
+@@ -1436,7 +1434,6 @@ unlock:
+ 	irq_exit();
+ }
  
--#ifndef notrace
--#define notrace		__attribute__((no_instrument_function))
+-#ifndef CONFIG_IPIPE
+ static void irq_complete_move(unsigned int irq)
+ {
+ 	struct irq_cfg *cfg = irq_cfg + irq;
+@@ -1456,11 +1453,34 @@ static void irq_complete_move(unsigned i
+ 		cfg->move_in_progress = 0;
+ 	}
+ }
 -#endif
--
+-#elif !defined(CONFIG_IPIPE)
++#else
+ static inline void irq_complete_move(unsigned int irq) {}
  #endif
-
+ 
++#ifdef CONFIG_IPIPE
++static void move_apic_irq(unsigned int irq)
++{
++	struct irq_desc *desc = &irq_desc[irq];
++
++	if (desc->handle_irq == &handle_edge_irq) {
++		spin_lock(&desc->lock);
++		irq_complete_move(irq);
++		move_native_irq(irq);
++		spin_unlock(&desc->lock);
++	} else if (desc->handle_irq == &handle_fasteoi_irq) {
++		spin_lock(&desc->lock);
++		irq_complete_move(irq);
++		if (unlikely(desc->status & IRQ_MOVE_PENDING)) {
++			if (!io_apic_level_ack_pending(irq))
++				move_masked_irq(irq);
++			unmask_IO_APIC_irq(irq);
++		}
++		spin_unlock(&desc->lock);
++	} else
++		WARN_ON(1);
++}
++#endif /* CONFIG_IPIPE */
++
+ static void ack_apic_edge(unsigned int irq)
+ {
+ #ifndef CONFIG_IPIPE
+@@ -1544,6 +1564,9 @@ static struct irq_chip ioapic_chip __rea
+ 	.eoi 		= ack_apic_level,
+ #ifdef CONFIG_SMP
+ 	.set_affinity 	= set_ioapic_affinity_irq,
++#ifdef CONFIG_IPIPE
++	.move		= move_apic_irq,
++#endif
+ #endif
+ 	.retrigger	= ioapic_retrigger_irq,
+ };
+@@ -2087,6 +2110,9 @@ static struct irq_chip msi_chip = {
+ 	.ack		= ack_apic_edge,
+ #ifdef CONFIG_SMP
+ 	.set_affinity	= set_msi_irq_affinity,
++#ifdef CONFIG_IPIPE
++	.move		= move_apic_irq,
++#endif
+ #endif
+ 	.retrigger	= ioapic_retrigger_irq,
+ };
+@@ -2156,6 +2182,9 @@ struct irq_chip dmar_msi_type = {
+ 	.ack = ack_apic_edge,
+ #ifdef CONFIG_SMP
+ 	.set_affinity = dmar_msi_set_affinity,
++#ifdef CONFIG_IPIPE
++	.move = move_apic_irq,
++#endif
+ #endif
+ 	.retrigger = ioapic_retrigger_irq,
+ };
+@@ -2225,6 +2254,9 @@ static struct irq_chip ht_irq_chip = {
+ 	.ack		= ack_apic_edge,
+ #ifdef CONFIG_SMP
+ 	.set_affinity	= set_ht_irq_affinity,
++#ifdef CONFIG_IPIPE
++	.move		= move_apic_irq,
++#endif
+ #endif
+ 	.retrigger	= ioapic_retrigger_irq,
+ };
+Index: b/include/asm-x86/ipipe_64.h
+===================================================================
+--- a/include/asm-x86/ipipe_64.h
++++ b/include/asm-x86/ipipe_64.h
+@@ -135,6 +135,17 @@ static inline void __ipipe_call_root_vir
+ 			     : /* no input */);
+ }
+ 
++#ifdef CONFIG_SMP
++#define __ipipe_move_root_irq(irq)					\
++	do {								\
++		struct irq_chip *chip = irq_desc[irq].chip;		\
++		if (irq < NR_IRQS && chip->move)			\
++			chip->move(irq);				\
++	} while (0)
++#else /* !CONFIG_SMP */
++#define __ipipe_move_root_irq(irq)	do { } while (0)
++#endif /* !CONFIG_SMP */
++
+ /*
+  * When running handlers, enable hw interrupts for all domains but the
+  * one heading the pipeline, so that IRQs can never be significantly
+@@ -144,10 +155,11 @@ static inline void __ipipe_call_root_vir
+ 	do {								\
+ 		local_irq_enable_nohead(ipd);				\
+ 		if (ipd == ipipe_root_domain) {				\
+-			if (likely(!ipipe_virtual_irq_p(irq)))		\
++			if (likely(!ipipe_virtual_irq_p(irq))) {	\
++				__ipipe_move_root_irq(irq);		\
+ 				__ipipe_call_root_xirq_handler(		\
+ 					irq, (ipd)->irqs[irq].handler);	\
+-			else						\
++			} else						\
+ 				__ipipe_call_root_virq_handler(		\
+ 					irq, (ipd)->irqs[irq].handler,	\
+ 					(ipd)->irqs[irq].cookie);	\
+Index: b/include/linux/irq.h
+===================================================================
+--- a/include/linux/irq.h
++++ b/include/linux/irq.h
+@@ -111,6 +111,9 @@ struct irq_chip {
+ 
+ 	void		(*end)(unsigned int irq);
+ 	void		(*set_affinity)(unsigned int irq, cpumask_t dest);
++#ifdef CONFIG_IPIPE
++	void		(*move)(unsigned int irq);
++#endif /* CONFIG_IPIPE */
+ 	int		(*retrigger)(unsigned int irq);
+ 	int		(*set_type)(unsigned int irq, unsigned int flow_type);
+ 	int		(*set_wake)(unsigned int irq, unsigned int on);
 -- 
 Siemens AG, Corporate Technology, CT SE 26
 Corporate Competence Center Embedded Linux
