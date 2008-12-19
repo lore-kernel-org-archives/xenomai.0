@@ -1,10 +1,13 @@
-Message-ID: <494B6A26.1040001@domain.hid>
-Date: Fri, 19 Dec 2008 10:32:22 +0100
+Message-ID: <494BBB5A.90805@domain.hid>
+Date: Fri, 19 Dec 2008 16:18:50 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+References: <494B6A26.1040001@domain.hid>
+In-Reply-To: <494B6A26.1040001@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [RFC][PATCH] x86-64: Enable root domain IRQ migration
+Subject: Re: [Adeos-main] [RFC][PATCH] x86-64: Enable root domain IRQ
+	migration
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,28 +18,34 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: adeos-main <adeos-main@gna.org>
 
-Currently, I-pipe breaks the setting of IRQ affinities through Linux,
-the root domain. This is because migrating IRQs while they are active is
-a tricky business on x86, requiring special measures within the IRQ ack
-path. And as this path is now used by non-root domains, the migration
-code had to be deactivated.
+Jan Kiszka wrote:
+> Currently, I-pipe breaks the setting of IRQ affinities through Linux,
+> the root domain. This is because migrating IRQs while they are active is
+> a tricky business on x86, requiring special measures within the IRQ ack
+> path. And as this path is now used by non-root domains, the migration
+> code had to be deactivated.
+> 
+> The following patch is a proof of concept for x86-64 how to overcome
+> this unfortunate limitation (if you want to isolate RT from non-RT
+> CPUs). The approach works without adding code to critical paths. First
+> tests inside KVM indicate that things work as expected, but more testing
+> on real iron is scheduled, e.g. to check MSI IRQs which I don't have in
+> my KVM environment.
+> 
 
-The following patch is a proof of concept for x86-64 how to overcome
-this unfortunate limitation (if you want to isolate RT from non-RT
-CPUs). The approach works without adding code to critical paths. First
-tests inside KVM indicate that things work as expected, but more testing
-on real iron is scheduled, e.g. to check MSI IRQs which I don't have in
-my KVM environment.
+Here is version 2, now also including 32-bit support (untested).
 
-Feedback welcome.
+Meanwhile I've run this patch on an real dual core box with MSI, and all
+works smoothly.
 
 Jan
-
 ---
+ arch/x86/kernel/io_apic_32.c |   24 ++++++++++++++++++++++++
  arch/x86/kernel/io_apic_64.c |   42 +++++++++++++++++++++++++++++++++++++-----
- include/asm-x86/ipipe_64.h   |   16 ++++++++++++++--
+ include/asm-x86/ipipe.h      |   11 +++++++++++
+ include/asm-x86/ipipe_64.h   |    5 +++--
  include/linux/irq.h          |    3 +++
- 3 files changed, 54 insertions(+), 7 deletions(-)
+ 5 files changed, 78 insertions(+), 7 deletions(-)
 
 Index: b/arch/x86/kernel/io_apic_64.c
 ===================================================================
@@ -96,7 +105,7 @@ Index: b/arch/x86/kernel/io_apic_64.c
 +		}
 +		spin_unlock(&desc->lock);
 +	} else
-+		WARN_ON(1);
++		WARN_ON_ONCE(1);
 +}
 +#endif /* CONFIG_IPIPE */
 +
@@ -147,25 +156,7 @@ Index: b/include/asm-x86/ipipe_64.h
 ===================================================================
 --- a/include/asm-x86/ipipe_64.h
 +++ b/include/asm-x86/ipipe_64.h
-@@ -135,6 +135,17 @@ static inline void __ipipe_call_root_vir
- 			     : /* no input */);
- }
- 
-+#ifdef CONFIG_SMP
-+#define __ipipe_move_root_irq(irq)					\
-+	do {								\
-+		struct irq_chip *chip = irq_desc[irq].chip;		\
-+		if (irq < NR_IRQS && chip->move)			\
-+			chip->move(irq);				\
-+	} while (0)
-+#else /* !CONFIG_SMP */
-+#define __ipipe_move_root_irq(irq)	do { } while (0)
-+#endif /* !CONFIG_SMP */
-+
- /*
-  * When running handlers, enable hw interrupts for all domains but the
-  * one heading the pipeline, so that IRQs can never be significantly
-@@ -144,10 +155,11 @@ static inline void __ipipe_call_root_vir
+@@ -144,10 +144,11 @@ static inline void __ipipe_call_root_vir
  	do {								\
  		local_irq_enable_nohead(ipd);				\
  		if (ipd == ipipe_root_domain) {				\
@@ -193,7 +184,82 @@ Index: b/include/linux/irq.h
  	int		(*retrigger)(unsigned int irq);
  	int		(*set_type)(unsigned int irq, unsigned int flow_type);
  	int		(*set_wake)(unsigned int irq, unsigned int on);
--- 
-Siemens AG, Corporate Technology, CT SE 26
-Corporate Competence Center Embedded Linux
+Index: b/arch/x86/kernel/io_apic_32.c
+===================================================================
+--- a/arch/x86/kernel/io_apic_32.c
++++ b/arch/x86/kernel/io_apic_32.c
+@@ -1929,6 +1929,21 @@ static unsigned int startup_ioapic_irq(u
+ 	return was_pending;
+ }
+ 
++#if defined(CONFIG_IPIPE) && defined(CONFIG_SMP)
++static void move_apic_irq(unsigned int irq)
++{
++	struct irq_desc *desc = &irq_desc[irq];
++
++	if (desc->handle_irq == &handle_edge_irq ||
++	    desc->handle_irq == &handle_fasteoi_irq) {
++		spin_lock(&desc->lock);
++		move_native_irq(irq);
++		spin_unlock(&desc->lock);
++	} else
++		WARN_ON_ONCE(1);
++}
++#endif /* CONFIG_IPIPE && CONFIG_SMP */
++
+ static void ack_ioapic_irq(unsigned int irq)
+ {
+ #ifndef CONFIG_IPIPE
+@@ -2018,6 +2033,9 @@ static struct irq_chip ioapic_chip __rea
+ 	.eoi 		= ack_ioapic_quirk_irq,
+ #ifdef CONFIG_SMP
+ 	.set_affinity 	= set_ioapic_affinity_irq,
++#ifdef CONFIG_IPIPE
++	.move		= move_apic_irq,
++#endif
+ #endif
+ 	.retrigger	= ioapic_retrigger_irq,
+ };
+@@ -2600,6 +2618,9 @@ static struct irq_chip msi_chip = {
+ 	.ack		= ack_ioapic_irq,
+ #ifdef CONFIG_SMP
+ 	.set_affinity	= set_msi_irq_affinity,
++#ifdef CONFIG_IPIPE
++	.move		= move_apic_irq,
++#endif
+ #endif
+ 	.retrigger	= ioapic_retrigger_irq,
+ };
+@@ -2680,6 +2701,9 @@ static struct irq_chip ht_irq_chip = {
+ 	.ack		= ack_ioapic_irq,
+ #ifdef CONFIG_SMP
+ 	.set_affinity	= set_ht_irq_affinity,
++#ifdef CONFIG_IPIPE
++	.move		= move_apic_irq,
++#endif
+ #endif
+ 	.retrigger	= ioapic_retrigger_irq,
+ };
+Index: b/include/asm-x86/ipipe.h
+===================================================================
+--- a/include/asm-x86/ipipe.h
++++ b/include/asm-x86/ipipe.h
+@@ -118,6 +118,17 @@ int __ipipe_check_tickdev(const char *de
+ 
+ #define __ipipe_root_tick_p(regs)	((regs)->flags & X86_EFLAGS_IF)
+ 
++#ifdef CONFIG_SMP
++#define __ipipe_move_root_irq(irq)					\
++	do {								\
++		struct irq_chip *chip = irq_desc[irq].chip;		\
++		if (irq < NR_IRQS && chip->move)			\
++			chip->move(irq);				\
++	} while (0)
++#else /* !CONFIG_SMP */
++#define __ipipe_move_root_irq(irq)	do { } while (0)
++#endif /* !CONFIG_SMP */
++
+ #else /* !CONFIG_IPIPE */
+ 
+ #define ipipe_update_tick_evtdev(evtdev)	do { } while (0)
 
