@@ -1,16 +1,13 @@
-Message-ID: <494D658A.9030705@domain.hid>
-Date: Sat, 20 Dec 2008 22:37:14 +0100
+Message-ID: <49513184.3040608@domain.hid>
+Date: Tue, 23 Dec 2008 19:44:20 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <20081219084446.8148.89319.stgit@domain.hid>
-	<494D1ED5.2090300@domain.hid> <494D5A00.6070809@domain.hid>
-	<494D5CFE.8020406@domain.hid> <494D5E35.2010208@domain.hid>
-In-Reply-To: <494D5E35.2010208@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig3AB2BFD820F291CB47F8A589"
+	boundary="------------enig5E05386FE32AE10E0D271718"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [PATCH  0/3] NMI watchdog fixes / enhancements
+Subject: [Xenomai-core] [PATCH] HAL-x86: Fix race in timer request and
+	release path
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,70 +17,122 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig3AB2BFD820F291CB47F8A589
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enig5E05386FE32AE10E0D271718
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Gilles Chanteperdrix wrote:
->>>> Jan Kiszka wrote:
->>>>> This is basically a repost of the NNI watchdog series I sent out a =
-few
->>>>> weeks ago. I just rebased things over latest trunk and fixed some
->>>>> warnings.
->>>>>
->>>>> All patches are also available at
->>>>> git://git.kiszka.org/xenomai.git nmi-wd-queue
->>>> That is a lot of stuff to review. I am afraid it is impossible to re=
-view
->>>> everything, so the only thing we can rely on is testing, hence the n=
-ext
->>>> question: have these patches been tested in every configuration
->>>> (enabled, disabled, built-in, module, voluntary overrun)?
->>> In most configurations, but definitely not in all (they are too many)=
-=2E
->>>
->>> This is a debugging tool, so first of all the disabled case must not
->>> cause harm, and I'm quite sure I haven't changed anything regarding
->>> this. Moreover, the enabled case was not working for many recent
->>> platforms anymore as we were lacking P6 support. So there shouldn't b=
-e
->>> much to loose.
->> I disagree: the current version compiles in all configurations tested
->> until now, and happened to work when enabled at some point in the past=
-=2E
->> I find it annoying, to say the least, when I want to test something on=
+By taking over a tick device from Linux, we install a set-next-tick
+handler for Linux that could be called shortly after, eventually with
+such a small delay that it will trigger the Xenomai tick IRQ before we
+installed its corresponding handler. This will cause a NULL pointer oops
+which has been observed at least once here over a KVM environment (where
+race windows tend to widen a lot).
 
->> trunk, that some previous unrelated commit breaks a configuration
->> because it was not tested. So, please test your patch. The
->> configurations to test are not so numerous: disabled, enabled built-in=
+Plug the race by installing the tick IRQ handler first, then starting
+to take over tick devices. Vice versa on release.
 
->> with an overrun check, enabled in module with an overrun check, repeat=
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
 
->> for x86_64. That makes 6 configurations, not that much.
->=20
-> The trivial ones have been tested, of course. But keep in mind that
-> there are more variables (CPU types , kernel versions, interfering
-> config settings, etc.) that create much more that 6 variants to be buil=
-t
-> and run.
+ ksrc/arch/x86/hal-common.c |   44 +++++++++++++++++++++++---------------=
+------
+ 1 files changed, 23 insertions(+), 21 deletions(-)
 
-To give an example of untested scenarios: Current trunk does not build
-against 2.6.27 for x86-32 with NMI watchdog enabled (die_nmi gained
-another argument doe to unification with x86-64). Well, my patch does
-not change this picture yet (I once tested against 2.6.26 for 32-bit
-support). Will fix this as well.
+diff --git a/ksrc/arch/x86/hal-common.c b/ksrc/arch/x86/hal-common.c
+index 2b04dcf..4d818ad 100644
+--- a/ksrc/arch/x86/hal-common.c
++++ b/ksrc/arch/x86/hal-common.c
+@@ -107,18 +107,24 @@ int rthal_timer_request(
+ 	int cpu)
+ {
+ 	unsigned long tmfreq;
+-	int tickval, err;
++	int tickval, err, res;
++
++	if (cpu_timers_requested =3D=3D 0) {
++		err =3D rthal_irq_request(RTHAL_APIC_TIMER_IPI,
++					(rthal_irq_handler_t) tick_handler,
++					NULL, NULL);
++		if (err)
++			return err;
++	}
+=20
+ 	/* This code works both for UP+LAPIC and SMP configurations. */
+=20
+ #ifdef __IPIPE_FEATURE_REQUEST_TICKDEV
+-	int res =3D ipipe_request_tickdev("lapic", mode_emul, tick_emul, cpu,
+-					&tmfreq);
++	res =3D ipipe_request_tickdev("lapic", mode_emul, tick_emul, cpu,
++				    &tmfreq);
+ #else
+-	int res =3D ipipe_request_tickdev("lapic",
+-					(compat_emumode_t)mode_emul,
+-					(compat_emutick_t)tick_emul,
+-					cpu);
++	res =3D ipipe_request_tickdev("lapic", (compat_emumode_t)mode_emul,
++				    (compat_emutick_t)tick_emul, cpu);
+ 	tmfreq =3D RTHAL_COMPAT_TIMERFREQ;
+ #endif
+=20
+@@ -141,9 +147,12 @@ int rthal_timer_request(
+ 		break;
+=20
+ 	case CLOCK_EVT_MODE_SHUTDOWN:
+-		return -ENODEV;
++		res =3D -ENODEV;
++		/* fall through */
+=20
+ 	default:
++		if (cpu_timers_requested =3D=3D 0)
++			rthal_irq_release(RTHAL_APIC_TIMER_IPI);
+ 		return res;
+ 	}
+ 	rthal_ktimer_saved_mode =3D res;
+@@ -155,19 +164,12 @@ int rthal_timer_request(
+ 	 * The rest of the initialization should only be performed
+ 	 * once by a single CPU.
+ 	 */
+-	if (cpu_timers_requested++ > 0)
+-		goto out;
+-
+-	err =3D rthal_irq_request(RTHAL_APIC_TIMER_IPI,
+-				(rthal_irq_handler_t) tick_handler, NULL, NULL);
+-
+-	if (err)
+-		return err;
++	if (cpu_timers_requested++ =3D=3D 0) {
++		rthal_timer_set_oneshot(1);
+=20
+-	rthal_timer_set_oneshot(1);
++		rthal_nmi_init(&rthal_latency_above_max);
++	}
+=20
+-	rthal_nmi_init(&rthal_latency_above_max);
+-out:
+ 	return tickval;
+ }
+=20
+@@ -270,12 +272,12 @@ void rthal_timer_release(int cpu)
+=20
+ 	rthal_nmi_release();
+=20
+-	rthal_irq_release(RTHAL_APIC_TIMER_IPI);
+-
+ 	if (rthal_ktimer_saved_mode =3D=3D KTIMER_MODE_PERIODIC)
+ 		rthal_timer_set_periodic();
+ 	else if (rthal_ktimer_saved_mode =3D=3D KTIMER_MODE_ONESHOT)
+ 		rthal_timer_set_oneshot(0);
++
++	rthal_irq_release(RTHAL_APIC_TIMER_IPI);
+ }
+=20
+=20
 
-Jan
 
-
---------------enig3AB2BFD820F291CB47F8A589
+--------------enig5E05386FE32AE10E0D271718
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -92,10 +141,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAklNZY8ACgkQniDOoMHTA+mHjQCeLkHB8AqNdaODFaLCRpMyd8i/
-oyQAmgMBbBxWcEZMRRc9HPBibEWq0Z+1
-=T2OU
+iEYEARECAAYFAklRMYkACgkQniDOoMHTA+lnngCfXo+QBLi0rVubSzXMVZ1QFPyb
+D80An0kE/epmGsqHOOz4H2ETuXr1M/3D
+=waIp
 -----END PGP SIGNATURE-----
 
---------------enig3AB2BFD820F291CB47F8A589--
+--------------enig5E05386FE32AE10E0D271718--
 
