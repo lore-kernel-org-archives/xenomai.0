@@ -1,15 +1,15 @@
 Resent-To: xenomai-core <xenomai@xenomai.org>
-Resent-Message-Id: <49513833.7050407@domain.hid>
+Resent-Message-Id: <49513831.9090608@domain.hid>
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Tue, 23 Dec 2008 20:06:50 +0100
-Message-ID: <20081223190649.26094.68753.stgit@domain.hid>
+Date: Tue, 23 Dec 2008 20:06:49 +0100
+Message-ID: <20081223190649.26094.74676.stgit@domain.hid>
 In-Reply-To: <20081223190649.26094.61372.stgit@domain.hid>
 References: <20081223190649.26094.61372.stgit@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH v2 5/5] Rework x86 NMI watchdog pass-through
+Subject: [Xenomai-core] [PATCH v2 4/5] NMI watchdog support for x86-64
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,237 +21,214 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
-Currently, Xenomai's NMI watchdog handler assumes to be called only on
-watchdog events. Other reasons are considered spurious, and a TSC-based
-method is used to detect such conditions. This has several issues
- - the return code of the Linux handler is ignored
- - KGDB's NMI events (CPU roundups) are not passed through
- - early_shot mechanism suffers from a signedness bug and misses too
-   early shots
- - printk from NMI can cause lock-ups, but we also support non-fatal
-   reports (ipipe tracer active)
+No need to lock the NMI away from x86-64 boxes, it just takes a bit
+refactoring.
 
-This patch therefore switches to the watchdog detection pattern that
-Linux uses: Check for the highest perfctr bit being zero for true
-timeouts. In case the watchdog did not time out, the Linux handler is
-invoked and its return code is properly forwarded. Finally, the
-early_shot reporting is dropped as it becomes pointless when KGDB is in
-use (and I suspect that patch 1 of this series fixes most of the
-original reasons).
+NOTE: Whoever applies this to SVN, make sure to MOVE nmi_32.c to nmi.c!
 
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
 
- ksrc/arch/x86/nmi.c |   95 ++++++++++++++++++++++----------------------------
- 1 files changed, 42 insertions(+), 53 deletions(-)
+ include/asm-x86/hal.h             |    2 +
+ include/asm-x86/hal_32.h          |    2 -
+ ksrc/arch/x86/Kconfig             |    4 ---
+ ksrc/arch/x86/Makefile            |    4 +-
+ ksrc/arch/x86/hal-common.c        |   48 ++++++++++++++++++++++++++++++++++++
+ ksrc/arch/x86/hal_32.c            |   49 -------------------------------------
+ ksrc/arch/x86/{nmi_32.c => nmi.c} |    0 
+ 7 files changed, 52 insertions(+), 57 deletions(-)
+ rename ksrc/arch/x86/{nmi_32.c => nmi.c} (100%)
 
-diff --git a/ksrc/arch/x86/nmi.c b/ksrc/arch/x86/nmi.c
-index 69a392a..a9d9380 100644
---- a/ksrc/arch/x86/nmi.c
-+++ b/ksrc/arch/x86/nmi.c
-@@ -65,13 +65,11 @@
- typedef union {
- 	struct {
- 		/* Xenomai watchdog data. */
--		unsigned int flags;
--		unsigned long perfctr_msr;
- 		unsigned long long next_linux_check;
-+		unsigned long perfctr_msr;
-+		u64 perfctr_checkmask;
- 		unsigned int p4_cccr_val;
+diff --git a/include/asm-x86/hal.h b/include/asm-x86/hal.h
+index 4df6bf6..158e3e6 100644
+--- a/include/asm-x86/hal.h
++++ b/include/asm-x86/hal.h
+@@ -69,6 +69,8 @@ typedef int (*compat_emutick_t)(unsigned long evt,
+ 
+ extern enum rthal_ktimer_mode rthal_ktimer_saved_mode;
+ 
++void rthal_latency_above_max(struct pt_regs *regs);
++
+ #ifdef __i386__
+ #include "hal_32.h"
+ #else
+diff --git a/include/asm-x86/hal_32.h b/include/asm-x86/hal_32.h
+index ddcec08..9a707d0 100644
+--- a/include/asm-x86/hal_32.h
++++ b/include/asm-x86/hal_32.h
+@@ -234,6 +234,4 @@ static inline void rthal_setup_oneshot_apic(int vector)
+ 
+ long rthal_strncpy_from_user(char *dst, const char __user * src, long count);
+ 
+-void rthal_latency_above_max(struct pt_regs *regs);
 -
--		unsigned early_shots;
--		unsigned long long tick_date;
-+		unsigned int flags;
- 	};
- 	char __pad[SMP_CACHE_BYTES];
- } rthal_nmi_wd_t ____cacheline_aligned;
-@@ -82,6 +80,15 @@ static void (*rthal_nmi_emergency) (struct pt_regs *);
- #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,19)
- #define MSR_ARCH_PERFMON_PERFCTR0	0xc1
- #define MSR_ARCH_PERFMON_PERFCTR1	0xc2
-+union cpuid10_eax {
-+	struct {
-+		unsigned int version_id:8;
-+		unsigned int num_counters:8;
-+		unsigned int bit_width:8;
-+		unsigned int mask_length:8;
-+	} split;
-+	unsigned int full;
-+};
- static void (*rthal_linux_nmi_tick) (struct pt_regs *);
+ #endif /* !_XENO_ASM_X86_HAL_32_H */
+diff --git a/ksrc/arch/x86/Kconfig b/ksrc/arch/x86/Kconfig
+index 865ade7..ad8a5de 100644
+--- a/ksrc/arch/x86/Kconfig
++++ b/ksrc/arch/x86/Kconfig
+@@ -27,8 +27,6 @@ config XENO_HW_FPU
+ 	Float-Point Unit on the x86 platform at the following URL:
+ 	http://www.intel.com/design/intarch/techinfo/Pentium/fpu.htm
  
- #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0)
-@@ -105,28 +112,28 @@ static int (*rthal_linux_nmi_tick) (struct pt_regs *, unsigned);
- #endif /* Linux >= 2.6.19 */
+-if !X86_64
+-
+ menu "NMI watchdog"
  
- #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,19)
--#define CALL_LINUX_NMI		rthal_linux_nmi_tick(regs)
--#define NMI_RETURN		return
-+#define CALL_LINUX_NMI		({ rthal_linux_nmi_tick(regs); 1; })
-+#define NMI_RETURN(code)	return
- static void rthal_nmi_watchdog_tick(struct pt_regs *regs)
- #else /* Linux >= 2.6.19 */
- #define CALL_LINUX_NMI		rthal_linux_nmi_tick(regs, reason)
--#define NMI_RETURN		return 1
-+#define NMI_RETURN(code)	return (code)
- static int rthal_nmi_watchdog_tick(struct pt_regs *regs, unsigned reason)
- #endif /* Linux >= 2.6.19 */
- {
- 	int cpu = rthal_processor_id();
- 	rthal_nmi_wd_t *wd = &rthal_nmi_wds[cpu];
- 	unsigned long long now;
-+	u64 perfctr;
+ config XENO_HW_NMI_DEBUG_LATENCY
+@@ -59,8 +57,6 @@ config XENO_HW_NMI_DEBUG_LATENCY_MAX
  
--	if (wd->flags & NMI_WD_ARMED) {
--		if (rthal_rdtsc() - wd->tick_date < rthal_maxlat_tsc) {
--			++wd->early_shots;
--			wd->next_linux_check = wd->tick_date + rthal_maxlat_tsc;
--		} else {
--			printk("NMI early shots: %d\n", wd->early_shots);
--			rthal_nmi_emergency(regs);
--		}
--	}
-+	rdmsrl(wd->perfctr_msr, perfctr);
-+
-+	if (perfctr & wd->perfctr_checkmask)
-+		/* No watchdog tick, let Linux handle it. */
-+		NMI_RETURN(CALL_LINUX_NMI);
-+
-+	if (wd->flags & NMI_WD_ARMED)
-+		rthal_nmi_emergency(regs);
+ endmenu
  
- 	now = rthal_rdtsc();
+-endif
+-
+ menu "SMI workaround"
  
-@@ -162,36 +169,14 @@ static int rthal_nmi_watchdog_tick(struct pt_regs *regs, unsigned reason)
- 	else
- 		wrmsrl(wd->perfctr_msr, now - wd->next_linux_check);
+ config XENO_HW_SMI_DETECT_DISABLE
+diff --git a/ksrc/arch/x86/Makefile b/ksrc/arch/x86/Makefile
+index 71cc8ec..3296206 100644
+--- a/ksrc/arch/x86/Makefile
++++ b/ksrc/arch/x86/Makefile
+@@ -12,7 +12,7 @@ obj-$(CONFIG_XENOMAI) += xeno_hal.o
  
--	NMI_RETURN;
-+	NMI_RETURN(1);
+ xeno_hal-y := hal_$(X86_MODE).o hal-common.o usercopy_$(X86_MODE).o
+ 
+-xeno_hal-$(CONFIG_XENO_HW_NMI_DEBUG_LATENCY) += nmi_$(X86_MODE).o
++xeno_hal-$(CONFIG_XENO_HW_NMI_DEBUG_LATENCY) += nmi.o
+ 
+ xeno_hal-$(CONFIG_XENO_HW_SMI_DETECT) += smi.o
+ 
+@@ -28,7 +28,7 @@ O_TARGET := built-in.o
+ 
+ obj-y := hal_32.o hal-common.o
+ 
+-obj-$(CONFIG_XENO_HW_NMI_DEBUG_LATENCY) += nmi_32.o
++obj-$(CONFIG_XENO_HW_NMI_DEBUG_LATENCY) += nmi.o
+ 
+ obj-$(CONFIG_XENO_HW_SMI_DETECT) += smi.o
+ 
+diff --git a/ksrc/arch/x86/hal-common.c b/ksrc/arch/x86/hal-common.c
+index 2b04dcf..315ce2a 100644
+--- a/ksrc/arch/x86/hal-common.c
++++ b/ksrc/arch/x86/hal-common.c
+@@ -278,6 +278,54 @@ void rthal_timer_release(int cpu)
+ 		rthal_timer_set_oneshot(0);
  }
  
--#ifdef CONFIG_PROC_FS
--static int earlyshots_read_proc(char *page,
--				char **start,
--				off_t off, int count, int *eof, void *data)
--{
--	int i, len = 0;
--
--	for_each_online_cpu(i)
--		len += sprintf(page + len, "CPU#%d: %u\n",
--			       i, rthal_nmi_wds[i].early_shots);
--	len -= off;
--	if (len <= off + count)
--		*eof = 1;
--	*start = page + off;
--	if (len > count)
--		len = count;
--	if (len < 0)
--		len = 0;
--
--	return len;
--}
--#endif /* CONFIG_PROC_FS */
--
- int rthal_nmi_request(void (*emergency) (struct pt_regs *))
- {
- 	unsigned long long next_linux_check;
- 	unsigned long perfctr_msr;
-+	u64 perfctr_checkmask;
- 	unsigned int wd_flags = 0;
- 	unsigned int p4_cccr_val = 0;
- 	int i;
-@@ -205,23 +190,30 @@ int rthal_nmi_request(void (*emergency) (struct pt_regs *))
- 	switch (boot_cpu_data.x86_vendor) {
-         case X86_VENDOR_AMD:
- 		perfctr_msr = MSR_K7_PERFCTR0;
-+		perfctr_checkmask = 1ULL << 47;
- 		break;
-         case X86_VENDOR_INTEL:
- 		if (cpu_has(&boot_cpu_data, X86_FEATURE_ARCH_PERFMON)) {
-+			union cpuid10_eax eax;
++#ifdef CONFIG_XENO_HW_NMI_DEBUG_LATENCY
 +
- 			if (boot_cpu_data.x86 == 6 &&
- 			    boot_cpu_data.x86_model == 14)
- 				perfctr_msr = MSR_ARCH_PERFMON_PERFCTR0;
- 			else
- 				perfctr_msr = MSR_ARCH_PERFMON_PERFCTR1;
-+			cpuid(10, &eax.full, &i, &i, &i);
-+			perfctr_checkmask = 1ULL << (eax.split.bit_width - 1);
- 			wd_flags = NMI_WD_P6_OR_LATER | NMI_WD_31BITS;
- 		} else
- 			switch (boot_cpu_data.x86) {
- 	                case 6:
- 				perfctr_msr = MSR_P6_PERFCTR0;
-+				perfctr_checkmask = 1ULL << 39;
- 				wd_flags = NMI_WD_P6_OR_LATER | NMI_WD_31BITS;
- 				break;
- 	                case 15:
- 				perfctr_msr = MSR_P4_IQ_COUNTER0;
-+				perfctr_checkmask = 1ULL << 39;
- 				p4_cccr_val = P4_NMI_IQ_CCCR0;
- #ifdef CONFIG_SMP
- 				if (smp_num_siblings == 2)
-@@ -244,6 +236,7 @@ int rthal_nmi_request(void (*emergency) (struct pt_regs *))
- 
- 		wd->flags = wd_flags;
- 		wd->perfctr_msr = perfctr_msr;
-+		wd->perfctr_checkmask = perfctr_checkmask;
- 		wd->p4_cccr_val = p4_cccr_val;
- 		wd->next_linux_check = next_linux_check;
- 	}
-@@ -252,12 +245,6 @@ int rthal_nmi_request(void (*emergency) (struct pt_regs *))
- 	wmb();
- 	nmi_watchdog_tick = &rthal_nmi_watchdog_tick;
- 
--#ifdef CONFIG_PROC_FS
--	rthal_add_proc_leaf("nmi_early_shots",
--			    &earlyshots_read_proc,
--			    NULL, NULL, rthal_proc_root);
--#endif /* CONFIG_PROC_FS */
--
- 	return 0;
- }
- 
-@@ -269,10 +256,6 @@ void rthal_nmi_release(void)
- 	if (!rthal_linux_nmi_tick)
- 		return;
- 
--#ifdef CONFIG_PROC_FS
--	remove_proc_entry("nmi_early_shots", rthal_proc_root);
--#endif /* CONFIG_PROC_FS */
--
- 	if (wd->flags & NMI_WD_31BITS)
- 		wrmsr(wd->perfctr_msr, (u32)(0 - RTHAL_CPU_FREQ), 0);
- 	else
-@@ -299,6 +282,10 @@ void rthal_nmi_arm(unsigned long delay)
- 		/* Protect from an interrupt handler calling rthal_nmi_arm. */
- 		rthal_local_irq_save(flags);
- 		wd->flags &= ~NMI_WD_ARMED;
-+		/*
-+		 * Our watchdog must be declared unarmed before we triger the
-+		 * Linux watchdog NMI, entering rthal_nmi_watchdog_tick.
-+		 */
- 		wmb();
- 		if (wd->flags & NMI_WD_31BITS)
- 			wrmsr(wd->perfctr_msr, (u32)-1, 0);
-@@ -308,12 +295,14 @@ void rthal_nmi_arm(unsigned long delay)
- 		rthal_local_irq_restore(flags);
- 	}
- 
--	wd->tick_date = rthal_rdtsc() + (delay - rthal_maxlat_tsc);
--	wmb();
- 	if (wd->flags & NMI_WD_31BITS)
- 		wrmsr(wd->perfctr_msr, (u32)(0 - delay), 0);
- 	else
- 		wrmsrl(wd->perfctr_msr, 0 - delay);
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0)
++
++#include <linux/vt_kern.h>
++
++extern void show_registers(struct pt_regs *regs);
++
++extern spinlock_t nmi_print_lock;
++
++void die_nmi(const char *msg, struct pt_regs *regs, int do_panic)
++{
++	spin_lock(&nmi_print_lock);
 +	/*
-+	 * New perfctr must have been written before we can declare the
-+	 * watchdog armed (avoid race with previously programmed value).
++	 * We are in trouble anyway, lets at least try
++	 * to get a message out.
 +	 */
- 	wmb();
- 	wd->flags |= NMI_WD_ARMED;
++	bust_spinlocks(1);
++	printk(msg);
++	show_registers(regs);
++	printk("console shuts up ...\n");
++	console_silent();
++	spin_unlock(&nmi_print_lock);
++	bust_spinlocks(0);
++	do_exit(SIGSEGV);
++}
++
++#elif LINUX_VERSION_CODE < KERNEL_VERSION(2,6,27) && defined(CONFIG_X86_32)
++#define die_nmi(msg, regs, do_panic)	die_nmi(regs, msg)
++#else /* Linux >= 2.6.27 || CONFIG_X86_64 */
++#include <asm/nmi.h>
++#endif /* Linux >= 2.6.27 || CONFIG_X86_64*/
++
++void rthal_latency_above_max(struct pt_regs *regs)
++{
++	/* Try to report via latency tracer first, then fall back to panic. */
++	if (rthal_trace_user_freeze(rthal_maxlat_us, 1) < 0) {
++		char buf[128];
++
++		snprintf(buf,
++			 sizeof(buf),
++			 "NMI watchdog detected timer latency above %u us\n",
++			 rthal_maxlat_us);
++		die_nmi(buf, regs, 1);
++	}
++}
++
++#endif /* CONFIG_XENO_HW_NMI_DEBUG_LATENCY */
+ 
+ #endif /* CONFIG_X86_LOCAL_APIC */
+ 
+diff --git a/ksrc/arch/x86/hal_32.c b/ksrc/arch/x86/hal_32.c
+index 79b7c83..026b03f 100644
+--- a/ksrc/arch/x86/hal_32.c
++++ b/ksrc/arch/x86/hal_32.c
+@@ -97,55 +97,6 @@ unsigned long rthal_timer_calibrate(void)
+ 	return rthal_imuldiv(dt, 20, RTHAL_CPU_FREQ);
  }
+ 
+-#ifdef CONFIG_XENO_HW_NMI_DEBUG_LATENCY
+-
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0)
+-
+-#include <linux/vt_kern.h>
+-
+-extern void show_registers(struct pt_regs *regs);
+-
+-extern spinlock_t nmi_print_lock;
+-
+-void die_nmi(const char *msg, struct pt_regs *regs, int do_panic)
+-{
+-	spin_lock(&nmi_print_lock);
+-	/*
+-	 * We are in trouble anyway, lets at least try
+-	 * to get a message out.
+-	 */
+-	bust_spinlocks(1);
+-	printk(msg);
+-	show_registers(regs);
+-	printk("console shuts up ...\n");
+-	console_silent();
+-	spin_unlock(&nmi_print_lock);
+-	bust_spinlocks(0);
+-	do_exit(SIGSEGV);
+-}
+-
+-#elif LINUX_VERSION_CODE < KERNEL_VERSION(2,6,27)
+-#define die_nmi(msg, regs, do_panic)	die_nmi(regs, msg)
+-#else /* Linux >= 2.6.27 */
+-#include <asm/nmi.h>
+-#endif /* Linux >= 2.6.27 */
+-
+-void rthal_latency_above_max(struct pt_regs *regs)
+-{
+-	/* Try to report via latency tracer first, then fall back to panic. */
+-	if (rthal_trace_user_freeze(rthal_maxlat_us, 1) < 0) {
+-		char buf[128];
+-
+-		snprintf(buf,
+-			 sizeof(buf),
+-			 "NMI watchdog detected timer latency above %u us\n",
+-			 rthal_maxlat_us);
+-		die_nmi(buf, regs, 1);
+-	}
+-}
+-
+-#endif /* CONFIG_XENO_HW_NMI_DEBUG_LATENCY */
+-
+ #else /* !CONFIG_X86_LOCAL_APIC */
+ 
+ unsigned long rthal_timer_calibrate(void)
+diff --git a/ksrc/arch/x86/nmi_32.c b/ksrc/arch/x86/nmi.c
+similarity index 100%
+rename from ksrc/arch/x86/nmi_32.c
+rename to ksrc/arch/x86/nmi.c
 
 
