@@ -1,15 +1,10 @@
-Message-ID: <49518900.5040504@domain.hid>
-Date: Wed, 24 Dec 2008 01:57:36 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Paul <paul_c@domain.hid>
+Date: Wed, 24 Dec 2008 01:19:33 +0000
 MIME-Version: 1.0
-References: <20081223190649.26094.61372.stgit@domain.hid>
-	<49513A4F.2060700@domain.hid>
-In-Reply-To: <49513A4F.2060700@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigD7BA08DF5DB10291C1C5448C"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [PATCH v2 0/5] NMI watchdog fixes / enhancements
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_l4YUJg3npfuCFzr"
+Message-Id: <200812240119.33232.paul_c@domain.hid>
+Subject: [Xenomai-core] [PATCH] Minor correction to debian/control
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,64 +14,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD7BA08DF5DB10291C1C5448C
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Changes since last round:
->>  - Fix build breakage of trunk against 2.6.27
->>  - Make rthal_nmi_release more robust (additional patch)
->>  - Fix issue of last patch on 32 bit (untested last-minute changes...)=
-
->>
->> All patches are also available at
->> git://git.kiszka.org/xenomai.git nmi-wd-queue
->=20
-> I remind you that trunk is currently broken for the posix skin on arm, =
-a
-> regression introduced by your FASTSYNCH patches. From my point of view,=
-
-> fixing this regression is more important than fixing an option that
-> almost nobody uses with untested patches...
-
-Many things are broken and awaiting a fix. I also have 6 posted bug
-fixes in my assorted patch queue for Xenomai ATM. But this doesn't mean
-everything else has to wait just because review or merging is delayed
-due to current overload.
-
-And FYI, I've discussed the posix skin setup race with Wolfgang last
-week, suggesting a few things to try next on his target - what he will
-likely do as soon as time permits. I can't help at this point as A) the
-race is not yet obvious for me and B) I've no chance to reproduce it.
-But any further information on this is always welcome - if you happen to
-see the problem as well.
-
-Regarding this thread, I would appreciate if we could just stay on
-topic. If you don't have the time for the patches, then it's absolutely
-OK, just leave them alone.
-
-Jan
+--Boundary-00=_l4YUJg3npfuCFzr
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 
---------------enigD7BA08DF5DB10291C1C5448C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+ Reviewing and updating one of my systems here, I noticed a copy/paste error 
+in the debian/control - The short description is the same for both lib and 
+dev packages. The $trivial patch attached addresses this. Both the 2.4.x 
+branch and trunk suffer from the same error.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAklRiQUACgkQniDOoMHTA+lRNQCeNEu18H1G4KX3OG9jgHKzTKgw
-jN8Ani2NjVa0o0+mtUElkX1wvNQHlNOF
-=g+25
------END PGP SIGNATURE-----
+Regards, Paul.
 
---------------enigD7BA08DF5DB10291C1C5448C--
+
+
+
+
+--Boundary-00=_l4YUJg3npfuCFzr
+Content-Type: text/x-diff;
+  charset="iso 8859-15";
+  name="debian_control.diff"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="debian_control.diff"
+
+Index: debian/control
+===================================================================
+--- debian/control	(revision 4493)
++++ debian/control	(working copy)
+@@ -52,7 +52,7 @@ Depends: ${shlibs:Depends}
+ Suggests: linux-patch-xenomai, xenomai-doc
+ Replaces: xenomai
+ Conflicts: xenomai
+-Description: Headers and static libs for Xenomai
++Description: Shared libraries for Xenomai
+  Xenomai is a real-time development framework cooperating with the Linux
+  kernel in order to provide a pervasive, interface-agnostic, hard real-time
+  support to user-space applications, seamlessly integrated into the GNU/Linux
+
+--Boundary-00=_l4YUJg3npfuCFzr--
 
