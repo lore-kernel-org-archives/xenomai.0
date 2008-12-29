@@ -1,16 +1,12 @@
-Message-ID: <4958DF63.5060005@domain.hid>
-Date: Mon, 29 Dec 2008 15:32:03 +0100
+Message-ID: <4958E30C.5060103@domain.hid>
+Date: Mon, 29 Dec 2008 15:47:40 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <20081223190649.26094.61372.stgit@domain.hid>
-	<49513A4F.2060700@domain.hid> <49518900.5040504@domain.hid>
-	<4951E402.8000702@domain.hid>
-In-Reply-To: <4951E402.8000702@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigD019B3C587F5D1971166C3EA"
+	boundary="------------enig2AF38420C51C312BDF1BBBD1"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [PATCH v2 0/5] NMI watchdog fixes / enhancements
+Subject: [Xenomai-core] [PATCH] x86-userspace: Turn on SMP by default
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,36 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD019B3C587F5D1971166C3EA
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enig2AF38420C51C312BDF1BBBD1
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Regarding this thread, I would appreciate if we could just stay on
->> topic. If you don't have the time for the patches, then it's absolutel=
-y
->> OK, just leave them alone.
->=20
-> I am reluctant to test patches which are explicitely labeled as
-> "untested", and prefer to wait the tested ones. Trunk is already broken=
+A signigicant portion of x86 systems is SMP these days. Turn on the
+corresponding user space option to reflect the situation, specifically
+as running SMP-enabled libraries on a single-core system is just
+slightly suboptimal while the other way around does not work, forcing
+the user to rebuild the Xenomai libs.
 
-> enough, that is my point.
->=20
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
 
-Oh, that was a misunderstanding due to my unfortunate changelog.
-Untested referred to a specific config set and a last-minute change of
-the previous version.
+ configure.in |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
 
-Jan
+diff --git a/configure.in b/configure.in
+index 4300d6f..d665dc6 100644
+--- a/configure.in
++++ b/configure.in
+@@ -135,6 +135,9 @@ AC_MSG_RESULT(${debug_symbols:-no})
+ dnl SMP support (default: off)
+=20
+ CONFIG_SMP=3D
++if test $XENO_TARGET_ARCH =3D x86; then
++	CONFIG_SMP=3Dy
++fi
+ AC_MSG_CHECKING(for SMP support)
+ AC_ARG_ENABLE(smp,
+ 	AS_HELP_STRING([--enable-smp], [Enable SMP support]),
 
 
-
---------------enigD019B3C587F5D1971166C3EA
+--------------enig2AF38420C51C312BDF1BBBD1
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -58,10 +60,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAklY32YACgkQniDOoMHTA+kD6gCfQlZWyMIjKCMNqDIx0FnX54yI
-iNYAnRqn4RoqC77UHcbM8+m+38Gf2zVk
-=VxYL
+iEYEARECAAYFAklY4wwACgkQniDOoMHTA+nGPQCeK2xAZGTgytHdAY3wIDtg7GNQ
+8/EAn1Kw3nwSlQRtSiLK8LTFMUxt/AqO
+=E4rQ
 -----END PGP SIGNATURE-----
 
---------------enigD019B3C587F5D1971166C3EA--
+--------------enig2AF38420C51C312BDF1BBBD1--
 
