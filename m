@@ -1,12 +1,12 @@
-Message-ID: <494D6EA9.1020703@domain.hid>
-Date: Sat, 20 Dec 2008 23:16:09 +0100
+Message-ID: <4958E439.9040503@domain.hid>
+Date: Mon, 29 Dec 2008 15:52:41 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig44C0AACE73186AA54AFAC406"
+	boundary="------------enig8F4255545E867F3EA13A0FA3"
 Sender: jan.kiszka@domain.hid
-Subject: [Adeos-main] [PATCH] Export __ipipe_set_irq_pending
+Subject: [Adeos-main] [PATCH] Fix include for kernel/panic.c
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -18,36 +18,37 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 To: adeos-main <adeos-main@gna.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig44C0AACE73186AA54AFAC406
+--------------enig8F4255545E867F3EA13A0FA3
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Required when using __ipipe_propagate_irq or
-__ipipe_schedule_irq_{head,root} as module.
+Not all archs include ipipe_trace.h implicitly so that bulding
+kernel/panic.c may break in oops_enter (seen on ARM with tracer
+disabled). Fix this with a proper include.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 
 ---
- kernel/ipipe/core.c |    1 +
+ kernel/panic.c |    1 +
  1 file changed, 1 insertion(+)
 
-Index: b/kernel/ipipe/core.c
+Index: b/kernel/panic.c
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/kernel/ipipe/core.c
-+++ b/kernel/ipipe/core.c
-@@ -1701,6 +1701,7 @@ EXPORT_SYMBOL(ipipe_get_ptd);
- EXPORT_SYMBOL(ipipe_set_irq_affinity);
- EXPORT_SYMBOL(ipipe_send_ipi);
- EXPORT_SYMBOL(__ipipe_pend_irq);
-+EXPORT_SYMBOL(__ipipe_set_irq_pending);
- #ifdef CONFIG_GENERIC_CLOCKEVENTS
- EXPORT_SYMBOL(ipipe_request_tickdev);
- EXPORT_SYMBOL(ipipe_release_tickdev);
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -21,6 +21,7 @@
+ #include <linux/debug_locks.h>
+ #include <linux/random.h>
+ #include <linux/kallsyms.h>
++#include <linux/ipipe_trace.h>
+=20
+ int panic_on_oops;
+ int tainted;
 
 
---------------enig44C0AACE73186AA54AFAC406
+--------------enig8F4255545E867F3EA13A0FA3
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -56,10 +57,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAklNbq0ACgkQniDOoMHTA+lVyQCbBgwmaH5icAAJpuIqh/CXGNBy
-wGsAnjwSX0KhZ/r44/93Z5zJge86fAU4
-=4DzK
+iEYEARECAAYFAklY5DkACgkQniDOoMHTA+nljQCeLG+wJk98n4O3xa/kehOes3/4
+kAEAnjSxC2/goZ1sV6XGwEILLYMbwT8u
+=P6ZX
 -----END PGP SIGNATURE-----
 
---------------enig44C0AACE73186AA54AFAC406--
+--------------enig8F4255545E867F3EA13A0FA3--
 
