@@ -1,5 +1,5 @@
-Message-ID: <495CB407.10801@domain.hid>
-Date: Thu, 01 Jan 2009 13:16:07 +0100
+Message-ID: <495CCF2C.40008@domain.hid>
+Date: Thu, 01 Jan 2009 15:11:56 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <495C80FB.7050501@domain.hid>
@@ -53,8 +53,53 @@ Wolfgang Grandegger wrote:
 > 
 > Does that trigger a bell?
 
-One possible explanation could be that thread_destroy is called twice,
-could you check if this is what happens ?
+Wait, yes, this is bad, I think we should not execute
+xnsched_finish_unlocked_switch at this point. Try this. This is a
+temporary patch, we probably have to work out something better for SMP,
+but it should at least show us if this is the reason for the problem you
+have.
+
+Index: ksrc/nucleus/pod.c
+===================================================================
+--- ksrc/nucleus/pod.c	(revision 4519)
++++ ksrc/nucleus/pod.c	(working copy)
+@@ -2085,18 +2085,8 @@ void __xnpod_schedule(struct xnsched *sc
+
+ 	xnpod_switch_to(sched, prev, next);
+
+-	switched = 1;
+-	sched = xnsched_finish_unlocked_switch(sched);
+-	/*
+-	 * Re-read the currently running thread, this is needed
+-	 * because of relaxed/hardened transitions.
+-	 */
+ 	curr = sched->curr;
+
+-	xnarch_trace_pid(xnthread_user_task(curr) ?
+-			 xnarch_user_pid(xnthread_archtcb(curr)) : -1,
+-			 xnthread_current_priority(curr));
+-
+ #ifdef CONFIG_XENO_OPT_PERVASIVE
+ 	/*
+ 	 * Test whether we are relaxing a thread. In such a case, we
+@@ -2107,6 +2097,16 @@ void __xnpod_schedule(struct xnsched *sc
+ 		goto relax_epilogue;
+ #endif /* CONFIG_XENO_OPT_PERVASIVE */
+
++	switched = 1;
++	sched = xnsched_finish_unlocked_switch(sched);
++	/*
++	 * Re-read the currently running thread, this is needed
++	 * because of relaxed/hardened transitions.
++	 */
++	xnarch_trace_pid(xnthread_user_task(curr) ?
++			 xnarch_user_pid(xnthread_archtcb(curr)) : -1,
++			 xnthread_current_priority(curr));
++
+ 	if (zombie)
+ 		xnpod_fatal("zombie thread %s (%p) would not die...",
+ 			    prev->name, prev);
+
 
 -- 
 					    Gilles.
