@@ -1,15 +1,16 @@
-Message-ID: <495CF842.5000100@domain.hid>
-Date: Thu, 01 Jan 2009 18:07:14 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <495CF915.6010506@domain.hid>
+Date: Thu, 01 Jan 2009 18:10:45 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <493306F5.2080605@domain.hid>	<49330CD3.4090700@domain.hid>	<4933BAE2.3000502@domain.hid>	<4933F1A4.8060209@domain.hid>	<4933F18F.7080103@domain.hid>	<4933FE5A.5060501@domain.hid>	<49355B5D.8070802@domain.hid>	<49355A59.4050600@domain.hid>	<49357C02.1090001@domain.hid>	<49358003.1080705@domain.hid>
-	<493BF43B.4080208@domain.hid>	<493FA528.3060307@domain.hid>
-	<495CC649.1070203@domain.hid>
+References: <493306F5.2080605@domain.hid>	<49330CD3.4090700@domain.hid>	<4933BAE2.3000502@domain.hid>	<4933F1A4.8060209@domain.hid>	<4933F18F.7080103@domain.hid>
+	<4933FE5A.5060501@domain.hid>	<49355B5D.8070802@domain.hid>
+	<49355A59.4050600@domain.hid>	<49357C02.1090001@domain.hid>
+	<49358003.1080705@domain.hid> <493BF43B.4080208@domain.hid>
+	<493FA528.3060307@domain.hid> <495CC649.1070203@domain.hid>
 In-Reply-To: <495CC649.1070203@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] pthread cancelation and scheduling magics
-Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -84,12 +85,18 @@ Gilles Chanteperdrix wrote:
 > What version of gcc are you using ? When trying to get xenomai running
 > on an ARM platform, I found out that gcc 4.3.1 and 4.3.2 have a bug on
 > ARM which thrashes the parameters passed to  some xenomai syscalls.
-> 
 
-A common issue happens when pthread_self() is inlined in the syscall arg list.
-Early gcc 4.x for powerpc has this problem; never tried with newer releases, but
-rather made sure to use a temporary variable to pass this value to the syscall.
+The new ELDK 4.2 for ARM11 with VFP support [1] uses:
 
--- 
-Philippe.
+  $ armVFP-linux-gcc --version
+  armVFP-linux-gcc (GCC) 4.2.2
+
+Nevertheless, the problems do not show up with Xenomai v2.4.x and
+therefore it's unlikely that Xenomai syscalls do not work properly.
+
+[1] http://www.denx.de/en/News/WebHome#NewsEldk42Arm
+
+Wolfgang.
+
+
 
