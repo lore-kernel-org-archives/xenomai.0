@@ -1,12 +1,16 @@
-Message-ID: <496F2281.2000102@domain.hid>
-Date: Thu, 15 Jan 2009 12:48:17 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <496BA87C.2020306@domain.hid>
+Date: Mon, 12 Jan 2009 21:30:52 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <BAY101-W2825402A319CC124388542EAD70@domain.hid>
-In-Reply-To: <BAY101-W2825402A319CC124388542EAD70@domain.hid>
+References: <CF7FB0793253794F9F45991443E5FE2003E4BABF18@domain.hid>
+	<496B6B66.7070905@domain.hid>
+	<CF7FB0793253794F9F45991443E5FE2004DF7840E1@domain.hid>
+	<200901121810.42126.Sebastian.Smolorz@domain.hid>
+	<CF7FB0793253794F9F45991443E5FE2004DF7841B2@domain.hid>
+In-Reply-To: <CF7FB0793253794F9F45991443E5FE2004DF7841B2@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Debugger Support
+Subject: Re: [Xenomai-help] [Socketcan-users] rtcanconfig rtcansend rtcanrecv
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,37 +20,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stephen Davies <steve_davies61@domain.hid>
-Cc: xenomai@xenomai.org
+To: "Charlton, John" <john.charlton@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "socketcan-users@domain.hid" <socketcan-users@domain.hid>
 
-Stephen Davies wrote:
-> Hi All,
-> 
-> I currently have an application that runs under RTAI however I am now
-> having problems that I wish to debug.  Debugger support for RTAI is
-> limited at best (currently the only option we have is to use
-> rt_printk() or printf() to the console).  I've been looking back at
-> Xenomai and I see a lot of references to LTTng support which would be
-> ideal and would mean I would port my RTAI app to Xenomai.  However
-> these references seem to all die out around 2007.  Is there still
-> support for a "proper" debugger (stepping through code, variable
-> values etc...) in the current release of Xenomai?
+Charlton, John wrote:
+> I agree that rtcan1 transmit interrupt request is set as is rtcan0 receive request in sja1000 base + 3, but I notice that neither interrupt is enabled in the control register (offset 0).  I think the command register should be 0x06 so that TIE and RIE interrupt enable bits are set.  I am relying on the xeno_can_sja1000 module to set the interrupt enable bits since the xeno_can_tscan1 module should just provide access to the sja1000 registers.  I don't think the xeno_can_tscan1 should program any of the sja1000 registers itself--is that assumption correct?  I am specifying the correct interrupts which are jumper selected to be 5 and 7 for rtcan0 and rtcan1 respectively.  The jumper settings can be checked using the TS-CAN1 base + 6 to but the driver doesn't do that yet.
 
-LTTng is actively supported over Xenomai, we just still need additional
-fiddling with the patch series as LTTng is not yet mainline. We are
-using it here over 2.6.26 ATM, I think I just missed to post the (rather
-simple) update from the published 2.6.24 version. And I'm about to port
-them to the next kernel base (either 2.6.27 or .28).
+The interrupt enable register (IER) is at offset 0x4 and they are all
+enabled (see below). The transfer from rtcan1 to rtcan0 went fine. Just
+no interrupts are triggered. And yes, the SJA100 does all relevant
+accesses to the SJA1000 chips. Some more questions:
 
-Beside the LTTng tracer there is also source-level debugging, of course.
-gdb for the apps, kgdb for the kernel (x86) - or via KVM, ie. kernel
-source-level debugging inside a virtual x86 machine. kgdb just needs
-some extra patches which I didn't update to 2.6.27 yet because I'm using
-KVM now.
+- What do your read at offset 0x6 (JMP)?
+- What does /proc/interrupts return?
+- Do you see any RTCAN related messages with "$ dmesg".
 
-Jan
+Wolfgang
 
--- 
-Siemens AG, Corporate Technology, CT SE 26
-Corporate Competence Center Embedded Linux
+
 
