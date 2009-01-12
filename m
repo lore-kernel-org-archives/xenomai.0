@@ -1,10 +1,14 @@
-Message-ID: <21175505.1231747787507.JavaMail.ngmail@domain.hid>
-Date: Mon, 12 Jan 2009 09:09:47 +0100 (CET)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
+Message-ID: <20090112110445.gupikke2o4o40kko@domain.hid>
+Date: Mon, 12 Jan 2009 11:04:45 +0100
+From: Sebastien.Berruer@domain.hid
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+	charset=ISO-8859-1;
+	DelSp="Yes";
+	format="flowed"
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] Xenomai and Perfmon2?
+Subject: [Xenomai-help] Xenomai on Gumstix
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,47 +20,69 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi everybody,
+Hi,
 
-I am using Xenomai for real time system that has to compute complex simulat=
-ions.
-For that, not only real time behaviour but also computation power is releva=
-nt.
-I am using Intel's Core 2 Duo/Quad CPUs.
-The perfom2 package (http://perfmon2.sourceforge.net/) allows to access the=
- CPU's
-perfomance monitoring registers fairly easily.
-It contains a kernel patch and a user mode frontend.
-I have now tried to apply the Xenomai patch (first) and the perfom2 patch (=
-second) which seems to work
-(some slight modifications on the perfom2 patch have been necessary) partia=
-lly.
-I can now use the system-wide mode of pfmon, however I can not attach from =
-pfmon to a running
-realtime task (the kernel freezes), but at least the system-wide mode is qu=
-ite helpful.
+I'm a student and I work on a project to get Xenomai running on a
+gumstix platform. I'm using a Verdex board and OpenEmbedded as my
+development environment. Prior to re-flashing the board, I'm testing
+the RAM image with Qemu.
 
-My questions to this combination:
-- Can the perfmon2 kernel patch somehow destroy the real time behaviour of =
-the Xenomai executable?
+I've patched the kernel with Adeos. I followed the instruction of
+Xenomai 2.4.3 for a linux kernel 2.6.24.
 
-- I am mostly interested in things like EIST mode (Intel speed Step) change=
-s, bus access delays etc.
-Is there more simple way to access this information but using the perfom2 p=
-atch?
+I've been careful to run the command :
+bitbake gumstix-kernel -c menuconfig
+to force the copy of
+~/gumstix/gumstix-oe/tmp/work/gumstix-custom-verdex-angstrom-linux-gnueabi/g=
+umstix-kernel-2.6.24-r1/linux-2.6.24/.config
+to
+~/gumstix/gumstix-oe/user.collection/packages/linux/gumstix-kernel-2.6.24/gu=
+mstix-custom-verdex/defconfig
 
-Thanks for any response on that questions!
+Then, I tried to recompile the kernel source code (without that
+bitbake unpacked the archive of the previous version)
+bitbake gumstix-kernel -f -c compile
 
-Mathias
+And create the new images
+bitbake task-base-gumstix -c rebuild
+bitbake gumstix-basic-image -c rebuild
 
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
+I've made an image of RAM with the dd command to run in Qemu. But,
+when I'm trying to boot this image, the boot stop and said me :
+Copying kernel to 0xa2000000 from 0x01f00000 (length 0x00100000)...done
+## Booting image at a2000000 ...
+     Image Name:   Angstrom/2.6.24/gumstix-custom-v
+     Image Type:   ARM Linux Kernel Image (uncompressed)
+     Data Size:    1124960 Bytes =3D  1.1 MB
+     Load Address: a0008000
+     Entry Point:  a0008000
+OK
+
+Starting kernel ...
+
+ran out of input data
+
+   -- System halted
+
+I've seen in previous threads the experience from Felipe Brand=E3o
+Cavalcanti. This thread shows that it's possible to get an operational
+system on this platform. Can I hope some specific help ?
+
+Best regards,
+
+|=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D|
+| BERRUER S=E9bastien        |                                  |
+| 2 rue du Vieil Armand    | Tel : 06-76-35-29-55             |
+| Studio 112               | Email : sberruer@domain.hid     |
+| 67100 STRASBOURG         |                                  |
+|=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D|
 
 
-Jetzt komfortabel bei Arcor-Digital TV einsteigen: Mehr Happy Ends, mehr He=
-rzschmerz, mehr Fernsehen! Erleben Sie 50 digitale TV Programme und optiona=
-l 60 Pay TV Sender, einen elektronischen Programmf=FChrer mit Movie Star Be=
-wertungen von TV Movie. Au=DFerdem, aktuelle Filmhits und spannende Dokus i=
-n der Arcor-Videothek. Infos unter www.arcor.de/tv
+
+
+
 
