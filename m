@@ -1,9 +1,9 @@
-Message-ID: <496DEECF.1070407@domain.hid>
-Date: Wed, 14 Jan 2009 13:55:27 +0000
+Message-ID: <496DEFEA.5000709@domain.hid>
+Date: Wed, 14 Jan 2009 14:00:10 +0000
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <496DEB16.5060803@domain.hid> <496DEDBB.8000204@domain.hid>
-In-Reply-To: <496DEDBB.8000204@domain.hid>
+References: <496DEB16.5060803@domain.hid> <496DEE61.80706@domain.hid>
+In-Reply-To: <496DEE61.80706@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Clock drift.
@@ -16,10 +16,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: rpm@xenomai.org
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Jan Kiszka wrote:
+Philippe Gerum wrote:
 > Gilles Chanteperdrix wrote:
 >> Hi,
 >>
@@ -27,60 +27,18 @@ Jan Kiszka wrote:
 >> CONFIG_GENERIC_CLOCKEVENT, with a systematic drift of 3us/s. How can
 >> this happen? Does it come from the error due to the multiply and shift
 >> used for tsc to/from ns conversions ?
+>>
 > 
-> What clocksource is used by Linux? Also tsc?
+> - ipipe_request_tickdev() returning a timer freq we don't like?
 
-It is an ARM, but yes, the timer used to emulate the tsc is also used by
-Linux. Here is the relevant code:
+Well, I would expect ipipe_request_tickdev() to return the same
+frequency as the one used by Linux.
 
-notrace unsigned long long __ipipe_mach_get_tsc(void)
-{
-        if (likely(ixp4xx_timer_initialized)) {
-                union tsc_reg *local_tsc, result;
-                unsigned long stamp;
+> - does using your generic arith ops instead of the arch-dependent fast ops help?
 
-                local_tsc = &tsc[ipipe_processor_id()];
-
-                __asm__ ("ldmia %1, %M0\n":
-                         "=r"(result.full): "r"(local_tsc),
-"m"(*local_tsc));
-                barrier();
-                stamp = *IXP4XX_OSTS;
-                if (unlikely(stamp < result.low))
-                        /* 32 bit counter wrapped, increment high word. */
-                        result.high++;
-                result.low = stamp;
-                return result.full;
-        }
-
-        return 0;
-}
-
-cycle_t ixp4xx_get_cycles(void)
-{
-        return *IXP4XX_OSTS;
-}
-
-static struct clocksource clocksource_ixp4xx = {
-        .name           = "OSTS",
-        .rating         = 200,
-        .read           = ixp4xx_get_cycles,
-        .mask           = CLOCKSOURCE_MASK(32),
-        .shift          = 20,
-        .flags          = CLOCK_SOURCE_IS_CONTINUOUS,
-};
-
-unsigned long ixp4xx_timer_freq = FREQ;
-static int __init ixp4xx_clocksource_init(void)
-{
-        clocksource_ixp4xx.mult =
-                clocksource_hz2mult(ixp4xx_timer_freq,
-                                    clocksource_ixp4xx.shift);
-        clocksource_register(&clocksource_ixp4xx);
-
-        return 0;
-}
-
+Linux itself uses a multiply and shift strategy, so maybe the
+computation of the multiply and shift factors done by Xenomai does not
+find the same result as the one used by Linux?
 
 -- 
                                                  Gilles.
