@@ -1,36 +1,57 @@
-Message-ID: <49671C59.80602@domain.hid>
-Date: Fri, 09 Jan 2009 09:43:53 +0000
+Message-ID: <496F3F32.4090307@domain.hid>
+Date: Thu, 15 Jan 2009 13:50:42 +0000
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <210C29C84389463087C0F7ABD63428C1@domain.hid>
-In-Reply-To: <210C29C84389463087C0F7ABD63428C1@domain.hid>
+References: <496DEB16.5060803@domain.hid>	<496DEE61.80706@domain.hid>	<496DEFEA.5000709@domain.hid>	<496DF150.8050606@domain.hid>
+	<496F36EE.1070305@domain.hid> <496F3A6F.4060402@domain.hid>
+In-Reply-To: <496F3A6F.4060402@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Use Xenomai / C++
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Clock drift.
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: newsgroup <newsgroup@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: rpm@xenomai.org
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-newsgroup wrote:
-> Hello,
+Gilles Chanteperdrix wrote:
+> Gilles Chanteperdrix wrote:
+>> Philippe Gerum wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Philippe Gerum wrote:
+>>>>> Gilles Chanteperdrix wrote:
+>>>>>> Hi,
+>>>>>>
+>>>>>> I run clocktest on a system here, not running NTP, using
+>>>>>> CONFIG_GENERIC_CLOCKEVENT, with a systematic drift of 3us/s. How can
+>>>>>> this happen? Does it come from the error due to the multiply and shift
+>>>>>> used for tsc to/from ns conversions ?
+>>>>>>
+>>>>> - ipipe_request_tickdev() returning a timer freq we don't like?
+>>>> Well, I would expect ipipe_request_tickdev() to return the same
+>>>> frequency as the one used by Linux.
+>>>>
+>>> Yes it does. But this value is used by Xenomai code.
+>> It turns out that the frequency used to convert tsc to ns is the cpu
+>> frequency (which is kind of a misnomer, since your emulated tsc on arm
+>> does not run at cpu frequency), which is computed though it should have
+>> the same value as the timer frequency but is suject to rounding errors.
 > 
-> i am new in Xenomai and try to develop under C++ using Xenomai.
+> The timer frequency is as approximate as the cpu frequency,
+> ipipe_request_tickdev does this:
 > 
-> Is it possible? 
-> I couldn't find an examples, etc about this.
+> 	freq = (1000000000ULL * evtdev->mult) >> evtdev->shift;
+> 	*tmfreq = (unsigned long)freq;
 > 
-> I dont mean to wrapp the Xenomai-funcs like Xeno--, just use it under C++ so
-> that i can use classes and objects in my application. 
 
-It should work. So, if some "extern "C"" is missing, please tell us.
+Ok. But linux uses the same approximate frequency. So, the error is
+somewhere else.
 
 -- 
                                                  Gilles.
