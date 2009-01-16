@@ -1,14 +1,9 @@
-Message-ID: <496F3A37.1000801@domain.hid>
-Date: Thu, 15 Jan 2009 14:29:27 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: stefano.franzoni@domain.hid
+Date: Fri, 16 Jan 2009 17:36:29 +0100
 MIME-Version: 1.0
-References: <BAY101-W2825402A319CC124388542EAD70@domain.hid>
-	<496F2281.2000102@domain.hid>
-	<BAY101-W14267D7B841C080C30386DEAD70@domain.hid>
-In-Reply-To: <BAY101-W14267D7B841C080C30386DEAD70@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Debugger Support
+Content-type: text/plain; charset=US-ASCII
+Message-Id: <20090116163634.2C8C11C066@domain.hid>
+Subject: [Xenomai-help] malloc greater than 4K issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,22 +13,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stephen Davies <steve_davies61@domain.hid>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Stephen Davies wrote:
-> Hi Jan,
->  
-> Thanks for your quick reply.  Just to be clear I would be able to debug hard real time threads using GDB with no patches applied to it?  That would be a massive step forward for me!
 
-Yes. Debugging real-time apps in general is not always straightforward.
-So you may be forced to apply some smart methods to avoid gdb disturbing
-your real-time constraints already before you get to the interesting
-point. But this is (in most cases) nothing Xenomai specific.
+Dear experts
 
-Jan
+we have a systems with Ubuntu Linux 2.6.25.11 and Xenomai 2.4.4.
+The system has a Pentium III (Coppermine) 1GHz.
+The Xenomai installation seems to be ok.
 
--- 
-Siemens AG, Corporate Technology, CT SE 26
-Corporate Competence Center Embedded Linux
+The application, in an Rt task in user mode, allocates and uses a buffer of
+4K or greater.
+The buffer is allocated with malloc.
+
+When the buffer is greater that 4K the progam exits with a sementation
+fault.
+
+I have no idea of the origin of the issue.
+I ask you if the use of malloc for buffer greater than 4K is correct or the
+use of other APIs is suggested.
+I have tried also with rt_heap_create but I receive an error of "permission
+denied".
+
+Any suggestions?
+
+Thanks in advance
+
+Stefano
+
 
