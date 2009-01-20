@@ -1,18 +1,10 @@
-Message-ID: <497597EE.1050303@domain.hid>
-Date: Tue, 20 Jan 2009 10:22:54 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <496F0DBE.5010108@domain.hid>
-	<496F14B9.4010604@domain.hid>	<496F1CF2.1030401@domain.hid>
-	<496F275E.90407@domain.hid>	<496F4065.9040501@domain.hid>
-	<496F4558.8080603@domain.hid> <49750A32.8080104@domain.hid>
-	<49750E55.8080000@domain.hid> <4975901E.7040408@domain.hid>
-	<4975942D.60906@domain.hid>
-In-Reply-To: <4975942D.60906@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Pending patches
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C97B0C.13A24E32"
+Date: Tue, 20 Jan 2009 15:33:35 +0100
+Message-ID: <0B45E93C5FF65740AEAE690BF3848B7AD384F9@domain.hid>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] uClibc compile failure
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,136 +14,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->> Jan Kiszka wrote:
->>> Philippe Gerum wrote:
->>>> Philippe Gerum wrote:
->>>>> Jan Kiszka wrote:
->>>>>> Philippe Gerum wrote:
->>>>>>> Jan Kiszka wrote:
->>>>>>>> Philippe Gerum wrote:
->>>>>>>>> Jan Kiszka wrote:
->>>>>>>>>> commit 728fc8970e2032b3280971788f1223f3ad82d80d
->>>>>>>>>> Author: Jan Kiszka <jan.kiszka@domain.hid>
->>>>>>>>>> Date:   Thu Jan 15 11:10:24 2009 +0100
->>>>>>>>>>
->>>>>>>>>>     xnpipe: Fix racy callback handlers
->>>>>>>>>>     
->>>>>>>>>>     Invocation of input, output and alloc handler must take place under
->>>>>>>>>>     nklock to properly synchronize with xnpipe_disconnect. Change all
->>>>>>>>>>     callers to comply with this policy.
->>>>>>>>>>
->>>>>>>>> That one is under investigation. I agree on the bug report (thanks btw), but I
->>>>>>>>> disagree on the fix. Basically, we can't run all hooks under nklock. For
->>>>>>>>> instance, the alloc_handler may issue kmalloc() calls when issued from the Linux
->>>>>>>>> write endpoint.
->>>>>>>> You mean it /could/? Because no in-tree user (ie. native) calls
->>>>>>>> rt-unsafe services from its alloc_handler.
->>>>>>>>
->>>>>>> When you export a public interface, it is better not to make it incompatible
->>>>>>> unless there is no other way to fix a situation. Doing so is last resort for me.
->>>>>> OTH, there is nothing documented yet about those callback handlers or
->>>>>> xnpipe_connect. So we could only break _assumptions_ about this
->>>>>> interface.
->>>>> Actually, we would break existing implementations, but I understand your point.
->>>>>
->>>>>  But, of course, I would be happy if we could continue to keep
->>>>>> the critical section length short. I just don't see how to achieve this
->>>>>> without significant restrictions on the callback handlers and their use
->>>>>> cases.
->>>>>>
->>>>> That is because the semantics of those callouts is not that smart. If we have to
->>>>> break the API to solve the locking issue, I want to get the semantics fixed in
->>>>> the same move (which may help a lot in solving the locking issue as well), so we
->>>>> don't end up with two subsequent breakage.
->>>>>
->>>> As suspected, the callback management in the message pipe code had very serious
->>>> issues, including the xnpipe_disconnect / xnpipe_release race. At least:
->>>>
->>>> - the latency would simply skyrocket when the input queue (i.e. userland to
->>>> kernel) is flushed from xnpipe_cleanup_user_conn, because the latter holds the
->>>> nklock with interrupts off when doing so. I've tested this case on v2.4.x, the
->>>> results on a latency test when the pipe test code is running in parallel are not
->>>> pretty (i.e. > 220 us latency spot).
->>>>
->>>> - message buffers waiting in the output queue while the latter is flushed would
->>>> NOT be returned to the memory pool when an input handler is present, which is
->>>> the case with the native API that provides one. All the confusion went from the
->>>> output notification and free buffer logic that were combined into the output
->>>> handler. This went unnoticed probably because messages sent via the write()
->>>> endpoint are immediately consumed by the receiving side in a RT task that
->>>> preempts, but still, the bug is there.
->>>>
->>>> The disconnect vs release race can be fixed in a (nearly) lockless way using a
->>>> lingering close sequence, that prevents xnpipe_disconnect() to wipe out the
->>>> extra state (e.g. RT_PIPE struct) until xnpipe_release() does not need it
->>>> anymore. In short, if the userland side is connected, xnpipe_disconnect() will
->>>> defer the actual release of that extra state to xnpipe_release(); otherwise, it
->>>> will discard it immediately. A new callback, namely .release has been added for
->>>> that purpose.
->>> Just had a short glance so far. Looks good - except that there is still
->>> a use (cookie, now xstate, from xnpipe_state) after release
->>> (xnpipe_minor_free). Can't we push the minor_free after calling the
->>> release handler?
->>>
->> We should indeed postpone this just in case the upper layer indexes the extra
->> state on the minor value. We can also simplify a few things doing so.
->>
->> --- ksrc/nucleus/pipe.c	(revision 4565)
->> +++ ksrc/nucleus/pipe.c	(working copy)
->> @@ -77,11 +77,9 @@
->>
->>  static inline void xnpipe_minor_free(int minor)
->>  {
->> -	if (minor < 0 || minor >= XNPIPE_NDEVS)
->> -		return;
->> -
->> -	__clrbits(xnpipe_bitmap[minor / BITS_PER_LONG],
->> -		  1UL << (minor % BITS_PER_LONG));
-> 
-> xnarch_write_memory_barrier()? Just for the paranoiacs.
->
+This is a multi-part message in MIME format.
 
-Yes, we should be that paranoid.
+------_=_NextPart_001_01C97B0C.13A24E32
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
->> +	/* May be called with nklock free. */
->> +	clrbits(xnpipe_bitmap[minor / BITS_PER_LONG],
->> +		1UL << (minor % BITS_PER_LONG));
->>  }
->>
->>  static inline void xnpipe_enqueue_wait(struct xnpipe_state *state, int mask)
->> @@ -413,9 +411,9 @@
->>  		__setbits(state->status, XNPIPE_KERN_LCLOSE);
->>  		xnlock_put_irqrestore(&nklock, s);
->>  	} else {
->> -		xnpipe_minor_free(minor);
->>  		xnlock_put_irqrestore(&nklock, s);
->>  		state->ops.release(state->xstate);
->> +		xnpipe_minor_free(minor);
->>  	}
->>
->>  	if (need_sched)
->> @@ -621,9 +619,9 @@
->>  		__clrbits((__state)->status, XNPIPE_USER_CONN);		\
->>  		if (testbits((__state)->status, XNPIPE_KERN_LCLOSE)) {	\
->>  			clrbits((__state)->status, XNPIPE_KERN_LCLOSE);	\
->> -			xnpipe_minor_free(xnminor_from_state(__state));	\
->>  			xnlock_put_irqrestore(&nklock, (__s));		\
->>  			(__state)->ops.release((__state)->xstate);	\
->> +			xnpipe_minor_free(xnminor_from_state(__state));	\
->>  			xnlock_get_irqsave(&nklock, (__s));		\
->>  		}							\
->>  	} while(0)
->>
-> 
-> Jan
-> 
+Hi,
+
+I haven't seen a reply to this patch, maybe it has been missed?
+
+https://mail.gna.org/public/xenomai-core/2008-12/msg00009.html
 
 
--- 
-Philippe.
+---8<-------8<-------8<-------8<-------8<-------8<----
+
+I have bumped on a compilation failure of Xenomai 2.4.6 with uClibc.
+The mmap64/ftruncate64 functions may not be available, at all.
+So here's an attached patch (xeno-uclibc-link.patch) against 2.4.6,
+FWIW.
+
+BTW, people stuck with a fascist pthread that lets only superuser use=20
+SCHED_FIFO will also need the following patch. Same discussion[1]
+applies.
+[1] https://mail.gna.org/public/xenomai-help/2007-05/msg00330.html
+
+--- src/skins/native/task.c     9 Jun 2008 09:38:14 -0000       1.5
++++ src/skins/native/task.c     8 Dec 2008 10:37:55 -0000
+@@ -139,7 +139,13 @@
+
+        pthread_attr_setinheritsched(&thattr, PTHREAD_EXPLICIT_SCHED);
+        memset(&param, 0, sizeof(param));
+-       if (prio > 0) {
++       /* There's a limitation in libpthread
++        * that returns EPERM upon SCHED_FIFO
++        * for non priviledged users.
++        * So workaround this for now.
++        * FIXME (in uClibc/pthread).
++        */
++       if (prio > 0 && geteuid() =3D=3D 0) {
+                pthread_attr_setschedpolicy(&thattr, SCHED_FIFO);
+                param.sched_priority =3D prio;
+        } else
+
+--=20
+Stephane
+
+------_=_NextPart_001_01C97B0C.13A24E32
+Content-Type: application/octet-stream;
+	name="xeno-uclibc-link.patch"
+Content-Transfer-Encoding: base64
+Content-Description: xeno-uclibc-link.patch
+Content-Disposition: attachment;
+	filename="xeno-uclibc-link.patch"
+
+LS0tIGNvbmZpZ3VyZS5pbgkxNyBOb3YgMjAwOCAxMDo0NzowOSAtMDAwMAkxLjkKKysrIGNvbmZp
+Z3VyZS5pbgk4IERlYyAyMDA4IDEwOjExOjU2IC0wMDAwCkBAIC03MzMsNyArNzMzLDcgQEAKIAog
+c2F2ZV9MSUJTPSIkTElCUyIKIExJQlM9IiRMSUJTIC1scnQiCi1BQ19DSEVDS19GVU5DUyhbc2ht
+X29wZW4gc2htX3VubGlua10pCitBQ19DSEVDS19GVU5DUyhbc2htX29wZW4gc2htX3VubGluayBt
+bWFwNjQgZnRydW5jYXRlNjRdKQogTElCUz0iJHNhdmVfTElCUyIKIAogZG5sCi0tLSBzcmMvc2tp
+bnMvcG9zaXgvc2htLmMJMTcgTm92IDIwMDggMTA6NDc6MjAgLTAwMDAJMS4zCisrKyBzcmMvc2tp
+bnMvcG9zaXgvc2htLmMJOCBEZWMgMjAwOCAxMDoxMTo1NiAtMDAwMApAQCAtMTYwLDggKzE2MCwx
+MCBAQAogCWlmICghZXJyKQogCQlyZXR1cm4gMDsKIAorI2lmZGVmIEhBVkVfRlRSVU5DQVRFNjQK
+IAlpZiAoZXJyID09IEVCQURGIHx8IGVyciA9PSBFTk9TWVMpCiAJCXJldHVybiBfX3JlYWxfZnRy
+dW5jYXRlNjQoZmlsZGVzLCBsZW5ndGgpOworI2VuZGlmCiAKIAllcnJubyA9IGVycjsKIAlyZXR1
+cm4gLTE7CkBAIC0xODUsOCArMTg3LDEwIEBACiAJCQkJICgodW5zaWduZWQgbG9uZyBsb25nKSBv
+ZmYgPCBMT05HX01BWAogCQkJCSAgPyAobG9uZykgb2ZmIDogLTFMKSwgJm1hcCk7CiAKKyNpZmRl
+ZiBIQVZFX01NQVA2NAogCWlmIChlcnIgPT0gRUJBREYgfHwgZXJyID09IEVOT1NZUykKIAkJcmV0
+dXJuIF9fcmVhbF9tbWFwNjQoYWRkciwgbGVuLCBwcm90LCBmbGFncywgZmlsZGVzLCBvZmYpOwor
+I2VuZGlmCiAKIAlpZiAoZXJyKQogCQlnb3RvIGVycm9yOwpAQCAtMTk2LDggKzIwMCwxMiBAQAog
+CWlmIChlcnIpCiAJCWdvdG8gZXJyX21tYXBfZXBpbG9ndWU7CiAKKyNpZmRlZiBIQVZFX01NQVA2
+NAogCS8qIG1hcCB0aGUgd2hvbGUgaGVhcC4gKi8KIAl1YWRkciA9IF9fcmVhbF9tbWFwNjQoTlVM
+TCwgbWFwLm1hcHNpemUsIHByb3QsIGZsYWdzLCBmaWxkZXMsIDApOworI2Vsc2UKKwl1YWRkciA9
+IE1BUF9GQUlMRUQ7CisjZW5kaWYKIAogCWlmICh1YWRkciA9PSBNQVBfRkFJTEVEKSB7CiAJICAg
+ICAgZXJyX21tYXBfZXBpbG9ndWU6Cg==
+
+------_=_NextPart_001_01C97B0C.13A24E32--
 
