@@ -1,14 +1,18 @@
-Message-ID: <49759702.4010903@domain.hid>
-Date: Tue, 20 Jan 2009 10:18:58 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <497597EE.1050303@domain.hid>
+Date: Tue, 20 Jan 2009 10:22:54 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <496F0DBE.5010108@domain.hid>	<496F14B9.4010604@domain.hid>	<496F1CF2.1030401@domain.hid>	<496F275E.90407@domain.hid>	<496F4065.9040501@domain.hid>	<496F4558.8080603@domain.hid>
-	<49750A32.8080104@domain.hid>	<49750E55.8080000@domain.hid>
-	<4975901E.7040408@domain.hid> <4975942D.60906@domain.hid>
+References: <496F0DBE.5010108@domain.hid>
+	<496F14B9.4010604@domain.hid>	<496F1CF2.1030401@domain.hid>
+	<496F275E.90407@domain.hid>	<496F4065.9040501@domain.hid>
+	<496F4558.8080603@domain.hid> <49750A32.8080104@domain.hid>
+	<49750E55.8080000@domain.hid> <4975901E.7040408@domain.hid>
+	<4975942D.60906@domain.hid>
 In-Reply-To: <4975942D.60906@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Pending patches
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,7 +22,7 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
@@ -110,13 +114,44 @@ Jan Kiszka wrote:
 >> -		  1UL << (minor % BITS_PER_LONG));
 > 
 > xnarch_write_memory_barrier()? Just for the paranoiacs.
+>
 
-Actually, xnarch_memory_barrier(), reading (eg. from xstate) should
-better be finished by then as well.
+Yes, we should be that paranoid.
 
-Jan
+>> +	/* May be called with nklock free. */
+>> +	clrbits(xnpipe_bitmap[minor / BITS_PER_LONG],
+>> +		1UL << (minor % BITS_PER_LONG));
+>>  }
+>>
+>>  static inline void xnpipe_enqueue_wait(struct xnpipe_state *state, int mask)
+>> @@ -413,9 +411,9 @@
+>>  		__setbits(state->status, XNPIPE_KERN_LCLOSE);
+>>  		xnlock_put_irqrestore(&nklock, s);
+>>  	} else {
+>> -		xnpipe_minor_free(minor);
+>>  		xnlock_put_irqrestore(&nklock, s);
+>>  		state->ops.release(state->xstate);
+>> +		xnpipe_minor_free(minor);
+>>  	}
+>>
+>>  	if (need_sched)
+>> @@ -621,9 +619,9 @@
+>>  		__clrbits((__state)->status, XNPIPE_USER_CONN);		\
+>>  		if (testbits((__state)->status, XNPIPE_KERN_LCLOSE)) {	\
+>>  			clrbits((__state)->status, XNPIPE_KERN_LCLOSE);	\
+>> -			xnpipe_minor_free(xnminor_from_state(__state));	\
+>>  			xnlock_put_irqrestore(&nklock, (__s));		\
+>>  			(__state)->ops.release((__state)->xstate);	\
+>> +			xnpipe_minor_free(xnminor_from_state(__state));	\
+>>  			xnlock_get_irqsave(&nklock, (__s));		\
+>>  		}							\
+>>  	} while(0)
+>>
+> 
+> Jan
+> 
+
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Philippe.
 
