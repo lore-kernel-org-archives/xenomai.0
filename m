@@ -1,7 +1,11 @@
-Message-ID: <497799F2.8070605@domain.hid>
-Date: Wed, 21 Jan 2009 22:56:02 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 21 Jan 2009 14:57:46 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D5907E9@domain.hid>
+In-Reply-To: <497799F2.8070605@domain.hid>
 References: <51CAD0CE1504444DBE77CBBE51A0135D533F9A@slcmail.slc.mew.int>
 	<49757B25.8020500@domain.hid>
 	<51CAD0CE1504444DBE77CBBE51A0135D533FB0@domain.hid>
@@ -22,10 +26,9 @@ References: <51CAD0CE1504444DBE77CBBE51A0135D533F9A@slcmail.slc.mew.int>
 	<49779002.5080704@domain.hid>
 	<51CAD0CE1504444DBE77CBBE51A0135D534095@domain.hid>
 	<49779319.5040500@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D5907E5@domain.hid>
-In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D5907E5@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+	<51CAD0CE1504444DBE77CBBE51A0135D5907E5@domain.hid> <4977
+	99F2.8070605@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
 Subject: Re: [Xenomai-help] fpu issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -36,16 +39,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <sseeger@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Steven Seeger wrote:
-> Yes, kernel_fpu_begin() is being called. 
+It is being called a lot. Running my test with the break in both loops
+yields approximately 60 calls to it. Half of those are called even
+before i387.c's init_fpu().
 
-If kernel_fpu_begin() is called during the run-time (and not only at
-initialization time when benchmarking RAID functions), then it is
-probably the source of the problem. This situation was not well tested.
+Steven
 
--- 
-					    Gilles.
+> -----Original Message-----
+> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+> Sent: Wednesday, January 21, 2009 2:56 PM
+> To: Steven Seeger
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai-help] fpu issue
+>=20
+> Steven Seeger wrote:
+> > Yes, kernel_fpu_begin() is being called.
+>=20
+> If kernel_fpu_begin() is called during the run-time (and not only at
+> initialization time when benchmarking RAID functions), then it is
+> probably the source of the problem. This situation was not well
+tested.
+>=20
+> --
+> 					    Gilles.
 
