@@ -3,8 +3,8 @@ MIME-Version: 1.0
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Date: Wed, 21 Jan 2009 13:08:54 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D534085@domain.hid>
+Date: Wed, 21 Jan 2009 13:45:01 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D53408B@slcmail.slc.mew.int>
 In-Reply-To: <49777C1F.4040805@domain.hid>
 References: <51CAD0CE1504444DBE77CBBE51A0135D533F9A@slcmail.slc.mew.int>
 	<49757B25.8020500@domain.hid>
@@ -36,8 +36,13 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-The increased output has changed timing and now I never get the bad
-case. I'll have to try and reduce some extra messages. :(
+Gilles,
+
+I can't seem to reproduce the corruption anymore with gatekeeper and
+double_test. I've really reduced what I print out but for some reason
+there is no more scrambled FPU registers. What I do notice, however, is
+that if(!wrap_test_fpu_used(task)) always evaluates to true in every
+xnarch_save_fpu() which seems odd to me.
 
 Steven
 
