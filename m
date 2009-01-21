@@ -3,8 +3,8 @@ MIME-Version: 1.0
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Date: Wed, 21 Jan 2009 13:05:36 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D534083@domain.hid>
+Date: Wed, 21 Jan 2009 13:08:54 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D534085@domain.hid>
 In-Reply-To: <49777C1F.4040805@domain.hid>
 References: <51CAD0CE1504444DBE77CBBE51A0135D533F9A@slcmail.slc.mew.int>
 	<49757B25.8020500@domain.hid>
@@ -36,12 +36,8 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Gilles,
-
-That gave me more stuff to look at. Let me sift through it and type up
-my findings shortly.
-
-Thanks again for all your help.
+The increased output has changed timing and now I never get the bad
+case. I'll have to try and reduce some extra messages. :(
 
 Steven
 
