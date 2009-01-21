@@ -1,12 +1,17 @@
-Message-ID: <f48df4840901201628g1c12c3d3w3d3c805e1147936e@domain.hid>
-Date: Wed, 21 Jan 2009 01:28:16 +0100
-From: "Bruno Rouchouse" <brouchouse@domain.hid>
-In-Reply-To: <f48df4840901191553w238f883bk4d3910be7405c1d@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_29452_26900991.1232497696841"
-References: <f48df4840901191553w238f883bk4d3910be7405c1d@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai on Intel Core2 Quad CPU
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C97B60.CB8DED50"
+Date: Tue, 20 Jan 2009 17:40:01 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D534028@domain.hid>
+In-Reply-To: <4975E612.9040708@domain.hid>
+References: <51CAD0CE1504444DBE77CBBE51A0135D533F9A@slcmail.slc.mew.int>
+	<49757B25.8020500@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D533FB0@domain.hid>
+	<4975E491.1040506@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D533FB6@domain.hid>
+	<4975E612.9040708@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
+Subject: Re: [Xenomai-help] fpu issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,136 +21,131 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Xenomai-help@domain.hid" <xenomai@xenomai.org>
-
-------=_Part_29452_26900991.1232497696841
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Problem solved!
-
-It was apparently coming from some kernel debugging feature that I activated
-in my configuration. I haven't identified precisely which one since I unset
-a couple of them at the same time.
-
-Thanks Paul for your help and configuration file. It was really helpful.
-
---Bruno
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
 
-2009/1/20 Bruno Rouchouse <brouchouse@domain.hid>
+This is a multi-part message in MIME format.
 
-> Hi list,
->
-> I'm trying to get Xenomai to work on my Intel Core 2 Quad (x86_64) but I'm
-> facing a critical issue here and I'd like to know if someone has already
-> stumbled over a similar problem.
->
-> *Problem:
-> *I experience a kernel freeze or spurious reboot as soon as I get "I-pipe:
-> Domain Xenomai Registered". I usually get a few more messages after that
-> like "BUG: unable to handle kernel paging request at 0xfffffffffffffff"
-> before the kernel freezes but I don't think they are really relevant since
-> there are almost different every time!
->
-> *Configuration:
-> *cat /proc/cpuinfo while running Linux ubuntu 2.6.27-7-generic #1 SMP Tue
-> Nov 4 19:33:06 UTC 2008 x86_64 GNU/Linux
->
-> (first core only)
-> processor    : 0
-> vendor_id    : GenuineIntel
-> cpu family    : 6
-> model        : 23
-> model name    : Intel(R) Core(TM)2 Quad CPU    Q9400  @ 2.66GHz
-> stepping    : 10
-> cpu MHz        : 2003.000
-> cache size    : 3072 KB
-> physical id    : 0
-> siblings    : 4
-> core id        : 0
-> cpu cores    : 4
-> apicid        : 0
-> initial apicid    : 0
-> fpu        : yes
-> fpu_exception    : yes
-> cpuid level    : 13
-> wp        : yes
-> flags        : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca
-> cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx lm
-> constant_tsc arch_perfmon pebs bts rep_good nopl pni monitor ds_cpl vmx smx
-> est tm2 ssse3 cx16 xtpr sse4_1 lahf_lm
-> bogomips    : 5343.17
-> clflush size    : 64
-> cache_alignment    : 64
-> address sizes    : 36 bits physical, 48 bits virtual
-> power management:
->
-> Linux Kernel version: 2.6.27.11
-> Adeos patch: adeos-ipipe-2.6.27-x86-2.2-02.patch from svn
->
-> Kernel configuration file attached to this email.
->
-> *Things I have tried so far:
-> *Gilles pointed out to me this thread:
-> https://mail.gna.org/public/xenomai-help/2008-12/msg00088.html
-> I did try to apply the patch but without any success. I also tried to
-> change maxcpus on the bootline but it doesn't change anything either. In
-> fact, I don't think it is the same issue here since I seem to crash at the
-> very beginning of the boot process.
->
-> Of course disabling I-pipe support in the configuration works fine.
->
-> Try to get as few options as possible. Probably not finished but it didn't
-> help either so far!
->
-> Since the more I work on that, the least it's probably going to work :) I
-> need to step back a little bit. I would appreciate any hints or advice on
-> how to tackle that. Any configuration file on a same or similar
-> configuration is also very welcome. It may just be a stupid conflict in my
-> kernel features that may provoke this problem.
->
-> Thanks in advance...
->
-> Best regards,
->
-> --Bruno
->
+------_=_NextPart_001_01C97B60.CB8DED50
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-------=_Part_29452_26900991.1232497696841
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Hello everyone. I have the dumps here from the header file that Gilles
+was kind enough to provide to me.
 
-Problem solved!<br><br>It was apparently coming from some kernel debugging feature that I activated in my configuration. I haven&#39;t identified precisely which one since I unset a couple of them at the same time.<br><br>
-Thanks Paul for your help and configuration file. It was really helpful.<br><br>--Bruno<br><br><br><div class="gmail_quote">2009/1/20 Bruno Rouchouse <span dir="ltr">&lt;<a href="mailto:brouchouse@domain.hid">brouchouse@domain.hid</a>&gt;</span><br>
-<blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Hi list,<br><br>I&#39;m trying to get Xenomai to work on my Intel Core 2 Quad (x86_64) but I&#39;m facing a critical issue here and I&#39;d like to know if someone has already stumbled over a similar problem.<br>
-<br><b>Problem:<br>
+When the problem does not occur:
 
-</b>I experience a kernel freeze or spurious reboot as soon as I get &quot;I-pipe: Domain Xenomai Registered&quot;. I usually get a few more messages after that like &quot;BUG: unable to handle kernel paging request at 0xfffffffffffffff&quot; before the kernel freezes but I don&#39;t think they are really relevant since there are almost different every time!<br>
+sizeof(fpreg_t): 12
+cwd: 0000037f,  swd: 00000000
+fip: 08048c3e,  fcs: 01d00073
+foo: 0959961c,  fos: 0000007b
+FPU registers stack, top at 0:
+7: Empty
+6: Empty
+5: Empty
+4: Empty
+3: Empty
+2: Empty
+1: Empty
+0: Empty
+
+When the problem does occur:
+
+sizeof(fpreg_t): 12
+cwd: 0000037f,  swd: 00000000
+fip: 08048c3e,  fcs: 01d00073
+foo: 00000000,  fos: 00000000
+FPU registers stack, top at 0:
+7:  10.000000000
+6:  25.000000000
+5: 0
+4: 0
+3: 0
+2: 0
+1: 0
+0: - inf.
+
+What's interesting is that 10.0 and 25.0 are coming from my other task.
+I will attach my code as well. You can see that I'm dumping these values
+in func2, and it seems that the FPU is perhaps left in an undesirable
+state by func?
+
+This problem occurs on a geode GX1 and a geode LX800. I hate geodes.
+
+Steven
 
 
-<br><b>Configuration:<br></b>cat /proc/cpuinfo while running Linux ubuntu 2.6.27-7-generic #1 SMP Tue Nov 4 19:33:06 UTC 2008 x86_64 GNU/Linux<br><br>(first core only)<br>processor&nbsp;&nbsp;&nbsp; : 0<br>vendor_id&nbsp;&nbsp;&nbsp; : GenuineIntel<br>
 
-cpu family&nbsp;&nbsp;&nbsp; : 6<br>
-model&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; : 23<br>model name&nbsp;&nbsp;&nbsp; : Intel(R) Core(TM)2 Quad CPU&nbsp;&nbsp;&nbsp; Q9400&nbsp; @ 2.66GHz<br>stepping&nbsp;&nbsp;&nbsp; : 10<br>cpu MHz&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; : 2003.000<br>cache size&nbsp;&nbsp;&nbsp; : 3072 KB<br>physical id&nbsp;&nbsp;&nbsp; : 0<br>siblings&nbsp;&nbsp;&nbsp; : 4<br>core id&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; : 0<br>
+> -----Original Message-----
+> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+> Sent: Tuesday, January 20, 2009 7:56 AM
+> To: Steven Seeger
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai-help] fpu issue
+>=20
+> Steven Seeger wrote:
+> > I do not have fxsr support. I noticed that instruction being used
+and
+> > didn't find it in my datasheet. I guess my question is you want me
+to
+> > dump the fpu state before I initialize the volatile doubles.
+However,
+> I
+> > don't have a saved state at that point. What exactly do I pass in?
+Or
+> do
+> > you want me to save and then dump?
+>=20
+> Yes, save then dump.
+>=20
+> --
+>                                                  Gilles.
 
+------_=_NextPart_001_01C97B60.CB8DED50
+Content-Type: application/octet-stream;
+	name="double_test.cpp"
+Content-Transfer-Encoding: base64
+Content-Description: double_test.cpp
+Content-Disposition: attachment;
+	filename="double_test.cpp"
 
-cpu cores&nbsp;&nbsp;&nbsp; : 4<br>apicid&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; : 0<br>initial apicid&nbsp;&nbsp;&nbsp; : 0<br>fpu&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; : yes<br>fpu_exception&nbsp;&nbsp;&nbsp; : yes<br>cpuid level&nbsp;&nbsp;&nbsp; : 13<br>wp&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; : yes<br>flags&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx lm constant_tsc arch_perfmon pebs bts rep_good nopl pni monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr sse4_1 lahf_lm<br>
+I2luY2x1ZGUgPHN5cy9tbWFuLmg+CiNpbmNsdWRlIDxpb3N0cmVhbT4KI2luY2x1ZGUgPG5hdGl2
+ZS90YXNrLmg+CiNpbmNsdWRlICJpMzg3LmgiCgpzdGF0aWMgUlRfVEFTSyB0YXNrLHRhc2syOwoK
+dm9pZCBmdW5jKHZvaWQqKQp7CiAgICB2b2xhdGlsZSBkb3VibGUgbWluID0gMTAuMDsKICAgIHZv
+bGF0aWxlIGRvdWJsZSB2YWwgPSAyNS4wOwogICAgCiAgICBmb3IoOzspCiAgICB7CiAgICAgICAg
+aWYodmFsID4gbWluKSB7CiAgICAgICAgICAgIAogICAgICAgIH0KICAgICAgICBlbHNlIHN0ZDo6
+Y291dCA8PCAic2hvdWxkbid0IHNlZSB0aGlzICIgPDwgbWluIDw8ICcgJyA8PCB2YWwgPDwgc3Rk
+OjplbmRsOwogICAgICAgIAogICAgICAgIHJ0X3Rhc2tfc2xlZXAoMTAwMDAwKTsKICAgIH0KICAg
+IAp9CgovL3N0YXRpYyBjb25zdCBkb3VibGUgbWluID0gNS4wOwovL3N0YXRpYyBjb25zdCBkb3Vi
+bGUgdmFsID0gMjAuMDsKCnZvaWQgX2Z1bmMyKHZvaWQqKQp7CiAgICBmcGVudl90IGVudjsKICAg
+IAogICAgb2xkX3NhdmVfZnAoJmVudik7CiAgICBkdW1wX29sZF9mcCgmZW52KTsKICAgIGNvbnN0
+IGRvdWJsZSBtaW4gPSA1LjA7CiAgICBjb25zdCBkb3VibGUgdmFsID0gMjAuMDsKICAgIC8vY29u
+c3QgdW5zaWduZWQgbG9uZyBsb25nIG1pbiA9IDU7CiAgICAvL2NvbnN0IHVuc2lnbmVkIGxvbmcg
+bG9uZyB2YWwgPSAyMDsKICAgIAogICAgdW5zaWduZWQgY2hhciBnYXJiYWdlWzhdID0geyAwLCAw
+LCAwLCAwLCAwLCAwLCAtOCwgLTEgfTsKICAgIAogICAgLy9ydF90YXNrX3NsZWVwKDUwMDAwMDAw
+MCk7CgogICAgc3RkOjpjb3V0IDw8ICJjcmFwOiAiIDw8ICooZG91YmxlKilnYXJiYWdlIDw8IHN0
+ZDo6ZW5kbDsKICAgIHN0ZDo6Y291dCA8PCAic2hvdWxkIHNlZSB0aGlzICIgPDwgbWluIDw8ICcg
+JyA8PCB2YWwgPDwgJyAnIDw8ICh2b2lkKikmbWluIDw8ICcgJyA8PCAodm9pZCopJnZhbCA8PCBz
+dGQ6OmVuZGw7CiAgICBzdGQ6OmNvdXQgPDwgKGludCkoY2hhcikoKGNoYXIqKSZtaW4pWzBdIDw8
+ICIsICIgPDwgCiAgICAoaW50KShjaGFyKSgoY2hhciopJm1pbilbMV0gPDwgIiwgIiA8PCAKICAg
+IChpbnQpKGNoYXIpKChjaGFyKikmbWluKVsyXSA8PCAiLCAiIDw8IAogICAgKGludCkoY2hhciko
+KGNoYXIqKSZtaW4pWzNdIDw8ICIsICIgPDwgCiAgICAoaW50KShjaGFyKSgoY2hhciopJm1pbilb
+NF0gPDwgIiwgIiA8PCAKICAgIChpbnQpKGNoYXIpKChjaGFyKikmbWluKVs1XSA8PCAiLCAiIDw8
+IAogICAgKGludCkoY2hhcikoKGNoYXIqKSZtaW4pWzZdIDw8ICIsICIgPDwgCiAgICAoaW50KShj
+aGFyKSgoY2hhciopJm1pbilbN10gPDwgIiwgIiA8PCAgc3RkOjplbmRsOwogICAgCiAgICBmb3Io
+OzspCiAgICB7CiAgICAgICAgaWYodmFsID4gbWluKSB7CiAgICAgICAgICAgIAogICAgICAgIH0K
+ICAgICAgICBlbHNlIHsKICAgICAgICAgICAgc3RkOjpjb3V0IDw8ICJzaG91bGRuJ3Qgc2VlIHRo
+aXMgIiA8PCBtaW4gPDwgJyAnIDw8IHZhbCA8PCAnICcgPDwgKHZvaWQqKSZtaW4gPDwgJyAnIDw8
+ICh2b2lkKikmdmFsICA8PCBzdGQ6OmVuZGw7CiAgICAgICAgfQogICAgICAgIAogICAgICAgIHJ0
+X3Rhc2tfc2xlZXAoMTAwMDAwKTsKICAgIH0KfQoKdm9pZCBmdW5jMih2b2lkKikKewogICAgLy92
+b2xhdGlsZSBkb3VibGUgZCA9IDEyMy4wOwogICAgLy9kICs9IDUuMDsKICAgIAogICAgX2Z1bmMy
+KE5VTEwpOwp9CgppbnQgbWFpbigpCnsKICAgIG1sb2NrYWxsKE1DTF9DVVJSRU5UIHwgTUNMX0ZV
+VFVSRSk7CiAgICAKICAgIHJ0X3Rhc2tfc3Bhd24oJnRhc2ssICJkdW1teSIsIDAsIDYwLCBUX0ZQ
+VSwgZnVuYywgTlVMTCk7CiAgICBydF90YXNrX3NwYXduKCZ0YXNrMiwgImR1bW15MiIsIDAsIDUw
+LCBUX0ZQVSwgZnVuYzIsIE5VTEwpOwogICAgCiAgICB1c2xlZXAoNTAwMDAwKTsKICAgIAogICAg
+cmV0dXJuIDA7Cn0K
 
-
-bogomips&nbsp;&nbsp;&nbsp; : 5343.17<br>clflush size&nbsp;&nbsp;&nbsp; : 64<br>cache_alignment&nbsp;&nbsp;&nbsp; : 64<br>address sizes&nbsp;&nbsp;&nbsp; : 36 bits physical, 48 bits virtual<br>power management:<br><br>Linux Kernel version: 2.6.27.11<br>Adeos patch: adeos-ipipe-2.6.27-x86-2.2-02.patch from svn<br>
-
-
-<br>Kernel configuration file attached to this email.<br><br><b>Things I have tried so far:<br></b>Gilles pointed out to me this thread: <a href="https://mail.gna.org/public/xenomai-help/2008-12/msg00088.html" target="_blank">https://mail.gna.org/public/xenomai-help/2008-12/msg00088.html</a><br>
-
-I did try to apply the patch but without any success. I also tried to change maxcpus on the bootline but it doesn&#39;t change anything either. In fact, I don&#39;t think it is the same issue here since I seem to crash at the very beginning of the boot process.<br>
-
-<br>Of course disabling I-pipe support in the configuration works fine.<br><br>Try to get as few options as possible. Probably not finished but it didn&#39;t help either so far!<br><br>Since the more I work on that, the least it&#39;s probably going to work :) I need to step back a little bit. I would appreciate any hints or advice on how to tackle that. Any configuration file on a same or similar configuration is also very welcome. It may just be a stupid conflict in my kernel features that may provoke this problem.<br>
-
-<br>Thanks in advance...<br><br>Best regards,<br><font color="#888888"><br>--Bruno<br>
-</font></blockquote></div><br>
-
-------=_Part_29452_26900991.1232497696841--
+------_=_NextPart_001_01C97B60.CB8DED50--
 
