@@ -1,35 +1,14 @@
-Content-class: urn:content-classes:message
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
 Content-Type: text/plain;
-	charset="us-ascii"
+	charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Date: Wed, 21 Jan 2009 14:57:46 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D5907E9@domain.hid>
-In-Reply-To: <497799F2.8070605@domain.hid>
-References: <51CAD0CE1504444DBE77CBBE51A0135D533F9A@slcmail.slc.mew.int>
-	<49757B25.8020500@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D533FB0@domain.hid>
-	<4975E491.1040506@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D533FB6@domain.hid>
-	<4975E612.9040708@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D534028@domain.hid>
-	<4976EABD.3060505@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D534053@domain.hid>
-	<497751E3.3020301@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D53405D@slcmail.slc.mew.int>
-	<49775759.2090505@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D534064@domain.hid>
-	<49776313.2090403@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D53407D@slcmail.slc.mew.int>
-	<49777C1F.4040805@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D53408C@slcmail.slc.mew.int>
-	<49779002.5080704@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D534095@domain.hid>
-	<49779319.5040500@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D5907E5@domain.hid> <4977
-	99F2.8070605@domain.hid>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: Re: [Xenomai-help] fpu issue
+Date: Thu, 22 Jan 2009 12:06:01 +0100
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A01776C87@domain.hid>
+In-Reply-To: <49771D9E.4080204@domain.hid>
+From: <roderik.wildenburg@domain.hid>
+Subject: Re: [Xenomai-help] How to use Xenomai libraries with "normal" (non
+	Xenomai) linux processes ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -39,30 +18,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: gilles.chanteperdrix@xenomai.org
 Cc: xenomai@xenomai.org
 
-It is being called a lot. Running my test with the break in both loops
-yields approximately 60 calls to it. Half of those are called even
-before i387.c's init_fpu().
+Sorry for the delayed answer, but I am fighting with an other Xenomai =
+problem too (PPC switchtest FPU problem, you probably heard about it).
 
-Steven
+> > I don=B4t understand this. Isn=B4t this a contradiction to your=20
+> answer in
+> > 2.) ? I thought sched_setscheduler does not work for Xenomai tasks
+> > and in our testcase we could see that scheduling policy isn=B4t set =
+as
+> > expected (to SCHED_FIFO).
+>=20
+> Currently the posix skin library does, in init.c:
+>        parm.sched_priority =3D 0;
+>         err =3D __wrap_pthread_setschedparam(pthread_self(),=20
+> SCHED_OTHER,
+>                                            &parm);
+>=20
+> We could replace this with:
+> 	err =3D pthread_getschedparam(pthread_self(), &policy, &parm);
+> 	if (err)
+> 		...
+> 	err =3D __wrap_pthread_setschedparam(pthread_self(),
+> 					   policy, &parm);
+>=20
+> But sched_setscheduler could be called after that, so this is racy.
 
-> -----Original Message-----
-> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
-> Sent: Wednesday, January 21, 2009 2:56 PM
-> To: Steven Seeger
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] fpu issue
+Please correct me if I am wrong:
+In your replacement pthread_getschedparam would read scheduling =
+parameters which should have been set with sched_setscheduler before(!) =
+your replacement gets active. Is this possible at all ? Wouldn=B4t I =
+have to call sched_setscheduler (in "sysup") before I fork? And if =
+calling after the fork it realy would be racy. So this isn=B4t a very =
+feasible solution, isn=B4t it? Changing the scheduling paramters of a =
+running Xenoami task probably isn=B4t possible (probably there is =
+nothing to recognize the change ?)?
+
+> >=20
+> > So how can I force secondary mode ?
 >=20
-> Steven Seeger wrote:
-> > Yes, kernel_fpu_begin() is being called.
->=20
-> If kernel_fpu_begin() is called during the run-time (and not only at
-> initialization time when benchmarking RAID functions), then it is
-> probably the source of the problem. This situation was not well
-tested.
->=20
-> --
-> 					    Gilles.
+> The point is that if you force it to secondary mode, and the=20
+> next system
+> call is in fact a xenomai syscall, xenomai will switch the thread to
+> primary mode again. So, you have two useless mode switches which you
+> could have avoided if you had not forcibly switched to secondary mode.
+
+In our case this wouldn=B4t be very likely and even if there would be 2 =
+useless mode switches, I could accept this as it would happen "only" in =
+a Linux (not realtime) process (I would force back to secondary mode =
+only if I knew it is a Linux, not Xenomai process).
+
+> Note that even if a xenomai thread is running in secondary=20
+> mode and has
+> a priority higher than another xenomai thread running in primary mode,
+> the one running in secondary mode will run. So, you should not use
+> primary mode and secondary mode to decide which thread should run, you
+> should use the priorities.
+
+This is realy astonishing! I didn=B4t knew that and even now I can=B4t =
+believe it.
+I allways thought that secondary mode means: scheduled by Linux and =
+Linux is the lowest priority task in Xenomai. So, as soon as a task is =
+in secondary mode every(!) Xenomai primary mode task would be scheduled =
+in front of a secondary mode task, I thought.
+So, if your statement is right, I can=B4t see the difference between =
+primary and secondary mode any more as a higher prioritized task =
+obviously allways(!?) runs in front of a lower prioritized one =
+independend whether it runs in primary or secondary mode? Is there some =
+documenation I could read for better understanding ?
+Is this behaviour connected to the Xenomai "priority coupling" option?
+
+Best regards=20
+Roderik
+
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
