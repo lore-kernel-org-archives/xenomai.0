@@ -1,5 +1,5 @@
-Message-ID: <49789ECA.4010905@domain.hid>
-Date: Thu, 22 Jan 2009 16:28:58 +0000
+Message-ID: <49789F74.60502@domain.hid>
+Date: Thu, 22 Jan 2009 16:31:48 +0000
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1232641398.13734.110.camel@domain.hid>
@@ -41,18 +41,9 @@ Greg Bentley wrote:
 >         --enable-arm-mach=at91sam926x \
 >         --enable-arm-eabi \
 >         --enable-arm-tsc
-> make DESTDIR=/projects/som9260/xenomai/_install install
-> 
-> These options worked correctly with Xenomai 2.4.3 and I did not see any
-> changes from the current configure help or from README.INSTALL. If
-> someone could point out what I am doing wrong here, I would appreciate
-> the assistance.
 
-I already had this bug, and it turned out to be a toolchain bug.
-PTHREAD_STACK_MIN was defined in /usr/local/arm-linux/include/limits.h,
-whereas the toolchain found the limits.h from its system includes before
-this header. The cure was to add a -I/usr/local/arm-linux/include to the
-CPPFLAGS.
+Note that if you pass --host=arm-linux-gnueabi to configure, configure
+guesses the correct values for CC, CXX, AR and LD.
 
 -- 
                                                  Gilles.
