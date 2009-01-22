@@ -1,5 +1,5 @@
-Message-ID: <49787147.9060201@domain.hid>
-Date: Thu, 22 Jan 2009 13:14:47 +0000
+Message-ID: <497877B4.6060000@domain.hid>
+Date: Thu, 22 Jan 2009 13:42:12 +0000
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <5D63919D95F87E4D9D34FF7748CE2C2A01776C87@domain.hid>
@@ -52,48 +52,44 @@ roderik.wildenburg@domain.hid wrote:
 > Xenoami task probably isn=B4t possible (probably there is nothing to
 > recognize the change ?)?
 
-You are just repeating what I said. So, I have not much more to say.
+You can also call sched_setscheduler after fork but before exec. In case
+you want to do that, here is the (untested) patch, to let the xenomai
+posix skin use this priority.
 
->=20
->>> So how can I force secondary mode ?
->> The point is that if you force it to secondary mode, and the next
->> system call is in fact a xenomai syscall, xenomai will switch the
->> thread to primary mode again. So, you have two useless mode
->> switches which you could have avoided if you had not forcibly
->> switched to secondary mode.
->=20
-> In our case this wouldn=B4t be very likely and even if there would be 2=
+Index: src/skins/posix/init.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- src/skins/posix/init.c	(revision 4572)
++++ src/skins/posix/init.c	(working copy)
+@@ -48,7 +48,7 @@ static __attribute__ ((constructor))
+ void __init_posix_interface(void)
+ {
+ 	struct sched_param parm;
+-	int muxid, err;
++	int muxid, err, policy;
 
-> useless mode switches, I could accept this as it would happen "only"
-> in a Linux (not realtime) process (I would force back to secondary
-> mode only if I knew it is a Linux, not Xenomai process).
->=20
->> Note that even if a xenomai thread is running in secondary mode and
->> has a priority higher than another xenomai thread running in
->> primary mode, the one running in secondary mode will run. So, you
->> should not use primary mode and secondary mode to decide which
->> thread should run, you should use the priorities.
->=20
-> This is realy astonishing! I didn=B4t knew that and even now I can=B4t
-> believe it. I allways thought that secondary mode means: scheduled by
-> Linux and Linux is the lowest priority task in Xenomai. So, as soon
-> as a task is in secondary mode every(!) Xenomai primary mode task
-> would be scheduled in front of a secondary mode task, I thought. So,
-> if your statement is right, I can=B4t see the difference between
-> primary and secondary mode any more as a higher prioritized task
-> obviously allways(!?) runs in front of a lower prioritized one
-> independend whether it runs in primary or secondary mode? Is there
-> some documenation I could read for better understanding ? Is this
-> behaviour connected to the Xenomai "priority coupling" option?
+ 	muxid =3D
+ 	    xeno_bind_skin(PSE51_SKIN_MAGIC, "POSIX", "xeno_posix");
+@@ -74,9 +74,14 @@ void __init_posix_interface(void)
+ 		exit(EXIT_FAILURE);
+ 	}
 
-Yes, it is what priority coupling means. But it really is the most sane
-behaviour: you choose a priority and both Linux and Xenomai schedulers
-cooperate to enfore this priority.
-The real difference between a task running in secondary mode and a task
-running in primary mode, is that a task running in secondary mode may be
-interrupted/preempted by a Linux event. So, running in primary mode is
-not a problem in itself as you seem to think. Provided that the priority
-are well chosen, it will not prevent other task from running.
+-	parm.sched_priority =3D 0;
+-	err =3D __wrap_pthread_setschedparam(pthread_self(), SCHED_OTHER,
+-					   &parm);
++	err =3D __real_pthread_getschedparam(pthread_self(), &policy, &parm);
++	if (err) {
++		fprintf(stderr, "Xenomai Posix skin init: "
++			"pthread_getschedparam: %s\n", strerror(err));
++		exit(EXIT_FAILURE);
++	}
++
++	err =3D __wrap_pthread_setschedparam(pthread_self(), policy, &parm);
+ 	if (err) {
+ 		fprintf(stderr, "Xenomai Posix skin init: "
+ 			"pthread_setschedparam: %s\n", strerror(err));
+
 
 --=20
                                                  Gilles.
