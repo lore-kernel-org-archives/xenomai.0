@@ -1,13 +1,14 @@
-Message-ID: <49798994.1010903@domain.hid>
-Date: Fri, 23 Jan 2009 10:10:44 +0100
-From: Federico Ridolfo <federico.ridolfo@domain.hid>
+Message-ID: <4979920B.7050104@domain.hid>
+Date: Fri, 23 Jan 2009 10:46:51 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4979727E.6060304@domain.hid> <49798544.4050808@domain.hid>
-In-Reply-To: <49798544.4050808@domain.hid>
-Content-Type: text/plain; charset=windows-1251
+References: <8e2adebc0812311008j76d745f9r539a1b9108f8903d@domain.hid>	<495BB5AE.1010805@domain.hid>	<8e2adebc0901221104y18d09bb5l3d5645f77e4f42ed@domain.hid>	<4978C5A1.4080302@domain.hid>	<8e2adebc0901221408q3bd65bfeu29b7cfe8ce3bb05e@domain.hid>	<4978EEDC.6040307@domain.hid>
+	<8e2adebc0901221506y31e9930aq51e3b26fe4ce4e15@domain.hid>
+In-Reply-To: <8e2adebc0901221506y31e9930aq51e3b26fe4ce4e15@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] PowerPC irq unmask
-Reply-To: federico.ridolfo@domain.hid
+Subject: Re: [Xenomai-help] ARM I-pipe port to OMAP osk board
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,104 +18,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Mandar Thite <mandarthite@domain.hid>
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> Federico Ridolfo wrote:
->   
->> Hi all,
->> my platform is a mpc5200b based one. I wrote
->> some rtdm driver for that platform on linux-2.6.18
->> kernel. Some info:
->> - ARCH=ppc
->> - no fdt (so no dts)
->> - u-boot
->> - xenomai 2.3.2,
->> - adeos-ipipe-2.6.18-ppc-1.5-01.patch
->> All works fine.
->>
->> Now i want to use:
->> - ARCH = powerpc
->> - linux kernel from denx: ipipe-2.6-26-powerpc-2.4-03
->> - fdt (so i have a dts file)
->> - xenomai-2.4.6.1
->> - u-boot
->> Ok. My board boots, all peripheral s work. Xenomai works, but
->> my rtdm drivers don't work. The problem is that the rtdm_irq_request
->> returns -ENODEV coming from line 166 in wrappers.h:
->> ...
->> #else /* > 2.6.19 */
->> #define rthal_irq_chip_enable(irq)                    \
->>     ({                                \
->>         int __err__ = 0;                    \
->>         if (unlikely(rthal_irq_handlerp(irq)->unmask == NULL))    \
->>             __err__ = -ENODEV;     \
->>         else                            \
->>             rthal_irq_handlerp(irq)->unmask(irq);        \
->>         __err__;                        \
->>     })
->> ...
->> Seems that adeos doesn't not set the unmask function. In the linux kernel
->> the right functions for my pic in in
->>     
+Mandar Thite wrote:
+> Hi Gilles,
+> 
+> I have a problem in following paragraph...
+> 
+> /**********
+> a function is expected to update the tsc area from time to time (at
+> least once before the underlying counter reaches the same value again,
+> in order to avoid losing some wrap arounds). If the free-running counter
+> wraps fast, the best place to do this is __ipipe_mach_acktimer. If the
+> free-running counter wraps slowly, doing this from Linux timer interrupt
+> will reduce the timer interrupt latency.
+> **********/
+> 
+> How do I decide if, for my platform, "free-running counter" wraps fast
+> or slow? Or iow, what does it depend upon?
 >
-> Adeos reuses what Linux provides. In this case, an unmask routine is provided
-> for all the SDMA, external, peripheral and main interrupt sources.
->
-> Which IRQ are you trying to grab? What does you code look like?
-I wrote 2 rtdm drivers. The first one tries to grab  MPC52xx_GPIO_IRQ (= 12)
-in order to use USB1_9 of MPC5200B has an interrupt pin.
-The second driver is a RTDM SPI driver for PSC3 (full spi mode)
-and PSC6, so i'm trying to grap MPC52xx_PSC3_IRQ (= 42) and 
-MPC52xx_PSC6_IRQ (= 43).
 
->   
->> arch/powerpc/platforms/52xx/mpc52xx_pic.c
->> I thing i have to add some code in mpc52xx_pic.c in order to match
->> device tree table
->> and also something in my dts file.
->>     
->
-> Don't do that. It would be wrong.
->   
-mmm... some .config mistake? I don't known...
->  Any help is very usefull!!!
->   
->> Thanks
->>
->>
->> --
->> chicco
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->>
->>     
->
->
->   
+If you need someone to explain what a free running counter is, or why a
+timer-related counter may wrap fast or slow, then I'm afraid there is no way you
+could achieve your port before hell freezes. Make everyone a favor, do your
+homework first, please.
 
+Besides, the least you could do is attaching your code since you want people to
+help with it. A good practice is to send the current state of your work as a
+patch with your initial question so that people understand where you are at this
+point, then update the list with improved releases of this work from time to
+time, as progress is made. This would clear a rather irritating feeling we have
+that you are offloading your work to the list.
 
---
-Dott. Ing. Federico Ridolfo
-COL Giovanni Paolo S.P.A.
-Stabilimento Catania
-Via Luigi Pirandello,Contrada Cugno, 95040 Piano Tavola, BELPASSO (CT)
-tel. +39 095 7133088
-e-mail: federico.ridolfo@domain.hid
+> On Fri, Jan 23, 2009 at 3:40 AM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org
+> <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
+> 
+>     Mandar Thite wrote:
+>     > Hi again,
+>     > Platform specific code for "clock_event_device" timer
+>     initialization in
+>     > "arch/arm/mach-omap1/time.c" is starting the timer in "autoreload
+>     mode" as
+>     > per "HZ" value. Is this ok for functioning of I-pipe or needs a
+>     > modification(i mean should it be started in "one shot mode")?
+>     > Thanks. ---Mandar
+> 
+>     Xenomai requires one shot mode.
+> 
+>     --
+>                                                Gilles.
+> 
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+
 
 -- 
-AVVERTENZE AI SENSI DEL D.LGS. 196/2003
-
-Le informazioni contenute in questo messaggio di posta elettronica e negli eventuali files allegati, sono da considerarsi strettamente riservate. Il loro utilizzo e` consentito esclusivamente al destinatario del messaggio, per le finalita` indicate nel messaggio stesso. Qualora riceveste per errore questo messaggio, Vi preghiamo cortesemente di darcene notizia all'indirizzo e-mail di cui sopra e di procedere alla distruzione del messaggio stesso, cancellandolo dal Vostro sistema; costituisce comportamento contrario ai principi dettati dal D.lgs. 196/2003 il trattenere il messaggio stesso, divulgarlo anche in parte, distribuirlo ad altri soggetti, copiarlo, od utilizzarlo per finalita` diverse.
-Ogni dato previsto e trattato dal D.lgs. 196/2003, eventualmente presente nell'e-mail e` trattato nel rispetto della legge.
-
-This e-mail is confidential and may also contain privileged information. If you are not the intended recipient you are not authorised to read, print, save, process or disclose this message.
-If you have received this message by mistake, please inform the sender immediately and delete this e-mail, its attachments and any copies.
-Any use, distribution, reproduction or disclosure by any person other than the intended recipient is strictly forbidden and the person responsible may incur penalties (D.lgs. 196/2003 Italian law).
-Every information treated by D.lgs. 196/2003 Italian law, eventually present in this e-mail are treated in the respect of the law. 
-
+Philippe.
 
