@@ -1,16 +1,14 @@
-Message-ID: <8b216e9e0901130904y2384e9ecge11ef7206123549a@domain.hid>
-Date: Tue, 13 Jan 2009 15:04:42 -0200
-From: "=?ISO-8859-1?Q?Felipe_Brand=E3o_Cavalcanti?=" <cavalkaf@domain.hid>
-In-Reply-To: <8b216e9e0901130903h494d26c6vc3861fe35fb4efa4@domain.hid>
+Message-ID: <49799256.6000009@domain.hid>
+Date: Fri, 23 Jan 2009 10:48:06 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_210965_33098088.1231866282799"
-References: <20090112110445.gupikke2o4o40kko@domain.hid>
-	<496B1807.8090600@domain.hid>
-	<8b216e9e0901130417q6a6ffa28la6fac3a2a22c046f@domain.hid>
-	<496CA82A.7090703@domain.hid>
-	<8b216e9e0901130903h494d26c6vc3861fe35fb4efa4@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai on Gumstix
+References: <4979727E.6060304@domain.hid> <49798544.4050808@domain.hid>
+	<49798994.1010903@domain.hid>
+In-Reply-To: <49798994.1010903@domain.hid>
+Content-Type: text/plain; charset=windows-1251
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] PowerPC irq unmask
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,66 +18,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: federico.ridolfo@domain.hid
+Cc: xenomai@xenomai.org
 
-------=_Part_210965_33098088.1231866282799
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-The Gumstix has a separate 1 Mb partition for the kernel - it has something
-to do with the bootloader and how it handles the kernel. I don't think
-anyone has bothered to make a custom version with a different partition
-scheme.
-
-On Tue, Jan 13, 2009 at 12:41 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
-
-> Felipe Brand=E3o Cavalcanti wrote:
-> > (...)
-> > witch you might not really need - the kernel needs to be less than 1 Mb=
-),
-> I
-> > (...)
+Federico Ridolfo wrote:
+> Philippe Gerum wrote:
+>> Federico Ridolfo wrote:
+>>   
+>>> Hi all,
+>>> my platform is a mpc5200b based one. I wrote
+>>> some rtdm driver for that platform on linux-2.6.18
+>>> kernel. Some info:
+>>> - ARCH=ppc
+>>> - no fdt (so no dts)
+>>> - u-boot
+>>> - xenomai 2.3.2,
+>>> - adeos-ipipe-2.6.18-ppc-1.5-01.patch
+>>> All works fine.
+>>>
+>>> Now i want to use:
+>>> - ARCH = powerpc
+>>> - linux kernel from denx: ipipe-2.6-26-powerpc-2.4-03
+>>> - fdt (so i have a dts file)
+>>> - xenomai-2.4.6.1
+>>> - u-boot
+>>> Ok. My board boots, all peripheral s work. Xenomai works, but
+>>> my rtdm drivers don't work. The problem is that the rtdm_irq_request
+>>> returns -ENODEV coming from line 166 in wrappers.h:
+>>> ...
+>>> #else /* > 2.6.19 */
+>>> #define rthal_irq_chip_enable(irq)                    \
+>>>     ({                                \
+>>>         int __err__ = 0;                    \
+>>>         if (unlikely(rthal_irq_handlerp(irq)->unmask == NULL))    \
+>>>             __err__ = -ENODEV;     \
+>>>         else                            \
+>>>             rthal_irq_handlerp(irq)->unmask(irq);        \
+>>>         __err__;                        \
+>>>     })
+>>> ...
+>>> Seems that adeos doesn't not set the unmask function. In the linux kernel
+>>> the right functions for my pic in in
+>>>     
+>> Adeos reuses what Linux provides. In this case, an unmask routine is provided
+>> for all the SDMA, external, peripheral and main interrupt sources.
+>>
+>> Which IRQ are you trying to grab? What does you code look like?
+> I wrote 2 rtdm drivers. The first one tries to grab  MPC52xx_GPIO_IRQ (= 12)
+> in order to use USB1_9 of MPC5200B has an interrupt pin.
+> The second driver is a RTDM SPI driver for PSC3 (full spi mode)
+> and PSC6, so i'm trying to grap MPC52xx_PSC3_IRQ (= 42) and 
+> MPC52xx_PSC6_IRQ (= 43).
 >
-> What is the point of imposing such a limit? The kernel itself has no
-> such limit.
->
+
+Ok, what does /proc/interrupts say?
+
+>>   
+>>> arch/powerpc/platforms/52xx/mpc52xx_pic.c
+>>> I thing i have to add some code in mpc52xx_pic.c in order to match
+>>> device tree table
+>>> and also something in my dts file.
+>>>     
+>> Don't do that. It would be wrong.
+>>   
+> mmm... some .config mistake? I don't known...
+>>  Any help is very usefull!!!
+>>   
+>>> Thanks
+>>>
+>>>
+>>> --
+>>> chicco
+>>>
+>>> _______________________________________________
+>>> Xenomai-help mailing list
+>>> Xenomai-help@domain.hid
+>>> https://mail.gna.org/listinfo/xenomai-help
+>>>
+>>>     
+>>
+>>   
+> 
+> 
 > --
->                                                  Gilles.
->
->
+> Dott. Ing. Federico Ridolfo
+> COL Giovanni Paolo S.P.A.
+> Stabilimento Catania
+> Via Luigi Pirandello,Contrada Cugno, 95040 Piano Tavola, BELPASSO (CT)
+> tel. +39 095 7133088
+> e-mail: federico.ridolfo@domain.hid
+> 
 
-------=_Part_210965_33098088.1231866282799
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-The Gumstix has a separate 1 Mb partition for the kernel - it has something=
- to do with the bootloader and how it handles the kernel. I don&#39;t think=
- anyone has bothered to make a custom version with a different partition sc=
-heme.<div class=3D"gmail_quote">
-<div><div></div><div class=3D"Wj3C7c"><br><div class=3D"gmail_quote">On Tue=
-, Jan 13, 2009 at 12:41 PM, Gilles Chanteperdrix <span dir=3D"ltr">&lt;<a h=
-ref=3D"mailto:gilles.chanteperdrix@xenomai.org" target=3D"_blank">gilles.ch=
-anteperdrix@domain.hid</a>&gt;</span> wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
-204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-Felipe Brand=E3o Cavalcanti wrote:<br>
-&gt; (...)<br>
-<div>&gt; witch you might not really need - the kernel needs to be less tha=
-n 1 Mb), I<br>
-</div>&gt; (...)<br>
-<br>
-What is the point of imposing such a limit? The kernel itself has no<br>
-such limit.<br>
-<br>
---<br>
-<font color=3D"#888888"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &=
-nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;=
- &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Gilles.<br>
-<br>
-</font></blockquote></div></div></div></div><br>
-
-------=_Part_210965_33098088.1231866282799--
+-- 
+Philippe.
 
