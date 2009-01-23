@@ -1,59 +1,55 @@
-Message-ID: <499AFA8D.3080302@domain.hid>
-Date: Tue, 17 Feb 2009 18:57:33 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <20090217170418.1425.56126.stgit@domain.hid>
-	<20090217170419.1425.15313.stgit@domain.hid>
-	<499AF09F.8040402@domain.hid> <499AF3C9.2040502@domain.hid>
-	<499AF5DC.6010602@domain.hid> <499AF82A.20406@domain.hid>
-	<499AF8E7.5000304@domain.hid>
-In-Reply-To: <499AF8E7.5000304@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH v2 1/4] POSIX: Fix SCHED_RR thread
-	creation
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 23 Jan 2009 12:43:15 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D5908A4@domain.hid>
+In-Reply-To: <497A1963.8030902@domain.hid>
+References: <51CAD0CE1504444DBE77CBBE51A0135D5908A3@domain.hid>
+	<497A1963.8030902@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
+Subject: Re: [Xenomai-help] shadow task and rt_task_self()
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> Jan Kiszka wrote:
->>>>>> @@ -192,6 +192,9 @@ static void *__pthread_trampoline(void *arg)
->>>>>>  
->>>>>>  	param.sched_priority = iargs->prio;
->>>>>>  	policy = iargs->policy;
->>>>>> +	if (policy == SCHED_RR)
->>>>>> +		/* Restrict round-robin scheduling to the Xenomai domain. */
->>>>>> +		policy = SCHED_FIFO;
->>>>> Should not there be the same thing in __wrap_pthread_setschedparam ?
->>>> Yes, and setschedparam_ex, here we go:
->>> Actually, I am wondering if we can not get rid of these calls to
->>> __real_pthread_setschedparam, now that propagating kernel-space priority
->>> to user-space is done by a signal ?
->> Not with the existing code, as that only forwards prio changes, but no
->> policy changes.
-> 
-> If we map SCHED_RR to SCHED_FIFO, are there any policy changes?
+Gilles, the problem is very simple. The initial task has self->opaque
+set to XN_NO_HANDLE. After you shadow that task, rt_task_self() still
+returns NULL.
 
-Yes, the initial one. Keep in mind that not all pthread implementations
-may respect the pthread_attr or have problems assigning SCHED_FIFO to
-threads of non-root users.
+This is either an oversight or you aren't supposed to shadow the initial
+task?
 
-Jan
+Thanks,
+Steven
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+
+> -----Original Message-----
+> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+> Sent: Friday, January 23, 2009 12:24 PM
+> To: Steven Seeger
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai-help] shadow task and rt_task_self()
+>=20
+> Steven Seeger wrote:
+> > Using the latest xenomai we seem to always get back NULL from a
+> shadow
+> > task using rt_task_self(). We used to get something valid with
+r3415.
+> > Any idea?
+>=20
+> Please send us a little test program that we can run to observe the
+> issue. And tell us which branch has the problem trunk or v2.4.x?
+>=20
+> --
+> 					    Gilles.
 
