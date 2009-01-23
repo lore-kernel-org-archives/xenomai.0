@@ -1,13 +1,16 @@
-Message-ID: <49808334.7040701@domain.hid>
-Date: Wed, 28 Jan 2009 17:09:24 +0100
-From: Sebastian Smolorz <smolorz@domain.hid>
+Message-ID: <497A2344.8060605@domain.hid>
+Date: Fri, 23 Jan 2009 21:06:28 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <8E970E0F84BD44C9B4C41942F86F2F34@domain.hid>
-In-Reply-To: <8E970E0F84BD44C9B4C41942F86F2F34@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <51CAD0CE1504444DBE77CBBE51A0135D5908A3@domain.hid>
+	<497A1963.8030902@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D5908A4@domain.hid>
+	<497A1E95.4080805@domain.hid>
+	<51CAD0CE1504444DBE77CBBE51A0135D5908A5@domain.hid>
+In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D5908A5@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] TR: Kernel panic with (Kernel-2.6.27/Xenomai
-	-2.4.6)
+Subject: Re: [Xenomai-help] shadow task and rt_task_self()
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,18 +20,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sebastien DI MERCURIO <sebastien.di-mercurio@domain.hid>
+To: Steven Seeger <sseeger@domain.hid>
 Cc: xenomai@xenomai.org
 
-Sebastien DI MERCURIO schrieb:
-> I have compiled and installed linux kernel 2.6.27 in a fedora distro running
-> in Virtualbox. Everything worked fine.
-> After that, I patched the kernel using xenomai-2.4.6 script
-> "prepare-kernel.sh". So, the adeos patch used was
-> adeos-ipie-2.6.27-x86-2.1-01.patch. No problem.
+Steven Seeger wrote:
+> Gilles,
+> 
+> Attached is my simple test that repeats this problem.
+> 
+> Output is:
+> 
+> 0
+> 0 0
+> 
+> This is using latest xenomai trunk.
+> 
 
-Try Xenomai-2.4.6.1. This problem was fixed there.
+Ok. Try this:
+
+Index: src/skins/native/task.c
+===================================================================
+--- src/skins/native/task.c	(revision 4570)
++++ src/skins/native/task.c	(working copy)
+@@ -210,8 +210,12 @@ int rt_task_shadow(RT_TASK *task, const
+ 	err = XENOMAI_SKINCALL2(__native_muxid, __native_task_create, &bulk,
+ 				NULL);
+
+-	if (!err)
++	if (!err) {
++#ifdef HAVE___THREAD
++		__native_self = *task;
++#endif /* HAVE___THREAD */
+ 		xeno_set_current();
++	}
+
+ 	return err;
+ }
+
 
 -- 
-Sebastian
+					    Gilles.
 
