@@ -1,69 +1,70 @@
-Message-ID: <499A830C.3070803@domain.hid>
-Date: Tue, 17 Feb 2009 10:27:40 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <9c789a000902160455k7dcae1d2tc151b12df6140ec0@domain.hid>
-	<200902170000.00900.berlemont.hauw@domain.hid>
-In-Reply-To: <200902170000.00900.berlemont.hauw@domain.hid>
+Date: Mon, 26 Jan 2009 09:12:42 +0530
+Message-ID: <8e2adebc0901251942q75a08473m6121fcd2d296f598@domain.hid>
+From: Mandar Thite <mandarthite@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Comedi drivers in Xenomai porting/integration
-	status ?
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: [Xenomai-help] NULL ptr dereference: porting I-pipe to ARM
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Alexis Berlemont <berlemont.hauw@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: adeos-main@gna.org, xenomai@xenomai.org
 
-Alexis Berlemont wrote:
-> Hi,
-> 
->> Hello all! I would like to know what is the current status of the Comedi
->> port to Xenomai.
->>
->> Should all the specific Comedi drivers (ni_pcimio, ni_mite) be available
->> for testing (by me or someone with a supported DAQ card) and (if ok) for
->> futher integration ?
-> 
-> I am still working on that port. It is a long work and I am wondering at each 
-> line whether I should rewrite any part of code which does not comply with 
-> common coding constraints. Unfortunately, I currently do not have a lot of 
-> spare time. Anyway, most of the ni subdevices drivers have been ported (mite, 
-> tio, mio, 8255). I am trying to finalize the global driver port.
-> 
-> By the way, in the middle of january, I noticed that the legacy Comedi branch 
-> found its way into the mainline (through the staging tree). I do not know 
-> what will be the future of such a package in mainstream. I assume the main 
-> goal is the definition of a global framework for acquisition boards like V4L2 
-> is for video cards. 
-> 
-> Starting from here, I have been thinking on some alternatives so as to benefit 
-> from the kernel code. But I am a bit perplexed as the code does not seem to 
-> evolve a lot (the 2.6.29-rc5 patch still contains some rtlinux/rtai/fusion 
-> related code). I was unable to notice any significant work on the framework 
-> to reach main kernel standards.
-> 
-> Since the beginning of January, there was only one mail thread which dealt 
-> with Comedi on the lkml (which is, by the way, interesting): 
-> http://lkml.org/lkml/2009/2/9/335
+Hello everyone,
 
-The staging tree does not start an automatic merging process. Unless the
-original maintainers or some new pusher (don't count on GKH for this)
-step in and work with the kernel people to address remaining issues
-beyond coding style, staging may also be a dead end (specifically if the
-project is adding a new user space interface that always needs extra
-care). For larger projects like comedi, I would say staging is more of a
-test if someone is serious about mainlining it.
+I am trying to boot Linux kernel ver. 2.6.26 patched with ADEOS ipipe
+ver. 1.11-02 on OMAP5912 CPU(arch/arm/mach-omap1) containing ARM926
+core.
+Of course, I have configured my Linux kernel to run in tickless mode.
+In the final steps of booting, kernel is encountering " NULL pointer
+dereference " in the function " rb_erase() " called from " __remove_hrtimer() ".
+Following is the backtrace log emitted by the kernel.
 
-Jan
+Unable to handle kernel NULL pointer dereference at virtual address 00000008
+pgd = c0004000
+[00000008] *pgd=00000000
+Internal error: Oops: 5 [#1]
+Modules linked in:
+CPU: 0    Tainted: G        W  (2.6.26-ipipe #3)
+PC is at rb_erase+0x114/0x358
+LR is at __remove_hrtimer+0x88/0x94
+Backtrace:
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+[<c012ed1c>] (rb_erase+0x0/0x358) from [<c0053f48>] (__remove_hrtimer+0x88/0x94)
+ r9:00000080 r8:c0285530 r7:00000000 r6:00000001 r5:c0285530 r4:c02a6298
+
+[<c0053ec0>] (__remove_hrtimer+0x0/0x94) from [<c00548a8>]
+(hrtimer_start+0x74/0x108)
+ r7:00000006 r6:02625a00 r5:00000000 r4:2d4cae00
+
+[<c0054834>] (hrtimer_start+0x0/0x108) from [<c005af18>]
+(tick_nohz_stop_sched_tick+0x2bc/0x3a4)
+
+[<c005ac5c>] (tick_nohz_stop_sched_tick+0x0/0x3a4) from [<c0023318>]
+(cpu_idle+0x38/0x60)
+
+[<c00232e0>] (cpu_idle+0x0/0x60) from [<c01f7d58>] (rest_init+0x58/0x6c)
+ r5:c001cdc4 r4:c02bc754
+
+[<c01f7d00>] (rest_init+0x0/0x6c) from [<c0008ad0>] (start_kernel+0x244/0x290)
+
+[<c000888c>] (start_kernel+0x0/0x290) from [<10008034>] (0x10008034)
+ r6:c001cdc0 r5:c029af88 r4:00053175
+
+Code: e3580001 01a04005 189dabf0 ea000082 (e5941008)
+---[ end trace b0a66fe3e48abdda ]---
+Kernel panic - not syncing: Attempted to kill the idle task!
+
+>From this what I understand is, address of nonexistent node is passed
+to rb_erase()?
+
+Can anybody please direct me, how to investigate further into this problem?
+
+--Mandar
 
