@@ -1,58 +1,47 @@
-Message-ID: <499D6FC7.6010204@domain.hid>
-Date: Thu, 19 Feb 2009 15:42:15 +0100
+Message-ID: <497D628F.7020302@domain.hid>
+Date: Mon, 26 Jan 2009 08:13:19 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <499D359C.3060805@domain.hid>
-	<499D3801.5040303@domain.hid>	<499D3FE6.4030208@domain.hid>
-	<499D5B0A.7020608@domain.hid> <499D5FC4.4030303@domain.hid>
-	<499D67A6.7000301@domain.hid> <499D68A5.8020002@domain.hid>
-In-Reply-To: <499D68A5.8020002@domain.hid>
+References: <894886ec0901252258t12cef21dv863a921b10c042a1@domain.hid>
+In-Reply-To: <894886ec0901252258t12cef21dv863a921b10c042a1@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] XENO_OPT_SYS_STACKPOOLSZ vs. switchtest
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] ata revalidation failed?
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Rob Wheeler <wheeler@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->> Jan Kiszka wrote:
->>> Gilles Chanteperdrix wrote:
->>>> Jan Kiszka wrote:
->>>>> Gilles Chanteperdrix wrote:
->>>>>> Jan Kiszka wrote:
->>>>>>> Hi Gilles,
->>>>>>>
->>>>>>> how much XENO_OPT_SYS_STACKPOOLSZ do I need to run switchtest for
->>>>>>> default settings? At least on x86-64, the default 32K is not enough.
->>>>>>> Unless we talk about GB ;), maybe it makes sense to adjust the default
->>>>>>> size accordingly.
->>>>>> It depends on the arguments you pass to switchtest.
->>>>> None, ie. the default settings.
->>>> Then 6 kernel-space tasks are created. Since switchtest is not the
->>> 6*4 is 20k... Ah, the well-known allocator overhead, I guess. Will try
->>> with >= 40k.
->>>
->> Actually, it is not really an overhead, but rather the fact that it wants at
->> least two initially free pages per heap.
-> 
-> That would make 22K. The problem is that the management overhead is
-> rounded up to another full page, requiring a 8K allocation per 4K
-> request. Reminds me of TLSF - if I only had the time... :)
+Rob Wheeler wrote:
+> We have a robot platform with 4 identical computers installed in its
+> base.  Three of the computers are running an ubuntu 8.04 server
+> distribution.  The fourth machine is running Xenomai 2.4.5 with a
+> 2.6.24.3 kernel.  The Xenomai machine is used to send controls to the
 
-When allocating 4K, only 4K are allocated.
+Hi Rob,
 
-I think the problem could rather be that you are running switchtest on a
-multi-cpu system, in which same the number of cpu tasks created is 6 by cpu.
+what happened to your tests of Xenomai 2.4.6.1. You could not get it
+running ?
+
+I had a similar bug on my laptop, and it turned out that it was because
+I used the ACPI processor module, which should not be used with Xenomai
+anyway.
+
+> Anyone have any ideas or suggestions on how to track this one down?
+
+Try and enable the I-pipe tracer, and trigger a trace the first time you
+get the revalidation error. Send the logs to the network using netconsole.
+
+Enable other I-pipe debugging options such as context checking. Enable
+Xenomai debugging options too.
 
 -- 
-                                                 Gilles.
+					    Gilles.
 
