@@ -1,12 +1,14 @@
-Message-ID: <497A1963.8030902@domain.hid>
-Date: Fri, 23 Jan 2009 20:24:19 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Paul <paul_c@domain.hid>
+Date: Mon, 26 Jan 2009 11:21:54 +0000
+References: <894886ec0901252258t12cef21dv863a921b10c042a1@domain.hid>
+In-Reply-To: <894886ec0901252258t12cef21dv863a921b10c042a1@domain.hid>
 MIME-Version: 1.0
-References: <51CAD0CE1504444DBE77CBBE51A0135D5908A3@domain.hid>
-In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D5908A3@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] shadow task and rt_task_self()
+Content-Disposition: inline
+Message-Id: <200901261121.54697.paul_c@domain.hid>
+Subject: Re: [Xenomai-help] ata revalidation failed?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,17 +18,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <sseeger@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Steven Seeger wrote:
-> Using the latest xenomai we seem to always get back NULL from a shadow
-> task using rt_task_self(). We used to get something valid with r3415.
-> Any idea?
 
-Please send us a little test program that we can run to observe the
-issue. And tell us which branch has the problem trunk or v2.4.x?
+Hi Rob
 
--- 
-					    Gilles.
+On Monday 26 January 2009, Rob Wheeler wrote:
+> We have a robot platform with 4 identical computers installed in its
+> base.  Three of the computers are running an ubuntu 8.04 server
+> distribution.  The fourth machine is running Xenomai 2.4.5 with a
+> 2.6.24.3 kernel.  The Xenomai machine is used to send controls to the
+> robot's motors at a 1KHz frequency.  Sporadically, the Xenomai machine
+> locks up and we can no longer ping it from the outside world and the
+> control program appears to no longer be running.  Unfortunately, this
+> particular HW platform does not have a serial connection.  In the
+> meantime, we've connected an LCD monitor to the Xenomai machine, and
+> when it locked up, we noticed the following messages:
+>
+> ata3.00: exception Emask 0x0 SAct 0x0 SErr 0x0 action 0x2 frozen
+> ata3.00: cmd ca/00:08:89:f0:6b/00:00:00:00:00/e0 tag 0 dma 4096 out
+> ata3.00: status: {DRDY}
+> ata3.00: revalidation failed (errno=-5)
+>
+> This usually repeats a small number of times on the monitor, but the
+> computer is otherwise non-responsive (cannot even use keyboard
+> connected directly to the computer).  This revalidation error seems
+> somewhat reoccurring, however, there are occasionally other messages
+> that popup, such as:
+>
+> Buffer I/O error on device sda1, logical block 884241
+>
+> We've been able to reproduce this problem on multiple instances of
+> this same make of computer running Xenomai, but never on the same HW
+> platform running a vanilla kernel.
+>
+> Anyone have any ideas or suggestions on how to track this one down?
+
+Yes - I have eperienced similar issues here with an AMD64 box - By adding 
+`pci=noacpi` to the boot line appears to have cured the problem.
+
+
+Regards, Paul.
 
