@@ -1,12 +1,11 @@
-Message-ID: <497EE381.3040005@domain.hid>
-Date: Tue, 27 Jan 2009 10:35:45 +0000
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5D63919D95F87E4D9D34FF7748CE2C2A017A39A7@domain.hid>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A017A39A7@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] fpu issue on PPC ?
+In-Reply-To: <57e813c90901270847o6907862areb78f7713e8255e6@domain.hid>
+References: <57e813c90901270847o6907862areb78f7713e8255e6@domain.hid>
+Date: Tue, 27 Jan 2009 15:18:53 -0200
+Message-ID: <57e813c90901270918g1b74cd6ev7698e0717647c0d9@domain.hid>
+From: Zara Tustra <zarawesome@domain.hid>
+Content-Type: multipart/alternative; boundary=0016367ed58fabb87504617a0ca8
+Subject: [Xenomai-help] librt.so.1 missing
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,24 +15,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: roderik.wildenburg@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-roderik.wildenburg@domain.hid wrote:
-> As you certainly allready know, we are facing some FPU problems on
-> PPC (2.4 Kernel) too (switchtest reports inconsistent FPU-register;
-> our application crashs with FPU-exception or shows sometimes
-> unreasonable FP-values). Is the solution you found for i386
-> applicable for PPC too (does the issue, you described, apply to PPC
-> too) ?
+--0016367ed58fabb87504617a0ca8
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-No. The FPU handling is very different on ppc and x86. I far as I know,
-the PPC kernel only uses Altivec in kernel-space which is handled
-separately from plain FPU registers and not touched at all by Xenomai.
+Running the test suite on the ARM board results on the message:
 
-I am investigating the ppc fpu issue, and the current situation is that
-the FPU handling on ppc is indeed broken. I am working on a fix.
+ error while loading shared libraries: librt.so.1: cannot open shared object
+file: No such file or directory
 
--- 
-                                                 Gilles.
+I cannot find librt.so in any directory of the compiled kernel or the user
+space. Am I missing something?
+
+Thanks
+
+--0016367ed58fabb87504617a0ca8
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div class=3D"gmail_quote">Running the test suite on the ARM board results =
+on the message:<br><br>&nbsp;error while loading shared libraries: librt.so=
+.1: cannot open shared object file: No such file or directory <br><br>I can=
+not find librt.so in any directory of the compiled kernel or the user space=
+. Am I missing something?<br>
+
+<br>Thanks<br>
+</div><br>
+
+--0016367ed58fabb87504617a0ca8--
 
