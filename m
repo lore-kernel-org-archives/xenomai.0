@@ -1,9 +1,9 @@
-Message-ID: <497F40F3.3010801@domain.hid>
-Date: Tue, 27 Jan 2009 17:14:27 +0000
+Message-ID: <497F4227.2020406@domain.hid>
+Date: Tue, 27 Jan 2009 17:19:35 +0000
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <497F3E29.6050303@domain.hid>
-In-Reply-To: <497F3E29.6050303@domain.hid>
+References: <497F3E29.6050303@domain.hid> <497F40F3.3010801@domain.hid>
+In-Reply-To: <497F40F3.3010801@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [PATCH] xnpipe: Fix minor number management
@@ -19,20 +19,15 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> This is an attempt to fix the bugs found in the minor number management:
-> - changing the bitmap requires atomic operations
-> - clrbits/setbits work against xnarch_atomic_t, and that is only 32 bit
->   wide on x86-64
+Gilles Chanteperdrix wrote:
+> As for the find_first_bit, why not simply taking the nklock
 
-I think we should rather fix xnarch_atomic_t to be the size of a long on
-x86-64, than having to cope with xnarch_atomic_t of various sizes in the
-code (there are probably other places where we depend on the size of
-xnarch_atomic_t).
+in
 
-As for the find_first_bit, why not simply taking the nklock
-xnpipe_minor_free ? This is a first masking section, so this should not
-matter a lot.
+> xnpipe_minor_free ? This is a first masking section, so this should not
+> matter a lot.
+
+a short masking section
 
 -- 
                                                  Gilles.
