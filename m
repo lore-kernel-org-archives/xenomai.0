@@ -1,10 +1,10 @@
-Message-ID: <498082B7.2000609@domain.hid>
-Date: Wed, 28 Jan 2009 16:07:19 +0000
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <49808334.7040701@domain.hid>
+Date: Wed, 28 Jan 2009 17:09:24 +0100
+From: Sebastian Smolorz <smolorz@domain.hid>
 MIME-Version: 1.0
 References: <8E970E0F84BD44C9B4C41942F86F2F34@domain.hid>
 In-Reply-To: <8E970E0F84BD44C9B4C41942F86F2F34@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] TR: Kernel panic with (Kernel-2.6.27/Xenomai
 	-2.4.6)
@@ -20,25 +20,15 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Sebastien DI MERCURIO <sebastien.di-mercurio@domain.hid>
 Cc: xenomai@xenomai.org
 
-Sebastien DI MERCURIO wrote:
-> Hello,
->  
+Sebastien DI MERCURIO schrieb:
 > I have compiled and installed linux kernel 2.6.27 in a fedora distro running
 > in Virtualbox. Everything worked fine.
 > After that, I patched the kernel using xenomai-2.4.6 script
 > "prepare-kernel.sh". So, the adeos patch used was
 > adeos-ipie-2.6.27-x86-2.1-01.patch. No problem.
->  
-> Then I have configured the newly patched kernel for activate xenomai and
-> nucleus (find the .config file in attachment). I compiled the kernel. No
-> error, no problem.
->  
-> But when I boot the patched kernel, it produces a panic, apparently in
-> xeno_sys_init (look at the screen copy of vitualbox).
 
-Do you have the same error if you boot this kernel on a real machine ?
-
+Try Xenomai-2.4.6.1. This problem was fixed there.
 
 -- 
-                                                 Gilles.
+Sebastian
 
