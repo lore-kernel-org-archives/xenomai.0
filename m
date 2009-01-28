@@ -1,16 +1,13 @@
-Message-ID: <497A2344.8060605@domain.hid>
-Date: Fri, 23 Jan 2009 21:06:28 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Carlos Novaes <carlosnov@domain.hid>
+Date: Wed, 28 Jan 2009 21:13:48 -0200
 MIME-Version: 1.0
-References: <51CAD0CE1504444DBE77CBBE51A0135D5908A3@domain.hid>
-	<497A1963.8030902@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D5908A4@domain.hid>
-	<497A1E95.4080805@domain.hid>
-	<51CAD0CE1504444DBE77CBBE51A0135D5908A5@domain.hid>
-In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D5908A5@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] shadow task and rt_task_self()
+Content-Disposition: inline
+Message-Id: <200901282113.48357.carlosnov@domain.hid>
+Subject: [Xenomai-help] proc interface isn't created
+Reply-To: Carlos Eduardo de Brito Novaes <carlosnov@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,44 +17,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <sseeger@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Steven Seeger wrote:
-> Gilles,
-> 
-> Attached is my simple test that repeats this problem.
-> 
-> Output is:
-> 
-> 0
-> 0 0
-> 
-> This is using latest xenomai trunk.
-> 
+Hello.
+I am using xenomai to develop a real time driver and got some strange 
+behaviour.
+On my study machine, a recent 64 bit and ubuntu 8.10 I could write and compile 
+some xenomai code.
+But, on my work machine, an old PC with ISA BUS and a stripped version of LFS 
+(linux from scratch), I cant create memory heap and the /proc/xenomai dir wont 
+be created. There is no errors until "create_heap".
+I cant find any difference on XENO part of both .config. 
+Can someone give me any hint?
 
-Ok. Try this:
-
-Index: src/skins/native/task.c
-===================================================================
---- src/skins/native/task.c	(revision 4570)
-+++ src/skins/native/task.c	(working copy)
-@@ -210,8 +210,12 @@ int rt_task_shadow(RT_TASK *task, const
- 	err = XENOMAI_SKINCALL2(__native_muxid, __native_task_create, &bulk,
- 				NULL);
-
--	if (!err)
-+	if (!err) {
-+#ifdef HAVE___THREAD
-+		__native_self = *task;
-+#endif /* HAVE___THREAD */
- 		xeno_set_current();
-+	}
-
- 	return err;
- }
-
+Thank you so much
 
 -- 
-					    Gilles.
+
+Carlos Novaes
 
