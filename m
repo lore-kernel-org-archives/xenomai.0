@@ -1,12 +1,14 @@
-Message-ID: <498061AB.2050004@domain.hid>
-Date: Wed, 28 Jan 2009 13:46:19 +0000
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <20090128132017.9DDCF1C066@domain.hid>
-In-Reply-To: <20090128132017.9DDCF1C066@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] interrupt service routine issue
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 28 Jan 2009 07:33:29 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D5909B3@domain.hid>
+In-Reply-To: <497F6524.2080601@domain.hid>
+References: <497F6524.2080601@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
+Subject: Re: [Xenomai-help] [Xenomai-core] [RFC] FPU support
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,15 +18,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: stefano.franzoni@domain.hid
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-stefano.franzoni@domain.hid wrote:
-> (See attached file: .config)
+We are using FPU support in one kernel space thread to generate tones
+with a DDS algorithm via an ioctl in a xenomai software sound driver.=20
+Steven
 
-As we repeat often, you should not disable ACPI completely, you should
-only disable the ACPI "processor" module.
-
--- 
-                                                 Gilles.
 
