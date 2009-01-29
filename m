@@ -1,11 +1,13 @@
-Content-class: urn:content-classes:message
+Message-ID: <498226CC.1020504@domain.hid>
+Date: Thu, 29 Jan 2009 22:59:40 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C98253.8AC22BD4"
-Date: Thu, 29 Jan 2009 13:52:46 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D590A7C@slcmail.slc.mew.int>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: [Xenomai-help] xnpod_schedule 2.4.6.1
+References: <51CAD0CE1504444DBE77CBBE51A0135D590A7C@slcmail.slc.mew.int>
+In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D590A7C@slcmail.slc.mew.int>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] xnpod_schedule 2.4.6.1
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,147 +17,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Steven Seeger <sseeger@domain.hid>
+Cc: xenomai@xenomai.org
+
+Steven Seeger wrote:
+> Forgive me if this has been asked before.
+> 
+>  
+> 
+> In xnpod_schedule I notice there is a call to
+> xnlock_get_irqsave(&nklock, s);
+> 
+>  
+> 
+> Further down, this call is made again followed by
+> xnlock_put_irqrestore(&nklock, s);
+> 
+>  
+> 
+> The comments say that the lock is not held, but from what I can tell it
+> previously was. I was just pointing out this observation in case it was
+> a bug. It looks like this function has been changed a lot in trunk, so
+> perhaps anything relating to this was fixed since 2.4.6.1.
+>
+
+There is a Xenomai to Linux context switch in between, and the nklock was indeed
+released in that case. This code is correct.
+
+>  
+> 
+> Steven
+> 
+>  
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
 
-This is a multi-part message in MIME format.
-
-------_=_NextPart_001_01C98253.8AC22BD4
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-Forgive me if this has been asked before.
-
-=20
-
-In xnpod_schedule I notice there is a call to
-xnlock_get_irqsave(&nklock, s);
-
-=20
-
-Further down, this call is made again followed by
-xnlock_put_irqrestore(&nklock, s);
-
-=20
-
-The comments say that the lock is not held, but from what I can tell it
-previously was. I was just pointing out this observation in case it was
-a bug. It looks like this function has been changed a lot in trunk, so
-perhaps anything relating to this was fixed since 2.4.6.1.
-
-=20
-
-Steven
-
-=20
-
-
-------_=_NextPart_001_01C98253.8AC22BD4
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
-xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
-
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 12 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:"MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
-@font-face
-	{font-family:"MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
-@font-face
-	{font-family:"\@MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:"Calibri","sans-serif";
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.0in 1.0in 1.0in;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-<!--[if gte mso 9]><xml>
- <o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
- <o:shapelayout v:ext=3D"edit">
-  <o:idmap v:ext=3D"edit" data=3D"1" />
- </o:shapelayout></xml><![endif]-->
-</head>
-
-<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal>Forgive me if this has been asked =
-before.<o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-<p class=3DMsoNormal>In xnpod_schedule I notice there is a call to =
-xnlock_get_irqsave(&amp;nklock,
-s);<o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-<p class=3DMsoNormal>Further down, this call is made again followed by
-xnlock_put_irqrestore(&amp;nklock, s);<o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-<p class=3DMsoNormal>The comments say that the lock is not held, but =
-from what I
-can tell it previously was. I was just pointing out this observation in =
-case it
-was a bug. It looks like this function has been changed a lot in trunk, =
-so
-perhaps anything relating to this was fixed since =
-2.4.6.1.<o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-<p class=3DMsoNormal>Steven<o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01C98253.8AC22BD4--
+-- 
+Philippe.
 
