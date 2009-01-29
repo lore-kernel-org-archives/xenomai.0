@@ -1,14 +1,12 @@
-Message-ID: <49815710.7070709@domain.hid>
-Date: Thu, 29 Jan 2009 08:13:20 +0100
+Message-ID: <49816058.6080704@domain.hid>
+Date: Thu, 29 Jan 2009 08:52:56 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <ba9b368a0901282227i705ebe80oe75782ccc5cdc17f@domain.hid>	
-	<49814ED3.9080607@domain.hid>
-	<ba9b368a0901282246t4bece718g5b8512220e961719@domain.hid>
-In-Reply-To: <ba9b368a0901282246t4bece718g5b8512220e961719@domain.hid>
+References: <200901282113.48357.carlosnov@domain.hid>
+In-Reply-To: <200901282113.48357.carlosnov@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem using sem_open and rt_sem_create
+Subject: Re: [Xenomai-help] proc interface isn't created
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,47 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniel Adams <dadams81@domain.hid>
+To: Carlos Eduardo de Brito Novaes <carlosnov@domain.hid>
 Cc: xenomai@xenomai.org
 
-Daniel Adams wrote:
-> Thanks Gillies,
+Carlos Novaes wrote:
+> Hello.
+> I am using xenomai to develop a real time driver and got some strange 
+> behaviour.
+> On my study machine, a recent 64 bit and ubuntu 8.10 I could write and compile 
+> some xenomai code.
+> But, on my work machine, an old PC with ISA BUS and a stripped version of LFS 
+> (linux from scratch), I cant create memory heap and the /proc/xenomai dir wont 
+> be created. There is no errors until "create_heap".
+> I cant find any difference on XENO part of both .config. 
+> Can someone give me any hint?
 > 
-> Is it possible to use the rt_sem_bind from a linux process that hasn't been
-> shadowed using rt_task_shadow?
+> Thank you so much
 
-No. If you read the documentation of rt_sem_bind, you will see:
-
-Environments:
-
-This service can be called from:
-
-    * User-space task (switches to primary mode)
-
-And to switch to primary mode, task needs to be shadowed with
-rt_task_shadow.
-
-> Is this the same for named pipes created using the native skin and accessing
-> them from a posix interface?
-
-The non real-time side of named pipes may be accessed using the Linux
-posix interface, not Xenomai posix skin interface.
-
-> 
-> What is the recommended IPC to talk between posix threads and native rt
-> threads?
-
-It depends if you are talking about (non real-time) Linux posix threads,
-or (real-time) Xenomai posix skin threads.
-
-If you are talking about Linux posix threads, then what you are looking
-for is rt_pipes.
-
-If you are talking about Xenomai posix skin threads, then mostly any IPC
-of both skins may be used. Only, you have to use the same interface with
-both skins. So, for instance, if you choose Xenomai posix skin message
-queues, you have to use mq_open, mq_send, mq_receive, mq_close,
-mq_unlink with the threads of the two skins.
+Is /proc mounted ?
+Otherwise, please send us your .config.
 
 -- 
 					    Gilles.
