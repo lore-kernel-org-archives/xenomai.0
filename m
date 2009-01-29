@@ -1,13 +1,15 @@
-Message-ID: <498226CC.1020504@domain.hid>
-Date: Thu, 29 Jan 2009 22:59:40 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 29 Jan 2009 15:05:06 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D590A88@domain.hid>
+In-Reply-To: <498226CC.1020504@domain.hid>
 References: <51CAD0CE1504444DBE77CBBE51A0135D590A7C@slcmail.slc.mew.int>
-In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D590A7C@slcmail.slc.mew.int>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+	<498226CC.1020504@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
 Subject: Re: [Xenomai-help] xnpod_schedule 2.4.6.1
-Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,48 +19,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <sseeger@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-Steven Seeger wrote:
-> Forgive me if this has been asked before.
-> 
->  
-> 
-> In xnpod_schedule I notice there is a call to
-> xnlock_get_irqsave(&nklock, s);
-> 
->  
-> 
-> Further down, this call is made again followed by
-> xnlock_put_irqrestore(&nklock, s);
-> 
->  
-> 
-> The comments say that the lock is not held, but from what I can tell it
-> previously was. I was just pointing out this observation in case it was
-> a bug. It looks like this function has been changed a lot in trunk, so
-> perhaps anything relating to this was fixed since 2.4.6.1.
->
+> There is a Xenomai to Linux context switch in between, and the nklock
+> was indeed
+> released in that case. This code is correct.
 
-There is a Xenomai to Linux context switch in between, and the nklock was indeed
-released in that case. This code is correct.
+Thanks for letting me know. I am inspecting things and trying to
+understand what happens in Xenomai so I can help debug the FPU issue we
+are still having. I noticed on the RTAI mailing list there was another
+user with my board who had the same problem with LXRT. It looks like
+geodes do something weird.
 
->  
-> 
-> Steven
-> 
->  
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+Steven
 
-
--- 
-Philippe.
 
