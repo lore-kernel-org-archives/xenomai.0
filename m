@@ -1,53 +1,111 @@
-Message-ID: <498305CC.9060601@domain.hid>
-Date: Fri, 30 Jan 2009 14:51:08 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Sat, 31 Jan 2009 04:03:21 -0800 (PST)
+From: ahmad zamani <stu_zamani@domain.hid>
 MIME-Version: 1.0
-References: <ba9b368a0901292128x57de0b4dj4cb701db49bb2059@domain.hid>
-In-Reply-To: <ba9b368a0901292128x57de0b4dj4cb701db49bb2059@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Watchdog process
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Daniel Adams <dadams81@domain.hid>
-Cc: xenomai@xenomai.org
+Content-Type: multipart/alternative; boundary="0-1362664855-1233403401=:11572"
+Message-ID: <142181.11572.qm@domain.hid>
+Subject: [Adeos-main] whay "rt_request_apic_timers" used
+	"rtai_request_tickdev"
+Reply-To: stu_zamani@domain.hid
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Adeos-main@domain.hid
 
-Daniel Adams wrote:
-> Hi,
-> 
-> I've written a watchdog process which expects a token (semaphore) to be
-> touch every Nms by waiting on the semaphore with a timeout. If the task
-> timeouts out on the semaphore I need it to cause a hardware reset. Previous
-> RTOSes I've used have had direct access to the COP/Watchdog timer hardware
+--0-1362664855-1233403401=:11572
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-It's funny, because people generally consider memory protection as a
-good thing. In any case, you can use /dev/mem to access your hardware in
-user-space, our use iopl/ioperm and inb/outb if it is ISA hardware.
 
-> where the process would tickle the COP or just spin wait for reset once an
-> deadline had been missed. I understand that I can get similar behaviour by
-> essentially starving the Linux kernel of processor time which causes the NMI
-> watchdog to not be tickled, but this timeout is in the order of seconds. The
-> application I'm working on is safety critical and needs to cause a system
-> reset in < 1 sec.
-> 
-> Is this possible with Xenomai? If so, can some one point me the direction of
-> how to achieve it.
 
-You could do this outside of xenomai: implement a Linux watchdog driver
-for your watchdog hardware. Then you can use the existing Linux watchdog
-program, or you can modify it to try and get the semaphore. Running the
-watchdog program as a plain Linux task is a better idea as running it as
-a Xenomai task, because this way, if ever Xenomai starves Linux, you
-will get the expected behaviour.
+if (typeof YAHOO =3D=3D "undefined") {
+ var YAHOO =3D {};
+}
+YAHOO.Shortcuts =3D YAHOO.Shortcuts || {};
+YAHOO.Shortcuts.hasSensitiveText =3D false;
+YAHOO.Shortcuts.sensitivityType =3D [];
+YAHOO.Shortcuts.doUlt =3D false;
+YAHOO.Shortcuts.location =3D "us";
+YAHOO.Shortcuts.document_id =3D 0;
+YAHOO.Shortcuts.document_type =3D "";
+YAHOO.Shortcuts.document_title =3D "whay \u005c\u0022rt_request_apic_timers=
+\u005c\u0022  used  \u005c\u0022rtai_request_tickdev\u005c\u0022";
+YAHOO.Shortcuts.document_publish_date =3D "";
+YAHOO.Shortcuts.document_author =3D "stu_zamani@domain.hid";
+YAHOO.Shortcuts.document_url =3D "";
+YAHOO.Shortcuts.document_tags =3D "";
+YAHOO.Shortcuts.document_language =3D "english";
+YAHOO.Shortcuts.annotationSet =3D {
 
--- 
-					    Gilles.
+};
+YAHOO.Shortcuts.headerID =3D "25a867d2cb25a2f961068e11451e4504";
+
+
+
+
+
+
+
+hello all.
+i study http://lwn.net/Articles/223185/. that is about clockevents in linux=
+ and=20
+=A0
+i find it is for get capability of use=A0timers in system in global way.
+=A0
+then =A0in "rt_request_apic_timers"=A0 used=A0 "rtai_request_tickdev".
+=A0
+my question is that why=A0use this function when we use apic timer self and
+manualy program it .
+=A0
+thnaks very.=0A=0A=0A      
+--0-1362664855-1233403401=:11572
+Content-Type: text/html; charset=us-ascii
+
+<table cellspacing="0" cellpadding="0" border="0" ><tr><td valign="top" style="font: inherit;"><DIV class="undoreset clearfix" id=message1231390392>
+<SCRIPT defer type=text/javascript>
+if (typeof YAHOO == "undefined") {
+ var YAHOO = {};
+}
+YAHOO.Shortcuts = YAHOO.Shortcuts || {};
+YAHOO.Shortcuts.hasSensitiveText = false;
+YAHOO.Shortcuts.sensitivityType = [];
+YAHOO.Shortcuts.doUlt = false;
+YAHOO.Shortcuts.location = "us";
+YAHOO.Shortcuts.document_id = 0;
+YAHOO.Shortcuts.document_type = "";
+YAHOO.Shortcuts.document_title = "whay \u005c\u0022rt_request_apic_timers\u005c\u0022  used  \u005c\u0022rtai_request_tickdev\u005c\u0022";
+YAHOO.Shortcuts.document_publish_date = "";
+YAHOO.Shortcuts.document_author = "stu_zamani@domain.hid";
+YAHOO.Shortcuts.document_url = "";
+YAHOO.Shortcuts.document_tags = "";
+YAHOO.Shortcuts.document_language = "english";
+YAHOO.Shortcuts.annotationSet = {
+
+};
+YAHOO.Shortcuts.headerID = "25a867d2cb25a2f961068e11451e4504";
+</SCRIPT>
+
+<DIV id=yiv88218929>
+<TABLE cellSpacing=0 cellPadding=0 border=0>
+<TBODY>
+<TR>
+<TD vAlign=top>
+<DIV>hello all.</DIV>
+<DIV>i study <A href="http://lwn.net/Articles/223185/" target=_blank rel=nofollow><SPAN class=yshortcuts id=lw_1233399607_1><FONT color=#003399>http://lwn.net/Articles/223185/</FONT></SPAN></A>. that is about clockevents in linux and </DIV>
+<DIV>&nbsp;</DIV>
+<DIV>i find it is for get capability of use&nbsp;timers in system in global way.</DIV>
+<DIV>&nbsp;</DIV>
+<DIV>then &nbsp;in "rt_request_apic_timers"&nbsp; used&nbsp; "rtai_request_tickdev".</DIV>
+<DIV>&nbsp;</DIV>
+<DIV>my question is that why&nbsp;use this function when we use apic timer self and</DIV>
+<DIV>manualy program it .</DIV>
+<DIV>&nbsp;</DIV>
+<DIV>thnaks very.</DIV></TD></TR></TBODY></TABLE></DIV></DIV></td></tr></table><br>
+
+      
+--0-1362664855-1233403401=:11572--
 
