@@ -1,49 +1,48 @@
-Message-ID: <49A3F793.3010204@domain.hid>
-Date: Tue, 24 Feb 2009 14:35:15 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Mon, 2 Feb 2009 08:14:53 +0000 (GMT)
+From: seb p <sebas_p2002@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH] Fix gatekeeper affinity
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/alternative; boundary="0-1431454353-1233562493=:65105"
+Message-ID: <271563.65105.qm@domain.hid>
+Subject: [Xenomai-help] Problem with 	rtdm_irq_request
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-As the xnsched structures get initialized later, during xnpod_init,
-xnsched_cpu always returned 0 in the gatekeeper_thread prologue. That
-caused binding of all gatekeepers to CPU 0.
+--0-1431454353-1233562493=:65105
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
+Hello,=0A=0AI use a atmel card AT91SAM9260 and I install Linux 2.6.25 with =
+xenomai 2.4.4. I am doing a RTDM serial driver. I use the function rtdm_irq=
+_request with the routine rt_rs485_interrupt. The interrupt number is 7. Th=
+e interrupt is enable when a carracter is in the buffer Rx and the programm=
+ execute the routine rt_rs485_interrupt. But in my programm, when a caracte=
+r is in the buffer Rx, the programm doesn't execute the routine and I must =
+reboot the linux. The console don't answer.=0A=0AHave you got an idea of th=
+e problem? Thanks.=0A=0AS=C3=A9b.=0A=0A=0A=0A      
+--0-1431454353-1233562493=:65105
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
- ksrc/nucleus/shadow.c |    5 ++++-
- 1 files changed, 4 insertions(+), 1 deletions(-)
-
-diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
-index 1dedd85..2243c0e 100644
---- a/ksrc/nucleus/shadow.c
-+++ b/ksrc/nucleus/shadow.c
-@@ -823,11 +823,14 @@ static int gatekeeper_thread(void *data)
- 	struct task_struct *this_task = current;
- 	DECLARE_WAITQUEUE(wait, this_task);
- 	struct xnsched *sched = data;
--	int cpu = xnsched_cpu(sched);
- 	struct xnthread *target;
- 	cpumask_t cpumask;
-+	int cpu;
- 	spl_t s;
- 
-+	/* sched not fully initialized, xnsched_cpu does not work yet */
-+	cpu = sched - nkpod_struct.sched;
-+
- 	this_task->flags |= PF_NOFREEZE;
- 	sigfillset(&this_task->blocked);
- 	cpumask = cpumask_of_cpu(cpu);
+<html><head><style type=3D"text/css"><!-- DIV {margin:0px;} --></style></he=
+ad><body><div style=3D"font-family:times new roman,new york,times,serif;fon=
+t-size:12pt"><div>Hello,<br><br>I use a atmel card AT91SAM9260 and I instal=
+l Linux 2.6.25 with xenomai 2.4.4. I am doing a RTDM serial driver. I use t=
+he function <a class=3D"el" href=3D"http://www.xenomai.org/documentation/tr=
+unk/html/api/group__rtdmirq.html#g9bb3d95218ac5261e4033fb0bf695073">rtdm_ir=
+q_request</a> with the routine rt_rs485_interrupt. The interrupt number is =
+7. The interrupt is enable when a carracter is in the buffer Rx and the pro=
+gramm execute the routine rt_rs485_interrupt. But in my programm, when a ca=
+racter is in the buffer Rx, the programm doesn't execute the routine and I =
+must reboot the linux. The console don't answer.<br><br>Have you got an ide=
+a of the problem? Thanks.<br><br>S=C3=A9b.<br></div></div><br>=0A=0A=0A=0A =
+     </body></html>
+--0-1431454353-1233562493=:65105--
 
