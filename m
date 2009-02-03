@@ -1,60 +1,63 @@
-Message-ID: <49A3FB6E.2090509@domain.hid>
-Date: Tue, 24 Feb 2009 14:51:42 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <49884633.6050403@domain.hid>
+Date: Tue, 03 Feb 2009 14:27:15 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <49A3F793.3010204@domain.hid>
-In-Reply-To: <49A3F793.3010204@domain.hid>
+References: <BAY101-W54D5E94646F7B999F81AF8EAC50@domain.hid>
+In-Reply-To: <BAY101-W54D5E94646F7B999F81AF8EAC50@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] Fix gatekeeper affinity
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Compiler Options
+Reply-To: rpm@xenomai.org
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Stephen Davies <steve_davies61@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> As the xnsched structures get initialized later, during xnpod_init,
-> xnsched_cpu always returned 0 in the gatekeeper_thread prologue. That
-> caused binding of all gatekeepers to CPU 0.
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
-> ---
-> 
->  ksrc/nucleus/shadow.c |    5 ++++-
->  1 files changed, 4 insertions(+), 1 deletions(-)
-> 
-> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
-> index 1dedd85..2243c0e 100644
-> --- a/ksrc/nucleus/shadow.c
-> +++ b/ksrc/nucleus/shadow.c
-> @@ -823,11 +823,14 @@ static int gatekeeper_thread(void *data)
->  	struct task_struct *this_task = current;
->  	DECLARE_WAITQUEUE(wait, this_task);
->  	struct xnsched *sched = data;
-> -	int cpu = xnsched_cpu(sched);
->  	struct xnthread *target;
->  	cpumask_t cpumask;
-> +	int cpu;
->  	spl_t s;
+Stephen Davies wrote:
+> Hi all,
 >  
-> +	/* sched not fully initialized, xnsched_cpu does not work yet */
-> +	cpu = sched - nkpod_struct.sched;
-> +
->  	this_task->flags |= PF_NOFREEZE;
->  	sigfillset(&this_task->blocked);
->  	cpumask = cpumask_of_cpu(cpu);
+> I start by apologising for asking what I imagine is a very basic
+> question but it's been driving me nuts all day!  I am currently trying
+> to build and compile one of the sample programs - msg_queue.c.  I'm
+> using the Code::Blocks IDE with GCC underneath it to compile the
+> program.  I have linked in the include directory /usr/xenomai/include
+> but when I compile and link my code I get a load of 'undefined
+> reference' errors relating to all of the xenomai functions.  On my old
+> RTAI setup I have never had to link explicitly to any libs only include
+> header files - what am I doing wrong with xenomai? 
+>  
 
-This does not look good, it means that the gatekeeper accesses the sched
-structure before it is initialized. So, IMO, the proper fix would be to
-start the gatekeepers only after the sched structure has been initialized.
+Try /usr/xenomai/bin/xeno-config { --xeno-cflags, --xeno-ldflags, etc. }
+
+> My setup is 2.6.27 kernel, Xenomai latest stable, Ubuntu 8.10
+>  
+> Apologies again for what I imagine is a very simple question, but it's
+> driving me nuts!
+>  
+> Thanks for your help,
+>  
+> Steve
+> 
+> ------------------------------------------------------------------------
+> Share your photos with Windows Live Photos - Free Try it Now!
+> <http://www.microsoft.com/uk/windows/windowslive/products/messenger.aspx>
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+
 
 -- 
-                                                 Gilles.
+Philippe.
 
