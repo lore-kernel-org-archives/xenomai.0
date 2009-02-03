@@ -1,15 +1,15 @@
-Message-ID: <49885254.9070007@domain.hid>
-Date: Tue, 03 Feb 2009 15:19:00 +0100
-From: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
+Message-ID: <4988708D.1060204@domain.hid>
+Date: Tue, 03 Feb 2009 17:27:57 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CF7FB0793253794F9F45991443E5FE2003E4BABF18@domain.hid>	<200901071828.31323.Sebastian.Smolorz@domain.hid>	<CF7FB0793253794F9F45991443E5FE2003E4BAC0C0@domain.hid>	<4965D651.5010808@domain.hid>
-	<CF7FB0793253794F9F45991443E5FE2003E4EFB9BA@us194mx002.tycoelectronics.net>
-	<496605F2.1080306@domain.hid>
-	<CF7FB0793253794F9F45991443E5FE2004E3E954FF@us194mx002.tycoelectronics.net>
-In-Reply-To: <CF7FB0793253794F9F45991443E5FE2004E3E954FF@us194mx002.tycoelectronics.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [Socketcan-users] rtcanconfig rtcansend rtcanrecv
+References: <271563.65105.qm@domain.hid>
+	<4986B44B.3030307@domain.hid>
+	<162418.27985.qm@domain.hid>
+In-Reply-To: <162418.27985.qm@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Re :  Problem with  rtdm_irq_request
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,21 +19,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Charlton, John" <john.charlton@domain.hid>
-Cc: Oliver Hartkopp <socketcan@domain.hid>, "socketcan-users@domain.hid" <socketcan-users@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: seb p <sebas_p2002@domain.hid>
+Cc: xenomai@xenomai.org
 
-Charlton, John wrote:
-> Thank you for the tip.  I need to add the socketcan drivers to my linux kernel.
-> I have linux-2.6.27.7 currently patched for xenomai-2.4.6.1 to which I added a
-> rtcan_tscan1.c module to support the TS_CAN1 interface I am using.
-> It looks like the rtcan modules only support CAN_RAW frames and I would like
-> to use your IP point to point tunnel and other utils so I can send IP packets
-> over the CAN interface for performance testing.
+seb p wrote:
+> I try with the last version of xenomai but it's the same problem.
+>=20
+> I send you my code.
+>
 
-The isotp tools Oliver mentioned are for SocketCAN. They do not work for 
-RT-Socket-CAN shipped with Xenomai. So either you have to switch to 
-SocketCAN or someone has to port ISO-TP over RT-Socket-CAN.
+http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__rtdm=
+irq.html
 
--- 
-Sebastian
+> Thank you for your help.
+>=20
+> Seb.
+>=20
+> -----------------------------------------------------------------------=
+-
+> *De :* Philippe Gerum <rpm@xenomai.org>
+> *=C3=80 :* seb p <sebas_p2002@domain.hid>
+> *Cc :* xenomai@xenomai.org
+> *Envoy=C3=A9 le :* Lundi, 2 F=C3=A9vrier 2009, 9h52mn 27s
+> *Objet :* Re: [Xenomai-help] Problem with rtdm_irq_request
+>=20
+> seb p wrote:
+>> Hello,
+>>
+>> I use a atmel card AT91SAM9260 and I install Linux 2.6.25 with xenomai
+>> 2.4.4. I am doing a RTDM serial driver. I use the function
+>> rtdm_irq_request
+>>
+> <http://www.xenomai.org/documentation/trunk/html/api/group__rtdmirq.htm=
+l#g9bb3d95218ac5261e4033fb0bf695073>
+>> with the routine rt_rs485_interrupt. The interrupt number is 7. The
+>> interrupt is enable when a carracter is in the buffer Rx and the
+>> programm execute the routine rt_rs485_interrupt. But in my programm,
+>> when a caracter is in the buffer Rx, the programm doesn't execute the
+>> routine and I must reboot the linux. The console don't answer.
+>>
+>> Have you got an idea of the problem? Thanks.
+>>
+>=20
+> Time is a scarce resource for everyone. With that in mind, please:
+>=20
+> - do not report issues based on outdated Xenomai releases unless you
+> made sure
+> that such issue also happens on the latest release. Xenomai 2.4.6.1 wil=
+l
+> happily
+> work over 2.6.25/arm.
+>=20
+> - send an excerpt of your code that helps understanding the issue.
+>=20
+>> S=C3=A9b.
+>>
+>>
+>> ----------------------------------------------------------------------=
+--
+>>
+>> _______________________________________________
+>> Xenomai-help mailing list
+>> Xenomai-help@domain.hid <mailto:Xenomai-help@domain.hid>
+>> https://mail.gna.org/listinfo/xenomai-help
+>=20
+>=20
+> --=20
+> Philippe.
+>=20
+
+
+--=20
+Philippe.
 
