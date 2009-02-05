@@ -1,13 +1,17 @@
-Content-class: urn:content-classes:message
+Message-ID: <498B12E4.6010001@domain.hid>
+Date: Thu, 05 Feb 2009 17:25:08 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 5 Feb 2009 16:10:38 -0000
-Message-ID: <4B3F8896E1733D4787DDB0EA1C7FF91F704347@domain.hid>
-From: "Mike McTernan" <mmcternan@domain.hid>
-Subject: [Xenomai-help] lib order fails for xeno-config --posix-ldflags on
-	Blackfin
+References: <4B3F8896E1733D4787DDB0EA1C7FF91F6B58D5@domain.hid>
+	<4988830A.7070800@domain.hid>
+	<4B3F8896E1733D4787DDB0EA1C7FF91F6B58DC@ukmail.uk.wirelessworld.airvananet.com>
+	<498B0BC5.3060808@domain.hid>
+	<4B3F8896E1733D4787DDB0EA1C7FF91F704346@domain.hid>
+In-Reply-To: <4B3F8896E1733D4787DDB0EA1C7FF91F704346@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] IRQ reservation and config
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,63 +21,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Mike McTernan <mmcternan@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+Mike McTernan wrote:
+>> Mike McTernan wrote:
+>>> Hi,
+>>>
+>>> Right - I want the interrupt to be handled in realtime.
+>>>
+>>> Is there a way to configure the interrupt as level sensitive under
+>>> Xenomai?  I can't see how to do it, hence the thought of using
+>>> request_irq(), which can do that.
+>>>
+>> rtdm_irq_request() assumes that the platform-dependent code did set
+> the
+>> correct IRQ type/sense already.
+> 
+> Cool.  So I think you are saying it is valid to first request_irq() to
+> setup and config the interrupt, then hook it with rtdm_irq_request() for
+> the realtime handler afterwards. 
+>
 
-Checking xeno-config.in from 2.4.1, it has the following:
+Yes; the IRQ could even be freed right away, since you only want request_irq()
+to set the IRQ sense, and free_irq() won't undo anything.
 
-XENO_POSIX_LDFLAGS=3D"-L${staging}${libdir} -lpthread_rt -lpthread -lrt
-@XENO_USER_APP_LDFLAGS@"
+> I was unsure about mixing calls to the rtdm with the normal APIs, but it
+> sounds like in this case it is not a problem and the recommended method.
+> 
 
-On Blackfin uClinux 2008R1.5 linking fails with -lpthread_rt and
--lpthread in that order:
+I would say that the recommended method is rather to have the BSP code do
+whatever is needed to set the damn thing properly, but if it does not, plan B
+may be to count on request_irq() to call the set_type() callback of the related
+interrupt chip for the IRQ in question. That should work (Famous Last Words).
 
-bfin-uclinux-gcc -I/usr/xenomai/include -I/usr/xenomai/include/posix
--D_GNU_SOURCE -D_REENTRANT -D__XENO__ -o hello hello.o
--Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib -lpthread_rt
--lpthread -lrt
-/opt/uClinux/bfin-uclinux/bfin-uclinux/runtime/usr/lib/libpthread.a(mute
-x.os): In function `__pthread_once_fork_child':
-libpthread/linuxthreads.old/mutex.c:357: undefined reference to
-`___wrap_pthread_cond_init'
-/opt/uClinux/bfin-uclinux/bfin-uclinux/runtime/usr/lib/libpthread.a(mute
-x.os): In function `__pthread_once':
-libpthread/linuxthreads.old/mutex.c:308: undefined reference to
-`___wrap_pthread_cond_wait'
-libpthread/linuxthreads.old/mutex.c:325: undefined reference to
-`___wrap_pthread_cond_broadcast'
-/opt/uClinux/bfin-uclinux/bfin-uclinux/runtime/usr/lib/libpthread.a(mute
-x.os): In function `pthread_once_cancelhandler':
-libpthread/linuxthreads.old/mutex.c:281: undefined reference to
-`___wrap_pthread_cond_broadcast'
-collect2: ld returned 1 exit status
-make: *** [hello] Error 1
+> Many Thanks,
+> 
+> Mike
+> 
+> 
 
-It looks like the uClinux pthread implementation makes use of its own
-functions and hence needs the library containing the wrappers specified
-after the pthread lib to enable resolving of references, as per the ld
-manual:
 
-"Normally, an archive is searched only once in the order that it is
-specified on the command line. If a symbol in that archive is needed to
-resolve an undefined symbol referred to by an object in an archive that
-appears later on the command line, the linker would not be able to
-resolve that reference."
-
-I'd have thought there are potentially some circular dependencies
-between the pthread and pthread_rt libs.  Would it help portability to
-surround these options with -Wl,--start-group <libs> -Wl,--end-group?
-i.e.
-
-XENO_POSIX_LDFLAGS=3D"-L${staging}${libdir} -Wl,--start-group =
--lpthread_rt
--lpthread -Wl,--end-group -lrt @XENO_USER_APP_LDFLAGS@"
-
-I've done this locally and I can build the apps without re-ordering the
-libraries.
-
-Regards,
-
-Mike
+-- 
+Philippe.
 
