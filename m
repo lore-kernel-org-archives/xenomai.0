@@ -1,110 +1,63 @@
-Message-ID: <49A40219.1020305@domain.hid>
-Date: Tue, 24 Feb 2009 15:20:09 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <498D56C7.7020504@domain.hid>
+Date: Sat, 07 Feb 2009 10:39:19 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <49A3F793.3010204@domain.hid> <49A3FB6E.2090509@domain.hid>
-	<49A3FCD4.90900@domain.hid> <49A3FF9E.5000206@domain.hid>
-In-Reply-To: <49A3FF9E.5000206@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <20090204141542.GA9557@domain.hid>	<20090204161903.GA27688@domain.hid>
+	<20090205093528.GC11556@domain.hid>
+In-Reply-To: <20090205093528.GC11556@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] Fix gatekeeper affinity
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] posix shm problem
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Tom Schouten <tom@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> As the xnsched structures get initialized later, during xnpod_init,
->>>> xnsched_cpu always returned 0 in the gatekeeper_thread prologue. That
->>>> caused binding of all gatekeepers to CPU 0.
->>>>
->>>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->>>> ---
->>>>
->>>>  ksrc/nucleus/shadow.c |    5 ++++-
->>>>  1 files changed, 4 insertions(+), 1 deletions(-)
->>>>
->>>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
->>>> index 1dedd85..2243c0e 100644
->>>> --- a/ksrc/nucleus/shadow.c
->>>> +++ b/ksrc/nucleus/shadow.c
->>>> @@ -823,11 +823,14 @@ static int gatekeeper_thread(void *data)
->>>>  	struct task_struct *this_task = current;
->>>>  	DECLARE_WAITQUEUE(wait, this_task);
->>>>  	struct xnsched *sched = data;
->>>> -	int cpu = xnsched_cpu(sched);
->>>>  	struct xnthread *target;
->>>>  	cpumask_t cpumask;
->>>> +	int cpu;
->>>>  	spl_t s;
->>>>  
->>>> +	/* sched not fully initialized, xnsched_cpu does not work yet */
->>>> +	cpu = sched - nkpod_struct.sched;
->>>> +
->>>>  	this_task->flags |= PF_NOFREEZE;
->>>>  	sigfillset(&this_task->blocked);
->>>>  	cpumask = cpumask_of_cpu(cpu);
->>> This does not look good, it means that the gatekeeper accesses the sched
->>> structure before it is initialized. So, IMO, the proper fix would be to
->>> start the gatekeepers only after the sched structure has been initialized.
->>>
->> I briefly thought about moving xnshadow_mount into xnpod_init. But given
->> the fact that it worked like this before and that I was not able to
->> quickly exclude new regressions when reordering things, I decided to
->> restore the old pattern.
+Tom Schouten wrote:
+> Hello,
 > 
-> Ok. What about passing cpu as the gatekeeper argument, and using
-> xnpod_sched_slot(cpu) to find the sched pointer ?
+> I tried with a different kernel .config (right.config) which made the 
+> userspace posix shm problem go away.  The significant difference I can see 
+> is this:
 > 
+> ## cat right.config |grep SHM
+> CONFIG_SHMEM=y
+> # CONFIG_TINY_SHMEM is not set
+> # CONFIG_XENO_OPT_POSIX_SHM is not set
 
-Something like this? Same result, but looks indeed a bit nicer.
+Ok. In this case, you use Linux' shared memories, not xenomai's.
 
------------>
+There is something I do not understand, though. Is right.config the
+config that you use with 2.4.4 too ? Just to know if the problem comes
+from recent changes or has always been there.
 
-As the xnsched structures get initialized later, during xnpod_init,
-xnsched_cpu always returned 0 in the gatekeeper_thread prologue. That
-caused binding of all gatekeepers to CPU 0.
+> 
+> 
+> ## cat wrong.config |grep SHM
+> CONFIG_SHMEM=y
+> # CONFIG_TINY_SHMEM is not set
+> CONFIG_XENO_OPT_POSIX_SHM=y
+> 
+> Cheers,
+> Tom
+> 
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
 
- ksrc/nucleus/shadow.c |    8 ++++----
- 1 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
-index 1dedd85..6822fcb 100644
---- a/ksrc/nucleus/shadow.c
-+++ b/ksrc/nucleus/shadow.c
-@@ -822,8 +822,8 @@ static int gatekeeper_thread(void *data)
- {
- 	struct task_struct *this_task = current;
- 	DECLARE_WAITQUEUE(wait, this_task);
--	struct xnsched *sched = data;
--	int cpu = xnsched_cpu(sched);
-+	int cpu = (long)data;
-+	struct xnsched *sched = xnpod_sched_slot(cpu);
- 	struct xnthread *target;
- 	cpumask_t cpumask;
- 	spl_t s;
-@@ -2600,8 +2600,8 @@ int xnshadow_mount(void)
- 		sema_init(&sched->gksync, 0);
- 		xnarch_memory_barrier();
- 		sched->gatekeeper =
--		    kthread_create(&gatekeeper_thread, sched, "gatekeeper/%d",
--				   cpu);
-+		    kthread_create(&gatekeeper_thread, (void *)(long)cpu,
-+				   "gatekeeper/%d", cpu);
- 		wake_up_process(sched->gatekeeper);
- 		down(&sched->gksync);
- 	}
+-- 
+					    Gilles.
 
