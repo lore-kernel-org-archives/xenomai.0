@@ -1,12 +1,15 @@
-Message-ID: <49904BCF.4020509@domain.hid>
-Date: Mon, 09 Feb 2009 15:29:19 +0000
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Mon, 9 Feb 2009 17:50:09 +0100
+From: Tom Schouten <tom@domain.hid>
+Message-ID: <20090209165009.GD12938@domain.hid>
+References: <20090204141542.GA9557@domain.hid>
+	<20090204161903.GA27688@domain.hid>
+	<20090205093528.GC11556@domain.hid>
+	<498D56C7.7020504@domain.hid>
 MIME-Version: 1.0
-References: <a0ef0a9d0902081422j35e1cfe8s9bf53083b87ef1cb@domain.hid>
-In-Reply-To: <a0ef0a9d0902081422j35e1cfe8s9bf53083b87ef1cb@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Porting xenomai on uclinux
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <498D56C7.7020504@domain.hid>
+Subject: Re: [Xenomai-help] posix shm problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,43 +19,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ghanem Lafi <lafi.ghanem@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Ghanem Lafi wrote:
-> Hello,
+On Sat, Feb 07, 2009 at 10:39:19AM +0100, Gilles Chanteperdrix wrote:
+> Tom Schouten wrote:
+> > Hello,
+> > 
+> > I tried with a different kernel .config (right.config) which made the 
+> > userspace posix shm problem go away.  The significant difference I can see 
+> > is this:
+> > 
+> > ## cat right.config |grep SHM
+> > CONFIG_SHMEM=y
+> > # CONFIG_TINY_SHMEM is not set
+> > # CONFIG_XENO_OPT_POSIX_SHM is not set
 > 
-> It is my first time with xenomai and i  have to port xenomai on
-> uclinux on the first step.
-> Then i ask about the compatible version of xenomai and uclinux and the
-> version of linux kernel if it is necessary.
+> Ok. In this case, you use Linux' shared memories, not xenomai's.
+> 
 
-Xenomai should not care much about whether uclinux or linux is used,
-since at least one port exists of xenomai over an architecture using
-uclinux (blackfin).
+Aha.  
 
-Now, for the specific case of ARM, the uclinux patch for ARM is no
-longer published since some part of it have started to been merged into
-the mainline linux, but since not all of it has been merged, uclinux is
-not yet selectable in the mainline linux kernel configuration. So
-basically, I do not know. You should probably ask to the uclinux/arm
-maintainers/mailing list (you can find information on this site:
-http://opensrc.sec.samsung.com/profile.html) for the way of having
-uclinux on arm with a recent kernel.
+Does this have any impact on real-time behaviour after the memory is 
+mapped?
 
-In any case, when you have a working uclinux, you can apply the I-pipe
-patch for that kernel, and start seeing what happens when you enable
-both I-pipe and uclinux. Normally, nothing wrong should happen, but I
-would not been surprised if a few #ifdef CONFIG_MMU are missing in the
-I-pipe patch.
+> There is something I do not understand, though. Is right.config the
+> config that you use with 2.4.4 too ?
 
-> After, the second step is to load the result image on arm processor.
-> Then i ask about the cross compiler compatible with my work.
+Yes.. 
 
-Look at linux and uclinux to see what compiler are recommended. On ARM,
-I would recommend to avoid gcc 4.3.2 since it has a severe bug related
-with inline assembly.
+> Just to know if the problem comes
+> from recent changes or has always been there.
+> 
 
--- 
-                                                 Gilles.
+So I guess this report is not very informative..  I didn't try to
+enable CONFIG_XENO_OPT_POSIX_SHM on 2.4.4, only with the newer Xenomai 
+versions.
 
