@@ -1,15 +1,10 @@
-Date: Tue, 10 Feb 2009 20:46:23 +0100
-From: Georg Gottleuber <gg@domain.hid>
+Date: Tue, 10 Feb 2009 11:59:58 -0800 (PST)
+From: A User <t02446@domain.hid>
 MIME-Version: 1.0
-References: <E1LWvjc-0006Xw-FB@mailer.emlix.com>
-	<4991AF95.1030301@domain.hid>	<E1LWwFb-000754-FT@mailer.emlix.com>
-	<4991B98C.8000301@domain.hid> <E1LWwd9-0007TE-Ee@domain.hid>
-	<4991D290.8020306@domain.hid>
-In-Reply-To: <4991D290.8020306@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Message-Id: <E1LWyV8-0000ph-Ae@domain.hid>
-Subject: Re: [Xenomai-help] strange latency output (xenomai-2.4.5)
+Content-Type: text/plain; charset=us-ascii
+Message-ID: <187029.53861.qm@domain.hid>
+Subject: [Xenomai-help] matching a kernel and xenomai patch
+Reply-To: t02446@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,50 +16,12 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Gilles Chanteperdrix schrieb:
-> Georg Gottleuber wrote:
->> Gilles Chanteperdrix schrieb:
->>> Georg Gottleuber wrote:
->>>> Gilles Chanteperdrix schrieb:
->>>>> Georg Gottleuber wrote:
->>>>>> Hi,
->>>>>>
->>>>>> I recently port a  ARM926EJ-S mach to Xenomai
->>>>>> (like described in http://www.xenomai.org/index.php/I-pipe:ArmPorting).
->>>>>>
->>>>>> While testing with latency I got this output:
->>>>>> # /usr/xenomai/bin/latency  -p 1000 -h -s -H 500 -t 1
->>>>>> == Sampling period: 1000 us
->>>>>> == Test mode: in-kernel periodic task
->>>>>> == All results in microseconds
->>>>>> warming up...
->>>>>> RTT|  00:00:01  (in-kernel periodic task, 1000 us period, priority 99)
->>>>>> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
->>>>>> RTD|      78.992|     104.308|     124.131|       0|      78.992|     124.131
->>>>>> ...
->>>>>> RTD|      14.678|      68.413|      96.275|       0|       9.528|     155.321
->>>>>> RTD|      84.046|     116.435|     175.192|       0|       9.528|     182.139
->>>>>> ...                                ^^^^^^^                            ^^^^^^^
->>>>> I do not understand, what is wrong with these values ?
->>>> It thought, if "lat max" of the current interval is bigger than "lat worst", this "lat
->>>> max" updates the "lat worst". So I ask myself, out of which interval comes the updated 182
->>>> value?
->>> If your machine is highly loaded, like what you get with a ping -f, the
->>> "display" thread, which is a non real-time one, may be delayed for more
->>> than one second, in which case, it "misses", what is sent by the
->>> "sampling" thread, but the sampling thread never looses the worst
->>> latency itself, so that when the display thread finally manages to print
->>> something, it will print the correct worst case latency.
->>>
->> Bingo. That's the point. This also explains totally equal lines and missing time
->> stamps/lines that I have observed.
-> 
-> Yes, the communication between the sampling and display threads is a
-> semaphore, so when the display thread is delayed, it will get the
-> semaphore several times in a row and print the same values.
-> 
-> If your patch is for a machine in the mainline linux, I would be happy
-> to merge your changes into the I-pipe patch.
+I see that Xenomai 2.4.6.1 supports Linux 2.6.27-x86-2.1-02, it's not clear exactly which Linux tar to start with.
 
-The merge to mainline is in progress (look for PNX8181).
+I understand 2.6.27.  I can guess what x86 means, but I don't get 2.1-02.
+
+2.6.27 currently has build numbers up to 15 (that is, 2.6.27.15).  Do I use Xenomai 2.5.6.1 with Linux 2.6.27.15, or 2.6.27.2, or does 2.1-02 mean something else?  Is this covered in a faq?
+
+
+      
 
