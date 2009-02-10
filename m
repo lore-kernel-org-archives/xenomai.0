@@ -1,17 +1,14 @@
-Message-ID: <4991C5F5.7030807@domain.hid>
-Date: Tue, 10 Feb 2009 18:22:45 +0000
+Message-ID: <4991D290.8020306@domain.hid>
+Date: Tue, 10 Feb 2009 20:16:32 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <729916.37479.qm@domain.hid>
-	<49915E95.7010101@domain.hid>
-	<951569.86092.qm@domain.hid>
-	<49917AE7.5030207@domain.hid>
-	<767995.6513.qm@domain.hid>
-In-Reply-To: <767995.6513.qm@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <E1LWvjc-0006Xw-FB@mailer.emlix.com>
+	<4991AF95.1030301@domain.hid>	<E1LWwFb-000754-FT@mailer.emlix.com>
+	<4991B98C.8000301@domain.hid> <E1LWwd9-0007TE-Ee@domain.hid>
+In-Reply-To: <E1LWwd9-0007TE-Ee@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Re : Re : Problem with Xeno-test: "Something
- died a XXX or"
+Subject: Re: [Xenomai-help] strange latency output (xenomai-2.4.5)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,37 +18,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Mathieu JOINIE-MAURIN <mjoiniem@domain.hid>, Xenomai help <xenomai@xenomai.org>
+To: Georg Gottleuber <gg@domain.hid>
+Cc: xenomai@xenomai.org
 
-Mathieu JOINIE-MAURIN wrote:
-> Thank you for your help. The thing is that I am really not familiar
-> with such scripts.  I found somebody who had the same error before on
->  https://mail.gna.org/public/xenomai-help/2008-10/msg00034.html
+Georg Gottleuber wrote:
+> 
+> Gilles Chanteperdrix schrieb:
+>> Georg Gottleuber wrote:
+>>> Gilles Chanteperdrix schrieb:
+>>>> Georg Gottleuber wrote:
+>>>>> Hi,
+>>>>>
+>>>>> I recently port a  ARM926EJ-S mach to Xenomai
+>>>>> (like described in http://www.xenomai.org/index.php/I-pipe:ArmPorting).
+>>>>>
+>>>>> While testing with latency I got this output:
+>>>>> # /usr/xenomai/bin/latency  -p 1000 -h -s -H 500 -t 1
+>>>>> == Sampling period: 1000 us
+>>>>> == Test mode: in-kernel periodic task
+>>>>> == All results in microseconds
+>>>>> warming up...
+>>>>> RTT|  00:00:01  (in-kernel periodic task, 1000 us period, priority 99)
+>>>>> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
+>>>>> RTD|      78.992|     104.308|     124.131|       0|      78.992|     124.131
+>>>>> ...
+>>>>> RTD|      14.678|      68.413|      96.275|       0|       9.528|     155.321
+>>>>> RTD|      84.046|     116.435|     175.192|       0|       9.528|     182.139
+>>>>> ...                                ^^^^^^^                            ^^^^^^^
+>>>> I do not understand, what is wrong with these values ?
+>>> It thought, if "lat max" of the current interval is bigger than "lat worst", this "lat
+>>> max" updates the "lat worst". So I ask myself, out of which interval comes the updated 182
+>>> value?
+>> If your machine is highly loaded, like what you get with a ping -f, the
+>> "display" thread, which is a non real-time one, may be delayed for more
+>> than one second, in which case, it "misses", what is sent by the
+>> "sampling" thread, but the sampling thread never looses the worst
+>> latency itself, so that when the display thread finally manages to print
+>> something, it will print the correct worst case latency.
+>>
+> 
+> Bingo. That's the point. This also explains totally equal lines and missing time
+> stamps/lines that I have observed.
 
-Come on ! Debugging a script is not that hard.
+Yes, the communication between the sampling and display threads is a
+semaphore, so when the display thread is delayed, it will get the
+semaphore several times in a row and print the same values.
 
-> 
-> I think I defined good my processor in .config file.
-> 
-> In the script, I found the following code:
-> 
-> 
-> generate_loads() { jobsct=$1; #if test -z "$1"; then echo Skipping
-> generate_loads; return; fi shift 1 if test 0 -eq $withBusybox ; then 
-> reaper() { echo something died a $! or $* ; sleep 1;  } trap reaper
-> CHLD trap cleanup_load EXIT    # under all exit conditions fi while
-> test $jobsct -ge 1; do jobsct=$(($jobsct-1)); mkload 
-> dd_jobs="$dd_jobs $!" ; done
-> 
-> What is exactly Busy box ? Is it a flag I should have turned off or
-> on in the kernel .config file ? I do not really understand the test
-> which is made and why I get "Something died a ..." error.
+If your patch is for a machine in the mainline linux, I would be happy
+to merge your changes into the I-pipe patch.
 
-You can find what is busybox with google or wikipedia. And in any case,
-you can look in the script to see how this withBusybox variable is set.
-
-Please use the mailing list.
+It would be interesting if you could try a recent patch with the "FCSE"
+option, to see if it works for 926 (it was tested for 920 and xscale
+only), and what gains you get on latencies.
 
 -- 
-                                                 Gilles.
+					    Gilles.
 
