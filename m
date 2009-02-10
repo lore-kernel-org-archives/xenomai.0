@@ -1,5 +1,5 @@
-Message-ID: <4991B7AC.60901@domain.hid>
-Date: Tue, 10 Feb 2009 17:21:48 +0000
+Message-ID: <4991B98C.8000301@domain.hid>
+Date: Tue, 10 Feb 2009 17:29:48 +0000
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <E1LWvjc-0006Xw-FB@mailer.emlix.com> <4991AF95.1030301@domain.hid>
@@ -48,9 +48,12 @@ Georg Gottleuber wrote:
 > max" updates the "lat worst". So I ask myself, out of which interval comes the updated 182
 > value?
 
-Ok. Got it.
-
-What type of floats are you compiling with ?
+If your machine is highly loaded, like what you get with a ping -f, the
+"display" thread, which is a non real-time one, may be delayed for more
+than one second, in which case, it "misses", what is sent by the
+"sampling" thread, but the sampling thread never looses the worst
+latency itself, so that when the display thread finally manages to print
+something, it will print the correct worst case latency.
 
 -- 
                                                  Gilles.
