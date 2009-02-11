@@ -1,12 +1,13 @@
-Message-ID: <4991E562.3070200@domain.hid>
-Date: Tue, 10 Feb 2009 21:36:50 +0100
+Message-ID: <49921547.2060601@domain.hid>
+Date: Wed, 11 Feb 2009 01:01:11 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <187029.53861.qm@domain.hid>
-In-Reply-To: <187029.53861.qm@domain.hid>
+References: <20090204141542.GA9557@domain.hid>	<20090204161903.GA27688@domain.hid>	<20090205093528.GC11556@domain.hid>	<498D56C7.7020504@domain.hid>	<20090209165009.GD12938@domain.hid>
+	<499089C8.2010303@domain.hid>
+In-Reply-To: <499089C8.2010303@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] matching a kernel and xenomai patch
+Subject: Re: [Xenomai-help] posix shm problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,28 +17,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: t02446@domain.hid
+To: Tom Schouten <tom@domain.hid>
 Cc: xenomai@xenomai.org
 
-A User wrote:
-> I see that Xenomai 2.4.6.1 supports Linux 2.6.27-x86-2.1-02, it's not
-> clear exactly which Linux tar to start with.
+Gilles Chanteperdrix wrote:
+> Tom Schouten wrote:
+>> On Sat, Feb 07, 2009 at 10:39:19AM +0100, Gilles Chanteperdrix wrote:
+>>> Tom Schouten wrote:
+>>>> Hello,
+>>>>
+>>>> I tried with a different kernel .config (right.config) which made the 
+>>>> userspace posix shm problem go away.  The significant difference I can see 
+>>>> is this:
+>>>>
+>>>> ## cat right.config |grep SHM
+>>>> CONFIG_SHMEM=y
+>>>> # CONFIG_TINY_SHMEM is not set
+>>>> # CONFIG_XENO_OPT_POSIX_SHM is not set
+>>> Ok. In this case, you use Linux' shared memories, not xenomai's.
+>>>
+>> Aha.  
+>>
+>> Does this have any impact on real-time behaviour after the memory is 
+>> mapped?
 > 
-> I understand 2.6.27.  I can guess what x86 means, but I don't get
-> 2.1-02.
-
-It is the version of the patch, as it happens often that there are
-several versions of adeos I-pipe patches for the same kernel.
-
+> No, provided that the memory is locked with mlockall, there is no fault
+> upon access to the mapped memory.
 > 
-> 2.6.27 currently has build numbers up to 15 (that is, 2.6.27.15).  Do
-> I use Xenomai 2.5.6.1 with Linux 2.6.27.15, or 2.6.27.2, or does
-> 2.1-02 mean something else?  Is this covered in a faq?
+> As explained in the Kconfig help, the only use of Xenomai posix skin
+> shared memory is to share memory between kernel-space and user-space.
+> So, if you only plan to write user-space applications, you do not need
+> posix skin shared memory support.
+> 
+> Nevertheless, the bug you found needs fixing...
 
-The adeos I-pipe patch usually applies on any release. It happens that
-it is false, in this case, a new patch is issued, called for instance:
-adeos-ipipe-2.6.27.13-x86-2.2-04.patch, meaning that it works from linux
-2.6.27.13 onward.
+Ok. This should be fixed by now.
+
+http://svn.gna.org/viewcvs/xenomai?rev=4617&view=rev
 
 -- 
 					    Gilles.
