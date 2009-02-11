@@ -1,12 +1,13 @@
-Content-class: urn:content-classes:message
+Message-ID: <49935B0A.7050706@domain.hid>
+Date: Thu, 12 Feb 2009 00:11:06 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 11 Feb 2009 19:40:19 -0000
-Message-ID: <4B3F8896E1733D4787DDB0EA1C7FF91F704A7F@ukmail.uk.wirelessworld.airvananet.com>
-From: "Mike McTernan" <mmcternan@domain.hid>
-Subject: [Xenomai-help] Massive improvement when Xenomai patched
+References: <4B3F8896E1733D4787DDB0EA1C7FF91F704A7F@ukmail.uk.wirelessworld.airvananet.com>
+In-Reply-To: <4B3F8896E1733D4787DDB0EA1C7FF91F704A7F@ukmail.uk.wirelessworld.airvananet.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Massive improvement when Xenomai patched
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,91 +17,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Mike McTernan <mmcternan@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+Mike McTernan wrote:
+> Hi,
+> 
+> I've patched Blackfin uClinux 2008R1.5 with Adeos and Xenomai 2.4.6.1
+> and started benchmarking our system.  At this point the apps are
+> unmodified and I only change between a Xenomai enabled kernel and an
+> unmodified kernel.  This is verified by checking the boot messages and
+> the process list under /proc/xenomai/stats.
+>
 
-I've patched Blackfin uClinux 2008R1.5 with Adeos and Xenomai 2.4.6.1
-and started benchmarking our system.  At this point the apps are
-unmodified and I only change between a Xenomai enabled kernel and an
-unmodified kernel.  This is verified by checking the boot messages and
-the process list under /proc/xenomai/stats.
+<snip>
 
-The critical app creates a thread to service a level sensitive interrupt
-in user-space via a device driver.  The driver is a Linux char device,
-the guts being:
+> I made measurements over ~2000 sweeps on a scope with the unpatched and
+> patched kernel, both when otherwise idle and then when under load.  To
+> create load I execute the following line on a telnet session:
+> 
+>   $ while true; do ls -l /mnt; done
+>   
+> The results:
+> 
+>   Configuration                    Duration (uS)
+>                            Min       Mean      Max
+>   Vanilla                  9.9       16.8     30.8
+>   Xenomai Kernel          19.0       27.5     50.4
+>   Vanilla + load          10.9    11017.4  19619.7
+>   Xenomai Kernel + load   59.4      215.5   1849.8
+> 
+> Clearly Xenomai appears to add some overhead to the interrupt handling
+> and acknowledgement.  That's to be expected as the apps are executing in
+> the secondary and the drivers are not RTDM, and the overhead is very
+> small in anycase.
+> 
 
-    static irqreturn_t fpgairq_handler(int irq, void *p)
-    {
-        /* Disable this interrupt */
-        disable_irq_nosync(irq);
+As a matter of fact, on the Blackfin with I-pipe series <= 1.8, the IRQs are
+threaded, which causes such overhead. This is no more the case since 1.9-00.
 
-        /* Enable any blocked task to run */
-        fpgairq_waitcond =3D 1;
-        wake_up_interruptible(&fpgairq_waitq);
+> But I don't understand why under load the scheduling of the non-Xenomai
+> task is so much improved.  The worst case is more than x10 better, the
+> average case x50.  It's incredible!
+>
 
-        return IRQ_HANDLED;
-    }
+Beyond that, it's a clear violation of Murphy's law.
 
-    static ssize_t fpgairq_read(struct file *filp, char *buf, size_t
-size, loff_t *offp)
-    {
-        const int irq =3D gpio_to_irq(PIN_IRQ);
+> Is this to be expected?
+> 
 
-        ....
+I suspect the IRQ latency figures look better because the I-pipe lowers the
+current interrupt priority much earlier than the original code does. Moving the
+interrupt handlers over threads reflecting the interrupt priorities used to be
+the way the I-pipe did this on Blackfin at the expense of more overhead.
+Additionally, the I-pipe for 2.6.22/blackfin makes the kernel tick on TMR0
+instead of the core timer (the latter is then dedicated to Xenomai), which may
+have some impact depending on the priority value set for CONFIG_IRQ_TMR0.
 
-        /* Clear the wait condition */
-        fpgairq_waitcond =3D 0;
+Once your driver is RTDM-based and the IRQ hooked via rtdm_irq_request(), you
+should see the worst-case latency drop below 60 us on a bf537, likely less than
+45 us on a bf561. The extra bonus will then likely be due to the changes in
+arch/blackfin/lib/ins.S. These PIO helpers are responsible for huge latency
+spots in the vanilla implementation, particularly under significant network
+load, and the I-pipe makes them preemptible by real-time IRQs, even if Linux
+IRQs are still masked.
 
-        /* Enable the interrupt source */
-        enable_irq(irq);
-
-        /* Now wait for an interrupt */
-        wait_event_interruptible(fpgairq_waitq, fpgairq_waitcond !=3D =
-0);
-
-        /* The interrupt handler will have disabled the interrupt again
-*/
-
-        return size;
-    }
-   =20
-The user-space code sets it's pthread_setschedparam() to SCHED_FIFO with
-a high priority.  It then loops, reading from the device to wait for the
-next interrupt and then writes via a different device to acknowledge the
-external interrupt source.  Measuring the duration for which the line is
-asserted gives the time between the interrupt being asserted and it
-being acknowledged.
-
-I made measurements over ~2000 sweeps on a scope with the unpatched and
-patched kernel, both when otherwise idle and then when under load.  To
-create load I execute the following line on a telnet session:
-
-  $ while true; do ls -l /mnt; done
- =20
-The results:
-
-  Configuration                    Duration (uS)
-                           Min       Mean      Max
-  Vanilla                  9.9       16.8     30.8
-  Xenomai Kernel          19.0       27.5     50.4
-  Vanilla + load          10.9    11017.4  19619.7
-  Xenomai Kernel + load   59.4      215.5   1849.8
-
-Clearly Xenomai appears to add some overhead to the interrupt handling
-and acknowledgement.  That's to be expected as the apps are executing in
-the secondary and the drivers are not RTDM, and the overhead is very
-small in anycase.
-
-But I don't understand why under load the scheduling of the non-Xenomai
-task is so much improved.  The worst case is more than x10 better, the
-average case x50.  It's incredible!
-
-Is this to be expected?
-
-Regards,
-
-Mike
-
-
+-- 
+Philippe.
 
