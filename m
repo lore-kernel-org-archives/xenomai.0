@@ -1,13 +1,12 @@
-Message-ID: <499465D0.7000800@domain.hid>
-Date: Thu, 12 Feb 2009 19:09:20 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <499480EE.3040403@domain.hid>
+Date: Thu, 12 Feb 2009 21:05:02 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <6a782b880902120633k48de76a0y2fa005bc852d74fb@domain.hid>
-In-Reply-To: <6a782b880902120633k48de76a0y2fa005bc852d74fb@domain.hid>
+References: <7ed3bc8b0902120904r800de72q97e694001600051e@domain.hid>
+In-Reply-To: <7ed3bc8b0902120904r800de72q97e694001600051e@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] rt_task_add_hook() doesnt work
-Reply-To: rpm@xenomai.org
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Known-to-work motherboards?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,57 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Thiago Lima <thiagolims@domain.hid>
+To: Stuart O Anderson <soa@domain.hid>
 Cc: xenomai@xenomai.org
 
-Thiago Lima wrote:
-> Hi all !
->=20
-> I need to do some things when a new rt task starts. So that, i need to
-> use the 'rt_task_add_hook()', defined in xenomai task management servic=
-e.
-> So, i have created a linux kernel module in which i call this service i=
-n
-> init_module() function. After that, initialize the module and starts a
-> RT Task.
->=20
-> But, the hook function isnt called. Does anybody have already faced thi=
-s
-> problem ?
->
+Stuart O Anderson wrote:
+> Hello -
+> 
+> Is there a list of recent motherboards that are known to play nicely
+> with Xenomai?  I've run into problems with some machines (USB host
+> drops out, SATA doesn't work, etc) we have in the lab.  I've been able
+> to work around these problems in most cases.
 
-Start hooks are not fired for userland tasks.
+As answered to the questions you initially asked on this list, the only
+known needed workaround is to disable MSI interrupts (I do not even know
+if it is still needed). So, if you have other problems, we would be glad
+to know it, because we like to think that when a kernel configuration
+works with Linux, it works when enabling Xenomai. So, any motherboard
+which works with Linux is supposed to work with Xenomai.
 
->=20
-> --------- kernel module simple code -----
->=20
-> void hook(void *cookie) {
->    printk(KERN_INFO "hook().\n");
-> }
->=20
-> int init_module (void) {
->     rt_task_add_hook(T_HOOK_START, &hook);
->     return 0;
-> }
->=20
-> --------- kernel module simple code -----
->=20
->=20
-> --=20
-> Thiago Lima Silva
-> Graduando - Ci=EAncia da Computa=E7=E3o UFBA
-> Registered Linux user #466887
->=20
->=20
-> -----------------------------------------------------------------------=
--
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+> If there isn't a list online that I've missed, is anyone running
+> xenomai on a relatively recent machine with 8 or more cores without
+> problems?  If so, can you provide hardware specs?
 
+Xenomai will have scalability problems when running on an 8 cores system
+(if you intend to run real-time tasks on each of the 8 cores).
 
---=20
-Philippe.
+-- 
+					    Gilles.
 
