@@ -1,60 +1,50 @@
-Message-ID: <497CEA73.4060902@domain.hid>
-Date: Sun, 25 Jan 2009 23:40:51 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Paul <paul_c@domain.hid>
+Date: Thu, 12 Feb 2009 22:31:25 +0000
 MIME-Version: 1.0
-References: <4975FF9F.1050503@domain.hid> <4976001B.5050105@domain.hid>
-	<4976027D.2090905@domain.hid>
-In-Reply-To: <4976027D.2090905@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] switchtest fails with pthread_create:
- Cannot	allocate memory
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain;
+  charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200902122231.25745.paul_c@domain.hid>
+Subject: [Xenomai-core] SMP build failure (2.6.28)
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-Wolfgang Grandegger wrote:
-> Gilles Chanteperdrix wrote:
->> Wolfgang Grandegger wrote:
->>> Hello,
->>>
->>> when I try to run "switchtest" from the test-suite, I get the error
->>>
->>>   "pthread_create: Cannot allocate memory"
->>>
->>> on my MPC5200 PowerPC board. Some resource is exhausted and likely it's
->>> system memory. I already realized heavy memory usage by threads using
->>> the Xenomai POSIX skin. 
->>>
->>> -bash-3.2# free      
->>>              total       used       free     shared    buffers     cached
->>> Mem:         61280      12044      49236          0          0       5796
->>>
->>> -bash-3.2# ./switchtest rtk0 rtk0 rtup0 rtup0 rtus0 rtus0 rtuo0
->>>
->>> -bash-3.2# free
->>>              total       used       free     shared    buffers     cached
->>> Mem:         61280      59700       1580          0          0       3932
->>>
->>> Any idea what could cause the exhaustive use of memory? Is it the same on
->>> x86? This test was  done with Linux 2.6.26 i-Pipe 2.2-07 and Xenomai 2.4.x
->>> but it's the same with trunk.
->> It not is the stack size problem described in TROUBLESHOOTING ?
-> 
-> Well, RTFM, it seems to be exactly the problem described in there.
-> Setting "ulimit -s 2048" before starting "switchtest" helps.
 
-What I do not understand is that switchtest sets the pthreads stack size
-to 20K, so we should not have this problem...
+Patching a 2.6.28.2 with the relevant patch in trunk, using a config with S=
+MP=20
+enabled resulted in:
 
--- 
-					    Gilles.
+  LD      kernel/xenomai/arch/built-in.o
+  CC      kernel/xenomai/nucleus/heap.o
+In file included from include/xenomai/nucleus/pod.h:34,
+                 from kernel/xenomai/nucleus/heap.c:66:
+include/xenomai/nucleus/sched.h: In function =E2=80=98xnsched_self_resched_=
+p=E2=80=99:
+include/xenomai/nucleus/sched.h:171: error: =E2=80=98nkpod=E2=80=99 undecla=
+red (first use in=20
+this function)
+include/xenomai/nucleus/sched.h:171: error: (Each undeclared identifier is=
+=20
+reported only once
+include/xenomai/nucleus/sched.h:171: error: for each function it appears in=
+=2E)
+make[3]: *** [kernel/xenomai/nucleus/heap.o] Error 1
+
+
+Digging in to the nucleus/sched.h and nucleus/pod.h headers, there appears =
+to=20
+be a circular dependency around nkpod_struct - This only hits home with=20
+CONFIG_SMP defined.
+
+
+Regards, Paul.
 
