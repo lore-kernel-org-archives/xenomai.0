@@ -1,253 +1,73 @@
-Message-ID: <49A4209F.60502@domain.hid>
-Date: Tue, 24 Feb 2009 17:30:23 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <a0e7fce50902240018g6be57617g2c5f14c55685ef24@domain.hid>
-In-Reply-To: <a0e7fce50902240018g6be57617g2c5f14c55685ef24@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] blackfin: build xenomai in FLAT format
-Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Date: Thu, 12 Feb 2009 14:33:54 +0000
+Message-ID: <6a782b880902120633k48de76a0y2fa005bc852d74fb@domain.hid>
+From: Thiago Lima <thiagolims@domain.hid>
+Content-Type: multipart/alternative; boundary=000e0cd4d1aa1d4fc20462b99c33
+Subject: [Xenomai-help] rt_task_add_hook() doesnt work
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: yi li <liyi.dev@domain.hid>
-Cc: Xenomai-core@domain.hid
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-yi li wrote:
-> This patch fixes xenomai-2.4.x branch build scripts, to build xenomai
-> as FLAT on Blackfin.
-> 
-> 1. "-mfdpic" option is by default set by bfin-linux-uclibc-gcc. It is
-> not required and it can cause error for bfin-uclinux-gcc.
+--000e0cd4d1aa1d4fc20462b99c33
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Ack.
+Hi all !
 
-> 2.  libpthread_rt.la should not depend on "lpthread".
-> 
+I need to do some things when a new rt task starts. So that, i need to use
+the 'rt_task_add_hook()', defined in xenomai task management service.
+So, i have created a linux kernel module in which i call this service in
+init_module() function. After that, initialize the module and starts a RT
+Task.
 
-Nak. In flat mode, turning the link dependencies order upside down will not buy
-us anything. Two-phase link is the only way to prevent circular/invalid
-dependencies with a static only format when symbol wrapping is involved.
-
-> -Yi
-> 
-> diff -Nurp --exclude=.svn xenomai-2.4.x-clean/configure xenomai-2.4.x/configure
-> --- xenomai-2.4.x-clean/configure	2008-12-04 19:21:40.000000000 +0800
-> +++ xenomai-2.4.x/configure	2009-02-23 17:12:14.000000000 +0800
-> @@ -22569,10 +22569,10 @@ case $XENO_TARGET_ARCH in
->          ;;
->   blackfin)
->  	# Produce libraries in FDPIC format.
-> -	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe -mfdpic"
-> -	XENO_USER_LDFLAGS="$XENO_USER_CFLAGS -mfdpic"
-> -	XENO_USER_APP_CFLAGS="$XENO_USER_APP_CFLAGS -mfdpic"
-> -	XENO_USER_APP_LDFLAGS="$XENO_USER_APP_LDFLAGS -mfdpic"
-> +	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe"
-> +	XENO_USER_LDFLAGS="$XENO_USER_CFLAGS"
-> +	XENO_USER_APP_CFLAGS="$XENO_USER_APP_CFLAGS"
-> +	XENO_USER_APP_LDFLAGS="$XENO_USER_APP_LDFLAGS"
->          ;;
->   arm)
->  	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe
-> -march=armv$CONFIG_XENO_ARM_ARCH"
-> diff -Nurp --exclude=.svn xenomai-2.4.x-clean/configure.in
-> xenomai-2.4.x/configure.in
-> --- xenomai-2.4.x-clean/configure.in	2008-12-04 19:21:40.000000000 +0800
-> +++ xenomai-2.4.x/configure.in	2009-02-23 17:12:14.000000000 +0800
-> @@ -648,10 +648,10 @@ case $XENO_TARGET_ARCH in
->          ;;
->   blackfin)
->  	# Produce libraries in FDPIC format.
-> -	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe -mfdpic"
-> -	XENO_USER_LDFLAGS="$XENO_USER_CFLAGS -mfdpic"
-> -	XENO_USER_APP_CFLAGS="$XENO_USER_APP_CFLAGS -mfdpic"
-> -	XENO_USER_APP_LDFLAGS="$XENO_USER_APP_LDFLAGS -mfdpic"
-> +	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe"
-> +	XENO_USER_LDFLAGS="$XENO_USER_CFLAGS"
-> +	XENO_USER_APP_CFLAGS="$XENO_USER_APP_CFLAGS"
-> +	XENO_USER_APP_LDFLAGS="$XENO_USER_APP_LDFLAGS"
->          ;;
->   arm)
->  	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe
-> -march=armv$CONFIG_XENO_ARM_ARCH"
-> diff -Nurp --exclude=.svn
-> xenomai-2.4.x-clean/src/skins/posix/Makefile.am
-> xenomai-2.4.x/src/skins/posix/Makefile.am
-> --- xenomai-2.4.x-clean/src/skins/posix/Makefile.am	2008-03-10
-> 06:33:59.000000000 +0800
-> +++ xenomai-2.4.x/src/skins/posix/Makefile.am	2009-02-23
-> 17:12:14.000000000 +0800
-> @@ -2,7 +2,7 @@ includedir = $(prefix)/include/posix
-> 
->  lib_LTLIBRARIES = libpthread_rt.la
-> 
-> -libpthread_rt_la_LDFLAGS = -version-info 1:0:0 -lpthread
-> +libpthread_rt_la_LDFLAGS = -version-info 1:0:0
-> 
->  libpthread_rt_la_SOURCES = \
->  	init.c \
-> diff -Nurp --exclude=.svn
-> xenomai-2.4.x-clean/src/skins/posix/Makefile.in
-> xenomai-2.4.x/src/skins/posix/Makefile.in
-> --- xenomai-2.4.x-clean/src/skins/posix/Makefile.in	2008-06-02
-> 05:32:28.000000000 +0800
-> +++ xenomai-2.4.x/src/skins/posix/Makefile.in	2009-02-23
-> 17:12:14.000000000 +0800
-> @@ -239,7 +239,7 @@ target_vendor = @target_vendor@
->  top_builddir = @top_builddir@
->  top_srcdir = @top_srcdir@
->  lib_LTLIBRARIES = libpthread_rt.la
-> -libpthread_rt_la_LDFLAGS = -version-info 1:0:0 -lpthread
-> +libpthread_rt_la_LDFLAGS = -version-info 1:0:0
->  libpthread_rt_la_SOURCES = \
->  	init.c \
->  	thread.c \
-> diff -Nurp --exclude=.svn
-> xenomai-2.4.x-clean/src/testsuite/clocktest/Makefile.am
-> xenomai-2.4.x/src/testsuite/clocktest/Makefile.am
-> --- xenomai-2.4.x-clean/src/testsuite/clocktest/Makefile.am	2008-03-01
-> 04:41:56.000000000 +0800
-> +++ xenomai-2.4.x/src/testsuite/clocktest/Makefile.am	2009-02-23
-> 17:12:14.000000000 +0800
-> @@ -9,7 +9,7 @@ clocktest_CPPFLAGS = -I$(top_srcdir)/inc
->  clocktest_LDFLAGS = $(XENO_POSIX_WRAPPERS) $(XENO_USER_LDFLAGS)
-> 
->  clocktest_LDADD = \
-> -	../../skins/posix/libpthread_rt.la -lpthread -lrt
-> +	-lpthread -lrt ../../skins/posix/libpthread_rt.la
-> 
->  install-data-local:
->  	$(mkinstalldirs) $(DESTDIR)$(testdir)
-> diff -Nurp --exclude=.svn
-> xenomai-2.4.x-clean/src/testsuite/clocktest/Makefile.in
-> xenomai-2.4.x/src/testsuite/clocktest/Makefile.in
-> --- xenomai-2.4.x-clean/src/testsuite/clocktest/Makefile.in	2008-06-02
-> 05:32:28.000000000 +0800
-> +++ xenomai-2.4.x/src/testsuite/clocktest/Makefile.in	2009-02-23
-> 17:12:14.000000000 +0800
-> @@ -232,7 +232,7 @@ clocktest_SOURCES = clocktest.c
->  clocktest_CPPFLAGS = -I$(top_srcdir)/include/posix
-> $(XENO_USER_CFLAGS) -I$(top_srcdir)/include
->  clocktest_LDFLAGS = $(XENO_POSIX_WRAPPERS) $(XENO_USER_LDFLAGS)
->  clocktest_LDADD = \
-> -	../../skins/posix/libpthread_rt.la -lpthread -lrt
-> +	-lpthread -lrt ../../skins/posix/libpthread_rt.la
-> 
->  EXTRA_DIST = runinfo.in
->  all: all-am
-> diff -Nurp --exclude=.svn
-> xenomai-2.4.x-clean/src/testsuite/cyclic/Makefile.am
-> xenomai-2.4.x/src/testsuite/cyclic/Makefile.am
-> --- xenomai-2.4.x-clean/src/testsuite/cyclic/Makefile.am	2008-03-01
-> 04:41:56.000000000 +0800
-> +++ xenomai-2.4.x/src/testsuite/cyclic/Makefile.am	2009-02-23
-> 17:12:14.000000000 +0800
-> @@ -9,7 +9,7 @@ cyclictest_CPPFLAGS = -I$(top_srcdir)/in
->  cyclictest_LDFLAGS = $(XENO_POSIX_WRAPPERS) $(XENO_USER_LDFLAGS)
-> 
->  cyclictest_LDADD = \
-> -	../../skins/posix/libpthread_rt.la -lpthread -lrt
-> +	-lpthread -lrt ../../skins/posix/libpthread_rt.la
-> 
->  install-data-local:
->  	$(mkinstalldirs) $(DESTDIR)$(testdir)
-> diff -Nurp --exclude=.svn
-> xenomai-2.4.x-clean/src/testsuite/cyclic/Makefile.in
-> xenomai-2.4.x/src/testsuite/cyclic/Makefile.in
-> --- xenomai-2.4.x-clean/src/testsuite/cyclic/Makefile.in	2008-06-02
-> 05:32:28.000000000 +0800
-> +++ xenomai-2.4.x/src/testsuite/cyclic/Makefile.in	2009-02-23
-> 17:12:14.000000000 +0800
-> @@ -232,7 +232,7 @@ cyclictest_SOURCES = cyclictest.c
->  cyclictest_CPPFLAGS = -I$(top_srcdir)/include/posix
-> $(XENO_USER_CFLAGS) -DIPIPE_TRACE=1 -I$(top_srcdir)/include
->  cyclictest_LDFLAGS = $(XENO_POSIX_WRAPPERS) $(XENO_USER_LDFLAGS)
->  cyclictest_LDADD = \
-> -	../../skins/posix/libpthread_rt.la -lpthread -lrt
-> +	-lpthread -lrt ../../skins/posix/libpthread_rt.la
-> 
->  EXTRA_DIST = runinfo.in
->  all: all-am
-> diff -Nurp --exclude=.svn
-> xenomai-2.4.x-clean/src/testsuite/irqbench/Makefile.am
-> xenomai-2.4.x/src/testsuite/irqbench/Makefile.am
-> --- xenomai-2.4.x-clean/src/testsuite/irqbench/Makefile.am	2008-03-01
-> 04:41:56.000000000 +0800
-> +++ xenomai-2.4.x/src/testsuite/irqbench/Makefile.am	2009-02-23
-> 17:12:14.000000000 +0800
-> @@ -19,7 +19,7 @@ irqloop_LDFLAGS = \
->  	$(XENO_USER_LDFLAGS)
-> 
->  irqloop_LDADD = \
-> -	../../skins/posix/libpthread_rt.la -lpthread -lrt
-> +	-lpthread -lrt ../../skins/posix/libpthread_rt.la
-> 
-> 
->  irqbench_SOURCES = irqbench.c
-> diff -Nurp --exclude=.svn
-> xenomai-2.4.x-clean/src/testsuite/irqbench/Makefile.in
-> xenomai-2.4.x/src/testsuite/irqbench/Makefile.in
-> --- xenomai-2.4.x-clean/src/testsuite/irqbench/Makefile.in	2008-06-02
-> 05:32:28.000000000 +0800
-> +++ xenomai-2.4.x/src/testsuite/irqbench/Makefile.in	2009-02-23
-> 17:12:14.000000000 +0800
-> @@ -247,7 +247,7 @@ irqloop_LDFLAGS = \
->  	$(XENO_USER_LDFLAGS)
-> 
->  irqloop_LDADD = \
-> -	../../skins/posix/libpthread_rt.la -lpthread -lrt
-> +	-lpthread -lrt ../../skins/posix/libpthread_rt.la
-> 
->  irqbench_SOURCES = irqbench.c
->  irqbench_CPPFLAGS = \
-> diff -Nurp --exclude=.svn
-> xenomai-2.4.x-clean/src/testsuite/switchtest/Makefile.am
-> xenomai-2.4.x/src/testsuite/switchtest/Makefile.am
-> --- xenomai-2.4.x-clean/src/testsuite/switchtest/Makefile.am	2008-03-01
-> 04:41:56.000000000 +0800
-> +++ xenomai-2.4.x/src/testsuite/switchtest/Makefile.am	2009-02-23
-> 17:12:14.000000000 +0800
-> @@ -9,7 +9,7 @@ switchtest_CPPFLAGS = -I$(top_srcdir)/in
->  switchtest_LDFLAGS =  $(XENO_POSIX_WRAPPERS) $(XENO_USER_LDFLAGS)
-> 
->  switchtest_LDADD = \
-> -	../../skins/posix/libpthread_rt.la -lpthread -lrt
-> +	-lpthread -lrt ../../skins/posix/libpthread_rt.la
-> 
->  install-data-local:
->  	$(mkinstalldirs) $(DESTDIR)$(testdir)
-> diff -Nurp --exclude=.svn
-> xenomai-2.4.x-clean/src/testsuite/switchtest/Makefile.in
-> xenomai-2.4.x/src/testsuite/switchtest/Makefile.in
-> --- xenomai-2.4.x-clean/src/testsuite/switchtest/Makefile.in	2008-06-02
-> 05:32:28.000000000 +0800
-> +++ xenomai-2.4.x/src/testsuite/switchtest/Makefile.in	2009-02-23
-> 17:12:14.000000000 +0800
-> @@ -232,7 +232,7 @@ switchtest_SOURCES = switchtest.c
->  switchtest_CPPFLAGS = -I$(top_srcdir)/include/posix
-> $(XENO_USER_CFLAGS) -g -I$(top_srcdir)/include
->  switchtest_LDFLAGS = $(XENO_POSIX_WRAPPERS) $(XENO_USER_LDFLAGS)
->  switchtest_LDADD = \
-> -	../../skins/posix/libpthread_rt.la -lpthread -lrt
-> +	-lpthread -lrt ../../skins/posix/libpthread_rt.la
-> 
->  EXTRA_DIST = runinfo.in
->  all: all-am
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
-> 
+But, the hook function isnt called. Does anybody have already faced this
+problem ?
 
 
--- 
-Philippe.
+--------- kernel module simple code -----
+
+void hook(void *cookie) {
+   printk(KERN_INFO "hook().\n");
+}
+
+int init_module (void) {
+    rt_task_add_hook(T_HOOK_START, &hook);
+    return 0;
+}
+
+--------- kernel module simple code -----
+
+
+--=20
+Thiago Lima Silva
+Graduando - Ci=EAncia da Computa=E7=E3o UFBA
+Registered Linux user #466887
+
+--000e0cd4d1aa1d4fc20462b99c33
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi all !<br><br>I need to do some things when a new rt task starts. So that=
+, i need to use the &#39;rt_task_add_hook()&#39;, defined in xenomai task m=
+anagement service.<br>So, i have created a linux kernel module in which i c=
+all this service in init_module() function. After that, initialize the modu=
+le and starts a RT Task.<br>
+<br>But, the hook function isnt called. Does anybody have already faced thi=
+s problem ?<br><br><br>--------- kernel module simple code -----<br><br>voi=
+d hook(void *cookie) { <br>&nbsp;&nbsp; printk(KERN_INFO &quot;hook().\n&qu=
+ot;);<br>
+}<br><br>int init_module (void) {<br>&nbsp;&nbsp;&nbsp; rt_task_add_hook(T_=
+HOOK_START, &amp;hook);<br>&nbsp;&nbsp;&nbsp; return 0;<br>}<br><br>-------=
+-- kernel module simple code -----<br><br><br>-- <br>Thiago Lima Silva<br>G=
+raduando - Ci=EAncia da Computa=E7=E3o UFBA<br>
+Registered Linux user #466887<br><br>
+
+--000e0cd4d1aa1d4fc20462b99c33--
 
