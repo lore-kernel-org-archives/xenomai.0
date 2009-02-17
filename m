@@ -1,90 +1,76 @@
-Message-ID: <49C0BDE8.4050400@domain.hid>
-Date: Wed, 18 Mar 2009 10:24:56 +0100
+Message-ID: <499B3F35.2080604@domain.hid>
+Date: Tue, 17 Feb 2009 23:50:29 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH] posix: Fix error checks when copying user
-	strings
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <499B36C5.3060104@domain.hid>
+In-Reply-To: <499B36C5.3060104@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig5006CA29D82DEAAD97A65712"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] BUG fs/buffer.c with Linux 2.6.26,27
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Roman Pisl <rpisl@domain.hid>
+Cc: xenomai@xenomai.org
 
-Do not return -EFAULT when the passed string has zero-length. Instead,
-return -EINVAL when trying to create objects with empty names.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig5006CA29D82DEAAD97A65712
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
+Roman Pisl wrote:
+> Hello,
+> I'm porting our application to Xenomai and I found a bug with Linux
+> 2.6.26 and 2.6.27 (and also .19) and Xenomai 2.4.6.1. This happens when=
 
- ksrc/skins/posix/syscall.c |   14 ++++++++++----
- 1 files changed, 10 insertions(+), 4 deletions(-)
+> the application is running and there is hard disk activity. It happens
+> also when latency test is running for a while. Linux 2.6.16 with Xenoma=
+i
+> 2.4.6.1 works without problem. So this is solution for now.
+>=20
+> Tested on x86 - thinkpad laptop and pentium 4 desktop.
+>=20
+> I'm not a kernel hacker but surely try to help with fixing. I'd like to=
 
-diff --git a/ksrc/skins/posix/syscall.c b/ksrc/skins/posix/syscall.c
-index 16303b3..c7950a6 100644
---- a/ksrc/skins/posix/syscall.c
-+++ b/ksrc/skins/posix/syscall.c
-@@ -600,6 +600,8 @@ static int __sem_open(struct pt_regs *regs)
- 
- 	if (len >= sizeof(name))
- 		return -ENAMETOOLONG;
-+	if (len == 0)
-+		return -EINVAL;
- 
- 	oflags = __xn_reg_arg3(regs);
- 
-@@ -1663,11 +1665,13 @@ static int __mq_open(struct pt_regs *regs)
- 	len = __xn_safe_strncpy_from_user(name,
- 					  (const char __user *)__xn_reg_arg1(regs),
- 					  sizeof(name));
--	if (len <= 0)
-+	if (len < 0)
- 		return -EFAULT;
- 
- 	if (len >= sizeof(name))
- 		return -ENAMETOOLONG;
-+	if (len == 0)
-+		return -EINVAL;
- 
- 	oflags = __xn_reg_arg2(regs);
- 	mode = __xn_reg_arg3(regs);
-@@ -1736,7 +1740,7 @@ static int __mq_unlink(struct pt_regs *regs)
- 	len = __xn_safe_strncpy_from_user(name,
- 					  (const char __user *)__xn_reg_arg1(regs),
- 					  sizeof(name));
--	if (len <= 0)
-+	if (len < 0)
- 		return -EFAULT;
- 
- 	if (len >= sizeof(name))
-@@ -2440,11 +2444,13 @@ static int __shm_open(struct pt_regs *regs)
- 	len = __xn_safe_strncpy_from_user(name,
- 					  (const char __user *)__xn_reg_arg1(regs),
- 					  sizeof(name));
--	if (len <= 0)
-+	if (len < 0)
- 		return -EFAULT;
- 
- 	if (len >= sizeof(name))
- 		return -ENAMETOOLONG;
-+	if (len == 0)
-+		return -EINVAL;
- 
- 	oflag = (int)__xn_reg_arg2(regs);
- 	mode = (mode_t) __xn_reg_arg3(regs);
-@@ -2487,7 +2493,7 @@ static int __shm_unlink(struct pt_regs *regs)
- 	len = __xn_safe_strncpy_from_user(name,
- 					  (const char __user *)__xn_reg_arg1(regs),
- 					  sizeof(name));
--	if (len <= 0)
-+	if (len < 0)
- 		return -EFAULT;
- 
- 	if (len >= sizeof(name))
+> see this fixed.
+
+/me, too. But could you first of all check if the problem persists even
+with latest adeos-ipipe-2.6.27.13-x86-2.2-05.patch [1]?
+
+If it does: Go back to 2.6.26 (in order to have the ipipe tracer).
+Before the oops can occur, extend /proc/ipipe/trace/back_trace_points
+to, say, one thousand ("echo 1000 > /proc/..."). Then post the resulting
+trace. It may include some hints about when Linux IRQs were last enabled
+and when they became stuck at disabled. Also, please attach your .config.=
+
+
+Thanks,
+Jan
+
+[1] http://download.gna.org/adeos/patches/v2.6/x86/
+
+
+--------------enig5006CA29D82DEAAD97A65712
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkmbPzoACgkQniDOoMHTA+miMQCfXjMLYnqgPcsR+6Luakqc1iiA
+FDIAnAz1l4aBXuwA/YeC6Ji/jdtVepfB
+=PLH5
+-----END PGP SIGNATURE-----
+
+--------------enig5006CA29D82DEAAD97A65712--
 
