@@ -1,70 +1,110 @@
+Message-ID: <499A8636.5020100@domain.hid>
+Date: Tue, 17 Feb 2009 10:41:10 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Date: Mon, 26 Jan 2009 09:12:42 +0530
-Message-ID: <8e2adebc0901251942q75a08473m6121fcd2d296f598@domain.hid>
-From: Mandar Thite <mandarthite@domain.hid>
+References: <9c789a000902160455k7dcae1d2tc151b12df6140ec0@domain.hid>	<200902170000.00900.berlemont.hauw@domain.hid>
+	<200902170940.54910.peter.soetens@domain.hid>
+In-Reply-To: <200902170940.54910.peter.soetens@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] NULL ptr dereference: porting I-pipe to ARM
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Comedi drivers in Xenomai porting/integration
+	status ?
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: adeos-main@gna.org, xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Peter Soetens <peter.soetens@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hello everyone,
+Peter Soetens wrote:
+> On Tuesday 17 February 2009 00:00:00 Alexis Berlemont wrote:
+>> Hi,
+>>
+>>> Hello all! I would like to know what is the current status of the Comedi
+>>> port to Xenomai.
+>>>
+>>> Should all the specific Comedi drivers (ni_pcimio, ni_mite) be available
+>>> for testing (by me or someone with a supported DAQ card) and (if ok) for
+>>> futher integration ?
+>> I am still working on that port. It is a long work and I am wondering at
+>> each line whether I should rewrite any part of code which does not comply
+>> with common coding constraints. Unfortunately, I currently do not have a
+>> lot of spare time. Anyway, most of the ni subdevices drivers have been
+>> ported (mite, tio, mio, 8255). I am trying to finalize the global driver
+>> port.
+>>
+>> By the way, in the middle of january, I noticed that the legacy Comedi
+>> branch found its way into the mainline (through the staging tree). I do not
+>> know what will be the future of such a package in mainstream. I assume the
+>> main goal is the definition of a global framework for acquisition boards
+>> like V4L2 is for video cards.
+> 
+> I'm not sure I understand where this is going. We did a review of the 
+> Xenomai/Comedi code integration a few weeks ago. 
+> 
+> These are the facts we observed:
+> 
+> * The Xenomai/Comedi port breaks the complete Comedi API, user space *and* 
+> kernel space. (We thought/assumed that only the user space interface would go 
+> over RTDM and that once that was done, the kernel modules could be almost 
+> copy/pasted into the new framework.)
 
-I am trying to boot Linux kernel ver. 2.6.26 patched with ADEOS ipipe
-ver. 1.11-02 on OMAP5912 CPU(arch/arm/mach-omap1) containing ARM926
-core.
-Of course, I have configured my Linux kernel to run in tickless mode.
-In the final steps of booting, kernel is encountering " NULL pointer
-dereference " in the function " rb_erase() " called from " __remove_hrtimer() ".
-Following is the backtrace log emitted by the kernel.
+Maybe you have a list of the major differences. Then please share it so
+that the motivation can be discussed here and maybe clarified (it's a
+blurred topic for me as well).
 
-Unable to handle kernel NULL pointer dereference at virtual address 00000008
-pgd = c0004000
-[00000008] *pgd=00000000
-Internal error: Oops: 5 [#1]
-Modules linked in:
-CPU: 0    Tainted: G        W  (2.6.26-ipipe #3)
-PC is at rb_erase+0x114/0x358
-LR is at __remove_hrtimer+0x88/0x94
-Backtrace:
+> * The Xenomai/Comedi port is not supported by 'upstream' (what you call 
+> 'legacy'). It's not discussed on their ML, they don't send in patches or 
+> feedback. 
+> * There aren't any (?) device drivers ported to the Xenomai/Comedi project 
+> (public trunk)
+> 
+> This is what we concluded:
+> 
+> * Xenomai/Comedi has no future as long as it ignores (or is ignored by) 
+> upstream. Even after a port of a device driver, pulling fixes from upstream 
+> will be hard due to the changed kernel API.
 
-[<c012ed1c>] (rb_erase+0x0/0x358) from [<c0053f48>] (__remove_hrtimer+0x88/0x94)
- r9:00000080 r8:c0285530 r7:00000000 r6:00000001 r5:c0285530 r4:c02a6298
+IMHO, that heavily depends on the use cases both projects are able to
+cover. If there are major RT design issues upstream that this variant
+solves, then people may be willing to live with the differences
+(including a smaller driver set downstream). It wouldn't be the first time.
 
-[<c0053ec0>] (__remove_hrtimer+0x0/0x94) from [<c00548a8>]
-(hrtimer_start+0x74/0x108)
- r7:00000006 r6:02625a00 r5:00000000 r4:2d4cae00
+> * As GKH puts it: all device drivers belong in the Linux kernel. Upstream is 
+> doing this right now, which makes acceptance of Xenomai/Comedi unlikely, which 
+> makes its life expectations uncertain.
 
-[<c0054834>] (hrtimer_start+0x0/0x108) from [<c005af18>]
-(tick_nohz_stop_sched_tick+0x2bc/0x3a4)
+I don't think anyone expect to see the RT drivers here and around in
+mainline Linux in the foreseeable future. That's not the primary goal.
+At the same time, it's still unclear how serious mainline is about RT
+redesigns of existing drivers or frameworks. And I recall from earlier
+threads on the comedi list that at least the current comedi maintainers
+consider RT use at best as a niche and not an important scenario.
 
-[<c005ac5c>] (tick_nohz_stop_sched_tick+0x0/0x3a4) from [<c0023318>]
-(cpu_idle+0x38/0x60)
+> * We're now actually considering Preempt/RT as the kernel to use in 
+> combination with the original Comedi. We might be stupid, but then again, it 
+> might just work.
+> * We believe the name Xenomai/Comedi is strongly misleading.  It suggests a 
+> painless transition path, but it's a completely different software project, 
+> different interfaces, different maintainer(s ?).
 
-[<c00232e0>] (cpu_idle+0x0/0x60) from [<c01f7d58>] (rest_init+0x58/0x6c)
- r5:c001cdc4 r4:c02bc754
+I agree. If reasons for significant differences in the user API remain,
+then a different name would be appropriate, too. Looks like this is not
+Socket-CAN vs. RT-Socket-CAN here?
 
-[<c01f7d00>] (rest_init+0x0/0x6c) from [<c0008ad0>] (start_kernel+0x244/0x290)
+> 
+> Sorry for flaming, and please correct me where I'm wrong.
 
-[<c000888c>] (start_kernel+0x0/0x290) from [<10008034>] (0x10008034)
- r6:c001cdc0 r5:c029af88 r4:00053175
+Sometime "flaming" can even be helpful... :)
 
-Code: e3580001 01a04005 189dabf0 ea000082 (e5941008)
----[ end trace b0a66fe3e48abdda ]---
-Kernel panic - not syncing: Attempted to kill the idle task!
+Jan
 
->From this what I understand is, address of nonexistent node is passed
-to rb_erase()?
-
-Can anybody please direct me, how to investigate further into this problem?
-
---Mandar
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
