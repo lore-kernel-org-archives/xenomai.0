@@ -1,36 +1,59 @@
-Message-ID: <49A69C93.3040402@domain.hid>
-Date: Thu, 26 Feb 2009 14:43:47 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <a0ef0a9d0902260303k711d228ct82e4bdae85d5ed1f@domain.hid>
-	<49A69429.1090502@domain.hid>
-In-Reply-To: <49A69429.1090502@domain.hid>
+Date: Tue, 17 Feb 2009 09:47:50 +0100
+From: "gwenhael.goavec" <gwen@domain.hid>
+Message-ID: <20090217094750.46fb937d@domain.hid>
+Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai uClinux issue
-Reply-To: gilles.chanteperdrix@xenomai.org
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Ghanem Lafi <lafi.ghanem@domain.hid>
-Cc: xenomai@xenomai.org
+Content-Transfer-Encoding: quoted-printable
+Subject: [Adeos-main] I.MXL won't boot after patching with
+ adeos-ipipe-2.6.27-arm-1.12-00.patch
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
 
-Gilles Chanteperdrix wrote:
-> As I also told you in a previous mail, picking such old versions of
-> linux, and gcc (gcc 2.95 is really really old now) is a bad idea.
-> 
+Hello,
 
-I have just checked linux-2.6.25-uc0-big.patch.gz, and it contains
-support for LPC22XX, so, there is really no reason to start with linux
-2.6.15.
+I wish to test adeos and Xenomai on Arm9 I.MXL(MC9328) based
+platform. I have already tested with linux-2.6.26.5 and
+linux-2.6.24.3. Ipipe worked fine and the system has booted
+correctly.
+But with linux-2.6.27.13 and others 2.6.27.XX System
+won't boot. The last message I have is :=20
 
+BIOS> boot                                                                 =
+   =20
+## Booting kernel from Legacy Image at 100a0000 ...
+   Image Name:   Linux-2.6.27.13                  =20
+   Created:      2009-02-16  21:03:08 UTC
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    1329204 Bytes =3D  1.3 MB             =20
+   Load Address: 08008000              =20
+   Entry Point:  08008000
+   Verifying Checksum ... OK
+   Loading Kernel Image ... OK
+OK                           =20
+ =20
+Starting kernel ...
+                  =20
+Uncompressing
+Linux......................................................................=
+.................
+done, booting the kernel.
 
--- 
-                                                 Gilles.
+kernel_start() is never called.
+=09
+However, when CONFIG_IPIPE is not active, the system works
+well!
+
+Do someone have the same problem ?
+What is the solution for having  linux-2.6.27 working
+with this processor ?
+Thank you very much.
+
+Gwenha=EBl
 
