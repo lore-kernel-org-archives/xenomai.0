@@ -1,10 +1,10 @@
-Message-ID: <499C422D.9090203@domain.hid>
-Date: Wed, 18 Feb 2009 18:15:25 +0100
+Message-ID: <499C5705.2070001@domain.hid>
+Date: Wed, 18 Feb 2009 19:44:21 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH] Rework initial Linux schedparam setting
+Subject: [Xenomai-core] [RFC][PATCH] Exclude CPUs from Xenomai use
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,297 +14,305 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-[ This obsoletes patch 1 of yesterday's series. ]
+This patch mitigates the scalability issue Xenomai faces due to global
+locks, primarily nklock.
 
-This patch enforces Linux task policy and priority alignment for shadow
-threads via xnshadow_map and SIGSHADOW instead of solely relying on the
-skins for this job. This allows to drop a few explicit
-pthread_setschedparam calls from skin trampolines. It also helps to fix
-SCHED_RR pthread_create (which is currently not forwarding the
-round-robin property to the kernel side).
+If you want to run Xenomai on a larger multicore platform side by side
+with non-RT load, you may want to restrict RT tasks to a certain CPU
+subset anyway. With this patch it is additionally possible to avoid any
+Xenomai locking overhead on the non-RT CPUs that would otherwise be
+caused by redirecting the host timer ticks through Xenomai's timer
+subsystem. And the patch prevents that anyone can accidentally push an
+RT task to an unsupported CPU by adjusting the possible affinity mask.
+So in theory, you could scale the CPU number up to Linux' limits as long
+as Xenomai is restricted to a reasonably small set of CPUs.
+
+The set of supported Xenomai CPUs is controlled via a kernel parameter
+of the HAL: xeno_hal.supported_cpus (CPU mask, initially set to all
+CPUs). Dynamical adjustment is not supported in order to keep things
+simple and minimally invasive.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
 
- ksrc/nucleus/shadow.c        |   12 ++++++++++++
- ksrc/skins/posix/syscall.c   |    6 +++---
- src/skins/native/task.c      |   19 -------------------
- src/skins/native/wrappers.c  |    7 -------
- src/skins/native/wrappers.h  |    3 ---
- src/skins/posix/thread.c     |    9 ++-------
- src/skins/psos+/task.c       |    5 -----
- src/skins/vrtx/task.c        |    9 ---------
- src/skins/vxworks/taskLib.c  |    9 ---------
- src/skins/vxworks/wrappers.c |    7 -------
- src/skins/vxworks/wrappers.h |    3 ---
- 11 files changed, 17 insertions(+), 72 deletions(-)
+ include/asm-generic/hal.h    |   16 ++++++++++++++++
+ include/asm-generic/system.h |    3 +++
+ include/asm-sim/system.h     |    3 +++
+ ksrc/arch/generic/hal.c      |   18 ++++++++++++++++++
+ ksrc/arch/x86/hal-common.c   |   11 ++++++++---
+ ksrc/nucleus/module.c        |   31 +++++++++++++++++++------------
+ ksrc/nucleus/pod.c           |    9 +++++++--
+ ksrc/nucleus/shadow.c        |   15 +++++++++++----
+ 8 files changed, 85 insertions(+), 21 deletions(-)
 
+diff --git a/include/asm-generic/hal.h b/include/asm-generic/hal.h
+index ad9011d..7628fff 100644
+--- a/include/asm-generic/hal.h
++++ b/include/asm-generic/hal.h
+@@ -465,6 +465,22 @@ int rthal_timer_request(void (*tick_handler)(void),
+ 
+ void rthal_timer_release(int cpu);
+ 
++#ifdef CONFIG_SMP
++extern cpumask_t rthal_supported_cpus;
++
++static inline int rthal_cpu_supported(int cpu)
++{
++	return cpu_isset(cpu, rthal_supported_cpus);
++}
++#else  /* !CONFIG_SMP */
++#define rthal_supported_cpus CPU_MASK_ALL
++
++static inline int rthal_cpu_supported(int cpu)
++{
++	return 1;
++}
++#endif /* !CONFIG_SMP */
++
+ #ifdef CONFIG_PROC_FS
+ #include <linux/proc_fs.h>
+ 
+diff --git a/include/asm-generic/system.h b/include/asm-generic/system.h
+index ee66cca..91e896a 100644
+--- a/include/asm-generic/system.h
++++ b/include/asm-generic/system.h
+@@ -263,6 +263,9 @@ typedef cpumask_t xnarch_cpumask_t;
+ #define xnarch_first_cpu(mask)			first_cpu(mask)
+ #define XNARCH_CPU_MASK_ALL			CPU_MASK_ALL
+ 
++#define xnarch_supported_cpus			rthal_supported_cpus
++#define xnarch_cpu_supported(cpu)		rthal_cpu_supported(cpu)
++
+ struct xnheap;
+ 
+ typedef struct xnarch_heapcb {
+diff --git a/include/asm-sim/system.h b/include/asm-sim/system.h
+index cf3bee6..5162bef 100644
+--- a/include/asm-sim/system.h
++++ b/include/asm-sim/system.h
+@@ -120,6 +120,9 @@ typedef unsigned long xnarch_cpumask_t;
+ #define xnarch_first_cpu(mask)           (ffnz(mask))
+ #define XNARCH_CPU_MASK_ALL              (~0UL)
+ 
++#define xnarch_supported_cpus            (~0UL)
++#define xnarch_cpu_supported(cpu)        1
++
+ #define xnarch_ullmod(ull,uld,rem)   ((*rem) = ((ull) % (uld)))
+ #define xnarch_uldivrem(ull,uld,rem) ((u_long)xnarch_ulldiv((ull),(uld),(rem)))
+ #define xnarch_uldiv(ull, d)         xnarch_uldivrem(ull, d, NULL)
+diff --git a/ksrc/arch/generic/hal.c b/ksrc/arch/generic/hal.c
+index 63304cb..99eca80 100644
+--- a/ksrc/arch/generic/hal.c
++++ b/ksrc/arch/generic/hal.c
+@@ -58,6 +58,14 @@ module_param_named(cpufreq, rthal_cpufreq_arg, ulong, 0444);
+ unsigned long rthal_timerfreq_arg;
+ module_param_named(timerfreq, rthal_timerfreq_arg, ulong, 0444);
+ 
++#ifdef CONFIG_SMP
++static unsigned long supported_cpus_arg = -1;
++module_param_named(supported_cpus, supported_cpus_arg, ulong, 0444);
++
++cpumask_t rthal_supported_cpus;
++EXPORT_SYMBOL(rthal_supported_cpus);
++#endif /* CONFIG_SMP */
++
+ static struct {
+ 
+     void (*handler) (void *cookie);
+@@ -778,6 +786,16 @@ int rthal_init(void)
+     if (err)
+         goto out;
+ 
++#ifdef CONFIG_SMP
++    {
++        int cpu;
++        cpus_clear(rthal_supported_cpus);
++        for (cpu = 0; cpu < BITS_PER_LONG; cpu++)
++            if (supported_cpus_arg & (1 << cpu))
++                cpu_set(cpu, rthal_supported_cpus);
++    }
++#endif /* CONFIG_SMP */
++
+     /* The arch-dependent support must have updated the frequency args
+        as required. */
+     rthal_tunables.cpu_freq = rthal_cpufreq_arg;
+diff --git a/ksrc/arch/x86/hal-common.c b/ksrc/arch/x86/hal-common.c
+index 43d97b7..19637b4 100644
+--- a/ksrc/arch/x86/hal-common.c
++++ b/ksrc/arch/x86/hal-common.c
+@@ -46,6 +46,8 @@ static struct {
+ 
+ static void rthal_critical_sync(void)
+ {
++	if (!rthal_cpu_supported(rthal_processor_id()))
++		return;
+ 	switch (rthal_sync_op) {
+ 	case RTHAL_SET_ONESHOT_XENOMAI:
+ 		rthal_setup_oneshot_apic(RTHAL_APIC_TIMER_VECTOR);
+@@ -70,12 +72,14 @@ static void rthal_timer_set_oneshot(int rt_mode)
+ 	flags = rthal_critical_enter(rthal_critical_sync);
+ 	if (rt_mode) {
+ 		rthal_sync_op = RTHAL_SET_ONESHOT_XENOMAI;
+-		rthal_setup_oneshot_apic(RTHAL_APIC_TIMER_VECTOR);
++		if (rthal_cpu_supported(rthal_processor_id()))
++			rthal_setup_oneshot_apic(RTHAL_APIC_TIMER_VECTOR);
+ 		if (rthal_ktimer_saved_mode != KTIMER_MODE_UNUSED)
+ 			__ipipe_tick_irq = RTHAL_TIMER_IRQ;
+ 	} else {
+ 		rthal_sync_op = RTHAL_SET_ONESHOT_LINUX;
+-		rthal_setup_oneshot_apic(LOCAL_TIMER_VECTOR);
++		if (rthal_cpu_supported(rthal_processor_id()))
++			rthal_setup_oneshot_apic(LOCAL_TIMER_VECTOR);
+ 		__ipipe_tick_irq = RTHAL_HOST_TICK_IRQ;
+ 		/* We need to keep the timing cycle alive for the kernel. */
+ 		rthal_trigger_irq(RTHAL_HOST_TICK_IRQ);
+@@ -89,7 +93,8 @@ static void rthal_timer_set_periodic(void)
+ 
+ 	flags = rthal_critical_enter(&rthal_critical_sync);
+ 	rthal_sync_op = RTHAL_SET_PERIODIC;
+-	rthal_setup_periodic_apic(RTHAL_APIC_ICOUNT, LOCAL_TIMER_VECTOR);
++	if (rthal_cpu_supported(rthal_processor_id()))
++		rthal_setup_periodic_apic(RTHAL_APIC_ICOUNT, LOCAL_TIMER_VECTOR);
+ 	__ipipe_tick_irq = RTHAL_HOST_TICK_IRQ;
+ 	rthal_critical_exit(flags);
+ }
+diff --git a/ksrc/nucleus/module.c b/ksrc/nucleus/module.c
+index 597ff50..1507e5e 100644
+--- a/ksrc/nucleus/module.c
++++ b/ksrc/nucleus/module.c
+@@ -418,17 +418,22 @@ static int __stat_seq_open(struct inode *inode,
+ 				break; /* line unused or end of chain */
+ 			}
+ 
+-			stat_info->cpu = intr_iter.cpu;
+-			stat_info->csw = intr_iter.hits;
+-			stat_info->exectime_period = intr_iter.exectime_period;
+-			stat_info->account_period = intr_iter.account_period;
+-			stat_info->exectime_total = intr_iter.exectime_total;
+-			stat_info->pid = 0;
+-			stat_info->state =  0;
+-			stat_info->ssw = 0;
+-			stat_info->pf = 0;
+-
+-			iter->nentries++;
++			if (xnarch_cpu_supported(intr_iter.cpu)) {
++				stat_info->cpu = intr_iter.cpu;
++				stat_info->csw = intr_iter.hits;
++				stat_info->exectime_period =
++					intr_iter.exectime_period;
++				stat_info->account_period =
++					intr_iter.account_period;
++				stat_info->exectime_total =
++					intr_iter.exectime_total;
++				stat_info->pid = 0;
++				stat_info->state =  0;
++				stat_info->ssw = 0;
++				stat_info->pf = 0;
++
++				iter->nentries++;
++			}
+ 		}
+ 
+ 	seq = file->private_data;
+@@ -1022,7 +1027,7 @@ static int affinity_write_proc(struct file *file,
+ 	for (cpu = 0; cpu < sizeof(val) * 8; cpu++, val >>= 1)
+ 		if (val & 1)
+ 			xnarch_cpu_set(cpu, new_affinity);
+-	nkaffinity = new_affinity;
++	xnarch_cpus_and(nkaffinity, new_affinity, xnarch_supported_cpus);
+ 
+ 	return count;
+ }
+@@ -1237,6 +1242,8 @@ int __init __xeno_sys_init(void)
+ 
+ 	xeno_nucleus_status = 0;
+ 
++	xnarch_cpus_and(nkaffinity, nkaffinity, xnarch_supported_cpus);
++
+ 	return 0;
+ 
+ #ifdef __KERNEL__
+diff --git a/ksrc/nucleus/pod.c b/ksrc/nucleus/pod.c
+index 842222d..7811df5 100644
+--- a/ksrc/nucleus/pod.c
++++ b/ksrc/nucleus/pod.c
+@@ -414,7 +414,8 @@ int xnpod_init(void)
+ 	for (cpu = 0; cpu < nr_cpus; ++cpu) {
+ 		sched = &pod->sched[cpu];
+ 		xnsched_init(sched, cpu);
+-		appendq(&pod->threadq, &sched->rootcb.glink);
++		if (xnarch_cpu_supported(cpu))
++			appendq(&pod->threadq, &sched->rootcb.glink);
+ 	}
+ 
+ 	xnarch_hook_ipi(&xnpod_schedule_handler);
+@@ -2653,6 +2654,9 @@ int xnpod_enable_timesource(void)
+ 
+ 	for (cpu = 0; cpu < xnarch_num_online_cpus(); cpu++) {
+ 
++		if (!xnarch_cpu_supported(cpu))
++			continue;
++
+ 		sched = xnpod_sched_slot(cpu);
+ 
+ 		htickval = xnarch_start_timer(&xnintr_clock_handler, cpu);
+@@ -2743,7 +2747,8 @@ void xnpod_disable_timesource(void)
+ 	   timer, since this could cause deadlock situations to arise
+ 	   on SMP systems. */
+ 	for (cpu = 0; cpu < xnarch_num_online_cpus(); cpu++)
+-		xnarch_stop_timer(cpu);
++		if (xnarch_cpu_supported(cpu))
++			xnarch_stop_timer(cpu);
+ 
+ 	xntimer_freeze();
+ 
 diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
-index 8c679ad..4a0f021 100644
+index 4a0f021..1dedd85 100644
 --- a/ksrc/nucleus/shadow.c
 +++ b/ksrc/nucleus/shadow.c
-@@ -1250,6 +1250,12 @@ int xnshadow_map(xnthread_t *thread, xncompletion_t __user *u_completion,
+@@ -1222,6 +1222,11 @@ int xnshadow_map(xnthread_t *thread, xncompletion_t __user *u_completion,
+ 		}
+ 	}
+ 
++	/* Restrict affinity to a single CPU of nkaffinity & current set. */
++	xnarch_cpus_and(affinity, current->cpus_allowed, nkaffinity);
++	affinity = xnarch_cpumask_of_cpu(xnarch_first_cpu(affinity));
++	set_cpus_allowed(current, affinity);
++
+ 	trace_mark(xn_nucleus_shadow_map,
+ 		   "thread %p thread_name %s pid %d priority %d",
+ 		   thread, xnthread_name(thread), current->pid,
+@@ -1243,10 +1248,6 @@ int xnshadow_map(xnthread_t *thread, xncompletion_t __user *u_completion,
+ 	xnthread_set_state(thread, XNMAPPED);
+ 	xnpod_suspend_thread(thread, XNRELAX, XN_INFINITE, XN_RELATIVE, NULL);
+ 
+-	/* Restrict affinity to a single CPU of nkaffinity & current set. */
+-	xnarch_cpus_and(affinity, current->cpus_allowed, nkaffinity);
+-	affinity = xnarch_cpumask_of_cpu(xnarch_first_cpu(affinity));
+-	set_cpus_allowed(current, affinity);
  	thread->u_mode = u_mode;
  
  	if (u_completion) {
-+		/*
-+		 * Send the renice signal if we are not migrating so that user
-+		 * space will immediately align Linux sched policy and prio.
-+		 */
-+		xnshadow_renice(thread);
+@@ -2592,6 +2593,9 @@ int xnshadow_mount(void)
+ 	    rthal_apc_alloc("lostage_handler", &lostage_handler, NULL);
+ 
+ 	for_each_online_cpu(cpu) {
++		if (!xnarch_cpu_supported(cpu))
++			continue;
 +
-  		/*
- 		 * We still have the XNDORMANT bit set, so we can't
-  		 * link to the RPI queue which only links _runnable_
-@@ -1273,6 +1279,12 @@ int xnshadow_map(xnthread_t *thread, xncompletion_t __user *u_completion,
+ 		sched = &nkpod_struct.sched[cpu];
+ 		sema_init(&sched->gksync, 0);
+ 		xnarch_memory_barrier();
+@@ -2655,6 +2659,9 @@ void xnshadow_cleanup(void)
+ 	rthal_catch_hisyscall(NULL);
  
- 	ret = xnshadow_harden();
- 
-+	/*
-+	 * Ensure that user space will receive the proper Linux task policy
-+	 * and prio on next switch to secondary mode.
-+	 */
-+	xnthread_set_info(thread, XNPRIOSET);
+ 	for_each_online_cpu(cpu) {
++		if (!xnarch_cpu_supported(cpu))
++			continue;
 +
- 	xnarch_trace_pid(xnarch_user_pid(xnthread_archtcb(thread)),
- 			 xnthread_current_priority(thread));
- 
-diff --git a/ksrc/skins/posix/syscall.c b/ksrc/skins/posix/syscall.c
-index 99c2a16..16303b3 100644
---- a/ksrc/skins/posix/syscall.c
-+++ b/ksrc/skins/posix/syscall.c
-@@ -167,9 +167,9 @@ static int __pthread_create(struct pt_regs *regs)
- 	   calling context. */
- 
- 	pthread_attr_init(&attr);
--	attr.policy = p->policy;
-+	attr.policy = __xn_reg_arg2(regs);
- 	attr.detachstate = PTHREAD_CREATE_DETACHED;
--	attr.schedparam_ex.sched_priority = p->rt_priority;
-+	attr.schedparam_ex.sched_priority = __xn_reg_arg3(regs);
- 	attr.fp = 1;
- 	attr.name = p->comm;
- 
-@@ -179,7 +179,7 @@ static int __pthread_create(struct pt_regs *regs)
- 		return -err;	/* Conventionally, our error codes are negative. */
- 
- 	err = xnshadow_map(&k_tid->threadbase, NULL,
--			   (unsigned long __user *)__xn_reg_arg2(regs));
-+			   (unsigned long __user *)__xn_reg_arg4(regs));
- 
- 	if (!err && !__pthread_hash(&hkey, k_tid))
- 		err = -ENOMEM;
-diff --git a/src/skins/native/task.c b/src/skins/native/task.c
-index 7bcc49c..190dc4b 100644
---- a/src/skins/native/task.c
-+++ b/src/skins/native/task.c
-@@ -55,21 +55,10 @@ static void *rt_task_trampoline(void *cookie)
- {
- 	struct rt_task_iargs *iargs = (struct rt_task_iargs *)cookie;
- 	void (*entry) (void *cookie);
--	struct sched_param param;
- 	struct rt_arg_bulk bulk;
- 	RT_TASK *task;
- 	long err;
- 
--	if (iargs->prio > 0) {
--		/*
--		 * Re-apply sched params here as some libpthread
--		 * implementations fail doing this via pthread_create.
--		 */
--		memset(&param, 0, sizeof(param));
--		param.sched_priority = iargs->prio;
--		__real_pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
--	}
--
- 	/* rt_task_delete requires asynchronous cancellation */
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
- 
-@@ -178,7 +167,6 @@ int rt_task_start(RT_TASK *task, void (*entry) (void *cookie), void *cookie)
- 
- int rt_task_shadow(RT_TASK *task, const char *name, int prio, int mode)
- {
--	struct sched_param param;
- 	struct rt_arg_bulk bulk;
- 	RT_TASK task_desc;
- 	int err;
-@@ -190,13 +178,6 @@ int rt_task_shadow(RT_TASK *task, const char *name, int prio, int mode)
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
- 	sigshadow_install_once();
- 
--	if (prio > 0) {
--		/* Make sure the POSIX library caches the right priority. */
--		memset(&param, 0, sizeof(param));
--		param.sched_priority = prio;
--		__real_pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
--	}
--
- 	bulk.a1 = (u_long)task;
- 	bulk.a2 = (u_long)name;
- 	bulk.a3 = (u_long)prio;
-diff --git a/src/skins/native/wrappers.c b/src/skins/native/wrappers.c
-index 8421456..4463f6f 100644
---- a/src/skins/native/wrappers.c
-+++ b/src/skins/native/wrappers.c
-@@ -33,13 +33,6 @@
-  */
- 
- __attribute__ ((weak))
--int __real_pthread_setschedparam(pthread_t thread,
--				 int policy, const struct sched_param *param)
--{
--	return pthread_setschedparam(thread, policy, param);
--}
--
--__attribute__ ((weak))
- int __real_pthread_create(pthread_t *tid,
- 			  const pthread_attr_t * attr,
- 			  void *(*start) (void *), void *arg)
-diff --git a/src/skins/native/wrappers.h b/src/skins/native/wrappers.h
-index f2125a4..99568a9 100644
---- a/src/skins/native/wrappers.h
-+++ b/src/skins/native/wrappers.h
-@@ -8,9 +8,6 @@ int __real_pthread_create(pthread_t *tid,
- 			  const pthread_attr_t * attr,
- 			  void *(*start) (void *), void *arg);
- 
--int __real_pthread_setschedparam(pthread_t thread,
--				 int policy, const struct sched_param *param);
--
- int __real_pthread_kill(pthread_t tid, int sig);
- 
- int __real_open(const char *path, int oflag, ...);
-diff --git a/src/skins/posix/thread.c b/src/skins/posix/thread.c
-index f32c7e1..e8c50bd 100644
---- a/src/skins/posix/thread.c
-+++ b/src/skins/posix/thread.c
-@@ -203,8 +203,8 @@ static void *__pthread_trampoline(void *arg)
- 
- 	/* Do _not_ inline the call to pthread_self() in the syscall
- 	   macro: this trashes the syscall regs on some archs. */
--	err = XENOMAI_SKINCALL2(__pse51_muxid, __pse51_thread_create, tid,
--				mode_buf);
-+	err = XENOMAI_SKINCALL4(__pse51_muxid, __pse51_thread_create, tid,
-+				iargs->policy, iargs->prio, mode_buf);
- 	iargs->ret = -err;
- 
- 	/* We must save anything we'll need to use from *iargs on our own
-@@ -221,11 +221,6 @@ static void *__pthread_trampoline(void *arg)
- 	__real_sem_post(&iargs->sync);
- 
- 	if (!err) {
--		/* Broken pthread libs ignore some of the thread attribute specs
--		   passed to pthread_create(3), so we force the scheduling policy
--		   once again here. */
--		__real_pthread_setschedparam(tid, policy, &param);
--
- 		/* If the thread running pthread_create runs with the same
- 		   priority as us, we should leave it running, as if there never
- 		   was a synchronization with a semaphore. */
-diff --git a/src/skins/psos+/task.c b/src/skins/psos+/task.c
-index 265eab2..1bf3565 100644
---- a/src/skins/psos+/task.c
-+++ b/src/skins/psos+/task.c
-@@ -63,13 +63,8 @@ static void *psos_task_trampoline(void *cookie)
- 	void (*entry)(u_long, u_long, u_long, u_long);
- 	u_long dummy_args[4] = { 0, 0, 0, 0 }, *targs;
- 	struct psos_arg_bulk bulk;
--	struct sched_param param;
--	int policy;
- 	long err;
- 
--	policy = psos_task_set_posix_priority(iargs->prio, &param);
--	pthread_setschedparam(pthread_self(), policy, &param);
--
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
- 	sigshadow_install_once();
- 
-diff --git a/src/skins/vrtx/task.c b/src/skins/vrtx/task.c
-index 1b16f68..184c948 100644
---- a/src/skins/vrtx/task.c
-+++ b/src/skins/vrtx/task.c
-@@ -73,8 +73,6 @@ static void *vrtx_task_trampoline(void *cookie)
- 	struct vrtx_task_iargs *iargs =
- 	    (struct vrtx_task_iargs *)cookie, _iargs;
- 	struct vrtx_arg_bulk bulk;
--	struct sched_param param;
--	int policy;
- 	long err;
- #ifndef HAVE___THREAD
- 	TCB *tcb;
-@@ -83,13 +81,6 @@ static void *vrtx_task_trampoline(void *cookie)
- 	/* Backup the arg struct, it might vanish after completion. */
- 	memcpy(&_iargs, iargs, sizeof(_iargs));
- 
--	/*
--	 * Apply sched params here as some libpthread implementations
--	 * fail doing this properly via pthread_create.
--	 */
--	policy = vrtx_task_set_posix_priority(iargs->prio, &param);
--	pthread_setschedparam(pthread_self(), policy, &param);
--
- 	/* vrtx_task_delete requires asynchronous cancellation */
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
- 
-diff --git a/src/skins/vxworks/taskLib.c b/src/skins/vxworks/taskLib.c
-index 1ba193e..3249bfc 100644
---- a/src/skins/vxworks/taskLib.c
-+++ b/src/skins/vxworks/taskLib.c
-@@ -86,21 +86,12 @@ static void *wind_task_trampoline(void *cookie)
- 	struct wind_task_iargs *iargs =
- 	    (struct wind_task_iargs *)cookie, _iargs;
- 	struct wind_arg_bulk bulk;
--	struct sched_param param;
- 	WIND_TCB *pTcb;
--	int policy;
- 	long err;
- 
- 	/* Backup the arg struct, it might vanish after completion. */
- 	memcpy(&_iargs, iargs, sizeof(_iargs));
- 
--	/*
--	 * Apply sched params here as some libpthread implementations
--	 * fail doing this properly via pthread_create.
--	 */
--	policy = wind_task_set_posix_priority(iargs->prio, &param);
--	__real_pthread_setschedparam(pthread_self(), policy, &param);
--
- 	/* wind_task_delete requires asynchronous cancellation */
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
- 	sigshadow_install_once();
-diff --git a/src/skins/vxworks/wrappers.c b/src/skins/vxworks/wrappers.c
-index 394ea51..ab50d77 100644
---- a/src/skins/vxworks/wrappers.c
-+++ b/src/skins/vxworks/wrappers.c
-@@ -33,13 +33,6 @@
-  */
- 
- __attribute__ ((weak))
--int __real_pthread_setschedparam(pthread_t thread,
--				 int policy, const struct sched_param *param)
--{
--	return pthread_setschedparam(thread, policy, param);
--}
--
--__attribute__ ((weak))
- int __real_pthread_create(pthread_t *tid,
- 			  const pthread_attr_t * attr,
- 			  void *(*start) (void *), void *arg)
-diff --git a/src/skins/vxworks/wrappers.h b/src/skins/vxworks/wrappers.h
-index 919309a..e20da86 100644
---- a/src/skins/vxworks/wrappers.h
-+++ b/src/skins/vxworks/wrappers.h
-@@ -8,9 +8,6 @@ int __real_pthread_create(pthread_t *tid,
- 			  const pthread_attr_t * attr,
- 			  void *(*start) (void *), void *arg);
- 
--int __real_pthread_setschedparam(pthread_t thread,
--				 int policy, const struct sched_param *param);
--
- int __real_pthread_kill(pthread_t tid, int sig);
- 
- int __real_open(const char *path, int oflag, ...);
+ 		sched = &nkpod_struct.sched[cpu];
+ 		down(&sched->gksync);
+ 		sched->gktarget = NULL;
 
