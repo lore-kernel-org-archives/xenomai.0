@@ -1,11 +1,16 @@
+Message-ID: <499C0E33.3070606@domain.hid>
+Date: Wed, 18 Feb 2009 14:33:39 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <6a782b880902170947q215c5686r2dd87d086d6073b3@domain.hid>
-References: <6a782b880902170947q215c5686r2dd87d086d6073b3@domain.hid>
-Date: Wed, 18 Feb 2009 12:26:23 +0000
-Message-ID: <6a782b880902180426w4d4ef6beh1afa018d8e9b6566@domain.hid>
-From: Thiago Lima <thiagolims@domain.hid>
-Content-Type: multipart/alternative; boundary=000e0cd47d9c208f56046330872e
-Subject: Re: [Xenomai-help] Hook Problems
+References: <499B36C5.3060104@domain.hid> <499B3F35.2080604@domain.hid>
+	<499B5136.2030107@domain.hid> <499B55CF.3020005@domain.hid>
+	<499BBF88.9000207@domain.hid> <499BE2E7.4090704@domain.hid>
+	<499BF9BB.3090700@domain.hid>
+In-Reply-To: <499BF9BB.3090700@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] __ipipe_syscall_root logic (was: BUG fs/buffer.c
+ with Linux 2.6.26, 27)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,82 +20,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>, adeos-main <adeos-main@gna.org>
 
---000e0cd47d9c208f56046330872e
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Jan Kiszka wrote:
+> ...
+> However, let's assumed we entered __ipipe_syscall_root with root domain
+> stalled. If we then return from __ipipe_dispatch_event with 0 (=>
+> forward this syscall to Linux), we would not call __fixup_if again so
+> that the stalled state is kept. Is this a valid scenario for the given
+> task, or would this be broken already? At least it looks like the path
+> taken here
 
-That's ok. I have already found the solution.
+Could someone explain __ipipe_syscall_root to me? The comment before the
+second __fixup_if() does not help me understanding why we only have to
+call it when we do not forward the syscall to Linux. In other words,
+this version would make more sense to me (32-bit variant, but 64-bit
+looks as fishy as its little brother):
 
-I used the following code to get the thread that fired the hook.
-
-void start_hook(void *cookie) {
-   xnthread_t *task;
-
-   task = (xnthread_t*) cookie;
-
-  (...)
-
-}
-
-[]s
-
-On Tue, Feb 17, 2009 at 5:47 PM, Thiago Lima <thiagolims@domain.hid> wrote:
-
-> Well,
->
-> I have created a function in a linux kernel module and used
-> rt_task_add_hook() to this function.
-> I would like to obtain information about the thread that have fired the
-> hook.
-> Does anyone know how to do it ?
->
-> I have already tried rt_task_self(), but i have no success.
->
-> Thanks.
->
-> att,
->
-> --
-> Thiago Lima Silva
-> Computer Science Student - UFBA
-> Registered Linux user #466887
->
->
-
+--- a/arch/x86/kernel/ipipe.c
++++ b/arch/x86/kernel/ipipe.c
+@@ -540,6 +540,7 @@ asmlinkage void __ipipe_unstall_iret_roo
+ asmlinkage int __ipipe_syscall_root(struct pt_regs regs)
+ {
+ 	unsigned long flags;
++	int pass;
+ 
+ 	__fixup_if(&regs);
+ 
+@@ -551,8 +552,9 @@ asmlinkage int __ipipe_syscall_root(stru
+ 	   tail work has to be performed (for handling signals etc). */
+ 
+ 	if (__ipipe_syscall_watched_p(current, regs.orig_ax) &&
+-	    __ipipe_event_monitored_p(IPIPE_EVENT_SYSCALL) &&
+-	    __ipipe_dispatch_event(IPIPE_EVENT_SYSCALL,&regs) > 0) {
++	    __ipipe_event_monitored_p(IPIPE_EVENT_SYSCALL)) {
++		pass = !__ipipe_dispatch_event(IPIPE_EVENT_SYSCALL,&regs);
++
+ 		/* We might enter here over a non-root domain and exit
+ 		 * over the root one as a result of the syscall
+ 		 * (i.e. by recycling the register set of the current
+@@ -562,6 +564,9 @@ asmlinkage int __ipipe_syscall_root(stru
+ 		 * stall bit on exit. */
+ 		__fixup_if(&regs);
+ 
++		if (pass)
++			return 0;
++
+ 		if (ipipe_root_domain_p && !in_atomic()) {
+ 			/* Sync pending VIRQs before _TIF_NEED_RESCHED is tested. */
+ 			local_irq_save_hw(flags);
 
 -- 
-Thiago Lima Silva
-Computer Science Student - UFBA
-Registered Linux user #466887
-
---000e0cd47d9c208f56046330872e
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-That&#39;s ok. I have already found the solution.<br><br>I used the followi=
-ng code to get the thread that fired the hook.<br><br>void start_hook(void =
-*cookie) {<br>&nbsp;&nbsp; xnthread_t *task;<br><br>&nbsp;&nbsp; task =3D (=
-xnthread_t*) cookie;<br>
-<br>&nbsp; (...)<br><br>}<br><br>[]s<br><br><div class=3D"gmail_quote">On T=
-ue, Feb 17, 2009 at 5:47 PM, Thiago Lima <span dir=3D"ltr">&lt;<a href=3D"m=
-ailto:thiagolims@domain.hid">thiagolims@domain.hid</a>&gt;</span> wrote:<br><=
-blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, 2=
-04, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-Well,<br><br>I have created a function in a linux kernel module and used rt=
-_task_add_hook() to this function.<br>I would like to obtain information ab=
-out the thread that have fired the hook.<br>Does anyone know how to do it ?=
-<br>
-
-<br>I have already tried rt_task_self(), but i have no success.<br><br>Than=
-ks.<br><br>att,<br clear=3D"all"><font color=3D"#888888"><br>-- <br>Thiago =
-Lima Silva<br>Computer Science Student - UFBA<br>Registered Linux user #466=
-887<br>
-<br>
-</font></blockquote></div><br><br clear=3D"all"><br>-- <font color=3D"#8888=
-88"><br>Thiago Lima Silva<br>Computer Science Student - UFBA<br>Registered =
-Linux user #466887</font><br><br>
-
---000e0cd47d9c208f56046330872e--
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
