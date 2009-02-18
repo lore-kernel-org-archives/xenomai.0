@@ -1,13 +1,12 @@
-Message-ID: <499C5D16.9000600@domain.hid>
-Date: Wed, 18 Feb 2009 20:10:14 +0100
+Message-ID: <499C5E49.90002@domain.hid>
+Date: Wed, 18 Feb 2009 20:15:21 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4B2EEE69E41E524EB7FCDC62A15D68D80308F137@domain.hid>	<499572C2.3060609@domain.hid>	<49957D23.4040806@domain.hid>	<4B2EEE69E41E524EB7FCDC62A15D68D8030CCF0F@ARVMAIL1.mra.roland-man.biz>	<499C1749.7040804@domain.hid>	<4B2EEE69E41E524EB7FCDC62A15D68D8030CCF23@domain.hid>	<499C1BD6.3010909@domain.hid>	<499C5A63.8060309@domain.hid>
-	<499C5BB4.2070003@domain.hid>
-In-Reply-To: <499C5BB4.2070003@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <499B36C5.3060104@domain.hid>
+In-Reply-To: <499B36C5.3060104@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-2
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Floating Point Exceptions in RT-Tasks
+Subject: Re: [Xenomai-help] BUG fs/buffer.c with Linux 2.6.26,27
 Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,43 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
+To: Roman Pisl <rpisl@domain.hid>
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> Wolfgang Grandegger wrote:
->> Wolfgang Grandegger wrote:
->>> thomas.debes@domain.hid wrote:
->>>> Unfortunately I don't have a newer kernel, I will talk to Wolfgang Grandegger, maybe he can do a short test with my formerly attached sample application.
->>> I will try it out on my TQM5200 board later today or tomorrow.
->> With I-Pipe v2.4-03, Xenomai v2.5-devel (SVN revision 4519) and Linux
->> 2.6.26 on my TQM85200 I get:
->>
->>   -bash-3.2# ./fpu-exception-test
->>   Floating point exception
->>
->>   -bash-3.2# dmesg|tail
->>   ...
->>   Xenomai: Switching trivial to secondary mode after
->>   exception #1792 from user-space at 0x10001840 (pid 1127)
->>
->> Is that the expected behavior?
->>
+Roman Pisl wrote:
+> Hello,
+> I'm porting our application to Xenomai and I found a bug with Linux
+> 2.6.26 and 2.6.27 (and also .19) and Xenomai 2.4.6.1. This happens when
+> the application is running and there is hard disk activity. It happens
+> also when latency test is running for a while. Linux 2.6.16 with Xenomai
+> 2.4.6.1 works without problem. So this is solution for now.
 > 
-> Yes.
+> Tested on x86 - thinkpad laptop and pentium 4 desktop.
 >
 
-I need to have a look at the 2.4 pipeline patch.
+Could you disable CONFIG_PREEMPT and test again?
 
->> Wolfgang.
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->>
+TIA,
+
+> I'm not a kernel hacker but surely try to help with fixing. I'd like to
+> see this fixed.
+> 
+> Thank you.
+> 
+> Roman Pisl
 > 
 > 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
 
 -- 
