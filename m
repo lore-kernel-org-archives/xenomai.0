@@ -1,13 +1,10 @@
-Message-ID: <499C5E49.90002@domain.hid>
-Date: Wed, 18 Feb 2009 20:15:21 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <BAY135-W5F4633CFE181E5E1DFB22C6B20@domain.hid>
+From: Thomas Schaefer <thomas_schaefer_canada@domain.hid>
+Date: Wed, 18 Feb 2009 18:18:53 -0700
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <499B36C5.3060104@domain.hid>
-In-Reply-To: <499B36C5.3060104@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-2
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] BUG fs/buffer.c with Linux 2.6.26,27
-Reply-To: rpm@xenomai.org
+Subject: [Xenomai-help] rt_task_create with mode T_CPU(1)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,41 +14,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Roman Pisl <rpisl@domain.hid>
-Cc: xenomai@xenomai.org
-
-Roman Pisl wrote:
-> Hello,
-> I'm porting our application to Xenomai and I found a bug with Linux
-> 2.6.26 and 2.6.27 (and also .19) and Xenomai 2.4.6.1. This happens when
-> the application is running and there is hard disk activity. It happens
-> also when latency test is running for a while. Linux 2.6.16 with Xenomai
-> 2.4.6.1 works without problem. So this is solution for now.
-> 
-> Tested on x86 - thinkpad laptop and pentium 4 desktop.
->
-
-Could you disable CONFIG_PREEMPT and test again?
-
-TIA,
-
-> I'm not a kernel hacker but surely try to help with fixing. I'd like to
-> see this fixed.
-> 
-> Thank you.
-> 
-> Roman Pisl
-> 
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+To: xenomai@xenomai.org
 
 
--- 
-Philippe.
+Hi=2C
+
+I did some testing with the very latest Xenomai svn repository and kernel 2=
+.6.28.2 on a quad core xeon arch X86_64.
+
+Until a few days ago everything seemed to work just fine.
+Now a task created with T_CPU( anything but 0) doesn't start after rt_task_=
+start is called.
+I modified the trivial-periodic example and changed the mode to T_CPU(1).
+Now the example doesn't work anymore. It works unmodified or with T_CPU(0).
+
+I was wondering if I missed a change that would explain this behavior or if=
+ this is a bug?
+
+Thomas
+
+
+
+_________________________________________________________________
+
 
