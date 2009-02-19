@@ -1,13 +1,11 @@
-Message-ID: <499D7EC6.2090500@domain.hid>
-Date: Thu, 19 Feb 2009 16:46:14 +0100
+Message-ID: <499D8065.2020009@domain.hid>
+Date: Thu, 19 Feb 2009 16:53:09 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <499D359C.3060805@domain.hid>
-	<499D3801.5040303@domain.hid>	<499D3FE6.4030208@domain.hid>
-	<499D5B0A.7020608@domain.hid> <499D5FC4.4030303@domain.hid>
-	<499D67A6.7000301@domain.hid> <499D68A5.8020002@domain.hid>
-	<499D6FC7.6010204@domain.hid>
-In-Reply-To: <499D6FC7.6010204@domain.hid>
+References: <499D359C.3060805@domain.hid>	<499D3801.5040303@domain.hid>	<499D3FE6.4030208@domain.hid>	<499D5B0A.7020608@domain.hid>
+	<499D5FC4.4030303@domain.hid>	<499D67A6.7000301@domain.hid>
+	<499D68A5.8020002@domain.hid> <499D76AE.2090309@domain.hid>
+In-Reply-To: <499D76AE.2090309@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] XENO_OPT_SYS_STACKPOOLSZ vs. switchtest
@@ -20,10 +18,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: rpm@xenomai.org
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
+Philippe Gerum wrote:
 > Jan Kiszka wrote:
 >> Philippe Gerum wrote:
 >>> Jan Kiszka wrote:
@@ -47,16 +45,22 @@ Gilles Chanteperdrix wrote:
 >>> least two initially free pages per heap.
 >> That would make 22K. The problem is that the management overhead is
 >> rounded up to another full page, requiring a 8K allocation per 4K
->> request. Reminds me of TLSF - if I only had the time... :)
+>> request.
 > 
-> When allocating 4K, only 4K are allocated.
-> 
-> I think the problem could rather be that you are running switchtest on a
-> multi-cpu system, in which same the number of cpu tasks created is 6 by cpu.
+> Nope. An individual 4k request is going to pull 8 x 512 bytes pages from the
+> stack pool, not more.
 
-That was in fact the problem here. OK, so we should just consider
-adjusting the pool default for 8K-stack archs (PowerPC64, Blackfin, and
-maybe also x86-64).
+Yeah, I see. The only "overhead" here was already paid via the pagemap.
+
+> 
+>  Reminds me of TLSF - if I only had the time... :)
+> 
+> It looks like working properly for -solo.
+
+I think to remember your concerns were more about missing fragmentation,
+size overhead and performance comparisons. A working version for
+standard Xenomai was already available at that time (maybe not for all
+archs, but that is surely quickly fixed).
 
 Jan
 
