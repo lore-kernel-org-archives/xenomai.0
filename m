@@ -1,12 +1,12 @@
-Message-ID: <499E9C8A.20309@domain.hid>
-Date: Fri, 20 Feb 2009 13:05:30 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <499E9DCD.4010400@domain.hid>
+Date: Fri, 20 Feb 2009 13:10:53 +0100
+From: Roman Pisl <rpisl@domain.hid>
 MIME-Version: 1.0
-References: <499B36C5.3060104@domain.hid>
-	<499C5E49.90002@domain.hid>	<20090219183812.6bslw8zfkk44sgko@domain.hid>
+References: <499B36C5.3060104@domain.hid> <499C5E49.90002@domain.hid>
+	<20090219183812.6bslw8zfkk44sgko@domain.hid>
 	<499E95F5.10307@domain.hid>
 In-Reply-To: <499E95F5.10307@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] BUG fs/buffer.c with Linux 2.6.26,27
 List-Id: Help regarding installation and common use of Xenomai
@@ -21,7 +21,7 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
+Philippe Gerum napsal(a):
 > Roman Pisl wrote:
 >> Hello Philippe, Jan and other experts,
 >> I did some tests on the desktop and the bug is still present.
@@ -50,21 +50,24 @@ Philippe Gerum wrote:
 > FYI, testev.c is broken; the rt_event_wait() arglist is really wrong: mask_r
 > is a mandatory arg that may not be passed as NULL, and the mode/timeout args
 > have been inverted.
+> 
+>> Roman
+>>
+>>
+>> ------------------------------------------------------------------------
+>>
+>> _______________________________________________
+>> Xenomai-help mailing list
+>> Xenomai-help@domain.hid
+>> https://mail.gna.org/listinfo/xenomai-help
+> 
+> 
 
-Ah, good to know. I suspected something like that as I also see such
-faults in the return path of __rt_event_wait with 2.4.x and the test
-binary I received privately. So this is actually a trigger for the ipipe
-issue we have.
+Thank you for this important notice. Now I see, rt_event_clear accepts 
+NULL, but in rt_event_wait it is a mandatory arg.
 
-I'm almost done with understanding the race in ipipe. It looks like
-stalling the root domain in __ipipe_handle_exception when
-__rt_event_wait triggers some fault over the Xenomai domain is buggy.
-Because this stalled state is then propagated to a different Linux task
-context, causing the root domain's IRQ corruption. More on this shortly.
+I corrected it immediately, now I'm running 2.6.27 and can't trigger the 
+bug!
 
-Jan
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
 
