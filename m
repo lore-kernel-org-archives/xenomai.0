@@ -1,14 +1,14 @@
-Message-ID: <499E95F5.10307@domain.hid>
-Date: Fri, 20 Feb 2009 12:37:25 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <499E9C8A.20309@domain.hid>
+Date: Fri, 20 Feb 2009 13:05:30 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <499B36C5.3060104@domain.hid> <499C5E49.90002@domain.hid>
-	<20090219183812.6bslw8zfkk44sgko@domain.hid>
-In-Reply-To: <20090219183812.6bslw8zfkk44sgko@domain.hid>
+References: <499B36C5.3060104@domain.hid>
+	<499C5E49.90002@domain.hid>	<20090219183812.6bslw8zfkk44sgko@domain.hid>
+	<499E95F5.10307@domain.hid>
+In-Reply-To: <499E95F5.10307@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] BUG fs/buffer.c with Linux 2.6.26,27
-Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,49 +18,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Roman Pisl <rpisl@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-Roman Pisl wrote:
-> Hello Philippe, Jan and other experts,
-> I did some tests on the desktop and the bug is still present.
+Philippe Gerum wrote:
+> Roman Pisl wrote:
+>> Hello Philippe, Jan and other experts,
+>> I did some tests on the desktop and the bug is still present.
+>>
+>> I tried both disabling CONFIG_PREEMPT and applying __ipipe_syscall_root
+>> patch.
+>>
+>> Unfortunately I couldn't test Xenomai from trunk with our application,
+>> because events are probably broken - attached example segfaults on
+>> rt_event_wait. So I still use 2.4.6.1 and that is the reason for the
+>> problem with void rthal_propagate_irq when
+>> adeos-ipipe-2.6.27.13-x86-2.2-05.patch is applied.
+>>
+>> Jan wrote:
+>> The tracer log for .27 looks strange - did you apply my
+>> ipipe-trace-over-ftrace patch or just enabled the existing code? In the
+>> latter case, the .26-based trace log would be nice to cross-check and
+>> exclude tracer artifacts.
+>>
+>> Sorry, but I don't know where this patch comes from. I enabled existing
+>> code only.
+>>
+>> .configs and logs are attached.
+>>
 > 
-> I tried both disabling CONFIG_PREEMPT and applying __ipipe_syscall_root
-> patch.
-> 
-> Unfortunately I couldn't test Xenomai from trunk with our application,
-> because events are probably broken - attached example segfaults on
-> rt_event_wait. So I still use 2.4.6.1 and that is the reason for the
-> problem with void rthal_propagate_irq when
-> adeos-ipipe-2.6.27.13-x86-2.2-05.patch is applied.
-> 
-> Jan wrote:
-> The tracer log for .27 looks strange - did you apply my
-> ipipe-trace-over-ftrace patch or just enabled the existing code? In the
-> latter case, the .26-based trace log would be nice to cross-check and
-> exclude tracer artifacts.
-> 
-> Sorry, but I don't know where this patch comes from. I enabled existing
-> code only.
-> 
-> .configs and logs are attached.
->
+> FYI, testev.c is broken; the rt_event_wait() arglist is really wrong: mask_r
+> is a mandatory arg that may not be passed as NULL, and the mode/timeout args
+> have been inverted.
 
-FYI, testev.c is broken; the rt_event_wait() arglist is really wrong: mask_r
-is a mandatory arg that may not be passed as NULL, and the mode/timeout args
-have been inverted.
+Ah, good to know. I suspected something like that as I also see such
+faults in the return path of __rt_event_wait with 2.4.x and the test
+binary I received privately. So this is actually a trigger for the ipipe
+issue we have.
 
-> Roman
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+I'm almost done with understanding the race in ipipe. It looks like
+stalling the root domain in __ipipe_handle_exception when
+__rt_event_wait triggers some fault over the Xenomai domain is buggy.
+Because this stalled state is then propagated to a different Linux task
+context, causing the root domain's IRQ corruption. More on this shortly.
 
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
