@@ -1,16 +1,10 @@
-Message-ID: <499D83DD.7010309@domain.hid>
-Date: Thu, 19 Feb 2009 17:07:57 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: Paul <paul_c@domain.hid>
+Date: Sat, 21 Feb 2009 14:06:44 +0000
 MIME-Version: 1.0
-References: <499D359C.3060805@domain.hid>	<499D3801.5040303@domain.hid>	<499D3FE6.4030208@domain.hid>	<499D5B0A.7020608@domain.hid>
-	<499D5FC4.4030303@domain.hid>	<499D67A6.7000301@domain.hid>
-	<499D68A5.8020002@domain.hid> <499D76AE.2090309@domain.hid>
-	<499D8065.2020009@domain.hid>
-In-Reply-To: <499D8065.2020009@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] XENO_OPT_SYS_STACKPOOLSZ vs. switchtest
-Reply-To: rpm@xenomai.org
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_0pAoJpZnWgc1f/o"
+Message-Id: <200902211406.44439.paul_c@domain.hid>
+Subject: [Xenomai-core] [PATCH] debian/prepare-patch
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,64 +14,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->> Jan Kiszka wrote:
->>> Philippe Gerum wrote:
->>>> Jan Kiszka wrote:
->>>>> Gilles Chanteperdrix wrote:
->>>>>> Jan Kiszka wrote:
->>>>>>> Gilles Chanteperdrix wrote:
->>>>>>>> Jan Kiszka wrote:
->>>>>>>>> Hi Gilles,
->>>>>>>>>
->>>>>>>>> how much XENO_OPT_SYS_STACKPOOLSZ do I need to run switchtest for
->>>>>>>>> default settings? At least on x86-64, the default 32K is not enough.
->>>>>>>>> Unless we talk about GB ;), maybe it makes sense to adjust the default
->>>>>>>>> size accordingly.
->>>>>>>> It depends on the arguments you pass to switchtest.
->>>>>>> None, ie. the default settings.
->>>>>> Then 6 kernel-space tasks are created. Since switchtest is not the
->>>>> 6*4 is 20k... Ah, the well-known allocator overhead, I guess. Will try
->>>>> with >= 40k.
->>>>>
->>>> Actually, it is not really an overhead, but rather the fact that it wants at
->>>> least two initially free pages per heap.
->>> That would make 22K. The problem is that the management overhead is
->>> rounded up to another full page, requiring a 8K allocation per 4K
->>> request.
->> Nope. An individual 4k request is going to pull 8 x 512 bytes pages from the
->> stack pool, not more.
-> 
-> Yeah, I see. The only "overhead" here was already paid via the pagemap.
-> 
->>  Reminds me of TLSF - if I only had the time... :)
->>
->> It looks like working properly for -solo.
-> 
-> I think to remember your concerns were more about missing fragmentation,
-> size overhead and performance comparisons. A working version for
-> standard Xenomai was already available at that time (maybe not for all
-> archs, but that is surely quickly fixed).
->
-
-Locking and init fixes went to TLSF 2.4.4 in the recent months, so we would have
-needed those anyway. It's quite late to merge TLSF in Xenomai 2.5, but I would
-have no objection to make it the base allocator of the 3.x series. We would have
-to extend it with:
-
-- support for a few callouts, such as the validity checking function used in
-xnhead_test_and_free(),
-- shared memory export (this is quite allocator agnostic in fact)
-- detailed error codes in xnheap_test_and_free/xnheap_free
-
-> Jan
-> 
+--Boundary-00=_0pAoJpZnWgc1f/o
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 
--- 
-Philippe.
+Now that Debian has gone "stable" with Lenny, I've been updating some of my 
+local repositories - The current debian/rule set produces a horribly broken 
+patch for 2.6.28 (on x86), and probably other kernels. The attached patch 
+goes some way to resolving this problem for trunk and probably needs to be 
+applied to the v2.4.x branch so that it can be picke up by the Debian team.
+
+
+Regards, Paul.
+
+
+
+
+
+--Boundary-00=_0pAoJpZnWgc1f/o
+Content-Type: text/x-diff;
+  charset="iso 8859-15";
+  name="debian_kpatch.diff"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="debian_kpatch.diff"
+
+Index: debian/prepare-patch.sh
+===================================================================
+--- debian/prepare-patch.sh	(revision 4639)
++++ debian/prepare-patch.sh	(working copy)
+@@ -74,12 +74,11 @@ generate_patch() {
+ }
+ 
+ diff_addons() {
+-    lines=`(echo ; echo ; cat $xenomai_root/scripts/Kconfig.frag) | wc -l`
++    lines=`cat $xenomai_root/scripts/Kconfig.frag | wc -l`
+ 
+-    echo "--- linux/arch/$linux_arch/Kconfig	1970-01-01 01:00:00.000000000 +0100" >> $patch_file
+-    echo "+++ linux-patched/arch/$linux_arch/Kconfig	2007-03-06 17:55:58.000000000 +0000" >> $patch_file
+-    echo "@@ -40,2 +40,$lines @@" >> $patch_file
+-    echo " source \"init/Kconfig\"" >> $patch_file
++    echo "--- linux/init/Kconfig	1970-01-01 01:00:00.000000000 +0100" >> $patch_file
++    echo "+++ linux-patched/init/Kconfig	2007-03-06 17:55:58.000000000 +0000" >> $patch_file
++    echo "@@ -950,0 +950,$lines @@" >> $patch_file
+     sed -e "s,@LINUX_ARCH@,$linux_arch,g" $xenomai_root/scripts/Kconfig.frag | sed 's/^/+/' >> $patch_file
+     echo " " >> $patch_file
+ }
+
+--Boundary-00=_0pAoJpZnWgc1f/o--
 
