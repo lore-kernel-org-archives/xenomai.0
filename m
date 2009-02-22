@@ -1,15 +1,14 @@
-Content-class: urn:content-classes:message
+Message-ID: <49A1DEBE.6020002@domain.hid>
+Date: Mon, 23 Feb 2009 00:24:46 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
-Date: Sun, 22 Feb 2009 15:41:22 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D590F8C@slcmail.slc.mew.int>
-In-Reply-To: <49A1D243.6060801@domain.hid>
-References: <51CAD0CE1504444DBE77CBBE51A0135D590F8B@slcmail.slc.mew.int>
-	<49A1D243.6060801@domain.hid>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: Re: [Xenomai-help] xenomai on atom
+References: <BAY135-W5F4633CFE181E5E1DFB22C6B20@domain.hid>
+In-Reply-To: <BAY135-W5F4633CFE181E5E1DFB22C6B20@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig3E4D45DA2BF53D060E02D9B3"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] rt_task_create with mode T_CPU(1)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,106 +18,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Thomas Schaefer <thomas_schaefer_canada@domain.hid>
 Cc: xenomai@xenomai.org
 
-Philippe,=20
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig3E4D45DA2BF53D060E02D9B3
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Next time I ask such a question I'll be sure to specify --verbose=3D0 :)
+Thomas Schaefer wrote:
+> Hi,
+>=20
+> I did some testing with the very latest Xenomai svn repository and kern=
+el 2.6.28.2 on a quad core xeon arch X86_64.
+>=20
+> Until a few days ago everything seemed to work just fine.
+> Now a task created with T_CPU( anything but 0) doesn't start after rt_t=
+ask_start is called.
+> I modified the trivial-periodic example and changed the mode to T_CPU(1=
+).
+> Now the example doesn't work anymore. It works unmodified or with T_CPU=
+(0).
+>=20
+> I was wondering if I missed a change that would explain this behavior o=
+r if this is a bug?
 
-Thanks,
-Steven
+Just tested with
 
-> -----Original Message-----
-> From: Philippe Gerum [mailto:rpm@xenomai.org]
-> Sent: Sunday, February 22, 2009 3:32 PM
-> To: Steven Seeger
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] xenomai on atom
->=20
-> Steven Seeger wrote:
-> > Would there be any issue running Xenomai on an atom processor?
-> >
->=20
-> atom login: root
-> # dmesg
->=20
-> <snip>
->=20
-> Detected 1596.202 MHz processor.
-> I-pipe 2.2-06: pipeline enabled.
-> Console: colour VGA+ 80x25
-> console [ttyS0] enabled
-> Dentry cache hash table entries: 262144 (order: 9, 2097152 bytes)
-> Inode-cache hash table entries: 131072 (order: 8, 1048576 bytes)
-> Checking aperture...
-> No AGP bridge found
-> Memory: 2047812k/2087936k available (3426k kernel code, 1128k absent,
-> 38372k
-> reserved, 1269k data, 364k init)
-> hpet clockevent registered
-> HPET: 3 timers in total, 0 timers will be used for per-cpu timer
-> Calibrating delay loop (skipped), value calculated using timer
-> frequency..
-> 3192.40 BogoMIPS (lpj=3D6384808)
-> Mount-cache hash table entries: 256
-> Initializing cgroup subsys ns
-> Initializing cgroup subsys cpuacct
-> CPU: L1 I cache: 32K, L1 D cache: 24K
-> CPU: L2 cache: 512K
-> CPU: Physical Processor ID: 0
-> CPU: Processor Core ID: 0
-> ACPI: Core revision 20080926
-> Setting APIC routing to flat
-> ..TIMER: vector=3D0x30 apic1=3D0 pin1=3D2 apic2=3D-1 pin2=3D-1
-> CPU0: Intel(R) Atom(TM) CPU  230   @ 1.60GHz stepping 02
-> Booting processor 1 APIC 0x1 ip 0x6000
-> Initializing CPU#1
-> Calibrating delay using timer specific routine.. 3192.15 BogoMIPS
-> (lpj=3D6384309)
-> CPU: L1 I cache: 32K, L1 D cache: 24K
-> CPU: L2 cache: 512K
-> CPU: Physical Processor ID: 0
-> CPU: Processor Core ID: 0
-> x86 PAT enabled: cpu 1, old 0x7040600070406, new 0x7010600070106
-> CPU1: Intel(R) Atom(TM) CPU  230   @ 1.60GHz stepping 02
-> checking TSC synchronization [CPU#0 -> CPU#1]: passed.
-> Brought up 2 CPUs
-> Total of 2 processors activated (6384.55 BogoMIPS).
->=20
-> <snip>
->=20
-> NET: Registered protocol family 2
-> IP route cache hash table entries: 65536 (order: 7, 524288 bytes)
-> TCP established hash table entries: 262144 (order: 10, 4194304 bytes)
-> TCP bind hash table entries: 65536 (order: 8, 1048576 bytes)
-> TCP: Hash tables configured (established 262144 bind 65536)
-> TCP reno registered
-> NET: Registered protocol family 1
-> I-pipe: Domain Xenomai registered.
-> Xenomai: hal/x86_64 started.
-> Xenomai: real-time nucleus v2.4.6 (Bamboo) loaded.
->=20
->=20
-> >
-> >
-> > Thanks,
-> >
-> > Steven
-> >
-> >
-> >
-> >
-> >
----------------------------------------------------------------------
-> ---
-> >
-> > _______________________________________________
-> > Xenomai-help mailing list
-> > Xenomai-help@domain.hid
-> > https://mail.gna.org/listinfo/xenomai-help
->=20
->=20
-> --
-> Philippe.
+diff --git a/examples/native/trivial-periodic.c b/examples/native/trivial=
+-periodic.c
+index c0422db..b8198f0 100644
+--- a/examples/native/trivial-periodic.c
++++ b/examples/native/trivial-periodic.c
+@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
+ 	 *            priority,
+ 	 *            mode (FPU, start suspended, ...)
+ 	 */
+-	rt_task_create(&demo_task, "trivial", 0, 99, 0);
++	rt_task_create(&demo_task, "trivial", 0, 99, T_CPU(1));
+=20
+ 	/*
+ 	 * Arguments: &task,
+
+on a dual core system using latest trunk on 2.6.28.7. Works fine, and
+the same is true for "latency -c 1". Can you provide more details about
+your setup?
+
+Jan
+
+
+--------------enig3E4D45DA2BF53D060E02D9B3
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkmh3sIACgkQniDOoMHTA+nxhACfdgojn619BnUUNPLpGOOl/dul
+rA8AoIO451Z8XOJ+sPfzyhy3/iTxRpeM
+=hniV
+-----END PGP SIGNATURE-----
+
+--------------enig3E4D45DA2BF53D060E02D9B3--
 
