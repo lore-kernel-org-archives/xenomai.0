@@ -1,11 +1,13 @@
-Content-class: urn:content-classes:message
+Message-ID: <49A1D243.6060801@domain.hid>
+Date: Sun, 22 Feb 2009 23:31:31 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C99531.1179B9D3"
-Date: Sun, 22 Feb 2009 14:03:52 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D590F8B@slcmail.slc.mew.int>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: [Xenomai-help] xenomai on atom
+References: <51CAD0CE1504444DBE77CBBE51A0135D590F8B@slcmail.slc.mew.int>
+In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D590F8B@slcmail.slc.mew.int>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] xenomai on atom
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,156 +17,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Steven Seeger <sseeger@domain.hid>
+Cc: xenomai@xenomai.org
+
+Steven Seeger wrote:
+> Would there be any issue running Xenomai on an atom processor?
+> 
+
+atom login: root
+# dmesg
+
+<snip>
+
+Detected 1596.202 MHz processor.
+I-pipe 2.2-06: pipeline enabled.
+Console: colour VGA+ 80x25
+console [ttyS0] enabled
+Dentry cache hash table entries: 262144 (order: 9, 2097152 bytes)
+Inode-cache hash table entries: 131072 (order: 8, 1048576 bytes)
+Checking aperture...
+No AGP bridge found
+Memory: 2047812k/2087936k available (3426k kernel code, 1128k absent, 38372k
+reserved, 1269k data, 364k init)
+hpet clockevent registered
+HPET: 3 timers in total, 0 timers will be used for per-cpu timer
+Calibrating delay loop (skipped), value calculated using timer frequency..
+3192.40 BogoMIPS (lpj=6384808)
+Mount-cache hash table entries: 256
+Initializing cgroup subsys ns
+Initializing cgroup subsys cpuacct
+CPU: L1 I cache: 32K, L1 D cache: 24K
+CPU: L2 cache: 512K
+CPU: Physical Processor ID: 0
+CPU: Processor Core ID: 0
+ACPI: Core revision 20080926
+Setting APIC routing to flat
+..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+CPU0: Intel(R) Atom(TM) CPU  230   @ 1.60GHz stepping 02
+Booting processor 1 APIC 0x1 ip 0x6000
+Initializing CPU#1
+Calibrating delay using timer specific routine.. 3192.15 BogoMIPS (lpj=6384309)
+CPU: L1 I cache: 32K, L1 D cache: 24K
+CPU: L2 cache: 512K
+CPU: Physical Processor ID: 0
+CPU: Processor Core ID: 0
+x86 PAT enabled: cpu 1, old 0x7040600070406, new 0x7010600070106
+CPU1: Intel(R) Atom(TM) CPU  230   @ 1.60GHz stepping 02
+checking TSC synchronization [CPU#0 -> CPU#1]: passed.
+Brought up 2 CPUs
+Total of 2 processors activated (6384.55 BogoMIPS).
+
+<snip>
+
+NET: Registered protocol family 2
+IP route cache hash table entries: 65536 (order: 7, 524288 bytes)
+TCP established hash table entries: 262144 (order: 10, 4194304 bytes)
+TCP bind hash table entries: 65536 (order: 8, 1048576 bytes)
+TCP: Hash tables configured (established 262144 bind 65536)
+TCP reno registered
+NET: Registered protocol family 1
+I-pipe: Domain Xenomai registered.
+Xenomai: hal/x86_64 started.
+Xenomai: real-time nucleus v2.4.6 (Bamboo) loaded.
 
 
-This is a multi-part message in MIME format.
+>  
+> 
+> Thanks,
+> 
+> Steven
+> 
+>  
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
-------_=_NextPart_001_01C99531.1179B9D3
-Content-Type: text/plain;
-	charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
 
-Would there be any issue running Xenomai on an atom processor?
-
-=20
-
-Thanks,
-
-Steven
-
-=20
-
-
-------_=_NextPart_001_01C99531.1179B9D3
-Content-Type: text/html;
-	charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
-xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:x=3D"urn:schemas-microsoft-com:office:excel" =
-xmlns:p=3D"urn:schemas-microsoft-com:office:powerpoint" =
-xmlns:a=3D"urn:schemas-microsoft-com:office:access" =
-xmlns:dt=3D"uuid:C2F41010-65B3-11d1-A29F-00AA00C14882" =
-xmlns:s=3D"uuid:BDC6E3F0-6DA3-11d1-A2A3-00AA00C14882" =
-xmlns:rs=3D"urn:schemas-microsoft-com:rowset" xmlns:z=3D"#RowsetSchema" =
-xmlns:b=3D"urn:schemas-microsoft-com:office:publisher" =
-xmlns:ss=3D"urn:schemas-microsoft-com:office:spreadsheet" =
-xmlns:c=3D"urn:schemas-microsoft-com:office:component:spreadsheet" =
-xmlns:odc=3D"urn:schemas-microsoft-com:office:odc" =
-xmlns:oa=3D"urn:schemas-microsoft-com:office:activation" =
-xmlns:html=3D"http://www.w3.org/TR/REC-html40" =
-xmlns:q=3D"http://schemas.xmlsoap.org/soap/envelope/" xmlns:D=3D"DAV:" =
-xmlns:x2=3D"http://schemas.microsoft.com/office/excel/2003/xml" =
-xmlns:ois=3D"http://schemas.microsoft.com/sharepoint/soap/ois/" =
-xmlns:dir=3D"http://schemas.microsoft.com/sharepoint/soap/directory/" =
-xmlns:ds=3D"http://www.w3.org/2000/09/xmldsig#" =
-xmlns:dsp=3D"http://schemas.microsoft.com/sharepoint/dsp" =
-xmlns:udc=3D"http://schemas.microsoft.com/data/udc" =
-xmlns:xsd=3D"http://www.w3.org/2001/XMLSchema" =
-xmlns:sub=3D"http://schemas.microsoft.com/sharepoint/soap/2002/1/alerts/"=
- xmlns:ec=3D"http://www.w3.org/2001/04/xmlenc#" =
-xmlns:sp=3D"http://schemas.microsoft.com/sharepoint/" =
-xmlns:sps=3D"http://schemas.microsoft.com/sharepoint/soap/" =
-xmlns:xsi=3D"http://www.w3.org/2001/XMLSchema-instance" =
-xmlns:udcs=3D"http://schemas.microsoft.com/data/udc/soap" =
-xmlns:udcxf=3D"http://schemas.microsoft.com/data/udc/xmlfile" =
-xmlns:udcp2p=3D"http://schemas.microsoft.com/data/udc/parttopart" =
-xmlns:wf=3D"http://schemas.microsoft.com/sharepoint/soap/workflow/" =
-xmlns:dsss=3D"http://schemas.microsoft.com/office/2006/digsig-setup" =
-xmlns:dssi=3D"http://schemas.microsoft.com/office/2006/digsig" =
-xmlns:mdssi=3D"http://schemas.openxmlformats.org/package/2006/digital-sig=
-nature" =
-xmlns:mver=3D"http://schemas.openxmlformats.org/markup-compatibility/2006=
-" xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
-xmlns:mrels=3D"http://schemas.openxmlformats.org/package/2006/relationshi=
-ps" xmlns:spwp=3D"http://microsoft.com/sharepoint/webpartpages" =
-xmlns:ex12t=3D"http://schemas.microsoft.com/exchange/services/2006/types"=
- =
-xmlns:ex12m=3D"http://schemas.microsoft.com/exchange/services/2006/messag=
-es" =
-xmlns:pptsl=3D"http://schemas.microsoft.com/sharepoint/soap/SlideLibrary/=
-" =
-xmlns:spsl=3D"http://microsoft.com/webservices/SharePointPortalServer/Pub=
-lishedLinksService" xmlns:Z=3D"urn:schemas-microsoft-com:" =
-xmlns:st=3D"&#1;" xmlns=3D"http://www.w3.org/TR/REC-html40">
-
-<head>
-<meta http-equiv=3DContent-Type content=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 12 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:"MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
-@font-face
-	{font-family:"MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
-@font-face
-	{font-family:"\@MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:"Calibri","sans-serif";
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.0in 1.0in 1.0in;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-<!--[if gte mso 9]><xml>
- <o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
- <o:shapelayout v:ext=3D"edit">
-  <o:idmap v:ext=3D"edit" data=3D"1" />
- </o:shapelayout></xml><![endif]-->
-</head>
-
-<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal>Would there be any issue running Xenomai on an atom
-processor?<o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-<p class=3DMsoNormal>Thanks,<o:p></o:p></p>
-
-<p class=3DMsoNormal>Steven<o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01C99531.1179B9D3--
+-- 
+Philippe.
 
