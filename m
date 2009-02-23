@@ -1,13 +1,13 @@
-Message-ID: <49A2D814.3070400@domain.hid>
-Date: Mon, 23 Feb 2009 18:08:36 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <49A2DB32.2070200@domain.hid>
+Date: Mon, 23 Feb 2009 18:21:54 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <BAY135-W5F4633CFE181E5E1DFB22C6B20@domain.hid>	<49A1DEBE.6020002@domain.hid>
-	<BAY135-W25DA8BBF5E569E370DB25DC6AE0@domain.hid>
-In-Reply-To: <BAY135-W25DA8BBF5E569E370DB25DC6AE0@domain.hid>
-Content-Type: text/plain; charset=windows-1252
+References: <499EBF45.900@domain.hid> <49A29232.5060003@domain.hid>
+In-Reply-To: <49A29232.5060003@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_task_create with mode T_CPU(1)
+Subject: Re: [Xenomai-help] [PATCH] x86: Proper root domain state management
+	for ipipe_handle_exception
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,35 +17,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Thomas Schaefer <thomas_schaefer_canada@domain.hid>
-Cc: xenomai@xenomai.org, jan.kiszka@domain.hid
+To: rpm@xenomai.org
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Thomas Schaefer wrote:
+Philippe Gerum wrote:
+> Could anyone affected by the fs/buffer.c WARN_ON() message try at least one of
+> the patches below? It is an attempt to fix the exception handling bugs both for
+> x86_32 and x86_64.
 > 
-> Hi,
+> TIA,
 > 
-> I downloaded kernel 2.6.28.7 and used the xenomai svn revision 4639.
-> BTW. I can't update my svn repository i get "svn: Can't find a temporary directory: Internal error".
-> According to Google this means that your svn server is out of disk space.
+> http://download.gna.org/adeos/patches/v2.6/x86/adeos-ipipe-2.6.27.19-x86-2.2-06.patch
+> http://download.gna.org/adeos/patches/v2.6/x86/adeos-ipipe-2.6.28.7-x86-2.2-06.patch
 > 
-> After running the new kernel and running ./latency -c1 it hangs after "warming up...".
-> After ctrl+c I get:
-> 
-> ^C---|------------|------------|------------|--------|-------------------------
-> RTS|    4699.016|       0.000|   -4699.016|       0|    00:11:21/00:11:21
-> 
-> and it still hangs. Except for this windows the system stays responsive.
-> 
-> Revision 4595 seems to work as expected.
-> 
-> I tried booting the kernel with maxcpus=2 but it yields the same result.
-> 
-> I am running debian lenny on a quad core xeon with 3GB ram.
-> The Kernel is compiled for 64bit.
-> I attached the kernel config file.
 
-Enable ACPI, except the ACPI "processor" module.
+For 2.6.28.7-x86-2.2-06 on 32 bit, I can report that Roman's test no
+longer triggers an oops or a warning.
+
+Jan
 
 -- 
-                                                 Gilles.
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
