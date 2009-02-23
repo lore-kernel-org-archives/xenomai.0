@@ -1,6 +1,6 @@
-Message-ID: <49A29947.9020807@domain.hid>
-Date: Mon, 23 Feb 2009 13:40:39 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <49A29CBF.80701@domain.hid>
+Date: Mon, 23 Feb 2009 13:55:27 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <499EBF45.900@domain.hid> <49A290E8.5030400@domain.hid>
 	<49A29871.90807@domain.hid>
@@ -9,6 +9,7 @@ Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] [PATCH] x86: Proper root domain state management
 	for ipipe_handle_exception
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,7 +19,7 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-help <xenomai@xenomai.org>, adeos-main <adeos-main@gna.org>
 
 Jan Kiszka wrote:
@@ -70,15 +71,18 @@ Jan Kiszka wrote:
 > _after_ calling the Linux handler. I rather think we should keep the
 > state that Linux leaves behind to remain transparent to it. Maybe no
 > practical issue ATM, but it makes the code at least illogical.
+> 
 
-And that reminds me: Please comment such considerations *in place*, ie.
-in the code. No one can otherwise understand why there is a
-local_irq_save/restore unless (s)he browses all the postings on our
-mailing lists (which tend to become outdated over the time...).
+Please re-read the explanations, and you will find the logic. I cannot do
+anything more than re-hashing what I just said. What you perceive as illogical
+is actually the only sane way to do this. Formally speaking, a linux fault
+handler may NOT alter the interrupt state blindly, so we must be able to assume
+that we ought to restore it the way the lower code set it.
 
-Jan
+> Jan
+> 
+
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Philippe.
 
