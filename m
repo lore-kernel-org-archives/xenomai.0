@@ -1,14 +1,10 @@
-Message-ID: <49A2FE68.5040508@domain.hid>
-Date: Mon, 23 Feb 2009 20:52:08 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <a0ef0a9d0902230831t1f1cb440tc4bc7fdeab134fc8@domain.hid>	
-	<49A2F11E.2040204@domain.hid>
-	<a0ef0a9d0902231134m34399babk5d674d99c671f4e4@domain.hid>
-In-Reply-To: <a0ef0a9d0902231134m34399babk5d674d99c671f4e4@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Adeos patch for arm ??
+Date: Mon, 23 Feb 2009 12:16:34 -0800
+Message-ID: <67b6b3430902231216k11c5addahaafef823075e7e54@domain.hid>
+From: Mark Saiia <mark.saiia@domain.hid>
+Content-Type: multipart/alternative; boundary=00221532cba0d4195704639badec
+Subject: [Xenomai-help] Error building 2.6.27.19 w/
+	adeos-ipipe-2.6.27.19-x86-2.2-06.patch
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,31 +14,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ghanem Lafi <lafi.ghanem@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Ghanem Lafi wrote:
-> Hello Gilles,
-> 
-> The choice is an obligation because the vendor  of the board  offers only an
-> uClinux  patch for a version 2.6.11.8...
-> And they said that it is the only uClinux patch.
+--00221532cba0d4195704639badec
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-Please keep the discussion public.
+When building 2.6.27.19 w/ adeos-ipipe-2.6.27.19-x86-2.2-06.patch. I get the
+following error.
 
-What I meant by saying that you should focus on getting Linux running on
-it is that you should adapt whatever board specific code is in this
-vendor patch to the latest linux kernel release, following the linux
-kernel coding standards (and not the rules followed by the vendor), then
-try and get this support merged into the mainline linux by posting your
-patches on the linux arm kernel mailing list. When this is done, you
-will be able to apply whatever patch you want, uclinux, adeos I-pipe,
-and with a minimum effort, you will even be able to follow the linux
-kernel releases.
+CC      kernel/xenomai/arch/generic/hal.o
+kernel/xenomai/arch/generic/hal.c: In function 'rthal_irq_host_pend':
+kernel/xenomai/arch/generic/hal.c:301: error: void value not ignored as it
+ought to be
 
-What board is this by the way? It may happen that it is in fact already
-supported by the mainline kernel.
 
--- 
-					    Gilles.
+Has anyone else ran into this issue?
+
+Deleting the return on that line appears to fix the issue.
+
+Mark Saiia
+
+--00221532cba0d4195704639badec
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+When building 2.6.27.19 w/ adeos-ipipe-2.6.27.19-x86-2.2-06.patch. I get th=
+e following error.<br><br>CC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; kernel/xenomai/a=
+rch/generic/hal.o<br>kernel/xenomai/arch/generic/hal.c: In function 'rthal_=
+irq_host_pend':<br>kernel/xenomai/arch/generic/hal.c:301: error: void value=
+ not ignored as it ought to be<br>
+<br><br>Has anyone else ran into this issue?&nbsp; <br><br>Deleting the ret=
+urn on that line appears to fix the issue.<br><br>Mark Saiia<br><br>
+
+--00221532cba0d4195704639badec--
 
