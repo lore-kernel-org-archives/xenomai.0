@@ -1,9 +1,8 @@
-Message-ID: <49A2D47D.90609@domain.hid>
-Date: Mon, 23 Feb 2009 17:53:17 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <49A2D774.9000706@domain.hid>
+Date: Mon, 23 Feb 2009 18:05:56 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <BAY135-W5F4633CFE181E5E1DFB22C6B20@domain.hid>
-	<49A1DEBE.6020002@domain.hid>
+References: <BAY135-W5F4633CFE181E5E1DFB22C6B20@domain.hid>	<49A1DEBE.6020002@domain.hid>
 	<BAY135-W25DA8BBF5E569E370DB25DC6AE0@domain.hid>
 In-Reply-To: <BAY135-W25DA8BBF5E569E370DB25DC6AE0@domain.hid>
 Content-Type: text/plain; charset=windows-1252
@@ -19,7 +18,7 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Thomas Schaefer <thomas_schaefer_canada@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: xenomai@xenomai.org, jan.kiszka@domain.hid
 
 Thomas Schaefer wrote:
 > 
@@ -45,14 +44,9 @@ Thomas Schaefer wrote:
 > The Kernel is compiled for 64bit.
 > I attached the kernel config file.
 
-You've got CONFIG_X86_HT enabled. In case your CPU actually supports
-this feature, please try to disable it. Latency-wise, it's no good idea
-for RT scheduling anyway. I'm not aware of problems related to it, but
-it's worth a try (and I couldn't test it ATM due to lacking comparable HW).
+What does /proc/cpuinfo say ?
 
-Jan
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+                                                 Gilles.
 
