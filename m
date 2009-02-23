@@ -1,12 +1,13 @@
-Message-ID: <49A290AD.9040909@domain.hid>
-Date: Mon, 23 Feb 2009 13:03:57 +0100
+Message-ID: <49A290E2.3040506@domain.hid>
+Date: Mon, 23 Feb 2009 13:04:50 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <499EA168.3000103@domain.hid>
-In-Reply-To: <499EA168.3000103@domain.hid>
+References: <499EBF31.2080405@domain.hid>
+In-Reply-To: <499EBF31.2080405@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] Stall bit setting in __ipipe_handle_exception
+Subject: Re: [Adeos-main] [PATCH] x86: Always call fixup_if after event
+	dispatching
 Reply-To: rpm@xenomai.org
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
@@ -20,51 +21,108 @@ To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: adeos-main <adeos-main@gna.org>
 
 Jan Kiszka wrote:
-> Hi Philippe,
+> As we may switch the Linux context as a result of calling
+> __ipipe_dispatch_event and, thus, may leave it with a different root
+> domain state independent of the return code, we have to call __fixup_if
+> unconditionally. Moreover, we should also always check for pending VIRQs
+> on return.
 > 
-> as already indicated, I'm starting to understand the ipipe bug Roman
-> sees. It seems to melt down to the following path:
+> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 > 
-> - exception raised over non-root domain (__rt_event_wait...)
-> - root domain is stalled on entry of __ipipe_handle_exception
-> - fault causing task is first relaxed, then scheduled away under Linux
-> - scheduled-in Linux task was interrupted in __ipipe_divert_exception,
->   shortly before __fixup_if
-> - __fixup_if finds root domain stalled and propagates this to the
->   register set of the interrupted context (user space task running on
->   its first fpu instruction, having triggered device_not_available).
-> - return to user space task with irqs disable - bang!
+> ---
+>  arch/x86/kernel/ipipe.c |   24 ++++++++++++++++--------
+>  1 file changed, 16 insertions(+), 8 deletions(-)
+> 
+> Index: b/arch/x86/kernel/ipipe.c
+> ===================================================================
+> --- a/arch/x86/kernel/ipipe.c
+> +++ b/arch/x86/kernel/ipipe.c
+> @@ -540,6 +540,7 @@ asmlinkage void __ipipe_unstall_iret_roo
+>  asmlinkage int __ipipe_syscall_root(struct pt_regs regs)
+>  {
+>  	unsigned long flags;
+> +	int dont_pass;
+>  
+>  	__fixup_if(&regs);
+>  
+> @@ -551,8 +552,9 @@ asmlinkage int __ipipe_syscall_root(stru
+>  	   tail work has to be performed (for handling signals etc). */
+>  
+>  	if (__ipipe_syscall_watched_p(current, regs.orig_ax) &&
+> -	    __ipipe_event_monitored_p(IPIPE_EVENT_SYSCALL) &&
+> -	    __ipipe_dispatch_event(IPIPE_EVENT_SYSCALL,&regs) > 0) {
+> +	    __ipipe_event_monitored_p(IPIPE_EVENT_SYSCALL)) {
+> +		dont_pass = __ipipe_dispatch_event(IPIPE_EVENT_SYSCALL,&regs);
+> +
+>  		/* We might enter here over a non-root domain and exit
+>  		 * over the root one as a result of the syscall
+>  		 * (i.e. by recycling the register set of the current
+> @@ -568,9 +570,10 @@ asmlinkage int __ipipe_syscall_root(stru
+>  			if ((ipipe_root_cpudom_var(irqpend_himask) & IPIPE_IRQMASK_VIRT) != 0)
+>  				__ipipe_sync_pipeline(IPIPE_IRQMASK_VIRT);
+>  			local_irq_restore_hw(flags);
+> -			return -1;
+> -		}
+> -		return 1;
+> +			if (dont_pass)
+> +				return -1;
+> +		} else if (dont_pass)
+> +			return 1;
+>  	}
+>  
+>  	return 0;
+> @@ -610,6 +613,7 @@ asmlinkage int __ipipe_preempt_schedule_
+>  asmlinkage int __ipipe_syscall_root(struct pt_regs *regs)
+>  {
+>  	unsigned long flags;
+> +	int pass;
+>  
+>  	__fixup_if(regs);
 >
 
-Good catch.
+This needs fixing; a thread relaxing to secondary mode to run a regular Linux
+syscall would trigger the issue as well.
 
-> Two ways to approach this:
-> 1. Do we actually have to stall the root domain in
->    __ipipe_handle_exception before ipipe_trap_notify? I don't see why we
->    should be better off with doing this afterwards.
+> @@ -621,8 +625,9 @@ asmlinkage int __ipipe_syscall_root(stru
+>  	   tail work has to be performed (for handling signals etc). */
+>  
+>  	if (__ipipe_syscall_watched_p(current, regs->orig_ax) &&
+> -	    __ipipe_event_monitored_p(IPIPE_EVENT_SYSCALL) &&
+> -	    __ipipe_dispatch_event(IPIPE_EVENT_SYSCALL, regs) > 0) {
+> +	    __ipipe_event_monitored_p(IPIPE_EVENT_SYSCALL)) {
+> +		pass = !__ipipe_dispatch_event(IPIPE_EVENT_SYSCALL, regs);
+> +
+>  		/* We might enter here over a non-root domain and exit
+>  		 * over the root one as a result of the syscall
+>  		 * (i.e. by recycling the register set of the current
+> @@ -632,6 +637,9 @@ asmlinkage int __ipipe_syscall_root(stru
+>  		 * stall bit on exit. */
+>  		__fixup_if(regs);
+>  
+> +		if (pass)
+> +			return 0;
+> +
+>  		if (ipipe_root_domain_p && !in_atomic()) {
 
-We do, because the root domain may install an I-pipe event handler on exceptions
-as well, and the callee may assume that the virtual interrupt state is correct.
+We may remove the in_atomic() check. This is legacy code that does not serve any
+purpose in recent kernels.
 
-> 2. Avoid that __ipipe_divert_exception is interruptible and can pick up
->    the stall flag from a different Linux task. But I don't know if there
->    aren't more race windows like that.
-> 
-
-Since the core of the issue is about a preemption point that may be introduced
-by a thread migration to secondary, the same goes with __ipipe_syscall_root;
-this is what I stumbled upon on a different trace set.
-
-The way to fix this properly is to decouple fixup_if() from the current global
-interrupt state at call time, and rather make such state context-dependent, so
-that iret emulation always uses the proper state value. A typical approach would
-be to record the stall bit value on the caller's stack, and feed fixup_if() with it.
-
-> Jan
+>  			/* Sync pending VIRQs before _TIF_NEED_RESCHED is tested. */
+>  			local_irq_save_hw(flags);
+> @@ -648,7 +656,7 @@ asmlinkage int __ipipe_syscall_root(stru
+>  		return 1;
+>  	}
+>  
+> -    return 0;
+> +	return 0;
+>  }
+>  
+>  #endif /* !CONFIG_X86_32 */
 > 
 
 
 -- 
 Philippe.
+
 
 
