@@ -1,5 +1,5 @@
-Message-ID: <49A2D774.9000706@domain.hid>
-Date: Mon, 23 Feb 2009 18:05:56 +0100
+Message-ID: <49A2D814.3070400@domain.hid>
+Date: Mon, 23 Feb 2009 18:08:36 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <BAY135-W5F4633CFE181E5E1DFB22C6B20@domain.hid>	<49A1DEBE.6020002@domain.hid>
@@ -44,8 +44,7 @@ Thomas Schaefer wrote:
 > The Kernel is compiled for 64bit.
 > I attached the kernel config file.
 
-What does /proc/cpuinfo say ?
-
+Enable ACPI, except the ACPI "processor" module.
 
 -- 
                                                  Gilles.
