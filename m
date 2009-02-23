@@ -1,127 +1,93 @@
-Content-Class: urn:content-classes:message
+Message-ID: <49A2A654.7040706@domain.hid>
+Date: Mon, 23 Feb 2009 14:36:20 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 16 Feb 2009 07:19:45 +0100
-Message-ID: <4B2EEE69E41E524EB7FCDC62A15D68D80308F248@domain.hid>
-In-Reply-To: <49957D23.4040806@domain.hid>
-References: <4B2EEE69E41E524EB7FCDC62A15D68D80308F137@domain.hid>
-	<499572C2.3060609@domain.hid> <49957D23.4040806@domain.hid>
-From: <thomas.debes@domain.hid>
-Subject: Re: [Xenomai-help] Floating Point Exceptions in RT-Tasks
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: gilles.chanteperdrix@xenomai.org
-Cc: xenomai@xenomai.org
+References: <499EBF45.900@domain.hid> <49A290E8.5030400@domain.hid>
+	<49A29871.90807@domain.hid> <49A29CBF.80701@domain.hid>
+In-Reply-To: <49A29CBF.80701@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Adeos-main] [PATCH] x86: Proper root domain state management
+	for ipipe_handle_exception
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: rpm@xenomai.org
+Cc: adeos-main <adeos-main@gna.org>
 
-I modified the trivial periodic example. That raises the exception only =
-when I comment in the printf in demo(...). Basically I want to get =
-notified if a floating point exception occurs. We have an automatic code =
-generator which generates protection code for underflow, overflow and =
-division by zero. This adds a lot of overhead to each application (which =
-are very math centric) and suppresses any error. By leaving this code =
-out we want to enable FPE's (only in debug mode) and give the users the =
-ability to test their algorithms against arithmetic exceptions.
-
-
-#include <stdio.h>
-#include <signal.h>
-#include <unistd.h>
-#include <sys/mman.h>
-#include <fenv.h>
-#include <native/task.h>
-#include <native/timer.h>
-
-RT_TASK demo_task;
-double z;
-
-/* NOTE: error handling omitted. */
-
-void demo(void *arg)
-{
-	RTIME now, previous;
-	rt_task_set_periodic(NULL, TM_NOW, 1000000000);
-	previous =3D rt_timer_read();
-
-        double a =3D 23.0;
-
-        z =3D 0;
-        a /=3D z;
-
-	while (1) {
-		rt_task_wait_period(NULL);
-		now =3D rt_timer_read();
-		/*printf("Time since last turn: %ld.%06ld ms\n",
-		       (long)(now - previous) / 1000000,
-		       (long)(now - previous) % 1000000);*/
-		       previous =3D now;
-	}
-}
-
-void catch_signal(int sig)
-{
-}
-
-int main(int argc, char* argv[])
-{
-      fesetenv(FE_ENABLED_ENV);
-
-	signal(SIGTERM, catch_signal);
-	signal(SIGINT, catch_signal);
-	mlockall(MCL_CURRENT|MCL_FUTURE);
-	rt_task_create(&demo_task, "trivial", 0, 99, 0);
-	rt_task_start(&demo_task, &demo, NULL);
-	pause();
-	rt_task_delete(&demo_task);
-}
-
-Thanks
-Thomas
-
------Urspr=FCngliche Nachricht-----
-Von: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
-Gesendet: Freitag, 13. Februar 2009 15:01
-An: Debes, Thomas RAEK3 MRA
-Cc: xenomai@xenomai.org
-Betreff: Re: [Xenomai-help] Floating Point Exceptions in RT-Tasks
-
-Gilles Chanteperdrix wrote:
-> thomas.debes@domain.hid wrote:
->> Hi,
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>> Philippe Gerum wrote:
+>>> Jan Kiszka wrote:
+>>>> This is an attempt to fix the broken root domain state adjustment in
+>>>> __ipipe_handle_exception. Patch below fixes the issues recently reported
+>>>> by Roman Pisl. Also, it currently makes much more sense to me than what
+>>>> we have so far.
+>>>>
+>>>> In short, this patch propagates the hardware irq state into the root
+>>>> domains stall flag shortly before calling into the Linux handler, and
+>>>> only then. This avoids spurious root domain stalls the end up over the
+>>>> wrong Linux context due to context switches between enter and exit of
+>>>> ipipe_handle_exception. Also, this patch drops the bogus
+>>>> local_irq_save/restore pair that doesn't account for Linux irq state
+>>>> changes inside its fault handler.
+>>>>
+>>> Actually, it is not bogus at all, it is even mandatory on x86_64, given that we
+>>> don't branch to any sysretq/iretq emulation unlike with x86_32. So if we don't
+>>> restore the stall bit for the root domain properly there, we could end up
+>>> running with interrupts off in user-space.
+>>>
+>>> However, the way the interrupt state is currently saved is wrong: we should not
+>>> local_irq_disable() over non-root domains. Here is some on-line documentation to
+>>> explain why:
+>>>
+>>> The main difference between x86_32 and 64 is that the former does virtualize the
+>>> interrupt state in entry_32.S, unlike the latter. For that reason, x86_64 does
+>>> not require (actually, we should not be doing) any fixup. So, to sum up:
+>>>
+>>> - we use fixup_if() to restore the virtual interrupt state properly when control
+>>> is given back to the code that triggered the fault/exception (x86_32). We need
+>>> to do that because of task migrations between primary and secondary modes.
+>>>
+>>> - we must clear the virtual interrupt flag before calling the I-pipe handler /
+>>> Linux regular exception handler, because our callee may/must run in the root
+>>> domain as well, and expect that interrupt state to reflect the hw one, as set by
+>>> the x86 exception gate / fault prologue in entry_*.S.
+>>>
+>>> - because of the above, we must use local_irq_save()/local_irq_restore_nosync()
+>>> in our fault handler to make sure to restore the virtual interrupt flag properly
+>>> between this routine, and the exception return statement (i.e. during the Linux
+>>> fault epilogue in entry_*.S).
+>> OK, if there is a reason to enforce a stalled root domain while calling
+>> into the exception hook, this makes some sense. But I don't think it is
+>> formally correct to save the root state on entry and blindly restore it
+>> _after_ calling the Linux handler. I rather think we should keep the
+>> state that Linux leaves behind to remain transparent to it. Maybe no
+>> practical issue ATM, but it makes the code at least illogical.
 >>
->> I successfully managed to enable FP Exceptions on our MPC5200 board =
-for
->> plain linux applications (via fesetenv). When I put the same trigger
->> code (DivByZero) into a (native) RT task no exception is triggered =
-until
->> I force a mode switch to secondary mode (e.g. printf). How can I get
->> them without performing the mode switch?
->=20
-> An FPU exception triggers a signal, and signal can only be sent to a
-> task running in secondary mode. So, even if we managed to get the =
-signal
-> to be sent to the task immediately, it would cause it to switch to
-> secondary mode. Is it really what you want?
+> 
+> Please re-read the explanations, and you will find the logic. I cannot do
+> anything more than re-hashing what I just said. What you perceive as illogical
+> is actually the only sane way to do this. Formally speaking, a linux fault
+> handler may NOT alter the interrupt state blindly, so we must be able to assume
+> that we ought to restore it the way the lower code set it.
 
-Actually, this should not happen. Could you send us a test program?
+I got your first and second point, but they don't imply to me that the
+third shall be correct as well. "...to make sure to restore the virtual
+interrupt flag properly" is not directly an clear explanation (for me)
+why we have to restore the flag across calls to the _Linux_ handler. We
+can demand that the hook handler leaves the root state untouched, but
+requiring the same from Linux is a restriction that you don't find in
+the ipipe-less case, nor do I see the reason for this under ipipe control.
 
---=20
-                                                 Gilles.
+Jan
 
---------------------------------------------------------
-manroland AG
-Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle  =20
-Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592
-USt-Ident-Nr. DE 250200933
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
