@@ -1,16 +1,15 @@
-Message-ID: <49A323CE.3010302@domain.hid>
-Date: Mon, 23 Feb 2009 23:31:42 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <BAY135-W5F4633CFE181E5E1DFB22C6B20@domain.hid>	<49A1DEBE.6020002@domain.hid>
-	<BAY135-W25DA8BBF5E569E370DB25DC6AE0@domain.hid>	<49A2D47D.90609@domain.hid>
-	<BAY135-W50A146D755045D42A23F66C6AE0@domain.hid>
-In-Reply-To: <BAY135-W50A146D755045D42A23F66C6AE0@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig6264CC179F58EDFB112C7681"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] rt_task_create with mode T_CPU(1)
+Content-Type: text/plain;
+	charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 23 Feb 2009 16:32:48 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D590FDA@slcmail.slc.mew.int>
+In-Reply-To: <49A29232.5060003@domain.hid>
+References: <499EBF45.900@domain.hid> <49A29232.5060003@domain.hid>
+From: "Steven Seeger" <sseeger@domain.hid>
+Subject: Re: [Xenomai-help] [PATCH] x86: Proper root domain state management
+	for ipipe_handle_exception
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,52 +19,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Thomas Schaefer <thomas_schaefer_canada@domain.hid>
-Cc: xenomai@xenomai.org
+To: rpm@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6264CC179F58EDFB112C7681
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+I ran my old FPU test on this just for fun and got the following OOPS:
 
-Thomas Schaefer wrote:
-> Hi,
->=20
-> CONFIG_SCHED_SMT is not set.
-> I manually overwrite CONFIG_X86_HT to n but every time I run make-kpkg =
-it will overwrite CONFIG_X86_HT to y.
+Eeek! Page_mapcount(page) went negative! (-1)
+Page pfn =3D 0
+Page->flags =3D 14
+Page->count =3D ffffffff
+Page->mapping =3D 00000000
+Vm->vm_ops =3D 0
+BUG at mm/rmap.c:684
 
-Yeah, that was nonsense. And I do have a HT-capable test box with an
-older 2x2 Xeon in fact. It never caused problems, at least not like
-those you found (the box has sever and unfixable SMI issues, so I
-stopped using it for Xenomai tests).
+In page_remove_rmap
 
-More ideas: What happens if your run latency like this?
+I also see "fixing recursive fault but reboot needed"
 
-	taskset -c 1 latency -c 1
+Steven
 
-Maybe there is some strange issue with sending IPIs on your box (which
-is required to start things up in case creator and created task sit on
-different CPUs). If that happens to make a difference, please try again
-without taskset but with dumping /proc/xenomai/irq before and after the
-start and post the result.
-
-Jan
-
-
---------------enig6264CC179F58EDFB112C7681
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkmjI9IACgkQniDOoMHTA+khaQCfdWkfvhnqRt3wcmUqAy16vnmi
-B0kAn1YYsIALcAOIPLtrqwHqPOk17uzl
-=W3St
------END PGP SIGNATURE-----
-
---------------enig6264CC179F58EDFB112C7681--
 
