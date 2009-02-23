@@ -1,14 +1,9 @@
-Message-ID: <BAY135-W50A146D755045D42A23F66C6AE0@domain.hid>
-From: Thomas Schaefer <thomas_schaefer_canada@domain.hid>
-Date: Mon, 23 Feb 2009 11:32:37 -0700
-In-Reply-To: <49A2D47D.90609@domain.hid>
-References: <BAY135-W5F4633CFE181E5E1DFB22C6B20@domain.hid>
-	<49A1DEBE.6020002@domain.hid> <BAY135-W25DA8BBF5E569E370DB25DC6AE0@domain.hid>
-	<49A2D47D.90609@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] rt_task_create with mode T_CPU(1)
+Date: Mon, 23 Feb 2009 17:31:15 +0100
+Message-ID: <a0ef0a9d0902230831t1f1cb440tc4bc7fdeab134fc8@domain.hid>
+From: Ghanem Lafi <lafi.ghanem@domain.hid>
+Content-Type: multipart/alternative; boundary=001636c5a72e0b29600463988847
+Subject: [Xenomai-help] Adeos patch for arm ??
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,69 +13,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+
+--001636c5a72e0b29600463988847
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+Hello,
+
+   To install  xenomai, I should  have a patch adeos for  arm architecture
+related to kernel Linux 2.6.11.8
+
+   The problem is that the oldest  version of arm adeos  patch  is related
+to  linux2.6.14... and my work
+ must work with linux2.6.11.8 !!
+
+   I would appreciate comments and suggestions. If this is already
+discussed somewhere else then I would be grateful if you could point me
+in the right direction.
+
+   Thanks in advance for your help
+
+   Kind regards.
 
 
-Hi=2C
+LAFI Ghanem
 
-CONFIG_SCHED_SMT is not set.
-I manually overwrite CONFIG_X86_HT to n but every time I run make-kpkg it w=
-ill overwrite CONFIG_X86_HT to y.
+--001636c5a72e0b29600463988847
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Thomas
+<div dir=3D"ltr">Hello,<br><br>&nbsp;&nbsp; To install&nbsp; xenomai, I sho=
+uld&nbsp; have a patch adeos for&nbsp; arm architecture related to kernel L=
+inux 2.6.11.8<br><br>&nbsp;&nbsp; The problem is that the oldest&nbsp; vers=
+ion of arm adeos&nbsp; patch&nbsp; is related to&nbsp; linux2.6.14... and m=
+y work<br>
+&nbsp;must work with linux2.6.11.8 !!<br><br>&nbsp;&nbsp; I would appreciat=
+e comments and suggestions. If this is already<br>discussed somewhere else =
+then I would be grateful if you could point me<br>in the right direction.<b=
+r><br>&nbsp;&nbsp; Thanks in advance for your help<br>
+<br>&nbsp;&nbsp; Kind regards.<br><br><br>LAFI Ghanem<br></div>
 
-
-----------------------------------------
-> Date: Mon=2C 23 Feb 2009 17:53:17 +0100
-> From: jan.kiszka@domain.hid
-> To: thomas_schaefer_canada@domain.hid
-> CC: xenomai@xenomai.org
-> Subject: Re: rt_task_create with mode T_CPU(1)
->
-> Thomas Schaefer wrote:
->>
->> Hi=2C
->>
->> I downloaded kernel 2.6.28.7 and used the xenomai svn revision 4639.
->> BTW. I can't update my svn repository i get "svn: Can't find a temporary=
- directory: Internal error".
->> According to Google this means that your svn server is out of disk space=
-.
->>
->> After running the new kernel and running ./latency -c1 it hangs after "w=
-arming up...".
->> After ctrl+c I get:
->>
->> ^C---|------------|------------|------------|--------|------------------=
--------
->> RTS| 4699.016| 0.000| -4699.016| 0| 00:11:21/00:11:21
->>
->> and it still hangs. Except for this windows the system stays responsive.
->>
->> Revision 4595 seems to work as expected.
->>
->> I tried booting the kernel with maxcpus=3D2 but it yields the same resul=
-t.
->>
->> I am running debian lenny on a quad core xeon with 3GB ram.
->> The Kernel is compiled for 64bit.
->> I attached the kernel config file.
->
-> You've got CONFIG_X86_HT enabled. In case your CPU actually supports
-> this feature=2C please try to disable it. Latency-wise=2C it's no good id=
-ea
-> for RT scheduling anyway. I'm not aware of problems related to it=2C but
-> it's worth a try (and I couldn't test it ATM due to lacking comparable HW=
-).
->
-> Jan
->
-> --
-> Siemens AG=2C Corporate Technology=2C CT SE 2
-> Corporate Competence Center Embedded Linux
-
-_________________________________________________________________
-How fun is this? IMing with Windows Live Messenger just got better.
-http://www.microsoft.com/windows/windowslive/products/messenger.aspx=
+--001636c5a72e0b29600463988847--
 
