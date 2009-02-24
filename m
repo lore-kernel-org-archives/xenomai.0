@@ -1,19 +1,10 @@
+Message-ID: <49A3F793.3010204@domain.hid>
+Date: Tue, 24 Feb 2009 14:35:15 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <49A67901.60506@domain.hid>
-References: <a0e7fce50902240018g6be57617g2c5f14c55685ef24@domain.hid>
-	<49A4209F.60502@domain.hid>
-	<a0e7fce50902242022y2c6304c9lca98e6d981aa4251@domain.hid>
-	<49A51C3D.1020705@domain.hid>
-	<a0e7fce50902252221x28c4b394j56803eaab0460f7b@domain.hid>
-	<49A66CF6.7050405@domain.hid>
-	<a0e7fce50902260256o49ab88fcmbe6269b67b92aa5f@domain.hid>
-	<49A67901.60506@domain.hid>
-Date: Fri, 27 Feb 2009 18:02:32 +0800
-Message-ID: <a0e7fce50902270202l66bf8686j57057478897fe082@domain.hid>
-From: yi li <liyi.dev@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] blackfin: build xenomai in FLAT format
+Subject: [Xenomai-core] [PATCH] Fix gatekeeper affinity
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -23,17 +14,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Xenomai-core@domain.hid
+To: xenomai-core <xenomai@xenomai.org>
 
-Thanks. This makes sense to me.
+As the xnsched structures get initialized later, during xnpod_init,
+xnsched_cpu always returned 0 in the gatekeeper_thread prologue. That
+caused binding of all gatekeepers to CPU 0.
 
--Yi
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
 
-On Thu, Feb 26, 2009 at 7:12 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> This is why we are talking about "two-phase" link for static mode. In fact,
-> fixing the issue your reported would require to implement two-phase link
-> conditionally in our Makefiles producing POSIX binaries, to be used when FLAT
-> format is wanted. This is doable, but requires a bit more work than just
-> reordering or removing dependencies on libpthread.
+ ksrc/nucleus/shadow.c |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
+index 1dedd85..2243c0e 100644
+--- a/ksrc/nucleus/shadow.c
++++ b/ksrc/nucleus/shadow.c
+@@ -823,11 +823,14 @@ static int gatekeeper_thread(void *data)
+ 	struct task_struct *this_task = current;
+ 	DECLARE_WAITQUEUE(wait, this_task);
+ 	struct xnsched *sched = data;
+-	int cpu = xnsched_cpu(sched);
+ 	struct xnthread *target;
+ 	cpumask_t cpumask;
++	int cpu;
+ 	spl_t s;
+ 
++	/* sched not fully initialized, xnsched_cpu does not work yet */
++	cpu = sched - nkpod_struct.sched;
++
+ 	this_task->flags |= PF_NOFREEZE;
+ 	sigfillset(&this_task->blocked);
+ 	cpumask = cpumask_of_cpu(cpu);
 
