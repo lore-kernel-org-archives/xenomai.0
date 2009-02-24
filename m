@@ -1,86 +1,252 @@
-Message-ID: <49935B0A.7050706@domain.hid>
-Date: Thu, 12 Feb 2009 00:11:06 +0100
+Message-ID: <49A4209F.60502@domain.hid>
+Date: Tue, 24 Feb 2009 17:30:23 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4B3F8896E1733D4787DDB0EA1C7FF91F704A7F@ukmail.uk.wirelessworld.airvananet.com>
-In-Reply-To: <4B3F8896E1733D4787DDB0EA1C7FF91F704A7F@ukmail.uk.wirelessworld.airvananet.com>
+References: <a0e7fce50902240018g6be57617g2c5f14c55685ef24@domain.hid>
+In-Reply-To: <a0e7fce50902240018g6be57617g2c5f14c55685ef24@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Massive improvement when Xenomai patched
+Subject: Re: [Xenomai-core] [PATCH] blackfin: build xenomai in FLAT format
 Reply-To: rpm@xenomai.org
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Mike McTernan <mmcternan@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: yi li <liyi.dev@domain.hid>
+Cc: Xenomai-core@domain.hid
 
-Mike McTernan wrote:
-> Hi,
+yi li wrote:
+> This patch fixes xenomai-2.4.x branch build scripts, to build xenomai
+> as FLAT on Blackfin.
 > 
-> I've patched Blackfin uClinux 2008R1.5 with Adeos and Xenomai 2.4.6.1
-> and started benchmarking our system.  At this point the apps are
-> unmodified and I only change between a Xenomai enabled kernel and an
-> unmodified kernel.  This is verified by checking the boot messages and
-> the process list under /proc/xenomai/stats.
->
+> 1. "-mfdpic" option is by default set by bfin-linux-uclibc-gcc. It is
+> not required and it can cause error for bfin-uclinux-gcc.
 
-<snip>
+Ack.
 
-> I made measurements over ~2000 sweeps on a scope with the unpatched and
-> patched kernel, both when otherwise idle and then when under load.  To
-> create load I execute the following line on a telnet session:
-> 
->   $ while true; do ls -l /mnt; done
->   
-> The results:
-> 
->   Configuration                    Duration (uS)
->                            Min       Mean      Max
->   Vanilla                  9.9       16.8     30.8
->   Xenomai Kernel          19.0       27.5     50.4
->   Vanilla + load          10.9    11017.4  19619.7
->   Xenomai Kernel + load   59.4      215.5   1849.8
-> 
-> Clearly Xenomai appears to add some overhead to the interrupt handling
-> and acknowledgement.  That's to be expected as the apps are executing in
-> the secondary and the drivers are not RTDM, and the overhead is very
-> small in anycase.
+> 2.  libpthread_rt.la should not depend on "lpthread".
 > 
 
-As a matter of fact, on the Blackfin with I-pipe series <= 1.8, the IRQs are
-threaded, which causes such overhead. This is no more the case since 1.9-00.
+Nak. In flat mode, turning the link dependencies order upside down will not buy
+us anything. Two-phase link is the only way to prevent circular/invalid
+dependencies with a static only format when symbol wrapping is involved.
 
-> But I don't understand why under load the scheduling of the non-Xenomai
-> task is so much improved.  The worst case is more than x10 better, the
-> average case x50.  It's incredible!
->
-
-Beyond that, it's a clear violation of Murphy's law.
-
-> Is this to be expected?
+> -Yi
+> 
+> diff -Nurp --exclude=.svn xenomai-2.4.x-clean/configure xenomai-2.4.x/configure
+> --- xenomai-2.4.x-clean/configure	2008-12-04 19:21:40.000000000 +0800
+> +++ xenomai-2.4.x/configure	2009-02-23 17:12:14.000000000 +0800
+> @@ -22569,10 +22569,10 @@ case $XENO_TARGET_ARCH in
+>          ;;
+>   blackfin)
+>  	# Produce libraries in FDPIC format.
+> -	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe -mfdpic"
+> -	XENO_USER_LDFLAGS="$XENO_USER_CFLAGS -mfdpic"
+> -	XENO_USER_APP_CFLAGS="$XENO_USER_APP_CFLAGS -mfdpic"
+> -	XENO_USER_APP_LDFLAGS="$XENO_USER_APP_LDFLAGS -mfdpic"
+> +	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe"
+> +	XENO_USER_LDFLAGS="$XENO_USER_CFLAGS"
+> +	XENO_USER_APP_CFLAGS="$XENO_USER_APP_CFLAGS"
+> +	XENO_USER_APP_LDFLAGS="$XENO_USER_APP_LDFLAGS"
+>          ;;
+>   arm)
+>  	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe
+> -march=armv$CONFIG_XENO_ARM_ARCH"
+> diff -Nurp --exclude=.svn xenomai-2.4.x-clean/configure.in
+> xenomai-2.4.x/configure.in
+> --- xenomai-2.4.x-clean/configure.in	2008-12-04 19:21:40.000000000 +0800
+> +++ xenomai-2.4.x/configure.in	2009-02-23 17:12:14.000000000 +0800
+> @@ -648,10 +648,10 @@ case $XENO_TARGET_ARCH in
+>          ;;
+>   blackfin)
+>  	# Produce libraries in FDPIC format.
+> -	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe -mfdpic"
+> -	XENO_USER_LDFLAGS="$XENO_USER_CFLAGS -mfdpic"
+> -	XENO_USER_APP_CFLAGS="$XENO_USER_APP_CFLAGS -mfdpic"
+> -	XENO_USER_APP_LDFLAGS="$XENO_USER_APP_LDFLAGS -mfdpic"
+> +	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe"
+> +	XENO_USER_LDFLAGS="$XENO_USER_CFLAGS"
+> +	XENO_USER_APP_CFLAGS="$XENO_USER_APP_CFLAGS"
+> +	XENO_USER_APP_LDFLAGS="$XENO_USER_APP_LDFLAGS"
+>          ;;
+>   arm)
+>  	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe
+> -march=armv$CONFIG_XENO_ARM_ARCH"
+> diff -Nurp --exclude=.svn
+> xenomai-2.4.x-clean/src/skins/posix/Makefile.am
+> xenomai-2.4.x/src/skins/posix/Makefile.am
+> --- xenomai-2.4.x-clean/src/skins/posix/Makefile.am	2008-03-10
+> 06:33:59.000000000 +0800
+> +++ xenomai-2.4.x/src/skins/posix/Makefile.am	2009-02-23
+> 17:12:14.000000000 +0800
+> @@ -2,7 +2,7 @@ includedir = $(prefix)/include/posix
+> 
+>  lib_LTLIBRARIES = libpthread_rt.la
+> 
+> -libpthread_rt_la_LDFLAGS = -version-info 1:0:0 -lpthread
+> +libpthread_rt_la_LDFLAGS = -version-info 1:0:0
+> 
+>  libpthread_rt_la_SOURCES = \
+>  	init.c \
+> diff -Nurp --exclude=.svn
+> xenomai-2.4.x-clean/src/skins/posix/Makefile.in
+> xenomai-2.4.x/src/skins/posix/Makefile.in
+> --- xenomai-2.4.x-clean/src/skins/posix/Makefile.in	2008-06-02
+> 05:32:28.000000000 +0800
+> +++ xenomai-2.4.x/src/skins/posix/Makefile.in	2009-02-23
+> 17:12:14.000000000 +0800
+> @@ -239,7 +239,7 @@ target_vendor = @target_vendor@
+>  top_builddir = @top_builddir@
+>  top_srcdir = @top_srcdir@
+>  lib_LTLIBRARIES = libpthread_rt.la
+> -libpthread_rt_la_LDFLAGS = -version-info 1:0:0 -lpthread
+> +libpthread_rt_la_LDFLAGS = -version-info 1:0:0
+>  libpthread_rt_la_SOURCES = \
+>  	init.c \
+>  	thread.c \
+> diff -Nurp --exclude=.svn
+> xenomai-2.4.x-clean/src/testsuite/clocktest/Makefile.am
+> xenomai-2.4.x/src/testsuite/clocktest/Makefile.am
+> --- xenomai-2.4.x-clean/src/testsuite/clocktest/Makefile.am	2008-03-01
+> 04:41:56.000000000 +0800
+> +++ xenomai-2.4.x/src/testsuite/clocktest/Makefile.am	2009-02-23
+> 17:12:14.000000000 +0800
+> @@ -9,7 +9,7 @@ clocktest_CPPFLAGS = -I$(top_srcdir)/inc
+>  clocktest_LDFLAGS = $(XENO_POSIX_WRAPPERS) $(XENO_USER_LDFLAGS)
+> 
+>  clocktest_LDADD = \
+> -	../../skins/posix/libpthread_rt.la -lpthread -lrt
+> +	-lpthread -lrt ../../skins/posix/libpthread_rt.la
+> 
+>  install-data-local:
+>  	$(mkinstalldirs) $(DESTDIR)$(testdir)
+> diff -Nurp --exclude=.svn
+> xenomai-2.4.x-clean/src/testsuite/clocktest/Makefile.in
+> xenomai-2.4.x/src/testsuite/clocktest/Makefile.in
+> --- xenomai-2.4.x-clean/src/testsuite/clocktest/Makefile.in	2008-06-02
+> 05:32:28.000000000 +0800
+> +++ xenomai-2.4.x/src/testsuite/clocktest/Makefile.in	2009-02-23
+> 17:12:14.000000000 +0800
+> @@ -232,7 +232,7 @@ clocktest_SOURCES = clocktest.c
+>  clocktest_CPPFLAGS = -I$(top_srcdir)/include/posix
+> $(XENO_USER_CFLAGS) -I$(top_srcdir)/include
+>  clocktest_LDFLAGS = $(XENO_POSIX_WRAPPERS) $(XENO_USER_LDFLAGS)
+>  clocktest_LDADD = \
+> -	../../skins/posix/libpthread_rt.la -lpthread -lrt
+> +	-lpthread -lrt ../../skins/posix/libpthread_rt.la
+> 
+>  EXTRA_DIST = runinfo.in
+>  all: all-am
+> diff -Nurp --exclude=.svn
+> xenomai-2.4.x-clean/src/testsuite/cyclic/Makefile.am
+> xenomai-2.4.x/src/testsuite/cyclic/Makefile.am
+> --- xenomai-2.4.x-clean/src/testsuite/cyclic/Makefile.am	2008-03-01
+> 04:41:56.000000000 +0800
+> +++ xenomai-2.4.x/src/testsuite/cyclic/Makefile.am	2009-02-23
+> 17:12:14.000000000 +0800
+> @@ -9,7 +9,7 @@ cyclictest_CPPFLAGS = -I$(top_srcdir)/in
+>  cyclictest_LDFLAGS = $(XENO_POSIX_WRAPPERS) $(XENO_USER_LDFLAGS)
+> 
+>  cyclictest_LDADD = \
+> -	../../skins/posix/libpthread_rt.la -lpthread -lrt
+> +	-lpthread -lrt ../../skins/posix/libpthread_rt.la
+> 
+>  install-data-local:
+>  	$(mkinstalldirs) $(DESTDIR)$(testdir)
+> diff -Nurp --exclude=.svn
+> xenomai-2.4.x-clean/src/testsuite/cyclic/Makefile.in
+> xenomai-2.4.x/src/testsuite/cyclic/Makefile.in
+> --- xenomai-2.4.x-clean/src/testsuite/cyclic/Makefile.in	2008-06-02
+> 05:32:28.000000000 +0800
+> +++ xenomai-2.4.x/src/testsuite/cyclic/Makefile.in	2009-02-23
+> 17:12:14.000000000 +0800
+> @@ -232,7 +232,7 @@ cyclictest_SOURCES = cyclictest.c
+>  cyclictest_CPPFLAGS = -I$(top_srcdir)/include/posix
+> $(XENO_USER_CFLAGS) -DIPIPE_TRACE=1 -I$(top_srcdir)/include
+>  cyclictest_LDFLAGS = $(XENO_POSIX_WRAPPERS) $(XENO_USER_LDFLAGS)
+>  cyclictest_LDADD = \
+> -	../../skins/posix/libpthread_rt.la -lpthread -lrt
+> +	-lpthread -lrt ../../skins/posix/libpthread_rt.la
+> 
+>  EXTRA_DIST = runinfo.in
+>  all: all-am
+> diff -Nurp --exclude=.svn
+> xenomai-2.4.x-clean/src/testsuite/irqbench/Makefile.am
+> xenomai-2.4.x/src/testsuite/irqbench/Makefile.am
+> --- xenomai-2.4.x-clean/src/testsuite/irqbench/Makefile.am	2008-03-01
+> 04:41:56.000000000 +0800
+> +++ xenomai-2.4.x/src/testsuite/irqbench/Makefile.am	2009-02-23
+> 17:12:14.000000000 +0800
+> @@ -19,7 +19,7 @@ irqloop_LDFLAGS = \
+>  	$(XENO_USER_LDFLAGS)
+> 
+>  irqloop_LDADD = \
+> -	../../skins/posix/libpthread_rt.la -lpthread -lrt
+> +	-lpthread -lrt ../../skins/posix/libpthread_rt.la
+> 
+> 
+>  irqbench_SOURCES = irqbench.c
+> diff -Nurp --exclude=.svn
+> xenomai-2.4.x-clean/src/testsuite/irqbench/Makefile.in
+> xenomai-2.4.x/src/testsuite/irqbench/Makefile.in
+> --- xenomai-2.4.x-clean/src/testsuite/irqbench/Makefile.in	2008-06-02
+> 05:32:28.000000000 +0800
+> +++ xenomai-2.4.x/src/testsuite/irqbench/Makefile.in	2009-02-23
+> 17:12:14.000000000 +0800
+> @@ -247,7 +247,7 @@ irqloop_LDFLAGS = \
+>  	$(XENO_USER_LDFLAGS)
+> 
+>  irqloop_LDADD = \
+> -	../../skins/posix/libpthread_rt.la -lpthread -lrt
+> +	-lpthread -lrt ../../skins/posix/libpthread_rt.la
+> 
+>  irqbench_SOURCES = irqbench.c
+>  irqbench_CPPFLAGS = \
+> diff -Nurp --exclude=.svn
+> xenomai-2.4.x-clean/src/testsuite/switchtest/Makefile.am
+> xenomai-2.4.x/src/testsuite/switchtest/Makefile.am
+> --- xenomai-2.4.x-clean/src/testsuite/switchtest/Makefile.am	2008-03-01
+> 04:41:56.000000000 +0800
+> +++ xenomai-2.4.x/src/testsuite/switchtest/Makefile.am	2009-02-23
+> 17:12:14.000000000 +0800
+> @@ -9,7 +9,7 @@ switchtest_CPPFLAGS = -I$(top_srcdir)/in
+>  switchtest_LDFLAGS =  $(XENO_POSIX_WRAPPERS) $(XENO_USER_LDFLAGS)
+> 
+>  switchtest_LDADD = \
+> -	../../skins/posix/libpthread_rt.la -lpthread -lrt
+> +	-lpthread -lrt ../../skins/posix/libpthread_rt.la
+> 
+>  install-data-local:
+>  	$(mkinstalldirs) $(DESTDIR)$(testdir)
+> diff -Nurp --exclude=.svn
+> xenomai-2.4.x-clean/src/testsuite/switchtest/Makefile.in
+> xenomai-2.4.x/src/testsuite/switchtest/Makefile.in
+> --- xenomai-2.4.x-clean/src/testsuite/switchtest/Makefile.in	2008-06-02
+> 05:32:28.000000000 +0800
+> +++ xenomai-2.4.x/src/testsuite/switchtest/Makefile.in	2009-02-23
+> 17:12:14.000000000 +0800
+> @@ -232,7 +232,7 @@ switchtest_SOURCES = switchtest.c
+>  switchtest_CPPFLAGS = -I$(top_srcdir)/include/posix
+> $(XENO_USER_CFLAGS) -g -I$(top_srcdir)/include
+>  switchtest_LDFLAGS = $(XENO_POSIX_WRAPPERS) $(XENO_USER_LDFLAGS)
+>  switchtest_LDADD = \
+> -	../../skins/posix/libpthread_rt.la -lpthread -lrt
+> +	-lpthread -lrt ../../skins/posix/libpthread_rt.la
+> 
+>  EXTRA_DIST = runinfo.in
+>  all: all-am
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 > 
 
-I suspect the IRQ latency figures look better because the I-pipe lowers the
-current interrupt priority much earlier than the original code does. Moving the
-interrupt handlers over threads reflecting the interrupt priorities used to be
-the way the I-pipe did this on Blackfin at the expense of more overhead.
-Additionally, the I-pipe for 2.6.22/blackfin makes the kernel tick on TMR0
-instead of the core timer (the latter is then dedicated to Xenomai), which may
-have some impact depending on the priority value set for CONFIG_IRQ_TMR0.
-
-Once your driver is RTDM-based and the IRQ hooked via rtdm_irq_request(), you
-should see the worst-case latency drop below 60 us on a bf537, likely less than
-45 us on a bf561. The extra bonus will then likely be due to the changes in
-arch/blackfin/lib/ins.S. These PIO helpers are responsible for huge latency
-spots in the vanilla implementation, particularly under significant network
-load, and the I-pipe makes them preemptible by real-time IRQs, even if Linux
-IRQs are still masked.
 
 -- 
 Philippe.
