@@ -1,16 +1,16 @@
-Content-class: urn:content-classes:message
+Message-ID: <49A3B14A.4010501@domain.hid>
+Date: Tue, 24 Feb 2009 09:35:22 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 23 Feb 2009 17:46:42 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D590FE0@domain.hid>
-In-Reply-To: <49A30B86.7080106@domain.hid>
-References: <67b6b3430902231216k11c5addahaafef823075e7e54@domain.hid>
-	<49A30B86.7080106@domain.hid>
-From: "Steven Seeger" <sseeger@domain.hid>
-Subject: Re: [Xenomai-help] Error building
-	2.6.27.19w/	adeos-ipipe-2.6.27.19-x86-2.2-06.patch
+References: <BAY135-W5F4633CFE181E5E1DFB22C6B20@domain.hid>	<49A1DEBE.6020002@domain.hid><BAY135-W25DA8BBF5E569E370DB25DC6AE0@domain.hid>	<49A2D47D.90609@domain.hid><BAY135-W50A146D755045D42A23F66C6AE0@domain.hid>
+	<49A323CE.3010302@domain.hid>
+	<6B8F1229FFBDCA47BA5C9712C46F18DFABCE46@domain.hid>
+In-Reply-To: <6B8F1229FFBDCA47BA5C9712C46F18DFABCE46@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig669EE08E3FA1E767201D8051"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] rt_task_create with mode T_CPU(1)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,69 +20,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org, Mark Saiia <mark.saiia@domain.hid>
+To: Thomas Schaefer <thomass@domain.hid>
 Cc: xenomai@xenomai.org
 
-Sorry for all the emails. As the FPU issue is still present on the geode
-boards, I had to disable 3DNOW in the kernel in order to run stable.
-Things are stable on my end now with the patch. Hopefully Mark can test
-it with our application as he has access to the hardware. I didn't have
-issues with fs/buffer.c with my own tests, however.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig669EE08E3FA1E767201D8051
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Steven
+Thomas Schaefer wrote:
+> Hi,
+>=20
+> unfortunately this doesn't work.
+> I tried a few other svn revisions.=20
+> 4610 is the last one that works correctly and I can compile without an
+> error message.
+> The next revision that successfully compiles hangs.
+>=20
+
+Which version is this?
+
+Jan
 
 
-> -----Original Message-----
-> From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-
-> bounces@domain.hid] On Behalf Of Philippe Gerum
-> Sent: Monday, February 23, 2009 1:48 PM
-> To: Mark Saiia
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] Error building 2.6.27.19w/ adeos-ipipe-
-> 2.6.27.19-x86-2.2-06.patch
->=20
-> Mark Saiia wrote:
-> > When building 2.6.27.19 w/ adeos-ipipe-2.6.27.19-x86-2.2-06.patch. I
-> get
-> > the following error.
-> >
-> > CC      kernel/xenomai/arch/generic/hal.o
-> > kernel/xenomai/arch/generic/hal.c: In function
-'rthal_irq_host_pend':
-> > kernel/xenomai/arch/generic/hal.c:301: error: void value not ignored
-> as
-> > it ought to be
-> >
-> >
-> > Has anyone else ran into this issue?
-> >
->=20
-> This patch is supported by the v2.4.x maintenance branch, or the
-> Xenomai dev trunk.
->=20
-> > Deleting the return on that line appears to fix the issue.
-> >
->=20
-> This will work as well.
->=20
-> > Mark Saiia
-> >
-> >
-> >
----------------------------------------------------------------------
-> ---
-> >
-> > _______________________________________________
-> > Xenomai-help mailing list
-> > Xenomai-help@domain.hid
-> > https://mail.gna.org/listinfo/xenomai-help
->=20
->=20
-> --
-> Philippe.
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+--------------enig669EE08E3FA1E767201D8051
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkmjsU4ACgkQniDOoMHTA+kU+QCfVhp3qwpwK+7DssQgPEu/QU+V
+pkYAn3/jKqUwSuUvOMxehC1PpYjZMsEL
+=IPOt
+-----END PGP SIGNATURE-----
+
+--------------enig669EE08E3FA1E767201D8051--
 
