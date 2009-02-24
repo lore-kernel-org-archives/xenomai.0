@@ -1,94 +1,71 @@
-Message-ID: <498C4777.8050801@domain.hid>
-Date: Fri, 06 Feb 2009 15:21:43 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <49A3FF9E.5000206@domain.hid>
+Date: Tue, 24 Feb 2009 15:09:34 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B3F8896E1733D4787DDB0EA1C7FF91F704347@domain.hid>
-	<498C0EBE.5000004@domain.hid>
-	<4B3F8896E1733D4787DDB0EA1C7FF91F70443C@ukmail.uk.wirelessworld.airvananet.com>
-In-Reply-To: <4B3F8896E1733D4787DDB0EA1C7FF91F70443C@ukmail.uk.wirelessworld.airvananet.com>
+References: <49A3F793.3010204@domain.hid> <49A3FB6E.2090509@domain.hid>
+	<49A3FCD4.90900@domain.hid>
+In-Reply-To: <49A3FCD4.90900@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] lib order fails for xeno-config --posix-ldflags
- on	Blackfin
-Reply-To: rpm@xenomai.org
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [PATCH] Fix gatekeeper affinity
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Mike McTernan <mmcternan@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Mike McTernan wrote:
-> Philippe Gerum wrote:
->> Mike McTernan wrote:
->>> Hi,
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> As the xnsched structures get initialized later, during xnpod_init,
+>>> xnsched_cpu always returned 0 in the gatekeeper_thread prologue. That
+>>> caused binding of all gatekeepers to CPU 0.
 >>>
-
-
-> 
-> I think you are using ELF, so maybe you don't see the problem - the
-> dynamic linker maybe patching up the internal pthread references?  I'm
-> using FLAT, which is essentially a static link, so everything has to be
-> fully resolved.
-
-Yes, this is where FLAT is biting you. All refs have to be resolved, so the
-linker tries to pick whatever it needs at link time.
-
-> 
-> While I'm not familiar with the internals of Xenomai, I'd have thought
-> that intercepting the internal call would be inefficient, but not
-> harmful.  Presumably we end up in the normal pthread lib because the
-> calling thread has no Xenomai context.  When the wrapper is called from
-> pthread internally, it should always find there is no Xenomai-thread
-> context for the caller and hence go back into the normal pthread lib.
-> FWIW the compiled test app runs and produces the expected behaviour,
-> although is too trivial to be a thorough test.  
-> 
-
-An internal uclibc call to grab e.g. a regular mutex from a Xenomai thread would
-likely be an issue though.
-
->> Here is a trivial Makefile I have just used to produce an executable
->> against 2008-r1.5-rc3 and 2.4.1, without any problem. Obviously this 
->> also depends on the references dragged in by your example code; mine
->> was pulling condvar, mutex and thread support through the common 
->> pthread_* calls. If this simple Makefile does not work with a properly
-> 
->> built Xenomai userland support, I'd be interested to see your example 
->> code. TIA,
->>
->> X := /usr/xenomai/blackfin
->> CFLAGS := $(shell $(X)/bin/xeno-config --posix-cflags)
->> LDFLAGS := $(shell $(X)/bin/xeno-config --posix-ldflags)
->> CC :=  $(shell $(X)/bin/xeno-config --cc)
->>
->> all: hello
->>
->> hello: hello.c
->> 	$(CC) -o $@ $< $(CFLAGS) $(LDFLAGS)
->>
->> clean:
->> 	$(RM) hello
+>>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+>>> ---
+>>>
+>>>  ksrc/nucleus/shadow.c |    5 ++++-
+>>>  1 files changed, 4 insertions(+), 1 deletions(-)
+>>>
+>>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
+>>> index 1dedd85..2243c0e 100644
+>>> --- a/ksrc/nucleus/shadow.c
+>>> +++ b/ksrc/nucleus/shadow.c
+>>> @@ -823,11 +823,14 @@ static int gatekeeper_thread(void *data)
+>>>  	struct task_struct *this_task = current;
+>>>  	DECLARE_WAITQUEUE(wait, this_task);
+>>>  	struct xnsched *sched = data;
+>>> -	int cpu = xnsched_cpu(sched);
+>>>  	struct xnthread *target;
+>>>  	cpumask_t cpumask;
+>>> +	int cpu;
+>>>  	spl_t s;
+>>>  
+>>> +	/* sched not fully initialized, xnsched_cpu does not work yet */
+>>> +	cpu = sched - nkpod_struct.sched;
+>>> +
+>>>  	this_task->flags |= PF_NOFREEZE;
+>>>  	sigfillset(&this_task->blocked);
+>>>  	cpumask = cpumask_of_cpu(cpu);
+>> This does not look good, it means that the gatekeeper accesses the sched
+>> structure before it is initialized. So, IMO, the proper fix would be to
+>> start the gatekeepers only after the sched structure has been initialized.
 >>
 > 
-> Unfortunately this does not link either (note I added -Wl,-elf2flt).
-> Here's the program I am trying to compile, the compile output, and the
-> xeno-config output:
-> 
+> I briefly thought about moving xnshadow_mount into xnpod_init. But given
+> the fact that it worked like this before and that I was not able to
+> quickly exclude new regressions when reordering things, I decided to
+> restore the old pattern.
 
-This is all due to the FLAT mode. So I guess your next option is two-stage
-linking in you don't want to rely on shared fdpic libs.
-
-> #include <stdio.h>
-> #include <sys/mman.h>
-> #include <pthread.h>
-> 
+Ok. What about passing cpu as the gatekeeper argument, and using
+xnpod_sched_slot(cpu) to find the sched pointer ?
 
 -- 
-Philippe.
+                                                 Gilles.
 
