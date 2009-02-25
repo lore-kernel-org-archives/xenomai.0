@@ -1,10 +1,11 @@
-Message-ID: <49A42D71.8040702@domain.hid>
-Date: Tue, 24 Feb 2009 18:25:05 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [PATCH] x86: Document exception handling
+Date: Wed, 25 Feb 2009 11:05:06 +0000
+From: =?UTF-8?Q?Gwenha=C3=ABl?= <gwen@domain.hid>
+Message-ID: <d7143fa7afb9637a602a432e52eb35b4@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Adeos-main] [PATCH] ipipe i.MXL freeze's boot
+Reply-To: adeos-main@gna.org
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -13,88 +14,51 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+To: adeos-main@gna.org
 
-...so that validating these code paths becomes easier in case of future
-troubles.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
-
-[ PS: Find the patch also at
-git://git.kiszka.org/ipipe-2.6.git queues/2.6.28-x86
-(together with other pending patches). ]
----
-
- arch/x86/kernel/ipipe.c |   26 ++++++++++++++++++++++----
- 1 files changed, 22 insertions(+), 4 deletions(-)
-
-diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-index 6d3c434..964691f 100644
---- a/arch/x86/kernel/ipipe.c
-+++ b/arch/x86/kernel/ipipe.c
-@@ -631,13 +631,15 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
- {
- 	unsigned long flags;
- 
-+	/* Pick up the root domain state of the interrupted context. */
- 	local_save_flags(flags);
- 
--	/*
--	 * Track the hw interrupt state before calling the I-pipe
--	 * event handler, replicating it into the virtual mask.
--	 */
- 	if (ipipe_root_domain_p) {
-+		/*
-+		 * Replicate hw interrupt state into the virtual mask before
-+		 * calling the I-pipe event handler over the root domain. Also
-+		 * required later when calling the Linux exception handler.
-+		 */
- 		if (irqs_disabled_hw())
- 			local_irq_disable();
- 	}
-@@ -654,6 +656,11 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
- 		return 1;
- 	}
- 
-+	/*
-+	 * 32-bit: In case we migrated to root domain inside the event
-+	 * handler, restore the original IF from exception entry as the
-+	 * low-level return code will evaluate it.
-+	 */
- 	__fixup_if(raw_irqs_disabled_flags(flags), regs);
- 
- 	if (unlikely(!ipipe_root_domain_p)) {
-@@ -685,6 +692,11 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
- 	}
- 
- 	__ipipe_std_extable[vector](regs, error_code);
-+
-+	/*
-+	 * Relevant for 64-bit: Restore root domain state as the low-level
-+	 * return code will not align it to regs.flags.
-+	 */
- 	local_irq_restore_nosync(flags);
- 
- 	return 0;
-@@ -694,6 +706,7 @@ int __ipipe_divert_exception(struct pt_regs *regs, int vector)
- {
- 	unsigned long flags;
- 
-+	/* Same root state handling as in __ipipe_handle_exception. */
- 	local_save_flags(flags);
- 
- 	if (ipipe_root_domain_p) {
-@@ -722,6 +735,11 @@ int __ipipe_divert_exception(struct pt_regs *regs, int vector)
- 		return 1;
- 	}
- 
-+	/*
-+	 * 32-bit: Due to possible migration inside the event handler, we have
-+	 * to restore IF so that low-level return code sets the root domain
-+	 * state correctly.
-+	 */
- 	__fixup_if(raw_irqs_disabled_flags(flags), regs);
- 
- 	return 0;
+With i.MXL processor, kernel patched with=0D
+adeos-2.6.27-ipipe-1.12-00.patch wait indefinitly for timer=0D
+calibration.=0D
+Tick event never appear. This patch modify acktimer() in=0D
+arch/arm/mach-imx/time.c.=0D
+=0D
+I need to know if this modification is good (without adding=0D
+new errors).=0D
+=0D
+Thank you very much=0D
+=0D
+Gwenhael=0D
+=0D
+Signed-off-by: gwenhael.goavec-merou@domain.hid
+=0D
+=0D
+---- diff -ru a/arch/arm/mach-imx/irq.c b/arch/arm/mach-imx/irq.c=0D
+--- a/arch/arm/mach-imx/irq.c    2009-02-17 11:32:52.000000000 +0100=0D
++++ b/arch/arm/mach-imx/irq.c       2009-02-23 14:12:43.000000000 +0100=0D
+@@ -35,7 +35,7 @@=0D
+ #include <asm/io.h>=0D
+ =0D
+ #include <asm/mach/irq.h>=0D
+-#include <asm/arch/imx-regs.h>=0D
++#include <mach/imx-regs.h>=0D
+ =0D
+ =0D
+ /* Used for IMX INTERRUPT priority: Still Experimental */ =0D
+diff -ru a/arch/arm/mach-imx/time.c b/arch/arm/mach-imx/time.c=0D
+--- a/arch/arm/mach-imx/time.c  2009-02-24 15:26:42.000000000 +0100=0D
++++ b/arch/arm/mach-imx/time.c      2009-02-24 15:24:45.000000000 +0100=0D
+@@ -294,7 +294,12 @@=0D
+ #ifdef CONFIG_IPIPE=0D
+ void __ipipe_mach_acktimer(void)=0D
+ {  =0D
++  uint32_t tstat;=0D
++  tstat =3D IMX_TSTAT(TIMER_BASE);=0D
+   IMX_TSTAT(TIMER_BASE) =3D 0;=0D
++  if (likely(tstat & TSTAT_COMP)) {=0D
++    ipipe_mach_update_tsc(void);=0D
++  }=0D
+ }=0D
+ =0D
+ static void ipipe_mach_update_tsc(void)
 
