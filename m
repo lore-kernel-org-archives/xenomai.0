@@ -1,12 +1,10 @@
-Message-ID: <49A59038.9030600@domain.hid>
-Date: Wed, 25 Feb 2009 19:38:48 +0100
+Message-ID: <49A59041.2040205@domain.hid>
+Date: Wed, 25 Feb 2009 19:38:57 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <49A58E4F.6060907@domain.hid>
-In-Reply-To: <49A58E4F.6060907@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] lttng: Trace syscall exits
+Subject: [Xenomai-core] [PATCH 1/2] Add xn_sys_current_info
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,97 +14,168 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Add proper marks for the end of Xenomai's syscall handling, just like
-> LTTng provides for Linux syscall. That is helpful to keep the overview
-> of current context and the time spent there. And it allows to track the
-> return code.
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
-> ---
-> 
->  0 files changed, 0 insertions(+), 0 deletions(-)
+Provide a new nucleus syscall for retrieving low-level information about
+the current thread in a skin-agnostic way. This is useful for building
+diagnosis services like the assert_context the following patch will
+introduce.
 
-What a marvelous patch: improvement without changes...
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
 
- ksrc/nucleus/shadow.c |   17 ++++++++++++-----
- 1 files changed, 12 insertions(+), 5 deletions(-)
+ include/asm-generic/syscall.h |   21 +++++++++++----------
+ include/nucleus/thread.h      |   27 ++++++++++++++++++++++++++
+ ksrc/nucleus/shadow.c         |   42 +++++++++++++++++++++++++++++++++++++----
+ 3 files changed, 76 insertions(+), 14 deletions(-)
 
-(stgit bug: don't call "stg mail" while in an untracked directory)
-
-> 
-> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
-> index e2f2968..b9303b2 100644
-> --- a/ksrc/nucleus/shadow.c
-> +++ b/ksrc/nucleus/shadow.c
-> @@ -1924,7 +1924,7 @@ static inline int do_hisyscall_event(unsigned event, unsigned domid, void *data)
->  	muxid = __xn_mux_id(regs);
->  	muxop = __xn_mux_op(regs);
->  
-> -	trace_mark(xn_nucleus, syscall_histage,
-> +	trace_mark(xn_nucleus, syscall_histage_entry,
->  		   "thread %p thread_name %s muxid %d muxop %d",
->  		   thread, thread ? xnthread_name(thread) : NULL,
->  		   muxid, muxop);
-> @@ -1932,14 +1932,14 @@ static inline int do_hisyscall_event(unsigned event, unsigned domid, void *data)
->  	if (muxid < 0 || muxid > XENOMAI_MUX_NR ||
->  	    muxop < 0 || muxop >= muxtable[muxid].props->nrcalls) {
->  		__xn_error_return(regs, -ENOSYS);
-> -		return RTHAL_EVENT_STOP;
-> +		goto ret_handled;
->  	}
->  
->  	sysflags = muxtable[muxid].props->systab[muxop].flags;
->  
->  	if ((sysflags & __xn_exec_shadow) != 0 && !thread) {
->  		__xn_error_return(regs, -EPERM);
-> -		return RTHAL_EVENT_STOP;
-> +		goto ret_handled;
->  	}
->  
->  	if ((sysflags & __xn_exec_conforming) != 0)
-> @@ -2018,6 +2018,10 @@ static inline int do_hisyscall_event(unsigned event, unsigned domid, void *data)
->  	else if ((sysflags & __xn_exec_switchback) != 0 && switched)
->  		xnshadow_harden();	/* -EPERM will be trapped later if needed. */
->  
-> +      ret_handled:
-> +
-> +	trace_mark(xn_nucleus, syscall_histage_exit,
-> +		   "ret %ld", __xn_reg_rval(regs));
->  	return RTHAL_EVENT_STOP;
->  
->        linux_syscall:
-> @@ -2115,7 +2119,7 @@ static inline int do_losyscall_event(unsigned event, unsigned domid, void *data)
->  	muxid = __xn_mux_id(regs);
->  	muxop = __xn_mux_op(regs);
->  
-> -	trace_mark(xn_nucleus, syscall_lostage,
-> +	trace_mark(xn_nucleus, syscall_lostage_entry,
->  		   "thread %p thread_name %s muxid %d muxop %d",
->  		   xnpod_active_p() ? xnpod_current_thread() : NULL,
->  		   xnpod_active_p() ? xnthread_name(xnpod_current_thread()) : NULL,
-> @@ -2137,7 +2141,7 @@ static inline int do_losyscall_event(unsigned event, unsigned domid, void *data)
->  		   syscall. */
->  		if ((err = xnshadow_harden()) != 0) {
->  			__xn_error_return(regs, err);
-> -			return RTHAL_EVENT_STOP;
-> +			goto ret_handled;
->  		}
->  
->  		switched = 1;
-> @@ -2165,6 +2169,9 @@ static inline int do_losyscall_event(unsigned event, unsigned domid, void *data)
->  	else if ((sysflags & __xn_exec_switchback) != 0 && switched)
->  		xnshadow_relax(0);
->  
-> +      ret_handled:
-> +	trace_mark(xn_nucleus, syscall_lostage_exit,
-> +		   "ret %ld", __xn_reg_rval(regs));
->  	return RTHAL_EVENT_STOP;
->  }
-
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+diff --git a/include/asm-generic/syscall.h b/include/asm-generic/syscall.h
+index c378ea9..cf3ea9d 100644
+--- a/include/asm-generic/syscall.h
++++ b/include/asm-generic/syscall.h
+@@ -21,17 +21,18 @@
+ #define _XENO_ASM_GENERIC_SYSCALL_H
+ 
+ /* Xenomai multiplexer syscall. */
+-#define __xn_sys_mux        555	/* Must fit within 15bit */
++#define __xn_sys_mux		555	/* Must fit within 15bit */
+ /* Xenomai nucleus syscalls. */
+-#define __xn_sys_bind       0	/* muxid = bind_to_interface(magic,featdep,abirev) */
+-#define __xn_sys_completion 1	/* xnshadow_completion(&completion) */
+-#define __xn_sys_migrate    2	/* switched = xnshadow_relax/harden() */
+-#define __xn_sys_barrier    3	/* started = xnshadow_wait_barrier(&entry,&cookie) */
+-#define __xn_sys_info       4	/* xnshadow_get_info(muxid,&info) */
+-#define __xn_sys_arch       5	/* r = xnarch_local_syscall(args) */
+-#define __xn_sys_trace      6	/* r = xntrace_xxx(...) */
+-#define __xn_sys_sem_heap   7
+-#define __xn_sys_current    8
++#define __xn_sys_bind		0	/* muxid = bind_to_interface(magic,featdep,abirev) */
++#define __xn_sys_completion	1	/* xnshadow_completion(&completion) */
++#define __xn_sys_migrate	2	/* switched = xnshadow_relax/harden() */
++#define __xn_sys_barrier	3	/* started = xnshadow_wait_barrier(&entry,&cookie) */
++#define __xn_sys_info		4	/* xnshadow_get_info(muxid,&info) */
++#define __xn_sys_arch		5	/* r = xnarch_local_syscall(args) */
++#define __xn_sys_trace		6	/* r = xntrace_xxx(...) */
++#define __xn_sys_sem_heap	7
++#define __xn_sys_current	8	/* threadh = xnthread_handle(cur) */
++#define __xn_sys_current_info	9	/* r = xnshadow_current_info(&info) */
+ 
+ #define XENOMAI_LINUX_DOMAIN  0
+ #define XENOMAI_XENO_DOMAIN   1
+diff --git a/include/nucleus/thread.h b/include/nucleus/thread.h
+index 27765ca..4e17000 100644
+--- a/include/nucleus/thread.h
++++ b/include/nucleus/thread.h
+@@ -22,6 +22,8 @@
+ #ifndef _XENO_NUCLEUS_THREAD_H
+ #define _XENO_NUCLEUS_THREAD_H
+ 
++#include <nucleus/types.h>
++
+ /*! @ingroup nucleus 
+   @defgroup nucleus_state_flags Thread state flags.
+   @brief Bits reporting permanent or transient states of thread.
+@@ -121,6 +123,31 @@
+ 
+ /*! @} */ /* Ends doxygen comment group: nucleus_info_flags */
+ 
++/*!
++  @brief Structure containing thread information.
++*/
++typedef struct xnthread_info {
++
++	unsigned long state; /**< Thread state, @see nucleus_state_flags */
++
++	int bprio;  /**< Base priority. */
++	int cprio; /**< Current priority. May change through Priority Inheritance.*/
++
++	int cpu; /**< CPU the thread currently runs on. */
++	unsigned long affinity; /**< Thread's CPU affinity. */
++
++	unsigned long long relpoint; /**< Time of next release.*/
++
++	unsigned long long exectime; /**< Execution time in primary mode in nanoseconds. */
++
++	unsigned long modeswitches; /**< Number of primary->secondary mode switches. */
++	unsigned long ctxswitches; /**< Number of context switches. */
++	unsigned long pagefaults; /**< Number of triggered page faults. */
++
++	char name[XNOBJECT_NAME_LEN];  /**< Symbolic name assigned at creation. */
++
++} xnthread_info_t;
++
+ #if defined(__KERNEL__) || defined(__XENO_SIM__)
+ 
+ #include <nucleus/stat.h>
+diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
+index b9303b2..612c8d8 100644
+--- a/ksrc/nucleus/shadow.c
++++ b/ksrc/nucleus/shadow.c
+@@ -1807,9 +1807,9 @@ static int xnshadow_sys_sem_heap(struct pt_regs *regs)
+ 	return __xn_safe_copy_to_user(us_hinfo, &hinfo, sizeof(*us_hinfo));
+ }
+ 
+-#ifdef CONFIG_XENO_OPT_REGISTRY
+ static int xnshadow_sys_current(struct pt_regs *regs)
+ {
++#ifdef CONFIG_XENO_OPT_REGISTRY
+ 	xnthread_t *cur = xnshadow_thread(current);
+ 	xnhandle_t __user *us_handle;
+ 
+@@ -1820,8 +1820,42 @@ static int xnshadow_sys_current(struct pt_regs *regs)
+ 
+ 	return __xn_safe_copy_to_user(us_handle, &xnthread_handle(cur),
+ 				      sizeof(*us_handle));
++#else /* !CONFIG_XENO_OPT_REGISTRY */
++	return -ENOSYS;
++#endif /* !CONFIG_XENO_OPT_REGISTRY */
++}
++
++static int xnshadow_sys_current_info(struct pt_regs *regs)
++{
++	xnthread_info_t __user *us_info;
++	xnthread_info_t info;
++	xnthread_t *cur = xnshadow_thread(current);
++	xnticks_t raw_exectime;
++	int i;
++
++	if (!cur)
++		return -EPERM;
++
++	info.state = xnthread_state_flags(cur);
++	info.bprio = xnthread_base_priority(cur);
++	info.cprio = xnthread_current_priority(cur);
++	info.cpu = xnsched_cpu(xnthread_sched(cur));
++	for (i = 0, info.affinity = 0; i < BITS_PER_LONG; i++)
++		if (xnthread_affine_p(cur, i))
++			info.affinity |= 1UL << i;
++	info.relpoint = xntimer_get_date(&cur->ptimer);
++	raw_exectime = xnthread_get_exectime(cur) +
++		xnstat_exectime_now() - xnthread_get_lastswitch(cur);
++	info.exectime = xnarch_tsc_to_ns(raw_exectime);
++	info.modeswitches = xnstat_counter_get(&cur->stat.ssw);
++	info.ctxswitches = xnstat_counter_get(&cur->stat.csw);
++	info.pagefaults = xnstat_counter_get(&cur->stat.pf);
++	strcpy(info.name, xnthread_name(cur));
++
++	us_info = (xnthread_info_t __user *) __xn_reg_arg1(regs);
++
++	return __xn_safe_copy_to_user(us_info, &info, sizeof(*us_info));
+ }
+-#endif /* CONFIG_XENO_OPT_REGISTRY */
+ 
+ static xnsysent_t __systab[] = {
+ 	[__xn_sys_migrate] = {&xnshadow_sys_migrate, __xn_exec_current},
+@@ -1832,9 +1866,9 @@ static xnsysent_t __systab[] = {
+ 	[__xn_sys_barrier] = {&xnshadow_sys_barrier, __xn_exec_lostage},
+ 	[__xn_sys_trace] = {&xnshadow_sys_trace, __xn_exec_any},
+ 	[__xn_sys_sem_heap] = {&xnshadow_sys_sem_heap, __xn_exec_any},
+-#ifdef CONFIG_XENO_OPT_REGISTRY
+ 	[__xn_sys_current] = {&xnshadow_sys_current, __xn_exec_any},
+-#endif /* CONFIG_XENO_OPT_REGISTRY */
++	[__xn_sys_current_info] =
++		{&xnshadow_sys_current_info, __xn_exec_shadow},
+ };
+ 
+ static void *xnshadow_sys_event(int event, void *data)
 
