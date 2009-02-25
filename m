@@ -1,13 +1,14 @@
-Message-ID: <49A51C3D.1020705@domain.hid>
-Date: Wed, 25 Feb 2009 11:23:57 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <49A52928.9010008@domain.hid>
+Date: Wed, 25 Feb 2009 12:19:04 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <a0e7fce50902240018g6be57617g2c5f14c55685ef24@domain.hid>	<49A4209F.60502@domain.hid>
-	<a0e7fce50902242022y2c6304c9lca98e6d981aa4251@domain.hid>
-In-Reply-To: <a0e7fce50902242022y2c6304c9lca98e6d981aa4251@domain.hid>
+References: <20090217170418.1425.56126.stgit@domain.hid>
+	<49A517B1.8000409@domain.hid>
+In-Reply-To: <49A517B1.8000409@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] blackfin: build xenomai in FLAT format
+Subject: Re: [Xenomai-core] [PATCH v2 0/4] Various fixes and cleanups
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,24 +18,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: yi li <liyi.dev@domain.hid>
-Cc: Xenomai-core@domain.hid
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-yi li wrote:
-> On Wed, Feb 25, 2009 at 12:30 AM, Philippe Gerum <rpm@xenomai.org> wrote:
->>> 2.  libpthread_rt.la should not depend on "lpthread".
->>>
->> Nak. In flat mode, turning the link dependencies order upside down will not buy
->> us anything. Two-phase link is the only way to prevent circular/invalid
->> dependencies with a static only format when symbol wrapping is involved.
+Jan Kiszka wrote:
+> Jan Kiszka wrote:
+>> This is a rework/rebase of the patch series I sent last December,
+>> addressing the concerns and suggestions brought up during our discussion
+>> in January.
 >>
-> 
-> Agree. But "libpthread_rt_la_LDFLAGS" should not include "-lpthread",
-> otherwise libtool will think libpthread_rt.a depends on libpthread.
-> I don't think there is such a dependency, isn't it?
+>>
+>> Find the patches also at git://git.kiszka.org/xenomai.git queues/assorted
+>>
+>> Jan Kiszka (4):
+>>       POSIX: Fix SCHED_RR thread creation
 
-Look at libpthread_rt code.
+This one needs more review and testing. It will be merged in 2.5-rc1 to get more
+exposure first, before any backport to 2.4 in order to reduce the impact of any
+regression we might find.
+
+>>       Mark libs nodlopen on initial-exec TLS
+>>       Add --enable-dlopen-skins configure switch
+>>       POSIX: Do not auto-shadow main with dlopen enabled
+> 
+
+Will make their way to 2.4.7 and 2.5-rc1 asap.
+
+> What is the schedule for these patches? 2..4 shouldn't be controversial
+> anymore (find them rebased as patch 1..3 under queues/assorted). And for
+> the first one I already sent a rework (now patch 4 in that queue) that
+> still looks fine to me. But I can also repost some/all of them if preferred.
+> 
+> Jan
+> 
+
 
 -- 
-                                                 Gilles.
+Philippe.
 
