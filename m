@@ -1,12 +1,10 @@
-Message-ID: <49A6A109.2030904@domain.hid>
-Date: Thu, 26 Feb 2009 15:02:49 +0100
+Message-ID: <49A6A2AE.9080800@domain.hid>
+Date: Thu, 26 Feb 2009 15:09:50 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <49A5904A.2020800@domain.hid>
-In-Reply-To: <49A5904A.2020800@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH v2 2/2] rtdk: Add assert_context helpers
+Subject: [Xenomai-core] [PATCH] rtdk: Suspend/resume printer thread
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,218 +14,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-[ fixed typos, separated __real functions, exported assert_nrt ]
-
-Provide assert_nrt helper that checks if the caller is either not a
-shadow thread or is currently running in relaxed mode. If not, SIG_XCPU
-is raised.
-
-This service is then used to provide wrappers for glibc functions that
-are not realtime-safe but do not always trigger a syscall. Such
-functions may therefore be used by RT threads in primary mode for quite
-a while without being detected via some Xenomai mode switch. Moreover,
-some functions that go through the vsyscall page even to raise an
-ordinary syscall may not allow proper stack backtraces, making it harder
-to find their callers.
-
-So far we provide wrappers (for use with the --wrap linker switch) for
-malloc/free, gettimeofday and clock_gettime. Adding more (if there
-are/will be more) is trivial.
+If someone is linking against rtdk for other reasons than using
+rt_print, we should not let the printer thread poll the buffers
+needlessly. So suspend it in case no buffer exists and resume once some
+thread starts to use RT printing services.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
 
- include/rtdk.h            |    2 +
- src/rtdk/Makefile.am      |    6 ++--
- src/rtdk/assert_context.c |   73 +++++++++++++++++++++++++++++++++++++++++++++
- src/rtdk/internal.h       |    9 ++++++
- src/rtdk/wrappers.c       |   45 ++++++++++++++++++++++++++++
- 5 files changed, 133 insertions(+), 2 deletions(-)
- create mode 100644 src/rtdk/assert_context.c
- create mode 100644 src/rtdk/wrappers.c
+ src/rtdk/rt_print.c |   16 ++++++++++++++--
+ 1 files changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/include/rtdk.h b/include/rtdk.h
-index fc7525d..981bfda 100644
---- a/include/rtdk.h
-+++ b/include/rtdk.h
-@@ -58,6 +58,8 @@ void rt_print_cleanup(void);
- void rt_print_auto_init(int enable);
- const char *rt_print_buffer_name(void);
+diff --git a/src/rtdk/rt_print.c b/src/rtdk/rt_print.c
+index 2d6875f..0615247 100644
+--- a/src/rtdk/rt_print.c
++++ b/src/rtdk/rt_print.c
+@@ -61,11 +61,13 @@ struct print_buffer {
+ };
  
-+void assert_nrt(void);
+ static struct print_buffer *first_buffer;
++static int buffers;
+ static uint32_t seq_no;
+ static size_t default_buffer_size;
+ static struct timespec print_period;
+ static int auto_init;
+ static pthread_mutex_t buffer_lock;
++static pthread_cond_t printer_wakeup;
+ static pthread_key_t buffer_key;
+ static pthread_t printer_thread;
+ 
+@@ -258,6 +260,9 @@ int rt_print_init(size_t buffer_size, const char *buffer_name)
+ 		first_buffer->prev = buffer;
+ 	first_buffer = buffer;
+ 
++	buffers++;
++	pthread_cond_signal(&printer_wakeup);
 +
- #ifdef __cplusplus
+ 	pthread_mutex_unlock(&buffer_lock);
+ 
+ 	pthread_setspecific(buffer_key, buffer);
+@@ -329,6 +334,8 @@ static void cleanup_buffer(struct print_buffer *buffer)
+ 	if (next)
+ 		next->prev = prev;
+ 
++	buffers--;
++
+ 	pthread_mutex_unlock(&buffer_lock);
+ 
+ 	free(buffer->ring);
+@@ -397,13 +404,16 @@ static void print_buffers(void)
+ static void *printer_loop(void *arg)
+ {
+ 	while (1) {
+-		nanosleep(&print_period, NULL);
+-
+ 		pthread_mutex_lock(&buffer_lock);
+ 
++		while (buffers == 0)
++			pthread_cond_wait(&printer_wakeup, &buffer_lock);
++
+ 		print_buffers();
+ 
+ 		pthread_mutex_unlock(&buffer_lock);
++
++		nanosleep(&print_period, NULL);
+ 	}
  }
- #endif /* __cplusplus */
-diff --git a/src/rtdk/Makefile.am b/src/rtdk/Makefile.am
-index cb80262..778c697 100644
---- a/src/rtdk/Makefile.am
-+++ b/src/rtdk/Makefile.am
-@@ -1,10 +1,12 @@
- lib_LTLIBRARIES = librtdk.la
  
--librtdk_la_LDFLAGS = -version-info 0:0:0 -lpthread
-+librtdk_la_LDFLAGS = -version-info 0:0:0 -lpthread -lrt
+@@ -444,6 +454,8 @@ void __rt_print_init(void)
+ 	pthread_mutex_init(&buffer_lock, NULL);
+ 	pthread_key_create(&buffer_key, (void (*)(void*))cleanup_buffer);
  
- librtdk_la_SOURCES = \
- 	init.c \
--	rt_print.c
-+	rt_print.c \
-+	assert_context.c \
-+	wrappers.c
- 
- librtdk_la_CPPFLAGS = \
- 	@XENO_USER_CFLAGS@ \
-diff --git a/src/rtdk/assert_context.c b/src/rtdk/assert_context.c
-new file mode 100644
-index 0000000..2176db3
---- /dev/null
-+++ b/src/rtdk/assert_context.c
-@@ -0,0 +1,73 @@
-+/*
-+ * Copyright (C) 2008, 2009 Jan Kiszka <jan.kiszka@domain.hid>.
-+ *
-+ * This library is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU Lesser General Public
-+ * License as published by the Free Software Foundation; either
-+ * version 2 of the License, or (at your option) any later version.
-+ *
-+ * This library is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-+ * Lesser General Public License for more details.
++	pthread_cond_init(&printer_wakeup, NULL);
 +
-+ * You should have received a copy of the GNU Lesser General Public
-+ * License along with this library; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-+ */
-+
-+#include <signal.h>
-+#include <stdlib.h>
-+
-+#include "internal.h"
-+
-+#include <nucleus/thread.h>
-+#include <asm-generic/syscall.h>
-+#include <asm-generic/bits/current.h>
-+
-+void assert_nrt(void)
-+{
-+	xnthread_info_t info;
-+	int err;
-+
-+	if (unlikely(xeno_get_current() != XN_NO_HANDLE &&
-+		     !(xeno_get_current_mode() & XNRELAX))) {
-+
-+		err = XENOMAI_SYSCALL1(__xn_sys_current_info, &info);
-+
-+		if (err) {
-+			fprintf(stderr, "__xn_sys_current_info failed: %s\n",
-+				strerror(-err));
-+			return;
-+		}
-+
-+		if (info.state & XNTRAPSW)
-+			pthread_kill(pthread_self(), SIGXCPU);
-+	}
-+}
-+
-+/* Memory allocation services */
-+void *__wrap_malloc(size_t size)
-+{
-+	assert_nrt();
-+	return __real_malloc(size);
-+}
-+
-+void __wrap_free(void *ptr)
-+{
-+	assert_nrt();
-+	__real_free(ptr);
-+}
-+
-+/* vsyscall-based services */
-+int __wrap_gettimeofday(struct timeval *tv, struct timezone *tz)
-+{
-+	assert_nrt();
-+	return __real_gettimeofday(tv, tz);
-+}
-+
-+int __wrap_clock_gettime(clockid_t clk_id, struct timespec *tp)
-+{
-+	assert_nrt();
-+	return __real_clock_gettime(clk_id, tp);
-+}
-diff --git a/src/rtdk/internal.h b/src/rtdk/internal.h
-index 69b869f..bd15b2d 100644
---- a/src/rtdk/internal.h
-+++ b/src/rtdk/internal.h
-@@ -19,6 +19,15 @@
- #ifndef _LIBRTUTILS_INTERNAL_H
- #define _LIBRTUTILS_INTERNAL_H
- 
-+#include <time.h>
-+#include <sys/time.h>
-+
- void __rt_print_init(void);
- 
-+void __real_free(void *ptr);
-+void *__real_malloc(size_t size);
-+
-+int __real_gettimeofday(struct timeval *tv, struct timezone *tz);
-+int __real_clock_gettime(clockid_t clk_id, struct timespec *tp);
-+
- #endif /* !_LIBRTUTILS_INTERNAL_H */
-diff --git a/src/rtdk/wrappers.c b/src/rtdk/wrappers.c
-new file mode 100644
-index 0000000..e5340c9
---- /dev/null
-+++ b/src/rtdk/wrappers.c
-@@ -0,0 +1,45 @@
-+/*
-+ * Copyright (C) 2008, 2009 Jan Kiszka <jan.kiszka@domain.hid>.
-+ *
-+ * This library is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU Lesser General Public
-+ * License as published by the Free Software Foundation; either
-+ * version 2 of the License, or (at your option) any later version.
-+ *
-+ * This library is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-+ * Lesser General Public License for more details.
-+
-+ * You should have received a copy of the GNU Lesser General Public
-+ * License along with this library; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-+ */
-+
-+#include <stdlib.h>
-+
-+#include "internal.h"
-+
-+__attribute__ ((weak))
-+void *__real_malloc(size_t size)
-+{
-+	return malloc(size);
-+}
-+
-+__attribute__ ((weak))
-+void __real_free(void *ptr)
-+{
-+	free(ptr);
-+}
-+
-+__attribute__ ((weak))
-+int __real_gettimeofday(struct timeval *tv, struct timezone *tz)
-+{
-+	return gettimeofday(tv, tz);
-+}
-+
-+__attribute__ ((weak))
-+int __real_clock_gettime(clockid_t clk_id, struct timespec *tp)
-+{
-+	return clock_gettime(clk_id, tp);
-+}
+ 	pthread_attr_init(&thattr);
+ 	pthread_attr_setstacksize(&thattr, PTHREAD_STACK_MIN);
+ 	pthread_create(&printer_thread, &thattr, printer_loop, NULL);
 
