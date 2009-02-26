@@ -1,12 +1,15 @@
-Message-ID: <49A5949D.7070902@domain.hid>
-Date: Wed, 25 Feb 2009 19:57:33 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <49A5904A.2020800@domain.hid> <49A590F3.7050007@domain.hid>
-In-Reply-To: <49A590F3.7050007@domain.hid>
+In-Reply-To: <49A51C3D.1020705@domain.hid>
+References: <a0e7fce50902240018g6be57617g2c5f14c55685ef24@domain.hid>
+	<49A4209F.60502@domain.hid>
+	<a0e7fce50902242022y2c6304c9lca98e6d981aa4251@domain.hid>
+	<49A51C3D.1020705@domain.hid>
+Date: Thu, 26 Feb 2009 14:21:19 +0800
+Message-ID: <a0e7fce50902252221x28c4b394j56803eaab0460f7b@domain.hid>
+From: yi li <liyi.dev@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 2/2] rtdk: Add assert_context helpers
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-core] [PATCH] blackfin: build xenomai in FLAT format
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,128 +20,72 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: Xenomai-core@domain.hid
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Provide assert_nrt helper that checks if the caller is either not a
->> shadow thread or is currently running in relaxed mode. If not, SIG_XCPU
->> is raised.
+On Wed, Feb 25, 2009 at 6:23 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> yi li wrote:
+>> On Wed, Feb 25, 2009 at 12:30 AM, Philippe Gerum <rpm@xenomai.org> wrote=
+:
+>>>> 2. =A0libpthread_rt.la should not depend on "lpthread".
+>>>>
+>>> Nak. In flat mode, turning the link dependencies order upside down will=
+ not buy
+>>> us anything. Two-phase link is the only way to prevent circular/invalid
+>>> dependencies with a static only format when symbol wrapping is involved=
+.
+>>>
 >>
->> This service is then used to provide wrappers for glibc functions that
->> are not realtime-safe but do not always trigger a syscall. Such
->> functions may therefore be used by RT threads in primary mode for quite
->> a while without being detected via some Xenomai mode switch. Moreover,
->> some functions that go through the vsyscall page even to raise an
->> ordinary syscall may not allow proper stack backtraces, making it harder
->> to find their callers.
->>
->> So far we provide wrappers (for use with the --wrap linker switch) for
->> malloc/free, gettimeofday and clock_gettime. Adding more (if there
->> are/will be more) is trivial.
->>
->> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->> ---
->>
->>  src/rtdk/Makefile.am      |    5 +-
->>  src/rtdk/assert_context.c |   97 +++++++++++++++++++++++++++++++++++++++++++++
->>  2 files changed, 100 insertions(+), 2 deletions(-)
->>  create mode 100644 src/rtdk/assert_context.c
->>
->> diff --git a/src/rtdk/Makefile.am b/src/rtdk/Makefile.am
->> index cb80262..5b76b5d 100644
->> --- a/src/rtdk/Makefile.am
->> +++ b/src/rtdk/Makefile.am
->> @@ -1,10 +1,11 @@
->>  lib_LTLIBRARIES = librtdk.la
->>  
->> -librtdk_la_LDFLAGS = -version-info 0:0:0 -lpthread
->> +librtdk_la_LDFLAGS = -version-info 0:0:0 -lpthread -lrt
->>  
->>  librtdk_la_SOURCES = \
->>  	init.c \
->> -	rt_print.c
->> +	rt_print.c \
->> +	assert_context.c
->>  
->>  librtdk_la_CPPFLAGS = \
->>  	@XENO_USER_CFLAGS@ \
->> diff --git a/src/rtdk/assert_context.c b/src/rtdk/assert_context.c
->> new file mode 100644
->> index 0000000..e01fc93
->> --- /dev/null
->> +++ b/src/rtdk/assert_context.c
->> @@ -0,0 +1,97 @@
->> +/*
->> + * Copyright (C) 2008 Jan Kiszka <jan.kiszka@domain.hid>.
->> + *
->> + * This library is free software; you can redistribute it and/or
->> + * modify it under the terms of the GNU Lesser General Public
->> + * License as published by the Free Software Foundation; either
->> + * version 2 of the License, or (at your option) any later version.
->> + *
->> + * This library is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
->> + * Lesser General Public License for more details.
->> +
->> + * You should have received a copy of the GNU Lesser General Public
->> + * License along with this library; if not, write to the Free Software
->> + * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
->> + */
->> +
->> +#include <signal.h>
->> +#include <stdlib.h>
->> +#include <time.h>
->> +#include <sys/time.h>
->> +
->> +#include <nucleus/thread.h>
->> +#include <asm-generic/syscall.h>
->> +#include <asm-generic/bits/current.h>
->> +
->> +void assert_nrt(void)
->> +{
->> +	xnthread_info_t info;
->> +	int err;
->> +
->> +	if (unlikely(xeno_get_current() != XN_NO_HANDLE &&
->> +		     !(xeno_get_current_mode() & XNRELAX))) {
->> +
->> +		err = XENOMAI_SYSCALL1(__xn_sys_current_info, &info);
->> +
->> +		if (err) {
->> +			fprintf(stderr, "__xn_sys_current_info failed: %s\n",
->> +				strerror(-err));
->> +			return;
->> +		}
->> +
->> +		if (info.state & XNTRAPSW)
->> +			pthread_kill(pthread_self(), SIGXCPU);
->> +	}
->> +}
->> +
->> +/* Memory allocation services */
->> +__attribute__ ((weak))
->> +void *__real_malloc(size_t size)
->> +{
->> +	return malloc(size);
->> +}
->> +
->> +void *__warp_malloc(size_t size)
->> +{
->> +	assert_nrt();
->> +	return __real_malloc(size);
->> +}
-> 
-> It is wrap not warp, and the __real functions should not be put in the
-> same compilation unit as the __wrap functions.
+>> Agree. But "libpthread_rt_la_LDFLAGS" should not include "-lpthread",
+>> otherwise libtool will think libpthread_rt.a depends on libpthread.
+>> I don't think there is such a dependency, isn't it?
+>
+> Look at libpthread_rt code.
+>
 
-OK, seems to have worked by chance. Will provide an update.
+Here is the problem:
 
-Thanks,
-Jan
+/bin/bash ../../../libtool --tag=3DCC   --mode=3Dlink bfin-uclinux-gcc
+-pipe -Wall -g -O2      -mcpu=3Dbf527-0.1
+-Wl,@/home/adam/new_workspace/local_svn/kernel/adeos/uclinux-dist/user/xeno=
+mai/xenomai-2.4.x/src/skins/posix/posix.wrappers
+-D_GNU_SOURCE -D_REENTRANT -Wall -pipe -Wl,-elf2flt    -mcpu=3Dbf527-0.1
+-o cyclictest cyclictest-cyclictest.o -lpthread -lrt
+../../skins/posix/libpthread_rt.la
+mkdir .libs
+bfin-uclinux-gcc -pipe -Wall -g -O2 -mcpu=3Dbf527-0.1
+-Wl,@/home/adam/new_workspace/local_svn/kernel/adeos/uclinux-dist/user/xeno=
+mai/xenomai-2.4.x/src/skins/posix/posix.wrappers
+-D_GNU_SOURCE -D_REENTRANT -Wall -pipe -Wl,-elf2flt -mcpu=3Dbf527-0.1 -o
+cyclictest cyclictest-cyclictest.o  -lrt
+../../skins/posix/.libs/libpthread_rt.a -lpthread
+/home/adam/workspace/toolchain/4.1-1220/bfin-uclinux/bin/../bfin-uclinux/ru=
+ntime/usr/lib/libpthread.a(manager.o):
+In function `__pthread_manager':
+libpthread/linuxthreads.old/manager.c:173: undefined reference to
+`___wrap_select'
+/home/adam/workspace/toolchain/4.1-1220/bfin-uclinux/bin/../bfin-uclinux/ru=
+ntime/usr/lib/libpthread.a(mutex.o):
+In function `__pthread_once_fork_child':
+libpthread/linuxthreads.old/mutex.c:357: undefined reference to
+`___wrap_pthread_cond_init'
+/home/adam/workspace/toolchain/4.1-1220/bfin-uclinux/bin/../bfin-uclinux/ru=
+ntime/usr/lib/libpthread.a(mutex.o):
+In function `__pthread_once':
+libpthread/linuxthreads.old/mutex.c:308: undefined reference to
+`___wrap_pthread_cond_wait'
+libpthread/linuxthreads.old/mutex.c:325: undefined reference to
+`___wrap_pthread_cond_broadcast'
+/home/adam/workspace/toolchain/4.1-1220/bfin-uclinux/bin/../bfin-uclinux/ru=
+ntime/usr/lib/libpthread.a(mutex.o):
+In function `pthread_once_cancelhandler':
+libpthread/linuxthreads.old/mutex.c:281: undefined reference to
+`___wrap_pthread_cond_broadcast'
+collect2: ld returned 1 exit status
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+In my opinion,  "-lpthread" does not need to be set in
+"libpthread_rt_la_LDFLAGS". The application (e.g, cyclictest) decides
+which libraries to link with.
+
+-Yi
 
