@@ -1,15 +1,13 @@
-Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 3 Mar 2009 15:04:40 +0100
-Message-ID: <4B2EEE69E41E524EB7FCDC62A15D68D80312FEE6@domain.hid>
-In-Reply-To: <499E7967.3000209@domain.hid>
-References: <5D63919D95F87E4D9D34FF7748CE2C2A0183D12A@ARVMAIL1.mra.roland-man.biz>
-	<499E7967.3000209@domain.hid>
-From: <thomas.debes@domain.hid>
-Subject: Re: [Xenomai-help] Floating Point Exceptions in RT-Tasks
+In-Reply-To: <OFEBB322C4.DB1D01E7-ON6525756E.00403279-6525756E.003FD3E1@domain.hid>
+References: <OF2344306C.C261A830-ON6525756E.003F50BB-6525756E.003E8F43@domain.hid>
+	<f48df4840903030338r6c10d610i5b6a6cddc7e9163b@domain.hid>
+	<OFEBB322C4.DB1D01E7-ON6525756E.00403279-6525756E.003FD3E1@domain.hid>
+Date: Tue, 3 Mar 2009 15:21:54 +0100
+Message-ID: <f48df4840903030621r74920230oa2b292631ce6db33@domain.hid>
+From: Bruno Rouchouse <brouchouse@domain.hid>
+Content-Type: multipart/alternative; boundary=0016e6409b342d68f3046437a8b1
+Subject: Re: [Xenomai-help] [Xenomai-core] (no subject)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,158 +17,136 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org, roderik.wildenburg@domain.hid
-Cc: xenomai@xenomai.org, wg@domain.hid
+To: Vandana Sasidharan <vandana.sasidharan@domain.hid>
+Cc: "Xenomai-help@domain.hid" <xenomai@xenomai.org>
 
-Hello,
+--0016e6409b342d68f3046437a8b1
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-are there any news related to this topic? If ELDK 3.1.1 with kernel 2.4 =
-works on your system there must be something wrong with our =
-configuration...
+Hi,
 
-Thomas
+the simulator README tells you how to build it:
 
------Urspr=FCngliche Nachricht-----
-Von: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] =
-Im Auftrag von Philippe Gerum
-Gesendet: Freitag, 20. Februar 2009 10:36
-An: Wildenburg, Roderik RAEK3 MRA
-Cc: xenomai@xenomai.org; wg@domain.hid
-Betreff: Re: [Xenomai-help] Floating Point Exceptions in RT-Tasks
+Building the simulator
 
-roderik.wildenburg@domain.hid wrote:
-> On behalf of Thomas I would like to answer your question :
->=20
-> We too use Eldk 3.1.1 with a libc-2.3.1.so (from the Eldk 3.1.1 =
-rootfs) and an adeos-ipipe-2.4.25-ppc-DENX-1.2-02.patch.
->=20
-> We do not use Eldk=B4s rootfs completely, as our system is busybox =
-based, but many parts form it (for example the libraries and bash). Do =
-you know anything else, we have to activate/keep care of to get =
-FPU-exceptions ? From my point of view everything should be configured =
-all right, as we get exceptions when the thread switches to secondary =
-mode!??
+You will need the libelf, libpng, tcl8.x/tk8.x and tix41 _development
+packages_ in order to build the simulator and its companion tools.
+[...]
+Since v2.1, the simulator is available as a separate tarball, distinct
+from the main Xenomai archive. To build the simulator, you will also
+need the latter; the simulator archive should be extracted in
+Xenomai's main source tree under the sim/ sub-directory. The following
+steps should be followed in order to build and install the simulation
+system:
+
+# $xenomai_tar: Main Xenomai tarball
+# $xenosim_tar: Simulator tarball
+# $xenomai_src: Root of Xenomai's source tree after extraction
+# $sim_builddir: Build root for the simulator
+# $sim_installdir: Installation directory for the simulator;
+# (usually, the same place than used for Xenomai's main system).
+# gcc_tarball: Path to a GCC 2.95.3 source archive.
+
+$ tar jxf $xenomai_tar
+$ cd xenomai-2.X.Y
+$ tar jxf $xenosim_tar
+$ mkdir $sim_builddir && cd $sim_builddir
+$ $xenomai_src/xenosim-X.Y.Z/configure --prefix=$sim_installdir
+--with-gcc-tarball=$gcc_tarball
+$ make install
+
+Note that I haven't built it for a long time but I know core developers use
+it to implement and debug skins.
+
+Please keep the mailing-list in the loop and note that xenomai-help is
+probaby more suitable in this case.
+
+--BR
+
+2009/3/3 Vandana Sasidharan <vandana.sasidharan@domain.hid>
+
+>
+>
+> hi bruno
+>
+> thanks but i have gone through these docs.
+> I want to know how can i make this xenosim or MVM run on a fedora core?
+>
+> =====-----=====-----=====
+> Notice: The information contained in this e-mail
+> message and/or attachments to it may contain
+> confidential or privileged information. If you are
+> not the intended recipient, any dissemination, use,
+> review, distribution, printing or copying of the
+> information contained in this e-mail message
+> and/or attachments to it are strictly prohibited. If
+> you have received this communication in error,
+> please notify us by reply e-mail or telephone and
+> immediately and permanently delete the message
+> and any attachments. Thank you
+>
+>
+>
 >
 
-Please send your kernel .config file, and the output of the ldd command =
-against
-the small fesetenv test we have been trying lately on different setups.
+--0016e6409b342d68f3046437a8b1
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-TIA,
-
-> Dr. Grandegger : could you be so kind to try Thomas=B4 testprogram on =
-our plattfrom with Eldk 3.1.1?
->=20
-> Many thanks in advance for your help
-> Roderik
->=20
->> -----Urspr=FCngliche Nachricht-----
->> Von: xenomai-help-bounces@domain.hid
->> [mailto:xenomai-help-bounces@domain.hid] Im Auftrag von Philippe Gerum
->> Gesendet: Donnerstag, 19. Februar 2009 16:20
->> An: Debes, Thomas RAEK3 MRA
->> Cc: xenomai@xenomai.org
->> Betreff: Re: [Xenomai-help] Floating Point Exceptions in RT-Tasks
->>
->> Philippe Gerum wrote:
->>> thomas.debes@domain.hid wrote:
->>>> Thanks for testing it - that is exactly what I would like=20
->> to see. Obviously it's a kernel/I-Pipe related thing which=20
->> prevents me from getting the exception. Unfortunately=20
->> updating to kernel 2.6 is not an option for now.
->>> I'm afraid this is not I-pipe related, this would have been=20
->> too easy. The test
->>> snippet works fine here as well on a lite5200 +=20
->> ipipe-2.4.25-1.2-02, ELDK-4.1
->>> environment.
->>>
->>> Now we should suspect something going on with your target=20
->> environment; which
->>> libc are you based on?
->>>
->> Works fine with ELDK-3.1.1 rootfs as well.
->>
->>>> Thomas
->>>>
->>>> -----Urspr=FCngliche Nachricht-----
->>>> Von: Wolfgang Grandegger [mailto:wg@domain.hid
->>>> Gesendet: Mittwoch, 18. Februar 2009 19:59
->>>> An: Debes, Thomas RAEK3 MRA
->>>> Cc: xenomai@xenomai.org; Gilles Chanteperdrix
->>>> Betreff: Re: [Xenomai-help] Floating Point Exceptions in RT-Tasks
->>>>
->>>> Wolfgang Grandegger wrote:
->>>>> thomas.debes@domain.hid wrote:
->>>>>> Unfortunately I don't have a newer kernel, I will talk=20
->> to Wolfgang Grandegger, maybe he can do a short test with my=20
->> formerly attached sample application.
->>>>> I will try it out on my TQM5200 board later today or tomorrow.
->>>> With I-Pipe v2.4-03, Xenomai v2.5-devel (SVN revision=20
->> 4519) and Linux
->>>> 2.6.26 on my TQM85200 I get:
->>>>
->>>>   -bash-3.2# ./fpu-exception-test
->>>>   Floating point exception
->>>>
->>>>   -bash-3.2# dmesg|tail
->>>>   ...
->>>>   Xenomai: Switching trivial to secondary mode after
->>>>   exception #1792 from user-space at 0x10001840 (pid 1127)
->>>>
->>>> Is that the expected behavior?
->>>>
->>>> Wolfgang.
->>>>
->>>> --------------------------------------------------------
->>>> manroland AG
->>>> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
->>>> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch,=20
->> Dr. Markus Rall, Paul Steidle  =20
->>>> Sitz der Gesellschaft: Offenbach am Main, Registergericht:=20
->> Amtsgericht Offenbach HRB-Nr. 42592
->>>> USt-Ident-Nr. DE 250200933
->>>>
->>>> _______________________________________________
->>>> Xenomai-help mailing list
->>>> Xenomai-help@domain.hid
->>>> https://mail.gna.org/listinfo/xenomai-help
->>>>
->>>
->>
->> --=20
->> Philippe.
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->>
->=20
-> --------------------------------------------------------
-> manroland AG
-> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle  =20
-> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592
-> USt-Ident-Nr. DE 250200933
->=20
+Hi,<br><br>the simulator README tells you how to build it: <br><pre style=
+=3D"font-family: arial,helvetica,sans-serif;"><font size=3D"2">Building the=
+ simulator<br><br>You will need the libelf, libpng, tcl8.x/tk8.x and tix41 =
+_development<br>
+packages_ in order to build the simulator and its companion tools.<br>[...]=
+<br>Since v2.1, the simulator is available as a separate tarball, distinct<=
+br>from the main Xenomai archive. To build the simulator, you will also<br>
+need the latter; the simulator archive should be extracted in<br>Xenomai&#3=
+9;s main source tree under the sim/ sub-directory. The following<br>steps s=
+hould be followed in order to build and install the simulation<br>system:<b=
+r>
+<br># $xenomai_tar: Main Xenomai tarball<br># $xenosim_tar: Simulator tarba=
+ll<br># $xenomai_src: Root of Xenomai&#39;s source tree after extraction<br=
+># $sim_builddir: Build root for the simulator<br># $sim_installdir: Instal=
+lation directory for the simulator;<br>
+# (usually, the same place than used for Xenomai&#39;s main system).<br># g=
+cc_tarball: Path to a GCC 2.95.3 source archive.<br><br>$ tar jxf $xenomai_=
+tar<br>$ cd xenomai-2.X.Y<br>$ tar jxf $xenosim_tar<br>$ mkdir $sim_builddi=
+r &amp;&amp; cd $sim_builddir<br>
+$ $xenomai_src/xenosim-X.Y.Z/configure --prefix=3D$sim_installdir --with-gc=
+c-tarball=3D$gcc_tarball<br>$ make install<br></font></pre>Note that I have=
+n&#39;t built it for a long time but I know core developers use it to imple=
+ment and debug skins.<br>
+<br>Please keep the mailing-list in the loop and note that xenomai-help is =
+probaby more suitable in this case.<br><br>--BR<br><br><div class=3D"gmail_=
+quote">2009/3/3 Vandana Sasidharan <span dir=3D"ltr">&lt;<a href=3D"mailto:=
+vandana.sasidharan@domain.hid">vandana.sasidharan@domain.hid</a>&gt;</span><br>
+<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
+204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+<br><font size=3D"2" face=3D"sans-serif"><br>
+hi bruno</font>
+<br>
+<br><font size=3D"2" face=3D"sans-serif">thanks but i have gone through the=
+se
+docs.</font>
+<br><font size=3D"2" face=3D"sans-serif">I want to know how can i make this=
+ xenosim
+or MVM run on a fedora core?</font><div><div></div><div class=3D"h5"><pre>=
+=3D=3D=3D=3D=3D-----=3D=3D=3D=3D=3D-----=3D=3D=3D=3D=3D
+Notice: The information contained in this e-mail
+message and/or attachments to it may contain=20
+confidential or privileged information. If you are=20
+not the intended recipient, any dissemination, use,=20
+review, distribution, printing or copying of the=20
+information contained in this e-mail message=20
+and/or attachments to it are strictly prohibited. If=20
+you have received this communication in error,=20
+please notify us by reply e-mail or telephone and=20
+immediately and permanently delete the message=20
+and any attachments. Thank you
 
 
---=20
-Philippe.
+</pre></div></div></blockquote></div><br>
 
-_______________________________________________
-Xenomai-help mailing list
-Xenomai-help@domain.hid
-https://mail.gna.org/listinfo/xenomai-help
-
---------------------------------------------------------
-manroland AG
-Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle  =20
-Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592
-USt-Ident-Nr. DE 250200933
+--0016e6409b342d68f3046437a8b1--
 
