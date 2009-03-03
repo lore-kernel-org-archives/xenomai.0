@@ -1,459 +1,92 @@
-Message-Id: <17B3FD74-07D0-4F36-9836-8E03943DF917@domain.hid>
-From: Steven Seeger <steven.seeger@domain.hid>
-Content-Type: multipart/mixed; boundary=Apple-Mail-66-58141186
-Mime-Version: 1.0 (Apple Message framework v930.3)
-Date: Fri, 27 Mar 2009 23:27:42 -0400
-Subject: [Xenomai-core] geode gx1 latencies
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+From: Chitra4 M <chitra4.m@domain.hid>
+MIME-Version: 1.0
+Message-ID: <OF8769A991.99410A6C-ON6525756E.003EB23E-6525756E.003DBC7A@tcs.com>
+Sender: Chitra4 M <chitra4.m@domain.hid>
+Date: Tue, 3 Mar 2009 16:55:53 +0530
+Content-Type: multipart/alternative;
+	boundary="=_alternative 003DBC786525756E_="
+Subject: [Xenomai-help] xenomai
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-
---Apple-Mail-66-58141186
-Content-Type: text/plain;
-	charset=US-ASCII;
-	format=flowed;
-	delsp=yes
+This is a multipart message in MIME format.
+--=_alternative 003DBC786525756E_=
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
 
-Per Gilles's suggestion, Mark at Stellartech ran latency and klatency  
-with the TSC enabled "the hack" and without the TSC enabled. He also  
-posted the CPU task measurements with our app running without the  
-hack, which is horrible compared to when the TSC is on.
+Hi,
+I am new to xenomai.could you explain me in detail about the components of 
+xenomai and how it is being interfaced with linux
+Thank you
+Chitra M
+Assistant System engineer trainee
+Tata Consultancy Services
+Mailto: chitra4.m@domain.hid
+Website: http://www.tcs.com
+____________________________________________
+Experience certainty.   IT Services
+                        Business Solutions
+                        Outsourcing
+____________________________________________
+=====-----=====-----=====
+Notice: The information contained in this e-mail
+message and/or attachments to it may contain 
+confidential or privileged information. If you are 
+not the intended recipient, any dissemination, use, 
+review, distribution, printing or copying of the 
+information contained in this e-mail message 
+and/or attachments to it are strictly prohibited. If 
+you have received this communication in error, 
+please notify us by reply e-mail or telephone and 
+immediately and permanently delete the message 
+and any attachments. Thank you
 
-It looks like we are better off with the TSC. The worst case is much  
-better, anyway.
-
-Steven
 
 
---Apple-Mail-66-58141186
-Content-Disposition: attachment;
-	filename=latency_tests03709.txt
-Content-Type: text/plain;
-	x-unix-mode=0644;
-	name="latency_tests03709.txt"
+--=_alternative 003DBC786525756E_=
 Content-Transfer-Encoding: 7bit
-
-***********************************
-Results with tsc hack
-***********************************
-
-/ # ./latency
-== Sampling period: 100 us
-== Test mode: periodic user-mode task
-== All results in microseconds
-warming up...
-RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      17.995|      26.691|      59.956|       0|      17.995|      59.956
-RTD|      19.125|      29.742|      72.538|       0|      17.995|      72.538
-RTD|      20.428|      30.728|      81.350|       0|      17.995|      81.350
-RTD|      19.840|      30.781|      61.520|       0|      17.995|      81.350
-RTD|      19.833|      29.481|      67.642|       0|      17.995|      81.350
-RTD|      19.513|      29.989|      70.172|       0|      17.995|      81.350
-RTD|      20.251|      31.119|      67.482|       0|      17.995|      81.350
-RTD|      20.064|      30.347|      64.858|       0|      17.995|      81.350
-RTD|      19.429|      29.311|      65.019|       0|      17.995|      81.350
-RTD|      18.751|      30.116|      68.531|       0|      17.995|      81.350
-RTD|      20.455|      31.236|      71.726|       0|      17.995|      81.350
-RTD|      20.111|      30.123|      67.341|       0|      17.995|      81.350
-RTD|      18.918|      29.612|      71.134|       0|      17.995|      81.350
-RTD|      20.047|      30.514|      69.701|       0|      17.995|      81.350
-^C---|------------|------------|------------|--------|-------------------------
-RTS|      17.995|      29.983|      81.350|       0|    00:00:14/00:00:14
-/ # ./klatency
+Content-Type: text/html; charset="us-ascii"
 
 
-
-/lib/modules/2.6.27.19-testing-tsc-xenomai/kernel/drivers/xenomai/testing # /klatency
-== Sampling period: 100 us
-== Test mode: in-kernel periodic task
-== All results in microseconds
-warming up...
-RTT|  00:00:00  (in-kernel periodic task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      -2.080|       1.486|      15.408|       0|      -2.080|      15.408
-RTD|       0.399|       1.647|      16.724|       0|      -2.080|      16.724
-RTD|      -1.980|       1.665|      15.926|       0|      -2.080|      16.724
-RTD|      -1.995|       1.386|       8.039|       0|      -2.080|      16.724
-RTD|       0.406|       1.605|      11.556|       0|      -2.080|      16.724
-RTD|      -2.019|       1.402|      18.811|       0|      -2.080|      18.811
-RTD|       0.387|       1.530|      15.923|       0|      -2.080|      18.811
-RTD|      -2.014|       1.649|      19.122|       0|      -2.080|      19.122
-RTD|      -1.984|       1.491|      15.397|       0|      -2.080|      19.122
-RTD|       0.412|       1.903|      11.345|       0|      -2.080|      19.122
-RTD|      -2.087|       1.592|      17.973|       0|      -2.087|      19.122
-RTD|       0.434|       1.644|      25.208|       0|      -2.087|      25.208
-RTD|      -2.033|       1.633|      21.371|       0|      -2.087|      25.208
-RTD|      -2.009|       1.552|      12.160|       0|      -2.087|      25.208
-RTD|       0.460|       1.750|      14.285|       0|      -2.087|      25.208
-RTD|      -2.015|       1.501|      13.514|       0|      -2.087|      25.208
-RTD|      -0.402|       1.496|      12.506|       0|      -2.087|      25.208
-RTD|      -2.013|       1.639|      14.297|       0|      -2.087|      25.208
-RTD|      -2.025|       1.418|      10.627|       0|      -2.087|      25.208
-RTD|       0.513|       1.763|       6.998|       0|      -2.087|      25.208
-RTD|      -1.981|       1.475|      10.352|       0|      -2.087|      25.208
-RTT|  00:00:00  (in-kernel periodic task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|       0.410|       1.642|      10.753|       0|      -2.087|      25.208
-RTD|      -2.026|       1.847|      10.811|       0|      -2.087|      25.208
-RTD|      -1.897|       1.563|      20.965|       0|      -2.087|      25.208
-RTD|       0.440|       1.783|      14.815|       0|      -2.087|      25.208
-RTD|      -2.119|       1.462|      13.438|       0|      -2.119|      25.208
-RTD|       0.367|       1.661|      11.577|       0|      -2.119|      25.208
-RTD|      -2.021|       1.781|      17.126|       0|      -2.119|      25.208
-RTD|      -2.013|       1.399|      12.564|       0|      -2.119|      25.208
-RTD|       0.466|       1.706|       5.723|       0|      -2.119|      25.208
-RTD|      -2.024|       1.391|      13.495|       0|      -2.119|      25.208
-RTD|      -0.387|       1.852|      55.675|       0|      -2.119|      55.675
-RTD|      -2.020|       1.541|      13.236|       0|      -2.119|      55.675
-RTD|      -1.429|       1.433|      17.682|       0|      -2.119|      55.675
-RTD|       0.553|       1.744|      16.433|       0|      -2.119|      55.675
-RTD|      -1.993|       1.420|      18.884|       0|      -2.119|      55.675
-RTD|       0.398|       1.656|      18.628|       0|      -2.119|      55.675
-RTD|      -2.118|       1.826|      11.203|       0|      -2.119|      55.675
-RTD|      -0.706|       1.566|      23.025|       0|      -2.119|      55.675
-RTD|       0.555|       1.783|      22.984|       0|      -2.119|      55.675
-RTD|      -2.037|       1.477|      14.043|       0|      -2.119|      55.675
-RTD|       0.392|       1.679|      12.628|       0|      -2.119|      55.675
-RTT|  00:00:12  (in-kernel periodic task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      -2.000|       1.678|      17.200|       0|      -2.119|      55.675
-RTD|      -0.553|       1.408|      12.061|       0|      -2.119|      55.675
-RTD|       0.564|       1.665|      13.912|       0|      -2.119|      55.675
-RTD|      -2.006|       1.353|      16.984|       0|      -2.119|      55.675
-RTD|       0.412|       1.556|      13.559|       0|      -2.119|      55.675
-RTD|      -2.019|       1.624|      14.935|       0|      -2.119|      55.675
-RTD|      -0.450|       1.505|      22.086|       0|      -2.119|      55.675
-RTD|       0.574|       1.910|      16.389|       0|      -2.119|      55.675
-RTD|      -2.043|       1.469|      15.453|       0|      -2.119|      55.675
-RTD|       0.387|       1.660|      25.465|       0|      -2.119|      55.675
-RTD|      -2.070|       1.599|      13.185|       0|      -2.119|      55.675
-RTD|      -0.422|       1.590|      13.126|       0|      -2.119|      55.675
-RTD|       0.555|       1.795|      15.509|       0|      -2.119|      55.675
-RTD|      -1.996|       1.451|      18.445|       0|      -2.119|      55.675
-RTD|       0.338|       1.515|      14.528|       0|      -2.119|      55.675
-RTD|      -2.013|       1.489|      18.484|       0|      -2.119|      55.675
-RTD|      -0.383|       1.471|      22.710|       0|      -2.119|      55.675
-RTD|       0.509|       1.736|      15.731|       0|      -2.119|      55.675
-RTD|      -2.015|       1.406|      22.151|       0|      -2.119|      55.675
-RTD|       0.404|       1.626|      19.137|       0|      -2.119|      55.675
-RTD|      -2.076|       1.747|      22.783|       0|      -2.119|      55.675
-RTT|  00:00:33  (in-kernel periodic task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      -0.373|       1.586|      12.331|       0|      -2.119|      55.675
-RTD|       0.552|       1.809|      12.310|       0|      -2.119|      55.675
-RTD|      -2.035|       1.524|      24.429|       0|      -2.119|      55.675
-RTD|       0.377|       1.680|      13.651|       0|      -2.119|      55.675
-RTD|      -2.006|       1.600|      14.234|       0|      -2.119|      55.675
-RTD|      -0.591|       1.452|      21.914|       0|      -2.119|      55.675
-RTD|       0.444|       1.664|      17.583|       0|      -2.119|      55.675
-RTD|      -2.023|       1.381|      15.504|       0|      -2.119|      55.675
-RTD|       0.401|       1.571|      19.722|       0|      -2.119|      55.675
-RTD|      -2.005|       1.559|      12.034|       0|      -2.119|      55.675
-RTD|      -0.453|       1.528|      18.904|       0|      -2.119|      55.675
-RTD|       0.071|       1.958|      11.443|       0|      -2.119|      55.675
-RTD|      -2.109|       1.470|      19.026|       0|      -2.119|      55.675
-RTD|       0.396|       1.673|      15.646|       0|      -2.119|      55.675
-RTD|      -2.055|       1.559|      11.562|       0|      -2.119|      55.675
-RTD|      -0.395|       1.647|      18.476|       0|      -2.119|      55.675
-RTD|       0.409|       1.831|      13.920|       0|      -2.119|      55.675
-RTD|      -1.999|       1.386|      16.375|       0|      -2.119|      55.675
-RTD|       0.310|       1.533|      13.296|       0|      -2.119|      55.675
-RTD|      -2.007|       1.457|      17.216|       0|      -2.119|      55.675
-RTD|      -0.368|       1.596|      13.787|       0|      -2.119|      55.675
-RTT|  00:00:54  (in-kernel periodic task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|       0.098|       1.727|      12.937|       0|      -2.119|      55.675
-RTD|      -1.998|       1.415|      20.423|       0|      -2.119|      55.675
-RTD|       0.408|       1.717|      20.182|       0|      -2.119|      55.675
-RTD|      -2.101|       1.822|      21.652|       0|      -2.119|      55.675
-RTD|      -0.340|       1.612|      18.109|       0|      -2.119|      55.675
-RTD|      -0.165|       1.764|      16.344|       0|      -2.119|      55.675
-RTD|      -2.114|       1.474|      28.347|       0|      -2.119|      55.675
-RTD|       0.467|       1.688|      26.743|       0|      -2.119|      55.675
-RTD|      -2.016|       1.593|      25.887|       0|      -2.119|      55.675
-RTD|      -0.403|       1.427|      11.252|       0|      -2.119|      55.675
-RTD|      -0.128|       1.641|      11.446|       0|      -2.119|      55.675
-RTD|      -2.024|       1.356|      17.629|       0|      -2.119|      55.675
-RTD|       0.420|       1.577|      14.643|       0|      -2.119|      55.675
-RTD|      -2.012|       1.575|      19.857|       0|      -2.119|      55.675
-RTD|      -0.156|       1.560|      24.963|       0|      -2.119|      55.675
-RTD|      -0.332|       1.944|      22.450|       0|      -2.119|      55.675
-RTD|      -2.053|       1.483|      18.985|       0|      -2.119|      55.675
-RTD|       0.401|       1.675|      15.563|       0|      -2.119|      55.675
-RTD|      -2.106|       1.551|      13.388|       0|      -2.119|      55.675
-RTD|      -0.203|       1.749|      27.646|       0|      -2.119|      55.675
-RTD|      -0.577|       1.811|      30.533|       0|      -2.119|      55.675
-RTT|  00:01:15  (in-kernel periodic task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      -2.014|       1.368|      18.239|       0|      -2.119|      55.675
-RTD|       0.355|       1.546|      15.007|       0|      -2.119|      55.675
-RTD|      -2.025|       1.444|      21.938|       0|      -2.119|      55.675
-RTD|       0.062|       1.552|      16.375|       0|      -2.119|      55.675
-RTD|      -0.501|       1.725|      16.789|       0|      -2.119|      55.675
-RTD|      -2.001|       1.415|      20.799|       0|      -2.119|      55.675
-RTD|       0.439|       1.676|      18.975|       0|      -2.119|      55.675
-RTD|      -2.099|       1.655|      20.731|       0|      -2.119|      55.675
-RTD|       0.196|       1.620|      18.939|       0|      -2.119|      55.675
-RTD|      -0.608|       1.782|      28.857|       0|      -2.119|      55.675
-RTD|      -1.984|       1.499|      12.757|       0|      -2.119|      55.675
-RTD|       0.367|       1.687|      23.015|       0|      -2.119|      55.675
-RTD|      -2.020|       1.551|      14.758|       0|      -2.119|      55.675
-RTD|      -0.535|       1.457|      13.797|       0|      -2.119|      55.675
-RTD|      -0.688|       1.625|      13.541|       0|      -2.119|      55.675
-RTD|      -2.021|       1.370|      16.349|       0|      -2.119|      55.675
-RTD|       0.358|       1.571|      21.423|       0|      -2.119|      55.675
-RTD|      -2.026|       1.561|      17.119|       0|      -2.119|      55.675
-RTD|       0.332|       1.564|      20.072|       0|      -2.119|      55.675
-RTD|      -0.834|       1.936|      13.682|       0|      -2.119|      55.675
-RTD|      -2.065|       1.508|      12.220|       0|      -2.119|      55.675
-RTT|  00:01:36  (in-kernel periodic task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|       0.374|       1.681|      12.000|       0|      -2.119|      55.675
-RTD|      -2.091|       1.553|      11.520|       0|      -2.119|      55.675
-RTD|       0.320|       1.652|      13.730|       0|      -2.119|      55.675
-RTD|      -1.000|       1.750|      15.715|       0|      -2.119|      55.675
-RTD|      -2.021|       1.372|      18.243|       0|      -2.119|      55.675
-RTD|       0.278|       1.551|      17.808|       0|      -2.119|      55.675
-RTD|      -2.015|       1.487|      20.098|       0|      -2.119|      55.675
-RTD|       0.140|       1.566|      20.535|       0|      -2.119|      55.675
-RTD|      -1.139|       1.716|      17.900|       0|      -2.119|      55.675
-RTD|      -2.015|       1.432|      18.501|       0|      -2.119|      55.675
-RTD|       0.453|       1.730|      14.905|       0|      -2.119|      55.675
-RTD|      -2.058|       1.656|      11.046|       0|      -2.119|      55.675
-RTD|       0.246|       1.634|      12.925|       0|      -2.119|      55.675
-RTD|      -1.212|       1.723|      12.317|       0|      -2.119|      55.675
-RTD|      -2.044|       1.517|      16.159|       0|      -2.119|      55.675
-RTD|       0.394|       1.699|      18.319|       0|      -2.119|      55.675
-RTD|      -2.025|       1.550|      14.146|       0|      -2.119|      55.675
-RTD|      -1.099|       1.453|      14.139|       0|      -2.119|      55.675
-RTD|      -1.521|       1.589|      15.770|       0|      -2.119|      55.675
-RTD|      -2.023|       1.412|      17.870|       0|      -2.119|      55.675
-RTD|       0.329|       1.620|      21.813|       0|      -2.119|      55.675
-RTT|  00:01:57  (in-kernel periodic task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      -2.026|       1.499|      19.023|       0|      -2.119|      55.675
-RTD|       0.302|       1.579|      19.284|       0|      -2.119|      55.675
-RTD|      -1.452|       1.866|      13.687|       0|      -2.119|      55.675
-^CRTD|      -2.104|       1.535|      14.196|       0|      -2.119|      55.675
----|------------|------------|------------|--------|-------------------------
-RTS|      -2.119|       1.589|      55.675|       0|    00:02:00/00:02:00
+<br><font size=2 face="sans-serif">Hi,</font>
+<br><font size=2 face="sans-serif">I am new to xenomai.could you explain
+me in detail about the components of xenomai and how it is being interfaced
+with linux</font>
+<br><font size=2 face="sans-serif">Thank you<br>
+Chitra M<br>
+Assistant System engineer trainee<br>
+Tata Consultancy Services<br>
+Mailto: chitra4.m@domain.hid<br>
+Website: </font><a href=http://www.tcs.com/><font size=2 face="sans-serif">http://www.tcs.com</font></a><font size=2 face="sans-serif"><br>
+____________________________________________<br>
+Experience certainty. &nbsp; &nbsp; &nbsp; &nbsp;IT Services<br>
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp;Business Solutions<br>
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp;Outsourcing<br>
+____________________________________________</font><pre>=====-----=====-----=====
+Notice: The information contained in this e-mail
+message and/or attachments to it may contain 
+confidential or privileged information. If you are 
+not the intended recipient, any dissemination, use, 
+review, distribution, printing or copying of the 
+information contained in this e-mail message 
+and/or attachments to it are strictly prohibited. If 
+you have received this communication in error, 
+please notify us by reply e-mail or telephone and 
+immediately and permanently delete the message 
+and any attachments. Thank you
 
 
+</pre>
+--=_alternative 003DBC786525756E_=--
 
-**********************************
-Results with nohack
-**********************************
-
-/ # ./latency
-== Sampling period: 100 us
-== Test mode: periodic user-mode task
-== All results in microseconds
-warming up...
-RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      30.394|      43.387|      66.907|       0|      30.394|      66.907
-RTD|      25.695|      51.377|      70.890|       0|      25.695|      70.890
-RTD|      25.227|      33.682|      85.771|       0|      25.227|      85.771
-RTD|      20.722|      31.730|      97.354|       0|      20.722|      97.354
-RTD|      23.426|      34.223|      59.628|       0|      20.722|      97.354
-RTD|      28.652|      46.772|      74.914|       0|      20.722|      97.354
-RTD|      26.206|      51.370|      73.423|       0|      20.722|      97.354
-RTD|      24.759|      33.558|      80.748|       0|      20.722|      97.354
-RTD|      25.715|      31.690|      75.191|       0|      20.722|      97.354
-RTD|      23.763|      34.384|      59.698|       0|      20.722|      97.354
-RTD|      30.059|      46.989|      72.150|       0|      20.722|      97.354
-RTD|      28.649|      51.567|      70.990|       0|      20.722|      97.354
-RTD|      12.471|      33.374|      90.430|       0|      12.471|      97.354
-RTD|      24.368|      31.710|      82.165|       0|      12.471|      97.354
-RTD|      21.681|      34.491|      59.648|       0|      12.471|      97.354
-RTD|      21.314|      47.220|      85.293|       0|      12.471|      97.354
-RTD|      27.416|      50.675|      69.994|       0|      12.471|      97.354
-RTD|      22.229|      33.221|      68.785|       0|      12.471|      97.354
-RTD|      13.120|      31.727|      86.329|       0|      12.471|      97.354
-RTD|      22.567|      34.634|      56.898|       0|      12.471|      97.354
-RTD|      30.521|      47.387|      74.576|       0|      12.471|      97.354
-RTT|  00:00:22  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      28.549|      50.578|      73.447|       0|      12.471|      97.354
-RTD|      20.709|      33.234|      75.909|       0|      12.471|      97.354
-RTD|      22.236|      31.720|      75.011|       0|      12.471|      97.354
-RTD|      22.450|      34.818|      55.524|       0|      12.471|      97.354
-RTD|      31.968|      47.490|      73.136|       0|      12.471|      97.354
-RTD|      26.835|      50.284|      83.342|       0|      12.471|      97.354
-^C---|------------|------------|------------|--------|-------------------------
-RTS|      12.471|      40.122|      97.354|       0|    00:00:27/00:00:27
-
-
-/ # ./klatency
-== Sampling period: 100 us
-== Test mode: in-kernel periodic task
-== All results in microseconds
-warming up...
-RTT|  00:00:00  (in-kernel periodic task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      -0.058|       0.981|      15.443|       0|      -0.098|      15.443
-RTD|      -0.315|       0.939|      12.596|       0|      -0.315|      15.443
-RTD|      -0.032|       0.978|      13.572|       0|      -0.315|      15.443
-RTD|      -0.300|       1.036|      13.371|       0|      -0.315|      15.443
-RTD|      -0.099|       1.832|     142.261|       2|      -0.315|     142.261
-RTD|       2.061|       5.328|      13.832|       2|      -0.315|     142.261
-RTD|      -1.428|      10.295|      33.038|       2|      -1.428|     142.261
-RTD|       0.287|       7.548|      32.728|       2|      -1.428|     142.261
-RTD|       1.620|       9.494|      27.019|       2|      -1.428|     142.261
-RTD|       2.034|       4.997|      23.769|       2|      -1.428|     142.261
-RTD|       1.566|       5.807|      30.386|       2|      -1.428|     142.261
-RTD|      -1.402|      10.267|      34.574|       2|      -1.428|     142.261
-RTD|      -0.987|       7.364|      29.561|       2|      -1.428|     142.261
-RTD|       1.701|       9.521|      25.052|       2|      -1.428|     142.261
-RTD|       1.579|       4.980|      28.992|       2|      -1.428|     142.261
-RTD|       1.860|       5.812|      27.932|       2|      -1.428|     142.261
-RTD|      -1.535|      10.465|      34.133|       2|      -1.535|     142.261
-RTD|      -0.800|       7.295|      30.370|       2|      -1.535|     142.261
-RTD|       1.753|       9.528|      32.192|       2|      -1.535|     142.261
-RTD|       1.699|       4.969|      29.681|       2|      -1.535|     142.261
-RTD|       1.806|       5.850|      40.060|       2|      -1.535|     142.261
-RTT|  00:00:00  (in-kernel periodic task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      -1.522|      10.504|      34.023|       2|      -1.535|     142.261
-RTD|       0.297|       6.946|      29.632|       2|      -1.535|     142.261
-RTD|       1.806|       9.544|      24.557|       2|      -1.535|     142.261
-RTD|       2.223|       4.948|      30.821|       2|      -1.535|     142.261
-RTD|       1.913|       5.870|      27.388|       2|      -1.535|     142.261
-RTD|      -1.576|      10.669|      32.726|       2|      -1.576|     142.261
-RTD|       1.790|       6.767|      28.812|       2|      -1.576|     142.261
-RTD|       1.538|       9.587|      25.439|       2|      -1.576|     142.261
-RTD|       2.581|       4.955|      30.326|       2|      -1.576|     142.261
-RTD|       1.806|       5.881|      28.463|       2|      -1.576|     142.261
-RTD|      -0.110|       1.491|      25.369|       4|      -1.630|     170.587
-RTD|      -0.105|       1.002|      14.384|       4|      -1.630|     170.587
-RTD|      -0.062|       0.998|      18.598|       4|      -1.630|     170.587
-RTD|      -0.130|       1.003|      13.834|       4|      -1.630|     170.587
-RTD|      -0.117|       0.995|      13.491|       4|      -1.630|     170.587
-RTD|      -0.077|       1.005|      14.942|       4|      -1.630|     170.587
-RTD|      -0.305|       0.966|      14.116|       4|      -1.630|     170.587
-RTD|      -0.332|       0.974|      17.042|       4|      -1.630|     170.587
-RTD|      -0.304|       0.969|      31.052|       4|      -1.630|     170.587
-RTD|      -0.036|       1.001|      19.745|       4|      -1.630|     170.587
-RTD|      -0.089|       0.996|      15.757|       4|      -1.630|     170.587
-RTT|  00:00:12  (in-kernel periodic task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      -0.040|       1.001|      18.272|       4|      -1.630|     170.587
-^CRTD|      -0.298|       0.990|      14.129|       4|      -1.630|     170.587
----|------------|------------|------------|--------|-------------------------
-RTS|      -1.630|       2.685|     170.587|       4|    00:00:13/00:00:13
-
-
-
-*********************************************
-Stats without hack during pullback test
-********************************************
-
-/ # cat /proc/xenomai/stat
-CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
-  0  0      0          532017     0     00500080   29.2  ROOT
-  0  952    84         148        0     00300182    0.0  rtlogd
-  0  954    1          1          0     00300380    0.0  rtlogd socket
-  0  0      0          1030       0     00000082    0.0  klat_srvr
-  0  1029   0          2          0     00300182    0.0
-  0  1032   0          2289       0     00300184    0.0  heartbeat
-  0  1028   4          44         0     00300380    0.0  main thread
-  0  1033   1          5811       0     00300184    0.4  xoft watchdog
-  0  1034   1          43141      0     00300184    5.7  tpanelt
-  0  1035   1          5730       0     00300184    0.1  watchdog
-  0  1036   1          228861     0     00300184    5.2  power
-  0  1037   1          9053       0     00300184    9.9  steppert
-  0  1038   1          4499       0     00300184   12.5  rstepper meas
-  0  1039   1          46642      0     00300184   11.3  state
-  0  1041   148        2912       0     00300186    0.1
-  0  1145   0          326        0     00300182    0.1
-  0  1148   374        522        0     00300380    0.6
-  0  0      0          11963336   0     00000000   24.3  IRQ0: [timer]
-/ # cat /proc/xenomai/stat
-CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
-  0  0      0          536828     0     00500080   29.4  ROOT
-  0  952    84         148        0     00300182    0.0  rtlogd
-  0  954    1          1          0     00300380    0.0  rtlogd socket
-  0  0      0          1033       0     00000082    0.0  klat_srvr
-  0  1029   0          2          0     00300182    0.0
-  0  1032   0          2320       0     00300184    0.0  heartbeat
-  0  1028   4          44         0     00300380    0.0  main thread
-  0  1033   1          5924       0     00300184    0.4  xoft watchdog
-  0  1034   1          44359      0     00300184    5.8  tpanelt
-  0  1035   1          5808       0     00300184    0.1  watchdog
-  0  1036   1          231899     0     00300184    4.9  power
-  0  1037   1          14587      0     00300184   10.0  steppert
-  0  1038   1          7261       0     00300184   12.5  rstepper meas
-  0  1039   1          48365      0     00300184   11.3  state
-  0  1041   148        2952       0     00300186    0.1
-  0  1145   0          357        0     00300182    0.1
-  0  1148   598        839        0     00300380    0.6
-  0  0      0          12016995   0     00000000   24.2  IRQ0: [timer]
-
-
-
-****************************************************
-/proc/xenomai/stat during treatment without the hack
-****************************************************
-
-/ # cat /proc/xenomai/stat
-CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
-  0  0      0          1503227    0     00500080   16.4  ROOT
-  0  952    194        353        0     00300182    0.0  rtlogd
-  0  954    1          1          0     00300380    0.0  rtlogd socket
-  0  0      0          2033       0     00000082    0.0  klat_srvr
-  0  1029   0          2          0     00300182    0.0
-  0  1032   0          11416      0     00300184    0.0  heartbeat
-  0  1028   4          44         0     00300380    0.0  main thread
-  0  1033   1          30521      0     00300184    0.4  xoft watchdog
-  0  1034   1          219814     0     00300184    5.6  tpanelt
-  0  1035   1          28762      0     00300184    0.1  watchdog
-  0  1036   1          1141490    0     00300184    5.0  power
-  0  1037   1          219051     0     00300184   10.2  steppert
-  0  1038   1          108935     0     00300184   12.4  rstepper meas
-  0  1039   1          295444     0     00320184   16.8  state
-  0  1041   550        14219      0     00300186    0.1
-  0  1426   210        3988       0     00300182    7.9
-  0  0      0          27768490   0     00000000   24.5  IRQ0: [timer]
-/ # cat /proc/xenomai/stat
-CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
-  0  0      0          1504336    0     00500080   17.1  ROOT
-  0  952    194        353        0     00300182    0.0  rtlogd
-  0  954    1          1          0     00300380    0.0  rtlogd socket
-  0  0      0          2036       0     00000082    0.0  klat_srvr
-  0  1029   0          2          0     00300182    0.0
-  0  1032   0          11429      0     00300184    0.0  heartbeat
-  0  1028   4          44         0     00300380    0.0  main thread
-  0  1033   1          30590      0     00300184    0.4  xoft watchdog
-  0  1034   1          220302     0     00300184    5.7  tpanelt
-  0  1035   1          28801      0     00300184    0.1  watchdog
-  0  1036   1          1142847    0     00300184    5.2  power
-  0  1037   1          221297     0     00300182    9.6  steppert
-  0  1038   1          110119     0     00300182   11.7  rstepper meas
-  0  1039   1          296574     0     00320184   16.7  state
-  0  1041   550        14237      0     00300186    0.1
-  0  1426   217        4537       0     00300182    8.3
-  0  0      0          27793166   0     00000000   24.5  IRQ0: [timer]
-
-
-
-
---Apple-Mail-66-58141186
-Content-Type: text/plain;
-	charset=US-ASCII;
-	format=flowed
-Content-Transfer-Encoding: 7bit
-
-
-
---Apple-Mail-66-58141186--
 
