@@ -1,51 +1,72 @@
-Message-ID: <49C13179.5060108@domain.hid>
-Date: Wed, 18 Mar 2009 18:38:01 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <1237393895.5495.7.camel@domain.hid>
-	<1237395895.3441.6.camel@domain.hid>
-In-Reply-To: <1237395895.3441.6.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Kernel crash
-	in	xnheap_test_and_free	(native/heap.c)
-Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <OF7164F543.85F7224E-ON6525756E.0046510E-6525756E.0045BC7F@tcs.com>
+From: Reshmi Rajagopal <reshmi.rajagopal@domain.hid>
+Date: Tue, 3 Mar 2009 18:22:15 +0530
+Content-Type: multipart/alternative;
+	boundary="=_alternative 0045BC7E6525756E_="
+Subject: [Xenomai-help] (no subject)
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Andreas Glatz <andreasglatz@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Andreas Glatz wrote:
-> The last source code I sent is outdated.
-> 
-> The newest version with a sighandler for SIGINT is attached here.
->
+This is a multipart message in MIME format.
+--=_alternative 0045BC7E6525756E_=
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
 
-Confirmed, it's perfectly reproducible here as well. Will dig this. Thanks for 
-reporting.
+hi sir,
+ 
 
-> Sorry for that,
-> 
-> Andreas
-> 
-> 
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+              I found your site informative.Could you give the information 
+regarding the skins so that it will useful for me.
+=====-----=====-----=====
+Notice: The information contained in this e-mail
+message and/or attachments to it may contain 
+confidential or privileged information. If you are 
+not the intended recipient, any dissemination, use, 
+review, distribution, printing or copying of the 
+information contained in this e-mail message 
+and/or attachments to it are strictly prohibited. If 
+you have received this communication in error, 
+please notify us by reply e-mail or telephone and 
+immediately and permanently delete the message 
+and any attachments. Thank you
 
 
--- 
-Philippe.
+
+--=_alternative 0045BC7E6525756E_=
+Content-Transfer-Encoding: 7bit
+Content-Type: text/html; charset="us-ascii"
+
+
+<br><font size=2 face="sans-serif">hi sir,</font>
+<br><font size=2 face="sans-serif">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+</font>
+<br><font size=2 face="sans-serif"><br>
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;I found your site informative.Could
+you give the information regarding the skins so that it will useful for
+me.</font><pre>=====-----=====-----=====
+Notice: The information contained in this e-mail
+message and/or attachments to it may contain 
+confidential or privileged information. If you are 
+not the intended recipient, any dissemination, use, 
+review, distribution, printing or copying of the 
+information contained in this e-mail message 
+and/or attachments to it are strictly prohibited. If 
+you have received this communication in error, 
+please notify us by reply e-mail or telephone and 
+immediately and permanently delete the message 
+and any attachments. Thank you
+
+
+</pre>
+--=_alternative 0045BC7E6525756E_=--
+
 
