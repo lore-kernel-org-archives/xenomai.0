@@ -1,11 +1,9 @@
-Message-ID: <49AE4EF0.2050902@domain.hid>
-Date: Wed, 04 Mar 2009 10:50:40 +0100
+Message-ID: <49AE4F09.6040605@domain.hid>
+Date: Wed, 04 Mar 2009 10:51:05 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <OF7164F543.85F7224E-ON6525756E.0046510E-6525756E.0045BC7F@tcs.com>
-	<49AD32C4.9090603@domain.hid>
-	<OFEF55F6FC.C2A72339-ON6525756F.001530A3-6525756F.00147B0D@tcs.com>
-In-Reply-To: <OFEF55F6FC.C2A72339-ON6525756F.001530A3-6525756F.00147B0D@tcs.com>
+References: <OF2D49A8B9.AFC46539-ON6525756F.001A036F-6525756F.00191D2C@tcs.com>
+In-Reply-To: <OF2D49A8B9.AFC46539-ON6525756F.001A036F-6525756F.00191D2C@tcs.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] (no subject)
@@ -18,17 +16,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Reshmi Rajagopal <reshmi.rajagopal@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Chitra4 M <chitra4.m@domain.hid>
+Cc: Xenomai-help@domain.hid
 
-Reshmi Rajagopal wrote:
-> hi Gilles Chanteperdrix,
->                                              Can you please give me 
-> information regarding uITRON skin and its architecture.
+Chitra4 M wrote:
+> Hi,
+>    Can anyone give details on how to make xenomai run on fedora linux?and 
+> xenomai installation.
 
-As I told you in a previous mail, you can find a lot of information,
-including the answer to this question on Xenomai site:
-http://www.xenomai.org
+See README.INSTALL in xenomai tarball.
 
 -- 
                                                  Gilles.
