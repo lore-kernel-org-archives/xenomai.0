@@ -1,13 +1,14 @@
-Message-Id: <A04AB540-BCCC-43EA-8B4F-47DE9AEC8E04@domain.hid>
-From: Steven Seeger <steven.seeger@domain.hid>
-In-Reply-To: <49AFA197.9090704@domain.hid>
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
-Content-Transfer-Encoding: 7bit
-Mime-Version: 1.0 (Apple Message framework v930.3)
-Date: Thu, 5 Mar 2009 06:45:27 -0500
+Message-ID: <49AFCF81.8020806@domain.hid>
+Date: Thu, 05 Mar 2009 14:11:29 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <67b6b3430903041631p107682bdyf5d5fb9c0e70d86d@domain.hid>
 	<49AFA197.9090704@domain.hid>
+In-Reply-To: <49AFA197.9090704@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] ipipe error
+Reply-To: gilles.chanteperdrix@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,21 +21,23 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-> Additionally, what happens if you stop asking rt_task_set_mode() to  
-> clear
-> primary mode via toggling the T_PRIMARY flag? (which you should very  
-> likely NOT
-> do, btw. Forcing the current mode is counter-productive most of the  
-> time; this
-> is an internal feature for very, very specific needs of some Xenomai  
-> library code).
+Philippe Gerum wrote:
+> Mark Saiia wrote:
+>> When running 2.6.27.19 w/ Xenomai 2.4.7 on a geode board, I get the
+>> following in the log. I haven't done any debugging yet, but wanted to
+>> see if anyone else has this issue.  It results in some of the
+>> application threads not being responsive, while others are still
+>> running.
+>>
+> 
+> Is CONFIG_FRAME_POINTER enabled for your kernel, i.e. can we trust the backtrace
+> below?
 
-I am not even sure why that code is there. it's around a call to  
-rt_queue_read() which will go to primary mode anyway. Perhaps it is  
-left over from some debug mode. I'll ask Mark to remove it.
+>From what I understood, in recent kernels, even when
+CONFIG_FRAME_POINTER is enabled, the show_stack code prints what it
+finds on the stack, but with a '?' before, to make the difference with
+the frame pointers.
 
-Thanks for he tip.
-
-Steven
-
+-- 
+                                                 Gilles.
 
