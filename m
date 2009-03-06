@@ -1,13 +1,14 @@
-Content-Class: urn:content-classes:message
+Message-ID: <49B1200D.7000204@domain.hid>
+Date: Fri, 06 Mar 2009 14:07:25 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
+References: <76902d360903060146t677ab7a1y38a11273957b8c45@domain.hid>	
+	<49B0F2DD.5080507@domain.hid>
+	<76902d360903060341y20a45b61y1a6e484767baca80@domain.hid>
+In-Reply-To: <76902d360903060341y20a45b61y1a6e484767baca80@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 6 Mar 2009 13:06:29 +0100
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A0187317D@ARVMAIL1.mra.roland-man.biz>
-In-Reply-To: <49B0FE9A.9040809@domain.hid>
-From: <roderik.wildenburg@domain.hid>
-Subject: Re: [Xenomai-help] Floating Point Exceptions in RT-Tasks
+Subject: Re: [Xenomai-help] Xenomai and reading of linux files?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,37 +18,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org, wg@domain.hid
+To: =?ISO-8859-1?Q?Jens_K=F6hler?= <jenskxxx@domain.hid>
+Cc: xenomai@xenomai.org
 
-> Unfortunately, I'm not able to reproduce this bug on my side,=20
-> even using the=20
-> latest linuxppc_devel tree. I have attached my test code to=20
-> make sure we are=20
-> testing the same thing. This test code does raise the FPU=20
-> exception properly.
+Jens K=F6hler wrote:
+> 2009/3/6 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>=20
+>>  Jens K=F6hler wrote:
+>>> Hello,
+>>>
+>>> I like to port a rtai application  to xenomai. The rtai application h=
+as a
+>>> user space part and a kernel module. Both communication together by r=
+tai
+>>> queues and a shared memory.
+>>> Do I need for xenomai still queues? Or is it f.i. possible to read or=
 
-This program produces a core here too (Xeno 2.4.6).
-May I remember that Thomas got a core too, when he forced a switch to =
-secondary mode.
-Probably your task_suspend is something similar.
+>> write
+>>> linux files from xenomai application without problems?
+>> reading and writing will work, but will cause the thread which does it=
 
+>> to switch to secondary mode (if it is a real-time thread), so it may n=
+ot
+>> be what you want.
+>>
+>> --
+>>                                                 Gilles.
+>=20
+>=20
+> Hi Gilles,
+>=20
+> thank you for your fast answer. I need in periodic real time task data =
+from
+> user space. Then I have to use a msg_queue!?
 
-Thomas=B4 original post from 13.2.09
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-I successfully managed to enable FP Exceptions on our MPC5200 board for
-plain linux applications (via fesetenv). When I put the same trigger
-code (DivByZero) into a (native) RT task no exception is triggered until
-I force a mode switch to secondary mode (e.g. printf). How can I get
-them without performing the mode switch?
+Xenomai allows real-time in user-space (as RTAI does, by the way), so
+the problem is not user-space versus kernel-space, the problem is
+primary mode versus secondary mode.
 
---------------------------------------------------------
-manroland AG
-Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle  =20
-Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592
-USt-Ident-Nr. DE 250200933
+> How can I check if my real time task/ thread runs accidentally in secon=
+dary
+> mode?
+
+See:
+http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__task=
+=2Ehtml#g915e7edfb0aaddb643794d7abc7093bf
+
+And for an introduction on xenomai native api, see:
+http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Native-API-Tour-=
+rev-C.pdf
+
+--=20
+                                                 Gilles.
+
 
