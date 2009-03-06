@@ -1,12 +1,16 @@
-Message-ID: <49B0FE9A.9040809@domain.hid>
-Date: Fri, 06 Mar 2009 11:44:42 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: Sergey PENIAZ <Sergey.Peniaz@domain.hid>
+Date: Fri, 6 Mar 2009 12:58:43 +0200
+References: <200903061109.58455.Sergey.Peniaz@domain.hid>
+	<200903061210.46156.Sergey.Peniaz@domain.hid>
+	<49B0F731.8040402@domain.hid>
+In-Reply-To: <49B0F731.8040402@domain.hid>
 MIME-Version: 1.0
-References: <5D63919D95F87E4D9D34FF7748CE2C2A0187305A@ARVMAIL1.mra.roland-man.biz>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A0187305A@ARVMAIL1.mra.roland-man.biz>
-Content-Type: multipart/mixed; boundary="------------050900090307080304030202"
-Subject: Re: [Xenomai-help] Floating Point Exceptions in RT-Tasks
-Reply-To: rpm@xenomai.org
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200903061258.43940.Sergey.Peniaz@domain.hid>
+Subject: Re: [Xenomai-help] Is such latency normal?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,69 +20,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: roderik.wildenburg@domain.hid
-Cc: xenomai@xenomai.org, wg@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------050900090307080304030202
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
 
-roderik.wildenburg@domain.hid wrote:
->> Gilles sent you a patch affecting 
->> include/asm-powerpc/bits/pod.h a few weeks
->> ago, that fixed an FPU issue. Are you running with this patch applied?
->>
-> 
-> Yes, with 2.3.5 and 2.4.6. Both show the same behavior.
-> Obviously, in the meantime, Wolfgang could reproduce the problem!?
+Yes.
+
+Thanks.
+
+On 6 March 2009, Gilles Chanteperdrix wrote:
+> Sergey PENIAZ wrote:
+> > Thanks for you help.
+> >
+> >> Also, did you check SMIs?
+> >
+> > Do you mean this?
+> >
+> > testpc:/usr/src/linux-2.6.26.8# cat .config | grep SMI
+> > # SMI workaround
+> > # CONFIG_XENO_HW_SMI_DETECT_DISABLE is not set
+> > CONFIG_XENO_HW_SMI_DETECT=y
+> > # CONFIG_XENO_HW_SMI_WORKAROUND is not set
 >
-
-Unfortunately, I'm not able to reproduce this bug on my side, even using the 
-latest linuxppc_devel tree. I have attached my test code to make sure we are 
-testing the same thing. This test code does raise the FPU exception properly.
-
-> Roderik
-> 
-> --------------------------------------------------------
-> manroland AG
-> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Rall, Paul Steidle   
-> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592
-> USt-Ident-Nr. DE 250200933
-> 
+> I mean, did you read the TROUBLESHOOTING guide and applied what you
+> found there ?
 
 
---------------050900090307080304030202
-Content-Type: text/x-csrc;
- name="divzero.c"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="divzero.c"
+-- 
+With Best Regards
+Sergey Peniaz
+Visutech System Ltd.
 
-#include <sys/types.h>
-#include <sys/mman.h>
-#include <stdio.h>
-#include <fenv.h>
-#include <native/task.h>
-
-double z;
-
-int main (int argc, char **argv)
-{
-	double a = 23.0;
-
-	z = 0;
-	fesetenv(FE_ENABLED_ENV);
-
-        mlockall(MCL_CURRENT | MCL_FUTURE);
-
-	rt_task_shadow(NULL, "main", 10, 0);
-	a /= z;
-	rt_task_suspend(NULL);
-
-	return (int)a;
-}
-
---------------050900090307080304030202--
+E-Mail:Sergey.Peniaz@domain.hid
 
