@@ -1,5 +1,5 @@
-Message-ID: <49B133D8.1000401@domain.hid>
-Date: Fri, 06 Mar 2009 15:31:52 +0100
+Message-ID: <49B13443.5010203@domain.hid>
+Date: Fri, 06 Mar 2009 15:33:39 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <20090306142134.37AC11C079@domain.hid>
@@ -41,14 +41,14 @@ rted
 > arch/x86/kernel/ipipe.c:710: error: for each function it appears in.)
 > make[1]: *** [arch/x86/kernel/ipipe.o] Error 1
 > make: *** [arch/x86/kernel] Error 2
->
-
-Switch off CONFIG_KGDB.
-
+>=20
 > I have seen that ex_device_not_available is missed but the kernel
 > compilation terminates with no errors if I use ex_do_device_not_availab=
 le
 > instead of ex_device_not_available.
+
+This fix is correct as well.
+
 >=20
 > Any suggestion?
 >=20
