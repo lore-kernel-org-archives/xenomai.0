@@ -1,14 +1,14 @@
-Message-ID: <49B1522F.4060202@domain.hid>
-Date: Fri, 06 Mar 2009 17:41:19 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <49B16B2F.8090305@domain.hid>
+Date: Fri, 06 Mar 2009 19:27:59 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <27822339.1236353250536.JavaMail.ngmail@domain.hid>	
-	<49B14276.20100@domain.hid>
-	<cbe23c50903060826i7f8b4a41s9aed051eea249c28@domain.hid>
-In-Reply-To: <cbe23c50903060826i7f8b4a41s9aed051eea249c28@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <5D63919D95F87E4D9D34FF7748CE2C2A01872F90@domain.hid>
+	<49AFE525.2080401@domain.hid> <49B03E9C.70203@domain.hid>
+In-Reply-To: <49B03E9C.70203@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai and OpenMP
+Subject: Re: [Xenomai-help] Floating Point Exceptions in RT-Tasks
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,69 +18,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Eric Noulard <eric.noulard@domain.hid>
-Cc: xenomai@xenomai.org, "M. Koehrer" <mathias_koehrer@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai@xenomai.org
 
-Eric Noulard wrote:
-> 2009/3/6 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->> M. Koehrer wrote:
->>> Hi everybody,
+Wolfgang Grandegger wrote:
+> Philippe Gerum wrote:
+>> roderik.wildenburg@domain.hid wrote:
+>>> On behalf of Thomas I would like to answer : 
 >>>
->>> is it possible to use OpenMP with Xenomai Realtime threads? I have a
->>> Intel QuadCore CPU running. Currently I use the native skin to create
->>> multiple threads to run on multiple CPU cores. That works perfectly.
->>> However for some computations, a more local parallel computation
->>> could be great. And OpenMP provides exactly the right thing here. My
->>> question is now: Is it possible to use OpenMP with Xenomai real time
->>> tasks? How can I define the worker threads of OpenMP to be real time
->>> threads? What about the priority of these threads?
->> I do not know what OpenMP is,
+>>>> Do you have CONFIG_XENO_OPT_DEBUG_NUCLEUS enabled in your 
+>>> yes, we can aahhh have this option enabled.
+>>>
+>>>> kconfig, and if so, do
+>>>> you get any message in your kernel log when running fetest?
+>>> no, no message anywhere (/var/log/messages, console, dmesg).
+>>> fetest runs and runs till I sent CTRL-C.
 > 
-> OpenMP is a proposed standard for shared-memory parallel programming:
-> http://openmp.org.
-> 
-> The idea is to indicate to the OpenMP-aware compiler which part
-> of your code may be parallelized with #pragma omp <something>
-> those pragma should be ignored by non OpenMP-aware compiler
-> making the parallelized code more portable.
-> 
-> GCC 4.2 and up support OpenMP pragma if you use the
-> -fopenmp
-> command line switch.
-> 
->> but if it uses the posix API, the first
->> step to make it work with Xenomai is to try and compile it with xenomai
->> posix skin. Then, all threads created by this openmp compiled for
->> xenomai posix skin will be real-time threads, and the priority of these
->> threads will be the one chosen by the pthread_att_setschedparam or
->> pthread_setschedparam services.
-> 
-> The OpenMP parallel model concerning threads is a so-called
-> fork/join model. The compiler insert the code that
-> creates the threads (and eventually join them)
-> at appropriate places for you.
-> The work is then distributed to those "worker" threads.
-> The code use to handle those mechanism is NOT under user control,
-> user only insert OpenMP pragmas.
-> 
-> In GCC there is a supporting library "libgomp" used:
-> http://gcc.gnu.org/viewcvs/trunk/libgomp/
-> 
-> the lib seems to be using pthread, but this as to be checked carefully.
-> Thus I would bet that somewhere in libgomp you'll find the pthread_xxxx
-> calls corresponding to the OpenMP handled threads.
-> 
-> I think in order to make the OpenMP thread Xenomai one's you'll have
-> to find WHERE (in the libgomp code) they are created and may
-> WHEN they are launched, in order to be sure the libgomp created
-> threand will be Xenomai tasks.
-> 
-> The solution used by other compiler to support OpenMP may be different,
-> so the Xenomai+OpenMP support may be different  for other compiler.
+> I just tried the program fetest on my TQM5200 with a fresh Xenomai 2.4.x
+> and the linuxppc_2_4_devel tree and the excepetion does *not* get
+> triggered. Actually I realize the following wired behavior:
+>
 
-if the libgomp uses posix, recompiling it for xenomai posix skin should
-be enough.
+I can reproduce this as well on the tqm now. This seems to be a nucleus issue 
+wrt FPU management. More later.
 
--- 
-                                                 Gilles.
+> /fpu_test
+> ^C
+> ./fpu_test
+> ^C
+> Feb  3 17:16:12 tqm5200 kernel: Xenomai: Switching trivial to secondary
+> mode after exception #1792 from user-space at 0x10001974 (pid 342)
+> Floating point exception
+> bash-2.05b# ./fpu_test
+> ^C
+> bash-2.05b# ./fpu_test
+>  ^C
+> bash-2.05b# ./fpu_test
+> 
+> After aborting the fpu_test program with ^C, I get the message above,
+> but only after the second try.
+> 
+>> Gilles sent you a patch affecting include/asm-powerpc/bits/pod.h a few weeks
+>> ago, that fixed an FPU issue. Are you running with this patch applied?
+> 
+> $ svn log include/asm-powerpc/bits/pod.h
+> ------------------------------------------------------------------------
+> r4600 | gch | 2009-01-31 19:46:37 +0100 (Sat, 31 Jan 2009) | 1 line
+> 
+> Is that the patch you have in mind?
+> 
+> Wolfgang.
+> 
+
 
