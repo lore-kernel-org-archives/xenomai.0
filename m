@@ -1,12 +1,13 @@
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-In-Reply-To: <49B0F2DD.5080507@domain.hid>
-References: <76902d360903060146t677ab7a1y38a11273957b8c45@domain.hid>
-	<49B0F2DD.5080507@domain.hid>
-Date: Fri, 6 Mar 2009 12:41:46 +0100
-Message-ID: <76902d360903060341y20a45b61y1a6e484767baca80@domain.hid>
-From: =?ISO-8859-1?Q?Jens_K=F6hler?= <jenskxxx@domain.hid>
-Content-Type: multipart/alternative; boundary=000e0cd150b604c2ac046471c56e
-Subject: Re: [Xenomai-help] Xenomai and reading of linux files?
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 6 Mar 2009 13:06:29 +0100
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A0187317D@ARVMAIL1.mra.roland-man.biz>
+In-Reply-To: <49B0FE9A.9040809@domain.hid>
+From: <roderik.wildenburg@domain.hid>
+Subject: Re: [Xenomai-help] Floating Point Exceptions in RT-Tasks
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,80 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org, wg@domain.hid
 
---000e0cd150b604c2ac046471c56e
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+> Unfortunately, I'm not able to reproduce this bug on my side,=20
+> even using the=20
+> latest linuxppc_devel tree. I have attached my test code to=20
+> make sure we are=20
+> testing the same thing. This test code does raise the FPU=20
+> exception properly.
 
-2009/3/6 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-
->  Jens K=F6hler wrote:
-> > Hello,
-> >
-> > I like to port a rtai application  to xenomai. The rtai application has=
- a
-> > user space part and a kernel module. Both communication together by rta=
-i
-> > queues and a shared memory.
-> > Do I need for xenomai still queues? Or is it f.i. possible to read or
-> write
-> > linux files from xenomai application without problems?
->
-> reading and writing will work, but will cause the thread which does it
-> to switch to secondary mode (if it is a real-time thread), so it may not
-> be what you want.
->
-> --
->                                                 Gilles.
+This program produces a core here too (Xeno 2.4.6).
+May I remember that Thomas got a core too, when he forced a switch to =
+secondary mode.
+Probably your task_suspend is something similar.
 
 
-Hi Gilles,
+Thomas=B4 original post from 13.2.09
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+I successfully managed to enable FP Exceptions on our MPC5200 board for
+plain linux applications (via fesetenv). When I put the same trigger
+code (DivByZero) into a (native) RT task no exception is triggered until
+I force a mode switch to secondary mode (e.g. printf). How can I get
+them without performing the mode switch?
 
-thank you for your fast answer. I need in periodic real time task data from
-user space. Then I have to use a msg_queue!?
-How can I check if my real time task/ thread runs accidentally in secondary
-mode?
-
-Thanks,
-Jens
-
---000e0cd150b604c2ac046471c56e
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<br><br>
-<div class=3D"gmail_quote">2009/3/6 Gilles Chanteperdrix <span dir=3D"ltr">=
-&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdri=
-x@domain.hid</a>&gt;</span><br>
-<blockquote class=3D"gmail_quote" style=3D"PADDING-LEFT: 1ex; MARGIN: 0px 0=
-px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">
-<div>
-<div></div>
-<div class=3D"h5">Jens K=F6hler wrote:<br>&gt; Hello,<br>&gt;<br>&gt; I lik=
-e to port a rtai application =A0to xenomai. The rtai application has a<br>&=
-gt; user space part and a kernel module. Both communication together by rta=
-i<br>
-&gt; queues and a shared memory.<br>&gt; Do I need for xenomai still queues=
-? Or is it f.i. possible to read or write<br>&gt; linux files from xenomai =
-application without problems?<br><br></div></div>reading and writing will w=
-ork, but will cause the thread which does it<br>
-to switch to secondary mode (if it is a real-time thread), so it may not<br=
->be what you want.<br><br>--<br><font color=3D"#888888">=A0 =A0 =A0 =A0 =A0=
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 Gilles.</font></blockquote>
-<div>=A0</div>
-<div>Hi Gilles,</div>
-<div>=A0</div>
-<div>thank you for your fast answer. I need in periodic real time task data=
- from user space. Then I have to use a msg_queue!?</div>
-<div>How can I check if my real time task/ thread runs accidentally in seco=
-ndary mode?</div>
-<div>=A0</div>
-<div>Thanks,</div>
-<div>Jens</div>
-<div>=A0</div></div><br>
-
---000e0cd150b604c2ac046471c56e--
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
