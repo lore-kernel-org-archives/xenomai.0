@@ -1,70 +1,84 @@
-From: Andreas Glatz <andreasglatz@domain.hid>
-In-Reply-To: <49C16F57.8090808@domain.hid>
-References: <1237393895.5495.7.camel@domain.hid>
-	<49C16D55.1080003@domain.hid>  <49C16F57.8090808@domain.hid>
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
-Date: Thu, 19 Mar 2009 09:24:20 -0400
-Message-Id: <1237469060.21634.16.camel@domain.hid>
-Mime-Version: 1.0
-Subject: Re: [Xenomai-core] Kernel crash
-	in	xnheap_test_and_free	(native/heap.c)
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <49B0FE9A.9040809@domain.hid>
+Date: Fri, 06 Mar 2009 11:44:42 +0100
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
+References: <5D63919D95F87E4D9D34FF7748CE2C2A0187305A@ARVMAIL1.mra.roland-man.biz>
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A0187305A@ARVMAIL1.mra.roland-man.biz>
+Content-Type: multipart/mixed; boundary="------------050900090307080304030202"
+Subject: Re: [Xenomai-help] Floating Point Exceptions in RT-Tasks
+Reply-To: rpm@xenomai.org
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: roderik.wildenburg@domain.hid
+Cc: xenomai@xenomai.org, wg@domain.hid
 
-On Wed, 2009-03-18 at 23:01 +0100, Philippe Gerum wrote:
-> Philippe Gerum wrote:
-> > Andreas Glatz wrote:
-> >> Hi,
-> >>
-> >> I got a kernel crash because inside xnheap_test_and_free a 
-> >> invalid pointer contained in variable 'nextpage' is dereferenced:
-> >>
-> > 
-> > <snip>
-> > 
-> > This turned out to be caused by an out-of-bound write triggered by the streaming 
-> > output service.
-> > 
-> > The patch below fixes the issue; it has been committed to both the maintenance 
-> > (v2.4.x) and development branches.
+This is a multi-part message in MIME format.
+--------------050900090307080304030202
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Great! This fixes the bug! Many thanks!
-
-
-> > 
-> > Sidenote: your test scenario involves echoing some data to /dev/rtp0 for 
-> > triggering the issue; this will now work, but you won't get that input available 
-> > to rt_pipe_read(). In case you wonder why, the reason is that 'echo' will exit 
-> > immediately after sending the bytes, which will cause the user-space side of the 
-> > channel to be closed, and the input queue (the one that goes user -> kernel) to 
-> > be flushed from any pending data.
-> > 
+roderik.wildenburg@domain.hid wrote:
+>> Gilles sent you a patch affecting 
+>> include/asm-powerpc/bits/pod.h a few weeks
+>> ago, that fixed an FPU issue. Are you running with this patch applied?
+>>
 > 
-> ...unless your polling RT read loop wakes up at the right time and manages to 
-> preempt the Linux kernel shortly after the echo sent the bytes, in which case 
-> you will receive the data, but that is obviously not the most frequent situation.
+> Yes, with 2.3.5 and 2.4.6. Both show the same behavior.
+> Obviously, in the meantime, Wolfgang could reproduce the problem!?
+>
+
+Unfortunately, I'm not able to reproduce this bug on my side, even using the 
+latest linuxppc_devel tree. I have attached my test code to make sure we are 
+testing the same thing. This test code does raise the FPU exception properly.
+
+> Roderik
+> 
+> --------------------------------------------------------
+> manroland AG
+> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Rall, Paul Steidle   
+> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592
+> USt-Ident-Nr. DE 250200933
 > 
 
-Actually we don't use echo or cat to write to/read from the pipe. I just
-used it to describe the failure. We are using a patched version of
-minicom to read from/write to the pipe. Probably you know that you can
-use minicom to connect to a unix-socket, I just went ahead and patched
-it so that you can connect to a named pipe.
 
-Anyways,
+--------------050900090307080304030202
+Content-Type: text/x-csrc;
+ name="divzero.c"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="divzero.c"
 
-Thanks a lot!
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <stdio.h>
+#include <fenv.h>
+#include <native/task.h>
 
-Andreas
+double z;
 
+int main (int argc, char **argv)
+{
+	double a = 23.0;
+
+	z = 0;
+	fesetenv(FE_ENABLED_ENV);
+
+        mlockall(MCL_CURRENT | MCL_FUTURE);
+
+	rt_task_shadow(NULL, "main", 10, 0);
+	a /= z;
+	rt_task_suspend(NULL);
+
+	return (int)a;
+}
+
+--------------050900090307080304030202--
 
