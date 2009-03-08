@@ -1,10 +1,12 @@
+Message-ID: <49B39DB5.8040601@domain.hid>
+Date: Sun, 08 Mar 2009 11:28:05 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Message-ID: <OF1CF49A0B.154D29AF-ON6525756F.0018659A-6525756F.001858AD@tcs.com>
-From: Vandana Sasidharan <vandana.sasidharan@domain.hid>
-Date: Wed, 4 Mar 2009 10:05:22 +0530
-Content-Type: multipart/alternative;
-	boundary="=_alternative 001858AA6525756F_="
-Subject: [Xenomai-core] (no subject)
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig676764E9C82C41FFC52E8AAF"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] xnshadow_relax in taskexit_event
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,70 +16,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-This is a multipart message in MIME format.
---=_alternative 001858AA6525756F_=
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig676764E9C82C41FFC52E8AAF
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Hi
-Thanks Bruno and Gilles...
-Im really very new to Xenomai and its simulator stuffs... so I need 
-serious help...
-Is my understanding right if I say that Xenoscopr is a debugger?
-and also  what are the major components/functional blocks of Simulator 
-(Xenosim, Xenoscope,..) so that I I can know what are the internal 
-interfaces of the simulator.
+Hi,
 
-Regards
-Vandana
-=====-----=====-----=====
-Notice: The information contained in this e-mail
-message and/or attachments to it may contain 
-confidential or privileged information. If you are 
-not the intended recipient, any dissemination, use, 
-review, distribution, printing or copying of the 
-information contained in this e-mail message 
-and/or attachments to it are strictly prohibited. If 
-you have received this communication in error, 
-please notify us by reply e-mail or telephone and 
-immediately and permanently delete the message 
-and any attachments. Thank you
+this looks suspicious to me:
 
+static inline void do_taskexit_event(struct task_struct *p)
+{
+	...
+	if (xnpod_shadow_p())
+		xnshadow_relax(0);
+
+A) The only call context of this hook is do_exit() - and that's Linux
+kernel code which should always run in secondary mode, no?
+
+B) Even if we were called once in a while from primary mode here, too,
+the check xnpod_shadow_p() would only tell us that we are a shadow
+thread, not in which mode we currently run.
+
+I've tested a removal of this hunk and found no regressions so far. Will
+post a patch unless someone can explain why we actually need this (and
+why A) and B) are non-issues).
+
+Jan
 
 
---=_alternative 001858AA6525756F_=
-Content-Transfer-Encoding: 7bit
-Content-Type: text/html; charset="us-ascii"
+--------------enig676764E9C82C41FFC52E8AAF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-<br><font size=2 face="sans-serif">Hi</font>
-<br><font size=2 face="sans-serif">Thanks Bruno and Gilles...</font>
-<br><font size=2 face="sans-serif">Im really very new to Xenomai and its
-simulator stuffs... so I need serious help...</font>
-<br><font size=2 face="sans-serif">Is my understanding right if I say that
-Xenoscopr is a debugger?</font>
-<br><font size=2 face="sans-serif">and also &nbsp;what are the major components/functional
-blocks of Simulator (Xenosim, Xenoscope,..) so that I I can know what are
-the internal interfaces of the simulator.</font>
-<br>
-<br><font size=2 face="sans-serif">Regards</font>
-<br><font size=2 face="sans-serif">Vandana</font><pre>=====-----=====-----=====
-Notice: The information contained in this e-mail
-message and/or attachments to it may contain 
-confidential or privileged information. If you are 
-not the intended recipient, any dissemination, use, 
-review, distribution, printing or copying of the 
-information contained in this e-mail message 
-and/or attachments to it are strictly prohibited. If 
-you have received this communication in error, 
-please notify us by reply e-mail or telephone and 
-immediately and permanently delete the message 
-and any attachments. Thank you
+iEYEARECAAYFAkmznbwACgkQniDOoMHTA+laXgCfZJn+CmLVcflzU2t6Bp3phy+a
+EJAAn1qCIKk5dSEmE22fr0tHQD/psX0r
+=MY02
+-----END PGP SIGNATURE-----
 
-
-</pre>
---=_alternative 001858AA6525756F_=--
-
+--------------enig676764E9C82C41FFC52E8AAF--
 
