@@ -1,12 +1,12 @@
-Message-ID: <49B39DB5.8040601@domain.hid>
-Date: Sun, 08 Mar 2009 11:28:05 +0100
+Message-ID: <49B3A126.6000602@domain.hid>
+Date: Sun, 08 Mar 2009 11:42:46 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig676764E9C82C41FFC52E8AAF"
+	boundary="------------enig177223CC2816590B14D2ADDA"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] xnshadow_relax in taskexit_event
+Subject: [Xenomai-core] Watchdog / immediate Linux signal delivery
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,35 +19,44 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig676764E9C82C41FFC52E8AAF
+--------------enig177223CC2816590B14D2ADDA
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-this looks suspicious to me:
+the watchdog is currently broken in trunk ("zombie [...] would not
+die..."). In fact, it should also be broken in older versions, but only
+recent thread termination rework made this visible.
 
-static inline void do_taskexit_event(struct task_struct *p)
-{
-	...
-	if (xnpod_shadow_p())
-		xnshadow_relax(0);
+When a Xenomai CPU hog is caught by the watchdog, xnpod_delete_thread is
+invoked, causing the current thread to be set in zombie state and
+scheduled out. But as its Linux mate still exist, hell breaks loose once
+Linux tries to get rid of it (the Xenomai zombie is scheduled in again).
+In short: calling xnpod_delete_thread(<self>) for a shadow thread is not
+working, probably never worked cleanly.
 
-A) The only call context of this hook is do_exit() - and that's Linux
-kernel code which should always run in secondary mode, no?
+There are basically two approaches to fix it: The first one is to find a
+different way to kill (or only suspend?) the current shadow thread when
+the watchdog strikes. The second one brought me to another issue: Raise
+SIGKILL for the current thread and make sure that it can be processed by
+Linux (e.g. via xnpod_suspend_thread(<cpu-hog>). Unfortunately, there is
+no way to force a shadow thread into secondary mode to handle pending
+Linux signals unless that thread issues a syscall once in a while. And
+that raises the question if we shouldn't improve this as well while we
+are on it.
 
-B) Even if we were called once in a while from primary mode here, too,
-the check xnpod_shadow_p() would only tell us that we are a shadow
-thread, not in which mode we currently run.
+Granted, non-broken Xenomai user space threads always issue frequent
+syscalls, otherwise the system would starve (and the watchdog would come
+around). On the other hand, delaying signals till syscall prologues is
+different from plain Linux behaviour...
 
-I've tested a removal of this hunk and found no regressions so far. Will
-post a patch unless someone can explain why we actually need this (and
-why A) and B) are non-issues).
+Comments, ideas?
 
 Jan
 
 
---------------enig676764E9C82C41FFC52E8AAF
+--------------enig177223CC2816590B14D2ADDA
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -56,10 +65,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkmznbwACgkQniDOoMHTA+laXgCfZJn+CmLVcflzU2t6Bp3phy+a
-EJAAn1qCIKk5dSEmE22fr0tHQD/psX0r
-=MY02
+iEYEARECAAYFAkmzoS8ACgkQniDOoMHTA+krMwCfRlSGD96r8adO1sbuA+Hi4Hkg
+ZP0AnRi8R9gmabTD69wKmqk59XtVy2V8
+=5qO1
 -----END PGP SIGNATURE-----
 
---------------enig676764E9C82C41FFC52E8AAF--
+--------------enig177223CC2816590B14D2ADDA--
 
