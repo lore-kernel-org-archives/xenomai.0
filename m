@@ -1,12 +1,13 @@
-Message-ID: <49B4E102.5050904@domain.hid>
-Date: Mon, 09 Mar 2009 10:27:30 +0100
+Message-ID: <49B4E3C0.6030804@domain.hid>
+Date: Mon, 09 Mar 2009 10:39:12 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <49B3AA0E.5020805@domain.hid>
-In-Reply-To: <49B3AA0E.5020805@domain.hid>
+References: <49B39DB5.8040601@domain.hid> <49B3A61E.3040306@domain.hid>
+	<49B4DF0E.9050707@domain.hid> <49B4E225.5080401@domain.hid>
+In-Reply-To: <49B4E225.5080401@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH] nucleus: Cleanup taskexit hook
+Subject: Re: [Xenomai-core] xnshadow_relax in taskexit_event
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,55 +17,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: rpm@xenomai.org
 Cc: xenomai-core <xenomai@xenomai.org>
 
-[ Enhanced version, removing more unneeded code. ]
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>> Philippe Gerum wrote:
+>>> Jan Kiszka wrote:
+>>>> Hi,
+>>>>
+>>>> this looks suspicious to me:
+>>>>
+>>>> static inline void do_taskexit_event(struct task_struct *p)
+>>>> {
+>>>>     ...
+>>>>     if (xnpod_shadow_p())
+>>>>         xnshadow_relax(0);
+>>>>
+>>>> A) The only call context of this hook is do_exit() - and that's Linux
+>>>> kernel code which should always run in secondary mode, no?
+>>>>
+>>> It is a left-over from the days when do_exit() could be called from
+>>> primary context directly on behalf on the shadow unmapping code; now
+>>> we go through an APC, so that should be ok.
+>>
+>> Mmm, then I wonder if we shouldn't be able to drop the explicit
+>> xnpod_schedule() from do_taskexit_event() as well: we always enter this
+>> code over the ROOT thread, and xnpod_delete_thread() will only kill a
+>> suspended thread. So there should be no need to reschedule afterwards.
+>> Will post an updated patch.
+>>
+> 
+> Nak, the deletion hook may alter the scheduling state.
 
-xnshadow_relax is no longer needed as do_exit, the caller of this hook,
-always runs in secondary mode, ie. over the ROOT thread. Enforce this
-assumptions by leaving a XENO_BUGON behind.
+OK. Is such a hook expected to call xnsched_set_resched in that case,
+ie. can we drop it?
 
-And as the target thread is relaxed already, ie. suspended, there is
-also no need for a reschedule. Drop the related code.
+Jan
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
-
- ksrc/nucleus/shadow.c |   10 +++++-----
- 1 files changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
-index e2f2968..1f90054 100644
---- a/ksrc/nucleus/shadow.c
-+++ b/ksrc/nucleus/shadow.c
-@@ -2179,12 +2179,11 @@ static inline void do_taskexit_event(struct task_struct *p)
- 	if (!thread)
- 		return;
- 
-+	XENO_BUGON(NUCLEUS, !xnpod_root_p());
-+
- 	if (xnthread_test_state(thread, XNDEBUG))
- 		unlock_timers();
- 
--	if (xnpod_shadow_p())
--		xnshadow_relax(0);
--
- 	magic = xnthread_get_magic(thread);
- 
- 	xnlock_get_irqsave(&nklock, s);
-@@ -2193,9 +2192,10 @@ static inline void do_taskexit_event(struct task_struct *p)
- 	xnthread_archtcb(thread)->user_task = NULL;
- 	/* xnpod_delete_thread() -> hook -> xnshadow_unmap(). */
- 	xnpod_delete_thread(thread);
--	xnsched_set_resched(thread->sched);
- 	xnlock_put_irqrestore(&nklock, s);
--	xnpod_schedule();
-+
-+	/* The deleted thread was suspended (relaxed), so there is no need for
-+	   reschedule. */
- 
- 	xnshadow_dereference_skin(magic);
- 	trace_mark(xn_nucleus, shadow_exit, "thread %p thread_name %s",
-
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
