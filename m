@@ -1,15 +1,14 @@
-Message-ID: <49B64A7F.4030809@domain.hid>
-Date: Tue, 10 Mar 2009 12:09:51 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <49B3A126.6000602@domain.hid>
-	<49B53AC3.10707@domain.hid>	<49B54780.6040504@domain.hid>
-	<49B54D2C.5080001@domain.hid>	<49B55175.2070205@domain.hid>
-	<49B55407.9000700@domain.hid> <49B558DF.7050109@domain.hid>
-In-Reply-To: <49B558DF.7050109@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+From: Andreas Glatz <andreasglatz@domain.hid>
+In-Reply-To: <49B54BB7.5040705@domain.hid>
+References: <1236608449.3587.32.camel@domain.hid>
+	<49B53EE4.1030008@domain.hid> <1236616652.3531.57.camel@domain.hid>
+	<49B54BB7.5040705@domain.hid>
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Watchdog / immediate Linux signal delivery
+Date: Tue, 10 Mar 2009 08:43:19 -0400
+Message-Id: <1236688999.3531.75.camel@domain.hid>
+Mime-Version: 1.0
+Subject: Re: [Xenomai-core] rt_queue_create in RT task?
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,57 +18,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->> Jan Kiszka wrote:
->>> Philippe Gerum wrote:
->>>> Jan Kiszka wrote:
->>>>> Meanwhile I played with some light-weight approach to relax a thread
->>>>> that received a signal (according to do_sigwake_event). Worked, but only
->>>>> once due to a limitation (if not bug) of I-pipe x86: in __ipipe_run_isr,
->>>>> it does not handle the case that a non-root handler may alter the
->>>>> current domain, causing corruptions to the IPIPE_SYNC_FLAG states of the
->>>>> involved domains.
->>>> It is not a bug, this is wanted. ISR must neither change the current
->>>> domain nor migrate CPU; allowing this would open Pandora's box.
->>> And if there is no way to migrate from within an ISR, we can bury any
->>> attempt to deliver signals to spinning Xenomai threads - or what other
->>> context would remain to Xenomai for triggering migration?
->>>
->> The two-phase solution I have mentioned would work.
+Hi,
+
+On Mon, 2009-03-09 at 18:02 +0100, Philippe Gerum wrote:
+> Andreas Glatz wrote:
+> > Hi,
+> > 
+> > On Mon, 2009-03-09 at 17:08 +0100, Philippe Gerum wrote:
+> >> Andreas Glatz wrote:
+> >>> Hi,
+> >>>
+> >>> Calling rt_queue_create in a real-time task is supposed to fail
+> >>> according to the documentation. 
+> >>>
+> >> It fails from kernel space, otherwise, from user-space, your application would 
+> >> simply be moved to a Linux context automatically for processing the 
+> >> rt_queue_create() syscall.
+> > 
+> > Currently, we are developing in Userspace, so everything works fine. But
+> > we still would like to have the option to run in kernel-space if for
+> > some reason the user-space performance is too poor. 
+> >
 > 
-> Something like:
+> Could you elaborate a bit about this? What was bad, latency? If so, what is your 
+> target arch/platform, and which typical latency do you require?
 > 
-> Index: ksrc/nucleus/sched.c
-> ===================================================================
-> --- ksrc/nucleus/sched.c        (revision 4678)
-> +++ ksrc/nucleus/sched.c        (working copy)
-> @@ -75,7 +75,13 @@ static void xnsched_watchdog_handler(str
->                            thread, xnthread_name(thread));
->                 xnprintf("watchdog triggered -- killing runaway thread
-> '%s'\n",
->                          xnthread_name(thread));
-> -               xnpod_delete_thread(thread);
-> +#ifdef CONFIG_XENO_OPT_PERVASIVE
-> +               if (xnthread_user_task(thread)) {
-> +                       xnpod_suspend_thread(thread);
-> +                       xnshadow_send_sig(thread, SIGSEGV, 0, 1);
-> +               } else
-> +#endif /* CONFIG_XENO_OPT_PERVASIVE */
-> +                       xnpod_delete_thread(thread);
->                 xnsched_reset_watchdog(sched);
->         }
->  }
 
-Looks good - but we first have to establish that famous relax-on-pending
-signal thing...
+Interrupt latency is an issue. But we are still in the development phase
+and I don't have detailed figures available. I'll post them when I get
+them!
 
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Thanks for yr help,
+Andreas
 
