@@ -1,68 +1,75 @@
-Message-ID: <499B3C4E.1060806@domain.hid>
-Date: Tue, 17 Feb 2009 23:38:06 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <49B6684F.5050204@domain.hid>
+Date: Tue, 10 Mar 2009 14:17:03 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <499B36C5.3060104@domain.hid>
-In-Reply-To: <499B36C5.3060104@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-2
+References: <49B3A126.6000602@domain.hid>
+	<49B53AC3.10707@domain.hid>	<49B54780.6040504@domain.hid>
+	<49B54D2C.5080001@domain.hid>	<49B55175.2070205@domain.hid>
+	<49B55407.9000700@domain.hid> <49B558DF.7050109@domain.hid>
+	<49B64A7F.4030809@domain.hid>
+In-Reply-To: <49B64A7F.4030809@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] BUG fs/buffer.c with Linux 2.6.26,27
-Reply-To: rpm@xenomai.org
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Watchdog / immediate Linux signal delivery
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Roman Pisl <rpisl@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Roman Pisl wrote:
-> Hello,
-> I'm porting our application to Xenomai and I found a bug with Linux
-> 2.6.26 and 2.6.27 (and also .19) and Xenomai 2.4.6.1. This happens when
-> the application is running and there is hard disk activity. It happens
-> also when latency test is running for a while. Linux 2.6.16 with Xenomai
-> 2.4.6.1 works without problem. So this is solution for now.
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Philippe Gerum wrote:
+>>> Jan Kiszka wrote:
+>>>> Philippe Gerum wrote:
+>>>>> Jan Kiszka wrote:
+>>>>>> Meanwhile I played with some light-weight approach to relax a thread
+>>>>>> that received a signal (according to do_sigwake_event). Worked, but only
+>>>>>> once due to a limitation (if not bug) of I-pipe x86: in __ipipe_run_isr,
+>>>>>> it does not handle the case that a non-root handler may alter the
+>>>>>> current domain, causing corruptions to the IPIPE_SYNC_FLAG states of the
+>>>>>> involved domains.
+>>>>> It is not a bug, this is wanted. ISR must neither change the current
+>>>>> domain nor migrate CPU; allowing this would open Pandora's box.
+>>>> And if there is no way to migrate from within an ISR, we can bury any
+>>>> attempt to deliver signals to spinning Xenomai threads - or what other
+>>>> context would remain to Xenomai for triggering migration?
+>>>>
+>>> The two-phase solution I have mentioned would work.
+>> Something like:
+>>
+>> Index: ksrc/nucleus/sched.c
+>> ===================================================================
+>> --- ksrc/nucleus/sched.c        (revision 4678)
+>> +++ ksrc/nucleus/sched.c        (working copy)
+>> @@ -75,7 +75,13 @@ static void xnsched_watchdog_handler(str
+>>                            thread, xnthread_name(thread));
+>>                 xnprintf("watchdog triggered -- killing runaway thread
+>> '%s'\n",
+>>                          xnthread_name(thread));
+>> -               xnpod_delete_thread(thread);
+>> +#ifdef CONFIG_XENO_OPT_PERVASIVE
+>> +               if (xnthread_user_task(thread)) {
+>> +                       xnpod_suspend_thread(thread);
+>> +                       xnshadow_send_sig(thread, SIGSEGV, 0, 1);
+>> +               } else
+>> +#endif /* CONFIG_XENO_OPT_PERVASIVE */
+>> +                       xnpod_delete_thread(thread);
+>>                 xnsched_reset_watchdog(sched);
+>>         }
+>>  }
 > 
-> Tested on x86 - thinkpad laptop and pentium 4 desktop.
-> 
-> I'm not a kernel hacker but surely try to help with fixing. I'd like to
-> see this fixed.
->
+> Looks good - but we first have to establish that famous relax-on-pending
+> signal thing...
 
-2.4.7 is on hold precisely because we were trying to reproduce this random bug
-for which we had previous reports, and which is likely x86 specific; so you can
-bet we want this fixed asap as well.
-
-Thanks for this detailed report; I think we should be able to make good use of it.
-
-Two questions more:
-
-- Could you send your kernel .config file?
-
-- Could you tell us how long it takes on your setup to get this BUG_ON() trigger
-with the latency test running (on the average)?
-
-TIA,
-
-> Thank you.
-> 
-> Roman Pisl
-> 
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
+Yes, obviously, it does not work, in other words...
 
 -- 
-Philippe.
+                                                 Gilles.
 
