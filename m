@@ -1,10 +1,16 @@
-Message-ID: <49B62D9A.9030406@domain.hid>
-Date: Tue, 10 Mar 2009 10:06:34 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <49B630E6.90707@domain.hid>
+Date: Tue, 10 Mar 2009 10:20:38 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+References: <49B3A126.6000602@domain.hid>
+	<49B53AC3.10707@domain.hid>	<49B54780.6040504@domain.hid>
+	<49B54D2C.5080001@domain.hid>	<49B54E09.70809@domain.hid>
+	<49B553E1.1020704@domain.hid> <49B5AB25.9080308@domain.hid>
+In-Reply-To: <49B5AB25.9080308@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH] Suppress switch warnings while debugging
+Subject: Re: [Xenomai-core] Watchdog / immediate Linux signal delivery
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,31 +20,201 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Don't raise SIGXCPU while the process is being debugged. These mode
-changes are expected, and reporting them doesn't provide any helpful
-information to the application. Rather, it may raise error storms on the
-application side.
+Jan Kiszka wrote:
+> Philippe Gerum wrote:
+>> Jan Kiszka wrote:
+>>> Philippe Gerum wrote:
+>>>> Jan Kiszka wrote:
+>>>>> Philippe Gerum wrote:
+>>>>>> Jan Kiszka wrote:
+>>>>>>> Hi,
+>>>>>>>
+>>>>>>> the watchdog is currently broken in trunk ("zombie [...] would not
+>>>>>>> die..."). In fact, it should also be broken in older versions, but only
+>>>>>>> recent thread termination rework made this visible.
+>>>>>>>
+>>>>>>> When a Xenomai CPU hog is caught by the watchdog,
+>>>>>>> xnpod_delete_thread is
+>>>>>>> invoked, causing the current thread to be set in zombie state and
+>>>>>>> scheduled out. But as its Linux mate still exist, hell breaks loose
+>>>>>>> once
+>>>>>>> Linux tries to get rid of it (the Xenomai zombie is scheduled in
+>>>>>>> again).
+>>>>>>> In short: calling xnpod_delete_thread(<self>) for a shadow thread is
+>>>>>>> not
+>>>>>>> working, probably never worked cleanly.
+>>>>>> Nak, it is a regression introduced by the scheduler changes in 2.5.x.
+>>>>>> We should detect _any_ shadow thread that schedules out in primary
+>>>>>> mode then regains control in secondary mode like we do in the 2.4.x
+>>>>>> series, not only _relaxing_ shadow threads. It is perfectly valid to
+>>>>>> have the Linux task orphaned from the deletion of its shadow TCB
+>>>>>> until Xenomai notices the issue and reaps it; problem was that such
+>>>>>> regression prevented the nucleus to get the memo.
+>>>>>>
+>>>>>> The following patch should fix the issue:
+>>>>>>
+>>>>>>   Index: include/asm-generic/system.h
+>>>>>> ===================================================================
+>>>>>> --- include/asm-generic/system.h    (revision 4676)
+>>>>>> +++ include/asm-generic/system.h    (working copy)
+>>>>>> @@ -311,6 +311,11 @@
+>>>>>>       return !!s;
+>>>>>>   }
+>>>>>>
+>>>>>> +static inline int xnarch_root_domain_p(void)
+>>>>>> +{
+>>>>>> +    return rthal_current_domain == rthal_root_domain;
+>>>>>> +}
+>>>>>> +
+>>>>>>   #ifdef CONFIG_SMP
+>>>>>>
+>>>>>>   #define xnlock_get(lock)        __xnlock_get(lock  XNLOCK_DBG_CONTEXT)
+>>>>>> Index: ksrc/nucleus/pod.c
+>>>>>> ===================================================================
+>>>>>> --- ksrc/nucleus/pod.c    (revision 4676)
+>>>>>> +++ ksrc/nucleus/pod.c    (working copy)
+>>>>>> @@ -2137,7 +2137,7 @@
+>>>>>>   void __xnpod_schedule(struct xnsched *sched)
+>>>>>>   {
+>>>>>>       struct xnthread *prev, *next, *curr = sched->curr;
+>>>>>> -    int zombie, switched = 0, need_resched, relaxing;
+>>>>>> +    int zombie, switched = 0, need_resched, shadow;
+>>>>>>       spl_t s;
+>>>>>>
+>>>>>>       if (xnarch_escalate())
+>>>>>> @@ -2174,9 +2174,9 @@
+>>>>>>              next, xnthread_name(next));
+>>>>>>
+>>>>>>   #ifdef CONFIG_XENO_OPT_PERVASIVE
+>>>>>> -    relaxing = xnthread_test_state(prev, XNRELAX);
+>>>>>> +    shadow = xnthread_test_state(prev, XNSHADOW);
+>>>>>>   #else
+>>>>>> -    (void)relaxing;
+>>>>>> +    (void)shadow;
+>>>>>>   #endif /* CONFIG_XENO_OPT_PERVASIVE */
+>>>>>>
+>>>>>>       if (xnthread_test_state(next, XNROOT)) {
+>>>>>> @@ -2204,12 +2204,18 @@
+>>>>>>
+>>>>>>   #ifdef CONFIG_XENO_OPT_PERVASIVE
+>>>>>>       /*
+>>>>>> -     * Test whether we are relaxing a thread. In such a case, we
+>>>>>> -     * are here the epilogue of Linux' schedule, and should skip
+>>>>>> -     * xnpod_schedule epilogue.
+>>>>>> +     * Test whether we transitioned from primary mode to secondary
+>>>>>> +     * over a shadow thread. This may happen in two cases:
+>>>>>> +     *
+>>>>>> +     * 1) the shadow thread just relaxed.
+>>>>>> +     * 2) the shadow TCB has just been deleted, in which case
+>>>>>> +     * we have to reap the mated Linux side as well.
+>>>>>> +     *
+>>>>>> +     * In both cases, we are running over the epilogue of Linux's
+>>>>>> +     * schedule, and should skip our epilogue code.
+>>>>>>        */
+>>>>>> -    if (relaxing)
+>>>>>> -        goto relax_epilogue;
+>>>>>> +    if (shadow && xnarch_root_domain_p())
+>>>>>> +        goto shadow_epilogue;
+>>>>>>   #endif /* CONFIG_XENO_OPT_PERVASIVE */
+>>>>>>
+>>>>>>       switched = 1;
+>>>>>> @@ -2252,7 +2258,7 @@
+>>>>>>       return;
+>>>>>>
+>>>>>>   #ifdef CONFIG_XENO_OPT_PERVASIVE
+>>>>>> -      relax_epilogue:
+>>>>>> +      shadow_epilogue:
+>>>>>>       {
+>>>>>>           spl_t ignored;
+>>>>> Finally makes sense and works (but your posting was corrupted). Great.
+>>>>>
+>>>>>>> There are basically two approaches to fix it: The first one is to
+>>>>>>> find a
+>>>>>>> different way to kill (or only suspend?)
+>>>>>> Suspending the hog won't work, particularly when GDB is involved,
+>>>>>> because a pending non-lethal Linux signal may cause the suspended
+>>>>>> shadow to resume immediately for processing the signal, therefore
+>>>>>> defeating the purpose of the watchdog, leading to an infinite loop.
+>>>>>> This is why we moved from suspension to deletion upon watchdog
+>>>>>> trigger in 2.3 (2.2 used to suspend only).
+>>>>> Yes, that became clear to me in the meantime, too.
+>>>>>
+>>>>>>   the current shadow thread when
+>>>>>>> the watchdog strikes. The second one brought me to another issue: Raise
+>>>>>>> SIGKILL for the current thread and make sure that it can be
+>>>>>>> processed by
+>>>>>>> Linux (e.g. via xnpod_suspend_thread(<cpu-hog>). Unfortunately,
+>>>>>>> there is
+>>>>>>> no way to force a shadow thread into secondary mode to handle pending
+>>>>>>> Linux signals unless that thread issues a syscall once in a while. And
+>>>>>>> that raises the question if we shouldn't improve this as well while we
+>>>>>>> are on it.
+>>>>>>>
+>>>>>>> Granted, non-broken Xenomai user space threads always issue frequent
+>>>>>>> syscalls, otherwise the system would starve (and the watchdog would
+>>>>>>> come
+>>>>>>> around). On the other hand, delaying signals till syscall prologues is
+>>>>>>> different from plain Linux behaviour...
+>>>>>>>
+>>>>>>> Comments, ideas?
+>>>>>>>
+>>>>>> We probably need a two-stage approach: first record the thread was
+>>>>>> bumped out and suspend it from the watchdog handler to give Linux a
+>>>>>> chance to run again, then finish the work, killing it for good, next
+>>>>>> time the root thread is scheduled in on the same CPU.
+>>>>> That confuses me again: The watchdog issue is solved now, no? We are
+>>>>> only left with the scenario of breaking out of a user space loop of some
+>>>>> Xenomai thread via a Linux signal (which implies SMP - otherwise there
+>>>>> is no chance to raise the signal...).
+>>>>>
+>>>> If you first suspend the hog, then send it a lethal signal, you solve
+>>>> both issues: first Linux is allowed to run eventually, then your task
+>>>> won't be able to resume running the faulty code, but solely to process
+>>>> SIGKILL, which can be made pending early enough because the nucleus
+>>>> decides when Linux resumes.
+>>> I'm not interested in SIGKILL here, rather in SIGSTOP to do debugging.
+>>> That is currently impossible.
+>>>
+>>>>> Meanwhile I played with some light-weight approach to relax a thread
+>>>>> that received a signal (according to do_sigwake_event). Worked, but only
+>>>>> once due to a limitation (if not bug) of I-pipe x86: in __ipipe_run_isr,
+>>>>> it does not handle the case that a non-root handler may alter the
+>>>>> current domain, causing corruptions to the IPIPE_SYNC_FLAG states of the
+>>>>> involved domains.
+>>>> It is not a bug, this is wanted. ISR must neither change the current
+>>>> domain nor migrate CPU; allowing this would open Pandora's box.
+>>> OK, then please elaborate on this a bit more in the adeos-main thread
+>>> and explain why __ipipe_sync_stage currently reloads the domain.
+>>>
+>> ipipe_cpudom_ptr() may be affected by CPU migration within the _root_ domain, 
+>> which does not mean that non-root domains are allowed to migrate and/or change 
+>> domains.
+> 
+> ipd or ipipe_current_domain should not be affected by CPU migration, so
+> I still see no point in re-reading the current domain unless it actually
+> changes.
+>
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
+Please re-read:
+>> which does not mean that non-root domains are allowed to migrate and/or change 
+>> domains.
 
- ksrc/nucleus/shadow.c |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+That also means that the root domain may migrate CPU and/or domain, not the 
+others. I'm not opposed to reconsider domain migration for NON-root domains, but 
+this has implications. Not all pipeline code is able to handle such situation, 
+particularly not all ipipe_sync_pipeline call sites. Each and every call site 
+should be inspected for making sure that important assumptions are not broken.
+The fact that __ipipe_run_isr() does not consider such migration possible when 
+non-root domains are involved is telling. Again, this was done on purpose. Sorry 
+for the bad news.
 
-diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
-index bcf3b8b..91cf499 100644
---- a/ksrc/nucleus/shadow.c
-+++ b/ksrc/nucleus/shadow.c
-@@ -1082,7 +1082,8 @@ void xnshadow_relax(int notify)
- 
- 	xnstat_counter_inc(&thread->stat.ssw);	/* Account for secondary mode switch. */
- 
--	if (notify && xnthread_test_state(thread, XNTRAPSW))
-+	if (notify && xnthread_test_state(thread, XNTRAPSW) &&
-+	    !xnthread_test_state(thread, XNDEBUG))
- 		/* Help debugging spurious relaxes. */
- 		send_sig(SIGXCPU, current, 1);
- 
+> Jan
+> 
+
+
+-- 
+Philippe.
 
