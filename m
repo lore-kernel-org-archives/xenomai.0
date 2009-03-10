@@ -1,13 +1,12 @@
-Message-ID: <49B63AB3.7000801@domain.hid>
-Date: Tue, 10 Mar 2009 11:02:27 +0100
+Message-ID: <49B641A2.40503@domain.hid>
+Date: Tue, 10 Mar 2009 11:32:02 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <49B62D9A.9030406@domain.hid> <49B63332.6050209@domain.hid>
-	<49B635D1.4030408@domain.hid> <49B63965.8090604@domain.hid>
-In-Reply-To: <49B63965.8090604@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <49B62D9A.9030406@domain.hid>
+In-Reply-To: <49B62D9A.9030406@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] Suppress switch warnings while debugging
+Subject: [Xenomai-core] [PATCH v2] Suppress switch warnings while debugging
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,61 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> Jan Kiszka wrote:
->>>> Don't raise SIGXCPU while the process is being debugged. These mode
->>>> changes are expected, and reporting them doesn't provide any helpful
->>>> information to the application. Rather, it may raise error storms on
->>>> the
->>>> application side.
->>>>
->>>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->>>> ---
->>>>
->>>>  ksrc/nucleus/shadow.c |    3 ++-
->>>>  1 files changed, 2 insertions(+), 1 deletions(-)
->>>>
->>>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
->>>> index bcf3b8b..91cf499 100644
->>>> --- a/ksrc/nucleus/shadow.c
->>>> +++ b/ksrc/nucleus/shadow.c
->>>> @@ -1082,7 +1082,8 @@ void xnshadow_relax(int notify)
->>>>  
->>>>      xnstat_counter_inc(&thread->stat.ssw);    /* Account for
->>>> secondary mode switch. */
->>>>  
->>>> -    if (notify && xnthread_test_state(thread, XNTRAPSW))
->>>> +    if (notify && xnthread_test_state(thread, XNTRAPSW) &&
->>>> +        !xnthread_test_state(thread, XNDEBUG))
->>>>          /* Help debugging spurious relaxes. */
->>>>          send_sig(SIGXCPU, current, 1);
->>>>
->>> I would rather identify the source of the switch and clear the notify
->>> flag appropriately from the relax call site.
->>
->> Sorry, don't get this: What flag do you want to clear? XNTRAPSW?
->>
-> 
-> The "notify" parameter should set by the call site to tell
-> xnshadow_relax() whether we want the SIGXCPU signal to be sent or not. I
-> would rather identify which call site introduces the issue, and fix the
-> notify parameter accordingly. Did you track the issue down to
-> request_syscall_restart() for instance? In which case, we should rather
-> test XNDEBUG there, and set the notify flag passed to xnshadow_relax()
-> appropriately.
+Don't raise SIGXCPU while the process is being debugged. These mode
+changes are expected, and reporting them doesn't provide any helpful
+information to the application. Rather, it may raise error storms on the
+application side.
 
-OK, now I understand. I didn't track this down yet, but it must be
-request_syscall_restart, because that should be the only site that
-relaxes due to pending signals. Will update the patch.
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
 
-Jan
+ ksrc/nucleus/shadow.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
+index bcf3b8b..12b4073 100644
+--- a/ksrc/nucleus/shadow.c
++++ b/ksrc/nucleus/shadow.c
+@@ -667,7 +667,7 @@ static inline void request_syscall_restart(xnthread_t *thread,
+ 			__xn_error_return(regs,
+ 					  (sysflags & __xn_exec_norestart) ?
+ 					  -ERESTARTNOHAND : -ERESTARTSYS);
+-			notify = 1;
++			notify = !xnthread_test_state(thread, XNDEBUG);
+ 		}
+ 
+ 		xnthread_clear_info(thread, XNKICKED);
 
