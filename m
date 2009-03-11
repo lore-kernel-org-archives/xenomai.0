@@ -1,7 +1,10 @@
-Message-ID: <49B7EF28.4080203@domain.hid>
-Date: Wed, 11 Mar 2009 18:04:40 +0100
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
+Message-Id: <C0049A04-822D-497A-BBA0-E5C8F6E8A947@domain.hid>
+From: Steven Seeger <steven.seeger@domain.hid>
+In-Reply-To: <49B7EF28.4080203@domain.hid>
+Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Apple Message framework v930.3)
+Date: Wed, 11 Mar 2009 13:07:37 -0400
 References: <67b6b3430903091727o4a60a28ay91c7ba35ad7d08ef@domain.hid>	
 	<49B634F1.2040101@domain.hid>	
 	<D8EB3A02-F76F-442A-8B0D-7F26D4E16D16@domain.hid>	
@@ -13,11 +16,8 @@ References: <67b6b3430903091727o4a60a28ay91c7ba35ad7d08ef@domain.hid>
 	<67b6b3430903101552u37244233s587898c4d0f9ef3d@domain.hid>	
 	<49B78113.3030308@domain.hid>
 	<67b6b3430903110951m71679f89ud83859654f04aabb@domain.hid>
-In-Reply-To: <67b6b3430903110951m71679f89ud83859654f04aabb@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+	<49B7EF28.4080203@domain.hid>
 Subject: Re: [Xenomai-help] rt_queue_write return 1, with no receiver
-Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -27,118 +27,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Mark Saiia <mark.saiia@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai-help <xenomai@xenomai.org>
 
-Mark Saiia wrote:
-> I still get no output when the crash occurs, even over a serial link.
-> I also do not see any output when running the app over telnet.  Right
-> now the app is not running in graphics mode, so I should see output
-> even when I was running it locally.
->
+> Not if the kernel is terminally broken due to this bug. Wild guess:  
+> I would
+> suggest to check how message queue buffers are used by your  
+> application,
+> particularly to detect out-of-bound writes.
 
-Not if the kernel is terminally broken due to this bug. Wild guess: I would 
-suggest to check how message queue buffers are used by your application, 
-particularly to detect out-of-bound writes.
-  .
-> 
-> Mark
-> 
-> 
-> On Wed, Mar 11, 2009 at 2:14 AM, Philippe Gerum <rpm@xenomai.org> wrote:
->> Mark Saiia wrote:
->>> I am unable to examine the kernel log.  When I say hard crash I mean
->>> that everything locks up, including the OS.
->> When the system detects a corruption, it first dumps a report to the console
->> then halts the CPU. So what you need to do is a way to get the console
->> output over a serial link, or maybe over a netconsole.
->>
->>  Therefore, I cannot do a
->>> logread.  I modified syslogd to output to file. Klogd is outputting to
->>> syslog (the version being using does not have the option to output
->>> directly to file).  When I examine the log on disk after reboot, there
->>> is nothing relevant in there.
->> The report can't be synced to disk, so you can't find it after next boot
->> anyway.
->>
->>  The last log message is prior to the
->>> crash.
->>>
->>> On Tue, Mar 10, 2009 at 3:24 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->>>> Mark Saiia wrote:
->>>>> With the debugging options enabled, at the point when the application
->>>>> has previously shifted from 1 waiter to 2 waiters, the system
->>>>> hardlocks, just as when I was catting the queue proc entry.
->>>>>
->>>> That is expected, but what does the kernel log say at that point?
->>>>
->>>>> On 3/10/09, Philippe Gerum <rpm@xenomai.org> wrote:
->>>>>> Mark Saiia wrote:
->>>>>>> When our app's log shows the number of waiters is 1(via
->>>>>>> rt_queue_inquire), catting the proc entry shows the queue info, and a
->>>>>>> + on the next line.  However, when the log shows the number of waiters
->>>>>>> is 2, catting the proc entry crashes the system hard, which
->>>>>>> necessitates a reboot.  This behavior is completely reproducible.
->>>>>>>
->>>>>> This is an evidence that some internal data structures are terminally
->>>>>> broken.
->>>>>> You may want to enable CONFIG_XENO_OPT_DEBUG,
->>>>>> CONFIG_XENO_OPT_DEBUG_NUCLEUS
->>>>>> and
->>>>>> CONFIG_XENO_OPT_DEBUG_QUEUES in your kernel config. The nucleus will
->>>>>> pull
->>>>>> the
->>>>>> break when a corruption is detected at runtime.
->>>>>>
->>>>>>> Mark
->>>>>>>
->>>>>>>
->>>>>>> On 3/10/09, Philippe Gerum <rpm@xenomai.org> wrote:
->>>>>>>> Steven Seeger wrote:
->>>>>>>>>> Yes, the docs are correct, and the code looks sane as well. You may
->>>>>>>>>> want to
->>>>>>>>>> double-check your findings using rt_queue_inquire() before calling
->>>>>>>>>> rt_queue_write(), even if this won't be 100% reliable in case your
->>>>>>>>>> reader is
->>>>>>>>>> polling the queue.
->>>>>>>>> Philippe,
->>>>>>>>>
->>>>>>>>> We took your advice and tried rt_queue_inquire(). If we use a
->>>>>>>>> timeout
->>>>>>>>> on
->>>>>>>>> the read, It seems there are always 3 waiters, which is strange
->>>>>>>>> because
->>>>>>>>> we have only one thread reading from the queue. If we remove the
->>>>>>>>> timout,
->>>>>>>>> there is either 1 or 2 waiters. It got 0 waiters once and still
->>>>>>>>> hung.
->>>>>>>>> Very strange.
->>>>>>>>>
->>>>>>>> /proc/xenomai/registry/native/queues/* will tell you which threads
->>>>>>>> are
->>>>>>>> pending
->>>>>>>> on the queue.
->>>>>>>>
->>>>>>>>> Thanks,
->>>>>>>>> Steven
->>>>>>>>>
->>>>>>>>>
->>>>>>>> --
->>>>>>>> Philippe.
->>>>>>>>
->>>>>> --
->>>>>> Philippe.
->>>>>>
->>>> --
->>>> Philippe.
->>>>
->>
->> --
->> Philippe.
->>
-> 
+This particular queue is always writing a structure of a constant  
+size. So our reads and writes are always constant size. If reading  
+does not return a size that we expect then we assert.
 
+Steven
 
--- 
-Philippe.
 
