@@ -1,9 +1,9 @@
-Message-ID: <49BFEEE4.6020204@domain.hid>
-Date: Tue, 17 Mar 2009 19:41:40 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <49BFF0C7.7010001@domain.hid>
+Date: Tue, 17 Mar 2009 19:49:43 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <49BFED6E.4090009@domain.hid>
-In-Reply-To: <49BFED6E.4090009@domain.hid>
+References: <49BFED6E.4090009@domain.hid> <49BFEEE4.6020204@domain.hid>
+In-Reply-To: <49BFEEE4.6020204@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [PATCH] posix: Fix error checks when copying
@@ -17,17 +17,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Obviously a conversion error while switching to __xn_safe*.
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Obviously a conversion error while switching to __xn_safe*.
+>>
+>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 > 
-> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+> Well, I have just checked the kernel code, and 0 as a return value of
+> strncpy_from_user is treated as a value in most places, even if not -EFAULT.
+> 
 
-Well, I have just checked the kernel code, and 0 as a return value of
-strncpy_from_user is treated as a value in most places, even if not -EFAULT.
+Better check our code: :) __xn_safe_strncpy_from_user works differently.
+
+Jan
 
 -- 
-                                                 Gilles.
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
