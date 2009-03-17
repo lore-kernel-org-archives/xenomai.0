@@ -1,11 +1,10 @@
-Message-ID: <004801c9a69a$4a63aaf0$0109220a@domain.hid>
-From: "Henry Bausley" <hbausley@domain.hid>
-References: <004301c9a683$c6b00200$0109220a@domain.hid>
-Date: Mon, 16 Mar 2009 17:49:55 -0700
-MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_0045_01C9A65F.9E0261F0"
-Subject: Re: [Xenomai-help] ENXIO error with large shared memory
+Message-Id: <E0083B93-4ADC-4AA1-9FA2-67E6481AFEA5@domain.hid>
+From: Alphan Ulusoy <alphan@domain.hid>
+Content-Type: multipart/signed; boundary=Apple-Mail-3--878096191; micalg=sha1;
+	protocol="application/pkcs7-signature"
+Mime-Version: 1.0 (Apple Message framework v930.3)
+Date: Tue, 17 Mar 2009 09:23:45 +0200
+Subject: [Xenomai-help] Disabling/Limiting Kernel panic messages
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,154 +14,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
 
-------=_NextPart_000_0045_01C9A65F.9E0261F0
+--Apple-Mail-3--878096191
 Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	charset=US-ASCII;
+	format=flowed;
+	delsp=yes
+Content-Transfer-Encoding: 7bit
 
-ftruncate returns 0
-  ----- Original Message -----=20
-  From: Henry Bausley=20
-  To: xenomai@xenomai.org
-  Sent: Monday, March 16, 2009 3:08 PM
-  Subject: [Xenomai-help] ENXIO error with large shared memory
+Hi!
 
-
-  I am trying to map a large shared memory buffer and cannot seem to map 32=
-M.
-  I get the error code ENXIO back from the posix skin mmap.
-
-  The code works for
-    ftruncate(prgshmfd, 16777216);
-    pPrgShm =3D mmap(NULL, 16777216, PROT_READ | PROT_WRITE, MAP_SHARED, pr=
-gshmfd, 0);
-  but fails if I have
-    ftruncate(prgshmfd, 16777216*2);
-    pPrgShm =3D mmap(NULL, 16777216*2, PROT_READ | PROT_WRITE, MAP_SHARED, =
-prgshmfd, 0);
+Is there a way to disable or limit the messages printed on the screen  
+in case of kernel panic? I'm working with an old monitor and the  
+messages scroll off the screen and I'm left with irrelevant info. I  
+would prefer to use my prink()'s.
 
 
-  The condition failing is mmap in xenomai/skins/posix/shm.c.=20
+P.S. I've already posted this question to several forums and did not  
+receive any replies. Hopefully someone can help me.
 
-   if (!shm->addr || off + len > shm->size)=20
-          {
-     err =3D ENXIO;
-     up(&shm->maplock);
-     goto err_free_map;
-   }
+-- 
+alphan
 
 
-  For  16M
-  len =3D 0x1000000 and shm->size =3D 0x1000000
-
-  For 32M
-  len =3D 0x2000000 and shm->size =3D 0x1FFF000
-
-  Is there something I didn't configure correctly that is limiting my size?
 
 
-  I am currently using 2.4.6 Xenomai, I-pipe 2.2-07 with kernel 2.6.26-denx=
- on a 1Ghz PowerPC 460EX with 2G RAM
 
+--Apple-Mail-3--878096191
+Content-Disposition: attachment;
+	filename=smime.p7s
+Content-Type: application/pkcs7-signature;
+	name=smime.p7s
+Content-Transfer-Encoding: base64
 
----------------------------------------------------------------------------=
----
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIGMzCCAuww
+ggJVoAMCAQICEFlbEbpcrtRwEgeTD6b7/UYwDQYJKoZIhvcNAQEFBQAwYjELMAkGA1UEBhMCWkEx
+JTAjBgNVBAoTHFRoYXd0ZSBDb25zdWx0aW5nIChQdHkpIEx0ZC4xLDAqBgNVBAMTI1RoYXd0ZSBQ
+ZXJzb25hbCBGcmVlbWFpbCBJc3N1aW5nIENBMB4XDTA4MDkxMDE4MjkxMFoXDTA5MDkxMDE4Mjkx
+MFowSzEfMB0GA1UEAxMWVGhhd3RlIEZyZWVtYWlsIE1lbWJlcjEoMCYGCSqGSIb3DQEJARYZYWxw
+aGFuQHN1LnNhYmFuY2l1bml2LmVkdTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKju
+oEccePvK+1FqYYzkT3ZagQMkK86SRcJIznx9wqt7mIE6oYI/SjcjURCvuaoU4l0zG3dhC5Jlgg1A
+u5xtAQCxd/mrvyRm6fM+AMs+qvyZjVBLqAnHT/HxHTV3Ju5BE4U2G6Dj+x18WuRy/YSj4fihhdAI
+AcsPuJri8Dfvusecef7Xam6gcl0kkRexmEDiiMSb3SEziOdjQqAZEArTRMYZYGFANsMJvXzNN76I
+qyAkaAcr8IuUoXt0RYwwn2DhUcBTrg1SfIqYdTrWi7TmCVpudfND6hHlz8+RogQi7ohbMbwKFwKa
+3gXhcRnc1dABGNnyXDJR1nCWKMHq1KE72DUCAwEAAaM2MDQwJAYDVR0RBB0wG4EZYWxwaGFuQHN1
+LnNhYmFuY2l1bml2LmVkdTAMBgNVHRMBAf8EAjAAMA0GCSqGSIb3DQEBBQUAA4GBACe45E4PvEZO
+ZjwogK3R7lVPLQ4bfNF1hpUDfK0Kgba6jbDlIRSmx0Cz3xgMdC2SGpf3aCu+7PJQa4u0NA2QAlEs
+AMI9QFNtu0HhyXKtdR3a7sHRCR4XiczLQUHS4S9LRKueHGvWaVx6jQICMH9lJBlW62gnd2TgOcWP
+TGxJWK9YMIIDPzCCAqigAwIBAgIBDTANBgkqhkiG9w0BAQUFADCB0TELMAkGA1UEBhMCWkExFTAT
+BgNVBAgTDFdlc3Rlcm4gQ2FwZTESMBAGA1UEBxMJQ2FwZSBUb3duMRowGAYDVQQKExFUaGF3dGUg
+Q29uc3VsdGluZzEoMCYGA1UECxMfQ2VydGlmaWNhdGlvbiBTZXJ2aWNlcyBEaXZpc2lvbjEkMCIG
+A1UEAxMbVGhhd3RlIFBlcnNvbmFsIEZyZWVtYWlsIENBMSswKQYJKoZIhvcNAQkBFhxwZXJzb25h
+bC1mcmVlbWFpbEB0aGF3dGUuY29tMB4XDTAzMDcxNzAwMDAwMFoXDTEzMDcxNjIzNTk1OVowYjEL
+MAkGA1UEBhMCWkExJTAjBgNVBAoTHFRoYXd0ZSBDb25zdWx0aW5nIChQdHkpIEx0ZC4xLDAqBgNV
+BAMTI1RoYXd0ZSBQZXJzb25hbCBGcmVlbWFpbCBJc3N1aW5nIENBMIGfMA0GCSqGSIb3DQEBAQUA
+A4GNADCBiQKBgQDEpjxVc1X7TrnKmVoeaMB1BHCd3+n/ox7svc31W/Iadr1/DDph8r9RzgHU5VAK
+MNcCY1osiRVwjt3J8CuFWqo/cVbLrzwLB+fxH5E2JCoTzyvV84J3PQO+K/67GD4Hv0CAAmTXp6a7
+n2XRxSpUhQ9IBH+nttE8YQRAHmQZcmC3+wIDAQABo4GUMIGRMBIGA1UdEwEB/wQIMAYBAf8CAQAw
+QwYDVR0fBDwwOjA4oDagNIYyaHR0cDovL2NybC50aGF3dGUuY29tL1RoYXd0ZVBlcnNvbmFsRnJl
+ZW1haWxDQS5jcmwwCwYDVR0PBAQDAgEGMCkGA1UdEQQiMCCkHjAcMRowGAYDVQQDExFQcml2YXRl
+TGFiZWwyLTEzODANBgkqhkiG9w0BAQUFAAOBgQBIjNFQg+oLLswNo2asZw9/r6y+whehQ5aUnX9M
+Ibj4Nh+qLZ82L8D0HFAgk3A8/a3hYWLD2ToZfoSxmRsAxRoLgnSeJVCUYsfbJ3FXJY3dqZw5jowg
+T2Vfldr394fWxghOrvbqNOUQGls1TXfjViF4gtwhGTXeJLHTHUb/XV9lTzGCAxAwggMMAgEBMHYw
+YjELMAkGA1UEBhMCWkExJTAjBgNVBAoTHFRoYXd0ZSBDb25zdWx0aW5nIChQdHkpIEx0ZC4xLDAq
+BgNVBAMTI1RoYXd0ZSBQZXJzb25hbCBGcmVlbWFpbCBJc3N1aW5nIENBAhBZWxG6XK7UcBIHkw+m
++/1GMAkGBSsOAwIaBQCgggFvMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkF
+MQ8XDTA5MDMxNzA3MjM0NVowIwYJKoZIhvcNAQkEMRYEFNuQDb7WnjDuROk/eMQiIkZE8/QlMIGF
+BgkrBgEEAYI3EAQxeDB2MGIxCzAJBgNVBAYTAlpBMSUwIwYDVQQKExxUaGF3dGUgQ29uc3VsdGlu
+ZyAoUHR5KSBMdGQuMSwwKgYDVQQDEyNUaGF3dGUgUGVyc29uYWwgRnJlZW1haWwgSXNzdWluZyBD
+QQIQWVsRulyu1HASB5MPpvv9RjCBhwYLKoZIhvcNAQkQAgsxeKB2MGIxCzAJBgNVBAYTAlpBMSUw
+IwYDVQQKExxUaGF3dGUgQ29uc3VsdGluZyAoUHR5KSBMdGQuMSwwKgYDVQQDEyNUaGF3dGUgUGVy
+c29uYWwgRnJlZW1haWwgSXNzdWluZyBDQQIQWVsRulyu1HASB5MPpvv9RjANBgkqhkiG9w0BAQEF
+AASCAQCIL7E6UCXF1M0dKzHQHnp7xcDZmIC5zc1tVmXoadFVXk+RU0cSA9/RVpnWcSpThSjMBAuJ
+pkOVobTTrhFARuliSasfpPq6gDPWkI/gq83bdSunVPkxuUyIwZqJnFidQl7TrS7KPaNLLd/XsdqU
+pNQI9TCKV45JrMIEKGqk7eZYpN+4mGF16tPQd/X9oczCBPw0wRNGBs60irppDELj0e0ItIM80gsX
+jXlpXq6Q9oo2OZi6bf4ZtqTo+bU96bWFoSnhXdkbTvac7ncODaC157gdztN8Ve66UuzRm8CFH7Bh
+DRY4rh9/XIqtupic+nB+9hLittVuZait3gZSmFUZLCRgAAAAAAAA
 
-
-  _______________________________________________
-  Xenomai-help mailing list
-  Xenomai-help@domain.hid
-  https://mail.gna.org/listinfo/xenomai-help
-
-**********************************************************=0D
-Outbound scan for Spam or Virus by Barracuda at Delta Tau=0D
-**********************************************************
-
-------=_NextPart_000_0045_01C9A65F.9E0261F0
-Content-Type: text/html;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META http-equiv=3DContent-Type content=3D"text/html; charset=3Diso-8859-1">
-<META content=3D"MSHTML 6.00.6000.16809" name=3DGENERATOR>
-<STYLE></STYLE>
-</HEAD>
-<BODY bgColor=3D#ffffff>
-<DIV><FONT face=3DArial size=3D2>ftruncate returns 0</FONT></DIV>
-<BLOCKQUOTE=20
-style=3D"PADDING-RIGHT: 0px; PADDING-LEFT: 5px; MARGIN-LEFT: 5px; BORDER-LE=
-FT: #000000 2px solid; MARGIN-RIGHT: 0px">
-  <DIV style=3D"FONT: 10pt arial">----- Original Message ----- </DIV>
-  <DIV=20
-  style=3D"BACKGROUND: #e4e4e4; FONT: 10pt arial; font-color: black"><B>Fro=
-m:</B>=20
-  <A title=3Dhbausley@domain.hid href=3D"mailto:hbausley@domain.hid">He=
-nry=20
-  Bausley</A> </DIV>
-  <DIV style=3D"FONT: 10pt arial"><B>To:</B> <A title=3Dxenomai@xenomai.org=
-g=20
-  href=3D"mailto:xenomai@xenomai.org">xenomai@xenomai.org</A> </DIV>
-  <DIV style=3D"FONT: 10pt arial"><B>Sent:</B> Monday, March 16, 2009 3:08=
-=20
-PM</DIV>
-  <DIV style=3D"FONT: 10pt arial"><B>Subject:</B> [Xenomai-help] ENXIO erro=
-r with=20
-  large shared memory</DIV>
-  <DIV><BR></DIV>
-  <DIV><FONT face=3DArial size=3D2>I am trying to map a large shared memory=
- buffer=20
-  and cannot seem to map 32M.<BR>I get the error code ENXIO back from the p=
-osix=20
-  skin mmap.</FONT></DIV>
-  <DIV>&nbsp;</DIV>
-  <DIV><FONT face=3DArial size=3D2>The code works for<BR>&nbsp; ftruncate(p=
-rgshmfd,=20
-  16777216);<BR>&nbsp; pPrgShm =3D mmap(NULL, 16777216, PROT_READ | PROT_WR=
-ITE,=20
-  MAP_SHARED, prgshmfd, 0);<BR>but fails if I have<BR>&nbsp; ftruncate(prgs=
-hmfd,=20
-  16777216*2);<BR>&nbsp; pPrgShm =3D mmap(NULL, 16777216*2, PROT_READ |=20
-  PROT_WRITE, MAP_SHARED, prgshmfd, 0);</FONT></DIV>
-  <DIV>&nbsp;</DIV><FONT face=3DArial size=3D2>
-  <DIV><BR>The condition failing is mmap in xenomai/skins/posix/shm.c. </DI=
-V>
-  <DIV>&nbsp;</DIV>
-  <DIV>&nbsp;if (!shm-&gt;addr || off + len &gt; shm-&gt;size)=20
-  <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<BR>&nbsp;&nbsp; err =3D=
-=20
-  ENXIO;<BR>&nbsp;&nbsp; up(&amp;shm-&gt;maplock);<BR>&nbsp;&nbsp; goto=20
-  err_free_map;<BR>&nbsp;}</DIV>
-  <DIV>&nbsp;</DIV>
-  <DIV><BR>For&nbsp; 16M<BR>len =3D 0x1000000 and shm-&gt;size =3D 0x100000=
-0</DIV>
-  <DIV>&nbsp;</DIV>
-  <DIV>For 32M<BR>len =3D 0x2000000 and shm-&gt;size =3D 0x1FFF000</DIV>
-  <DIV>&nbsp;</DIV>
-  <DIV>Is there something I didn't configure correctly that is limiting my=
-=20
-  size?</DIV>
-  <DIV>&nbsp;</DIV>
-  <DIV>&nbsp;</DIV>
-  <DIV>I am currently using 2.4.6 Xenomai, I-pipe 2.2-07 with kernel 2.6.26=
--denx=20
-  on a 1Ghz PowerPC 460EX with 2G RAM</FONT></DIV>
-  <P>
-  <HR>
-
-  <P></P>_______________________________________________<BR>Xenomai-help ma=
-iling=20
-  list<BR>Xenomai-help@domain.hid<BR>https://mail.gna.org/listinfo/xenomai-hel=
-p<BR></BLOCKQUOTE>
-</BODY></HTML>
-
-------=_NextPart_000_0045_01C9A65F.9E0261F0--
-
-
+--Apple-Mail-3--878096191--
 
