@@ -1,6 +1,6 @@
-Message-ID: <49BF679B.9060102@domain.hid>
-Date: Tue, 17 Mar 2009 10:04:27 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <49BF7CC3.5080906@domain.hid>
+Date: Tue, 17 Mar 2009 11:34:43 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <E0083B93-4ADC-4AA1-9FA2-67E6481AFEA5@domain.hid>
 In-Reply-To: <E0083B93-4ADC-4AA1-9FA2-67E6481AFEA5@domain.hid>
@@ -22,22 +22,17 @@ Cc: xenomai@xenomai.org
 Alphan Ulusoy wrote:
 > Hi!
 > 
-> Is there a way to disable or limit the messages printed on the screen in
-> case of kernel panic? I'm working with an old monitor and the messages
-> scroll off the screen and I'm left with irrelevant info. I would prefer
-> to use my prink()'s.
+> Is there a way to disable or limit the messages printed on the screen  
+> in case of kernel panic? I'm working with an old monitor and the  
+> messages scroll off the screen and I'm left with irrelevant info. I  
+> would prefer to use my prink()'s.
 > 
 > 
-> P.S. I've already posted this question to several forums and did not
+> P.S. I've already posted this question to several forums and did not  
 > receive any replies. Hopefully someone can help me.
-> 
 
-Use a serial console or netconsole to push kernel messages from your
-target to a logging host. That way you can even debug headless boxes.
-
-Jan
+Well, you can modify the code to only print what you want...
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+                                                 Gilles.
 
