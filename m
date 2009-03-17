@@ -1,16 +1,11 @@
-Message-Id: <8016DB39-DE5B-4299-8323-25B0A58F1CE6@domain.hid>
-From: Steven Seeger <steven.seeger@domain.hid>
-In-Reply-To: <49B8FB5E.1050907@domain.hid>
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+Message-ID: <49BFED6E.4090009@domain.hid>
+Date: Tue, 17 Mar 2009 19:35:26 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Mime-Version: 1.0 (Apple Message framework v930.3)
-Date: Thu, 12 Mar 2009 08:15:37 -0400
-References: <E8013A51-96DB-4DF4-A083-C5BA81A3697B@comcast.net>	<49B8EE0A.3050708@domain.hid>
-	<E48B6941-3355-4C95-9645-6DF14B5103DA@comcast.net>
-	<49B8F602.9090808@domain.hid>
-	<8334A175-8F99-499D-9466-5F0B508FF5DD@comcast.net>
-	<49B8FB5E.1050907@domain.hid>
-Subject: Re: [Xenomai-core] rtdm timer questions
+Subject: [Xenomai-core] [PATCH] posix: Fix error checks when copying user
+	strings
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,18 +15,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-> Be careful with volatile variables: Unless they refer to hardware- 
-> backed
-> data (MMIO), you may just happen to write racy lock-less code - or the
-> volatile is useless anyway.
+Obviously a conversion error while switching to __xn_safe*.
 
-Yes that is true. In this case, however, writes are atomic (just 0 or  
-1) and even if something happens the "mode of failure" will be a  
-missed 125us cycle of sound output. I doubt anyone would hear just one.
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
 
-Steven
+ ksrc/skins/posix/syscall.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
 
+diff --git a/ksrc/skins/posix/syscall.c b/ksrc/skins/posix/syscall.c
+index 16303b3..0eca3d0 100644
+--- a/ksrc/skins/posix/syscall.c
++++ b/ksrc/skins/posix/syscall.c
+@@ -1663,7 +1663,7 @@ static int __mq_open(struct pt_regs *regs)
+ 	len = __xn_safe_strncpy_from_user(name,
+ 					  (const char __user *)__xn_reg_arg1(regs),
+ 					  sizeof(name));
+-	if (len <= 0)
++	if (len < 0)
+ 		return -EFAULT;
+ 
+ 	if (len >= sizeof(name))
+@@ -1736,7 +1736,7 @@ static int __mq_unlink(struct pt_regs *regs)
+ 	len = __xn_safe_strncpy_from_user(name,
+ 					  (const char __user *)__xn_reg_arg1(regs),
+ 					  sizeof(name));
+-	if (len <= 0)
++	if (len < 0)
+ 		return -EFAULT;
+ 
+ 	if (len >= sizeof(name))
+@@ -2440,7 +2440,7 @@ static int __shm_open(struct pt_regs *regs)
+ 	len = __xn_safe_strncpy_from_user(name,
+ 					  (const char __user *)__xn_reg_arg1(regs),
+ 					  sizeof(name));
+-	if (len <= 0)
++	if (len < 0)
+ 		return -EFAULT;
+ 
+ 	if (len >= sizeof(name))
+@@ -2487,7 +2487,7 @@ static int __shm_unlink(struct pt_regs *regs)
+ 	len = __xn_safe_strncpy_from_user(name,
+ 					  (const char __user *)__xn_reg_arg1(regs),
+ 					  sizeof(name));
+-	if (len <= 0)
++	if (len < 0)
+ 		return -EFAULT;
+ 
+ 	if (len >= sizeof(name))
 
