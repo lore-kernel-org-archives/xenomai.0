@@ -1,75 +1,31 @@
-Message-Id: <08A82EA4-797A-42C9-AE47-1A260D58E4DB@comcast.net>
-From: Steven Seeger <steven.seeger@domain.hid>
-In-Reply-To: <1237848861.13946.101.camel@domain.hid>
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
-Content-Transfer-Encoding: 7bit
-Mime-Version: 1.0 (Apple Message framework v930.3)
-Date: Mon, 23 Mar 2009 19:03:27 -0400
-References: <D0AF8C6A-CE07-4F45-A9E3-E82CB93F8500@domain.hid>
-	<1237848861.13946.101.camel@domain.hid>
-Subject: Re: [Xenomai-core] irq0 usage
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+From: "Charlton, John" <john.charlton@domain.hid>
+Date: Tue, 17 Mar 2009 11:38:56 -0400
+Message-ID: <CF7FB0793253794F9F45991443E5FE200513A0636F@us194mx002.tycoelectronics.net>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Subject: [Xenomai-help] Port rtai rt_request_srq to xenomai
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> What are you comparing, I mean, exactly?
-> All kernel RTAI vs all userland Xenomai?
+I am porting an rtai linux 2.4 kernel driver to xenomai-2.4.6.1 patched lin=
+ux 2.26.27.7 kernel.  I have done a fair amount of searching for the rtai f=
+unctions: rt_request_srq()/rt_free_srq() and have not found an equivalent i=
+n xenomai. Would appreciate advice on how this can be done in xenomai or if=
+ the equivalent of this is not available in xenomai. It looks like rthal_ap=
+c_alloc() may be what I am looking for.
 
-Yes.
+--John
 
->
->
-> The timer handler is charged for the callbacks it runs, so it really
-> boils down to what code is attached to Xenomai timers, aside of the
-> built-in scheduler tick.
 
-In this case we have only a single RTDM timer that fires ever 125 us  
-and does nothing (as a test.) It will be easy to remove this and  
-compare the amount of usage irq0 handler uses without it. I know it'll  
-be at least 14 or 15.
-
->
->
-> When you measure that load, what does /proc/xenomai/timerstat say?
->
->> I know
->> there is some overhead with userspace calls but hte irq0 handler  
->> alone
->> accounts for 20% of it. Are there any options that can speed things  
->> up?
->>
->
-> Yeah, but you won't like it: buy a Geode that has SEP support for
-> syscalls and a working TSC, then switch on --enable-x86-sep. Ok,
-> granted, that is _not_ funny.
-
-We have a new Geode that has SEP and yes, things are faster. Just how  
-much overhead does syscall create? Is there no better option other  
-than SEP? If we could have kernel threads work without corrupting  
-userland FPU contexts then we could use our two higher priority  
-drivers in a kernel module to save overhead.
-
-Is TSC really going to make that much of a difference? It seems that  
-xenomai uses PIT anyway. We can build with TSC if we disable suspend  
-on halt and it works. If we do this the usage stays the same. It may  
-drop a couple tenths of a percent.
-
-> What would be interesting is to get the value reported for the timer
-> interrupt when the standard latency test runs at the same frequency  
-> than
-> your application does (use -p option).
-
-So you mean look at cat /proc/stat/xenomai while running latency test - 
-p?
-
-Steven
 
 
