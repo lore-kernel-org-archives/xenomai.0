@@ -1,10 +1,10 @@
-Message-ID: <49BFF131.7070607@domain.hid>
-Date: Tue, 17 Mar 2009 19:51:29 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <49BFF332.9080809@domain.hid>
+Date: Tue, 17 Mar 2009 20:00:02 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <49BFED6E.4090009@domain.hid> <49BFEEE4.6020204@domain.hid>
-	<49BFF0C7.7010001@domain.hid>
-In-Reply-To: <49BFF0C7.7010001@domain.hid>
+	<49BFF0C7.7010001@domain.hid> <49BFF131.7070607@domain.hid>
+In-Reply-To: <49BFF131.7070607@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [PATCH] posix: Fix error checks when copying
@@ -18,23 +18,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Obviously a conversion error while switching to __xn_safe*.
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> Obviously a conversion error while switching to __xn_safe*.
+>>>>
+>>>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+>>> Well, I have just checked the kernel code, and 0 as a return value of
+>>> strncpy_from_user is treated as a value in most places, even if not -EFAULT.
 >>>
->>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->> Well, I have just checked the kernel code, and 0 as a return value of
->> strncpy_from_user is treated as a value in most places, even if not -EFAULT.
->>
+>> Better check our code: :) __xn_safe_strncpy_from_user works differently.
 > 
-> Better check our code: :) __xn_safe_strncpy_from_user works differently.
+> Then I would tend to consider that xn_safe_strncpy is broken.
 
-Then I would tend to consider that xn_safe_strncpy is broken.
+No, because it not a derivate of strncpy_from_user, but an internal
+service optimized for the most common use cases (where you don't care
+about the precise return value).
+
+Jan
 
 -- 
-                                                 Gilles.
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
