@@ -1,16 +1,12 @@
-MIME-version: 1.0
-Content-transfer-encoding: 7BIT
-Content-disposition: inline
-Content-type: text/plain; charset=iso-8859-1
-From: Peter =?iso-8859-1?q?W=E4chtler?= <pwaechtler@domain.hid>
-Date: Fri, 27 Mar 2009 16:41:09 +0100
-References: <200903271538.10434.pwaechtler@domain.hid>
-	<49CCE84E.7060708@domain.hid>
-In-reply-to: <49CCE84E.7060708@domain.hid>
-Message-id: <200903271641.09389.pwaechtler@domain.hid>
-Subject: Re: [Xenomai-core] use case: possible to boot Posix subsystem in
- <50ms and then Linux?
-Reply-To: pwaechtler@domain.hid
+From: Andreas Glatz <andreasglatz@domain.hid>
+In-Reply-To: <1237393895.5495.7.camel@domain.hid>
+References: <1237393895.5495.7.camel@domain.hid>
+Content-Type: multipart/mixed; boundary="=-TdEkkbrvsSY+Q4qej5E9"
+Date: Wed, 18 Mar 2009 13:04:55 -0400
+Message-Id: <1237395895.3441.6.camel@domain.hid>
+Mime-Version: 1.0
+Subject: Re: [Xenomai-core] Kernel crash in
+	xnheap_test_and_free	(native/heap.c)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,43 +16,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Am Friday 27 March 2009 15:53:02 schrieb Gilles Chanteperdrix:
->
-> Xenomai kernel-space support is started somewhere in the middle of the
-> boot process, so, you can probably start kernel-space applications at
-> that time. User-space only works when init has been started, which
-> happens a bit later during the boot process. But you can start Xenomai
-> applications before all the system services have been started.
->
 
-I think the fundamental question is: does Adeos provide a scheduler? 
+--=-TdEkkbrvsSY+Q4qej5E9
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-And I guess the answer is yes, at least "Life-with-Adeos" doc mentions
-primary and secondary execution modes/domains.
 
-In the use case it would be necessary that OSEK subsystem is able to schedule 
-between a static number of preconfigured threads WITHOUT the precondition 
-that Linux is up and running.
+The last source code I sent is outdated.
 
->
-> As a side note, I have a question for the automotive industry people.
-> Would there be an interest in developing an OSEK skin for Xenomai? I
-> have been thinking about that for some time, but still have not found
-> time to start the job. I have read the OSEK spec, and found the
-> interface pretty simple (though some part of the job has to be done
-> offline, and annoyingly need to read XML files). The OSEK com spec, on
-> the other hand, looks rather scary.
+The newest version with a sighandler for SIGINT is attached here.
 
-There are open source OSEK implementations. AFAIK, all far from completeness.
+Sorry for that,
 
-You can start with
-http://opensek.sourceforge.net/
+Andreas
 
-or have a look at the list at 
-http://en.wikipedia.org/wiki/OSEK
 
-	Peter
+
+--=-TdEkkbrvsSY+Q4qej5E9
+Content-Disposition: attachment; filename=rtpipetest.c
+Content-Type: text/x-csrc; name=rtpipetest.c; charset=UTF-8
+Content-Transfer-Encoding: base64
+
+I2luY2x1ZGUgPHJ0ZGsuaD4NCiNpbmNsdWRlIDxuYXRpdmUvcGlwZS5oPg0KI2luY2x1ZGUgPG5h
+dGl2ZS90YXNrLmg+DQojaW5jbHVkZSA8ZXJybm8uaD4NCiNpbmNsdWRlIDxzdHJpbmcuaD4NCiNp
+bmNsdWRlIDxzeXMvbW1hbi5oPg0KI2luY2x1ZGUgPHVuaXN0ZC5oPg0KI2luY2x1ZGUgPHN0ZGxp
+Yi5oPg0KI2luY2x1ZGUgPHNpZ25hbC5oPg0KDQpzdGF0aWMgUlRfVEFTSwkJCW1fdGFzazsNCnN0
+YXRpYyBSVF9QSVBFCQkJbV9waXBlOw0Kc3RhdGljIHZvbGF0aWxlIGludAkJY29udAk9IDE7DQoN
+CnZvaWQgc2lnX2hkbChpbnQgc2lnKSANCnsNCgljb250CT0gMDsNCn0NCg0KDQojZGVmaW5lIHJj
+X2Vycm9yKGZuLCByZXQpCXJ0X3ByaW50ZigiRXJyb3I6ICIgZm4gIjolcyAoJWQpICVzXG4iLCBz
+dHJlcnJvcigtcmV0KSwgLXJldCkNCg0KaW50IG1haW4odm9pZCkNCnsNCglpbnQJCQllcnI7DQoJ
+Y29uc3QgY2hhcioJb3V0X3N0cgkJPSAiZCI7DQoJaW50CQkJb3V0X3N0cl9sZW4JPSAxOw0KCWlu
+dAkJCWluX3N0cl9sZW4JPSAzMjsNCgljaGFyCQlpbl9zdHJbaW5fc3RyX2xlbl07DQoNCgkvLyBM
+b2NrIHBhZ2VzIGluIG1lbW9yeQ0KCW1sb2NrYWxsKE1DTF9DVVJSRU5UfE1DTF9GVVRVUkUpOw0K
+DQoJLy8gSW5pdCBydGRrIGZyYW1ld29yayBmb3IgcnRfcHJpbnRmDQoJcnRfcHJpbnRfYXV0b19p
+bml0KDEpOw0KDQoJLy8gQ2F0Y2ggU0lHX0lOVA0KCXNpZ25hbChTSUdJTlQsIHNpZ19oZGwpOw0K
+DQoJLy8gQWRkIHJ0IHNoYWRvdw0KCWVycgk9IHJ0X3Rhc2tfc2hhZG93KCZtX3Rhc2ssICJtYWlu
+IiwgMjIsIDApOw0KCWlmKGVycikgew0KCQlyY19lcnJvcigicnRfdGFza19zaGFkb3ciLCBlcnIp
+Ow0KCQlyZXR1cm4gZXJyOw0KCX0NCg0KCS8vIENyZWF0ZSBwaXBlDQoJZXJyCT0gcnRfcGlwZV9j
+cmVhdGUoJm1fcGlwZSwgInJ0cDAiLCAwLCAyMDQ4KTsNCglpZihlcnIpIHsNCgkJcmNfZXJyb3Io
+InJ0X3BpcGVfY3JlYXRlIiwgZXJyKTsNCgkJZ290byBjbGVhbnVwOw0KCX0NCg0KCS8vIERlbGli
+ZXJhdGVseSBmaWxsIHBpcGUgd2l0aG91dCBhIHJlYWRlciBvbg0KCS8vIHRoZSBvdGhlciBzaWRl
+Li4uDQoJd2hpbGUoMSkgew0KCQllcnIJPSBydF9waXBlX3N0cmVhbSgmbV9waXBlLCBvdXRfc3Ry
+LCBvdXRfc3RyX2xlbik7DQoJCS8vIENoZWNrIGlmIHRoZXJlIHdhcyBhbiBlcnJvcg0KCQlpZihl
+cnIgPCAwKSB7DQoJCQlyY19lcnJvcigicnRfcGlwZV9zdHJlYW0iLCBlcnIpOw0KCQkJZ290byBj
+bGVhbnVwOw0KCQl9DQoJCS8vIENoZWNrIGlmIGFsbCBieXRlcyB3aGVyZSB3cml0dGVuIHRvIHRo
+ZSBwaXBlDQoJCWlmKGVyciAhPSBvdXRfc3RyX2xlbikgew0KCQkJcnRfcHJpbnRmKCJJbmZvOiBy
+dF9waXBlX3N0cmVhbSBpcyBmdWxsIChyZXQ9JWQpXG4iLCBlcnIpOw0KCQkJYnJlYWs7DQoJCX0N
+Cgl9DQoNCgkvLyBXYWl0IGZvciB0aGUgdXNlciB0byBjb25uZWN0IHRvIHRoZSBwaXBlIGFuZCAN
+CgkvLyBsb29wIHVudGlsIHdlIGFyZSBhYmxlIHRvIHJlYWQgYSBieXRlDQoJd2hpbGUoY29udCkg
+ew0KCQllcnIJPSBydF9waXBlX3JlYWQoJm1fcGlwZSwgaW5fc3RyLCBpbl9zdHJfbGVuLCBUTV9O
+T05CTE9DSyk7DQoJCWlmKGVyciA8IDAgJiYgZXJyICE9IC1FQUdBSU4pIHsNCgkJCXJjX2Vycm9y
+KCJydF9waXBlX3JlYWQiLCBlcnIpOw0KCQkJZ290byBjbGVhbnVwOw0KCQl9DQoJCS8vIENoZWNr
+IGlmIHdlIHJlY2VpdmVkIHNvbWV0aGluZwkNCgkJaWYoZXJyID49IDApIHsNCgkJCXJ0X3ByaW50
+ZigiUmVjZWl2ZWQ6ICVkIGJ5dGVzXG4iLCBlcnIpOw0KCQkJYnJlYWs7DQoJCX0NCg0KCQkvLyBX
+YWl0IDFtcw0KCQlydF90YXNrX3NsZWVwKDEwMDAwMDApOw0KCX0NCgllcnIJPSAwOw0KDQpjbGVh
+bnVwOg0KCXJ0X3BpcGVfZGVsZXRlKCZtX3BpcGUpOw0KCXJ0X3Rhc2tfZGVsZXRlKCZtX3Rhc2sp
+Ow0KCXJldHVybiBlcnI7DQp9DQo=
+
+
+--=-TdEkkbrvsSY+Q4qej5E9--
 
