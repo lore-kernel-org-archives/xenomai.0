@@ -1,52 +1,53 @@
-Message-ID: <49AFE525.2080401@domain.hid>
-Date: Thu, 05 Mar 2009 15:43:49 +0100
+Message-ID: <49C16F57.8090808@domain.hid>
+Date: Wed, 18 Mar 2009 23:01:59 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <5D63919D95F87E4D9D34FF7748CE2C2A01872F90@domain.hid>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A01872F90@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <1237393895.5495.7.camel@domain.hid> <49C16D55.1080003@domain.hid>
+In-Reply-To: <49C16D55.1080003@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Floating Point Exceptions in RT-Tasks
+Subject: Re: [Xenomai-core] Kernel crash in
+	xnheap_test_and_free	(native/heap.c)
 Reply-To: rpm@xenomai.org
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: roderik.wildenburg@domain.hid
-Cc: xenomai@xenomai.org, wg@domain.hid
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-roderik.wildenburg@domain.hid wrote:
-> On behalf of Thomas I would like to answer : 
+Philippe Gerum wrote:
+> Andreas Glatz wrote:
+>> Hi,
+>>
+>> I got a kernel crash because inside xnheap_test_and_free a 
+>> invalid pointer contained in variable 'nextpage' is dereferenced:
+>>
 > 
->> Do you have CONFIG_XENO_OPT_DEBUG_NUCLEUS enabled in your 
+> <snip>
 > 
-> yes, we can aahhh have this option enabled.
+> This turned out to be caused by an out-of-bound write triggered by the streaming 
+> output service.
 > 
->> kconfig, and if so, do
->> you get any message in your kernel log when running fetest?
+> The patch below fixes the issue; it has been committed to both the maintenance 
+> (v2.4.x) and development branches.
 > 
-> no, no message anywhere (/var/log/messages, console, dmesg).
-> fetest runs and runs till I sent CTRL-C.
-> 
-
-Gilles sent you a patch affecting include/asm-powerpc/bits/pod.h a few weeks
-ago, that fixed an FPU issue. Are you running with this patch applied?
-
-> Roderik
-> 
-> --------------------------------------------------------
-> manroland AG
-> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Rall, Paul Steidle   
-> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592
-> USt-Ident-Nr. DE 250200933
+> Sidenote: your test scenario involves echoing some data to /dev/rtp0 for 
+> triggering the issue; this will now work, but you won't get that input available 
+> to rt_pipe_read(). In case you wonder why, the reason is that 'echo' will exit 
+> immediately after sending the bytes, which will cause the user-space side of the 
+> channel to be closed, and the input queue (the one that goes user -> kernel) to 
+> be flushed from any pending data.
 > 
 
+...unless your polling RT read loop wakes up at the right time and manages to 
+preempt the Linux kernel shortly after the echo sent the bytes, in which case 
+you will receive the data, but that is obviously not the most frequent situation.
 
 -- 
 Philippe.
