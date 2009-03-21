@@ -1,72 +1,227 @@
-Message-Id: <CA6F6312-6598-4C76-A36A-CD465CB3236D@comcast.net>
-From: Steven Seeger <steven.seeger@domain.hid>
-In-Reply-To: <1237850338.13946.117.camel@domain.hid>
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
-Content-Transfer-Encoding: 7bit
-Mime-Version: 1.0 (Apple Message framework v930.3)
-Date: Mon, 23 Mar 2009 19:32:44 -0400
-References: <D0AF8C6A-CE07-4F45-A9E3-E82CB93F8500@domain.hid>
-	<1237848861.13946.101.camel@domain.hid>
-	<08A82EA4-797A-42C9-AE47-1A260D58E4DB@comcast.net>
-	<1237850338.13946.117.camel@domain.hid>
-Subject: Re: [Xenomai-core] irq0 usage
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+MIME-Version: 1.0
+In-Reply-To: <49C4AD34.7010303@domain.hid>
+References: <1237546591.9844.115.camel@domain.hid>
+	<49C381F8.9070107@domain.hid>
+	<1237563537.9844.150.camel@domain.hid>
+	<49C4AD34.7010303@domain.hid>
+Date: Sat, 21 Mar 2009 18:26:45 +0200
+Message-ID: <b131c9f0903210926j5d0ef32emec061956dfe9000c@domain.hid>
+From: vikesh rambaran <vikesh.rambaran@domain.hid>
+Content-Type: multipart/alternative; boundary=00032557497ecfe31c0465a37f02
+Subject: Re: [Xenomai-help] rtserial interface stalls
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-> Ok, so we will agree that the 20%/60% ratios can't be compared, in  
-> fact.
+--00032557497ecfe31c0465a37f02
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-Do you mean that this is not a fair comparison or that I should not be  
-this slow compared to RTAI?
+On Sat, Mar 21, 2009 at 11:02 AM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
 
-> The fact that the GX still has to use a crappy 8253 PIT for timing and
-> must emulate the TSC using one of the PIT channels is not helping at
-> all. Emulating the TSC costs 1 x time_of(outb) + 2 x time_of(inb),  
-> each
-> time a timestamp is read via the rdtsc emulation code. That is costly.
+> Vikesh Rambaran wrote:
+> > On Fri, 2009-03-20 at 12:46 +0100, Jan Kiszka wrote:
+> >> Vikesh Rambaran wrote:
+> >>> ...
+> >>> Alternative tried (after a bit of debugging)
+> >>> -----------------
+> >>>
+> >>> Changed  serialConfig.tx_timeout       = RTSER_DEF_TIMEOUT;
+> >>> to       serialConfig.tx_timeout       = RTDM_TIMEOUT_NONE;
+> >>>
+> >>> Task 2 then runs continuously. Writing to rtser0 returns valid number
+> of
+> >>> bytes written but no data appears on serial port pin. At the same time
+> >>> rtser1 functions normally.
+> >> Without feedback from the device about its tx queue state you may
+> >> quickly overload it this way (definitely if written bytes > fifo
+> length).
+> >>
+> >
+> > The idea is to write data into the devices' circular buffer and return
+> > immediately. If there is not enough place in the buffer, i expected
+> > the write call to return an error code or fewer bytes than that which
+> > was requested. That would indicate a buffer overrun condition which can
+> > be flagged at application level. This way the task will not be delayed
+> > and other important functionality can be executed in a deterministic
+> > way.
+> >
+> > The data transmitted on each serial channel is less than 150 bytes at
+> > 115200kb/s with the task having a fixed period of 20mS. This should not
+> > overflow default 4k buffers of the 16550A driver.
+> >
+> > Well that's the plan:) Did i perhaps misunderstand the implementation
+> > for the tx_timeout ?
+> >
+>
+> No, I agree your approach is valid, and even non-blocking write should
+> behave as you expected. I actually forgot that the uart driver is that
+> smart - at least in theory. Something else is fishy.
 
-Do you agree that if I build with TSC on and disable suspend on halt  
-(or use idle=poll) that xenomai will use rdtsc?
 
-> It switches to supervisor mode using an interrupt (0x80); that logic  
-> is
-> really costly compared to the SEP entry. I'd say ~800ns-1us vs 200ns  
-> on
-> average for your target.
+:) Yes the uart driver is brimming with features !
 
-This is bad, but since our fastest userspace period is 500us it is not  
-a dealbreaker. Just rt_task_wait_next_period() and one mutex lock/ 
-unlock is too much for it.
+>
+> When you switch to non-blocking, is there no data at all written, or
+> does transmission stop roughly around where blocking write would stop
+> the writer?
+>
 
-> Btw, did you fix your driver code regarding the unprotected usage of  
-> FPU
-> in pure Linux kernel context?
+I came across a *stupid* mistake that i made with regards displaying the
+error code
+of the write function! Apologies for noise on that one.
 
-Yes in fact the new driver does not use floats at all. It's purely  
-integer math.
+ The return codes are exactly as we would expect in the non-blocking mode.
+After running normally for a while, the write function for rtser0, returns a
+positive
+value that is less than the requested number of bytes. Thereafter the
+function returns
+-EAGAIN, for consecutive writes. This occurs at the same place where the
+blocking write
+stops the task.
 
-> Eh, no. TSC is always preferred when available.
+I've also displayed the error codes returned from the read calls. On some
+occasions, just prior to
+the above error, the read call returns -EIO, with the LSR = 0x02 (overrun)
+and MSR = 0xFB.
 
-I was looking at rthal_timer_program_shot().
+Need to spend some time understanding that one ...
 
-> Frankly, those figures are really surprising. rdtsc() is about
-> 100-200ns, running rthal_get_8254_tsc() is a lot, lot more.
+On another note, the RS422 signal levels on the 2nd PC interfacing to our
+realtime simulator
+PC is a bit low. Will try to get another RS422 converter for the 2nd PC and
+repeat the tests to see
+if that is influencing it adversely. For comparison, i did measure the
+signals when the realtime
+simulator interfaced to the actual hardware (autopilot) and the levels were
+acceptable.
 
-I asked above if what we did would really use the TSC or not. What do  
-you think?
 
-> No, when _your_ test runs.
+> Jan
+>
+> Thanx for your help thus far
+Vicki
 
-So we should run latency -p and then our test and look at the output?
 
-Thanks,
-Steven
+>
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+>
+>
+
+--00032557497ecfe31c0465a37f02
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<br><br><div class=3D"gmail_quote">On Sat, Mar 21, 2009 at 11:02 AM, Jan Ki=
+szka <span dir=3D"ltr">&lt;<a href=3D"mailto:jan.kiszka@domain.hid">jan.kiszka@=
+web.de</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"=
+border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; paddi=
+ng-left: 1ex;">
+<div class=3D"im">Vikesh Rambaran wrote:<br>
+&gt; On Fri, 2009-03-20 at 12:46 +0100, Jan Kiszka wrote:<br>
+&gt;&gt; Vikesh Rambaran wrote:<br>
+</div>&gt;&gt;&gt; ...<br>
+<div class=3D"im">&gt;&gt;&gt; Alternative tried (after a bit of debugging)=
+<br>
+&gt;&gt;&gt; -----------------<br>
+&gt;&gt;&gt;<br>
+&gt;&gt;&gt; Changed =A0serialConfig.tx_timeout =A0 =A0 =A0 =3D RTSER_DEF_T=
+IMEOUT;<br>
+&gt;&gt;&gt; to =A0 =A0 =A0 serialConfig.tx_timeout =A0 =A0 =A0 =3D RTDM_TI=
+MEOUT_NONE;<br>
+&gt;&gt;&gt;<br>
+&gt;&gt;&gt; Task 2 then runs continuously. Writing to rtser0 returns valid=
+ number of<br>
+&gt;&gt;&gt; bytes written but no data appears on serial port pin. At the s=
+ame time<br>
+&gt;&gt;&gt; rtser1 functions normally.<br>
+&gt;&gt; Without feedback from the device about its tx queue state you may<=
+br>
+&gt;&gt; quickly overload it this way (definitely if written bytes &gt; fif=
+o length).<br>
+&gt;&gt;<br>
+&gt;<br>
+&gt; The idea is to write data into the devices&#39; circular buffer and re=
+turn<br>
+&gt; immediately. If there is not enough place in the buffer, i expected<br=
+>
+&gt; the write call to return an error code or fewer bytes than that which<=
+br>
+&gt; was requested. That would indicate a buffer overrun condition which ca=
+n<br>
+&gt; be flagged at application level. This way the task will not be delayed=
+<br>
+&gt; and other important functionality can be executed in a deterministic<b=
+r>
+&gt; way.<br>
+&gt;<br>
+&gt; The data transmitted on each serial channel is less than 150 bytes at<=
+br>
+&gt; 115200kb/s with the task having a fixed period of 20mS. This should no=
+t<br>
+&gt; overflow default 4k buffers of the 16550A driver.<br>
+&gt;<br>
+&gt; Well that&#39;s the plan:) Did i perhaps misunderstand the implementat=
+ion<br>
+&gt; for the tx_timeout ?<br>
+&gt;<br>
+<br>
+</div>No, I agree your approach is valid, and even non-blocking write shoul=
+d<br>
+behave as you expected. I actually forgot that the uart driver is that<br>
+smart - at least in theory. Something else is fishy.</blockquote><div>=A0</=
+div><div>:) Yes the uart driver is brimming with features !<br></div><block=
+quote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, 204, 2=
+04); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+<br>
+When you switch to non-blocking, is there no data at all written, or<br>
+does transmission stop roughly around where blocking write would stop<br>
+the writer?<br>
+<font color=3D"#888888"></font></blockquote><div>=A0<br>I came across a *st=
+upid* mistake that i made with regards displaying the error code <br>of the=
+ write function! Apologies for noise on that one.<br><br>=A0The return code=
+s are exactly as we would expect in the non-blocking mode.<br>
+After running normally for a while, the write function for rtser0, returns =
+a positive <br>value that is less than the requested number of bytes. There=
+after the function returns<br>-EAGAIN, for consecutive writes. This occurs =
+at the same place where the blocking write<br>
+stops the task.<br><br>I&#39;ve also displayed the error codes returned fro=
+m the read calls. On some occasions, just prior to<br>the above error, the =
+read call returns -EIO, with the LSR =3D 0x02 (overrun) and MSR =3D 0xFB.<b=
+r>
+<br>Need to spend some time understanding that one ...<br><br>On another no=
+te, the RS422 signal levels on the 2nd PC interfacing to our realtime simul=
+ator <br>PC is a bit low. Will try to get another RS422 converter for the 2=
+nd PC and repeat the tests to see <br>
+if that is influencing it adversely. For comparison, i did measure the sign=
+als when the realtime<br>simulator interfaced to the actual hardware (autop=
+ilot) and the levels were acceptable.<br><br></div><blockquote class=3D"gma=
+il_quote" style=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0=
+pt 0pt 0.8ex; padding-left: 1ex;">
+<font color=3D"#888888"><br>
+Jan<br>
+<br>
+</font></blockquote><div>Thanx for your help thus far<br>
+Vicki<br>=A0
+<br></div><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid=
+ rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><br>___=
+____________________________________________<br>
+Xenomai-help mailing list<br>
+<a href=3D"mailto:Xenomai-help@domain.hid">Xenomai-help@domain.hid</a><br>
+<a href=3D"https://mail.gna.org/listinfo/xenomai-help" target=3D"_blank">ht=
+tps://mail.gna.org/listinfo/xenomai-help</a><br>
+<br></blockquote></div><br>
+
+--00032557497ecfe31c0465a37f02--
 
