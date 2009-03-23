@@ -1,44 +1,29 @@
-Message-Id: <C0049A04-822D-497A-BBA0-E5C8F6E8A947@domain.hid>
+Message-Id: <D0AF8C6A-CE07-4F45-A9E3-E82CB93F8500@domain.hid>
 From: Steven Seeger <steven.seeger@domain.hid>
-In-Reply-To: <49B7EF28.4080203@domain.hid>
 Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
 Content-Transfer-Encoding: 7bit
 Mime-Version: 1.0 (Apple Message framework v930.3)
-Date: Wed, 11 Mar 2009 13:07:37 -0400
-References: <67b6b3430903091727o4a60a28ay91c7ba35ad7d08ef@domain.hid>	
-	<49B634F1.2040101@domain.hid>	
-	<D8EB3A02-F76F-442A-8B0D-7F26D4E16D16@domain.hid>	
-	<49B6C5E5.3090302@domain.hid>	
-	<67b6b3430903101403r183d6d4cwe100619a293abae2@domain.hid>	
-	<49B6D69E.8050707@domain.hid>	
-	<67b6b3430903101516n354263d6of00c79e130118e1@domain.hid>	
-	<49B6E8B1.2030900@domain.hid>	
-	<67b6b3430903101552u37244233s587898c4d0f9ef3d@domain.hid>	
-	<49B78113.3030308@domain.hid>
-	<67b6b3430903110951m71679f89ud83859654f04aabb@domain.hid>
-	<49B7EF28.4080203@domain.hid>
-Subject: Re: [Xenomai-help] rt_queue_write return 1, with no receiver
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Date: Mon, 23 Mar 2009 15:59:27 -0400
+Subject: [Xenomai-core] irq0 usage
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-> Not if the kernel is terminally broken due to this bug. Wild guess:  
-> I would
-> suggest to check how message queue buffers are used by your  
-> application,
-> particularly to detect out-of-bound writes.
+We are still running into issues where irq0 is using a lot of CPU  
+time. The same threads on an RTAi system on the same hardware used  
+about 13% of the CPU but are using closer to 60% on Xenomai. I know  
+there is some overhead with userspace calls but hte irq0 handler alone  
+accounts for 20% of it. Are there any options that can speed things up?
 
-This particular queue is always writing a structure of a constant  
-size. So our reads and writes are always constant size. If reading  
-does not return a size that we expect then we assert.
+We've tried both one shot and periodic modes. I confirmed that the ISA  
+i/o timing is 1.3usec per outb as expected.
 
 Steven
 
