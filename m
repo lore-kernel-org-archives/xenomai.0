@@ -1,14 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <49C4AD34.7010303@domain.hid>
-References: <1237546591.9844.115.camel@domain.hid>
-	<49C381F8.9070107@domain.hid>
-	<1237563537.9844.150.camel@domain.hid>
-	<49C4AD34.7010303@domain.hid>
-Date: Sat, 21 Mar 2009 18:26:45 +0200
-Message-ID: <b131c9f0903210926j5d0ef32emec061956dfe9000c@domain.hid>
+Date: Mon, 23 Mar 2009 10:00:31 +0200
+Message-ID: <b131c9f0903230100x1b2aa2fet9e2b0efe68a7a77f@domain.hid>
 From: vikesh rambaran <vikesh.rambaran@domain.hid>
-Content-Type: multipart/alternative; boundary=00032557497ecfe31c0465a37f02
-Subject: Re: [Xenomai-help] rtserial interface stalls
+Content-Type: multipart/alternative; boundary=000325574d7a1700680465c4a9ab
+Subject: [Xenomai-help] Xenomai LTTng support
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,210 +13,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai-help <xenomai@xenomai.org>
 
---00032557497ecfe31c0465a37f02
+--000325574d7a1700680465c4a9ab
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 
-On Sat, Mar 21, 2009 at 11:02 AM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+Hi
 
-> Vikesh Rambaran wrote:
-> > On Fri, 2009-03-20 at 12:46 +0100, Jan Kiszka wrote:
-> >> Vikesh Rambaran wrote:
-> >>> ...
-> >>> Alternative tried (after a bit of debugging)
-> >>> -----------------
-> >>>
-> >>> Changed  serialConfig.tx_timeout       = RTSER_DEF_TIMEOUT;
-> >>> to       serialConfig.tx_timeout       = RTDM_TIMEOUT_NONE;
-> >>>
-> >>> Task 2 then runs continuously. Writing to rtser0 returns valid number
-> of
-> >>> bytes written but no data appears on serial port pin. At the same time
-> >>> rtser1 functions normally.
-> >> Without feedback from the device about its tx queue state you may
-> >> quickly overload it this way (definitely if written bytes > fifo
-> length).
-> >>
-> >
-> > The idea is to write data into the devices' circular buffer and return
-> > immediately. If there is not enough place in the buffer, i expected
-> > the write call to return an error code or fewer bytes than that which
-> > was requested. That would indicate a buffer overrun condition which can
-> > be flagged at application level. This way the task will not be delayed
-> > and other important functionality can be executed in a deterministic
-> > way.
-> >
-> > The data transmitted on each serial channel is less than 150 bytes at
-> > 115200kb/s with the task having a fixed period of 20mS. This should not
-> > overflow default 4k buffers of the 16550A driver.
-> >
-> > Well that's the plan:) Did i perhaps misunderstand the implementation
-> > for the tx_timeout ?
-> >
->
-> No, I agree your approach is valid, and even non-blocking write should
-> behave as you expected. I actually forgot that the uart driver is that
-> smart - at least in theory. Something else is fishy.
+I'm trying to get LTTng support for Xenomai 2.4.7 with Linux 2.6.28.7
+running.
+With regards the mailing list, the latest one seems to be
 
+[ date    Tue, Feb 24, 2009 at 8:30 PM
+  subject    [Xenomai-help] [ANNOUNCE] LTTng-over-I-pipe git tree
+]
 
-:) Yes the uart driver is brimming with features !
+My understanding of the sequence is :
+(please correct as necessary)
 
->
-> When you switch to non-blocking, is there no data at all written, or
-> does transmission stop roughly around where blocking write would stop
-> the writer?
->
+1. Get the tree which already has LTTng and ipipe patched in
+2. Apply trace_mark channel event patch to xenomai 2.4.7
+3. Apply xenomai patches to kernel
+4. Build and install
 
-I came across a *stupid* mistake that i made with regards displaying the
-error code
-of the write function! Apologies for noise on that one.
+However, I am having trouble with the following and would appreciate help
 
- The return codes are exactly as we would expect in the non-blocking mode.
-After running normally for a while, the write function for rtser0, returns a
-positive
-value that is less than the requested number of bytes. Thereafter the
-function returns
--EAGAIN, for consecutive writes. This occurs at the same place where the
-blocking write
-stops the task.
+a) "git clone git://git.kiszka.org/ipipe-2.6.git lttng/2.6.28-x86"
+as per the email, results in the 2.6.29-rc6. What should the command be
+to access the 2.6.28 tree ?
 
-I've also displayed the error codes returned from the read calls. On some
-occasions, just prior to
-the above error, the read call returns -EIO, with the LSR = 0x02 (overrun)
-and MSR = 0xFB.
+Note : downloading ipipe-2.6.28.7-x86-2.2-06 from
+http://git.kiszka.org/?p=ipipe-2.6.git;a=commit;h=7abbb32f691345126d96cb6b48c587e145b8ef20
+using the web interface gives the 2.6.28.7 tree. Is this ok to use ?
 
-Need to spend some time understanding that one ...
+b) The LTTng manual mentions that there should be a kernel option
+Linux Trace Toolkit Next Generation (LTTng) under General settings. This
+seems to be
+unavailable for both the above trees. What must be done to enable this
+feature ?
 
-On another note, the RS422 signal levels on the 2nd PC interfacing to our
-realtime simulator
-PC is a bit low. Will try to get another RS422 converter for the 2nd PC and
-repeat the tests to see
-if that is influencing it adversely. For comparison, i did measure the
-signals when the realtime
-simulator interfaced to the actual hardware (autopilot) and the levels were
-acceptable.
+c) Applying the xenomai instrumentation patch from
+[http://permalink.gmane.org/gmane.linux.real-time.xenomai.devel/6009]  to
+the xenomai 2.4.7
+tree using patch -p1 < "filename",  results in numerous hunks. What am i
+doing wrong ?
 
 
-> Jan
->
-> Thanx for your help thus far
+Thanx for any help
 Vicki
 
-
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->
->
-
---00032557497ecfe31c0465a37f02
+--000325574d7a1700680465c4a9ab
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-<br><br><div class=3D"gmail_quote">On Sat, Mar 21, 2009 at 11:02 AM, Jan Ki=
-szka <span dir=3D"ltr">&lt;<a href=3D"mailto:jan.kiszka@domain.hid">jan.kiszka@=
-web.de</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"=
-border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; paddi=
-ng-left: 1ex;">
-<div class=3D"im">Vikesh Rambaran wrote:<br>
-&gt; On Fri, 2009-03-20 at 12:46 +0100, Jan Kiszka wrote:<br>
-&gt;&gt; Vikesh Rambaran wrote:<br>
-</div>&gt;&gt;&gt; ...<br>
-<div class=3D"im">&gt;&gt;&gt; Alternative tried (after a bit of debugging)=
-<br>
-&gt;&gt;&gt; -----------------<br>
-&gt;&gt;&gt;<br>
-&gt;&gt;&gt; Changed =A0serialConfig.tx_timeout =A0 =A0 =A0 =3D RTSER_DEF_T=
-IMEOUT;<br>
-&gt;&gt;&gt; to =A0 =A0 =A0 serialConfig.tx_timeout =A0 =A0 =A0 =3D RTDM_TI=
-MEOUT_NONE;<br>
-&gt;&gt;&gt;<br>
-&gt;&gt;&gt; Task 2 then runs continuously. Writing to rtser0 returns valid=
- number of<br>
-&gt;&gt;&gt; bytes written but no data appears on serial port pin. At the s=
-ame time<br>
-&gt;&gt;&gt; rtser1 functions normally.<br>
-&gt;&gt; Without feedback from the device about its tx queue state you may<=
-br>
-&gt;&gt; quickly overload it this way (definitely if written bytes &gt; fif=
-o length).<br>
-&gt;&gt;<br>
-&gt;<br>
-&gt; The idea is to write data into the devices&#39; circular buffer and re=
-turn<br>
-&gt; immediately. If there is not enough place in the buffer, i expected<br=
->
-&gt; the write call to return an error code or fewer bytes than that which<=
-br>
-&gt; was requested. That would indicate a buffer overrun condition which ca=
-n<br>
-&gt; be flagged at application level. This way the task will not be delayed=
-<br>
-&gt; and other important functionality can be executed in a deterministic<b=
+Hi<br><br>I&#39;m trying to get LTTng support for Xenomai 2.4.7 with Linux =
+2.6.28.7 running.<br>With regards the mailing list, the latest one seems to=
+ be<br><br>[ date=A0=A0=A0 Tue, Feb 24, 2009 at 8:30 PM<br>=A0 subject=A0=
+=A0=A0 [Xenomai-help] [ANNOUNCE] LTTng-over-I-pipe git tree<br>
+]<br><br>My understanding of the sequence is :<br>(please correct as necess=
+ary)<br><br>1. Get the tree which already has LTTng and ipipe patched in<br=
+>2. Apply trace_mark channel event patch to  xenomai 2.4.7<br>3. Apply xeno=
+mai patches to kernel<br>
+4. Build and install<br><br>However, I am having trouble with the following=
+ and would appreciate help<br><br>a) &quot;git clone git://<a href=3D"http:=
+//git.kiszka.org/ipipe-2.6.git">git.kiszka.org/ipipe-2.6.git</a> lttng/2.6.=
+28-x86&quot;<br>
+as per the email, results in the 2.6.29-rc6. What should the command be<br>=
+to access the 2.6.28 tree ?<br><br>Note : downloading ipipe-2.6.28.7-x86-2.=
+2-06 from <br><a href=3D"http://git.kiszka.org/?p=3Dipipe-2.6.git;a=3Dcommi=
+t;h=3D7abbb32f691345126d96cb6b48c587e145b8ef20">http://git.kiszka.org/?p=3D=
+ipipe-2.6.git;a=3Dcommit;h=3D7abbb32f691345126d96cb6b48c587e145b8ef20</a><b=
 r>
-&gt; way.<br>
-&gt;<br>
-&gt; The data transmitted on each serial channel is less than 150 bytes at<=
-br>
-&gt; 115200kb/s with the task having a fixed period of 20mS. This should no=
-t<br>
-&gt; overflow default 4k buffers of the 16550A driver.<br>
-&gt;<br>
-&gt; Well that&#39;s the plan:) Did i perhaps misunderstand the implementat=
-ion<br>
-&gt; for the tx_timeout ?<br>
-&gt;<br>
-<br>
-</div>No, I agree your approach is valid, and even non-blocking write shoul=
-d<br>
-behave as you expected. I actually forgot that the uart driver is that<br>
-smart - at least in theory. Something else is fishy.</blockquote><div>=A0</=
-div><div>:) Yes the uart driver is brimming with features !<br></div><block=
-quote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, 204, 2=
-04); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-<br>
-When you switch to non-blocking, is there no data at all written, or<br>
-does transmission stop roughly around where blocking write would stop<br>
-the writer?<br>
-<font color=3D"#888888"></font></blockquote><div>=A0<br>I came across a *st=
-upid* mistake that i made with regards displaying the error code <br>of the=
- write function! Apologies for noise on that one.<br><br>=A0The return code=
-s are exactly as we would expect in the non-blocking mode.<br>
-After running normally for a while, the write function for rtser0, returns =
-a positive <br>value that is less than the requested number of bytes. There=
-after the function returns<br>-EAGAIN, for consecutive writes. This occurs =
-at the same place where the blocking write<br>
-stops the task.<br><br>I&#39;ve also displayed the error codes returned fro=
-m the read calls. On some occasions, just prior to<br>the above error, the =
-read call returns -EIO, with the LSR =3D 0x02 (overrun) and MSR =3D 0xFB.<b=
-r>
-<br>Need to spend some time understanding that one ...<br><br>On another no=
-te, the RS422 signal levels on the 2nd PC interfacing to our realtime simul=
-ator <br>PC is a bit low. Will try to get another RS422 converter for the 2=
-nd PC and repeat the tests to see <br>
-if that is influencing it adversely. For comparison, i did measure the sign=
-als when the realtime<br>simulator interfaced to the actual hardware (autop=
-ilot) and the levels were acceptable.<br><br></div><blockquote class=3D"gma=
-il_quote" style=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0=
-pt 0pt 0.8ex; padding-left: 1ex;">
-<font color=3D"#888888"><br>
-Jan<br>
-<br>
-</font></blockquote><div>Thanx for your help thus far<br>
-Vicki<br>=A0
-<br></div><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid=
- rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><br>___=
-____________________________________________<br>
-Xenomai-help mailing list<br>
-<a href=3D"mailto:Xenomai-help@domain.hid">Xenomai-help@domain.hid</a><br>
-<a href=3D"https://mail.gna.org/listinfo/xenomai-help" target=3D"_blank">ht=
-tps://mail.gna.org/listinfo/xenomai-help</a><br>
-<br></blockquote></div><br>
+using the web interface gives the 2.6.28.7 tree. Is this ok to use ?<br><br=
+>b) The LTTng manual mentions that there should be a kernel option <br>
+Linux Trace Toolkit Next Generation (LTTng) under General settings. This se=
+ems to be<br>
+unavailable for both the above trees. What must be done to enable this feat=
+ure ?<br>
+<br>c) Applying the xenomai instrumentation patch from<br>
+[<a href=3D"http://permalink.gmane.org/gmane.linux.real-time.xenomai.devel/=
+6009">http://permalink.gmane.org/gmane.linux.real-time.xenomai.devel/6009</=
+a>]=A0 to the xenomai 2.4.7 <br>tree using patch -p1 &lt; &quot;filename&qu=
+ot;,=A0 results in numerous hunks. What am i doing wrong ?<br>
+<br><br>Thanx for any help<br>Vicki<br>
 
---00032557497ecfe31c0465a37f02--
+--000325574d7a1700680465c4a9ab--
 
