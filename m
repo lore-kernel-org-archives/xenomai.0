@@ -1,94 +1,72 @@
-Message-ID: <49C4AD34.7010303@domain.hid>
-Date: Sat, 21 Mar 2009 10:02:44 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <1237546591.9844.115.camel@domain.hid>	<49C381F8.9070107@domain.hid>
-	<1237563537.9844.150.camel@domain.hid>
-In-Reply-To: <1237563537.9844.150.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig34C1391C2C5D674A8AEC98EA"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] rtserial interface stalls
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Message-Id: <CA6F6312-6598-4C76-A36A-CD465CB3236D@comcast.net>
+From: Steven Seeger <steven.seeger@domain.hid>
+In-Reply-To: <1237850338.13946.117.camel@domain.hid>
+Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Apple Message framework v930.3)
+Date: Mon, 23 Mar 2009 19:32:44 -0400
+References: <D0AF8C6A-CE07-4F45-A9E3-E82CB93F8500@domain.hid>
+	<1237848861.13946.101.camel@domain.hid>
+	<08A82EA4-797A-42C9-AE47-1A260D58E4DB@comcast.net>
+	<1237850338.13946.117.camel@domain.hid>
+Subject: Re: [Xenomai-core] irq0 usage
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Vikesh Rambaran <vikesh.rambaran@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig34C1391C2C5D674A8AEC98EA
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+> Ok, so we will agree that the 20%/60% ratios can't be compared, in  
+> fact.
 
-Vikesh Rambaran wrote:
-> On Fri, 2009-03-20 at 12:46 +0100, Jan Kiszka wrote:
->> Vikesh Rambaran wrote:
->>> ...
->>> Alternative tried (after a bit of debugging)
->>> -----------------
->>>
->>> Changed  serialConfig.tx_timeout       =3D RTSER_DEF_TIMEOUT;
->>> to       serialConfig.tx_timeout       =3D RTDM_TIMEOUT_NONE;
->>>
->>> Task 2 then runs continuously. Writing to rtser0 returns valid number=
- of
->>> bytes written but no data appears on serial port pin. At the same tim=
-e
->>> rtser1 functions normally.
->> Without feedback from the device about its tx queue state you may
->> quickly overload it this way (definitely if written bytes > fifo lengt=
-h).
->>
->=20
-> The idea is to write data into the devices' circular buffer and return
-> immediately. If there is not enough place in the buffer, i expected
-> the write call to return an error code or fewer bytes than that which
-> was requested. That would indicate a buffer overrun condition which can=
+Do you mean that this is not a fair comparison or that I should not be  
+this slow compared to RTAI?
 
-> be flagged at application level. This way the task will not be delayed
-> and other important functionality can be executed in a deterministic
-> way.
->=20
-> The data transmitted on each serial channel is less than 150 bytes at
-> 115200kb/s with the task having a fixed period of 20mS. This should not=
+> The fact that the GX still has to use a crappy 8253 PIT for timing and
+> must emulate the TSC using one of the PIT channels is not helping at
+> all. Emulating the TSC costs 1 x time_of(outb) + 2 x time_of(inb),  
+> each
+> time a timestamp is read via the rdtsc emulation code. That is costly.
 
-> overflow default 4k buffers of the 16550A driver.
->=20
-> Well that's the plan:) Did i perhaps misunderstand the implementation
-> for the tx_timeout ?
->=20
+Do you agree that if I build with TSC on and disable suspend on halt  
+(or use idle=poll) that xenomai will use rdtsc?
 
-No, I agree your approach is valid, and even non-blocking write should
-behave as you expected. I actually forgot that the uart driver is that
-smart - at least in theory. Something else is fishy.
+> It switches to supervisor mode using an interrupt (0x80); that logic  
+> is
+> really costly compared to the SEP entry. I'd say ~800ns-1us vs 200ns  
+> on
+> average for your target.
 
-When you switch to non-blocking, is there no data at all written, or
-does transmission stop roughly around where blocking write would stop
-the writer?
+This is bad, but since our fastest userspace period is 500us it is not  
+a dealbreaker. Just rt_task_wait_next_period() and one mutex lock/ 
+unlock is too much for it.
 
-Jan
+> Btw, did you fix your driver code regarding the unprotected usage of  
+> FPU
+> in pure Linux kernel context?
 
+Yes in fact the new driver does not use floats at all. It's purely  
+integer math.
 
---------------enig34C1391C2C5D674A8AEC98EA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+> Eh, no. TSC is always preferred when available.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+I was looking at rthal_timer_program_shot().
 
-iEYEARECAAYFAknErTgACgkQniDOoMHTA+mKugCfRZwglFPXfiSLhrdqB3+/FkMd
-bugAnAuD/t0BOEtFSM7v+Q2XrFp1QRrr
-=iBdH
------END PGP SIGNATURE-----
+> Frankly, those figures are really surprising. rdtsc() is about
+> 100-200ns, running rthal_get_8254_tsc() is a lot, lot more.
 
---------------enig34C1391C2C5D674A8AEC98EA--
+I asked above if what we did would really use the TSC or not. What do  
+you think?
+
+> No, when _your_ test runs.
+
+So we should run latency -p and then our test and look at the output?
+
+Thanks,
+Steven
 
