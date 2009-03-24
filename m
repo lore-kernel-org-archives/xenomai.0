@@ -1,12 +1,12 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <10023762.21237868208390.JavaMail.root@domain.hid>
-References: <10023762.21237868208390.JavaMail.root@domain.hid>
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A018D3CFB@ARVMAIL1.mra.roland-man.biz>
+References: <5D63919D95F87E4D9D34FF7748CE2C2A018D3CFB@ARVMAIL1.mra.roland-man.biz>
 Content-Type: text/plain
-Date: Tue, 24 Mar 2009 09:59:37 +0100
-Message-Id: <1237885177.6815.36.camel@domain.hid>
+Date: Tue, 24 Mar 2009 10:22:28 +0100
+Message-Id: <1237886548.6815.39.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Support for static APIs in uITRON skin
+Subject: Re: [Xenomai-help] Floating Point Exceptions in RT-Tasks
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,52 +16,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: ravikiran.saralaya@domain.hid
+To: roderik.wildenburg@domain.hid
 Cc: xenomai@xenomai.org
 
-On Tue, 2009-03-24 at 00:16 -0400, ravikiran.saralaya@domain.hid wrote:
-> Thanks Philippe for the clarification.
+On Mon, 2009-03-23 at 15:25 +0100, roderik.wildenburg@domain.hid
+wrote:
+> Hello Philippe,
 > 
-> I am curious to know if there are any attempts being done to make uITRON skin compliant to uITRON Specification version 4.03.00.
-> 
+> could you find out something new with this issue ?
 
-No idea.
+I did not manage to resume work on this issue yet, unfortunately.
+Meanwhile, you my want to switch to 2.4.7, so that we don't run into
+already fixed issues when chasing this one later on.
 
-> Regards,
-> Ravikiran
 > 
-> -- Philippe Gerum wrote : 
-> ravikiran.saralaya@domain.hid.... wrote:
-> > Hello,
+> Roderik
+> 
+> > Wolfgang Grandegger wrote:
+> > > Philippe Gerum wrote:
+> > >> roderik.wildenburg@domain.hid wrote:
+> > >>> On behalf of Thomas I would like to answer : 
+> > >>>
+> > >>>> Do you have CONFIG_XENO_OPT_DEBUG_NUCLEUS enabled in your 
+> > >>> yes, we can aahhh have this option enabled.
+> > >>>
+> > >>>> kconfig, and if so, do
+> > >>>> you get any message in your kernel log when running fetest?
+> > >>> no, no message anywhere (/var/log/messages, console, dmesg).
+> > >>> fetest runs and runs till I sent CTRL-C.
+> > > 
+> > > I just tried the program fetest on my TQM5200 with a fresh 
+> > Xenomai 2.4.x
+> > > and the linuxppc_2_4_devel tree and the excepetion does *not* get
+> > > triggered. Actually I realize the following wired behavior:
+> > >
 > > 
-> > I am  planning to use Xenomai 2.4.7 for uITRON based application.
+> > I can reproduce this as well on the tqm now. This seems to be 
+> > a nucleus issue 
+> > wrt FPU management. More later.
 > > 
-> > However it seems the uITRON skin doesn't support static creation of tasks, semaphores etc. Is there any specific reason for not supporting static APIs in Xenomai uITRON skin?
-> 
-> 
-> None, aside of the fact that this implementation supports level E from the 
-> uITRON spec, and it seems rather straightforward to get static object creation 
-> at init time out of the existing dynamic object creation services.
-> 
+> > > /fpu_test
+> > > ^C
+> > > ./fpu_test
+> > > ^C
+> > > Feb  3 17:16:12 tqm5200 kernel: Xenomai: Switching trivial 
+> > to secondary
+> > > mode after exception #1792 from user-space at 0x10001974 (pid 342)
+> > > Floating point exception
+> > > bash-2.05b# ./fpu_test
+> > > ^C
+> > > bash-2.05b# ./fpu_test
+> > >  ^C
+> > > bash-2.05b# ./fpu_test
+> > > 
+> > > After aborting the fpu_test program with ^C, I get the 
+> > message above,
+> > > but only after the second try.
+> > > 
+> > >> Gilles sent you a patch affecting 
+> > include/asm-powerpc/bits/pod.h a few weeks
+> > >> ago, that fixed an FPU issue. Are you running with this 
+> > patch applied?
+> > > 
+> > > $ svn log include/asm-powerpc/bits/pod.h
+> > > 
+> > --------------------------------------------------------------
+> > ----------
+> > > r4600 | gch | 2009-01-31 19:46:37 +0100 (Sat, 31 Jan 2009) | 1 line
+> > > 
+> > > Is that the patch you have in mind?
+> > > 
+> > > Wolfgang.
+> > > 
 > > 
-> > How can I go about in supporting static APIs for uITRON?
 > >
-> > Regards,
-> > Ravikiran
-> > 
-> > 
-> > 
-> > --
-> > This message was sent on behalf of ravikiran.saralaya@domain.hid.... at openSubscriber.com
-> > http://www.opensubscriber.com/messages/xenomai@xenomai.org
-> > 
-> > _______________________________________________
-> > Xenomai-help mailing list
-> > Xenomai-help@domain.hid....
-> > https://mail.gna.org/listinfo/xenomai-help
-> > 
 > 
-> 
+> --------------------------------------------------------
+> manroland AG
+> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Rall, Paul Steidle   
+> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592
+> USt-Ident-Nr. DE 250200933
 -- 
 Philippe.
 
