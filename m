@@ -1,12 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A018D3CFB@ARVMAIL1.mra.roland-man.biz>
-References: <5D63919D95F87E4D9D34FF7748CE2C2A018D3CFB@ARVMAIL1.mra.roland-man.biz>
-Content-Type: text/plain
-Date: Tue, 24 Mar 2009 10:22:28 +0100
-Message-Id: <1237886548.6815.39.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <49C91B24.2020304@domain.hid>
+Date: Tue, 24 Mar 2009 18:40:52 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <b131c9f0903230100x1b2aa2fet9e2b0efe68a7a77f@domain.hid>	
+	<49C7899F.5030306@domain.hid>
+	<b131c9f0903240037q446193f5hbfdd3ade40ea2af4@domain.hid>
+In-Reply-To: <b131c9f0903240037q446193f5hbfdd3ade40ea2af4@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Floating Point Exceptions in RT-Tasks
+Subject: Re: [Xenomai-help] Xenomai LTTng support
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,89 +18,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: roderik.wildenburg@domain.hid
-Cc: xenomai@xenomai.org
+To: vikesh rambaran <vikesh.rambaran@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On Mon, 2009-03-23 at 15:25 +0100, roderik.wildenburg@domain.hid
-wrote:
-> Hello Philippe,
+vikesh rambaran wrote:
+> Thanx for the all feedback Jan and Andreas !
 > 
-> could you find out something new with this issue ?
+> On Mon, Mar 23, 2009 at 3:07 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> 
+>>> However, I am having trouble with the following and would appreciate help
+>>>
+>>> a) "git clone git://git.kiszka.org/ipipe-2.6.git lttng/2.6.28-x86"
+>>> as per the email, results in the 2.6.29-rc6. What should the command be
+>>> to access the 2.6.28 tree ?
+>> Additionally try "git checkout lttng/2.6.28-x86".
+>>
+> 
+> Ok, should have done some homework before asking that question :)
+> Worked through the fundamentals of the git usermanual. Fancy VCS !
+> 
+> For newbies to git (like me), the complete command i had to issue on the
+> cloned repository to
+> get the lttng branch was :
+> 
+> git checkout -b v2.6.28-x86 origin/lttng/2.6.28-x86
 
-I did not manage to resume work on this issue yet, unfortunately.
-Meanwhile, you my want to switch to 2.4.7, so that we don't run into
-already fixed issues when chasing this one later on.
+That's the only advantage of svn over git: If you do not know a precise
+command for the moment, you can guess it and it will probably be right.
+Don't try this with git (like I did)... :)
 
 > 
-> Roderik
 > 
-> > Wolfgang Grandegger wrote:
-> > > Philippe Gerum wrote:
-> > >> roderik.wildenburg@domain.hid wrote:
-> > >>> On behalf of Thomas I would like to answer : 
-> > >>>
-> > >>>> Do you have CONFIG_XENO_OPT_DEBUG_NUCLEUS enabled in your 
-> > >>> yes, we can aahhh have this option enabled.
-> > >>>
-> > >>>> kconfig, and if so, do
-> > >>>> you get any message in your kernel log when running fetest?
-> > >>> no, no message anywhere (/var/log/messages, console, dmesg).
-> > >>> fetest runs and runs till I sent CTRL-C.
-> > > 
-> > > I just tried the program fetest on my TQM5200 with a fresh 
-> > Xenomai 2.4.x
-> > > and the linuxppc_2_4_devel tree and the excepetion does *not* get
-> > > triggered. Actually I realize the following wired behavior:
-> > >
-> > 
-> > I can reproduce this as well on the tqm now. This seems to be 
-> > a nucleus issue 
-> > wrt FPU management. More later.
-> > 
-> > > /fpu_test
-> > > ^C
-> > > ./fpu_test
-> > > ^C
-> > > Feb  3 17:16:12 tqm5200 kernel: Xenomai: Switching trivial 
-> > to secondary
-> > > mode after exception #1792 from user-space at 0x10001974 (pid 342)
-> > > Floating point exception
-> > > bash-2.05b# ./fpu_test
-> > > ^C
-> > > bash-2.05b# ./fpu_test
-> > >  ^C
-> > > bash-2.05b# ./fpu_test
-> > > 
-> > > After aborting the fpu_test program with ^C, I get the 
-> > message above,
-> > > but only after the second try.
-> > > 
-> > >> Gilles sent you a patch affecting 
-> > include/asm-powerpc/bits/pod.h a few weeks
-> > >> ago, that fixed an FPU issue. Are you running with this 
-> > patch applied?
-> > > 
-> > > $ svn log include/asm-powerpc/bits/pod.h
-> > > 
-> > --------------------------------------------------------------
-> > ----------
-> > > r4600 | gch | 2009-01-31 19:46:37 +0100 (Sat, 31 Jan 2009) | 1 line
-> > > 
-> > > Is that the patch you have in mind?
-> > > 
-> > > Wolfgang.
-> > > 
-> > 
-> >
 > 
-> --------------------------------------------------------
-> manroland AG
-> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Rall, Paul Steidle   
-> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592
-> USt-Ident-Nr. DE 250200933
+>>> Note : downloading ipipe-2.6.28.7-x86-2.2-06 from
+>>>
+>> http://git.kiszka.org/?p=ipipe-2.6.git;a=commit;h=7abbb32f691345126d96cb6b48c587e145b8ef20
+>>> using the web interface gives the 2.6.28.7 tree. Is this ok to use ?
+>>>
+>>> b) The LTTng manual mentions that there should be a kernel option
+>>> Linux Trace Toolkit Next Generation (LTTng) under General settings. This
+>>> seems to be
+>>> unavailable for both the above trees. What must be done to enable this
+>>> feature ?
+>> It will be available in the git branch that contains LTTng.
+>>
+> 
+> Yes, see it now !
+> 
+> 
+>>> c) Applying the xenomai instrumentation patch from
+>>> [http://permalink.gmane.org/gmane.linux.real-time.xenomai.devel/6009]
+>>  to
+>>> the xenomai 2.4.7
+>>> tree using patch -p1 < "filename",  results in numerous hunks. What am i
+>>> doing wrong ?
+>> Hmm, I'm afraid the patch has to be back-ported manually. It was
+>> developed against the instrumentation points in trunk, 2.4.x looks a bit
+>> different (but you should be able to derive the adoption pattern from
+>> that patch).
+> 
+> Ok , will do so and post the updated diff
+
+Looking forward!
+
+Jan
+
 -- 
-Philippe.
-
-
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
