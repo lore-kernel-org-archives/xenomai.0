@@ -1,48 +1,39 @@
-Message-ID: <49CC95A4.9010702@domain.hid>
-Date: Fri, 27 Mar 2009 10:00:20 +0100
-From: Axel Beierlein <belatronix@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+From: Philippe Gerum <rpm@xenomai.org>
+Content-Type: text/plain
+Date: Wed, 25 Mar 2009 19:46:50 +0100
+Message-Id: <1238006810.6815.102.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Meaning of cache locking in /proc/xenomai/faults
-Reply-To: belatronix@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] Migrating to GIT
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org, xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, Wolfgang Grandegger <wg@domain.hid>
 
-Hello,
 
-on my MPC5200 i have the following output of /proc/xenomai/faults
+We are about to convert our SVN repos to GIT trees. This operation will
+take place between Thursday, March 26, 3pm CET and Friday 27, 8am CET.
+Please make sure to pull the data you need from those repos before we
+start the migration. Starting from Friday morning, everything will be
+available anew via GIT trees, and the old SVN repos will not be
+accessible anymore. Committers, please push pending patches before
+tomorrow afternoon as well, or wait for Friday.
 
-TRAP         CPU0
-   0:            0    (Data or instruction access)
-   1:            0    (Alignment)
-   2:            0    (Altivec unavailable)
-   3:            0    (Program check exception)
-   4:            0    (Machine check exception)
-   5:            0    (Unknown)
-   6:            0    (Instruction breakpoint)
-   7:            0    (Run mode exception)
-   8:            0    (Single-step exception)
-   9:            0    (Non-recoverable exception)
-  10:            0    (Software emulation)
-  11:            0    (Debug)
-  12:            0    (SPE)
-  13:            0    (Altivec assist)
-  14:  -1072753084    (Cache-locking exception)
-  15:            0    (Kernel FP unavailable)
+Detailed instructions for cloning the Xenomai code from the GIT trees
+will be sent on Friday to the lists, and also made available from our
+Wiki on xenomai.org.
 
-Now i am trying to find out what the negative Value of Cache-locking and 
-what this Trap general mean and when it was triggered.
+Sorry in advance for any inconvenience this may cause.
 
-Can you give me some advice?
+-- 
+Philippe.
 
-TIA
+
 
