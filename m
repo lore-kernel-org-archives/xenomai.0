@@ -1,11 +1,12 @@
-Message-ID: <49CBA737.2060808@domain.hid>
-Date: Thu, 26 Mar 2009 17:03:03 +0100
-From: Axel Beierlein <belatronix@domain.hid>
+Message-ID: <49CBA83D.8090407@domain.hid>
+Date: Thu, 26 Mar 2009 17:07:25 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+References: <49CBA737.2060808@domain.hid>
+In-Reply-To: <49CBA737.2060808@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Xenosim configure issue
-Reply-To: belatronix@domain.hid
+Subject: Re: [Xenomai-help] Xenosim configure issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,17 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: belatronix@domain.hid
+Cc: xenomai@xenomai.org
 
-Hi,
+Axel Beierlein wrote:
+> Hi,
+> 
+> i try to install the xenosim package on my Ubuntu 8.04 as shown in the
+> README. But when the configuration tool comes to the libpng
+> check it fails cause there has to be an installed libpng-dev package.
+> libpng12-dev is correctly installed and i cant find any way or package 
+> to install the libpng2 version on my desktop.
+> 
+> Any Hints are appreciated!
 
-i try to install the xenosim package on my Ubuntu 8.04 as shown in the
-README. But when the configuration tool comes to the libpng
-check it fails cause there has to be an installed libpng-dev package.
-libpng12-dev is correctly installed and i cant find any way or package 
-to install the libpng2 version on my desktop.
+See:
 
-Any Hints are appreciated!
+https://mail.gna.org/public/xenomai-help/2009-03/msg00137.html
 
-Axel
+-- 
+                                                 Gilles.
 
