@@ -1,15 +1,16 @@
-Message-Id: <CDF892E1-C135-4301-B531-A16F1525B99C@comcast.net>
-From: Steven Seeger <steven.seeger@domain.hid>
-In-Reply-To: <200903271617.42331.pwaechtler@domain.hid>
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
-Content-Transfer-Encoding: 7bit
-Mime-Version: 1.0 (Apple Message framework v930.3)
-Date: Fri, 27 Mar 2009 11:31:22 -0400
+MIME-version: 1.0
+Content-transfer-encoding: 7BIT
+Content-disposition: inline
+Content-type: text/plain; charset=iso-8859-1
+From: Peter =?iso-8859-1?q?W=E4chtler?= <pwaechtler@domain.hid>
+Date: Fri, 27 Mar 2009 16:41:09 +0100
 References: <200903271538.10434.pwaechtler@domain.hid>
-	<943F8CE6-B103-4ED5-99CA-29F84AD90593@domain.hid>
-	<200903271617.42331.pwaechtler@domain.hid>
+	<49CCE84E.7060708@domain.hid>
+In-reply-to: <49CCE84E.7060708@domain.hid>
+Message-id: <200903271641.09389.pwaechtler@domain.hid>
 Subject: Re: [Xenomai-core] use case: possible to boot Posix subsystem in
-	<50ms and then Linux?
+ <50ms and then Linux?
+Reply-To: pwaechtler@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,42 +20,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: pwaechtler@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-> Well the hardware should not matter and the startup code should be  
-> finished in
-> several milli seconds, of course.
-> Most probably are ARM. PPC or SH4 platforms used in automotive  
-> devices.
+Am Friday 27 March 2009 15:53:02 schrieb Gilles Chanteperdrix:
 >
-> In the automation industry the boot time is not that important -  
-> therefore a
-> lot of PC compatible boards are used.
+> Xenomai kernel-space support is started somewhere in the middle of the
+> boot process, so, you can probably start kernel-space applications at
+> that time. User-space only works when init has been started, which
+> happens a bit later during the boot process. But you can start Xenomai
+> applications before all the system services have been started.
+>
 
-The reason I ask about the hardware is so that I can figure out if you  
-are trying to boot a standard PC in that amount time or not. I don't  
-know your level of understanding in these matters so that's why I ask  
-for more information. I was the MIPS maintainer on RTAI for a couple  
-of years, and we had a very wimpy MIPS board and it would boot up and  
-start our application in about 2 seconds. Now, with the kernel  
-executing in place that time was significantly lower but ROM access  
-was very slow and this affected realtime performance. That's why I had  
-to go with copying the kernel to RAM. If I recall it would boot up in  
-under a second, but that's significantly more time than the 50ms you  
-are asking about.
+I think the fundamental question is: does Adeos provide a scheduler? 
 
-On the other hand that really was a weak chip. 66MHz VR4181. Ugh. We  
-mainly wanted it for the low power draw.
+And I guess the answer is yes, at least "Life-with-Adeos" doc mentions
+primary and secondary execution modes/domains.
 
-Gilles pointed out that you could start a kernel based xenomai  
-application fairly early but userspace support takes more time to get  
-up. If you really want to get a fast boot time then try to link your  
-kernel to execute in place if the hardware supports it.
+In the use case it would be necessary that OSEK subsystem is able to schedule 
+between a static number of preconfigured threads WITHOUT the precondition 
+that Linux is up and running.
 
-Steven
+>
+> As a side note, I have a question for the automotive industry people.
+> Would there be an interest in developing an OSEK skin for Xenomai? I
+> have been thinking about that for some time, but still have not found
+> time to start the job. I have read the OSEK spec, and found the
+> interface pretty simple (though some part of the job has to be done
+> offline, and annoyingly need to read XML files). The OSEK com spec, on
+> the other hand, looks rather scary.
 
+There are open source OSEK implementations. AFAIK, all far from completeness.
 
-Steven
+You can start with
+http://opensek.sourceforge.net/
 
+or have a look at the list at 
+http://en.wikipedia.org/wiki/OSEK
+
+	Peter
 
