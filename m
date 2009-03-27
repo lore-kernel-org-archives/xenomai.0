@@ -1,15 +1,14 @@
-Message-ID: <49CCDF80.4020903@domain.hid>
-Date: Fri, 27 Mar 2009 15:15:28 +0100
-From: Axel Beierlein <belatronix@domain.hid>
+From: "Charlton, John" <john.charlton@domain.hid>
+Date: Fri, 27 Mar 2009 11:01:47 -0400
+Message-ID: <54F3C3916FD0724091580775FA3604FB752B0BE8@domain.hid>
+References: <CF7FB0793253794F9F45991443E5FE200513A0636F@us194mx002.tycoelectronics.net>
+	<49BFC742.8010409@domain.hid>
+In-Reply-To: <49BFC742.8010409@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <49CC95A4.9010702@domain.hid> <1238145958.6815.145.camel@domain.hid>	
-	<49CC9E46.3050501@domain.hid> <1238149727.6815.151.camel@domain.hid>	
-	<49CCD081.3020203@domain.hid> <1238161560.6815.187.camel@domain.hid>
-In-Reply-To: <1238161560.6815.187.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Meaning of cache locking in /proc/xenomai/faults
-Reply-To: belatronix@domain.hid
+Subject: Re: [Xenomai-help] Port rtai rt_request_srq to xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,84 +18,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: "rpm@xenomai.org" <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Philippe Gerum schrieb:
-> On Fri, 2009-03-27 at 14:11 +0100, Axel Beierlein wrote:
->> Philippe Gerum schrieb:
->>> On Fri, 2009-03-27 at 10:37 +0100, Axel Beierlein wrote:
->>>> Philippe Gerum schrieb:
->>>>> On Fri, 2009-03-27 at 10:00 +0100, Axel Beierlein wrote:
->>>>>> Hello,
->>>>>>
->>>>>> on my MPC5200 i have the following output of /proc/xenomai/faults
->>>>>>
->>>>>> TRAP         CPU0
->>>>>>    0:            0    (Data or instruction access)
->>>>>>    1:            0    (Alignment)
->>>>>>    2:            0    (Altivec unavailable)
->>>>>>    3:            0    (Program check exception)
->>>>>>    4:            0    (Machine check exception)
->>>>>>    5:            0    (Unknown)
->>>>>>    6:            0    (Instruction breakpoint)
->>>>>>    7:            0    (Run mode exception)
->>>>>>    8:            0    (Single-step exception)
->>>>>>    9:            0    (Non-recoverable exception)
->>>>>>   10:            0    (Software emulation)
->>>>>>   11:            0    (Debug)
->>>>>>   12:            0    (SPE)
->>>>>>   13:            0    (Altivec assist)
->>>>>>   14:  -1072753084    (Cache-locking exception)
->>>>>>   15:            0    (Kernel FP unavailable)
->>>>>>
->>>>>> Now i am trying to find out what the negative Value of Cache-locking and 
->>>>>> what this Trap general mean and when it was triggered.
->>>>> The negative value is only the sign of an overflow. However, a cache
->>>>> locking exception is specific to FSL_BOOKE archs. What is your kernel
->>>>> release and exact ppc platform configuration?
->>>
->>> You can ignore the last two counters, when 2.4.25-ppc is involved, they
->>> contain garbage in fact; this does not have any consequences beyond that
->>> strange output. The patch below should fix them, actually leave them
->>> zeroed.
->>>
->>> --- include/asm-ppc/ipipe.h~	2008-06-08 16:15:51.000000000 +0200
->>> +++ include/asm-ppc/ipipe.h	2009-03-27 11:22:31.000000000 +0100
->>> @@ -80,7 +80,7 @@ do {						\
->>>  #define IPIPE_TRAP_DEBUG	11	/* Debug exception */
->>>  #define IPIPE_TRAP_SPE		12	/* SPE exception */
->>>  #define IPIPE_TRAP_ALTASSIST	13	/* Altivec assist exception */
->>> -#define IPIPE_NR_FAULTS		14
->>> +#define IPIPE_NR_FAULTS		16
->>>  /* Pseudo-vectors used for kernel events */
->>>  #define IPIPE_FIRST_EVENT	IPIPE_NR_FAULTS
->>>  #define IPIPE_EVENT_SYSCALL	(IPIPE_FIRST_EVENT)
->>>
->> Thank you Philippe for your Help.
->>
->> By the way, can you, or someone else, point me to a message where are 
->> the other traps are explained or can you give me short examples for 
->> situations where the listed exceptions are triggered?
->> For example: What is an alignment Trap and which situation can trigger 
->> such a fault.
->>
-> 
-> You probably want to have alook at the PowerPC UISA documentation:
-> http://download.boulder.ibm.com/ibmdl/pub/software/dw/library/es-ppcbook1.zip
-> 
-> You will find common reasons for traps. Additionally, you should refer
-> to your core's reference manual, since it may have specifics regarding
-> why/when some exceptions are triggered. Alignment exception is usually
-> due to data placement, misaligned float ops are usual suspects, but
-> depending on your particular ppc core, other reasons for alignment traps
-> may exist (e.g. e300 cores fire this exception when using a particular
-> byte-zeroing instruction on cache-inhibited memory). In short, YMMV.
-> 
->> Axel
+Thank you.  I was able to port the rtai kernel module driver to xenomai rtd=
+m and it loads using insmod.  I see it in the /proc/modules list and it is =
+properly displaying the /proc/<driver name> entries.  This kernel module ex=
+ports functions using EXPORT_SYMBOL().  I compile and load another kernel m=
+odules that uses the first modules functions but it fails to load: The seco=
+nd kernel module has unknown symbol warnings for the first modules exported=
+ symbols when I build the module and also when I load it and it fails to lo=
+ad.  When I look in the /proc/kallsyms list the symbols exported by the fir=
+st module are all there.
 
-Yeah! Thats it. Thanks. I find all the needed informations in the 
-e300coreRM Manual from Freescale.
+It seems to be a module version problem since the error output is: no symbo=
+l version for <symbol name>
 
-Axel
+How do I specify to the second module that the undefined symbols (external =
+functions) are in the first module at runtime?  This was not necessary in t=
+he rtai linux 2.4 kernel since the modules were just object files that reso=
+lved symbols at load time. I would rather not include these drivers in the =
+kernel config/build if I can avoid it.
 
+--John
+
+
+-----Original Message-----
+From: Philippe Gerum [mailto:rpm@xenomai.org
+Sent: Tuesday, March 17, 2009 11:53 AM
+To: Charlton, John
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai-help] Port rtai rt_request_srq to xenomai
+
+Charlton, John wrote:
+> I am porting an rtai linux 2.4 kernel driver to xenomai-2.4.6.1 patched l=
+inux 2.26.27.7 kernel.  I have done a fair amount of searching for the rtai=
+ functions: rt_request_srq()/rt_free_srq() and have not found an equivalent=
+ in xenomai. Would appreciate advice on how this can be done in xenomai or =
+if the equivalent of this is not available in xenomai. It looks like rthal_=
+apc_alloc() may be what I am looking for.
+>
+
+It is indeed what you are looking for, if you want a 1:1 replacement. Howev=
+er, you may also want to consider porting your driver code over the RTDM fr=
+amework, and use the rtdm_nrtsig support:
+http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__rtdmir=
+q.html
+
+> --John
+>=20
+>=20
+>=20
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+>=20
+
+
+--
+Philippe.
 
