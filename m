@@ -1,13 +1,13 @@
-Message-ID: <49CBBBF2.1010204@domain.hid>
-Date: Thu, 26 Mar 2009 18:31:30 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <BE4E1CF0-48F4-42EF-9C19-A4A01F43A597@domain.hid>
-	<5963B18A-B0A0-4048-841F-F3A7F239588A@comcast.net>
-In-Reply-To: <5963B18A-B0A0-4048-841F-F3A7F239588A@comcast.net>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] irq0 usage
+MIME-version: 1.0
+Content-transfer-encoding: 7BIT
+Content-disposition: inline
+Content-type: text/plain; charset=us-ascii
+From: Peter =?iso-8859-1?q?W=E4chtler?= <pwaechtler@domain.hid>
+Date: Fri, 27 Mar 2009 15:38:10 +0100
+Message-id: <200903271538.10434.pwaechtler@domain.hid>
+Subject: [Xenomai-core] use case: possible to boot Posix subsystem in <50ms
+	and then Linux?
+Reply-To: pwaechtler@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,17 +17,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Steven Seeger <steven.seeger@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Steven Seeger wrote:
-> I forgot to mention. In order to keep tsc as the clockdev I disabled  
-> the code in the kernel that removes it as the clocksource.
+Hi Xenomai developers,
 
-Even when idle=poll or nohlt the kernel disables the tsc as clocksource ?
-Also note that Xenomai does not care if Linux uses the tsc as
-clocksource or not to use the tsc.
+for automotive control units the boot time is essential. After power-up the 
+first status message has to be sent in about 50ms. This is usually achieved 
+by a RTOS with boot times far below.
 
--- 
-                                                 Gilles.
+Is it possible to construct a system with Xenomai that boots the POSIX (or 
+whatever) subsystem first and then start Linux. Or is there a dependency that 
+the subsystem can't run until Linux is up?
+
+That's the question ;)
+
+        Peter
 
