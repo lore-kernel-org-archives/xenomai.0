@@ -1,13 +1,13 @@
-Message-Id: <943F8CE6-B103-4ED5-99CA-29F84AD90593@domain.hid>
-From: Steven Seeger <steven.seeger@domain.hid>
-In-Reply-To: <200903271538.10434.pwaechtler@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed; delsp=yes
-Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (Apple Message framework v930.3)
-Date: Fri, 27 Mar 2009 10:41:46 -0400
+Message-ID: <49CCE84E.7060708@domain.hid>
+Date: Fri, 27 Mar 2009 15:53:02 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <200903271538.10434.pwaechtler@domain.hid>
+In-Reply-To: <200903271538.10434.pwaechtler@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-core] use case: possible to boot Posix subsystem in
-	<50ms and then Linux?
+ <50ms	and then Linux?
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,38 +20,42 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: pwaechtler@domain.hid
 Cc: xenomai@xenomai.org
 
-Peter,
-
-Please tell us more about your hardware platform. I know this is not =20
-possible on convention x86 boards with a PC compatible BIOS.
-
-Thanks,
-Steven
-
-On Mar 27, 2009, at 10:38 AM, Peter W=E4chtler wrote:
-
+Peter W=E4chtler wrote:
 > Hi Xenomai developers,
->
-> for automotive control units the boot time is essential. After power-=20=
-
-> up the
-> first status message has to be sent in about 50ms. This is usually =20
-> achieved
+>=20
+> for automotive control units the boot time is essential. After power-up=
+ the=20
+> first status message has to be sent in about 50ms. This is usually achi=
+eved=20
 > by a RTOS with boot times far below.
->
-> Is it possible to construct a system with Xenomai that boots the =20
-> POSIX (or
-> whatever) subsystem first and then start Linux. Or is there a =20
-> dependency that
+>=20
+> Is it possible to construct a system with Xenomai that boots the POSIX =
+(or=20
+> whatever) subsystem first and then start Linux. Or is there a dependenc=
+y that=20
 > the subsystem can't run until Linux is up?
->
-> That's the question ;)
->
->        Peter
->
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+
+Xenomai kernel-space support is started somewhere in the middle of the
+boot process, so, you can probably start kernel-space applications at
+that time. User-space only works when init has been started, which
+happens a bit later during the boot process. But you can start Xenomai
+applications before all the system services have been started.
+
+If you are using an x86, the bios itself lasts for more than 50 ms. On
+other architectures, boots time are lower, but there are still places in
+the kernel initialization that may be optimized. I have read articles on
+linuxdevices of people having worked on that, but never looked at what
+they had actually done.
+
+As a side note, I have a question for the automotive industry people.
+Would there be an interest in developing an OSEK skin for Xenomai? I
+have been thinking about that for some time, but still have not found
+time to start the job. I have read the OSEK spec, and found the
+interface pretty simple (though some part of the job has to be done
+offline, and annoyingly need to read XML files). The OSEK com spec, on
+the other hand, looks rather scary.
+
+--=20
+                                                 Gilles.
 
 
