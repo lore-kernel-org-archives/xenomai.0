@@ -1,46 +1,30 @@
-Message-ID: <49B54D2C.4030600@domain.hid>
-Date: Mon, 09 Mar 2009 18:09:00 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+Message-Id: <5CF8D9FD-0628-4C6B-BF3D-9A8AF1F5667D@comcast.net>
+From: Steven Seeger <steven.seeger@domain.hid>
+Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] __ipipe_run_isr vs. domain migration
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+Mime-Version: 1.0 (Apple Message framework v930.3)
+Date: Mon, 30 Mar 2009 18:46:20 -0400
+Subject: [Xenomai-core] pipe issue
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-Hi Philippe,
+List,
 
-as indicated on xenomai-core, there is at least a theoretical issue with
-__ipipe_sync_stage/__ipipe_run_isr and non-root IRQ handlers performing
-a domain migration. And it's not only limited to x86 but rather a
-cross-arch thing: While __ipipe_run_isr assumes, that the domain stays
-the same across a handler call
+We seem to have an issue where a rt_pipe_read with TM_NONBLOCK in a  
+loop never receives data. We loop and wait on a period for 1 second.  
+This used to work. If we just do a 1 second blocking read the data  
+will be received. We will write a simple test and send it tomorrow  
+morning. I figured I'd write this message in case it rang any bells.
 
-[e.g. x86-32:]
-	__clear_bit(IPIPE_SYNC_FLAG, &ipipe_cpudom_var(ipd, status)); \
-	ipd->irqs[irq].handler(irq, ipd->irqs[irq].cookie);	\
-	__set_bit(IPIPE_SYNC_FLAG, &ipipe_cpudom_var(ipd, status)); \
+Thanks,
+Steven
 
-i.e. ipd is not updated on return, __ipipe_sync_stage interestingly
-reloads the current domain
-
-	__ipipe_run_isr(ipd, irq);
-	p = ipipe_cpudom_ptr(ipipe_current_domain);
-
-Is it forbidden for some other reasons to change the domain from within
-an IRQ handler or is there a bug sleeping?
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
 
