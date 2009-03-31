@@ -1,37 +1,31 @@
-Message-ID: <49D1EA0B.2020300@domain.hid>
-Date: Tue, 31 Mar 2009 12:01:47 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <17B3FD74-07D0-4F36-9836-8E03943DF917@domain.hid>
-In-Reply-To: <17B3FD74-07D0-4F36-9836-8E03943DF917@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+From: Patrick <kpa_info@domain.hid>
+Content-Type: text/plain
+Date: Tue, 31 Mar 2009 11:11:28 +0200
+Message-Id: <1238490688.6422.3.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] geode gx1 latencies
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: [Xenomai-help] Xenomai on PXA320
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Steven Seeger <steven.seeger@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Steven Seeger wrote:
-> Per Gilles's suggestion, Mark at Stellartech ran latency and klatency  
-> with the TSC enabled "the hack" and without the TSC enabled. He also  
-> posted the CPU task measurements with our app running without the  
-> hack, which is horrible compared to when the TSC is on.
-> 
-> It looks like we are better off with the TSC. The worst case is much  
-> better, anyway.
+Hello,
 
-I do not understand these results. In the "nohack" case, is
-CONFIG_X86_TSC enabled ? In this case, you should not observe any
-difference.
+I would like to know if anybody have already experienced Xenomai on a
+PXA320 ARM machine ?
+Is it working fine ? With which kernel ?
 
--- 
-                                                 Gilles.
+Thanks for any information about Xenomai on PXA320.
+
+Patrick
+
+
+
 
