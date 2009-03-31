@@ -1,76 +1,159 @@
-Message-ID: <49DF36CE.6020105@domain.hid>
-Date: Fri, 10 Apr 2009 14:08:46 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-References: <49DF102B.4030107@domain.hid> <1239359009.7007.127.camel@domain.hid>
-In-Reply-To: <1239359009.7007.127.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Git pull request.
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 31 Mar 2009 13:52:52 +0200
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A0190259F@ARVMAIL1.mra.roland-man.biz>
+In-Reply-To: <49D0B7BE.8090207@domain.hid>
+From: <roderik.wildenburg@domain.hid>
+Subject: Re: [Xenomai-help] Some problems with shared memory
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: gilles.chanteperdrix@xenomai.org
+Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Fri, 2009-04-10 at 11:23 +0200, Gilles Chanteperdrix wrote:
->> Hi Philippe,
->>
->> I got some changes ready for head. What we want to include in the stable
->> branch remains to be discussed, once we agree, I will prepare another
->> branch for v2.4.x patches.
->>
-> 
-> No objection to merge back FPU fixes to 2.4.x before we close that
-> branch, when 2.5 is out. This would give us some time to make sure
-> everything is fine while running the -rc series.
+> > I have two problems with shared memory and Xenomai 2.4.6=20
+> (2.4.25 PPC-kernel):
+> >=20
+> > 1.) If I don=B4t page align the size of shared memory=20
+> (multiple of 4096) I get the following error message :
+> > "createshm mmap: No such device or address"
+> >=20
+> > Detailed programm output of attached testprogram :
+> > {
+> > prompt # ./killtest -c &
+> > [1] 104
+> > prompt # createshm mmap: No such device or address
+> > shmsize =3D 100000; errno : 6 =3D=3D Failed to create shm : -3
+> > killtest user exit !
+> > }
+> >=20
+> > You can reproduce this effect by commenting out line 60 in=20
+> the attached source file and calling the program as follows:
+> >=20
+> > prompt # killtest -c
+> >=20
+> >=20
+> > 2.) If I create 2 processes which use the same shared=20
+> memory and I kill the process which created the SHM before=20
+> (!) the other process, which only uses the SHM, the whole=20
+> system stalls.
+> > You can reproduce this with the attached testprogramm by=20
+> calling it in the following way :
+> >=20
+> > prompt # ./killtest -c &
+> > [1] 105
+> > prompt # ./killtest &
+> > [2] 106
+> > prompt # kill 105
+> > prompt # killtest user exit !
+> > [1]-  Done                    ./killtest -c
+> > prompt # kill 106
+> >=20
+> > System stalls   =20
+> >=20
+> >=20
+> > Is this a problem of Xenomai (Cleanup od SHM) or am I=20
+> creating/deleting the SHM in a wrong way ?
+> > Could you please try to reproduce this problem ?
+>=20
+> Could you try to reproduce these issues with xenomai 2.4.7=20
+> and the patch
+> posted here:
+> https://mail.gna.org/public/xenomai-help/2009-03/msg00098.html
+>=20
 
-Ok. I was thinking that it may be dangerous to merge the "Optimize x86
-fpu switches" patch, since it is not strictly necessary. But from the
-point of view of getting it tested ASAP by users, you are right. The
-concern about switchtest is that the changes once again break the driver
-ABI.
+Sorry, neither problem 1 nor problem 2 changed with 2.4.7 and your patch =
+:
 
-> 
->> The following changes since commit bbbaec33689d8e82b604745bb55209a83d79a4bc:
->>   Philippe Gerum (1):
->>         Test for self-deletion in a safer way
->>
->> are available in the git repository at:
->>
->>   git://git.xenomai.org/xenomai-gch.git for-upstream
->>
->> Gilles Chanteperdrix (4):
->>       Improve switchtest coverage.
->>       x86 FPU fixes
->>       Optimize x86 fpu switches.
->>       Fix rt_task_trampoline and rt_task_shadow error paths.
-> 
-> I'm generally ok with the patches, but the last one still leaves an
-> issue open: if the child thread dies upon -ENOMEM, the creator won't be
-> unblocked from pending on the completion sync in rt_task_create(). We
-> could live with this for a while (lacking memory at that point is a
-> clear sign that things are going to turn ugly very soon anyway), but
-> would we want to fix this, we would have to either fire the
-> __rt_task_create syscall with some NULL args and let it notice them,
-> then signal the completion block with an error status, or have something
-> like __xn_sys_sigcompletion to unblock the waiter directly from
-> userland.
+Output of killtest and Shared Memory not page aligned :
+------------------------------------------------------
+killtest2 # cat /proc/xenomai/version
+2.4.7
+killtest2 # ./killtest -c &
+[1] 107
+killtest2 # createshm mmap: No such device or address
+shmsize =3D 100000; errno : 6 =3D=3D Failed to create shm : -3
+killtest user exit !
+=20
+Output of killtest and Shared Memory page aligned :
+---------------------------------------------------
+killtest2 # cat /proc/xenomai/version
+2.4.7
+killtest2 # ./killtest -c &
+[1] 109
+killtest2 # ./killtest &
+[2] 110
+killtest2 #
+killtest2 # kill 109
+killtest user exit !
+[1]-  Done                    ./killtest -c
+killtest2 #
+killtest2 # kill 110=20
 
-I just reused the "fail" label of rt_task_trampoline without thinking
-about the consequences. Will try to see which idea is simpler to
-implement. In any case, I am afraid we will get yet another ABI change.
+System stalled
 
-A question about git now: can I "git reset" or "git branch -D" a remote
-branch ?
 
--- 
-                                                 Gilles.
+Page align problem is the same with Xenomai 2.3.5
+Output of killtest and Shared Memory not page aligned with xenomai =
+2.3.5:
+-------------------------------------------------------------------------=
+
+killtest2 # cat /proc/xenomai/version
+2.3.5
+killtest2 # ./killtest -c &
+[1] 120
+killtest2 # createshm mmap: No such device or address
+shmsize =3D 100000; errno : 6 =3D=3D Failed to create shm : -3
+killtest user exit !
+
+[1]+  Done(255)               ./killtest -c
+killtest2 #=20
+
+
+But the "stall"-problem does not occur with Xenomai 2.3.5 !
+Output of killtest and Shared Memory page aligned with xenomai 2.3.5:
+----------------------------------------------------------------------
+killtest2 # cat /proc/xenomai/version
+2.3.5
+killtest2 # ./killtest -c &
+[1] 122
+killtest2 #
+killtest2 # ./killtest &
+[2] 123
+killtest2 #
+killtest2 # kill 122
+killtest user exit !
+[1]-  Done                    ./killtest -c
+killtest2 #
+killtest2 # kill 123
+killtest2 # killtest user exit !
+
+[2]+  Done                    ./killtest
+killtest2 #
+killtest2 #
+
+
+Anything else I could test ?
+Does the problem accour on your testequipment ?
+
+Many thanks for your help
+Roderik
+
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
