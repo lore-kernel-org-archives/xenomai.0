@@ -1,35 +1,65 @@
-Message-Id: <0472DB27-ED82-4412-97D5-0D3FDE598C45@domain.hid>
-From: Steven Seeger <steven.seeger@domain.hid>
-In-Reply-To: <49DDBEF4.7@domain.hid>
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+From: Vikesh Rambaran <vikesh.rambaran@domain.hid>
+In-Reply-To: <37f89760903310217o29fe3435j286d5fa10dd6aa82@domain.hid>
+References: <37f89760903310217o29fe3435j286d5fa10dd6aa82@domain.hid>
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
-Mime-Version: 1.0 (Apple Message framework v930.3)
-Date: Thu, 9 Apr 2009 07:02:08 -0400
-References: <1E6B62F8-3C13-425C-A2E3-652E2FB0D6DE@comcast.net>
-	<49DDBEF4.7@domain.hid>
-Subject: Re: [Xenomai-core] native syscalls
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Date: Tue, 31 Mar 2009 11:37:17 +0200
+Message-Id: <1238492237.9965.40.camel@domain.hid>
+Mime-Version: 1.0
+Subject: Re: [Xenomai-help] Test xen_16500A.ko on different serial port
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Marcel Soulot <msoulot@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Apr 9, 2009, at 5:25 AM, Gilles Chanteperdrix wrote:
+Hi
+On Tue, 2009-03-31 at 11:17 +0200, Marcel Soulot wrote:
+> Hi 
+> 
+> I start with xenomai so I patch the kernel 2.6.26.7 with the version
+> 2.4.6.
+> 
+> So I try to test the xeno_16550A.ko driver generated instead of the
+> standard 16550A on serial port ttyS0 ioaddr=0x3f8 irq=4 (standard one)
+> and also on serial port in PCI card ttyS6 ioaddr=0xe0000400 irq=10.
+> 
+> I used the following command to substitute the 16550A driver used by
+> the xeno_16550A.ko:
+> 
+> > setserial /dev/ttyS0 uart none
+> > insmod ./xeno_16550.ko ioaddr=0x3f8 irq=4
+> 
+> I got the error message : 
+> 
+> xeno_16550A: Unkonwn parameter 'ioaddr'
+> insmod: error inserting './xeno_16550A.ko': -1 Unknown symbol in
+> module
+> 
 
-> As I told you in a voluntarily detailed private mail, only the traces
-> made by the I-pipe tracer are of any interest for us.
+Instead of 'ioaddr', try 'io' (without the apostrophes)
 
-Gilles, I will send that email to Mark who has hardware to run on. I  
-apologize for not doing this first but the email you speak of was lost  
-among the 20 or so we had yesterday. :)
+> and I got the same thing with the other port.
+> 
+> Can you explain me how I can load correctly the xeno_16550A.ko
+> 
+> Thanks for your help.
+> 
+> Marcel.
 
-Steven
+Thanx
+Vicki
+
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
 
 
