@@ -1,14 +1,13 @@
-Message-ID: <49D4ED4E.40707@domain.hid>
-Date: Thu, 02 Apr 2009 18:52:30 +0200
+Message-ID: <49D513D8.5020001@domain.hid>
+Date: Thu, 02 Apr 2009 21:36:56 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <49D481EF.1010908@domain.hid>
-In-Reply-To: <49D481EF.1010908@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig01499DA12910E7BFD03E90A6"
+	boundary="------------enig535AC35B053761A3B39F03D7"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] Fix rt_task_shadow error path without __thread.
+Subject: [Xenomai-core] [PATCH] libnative: Avoid double-evaluation of
+	rt_task_self()
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,81 +17,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig01499DA12910E7BFD03E90A6
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enig535AC35B053761A3B39F03D7
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> Hi,
->=20
-> it seems that rt_task_shadow currently leaves the self tsd assigned (an=
-d
-> uninitialized) in case of error. So, here is an attempt to fix this
-> situation:
+[ can be pulled from git.xenomai.org/xenomai-jki.git queues/assorted ]
 
-Good point.
+Keep the result of rt_task_self() in a local variable to avoid the
+second invocation.
 
->=20
-> Index: src/skins/native/task.c
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> --- src/skins/native/task.c     (revision 4727)
-> +++ src/skins/native/task.c     (working copy)
-> @@ -187,15 +187,8 @@
->=20
->  #ifdef HAVE___THREAD
->         self =3D &__native_self;
-> -#else /* !HAVE___THREAD */
-> -       self =3D pthread_getspecific(__native_tskey);
-> +#endif /* HAVE___THREAD */
->=20
-> -       if (!self)
-> -               self =3D malloc(sizeof(*self));
-> -
-> -       pthread_setspecific(__native_tskey, self);
-> -#endif /* !HAVE___THREAD */
-> -
->         if (task =3D=3D NULL)
->                 task =3D &task_desc; /* Discarded. */
->=20
-> @@ -217,9 +210,13 @@
->                                 NULL);
->=20
->         if (!err) {
-> -               if (self)
-> -                       *self =3D *task;
-> +#ifndef HAVE___THREAD
-> +               self =3D malloc(sizeof(*self));
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
 
-Hmm, this creates a potential relaxation point (and may raise SIGXCPU if
-the warn flag is set). I would prefer to keep early allocation and
-release the chunk properly on error (as well as reset the tsd).
+ src/skins/native/task.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
->=20
-> +               pthread_setspecific(__native_tskey, self);
-> +#endif /* !HAVE___THREAD */
-> +               *self =3D *task;
-
-And if self is NULL, ie. malloc failed for whatever obscure reasons? The
-existing code skipped over this, maybe we should actually handle it and
-return an error code.
-
-> +
->                 xeno_set_current();
->=20
->                 if (mode & T_WARNSW)
->=20
->=20
-
-Jan
+diff --git a/src/skins/native/task.c b/src/skins/native/task.c
+index 905d366..149717b 100644
+--- a/src/skins/native/task.c
++++ b/src/skins/native/task.c
+@@ -247,10 +247,11 @@ int rt_task_resume(RT_TASK *task)
+=20
+ int rt_task_delete(RT_TASK *task)
+ {
++	RT_TASK *self;
+ 	int err;
+=20
+ 	if (task =3D=3D NULL ||
+-	    (rt_task_self() && task->opaque =3D=3D rt_task_self()->opaque)) {
++	    ((self =3D rt_task_self()) && self->opaque =3D=3D task->opaque)) {
+ 		/* Silently migrate to avoid raising SIGXCPU. */
+ 		XENOMAI_SYSCALL1(__xn_sys_migrate, XENOMAI_LINUX_DOMAIN);
+ 		pthread_exit(NULL);
 
 
---------------enig01499DA12910E7BFD03E90A6
+--------------enig535AC35B053761A3B39F03D7
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -101,10 +64,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAknU7VIACgkQniDOoMHTA+ndFgCfe2CRMQI7+b9hgfP92DUZ3EmG
-Il0An3lLd/KO2MiPlLM5C8Knjajf/JVJ
-=rysy
+iEYEARECAAYFAknVE9wACgkQniDOoMHTA+nBnACcCgaxOsSonkuC7QyMjD4i+9+O
+Zl8AniEIdyKnKPF5/ezpOUwS1oWCDRw2
+=FykL
 -----END PGP SIGNATURE-----
 
---------------enig01499DA12910E7BFD03E90A6--
+--------------enig535AC35B053761A3B39F03D7--
 
