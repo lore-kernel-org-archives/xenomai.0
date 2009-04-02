@@ -1,60 +1,112 @@
-From: Vikesh Rambaran <vikesh.rambaran@domain.hid>
-In-Reply-To: <1240927256.6990.382.camel@domain.hid>
-References: <49F69924.8070001@domain.hid> <1240913240.6990.347.camel@domain.hid>
-	<49F6F4DD.6000902@domain.hid> <1240926119.6990.368.camel@domain.hid>
-	<49F70883.4080005@domain.hid>  <1240927256.6990.382.camel@domain.hid>
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
-Date: Wed, 29 Apr 2009 09:52:07 +0200
-Message-Id: <1240991527.6300.21.camel@domain.hid>
-Mime-Version: 1.0
-Subject: Re: [Xenomai-core] xenomai 2.5 rc1 timing computations.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+From: "Charlton, John" <john.charlton@domain.hid>
+Date: Thu, 2 Apr 2009 08:01:43 -0400
+Message-ID: <CF7FB0793253794F9F45991443E5FE200513F8F2AB@us194mx002.tycoelectronics.net>
+References: <CF7FB0793253794F9F45991443E5FE200513A0636F@us194mx002.tycoelectronics.net>
+	<49BFC742.8010409@domain.hid>
+	<54F3C3916FD0724091580775FA3604FB752B0BE8@domain.hid>
+In-Reply-To: <54F3C3916FD0724091580775FA3604FB752B0BE8@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] Port rtai rt_request_srq to xenomai
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: "rpm@xenomai.org" <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi
+The problem with the undefined symbols was due to compiling two external mo=
+dules outside of the kernel tree and then trying to access exported symbols=
+ from one module in the other external module.  The solution is all well do=
+cumented in the linux 2.6 kernel document at: Documentation/kbuild/modules.=
+txt in the kernel source.  The solution I used is to put the Module.symvers=
+ file from the external module exporting the symbols into the build directo=
+ry of the module using the exported symbols.  This worked well keeping both=
+ modules outside of the kernel tree.  There are two other methods to accomp=
+lish this documented in the above mentioned modules.txt file.
 
-On Tue, 2009-04-28 at 16:00 +0200, Philippe Gerum wrote:
-> On Tue, 2009-04-28 at 15:45 +0200, Gilles Chanteperdrix wrote:
-> > > We don't care that much about changing the ABI between -rc1 and -rc2
-> > > actually, so it mostly depends whether we want to backport the fix to
-> > > 2.4 regarding the tsc->ns conversion, since we do not have any nodiv
-> > > implementation for the ns->tsc one there yet.
-> > 
-> > But we have llmulshft, do we ? which means that we do have the problem
-> > of approximate cpu frequency.
-> > 
->  
-> So I guess your answer to the "should backport" question is yes, we
-> should. Ok, so we do have to run xnarch_init_u32frac and friends from
-> userland. I will try to find a better excuse for procrastinating then...
-> 
+This was not an issue in the 2.4 kernel since external symbols are all reso=
+lved at module load time by insmod but in the 2.6 kernel the external symbo=
+ls are resolved at build/link time.
 
-Thanx for the effort 
+--John
 
-Just for info, i tested adeos patch 2.6.28.9-x86-2.2-07 with Xenomai
-2.4.7 with regards the timing (as described in the thread "adeos patch
-2.6.28.9-x86-2.2-07 feedback" on the xenomai-help mailing list)
+-----Original Message-----
+From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] On=
+ Behalf Of Charlton, John
+Sent: Friday, March 27, 2009 11:02 AM
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai-help] Port rtai rt_request_srq to xenomai
 
-I compared those results with the ones i obtained from
-adeos-ipipe-2.6.24-x86-2.0-07.patch with Xenomai 2.4.5.
+Thank you.  I was able to port the rtai kernel module driver to xenomai rtd=
+m and it loads using insmod.  I see it in the /proc/modules list and it is =
+properly displaying the /proc/<driver name> entries.  This kernel module ex=
+ports functions using EXPORT_SYMBOL().  I compile and load another kernel m=
+odules that uses the first modules functions but it fails to load: The seco=
+nd kernel module has unknown symbol warnings for the first modules exported=
+ symbols when I build the module and also when I load it and it fails to lo=
+ad.  When I look in the /proc/kallsyms list the symbols exported by the fir=
+st module are all there.
 
-My testing with Xenomai 2.5 rc1 was just to boot and see if the lockup
-problem was still present. Would you would like me to do the latency
-tests with Xenomai 2.5 rc1 ?
+It seems to be a module version problem since the error output is: no symbo=
+l version for <symbol name>
 
-Keep well
-Vicki
+How do I specify to the second module that the undefined symbols (external =
+functions) are in the first module at runtime?  This was not necessary in t=
+he rtai linux 2.4 kernel since the modules were just object files that reso=
+lved symbols at load time. I would rather not include these drivers in the =
+kernel config/build if I can avoid it.
+
+--John
 
 
+-----Original Message-----
+From: Philippe Gerum [mailto:rpm@xenomai.org]
+Sent: Tuesday, March 17, 2009 11:53 AM
+To: Charlton, John
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai-help] Port rtai rt_request_srq to xenomai
+
+Charlton, John wrote:
+> I am porting an rtai linux 2.4 kernel driver to xenomai-2.4.6.1 patched l=
+inux 2.26.27.7 kernel.  I have done a fair amount of searching for the rtai=
+ functions: rt_request_srq()/rt_free_srq() and have not found an equivalent=
+ in xenomai. Would appreciate advice on how this can be done in xenomai or =
+if the equivalent of this is not available in xenomai. It looks like rthal_=
+apc_alloc() may be what I am looking for.
+>
+
+It is indeed what you are looking for, if you want a 1:1 replacement. Howev=
+er, you may also want to consider porting your driver code over the RTDM fr=
+amework, and use the rtdm_nrtsig support:
+http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__rtdmir=
+q.html
+
+> --John
+>=20
+>=20
+>=20
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+>=20
 
 
+--
+Philippe.
+
+_______________________________________________
+Xenomai-help mailing list
+Xenomai-help@domain.hid
+https://mail.gna.org/listinfo/xenomai-help
 
