@@ -1,12 +1,12 @@
-Message-ID: <49D5F4DC.2020109@domain.hid>
-Date: Fri, 03 Apr 2009 13:37:00 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <47104.41238755290008.JavaMail.root@domain.hid>
-In-Reply-To: <47104.41238755290008.JavaMail.root@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Not able to execute xenoscope.
+In-Reply-To: <49D1E294.4070201@domain.hid>
+References: <1238490688.6422.3.camel@domain.hid>
+	<49D1E294.4070201@domain.hid>
+Date: Fri, 3 Apr 2009 18:15:42 -0300
+Message-ID: <8b216e9e0904031415o2cd0ab6bja24b7e30a7543444@domain.hid>
+From: =?ISO-8859-1?Q?Felipe_Brand=E3o_Cavalcanti?= <cavalkaf@domain.hid>
+Content-Type: multipart/alternative; boundary=00163616498f1a64ef0466ad0dff
+Subject: Re: [Xenomai-help] Xenomai on PXA320
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,61 +16,106 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: virendra.agadi@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-virendra.agadi@domain.hid wrote:
-> HI All,
-> I have recently joined the xenomai-help group.
-> 
-> I want to upgrade uItron skin to the spec 4.0 as my application to be ported is uITRON 4.0 complient.
-> I have built the adeos patch along with linux kernel on x86 machine(PC)and also installed xenomai patched kernel.
-> Versions used:
-> Linux kernel: 2.6.25.11 (Fedora 9)
-> Xenomai Version: xenomai-2.4.7
-> Xenosim Version: xenosim-2.4.7
-> 
-> Now I am trying to configure Xenosim, for basic testing and profiling. Going forward I would be extensively using Xenosim to test and profile uITRON 4.0 skin. I hope I will be able to commit uITRON-4.0 skin along with Xenosim testsuite for uITRON in future.
-> 
-> I built xenosim successfully except got one compiler error related to type "__user" in files heap.h,heap.c,queue.c and queue.h, which I resolved by adding /linux/conpiler.h in files heap.h and queue.h under path ""xenomai-2.4.7/include/native". 
-> I installed the Xenosim as refered in README.txt present under xenosim directory.
-> 
-> I got the targets Xenoscope and gcic installed in xenosim build DIR/bin
-> Then I tried with posix demos present along with the xenosim package.
-> 
-> I followed the steps:
->> export PATH=/usr/xenomai/bin:$PATH
->> export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
->> cd ../xenomai-2.4.7/sim_build/skins/posix/demos
->> make satch_sim
->> xenoscope satch_sim
-> 
-> but I could not get the xenoscpe UI window.
-> I also tried just running xenoscope but still I am not getting the window.
-> 
-> After debuging using GDB I see that in file "bridge.cc", it could successfully initialize Tcl_Init(tclInterp) and Tk_Init(tclInterp), 
-> but at function Tix_Init(tclInterp) it gives segmentation fault, I could not step into the function.
-> So basically Tix_Init is failing/crashing for me, due to which I am not getting xenoscope window.
-> 
-> Please let me know if there is any version mismatch in Tix,TCL or TK? or is there any other issue?
-> Here are the versions of TCL.TK and TIX
-> TCL version : 8.3.5
-> TK version: 8.3.5
-> TIX version: 4.1
-> 
-> As I am new to Linux and also Xenomai/Xenosim, I am not sure if the Xenosim problems are to do with the way I configure/build/install Xenosim.
-> Please any one can guide me as to why Tix_Init() got crashed?
+--00163616498f1a64ef0466ad0dff
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-We already answered questions about xenomsim to people working for the
-same company as you. So, please communicate with them, or browse the
-archives to find the answer we gave.
+I did get it working very well in a PXA270 (Gumstix Verdex). I am working o=
+n
+a little tutorial, but there should be no changes on the xenomai side of
+things, except that you need to run both xeno-test and latency with a -p
+1000 flag.
 
-As for your promise to maybe contribute the uitron v4.0 support, it is
-very kind of you. But you see, we saw several times people promising to
-contribute things, getting help, and never contribute anything. So, this
-time we will proceed differently: show us the undebugged code first, and
-you will help you debug it.
+Hope this helps,
+        -Felipe Brand=E3o Cavalcanti
+        LARA - Laboratory of Robotics and Automation
+        Department of Electrical Engineering
+        UnB - University of Bras=EDlia, Brazil
+        http://www.lara.unb.br/
 
--- 
-					    Gilles.
+On Tue, Mar 31, 2009 at 6:29 AM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> Patrick wrote:
+> > Hello,
+> >
+> > I would like to know if anybody have already experienced Xenomai on a
+> > PXA320 ARM machine ?
+> > Is it working fine ? With which kernel ?
+> >
+> > Thanks for any information about Xenomai on PXA320.
+>
+> Xenomai is supposed to support PXA. So please try and tell us whether it
+> works. Starting with the latest release (2.4.7) is really recommended.
+>
+> --
+>                                                  Gilles.
+>
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+>
+
+
+
+--=20
+*=BA=A4., =B8=B8,.=A4=BA*=A8*=A4., =B8=B8,.=A4=BA*=A8*
+Cavalkaf (aka Felipe) <cavalkaf@domain.hid>
+AIM: Cavalkaf | MSN: cavalkaf2@domain.hid
+Check out <http://www.flickr.com/photos/rbcav2003/>
+
+--00163616498f1a64ef0466ad0dff
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+I did get it working very well in a PXA270 (Gumstix Verdex). I am working o=
+n a little tutorial, but there should be no changes on the xenomai side of =
+things, except that you need to run both xeno-test and latency with a -p 10=
+00 flag.<br>
+<br>Hope this helps,<br>=A0=A0=A0=A0=A0=A0=A0 -Felipe Brand=E3o Cavalcanti<=
+br>=A0=A0=A0=A0=A0=A0=A0 LARA - Laboratory of Robotics and Automation<br>=
+=A0=A0=A0=A0=A0=A0=A0 Department of Electrical Engineering<br>=A0=A0=A0=A0=
+=A0=A0=A0 UnB - University of Bras=EDlia, Brazil<br>=A0=A0=A0=A0=A0=A0=A0 <=
+a href=3D"http://www.lara.unb.br/">http://www.lara.unb.br/</a><br>
+<br><div class=3D"gmail_quote">On Tue, Mar 31, 2009 at 6:29 AM, Gilles Chan=
+teperdrix <span dir=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org=
+mai.org">gilles.chanteperdrix@xenomai.org</a>&gt;</span> wrote:<br><blockqu=
+ote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, 204, 204=
+); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+<div class=3D"im">Patrick wrote:<br>
+&gt; Hello,<br>
+&gt;<br>
+&gt; I would like to know if anybody have already experienced Xenomai on a<=
+br>
+&gt; PXA320 ARM machine ?<br>
+&gt; Is it working fine ? With which kernel ?<br>
+&gt;<br>
+&gt; Thanks for any information about Xenomai on PXA320.<br>
+<br>
+</div>Xenomai is supposed to support PXA. So please try and tell us whether=
+ it<br>
+works. Starting with the latest release (2.4.7) is really recommended.<br>
+<br>
+--<br>
+<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 Gilles.<br>
+</font><div><div></div><div class=3D"h5"><br>
+_______________________________________________<br>
+Xenomai-help mailing list<br>
+<a href=3D"mailto:Xenomai-help@domain.hid">Xenomai-help@domain.hid</a><br>
+<a href=3D"https://mail.gna.org/listinfo/xenomai-help" target=3D"_blank">ht=
+tps://mail.gna.org/listinfo/xenomai-help</a><br>
+</div></div></blockquote></div><br><br clear=3D"all"><br>-- <br>*=BA=A4., =
+=B8=B8,.=A4=BA*=A8*=A4., =B8=B8,.=A4=BA*=A8*<br>Cavalkaf (aka Felipe) &lt;<=
+a href=3D"mailto:cavalkaf@domain.hid">cavalkaf@domain.hid</a>&gt;<br>AIM: Cav=
+alkaf | MSN: <a href=3D"mailto:cavalkaf2@domain.hid">cavalkaf2@domain.hid</a>=
+<br>
+Check out &lt;<a href=3D"http://www.flickr.com/photos/rbcav2003/">http://ww=
+w.flickr.com/photos/rbcav2003/</a>&gt;<br>
+
+--00163616498f1a64ef0466ad0dff--
 
