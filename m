@@ -1,15 +1,11 @@
-From: "Charlton, John" <john.charlton@domain.hid>
-Date: Thu, 2 Apr 2009 08:01:43 -0400
-Message-ID: <CF7FB0793253794F9F45991443E5FE200513F8F2AB@us194mx002.tycoelectronics.net>
-References: <CF7FB0793253794F9F45991443E5FE200513A0636F@us194mx002.tycoelectronics.net>
-	<49BFC742.8010409@domain.hid>
-	<54F3C3916FD0724091580775FA3604FB752B0BE8@domain.hid>
-In-Reply-To: <54F3C3916FD0724091580775FA3604FB752B0BE8@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Date: Fri, 3 Apr 2009 06:36:28 -0400
+From: virendra.agadi@domain.hid
+Message-ID: <8592949.31238754988785.JavaMail.root@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Port rtai rt_request_srq to xenomai
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Not able to execute xenoscope.
+Reply-To: virendra.agadi@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,94 +15,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "rpm@xenomai.org" <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-The problem with the undefined symbols was due to compiling two external mo=
-dules outside of the kernel tree and then trying to access exported symbols=
- from one module in the other external module.  The solution is all well do=
-cumented in the linux 2.6 kernel document at: Documentation/kbuild/modules.=
-txt in the kernel source.  The solution I used is to put the Module.symvers=
- file from the external module exporting the symbols into the build directo=
-ry of the module using the exported symbols.  This worked well keeping both=
- modules outside of the kernel tree.  There are two other methods to accomp=
-lish this documented in the above mentioned modules.txt file.
+HI All,
 
-This was not an issue in the 2.4 kernel since external symbols are all reso=
-lved at module load time by insmod but in the 2.6 kernel the external symbo=
-ls are resolved at build/link time.
+I have recently joined the xenomai-help group.
 
---John
+I want to upgrade uItron skin to the spec 4.0 as my application to be ported is uITRON 4.0 complient.
+I have built the adeos patch along with linux kernel on x86 machine(PC)and also installed xenomai patched kernel.
 
------Original Message-----
-From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] On=
- Behalf Of Charlton, John
-Sent: Friday, March 27, 2009 11:02 AM
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] Port rtai rt_request_srq to xenomai
+Versions used:
+Linux kernel: 2.6.25.11 (Fedora 9)
+Xenomai Version: xenomai-2.4.7
+Xenosim Version: xenosim-2.4.7
 
-Thank you.  I was able to port the rtai kernel module driver to xenomai rtd=
-m and it loads using insmod.  I see it in the /proc/modules list and it is =
-properly displaying the /proc/<driver name> entries.  This kernel module ex=
-ports functions using EXPORT_SYMBOL().  I compile and load another kernel m=
-odules that uses the first modules functions but it fails to load: The seco=
-nd kernel module has unknown symbol warnings for the first modules exported=
- symbols when I build the module and also when I load it and it fails to lo=
-ad.  When I look in the /proc/kallsyms list the symbols exported by the fir=
-st module are all there.
+Now I am trying to configure Xenosim, for basic testing and profiling. Going forward I would be extensively using Xenosim to test and profile uITRON 4.0 skin. I hope I will be able to commit uITRON-4.0 skin along with Xenosim testsuite for uITRON in future.
 
-It seems to be a module version problem since the error output is: no symbo=
-l version for <symbol name>
+I built xenosim successfully except got one compiler error related to type "__user" in files heap.h,heap.c,queue.c and queue.h, which I resolved by adding /linux/conpiler.h in files heap.h and queue.h under path ""xenomai-2.4.7/include/native". 
+I installed the Xenosim as refered in README.txt present under xenosim directory.
 
-How do I specify to the second module that the undefined symbols (external =
-functions) are in the first module at runtime?  This was not necessary in t=
-he rtai linux 2.4 kernel since the modules were just object files that reso=
-lved symbols at load time. I would rather not include these drivers in the =
-kernel config/build if I can avoid it.
+I got the targets Xenoscope and gcic installed in xenosim build DIR/bin
+Then I tried with posix demos present along with the xenosim package.
 
---John
+I followed the steps:
+> export PATH=/usr/xenomai/bin:$PATH
+> export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+> cd ../xenomai-2.4.7/sim_build/skins/posix/demos
+>make satch_sim
+>xenoscope satch_sim
 
+but I could not get the xenoscpe UI window.
+I also tried just running xenoscope but still I am not getting the window.
 
------Original Message-----
-From: Philippe Gerum [mailto:rpm@xenomai.org]
-Sent: Tuesday, March 17, 2009 11:53 AM
-To: Charlton, John
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] Port rtai rt_request_srq to xenomai
+After debuging using GDB I see that in file "bridge.cc", it could successfully initialize Tcl_Init(tclInterp) and Tk_Init(tclInterp), 
+but at function Tix_Init(tclInterp) it gives segmentation fault, I could not step into the function.
+So basically Tix_Init is failing/crashing for me, due to which I am not getting xenoscope window.
 
-Charlton, John wrote:
-> I am porting an rtai linux 2.4 kernel driver to xenomai-2.4.6.1 patched l=
-inux 2.26.27.7 kernel.  I have done a fair amount of searching for the rtai=
- functions: rt_request_srq()/rt_free_srq() and have not found an equivalent=
- in xenomai. Would appreciate advice on how this can be done in xenomai or =
-if the equivalent of this is not available in xenomai. It looks like rthal_=
-apc_alloc() may be what I am looking for.
->
+Please let me know if there is any version mismatch in Tix,TCL or TK? or is there any other issue?
+Here are the versions of TCL.TK and TIX
+TCL version : 8.3.5
+TK version: 8.3.5
+TIX version: 4.1
 
-It is indeed what you are looking for, if you want a 1:1 replacement. Howev=
-er, you may also want to consider porting your driver code over the RTDM fr=
-amework, and use the rtdm_nrtsig support:
-http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__rtdmir=
-q.html
+As I am new to Linux and also Xenomai/Xenosim, I am not sure if the Xenosim problems are to do with the way I configure/build/install Xenosim.
 
-> --John
->=20
->=20
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->=20
+Please any one can guide me as to why Tix_Init() got crashed?
+
+Thanks in Advance.
+
+Kind Regards,
+Virendra.
+
 
 
 --
-Philippe.
-
-_______________________________________________
-Xenomai-help mailing list
-Xenomai-help@domain.hid
-https://mail.gna.org/listinfo/xenomai-help
+This message was sent on behalf of virendra.agadi@domain.hid at openSubscriber.com
+http://www.opensubscriber.com/messages/xenomai@xenomai.org
 
