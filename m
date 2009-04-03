@@ -1,6 +1,6 @@
-Date: Fri, 3 Apr 2009 06:36:28 -0400
+Date: Fri, 3 Apr 2009 06:41:30 -0400
 From: virendra.agadi@domain.hid
-Message-ID: <8592949.31238754988785.JavaMail.root@domain.hid>
+Message-ID: <47104.41238755290008.JavaMail.root@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
@@ -18,12 +18,10 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: xenomai@xenomai.org
 
 HI All,
-
 I have recently joined the xenomai-help group.
 
 I want to upgrade uItron skin to the spec 4.0 as my application to be ported is uITRON 4.0 complient.
 I have built the adeos patch along with linux kernel on x86 machine(PC)and also installed xenomai patched kernel.
-
 Versions used:
 Linux kernel: 2.6.25.11 (Fedora 9)
 Xenomai Version: xenomai-2.4.7
@@ -58,14 +56,11 @@ TK version: 8.3.5
 TIX version: 4.1
 
 As I am new to Linux and also Xenomai/Xenosim, I am not sure if the Xenosim problems are to do with the way I configure/build/install Xenosim.
-
 Please any one can guide me as to why Tix_Init() got crashed?
 
 Thanks in Advance.
-
 Kind Regards,
 Virendra.
-
 
 
 --
