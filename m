@@ -1,13 +1,9 @@
-Message-ID: <49D9E000.4070009@domain.hid>
-Date: Mon, 06 Apr 2009 12:57:04 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <b131c9f0903230100x1b2aa2fet9e2b0efe68a7a77f@domain.hid>	<49C7899F.5030306@domain.hid>	<b131c9f0903240037q446193f5hbfdd3ade40ea2af4@domain.hid>	<49C91B24.2020304@domain.hid>	<b131c9f0903241437s661b9bd3v504b14f83b1b9c86@domain.hid>	<49C95A76.4020802@domain.hid>	<b131c9f0903250636o85af46au240a04ab33ebb599@domain.hid>
-	<b131c9f0904060126n12158c5dqd37d71769cc8aff5@domain.hid>
-In-Reply-To: <b131c9f0904060126n12158c5dqd37d71769cc8aff5@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai LTTng support
+Date: Mon, 6 Apr 2009 18:38:50 +0200
+Message-ID: <37f89760904060938n2f1d2b1je841f1e8b1f82f89@domain.hid>
+From: Marcel Soulot <msoulot@domain.hid>
+Content-Type: multipart/alternative; boundary=0016364c7edd8621ed0466e58843
+Subject: [Xenomai-help] Interrupt sharing
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,63 +13,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: vikesh rambaran <vikesh.rambaran@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-vikesh rambaran wrote:
-> Hi
-> Apologies for being quiet for a while. Was away for a few days...
-> 
->>>> Besides that, the kernel does boot although X + keyboard + mouse seems
->>> to
->>>> lock up occasionally.
->>> Is the lockup permanent then, or does the system recover from it later?
->>>
->> Lockup is permanent and requires a reboot. I unfortunately do not have a
->> network connection to a second PC on this setup to see what else is alive.
->>
-> 
->>>> It does not seem to be LTTng specific, as i've noticed it with a xenomai
->>>> enabled kernel only as well. Will try
->>>> isolating the problem with a vanilla kernel soon.
->>>>
->>>> For reference, the other LTT tools used are
->>>> LTT control  : ltt-control-0.62-23122008
->>>> LTTV          : lttv-0.12.9-29012009
->>>>
->>>> Both obtained from  http://ltt.polymtl.ca/
->>>>
-> Some feedback
-> 
-> I've managed to test the kernel on three different PCs :
-> intel core 2, intel core duo, amd athlon 64 x 2 (all running 32 bit
-> kernels).
-> 
-> The lockup occurs after a few minutes and is permanent with no network
-> access after the lockup.
-> 
-> Vanilla kernel did not lock up during the hour that i used it
-> 
-> I've just noticed on the intel core 2 PC, dmesg gives an error setting up
-> the hardware clock.
-> Will investigate this one further.
-> 
-> The kernel config is attached.
-> If anyone else has experienced similar issues and found a solution, please
-> let me know
+--0016364c7edd8621ed0466e58843
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-We've an open ticket from our customer about some mysterious "lockup
-when starting xosview". But the current state is "no longer
-reproducible", even at customer site. :-|
+Hi,
 
-Your lockup only happens when X is running? Are there any last words on
-the serial console if you redirect kernel messages to it? Otherwise,
-could you also try with nmi_watchdog=2 and
-CONFIG_XENO_HW_NMI_DEBUG_LATENCY enabled?
+I wonder if I can manage the same IRQ with xenomai and the kernel ?
 
-Jan
+I have a multiple devices (8 UARTs and GPIOs...) on a PCI card and all share
+the same IRQ.
+Can I open for example 4 uart with xenomai and the 4 others with the kernel
+?
+How can work the interrupt share mecanism between xenomai and the kernel ?
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Thanks for your help,
+Marcel.
+
+--0016364c7edd8621ed0466e58843
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi,<br><br>I wonder if I can manage the same IRQ with xenomai and the kerne=
+l ?<br><br>I have a multiple devices (8 UARTs and GPIOs...) on a PCI card a=
+nd all share the same IRQ.<br>Can I open for example 4 uart with xenomai an=
+d the 4 others with the kernel ?<br>
+How can work the interrupt share mecanism between xenomai and the kernel ?<=
+br><br>Thanks for your help,<br>Marcel.<br>=A0 <br>
+
+--0016364c7edd8621ed0466e58843--
 
