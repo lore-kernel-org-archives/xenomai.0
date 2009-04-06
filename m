@@ -1,13 +1,13 @@
-Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 6 Apr 2009 10:47:42 +0200
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A01903012@domain.hid>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A0190259F@ARVMAIL1.mra.roland-man.biz>
-From: <roderik.wildenburg@domain.hid>
-Subject: [Xenomai-help]  Some problems with shared memory
+In-Reply-To: <b131c9f0903230122r713d131x7bb516ed9d00a42a@domain.hid>
+References: <1237546591.9844.115.camel@domain.hid>
+	<49C381F8.9070107@domain.hid>
+	<b131c9f0903230122r713d131x7bb516ed9d00a42a@domain.hid>
+Date: Mon, 6 Apr 2009 11:30:05 +0200
+Message-ID: <b131c9f0904060230g499a0c37l37cbc48c5895e09b@domain.hid>
+From: vikesh rambaran <vikesh.rambaran@domain.hid>
+Content-Type: multipart/alternative; boundary=000325579e822e714b0466df8b84
+Subject: Re: [Xenomai-help] rtserial interface stalls
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,150 +17,209 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: roderik.wildenburg@domain.hid, gilles.chanteperdrix@xenomai.org
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Hi Gurus,
+--000325579e822e714b0466df8b84
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-has anybody been able to reproduce this topic or is it just a problem of =
-my hardware and software constellation ?
+Hi there
 
-Roderik
+On Mon, Mar 23, 2009 at 10:22 AM, vikesh rambaran <vikesh.rambaran@domain.hid
+> wrote:
 
-> > > I have two problems with shared memory and Xenomai 2.4.6=20
-> > (2.4.25 PPC-kernel):
-> > >=20
-> > > 1.) If I don=B4t page align the size of shared memory=20
-> > (multiple of 4096) I get the following error message :
-> > > "createshm mmap: No such device or address"
-> > >=20
-> > > Detailed programm output of attached testprogram :
-> > > {
-> > > prompt # ./killtest -c &
-> > > [1] 104
-> > > prompt # createshm mmap: No such device or address
-> > > shmsize =3D 100000; errno : 6 =3D=3D Failed to create shm : -3
-> > > killtest user exit !
-> > > }
-> > >=20
-> > > You can reproduce this effect by commenting out line 60 in=20
-> > the attached source file and calling the program as follows:
-> > >=20
-> > > prompt # killtest -c
-> > >=20
-> > >=20
-> > > 2.) If I create 2 processes which use the same shared=20
-> > memory and I kill the process which created the SHM before=20
-> > (!) the other process, which only uses the SHM, the whole=20
-> > system stalls.
-> > > You can reproduce this with the attached testprogramm by=20
-> > calling it in the following way :
-> > >=20
-> > > prompt # ./killtest -c &
-> > > [1] 105
-> > > prompt # ./killtest &
-> > > [2] 106
-> > > prompt # kill 105
-> > > prompt # killtest user exit !
-> > > [1]-  Done                    ./killtest -c
-> > > prompt # kill 106
-> > >=20
-> > > System stalls   =20
-> > >=20
-> > >=20
-> > > Is this a problem of Xenomai (Cleanup od SHM) or am I=20
-> > creating/deleting the SHM in a wrong way ?
-> > > Could you please try to reproduce this problem ?
-> >=20
-> > Could you try to reproduce these issues with xenomai 2.4.7=20
-> > and the patch
-> > posted here:
-> > https://mail.gna.org/public/xenomai-help/2009-03/msg00098.html
-> >=20
->=20
-> Sorry, neither problem 1 nor problem 2 changed with 2.4.7 and=20
-> your patch :
->=20
-> Output of killtest and Shared Memory not page aligned :
-> ------------------------------------------------------
-> killtest2 # cat /proc/xenomai/version
-> 2.4.7
-> killtest2 # ./killtest -c &
-> [1] 107
-> killtest2 # createshm mmap: No such device or address
-> shmsize =3D 100000; errno : 6 =3D=3D Failed to create shm : -3
-> killtest user exit !
-> =20
-> Output of killtest and Shared Memory page aligned :
-> ---------------------------------------------------
-> killtest2 # cat /proc/xenomai/version
-> 2.4.7
-> killtest2 # ./killtest -c &
-> [1] 109
-> killtest2 # ./killtest &
-> [2] 110
-> killtest2 #
-> killtest2 # kill 109
-> killtest user exit !
-> [1]-  Done                    ./killtest -c
-> killtest2 #
-> killtest2 # kill 110=20
->=20
-> System stalled
->=20
->=20
-> Page align problem is the same with Xenomai 2.3.5
-> Output of killtest and Shared Memory not page aligned with=20
-> xenomai 2.3.5:
-> --------------------------------------------------------------
-> -----------
-> killtest2 # cat /proc/xenomai/version
-> 2.3.5
-> killtest2 # ./killtest -c &
-> [1] 120
-> killtest2 # createshm mmap: No such device or address
-> shmsize =3D 100000; errno : 6 =3D=3D Failed to create shm : -3
-> killtest user exit !
->=20
-> [1]+  Done(255)               ./killtest -c
-> killtest2 #=20
->=20
->=20
-> But the "stall"-problem does not occur with Xenomai 2.3.5 !
-> Output of killtest and Shared Memory page aligned with xenomai 2.3.5:
-> ----------------------------------------------------------------------
-> killtest2 # cat /proc/xenomai/version
-> 2.3.5
-> killtest2 # ./killtest -c &
-> [1] 122
-> killtest2 #
-> killtest2 # ./killtest &
-> [2] 123
-> killtest2 #
-> killtest2 # kill 122
-> killtest user exit !
-> [1]-  Done                    ./killtest -c
-> killtest2 #
-> killtest2 # kill 123
-> killtest2 # killtest user exit !
->=20
-> [2]+  Done                    ./killtest
-> killtest2 #
-> killtest2 #
->=20
->=20
-> Anything else I could test ?
-> Does the problem accour on your testequipment ?
->=20
-> Many thanks for your help
-> Roderik
+>
+> Some feedback,
+>
+> On Fri, Mar 20, 2009 at 1:46 PM, Jan Kiszka <jan.kiszka@domain.hid>wrote:
+>
+> First of all, it would in fact be good to rule-out issues of the old
+>> kernel/ipipe combination /wrt IRQ handling by giving latest versions a
+>> try (2.6.28 + Xenomai 2.4.7). The you may want to consider setting up a
+>> tracer:
+>>
+>
+> Tried the above combination and the problem still persists (:
+>
+> Although SMIs cannot be globally disabled on this platform, i wonder if it
+> is having an effect after all.
+> Latency and serial loopback tests ran acceptably tho' with worst case of <
+> 85uS for a 100uS
+> task.
+>
+> I have rewired the communications to bypass the PCI communications card and
+> use the motherboard
+> RS232 ports instead. Although task latencies increased by about 150uS, the
+> communications was
+> stable after an hour ... (Changed task 1 to 250uS periodic instead of
+> 100uS)
+>
 
---------------------------------------------------------
-manroland AG
-Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle  =20
-Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592
-USt-Ident-Nr. DE 250200933
+The  tests with the motherboard serial ports interfacing to the actual
+hardware via RS422 converters,
+ran smoothly for more than 72 hours.
+
+Problem seems to be interfacing to the PCI serial card.
+
+
+>
+>>
+>> The ipipe function tracer (see Xenomai wiki) would make sense when you
+>> can identify a failure very quickly (without a few 100 us or so) and
+>> trigger a stop. That is required as the ipipe tracer works on lowest
+>> lever (kernel functions) and quickly fills up its circular buffer with
+>> new events.
+>
+>
+> Next  on the TODO list
+>
+
+>
+>> The LTTng tracer provides a higher level view on the problem and could
+>> perfectly run over a longer period. See related postings on this list
+>> for details (I'm currently maintaining a 2.6.28 port for ipipe, see also
+>> git.kiszka.org).
+>>
+>
+> Started a new thread on getting LTTng up and running. This feature will
+> definitely worthwhile putting the
+> effort into!
+>
+>
+>> Once you have a picture of what goes on in the kernel generally, you may
+>> add ad-hoc instrumentations to driver or kernel (or we can discuss where
+>> to add them) to find out what actually happens.
+>>
+>
+LTTng trace captured. With my limited background, the following seems to
+occur after the application
+has been running for a while :
+
+1. RT task requests a write of 85 bytes to rtser0. The result of the call is
+64 bytes.
+    (not all bytes could be written)
+2. Following write requests return -11 (EAGAIN).
+3. Read calls on rtser0 function normally.
+4. rtser1 read and write function normally
+5. Approximately one second prior to the write call returning 64, one of the
+xenomai/rtdm internal event
+ signals stops (This event could be related to the write event).
+
+Since the thread writes 85 bytes every 20mS to rtser0, the 4k write buffer
+would fill up in about
+one second if no data was removed. This ties up with the event stopping one
+second earlier.
+
+The number of interrupts generated by the card even when 'operating
+normally' is a bit high tho'.
+(typically 100uS apart !)
+
+I can mail the zipped trace data privately if required. It is approx
+20Mbyte.
+
+Will try to contact the manufacturer for a register level datasheet to see
+if there are any considerations
+that need to be taken specifically for this card.
+
+Thanx for the help and suggestions
+Vicki
+
+PS Fortunately, the onboard serial ports do give us a workable solution for
+our simulation environment,
+but it would be good to understand why the problem occurs.
+
+--000325579e822e714b0466df8b84
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi there<br><br><div class=3D"gmail_quote">On Mon, Mar 23, 2009 at 10:22 AM=
+, vikesh rambaran <span dir=3D"ltr">&lt;<a href=3D"mailto:vikesh.rambaran@domain.hid=
+mail.com">vikesh.rambaran@domain.hid</a>&gt;</span> wrote:<br><blockquote cl=
+ass=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, 204, 204); mar=
+gin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+<br>Some feedback,<br><br><div class=3D"gmail_quote"><div class=3D"im">On F=
+ri, Mar 20, 2009 at 1:46 PM, Jan Kiszka <span dir=3D"ltr">&lt;<a href=3D"ma=
+ilto:jan.kiszka@domain.hid" target=3D"_blank">jan.kiszka@domain.hid</a>&g=
+t;</span> wrote:<br>
+<br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(2=
+04, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+First of all, it would in fact be good to rule-out issues of the old<br>
+kernel/ipipe combination /wrt IRQ handling by giving latest versions a<br>
+try (2.6.28 + Xenomai 2.4.7). The you may want to consider setting up a<br>
+tracer:<br>
+</blockquote></div><div><br>Tried the above combination and the problem sti=
+ll persists (:<br><br>Although SMIs cannot be globally disabled on this pla=
+tform, i wonder if it is having an effect after all.<br>Latency and serial =
+loopback tests ran acceptably tho&#39; with worst case of &lt; 85uS for a 1=
+00uS<br>
+
+task.<br><br>I have rewired the communications to bypass the PCI communicat=
+ions card and use the motherboard<br>RS232 ports instead. Although task lat=
+encies increased by about 150uS, the communications was<br>stable after an =
+hour ... (Changed task 1 to 250uS periodic instead of 100uS)<br>
+
+</div></div></blockquote><div>=A0</div><div>The=A0 tests with the motherboa=
+rd serial ports interfacing to the actual hardware via RS422 converters, <b=
+r>ran smoothly for more than 72 hours. <br><br>Problem seems to be interfac=
+ing to the PCI serial card.<br>
+<br></div><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid=
+ rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><div cl=
+ass=3D"gmail_quote"><div>=A0<br></div><div class=3D"im"><blockquote class=
+=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, 204, 204); margin=
+: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+<br>
+The ipipe function tracer (see Xenomai wiki) would make sense when you<br>
+can identify a failure very quickly (without a few 100 us or so) and<br>
+trigger a stop. That is required as the ipipe tracer works on lowest<br>
+lever (kernel functions) and quickly fills up its circular buffer with<br>
+new events.</blockquote><div>=A0</div></div><div>Next=A0 on the TODO list</=
+div></div></blockquote><div></div><blockquote class=3D"gmail_quote" style=
+=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; p=
+adding-left: 1ex;">
+<div class=3D"gmail_quote"><div><br></div><div class=3D"im"><blockquote cla=
+ss=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, 204, 204); marg=
+in: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><br>
+The LTTng tracer provides a higher level view on the problem and could<br>
+perfectly run over a longer period. See related postings on this list<br>
+for details (I&#39;m currently maintaining a 2.6.28 port for ipipe, see als=
+o<br>
+<a href=3D"http://git.kiszka.org" target=3D"_blank">git.kiszka.org</a>).<br=
+>
+</blockquote></div><div><br>Started a new thread on getting LTTng up and ru=
+nning. This feature will definitely worthwhile putting the<br>effort into!<=
+br><br></div><div class=3D"im"><blockquote class=3D"gmail_quote" style=3D"b=
+order-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; paddin=
+g-left: 1ex;">
+
+<br>
+Once you have a picture of what goes on in the kernel generally, you may<br=
+>
+add ad-hoc instrumentations to driver or kernel (or we can discuss where<br=
+>
+to add them) to find out what actually happens.<br>
+</blockquote></div></div></blockquote><div><br>LTTng trace captured. With m=
+y limited background, the following seems to occur after the application<br=
+>has been running for a while :<br><br>1. RT task requests a write of 85 by=
+tes to rtser0. The result of the call is 64 bytes.<br>
+=A0=A0=A0 (not all bytes could be written)<br>2. Following write requests r=
+eturn -11 (EAGAIN). <br>3. Read calls on rtser0 function normally. <br>4. r=
+tser1 read and write function normally<br>5. Approximately one second prior=
+ to the write call returning 64, one of the xenomai/rtdm internal event<br>
+=A0signals stops (This event could be related to the write event). <br><br>=
+Since the thread writes 85 bytes every 20mS to rtser0, the 4k write buffer =
+would fill up in about<br>one second if no data was removed. This ties up w=
+ith the event stopping one second earlier.<br>
+</div></div><br>The number of interrupts generated by the card even when &#=
+39;operating normally&#39; is a bit high tho&#39;. <br>(typically 100uS apa=
+rt !)<br><br>I can mail the zipped trace data privately if required. It is =
+approx 20Mbyte.<br>
+<br>Will try to contact the manufacturer for a register level datasheet to =
+see if there are any considerations<br>that need to be taken specifically f=
+or this card.<br><br>Thanx for the help and suggestions<br>Vicki<br><br>
+PS Fortunately, the onboard serial ports do give us a workable solution for=
+ our simulation environment, <br>but it would be good to understand why the=
+ problem occurs. <br><br><br>
+
+--000325579e822e714b0466df8b84--
 
