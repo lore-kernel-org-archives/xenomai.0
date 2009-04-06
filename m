@@ -1,13 +1,13 @@
+Message-ID: <49D9E000.4070009@domain.hid>
+Date: Mon, 06 Apr 2009 12:57:04 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <b131c9f0903230122r713d131x7bb516ed9d00a42a@domain.hid>
-References: <1237546591.9844.115.camel@domain.hid>
-	<49C381F8.9070107@domain.hid>
-	<b131c9f0903230122r713d131x7bb516ed9d00a42a@domain.hid>
-Date: Mon, 6 Apr 2009 11:30:05 +0200
-Message-ID: <b131c9f0904060230g499a0c37l37cbc48c5895e09b@domain.hid>
-From: vikesh rambaran <vikesh.rambaran@domain.hid>
-Content-Type: multipart/alternative; boundary=000325579e822e714b0466df8b84
-Subject: Re: [Xenomai-help] rtserial interface stalls
+References: <b131c9f0903230100x1b2aa2fet9e2b0efe68a7a77f@domain.hid>	<49C7899F.5030306@domain.hid>	<b131c9f0903240037q446193f5hbfdd3ade40ea2af4@domain.hid>	<49C91B24.2020304@domain.hid>	<b131c9f0903241437s661b9bd3v504b14f83b1b9c86@domain.hid>	<49C95A76.4020802@domain.hid>	<b131c9f0903250636o85af46au240a04ab33ebb599@domain.hid>
+	<b131c9f0904060126n12158c5dqd37d71769cc8aff5@domain.hid>
+In-Reply-To: <b131c9f0904060126n12158c5dqd37d71769cc8aff5@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai LTTng support
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,209 +17,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: vikesh rambaran <vikesh.rambaran@domain.hid>
 Cc: xenomai-help <xenomai@xenomai.org>
 
---000325579e822e714b0466df8b84
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-
-Hi there
-
-On Mon, Mar 23, 2009 at 10:22 AM, vikesh rambaran <vikesh.rambaran@domain.hid
-> wrote:
-
->
-> Some feedback,
->
-> On Fri, Mar 20, 2009 at 1:46 PM, Jan Kiszka <jan.kiszka@domain.hid>wrote:
->
-> First of all, it would in fact be good to rule-out issues of the old
->> kernel/ipipe combination /wrt IRQ handling by giving latest versions a
->> try (2.6.28 + Xenomai 2.4.7). The you may want to consider setting up a
->> tracer:
+vikesh rambaran wrote:
+> Hi
+> Apologies for being quiet for a while. Was away for a few days...
+> 
+>>>> Besides that, the kernel does boot although X + keyboard + mouse seems
+>>> to
+>>>> lock up occasionally.
+>>> Is the lockup permanent then, or does the system recover from it later?
+>>>
+>> Lockup is permanent and requires a reboot. I unfortunately do not have a
+>> network connection to a second PC on this setup to see what else is alive.
 >>
->
-> Tried the above combination and the problem still persists (:
->
-> Although SMIs cannot be globally disabled on this platform, i wonder if it
-> is having an effect after all.
-> Latency and serial loopback tests ran acceptably tho' with worst case of <
-> 85uS for a 100uS
-> task.
->
-> I have rewired the communications to bypass the PCI communications card and
-> use the motherboard
-> RS232 ports instead. Although task latencies increased by about 150uS, the
-> communications was
-> stable after an hour ... (Changed task 1 to 250uS periodic instead of
-> 100uS)
->
+> 
+>>>> It does not seem to be LTTng specific, as i've noticed it with a xenomai
+>>>> enabled kernel only as well. Will try
+>>>> isolating the problem with a vanilla kernel soon.
+>>>>
+>>>> For reference, the other LTT tools used are
+>>>> LTT control  : ltt-control-0.62-23122008
+>>>> LTTV          : lttv-0.12.9-29012009
+>>>>
+>>>> Both obtained from  http://ltt.polymtl.ca/
+>>>>
+> Some feedback
+> 
+> I've managed to test the kernel on three different PCs :
+> intel core 2, intel core duo, amd athlon 64 x 2 (all running 32 bit
+> kernels).
+> 
+> The lockup occurs after a few minutes and is permanent with no network
+> access after the lockup.
+> 
+> Vanilla kernel did not lock up during the hour that i used it
+> 
+> I've just noticed on the intel core 2 PC, dmesg gives an error setting up
+> the hardware clock.
+> Will investigate this one further.
+> 
+> The kernel config is attached.
+> If anyone else has experienced similar issues and found a solution, please
+> let me know
 
-The  tests with the motherboard serial ports interfacing to the actual
-hardware via RS422 converters,
-ran smoothly for more than 72 hours.
+We've an open ticket from our customer about some mysterious "lockup
+when starting xosview". But the current state is "no longer
+reproducible", even at customer site. :-|
 
-Problem seems to be interfacing to the PCI serial card.
+Your lockup only happens when X is running? Are there any last words on
+the serial console if you redirect kernel messages to it? Otherwise,
+could you also try with nmi_watchdog=2 and
+CONFIG_XENO_HW_NMI_DEBUG_LATENCY enabled?
 
+Jan
 
->
->>
->> The ipipe function tracer (see Xenomai wiki) would make sense when you
->> can identify a failure very quickly (without a few 100 us or so) and
->> trigger a stop. That is required as the ipipe tracer works on lowest
->> lever (kernel functions) and quickly fills up its circular buffer with
->> new events.
->
->
-> Next  on the TODO list
->
-
->
->> The LTTng tracer provides a higher level view on the problem and could
->> perfectly run over a longer period. See related postings on this list
->> for details (I'm currently maintaining a 2.6.28 port for ipipe, see also
->> git.kiszka.org).
->>
->
-> Started a new thread on getting LTTng up and running. This feature will
-> definitely worthwhile putting the
-> effort into!
->
->
->> Once you have a picture of what goes on in the kernel generally, you may
->> add ad-hoc instrumentations to driver or kernel (or we can discuss where
->> to add them) to find out what actually happens.
->>
->
-LTTng trace captured. With my limited background, the following seems to
-occur after the application
-has been running for a while :
-
-1. RT task requests a write of 85 bytes to rtser0. The result of the call is
-64 bytes.
-    (not all bytes could be written)
-2. Following write requests return -11 (EAGAIN).
-3. Read calls on rtser0 function normally.
-4. rtser1 read and write function normally
-5. Approximately one second prior to the write call returning 64, one of the
-xenomai/rtdm internal event
- signals stops (This event could be related to the write event).
-
-Since the thread writes 85 bytes every 20mS to rtser0, the 4k write buffer
-would fill up in about
-one second if no data was removed. This ties up with the event stopping one
-second earlier.
-
-The number of interrupts generated by the card even when 'operating
-normally' is a bit high tho'.
-(typically 100uS apart !)
-
-I can mail the zipped trace data privately if required. It is approx
-20Mbyte.
-
-Will try to contact the manufacturer for a register level datasheet to see
-if there are any considerations
-that need to be taken specifically for this card.
-
-Thanx for the help and suggestions
-Vicki
-
-PS Fortunately, the onboard serial ports do give us a workable solution for
-our simulation environment,
-but it would be good to understand why the problem occurs.
-
---000325579e822e714b0466df8b84
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Hi there<br><br><div class=3D"gmail_quote">On Mon, Mar 23, 2009 at 10:22 AM=
-, vikesh rambaran <span dir=3D"ltr">&lt;<a href=3D"mailto:vikesh.rambaran@domain.hid=
-mail.com">vikesh.rambaran@domain.hid</a>&gt;</span> wrote:<br><blockquote cl=
-ass=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, 204, 204); mar=
-gin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-<br>Some feedback,<br><br><div class=3D"gmail_quote"><div class=3D"im">On F=
-ri, Mar 20, 2009 at 1:46 PM, Jan Kiszka <span dir=3D"ltr">&lt;<a href=3D"ma=
-ilto:jan.kiszka@domain.hid" target=3D"_blank">jan.kiszka@domain.hid</a>&g=
-t;</span> wrote:<br>
-<br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(2=
-04, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-First of all, it would in fact be good to rule-out issues of the old<br>
-kernel/ipipe combination /wrt IRQ handling by giving latest versions a<br>
-try (2.6.28 + Xenomai 2.4.7). The you may want to consider setting up a<br>
-tracer:<br>
-</blockquote></div><div><br>Tried the above combination and the problem sti=
-ll persists (:<br><br>Although SMIs cannot be globally disabled on this pla=
-tform, i wonder if it is having an effect after all.<br>Latency and serial =
-loopback tests ran acceptably tho&#39; with worst case of &lt; 85uS for a 1=
-00uS<br>
-
-task.<br><br>I have rewired the communications to bypass the PCI communicat=
-ions card and use the motherboard<br>RS232 ports instead. Although task lat=
-encies increased by about 150uS, the communications was<br>stable after an =
-hour ... (Changed task 1 to 250uS periodic instead of 100uS)<br>
-
-</div></div></blockquote><div>=A0</div><div>The=A0 tests with the motherboa=
-rd serial ports interfacing to the actual hardware via RS422 converters, <b=
-r>ran smoothly for more than 72 hours. <br><br>Problem seems to be interfac=
-ing to the PCI serial card.<br>
-<br></div><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid=
- rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><div cl=
-ass=3D"gmail_quote"><div>=A0<br></div><div class=3D"im"><blockquote class=
-=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, 204, 204); margin=
-: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-<br>
-The ipipe function tracer (see Xenomai wiki) would make sense when you<br>
-can identify a failure very quickly (without a few 100 us or so) and<br>
-trigger a stop. That is required as the ipipe tracer works on lowest<br>
-lever (kernel functions) and quickly fills up its circular buffer with<br>
-new events.</blockquote><div>=A0</div></div><div>Next=A0 on the TODO list</=
-div></div></blockquote><div></div><blockquote class=3D"gmail_quote" style=
-=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; p=
-adding-left: 1ex;">
-<div class=3D"gmail_quote"><div><br></div><div class=3D"im"><blockquote cla=
-ss=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, 204, 204); marg=
-in: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><br>
-The LTTng tracer provides a higher level view on the problem and could<br>
-perfectly run over a longer period. See related postings on this list<br>
-for details (I&#39;m currently maintaining a 2.6.28 port for ipipe, see als=
-o<br>
-<a href=3D"http://git.kiszka.org" target=3D"_blank">git.kiszka.org</a>).<br=
->
-</blockquote></div><div><br>Started a new thread on getting LTTng up and ru=
-nning. This feature will definitely worthwhile putting the<br>effort into!<=
-br><br></div><div class=3D"im"><blockquote class=3D"gmail_quote" style=3D"b=
-order-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; paddin=
-g-left: 1ex;">
-
-<br>
-Once you have a picture of what goes on in the kernel generally, you may<br=
->
-add ad-hoc instrumentations to driver or kernel (or we can discuss where<br=
->
-to add them) to find out what actually happens.<br>
-</blockquote></div></div></blockquote><div><br>LTTng trace captured. With m=
-y limited background, the following seems to occur after the application<br=
->has been running for a while :<br><br>1. RT task requests a write of 85 by=
-tes to rtser0. The result of the call is 64 bytes.<br>
-=A0=A0=A0 (not all bytes could be written)<br>2. Following write requests r=
-eturn -11 (EAGAIN). <br>3. Read calls on rtser0 function normally. <br>4. r=
-tser1 read and write function normally<br>5. Approximately one second prior=
- to the write call returning 64, one of the xenomai/rtdm internal event<br>
-=A0signals stops (This event could be related to the write event). <br><br>=
-Since the thread writes 85 bytes every 20mS to rtser0, the 4k write buffer =
-would fill up in about<br>one second if no data was removed. This ties up w=
-ith the event stopping one second earlier.<br>
-</div></div><br>The number of interrupts generated by the card even when &#=
-39;operating normally&#39; is a bit high tho&#39;. <br>(typically 100uS apa=
-rt !)<br><br>I can mail the zipped trace data privately if required. It is =
-approx 20Mbyte.<br>
-<br>Will try to contact the manufacturer for a register level datasheet to =
-see if there are any considerations<br>that need to be taken specifically f=
-or this card.<br><br>Thanx for the help and suggestions<br>Vicki<br><br>
-PS Fortunately, the onboard serial ports do give us a workable solution for=
- our simulation environment, <br>but it would be good to understand why the=
- problem occurs. <br><br><br>
-
---000325579e822e714b0466df8b84--
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
