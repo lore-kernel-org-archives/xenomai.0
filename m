@@ -1,13 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1240479431.6990.30.camel@domain.hid>
-References: <b131c9f0904230220j3f0a7d7ej9172ee4fb48aa69c@domain.hid>
-	<1240479431.6990.30.camel@domain.hid>
-Content-Type: text/plain
-Date: Thu, 23 Apr 2009 11:42:04 +0200
-Message-Id: <1240479724.6990.34.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <49DCF4A7.807@domain.hid>
+Date: Wed, 08 Apr 2009 12:01:59 -0700
+From: John Wojnaroski <castle@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] adeos patch 2.6.28.9-x86-2.2-07 feedback
+Subject: [Xenomai-help] Excess getpid calls??
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,67 +14,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: vikesh rambaran <vikesh.rambaran@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Thu, 2009-04-23 at 11:37 +0200, Philippe Gerum wrote:
-> On Thu, 2009-04-23 at 11:20 +0200, vikesh rambaran wrote:
-> > Hi
-> > 
-> > Thanx for the updated patch. Some feedback ...
-> > 
-> > I tested it with Xenomai 2.4.7 under Ubuntu 8.04.2  on three different
-> > platforms 
-> > (AMD Athlon Desktop, Intel Core 2 Desktop, Intel Core Duo Laptop)
-> > 
-> > Typical system lockups when in the gnome desktop do NOT occur
-> > anymore ! Great :)
-> > 
-> > Initial observations when compared to Xenomai 2.4.5 with
-> > adeos-ipipe-2.6.24-x86-2.0-07.patch.  :
-> > 
-> > 1. Latency test shows a slight increase of about 5 to 10 % on the
-> > Intel platforms. 
-> > (Still need to do the comparison on the AMD platform). This translates
-> > to less than 5 uS 
-> > so it's ok for our case.
-> > 
-> > 2. On the Intel Core 2 Desktop, our application has a much more
-> > significant max scheduling jitter
-> > of about 125 uS (compared with < 60uS for Xenomia 2.4.5). This
-> > 'increased jitter' does not
-> > show up on the other two platforms. Still trying to trace this one.
-> 
-> Time for an I-pipe tracer log, with latency -f. I guess this
-> pathological jitter should trigger with standard tests as well; if it
-> does not, well, there might be other regression spots in the APIs.
+Hi
 
-Actually, 2.4.5 -> 2.4.7 should only introduce maintenance fixes, so no
-heavy changes that might trigger such blatant regression. Usual suspect
-in that case is the I-pipe again, due to the 2.6.24 -> 2.6.29
-transition, and less likely the Xenomai core.
+We're running several apps with scheduled realtime task using 
+rt_task_spawn() in a flight simulator.  There are two apps each for a 
+pilot and copilot and each app has 8 periodic tasks running at various 
+duty cycles from 1Hz to 50Hz.
 
-In any case, 125 us is pathological.
- 
-> 
-> .config would help as well. TIA,
-> 
+A concern was raised as to whether the calls to getpid() were 
+excessive.  See trace ouput below....
 
-This still applies.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-> >  Already played around with 
-> > different ACPI and SMI settings, but no joy (:
-> > 
-> > 
-> > Keep well
-> > Vicki
-> > 
-> > _______________________________________________
-> > Xenomai-help mailing list
-> > Xenomai-help@domain.hid
-> > https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+[1006]$ ps augx | grep -i copilot
+root      3561 24.7  5.6  51936 58108 ?        RLl  Apr01 2455:02 
+Source/Main/copilot --file=glass.cfg --window=0 0 2400 1050
+hcsl     20859  0.0  0.0   1820   532 pts/4    S+   09:55   0:00 grep -i 
+copilot
+(09:55) <hcsl on spire>: ~
+[1007]$ sudo !!
+sudo strace -p 3561 -c
+Process 3561 attached - interrupt to quit
+Process 3561 detached
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+92.78    0.179969           2     90067           getpid
+5.67    0.010999           5      2247           ioctl
+1.55    0.003000           1      2247           gettimeofday
+0.00    0.000000           0         9           poll
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.193968                 94570           total
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+We have not bored down into the xenomai source to see exactly what is 
+going on or where or how the calls are made as we've been quite happy 
+with the performance and stability.
+
+Might someone shed a bit of light on the matter and should we be concerned?
+
+Thanks
+John W.
+
 
 
 
