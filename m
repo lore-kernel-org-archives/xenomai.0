@@ -1,13 +1,9 @@
-MIME-Version: 1.0
-In-Reply-To: <49D1EA0B.2020300@domain.hid>
-References: <17B3FD74-07D0-4F36-9836-8E03943DF917@domain.hid>
-	<49D1EA0B.2020300@domain.hid>
-Date: Wed, 8 Apr 2009 15:29:19 -0700
-Message-ID: <67b6b3430904081529n36226987r3708908b974d8d1a@domain.hid>
-From: Mark Saiia <mark.saiia@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] geode gx1 latencies
+Message-Id: <1E6B62F8-3C13-425C-A2E3-652E2FB0D6DE@comcast.net>
+From: Steven Seeger <steven.seeger@domain.hid>
+Content-Type: multipart/alternative; boundary=Apple-Mail-5--1054565390
+Mime-Version: 1.0 (Apple Message framework v930.3)
+Date: Wed, 8 Apr 2009 22:53:59 -0400
+Subject: [Xenomai-core] native syscalls
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,351 +13,310 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
-
-Gilles and list,
-I have tested out your latest patch with 2.4maint, 2.627.19.  It
-appears to work fine, no crashes related to 3dnow and no floating
-point issues.  However, we are observing rather high latencies.  This
-is without the hack described in the above thread.
-/proc/xenomai/timer shows clockdev as tsc.  At around 2.5 minutes , I
-did an ls in a while loop over a telnet connection in order to raise
-cpu usage to 22%.  Appended are the latency results.
+To: xenomai@xenomai.org
 
 
- # ./latency
-== Sampling period: 100 us
-== Test mode: periodic user-mode task
+--Apple-Mail-5--1054565390
+Content-Type: text/plain;
+	charset=US-ASCII;
+	format=flowed;
+	delsp=yes
+Content-Transfer-Encoding: 7bit
+
+Can xenomai preempt its own system calls? We ran latency with our  
+app.  We had a thread waiting on a cond, and when we signaled that  
+cond, the latency jumped from ~70us to almost 400us even though  
+latency runs a higher priority thread than the thread that we wake up.  
+Is there interrupt disabling that accounts for this?
+
+Here are the results as taken by Mark S.
+
 == All results in microseconds
 warming up...
 RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      12.414|      17.855|      46.254|       0|      12.414|      46.254
-RTD|      15.138|      19.302|      47.841|       0|      12.414|      47.841
-RTD|      15.118|      19.112|      47.390|       0|      12.414|      47.841
-RTD|      15.045|      19.098|      57.316|       0|      12.414|      57.316
-RTD|      14.657|      19.125|      62.723|       0|      12.414|      62.723
-RTD|      15.175|      19.165|      45.091|       0|      12.414|      62.723
-RTD|      13.835|      19.135|      52.483|       0|      12.414|      62.723
-RTD|      15.268|      19.239|      50.772|       0|      12.414|      62.723
-RTD|      14.968|      19.051|      45.559|       0|      12.414|      62.723
-RTD|      14.978|      19.098|      52.918|       0|      12.414|      62.723
-RTD|      14.931|      19.135|      63.632|       0|      12.414|      63.632
-RTD|      14.884|      19.185|      61.841|       0|      12.414|      63.632
-RTD|      12.782|      19.105|      49.028|       0|      12.414|      63.632
-RTD|      14.887|      19.198|      67.856|       0|      12.414|      67.856
-RTD|      14.814|      19.075|      48.152|       0|      12.414|      67.856
-RTD|      15.041|      19.102|      51.818|       0|      12.414|      67.856
-RTD|      14.704|      19.115|      54.916|       0|      12.414|      67.856
-RTD|      15.325|      19.152|      45.566|       0|      12.414|      67.856
-RTD|      13.815|      19.115|      51.528|       0|      12.414|      67.856
-RTD|      15.145|      19.225|      49.643|       0|      12.414|      67.856
-RTD|      15.161|      19.058|      58.191|       0|      12.414|      67.856
+RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|--- 
+lat worst
+RTD|      14.934|      27.179|      65.767|       0|      14.934|       
+65.767
+RTD|      15.151|      26.798|      70.954|       0|      14.934|       
+70.954
+RTD|      15.409|      27.152|      66.890|       0|      14.934|       
+70.954
+RTD|      15.947|      27.316|      71.168|       0|      14.934|       
+71.168
+RTD|      15.746|      26.878|      71.188|       0|      14.934|       
+71.188
+RTD|      15.489|      26.631|      74.476|       0|      14.934|       
+74.476
+RTD|      16.659|      26.527|      67.425|       0|      14.934|       
+74.476
+RTD|      14.567|      26.972|      59.448|       0|      14.567|       
+74.476
+RTD|      15.987|      27.837|      74.092|       0|      14.567|       
+74.476
+RTD|      16.241|      28.352|      66.740|       0|      14.567|       
+74.476
+RTD|      13.982|      27.139|      65.630|       0|      13.982|       
+74.476
+RTD|      13.982|      33.355|      65.286|       3|      13.892|      
+388.473
+RTD|      13.982|      33.355|      65.286|       3|      13.892|      
+388.473
+RTD|      13.982|      33.355|      65.286|       3|      13.892|      
+388.473
+RTD|      13.982|      33.355|      65.286|       3|      13.892|      
+388.473
+RTD|      13.982|      33.355|      65.286|       3|      13.892|      
+388.473
+RTD|      13.791|      33.465|      67.351|       3|      12.702|      
+388.473
+RTD|      13.791|      33.465|      67.351|       3|      12.702|      
+388.473
+RTD|      13.791|      33.465|      67.351|       3|      12.702|      
+388.473
+RTD|      13.791|      33.465|      67.351|       3|      12.702|      
+388.473
+RTD|      13.761|      33.722|      90.066|       3|      12.702|      
+388.473
 RTT|  00:00:22  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      14.988|      19.095|      53.419|       0|      12.414|      67.856
-RTD|      15.055|      19.185|      52.132|       0|      12.414|      67.856
-RTD|      15.292|      19.188|      57.897|       0|      12.414|      67.856
-RTD|      14.714|      19.138|      61.787|       0|      12.414|      67.856
-RTD|      15.402|      19.245|      59.421|       0|      12.414|      67.856
-RTD|      15.091|      19.071|      46.184|       0|      12.414|      67.856
-RTD|      15.105|      19.118|      58.766|       0|      12.414|      67.856
-RTD|      14.891|      19.118|      62.482|       0|      12.414|      67.856
-RTD|      15.178|      19.142|      52.216|       0|      12.414|      67.856
-RTD|      14.236|      19.108|      50.505|       0|      12.414|      67.856
-RTD|      14.821|      19.188|      63.966|       0|      12.414|      67.856
-RTD|      14.590|      19.061|      64.447|       0|      12.414|      67.856
-RTD|      15.192|      19.081|      60.611|       0|      12.414|      67.856
-RTD|      15.339|      19.138|      49.756|       0|      12.414|      67.856
-RTD|      15.031|      19.132|      50.304|       0|      12.414|      67.856
-RTD|      13.624|      19.118|      50.258|       0|      12.414|      67.856
-RTD|      14.984|      19.259|      56.988|       0|      12.414|      67.856
-RTD|      13.430|      19.048|      61.640|       0|      12.414|      67.856
-RTD|      15.202|      19.118|      51.949|       0|      12.414|      67.856
-RTD|      15.252|      19.175|      44.142|       0|      12.414|      67.856
-RTD|      14.904|      19.148|      53.312|       0|      12.414|      67.856
-RTT|  00:00:43  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      13.721|      19.132|      59.501|       0|      12.414|      67.856
-RTD|      15.305|      19.269|      49.860|       0|      12.414|      67.856
-RTD|      15.315|      19.055|      53.917|       0|      12.414|      67.856
-RTD|      15.108|      19.135|      52.376|       0|      12.414|      67.856
-RTD|      15.208|      19.128|      42.869|       0|      12.414|      67.856
-RTD|      15.309|      19.145|      53.212|       0|      12.414|      67.856
-RTD|      14.005|      19.105|      57.830|       0|      12.414|      67.856
-RTD|      14.911|      19.195|      49.659|       0|      12.414|      67.856
-RTD|      15.118|      19.028|      46.024|       0|      12.414|      67.856
-RTD|      15.111|      19.078|      49.426|       0|      12.414|      67.856
-RTD|      15.121|      19.165|      61.921|       0|      12.414|      67.856
-RTD|      15.048|      19.172|      52.420|       0|      12.414|      67.856
-RTD|      13.407|      19.152|      58.659|       0|      12.414|      67.856
-RTD|      15.001|      19.245|      50.024|       0|      12.414|      67.856
-RTD|      15.265|      19.018|      51.835|       0|      12.414|      67.856
-RTD|      15.258|      19.118|      59.421|       0|      12.414|      67.856
-RTD|      14.958|      19.182|      70.503|       0|      12.414|      70.503
-RTD|      15.085|      19.155|      46.174|       0|      12.414|      70.503
-RTD|      13.464|      19.138|      59.541|       0|      12.414|      70.503
-RTD|      15.055|      19.242|      55.304|       0|      12.414|      70.503
-RTD|      15.121|      19.048|      52.433|       0|      12.414|      70.503
-RTT|  00:01:04  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      15.302|      19.112|      47.300|       0|      12.414|      70.503
-RTD|      15.085|      19.158|      43.246|       0|      12.414|      70.503
-RTD|      15.325|      19.145|      54.021|       0|      12.414|      70.503
-RTD|      14.002|      19.088|      58.539|       0|      12.414|      70.503
-RTD|      15.125|      19.282|      60.129|       0|      12.414|      70.503
-RTD|      15.268|      19.045|      55.130|       0|      12.414|      70.503
-RTD|      15.168|      19.122|      47.370|       0|      12.414|      70.503
-RTD|      14.801|      19.145|      61.413|       0|      12.414|      70.503
-RTD|      15.035|      19.148|      58.980|       0|      12.414|      70.503
-RTD|      13.457|      19.102|      51.745|       0|      12.414|      70.503
-RTD|      15.419|      19.282|      50.358|       0|      12.414|      70.503
-RTD|      15.125|      19.108|      50.211|       0|      12.414|      70.503
-RTD|      14.964|      19.128|      58.044|       0|      12.414|      70.503
-RTD|      14.918|      19.142|      56.280|       0|      12.414|      70.503
-RTD|      15.035|      19.182|      50.679|       0|      12.414|      70.503
-RTD|      13.380|      19.102|      51.708|       0|      12.414|      70.503
-RTD|      14.847|      19.202|      48.727|       0|      12.414|      70.503
-RTD|      14.827|      19.098|      59.381|       0|      12.414|      70.503
-RTD|      14.837|      19.098|      55.184|       0|      12.414|      70.503
-RTD|      14.486|      19.112|      44.740|       0|      12.414|      70.503
-RTD|      15.238|      19.195|      44.560|       0|      12.414|      70.503
-RTT|  00:01:25  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      13.771|      19.202|      65.075|       0|      12.414|      70.503
-RTD|      15.382|      19.242|      47.688|       0|      12.414|      70.503
-RTD|      15.275|      19.071|      52.497|       0|      12.414|      70.503
-RTD|      14.941|      19.148|      62.763|       0|      12.414|      70.503
-RTD|      15.158|      19.188|      41.576|       0|      12.414|      70.503
-RTD|      15.085|      19.185|      55.798|       0|      12.414|      70.503
-RTD|      13.039|      19.192|      59.060|       0|      12.414|      70.503
-RTD|      15.068|      19.215|      49.603|       0|      12.414|      70.503
-RTD|      15.125|      19.068|      56.427|       0|      12.414|      70.503
-RTD|      14.971|      19.085|      57.082|       0|      12.414|      70.503
-RTD|      14.908|      19.145|      44.119|       0|      12.414|      70.503
-RTD|      15.188|      19.158|      62.322|       0|      12.414|      70.503
-RTD|      13.604|      19.145|      63.739|       0|      12.414|      70.503
-RTD|      14.891|      19.255|      46.612|       0|      12.414|      70.503
-RTD|      14.951|      19.095|      49.188|       0|      12.414|      70.503
-RTD|      15.205|      19.112|      49.075|       0|      12.414|      70.503
-RTD|      15.108|      19.125|      58.592|       0|      12.414|      70.503
-RTD|      15.088|      19.172|      58.860|       0|      12.414|      70.503
-RTD|      13.581|      19.155|      51.294|       0|      12.414|      70.503
-RTD|      15.135|      19.182|      51.160|       0|      12.414|      70.503
-RTD|      15.222|      19.122|      56.360|       0|      12.414|      70.503
-RTT|  00:01:46  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      15.125|      19.088|      45.933|       0|      12.414|      70.503
-RTD|      15.212|      19.155|      43.601|       0|      12.414|      70.503
-RTD|      15.192|      19.148|      57.175|       0|      12.414|      70.503
-RTD|      14.239|      19.112|      58.459|       0|      12.414|      70.503
-RTD|      14.831|      19.192|      58.385|       0|      12.414|      70.503
-RTD|      15.248|      19.118|      55.280|       0|      12.414|      70.503
-RTD|      14.734|      19.102|      50.355|       0|      12.414|      70.503
-RTD|      14.493|      19.142|      63.044|       0|      12.414|      70.503
-RTD|      15.038|      19.158|      51.360|       0|      12.414|      70.503
-RTD|      13.788|      19.148|      57.844|       0|      12.414|      70.503
-RTD|      15.004|      19.165|      53.673|       0|      12.414|      70.503
-RTD|      14.958|      19.098|      46.154|       0|      12.414|      70.503
-RTD|      14.968|      19.122|      58.586|       0|      12.414|      70.503
-RTD|      15.081|      19.132|      61.052|       0|      12.414|      70.503
-RTD|      15.462|      19.158|      59.942|       0|      12.414|      70.503
-RTD|      13.738|      19.132|      58.114|       0|      12.414|      70.503
-RTD|      15.151|      19.202|      46.291|       0|      12.414|      70.503
-RTD|      15.075|      19.071|      47.945|       0|      12.414|      70.503
-RTD|      15.208|      19.112|      57.002|       0|      12.414|      70.503
-RTD|      15.088|      19.122|      54.729|       0|      12.414|      70.503
-RTD|      15.061|      19.155|      54.552|       0|      12.414|      70.503
-RTT|  00:02:07  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      12.966|      19.115|      50.318|       0|      12.414|      70.503
-RTD|      14.847|      19.198|      53.476|       0|      12.414|      70.503
-RTD|      15.138|      19.068|      48.119|       0|      12.414|      70.503
-RTD|      15.118|      19.098|      48.700|       0|      12.414|      70.503
-RTD|      14.861|      19.145|      65.717|       0|      12.414|      70.503
-RTD|      15.058|      19.165|      63.177|       0|      12.414|      70.503
-RTD|      13.544|      19.142|      50.736|       0|      12.414|      70.503
-RTD|      15.489|      19.182|      59.354|       0|      12.414|      70.503
-RTD|      15.268|      19.148|      64.875|       0|      12.414|      70.503
-RTD|      15.633|      20.816|      64.420|       0|      12.414|      70.503
-RTD|      14.406|      18.858|      61.319|       0|      12.414|      70.503
-RTD|      14.931|      19.462|      47.257|       0|      12.414|      70.503
-RTD|      13.735|      19.402|      62.322|       0|      12.414|      70.503
-RTD|      15.192|      19.342|      45.646|       0|      12.414|      70.503
-RTD|      15.105|      19.309|      51.451|       0|      12.414|      70.503
-RTD|      14.814|      19.239|      47.504|       0|      12.414|      70.503
-RTD|      15.068|      19.325|      48.072|       0|      12.414|      70.503
-RTD|      15.332|      19.476|      46.819|       0|      12.414|      70.503
-RTD|      14.313|      19.369|      65.918|       0|      12.414|      70.503
-RTD|      14.897|      19.295|      61.667|       0|      12.414|      70.503
-RTD|      15.145|      19.185|      51.701|       0|      12.414|      70.503
-RTT|  00:02:28  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      15.125|      19.242|      64.340|       0|      12.414|      70.503
-RTD|      11.913|      27.209|      54.682|       0|      11.913|      70.503
-RTD|      15.593|      32.506|      53.172|       0|      11.913|      70.503
-RTD|      15.409|      32.492|      53.436|       0|      11.913|      70.503
-RTD|      15.021|      32.810|      71.532|       0|      11.913|      71.532
-RTD|      14.323|      32.613|      61.366|       0|      11.913|      71.532
-RTD|      15.339|      32.569|      54.642|       0|      11.913|      71.532
-RTD|      14.714|      32.372|      54.161|       0|      11.913|      71.532
-RTD|      15.078|      32.573|      54.716|       0|      11.913|      71.532
-RTD|      14.490|      32.606|      53.636|       0|      11.913|      71.532
-RTD|      15.352|      32.820|      70.302|       0|      11.913|      71.532
-RTD|      15.285|      32.693|      83.442|       0|      11.913|      83.442
-RTD|      14.951|      32.482|      66.279|       0|      11.913|      83.442
-RTD|      14.349|      32.459|      51.200|       0|      11.913|      83.442
-RTD|      14.560|      32.349|      52.744|       0|      11.913|      83.442
-RTD|      14.670|      32.459|      62.415|       0|      11.913|      83.442
-RTD|      15.509|      32.713|      70.523|       0|      11.913|      83.442
-RTD|      15.332|      32.666|      59.057|       0|      11.913|      83.442
-RTD|      15.071|      32.459|      55.966|       0|      11.913|      83.442
-RTD|      15.228|      32.352|      51.247|       0|      11.913|      83.442
-RTD|      15.282|      32.436|      79.412|       0|      11.913|      83.442
-RTT|  00:02:49  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      14.152|      32.726|      54.736|       0|      11.913|      83.442
-RTD|      14.346|      32.710|      70.409|       0|      11.913|      83.442
-RTD|      14.570|      32.639|      72.969|       0|      11.913|      83.442
-RTD|      15.532|      32.379|      57.984|       0|      11.913|      83.442
-RTD|      14.851|      32.492|      55.819|       0|      11.913|      83.442
-RTD|      15.402|      32.456|      51.822|       0|      11.913|      83.442
-RTD|      14.861|      32.419|      53.188|       0|      11.913|      83.442
-RTD|      15.486|      32.649|      60.698|       0|      11.913|      83.442
-RTD|      15.325|      32.643|      57.042|       0|      11.913|      83.442
-RTD|      14.650|      32.295|      55.087|       0|      11.913|      83.442
-RTD|      14.971|      32.395|      53.489|       0|      11.913|      83.442
-RTD|      14.777|      32.623|      54.829|       0|      11.913|      83.442
-RTD|      15.051|      32.459|      52.002|       0|      11.913|      83.442
-RTD|      14.369|      32.680|      57.750|       0|      11.913|      83.442
-RTD|      14.640|      32.536|      71.412|       0|      11.913|      83.442
-RTD|      15.292|      32.476|      65.690|       0|      11.913|      83.442
-RTD|      12.351|      32.285|      74.767|       0|      11.913|      83.442
-RTD|      13.400|      32.389|      78.236|       0|      11.913|      83.442
-RTD|      15.182|      32.482|      55.230|       0|      11.913|      83.442
-RTD|      15.242|      32.800|      59.227|       0|      11.913|      83.442
-RTD|      15.663|      32.626|      68.985|       0|      11.913|      83.442
-RTT|  00:03:10  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      15.141|      32.222|      51.802|       0|      11.913|      83.442
-RTD|      15.499|      32.345|      53.676|       0|      11.913|      83.442
-RTD|      14.827|      32.506|      57.613|       0|      11.913|      83.442
-RTD|      15.606|      32.609|      53.733|       0|      11.913|      83.442
-RTD|      15.208|      32.900|      80.993|       0|      11.913|      83.442
-RTD|      15.151|      32.763|      76.448|       0|      11.913|      83.442
-RTD|      14.991|      32.522|      58.853|       0|      11.913|      83.442
-RTD|      15.248|      32.542|      53.466|       0|      11.913|      83.442
-RTD|      15.098|      32.579|      54.104|       0|      11.913|      83.442
-RTD|      13.875|      32.796|      63.632|       0|      11.913|      83.442
-RTD|      14.737|      32.730|      88.298|       0|      11.913|      88.298
-RTD|      15.295|      32.733|      70.810|       0|      11.913|      88.298
-RTD|      15.085|      32.593|      51.882|       0|      11.913|      88.298
-RTD|      15.165|      32.653|      53.830|       0|      11.913|      88.298
-RTD|      14.791|      32.442|      59.505|       0|      11.913|      88.298
-RTD|      15.192|      32.639|      65.543|       0|      11.913|      88.298
-RTD|      14.841|      32.820|      77.333|       0|      11.913|      88.298
-RTD|      14.931|      32.706|      76.655|       0|      11.913|      88.298
-RTD|      15.041|      32.569|      54.495|       0|      11.913|      88.298
-RTD|      15.161|      32.546|      54.184|       0|      11.913|      88.298
-RTD|      14.570|      32.573|      54.148|       0|      11.913|      88.298
-RTT|  00:03:31  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      14.456|      32.599|      64.367|       0|      11.913|      88.298
-RTD|      15.178|      32.877|      63.816|       0|      11.913|      88.298
-RTD|      15.796|      32.820|      60.798|       0|      11.913|      88.298
-RTD|      15.218|      32.479|      53.105|       0|      11.913|      88.298
-RTD|      15.342|      32.486|      54.057|       0|      11.913|      88.298
-RTD|      14.657|      32.489|      63.401|       0|      11.913|      88.298
-RTD|      14.166|      32.686|      61.774|       0|      11.913|      88.298
-RTD|      14.887|      32.820|      66.987|       0|      11.913|      88.298
-RTD|      15.198|      32.753|      70.590|       0|      11.913|      88.298
-RTD|      15.415|      32.436|      58.469|       0|      11.913|      88.298
-RTD|      15.452|      32.506|      54.001|       0|      11.913|      88.298
-RTD|      15.743|      32.626|      52.527|       0|      11.913|      88.298
-RTD|      15.051|      32.589|      59.180|       0|      11.913|      88.298
-RTD|      14.690|      32.733|      53.162|       0|      11.913|      88.298
-RTD|      15.436|      32.773|      58.281|       0|      11.913|      88.298
-RTD|      15.439|      32.636|      52.924|       0|      11.913|      88.298
-RTD|      15.252|      32.643|      61.720|       0|      11.913|      88.298
-RTD|      14.877|      32.633|      60.905|       0|      11.913|      88.298
-RTD|      14.911|      32.472|      62.589|       0|      11.913|      88.298
-RTD|      15.362|      32.903|      66.897|       0|      11.913|      88.298
-RTD|      14.694|      32.659|      63.311|       0|      11.913|      88.298
-RTT|  00:03:52  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      14.791|      32.452|      54.131|       0|      11.913|      88.298
-RTD|      14.921|      32.469|      53.362|       0|      11.913|      88.298
-RTD|      15.329|      32.646|      58.753|       0|      11.913|      88.298
-RTD|      14.637|      32.546|      54.218|       0|      11.913|      88.298
-RTD|      14.704|      32.987|      62.215|       0|      11.913|      88.298
-RTD|      15.008|      32.619|      66.319|       0|      11.913|      88.298
-RTD|      15.556|      32.639|      58.305|       0|      11.913|      88.298
-RTD|      15.913|      32.576|      53.797|       0|      11.913|      88.298
-RTD|      15.840|      32.529|      55.972|       0|      11.913|      88.298
-RTD|      15.409|      32.680|      55.829|       0|      11.913|      88.298
-RTD|      15.379|      32.877|      64.755|       0|      11.913|      88.298
-RTD|      15.305|      32.586|      79.993|       0|      11.913|      88.298
-RTD|      15.359|      32.569|      55.618|       0|      11.913|      88.298
-RTD|      15.489|      32.489|      60.918|       0|      11.913|      88.298
-RTD|      14.704|      32.720|      64.674|       0|      11.913|      88.298
-RTD|      14.593|      32.790|      52.864|       0|      11.913|      88.298
-RTD|      15.446|      32.770|      57.770|       0|      11.913|      88.298
-RTD|      14.814|      32.700|      80.398|       0|      11.913|      88.298
-RTD|      15.205|      32.472|      50.826|       0|      11.913|      88.298
-RTD|      15.583|      32.599|      62.095|       0|      11.913|      88.298
-RTD|      14.817|      32.720|      83.188|       0|      11.913|      88.298
-RTT|  00:04:13  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      14.520|      32.690|      69.193|       0|      11.913|      88.298
-RTD|      14.710|      32.947|      81.200|       0|      11.913|      88.298
-RTD|      15.088|      32.740|      61.814|       0|      11.913|      88.298
-RTD|      16.244|      32.542|      63.445|       0|      11.913|      88.298
-RTD|      14.734|      32.626|      69.941|       0|      11.913|      88.298
-RTD|      15.088|      32.713|      59.234|       0|      11.913|      88.298
-RTD|      15.182|      32.532|      66.399|       0|      11.913|      88.298
-RTD|      15.412|      32.870|      62.405|       0|      11.913|      88.298
-RTD|      14.687|      32.676|      78.079|       0|      11.913|      88.298
-RTD|      15.108|      32.656|      54.144|       0|      11.913|      88.298
-RTD|      15.242|      32.499|      52.828|       0|      11.913|      88.298
-RTD|      14.981|      32.723|      64.494|       0|      11.913|      88.298
-RTD|      14.974|      32.586|      53.813|       0|      11.913|      88.298
-RTD|      14.924|      32.753|      66.225|       0|      11.913|      88.298
-RTD|      15.285|      32.649|      64.146|       0|      11.913|      88.298
-RTD|      15.168|      32.583|      62.943|       0|      11.913|      88.298
-RTD|      15.639|      32.549|      58.352|       0|      11.913|      88.298
-RTD|      13.968|      32.556|      59.007|       0|      11.913|      88.298
-RTD|      15.462|      32.606|      53.182|       0|      11.913|      88.298
-RTD|      14.991|      32.853|      63.521|       0|      11.913|      88.298
-RTD|      14.994|      32.743|      70.195|       0|      11.913|      88.298
-RTT|  00:04:34  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      14.821|      32.489|      54.201|       0|      11.913|      88.298
-RTD|      15.141|      32.639|      49.803|       0|      11.913|      88.298
-RTD|      15.212|      32.613|      52.744|       0|      11.913|      88.298
-RTD|      14.964|      32.676|      54.138|       0|      11.913|      88.298
-RTD|      14.777|      32.930|      59.959|       0|      11.913|      88.298
-RTD|      14.704|      32.566|      77.708|       0|      11.913|      88.298
-RTD|      14.938|      32.526|      66.091|       0|      11.913|      88.298
-RTD|      14.650|      32.469|      67.896|       0|      11.913|      88.298
-RTD|      15.432|      32.496|      84.679|       0|      11.913|      88.298
-RTD|      14.172|      32.653|      58.753|       0|      11.913|      88.298
-RTD|      15.776|      32.773|      56.911|       0|      11.913|      88.298
-RTD|      15.048|      32.786|      72.287|       0|      11.913|      88.298
-RTD|      15.312|      32.653|      61.333|       0|      11.913|      88.298
-RTD|      14.958|      32.506|      53.289|       0|      11.913|      88.298
-RTD|      13.471|      32.579|      51.474|       0|      11.913|      88.298
-RTD|      14.897|      32.796|      58.298|       0|      11.913|      88.298
-RTD|      14.426|      32.897|      63.926|       0|      11.913|      88.298
-RTD|      15.118|      32.569|      68.133|       0|      11.913|      88.298
-RTD|      15.329|      32.633|      59.622|       0|      11.913|      88.298
-RTD|      15.242|      32.583|      62.469|       0|      11.913|      88.298
-RTD|      14.931|      32.506|      64.380|       0|      11.913|      88.298
-RTT|  00:04:55  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      15.539|      32.663|      53.630|       0|      11.913|      88.298
-RTD|      15.212|      32.847|      64.404|       0|      11.913|      88.298
-RTD|      14.787|      32.659|      62.800|       0|      11.913|      88.298
-^C---|------------|------------|------------|--------|-------------------------
-RTS|      11.913|      25.889|      88.298|       0|    00:04:58/00:04:58
+RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|--- 
+lat worst
+RTD|      13.283|      29.361|      59.140|       3|      12.702|      
+388.473
+RTD|      11.502|      29.040|      58.235|       3|      11.502|      
+388.473
+RTD|      10.530|      28.947|      67.027|       3|      10.530|      
+388.473
+RTD|      14.410|      31.760|      65.229|       3|      10.530|      
+388.473
+RTD|      13.207|      31.286|      73.607|       3|      10.530|      
+388.473
+RTD|      13.454|      30.678|      71.275|       3|      10.530|      
+388.473
+RTD|      14.730|      31.122|      64.090|       3|      10.530|      
+388.473
+RTD|      14.881|      30.397|      80.705|       3|      10.530|      
+388.473
+RTD|       9.848|      30.534|      66.659|       3|       9.848|      
+388.473
+RTD|      14.039|      30.678|      63.525|       3|       9.848|      
+388.473
+RTD|      13.290|      28.973|      71.589|       3|       9.848|      
+388.473
+RTD|      16.228|      23.957|      80.598|       3|       9.848|      
+388.473
+RTD|      17.304|      26.467|      74.018|       3|       9.848|      
+388.473
+RTD|      16.137|      26.494|      73.226|       3|       9.848|      
+388.473
+^ 
+C 
+---| 
+------------| 
+------------|------------|--------|-------------------------
+
+Thanks,
+Steven
+
+
+--Apple-Mail-5--1054565390
+Content-Type: text/html;
+	charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+
+<html><body style=3D"word-wrap: break-word; -webkit-nbsp-mode: space; =
+-webkit-line-break: after-white-space; ">Can xenomai preempt its own =
+system calls? We ran latency with our app. &nbsp;We had a thread waiting =
+on a cond, and when we signaled that cond, the latency jumped from ~70us =
+to almost 400us even though latency runs a higher priority thread than =
+the thread that we wake up. Is there interrupt disabling that accounts =
+for this?<div><br></div><div>Here are the results as taken by Mark =
+S.</div><div><br></div><div><span class=3D"Apple-style-span" =
+style=3D"font-size: 10px; ">=3D=3D All results in =
+microseconds<br>warming up...<br>RTT|&nbsp; 00:00:01&nbsp; (periodic =
+user-mode task, 100 us period, priority 99)<br>RTH|-----lat min|-----lat =
+avg|-----lat max|-overrun|----lat best|---lat =
+worst<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+14.934|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+27.179|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+65.767|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+0|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14.934|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+65.767<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+15.151|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+26.798|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+70.954|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+0|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14.934|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+70.954<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+15.409|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+27.152|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+66.890|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+0|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14.934|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+70.954<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+15.947|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+27.316|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+71.168|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+0|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14.934|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+71.168<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+15.746|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+26.878|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+71.188|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+0|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14.934|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+71.188<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+15.489|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+26.631|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+74.476|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+0|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14.934|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+74.476<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+16.659|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+26.527|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+67.425|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+0|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14.934|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+74.476<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+14.567|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+26.972|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+59.448|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+0|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14.567|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+74.476<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+15.987|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+27.837|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+74.092|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+0|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14.567|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+74.476<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+16.241|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+28.352|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+66.740|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+0|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14.567|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+74.476<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+13.982|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+27.139|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+65.630|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+0|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 13.982|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+74.476<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+13.982|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+33.355|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+65.286|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 13.892|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+13.982|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+33.355|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+65.286|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 13.892|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+13.982|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+33.355|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+65.286|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 13.892|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+13.982|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+33.355|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+65.286|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 13.892|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+13.982|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+33.355|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+65.286|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 13.892|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+13.791|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+33.465|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+67.351|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12.702|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+13.791|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+33.465|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+67.351|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12.702|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+13.791|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+33.465|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+67.351|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12.702|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+13.791|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+33.465|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+67.351|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12.702|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+13.761|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+33.722|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+90.066|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12.702|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTT|&nbsp; 00:00:22&nbsp; (periodic user-mode task, 100 us =
+period, priority 99)<br>RTH|-----lat min|-----lat avg|-----lat =
+max|-overrun|----lat best|---lat =
+worst<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+13.283|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+29.361|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+59.140|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12.702|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+11.502|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+29.040|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+58.235|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11.502|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+10.530|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+28.947|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+67.027|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.530|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+14.410|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+31.760|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+65.229|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.530|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+13.207|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+31.286|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+73.607|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.530|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+13.454|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+30.678|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+71.275|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.530|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+14.730|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+31.122|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+64.090|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.530|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+14.881|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+30.397|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+80.705|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.530|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+9.848|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+30.534|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+66.659|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9.848|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+14.039|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+30.678|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+63.525|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9.848|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+13.290|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+28.973|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+71.589|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9.848|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+16.228|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+23.957|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+80.598|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9.848|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+17.304|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+26.467|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+74.018|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9.848|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+16.137|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+26.494|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+73.226|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+3|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9.848|&nbsp;&nbsp;&nbsp;&nbsp; =
+388.473<br>^C---|------------|------------|------------|--------|---------=
+----------------<br></span></div><div><br></div><div>Thanks,</div><div>Ste=
+ven</div><div><br></div></body></html>=
+
+--Apple-Mail-5--1054565390--
 
