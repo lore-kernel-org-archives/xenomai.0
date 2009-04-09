@@ -1,12 +1,11 @@
-Message-ID: <49F5B322.3040709@domain.hid>
-Date: Mon, 27 Apr 2009 15:29:06 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Date: Wed, 8 Apr 2009 17:11:34 -0700 (PDT)
+From: Martin Shepherd <mcs@domain.hid>
+In-Reply-To: <Pine.LNX.4.64.0904081243120.22300@domain.hid>
+Message-ID: <Pine.LNX.4.64.0904081659110.22300@domain.hid>
+References: <Pine.LNX.4.64.0904081243120.22300@domain.hid>
 MIME-Version: 1.0
-References: <37f89760904270553s1d862905l5c3c4df01ce0d984@domain.hid>
-In-Reply-To: <37f89760904270553s1d862905l5c3c4df01ce0d984@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Try to get recption on driver CAN
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: Re: [Xenomai-help] Selecting the TSC
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,37 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Marcel Soulot <msoulot@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Marcel Soulot wrote:
-> Hi,
-> 
-> I try to receive data from CAN network. I got a PCI card with a FPGA
-> which emulates the SJA1000.
-> So I load the following modules :
-> insmod ./xeno_can.ko
-> insmod ./xeno_can_sja1000.ko
-> insmod ./xeno_can_mem.ko mem=0xe0000800 irq=5 can_clock=80000000 cdr=0x8F
-> 
-> then I configure with :
-> ./rtcanconfig rtcan0 -v --baudrate=125000 start
-> 
-> and launch the receive test application :
-> ./rtcanrecv rtcan0 -v
-> 
-> The task is running but nothing happen in reception.
-> I could just say that the transmitter was blocked before I load the
-> driver. After all the upon configuration, I can check that the
-> connection with transmitter is now enabled and the data are sent.
 
-Do you get interrupts for out-going messages? What does "/proc/xeno/irq"
-report?.
+On Wed, 8 Apr 2009, Martin Shepherd wrote:
+> The reason is that for any processor type other than the
+> various Pentium CPUs, "make menuconfig" doesn't define CONFIG_X86_TSC
+> in the .config file
 
-> First, my question is this procedure have any chance to work ? or I
-> missed something in the configuration ?
+Oops. I got this part wrong. I hadn't realized that there were many
+more CPU options than the 6 options that "make menuconfig" initially
+shows in the Processor family configuration page. Scrolling down and
+selecting Athlon/Duron/K7 does indeed turn on the CONFIG_X86_TSC
+compilation option. So I was incorrect to say that this can't be done.
 
-I think you need a PCI driver to support your card properly.
+Regardless, I would still be interested to hear whether there are any
+moves to switch Xenomai over to consulting the run-time cpu_has_tsc
+macro, now that the CONFIG_X86_TSC option no longer configures the use
+of the TSC in the kernel.
 
-Wolfgang.
+Martin
 
