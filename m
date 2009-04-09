@@ -1,9 +1,13 @@
-MIME-Version: 1.0
-Date: Mon, 6 Apr 2009 18:38:50 +0200
-Message-ID: <37f89760904060938n2f1d2b1je841f1e8b1f82f89@domain.hid>
-From: Marcel Soulot <msoulot@domain.hid>
-Content-Type: multipart/alternative; boundary=0016364c7edd8621ed0466e58843
-Subject: [Xenomai-help] Interrupt sharing
+Message-Id: <F75DBA9B-A2C9-4C05-A339-0B4B47186E8A@comcast.net>
+From: Steven Seeger <steven.seeger@domain.hid>
+In-Reply-To: <Pine.LNX.4.64.0904081659110.22300@domain.hid>
+Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Apple Message framework v930.3)
+Date: Wed, 8 Apr 2009 22:49:48 -0400
+References: <Pine.LNX.4.64.0904081243120.22300@domain.hid>
+	<Pine.LNX.4.64.0904081659110.22300@domain.hid>
+Subject: Re: [Xenomai-help] Selecting the TSC
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -13,35 +17,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Martin Shepherd <mcs@domain.hid>
+Cc: xenomai@xenomai.org
 
---0016364c7edd8621ed0466e58843
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+On Apr 8, 2009, at 8:11 PM, Martin Shepherd wrote:
 
-Hi,
+> Regardless, I would still be interested to hear whether there are any
+> moves to switch Xenomai over to consulting the run-time cpu_has_tsc
+> macro, now that the CONFIG_X86_TSC option no longer configures the use
+> of the TSC in the kernel.
 
-I wonder if I can manage the same IRQ with xenomai and the kernel ?
+Martin, doing it the way Xenomai does it removes a branch from the  
+critical path in many places. That is a very good thing!
 
-I have a multiple devices (8 UARTs and GPIOs...) on a PCI card and all share
-the same IRQ.
-Can I open for example 4 uart with xenomai and the 4 others with the kernel
-?
-How can work the interrupt share mecanism between xenomai and the kernel ?
+Steven
 
-Thanks for your help,
-Marcel.
-
---0016364c7edd8621ed0466e58843
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Hi,<br><br>I wonder if I can manage the same IRQ with xenomai and the kerne=
-l ?<br><br>I have a multiple devices (8 UARTs and GPIOs...) on a PCI card a=
-nd all share the same IRQ.<br>Can I open for example 4 uart with xenomai an=
-d the 4 others with the kernel ?<br>
-How can work the interrupt share mecanism between xenomai and the kernel ?<=
-br><br>Thanks for your help,<br>Marcel.<br>=A0 <br>
-
---0016364c7edd8621ed0466e58843--
 
