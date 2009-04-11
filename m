@@ -1,19 +1,12 @@
-Message-ID: <49E0F887.40805@domain.hid>
-Date: Sat, 11 Apr 2009 22:07:35 +0200
+Message-ID: <49E0F949.5040900@domain.hid>
+Date: Sat, 11 Apr 2009 22:10:49 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <Pine.LNX.4.64.0904081243120.22300@domain.hid>
-	<Pine.LNX.4.64.0904081659110.22300@domain.hid>
-	<Pine.LNX.4.64.0904101250540.4820@domain.hid>
-	<Pine.LNX.4.64.0904101708030.4820@domain.hid>
-	<6C68EA7C-72E4-482D-917A-24C7C6DA31C9@domain.hid>
-	<Pine.LNX.4.64.0904101729031.4820@domain.hid>
-	<49E08F6F.8000604@domain.hid>
-	<Pine.LNX.4.64.0904111233180.32647@domain.hid>
-In-Reply-To: <Pine.LNX.4.64.0904111233180.32647@domain.hid>
+References: <d6c8ef150904101628r60c02baal3568b2ece287ce1f@domain.hid>
+In-Reply-To: <d6c8ef150904101628r60c02baal3568b2ece287ce1f@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Running xeno-test
+Subject: Re: [Xenomai-help] Intel EP80579 support
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,28 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Martin Shepherd <mcs@domain.hid>
-Cc: xenomai@xenomai.org
+To: Bosko Radivojevic <bosko.radivojevic@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Martin Shepherd wrote:
-> On Sat, 11 Apr 2009, Gilles Chanteperdrix wrote:
->> ...
->> So, in the mean time, you should not load the drivers and let xeno-test
->> load them once at a time when needed.
+Bosko Radivojevic wrote:
+> Hi all,
 > 
-> Thanks. This did indeed resolve the problem, and allowed all of the
-> latency tests to run. Unfortunately the subsequent switchtest step
-> appears to have completely hung the PC, but that could be a memory
-> error, since I'm temporarily experimenting with Xenomai on an
-> 8-year-old PC, and memtest86 occasionally flags a couple of marginal
-> bytes of RAM on this PC. I'll receive a new computer in a couple of
-> weeks.
+> I'm quite new in anything related to Intel and Xenomai on it, so I'm
+> sorry if my question(s) may sound silly ;) I hope some experience I
+> have after 1 year of dealing with Xenomai on ARM will help me.
+> 
+> Anyway, I have Megrez+Mizar evaluation kit, which consist of Mergez
+> (Development Board) and Mizar (Intel EP80579 Module):
+> - http://www.m31.com/en/m31-projects-embedded-solutions/prodotti/megrez-evaluation-board.html
+> - http://www.m31.com/en/m31-projects-embedded-solutions/prodotti/mizar-intel-ep80579-module.html
+> - http://www.intel.com/design/intarch/devkits/ep80579/index.htm
+> 
+> Before I understand what is the status of vanila Linux support (I got
+> 2.6.18 kernel in the kit, latest drivers on Intel's web are also for
+> 2.6.18), I'm wondering if latest Xenomai/Adeos will work on this
+> platform?
 
-We have just discovered that FPU handling on x86 had a few bugs, one of
-them involving CPUs without fxsr (check /proc/cpuinfo). You can try and
-apply commit 3a23967f3cc8d6881d8e3280130bbc431195aa31 from the for-head
-branch of the git://git.xenomai.org/xenomai-gch repository. This is
-fairly recent stuff, this is why it is not in any release.
+If it is an x86 and it works with the latest Linux, then I guess it
+should work with Xenomai. If, on the other hand, it runs with a heavily
+modified version of Linux, maybe Xenomai will need some adaptations too.
 
 -- 
 					    Gilles.
