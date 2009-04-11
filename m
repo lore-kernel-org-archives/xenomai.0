@@ -1,21 +1,15 @@
-Message-ID: <49DB3717.4090402@domain.hid>
-Date: Tue, 07 Apr 2009 13:20:55 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Fri, 10 Apr 2009 17:35:41 -0700 (PDT)
+From: Martin Shepherd <mcs@domain.hid>
+In-Reply-To: <6C68EA7C-72E4-482D-917A-24C7C6DA31C9@domain.hid>
+Message-ID: <Pine.LNX.4.64.0904101729031.4820@domain.hid>
+References: <Pine.LNX.4.64.0904081243120.22300@domain.hid>
+	<Pine.LNX.4.64.0904081659110.22300@domain.hid>
+	<Pine.LNX.4.64.0904101250540.4820@domain.hid>
+	<Pine.LNX.4.64.0904101708030.4820@domain.hid>
+	<6C68EA7C-72E4-482D-917A-24C7C6DA31C9@domain.hid>
 MIME-Version: 1.0
-References: <b131c9f0903230100x1b2aa2fet9e2b0efe68a7a77f@domain.hid>	
-	<49C7899F.5030306@domain.hid>	
-	<b131c9f0903240037q446193f5hbfdd3ade40ea2af4@domain.hid>	
-	<49C91B24.2020304@domain.hid>	
-	<b131c9f0903241437s661b9bd3v504b14f83b1b9c86@domain.hid>	
-	<49C95A76.4020802@domain.hid>	
-	<b131c9f0903250636o85af46au240a04ab33ebb599@domain.hid>	
-	<b131c9f0904060126n12158c5dqd37d71769cc8aff5@domain.hid>	
-	<49D9E000.4070009@domain.hid>
-	<1239099594.9869.65.camel@domain.hid>
-In-Reply-To: <1239099594.9869.65.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai LTTng support
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: Re: [Xenomai-help] Running xeno-test
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,83 +19,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Vikesh Rambaran <vikesh.rambaran@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Steven Seeger <steven.seeger@domain.hid>
+Cc: xenomai@xenomai.org
 
-Vikesh Rambaran wrote:
-> On Mon, 2009-04-06 at 12:57 +0200, Jan Kiszka wrote:
->> vikesh rambaran wrote:
->>> Hi
->>> Apologies for being quiet for a while. Was away for a few days...
->>>
->>>>>> Besides that, the kernel does boot although X + keyboard + mouse seems
->>>>> to
->>>>>> lock up occasionally.
->>>>> Is the lockup permanent then, or does the system recover from it later?
->>>>>
->>>> Lockup is permanent and requires a reboot. I unfortunately do not have a
->>>> network connection to a second PC on this setup to see what else is alive.
->>>>
->>>>>> It does not seem to be LTTng specific, as i've noticed it with a xenomai
->>>>>> enabled kernel only as well. Will try
->>>>>> isolating the problem with a vanilla kernel soon.
->>>>>>
->>>>>> For reference, the other LTT tools used are
->>>>>> LTT control  : ltt-control-0.62-23122008
->>>>>> LTTV          : lttv-0.12.9-29012009
->>>>>>
->>>>>> Both obtained from  http://ltt.polymtl.ca/
->>>>>>
->>> Some feedback
->>>
->>> I've managed to test the kernel on three different PCs :
->>> intel core 2, intel core duo, amd athlon 64 x 2 (all running 32 bit
->>> kernels).
->>>
->>> The lockup occurs after a few minutes and is permanent with no network
->>> access after the lockup.
->>>
->>> Vanilla kernel did not lock up during the hour that i used it
->>>
->>> I've just noticed on the intel core 2 PC, dmesg gives an error setting up
->>> the hardware clock.
->>> Will investigate this one further.
->>>
->>> The kernel config is attached.
->>> If anyone else has experienced similar issues and found a solution, please
->>> let me know
->> We've an open ticket from our customer about some mysterious "lockup
->> when starting xosview". But the current state is "no longer
->> reproducible", even at customer site. :-|
->>
->> Your lockup only happens when X is running? Are there any last words on
->> the serial console if you redirect kernel messages to it? Otherwise,
->> could you also try with nmi_watchdog=2 and
->> CONFIG_XENO_HW_NMI_DEBUG_LATENCY enabled?
->>
-> 
-> Latency test ran overnight on the console screen (tty1)
-> (without logging into X at the gdm login)
-> 
-> Lockup occurs after logging into X. This happens anywhere from a few
-> seconds to a few minutes after login.
-> 
 
-Hmm, maybe we have issues with MTRR again. Can you also try X without
-CONFIG_MTRR set in the kernel?
+On Fri, 10 Apr 2009, Steven Seeger wrote:
+> It klat.ko installed?
 
-> Will try your other two suggestions and provide feedback.
-> 
-> Thanx
-> Vicki
-> 
-> 
-> 
+Yes, assuming that by this you mean xeno_klat.ko. I don't see klat.ko
+without the xeno_ prefix in /lib/modules, and I opted for all of the
+Xenomai testing drivers to be built by the kernel installation, apart
+from irqbench.
 
-Thanks in advance,
-Jan
+The pertinent section of the kernel .config file is:
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+  #
+  # Testing drivers
+  #
+  CONFIG_XENO_KLATENCY_MODULE=m
+  CONFIG_XENO_DRIVERS_TIMERBENCH=m
+  CONFIG_XENO_DRIVERS_KLATENCY=m
+  # CONFIG_XENO_DRIVERS_IRQBENCH is not set
+  CONFIG_XENO_DRIVERS_SWITCHTEST=m
+
+and lsmod shows the following Xenomai drivers as being loaded:
+
+  $ lsmod | grep xeno
+  xeno_klat               5168  0
+  xeno_timerbench         7172  0
+  xeno_switchtest         6924  0
+
+Thanks for the help,
+
+Martin
+
 
