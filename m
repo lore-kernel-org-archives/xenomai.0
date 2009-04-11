@@ -1,12 +1,12 @@
-Message-ID: <49E0F949.5040900@domain.hid>
-Date: Sat, 11 Apr 2009 22:10:49 +0200
+Message-ID: <49E0FB28.8000104@domain.hid>
+Date: Sat, 11 Apr 2009 22:18:48 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <d6c8ef150904101628r60c02baal3568b2ece287ce1f@domain.hid>
-In-Reply-To: <d6c8ef150904101628r60c02baal3568b2ece287ce1f@domain.hid>
+References: <000001c9ba1a$02e1ac70$08a50550$@com>
+In-Reply-To: <000001c9ba1a$02e1ac70$08a50550$@com>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Intel EP80579 support
+Subject: Re: [Xenomai-help] Section Mismatch
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,30 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bosko Radivojevic <bosko.radivojevic@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: wcall@domain.hid
+Cc: xenomai@xenomai.org
 
-Bosko Radivojevic wrote:
-> Hi all,
-> 
-> I'm quite new in anything related to Intel and Xenomai on it, so I'm
-> sorry if my question(s) may sound silly ;) I hope some experience I
-> have after 1 year of dealing with Xenomai on ARM will help me.
-> 
-> Anyway, I have Megrez+Mizar evaluation kit, which consist of Mergez
-> (Development Board) and Mizar (Intel EP80579 Module):
-> - http://www.m31.com/en/m31-projects-embedded-solutions/prodotti/megrez-evaluation-board.html
-> - http://www.m31.com/en/m31-projects-embedded-solutions/prodotti/mizar-intel-ep80579-module.html
-> - http://www.intel.com/design/intarch/devkits/ep80579/index.htm
-> 
-> Before I understand what is the status of vanila Linux support (I got
-> 2.6.18 kernel in the kit, latest drivers on Intel's web are also for
-> 2.6.18), I'm wondering if latest Xenomai/Adeos will work on this
-> platform?
+Wayne Call wrote:
+> I get the following "Section mismatch" warnings when attempting to build the
+> lm73_rtdm.c and lpl_twi_uart_rtdm.c drivers.  What causes a mismatch?
 
-If it is an x86 and it works with the latest Linux, then I guess it
-should work with Xenomai. If, on the other hand, it runs with a heavily
-modified version of Linux, maybe Xenomai will need some adaptations too.
+Yes, these are plain Linux debugging messages, completely unrelated to
+Xenomai. they tell you that you access object from the init/exit
+sections from the text section, which is bad, since the init/exit
+sections may not be always available when functions from the text
+section are running. Show us the full code, and probably someone will be
+able to tell you what the problem is.
 
 -- 
 					    Gilles.
