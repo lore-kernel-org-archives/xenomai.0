@@ -1,13 +1,14 @@
-Message-ID: <49E22775.4070107@domain.hid>
-Date: Sun, 12 Apr 2009 19:40:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Sun, 12 Apr 2009 11:52:15 -0700 (PDT)
+From: Martin Shepherd <mcs@domain.hid>
+In-Reply-To: <49E1C43A.6060009@domain.hid>
+Message-ID: <Pine.LNX.4.64.0904121117380.23562@domain.hid>
+References: <Pine.LNX.4.64.0904081243120.22300@domain.hid>
+	<Pine.LNX.4.64.0904081659110.22300@domain.hid>
+	<Pine.LNX.4.64.0904101250540.4820@domain.hid>
+	<49E1C43A.6060009@domain.hid>
 MIME-Version: 1.0
-References: <Pine.LNX.4.64.0904081243120.22300@domain.hid>	<Pine.LNX.4.64.0904081659110.22300@domain.hid>	<Pine.LNX.4.64.0904101250540.4820@domain.hid>	<Pine.LNX.4.64.0904101708030.4820@domain.hid>	<6C68EA7C-72E4-482D-917A-24C7C6DA31C9@domain.hid>	<Pine.LNX.4.64.0904101729031.4820@domain.hid>	<49E08F6F.8000604@domain.hid>	<Pine.LNX.4.64.0904111233180.32647@domain.hid>	<49E0F887.40805@domain.hid>	<Pine.LNX.4.64.0904111820330.6444@domain.hid>
-	<49E1B05A.4040705@domain.hid>
-In-Reply-To: <49E1B05A.4040705@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Running xeno-test
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: Re: [Xenomai-help] Xeno-test bug
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,28 +18,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Martin Shepherd <mcs@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Martin Shepherd wrote:
->> On Sat, 11 Apr 2009, Gilles Chanteperdrix wrote:
->>> We have just discovered that FPU handling on x86 had a few bugs, one of
->>> them involving CPUs without fxsr (check /proc/cpuinfo).
->> The AMD Athlon that I am using, does have fxsr, according to
->> /proc/cpuinfo. Regardless, now that I have seen lockups during the
->> latency tests as well, I don't think that the problem can be related
->> to floating point. It looks more like an interrupt problem.
-> 
-> Ok. But the patch mentioned previously also fixes kernels using FPU in
-> kernel-space, which the Athlon does according to Konfig. So, please try
-> the FPU patch or select K6 instead of Athlon.
 
-Actually, the 3DNow was fixed before the 2.4.7 release. So, you should
-not have it if you are using Xenomai 2.4.7. And the proper commit number
-for the fxsr issue fix which was merged into the head branch in the mean
-time is: 3a23967f3cc8d6881d8e3280130bbc431195aa31.
+On Sun, 12 Apr 2009, Gilles Chanteperdrix wrote:
+> No, that is the intended behaviour, as the name "cleanup_load" suggests,
+> cleanup_load is intended to be called when generate_load terminates.
 
--- 
-					    Gilles.
+I think that you mean "when the dd process that generate_loads() runs,
+terminates", not when generate_loads() itself ends. Generate_loads is
+supposed to end as soon as it has started the specified number of dd
+processes in a background.
+
+> The
+> real problem is to know why generate_loads terminates early. Maybe you
+> have not installed dd ?
+
+No, dd is started, and continues to run fine in the background, even
+after the EXIT handler is triggered. What I found was that the EXIT
+handler was not being triggered by dd terminating, but because the
+generate_loads() procedure which starts it, is executed in a
+sub-shell, which terminates.
+
+Removing extraneous code, the problematic statements of the script are
+as follows:
+
+    loudly() {
+        eval $* &
+        wait $!
+    }
+
+    mkload() { dd if=$device of=/dev/null $* & }
+
+    generate_loads() {
+        loudly mkload
+    }
+
+    generate_loads
+
+When generate_loads() is executed above, it calls loudly(), telling it
+to execute mkload(). For some reason, loudly() does this as follows:
+
+  eval mkload &
+
+which, if one expands the definition of mkload(), is equivalent to:
+
+  (dd if=$device of=/dev/null $* &) &
+
+In other words, the "eval mkload &" statement starts mkload() within a
+background process, then mkload() also starts the dd in a second
+background process. The background dd process then continues, while the
+process that started it terminates normally, and triggers the EXIT
+handler.
+
+This happens because loudly() is implemented like:
+
+     loudly() {
+         eval $* &
+         wait $!
+     }
+
+instead of the more obvious:
+
+     loudly() {
+         eval $*
+     }
+
+Martin
 
