@@ -1,20 +1,23 @@
+Message-ID: <49E23FB1.5030505@domain.hid>
+Date: Sun, 12 Apr 2009 21:23:29 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <49DB3717.4090402@domain.hid>
-References: <b131c9f0903230100x1b2aa2fet9e2b0efe68a7a77f@domain.hid>
-	<b131c9f0903240037q446193f5hbfdd3ade40ea2af4@domain.hid>
-	<49C91B24.2020304@domain.hid>
-	<b131c9f0903241437s661b9bd3v504b14f83b1b9c86@domain.hid>
-	<49C95A76.4020802@domain.hid>
-	<b131c9f0903250636o85af46au240a04ab33ebb599@domain.hid>
-	<b131c9f0904060126n12158c5dqd37d71769cc8aff5@domain.hid>
-	<49D9E000.4070009@domain.hid>
-	<1239099594.9869.65.camel@domain.hid>
-	<49DB3717.4090402@domain.hid>
-Date: Wed, 8 Apr 2009 09:57:55 +0200
-Message-ID: <b131c9f0904080057v49b2caf3s5c2096827dd1576d@domain.hid>
-From: vikesh rambaran <vikesh.rambaran@domain.hid>
-Content-Type: multipart/alternative; boundary=00032557570241f81e0467067d5a
-Subject: Re: [Xenomai-help] Xenomai LTTng support
+References: <Pine.LNX.4.64.0904081243120.22300@domain.hid>
+	<Pine.LNX.4.64.0904081659110.22300@domain.hid>
+	<Pine.LNX.4.64.0904101250540.4820@domain.hid>
+	<Pine.LNX.4.64.0904101708030.4820@domain.hid>
+	<6C68EA7C-72E4-482D-917A-24C7C6DA31C9@domain.hid>
+	<Pine.LNX.4.64.0904101729031.4820@domain.hid>
+	<49E08F6F.8000604@domain.hid>
+	<Pine.LNX.4.64.0904111233180.32647@domain.hid>
+	<49E0F887.40805@domain.hid>
+	<Pine.LNX.4.64.0904111820330.6444@domain.hid>
+	<49E1B05A.4040705@domain.hid>
+	<Pine.LNX.4.64.0904121206040.23562@domain.hid>
+In-Reply-To: <Pine.LNX.4.64.0904121206040.23562@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Running xeno-test
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,58 +27,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>, Vikesh Rambaran <vikesh.rambaran@domain.hid>
+To: Martin Shepherd <mcs@domain.hid>
+Cc: xenomai@xenomai.org
 
---00032557570241f81e0467067d5a
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Martin Shepherd wrote:
+> On Sun, 12 Apr 2009, Gilles Chanteperdrix wrote:
+>> ...
+>> Could you tell us the versions of Linux and Xenomai you are using and
+>> post your .config ?
+> 
+> I am using Xenomai 2.4.7, with Linux kernel 2.6.28.7, under Ubuntu 8.10.
+> 
+> The following are the contents of the linux-2.6.28.7/.config file:
 
-Hi
+Ok. You seem to have avoided the usual pitfalls, however you really have
+a lot of options enabled. The symptoms of your problem really look like
+a bug which I had and turned out to be a NO_HZ problem. So, maybe you
+could try and disable CONFIG_NO_HZ ? You can also try to enable
+Xenomai's NMI watchdog, which will fire if a timer overrun occur.
 
-On Tue, Apr 7, 2009 at 1:20 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-
->
-> Hmm, maybe we have issues with MTRR again. Can you also try X without
-> CONFIG_MTRR set in the kernel?
-
-
-Tried the following combinations on intel and amd platforms
-
-1. No MTRR on 2.6.28.7 + Xenomai 2.4.7 for Intel core 2
-2. No MTRR on 2.6.28.7 + Xenomai 2.4.7 + LTTng for Amd Athlon
-
-Lockup still persists (:
-
-Going to compare the vanilla installation message log with that of the
-xenomai patched installation
-("Unable to set hardware clock" is something i don't remember seeing in the
-vanilla logs - will check again)
-
-Keep well
-Vicki
-
---00032557570241f81e0467067d5a
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Hi<br><br><div class=3D"gmail_quote">On Tue, Apr 7, 2009 at 1:20 PM, Jan Ki=
-szka <span dir=3D"ltr">&lt;<a href=3D"mailto:jan.kiszka@domain.hid">jan.ki=
-szka@domain.hid</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote"=
- style=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.=
-8ex; padding-left: 1ex;">
-<div><div></div><div class=3D"h5"><br>
-</div></div>Hmm, maybe we have issues with MTRR again. Can you also try X w=
-ithout<br>
-CONFIG_MTRR set in the kernel?</blockquote><div>=A0<br>Tried the following =
-combinations on intel and amd platforms<br><br></div><div>1. No MTRR on 2.6=
-.28.7 + Xenomai 2.4.7 for Intel core 2 <br>2. No MTRR on 2.6.28.7 + Xenomai=
- 2.4.7 + LTTng for Amd Athlon<br>
-<br>Lockup still persists (:<br><br>Going to compare the vanilla installati=
-on message log with that of the xenomai patched installation<br>(&quot;Unab=
-le to set hardware clock&quot; is something i don&#39;t remember seeing in =
-the vanilla logs - will check again)<br>
-</div></div><br>Keep well<br>Vicki<br>
-
---00032557570241f81e0467067d5a--
+-- 
+					    Gilles.
 
