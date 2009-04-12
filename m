@@ -1,16 +1,12 @@
-Message-ID: <49E24045.4060204@domain.hid>
-Date: Sun, 12 Apr 2009 21:25:57 +0200
+Message-ID: <49E24A32.9050200@domain.hid>
+Date: Sun, 12 Apr 2009 22:08:18 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <Pine.LNX.4.64.0904081243120.22300@domain.hid>
-	<Pine.LNX.4.64.0904081659110.22300@domain.hid>
-	<Pine.LNX.4.64.0904101250540.4820@domain.hid>
-	<49E1C43A.6060009@domain.hid>
-	<Pine.LNX.4.64.0904121117380.23562@domain.hid>
-In-Reply-To: <Pine.LNX.4.64.0904121117380.23562@domain.hid>
+References: <d6c8ef150904101628r60c02baal3568b2ece287ce1f@domain.hid>
+In-Reply-To: <d6c8ef150904101628r60c02baal3568b2ece287ce1f@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xeno-test bug
+Subject: Re: [Xenomai-help] Intel EP80579 support
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,76 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Martin Shepherd <mcs@domain.hid>
-Cc: xenomai@xenomai.org
+To: Bosko Radivojevic <bosko.radivojevic@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Martin Shepherd wrote:
-> On Sun, 12 Apr 2009, Gilles Chanteperdrix wrote:
->> No, that is the intended behaviour, as the name "cleanup_load" suggests,
->> cleanup_load is intended to be called when generate_load terminates.
+Bosko Radivojevic wrote:
+> Hi all,
 > 
-> I think that you mean "when the dd process that generate_loads() runs,
-> terminates", not when generate_loads() itself ends. Generate_loads is
-> supposed to end as soon as it has started the specified number of dd
-> processes in a background.
+> I'm quite new in anything related to Intel and Xenomai on it, so I'm
+> sorry if my question(s) may sound silly ;) I hope some experience I
+> have after 1 year of dealing with Xenomai on ARM will help me.
 > 
->> The
->> real problem is to know why generate_loads terminates early. Maybe you
->> have not installed dd ?
+> Anyway, I have Megrez+Mizar evaluation kit, which consist of Mergez
+> (Development Board) and Mizar (Intel EP80579 Module):
+> - http://www.m31.com/en/m31-projects-embedded-solutions/prodotti/megrez-evaluation-board.html
+> - http://www.m31.com/en/m31-projects-embedded-solutions/prodotti/mizar-intel-ep80579-module.html
+> - http://www.intel.com/design/intarch/devkits/ep80579/index.htm
 > 
-> No, dd is started, and continues to run fine in the background, even
-> after the EXIT handler is triggered. What I found was that the EXIT
-> handler was not being triggered by dd terminating, but because the
-> generate_loads() procedure which starts it, is executed in a
-> sub-shell, which terminates.
-> 
-> Removing extraneous code, the problematic statements of the script are
-> as follows:
-> 
->     loudly() {
->         eval $* &
->         wait $!
->     }
-> 
->     mkload() { dd if=$device of=/dev/null $* & }
-> 
->     generate_loads() {
->         loudly mkload
->     }
-> 
->     generate_loads
-> 
-> When generate_loads() is executed above, it calls loudly(), telling it
-> to execute mkload(). For some reason, loudly() does this as follows:
-> 
->   eval mkload &
-> 
-> which, if one expands the definition of mkload(), is equivalent to:
-> 
->   (dd if=$device of=/dev/null $* &) &
-> 
-> In other words, the "eval mkload &" statement starts mkload() within a
-> background process, then mkload() also starts the dd in a second
-> background process. The background dd process then continues, while the
-> process that started it terminates normally, and triggers the EXIT
-> handler.
-> 
-> This happens because loudly() is implemented like:
-> 
->      loudly() {
->          eval $* &
->          wait $!
->      }
-> 
-> instead of the more obvious:
-> 
->      loudly() {
->          eval $*
->      }
+> Before I understand what is the status of vanila Linux support (I got
+> 2.6.18 kernel in the kit, latest drivers on Intel's web are also for
+> 2.6.18), I'm wondering if latest Xenomai/Adeos will work on this
+> platform?
 
-Ok. Thanks for taking the time to debug this. If you made modifications
-(other than replacing #!/bin/sh with #!/bin/bash) which make xeno-test
-run in your case, send a patch which we will be happy to merge.
+Ah! It is the thing once named "tolapai", right? I once saw a
+presentation which said that the tolapai could not do bus master DMA on
+the PCI bus for other peripherals than the built-in ones (so, for
+instance, if you want to add a Wifi card, you have to use copy packets
+around). I had no confirmation of this information, but if it is true, I
+think it really cripples this processor.
 
 -- 
 					    Gilles.
