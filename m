@@ -1,12 +1,17 @@
-Message-ID: <49E0C40E.1050509@domain.hid>
-Date: Sat, 11 Apr 2009 18:23:42 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <49E36498.4040803@domain.hid>
+Date: Mon, 13 Apr 2009 18:13:12 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <49DF102B.4030107@domain.hid> <1239359009.7007.127.camel@domain.hid>
-In-Reply-To: <1239359009.7007.127.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Git pull request.
+References: <49D513D8.5020001@domain.hid> <49D530C8.8050109@domain.hid>	
+	<1238708700.6932.136.camel@domain.hid> <49D70E31.4070706@domain.hid>
+	<1238836702.6932.179.camel@domain.hid>
+In-Reply-To: <1238836702.6932.179.camel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig992E1C968FC2671BDAEBF664"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [PATCH] libnative: Avoid double-evaluation of
+ rt_task_self()
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,76 +24,79 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig992E1C968FC2671BDAEBF664
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
+
 Philippe Gerum wrote:
-> On Fri, 2009-04-10 at 11:23 +0200, Gilles Chanteperdrix wrote:
->> Hi Philippe,
+> On Sat, 2009-04-04 at 09:37 +0200, Jan Kiszka wrote:
+>> Philippe Gerum wrote:
+>>> On Thu, 2009-04-02 at 23:40 +0200, Gilles Chanteperdrix wrote:
+>>>> Jan Kiszka wrote:
+>>>>> [ can be pulled from git.xenomai.org/xenomai-jki.git queues/assorte=
+d ]
+>>>>>
+>>>>> Keep the result of rt_task_self() in a local variable to avoid the
+>>>>> second invocation.
+>>>> Maybe we could create a pure/const variant of rt_task_self() for use=
+ in
+>>>> task.c only which would avoid the double evaluatino ?
+>>>>
+>>> Can't do const because of pthread_getspecific(), but pure attribute i=
+s t
+>>> hand, yes.
+>>>
+>> At least my gcc 4.3 ignores
 >>
->> I got some changes ready for head. What we want to include in the stable
->> branch remains to be discussed, once we agree, I will prepare another
->> branch for v2.4.x patches.
+>> RT_TASK *rt_task_self(void) __attribute__ ((pure));
 >>
-> 
-> No objection to merge back FPU fixes to 2.4.x before we close that
-> branch, when 2.5 is out. This would give us some time to make sure
-> everything is fine while running the -rc series.
-> 
->> The following changes since commit bbbaec33689d8e82b604745bb55209a83d79a4bc:
->>   Philippe Gerum (1):
->>         Test for self-deletion in a safer way
+>=20
+> We can't do that on rt_task_self() directly, because of
+> rt_task_shadow().
+>=20
+>> and keeps on inserting two calls in rt_task_delete.
 >>
->> are available in the git repository at:
->>
->>   git://git.xenomai.org/xenomai-gch.git for-upstream
->>
->> Gilles Chanteperdrix (4):
->>       Improve switchtest coverage.
->>       x86 FPU fixes
->>       Optimize x86 fpu switches.
->>       Fix rt_task_trampoline and rt_task_shadow error paths.
-> 
-> I'm generally ok with the patches, but the last one still leaves an
-> issue open: if the child thread dies upon -ENOMEM, the creator won't be
-> unblocked from pending on the completion sync in rt_task_create(). We
-> could live with this for a while (lacking memory at that point is a
-> clear sign that things are going to turn ugly very soon anyway), but
-> would we want to fix this, we would have to either fire the
-> __rt_task_create syscall with some NULL args and let it notice them,
-> then signal the completion block with an error status, or have something
-> like __xn_sys_sigcompletion to unblock the waiter directly from
-> userland.
+>=20
+> What if a pure static inline helper is used internally from task.c?
+>=20
 
-Ok. The new branch for-head should contain an implementation of the 
-first idea. From now on, my proposed fixes should go in that branch.
-Fixes for the 2.4 branch should go in the for-2.4 branch.
+Makes no difference (and defining a new helper for this purpose would be
+overkill anyway).
 
-The following changes since commit 9a9c8bbcc5a5439396d593b250510d89a1584957:
-  Philippe Gerum (1):
-        Update baseline information
+So please pull my original version from
+git://git.xenomai.org/xenomai-jki.git for-upstream
 
-are available in the git repository at:
+BTW, you'll find another trivial fix in that queue:
 
-  git://git.xenomai.org/xenomai-gch.git for-head
+--- a/src/testsuite/switchtest/switchtest.c
++++ b/src/testsuite/switchtest/switchtest.c
+@@ -1094,7 +1094,7 @@ int check_fpu(void)
+ 		exit(EXIT_FAILURE);
+ 	}
 
-Gilles Chanteperdrix (5):
-      Improve switchtest coverage.
-      x86 FPU fixes
-      Optimize x86 fpu switches.
-      Fix rt_task_shadow error paths.
-      Fix rt_task_trampoline error path.
+-	return (int) status;
++	return (long) status;
+ }
 
- include/asm-arm/fptest.h              |   14 +-
- include/asm-blackfin/fptest.h         |   10 +
- include/asm-powerpc/fptest.h          |   34 +++
- include/asm-x86/bits/pod_32.h         |   41 ++---
- include/asm-x86/bits/pod_64.h         |   39 ++--
- include/asm-x86/fptest.h              |   31 +++
- include/rtdm/rttesting.h              |    8 +-
- ksrc/drivers/testing/switchtest.c     |  385 +++++++++++++++++++++------------
- ksrc/skins/native/syscall.c           |    5 +
- src/skins/native/task.c               |   55 +++--
- src/testsuite/switchtest/switchtest.c |  239 ++++++++++++++------
- 11 files changed, 578 insertions(+), 283 deletions(-)
+ int main(int argc, const char *argv[])
 
--- 
-					    Gilles.
+Jan
+
+
+--------------enig992E1C968FC2671BDAEBF664
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAknjZJ8ACgkQniDOoMHTA+nimgCfearaWLxUCe5x3uzSWaY1bn8K
+q0AAnAiKc6I8YMj2v25qY8wjLxsjgED5
+=Z0MV
+-----END PGP SIGNATURE-----
+
+--------------enig992E1C968FC2671BDAEBF664--
 
