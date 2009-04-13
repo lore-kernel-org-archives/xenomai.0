@@ -1,16 +1,16 @@
-Date: Sun, 12 Apr 2009 17:42:40 -0700 (PDT)
-From: Martin Shepherd <mcs@domain.hid>
-In-Reply-To: <49E24045.4060204@domain.hid>
-Message-ID: <Pine.LNX.4.64.0904121730060.23562@domain.hid>
-References: <Pine.LNX.4.64.0904081243120.22300@domain.hid>
-	<Pine.LNX.4.64.0904081659110.22300@domain.hid>
-	<Pine.LNX.4.64.0904101250540.4820@domain.hid>
-	<49E1C43A.6060009@domain.hid>
-	<Pine.LNX.4.64.0904121117380.23562@domain.hid>
-	<49E24045.4060204@domain.hid>
+Received: from [82.153.182.93] ([82.153.182.93] helo=mainstation country=GB
+	ident=postmaster*pop3&newburn*com)
+	by v-smtp-auth-relay-3.gradwell.net with esmtpa (Gradwell gwh-smtpd
+	1.290) id 49e300ad.3030.19
+	for xenomai@xenomai.org; Mon, 13 Apr 2009 10:06:53 +0100
+	(envelope-sender <Mail@domain.hid>)
+Message-ID: <063026E85C8B4F94A0F79B8B8CC30778@domain.hid>
+From: "Newburn" <Mail@domain.hid>
+Date: Mon, 13 Apr 2009 10:06:52 +0100
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Subject: Re: [Xenomai-help] Xeno-test bug
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_001F_01C9BC1F.91A2E670"
+Subject: [Xenomai-help] Arm Processors
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,32 +20,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
+This is a multi-part message in MIME format.
 
-On Sun, 12 Apr 2009, Gilles Chanteperdrix wrote:
-> Ok. Thanks for taking the time to debug this. If you made modifications
-> (other than replacing #!/bin/sh with #!/bin/bash) which make xeno-test
-> run in your case, send a patch which we will be happy to merge.
+------=_NextPart_000_001F_01C9BC1F.91A2E670
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Will do. There is also another bug in the handling of alternate loads
-that needs to be fixed. For some reason it xeno-test exec's the
-alternate load, instead of just running it, and this clobbers the
-generate_load() sub-process that invokes it, preventing more than one
-alternate load from being run, and preventing the subsequent cleanup
-of the one load that is started.
+Hi,
+  Is xenomai available for the Cirrus Arm EP9302 (9301) processor ?
+      - thanks
+------=_NextPart_000_001F_01C9BC1F.91A2E670
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-By the way, I now understand why loudly() invokes commands as follows:
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Diso-8859-1">
+<META content=3D"MSHTML 6.00.2900.5726" name=3DGENERATOR>
+<STYLE></STYLE>
+</HEAD>
+<BODY bgColor=3D#ffffff>
+<DIV><FONT face=3DArial size=3D2>Hi,</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2>&nbsp; Is xenomai available for the =
+Cirrus Arm=20
+EP9302 (9301) processor ?</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -=20
+thanks</FONT></DIV></BODY></HTML>
 
-  eval $* &
-  wait $!
+------=_NextPart_000_001F_01C9BC1F.91A2E670--
 
-The reason is that the shell postpones signal delivery while it is
-awaiting the completion of any command except the wait command. So
-spawning a blocking command in the background and then waiting for it
-to end with the wait command, is what makes it possible for somebody
-to abort xeno-test with Control-C.
-
-Martin
 
