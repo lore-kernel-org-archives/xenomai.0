@@ -1,16 +1,12 @@
-Received: from [82.153.182.93] ([82.153.182.93] helo=mainstation country=GB
-	ident=postmaster*pop3&newburn*com)
-	by v-smtp-auth-relay-3.gradwell.net with esmtpa (Gradwell gwh-smtpd
-	1.290) id 49e300ad.3030.19
-	for xenomai@xenomai.org; Mon, 13 Apr 2009 10:06:53 +0100
-	(envelope-sender <Mail@domain.hid>)
-Message-ID: <063026E85C8B4F94A0F79B8B8CC30778@domain.hid>
-From: "Newburn" <Mail@domain.hid>
-Date: Mon, 13 Apr 2009 10:06:52 +0100
-MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_001F_01C9BC1F.91A2E670"
-Subject: [Xenomai-help] Arm Processors
+Message-Id: <06731523-8DD6-4095-8E45-53A98C5275C0@domain.hid>
+From: Piquesel <piquesel@domain.hid>
+In-Reply-To: <f48df4840904130914j643b73ddy6ad99ddddb0bf0cd@domain.hid>
+Content-Type: multipart/alternative; boundary=Apple-Mail-68--648376795
+Mime-Version: 1.0 (Apple Message framework v930.3)
+Date: Mon, 13 Apr 2009 21:43:48 +0200
+References: <1239571605.8118.197.camel@domain.hid>
+	<f48df4840904130914j643b73ddy6ad99ddddb0bf0cd@domain.hid>
+Subject: Re: [Xenomai-help] Searching for tutorial
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,38 +16,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: TIREFORT Benoit <btirefort@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
 
-------=_NextPart_000_001F_01C9BC1F.91A2E670
+--Apple-Mail-68--648376795
 Content-Type: text/plain;
-	charset="iso-8859-1"
+	charset=ISO-8859-1;
+	format=flowed;
+	delsp=yes
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-  Is xenomai available for the Cirrus Arm EP9302 (9301) processor ?
-      - thanks
-------=_NextPart_000_001F_01C9BC1F.91A2E670
+
+Le 12 avr. 09 =E0 23:26, TIREFORT Benoit a =E9crit :
+
+> Hello,
+>
+> I have to develop a RT application.
+> I have recently discovered xenomai.
+> Is it possible for you to send me or help find some courses, tutorials
+> or examples (very well commented) how to develop an application with
+> xenomai?
+>
+I don't know how far you've been but if you are starting from scratch, =20=
+
+I would suggest the following;
+- read technical articles first: White paper, Life with Adeos and =20
+Native API Tour from xenomai website =
+(http://www.xenomai.org/index.php/Publications=20
+);
+- get Xenomai up and running for your board: read the README. INSTALL =20=
+
+file in the Xenomai tree;
+- once installed, start using the different testing tools: =20
+<install_dir>/bin (xeno-test);
+- finally, check the examples directory: <xenomai>/examples (posix/=20
+satch for instance).
+
+Hope it helps.
+
+>
+> Thank You
+>
+>
+>
+>
+>
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+>
+
+--Piquesel=
+
+--Apple-Mail-68--648376795
 Content-Type: text/html;
-	charset="iso-8859-1"
+	charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META http-equiv=3DContent-Type content=3D"text/html; =
-charset=3Diso-8859-1">
-<META content=3D"MSHTML 6.00.2900.5726" name=3DGENERATOR>
-<STYLE></STYLE>
-</HEAD>
-<BODY bgColor=3D#ffffff>
-<DIV><FONT face=3DArial size=3D2>Hi,</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>&nbsp; Is xenomai available for the =
-Cirrus Arm=20
-EP9302 (9301) processor ?</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -=20
-thanks</FONT></DIV></BODY></HTML>
+<html><body style=3D"word-wrap: break-word; -webkit-nbsp-mode: space; =
+-webkit-line-break: after-white-space; "><div><br></div><div>Le 12 avr. =
+09 =E0 23:26, TIREFORT Benoit a =E9crit :</div><div><br><blockquote =
+type=3D"cite"><div class=3D"gmail_quote">Hello,<br> <br> I have to =
+develop a RT application.<br> I have recently discovered xenomai.<br> Is =
+it possible for you to send me or help find some courses, tutorials<br> =
+or examples (very well commented) how to develop an application with<br> =
+xenomai?<br> <br></div></blockquote>I don't know how far you've been but =
+if you are starting from scratch, I would suggest the =
+following;</div><div>- read technical articles first:&nbsp;White =
+paper,&nbsp;Life with Adeos and Native API Tour from xenomai website (<a =
+href=3D"http://www.xenomai.org/index.php/Publications)">http://www.xenomai=
+.org/index.php/Publications)</a>;</div><div>- get Xenomai up and running =
+for your board: read the README. INSTALL file in the Xenomai =
+tree;</div><div>- once installed, start using the different testing =
+tools: &lt;install_dir&gt;/bin (xeno-test);</div><div>- finally, check =
+the examples directory: &lt;xenomai&gt;/examples (posix/satch for =
+instance).</div><div><br></div><div>Hope it =
+helps.&nbsp;</div><div><br></div><div><blockquote type=3D"cite"><div =
+class=3D"gmail_quote"> <br> Thank You<br> <br> <br> <br> <br> <br> =
+_______________________________________________<br> Xenomai-help mailing =
+list<br> <a =
+href=3D"mailto:Xenomai-help@domain.hid">Xenomai-help@domain.hid</a><br> <a =
+href=3D"https://mail.gna.org/listinfo/xenomai-help" =
+target=3D"_blank">https://mail.gna.org/listinfo/xenomai-help</a><br> =
+</div><br></blockquote></div><br><div>--Piquesel</div></body></html>=
 
-------=_NextPart_000_001F_01C9BC1F.91A2E670--
-
+--Apple-Mail-68--648376795--
 
