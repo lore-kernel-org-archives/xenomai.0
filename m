@@ -1,12 +1,13 @@
-Message-ID: <49E48C89.1050806@domain.hid>
-Date: Tue, 14 Apr 2009 15:15:53 +0200
+Message-ID: <49E492A7.3090301@domain.hid>
+Date: Tue, 14 Apr 2009 15:41:59 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <Pine.LNX.4.64.0904131821010.12546@domain.hid>
-In-Reply-To: <Pine.LNX.4.64.0904131821010.12546@domain.hid>
+References: <9872A1CE-C4C3-4E7B-B6A2-AF559B54792D@xenomai.org>
+In-Reply-To: <9872A1CE-C4C3-4E7B-B6A2-AF559B54792D@xenomai.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Fixing xeno-test
+Subject: Re: [Xenomai-core] [Documentation][Patch] Framework upgrade and a
+ few	fixes
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,42 +17,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Martin Shepherd <mcs@domain.hid>
+To: Piquesel <piquesel@domain.hid>
 Cc: xenomai@xenomai.org
 
-Martin Shepherd wrote:
-> I have been working on fixing the problems in xeno-test that I
-> reported a few days ago. After spending most of yesterday fighting
-> with the broken signal-handling behavior of the various bourne-shell
-> derivatives, I came to the conclusion that it was impossible to
-> reliably and portably clean up background workload processes using
-> just shell signal handling. I thus decided to write a separate program
-> that xeno-test could invoke, which would take care of running the
-> background processes, restart any that terminated before xeno-test
-> ended, and terminate them when xeno-test either exited normally or was
-> terminated by a signal. I have done this now, incorporated it into
-> xeno-test, and tested it while running xeno-test under bash, dash and
-> busybox. My question is whether this approach is acceptible, and if
-> so, how I should submit it for incorporation in xenomai?
-
-I'd prefer to avoid adding this new program. xeno-test is already more
-complicated than I would like, and I am almost sure that we can handle
-differences between the shells by testing what shell we are running (for
-instance using the SHELL variable) and using some explicit "ifs" in the
-script.
-
+Piquesel wrote:
+> Hi,
 > 
-> In particular, for the program that manages the background workload
-> processes (which is currently called xeno-stress), should I create a
-> new directory for this under xenomai-head/src/testsuite/, and set up
-> makefiles etc there, or should it go somewhere else?
+> here is a patch on the documentation, which is the first one of a  
+> longer series. More to come in the next few weeks:
+> - migration of remaining technical articles: Native API Tour (half  
+> done), RTDM (to be discussed...);
+> - getting started guide: a short guide trying to answer basic  
+> questions of newcomers and to point to proper ressources. The  
+> information is generally there, but way too much scattered IMO: README  
+> files, website, external websites, older posts on mailing-list archives;
+> - improvement of pdf generation;
+> - probably upgrade of maintenance scripts due to svn -> git migration;
+> - website update in order to link properly to the doc.
 > 
-> In case anybody wants to see the code first, you can find the program
-> source code and a simple makefile for compiling it, at:
+> This first patch fixes a few bugs here and there in the XML and CSS  
+> files and also integrate pictures reworked with Inkscape. SVG original  
+> files have been committed in order to be easily reused or fixed by  
+> others if needed.
 > 
->    http://www.astro.caltech.edu/~mcs/xenomai/xeno-stress.c
+> config/docbook.m4 has been updated in order to add a --with-fop  
+> parameter in order to easily use the latest version of documentation  
+> tools (fop in this case). In fact, fop-0.94 installed on most current  
+> Linux host distribution has some nasty bugs and can't deal for  
+> instance with png pictures properly. This patch may not be absolutely  
+> necessary since we are probably two in the world to use that but oh  
+> well :) Please check the added AC_CHECK_PROG, I'm really not fluent  
+> with autoconf!
+> 
+> Please, let me know if the patch is correct. I'm just starting using  
+> git and I'm not very familiar with all the functionality yet. It seems  
+> binary files are well handled but it's the first time I try.
 
-I get a 404.
+I am OK with the patches, I will start merging them in my tree. However,
+ please send me the whole patch set when you are finished. Another
+remark: your commit message can give more details. The first line is
+used as a short log, then you should skip a line, and the rest is used
+as a detailed commit log. Now that we have abandoned the ChangeLog (I am
+not complainling), the commit messages are all that we have.
 
 -- 
                                                  Gilles.
