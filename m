@@ -1,15 +1,12 @@
-Message-ID: <49E4C6A3.2070008@domain.hid>
-Date: Tue, 14 Apr 2009 19:23:47 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Tue, 14 Apr 2009 11:29:37 -0700 (PDT)
+From: Martin Shepherd <mcs@domain.hid>
+In-Reply-To: <49E48C89.1050806@domain.hid>
+Message-ID: <Pine.LNX.4.64.0904141018390.7250@domain.hid>
+References: <Pine.LNX.4.64.0904131821010.12546@domain.hid>
+	<49E48C89.1050806@domain.hid>
 MIME-Version: 1.0
-References: <49E4B5CC.1050902@domain.hid> <49E4B84A.9040805@domain.hid>
-	<49E4BA8A.8070207@domain.hid> <49E4BD20.4030008@domain.hid>
-	<49E4BEBD.90904@domain.hid> <49E4BFB7.50702@domain.hid>
-	<49E4C122.9080801@domain.hid>
-In-Reply-To: <49E4C122.9080801@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] posix: Avoid double declarations
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: Re: [Xenomai-core] Fixing xeno-test
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,91 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Gilles Chanteperdrix wrote:
->>>> Jan Kiszka wrote:
->>>>> Gilles Chanteperdrix wrote:
->>>>>> Jan Kiszka wrote:
->>>>>>> Please pull from git://git.xenomai.org/xenomai-jki.git for-upstream
->>>>>>> and run bootstrap.
->>>>>>>
->>>>>>> ---------->
->>>>>>>
->>>>>>> Recent glibc versions come with support for
->>>>>>> pthread_mutexattr_get/setprotocol and pthread_condattr_get/setclock.
->>>>>>> Make sure we don't declare those prototypes in Xenomai's pthread.h a
->>>>>>> second time as this can cause g++ warnings and even errors.
->>>>>>>
->>>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->>>>>>> ---
->>>>>>>
->>>>>>>  configure.in            |    4 ++--
->>>>>>>  include/posix/pthread.h |    4 ++++
->>>>>>>  2 files changed, 6 insertions(+), 2 deletions(-)
->>>>>>>
->>>>>>> diff --git a/configure.in b/configure.in
->>>>>>> index b291ce4..6a8b821 100644
->>>>>>> --- a/configure.in
->>>>>>> +++ b/configure.in
->>>>>>> @@ -750,8 +750,8 @@ if test x$CONFIG_XENO_POSIX_UITRON_MLOCKALL = xy; then
->>>>>>>  fi
->>>>>>>  
->>>>>>>  save_LIBS="$LIBS"
->>>>>>> -LIBS="$LIBS -lrt"
->>>>>>> -AC_CHECK_FUNCS([shm_open shm_unlink mmap64 ftruncate64])
->>>>>>> +LIBS="$LIBS -lrt -lpthread"
->>>>>>> +AC_CHECK_FUNCS([shm_open shm_unlink mmap64 ftruncate64 pthread_mutexattr_setprotocol pthread_condattr_setclock])
->>>>>>>  LIBS="$save_LIBS"
->>>>>>>  
->>>>>>>  AC_MSG_CHECKING(whether to enable dlopen support for skin libraries)
->>>>>>> diff --git a/include/posix/pthread.h b/include/posix/pthread.h
->>>>>>> index 2344158..98db325 100644
->>>>>>> --- a/include/posix/pthread.h
->>>>>>> +++ b/include/posix/pthread.h
->>>>>>> @@ -418,17 +418,21 @@ int pthread_intr_control_np(pthread_intr_t intr,
->>>>>>>  extern "C" {
->>>>>>>  #endif
->>>>>>>  
->>>>>>> +#ifndef HAVE_PTHREAD_MUTEXATTR_SETPROTOCOL
->>>>>>>  int pthread_mutexattr_getprotocol(const pthread_mutexattr_t *attr,
->>>>>>>  				  int *proto);
->>>>>>>  
->>>>>>>  int pthread_mutexattr_setprotocol(pthread_mutexattr_t *attr,
->>>>>>>  				  int proto);
->>>>>>> +#endif
->>>>>> That is not enough, if these functions are defined, then the
->>>>>> PTHREAD_PRIO_NONE, PTHREAD_PRIO_INHERIT, PTHREAD_PRIO_PROTECT are going
->>>>>> to be defined.
->>>>>>
->>>>>> Are you sure that the missing "restrict" are not causing the errors ?
->>>>> This is enough to fix our build breakage due to different prototypes of
->>>>> those functions, at least under C++. The magic __THROW may make the
->>>>> difference, but I didn't test that in details as I think its simply
->>>>> fragile to redeclare them.
->>>>>
->>>>> Don't know if those constants can cause trouble, they didn't do so here
->>>>> so far. But I can Include them if preferred.
->>>> If it works, it is just as fragile as trying to match function
->>>> declarations of Xenomai's pthread.h and glibc's pthread.h.
->>> Nope, because you don't repeat function attributes for their
->>> definitions. So Xenomai's pthread lib should pick up what the host
->>> header declares.
->> Currently, PTHREAD_PRIO_NONE, PTHREAD_PRIO_INHERIT and
->> PTHREAD_PRIO_PROTECT are defined in Xenomai's header unconditionnaly.
->> You see no warning or error because they are defined in an enum in
->> glibc. But this is a fragile situation.
+
+On Tue, 14 Apr 2009, Gilles Chanteperdrix wrote:
+> I'd prefer to avoid adding this new program. xeno-test is already more
+> complicated than I would like, and I am almost sure that we can handle
+> differences between the shells by testing what shell we are running (for
+> instance using the SHELL variable) and using some explicit "ifs" in the
+> script.
+
+Okay, although the external C program was meant to simplify the
+xeno-test script. I'll have another look at doing this entirely in the
+shell.
+
+>> In case anybody wants to see the code first, you can find the program
+>> source code and a simple makefile for compiling it, at:
 >>
-> 
-> I could offer this version and later add a patch to provide the missing
-> __real prototypes for all POSIX wrappers.
+>>    http://www.astro.caltech.edu/~mcs/xenomai/xeno-stress.c
+>
+> I get a 404.
 
-That's OK for me.
+Sorry, I must have deleted the wrong file after accidentally placing
+it in 2 places. FWIW, I've put it back now.
 
--- 
-                                                 Gilles.
+Martin
 
