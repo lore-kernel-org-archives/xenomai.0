@@ -1,30 +1,13 @@
-Message-ID: <49E49A0B.1040307@domain.hid>
-Date: Tue, 14 Apr 2009 16:13:31 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <b131c9f0903230100x1b2aa2fet9e2b0efe68a7a77f@domain.hid>	
-	<b131c9f0903240037q446193f5hbfdd3ade40ea2af4@domain.hid>	
-	<49C91B24.2020304@domain.hid>	
-	<b131c9f0903241437s661b9bd3v504b14f83b1b9c86@domain.hid>	
-	<49C95A76.4020802@domain.hid>	
-	<b131c9f0903250636o85af46au240a04ab33ebb599@domain.hid>	
-	<b131c9f0904060126n12158c5dqd37d71769cc8aff5@domain.hid>	
-	<49D9E000.4070009@domain.hid>	
-	<1239099594.9869.65.camel@domain.hid>	
-	<49DB3717.4090402@domain.hid>	
-	<b131c9f0904080057v49b2caf3s5c2096827dd1576d@domain.hid>	
-	<49DC6612.40802@domain.hid>
-	<1239696760.5780.12.camel@domain.hid>	
-	<49E45473.4050409@domain.hid>	
-	<1239708396.5780.34.camel@domain.hid>	
-	<49E4750B.6060602@domain.hid>	
-	<1239709765.5780.40.camel@domain.hid>	
-	<49E4793D.2010105@domain.hid>
-	<1239717322.5780.62.camel@domain.hid>
-In-Reply-To: <1239717322.5780.62.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+In-Reply-To: <49E0F949.5040900@domain.hid>
+References: <d6c8ef150904101628r60c02baal3568b2ece287ce1f@domain.hid>
+	<49E0F949.5040900@domain.hid>
+Date: Thu, 16 Apr 2009 01:13:56 +0200
+Message-ID: <d6c8ef150904151613j39f43928xd1a25f37184ad30b@domain.hid>
+From: Bosko Radivojevic <bosko.radivojevic@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai LTTng support
+Subject: Re: [Xenomai-help] Intel EP80579 support
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -34,56 +17,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Vikesh Rambaran <vikesh.rambaran@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Vikesh Rambaran wrote:
-> On Tue, 2009-04-14 at 13:53 +0200, Jan Kiszka wrote:
->> Vikesh Rambaran wrote:
->>> On Tue, 2009-04-14 at 13:35 +0200, Jan Kiszka wrote:
->>>>>> NMI watchdog, see Xenomai machine kconfig menu, use nmi_watchdog=2 to
->>>>>> finally enable it at the kernel command line.
->>>>>>
->>>>> There are build issues with NMI enabled.
->>>>>
->>>>> Would you prefer testing with the latest git updates, or can i just 
->>>>> replace the following in hal32.c (line 139)
->>>>>
->>>>> - die_nmi(regs, buf); 
->>>>> + die_nmi(buf, regs, 1);
->>>> If your CPU is not too new, this may suffice. Otherwise you should
->>>> switch over to the development head (upcoming 2.5) as there we have
->>>> up-to-date NMI support.
->>>> BTW, trying 2.5-devel might be useful anyway to check if the picture
->>>> changes (maybe we even see a clearer error with that branch...).
->>>>
->>> Ok, thanx. I have a Core Duo and a Core 2. Will try the 'short' approach
->>> first as our external git access at work is blocked. 
-> 
-> Tried the test with NMI enabled and die_nmi(buf, regs, 1);
-> No additional Xenomai / IPIPE info is displayed on the serial console.
-> 
-> What type of response were we hoping for ? Reset ?
+Hi!
 
-Nope. Some error message that the NMI watchdog triggered. You should see
-NMI increases in /proc/interrupts and /proc/xenomai/irq. But if you are
-on Intel Core processors, you need the patches in git head. 2.4.7 does
-not support your CPUs.
+I manged to boot my Tolapai with 2.6.28.8 Linux kernel and Xenomai
+2.4.7. Rootfs is based on buildroot, meaning uclibc. I've compiled
+Xenomai libs and my app by uclibc toolchain. Xenomai is built without
+--enable-x86-sep.
 
-> 
-> There is occasionally the following message that appears on the serial
-> console after logging into the gnome desktop (not sure if it's relevant
-> to this issue) :
-> 
-> evdev.c(EVIOCGBIT): Suspicious buffer size 511, limiting output to 64
-> bytes. See http://userweb.kernel.org/~dtor/eviocgbit-bug.html
-> 
+First test, to create & start RT task (from user space) passed ok.
+But, second one, enabling an interrupt failed. Here is the output,
+followed by test code. What am I doing wrong? :)
 
-Doesn't look directly related.
+# ./user_irq
+Task created!
+BUG: unable to handle kernel NULL pointer dereference at 00000000
+IP: [<00000000>] 0x0
+*pde = 00000000
+Oops: 0000 [#1]
+last sysfs file:
+Modules linked in:
 
-Jan
+Pid: 655, comm: user_irq Not tainted (2.6.28.8-ipipe #8) Intel Tolapai
+Based Board
+EIP: 0060:[<00000000>] EFLAGS: 00010206 CPU: 0
+EIP is at 0x0
+EAX: 00000026 EBX: fffffffd ECX: 00000026 EDX: c06ebf80
+ESI: 00000000 EDI: c06edf20 EBP: 00000000 ESP: df043f2c
+ DS: 007b ES: 007b FS: 0000 GS: 0000 SS: 0068
+Process user_irq (pid: 655, ti=df043000 task=df1a8960 task.ti=df043000)
+I-pipe domain Linux
+Stack:
+ c05b4a2c c044ded9 fffffffd df043fb8 c0447fe4 00000001 00000000 c0441ba7
+ 00000000 c06edf20 df1a8960 00000001 00000280 00000000 00000000 00000002
+ c07b2204 c07b2200 c043841e df043fb8 00000021 c07a6f00 c0441a67 c07a6f04
+Call Trace:
+ [<c05b4a2c>] rthal_irq_enable+0x26/0x29
+ [<c044ded9>] rt_intr_enable+0x28/0x49
+ [<c0447fe4>] __rt_intr_enable+0x34/0x3b
+ [<c0441ba7>] hisyscall_event+0x140/0x24a
+ [<c043841e>] __ipipe_dispatch_event+0x96/0x14e
+ [<c0441a67>] hisyscall_event+0x0/0x24a
+ [<c041083e>] __ipipe_syscall_root+0x44/0x96
+ [<c0403693>] system_call+0x2b/0x4c
+Code:  Bad EIP value.
+EIP: [<00000000>] 0x0 SS:ESP 0068:df043f2c
+---[ end trace e8aec4c9df299570 ]---
+Segmentation fault
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Code:
+#define IRQ_NUMBER 38
+#define TASK_PRIO  50
+#define TASK_MODE  T_JOINABLE
+#define TASK_STKSZ 0
+
+RT_INTR intr_desc;
+RT_TASK task_desc;
+
+void irq_server (void *cookie)
+{
+int err, counter=0;
+
+    for (;;counter++) {
+      rt_task_set_mode(0, T_PRIMARY, NULL);
+      err = rt_intr_wait(&intr_desc,TM_INFINITE);
+
+      if (err > 0) {
+           printf ("Interrupt received %d!!\n", counter);
+       } else {
+           printf ("rt_intr_wait(): %d\n", err);
+       }
+       rt_intr_enable (&intr_desc);
+    }
+}
+
+int main (int argc, char *argv[])
+{
+    int err;
+
+    mlockall(MCL_CURRENT|MCL_FUTURE);
+
+    err = rt_intr_create(&intr_desc, "MyIrq", 38, I_NOAUTOENA);
+
+    if (err) {
+      printf ("rt_intr_create: %d\n", err);
+      return 0;
+    }
+
+    err = rt_task_create(&task_desc, "MyIrqServer", TASK_STKSZ,
+TASK_PRIO, TASK_MODE);
+    printf ("Task created!\n");
+
+    rt_intr_enable (&intr_desc);
+    printf ("Interrupt enabled!\n");
+
+    if (!err)
+      rt_task_start(&task_desc,&irq_server,NULL);
+    else
+      printf ("rt_intr_create: %d\n", err);
+
+    printf ("user_irq [%d]: started.\n", getpid());
+    if (rt_task_join (&task_desc)) {
+      printf ("Error joining task\n");
+    }
+    return 0;
+}
+
+--
+Bosko
 
