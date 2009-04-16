@@ -1,9 +1,11 @@
-Message-ID: <49E72BA8.20203@domain.hid>
-Date: Thu, 16 Apr 2009 14:59:20 +0200
+Message-ID: <49E73DE7.9020307@domain.hid>
+Date: Thu, 16 Apr 2009 16:17:11 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <37f89760904160447j7399b4ctced93a3e4956db6a@domain.hid>
-In-Reply-To: <37f89760904160447j7399b4ctced93a3e4956db6a@domain.hid>
+References: <37f89760904160447j7399b4ctced93a3e4956db6a@domain.hid>	
+	<49E72BA8.20203@domain.hid>
+	<37f89760904160654g43fde4f0l6cd228faa65d6baf@domain.hid>
+In-Reply-To: <37f89760904160654g43fde4f0l6cd228faa65d6baf@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] driver: IOCTL command behavior
@@ -17,24 +19,51 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Marcel Soulot <msoulot@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: Xenomai help <xenomai@xenomai.org>
 
 Marcel Soulot wrote:
 > Hi,
+> sorry, i don't realise that my description is a bit fuzzy.
 > 
-> I wrote a driver and used IOCTL command. When I test my driver with a test
-> application with root access the IOCTL cmd work fine.
-> I notice when I declared my IOCTL command that I used the _IOR for all of
-> them. Even the IOCTL command is a read (on register) or write.
-> So I try to correct my mistake and wants to use _IOR for read command and
-> _IOW for write command.
-> For the write command, I got a error -25 (not a typewriter) so I don't
-> understand why.
-> I also try to change the _IOW to _IOWR but same mistake.
+> Here I define two IOCTL command:
 > 
-> Someone can explain what is the problem, please ?
+> #define RT_GPIO_RTIOC_GET_DIRECTION\
+>     _IOR(RTIOC_TYPE_GPIO, 0x01, int)
+> 
+> #define RT_GPIO_RTIOC_SET_DIRECTION\
+>     _IOR(RTIOC_TYPE_GPIO, 0x02, int)
+> 
+> the commands (both) works fine. For the command
+> RT_GPIO_RTIOC_SET_DIRECTION,I try to switch _IOR() to _IOW() according
+> the driver "xeno_16550A" (in the
+> file /usr/xenomai/include/rtdm/rtserial.h)
+> 
+> #define RTSER_RTIOC_GET_CONFIG    \
+>     _IOR(RTIOC_TYPE_SERIAL, 0x00, struct rtser_config)
+> 
+> #define RTSER_RTIOC_SET_CONFIG    \
+>     _IOW(RTIOC_TYPE_SERIAL, 0x01, struct rtser_config)
+> 
+> But when I define :
+> 
+> #define RT_GPIO_RTIOC_SET_DIRECTION\
+>     _IOW(RTIOC_TYPE_GPIO, 0x02, int)
+> 
+> or
+> 
+> #define RT_GPIO_RTIOC_SET_DIRECTION\
+>     _IOWR(RTIOC_TYPE_GPIO, 0x02, int)
+> 
+> the call of "rt_dev_ioctl(my_fd,RT_GPIO_RTIOC_SET_DIRECTION,0xFF)" returns
+> me the error  "-ENOTTY".
+> Which means that the command RT_GPIO_RTIOC_SET_DIRECTION is not recognized
+> and I drop in default error.
+> 
+> Hope my explanation is better,
 
-A piece of code is worth a thousand words...
+No, please send us enough code for us to reproduce the issue.
+
+Please do not drop the mailing list from the discussion.
 
 -- 
                                                  Gilles.
