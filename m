@@ -1,12 +1,16 @@
-Message-ID: <49DC9E5D.90404@domain.hid>
-Date: Wed, 08 Apr 2009 14:53:49 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <37f89760904080541u4cdff5b2weec809904146cea3@domain.hid>
-In-Reply-To: <37f89760904080541u4cdff5b2weec809904146cea3@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] IRQ issue :xnintr_irq_handler
+In-Reply-To: <49E74B8A.2090909@domain.hid>
+References: <37f89760904160447j7399b4ctced93a3e4956db6a@domain.hid>
+	<49E72BA8.20203@domain.hid>
+	<37f89760904160654g43fde4f0l6cd228faa65d6baf@domain.hid>
+	<49E73DE7.9020307@domain.hid>
+	<37f89760904160755y2e056c3cq1b86d3adf2160b0b@domain.hid>
+	<49E74B8A.2090909@domain.hid>
+Date: Thu, 16 Apr 2009 17:47:57 +0200
+Message-ID: <37f89760904160847ubc6d96fu93755c000b703a21@domain.hid>
+From: Marcel Soulot <msoulot@domain.hid>
+Content-Type: multipart/alternative; boundary=0016368e2b20f127660467adfcd9
+Subject: Re: [Xenomai-help] driver: IOCTL command behavior
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,33 +20,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Marcel Soulot <msoulot@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Marcel Soulot wrote:
-> Hi,
-> 
-> I wrote a driver to manage GPIO on a PCI card. This PCI card offer UART and
-> GPIO.
-> So when I use my GPIO driver with the IRQ10 (automatic assignment), I get
-> this error message : Xenomai: xnintr_irq_handler: IRQ10 not handled.
-> Disabling IRQ line.
-> I program IOCTL command which wait an event. This event is released when a
-> interrupt is notified on a change state from the input.
-> I get my error message when I change the state of my input and want to
-> provocate a interrupt.
-> 
-> I've made a another test; still with the same PCI card (same IRQ 10) but
-> this time I load the 16550A driver and use the uart with www.captain.at test
-> on writing and reading on the same uart. Everything works fine.
-> 
-> Can someone can explain me why I get my error ?
+--0016368e2b20f127660467adfcd9
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-You get this error because no registered real-time IRQ handler is able
-to handle the IRQ, very likely because you try to share an IRQ between
-real-time drivers and non real-time drivers without modifying the non
-real-time drivers as explained in the FAQ.
+Thanks for the tips. I forgot to recompile the user application.
 
--- 
-                                                 Gilles.
+Marcel.
+
+--0016368e2b20f127660467adfcd9
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+<br>Thanks for the tips. I forgot to recompile the user application.<br><br>Marcel.<br>
+
+--0016368e2b20f127660467adfcd9--
 
