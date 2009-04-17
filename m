@@ -1,25 +1,9 @@
-Message-ID: <49E87CB1.9070604@domain.hid>
-Date: Fri, 17 Apr 2009 14:57:21 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <Pine.LNX.4.64.0904081243120.22300@domain.hid>
-	<Pine.LNX.4.64.0904081659110.22300@domain.hid>
-	<Pine.LNX.4.64.0904101250540.4820@domain.hid>
-	<Pine.LNX.4.64.0904101708030.4820@domain.hid>
-	<6C68EA7C-72E4-482D-917A-24C7C6DA31C9@domain.hid>
-	<Pine.LNX.4.64.0904101729031.4820@domain.hid>
-	<49E08F6F.8000604@domain.hid>
-	<Pine.LNX.4.64.0904111233180.32647@domain.hid>
-	<49E0F887.40805@domain.hid>
-	<Pine.LNX.4.64.0904111820330.6444@domain.hid>
-	<49E1B05A.4040705@domain.hid>
-	<Pine.LNX.4.64.0904121206040.23562@domain.hid>
-	<49E23FB1.5030505@domain.hid>
-	<Pine.LNX.4.64.0904151951500.9694@domain.hid>
-In-Reply-To: <Pine.LNX.4.64.0904151951500.9694@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Running xeno-test
+Date: Fri, 17 Apr 2009 16:49:13 +0200
+Message-ID: <2b490f270904170749m3ec39cc8vddab1b5aa50f4b4c@domain.hid>
+From: Dehann Fourie <dehann.fourie@domain.hid>
+Content-Type: multipart/alternative; boundary=001636416899b569540467c14871
+Subject: [Xenomai-help] RT Serial, rt_dev_read blocking problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -29,60 +13,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Martin Shepherd <mcs@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Martin Shepherd wrote:
-> On Sun, 12 Apr 2009, Gilles Chanteperdrix wrote:
->> Martin Shepherd wrote:
->>> On Sun, 12 Apr 2009, Gilles Chanteperdrix wrote:
->>>> ...
->>>> Could you tell us the versions of Linux and Xenomai you are using and
->>>> post your .config ?
->>> I am using Xenomai 2.4.7, with Linux kernel 2.6.28.7, under Ubuntu 8.10.
->>>
->>> The following are the contents of the linux-2.6.28.7/.config file:
->> Ok. You seem to have avoided the usual pitfalls, however you really have
->> a lot of options enabled.
-> 
-> Yes, I started from the config that came with Ubuntu, which has lots
-> of things turned on. However most of them are modules for drivers that
-> will never be loaded.
+--001636416899b569540467c14871
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-No, there are also options which I would not recommend to turn on, such
-as syscall auditing and the like.
+Hi,
 
-> 
->> The symptoms of your problem really look like
->> a bug which I had and turned out to be a NO_HZ problem. So, maybe you
->> could try and disable CONFIG_NO_HZ ? You can also try to enable
->> Xenomai's NMI watchdog, which will fire if a timer overrun occur.
-> 
-> Correct me if I am wrong, but turning on the NMI watchdog appears to
-> be contingent on having local APIC, which the processor that I am
-> using (an ancient AMD Athlon), doesn't seem to have.
+I am having trouble with reading data from the serial port. I initially
+followed the RT Serial example from captain. I changed the read task to a
+periodic 20ms task, from which I read from the serial port (rtser0). This is
+all that the rt_task is doing. The serial port config is:
 
-Last time I used an Athlon, it had a local APIC and IO-APIC. Only, the
-Linux kernel disables them by default, so, you have to pass a special
-option for them to be enabled (see TROUBLESHOOTING). The IO-APIC is
-buggy and caused hard lockups, but the local APIC seemed to run fine.
+static const struct rtser_config
+<http://www.xenomai.org/documentation/trunk/html/api/structrtser__config.html>
+read_config = {
+        .config_mask       = 0xFFFF,
+        .baud_rate         = 57600,
+        .parity            = RTSER_NO_PARITY,
+        .data_bits         = RTSER_8_BITS,
+        .stop_bits         = RTSER_1_STOPB,
+        .handshake         = RTSER_NO_HAND,
+        .fifo_depth        = RTSER_DEF_FIFO_DEPTH,
+        .rx_timeout        = RTSER_DEF_TIMEOUT,
+        .tx_timeout        = RTSER_DEF_TIMEOUT,
+        .event_timeout     = RTSER_DEF_TIMEOUT,
+        .timestamp_history = RTSER_RX_TIMESTAMP_HISTORY,
+        .event_mask        = RTSER_EVENT_RXPEND,
+};
 
-> 
-> I have tried disabling CONFIG_NO_HZ (by disabling Tickless System in
-> "make menuconfig"), but this didn't change the symptoms.
-> 
-> It turns out that just running "dd if=/dev/zero of=/dev/null" on its
-> own, without running xeno-test, hangs the computer after a random
-> interval of a few seconds to a minute or so. At that point, the only
-> thing that wakes it up for a few more seconds, is to hit a key on the
-> keyboard of the computer, or move the mouse, and after a few times of
-> doing this, the computer locks up hard and has to be rebooted. I have
-> verified that this doesn't happen if I boot into Ubuntu with the
-> 2.6.27-11 kernel that came with it.
+I am reading data into a buffer, char buf[300]. I am able to read data but
+the task is repeating at a rate of about 50ms. Execution also only returns
+from the rt_dev_read() call when 300 chars have been read, but the external
+hardware is only sending a couple of chars (+-35) at a rate of 171Hz. Is the
+rt task maybe blocking? How can I get it to only read the available chars in
+the serial buffer and then return to my program?
 
-Ok. Could you try a kernel without Xenomai but only with the Adeos
-Interrupt pipeline enabled ?
+I am on a Geode 500MHz single board computer with kernel 2.6.23 and xeno
+2.4.3.
+
+Thanks in advance.
+
+Kind regards,
 
 -- 
-					    Gilles.
+Dehann Fourie
+
+--001636416899b569540467c14871
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi,<br><br>I am having trouble with reading data from the serial port. I in=
+itially followed the RT Serial example from captain. I changed the read tas=
+k to a periodic 20ms task, from which I read from the serial port (rtser0).=
+ This is all that the rt_task is doing. The serial port config is:<br>
+<br><pre class=3D"fragment"><span class=3D"keyword">static</span> <span cla=
+ss=3D"keyword">const</span> <span class=3D"keyword">struct </span><a name=
+=3D"_a0"></a><a class=3D"code" href=3D"http://www.xenomai.org/documentation=
+/trunk/html/api/structrtser__config.html" title=3D"Serial device configurat=
+ion.">rtser_config</a> read_config =3D {<br>
+        .config_mask       =3D 0xFFFF,<br>        .baud_rate         =3D 57=
+600,<br>        .parity            =3D RTSER_NO_PARITY,<br>        .data_bi=
+ts         =3D RTSER_8_BITS,<br>        .stop_bits         =3D RTSER_1_STOP=
+B,<br>
+        .handshake         =3D RTSER_NO_HAND,<br>        .fifo_depth       =
+ =3D RTSER_DEF_FIFO_DEPTH,<br>        .rx_timeout        =3D RTSER_DEF_TIME=
+OUT,<br>        .tx_timeout        =3D RTSER_DEF_TIMEOUT,<br>        .event=
+_timeout     =3D RTSER_DEF_TIMEOUT,<span class=3D"comment"></span><br>
+        .timestamp_history =3D RTSER_RX_TIMESTAMP_HISTORY,<br>        .even=
+t_mask        =3D RTSER_EVENT_RXPEND,<br>};<br><br></pre><div style=3D"text=
+-align: left;">I am reading data into a buffer, char buf[300]. I am able to=
+ read data but the task is repeating at a rate of about 50ms. Execution als=
+o only returns from the rt_dev_read() call when 300 chars have been read, b=
+ut the external hardware is only sending a couple of chars (+-35) at a rate=
+ of 171Hz. Is the rt task maybe blocking? How can I get it to only read the=
+ available chars in the serial buffer and then return to my program?<br>
+<br>I am on a Geode 500MHz single board computer with kernel 2.6.23 and xen=
+o 2.4.3.<br><br>Thanks in advance.<br><br>Kind regards,<br></div><pre class=
+=3D"fragment"></pre>-- <br>Dehann Fourie<br>
+
+--001636416899b569540467c14871--
 
