@@ -1,7 +1,7 @@
-Date: Thu, 16 Apr 2009 15:18:45 -0700 (PDT)
+Date: Thu, 16 Apr 2009 19:50:49 -0700 (PDT)
 From: Martin Shepherd <mcs@domain.hid>
 In-Reply-To: <91569DDB-D66D-41FA-B8C4-7B40FC526EBC@comcast.net>
-Message-ID: <Pine.LNX.4.64.0904161456240.26955@domain.hid>
+Message-ID: <Pine.LNX.4.64.0904161943540.1020@domain.hid>
 References: <Pine.LNX.4.64.0904081243120.22300@domain.hid>
 	<Pine.LNX.4.64.0904081659110.22300@domain.hid>
 	<Pine.LNX.4.64.0904101250540.4820@domain.hid>
@@ -34,41 +34,14 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Steven Seeger <steven.seeger@domain.hid>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-
-On Thu, 16 Apr 2009, Steven Seeger wrote:
-> Sorry I wasn't clear. I want to test the timing of sleep while the
-> system has no load. The issue we had was a timing problem, so unless
-> interrupts were firing the system timer was off by like a factor of
-> 1000.
-
-I tried a number of sleep's with no other load, and they all lasted
-the requested duration, even in between hangs.
-
-> Weird that dd dropped so much in top.
-
-I have since noticed that the dd process usually gets very little CPU
-time, even when the system is apparently working okay, and nothing
-else is running. While dd is running, even though no other processes
-are shown as using anything significant, the total CPU usage is 100%,
-dominated by system usage. If I stop dd, then the total CPU usage goes
-back down to close to zero.
-
-> Aren't you the one with the failing memtest sometimes?
-
-The reason that I don't believe that this is a memory problem, is that
-the symptoms don't change when I swap between two different memory
-sticks. Although both of these memory sticks each have two bytes that
-memtest occasionally flags, their locations of these bytes are very
-different from one stick to the other. So I would expect the symptoms
-to change when I swap sticks.
-
-> Perhaps you should wait for that new computer. :)
-
-The new computers should arrive in a couple of days, but I'm expected
-to work on this in the meantime.
-
-What I'm going to try next, is to compile the 2.6.28.7 kernel without
-xenomai patches, and see if that also misbehaves.
+I have now compiled the 2.6.28.7 kernel without the xenomai patches,
+but with the same configuration options that I used to compile the
+xenomai-patched version of this kernel. I have thus been able to
+verify that the version without the xenomai patches behaves correctly
+when I run "dd if=/dev/zero of=/dev/null". The dd job gets around 99%
+CPU time, and doesn't hang the computer. So unfortunately, the hangs
+that I have been experiencing with the xenomai patched kernel, do
+appear to be related to the xenomai patches.
 
 Martin
 
