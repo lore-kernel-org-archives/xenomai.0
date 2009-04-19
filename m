@@ -1,12 +1,25 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1240088252.31471.6.camel@domain.hid>
-References: <1240088252.31471.6.camel@domain.hid>
-Content-Type: text/plain
-Date: Sun, 19 Apr 2009 00:42:09 +0200
-Message-Id: <1240094529.26554.176.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Using xeno-config in cross compiling
+Date: Sat, 18 Apr 2009 22:15:51 -0700 (PDT)
+From: Martin Shepherd <mcs@domain.hid>
+In-Reply-To: <49E87CB1.9070604@domain.hid>
+Message-ID: <Pine.LNX.4.64.0904182205490.9176@domain.hid>
+References: <Pine.LNX.4.64.0904081243120.22300@domain.hid>
+	<Pine.LNX.4.64.0904081659110.22300@domain.hid>
+	<Pine.LNX.4.64.0904101250540.4820@domain.hid>
+	<Pine.LNX.4.64.0904101708030.4820@domain.hid>
+	<6C68EA7C-72E4-482D-917A-24C7C6DA31C9@domain.hid>
+	<Pine.LNX.4.64.0904101729031.4820@domain.hid>
+	<49E08F6F.8000604@domain.hid>
+	<Pine.LNX.4.64.0904111233180.32647@domain.hid>
+	<49E0F887.40805@domain.hid>
+	<Pine.LNX.4.64.0904111820330.6444@domain.hid>
+	<49E1B05A.4040705@domain.hid>
+	<Pine.LNX.4.64.0904121206040.23562@domain.hid>
+	<49E23FB1.5030505@domain.hid>
+	<Pine.LNX.4.64.0904151951500.9694@domain.hid>
+	<49E87CB1.9070604@domain.hid>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: Re: [Xenomai-help] Running xeno-test
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,54 +29,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jeff angielski <jeff@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Sat, 2009-04-18 at 16:57 -0400, jeff angielski wrote:
-> I am unable to cross compile to any POSIX skin applications, including
-> the example, because the xeno-config is return that POSIX is not
-> supported.  However, when I run xeno-config on the target itself, it
-> returns the necessary posix-cflags and posix-ldflags.
-> 
-> Running it on my powerpc target:
->  -bash-3.2# /usr/xenomai/bin/xeno-config --posix-cflags --posix-ldflags
-> -I/usr/xenomai/include -I/usr/xenomai/include/posix -D_GNU_SOURCE
-> -D_REENTRANT -D__XENO__
-> -Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib -lpthread_rt
-> -lpthread -lrt
-> 
-> Running it on my i686 build host:
-> jaa@domain.hid:~$ /srv/nfs/srp-xen/usr/xenomai/bin/xeno-config
-> --posix-cflags --posix-ldflags
-> -I/usr/xenomai/include -I/usr/xenomai/include/posix -D_GNU_SOURCE
-> -D_REENTRANT -D__XENO__
-> POSIX support is not available
-> 
-> 
-> What is the proper way to cross compiler a POSIX skin application in a
-> cross compiler development setup?
-> 
 
-The way you did it is probably ok; but you may want to tell xeno-config
-where to find the staging directory via the DESTDIR variable, so it can
-locate all the host files it needs locally (e.g. posix.wrappers).
+On Fri, 17 Apr 2009, Gilles Chanteperdrix wrote:
+>>...
+>> Correct me if I am wrong, but turning on the NMI watchdog appears to
+>> be contingent on having local APIC, which the processor that I am
+>> using (an ancient AMD Athlon), doesn't seem to have.
+>
+> Last time I used an Athlon, it had a local APIC and IO-APIC. Only, the
+> Linux kernel disables them by default, so, you have to pass a special
+> option for them to be enabled (see TROUBLESHOOTING). The IO-APIC is
+> buggy and caused hard lockups, but the local APIC seemed to run fine.
 
-i.e.
+Yes, you are correct. I have been using lapic=1 all along, but what I
+needed to do to get "make menuconfig" to let me select the NMI
+watchdog, was first enable the "Local APIC support on uniprocessors"
+option, and I wasn't doing that. Tonight I tried this, and then
+selected the kconfig option to turn on the NMI watchdog, but when I
+then compiled the kernel, gcc got upset, saying:
 
-DESTDIR=/srv/nfs/srp-xen /srv/nfs/srp-xen/usr/xenomai/bin/xeno-config
---posix-cflags ...
+   arch/x86/xenomai/hal_32.c:139: warning: passing argument 1 of 'die_nmi' from incompatible pointer type
+   arch/x86/xenomai/hal_32.c:139: warning: passing argument 2 of 'die_nmi' from incompatible pointer type
+   arch/x86/xenomai/hal_32.c:139: error: too few arguments to function 'die_nmi'
+   make[1]: *** [arch/x86/xenomai/hal_32.o] Error 1
+   make: *** [arch/x86/xenomai] Error 2
 
-> 
-> 
-> Gory details:
-> xen: xenomai-2.4.7
-> kernel: linux 2.6.28.5
-> arch: powerpc (MPC8544)
-> cc: ppc_85xxDP (from ELDK)
-> 
-> 
--- 
-Philippe.
+Looking at the code, I found that there were two definitions of the
+die_nmi() function, with completely different arguments. Rather than
+try to figure out why, and fix this, I've decided to have a go with
+the 2.5 release candidate, since I notice that in that version, the
+above code has been removed.
 
-
+Martin
 
