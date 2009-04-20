@@ -1,13 +1,16 @@
-From: Vikesh Rambaran <vikesh.rambaran@domain.hid>
-In-Reply-To: <1240214185.26554.211.camel@domain.hid>
-References: <b131c9f0904191152i16953fe1k3f035d19a7c606e4@domain.hid>
-	<1240214185.26554.211.camel@domain.hid>
-Content-Type: text/plain
+MIME-Version: 1.0
+In-Reply-To: <49E67198.3080801@domain.hid>
+References: <d6c8ef150904101628r60c02baal3568b2ece287ce1f@domain.hid>
+	<49E0F949.5040900@domain.hid>
+	<d6c8ef150904151613j39f43928xd1a25f37184ad30b@domain.hid>
+	<d6c8ef150904151626r5c36df10yb9f8e93ea59640df@domain.hid>
+	<49E67198.3080801@domain.hid>
+Date: Mon, 20 Apr 2009 13:24:23 +0200
+Message-ID: <d6c8ef150904200424g5691b220l1cea34d9268f747d@domain.hid>
+From: Bosko Radivojevic <bosko.radivojevic@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Date: Mon, 20 Apr 2009 11:58:43 +0200
-Message-Id: <1240221523.6681.7.camel@domain.hid>
-Mime-Version: 1.0
-Subject: Re: [Xenomai-help] Xenomai v2.5-rc1 feedback
+Subject: Re: [Xenomai-help] Intel EP80579 support
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,37 +20,13 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi
+Hi All,
 
-On Mon, 2009-04-20 at 09:56 +0200, Philippe Gerum wrote:
-> On Sun, 2009-04-19 at 20:52 +0200, vikesh rambaran wrote:
-> > hi
-> > 
-> > Thanx for v2.5-rc1. Here are some minor observations 
-> > 
-> > 1. The prepare-kernel script requires --arch=x86 for an x86 32 bit
-> > platform.
-> > 
-> > --arch=i386 as per README.INSTALL section 2.1 does not seem to be
-> > allowed anymore
-> 
-> This switch is still allowed. Could you send us the error output? TIA,
-> 
+no ideas what could be causing problem?
 
-Thanx for checking. 
-
-I also cannot reproduce this error on the PC which i have here (:
-
-Will try it out again on the PC at home and let you know. 
-Feels like i had some finger trouble ...
-
-Keep well
-Vicki
-
-
-
-
+Sincerely,
+Bosko
 
