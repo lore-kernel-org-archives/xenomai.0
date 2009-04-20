@@ -1,5 +1,5 @@
-Message-ID: <49ECC04C.10708@domain.hid>
-Date: Mon, 20 Apr 2009 20:34:52 +0200
+Message-ID: <49ECBEE6.2060201@domain.hid>
+Date: Mon, 20 Apr 2009 20:28:54 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <Pine.LNX.4.64.0904201026330.23588@domain.hid>
@@ -53,9 +53,32 @@ Martin Shepherd wrote:
 >     and I later unfroze it by moving the mouse, even though the system
 >     clock lost seconds of time.  It froze many times during the
 >     switchbench part of xeno-test, without any complaints from Xenomai
+>     or the kernel. I couldn't get it to freeze this time during the
+>     latency tests.
+> 
+>     Is there anything else that I need to do to get the watchdog to
+>     do something?
 
-The freeze during switchbench is normal. There should be a message
-telling you so and telling you not to try and interrupt switchbench.
+The watchdog is probably working. The fact that you get the problem with
+the interrupt pipeline enabled but not Xenomai proves that the culprit
+is not Xenomai's timer interception. So, what probably happens is that
+only Linux' timer is not working when you experience "hang ups". You can
+check that by checking the irqs count in /proc/xenomai/irq when latency
+is running.
+
+In any case, you should run without NO_HZ and should try to disable high
+res timers to see if it helps further.
+
+> I believe that today I will finally receive the new computers that I
+> ordered. So hopefully these problems won't turn up again on them.
+> Regardless, I would have liked to have figured out what the problem
+> was, just in case it is something serious that just happens less often
+> on newer computers.
+
+Well, trying to solve an issue which happens on a machine with faulty
+RAM is not really interesting. So, unless you are able to test the same
+machine with working RAM, I would suggest to stop spending time on this
+issue.
 
 -- 
 					    Gilles.
