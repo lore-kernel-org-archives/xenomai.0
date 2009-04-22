@@ -1,5 +1,5 @@
-Message-ID: <49EF7088.6070006@domain.hid>
-Date: Wed, 22 Apr 2009 21:31:20 +0200
+Message-ID: <49EF70E3.7090105@domain.hid>
+Date: Wed, 22 Apr 2009 21:32:51 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <49EF6591.7000802@domain.hid>
@@ -32,11 +32,8 @@ Steven Seeger wrote:
 > the problem will be something else. It would be nice to have my other  
 > questions answered, though.
 
-You are repeating yourself, so, I am going to repeat myself. Just run
-the latency test, if it does not have the same latency, then your
-problem is in your application. It it has the same latency, then there
-is a problem with Xenomai, and you should enable the I-pipe tracer and
-send us the trace.
+To give you some figures, the Geode you sent me has a latency around
+40us under full load.
 
 -- 
 					    Gilles.
