@@ -1,12 +1,16 @@
-Message-ID: <49EF726D.70000@domain.hid>
-Date: Wed, 22 Apr 2009 21:39:25 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <1240428903.3403.8.camel@domain.hid>
-In-Reply-To: <1240428903.3403.8.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Message-Id: <A5692251-1B79-4E0A-9024-8A40AD22A44D@comcast.net>
+From: Steven Seeger <steven.seeger@domain.hid>
+In-Reply-To: <1240438664.6987.85.camel@domain.hid>
+Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] powerpc and fastsync
+Mime-Version: 1.0 (Apple Message framework v930.3)
+Date: Wed, 22 Apr 2009 19:08:01 -0400
+References: <49EF6591.7000802@domain.hid>
+	<468CF57C-40DE-498B-9C2C-C73AE07CFE4F@comcast.net>
+	<49EF7088.6070006@domain.hid>
+	<4A05FD82-380E-4DBB-A848-CB2212F88C39@domain.hid>
+	<1240438664.6987.85.camel@domain.hid>
+Subject: Re: [Xenomai-core] [Xenomai-help] An answer to Steven's questions.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,27 +20,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: jpl@domain.hid
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Joshua Lamorie wrote:
-> Gidday there,
-> 
-> I am using Xenomai-trunk on a Virtex-II Pro (PowerPC 405) using a
-> patched version of DENX-2.6.28.5 (using
-> adeos-ipipe-2.6.28.5...2.4-04.patch as a base).
-> 
-> This was working fine up until the beginning of April when it appears
-> that the configure.in and configure scripts were changed for powerpc.
-> The SVN revision(commit) 4681 removed CONFIG_XENO_FASTSYNCH=y.  However,
-> in ksrc/arch/powerpc/Kconfig, XENO_FASTSYNCH is still set to 'y'.
-> 
-> Is this normal?
+> We do _not_ know what the heck your application does, whether it has
+> problems or not. But, we could find out whether Xenomai has problems  
+> or
+> not on your particular hardware. You already confirmed that your
+> RTAI-based implementation differed totally from your Xenomai-based  
+> one,
+> so comparing won't help either. Btw, do you really think that other
+> users would settle for 3 digit latency figures on x86? Obviously  
+> not, so
+> what you see must be pathological. Therefore, the only question worth
+> discussing is: who is causing this?
 
-No this is not normal and has been fixed in xenomai 2.5-rc1. The svn
-repository is no longer used, we use git now. See http://www.xenomai.org
-for details on how to fetch the code in git repositories.
+We have sent output from latency before, and the ones I have seen I  
+think had a max of like 85us. We never ran it for an hour. We can do  
+that with both latency -t1 and -t2.
 
--- 
-					    Gilles.
+It is probably our app that has problems, but I am trying to  
+understand how the interactions work. The highest priority thread in  
+our program does nothing but flip a bit and we're seeing that do weird  
+things on a logic analyzer.
+
+Nice angry email! :)
+
+Steven
+
 
