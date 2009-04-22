@@ -1,13 +1,14 @@
-Message-ID: <49EF0630.3010807@domain.hid>
-Date: Wed, 22 Apr 2009 13:57:36 +0200
+Message-ID: <49EF5149.9090609@domain.hid>
+Date: Wed, 22 Apr 2009 19:18:01 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <49EEE65E.6060308@domain.hid> <49EEE9F1.2000204@domain.hid>
-	<49EEF2B8.2090702@domain.hid>
-In-Reply-To: <49EEF2B8.2090702@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-2
+References: <Pine.LNX.4.64.0904201026330.23588@domain.hid>
+	<49ECBEE6.2060201@domain.hid>
+	<Pine.LNX.4.64.0904201444200.26654@domain.hid>
+In-Reply-To: <Pine.LNX.4.64.0904201444200.26654@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem with mutexes in daemon
+Subject: Re: [Xenomai-help] Success! (was Re: Tests with 2.5rc1)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,40 +18,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Roman Pisl <rpisl@domain.hid>
+To: Martin Shepherd <mcs@domain.hid>
 Cc: xenomai@xenomai.org
 
-Roman Pisl wrote:
-> Gilles Chanteperdrix napsal(a):
->> Roman Pisl wrote:
->>> Hello,
->>> I'm experiencing weird behavior with mutexes in a daemon application. 
->>> After daemon() is called, unnamed mutexes fail on call 
->>> rt_mutex_release() with -EPERM. Everything is ok for named mutexes.
->>>
->>> Is there something special with daemon and unnamed mutexes - should all 
->>> have name? Or is it a bug? I'm using kernel 2.6.28 and Xenomai 2.4.6.1.
->>>
->>> Example showing this problem is attached.
->> Unnamed mutexes are local to a process. Since forking results in a
->> different process, mutexes are not preserved.
->>
->> Yes, Xenomai behaviour is not intuitive, but fixing this requires
->> internal changes.
->>
+Martin Shepherd wrote:
+> On Mon, 20 Apr 2009, Gilles Chanteperdrix wrote:
+>> ...and should try to disable high
+>> res timers to see if it helps further.
 > 
-> I understand, but daemon() is the first call and everything is done in 
-> the new forked process.
+> Excellent suggestion. This has completely fixed the problem. To be
+> precise, starting with the config of the last problematic kernel, I
+> toggled off the high-res timer option in menuconfig, recompiled the
+> kernel, and booted into the new kernel.  I have now booted twice into
+> the resulting kernel, and have been unable to provoke a single hang in
+> either case, whereas before this change, I could reliably always
+> provoke a hang within a few seconds of running "dd if=/dev/zero
+> of=/dev/null". I have also now run xeno-test twice, all the way
+> through, for the first time.
 > 
-> What is the best solution for now? Is everything except unnamed mutexes 
-> supposed to work well in daemon or should I cancel the concept of daemon 
-> at all?
+> Do you have any idea why having the high-resolution timers option
+> enabled was causing the system to hang?
 
-Yes, what you are doing is supposed to work, I did not look at your
-code, I thought you were expecting to be able to create the mutex in a
-process and use it in its child.
+Not at all. The issue you have seems to be related with the timer
+sub-system, the timer not being reprogrammed or something like that.
+We must tell everyone on this list that high-res timers work for the
+current hardware we run our tests on, so that people do not conclude
+that hi-res timers do not work with Xenomai.
 
-On what platform do you get these issues ?
+So, I see from previous posts that you have PM-timers enabled, could you
+try to re-enable high-res timers, and disable PM-timers ?
 
 -- 
                                                  Gilles.
