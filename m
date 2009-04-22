@@ -1,12 +1,13 @@
-Message-ID: <49EF70E3.7090105@domain.hid>
-Date: Wed, 22 Apr 2009 21:32:51 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+Message-Id: <4A05FD82-380E-4DBB-A848-CB2212F88C39@domain.hid>
+From: Steven Seeger <steven.seeger@domain.hid>
+In-Reply-To: <49EF7088.6070006@domain.hid>
+Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Apple Message framework v930.3)
+Date: Wed, 22 Apr 2009 17:17:44 -0400
 References: <49EF6591.7000802@domain.hid>
 	<468CF57C-40DE-498B-9C2C-C73AE07CFE4F@comcast.net>
-In-Reply-To: <468CF57C-40DE-498B-9C2C-C73AE07CFE4F@comcast.net>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+	<49EF7088.6070006@domain.hid>
 Subject: Re: [Xenomai-help] An answer to Steven's questions.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,24 +18,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <steven.seeger@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai help <xenomai@xenomai.org>
 
-Steven Seeger wrote:
-> The problem is that latency on Xenomai (even with kernel based  
-> threads) is terrible on our board compared to RTAI and it's causing us  
-> issues. I'm starting to think that Xenomai on Geode is not appropriate  
-> for our application, but we have to salvage the work that's already  
-> been done. At this point I'm simply looking to minimize the problem.
-> 
-> We are seeing jitters of upwards of 70us when we have a 125us and a  
-> 500us task. That's a huge amount and we can't deal with it. Hopefully  
-> the problem will be something else. It would be nice to have my other  
-> questions answered, though.
+> You are repeating yourself, so, I am going to repeat myself. Just run
+> the latency test, if it does not have the same latency, then your
+> problem is in your application. It it has the same latency, then there
+> is a problem with Xenomai, and you should enable the I-pipe tracer and
+> send us the trace.
 
-To give you some figures, the Geode you sent me has a latency around
-40us under full load.
+I see what you are saying. I believe our application has the same  
+latency but I am not there to see the timing analysis, so I will have  
+to take other peoples' word.
 
--- 
-					    Gilles.
+Steven
+
 
