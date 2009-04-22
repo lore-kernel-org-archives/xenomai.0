@@ -1,14 +1,10 @@
-Message-ID: <49EF5149.9090609@domain.hid>
-Date: Wed, 22 Apr 2009 19:18:01 +0200
+Message-ID: <49EF6591.7000802@domain.hid>
+Date: Wed, 22 Apr 2009 20:44:33 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <Pine.LNX.4.64.0904201026330.23588@domain.hid>
-	<49ECBEE6.2060201@domain.hid>
-	<Pine.LNX.4.64.0904201444200.26654@domain.hid>
-In-Reply-To: <Pine.LNX.4.64.0904201444200.26654@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Success! (was Re: Tests with 2.5rc1)
+Subject: [Xenomai-help] An answer to Steven's questions.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,36 +14,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Martin Shepherd <mcs@domain.hid>
-Cc: xenomai@xenomai.org
+To: Steven Seeger <steven.seeger@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Martin Shepherd wrote:
-> On Mon, 20 Apr 2009, Gilles Chanteperdrix wrote:
->> ...and should try to disable high
->> res timers to see if it helps further.
-> 
-> Excellent suggestion. This has completely fixed the problem. To be
-> precise, starting with the config of the last problematic kernel, I
-> toggled off the high-res timer option in menuconfig, recompiled the
-> kernel, and booted into the new kernel.  I have now booted twice into
-> the resulting kernel, and have been unable to provoke a single hang in
-> either case, whereas before this change, I could reliably always
-> provoke a hang within a few seconds of running "dd if=/dev/zero
-> of=/dev/null". I have also now run xeno-test twice, all the way
-> through, for the first time.
-> 
-> Do you have any idea why having the high-resolution timers option
-> enabled was causing the system to hang?
 
-Not at all. The issue you have seems to be related with the timer
-sub-system, the timer not being reprogrammed or something like that.
-We must tell everyone on this list that high-res timers work for the
-current hardware we run our tests on, so that people do not conclude
-that hi-res timers do not work with Xenomai.
+Hi Steven,
 
-So, I see from previous posts that you have PM-timers enabled, could you
-try to re-enable high-res timers, and disable PM-timers ?
+what matters in an RTOS, Xenomai being no exception, is the latency.
+Actually, there are three latencies, the interrupt latency, the
+kernel-space scheduling latency, and the user-space scheduling latency.
+
+The true nature of these latencies for Xenomai is complex. It is
+probably a mix between the longest interrupt masking section in both
+Xenomai and Linux code and the indirect effect of cache, spin-locking on
+SMP, TLB, BTB and of other hardware effects. Trying to compute this
+latency mathematically is hopeless.
+
+For this reason, Xenomai comes with a tool called "latency", which
+allows you to measure these latencies given a load applied on the
+system. For this tool to give meaningful results, you should apply a
+realistic load on the system, to be sure that most paths in Xenomai and
+Linux code are taken so that their masking section time, or their effect
+on cache, TLB, BTB, etc... if any, is taken into account.
+
+So, you should not focus on whether this or that part of Xenomai or
+Linux code is preemptible or not, you would miss the big picture. What
+you have to do, is run the latency test given a proper load applied on
+the system. Then you will get a number, and you can rely on this number
+(maybe adding some safety margin) as being the latency of Xenomai on
+your system. Needless to say, Xenomai syscalls and process migrations
+are already done by the printing thread in the latency test, so, there
+is no need to try them in a separate load program.
+
+Regards.
 
 -- 
-                                                 Gilles.
+					    Gilles.
 
