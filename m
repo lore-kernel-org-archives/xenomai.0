@@ -1,9 +1,9 @@
+Message-ID: <49EEE65E.6060308@domain.hid>
+Date: Wed, 22 Apr 2009 11:41:50 +0200
+From: Roman Pisl <rpisl@domain.hid>
 MIME-Version: 1.0
-Date: Wed, 22 Apr 2009 10:27:48 +0200
-Message-ID: <37f89760904220127t63317a8cr4a4295c0a726f1c2@domain.hid>
-From: Marcel Soulot <msoulot@domain.hid>
-Content-Type: multipart/alternative; boundary=001636c92545e493fa04682089cf
-Subject: [Xenomai-help] Manage PCI irq to avoid conflict
+Content-Type: multipart/mixed; boundary="------------040209090207020208040704"
+Subject: [Xenomai-help] Problem with mutexes in daemon
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -13,83 +13,155 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
---001636c92545e493fa04682089cf
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
+--------------040209090207020208040704
+Content-Type: text/plain; charset=ISO-8859-2; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi,
+Hello,
+I'm experiencing weird behavior with mutexes in a daemon application. 
+After daemon() is called, unnamed mutexes fail on call 
+rt_mutex_release() with -EPERM. Everything is ok for named mutexes.
 
-I'm looking for a way to allocate a specific IRQ to a PCI card.
-I have two PCI cards and I can't change their slot and I try to change the
-bios configuration but no success.
+Is there something special with daemon and unnamed mutexes - should all 
+have name? Or is it a bug? I'm using kernel 2.6.28 and Xenomai 2.4.6.1.
 
-My first PCI card uses two IRQs 10 and 12 and my second uses one IRQs 5.
-These IRQs are also use by the usb controller.
-One way that I found is to disabled usb controller but I need it so I can't
-use this solution.
+Example showing this problem is attached.
 
-Here is my IRQ allocation :
-           CPU0
-  0:         84    XT-PIC-XT        timer
-  1:        531    XT-PIC-XT        i8042
-  2:          0    XT-PIC-XT        cascade
-  3:         92    XT-PIC-XT        serial
-  4:          4    XT-PIC-XT
-  5:          0    XT-PIC-XT        uhci_hcd:usb3
-  7:        315    XT-PIC-XT        ehci_hcd:usb1
-  8:          2    XT-PIC-XT        rtc0
-  9:          0    XT-PIC-XT        uhci_hcd:usb4
- 10:          0    XT-PIC-XT        uhci_hcd:usb2
- 11:      22240    XT-PIC-XT        eth0
- 12:          0    XT-PIC-XT        Intel 82801DB-ICH4
- 14:       1981    XT-PIC-XT        ide0
- 15:          0    XT-PIC-XT        ide1
-NMI:          0   Non-maskable interrupts
-LOC:     167780   Local timer interrupts
-RES:          0   Rescheduling interrupts
-CAL:          0   function call interrupts
-TLB:          0   TLB shootdowns
-TRM:          0   Thermal event interrupts
-SPU:          0   Spurious interrupts
-ERR:          0
-MIS:          0
+Thank you for help,
 
-Thanks for your help,
-Marcel.
+Roman
 
---001636c92545e493fa04682089cf
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: base64
+--------------040209090207020208040704
+Content-Type: text/plain;
+ name="daemon.c"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="daemon.c"
 
-SGksPGJyPjxicj5JJiMzOTttIGxvb2tpbmcgZm9yIGEgd2F5IHRvIGFsbG9jYXRlIGEgc3BlY2lm
-aWMgSVJRIHRvIGEgUENJIGNhcmQuPGJyPkkgaGF2ZSB0d28gUENJIGNhcmRzIGFuZCBJIGNhbiYj
-Mzk7dCBjaGFuZ2UgdGhlaXIgc2xvdCBhbmQgSSB0cnkgdG8gY2hhbmdlIHRoZSBiaW9zIGNvbmZp
-Z3VyYXRpb24gYnV0IG5vIHN1Y2Nlc3MuPGJyPjxicj5NeSBmaXJzdCBQQ0kgY2FyZCB1c2VzIHR3
-byBJUlFzIDEwIGFuZCAxMiBhbmQgbXkgc2Vjb25kIHVzZXMgb25lIElSUXMgNS48YnI+ClRoZXNl
-IElSUXMgYXJlIGFsc28gdXNlIGJ5IHRoZSB1c2IgY29udHJvbGxlci48YnI+T25lIHdheSB0aGF0
-IEkgZm91bmQgaXMgdG8gZGlzYWJsZWQgdXNiIGNvbnRyb2xsZXIgYnV0IEkgbmVlZCBpdCBzbyBJ
-IGNhbiYjMzk7dCB1c2UgdGhpcyBzb2x1dGlvbi4gPGJyPjxicj5IZXJlIGlzIG15IElSUSBhbGxv
-Y2F0aW9uIDo8YnI+oKCgoKCgoKCgoCBDUFUwoKCgoKCgIDxicj6gIDA6oKCgoKCgoKAgODSgoKAg
-WFQtUElDLVhUoKCgoKCgoCB0aW1lcjxicj4KoCAxOqCgoKCgoKAgNTMxoKCgIFhULVBJQy1YVKCg
-oKCgoKAgaTgwNDI8YnI+oCAyOqCgoKCgoKCgoCAwoKCgIFhULVBJQy1YVKCgoKCgoKAgY2FzY2Fk
-ZTxicj6gIDM6oKCgoKCgoKAgOTKgoKAgWFQtUElDLVhUoKCgoKCgoCBzZXJpYWw8YnI+oCA0OqCg
-oKCgoKCgoCA0oKCgIFhULVBJQy1YVKCgoKCgIDxicj6gIDU6oKCgoKCgoKCgIDCgoKAgWFQtUElD
-LVhUoKCgoKCgoCB1aGNpX2hjZDp1c2IzPGJyPgqgIDc6oKCgoKCgoCAzMTWgoKAgWFQtUElDLVhU
-oKCgoKCgoCBlaGNpX2hjZDp1c2IxPGJyPqAgODqgoKCgoKCgoKAgMqCgoCBYVC1QSUMtWFSgoKCg
-oKCgIHJ0YzA8YnI+oCA5OqCgoKCgoKCgoCAwoKCgIFhULVBJQy1YVKCgoKCgoKAgdWhjaV9oY2Q6
-dXNiNDxicj6gMTA6oKCgoKCgoKCgIDCgoKAgWFQtUElDLVhUoKCgoKCgoCB1aGNpX2hjZDp1c2Iy
-PGJyPqAxMTqgoKCgoCAyMjI0MKCgoCBYVC1QSUMtWFSgoKCgoKCgIGV0aDA8YnI+CqAxMjqgoKCg
-oKCgoKAgMKCgoCBYVC1QSUMtWFSgoKCgoKCgIEludGVsIDgyODAxREItSUNINDxicj6gMTQ6oKCg
-oKCgIDE5ODGgoKAgWFQtUElDLVhUoKCgoKCgoCBpZGUwPGJyPqAxNTqgoKCgoKCgoKAgMKCgoCBY
-VC1QSUMtWFSgoKCgoKCgIGlkZTE8YnI+Tk1JOqCgoKCgoKCgoCAwoKAgTm9uLW1hc2thYmxlIGlu
-dGVycnVwdHM8YnI+TE9DOqCgoKAgMTY3NzgwoKAgTG9jYWwgdGltZXIgaW50ZXJydXB0czxicj4K
-UkVTOqCgoKCgoKCgoCAwoKAgUmVzY2hlZHVsaW5nIGludGVycnVwdHM8YnI+Q0FMOqCgoKCgoKCg
-oCAwoKAgZnVuY3Rpb24gY2FsbCBpbnRlcnJ1cHRzPGJyPlRMQjqgoKCgoKCgoKAgMKCgIFRMQiBz
-aG9vdGRvd25zPGJyPlRSTTqgoKCgoKCgoKAgMKCgIFRoZXJtYWwgZXZlbnQgaW50ZXJydXB0czxi
-cj5TUFU6oKCgoKCgoKCgIDCgoCBTcHVyaW91cyBpbnRlcnJ1cHRzPGJyPkVSUjqgoKCgoKCgoKAg
-MDxicj4KTUlTOqCgoKCgoKCgoCAwPGJyPjxicj5UaGFua3MgZm9yIHlvdXIgaGVscCw8YnI+TWFy
-Y2VsLjxicj4K
---001636c92545e493fa04682089cf--
+#include <stdio.h>
+#include <stdbool.h>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/mman.h>
+
+#include <native/task.h>
+#include <native/cond.h>
+#include <native/mutex.h>
+#include <native/timer.h>
+
+RT_TASK demo_task;
+RT_TASK main_task;
+RT_MUTEX mutex;
+RT_MUTEX shut_mutex;
+RT_COND shut_cond;
+
+#define TRUE 1
+#define FALSE 0
+
+bool terminated = FALSE;
+bool terminated2 = FALSE;
+
+void demo(void *arg)
+{
+    int ret;
+    RTIME now, previous;
+
+    rt_task_set_periodic(NULL, TM_NOW, 1000000000);
+    previous = rt_timer_read();
+
+    while (!terminated2) {
+        rt_task_wait_period(NULL);
+        now = rt_timer_read();
+
+        printf("DT: Time since last turn: %ld.%06ld ms\n",
+               (long)(now - previous) / 1000000,
+               (long)(now - previous) % 1000000);
+               previous = now;
+
+        if (ret = rt_mutex_acquire(&mutex, TM_INFINITE))
+            printf("DT: rt_mutex_acquire() failed %i\n", ret);
+        rt_task_sleep(1000000);
+        if (ret = rt_mutex_release(&mutex))
+            printf("DT: rt_mutex_release() failed %i\n", ret);
+    }
+    if (ret = rt_mutex_acquire(&shut_mutex, TM_INFINITE))
+        printf("DT: rt_mutex_acquire() before cond failed %i\n", ret);
+    if (ret = rt_cond_signal(&shut_cond))
+        printf("DT: rt_cond_signal() failed %i\n", ret);
+    if (ret = rt_mutex_release(&shut_mutex))
+        printf("DT: rt_mutex_release() after cond failed %i\n", ret);
+}
+
+void catch_signal(int sig)
+{
+    terminated = TRUE;
+}
+
+int main(int argc, char* argv[])
+{
+    int ret;
+    //when daemon - problems with unnamed mutexes
+    //without daemon everything ok
+    daemon(1, 1);
+
+    if (ret = rt_mutex_create(&mutex, NULL))
+    {
+        printf("Error creating mutex %i\n", ret);
+        return 0;
+    }
+
+    if (ret = rt_mutex_create(&shut_mutex, NULL))
+    {
+        printf("Error creating shut_mutex %i\n", ret);
+        return 0;
+    }
+
+    if (ret = rt_cond_create(&shut_cond, NULL))
+    {
+        printf("Error creating cond%i\n", ret);
+        return 0;
+    }
+
+    signal(SIGTERM, catch_signal);
+    signal(SIGINT, catch_signal);
+
+    mlockall(MCL_CURRENT|MCL_FUTURE);
+
+    if (ret = rt_task_shadow(&main_task, "main", 90, 0))
+        printf("rt_task_shadow() failed %i\n", ret);
+    if (ret = rt_task_create(&demo_task, "trivial", 0, 99, 0))
+        printf("rt_task_create() failed %i\n", ret);
+
+    rt_task_start(&demo_task, &demo, NULL);
+
+    while (!terminated)
+    {
+        if (ret = rt_mutex_acquire(&mutex, TM_INFINITE))
+            printf("MT: rt_mutex_acquire() failed, %i\n", ret);
+        rt_task_sleep(1000000);
+        printf("sleep\n");
+        if (ret = rt_mutex_release(&mutex))
+            printf("MT: rt_mutex_release() failed %i\n", ret);
+        rt_task_sleep(1000000000);
+    }
+    printf("Finished...\n");
+
+    if (ret = rt_mutex_acquire(&shut_mutex, TM_INFINITE))
+        printf("MT: rt_mutex_acquire() before cond failed %i\n", ret);
+    terminated2 = TRUE;
+    if (ret = rt_cond_wait(&shut_cond, &shut_mutex, TM_INFINITE))
+        printf("MT: rt_cond_signal() failed %i\n", ret);
+    if (ret = rt_mutex_release(&shut_mutex))
+        printf("MT: rt_mutex_release() after cond failed %i\n", ret);
+
+    rt_task_delete(&demo_task);
+    rt_mutex_delete(&mutex);
+    rt_mutex_delete(&shut_mutex);
+    rt_cond_delete(&shut_cond);
+}
+
+--------------040209090207020208040704--
 
