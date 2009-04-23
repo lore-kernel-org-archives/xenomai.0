@@ -1,12 +1,15 @@
-Message-ID: <49F06D77.7050103@domain.hid>
-Date: Thu, 23 Apr 2009 15:30:31 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <1043994168.4085071240493189508.JavaMail.root@domain.hid>
-In-Reply-To: <1043994168.4085071240493189508.JavaMail.root@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Problem of freeze
+From: Vikesh Rambaran <vikesh.rambaran@domain.hid>
+In-Reply-To: <49F05891.8040408@domain.hid>
+References: <b131c9f0904230220j3f0a7d7ej9172ee4fb48aa69c@domain.hid>
+	<1240479431.6990.30.camel@domain.hid>
+	<1240482629.7599.45.camel@domain.hid>
+	<49F05891.8040408@domain.hid>
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+Date: Thu, 23 Apr 2009 15:34:34 +0200
+Message-Id: <1240493674.16510.36.camel@domain.hid>
+Mime-Version: 1.0
+Subject: Re: [Xenomai-help] adeos patch 2.6.28.9-x86-2.2-07 feedback
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,63 +19,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: btirefort@domain.hid
-Cc: xenomai-help <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-btirefort@domain.hid wrote:
->> ----- Mail Original -----
->> De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
->> =C3=80: btirefort@domain.hid
->> Cc: "xenomai-help" <xenomai@xenomai.org>
->> Envoy=C3=A9: Jeudi 23 Avril 2009 10h28:31 GMT +01:00 Amsterdam / Berli=
-n / Berne / Rome / Stockholm / >Vienne
->> Objet: Re: [Xenomai-help] Problem of freeze
->=20
->> btirefort@domain.hid wrote:
->>> Hello
->>>
->>> I'am rookie in xenomai and i have a problem.
->>>
->>> Here my configuration :
->>>
->>> Linux base : CentOS v5.3 (with gnome)
->>> kernel : linux-2.6.28.7
->>> <xenomai : 2.4.7
->>> processor cpu familly  : 6
->>>               type : 14 (Intel Core Duo T2500 2Ghz)
->>> memory : 1 GB
->>> HDD : SCSI with Adaptec AIC-7892B card
->>>
->>> I have installed xenomai with no problem.
->>> All options of ACPI, APM and CPU frequency scaling are disabled.
->=20
->> This is wrong. You should enable ACPI, and only disable ACPI_PROCESSOR=
-=2E
->> Disabling ACPI is known to cause bugs with Linux on some machines.
->=20
->> --=20
->> 					    Gilles.
->=20
-> Thanks for your reply
-> So now ACPI is enable and ACPI PROCESSOR Disable
->=20
-> I use xenomai with the patch adeos-ipipe-2.6.28.9-x86-2.2-07.patch from=
- the Xenomai git
->=20
-> But i have the same problem :(
->=20
-> I have a question, when I configure the kernel, for the procesor type, =
-can i use th right type for me (core 2) or I must use only 6x86MX type ?
+Hi Gilles
 
-No you should use the right type for your procsesor.
+On Thu, 2009-04-23 at 14:01 +0200, Gilles Chanteperdrix wrote:
+> Vikesh Rambaran wrote:
+> > I am going to test with CONFIG_NO_HERTZ and ACPI_PROCESSOR disabled
+> > as per Gilles suggestions on other emails.
+> 
+> Yes, you should disable ACPI_PROCESSOR. I am surprised that it is not
+> already done, because it is (or should be) written everywhere.
+> 
 
-I see that you are using X-window, so I guess you do not see the
-console. Unfortunately, if your hang is due to a kernel oops we do not
-have a clue. So, you should try and get the console output on another
-machine, using preferably a serial cable, or if not possible the netconso=
-le.
+Thanx for your reply. It is well documented on the mailing lists ..:)
 
---=20
-                                                 Gilles.
+However, I have previously disabled ACPI completely (not just
+ACPI_PROCESSOR) ONLY because it gave the lowest latencies across all the
+platforms which i tested. Well that's the way it seemed for our
+application. (unfortunately, i know this is not what's recommended on
+the lists)
+
+To retest, I have rebuilt the kernel 2.6.28.9 with ACPI enabled, but
+ACPI_PROCESSOR disabled. Our applications latency report goes up 
+to 250uS for the few minutes that it was run on the Core 2 PC.
+
+On the Core Duo laptop, the above kernel and application give latencies
+< 40uS. By the way, is it ok to use a kernel compiled for Core2 on a 
+Core Duo platform ?
+
+The latency test does not show any significant difference whether ACPI
+is completely disabled or only ACPI_PROCESSOR is disabled.
+
+
+> As for CONFIG_NO_HZ, CONFIG_NO_HZ works correctly with Xenomai, it had a
+> bug on ARM on 2.6.26, but the bug was specific to ARM (actually specific
+> to architectures with unlocked context switches), I was only asking
+> Martin to test this because his bug looked like the NO_HZ bug on ARM,
+> but Martin's problem turned out to be with CONFIG_X86_PM_TIMER, so is
+> completely unrelated to NO_HZ.
+> 
+
+Ok, great.
+
+Thanx again
+Vicki
+
 
 
