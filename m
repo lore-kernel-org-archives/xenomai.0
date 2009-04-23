@@ -1,15 +1,17 @@
-Message-ID: <49F016B2.8040709@domain.hid>
-Date: Thu, 23 Apr 2009 09:20:18 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <49EF0CFE.90405@domain.hid> <1240417384.6987.8.camel@domain.hid>
-	<49EF4A6A.4010604@domain.hid>
-In-Reply-To: <49EF4A6A.4010604@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig9393CA496A4733970019712C"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] BUG on xnintr_attach
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <A5692251-1B79-4E0A-9024-8A40AD22A44D@comcast.net>
+References: <49EF6591.7000802@domain.hid>
+	<468CF57C-40DE-498B-9C2C-C73AE07CFE4F@comcast.net>
+	<49EF7088.6070006@domain.hid>
+	<4A05FD82-380E-4DBB-A848-CB2212F88C39@domain.hid>
+	<1240438664.6987.85.camel@domain.hid>
+	<A5692251-1B79-4E0A-9024-8A40AD22A44D@comcast.net>
+Content-Type: text/plain
+Date: Thu, 23 Apr 2009 10:10:03 +0200
+Message-Id: <1240474203.6990.19.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [Xenomai-help] An answer to Steven's questions.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,91 +21,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Steven Seeger <steven.seeger@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig9393CA496A4733970019712C
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On Wed, 2009-04-22 at 19:08 -0400, Steven Seeger wrote:
+> > We do _not_ know what the heck your application does, whether it has
+> > problems or not. But, we could find out whether Xenomai has problems  
+> > or
+> > not on your particular hardware. You already confirmed that your
+> > RTAI-based implementation differed totally from your Xenomai-based  
+> > one,
+> > so comparing won't help either. Btw, do you really think that other
+> > users would settle for 3 digit latency figures on x86? Obviously  
+> > not, so
+> > what you see must be pathological. Therefore, the only question worth
+> > discussing is: who is causing this?
+> 
+> We have sent output from latency before, and the ones I have seen I  
+> think had a max of like 85us. We never ran it for an hour. We can do  
+> that with both latency -t1 and -t2.
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->> On Wed, 2009-04-22 at 14:26 +0200, Jan Kiszka wrote:
->>> Hi all,
->>>
->>> issuing  rtdm_irq_request and, thus, xnintr_attach can trigger a
->>> "I-pipe: Detected stalled topmost domain, probably caused by a bug." =
-if
->>> the interrupt type is MSI:
->>>
->>>   [<ffffffff80273cce>] ipipe_check_context+0xe7/0xe9
->>>   [<ffffffff8049dae9>] _spin_lock_irqsave+0x18/0x54
->>>   [<ffffffff8037dcc2>] pci_bus_read_config_dword+0x3c/0x87
->>>   [<ffffffff80387c1d>] read_msi_msg+0x61/0xe1
->>>   [<ffffffff8021c5b8>] ? assign_irq_vector+0x3e/0x49
->>>   [<ffffffff8021d7b2>] set_msi_irq_affinity+0x6d/0xc8
->>>   [<ffffffff8021fa5d>] __ipipe_set_irq_affinity+0x6c/0x77
->>>   [<ffffffff80274231>] ipipe_set_irq_affinity+0x34/0x3d
->>>   [<ffffffff8027c572>] xnintr_attach+0xaa/0x11e
->>>
->>> Two option to fix this, but I'm currently undecided which one to go:
->>>  - harden pci_lock (drivers/pci/access.c) - didn't we applied such a
->>>    MSI-related workaround before?
->> This did not work as expected: pathological latency spots. This said,
->> the vanilla code has evolved since I tried this quick hack months ago,=
+The latency figures we have for the GX1 were obtained when chasing the
+TSC issue, so we are not going to base any reasoning on them. We need
+fresh values from your very latest setup in use.
 
->> so it may be worth to look at this option once again.
->>
->>>  - move xnarch_set_irq_affinity out of intrlock (but couldn't we face=
+But yes, having -t0, -t1 and -t2 would make sense, because comparing
+them would help understanding where the weak point might be, if the
+issue is Xenomai related. If it is not, then at least we would not chase
+wild gooses uselessly.
 
->>>    even more pci_lock related issues?)
->>>
->> Since upstream decided to use PCI config reads even inside hot paths
->> when processing MSI interrupts, the only sane way would be to make the=
+> 
+> It is probably our app that has problems, but I am trying to  
+> understand how the interactions work.
 
->> locking used there Adeos-aware, likely virtualizing the interrupt mask=
-=2E
->> The way upstream generally deals with MSI is currently a problem for u=
-s.
->=20
-> Hmm, guess this needs a closer look again. But I vaguely recall upstrea=
-m
-> had removed the config reading at least from the hot paths due to
-> complaints about performance.
+I understand that, but this is not the way to go; as Gilles pointed out,
+speculating on various unrelated/obscure issues would make us miss the
+big picture. We first have to find a stable ground to build our
+reasoning on, that is decoupled from any application artefacts. Standard
+latency tests do provide this information.
 
-I went through the critical MSI code paths again. Its irqchip comes with
-ack, mask/unmask and set_affinity which may be used by Xenomai. The ack
-is most important as it runs during early dispatching, but it maps to
-ack_apic_edge, thus is clean. The rest is contaminated with PCI config
-access.
+>  The highest priority thread in  
+> our program does nothing but flip a bit and we're seeing that do weird  
+> things on a logic analyzer.
 
-At least pci_lock is involved for this, depending on the PCI access
-method, also pci_config_lock. And then there are other code paths that
-call wake_up_all while holding pci_lock. This locks more or less hopeless=
-=2E
+This is step #2: as soon as we may rule out a general platform issue, we
+may introduce additional application monitoring such as the I-pipe
+tracer in the picture.
 
-On the other hand, we shouldn't depend on mask/unmask or set_affinity
-while in critical Xenomai/I-pipe code paths. The MSI interrupt flow is
-the same as for edge-triggered (except that there is even no EIO). That
-means we do not mask deferred interrupts. And that means we should be
-safe once the affinity setting is fixed.
+> 
+> Nice angry email! :)
+> 
 
-Jan
+I was not angry, just surprised that we already spent that much time on
+discussing those issues in a scatterbrain way instead of following a
+simple and consistent approach. It's easy to find out when I'm writing
+angry e-mails actually, I'm using "damnit" as a punctuation mark.
+
+> Steven
+> 
+-- 
+Philippe.
 
 
---------------enig9393CA496A4733970019712C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAknwFrcACgkQniDOoMHTA+n9igCdEo3VWVHYJbGeLTZZBLnt7Pjk
-RmkAn2xstnSpa3Zu8sBm5Gn2U+FfWJeo
-=pjJ/
------END PGP SIGNATURE-----
-
---------------enig9393CA496A4733970019712C--
 
