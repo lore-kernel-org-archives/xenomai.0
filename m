@@ -1,14 +1,14 @@
-Date: Wed, 22 Apr 2009 18:43:20 -0700 (PDT)
-From: Martin Shepherd <mcs@domain.hid>
-In-Reply-To: <49EF5149.9090609@domain.hid>
-Message-ID: <Pine.LNX.4.64.0904221805420.16285@domain.hid>
-References: <Pine.LNX.4.64.0904201026330.23588@domain.hid>
-	<49ECBEE6.2060201@domain.hid>
-	<Pine.LNX.4.64.0904201444200.26654@domain.hid>
-	<49EF5149.9090609@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Subject: Re: [Xenomai-help] Success! (was Re: Tests with 2.5rc1)
+In-Reply-To: <49EAEBF8.9090006@domain.hid>
+References: <2b490f270904170749m3ec39cc8vddab1b5aa50f4b4c@domain.hid>
+	<49E89BC7.6000704@domain.hid>
+	<2b490f270904190151n70cfc610u9a742da5c62e4076@domain.hid>
+	<49EAEBF8.9090006@domain.hid>
+Date: Thu, 23 Apr 2009 09:02:13 +0200
+Message-ID: <2b490f270904230002u224fb692g6ff0ad237acc8dfb@domain.hid>
+From: Dehann Fourie <dehann.fourie@domain.hid>
+Content-Type: multipart/alternative; boundary=0016369fa2fda97526046833759a
+Subject: Re: [Xenomai-help] RT Serial, rt_dev_read blocking problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,38 +21,82 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
+--0016369fa2fda97526046833759a
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-On Wed, 22 Apr 2009, Gilles Chanteperdrix wrote:
->...
-> We must tell everyone on this list that high-res timers work for the
-> current hardware we run our tests on, so that people do not conclude
-> that hi-res timers do not work with Xenomai.
+Hi Gilles,
+
+Just for informations sake. I am still on xeno 2.4.3, but setting
+.rx_timeout to RTSER_TIMEOUT_NONE has fixed the problem. Many thanks.
+
+Dehann
+
+On Sun, Apr 19, 2009 at 11:16 AM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> Dehann Fourie wrote:
+> > Hi Gilles,
+> >
+> > Thanks a lot. Will give it a try. I have tried  .rx_timeout =
+> > RTSER_TIMEOUT_NONE before, but then I was not able to read any data. I am
+> > assuming the data expired before I had read it. This was on a different
+> > config however, so I will try it again.
+> >
+> > Please excuse my lack of knowledge but I am not following you on:
+> > -  ... and apply the commit 3a23967f3cc8d6881d8e3280130bbc431195aa31
+> > -     from head.
 >
-> So, I see from previous posts that you have PM-timers enabled, could you
-> try to re-enable high_res_timers, and disable PM-timers ?
+> Xenomai has a git repository now. See http://git.xenomai.org/
+> 3a23967f3cc8d6881d8e3280130bbc431195aa31<http://git.xenomai.org/%0A3a23967f3cc8d6881d8e3280130bbc431195aa31>is the identifier of a commit.
+>
+> --
+>                                             Gilles.
+>
 
-Yes, enabling HIGH_RES_TIMERS and disabling X86_PM_TIMER also fixes
-the problem. In detail, after I re-enabled HIGH_RES_TIMERS, and
-enabled EMBEDDED so that I could change the X86_PM_TIMER option, I
-recompiled the kernel 4 times, toggling just the state of the
-X86_PM_TIMER option. The results were as follows:
 
-In the two cases where X86_PM_TIMER was enabled, the normal dd test
-reliably hung the computer after about half a minute, leaving the
-computer completely unresponsive to the keyboard and to pings from
-other machines. Leading up to these hangs, top reported that dd was
-getting very little CPU time, even though nothing else was running. I
-limited dd to copying 5.1GB at a time, by setting its count argument
-to 10000000, and was thus able to verify that dd eventually completed,
-and that at that point, the system returned to normal, except that the
-clock resumed from where it had been when the hang started, and was
-thus left running slow. In other words, dd ran normally, but the clock
-that would have otherwise allowed the scheduler to switch to other
-tasks, stalled until dd finished.
 
-In the two cases where X86_PM_TIMER was disabled, the system worked
-fine. The dd process reliably got at least 95% of the CPU time when
-nothing else was running, and never hung the computer.
+-- 
+Dehann Fourie
 
-Martin
+--0016369fa2fda97526046833759a
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi Gilles,<br><br>Just for informations sake. I am still on xeno 2.4.3, but=
+ setting .rx_timeout to RTSER_TIMEOUT_NONE has fixed the problem. Many than=
+ks.<br><br>Dehann<br><br><div class=3D"gmail_quote">On Sun, Apr 19, 2009 at=
+ 11:16 AM, Gilles Chanteperdrix <span dir=3D"ltr">&lt;<a href=3D"mailto:gil=
+les.chanteperdrix@domain.hid">gilles.chanteperdrix@xenomai.org</a>&gt;</sp=
+an> wrote:<br>
+<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
+204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><div class=3D"im"=
+>Dehann Fourie wrote:<br>
+&gt; Hi Gilles,<br>
+&gt;<br>
+&gt; Thanks a lot. Will give it a try. I have tried =A0.rx_timeout =3D<br>
+&gt; RTSER_TIMEOUT_NONE before, but then I was not able to read any data. I=
+ am<br>
+&gt; assuming the data expired before I had read it. This was on a differen=
+t<br>
+&gt; config however, so I will try it again.<br>
+&gt;<br>
+&gt; Please excuse my lack of knowledge but I am not following you on:<br>
+&gt; - =A0... and apply the commit 3a23967f3cc8d6881d8e3280130bbc431195aa31=
+<br>
+&gt; - =A0 =A0 from head.<br>
+<br>
+</div>Xenomai has a git repository now. See <a href=3D"http://git.xenomai.o=
+rg/%0A3a23967f3cc8d6881d8e3280130bbc431195aa31" target=3D"_blank">http://gi=
+t.xenomai.org/<br>
+3a23967f3cc8d6881d8e3280130bbc431195aa31</a> is the identifier of a commit.=
+<br>
+<br>
+--<br>
+<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.<br>
+</font></blockquote></div><br><br clear=3D"all"><br>-- <br>Dehann Fourie<br=
+>
+
+--0016369fa2fda97526046833759a--
 
