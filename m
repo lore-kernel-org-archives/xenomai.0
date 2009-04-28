@@ -1,17 +1,11 @@
-Date: Mon, 27 Apr 2009 17:26:37 -0700 (PDT)
-From: Martin Shepherd <mcs@domain.hid>
-In-Reply-To: <49F64500.50901@domain.hid>
-Message-ID: <Pine.LNX.4.64.0904271720580.6463@domain.hid>
-References: <b131c9f0904230220j3f0a7d7ej9172ee4fb48aa69c@domain.hid>
-	<1240479431.6990.30.camel@domain.hid>
-	<1240482629.7599.45.camel@domain.hid>
-	<1240487288.6990.71.camel@domain.hid>
-	<Pine.LNX.4.64.0904271229410.719@domain.hid>
-	<49F640A0.4010904@domain.hid> <49F64500.50901@domain.hid>
+Message-ID: <49F65852.6090401@domain.hid>
+Date: Tue, 28 Apr 2009 10:13:54 +0900
+From: "Kim, Hee-young" <plugdboy@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Subject: Re: [Xenomai-help] Lockups on a new Celeron-430 system detected and
- resolved.
+Content-Type: text/plain; charset="euc-kr"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai-help] Does not exist "xnpod_start_timer" on Xenomai 2.4.7
+	???
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,18 +15,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-
-On Tue, 28 Apr 2009, Gilles Chanteperdrix wrote:
-> Ok. I missed the NO_HZ option. With NO_HZ (and high res), I can
-> reproduce the issue.
-
-Excellent. Just to confirm, I was also using NO_HZ and high-res
-timers.
-
-Thanks,
-
-Martin
-
+SGksCgpJJ20gdHJ5aW5nIHRvIHBhdGNoICJydC1maXJld2lyZSAwLjEiIGZvciBsYXN0ZXN0IHhl
+bm9tYWkgcGF0Y2hlZAprZXJuZWwuIEkgZml4ZWQgc29tZSBmdW5jdGlvbnMgdG8gYWx0ZXJlZCBv
+bmUuIEJ1dCwgeG5wb2Rfc3RhcnRfdGltZXIoKSwKeG5wb2Rfc3RvcF90aW1lcigpIGFuZCByZWxh
+dGVzIGRvIG5vdCBleGlzdCBpbiBwb2QuYy4KYW5kIHRyeSB0byBmaW5kIHNhbWUgZnVuY3Rpb24g
+bmFtZSBpbiBYZW5vbWFpIGJ1dCB0aGVyZSBhcmUgbm8gZXhpc3RzLgpXaGVyZSBjYW4gSSBmaW5k
+IHRoZXNlIGZ1bmN0aW9ucz8gb3IgSG93IHRvIHNvbHZlIGl0PwoKICAgIEluIGZpbGUgaW5jbHVk
+ZWQgZnJvbQogICAgL2hvbWUvaHkvZElIQy9ydF9maXJld2lyZS9SVC1GaXJlV2lyZS0wLjEvaW5j
+bHVkZS9ydDEzOTRfc3lzLmg6NDQsCiAgICBmcm9tIC9ob21lL2h5L2RJSEMvcnRfZmlyZXdpcmUv
+UlQtRmlyZVdpcmUtMC4xL3J0X3NlcnYvcnRfc2Vydi5jOjMxOgogICAgL2hvbWUvaHkvZElIQy9y
+dF9maXJld2lyZS9SVC1GaXJlV2lyZS0wLjEvaW5jbHVkZS9ydG9zX3ByaW1pdGl2ZXMuaDoKICAg
+IEluIGZ1bmN0aW9uIKGucnRvc190aW1lcl9zdGFydF9vbmVzaG90oa86CiAgICAvaG9tZS9oeS9k
+SUhDL3J0X2ZpcmV3aXJlL1JULUZpcmVXaXJlLTAuMS9pbmNsdWRlL3J0b3NfcHJpbWl0aXZlcy5o
+OjU0MDoKICAgIGVycm9yOiBpbXBsaWNpdCBkZWNsYXJhdGlvbiBvZiBmdW5jdGlvbiChrnhucG9k
+X3N0YXJ0X3RpbWVyoa8KICAgIC9ob21lL2h5L2RJSEMvcnRfZmlyZXdpcmUvUlQtRmlyZVdpcmUt
+MC4xL2luY2x1ZGUvcnRvc19wcmltaXRpdmVzLmg6NTQwOgogICAgZXJyb3I6IKGuWE5QT0RfREVG
+QVVMVF9USUNLSEFORExFUqGvIHVuZGVjbGFyZWQgKGZpcnN0IHVzZSBpbiB0aGlzCiAgICBmdW5j
+dGlvbikKICAgIC9ob21lL2h5L2RJSEMvcnRfZmlyZXdpcmUvUlQtRmlyZVdpcmUtMC4xL2luY2x1
+ZGUvcnRvc19wcmltaXRpdmVzLmg6NTQwOgogICAgZXJyb3I6IChFYWNoIHVuZGVjbGFyZWQgaWRl
+bnRpZmllciBpcyByZXBvcnRlZCBvbmx5IG9uY2UKICAgIC9ob21lL2h5L2RJSEMvcnRfZmlyZXdp
+cmUvUlQtRmlyZVdpcmUtMC4xL2luY2x1ZGUvcnRvc19wcmltaXRpdmVzLmg6NTQwOgogICAgZXJy
+b3I6IGZvciBlYWNoIGZ1bmN0aW9uIGl0IGFwcGVhcnMgaW4uKQogICAgL2hvbWUvaHkvZElIQy9y
+dF9maXJld2lyZS9SVC1GaXJlV2lyZS0wLjEvaW5jbHVkZS9ydG9zX3ByaW1pdGl2ZXMuaDoKICAg
+IEluIGZ1bmN0aW9uIKGucnRvc190aW1lcl9zdG9woa86CiAgICAvaG9tZS9oeS9kSUhDL3J0X2Zp
+cmV3aXJlL1JULUZpcmVXaXJlLTAuMS9pbmNsdWRlL3J0b3NfcHJpbWl0aXZlcy5oOjU0NToKICAg
+IGVycm9yOiBpbXBsaWNpdCBkZWNsYXJhdGlvbiBvZiBmdW5jdGlvbiChrnhucG9kX3N0b3BfdGlt
+ZXKhrwogICAgL2hvbWUvaHkvZElIQy9ydF9maXJld2lyZS9SVC1GaXJlV2lyZS0wLjEvcnRfc2Vy
+di9ydF9zZXJ2LmM6IEluCiAgICBmdW5jdGlvbiChrnJ0X3NlcnZfaW5pdKGvOgogICAgL2hvbWUv
+aHkvZElIQy9ydF9maXJld2lyZS9SVC1GaXJlV2lyZS0wLjEvcnRfc2Vydi9ydF9zZXJ2LmM6NDQy
+OgogICAgZXJyb3I6IGluY29tcGF0aWJsZSB0eXBlcyBpbiBhc3NpZ25tZW50CiAgICAvaG9tZS9o
+eS9kSUhDL3J0X2ZpcmV3aXJlL1JULUZpcmVXaXJlLTAuMS9ydF9zZXJ2L3J0X3NlcnYuYzogSW4K
+ICAgIGZ1bmN0aW9uIKGuc2Vydl9tb2R1bGVfaW5pdKGvOgogICAgL2hvbWUvaHkvZElIQy9ydF9m
+aXJld2lyZS9SVC1GaXJlV2lyZS0wLjEvcnRfc2Vydi9ydF9zZXJ2LmM6NTM2OgogICAgd2Fybmlu
+Zzogoa5ydF90aW1lcl9zdGFydKGvIGlzIGRlcHJlY2F0ZWQgKGRlY2xhcmVkIGF0CiAgICAvdXNy
+L3hlbm9tYWkvaW5jbHVkZS9uYXRpdmUvdGltZXIuaDoyNTQpCiAgICAvaG9tZS9oeS9kSUhDL3J0
+X2ZpcmV3aXJlL1JULUZpcmVXaXJlLTAuMS9ydF9zZXJ2L3J0X3NlcnYuYzo1NTk6CiAgICBlcnJv
+cjogdG9vIGZldyBhcmd1bWVudHMgdG8gZnVuY3Rpb24goa5ydGRtX25ydHNpZ19pbml0CgpLaW0s
+IEhlZS15b3VuZwoK
