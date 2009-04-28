@@ -1,14 +1,12 @@
-Message-ID: <49F5BDBA.5050200@domain.hid>
-Date: Mon, 27 Apr 2009 16:14:18 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <49F73604.8070706@domain.hid>
+Date: Tue, 28 Apr 2009 18:59:48 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <37f89760904270553s1d862905l5c3c4df01ce0d984@domain.hid>	
-	<49F5B322.3040709@domain.hid>
-	<37f89760904270652i6b8b1d6dq2ecef27d3e3a550@domain.hid>
-In-Reply-To: <37f89760904270652i6b8b1d6dq2ecef27d3e3a550@domain.hid>
+References: <DF9F3A3C150B0646A17FF1487C1B6D5E019F64AA@rennsmail06.eu.thmulti.com>
+In-Reply-To: <DF9F3A3C150B0646A17FF1487C1B6D5E019F64AA@rennsmail06.eu.thmulti.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Try to get recption on driver CAN
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] ARM interrupt latency
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,64 +16,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Marcel Soulot <msoulot@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: "Daniel Jacques (Alten)" <jacques.daniel@domain.hid>
+Cc: xenomai@xenomai.org
 
-Marcel Soulot wrote:
-> 
-> 
-> 2009/4/27 Wolfgang Grandegger <wg@domain.hid <mailto:wg@domain.hid>>
-> 
->     Marcel Soulot wrote:
->     > Hi,
->     >
->     > I try to receive data from CAN network. I got a PCI card with a FPGA
->     > which emulates the SJA1000.
->     > So I load the following modules :
->     > insmod ./xeno_can.ko
->     > insmod ./xeno_can_sja1000.ko
->     > insmod ./xeno_can_mem.ko mem=0xe0000800 irq=5 can_clock=80000000
->     cdr=0x8F
->     >
->     > then I configure with :
->     > ./rtcanconfig rtcan0 -v --baudrate=125000 start
->     >
->     > and launch the receive test application :
->     > ./rtcanrecv rtcan0 -v
->     >
->     > The task is running but nothing happen in reception.
->     > I could just say that the transmitter was blocked before I load the
->     > driver. After all the upon configuration, I can check that the
->     > connection with transmitter is now enabled and the data are sent.
-> 
->     Do you get interrupts for out-going messages? What does "/proc/xeno/irq"
->     report?.
-> 
-> 
-> I sent the data from another computer so I can check the flow data on my
-> CAN device (CANcaseXL). when the driver is unloaded I got the error led
-> and when I loaded and configured the driver the led transmit start to
-> blink and the error led is off.
+Daniel Jacques (Alten) wrote:
+> Hi all,
+>=20
+>=20
+>=20
+> I am using xenomai 2.3.4 on a product based on ARM1136.
+>=20
+> - I create several interrupt objects using "rt_intr_create" routine
+> from user-space and their associated interrupt tasks that permanently
+> wait for interrupt using "rt_intr_wait" routine.
+>=20
+> - The application contains also several user tasks to manage specific
+> functionalities.
+>=20
+> - The processing in the interrupt tasks is very short: typically only
+> resume the user task.
+>=20
+>=20
+>=20
+> By adding some embedded spies, I notice high latencies between
+> interrupt task and user task (maximum 300=B5s, average 100=B5s).
+>=20
+> If I supposed inherent interrupt latency on ARM is around 30=B5s, I can=
 
-Well, I don't understand what that means. Is RT-Socket-CAN working on
-you PCI card. If not, what does not work? RX? TX?
+> explain the latency between interrupt task and user task by the
+> important number of interrupts on my system (around 100 IRQ are
+> generated in each period of 20ms). It means than only 5 or 6 IRQ at
+> the same time can produced this effect ...
 
->     > First, my question is this procedure have any chance to work ? or I
->     > missed something in the configuration ?
-> 
->     I think you need a PCI driver to support your card properly.
-> 
-> 
-> I also already manage a GPIO driver for the same card and it works fine.
+No the latency between interrupt and user task is due to the worst time
+taken by a user-space context switch which, among other things contains
+a full cache flush if you are using a VIVT cache. So, 300us is expected,
+ especially with Xenomai 2.3.4, which does not contain any of the
+optimizations which have been done in this area. I think 30us is overly
+optimistic too, interrupt latency is probably more around 50us.
 
-Does it use interrupts?
+In any case, Xenomai ships with a tool called "latency" which will help
+you find the latency of your system. Actually, the first thing you
+should do when testing Xenomai on a platform is run the latency test to
+get the figures of Xenomai on your platform.
 
-> The driver xeno_can_mem.ko is not designed to access register with
-> memory address ? What are the risk espacially if I have to manage
-> several differents driver with the same card?
 
-The accesses from and to the device should not be a problem but
-interrupt handling might be.
+>=20
+>=20
+>=20
+> So, first I'd like to have your opinion on this interpretation ...
+>=20
+> And in a second step, do you think that It could be interesting and
+> especially sufficient in term of performance, to directly manage
+> interrupt in kernel space instead of user space?
 
-Wolfgang.
+Yes, managing interrupt in kernel-space is not only good for latencies,
+it is good for design. By forcing you to split your code between driver
+code and user application, it will help you write future proof code,
+instead of spaghetti code with driver and application intermixed.
+
+>=20
+> Additionally, if I choose this solution, should I publish the source
+> code (as kernel and xenomai are under GPL)?
+
+Well, under the terms of the GPL, anyone you distribute your system to
+should have a way to get the sources, yes.
+
+--=20
+                                                 Gilles.
+
 
