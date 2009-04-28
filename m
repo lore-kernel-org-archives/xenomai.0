@@ -1,10 +1,10 @@
-Message-ID: <49F699B2.9090804@domain.hid>
-Date: Tue, 28 Apr 2009 07:52:50 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <49F69924.8070001@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <49F69924.8070001@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <49F69924.8070001@domain.hid>
+Content-Type: text/plain
+Date: Tue, 28 Apr 2009 12:07:20 +0200
+Message-Id: <1240913240.6990.347.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] xenomai 2.5 rc1 timing computations.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -15,9 +15,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai core <Xenomai-core@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Gilles Chanteperdrix wrote:
+On Tue, 2009-04-28 at 07:50 +0200, Gilles Chanteperdrix wrote:
 > Hi,
 > 
 > currently, the situation is this:
@@ -33,10 +34,20 @@ Gilles Chanteperdrix wrote:
 > conversions between ns and tsc (only if using tsc in user-space).
 > 
 > These are causes of unprecisions, I think we should fix this, though it
+> is unlikely to be the cause of the high jitters observed by Vikesh with
+> 2.5-rc1.
+> 
 
-imprecisions.
+Ack, we definitely should. Working on allowing userland to use
+llmulshift for timing computations for the native skin here, as a first
+step. For that purpose, xnsysinfo_t has just been extended to carry the
+pre-scaled values needed for llmulshft. I just don't want to have to
+issue a syscall for those conversions to take place.
 
-
+> Regards.
+> 
 -- 
-					    Gilles.
+Philippe.
+
+
 
