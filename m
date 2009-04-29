@@ -1,11 +1,12 @@
-Message-ID: <49F73604.8070706@domain.hid>
-Date: Tue, 28 Apr 2009 18:59:48 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <DF9F3A3C150B0646A17FF1487C1B6D5E019F64AA@rennsmail06.eu.thmulti.com>
-In-Reply-To: <DF9F3A3C150B0646A17FF1487C1B6D5E019F64AA@rennsmail06.eu.thmulti.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+Date: Wed, 29 Apr 2009 08:52:09 +0200
+Message-ID: <DF9F3A3C150B0646A17FF1487C1B6D5E019F64AB@rennsmail06.eu.thmulti.com>
+In-Reply-To: <49F73604.8070706@domain.hid>
+From: "Daniel Jacques (Alten)" <jacques.daniel@domain.hid>
 Subject: Re: [Xenomai-help] ARM interrupt latency
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,8 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Daniel Jacques (Alten)" <jacques.daniel@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
+
+Thanks lot for your help and recommendation.
+I will keep you up to date on my investigation,
+Regards,
+Jacques
+
+Jacques DANIEL - Consultant ALTEN
+Grass Valley - France
+Rue du Clos Courtel
+35517 Cesson S=E9vign=E9 Cedex
+33 (0)2 99 27 38 38
+=20
+ Pensez =E0 l'environnement avant d'imprimer ce mail / Please consider =
+the environment before printing
+=20
+
+-----Original Message-----
+From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
+Sent: mardi 28 avril 2009 19:00
+To: Daniel Jacques (Alten)
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai-help] ARM interrupt latency
 
 Daniel Jacques (Alten) wrote:
 > Hi all,
@@ -41,8 +64,8 @@ Daniel Jacques (Alten) wrote:
 > By adding some embedded spies, I notice high latencies between
 > interrupt task and user task (maximum 300=B5s, average 100=B5s).
 >=20
-> If I supposed inherent interrupt latency on ARM is around 30=B5s, I can=
-
+> If I supposed inherent interrupt latency on ARM is around 30=B5s, I =
+can
 > explain the latency between interrupt task and user task by the
 > important number of interrupts on my system (around 100 IRQ are
 > generated in each period of 20ms). It means than only 5 or 6 IRQ at
