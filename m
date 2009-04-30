@@ -1,9 +1,12 @@
+Message-ID: <49F961B4.60506@domain.hid>
+Date: Thu, 30 Apr 2009 10:30:44 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Thu, 30 Apr 2009 09:28:39 +0200
-Message-ID: <37f89760904300028q6406a795h6aeaa14de971f8b8@domain.hid>
-From: Marcel Soulot <msoulot@domain.hid>
-Content-Type: multipart/alternative; boundary=0016e6de04e11cdcf20468c0a5af
-Subject: [Xenomai-help] incompatible compact flash
+References: <37f89760904300028q6406a795h6aeaa14de971f8b8@domain.hid>
+In-Reply-To: <37f89760904300028q6406a795h6aeaa14de971f8b8@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] incompatible compact flash
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -13,37 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+To: Marcel Soulot <msoulot@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
---0016e6de04e11cdcf20468c0a5af
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Marcel Soulot wrote:
+> Hi,
+> 
+> My system uses a compact flash as mass memory.
+> I try to use a compact flash from "silicon drive II, SSD-C04G-4000, 4GB" and
+> the kernel patched with xenomai 2.4.6 doesn't want to start. I stay block in
+> "kernel booting" ...
+> As anyone have already encounter this kind of problem and find the reason ?
+> The thing is with the same software, I succeed to launch the kernel but with
+> a another CF "transcend, 4GB"
 
-Hi,
+Xenomai 2.4.6 is a version which you should not use. And it is not the
+latest version either. So, do you have the same issue with Xenomai 2.4.7  ?
 
-My system uses a compact flash as mass memory.
-I try to use a compact flash from "silicon drive II, SSD-C04G-4000, 4GB" and
-the kernel patched with xenomai 2.4.6 doesn't want to start. I stay block in
-"kernel booting" ...
-As anyone have already encounter this kind of problem and find the reason ?
-The thing is with the same software, I succeed to launch the kernel but with
-a another CF "transcend, 4GB"
+Are you sure the EXACT SAME kernel configuration with only Xenomai and
+Adeos I-pipe disabled does not have the same issue ?
 
-thanks,
-Marcel.
-
---0016e6de04e11cdcf20468c0a5af
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Hi,<br><br>My system uses a compact flash as mass memory.<br>I try to use a=
- compact flash from &quot;silicon drive II, SSD-C04G-4000, 4GB&quot; and th=
-e kernel patched with xenomai 2.4.6 doesn&#39;t want to start. I stay block=
- in &quot;kernel booting&quot; ...<br>
-As anyone have already encounter this kind of problem and find the reason ?=
- <br>The thing is with the same software, I succeed to launch the kernel bu=
-t with a another CF &quot;transcend, 4GB&quot; <br><br>thanks,<br>Marcel.<b=
-r>
-
---0016e6de04e11cdcf20468c0a5af--
+-- 
+                                                 Gilles.
 
