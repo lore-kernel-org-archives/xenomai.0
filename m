@@ -1,10 +1,11 @@
-Message-ID: <49FDFCC7.6000009@domain.hid>
-Date: Sun, 03 May 2009 22:21:27 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+From: Wolfgang Denk <wd@domain.hid>
+Mime-version: 1.0
+Content-type: text/plain; charset=ISO-8859-1
+In-reply-to: <49FDFCC7.6000009@domain.hid>
 References: <5D63919D95F87E4D9D34FF7748CE2C2A018D48CC@ARVMAIL1.mra.roland-man.biz>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A018D48CC@ARVMAIL1.mra.roland-man.biz>
-Content-Type: text/plain; charset=ISO-8859-1
+	<49FDFCC7.6000009@domain.hid>
+Date: Mon, 04 May 2009 09:23:04 +0200
+Message-Id: <20090504072304.A7E2483420E8@domain.hid>
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] Some problems with shared memory
 List-Id: Help regarding installation and common use of Xenomai
@@ -16,49 +17,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: roderik.wildenburg@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-roderik.wildenburg@domain.hid wrote:
-> I have two problems with shared memory and Xenomai 2.4.6 (2.4.25 PPC-ke=
-rnel):
->=20
-> 1.) If I don=B4t page align the size of shared memory (multiple of 4096=
-) I get the following error message :
-> "createshm mmap: No such device or address"
->=20
-> Detailed programm output of attached testprogram :
-> {
-> prompt # ./killtest -c &
-> [1] 104
-> prompt # createshm mmap: No such device or address
-> shmsize =3D 100000; errno : 6 =3D=3D Failed to create shm : -3
-> killtest user exit !
-> }
->=20
-> You can reproduce this effect by commenting out line 60 in the attached=
- source file and calling the program as follows:
->=20
-> prompt # killtest -c
+Dear Gilles,
 
-Hi,
+in message <49FDFCC7.6000009@domain.hid> you wrote:
+>
+> > 1.) If I don=B4t page align the size of shared memory (multiple of 40=
+96)
+> I get the following error message :
+> > "createshm mmap: No such device or address"
+...
+> Are you sure this issue is specific to xenomai, do not you have the sam=
+e
+> effect with plain Linux shared memories ?
 
-sorry for the late answer, your questions got somewhat forgotten.
+To avoid misunderstandings, we should first point  out  that  we  are
+here  in  fact *not* discussing classic shared memory in the sense of
+the SysV SHM code, but the creation of shared memory regions by using
+the mmap() system call.
 
-Are you sure this issue is specific to xenomai, do not you have the same
-effect with plain Linux shared memories ?
 
->=20
->=20
-> 2.) If I create 2 processes which use the same shared memory and I kill=
- the process which created the SHM before (!) the other process, which on=
-ly uses the SHM, the whole system stalls.
-> You can reproduce this with the attached testprogramm by calling it in =
-the following way :
+For completeness: shmget(2) *does* allow to allocate sizes which are
+not a multiple of pages sizes; but it then rounds up internally:
 
-This issue should have been fixed in the course of the 2.5-rc1 release.
+SHMGET(2) ... DESCRIPTION:
+
+        ... A new shared memory segment, with size equal to the value
+        of size rounded up to a multiple of PAGE_SIZE, is created ...
+
+As far as mmap()  is  concerned,  there  is  no  restriction  on  the
+"length"  parameter  (though  it  is  clear  that  internally this is
+rounded up to a multiple of pages, too, but only "length"  bytes  are
+visible to the user).
+
+The restrictions for page allignments affect the addr and offset
+paraemters only.
+
+
+To me it seems clear that mmap() in plain Linux and Xenomai behave
+differently.
+
+
+Best regards,
+
+Wolfgang Denk
 
 --=20
-					    Gilles.
-
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
+Let's say the docs present a simplified view of reality...    :-)
+                      - Larry Wall in  <6940@domain.hid>
 
