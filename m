@@ -1,14 +1,15 @@
-Date: Mon, 04 May 2009 16:20:55 +0200
-From: "Petr Cervenka" <grugh@domain.hid>
-MIME-Version: 1.0
-Message-ID: <200905041620.27243@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <200905041620.27243@domain.hid>
 References: <200905041613.30996@domain.hid> <200905041614.26154@domain.hid>
 	<200905041615.12763@domain.hid> <200905041616.11698@domain.hid>
 	<200905041617.10314@domain.hid> <200905041618.6444@domain.hid>
 	<200905041619.25024@domain.hid> <200905041620.27181@domain.hid>
-In-Reply-To: <200905041620.27181@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+	<200905041620.27243@domain.hid>
+Content-Type: text/plain
+Date: Mon, 04 May 2009 16:22:16 +0200
+Message-Id: <1241446936.26544.324.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] rtdm_event_timedwait returns -EINTR
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -19,17 +20,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Petr Cervenka <grugh@domain.hid>
 Cc: xenomai@xenomai.org
 
->Assuming you are using the native API (the POSIX interface would have to
->be adapted the same way), does the following patch help?
->
+On Mon, 2009-05-04 at 16:20 +0200, Petr Cervenka wrote:
+> >Assuming you are using the native API (the POSIX interface would have to
+> >be adapted the same way), does the following patch help?
+> >
+> 
+> The patch doesn't make any difference. It could be because I use mostly rtdm skin in the driver, not native. And the native skin example already resets syscall (but with wrong timeout).
+> 
+> Meanwhile I have found out the type of the signal, which interrupts my syscalls. It's SIGWINCH (or perhaps SIGHARDEN). What is exactly this signal used for, should it be interrupting syscalls?
 
-The patch doesn't make any difference. It could be because I use mostly rtdm skin in the driver, not native. And the native skin example already resets syscall (but with wrong timeout).
+This is a signal internally used by skins to force a thread in primary
+mode; it should not do interrupt syscalls, provided we set the sigaction
+flags properly.
 
-Meanwhile I have found out the type of the signal, which interrupts my syscalls. It's SIGWINCH (or perhaps SIGHARDEN). What is exactly this signal used for, should it be interrupting syscalls?
+> 
+> Petr
+> 
+-- 
+Philippe.
 
-Petr
 
 
