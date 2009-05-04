@@ -1,13 +1,14 @@
-Message-ID: <49FF08C4.40908@domain.hid>
-Date: Mon, 04 May 2009 08:24:52 -0700
-From: Thomas Lockhart <Thomas.Lockhart@domain.hid>
+Date: Mon, 04 May 2009 18:11:53 +0200
+From: "Petr Cervenka" <grugh@domain.hid>
 MIME-Version: 1.0
-References: <5D63919D95F87E4D9D34FF7748CE2C2A018D48CC@ARVMAIL1.mra.roland-man.biz>	<49FDFCC7.6000009@domain.hid>
-	<20090504072304.A7E2483420E8@domain.hid>
-In-Reply-To: <20090504072304.A7E2483420E8@domain.hid>
-Content-Type: multipart/alternative;
-	boundary="------------030304040909060501070002"
-Subject: Re: [Xenomai-help] Some problems with shared memory
+Message-ID: <200905041811.11867@domain.hid>
+References: <200905041613.30996@domain.hid> <200905041614.26154@domain.hid>
+	<1241446936.26544.324.camel@domain.hid>
+	<1241447342.26544.329.camel@domain.hid>
+In-Reply-To: <1241447342.26544.329.camel@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-help] rtdm_event_timedwait returns -EINTR
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,69 +18,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Denk <wd@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------030304040909060501070002
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+>
+>Read: it must interrupt Xenomai syscalls internally but the latter
+>should always be silently restarted, by properly setting the SA_RESTART
+>bit in the sigaction flags for that signal.
+>
+>Not allowing Linux to interrupt blocking Xenomai syscalls to process
+>pending signals would basically kill GDB support, and beyond this create
+>a very fragile situation wrt signal handling and Xenomai, which is the
+>last thing we would want to do.
+>
+>Philippe.
+>
 
-> >> 1.) If I don=B4t page align the size of shared memory (multiple of
-> >> 4096)...
->  The restrictions for page allignments affect the addr and offset
->  paraemters only. To me it seems clear that mmap() in plain Linux and
->  Xenomai behave differently.
+I have found following problems / errors:
+--------------------------------------------------------------
+1) rtdm_event_timedwait() in ioctl handler is not automatically internally restarted (driver: rtdm, app. tasks: native)
 
-Sorry for not having the start of the thread. I'm not sure if it is=20
-helpful to note that when I implemented memory mapped "device drivers"=20
-for our system I had to align the address and offset to the page size=20
-before the call to mmap would succeed. That was with plain Linux and the=20
-driver also works with Xenomai.
+2) computer hangs, when I call in ioctl handler something like:
+do {
+  res = rtdm_event_timedwait(&event, timeout, NULL);
+} while (res == -EINTR);
+this could have perhaps some relevance: https://mail.gna.org/public/xenomai-help/2008-11/msg00025.html
 
-                                      - Tom
+3) rt_event_wait() in application is restarted always with the same relative timeout. it could run forever.
 
---=20
-Thomas Lockhart
-Supervisor, Distributed and Real-time Group
-Instrument Software and Science Data Systems
-Caltech/JPL
+problems with version 2.5-rc1:
+-----------------------------------------------
+1) function rt_task_shadow always returns -EFAULT
 
+2) when resizing window with latency test running, it prints out "Not SIGSHADOW !". But it should be SIGSHADOW (in my opinion).
 
---------------030304040909060501070002
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Petr
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
-</head>
-<body bgcolor="#ffffff" text="#000000">
-<span style="white-space: pre;">&gt;&gt;&gt; 1.) If I don&acute;t page align
-the size of shared memory (multiple of <br>
-&gt;&gt;&gt; 4096)...<br>
-&gt; The restrictions for page allignments affect the addr and offset <br>
-&gt; paraemters only. To me it seems clear that mmap() in plain Linux
-and<br>
-&gt; Xenomai behave differently.</span><br>
-<br>
-Sorry for not having the start of the thread. I'm not sure if it is
-helpful to note that when I implemented memory mapped "device drivers"
-for our system I had to align the address and offset to the page size
-before the call to mmap would succeed. That was with plain Linux and
-the driver also works with Xenomai.<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Tom<br>
-<br>
--- <br>
-Thomas Lockhart<br>
-Supervisor, Distributed and Real-time Group<br>
-Instrument Software and Science Data Systems<br>
-Caltech/JPL<br>
-<br>
-</body>
-</html>
-
---------------030304040909060501070002--
 
