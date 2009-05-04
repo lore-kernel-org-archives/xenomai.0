@@ -1,15 +1,10 @@
 MIME-Version: 1.0
-In-Reply-To: <37f89760904300158v16bacc49xd6da180923738f96@domain.hid>
-References: <37f89760904300028q6406a795h6aeaa14de971f8b8@domain.hid>
-	<49F961B4.60506@domain.hid>
-	<37f89760904300139t560fbdd6rb7bae9bc27bb5cf9@domain.hid>
-	<49F9644A.6080408@domain.hid>
-	<37f89760904300158v16bacc49xd6da180923738f96@domain.hid>
-Date: Mon, 4 May 2009 10:55:38 +0200
-Message-ID: <37f89760905040155g70d67afcybd10299011616e75@domain.hid>
-From: Marcel Soulot <msoulot@domain.hid>
-Content-Type: multipart/alternative; boundary=001636c598f385443704691253e3
-Subject: Re: [Xenomai-help] incompatible compact flash
+Date: Mon, 4 May 2009 13:59:00 +0200
+Message-ID: <ff1d78710905040459u56772812kb95fb6083a2ee0c5@domain.hid>
+From: Steven Kauffmann <steven.kauffmann@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Kernel lockup when shared IRQ is enabled
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,87 +14,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
---001636c598f385443704691253e3
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Hi all,
 
-hi,
+As some other people on this mailing list, we also have system lockups
+with the latest 2.4 branch. For some people the problems seems to be
+solved when using the adeos-ipipe-2.6.28.9-x86-2.2-07.patch. So we
+tried that but the system still freezes. The console output on another
+machine reports nothing when the system freezes but at computer
+startup we found this line:
 
-I come back with my memory issue. So I try with the kernel version patch
-with the last version of Xenomai 4.7 and the result is same the kernel is
-stuck at the loading time.
+Xenomai: xnintr_shirq_handler: IRQ11 not handled. Disabling IRQ line.
 
-I try with another memory from the same manufactor but another serie
-SSD-C04GI-3500. It works normally; the kernel patched with Xenomai 4.7 is
-loaded and run.
+lspci shows us that the peak CAN card and the ethernet controller use
+the same IRQ.
 
-I'm using the kernel 2.6.26.7.
-Any idea of what's going wrong with this memory SiliconDrive II
-SSD-C04G-4000 from Silicon Systems?
+$ lspci -v
 
-thanks,
-Marcel.
+02:00.0 Ethernet controller: Intel Corporation 82573L Gigabit Ethernet
+Controller
+        Subsystem: Intel Corporation Unknown device 0000
+        Flags: bus master, fast devsel, latency 0, IRQ 11
+        Memory at d0000000 (32-bit, non-prefetchable) [size=128K]
+        I/O ports at c000 [size=32]
+        Capabilities: <access denied>
+
+04:05.0 Network controller: Unknown device 001c:0001 (rev 02)
+        Subsystem: Unknown device 001c:0004
+        Flags: medium devsel, IRQ 11
+        Memory at d0100000 (32-bit, non-prefetchable) [size=64K]
+        Memory at d0110000 (32-bit, non-prefetchable) [size=64K]
+
+Every time we try to bring up the ethernet device the system freezes.
+Is this related with the above kernel log message and that both cards
+use the same IRQ?
+
+Disabling the shared IRQ option (XENO_OPT_SHIRQ) solved the problem of
+the system lockups but this option is required in order to use the
+peak CAN card.
 
 
-2009/4/30 Marcel Soulot <msoulot@domain.hid>
+Regards
 
-> yes
->
-> 2009/4/30 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->
->> Marcel Soulot wrote:
->>
->> > Hi,
->> >
->> > I'm able to run the kernel without Xenomai and Adeos I-pipe.
->>
->> The question: is it exactly the same kernel configuration with only
->> Xenomai and I-pipe disabled ?
->>
->> --
->>                                                  Gilles.
->>
->
->
-
---001636c598f385443704691253e3
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-hi,<br><br>I come back with my memory issue. So I try with the kernel versi=
-on patch with the last version of Xenomai 4.7 and the result is same the ke=
-rnel is stuck at the loading time.<br><br>I try with another memory from th=
-e same manufactor but another serie SSD-C04GI-3500. It works normally; the =
-kernel patched with Xenomai 4.7 is loaded and run.<br>
-<br>I&#39;m using the kernel 2.6.26.7.<br>Any idea of what&#39;s going wron=
-g with this memory SiliconDrive II SSD-C04G-4000 from Silicon Systems?<br><=
-br>thanks,<br>Marcel.<br>=A0 =A0 <br><br><div class=3D"gmail_quote">2009/4/=
-30 Marcel Soulot <span dir=3D"ltr">&lt;<a href=3D"mailto:msoulot@domain.hid"=
->msoulot@domain.hid</a>&gt;</span><br>
-<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
-204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">yes<br><br><div c=
-lass=3D"gmail_quote"><div class=3D"im">2009/4/30 Gilles Chanteperdrix <span=
- dir=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org" target=
-=3D"_blank">gilles.chanteperdrix@xenomai.org</a>&gt;</span><br>
-</div><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb=
-(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-<div>Marcel Soulot wrote:<div><div></div><div class=3D"h5"><br>
-&gt; Hi,<br>
-&gt;<br>
-&gt; I&#39;m able to run the kernel without Xenomai and Adeos I-pipe.<br>
-<br>
-</div></div></div><div><div></div><div class=3D"h5">The question: is it exa=
-ctly the same kernel configuration with only<br>
-Xenomai and I-pipe disabled ?<br>
-<br>
---<br>
-<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 Gilles.<br>
-</font></div></div></blockquote></div><br>
-</blockquote></div><br>
-
---001636c598f385443704691253e3--
+Steven
 
