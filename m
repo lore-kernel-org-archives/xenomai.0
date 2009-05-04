@@ -1,14 +1,15 @@
-Message-ID: <49FEAC15.5060502@domain.hid>
-Date: Mon, 04 May 2009 10:49:25 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5D63919D95F87E4D9D34FF7748CE2C2A018D48CC@ARVMAIL1.mra.roland-man.biz>
-	<49FDFCC7.6000009@domain.hid>
-	<20090504072304.A7E2483420E8@domain.hid>
-In-Reply-To: <20090504072304.A7E2483420E8@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Some problems with shared memory
+In-Reply-To: <37f89760904300158v16bacc49xd6da180923738f96@domain.hid>
+References: <37f89760904300028q6406a795h6aeaa14de971f8b8@domain.hid>
+	<49F961B4.60506@domain.hid>
+	<37f89760904300139t560fbdd6rb7bae9bc27bb5cf9@domain.hid>
+	<49F9644A.6080408@domain.hid>
+	<37f89760904300158v16bacc49xd6da180923738f96@domain.hid>
+Date: Mon, 4 May 2009 10:55:38 +0200
+Message-ID: <37f89760905040155g70d67afcybd10299011616e75@domain.hid>
+From: Marcel Soulot <msoulot@domain.hid>
+Content-Type: multipart/alternative; boundary=001636c598f385443704691253e3
+Subject: Re: [Xenomai-help] incompatible compact flash
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,54 +19,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Denk <wd@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Wolfgang Denk wrote:
-> Dear Gilles,
->=20
-> in message <49FDFCC7.6000009@domain.hid> you wrote:
->>> 1.) If I don=B4t page align the size of shared memory (multiple of 40=
-96)
->> I get the following error message :
->>> "createshm mmap: No such device or address"
-> ...
->> Are you sure this issue is specific to xenomai, do not you have the sa=
-me
->> effect with plain Linux shared memories ?
->=20
-> To avoid misunderstandings, we should first point  out  that  we  are
-> here  in  fact *not* discussing classic shared memory in the sense of
-> the SysV SHM code, but the creation of shared memory regions by using
-> the mmap() system call.
+--001636c598f385443704691253e3
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-Yes, obviously.
+hi,
 
->=20
->=20
-> For completeness: shmget(2) *does* allow to allocate sizes which are
-> not a multiple of pages sizes; but it then rounds up internally:
->=20
-> SHMGET(2) ... DESCRIPTION:
->=20
->         ... A new shared memory segment, with size equal to the value
->         of size rounded up to a multiple of PAGE_SIZE, is created ...
->=20
-> As far as mmap()  is  concerned,  there  is  no  restriction  on  the
-> "length"  parameter  (though  it  is  clear  that  internally this is
-> rounded up to a multiple of pages, too, but only "length"  bytes  are
-> visible to the user).
->=20
-> The restrictions for page allignments affect the addr and offset
-> paraemters only.
->=20
->=20
-> To me it seems clear that mmap() in plain Linux and Xenomai behave
-> differently.
+I come back with my memory issue. So I try with the kernel version patch
+with the last version of Xenomai 4.7 and the result is same the kernel is
+stuck at the loading time.
 
-It will be clear to me when someone will have run the tests.
+I try with another memory from the same manufactor but another serie
+SSD-C04GI-3500. It works normally; the kernel patched with Xenomai 4.7 is
+loaded and run.
 
---=20
-					    Gilles.
+I'm using the kernel 2.6.26.7.
+Any idea of what's going wrong with this memory SiliconDrive II
+SSD-C04G-4000 from Silicon Systems?
 
+thanks,
+Marcel.
+
+
+2009/4/30 Marcel Soulot <msoulot@domain.hid>
+
+> yes
+>
+> 2009/4/30 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>
+>> Marcel Soulot wrote:
+>>
+>> > Hi,
+>> >
+>> > I'm able to run the kernel without Xenomai and Adeos I-pipe.
+>>
+>> The question: is it exactly the same kernel configuration with only
+>> Xenomai and I-pipe disabled ?
+>>
+>> --
+>>                                                  Gilles.
+>>
+>
+>
+
+--001636c598f385443704691253e3
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+hi,<br><br>I come back with my memory issue. So I try with the kernel versi=
+on patch with the last version of Xenomai 4.7 and the result is same the ke=
+rnel is stuck at the loading time.<br><br>I try with another memory from th=
+e same manufactor but another serie SSD-C04GI-3500. It works normally; the =
+kernel patched with Xenomai 4.7 is loaded and run.<br>
+<br>I&#39;m using the kernel 2.6.26.7.<br>Any idea of what&#39;s going wron=
+g with this memory SiliconDrive II SSD-C04G-4000 from Silicon Systems?<br><=
+br>thanks,<br>Marcel.<br>=A0 =A0 <br><br><div class=3D"gmail_quote">2009/4/=
+30 Marcel Soulot <span dir=3D"ltr">&lt;<a href=3D"mailto:msoulot@domain.hid"=
+>msoulot@domain.hid</a>&gt;</span><br>
+<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
+204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">yes<br><br><div c=
+lass=3D"gmail_quote"><div class=3D"im">2009/4/30 Gilles Chanteperdrix <span=
+ dir=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org" target=
+=3D"_blank">gilles.chanteperdrix@xenomai.org</a>&gt;</span><br>
+</div><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb=
+(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+<div>Marcel Soulot wrote:<div><div></div><div class=3D"h5"><br>
+&gt; Hi,<br>
+&gt;<br>
+&gt; I&#39;m able to run the kernel without Xenomai and Adeos I-pipe.<br>
+<br>
+</div></div></div><div><div></div><div class=3D"h5">The question: is it exa=
+ctly the same kernel configuration with only<br>
+Xenomai and I-pipe disabled ?<br>
+<br>
+--<br>
+<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 Gilles.<br>
+</font></div></div></blockquote></div><br>
+</blockquote></div><br>
+
+--001636c598f385443704691253e3--
 
