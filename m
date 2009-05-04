@@ -1,15 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200905041539.35371.smolorz@domain.hid>
-References: <ff1d78710905040459u56772812kb95fb6083a2ee0c5@domain.hid>
-	<200905041409.01179.smolorz@domain.hid>
-	<ff1d78710905040630r754df1ffme2f56f51fada6302@domain.hid>
-	<200905041539.35371.smolorz@domain.hid>
-Content-Type: text/plain
-Date: Mon, 04 May 2009 15:44:13 +0200
-Message-Id: <1241444653.26544.323.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Kernel lockup when shared IRQ is enabled
+Date: Mon, 04 May 2009 16:20:55 +0200
+From: "Petr Cervenka" <grugh@domain.hid>
+MIME-Version: 1.0
+Message-ID: <200905041620.27243@domain.hid>
+References: <200905041613.30996@domain.hid> <200905041614.26154@domain.hid>
+	<200905041615.12763@domain.hid> <200905041616.11698@domain.hid>
+	<200905041617.10314@domain.hid> <200905041618.6444@domain.hid>
+	<200905041619.25024@domain.hid> <200905041620.27181@domain.hid>
+In-Reply-To: <200905041620.27181@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-help] rtdm_event_timedwait returns -EINTR
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,49 +19,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sebastian Smolorz <smolorz@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-On Mon, 2009-05-04 at 15:39 +0200, Sebastian Smolorz wrote:
-> Steven Kauffmann wrote:
-> > 2009/5/4 Sebastian Smolorz <smolorz@domain.hid>:
-> > > Steven Kauffmann wrote:
-> > >> Hi all,
-> > >>
-> > >> As some other people on this mailing list, we also have system lockups
-> > >> with the latest 2.4 branch. For some people the problems seems to be
-> > >> solved when using the adeos-ipipe-2.6.28.9-x86-2.2-07.patch. So we
-> > >> tried that but the system still freezes. The console output on another
-> > >> machine reports nothing when the system freezes but at computer
-> > >> startup we found this line:
-> > >>
-> > >> Xenomai: xnintr_shirq_handler: IRQ11 not handled. Disabling IRQ line.
-> > >>
-> > >> lspci shows us that the peak CAN card and the ethernet controller use
-> > >> the same IRQ.
-> > >
-> > > Generally, it is problematic to share IRQs between RT and NRT devices.
-> > > You better try to decouple these two devices WRT IRQ sharing.
-> > >
-> > >> Every time we try to bring up the ethernet device the system freezes.
-> > >> Is this related with the above kernel log message and that both cards
-> > >> use the same IRQ?
-> > >
-> > > Are you sure that the system freezes? Do you happen to be logged in over
-> > > the net?
-> >
-> > Yes I'm sure. I cannot ping to the system anymore ...
-> 
-> That is not a sign of a freezed system. The ping does not get replied because 
-> the ethernet IRQ is not handled any more. I bet the system continues to work. 
-> You can check this by using a serial console or a local keyboard.
+>Assuming you are using the native API (the POSIX interface would have to
+>be adapted the same way), does the following patch help?
+>
 
-Maybe an interrupt storm kills the board as soon as interrupts are
-enabled again in case the ethernet IRQ is level sensitive, since the
-last event was not handled.
+The patch doesn't make any difference. It could be because I use mostly rtdm skin in the driver, not native. And the native skin example already resets syscall (but with wrong timeout).
 
--- 
-Philippe.
+Meanwhile I have found out the type of the signal, which interrupts my syscalls. It's SIGWINCH (or perhaps SIGHARDEN). What is exactly this signal used for, should it be interrupting syscalls?
 
+Petr
 
 
