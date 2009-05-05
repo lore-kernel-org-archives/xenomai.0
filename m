@@ -1,12 +1,13 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <000301c9cef5$dea192d0$9be4b870$@skku.ac.kr>
-References: <000301c9cef5$dea192d0$9be4b870$@skku.ac.kr>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 07 May 2009 11:40:40 +0200
-Message-Id: <1241689240.26544.719.camel@domain.hid>
+In-Reply-To: <4A003DC3.4060007@domain.hid>
+References: <OF9CF4E5FB.BA5862BC-ONC12575AD.00275D59-C12575AD.00285FDC@datacon.at>
+	<4A003DC3.4060007@domain.hid>
+Content-Type: text/plain
+Date: Tue, 05 May 2009 15:58:04 +0200
+Message-Id: <1241531884.26544.369.camel@domain.hid>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] FT245 driver
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] help with xenomai configuration
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,33 +17,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?UTF-8?Q?=EB=B0=95=EC=9E=AC=ED=9B=88?= <lordpark@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Thu, 2009-05-07 at 18:26 +0900, =EB=B0=95=EC=9E=AC=ED=9B=88 wrote:
-> Hello,
->=20
-> =20
->=20
-> I installed USB4RT driver successfully. But when I loaded the FT245
-> driver, there is no response.
->=20
-> I found some QnA about it. In the QnA, The driver was not developed
-> completely, the working in progress.
->=20
-> when can we use rt-driver for ft245?
->=20
+On Tue, 2009-05-05 at 15:23 +0200, Gilles Chanteperdrix wrote:
+> henning.richter@domain.hid wrote:
+> > 
+> > Hi,
+> > 
+> > I use a KUbuntu 8.10 with kernel 2.6.27.7, xenomai 2.4.6.1 and the latest
+> > rtnet version.
+> > I set up the EthercatMasterLibrary and send some Frames (size of ~1200
+> > byte) cylical to my Beckhoff devices.
+> > Measuring the time (via rt_read_timer-function of timer.h) handing the
+> > frames over to the NIC last between 5 and 10 us. (its the low_level_send)
+> > Measuring the time at the application layer is takes ~250 - 350 us. So I am
+> > loosing quite a lot time in between.
+> > 
+> > Maybe there is sth. wrong with my xenomai configuration.
+> > I run the 'xeno-test' (results below) but the test stop at generation load.
+> 
+> Yes, xeno-test has a known issue when run without bash, and ubuntu no
+> longer uses bash by default. So, try running xeno-test with bash.
+> 
 
-Sorry, I don't quite understand your question.
+Gilles, we have an ongoing series of recurring issues with xeno-test
+that pleads for a reshuffle. I would really like to see something
+simpler in there, which may not cover all aspects that xeno-test
+currently addresses, but which would at least work for all setups, and
+particularly embedded ones.
 
-> =20
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
---=20
+We should rather see xeno-test as a simple validation tool to dig out
+most common latency issues due to bad kernel settings. Further
+validation via long running stress tests would be better accomplished
+via the LTP-based suite we use internally to validate ports, within
+standalone mini-rootfs; maybe at some point we could provide those
+pre-built rootfs for download, for that particular purpose.
+
+> Alternatively, you can run the latency test directly. Preferably using
+> the same period as the problematic one with EML.
+> 
+-- 
 Philippe.
 
 
