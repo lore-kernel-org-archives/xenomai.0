@@ -1,11 +1,12 @@
-Message-ID: <OF90B43322.3740E337-ONC12575AD.00480F2D-C12575AD.0048903F@datacon.at>
-From: henning.richter@domain.hid
-Date: Tue, 5 May 2009 15:12:35 +0200
+Message-ID: <4A003DC3.4060007@domain.hid>
+Date: Tue, 05 May 2009 15:23:15 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-type: multipart/alternative; 
-	Boundary="0__=4EBBFF3EDFDB89BD8f9e8a93df938690918c4EBBFF3EDFDB89BD"
-Content-Disposition: inline
-Subject: [Xenomai-help]  gatekeeper/0
+References: <OF9CF4E5FB.BA5862BC-ONC12575AD.00275D59-C12575AD.00285FDC@datacon.at>
+In-Reply-To: <OF9CF4E5FB.BA5862BC-ONC12575AD.00275D59-C12575AD.00285FDC@datacon.at>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] help with xenomai configuration
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,34 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: henning.richter@domain.hid
+Cc: xenomai@xenomai.org
 
---0__=4EBBFF3EDFDB89BD8f9e8a93df938690918c4EBBFF3EDFDB89BD
-Content-type: text/plain; charset=US-ASCII
+henning.richter@domain.hid wrote:
+> 
+> Hi,
+> 
+> I use a KUbuntu 8.10 with kernel 2.6.27.7, xenomai 2.4.6.1 and the latest
+> rtnet version.
+> I set up the EthercatMasterLibrary and send some Frames (size of ~1200
+> byte) cylical to my Beckhoff devices.
+> Measuring the time (via rt_read_timer-function of timer.h) handing the
+> frames over to the NIC last between 5 and 10 us. (its the low_level_send)
+> Measuring the time at the application layer is takes ~250 - 350 us. So I am
+> loosing quite a lot time in between.
+> 
+> Maybe there is sth. wrong with my xenomai configuration.
+> I run the 'xeno-test' (results below) but the test stop at generation load.
 
+Yes, xeno-test has a known issue when run without bash, and ubuntu no
+longer uses bash by default. So, try running xeno-test with bash.
 
-Hi,
+Alternatively, you can run the latency test directly. Preferably using
+the same period as the problematic one with EML.
 
-running a xenomai task in which I am sending a single Frame (size ~500
-byte) from my EtherCAT Master to some Beckhoff slaves has latencies around
-200 us.
-While running that task, top shows that gatekeeper/0 (with RT priority) has
-30% CPU usage.
-What is the task of this gatekeeper and can this cause my high latencies?
-
-Henning
---0__=4EBBFF3EDFDB89BD8f9e8a93df938690918c4EBBFF3EDFDB89BD
-Content-type: text/html; charset=US-ASCII
-Content-Disposition: inline
-
-<html><body>
-<p><font face="Arial">Hi,</font><br>
-<br>
-<font face="Arial">running a xenomai task in which I am sending a single Frame (size ~500 byte) from my EtherCAT Master to some Beckhoff slaves has latencies around 200 us.</font><br>
-<font face="Arial">While running that task, top shows that gatekeeper/0 (with RT priority) has 30% CPU usage. </font><br>
-<font face="Arial">What is the task of this gatekeeper and can this cause my high latencies?</font><br>
-<br>
-<font face="Arial">Henning</font></body></html>
---0__=4EBBFF3EDFDB89BD8f9e8a93df938690918c4EBBFF3EDFDB89BD--
-
+-- 
+                                                 Gilles.
 
