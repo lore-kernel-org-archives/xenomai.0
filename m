@@ -1,12 +1,12 @@
-Message-ID: <4A0040D9.60907@domain.hid>
-Date: Tue, 05 May 2009 15:36:25 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-References: <OF90B43322.3740E337-ONC12575AD.00480F2D-C12575AD.0048903F@datacon.at>
-In-Reply-To: <OF90B43322.3740E337-ONC12575AD.00480F2D-C12575AD.0048903F@datacon.at>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] gatekeeper/0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 5 May 2009 15:44:08 +0200
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A0198FCE1@domain.hid>
+From: <roderik.wildenburg@domain.hid>
+Subject: [Xenomai-help] sem_wait increments fault counter
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,30 +16,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: henning.richter@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-henning.richter@domain.hid wrote:
-> Hi,
-> 
-> running a xenomai task in which I am sending a single Frame (size ~500
-> byte) from my EtherCAT Master to some Beckhoff slaves has latencies around
-> 200 us.
-> While running that task, top shows that gatekeeper/0 (with RT priority) has
-> 30% CPU usage.
-> What is the task of this gatekeeper and can this cause my high latencies?
+Dear Gurus,
 
-The gatekeeper is used when a taks is migrating from secondary mode to
-primary mode. The gatekeeper itself can not cause the high latencies,
-but the fact that a task runs in secondary mode can.
+every time I call sem_wait a fault counter is incremented (TRAP 0).
+sem_wait itself does not return an error :
 
-To check if this is what happens, check the MSW column in
-/proc/xenomai/stat for the thread which has latencies issues. If MSW is
-increasing then you have a problem.
+uc101 # cat /proc/xenomai/faults
+TRAP         CPU0
+  0:            1    (Data or instruction access)
+  1:            0    (Alignment)
+  2:            0    (Altivec unavailable)
+  3:            0    (Program check exception)
+  4:            0    (Machine check exception)
+  5:            0    (Unknown)
+  6:            0    (Instruction breakpoint)
+  7:            0    (Run mode exception)
+  8:            0    (Single-step exception)
+  9:            0    (Non-recoverable exception)
+ 10:            0    (Software emulation)
+ 11:            0    (Debug)
+ 12:            0    (SPE)
+ 13:            0    (Altivec assist)
 
-To find where your thread switches to secondary mode, use the technique
-demonstrated in examples/native/sigxcpu.c.
+what could be the reason for this? Is this serious?
+I have to add that sem_wait is called form a Linux-Prozess (linked with
+xenomai libraries, but no xenomai thread is created) when this happens.
 
--- 
-                                                 Gilles.
+System: PPC Linux 2.4.25; Xenomai 2.3.5=20
+
+Thank you for your help
+Roderik
+
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
