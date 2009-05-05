@@ -1,12 +1,11 @@
-Message-ID: <4A00371C.7050304@domain.hid>
-Date: Tue, 05 May 2009 14:54:52 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <OF90B43322.3740E337-ONC12575AD.00480F2D-C12575AD.0048903F@datacon.at>
+From: henning.richter@domain.hid
+Date: Tue, 5 May 2009 15:12:35 +0200
 MIME-Version: 1.0
-References: <1320079365.6465251241525593071.JavaMail.root@domain.hid>
-In-Reply-To: <1320079365.6465251241525593071.JavaMail.root@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Searching for tutorial
+Content-type: multipart/alternative; 
+	Boundary="0__=4EBBFF3EDFDB89BD8f9e8a93df938690918c4EBBFF3EDFDB89BD"
+Content-Disposition: inline
+Subject: [Xenomai-help]  gatekeeper/0
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,31 +15,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: btirefort@domain.hid
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-btirefort@domain.hid wrote:
-> Hello thank you for your mesage
-> 
-> I'd find a good help for understand basics rules for RT development (with exemples)
-> 
-> lesson is in french.
-> 
-> 
-> You can find it here :
-> 
-> http://eavr.u-strasbg.fr/wiki/index.php/Syst%C3%A8mes_temps-r%C3%A9el_et_syst%C3%A8mes_embarqu%C3%A9s
+--0__=4EBBFF3EDFDB89BD8f9e8a93df938690918c4EBBFF3EDFDB89BD
+Content-type: text/plain; charset=US-ASCII
+
 
 Hi,
 
-I have just read that, and find it fine. However, I find that the code
-samples do not check the return value of the Xenomai calls. This is a
-really bad habit, and I find important for a programming course to teach
-the good habit of always checking the return values, not only of Xenomai
-services but of all services which do not return void.
+running a xenomai task in which I am sending a single Frame (size ~500
+byte) from my EtherCAT Master to some Beckhoff slaves has latencies around
+200 us.
+While running that task, top shows that gatekeeper/0 (with RT priority) has
+30% CPU usage.
+What is the task of this gatekeeper and can this cause my high latencies?
 
-Regards.
+Henning
+--0__=4EBBFF3EDFDB89BD8f9e8a93df938690918c4EBBFF3EDFDB89BD
+Content-type: text/html; charset=US-ASCII
+Content-Disposition: inline
 
--- 
-                                                 Gilles.
+<html><body>
+<p><font face="Arial">Hi,</font><br>
+<br>
+<font face="Arial">running a xenomai task in which I am sending a single Frame (size ~500 byte) from my EtherCAT Master to some Beckhoff slaves has latencies around 200 us.</font><br>
+<font face="Arial">While running that task, top shows that gatekeeper/0 (with RT priority) has 30% CPU usage. </font><br>
+<font face="Arial">What is the task of this gatekeeper and can this cause my high latencies?</font><br>
+<br>
+<font face="Arial">Henning</font></body></html>
+--0__=4EBBFF3EDFDB89BD8f9e8a93df938690918c4EBBFF3EDFDB89BD--
+
 
