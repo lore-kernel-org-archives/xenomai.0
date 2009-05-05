@@ -1,15 +1,9 @@
-Date: Mon, 27 Apr 2009 15:30:45 -0700 (PDT)
-From: Martin Shepherd <mcs@domain.hid>
-In-Reply-To: <1240487288.6990.71.camel@domain.hid>
-Message-ID: <Pine.LNX.4.64.0904271229410.719@domain.hid>
-References: <b131c9f0904230220j3f0a7d7ej9172ee4fb48aa69c@domain.hid>
-	<1240479431.6990.30.camel@domain.hid>
-	<1240482629.7599.45.camel@domain.hid>
-	<1240487288.6990.71.camel@domain.hid>
+Message-ID: <846584.44873.qm@domain.hid>
+Date: Mon, 4 May 2009 22:45:42 -0700 (PDT)
+From: luan dinh <dinhluanbmt@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Subject: [Xenomai-help] Lockups on a new Celeron-430 system detected and
-	resolved.
+Content-Type: multipart/alternative; boundary="0-1107557562-1241502342=:44873"
+Subject: [Xenomai-help] shared library in xenomai ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,82 +13,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I have just installed Xenomai 2.5-rc1 on a new computer that has a new
-Celeron-430 1.8GHz processor on a Foxconn G31AX motherboard.
-Initially I experienced similar lockup problems with this setup as I
-previously reported for an ancient 850MHz AMD Athlon computer. As with
-the AMD Athlon, fixing the lockup problem required me to turn off both
-HPET_TIMER and X86_PM_TIMER.
 
-I initially left both HPET_TIMER and X86_PM_TIMER enabled, because I'd
-guessed that the problem that I'd previously experienced was specific
-to the older system.  However on trying out kernel 2.6.29.1, patched
-with Xenomai 2.5-rc1, and ipipe 2.6.29.1-x86-2.3-01, on the new
-system, I found that when running dd if=/dev/zero of=/dev/null, it
-behaved almost identically to the older system. The only apparent
-difference was that the clock on the new system didn't appear to lose
-any time during the lockup periods. Since that initial test, I have
-tried all 4 possible combinations of HPET_TIMER and X86_PM_TIMER, and
-have thus verified that both of these options must be turned off to
-prevent the lockups.
+--0-1107557562-1241502342=:44873
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-I'm wondering why nobody else appears to have encountered this
-problem. I wonder if this could be related to turning off "Symmetric
-multi-processing support", and turning on both "Local APIC support on
-uniprocessors", and "IO-APIC support on uniprocessors".
+Dear all.
+i finished build a program and run it in xenomai. now i want to build it as=
+ shared library.
+i use following commands=A0 to create library file (.so ) from object file =
+(.o)   =20
+    gcc -shared -Wl,-soname,libctest.so.1 -o libctest.so.1.0   *.o
+    mv libctest.so.1.0 /opt/lib
+    ln -sf /opt/lib/libctest.so.1.0 /opt/lib/libctest.so
+    ln -sf /opt/lib/libctest.so.1.0 /opt/lib/libctest.so.1
+after that i write TEST program and use fuctions which my library
+support. i can build and run TEST program but some functions in
+my library doen't work ....
+how to build and use my shared library in xenomai?
+Thanks for any help.
+Luan Dinh
 
-For the sake of anybody else who does come across this thread on
-encountering similar problems, note that in order to turn off
-X86_PM_TIMER, one has to first go to the "General setup" kernel
-configuration page, enable the "Configure standard kernel features
-(for small systems)" option, then go to the "Power management and ACPI
-options" page, and under its "ACPI (Advanced Configration and Power
-Interface) Support)" page, disable "Power Management Timer
-Support". To turn off the HPET timer as well, go to the "Processor
-type and features" page, and disable the "HPET Timer Support" option.
+=0A=0A=0A      
+--0-1107557562-1241502342=:44873
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-As with the old Athlon system, when either of the above timer options
-was enabled, the new Celeron system reliably locked up within about 30
-seconds of starting to run dd if=/dev/zero of=/dev/null. In the
-periods before it locked up, top always showed that dd was getting
-only a few percent CPU time, with no other processes running, even
-though top also indicated that the CPU was 100% utilized. When it then
-locked up, top froze, the system was unresponsive to any other input,
-and pings from other computers failed to elicit replies from the
-computer. However, during the lockups, dd apparently continued to run,
-because when it was bounded with the count= option, although it
-blocked out all other processes, it always finished in the expected
-amount of time, and then the system returned to normal. Curiously,
-when dd was run during the latency phase of xeno-test, the system
-didn't lock up at all, and top showed dd getting 98% of the CPU
-time. However the latency program displayed bogus values of between
--1.0 and 1.0 micro-seconds. When dd was not running, the latency
-measurements showed more believable values of around 20 usec, although
-as shown below, these were much higher than this system is capable of
-with the problematic timer options turned off. When the switch test
-part of xeno-test was running, the system did lock up. In this case, I
-ran xeno-test with a background load that consisted of a script that
-ran dd bounded to about 35 seconds, then slept for 5 seconds, then ran
-dd for another 35 seconds etc. During the 5 second pauses, the switch
-test went fine. After each pause, when dd was running, the number of
-context switches that were reported, climbed until reaching around
-28000 per second. At that point the system would lock up until the
-next 5 second pause, at which point the results would again be around
-28000 per second for a few seconds, then quickly decrease until dd
-started again, then again rise towards that figure before locking up.
-
-With both of the problematic timer options turned off, the dd workload
-caused no problems. In this case, xeno-test reported a maximum latency
-of 6.5us for the periodic user-mode task, 4.0us for the in-kernel
-periodic task, and 1.6us for the in-kernel timer handler. During the
-switchtest phase, there were between 7400 and 8944 context switches
-per second. So if I understand this correctly, it looks as though it
-should be possible for a Xenomai task running in user-space, to always
-start responding to an interrupt within about 140us. I will verify
-this as soon as I've written a driver for the digital I/O cards that I
-have here.
-
-Martin
+<table cellspacing=3D"0" cellpadding=3D"0" border=3D"0" ><tr><td valign=3D"=
+top" style=3D"font: inherit;"><font size=3D"3"><span style=3D"font-family: =
+times new roman,new york,times,serif;">Dear all.</span><br style=3D"font-fa=
+mily: times new roman,new york,times,serif;"><span style=3D"font-family: ti=
+mes new roman,new york,times,serif;">i finished build a program and run it =
+in xenomai. now i want to build it as shared library.</span><br style=3D"fo=
+nt-family: times new roman,new york,times,serif;"></font><span style=3D"fon=
+t-family: times new roman,new york,times,serif;"><font size=3D"3">i use fol=
+lowing commands&nbsp; to create library file (.so ) from object file (.o</f=
+ont>)    </span><br style=3D"font-family: times new roman,new york,times,se=
+rif;"><pre>    gcc -shared -Wl,-soname,libctest.so.1 -o libctest.so.1.0   *=
+.o<br>    mv libctest.so.1.0 /opt/lib<br>    ln -sf /opt/lib/libctest.so.1.=
+0 /opt/lib/libctest.so<br>    ln -sf /opt/lib/libctest.so.1.0 /opt/lib/libc=
+test.so.1<br><font
+ size=3D"4"><span style=3D"font-family: times new roman,new york,times,seri=
+f;">after that i write TEST program and use fuctions which my library</span=
+><br style=3D"font-family: times new roman,new york,times,serif;"><span sty=
+le=3D"font-family: times new roman,new york,times,serif;">support. i can bu=
+ild and run TEST program but some functions in</span><br style=3D"font-fami=
+ly: times new roman,new york,times,serif;"><span style=3D"font-family: time=
+s new roman,new york,times,serif;">my library doen't work ....</span><br st=
+yle=3D"font-family: times new roman,new york,times,serif;"><span style=3D"f=
+ont-family: times new roman,new york,times,serif;">how to build and use my =
+shared library in xenomai?</span><br style=3D"font-family: times new roman,=
+new york,times,serif;"><span style=3D"font-family: times new roman,new york=
+,times,serif;">Thanks for any help.</span><br style=3D"font-family: times n=
+ew roman,new york,times,serif;"><span style=3D"font-family: times new roman=
+,new
+ york,times,serif;">Luan Dinh</span><br style=3D"font-family: times new rom=
+an,new york,times,serif;"></font></pre><br></td></tr></table><br>=0A=0A=0A=
+=0A      
+--0-1107557562-1241502342=:44873--
 
