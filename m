@@ -1,89 +1,64 @@
-Message-ID: <4A30CF49.8010007@domain.hid>
-Date: Thu, 11 Jun 2009 11:32:57 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4A004385.7020200@domain.hid>
+Date: Tue, 05 May 2009 15:47:49 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4A30CB83.5080504@domain.hid>
-In-Reply-To: <4A30CB83.5080504@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigBF3311B28A9CA8C7767212C3"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [PATCH] ksrc: respect struct proc_dir_entry
-	changes in 2.6.30
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <OFB15EA397.FEDBD30F-ONC12575AD.004B05A5-C12575AD.004B769C@datacon.at>
+In-Reply-To: <OFB15EA397.FEDBD30F-ONC12575AD.004B05A5-C12575AD.004B769C@datacon.at>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] gatekeeper/0
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Vladimir Zapolskiy <vladimir.zapolskiy@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: henning.richter@domain.hid
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigBF3311B28A9CA8C7767212C3
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+henning.richter@domain.hid wrote:
+> 
+> 
+> henning.richter@domain.hid wrote:
+>>> Hi,
+>>>
+>>> running a xenomai task in which I am sending a single Frame (size ~500
+>>> byte) from my EtherCAT Master to some Beckhoff slaves has latencies
+> around
+>>> 200 us.
+>>> While running that task, top shows that gatekeeper/0 (with RT priority)
+> has
+>>> 30% CPU usage.
+>>> What is the task of this gatekeeper and can this cause my high
+> latencies?
+>> The gatekeeper is used when a taks is migrating from secondary mode to
+>> primary mode. The gatekeeper itself can not cause the high latencies,
+>> but the fact that a task runs in secondary mode can.
+>>
+>> To check if this is what happens, check the MSW column in
+>> /proc/xenomai/stat for the thread which has latencies issues. If MSW is
+>> increasing then you have a problem.
+> 
+>> To find where your thread switches to secondary mode, use the technique
+>> demonstrated in examples/native/sigxcpu.c.
+> 
+> --
+>                                                  Gilles.
+> 
+> So thank your for defining my problem.
+> Now I am sure that there my thread is switching to secondary mode
+> as the MSW column increases rapidly while running my application.
+> Can I also use the ipipe tracer or LTTng to find the place where it
+> switches the modes as I don't have the
+> xenomai examples installed.
 
-Hi Vladimir,
+Yes, you can use the I-pipe tracer, but reading the output might be a
+bit complicated. Examples are part of Xenomai sources freely available
+on Xenomai web site.
 
-Vladimir Zapolskiy wrote:
-> Hello,
->=20
-> please apply the attached simple patch, which resolves a kind of
-> compilation problems against 2.6.30 kernel.
->=20
-> --=20
-> With best wishes,
-> Vladimir=20
->=20
-> From 894660f7dc91b406d8e078247b46606778562de9 Mon Sep 17 00:00:00 2001
-> From: Vladimir Zapolskiy <vladimir.zapolskiy@domain.hid>
-> Date: Thu, 11 Jun 2009 12:32:00 +0400
-> Subject: [PATCH] Made conditional inclusion of owner field in struct pr=
-oc_dir_entry due to changes in 2.6.30
->=20
-> Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@domain.hid>
-> ---
->  ksrc/arch/generic/hal.c              |    6 ++++++
->  ksrc/drivers/comedi/device.c         |    2 ++
->  ksrc/drivers/comedi/rtdm_interface.c |    4 ++++
->  ksrc/nucleus/registry.c              |    2 ++
->  4 files changed, 14 insertions(+), 0 deletions(-)
->=20
-> diff --git a/ksrc/arch/generic/hal.c b/ksrc/arch/generic/hal.c
-> index e4f0f31..b983b68 100644
-> --- a/ksrc/arch/generic/hal.c
-> +++ b/ksrc/arch/generic/hal.c
-> @@ -738,7 +738,9 @@ struct proc_dir_entry *rthal_add_proc_leaf(const ch=
-ar *name,
->  	entry->data =3D data;
->  	entry->read_proc =3D rdproc;
->  	entry->write_proc =3D wrproc;
-> +#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,30)
->  	entry->owner =3D THIS_MODULE;
-> +#endif
-
-I would suggest to squeeze all these assignments into a helper function
-that is void from 2.6.30 on, hiding the #ifdefs
-
-Jan
-
-
---------------enigBF3311B28A9CA8C7767212C3
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkowz0kACgkQniDOoMHTA+m/igCffsWvLvbBi0wh2MF+Cw8XU/it
-AZ4An1qZNUBvQrRRh7jy3z+ytzqgcp+1
-=YjrA
------END PGP SIGNATURE-----
-
---------------enigBF3311B28A9CA8C7767212C3--
+-- 
+                                                 Gilles.
 
