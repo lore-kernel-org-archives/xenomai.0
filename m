@@ -1,12 +1,12 @@
-Message-ID: <4A003DC3.4060007@domain.hid>
-Date: Tue, 05 May 2009 15:23:15 +0200
+Message-ID: <4A0040D9.60907@domain.hid>
+Date: Tue, 05 May 2009 15:36:25 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <OF9CF4E5FB.BA5862BC-ONC12575AD.00275D59-C12575AD.00285FDC@datacon.at>
-In-Reply-To: <OF9CF4E5FB.BA5862BC-ONC12575AD.00275D59-C12575AD.00285FDC@datacon.at>
+References: <OF90B43322.3740E337-ONC12575AD.00480F2D-C12575AD.0048903F@datacon.at>
+In-Reply-To: <OF90B43322.3740E337-ONC12575AD.00480F2D-C12575AD.0048903F@datacon.at>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] help with xenomai configuration
+Subject: Re: [Xenomai-help] gatekeeper/0
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,26 +20,25 @@ To: henning.richter@domain.hid
 Cc: xenomai@xenomai.org
 
 henning.richter@domain.hid wrote:
-> 
 > Hi,
 > 
-> I use a KUbuntu 8.10 with kernel 2.6.27.7, xenomai 2.4.6.1 and the latest
-> rtnet version.
-> I set up the EthercatMasterLibrary and send some Frames (size of ~1200
-> byte) cylical to my Beckhoff devices.
-> Measuring the time (via rt_read_timer-function of timer.h) handing the
-> frames over to the NIC last between 5 and 10 us. (its the low_level_send)
-> Measuring the time at the application layer is takes ~250 - 350 us. So I am
-> loosing quite a lot time in between.
-> 
-> Maybe there is sth. wrong with my xenomai configuration.
-> I run the 'xeno-test' (results below) but the test stop at generation load.
+> running a xenomai task in which I am sending a single Frame (size ~500
+> byte) from my EtherCAT Master to some Beckhoff slaves has latencies around
+> 200 us.
+> While running that task, top shows that gatekeeper/0 (with RT priority) has
+> 30% CPU usage.
+> What is the task of this gatekeeper and can this cause my high latencies?
 
-Yes, xeno-test has a known issue when run without bash, and ubuntu no
-longer uses bash by default. So, try running xeno-test with bash.
+The gatekeeper is used when a taks is migrating from secondary mode to
+primary mode. The gatekeeper itself can not cause the high latencies,
+but the fact that a task runs in secondary mode can.
 
-Alternatively, you can run the latency test directly. Preferably using
-the same period as the problematic one with EML.
+To check if this is what happens, check the MSW column in
+/proc/xenomai/stat for the thread which has latencies issues. If MSW is
+increasing then you have a problem.
+
+To find where your thread switches to secondary mode, use the technique
+demonstrated in examples/native/sigxcpu.c.
 
 -- 
                                                  Gilles.
