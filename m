@@ -1,84 +1,48 @@
-Message-ID: <4A267EB1.20004@domain.hid>
-Date: Wed, 03 Jun 2009 15:46:25 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Wed, 6 May 2009 16:12:17 -0700 (PDT)
+From: Martin Shepherd <mcs@domain.hid>
+Message-ID: <Pine.LNX.4.64.0905061412070.24701@domain.hid>
 MIME-Version: 1.0
-References: <20090603104015.13268.34073.stgit@domain.hid>	
-	<20090603104015.13268.59718.stgit@domain.hid>	
-	<4A267036.8010507@domain.hid> <4A267591.2060301@domain.hid>
-	<1244036044.5329.12.camel@domain.hid>
-In-Reply-To: <1244036044.5329.12.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 2/3] RTDM: Instrument rtdm_lock_get for
- proper use
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: [Xenomai-help] Selecting the appropriate RTDM _rt/_nrt ioctl at
+	run-time.
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Wed, 2009-06-03 at 15:07 +0200, Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> In case the user thinks rtdm_lock_get could be used like spin_lock or
->>>> messes up the IRQ protection for other reasons, catch this with a
->>>> XENO_BUGON.
->>>>
->>>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->>>> ---
->>>>
->>>>  include/rtdm/rtdm_driver.h |    8 ++++++++
->>>>  1 files changed, 8 insertions(+), 0 deletions(-)
->>>>
->>>> diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
->>>> index 058a9f8..fe42eea 100644
->>>> --- a/include/rtdm/rtdm_driver.h
->>>> +++ b/include/rtdm/rtdm_driver.h
->>>> @@ -655,7 +655,15 @@ typedef unsigned long rtdm_lockctx_t;
->>>>   *
->>>>   * Rescheduling: never.
->>>>   */
->>>> +#ifdef DOXYGEN_CPP /* Beautify doxygen output */
->>>>  #define rtdm_lock_get(lock)	rthal_spin_lock(lock)
->>>> +#else /* This is how it really works */
->>>> +#define rtdm_lock_get(lock)					\
->>>> +	do {							\
->>>> +		XENO_BUGON(RTDM, rthal_local_irq_test());	\
->>>> +		rthal_spin_lock(lock);				\
->>>> +	} while (0)
->>>> +#endif
->>> Why is it a problem to call rthal_spin_lock with irqs off?
->> Did I messed it up again? I meant it is a problem to call it with irqs
->> *on*. Checking what rthal_local_irq_test() actually means...
-> 
-> It means "is the stall bit set for the Xenomai pipeline stage", so your
-> test is inverted.
+I'm in the process of writing an RTDM device driver. Some of the ioctl
+requests that it implements can only be executed from non-realtime
+context, due to the need for them to call Linux kernel functions,
+while other ioctl requests are context-agnostic, but are intended to
+be used from realtime context.
 
-Ah, OK, now I got it. A terrible interface.
+At first glance the RTDM documentation appears to indicate that I
+should implement the ioctl requests that require non-realtime context
+in the ioctl_nrt() handler of the driver, and implement the remaining
+context-agnostic requests in both the ioctl_nrt() and ioctl_rt()
+handlers. However for this to work transparently, RTDM would have to
+know which request codes were implemented by ioctl_nrt() and which by
+ioctl_rt(), then automatically switch context, if needed, before
+calling them.  I don't see anything implemented along these lines.
 
-> 
->>  Hmm, I
->> still think it's correct. Maybe we should rename rthal_local_irq_test to
->> rthal_local_irq_enabled to clarify the usage.
->>
-> 
-> No, because this is aligned on the I-pipe internal logic, but we could
-> define rthal_local_irq_disabled() as an alias.
+In principle I could tell application writers that they have to
+explicitly switch to the secondary linux domain before calling
+rt_dev_ioctl() for a request that requires this. However I don't see
+any RTDM or Xenomai user-API call for switching contexts (other than
+xnshadown_relax(), which is marked as for internal use only). I
+imagine that one could do the equivalent by calling something like
+sleep(0) to force a switch to the Linux domain. But this seems like a
+kludge.
 
-I think at least Xenomai internal users would not really miss
-rthal_local_irq_test. However, I will add a proper alias called
-rthal_local_irq_disabled and clean up at least RTDM's users. spltest
-would not really benefit from being switched over...
+Am I missing something obvious?
 
-Jan
+Thanks,
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Martin
 
