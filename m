@@ -1,17 +1,12 @@
-Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-References: <9c789a000905250446t78fd6b38x1a6f28e35b70d7d6@domain.hid>
-	<878wkkzxba.fsf@domain.hid>
-	<9c789a000905251435p6f851d21v617c7e26a971f143@domain.hid>
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
-Date: Tue, 26 May 2009 00:10:14 +0200
-In-Reply-To: <9c789a000905251435p6f851d21v617c7e26a971f143@domain.hid>
-	(Cristian Axenie's message of "Tue\,
-	26 May 2009 00\:35\:49 +0300")
-Message-ID: <871vqczveh.fsf@domain.hid>
+Message-ID: <4A012DDE.7030601@domain.hid>
+Date: Wed, 06 May 2009 08:27:42 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Driver testing procedure ?!
+References: <431263.25323.qm@domain.hid>
+In-Reply-To: <431263.25323.qm@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] shared library in xenomai ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,64 +16,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Cristian Axenie <cristian.axenie@domain.hid>
-Cc: xenomai@xenomai.org
+To: luan dinh <dinhluanbmt@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Cristian Axenie <cristian.axenie@domain.hid> writes:
+luan dinh wrote:
+> hi.
+> My program included :
+> + libsock.c
+> + demo_use.c
+> + Makefile
+> i build libsock.c as shared library named libmylibra.so ( support my_send() function )
+> demo_use.c use my_send() and built with -lmylibra option
+> Thanks for any advise.
+> Luan Dinh
+> PS :i also attach the source code of these files 
+> ######### libsock. c###
+> void demo(void *agr)
+> {    
+>     int len,i;
+>     rt_task_set_periodic(NULL, TM_NOW, 100000000);
+>     while (1) {       
+>     rt_task_wait_period(NULL);
+>     len = send(sock, data, sizeof(data), 0);
+>         if (len < 0)
+>     {
+>         printf("Sent Failed...!\n");
+>             break;
+>     }    
+>     }       
+> }
+> /*my_send*/
+> int my_send()
+> {    
+>     struct sched_param param;// = { .sched_priority = 1 };     
+>       struct sockaddr_ll addr;
+>       struct ifreq ifr;    
+>     mlockall(MCL_CURRENT|MCL_FUTURE);    
+>     if ((sock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0) {
+>             perror("socket cannot be created");
+>             return 1;
+>     }
+>     strncpy(ifr.ifr_name, "rteth0", IFNAMSIZ);
+>     if (ioctl(sock, SIOCGIFINDEX, &ifr) < 0) {
+>             perror("cannot get interface index");
+>             close(sock);
+>             return 1;
+>        }
+>      addr.sll_family   = AF_PACKET;
+>         addr.sll_protocol = htons(ETH_P_ALL);
+>     addr.sll_pkttype  = PACKET_OTHERHOST;
+>         addr.sll_ifindex  = ifr.ifr_ifindex;
+> 
+>         if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+>             perror("cannot bind");
+>             close(sock);
+>             return 1;
+>         }
+>     
+>     rt_task_create(&demo_task, "mytask", 0, 99, 0);
+>     rt_task_start(&demo_task, &demo, NULL);      
+>     return 1;
+> }
+> 
+> ### demo_use.c ###
+> int main( int argc, char * argv[] )
+> {
+>     my_send();
+>     pause();    
+>     return 1;    
+> }
+> 
+> ## Makefile ###
+> CC = gcc
+> AR = ar cru
+> SOFLAGS = -shared -Wl
 
-> Hi,
->
-> I finally figured out this aspect but I still have one problem, residing =
-in the fact that I have no comedi devices in my dev list
-> and so I cannot ./comedi_config /dev/comedi0 nipcimio !
->
-> As I see it there are no comedi devices
->
-> /usr/xenomai/sbin # cat /proc/devices
+The -Wl means that you are going to pass a flag to the linker. So, this
+declaration of SOFLAGS is a bit like a sentence which you started and
+did not finish.
 
-You should not look at there. This proc file lists everything but RTDM devi=
-ces.
+> CFLAGS = -I/usr/xenomai/include -I/usr/xenomai/include/posix -D_GNU_SOURCE -D_REENTRANT -D__XENO__ -Wall -g -fPIC -rdynamic -pipe -O2 -fstrict-aliasing
+> LDFLAGS = -Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib -lpthread_rt -lpthread -lnative -lrt -lstdc++ -ldl
 
->
-> and the list
->
-> /usr/xenomai/sbin # cat /proc/comedi/devices
-> --=C2=A0 Comedi devices --
->
-> | idx | status | driver
-> |=C2=A0 00 | Unused | No driver
-> |=C2=A0 01 | Unused | No driver
-> |=C2=A0 02 | Unused | No driver
-> |=C2=A0 03 | Unused | No driver
-> |=C2=A0 04 | Unused | No driver
-> |=C2=A0 05 | Unused | No driver
-> |=C2=A0 06 | Unused | No driver
-> |=C2=A0 07 | Unused | No driver
-> |=C2=A0 08 | Unused | No driver
-> |=C2=A0 09 | Unused | No driver
-> /usr/xenomai/sbin # cat /proc/comedi/drivers
-> comedi_config=C2=A0=C2=A0 rtcanconfig=C2=A0=C2=A0=C2=A0=C2=A0 rtps
-> /usr/xenomai/sbin # cat /proc/comedi/drivers
-> --=C2=A0 Comedi drivers --
->
-> | idx | driver name
-> |=C2=A0 00 | pcimio
-> |=C2=A0 01 | comedi_8255
-> |=C2=A0 02 | comedi_loop
-> |=C2=A0 03 | comedi_fake
->
-> Shouldn't the specific comedi devices be generated when installing Xenoma=
-i ?
+Bad. You should use xeno-config to obtain the CFLAGS and the LDFLAGS.
 
-That is common comedi behaviour. So far, the comedi drivers are listed,
-they are available in the kernel. However, you have to attach them so as
-to make them reachable (thanks to comedi_config).
+> LINKER = $(CC)
+> LINT = lint -c
+> RM = /bin/rm -f
+> LIBOBJS =  libsock.o 
+> TARGET =  libmylibra.so \
+>         test 
+> all: $(TARGET)
+> libmylibra.so: $(LIBOBJS)
+>     $(LINKER) $(SOFLAGS) -o $@ $^ -lc
 
-Once the attach will be done, you will see your driver appear in
-/proc/comedi/devices.
+As I told you in my previous mail, you should use LDFLAGS when linking
+libmylibra.so.
 
-If the comedi_config did not work, the problem is here. In such case,
-could you send the traces?
+Also, if you are working on an embedded system, it is a better idea to
+use either the native skin or the posix skin, not use both. This way,
+you can compile only one of the two skins in the kernel, and you put
+only one of the two libraries on your system.
 
-Alexis.
+-- 
+					    Gilles.
 
