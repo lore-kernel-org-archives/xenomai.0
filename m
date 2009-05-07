@@ -1,13 +1,13 @@
-Message-ID: <4A005090.1080406@domain.hid>
-Date: Tue, 05 May 2009 16:43:28 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-References: <OF9CF4E5FB.BA5862BC-ONC12575AD.00275D59-C12575AD.00285FDC@datacon.at>	
-	<4A003DC3.4060007@domain.hid> <1241531884.26544.369.camel@domain.hid>
-In-Reply-To: <1241531884.26544.369.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] help with xenomai configuration
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 7 May 2009 15:47:36 +0200
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A019C345B@ARVMAIL1.mra.roland-man.biz>
+In-Reply-To: <4A02DBE5.1010704@domain.hid>
+From: <roderik.wildenburg@domain.hid>
+Subject: Re: [Xenomai-help] sem_wait increments fault counter
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,52 +17,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: gilles.chanteperdrix@xenomai.org
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Tue, 2009-05-05 at 15:23 +0200, Gilles Chanteperdrix wrote:
->> henning.richter@domain.hid wrote:
->>> Hi,
->>>
->>> I use a KUbuntu 8.10 with kernel 2.6.27.7, xenomai 2.4.6.1 and the latest
->>> rtnet version.
->>> I set up the EthercatMasterLibrary and send some Frames (size of ~1200
->>> byte) cylical to my Beckhoff devices.
->>> Measuring the time (via rt_read_timer-function of timer.h) handing the
->>> frames over to the NIC last between 5 and 10 us. (its the low_level_send)
->>> Measuring the time at the application layer is takes ~250 - 350 us. So I am
->>> loosing quite a lot time in between.
->>>
->>> Maybe there is sth. wrong with my xenomai configuration.
->>> I run the 'xeno-test' (results below) but the test stop at generation load.
->> Yes, xeno-test has a known issue when run without bash, and ubuntu no
->> longer uses bash by default. So, try running xeno-test with bash.
->>
-> 
-> Gilles, we have an ongoing series of recurring issues with xeno-test
-> that pleads for a reshuffle. I would really like to see something
-> simpler in there, which may not cover all aspects that xeno-test
-> currently addresses, but which would at least work for all setups, and
-> particularly embedded ones.
+> >=20
+> > every time I call sem_wait a fault counter is incremented (TRAP 0).
+> > sem_wait itself does not return an error :
+> >=20
+> > uc101 # cat /proc/xenomai/faults
+> > TRAP         CPU0
+> >   0:            1    (Data or instruction access)
+> >=20
+> > what could be the reason for this? Is this serious?
+> > I have to add that sem_wait is called form a Linux-Prozess=20
+> (linked with
+> > xenomai libraries, but no xenomai thread is created) when=20
+> this happens.
+>=20
+> Your not enough specific to get an answer. Are you talking=20
+> about Linux'
+> sem_wait or about Xenomai's sem_wait ? What Xenomai library are you
+> talking about, Xenomai native skin library or Xenomai posix=20
+> skin library?
 
-Yes, I am ok. These issues with xeno-test are annoying.
+It=B4s posix skin library, we are talking about.
 
-> We should rather see xeno-test as a simple validation tool to dig out
-> most common latency issues due to bad kernel settings. Further
-> validation via long running stress tests would be better accomplished
-> via the LTP-based suite we use internally to validate ports, within
-> standalone mini-rootfs; maybe at some point we could provide those
-> pre-built rootfs for download, for that particular purpose.
+> If using the Xenomai posix skin library (which would mean=20
+> that you use in fact Xenomai's sem_wait), the main thread is actually =
+a xenomai
+> thread,=20
 
-Yes, Ok too.
+That=B4s fine/o.k. (but I didn=B4t know it).
 
-> 
->> Alternatively, you can run the latency test directly. Preferably using
->> the same period as the problematic one with EML.
->>
+>and in order to actually not create a xenomai thread,=20
+> you would
+> have to call __real_pthread_create instead of pthread_create.=20
+> Otherwise,
+> all threads are Xenomai threads.
 
+I try to give some more information:
+In fact it is a library we are talking about (let=B4s call it shmlib). =
+This library creates a shared memory and a (named) semaphore which =
+should synchronise the access to the shared memory. This library =
+(shmlib) is linked with Xenomai posix-library, so all posix-calls within =
+shmlib should be handled by Xenomai.=20
+This shmlib is linked to different applications (build by different =
+developers). To "real" Xenomai-applications  with threads created with =
+pthread_create and to Linux-applications which do not use pthread_create =
+(but whose main thread is a Xenomai thread, if linked with shmlib, as I =
+learned just now).=20
+When such a Linux-application calls the shmlib synchronisation function, =
+which in turn calls sem_wait(), the trap 0 counter is incremented, but =
+no other error or problem occurs. If I comment out the sem_wait call in =
+shmlib, the counter isn=B4t incremented. So my conclusion was, that =
+sem_wait causes the trap 0.=20
 
--- 
-                                                 Gilles.
+Is trap 0 explicitly generated by Xenomay in some error case or is it =
+"just" a CPU error when executing an illegal instruction (but where =
+should this illegal instruction/code come from ?) ?
+
+By the way: this error also happens with Xenoami 2.4.6.
+
+Roderik
+
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
