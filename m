@@ -1,10 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <24870972-4150-4835-9564-0ED960A6FD44@domain.hid>
+Message-ID: <4A031085.3050100@domain.hid>
+Date: Thu, 07 May 2009 18:47:01 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <24870972-4150-4835-9564-0ED960A6FD44@domain.hid>
-Content-Type: text/plain
-Date: Thu, 07 May 2009 18:45:13 +0200
-Message-Id: <1241714713.26544.735.camel@domain.hid>
-Mime-Version: 1.0
+In-Reply-To: <24870972-4150-4835-9564-0ED960A6FD44@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Desktop randomly freezes after install of
  Xenomai 2.4.7
@@ -20,7 +20,7 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: John Yamokoski <yamokosk@domain.hid>
 Cc: xenomai@xenomai.org, adeos-main <adeos-main@gna.org>
 
-On Thu, 2009-05-07 at 12:36 -0400, John Yamokoski wrote:
+John Yamokoski wrote:
 > Since my freezing problems may not be related to other people's  
 > freezing problems I have started a new thread.
 > 
@@ -34,13 +34,10 @@ On Thu, 2009-05-07 at 12:36 -0400, John Yamokoski wrote:
 > but I don't get any messages when the computer freezes. Attached are a  
 > netconsole dump as well as my .config from the kernel compile.
 
-... and also disable HPET and X86_PM_TIMER from your configuration. This
-is a known pending bug.
+Please disable CONFIG_HPET_TIMER and CONFIG_X86_PM_TIMER, we have known
+unfixed issues with these configurations.
 
-> 
-> _______________________________________________ Xenomai-help mailing list Xenomai-help@domain.hid https://mail.gna.org/listinfo/xenomai-help
+
 -- 
-Philippe.
-
-
+					    Gilles.
 
