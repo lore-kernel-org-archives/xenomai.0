@@ -1,16 +1,12 @@
-Message-ID: <4A02DEB0.70508@domain.hid>
-Date: Thu, 07 May 2009 15:14:24 +0200
+Message-ID: <4A02E251.6030909@domain.hid>
+Date: Thu, 07 May 2009 15:29:53 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1043994168.4085071240493189508.JavaMail.root@domain.hid>	
-	<49F06D77.7050103@domain.hid> <1241695394.6157.7.camel@domain.hid>	
-	<4A02D4C2.3060009@domain.hid> <4A02D609.2010202@domain.hid>	
-	<1241700440.6157.15.camel@domain.hid>
-	<1241701380.26544.724.camel@domain.hid>
-In-Reply-To: <1241701380.26544.724.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <OF2606C557.B1D5A7EE-ONC12575AF.00492678-C12575AF.0049CCCC@datacon.at>
+In-Reply-To: <OF2606C557.B1D5A7EE-ONC12575AF.00492678-C12575AF.0049CCCC@datacon.at>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem of freeze
+Subject: Re: [Xenomai-help] gatekeeper/0
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,41 +16,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
+To: henning.richter@domain.hid
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> On Thu, 2009-05-07 at 14:47 +0200, Raistlin wrote:
->> On Thu, 2009-05-07 at 14:37 +0200, Gilles Chanteperdrix wrote:
->>>> As usual, please send us /proc/interrupts, /proc/xenomai/irq, your
->>>> .config, and the version of the I-pipe patch you use.
->>>>
->> I will.
->>
->>>> Run the latency and switchtest tests, and tell us if you have the freeze
->>>> with them too.
->> It has happened once during a test (latency I think), but I've also been
->> (next times, after reboot) able to run both of them without any issue.
->>
->> Anyway, as soon as I reboot I'll run all the tests again.
->>
->>> Also, Benoit's problem was not in fact due to xenomai but to gnome power
->>> management. 
->> I see... Well, of course, all is possible... I'm using
->> gnome-power-manager too, but while running plain Ubuntu kernel no freeze
->> happens, but... I mean... Who knows?!?!
-> 
-> The point is not about blaming Gnome PM, but we do know for sure that
-> power management related drivers may have adverse effects on a
-> Xenomai-patched kernel - see the troubleshooting guide. If your kernel
-> enable those, and Gnome PM triggers actions on those such as CPU freq
-> governors, bad things may happen.
-> 
-> You .config will confirm or not whether this assumption is correct.
+henning.richter@domain.hid wrote:
+> So I will configure the kernel once more. This time with the switchtest
+> option.
+> But what I am still wondering about is that the kernel oops is not
+> regularly when I am running
+> my application. Sometimes there is no problem running the application with
+> prio 99 a few times (e.g. 10 times)
+> and gathering information from /xenomai/stat and/or /sched etc. (also in
+> graphical mode)
+> (I also run my application in console mode and nothing went wrong.)
 
-The problem could also be that gnome-power-management is trying to use
-services from the kernel which are not available because power
-management is disabled in kernel configuration.
+You mean that you get crashes only in graphic mode ?
 
 -- 
                                                  Gilles.
