@@ -1,69 +1,61 @@
-Message-ID: <4A48FB71.6070506@domain.hid>
-Date: Mon, 29 Jun 2009 19:35:45 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Sebastian Smolorz <smolorz@domain.hid>
+Date: Thu, 7 May 2009 10:14:02 +0200
+References: <Pine.LNX.4.64.0905061412070.24701@domain.hid>
+In-Reply-To: <Pine.LNX.4.64.0905061412070.24701@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] x86: Endless minor faults
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Disposition: inline
+Message-Id: <200905071014.02435.smolorz@domain.hid>
+Subject: Re: [Xenomai-help] Selecting the appropriate RTDM _rt/_nrt ioctl at
+	run-time.
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Martin Shepherd <mcs@domain.hid>, xenomai@xenomai.org
 
-Hi all,
+Martin Shepherd wrote:
+> I'm in the process of writing an RTDM device driver. Some of the ioctl
+> requests that it implements can only be executed from non-realtime
+> context, due to the need for them to call Linux kernel functions,
+> while other ioctl requests are context-agnostic, but are intended to
+> be used from realtime context.
+>
+> At first glance the RTDM documentation appears to indicate that I
+> should implement the ioctl requests that require non-realtime context
+> in the ioctl_nrt() handler of the driver, and implement the remaining
+> context-agnostic requests in both the ioctl_nrt() and ioctl_rt()
+> handlers. However for this to work transparently, RTDM would have to
+> know which request codes were implemented by ioctl_nrt() and which by
+> ioctl_rt(), then automatically switch context, if needed, before
+> calling them.  I don't see anything implemented along these lines.
+>
+> In principle I could tell application writers that they have to
+> explicitly switch to the secondary linux domain before calling
+> rt_dev_ioctl() for a request that requires this.
 
-seen such loops before? This particular trace is from a 2.6.29.3 kernel
-with ipipe-2.3-01 (SMP/PREEMPT_VOLUNTARY), but the same happens with
-2.6.29.5/2.3-03:
+Generally speaking, it is a bad habit to explicitely switch the context in 
+applications.
 
-:|   +func                -653    0.084  __ipipe_handle_exception+0x11 (page_fault+0x26)
-:|   +func                -653    0.096  ipipe_check_context+0xd (__ipipe_handle_exception+0x71)
-:|   #end     0x80000000  -653    0.069  do_page_fault+0x33 (__ipipe_handle_exception+0x1ff)
-:    #func                -653    0.078  __ipipe_unstall_root+0x9 (do_page_fault+0x3cb)
-:|   #begin   0x80000000  -653    0.068  __ipipe_unstall_root+0x34 (do_page_fault+0x3cb)
-:|   +end     0x80000000  -653    0.069  __ipipe_unstall_root+0x59 (do_page_fault+0x3cb)
-:    +func                -653    0.060  down_read_trylock+0x4 (do_page_fault+0x424)
-:    +func                -653    0.068  _spin_lock_irqsave+0x9 (__down_read_trylock+0x16)
-:    +func                -653    0.108  ipipe_check_context+0xd (_spin_lock_irqsave+0x1d)
-:    #func                -652    0.066  _spin_unlock_irqrestore+0x4 (__down_read_trylock+0x3f)
-:    #func                -652    0.069  __ipipe_restore_root+0x4 (_spin_unlock_irqrestore+0x21)
-:    #func                -652    0.074  __ipipe_unstall_root+0x9 (__ipipe_restore_root+0x2c)
-:|   #begin   0x80000000  -652    0.066  __ipipe_unstall_root+0x34 (__ipipe_restore_root+0x2c)
-:|   +end     0x80000000  -652    0.069  __ipipe_unstall_root+0x59 (__ipipe_restore_root+0x2c)
-:    +func                -652    0.096  find_vma+0x4 (do_page_fault+0x465)
-:    +func                -652    0.150  ltt_run_filter_default+0x4 (_ltt_specialized_trace+0xc1)
-:    +func                -652    0.098  handle_mm_fault+0x11 (do_page_fault+0x537)
-:    +func                -652    0.090  _spin_lock+0x4 (handle_mm_fault+0x680)
-:    +func                -652    0.063  ptep_set_access_flags+0x9 (handle_mm_fault+0x6d1)
-:    +func                -652    0.282  flush_tlb_page+0xd (handle_mm_fault+0x6e7)
-:    +func                -651    0.162  ltt_run_filter_default+0x4 (_ltt_specialized_trace+0xc1)
-:    +func                -651    0.062  up_read+0x4 (do_page_fault+0x5a9)
-:    +func                -651    0.072  _spin_lock_irqsave+0x9 (__up_read+0x1c)
-:    +func                -651    0.117  ipipe_check_context+0xd (_spin_lock_irqsave+0x1d)
-:    #func                -651    0.074  _spin_unlock_irqrestore+0x4 (__up_read+0x92)
-:    #func                -651    0.069  __ipipe_restore_root+0x4 (_spin_unlock_irqrestore+0x21)
-:    #func                -651    0.060  __ipipe_unstall_root+0x9 (__ipipe_restore_root+0x2c)
-:|   #begin   0x80000000  -651    0.056  __ipipe_unstall_root+0x34 (__ipipe_restore_root+0x2c)
-:|   +end     0x80000000  -651    0.420  __ipipe_unstall_root+0x59 (__ipipe_restore_root+0x2c)
-:|   +func                -650    0.084  __ipipe_handle_exception+0x11 (page_fault+0x26)
+> However I don't see
+> any RTDM or Xenomai user-API call for switching contexts (other than
+> xnshadown_relax(), which is marked as for internal use only). I
+> imagine that one could do the equivalent by calling something like
+> sleep(0) to force a switch to the Linux domain. But this seems like a
+> kludge.
+>
+> Am I missing something obvious?
 
-and again and again...
-
-We are looping over a minor fault here (according to /proc/PID/stat),
-the context is a Xenomai task in secondary mode. As the task no longer
-processes signals in this state, the whole system is more or less
-broken. Tomorrow I will try to find out the faulting address with an
-instrumented kernel, but maybe you already have some ideas.
-
-Jan
+Could the function rtdm_in_rt_context() be useful for you?
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Sebastian
+
 
