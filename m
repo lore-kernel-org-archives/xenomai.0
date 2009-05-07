@@ -1,9 +1,9 @@
-Message-ID: <4A02A232.9070300@domain.hid>
-Date: Thu, 07 May 2009 10:56:18 +0200
+Message-ID: <4A02A38C.4040203@domain.hid>
+Date: Thu, 07 May 2009 11:02:04 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <OF5F7E19CA.A61055AA-ONC12575AF.00305BEC-C12575AF.0030F7DF@datacon.at>
-In-Reply-To: <OF5F7E19CA.A61055AA-ONC12575AF.00305BEC-C12575AF.0030F7DF@datacon.at>
+References: <OFAD630900.6B7052D5-ONC12575AF.003134DD-C12575AF.003171E4@domain.hid>
+In-Reply-To: <OFAD630900.6B7052D5-ONC12575AF.003134DD-C12575AF.003171E4@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] gatekeeper/0
@@ -20,11 +20,17 @@ To: henning.richter@domain.hid
 Cc: xenomai@xenomai.org
 
 henning.richter@domain.hid wrote:
-> My machine only has one CPU.
-> So switchtest doesn't work.
+> Outputs of the switchtest:
+> 
+> == FPU check routines: OK!.
+> switchtest: Unabale to open switchtest device.
+> (modprobe xeno_switchtest ? )
+> 
+> modeprobe xeno_switchtest leads to FATAL: Module xeno_switchtest not found.
 
-switchtest works on machine with only one CPU. What is the exact error
-message you get ?
+I do not see anything in this message related to the number of CPUs in
+your system. You should simply enable the switchtest module in Xenomai
+configuration (in the kernel configuration menus).
 
 -- 
                                                  Gilles.
