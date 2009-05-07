@@ -1,13 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4A003DC3.4060007@domain.hid>
-References: <OF9CF4E5FB.BA5862BC-ONC12575AD.00275D59-C12575AD.00285FDC@datacon.at>
-	<4A003DC3.4060007@domain.hid>
-Content-Type: text/plain
-Date: Tue, 05 May 2009 15:58:04 +0200
-Message-Id: <1241531884.26544.369.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4A02AEC3.70401@domain.hid>
+Date: Thu, 07 May 2009 11:49:55 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <OF4D358DA8.8C7A5638-ONC12575AF.00332A73-C12575AF.003367B6@domain.hid>
+In-Reply-To: <OF4D358DA8.8C7A5638-ONC12575AF.00332A73-C12575AF.003367B6@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] help with xenomai configuration
+Subject: Re: [Xenomai-help] gatekeeper/0
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,48 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: henning.richter@domain.hid
 Cc: xenomai@xenomai.org
 
-On Tue, 2009-05-05 at 15:23 +0200, Gilles Chanteperdrix wrote:
-> henning.richter@domain.hid wrote:
-> > 
-> > Hi,
-> > 
-> > I use a KUbuntu 8.10 with kernel 2.6.27.7, xenomai 2.4.6.1 and the latest
-> > rtnet version.
-> > I set up the EthercatMasterLibrary and send some Frames (size of ~1200
-> > byte) cylical to my Beckhoff devices.
-> > Measuring the time (via rt_read_timer-function of timer.h) handing the
-> > frames over to the NIC last between 5 and 10 us. (its the low_level_send)
-> > Measuring the time at the application layer is takes ~250 - 350 us. So I am
-> > loosing quite a lot time in between.
-> > 
-> > Maybe there is sth. wrong with my xenomai configuration.
-> > I run the 'xeno-test' (results below) but the test stop at generation load.
-> 
-> Yes, xeno-test has a known issue when run without bash, and ubuntu no
-> longer uses bash by default. So, try running xeno-test with bash.
-> 
+henning.richter@domain.hid wrote:
+> Beside I actually don't use xconfig because QT3 is not installed
+> my application runs well in console mode and I am able to gather
+> information from /proc/xenomai/stat etc.
 
-Gilles, we have an ongoing series of recurring issues with xeno-test
-that pleads for a reshuffle. I would really like to see something
-simpler in there, which may not cover all aspects that xeno-test
-currently addresses, but which would at least work for all setups, and
-particularly embedded ones.
+In a previous mail you told us that you were running your application in
+graphical mode. If you are running in console mode, you should see the
+oops (though it may not be easy to capture, and you may need to actually
+increase the console resolution through kernel command line to see the
+message entirely, some people in the past send us numerical photos of
+the screen to show us their oops...).
 
-We should rather see xeno-test as a simple validation tool to dig out
-most common latency issues due to bad kernel settings. Further
-validation via long running stress tests would be better accomplished
-via the LTP-based suite we use internally to validate ports, within
-standalone mini-rootfs; maybe at some point we could provide those
-pre-built rootfs for download, for that particular purpose.
+As for not being able to use switchtest, sorry, but if you do not want
+to use the graphical tool, you have to learn how to search in text mode,
+this means find . -name 'Kconfig*' | xargs grep switchtest...
 
-> Alternatively, you can run the latency test directly. Preferably using
-> the same period as the problematic one with EML.
-> 
 -- 
-Philippe.
-
-
+                                                 Gilles.
 
