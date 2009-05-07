@@ -1,12 +1,11 @@
-Content-Class: urn:content-classes:message
+Message-ID: <4A02EAAB.9040600@domain.hid>
+Date: Thu, 07 May 2009 16:05:31 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
+References: <5D63919D95F87E4D9D34FF7748CE2C2A019C345B@ARVMAIL1.mra.roland-man.biz>
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A019C345B@ARVMAIL1.mra.roland-man.biz>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 7 May 2009 15:47:36 +0200
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A019C345B@ARVMAIL1.mra.roland-man.biz>
-In-Reply-To: <4A02DBE5.1010704@domain.hid>
-From: <roderik.wildenburg@domain.hid>
 Subject: Re: [Xenomai-help] sem_wait increments fault counter
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,75 +16,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: gilles.chanteperdrix@xenomai.org
+To: roderik.wildenburg@domain.hid
 Cc: xenomai@xenomai.org
 
-> >=20
-> > every time I call sem_wait a fault counter is incremented (TRAP 0).
-> > sem_wait itself does not return an error :
-> >=20
-> > uc101 # cat /proc/xenomai/faults
-> > TRAP         CPU0
-> >   0:            1    (Data or instruction access)
-> >=20
-> > what could be the reason for this? Is this serious?
-> > I have to add that sem_wait is called form a Linux-Prozess=20
-> (linked with
-> > xenomai libraries, but no xenomai thread is created) when=20
-> this happens.
+roderik.wildenburg@domain.hid wrote:
+>>> every time I call sem_wait a fault counter is incremented (TRAP
+>>> 0). sem_wait itself does not return an error :
+>>>=20
+>>> uc101 # cat /proc/xenomai/faults TRAP         CPU0 0:
+>>> 1    (Data or instruction access)
+>>>=20
+>>> what could be the reason for this? Is this serious? I have to add
+>>> that sem_wait is called form a Linux-Prozess
+>> (linked with
+>>> xenomai libraries, but no xenomai thread is created) when
+>> this happens.
+>>=20
+>> Your not enough specific to get an answer. Are you talking about
+>> Linux' sem_wait or about Xenomai's sem_wait ? What Xenomai library
+>> are you talking about, Xenomai native skin library or Xenomai posix
+>>  skin library?
 >=20
-> Your not enough specific to get an answer. Are you talking=20
-> about Linux'
-> sem_wait or about Xenomai's sem_wait ? What Xenomai library are you
-> talking about, Xenomai native skin library or Xenomai posix=20
-> skin library?
+> It=B4s posix skin library, we are talking about.
+>=20
+>> If using the Xenomai posix skin library (which would mean that you
+>> use in fact Xenomai's sem_wait), the main thread is actually a
+>> xenomai thread,
+>=20
+> That=B4s fine/o.k. (but I didn=B4t know it).
+>=20
+>> and in order to actually not create a xenomai thread, you would=20
+>> have to call __real_pthread_create instead of pthread_create.=20
+>> Otherwise, all threads are Xenomai threads.
+>=20
+> I try to give some more information: In fact it is a library we are
+> talking about (let=B4s call it shmlib). This library creates a shared
+> memory and a (named) semaphore which should synchronise the access to
+> the shared memory. This library (shmlib) is linked with Xenomai
+> posix-library, so all posix-calls within shmlib should be handled by
+> Xenomai.
 
-It=B4s posix skin library, we are talking about.
+Well, not quite. Linking is not enough. To actually use Xenomai posix
+library calls, you have to pass the bunch of -Wl,--wrap options to gcc,
+which you get when calling xeno-config --posix-ldflags. Is it what you
+are doing.
 
-> If using the Xenomai posix skin library (which would mean=20
-> that you use in fact Xenomai's sem_wait), the main thread is actually =
-a xenomai
-> thread,=20
 
-That=B4s fine/o.k. (but I didn=B4t know it).
+ This shmlib is linked to different applications (build by
+> different developers). To "real" Xenomai-applications  with threads
+> created with pthread_create and to Linux-applications which do not
+> use pthread_create (but whose main thread is a Xenomai thread, if
+> linked with shmlib, as I learned just now). When such a
+> Linux-application calls the shmlib synchronisation function, which in
+> turn calls sem_wait(), the trap 0 counter is incremented, but no
+> other error or problem occurs. If I comment out the sem_wait call in
+> shmlib, the counter isn=B4t incremented. So my conclusion was, that
+> sem_wait causes the trap 0.
 
->and in order to actually not create a xenomai thread,=20
-> you would
-> have to call __real_pthread_create instead of pthread_create.=20
-> Otherwise,
-> all threads are Xenomai threads.
+If the thread using the semaphore was not a Xenomai posix skin thread,
+you would not be able to call Xenomai's sem_wait, it would return -1
+with errno set to EPERM.
 
-I try to give some more information:
-In fact it is a library we are talking about (let=B4s call it shmlib). =
-This library creates a shared memory and a (named) semaphore which =
-should synchronise the access to the shared memory. This library =
-(shmlib) is linked with Xenomai posix-library, so all posix-calls within =
-shmlib should be handled by Xenomai.=20
-This shmlib is linked to different applications (build by different =
-developers). To "real" Xenomai-applications  with threads created with =
-pthread_create and to Linux-applications which do not use pthread_create =
-(but whose main thread is a Xenomai thread, if linked with shmlib, as I =
-learned just now).=20
-When such a Linux-application calls the shmlib synchronisation function, =
-which in turn calls sem_wait(), the trap 0 counter is incremented, but =
-no other error or problem occurs. If I comment out the sem_wait call in =
-shmlib, the counter isn=B4t incremented. So my conclusion was, that =
-sem_wait causes the trap 0.=20
+My question may seem a little bit stupid, but are you checking the
+return value of sem_wait ?
 
-Is trap 0 explicitly generated by Xenomay in some error case or is it =
-"just" a CPU error when executing an illegal instruction (but where =
-should this illegal instruction/code come from ?) ?
+>=20
+> Is trap 0 explicitly generated by Xenomay in some error case or is it
+> "just" a CPU error when executing an illegal instruction (but where
+> should this illegal instruction/code come from ?) ?
+>=20
+> By the way: this error also happens with Xenoami 2.4.6.
 
-By the way: this error also happens with Xenoami 2.4.6.
+No, Xenomai has no particular reason to voluntarily generate a trap. And
+this trap probably causes the calling thread to switch to secondary
+mode, so this is bad news if it is a thread with actual real-time
+activities. As Philippe told you, this trap may be due to some Power PC
+specific behaviour.
 
-Roderik
+Also, I told you that several times already, but I will tell it once
+more: the Xenomai posix skin shared memory services are only useful if
+you intend to share memory between a user-space real-time application
+and a kernel-space real-time module. If what you want to do is simply
+share memory between user-space applications, you can use Linux' shared
+memory services.
 
---------------------------------------------------------
-manroland AG
-Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle  =20
-Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592
-USt-Ident-Nr. DE 250200933
+--=20
+                                                 Gilles.
+
 
