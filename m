@@ -1,11 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A019C3523@domain.hid>
-References: <5D63919D95F87E4D9D34FF7748CE2C2A019C3523@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 08 May 2009 12:36:09 +0200
-Message-Id: <1241778969.26544.745.camel@domain.hid>
-Mime-Version: 1.0
+Content-Class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+Date: Fri, 8 May 2009 14:11:13 +0200
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A019C35ED@ARVMAIL1.mra.roland-man.biz>
+In-Reply-To: <1241778969.26544.745.camel@domain.hid>
+From: <roderik.wildenburg@domain.hid>
 Subject: Re: [Xenomai-help] sem_wait increments fault counter
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,111 +17,147 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: roderik.wildenburg@domain.hid
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-On Fri, 2009-05-08 at 09:14 +0200, roderik.wildenburg@domain.hid
-wrote:
+Thank you all for your patience in explaining me the Xenomai internals !
+But obviously we can=B4t realy track down the problem.
+Therefore I=B4ll try to make a short test case out of my code, which =
+will either help you understand my problem or cut the knot in my brain =
+;-).
+
+I=B4ll report again next week.
+Have a nice weekend
+Roderik
+
+> -----Urspr=FCngliche Nachricht-----
+> Von: Philippe Gerum [mailto:rpm@xenomai.org
+> Gesendet: Freitag, 8. Mai 2009 12:36
+> An: Wildenburg, Roderik RAEK3 MRA
+> Cc: gilles.chanteperdrix@xenomai.org; xenomai@xenomai.org
+> Betreff: Re: [Xenomai-help] sem_wait increments fault counter
+>=20
+> On Fri, 2009-05-08 at 09:14 +0200, roderik.wildenburg@domain.hid
+> wrote:
+> > > >=20
+> > > > I try to give some more information: In fact it is a=20
+> library we are
+> > > > talking about (let=B4s call it shmlib). This library=20
+> creates a shared
+> > > > memory and a (named) semaphore which should synchronise the=20
+> > > access to
+> > > > the shared memory. This library (shmlib) is linked with Xenomai
+> > > > posix-library, so all posix-calls within shmlib should=20
+> be handled by
+> > > > Xenomai.
 > > >=20
-> > > I try to give some more information: In fact it is a library we are
-> > > talking about (let=C2=B4s call it shmlib). This library creates a s=
-hared
-> > > memory and a (named) semaphore which should synchronise the=20
-> > access to
-> > > the shared memory. This library (shmlib) is linked with Xenomai
-> > > posix-library, so all posix-calls within shmlib should be handled b=
-y
-> > > Xenomai.
+> > > Well, not quite. Linking is not enough. To actually use=20
+> Xenomai posix
+> > > library calls, you have to pass the bunch of -Wl,--wrap=20
+> > > options to gcc,
+> > > which you get when calling xeno-config --posix-ldflags.=20
+> Is it what you
+> > > are doing.
 > >=20
-> > Well, not quite. Linking is not enough. To actually use Xenomai posix
-> > library calls, you have to pass the bunch of -Wl,--wrap=20
-> > options to gcc,
-> > which you get when calling xeno-config --posix-ldflags. Is it what yo=
-u
-> > are doing.
->=20
-> Not exactly, I wrap all posix calls in my library (shmlib) by hand:
-> shm_open -> __wrap_shm_open
-> So, when linking shmlib with an application the wrap-options for gcc do=
-n=C2=B4t need to be provided (I hope. And the linker does not complain).
->=20
-> >  This shmlib is linked to different applications (build by
-> > > different developers). To "real" Xenomai-applications  with threads
-> > > created with pthread_create and to Linux-applications which do not
-> > > use pthread_create (but whose main thread is a Xenomai thread, if
-> > > linked with shmlib, as I learned just now). When such a
-> > > Linux-application calls the shmlib synchronisation=20
-> > function, which in
-> > > turn calls sem_wait(), the trap 0 counter is incremented, but no
-> > > other error or problem occurs. If I comment out the sem_wait call i=
-n
-> > > shmlib, the counter isn=C2=B4t incremented. So my conclusion was, t=
-hat
-> > > sem_wait causes the trap 0.
+> > Not exactly, I wrap all posix calls in my library (shmlib) by hand:
+> > shm_open -> __wrap_shm_open
+> > So, when linking shmlib with an application the=20
+> wrap-options for gcc don=B4t need to be provided (I hope. And=20
+> the linker does not complain).
 > >=20
-> > If the thread using the semaphore was not a Xenomai posix skin thread=
-,
-> > you would not be able to call Xenomai's sem_wait, it would return -1
-> > with errno set to EPERM.
-> >=20
-> > My question may seem a little bit stupid, but are you checking the
-> > return value of sem_wait ?
-> >=20
->=20
-> Yes ("sem_wait itself does not return an error") .
->=20
+> > >  This shmlib is linked to different applications (build by
+> > > > different developers). To "real" Xenomai-applications =20
+> with threads
+> > > > created with pthread_create and to Linux-applications=20
+> which do not
+> > > > use pthread_create (but whose main thread is a Xenomai=20
+> thread, if
+> > > > linked with shmlib, as I learned just now). When such a
+> > > > Linux-application calls the shmlib synchronisation=20
+> > > function, which in
+> > > > turn calls sem_wait(), the trap 0 counter is incremented, but no
+> > > > other error or problem occurs. If I comment out the=20
+> sem_wait call in
+> > > > shmlib, the counter isn=B4t incremented. So my conclusion=20
+> was, that
+> > > > sem_wait causes the trap 0.
 > > >=20
-> > > Is trap 0 explicitly generated by Xenomay in some error=20
-> > case or is it
-> > > "just" a CPU error when executing an illegal instruction (but where
-> > > should this illegal instruction/code come from ?) ?
+> > > If the thread using the semaphore was not a Xenomai posix=20
+> skin thread,
+> > > you would not be able to call Xenomai's sem_wait, it=20
+> would return -1
+> > > with errno set to EPERM.
 > > >=20
-> > > By the way: this error also happens with Xenoami 2.4.6.
+> > > My question may seem a little bit stupid, but are you checking the
+> > > return value of sem_wait ?
+> > >=20
 > >=20
-> > No, Xenomai has no particular reason to voluntarily generate=20
-> > a trap. And
-> > this trap probably causes the calling thread to switch to secondary
-> > mode, so this is bad news if it is a thread with actual real-time
-> > activities. As Philippe told you, this trap may be due to=20
-> > some Power PC
-> > specific behaviour.
+> > Yes ("sem_wait itself does not return an error") .
+> >=20
+> > > >=20
+> > > > Is trap 0 explicitly generated by Xenomay in some error=20
+> > > case or is it
+> > > > "just" a CPU error when executing an illegal=20
+> instruction (but where
+> > > > should this illegal instruction/code come from ?) ?
+> > > >=20
+> > > > By the way: this error also happens with Xenoami 2.4.6.
+> > >=20
+> > > No, Xenomai has no particular reason to voluntarily generate=20
+> > > a trap. And
+> > > this trap probably causes the calling thread to switch to=20
+> secondary
+> > > mode, so this is bad news if it is a thread with actual real-time
+> > > activities. As Philippe told you, this trap may be due to=20
+> > > some Power PC
+> > > specific behaviour.
+> >=20
+> > No, it is not a real_time thread which causes the trap.
 >=20
-> No, it is not a real_time thread which causes the trap.
-
-Excerpt from Xenomai's powerpc core: ksrc/arch/powerpc/hal.c:413
-
-static inline int do_exception_event(unsigned event, unsigned domid, void=
- *data)
-{
-	if (domid =3D=3D RTHAL_DOMAIN_ID) {
-		rthal_realtime_faults[rthal_processor_id()][event]++;
-
-		if (rthal_trap_handler !=3D NULL &&
-		    rthal_trap_handler(event, domid, data) !=3D 0)
-			return RTHAL_EVENT_STOP;
-	}
-
-	return RTHAL_EVENT_PROPAGATE;
-}
-
-The counter reported by /proc/xenomai/faults is the one incremented
-above, only if the issuing domain was Xenomai. Since only real-time
-threads may live at that stage, along with Xenomai IRQ handlers, this
-does imply in turn that only a real-time thread may have caused such
-trap, provided your initial blame on sem_wait() is right. Really.
-
-> It is just a Linux application which has been linked with my library
-> and therefore becomes a Xenomai thread (but probably in secondary
-> > mode ?).
-
-Faults happening in secondary mode are not reported
-by /proc/xenomai/faults, precisely because they do not require any
-special care from Xenomai, and are simply passed down to the Linux
-kernel by the interrupt pipeline.
-
+> Excerpt from Xenomai's powerpc core: ksrc/arch/powerpc/hal.c:413
 >=20
---=20
-Philippe.
+> static inline int do_exception_event(unsigned event, unsigned=20
+> domid, void *data)
+> {
+> 	if (domid =3D=3D RTHAL_DOMAIN_ID) {
+> 		rthal_realtime_faults[rthal_processor_id()][event]++;
+>=20
+> 		if (rthal_trap_handler !=3D NULL &&
+> 		    rthal_trap_handler(event, domid, data) !=3D 0)
+> 			return RTHAL_EVENT_STOP;
+> 	}
+>=20
+> 	return RTHAL_EVENT_PROPAGATE;
+> }
+>=20
+> The counter reported by /proc/xenomai/faults is the one incremented
+> above, only if the issuing domain was Xenomai. Since only real-time
+> threads may live at that stage, along with Xenomai IRQ handlers, this
+> does imply in turn that only a real-time thread may have caused such
+> trap, provided your initial blame on sem_wait() is right. Really.
+>=20
+> > It is just a Linux application which has been linked with my library
+> > and therefore becomes a Xenomai thread (but probably in secondary
+> > > mode ?).
+>=20
+> Faults happening in secondary mode are not reported
+> by /proc/xenomai/faults, precisely because they do not require any
+> special care from Xenomai, and are simply passed down to the Linux
+> kernel by the interrupt pipeline.
+>=20
+> >=20
+> --=20
+> Philippe.
+>=20
+>=20
+>
 
-
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
