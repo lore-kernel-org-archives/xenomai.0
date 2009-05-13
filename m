@@ -1,12 +1,13 @@
-Message-ID: <4A0AC3F9.9090103@domain.hid>
-Date: Wed, 13 May 2009 14:58:33 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4A0AC1C8.4050006@domain.hid>
-In-Reply-To: <4A0AC1C8.4050006@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <ff1d78710905130504h2588d8c5te0b918dce3a8f0da@domain.hid>
+References: <ff1d78710905130504h2588d8c5te0b918dce3a8f0da@domain.hid>
+Content-Type: text/plain
+Date: Wed, 13 May 2009 14:59:37 +0200
+Message-Id: <1242219577.26544.952.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Troubles with switchtest
+Subject: Re: [Xenomai-core] [Xenomai-help] Periodic threads not scheduled
+ anymore during debug session
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,38 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Steven Kauffmann <steven.kauffmann@domain.hid>
+Cc: xenomai@xenomai.org, xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Hi Gilles,
+On Wed, 2009-05-13 at 14:04 +0200, Steven Kauffmann wrote:
+> Hi all,
 > 
-> I'm currently facing a nasty effect with switchtest over latest git head
-> (only tested this so far): running it inside my test VM (ie. with
-> frequent excessive latencies) I get a stalled Linux timer IRQ quite
-> quickly. System is otherwise still responsive, Xenomai timers are still
-> being delivered, other Linux IRQs too. switchtest complained about
+> If I connect a debugger to my application, other Xenomai periodic
+> threads (threads that not belong to the current process I'm debugging
+> ) are not scheduled anymore. Attached you can find a simple example
+> that reproduces the problem. I run the program 2 times in a different
+> terminal and connected a debugger to one of them. When a breakpoint is
+> reached both programs stops their execution but I would expect that
+> only the program that I'm debugging should stop and not both.
 > 
->     "Warning: Linux is compiled to use FPU in kernel-space."
+> $ cat /proc/xenomai/sched
 > 
-> when it was started. Kernels are 2.6.28.9/ipipe-x86-2.2-07 and
-> 2.6.29.3/ipipe-x86-2.3-01 (LTTng patched in, but unused), both show the
-> same effect.
+> CPU  PID    PRI      PERIOD     TIMEOUT    TIMEBASE  STAT       NAME
+>   0  0       -1      0          0          master    R          ROOT
+>   0  5469     0      1000000001 331274938  master    D
+>   0  5471     0      1000000001 0          master    XT
 > 
-> Seen this before?
+> This looks normal one thread is stopped ( thread that reaches the
+> breakpoint ) and the other one is delayed because it's a periodic
+> thread. Every time I call this command the timeout of the delayed
+> thread changes so it looks like this thread is still running but in
+> reality it is not.
 
-The warning about Linux being compiled to use FPU in kernel-space means
-that you enabled soft RAID or compiled for K7, Geode, or any other
-configuration using 3DNow for such simple operations as memcpy. It is
-harmless, it simply means that switchtest can not use fpu in kernel-space.
+This behavior is wanted (I mean, the implementation does freeze all
+thread timers when a break state is reached on purpose), so that you
+don't get tons of overruns once the debuggee is restarted.
 
-The bug you have is probably the same as the one described here, which I
-am able to reproduce on my atom:
-https://mail.gna.org/public/xenomai-help/2009-04/msg00200.html
+However, I'm now wondering if we should not be a bit smarter than this,
+and narrow the scope of such action. We do have the mechanisms to do so,
+it is just a matter of using them.
 
-Unfortunately, I for one am working on ARM issues and am not available
-to debug x86 issues. I think Philippe is busy too...
-
+> 
+> I'm using the xenomai 2.4 branch and kernel linux-2.6.28.9 patched
+> with adeos-ipipe-2.6.28.9-x86-2.2-07.
+> 
+> Regards
+> 
+> Steven
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 -- 
-                                                 Gilles.
+Philippe.
+
+
 
