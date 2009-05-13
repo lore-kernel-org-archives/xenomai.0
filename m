@@ -1,10 +1,10 @@
+Message-ID: <4A0ABB32.8080706@domain.hid>
+Date: Wed, 13 May 2009 14:21:06 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Wed, 13 May 2009 14:04:01 +0200
-Message-ID: <ff1d78710905130504h2588d8c5te0b918dce3a8f0da@domain.hid>
-From: Steven Kauffmann <steven.kauffmann@domain.hid>
-Content-Type: multipart/mixed; boundary=001636c92477cc4ecb0469ca019b
-Subject: [Xenomai-help] Periodic threads not scheduled anymore during debug
-	session
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] gatekeeper/0
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,67 +14,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
---001636c92477cc4ecb0469ca019b
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Somehow, the xenomai-help mailing list does not receive your mails. So,
+I am resending your mail to the list.
 
-Hi all,
 
-If I connect a debugger to my application, other Xenomai periodic
-threads (threads that not belong to the current process I'm debugging
-) are not scheduled anymore. Attached you can find a simple example
-that reproduces the problem. I run the program 2 times in a different
-terminal and connected a debugger to one of them. When a breakpoint is
-reached both programs stops their execution but I would expect that
-only the program that I'm debugging should stop and not both.
+Hi Gilles, Hi list,
 
-$ cat /proc/xenomai/sched
+nearly everything is working fine. I rebuild the kernel again without the
+given options and it seems to work.
+Even the latencies look quite much better. There is only one problem left
+that bothers me.
 
-CPU  PID    PRI      PERIOD     TIMEOUT    TIMEBASE  STAT       NAME
-  0  0       -1      0          0          master    R          ROOT
-  0  5469     0      1000000001 331274938  master    D
-  0  5471     0      1000000001 0          master    XT
+Every time I load the rt_eepro100 for my real-time device I get the
+message:
 
-This looks normal one thread is stopped ( thread that reaches the
-breakpoint ) and the other one is delayed because it's a periodic
-thread. Every time I call this command the timeout of the delayed
-thread changes so it looks like this thread is still running but in
-reality it is not.
+[   95.753152]   *** Receiver lock-up bug detected ***
+[   95.753154]   Your device may not work reliably!
 
-I'm using the xenomai 2.4 branch and kernel linux-2.6.28.9 patched
-with adeos-ipipe-2.6.28.9-x86-2.2-07.
+and sometimes the systems hangs (and can not be woken up) at this point.
 
-Regards
+I know that this is a hint for a irq problem but I don't know where this
+should be.
+My eth0 device (irq6) is not sharing this irq with an other deveice.
 
-Steven
+IRQs after boot:
 
---001636c92477cc4ecb0469ca019b
-Content-Type: text/x-csrc; charset=US-ASCII; name="test_gdb.c"
-Content-Disposition: attachment; filename="test_gdb.c"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_funzdriq0
+         CPU0
+  0:         40    XT-PIC-XT        timer
+  1:         52    XT-PIC-XT        i8042
+  2:          0    XT-PIC-XT        cascade
+  3:          2    XT-PIC-XT
+  4:        280    XT-PIC-XT        serial
+  5:       6179    XT-PIC-XT        uhci_hcd:usb2, eth3,
+i915@domain.hid
+  6:         44    XT-PIC-XT        eth0
+  7:       1293    XT-PIC-XT        ehci_hcd:usb1
+  8:          2    XT-PIC-XT        rtc0
+  9:         11    XT-PIC-XT        acpi
+ 10:          2    XT-PIC-XT
+ 11:          2    XT-PIC-XT
+ 12:        951    XT-PIC-XT        i8042
+ 14:       7734    XT-PIC-XT        ata_piix
+ 15:         40    XT-PIC-XT        uhci_hcd:usb3, ata_piix, eth1, eth2
 
-I2luY2x1ZGUgPHN5cy9tbWFuLmg+CiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPgojaW5jbHVkZSA8
-bmF0aXZlL3RpbWVyLmg+CgpSVF9UQVNLIHRhc2s7Cgp2b2lkIG15dGFzayh2b2lkKiBjb29raWUp
-IHsKCiAgaW50IHJldDsKCiAgcmV0ID0gcnRfdGFza19zZXRfcGVyaW9kaWMoJnRhc2ssIFRNX05P
-VywgMTAwMDAwMDAwMCk7CiAgaWYocmV0ICE9IDApIHsKICAgIHByaW50ZigiRXJyb3I6IHJ0X3Rh
-c2tfc2V0X3BlcmlvZCByZXR1cm5lZCAlZFxuIiwgcmV0KTsKICAgIHJ0X3Rhc2tfZGVsZXRlKCZ0
-YXNrKTsKICAgIHJldHVybjsKICB9CgogIGludCBjb3VudGVyID0gMDsKCiAgd2hpbGUoMSkgewog
-ICAgcHJpbnRmKCJDb3VudGVyOiAlZFxuIiwgY291bnRlcik7CiAgICBjb3VudGVyKys7CiAgICBy
-dF90YXNrX3dhaXRfcGVyaW9kKE5VTEwpOwogIH0KCn0KCmludCBtYWluKCkgewoKICBpbnQgcmV0
-OwoKICBtbG9ja2FsbChNQ0xfQ1VSUkVOVHxNQ0xfRlVUVVJFKTsKCiAgcmV0ID0gcnRfdGFza19j
-cmVhdGUoJnRhc2ssIE5VTEwsIDAsIDAsIDApOwogIGlmKHJldCAhPSAwKSB7CiAgICBwcmludGYo
-IkVycm9yOiBydF90YXNrX2NyZWF0ZSByZXR1cm5lZCAlZFxuIiwgcmV0KTsKICAgIHJldHVybiAt
-MTsKICB9CgogIHJldCA9IHJ0X3Rhc2tfc3RhcnQoJnRhc2ssICZteXRhc2ssIE5VTEwpOwogIGlm
-KHJldCAhPSAwKSB7CiAgICBwcmludGYoIkVycm9yOiBydF90YXNrX3N0YXJ0IHJldHVybmVkICVk
-XG4iLCByZXQpOwogICAgcmV0dXJuIC0xOwogIH0KCiAgcmV0ID0gcnRfdGFza19zZXRfcGVyaW9k
-aWMoJnRhc2ssIFRNX05PVywgMTAwMDAwMDAwMCk7CiAgaWYocmV0ICE9IDApIHsKICAgIHByaW50
-ZigiRXJyb3I6IHJ0X3Rhc2tfc2V0X3BlcmlvZCByZXR1cm5lZCAlZFxuIiwgcmV0KTsKICAgIHJ0
-X3Rhc2tfZGVsZXRlKCZ0YXNrKTsKICAgIHJldHVybiAtMTsKICB9CgogIGdldGNoYXIoKTsKCiAg
-cmV0ID0gcnRfdGFza19kZWxldGUoJnRhc2spOwogIGlmKHJldCAhPSAwKSB7CiAgICBwcmludGYo
-IkVycm9yOiBydF90YXNrX2RlbGV0ZSByZXR1cm5lZCAlZFxuIiwgcmV0KTsKICAgIHJldHVybiAt
-MTsKICB9CgogIHJldHVybiAwOwp9Cg==
---001636c92477cc4ecb0469ca019b--
+   IRQs after I added the real-time device:
+
+          CPU0
+  0:         40    XT-PIC-XT        timer
+  1:        131    XT-PIC-XT        i8042
+  2:          0    XT-PIC-XT        cascade
+  3:          2    XT-PIC-XT
+  4:        280    XT-PIC-XT        serial
+  5:      21773    XT-PIC-XT        uhci_hcd:usb2, i915@domain.hid,
+eth3
+  6:         71    XT-PIC-XT
+  7:       2334    XT-PIC-XT        ehci_hcd:usb1
+  8:          2    XT-PIC-XT        rtc0
+  9:         17    XT-PIC-XT        acpi
+ 10:          2    XT-PIC-XT
+ 11:          2    XT-PIC-XT
+ 12:       3771    XT-PIC-XT        i8042
+ 14:      11960    XT-PIC-XT        ata_piix
+ 15:         66    XT-PIC-XT        uhci_hcd:usb3, ata_piix, eth1, eth2
+
+cat /proc/xenomai/irq
+IRQ         CPU0
+  6:           1         rt_eepro100
+230:           0         [IPI]
+233:      170615         [timer]
+234:           0         [critical sync]
+258:           2         [virtual]
 
