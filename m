@@ -1,14 +1,13 @@
-Message-ID: <4A0AE726.5090107@domain.hid>
-Date: Wed, 13 May 2009 17:28:38 +0200
+Message-ID: <4A0AE9EF.1010107@domain.hid>
+Date: Wed, 13 May 2009 17:40:31 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4A0AC1C8.4050006@domain.hid> <4A0AC3F9.9090103@domain.hid>	
-	<4A0AC8A6.1000701@domain.hid> <1242220962.26544.955.camel@domain.hid>
-In-Reply-To: <1242220962.26544.955.camel@domain.hid>
+References: <4A0AC1C8.4050006@domain.hid> <4A0AC3F9.9090103@domain.hid>
+	<4A0AC8A6.1000701@domain.hid> <4A0AE2AC.7010302@domain.hid>
+In-Reply-To: <4A0AE2AC.7010302@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH] Fix host IRQ propagation (was: Troubles with
-	switchtest)
+Subject: Re: [Xenomai-core] Troubles with switchtest
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,11 +16,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> On Wed, 2009-05-13 at 15:18 +0200, Jan Kiszka wrote:
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
 >> Gilles Chanteperdrix wrote:
 >>> Jan Kiszka wrote:
 >>>> Hi Gilles,
@@ -42,60 +41,18 @@ Philippe Gerum wrote:
 >>> The warning about Linux being compiled to use FPU in kernel-space means
 >>> that you enabled soft RAID or compiled for K7, Geode, or any other
 >> RAID is on (ordinary server config).
->>
->>> configuration using 3DNow for such simple operations as memcpy. It is
->>> harmless, it simply means that switchtest can not use fpu in kernel-space.
->>>
->>> The bug you have is probably the same as the one described here, which I
->>> am able to reproduce on my atom:
->>> https://mail.gna.org/public/xenomai-help/2009-04/msg00200.html
->>>
->>> Unfortunately, I for one am working on ARM issues and am not available
->>> to debug x86 issues. I think Philippe is busy too...
->> OK, looks like I got the same flu here.
->>
->> Philippe, did you find out any more details in the meantime? Then I'm
->> afraid I have to pick this up.
 > 
-> No, I did not resume this task yet. Working from the powerpc side of the
-> universe here.
+> By the way, I wonder how MMX accelerated software raid works on K7,
+> since the way I understand the code, calls to kernel_fpu_begin() can not
+> be nested.
+> 
+> If you think they can be nested, then we can make switchtest test fpu in
+> Linux kernel-space when these options are enabled.
 
-Hoho, don't think this rain here over x86 would have never made it down
-to ARM or PPC land! ;)
-
-Martin, could you check if this helps you, too?
+Sorry, I haven't looked that close into the in-kernel FPU handling so
+far. What users are nested in the standard kernel? Or is it RAID in itself?
 
 Jan
-
-(as usual, ready to be pulled from 'for-upstream')
-
---------->
-
-Host IRQs may not only be triggered from non-root domains. But
-rthal_propagate_irq's implemenation in I-pipe assumes so, which broke
-host tick propagation under certain load scenarios. Besides that,
-rthal_schedule_irq_root is the more efficient service for this purpose
-anyway.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
-
- include/asm-generic/hal.h |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/include/asm-generic/hal.h b/include/asm-generic/hal.h
-index b37e476..8137856 100644
---- a/include/asm-generic/hal.h
-+++ b/include/asm-generic/hal.h
-@@ -437,7 +437,7 @@ int rthal_irq_host_release(unsigned irq,
- 
- static inline void rthal_irq_host_pend(unsigned irq)
- {
--	rthal_propagate_irq(irq);
-+	rthal_schedule_irq_root(irq);
- }
- 
- int rthal_apc_alloc(const char *name,
 
 -- 
 Siemens AG, Corporate Technology, CT SE 2
