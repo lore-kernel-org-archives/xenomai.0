@@ -1,10 +1,12 @@
-Message-ID: <4A0C0E20.30200@domain.hid>
-Date: Thu, 14 May 2009 14:27:12 +0200
-From: Pierre Antoine HALOPEAU <halopeau@domain.hid>
+Message-ID: <4A0C1B0D.1050104@domain.hid>
+Date: Thu, 14 May 2009 15:22:21 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] help with drivers
+References: <OF8AF478EE.52F5DF3F-ONC12575B5.004203DE-C12575B5.0042CC16@domain.hid>
+In-Reply-To: <OF8AF478EE.52F5DF3F-ONC12575B5.004203DE-C12575B5.0042CC16@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] gatekeeper/0
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,33 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: henning.richter@domain.hid
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Hello,
-=20
-I'm trying to make a RT driver for a TEWS TCP-460 serial card . I got=20
-the driver for Linux and I am searching for some tutorials that explain=20
-the difference between a rtdm driver and Linux driver. I already read=20
-the driver for the 16550 UART. I try to use it with the tutorial in=20
-order to install it but when I make setserial /dev/ttySTRV002_0 the=20
-response has for io adress is 0x0000 and IRQ is 230. Actually I use the=20
-HAL drivers of TEWS in order to make recognize my card by Linux because=20
-Linux doesn't recognize it when I just plug in it. I think I will try to=20
-add a PCI serial controller visable to the 16550A driver in order to use=20
-it directly with my card. If you have some examples, could it be=20
-possible for you to send them to me. Thank you in advance.
-=20
-best regards,
-=20
-Pierre Antoine HALOPEAU
+henning.richter@domain.hid wrote:
+> Hi Gilles, Hi list,
+> 
+> nearly everything is working fine. I rebuild the kernel again without the
+> given options and it seems to work.
+> Even the latencies look quite much better. There is only one problem left
+> that bothers me.
+> 
+> Every time I load the rt_eepro100 for my real-time device I get the
+> message:
+> 
+> [   95.753152]   *** Receiver lock-up bug detected ***
+> [   95.753154]   Your device may not work reliably!
+> 
+> and sometimes the systems hangs (and can not be woken up) at this point.
+> 
+> I know that this is a hint for a irq problem but I don't know where this
+> should be.
+> My eth0 device (irq6) is not sharing this irq with an other deveice.
+> 
+> IRQs after boot:
 
+Hi,
 
-__________ Information provenant d'ESET NOD32 Antivirus, version de la base=
- des signatures de virus 4074 (20090514) __________
+when your question is new, please post a new message instead of replying
+to an old thread. The person likely to answer your question probably did
+not even read your message because it is buried so deep in a thread
+which I handled until now.
 
-Le message a =E9t=E9 v=E9rifi=E9 par ESET NOD32 Antivirus.
+Regards.
 
-http://www.eset.com
-
-
+-- 
+                                                 Gilles.
 
