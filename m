@@ -1,13 +1,14 @@
-Message-ID: <4A0BF3A2.2040903@domain.hid>
-Date: Thu, 14 May 2009 12:34:10 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4A0BF054.3040308@domain.hid>
 References: <4A0AC1C8.4050006@domain.hid> <4A0AC3F9.9090103@domain.hid>
-	<4A0AC8A6.1000701@domain.hid>
-	<1242220962.26544.955.camel@domain.hid>	<4A0AE726.5090107@domain.hid>
-	<Pine.LNX.4.64.0905131152460.1027@domain.hid>
-In-Reply-To: <Pine.LNX.4.64.0905131152460.1027@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+	<4A0AC8A6.1000701@domain.hid> <1242220962.26544.955.camel@domain.hid>
+	<4A0AE726.5090107@domain.hid> <1242230121.26544.977.camel@domain.hid>
+	<4A0AF109.5050804@domain.hid> <1242247840.26544.981.camel@domain.hid>
+	<4A0BF054.3040308@domain.hid>
+Content-Type: text/plain
+Date: Thu, 14 May 2009 12:49:17 +0200
+Message-Id: <1242298157.6816.10.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [PATCH] Fix host IRQ propagation
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -18,43 +19,106 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Martin Shepherd <mcs@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Martin Shepherd wrote:
-> On Wed, 13 May 2009, Jan Kiszka wrote:
->> ...
->> Martin, could you check if this helps you, too?
+On Thu, 2009-05-14 at 12:20 +0200, Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> > On Wed, 2009-05-13 at 18:10 +0200, Jan Kiszka wrote:
+> >> Philippe Gerum wrote:
+> >>> On Wed, 2009-05-13 at 17:28 +0200, Jan Kiszka wrote:
+> >>>> Philippe Gerum wrote:
+> >>>>> On Wed, 2009-05-13 at 15:18 +0200, Jan Kiszka wrote:
+> >>>>>> Gilles Chanteperdrix wrote:
+> >>>>>>> Jan Kiszka wrote:
+> >>>>>>>> Hi Gilles,
+> >>>>>>>>
+> >>>>>>>> I'm currently facing a nasty effect with switchtest over latest git head
+> >>>>>>>> (only tested this so far): running it inside my test VM (ie. with
+> >>>>>>>> frequent excessive latencies) I get a stalled Linux timer IRQ quite
+> >>>>>>>> quickly. System is otherwise still responsive, Xenomai timers are still
+> >>>>>>>> being delivered, other Linux IRQs too. switchtest complained about
+> >>>>>>>>
+> >>>>>>>>     "Warning: Linux is compiled to use FPU in kernel-space."
+> >>>>>>>>
+> >>>>>>>> when it was started. Kernels are 2.6.28.9/ipipe-x86-2.2-07 and
+> >>>>>>>> 2.6.29.3/ipipe-x86-2.3-01 (LTTng patched in, but unused), both show the
+> >>>>>>>> same effect.
+> >>>>>>>>
+> >>>>>>>> Seen this before?
+> >>>>>>> The warning about Linux being compiled to use FPU in kernel-space means
+> >>>>>>> that you enabled soft RAID or compiled for K7, Geode, or any other
+> >>>>>> RAID is on (ordinary server config).
+> >>>>>>
+> >>>>>>> configuration using 3DNow for such simple operations as memcpy. It is
+> >>>>>>> harmless, it simply means that switchtest can not use fpu in kernel-space.
+> >>>>>>>
+> >>>>>>> The bug you have is probably the same as the one described here, which I
+> >>>>>>> am able to reproduce on my atom:
+> >>>>>>> https://mail.gna.org/public/xenomai-help/2009-04/msg00200.html
+> >>>>>>>
+> >>>>>>> Unfortunately, I for one am working on ARM issues and am not available
+> >>>>>>> to debug x86 issues. I think Philippe is busy too...
+> >>>>>> OK, looks like I got the same flu here.
+> >>>>>>
+> >>>>>> Philippe, did you find out any more details in the meantime? Then I'm
+> >>>>>> afraid I have to pick this up.
+> >>>>> No, I did not resume this task yet. Working from the powerpc side of the
+> >>>>> universe here.
+> >>>> Hoho, don't think this rain here over x86 would have never made it down
+> >>>> to ARM or PPC land! ;)
+> >>>>
+> >>>> Martin, could you check if this helps you, too?
+> >>>>
+> >>>> Jan
+> >>>>
+> >>>> (as usual, ready to be pulled from 'for-upstream')
+> >>>>
+> >>>> --------->
+> >>>>
+> >>>> Host IRQs may not only be triggered from non-root domains.
+> >>> Are you sure of this? I can't find any spot where this assumption would
+> >>> be wrong. host_pend() is basically there to relay RT timer ticks and
+> >>> device IRQs, and this only happens on behalf of the pipeline head. At
+> >>> least, this is how rthal_irq_host_pend() should be used in any case. If
+> >>> you did find a spot where this interface is being called from the lower
+> >>> stage, then this is the root bug to fix.
+> >> I haven't studied the I-pipe trace /wrt this in details yet, but I could
+> >> imagine that some shadow task is interrupted in primary mode by the
+> >> timer IRQ and then leaves the handler in secondary mode due to whatever
+> >> events between schedule-out and in at the end of xnintr_clock_handler.
+> >>
+> > 
+> > You need a thread context to move to secondary, I just can't see how
+> > such scenario would be possible.
 > 
-> It doesn't appear to help. To check, first I turned on the HPET and PM
-> timer options, and recompiled the kernel without your patch, to verify
-> that this reproduced the problem. I then manually applied your patch
-> to include/asm-generic/xenomai/hal.h in the kernel source tree,
-> recompiled the kernel, installed etc, and rebooted. However even with
-> the patch in place, whenever I ran:
+> Here is the trace of events:
 > 
->   dd if=/dev/zero of=/dev/null count=20000000
+> => Shadow task starts migration to secondary
+> => in xnpod_suspend_thread, nklock is briefly released before
+>    xnpod_schedule
+
+Which is the root bug. Blame on me; this recent change in -head breaks a
+basic rule a lot of code is based on: a self-suspending thread may not
+be preempted while scheduling out, i.e. suspension and rescheduling must
+be atomically performed. xnshadow_relax() counts on this too.
+
+> => timer IRQ intercepts
+> => as the current CPU is marked for reschedule, we enter xnpod_schedule
+>    before propagating the host tick
+> => once the migrating thread comes in again, it will run the
+>    xnintr_clock_handler tail, i.e. xnarch_relay_tick, already over the
+>    root domain
+
+Ok, makes sense now. However, this can't happen with 2.4 which has no
+such lock release in xnpod_suspend_thread(). So the question is: was the
+"lost tick" bug observed also on 2.4, or not?
+
 > 
-> then initially top showed that dd was getting very little CPU time
-> (<10%), then after 30 seconds or so, the system became completely
-> unresponsive until the dd ended. This is how it acts without the patch
-> as well. So it doesn't appear that the patch has made any difference
-> to this problem.
-
-Hmm, so there is no Xenomai task running during this test, just Linux
-load? Tried to reproduce with my kernel here (both HPET and PM enabled,
-as usual), but no success. Strange.
-
-> Note that I applied the patch to Xenomai 2.5-rc1 in linux kernel
-> 2.6.29.1. If the patch somehow relies on head, tell me, and I'll
-> endeavor to set up a new kernel using that.
-
-The patch must cleanly apply as is on -rc1, any later changes did not
-affect its context.
-
-Jan
-
+> Jan
+> 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Philippe.
+
+
 
