@@ -1,12 +1,10 @@
-Date: Thu, 14 May 2009 17:15:54 -0700 (PDT)
-From: Martin Shepherd <mcs@domain.hid>
-In-Reply-To: <4A0BC53F.5090505@domain.hid>
-Message-ID: <Pine.LNX.4.64.0905141128190.25483@domain.hid>
-References: <Pine.LNX.4.64.0905131634150.7706@domain.hid>
-	<4A0BC53F.5090505@domain.hid>
+Message-ID: <4A0D25D6.5090607@domain.hid>
+Date: Fri, 15 May 2009 10:20:38 +0200
+From: Pierre Antoine HALOPEAU <halopeau@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Subject: Re: [Xenomai-help] Encouraging Xenomai test results
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] help with driver 16550A
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,42 +14,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+
+Hello,
+
+I' m trying to drive a card TEWS TCP460 that is compatible with 16550=20
+with the driver 16550A. Before compile my kernel I chose the option=20
+CONFIG_XENO_DRIVERS_16550A_ANY so I try to load the driver with the=20
+command modprobe xeno_16550A mem=3D0xfebff000  irq=3D23. I found the=20
+argument with the command dmesg. I have a mmio adress and an IRQ in the=20
+list. When I load the driver I have not errors but when I watch in=20
+/proc/xenomai/rtdm I did not see my ports. As anabody have information?=20
+As anabody can help me ? Thank you in advance.
+
+Best regards,
+
+Pierre - Antoine HALOPEAU
 
 
-On Thu, 14 May 2009, Gilles Chanteperdrix wrote:
-> Adeos no longer plays back the missed interrupts. It only plays back one
-> interrupt and let Linux' lost tick compensation algorithms do the rest.
+__________ Information provenant d'ESET NOD32 Antivirus, version de la base=
+ des signatures de virus 4077 (20090514) __________
 
-Is there a way to get ipipe to report if it has had to drop any
-interrupts for a given IRQ number?
+Le message a =E9t=E9 v=E9rifi=E9 par ESET NOD32 Antivirus.
 
-> Running real-time tasks for 3 seconds without leaving Linux run is a bad
-> idea (it is even surprising that it works at all).
+http://www.eset.com
 
-Understood, although I still think that this was a useful exercise,
-even if no sane application would lock out linux for so long, because
-it showed me how the system will react if a bug or a hardware problem
-causes my code to operate seriously out of spec. For safety reasons,
-this is useful to know.
 
-Anyway, I have now re-run the test program, this time configured to
-only lock out Linux for 3 milliseconds at a time, separated by gaps of
-1.5 milliseconds. As expected, this time the Linux clock, with its 4
-millisecond period, appeared to be unaffected by the test. To be
-precise, the Linux clock on this computer generally drifts at about
--1ms per minute (measured using a couple of tier-1 NTP servers), and
-it continued to drift at this rate while I was running the test
-program. The min and max roundtrip latencies of the new test run were
-unchanged from what I reported earlier.
-
-> For Linux to work correctly, we usually advise people not to let
-> real-time task run for a period longer than Linux tick period.
-
-That's a useful bit of information.
-
-Thanks for the help,
-
-Martin
 
