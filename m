@@ -1,10 +1,12 @@
-From: "Dr. Kiriakos Athanasas" <athanasas@domain.hid>
-Date: Fri, 15 May 2009 10:54:03 +0200
+Content-Transfer-Encoding: 7bit
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_03E2_01C9D54B.75F95DB0"
-Message-Id: <0MKv5w-1M4tAX3kHn-0001tx@domain.hid>
-Subject: [Xenomai-help] problem with mutexes between kernel and user-space
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C9D542.F262EE2F"
+Date: Fri, 15 May 2009 11:53:05 +0200
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A019C42C3@domain.hid>
+In-Reply-To: <4A044EAE.8070408@domain.hid>
+From: <roderik.wildenburg@domain.hid>
+Subject: Re: [Xenomai-help] sem_wait increments fault counter - solved
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,273 +16,212 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: gilles.chanteperdrix@xenomai.org
+Cc: xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
 
-------=_NextPart_000_03E2_01C9D54B.75F95DB0
+------_=_NextPart_001_01C9D542.F262EE2F
 Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-
-Hello,
-
- 
-
-I had an application which run under kernel 2.6.26 and xeno 2.4.6 without
-any problems.
-
- 
-
-I tried now kernel 2.6.28.7 and xeno 2.5.1 and have the following problem:
-
- 
-
-inside a kernel module I create a mutex for locking an shared memory. from
-an user-task I want now to
-
-communicate over the protected shm. Therefore I bind to the mutex of the
-kernel-space
-
- 
-
-when I call rt_mutex_acquire I get the failure EIDRM. Why the mutex seems to
-be deleted?
-
- 
-
-rt_mutex_release causes a segmentation fault.
-
- 
-
-What is my mistake?
-
- 
-
- 
-
-Here the code description of user space (it is really simple):
-
- 
-
-err = rt_mutex_create(&eca_mutex,"Mutex1");
-
-.
-
-err = rt_mutex_bind(&eca_mutex," Mutex1",TM_INFINITE);  
-
-.
-
-err = rt_mutex_acquire(&eca_mutex, TM_INFINITE);   // lock mutex
-
-memcpy(.); 
-
-err = rt_mutex_release(&eca_mutex);               // unlock mutex
-
-.
-
- 
-
-Best regards 
-
- 
-
-Kiriakos
-
- 
-
-
-------=_NextPart_000_03E2_01C9D54B.75F95DB0
-Content-Type: text/html;
-	charset="us-ascii"
+	charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
+When I tried to build a test for this problem, I realized that I did not =
+use the correct shared memory size with the munmap call (and I did not =
+check the munmap return value, blame on me). This wrong size was the =
+reason for the increment of the trap 0 counter. So, when using the =
+correct shared memory size the fault counter wasn=B4t incremented.
+Astonishingly the trap 0 counter also wasn=B4t incremeted when the =
+munmap size was wrong but I additionally did not (!) use a sem_wait-call =
+!!?? Therefore I first thought the sem_wait-call is responsible for the =
+fault counter, but obviously it wasn=B4t, whysoever.=20
 
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
-<style>
-<!--
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:Arial;}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-span.E-MailFormatvorlage17
-	{mso-style-type:personal-compose;
-	font-family:Arial;
-	color:windowtext;}
-@page Section1
-	{size:595.3pt 841.9pt;
-	margin:70.85pt 70.85pt 2.0cm 70.85pt;}
-div.Section1
-	{page:Section1;}
--->
-</style>
+If you are interested in reproducing this behaviour, you can do so with =
+the appended testcase.
+The included makefile creates 2 processes :
+- a daemon (dm) which creates shared memory and
+- a client (cl) which tries to use shared memory (optionally with the =
+use of a semaphore or without it).
 
-</head>
+Simply call "dm &" and then "cl 1". This will use the semaphore and =
+increment the fault counter. Or call "cl 0" which will not use the =
+semaphore and also will not increment the fault counter (cat =
+/proc/xenomai/faults;  both calls use a wrong size parameter (0) with =
+the munmap-call).
 
-<body lang=3DDE link=3Dblue vlink=3Dpurple>
+Sorry for having stolen your time, but the strange behavior of the =
+semaphore use lead me on the wrong track.
+Roderik
 
-<div class=3DSection1>
 
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt'>Hello,<o:p></o:p></span></font></p>
+> -----Urspr=FCngliche Nachricht-----
+> Von: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
+> Gesendet: Freitag, 8. Mai 2009 17:25
+> An: Wildenburg, Roderik RAEK3 MRA
+> Cc: xenomai@xenomai.org
+> Betreff: Re: AW: AW: [Xenomai-help] sem_wait increments fault counter
+>=20
+> roderik.wildenburg@domain.hid wrote:
+> >>> I try to give some more information: In fact it is a=20
+> library we are
+> >>> talking about (let=B4s call it shmlib). This library=20
+> creates a shared
+> >>> memory and a (named) semaphore which should synchronise the=20
+> >> access to
+> >>> the shared memory. This library (shmlib) is linked with Xenomai
+> >>> posix-library, so all posix-calls within shmlib should be=20
+> handled by
+> >>> Xenomai.
+> >> Well, not quite. Linking is not enough. To actually use=20
+> Xenomai posix
+> >> library calls, you have to pass the bunch of -Wl,--wrap=20
+> >> options to gcc,
+> >> which you get when calling xeno-config --posix-ldflags. Is=20
+> it what you
+> >> are doing.
+> >=20
+> > Not exactly, I wrap all posix calls in my library (shmlib) by hand:
+> > shm_open -> __wrap_shm_open
+> > So, when linking shmlib with an application the wrap-options for gcc
+> > don=B4t need to be provided (I hope. And the linker does not=20
+> complain).
+>=20
+> If shmlib is a shared lib, then wrapping when=20
+> compiling/linking the lib
+> is all that is needed. Flags do not need to be passed to the=20
+> application
+>  using the lib. If it is a static lib, of course, things are=20
+> different.
+>=20
+> In any case, I still do not know if the calls to sem_open/sem_wait are
+> wrapped too ?
+>=20
+> >>> Is trap 0 explicitly generated by Xenomay in some error=20
+> >> case or is it
+> >>> "just" a CPU error when executing an illegal instruction=20
+> (but where
+> >>> should this illegal instruction/code come from ?) ?
+> >>>
+> >>> By the way: this error also happens with Xenoami 2.4.6.
+> >> No, Xenomai has no particular reason to voluntarily generate=20
+> >> a trap. And
+> >> this trap probably causes the calling thread to switch to secondary
+> >> mode, so this is bad news if it is a thread with actual real-time
+> >> activities. As Philippe told you, this trap may be due to=20
+> >> some Power PC
+> >> specific behaviour.
+> >=20
+> > No, it is not a real_time thread which causes the trap. It is just
+> > a Linux application which has been linked with my library=20
+> and therefore
+> > becomes a Xenomai thread (but probably in secondary mode ?).
+>=20
+> As indicated by Philippe, if the fault counter is incremented, the
+> Xenomai thread runs in primary mode at the time when the=20
+> fault happens.
+>=20
+> > Neverthelss, the problem(?) we are talking about is caused by
+> > sem_wait not by shared memory (as far as I can see).
+> > Is the problem worth to be further investigated (at the moment I
+> > don=B4t have any obvious drawbacks from trap 0). If so, do=20
+> you have an idea what
+> I could do else to find out the reason for the trap 0 ?
+>=20
+> Yes, of course, but if you use Xenomai's sem_wait, you could probably
+> switch to Linux' sem_wait. If you want to know why the fault happens,
+> then put a show_stack(NULL, NULL) at the point where the counter is
+> incremented.
+>=20
+> --=20
+> 					    Gilles.
+>=20
+>
 
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt'><o:p>&nbsp;</o:p></span></font></p>
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>I had an application which run under kernel 2.6.26 and xeno =
-2.4.6
-without any problems.<o:p></o:p></span></font></p>
+------_=_NextPart_001_01C9D542.F262EE2F
+Content-Type: application/x-zip-compressed;
+	name="faulttes.zip"
+Content-Transfer-Encoding: base64
+Content-Description: faulttes.zip
+Content-Disposition: attachment;
+	filename="faulttes.zip"
 
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'><o:p>&nbsp;</o:p></span></font></p>
+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
 
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>I tried now kernel 2.6.28.7 and xeno 2.5.1 and have the =
-following problem:<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>inside a kernel module I create a mutex for locking an shared =
-memory. from
-an user-task I want now to<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>communicate over the protected shm. Therefore I bind to the =
-mutex of
-the kernel-space<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>when I call rt_mutex_acquire I get the failure EIDRM. Why the =
-mutex
-seems to be deleted?<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>rt_mutex_release causes a segmentation =
-fault.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>What is my mistake?<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>Here the code description of user space (it is really =
-simple):<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>err =3D =
-rt_mutex_create(&amp;eca_mutex,&quot;Mutex1&quot;);<o:p></o:p></span></fo=
-nt></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>&#8230;<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>err =3D rt_mutex_bind(&amp;eca_mutex,&quot; =
-Mutex1&quot;,TM_INFINITE);&nbsp; <o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>&#8230;<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>err =3D rt_mutex_acquire(&amp;eca_mutex, =
-TM_INFINITE);&nbsp;&nbsp; // lock mutex<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>memcpy(&#8230;); <o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>err =3D =
-rt_mutex_release(&amp;eca_mutex);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // unlock =
-mutex<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>&#8230;<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>Best regards <o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'>Kiriakos<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt'><o:p>&nbsp;</o:p></span></font></p>
-
-</div>
-
-</body>
-
-</html>
-
-------=_NextPart_000_03E2_01C9D54B.75F95DB0--
-
+------_=_NextPart_001_01C9D542.F262EE2F--
 
