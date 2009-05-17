@@ -1,12 +1,10 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1242330281.3919.12.camel@domain.hid>
-References: <1242330281.3919.12.camel@domain.hid>
 Content-Type: text/plain
-Date: Sun, 17 May 2009 12:55:46 +0200
-Message-Id: <1242557746.17138.43.camel@domain.hid>
+Date: Sun, 17 May 2009 16:54:57 +0200
+Message-Id: <1242572097.17138.57.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Xenomai standalone
+Subject: [Xenomai-core] Allow "break" statement in RTDM_EXECUTE_ATOMICALLY()
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,52 +13,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Patrick <kpa_info@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
-On Thu, 2009-05-14 at 21:44 +0200, Patrick wrote:
-> Hello all,
-> 
-> I would like to know if it's possible to simply "separate" Xenomai
-> (nucleus) from Linux and adeos ? My goal is to have a simple RTOS based
-> on Xenomai (only native skin in kernel space).
-> 
-> I have done a quick look at the source and it's seems ok to remove adeos
-> by editing hal. About linux, Xenomai seems to need only MM, timer, and
-> some part of irq management. Is that right ?
-> 
-> So do you think that it would be possible to run Xenomai nucleus as a
-> standalone RTOS ?
-> 
 
-It is, and has already been done actually.
+Jan,
 
-You may want to track how the nucleus and skins are moved on top of the
-event-driven simulator running in user-space: i.e. include/asm-sim,
-__XENO_SIM__ define. The simulator is basically a C++ library providing
-co-routines, and a set of building blocks to mimick typical RTOS
-resources (synchs, threads, interrupts etc).
+Would you consider allowing "break" for leaving an atomic code block as
+illustrated below?
 
-Two more hints:
-- the simulator is a good analogy for your problem, because the
-simulation engine cannot provide any Linux kernel services, since it is
-fully based on userland resources (in this case: from the glibc).
-Therefore, if you don't have Linux underneath, this applies as well to
-your case.
-- track the xnarch_* interface from asm-sim/ (and elsewhere), how it is
-implemented, what set of services is defined here. This is key to your
-problem.
+I understand this would create a potential issue with newer RTDM drivers
+relying on this feature when backported to former RTDM implementations,
+but only having if/else constructs to control the execution flow within
+an atomic block may be painful sometimes and lead to uselessly hairy
+code, especially for error handling.
+Maybe adding another helper macro with the desired behavior, and
+documenting it separately from RTDM_EXECUTE_ATOMICALLY() would mitigate
+the portability issue?
 
-> Thanks in advance for any help
-> 
-> Patrick
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+Additionally, I would definitely shadow/hide the spl value from the code
+block in a way or another, since using "s" as a socket identifier for
+RTDM-based protocol drivers is not that unusual.
+
+e.g.
+
+diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
+index 058a9f8..18b6001 100644
+--- a/include/rtdm/rtdm_driver.h
++++ b/include/rtdm/rtdm_driver.h
+@@ -595,14 +595,16 @@ int rtdm_select_bind(int fd, rtdm_selector_t *selector,
+ 	<LEAVE_ATOMIC_SECTION>			\
+ }
+ #else /* This is how it really works */
+-#define RTDM_EXECUTE_ATOMICALLY(code_block)	\
+-{						\
++#define RTDM_ATOMIC_BLOCK(code_block)		\
++do {						\
+ 	spl_t s;				\
+-						\
+ 	xnlock_get_irqsave(&nklock, s);		\
+-	code_block;				\
++	do {					\
++	  code_block;				\
++	} while(0);				\
+ 	xnlock_put_irqrestore(&nklock, s);	\
+-}
++} while(0)
++#define RTDM_EXECUTE_ATOMICALLY(code_block)	RTDM_ATOMIC_BLOCK(code_block)
+ #endif
+ /** @} Global Lock across Scheduler Invocation */
+ 
 -- 
 Philippe.
 
