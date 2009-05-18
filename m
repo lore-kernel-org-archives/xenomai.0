@@ -1,11 +1,13 @@
-Message-ID: <4A008DC9.1000603@domain.hid>
-Date: Tue, 05 May 2009 21:04:41 +0200
-From: Stefan Kisdaroczi <kisda@domain.hid>
+Message-ID: <4A116D6D.7020105@domain.hid>
+Date: Mon, 18 May 2009 16:15:09 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig2BDCFFA281BDED63E4E7BA59"
-Subject: [Xenomai-help] IXXAT-PCI-CAN driver hijacks my pci board
+References: <abaf774b0905180656y4eddca23h6241c9dc031a3ba4@domain.hid>
+	<4A116AC5.7010704@domain.hid>
+In-Reply-To: <4A116AC5.7010704@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] select(2) generates EFAULT
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,67 +17,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig2BDCFFA281BDED63E4E7BA59
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Gilles Chanteperdrix wrote:
+> Steve wrote:
+>> First, thank you for the help on my previous query.
+>>
+>> I am still working on porting a c++ application from RTAI to Xenomai,
+>> and have encountered a problem with sockets, specifically the select
+>> function.
+>>
+>> When Xenomai is not being used the code runs as expected.  Once the
+>> Xenomai headers, compile options, etc, are used the select function
+>> fails with the error EFAULT.  I have reproduced the error (works
+>> without Xenomai, EFAULTs with Xenomai) using the following program:
+>>
+>> #include <stdio.h>
+>> #include <arpa/inet.h>
+>> #include <errno.h>
+>>
+>> int handleError(char *msg, int err);
+>>
+>> int main(void)
+>> {
+>>    int sfd;
+>>    struct sockaddr_in sai;
+>>    fd_set SockSet;
+>>    struct timeval tv;
+>>    tv.tv_sec = 2;
+>>    tv.tv_usec = 0;
+>>
+>>    sai.sin_family = AF_INET;
+>>    sai.sin_port = htons(1025);
+>>    sai.sin_addr.s_addr = htonl(INADDR_ANY);
+>>
+>>    if((sfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+>>    { return handleError("creation error", errno); }
+>>
+>>    if(bind(sfd, (struct sockaddr*)&sai, sizeof(sai)) == -1)
+>>    { return handleError("bind error", errno); }
+>>
+>>    if(listen(sfd, 5) == -1)
+>>    { return handleError("listen error", errno); }
+>>
+>>    FD_ZERO(&SockSet);
+>>    FD_SET(sfd, &SockSet);
+>>
+>>    if(select(sfd+1, &SockSet, 0, 0, &tv) == -1)
+>>    { return handleError("select error", errno); }
+>>
+>>    printf("success\n");
+>>
+>>    return 0;
+>> }
+>>
+>> I am using Xenomai 2.4.6.1 on a vanilla 2.6.24.6 Linux kernel, and
+>> running on Ubuntu 8.04.
+> 
+> Could you try 2.4.7, to see if you are not having a bug which has
+> already been fixed?
+> 
+> What you are trying should work, even though you are not really using
+> Xenomai's select but Linux plain select.
 
-Hi,
+This should have been fixed in 2.4.x.git - if my patch were applied. See
+git://git.xenomai.org/xenomai-jki.git for-2.4.x
 
-my pci board has the same pci-interface-chip as the IXXAT-PCI board.
-The vendor and device id's are identical, but the subsys id is different.=
+Did I missed to post some correction of that version, or what delays
+this? Sorry, lost track of it.
 
+Jan
 
-The documentation for my board says that it is essential to check all ID =
-values,
-because vendor and device id are standard values for the pci-interface-ch=
-ip.
-
-dmesg output, there is no IXXAT-PCI-CAN board installed:
-> RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
-> RTCAN SJA1000 driver initialized
-> PCI: setting IRQ 12 as level-triggered
-> IXXAT-PCI-CAN 0000:00:11.0: found PCI INT A -> IRQ 12
-> IXXAT-PCI-CAN: Initializing device 10b5:9050:2503
-
-The following patch fixed it for me (my own driver loads again).
-However, i could not check if it still detects the CAN board,
-as i dont have one.
-
-Thanks
-kisda
-
---- xenomai-2.4.7.orig/ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c
-+++ xenomai-2.4.7/ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c
-@@ -73,7 +73,7 @@
- #define IXXAT_BASE_PORT_SIZE 0x0400
-
- static struct pci_device_id ixxat_pci_tbl[] =3D {
--	{IXXAT_PCI_VENDOR_ID, IXXAT_PCI_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID, 0, 0=
-, 0},
-+	{IXXAT_PCI_VENDOR_ID, IXXAT_PCI_DEVICE_ID, IXXAT_PCI_VENDOR_ID, IXXAT_P=
-CI_SUB_SYS_ID, 0, 0, 0},
- 	{ }
- };
- MODULE_DEVICE_TABLE (pci, ixxat_pci_tbl);
-
-
-
---------------enig2BDCFFA281BDED63E4E7BA59
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFKAI3KIPTw9rIdn6oRAkXLAJ9jV+bBoa5Mq/KQsZiSrDmNBRCIagCfZXge
-uL9cbyUuxyEFoab80wvoguk=
-=O7+U
------END PGP SIGNATURE-----
-
---------------enig2BDCFFA281BDED63E4E7BA59--
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
