@@ -1,12 +1,12 @@
+Message-ID: <4A117E7B.7010203@domain.hid>
+Date: Mon, 18 May 2009 17:27:55 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <abaf774b0905180808t43991e35q1e4fda4675b37beb@domain.hid>
-References: <abaf774b0905180656y4eddca23h6241c9dc031a3ba4@domain.hid>
-	<4A116AC5.7010704@domain.hid> <4A116D6D.7020105@domain.hid>
-	<4A116EA1.6050303@domain.hid> <4A117241.5080104@domain.hid>
+References: <abaf774b0905180656y4eddca23h6241c9dc031a3ba4@domain.hid>	<4A116AC5.7010704@domain.hid>
+	<4A116D6D.7020105@domain.hid>	<4A116EA1.6050303@domain.hid>
+	<4A117241.5080104@domain.hid>
 	<abaf774b0905180808t43991e35q1e4fda4675b37beb@domain.hid>
-Date: Mon, 18 May 2009 16:17:33 +0100
-Message-ID: <abaf774b0905180817m3c12c78dm5e62a0e1550decd5@domain.hid>
-From: Steve <sbxenomai@domain.hid>
+In-Reply-To: <abaf774b0905180808t43991e35q1e4fda4675b37beb@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] select(2) generates EFAULT
@@ -19,14 +19,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Steve <sbxenomai@domain.hid>
+Cc: xenomai@xenomai.org
 
-Also, because my company restricts access to all external ports except
-http / https, I can't use git.  I have had to download the xenomai
-releases from 'http://download.gna.org/xenomai/stable/'.  Does this
-make a difference?
-
-On 18/05/2009, Steve <sbxenomai@domain.hid> wrote:
+Steve wrote:
 > On 18/05/2009, Jan Kiszka <jan.kiszka@domain.hid> wrote:
 >> Gilles Chanteperdrix wrote:
 >>> Jan Kiszka wrote:
@@ -89,19 +85,16 @@ On 18/05/2009, Steve <sbxenomai@domain.hid> wrote:
 >>>>>
 >>>>> What you are trying should work, even though you are not really using
 >>>>> Xenomai's select but Linux plain select.
->>>> This should have been fixed in 2.4.x.git - if my patch were applied.
->>>> See
+>>>> This should have been fixed in 2.4.x.git - if my patch were applied. See
 >>>> git://git.xenomai.org/xenomai-jki.git for-2.4.x
 >>>>
 >>>> Did I missed to post some correction of that version, or what delays
 >>>> this? Sorry, lost track of it.
->>>
 >>> Sorry, I do not see what patch you are refering to. Is it:
 >>> http://git.xenomai.org/?p=xenomai-jki.git;a=commitdiff;h=86333965a4362f8439822ec9d22b0a84b5701141;hp=a219c4a71b381f4662df45bac5508c3ae64ab924
 >>>
 >>> In this commit, I only see things which should return more -EFAULT. Or
 >>> did I miss something?
->>
 >> I mean
 >> http://git.xenomai.org/?p=xenomai-jki.git;a=commitdiff;h=8542b9dc56b9edd16dab69e930699bcee17fa6ac
 >>
@@ -114,12 +107,17 @@ On 18/05/2009, Steve <sbxenomai@domain.hid> wrote:
 >> Siemens AG, Corporate Technology, CT SE 2
 >> Corporate Competence Center Embedded Linux
 >>
->
+> 
 > I am in the process of re-compiling the kernel with the 2.4.7, and I
 > have just checked the fault number of my example; it is definitely
 > giving +14, not -14 (so EFAULT, not -EFAULT).  Might this be an issue
 > with my kernel config options rather than anthing else?
->
-> Steve
->
+
+No, that is the unix standard behaviour, select should return -1 and the
+14 be set in errno.
+Newer calls belonging to the pthread_*, clock_* families return their
+errors directly as positive codes too, and not through errno.
+
+-- 
+                                                 Gilles.
 
