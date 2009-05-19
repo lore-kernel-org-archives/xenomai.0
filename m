@@ -1,15 +1,21 @@
-Message-ID: <4A117E7B.7010203@domain.hid>
-Date: Mon, 18 May 2009 17:27:55 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <abaf774b0905180656y4eddca23h6241c9dc031a3ba4@domain.hid>	<4A116AC5.7010704@domain.hid>
-	<4A116D6D.7020105@domain.hid>	<4A116EA1.6050303@domain.hid>
-	<4A117241.5080104@domain.hid>
-	<abaf774b0905180808t43991e35q1e4fda4675b37beb@domain.hid>
-In-Reply-To: <abaf774b0905180808t43991e35q1e4fda4675b37beb@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <Pine.LNX.4.64.0904291204500.15719@domain.hid>
+References: <b131c9f0904230220j3f0a7d7ej9172ee4fb48aa69c@domain.hid>
+	<1240479431.6990.30.camel@domain.hid>
+	<1240482629.7599.45.camel@domain.hid>
+	<1240487288.6990.71.camel@domain.hid>
+	<Pine.LNX.4.64.0904271229410.719@domain.hid>
+	<49F640A0.4010904@domain.hid> <49F64500.50901@domain.hid>
+	<Pine.LNX.4.64.0904271720580.6463@domain.hid>
+	<49F69187.9030402@domain.hid>
+	<Pine.LNX.4.64.0904291204500.15719@domain.hid>
+Content-Type: text/plain
+Date: Tue, 19 May 2009 12:08:03 +0200
+Message-Id: <1242727683.17138.72.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] select(2) generates EFAULT
+Subject: Re: [Xenomai-help] Lockups on a new Celeron-430 system detected and
+ resolved.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,105 +25,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steve <sbxenomai@domain.hid>
-Cc: xenomai@xenomai.org
+To: Martin Shepherd <mcs@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Steve wrote:
-> On 18/05/2009, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> Steve wrote:
->>>>>> First, thank you for the help on my previous query.
->>>>>>
->>>>>> I am still working on porting a c++ application from RTAI to Xenomai,
->>>>>> and have encountered a problem with sockets, specifically the select
->>>>>> function.
->>>>>>
->>>>>> When Xenomai is not being used the code runs as expected.  Once the
->>>>>> Xenomai headers, compile options, etc, are used the select function
->>>>>> fails with the error EFAULT.  I have reproduced the error (works
->>>>>> without Xenomai, EFAULTs with Xenomai) using the following program:
->>>>>>
->>>>>> #include <stdio.h>
->>>>>> #include <arpa/inet.h>
->>>>>> #include <errno.h>
->>>>>>
->>>>>> int handleError(char *msg, int err);
->>>>>>
->>>>>> int main(void)
->>>>>> {
->>>>>>    int sfd;
->>>>>>    struct sockaddr_in sai;
->>>>>>    fd_set SockSet;
->>>>>>    struct timeval tv;
->>>>>>    tv.tv_sec = 2;
->>>>>>    tv.tv_usec = 0;
->>>>>>
->>>>>>    sai.sin_family = AF_INET;
->>>>>>    sai.sin_port = htons(1025);
->>>>>>    sai.sin_addr.s_addr = htonl(INADDR_ANY);
->>>>>>
->>>>>>    if((sfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
->>>>>>    { return handleError("creation error", errno); }
->>>>>>
->>>>>>    if(bind(sfd, (struct sockaddr*)&sai, sizeof(sai)) == -1)
->>>>>>    { return handleError("bind error", errno); }
->>>>>>
->>>>>>    if(listen(sfd, 5) == -1)
->>>>>>    { return handleError("listen error", errno); }
->>>>>>
->>>>>>    FD_ZERO(&SockSet);
->>>>>>    FD_SET(sfd, &SockSet);
->>>>>>
->>>>>>    if(select(sfd+1, &SockSet, 0, 0, &tv) == -1)
->>>>>>    { return handleError("select error", errno); }
->>>>>>
->>>>>>    printf("success\n");
->>>>>>
->>>>>>    return 0;
->>>>>> }
->>>>>>
->>>>>> I am using Xenomai 2.4.6.1 on a vanilla 2.6.24.6 Linux kernel, and
->>>>>> running on Ubuntu 8.04.
->>>>> Could you try 2.4.7, to see if you are not having a bug which has
->>>>> already been fixed?
->>>>>
->>>>> What you are trying should work, even though you are not really using
->>>>> Xenomai's select but Linux plain select.
->>>> This should have been fixed in 2.4.x.git - if my patch were applied. See
->>>> git://git.xenomai.org/xenomai-jki.git for-2.4.x
->>>>
->>>> Did I missed to post some correction of that version, or what delays
->>>> this? Sorry, lost track of it.
->>> Sorry, I do not see what patch you are refering to. Is it:
->>> http://git.xenomai.org/?p=xenomai-jki.git;a=commitdiff;h=86333965a4362f8439822ec9d22b0a84b5701141;hp=a219c4a71b381f4662df45bac5508c3ae64ab924
->>>
->>> In this commit, I only see things which should return more -EFAULT. Or
->>> did I miss something?
->> I mean
->> http://git.xenomai.org/?p=xenomai-jki.git;a=commitdiff;h=8542b9dc56b9edd16dab69e930699bcee17fa6ac
->>
->> That should be...
->> http://permalink.gmane.org/gmane.linux.real-time.xenomai.devel/6237
->>
->> Jan
->>
->> --
->> Siemens AG, Corporate Technology, CT SE 2
->> Corporate Competence Center Embedded Linux
->>
+On Wed, 2009-04-29 at 12:48 -0700, Martin Shepherd wrote:
+> On Tue, 28 Apr 2009, Gilles Chanteperdrix wrote:
+> > On my side, disabling NO_HZ is enough to make the issue disappear.
 > 
-> I am in the process of re-compiling the kernel with the 2.4.7, and I
-> have just checked the fault number of my example; it is definitely
-> giving +14, not -14 (so EFAULT, not -EFAULT).  Might this be an issue
-> with my kernel config options rather than anthing else?
+> I finally just got around to trying this, but unfortunately, disabling
+> NO_HZ and re-enabling HPET_TIMER and x86_PM_TIMER caused the lockups
+> to return on my new Celeron-based system. I also tried just disabling
+> NO_HZ and X86_PM_TIMER, while leaving just HPET_TIMER enabled, but
+> this also resulted in lock-ups. So on my system, the only way to
+> prevent the lockups, continues to be to turn off both X86_PM_TIMER and
+> HPET_TIMER. Just in case they are useful, I have placed the offending
+> kernel configuration file and corresponding contents of dmesg after a
+> reboot, for the case of NO_HZ disabled and both timers enabled, at:
+> 
+>   http://www.astro.caltech.edu/~mcs/xenomai/config-2.6.29.1-xenomai-2.5-rc1
+>   http://www.astro.caltech.edu/~mcs/dmesg
+> 
 
-No, that is the unix standard behaviour, select should return -1 and the
-14 be set in errno.
-Newer calls belonging to the pthread_*, clock_* families return their
-errors directly as positive codes too, and not through errno.
+Could you try the following patch against 2.6.29.1-x86-2.3-01? TIA,
 
+diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+index 44378f8..7879469 100644
+--- a/arch/x86/kernel/ipipe.c
++++ b/arch/x86/kernel/ipipe.c
+@@ -512,14 +512,14 @@ asmlinkage void __ipipe_unstall_iret_root(struct pt_regs regs)
+ 			trace_hardirqs_on();
+ 			__clear_bit(IPIPE_STALL_FLAG, &p->status);
+ 		}
+-
+ 		/*
+-		 * Only sync virtual IRQs here, so that we don't
+-		 * recurse indefinitely in case of an external
+-		 * interrupt flood.
++		 * We could have received and logged interrupts while
++		 * stalled in the syscall path: play the log now to
++		 * release any pending event. The SYNC_BIT prevents
++		 * infinite recursion in case of flooding.
+ 		 */
+-		if ((p->irqpend_himask & IPIPE_IRQMASK_VIRT) != 0)
+-			__ipipe_sync_pipeline(IPIPE_IRQMASK_VIRT);
++		if (p->irqpend_himask != 0)
++			__ipipe_sync_pipeline(IPIPE_IRQMASK_ANY);
+ 	}
+ #ifdef CONFIG_IPIPE_TRACE_IRQSOFF
+ 	ipipe_trace_end(0x8000000D);
+
+
+> Martin
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 -- 
-                                                 Gilles.
+Philippe.
+
+
 
