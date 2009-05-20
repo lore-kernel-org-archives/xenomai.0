@@ -1,13 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4A008DC9.1000603@domain.hid>
-References: <4A008DC9.1000603@domain.hid>
-Content-Type: text/plain
-Date: Wed, 20 May 2009 11:42:19 +0200
-Message-Id: <1242812539.31033.12.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4A13D1DA.8050507@domain.hid>
+Date: Wed, 20 May 2009 11:48:10 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <E1M6iMm-0002wC-TJ@xenomai.org>
+In-Reply-To: <E1M6iMm-0002wC-TJ@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Xenomai-help] IXXAT-PCI-CAN driver hijacks my
-	pci board
+Subject: Re: [Xenomai-core] [Xenomai-git] Stefan Kisdaroczi : Debian package
+ building fails with 2.5-rc1
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,55 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: wg@domain.hid
-Cc: xenomai@xenomai.org, Stefan Kisdaroczi <kisda@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-
-It looks like this patch is still pending an ack/nak. Wolfgang, any
-comment on this? TIA,
-
-On Tue, 2009-05-05 at 21:04 +0200, Stefan Kisdaroczi wrote:
+GIT version control wrote:
+> Module: xenomai-head
+> Branch: master
+> Commit: 3efa9d95abc65bef76546480bbd643de5a391a30
+> URL:    http://git.xenomai.org/?p=xenomai-head.git;a=commit;h=3efa9d95abc65bef76546480bbd643de5a391a30
+> 
+> Author: Stefan Kisdaroczi <kisda@domain.hid>
+> Date:   Tue May  5 20:25:17 2009 +0200
+> 
+> Debian package building fails with 2.5-rc1
+> 
+> This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
 > Hi,
 > 
-> my pci board has the same pci-interface-chip as the IXXAT-PCI board.
-> The vendor and device id's are identical, but the subsys id is different.
-> 
-> The documentation for my board says that it is essential to check all ID values,
-> because vendor and device id are standard values for the pci-interface-chip.
-> 
-> dmesg output, there is no IXXAT-PCI-CAN board installed:
-> > RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
-> > RTCAN SJA1000 driver initialized
-> > PCI: setting IRQ 12 as level-triggered
-> > IXXAT-PCI-CAN 0000:00:11.0: found PCI INT A -> IRQ 12
-> > IXXAT-PCI-CAN: Initializing device 10b5:9050:2503
-> 
-> The following patch fixed it for me (my own driver loads again).
-> However, i could not check if it still detects the CAN board,
-> as i dont have one.
-> 
-> Thanks
-> kisda
-> 
-> --- xenomai-2.4.7.orig/ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c
-> +++ xenomai-2.4.7/ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c
-> @@ -73,7 +73,7 @@
->  #define IXXAT_BASE_PORT_SIZE 0x0400
-> 
->  static struct pci_device_id ixxat_pci_tbl[] = {
-> -	{IXXAT_PCI_VENDOR_ID, IXXAT_PCI_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
-> +	{IXXAT_PCI_VENDOR_ID, IXXAT_PCI_DEVICE_ID, IXXAT_PCI_VENDOR_ID, IXXAT_PCI_SUB_SYS_ID, 0, 0, 0},
->  	{ }
->  };
->  MODULE_DEVICE_TABLE (pci, ixxat_pci_tbl);
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+> there is no ChangeLog file in the project root anymore, so debian package building fails.
+> Following patch fixed it for me.
+
+Maybe we should add some cruft to extract the shortlogs from git?
+
 -- 
-Philippe.
-
-
+                                                 Gilles.
 
