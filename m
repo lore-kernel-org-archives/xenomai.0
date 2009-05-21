@@ -1,17 +1,14 @@
-Message-ID: <4A14D601.2090406@domain.hid>
-Date: Wed, 20 May 2009 21:18:09 -0700
-From: Thomas Lockhart <Thomas.Lockhart@domain.hid>
+Message-ID: <4A150514.2030901@domain.hid>
+Date: Thu, 21 May 2009 09:39:00 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <b131c9f0904230220j3f0a7d7ej9172ee4fb48aa69c@domain.hid>
-	<1240479431.6990.30.camel@domain.hid>	<1240482629.7599.45.camel@domain.hid>	<1240487288.6990.71.camel@domain.hid>	<Pine.LNX.4.64.0904271229410.719@domain.hid>	<49F640A0.4010904@domain.hid>
-	<49F64500.50901@domain.hid>
-	<Pine.LNX.4.64.0904271720580.6463@domain.hid>	<49F69187.9030402@domain.hid>	<Pine.LNX.4.64.0904291204500.15719@domain.hid>	<1242727683.17138.72.camel@domain.hid>
-	<Pine.LNX.4.64.0905201732050.3574@domain.hid>
-In-Reply-To: <Pine.LNX.4.64.0905201732050.3574@domain.hid>
-Content-Type: multipart/alternative;
-	boundary="------------010301030302070407090502"
-Subject: Re: [Xenomai-help] Lockups on a new Celeron-430 system detected and
- resolved.
+References: <4A008DC9.1000603@domain.hid>
+	<1242812539.31033.12.camel@domain.hid>	<4A13D9F6.30602@domain.hid>
+	<4A13E8BF.3030703@domain.hid>
+In-Reply-To: <4A13E8BF.3030703@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] IXXAT-PCI-CAN driver hijacks my pci board
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,68 +18,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Martin Shepherd <mcs@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Stefan Kisdaroczi <kisda@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------010301030302070407090502
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Stefan Kisdaroczi wrote:
+> Hi Wolfgang,
+> 
+> Wolfgang Grandegger schrieb:
+>> [...]
+>>>> dmesg output, there is no IXXAT-PCI-CAN board installed:
+>>>>> RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
+>>>>> RTCAN SJA1000 driver initialized
+>>>>> PCI: setting IRQ 12 as level-triggered
+>>>>> IXXAT-PCI-CAN 0000:00:11.0: found PCI INT A -> IRQ 12
+>>>>> IXXAT-PCI-CAN: Initializing device 10b5:9050:2503
+>> OK, it finding a variant of the PLX9050, but it will not use the device  
+>> because of the following lines after the above printout:
+>>
+>>     if (sub_sys_id != IXXAT_PCI_SUB_SYS_ID)
+>>              return -ENODEV;
+>>                 
+>> But ...
+>>
+>>>> The following patch fixed it for me (my own driver loads again).
+>> ... obviously it does  not probe again.
+> 
+> it probes again, but pci_request_regions() failed in my driver.
+> 
+> In the -ENODEV case, the function pci_release_regions() is not
+> called in the ixxat driver, so access is blocked for other drivers.
 
->  Sorry for the lack of any response. The laptop that I work from died
->  2 days ago, and I'm still urgently trying to find a usable
->  replacement.
+That's a bug. Will fix.
 
-I've had two Sony Vaio machines and I would not get another. They have 
-absolutely no after sales support and certainly nothing for Linux. Not 
-to mention the $500 batteries :(
+Thanks,
 
-I've had good luck with a Lenovo laptop (12" screen, 3lb weight) for the 
-last couple of years; I think they have continued the trend from IBM to 
-help with Linux support for that hardware.
-
-                                    - Tom
-
--- 
-Thomas Lockhart
-Supervisor, Distributed and Real-time Group
-Instrument Software and Science Data Systems
-Caltech/JPL
-
-
---------------010301030302070407090502
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
-</head>
-<body bgcolor="#ffffff" text="#000000">
-<span style="white-space: pre;">&gt; Sorry for the lack of any
-response. The laptop that I work from died<br>
-&gt; 2 days ago, and I'm still urgently trying to find a usable<br>
-&gt; replacement.</span><br>
-<br>
-I've had two Sony Vaio machines and I would not get another. They have
-absolutely no after sales support and certainly nothing for Linux. Not
-to mention the $500 batteries :(<br>
-<br>
-I've had good luck with a Lenovo laptop (12" screen, 3lb weight) for
-the last couple of years; I think they have continued the trend from
-IBM to help with Linux support for that hardware.<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Tom<br>
-<br>
--- <br>
-Thomas Lockhart<br>
-Supervisor, Distributed and Real-time Group<br>
-Instrument Software and Science Data Systems<br>
-Caltech/JPL<br>
-<br>
-</body>
-</html>
-
---------------010301030302070407090502--
+Wolfgang.
 
