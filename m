@@ -1,12 +1,15 @@
-Message-ID: <4A165F3A.30300@domain.hid>
-Date: Fri, 22 May 2009 10:15:54 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
+Date: Fri, 22 May 2009 10:16:06 +0200
+References: <4A008DC9.1000603@domain.hid> <4A13E8BF.3030703@domain.hid>
+	<4A150514.2030901@domain.hid>
+In-Reply-To: <4A150514.2030901@domain.hid>
 MIME-Version: 1.0
-References: <20090521234047.12080x4n89e96wdc@domain.hid>
-In-Reply-To: <20090521234047.12080x4n89e96wdc@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai on ARM integrator platform
+Content-Disposition: inline
+Message-Id: <200905221016.07433.Sebastian.Smolorz@domain.hid>
+Subject: Re: [Xenomai-help] IXXAT-PCI-CAN driver hijacks my pci board
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,38 +19,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gildas Bayard <gildas.bayard@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai@xenomai.org
 
-Gildas Bayard wrote:
-> Hello,
-> 
-> I've got problems compiling a xenomai kernel for the arm integrator platform.
-> I've tried linux 2.6.26, 2.6.27 and 2.6.28. The kernel patches are  
-> applied smoothly but compilation gives me undefined references kind of  
-> errors.
-> 
-> For the 2.6.28 it says:
-> arch/arm/kernel/built-in.o: In function `__ipipe_grab_irq':
-> io.c:(.text+0x5840): undefined reference to `__ipipe_mach_demux_irq'
-> arch/arm/kernel/built-in.o: In function `ipipe_get_sysinfo':
-> io.c:(.text+0x5b14): undefined reference to `__ipipe_mach_ticks_per_jiffy'
-> arch/arm/mach-integrator/built-in.o: In function `__ipipe_mach_release_timer':
-> pci.c:(.text+0x580): undefined reference to `__ipipe_mach_ticks_per_jiffy'
-> arch/arm/xenomai/built-in.o: In function `rthal_timer_release':
-> hal.c:(.text+0x46c): undefined reference to `__ipipe_mach_ticks_per_jiffy'
-> arch/arm/xenomai/built-in.o: In function `rthal_timer_request':
-> hal.c:(.text+0x534): undefined reference to `__ipipe_mach_ticks_per_jiffy'
-> 
-> Searching on the net I've found someone with a similar problem and the  
-> answer for him was that it's board was not supported.
-> But it seemed to me that ARM integrator was advertised as fully supported.
-> Could someone give me versions for xenomai/linux that compile well for  
-> the integrator board?
+Hi Wolfgang,
 
-Only integrator cp is supported, are you sure you are not trying to
-select integrator ap ?
+Wolfgang Grandegger wrote:
+> Stefan Kisdaroczi wrote:
+> > Hi Wolfgang,
+> >
+> > Wolfgang Grandegger schrieb:
+> >> [...]
+> >>
+> >>>> dmesg output, there is no IXXAT-PCI-CAN board installed:
+> >>>>> RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
+> >>>>> RTCAN SJA1000 driver initialized
+> >>>>> PCI: setting IRQ 12 as level-triggered
+> >>>>> IXXAT-PCI-CAN 0000:00:11.0: found PCI INT A -> IRQ 12
+> >>>>> IXXAT-PCI-CAN: Initializing device 10b5:9050:2503
+> >>
+> >> OK, it finding a variant of the PLX9050, but it will not use the device
+> >> because of the following lines after the above printout:
+> >>
+> >>     if (sub_sys_id != IXXAT_PCI_SUB_SYS_ID)
+> >>              return -ENODEV;
+> >>
+> >> But ...
+> >>
+> >>>> The following patch fixed it for me (my own driver loads again).
+> >>
+> >> ... obviously it does  not probe again.
+> >
+> > it probes again, but pci_request_regions() failed in my driver.
+> >
+> > In the -ENODEV case, the function pci_release_regions() is not
+> > called in the ixxat driver, so access is blocked for other drivers.
+>
+> That's a bug. Will fix.
+
+please see:
+
+https://mail.gna.org/public/xenomai-core/2009-03/msg00055.html
+
+I sent a patch for exactly this issue on March 10.
 
 -- 
-					    Gilles.
+Sebastian
 
