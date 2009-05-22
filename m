@@ -1,15 +1,10 @@
-From: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
-Date: Fri, 22 May 2009 10:16:06 +0200
-References: <4A008DC9.1000603@domain.hid> <4A13E8BF.3030703@domain.hid>
-	<4A150514.2030901@domain.hid>
-In-Reply-To: <4A150514.2030901@domain.hid>
+Message-ID: <4A169F11.9000702@domain.hid>
+Date: Fri, 22 May 2009 14:48:17 +0200
+From: Adrien LECOINTRE <adrien20@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200905221016.07433.Sebastian.Smolorz@domain.hid>
-Subject: Re: [Xenomai-help] IXXAT-PCI-CAN driver hijacks my pci board
+Subject: [Xenomai-help] Square wave jitter reduce with cpu load
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,50 +14,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hi Wolfgang,
+Hello,
 
-Wolfgang Grandegger wrote:
-> Stefan Kisdaroczi wrote:
-> > Hi Wolfgang,
-> >
-> > Wolfgang Grandegger schrieb:
-> >> [...]
-> >>
-> >>>> dmesg output, there is no IXXAT-PCI-CAN board installed:
-> >>>>> RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
-> >>>>> RTCAN SJA1000 driver initialized
-> >>>>> PCI: setting IRQ 12 as level-triggered
-> >>>>> IXXAT-PCI-CAN 0000:00:11.0: found PCI INT A -> IRQ 12
-> >>>>> IXXAT-PCI-CAN: Initializing device 10b5:9050:2503
-> >>
-> >> OK, it finding a variant of the PLX9050, but it will not use the device
-> >> because of the following lines after the above printout:
-> >>
-> >>     if (sub_sys_id != IXXAT_PCI_SUB_SYS_ID)
-> >>              return -ENODEV;
-> >>
-> >> But ...
-> >>
-> >>>> The following patch fixed it for me (my own driver loads again).
-> >>
-> >> ... obviously it does  not probe again.
-> >
-> > it probes again, but pci_request_regions() failed in my driver.
-> >
-> > In the -ENODEV case, the function pci_release_regions() is not
-> > called in the ixxat driver, so access is blocked for other drivers.
->
-> That's a bug. Will fix.
+I wrote a simple program toggling a pin of the parallel port every 20 
+us. I observe with a scope a jitter of 4 us on my square wave. Then I 
+added a background cpu load task and I expected to observe a bigger 
+jitter but in fact the jitter becomes inferior than 1 us.
+Do you have any explanation of this phenomena ? Do you think that I 
+missed something in my kernel configuration ?
 
-please see:
+Thanks and sorry for my english.
 
-https://mail.gna.org/public/xenomai-core/2009-03/msg00055.html
+int main(int argc, char *argv[]) {
 
-I sent a patch for exactly this issue on March 10.
+    struct sched_param param;
+    param.sched_priority = 99;
+    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+            perror("main: sched_setscheduler failed");
+            exit(-1);
+    }
 
--- 
-Sebastian
+    mlockall(MCL_CURRENT | MCL_FUTURE);
+    iopl(3);
+
+    if (argc>1 && strcmp(argv[1],"square")==0)
+        rt_task_spawn(&square_task, "square", STACK_SIZE, 90, T_JOINABLE | T_SUSP, &square, NULL);
+    if (argc>2 && strcmp(argv[2],"cpu")==0)
+        rt_task_spawn(&load_task, "cpu_load", STACK_SIZE, 80, T_JOINABLE | T_SUSP, &cpu_load, NULL);
+    rt_task_resume(&square_task);
+    rt_task_join(&square_task);
+    rt_task_join(&load_task);
+
+    return 0;
+}
+
+
+//                    --s-ms-us-ns
+RTIME square_period_ns =     20000llu;
+
+//        --s-ms-us-ns
+RTIME cpu = 5000000000llu;
+
+void square(void *cookie) {
+    rt_task_resume(&load_task);
+    unsigned long overrun;
+    rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(square_period_ns));
+
+    int i;
+    for (i=0;i<NB_LOOP;i++)
+    {
+        outb_p(0xFF, PORT);
+        rt_task_wait_period(&overrun);
+        outb_p(0x00, PORT);
+        rt_task_wait_period(&overrun);
+    }
+    rt_task_suspend(&load_task);
+    rt_task_delete(&load_task);
+}
+
+void cpu_load(void *cookie)
+{
+    while(1)
+        rt_timer_spin(cpu);
+}
+
+
 
