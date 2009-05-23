@@ -1,16 +1,17 @@
-From: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
-Date: Fri, 22 May 2009 17:20:44 +0200
-References: <4A008DC9.1000603@domain.hid>
-	<200905221016.07433.Sebastian.Smolorz@domain.hid>
-	<4A16C110.8040303@domain.hid>
-In-Reply-To: <4A16C110.8040303@domain.hid>
+Message-ID: <20090523195234.1855465xtufv1ngg@domain.hid>
+Date: Sat, 23 May 2009 19:52:34 +0200
+From: Gildas Bayard <gildas.bayard@domain.hid>
+References: <20090521234047.12080x4n89e96wdc@domain.hid>
+	<4A165F3A.30300@domain.hid>
+In-Reply-To: <4A165F3A.30300@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+ charset=ISO-8859-1;
+ DelSp="Yes";
+ format="flowed"
 Content-Disposition: inline
-Message-Id: <200905221720.45258.Sebastian.Smolorz@domain.hid>
-Subject: Re: [Xenomai-help] IXXAT-PCI-CAN driver hijacks my pci board
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Xenomai on ARM integrator platform
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,18 +21,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
-> Obviously I missed that one as well, sorry. Will send a proper patch
-> later today or tomorrow. Sebastian, does that mean that you have an
-> IXXAT PCI card available for testing?
+Oops! My fault, I was using integrator ap which is the default in the kernel
 
-No, unfortunately not. But I was playing with the source code for that card 
-while trying to get an ESD card to work with Xenomai. BTW that reminds me of 
-sending a patch for that card to the ML ... maybe next week.
+Thank you
+Gildas
 
--- 
-Sebastian
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> a =E9crit=A0:
+
+> Gildas Bayard wrote:
+>> Hello,
+>>
+>> I've got problems compiling a xenomai kernel for the arm integrator =20
+>> platform.
+>> I've tried linux 2.6.26, 2.6.27 and 2.6.28. The kernel patches are
+>> applied smoothly but compilation gives me undefined references kind of
+>> errors.
+>>
+>> For the 2.6.28 it says:
+>> arch/arm/kernel/built-in.o: In function `__ipipe_grab_irq':
+>> io.c:(.text+0x5840): undefined reference to `__ipipe_mach_demux_irq'
+>> arch/arm/kernel/built-in.o: In function `ipipe_get_sysinfo':
+>> io.c:(.text+0x5b14): undefined reference to `__ipipe_mach_ticks_per_jiffy=
+'
+>> arch/arm/mach-integrator/built-in.o: In function =20
+>> `__ipipe_mach_release_timer':
+>> pci.c:(.text+0x580): undefined reference to `__ipipe_mach_ticks_per_jiffy=
+'
+>> arch/arm/xenomai/built-in.o: In function `rthal_timer_release':
+>> hal.c:(.text+0x46c): undefined reference to `__ipipe_mach_ticks_per_jiffy=
+'
+>> arch/arm/xenomai/built-in.o: In function `rthal_timer_request':
+>> hal.c:(.text+0x534): undefined reference to `__ipipe_mach_ticks_per_jiffy=
+'
+>>
+>> Searching on the net I've found someone with a similar problem and the
+>> answer for him was that it's board was not supported.
+>> But it seemed to me that ARM integrator was advertised as fully supported=
+.
+>> Could someone give me versions for xenomai/linux that compile well for
+>> the integrator board?
+>
+> Only integrator cp is supported, are you sure you are not trying to
+> select integrator ap ?
+>
+> --
+> =09=09=09=09=09    Gilles.
+>
 
