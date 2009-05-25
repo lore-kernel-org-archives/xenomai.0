@@ -1,13 +1,13 @@
-Message-ID: <4A1A9F29.8050806@domain.hid>
-Date: Mon, 25 May 2009 15:37:45 +0200
+Message-ID: <4A1AA4F8.80101@domain.hid>
+Date: Mon, 25 May 2009 16:02:32 +0200
 From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-References: <200905251736.07951.shashank.bhatia@domain.hid>
-In-Reply-To: <200905251736.07951.shashank.bhatia@domain.hid>
+References: <200905251501.25400.shashank.bhatia@domain.hid>
+In-Reply-To: <200905251501.25400.shashank.bhatia@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigF99E3396F95526BBD625C5F0"
-Subject: Re: [Xenomai-help] Interrupt service routine problem
+	boundary="------------enigCDC66EEA90026D1BB4B053D2"
+Subject: Re: [Xenomai-help] RT Task as a kernel module halts the whole system
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,129 +21,74 @@ To: Shashank Bhatia <shashank.bhatia@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF99E3396F95526BBD625C5F0
+--------------enigCDC66EEA90026D1BB4B053D2
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-the rt_intr_* functions are disabled by default in the kernel configurati=
-on [1].
-
-You can enable them here:
-Real-time subsystem -> Interfaces -> Native API -> Interrupts
-
-For device drivers its suggested that you use the RTDM skin and not the
-rt_intr_* calls from the native API.
-
-kisda
-
-[1] https://mail.gna.org/public/xenomai-help/2006-07/msg00197.html
-
-
 Shashank Bhatia schrieb:
 > Dear All,
 >=20
-> I was trying to make a simple kernel module, and was unable to insert i=
-t into=20
-> the kernel space. The code and Error messages are provided hereunder:
+>             I wrote a simple RT task to be run as kernel module and tri=
+ed to=20
+> run it. As soon as i issue the insmod command, it halts the whole syste=
+m.
+> Please help me out,
 >=20
+> The code is as follows:
+> [...]
 >=20
-> Code:
-> #include <native/task.h>
-> #include <native/timer.h>
-> #include <native/intr.h>
+>         err =3D rt_alarm_create(&alarm,"myAlarm");
+
+looking at the xenomai docs [1], there are two rt_alarm_create() function=
+s,
+one for kernel-space and one for userspace:
+
+int rt_alarm_create (RT_ALARM *alarm, const char *)
+    Create an alarm object from user-space.
+
+int rt_alarm_create (RT_ALARM *alarm, const char *name, rt_alarm_t handle=
+r, void *cookie)
+    Create an alarm object from kernel space.
+
+It seems you are using the wrong one.
+
+For a user-space alarm example and other code-snippets look in the direct=
+ory
+ksrc/skins/native/snippets/
+
+kisda
+
+[1] http://www.xenomai.org/documentation/branches/v2.4.x/html/api/index.h=
+tml
+
+
+>         err =3D rt_alarm_start(&alarm,ALARM_VAL,ALARM_INT);
 >=20
-> #define STACK_SIZE         0=20
+> err=3Drt_task_create(&alarm_handler, "ALARMtask",STAK_SIZE,TASK_PRI,TAS=
+K_MODE);
 >=20
-> RT_INTR isrDesc;
+>         if(!err)
+>                 rt_task_start(&alarm_handler,&alarm_hand_func,NULL);
 >=20
->=20
-> int isrKbdHandler(struct xnintr* _idesc) {
->=20
->=20
->   printk("module: catch a key\n");
->=20
->   return RT_INTR_PROPAGATE;=20
->=20
+>         return 0;                             // A non-zero return mean=
+s=20
+> hello_init failed; the module can't be loaded.
 > }
 >=20
+> // End/Cleanup function
+> static void hello_exit(void) {
 >=20
+>         //rt_task_delete(&alarm_handler);
 >=20
-> int init_module (void) {
+>         rt_alarm_delete(&alarm);
 >=20
->   printk("module: Init\n");
->   rt_intr_create(&isrDesc, "kbdisr", (unsigned)1, &isrKbdHandler, NULL,=
- 0);
->   rt_intr_enable(&isrDesc);
->=20
->=20
->   return 0;
+>         printk(KERN_ALERT "Goodbye world!\n");
 > }
 >=20
->=20
->=20
-> void cleanup_module (void) {
->=20
-> =20
->   rt_intr_delete(&isrDesc);
->  =20
->   printk("module: exit\n");
-> }
->=20
-> MODULE_LICENSE("GPL");
->=20
->=20
->=20
->=20
-> Makefile:
->=20
->=20
-> obj-m  =3D module.o
->=20
->=20
-> KDIR	=3D /lib/modules/$(shell uname -r)/build
-> PWD		=3D $(shell pwd)
-> EXTRA_CFLAGS =3D -I/usr/xenomai/include -I/usr/include/=20
-> default:
-> 	$(MAKE) -C $(KDIR) SUBDIRS=3D$(PWD) modules
->=20
-> clean:
-> 	rm -f *.o *.ko *.mod.c *symvers *~
->=20
->=20
->=20
-> Error message:
-> make -C /lib/modules/2.6.25.11-default/build=20
-> SUBDIRS=3D/home/bhatia/rtprog/interupt modules
-> make[1]: Entering directory `/usr/src/linux-2.6.25.11'
->   CC [M]  /home/bhatia/rtprog/interupt/module.o
->   Building modules, stage 2.
->   MODPOST 1 modules
-> WARNING: "rt_intr_enable" [/home/bhatia/rtprog/interupt/module.ko] unde=
-fined!
-> WARNING: "rt_intr_create" [/home/bhatia/rtprog/interupt/module.ko] unde=
-fined!
-> WARNING: "rt_intr_delete" [/home/bhatia/rtprog/interupt/module.ko] unde=
-fined!
->   CC      /home/bhatia/rtprog/interupt/module.mod.o
->   LD [M]  /home/bhatia/rtprog/interupt/module.ko
-> make[1]: Leaving directory `/usr/src/linux-2.6.25.11'
->=20
->=20
->=20
-> Error while insmoding:
-> insmod: error inserting './module.ko': -1 Unknown symbol in module
->=20
->=20
->=20
->=20
->=20
->=20
->=20
-> Thanks and Regards,
->=20
-> Shashank
+> module_init(hello_init);
+> module_exit(hello_exit);
 >=20
 > -------------------------------------
 > Hi-Tech Gears Limited, Gurgaon, India
@@ -160,7 +105,7 @@ fined!
 
 
 
---------------enigF99E3396F95526BBD625C5F0
+--------------enigCDC66EEA90026D1BB4B053D2
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -169,10 +114,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.3 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFKGp8wIPTw9rIdn6oRAlfeAJ9HBD7/jce74H5xju6g6aBobuk4KACfWl3X
-ysZLvFC3k+jjYms2+z6HXbU=
-=fHU+
+iD8DBQFKGqT9IPTw9rIdn6oRAikrAJ46FydCR5ctbCJ69jeXvEgsmeJUkACeOFUT
+uKiE2MbmB25eUWmWU1sT5KU=
+=FfhB
 -----END PGP SIGNATURE-----
 
---------------enigF99E3396F95526BBD625C5F0--
+--------------enigCDC66EEA90026D1BB4B053D2--
 
