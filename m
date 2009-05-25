@@ -1,12 +1,15 @@
-Message-ID: <4A012DDE.7030601@domain.hid>
-Date: Wed, 06 May 2009 08:27:42 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <431263.25323.qm@domain.hid>
-In-Reply-To: <431263.25323.qm@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] shared library in xenomai ?
+In-Reply-To: <9c789a000905251516j5272ae7bpc60aea8fdc17d50c@domain.hid>
+References: <9c789a000905250446t78fd6b38x1a6f28e35b70d7d6@domain.hid>
+	<878wkkzxba.fsf@domain.hid>
+	<9c789a000905251435p6f851d21v617c7e26a971f143@domain.hid>
+	<871vqczveh.fsf@domain.hid>
+	<9c789a000905251516j5272ae7bpc60aea8fdc17d50c@domain.hid>
+Date: Tue, 26 May 2009 01:32:42 +0300
+Message-ID: <9c789a000905251532i4775d796x8f095503a203e5bb@domain.hid>
+From: Cristian Axenie <cristian.axenie@domain.hid>
+Content-Type: multipart/alternative; boundary=001636c599a6410a47046ac43011
+Subject: [Xenomai-help]  Driver testing procedure ?!
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,108 +19,187 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: luan dinh <dinhluanbmt@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-luan dinh wrote:
-> hi.
-> My program included :
-> + libsock.c
-> + demo_use.c
-> + Makefile
-> i build libsock.c as shared library named libmylibra.so ( support my_send() function )
-> demo_use.c use my_send() and built with -lmylibra option
-> Thanks for any advise.
-> Luan Dinh
-> PS :i also attach the source code of these files 
-> ######### libsock. c###
-> void demo(void *agr)
-> {    
->     int len,i;
->     rt_task_set_periodic(NULL, TM_NOW, 100000000);
->     while (1) {       
->     rt_task_wait_period(NULL);
->     len = send(sock, data, sizeof(data), 0);
->         if (len < 0)
->     {
->         printf("Sent Failed...!\n");
->             break;
->     }    
->     }       
-> }
-> /*my_send*/
-> int my_send()
-> {    
->     struct sched_param param;// = { .sched_priority = 1 };     
->       struct sockaddr_ll addr;
->       struct ifreq ifr;    
->     mlockall(MCL_CURRENT|MCL_FUTURE);    
->     if ((sock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0) {
->             perror("socket cannot be created");
->             return 1;
->     }
->     strncpy(ifr.ifr_name, "rteth0", IFNAMSIZ);
->     if (ioctl(sock, SIOCGIFINDEX, &ifr) < 0) {
->             perror("cannot get interface index");
->             close(sock);
->             return 1;
->        }
->      addr.sll_family   = AF_PACKET;
->         addr.sll_protocol = htons(ETH_P_ALL);
->     addr.sll_pkttype  = PACKET_OTHERHOST;
->         addr.sll_ifindex  = ifr.ifr_ifindex;
-> 
->         if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
->             perror("cannot bind");
->             close(sock);
->             return 1;
->         }
->     
->     rt_task_create(&demo_task, "mytask", 0, 99, 0);
->     rt_task_start(&demo_task, &demo, NULL);      
->     return 1;
-> }
-> 
-> ### demo_use.c ###
-> int main( int argc, char * argv[] )
-> {
->     my_send();
->     pause();    
->     return 1;    
-> }
-> 
-> ## Makefile ###
-> CC = gcc
-> AR = ar cru
-> SOFLAGS = -shared -Wl
+--001636c599a6410a47046ac43011
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-The -Wl means that you are going to pass a flag to the linker. So, this
-declaration of SOFLAGS is a bit like a sentence which you started and
-did not finish.
+---------- Forwarded message ----------
+From: Cristian Axenie <cristian.axenie@domain.hid>
+Date: Tue, May 26, 2009 at 1:16 AM
+Subject: Re: [Xenomai-help] Driver testing procedure ?!
+To: Alexis Berlemont <berlemont.hauw@domain.hid>
 
-> CFLAGS = -I/usr/xenomai/include -I/usr/xenomai/include/posix -D_GNU_SOURCE -D_REENTRANT -D__XENO__ -Wall -g -fPIC -rdynamic -pipe -O2 -fstrict-aliasing
-> LDFLAGS = -Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib -lpthread_rt -lpthread -lnative -lrt -lstdc++ -ldl
 
-Bad. You should use xeno-config to obtain the CFLAGS and the LDFLAGS.
 
-> LINKER = $(CC)
-> LINT = lint -c
-> RM = /bin/rm -f
-> LIBOBJS =  libsock.o 
-> TARGET =  libmylibra.so \
->         test 
-> all: $(TARGET)
-> libmylibra.so: $(LIBOBJS)
->     $(LINKER) $(SOFLAGS) -o $@ $^ -lc
 
-As I told you in my previous mail, you should use LDFLAGS when linking
-libmylibra.so.
+On Tue, May 26, 2009 at 1:10 AM, Alexis Berlemont <berlemont.hauw@domain.hid>wrote:
 
-Also, if you are working on an embedded system, it is a better idea to
-use either the native skin or the posix skin, not use both. This way,
-you can compile only one of the two skins in the kernel, and you put
-only one of the two libraries on your system.
+> Cristian Axenie <cristian.axenie@domain.hid> writes:
+>
+> > Hi,
+> >
+> > I finally figured out this aspect but I still have one problem, residing
+> in the fact that I have no comedi devices in my dev list
+> > and so I cannot ./comedi_config /dev/comedi0 nipcimio !
+> >
+> > As I see it there are no comedi devices
+> >
+> > /usr/xenomai/sbin # cat /proc/devices
+>
+> You should not look at there. This proc file lists everything but RTDM
+> devices.
+>
+> >
+> > and the list
+> >
+> > /usr/xenomai/sbin # cat /proc/comedi/devices
+> > --  Comedi devices --
+> >
+> > | idx | status | driver
+> > |  00 | Unused | No driver
+> > |  01 | Unused | No driver
+> > |  02 | Unused | No driver
+> > |  03 | Unused | No driver
+> > |  04 | Unused | No driver
+> > |  05 | Unused | No driver
+> > |  06 | Unused | No driver
+> > |  07 | Unused | No driver
+> > |  08 | Unused | No driver
+> > |  09 | Unused | No driver
+> > /usr/xenomai/sbin # cat /proc/comedi/drivers
+> > comedi_config   rtcanconfig     rtps
+> > /usr/xenomai/sbin # cat /proc/comedi/drivers
+> > --  Comedi drivers --
+> >
+> > | idx | driver name
+> > |  00 | pcimio
+> > |  01 | comedi_8255
+> > |  02 | comedi_loop
+> > |  03 | comedi_fake
+> >
+> > Shouldn't the specific comedi devices be generated when installing
+> Xenomai ?
+>
+> That is common comedi behaviour. So far, the comedi drivers are listed,
+> they are available in the kernel. However, you have to attach them so as
+> to make them reachable (thanks to comedi_config).
+>
+> Once the attach will be done, you will see your driver appear in
+> /proc/comedi/devices.
+>
+> If the comedi_config did not work, the problem is here. In such case,
+> could you send the traces?
 
--- 
-					    Gilles.
+
+The problem is that the comedi devs are not present in /dev and so when I
+run comedi config
+
+/usr/xenomai/sbin # ./comedi_config /dev/comedi0 pcimio
+comedi_config: comedi_open failed ret=-19
+
+Shouldn't the comedi0, comedi1... devices be created when installing Xenomai
+?
+
+
+>
+>
+> Alexis.
+>
+
+--001636c599a6410a47046ac43011
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<br><br><div class=3D"gmail_quote">---------- Forwarded message ----------<=
+br>From: <b class=3D"gmail_sendername">Cristian Axenie</b> <span dir=3D"ltr=
+">&lt;<a href=3D"mailto:cristian.axenie@domain.hid">cristian.axenie@domain.hid=
+m</a>&gt;</span><br>
+Date: Tue, May 26, 2009 at 1:16 AM<br>Subject: Re: [Xenomai-help] Driver te=
+sting procedure ?!<br>To: Alexis Berlemont &lt;<a href=3D"mailto:berlemont.=
+hauw@domain.hid">berlemont.hauw@domain.hid</a>&gt;<br><br><br><br><br><div class=
+=3D"gmail_quote">
+<div><div></div><div class=3D"h5">On Tue, May 26, 2009 at 1:10 AM, Alexis B=
+erlemont <span dir=3D"ltr">&lt;<a href=3D"mailto:berlemont.hauw@domain.hid" ta=
+rget=3D"_blank">berlemont.hauw@domain.hid</a>&gt;</span> wrote:<br><blockquote=
+ class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, 204, 204); =
+margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+
+<div>Cristian Axenie &lt;<a href=3D"mailto:cristian.axenie@domain.hid" targe=
+t=3D"_blank">cristian.axenie@domain.hid</a>&gt; writes:<br>
+<br>
+</div><div>&gt; Hi,<br>
+&gt;<br>
+&gt; I finally figured out this aspect but I still have one problem, residi=
+ng in the fact that I have no comedi devices in my dev list<br>
+&gt; and so I cannot ./comedi_config /dev/comedi0 nipcimio !<br>
+&gt;<br>
+&gt; As I see it there are no comedi devices<br>
+&gt;<br>
+&gt; /usr/xenomai/sbin # cat /proc/devices<br>
+<br>
+</div>You should not look at there. This proc file lists everything but RTD=
+M devices.<br>
+<div><br>
+&gt;<br>
+&gt; and the list<br>
+&gt;<br>
+&gt; /usr/xenomai/sbin # cat /proc/comedi/devices<br>
+&gt; --=A0 Comedi devices --<br>
+&gt;<br>
+&gt; | idx | status | driver<br>
+&gt; |=A0 00 | Unused | No driver<br>
+&gt; |=A0 01 | Unused | No driver<br>
+&gt; |=A0 02 | Unused | No driver<br>
+&gt; |=A0 03 | Unused | No driver<br>
+&gt; |=A0 04 | Unused | No driver<br>
+&gt; |=A0 05 | Unused | No driver<br>
+&gt; |=A0 06 | Unused | No driver<br>
+&gt; |=A0 07 | Unused | No driver<br>
+&gt; |=A0 08 | Unused | No driver<br>
+&gt; |=A0 09 | Unused | No driver<br>
+&gt; /usr/xenomai/sbin # cat /proc/comedi/drivers<br>
+&gt; comedi_config=A0=A0 rtcanconfig=A0=A0=A0=A0 rtps<br>
+&gt; /usr/xenomai/sbin # cat /proc/comedi/drivers<br>
+&gt; --=A0 Comedi drivers --<br>
+&gt;<br>
+&gt; | idx | driver name<br>
+&gt; |=A0 00 | pcimio<br>
+&gt; |=A0 01 | comedi_8255<br>
+&gt; |=A0 02 | comedi_loop<br>
+&gt; |=A0 03 | comedi_fake<br>
+&gt;<br>
+&gt; Shouldn&#39;t the specific comedi devices be generated when installing=
+ Xenomai ?<br>
+<br>
+</div>That is common comedi behaviour. So far, the comedi drivers are liste=
+d,<br>
+they are available in the kernel. However, you have to attach them so as<br=
+>
+to make them reachable (thanks to comedi_config).<br>
+<br>
+Once the attach will be done, you will see your driver appear in<br>
+/proc/comedi/devices.<br>
+<br>
+If the comedi_config did not work, the problem is here. In such case,<br>
+could you send the traces?</blockquote></div></div><div><br>The problem is =
+that the comedi devs are not present in /dev and so when I run comedi confi=
+g<br>
+<br>
+/usr/xenomai/sbin # ./comedi_config /dev/comedi0 pcimio<br>
+comedi_config: comedi_open failed ret=3D-19<br>
+<br>
+Shouldn&#39;t the comedi0, comedi1... devices be created when installing Xe=
+nomai ?<br>=A0<br></div><blockquote class=3D"gmail_quote" style=3D"border-l=
+eft: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left:=
+ 1ex;">
+
+<br>
+<font color=3D"#888888"><br>
+Alexis.<br>
+</font></blockquote></div><br>
+</div><br>
+
+--001636c599a6410a47046ac43011--
 
