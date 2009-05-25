@@ -1,15 +1,11 @@
-Message-ID: <4A1A4A99.4040208@domain.hid>
-Date: Mon, 25 May 2009 09:36:57 +0200
+Message-ID: <4A1A4B3F.8050704@domain.hid>
+Date: Mon, 25 May 2009 09:39:43 +0200
 From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <4A008DC9.1000603@domain.hid> <1242812539.31033.12.camel@domain.hid>	
-	<4A13D9F6.30602@domain.hid> <4A13DD1C.5080208@domain.hid>
-	<1242816059.31033.15.camel@domain.hid>
-In-Reply-To: <1242816059.31033.15.camel@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Xenomai-help] IXXAT-PCI-CAN driver hijacks my
- pci board
+Subject: [Xenomai-core] [PATCH] rtcan: ixxat-pci: fix problems with device
+	probing
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,79 +14,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>, xenomai@xenomai.org, Stefan Kisdaroczi <kisda@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-Hi Philipe,
+This patch fixes problems with probing and registration of the
+RTCAN IXXAT PCI driver as reported by Stefan Kisdaroczi and
+Sebastian Smolorz. The PCI device id table entry now specifies
+the PCI sub-system id avoiding the driver's probe function to
+be call unnecessarily (a PLX9050 is used for many other non-can
+PCI devices). This also makes the checking of the sub-system id
+obsolete.
 
-Philippe Gerum wrote:
-> On Wed, 2009-05-20 at 12:36 +0200, Wolfgang Grandegger wrote:
->> Wolfgang Grandegger wrote:
->>> Hi Philippe,
->>>
->>> Philippe Gerum wrote:
->>>> It looks like this patch is still pending an ack/nak. Wolfgang, any
->>>> comment on this? TIA,
->>> FIFO overrun, sorry.
->>>
->>>> On Tue, 2009-05-05 at 21:04 +0200, Stefan Kisdaroczi wrote:
->>>>> Hi,
->>>>>
->>>>> my pci board has the same pci-interface-chip as the IXXAT-PCI board.
->>>>> The vendor and device id's are identical, but the subsys id is different.
->>>>>
->>>>> The documentation for my board says that it is essential to check all ID values,
->>>>> because vendor and device id are standard values for the pci-interface-chip.
->>>>>
->>>>> dmesg output, there is no IXXAT-PCI-CAN board installed:
->>>>>> RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
->>>>>> RTCAN SJA1000 driver initialized
->>>>>> PCI: setting IRQ 12 as level-triggered
->>>>>> IXXAT-PCI-CAN 0000:00:11.0: found PCI INT A -> IRQ 12
->>>>>> IXXAT-PCI-CAN: Initializing device 10b5:9050:2503
->>> OK, it finding a variant of the PLX9050, but it will not use the device  
->>> because of the following lines after the above printout:
->>>
->>>     if (sub_sys_id != IXXAT_PCI_SUB_SYS_ID)
->>>              return -ENODEV;
->>>                 
->>> But ...
->>>
->>>>> The following patch fixed it for me (my own driver loads again).
->>> ... obviously it does  not probe again.
->>>
->>>>> However, i could not check if it still detects the CAN board,
->>>>> as i dont have one.
->>>
->>>
->>>
->>>>> Thanks
->>>>> kisda
->>>>>
->>>>> --- xenomai-2.4.7.orig/ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c
->>>>> +++ xenomai-2.4.7/ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c
->>>>> @@ -73,7 +73,7 @@
->>>>>  #define IXXAT_BASE_PORT_SIZE 0x0400
->>>>>
->>>>>  static struct pci_device_id ixxat_pci_tbl[] = {
->>>>> -	{IXXAT_PCI_VENDOR_ID, IXXAT_PCI_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
->>>>> +	{IXXAT_PCI_VENDOR_ID, IXXAT_PCI_DEVICE_ID, IXXAT_PCI_VENDOR_ID, IXXAT_PCI_SUB_SYS_ID, 0, 0, 0},
->>>>>  	{ }
->>>>>  };
->>>>>  MODULE_DEVICE_TABLE (pci, ixxat_pci_tbl);
->>> I don't have a IXXAT CAN card to check if the sub-vendor id is really
->>> IXXAT_PCI_VENDOR_ID. Does 
->>>
->>>   {IXXAT_PCI_VENDOR_ID, IXXAT_PCI_DEVICE_ID, PCI_ANY_ID, IXXAT_PCI_SUB_SYS_ID, 0, 0, 0},
->>>
->>> work as well? A work-around would be to disable the IXXAT-PCI driver in the kernel config.
->> I just found a lspci output for an IXXAT card and Stefan's patch should
->>  work fine. Are you going to apply it or should I take care?
->>
-> 
-> It's in my queue already, so I can commit directly. Thanks,
+Signed-off-by: Wolfgang Grandegger <wg@domain.hid>
+---
+ ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c |   13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
-Two patches for the IXXAT-PCI and MSCAN will follow. Sorry for delay.
-
-Wolfgang.
+Index: xenomai-2.4/ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c
+===================================================================
+--- xenomai-2.4.orig/ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c	2009-05-24 11:17:20.159718982 +0200
++++ xenomai-2.4/ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c	2009-05-25 08:02:06.607459337 +0200
+@@ -73,7 +73,8 @@
+ #define IXXAT_BASE_PORT_SIZE 0x0400
+ 
+ static struct pci_device_id ixxat_pci_tbl[] = {
+-	{IXXAT_PCI_VENDOR_ID, IXXAT_PCI_DEVICE_ID, IXXAT_PCI_VENDOR_ID, IXXAT_PCI_SUB_SYS_ID, 0, 0, 0},
++	{IXXAT_PCI_VENDOR_ID, IXXAT_PCI_DEVICE_ID,
++	 IXXAT_PCI_VENDOR_ID, IXXAT_PCI_SUB_SYS_ID, 0, 0, 0},
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE (pci, ixxat_pci_tbl);
+@@ -206,7 +207,6 @@
+ 					 const struct pci_device_id *ent)
+ {
+     int ret, channel, conf_addr;
+-    u16 sub_sys_id;
+     unsigned long addr;
+     void __iomem *base_addr;
+     struct rtcan_device *master_dev = NULL;
+@@ -217,14 +217,9 @@
+     if ((ret = pci_request_regions(pdev, RTCAN_DRV_NAME)))
+ 	goto failure;
+ 
+-    if ((ret = pci_read_config_word(pdev, 0x2e, &sub_sys_id)))
+-	goto failure_release_pci;
+-
+     RTCAN_DBG("%s: Initializing device %04x:%04x:%04x\n",
+-	      RTCAN_DRV_NAME, pdev->vendor, pdev->device, sub_sys_id);
+-
+-    if (sub_sys_id != IXXAT_PCI_SUB_SYS_ID)
+-	    return -ENODEV;
++	      RTCAN_DRV_NAME, pdev->vendor, pdev->device,
++	      pdev->subsystem_device);
+ 
+     /* Enable memory and I/O space */
+     if ((ret = pci_write_config_word(pdev, 0x04, 0x3)))
 
