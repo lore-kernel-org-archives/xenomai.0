@@ -1,14 +1,13 @@
-Message-ID: <4A1EC2C3.1000405@domain.hid>
-Date: Thu, 28 May 2009 18:58:43 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <abaf774b0905270831q6c8aeb44mb2cf10f7ca3b926f@domain.hid>	<4A1D6ED4.3060104@domain.hid>
-	<1243443636.22014.79.camel@domain.hid>	<4A1D73B6.1050602@domain.hid>	<abaf774b0905272354m2ece1cb3s967f17b876b55bbf@domain.hid>	<4A1E46C9.9050806@domain.hid>
-	<abaf774b0905280853x23fe5bf2y68cd354ba6a787c9@domain.hid>
-In-Reply-To: <abaf774b0905280853x23fe5bf2y68cd354ba6a787c9@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+From: Andreas Glatz <andreasglatz@domain.hid>
+In-Reply-To: <1243529533.22173.6.camel@domain.hid>
+References: <1243526358.898.21.camel@domain.hid>
+	<1243529533.22173.6.camel@domain.hid>
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] xeno-test hangs during latency test
+Date: Thu, 28 May 2009 13:58:50 -0400
+Message-Id: <1243533530.898.36.camel@domain.hid>
+Mime-Version: 1.0
+Subject: Re: [Xenomai-help] Running out of stack memory in kernel-space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,94 +17,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steve <sbxenomai@domain.hid>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-Steve wrote:
-> On 28/05/2009, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
->> Steve wrote:
->>> On 27/05/2009, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>> wrote:
->>>> Philippe Gerum wrote:
->>>>> On Wed, 2009-05-27 at 18:48 +0200, Gilles Chanteperdrix wrote:
->>>>>> Steve wrote:
->>>>>>> After installing the latest version of Xenomai last week I have
->>>>>>> encountered a problem with Xenomai applications hanging linux
->>>>>>> completely, requiring restart.  This has also occured while running
->>>>>>> xeno-test, during the latency tests.
->>>>>>>
->>>>>>> I have tried to follow the various suggestions on this board about
->>>>>>> preventing hanging of Xenomai, however I am still experiencing the
->>>>>>> problem.
->>>>>>>
->>>>>>> I am using:
->>>>>>> Vanilla Linux Kernel 2.6.24
->>>>>>> Adeos Patch 2.6.24-x86-2.0-07
->>>>> ^^^^^
->>>> Yeah, right, please try the latest version, Xenomai 2.4.7, and the
->>>> patches it contains. If you need debian packages, the package ship with
->>>> its own debian directory allowing to build the packages from sources. If
->>>> it does not work, then report bugs.
->>>>
->>>> Also, depending on your deadlines, 2.4.8 should be out soon, so you may
->>>> want to wait for this release.
->>>>
->>>> --
->>>>                                                  Gilles.
->>>>
->>> When I first installed Xenomai I used the latest Adeos patch (at the
->>> time) instead of the one corresponding directly to my kernel (eg
->>> 2.6.27 patch for 2.6.24 kernel).  This did not work.  Once I used the
->>> latest of the corresponding patches (2.6.24) it seemed to work, so I
->>> have been using that combination ever since, and there has not been a
->>> newer Adeos patch for that kernel since.  Am I correct in thinking
->>> that you must use an Adeos patch that corresponds to your particular
->>> kernel (this makes sense, although it is not stated in the readme's)?
->> Yes, you are right, and it is stated in the readme: "Apply one of the
->> patches found into this directory against the corresponding kernel release."
->>
->>> If so, then I must use a newer linux kernel to use a later adeos
->>> patch, which is fine, I will try it after testing with a serial port.
->>> If not, then I'll use the latest adeos patch that comes with the 2.4.7
->>> release and let you kow the results.
->> Yes, please use a more recent version, there were fixes recently on x86.
->>
->> --
->> 					    Gilles.
->>
+On Thu, 2009-05-28 at 18:52 +0200, Philippe Gerum wrote:
+> On Thu, 2009-05-28 at 11:59 -0400, Andreas Glatz wrote:
+> > Hi,
+> > 
+> > We have to start 40+ Xenomai tasks in kernel space.
 > 
-> Ah, yes, in the patch folder readme, I somehow missed the all important word.
+> Why subjecting yourself to the pain of running a complex application in
+> kernel space? The difference between kernel and userland latencies on an
+> mpc836x should not be worth it.
 > 
-> More importantly, I am now running:
-> Vanilla Linux Kernel: 2.6.29.4
-> Adeos Patch: adeos-ipipe-2.6.29.4-x86-2.4-01.patch
-> Xenomai Version: 2.4.7
-> 
-> Due to the change in kernel my config file is now different.  The
-> primary change that may be relevant based on previous postings is that
->  CONFIG_CPU_IDLE is now set, because it will not disable unless ACPI
-> is completely disabled.
-> 
-> The OS still hangs during the latency test of xeno-test, but I now
-> have the attached output from the kernel console (including the final
-> initialisation message ('boot scripts') before the hang).
 
-Ok. Could you send us a disassembly of the xntimer_next_local_shot
-function ? As well as the value of the cpu frequency and the APIC
-frequency on your system ?
+We see a 70us difference between running exactly the same
+application in kernel-space and user-space. The application
+registers the rx and tx interrupt of one UEC and replaces
+the buffer descriptor rings allocated by Linux, and 
+takes care of the buffer handling. During the
+test we send out an Ethernet frame from the MPC8360, the
+frame gets processed on the other end of the wire and 
+eventually we receive the response from the other device. 
+The total round trip time (function call send() to 
+return of function call receive() measured with __xn_rdtsc()) 
+is 230us in kernel-space and 300us in user-space.
 
-> 
-> Steve
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+FYI: Another device which used direct SMI instead of Ethernet
+to talk to the device on the other end of the wire showed a
+round trip time of 40us... 
 
 
--- 
-                                                 Gilles.
+Andreas
 
