@@ -1,22 +1,14 @@
 MIME-Version: 1.0
-Sender: alexis.berlemont@domain.hid
-In-Reply-To: <9c789a000905271447i3998c3d3xf5ce93d1d8783031@domain.hid>
-References: <9c789a000905250446t78fd6b38x1a6f28e35b70d7d6@domain.hid>
-	<9c789a000905251516j5272ae7bpc60aea8fdc17d50c@domain.hid>
-	<9c789a000905251532i4775d796x8f095503a203e5bb@domain.hid>
-	<72cf3fb0905260655g3e6942c5va7bc032f1cb5f35@domain.hid>
-	<9c789a000905260736t241467ax805c4823b0d58ff5@domain.hid>
-	<1243374524.22014.74.camel@domain.hid>
-	<9c789a000905261525q45cbaa3ag25855befde1cb130@domain.hid>
-	<9c789a000905261531m67dee7dah9740d825cce04cbc@domain.hid>
-	<9c789a000905261535v56d5ac5i4fa1a41f4e678849@domain.hid>
-	<9c789a000905271447i3998c3d3xf5ce93d1d8783031@domain.hid>
-Date: Thu, 28 May 2009 08:38:46 +0200
-Message-ID: <72cf3fb0905272338s6ef295fch9239989091ac85ca@domain.hid>
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
+In-Reply-To: <4A1D73B6.1050602@domain.hid>
+References: <abaf774b0905270831q6c8aeb44mb2cf10f7ca3b926f@domain.hid>
+	<4A1D6ED4.3060104@domain.hid> <1243443636.22014.79.camel@domain.hid>
+	<4A1D73B6.1050602@domain.hid>
+Date: Thu, 28 May 2009 07:54:36 +0100
+Message-ID: <abaf774b0905272354m2ece1cb3s967f17b876b55bbf@domain.hid>
+From: Steve <sbxenomai@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Driver testing procedure ?!
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] xeno-test hangs during latency test
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,41 +18,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Cristian Axenie <cristian.axenie@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hi,
+On 27/05/2009, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> Philippe Gerum wrote:
+>> On Wed, 2009-05-27 at 18:48 +0200, Gilles Chanteperdrix wrote:
+>>> Steve wrote:
+>>>> After installing the latest version of Xenomai last week I have
+>>>> encountered a problem with Xenomai applications hanging linux
+>>>> completely, requiring restart.  This has also occured while running
+>>>> xeno-test, during the latency tests.
+>>>>
+>>>> I have tried to follow the various suggestions on this board about
+>>>> preventing hanging of Xenomai, however I am still experiencing the
+>>>> problem.
+>>>>
+>>>> I am using:
+>>>> Vanilla Linux Kernel 2.6.24
+>>>> Adeos Patch 2.6.24-x86-2.0-07
+>>
+>> ^^^^^
+>
+> Yeah, right, please try the latest version, Xenomai 2.4.7, and the
+> patches it contains. If you need debian packages, the package ship with
+> its own debian directory allowing to build the packages from sources. If
+> it does not work, then report bugs.
+>
+> Also, depending on your deadlines, 2.4.8 should be out soon, so you may
+> want to wait for this release.
+>
+> --
+>                                                  Gilles.
+>
 
-On Wed, May 27, 2009 at 11:47 PM, Cristian Axenie
-<cristian.axenie@domain.hid> wrote:
-> Hi!
->
-> Without no modiffications (just some printks) I've got a new trace pointi=
-ng
-> that the problem is at another location :
->
-> and the location from the kernel dissasembly points to :
->
-> /home/haustiq/development/eldk/ppc_6xx/usr/src/linux-2.6.24-prepared/driv=
-ers/xenomai/comedi/transfer.c:317
-> c02399d8:=A0=A0=A0 38 00 00 00 =A0=A0=A0 li=A0=A0=A0=A0=A0 r0,0
-> c02399dc:=A0=A0=A0 60 00 ff ff =A0=A0=A0 ori=A0=A0=A0=A0 r0,r0,65535
-> c02399e0:=A0=A0=A0 81 23 00 08 =A0=A0=A0 lwz=A0=A0=A0=A0 r9,8(r3)
-> c02399e4:=A0=A0=A0 81 69 00 1c =A0=A0=A0 lwz=A0=A0=A0=A0 r11,28(r9)
-> c02399e8:=A0=A0=A0 7f 8b 00 00 =A0=A0=A0 cmpw=A0=A0=A0 cr7,r11,r0
-> c02399ec:=A0=A0=A0 41 9e 00 1c =A0=A0=A0 beq-=A0=A0=A0 cr7,c0239a08 <come=
-di_request_irq+0x48>
->
->
-> Do you have any idea what is the source for this random erroneous behavio=
-ur
-> ?
+When I first installed Xenomai I used the latest Adeos patch (at the
+time) instead of the one corresponding directly to my kernel (eg
+2.6.27 patch for 2.6.24 kernel).  This did not work.  Once I used the
+latest of the corresponding patches (2.6.24) it seemed to work, so I
+have been using that combination ever since, and there has not been a
+newer Adeos patch for that kernel since.  Am I correct in thinking
+that you must use an Adeos patch that corresponds to your particular
+kernel (this makes sense, although it is not stated in the readme's)?
+If so, then I must use a newer linux kernel to use a later adeos
+patch, which is fine, I will try it after testing with a serial port.
+If not, then I'll use the latest adeos patch that comes with the 2.4.7
+release and let you kow the results.
 
-Ok. Thanks, I will have a look at that location. By the way, I think
-there was another mistake (I made) in the attach procedure
-(comedi_init_drv() called twice).
-
-But do not expect any git update today, I am unavailable until tonight.
-
-Alexis.
+Steve
 
