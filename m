@@ -1,10 +1,12 @@
-From: Andreas Glatz <andreasglatz@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1243526358.898.21.camel@domain.hid>
+References: <1243526358.898.21.camel@domain.hid>
 Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
-Date: Thu, 28 May 2009 11:59:18 -0400
-Message-Id: <1243526358.898.21.camel@domain.hid>
+Date: Thu, 28 May 2009 18:39:58 +0200
+Message-Id: <1243528798.22173.3.camel@domain.hid>
 Mime-Version: 1.0
-Subject: [Xenomai-help] Running out of stack memory in kernel-space
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Running out of stack memory in kernel-space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,26 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Andreas Glatz <andreasglatz@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+On Thu, 2009-05-28 at 11:59 -0400, Andreas Glatz wrote:
+> Hi,
+> 
+> We have to start 40+ Xenomai tasks in kernel space.
+> We want to allocate at least 4kbyte of stack memory
+> for each of them. So we need the stack heap size 
+> to be more than 160kbyte. 
+> 
+> In the documentation it says that the total 
+> stack heap size cannot be more than 128kbyte
+> (the limit of kmalloc).
 
-We have to start 40+ Xenomai tasks in kernel space.
-We want to allocate at least 4kbyte of stack memory
-for each of them. So we need the stack heap size 
-to be more than 160kbyte. 
+Could you point me at that doc? TIA,
 
-In the documentation it says that the total 
-stack heap size cannot be more than 128kbyte
-(the limit of kmalloc).
+> 
+> Now my idea is to modify the Xenomai code to have 
+> more than one stack heaps. So when I'm running out
+> of space in one heap I can switch to the next heap...
+> 
+> Is there an easier way to increase the max. stack heap size?
+> 
 
-Now my idea is to modify the Xenomai code to have 
-more than one stack heaps. So when I'm running out
-of space in one heap I can switch to the next heap...
+See CONFIG_XENO_OPT_SYS_STACKPOOLSZ, nucleus configuration menu.
 
-Is there an easier way to increase the max. stack heap size?
+> Best regards, 
+> Andreas 
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+-- 
+Philippe.
 
-Best regards, 
-Andreas 
 
 
