@@ -1,10 +1,17 @@
 From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4B2EEE69E41E524EB7FCDC62A15D68D80348DF91@domain.hid>
+References: <ff1d78710905130504h2588d8c5te0b918dce3a8f0da@domain.hid>
+	<1242219577.26544.952.camel@domain.hid>  <4A0AC81A.7050000@domain.hid>
+	<1242221456.26544.960.camel@domain.hid>  <4A0ACC6A.3010205@domain.hid>
+	<1242222147.26544.964.camel@domain.hid>
+	<4B2EEE69E41E524EB7FCDC62A15D68D80348DF91@domain.hid>
 Content-Type: text/plain
-Date: Fri, 29 May 2009 18:56:18 +0200
-Message-Id: <1243616178.27443.21.camel@domain.hid>
+Date: Sat, 30 May 2009 17:32:33 +0200
+Message-Id: <1243697553.27443.44.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Xenomai v2.4.8
+Subject: Re: [Xenomai-core] [Xenomai-help] Periodic threads not scheduled
+ anymore during debug session
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,74 +20,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: thomas.debes@domain.hid
+Cc: xenomai@xenomai.org
 
+On Wed, 2009-05-27 at 11:23 +0200, thomas.debes@domain.hid wrote:
+> > 
+> > For the rest, we would have to reverse the current logic and tag
+> > blockable timers instead of non-blockable one. The shadow code would
+> > then have to tag the ptimer/rtimer of the ptraced thread as blockable,
+> > leaving all other timers as unblockable by default.
+> > 
+> > >
+> 
+> Do you know when this will be implemented? 
+> 
 
-Here is the eighth maintenance release for the v2.4.x branch.  Short
-log follows:
+No idea, yet. This is certainly something to work on at some point
+though.
 
-	[nucleus]
-
-	* Suppress switch warning upon signal receipt when the process
-	is being debugged.
-	* Fix host tick propagation.
-	* Prevent early timer shots due to rounding imprecision.
-	* Fix computation of heap overhead.
-	* Move xnarch_set_irq_affinity out of intr lock.
-	* Introduce channel information in LTTng markers.
-
-	[posix]
-
-	* Fix access checks in select().
-	* Fix errnoneous -EINVAL error return with mmap() of non
-          page-aligned length.
-
-	[native]
-
-	* Fix message pipe streaming mode.
-	* Make optimized tsc<->ns conversion routines available to
-          user-space.
-
-	[vxworks]
-
-	* Add missing rescheduling in semaphore deletion code.
-
-	[vrtx]
-
-	* Fix sc_[e]tcreate().
-	* Rework mutex support.
-
-	[powerpc]
-
-	* Do not restore ALTIVEC/SPE regs for kernel threads.
-	* Port to Emerson's MVME7100 dual core SBC.
-	* Upgrade Adeos support to 2.6.29.4-powerpc-DENX-2.6-00.
-
-	[arm]
-
-	* Upgrade Adeos support to 2.6.29-arm-1.13-00.
-
-	[x86]
-
-	* Fix miscompilation of __do_strncpy_from_user().
-	* Yet another round of FPU management fixes.
-	* Upgrade Adeos support to 2.6.29.4-x86-2.4-01.
-
-	[blackfin]
-
-	* Upgrade Adeos support to 2.6.28.10-blackfin.git-1.10-00.
-
-	[can]
-
-	* ixxat-pci: fix problems with device probing.
-	* ixxat-pci: disambiguate PCI device id.
-	* mscan: fix build problems with recent kernel versions.
-
-
-http://download.gna.org/xenomai/stable/xenomai-2.4.8.tar.bz2
-
-git://xenomai.org/xenomai-2.4.git
-
+> We have a kernel watchdog service running (Xenomai task) which always restarts our system while debugging (because the watchdog is not triggered anymore). I assume that this problem is related to the one above.
+> 
+> Thanks
+> Thomas
+> 
+> --------------------------------------------------------
+> manroland AG
+> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Rall, Paul Steidle   
+> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592
+> USt-Ident-Nr. DE 250200933
 -- 
 Philippe.
 
