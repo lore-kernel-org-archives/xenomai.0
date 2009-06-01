@@ -1,92 +1,123 @@
-Message-ID: <4A4A6350.1050304@domain.hid>
-Date: Tue, 30 Jun 2009 21:11:12 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig16EAF97812DCB383CF5970DA"
-Sender: jan.kiszka@domain.hid
-Subject: [Adeos-main] [PATCH] 2.6.30: Harden ftrace_run_update_code
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <5F0B1AF0FEA4EB4F8AC9F4CF3AF6DC1E933A9E0554@domain.hid>
+References: <1243616178.27443.21.camel@domain.hid>
+	<5F0B1AF0FEA4EB4F8AC9F4CF3AF6DC1E933A9E0554@domain.hid>
+Content-Type: text/plain
+Date: Mon, 01 Jun 2009 11:03:21 +0200
+Message-Id: <1243847001.27443.489.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] [Xenomai-core] Xenomai v2.4.8
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Vikesh Rambaran <Vikesh.Rambaran@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig16EAF97812DCB383CF5970DA
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On Mon, 2009-06-01 at 10:17 +0200, Vikesh Rambaran wrote:
+> Hi
+> Thanx for the release.
+> 
+> However, could you please check the xenomai-2.4.8.tar.bz2 file. 
+> It seems to be missing a few files and folders (eg ksrc, scripts).
+> 
 
-[ I also back-ported this and 3 related patches to 2.6.29, see git://git.=
-kiszka.org/ipipe-2.6.git queues/2.6.29-noarch. ]
+I don't think so. Please check again.
 
-In order to safely enable/disable ftrace during runtime we have to
-harden its related service that relies on stop_machine for vanilla
-kernels.
+> Keep well
+> Vicki
+> 
+> ________________________________________
+> From: xenomai-core-bounces@domain.hid [xenomai-core-bounces@domain.hid] On Behalf Of Philippe Gerum [rpm@xenomai.org]
+> Sent: Friday, May 29, 2009 6:56 PM
+> To: xenomai@xenomai.org
+> Cc: xenomai@xenomai.org
+> Subject: [Xenomai-core] Xenomai v2.4.8
+> 
+> Here is the eighth maintenance release for the v2.4.x branch.  Short
+> log follows:
+> 
+>         [nucleus]
+> 
+>         * Suppress switch warning upon signal receipt when the process
+>         is being debugged.
+>         * Fix host tick propagation.
+>         * Prevent early timer shots due to rounding imprecision.
+>         * Fix computation of heap overhead.
+>         * Move xnarch_set_irq_affinity out of intr lock.
+>         * Introduce channel information in LTTng markers.
+> 
+>         [posix]
+> 
+>         * Fix access checks in select().
+>         * Fix errnoneous -EINVAL error return with mmap() of non
+>           page-aligned length.
+> 
+>         [native]
+> 
+>         * Fix message pipe streaming mode.
+>         * Make optimized tsc<->ns conversion routines available to
+>           user-space.
+> 
+>         [vxworks]
+> 
+>         * Add missing rescheduling in semaphore deletion code.
+> 
+>         [vrtx]
+> 
+>         * Fix sc_[e]tcreate().
+>         * Rework mutex support.
+> 
+>         [powerpc]
+> 
+>         * Do not restore ALTIVEC/SPE regs for kernel threads.
+>         * Port to Emerson's MVME7100 dual core SBC.
+>         * Upgrade Adeos support to 2.6.29.4-powerpc-DENX-2.6-00.
+> 
+>         [arm]
+> 
+>         * Upgrade Adeos support to 2.6.29-arm-1.13-00.
+> 
+>         [x86]
+> 
+>         * Fix miscompilation of __do_strncpy_from_user().
+>         * Yet another round of FPU management fixes.
+>         * Upgrade Adeos support to 2.6.29.4-x86-2.4-01.
+> 
+>         [blackfin]
+> 
+>         * Upgrade Adeos support to 2.6.28.10-blackfin.git-1.10-00.
+> 
+>         [can]
+> 
+>         * ixxat-pci: fix problems with device probing.
+>         * ixxat-pci: disambiguate PCI device id.
+>         * mscan: fix build problems with recent kernel versions.
+> 
+> 
+> http://download.gna.org/xenomai/stable/xenomai-2.4.8.tar.bz2
+> 
+> git://xenomai.org/xenomai-2.4.git
+> 
+> --
+> Philippe.
+> 
+> 
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+> 
+> 
+-- 
+Philippe.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
 
- kernel/trace/ftrace.c |   10 ++++++++++
- 1 files changed, 10 insertions(+), 0 deletions(-)
-
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index f7c600d..aa45f71 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -28,6 +28,7 @@
- #include <linux/ctype.h>
- #include <linux/list.h>
- #include <linux/hash.h>
-+#include <linux/ipipe.h>
-=20
- #include <trace/sched.h>
-=20
-@@ -627,6 +628,9 @@ static int __ftrace_modify_code(void *data)
-=20
- static void ftrace_run_update_code(int command)
- {
-+#ifdef CONFIG_IPIPE
-+	unsigned long flags;
-+#endif /* CONFIG_IPIPE */
- 	int ret;
-=20
- 	ret =3D ftrace_arch_code_modify_prepare();
-@@ -634,7 +638,13 @@ static void ftrace_run_update_code(int command)
- 	if (ret)
- 		return;
-=20
-+#ifdef CONFIG_IPIPE
-+	flags =3D ipipe_critical_enter(NULL);
-+	__ftrace_modify_code(&command);
-+	ipipe_critical_exit(flags);
-+#else  /* !CONFIG_IPIPE */
- 	stop_machine(__ftrace_modify_code, &command, NULL);
-+#endif /* !CONFIG_IPIPE */
-=20
- 	ret =3D ftrace_arch_code_modify_post_process();
- 	FTRACE_WARN_ON(ret);
-
-
---------------enig16EAF97812DCB383CF5970DA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkpKY1QACgkQniDOoMHTA+mePwCfeBTkoj9gYzgbMzgfd36MLfnE
-qcgAn2EGjSvI+BvphBhGJDAkJXu6HQLb
-=kXnI
------END PGP SIGNATURE-----
-
---------------enig16EAF97812DCB383CF5970DA--
 
