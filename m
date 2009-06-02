@@ -1,98 +1,58 @@
-From: Wolfgang Denk <wd@domain.hid>
-Mime-version: 1.0
-Content-type: text/plain; charset=ISO-8859-1
-Date: Tue, 21 Jul 2009 16:05:12 +0200
-Message-Id: <20090721140512.793ED832E416@domain.hid>
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-core] XUM - Xenomai User's Meeting
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <4A258624.4020508@domain.hid>
+Date: Tue, 02 Jun 2009 22:05:56 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <4A2452CB.2030909@domain.hid> <4A2580C5.4000806@domain.hid>
+In-Reply-To: <4A2580C5.4000806@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] How to chose between xenomai and preempt RT
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
-Cc: ag-automation@domain.hid
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Jeff Angielski <jeff@domain.hid>
+Cc: xenomai@xenomai.org
 
-[Sorry if you recieved this twice; I posted this information before
-in the Xenomai groups as a reply in thread "RT_PREEMPT patch and
-other things...", but this did not catch some of the potentially
-interested eyes, so here it goes again.]
+Jeff Angielski wrote:
+> Adrien LECOINTRE wrote:
+>> Hi,
+>>
+>> I've been testing for a while, Xenomai and Linux preempt RT latencies 
+>> under different loads and I couldn't find any big differences. Latencies 
+>> are almost the same.
+>> So my question is, do you know any case where Xenomai is really better 
+>> than a simple preempt RT?
+>> Or which specification in a real time application should make me chose 
+>> Xenomai instead of preempt RT?
+> 
+> I suspect your loads are not sufficiently exercising your system.
+> 
+> To answer your question, though, it all depends on your requirements, 
+> whether you need hard or soft realtime.  In other words, is it ok to 
+> miss your deadline every so often?  If so, CONFIG_PREEMPT would be fine 
+> for you. If you can't miss any deadlines, use Xenomai.
+> 
+> Of course, just by choosing to use Xenomai, you don't get hard realtime. 
+>   You still need to design your system and software correctly.
+> 
+> As time marches on, the CONFIG_PREEMPT is getting closer to hard 
+> realtime, especially with the interrupt threading, but I don't think 
+> that time is now.
 
+threaded interrupts are no silver bullet, they are essentially replacing
+interrupt latencies with kernel-space scheduling latencies; on x86, this
+may not make that much of a difference, but on low-end platform it does.
 
-We at DENX are trying to organize something like a "Xenomai User's
-Meeting" at this year's Real-Time Linux Workshop (September 28 to 30,
-in Dresden, Germany).
+See also:
+https://mail.gna.org/public/xenomai-help/2008-05/msg00043.html
+https://mail.gna.org/public/xenomai-help/2009-06/msg00005.html
 
-
-If you are already using Xenomai in your projects, or if you are
-using other real-time solutions and interested to learn what Xenomai
-has to offer: please come to the RTLWS to Dresden, and please let me
-know about it. My dream is that as many as possible give a short
-(2...5 minutes is sufficient) presentation of their project: how long
-they've been using Xenomai, on which platform, what their area of
-business is, eventually what their project is about, success stories,
-what you like about Xenomai, where you ran into problems, what is
-still missing in Xenomai to make it even easier to use for you, etc.
-etc...
-
-We don't have a formal agenda yet as we are  still  trying  to  reach
-some critical mass, but so far we have:
-
-
-Some Xenomai / Adeos related presentations have already been
-submitted (though I don't know about acceptance, schedule or the
-like):
-
-* Philippe Gerum
-  will give a presentation about Xenomai's Roadmap
-
-* Richard Cochran, OMICRON electronics GmbH, and
-  Gilles Chanteperdrix, xenomai.org
-  will talk about "ARM Fast Context Switch Extension for Linux"
-
-* Rene Graf, Siemens AG
-  Manfred Neugebauer, Siemens AG
-  Wolfgang Hartmann, Siemens AG
-  will present "Transparent real time behavior, a new approach"
-
-* Daniel Rossier and Patrick Gerber,
-  both Reconfigurable Embedded Digital Systems, HEIG-VD/HES-SO, Switzerla=
-nd,
-  present "Colibri-in-Motion: embedded virtualization technics
-  devoted to hard realtime control"
-
-* Peter Soetens, Katholieke Universiteit Leuven and
-  Markus Klotzb=FCcher, Katholieke Universiteit Leuven
-  talk about "Real Time Toolkit for Open Robot Control Software"
-
-Some other well-known Xenomai experts like Jan Kiszka promised to
-come, too.
-
-
-I know that many people from many companies read this list and use
-Xenomai in their projects, often without ever activly participating
-in the discussions here. Come together at RTLWS! That's the chance to
-see who else is doing the same, and to match faces to names.
-
-See http://www.osadl.org/Dresden-2009.rtlws11-dresden-2009.0.html for
-details, and/or contact me in case of questions, suggestions, or if
-you have an abstract for a presentation (yes, the deadline is already
-past, but I'll try to help).
-
-
-Best regards,
-
-Wolfgang Denk
-
---=20
-DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
-Severe culture shock results when experts from another protocol suite
-[...] try to read OSI documents. The term "osified" is used to  refer
-to  such  documents. [...] Any relationship to the word "ossified" is
-purely intentional.                                - Marshall T. Rose
+-- 
+					    Gilles.
 
