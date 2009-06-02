@@ -1,114 +1,51 @@
-Mime-Version: 1.0 (Apple Message framework v753.1)
-Message-Id: <71D4C981-5356-40C4-AD25-3EA41BD566BC@gmail.com>
-Content-Type: multipart/alternative; boundary=Apple-Mail-2--1026225248
-References: <C026136E-758C-4767-988F-742C8FA08EE9@domain.hid>
-From: Andreas Glatz <andi.glatz@domain.hid>
-Date: Fri, 17 Jul 2009 16:51:54 -0400
-Subject: Re: [Xenomai-core] RT_PREEMPT patch and other things...
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
-
-
---Apple-Mail-2--1026225248
+Message-ID: <4A2580C5.4000806@domain.hid>
+Date: Tue, 02 Jun 2009 15:43:01 -0400
+From: Jeff Angielski <jeff@domain.hid>
+MIME-Version: 1.0
+References: <4A2452CB.2030909@domain.hid>
+In-Reply-To: <4A2452CB.2030909@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain;
-	charset=US-ASCII;
-	delsp=yes;
-	format=flowed
+Subject: Re: [Xenomai-help] How to chose between xenomai and preempt RT
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Adrien LECOINTRE <adrien20@domain.hid>
+Cc: xenomai@xenomai.org
 
+Adrien LECOINTRE wrote:
+> Hi,
+> 
+> I've been testing for a while, Xenomai and Linux preempt RT latencies 
+> under different loads and I couldn't find any big differences. Latencies 
+> are almost the same.
+> So my question is, do you know any case where Xenomai is really better 
+> than a simple preempt RT?
+> Or which specification in a real time application should make me chose 
+> Xenomai instead of preempt RT?
 
+I suspect your loads are not sufficiently exercising your system.
 
-On 17 Jul 2009, at 12:24, Jan Kiszka wrote:
+To answer your question, though, it all depends on your requirements, 
+whether you need hard or soft realtime.  In other words, is it ok to 
+miss your deadline every so often?  If so, CONFIG_PREEMPT would be fine 
+for you. If you can't miss any deadlines, use Xenomai.
 
-> Andreas Glatz wrote:
->> Hi,
->>
->> I have some questions about the future of Xenomai:
->>
->> 1) I read that in Xenomai 3 you will add support to switch between
->> the native Xenomai scheduler
->>       and the Linux scheduler patched with the RT_PREEMPT patchset.
->> When are you planning to
->>       start this development?
->>
->
-> There are some early components available, see
-> http://git.denx.de/?p=xenomai-solo.git and
-> http://git.xenomai.org/?p=rtdm-native.git.
->
+Of course, just by choosing to use Xenomai, you don't get hard realtime. 
+  You still need to design your system and software correctly.
 
-When do u think Xenomai-Solo will become stable (ready for production  
-use on a powerpc platform)?
+As time marches on, the CONFIG_PREEMPT is getting closer to hard 
+realtime, especially with the interrupt threading, but I don't think 
+that time is now.
 
-Andreas
-
-
---Apple-Mail-2--1026225248
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/html;
-	charset=US-ASCII
-
-<html><body style=3D"word-wrap: break-word; -webkit-nbsp-mode: space; =
--webkit-line-break: after-white-space; "><div><div style=3D"margin-top: =
-0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; =
-min-height: 14px; "><font class=3D"Apple-style-span" =
-color=3D"#000000"><br></font></div> <div style=3D"margin-top: 0px; =
-margin-right: 0px; margin-bottom: 0px; margin-left: 0px; min-height: =
-14px; "><br></div><div style=3D"margin-top: 0px; margin-right: 0px; =
-margin-bottom: 0px; margin-left: 0px; ">On 17 Jul 2009, at 12:24, Jan =
-Kiszka wrote:</div><div style=3D"margin-top: 0px; margin-right: 0px; =
-margin-bottom: 0px; margin-left: 0px; min-height: 14px; "><br></div> =
-<blockquote type=3D"cite"><div style=3D"margin-top: 0px; margin-right: =
-0px; margin-bottom: 0px; margin-left: 0px; ">Andreas Glatz wrote:</div> =
-<blockquote type=3D"cite"><div style=3D"margin-top: 0px; margin-right: =
-0px; margin-bottom: 0px; margin-left: 0px; ">Hi,</div><div =
-style=3D"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; =
-margin-left: 0px; min-height: 14px; "><br></div><div style=3D"margin-top: =
-0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; ">I have =
-some questions about the future of Xenomai:</div><div style=3D"margin-top:=
- 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; =
-min-height: 14px; "><br></div><div style=3D"margin-top: 0px; =
-margin-right: 0px; margin-bottom: 0px; margin-left: 0px; ">1) I read =
-that in Xenomai 3 you will add support to switch between</div><div =
-style=3D"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; =
-margin-left: 0px; ">the native Xenomai scheduler</div><div =
-style=3D"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; =
-margin-left: 0px; "><span class=3D"Apple-converted-space">&nbsp; &nbsp; =
-&nbsp; </span>and the Linux scheduler patched with the RT_PREEMPT =
-patchset.</div><div style=3D"margin-top: 0px; margin-right: 0px; =
-margin-bottom: 0px; margin-left: 0px; ">When are you planning =
-to</div><div style=3D"margin-top: 0px; margin-right: 0px; margin-bottom: =
-0px; margin-left: 0px; "><span class=3D"Apple-converted-space">&nbsp; =
-&nbsp; &nbsp; </span>start this development?</div><div =
-style=3D"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; =
-margin-left: 0px; min-height: 14px; "><br></div> </blockquote><div =
-style=3D"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; =
-margin-left: 0px; min-height: 14px; "><br></div><div style=3D"margin-top: =
-0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; ">There =
-are some early components available, see</div><div style=3D"margin-top: =
-0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; "><a =
-href=3D"http://git.denx.de/?p=3Dxenomai-solo.git">http://git.denx.de/?p=3D=
-xenomai-solo.git</a> and</div><div style=3D"margin-top: 0px; =
-margin-right: 0px; margin-bottom: 0px; margin-left: 0px; "><a =
-href=3D"http://git.xenomai.org/?p=3Drtdm-native.git">http://git.xenomai.or=
-g/?p=3Drtdm-native.git</a>.</div><div style=3D"margin-top: 0px; =
-margin-right: 0px; margin-bottom: 0px; margin-left: 0px; min-height: =
-14px; "><br></div> </blockquote><div style=3D"margin-top: 0px; =
-margin-right: 0px; margin-bottom: 0px; margin-left: 0px; min-height: =
-14px; "><br></div><div style=3D"margin-top: 0px; margin-right: 0px; =
-margin-bottom: 0px; margin-left: 0px; ">When do u think Xenomai-Solo =
-will become stable (ready for production use on a powerpc =
-platform)?</div><div style=3D"margin-top: 0px; margin-right: 0px; =
-margin-bottom: 0px; margin-left: 0px; min-height: 14px; "><br></div><div =
-style=3D"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; =
-margin-left: 0px; ">Andreas</div> </div><br></body></html>=
-
---Apple-Mail-2--1026225248--
+-- 
+Jeff Angielski
+The PTR Group
+www.theptrgroup.com
 
