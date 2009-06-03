@@ -1,78 +1,77 @@
-Message-ID: <4A49CD81.4060706@domain.hid>
-Date: Tue, 30 Jun 2009 10:32:01 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4A48FB71.6070506@domain.hid>
-In-Reply-To: <4A48FB71.6070506@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+In-Reply-To: <1243585964.25099.8.camel@domain.hid>
+References: <abaf774b0905270831q6c8aeb44mb2cf10f7ca3b926f@domain.hid>
+	<4A1D6ED4.3060104@domain.hid> <1243443636.22014.79.camel@domain.hid>
+	<4A1D73B6.1050602@domain.hid>
+	<abaf774b0905272354m2ece1cb3s967f17b876b55bbf@domain.hid>
+	<4A1E46C9.9050806@domain.hid>
+	<abaf774b0905280853x23fe5bf2y68cd354ba6a787c9@domain.hid>
+	<1243585964.25099.8.camel@domain.hid>
+Date: Wed, 3 Jun 2009 11:41:02 +0100
+Message-ID: <abaf774b0906030341x2e0fca36t7db790b9157e1570@domain.hid>
+From: Steve <sbxenomai@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] x86: Endless minor faults
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] xeno-test hangs during latency test
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Hi all,
-> 
-> seen such loops before? This particular trace is from a 2.6.29.3 kernel
-> with ipipe-2.3-01 (SMP/PREEMPT_VOLUNTARY), but the same happens with
-> 2.6.29.5/2.3-03:
-> 
-> :|   +func                -653    0.084  __ipipe_handle_exception+0x11 (page_fault+0x26)
-> :|   +func                -653    0.096  ipipe_check_context+0xd (__ipipe_handle_exception+0x71)
-> :|   #end     0x80000000  -653    0.069  do_page_fault+0x33 (__ipipe_handle_exception+0x1ff)
-> :    #func                -653    0.078  __ipipe_unstall_root+0x9 (do_page_fault+0x3cb)
-> :|   #begin   0x80000000  -653    0.068  __ipipe_unstall_root+0x34 (do_page_fault+0x3cb)
-> :|   +end     0x80000000  -653    0.069  __ipipe_unstall_root+0x59 (do_page_fault+0x3cb)
-> :    +func                -653    0.060  down_read_trylock+0x4 (do_page_fault+0x424)
-> :    +func                -653    0.068  _spin_lock_irqsave+0x9 (__down_read_trylock+0x16)
-> :    +func                -653    0.108  ipipe_check_context+0xd (_spin_lock_irqsave+0x1d)
-> :    #func                -652    0.066  _spin_unlock_irqrestore+0x4 (__down_read_trylock+0x3f)
-> :    #func                -652    0.069  __ipipe_restore_root+0x4 (_spin_unlock_irqrestore+0x21)
-> :    #func                -652    0.074  __ipipe_unstall_root+0x9 (__ipipe_restore_root+0x2c)
-> :|   #begin   0x80000000  -652    0.066  __ipipe_unstall_root+0x34 (__ipipe_restore_root+0x2c)
-> :|   +end     0x80000000  -652    0.069  __ipipe_unstall_root+0x59 (__ipipe_restore_root+0x2c)
-> :    +func                -652    0.096  find_vma+0x4 (do_page_fault+0x465)
-> :    +func                -652    0.150  ltt_run_filter_default+0x4 (_ltt_specialized_trace+0xc1)
-> :    +func                -652    0.098  handle_mm_fault+0x11 (do_page_fault+0x537)
-> :    +func                -652    0.090  _spin_lock+0x4 (handle_mm_fault+0x680)
-> :    +func                -652    0.063  ptep_set_access_flags+0x9 (handle_mm_fault+0x6d1)
-> :    +func                -652    0.282  flush_tlb_page+0xd (handle_mm_fault+0x6e7)
-> :    +func                -651    0.162  ltt_run_filter_default+0x4 (_ltt_specialized_trace+0xc1)
-> :    +func                -651    0.062  up_read+0x4 (do_page_fault+0x5a9)
-> :    +func                -651    0.072  _spin_lock_irqsave+0x9 (__up_read+0x1c)
-> :    +func                -651    0.117  ipipe_check_context+0xd (_spin_lock_irqsave+0x1d)
-> :    #func                -651    0.074  _spin_unlock_irqrestore+0x4 (__up_read+0x92)
-> :    #func                -651    0.069  __ipipe_restore_root+0x4 (_spin_unlock_irqrestore+0x21)
-> :    #func                -651    0.060  __ipipe_unstall_root+0x9 (__ipipe_restore_root+0x2c)
-> :|   #begin   0x80000000  -651    0.056  __ipipe_unstall_root+0x34 (__ipipe_restore_root+0x2c)
-> :|   +end     0x80000000  -651    0.420  __ipipe_unstall_root+0x59 (__ipipe_restore_root+0x2c)
-> :|   +func                -650    0.084  __ipipe_handle_exception+0x11 (page_fault+0x26)
-> 
-> and again and again...
-> 
-> We are looping over a minor fault here (according to /proc/PID/stat),
-> the context is a Xenomai task in secondary mode. As the task no longer
-> processes signals in this state, the whole system is more or less
-> broken. Tomorrow I will try to find out the faulting address with an
-> instrumented kernel, but maybe you already have some ideas.
+On 29/05/2009, Philippe Gerum <rpm@xenomai.org> wrote:
+> On Thu, 2009-05-28 at 16:53 +0100, Steve wrote:
+>> More importantly, I am now running:
+>> Vanilla Linux Kernel: 2.6.29.4
+>> Adeos Patch: adeos-ipipe-2.6.29.4-x86-2.4-01.patch
+>> Xenomai Version: 2.4.7
+>>
+>
+> 2.4.7 vanilla does not support 2.6.29 kernels (actually, it does not
+> even compile against it), so I guess you are in fact running a snapshot
+> from the v2.4.x maintenance branch
+> (http://git.xenomai.org/?p=xenomai-2.4.git;a=summary).
+>
+> If true, and this snapshot was taken between May 19 and May 21, then a
+> short lived bug affecting the timer programming code may well lead to
+> the kind of issue you reported. In such a case, you may want to pull the
+> latest changes from our git tree.
+>
+>> Due to the change in kernel my config file is now different.  The
+>> primary change that may be relevant based on previous postings is that
+>>  CONFIG_CPU_IDLE is now set, because it will not disable unless ACPI
+>> is completely disabled.
+>>
+>> The OS still hangs during the latency test of xeno-test, but I now
+>> have the attached output from the kernel console (including the final
+>> initialisation message ('boot scripts') before the hang).
+>>
+>> Steve
+>> _______________________________________________
+>> Xenomai-help mailing list
+>> Xenomai-help@domain.hid
+>> https://mail.gna.org/listinfo/xenomai-help
+> --
+> Philippe.
+>
+>
+>
 
-The fault is apparently triggered by __xn_put_user(XNRELAX,
-thread->u_mode) in xnshadow_relax. thread->u_mode is pointing to an
-invalid region ATM. The questions are now: Who corrupted this, user
-space on init (not that likely) or kernel space later on (unpleasant
-thought)? Moreover: Why can't we recover from a fault on u_mode?
+Having installed the latest version of Xenomai (2.4.8) it no longer
+hangs, thanks for the advice.
 
-Jan
+You guess correctly, I was running 2.4.X released on the 19th May, not
+2.4.7 as I incorrectly said in my later post, and so it seems that
+that was my problem.  Just for completeness, I am now running a
+vanilla 2.6.29.4 Linux kernel patched with
+adeos-ipipe-2.6.29.4-x86-2.4-01 and Xenomai 2.4.8 on Ubuntu 8.04.
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Thanks for your help,
+
+Steve
 
