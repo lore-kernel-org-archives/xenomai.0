@@ -1,15 +1,14 @@
-Resent-To: Philippe Gerum <rpm@xenomai.org>
-Resent-Message-Id: <4A265441.7090009@domain.hid>
-From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Wed, 03 Jun 2009 12:40:15 +0200
-Message-ID: <20090603104015.13268.59718.stgit@domain.hid>
-In-Reply-To: <20090603104015.13268.34073.stgit@domain.hid>
-References: <20090603104015.13268.34073.stgit@domain.hid>
+Message-ID: <4A267036.8010507@domain.hid>
+Date: Wed, 03 Jun 2009 14:44:38 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+References: <20090603104015.13268.34073.stgit@domain.hid>
+	<20090603104015.13268.59718.stgit@domain.hid>
+In-Reply-To: <20090603104015.13268.59718.stgit@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH 2/3] RTDM: Instrument rtdm_lock_get for
-	proper use
+Subject: Re: [Xenomai-core] [PATCH 2/3] RTDM: Instrument rtdm_lock_get for
+ proper use
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,38 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-In case the user thinks rtdm_lock_get could be used like spin_lock or
-messes up the IRQ protection for other reasons, catch this with a
-XENO_BUGON.
+Jan Kiszka wrote:
+> In case the user thinks rtdm_lock_get could be used like spin_lock or
+> messes up the IRQ protection for other reasons, catch this with a
+> XENO_BUGON.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+> ---
+> 
+>  include/rtdm/rtdm_driver.h |    8 ++++++++
+>  1 files changed, 8 insertions(+), 0 deletions(-)
+> 
+> diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
+> index 058a9f8..fe42eea 100644
+> --- a/include/rtdm/rtdm_driver.h
+> +++ b/include/rtdm/rtdm_driver.h
+> @@ -655,7 +655,15 @@ typedef unsigned long rtdm_lockctx_t;
+>   *
+>   * Rescheduling: never.
+>   */
+> +#ifdef DOXYGEN_CPP /* Beautify doxygen output */
+>  #define rtdm_lock_get(lock)	rthal_spin_lock(lock)
+> +#else /* This is how it really works */
+> +#define rtdm_lock_get(lock)					\
+> +	do {							\
+> +		XENO_BUGON(RTDM, rthal_local_irq_test());	\
+> +		rthal_spin_lock(lock);				\
+> +	} while (0)
+> +#endif
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
+Why is it a problem to call rthal_spin_lock with irqs off?
 
- include/rtdm/rtdm_driver.h |    8 ++++++++
- 1 files changed, 8 insertions(+), 0 deletions(-)
+I also belived that you can avoid the #ifdef DOXYGEN_CPP.
 
-diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
-index 058a9f8..fe42eea 100644
---- a/include/rtdm/rtdm_driver.h
-+++ b/include/rtdm/rtdm_driver.h
-@@ -655,7 +655,15 @@ typedef unsigned long rtdm_lockctx_t;
-  *
-  * Rescheduling: never.
-  */
-+#ifdef DOXYGEN_CPP /* Beautify doxygen output */
- #define rtdm_lock_get(lock)	rthal_spin_lock(lock)
-+#else /* This is how it really works */
-+#define rtdm_lock_get(lock)					\
-+	do {							\
-+		XENO_BUGON(RTDM, rthal_local_irq_test());	\
-+		rthal_spin_lock(lock);				\
-+	} while (0)
-+#endif
- 
- /**
-  * Release lock without preemption restoration
-
+-- 
+					    Gilles.
 
