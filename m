@@ -1,48 +1,56 @@
-Date: Wed, 6 May 2009 16:12:17 -0700 (PDT)
-From: Martin Shepherd <mcs@domain.hid>
-Message-ID: <Pine.LNX.4.64.0905061412070.24701@domain.hid>
+Resent-To: Philippe Gerum <rpm@xenomai.org>
+Resent-Message-Id: <4A2681F5.9090207@domain.hid>
+From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Wed, 03 Jun 2009 15:59:14 +0200
+Message-ID: <20090603135913.22120.80931.stgit@domain.hid>
+In-Reply-To: <20090603135912.22120.29245.stgit@domain.hid>
+References: <20090603135912.22120.29245.stgit@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Subject: [Xenomai-help] Selecting the appropriate RTDM _rt/_nrt ioctl at
-	run-time.
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] [PATCH v2 4/4] RTDM: Avoid namespace pollution
+	in	RTDM_EXECUTE_ATOMICALLY
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-I'm in the process of writing an RTDM device driver. Some of the ioctl
-requests that it implements can only be executed from non-realtime
-context, due to the need for them to call Linux kernel functions,
-while other ioctl requests are context-agnostic, but are intended to
-be used from realtime context.
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
 
-At first glance the RTDM documentation appears to indicate that I
-should implement the ioctl requests that require non-realtime context
-in the ioctl_nrt() handler of the driver, and implement the remaining
-context-agnostic requests in both the ioctl_nrt() and ioctl_rt()
-handlers. However for this to work transparently, RTDM would have to
-know which request codes were implemented by ioctl_nrt() and which by
-ioctl_rt(), then automatically switch context, if needed, before
-calling them.  I don't see anything implemented along these lines.
+ include/rtdm/rtdm_driver.h |   14 +++++++-------
+ 1 files changed, 7 insertions(+), 7 deletions(-)
 
-In principle I could tell application writers that they have to
-explicitly switch to the secondary linux domain before calling
-rt_dev_ioctl() for a request that requires this. However I don't see
-any RTDM or Xenomai user-API call for switching contexts (other than
-xnshadown_relax(), which is marked as for internal use only). I
-imagine that one could do the equivalent by calling something like
-sleep(0) to force a switch to the Linux domain. But this seems like a
-kludge.
+diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
+index 5fc8b57..7f1f3f8 100644
+--- a/include/rtdm/rtdm_driver.h
++++ b/include/rtdm/rtdm_driver.h
+@@ -595,13 +595,13 @@ int rtdm_select_bind(int fd, rtdm_selector_t *selector,
+ 	<LEAVE_ATOMIC_SECTION>			\
+ }
+ #else /* This is how it really works */
+-#define RTDM_EXECUTE_ATOMICALLY(code_block)	\
+-{						\
+-	spl_t s;				\
+-						\
+-	xnlock_get_irqsave(&nklock, s);		\
+-	code_block;				\
+-	xnlock_put_irqrestore(&nklock, s);	\
++#define RTDM_EXECUTE_ATOMICALLY(code_block)		\
++{							\
++	spl_t __rtdm_s;					\
++							\
++	xnlock_get_irqsave(&nklock, __rtdm_s);		\
++	code_block;					\
++	xnlock_put_irqrestore(&nklock, __rtdm_s);	\
+ }
+ #endif
+ /** @} Global Lock across Scheduler Invocation */
 
-Am I missing something obvious?
-
-Thanks,
-
-Martin
 
