@@ -1,13 +1,13 @@
-Message-ID: <4A267BBE.8010407@domain.hid>
-Date: Wed, 03 Jun 2009 15:33:50 +0200
+Message-ID: <4A267EB1.20004@domain.hid>
+Date: Wed, 03 Jun 2009 15:46:25 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <20090603104015.13268.34073.stgit@domain.hid>
-	<20090603104015.13268.59718.stgit@domain.hid>
+References: <20090603104015.13268.34073.stgit@domain.hid>	
+	<20090603104015.13268.59718.stgit@domain.hid>	
 	<4A267036.8010507@domain.hid> <4A267591.2060301@domain.hid>
-	<4A267669.9030304@domain.hid>
-In-Reply-To: <4A267669.9030304@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+	<1244036044.5329.12.camel@domain.hid>
+In-Reply-To: <1244036044.5329.12.camel@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [PATCH 2/3] RTDM: Instrument rtdm_lock_get for
  proper use
@@ -19,11 +19,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
+Philippe Gerum wrote:
+> On Wed, 2009-06-03 at 15:07 +0200, Jan Kiszka wrote:
 >> Gilles Chanteperdrix wrote:
 >>> Jan Kiszka wrote:
 >>>> In case the user thinks rtdm_lock_get could be used like spin_lock or
@@ -55,29 +55,26 @@ Gilles Chanteperdrix wrote:
 >>>> +#endif
 >>> Why is it a problem to call rthal_spin_lock with irqs off?
 >> Did I messed it up again? I meant it is a problem to call it with irqs
->> *on*. Checking what rthal_local_irq_test() actually means... Hmm, I
+>> *on*. Checking what rthal_local_irq_test() actually means...
+> 
+> It means "is the stall bit set for the Xenomai pipeline stage", so your
+> test is inverted.
+
+Ah, OK, now I got it. A terrible interface.
+
+> 
+>>  Hmm, I
 >> still think it's correct. Maybe we should rename rthal_local_irq_test to
 >> rthal_local_irq_enabled to clarify the usage.
+>>
 > 
-> Ok. Got it. So, maybe, what you want is:
-> 
-> if (rthal_local_irq_test())
-> 	xnpod_lock_sched();
-> rthal_spin_lock
-> 
-> ?
+> No, because this is aligned on the I-pipe internal logic, but we could
+> define rthal_local_irq_disabled() as an alias.
 
-That would be a semantical enhancement of rtdm_spin_lock/unlock, but I'm
-not sure we want it. Because then you can run into bugs if the user
-forgets to pick the irqsave version for task context when there is also
-an IRQ context use of the same lock.
-
-So far the semantic of rtdm_lock was very simple: cross-CPU protection
-via spin lock, local preemption protection via IRQ lock. And that
-pattern could easily be validated with the instrumentation I posted. And
-so far no one asked for more. And finally: xnpod_lock/unlock_sched won't
-be be cheaper than irqsave/restore as it involves a full nklock
-acquisition - with irqsave/restore...
+I think at least Xenomai internal users would not really miss
+rthal_local_irq_test. However, I will add a proper alias called
+rthal_local_irq_disabled and clean up at least RTDM's users. spltest
+would not really benefit from being switched over...
 
 Jan
 
