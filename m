@@ -1,39 +1,57 @@
-Date: Thu, 7 May 2009 08:58:35 +0200 (CEST)
-From: btirefort@domain.hid
-Message-ID: <133371119.6914661241679515499.JavaMail.root@domain.hid>
-In-Reply-To: <731730299.6912051241678801295.JavaMail.root@domain.hid>
+Message-ID: <4A27AF25.8050108@domain.hid>
+Date: Thu, 04 Jun 2009 13:25:25 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+References: <325d766d0906040408w7d9712a0gb8927529796a3913@domain.hid>
+	<4A27ACEA.6010500@domain.hid>
+In-Reply-To: <4A27ACEA.6010500@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Problem during xenosim install
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [PATCH] Support for Atmel AT91SAM9G20 processor
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: martin mangard <dothemango@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hello,
+Gilles Chanteperdrix wrote:
+> martin mangard wrote:
+>> Hello
+>>
+>> I made a patch in order to support the Atmel AT91SAM9G20 processor,
+>> which has to be applied after the "adeos-ipipe-2.6.27-arm-*" patch.
+>> Due to the similarities between the AT91SAM9260 and the AT91SAM9G20
+>> processor, only a few changes were necessary. I booted the system on a
+>> "AT91SAM9G20-EK" development
+>> board and executed "latencytest" and "clocktest". Are there plans to
+>> officially support this processor in the future?
+> 
+> Well, now that you sent the patch, this should be included in the next
+> adeos patch. However:
+> - your mailer mangled the patch, so I can not apply it, please configure
+> your mailer to avoid mangling the patch, or if that is not possible,
+> send the patch as attachment;
+> -  there is one change in your patch that I do not like:
+> 
+>>  #ifdef CONFIG_ARCH_AT91SAM9260
+>>  #define cpu_is_at91sam9xe()    (at91_arch_identify() == ARCH_FAMILY_AT91SAM9XE)
+>> -#define cpu_is_at91sam9260()   ((at91_cpu_identify() ==
+>> ARCH_ID_AT91SAM9260) || cpu_is_at91sam9xe())
+>> +#define cpu_is_at91sam9260()   ((at91_cpu_identify() ==
+>> ARCH_ID_AT91SAM9260) || cpu_is_at91sam9xe() ||
+>> (at91_cpu_identify()==ARCH_ID_AT91SAM9G20)))
+> 
+> You are touching mailine code here. It this patch is really needed by
+> mainline, then post it to the linux arm kernel mailing list.
+> 
 
+Also, please send it as a patch to the current kernel i.e. 2.6.29.
 
-I want to install xenosim to test xenoscope.
-I'am using xenosim-2.4.7 and xenomai-2.4.7
-
-But I have a error during install :
-
-imgUtil.c:125 :  error too few arguments to function 'Th_PhotoPutBlock'
-
-
-this error stop me.
-
-anybody can help me ?
-
-
-
-
-
+-- 
+					    Gilles.
 
