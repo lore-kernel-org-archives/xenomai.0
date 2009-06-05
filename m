@@ -1,86 +1,113 @@
-Message-ID: <4A49CFF0.7070202@domain.hid>
-Date: Tue, 30 Jun 2009 10:42:24 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4A48FB71.6070506@domain.hid> <4A49CD81.4060706@domain.hid>
-In-Reply-To: <4A49CD81.4060706@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] x86: Endless minor faults
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-Id: <4A294359.3E52.00F8.0@domain.hid>
+Date: Fri, 05 Jun 2009 16:09:57 +0200
+From: "Karl Tyss" <tyss.k@domain.hid>
+References: <4A28F029020000F80002DB14@domain.hid>	<4A28FAD4020000F80002DB27@domain.hid>
+	<4A28FAD7.3E52.00F8.0@domain.hid><4A28FAD7.3E52.00F8.0@domain.hid>
+	<4A28E5E0.9020805@domain.hid>
+	<4A2907EF.3E52.00F8.0@domain.hid><4A2907EF.3E52.00F8.0@domain.hid>
+	<4A2920C7.40200@domain.hid>
+In-Reply-To: <4A2920C7.40200@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Subject: Re: [Xenomai-help] IRQ-Latency when in idle State on ARM
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Jan Kiszka wrote:
->> Hi all,
->>
->> seen such loops before? This particular trace is from a 2.6.29.3 kernel
->> with ipipe-2.3-01 (SMP/PREEMPT_VOLUNTARY), but the same happens with
->> 2.6.29.5/2.3-03:
->>
->> :|   +func                -653    0.084  __ipipe_handle_exception+0x11 (page_fault+0x26)
->> :|   +func                -653    0.096  ipipe_check_context+0xd (__ipipe_handle_exception+0x71)
->> :|   #end     0x80000000  -653    0.069  do_page_fault+0x33 (__ipipe_handle_exception+0x1ff)
->> :    #func                -653    0.078  __ipipe_unstall_root+0x9 (do_page_fault+0x3cb)
->> :|   #begin   0x80000000  -653    0.068  __ipipe_unstall_root+0x34 (do_page_fault+0x3cb)
->> :|   +end     0x80000000  -653    0.069  __ipipe_unstall_root+0x59 (do_page_fault+0x3cb)
->> :    +func                -653    0.060  down_read_trylock+0x4 (do_page_fault+0x424)
->> :    +func                -653    0.068  _spin_lock_irqsave+0x9 (__down_read_trylock+0x16)
->> :    +func                -653    0.108  ipipe_check_context+0xd (_spin_lock_irqsave+0x1d)
->> :    #func                -652    0.066  _spin_unlock_irqrestore+0x4 (__down_read_trylock+0x3f)
->> :    #func                -652    0.069  __ipipe_restore_root+0x4 (_spin_unlock_irqrestore+0x21)
->> :    #func                -652    0.074  __ipipe_unstall_root+0x9 (__ipipe_restore_root+0x2c)
->> :|   #begin   0x80000000  -652    0.066  __ipipe_unstall_root+0x34 (__ipipe_restore_root+0x2c)
->> :|   +end     0x80000000  -652    0.069  __ipipe_unstall_root+0x59 (__ipipe_restore_root+0x2c)
->> :    +func                -652    0.096  find_vma+0x4 (do_page_fault+0x465)
->> :    +func                -652    0.150  ltt_run_filter_default+0x4 (_ltt_specialized_trace+0xc1)
->> :    +func                -652    0.098  handle_mm_fault+0x11 (do_page_fault+0x537)
->> :    +func                -652    0.090  _spin_lock+0x4 (handle_mm_fault+0x680)
->> :    +func                -652    0.063  ptep_set_access_flags+0x9 (handle_mm_fault+0x6d1)
->> :    +func                -652    0.282  flush_tlb_page+0xd (handle_mm_fault+0x6e7)
->> :    +func                -651    0.162  ltt_run_filter_default+0x4 (_ltt_specialized_trace+0xc1)
->> :    +func                -651    0.062  up_read+0x4 (do_page_fault+0x5a9)
->> :    +func                -651    0.072  _spin_lock_irqsave+0x9 (__up_read+0x1c)
->> :    +func                -651    0.117  ipipe_check_context+0xd (_spin_lock_irqsave+0x1d)
->> :    #func                -651    0.074  _spin_unlock_irqrestore+0x4 (__up_read+0x92)
->> :    #func                -651    0.069  __ipipe_restore_root+0x4 (_spin_unlock_irqrestore+0x21)
->> :    #func                -651    0.060  __ipipe_unstall_root+0x9 (__ipipe_restore_root+0x2c)
->> :|   #begin   0x80000000  -651    0.056  __ipipe_unstall_root+0x34 (__ipipe_restore_root+0x2c)
->> :|   +end     0x80000000  -651    0.420  __ipipe_unstall_root+0x59 (__ipipe_restore_root+0x2c)
->> :|   +func                -650    0.084  __ipipe_handle_exception+0x11 (page_fault+0x26)
->>
->> and again and again...
->>
->> We are looping over a minor fault here (according to /proc/PID/stat),
->> the context is a Xenomai task in secondary mode. As the task no longer
->> processes signals in this state, the whole system is more or less
->> broken. Tomorrow I will try to find out the faulting address with an
->> instrumented kernel, but maybe you already have some ideas.
+Hi,
+
+5 minutes ago I found out that one of the caches definately has to
+cause the problem. I believe I would have to spent couple of more days
+to find out why. 
+
+Your hint was a bulls eye. I tried a dirty trick and commented out the
+two lines responsible for disabling the I-cache.  It helped. I wonder if
+it leads to other problems. I will test it and post my results.
+
+Thank you both for the quick and productive help.
+
+Best regards,
+Karl Tyss
+ 
+
+Mit Freundlichen Grüßen,
+Karl Tyss
+
+
+
+>>> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> 06/05/09
+3:42 PM >>> 
+Karl Tyss wrote:
+> Hi,
 > 
-> The fault is apparently triggered by __xn_put_user(XNRELAX,
-> thread->u_mode) in xnshadow_relax. thread->u_mode is pointing to an
-> invalid region ATM. The questions are now: Who corrupted this, user
-> space on init (not that likely) or kernel space later on (unpleasant
-> thought)? Moreover: Why can't we recover from a fault on u_mode?
+> thank you for the quick answer.
+> 
+> The idea with deactivating the caches is to see if they are
+influencing
+> this behavior. I also tried out the FCSE option and it did not help.
+My
+> issue is that if there is a user space application that starts lots
+of
+> short processes/threads and sleeps for a short time, in this case I
+get
+> a large jitter. Till this point I was able to find out that it makes
+a
+> difference if the idle task is running. 
+> 
+> These simple tests I was running weren't supposed to be relevant
+stress
+> tests. I only tried to prevent the kernel entering the idle task and
+the
+> simplest way was to start an endless loop doing noting.
+> 
+> So my question was actually is there any explanation to this
+behavior
+> and in both cases (yes or no) is this behavior predictable? Perhaps
+one
+> can avoid this by modifying the cpu_idle task, so that the system
+> doesn't necessarily go in a sleep mode.
 
-I already investigated such an issue, and my conclusion was that there
-are some places in the code where we can not cope with a fault.
-xnshadow_relax being such a place, because, if relax faults, then what
-will the fault handler do? Call relax again. Fortunately, mlockall and
-the nocow stuff fixes this.
-
-Another way to implement the u_mode thing would be to use the shared
-heaps we use for fast mutexes.
+Ok. If I understand correctly, the AT91SAM9G20 uses an arm926ejs core,
+and in arch/arm/mm/proc-arm926.S, the idle function disables and
+re-enables the I-cache, so, that may be the source of your problems.
 
 -- 
-                                          Gilles
+					    Gilles.
 
+
+
+---------------------------------------------------------------------------------------
+This email including its attachments is intended for the person or
+entity only to which it is addressed. It may contain confidential and/or
+privileged material. Any review, forwarding, dissemination, other use
+of, or taking of any action in reliance upon this information by persons
+or entities other than the intended recipient is prohibited.
+If you received this email in error, please contact the sender and 
+delete the material from any computer system. 
+---------------------------------------------------------------------------------------
+
+Eppendorf AG, Hamburg, Barkhausenweg 1, 22339 Hamburg,
+Amtsgericht Hamburg HRB 76249
+Vors. des Aufsichtsrats: Dipl.-Ing. Adrian Déteindre
+Vorstand: Klaus Fink (Vorsitzender), Detmar Ammermann,
+Dr. Heinz G. Koehn, Dr. Michael Schroeder
+
+Eppendorf Instrumente GmbH, Hamburg, Amtsgericht Hamburg, HRB 69077
+Geschäftsführer: Rainer Treptow
+
+Eppendorf Biochip Systems GmbH, Hamburg, Amtsgericht Hamburg, HRB 96641
+Geschäftsführer: Dr. Sven Buelow
+
+Eppendorf Liquid Handling GmbH, Hamburg, Amtsgericht Hamburg, HRB 92250
+Geschäftsführer: Boris von Beichmann
 
