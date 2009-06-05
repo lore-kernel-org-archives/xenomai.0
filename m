@@ -1,5 +1,5 @@
-Message-ID: <4A2928AF.30500@domain.hid>
-Date: Fri, 05 Jun 2009 16:16:15 +0200
+Message-ID: <4A29290E.7050609@domain.hid>
+Date: Fri, 05 Jun 2009 16:17:50 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4A28F029020000F80002DB14@domain.hid>	<4A28FAD4020000F80002DB27@domain.hid>
@@ -36,10 +36,9 @@ Karl Tyss wrote:
 > 
 > Thank you both for the quick and productive help.
 
-In my understanding, Icache can not be disabled using kernel
-configuration options on 926, the only thing that can be done for a 926
- is to set the Dcache to writethrough mode. How did you manage to
-disable the caches ?
+Also, let me insist: 2 microseconds on ARM is peanuts. Really, it is
+insignificant, you will get much worse jitters than that with a properly
+loaded system.
 
 -- 
 					    Gilles.
