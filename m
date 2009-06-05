@@ -1,9 +1,12 @@
+Message-ID: <4A299794.6010504@domain.hid>
+Date: Sat, 06 Jun 2009 00:09:24 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-From: Thiago Lima <thiagolims@domain.hid>
-Date: Fri, 5 Jun 2009 20:38:33 +0000
-Message-ID: <6a782b880906051338r401163b2m7e1d1a53f7f0800@domain.hid>
-Content-Type: multipart/alternative; boundary=000e0cd4d1aa71cf90046b9fe148
-Subject: [Xenomai-help] Get ready queue
+References: <6a782b880906051338r401163b2m7e1d1a53f7f0800@domain.hid>
+In-Reply-To: <6a782b880906051338r401163b2m7e1d1a53f7f0800@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Get ready queue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -13,37 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Thiago Lima <thiagolims@domain.hid>
+Cc: xenomai@xenomai.org
 
---000e0cd4d1aa71cf90046b9fe148
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Thiago Lima wrote:
+> Hi everybody,
+> 
+> I have a function in a linux kernel module that is called whenever a
+> function in xenomai domain starts. In this moment, i need to get the ready
+> queue with all ready threads of xenomai.
+> Do you realize how can i do that ?
 
-Hi everybody,
+If you are using a skin, then you should restrict yourself to the
+services of that skin. If you are writing a skin, then the services you
+can access are those of the nucleus.
 
-I have a function in a linux kernel module that is called whenever a
-function in xenomai domain starts. In this moment, i need to get the ready
-queue with all ready threads of xenomai.
-Do you realize how can i do that ?
+http://www.xenomai.org/documentation/trunk/html/api/group__nucleus.html
 
-Thanks,
+If you are writing your own skin, then you can add an xnholder structure
+to the TCB of your tasks, it will allow you to walk this list once you
+need it.
 
---=20
-Thiago Lima Silva
-Graduando - Ci=EAncia da Computa=E7=E3o UFBA
-Registered Linux user #466887
-
---000e0cd4d1aa71cf90046b9fe148
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Hi everybody,<br><br>I have a function in a linux kernel module that is cal=
-led whenever a function in xenomai domain starts. In this moment, i need to=
- get the ready queue with all ready threads of xenomai.<br>Do you realize h=
-ow can i do that ?<br>
-
-<br>Thanks,<br clear=3D"all"><br>-- <br>Thiago Lima Silva<br>Graduando - Ci=
-=EAncia da Computa=E7=E3o UFBA<br>Registered Linux user #466887<br><br>
-
---000e0cd4d1aa71cf90046b9fe148--
+-- 
+					    Gilles.
 
