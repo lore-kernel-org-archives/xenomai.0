@@ -1,12 +1,13 @@
-Message-ID: <4A299794.6010504@domain.hid>
-Date: Sat, 06 Jun 2009 00:09:24 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4A2AA98D.4030407@domain.hid>
+Date: Sat, 06 Jun 2009 19:38:21 +0200
+From: Karl Tyss <karl.tyss@domain.hid>
 MIME-Version: 1.0
-References: <6a782b880906051338r401163b2m7e1d1a53f7f0800@domain.hid>
-In-Reply-To: <6a782b880906051338r401163b2m7e1d1a53f7f0800@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <4A294F59020000F80002DC0E@msw.eppendorf.de>	<200906051932.16827.karl.tyss@domain.hid>	<4A295F43.9090904@domain.hid>
+	<4A296D32.2080003@domain.hid>
+In-Reply-To: <4A296D32.2080003@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Get ready queue
+Subject: Re: [Xenomai-help] IRQ-Latency when in idle State on ARM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,27 +17,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Thiago Lima <thiagolims@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Thiago Lima wrote:
-> Hi everybody,
-> 
-> I have a function in a linux kernel module that is called whenever a
-> function in xenomai domain starts. In this moment, i need to get the ready
-> queue with all ready threads of xenomai.
-> Do you realize how can i do that ?
+Hi Gilles,
+> Note that the effect you observe is due to the very special nature of
+> your setup: since you run no significant user-space load, the irq
+> handling function may remain in the cache, but on a realistically loaded
+> system, the irq handling function will not be able to remain in the
+> cache, so, the disabling of the I-cache in the idle function will not
+> change anything with regard to the worst case latency.
+>   
 
-If you are using a skin, then you should restrict yourself to the
-services of that skin. If you are writing a skin, then the services you
-can access are those of the nucleus.
+you are absolutely right. Its also clear to me that the maximum 
+latencies are more relevant but in my case I also have to know how the 
+latencies are if the system has no load. This will be the most probable 
+case in my system. This is a special case but I believe also a pretty 
+common one so I have to be able to explain the behaviour in detail. 
+Thanks to your help I am able to do this now :)
 
-http://www.xenomai.org/documentation/trunk/html/api/group__nucleus.html
+> Also note that using a GPIO to assess the timer interrupt latency is a
+> bad idea: if you want to assess the timer interrupt you should register
+> a timer, because the path in the kernel is different for the timer
+> interrupt than for other interrupts and especially for multiplexed GPIO
+> interrupts. But doing all this by yourself and risking to have problem
+> that we already solved is not a good idea; what you should really do is
+> use the latency test provided by Xenomai. It is relatively simple,
+> covers all the cases, and is validated on many platforms.
+>   
+Acually I have already been using the latency test from xenomai to find 
+the average and max latencies but the GPIO way seemed for me to be the 
+best way to get a continous data set in order to plot the results. I am 
+now able to record about half a million interrupts contineously in a 
+relative short period of time. These results alone are not 
+representative but in combination with the latency test.
 
-If you are writing your own skin, then you can add an xnholder structure
-to the TCB of your tasks, it will allow you to walk this list once you
-need it.
+So to come to an end... thank you for the quick help and if I find out 
+something more I'll post it for the future generations :D
 
--- 
-					    Gilles.
+Regards,
+Karl Tyss
 
