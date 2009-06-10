@@ -1,13 +1,12 @@
-Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 10 Jun 2009 13:47:30 +0200
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A01A45BCA@ARVMAIL1.mra.roland-man.biz>
-In-Reply-To: <1244554081.7890.99.camel@domain.hid>
-From: <roderik.wildenburg@domain.hid>
-Subject: Re: [Xenomai-help] Some problems with shared memory
+In-Reply-To: <4A299794.6010504@domain.hid>
+References: <6a782b880906051338r401163b2m7e1d1a53f7f0800@domain.hid> 
+	<4A299794.6010504@domain.hid>
+From: Thiago Lima <thiagolims@domain.hid>
+Date: Wed, 10 Jun 2009 19:36:51 +0000
+Message-ID: <6a782b880906101236l625792d5p6fcd3dad53e965a2@domain.hid>
+Content-Type: multipart/alternative; boundary=001e680f1230fd6ce8046c039995
+Subject: Re: [Xenomai-help] Get ready queue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,131 +16,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-> -----Urspr=FCngliche Nachricht-----
-> Von: Philippe Gerum [mailto:rpm@xenomai.org
-> Gesendet: Dienstag, 9. Juni 2009 15:28
-> An: Wildenburg, Roderik RAEK3 MRA
-> Cc: gilles.chanteperdrix@xenomai.org; xenomai@xenomai.org
-> Betreff: Re: [Xenomai-help] Some problems with shared memory
->=20
-> On Mon, 2009-06-08 at 10:25 +0200, roderik.wildenburg@domain.hid
-> wrote:
-> > >=20
-> > > roderik.wildenburg@domain.hid wrote:
-> > > >> All I want to hear is "yes, we ran the shm test=20
-> without Xenomai, on
-> > > >> exactly the same kernel, on the same platform, and the shm=20
-> > > >> test worked".
-> > > >> Because Xenomai runs plain Linux mmap under the hood and do no
-> > > >> particular check on the mmap length. So, the problem=20
-> is either that
-> > > >> Linux mmap on that particular machine with that particular=20
-> > > >> kernel does a
-> > > >> check on length, or that there is a subtle bug somewhere=20
-> > > that I do not
-> > > >> want to investigate until I am usre that it is real.
-> > > >=20
-> > > >=20
-> > > > yes, we ran the shm test without Xenomai, on
-> > > > exactly the same kernel, on the same platform, and the shm=20
-> > > > test worked.
-> > > >=20
-> > > > This means :=20
-> > > > I took a plain 2.4.25 PPC-Kernel and started killtest=20
-> > > without pagealigned shm size and got the error message :
-> > > > shm_open fails. errno=3D38 SHM:/testshm
-> > > > shm_open: Function not implemented
-> > > >=20
-> > > > Therefore I mounted a tmpfs on /dev/shm and killtest ran=20
-> > > without any errormessage.
-> > > > To make shure the missing /dev/shm isn=B4t the reason for the=20
-> > > mmap-error I took a xenomai-enhanced kernel, mounted /dev/shm=20
-> > > and run (a xenomai-linked) killtest, but I still got the error :
-> > > > killtest2 # ./killtest -c
-> > > > createshm mmap: No such device or address
-> > > > shmsize =3D 100000; errno : 6 =3D=3D Failed to create shm : -3
-> > > > killtest user exit !
-> > > >=20
-> > > > This I tried with Xenomai 2.3.5 and 2.4.7 (and got the=20
-> same error).
-> > > > Even on a Xenomai-enhanced kernel a killtest, which was=20
-> > > linked without Xenomai-libraries, run without error.
-> > > >=20
-> > > > Sorry for not having better news
-> > > > Roderik
-> >=20
-> >=20
-> >=20
-> > > Hi,
-> > >=20
-> > > this should have been fixed in the 2.4.8 release, so please=20
-> > > test it and
-> > > tell us whether it works for you.
-> > >=20
-> >=20
-> > Hello,
-> >=20
-> > sorry for the delayed answer.
-> > Yes and no: The restriction of a page aligned SHM-size=20
-> seems to be abolished (I didn=B4t get the error message "No=20
-> such device or address" any more).
-> > But my target still stalls, when I kill my test=20
-> applications in the wrong order.
-> > For your convenience I appended the test again (start=20
-> "killtest -c &" then "killtest &" and then kill the last one=20
-> before the first).
-> >=20
->=20
-> By "stalls", do you mean a lockup, or does your shell hang=20
-> upon ^C while
-> the rest of the system keeps running fine?
->=20
+--001e680f1230fd6ce8046c039995
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-In fact, my system reboots because a high priority (no other Xenomai =
-task has higher priority) Xenomai watchdog trigger task isn=B4t executed =
-any more (the hardware watchdog resets the system if it is not triggered =
-for more than 0,5 seconds).=20
-When I deactivate the watchdog, the console is dead immediatelly (after =
-the kill) but the system seems to work  (ping works) for a while. Even a =
-telnet login is sometimes (sometimes the system stalls with the login =
-sometimes not) possible. Sometimes the system stalls only after a =
-minute, sometimes not at all.
-Sorry that I can=B4t give you a better description, but the behaviour is =
-pretty strange.
+Sorry, i didnt understand you answer.
+I get the global queue doing this:
 
-Here is the output of /proc/xenomai/irq when I had access to the system =
-via telnet :
-fer1_rw:/ # cat /proc/xenomai/irq
-IRQ         CPU0
-  6:           0         pciibm0
-256:       14619         [virtual]
-259:           9         [virtual]
-fer1_rw:/ # cat /proc/xenomai/irq
-IRQ         CPU0
-  6:           0         pciibm0
-256:       14619         [virtual]
-259:           9         [virtual]
-fer1_rw:/ # cat /proc/xenomai/irq
-IRQ         CPU0
-  6:           0         pciibm0
-256:       14619         [virtual]
-259:           9         [virtual]
-=20
+threads =3D &pod->threadq;    // GLOBAL QUEUE
+holder =3D getheadq(&nkpod->threadq); //HEAD NODE
 
-Best regards
-Roderik
+thanks for helping.
 
-P.s.: I will not be in office till next monday.
+On Fri, Jun 5, 2009 at 10:09 PM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
 
---------------------------------------------------------
-manroland AG
-Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle  =20
-Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592
-USt-Ident-Nr. DE 250200933
+> Thiago Lima wrote:
+> > Hi everybody,
+> >
+> > I have a function in a linux kernel module that is called whenever a
+> > function in xenomai domain starts. In this moment, i need to get the
+> ready
+> > queue with all ready threads of xenomai.
+> > Do you realize how can i do that ?
+>
+> If you are using a skin, then you should restrict yourself to the
+> services of that skin. If you are writing a skin, then the services you
+> can access are those of the nucleus.
+>
+> http://www.xenomai.org/documentation/trunk/html/api/group__nucleus.html
+>
+> If you are writing your own skin, then you can add an xnholder structure
+> to the TCB of your tasks, it will allow you to walk this list once you
+> need it.
+>
+> --
+>                                             Gilles.
+>
+
+
+
+--=20
+Thiago Lima Silva
+Graduando - Ci=EAncia da Computa=E7=E3o UFBA
+Registered Linux user #466887
+
+--001e680f1230fd6ce8046c039995
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Sorry, i didnt understand you answer.<br>I get the global queue doing this:=
+<br><br>threads =3D &amp;pod-&gt;threadq;=A0=A0=A0 // GLOBAL QUEUE=A0=A0=A0=
+ <br>holder =3D getheadq(&amp;nkpod-&gt;threadq); //HEAD NODE<br><br>thanks=
+ for helping.<br>
+
+<br><div class=3D"gmail_quote">On Fri, Jun 5, 2009 at 10:09 PM, Gilles Chan=
+teperdrix <span dir=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org=
+mai.org">gilles.chanteperdrix@xenomai.org</a>&gt;</span> wrote:<br><blockqu=
+ote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, 204, 204=
+); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+
+<div class=3D"im">Thiago Lima wrote:<br>
+&gt; Hi everybody,<br>
+&gt;<br>
+&gt; I have a function in a linux kernel module that is called whenever a<b=
+r>
+&gt; function in xenomai domain starts. In this moment, i need to get the r=
+eady<br>
+&gt; queue with all ready threads of xenomai.<br>
+&gt; Do you realize how can i do that ?<br>
+<br>
+</div>If you are using a skin, then you should restrict yourself to the<br>
+services of that skin. If you are writing a skin, then the services you<br>
+can access are those of the nucleus.<br>
+<br>
+<a href=3D"http://www.xenomai.org/documentation/trunk/html/api/group__nucle=
+us.html" target=3D"_blank">http://www.xenomai.org/documentation/trunk/html/=
+api/group__nucleus.html</a><br>
+<br>
+If you are writing your own skin, then you can add an xnholder structure<br=
+>
+to the TCB of your tasks, it will allow you to walk this list once you<br>
+need it.<br>
+<br>
+--<br>
+<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.<br>
+</font></blockquote></div><br><br clear=3D"all"><br>-- <br>Thiago Lima Silv=
+a<br>Graduando - Ci=EAncia da Computa=E7=E3o UFBA<br>Registered Linux user =
+#466887<br><br>
+
+--001e680f1230fd6ce8046c039995--
 
