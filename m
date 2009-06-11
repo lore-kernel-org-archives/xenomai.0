@@ -1,64 +1,75 @@
-Message-ID: <4A004385.7020200@domain.hid>
-Date: Tue, 05 May 2009 15:47:49 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4A30D3CD.8050908@domain.hid>
+Date: Thu, 11 Jun 2009 13:52:13 +0400
+From: Vladimir Zapolskiy <vladimir.zapolskiy@domain.hid>
 MIME-Version: 1.0
-References: <OFB15EA397.FEDBD30F-ONC12575AD.004B05A5-C12575AD.004B769C@datacon.at>
-In-Reply-To: <OFB15EA397.FEDBD30F-ONC12575AD.004B05A5-C12575AD.004B769C@datacon.at>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4A30CB83.5080504@domain.hid> <4A30CF49.8010007@domain.hid>
+In-Reply-To: <4A30CF49.8010007@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] gatekeeper/0
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [PATCH] ksrc: respect struct proc_dir_entry
+	changes in 2.6.30
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: henning.richter@domain.hid
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-henning.richter@domain.hid wrote:
+Hi Jan,
+I observed that LINUX_VERSION_CODE comparisons are common enough in
+Xenomai code. Do you propose to make a separate header, which is
+included from nucleus, drivers and arch files?
+
+--
+With best wishes,
+Vladimir
+
+
+Jan Kiszka wrote:
+> Hi Vladimir,
 > 
-> 
-> henning.richter@domain.hid wrote:
->>> Hi,
->>>
->>> running a xenomai task in which I am sending a single Frame (size ~500
->>> byte) from my EtherCAT Master to some Beckhoff slaves has latencies
-> around
->>> 200 us.
->>> While running that task, top shows that gatekeeper/0 (with RT priority)
-> has
->>> 30% CPU usage.
->>> What is the task of this gatekeeper and can this cause my high
-> latencies?
->> The gatekeeper is used when a taks is migrating from secondary mode to
->> primary mode. The gatekeeper itself can not cause the high latencies,
->> but the fact that a task runs in secondary mode can.
+> Vladimir Zapolskiy wrote:
+>> Hello,
 >>
->> To check if this is what happens, check the MSW column in
->> /proc/xenomai/stat for the thread which has latencies issues. If MSW is
->> increasing then you have a problem.
+>> please apply the attached simple patch, which resolves a kind of
+>> compilation problems against 2.6.30 kernel.
+>>
+>> -- 
+>> With best wishes,
+>> Vladimir 
+>>
+>> From 894660f7dc91b406d8e078247b46606778562de9 Mon Sep 17 00:00:00 2001
+>> From: Vladimir Zapolskiy <vladimir.zapolskiy@domain.hid>
+>> Date: Thu, 11 Jun 2009 12:32:00 +0400
+>> Subject: [PATCH] Made conditional inclusion of owner field in struct proc_dir_entry due to changes in 2.6.30
+>>
+>> Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@domain.hid>
+>> ---
+>>  ksrc/arch/generic/hal.c              |    6 ++++++
+>>  ksrc/drivers/comedi/device.c         |    2 ++
+>>  ksrc/drivers/comedi/rtdm_interface.c |    4 ++++
+>>  ksrc/nucleus/registry.c              |    2 ++
+>>  4 files changed, 14 insertions(+), 0 deletions(-)
+>>
+>> diff --git a/ksrc/arch/generic/hal.c b/ksrc/arch/generic/hal.c
+>> index e4f0f31..b983b68 100644
+>> --- a/ksrc/arch/generic/hal.c
+>> +++ b/ksrc/arch/generic/hal.c
+>> @@ -738,7 +738,9 @@ struct proc_dir_entry *rthal_add_proc_leaf(const char *name,
+>>  	entry->data = data;
+>>  	entry->read_proc = rdproc;
+>>  	entry->write_proc = wrproc;
+>> +#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,30)
+>>  	entry->owner = THIS_MODULE;
+>> +#endif
 > 
->> To find where your thread switches to secondary mode, use the technique
->> demonstrated in examples/native/sigxcpu.c.
+> I would suggest to squeeze all these assignments into a helper function
+> that is void from 2.6.30 on, hiding the #ifdefs
 > 
-> --
->                                                  Gilles.
+> Jan
 > 
-> So thank your for defining my problem.
-> Now I am sure that there my thread is switching to secondary mode
-> as the MSW column increases rapidly while running my application.
-> Can I also use the ipipe tracer or LTTng to find the place where it
-> switches the modes as I don't have the
-> xenomai examples installed.
-
-Yes, you can use the I-pipe tracer, but reading the output might be a
-bit complicated. Examples are part of Xenomai sources freely available
-on Xenomai web site.
-
--- 
-                                                 Gilles.
 
