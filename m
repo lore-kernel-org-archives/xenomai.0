@@ -1,93 +1,51 @@
-Message-ID: <4A49D334.6030201@domain.hid>
-Date: Tue, 30 Jun 2009 10:56:20 +0200
+Message-ID: <4A3235BF.5090201@domain.hid>
+Date: Fri, 12 Jun 2009 13:02:23 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4A48FB71.6070506@domain.hid> <4A49CD81.4060706@domain.hid>
-	<4A49CFF0.7070202@domain.hid>
-In-Reply-To: <4A49CFF0.7070202@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+References: <634c78ce0906120240t694ded8cpfa7fcd9dfb2c3b8@domain.hid>
+	<200906121148.37732.smolorz@domain.hid>
+In-Reply-To: <200906121148.37732.smolorz@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] x86: Endless minor faults
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Running Xenomai in a virtual machine
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Sebastian Smolorz <smolorz@domain.hid>, Peter Soetens <peter@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Jan Kiszka wrote:
->>> Hi all,
->>>
->>> seen such loops before? This particular trace is from a 2.6.29.3 kernel
->>> with ipipe-2.3-01 (SMP/PREEMPT_VOLUNTARY), but the same happens with
->>> 2.6.29.5/2.3-03:
->>>
->>> :|   +func                -653    0.084  __ipipe_handle_exception+0x11 (page_fault+0x26)
->>> :|   +func                -653    0.096  ipipe_check_context+0xd (__ipipe_handle_exception+0x71)
->>> :|   #end     0x80000000  -653    0.069  do_page_fault+0x33 (__ipipe_handle_exception+0x1ff)
->>> :    #func                -653    0.078  __ipipe_unstall_root+0x9 (do_page_fault+0x3cb)
->>> :|   #begin   0x80000000  -653    0.068  __ipipe_unstall_root+0x34 (do_page_fault+0x3cb)
->>> :|   +end     0x80000000  -653    0.069  __ipipe_unstall_root+0x59 (do_page_fault+0x3cb)
->>> :    +func                -653    0.060  down_read_trylock+0x4 (do_page_fault+0x424)
->>> :    +func                -653    0.068  _spin_lock_irqsave+0x9 (__down_read_trylock+0x16)
->>> :    +func                -653    0.108  ipipe_check_context+0xd (_spin_lock_irqsave+0x1d)
->>> :    #func                -652    0.066  _spin_unlock_irqrestore+0x4 (__down_read_trylock+0x3f)
->>> :    #func                -652    0.069  __ipipe_restore_root+0x4 (_spin_unlock_irqrestore+0x21)
->>> :    #func                -652    0.074  __ipipe_unstall_root+0x9 (__ipipe_restore_root+0x2c)
->>> :|   #begin   0x80000000  -652    0.066  __ipipe_unstall_root+0x34 (__ipipe_restore_root+0x2c)
->>> :|   +end     0x80000000  -652    0.069  __ipipe_unstall_root+0x59 (__ipipe_restore_root+0x2c)
->>> :    +func                -652    0.096  find_vma+0x4 (do_page_fault+0x465)
->>> :    +func                -652    0.150  ltt_run_filter_default+0x4 (_ltt_specialized_trace+0xc1)
->>> :    +func                -652    0.098  handle_mm_fault+0x11 (do_page_fault+0x537)
->>> :    +func                -652    0.090  _spin_lock+0x4 (handle_mm_fault+0x680)
->>> :    +func                -652    0.063  ptep_set_access_flags+0x9 (handle_mm_fault+0x6d1)
->>> :    +func                -652    0.282  flush_tlb_page+0xd (handle_mm_fault+0x6e7)
->>> :    +func                -651    0.162  ltt_run_filter_default+0x4 (_ltt_specialized_trace+0xc1)
->>> :    +func                -651    0.062  up_read+0x4 (do_page_fault+0x5a9)
->>> :    +func                -651    0.072  _spin_lock_irqsave+0x9 (__up_read+0x1c)
->>> :    +func                -651    0.117  ipipe_check_context+0xd (_spin_lock_irqsave+0x1d)
->>> :    #func                -651    0.074  _spin_unlock_irqrestore+0x4 (__up_read+0x92)
->>> :    #func                -651    0.069  __ipipe_restore_root+0x4 (_spin_unlock_irqrestore+0x21)
->>> :    #func                -651    0.060  __ipipe_unstall_root+0x9 (__ipipe_restore_root+0x2c)
->>> :|   #begin   0x80000000  -651    0.056  __ipipe_unstall_root+0x34 (__ipipe_restore_root+0x2c)
->>> :|   +end     0x80000000  -651    0.420  __ipipe_unstall_root+0x59 (__ipipe_restore_root+0x2c)
->>> :|   +func                -650    0.084  __ipipe_handle_exception+0x11 (page_fault+0x26)
->>>
->>> and again and again...
->>>
->>> We are looping over a minor fault here (according to /proc/PID/stat),
->>> the context is a Xenomai task in secondary mode. As the task no longer
->>> processes signals in this state, the whole system is more or less
->>> broken. Tomorrow I will try to find out the faulting address with an
->>> instrumented kernel, but maybe you already have some ideas.
->> The fault is apparently triggered by __xn_put_user(XNRELAX,
->> thread->u_mode) in xnshadow_relax. thread->u_mode is pointing to an
->> invalid region ATM. The questions are now: Who corrupted this, user
->> space on init (not that likely) or kernel space later on (unpleasant
->> thought)? Moreover: Why can't we recover from a fault on u_mode?
+Sebastian Smolorz wrote:
+> Peter Soetens wrote:
+>> I'm looking for a more agile way to run my unit tests (and build farm)
+>> on a Xenomai system, without running them directly my development
+>> system (nor rebooting to a Xenomai patched kernel). I was hoping that
+>> a virtualisation solution would do the trick. Does anyone have
+>> experience with running a Xenomai patched kernel + applicaiton in
+>> vmware or another virtualisation package ?
+>>
 > 
-> I already investigated such an issue, and my conclusion was that there
-> are some places in the code where we can not cope with a fault.
-> xnshadow_relax being such a place, because, if relax faults, then what
-> will the fault handler do? Call relax again. Fortunately, mlockall and
-> the nocow stuff fixes this.
-
-That was the assumption I built u_mode setting on. Granted, I neglected
-the case where we fail due to corrupt addresses.
-
+> Xenomai runs perfectly inside qemu, without real-time guarantees, of course.
 > 
-> Another way to implement the u_mode thing would be to use the shared
-> heaps we use for fast mutexes.
 
-This is probably the way to go for a robust u_mode interface. A must-fix
-for 2.5-final. Nevertheless, I will do another run to find out where
-this address comes from. As often, we may see a chain of bugs...
+Most of the time we are developing on and for Xenomai inside qemu-kvm,
+often using '-smp 2' (or more) and an SMP host so that the more
+interesting races are triggered. In contrast to other hypervisors, this
+offers the chance to do source-level kernel debugging, also when the
+target hopelessly locked up deep inside I-pipe - situations that are
+almost undebugable on real x86 hardware.
+
+For sure, you don't get reasonable latencies this way (though evaluating
+kvm under -rt /wrt soft-rt is on my to-do list for the next weeks), but
+a lot of testing does not require this anyway. Moreover, qemu/kvm
+cleanly integrates with Linux, thus can easily be scripted. If you plan
+to set up some test farm, you may also want to have a look at
+kvm-autotest (currently under merge into autotest).
 
 Jan
 
