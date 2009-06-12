@@ -1,13 +1,11 @@
+Message-ID: <4A324D3D.9060505@domain.hid>
+Date: Fri, 12 Jun 2009 14:42:37 +0200
+From: Johan Visser <johan.visser@domain.hid>
 MIME-Version: 1.0
-Sender: peter.soetens@domain.hid
-In-Reply-To: <4A3235BF.5090201@domain.hid>
-References: <634c78ce0906120240t694ded8cpfa7fcd9dfb2c3b8@domain.hid> 
-	<200906121148.37732.smolorz@domain.hid>
+References: <634c78ce0906120240t694ded8cpfa7fcd9dfb2c3b8@domain.hid>	<200906121148.37732.smolorz@domain.hid>
 	<4A3235BF.5090201@domain.hid>
-From: Peter Soetens <peter@domain.hid>
-Date: Fri, 12 Jun 2009 13:14:59 +0200
-Message-ID: <634c78ce0906120414j70a8a7cav49ef09cb99913ea5@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+In-Reply-To: <4A3235BF.5090201@domain.hid>
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Running Xenomai in a virtual machine
 List-Id: Help regarding installation and common use of Xenomai
@@ -22,9 +20,11 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Fri, Jun 12, 2009 at 13:02, Jan Kiszka<jan.kiszka@domain.hid> wrote:
+Jan Kiszka schreef:
 > Sebastian Smolorz wrote:
+>   
 >> Peter Soetens wrote:
+>>     
 >>> I'm looking for a more agile way to run my unit tests (and build farm)
 >>> on a Xenomai system, without running them directly my development
 >>> system (nor rebooting to a Xenomai patched kernel). I was hoping that
@@ -32,9 +32,10 @@ On Fri, Jun 12, 2009 at 13:02, Jan Kiszka<jan.kiszka@domain.hid> wrote:
 >>> experience with running a Xenomai patched kernel + applicaiton in
 >>> vmware or another virtualisation package ?
 >>>
->>
+>>>       
 >> Xenomai runs perfectly inside qemu, without real-time guarantees, of course.
 >>
+>>     
 >
 > Most of the time we are developing on and for Xenomai inside qemu-kvm,
 > often using '-smp 2' (or more) and an SMP host so that the more
@@ -49,8 +50,37 @@ On Fri, Jun 12, 2009 at 13:02, Jan Kiszka<jan.kiszka@domain.hid> wrote:
 > cleanly integrates with Linux, thus can easily be scripted. If you plan
 > to set up some test farm, you may also want to have a look at
 > kvm-autotest (currently under merge into autotest).
+>
+> Jan
+>
+>   
+Just the last few days we were trying to do the same with our XENOMAI 
+system and application.
 
-Thank you for your answers !
+According the package info I can not use KVM because the processor of my 
+laptop does not have hardware virtualisation support.
+Virtualbox failed on a standard PC , it took 5 minutes to boot my guest 
+and then after that froze.
+VMware runs, but gives heavy CPU load ( about 38 % ) instead of 6-8 % on 
+a real system.
+The application runs, but of course it is not realtime.
 
-Peter
+The system i am using on my laptop is a standard Ubuntu system.
+
+I was wondering if the kernel running on my host system is of importance 
+too.
+Now it schedules at 250 HZ. I tried to use a -rt kernel fom the ubuntu 
+repository ( 1000 Hz ) but this will not work on my system some how.
+
+-- 
+Ing. Johan Visser
+Stork Plastics Machinery B.V.
+Tel. : +31 742405113
+Mob. : +31 653731518
+
+----------------------------------------------------
+Stork Plastics Machinery B.V. Alfred Marshallstraat 2, 7559 SE Hengelo, the Netherlands.
+Supplies and executions to the conditions and stipulations filed with the Chamber of Commerce (Trade register Enschede nr. 06041991) except as otherwise provided in writing.
+DISCLAIMER:
+The information contained in this communication is confidential and may be legally privileged. It is intended solely for the use of the individual or entity to whom it is addressed and others authorized to receive it. If you are not the intended recipient, you are hereby notified that any disclosure, copying, distribution, or taking any action in reliance of the contents of this information is strictly prohibited and may be unlawful. Stork Plastics Machinery is neither liable for the proper and complete transmission of the information contained in this communication nor for any delay in its receipt. 
 
