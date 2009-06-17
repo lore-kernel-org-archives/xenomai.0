@@ -1,5 +1,5 @@
-Message-ID: <4A38BC7D.9090301@domain.hid>
-Date: Wed, 17 Jun 2009 11:50:53 +0200
+Message-ID: <4A38C5D6.1050300@domain.hid>
+Date: Wed, 17 Jun 2009 12:30:46 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <188636.66895.qm@domain.hid>
@@ -32,35 +32,18 @@ Peter Soetens wrote:
 > I was hoping to use rt_pipe + select in real-time context to implement
 > a data receiving server for real-time inter-process communication. Is
 > this possible ?
-
-No, currently, select works with posix skin descriptors and RTDM
-descriptors, and rt-pipes is a native skin interface, both were not
-meant to be mixed.
-
-So, there are several ways to fix this:
-- add a mapping of the xnpipe API to the posix skin (or RTDM), I do not
-really know how to do this, probably the best thing would be a special
-kind of socketpair, which returns both descriptors;
-- add a mapping of the xnselect API to the native skin, this would allow
-us the freedom to implement an interface without the long scan of the
-fd_set in application which scales badly, though scalability may not be
-an issue with select due to the limit of 1024 descriptors;
-- have a great unified file descriptor support, which would allow to mix
-interfaces.
-
 > What would happen if the real-time clients open the pipes as rt_pipes
 > and start sending
 > data in ? What's the alternative to listen in real-time to many
 > connections from
 > a single thread ?
-> 
-> Peter
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
 
+Note that posix message queues already work for inter-process
+communications, with support for select. Depending on your needs, this
+may be sufficient: you will need Xenomai threads on both sides, but the
+non real-time one may use the SCHED_OTHER policy.
+
+I was thinking, maybe we could map the xnpipe to a special flag in mq_open ?
 
 -- 
                                           Gilles
