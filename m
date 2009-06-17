@@ -1,91 +1,81 @@
-Message-ID: <4A49D935.3060900@domain.hid>
-Date: Tue, 30 Jun 2009 11:21:57 +0200
+Message-ID: <4A38E0C5.1050704@domain.hid>
+Date: Wed, 17 Jun 2009 14:25:41 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4A48FB71.6070506@domain.hid> <4A49CD81.4060706@domain.hid>	
-	<4A49CFF0.7070202@domain.hid> <1246353623.7803.21.camel@domain.hid>
-In-Reply-To: <1246353623.7803.21.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <188636.66895.qm@domain.hid>
+	<1245226197.1443.18.camel@domain.hid>
+	<634c78ce0906170240w1ade29b0p904c3468af0866c@domain.hid>
+	<4A38C5D6.1050300@domain.hid>
+	<634c78ce0906170513p33853631ofaa4421ac1c15944@domain.hid>
+In-Reply-To: <634c78ce0906170513p33853631ofaa4421ac1c15944@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] x86: Endless minor faults
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Native API rt_pipe_monitor() call can not be
+ called from an RT Task in linux userspace ?
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Peter Soetens <peter@domain.hid>
+Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Tue, 2009-06-30 at 10:42 +0200, Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Jan Kiszka wrote:
->>>> Hi all,
->>>>
->>>> seen such loops before? This particular trace is from a 2.6.29.3 kernel
->>>> with ipipe-2.3-01 (SMP/PREEMPT_VOLUNTARY), but the same happens with
->>>> 2.6.29.5/2.3-03:
->>>>
->>>> :|   +func                -653    0.084  __ipipe_handle_exception+0x11 (page_fault+0x26)
->>>> :|   +func                -653    0.096  ipipe_check_context+0xd (__ipipe_handle_exception+0x71)
->>>> :|   #end     0x80000000  -653    0.069  do_page_fault+0x33 (__ipipe_handle_exception+0x1ff)
->>>> :    #func                -653    0.078  __ipipe_unstall_root+0x9 (do_page_fault+0x3cb)
->>>> :|   #begin   0x80000000  -653    0.068  __ipipe_unstall_root+0x34 (do_page_fault+0x3cb)
->>>> :|   +end     0x80000000  -653    0.069  __ipipe_unstall_root+0x59 (do_page_fault+0x3cb)
->>>> :    +func                -653    0.060  down_read_trylock+0x4 (do_page_fault+0x424)
->>>> :    +func                -653    0.068  _spin_lock_irqsave+0x9 (__down_read_trylock+0x16)
->>>> :    +func                -653    0.108  ipipe_check_context+0xd (_spin_lock_irqsave+0x1d)
->>>> :    #func                -652    0.066  _spin_unlock_irqrestore+0x4 (__down_read_trylock+0x3f)
->>>> :    #func                -652    0.069  __ipipe_restore_root+0x4 (_spin_unlock_irqrestore+0x21)
->>>> :    #func                -652    0.074  __ipipe_unstall_root+0x9 (__ipipe_restore_root+0x2c)
->>>> :|   #begin   0x80000000  -652    0.066  __ipipe_unstall_root+0x34 (__ipipe_restore_root+0x2c)
->>>> :|   +end     0x80000000  -652    0.069  __ipipe_unstall_root+0x59 (__ipipe_restore_root+0x2c)
->>>> :    +func                -652    0.096  find_vma+0x4 (do_page_fault+0x465)
->>>> :    +func                -652    0.150  ltt_run_filter_default+0x4 (_ltt_specialized_trace+0xc1)
->>>> :    +func                -652    0.098  handle_mm_fault+0x11 (do_page_fault+0x537)
->>>> :    +func                -652    0.090  _spin_lock+0x4 (handle_mm_fault+0x680)
->>>> :    +func                -652    0.063  ptep_set_access_flags+0x9 (handle_mm_fault+0x6d1)
->>>> :    +func                -652    0.282  flush_tlb_page+0xd (handle_mm_fault+0x6e7)
->>>> :    +func                -651    0.162  ltt_run_filter_default+0x4 (_ltt_specialized_trace+0xc1)
->>>> :    +func                -651    0.062  up_read+0x4 (do_page_fault+0x5a9)
->>>> :    +func                -651    0.072  _spin_lock_irqsave+0x9 (__up_read+0x1c)
->>>> :    +func                -651    0.117  ipipe_check_context+0xd (_spin_lock_irqsave+0x1d)
->>>> :    #func                -651    0.074  _spin_unlock_irqrestore+0x4 (__up_read+0x92)
->>>> :    #func                -651    0.069  __ipipe_restore_root+0x4 (_spin_unlock_irqrestore+0x21)
->>>> :    #func                -651    0.060  __ipipe_unstall_root+0x9 (__ipipe_restore_root+0x2c)
->>>> :|   #begin   0x80000000  -651    0.056  __ipipe_unstall_root+0x34 (__ipipe_restore_root+0x2c)
->>>> :|   +end     0x80000000  -651    0.420  __ipipe_unstall_root+0x59 (__ipipe_restore_root+0x2c)
->>>> :|   +func                -650    0.084  __ipipe_handle_exception+0x11 (page_fault+0x26)
->>>>
->>>> and again and again...
->>>>
->>>> We are looping over a minor fault here (according to /proc/PID/stat),
->>>> the context is a Xenomai task in secondary mode. As the task no longer
->>>> processes signals in this state, the whole system is more or less
->>>> broken. Tomorrow I will try to find out the faulting address with an
->>>> instrumented kernel, but maybe you already have some ideas.
->>> The fault is apparently triggered by __xn_put_user(XNRELAX,
->>> thread->u_mode) in xnshadow_relax. thread->u_mode is pointing to an
->>> invalid region ATM. The questions are now: Who corrupted this, user
->>> space on init (not that likely) or kernel space later on (unpleasant
->>> thought)? Moreover: Why can't we recover from a fault on u_mode?
->> I already investigated such an issue, and my conclusion was that there
->> are some places in the code where we can not cope with a fault.
->> xnshadow_relax being such a place, because, if relax faults, then what
->> will the fault handler do? Call relax again. Fortunately, mlockall and
->> the nocow stuff fixes this.
+Peter Soetens wrote:
+> On Wed, Jun 17, 2009 at 12:30, Gilles
+> Chanteperdrix<gilles.chanteperdrix@xenomai.org> wrote:
+>> Peter Soetens wrote:
+>>> On Wed, Jun 17, 2009 at 10:09, Philippe Gerum<rpm@xenomai.org> wrote:
+>>>> As you have probably understood already, building a full real-time to
+>>>> real-time data path using pipes is not possible; this said, this is not
+>>>> the purpose of this API anyway, which has been designed for real-time to
+>>>> non-RT communication.
+>>> I was hoping to use rt_pipe + select in real-time context to implement
+>>> a data receiving server for real-time inter-process communication. Is
+>>> this possible ?
+>>> What would happen if the real-time clients open the pipes as rt_pipes
+>>> and start sending
+>>> data in ? What's the alternative to listen in real-time to many
+>>> connections from
+>>> a single thread ?
+>> Note that posix message queues already work for inter-process
+>> communications, with support for select. Depending on your needs, this
+>> may be sufficient: you will need Xenomai threads on both sides, but the
+>> non real-time one may use the SCHED_OTHER policy.
 > 
+> Thanks, I missed that. I thought that the mqd_t would not be
+> compatible with file descriptors required by select. I think I can
+> settle with Xenomai<->Xenomai only communication, since it's all
+> running on the same host and our library initialises every thread as a
+> Xenomai native task. It was a bit confusing which ipc primitive to use
+> in which situation.  We're still looking for the Holy grale (Any<->Any
+> + select), but we're getting close :-)
 > 
-> xnshadow_relax() faulting before the current thread bears the XNRELAX
-> bit would mean that a creepy issue involving ondemand PTEs in _kernel_
-> space must have caused this. Having the init_mm mappings known from all
-> processes seems more relevant to this issue than anything nocow and/or
-> mlockall could ever do to fix it.
+>> I was thinking, maybe we could map the xnpipe to a special flag in mq_open ?
+> 
+> If POSIX compatibility is put up front, I don't think this will happen ?
 
-u_mode is a user-space address.
+The problem is that the only "POSIX way" I see to add a posix mapping
+for the xnpipe API, is to add a non portable extension somewhere. It
+could be a non portable message queues flag, or a non-portable socket
+protocol. The problem with the socket protocol, is that we would open
+one pipe end with the socket() call, and the other one with
+open("/dev/rtpipe42"), which is a little bit cumbersome and why I
+suggested to use socketpair instead, which would hide the call to open.
+On the other hand, the same application does not necessarily need to
+access the two sides of the pipe.
+
+As for the holy grail you are looking for, message queues have
+any<->any, but do not allow non real-time select. A mapping of xnpipe
+would be asymetric, but would allow non real-time select on the non
+real-time side, and real-time select on the real-time side.
+
+By the way, I recently made a guide where I put some ideas on porting
+POSIX applications to Xenomai, it mentions these issues:
+http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai
 
 -- 
                                           Gilles
