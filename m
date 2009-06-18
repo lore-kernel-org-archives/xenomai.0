@@ -1,100 +1,134 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4A49D935.3060900@domain.hid>
-References: <4A48FB71.6070506@domain.hid> <4A49CD81.4060706@domain.hid>
-	<4A49CFF0.7070202@domain.hid> <1246353623.7803.21.camel@domain.hid>
-	<4A49D935.3060900@domain.hid>
-Content-Type: text/plain
-Date: Tue, 30 Jun 2009 11:25:13 +0200
-Message-Id: <1246353913.7803.24.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] x86: Endless minor faults
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <164332.23281.qm@domain.hid>
+References: <188636.66895.qm@domain.hid>
+	<1245226197.1443.18.camel@domain.hid>
+	<634c78ce0906170240w1ade29b0p904c3468af0866c@domain.hid>
+	<4A38C5D6.1050300@domain.hid> <1245278513.19887.37.camel@domain.hid>
+Date: Thu, 18 Jun 2009 10:20:13 -0700 (PDT)
+From: Guvenc Gulce <gulceg@domain.hid>
+In-Reply-To: <1245278513.19887.37.camel@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-help] Native API rt_pipe_monitor() call can not be
+	called from an RT Task in linux userspace ?
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
+
+
+Hi all
+Thanks for the replies so far. Maybe I should give some background info regarding my needs and why I have 
+asked this question at the first place so that you guys may have some ideas how to solve such a situation 
+in an elegant way by using the current APIs of Xenomai.
+
+I am planning to develop a mechanism which allows me to use Linux Network Sockets(send/receive) from an RT Task 
+running in linux userspace. (I am aware of the RTNet but I don't really need real timeliness and 
+determinism on the wire.) What I need is that my RT Task in the userspace does not lose its real timeliness
+at any cost. My Understanding is that calling Linux APIs (e.g. socket(), bind() etc.) from RT Tasks 
+disturb the real timeliness of the RT task. 
+
+Is there something already developed to meet such a need in Xenomai context ? 
+If not, what would be the best way to approach such a problem ?
+
+Here are few ideas I have :
+
+* RT Task(Userspace) <---Connnected with RT Pipes---> Linux Task(Userspace, does the socket API calls)
+
+The problem with this approach is that RT Pipe API is not fully available in userspace and ugly 
+O(n) Algorithms should be used at some places. (Synchron/Serial pipe handling)
+
+* RT Task(Userspace) <---Connected with Posix System Calls--> RTDM (Kernel Space) <-- RT Pipes --> 
+Some other Kernel Module(Kernel space, does the Socket API calls)
+
+I am not sure whether such an approach would work at all. Maybe RT Pipes are not necessary at all 
+and RTDM can do the Linux Socket API calls, in other words, RTDM would wrap Socket API calls with 
+some additional logic. Would such an approach disturb the real timeliness of the original caller RT Task? RT Task 
+calls RTDM which then calls some linux stuff which may cause a switch to secondary domain ? 
+
+There are also a lot of similar APIs in Native and Posix skins. Would it be correct to say that one 
+of them can be randomly picked, if there aren't concerns of legacy code compatibility issues. They 
+are somewhat confusing and it is not really clear which Skin in which case really makes sense. 
+Native Skin has RT-Pipes and Queues and on the other hand Posix has only Queues. Can the Queues 
+also be used for RT Task <--> Non-RT Task communication as in the case of RT Pipes ? 
+
+Thanks in advance for the comments
+
+Guvenc  
+
+
+
+
+
+
+----- Original Message ----
+From: Philippe Gerum <rpm@xenomai.org>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
+Sent: Thursday, June 18, 2009 12:41:53 AM
+Subject: Re: [Xenomai-help] Native API rt_pipe_monitor() call can not be called from an RT Task in linux userspace ?
 
-On Tue, 2009-06-30 at 11:21 +0200, Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
-> > On Tue, 2009-06-30 at 10:42 +0200, Gilles Chanteperdrix wrote:
-> >> Jan Kiszka wrote:
-> >>> Jan Kiszka wrote:
-> >>>> Hi all,
-> >>>>
-> >>>> seen such loops before? This particular trace is from a 2.6.29.3 kernel
-> >>>> with ipipe-2.3-01 (SMP/PREEMPT_VOLUNTARY), but the same happens with
-> >>>> 2.6.29.5/2.3-03:
-> >>>>
-> >>>> :|   +func                -653    0.084  __ipipe_handle_exception+0x11 (page_fault+0x26)
-> >>>> :|   +func                -653    0.096  ipipe_check_context+0xd (__ipipe_handle_exception+0x71)
-> >>>> :|   #end     0x80000000  -653    0.069  do_page_fault+0x33 (__ipipe_handle_exception+0x1ff)
-> >>>> :    #func                -653    0.078  __ipipe_unstall_root+0x9 (do_page_fault+0x3cb)
-> >>>> :|   #begin   0x80000000  -653    0.068  __ipipe_unstall_root+0x34 (do_page_fault+0x3cb)
-> >>>> :|   +end     0x80000000  -653    0.069  __ipipe_unstall_root+0x59 (do_page_fault+0x3cb)
-> >>>> :    +func                -653    0.060  down_read_trylock+0x4 (do_page_fault+0x424)
-> >>>> :    +func                -653    0.068  _spin_lock_irqsave+0x9 (__down_read_trylock+0x16)
-> >>>> :    +func                -653    0.108  ipipe_check_context+0xd (_spin_lock_irqsave+0x1d)
-> >>>> :    #func                -652    0.066  _spin_unlock_irqrestore+0x4 (__down_read_trylock+0x3f)
-> >>>> :    #func                -652    0.069  __ipipe_restore_root+0x4 (_spin_unlock_irqrestore+0x21)
-> >>>> :    #func                -652    0.074  __ipipe_unstall_root+0x9 (__ipipe_restore_root+0x2c)
-> >>>> :|   #begin   0x80000000  -652    0.066  __ipipe_unstall_root+0x34 (__ipipe_restore_root+0x2c)
-> >>>> :|   +end     0x80000000  -652    0.069  __ipipe_unstall_root+0x59 (__ipipe_restore_root+0x2c)
-> >>>> :    +func                -652    0.096  find_vma+0x4 (do_page_fault+0x465)
-> >>>> :    +func                -652    0.150  ltt_run_filter_default+0x4 (_ltt_specialized_trace+0xc1)
-> >>>> :    +func                -652    0.098  handle_mm_fault+0x11 (do_page_fault+0x537)
-> >>>> :    +func                -652    0.090  _spin_lock+0x4 (handle_mm_fault+0x680)
-> >>>> :    +func                -652    0.063  ptep_set_access_flags+0x9 (handle_mm_fault+0x6d1)
-> >>>> :    +func                -652    0.282  flush_tlb_page+0xd (handle_mm_fault+0x6e7)
-> >>>> :    +func                -651    0.162  ltt_run_filter_default+0x4 (_ltt_specialized_trace+0xc1)
-> >>>> :    +func                -651    0.062  up_read+0x4 (do_page_fault+0x5a9)
-> >>>> :    +func                -651    0.072  _spin_lock_irqsave+0x9 (__up_read+0x1c)
-> >>>> :    +func                -651    0.117  ipipe_check_context+0xd (_spin_lock_irqsave+0x1d)
-> >>>> :    #func                -651    0.074  _spin_unlock_irqrestore+0x4 (__up_read+0x92)
-> >>>> :    #func                -651    0.069  __ipipe_restore_root+0x4 (_spin_unlock_irqrestore+0x21)
-> >>>> :    #func                -651    0.060  __ipipe_unstall_root+0x9 (__ipipe_restore_root+0x2c)
-> >>>> :|   #begin   0x80000000  -651    0.056  __ipipe_unstall_root+0x34 (__ipipe_restore_root+0x2c)
-> >>>> :|   +end     0x80000000  -651    0.420  __ipipe_unstall_root+0x59 (__ipipe_restore_root+0x2c)
-> >>>> :|   +func                -650    0.084  __ipipe_handle_exception+0x11 (page_fault+0x26)
-> >>>>
-> >>>> and again and again...
-> >>>>
-> >>>> We are looping over a minor fault here (according to /proc/PID/stat),
-> >>>> the context is a Xenomai task in secondary mode. As the task no longer
-> >>>> processes signals in this state, the whole system is more or less
-> >>>> broken. Tomorrow I will try to find out the faulting address with an
-> >>>> instrumented kernel, but maybe you already have some ideas.
-> >>> The fault is apparently triggered by __xn_put_user(XNRELAX,
-> >>> thread->u_mode) in xnshadow_relax. thread->u_mode is pointing to an
-> >>> invalid region ATM. The questions are now: Who corrupted this, user
-> >>> space on init (not that likely) or kernel space later on (unpleasant
-> >>> thought)? Moreover: Why can't we recover from a fault on u_mode?
-> >> I already investigated such an issue, and my conclusion was that there
-> >> are some places in the code where we can not cope with a fault.
-> >> xnshadow_relax being such a place, because, if relax faults, then what
-> >> will the fault handler do? Call relax again. Fortunately, mlockall and
-> >> the nocow stuff fixes this.
+On Wed, 2009-06-17 at 12:30 +0200, Gilles Chanteperdrix wrote:
+> Peter Soetens wrote:
+> > On Wed, Jun 17, 2009 at 10:09, Philippe Gerum<rpm@xenomai.org> wrote:
+> >> As you have probably understood already, building a full real-time to
+> >> real-time data path using pipes is not possible; this said, this is not
+> >> the purpose of this API anyway, which has been designed for real-time to
+> >> non-RT communication.
 > > 
-> > 
-> > xnshadow_relax() faulting before the current thread bears the XNRELAX
-> > bit would mean that a creepy issue involving ondemand PTEs in _kernel_
-> > space must have caused this. Having the init_mm mappings known from all
-> > processes seems more relevant to this issue than anything nocow and/or
-> > mlockall could ever do to fix it.
+> > I was hoping to use rt_pipe + select in real-time context to implement
+> > a data receiving server for real-time inter-process communication. Is
+> > this possible ?
+> > What would happen if the real-time clients open the pipes as rt_pipes
+> > and start sending
+> > data in ? What's the alternative to listen in real-time to many
+> > connections from
+> > a single thread ?
 > 
-> u_mode is a user-space address.
+> Note that posix message queues already work for inter-process
+> communications, with support for select. Depending on your needs, this
+> may be sufficient: you will need Xenomai threads on both sides, but the
+> non real-time one may use the SCHED_OTHER policy.
+> 
+> I was thinking, maybe we could map the xnpipe to a special flag in mq_open ?
 > 
 
-Why do you think xnshadow_relax() would be called for an already relaxed
-thread?
+Albeit the message pipes are most of the time used in datagram mode, it
+can also be used in byte stream mode, which would not fit the mq
+semantics that nicely (I'm a bit afraid of potential overhead as well).
+
+Actually, we do have a pivotal API we could use further, and this is
+RTDM. We could have a set of socket-based RTDM drivers that implement
+different RT communication domains for IPC, one emulating a real-time
+socketpair for local IPC as you mentioned for instance, another one
+would bear the message pipe semantics etc.
+
+RTDM already complements all other APIs, so there would be no need to
+extend those to get message pipes with select() support, and we could
+even go as far as deprecating the existing message pipe API from the
+native skin, at some point. Besides, all RTOS emulators we support work
+fine side-by-side with either the POSIX or native skins, which in turn
+do support the RTDM model. So basically, we write one IPC driver, it
+works for the whole set of APIs we have, without any change. Maybe it's
+time for ksrc/drivers/ipc or something?
 
 -- 
 Philippe.
 
+
+
+_______________________________________________
+Xenomai-help mailing list
+Xenomai-help@domain.hid
+https://mail.gna.org/listinfo/xenomai-help
+
+
+
+      
 
 
