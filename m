@@ -1,38 +1,64 @@
-Message-ID: <4A4905E6.6000606@domain.hid>
-Date: Mon, 29 Jun 2009 20:20:22 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <4A48FB71.6070506@domain.hid> <1246298975.4040.53.camel@domain.hid>
-In-Reply-To: <1246298975.4040.53.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4A3CC746.3040605@domain.hid>
+References: <4A3CC746.3040605@domain.hid>
+Content-Type: text/plain
+Date: Sat, 20 Jun 2009 17:13:37 +0200
+Message-Id: <1245510817.4090.186.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] x86: Endless minor faults
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] debian specific kernel patching/unpatching
+ problems with 2.6.29
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Stefan Kisdaroczi <kisda@domain.hid>
+Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Mon, 2009-06-29 at 19:35 +0200, Jan Kiszka wrote:
->> Hi all,
->>
->> seen such loops before? This particular trace is from a 2.6.29.3 kernel
->> with ipipe-2.3-01 (SMP/PREEMPT_VOLUNTARY), but the same happens with
->> 2.6.29.5/2.3-03:
+On Sat, 2009-06-20 at 13:25 +0200, Stefan Kisdaroczi wrote:
+> Hi,
 > 
-> Do you mean 2.6.29.5/2.4-03?
+> applying the xenomai kernelpatch created during debian package building
+> results to a corrupt init/Kconfig file and 'make menuconfig' fails. The 
+> problem
+> starts with linux-2.6.29.  reason: growing init/Kconfig file, see  [1].
+> This patch [2] fixed it (tested with 2.6.28 and 2.6.29).
+> 
+> The second problem is unpatching the kernel:
+> Starting with 2.6.29 the Adoes-IPipe patches have a second hunk for 
+> init/Kconfig
+> to remove the last line [3]. This hunk fails while reverse patching the 
+> kernel. Its
+> conflicting with the generated Kconfig.frag-patch (see [2] too).
+> Removing the second init/Kconfig-Hunk from the adeos-patch [3] fixed it.
+> 
+> tested with 2.5-rc2, but please merge to xenomai-2.4.x too. thank you.
+> kisda
+> 
+> [1]
+> wc -l (unpatched sources from kernel.org)
+> 764  ./linux-2.6.24.7/init/Kconfig
+> 875  ./linux-2.6.25.20/init/Kconfig
+> 925  ./linux-2.6.26.8/init/Kconfig
+> 912  ./linux-2.6.27.25/init/Kconfig
+> 937  ./linux-2.6.28.9/init/Kconfig
+> 1067 ./linux-2.6.29.5/init/Kconfig
+> 1156 ./linux-2.6.30.0/init/Kconfig
+> 
+> [2]
+> diff -uNrp xenomai-2.4.91.orig/debian/prepare-patch.sh 
+> xenomai-2.4.91/debian/prepare-patch.sh
 
-No, in fact I meant 2.4-01 (the one of rc2).
-
-Jan
+Thunderbird did massive whitespace damages to your patch it seems; could
+you resend it attached? TIA,
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Philippe.
+
+
 
