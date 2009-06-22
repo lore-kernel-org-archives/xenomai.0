@@ -1,13 +1,13 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <OF023F5611.C8ADBADC-ON652575DD.000E4E0F-652575DD.000F87A0@domain.hid>
-References: <OF023F5611.C8ADBADC-ON652575DD.000E4E0F-652575DD.000F87A0@domain.hid>
-Content-Type: text/plain
-Date: Mon, 22 Jun 2009 10:27:18 +0200
-Message-Id: <1245659238.4087.44.camel@domain.hid>
+In-Reply-To: <4A3E9E09.7060109@domain.hid>
+References: <4A3E9E09.7060109@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 22 Jun 2009 10:45:31 +0200
+Message-Id: <1245660331.4087.46.camel@domain.hid>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Question on uITRON Skin development and porting
- to iMX27/ARM926EJ-S
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] kernel build fails with
+ CONFIG_X86_MCE_P4THERMAL=y
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,58 +17,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ravikiran Saralaya <ravikiran.saralaya@domain.hid>, Vandana Sasidharan <vandana.sasidharan@domain.hid>
+To: Stefan Kisdaroczi <kisda@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Mon, 2009-06-22 at 08:20 +0530, Ravikiran Saralaya wrote:
-On Mon, 2009-06-22 at 08:58 +0530, Vandana Sasidharan wrote:
-<...>
+On Sun, 2009-06-21 at 22:54 +0200, Stefan Kisdaroczi wrote:
+> hi,
+>=20
+> if 'check for P4 thermal throttling interrupt.' (=20
+> CONFIG_X86_MCE_P4THERMAL ) is enabled, kernel builds ok with 2.6.28, bu=
+t=20
+> fails with adeos-ipipe-2.6.29.5-x86-2.4-02.patch:
+>=20
+> arch/x86/kernel/ipipe.c: In function =E2=80=98__ipipe_enable_pipeline=E2=
+=80=99:
+> arch/x86/kernel/ipipe.c:210: error: =E2=80=98smp_thermal_interrupt=E2=80=
+=99 undeclared=20
+> (first use in this function)
+> arch/x86/kernel/ipipe.c:210: error: (Each undeclared identifier is=20
+> reported only once
+> arch/x86/kernel/ipipe.c:210: error: for each function it appears in.)
+> make[3]: *** [arch/x86/kernel/ipipe.o] Fehler 1
+> make[2]: *** [arch/x86/kernel] Fehler 2
+>=20
 
-Could everyone working on this very same project at TCS talk to each
-other, so that we don't get the annoying feeling of being spammed? TIA,
+Thanks. I will push 2.4-03 out after I have received confirmation that
+everything is fine on your side. TIA,
 
-Could everyone involved in this project at TCS refrain from sending
-private information requests to maintainers, so that we don't get the
-annoying feeling of being spammed? TIA,
+diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+index 28cc903..d186a4c 100644
+--- a/arch/x86/kernel/ipipe.c
++++ b/arch/x86/kernel/ipipe.c
+@@ -116,6 +116,9 @@ void smp_invalidate_interrupt(struct pt_regs *regs);
+ void smp_call_function_interrupt(struct pt_regs *regs);
+ void smp_call_function_single_interrupt(struct pt_regs *regs);
+ void uv_bau_message_interrupt(struct pt_regs *regs);
++#ifdef CONFIG_X86_32
++void smp_thermal_interrupt(struct pt_regs *regs);
++#endif
+=20
+ static void __ipipe_ack_irq(unsigned irq, struct irq_desc *desc)
+ {
 
-Could everyone involved in this project at TCS who may wish to get
-information from free software contributors/users read this short blog
-entry, just to get the basics?
-http://opensourcestrategies.blogspot.com/2005/09/how-to-get-support-from-open-source.html
-
-As far as the uITRON issue is concerned, I seem to remember having
-indicated what follows at least once already, but I'm going to do it
-once more, just in case you do read answers and not just bury people
-alive in questions:
-
-there will be no incentive to help you as long as nobody sees any code
-from your end on this list. Among other things, the Xenomai project did
-write the uITRON emulator in the first place, so I don't see any reason
-why anyone would want to help you upgrading it for your own exclusive
-benefit, really. If you don't have any code to share yet, then please
-start here:
-http://www.xenomai.org/documentation/branches/v2.4.x/html/api/group__nucleus.html
-
-Good luck.
-
-> =====-----=====-----=====
-> Notice: The information contained in this e-mail
-> message and/or attachments to it may contain 
-> confidential or privileged information. If you are 
-> not the intended recipient, any dissemination, use, 
-> review, distribution, printing or copying of the 
-> information contained in this e-mail message 
-> and/or attachments to it are strictly prohibited. If 
-> you have received this communication in error, 
-> please notify us by reply e-mail or telephone and 
-> immediately and permanently delete the message 
-> and any attachments. Thank you
-> 
-
-Abiding by the above rules, I have immediately and permanently deleted
-your message. Thank you.
-
--- 
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+--=20
 Philippe.
 
 
