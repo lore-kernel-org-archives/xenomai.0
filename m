@@ -1,9 +1,10 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200906221245.04890.smolorz@domain.hid>
+In-Reply-To: <4A3F73B6.1060202@domain.hid>
 References: <200906221245.04890.smolorz@domain.hid>
+	<4A3F73B6.1060202@domain.hid>
 Content-Type: text/plain
-Date: Mon, 22 Jun 2009 14:35:07 +0200
-Message-Id: <1245674107.4121.0.camel@domain.hid>
+Date: Mon, 22 Jun 2009 14:37:15 +0200
+Message-Id: <1245674235.4121.1.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [BUG] [xenomai-head] xeno_posix.ko cannot be
@@ -16,28 +17,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Sebastian Smolorz <smolorz@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Mon, 2009-06-22 at 12:45 +0200, Sebastian Smolorz wrote:
-> Hi Philippe,
+On Mon, 2009-06-22 at 14:06 +0200, Gilles Chanteperdrix wrote:
+> Sebastian Smolorz wrote:
+> > Hi Philippe,
+> > 
+> > with latest head it is not possible to build the POSIX skin as module. It 
+> > gives:
+> > 
+> > ERROR: "xnarch_divrem_billion" [kernel/xenomai/skins/posix/xeno_posix.ko] 
+> > undefined!
+> > 
+> > Obviously an
+> > 
+> > EXPORT_SYMBOL(xnarch_divrem_billion);
+> > 
+> > is missing.
 > 
-> with latest head it is not possible to build the POSIX skin as module. It 
-> gives:
-> 
-> ERROR: "xnarch_divrem_billion" [kernel/xenomai/skins/posix/xeno_posix.ko] 
-> undefined!
-> 
-> Obviously an
-> 
-> EXPORT_SYMBOL(xnarch_divrem_billion);
-> 
-> is missing.
-> 
+> Well, no. The definition of xnarh_divrem_billion is in the timeconv.h
+> header, which should be included in places where this function is
+> needed.
 
-Indeed. Thanks,
-http://git.xenomai.org/?p=xenomai-head.git;a=commit;h=7847120b2d84900941d2a40251e28636d9cbc682
+Actually, this is no inline stuff anymore, so we do need an export just
+like tsc_to_ns and converse op.
 
+>  So, what is missing is probably a #include. But Ok, thanks for
+> taking care of testing 2.5-rc2.
+> 
 -- 
 Philippe.
 
