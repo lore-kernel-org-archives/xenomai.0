@@ -1,13 +1,12 @@
-Message-ID: <4A3F368F.90606@domain.hid>
-Date: Mon, 22 Jun 2009 09:45:19 +0200
+Message-ID: <4A3F4A51.1000306@domain.hid>
+Date: Mon, 22 Jun 2009 11:09:37 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <OF023F5611.C8ADBADC-ON652575DD.000E4E0F-652575DD.000F87A0@domain.hid>
-In-Reply-To: <OF023F5611.C8ADBADC-ON652575DD.000E4E0F-652575DD.000F87A0@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <1245646593.3478.2.camel@domain.hid>
+In-Reply-To: <1245646593.3478.2.camel@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Question on uITRON Skin development and porting
-	to iMX27/ARM926EJ-S
+Subject: Re: [Xenomai-core] Installation on Ubuntu
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,25 +15,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Ravikiran Saralaya <ravikiran.saralaya@domain.hid>
-Cc: xenomai@xenomai.org
+To: Shashank Bhatia <shashank.bhatia@domain.hid>
+Cc: Xenomai Help <xenomai@xenomai.org>
 
-Ravikiran Saralaya wrote:
-> 1.      The uITRON specification requires task creation to accept base 
-> address of task stack to be allocated. The xnarch_alloc_stack() currently 
-> accepts only stack size but not the base address.
+Shashank Bhatia wrote:
+> Dear All,
+> 
+>             I had tried using ubuntu with xenomai, but the installation
+> guide given on the Xenomai website does not work. I have the latest
+> ubuntu 9.04 jaunty. The steps written work, but finally, when i try to
+> boot into the newly patched and compiled kernel, it gives me errors
+> related to file system and halts. 
 
-The solution is simple: let the system allocate the stack, or implement
-the missing functionality.
+We do not have enough details to help you. You do not tell us:
+- which version of the Linux kernel you use
+- which version of the Adeos I-pipe you use
+- which version of Xenomai you use
+- what is the exact error message you get.
 
-
-> I also tried to get different Linux kernel version ported to iMX27, such 
-> as 2.6.20, but I don?t have any option here other than 2.6.19 :(
-
-Then I am afraid there is nothing we can do for you. You are on your
-own. Sorry.
-
+If you take the exact same kernel configuration (and when I say exact, I
+mean exact), with the exact same kernel sources, and only disable
+Xenomai and Interrupt pipeline, and you still get the same error, then
+the error you get is unrelated to Xenomai.
 
 -- 
-					    Gilles.
+                                          Gilles
+
 
