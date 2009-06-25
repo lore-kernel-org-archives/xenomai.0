@@ -1,13 +1,10 @@
-Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 25 Jun 2009 11:36:27 +0200
-Message-ID: <E5CDD68F7A516B4F863D651CDA2DBF71010A9E62@domain.hid>
-References: <1245226350.3614.10.camel@domain.hid>
-From: "LEMARCHAND Ludovic" <Ludovic.LEMARCHAND@tech.viveris.com>
-Subject: [Xenomai-help] message pipe services
+Date: Thu, 25 Jun 2009 12:02:28 +0200
+Message-ID: <f94f034b0906250302j23d44723rcf682f98370113d6@domain.hid>
+From: Michele De Candia <mdecandia@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Serial Multiport Adapter
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,22 +16,19 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hello
+Hi all,
 
-I have an application with xenomai task and a standard linux process in =
-order to establish a communication between them.
-I have read that message pipe services is the best solution.
+I need a serial multiport adapter for real-time I/O to be used with Xenomai.
 
-So, I tested the pipe.c exemple, but it doesn't compile. I have include =
-native/pipe.h library but it doesn't find RT_PIPE_MSG and =
-rt_pipe_alloc().
-So, I take a look at the library and this elements are declared between =
-ifdef __KERNEL__ ... endif, but this condition is never validate.
+I need at least 4 ports (possibly expandable), Xenomai support and reduced I/O
+latency.
 
-How can I register my xenomai task as __KERNEL__ ? Is it automatic, have =
-I something to do ?
+Do you suggest smart (with internal interrupt and buffer handling ) or dummy
+adapters?
 
-Thank you for any response and suggestions.
+Do you suggest any?
 
-Ludovic Lemarchand
+
+Thanks in advance,
+Michele Jr De Candia
 
