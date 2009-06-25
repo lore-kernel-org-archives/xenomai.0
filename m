@@ -1,12 +1,10 @@
-Message-ID: <4A40BEF6.9070201@domain.hid>
-Date: Tue, 23 Jun 2009 13:39:34 +0200
+Message-ID: <4A436A62.1070700@domain.hid>
+Date: Thu, 25 Jun 2009 14:15:30 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1245754510.25830.5.camel@domain.hid>
-In-Reply-To: <1245754510.25830.5.camel@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Regarding latency benchmarks
+Subject: [Xenomai-core] Problems posting to the list.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,23 +13,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Shashank Bhatia <shashank.bhatia@domain.hid>
-Cc: Xenomai Help <xenomai@xenomai.org>
+To: Xenomai help <xenomai@xenomai.org>, Xenomai core <Xenomai-core@domain.hid>
 
-Shashank Bhatia wrote:
-> My CPU is a dual core intel processor 1.8 GHz, and i am using
-> xenomai-2.4.8 with 2.6.28.9 kernel.
 
 Hi,
 
-You are still posting to the xenomai-core mailing list whereas you
-should post to the xenomai-help mailing list.
+for people having problems posting to the list, that is who can send
+mails to the list, but who do not see the message they posted either on
+the mailing list or on the mailing list archives, your message probably
+has been tagged as spam by gna.org, and you may find it in the spam
+archives:
 
-I can not reproduce your issue, so could you provide us with the full
-compilation and installation logs of both user-space and kernel-space?
-And send us your .config too?
+http://mail.gna.org/public/spam/
 
-And this time use the xenomai@xenomai.org mailing list.
+as explained on this page:
+https://gna.org/cookbook/?func=detailitem&comingfrom=1275&item_id=112
+
+The archived mail contains the spamassassin rules explaining why the
+message was rejected, which should hopefully allow you to "fix" your
+message.
+
+Regards,
 
 -- 
                                           Gilles
