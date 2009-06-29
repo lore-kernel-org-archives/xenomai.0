@@ -1,61 +1,79 @@
-From: Sebastian Smolorz <smolorz@domain.hid>
-Date: Thu, 7 May 2009 10:14:02 +0200
-References: <Pine.LNX.4.64.0905061412070.24701@domain.hid>
-In-Reply-To: <Pine.LNX.4.64.0905061412070.24701@domain.hid>
+Message-ID: <4A490144.8050300@domain.hid>
+Date: Mon, 29 Jun 2009 20:00:36 +0200
+From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200905071014.02435.smolorz@domain.hid>
-Subject: Re: [Xenomai-help] Selecting the appropriate RTDM _rt/_nrt ioctl at
-	run-time.
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <1245669529.7250.3.camel@domain.hid>
+In-Reply-To: <1245669529.7250.3.camel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig2A2ADD9E02519C0039D3E211"
+Subject: Re: [Xenomai-core] Problem running klatency test
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Martin Shepherd <mcs@domain.hid>, xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-Martin Shepherd wrote:
-> I'm in the process of writing an RTDM device driver. Some of the ioctl
-> requests that it implements can only be executed from non-realtime
-> context, due to the need for them to call Linux kernel functions,
-> while other ioctl requests are context-agnostic, but are intended to
-> be used from realtime context.
->
-> At first glance the RTDM documentation appears to indicate that I
-> should implement the ioctl requests that require non-realtime context
-> in the ioctl_nrt() handler of the driver, and implement the remaining
-> context-agnostic requests in both the ioctl_nrt() and ioctl_rt()
-> handlers. However for this to work transparently, RTDM would have to
-> know which request codes were implemented by ioctl_nrt() and which by
-> ioctl_rt(), then automatically switch context, if needed, before
-> calling them.  I don't see anything implemented along these lines.
->
-> In principle I could tell application writers that they have to
-> explicitly switch to the secondary linux domain before calling
-> rt_dev_ioctl() for a request that requires this.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig2A2ADD9E02519C0039D3E211
+Content-Type: multipart/mixed;
+ boundary="------------010806040008000601020005"
 
-Generally speaking, it is a bad habit to explicitely switch the context in 
-applications.
+This is a multi-part message in MIME format.
+--------------010806040008000601020005
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-> However I don't see
-> any RTDM or Xenomai user-API call for switching contexts (other than
-> xnshadown_relax(), which is marked as for internal use only). I
-> imagine that one could do the equivalent by calling something like
-> sleep(0) to force a switch to the Linux domain. But this seems like a
-> kludge.
->
-> Am I missing something obvious?
+Shashank Bhatia schrieb:
+> [...]
+> open(/proc/xenomai/registry/native/pipes/klat_pipe): No such file or
+> directory
+> modprobe klat_mod or try the -P option?
 
-Could the function rtdm_in_rt_context() be useful for you?
+the module ist called xeno_klat. patch attached.
 
--- 
-Sebastian
 
+--------------010806040008000601020005
+Content-Type: text/plain;
+ name="xeno_klat.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="xeno_klat.patch"
+
+diff --git a/src/testsuite/klatency/klatency.c b/src/testsuite/klatency/k=
+latency.c
+index a22cd59..c419402 100644
+--- a/src/testsuite/klatency/klatency.c
++++ b/src/testsuite/klatency/klatency.c
+@@ -187,7 +187,7 @@ int main(int argc, char **argv)
+ 		if (benchdev =3D=3D -1) {
+ 			perror("open(/proc/xenomai/registry/native/pipes/klat_pipe)");
+ 			fprintf(stderr,
+-				"modprobe klat_mod or try the -P option?\n");
++				"modprobe xeno_klat or try the -P option?\n");
+ 			exit(EXIT_FAILURE);
+ 		}
+ 	} else {
+
+--------------010806040008000601020005--
+
+--------------enig2A2ADD9E02519C0039D3E211
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFKSQFJIPTw9rIdn6oRAqHfAJ9h8qo8u8l1bHl9klJ7onokYJreogCfeFOA
+vsG9idfRqO01p1ylriAcNhg=
+=3z2u
+-----END PGP SIGNATURE-----
+
+--------------enig2A2ADD9E02519C0039D3E211--
 
