@@ -1,116 +1,55 @@
-From: Vikesh Rambaran <Vikesh.Rambaran@domain.hid>
-Date: Mon, 1 Jun 2009 10:17:47 +0200
-Message-ID: <5F0B1AF0FEA4EB4F8AC9F4CF3AF6DC1E933A9E0554@domain.hid>
-References: <1243616178.27443.21.camel@domain.hid>
-In-Reply-To: <1243616178.27443.21.camel@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] [Xenomai-core] Xenomai v2.4.8
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4A48D9A1.40509@domain.hid>
+References: <4A48D9A1.40509@domain.hid>
+Content-Type: text/plain
+Date: Mon, 29 Jun 2009 17:39:07 +0200
+Message-Id: <1246289947.4040.20.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Adeos-main] DYNAMIC_FTRACE vs. I-pipe tracer
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: adeos-main <adeos-main@gna.org>
 
-Hi
-Thanx for the release.
+On Mon, 2009-06-29 at 17:11 +0200, Jan Kiszka wrote:
+> Hi Philippe,
+> 
+> I saw this for 2.6.30, but it obviously also made it into 2.6.29:
+> 
+> http://git.denx.de/?p=ipipe-2.6.git;a=commitdiff;h=d302f7638b9b52ea90e3c042edd940449cedb7a1
+> 
+> What precise problem does it try to solve? Is it a 2.6.30-only problem?
+> The point is that, last time I checked, the dynamic ftrace approach was
+> by far not I-pipe compatible. So I suspect we rather need a fix for the
+> core issue, but keep DYNAMIC_FTRACE off.
 
-However, could you please check the xenomai-2.4.8.tar.bz2 file.=20
-It seems to be missing a few files and folders (eg ksrc, scripts).
+There are compatible for basic usage at least, but the way the tracer
+forced activation of the ftrace layer in 2.6.29+ was wrong in the first
+place, and this basically wrecked the ppc64 boot sequence. But now that
+it is right (at least non-x86s are happy with this now), we need
+DYNAMIC_FTRACE to enable the tracepoints; otherwise we would only get a
+few xenomai symbols in the trace log (seen on x86*/ppc*). As it is, we
+do get meaningful traces via /proc/ipipe/trace, but I would not assume
+that we could not break the kernel when fiddling with ftrace's debugfs
+interface.
 
-Keep well
-Vicki
+Quite frankly, moving the tracer over ftrace brought quite a lot of
+issues to the non-x86 ports unfortunately (including significant
+overhead issues on ppc64); the fact that ftrace is a moving target did
+not help either. This integration probably requires more work.
 
-________________________________________
-From: xenomai-core-bounces@domain.hid [xenomai-core-bounces@domain.hid] On Beha=
-lf Of Philippe Gerum [rpm@xenomai.org]
-Sent: Friday, May 29, 2009 6:56 PM
-To: xenomai@xenomai.org
-Cc: xenomai@xenomai.org
-Subject: [Xenomai-core] Xenomai v2.4.8
-
-Here is the eighth maintenance release for the v2.4.x branch.  Short
-log follows:
-
-=20       [nucleus]
-
-=20       * Suppress switch warning upon signal receipt when the process
-=20       is being debugged.
-=20       * Fix host tick propagation.
-=20       * Prevent early timer shots due to rounding imprecision.
-=20       * Fix computation of heap overhead.
-=20       * Move xnarch_set_irq_affinity out of intr lock.
-=20       * Introduce channel information in LTTng markers.
-
-=20       [posix]
-
-=20       * Fix access checks in select().
-=20       * Fix errnoneous -EINVAL error return with mmap() of non
-=20         page-aligned length.
-
-=20       [native]
-
-=20       * Fix message pipe streaming mode.
-=20       * Make optimized tsc<->ns conversion routines available to
-=20         user-space.
-
-=20       [vxworks]
-
-=20       * Add missing rescheduling in semaphore deletion code.
-
-=20       [vrtx]
-
-=20       * Fix sc_[e]tcreate().
-=20       * Rework mutex support.
-
-=20       [powerpc]
-
-=20       * Do not restore ALTIVEC/SPE regs for kernel threads.
-=20       * Port to Emerson's MVME7100 dual core SBC.
-=20       * Upgrade Adeos support to 2.6.29.4-powerpc-DENX-2.6-00.
-
-=20       [arm]
-
-=20       * Upgrade Adeos support to 2.6.29-arm-1.13-00.
-
-=20       [x86]
-
-=20       * Fix miscompilation of __do_strncpy_from_user().
-=20       * Yet another round of FPU management fixes.
-=20       * Upgrade Adeos support to 2.6.29.4-x86-2.4-01.
-
-=20       [blackfin]
-
-=20       * Upgrade Adeos support to 2.6.28.10-blackfin.git-1.10-00.
-
-=20       [can]
-
-=20       * ixxat-pci: fix problems with device probing.
-=20       * ixxat-pci: disambiguate PCI device id.
-=20       * mscan: fix build problems with recent kernel versions.
-
-
-http://download.gna.org/xenomai/stable/xenomai-2.4.8.tar.bz2
-
-git://xenomai.org/xenomai-2.4.git
-
---
+> 
+> Jan
+> 
+-- 
 Philippe.
-
-
-
-_______________________________________________
-Xenomai-core mailing list
-Xenomai-core@domain.hid
-https://mail.gna.org/listinfo/xenomai-core
 
 
 
