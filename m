@@ -1,13 +1,12 @@
-Message-ID: <4A490144.8050300@domain.hid>
-Date: Mon, 29 Jun 2009 20:00:36 +0200
-From: Stefan Kisdaroczi <kisda@domain.hid>
-MIME-Version: 1.0
-References: <1245669529.7250.3.camel@domain.hid>
-In-Reply-To: <1245669529.7250.3.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig2A2ADD9E02519C0039D3E211"
-Subject: Re: [Xenomai-core] Problem running klatency test
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4A48FB71.6070506@domain.hid>
+References: <4A48FB71.6070506@domain.hid>
+Content-Type: text/plain
+Date: Mon, 29 Jun 2009 20:09:35 +0200
+Message-Id: <1246298975.4040.53.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] x86: Endless minor faults
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,64 +15,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig2A2ADD9E02519C0039D3E211
-Content-Type: multipart/mixed;
- boundary="------------010806040008000601020005"
+On Mon, 2009-06-29 at 19:35 +0200, Jan Kiszka wrote:
+> Hi all,
+> 
+> seen such loops before? This particular trace is from a 2.6.29.3 kernel
+> with ipipe-2.3-01 (SMP/PREEMPT_VOLUNTARY), but the same happens with
+> 2.6.29.5/2.3-03:
 
-This is a multi-part message in MIME format.
---------------010806040008000601020005
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Do you mean 2.6.29.5/2.4-03?
 
-Shashank Bhatia schrieb:
-> [...]
-> open(/proc/xenomai/registry/native/pipes/klat_pipe): No such file or
-> directory
-> modprobe klat_mod or try the -P option?
-
-the module ist called xeno_klat. patch attached.
+-- 
+Philippe.
 
 
---------------010806040008000601020005
-Content-Type: text/plain;
- name="xeno_klat.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="xeno_klat.patch"
-
-diff --git a/src/testsuite/klatency/klatency.c b/src/testsuite/klatency/k=
-latency.c
-index a22cd59..c419402 100644
---- a/src/testsuite/klatency/klatency.c
-+++ b/src/testsuite/klatency/klatency.c
-@@ -187,7 +187,7 @@ int main(int argc, char **argv)
- 		if (benchdev =3D=3D -1) {
- 			perror("open(/proc/xenomai/registry/native/pipes/klat_pipe)");
- 			fprintf(stderr,
--				"modprobe klat_mod or try the -P option?\n");
-+				"modprobe xeno_klat or try the -P option?\n");
- 			exit(EXIT_FAILURE);
- 		}
- 	} else {
-
---------------010806040008000601020005--
-
---------------enig2A2ADD9E02519C0039D3E211
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFKSQFJIPTw9rIdn6oRAqHfAJ9h8qo8u8l1bHl9klJ7onokYJreogCfeFOA
-vsG9idfRqO01p1ylriAcNhg=
-=3z2u
------END PGP SIGNATURE-----
-
---------------enig2A2ADD9E02519C0039D3E211--
 
