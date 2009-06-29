@@ -1,58 +1,35 @@
-Message-ID: <4A49CA45.8000501@domain.hid>
-Date: Tue, 30 Jun 2009 10:18:13 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4A48D9A1.40509@domain.hid>
+Date: Mon, 29 Jun 2009 17:11:29 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <065A7D06F7D4E546A18E80E08D066E181189FBBFD4@domain.hid>
-In-Reply-To: <065A7D06F7D4E546A18E80E08D066E181189FBBFD4@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pthread_mutex_lock returns 1
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "Landau, Bracha" <BLandau@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Subject: [Adeos-main] DYNAMIC_FTRACE vs. I-pipe tracer
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
 
-Landau, Bracha wrote:
-> Thanks for your help.
-> 
-> I tried to put in "printk"s in the kernel implementation of the
-> xenomai pthread_mutex_lock, and it did not work. Neither did
-> xnprintf. I did this in order to find out what is the exact cause of
-> the error; generally adding printk's in the kernel implementation of
-> functions did work, but on this one it didn't.
+Hi Philippe,
 
-That is because the implementation of the pthread_mutex_lock service is
-in ksrc/skins/posix/syscall.c, and calls pse51_mutex_timedlock_break in
-ksrc/skins/posix/mutex.c, pthread_mutex_lock implementation in
-ksrc/skins/posix/mutex.c is only for kernel-space users. We had to split
-this for correct handling of Linux signals.
+I saw this for 2.6.30, but it obviously also made it into 2.6.29:
 
-> 
-> Is there any way to discern what exactly the problem is? This code
-> was working on earlier versions of Xenomai (2.2) and did not generate
-> an error on this instance of calling pthread_mutex_lock.
+http://git.denx.de/?p=ipipe-2.6.git;a=commitdiff;h=d302f7638b9b52ea90e3c042edd940449cedb7a1
 
-Ok, I have checked, 2.2 already had the pshared attribute, so I think
-your issue is the other one (calling phtread_mutex services from non
-real-time threads). Or maybe some other undocumented reason, which you
-should find by adding printks... :-)
+What precise problem does it try to solve? Is it a 2.6.30-only problem?
+The point is that, last time I checked, the dynamic ftrace approach was
+by far not I-pipe compatible. So I suspect we rather need a fix for the
+core issue, but keep DYNAMIC_FTRACE off.
 
-
-> This e-mail is confidential, the property of NDS Ltd and intended for
-> the addressee only. Any dissemination, copying or distribution of
-> this message or any attachments by anyone other than the intended
-> recipient is strictly prohibited.
-
-Did I tell you that I found these footers stupid?
+Jan
 
 -- 
-                                          Gilles
-
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
