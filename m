@@ -1,15 +1,12 @@
-Message-ID: <4A62D2B8.8030907@domain.hid>
-Date: Sun, 19 Jul 2009 10:00:56 +0200
+Message-ID: <4A49B42E.10004@domain.hid>
+Date: Tue, 30 Jun 2009 08:43:58 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4A62D1C1.9050807@domain.hid>
-In-Reply-To: <4A62D1C1.9050807@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig3BC3B926ACEC951AA750764B"
+	boundary="------------enig268B3109C23429F19FA0BE04"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 2/3] x86-64: Work around gcc issues with
- populating syscall registers
+Subject: [Xenomai-core] [Pull Request] Build fix for comedi
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -19,48 +16,30 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: Petr Cervenka <grugh@domain.hid>, xenomai-core <xenomai@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig3BC3B926ACEC951AA750764B
+--------------enig268B3109C23429F19FA0BE04
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-gcc-4.1.3 of kubuntu has problem with proper syscall register
-initialization in rt_task_shadow if TLS is enabled. But it is likely
-that more compiler versions below 4.3 and more configuration variants
-are affected.
+The following changes since commit 7f2e2eb4f2debd5bceb723e9860deb57912e3f=
+c0:
+  Philippe Gerum (1):
+        x86: upgrade I-pipe support to 2.6.30-x86-2.4-04 - fix
 
-This patch installs a workaround for these gcc versions which places an
-optimization barrier before the register variable setup. This forces gcc
-to actually load the registers.
+are available in the git repository at:
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
+  git://git.xenomai.org/xenomai-jki.git for-upstream
 
- include/asm-x86/syscall_64.h |    4 ++++
- 1 files changed, 4 insertions(+), 0 deletions(-)
+Jan Kiszka (1):
+      comedi: Fix build breakage due to typos
 
-diff --git a/include/asm-x86/syscall_64.h b/include/asm-x86/syscall_64.h
-index adaa40b..6918ac4 100644
---- a/include/asm-x86/syscall_64.h
-+++ b/include/asm-x86/syscall_64.h
-@@ -82,7 +82,11 @@ static inline int __xn_interrupted_p(struct pt_regs *r=
-egs)
-  * in kernel space.
-  */
-=20
-+#if __GNUC__ < 4 || (__GNUC__ =3D=3D 4 && __GNUC_MINOR__ < 3)
-+#define LOAD_ARGS_0()	asm volatile ("" ::: "memory");
-+#else
- #define LOAD_ARGS_0()
-+#endif
- #define LOAD_REGS_0
- #define ASM_ARGS_0
-=20
+ ksrc/drivers/comedi/rtdm_interface.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
 
---------------enig3BC3B926ACEC951AA750764B
+--------------enig268B3109C23429F19FA0BE04
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -69,10 +48,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkpi0rgACgkQniDOoMHTA+lQnwCfeQPR7X4EgDBpxwsMM/g+AdEA
-pSsAoIOTvKlnqnHIUUcpzbXNzNsbc+cB
-=y/hF
+iEYEARECAAYFAkpJtDIACgkQniDOoMHTA+kgqgCfSB/va2wsSt+pto7JKKQMN59q
+eSwAnAgM2VT+l5bD5BsASC8Fu2Sdt3vy
+=aTym
 -----END PGP SIGNATURE-----
 
---------------enig3BC3B926ACEC951AA750764B--
+--------------enig268B3109C23429F19FA0BE04--
 
