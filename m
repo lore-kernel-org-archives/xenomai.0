@@ -1,119 +1,106 @@
-From: ROSSIER Daniel <Daniel.Rossier@domain.hid>
-Date: Mon, 22 Jun 2009 15:15:49 +0200
-Message-ID: <D39BC4B7B612C6428144D37C54379A2F01A24CC99631@domain.hid>
-References: <634c78ce0906120240t694ded8cpfa7fcd9dfb2c3b8@domain.hid>
-	<200906121148.37732.smolorz@domain.hid>
-	<4A3235BF.5090201@domain.hid> <4A324D3D.9060505@domain.hid>
-	<4A325189.5060905@domain.hid> <4A3253DB.5040109@domain.hid>
-	<4A32674C.7060007@domain.hid>
-In-Reply-To: <4A32674C.7060007@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Running Xenomai in a virtual machine
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4A49DA4E.2020604@domain.hid>
+References: <4A48FB71.6070506@domain.hid> <4A49CD81.4060706@domain.hid>
+	<4A49CFF0.7070202@domain.hid> <1246353623.7803.21.camel@domain.hid>
+	<4A49D935.3060900@domain.hid> <1246353913.7803.24.camel@domain.hid>
+	<4A49DA4E.2020604@domain.hid>
+Content-Type: text/plain
+Date: Tue, 30 Jun 2009 11:27:27 +0200
+Message-Id: <1246354047.7803.25.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] x86: Endless minor faults
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Johan Visser <johan.visser@domain.hid>, Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-Just going through this interesting thread, I though it might be of interes=
-t - probably not fully related to the topic, but... - to know
-that we are currently working on some integration efforts of Xenomai on top=
- of the XEN hypervisor in the context of the
-embeddedXEN project. For the time being, it is purely devoted to ARM-based =
-processors.
-
-In case of interest, please visit: https://sourceforge.net/projects/embedde=
-dxen. Xenomai will appear as a natural subtree of embeddedXEN, like xen or =
-minios,
-but currently it is not present yet. The hypervisor and miniOS boots up in =
-Mainstone/QEMU and soon on a Colibri/PXA270 board. EmbeddedXEN is mainly de=
-voted to integrate multiple kernels into a single binary image for embedded=
- systems with the support of hard realtime (domainU-RT, a new kind of Xen d=
-omain).
-
-If you're interested to contribute, simply tell us through the mailing list=
- (embeddedxen-devel@domain.hid)
-
-Daniel
-
-> -----Original Message-----
-> From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-
-> bounces@domain.hid] On Behalf Of Johan Visser
-> Sent: vendredi, 12. juin 2009 16:34
-> To: Jan Kiszka
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] Running Xenomai in a virtual machine
->=20
-> Jan Kiszka schreef:
-> > Jan Kiszka wrote:
-> >
-> >> ... You could still use qemu in
-> >> emulation mode, but that is 10..40 times slower than native (but
-> still
-> >> better than nothing if you have to debug the guest kernel - I've
-> done
-> >> this before kvm arrived).
+On Tue, 2009-06-30 at 11:26 +0200, Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+> > On Tue, 2009-06-30 at 11:21 +0200, Gilles Chanteperdrix wrote:
+> >> Philippe Gerum wrote:
+> >>> On Tue, 2009-06-30 at 10:42 +0200, Gilles Chanteperdrix wrote:
+> >>>> Jan Kiszka wrote:
+> >>>>> Jan Kiszka wrote:
+> >>>>>> Hi all,
+> >>>>>>
+> >>>>>> seen such loops before? This particular trace is from a 2.6.29.3 kernel
+> >>>>>> with ipipe-2.3-01 (SMP/PREEMPT_VOLUNTARY), but the same happens with
+> >>>>>> 2.6.29.5/2.3-03:
+> >>>>>>
+> >>>>>> :|   +func                -653    0.084  __ipipe_handle_exception+0x11 (page_fault+0x26)
+> >>>>>> :|   +func                -653    0.096  ipipe_check_context+0xd (__ipipe_handle_exception+0x71)
+> >>>>>> :|   #end     0x80000000  -653    0.069  do_page_fault+0x33 (__ipipe_handle_exception+0x1ff)
+> >>>>>> :    #func                -653    0.078  __ipipe_unstall_root+0x9 (do_page_fault+0x3cb)
+> >>>>>> :|   #begin   0x80000000  -653    0.068  __ipipe_unstall_root+0x34 (do_page_fault+0x3cb)
+> >>>>>> :|   +end     0x80000000  -653    0.069  __ipipe_unstall_root+0x59 (do_page_fault+0x3cb)
+> >>>>>> :    +func                -653    0.060  down_read_trylock+0x4 (do_page_fault+0x424)
+> >>>>>> :    +func                -653    0.068  _spin_lock_irqsave+0x9 (__down_read_trylock+0x16)
+> >>>>>> :    +func                -653    0.108  ipipe_check_context+0xd (_spin_lock_irqsave+0x1d)
+> >>>>>> :    #func                -652    0.066  _spin_unlock_irqrestore+0x4 (__down_read_trylock+0x3f)
+> >>>>>> :    #func                -652    0.069  __ipipe_restore_root+0x4 (_spin_unlock_irqrestore+0x21)
+> >>>>>> :    #func                -652    0.074  __ipipe_unstall_root+0x9 (__ipipe_restore_root+0x2c)
+> >>>>>> :|   #begin   0x80000000  -652    0.066  __ipipe_unstall_root+0x34 (__ipipe_restore_root+0x2c)
+> >>>>>> :|   +end     0x80000000  -652    0.069  __ipipe_unstall_root+0x59 (__ipipe_restore_root+0x2c)
+> >>>>>> :    +func                -652    0.096  find_vma+0x4 (do_page_fault+0x465)
+> >>>>>> :    +func                -652    0.150  ltt_run_filter_default+0x4 (_ltt_specialized_trace+0xc1)
+> >>>>>> :    +func                -652    0.098  handle_mm_fault+0x11 (do_page_fault+0x537)
+> >>>>>> :    +func                -652    0.090  _spin_lock+0x4 (handle_mm_fault+0x680)
+> >>>>>> :    +func                -652    0.063  ptep_set_access_flags+0x9 (handle_mm_fault+0x6d1)
+> >>>>>> :    +func                -652    0.282  flush_tlb_page+0xd (handle_mm_fault+0x6e7)
+> >>>>>> :    +func                -651    0.162  ltt_run_filter_default+0x4 (_ltt_specialized_trace+0xc1)
+> >>>>>> :    +func                -651    0.062  up_read+0x4 (do_page_fault+0x5a9)
+> >>>>>> :    +func                -651    0.072  _spin_lock_irqsave+0x9 (__up_read+0x1c)
+> >>>>>> :    +func                -651    0.117  ipipe_check_context+0xd (_spin_lock_irqsave+0x1d)
+> >>>>>> :    #func                -651    0.074  _spin_unlock_irqrestore+0x4 (__up_read+0x92)
+> >>>>>> :    #func                -651    0.069  __ipipe_restore_root+0x4 (_spin_unlock_irqrestore+0x21)
+> >>>>>> :    #func                -651    0.060  __ipipe_unstall_root+0x9 (__ipipe_restore_root+0x2c)
+> >>>>>> :|   #begin   0x80000000  -651    0.056  __ipipe_unstall_root+0x34 (__ipipe_restore_root+0x2c)
+> >>>>>> :|   +end     0x80000000  -651    0.420  __ipipe_unstall_root+0x59 (__ipipe_restore_root+0x2c)
+> >>>>>> :|   +func                -650    0.084  __ipipe_handle_exception+0x11 (page_fault+0x26)
+> >>>>>>
+> >>>>>> and again and again...
+> >>>>>>
+> >>>>>> We are looping over a minor fault here (according to /proc/PID/stat),
+> >>>>>> the context is a Xenomai task in secondary mode. As the task no longer
+> >>>>>> processes signals in this state, the whole system is more or less
+> >>>>>> broken. Tomorrow I will try to find out the faulting address with an
+> >>>>>> instrumented kernel, but maybe you already have some ideas.
+> >>>>> The fault is apparently triggered by __xn_put_user(XNRELAX,
+> >>>>> thread->u_mode) in xnshadow_relax. thread->u_mode is pointing to an
+> >>>>> invalid region ATM. The questions are now: Who corrupted this, user
+> >>>>> space on init (not that likely) or kernel space later on (unpleasant
+> >>>>> thought)? Moreover: Why can't we recover from a fault on u_mode?
+> >>>> I already investigated such an issue, and my conclusion was that there
+> >>>> are some places in the code where we can not cope with a fault.
+> >>>> xnshadow_relax being such a place, because, if relax faults, then what
+> >>>> will the fault handler do? Call relax again. Fortunately, mlockall and
+> >>>> the nocow stuff fixes this.
+> >>>
+> >>> xnshadow_relax() faulting before the current thread bears the XNRELAX
+> >>> bit would mean that a creepy issue involving ondemand PTEs in _kernel_
+> >>> space must have caused this. Having the init_mm mappings known from all
+> >>> processes seems more relevant to this issue than anything nocow and/or
+> >>> mlockall could ever do to fix it.
+> >> u_mode is a user-space address.
 > >>
-> >
-> > BTW, another advantage of qemu is that you could write a model of
-> your
-> > possibly non-standard I/O hardware and even run your drivers in qemu
-> > against this model. That works both with and without kvm support.
-> >
-> The IO is driven by ethernet :-)        so if it were real time....
-> We are now simulating real time ( on a live system ) on  a functional
-> basis,
-> My guest system programs the int0 to go at 1000 Hz, that is why I
-> wonder
-> if the used host system config matters.
->=20
-> > And as we are at it: qemu (in emulation mode) is also capable of
-> > providing a host for ARM, PPC, MIPS, etc. targets. An example: I'm
-> able
-> > to run the unmodified Linux firmware of my ARM-based webradio inside
-> > qemu, and it works as in real life (it just boots faster in qemu than
-> on
-> > real silicon ;)).
-> >
-> by real-life system nowadays is an ATOM based cpu board...
-> > Jan
-> >
-> >
->=20
-> --
-> Ing. Johan Visser
-> Stork Plastics Machinery B.V.
-> Tel. : +31 742405113
-> Mob. : +31 653731518
->=20
-> ----------------------------------------------------
-> Stork Plastics Machinery B.V. Alfred Marshallstraat 2, 7559 SE Hengelo,
-> the Netherlands.
-> Supplies and executions to the conditions and stipulations filed with
-> the Chamber of Commerce (Trade register Enschede nr. 06041991) except
-> as otherwise provided in writing.
-> DISCLAIMER:
-> The information contained in this communication is confidential and may
-> be legally privileged. It is intended solely for the use of the
-> individual or entity to whom it is addressed and others authorized to
-> receive it. If you are not the intended recipient, you are hereby
-> notified that any disclosure, copying, distribution, or taking any
-> action in reliance of the contents of this information is strictly
-> prohibited and may be unlawful. Stork Plastics Machinery is neither
-> liable for the proper and complete transmission of the information
-> contained in this communication nor for any delay in its receipt.
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+> > 
+> > Why do you think xnshadow_relax() would be called for an already relaxed
+> > thread?
+> 
+> Because the fault happens before it has finished relaxing ?
+> 
+
+Well, no. Have a second look at the code.
+
+-- 
+Philippe.
+
+
 
