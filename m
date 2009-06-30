@@ -1,72 +1,83 @@
-Message-ID: <4A48D072.5040400@domain.hid>
-Date: Mon, 29 Jun 2009 16:32:18 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4A4A5B53.7070208@domain.hid>
+Date: Tue, 30 Jun 2009 20:37:07 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <065A7D06F7D4E546A18E80E08D066E181189FBBDD9@domain.hid>
-In-Reply-To: <065A7D06F7D4E546A18E80E08D066E181189FBBDD9@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pthread_mutex_lock returns 1
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig16076A4BDAE1C18D416128E3"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [Pull Request] trivial warning fix
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "Landau, Bracha" <BLandau@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Landau, Bracha wrote:
-> I have a xenomai-based application basically working on my mpc8272 based
-> board. pthread_mutex_lock generally works (and returns zero), but in
-> some cases returns 1 (yes, positive, not negative) which is an unknown
-> error.
-> Any idea why this may be happening?
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig16076A4BDAE1C18D416128E3
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-1 is not an unknown error, it is EPERM. And the POSIX spec mandates that
-errors returned by pthread_* services are the error status. They are not
-stored in errno. This is even documented in Xenomai pthread_mutex_lock
-documentation:
+The following changes since commit cdc03ba796e72a93668cfe0eeb666b16017b6a=
+97:
+  Jan Kiszka (1):
+        comedi: Fix build breakage due to typos
 
-Returns:
-    0 on success
+are available in the git repository at:
 
-    an error number if:
+  git://git.xenomai.org/xenomai-jki.git for-upstream
 
-        * EPERM, the caller context is invalid;
-	(...)
-        * EPERM, the mutex is not process-shared and does not belong to
-the current process;
+Jan Kiszka (1):
+      posix: Fix build warning with dlopen support enabled
 
-(...)
-Valid contexts:
+ src/skins/posix/init.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
-        * Xenomai kernel-space thread;
-        * Xenomai user-space thread (switches to primary mode).
+---
 
-I use the following script to convert back and forth between libc errors
-and their value:
+commit c09ace348560c30754bbd1b480a838eb619600ac
+Author: Jan Kiszka <jan.kiszka@domain.hid>
+Date:   Tue Jun 30 20:33:44 2009 +0200
 
-#! /bin/sh
+    posix: Fix build warning with dlopen support enabled
+   =20
+    Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 
-sed  "s,#define\t\(.*\b$1\b.*\)/\*\(.*\)\*/,\1\2,;t;d" /usr/include/asm*/errno*
+diff --git a/src/skins/posix/init.c b/src/skins/posix/init.c
+index 9c58c9b..415997f 100644
+--- a/src/skins/posix/init.c
++++ b/src/skins/posix/init.c
+@@ -49,8 +49,9 @@ void __init_posix_interface(void)
+ {
+ #ifndef CONFIG_XENO_LIBS_DLOPEN
+ 	struct sched_param parm;
++	int policy;
+ #endif /* !CONFIG_XENO_LIBS_DLOPEN */
+-	int muxid, err, policy;
++	int muxid, err;
+=20
+ 	muxid =3D
+ 	    xeno_bind_skin(PSE51_SKIN_MAGIC, "POSIX", "xeno_posix");
 
 
+--------------enig16076A4BDAE1C18D416128E3
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-> ------------------------------------------------------------------------
-> This e-mail is confidential, the property of NDS Ltd and intended for
-> the addressee only. Any dissemination, copying or distribution of this
-> message or any attachments by anyone other than the intended recipient
-> is strictly prohibited.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-If this message is confidential, why do you send it to a public mailing
-list in the first place? Should we unsubscribe you from the mailing list
-to preserve your confidentiality?
+iEYEARECAAYFAkpKW1oACgkQniDOoMHTA+mvCwCcDIDh1e50FZyp5iUTqomGCjuM
+8doAniYKOcJJhk3NAHlWdvAgauhHvUFK
+=fnQK
+-----END PGP SIGNATURE-----
 
--- 
-                                          Gilles
-
+--------------enig16076A4BDAE1C18D416128E3--
 
