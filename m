@@ -1,11 +1,11 @@
-From: "Landau, Bracha" <BLandau@domain.hid>
-Date: Tue, 30 Jun 2009 10:24:36 +0300
-Message-ID: <065A7D06F7D4E546A18E80E08D066E181189FBBFD4@domain.hid>
-In-Reply-To: <4A48D072.5040400@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <4A49C46F.8010301@domain.hid>
+Date: Tue, 30 Jun 2009 09:53:19 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+References: <065A7D06F7D4E546A18E80E08D066E181189FBBFD4@domain.hid>
+In-Reply-To: <065A7D06F7D4E546A18E80E08D066E181189FBBFD4@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] pthread_mutex_lock returns 1
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,98 +16,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: "Landau, Bracha" <BLandau@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Thanks for your help.
-
-I tried to put in "printk"s in the kernel implementation of the xenomai pth=
-read_mutex_lock, and it did not work. Neither did xnprintf. I did this in o=
-rder to find out what is the exact cause of the error; generally adding pri=
-ntk's in the kernel implementation of functions did work, but on this one i=
-t didn't.
-
-Is there any way to discern what exactly the problem is? This code was work=
-ing on earlier versions of Xenomai (2.2) and did not generate an error on t=
-his instance of calling pthread_mutex_lock.
-
------Original Message-----
-From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
-Sent: Monday, June 29, 2009 5:32 PM
-To: Landau, Bracha
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] pthread_mutex_lock returns 1
-
 Landau, Bracha wrote:
-> I have a xenomai-based application basically working on my mpc8272
-> based board. pthread_mutex_lock generally works (and returns zero),
-> but in some cases returns 1 (yes, positive, not negative) which is an
-> unknown error.
-> Any idea why this may be happening?
+> Thanks for your help.
+> 
+> I tried to put in "printk"s in the kernel implementation of the
+> xenomai pthread_mutex_lock, and it did not work. Neither did
+> xnprintf. I did this in order to find out what is the exact cause of
+> the error; generally adding printk's in the kernel implementation of
+> functions did work, but on this one it didn't.
+> 
+> Is there any way to discern what exactly the problem is? This code
+> was working on earlier versions of Xenomai (2.2) and did not generate
+> an error on this instance of calling pthread_mutex_lock.
 
-1 is not an unknown error, it is EPERM. And the POSIX spec mandates that er=
-rors returned by pthread_* services are the error status. They are not stor=
-ed in errno. This is even documented in Xenomai pthread_mutex_lock
-documentation:
+Either your mutex is not process-shared and you try to use it from a
+different process (if that is the case, that is easy to know, you did
+not call pthread_mutexattr_setpshared, and you try to access the mutex
+from a different process, because you called fork after
+pthread_mutex_init for instance, see
+http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Mixing_fork_with_Xenomai_POSIX_skin_services.
+)
 
-Returns:
-    0 on success
+Or you are trying to lock the mutex from a thread which is not a Xenomai
+thread (that is, a thread created with __real_pthread_create, or in some
+part of the code where pthread_create is not wrapped with Xenomai POSIX
+skin's compilation flags).
 
-    an error number if:
-
-        * EPERM, the caller context is invalid;
-        (...)
-        * EPERM, the mutex is not process-shared and does not belong to the=
- current process;
-
-(...)
-Valid contexts:
-
-        * Xenomai kernel-space thread;
-        * Xenomai user-space thread (switches to primary mode).
-
-I use the following script to convert back and forth between libc errors an=
-d their value:
-
-#! /bin/sh
-
-sed  "s,#define\t\(.*\b$1\b.*\)/\*\(.*\)\*/,\1\2,;t;d" /usr/include/asm*/er=
-rno*
+You do not tell us with what version of Xenomai you have the problem. If
+this is 2.5-rc2, it is normal that you do not see your printks: the
+mutexes fast path is now handled in user-space (so, now that you mention
+it, I wonder if the pshared attribute works, so, you may have
+pthread_mutex_lock which does not fail when it is handled in user-space,
+and which fails when it has to go through kernel-space).
 
 
-
-> ----------------------------------------------------------------------
-> -- This e-mail is confidential, the property of NDS Ltd and intended
-> for the addressee only. Any dissemination, copying or distribution of
+> This e-mail is confidential, the property of NDS Ltd and intended for
+> the addressee only. Any dissemination, copying or distribution of
 > this message or any attachments by anyone other than the intended
 > recipient is strictly prohibited.
 
-If this message is confidential, why do you send it to a public mailing lis=
-t in the first place? Should we unsubscribe you from the mailing list to pr=
-eserve your confidentiality?
+Please be informed that since you send this mail to a public mailing
+list, we cannot fulfil these requirements in any other way than by
+preventing you from posting to the list.
 
---
+-- 
                                           Gilles
 
-
-This e-mail is confidential, the property of NDS Ltd and intended for the a=
-ddressee only. Any dissemination, copying or distribution of this message o=
-r any attachments by anyone other than the intended recipient is strictly p=
-rohibited. If you have received this message in error, please immediately n=
-otify the postmaster@domain.hid and destroy the original message. Messages sen=
-t to and from NDS may be monitored. NDS cannot guarantee any message delive=
-ry method is secure or error-free. Information could be intercepted, corrup=
-ted, lost, destroyed, arrive late or incomplete, or contain viruses. We do =
-not accept responsibility for any errors or omissions in this message and/o=
-r attachment that arise as a result of transmission. You should carry out y=
-our own virus checks before opening any attachment. Any views or opinions p=
-resented are solely those of the author and do not necessarily represent th=
-ose of NDS.
-
-To protect the environment please do not print this e-mail unless necessary=
-.
-
-NDS Limited Registered Office: One London Road, Staines,Middlesex TW18 4EX,=
- United Kingdom. A company registered in England and Wales Registered no. 3=
-080780 VAT no. GB 603 8808 40-00
 
