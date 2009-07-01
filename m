@@ -1,123 +1,91 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <5F0B1AF0FEA4EB4F8AC9F4CF3AF6DC1E933A9E0554@domain.hid>
-References: <1243616178.27443.21.camel@domain.hid>
-	<5F0B1AF0FEA4EB4F8AC9F4CF3AF6DC1E933A9E0554@domain.hid>
-Content-Type: text/plain
-Date: Mon, 01 Jun 2009 11:03:21 +0200
-Message-Id: <1243847001.27443.489.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4A4B34D3.3090004@domain.hid>
+Date: Wed, 01 Jul 2009 12:05:07 +0200
+From: Nocia <nocia.one@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [Xenomai-core] Xenomai v2.4.8
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] How to get the next periodic task awakening
+Reply-To: nocia.one@domain.hid
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Vikesh Rambaran <Vikesh.Rambaran@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-On Mon, 2009-06-01 at 10:17 +0200, Vikesh Rambaran wrote:
-> Hi
-> Thanx for the release.
-> 
-> However, could you please check the xenomai-2.4.8.tar.bz2 file. 
-> It seems to be missing a few files and folders (eg ksrc, scripts).
-> 
+Hi all,
 
-I don't think so. Please check again.
+I'm a beginer in the Xenomai world.
 
-> Keep well
-> Vicki
-> 
-> ________________________________________
-> From: xenomai-core-bounces@domain.hid [xenomai-core-bounces@domain.hid] On Behalf Of Philippe Gerum [rpm@xenomai.org]
-> Sent: Friday, May 29, 2009 6:56 PM
-> To: xenomai@xenomai.org
-> Cc: xenomai@xenomai.org
-> Subject: [Xenomai-core] Xenomai v2.4.8
-> 
-> Here is the eighth maintenance release for the v2.4.x branch.  Short
-> log follows:
-> 
->         [nucleus]
-> 
->         * Suppress switch warning upon signal receipt when the process
->         is being debugged.
->         * Fix host tick propagation.
->         * Prevent early timer shots due to rounding imprecision.
->         * Fix computation of heap overhead.
->         * Move xnarch_set_irq_affinity out of intr lock.
->         * Introduce channel information in LTTng markers.
-> 
->         [posix]
-> 
->         * Fix access checks in select().
->         * Fix errnoneous -EINVAL error return with mmap() of non
->           page-aligned length.
-> 
->         [native]
-> 
->         * Fix message pipe streaming mode.
->         * Make optimized tsc<->ns conversion routines available to
->           user-space.
-> 
->         [vxworks]
-> 
->         * Add missing rescheduling in semaphore deletion code.
-> 
->         [vrtx]
-> 
->         * Fix sc_[e]tcreate().
->         * Rework mutex support.
-> 
->         [powerpc]
-> 
->         * Do not restore ALTIVEC/SPE regs for kernel threads.
->         * Port to Emerson's MVME7100 dual core SBC.
->         * Upgrade Adeos support to 2.6.29.4-powerpc-DENX-2.6-00.
-> 
->         [arm]
-> 
->         * Upgrade Adeos support to 2.6.29-arm-1.13-00.
-> 
->         [x86]
-> 
->         * Fix miscompilation of __do_strncpy_from_user().
->         * Yet another round of FPU management fixes.
->         * Upgrade Adeos support to 2.6.29.4-x86-2.4-01.
-> 
->         [blackfin]
-> 
->         * Upgrade Adeos support to 2.6.28.10-blackfin.git-1.10-00.
-> 
->         [can]
-> 
->         * ixxat-pci: fix problems with device probing.
->         * ixxat-pci: disambiguate PCI device id.
->         * mscan: fix build problems with recent kernel versions.
-> 
-> 
-> http://download.gna.org/xenomai/stable/xenomai-2.4.8.tar.bz2
-> 
-> git://xenomai.org/xenomai-2.4.git
-> 
-> --
-> Philippe.
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
-> 
-> 
--- 
-Philippe.
 
+I'm working on the Xenomai kernel in order to minimize the power
+consumption, for my university final project
+(/http/://xenomaiote.googlecode.com).
+
+To do that I'm trying to implement OTE (one time extension).
+
+
+For OTE, I need to know if tasks are in the ready queue that I can do
+with countpq(&sched->readyq)
+
+However I have also to know when the next periodic task will wake up to
+know the available time that I can use to extends the current task.
+
+But I didn't find this information.
+
+I try this following things in the schedule function xnpod_schedule (pod.c):
+
+
+To get the next timer that will wake up :
+
+xntimerq_head(&sched->timerqueue)
+
+
+To get the date of the next wake up :
+
+xntimerh_date(&timer->aplink)
+
+
+Then I compare this date with the date of the next ingoing task (except
+the root task) with xnarch_get_cpu_tsc()
+
+
+But the results aren't convincing :
+
+Jul 1 11:13:23 rt-nocia kernel: [ 252.872275] now: 263916522565
+
+Jul 1 11:13:23 rt-nocia kernel: [ 252.872285] Name thread out : trivial2
+
+Jul 1 11:13:23 rt-nocia kernel: [ 252.872292] Name thread in : ROOT/0
+
+Jul 1 11:13:23 rt-nocia kernel: [ 252.872297] nb in queue 0
+
+Jul 1 11:13:23 rt-nocia kernel: [ 252.872303] next event *263920282098*
+
+Jul 1 11:13:23 rt-nocia kernel: [ 252.872317]
+
+Jul 1 11:13:24 rt-nocia kernel: [ 253.879348] now: *264923529578*
+
+Jul 1 11:13:24 rt-nocia kernel: [ 253.879362] Name thread out : ROOT/0
+
+Jul 1 11:13:24 rt-nocia kernel: [ 253.879369] Name thread in : trivial
+
+Jul 1 11:13:24 rt-nocia kernel: [ 253.879374] nb in queue 1
+
+
+The next event is 263920282098 and when the task is scheduling, the
+current time is 264923529578.
+
+
+Maybe it's because I have to get the second timer ?
+
+
+Thanks in advance for any help!
+
+
+Lucien
 
 
