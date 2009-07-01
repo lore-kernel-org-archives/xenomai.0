@@ -1,12 +1,12 @@
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-In-Reply-To: <4A5B3928.3E52.00F8.0@domain.hid>
-References: <4A5B3928.3E52.00F8.0@domain.hid>
-Date: Tue, 14 Jul 2009 14:19:45 +0200
-Message-ID: <b88603c30907140519t7818ff9p88fcb8498f7f050e@domain.hid>
-From: Henri Roosen <henriroosen@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] ARM: userspace apps result in Segmentation
+Date: Wed, 1 Jul 2009 11:52:18 +0200
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A01AB8BD8@domain.hid>
+From: <roderik.wildenburg@domain.hid>
+Subject: [Xenomai-help] Question about Interrupts
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,66 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Karl Tyss <tyss.k@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hi Karl,
+Dear Gurus,
 
-Thanks for the information. However I have tried the option
-"--enable-arm-eabi" and unfortunately without success. It solves the
-segmentation fault, but results in a hangup of the system.
-I was able to debug the latency application until the rt_task_create,
-but after that the debugger looses control. Any hints or help on that?
-
-Thanks,
-Henri
+I have a question of understanding regarding the priority of a interrupt
+service routine which is assigned to the linux domain and the priority
+of a Xenomai task. Which one is executed first the Linux ISR or the
+Xenomai task ?
+Background of my question is, that it seems (this is just a assumption
+!) that a Linux ISR (e.g. for serial interrupt) is delayed when the
+system is under heavy realtime load. Is this possible ?
 
 
-On Mon, Jul 13, 2009 at 1:39 PM, Karl Tyss<tyss.k@domain.hid> wrote:
-> Hi Henri,
->
-> I had a similar problem. If you compile Xenomai you will get the old
-> abi format by default.
->
-> Try the option "--enable-arm-eabi" while compiling Xenomai. It helped
-> in my case. Or try turning the option "Allow old ABI binaries to run
-> with this kernel" in the "Kernel Features" page.
->
-> Good luck,
-> Karl
->
->
-> Mit Freundlichen Gr=FC=DFen,
-> Karl Tyss
->
->
->
->
-> -------------------------------------------------------------------------=
---------------
-> This email including its attachments is intended for the person or
-> entity only to which it is addressed. It may contain confidential and/or
-> privileged material. Any review, forwarding, dissemination, other use
-> of, or taking of any action in reliance upon this information by persons
-> or entities other than the intended recipient is prohibited.
-> If you received this email in error, please contact the sender and
-> delete the material from any computer system.
-> -------------------------------------------------------------------------=
---------------
->
-> Eppendorf AG, Hamburg, Barkhausenweg 1, 22339 Hamburg,
-> Amtsgericht Hamburg HRB 76249
-> Vors. des Aufsichtsrats: Dipl.-Ing. Adrian D=E9teindre
-> Vorstand: Klaus Fink (Vorsitzender), Detmar Ammermann,
-> Dr. Heinz G. Koehn, Dr. Michael Schroeder
->
-> Eppendorf Instrumente GmbH, Hamburg, Amtsgericht Hamburg, HRB 69077
-> Gesch=E4ftsf=FChrer: Rainer Treptow
->
-> Eppendorf Biochip Systems GmbH, Hamburg, Amtsgericht Hamburg, HRB 96641
-> Gesch=E4ftsf=FChrer: Dr. Sven Buelow
->
-> Eppendorf Liquid Handling GmbH, Hamburg, Amtsgericht Hamburg, HRB 92250
-> Gesch=E4ftsf=FChrer: Boris von Beichmann
->
+Thank you for your help in advance
+Roderik
+
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
