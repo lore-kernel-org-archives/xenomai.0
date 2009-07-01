@@ -1,12 +1,16 @@
-Message-ID: <4A4B4BD9.2020506@domain.hid>
-Date: Wed, 01 Jul 2009 13:43:21 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4A4B4ED4.6020208@domain.hid>
+Date: Wed, 01 Jul 2009 13:56:04 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4A4B34D3.3090004@domain.hid>
-In-Reply-To: <4A4B34D3.3090004@domain.hid>
+References: <4A48FB71.6070506@domain.hid> <4A49CD81.4060706@domain.hid>	
+	<4A49CFF0.7070202@domain.hid> <1246353623.7803.21.camel@domain.hid>	
+	<4A49D935.3060900@domain.hid> <1246353913.7803.24.camel@domain.hid>	
+	<4A49DA4E.2020604@domain.hid> <1246354047.7803.25.camel@domain.hid>
+	<4A49DC0A.5000208@domain.hid> <4A4A391B.8000700@domain.hid>
+In-Reply-To: <4A4A391B.8000700@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] How to get the next periodic task awakening
+Subject: Re: [Xenomai-core] x86: Endless minor faults
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,60 +19,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: nocia.one@domain.hid
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Nocia wrote:
-> Hi all,
-> 
-> I'm a beginer in the Xenomai world.
-> 
-> 
-> I'm working on the Xenomai kernel in order to minimize the power
-> consumption, for my university final project
-> (/http/://xenomaiote.googlecode.com).
-> 
-> To do that I'm trying to implement OTE (one time extension).
+Jan Kiszka wrote:
+> It's still unclear what goes on precisely, we are still digging, but the
+> test system that can produce this is highly contended.
 
-Ok, I have found this
-http://www.google.com/url?sa=t&source=web&ct=res&cd=8&url=http%3A%2F%2Fwww.embeddedcomputingconference.ch%2Fdownload_sec%2F1B-Evequoz.pdf&ei=-UhLSsLDGJaRjAfwm4Fl&rct=j&q=%22one+time+extension%22+operating+system&usg=AFQjCNGPkM9-VpD8jFNIa38xmu4hruEdkw
+Short update: Further instrumentation revealed that cr3 differs from
+active_mm->pgd while we are looping over that fault, ie. the kernel
+tries to fixup the wrong mm. And that means we have some open race
+window between updating cr3 and active_mm somewhere (isn't switch_mm run
+in a preemptible manner now?).
 
-Is this what you are talking about?
+As a first shot I disabled CONFIG_IPIPE_DELAYED_ATOMICSW, and we are now
+checking if it makes a difference. Digging deeper into the code in the
+meanwhile...
 
-
-> (...)
-> To get the next timer that will wake up :
-> 
-> xntimerq_head(&sched->timerqueue)
-> 
-> 
-> To get the date of the next wake up :
-> 
-> xntimerh_date(&timer->aplink)
-> 
-> 
-> Then I compare this date with the date of the next ingoing task (except
-> the root task) with xnarch_get_cpu_tsc()
-
-xntimerq_head is the next timer which is going to fire, this is not
-necessarily attached to a task, and even if it was, there is no
-guarantee that nothing else will happen between now and this next event.
-Another task may be woken up by an interrupt, or even by the current
-task, tasks are not necessarily time-triggered.
-
-xntimerh_date(&timer->aplink) only works for aperiodic timers.
-
-I think you are looking in the wrong direction. What you really need is
-to implement a new scheduler class (EDF with OTE or something like
-that), and implement things in this abstraction, not by patching
-xnpod_schedule.
-
-Also note that the default scheduler classes (FIFO and RR) do their job
-without knowing what the WCET of a task is, and from what I saw,
-skimming the document mentioned above, you need this information, so,
-you absolutely need a new scheduler class.
-
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
