@@ -1,6 +1,6 @@
-Message-ID: <4A4B5116.3090006@domain.hid>
-Date: Wed, 01 Jul 2009 14:05:42 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4A4B558D.20307@domain.hid>
+Date: Wed, 01 Jul 2009 14:24:45 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4A48FB71.6070506@domain.hid> <4A49CD81.4060706@domain.hid>	
 	<4A49CFF0.7070202@domain.hid> <1246353623.7803.21.camel@domain.hid>	
@@ -20,7 +20,7 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
@@ -33,18 +33,18 @@ Jan Kiszka wrote:
 > tries to fixup the wrong mm. And that means we have some open race
 > window between updating cr3 and active_mm somewhere (isn't switch_mm run
 > in a preemptible manner now?).
+
+Maybe the rsp is wrong and leads you to the wrong active_mm ?
+
 > 
 > As a first shot I disabled CONFIG_IPIPE_DELAYED_ATOMICSW, and we are now
 > checking if it makes a difference. Digging deeper into the code in the
 > meanwhile...
 
-CONFIG_IPIPE_DELAYED_ATOMICSW is nonsense. And we don't do switch_mm
-without irq protection on x86, at least not from the nucleus, right?
-Maybe a race due some Linux user running it unprotectedly?
-
-Jan
+As you have found out in the mean time, we do not use unlocked context
+switches on x86.
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+                                          Gilles
+
 
