@@ -1,6 +1,6 @@
-Message-ID: <4A4B58E9.4050407@domain.hid>
-Date: Wed, 01 Jul 2009 14:39:05 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4A4B596F.5010601@domain.hid>
+Date: Wed, 01 Jul 2009 14:41:19 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4A48FB71.6070506@domain.hid> <4A49CD81.4060706@domain.hid>	
 	<4A49CFF0.7070202@domain.hid> <1246353623.7803.21.camel@domain.hid>	
@@ -8,7 +8,8 @@ References: <4A48FB71.6070506@domain.hid> <4A49CD81.4060706@domain.hid>
 	<4A49DA4E.2020604@domain.hid> <1246354047.7803.25.camel@domain.hid>
 	<4A49DC0A.5000208@domain.hid> <4A4A391B.8000700@domain.hid>
 	<4A4B4ED4.6020208@domain.hid> <4A4B558D.20307@domain.hid>
-In-Reply-To: <4A4B558D.20307@domain.hid>
+	<4A4B58E9.4050407@domain.hid>
+In-Reply-To: <4A4B58E9.4050407@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] x86: Endless minor faults
@@ -20,39 +21,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
 >> Jan Kiszka wrote:
->>> It's still unclear what goes on precisely, we are still digging, but the
->>> test system that can produce this is highly contended.
->> Short update: Further instrumentation revealed that cr3 differs from
->> active_mm->pgd while we are looping over that fault, ie. the kernel
->> tries to fixup the wrong mm. And that means we have some open race
->> window between updating cr3 and active_mm somewhere (isn't switch_mm run
->> in a preemptible manner now?).
+>>> Jan Kiszka wrote:
+>>>> It's still unclear what goes on precisely, we are still digging, but the
+>>>> test system that can produce this is highly contended.
+>>> Short update: Further instrumentation revealed that cr3 differs from
+>>> active_mm->pgd while we are looping over that fault, ie. the kernel
+>>> tries to fixup the wrong mm. And that means we have some open race
+>>> window between updating cr3 and active_mm somewhere (isn't switch_mm run
+>>> in a preemptible manner now?).
+>> Maybe the rsp is wrong and leads you to the wrong active_mm ?
+>>
+>>> As a first shot I disabled CONFIG_IPIPE_DELAYED_ATOMICSW, and we are now
+>>> checking if it makes a difference. Digging deeper into the code in the
+>>> meanwhile...
+>> As you have found out in the mean time, we do not use unlocked context
+>> switches on x86.
+>>
 > 
-> Maybe the rsp is wrong and leads you to the wrong active_mm ?
+> Yes.
 > 
->> As a first shot I disabled CONFIG_IPIPE_DELAYED_ATOMICSW, and we are now
->> checking if it makes a difference. Digging deeper into the code in the
->> meanwhile...
-> 
-> As you have found out in the mean time, we do not use unlocked context
-> switches on x86.
-> 
+> The last question I asked myself (but couldn't answer yet due to other
+> activity) was: Where are the local_irq_disable/enable_hw around
+> switch_mm for its Linux callers?
 
-Yes.
-
-The last question I asked myself (but couldn't answer yet due to other
-activity) was: Where are the local_irq_disable/enable_hw around
-switch_mm for its Linux callers?
-
-Jan
+prepare_arch_switch and task_hijacked
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+                                          Gilles
+
 
