@@ -1,22 +1,11 @@
-Message-ID: <0c82df0dd948df7bce6df51115e217cf.squirrel@domain.hid>
-In-Reply-To: <4A4C5EE0.6050900@domain.hid>
-References: <4A48FB71.6070506@domain.hid> <4A49CD81.4060706@domain.hid>
-	<4A49CFF0.7070202@domain.hid> <1246353623.7803.21.camel@domain.hid>
-	<4A49D935.3060900@domain.hid> <1246353913.7803.24.camel@domain.hid>
-	<4A49DA4E.2020604@domain.hid> <1246354047.7803.25.camel@domain.hid>
-	<4A49DC0A.5000208@domain.hid> <4A4A391B.8000700@domain.hid>
-	<4A4B4ED4.6020208@domain.hid> <4A4B558D.20307@domain.hid>
-	<4A4B58E9.4050407@domain.hid> <4A4B5985.3070504@domain.hid>
-	<4A4B8617.5000704@domain.hid> <4A4B8851.9070005@domain.hid>
-	<4A4B8912.1060700@domain.hid> <4A4BA334.8090701@domain.hid>
-	<1246472157.7803.62.camel@domain.hid> <1246472833.7803.67.camel@domain.hid>
-	<4A4C15DC.80106@domain.hid> <4A4C52B2.9070000@domain.hid>
-	<4A4C5ADB.5080602@domain.hid> <4A4C5EE0.6050900@domain.hid>
-Date: Thu, 2 Jul 2009 09:44:18 +0200 (CEST)
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4A4CEB11.6020608@domain.hid>
+Date: Thu, 02 Jul 2009 19:14:57 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+References: <4A48FB71.6070506@domain.hid>
+In-Reply-To: <4A48FB71.6070506@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] x86: Endless minor faults
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -26,66 +15,203 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
+Hi again,
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> On archs with non-atomic switch_mm(), use_mm() will require a different
->>> strategy. I'm thinking about something like
->>>
->>> use_mm():
->>> 	set_some_flag();
->>> 	barrier();
->>> 	current->mm = new_mm;
->>> 	current->active_mm = new_mm;
->>> 	switch_mm(old_active_mm, new_mm, current);
->>> 	clear_some_flag();
->>>
->>> and switch_mm():
->>> 	...
->>> 	if (likely(prev != next) || some_flag_set()) {
->>> 		clear_some_flag();
->>> 		...
->>>
->>> ie. enforce mm switch if we may have interrupted use_mm at an
->>> unpleasant
->>> time. I just don't know yet where to attach that some_flag to. Should
->>> be
->>> the current task, but can we always access it from switch_mm?
->>
->> These mechanisms are already in place. All you have to do is:
->>
->> use_mm()
->> 	ipipe_active_mm = NULL;
->> 	barrier();
->> 	current->mm = new_mm;
->> 	current->active_mm = new_mm;
->> 	switch_mm(old_active_mm, new_mm, current);
->>
->
-> As far as I understand, ipipe_active_mm has different semantics on ARM.
-> Specifically, it has no relation to the initial "next != prev" check.
-> The test we need is likely orthogonal to this.
+this is now basically the patch which seems to stabilized x86 /wrt mmu
+switches again:
 
-Well except that prev is ipipe_active_mm, so if NULL next != prev is
-always true. ipipe_active_mm set to NULL means that the mm state is
-currently unknown, what it triggers is that if Xenomai switches at this
-moment, it will forcibly reload the mm state, and when switching back to
-Linux it will not touch the mm state, but mark the MMSWITCHINT flag in the
-current thread state, switch_mm will detect the flag and restart the mm
-switch. This mechanism is well tested and we would have had problems
-before if it was not working (the mm switch on ARM does a full cache flush
-which stands for about 100us, so the chances to be preempted at this
-moment are in fact pretty high).
+There were 3 race windows between setting active_mm of the current task
+and actually switching it (that's a noarch issue), there were several
+calls into switch_mm without proper hard interrupt protection (on archs
+that have no preemptible switch_mm, like x86) and there was a race in
+x86's leave_mm (as Gilles already remarked earlier in this thread -
+while I was looking at an old tree where smp_invalidate_interrupt took
+care of this).
 
-So, I still think that setting ipipe_active_mm to NULL at the beginning of
-use_mm is all what is needed, else I do not understand what you are
-talking about.
+The patch is thought as a basis for further discussions about
+
+ o how to solve all the issues for all archs technically (ideally
+   without the need to patch noarch parts in an arch-specific way...)
+
+ o if anyone thinks there could be more spots like these (I've checked
+   the code only for x86 so far)
+
+Jan
+
+-------->
+
+diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
+index dddfb84..d261b77 100644
+--- a/arch/x86/include/asm/mmu_context.h
++++ b/arch/x86/include/asm/mmu_context.h
+@@ -29,12 +29,17 @@ void destroy_context(struct mm_struct *mm);
+ 
+ #define activate_mm(prev, next)			\
+ do {						\
+- 	unsigned long flags;			\
+ 	paravirt_activate_mm((prev), (next));	\
+- 	local_irq_save_hw_cond(flags);		\
+-	switch_mm((prev), (next), NULL);	\
+- 	local_irq_restore_hw_cond(flags);	\
++	__switch_mm((prev), (next), NULL);	\
+ } while (0);
+ 
++static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
++			     struct task_struct *tsk)
++{
++	unsigned long flags;
++	local_irq_save_hw_cond(flags);
++	__switch_mm(prev, next, tsk);
++	local_irq_restore_hw_cond(flags);
++}
+ 
+ #endif /* _ASM_X86_MMU_CONTEXT_H */
+diff --git a/arch/x86/include/asm/mmu_context_32.h b/arch/x86/include/asm/mmu_context_32.h
+index 7e98ce1..e51cd09 100644
+--- a/arch/x86/include/asm/mmu_context_32.h
++++ b/arch/x86/include/asm/mmu_context_32.h
+@@ -9,12 +9,13 @@ static inline void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
+ #endif
+ }
+ 
+-static inline void switch_mm(struct mm_struct *prev,
+-			     struct mm_struct *next,
+-			     struct task_struct *tsk)
++static inline void __switch_mm(struct mm_struct *prev,
++			       struct mm_struct *next,
++			       struct task_struct *tsk)
+ {
+ 	int cpu = smp_processor_id();
+ 
++	WARN_ON_ONCE(!irqs_disabled_hw());
+ 	if (likely(prev != next)) {
+ 		/* stop flush ipis for the previous mm */
+ 		cpu_clear(cpu, prev->cpu_vm_mask);
+diff --git a/arch/x86/include/asm/mmu_context_64.h b/arch/x86/include/asm/mmu_context_64.h
+index 677d36e..0118200 100644
+--- a/arch/x86/include/asm/mmu_context_64.h
++++ b/arch/x86/include/asm/mmu_context_64.h
+@@ -11,10 +11,12 @@ static inline void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
+ #endif
+ }
+ 
+-static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
+-			     struct task_struct *tsk)
++static inline void __switch_mm(struct mm_struct *prev, struct mm_struct *next,
++			       struct task_struct *tsk)
+ {
+ 	unsigned cpu = smp_processor_id();
++
++	WARN_ON_ONCE(!irqs_disabled_hw());
+ 	if (likely(prev != next)) {
+ 		/* stop flush ipis for the previous mm */
+ 		cpu_clear(cpu, prev->cpu_vm_mask);
+diff --git a/arch/x86/kernel/tlb_32.c b/arch/x86/kernel/tlb_32.c
+index 08028a7..f68f2a6 100644
+--- a/arch/x86/kernel/tlb_32.c
++++ b/arch/x86/kernel/tlb_32.c
+@@ -34,9 +34,13 @@ static DEFINE_SPINLOCK(tlbstate_lock);
+  */
+ void leave_mm(int cpu)
+ {
++	unsigned long flags;
++
+ 	BUG_ON(x86_read_percpu(cpu_tlbstate.state) == TLBSTATE_OK);
++	local_irq_save_hw_cond(flags);
+ 	cpu_clear(cpu, x86_read_percpu(cpu_tlbstate.active_mm)->cpu_vm_mask);
+ 	load_cr3(swapper_pg_dir);
++	local_irq_restore_hw_cond(flags);
+ }
+ EXPORT_SYMBOL_GPL(leave_mm);
+ 
+diff --git a/arch/x86/kernel/tlb_64.c b/arch/x86/kernel/tlb_64.c
+index ce54e12..9829990 100644
+--- a/arch/x86/kernel/tlb_64.c
++++ b/arch/x86/kernel/tlb_64.c
+@@ -62,10 +62,14 @@ static DEFINE_PER_CPU(union smp_flush_state, flush_state);
+  */
+ void leave_mm(int cpu)
+ {
++	unsigned long flags;
++
+ 	if (read_pda(mmu_state) == TLBSTATE_OK)
+ 		BUG();
++	local_irq_save_hw_cond(flags);
+ 	cpu_clear(cpu, read_pda(active_mm)->cpu_vm_mask);
+ 	load_cr3(swapper_pg_dir);
++	local_irq_restore_hw_cond(flags);
+ }
+ EXPORT_SYMBOL_GPL(leave_mm);
+ 
+diff --git a/fs/aio.c b/fs/aio.c
+index 76da125..0286f0f 100644
+--- a/fs/aio.c
++++ b/fs/aio.c
+@@ -618,13 +618,16 @@ static void use_mm(struct mm_struct *mm)
+ {
+ 	struct mm_struct *active_mm;
+ 	struct task_struct *tsk = current;
++	unsigned long flags;
+ 
+ 	task_lock(tsk);
+ 	active_mm = tsk->active_mm;
+ 	atomic_inc(&mm->mm_count);
+ 	tsk->mm = mm;
++	local_irq_save_hw_cond(flags);
+ 	tsk->active_mm = mm;
+-	switch_mm(active_mm, mm, tsk);
++	__switch_mm(active_mm, mm, tsk);
++	local_irq_restore_hw_cond(flags);
+ 	task_unlock(tsk);
+ 
+ 	mmdrop(active_mm);
+diff --git a/fs/exec.c b/fs/exec.c
+index 3b36c69..06591ac 100644
+--- a/fs/exec.c
++++ b/fs/exec.c
+@@ -718,6 +718,7 @@ static int exec_mmap(struct mm_struct *mm)
+ {
+ 	struct task_struct *tsk;
+ 	struct mm_struct * old_mm, *active_mm;
++	unsigned long flags;
+ 
+ 	/* Notify parent that we're no longer interested in the old VM */
+ 	tsk = current;
+@@ -740,8 +741,10 @@ static int exec_mmap(struct mm_struct *mm)
+ 	task_lock(tsk);
+ 	active_mm = tsk->active_mm;
+ 	tsk->mm = mm;
++	local_irq_save_hw_cond(flags);
+ 	tsk->active_mm = mm;
+ 	activate_mm(active_mm, mm);
++	local_irq_restore_hw_cond(flags);
+ 	task_unlock(tsk);
+ 	arch_pick_mmap_layout(mm);
+ 	if (old_mm) {
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 01a836b..cf3b68a 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -1665,11 +1665,14 @@ SYSCALL_DEFINE1(unshare, unsigned long, unshare_flags)
+ 		}
+ 
+ 		if (new_mm) {
++			unsigned long flags;
+ 			mm = current->mm;
+ 			active_mm = current->active_mm;
+ 			current->mm = new_mm;
++			local_irq_save_hw_cond(flags);
+ 			current->active_mm = new_mm;
+ 			activate_mm(active_mm, new_mm);
++			local_irq_restore_hw_cond(flags);
+ 			new_mm = mm;
+ 		}
+  
 
 -- 
-                    Gilles.
-
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
