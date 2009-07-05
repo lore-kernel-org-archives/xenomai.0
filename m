@@ -1,129 +1,207 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4A157FD9.40106@domain.hid>
-References: <4A157FD9.40106@domain.hid>
-Content-Type: text/plain
-Date: Tue, 02 Jun 2009 11:09:09 +0200
-Message-Id: <1243933749.27443.557.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] About HARD real time
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Message-ID: <4A50DF0E.3070800@domain.hid>
+Date: Sun, 05 Jul 2009 19:12:46 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <4A48FB71.6070506@domain.hid>
+	<4A4CEB11.6020608@domain.hid>	<4A4E1BC2.7080707@domain.hid>
+	<4A4E1E5E.1090405@domain.hid> <4A4F85AF.2050705@domain.hid>
+	<4A509637.7070300@domain.hid> <4A50BF29.4000007@domain.hid>
+In-Reply-To: <4A50BF29.4000007@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig193269F36741C42E3C204F3D"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] x86: Endless minor faults
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Antoine Nourry <nourry@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Thu, 2009-05-21 at 18:22 +0200, Antoine Nourry wrote: 
-> Hi,
-> I just wonder :
-> Why can we read everywhere that PREEMPT-RT patch offer HARD real time 
-> while in other papers we can read that it cannot ensure determinism  ?
-> (because it only seems to permit low latencies but not constant 
-> execution times, by the way why ? Is it because this patch still uses 
-> undeterministic parts of the kernel ? )
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig193269F36741C42E3C204F3D
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Nobody is having constant execution times anyway, native or co-kernel:
-CPUs are stuffed with caches and all sort of artefacts that come with
-them, particularly with the current trend of multi-core architectures.
-Part of the system wants throughput, many interfaces and lots of drivers
-(the plain non-RT linux activities) and the other part wants absolute
-priority via immediate preemption (the rt layer), all competing for the
-same hardware resources at some point, none caring for the neighbour.
-E.g.
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> Gilles Chanteperdrix wrote:
+>>>>> Jan Kiszka wrote:
+>>>>>> Hi again,
+>>>>>>
+>>>>>> this is now basically the patch which seems to stabilized x86 /wrt=
+ mmu
+>>>>>> switches again:
+>>>>>>
+>>>>>> There were 3 race windows between setting active_mm of the current=
+ task
+>>>>>> and actually switching it (that's a noarch issue), there were seve=
+ral
+>>>>>> calls into switch_mm without proper hard interrupt protection (on =
+archs
+>>>>>> that have no preemptible switch_mm, like x86) and there was a race=
+ in
+>>>>>> x86's leave_mm (as Gilles already remarked earlier in this thread =
+-
+>>>>>> while I was looking at an old tree where smp_invalidate_interrupt =
+took
+>>>>>> care of this).
+>>>>>>
+>>>>>> The patch is thought as a basis for further discussions about
+>>>>>>
+>>>>>>  o how to solve all the issues for all archs technically (ideally
+>>>>>>    without the need to patch noarch parts in an arch-specific way.=
+=2E.)
+>>>>>>
+>>>>>>  o if anyone thinks there could be more spots like these (I've che=
+cked
+>>>>>>    the code only for x86 so far)
+>>>>>> diff --git a/fs/aio.c b/fs/aio.c
+>>>>>> index 76da125..0286f0f 100644
+>>>>>> --- a/fs/aio.c
+>>>>>> +++ b/fs/aio.c
+>>>>>> @@ -618,13 +618,16 @@ static void use_mm(struct mm_struct *mm)
+>>>>>>  {
+>>>>>>  	struct mm_struct *active_mm;
+>>>>>>  	struct task_struct *tsk =3D current;
+>>>>>> +	unsigned long flags;
+>>>>>> =20
+>>>>>>  	task_lock(tsk);
+>>>>>>  	active_mm =3D tsk->active_mm;
+>>>>>>  	atomic_inc(&mm->mm_count);
+>>>>>>  	tsk->mm =3D mm;
+>>>>>> +	local_irq_save_hw_cond(flags);
+>>>>>>  	tsk->active_mm =3D mm;
+>>>>>> -	switch_mm(active_mm, mm, tsk);
+>>>>>> +	__switch_mm(active_mm, mm, tsk);
+>>>>>> +	local_irq_restore_hw_cond(flags);
+>>>>>>  	task_unlock(tsk);
+>>>>>> =20
+>>>>>>  	mmdrop(active_mm);
+>>>>>> diff --git a/fs/exec.c b/fs/exec.c
+>>>>>> index 3b36c69..06591ac 100644
+>>>>>> --- a/fs/exec.c
+>>>>>> +++ b/fs/exec.c
+>>>>>> @@ -718,6 +718,7 @@ static int exec_mmap(struct mm_struct *mm)
+>>>>>>  {
+>>>>>>  	struct task_struct *tsk;
+>>>>>>  	struct mm_struct * old_mm, *active_mm;
+>>>>>> +	unsigned long flags;
+>>>>>> =20
+>>>>>>  	/* Notify parent that we're no longer interested in the old VM *=
+/
+>>>>>>  	tsk =3D current;
+>>>>>> @@ -740,8 +741,10 @@ static int exec_mmap(struct mm_struct *mm)
+>>>>>>  	task_lock(tsk);
+>>>>>>  	active_mm =3D tsk->active_mm;
+>>>>>>  	tsk->mm =3D mm;
+>>>>>> +	local_irq_save_hw_cond(flags);
+>>>>>>  	tsk->active_mm =3D mm;
+>>>>>>  	activate_mm(active_mm, mm);
+>>>>>> +	local_irq_restore_hw_cond(flags);
+>>>>>>  	task_unlock(tsk);
+>>>>>>  	arch_pick_mmap_layout(mm);
+>>>>>>  	if (old_mm) {
+>>>>>> diff --git a/kernel/fork.c b/kernel/fork.c
+>>>>>> index 01a836b..cf3b68a 100644
+>>>>>> --- a/kernel/fork.c
+>>>>>> +++ b/kernel/fork.c
+>>>>>> @@ -1665,11 +1665,14 @@ SYSCALL_DEFINE1(unshare, unsigned long, un=
+share_flags)
+>>>>>>  		}
+>>>>>> =20
+>>>>>>  		if (new_mm) {
+>>>>>> +			unsigned long flags;
+>>>>>>  			mm =3D current->mm;
+>>>>>>  			active_mm =3D current->active_mm;
+>>>>>>  			current->mm =3D new_mm;
+>>>>>> +			local_irq_save_hw_cond(flags);
+>>>>>>  			current->active_mm =3D new_mm;
+>>>>>>  			activate_mm(active_mm, new_mm);
+>>>>>> +			local_irq_restore_hw_cond(flags);
+>>>>>>  			new_mm =3D mm;
+>>>>>>  		}
+>>>>> Ok. These are patches of the noarch code which are dependent on x86=
 
-- run a latency test, with some load. Fire one test with a 10Khz period,
-and another one later using a 100hz period. Maybe counter-intuitively to
-some, you will get lower worst-case latency with the former, because the
-system will have less time/opportunity to evict the latency test from
-the caches due to the higher sampling frequency.
+>>>>> implementation.
+>>>>>
+>>>>> I think we need something like
+>>>>>
+>>>>> mm_change_enter(flags);
+>>>>> mm_change_leave(flags);
+>>>>>
+>>>>> which would resolve to ipipe_active_mm =3D NULL on architectures wi=
+th
+>>>>> unlocked context switches, and to local_irq_save_hw/local_irq_resto=
+re on
+>>>>> x86?
+>>>> + we have to change switch_mm in the lockless case, and maybe also i=
+ts
+>>>> caller (if I look at the arm code), to use ipipe_active_mm in order =
+to
+>>>> decide if to switch or not - see my explanation of the possible race=
+ in
+>>>> aio.c.
+>>> This is already the way it is currently working. the "prev" passed to=
 
-- run a latency test while a process is causing lots of page table entry
-flushes (LTP's mm stress tests do this). If your architecture has a
-software-assisted MMU management, like we may find on powerpc, the
-relevant code in a classic kernel is likely to operate with interrupts
-disabled while flushing an entire PTE range. If your platform is
-SMP-enabled, that code will probably have to exclude other CPUs while
-running as well. Enable HIGHMEM to use > 1Gb memory, and you may well
-end up doing that for 1024 PTE in a row. This may induce a latency
-penalty > 400 us, depending on the hw. And having > 1Gb memory available
-on modern embedded hardware is not that uncommon, especially with
-network processors.
+>>> switch_mm is always ipipe_active_mm.
+>>>
+>> Ah, I missed the difference in arm's xnarch_leave_root. Now I got it.
+>>
+>> OK, but this needs to be thought through in details again, specificall=
+y
+>> also the enter-root scenarios. I have no safe feeling about it yet,
+>> partly because switch_mm fiddles with ipipe_active_mm as well, but mor=
+e
+>> generally because we used to have such critical races in this area for=
+ a
+>> "fairly" long time.
+>=20
+> When reentering root with ipipe_active_mm NULL, the TIF_MMSWTICH_INT bi=
+t
+> is set, in which case the switch_mm preempted by Xenomai is restarted.
+>=20
 
-Regardless of -rt, co-kernel, whatever, we all have those problems with
-respect to execution time, and also unbounded latency issues, that we
-ought to take care of on a case-by-case basis. But even if you carefully
-prevent unbounded latencies by fixing the vanilla kernel code, the PTE
-range flush issue just described does still introduce uncertainty with
-respect to the execution time; this jitter is only made acceptable
-because we bounded it to a known maximum value (e.g. < 15 us on a dual
-core 8641D). Which we measured... by observation, because a GPOS+RTOS
-mix is currently too complex for any formal verification.
+Right. But now we are also dealing with preemptions outside that loop.
+And we are dealing with archs that have atomic switch_mm, thus no such
+loops.
 
-Therefore, the fact that some acceptable results with respect to latency
-were obtained on a given sw/hw combo does not mean anything regarding a
-significantly different combination, regardless of the RT approach you
-have been using to collect them. Typically:
+The goal should be to find a solution against the races outside
+switch_mm that is applicable to all archs. But the question is still
+unanswered to me if we can simply reuse existing ipipe_active_mm without
+disturbing its current use in non-atomic switch_mm.
 
-- focus on x86, enable the wrong set of option pertaining to the ACPI
-kitchen-sink, and/or face SMI events, and/or run an X-server that plays
-silly games with the interrupt state from userland, and both -rt and
-co-kernels will have serious latency issues.
+Moreover, part of the problems on x86 was the non-atomic update of
+cpu_vm_mask vs. actually switching the hardware. How do you deal with
+cpu_vm_mask on ARM? Why can you call switch_mm without IRQ protection?
+My impression is that only the (costly) cpu_switch_mm should be allowed
+to be preemptible to have a safe state around it. I'm also asking as we
+would have to address this on x86 & co. once switch_mm could be called
+with undefined prev_mm.
 
-- leave the common x86 world to run -rt on embeddded platforms, enable
-non-mainstream drivers, or enable HIGHMEM on platforms with
-software-assisted MMUs, and you may get some reasons to get busy fixing
-latency spots in the future (not to speak of the ARM VIVT cache flushing
-issue causing the latency figures to skyrocket when switching task
-contexts on classic kernels -- guess why Gilles enabled FCSE is Adeos
-patches recently).
-
-This makes assertions like "<blah> is able to sustain <blip> us
-worst-case latency. period." without specifying the exact
-characteristics of the sw and hw involved in the test, a bit suspicious,
-to say the least (read: this is reaching 97 over 100 on the bs'o'meter).
-
-> Considering this, how Xenomai 3 will be able to rely on PREEMPT-RT as 
-> real time enabling technology, allowing user to bypass ADEOS ?
-> 
-> 
-
-If one admits that both native preemption and dual kernel approaches
-have their own set of exclusive pros and cons, while sharing the same
-initial challenges brought by a mixed GPOS+RTOS environment, that
-question is a no-brainer: Xenomai should be able to rely on -rt enabled
-systems where no unacceptable latencies are observed regardless of the
-workload. This is a case-by-case matter, which depends on a given kernel
-release running on a given hw combo with a given software set enabled.
-
-For that reason, x3 will allow users to base their RT system over -rt or
-the I-pipe, as they see fit, as the requirements mandate. When running
-over -rt, Xenomai will only be in charge of providing real-time APIs;
-when running over the I-pipe, it will also provide the real-time bedrock
-that keeps latencies low, like it already does with earlier versions.
-
-As Paul E. McKenney puts it:
-"This is not to say that hard real time is undefined or useless.
-Instead, 'hard real time' is the start of a conversation rather than a
-complete requirement."
-http://www.linuxjournal.com/article/9361
-
-> 
-> Thanks for your work,
-> Antoine
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+Jan
 
 
+--------------enig193269F36741C42E3C204F3D
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkpQ3xIACgkQniDOoMHTA+lsLACfUpT/r4Rl+PEX5ybst0MyR4G3
+3MsAn3ZbtD6QznqF1P30dLGQKclWahP+
+=tGWf
+-----END PGP SIGNATURE-----
+
+--------------enig193269F36741C42E3C204F3D--
 
