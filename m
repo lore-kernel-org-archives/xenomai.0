@@ -1,16 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <6a782b880907170418q6bd4fbe7p6fde0f0c6bae551c@domain.hid>
-References: <6a782b880906051338r401163b2m7e1d1a53f7f0800@domain.hid>
-	<4A299794.6010504@domain.hid>
-	<6a782b880906101236l625792d5p6fcd3dad53e965a2@domain.hid>
-	<4A3010BE.9020107@domain.hid>
-	<6a782b880907170418q6bd4fbe7p6fde0f0c6bae551c@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 17 Jul 2009 14:14:11 +0200
-Message-Id: <1247832851.4228.138.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Get ready queue
+Message-ID: <4A5388E1.7070800@domain.hid>
+Date: Tue, 07 Jul 2009 19:41:53 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <206278.72023.qm@domain.hid>
+In-Reply-To: <206278.72023.qm@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] pthread_create memory size
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,87 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Thiago Lima <thiagolims@domain.hid>
-Cc: xenomai@xenomai.org
+To: Yigal Goldberger <yigal_gold@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On Fri, 2009-07-17 at 08:18 -0300, Thiago Lima wrote:
-> I am doing an schedulability test of real time processes in Xenomai.
-> So that, when a new task is started in system, i need to get all
-> threads from system, including the new one and make a test to decide
-> if this workset is schedulable.
->=20
-> I have a linux kernel module with a hook that is called whenever a
-> task is started. Besides, i have to apply a patch to xenomai kernel in
-> order to allow the hooks calling when a user space task is started.
+Yigal Goldberger wrote:
+> Hi Gilles,
+> Thanks for your quick reply.
+> I'd like to give some more details based on some expirements I've made .
+> I tried an older version of linux and xenomai (linux 2.6.14.7 ) and when I enlarged the requested stack size to 32KB instead of 8KB I saw a **dramatic** reduction in memory consumption per thread (~30MB less!!!).
+> I saw that there is some minimum stack size that if trying to create a thread with a smaller value will end up with the default (2MB ?) .
+> This improved to some extent the memory usage of my application also in the new version (linux 2.6.29 + new xenoami - recently ported to mpc8272ads by DENX ) , but I am getting the following :
+> 
+> 2.6.14.7 :
+> application usage :  ~31MB
+> 
+> 
+> 2.6.29.4
+> application usage : ~180MB 
+> 
+> The application is the same in both versions , so I can't think of where ~150MB are comming from ?
 
-You are likely using an outdated Xenomai core. 2.4.8 fires the START
-callout for userland threads as well.
+As I told you in the previous mail, see /proc/pid/maps to see how the
+memory is spent.
 
->=20
-> My question is: how can i get all ready xenomai tasks ? Because i need
-> to get the amount of threads to do this test.
->=20
-
-Regarding the Xenomai 2.4 core: include/nucleus/pod.h, follow the readyq
-member from the struct xnsched type.
-
-This said, the scheduler innards were heavily rewritten in 2.5, to
-provide scheduling classes and more policies than RR+FIFO (e.g. time
-partitioning and POSIX sporadic server). So what you would measure for
-2.4 may not be relevant with 2.5.
-
-> Sorry for my last email. I have not so much time to write and it was
-> vague.
->=20
-> att,
->=20
-> Thiago.
->=20
-> On Wed, Jun 10, 2009 at 4:59 PM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->         Thiago Lima wrote:
->         > Sorry, i didnt understand you answer.
->        =20
->        =20
->         The question was vague, so was the answer.
->        =20
->         > I get the global queue doing this:
->         >
->         > threads =3D &pod->threadq;    // GLOBAL QUEUE
->         > holder =3D getheadq(&nkpod->threadq); //HEAD NODE
->        =20
->        =20
->         These are internal data, you are not supposed to access them
->         that way.
->         Besides threadq is not the ready queue. And with the recent
->         advent of
->         the scheduler classes, you could not do the same modification
->         for the
->         latest version of Xenomai. In short, it is a bad idea, really.
->        =20
->         If you explained us what you are trying to do (and not how you
->         are
->         trying to do it), maybe we could help. Chances are that you
->         can do what
->         you do without changing Xenomai core, simply using hooks for
->         instance.
->        =20
->         --
->                                                    Gilles.
->=20
->=20
->=20
-> --=20
-> Thiago Lima Silva
-> Graduando - Ci=C3=AAncia da Computa=C3=A7=C3=A3o UFBA
-> Registered Linux user #466887
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
---=20
-Philippe.
-
-
+-- 
+					    Gilles.
 
