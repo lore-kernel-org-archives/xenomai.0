@@ -1,11 +1,10 @@
-Message-ID: <4A5B2551.1030905@domain.hid>
-Date: Mon, 13 Jul 2009 14:15:13 +0200
+Message-ID: <4A5B2553.2050705@domain.hid>
+Date: Mon, 13 Jul 2009 14:15:15 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [PATCH 2/3] 2.6.30-noarch: Introduce
-	CONFIG_IPIPE_DEBUG_INTERNAL
+Subject: [Adeos-main] [PATCH 3/3] 2.6.29-x86: Fix switch_mm atomicity
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,99 +16,89 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: adeos-main <adeos-main@gna.org>
 
-Add a switch to control if internal I-pipe debug checks like per-cpu
-access validation should be enabled. There is no need to force this on
-if the user, e.g., just wants to enable tracing or context check
-validation.
+Implement ipipe_mm_switch_protect via IRQ disabling and wrap further
+arch-specific code path around switch_mm that require atomicity. This
+patch provides __switch_mm as an unprotected alternative when it needs
+to be called from already atomic contexts. Furthermore, instrument
+__switch_mm so that we will detect any unprotected invocation in the
+future.
+
+This patch, together with its no-arch foundation, fixes subtle mm
+corruptions seen on x86 SMP boxes under heavy RT/non-RT load.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
 
- include/asm-generic/percpu.h |    2 +-
- kernel/ipipe/Kconfig.debug   |    9 +++++++++
- kernel/ipipe/core.c          |   10 +++++-----
- 3 files changed, 15 insertions(+), 6 deletions(-)
+ arch/x86/include/asm/mmu_context.h |   25 +++++++++++++++++++------
+ arch/x86/mm/tlb.c                  |    4 ++++
+ 2 files changed, 23 insertions(+), 6 deletions(-)
 
-diff --git a/include/asm-generic/percpu.h b/include/asm-generic/percpu.h
-index 98ccc17..5d5b6ba 100644
---- a/include/asm-generic/percpu.h
-+++ b/include/asm-generic/percpu.h
-@@ -57,7 +57,7 @@ extern unsigned long __per_cpu_offset[NR_CPUS];
- 	(*SHIFT_PERCPU_PTR(&per_cpu_var(var), __my_cpu_offset))
- 
- #ifdef CONFIG_IPIPE
--#if defined(CONFIG_IPIPE_DEBUG) && defined(CONFIG_SMP)
-+#if defined(CONFIG_IPIPE_DEBUG_INTERNAL) && defined(CONFIG_SMP)
- extern int __ipipe_check_percpu_access(void);
- #define __ipipe_local_cpu_offset				\
- 	({							\
-diff --git a/kernel/ipipe/Kconfig.debug b/kernel/ipipe/Kconfig.debug
-index 6717b51..c9b8abc 100644
---- a/kernel/ipipe/Kconfig.debug
-+++ b/kernel/ipipe/Kconfig.debug
-@@ -12,6 +12,15 @@ config IPIPE_DEBUG_CONTEXT
- 	  Linux services a warning is issued if the caller is not
- 	  running over the root domain.
- 
-+config IPIPE_DEBUG_INTERNAL
-+	bool "Enable internal debug checks"
-+	depends on IPIPE_DEBUG
-+	default y
-+	---help---
-+	  When this feature is enabled, I-pipe will perform internal
-+	  consistency checks of its subsystems, e.g. on per-cpu variable
-+	  access.
-+
- config IPIPE_TRACE
- 	bool "Latency tracing"
- 	depends on IPIPE_DEBUG
-diff --git a/kernel/ipipe/core.c b/kernel/ipipe/core.c
-index eeaee66..ffaceaa 100644
---- a/kernel/ipipe/core.c
-+++ b/kernel/ipipe/core.c
-@@ -310,7 +310,7 @@ void __ipipe_unstall_root(void)
- 
-         local_irq_disable_hw();
- 
--#ifdef CONFIG_IPIPE_DEBUG
-+#ifdef CONFIG_IPIPE_DEBUG_INTERNAL
- 	/* This helps catching bad usage from assembly call sites. */
- 	BUG_ON(!__ipipe_root_domain_p);
+diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
+index 63454a0..4b7020f 100644
+--- a/arch/x86/include/asm/mmu_context.h
++++ b/arch/x86/include/asm/mmu_context.h
+@@ -30,11 +30,14 @@ static inline void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
  #endif
-@@ -327,7 +327,7 @@ void __ipipe_unstall_root(void)
- 
- void __ipipe_restore_root(unsigned long x)
- {
--#ifdef CONFIG_IPIPE_DEBUG
-+#ifdef CONFIG_IPIPE_DEBUG_INTERNAL
- 	BUG_ON(!ipipe_root_domain_p);
- #endif
- 
-@@ -1697,7 +1697,7 @@ EXPORT_SYMBOL(ipipe_check_context);
- 
- #endif /* CONFIG_IPIPE_DEBUG_CONTEXT */
- 
--#if defined(CONFIG_IPIPE_DEBUG) && defined(CONFIG_SMP)
-+#if defined(CONFIG_IPIPE_DEBUG_INTERNAL) && defined(CONFIG_SMP)
- 
- int notrace __ipipe_check_percpu_access(void)
- {
-@@ -1743,7 +1743,7 @@ out:
- 	return ret;
  }
  
--#endif /* CONFIG_IPIPE_DEBUG && CONFIG_SMP */
-+#endif /* CONFIG_IPIPE_DEBUG_INTERNAL && CONFIG_SMP */
+-static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
+-			     struct task_struct *tsk)
++static inline void __switch_mm(struct mm_struct *prev, struct mm_struct *next,
++			       struct task_struct *tsk)
+ {
+ 	unsigned cpu = smp_processor_id();
  
- EXPORT_SYMBOL(ipipe_virtualize_irq);
- EXPORT_SYMBOL(ipipe_control_irq);
-@@ -1780,7 +1780,7 @@ EXPORT_SYMBOL(ipipe_set_irq_affinity);
- EXPORT_SYMBOL(ipipe_send_ipi);
- EXPORT_SYMBOL(__ipipe_pend_irq);
- EXPORT_SYMBOL(__ipipe_set_irq_pending);
--#if defined(CONFIG_IPIPE_DEBUG) && defined(CONFIG_SMP)
-+#if defined(CONFIG_IPIPE_DEBUG_INTERNAL) && defined(CONFIG_SMP)
- EXPORT_SYMBOL(__ipipe_check_percpu_access);
++#ifdef CONFIG_IPIPE_DEBUG_INTERNAL
++	WARN_ON_ONCE(!irqs_disabled_hw());
++#endif
+ 	if (likely(prev != next)) {
+ 		/* stop flush ipis for the previous mm */
+ 		cpu_clear(cpu, prev->cpu_vm_mask);
+@@ -70,13 +73,23 @@ static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
  #endif
- #ifdef CONFIG_GENERIC_CLOCKEVENTS
+ }
+ 
++static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
++			     struct task_struct *tsk)
++{
++	unsigned long flags;
++	local_irq_save_hw_cond(flags);
++	__switch_mm(prev, next, tsk);
++	local_irq_restore_hw_cond(flags);
++}
++
++#define ipipe_mm_switch_protect(flags)	local_irq_save_hw_cond(flags)
++#define ipipe_mm_switch_unprotect(flags) \
++	local_irq_restore_hw_cond(flags)
++
+ #define activate_mm(prev, next)			\
+ do {						\
+- 	unsigned long flags;			\
+ 	paravirt_activate_mm((prev), (next));	\
+- 	local_irq_save_hw_cond(flags);		\
+-	switch_mm((prev), (next), NULL);	\
+- 	local_irq_restore_hw_cond(flags);	\
++	__switch_mm((prev), (next), NULL);	\
+ } while (0);
+ 
+ #ifdef CONFIG_X86_32
+diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+index 06bd681..9294287 100644
+--- a/arch/x86/mm/tlb.c
++++ b/arch/x86/mm/tlb.c
+@@ -57,10 +57,14 @@ static union smp_flush_state flush_state[NUM_INVALIDATE_TLB_VECTORS];
+  */
+ void leave_mm(int cpu)
+ {
++	unsigned long flags;
++
+ 	if (percpu_read(cpu_tlbstate.state) == TLBSTATE_OK)
+ 		BUG();
++	local_irq_save_hw_cond(flags);
+ 	cpu_clear(cpu, percpu_read(cpu_tlbstate.active_mm)->cpu_vm_mask);
+ 	load_cr3(swapper_pg_dir);
++	local_irq_restore_hw_cond(flags);
+ }
+ EXPORT_SYMBOL_GPL(leave_mm);
+ 
 
