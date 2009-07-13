@@ -1,93 +1,64 @@
-Message-Id: <4BC52A31-8084-4C10-8536-1445A57958EA@su.sabanciuniv.edu>
-From: Alphan Ulusoy <alphan@domain.hid>
-Content-Type: multipart/signed; boundary=Apple-Mail-22-62171354; micalg=sha1;
-	protocol="application/pkcs7-signature"
-Mime-Version: 1.0 (Apple Message framework v935.3)
-Date: Thu, 30 Jul 2009 14:11:50 +0300
-Subject: [Xenomai-core] Periodic Task Time Drift
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-Id: <4A5B3928.3E52.00F8.0@domain.hid>
+Date: Mon, 13 Jul 2009 13:39:41 +0200
+From: "Karl Tyss" <tyss.k@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Subject: [Xenomai-help]  ARM: userspace apps result in Segmentation
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: henriroosen@domain.hid
+Cc: xenomai@xenomai.org
+
+Hi Henri,
+
+I had a similar problem. If you compile Xenomai you will get the old
+abi format by default.
+
+Try the option "--enable-arm-eabi" while compiling Xenomai. It helped
+in my case. Or try turning the option "Allow old ABI binaries to run
+with this kernel" in the "Kernel Features" page.
+
+Good luck,
+Karl
 
 
---Apple-Mail-22-62171354
-Content-Type: text/plain;
-	charset=US-ASCII;
-	format=flowed;
-	delsp=yes
-Content-Transfer-Encoding: 7bit
+Mit Freundlichen Grüßen,
+Karl Tyss
 
-Hello,
 
-I wonder if using a periodic alarm with the rt_alarm_wait() function  
-can suffer from drift in alarm expiration times when a kernel module  
-or an ISR remains in a non-preemptible section for too long (upto 1  
-msec). Please note that I'm concerned with alarm expiration time drift  
-not overruns. How does the behavior change when the task is declared  
-periodic and triggered with rt_task_wait_period() ?
 
-I'm using Xenomai 2.4.5 w/ kernel 2.6.27.10.
 
-best regards,
+---------------------------------------------------------------------------------------
+This email including its attachments is intended for the person or
+entity only to which it is addressed. It may contain confidential and/or
+privileged material. Any review, forwarding, dissemination, other use
+of, or taking of any action in reliance upon this information by persons
+or entities other than the intended recipient is prohibited.
+If you received this email in error, please contact the sender and 
+delete the material from any computer system. 
+---------------------------------------------------------------------------------------
 
--- 
-alphan
---Apple-Mail-22-62171354
-Content-Disposition: attachment;
-	filename=smime.p7s
-Content-Type: application/pkcs7-signature;
-	name=smime.p7s
-Content-Transfer-Encoding: base64
+Eppendorf AG, Hamburg, Barkhausenweg 1, 22339 Hamburg,
+Amtsgericht Hamburg HRB 76249
+Vors. des Aufsichtsrats: Dipl.-Ing. Adrian Déteindre
+Vorstand: Klaus Fink (Vorsitzender), Detmar Ammermann,
+Dr. Heinz G. Koehn, Dr. Michael Schroeder
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIGMzCCAuww
-ggJVoAMCAQICEFlbEbpcrtRwEgeTD6b7/UYwDQYJKoZIhvcNAQEFBQAwYjELMAkGA1UEBhMCWkEx
-JTAjBgNVBAoTHFRoYXd0ZSBDb25zdWx0aW5nIChQdHkpIEx0ZC4xLDAqBgNVBAMTI1RoYXd0ZSBQ
-ZXJzb25hbCBGcmVlbWFpbCBJc3N1aW5nIENBMB4XDTA4MDkxMDE4MjkxMFoXDTA5MDkxMDE4Mjkx
-MFowSzEfMB0GA1UEAxMWVGhhd3RlIEZyZWVtYWlsIE1lbWJlcjEoMCYGCSqGSIb3DQEJARYZYWxw
-aGFuQHN1LnNhYmFuY2l1bml2LmVkdTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKju
-oEccePvK+1FqYYzkT3ZagQMkK86SRcJIznx9wqt7mIE6oYI/SjcjURCvuaoU4l0zG3dhC5Jlgg1A
-u5xtAQCxd/mrvyRm6fM+AMs+qvyZjVBLqAnHT/HxHTV3Ju5BE4U2G6Dj+x18WuRy/YSj4fihhdAI
-AcsPuJri8Dfvusecef7Xam6gcl0kkRexmEDiiMSb3SEziOdjQqAZEArTRMYZYGFANsMJvXzNN76I
-qyAkaAcr8IuUoXt0RYwwn2DhUcBTrg1SfIqYdTrWi7TmCVpudfND6hHlz8+RogQi7ohbMbwKFwKa
-3gXhcRnc1dABGNnyXDJR1nCWKMHq1KE72DUCAwEAAaM2MDQwJAYDVR0RBB0wG4EZYWxwaGFuQHN1
-LnNhYmFuY2l1bml2LmVkdTAMBgNVHRMBAf8EAjAAMA0GCSqGSIb3DQEBBQUAA4GBACe45E4PvEZO
-ZjwogK3R7lVPLQ4bfNF1hpUDfK0Kgba6jbDlIRSmx0Cz3xgMdC2SGpf3aCu+7PJQa4u0NA2QAlEs
-AMI9QFNtu0HhyXKtdR3a7sHRCR4XiczLQUHS4S9LRKueHGvWaVx6jQICMH9lJBlW62gnd2TgOcWP
-TGxJWK9YMIIDPzCCAqigAwIBAgIBDTANBgkqhkiG9w0BAQUFADCB0TELMAkGA1UEBhMCWkExFTAT
-BgNVBAgTDFdlc3Rlcm4gQ2FwZTESMBAGA1UEBxMJQ2FwZSBUb3duMRowGAYDVQQKExFUaGF3dGUg
-Q29uc3VsdGluZzEoMCYGA1UECxMfQ2VydGlmaWNhdGlvbiBTZXJ2aWNlcyBEaXZpc2lvbjEkMCIG
-A1UEAxMbVGhhd3RlIFBlcnNvbmFsIEZyZWVtYWlsIENBMSswKQYJKoZIhvcNAQkBFhxwZXJzb25h
-bC1mcmVlbWFpbEB0aGF3dGUuY29tMB4XDTAzMDcxNzAwMDAwMFoXDTEzMDcxNjIzNTk1OVowYjEL
-MAkGA1UEBhMCWkExJTAjBgNVBAoTHFRoYXd0ZSBDb25zdWx0aW5nIChQdHkpIEx0ZC4xLDAqBgNV
-BAMTI1RoYXd0ZSBQZXJzb25hbCBGcmVlbWFpbCBJc3N1aW5nIENBMIGfMA0GCSqGSIb3DQEBAQUA
-A4GNADCBiQKBgQDEpjxVc1X7TrnKmVoeaMB1BHCd3+n/ox7svc31W/Iadr1/DDph8r9RzgHU5VAK
-MNcCY1osiRVwjt3J8CuFWqo/cVbLrzwLB+fxH5E2JCoTzyvV84J3PQO+K/67GD4Hv0CAAmTXp6a7
-n2XRxSpUhQ9IBH+nttE8YQRAHmQZcmC3+wIDAQABo4GUMIGRMBIGA1UdEwEB/wQIMAYBAf8CAQAw
-QwYDVR0fBDwwOjA4oDagNIYyaHR0cDovL2NybC50aGF3dGUuY29tL1RoYXd0ZVBlcnNvbmFsRnJl
-ZW1haWxDQS5jcmwwCwYDVR0PBAQDAgEGMCkGA1UdEQQiMCCkHjAcMRowGAYDVQQDExFQcml2YXRl
-TGFiZWwyLTEzODANBgkqhkiG9w0BAQUFAAOBgQBIjNFQg+oLLswNo2asZw9/r6y+whehQ5aUnX9M
-Ibj4Nh+qLZ82L8D0HFAgk3A8/a3hYWLD2ToZfoSxmRsAxRoLgnSeJVCUYsfbJ3FXJY3dqZw5jowg
-T2Vfldr394fWxghOrvbqNOUQGls1TXfjViF4gtwhGTXeJLHTHUb/XV9lTzGCAxAwggMMAgEBMHYw
-YjELMAkGA1UEBhMCWkExJTAjBgNVBAoTHFRoYXd0ZSBDb25zdWx0aW5nIChQdHkpIEx0ZC4xLDAq
-BgNVBAMTI1RoYXd0ZSBQZXJzb25hbCBGcmVlbWFpbCBJc3N1aW5nIENBAhBZWxG6XK7UcBIHkw+m
-+/1GMAkGBSsOAwIaBQCgggFvMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkF
-MQ8XDTA5MDczMDExMTE1MVowIwYJKoZIhvcNAQkEMRYEFIGe2e0pHLS3rxWzG+UJz0xfcqKfMIGF
-BgkrBgEEAYI3EAQxeDB2MGIxCzAJBgNVBAYTAlpBMSUwIwYDVQQKExxUaGF3dGUgQ29uc3VsdGlu
-ZyAoUHR5KSBMdGQuMSwwKgYDVQQDEyNUaGF3dGUgUGVyc29uYWwgRnJlZW1haWwgSXNzdWluZyBD
-QQIQWVsRulyu1HASB5MPpvv9RjCBhwYLKoZIhvcNAQkQAgsxeKB2MGIxCzAJBgNVBAYTAlpBMSUw
-IwYDVQQKExxUaGF3dGUgQ29uc3VsdGluZyAoUHR5KSBMdGQuMSwwKgYDVQQDEyNUaGF3dGUgUGVy
-c29uYWwgRnJlZW1haWwgSXNzdWluZyBDQQIQWVsRulyu1HASB5MPpvv9RjANBgkqhkiG9w0BAQEF
-AASCAQBEp26DS1o8JRFh0syKDwZONRuB7PKeo9BNVY/aZhkCzz0BcgJFXV6GRGNmUGw1S9CWYfJy
-OsIuqgTOT+RD7QNYJY1JoaIW9ZOxGTxWzXKdytF99YfCdaXnkjoVw4DXyfo0iBRYiqjFiAkftqzy
-rj1o9FH5YTXhgddhNvT5OmLConIHiWki2ZsW1sysS0zC6gRAgRh/arqnXovsjwfv+lwXzs7HqF4u
-LybdNL0Sh2bcG2P4advl1RRhXIq27OgeKfiV1F/a6+UUhsx4wCAmJYDufpay2UsqIPQU9zZ3YRkF
-B+py2ocKIpoRv7h7N1iAZQ5Y3p7knPuCOuf+lIguj728AAAAAAAA
+Eppendorf Instrumente GmbH, Hamburg, Amtsgericht Hamburg, HRB 69077
+Geschäftsführer: Rainer Treptow
 
---Apple-Mail-22-62171354--
+Eppendorf Biochip Systems GmbH, Hamburg, Amtsgericht Hamburg, HRB 96641
+Geschäftsführer: Dr. Sven Buelow
+
+Eppendorf Liquid Handling GmbH, Hamburg, Amtsgericht Hamburg, HRB 92250
+Geschäftsführer: Boris von Beichmann
 
