@@ -1,12 +1,10 @@
-Message-ID: <4A5CC870.3030208@domain.hid>
-Date: Tue, 14 Jul 2009 20:03:28 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Tue, 14 Jul 2009 21:14:45 +0200 (CEST)
+From: "Waschk,Kolja" <xenoka09@domain.hid>
+Message-ID: <alpine.DEB.2.00.0907142049190.4341@domain.hid>
 MIME-Version: 1.0
-References: <b88603c30907130031v9ec9618r46bd28b494ac3417@domain.hid>
-In-Reply-To: <b88603c30907130031v9ec9618r46bd28b494ac3417@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] ARM: userspace apps result in Segmentation fault
+Content-Type: TEXT/PLAIN; format=flowed; charset=US-ASCII
+Subject: [Xenomai-help] rtdm_mmap_to_user without MMU
+Reply-To: xenoka09@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,33 +14,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Henri Roosen <henriroosen@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Henri Roosen wrote:
-> Hi all,
-> 
-> I have a problem with running apps that are linked with the xenomai
-> userspace libraries. At the startup of the apps, when loading these
-> libraries the result is a segmentation fault.
-> 
-> I am using Xenomai version 2.4.8, but also tried the previous 2.4.7.
-> The ARM platform is basically the same as the at91sam9263ek board. The
-> Linux distribution is build with the OpenEmbedded (x11-image,
-> Angstrom) cross-compile environment, 2.6.28 kernel.
-> 
-> Note: I have been able to run a kernel RTDM driver with success.
-> 
-> While debugging I have been able to trace untill the
-> XENOMAI_DO_SYSCALL() in ./src/include/asm/xenomai
+Hi,
 
-Do the Xenomai applications run?
-Are you using gcc 4.3, if yes, switch to gcc 4.2, gcc 4.3 has a bug that
-we can not workaround.
-Have you built the kernel and xenomai user-space with compatible
-settings with regard to EABI?
+I'm starting to develop a RTDM driver to be used in uClinux on a Blackfin-based
+device. Its main task is to receive lots of framed data (30 MBit/s) and pass
+them to an application in user space, retaining the framing info. A major
+concern is the performance. I'd like to avoid copying, so I looked into using
+rtdm_mmap_to_user(). It seems to use the mmap op of /dev/zero, which is "return
+ENOSYS"(*) in drivers/char/mem.c on systems without a MMU. In other words, it
+doesn't seem to be usable in uClinux. Well, I could just forget about mmap,
+there is no MMU and thus my user code can access the data anyway. But what'd be
+the proper way to cope with this? I'd really like to code it so it would work
+on a system with MMU as well (maybe in next year's project...)
+
+Probably I'll move a bit more of the user space code (the decoding of the frame
+into a larger structure) into the driver, turning the "copying" into
+"decoding", which has to be done anyway. But ideally the kernel part should
+be kept as simple as possible.
+
+Kolja
+
+(*) I might have missed something between, because the actual error code is ENODEV
 
 
--- 
-					    Gilles.
+
+
+
 
