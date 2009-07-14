@@ -1,62 +1,81 @@
-Message-ID: <4A8488F5.8050208@domain.hid>
-Date: Thu, 13 Aug 2009 23:43:17 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Pull requests.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+In-Reply-To: <4A5B3928.3E52.00F8.0@domain.hid>
+References: <4A5B3928.3E52.00F8.0@domain.hid>
+Date: Tue, 14 Jul 2009 14:19:45 +0200
+Message-ID: <b88603c30907140519t7818ff9p88fcb8498f7f050e@domain.hid>
+From: Henri Roosen <henriroosen@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] ARM: userspace apps result in Segmentation
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Karl Tyss <tyss.k@domain.hid>
+Cc: xenomai@xenomai.org
 
-The following changes since commit 16d8b1f9a8158b73cee30084592aacf19d94fbe6:
-  Philippe Gerum (1):
-        nucleus: postpone sanity check to allow for signal receipt
+Hi Karl,
 
-are available in the git repository at:
+Thanks for the information. However I have tried the option
+"--enable-arm-eabi" and unfortunately without success. It solves the
+segmentation fault, but results in a hangup of the system.
+I was able to debug the latency application until the rt_task_create,
+but after that the debugger looses control. Any hints or help on that?
 
-  git+ssh://git@domain.hid for-2.4
-
-Gilles Chanteperdrix (1):
-      arm: fix syscalls with gcc 4.3.2
-
- include/asm-arm/syscall.h |   30 +++++++++++++++++++++---------
- src/skins/posix/thread.c  |    4 +++-
- 2 files changed, 24 insertions(+), 10 deletions(-)
+Thanks,
+Henri
 
 
-------------------------------------------------------------------------------
-
-
-The following changes since commit 8256c8a538ce3aee42ccdded4bbe50a83dbeca2c:
-  Philippe Gerum (1):
-        sim: provide irqs_disabled_hw()
-
-are available in the git repository at:
-
-  git+ssh://git@domain.hid for-head
-
-Gilles Chanteperdrix (4):
-      native: increase user-space native skin default stack size.
-      build: Do not compile with __thread by default on ARM
-      arm: fix syscalls with gcc 4.3.2
-      testsuite: fix division routines unit test feature macro test (for nodiv_llimd).
-
- configure.in                        |    5 +++--
- include/asm-arm/syscall.h           |   30 +++++++++++++++++++++---------
- src/skins/native/task.c             |    2 ++
- src/skins/posix/thread.c            |    4 +++-
- src/testsuite/unit/arith-noinline.c |    2 +-
- src/testsuite/unit/arith.c          |   14 +++++++-------
- 6 files changed, 37 insertions(+), 20 deletions(-)
-
-
--- 
-					    Gilles.
+On Mon, Jul 13, 2009 at 1:39 PM, Karl Tyss<tyss.k@domain.hid> wrote:
+> Hi Henri,
+>
+> I had a similar problem. If you compile Xenomai you will get the old
+> abi format by default.
+>
+> Try the option "--enable-arm-eabi" while compiling Xenomai. It helped
+> in my case. Or try turning the option "Allow old ABI binaries to run
+> with this kernel" in the "Kernel Features" page.
+>
+> Good luck,
+> Karl
+>
+>
+> Mit Freundlichen Gr=FC=DFen,
+> Karl Tyss
+>
+>
+>
+>
+> -------------------------------------------------------------------------=
+--------------
+> This email including its attachments is intended for the person or
+> entity only to which it is addressed. It may contain confidential and/or
+> privileged material. Any review, forwarding, dissemination, other use
+> of, or taking of any action in reliance upon this information by persons
+> or entities other than the intended recipient is prohibited.
+> If you received this email in error, please contact the sender and
+> delete the material from any computer system.
+> -------------------------------------------------------------------------=
+--------------
+>
+> Eppendorf AG, Hamburg, Barkhausenweg 1, 22339 Hamburg,
+> Amtsgericht Hamburg HRB 76249
+> Vors. des Aufsichtsrats: Dipl.-Ing. Adrian D=E9teindre
+> Vorstand: Klaus Fink (Vorsitzender), Detmar Ammermann,
+> Dr. Heinz G. Koehn, Dr. Michael Schroeder
+>
+> Eppendorf Instrumente GmbH, Hamburg, Amtsgericht Hamburg, HRB 69077
+> Gesch=E4ftsf=FChrer: Rainer Treptow
+>
+> Eppendorf Biochip Systems GmbH, Hamburg, Amtsgericht Hamburg, HRB 96641
+> Gesch=E4ftsf=FChrer: Dr. Sven Buelow
+>
+> Eppendorf Liquid Handling GmbH, Hamburg, Amtsgericht Hamburg, HRB 92250
+> Gesch=E4ftsf=FChrer: Boris von Beichmann
+>
 
