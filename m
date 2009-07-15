@@ -1,12 +1,9 @@
-From: "Landau, Bracha" <BLandau@domain.hid>
-Date: Wed, 1 Jul 2009 11:31:48 +0300
-Message-ID: <065A7D06F7D4E546A18E80E08D066E181189FBC64C@ILMA1.IL.NDS.COM>
-In-Reply-To: <4A49CA45.8000501@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] pthread_mutex_lock returns 1
+Date: Wed, 15 Jul 2009 16:25:00 +0100
+Message-ID: <abaf774b0907150825l289e7730h60ed03ca8db83d9a@domain.hid>
+From: Steve <sbxenomai@domain.hid>
+Content-Type: multipart/mixed; boundary=0016364c7d919ec5ac046ec028a6
+Subject: [Xenomai-help] mq_send takes longer than expected
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,89 +13,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
- Thanks.
+--0016364c7d919ec5ac046ec028a6
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-The mutex failed in the function pse51_mutex_trylock_internal, in the follo=
-wing section (the printk is mine):
+Hi,
 
-#if XENO_DEBUG(POSIX)
-        if (mutex->owningq !=3D pse51_kqueues(mutex->attr.pshared))
-        {
-                printk ("mutex->owningq\n");
-                return EPERM;
-        }
-#endif /* XENO_DEBUG(POSIX) */
+Calling mq_send takes significantly varied amounts of time depending
+on the queue length.  I was not expecting this behaviour, particularly
+as this does not happen when using RTAI mq_send calls.  I can
+understand that queue creation / opening times will heavily depend on
+the queue's overall size, however I would have thought that sending a
+message (adding it to the queue's data structure (linked list?)) would
+take a constant time.
 
-I have XENO_DEBUG defined.
+Is this a bug, or expected behaviour?  I have attached an example.
 
-What does this mean?
+I am running:
+Linux 2.6.29.4
+Adeos 2.6.29.4-x86-2.4-01
+Xenomai 2.4.8
 
-(BTW, nothing I can do about those footers.)
+Let me know if you need any more info,
 
------Original Message-----
-From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
-Sent: Tuesday, June 30, 2009 11:18 AM
-To: Landau, Bracha
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] pthread_mutex_lock returns 1
+Steve
 
-Landau, Bracha wrote:
-> Thanks for your help.
->
-> I tried to put in "printk"s in the kernel implementation of the
-> xenomai pthread_mutex_lock, and it did not work. Neither did xnprintf.
-> I did this in order to find out what is the exact cause of the error;
-> generally adding printk's in the kernel implementation of functions
-> did work, but on this one it didn't.
+--0016364c7d919ec5ac046ec028a6
+Content-Type: text/x-c++src; charset=US-ASCII; name="MessageQueueTest.cpp"
+Content-Disposition: attachment; filename="MessageQueueTest.cpp"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: file0
 
-That is because the implementation of the pthread_mutex_lock service is in =
-ksrc/skins/posix/syscall.c, and calls pse51_mutex_timedlock_break in ksrc/s=
-kins/posix/mutex.c, pthread_mutex_lock implementation in ksrc/skins/posix/m=
-utex.c is only for kernel-space users. We had to split this for correct han=
-dling of Linux signals.
-
->
-> Is there any way to discern what exactly the problem is? This code was
-> working on earlier versions of Xenomai (2.2) and did not generate an
-> error on this instance of calling pthread_mutex_lock.
-
-Ok, I have checked, 2.2 already had the pshared attribute, so I think your =
-issue is the other one (calling phtread_mutex services from non real-time t=
-hreads). Or maybe some other undocumented reason, which you should find by =
-adding printks... :-)
-
-
-> This e-mail is confidential, the property of NDS Ltd and intended for
-> the addressee only. Any dissemination, copying or distribution of this
-> message or any attachments by anyone other than the intended recipient
-> is strictly prohibited.
-
-Did I tell you that I found these footers stupid?
-
---
-                                          Gilles
-
-
-This e-mail is confidential, the property of NDS Ltd and intended for the a=
-ddressee only. Any dissemination, copying or distribution of this message o=
-r any attachments by anyone other than the intended recipient is strictly p=
-rohibited. If you have received this message in error, please immediately n=
-otify the postmaster@domain.hid and destroy the original message. Messages sen=
-t to and from NDS may be monitored. NDS cannot guarantee any message delive=
-ry method is secure or error-free. Information could be intercepted, corrup=
-ted, lost, destroyed, arrive late or incomplete, or contain viruses. We do =
-not accept responsibility for any errors or omissions in this message and/o=
-r attachment that arise as a result of transmission. You should carry out y=
-our own virus checks before opening any attachment. Any views or opinions p=
-resented are solely those of the author and do not necessarily represent th=
-ose of NDS.
-
-To protect the environment please do not print this e-mail unless necessary=
-.
-
-NDS Limited Registered Office: One London Road, Staines,Middlesex TW18 4EX,=
- United Kingdom. A company registered in England and Wales Registered no. 3=
-080780 VAT no. GB 603 8808 40-00
+I2luY2x1ZGUgInJ0ZGsuaCIKI2luY2x1ZGUgInBvc2l4L3Bvc2l4LmgiCgojZGVmaW5lIFJUSU1F
+IHVuc2lnbmVkIGxvbmcgbG9uZwojZGVmaW5lIE5BTk9fUEVSX1NFQyAxMDAwMDAwMDAwCgpjb25z
+dCBpbnQgTUFYX1FfTEVOX0xBUkdFID0gMTAwMDA7CmNvbnN0IGludCBNQVhfUV9MRU5fTUVEID0g
+MTAwMDsKY29uc3QgaW50IE1BWF9RX0xFTl9TTUFMTCA9IDEwMDsKY29uc3QgaW50IE1BWF9NU0df
+U0laRSA9IDg7CmNvbnN0IGludCBNQVhfUV9OQU1FX0xFTiA9IDEyOwoKaW50IG1haW4oKQp7CiAg
+IG1sb2NrYWxsKE1DTF9DVVJSRU5UIHwgTUNMX0ZVVFVSRSk7CiAgIHJ0X3ByaW50X2F1dG9faW5p
+dCgxKTsKCiAgIC8vIFRoZSB0aW1pbmcgdmFyaWFibGVzCiAgIHN0cnVjdCB0aW1lc3BlYyogUGF1
+c2UgPSBuZXcgc3RydWN0IHRpbWVzcGVjOwogICBzdHJ1Y3QgdGltZXNwZWMqIFN0YXJ0UyA9IG5l
+dyBzdHJ1Y3QgdGltZXNwZWM7CiAgIHN0cnVjdCB0aW1lc3BlYyogU3RhcnRNID0gbmV3IHN0cnVj
+dCB0aW1lc3BlYzsKICAgc3RydWN0IHRpbWVzcGVjKiBTdGFydEwgPSBuZXcgc3RydWN0IHRpbWVz
+cGVjOwogICBzdHJ1Y3QgdGltZXNwZWMqIEVuZFMgPSBuZXcgc3RydWN0IHRpbWVzcGVjOwogICBz
+dHJ1Y3QgdGltZXNwZWMqIEVuZE0gPSBuZXcgc3RydWN0IHRpbWVzcGVjOwogICBzdHJ1Y3QgdGlt
+ZXNwZWMqIEVuZEwgPSBuZXcgc3RydWN0IHRpbWVzcGVjOwogICBSVElNRSBEdXJhdGlvbkwgPSAw
+OwogICBSVElNRSBEdXJhdGlvbk0gPSAwOwogICBSVElNRSBEdXJhdGlvblMgPSAwOwoKICAgLy8g
+Q3JlYXRlIGFuZCBvcGVuIHRoZSB0d28gcXVldWVzCiAgIG1xZF90IE1zZ1FMOyAvLyBMYXJnZQog
+ICBtcWRfdCBNc2dRTTsgLy8gTWVkaXVtCiAgIG1xZF90IE1zZ1FTOyAvLyBTbWFsbAogICBjb25z
+dCBjaGFyIHBNc2dbTUFYX01TR19TSVpFXSA9ICJhYWFhYWFhIjsKICAgY29uc3QgY2hhciBwTXNn
+UU5hbWVMW01BWF9RX05BTUVfTEVOXSA9ICIvTXNnUUxhcmdlIjsKICAgY29uc3QgY2hhciBwTXNn
+UU5hbWVNW01BWF9RX05BTUVfTEVOXSA9ICIvTXNnUU1lZGl1bSI7CiAgIGNvbnN0IGNoYXIgcE1z
+Z1FOYW1lU1tNQVhfUV9OQU1FX0xFTl0gPSAiL01zZ1FTbWFsbCI7CiAgIHN0cnVjdCBtcV9hdHRy
+KiBwTXNnUUF0dHJMID0gbmV3IG1xX2F0dHI7CiAgIHN0cnVjdCBtcV9hdHRyKiBwTXNnUUF0dHJN
+ID0gbmV3IG1xX2F0dHI7CiAgIHN0cnVjdCBtcV9hdHRyKiBwTXNnUUF0dHJTID0gbmV3IG1xX2F0
+dHI7CiAgIHBNc2dRQXR0ckwtPm1xX2ZsYWdzID0gT19OT05CTE9DSzsKICAgcE1zZ1FBdHRyTC0+
+bXFfbWF4bXNnID0gTUFYX1FfTEVOX0xBUkdFOwogICBwTXNnUUF0dHJMLT5tcV9tc2dzaXplID0g
+TUFYX01TR19TSVpFOwogICBwTXNnUUF0dHJNLT5tcV9mbGFncyA9IE9fTk9OQkxPQ0s7CiAgIHBN
+c2dRQXR0ck0tPm1xX21heG1zZyA9IE1BWF9RX0xFTl9MQVJHRTsKICAgcE1zZ1FBdHRyTS0+bXFf
+bXNnc2l6ZSA9IE1BWF9NU0dfU0laRTsKICAgcE1zZ1FBdHRyUy0+bXFfZmxhZ3MgPSBPX05PTkJM
+T0NLOwogICBwTXNnUUF0dHJTLT5tcV9tYXhtc2cgPSBNQVhfUV9MRU5fU01BTEw7CiAgIHBNc2dR
+QXR0clMtPm1xX21zZ3NpemUgPSBNQVhfTVNHX1NJWkU7CgogICBjbG9ja19nZXR0aW1lKENMT0NL
+X01PTk9UT05JQywgU3RhcnRMKTsKICAgTXNnUUwgPSBtcV9vcGVuKHBNc2dRTmFtZUwsIE9fUkRX
+UiB8IE9fQ1JFQVQgfCBPX0VYQ0wsIDA3NzcsIHBNc2dRQXR0ckwpOwogICBpZihNc2dRTCA9PSAo
+bXFkX3QpIC0xICYmIGVycm5vID09IEVFWElTVCkKICAgewogICAgICBtcV91bmxpbmsocE1zZ1FO
+YW1lTCk7CiAgICAgIE1zZ1FMID0gbXFfb3BlbihwTXNnUU5hbWVMLCBPX1JEV1IgfCBPX0NSRUFU
+IHwgT19FWENMLCAwNzc3LCBwTXNnUUF0dHJMKTsKICAgfQogICBjbG9ja19nZXR0aW1lKENMT0NL
+X01PTk9UT05JQywgRW5kTCk7CgogICBjbG9ja19nZXR0aW1lKENMT0NLX01PTk9UT05JQywgU3Rh
+cnRNKTsKICAgTXNnUU0gPSBtcV9vcGVuKHBNc2dRTmFtZU0sIE9fUkRXUiB8IE9fQ1JFQVQgfCBP
+X0VYQ0wsIDA3NzcsIHBNc2dRQXR0ck0pOwogICBpZihNc2dRTSA9PSAobXFkX3QpIC0xICYmIGVy
+cm5vID09IEVFWElTVCkKICAgewogICAgICBtcV91bmxpbmsocE1zZ1FOYW1lTSk7CiAgICAgIE1z
+Z1FNID0gbXFfb3BlbihwTXNnUU5hbWVNLCBPX1JEV1IgfCBPX0NSRUFUIHwgT19FWENMLCAwNzc3
+LCBwTXNnUUF0dHJNKTsKICAgfQogICBjbG9ja19nZXR0aW1lKENMT0NLX01PTk9UT05JQywgRW5k
+TSk7CgogICBjbG9ja19nZXR0aW1lKENMT0NLX01PTk9UT05JQywgU3RhcnRTKTsKICAgTXNnUVMg
+PSBtcV9vcGVuKHBNc2dRTmFtZVMsIE9fUkRXUiB8IE9fQ1JFQVQgfCBPX0VYQ0wsIDA3NzcsIHBN
+c2dRQXR0clMpOwogICBpZihNc2dRUyA9PSAobXFkX3QpIC0xICYmIGVycm5vID09IEVFWElTVCkK
+ICAgewogICAgICBtcV91bmxpbmsocE1zZ1FOYW1lUyk7CiAgICAgIE1zZ1FMID0gbXFfb3Blbihw
+TXNnUU5hbWVTLCBPX1JEV1IgfCBPX0NSRUFUIHwgT19FWENMLCAwNzc3LCBwTXNnUUF0dHJTKTsK
+ICAgfQogICBjbG9ja19nZXR0aW1lKENMT0NLX01PTk9UT05JQywgRW5kUyk7CgogICBEdXJhdGlv
+blMgPSAoRW5kUy0+dHZfc2VjIC0gU3RhcnRTLT50dl9zZWMpICogTkFOT19QRVJfU0VDICsgRW5k
+Uy0+dHZfbnNlYyAtIFN0YXJ0Uy0+dHZfbnNlYzsKICAgRHVyYXRpb25NID0gKEVuZE0tPnR2X3Nl
+YyAtIFN0YXJ0TS0+dHZfc2VjKSAqIE5BTk9fUEVSX1NFQyArIEVuZE0tPnR2X25zZWMgLSBTdGFy
+dE0tPnR2X25zZWM7CiAgIER1cmF0aW9uTCA9IChFbmRMLT50dl9zZWMgLSBTdGFydEwtPnR2X3Nl
+YykgKiBOQU5PX1BFUl9TRUMgKyBFbmRMLT50dl9uc2VjIC0gU3RhcnRMLT50dl9uc2VjOwoKICAg
+cnRfcHJpbnRmKCJTbWFsbCBRIENyZWF0aW9uIER1cmF0aW9uICAlbGx1XG4iLCBEdXJhdGlvblMp
+OwogICBydF9wcmludGYoIk1lZGl1bSBRIENyZWF0aW9uIER1cmF0aW9uICVsbHVcbiIsIER1cmF0
+aW9uTSk7CiAgIHJ0X3ByaW50ZigiTGFyZ2UgUSBDcmVhdGlvbiBEdXJhdGlvbiAgJWxsdVxuIiwg
+RHVyYXRpb25MKTsKCiAgIC8vIFNlbmQgdGhlIG1lc3NhZ2UgdG8gZWFjaCBxdWV1ZQoKICAgY2xv
+Y2tfZ2V0dGltZShDTE9DS19NT05PVE9OSUMsIFN0YXJ0Uyk7CiAgIG1xX3NlbmQoTXNnUVMsIHBN
+c2csIE1BWF9NU0dfU0laRSwgMCk7CiAgIGNsb2NrX2dldHRpbWUoQ0xPQ0tfTU9OT1RPTklDLCBF
+bmRTKTsKCiAgIGNsb2NrX2dldHRpbWUoQ0xPQ0tfTU9OT1RPTklDLCBTdGFydE0pOwogICBtcV9z
+ZW5kKE1zZ1FNLCBwTXNnLCBNQVhfTVNHX1NJWkUsIDApOwogICBjbG9ja19nZXR0aW1lKENMT0NL
+X01PTk9UT05JQywgRW5kTSk7CgogICBjbG9ja19nZXR0aW1lKENMT0NLX01PTk9UT05JQywgU3Rh
+cnRMKTsKICAgbXFfc2VuZChNc2dRTCwgcE1zZywgTUFYX01TR19TSVpFLCAwKTsKICAgY2xvY2tf
+Z2V0dGltZShDTE9DS19NT05PVE9OSUMsIEVuZEwpOwoKICAgRHVyYXRpb25TID0gKEVuZFMtPnR2
+X3NlYyAtIFN0YXJ0Uy0+dHZfc2VjKSAqIE5BTk9fUEVSX1NFQyArIEVuZFMtPnR2X25zZWMgLSBT
+dGFydFMtPnR2X25zZWM7CiAgIER1cmF0aW9uTSA9IChFbmRNLT50dl9zZWMgLSBTdGFydE0tPnR2
+X3NlYykgKiBOQU5PX1BFUl9TRUMgKyBFbmRNLT50dl9uc2VjIC0gU3RhcnRNLT50dl9uc2VjOwog
+ICBEdXJhdGlvbkwgPSAoRW5kTC0+dHZfc2VjIC0gU3RhcnRMLT50dl9zZWMpICogTkFOT19QRVJf
+U0VDICsgRW5kTC0+dHZfbnNlYyAtIFN0YXJ0TC0+dHZfbnNlYzsKCiAgIHJ0X3ByaW50ZigiU21h
+bGwgUSBTZW5kIER1cmF0aW9uICAlbGx1XG4iLCBEdXJhdGlvblMpOwogICBydF9wcmludGYoIk1l
+ZGl1bSBRIFNlbmQgRHVyYXRpb24gJWxsdVxuIiwgRHVyYXRpb25NKTsKICAgcnRfcHJpbnRmKCJM
+YXJnZSBRIFNlbmQgRHVyYXRpb24gICVsbHVcbiIsIER1cmF0aW9uTCk7CgogICAvLyBQYXVzZSB0
+byBhbGxvdyBwcmludGluZwoKICAgUGF1c2UtPnR2X3NlYyA9IDU7CiAgIFBhdXNlLT50dl9uc2Vj
+ID0gMDsKICAgbmFub3NsZWVwKFBhdXNlLCBOVUxMKTsKCiAgIC8vIENsZWFuIHVwCgogICBtcV9j
+bG9zZShNc2dRTCk7CiAgIG1xX2Nsb3NlKE1zZ1FNKTsKICAgbXFfY2xvc2UoTXNnUVMpOwogICBt
+cV91bmxpbmsocE1zZ1FOYW1lTCk7CiAgIG1xX3VubGluayhwTXNnUU5hbWVNKTsKICAgbXFfdW5s
+aW5rKHBNc2dRTmFtZVMpOwoKICAgZGVsZXRlIHBNc2dRQXR0clM7CiAgIGRlbGV0ZSBwTXNnUUF0
+dHJNOwogICBkZWxldGUgcE1zZ1FBdHRyTDsKICAgZGVsZXRlIFN0YXJ0UzsKICAgZGVsZXRlIFN0
+YXJ0TTsKICAgZGVsZXRlIFN0YXJ0TDsKICAgZGVsZXRlIEVuZFM7CiAgIGRlbGV0ZSBFbmRNOwog
+ICBkZWxldGUgRW5kTDsKICAgZGVsZXRlIFBhdXNlOwp9Cg==
+--0016364c7d919ec5ac046ec028a6--
 
