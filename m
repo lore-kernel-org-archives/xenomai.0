@@ -1,14 +1,13 @@
-Date: Wed, 15 Jul 2009 12:24:59 +0200 (CEST)
-From: Kolja Waschk <xenoka09@domain.hid>
-In-Reply-To: <4A5D88E9.2010305@domain.hid>
-Message-ID: <Pine.LNX.4.62.0907151048370.24398@domain.hid>
-References: <alpine.DEB.2.00.0907142049190.4341@domain.hid>
-	<4A5D88E9.2010305@domain.hid>
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Sender: "Kolja Waschk,,," <xenoka09@domain.hid>
-Subject: Re: [Xenomai-help] rtdm_mmap_to_user without MMU
-Reply-To: xenoka09@domain.hid
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 15 Jul 2009 15:00:34 +0200
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A01B1A843@domain.hid>
+From: <roderik.wildenburg@domain.hid>
+Subject: [Xenomai-help] rtdm_lock_init does not compile with ppc-ipipe-patch
+	2.0.1
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,53 +19,63 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi,
+When I try to compile RTnet (for PPC, Xenomai 2.4.8, Ipipe 2.0.1, Kernel
+2.4.25) I get the following error message :
 
-> rtdm_mmap_to_user uses remap_pfn_range internally when there is no MMU.
+In file included from rtdev.c:33:
+../stack/include/rtskb.h: In function `rtskb_queue_init':
+../stack/include/rtskb.h:289: error: parse error before '{' token
+../stack/include/rtskb.h: At top level:
+../stack/include/rtskb.h:290: error: parse error before '->' token
+../stack/include/rtskb.h: In function `rtskb_prio_queue_init':
+../stack/include/rtskb.h:301: error: parse error before '{' token
+rtdev.c: In function `rtdev_alloc':
+rtdev.c:243: error: parse error before '{' token
 
-Ah, thanks, I missed the part in rtdm_do_mmap where the
-/dev/zero->f_op are temporarily replaced with rtdm_mmap_fops.
+I followed the error through a whole bunch of macros and this is what I
+figured out:
 
-Now I was able to find the actual ENODEV source down in linux/mm/nommu.c
-validate_mmap_request() where the following code path is followed:
+1) Startpoint of the error is rtdm_lock_init(&queue->lock) which is used
+in RTnet (rtskb.h)
+2) rtdm_lock_init() is defined in rtdm_driver.h :
+   #define rtdm_lock_init(lock) rthal_spin_lock_init(lock)
+3) rthal_spin_lock_init(lock) is defined in hal.h :  =20
+   #define rthal_spin_lock_init(lock) *(lock) =3D =
+IPIPE_SPIN_LOCK_UNLOCKED
+   !!(as spin_lock_hw is not defined any more in the 2.0.1 patch !)!!=20
+4) IPIPE_SPIN_LOCK_UNLOCKED is defined in spinlock.h (patched by the
+Ipipe-patch) :
+   #define IPIPE_SPIN_LOCK_UNLOCKED { .__lock =3D SPIN_LOCK_UNLOCKED }
+5) SPIN_LOCK_UNLOCKED is defined in spinlock.h :
+   #define SPIN_LOCK_UNLOCKED (spinlock_t) { }
 
-if(file)
-{
-     ...
-     if (mapping && mapping->backing_dev_info)
-         capabilities = mapping->backing_dev_info->capabilities;
-     ...
-     if (!file->f_op->get_unmapped_area)
-         capabilities &= ~BDI_CAP_MAP_DIRECT;
-     ...
-     if (flags & MAP_SHARED) {
-         ....
-         if (!(capabilities & BDI_CAP_MAP_DIRECT))
-             return -ENODEV;
-...
+so, if I expanded the whole thing correctly I get :
+rtdm_lock_init(&queue->lock) -> =20
+rthal_spin_lock_init(&queue->lock) -> *(&queue->lock) =3D
+IPIPE_SPIN_LOCK_UNLOCKED ->
+*(&queue->lock) =3D { .__lock =3D SPIN_LOCK_UNLOCKED } ->
 
-The mapping->backing_dev_info->capabilities is only BDI_CAP_MAP_COPY,
-no BDI_CAP_MAP_DIRECT. So even if drvlib would provide a
-get_unmapped_area op, validate_mmap_request would answer ENODEV.
+*(&queue->lock) =3D { .__lock =3D (spinlock_t) { } }
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D
 
-It seems that /dev/mem instead of /dev/zero has the required
-capabilities. So I changed rtdm_do_mmap to open dev/mem instead
-of dev/zero and provide a get_unmapped_area:
 
-#ifndef CONFIG_MMU
-     rtdm_mmap_fops.get_unmapped_area = old_fops->get_unmapped_area;
-#endif
+Unfortunately my preprocessor knowledge is too poor to decode this line
+of code, but I think this is not what is intented by the inventor for
+the macro expansion.
+Could somebody help me to understand what is going on here or, even
+better, correct the Ipipe 2.0.1 patch?
 
-Now the rtdm_mmap_to_user returns zero, indicating no error, but I still
-do not get a usable pptr (it's NULL as on input) from it. I somehow
-expect to get src_addr back in pptr.
+Thank you in advance
+Roderik
 
-> Can you provide some hardware-independent test case?
-
-I'm using the code from 
-http://www.captain.at/xenomai-real-time-driver-example.php
-almost unmodified except for some plausibility checking around
-mmappointer after calling the ioctl.
-
-Kolja
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
