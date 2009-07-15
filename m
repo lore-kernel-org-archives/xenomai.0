@@ -1,14 +1,14 @@
-From: Sebastian Smolorz <smolorz@domain.hid>
-Date: Wed, 1 Jul 2009 12:53:17 +0200
-References: <5D63919D95F87E4D9D34FF7748CE2C2A01AB8BD8@domain.hid>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A01AB8BD8@domain.hid>
+Message-ID: <4A5DDD35.3040003@domain.hid>
+Date: Wed, 15 Jul 2009 15:44:21 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
+References: <5D63919D95F87E4D9D34FF7748CE2C2A01B1A843@domain.hid>
+	<4A5DDB79.8070004@domain.hid>
+In-Reply-To: <4A5DDB79.8070004@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200907011253.17443.smolorz@domain.hid>
-Subject: Re: [Xenomai-help] Question about Interrupts
+Subject: Re: [Xenomai-help] rtdm_lock_init does not compile with
+ ppc-ipipe-patch 2.0.1
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,22 +21,30 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: roderik.wildenburg@domain.hid
 Cc: xenomai@xenomai.org
 
-roderik.wildenburg@domain.hid wrote:
-> Dear Gurus,
->
-> I have a question of understanding regarding the priority of a interrupt
-> service routine which is assigned to the linux domain and the priority
-> of a Xenomai task. Which one is executed first the Linux ISR or the
-> Xenomai task ?
-> Background of my question is, that it seems (this is just a assumption
-> !) that a Linux ISR (e.g. for serial interrupt) is delayed when the
-> system is under heavy realtime load. Is this possible ?
+Wolfgang Grandegger wrote:
+> Hi Roderik,
+> 
+> roderik.wildenburg@domain.hid wrote:
+>> When I try to compile RTnet (for PPC, Xenomai 2.4.8, Ipipe 2.0.1, Kernel
+>> 2.4.25) I get the following error message :
+>>
+>> In file included from rtdev.c:33:
+>> ../stack/include/rtskb.h: In function `rtskb_queue_init':
+>> ../stack/include/rtskb.h:289: error: parse error before '{' token
+>> ../stack/include/rtskb.h: At top level:
+>> ../stack/include/rtskb.h:290: error: parse error before '->' token
+>> ../stack/include/rtskb.h: In function `rtskb_prio_queue_init':
+>> ../stack/include/rtskb.h:301: error: parse error before '{' token
+>> rtdev.c: In function `rtdev_alloc':
+>> rtdev.c:243: error: parse error before '{' token
+> 
+> A similar issue has been reported on the RTnet-users ML by Thomas. What
+> version of RTnet are you using? 0.9.11 is broken!!! See also:
+> 
+> http://sourceforge.net/mailarchive/forum.php?thread_name=4A4B9610.9080708%40grandegger.com&forum_name=rtnet-users
 
-This is the essential core of the whole I-pipe/Xenomai construct. Real-time 
-tasks are executed before the Linux root domain and this includes Linux ISR 
-routines, too.
+... and you need adeos-ipipe-2.4.25-ppc-DENX-1.2-02.patch instead of
+adeos-ipipe-2.4.25-ppc-DENX-2.0-01.patch as Thomas reported.
 
--- 
-Sebastian
-
+Wolfgang.
 
