@@ -1,5 +1,5 @@
-Message-ID: <4A5EE38C.5030001@domain.hid>
-Date: Thu, 16 Jul 2009 10:23:40 +0200
+Message-ID: <4A5EE47E.5000507@domain.hid>
+Date: Thu, 16 Jul 2009 10:27:42 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <b88603c30907130031v9ec9618r46bd28b494ac3417@domain.hid>	
@@ -28,13 +28,14 @@ Henri Roosen wrote:
 > distribution, compiled this time with the CodeSourcery 2007q3
 > cross-compile environment. This is a gcc 4.2.1 version. But has the
 > same hangup behaviour as the default 4.3.3 version.
+> 
+> I build the xenomai userspace with:
+> ./configure --build=i686-pc-linux-gnu
+> --host=arm-angstrom-linux-gnueabi --enable-arm-mach=at91sam926x
+> --enable-arm-eabi
 
-CodeSourcery 2007q3 is the version I am using, there is no hang-up
-provided that I run cyclictest or latency with a 1000us period instead
-of the default 100us.
-
-Also, could you show us the result of cat /proc/interrupts and cat
-/proc/xenomai/irq on your target?
+I can not tell you if --enable-arm-eabi is correct, it depends on how
+you configured the kernel.
 
 -- 
                                           Gilles
