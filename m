@@ -1,14 +1,15 @@
-Date: Fri, 17 Jul 2009 15:32:14 +0200
-From: Petr Cervenka <grugh@domain.hid>
-References: <1247750127.306081.22356.nullmailer@domain.hid>	
-	<1247754601.4228.73.camel@domain.hid>	
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1247837534.904271.19070.nullmailer@domain.hid>
+References: <1247750127.306081.22356.nullmailer@domain.hid>
+	<1247754601.4228.73.camel@domain.hid>
 	<1247829470.829653.30773.nullmailer@domain.hid>
 	<1247832340.4228.132.camel@domain.hid>
-In-Reply-To: <1247832340.4228.132.camel@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/mixed;
-	boundary="_ca29_-------dcc710d96a1d57ee19b0f82e4358392e"
-Message-Id: <1247837534.904271.19070.nullmailer@domain.hid>
+	<1247837534.904271.19070.nullmailer@domain.hid>
+Content-Type: text/plain
+Date: Fri, 17 Jul 2009 15:52:13 +0200
+Message-Id: <1247838733.4228.139.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] rt_task_shadow returns always -EFAULT
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -19,210 +20,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Petr Cervenka <grugh@domain.hid>
 Cc: xenomai-help <xenomai@xenomai.org>
 
+On Fri, 2009-07-17 at 15:32 +0200, Petr Cervenka wrote:
+> >
+> >On Fri, 2009-07-17 at 13:17 +0200, Petr Cervenka wrote:
+> >> >On Thu, 2009-07-16 at 15:15 +0200, Petr Cervenka wrote:
+> >> >> Hello,
+> >> >> the xenomai native function rt_task_shadow(...) always returns -EFAULT for me. Only happens in xenomai-2.5-rc2.
+> >> >> 
+> >> >> Same behaviour was also in 2.5-rc1, see note in my older post:
+> >> >> https://mail.gna.org/public/xenomai-help/2009-05/msg00024.html
+> >> >> 
+> >> >> Example code, in the end of this post:
+> >> >> https://mail.gna.org/public/xenomai-help/2009-05/msg00038.html
+> >> >> 
+> >> >> My configuration:
+> >> >> Athlon 64 X2 4600+
+> >> >> Kubuntu 7.10
+> >> >> linux-2.6.29.5 (also tried 2.6.30.1)
+> >> >> xenomai-2.5.-rc2
+> >> >
+> >> >Does this still break when the name is passed as illustrated below?
+> >> >
+> >> 
+> >> No, it doesn't help.
+> >> 
+> >> I also tried the xenomai rtprint example -> same behavior. The rt_task_shadow() returns -EFAULT and any following rt_task_sleep() in that task returns -1. The other task works fine.
+> >> I will do some deeper examination of rt_task_shadow() code.
+> >> If you have any advices, what to send or what to try, i would like to hear it.
+> >> 
+> >
+> >Try instrumenting ksrc/skins/native/syscall.c, __rt_task_create(), to
+> >identify which spot returns -EFAULT. I can't reproduce this issue on a
+> >ppc target; I may try over x86 later, but this would speed up things if
+> >you could spot the failing test before I'm able to switch to this.
+> >
+> 
+> Meanwhile I tried to mess little bit with rt_task_shadow() function to see, where is the source of -EFAULT. I planned to continue to follow it inside syscall etc.
+> But most attempts to confirm, that the value is returned by line:
+> 	err = XENOMAI_SKINCALL2(__native_muxid, __native_task_create, &bulk,
+> 				NULL);
 
-This is a multi-part message in MIME format.
---_ca29_-------dcc710d96a1d57ee19b0f82e4358392e
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+This branches to __rt_task_create in kernel space.
 
->
->On Fri, 2009-07-17 at 13:17 +0200, Petr Cervenka wrote:
->> >On Thu, 2009-07-16 at 15:15 +0200, Petr Cervenka wrote:
->> >> Hello,
->> >> the xenomai native function rt_task_shadow(...) always returns -EFA=
-ULT for me. Only happens in xenomai-2.5-rc2.
->> >>=20
->> >> Same behaviour was also in 2.5-rc1, see note in my older post:
->> >> https://mail.gna.org/public/xenomai-help/2009-05/msg00024.html
->> >>=20
->> >> Example code, in the end of this post:
->> >> https://mail.gna.org/public/xenomai-help/2009-05/msg00038.html
->> >>=20
->> >> My configuration:
->> >> Athlon 64 X2 4600+
->> >> Kubuntu 7.10
->> >> linux-2.6.29.5 (also tried 2.6.30.1)
->> >> xenomai-2.5.-rc2
->> >
->> >Does this still break when the name is passed as illustrated below?
->> >
->>=20
->> No, it doesn't help.
->>=20
->> I also tried the xenomai rtprint example -> same behavior. The rt_task=
-_shadow() returns -EFAULT and any following rt_task_sleep() in that task =
-returns -1. The other task works fine.
->> I will do some deeper examination of rt_task_shadow() code.
->> If you have any advices, what to send or what to try, i would like to =
-hear it.
->>=20
->
->Try instrumenting ksrc/skins/native/syscall.c, __rt_task_create(), to
->identify which spot returns -EFAULT. I can't reproduce this issue on a
->ppc target; I may try over x86 later, but this would speed up things if
->you could spot the failing test before I'm able to switch to this.
->
+> where suprisingly followed by correct behavior. For example following (nothing doing) change in the attached patch solves the whole thing:
+> --- /usr/src/xenomai/src/skins/native/task2.c   2009-04-13 19:20:18.000000000 +0200
+> +++ /usr/src/xenomai/src/skins/native/task.c    2009-07-17 15:06:20.000000000 +0200
+> @@ -241,6 +241,7 @@
+>         pthread_setspecific(__native_tskey, NULL);
+>         free(self);
+>  #endif /* !HAVE___THREAD */
+> +       rt_task_set_mode(0, 0, NULL);
+>         return err;
+>  }
+> 
+> objdumps of original and changed rt_task_shadow() is in attachment
+> 
+> I will continue in research, but I'm really not good in dissasembling nor the register knowledge.
+> 
 
-Meanwhile I tried to mess little bit with rt_task_shadow() function to se=
-e, where is the source of -EFAULT. I planned to continue to follow it ins=
-ide syscall etc.
-But most attempts to confirm, that the value is returned by line:
-	err =3D XENOMAI_SKINCALL2(__native_muxid, __native_task_create, &bulk,
-				NULL);
-where suprisingly followed by correct behavior. For example following (no=
-thing doing) change in the attached patch solves the whole thing:
---- /usr/src/xenomai/src/skins/native/task2.c   2009-04-13 19:20:18.00000=
-0000 +0200
-+++ /usr/src/xenomai/src/skins/native/task.c    2009-07-17 15:06:20.00000=
-0000 +0200
-@@ -241,6 +241,7 @@
-        pthread_setspecific(__native_tskey, NULL);
-        free(self);
- #endif /* !HAVE___THREAD */
-+       rt_task_set_mode(0, 0, NULL);
-        return err;
- }
+Try rebuilding the user-space libs passing --without-__thread to the
+configure script.
 
-objdumps of original and changed rt_task_shadow() is in attachment
+> Petr
+-- 
+Philippe.
 
-I will continue in research, but I'm really not good in dissasembling nor=
- the register knowledge.
 
-Petr
-
---_ca29_-------dcc710d96a1d57ee19b0f82e4358392e
-Content-Type: text/plain; name="rt_task_shadow_1.txt"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="rt_task_shadow_1.txt"
-
-MDAwMDAwMDAwMDAwMDZkMCA8cnRfdGFza19zaGFkb3c+OgogNmQwOiAgIDQ4IDg5IDVjIDI0
-IGQ4ICAgICAgICAgIG1vdiAgICAlcmJ4LC0weDI4KCVyc3ApCiA2ZDU6ICAgNDggODkgNmMg
-MjQgZTAgICAgICAgICAgbW92ICAgICVyYnAsLTB4MjAoJXJzcCkKIDZkYTogICA0OCA4OSBm
-ZCAgICAgICAgICAgICAgICBtb3YgICAgJXJkaSwlcmJwCiA2ZGQ6ICAgNGMgODkgNjQgMjQg
-ZTggICAgICAgICAgbW92ICAgICVyMTIsLTB4MTgoJXJzcCkKIDZlMjogICA0YyA4OSA2YyAy
-NCBmMCAgICAgICAgICBtb3YgICAgJXIxMywtMHgxMCglcnNwKQogNmU3OiAgIDQ5IDg5IGY0
-ICAgICAgICAgICAgICAgIG1vdiAgICAlcnNpLCVyMTIKIDZlYTogICA0YyA4OSA3NCAyNCBm
-OCAgICAgICAgICBtb3YgICAgJXIxNCwtMHg4KCVyc3ApCiA2ZWY6ICAgNDggODMgZWMgNjgg
-ICAgICAgICAgICAgc3ViICAgICQweDY4LCVyc3AKIDZmMzogICA0OCA4NSBmZiAgICAgICAg
-ICAgICAgICB0ZXN0ICAgJXJkaSwlcmRpCiA2ZjY6ICAgNDggOGQgNDQgMjQgMzAgICAgICAg
-ICAgbGVhICAgIDB4MzAoJXJzcCksJXJheAogNmZiOiAgIGJmIDAxIDAwIDAwIDAwICAgICAg
-ICAgIG1vdiAgICAkMHgxLCVlZGkKIDcwMDogICA0MSA4OSBkNSAgICAgICAgICAgICAgICBt
-b3YgICAgJWVkeCwlcjEzZAogNzAzOiAgIDQxIDg5IGNlICAgICAgICAgICAgICAgIG1vdiAg
-ICAlZWN4LCVyMTRkCiA3MDY6ICAgNDggMGYgNDQgZTggICAgICAgICAgICAgY21vdmUgICVy
-YXgsJXJicAogNzBhOiAgIDMxIGY2ICAgICAgICAgICAgICAgICAgIHhvciAgICAlZXNpLCVl
-c2kKIDcwYzogICBlOCAwMCAwMCAwMCAwMCAgICAgICAgICBjYWxscSAgNzExIDxydF90YXNr
-X3NoYWRvdysweDQxPgogNzExOiAgIGJlIDAwIDAwIDAwIDAwICAgICAgICAgIG1vdiAgICAk
-MHgwLCVlc2kKIDcxNjogICBiZiAwMCAwMCAwMCAwMCAgICAgICAgICBtb3YgICAgJDB4MCwl
-ZWRpCiA3MWI6ICAgZTggMDAgMDAgMDAgMDAgICAgICAgICAgY2FsbHEgIDcyMCA8cnRfdGFz
-a19zaGFkb3crMHg1MD4KIDcyMDogICA0OCA4YiAwNSAwMCAwMCAwMCAwMCAgICBtb3YgICAg
-MHgwKCVyaXApLCVyYXggICAgICAgICMgNzI3IDxydF90YXNrX3NoYWRvdysweDU3PgogNzI3
-OiAgIDY0IDQ4IDAzIDA0IDI1IDAwIDAwICAgIGFkZCAgICAlZnM6MHgwLCVyYXgKIDcyZTog
-ICAwMCAwMAogNzMwOiAgIDhiIDFkIDAwIDAwIDAwIDAwICAgICAgIG1vdiAgICAweDAoJXJp
-cCksJWVieCAgICAgICAgIyA3MzYgPHJ0X3Rhc2tfc2hhZG93KzB4NjY+CiA3MzY6ICAgNDgg
-ODkgNDQgMjQgMjggICAgICAgICAgbW92ICAgICVyYXgsMHgyOCglcnNwKQogNzNiOiAgIDgx
-IGNiIDJiIDAyIDAwIDAwICAgICAgIG9yICAgICAkMHgyMmIsJWVieAogNzQxOiAgIGU4IDAw
-IDAwIDAwIDAwICAgICAgICAgIGNhbGxxICA3NDYgPHJ0X3Rhc2tfc2hhZG93KzB4NzY+CiA3
-NDY6ICAgNDggODkgNDQgMjQgMjAgICAgICAgICAgbW92ICAgICVyYXgsMHgyMCglcnNwKQog
-NzRiOiAgIDQ5IDYzIGM2ICAgICAgICAgICAgICAgIG1vdnNscSAlcjE0ZCwlcmF4CiA3NGU6
-ICAgNGMgODkgNjQgMjQgMDggICAgICAgICAgbW92ICAgICVyMTIsMHg4KCVyc3ApCiA3NTM6
-ICAgNDggODkgNDQgMjQgMTggICAgICAgICAgbW92ICAgICVyYXgsMHgxOCglcnNwKQogNzU4
-OiAgIDQ5IDYzIGM1ICAgICAgICAgICAgICAgIG1vdnNscSAlcjEzZCwlcmF4CiA3NWI6ICAg
-NDggODkgMmMgMjQgICAgICAgICAgICAgbW92ICAgICVyYnAsKCVyc3ApCiA3NWY6ICAgNDgg
-ODkgNDQgMjQgMTAgICAgICAgICAgbW92ICAgICVyYXgsMHgxMCglcnNwKQogNzY0OiAgIDg5
-IGQ4ICAgICAgICAgICAgICAgICAgIG1vdiAgICAlZWJ4LCVlYXgKIDc2NjogICAwZiAwNSAg
-ICAgICAgICAgICAgICAgICBzeXNjYWxsCiA3Njg6ICAgODUgYzAgICAgICAgICAgICAgICAg
-ICAgdGVzdCAgICVlYXgsJWVheAogNzZhOiAgIDQ5IDg5IGM0ICAgICAgICAgICAgICAgIG1v
-diAgICAlcmF4LCVyMTIKIDc2ZDogICA4OSBjMyAgICAgICAgICAgICAgICAgICBtb3YgICAg
-JWVheCwlZWJ4CiA3NmY6ICAgNzUgMzEgICAgICAgICAgICAgICAgICAgam5lICAgIDdhMiA8
-cnRfdGFza19zaGFkb3crMHhkMj4KIDc3MTogICA0OCA4YiA1NSAwMCAgICAgICAgICAgICBt
-b3YgICAgMHgwKCVyYnApLCVyZHgKIDc3NTogICA0OCA4YiAwNSAwMCAwMCAwMCAwMCAgICBt
-b3YgICAgMHgwKCVyaXApLCVyYXggICAgICAgICMgNzdjIDxydF90YXNrX3NoYWRvdysweGFj
-PgogNzdjOiAgIDY0IDQ4IDg5IDEwICAgICAgICAgICAgIG1vdiAgICAlcmR4LCVmczooJXJh
-eCkKIDc4MDogICA0OCA4YiA1NSAwOCAgICAgICAgICAgICBtb3YgICAgMHg4KCVyYnApLCVy
-ZHgKIDc4NDogICA2NCA0OCA4OSA1MCAwOCAgICAgICAgICBtb3YgICAgJXJkeCwlZnM6MHg4
-KCVyYXgpCiA3ODk6ICAgZTggMDAgMDAgMDAgMDAgICAgICAgICAgY2FsbHEgIDc4ZSA8cnRf
-dGFza19zaGFkb3crMHhiZT4KIDc4ZTogICA0MSA4MSBlNiAwMCAwMCAwMiAwMCAgICBhbmQg
-ICAgJDB4MjAwMDAsJXIxNGQKIDc5NTogICAwZiA0NCAxZCAwMCAwMCAwMCAwMCAgICBjbW92
-ZSAgMHgwKCVyaXApLCVlYnggICAgICAgICMgNzljIDxydF90YXNrX3NoYWRvdysweGNjPgog
-NzljOiAgIDg5IDFkIDAwIDAwIDAwIDAwICAgICAgIG1vdiAgICAlZWJ4LDB4MCglcmlwKSAg
-ICAgICAgIyA3YTIgPHJ0X3Rhc2tfc2hhZG93KzB4ZDI+CiA3YTI6ICAgNDQgODkgZTAgICAg
-ICAgICAgICAgICAgbW92ICAgICVyMTJkLCVlYXgKIDdhNTogICA0OCA4YiA1YyAyNCA0MCAg
-ICAgICAgICBtb3YgICAgMHg0MCglcnNwKSwlcmJ4CiA3YWE6ICAgNDggOGIgNmMgMjQgNDgg
-ICAgICAgICAgbW92ICAgIDB4NDgoJXJzcCksJXJicAogN2FmOiAgIDRjIDhiIDY0IDI0IDUw
-ICAgICAgICAgIG1vdiAgICAweDUwKCVyc3ApLCVyMTIKIDdiNDogICA0YyA4YiA2YyAyNCA1
-OCAgICAgICAgICBtb3YgICAgMHg1OCglcnNwKSwlcjEzCiA3Yjk6ICAgNGMgOGIgNzQgMjQg
-NjAgICAgICAgICAgbW92ICAgIDB4NjAoJXJzcCksJXIxNAogN2JlOiAgIDQ4IDgzIGM0IDY4
-ICAgICAgICAgICAgIGFkZCAgICAkMHg2OCwlcnNwCiA3YzI6ICAgYzMgICAgICAgICAgICAg
-ICAgICAgICAgcmV0cQo=
---_ca29_-------dcc710d96a1d57ee19b0f82e4358392e
-Content-Type: text/plain; name="rt_task_shadow_2.txt"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="rt_task_shadow_2.txt"
-
-MDAwMDAwMDAwMDAwMDZkMCA8cnRfdGFza19zaGFkb3c+OgogNmQwOiAgIDQ4IDg5IDVjIDI0
-IGUwICAgICAgICAgIG1vdiAgICAlcmJ4LC0weDIwKCVyc3ApCiA2ZDU6ICAgNDggODkgNmMg
-MjQgZTggICAgICAgICAgbW92ICAgICVyYnAsLTB4MTgoJXJzcCkKIDZkYTogICA0OCA4OSBm
-ZCAgICAgICAgICAgICAgICBtb3YgICAgJXJkaSwlcmJwCiA2ZGQ6ICAgNGMgODkgNjQgMjQg
-ZjAgICAgICAgICAgbW92ICAgICVyMTIsLTB4MTAoJXJzcCkKIDZlMjogICA0YyA4OSA2YyAy
-NCBmOCAgICAgICAgICBtb3YgICAgJXIxMywtMHg4KCVyc3ApCiA2ZTc6ICAgNDggODMgZWMg
-NjggICAgICAgICAgICAgc3ViICAgICQweDY4LCVyc3AKIDZlYjogICA0OCA4ZCA0NCAyNCAz
-MCAgICAgICAgICBsZWEgICAgMHgzMCglcnNwKSwlcmF4CiA2ZjA6ICAgNDggODUgZmYgICAg
-ICAgICAgICAgICAgdGVzdCAgICVyZGksJXJkaQogNmYzOiAgIDQ4IDg5IGYzICAgICAgICAg
-ICAgICAgIG1vdiAgICAlcnNpLCVyYngKIDZmNjogICBiZiAwMSAwMCAwMCAwMCAgICAgICAg
-ICBtb3YgICAgJDB4MSwlZWRpCiA2ZmI6ICAgNDEgODkgZDQgICAgICAgICAgICAgICAgbW92
-ICAgICVlZHgsJXIxMmQKIDZmZTogICA0MSA4OSBjZCAgICAgICAgICAgICAgICBtb3YgICAg
-JWVjeCwlcjEzZAogNzAxOiAgIDQ4IDBmIDQ0IGU4ICAgICAgICAgICAgIGNtb3ZlICAlcmF4
-LCVyYnAKIDcwNTogICAzMSBmNiAgICAgICAgICAgICAgICAgICB4b3IgICAgJWVzaSwlZXNp
-CiA3MDc6ICAgZTggMDAgMDAgMDAgMDAgICAgICAgICAgY2FsbHEgIDcwYyA8cnRfdGFza19z
-aGFkb3crMHgzYz4KIDcwYzogICBiZSAwMCAwMCAwMCAwMCAgICAgICAgICBtb3YgICAgJDB4
-MCwlZXNpCiA3MTE6ICAgYmYgMDAgMDAgMDAgMDAgICAgICAgICAgbW92ICAgICQweDAsJWVk
-aQogNzE2OiAgIGU4IDAwIDAwIDAwIDAwICAgICAgICAgIGNhbGxxICA3MWIgPHJ0X3Rhc2tf
-c2hhZG93KzB4NGI+CiA3MWI6ICAgNDkgNjMgYzQgICAgICAgICAgICAgICAgbW92c2xxICVy
-MTJkLCVyYXgKIDcxZTogICA0OCA4OSAyYyAyNCAgICAgICAgICAgICBtb3YgICAgJXJicCwo
-JXJzcCkKIDcyMjogICA0OCA4OSA1YyAyNCAwOCAgICAgICAgICBtb3YgICAgJXJieCwweDgo
-JXJzcCkKIDcyNzogICA0OCA4OSA0NCAyNCAxMCAgICAgICAgICBtb3YgICAgJXJheCwweDEw
-KCVyc3ApCiA3MmM6ICAgNDkgNjMgYzUgICAgICAgICAgICAgICAgbW92c2xxICVyMTNkLCVy
-YXgKIDcyZjogICA0OCA4OSA0NCAyNCAxOCAgICAgICAgICBtb3YgICAgJXJheCwweDE4KCVy
-c3ApCiA3MzQ6ICAgZTggMDAgMDAgMDAgMDAgICAgICAgICAgY2FsbHEgIDczOSA8cnRfdGFz
-a19zaGFkb3crMHg2OT4KIDczOTogICA0OCA4OSA0NCAyNCAyMCAgICAgICAgICBtb3YgICAg
-JXJheCwweDIwKCVyc3ApCiA3M2U6ICAgNDggOGIgMDUgMDAgMDAgMDAgMDAgICAgbW92ICAg
-IDB4MCglcmlwKSwlcmF4ICAgICAgICAjIDc0NSA8cnRfdGFza19zaGFkb3crMHg3NT4KIDc0
-NTogICA0OCA4OSBlNyAgICAgICAgICAgICAgICBtb3YgICAgJXJzcCwlcmRpCiA3NDg6ICAg
-NjQgNDggMDMgMDQgMjUgMDAgMDAgICAgYWRkICAgICVmczoweDAsJXJheAogNzRmOiAgIDAw
-IDAwCiA3NTE6ICAgMzEgZjYgICAgICAgICAgICAgICAgICAgeG9yICAgICVlc2ksJWVzaQog
-NzUzOiAgIDQ4IDg5IDQ0IDI0IDI4ICAgICAgICAgIG1vdiAgICAlcmF4LDB4MjgoJXJzcCkK
-IDc1ODogICA4YiAwNSAwMCAwMCAwMCAwMCAgICAgICBtb3YgICAgMHgwKCVyaXApLCVlYXgg
-ICAgICAgICMgNzVlIDxydF90YXNrX3NoYWRvdysweDhlPgogNzVlOiAgIDBkIDJiIDAyIDAw
-IDAwICAgICAgICAgIG9yICAgICAkMHgyMmIsJWVheAogNzYzOiAgIDBmIDA1ICAgICAgICAg
-ICAgICAgICAgIHN5c2NhbGwKIDc2NTogICA4NSBjMCAgICAgICAgICAgICAgICAgICB0ZXN0
-ICAgJWVheCwlZWF4CiA3Njc6ICAgODkgYzMgICAgICAgICAgICAgICAgICAgbW92ICAgICVl
-YXgsJWVieAogNzY5OiAgIDc0IDI2ICAgICAgICAgICAgICAgICAgIGplICAgICA3OTEgPHJ0
-X3Rhc2tfc2hhZG93KzB4YzE+CiA3NmI6ICAgMzEgZDIgICAgICAgICAgICAgICAgICAgeG9y
-ICAgICVlZHgsJWVkeAogNzZkOiAgIDMxIGY2ICAgICAgICAgICAgICAgICAgIHhvciAgICAl
-ZXNpLCVlc2kKIDc2ZjogICAzMSBmZiAgICAgICAgICAgICAgICAgICB4b3IgICAgJWVkaSwl
-ZWRpCiA3NzE6ICAgZTggMDAgMDAgMDAgMDAgICAgICAgICAgY2FsbHEgIDc3NiA8cnRfdGFz
-a19zaGFkb3crMHhhNj4KIDc3NjogICA4OSBkOCAgICAgICAgICAgICAgICAgICBtb3YgICAg
-JWVieCwlZWF4CiA3Nzg6ICAgNDggOGIgNmMgMjQgNTAgICAgICAgICAgbW92ICAgIDB4NTAo
-JXJzcCksJXJicAogNzdkOiAgIDQ4IDhiIDVjIDI0IDQ4ICAgICAgICAgIG1vdiAgICAweDQ4
-KCVyc3ApLCVyYngKIDc4MjogICA0YyA4YiA2NCAyNCA1OCAgICAgICAgICBtb3YgICAgMHg1
-OCglcnNwKSwlcjEyCiA3ODc6ICAgNGMgOGIgNmMgMjQgNjAgICAgICAgICAgbW92ICAgIDB4
-NjAoJXJzcCksJXIxMwogNzhjOiAgIDQ4IDgzIGM0IDY4ICAgICAgICAgICAgIGFkZCAgICAk
-MHg2OCwlcnNwCiA3OTA6ICAgYzMgICAgICAgICAgICAgICAgICAgICAgcmV0cQogNzkxOiAg
-IDQ4IDhiIDU1IDAwICAgICAgICAgICAgIG1vdiAgICAweDAoJXJicCksJXJkeAogNzk1OiAg
-IDQ4IDhiIDA1IDAwIDAwIDAwIDAwICAgIG1vdiAgICAweDAoJXJpcCksJXJheCAgICAgICAg
-IyA3OWMgPHJ0X3Rhc2tfc2hhZG93KzB4Y2M+CiA3OWM6ICAgNjQgNDggODkgMTAgICAgICAg
-ICAgICAgbW92ICAgICVyZHgsJWZzOiglcmF4KQogN2EwOiAgIDQ4IDhiIDU1IDA4ICAgICAg
-ICAgICAgIG1vdiAgICAweDgoJXJicCksJXJkeAogN2E0OiAgIDY0IDQ4IDg5IDUwIDA4ICAg
-ICAgICAgIG1vdiAgICAlcmR4LCVmczoweDgoJXJheCkKIDdhOTogICBlOCAwMCAwMCAwMCAw
-MCAgICAgICAgICBjYWxscSAgN2FlIDxydF90YXNrX3NoYWRvdysweGRlPgogN2FlOiAgIDQx
-IDgxIGU1IDAwIDAwIDAyIDAwICAgIGFuZCAgICAkMHgyMDAwMCwlcjEzZAogN2I1OiAgIDc0
-IGJmICAgICAgICAgICAgICAgICAgIGplICAgICA3NzYgPHJ0X3Rhc2tfc2hhZG93KzB4YTY+
-CiA3Yjc6ICAgYzcgMDUgMDAgMDAgMDAgMDAgMDAgICAgbW92bCAgICQweDAsMHgwKCVyaXAp
-ICAgICAgICAjIDdjMSA8cnRfdGFza19zaGFkb3crMHhmMT4KIDdiZTogICAwMCAwMCAwMAog
-N2MxOiAgIGViIGIzICAgICAgICAgICAgICAgICAgIGptcCAgICA3NzYgPHJ0X3Rhc2tfc2hh
-ZG93KzB4YTY+Cg==
---_ca29_-------dcc710d96a1d57ee19b0f82e4358392e--
 
