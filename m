@@ -1,14 +1,13 @@
+Date: Fri, 17 Jul 2009 13:17:50 +0200
+From: Petr Cervenka <grugh@domain.hid>
+References: <1247750127.306081.22356.nullmailer@domain.hid>
+	<1247754601.4228.73.camel@domain.hid>
+In-Reply-To: <1247754601.4228.73.camel@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <4A5E046D.3020404@domain.hid>
-References: <abaf774b0907150825l289e7730h60ed03ca8db83d9a@domain.hid>
-	<4A5DF5EB.8040509@domain.hid> <4A5E01C2.9070805@domain.hid>
-	<4A5E046D.3020404@domain.hid>
-Date: Fri, 17 Jul 2009 12:07:18 +0100
-Message-ID: <abaf774b0907170407q9544cc9la1c07860bd7ebf25@domain.hid>
-From: Steve <sbxenomai@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] mq_send takes longer than expected
+Content-Type: text/plain; charset=UTF-8
+Message-Id: <1247829470.829653.30773.nullmailer@domain.hid>
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] rt_task_shadow returns always -EFAULT
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,47 +17,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On 15/07/2009, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> Gilles Chanteperdrix wrote:
->> Gilles Chanteperdrix wrote:
->>> Steve wrote:
->>>> Hi,
->>>>
->>>> Calling mq_send takes significantly varied amounts of time depending
->>>> on the queue length.  I was not expecting this behaviour, particularly
->>>> as this does not happen when using RTAI mq_send calls.  I can
->>>> understand that queue creation / opening times will heavily depend on
->>>> the queue's overall size, however I would have thought that sending a
->>>> message (adding it to the queue's data structure (linked list?)) would
->>>> take a constant time.
->>>>
->>>> Is this a bug, or expected behaviour?  I have attached an example.
->>> mq_send is expected by the posix specification to block its caller when
->>> the queue is full. If you do not want this behaviour, you should pass
->>> O_NONBLOCK to mq_open and be prepared for mq_send to return -1 with
->>> errno set to EAGAIN/EWOULDBLOCK.
->>>
->>> Would this be your problem ?
->>
->> Ok, I now have looked at your test code, you measure when posting the
->> first message, and you already have O_NONBLOCK set. Could you try to
->> create the queues in the reverse order and see what happens?
+
+>On Thu, 2009-07-16 at 15:15 +0200, Petr Cervenka wrote:
+>> Hello,
+>> the xenomai native function rt_task_shadow(...) always returns -EFAULT=
+ for me. Only happens in xenomai-2.5-rc2.
+>>=20
+>> Same behaviour was also in 2.5-rc1, see note in my older post:
+>> https://mail.gna.org/public/xenomai-help/2009-05/msg00024.html
+>>=20
+>> Example code, in the end of this post:
+>> https://mail.gna.org/public/xenomai-help/2009-05/msg00038.html
+>>=20
+>> My configuration:
+>> Athlon 64 X2 4600+
+>> Kubuntu 7.10
+>> linux-2.6.29.5 (also tried 2.6.30.1)
+>> xenomai-2.5.-rc2
 >
-> Also, would you have CONFIG_XENO_OPT_DEBUG_QUEUES activated ? In this
-> case, list operations are no longer O(1).
->
-> --
->                                           Gilles
->
+>Does this still break when the name is passed as illustrated below?
 >
 
-I did have CONFIG_XENO_OPT_DEBUG_QUEUES activated, I must have been a
-little overzealous when choosing my config options.  Everything now
-runs as expected.
+No, it doesn't help.
 
-Thanks for the help,
+I also tried the xenomai rtprint example -> same behavior. The rt_task_sh=
+adow() returns -EFAULT and any following rt_task_sleep() in that task ret=
+urns -1. The other task works fine.
+I will do some deeper examination of rt_task_shadow() code.
+If you have any advices, what to send or what to try, i would like to hea=
+r it.
 
-Steve
+>--- petr.c~	2009-07-16 15:50:46.000000000 +0200
+>+++ petr.c	2009-07-16 16:28:31.000000000 +0200
+>@@ -14,11 +14,12 @@
+>     RT_EVENT event;
+>     unsigned long mask;
+>     RTIME start, end;
+>+    char name[32];
+>     int res;
+>=20
+>     mlockall(MCL_CURRENT | MCL_FUTURE);
+>=20
+>-    res =3D rt_task_shadow(&mainTask, "main_task", MY_PRIORITY, 0);
+>+    res =3D rt_task_shadow(&mainTask, strcpy(name, "main_task"), MY_PRI=
+ORITY, 0);
+>     if (res < 0) {
+>         printf("rt_task_shadow(): %d (%s)n", res, strerror(-res));
+>     }
+>
+>>=20
+>> Best regards
+>>=20
+>> Petr Cervenka
+>>=20
+>> _______________________________________________
+>> Xenomai-help mailing list
+>> Xenomai-help@domain.hid
+>> https://mail.gna.org/listinfo/xenomai-help
+>--=20
+>Philippe.
+>
+>
+Petr
 
