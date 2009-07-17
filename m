@@ -1,10 +1,13 @@
-Message-ID: <4A60E4FF.9020307@domain.hid>
-Date: Fri, 17 Jul 2009 22:54:23 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [rfc] Jumpless *llimd.
+From: Wolfgang Denk <wd@domain.hid>
+Mime-version: 1.0
+Content-type: text/plain; charset=ISO-8859-1
+Content-transfer-encoding: 8bit
+In-reply-to: <71D4C981-5356-40C4-AD25-3EA41BD566BC@gmail.com>
+References: <C026136E-758C-4767-988F-742C8FA08EE9@domain.hid>
+	<71D4C981-5356-40C4-AD25-3EA41BD566BC@gmail.com>
+Date: Sat, 18 Jul 2009 00:04:26 +0200
+Message-Id: <20090717220426.DBB76832E416@domain.hid>
+Subject: Re: [Xenomai-core] RT_PREEMPT patch and other things...
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,83 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Andreas Glatz <andi.glatz@domain.hid>
+Cc: xenomai@xenomai.org
 
+Dear Andreas Glatz,
 
-Hi,
+In message <71D4C981-5356-40C4-AD25-3EA41BD566BC@gmail.com> you wrote:
+> 
+> When do u think Xenomai-Solo will become stable (ready for production  
+> use on a powerpc platform)?
 
-we discussed this issue several times already I believe: it would be 
-fine if llimd (and nodiv_llimd) could work without jumps. 32 bits 
-compiler are unable to generate code without jumps for the following 
-sequence:
+Umm... it was stable when it has been released, or do you think
+Philippe would release unstable code? 
 
-union u64 {
-	long long ll;
-	unsigned l, h;
-};
+Really - do you think there are any deficiencies in Xenomai-Solo?
 
-long long llimd(union u64 x, unsigned m, unsigned d)
-{
-	unsigned s = x.h & 0x80000000;
-	if (s)
-		x.ll = -x.ll;
-	x.ll = ullimd(x.ll, m, d);
-	if (s)
-		x.ll = -x.ll;
-}
+Best regards,
 
-even though this works for x86_64 compiler.
-
-So, I thought, we might help a bit with inline assembly (after all, 
-ullimd is already inline assembly). For instance, we could define macros
-with the following semantic:
-
-#define sign_split(s, x)                        \
-        s = x.l & (1 << 31);                    \
-        if (s)                                  \
-                x.ll = -x.ll;
-
-#define sign_apply(s, x)                        \
-        if (s)                                  \
-                x.ll = -x.ll
-
-
-Jumpless versions on x86_32, using the cmov instruction, would give us:
-
-#define x86_sign_split(s, x)                                            \
-        ({                                                              \
-                unsigned tmpl = 0, tmph = 0;                            \
-                s = x.h;                                        	\
-                asm ("sub %[tmpl], %[xl]\n\t"                           \
-                     "sbb %[tmph], %[xh]\n\t"                           \
-                     "andl $0x80000000, %[s]\n\t"                       \
-                     "cmovnz %[tmpl], %[xl]\n\t"                        \
-                     "cmovnz %[tmph], %[xh]\n\n"                        \
-                     : [s]"+m"(s), [tmph]"+rm?"(tmph), [tmpl]"+rm?"(tmpl), \
-                       [xh]"=r"(x.h), [xl]"=r"(x.l));                 	\
-         })
-
-#define x86_sign_apply(s, x)                                            \
-        ({                                                              \
-                unsigned tmpl = 0, tmph = 0;                            \
-                asm ("sub %[tmpl], %[xl]\n\t"                           \
-                     "sbb %[tmph], %[xh]\n\t"                           \
-                     "cmpl $0x80000000, %[s]\n\t" 			\
-                     "cmove %[tmpl], %[xl]\n\t"                 	\
-                     "cmove %[tmph], %[xh]\n\n"                 	\
-                     : [tmph]"+rm?"(tmph), [tmpl]"+rm?"(tmpl), 		\
-                       [xh]"=r"(x.h), [xl]"=r"(x.l)                     \
-                     : [s]"m"(s));                      		\
-         })
-
-What do you think? I am out of my mind? Would you see llimd defined
-locally in each asm/arith.h using these macros? Or should we make this 
-yet another macro defined by asm/arith.h and used by 
-asm-generic/arith.h? 
-
-Note that on ARM, the inline assembly would be shorter (maybe there are
-shorter solutions on x86_32, but as usual, they are probably not natural).
+Wolfgang Denk
 
 -- 
-					    Gilles.
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
+Far back in the mists of ancient time, in the great and glorious days
+of the former Galactic Empire, life was wild, rich  and  largely  tax
+free.         - Douglas Adams, _The Hitchhiker's Guide to the Galaxy_
 
