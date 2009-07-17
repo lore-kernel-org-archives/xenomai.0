@@ -1,51 +1,95 @@
-Message-ID: <4A2580C5.4000806@domain.hid>
-Date: Tue, 02 Jun 2009 15:43:01 -0400
-From: Jeff Angielski <jeff@domain.hid>
+Message-ID: <4A60E4FF.9020307@domain.hid>
+Date: Fri, 17 Jul 2009 22:54:23 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4A2452CB.2030909@domain.hid>
-In-Reply-To: <4A2452CB.2030909@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] How to chose between xenomai and preempt RT
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] [rfc] Jumpless *llimd.
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Adrien LECOINTRE <adrien20@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-Adrien LECOINTRE wrote:
-> Hi,
-> 
-> I've been testing for a while, Xenomai and Linux preempt RT latencies 
-> under different loads and I couldn't find any big differences. Latencies 
-> are almost the same.
-> So my question is, do you know any case where Xenomai is really better 
-> than a simple preempt RT?
-> Or which specification in a real time application should make me chose 
-> Xenomai instead of preempt RT?
 
-I suspect your loads are not sufficiently exercising your system.
+Hi,
 
-To answer your question, though, it all depends on your requirements, 
-whether you need hard or soft realtime.  In other words, is it ok to 
-miss your deadline every so often?  If so, CONFIG_PREEMPT would be fine 
-for you. If you can't miss any deadlines, use Xenomai.
+we discussed this issue several times already I believe: it would be 
+fine if llimd (and nodiv_llimd) could work without jumps. 32 bits 
+compiler are unable to generate code without jumps for the following 
+sequence:
 
-Of course, just by choosing to use Xenomai, you don't get hard realtime. 
-  You still need to design your system and software correctly.
+union u64 {
+	long long ll;
+	unsigned l, h;
+};
 
-As time marches on, the CONFIG_PREEMPT is getting closer to hard 
-realtime, especially with the interrupt threading, but I don't think 
-that time is now.
+long long llimd(union u64 x, unsigned m, unsigned d)
+{
+	unsigned s = x.h & 0x80000000;
+	if (s)
+		x.ll = -x.ll;
+	x.ll = ullimd(x.ll, m, d);
+	if (s)
+		x.ll = -x.ll;
+}
+
+even though this works for x86_64 compiler.
+
+So, I thought, we might help a bit with inline assembly (after all, 
+ullimd is already inline assembly). For instance, we could define macros
+with the following semantic:
+
+#define sign_split(s, x)                        \
+        s = x.l & (1 << 31);                    \
+        if (s)                                  \
+                x.ll = -x.ll;
+
+#define sign_apply(s, x)                        \
+        if (s)                                  \
+                x.ll = -x.ll
+
+
+Jumpless versions on x86_32, using the cmov instruction, would give us:
+
+#define x86_sign_split(s, x)                                            \
+        ({                                                              \
+                unsigned tmpl = 0, tmph = 0;                            \
+                s = x.h;                                        	\
+                asm ("sub %[tmpl], %[xl]\n\t"                           \
+                     "sbb %[tmph], %[xh]\n\t"                           \
+                     "andl $0x80000000, %[s]\n\t"                       \
+                     "cmovnz %[tmpl], %[xl]\n\t"                        \
+                     "cmovnz %[tmph], %[xh]\n\n"                        \
+                     : [s]"+m"(s), [tmph]"+rm?"(tmph), [tmpl]"+rm?"(tmpl), \
+                       [xh]"=r"(x.h), [xl]"=r"(x.l));                 	\
+         })
+
+#define x86_sign_apply(s, x)                                            \
+        ({                                                              \
+                unsigned tmpl = 0, tmph = 0;                            \
+                asm ("sub %[tmpl], %[xl]\n\t"                           \
+                     "sbb %[tmph], %[xh]\n\t"                           \
+                     "cmpl $0x80000000, %[s]\n\t" 			\
+                     "cmove %[tmpl], %[xl]\n\t"                 	\
+                     "cmove %[tmph], %[xh]\n\n"                 	\
+                     : [tmph]"+rm?"(tmph), [tmpl]"+rm?"(tmpl), 		\
+                       [xh]"=r"(x.h), [xl]"=r"(x.l)                     \
+                     : [s]"m"(s));                      		\
+         })
+
+What do you think? I am out of my mind? Would you see llimd defined
+locally in each asm/arith.h using these macros? Or should we make this 
+yet another macro defined by asm/arith.h and used by 
+asm-generic/arith.h? 
+
+Note that on ARM, the inline assembly would be shorter (maybe there are
+shorter solutions on x86_32, but as usual, they are probably not natural).
 
 -- 
-Jeff Angielski
-The PTR Group
-www.theptrgroup.com
+					    Gilles.
 
