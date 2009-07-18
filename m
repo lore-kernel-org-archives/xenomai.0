@@ -1,12 +1,19 @@
-Message-ID: <4A60A372.90105@domain.hid>
-Date: Fri, 17 Jul 2009 18:14:42 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4A618101.2000608@domain.hid>
+Date: Sat, 18 Jul 2009 10:00:01 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4A60A0D7.5020006@domain.hid>
-In-Reply-To: <4A60A0D7.5020006@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai on Crusoe TM5900
+References: <alpine.DEB.2.00.0907142049190.4341@domain.hid>
+	<4A5D88E9.2010305@domain.hid>
+	<Pine.LNX.4.62.0907151048370.24398@domain.hid>
+	<Pine.LNX.4.62.0907151610090.24888@domain.hid>
+	<4A5F9E8A.3010906@domain.hid>
+	<Pine.LNX.4.62.0907171349580.28491@domain.hid>
+In-Reply-To: <Pine.LNX.4.62.0907171349580.28491@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig4F6773167120ABB33B379C16"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] rtdm_mmap_to_user without MMU
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,72 +23,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Pierre Ficheux <pierre.ficheux@domain.hid>
+To: Kolja Waschk <xenoka09@domain.hid>
 Cc: xenomai@xenomai.org
 
-Pierre Ficheux wrote:
-> Hi all,
-> 
-> I try to use Xenomai on TM5900 CPU:
-> 
-> Kernel is 2.6.28.9
-> Xenomai is 2.4.8
-> 
-> First configuration (CONFIG_HPET_TIMER is not set) gives lots of
-> overruns with latency program:
-> 
-> == Sampling period: 100 us
-> == Test mode: periodic user-mode task
-> == All results in microseconds
-> warming up...
-> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
-> worst
-> RTD|       4.493|      12.861|      25.111|       0|       4.493|
-> 25.111
-> RTD|       9.057|      13.876|    1152.413|      37|       4.493|
-> 1152.413
-> RTD|      12.180|      13.755|     640.259|      53|       4.493|
-> 1152.413
-> RTD|      12.285|      13.924|     618.703|      70|       4.493|
-> 1152.413
-> ...
-> 
-> Please not I use CONFIG_HZ=250 as CONFIG_HZ=1000 freezes at boot time
-> system with "clocksource tsc unstable" message.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig4F6773167120ABB33B379C16
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Ok. Your processor likely halts the tsc when idle, or something. You
-should try and see if there is no processor-specific kernel parameter to
-prevent this behaviour, or alternatively try passing idle=poll.
+Kolja Waschk wrote:
+>> they will become two in the end), see below. Please check if it works
+>> for you.
+>=20
+> Aah, I was checking too hastily and missed a compile error. Sorry!
+> Actually, there's a typo in the get_unmapped_area (filp <-> file), and
+> it does _not_ work this way, unless the address to map is specified as
+> the offset when calling do_mmap:
+>=20
+>     user_ptr =3D (void *)do_mmap(filp, (unsigned long)*pptr, len, prot,=
 
-You may also have issues with SMIs, see the TROUBLESHOOTING guide.
+>                        MAP_SHARED, mmap_data->src_vaddr);
+>=20
+> Otherwise pptr will simply remain zero.
 
-> 
-> 
-> If I set HPET:
-> 
-> CONFIG_HPET_TIMER=y
-> CONFIG_HPET_EMULATE_RTC=y
-> CONFIG_X86_UP_APIC=y
-> CONFIG_X86_UP_IOAPIC=y
-> CONFIG_X86_LOCAL_APIC=y
-> CONFIG_X86_IO_APIC=y
-> 
-> I have a very strange message when starting latency:
-> 
-> Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
-> (modprobe xeno_native?)
-> 
-> Of course native skin is present and CONFIG_XENO_OPT_PERVASIVE enabled
-> 
-> CONFIG_XENO_SKIN_NATIVE=y
-> CONFIG_XENO_OPT_PERVASIVE=y
-> 
-> Any idea?
+Hmm, thought I got all paths. Such side effects indicate that this way
+is not a stable one. Ok, will try to find a better solution, but may
+take some time.
 
-Please show us the full .config.
+Jan
 
--- 
-                                          Gilles
 
+--------------enig4F6773167120ABB33B379C16
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkphgQYACgkQniDOoMHTA+nF8ACeMe/ZpOfV9T58z1eciTdFj7/3
+lB4AnjtM9cXW0U2wQSs7KYFm8nsMPgjj
+=3P5b
+-----END PGP SIGNATURE-----
+
+--------------enig4F6773167120ABB33B379C16--
 
