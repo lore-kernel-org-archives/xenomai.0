@@ -1,13 +1,11 @@
-From: Wolfgang Denk <wd@domain.hid>
-Mime-version: 1.0
-Content-type: text/plain; charset=ISO-8859-1
-Content-transfer-encoding: 8bit
-In-reply-to: <71D4C981-5356-40C4-AD25-3EA41BD566BC@gmail.com>
-References: <C026136E-758C-4767-988F-742C8FA08EE9@domain.hid>
-	<71D4C981-5356-40C4-AD25-3EA41BD566BC@gmail.com>
-Date: Sat, 18 Jul 2009 00:04:26 +0200
-Message-Id: <20090717220426.DBB76832E416@domain.hid>
-Subject: Re: [Xenomai-core] RT_PREEMPT patch and other things...
+Content-Class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Sat, 18 Jul 2009 11:50:55 +0200
+Message-ID: <899865CA54E4444DAF2E3639C04C5F4806005D@trillian.at.omicron.at>
+From: Richard Cochran <richard.cochran@domain.hid>
+Subject: [Xenomai-core] Strange results with ARM EABI, gcc 4.3.2
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,30 +14,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Andreas Glatz <andi.glatz@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Dear Andreas Glatz,
+A certain xenomai project on ARM Linux of mine has been working fine
+using gcc 3.4.5. I wanted to use a more recent compiler and the EABI,
+so I used a default setting from crosstool-NG-1.4.1, which produces
+gcc version 4.3.2.
 
-In message <71D4C981-5356-40C4-AD25-3EA41BD566BC@gmail.com> you wrote:
-> 
-> When do u think Xenomai-Solo will become stable (ready for production  
-> use on a powerpc platform)?
+However, I get the following result running the trivial-periodic
+example program:
 
-Umm... it was stable when it has been released, or do you think
-Philippe would release unstable code? 
+# ./trivial-periodic &
+# cat /proc/xenomai/sched=20
+CPU  PID    PRI      PERIOD     TIMEOUT    TIMEBASE  STAT       NAME
+  0  0       -1      0          0          master    R          ROOT
+  0  850     99      1000000000 79513195085358725 master    D          =
+trivial
 
-Really - do you think there are any deficiencies in Xenomai-Solo?
+Looks like I will be waiting a long, long time for the timeout ;^)
+Any ideas?
 
-Best regards,
+Thanks,
+Richard
 
-Wolfgang Denk
-
--- 
-DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
-Far back in the mists of ancient time, in the great and glorious days
-of the former Galactic Empire, life was wild, rich  and  largely  tax
-free.         - Douglas Adams, _The Hitchhiker's Guide to the Galaxy_
 
