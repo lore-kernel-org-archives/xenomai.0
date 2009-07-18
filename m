@@ -1,12 +1,15 @@
-Message-ID: <4A54582E.5070407@domain.hid>
-Date: Wed, 08 Jul 2009 10:26:22 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4A61C690.3030306@domain.hid>
+Date: Sat, 18 Jul 2009 14:56:48 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <852117.36446.qm@domain.hid>
-In-Reply-To: <852117.36446.qm@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pthread_create memory size
+References: <1247750127.306081.22356.nullmailer@domain.hid>		<1247754601.4228.73.camel@domain.hid>		<1247829470.829653.30773.nullmailer@domain.hid>		<1247832340.4228.132.camel@domain.hid>		<1247837534.904271.19070.nullmailer@domain.hid>	<1247838733.4228.139.camel@domain.hid>	<1247845909.586479.22758.nullmailer@domain.hid>
+	<4A618239.90506@domain.hid> <4A61A4BE.5070308@domain.hid>
+In-Reply-To: <4A61A4BE.5070308@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig19F67C5092935045CD1DDFAD"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] rt_task_shadow returns always -EFAULT
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,106 +19,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Yigal Goldberger <yigal_gold@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Petr Cervenka <grugh@domain.hid>, xenomai-help <xenomai@xenomai.org>
 
-Yigal Goldberger wrote:
-> Hi again,
-> I've performed the cat proc/pid/maps
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig19F67C5092935045CD1DDFAD
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Ok, could you try /proc/pid/smaps? It gives you the sizes. Anyway:
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Petr Cervenka wrote:
+>>>>>> Try instrumenting ksrc/skins/native/syscall.c, __rt_task_create(),=
+ to
+>>>>>> identify which spot returns -EFAULT. I can't reproduce this issue =
+on a
+>>>>>> ppc target; I may try over x86 later, but this would speed up thin=
+gs if
+>>>>>> you could spot the failing test before I'm able to switch to this.=
 
-> 
-> I see a lot of libraries that were loaded .
-> Can you assist me in understanding this output :
-> 
-> 
-> 
->  -bash-3.2# cat proc/1203/maps
-> uart_ioctl, cmd is 802c7415
-> in set_termios
-> in change_termios
-> 00100000-00103000 r-xp 00100000 00:00 0          [vdso]
-> 0fa60000-0fb9c000 r-xp 00000000 00:0b 3577533    /lib/libc-2.6.so
-> 0fb9c000-0fbdb000 ---p 0013c000 00:0b 3577533    /lib/libc-2.6.so
-> 0fbdb000-0fbdd000 r--p 0013b000 00:0b 3577533    /lib/libc-2.6.so
-> 0fbdd000-0fbe0000 rwxp 0013d000 00:0b 3577533    /lib/libc-2.6.so
-> 0fbe0000-0fbe3000 rwxp 0fbe0000 00:00 0
-> 0fbf3000-0fc06000 r-xp 00000000 00:0b 3577554    /lib/libgcc_s.so.1
-> 0fc06000-0fc45000 ---p 00013000 00:0b 3577554    /lib/libgcc_s.so.1
-> 0fc45000-0fc46000 rwxp 00012000 00:0b 3577554    /lib/libgcc_s.so.1
-> 0fc56000-0fcf6000 r-xp 00000000 00:0b 3577583    /lib/libm-2.6.so
-> 0fcf6000-0fd35000 ---p 000a0000 00:0b 3577583    /lib/libm-2.6.so
-> 0fd35000-0fd36000 r--p 0009f000 00:0b 3577583    /lib/libm-2.6.so
-> 0fd36000-0fd39000 rwxp 000a0000 00:0b 3577583    /lib/libm-2.6.so
-> 0fd49000-0fd4c000 r-xp 00000000 00:0b 3508708    /usr/xenomai/lib/librtdm.so.1.0
-> .0
-> 0fd4c000-0fd8b000 ---p 00003000 00:0b 3508708    /usr/xenomai/lib/librtdm.so.1.0
-> .0
-> 0fd8b000-0fd8c000 rwxp 00002000 00:0b 3508708    /usr/xenomai/lib/librtdm.so.1.0
-> .0
-> 0fd9c000-0fe8a000 r-xp 00000000 00:0b 3577648    /lib/libstdc++.so.6.0.9
-> 0fe8a000-0fec9000 ---p 000ee000 00:0b 3577648    /lib/libstdc++.so.6.0.9
-> 0fec9000-0fecd000 r--p 000ed000 00:0b 3577648    /lib/libstdc++.so.6.0.9
-> 0fecd000-0fece000 rwxp 000f1000 00:0b 3577648    /lib/libstdc++.so.6.0.9
-> 0fece000-0fed5000 rwxp 0fece000 00:00 0
-> 0fee5000-0feec000 r-xp 00000000 00:0b 3577633    /lib/librt-2.6.so
-> 0feec000-0ff2b000 ---p 00007000 00:0b 3577633    /lib/librt-2.6.so
-> 0ff2b000-0ff2c000 r--p 00006000 00:0b 3577633    /lib/librt-2.6.so
-> 0ff2c000-0ff2d000 rwxp 00007000 00:0b 3577633    /lib/librt-2.6.so
-> 0ff3d000-0ff51000 r-xp 00000000 00:0b 3577623    /lib/libpthread-2.6.so
-> 0ff51000-0ff91000 ---p 00014000 00:0b 3577623    /lib/libpthread-2.6.so
-> 0ff91000-0ff92000 r--p 00014000 00:0b 3577623    /lib/libpthread-2.6.so
-> 0ff92000-0ff93000 rwxp 00015000 00:0b 3577623    /lib/libpthread-2.6.so
-> 0ff93000-0ff95000 rwxp 0ff93000 00:00 0
-> 0ffa5000-0ffb0000 r-xp 00000000 00:0b 3509109    /usr/xenomai/lib/libpthread_rt.
-> so.1.0.0
-> 0ffb0000-0ffef000 ---p 0000b000 00:0b 3509109    /usr/xenomai/lib/libpthread_rt.
-> so.1.0.0
-> 0ffef000-0fff0000 rwxp 0000a000 00:0b 3509109    /usr/xenomai/lib/libpthread_rt.
-> so.1.0.0
-> 10000000-1003e000 r-xp 00000000 00:0b 3509108    /802Rdr
-> 1007e000-1007f000 rwxp 0003e000 00:0b 3509108    /802Rdr
-> 1007f000-10081000 rwxp 1007f000 00:00 0
-> 10081000-100eb000 rwxp 10081000 00:00 0          [heap]
-> 48000000-4801d000 r-xp 00000000 00:0b 3577520    /lib/ld-2.6.so
-> 4801d000-4801e000 rw-p 4801d000 00:00 0
-> 4801e000-4801f000 rw-p 4801e000 00:00 0
-> 4801f000-48020000 rw-s 10000000 00:0b 3506904    /dev/mem
-> 48020000-48021000 rw-s 00010000 00:0b 3506904    /dev/mem
-> 48023000-48026000 rw-p 48023000 00:00 0
-> 48026000-4802e000 rw-s 10010000 00:0b 3506904    /dev/mem
-> 4805c000-4805d000 r--p 0001c000 00:0b 3577520    /lib/ld-2.6.so
-> 4805d000-4805e000 rwxp 0001d000 00:0b 3577520    /lib/ld-2.6.so
-> 4805e000-4805f000 ---p 4805e000 00:00 0
-> 4805f000-4885e000 rw-p 4805f000 00:00 0
+>>>>>>
+>>>>> Meanwhile I tried to mess little bit with rt_task_shadow() function=
+ to see, where is the source of -EFAULT. I planned to continue to follow =
+it inside syscall etc.
+>>>>> But most attempts to confirm, that the value is returned by line:
+>>>>> 	err =3D XENOMAI_SKINCALL2(__native_muxid, __native_task_create, &b=
+ulk,
+>>>>> 				NULL);
+>>>> This branches to __rt_task_create in kernel space.
+>>>>
+>>> The bulk variable is totally wrong in kernel space:
+>>> for example (2, 0, 0, 0, 0, 134217728), perhaps always same values. V=
+alue 2 could be number of arguments of the skincall.
+>>> It fails on following line (syscall.c:aprox. 193):
+>>> 	if (__xn_safe_copy_to_user((void __user *)bulk.a1, &ph, sizeof(ph)))=
+ {
+>>>
+>>>>> where suprisingly followed by correct behavior. For example followi=
+ng (nothing doing) change in the attached patch solves the whole thing:
+>>>>> --- /usr/src/xenomai/src/skins/native/task2.c   2009-04-13 19:20:18=
+=2E000000000 +0200
+>>>>> +++ /usr/src/xenomai/src/skins/native/task.c    2009-07-17 15:06:20=
+=2E000000000 +0200
+>>>>> @@ -241,6 +241,7 @@
+>>>>>         pthread_setspecific(__native_tskey, NULL);
+>>>>>         free(self);
+>>>>>  #endif /* !HAVE___THREAD */
+>>>>> +       rt_task_set_mode(0, 0, NULL);
+>>>>>         return err;
+>>>>>  }
+>>>>>
+>>>>> objdumps of original and changed rt_task_shadow() is in attachment
+>>>>>
+>>>>> I will continue in research, but I'm really not good in dissasembli=
+ng nor the register knowledge.
+>>>>>
+>>>> Try rebuilding the user-space libs passing --without-__thread to the=
 
-This is typically a thread stack: the page with only the 'p' flag is the
-"guard page", which will cause a segmentation fault in case of stack
-overflow. The other area is the stack, its size is 8 MB.
+>>>> configure script.
+>>>>
+>>> After rebuilding with "./configure --enable-smp --without-__thread" i=
+t works without any problems.
+>>> Do you already know, where the problem is? What does the "--without-_=
+_thread" argument mean?
+>> It's reproducible, will try to understand it. It's either a compiler b=
+ug
+>=20
+> That would be the second compiler bug with __thread (we have a bug on
+> arm). If we add this to the fact that supporting __thread clutters the
+> code with many #ifdefs, and does not improve performances on other
+> platforms than x86 where so many cycles are executed by nanosecond that=
 
-> 4885e000-4885f000 ---p 4885e000 00:00 0
-> 4885f000-4905e000 rw-p 4885f000 00:00 0
+> it does not matter that much, I'd say let's get rid of __thread.
+>=20
+> Besides, it really looks like C++ syntactic sugar where the compiler
+> makes things behind my back when I use a seemingly simple syntax, it
+> does not conform with what I would expect from a C compiler.
+>=20
 
-8 MB
+TLS was just the catalyst. The x86_64 syscall interface is defined in a
+too fragile way. As Petr already noticed, the core of the problem is
+that the syscall argument &bulk does not reach the kernel. And if you
+look at the disassembly kubuntu's gcc-4.3.1 generates, it's obvious why:
+rdi is not initialized at all with &bulk. For some reason, the compiler
+thinks it could leave this out or rdi would already contain the correct
+address.
 
-etc...
+However, I successfully applied the pattern Xen hypercalls use ("+r"
+in/out arguments). Will switch Xenomai to this scheme (which is also
+easier readable) and will fold in the 32-bit version at this chance, too.=
 
 
-> 4d85e000-4d85fuart_ioctl, cmd is 402c7413
+Jan
 
-These uart_ioctl are printks in one of your drivers probably
 
-> bfe75000-bfe8a000 rw-p bffeb000 00:00 0          [stack]
+--------------enig19F67C5092935045CD1DDFAD
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-The main thread stack, strangely, is only 86K large (I believe it is
-allocated on demand).
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-Did you try to check pthread_attr_setstacksize return value when calling it?
+iEYEARECAAYFAkphxpcACgkQniDOoMHTA+m1cACePVZohJgISRDCXp42NDGgPyOX
+c70AniEOr+eU2OXCJo9EiJvCH+7SC/qD
+=iFQQ
+-----END PGP SIGNATURE-----
 
-Please do not forget to cc the mailing list.
-
--- 
-                                          Gilles
-
+--------------enig19F67C5092935045CD1DDFAD--
 
