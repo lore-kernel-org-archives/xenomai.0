@@ -1,15 +1,14 @@
-Message-ID: <4A62D5EC.6010605@domain.hid>
-Date: Sun, 19 Jul 2009 10:14:36 +0200
+Message-ID: <4A62D608.2090802@domain.hid>
+Date: Sun, 19 Jul 2009 10:15:04 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <D2793D9B-14B5-493B-9D5E-B9E4F60F8761@domain.hid>	<4A60A5B5.3090604@domain.hid>
-	<20090717194523.2CA1F832E416@domain.hid>
-In-Reply-To: <20090717194523.2CA1F832E416@domain.hid>
+References: <4A60E4FF.9020307@domain.hid>
+In-Reply-To: <4A60E4FF.9020307@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigEAE3482863019A3380D73EC1"
+	boundary="------------enig37B73A4E350F65864CFBF969"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] RT_PREEMPT patch and other things...
+Subject: Re: [Xenomai-core] [rfc] Jumpless *llimd.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,96 +17,119 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Denk <wd@domain.hid>
-Cc: Andreas Glatz <andi.glatz@domain.hid>, xenomai@xenomai.org, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigEAE3482863019A3380D73EC1
+--------------enig37B73A4E350F65864CFBF969
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Wolfgang Denk wrote:
-> Dear Jan Kiszka,
+Gilles Chanteperdrix wrote:
+> Hi,
 >=20
-> In message <4A60A5B5.3090604@domain.hid> you wrote:
->>> 4) What are the most important conferences/summits/... for Xenomai =20
->>> developers?
->> E.g. RTLWS [1]. At least /me plans to attend (though on a non-Xenomai
->> topic).
+> we discussed this issue several times already I believe: it would be=20
+> fine if llimd (and nodiv_llimd) could work without jumps. 32 bits=20
+> compiler are unable to generate code without jumps for the following=20
+> sequence:
 >=20
-> Actually I'm trying to organize something like a Xenomai User's
-> Meeting at this year's RTLWS.
-
-Great! Wolfgang G. mentioned it recently, but I was already afraid it
-would not make it beyond a "it would be nice if...".
-
+> union u64 {
+> 	long long ll;
+> 	unsigned l, h;
+> };
 >=20
-> So far some Xenomai / Adeos related presentations have  already  been
-> submitted  (though  I  don't  know  about acceptance, schedule or the
-> like):
+> long long llimd(union u64 x, unsigned m, unsigned d)
+> {
+> 	unsigned s =3D x.h & 0x80000000;
+> 	if (s)
+> 		x.ll =3D -x.ll;
+> 	x.ll =3D ullimd(x.ll, m, d);
+> 	if (s)
+> 		x.ll =3D -x.ll;
+> }
 >=20
-> * ARM Fast Context Switch Extension for Linux
->   Richard Cochran, OMICRON electronics GmbH
->   Gilles Chanteperdrix, xenomai.org
+> even though this works for x86_64 compiler.
 >=20
-> * Transparent real time behavior, a new approach
->   Rene Graf, Siemens AG
->   Manfred Neugebauer, Siemens AG
->   Wolfgang Hartmann, Siemens AG
+> So, I thought, we might help a bit with inline assembly (after all,=20
+> ullimd is already inline assembly). For instance, we could define macro=
+s
+> with the following semantic:
 >=20
-> * Colibri-in-Motion: embedded virtualization technics devoted to hard r=
-ealtime control
->   Daniel Rossier, Reconfigurable Embedded Digital Systems, HEIG-VD/HES-=
-SO, Switzerland
->   Patrick Gerber, Reconfigurable Embedded Digital Systems, HEIG-VD/HES-=
-SO, Switzerland
+> #define sign_split(s, x)                        \
+>         s =3D x.l & (1 << 31);                    \
+>         if (s)                                  \
+>                 x.ll =3D -x.ll;
 >=20
-> * Real Time Toolkit for Open Robot Control Software
->   Peter Soetens, Katholieke Universiteit Leuven
->   Markus Klotzb=FCcher, Katholieke Universiteit Leuven
->=20
-> (not mentioned here several presentations covering RTAI).
->=20
-> In addition to Gilles'/Richard's  presentation  above  Philippe  also
-> indicated that he might eventually come and give a presentation :-)
+> #define sign_apply(s, x)                        \
+>         if (s)                                  \
+>                 x.ll =3D -x.ll
 >=20
 >=20
->=20
-> Anybody interested to come: please let me know. My dream is  that  as
-> many as possible give a short (2...5 minutes sufficient) presentation
-> of  their  project:  how  long  they've  been using Xenomai, on which
-> platform, what their  are  of  business  is,  eventually  what  their
-> project is about, success stories, what you like about Xenomai, where
-> you  ran  into  problems, what is still missing in Xenomai to make it
-> even easier to use for you, etc. etc...
->=20
->=20
-> I know that many people from many companies read this  list  and  use
-> Xenomai  in  their projects, often without ever activly participating
-> in the discussions here. Come together at RTLWS! That's the chance to
-> see who else is doing the same, and to match faces to names.
-
-I will spread the news internally, but I'm afraid it's still too early
-for our customers to show up publicly. In any case, I will try to
-prepare some technical information that can be released already (at the
-bare minimum a summary of what went to the list and into the repos
-during our project).
+> Jumpless versions on x86_32, using the cmov instruction, would give us:=
 
 >=20
-> See http://www.osadl.org/Dresden-2009.rtlws11-dresden-2009.0.html for
-> details, and/or contact me in case of questions, suggestions,  or  if
-> you have an abstract for a presentation (yes, the deadline is already
-> past, but I'll try to help).
+> #define x86_sign_split(s, x)                                           =
+ \
+>         ({                                                             =
+ \
+>                 unsigned tmpl =3D 0, tmph =3D 0;                       =
+     \
+>                 s =3D x.h;                                        	\
+>                 asm ("sub %[tmpl], %[xl]\n\t"                          =
+ \
+>                      "sbb %[tmph], %[xh]\n\t"                          =
+ \
+>                      "andl $0x80000000, %[s]\n\t"                      =
+ \
+>                      "cmovnz %[tmpl], %[xl]\n\t"                       =
+ \
+>                      "cmovnz %[tmph], %[xh]\n\n"                       =
+ \
+>                      : [s]"+m"(s), [tmph]"+rm?"(tmph), [tmpl]"+rm?"(tmp=
+l), \
+>                        [xh]"=3Dr"(x.h), [xl]"=3Dr"(x.l));              =
+   	\
+>          })
 >=20
-> Best regards,
+> #define x86_sign_apply(s, x)                                           =
+ \
+>         ({                                                             =
+ \
+>                 unsigned tmpl =3D 0, tmph =3D 0;                       =
+     \
+>                 asm ("sub %[tmpl], %[xl]\n\t"                          =
+ \
+>                      "sbb %[tmph], %[xh]\n\t"                          =
+ \
+>                      "cmpl $0x80000000, %[s]\n\t" 			\
+>                      "cmove %[tmpl], %[xl]\n\t"                 	\
+>                      "cmove %[tmph], %[xh]\n\n"                 	\
+>                      : [tmph]"+rm?"(tmph), [tmpl]"+rm?"(tmpl), 		\
+>                        [xh]"=3Dr"(x.h), [xl]"=3Dr"(x.l)                =
+     \
+>                      : [s]"m"(s));                      		\
+>          })
 >=20
-> Wolfgang Denk
+> What do you think? I am out of my mind? Would you see llimd defined
+> locally in each asm/arith.h using these macros? Or should we make this =
+
+> yet another macro defined by asm/arith.h and used by=20
+> asm-generic/arith.h?=20
 >=20
+> Note that on ARM, the inline assembly would be shorter (maybe there are=
+
+> shorter solutions on x86_32, but as usual, they are probably not natura=
+l).
+>=20
+
+The approach is generally fine, but you have to take measures to avoid
+using cmove on CPUs that don't support it. They may be still around
+(older VIA C3 e.g.).
 
 Jan
 
 
---------------enigEAE3482863019A3380D73EC1
+--------------enig37B73A4E350F65864CFBF969
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -116,10 +138,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkpi1ewACgkQniDOoMHTA+kO4QCfReqsD4VXHXvbNKDHC0+j6Ka5
-BjMAmwd062SCLDD1TpdiGjTyVsHJr5PH
-=qs9b
+iEYEARECAAYFAkpi1ggACgkQniDOoMHTA+n8bgCeIDJDZXO3gbEZ2nNicIGG0HsQ
+LAUAmgMgf0TlXqRbCpi6RmAC1A8ZYeME
+=+y/O
 -----END PGP SIGNATURE-----
 
---------------enigEAE3482863019A3380D73EC1--
+--------------enig37B73A4E350F65864CFBF969--
 
