@@ -1,12 +1,14 @@
-Message-ID: <4A6323D9.50900@domain.hid>
-Date: Sun, 19 Jul 2009 15:47:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4A60E4FF.9020307@domain.hid> <4A62D608.2090802@domain.hid>
-In-Reply-To: <4A62D608.2090802@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4A6322E1.1030908@domain.hid>
+References: <4A62D1C1.9050807@domain.hid> <4A62D2B8.8030907@domain.hid>
+	<4A6322E1.1030908@domain.hid>
+Content-Type: text/plain
+Date: Sun, 19 Jul 2009 16:31:24 +0200
+Message-Id: <1248013884.4228.155.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [rfc] Jumpless *llimd.
+Subject: Re: [Xenomai-core] [PATCH 2/3] x86-64: Work around gcc issues with
+ populating syscall registers
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,18 +17,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Petr Cervenka <grugh@domain.hid>, Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> The approach is generally fine, but you have to take measures to avoid
-> using cmove on CPUs that don't support it. They may be still around
-> (older VIA C3 e.g.).
+On Sun, 2009-07-19 at 15:42 +0200, Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+> > +#define LOAD_ARGS_0()	asm volatile ("" ::: "memory");
+> 
+> g++, at least some verions in the past, chokes on ::: so, you should do
+> : /* */ : /* */ :
+> 
 
-The kernel has a #define and in user-space, we would have to add a
-configure option, and we can test in /proc/cpuinfo if the instruction is
-supported by the processor.
+I will fix this manually while merging.
 
+> 
+> 
 -- 
-					    Gilles.
+Philippe.
+
+
 
