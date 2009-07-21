@@ -1,17 +1,16 @@
-Message-ID: <4A62D396.3090006@domain.hid>
-Date: Sun, 19 Jul 2009 10:04:38 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <1247750127.306081.22356.nullmailer@domain.hid>		<1247754601.4228.73.camel@domain.hid>		<1247829470.829653.30773.nullmailer@domain.hid>		<1247832340.4228.132.camel@domain.hid>		<1247837534.904271.19070.nullmailer@domain.hid>	<1247838733.4228.139.camel@domain.hid>	<1247845909.586479.22758.nullmailer@domain.hid>
-	<4A618239.90506@domain.hid> <4A61A4BE.5070308@domain.hid>
-	<4A61C690.3030306@domain.hid> <4A61C7B6.2080704@domain.hid>
-	<4A61CEAF.6060902@domain.hid> <4A61D0C1.30607@domain.hid>
-In-Reply-To: <4A61D0C1.30607@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig41F631EDE2C7088A177ED516"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] rt_task_shadow returns always -EFAULT
+In-Reply-To: <4A606C1A.9050800@domain.hid>
+References: <6a782b880906051338r401163b2m7e1d1a53f7f0800@domain.hid> 
+	<4A299794.6010504@domain.hid>
+	<6a782b880906101236l625792d5p6fcd3dad53e965a2@domain.hid> 
+	<4A3010BE.9020107@domain.hid>
+	<6a782b880907170418q6bd4fbe7p6fde0f0c6bae551c@domain.hid> 
+	<4A606C1A.9050800@domain.hid>
+From: Thiago Lima <thiagolims@domain.hid>
+Date: Tue, 21 Jul 2009 18:46:54 +0000
+Message-ID: <6a782b880907211146l438da963k2297955701bf20b2@domain.hid>
+Content-Type: multipart/alternative; boundary=000e0cd6ae8cd97e3f046f3baea2
+Subject: Re: [Xenomai-help] Get ready queue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,59 +20,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Petr Cervenka <grugh@domain.hid>, xenomai-help <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org, rpm@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig41F631EDE2C7088A177ED516
-Content-Type: text/plain; charset=UTF-8
+--000e0cd6ae8cd97e3f046f3baea2
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+Thanks for all suggestions and help.
+
+Well, i have extended xenomai nucleus with some data (wcet, activation
+period (latency)). Then, i have created system calls so that applications
+can inform to system these parameters.
+
+All tasks in the system should pass for schedulability test because we need
+to ensure that real time processes worst case computation time will be
+respected. So, i cannot create another scheduler class and, for this reason,
+i have extended kernel threads. (i could not think another solution)
+
+Indeed, i have applied a patch suggested by Philippe to catch user land
+tasks whenever they start. As soon as possible, I will update to xenomai 2.5
+core to test the module and an application.
+
+There, now, 2 main questions:
+
+1) I need to do some divisions in this module, but i could not use FPU in
+kernel. How do you handle this in xenomai nucleus ? Are there some examples
+of use in xenomai kernel code ?
+
+2) I am not yet considering threads with same priority. (cause i know
+xenomai uses RR or FIFO with them). How can i get list of threads with an
+specific priority ? Is there some example (reference) in xenomai kernel
+code?
+
+
+Thanks for help,
+
+Thiago.
+
+
+On Fri, Jul 17, 2009 at 12:18 PM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> Thiago Lima wrote:
+> > I am doing an schedulability test of real time processes in Xenomai.
+> (...)
+> > My question is: how can i get all ready xenomai tasks ? Because i need
+> > to get the amount of threads to do this test.
+> >
+> > Sorry for my last email. I have not so much time to write and it was
+> vague.
+>
+> I do not think you can do this schedulability test in general, you need
+> some additional data for each task, such as activation period and WCET,
+> so, what you should do is use Xenomai 2.5 and create your own scheduler
+> classes, and keep the list of tasks using these classes, presumably in
+> the per-class data. Then you would do the schedulatbility test only for
+> tasks in these classes.
+>
+> --
+>                                           Gilles
+>
+>
+
+--000e0cd6ae8cd97e3f046f3baea2
+Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> What was the precise brokenness you saw? Also a missing syscall
->> argument initialization? Can you easily reproduce the ARM issue?
->> Would be
->=20
-> It is here:
-> http://gcc.gnu.org/bugzilla/show_bug.cgi?id=3D38815
->=20
-> The arm syscalls contain a workaround, I copy the values to some
-> temporary variables, but I can not make it work with the bugzilla sampl=
-e
-> (though I am almost sure I tested it when I did it, I may have changed
-> toolchain version in the mean time).
->=20
->=20
->> interesting to know if '+r' makes a difference there, too.
->=20
-> I tested it after you mention it, and no, it makes no difference.
->=20
+Thanks for all suggestions and help.<br><br>Well, i have extended xenomai n=
+ucleus with some data (wcet, activation period (latency)). Then, i have cre=
+ated system calls so that applications can inform to system these parameter=
+s.<br>
 
-Meanwhile I also had troubles with the "+r" approach and even more
-aspects of the Xen way. But I found a different workaround, see the pull
-request.
+<br>All tasks in the system should pass for schedulability test because we =
+need to ensure that real time processes worst case computation time will be=
+ respected. So, i cannot create another scheduler class and, for this reaso=
+n, i have extended kernel threads. (i could not think another solution)<br>
 
-Also note that even removing all TLS references from rt_task_shadow made
-no difference for me. So this was really a different kind of bug than
-what you saw on ARM.
+<br>Indeed, i have applied a patch suggested by Philippe to catch user land=
+ tasks whenever they start. As soon as possible, I will update to xenomai 2=
+.5 core to test the module and an application.<br><br>There, now, 2 main qu=
+estions:<br>
 
-Jan
+<br>1) I need to do some divisions in this module, but i could not use FPU =
+in kernel. How do you handle this in xenomai nucleus ? Are there some examp=
+les of use in xenomai kernel code ?<br><br>2) I am not yet considering thre=
+ads with same priority. (cause i know xenomai uses RR or FIFO with them). H=
+ow can i get list of threads with an specific priority ? Is there some exam=
+ple (reference) in xenomai kernel code?<br>
 
+<br><br>Thanks for help,<br><br>Thiago.<br><br><br><div class=3D"gmail_quot=
+e">On Fri, Jul 17, 2009 at 12:18 PM, Gilles Chanteperdrix <span dir=3D"ltr"=
+>&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdr=
+ix@domain.hid</a>&gt;</span> wrote:<br>
 
---------------enig41F631EDE2C7088A177ED516
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
+204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Thiago Lima wrote=
+:<br>
+&gt; I am doing an schedulability test of real time processes in Xenomai. (=
+...)<br>
+<div class=3D"im">&gt; My question is: how can i get all ready xenomai task=
+s ? Because i need<br>
+&gt; to get the amount of threads to do this test.<br>
+&gt;<br>
+&gt; Sorry for my last email. I have not so much time to write and it was v=
+ague.<br>
+<br>
+</div>I do not think you can do this schedulability test in general, you ne=
+ed<br>
+some additional data for each task, such as activation period and WCET,<br>
+so, what you should do is use Xenomai 2.5 and create your own scheduler<br>
+classes, and keep the list of tasks using these classes, presumably in<br>
+the per-class data. Then you would do the schedulatbility test only for<br>
+tasks in these classes.<br>
+<br>
+--<br>
+<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles<br>
+<br>
+</font></blockquote></div><br><br>
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkpi05YACgkQniDOoMHTA+n+mACeIEkVr6LZlKk2oKoWnbWNII/q
-EUoAmwfF+UMffO09Er2cPy019LxHacZv
-=BCWM
------END PGP SIGNATURE-----
-
---------------enig41F631EDE2C7088A177ED516--
+--000e0cd6ae8cd97e3f046f3baea2--
 
