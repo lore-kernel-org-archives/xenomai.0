@@ -1,58 +1,44 @@
-Message-ID: <4A258624.4020508@domain.hid>
-Date: Tue, 02 Jun 2009 22:05:56 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Tue, 21 Jul 2009 20:03:49 +0200
+References: <20090721140512.793ED832E416@domain.hid>
+In-Reply-To: <20090721140512.793ED832E416@domain.hid>
 MIME-Version: 1.0
-References: <4A2452CB.2030909@domain.hid> <4A2580C5.4000806@domain.hid>
-In-Reply-To: <4A2580C5.4000806@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] How to chose between xenomai and preempt RT
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Disposition: inline
+Message-Id: <200907212003.51208.niklaus.giger@domain.hid>
+Subject: Re: [Xenomai-core] [Xenomai-help] XUM - Xenomai User's Meeting
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Angielski <jeff@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
+Cc: ag-automation@domain.hid
 
-Jeff Angielski wrote:
-> Adrien LECOINTRE wrote:
->> Hi,
->>
->> I've been testing for a while, Xenomai and Linux preempt RT latencies 
->> under different loads and I couldn't find any big differences. Latencies 
->> are almost the same.
->> So my question is, do you know any case where Xenomai is really better 
->> than a simple preempt RT?
->> Or which specification in a real time application should make me chose 
->> Xenomai instead of preempt RT?
-> 
-> I suspect your loads are not sufficiently exercising your system.
-> 
-> To answer your question, though, it all depends on your requirements, 
-> whether you need hard or soft realtime.  In other words, is it ok to 
-> miss your deadline every so often?  If so, CONFIG_PREEMPT would be fine 
-> for you. If you can't miss any deadlines, use Xenomai.
-> 
-> Of course, just by choosing to use Xenomai, you don't get hard realtime. 
->   You still need to design your system and software correctly.
-> 
-> As time marches on, the CONFIG_PREEMPT is getting closer to hard 
-> realtime, especially with the interrupt threading, but I don't think 
-> that time is now.
+Am Dienstag 21 Juli 2009 16.05:12 schrieb Wolfgang Denk:
+> [Sorry if you recieved this twice; I posted this information before
+> in the Xenomai groups as a reply in thread "RT_PREEMPT patch and
+> other things...", but this did not catch some of the potentially
+> interested eyes, so here it goes again.]
+>
+>
+> We at DENX are trying to organize something like a "Xenomai User's
+> Meeting" at this year's Real-Time Linux Workshop (September 28 to 30,
+> in Dresden, Germany).
+Excellent idea. I will try to come.
+<..>
 
-threaded interrupts are no silver bullet, they are essentially replacing
-interrupt latencies with kernel-space scheduling latencies; on x86, this
-may not make that much of a difference, but on low-end platform it does.
-
-See also:
-https://mail.gna.org/public/xenomai-help/2008-05/msg00043.html
-https://mail.gna.org/public/xenomai-help/2009-06/msg00005.html
+Best regards and thanks for your iniative.
 
 -- 
-					    Gilles.
+Niklaus Giger
+Wieshoschet 6
+CH-8753 Mollis
++41  (0)55 612 20 54 P
++41  (0)55 618 64 68 G
 
