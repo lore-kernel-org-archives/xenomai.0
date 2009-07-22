@@ -1,11 +1,10 @@
-Message-ID: <4A66D61E.5000904@domain.hid>
-Date: Wed, 22 Jul 2009 11:04:30 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <589194.96340.qm@domain.hid>
+Date: Wed, 22 Jul 2009 02:04:13 -0700 (PDT)
+From: Yigal Goldberger <yigal_gold@domain.hid>
+In-Reply-To: <0B45E93C5FF65740AEAE690BF3848B7AD386A4@domain.hid>
 MIME-Version: 1.0
-References: <898521.61258.qm@domain.hid>
-In-Reply-To: <898521.61258.qm@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] xenomai exceptions tracing
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,34 +15,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Yigal Goldberger <yigal_gold@domain.hid>
+To: Fillod Stephane <stephane.fillod@domain.hid>
 Cc: xenomai@xenomai.org
 
-Yigal Goldberger wrote:
-> Hi all, I'm using kernel 2.6.29.4 with xenomai . I'm getting an
-> exception 769 . I'd like to know what this exception means (or hints
-> where to look for it ).
 
-Well the meaning of exceptions is dependent on the platform you are 
-using, so we can not answer without more information.
+Hi Stephane,
+Thanks for your help, I used this tool (which is something I've been needin=
+g for a long time) and I got the function name .
+My architecture is powerpc (freescale 8272)
+Does anyine know what this exception means on this platform ?
+Best Regards,
+Yigal.
 
-> 
-> (...)<6>Xenomai:
-> Switching 802Rdr to secondary mode after exception #769 from user-sp 
-> ace at 0x10017cec (pid 974) 
+--- On Wed, 7/22/09, Fillod Stephane <stephane.fillod@domain.hid> wrot=
+e:
 
-However, you can ask to receive a signal at the point where the 
-exception happens, doing as in ksrc/skins/native/snippets/sigxcpu.c, 
-only using pthread_set_mode_np instead of rt_task_set_mode, if you use 
-the posix skin.
-
-Alternatively, you have a way of knowing directly where the exception 
-happens by disassembling your example program and look where 0x10017cec is.
-
-P.S: if you do not like the way your message looks when I rewrap it, 
-send it correctly wrapped.
-
--- 
-                                           Gilles
-
+> From: Fillod Stephane <stephane.fillod@domain.hid>
+> Subject: RE: [Xenomai-help] xenomai exceptions tracing
+> To: "Yigal Goldberger" <yigal_gold@domain.hid>, xenomai@xenomai.org
+> Date: Wednesday, July 22, 2009, 11:41 AM
+> Yigal Goldberger wrote:
+> [...]
+> > <6>Xenomai: Switching 802Rdr to secondary mode
+> after exception #769
+> from user-space at 0x10017cec (pid 974)
+>=20
+> I don't know what exception #769 stands for on your arch,
+> but have you=20
+> looked already what code in your program triggers it? This
+> command
+> may help you, esp. when the program is compiled with debug
+> info.
+>=20
+> =A0 ${CROSS_COMPILE}addr2line -f -e 802Rdr 0x10017cec
+>=20
+> HTH
+> --=20
+> Stephane
+> =0A=0A=0A      
 
