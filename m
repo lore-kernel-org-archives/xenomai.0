@@ -1,16 +1,13 @@
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-In-Reply-To: <4A606C1A.9050800@domain.hid>
-References: <6a782b880906051338r401163b2m7e1d1a53f7f0800@domain.hid> 
-	<4A299794.6010504@domain.hid>
-	<6a782b880906101236l625792d5p6fcd3dad53e965a2@domain.hid> 
-	<4A3010BE.9020107@domain.hid>
-	<6a782b880907170418q6bd4fbe7p6fde0f0c6bae551c@domain.hid> 
-	<4A606C1A.9050800@domain.hid>
-From: Thiago Lima <thiagolims@domain.hid>
-Date: Tue, 21 Jul 2009 18:46:54 +0000
-Message-ID: <6a782b880907211146l438da963k2297955701bf20b2@domain.hid>
-Content-Type: multipart/alternative; boundary=000e0cd6ae8cd97e3f046f3baea2
-Subject: Re: [Xenomai-help] Get ready queue
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 22 Jul 2009 10:21:40 +0200
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A01B1B218@domain.hid>
+In-Reply-To: <20090721140512.793ED832E416@domain.hid>
+From: <roderik.wildenburg@domain.hid>
+Subject: Re: [Xenomai-help] [Xenomai-core] XUM - Xenomai User's Meeting
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,124 +17,125 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org, rpm@xenomai.org
+To: wd@domain.hid, xenomai@xenomai.org
+Cc: ag-automation@domain.hid
 
---000e0cd6ae8cd97e3f046f3baea2
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+This is a really brilliant idea!
+We from manroland appreciate it very much and will join the meeting.
+We will also try to prepare a little presentation as you suggested.
+I am eagerly looking forward to meet Phillipe and Gilles from face to =
+face!
 
-Thanks for all suggestions and help.
+Thank you for making possible this workshop! We hope that many other =
+Xenomai users will come too.
 
-Well, i have extended xenomai nucleus with some data (wcet, activation
-period (latency)). Then, i have created system calls so that applications
-can inform to system these parameters.
-
-All tasks in the system should pass for schedulability test because we need
-to ensure that real time processes worst case computation time will be
-respected. So, i cannot create another scheduler class and, for this reason,
-i have extended kernel threads. (i could not think another solution)
-
-Indeed, i have applied a patch suggested by Philippe to catch user land
-tasks whenever they start. As soon as possible, I will update to xenomai 2.5
-core to test the module and an application.
-
-There, now, 2 main questions:
-
-1) I need to do some divisions in this module, but i could not use FPU in
-kernel. How do you handle this in xenomai nucleus ? Are there some examples
-of use in xenomai kernel code ?
-
-2) I am not yet considering threads with same priority. (cause i know
-xenomai uses RR or FIFO with them). How can i get list of threads with an
-specific priority ? Is there some example (reference) in xenomai kernel
-code?
+Best regards
+Roderik Wildenburg=20
+(manroland Augsburg/Germany)
+http://www.manroland.com/com/en/index.htm
 
 
-Thanks for help,
 
-Thiago.
-
-
-On Fri, Jul 17, 2009 at 12:18 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
-
-> Thiago Lima wrote:
-> > I am doing an schedulability test of real time processes in Xenomai.
-> (...)
-> > My question is: how can i get all ready xenomai tasks ? Because i need
-> > to get the amount of threads to do this test.
-> >
-> > Sorry for my last email. I have not so much time to write and it was
-> vague.
+> -----Urspr=FCngliche Nachricht-----
+> Von: xenomai-core-bounces@domain.hid
+> [mailto:xenomai-core-bounces@domain.hid] Im Auftrag von Wolfgang Denk
+> Gesendet: Dienstag, 21. Juli 2009 16:05
+> An: xenomai@xenomai.org
+> Cc: xenomai@xenomai.org; ag-automation@domain.hid
+> Betreff: [Xenomai-core] XUM - Xenomai User's Meeting
+>=20
+> [Sorry if you recieved this twice; I posted this information before
+> in the Xenomai groups as a reply in thread "RT_PREEMPT patch and
+> other things...", but this did not catch some of the potentially
+> interested eyes, so here it goes again.]
+>=20
+>=20
+> We at DENX are trying to organize something like a "Xenomai User's
+> Meeting" at this year's Real-Time Linux Workshop (September 28 to 30,
+> in Dresden, Germany).
+>=20
+>=20
+> If you are already using Xenomai in your projects, or if you are
+> using other real-time solutions and interested to learn what Xenomai
+> has to offer: please come to the RTLWS to Dresden, and please let me
+> know about it. My dream is that as many as possible give a short
+> (2...5 minutes is sufficient) presentation of their project: how long
+> they've been using Xenomai, on which platform, what their area of
+> business is, eventually what their project is about, success stories,
+> what you like about Xenomai, where you ran into problems, what is
+> still missing in Xenomai to make it even easier to use for you, etc.
+> etc...
+>=20
+> We don't have a formal agenda yet as we are  still  trying  to  reach
+> some critical mass, but so far we have:
+>=20
+>=20
+> Some Xenomai / Adeos related presentations have already been
+> submitted (though I don't know about acceptance, schedule or the
+> like):
+>=20
+> * Philippe Gerum
+>   will give a presentation about Xenomai's Roadmap
+>=20
+> * Richard Cochran, OMICRON electronics GmbH, and
+>   Gilles Chanteperdrix, xenomai.org
+>   will talk about "ARM Fast Context Switch Extension for Linux"
+>=20
+> * Rene Graf, Siemens AG
+>   Manfred Neugebauer, Siemens AG
+>   Wolfgang Hartmann, Siemens AG
+>   will present "Transparent real time behavior, a new approach"
+>=20
+> * Daniel Rossier and Patrick Gerber,
+>   both Reconfigurable Embedded Digital Systems,=20
+> HEIG-VD/HES-SO, Switzerland,
+>   present "Colibri-in-Motion: embedded virtualization technics
+>   devoted to hard realtime control"
+>=20
+> * Peter Soetens, Katholieke Universiteit Leuven and
+>   Markus Klotzb=FCcher, Katholieke Universiteit Leuven
+>   talk about "Real Time Toolkit for Open Robot Control Software"
+>=20
+> Some other well-known Xenomai experts like Jan Kiszka promised to
+> come, too.
+>=20
+>=20
+> I know that many people from many companies read this list and use
+> Xenomai in their projects, often without ever activly participating
+> in the discussions here. Come together at RTLWS! That's the chance to
+> see who else is doing the same, and to match faces to names.
+>=20
+> See http://www.osadl.org/Dresden-2009.rtlws11-dresden-2009.0.html for
+> details, and/or contact me in case of questions, suggestions, or if
+> you have an abstract for a presentation (yes, the deadline is already
+> past, but I'll try to help).
+>=20
+>=20
+> Best regards,
+>=20
+> Wolfgang Denk
+>=20
+> --=20
+> DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+> HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+> Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
+> Severe culture shock results when experts from another protocol suite
+> [...] try to read OSI documents. The term "osified" is used to  refer
+> to  such  documents. [...] Any relationship to the word "ossified" is
+> purely intentional.                                - Marshall T. Rose
+>=20
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 >
-> I do not think you can do this schedulability test in general, you need
-> some additional data for each task, such as activation period and WCET,
-> so, what you should do is use Xenomai 2.5 and create your own scheduler
-> classes, and keep the list of tasks using these classes, presumably in
-> the per-class data. Then you would do the schedulatbility test only for
-> tasks in these classes.
->
-> --
->                                           Gilles
->
->
 
---000e0cd6ae8cd97e3f046f3baea2
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Thanks for all suggestions and help.<br><br>Well, i have extended xenomai n=
-ucleus with some data (wcet, activation period (latency)). Then, i have cre=
-ated system calls so that applications can inform to system these parameter=
-s.<br>
-
-<br>All tasks in the system should pass for schedulability test because we =
-need to ensure that real time processes worst case computation time will be=
- respected. So, i cannot create another scheduler class and, for this reaso=
-n, i have extended kernel threads. (i could not think another solution)<br>
-
-<br>Indeed, i have applied a patch suggested by Philippe to catch user land=
- tasks whenever they start. As soon as possible, I will update to xenomai 2=
-.5 core to test the module and an application.<br><br>There, now, 2 main qu=
-estions:<br>
-
-<br>1) I need to do some divisions in this module, but i could not use FPU =
-in kernel. How do you handle this in xenomai nucleus ? Are there some examp=
-les of use in xenomai kernel code ?<br><br>2) I am not yet considering thre=
-ads with same priority. (cause i know xenomai uses RR or FIFO with them). H=
-ow can i get list of threads with an specific priority ? Is there some exam=
-ple (reference) in xenomai kernel code?<br>
-
-<br><br>Thanks for help,<br><br>Thiago.<br><br><br><div class=3D"gmail_quot=
-e">On Fri, Jul 17, 2009 at 12:18 PM, Gilles Chanteperdrix <span dir=3D"ltr"=
->&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdr=
-ix@domain.hid</a>&gt;</span> wrote:<br>
-
-<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
-204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Thiago Lima wrote=
-:<br>
-&gt; I am doing an schedulability test of real time processes in Xenomai. (=
-...)<br>
-<div class=3D"im">&gt; My question is: how can i get all ready xenomai task=
-s ? Because i need<br>
-&gt; to get the amount of threads to do this test.<br>
-&gt;<br>
-&gt; Sorry for my last email. I have not so much time to write and it was v=
-ague.<br>
-<br>
-</div>I do not think you can do this schedulability test in general, you ne=
-ed<br>
-some additional data for each task, such as activation period and WCET,<br>
-so, what you should do is use Xenomai 2.5 and create your own scheduler<br>
-classes, and keep the list of tasks using these classes, presumably in<br>
-the per-class data. Then you would do the schedulatbility test only for<br>
-tasks in these classes.<br>
-<br>
---<br>
-<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles<br>
-<br>
-</font></blockquote></div><br><br>
-
---000e0cd6ae8cd97e3f046f3baea2--
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
