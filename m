@@ -1,13 +1,15 @@
-Message-ID: <4A688232.6040403@domain.hid>
-Date: Thu, 23 Jul 2009 17:30:58 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4A689903.5010107@domain.hid>
+Date: Thu, 23 Jul 2009 19:08:19 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <Pine.LNX.4.62.0907231644270.9450@domain.hid>
-In-Reply-To: <Pine.LNX.4.62.0907231644270.9450@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] POSIX skin,
-	simple example with mutex not working...
+References: <EB48F2CADC239E44A8598CC0B0571102E4A99D@XVS-DCFR-21.europe.corp.altran.com>
+	<4A6829D6.9060301@domain.hid>
+	<EB48F2CADC239E44A8598CC0B0571102E4A99E@XVS-DCFR-21.europe.corp.altran.com>
+In-Reply-To: <EB48F2CADC239E44A8598CC0B0571102E4A99E@XVS-DCFR-21.europe.corp.altran.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] RE :  State of implementation of CAN,
+ CANOpen in Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,57 +19,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenoka09@domain.hid
+To: =?ISO-8859-1?Q?Berruer_S=E9bastien?= <sebastien.berruer@domain.hid>
 Cc: xenomai@xenomai.org
 
-Kolja Waschk wrote:
-> Hi,
-> 
-> As a newcomer to Xenomai, I was until now successfully experimenting
-> with the native skin. Now that it comes to run an existing application
-> that is written for POSIX threads, a few problems show up. The
-> pthread_mutex_lock() _always_ returns 1 (EPERM) to me, although there
-> are no forks involved and policy should have been to SCHED_FIFO.
+Berruer S=E9bastien wrote:
+> I'm on the first step of the project and I have to choose a complete
+> system for my customer. I looking at the constraints both for hardware
+> and software and the possibly dependency between them.
 
-Setting the policy to SCHED_FIFO is not necessary. However, your thread 
-initialization has several defects:
-- it does not check the return values of the function it calls, so you 
-do not see the errors which follow
-- setinheritsched(1) does not mean anything (and actually, it would seem 
-it means the contrary of what you would like, but I can not say for 
-sure), you should use the constants PTHREAD_EXPLICIT_SCHED or 
-PTHREAD_INHERIT_SCHED
-- setting the priority to anything else than 0 in the thread creation 
-attributes only works once you have set the scheduling policy (at least 
-it did a long time ago with linuxthreads, and I guess you are using 
-linuxthreads).
+OK.
 
-> 
-> If that's of interest, I'm developing for a Blackfin uClinux (NOMMU)
-> target with newest uClinux-dist snapshot (Kernel
-> 2.6.30.2-ADI-2010R1-pre, Xenomai 2.4.91, Nucleus v2.5-rc2) with FDPIC
-> userland. For building,  I simply used
+>> I'm asking for the current state of the CAN implementation. Is it a
+>> partial or a
+>> complete implementation of the CAN standard? What are the guarantee
+>> about real
+>> time latency?
+>=20
+> What exactly do you mean with CAN standard? RT-Socket-CAN allows
+> low-level access the CAN controller to send and receive messages, handl=
+e
+> errors and set the bit-timing. Standard, extended and RTR frames are
+> supported.
+>=20
+> Sorry, I've made a misunderstood about the CAN organization. In fact,
+> the RT-Socket-CAN is a kind of user API for ease the use of CAN bus,
+> isn't it? It seems that, generally, the handling of protocol, like the
+> access to media or arbitration, is done in the chip.
 
-Yes, that is of interest, because I do not think we experience this 
-issue on other platforms.
+Yep.
 
-> 
->> bfin-linux-uclibc-gcc `/usr/xenomai/bin/xeno-config --posix-cflags`
->>   `/usr/xenomai/bin/xeno-config --posix-ldflags`  try.c -o try
-> 
-> Writing an explicit command line including the -Wl,@(wrapper) etc.
-> doesn't change anything.  The output of the attached code, compiled,
-> shows the return value from mutex_lock, first called from the NRT
-> main(), then from a thread that IMHO should run as a realtime thread:
+>> I've read in "RTDM and applications" that there would be an effort for
+>> implementing a CANOpen profile. But, the implementation of CANOpen
+>> protocol is
+>> let to users? I can't find any newer reference for that in sources or
+> in the
+>> documentation of Xenomai. What is the state of this project?
+>=20
+> If you are looking for a free CANopen implementation, CANfestival might
+> be an option, which also supports RT-Socket-CAN, IIRC. Check
+> http://canfestival.org/ for further information.
+>=20
+> My client asks for a complete implementation of the CANOpen protocol. I
+> will take all a look at this site and if it's clear for that use.
 
-main is a real-time thread. All threads are real-time threads, whatever 
-the scheduling policy you use. The only way to create a non real-time 
-thread is to call __real_pthread_create.
+Usually, only a sub-set of the CANopen protocol is implemented.
 
-So, in short, your example should work, everyone should return 0. There 
-is a bug somewhere.
-
--- 
-                                           Gilles
-
+Wolfgang
 
