@@ -1,10 +1,11 @@
-Message-ID: <4A67F5D2.4090708@domain.hid>
-Date: Thu, 23 Jul 2009 07:32:02 +0200
-From: David <correupeldavid@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] Advice for a newbie on Xenomai & USB
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01CA0B6E.0A210954"
+Date: Thu, 23 Jul 2009 10:17:37 +0200
+Message-ID: <EB48F2CADC239E44A8598CC0B0571102E4A99D@XVS-DCFR-21.europe.corp.altran.com>
+From: =?iso-8859-1?Q?Berruer_S=E9bastien?= <sebastien.berruer@domain.hid>
+Subject: [Xenomai-help] State of implementation of CAN, CANOpen in Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,58 +17,144 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01CA0B6E.0A210954
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
 Hello,
-=20
-I am a PhD student at the Technical University of Catalonia. I work on=20
-UAV helicopters. It is a new field in my research group so I need to=20
-develop the rig before start working on Identification and Control=20
-Theory (which is supposed to be THE topic of the Thesis). =20
-=20
-We chose to use en embedded PC as 'brain'. The readings of the system=20
-come from an IMU and the actuators (R/C servos) are commanded by a=20
-microcontroller (already programmed and working). Both devices Tx/Rx=20
-input/output data with the computer through TTL USART converted to USB.
-=20
-The PC is an Intel Atom Z520, on a chipset ..., with 1GB of RAM and=20
-booting on a high-speed Compact Flash.
-=20
-On the first stage of the software, a human is choosing the=20
-microcontroller inputs (that is: piloting the craft), and the computer=20
-'only' needs to gather the input to the microcontroller and the output=20
-from the IMU and write it to disk with due time stamps. 10Hz would be=20
-OK, 100Hz would be the goal.
-=20
-On the second stage, the computer will have to gather the output data,=20
-compute the control input and send it to the microcontroller. On hard=20
-real time at (>10 to 100) Hz, of course.
-=20
-As you may guess, I chose Xenomai to make sure time requirements are=20
-respected. It would run on a command-line Ubuntu 9.04. The programming=20
-would be developed for C++ (compiled with g++).
-=20
-As a totally newbie on Xenomai and only average user on Ubuntu-Linux, I=20
-would need some community guidance to get my feet wet.
-=20
-As you already know my specifications, do you think the computing system=20
-is suited for the needs? As the computer does not have embedded USART=20
-modules, I rely on USB to TTL USART converters (ttyUSBx). Are there any=20
-suitable drivers for Xenomai? USB4RT? With interruptions and=20
-configuration for SSP? =20
-Where do you guess the bottlenecks will be?
-Is there any detailed guide for newbies? Could you suggest me any=20
-documentation on PC architecture and/or Linux OS to fully understand the=20
-system? I have mainly programmed microcontrollers, on which I would make=20
-use of interruptions and input/output modules all the time, and I need=20
-to port it to PC, for which I have never used interruptions nor used the=20
-input/output modules' drivers deeply nor write them.
-=20
-Any suggestions would be very useful.
-=20
-Thanks for your help.
-=20
+
+I'm reviewing the feasibility of a project that would require the =
+driving of
+devices with real time constrains.
+
+I'm asking for the current state of the CAN implementation. Is it a =
+partial or a
+complete implementation of the CAN standard? What are the guarantee =
+about real
+time latency?
+
+I explored briefly the sources of Xenomai, and I read the file
+"ksrc/drivers/can/README". Is it up-to-date? Is there really only =
+support for
+the controllers listed in it?
+
+I've read in "RTDM and applications" that there would be an effort for
+implementing a CANOpen profile. But, the implementation of CANOpen =
+protocol is
+let to users? I can't find any newer reference for that in sources or in =
+the
+documentation of Xenomai. What is the state of this project?
+
+I've seen that there is currently only one implementation of a RT driver =
+for the
+16550A serial controller. Has anybody implemented it for other chip?
+
+If I finally decide to choose a RT-Patch, instead of Xenomai, I will =
+have the
+CAN implementation that will use the Linux networking stack. But I will =
+not have
+any guarantee about its real time implementation, isn't it?
+
+I hope that somebody can answer my questions. May I ask those directly =
+to
+Wolfgang Grandegger or Sebastian Smolorz? Or on the "SocketCan" mailing =
+list?
+
 Best regards,
-=20
-David Lav=E8rnia =20
-=20
-=20
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D
+| BERRUER S=E9bastien             |
+| Trainee at Altran Ouest       |
+| Centre d'Affaires Alphasis    |
+| 35760 Saint-Gr=E9goire - FRANCE |
+| Tel: 06-76-35-29-55           |
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D
+
+
+
+------_=_NextPart_001_01CA0B6E.0A210954
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Diso-8859-1">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+6.5.7654.12">
+<TITLE>State of implementation of CAN, CANOpen in Xenomai</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/plain format -->
+
+<P><FONT SIZE=3D2>Hello,<BR>
+<BR>
+I'm reviewing the feasibility of a project that would require the =
+driving of<BR>
+devices with real time constrains.<BR>
+<BR>
+I'm asking for the current state of the CAN implementation. Is it a =
+partial or a<BR>
+complete implementation of the CAN standard? What are the guarantee =
+about real<BR>
+time latency?<BR>
+<BR>
+I explored briefly the sources of Xenomai, and I read the file<BR>
+&quot;ksrc/drivers/can/README&quot;. Is it up-to-date? Is there really =
+only support for<BR>
+the controllers listed in it?<BR>
+<BR>
+I've read in &quot;RTDM and applications&quot; that there would be an =
+effort for<BR>
+implementing a CANOpen profile. But, the implementation of CANOpen =
+protocol is<BR>
+let to users? I can't find any newer reference for that in sources or in =
+the<BR>
+documentation of Xenomai. What is the state of this project?<BR>
+<BR>
+I've seen that there is currently only one implementation of a RT driver =
+for the<BR>
+16550A serial controller. Has anybody implemented it for other chip?<BR>
+<BR>
+If I finally decide to choose a RT-Patch, instead of Xenomai, I will =
+have the<BR>
+CAN implementation that will use the Linux networking stack. But I will =
+not have<BR>
+any guarantee about its real time implementation, isn't it?<BR>
+<BR>
+I hope that somebody can answer my questions. May I ask those directly =
+to<BR>
+Wolfgang Grandegger or Sebastian Smolorz? Or on the =
+&quot;SocketCan&quot; mailing list?<BR>
+<BR>
+Best regards,<BR>
+<BR>
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D<BR>
+| BERRUER =
+S=E9bastien&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp; |<BR>
+| Trainee at Altran Ouest&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |<BR>
+| Centre d'Affaires Alphasis&nbsp;&nbsp;&nbsp; |<BR>
+| 35760 Saint-Gr=E9goire - FRANCE |<BR>
+| Tel: =
+06-76-35-29-55&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+; |<BR>
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D<BR>
+<BR>
+<BR>
+</FONT>
+</P>
+
+</BODY>
+</HTML>
+------_=_NextPart_001_01CA0B6E.0A210954--
 
