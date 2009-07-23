@@ -1,10 +1,10 @@
-Message-ID: <336414.37218.qm@domain.hid>
-Date: Wed, 8 Jul 2009 03:52:07 -0700 (PDT)
-From: Yigal Goldberger <yigal_gold@domain.hid>
+Message-ID: <4A67F5D2.4090708@domain.hid>
+Date: Thu, 23 Jul 2009 07:32:02 +0200
+From: David <correupeldavid@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] pthread_create memory size
+Subject: [Xenomai-help] Advice for a newbie on Xenomai & USB
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,173 +14,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-
-Hi Gilles,
-
-I enlarged the stack size during thread creation to 256KB and reduced the m=
-emory usage by ~140MB , this is roughly explained by an 8MB stack per threa=
-d .So there is no memory problem .
-Your quick and helpful responses are much appreciated.
-
-Yigal Goldberger.
-
---- On Wed, 7/8/09, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>=
- wrote:
-
-> From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-> Subject: Re: [Xenomai-help] pthread_create memory size
-> To: "Yigal Goldberger" <yigal_gold@domain.hid>
-> Cc: "Xenomai help" <xenomai@xenomai.org>
-> Date: Wednesday, July 8, 2009, 11:26 AM
-> Yigal Goldberger wrote:
-> > Hi again,
-> > I've performed the cat proc/pid/maps
->=20
-> Ok, could you try /proc/pid/smaps? It gives you the sizes.
-> Anyway:
->=20
-> >=20
-> > I see a lot of libraries that were loaded .
-> > Can you assist me in understanding this output :
-> >=20
-> >=20
-> >=20
-> >=A0 -bash-3.2# cat proc/1203/maps
-> > uart_ioctl, cmd is 802c7415
-> > in set_termios
-> > in change_termios
-> > 00100000-00103000 r-xp 00100000 00:00 0=A0 =A0
-> =A0 =A0 =A0 [vdso]
-> > 0fa60000-0fb9c000 r-xp 00000000 00:0b 3577533=A0
-> =A0 /lib/libc-2.6.so
-> > 0fb9c000-0fbdb000 ---p 0013c000 00:0b 3577533=A0
-> =A0 /lib/libc-2.6.so
-> > 0fbdb000-0fbdd000 r--p 0013b000 00:0b 3577533=A0
-> =A0 /lib/libc-2.6.so
-> > 0fbdd000-0fbe0000 rwxp 0013d000 00:0b 3577533=A0
-> =A0 /lib/libc-2.6.so
-> > 0fbe0000-0fbe3000 rwxp 0fbe0000 00:00 0
-> > 0fbf3000-0fc06000 r-xp 00000000 00:0b 3577554=A0
-> =A0 /lib/libgcc_s.so.1
-> > 0fc06000-0fc45000 ---p 00013000 00:0b 3577554=A0
-> =A0 /lib/libgcc_s.so.1
-> > 0fc45000-0fc46000 rwxp 00012000 00:0b 3577554=A0
-> =A0 /lib/libgcc_s.so.1
-> > 0fc56000-0fcf6000 r-xp 00000000 00:0b 3577583=A0
-> =A0 /lib/libm-2.6.so
-> > 0fcf6000-0fd35000 ---p 000a0000 00:0b 3577583=A0
-> =A0 /lib/libm-2.6.so
-> > 0fd35000-0fd36000 r--p 0009f000 00:0b 3577583=A0
-> =A0 /lib/libm-2.6.so
-> > 0fd36000-0fd39000 rwxp 000a0000 00:0b 3577583=A0
-> =A0 /lib/libm-2.6.so
-> > 0fd49000-0fd4c000 r-xp 00000000 00:0b 3508708=A0
-> =A0 /usr/xenomai/lib/librtdm.so.1.0
-> > .0
-> > 0fd4c000-0fd8b000 ---p 00003000 00:0b 3508708=A0
-> =A0 /usr/xenomai/lib/librtdm.so.1.0
-> > .0
-> > 0fd8b000-0fd8c000 rwxp 00002000 00:0b 3508708=A0
-> =A0 /usr/xenomai/lib/librtdm.so.1.0
-> > .0
-> > 0fd9c000-0fe8a000 r-xp 00000000 00:0b 3577648=A0
-> =A0 /lib/libstdc++.so.6.0.9
-> > 0fe8a000-0fec9000 ---p 000ee000 00:0b 3577648=A0
-> =A0 /lib/libstdc++.so.6.0.9
-> > 0fec9000-0fecd000 r--p 000ed000 00:0b 3577648=A0
-> =A0 /lib/libstdc++.so.6.0.9
-> > 0fecd000-0fece000 rwxp 000f1000 00:0b 3577648=A0
-> =A0 /lib/libstdc++.so.6.0.9
-> > 0fece000-0fed5000 rwxp 0fece000 00:00 0
-> > 0fee5000-0feec000 r-xp 00000000 00:0b 3577633=A0
-> =A0 /lib/librt-2.6.so
-> > 0feec000-0ff2b000 ---p 00007000 00:0b 3577633=A0
-> =A0 /lib/librt-2.6.so
-> > 0ff2b000-0ff2c000 r--p 00006000 00:0b 3577633=A0
-> =A0 /lib/librt-2.6.so
-> > 0ff2c000-0ff2d000 rwxp 00007000 00:0b 3577633=A0
-> =A0 /lib/librt-2.6.so
-> > 0ff3d000-0ff51000 r-xp 00000000 00:0b 3577623=A0
-> =A0 /lib/libpthread-2.6.so
-> > 0ff51000-0ff91000 ---p 00014000 00:0b 3577623=A0
-> =A0 /lib/libpthread-2.6.so
-> > 0ff91000-0ff92000 r--p 00014000 00:0b 3577623=A0
-> =A0 /lib/libpthread-2.6.so
-> > 0ff92000-0ff93000 rwxp 00015000 00:0b 3577623=A0
-> =A0 /lib/libpthread-2.6.so
-> > 0ff93000-0ff95000 rwxp 0ff93000 00:00 0
-> > 0ffa5000-0ffb0000 r-xp 00000000 00:0b 3509109=A0
-> =A0 /usr/xenomai/lib/libpthread_rt.
-> > so.1.0.0
-> > 0ffb0000-0ffef000 ---p 0000b000 00:0b 3509109=A0
-> =A0 /usr/xenomai/lib/libpthread_rt.
-> > so.1.0.0
-> > 0ffef000-0fff0000 rwxp 0000a000 00:0b 3509109=A0
-> =A0 /usr/xenomai/lib/libpthread_rt.
-> > so.1.0.0
-> > 10000000-1003e000 r-xp 00000000 00:0b 3509108=A0
-> =A0 /802Rdr
-> > 1007e000-1007f000 rwxp 0003e000 00:0b 3509108=A0
-> =A0 /802Rdr
-> > 1007f000-10081000 rwxp 1007f000 00:00 0
-> > 10081000-100eb000 rwxp 10081000 00:00 0=A0 =A0
-> =A0 =A0 =A0 [heap]
-> > 48000000-4801d000 r-xp 00000000 00:0b 3577520=A0
-> =A0 /lib/ld-2.6.so
-> > 4801d000-4801e000 rw-p 4801d000 00:00 0
-> > 4801e000-4801f000 rw-p 4801e000 00:00 0
-> > 4801f000-48020000 rw-s 10000000 00:0b 3506904=A0
-> =A0 /dev/mem
-> > 48020000-48021000 rw-s 00010000 00:0b 3506904=A0
-> =A0 /dev/mem
-> > 48023000-48026000 rw-p 48023000 00:00 0
-> > 48026000-4802e000 rw-s 10010000 00:0b 3506904=A0
-> =A0 /dev/mem
-> > 4805c000-4805d000 r--p 0001c000 00:0b 3577520=A0
-> =A0 /lib/ld-2.6.so
-> > 4805d000-4805e000 rwxp 0001d000 00:0b 3577520=A0
-> =A0 /lib/ld-2.6.so
-> > 4805e000-4805f000 ---p 4805e000 00:00 0
-> > 4805f000-4885e000 rw-p 4805f000 00:00 0
->=20
-> This is typically a thread stack: the page with only the
-> 'p' flag is the
-> "guard page", which will cause a segmentation fault in case
-> of stack
-> overflow. The other area is the stack, its size is 8 MB.
->=20
-> > 4885e000-4885f000 ---p 4885e000 00:00 0
-> > 4885f000-4905e000 rw-p 4885f000 00:00 0
->=20
-> 8 MB
->=20
-> etc...
->=20
->=20
-> > 4d85e000-4d85fuart_ioctl, cmd is 402c7413
->=20
-> These uart_ioctl are printks in one of your drivers
-> probably
->=20
-> > bfe75000-bfe8a000 rw-p bffeb000 00:00 0=A0 =A0
-> =A0 =A0 =A0 [stack]
->=20
-> The main thread stack, strangely, is only 86K large (I
-> believe it is
-> allocated on demand).
->=20
-> Did you try to check pthread_attr_setstacksize return value
-> when calling it?
->=20
-> Please do not forget to cc the mailing list.
->=20
-> --=20
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0
-> =A0 =A0 =A0 =A0 =A0 Gilles
->=20
-> =0A=0A=0A      
+Hello,
+=20
+I am a PhD student at the Technical University of Catalonia. I work on=20
+UAV helicopters. It is a new field in my research group so I need to=20
+develop the rig before start working on Identification and Control=20
+Theory (which is supposed to be THE topic of the Thesis). =20
+=20
+We chose to use en embedded PC as 'brain'. The readings of the system=20
+come from an IMU and the actuators (R/C servos) are commanded by a=20
+microcontroller (already programmed and working). Both devices Tx/Rx=20
+input/output data with the computer through TTL USART converted to USB.
+=20
+The PC is an Intel Atom Z520, on a chipset ..., with 1GB of RAM and=20
+booting on a high-speed Compact Flash.
+=20
+On the first stage of the software, a human is choosing the=20
+microcontroller inputs (that is: piloting the craft), and the computer=20
+'only' needs to gather the input to the microcontroller and the output=20
+from the IMU and write it to disk with due time stamps. 10Hz would be=20
+OK, 100Hz would be the goal.
+=20
+On the second stage, the computer will have to gather the output data,=20
+compute the control input and send it to the microcontroller. On hard=20
+real time at (>10 to 100) Hz, of course.
+=20
+As you may guess, I chose Xenomai to make sure time requirements are=20
+respected. It would run on a command-line Ubuntu 9.04. The programming=20
+would be developed for C++ (compiled with g++).
+=20
+As a totally newbie on Xenomai and only average user on Ubuntu-Linux, I=20
+would need some community guidance to get my feet wet.
+=20
+As you already know my specifications, do you think the computing system=20
+is suited for the needs? As the computer does not have embedded USART=20
+modules, I rely on USB to TTL USART converters (ttyUSBx). Are there any=20
+suitable drivers for Xenomai? USB4RT? With interruptions and=20
+configuration for SSP? =20
+Where do you guess the bottlenecks will be?
+Is there any detailed guide for newbies? Could you suggest me any=20
+documentation on PC architecture and/or Linux OS to fully understand the=20
+system? I have mainly programmed microcontrollers, on which I would make=20
+use of interruptions and input/output modules all the time, and I need=20
+to port it to PC, for which I have never used interruptions nor used the=20
+input/output modules' drivers deeply nor write them.
+=20
+Any suggestions would be very useful.
+=20
+Thanks for your help.
+=20
+Best regards,
+=20
+David Lav=E8rnia =20
+=20
+=20
 
