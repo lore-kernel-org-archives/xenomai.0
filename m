@@ -1,15 +1,17 @@
-Message-ID: <4A68A3F5.1000705@domain.hid>
-Date: Thu, 23 Jul 2009 19:55:01 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+Date: Thu, 23 Jul 2009 21:28:52 +0200 (CEST)
+From: Kolja Waschk <xenoka09@domain.hid>
+In-Reply-To: <4A68A3F5.1000705@domain.hid>
+Message-ID: <Pine.LNX.4.62.0907232117060.9450@domain.hid>
 References: <Pine.LNX.4.62.0907231644270.9450@domain.hid>
 	<4A688232.6040403@domain.hid>
 	<Pine.LNX.4.62.0907231741280.9450@domain.hid>
-In-Reply-To: <Pine.LNX.4.62.0907231741280.9450@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+	<4A68A3F5.1000705@domain.hid>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Sender: "Kolja Waschk,,," <xenoka09@domain.hid>
 Subject: Re: [Xenomai-help] POSIX skin,
 	simple example with mutex not working...
+Reply-To: xenoka09@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,52 +21,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenoka09@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai help <xenomai@xenomai.org>
 
-Kolja Waschk wrote:
-> Gilles,
-> 
-> thanks for the prompt answer. Yes, the code is not certainly not useful as a
-> skeleton for building anything else...
-> 
->> initialization has several defects:
->> - setinheritsched(1) does not mean anything (and actually, it would seem it
-> 
-> I copied it literally from the examples/posix/satch.c after I tried the
-> PTHREAD_* macros, hoping that it might workaround a definition mismatch.
-> 
->> main is a real-time thread. All threads are real-time threads, whatever the 
->> scheduling policy you use. The only way to create a non real-time thread is 
->> to call __real_pthread_create.
-> 
-> Ah, I took that guess about main() not being realtime from some old
-> conversation in Xenomai-help. Thanks for clarification.
-> 
-> https://mail.gna.org/public/xenomai-help/2006-06/msg00001.html
-> 
->> So, in short, your example should work, everyone should return 0. There is a 
->> bug somewhere.
-> 
-> Fortunately, there's already an OS abstraction layer in the application,
-> so it doesn't take long to replace POSIX mutex/sem/thread code with
-> Xenomai native API calls, and this way it seems to work. Hm, I assume
-> that mixing POSIX and native API calls is no good idea, or - for testing
-> - is it safe to (e.g.) use POSIX calls for thread management and native
-> API for mutexes? What about using POSIX clock_*() and native rt_mutex*
-> side by side?
+Hi,
 
-There is no real problem mixing the two APIs. For clock functions, 
-rt_timer_tsc has less overhead than clock_*. Of course, if you use 
-timeouts with rt_mutex, these can not be struct timespecs, you must 
-recompose the 64 bits value.
+> However, I really think we whould fix this issue. Not having access to a
 
-However, I really think we whould fix this issue. Not having access to a 
-blackfin, I will check if the error happens on my boxes, I think it does 
-not happen, but there could be a recent regression. Also, do you observe 
-the issue with a stable release of xenomai such as xenomai 2.4.8 ?
+Sure, but I'm afraid I can't work much on it once I found one working
+combination... I furthermore have strong problems using GDB here;
+sometimes it doesn't halt at breakpoint main() but the program simply
+runs over it and exits successfully, sometimes it segfaults or reboots.
 
--- 
-                                           Gilles
+> issue with a stable release of xenomai such as xenomai 2.4.8 ?
+
+It seems to. At least the very same "try", when run on an older
+uClinux-dist release from the Blackfin uClinux site (2008R1.5-RC3, with
+Xenomai 2.4.0), returns zero from all mutex_lock attempts.
+
+However, the app that I just converted to use the native API now returns
+-1 from one particular rt_mutex_acquire :/ on the old dist, and
+at some point reboots the target on the new...
+
+Kolja
+
 
 
