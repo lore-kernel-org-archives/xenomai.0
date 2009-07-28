@@ -1,12 +1,18 @@
-Message-ID: <4A6EECF1.9000103@domain.hid>
-Date: Tue, 28 Jul 2009 14:20:01 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Tue, 28 Jul 2009 19:12:01 +0200 (CEST)
+From: "Waschk,Kolja" <xenoka09@domain.hid>
+In-Reply-To: <1248517986.4438.1.camel@domain.hid>
+Message-ID: <alpine.DEB.2.00.0907281859210.4673@domain.hid>
+References: <Pine.LNX.4.62.0907241731170.11473@domain.hid>
+	<1248453047.3998.168.camel@domain.hid>
+	<alpine.DEB.2.00.0907241917480.4343@domain.hid>
+	<1248461458.3998.183.camel@domain.hid>
+	<alpine.DEB.2.00.0907242259430.4343@domain.hid>
+	<1248517986.4438.1.camel@domain.hid>
 MIME-Version: 1.0
-References: <b88603c30907280509u685a18di730cc0b021ab06eb@domain.hid>
-In-Reply-To: <b88603c30907280509u685a18di730cc0b021ab06eb@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Pagefaults during mlocked Realtime task
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: Re: [Xenomai-help] POSIX skin/Blackfin: SIGSEGV when stracing or
+ gdb'ing
+Reply-To: xenoka09@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,49 +22,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Henri Roosen <henriroosen@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Henri Roosen wrote:
-> Hi everyone,
-> 
-> I have a basic Xenomai realtime user task which does a read call to a
-> basic RTDM driver. The problem is that the realtime task is generating
-> pagefaults when the system is under heavy network load even while the
-> current and future memory is locked with mlockall(MCL_CURRENT |
-> MCL_FUTURE);. There should also be enough free memory.
-> 
-> Both the MSW and PF go up when showing the stat. So the realtime task
-> switches to the secondary domain causing long latencies which we don't
-> want.
-> 
-> (Aside from that I just want to mention that when we generate the high
-> load on the usb-gadget ethernet interface (g_ether), the realtime task
-> even gets defunct or generates a segfault. I first want to understand
-> the pagefaults when using the normal ethernet interface, which might
-> then later explain the things we are seeing using the usb-gadget
-> interface.)
-> 
-> I used the sigxcpu.c example to try to find the root of the
-> pagefaults, but that only provides me one address which seems to be on
-> the [stack] according to the process maps. Running the app in the
-> debugger halts when the signal triggers and the call stack shows it is
-> at <rt_dev_read+60>: pop    {r4, r7, pc}
-> I cannot really find anything in our driver code (rt_dev_read) or
-> realtime app that would generate these pagefaults.
-> 
-> Any help to explain and get rid of the pagefaults is very welcome!
-> 
-> I am currently running a 2.6.28 linux kernel and Xenomai version 2.4.8
-> on an ARM926EJ-S (at91sam9263ek) processor, using the EABI and
-> -msoft-float cross compiled with CodeSourcery 2007q3.
+Hi,
 
-Do you have the same behaviour while running the Xenomai latency test. 
-If not, without seeing your code, there is not much we can tell. One 
-thing to look for, however is the unaligned accesses. Also, do you have 
-FCSE enabled?
+I've finally found a configuration of releases that works for me, good enough
+to continue with the actual project development for now. It consists of
+Blackfin tools 2009R1-RC10, dist 2009R1-RC2 including kernel and nucleus 2.4.7,
+and external Xenomai 2.4.8 in userspace.
 
--- 
-                                           Gilles
+It's still not doing all what I expect, but the remaining problems probably are
+caused by incorrect memory access in my application and/or driver. The
+application runs with POSIX calls and critical threads controlled using the
+native API (using rt_task_shadow), or all threads controlled via POSIX skin,
+and it is well debuggable. Only when I tried to use the native skin for
+everything, I ran into problems this time.
+
+When there's time I'll again take a look at newer versions.
+
+Thanks for the help so far!
+
+Kolja
+
+
 
 
