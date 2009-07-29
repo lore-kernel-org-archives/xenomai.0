@@ -1,10 +1,7 @@
-Date: Wed, 29 Jul 2009 18:05:17 +0200
-From: Philippe Gerum <rpm@xenomai.org>
-In-reply-to: <Pine.LNX.4.62.0907291226390.20869@domain.hid>
-Message-id: <1248883517.3532.7.camel@domain.hid>
-MIME-version: 1.0
-Content-type: text/plain
-Content-transfer-encoding: 7bit
+Date: Wed, 29 Jul 2009 22:55:57 +0200 (CEST)
+From: "Waschk,Kolja" <xenoka09@domain.hid>
+In-Reply-To: <1248883517.3532.7.camel@domain.hid>
+Message-ID: <alpine.DEB.2.00.0907292209410.5958@domain.hid>
 References: <Pine.LNX.4.62.0907241731170.11473@domain.hid>
 	<1248453047.3998.168.camel@domain.hid>
 	<alpine.DEB.2.00.0907241917480.4343@domain.hid>
@@ -15,8 +12,12 @@ References: <Pine.LNX.4.62.0907241731170.11473@domain.hid>
 	<1248855797.3247.16.camel@domain.hid>
 	<Pine.LNX.4.62.0907291210470.20869@domain.hid>
 	<Pine.LNX.4.62.0907291226390.20869@domain.hid>
+	<1248883517.3532.7.camel@domain.hid>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
 Subject: Re: [Xenomai-help] Stack sizes etc. (Re: POSIX skin/Blackfin:
  SIGSEGV when stracing or gdb'ing)
+Reply-To: xenoka09@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,46 +27,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenoka09@domain.hid
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Wed, 2009-07-29 at 13:40 +0200, Kolja Waschk wrote:
-> Hi,
-> 
-> > One of the problems appears when the following code is run via
-> > gdbserver, a breakpoint is hit at main() and I "step" over
-> > rt_task_shadow:
-> >
-> >> Xenomai: fatal: xnshadow_relax() failed for thread maintask[222]
+Hi,
 
-This may be an I-pipe issue. As I understand, you are currently running
-2009R1-RC2 unmodified, could you summarize where the various Xenomai
-related components come from so I could try looking at the issue?
+> This may be an I-pipe issue. As I understand, you are currently running
+> 2009R1-RC2 unmodified, could you summarize where the various Xenomai
+> related components come from so I could try looking at the issue?
 
-e.g. I-pipe/Adeos patch from uclinux-dist's bfin_patch/adeos_patches/ ?
-     Xenomai 2.4.7 support from xenomai.org?
+I'll try: I haven't put in any extra sources, and it seems that
+user/xenomai/Makefile indeed refers to ADEOS =
+$(ROOTDIR)/bfin_patch/adeos_patch/adeos-bfin.patch
 
-There are two different sources for the I-pipe support for Blackfin, so
-it is important to know which one comes into play here.
+The latest SVN log entry says "update to
+http://download.gna.org/adeos/patches/v2.6/blackfin/adeos-ipipe-2.6.28.10-blackfin.git-1.10-00.patch"
+however adeos-bfin.patch in there is not exactly that file.
 
-> 
-> I just observed the same without gdb in play, with main extended a bit,
-> creating a second (RT) thread from main (after rt_task_shadow in main).
-> 
-> Xenomai: fatal: xnshadow_relax() failed for thread logger[219]
->   CPU  PID    PRI      TIMEOUT  STAT      NAME
->     0  0       50      0        00400088  ROOT
->     0  217     50      0        00300380  maintask
-> >  0  219     50      0        00300380  logger
-> Master time base: clock=74044591006
-> 
-> However, it doesn't happen with the simple example I posted last week.
-> Maybe I can find some evolutional stage between that example and my
-> larger application that just causes the failure.
-> 
-> Kolja
+Also, I use and didn't touch anything inside the dist's
+user/xenomai/xenomai-2.4.7 directory which seems to contain
+the almost unmodified 2.4.7 sources. Only minor changes regarding an
+installation prefix check and asm-blackfin/calibration.h are present. And it
+modifies the link order for the test programs. I noticed that last "trick" only
+just now; I'll try(*) tomorrow whether linking to (e.g) libnative.la changes
+anything over linking with -lnative. Specifying an extra -static anyway didn't
+help.  The uclinux-dist build puts the build Xenomai libraries into
+uClinux-dist/staging/usr/lib, and that's where my app links to.
+
+*) Because there's one more (strange, to me) observation: If I do not try
+"next" over the rt_task_shadow (which is the first line in main()), but "step",
+it seems to go directly into "__map_heap_memory" with heap=0 and php=argv[0]
+(i.e. the arguments to main()). So it seems it's not in main() but in in
+__map_heap_memory?!  In another case, I was able to make the code run further
+until a rt_task_create. A breakpoint there and one step, and all of the sudden
+gdb says I'm was actually in "rt_heap_create" but with the arguments that were
+passed to rt_task_create. It happens that both take similar type and count of
+arguments. This may be gdb displaying wrong info or a badly linked FDPIC elf?!
+
+BTW, the toolchain is ADI's 2009R1-RC10 (binary download),
+bfin-linux-uclibc-gcc reports version 4.1.2.
+
+Kolja
+
 -- 
-Philippe.
-
+Mr. K.Waschk - http://www.ixo.de - http://urjtag.org - Hamburg, DE
 
 
