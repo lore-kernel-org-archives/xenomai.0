@@ -1,21 +1,12 @@
-Date: Wed, 29 Jul 2009 12:12:57 +0200 (CEST)
-From: Kolja Waschk <xenoka09@domain.hid>
-In-Reply-To: <1248855797.3247.16.camel@domain.hid>
-Message-ID: <Pine.LNX.4.62.0907291210470.20869@domain.hid>
-References: <Pine.LNX.4.62.0907241731170.11473@domain.hid>
-	<1248453047.3998.168.camel@domain.hid>
-	<alpine.DEB.2.00.0907241917480.4343@domain.hid>
-	<1248461458.3998.183.camel@domain.hid>
-	<alpine.DEB.2.00.0907242259430.4343@domain.hid>
-	<1248517986.4438.1.camel@domain.hid>
-	<alpine.DEB.2.00.0907281859210.4673@domain.hid>
-	<1248855797.3247.16.camel@domain.hid>
+Message-ID: <4A7023F4.5090103@domain.hid>
+Date: Wed, 29 Jul 2009 12:27:00 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Sender: "Kolja Waschk,,," <xenoka09@domain.hid>
-Subject: [Xenomai-help] Stack sizes etc. (Re: POSIX skin/Blackfin: SIGSEGV
- when stracing or gdb'ing)
-Reply-To: xenoka09@domain.hid
+References: <abaf774b0907290133j6c2ec456s7be6c65de6993e3f@domain.hid>
+In-Reply-To: <abaf774b0907290133j6c2ec456s7be6c65de6993e3f@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Setup LTTng with Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,59 +16,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Steve <sbxenomai@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Hi,
+Steve wrote:
+> Hi,
+> 
+> I've been looking into using LTTng with Xenomai and each time I try to
+> find more information I find a different post with new links to
+> various patches and websites.  The most recently dated information
+> that I have found is 24th Feb 2009:
+> 
+> https://mail.gna.org/public/adeos-main/2009-02/msg00031.html
+> 
+> Is this the latest info, and is 'git.kiszka.org' the best source for
+> LTTng - Adeos combinations?
 
-Ok, it now seems to run on 2.4.7 (matched kernel + userland) just as
-well. I'll try to keep it that way because that's as it comes in the
-2009R1 release branch.
+For x86? Yes, for sure. :)
 
->> The application runs with POSIX calls and critical threads controlled
->> using the native API (using rt_task_shadow), or all threads
->> controlled via POSIX skin, and it is well debuggable. Only when I
->> tried to use the native skin for everything, I ran into problems this
->> time.
->
-> Any details about this? What did not work with GDB precisely (btw, did
-> you check the stack sizes used to create your native tasks)?
+Just note that I haven't updated my lttng tree with latest ipipe fixes
+for 2.6.29 yet. So I would recommend to merge/cherry-pick the changes
+found in queues/2.6.29-noarch and queues/2.6.29-x86 into your lttng clone.
 
-Yes, the problems are very probably caused by wrong configuration of various
-memory areas, including the task stack(s). I'm not sure how the stacks
-and heaps of main, NRT and RT tasks are related and where the memory is
-allocated from.
+> 
+> Also, I have tried to apply the Xenomai patch given by the link in the
+> above post, the one at:
+> 
+> http://permalink.gmane.org/gmane.linux.real-time.xenomai.devel/6009
+> 
+> However, this does not work on my copy of Xenomai (2.4.8) - which
+> version of Xenomai was the patch designed for, and is there a more
+> recent patch for 2.4.8 (or am I doing something wrong)?
 
-The main thread stack can be set with linker options (-Wl,--defsym,__stacksize=x). 
-Is the same memory used if I create a rt task using rt_task_shadow in main?
+That patch was written against the 2.5 development tree. You likely have
+to resolve the conflicts manually and furthermore fix remaining
+trace_mark invocations that changed between 2.4 and 2.5.
 
-Where is the memory for rt task stacks taken from?  Does it differ depending on the skin?
+> 
+> Finally, once I have the linux kernel tree with lttng and adeos (from
+> kiszka.org), and the patched Xenomai (using the patch from gmane.org),
+> I assume that I then prepare the kernel using Xenomai in the normal
+> fashion (omitting the adeos patch because it is already applied), and
 
-Does the Xenomai memory configuration in the kernel limit the rt task stack size?
+Yep.
 
-One of the problems appears when the following code is run via
-gdbserver, a breakpoint is hit at main() and I "step" over
-rt_task_shadow:
+> then I can configure and compile the kernel as normal.  Is this
+> correct?
 
-> int main (int argc, char *argv[])
-> {
->     RT_TASK maintask;
->     rt_task_shadow(&maintask, "maintask", 50, 0);
->     return 0;
-> }
+Yep. Just additionally enabled the LTTng support in the kernel config.
 
-The kernel, with Xenomai debugging enabled, then emits the following:
+> 
+> Thanks in advance for any help that you can give,
+> 
+> Steve
 
-> Xenomai: fatal: xnshadow_relax() failed for thread maintask[222]
->  CPU  PID    PRI      TIMEOUT  STAT      NAME
->    0  0       50      0        00400088  ROOT
-> >  0  222     50      0        00300380  maintask
-> Master time base: clock=264885399009
+Jan
 
-When started without gdb or "cont" without breakpoints set, this doesn't
-happen, main returns successfully.
-
-Kolja
-
-
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
