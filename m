@@ -1,19 +1,10 @@
-Date: Wed, 29 Jul 2009 10:23:17 +0200
-From: Philippe Gerum <rpm@xenomai.org>
-In-reply-to: <alpine.DEB.2.00.0907281859210.4673@domain.hid>
-Message-id: <1248855797.3247.16.camel@domain.hid>
-MIME-version: 1.0
-Content-type: text/plain
-Content-transfer-encoding: 7bit
-References: <Pine.LNX.4.62.0907241731170.11473@domain.hid>
-	<1248453047.3998.168.camel@domain.hid>
-	<alpine.DEB.2.00.0907241917480.4343@domain.hid>
-	<1248461458.3998.183.camel@domain.hid>
-	<alpine.DEB.2.00.0907242259430.4343@domain.hid>
-	<1248517986.4438.1.camel@domain.hid>
-	<alpine.DEB.2.00.0907281859210.4673@domain.hid>
-Subject: Re: [Xenomai-help] POSIX skin/Blackfin: SIGSEGV when stracing or
- gdb'ing
+MIME-Version: 1.0
+Date: Wed, 29 Jul 2009 09:33:49 +0100
+Message-ID: <abaf774b0907290133j6c2ec456s7be6c65de6993e3f@domain.hid>
+From: Steve <sbxenomai@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Setup LTTng with Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,47 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenoka09@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-On Tue, 2009-07-28 at 19:12 +0200, Waschk,Kolja wrote:
-> Hi,
-> 
-> I've finally found a configuration of releases that works for me, good enough
-> to continue with the actual project development for now. It consists of
-> Blackfin tools 2009R1-RC10, dist 2009R1-RC2 including kernel and nucleus 2.4.7,
-> and external Xenomai 2.4.8 in userspace.
+Hi,
 
-Albeit this combo will work since no ABI change may occur between
-releases of the stable branch, this does not make much sense to combine
-an older kernel support with newer userland libs during the development
-stage. You may want to upgrade the Xenomai kernel space support of
-2009R1-RC2 to 2.4.8 as well. This must work, or your current combo would
-only work by luck and there would very likely still be a problem hiding
-somewhere.
+I've been looking into using LTTng with Xenomai and each time I try to
+find more information I find a different post with new links to
+various patches and websites.  The most recently dated information
+that I have found is 24th Feb 2009:
 
-> 
-> It's still not doing all what I expect, but the remaining problems probably are
-> caused by incorrect memory access in my application and/or driver. The
-> application runs with POSIX calls and critical threads controlled using the
-> native API (using rt_task_shadow), or all threads controlled via POSIX skin,
-> and it is well debuggable. Only when I tried to use the native skin for
-> everything, I ran into problems this time.
-> 
+https://mail.gna.org/public/adeos-main/2009-02/msg00031.html
 
-Any details about this? What did not work with GDB precisely (btw, did
-you check the stack sizes used to create your native tasks)?
+Is this the latest info, and is 'git.kiszka.org' the best source for
+LTTng - Adeos combinations?
 
-> When there's time I'll again take a look at newer versions.
-> 
-> Thanks for the help so far!
-> 
-> Kolja
-> 
-> 
-> 
--- 
-Philippe.
+Also, I have tried to apply the Xenomai patch given by the link in the
+above post, the one at:
 
+http://permalink.gmane.org/gmane.linux.real-time.xenomai.devel/6009
 
+However, this does not work on my copy of Xenomai (2.4.8) - which
+version of Xenomai was the patch designed for, and is there a more
+recent patch for 2.4.8 (or am I doing something wrong)?
+
+Finally, once I have the linux kernel tree with lttng and adeos (from
+kiszka.org), and the patched Xenomai (using the patch from gmane.org),
+I assume that I then prepare the kernel using Xenomai in the normal
+fashion (omitting the adeos patch because it is already applied), and
+then I can configure and compile the kernel as normal.  Is this
+correct?
+
+Thanks in advance for any help that you can give,
+
+Steve
 
