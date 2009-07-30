@@ -1,104 +1,93 @@
-Message-ID: <4A5B2553.2050705@domain.hid>
-Date: Mon, 13 Jul 2009 14:15:15 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+Message-Id: <4BC52A31-8084-4C10-8536-1445A57958EA@su.sabanciuniv.edu>
+From: Alphan Ulusoy <alphan@domain.hid>
+Content-Type: multipart/signed; boundary=Apple-Mail-22-62171354; micalg=sha1;
+	protocol="application/pkcs7-signature"
+Mime-Version: 1.0 (Apple Message framework v935.3)
+Date: Thu, 30 Jul 2009 14:11:50 +0300
+Subject: [Xenomai-core] Periodic Task Time Drift
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
+
+
+--Apple-Mail-22-62171354
+Content-Type: text/plain;
+	charset=US-ASCII;
+	format=flowed;
+	delsp=yes
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [PATCH 3/3] 2.6.29-x86: Fix switch_mm atomicity
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
 
-Implement ipipe_mm_switch_protect via IRQ disabling and wrap further
-arch-specific code path around switch_mm that require atomicity. This
-patch provides __switch_mm as an unprotected alternative when it needs
-to be called from already atomic contexts. Furthermore, instrument
-__switch_mm so that we will detect any unprotected invocation in the
-future.
+Hello,
 
-This patch, together with its no-arch foundation, fixes subtle mm
-corruptions seen on x86 SMP boxes under heavy RT/non-RT load.
+I wonder if using a periodic alarm with the rt_alarm_wait() function  
+can suffer from drift in alarm expiration times when a kernel module  
+or an ISR remains in a non-preemptible section for too long (upto 1  
+msec). Please note that I'm concerned with alarm expiration time drift  
+not overruns. How does the behavior change when the task is declared  
+periodic and triggered with rt_task_wait_period() ?
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
+I'm using Xenomai 2.4.5 w/ kernel 2.6.27.10.
 
- arch/x86/include/asm/mmu_context.h |   25 +++++++++++++++++++------
- arch/x86/mm/tlb.c                  |    4 ++++
- 2 files changed, 23 insertions(+), 6 deletions(-)
+best regards,
 
-diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
-index 63454a0..4b7020f 100644
---- a/arch/x86/include/asm/mmu_context.h
-+++ b/arch/x86/include/asm/mmu_context.h
-@@ -30,11 +30,14 @@ static inline void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
- #endif
- }
- 
--static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
--			     struct task_struct *tsk)
-+static inline void __switch_mm(struct mm_struct *prev, struct mm_struct *next,
-+			       struct task_struct *tsk)
- {
- 	unsigned cpu = smp_processor_id();
- 
-+#ifdef CONFIG_IPIPE_DEBUG_INTERNAL
-+	WARN_ON_ONCE(!irqs_disabled_hw());
-+#endif
- 	if (likely(prev != next)) {
- 		/* stop flush ipis for the previous mm */
- 		cpu_clear(cpu, prev->cpu_vm_mask);
-@@ -70,13 +73,23 @@ static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
- #endif
- }
- 
-+static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
-+			     struct task_struct *tsk)
-+{
-+	unsigned long flags;
-+	local_irq_save_hw_cond(flags);
-+	__switch_mm(prev, next, tsk);
-+	local_irq_restore_hw_cond(flags);
-+}
-+
-+#define ipipe_mm_switch_protect(flags)	local_irq_save_hw_cond(flags)
-+#define ipipe_mm_switch_unprotect(flags) \
-+	local_irq_restore_hw_cond(flags)
-+
- #define activate_mm(prev, next)			\
- do {						\
-- 	unsigned long flags;			\
- 	paravirt_activate_mm((prev), (next));	\
-- 	local_irq_save_hw_cond(flags);		\
--	switch_mm((prev), (next), NULL);	\
-- 	local_irq_restore_hw_cond(flags);	\
-+	__switch_mm((prev), (next), NULL);	\
- } while (0);
- 
- #ifdef CONFIG_X86_32
-diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-index 06bd681..9294287 100644
---- a/arch/x86/mm/tlb.c
-+++ b/arch/x86/mm/tlb.c
-@@ -57,10 +57,14 @@ static union smp_flush_state flush_state[NUM_INVALIDATE_TLB_VECTORS];
-  */
- void leave_mm(int cpu)
- {
-+	unsigned long flags;
-+
- 	if (percpu_read(cpu_tlbstate.state) == TLBSTATE_OK)
- 		BUG();
-+	local_irq_save_hw_cond(flags);
- 	cpu_clear(cpu, percpu_read(cpu_tlbstate.active_mm)->cpu_vm_mask);
- 	load_cr3(swapper_pg_dir);
-+	local_irq_restore_hw_cond(flags);
- }
- EXPORT_SYMBOL_GPL(leave_mm);
- 
+-- 
+alphan
+--Apple-Mail-22-62171354
+Content-Disposition: attachment;
+	filename=smime.p7s
+Content-Type: application/pkcs7-signature;
+	name=smime.p7s
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIGMzCCAuww
+ggJVoAMCAQICEFlbEbpcrtRwEgeTD6b7/UYwDQYJKoZIhvcNAQEFBQAwYjELMAkGA1UEBhMCWkEx
+JTAjBgNVBAoTHFRoYXd0ZSBDb25zdWx0aW5nIChQdHkpIEx0ZC4xLDAqBgNVBAMTI1RoYXd0ZSBQ
+ZXJzb25hbCBGcmVlbWFpbCBJc3N1aW5nIENBMB4XDTA4MDkxMDE4MjkxMFoXDTA5MDkxMDE4Mjkx
+MFowSzEfMB0GA1UEAxMWVGhhd3RlIEZyZWVtYWlsIE1lbWJlcjEoMCYGCSqGSIb3DQEJARYZYWxw
+aGFuQHN1LnNhYmFuY2l1bml2LmVkdTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKju
+oEccePvK+1FqYYzkT3ZagQMkK86SRcJIznx9wqt7mIE6oYI/SjcjURCvuaoU4l0zG3dhC5Jlgg1A
+u5xtAQCxd/mrvyRm6fM+AMs+qvyZjVBLqAnHT/HxHTV3Ju5BE4U2G6Dj+x18WuRy/YSj4fihhdAI
+AcsPuJri8Dfvusecef7Xam6gcl0kkRexmEDiiMSb3SEziOdjQqAZEArTRMYZYGFANsMJvXzNN76I
+qyAkaAcr8IuUoXt0RYwwn2DhUcBTrg1SfIqYdTrWi7TmCVpudfND6hHlz8+RogQi7ohbMbwKFwKa
+3gXhcRnc1dABGNnyXDJR1nCWKMHq1KE72DUCAwEAAaM2MDQwJAYDVR0RBB0wG4EZYWxwaGFuQHN1
+LnNhYmFuY2l1bml2LmVkdTAMBgNVHRMBAf8EAjAAMA0GCSqGSIb3DQEBBQUAA4GBACe45E4PvEZO
+ZjwogK3R7lVPLQ4bfNF1hpUDfK0Kgba6jbDlIRSmx0Cz3xgMdC2SGpf3aCu+7PJQa4u0NA2QAlEs
+AMI9QFNtu0HhyXKtdR3a7sHRCR4XiczLQUHS4S9LRKueHGvWaVx6jQICMH9lJBlW62gnd2TgOcWP
+TGxJWK9YMIIDPzCCAqigAwIBAgIBDTANBgkqhkiG9w0BAQUFADCB0TELMAkGA1UEBhMCWkExFTAT
+BgNVBAgTDFdlc3Rlcm4gQ2FwZTESMBAGA1UEBxMJQ2FwZSBUb3duMRowGAYDVQQKExFUaGF3dGUg
+Q29uc3VsdGluZzEoMCYGA1UECxMfQ2VydGlmaWNhdGlvbiBTZXJ2aWNlcyBEaXZpc2lvbjEkMCIG
+A1UEAxMbVGhhd3RlIFBlcnNvbmFsIEZyZWVtYWlsIENBMSswKQYJKoZIhvcNAQkBFhxwZXJzb25h
+bC1mcmVlbWFpbEB0aGF3dGUuY29tMB4XDTAzMDcxNzAwMDAwMFoXDTEzMDcxNjIzNTk1OVowYjEL
+MAkGA1UEBhMCWkExJTAjBgNVBAoTHFRoYXd0ZSBDb25zdWx0aW5nIChQdHkpIEx0ZC4xLDAqBgNV
+BAMTI1RoYXd0ZSBQZXJzb25hbCBGcmVlbWFpbCBJc3N1aW5nIENBMIGfMA0GCSqGSIb3DQEBAQUA
+A4GNADCBiQKBgQDEpjxVc1X7TrnKmVoeaMB1BHCd3+n/ox7svc31W/Iadr1/DDph8r9RzgHU5VAK
+MNcCY1osiRVwjt3J8CuFWqo/cVbLrzwLB+fxH5E2JCoTzyvV84J3PQO+K/67GD4Hv0CAAmTXp6a7
+n2XRxSpUhQ9IBH+nttE8YQRAHmQZcmC3+wIDAQABo4GUMIGRMBIGA1UdEwEB/wQIMAYBAf8CAQAw
+QwYDVR0fBDwwOjA4oDagNIYyaHR0cDovL2NybC50aGF3dGUuY29tL1RoYXd0ZVBlcnNvbmFsRnJl
+ZW1haWxDQS5jcmwwCwYDVR0PBAQDAgEGMCkGA1UdEQQiMCCkHjAcMRowGAYDVQQDExFQcml2YXRl
+TGFiZWwyLTEzODANBgkqhkiG9w0BAQUFAAOBgQBIjNFQg+oLLswNo2asZw9/r6y+whehQ5aUnX9M
+Ibj4Nh+qLZ82L8D0HFAgk3A8/a3hYWLD2ToZfoSxmRsAxRoLgnSeJVCUYsfbJ3FXJY3dqZw5jowg
+T2Vfldr394fWxghOrvbqNOUQGls1TXfjViF4gtwhGTXeJLHTHUb/XV9lTzGCAxAwggMMAgEBMHYw
+YjELMAkGA1UEBhMCWkExJTAjBgNVBAoTHFRoYXd0ZSBDb25zdWx0aW5nIChQdHkpIEx0ZC4xLDAq
+BgNVBAMTI1RoYXd0ZSBQZXJzb25hbCBGcmVlbWFpbCBJc3N1aW5nIENBAhBZWxG6XK7UcBIHkw+m
++/1GMAkGBSsOAwIaBQCgggFvMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkF
+MQ8XDTA5MDczMDExMTE1MVowIwYJKoZIhvcNAQkEMRYEFIGe2e0pHLS3rxWzG+UJz0xfcqKfMIGF
+BgkrBgEEAYI3EAQxeDB2MGIxCzAJBgNVBAYTAlpBMSUwIwYDVQQKExxUaGF3dGUgQ29uc3VsdGlu
+ZyAoUHR5KSBMdGQuMSwwKgYDVQQDEyNUaGF3dGUgUGVyc29uYWwgRnJlZW1haWwgSXNzdWluZyBD
+QQIQWVsRulyu1HASB5MPpvv9RjCBhwYLKoZIhvcNAQkQAgsxeKB2MGIxCzAJBgNVBAYTAlpBMSUw
+IwYDVQQKExxUaGF3dGUgQ29uc3VsdGluZyAoUHR5KSBMdGQuMSwwKgYDVQQDEyNUaGF3dGUgUGVy
+c29uYWwgRnJlZW1haWwgSXNzdWluZyBDQQIQWVsRulyu1HASB5MPpvv9RjANBgkqhkiG9w0BAQEF
+AASCAQBEp26DS1o8JRFh0syKDwZONRuB7PKeo9BNVY/aZhkCzz0BcgJFXV6GRGNmUGw1S9CWYfJy
+OsIuqgTOT+RD7QNYJY1JoaIW9ZOxGTxWzXKdytF99YfCdaXnkjoVw4DXyfo0iBRYiqjFiAkftqzy
+rj1o9FH5YTXhgddhNvT5OmLConIHiWki2ZsW1sysS0zC6gRAgRh/arqnXovsjwfv+lwXzs7HqF4u
+LybdNL0Sh2bcG2P4advl1RRhXIq27OgeKfiV1F/a6+UUhsx4wCAmJYDufpay2UsqIPQU9zZ3YRkF
+B+py2ocKIpoRv7h7N1iAZQ5Y3p7knPuCOuf+lIguj728AAAAAAAA
+
+--Apple-Mail-22-62171354--
 
