@@ -1,144 +1,127 @@
-MIME-Version: 1.0
-In-Reply-To: <4A9BE7CF.3030406@domain.hid>
-References: <7a15153d0908281050l56343b26g45a8f66b87c839e9@domain.hid>
-	<4A981B54.4020908@domain.hid> <4A981C1E.8000904@domain.hid>
-	<7a15153d0908281209i5b133c53l4fa816993df7d0eb@domain.hid>
-	<4A982D08.4050802@domain.hid>
-	<7a15153d0908310753s68f36dffg817df3cb9a16db06@domain.hid>
-	<4A9BE7CF.3030406@domain.hid>
-Date: Mon, 31 Aug 2009 15:36:30 -0300
-Message-ID: <7a15153d0908311136g2a1619d5mc5ec803244da6553@domain.hid>
-From: Felipe Castro <felipecpc1@domain.hid>
-Content-Type: multipart/alternative; boundary=000feaf26f7d00ff42047274505d
-Subject: Re: [Xenomai-core] [PXA + Xenomai] Latency program
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <alpine.DEB.2.00.0907292209410.5958@domain.hid>
+References: <Pine.LNX.4.62.0907241731170.11473@domain.hid>
+	<1248453047.3998.168.camel@domain.hid>
+	<alpine.DEB.2.00.0907241917480.4343@domain.hid>
+	<1248461458.3998.183.camel@domain.hid>
+	<alpine.DEB.2.00.0907242259430.4343@domain.hid>
+	<1248517986.4438.1.camel@domain.hid>
+	<alpine.DEB.2.00.0907281859210.4673@domain.hid>
+	<1248855797.3247.16.camel@domain.hid>
+	<Pine.LNX.4.62.0907291210470.20869@domain.hid>
+	<Pine.LNX.4.62.0907291226390.20869@domain.hid>
+	<1248883517.3532.7.camel@domain.hid>
+	<alpine.DEB.2.00.0907292209410.5958@domain.hid>
+Content-Type: text/plain
+Date: Sun, 02 Aug 2009 19:53:36 +0200
+Message-Id: <1249235616.4010.24.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Stack sizes etc. (Re: POSIX skin/Blackfin:
+ SIGSEGV when stracing or gdb'ing)
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenoka09@domain.hid
+Cc: xenomai@xenomai.org
 
---000feaf26f7d00ff42047274505d
-Content-Type: text/plain; charset=ISO-8859-1
+On Wed, 2009-07-29 at 22:55 +0200, Waschk,Kolja wrote:
+> Hi,
+> 
+> > This may be an I-pipe issue. As I understand, you are currently running
+> > 2009R1-RC2 unmodified, could you summarize where the various Xenomai
+> > related components come from so I could try looking at the issue?
+> 
+> I'll try: I haven't put in any extra sources, and it seems that
+> user/xenomai/Makefile indeed refers to ADEOS =
+> $(ROOTDIR)/bfin_patch/adeos_patch/adeos-bfin.patch
+> 
+> The latest SVN log entry says "update to
+> http://download.gna.org/adeos/patches/v2.6/blackfin/adeos-ipipe-2.6.28.10-blackfin.git-1.10-00.patch"
+> however adeos-bfin.patch in there is not exactly that file.
+> 
+> Also, I use and didn't touch anything inside the dist's
+> user/xenomai/xenomai-2.4.7 directory which seems to contain
+> the almost unmodified 2.4.7 sources. Only minor changes regarding an
+> installation prefix check and asm-blackfin/calibration.h are present. And it
+> modifies the link order for the test programs. I noticed that last "trick" only
+> just now; I'll try(*) tomorrow whether linking to (e.g) libnative.la changes
+> anything over linking with -lnative. Specifying an extra -static anyway didn't
+> help.  The uclinux-dist build puts the build Xenomai libraries into
+> uClinux-dist/staging/usr/lib, and that's where my app links to.
+> 
+> *) Because there's one more (strange, to me) observation: If I do not try
+> "next" over the rt_task_shadow (which is the first line in main()), but "step",
+> it seems to go directly into "__map_heap_memory" with heap=0 and php=argv[0]
+> (i.e. the arguments to main()). So it seems it's not in main() but in in
+> __map_heap_memory?!  In another case, I was able to make the code run further
+> until a rt_task_create. A breakpoint there and one step, and all of the sudden
+> gdb says I'm was actually in "rt_heap_create" but with the arguments that were
+> passed to rt_task_create. It happens that both take similar type and count of
+> arguments. This may be gdb displaying wrong info or a badly linked FDPIC elf?!
+> 
 
-Ok i got ,
+You seem to be using flat binaries, not ELF, at least if you did not
+change anything to the stock Blackfin Makefiles for 2009R1-RC2.
 
-When i tried to run latency with 3 ms, it works but i received the message
-[149.437671] Xenomai: Switching display-321 to secondary modo after
-exception #5 from user-spcae at 0x9588 (pid 232)
+> BTW, the toolchain is ADI's 2009R1-RC10 (binary download),
+> bfin-linux-uclibc-gcc reports version 4.1.2.
 
-So , if i put my test software posted in the last message, to run with 3ms
-period task, the software freeze.
-I can run this software only with 10ms period time, what i'm doing wrong ?
+I have just rebuilt your exact setup, i.e. everything from a stock
+2009R1-RC2 which includes Xenomai 2.4.7, with the 09r1-rc10 toolchain.
+So far, everything looks fine when running the testsuite.
 
-On Mon, Aug 31, 2009 at 12:10 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+It seems that you made some changes to the kernel configuration compared
+to the default one, since you did activate the Xenomai debug option
+which is off by default (this is the one that triggers the
+xnshadow_relax() assertion). I would suggest to try the following, in
+sequence:
 
-> Felipe Castro wrote:
-> > hi !
-> >
-> > I apllied the patch that you sent me, but there are some weird!
-> > When i run latency program the result is:
-> >
-> > root@domain.hid$ /usr/xenomai/bin/latency
-> > == Sampling period: 100 us
-> > == Test mode: periodic user-mode task
-> > == All results in microseconds
-> > warming up...
-> > RTT|  00:00:02  (periodic user-mode task, 100 us period, priority 99)
-> > RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
-> > worst
-> > RTD|      83.384|     146.769|     189.538|    1803|      83.384|
-> > 189.538
->
-> 100us is to short a period for an ARM without FCSE enabled. Actually it
-> is also too short for an ARM with FCSE. Look at the latency: you are
-> asking a 100us period whereas the latency is 150us on average, don't you
-> see the problem?
->
-> You can try a period of 1ms, it is more reasonable. If you want periods
-> of 70us, you can not use an ARM.
->
-> >
-> >
-> > And than the program just freeze, and the kernel trace:
-> >
-> > [  780.136217] Xenomai: Switching display-343 to secondary mode after
-> > exception #5 from user-space at 0x93e0 (pid 345)
->
-> That is another problem which should be fixed in the next Xenomai
-> release, which should happen real soon now.
->
-> --
->                                           Gilles
->
->
+- rebuild your full uclinux-dist stuff based on default settings, still
+using the Xenomai code that ships with it; I would not try to tweak
+anything before getting a working default system though.
 
---000feaf26f7d00ff42047274505d
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+- override the shipped Xenomai release with a stock one:
+http://download.gna.org/xenomai/stable/xenomai-2.4.7.tar.bz2
+You will have to rebuild the kernel and Xenomai libs/programs aside of
+the standard uclinux-dist process, the following should do the trick
+(untested though):
 
-Ok i got , <br><br>When i tried to run latency with 3 ms, it works but i re=
-ceived the message<br>[149.437671] Xenomai: Switching display-321 to second=
-ary modo after exception #5 from user-spcae at 0x9588 (pid 232)<br><br>So ,=
- if i put my test software posted in the last message, to run with 3ms peri=
-od task, the software freeze. <br>
+$ cd $uclinux-dist-root/linux-2.6.x
+$ ~/xenomai-stock/scripts/prepare-kernel.sh --arch=blackfin --linux=.
+--forcelink
 
-I can run this software only with 10ms period time, what i&#39;m doing wron=
-g ?<br><br><div class=3D"gmail_quote">On Mon, Aug 31, 2009 at 12:10 PM, Gil=
-les Chanteperdrix <span dir=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperd=
-rix@domain.hid">gilles.chanteperdrix@xenomai.org</a>&gt;</span> wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
-204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><div class=3D"im"=
->Felipe Castro wrote:<br>
-&gt; hi !<br>
-&gt;<br>
-&gt; I apllied the patch that you sent me, but there are some weird!<br>
-&gt; When i run latency program the result is:<br>
-&gt;<br>
-&gt; root@domain.hid$ /usr/xenomai/bin/latency<br>
-&gt; =3D=3D Sampling period: 100 us<br>
-&gt; =3D=3D Test mode: periodic user-mode task<br>
-&gt; =3D=3D All results in microseconds<br>
-&gt; warming up...<br>
-&gt; RTT| =A000:00:02 =A0(periodic user-mode task, 100 us period, priority =
-99)<br>
-&gt; RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---la=
-t<br>
-&gt; worst<br>
-&gt; RTD| =A0 =A0 =A083.384| =A0 =A0 146.769| =A0 =A0 189.538| =A0 =A01803|=
- =A0 =A0 =A083.384|<br>
-&gt; 189.538<br>
-<br>
-</div>100us is to short a period for an ARM without FCSE enabled. Actually =
-it<br>
-is also too short for an ARM with FCSE. Look at the latency: you are<br>
-asking a 100us period whereas the latency is 150us on average, don&#39;t yo=
-u<br>
-see the problem?<br>
-<br>
-You can try a period of 1ms, it is more reasonable. If you want periods<br>
-of 70us, you can not use an ARM.<br>
-<div class=3D"im"><br>
-&gt;<br>
-&gt;<br>
-&gt; And than the program just freeze, and the kernel trace:<br>
-&gt;<br>
-&gt; [ =A0780.136217] Xenomai: Switching display-343 to secondary mode afte=
-r<br>
-&gt; exception #5 from user-space at 0x93e0 (pid 345)<br>
-<br>
-</div>That is another problem which should be fixed in the next Xenomai<br>
-release, which should happen real soon now.<br>
-<br>
---<br>
-<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles<br>
-<br>
-</font></blockquote></div><br>
+$ cd /tmp/somewhere
+$ ~/xenomai-stock/configure --build=i686-pc-linux-gnu
+--host=blackfin-unknown-linux-gnu CC=bfin-linux-uclibc-gcc
+CXX=bfin-linux-uclibc-gcc AR=bfin-linux-uclibc-ar
+LD=bfin-linux-uclibc-ld --prefix=/usr
+$ make DESTDIR=$uclinux-dist-root/staging install
+$ cd $uclinux-dist-root && make linux image
+$ cp images/uImage /tftpboot/somewhere/
 
---000feaf26f7d00ff42047274505d--
+The Xenomai libs/programs will be produced in ELF format, not flat. I
+understand this may be an issue for some users, but this is how the
+Xenomai project tests them anyway. In any case, you may want to check
+whether building for ELF without converting to FLT makes a difference
+with your GDB issue.
+
+PS: looking at the toolchain code (09r1-rc10), the mcount bug is still
+there in the gcc config frag for blackfin, so don't even bother trying
+ftrace or the I-pipe tracer; they would break your kernel during early
+boot up.
+
+> 
+> Kolja
+> 
+-- 
+Philippe.
+
+
 
