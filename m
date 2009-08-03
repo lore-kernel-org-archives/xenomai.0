@@ -1,24 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <alpine.DEB.2.00.0907292209410.5958@domain.hid>
-References: <Pine.LNX.4.62.0907241731170.11473@domain.hid>
-	<1248453047.3998.168.camel@domain.hid>
-	<alpine.DEB.2.00.0907241917480.4343@domain.hid>
-	<1248461458.3998.183.camel@domain.hid>
-	<alpine.DEB.2.00.0907242259430.4343@domain.hid>
-	<1248517986.4438.1.camel@domain.hid>
-	<alpine.DEB.2.00.0907281859210.4673@domain.hid>
-	<1248855797.3247.16.camel@domain.hid>
-	<Pine.LNX.4.62.0907291210470.20869@domain.hid>
-	<Pine.LNX.4.62.0907291226390.20869@domain.hid>
-	<1248883517.3532.7.camel@domain.hid>
-	<alpine.DEB.2.00.0907292209410.5958@domain.hid>
-Content-Type: text/plain
-Date: Mon, 03 Aug 2009 10:22:33 +0200
-Message-Id: <1249287753.4803.10.camel@domain.hid>
-Mime-Version: 1.0
+MIME-Version: 1.0
+In-Reply-To: <4A7023F4.5090103@domain.hid>
+References: <abaf774b0907290133j6c2ec456s7be6c65de6993e3f@domain.hid>
+	<4A7023F4.5090103@domain.hid>
+Date: Mon, 3 Aug 2009 09:35:25 +0100
+Message-ID: <abaf774b0908030135ubddd66ek3591f0ad110e0e5c@domain.hid>
+From: Steve <sbxenomai@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Stack sizes etc. (Re: POSIX skin/Blackfin:
- SIGSEGV when stracing or gdb'ing)
+Subject: Re: [Xenomai-help] Setup LTTng with Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -28,103 +17,106 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenoka09@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-On Wed, 2009-07-29 at 22:55 +0200, Waschk,Kolja wrote:
-> Hi,
-> 
-> > This may be an I-pipe issue. As I understand, you are currently running
-> > 2009R1-RC2 unmodified, could you summarize where the various Xenomai
-> > related components come from so I could try looking at the issue?
-> 
-> I'll try: I haven't put in any extra sources, and it seems that
-> user/xenomai/Makefile indeed refers to ADEOS =
-> $(ROOTDIR)/bfin_patch/adeos_patch/adeos-bfin.patch
-> 
-> The latest SVN log entry says "update to
-> http://download.gna.org/adeos/patches/v2.6/blackfin/adeos-ipipe-2.6.28.10-blackfin.git-1.10-00.patch"
-> however adeos-bfin.patch in there is not exactly that file.
-> 
-> Also, I use and didn't touch anything inside the dist's
-> user/xenomai/xenomai-2.4.7 directory which seems to contain
-> the almost unmodified 2.4.7 sources. Only minor changes regarding an
-> installation prefix check and asm-blackfin/calibration.h are present. And it
-> modifies the link order for the test programs. I noticed that last "trick" only
-> just now; I'll try(*) tomorrow whether linking to (e.g) libnative.la changes
-> anything over linking with -lnative. Specifying an extra -static anyway didn't
-> help.  The uclinux-dist build puts the build Xenomai libraries into
-> uClinux-dist/staging/usr/lib, and that's where my app links to.
-> 
-> *) Because there's one more (strange, to me) observation: If I do not try
-> "next" over the rt_task_shadow (which is the first line in main()), but "step",
-> it seems to go directly into "__map_heap_memory" with heap=0 and php=argv[0]
-> (i.e. the arguments to main()). So it seems it's not in main() but in in
-> __map_heap_memory?!  In another case, I was able to make the code run further
-> until a rt_task_create. A breakpoint there and one step, and all of the sudden
-> gdb says I'm was actually in "rt_heap_create" but with the arguments that were
-> passed to rt_task_create. It happens that both take similar type and count of
-> arguments. This may be gdb displaying wrong info or a badly linked FDPIC elf?!
-> 
+On 29/07/2009, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> Steve wrote:
+>> Hi,
+>>
+>> I've been looking into using LTTng with Xenomai and each time I try to
+>> find more information I find a different post with new links to
+>> various patches and websites.  The most recently dated information
+>> that I have found is 24th Feb 2009:
+>>
+>> https://mail.gna.org/public/adeos-main/2009-02/msg00031.html
+>>
+>> Is this the latest info, and is 'git.kiszka.org' the best source for
+>> LTTng - Adeos combinations?
+>
+> For x86? Yes, for sure. :)
+>
+> Just note that I haven't updated my lttng tree with latest ipipe fixes
+> for 2.6.29 yet. So I would recommend to merge/cherry-pick the changes
+> found in queues/2.6.29-noarch and queues/2.6.29-x86 into your lttng clone.
+>
+>>
+>> Also, I have tried to apply the Xenomai patch given by the link in the
+>> above post, the one at:
+>>
+>> http://permalink.gmane.org/gmane.linux.real-time.xenomai.devel/6009
+>>
+>> However, this does not work on my copy of Xenomai (2.4.8) - which
+>> version of Xenomai was the patch designed for, and is there a more
+>> recent patch for 2.4.8 (or am I doing something wrong)?
+>
+> That patch was written against the 2.5 development tree. You likely have
+> to resolve the conflicts manually and furthermore fix remaining
+> trace_mark invocations that changed between 2.4 and 2.5.
+>
+>>
+>> Finally, once I have the linux kernel tree with lttng and adeos (from
+>> kiszka.org), and the patched Xenomai (using the patch from gmane.org),
+>> I assume that I then prepare the kernel using Xenomai in the normal
+>> fashion (omitting the adeos patch because it is already applied), and
+>
+> Yep.
+>
+>> then I can configure and compile the kernel as normal.  Is this
+>> correct?
+>
+> Yep. Just additionally enabled the LTTng support in the kernel config.
+>
+>>
+>> Thanks in advance for any help that you can give,
+>>
+>> Steve
+>
+> Jan
+>
+> --
+> Siemens AG, Corporate Technology, CT SE 2
+> Corporate Competence Center Embedded Linux
+>
 
-You seem to be using flat binaries, not ELF, at least if you did not
-change anything to the stock Blackfin Makefiles for 2009R1-RC2.
+As a test I grabbed lttng-ipipe-2.6.28-x86-2.2-06.patch snapshot from
+git.kiszka.org, and the Xenomai 2.5-rc2 tar (which already has the
+patch from gmane.org applied).  I then prepared the kernel in the
+snapshot with Xenomai 2.5-rc2, and updated the kernel .config file to
+enable LTTng, plus some other options that allowed it to boot (my
+computer needed some kernel modules that Jan's computer obviously does
+not).
 
-> BTW, the toolchain is ADI's 2009R1-RC10 (binary download),
-> bfin-linux-uclibc-gcc reports version 4.1.2.
+After booting into the new kernel I deleted, rebuild and reinstalled
+the /usr/xenomai files, and then rebuilt my code.  I have since
+encountered a problem when running the code that may be caused by
+differences between 2.4.8 and 2.5-rc2, so I would like to know if this
+is the case:
 
-I have just rebuilt your exact setup, i.e. everything from a stock
-2009R1-RC2 which includes Xenomai 2.4.7, with the 09r1-rc10 toolchain.
-So far, everything looks fine when running the testsuite.
+The program first loads various modules using dlopen, and during this
+process the following error is thrown:
 
-It seems that you made some changes to the kernel configuration compared
-to the default one, since you did activate the Xenomai debug option
-which is off by default (this is the one that triggers the
-xnshadow_relax() assertion). I would suggest to try the following, in
-sequence:
+librtdm.so.1: shared object cannot be dlopen()ed
 
-- rebuild your full uclinux-dist stuff based on default settings, still
-using the Xenomai code that ships with it; I would not try to tweak
-anything before getting a working default system though. If that works,
-try to enable the Xenomai nucleus debug option and only this one, to
-check whether the xnshadow_relax() issue still triggers.
+After some investigation I tried reconfiguring the /usr/xenomai files
+by calling:
 
-- if the first option does not work, override the shipped Xenomai
-release with a stock one for testing:
-http://download.gna.org/xenomai/stable/xenomai-2.4.7.tar.bz2
-You will have to rebuild the kernel and Xenomai libs/programs aside of
-the standard uclinux-dist process, the following should do the trick
-(untested though):
+xenomai-src-dir/configure --enable-dlopen-skins
 
-$ cd $uclinux-dist-root/linux-2.6.x
-$ ~/xenomai-stock/scripts/prepare-kernel.sh --arch=blackfin --linux=.
---forcelink
+When I ran the program again I got a glibc error after the program had
+finished the loading / opening process and should have been waiting
+for input:
 
-$ cd /tmp/somewhere
-$ ~/xenomai-stock/configure --build=i686-pc-linux-gnu
---host=blackfin-unknown-linux-gnu CC=bfin-linux-uclibc-gcc
-CXX=bfin-linux-uclibc-gcc AR=bfin-linux-uclibc-ar
-LD=bfin-linux-uclibc-ld --prefix=/usr
-$ make DESTDIR=$uclinux-dist-root/staging install
-$ cd $uclinux-dist-root && make linux image
-$ cp images/uImage /tftpboot/somewhere/
+*** glibc detected *** ProgramName: double free or corruption
+(fasttop): 0x080517f8 ***
+======= Backtrace: =========
+/lib/tls/i686/cmov/libc.so.6[0xb7a91a85]
+/lib/tls/i686/cmov/libc.so.6(cfree+0x90) [0xb7a954f0]
+/usr/lib/libstdc++.so.6(_ZdlPv+0x21) [0xb7c5cb11]
+ProgramName[0x8049e73]
+/lib/tls/i686/cmov/libc.so.6(__libc_start_main+0xe0) [0xb7a3c450]
+ProgramName(__gxx_personality_v0+0xbd) [0x80498a1]
 
-The Xenomai libs/programs will be produced in ELF format, not flat. I
-understand this may be an issue for some users, but this is how the
-Xenomai project tests them anyway. In any case, you may want to check
-whether building for ELF without converting to FLT makes a difference
-with your GDB issue.
+Any ideas as to why this is happening?
 
-PS: looking at the toolchain code (09r1-rc10), the mcount bug is still
-there in the gcc config frag for blackfin, so don't even bother trying
-ftrace or the I-pipe tracer; they would break your kernel during early
-boot up.
-
-> 
-> Kolja
-> 
--- 
-Philippe.
-
-
+Steve
 
