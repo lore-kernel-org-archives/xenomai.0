@@ -13,8 +13,8 @@ References: <Pine.LNX.4.62.0907241731170.11473@domain.hid>
 	<1248883517.3532.7.camel@domain.hid>
 	<alpine.DEB.2.00.0907292209410.5958@domain.hid>
 Content-Type: text/plain
-Date: Sun, 02 Aug 2009 19:53:36 +0200
-Message-Id: <1249235616.4010.24.camel@domain.hid>
+Date: Mon, 03 Aug 2009 10:22:33 +0200
+Message-Id: <1249287753.4803.10.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Stack sizes etc. (Re: POSIX skin/Blackfin:
@@ -85,9 +85,12 @@ sequence:
 
 - rebuild your full uclinux-dist stuff based on default settings, still
 using the Xenomai code that ships with it; I would not try to tweak
-anything before getting a working default system though.
+anything before getting a working default system though. If that works,
+try to enable the Xenomai nucleus debug option and only this one, to
+check whether the xnshadow_relax() issue still triggers.
 
-- override the shipped Xenomai release with a stock one:
+- if the first option does not work, override the shipped Xenomai
+release with a stock one for testing:
 http://download.gna.org/xenomai/stable/xenomai-2.4.7.tar.bz2
 You will have to rebuild the kernel and Xenomai libs/programs aside of
 the standard uclinux-dist process, the following should do the trick
