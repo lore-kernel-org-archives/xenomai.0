@@ -1,13 +1,26 @@
+Date: Mon, 3 Aug 2009 12:42:11 +0200 (CEST)
+From: Kolja Waschk <xenoka09@domain.hid>
+In-Reply-To: <1249287753.4803.10.camel@domain.hid>
+Message-ID: <Pine.LNX.4.62.0908031224170.29519@domain.hid>
+References: <Pine.LNX.4.62.0907241731170.11473@domain.hid> 
+	<1248453047.3998.168.camel@domain.hid>
+	<alpine.DEB.2.00.0907241917480.4343@domain.hid>
+	<1248461458.3998.183.camel@domain.hid>
+	<alpine.DEB.2.00.0907242259430.4343@domain.hid>
+	<1248517986.4438.1.camel@domain.hid>
+	<alpine.DEB.2.00.0907281859210.4673@domain.hid>
+	<1248855797.3247.16.camel@domain.hid>
+	<Pine.LNX.4.62.0907291210470.20869@domain.hid>
+	<Pine.LNX.4.62.0907291226390.20869@domain.hid>
+	<1248883517.3532.7.camel@domain.hid>
+	<alpine.DEB.2.00.0907292209410.5958@domain.hid>
+	<1249287753.4803.10.camel@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <4A7023F4.5090103@domain.hid>
-References: <abaf774b0907290133j6c2ec456s7be6c65de6993e3f@domain.hid>
-	<4A7023F4.5090103@domain.hid>
-Date: Mon, 3 Aug 2009 09:35:25 +0100
-Message-ID: <abaf774b0908030135ubddd66ek3591f0ad110e0e5c@domain.hid>
-From: Steve <sbxenomai@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Setup LTTng with Xenomai
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Sender: "Kolja Waschk,,," <xenoka09@domain.hid>
+Subject: Re: [Xenomai-help] Stack sizes etc. (Re: POSIX skin/Blackfin:
+ SIGSEGV when stracing or gdb'ing)
+Reply-To: xenoka09@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,106 +30,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 29/07/2009, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> Steve wrote:
->> Hi,
->>
->> I've been looking into using LTTng with Xenomai and each time I try to
->> find more information I find a different post with new links to
->> various patches and websites.  The most recently dated information
->> that I have found is 24th Feb 2009:
->>
->> https://mail.gna.org/public/adeos-main/2009-02/msg00031.html
->>
->> Is this the latest info, and is 'git.kiszka.org' the best source for
->> LTTng - Adeos combinations?
->
-> For x86? Yes, for sure. :)
->
-> Just note that I haven't updated my lttng tree with latest ipipe fixes
-> for 2.6.29 yet. So I would recommend to merge/cherry-pick the changes
-> found in queues/2.6.29-noarch and queues/2.6.29-x86 into your lttng clone.
->
->>
->> Also, I have tried to apply the Xenomai patch given by the link in the
->> above post, the one at:
->>
->> http://permalink.gmane.org/gmane.linux.real-time.xenomai.devel/6009
->>
->> However, this does not work on my copy of Xenomai (2.4.8) - which
->> version of Xenomai was the patch designed for, and is there a more
->> recent patch for 2.4.8 (or am I doing something wrong)?
->
-> That patch was written against the 2.5 development tree. You likely have
-> to resolve the conflicts manually and furthermore fix remaining
-> trace_mark invocations that changed between 2.4 and 2.5.
->
->>
->> Finally, once I have the linux kernel tree with lttng and adeos (from
->> kiszka.org), and the patched Xenomai (using the patch from gmane.org),
->> I assume that I then prepare the kernel using Xenomai in the normal
->> fashion (omitting the adeos patch because it is already applied), and
->
-> Yep.
->
->> then I can configure and compile the kernel as normal.  Is this
->> correct?
->
-> Yep. Just additionally enabled the LTTng support in the kernel config.
->
->>
->> Thanks in advance for any help that you can give,
->>
->> Steve
->
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT SE 2
-> Corporate Competence Center Embedded Linux
->
+> You seem to be using flat binaries, not ELF, at least if you did not
+> change anything to the stock Blackfin Makefiles for 2009R1-RC2.
 
-As a test I grabbed lttng-ipipe-2.6.28-x86-2.2-06.patch snapshot from
-git.kiszka.org, and the Xenomai 2.5-rc2 tar (which already has the
-patch from gmane.org applied).  I then prepared the kernel in the
-snapshot with Xenomai 2.5-rc2, and updated the kernel .config file to
-enable LTTng, plus some other options that allowed it to boot (my
-computer needed some kernel modules that Jan's computer obviously does
-not).
+I tried both settings for userland in parallel, each time building 
+in an absolutely clean (just untarred) uclinux-dist directory.
 
-After booting into the new kernel I deleted, rebuild and reinstalled
-the /usr/xenomai files, and then rebuilt my code.  I have since
-encountered a problem when running the code that may be caused by
-differences between 2.4.8 and 2.5-rc2, so I would like to know if this
-is the case:
+> I have just rebuilt your exact setup, i.e. everything from a stock
+> 2009R1-RC2 which includes Xenomai 2.4.7, with the 09r1-rc10 toolchain.
+> So far, everything looks fine when running the testsuite.
 
-The program first loads various modules using dlopen, and during this
-process the following error is thrown:
+The smallest example that I can make that exhibits at least some of the
+strange behaviour also doesn't make any problems when it is just run.
+Let me describe the steps to reproduce, leaving as much at default as
+possible. I first untar the uClinux-dist-2009R1-RC2.tar.bz2 and make
+AnalogDevices/BF537-STAMP_default. When finished, I add Xenomai, using
+"make menuconfig" and [X]ing Xenomai under Miscellaneous Applications,
+and rebuild. All questions regarding Xenomai configuration when building
+the kernel are answered with [Enter] and thus left at their default
+value. Finally, I build an example and try to debug it.
 
-librtdm.so.1: shared object cannot be dlopen()ed
+The example is built from this source try.c:
 
-After some investigation I tried reconfiguring the /usr/xenomai files
-by calling:
+#include <stdio.h>
+#include <sys/mman.h>
+#include <native/task.h>
 
-xenomai-src-dir/configure --enable-dlopen-skins
+int main ()
+{
+   int r;
+   RT_TASK maintask;
+   mlockall(MCL_CURRENT|MCL_FUTURE);
+   r = rt_task_shadow(&maintask, "maintask", 3, 0);
+   printf("main:shadow:%d\n", r);
+   return 0;
+}
 
-When I ran the program again I got a glibc error after the program had
-finished the loading / opening process and should have been waiting
-for input:
+Using this command:
 
-*** glibc detected *** ProgramName: double free or corruption
-(fasttop): 0x080517f8 ***
-======= Backtrace: =========
-/lib/tls/i686/cmov/libc.so.6[0xb7a91a85]
-/lib/tls/i686/cmov/libc.so.6(cfree+0x90) [0xb7a954f0]
-/usr/lib/libstdc++.so.6(_ZdlPv+0x21) [0xb7c5cb11]
-ProgramName[0x8049e73]
-/lib/tls/i686/cmov/libc.so.6(__libc_start_main+0xe0) [0xb7a3c450]
-ProgramName(__gxx_personality_v0+0xbd) [0x80498a1]
+bfin-uclinux-gcc -I/opt/uClinux/uClinux-dist/staging/usr/include
+-D_GNU_SOURCE -D_REENTRANT -D__XENO__ -o try try.c -Wl,-elf2flt
+-L/opt/uClinux/uClinux-dist.flat/staging/usr/lib -lnative -lpthread -lrt
 
-Any ideas as to why this is happening?
+I start it on the BF537-STAMP using "gdbserver localhost:2222 /mnt/try"
+and debug from my PC with bfin-uclinux-gdb and this .gdbinit:
 
-Steve
+file try.gdb
+target remote bfin:2222
+break main
+cont
+next
+
+The result is  (on the PC)
+
+> 0x008e0044 in _stext ()
+> Breakpoint 1 at 0x8e0188
+> [New Thread 252]
+> [Switching to Thread 252]
+> 
+> Breakpoint 1, 0x008e0188 in main ()
+> Single stepping until exit from function main, 
+> which has no line number information.
+>
+> Program received signal SIGTRAP, Trace/breakpoint trap.
+> 0x008e71ae in __libc_write (fd=<value optimized out>, buf=0x8f4edc,
+> count=20) at libc/sysdeps/linux/common/write.c:15
+> 15	libc/sysdeps/linux/common/write.c: No such file or directory.
+> 	in libc/sysdeps/linux/common/write.c
+
+And on the BF537-STAMP the displayed result value is incorrect:
+
+> Process /mnt/try created; pid = 252
+> ...
+> main:shadow:9343576
+> Child exited with retcode = 0
+
+Now, I enable Debug support for Xenomai in the Kernel, with Nucleus
+Debugging support, but everything else (including Watchdog) disabled.
+Without changes in try.c or .gdbinit, the same steps now produce the
+error:
+
+Xenomai: fatal: xnshadow_relax() failed for thread maintask[219]
+  CPU  PID    PRI      TIMEOUT  STAT      NAME
+    0  0        3      0        00400088  ROOT
+>  0  219      3      0        00300380  maintask
+
+
+Next I'll try with stock 2.4.7 Xenomai as you described. Thanks for the
+concise guideline!
+
+Greetings from Hamburg
+Kolja
 
