@@ -1,5 +1,5 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <Pine.LNX.4.62.0908031850580.29886@domain.hid>
+In-Reply-To: <1249320846.4803.52.camel@domain.hid>
 References: <Pine.LNX.4.62.0907241731170.11473@domain.hid>
 	<1248453047.3998.168.camel@domain.hid>
 	<alpine.DEB.2.00.0907241917480.4343@domain.hid>
@@ -14,9 +14,10 @@ References: <Pine.LNX.4.62.0907241731170.11473@domain.hid>
 	<alpine.DEB.2.00.0907292209410.5958@domain.hid>
 	<1249287753.4803.10.camel@domain.hid>
 	<Pine.LNX.4.62.0908031850580.29886@domain.hid>
+	<1249320846.4803.52.camel@domain.hid>
 Content-Type: text/plain
-Date: Mon, 03 Aug 2009 19:34:06 +0200
-Message-Id: <1249320846.4803.52.camel@domain.hid>
+Date: Mon, 03 Aug 2009 19:37:16 +0200
+Message-Id: <1249321036.4803.54.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Stack sizes etc. (Re: POSIX skin/Blackfin:
@@ -33,32 +34,39 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: xenoka09@domain.hid
 Cc: xenomai@xenomai.org
 
-On Mon, 2009-08-03 at 19:29 +0200, Kolja Waschk wrote:
-> Hi,
+On Mon, 2009-08-03 at 19:34 +0200, Philippe Gerum wrote:
+> On Mon, 2009-08-03 at 19:29 +0200, Kolja Waschk wrote:
+> > Hi,
+> > 
+> > > - if the first option does not work, override the shipped Xenomai
+> > > release with a stock one for testing:
+> > 
+> > I've now managed to use the prepare-kernel.sh (with
+> > adeos-ipipe-2.6.28.10-blackfin.git-1.10-00.patch as it comes with
+> > xenomai-2.4.8) on the 2.6.28.10 kernel that comes as "linux-2.6.x" with
+> > uClinux-dist 2009R1-RC2.  Unfortunately, the three files ipipe.h,
+> > ipipe.c and ints-priority.c therein already contain the changes from the
+> > 1.10 patch, so to apply that patch, they had to be reverted beforehand.
+> > 
+> > In userland and for my application I used stock xenomai-2.4.8; only the
+> > xenomai-2.4.x.patch from uClinux-dist/user/xenomai had to be applied
+> > so that /usr can be specified as a destination during configure. But
+> > that patch doesn't change anything in the code.
+> > 
+> > Now, well, what should I say - the xnshadow call still fails. Or
+> > whatever the real cause for this message is...
 > 
-> > - if the first option does not work, override the shipped Xenomai
-> > release with a stock one for testing:
-> 
-> I've now managed to use the prepare-kernel.sh (with
-> adeos-ipipe-2.6.28.10-blackfin.git-1.10-00.patch as it comes with
-> xenomai-2.4.8) on the 2.6.28.10 kernel that comes as "linux-2.6.x" with
-> uClinux-dist 2009R1-RC2.  Unfortunately, the three files ipipe.h,
-> ipipe.c and ints-priority.c therein already contain the changes from the
-> 1.10 patch, so to apply that patch, they had to be reverted beforehand.
-> 
-> In userland and for my application I used stock xenomai-2.4.8; only the
-> xenomai-2.4.x.patch from uClinux-dist/user/xenomai had to be applied
-> so that /usr can be specified as a destination during configure. But
-> that patch doesn't change anything in the code.
-> 
-> Now, well, what should I say - the xnshadow call still fails. Or
-> whatever the real cause for this message is...
+> Could you send me your test code? TIA,
 
-Could you send me your test code? TIA,
+And the kernel .config file that goes with your latest test triggering
+the shadow_relax issue would help as well.
+
+Which bfin board are you running your app on btw?
 
 > 
-> Kolja
-> 
+> > 
+> > Kolja
+> > 
 -- 
 Philippe.
 
