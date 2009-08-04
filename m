@@ -1,27 +1,17 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1249320846.4803.52.camel@domain.hid>
-References: <Pine.LNX.4.62.0907241731170.11473@domain.hid>
-	<1248453047.3998.168.camel@domain.hid>
-	<alpine.DEB.2.00.0907241917480.4343@domain.hid>
-	<1248461458.3998.183.camel@domain.hid>
-	<alpine.DEB.2.00.0907242259430.4343@domain.hid>
-	<1248517986.4438.1.camel@domain.hid>
-	<alpine.DEB.2.00.0907281859210.4673@domain.hid>
-	<1248855797.3247.16.camel@domain.hid>
-	<Pine.LNX.4.62.0907291210470.20869@domain.hid>
-	<Pine.LNX.4.62.0907291226390.20869@domain.hid>
-	<1248883517.3532.7.camel@domain.hid>
-	<alpine.DEB.2.00.0907292209410.5958@domain.hid>
-	<1249287753.4803.10.camel@domain.hid>
-	<Pine.LNX.4.62.0908031850580.29886@domain.hid>
-	<1249320846.4803.52.camel@domain.hid>
-Content-Type: text/plain
-Date: Mon, 03 Aug 2009 19:37:16 +0200
-Message-Id: <1249321036.4803.54.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Stack sizes etc. (Re: POSIX skin/Blackfin:
- SIGSEGV when stracing or gdb'ing)
+Date: Tue, 4 Aug 2009 09:21:15 +0200 (CEST)
+From: Kolja Waschk <xenoka09@domain.hid>
+In-Reply-To: <4A618101.2000608@domain.hid>
+Message-ID: <Pine.LNX.4.62.0908040908001.30814@domain.hid>
+References: <alpine.DEB.2.00.0907142049190.4341@domain.hid>
+	<4A5D88E9.2010305@domain.hid>
+	<Pine.LNX.4.62.0907151048370.24398@domain.hid>
+	<Pine.LNX.4.62.0907151610090.24888@domain.hid> <4A5F9E8A.3010906@domain.hid>
+	<Pine.LNX.4.62.0907171349580.28491@domain.hid> <4A618101.2000608@domain.hid>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Sender: "Kolja Waschk,,," <xenoka09@domain.hid>
+Subject: Re: [Xenomai-help] rtdm_mmap_to_user without MMU
+Reply-To: Kolja Waschk <xenoka09@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -31,44 +21,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenoka09@domain.hid
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Mon, 2009-08-03 at 19:34 +0200, Philippe Gerum wrote:
-> On Mon, 2009-08-03 at 19:29 +0200, Kolja Waschk wrote:
-> > Hi,
-> > 
-> > > - if the first option does not work, override the shipped Xenomai
-> > > release with a stock one for testing:
-> > 
-> > I've now managed to use the prepare-kernel.sh (with
-> > adeos-ipipe-2.6.28.10-blackfin.git-1.10-00.patch as it comes with
-> > xenomai-2.4.8) on the 2.6.28.10 kernel that comes as "linux-2.6.x" with
-> > uClinux-dist 2009R1-RC2.  Unfortunately, the three files ipipe.h,
-> > ipipe.c and ints-priority.c therein already contain the changes from the
-> > 1.10 patch, so to apply that patch, they had to be reverted beforehand.
-> > 
-> > In userland and for my application I used stock xenomai-2.4.8; only the
-> > xenomai-2.4.x.patch from uClinux-dist/user/xenomai had to be applied
-> > so that /usr can be specified as a destination during configure. But
-> > that patch doesn't change anything in the code.
-> > 
-> > Now, well, what should I say - the xnshadow call still fails. Or
-> > whatever the real cause for this message is...
-> 
-> Could you send me your test code? TIA,
+> Hmm, thought I got all paths. Such side effects indicate that this way
+> is not a stable one. Ok, will try to find a better solution, but may
 
-And the kernel .config file that goes with your latest test triggering
-the shadow_relax issue would help as well.
+Hi,
 
-Which bfin board are you running your app on btw?
+One last note regarding the mmap on blackfin (nommu) thread a few days
+ago.
 
-> 
-> > 
-> > Kolja
-> > 
--- 
-Philippe.
+I just noticed that reserving pages with SetPageReserved and clearing
+that flag with ClearPageReserved doesn't work as expected. I blindly
+copied that code from Jan's (old) RTDM driver example, as below, and now
+found that the kernel will fail some seconds after the ClearPageReserved loop:
 
+> / # Bad page state in process 'events/0'
+> page:009e29c0 flags:0x00004400 mapping:00000000 mapcount:0 count:0
+> Trying to fix it up, but a reboot is needed
+
+If SetPageReserved doesn't work, it may well be the cause for the mmap
+trick to fail afterwards. For now, I bypass the page reservation and
+mmap and munmap, there is no MMU anyway, so there's no need to hurry.
+
+Here's the code that I refer to:
+
+/* Mark buffer pages as reserved so rtdm_mmap_to_user will work */
+unsigned long vaddr;
+for (vaddr  = (unsigned long)pool;
+      vaddr <= (unsigned long)pool + UFSIZE;
+      vaddr += PAGE_SIZE)
+{
+     SetPageReserved(virt_to_page(vaddr));
+}
+
+/* mmap... */
+/* munmap... */
+
+
+/* clear pages reserved */
+for (vaddr = (unsigned long)pool;
+      vaddr < (unsigned long)pool + BUFSIZE;
+      vaddr += PAGE_SIZE)
+{
+     ClearPageReserved(virt_to_page(vaddr));
+}
+
+Kolja
 
 
