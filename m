@@ -1,11 +1,11 @@
 From: "Charlton, John" <john.charlton@domain.hid>
-Date: Wed, 5 Aug 2009 10:12:10 -0400
-Message-ID: <CF7FB0793253794F9F45991443E5FE20060EEFC612@domain.hid>
+Date: Wed, 5 Aug 2009 11:56:23 -0400
+Message-ID: <CF7FB0793253794F9F45991443E5FE20060EFA3F76@domain.hid>
 Content-Language: en-US
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: [Xenomai-help] Peak parallel port dongle rtcan driver
+Subject: [Xenomai-help] FW: Peak parallel port dongle rtcan driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,6 +16,21 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+To follow up on this, I configured the parallel port for standard mode and =
+the xeno_can_peak_dng driver works without error so the problem has to do w=
+ith the EPP/ECP mode.  I would like to use EPP or ECP for performance.  And=
+ as indicated below, the xeno_can_peak_dng driver only recognizes the sja10=
+00 when the bios is set to EPP mode.  Any ideas on how to get it to work in=
+ EPP or ECP?
+
+--John
+
+-----Original Message-----
+From: Charlton, John=20
+Sent: Wednesday, August 05, 2009 10:12 AM
+To: xenomai@xenomai.org
+Subject: Peak parallel port dongle rtcan driver
 
 I am having some problems with the xeno_can_peak_dng driver with the Peak p=
 arallel port CAN dongle.  I am using linux-2.6.27.7 kernel and xenomai-2.4.=
@@ -28,9 +43,8 @@ nd get errors.  It is worse receiving packets with rtcanrecv than transmitt=
 ing with rtcansend.  I can transmit for longer intervals but eventually it =
 fails with an error.  The last error reported is:
 Assertion failed! <linux kernel directory>/drivers/xenomai/can/rtcan_raw.c:=
-rtcan_tx_push:171 dev->tx_socket =3D=3D 0
-This error occurred after 484 successful transmissions with 100msec delay a=
-t baudrate=3D1000000:
+rtcan_tx_push:171 dev->tx_socket =3D=3D 0 This error occurred after 484 suc=
+cessful transmissions with 100msec delay at baudrate=3D1000000:
 rtcansend rtcan0 --verbose --identifier=3D0x123 0xde 0xad 3 4 5 6 7 8
 
 After the transmission failed the I was unable to send any more packets unt=
