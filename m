@@ -1,10 +1,26 @@
-MIME-Version: 1.0
-Date: Tue, 4 Aug 2009 14:23:30 +0100
-Message-ID: <abaf774b0908040623w1583f930xda88c125b64394b1@domain.hid>
-From: Steve <sbxenomai@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <Pine.LNX.4.62.0908031850580.29886@domain.hid>
+References: <Pine.LNX.4.62.0907241731170.11473@domain.hid>
+	<1248453047.3998.168.camel@domain.hid>
+	<alpine.DEB.2.00.0907241917480.4343@domain.hid>
+	<1248461458.3998.183.camel@domain.hid>
+	<alpine.DEB.2.00.0907242259430.4343@domain.hid>
+	<1248517986.4438.1.camel@domain.hid>
+	<alpine.DEB.2.00.0907281859210.4673@domain.hid>
+	<1248855797.3247.16.camel@domain.hid>
+	<Pine.LNX.4.62.0907291210470.20869@domain.hid>
+	<Pine.LNX.4.62.0907291226390.20869@domain.hid>
+	<1248883517.3532.7.camel@domain.hid>
+	<alpine.DEB.2.00.0907292209410.5958@domain.hid>
+	<1249287753.4803.10.camel@domain.hid>
+	<Pine.LNX.4.62.0908031850580.29886@domain.hid>
+Content-Type: text/plain
+Date: Wed, 05 Aug 2009 13:58:15 +0200
+Message-Id: <1249473495.3809.22.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Xenomai 2.5-rc2 clock_gettime bad tv_nsec value
+Subject: Re: [Xenomai-help] Stack sizes etc. (Re: POSIX skin/Blackfin:
+ SIGSEGV when stracing or gdb'ing)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,25 +30,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: xenoka09@domain.hid
+Cc: xenomai@xenomai.org
 
-Hi,
+On Mon, 2009-08-03 at 19:29 +0200, Kolja Waschk wrote:
+> Hi,
+> 
+> > - if the first option does not work, override the shipped Xenomai
+> > release with a stock one for testing:
+> 
+> I've now managed to use the prepare-kernel.sh (with
+> adeos-ipipe-2.6.28.10-blackfin.git-1.10-00.patch as it comes with
+> xenomai-2.4.8) on the 2.6.28.10 kernel that comes as "linux-2.6.x" with
+> uClinux-dist 2009R1-RC2.  Unfortunately, the three files ipipe.h,
+> ipipe.c and ints-priority.c therein already contain the changes from the
+> 1.10 patch, so to apply that patch, they had to be reverted beforehand.
+> 
+> In userland and for my application I used stock xenomai-2.4.8; only the
+> xenomai-2.4.x.patch from uClinux-dist/user/xenomai had to be applied
+> so that /usr can be specified as a destination during configure. But
+> that patch doesn't change anything in the code.
+> 
+> Now, well, what should I say - the xnshadow call still fails. Or
+> whatever the real cause for this message is...
+> 
 
-Using Xenomai 2.5-rc2 on Linux 2.6.29.4 the following code
-periodically produces a bad result:
+Does this help?
 
-clock_gettime(CLOCK_REALTIME, timespec);
+diff --git a/ksrc/arch/blackfin/switch.S b/ksrc/arch/blackfin/switch.S
+index 906e5f5..6696a2f 100644
+--- a/ksrc/arch/blackfin/switch.S
++++ b/ksrc/arch/blackfin/switch.S
+@@ -85,15 +85,19 @@ ENTRY(_rthal_defer_switch_p)
+ 	r1 = EVT_IVG15 (z);
+         r0 = r0 & r1;
+ 	cc = r0 == 0;
+-	if !cc jump 1f; 
++	if !cc jump 1f;
+ #endif /* CONFIG_XENO_OPT_PERVASIVE */
+ 	p2.l = lo(IPEND);
+         p2.h = hi(IPEND);
+ 	csync;
+         r2 = [p2];
+-        r1 = 1;
+-        r1 = r2 - r1;
++        r1 = LO(~0x13) (Z);
+         r0 = r2 & r1;
++        cc = r0 == 0;
++        if cc jump 1f;
++        r1 = 1;
++        r1 = r0 - r1;
++        r0 = r0 & r1;
+ 1:
+ 	rts
+ 
+@@ -108,4 +112,4 @@ ENTRY(_rthal_nmi_handler)
+ 	RESTORE_ALL_SYS
+ 	rtn; 
+ 		
+-#endif /* CONFIG_XENO_HW_NMI_DEBUG_LATENCY_MAX */
++#endif /* CONFIG_XENO_HW_NMI_DEBUG_LATENCY */
 
-Where it assigns a timespec.tv_nsec that is greater than 1000 million.
- If it helps the maximum returned value that i have seen before tv_sec
-increments and tv_nsec returns to a 'safe' value is 1048044075.
+> Kolja
+> 
+-- 
+Philippe.
 
-This does not happen using Xenomai 2.4.8 on the same Linux kernel.
-There are some differences between the kernel config files used for my
-2.4.8 setup and 2.5-rc2 setup, but I don't imagine that that is the
-problem.
 
-Any thoughts?
-
-Steve
 
