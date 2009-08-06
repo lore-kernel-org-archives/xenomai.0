@@ -1,12 +1,12 @@
-Message-ID: <4A7AF4C4.30001@domain.hid>
-Date: Thu, 06 Aug 2009 17:20:36 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4A72BFBA.8040209@domain.hid>
-In-Reply-To: <4A72BFBA.8040209@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1249509063.4762.84.camel@domain.hid>
+References: <1249509063.4762.84.camel@domain.hid>
+Content-Type: text/plain
+Date: Thu, 06 Aug 2009 19:03:24 +0200
+Message-Id: <1249578204.3809.221.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] high latencies with Intel P45 ICH10
+Subject: Re: [Xenomai-help] Alignment exception on powerpc
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,33 +16,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Theo Veenker <T.J.G.Veenker@domain.hid>
+To: Andreas Glatz <andreasglatz@domain.hid>
 Cc: Xenomai help <xenomai@xenomai.org>
 
-Theo Veenker wrote:
+On Wed, 2009-08-05 at 17:51 -0400, Andreas Glatz wrote:
 > Hi,
 > 
-> I'm replacing a number of old machines in our lab by new ones with an
-> MSI P45 Neo3 mobo. On the new hardware I'm seeing high latencies with
-> Xenomai 2.4.8 on kernel 2.6.29.5. The latency thingy reports many
-> overruns:
-> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-> RTD|       4.083|       9.100|       9.807|       0|       4.083|       9.807
-> RTD|       4.137|       9.280|    1804.493|      18|       4.083|    1804.493
-> RTD|       3.451|       9.099|      14.337|      18|       3.451|    1804.493
-> RTD|       3.864|       9.281|    1820.762|      36|       3.451|    1820.762
-> RTD|       4.017|       9.102|       9.917|      36|       3.451|    1820.762
-> RTD|       4.121|       9.273|    1742.710|      53|       3.451|    1820.762
+> I'm running xenomai-2.4.8, Linux-2.6.26 on a MPC8360 PowerPC.
 > 
-> I've tried UP/SMP both with and without disabling SMI. No CONFIG_ACPI_PROCESSOR
-> etc. PCI_MSI is disabled too. I do not see the "Xenomai: SMI-enabled chipset
-> found..." message in the messages log file. Is that correct or is this hardware
-> too new for this version of Xenomai?
+> I enabled nucleus debugging and found out that tasks sometimes
+> switch to secondary mode due to data alignment exceptions (#1536 ==
+> 0x600):
+> 
+> <snip>
+> Xenomai: Switching bgndT30_3 to secondary mode after exception #1536
+> from user-space at 0x101013f4 (pid 3191)
+> Xenomai: Switching bgndT30_3 to secondary mode after exception #1536
+> from user-space at 0x101013f4 (pid 3191)
+> ...
+> </snip>
+> 
+> I know that we get those exceptions because we pass the -fpack-struct
+> option to gcc and some data in structures are misaligned. It would
+> be quite a lot of work to go through the code to change it so that 
+> we don't have to pass the -fpack-struct option.
+> 
+> Is there a way to execute the exception handler from primary mode 
+> to prevent the tasks to switch to secondary mode?
 
-Probably, the table of supported PCI ids is in arch/x86/smi.c
+I have absolutely no freaking idea whether the following patch will
+work, but you are welcome to feel lucky:
 
+diff --git a/arch/powerpc/kernel/traps.c b/arch/powerpc/kernel/traps.c
+index 701fe3b..3efe546 100644
+--- a/arch/powerpc/kernel/traps.c
++++ b/arch/powerpc/kernel/traps.c
+@@ -917,7 +917,8 @@ void alignment_exception(struct pt_regs *regs)
+ {
+ 	int sig, code, fixed = 0;
+ 
+-	if (ipipe_trap_notify(IPIPE_TRAP_ALIGNMENT,regs))
++	if (test_bit(IPIPE_NOSTACK_FLAG, &ipipe_this_cpudom_var(status)) &&
++	    ipipe_trap_notify(IPIPE_TRAP_ALIGNMENT, regs))
+ 	    	return;
+ 
+ 	/* we don't implement logging of alignment exceptions */
+@@ -930,6 +931,10 @@ void alignment_exception(struct pt_regs *regs)
+ 		return;
+ 	}
+ 
++	if (!ipipe_root_domain_p &&
++	    ipipe_trap_notify(IPIPE_TRAP_ALIGNMENT, regs))
++		return;
++
+ 	/* Operand address was bad */
+ 	if (fixed == -EFAULT) {
+ 		sig = SIGSEGV;
+
+> 
+> Best regards,
+> Andreas
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 -- 
-                                          Gilles
+Philippe.
+
 
 
