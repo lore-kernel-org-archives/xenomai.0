@@ -1,13 +1,13 @@
-Message-Id: <E6592CDB-2673-43B9-ABB9-24A8630319DD@suddenlink.net>
-From: Steven Seeger <steven.seeger@domain.hid>
-In-Reply-To: <4A7B3DD9.4030000@domain.hid>
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1249586110.8905.9.camel@domain.hid>
+References: <1249509063.4762.84.camel@domain.hid>
+	<1249578204.3809.221.camel@domain.hid> <1249586110.8905.9.camel@domain.hid>
+Content-Type: text/plain
+Date: Thu, 06 Aug 2009 23:24:32 +0200
+Message-Id: <1249593872.3809.242.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Mime-Version: 1.0 (Apple Message framework v935.3)
-Date: Thu, 6 Aug 2009 17:01:53 -0400
-References: <8b216e9e0908050557s3789edcdq5b8b6b88bf52861b@domain.hid>
-	<4A7B3DD9.4030000@domain.hid>
-Subject: Re: [Xenomai-help] Slow boot with Xenomai
+Subject: Re: [Xenomai-help] Alignment exception on powerpc
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,57 +17,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Andreas Glatz <andreasglatz@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
+On Thu, 2009-08-06 at 15:15 -0400, Andreas Glatz wrote:
+> Hi Philippe,
+> 
+> 
+> > > Is there a way to execute the exception handler from primary mode 
+> > > to prevent the tasks to switch to secondary mode?
+> > 
+> > I have absolutely no freaking idea whether the following patch will
+> > work, but you are welcome to feel lucky:
+> > 
+> 
+> The patch seems to work. I even put a printk inside the if(fixed == 1) 
+> clause inside of the patched function alignment_exception() 
+> to check if things really get fixed... and they do!
+> 
+> I just noticed that u sent out another patch. Do u want me to test that
+> one too? 
+> 
 
-On Aug 6, 2009, at 4:32 PM, Gilles Chanteperdrix wrote:
+Yes please. If that works for you, I will probably merge those bits in
+the next pipeline release, after some additional testing. 83xx may take
+various sorts of alignment traps, and there is no reason to suffer
+secondary mode switches for basic instruction emulation followed by a
+simple IP fixup.
 
-> The Geode is a very very bad choice:
-> - it is going to disappear any time soon
-> - its performances in many domains are far from the average x86
-> performances.
+#2 should definitely be better in some cases, for instance when the
+cause of the alignment trap requires FP emulation.
 
-Agreed.
+> Of course, now I have the problem that I don't know which one is
+> better... :p
 
->
-> Ok. I guess your Geode does not have an APIC. I have a Geode and just
-> checked, it has the same issue, so, you should turn of apic in kernel
-> configuration. Maybe something is needed in the BIOS to enable it
-> (because the AMD specs say that the Geode has an APIC).
+Well, in terms of voodoo programming, the latest one is simply better
+because it changes more lines of code, which gives much more
+opportunities to break things. Ok, let's look cool and jaunty: let's
+pick #2.
 
-I've also tried to figure out how to get it to work with both a GX1  
-and an LX-800 and cannot get it to work. I have read on other lists  
-that there is no APIC.
+> 
+> Andreas
+-- 
+Philippe.
 
-> Probably an issue induced by power management disabling the tsc. So  
-> the
-> usual advices apply, please be sure to disable any smart power
-> management issue in the bios configuration and to boot with ACPI  
-> enabled
-> (except ACPI_PROCESSOR). Someone, a long time ago, posted on the RTAI
-> mailing list a way to disable this tsc thing by running an outb at a
-> well defined address, but I never was able to test it since my Geode
-> does not have this issue. Another workaround reported to work is to  
-> boot
-> with idle=poll passed on the command line. Yet another workaround is  
-> to
-> avoid using the tsc (by selecting in the kernel configuration a
-> processor without tsc), but this means a lot of overhead.
-
-We use TSC with idle=poll and things work correctly. However, the  
-power saving mode will not run. However, gx1 is efficient and does not  
-require a heatsink or fan, so it will not hurt your hardware. If you  
-are running off a battery then you might want to use another approach.
-
-The big issue with geode is the SMI overhead. It's terrible, and it  
-will be a thorn in your side as you try to minimize jitter. I suggest  
-you consider another board. Someday when I get some time, I may try  
-and look into an smi disable function for geode. I think Gilles was  
-going to look into it at some point, too. I've not really had a chance  
-to work with Xenomai since May as the company I assist part time has  
-been working on other things lately.
-
-Steven
 
 
