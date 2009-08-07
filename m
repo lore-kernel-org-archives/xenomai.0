@@ -1,13 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1249586110.8905.9.camel@domain.hid>
-References: <1249509063.4762.84.camel@domain.hid>
-	<1249578204.3809.221.camel@domain.hid> <1249586110.8905.9.camel@domain.hid>
-Content-Type: text/plain
-Date: Thu, 06 Aug 2009 23:24:32 +0200
-Message-Id: <1249593872.3809.242.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4A7BC4DC.70209@domain.hid>
+Date: Fri, 07 Aug 2009 08:08:28 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <abaf774b0908040623w1583f930xda88c125b64394b1@domain.hid>
+In-Reply-To: <abaf774b0908040623w1583f930xda88c125b64394b1@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Alignment exception on powerpc
+Subject: Re: [Xenomai-help] Xenomai 2.5-rc2 clock_gettime bad tv_nsec value
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,49 +16,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Andreas Glatz <andreasglatz@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Steve <sbxenomai@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Thu, 2009-08-06 at 15:15 -0400, Andreas Glatz wrote:
-> Hi Philippe,
+Steve wrote:
+> Hi,
 > 
+> Using Xenomai 2.5-rc2 on Linux 2.6.29.4 the following code
+> periodically produces a bad result:
 > 
-> > > Is there a way to execute the exception handler from primary mode 
-> > > to prevent the tasks to switch to secondary mode?
-> > 
-> > I have absolutely no freaking idea whether the following patch will
-> > work, but you are welcome to feel lucky:
-> > 
+> clock_gettime(CLOCK_REALTIME, timespec);
 > 
-> The patch seems to work. I even put a printk inside the if(fixed == 1) 
-> clause inside of the patched function alignment_exception() 
-> to check if things really get fixed... and they do!
+> Where it assigns a timespec.tv_nsec that is greater than 1000 million.
+>  If it helps the maximum returned value that i have seen before tv_sec
+> increments and tv_nsec returns to a 'safe' value is 1048044075.
 > 
-> I just noticed that u sent out another patch. Do u want me to test that
-> one too? 
+> This does not happen using Xenomai 2.4.8 on the same Linux kernel.
+> There are some differences between the kernel config files used for my
+> 2.4.8 setup and 2.5-rc2 setup, but I don't imagine that that is the
+> problem.
 > 
+> Any thoughts?
 
-Yes please. If that works for you, I will probably merge those bits in
-the next pipeline release, after some additional testing. 83xx may take
-various sorts of alignment traps, and there is no reason to suffer
-secondary mode switches for basic instruction emulation followed by a
-simple IP fixup.
+Well, yes. Xenomai 2.5-rc2 has been modified to do the conversion 
+between ticks and timespec without divisions. I am afraid in some cases 
+we are wrong (essentially, we replace the division with a 
+multiplication, but it is entirely possible that the result of the 
+multiplication is off by one, and so when computing the remainder, we 
+get a too large value). Could you apply the following patch? It will 
+modify clock_gettime implementation in kernel-space to print the value 
+before conversion when the bug happens. Also tell us if you are running
+in periodic mode or aperiodic mode (if you do not know, then you are
+running in aperiodic mode).
 
-#2 should definitely be better in some cases, for instance when the
-cause of the alignment trap requires FP emulation.
+diff --git a/ksrc/skins/posix/clock.c b/ksrc/skins/posix/clock.c
+index 553e123..63a42fa 100644
+--- a/ksrc/skins/posix/clock.c
++++ b/ksrc/skins/posix/clock.c
+@@ -117,7 +117,10 @@ int clock_gettime(clockid_t clock_id, struct timespec *tp)
 
-> Of course, now I have the problem that I don't know which one is
-> better... :p
+        switch (clock_id) {
+        case CLOCK_REALTIME:
+-               ticks2ts(tp, xntbase_get_time(pse51_tbase));
++               cpu_time = xntbase_get_time(pse51_tbase);
++               ticks2ts(tp, cpu_time);
++               if (tp->tv_nsec > 1000000000)
++                       printk("Bad conversion, time: %llu\n", cpu_time);
+                break;
 
-Well, in terms of voodoo programming, the latest one is simply better
-because it changes more lines of code, which gives much more
-opportunities to break things. Ok, let's look cool and jaunty: let's
-pick #2.
+        case CLOCK_MONOTONIC:
 
-> 
-> Andreas
+
 -- 
-Philippe.
-
-
+					    Gilles.
 
