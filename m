@@ -1,9 +1,13 @@
+Message-ID: <4A7BFFA0.6080700@domain.hid>
+Date: Fri, 07 Aug 2009 12:19:12 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Fri, 7 Aug 2009 11:08:15 +0100
-Message-ID: <28c396720908070308t544c6cb7y45ed53c11dfee30c@domain.hid>
-From: Yang <hegallis@domain.hid>
-Content-Type: multipart/alternative; boundary=0016e6d77ec723a9b204708a6ad1
-Subject: [Xenomai-help] Interrupt workqueue and Xenomai 2.4.0
+References: <4A72BFBA.8040209@domain.hid> <4A7AF4C4.30001@domain.hid>
+	<4A7BDA38.2060405@domain.hid>
+In-Reply-To: <4A7BDA38.2060405@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] high latencies with Intel P45 ICH10
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -13,82 +17,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Theo Veenker <T.J.G.Veenker@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
---0016e6d77ec723a9b204708a6ad1
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Theo Veenker wrote:
+> Gilles Chanteperdrix wrote:
+>> Theo Veenker wrote:
+>>> Hi,
+>>>
+>>> I'm replacing a number of old machines in our lab by new ones with an
+>>> MSI P45 Neo3 mobo. On the new hardware I'm seeing high latencies with
+>>> Xenomai 2.4.8 on kernel 2.6.29.5. The latency thingy reports many
+>>> overruns:
+>>> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+>>> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
+>>> RTD|       4.083|       9.100|       9.807|       0|       4.083|       9.807
+>>> RTD|       4.137|       9.280|    1804.493|      18|       4.083|    1804.493
+>>> RTD|       3.451|       9.099|      14.337|      18|       3.451|    1804.493
+>>> RTD|       3.864|       9.281|    1820.762|      36|       3.451|    1820.762
+>>> RTD|       4.017|       9.102|       9.917|      36|       3.451|    1820.762
+>>> RTD|       4.121|       9.273|    1742.710|      53|       3.451|    1820.762
+>>>
+>>> I've tried UP/SMP both with and without disabling SMI. No CONFIG_ACPI_PROCESSOR
+>>> etc. PCI_MSI is disabled too. I do not see the "Xenomai: SMI-enabled chipset
+>>> found..." message in the messages log file. Is that correct or is this hardware
+>>> too new for this version of Xenomai?
+>> Probably, the table of supported PCI ids is in arch/x86/smi.c
+>>
+> 
+> Boy, am I glad this list is rolling again. I had no idea where to look.
+> I have added the ID of the LPC Interface Controller. Is that the expected
+> thing to do? (Maybe you can add a comment about it in smi.c).
 
-Hi
+Yes. In fact, there should be a way to dynamically add ids to the table
+with /sys, but I need to see how to get this working.
 
-I am working on BF527 at the moment while we queue work item upon GPI
-interrupt to a work queue as delayed work. This kernel driver works fine
-without Xenomai patch turned on. However, it stops working after applying
-Xenomai patch. It appears that the interrupt handler was triggered but the
-work item in the work queue is not being processing (by kernel thread which
-is supposed to work on).
+> 
+> And guess what; It works! Well I need to perform a lengthy test, but the
+> overruns are gone now.
+> 
+> This is the line I've added in smi.c:
+> 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH10_1)},
 
+Ok. I will add it then, thanks.
 
-my assumption was that ipipe should pass through non-rt interrupts to Linux
-domain. Linux kernel tasks such as work queue will still be handled in the
-same way by kthread. However, it seems that
-
-1. the interrupt line never gets cleared
-
-2. kthread which handles work structure in the work queue not doing its work
-(or cannot switch to linux kthread context I suspect)
-
-Any suggestions?
+> 
+> Thanks Gilles.
+> 
+> Theo
+> 
+> 
 
 
-Thanks
+-- 
+                                          Gilles
 
---0016e6d77ec723a9b204708a6ad1
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<span class=3D"Apple-style-span" style=3D"font-family: Tahoma; font-size: 1=
-4px; color: rgb(90, 90, 137); line-height: 16px; -webkit-border-horizontal-=
-spacing: 1px; -webkit-border-vertical-spacing: 1px; "><p style=3D"margin-to=
-p: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-to=
-p: 0px; padding-right: 0px; padding-bottom: 10px; padding-left: 0px; ">
-Hi</p><p style=3D"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; m=
-argin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 10px=
-; padding-left: 0px; ">I am working on BF527 at the moment while we queue w=
-ork item upon GPI interrupt to a work queue as delayed work. This kernel dr=
-iver works fine without Xenomai patch turned on. However, it stops working =
-after applying Xenomai patch. It appears that the interrupt handler was tri=
-ggered but the work item in the work queue is not being processing (by kern=
-el thread which is supposed to work on).</p>
-<p style=3D"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-=
-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 10px; padd=
-ing-left: 0px; "><br></p><p style=3D"margin-top: 0px; margin-right: 0px; ma=
-rgin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; p=
-adding-bottom: 10px; padding-left: 0px; ">
-</p><p style=3D"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; mar=
-gin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 10px; =
-padding-left: 0px; ">my assumption was that ipipe should pass through non-r=
-t interrupts to Linux domain. Linux kernel tasks such as work queue will st=
-ill be handled in the same way by kthread. However, it seems that</p>
-<p style=3D"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-=
-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 10px; padd=
-ing-left: 0px; ">1. the interrupt line never gets cleared</p><p style=3D"ma=
-rgin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; pad=
-ding-top: 0px; padding-right: 0px; padding-bottom: 10px; padding-left: 0px;=
- ">
-2. kthread which handles work structure in the work queue not doing its wor=
-k (or cannot switch to linux kthread context I suspect)</p><p style=3D"marg=
-in-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; paddi=
-ng-top: 0px; padding-right: 0px; padding-bottom: 10px; padding-left: 0px; "=
->
-Any suggestions?</p><p style=3D"margin-top: 0px; margin-right: 0px; margin-=
-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; paddin=
-g-bottom: 10px; padding-left: 0px; "><br></p><p style=3D"margin-top: 0px; m=
-argin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; p=
-adding-right: 0px; padding-bottom: 10px; padding-left: 0px; ">
-Thanks</p><p style=3D"margin-top: 0px; margin-right: 0px; margin-bottom: 0p=
-x; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: =
-10px; padding-left: 0px; "><br></p><p></p></span>
-
---0016e6d77ec723a9b204708a6ad1--
 
