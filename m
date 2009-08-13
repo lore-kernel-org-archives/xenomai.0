@@ -1,12 +1,10 @@
-From: Wolfgang Denk <wd@domain.hid>
-Mime-version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-In-reply-to: <20090721140512.793ED832E416@domain.hid>
-References: <20090721140512.793ED832E416@domain.hid>
-Date: Tue, 04 Aug 2009 15:58:08 +0200
-Message-Id: <20090804135808.3EBED8340728@domain.hid>
-Subject: Re: [Xenomai-core] [ag-automation] XUM - Xenomai User's Meeting
+Message-ID: <4A8488F5.8050208@domain.hid>
+Date: Thu, 13 Aug 2009 23:43:17 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Pull requests.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,40 +13,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
-Cc: ag-automation@domain.hid
+To: xenomai-core <xenomai@xenomai.org>
 
-In message <20090721140512.793ED832E416@domain.hid> I wrote:
->=20
-> We at DENX are trying to organize something like a "Xenomai User's
-> Meeting" at this year's Real-Time Linux Workshop (September 28 to 30,
-> in Dresden, Germany).
+The following changes since commit 16d8b1f9a8158b73cee30084592aacf19d94fbe6:
+  Philippe Gerum (1):
+        nucleus: postpone sanity check to allow for signal receipt
 
-It's going to happen; we hereby invite you to attend the=20
+are available in the git repository at:
 
-        Xenomai User Meeting 2009 (XUM-2009)
+  git+ssh://git@domain.hid for-2.4
 
-XUM-2009 is  scheduled  on
+Gilles Chanteperdrix (1):
+      arm: fix syscalls with gcc 4.3.2
 
-        Monday, September 28, 13:00 - 18:00
-at
-	Technische Universit=E4t Dresden
-	Faculty of Computer Science
-	Dresden, Germany
+ include/asm-arm/syscall.h |   30 +++++++++++++++++++++---------
+ src/skins/posix/thread.c  |    4 +++-
+ 2 files changed, 24 insertions(+), 10 deletions(-)
 
-For details and registration please see
-http://www.denx.de/en/News/XenomaiUserMeeting2009
 
-We are looking forward to welcoming your participation in the
-Xenomai User Meeting 2009.
+------------------------------------------------------------------------------
 
-Best regards,
 
-Wolfgang Denk
+The following changes since commit 8256c8a538ce3aee42ccdded4bbe50a83dbeca2c:
+  Philippe Gerum (1):
+        sim: provide irqs_disabled_hw()
 
---=20
-DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
-How does a project get to be a year late?      ... One day at a time.
+are available in the git repository at:
+
+  git+ssh://git@domain.hid for-head
+
+Gilles Chanteperdrix (4):
+      native: increase user-space native skin default stack size.
+      build: Do not compile with __thread by default on ARM
+      arm: fix syscalls with gcc 4.3.2
+      testsuite: fix division routines unit test feature macro test (for nodiv_llimd).
+
+ configure.in                        |    5 +++--
+ include/asm-arm/syscall.h           |   30 +++++++++++++++++++++---------
+ src/skins/native/task.c             |    2 ++
+ src/skins/posix/thread.c            |    4 +++-
+ src/testsuite/unit/arith-noinline.c |    2 +-
+ src/testsuite/unit/arith.c          |   14 +++++++-------
+ 6 files changed, 37 insertions(+), 20 deletions(-)
+
+
+-- 
+					    Gilles.
 
