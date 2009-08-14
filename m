@@ -1,16 +1,17 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <Pine.LNX.4.62.0908141226340.14595@domain.hid>
+Date: Fri, 14 Aug 2009 21:52:34 +0200 (CEST)
+From: "Waschk,Kolja" <xenoka09@domain.hid>
+In-Reply-To: <1250262328.2933.0.camel@domain.hid>
+Message-ID: <alpine.DEB.2.00.0908142138480.7626@domain.hid>
 References: <Pine.LNX.4.62.0908141030170.14595@domain.hid>
 	<4A853707.10509@domain.hid>
 	<Pine.LNX.4.62.0908141206480.14595@domain.hid>
 	<1250244831.3019.17.camel@domain.hid>
 	<Pine.LNX.4.62.0908141226340.14595@domain.hid>
-Content-Type: text/plain
-Date: Fri, 14 Aug 2009 17:05:28 +0200
-Message-Id: <1250262328.2933.0.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+	<1250262328.2933.0.camel@domain.hid>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
 Subject: Re: [Xenomai-help] T_WARNSW ignored?
+Reply-To: xenoka09@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,47 +21,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenoka09@domain.hid
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Fri, 2009-08-14 at 12:26 +0200, Kolja Waschk wrote:
-> > What does /proc/xenumai/faults say? Does any counter value increase
-> > while the app is running?
-> 
-> faults displays nothing. stat shows increasing MSW/CSW count for the
-> thread in question:
-> 
-> / # cat /proc/xenomai/faults 
-> TRAP         CPU0
-> / # cat /proc/xenomai/stat 
-> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
->    0  0      0          2392559    0     00400080   82.8  ROOT
->    0  274    38         652599     0     00300186   11.0  main
->    0  276    12         71461      0     00300186    1.4  logger
-> > 0  277    10210      20412      0     00320186    2.5  Head_UDP_Thread
+>>> 0  277    10210      20412      0     00320186    2.5  Head_UDP_Thread
+> UDP, like... socket() interface?
 
-UDP, like... socket() interface?
+No. There's a custom RTDM driver with a DMA completion ISR and an IOCTL_RT that
+can be used by the application to fetch a pointer to received data.  The thread
+has "UDP" in its name because the data comes in UDP-like packets over a
+Blackfin SPORT interface, and on other platforms (PC) the code indeed uses
+Ethernet and real sockets for reception.
 
->    0  0      0          3824071    0     00000000    1.9  IRQ6: [timer]
->    0  0      0          10040      0     00000000    0.1  IRQ14: rmiisport_rx
->    0  0      0          0          0     00000000    0.0  IRQ15: rmiisport_tx
->    0  0      0          159        0     00000000    0.0  IRQ46: rmiisport_err
-> 
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
-> +----------------------------------------------------------------------+
-> | ETAS Mail Security - http://intranet.etasgroup.com/encryption        |
-> +----------------------------------------------------------------------+
-> | - The message was not encrypted and not digitally signed             |
-> +----------------------------------------------------------------------+
--- 
-Philippe.
+Hmm, the solution to my question may be very simple. In the past I had to
+enclose the ioctl call to the driver with explicit mode switches, because
+otherwise the application would always crash (remember my previous problem with
+the xnshadow_relax() symptom). They're still there. I somehow expected the
+SIGXCPU to occur even before the first ioctl is made. But if that doesn't
+happen, and an explicit call to rt_task_set_mode doesn't cause SIGXCPU, that
+may be the (silly) cause... Unfortunately I can't check right now. Will report
+if that's it...
+
+Kolja
 
 
 
