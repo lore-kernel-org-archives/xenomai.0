@@ -1,14 +1,12 @@
-Message-ID: <4A8518FE.7070103@domain.hid>
-Date: Fri, 14 Aug 2009 09:57:50 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4A851FAB.1060800@domain.hid>
+Date: Fri, 14 Aug 2009 10:26:19 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CF7FB0793253794F9F45991443E5FE20060EFA3F76@domain.hid>
-	<4A840387.9010700@domain.hid>
-	<CF7FB0793253794F9F45991443E5FE20060F03FA93@domain.hid>
-In-Reply-To: <CF7FB0793253794F9F45991443E5FE20060F03FA93@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] FW: Peak parallel port dongle rtcan driver
+References: <0AB95BFCF14F984980DE7149C21D6B90065D58B59F@FND-MAILB03.VIA.DK>
+In-Reply-To: <0AB95BFCF14F984980DE7149C21D6B90065D58B59F@FND-MAILB03.VIA.DK>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] rt_mutex_acquire returns -3
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,27 +16,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Charlton, John" <john.charlton@domain.hid>
+To: =?ISO-8859-1?Q?=22Hans_S=F8ndergaard_=28HSO=29=22?= <HSO@VIAUC.DK>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Charlton, John wrote:
-> Wolfgang,
-> 
-> Thank you for the information and advice.  We are currently considering this interface in a custom embedded controller design but based on your recommendations we probably need to reassess that decision. We were intending to use the parallel port through a super io chip on a custom designed board but it sounds like we should go with an ISA or PCI bus interface to get real-time performance at 1mbit baud rate.  Our application requires the full 1mbit baudrate continuous for 100msec to 200msec intervals.
+Hans S=F8ndergaard (HSO) wrote:
+> I use objects of type:
+>=20
+> =20
+>=20
+> typedef struct object {
+>=20
+>   RT_MUTEX *rt_lock;
+>=20
+>   ..
+>=20
+> } Object;
+>=20
+> =20
+>=20
+> int err =3D rt_mutex_create (ob->rt_lock, NULL);
+>=20
+> printf ("[alloc.c]: rt_mutex_create err: %d; #%d \n", err, __LINE__);
+>=20
+> =20
+>=20
+> err =3D rt_mutex_acquire (ob->rt_lock, TM_INFINITE);
+>=20
+> printf ("[lock.c]: rt_mutex_acquire, err: %d; #%d \n", err, __LINE__);
+>=20
 
-FYI, I remember discussions about real-time problems with the PCAN dongle:
+A question that may look stupid, is ob->rt_lock correctly initialised?
+Also, why using a malloc for this, why not doing:
 
-  https://mail.gna.org/public/xenomai-help/2007-03/msg00185.html
+typedef struct object {
+   RT_MUTEX rt_lock;
+   /* ... */
+} Object;
 
-See also:
+int err =3D rt_mutex_create (&ob->rt_lock, NULL);
 
-  https://mail.gna.org/public/xenomai-help/2007-03/msg00183.html
+err =3D rt_mutex_acquire (&ob->rt_lock, TM_INFINITE);
 
-Can't remember where I got that information from, maybe from PEAK PCAN
-support.
+> On creation, rt_mutex_create returns 0 (as expected).
+>=20
+> On acquiring, rt_mutex_acquire returns -3,
+>=20
+> but this return value is not included among the possible return values
+> in the documentation of Mutex services.
+> =20
+>=20
+> Could you please explain what this return value -3 means?
 
-But that user did not have the problems you reported. Maybe it's
-hardware related.
+3 is ESRCH, what version of Xenomai are you using?
 
-Wolfgang.
+--=20
+                                          Gilles
+
 
