@@ -1,12 +1,11 @@
-Message-ID: <4A851FAB.1060800@domain.hid>
-Date: Fri, 14 Aug 2009 10:26:19 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Fri, 14 Aug 2009 11:05:40 +0200 (CEST)
+From: Kolja Waschk <xenoka09@domain.hid>
+Message-ID: <Pine.LNX.4.62.0908141030170.14595@domain.hid>
 MIME-Version: 1.0
-References: <0AB95BFCF14F984980DE7149C21D6B90065D58B59F@FND-MAILB03.VIA.DK>
-In-Reply-To: <0AB95BFCF14F984980DE7149C21D6B90065D58B59F@FND-MAILB03.VIA.DK>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] rt_mutex_acquire returns -3
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Sender: "Kolja Waschk,,," <xenoka09@domain.hid>
+Subject: [Xenomai-help] T_WARNSW ignored?
+Reply-To: xenoka09@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,60 +15,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?=22Hans_S=F8ndergaard_=28HSO=29=22?= <HSO@VIAUC.DK>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hans S=F8ndergaard (HSO) wrote:
-> I use objects of type:
->=20
-> =20
->=20
-> typedef struct object {
->=20
->   RT_MUTEX *rt_lock;
->=20
->   ..
->=20
-> } Object;
->=20
-> =20
->=20
-> int err =3D rt_mutex_create (ob->rt_lock, NULL);
->=20
-> printf ("[alloc.c]: rt_mutex_create err: %d; #%d \n", err, __LINE__);
->=20
-> =20
->=20
-> err =3D rt_mutex_acquire (ob->rt_lock, TM_INFINITE);
->=20
-> printf ("[lock.c]: rt_mutex_acquire, err: %d; #%d \n", err, __LINE__);
->=20
+Hi,
 
-A question that may look stupid, is ob->rt_lock correctly initialised?
-Also, why using a malloc for this, why not doing:
+I'm trying to detect some remaining unwanted mode switches in an
+application using the native Xenomai app. In one task (that is meant to
+stay in RT domain all the time) I set the T_WARNSW bit and run the
+program via gdb, but - although /proc/xenomai/stat shows some 1000 MSW
+per second for that task - no SIGXCPU ever occurs. Only after I interrupt
+it in the terminal where gdbserver was started, the gdb client shows
+SIGINT, and after "cont", SIGXPCU.
 
-typedef struct object {
-   RT_MUTEX rt_lock;
-   /* ... */
-} Object;
+I also tried the examples/native/sigxcpu.c with the same compiler flags.
+There, SIGXCPU occurs and is reported by GDB immediately. What may cause
+this, did I miss something?
 
-int err =3D rt_mutex_create (&ob->rt_lock, NULL);
+It's on Blackfin, uclinux-dist 2009R1-RC2, Xenomai 2.4.7, Kernel 2.6.28.10 with
+adeos-ipipe-2.6.28.10-blackfin.git-1.10-00.patch.
 
-err =3D rt_mutex_acquire (&ob->rt_lock, TM_INFINITE);
+This is how it looks when the program is interrupted after some time:
 
-> On creation, rt_mutex_create returns 0 (as expected).
->=20
-> On acquiring, rt_mutex_acquire returns -3,
->=20
-> but this return value is not included among the possible return values
-> in the documentation of Mutex services.
-> =20
->=20
-> Could you please explain what this return value -3 means?
+Program received signal SIGINT, Interrupt.
+[Switching to Thread 270]
+0x00710042 in rt_sem_p (sem=0xf69028, timeout=81067177008952732) at
+../../../../xenomai-2.4.7/src/skins/native/sem.c:43
+43		return XENOMAI_SKINCALL2(__native_muxid, __native_sem_p,
+sem, &timeout);
+Current language:  auto; currently c
+(gdb) cont
+Continuing.
 
-3 is ESRCH, what version of Xenomai are you using?
+Program received signal SIGXCPU, CPU time limit exceeded.
+[Switching to Thread 273]
+0x0070fc20 in rt_dev_ioctl (fd=0, request=4) at
+../../../../xenomai-2.4.7/src/skins/rtdm/core.c:60
+60		return XENOMAI_SKINCALL3(__rtdm_muxid,
+(gdb)
 
---=20
-                                          Gilles
+Kolja
 
 
