@@ -1,15 +1,11 @@
-Message-ID: <035001ca1c6b$92879d40$0109220a@domain.hid>
-From: "Henry Bausley" <hbausley@domain.hid>
-References: <004301c9a683$c6b00200$0109220a@domain.hid>	<004801c9a69a$4a63aaf0$0109220a@domain.hid>
-	<49BFBF48.7080102@domain.hid> <49BFCAEB.8080007@domain.hid>
-	<001801c9a734$e0c7ac90$0109220a@domain.hid>
-	<49BFEA33.5090803@domain.hid>
-Date: Thu, 13 Aug 2009 15:12:47 -0800
+From: =?iso-8859-1?Q?Hans_S=F8ndergaard_=28HSO=29?= <HSO@VIAUC.DK>
+Date: Fri, 14 Aug 2009 09:31:31 +0200
+Message-ID: <0AB95BFCF14F984980DE7149C21D6B90065D58B59F@FND-MAILB03.VIA.DK>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+	boundary="_000_0AB95BFCF14F984980DE7149C21D6B90065D58B59FFNDMAILB03VIA_"
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset="iso-8859-1";
-	reply-type=original
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] ENXIO error with large shared memory
+Subject: [Xenomai-help] rt_mutex_acquire returns -3
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,91 +15,192 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-This problems was due to the limits of vmalloc.  To increase
-the limit required changing the PAGE_OFFSET
+--_000_0AB95BFCF14F984980DE7149C21D6B90065D58B59FFNDMAILB03VIA_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-The virtual address space used by vmalloc() is in the
-range of VMALLOC_START and VMALLOC_END. If
-CONFIG_HIGMEM is defined while building the kernel (it
-will be, if the machine has more than 1GB memory), and
-the PAGE_OFFSET is the default value of 0xc0000000,
-this range is approximately 0xf8000000 to 0xfe000000.
-This is about 96MB.
-from ->  http://mail.nl.linux.org/kernelnewbies/2001-12/msg00004.html
+I use objects of type:
 
+typedef struct object {
+  RT_MUTEX *rt_lock;
+  ..
+} Object;
 
-then changed the advanced kernel settings
+int err =3D rt_mutex_create (ob->rt_lock, NULL);
+printf ("[alloc.c]: rt_mutex_create err: %d; #%d \n", err, __LINE__);
 
-#
-# Advanced setup
-#
-CONFIG_ADVANCED_OPTIONS=y
-# CONFIG_LOWMEM_SIZE_BOOL is not set
-CONFIG_LOWMEM_SIZE=0x30000000
-CONFIG_PAGE_OFFSET_BOOL=y
-CONFIG_PAGE_OFFSET=0x80000000
-CONFIG_KERNEL_START_BOOL=y
-CONFIG_KERNEL_START=0x80000000
-CONFIG_PHYSICAL_START=0x00000000
-CONFIG_TASK_SIZE_BOOL=y
-CONFIG_TASK_SIZE=0x80000000
-# CONFIG_CONSISTENT_START_BOOL is not set
-CONFIG_CONSISTENT_START=0xff100000
+err =3D rt_mutex_acquire (ob->rt_lock, TM_INFINITE);
+printf ("[lock.c]: rt_mutex_acquire, err: %d; #%d \n", err, __LINE__);
 
+On creation, rt_mutex_create returns 0 (as expected).
+On acquiring, rt_mutex_acquire returns -3,
+but this return value is not included among the possible return values in t=
+he documentation of Mutex services.
 
-from
+Could you please explain what this return value -3 means?
 
-#
-# Advanced setup
-#
-# CONFIG_ADVANCED_OPTIONS is not set
-
-#
-# Default settings for advanced configuration options are used
-#
-CONFIG_LOWMEM_SIZE=0x30000000
-CONFIG_PAGE_OFFSET=0xc0000000
-CONFIG_KERNEL_START=0xc0000000
-CONFIG_PHYSICAL_START=0x00000000
-CONFIG_TASK_SIZE=0xc0000000
-CONFIG_CONSISTENT_START=0xff100000
-CONFIG_CONSISTENT_SIZE=0x00200000
-CONFIG_NET=y
+Best regards
+Hans So
 
 
 
------ Original Message ----- 
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-To: "Henry Bausley" <hbausley@domain.hid>
-Cc: <xenomai@xenomai.org>
-Sent: Tuesday, March 17, 2009 10:21 AM
-Subject: Re: [Xenomai-help] ENXIO error with large shared memory
+--_000_0AB95BFCF14F984980DE7149C21D6B90065D58B59FFNDMAILB03VIA_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
 
-> Henry Bausley wrote:
->> The patch makes it work for 32M.  However if I try to go larger ie.48M or
->> 64M I get the following
+<head>
+<meta http-equiv=3DContent-Type content=3D"text/html; charset=3Diso-8859-1"=
 >
-> Do you get the same error if you only run a simple program that does
-> such a big allocation ?
->
-> In other words, is it the big allocation by itself which causes this
-> "badness" or the accumulation of allocations (and possible memory
-> corruption).
->
-> You should be aware that the vmalloc space also has limits. Why do you
-> need to share such big areas between kernel and user-space ?
->
-> -- 
->                                                 Gilles. 
+<meta name=3DGenerator content=3D"Microsoft Word 12 (filtered medium)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Verdana;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Verdana","sans-serif";
+	color:windowtext;
+	font-weight:normal;
+	font-style:normal;
+	text-decoration:none none;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page Section1
+	{size:612.0pt 792.0pt;
+	margin:3.0cm 2.0cm 3.0cm 2.0cm;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext=3D"edit">
+  <o:idmap v:ext=3D"edit" data=3D"1" />
+ </o:shapelayout></xml><![endif]-->
+</head>
 
+<body lang=3DDA link=3Dblue vlink=3Dpurple>
 
+<div class=3DSection1>
 
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Verdana","sans-serif"'>I
+use objects of type:<o:p></o:p></span></p>
 
-**********************************************************
-Outbound scan for Spam or Virus by Barracuda at Delta Tau
-**********************************************************
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Verdana","sans-serif"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Courier New"'>typedef
+struct object {<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Courier New"'>=A0
+RT_MUTEX *rt_lock;<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Courier New"'>=A0
+..<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Courier New"'>}
+Object;<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Courier New"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Courier New"'>int
+err =3D rt_mutex_create (ob-&gt;rt_lock, NULL);<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Courier New"'>printf
+(&quot;[alloc.c]: rt_mutex_create err: %d; #%d \n&quot;, err, __LINE__);<o:=
+p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Courier New"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Courier New"'>err
+=3D rt_mutex_acquire (ob-&gt;rt_lock, TM_INFINITE);<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Courier New"'>printf
+(&quot;[lock.c]: rt_mutex_acquire, err: %d; #%d \n&quot;, err, __LINE__);<o=
+:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Verdana","sans-serif"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Verdana","sans-serif"'>On
+creation, rt_mutex_create returns 0 (as expected).<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Verdana","sans-serif"'>On
+acquiring, rt_mutex_acquire returns -3,<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Verdana","sans-serif"'>but
+this return value is not included among the possible return values in the
+documentation of Mutex services.<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Verdana","sans-serif"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Verdana","sans-serif"'>Could
+you please explain what this return value -3 means?<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Verdana","sans-serif"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Verdana","sans-serif"'>Best
+regards<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Verdana","sans-serif"'>Hans
+So=A0 <o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:10.0pt;font-fami=
+ly:"Verdana","sans-serif"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+</div>
+
+</body>
+
+</html>
+
+--_000_0AB95BFCF14F984980DE7149C21D6B90065D58B59FFNDMAILB03VIA_--
 
