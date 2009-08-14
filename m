@@ -1,12 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <0AB95BFCF14F984980DE7149C21D6B90065D58B59F@FND-MAILB03.VIA.DK>
-References: <0AB95BFCF14F984980DE7149C21D6B90065D58B59F@FND-MAILB03.VIA.DK>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 14 Aug 2009 11:41:54 +0200
-Message-Id: <1250242914.3019.6.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] rt_mutex_acquire returns -3
+Message-ID: <4A853707.10509@domain.hid>
+Date: Fri, 14 Aug 2009 12:05:59 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <Pine.LNX.4.62.0908141030170.14595@domain.hid>
+In-Reply-To: <Pine.LNX.4.62.0908141030170.14595@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] T_WARNSW ignored?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,77 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Hans =?ISO-8859-1?Q?S=F8ndergaard?= (HSO)" <HSO@VIAUC.DK>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenoka09@domain.hid
+Cc: xenomai@xenomai.org
 
-On Fri, 2009-08-14 at 09:31 +0200, Hans S=C3=B8ndergaard (HSO) wrote:
-> I use objects of type:
->=20
-> =20
->=20
-> typedef struct object {
->=20
->   RT_MUTEX *rt_lock;
->=20
->   ..
->=20
-> } Object;
->=20
-> =20
->=20
-> int err =3D rt_mutex_create (ob->rt_lock, NULL);
->=20
-> printf ("[alloc.c]: rt_mutex_create err: %d; #%d \n", err, __LINE__);
->=20
-> =20
->=20
-> err =3D rt_mutex_acquire (ob->rt_lock, TM_INFINITE);
->=20
-> printf ("[lock.c]: rt_mutex_acquire, err: %d; #%d \n", err, __LINE__);
->=20
-> =20
->=20
-> On creation, rt_mutex_create returns 0 (as expected).
->=20
-> On acquiring, rt_mutex_acquire returns -3,
->=20
+Kolja Waschk wrote:
+> Hi,
+> 
+> I'm trying to detect some remaining unwanted mode switches in an
+> application using the native Xenomai app. In one task (that is meant to
+> stay in RT domain all the time) I set the T_WARNSW bit and run the
+> program via gdb, but - although /proc/xenomai/stat shows some 1000 MSW
+> per second for that task - no SIGXCPU ever occurs. Only after I interrupt
+> it in the terminal where gdbserver was started, the gdb client shows
+> SIGINT, and after "cont", SIGXPCU.
+> 
+> I also tried the examples/native/sigxcpu.c with the same compiler flags.
+> There, SIGXCPU occurs and is reported by GDB immediately. What may cause
+> this, did I miss something?
+> 
+> It's on Blackfin, uclinux-dist 2009R1-RC2, Xenomai 2.4.7, Kernel 2.6.28.10 with
+> adeos-ipipe-2.6.28.10-blackfin.git-1.10-00.patch.
+> 
+> This is how it looks when the program is interrupted after some time:
+> 
+> Program received signal SIGINT, Interrupt.
+> [Switching to Thread 270]
+> 0x00710042 in rt_sem_p (sem=0xf69028, timeout=81067177008952732) at
+> ../../../../xenomai-2.4.7/src/skins/native/sem.c:43
+> 43		return XENOMAI_SKINCALL2(__native_muxid, __native_sem_p,
+> sem, &timeout);
+> Current language:  auto; currently c
+> (gdb) cont
+> Continuing.
+> 
+> Program received signal SIGXCPU, CPU time limit exceeded.
+> [Switching to Thread 273]
+> 0x0070fc20 in rt_dev_ioctl (fd=0, request=4) at
+> ../../../../xenomai-2.4.7/src/skins/rtdm/core.c:60
+> 60		return XENOMAI_SKINCALL3(__rtdm_muxid,
+> (gdb)
 
--ESRCH. This means that for some reason, the internal handle copied by
-rt_mutex_create() to ob->rt_lock could not be found back in the system
-registry when calling rt_mutex_acquire().
+I do not know if that may be your issue, but gdb cause mode switches,
+and you are not notified for these ones. So, the only relevant test is
+to run your application outside gdb and see if the MSW increments.
 
-Any chance ob->rt_lock may have been overwritten, or this mutex deleted
-by another thread in the meantime?
-
-In userland, RT_MUTEX is a structure containing an opaque long integer
-value. Maybe you could check that value (printf("%ld",
-ob->rt_lock.opaque)) right after rt_mutex_create() returns, and just
-before rt_mutex_acquire() is invoked.
-
-> but this return value is not included among the possible return values
-> in the documentation of Mutex services.
->=20
-> =20
->=20
-> Could you please explain what this return value -3 means?
->=20
-> =20
->=20
-> Best regards
->=20
-> Hans So =20
->=20
-> =20
->=20
-> =20
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
---=20
-Philippe.
-
+-- 
+                                          Gilles
 
 
