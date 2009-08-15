@@ -1,43 +1,37 @@
-Content-Class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 1 Jul 2009 11:52:18 +0200
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A01AB8BD8@domain.hid>
-From: <roderik.wildenburg@domain.hid>
-Subject: [Xenomai-help] Question about Interrupts
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4A6C6101.5050707@domain.hid>
+References: <4A6C6101.5050707@domain.hid>
+Content-Type: text/plain
+Date: Sat, 15 Aug 2009 23:48:41 +0200
+Message-Id: <1250372921.2933.92.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] socket can compile broken
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Matteo Facchinetti <matteo.facchinetti@domain.hid>
+Cc: xenomai@xenomai.org
 
-Dear Gurus,
+On Sun, 2009-07-26 at 15:58 +0200, Matteo Facchinetti wrote:
+> Hi,
+> 
+> I've upgrade xenomai to the last 2.4.8 (git) version.
+> I'm using kernel 2.6.24powerpc and for compile socket-can module, need 
+> to change MPC5xxx_GPIO define.
+> In this kernel version I havn't mpc5xxx_gpio_find_and_map() function but 
+> only mpc52xx_find_and_map("mpc5200-gpio").
+> 
 
-I have a question of understanding regarding the priority of a interrupt
-service routine which is assigned to the linux domain and the priority
-of a Xenomai task. Which one is executed first the Linux ISR or the
-Xenomai task ?
-Background of my question is, that it seems (this is just a assumption
-!) that a Linux ISR (e.g. for serial interrupt) is delayed when the
-system is under heavy realtime load. Is this possible ?
+Merged, thanks.
+
+-- 
+Philippe.
 
 
-Thank you for your help in advance
-Roderik
-
---------------------------------------------------------
-manroland AG
-Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle  =20
-Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592
-USt-Ident-Nr. DE 250200933
 
