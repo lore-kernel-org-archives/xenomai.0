@@ -1,5 +1,5 @@
-Message-ID: <4A895028.6010205@domain.hid>
-Date: Mon, 17 Aug 2009 14:42:16 +0200
+Message-ID: <4A895169.1030905@domain.hid>
+Date: Mon, 17 Aug 2009 14:47:37 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <b88603c30907280509u685a18di730cc0b021ab06eb@domain.hid>	
@@ -34,15 +34,23 @@ Henri Roosen wrote:
 > 
 > Please find attached the .config
 
-Ok. Thanks for reporting. I am afraid there is a hole in the way Xenomai
-2.4 uses the Linux preemptible context switches. I do not even
-understand how it is supposed to have worked at one time.
+Ok. I will propose a better fix later, but could you check the following
+quick fix?
 
-It is my fault, of course, since I am always testing head with the full
-modification for unlocked context switches, and only 2.4 once in a while.
 
-I will test this configuration and will keep you informed as soon as I
-have a fix.
+diff --git a/ksrc/arch/arm/Kconfig b/ksrc/arch/arm/Kconfig
+index c79fe66..b62a14d 100644
+--- a/ksrc/arch/arm/Kconfig
++++ b/ksrc/arch/arm/Kconfig
+@@ -10,7 +10,7 @@ depends on XENO_OPT_NUCLEUS
+
+ config IPIPE_WANT_PREEMPTIBLE_SWITCH
+        bool
+-       default y
++       default n
+
+ config XENO_HW_FPU
+        bool "Enable FPU support"
 
 -- 
                                           Gilles
