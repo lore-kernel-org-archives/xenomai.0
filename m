@@ -1,16 +1,11 @@
-From: Henry Bausley <hbausley@domain.hid>
-In-Reply-To: <4A89DDE8.2010907@domain.hid>
-References: <1250186541.23699.8.camel@domain.hid>
-	<4A845C93.4060302@domain.hid>	<1250200537.28789.8.camel@domain.hid>
-	<4A8808BA.4080504@domain.hid>	<1250543873.14029.5.camel@domain.hid>
-	<4A89D5BC.3050006@domain.hid>  <4A89DDE8.2010907@domain.hid>
-Content-Type: text/plain
-Date: Tue, 18 Aug 2009 08:29:35 -0700
-Message-Id: <1250609375.19848.8.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help]
-	pthread_setschedparam:	Resource	temporarily	unavailable
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 18 Aug 2009 17:00:43 -0500
+Message-ID: <181804936ABC2349BE503168465576460BE76E09@domain.hid>
+From: "Steve Deiters" <SteveDeiters@domain.hid>
+Subject: [Xenomai-help] Shared interrupt usage questions
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,42 +15,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Thank you the memory leak is gone.
+Is there any acceptable method to share interrupts in userspace using
+the native or other skin?  I am writing a userspace driver for a
+Freescale mpc5121e PSC serial controller, which has 12 programmable
+serial controllers which share a single FIFO controller.  The single
+FIFO controller has only a single IRQ line for all 12 PSCs.  This is
+further complicated by the fact that I also have to share this IRQ line
+with the Linux domain, as it uses it for the console and other devices.
 
-On Tue, 2009-08-18 at 00:47 +0200, Gilles Chanteperdrix wrote:
-> Gilles Chanteperdrix wrote:
-> > Henry Bausley wrote:
-> >> I used the defaults that came up for my 2.6.28.8 kernel I-pipe 2.4-05.
-> >> I'll rebuild the kernel with 2.6
-> > 
-> > Ok. Forget it, I can reproduce it. I simply forgot to enable Xenomai
-> > posix skin shared memories in the kernel configuration. The bug does not
-> > happen on head though, only on 2.4. And this with the same version of
-> > the I-pipe.
-> 
-> It should be fixed in the repository. Here is the patch:
-> 
-> diff --git a/ksrc/skins/posix/syscall.c b/ksrc/skins/posix/syscall.c
-> index ec0c102..898cc91 100644
-> --- a/ksrc/skins/posix/syscall.c
-> +++ b/ksrc/skins/posix/syscall.c
-> @@ -2717,6 +2717,8 @@ static int __munmap_epilogue(struct pt_regs *regs)
->         xnlock_put_irqrestore(&pse51_assoc_lock, s);
-> 
->         err = munmap(umap->kaddr, len);
-> +       if (!err)
-> +               xnfree(umap);
-> 
->         return !err ? 0 : -thread_get_errno();
->  }
-> 
-> 
+I cannot create multiple descriptors for the same IRQ line using
+rt_intr_create and the I_SHARED flag doesn't seem to be exported to
+userspace.  Is it valid to create one interrupt object and have multiple
+tasks call rt_intr_wait for the same interrupt object?
+=20
+As far as sharing with the Linux domain, from the documentation it seems
+I would just pass I_PROPAGATE and this should then be transparent to the
+Linux domain.  Are there additional concerns I should be aware of with
+sharing the IRQ between domains?
 
+I have set this up with a single shared interrupt object and it seems=
+ to
+function properly.  I just want to make sure I'm not putting myself in=
+ a
+condition where I could get some obscure race condition or have a
+deadlocked interrupt server task.
 
-
-**********************************************************
-Outbound scan for Spam or Virus by Barracuda at Delta Tau
-**********************************************************
+Thanks.
 
