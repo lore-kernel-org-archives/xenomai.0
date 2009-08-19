@@ -1,12 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <4A8AAB92.6050901@domain.hid>
-References: <7a15153d0908180547s1d542689r30992d62662c4710@domain.hid>
-	<4A8AAB92.6050901@domain.hid>
-Date: Tue, 18 Aug 2009 11:43:40 -0300
-Message-ID: <7a15153d0908180743x412490bfne1f42c80fd836012@domain.hid>
-From: felipe felipe <felipecpc1@domain.hid>
-Content-Type: multipart/alternative; boundary=0016e6db2d225b462a04716b8b86
-Subject: Re: [Xenomai-core] Xenomai and PXA
+From: Philippe Gerum <rpm@xenomai.org>
+Content-Type: text/plain
+Date: Wed, 19 Aug 2009 17:46:24 +0200
+Message-Id: <1250696784.3014.31.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Xenomai v2.4.9
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,95 +15,109 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
---0016e6db2d225b462a04716b8b86
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
 
-For sure! i'll glad to share the drivers, but in fact i have to study a
-little bit more.
-Perhaps i'll need to implement this driver but i don't have experience with,
-and this will increase my project time significantly.
-Anyway , thanks for your quickly answer, and sorry for my english ... :P
-Felipe
-On Tue, Aug 18, 2009 at 10:24 AM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+Here is the ninth maintenance release for the v2.4.x branch:
 
-> felipe felipe wrote:
-> > Hi all ,
-> > I'm starting with xenomai, i tried to get a realtime linux embedded for
-> > a medical device.
-> > I run some examples, but I'm a little bit lost.
-> > I tried to run the cross-link example , tha uses the module xeno_16550A
-> > but it seems that this module is not compatible with PXA serial driver
-> > right?
->
-> Dunno. You should be the one who knows if the serial driver you use is
-> 16550 or not. In any case, if you implement another serial driver, we
-> would be happy to include it in future releases of Xenomai.
->
-> > There are some driver to get a serial driver working with PXA (Toradex
-> > colobri) SOM ?
-> > Another issue is about GPIO. I need to read some GPIO's , there are some
-> > example , driver or something like that ?
->
-> Nope. But again, if you implement a framework for GPIOs, we would be
-> happy to include it in Xenomai.
->
-> --
->                                           Gilles
->
->
+http://download.gna.org/xenomai/stable/xenomai-2.4.9.tar.bz2
 
---0016e6db2d225b462a04716b8b86
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Special note to PowerPC (32/64) users: the FPU management code has been
+sanitized an awful lot in this release compared to 2.4.8 and earlier
+for this architecture. Really.  Several bugs which may badly break the 
+floating-point registers state "in some circumstances" have
+been fixed.
 
-<div>For sure! i&#39;ll glad to share the drivers, but in fact i have to st=
-udy a little bit more.=A0</div><div>Perhaps i&#39;ll need to implement this=
- driver but i don&#39;t have experience with, and this will increase my pro=
-ject time significantly.</div>
-<div class=3D"gmail_quote"></div><div class=3D"gmail_quote">Anyway , thanks=
- for your quickly answer, and sorry for my english ... :P</div><div class=
-=3D"gmail_quote"></div><div class=3D"gmail_quote">Felipe</div><div class=3D=
-"gmail_quote">
-</div><div class=3D"gmail_quote">On Tue, Aug 18, 2009 at 10:24 AM, Gilles C=
-hanteperdrix <span dir=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org=
-enomai.org">gilles.chanteperdrix@xenomai.org</a>&gt;</span> wrote:<br><bloc=
-kquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #cc=
-c solid;padding-left:1ex;">
-<div class=3D"im">felipe felipe wrote:<br>
-&gt; Hi all ,<br>
-&gt; I&#39;m starting with xenomai, i tried to get a realtime linux embedde=
-d for<br>
-&gt; a medical device.<br>
-&gt; I run some examples, but I&#39;m a little bit lost.<br>
-&gt; I tried to run the cross-link example , tha uses the module xeno_16550=
-A<br>
-&gt; but it seems that this module is not compatible with PXA serial driver=
-<br>
-&gt; right?<br>
-<br>
-</div>Dunno. You should be the one who knows if the serial driver you use i=
-s<br>
-16550 or not. In any case, if you implement another serial driver, we<br>
-would be happy to include it in future releases of Xenomai.<br>
-<div class=3D"im"><br>
-&gt; There are some driver to get a serial driver working with PXA (Toradex=
-<br>
-&gt; colobri) SOM ?<br>
-&gt; Another issue is about GPIO. I need to read some GPIO&#39;s , there ar=
-e some<br>
-&gt; example , driver or something like that ?<br>
-<br>
-</div>Nope. But again, if you implement a framework for GPIOs, we would be<=
-br>
-happy to include it in Xenomai.<br>
-<br>
---<br>
-<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles<br>
-<br>
-</font></blockquote></div><br>
+Therefore I would strongly recommend to upgrade your Xenomai baseline
+to 2.4.9, and ideally, kernel 2.6/powerpc users should also move their
+I-pipe support to 2.6.30-2.7-00, or at the very least backport _both_ of
+the following patches, in that order, to their kernel tree:
 
---0016e6db2d225b462a04716b8b86--
+1. http://git.denx.de/?p=ipipe-2.6.git;a=blobdiff;f=arch/powerpc/kernel/fpu.S;h=503de51bed94cc2fc4d17b4342885d0329ba5c1b;hp=2436df33c6f4433d7e7f54b88caad6ba570cf3f6;hb=4a9cffba3407f1238646847aad06712d8952a310;hpb=4d121ab41bda8a269c20b0a1077af8f3ef400105
+2. http://git.denx.de/?p=ipipe-2.6.git;a=commitdiff;h=0024416dcce817854cbf80eff420b21ef615672c;hp=d0353a6d1b4b4af7f6990dfa27055c799b3756a9
+
+People running a 2.4.25 kernel (the only one officially supported by
+Xenomai from the legacy 2.4/ppc kernel series) should definitely
+upgrade to the following I-pipe patch, to close a few important
+issues, including the FPU ones:
+http://download.gna.org/adeos/patches/v2.4/ppc/adeos-ipipe-2.4.25-ppc-DENX-2.2-01.patch
+
+Panic mode mitigation: This is a PowerPC-related issue only. Other
+architectures were not affected by those bugs.
+
+= You have been warned =
+
+Not scared enough? Ok. Here is the short log for v2.4.9:
+
+Gilles Chanteperdrix (3):
+      arm: fix syscalls with gcc 4.3.2
+      arm: Disable preemptible switch.
+      posix: fix shm leak
+
+Graf Yang (1):
+      blackfin: Update __sched_latency for blackfin processors
+
+Matteo Facchinetti (1):
+      rtcan: fix MPC5xxx_GPIO definition for 2.6.2[0-4] kernels
+
+Philippe Gerum (54):
+      powerpc: add calibration data for Freescale's ADS8272
+      powerpc: add calibration data for TQ's TQM8560
+      powerpc: upgrade Adeos/powerpc support
+      build: upgrade to autoconf >= 2.62
+      powerpc: add calibration info for 440EP Yosemite
+      powerpc: update Adeos/powerpc support
+      powerpc: unify calibration values for PA-Semi
+      powerpc: upgrade I-pipe/2.4 support to 2.4.25-ppc-2.0-01
+      x86: upgrade I-pipe support to 2.6.29.5-x86-2.4-01
+      x86: upgrade I-pipe to 2.6.29.5-x86-2.4-02
+      powerpc: init FPU for userland Xenomai threads as well
+      powerpc: discard useless backup field
+      powerpc: fix fpu backup area layout
+      nucleus: fix potential init race of the main pod
+      powerpc: sanitize kthread init stack setup
+      nucleus: port to 2.6.30
+      native: force no more than PTHREAD_STACK_MIN bytes for stack size
+      powerpc: enable FE0/FE1 exceptions during fpu init
+      powerpc: flip FE0/FE1 when saving/restoring the FPU in RT mode
+      x86: fix wrap_switch_iobitmap() for 2.6.30
+      x86: remove now useless I/O bitmap switch code
+      nucleus: do not dereference thread memory after deletion
+      powerpc: raise SYS_STACKPOOLSZ to 128Kb for 64bit archs
+      nucleus: use larger default sizes for heap and stack pool
+      powerpc: reserve stack overhead in kthread trampoline
+      powerpc: sanitize FPU handling helpers
+      testsuite: add missing compiler barriers to switchtest
+      testsuite: do not specify stack sizes lower than PTHREAD_STACK_MIN
+      powerpc: upgrade legacy I-pipe support to 2.4.25-ppc-2.1-00
+      powerpc: upgrade legacy I-pipe support to 2.6.20-powerpc-1.9-00
+      powerpc: upgrade I-pipe support to 2.6.30-powerpc-2.6-03
+      arm: upgrade I-pipe support to 2.6.28-arm-1.12-03
+      arm: upgrade I-pipe support to 2.6.28-arm-1.13-01
+      x86: fix 2.6.30 build in 32bit mode
+      x86: upgrade I-pipe support to 2.6.30-x86-2.4-05
+      powerpc: upgrade I-pipe support to 2.6.30-powerpc-2.7-00
+      rtai: fix build with CONFIG_PROC_FS disabled
+      blackfin: upgrade I-pipe support to 2.6.30-1.11-00
+      asm-generic: stop using deprecated find_task_by_pid_type_ns()
+      x86: fix include for kernel >= 2.6.30
+      doc: fix GIT tree detection
+      blackfin: do not consider IPEND[4] for scheduling deferral
+      powerpc: reinstate FE0/FE1 depending on the per-task fpexc_mode
+      powerpc: do not leak MSR_FP when back to secondary mode
+      powerpc: upgrade legacy I-pipe support to 2.4.25-ppc-2.2-01
+      nucleus: trap wrong interrupt state upon return from hardening
+      nucleus: postpone sanity check to allow for signal receipt
+      arm: upgrade I-pipe support to 2.6.30-arm-1.14-00, 2.6.28-arm-1.12-04, 2.6.29-arm-1.13-02
+      scripts: use default autoconf version
+      powerpc: upgrade legacy I-pipe support to 2.6.20-powerpc-1.9-01
+      build: update version stamp
+      build: bootstrap
+      doc: regenerate documentation
+
+Stefan Kisdaroczi (1):
+      debian: fix kernel patch preparation script not to truncate init/Kconfig
+
+-- 
+Philippe.
+
+
 
