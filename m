@@ -1,13 +1,14 @@
-Message-ID: <4A8D295C.2080402@domain.hid>
-Date: Thu, 20 Aug 2009 12:45:48 +0200
+Message-ID: <4A8E628C.8010001@domain.hid>
+Date: Fri, 21 Aug 2009 11:02:04 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <abaf774b0908040623w1583f930xda88c125b64394b1@domain.hid>	<4A7BC4DC.70209@domain.hid>	<abaf774b0908190127y4092620cr9c19b65b6434d7b1@domain.hid>	<4A8BBA87.5010305@domain.hid>	<abaf774b0908190229q4d1e0641wfc2d6927a8b34e42@domain.hid>	<4A8BC7BE.5020201@domain.hid>
-	<abaf774b0908190246j61f0e841s60a1b284ab1bb86@domain.hid>
-In-Reply-To: <abaf774b0908190246j61f0e841s60a1b284ab1bb86@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai 2.5-rc2 clock_gettime bad tv_nsec value
+References: <EB48F2CADC239E44A8598CC0B0571102E4A9BE@XVS-DCFR-21.europe.corp.altran.com>
+	<4A8C23BE.8050904@domain.hid>
+	<EB48F2CADC239E44A8598CC0B0571102E4A9C2@domain.hid>
+In-Reply-To: <EB48F2CADC239E44A8598CC0B0571102E4A9C2@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] RE :  Native message queue and synchronisation
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,70 +18,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steve <sbxenomai@domain.hid>
+To: =?ISO-8859-1?Q?Berruer_S=E9bastien?= <sebastien.berruer@domain.hid>
 Cc: xenomai@xenomai.org
 
-Steve wrote:
-> On 19/08/2009, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
->> Steve wrote:
->>> Were you going to delay handling this until later, or were you hoping
->>> it wouldn't be a problem?  If it's the former then this is not my
->>> number one priority at the moment, so from my perspective I can wait
->>> until the next release candidate / release.
->> To be completely frank, I was not really worried about this issue, since
->> you had not answered, I thought that maybe the issue was in your test
->> program.
+Berruer S=E9bastien wrote:
+> Hi,
+>=20
+>>> I include my code and hope you can point me out what I am doing wrong.
+>>> I'm running a kernel 2.6.28 with Xenomai 2.4.8 on an ARM architecture
+>>> (PXA255).
 >>
->>> Linux kernel: 2.6.29.4
->>> Xenomai: 2.5-rc2
->>> Adeos: adeos-ipipe-2.6.29.4-x86-2.4-01
->>>
->>> OS: Ubuntu (8.04 with updates)
->>> Hardware:
->>> Intel Core 2 CPU, kernel compiled using processor family 'Pentium-4/etc'
->> compiled for 32 or 64 bits?
->>
->> --
->>                                           Gilles
->>
->>
-> 
-> 32 bit,
+>>Could you try Xenomai 2.4.9?
+>=20
+>=20
+>=20
+> I did it yesterday with the version 2.4.9. But, I still issue the same
+> problem with the same code.
+>=20
+> I recently pointed out another problem: during the deletion of a task
+> descriptor, I receive the error value -3 (-ESRCH). I quickly checked it
+> and, that's right, she didn't appear in the /proc/registry.
+>=20
+> May it be a registration problem for the queue, too?
 
-Ok. It turns out that the error is portable, and there is no other way
-than to fix the result after the multiplication (trying to round
-differently leads to the converse error). So, could you try the
-following patch:
+Ok. Please keep 2.4.8. I did not try to reproduce the bug yet, but in the
+mean time, could you try the following patch?
 
-diff --git a/include/asm-generic/bits/timeconv.h
-b/include/asm-generic/bits/time
-index 79060b3..aa595fe 100644
---- a/include/asm-generic/bits/timeconv.h
-+++ b/include/asm-generic/bits/timeconv.h
-@@ -60,10 +60,17 @@ long long xnarch_ns_to_tsc(long long ns)
- unsigned long long xnarch_divrem_billion(unsigned long long value,
-                                         unsigned long *rem)
- {
--       unsigned long long r;
--       r = xnarch_nodiv_ullimd(value, bln_frac.frac, bln_frac.integ);
--       *rem = value - r * 1000000000;
--       return r;
-+       unsigned long long q;
-+       unsigned r;
-+
-+       q = xnarch_nodiv_ullimd(value, bln_frac.frac, bln_frac.integ);
-+       r = value - q * 1000000000;
-+       if (r >= 1000000000) {
-+               ++q;
-+               r -= 1000000000;
-+       }
-+       *rem = r;
-+       return q;
- }
- #else /* !XNARCH_HAVE_NODIV_LLIMD */
- long long xnarch_ns_to_tsc(long long ns)
+diff --git a/ksrc/skins/native/queue.c b/ksrc/skins/native/queue.c
+index 8b7c43e..9184da6 100644
+--- a/ksrc/skins/native/queue.c
++++ b/ksrc/skins/native/queue.c
+@@ -228,7 +228,8 @@ int rt_queue_create(RT_QUEUE *q,
+
+                err =3D xnheap_init_mapped(&q->bufpool,
+                                         poolsize,
+-                                        (mode & Q_DMA) ? GFP_DMA : 0);
++                                        XNARCH_SHARED_HEAP_FLAGS |
++                                        ((mode & Q_DMA) ? GFP_DMA : 0));
+                if (err)
+                        return err;
 
 
--- 
-					    Gilles.
+
+--=20
+                                          Gilles
+
 
