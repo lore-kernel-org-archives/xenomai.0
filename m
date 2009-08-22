@@ -1,13 +1,12 @@
-From: =?utf-8?B?SGFucyBTw7huZGVyZ2FhcmQgKEhTTyk=?= <HSO@VIAUC.DK>
-Date: Sat, 22 Aug 2009 09:49:54 +0200
-Message-ID: <0AB95BFCF14F984980DE7149C21D6B9006E8E3078C@FND-MAILB03.VIA.DK>
-References: <0AB95BFCF14F984980DE7149C21D6B90065D58B59F@FND-MAILB03.VIA.DK>
-	<1250242914.3019.6.camel@domain.hid>
-In-Reply-To: <1250242914.3019.6.camel@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <4A8FC200.2@domain.hid>
+Date: Sat, 22 Aug 2009 12:01:36 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+References: <0AB95BFCF14F984980DE7149C21D6B90065D58B59F@FND-MAILB03.VIA.DK>	<1250242914.3019.6.camel@domain.hid>
+	<0AB95BFCF14F984980DE7149C21D6B9006E8E3078C@FND-MAILB03.VIA.DK>
+In-Reply-To: <0AB95BFCF14F984980DE7149C21D6B9006E8E3078C@FND-MAILB03.VIA.DK>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] rt_mutex_acquire returns -3
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,47 +17,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: =?UTF-8?B?IkhhbnMgU8O4bmRlcmdhYXJkIChIU08pIg==?= <HSO@VIAUC.DK>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-VGhhbmsgeW91IHRvIGJvdGggR2lsbGVzIGFuZCBQaGlsaXBwZS4NCkkgZm9sbG93ZWQgdGhlIGFk
-dmlzZXMgZnJvbSB5b3UgYm90aDoNCnR5cGVkZWYgc3RydWN0IG9iamVjdCB7DQogIFJUX01VVEVY
-IHJ0X2xvY2s7IA0KICAgLi4gDQogfSBPYmplY3Q7DQoNCmFuZCB1c2VkOg0KICBwcmludGYoIiVs
-ZCIsIG9iLT5ydF9sb2NrLm9wYXF1ZSk7DQp0byBzZWUgb3V0cHV0Lg0KRm9yIGEgZ2VuZXJhbCBv
-cmllbnRhdGlvbjogSSBhbSByZXdyaXRpbmcgYSBKYXZhIFZNOiBKYW1WTSwgZm9yIGEgUHJlZGlj
-dGFibGUgSmF2YSBwcm9maWxlIChuZWFybHkgdGhlIHNhbWUgYXMgdGhlIFNhZmV0eSBDcml0aWNh
-bCBKYXZhIHByb3Bvc2FsIGZyb20gU1VOKS4gVGhlIHByb2ZpbGUgd2lsbCBiZSBwcmVzZW50ZWQg
-YXQgSlRSRVMgMjAwOS4NCkkgdXNlIFhlbm9tYWkgYXMgcmVhbC10aW1lIE9TLg0KVmgvUmVnYXJk
-cw0KSGFucyBTw7gNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IFBoaWxpcHBl
-IEdlcnVtIFttYWlsdG86cnBtQHhlbm9tYWkub3JnXSANClNlbnQ6IDE0LiBhdWd1c3QgMjAwOSAx
-MTo0Mg0KVG86IEhhbnMgU8O4bmRlcmdhYXJkIChIU08pDQpDYzogeGVub21haS1oZWxwQGduYS5v
-cmcNClN1YmplY3Q6IFJlOiBbWGVub21haS1oZWxwXSBydF9tdXRleF9hY3F1aXJlIHJldHVybnMg
-LTMNCg0KT24gRnJpLCAyMDA5LTA4LTE0IGF0IDA5OjMxICswMjAwLCBIYW5zIFPDuG5kZXJnYWFy
-ZCAoSFNPKSB3cm90ZToNCj4gSSB1c2Ugb2JqZWN0cyBvZiB0eXBlOg0KPiANCj4gIA0KPiANCj4g
-dHlwZWRlZiBzdHJ1Y3Qgb2JqZWN0IHsNCj4gDQo+ICAgUlRfTVVURVggKnJ0X2xvY2s7DQo+IA0K
-PiAgIC4uDQo+IA0KPiB9IE9iamVjdDsNCj4gDQo+ICANCj4gDQo+IGludCBlcnIgPSBydF9tdXRl
-eF9jcmVhdGUgKG9iLT5ydF9sb2NrLCBOVUxMKTsNCj4gDQo+IHByaW50ZiAoIlthbGxvYy5jXTog
-cnRfbXV0ZXhfY3JlYXRlIGVycjogJWQ7ICMlZCBcbiIsIGVyciwgX19MSU5FX18pOw0KPiANCj4g
-IA0KPiANCj4gZXJyID0gcnRfbXV0ZXhfYWNxdWlyZSAob2ItPnJ0X2xvY2ssIFRNX0lORklOSVRF
-KTsNCj4gDQo+IHByaW50ZiAoIltsb2NrLmNdOiBydF9tdXRleF9hY3F1aXJlLCBlcnI6ICVkOyAj
-JWQgXG4iLCBlcnIsIF9fTElORV9fKTsNCj4gDQo+ICANCj4gDQo+IE9uIGNyZWF0aW9uLCBydF9t
-dXRleF9jcmVhdGUgcmV0dXJucyAwIChhcyBleHBlY3RlZCkuDQo+IA0KPiBPbiBhY3F1aXJpbmcs
-IHJ0X211dGV4X2FjcXVpcmUgcmV0dXJucyAtMywNCj4gDQoNCi1FU1JDSC4gVGhpcyBtZWFucyB0
-aGF0IGZvciBzb21lIHJlYXNvbiwgdGhlIGludGVybmFsIGhhbmRsZSBjb3BpZWQgYnkNCnJ0X211
-dGV4X2NyZWF0ZSgpIHRvIG9iLT5ydF9sb2NrIGNvdWxkIG5vdCBiZSBmb3VuZCBiYWNrIGluIHRo
-ZSBzeXN0ZW0NCnJlZ2lzdHJ5IHdoZW4gY2FsbGluZyBydF9tdXRleF9hY3F1aXJlKCkuDQoNCkFu
-eSBjaGFuY2Ugb2ItPnJ0X2xvY2sgbWF5IGhhdmUgYmVlbiBvdmVyd3JpdHRlbiwgb3IgdGhpcyBt
-dXRleCBkZWxldGVkDQpieSBhbm90aGVyIHRocmVhZCBpbiB0aGUgbWVhbnRpbWU/DQoNCkluIHVz
-ZXJsYW5kLCBSVF9NVVRFWCBpcyBhIHN0cnVjdHVyZSBjb250YWluaW5nIGFuIG9wYXF1ZSBsb25n
-IGludGVnZXINCnZhbHVlLiBNYXliZSB5b3UgY291bGQgY2hlY2sgdGhhdCB2YWx1ZSAocHJpbnRm
-KCIlbGQiLA0Kb2ItPnJ0X2xvY2sub3BhcXVlKSkgcmlnaHQgYWZ0ZXIgcnRfbXV0ZXhfY3JlYXRl
-KCkgcmV0dXJucywgYW5kIGp1c3QNCmJlZm9yZSBydF9tdXRleF9hY3F1aXJlKCkgaXMgaW52b2tl
-ZC4NCg0KPiBidXQgdGhpcyByZXR1cm4gdmFsdWUgaXMgbm90IGluY2x1ZGVkIGFtb25nIHRoZSBw
-b3NzaWJsZSByZXR1cm4gdmFsdWVzDQo+IGluIHRoZSBkb2N1bWVudGF0aW9uIG9mIE11dGV4IHNl
-cnZpY2VzLg0KPiANCj4gIA0KPiANCj4gQ291bGQgeW91IHBsZWFzZSBleHBsYWluIHdoYXQgdGhp
-cyByZXR1cm4gdmFsdWUgLTMgbWVhbnM/DQo+IA0KPiAgDQo+IA0KPiBCZXN0IHJlZ2FyZHMNCj4g
-DQo+IEhhbnMgU28gIA0KPiANCj4gIA0KPiANCj4gIA0KPiANCj4gDQo+IF9fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+IFhlbm9tYWktaGVscCBtYWlsaW5n
-IGxpc3QNCj4gWGVub21haS1oZWxwQGduYS5vcmcNCj4gaHR0cHM6Ly9tYWlsLmduYS5vcmcvbGlz
-dGluZm8veGVub21haS1oZWxwDQotLSANClBoaWxpcHBlLg0KDQoNCg==
+Hans S=C3=B8ndergaard (HSO) wrote:
+> Thank you to both Gilles and Philippe.
+> I followed the advises from you both:
+> typedef struct object {
+>   RT_MUTEX rt_lock;=20
+>    ..=20
+>  } Object;
+>=20
+> and used:
+>   printf("%ld", ob->rt_lock.opaque);
+> to see output.
+
+So, what is the result? Did you find the bug?
+
+--=20
+					    Gilles.
+
 
