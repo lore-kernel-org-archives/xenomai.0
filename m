@@ -1,12 +1,15 @@
-Message-ID: <4A8FC200.2@domain.hid>
-Date: Sat, 22 Aug 2009 12:01:36 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <0AB95BFCF14F984980DE7149C21D6B90065D58B59F@FND-MAILB03.VIA.DK>	<1250242914.3019.6.camel@domain.hid>
+From: =?utf-8?B?SGFucyBTw7huZGVyZ2FhcmQgKEhTTyk=?= <HSO@VIAUC.DK>
+Date: Sat, 22 Aug 2009 20:44:18 +0200
+Message-ID: <0AB95BFCF14F984980DE7149C21D6B9006E8E307A1@domain.hid>
+References: <0AB95BFCF14F984980DE7149C21D6B90065D58B59F@FND-MAILB03.VIA.DK>
+	<1250242914.3019.6.camel@domain.hid>
 	<0AB95BFCF14F984980DE7149C21D6B9006E8E3078C@FND-MAILB03.VIA.DK>
-In-Reply-To: <0AB95BFCF14F984980DE7149C21D6B9006E8E3078C@FND-MAILB03.VIA.DK>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+	<4A8FC200.2@domain.hid>
+In-Reply-To: <4A8FC200.2@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai-help] rt_mutex_acquire returns -3
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,24 +20,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?UTF-8?B?IkhhbnMgU8O4bmRlcmdhYXJkIChIU08pIg==?= <HSO@VIAUC.DK>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hans S=C3=B8ndergaard (HSO) wrote:
-> Thank you to both Gilles and Philippe.
-> I followed the advises from you both:
-> typedef struct object {
->   RT_MUTEX rt_lock;=20
->    ..=20
->  } Object;
->=20
-> and used:
->   printf("%ld", ob->rt_lock.opaque);
-> to see output.
-
-So, what is the result? Did you find the bug?
-
---=20
-					    Gilles.
-
+PiBTbywgd2hhdCBpcyB0aGUgcmVzdWx0PyBEaWQgeW91IGZpbmQgdGhlIGJ1Zz8NClllcywgSSB0
+aGluayBzby4gDQpUaGUgcHJvYmxlbSB3YXMgaW4gbXkgcmV3cml0aW5nIG9mIEphbVZNLiBJIGhh
+dmUgaW1wbGVtZW50ZWQgSmF2YSBQZXJpb2RpY0V2ZW50SGFuZGxlcnMgdXNpbmcgcGVyaW9kaWMg
+UlRfVEFTS3MsIGFuZCByZS1pbXBsZW1lbnRlZCBKYXZhIG9iamVjdCBhbGxvY2F0aW9uIHdpdGgg
+c3luY2hyb25pemVkIG1ldGhvZHMsIHVzaW5nIFJUX01VVEVYIHRvIHV0aWxpemUgdGhlIHByaW9y
+aXR5IGluaGVyaXRhbmNlIGluY2x1ZGVkIGluIFhlbm9tYWkuIEVhY2ggaGFuZGxlciBoYXMgYSBw
+cml2YXRlIG5hdGl2ZSBtZW1vcnlBcmVhIChubyBHYXJiYWdlIENvbGxlY3RvciBiZWNhdXNlIG9m
+IHJlYWwtdGltZSBjb25zdHJhaW50cykuDQpUaGUgYWxsb2NhdGlvbiBvZiBhIG5ldyBvYmplY3Qg
+YW5kIGNhbGxpbmcgaXRzIHN5bmNocm9uaXplZCBtZXRob2Qgbm93IGdpdmVzIHRoZSBvdXRwdXQ6
+DQoNCj0+IE5hdGl2ZTogZW50ZXJOYXRpdmVNZW1BcmVhDQoNClthbGxvYy5jXTogcnRfbXV0ZXhf
+Y3JlYXRlIGVycjogMDsgDQpbYWxsb2MuY106IG9iLT5ydF9sb2NrLm9wYXF1ZTogNzU7IA0KDQpb
+bG9jay5jXTogb2ItPnJ0X2xvY2sub3BhcXVlOiA3NTsgDQpbbG9jay5jXTogcnRfbXV0ZXhfYWNx
+dWlyZSwgcmVzdWx0IDA7DQoNCltsb2NrLmNdOiBvYi0+cnRfbG9jay5vcGFxdWU6IDc1Ow0KW2xv
+Y2suY106IHJ0X211dGV4X3JlbGVhc2UsIHJlc3VsdCAwOyANCg0KW2FsbG9jLmNdOiBydF9tdXRl
+eF9kZWxldGUsIGVycjogMDsgDQpbYWxsb2MuY106IG9iLT5ydF9sb2NrLm9wYXF1ZTogNzU7IA0K
+DQo9PiBOYXRpdmU6IHJlc2V0TWVtQXJlYTogYWZ0ZXItYmVmb3JlPXVzZWQ6IDEwMjMyIC0gMTAy
+MDggPSAyNCBCeXRlczsNCg0KVGhpcyBzaG91bGQgYmUgT0suDQpJIGhhdmUgKHN0aWxsKSBwcm9i
+bGVtcywgaWYgSSB1c2UgU3lzdGVtLm91dC5wcmludGxuIGluIHRoZSBzeW5jaHJvbml6ZWQgbWV0
+aG9kLCBidXQgbm93IEkga25vdyBpdCBpcyBiZWNhdXNlIG9mIG15IGluc3VmZmljaWVudCByZS1p
+bXBsZW1lbnRhdGlvbiBvZiBKYW1WTS4NClZoL1JlZ2FyZHMNCkhhbnMgU8O4DQoNCi0tLS0tT3Jp
+Z2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRvOmdp
+bGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANClNlbnQ6IDIyLiBhdWd1c3QgMjAwOSAx
+MjowMg0KVG86IEhhbnMgU8O4bmRlcmdhYXJkIChIU08pDQpDYzogeGVub21haS1oZWxwQGduYS5v
+cmcNClN1YmplY3Q6IFJlOiBbWGVub21haS1oZWxwXSBydF9tdXRleF9hY3F1aXJlIHJldHVybnMg
+LTMNCg0KSGFucyBTw7huZGVyZ2FhcmQgKEhTTykgd3JvdGU6DQo+IFRoYW5rIHlvdSB0byBib3Ro
+IEdpbGxlcyBhbmQgUGhpbGlwcGUuDQo+IEkgZm9sbG93ZWQgdGhlIGFkdmlzZXMgZnJvbSB5b3Ug
+Ym90aDoNCj4gdHlwZWRlZiBzdHJ1Y3Qgb2JqZWN0IHsNCj4gICBSVF9NVVRFWCBydF9sb2NrOyAN
+Cj4gICAgLi4gDQo+ICB9IE9iamVjdDsNCj4gDQo+IGFuZCB1c2VkOg0KPiAgIHByaW50ZigiJWxk
+Iiwgb2ItPnJ0X2xvY2sub3BhcXVlKTsNCj4gdG8gc2VlIG91dHB1dC4NCg0KU28sIHdoYXQgaXMg
+dGhlIHJlc3VsdD8gRGlkIHlvdSBmaW5kIHRoZSBidWc/DQoNCi0tIA0KCQkJCQkgICAgR2lsbGVz
+Lg0KDQo=
 
