@@ -1,16 +1,14 @@
-Message-ID: <4A8F1E70.6090608@domain.hid>
-Date: Sat, 22 Aug 2009 00:23:44 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: =?utf-8?B?SGFucyBTw7huZGVyZ2FhcmQgKEhTTyk=?= <HSO@VIAUC.DK>
+Date: Sat, 22 Aug 2009 09:49:54 +0200
+Message-ID: <0AB95BFCF14F984980DE7149C21D6B9006E8E3078C@FND-MAILB03.VIA.DK>
+References: <0AB95BFCF14F984980DE7149C21D6B90065D58B59F@FND-MAILB03.VIA.DK>
+	<1250242914.3019.6.camel@domain.hid>
+In-Reply-To: <1250242914.3019.6.camel@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <EB48F2CADC239E44A8598CC0B0571102E4A9BE@XVS-DCFR-21.europe.corp.altran.com>
-	<4A8C23BE.8050904@domain.hid>
-	<EB48F2CADC239E44A8598CC0B0571102E4A9C2@domain.hid>
-	<4A8E628C.8010001@domain.hid>
-	<EB48F2CADC239E44A8598CC0B0571102E4A9C4@domain.hid>
-In-Reply-To: <EB48F2CADC239E44A8598CC0B0571102E4A9C4@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] RE :  Native message queue and synchronisation
+Subject: Re: [Xenomai-help] rt_mutex_acquire returns -3
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,62 +18,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?UTF-8?B?QmVycnVlciBTw6liYXN0aWVu?= <sebastien.berruer@domain.hid>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Berruer S=C3=A9bastien wrote:
-> Hi,
->=20
->>>>> I'm running a kernel 2.6.28 with Xenomai 2.4.8 on an ARM architectu=
-re
->>>>> (PXA255).
->>>>
->>>>Could you try Xenomai 2.4.9?
->>>
->>> I did it yesterday with the version 2.4.9. But, I still issue the sam=
-e
->>> problem with the same code.
->>>
->>
->>Ok. Please keep 2.4.8. I did not try to reproduce the bug yet, but in t=
-he
->>mean time, could you try the following patch?
->>
->>diff --git a/ksrc/skins/native/queue.c b/ksrc/skins/native/queue.c
->>index 8b7c43e..9184da6 100644
->>--- a/ksrc/skins/native/queue.c
->>+++ b/ksrc/skins/native/queue.c
->>@@ -228,7 +228,8 @@ int rt_queue_create(RT_QUEUE *q,
->>
->>               err =3D xnheap_init_mapped(&q->bufpool,
->>                                         poolsize,
->>-                                        (mode & Q_DMA) ? GFP_DMA : 0);=
-
->>+                                        XNARCH_SHARED_HEAP_FLAGS |
->>+                                        ((mode & Q_DMA) ? GFP_DMA : 0)=
-);
->>                if (err)
->>                        return err;
->=20
-> I've applied the patch against library's sources.
->=20
-> In fact, if I remove the sleep from the "display" routine, it works.
-> But, I can't assert what was the scheduling of threads. Maybe, it was
-> favourable to the other thread to write the data.
->=20
-> If I enable the sleep call in "mesure" routine, I still issue the same
-> problem that before: the system hangs. I tried to investigate the role
-> of sleep, but it's a little confuse to me for debugging. Furthermore,
-> the hang doesn't append in the reverse situation. I'm keeping in that
-> way, waiting if you've got a better idea.
-
-Ok. Your test program was tested on ppc and ARM, and works as far as we
-can tell. So, unless you show us your full serial console trace, from
-boot to the oops/or panic if any, as welll as your kernel configuration,
-we will consider this issue closed.
-
-
---=20
-					    Gilles.
-
+VGhhbmsgeW91IHRvIGJvdGggR2lsbGVzIGFuZCBQaGlsaXBwZS4NCkkgZm9sbG93ZWQgdGhlIGFk
+dmlzZXMgZnJvbSB5b3UgYm90aDoNCnR5cGVkZWYgc3RydWN0IG9iamVjdCB7DQogIFJUX01VVEVY
+IHJ0X2xvY2s7IA0KICAgLi4gDQogfSBPYmplY3Q7DQoNCmFuZCB1c2VkOg0KICBwcmludGYoIiVs
+ZCIsIG9iLT5ydF9sb2NrLm9wYXF1ZSk7DQp0byBzZWUgb3V0cHV0Lg0KRm9yIGEgZ2VuZXJhbCBv
+cmllbnRhdGlvbjogSSBhbSByZXdyaXRpbmcgYSBKYXZhIFZNOiBKYW1WTSwgZm9yIGEgUHJlZGlj
+dGFibGUgSmF2YSBwcm9maWxlIChuZWFybHkgdGhlIHNhbWUgYXMgdGhlIFNhZmV0eSBDcml0aWNh
+bCBKYXZhIHByb3Bvc2FsIGZyb20gU1VOKS4gVGhlIHByb2ZpbGUgd2lsbCBiZSBwcmVzZW50ZWQg
+YXQgSlRSRVMgMjAwOS4NCkkgdXNlIFhlbm9tYWkgYXMgcmVhbC10aW1lIE9TLg0KVmgvUmVnYXJk
+cw0KSGFucyBTw7gNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IFBoaWxpcHBl
+IEdlcnVtIFttYWlsdG86cnBtQHhlbm9tYWkub3JnXSANClNlbnQ6IDE0LiBhdWd1c3QgMjAwOSAx
+MTo0Mg0KVG86IEhhbnMgU8O4bmRlcmdhYXJkIChIU08pDQpDYzogeGVub21haS1oZWxwQGduYS5v
+cmcNClN1YmplY3Q6IFJlOiBbWGVub21haS1oZWxwXSBydF9tdXRleF9hY3F1aXJlIHJldHVybnMg
+LTMNCg0KT24gRnJpLCAyMDA5LTA4LTE0IGF0IDA5OjMxICswMjAwLCBIYW5zIFPDuG5kZXJnYWFy
+ZCAoSFNPKSB3cm90ZToNCj4gSSB1c2Ugb2JqZWN0cyBvZiB0eXBlOg0KPiANCj4gIA0KPiANCj4g
+dHlwZWRlZiBzdHJ1Y3Qgb2JqZWN0IHsNCj4gDQo+ICAgUlRfTVVURVggKnJ0X2xvY2s7DQo+IA0K
+PiAgIC4uDQo+IA0KPiB9IE9iamVjdDsNCj4gDQo+ICANCj4gDQo+IGludCBlcnIgPSBydF9tdXRl
+eF9jcmVhdGUgKG9iLT5ydF9sb2NrLCBOVUxMKTsNCj4gDQo+IHByaW50ZiAoIlthbGxvYy5jXTog
+cnRfbXV0ZXhfY3JlYXRlIGVycjogJWQ7ICMlZCBcbiIsIGVyciwgX19MSU5FX18pOw0KPiANCj4g
+IA0KPiANCj4gZXJyID0gcnRfbXV0ZXhfYWNxdWlyZSAob2ItPnJ0X2xvY2ssIFRNX0lORklOSVRF
+KTsNCj4gDQo+IHByaW50ZiAoIltsb2NrLmNdOiBydF9tdXRleF9hY3F1aXJlLCBlcnI6ICVkOyAj
+JWQgXG4iLCBlcnIsIF9fTElORV9fKTsNCj4gDQo+ICANCj4gDQo+IE9uIGNyZWF0aW9uLCBydF9t
+dXRleF9jcmVhdGUgcmV0dXJucyAwIChhcyBleHBlY3RlZCkuDQo+IA0KPiBPbiBhY3F1aXJpbmcs
+IHJ0X211dGV4X2FjcXVpcmUgcmV0dXJucyAtMywNCj4gDQoNCi1FU1JDSC4gVGhpcyBtZWFucyB0
+aGF0IGZvciBzb21lIHJlYXNvbiwgdGhlIGludGVybmFsIGhhbmRsZSBjb3BpZWQgYnkNCnJ0X211
+dGV4X2NyZWF0ZSgpIHRvIG9iLT5ydF9sb2NrIGNvdWxkIG5vdCBiZSBmb3VuZCBiYWNrIGluIHRo
+ZSBzeXN0ZW0NCnJlZ2lzdHJ5IHdoZW4gY2FsbGluZyBydF9tdXRleF9hY3F1aXJlKCkuDQoNCkFu
+eSBjaGFuY2Ugb2ItPnJ0X2xvY2sgbWF5IGhhdmUgYmVlbiBvdmVyd3JpdHRlbiwgb3IgdGhpcyBt
+dXRleCBkZWxldGVkDQpieSBhbm90aGVyIHRocmVhZCBpbiB0aGUgbWVhbnRpbWU/DQoNCkluIHVz
+ZXJsYW5kLCBSVF9NVVRFWCBpcyBhIHN0cnVjdHVyZSBjb250YWluaW5nIGFuIG9wYXF1ZSBsb25n
+IGludGVnZXINCnZhbHVlLiBNYXliZSB5b3UgY291bGQgY2hlY2sgdGhhdCB2YWx1ZSAocHJpbnRm
+KCIlbGQiLA0Kb2ItPnJ0X2xvY2sub3BhcXVlKSkgcmlnaHQgYWZ0ZXIgcnRfbXV0ZXhfY3JlYXRl
+KCkgcmV0dXJucywgYW5kIGp1c3QNCmJlZm9yZSBydF9tdXRleF9hY3F1aXJlKCkgaXMgaW52b2tl
+ZC4NCg0KPiBidXQgdGhpcyByZXR1cm4gdmFsdWUgaXMgbm90IGluY2x1ZGVkIGFtb25nIHRoZSBw
+b3NzaWJsZSByZXR1cm4gdmFsdWVzDQo+IGluIHRoZSBkb2N1bWVudGF0aW9uIG9mIE11dGV4IHNl
+cnZpY2VzLg0KPiANCj4gIA0KPiANCj4gQ291bGQgeW91IHBsZWFzZSBleHBsYWluIHdoYXQgdGhp
+cyByZXR1cm4gdmFsdWUgLTMgbWVhbnM/DQo+IA0KPiAgDQo+IA0KPiBCZXN0IHJlZ2FyZHMNCj4g
+DQo+IEhhbnMgU28gIA0KPiANCj4gIA0KPiANCj4gIA0KPiANCj4gDQo+IF9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+IFhlbm9tYWktaGVscCBtYWlsaW5n
+IGxpc3QNCj4gWGVub21haS1oZWxwQGduYS5vcmcNCj4gaHR0cHM6Ly9tYWlsLmduYS5vcmcvbGlz
+dGluZm8veGVub21haS1oZWxwDQotLSANClBoaWxpcHBlLg0KDQoNCg==
 
