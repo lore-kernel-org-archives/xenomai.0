@@ -1,10 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1251101267.3754.18.camel@domain.hid>
+Message-ID: <4A925454.8000005@domain.hid>
+Date: Mon, 24 Aug 2009 10:50:28 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <1251101267.3754.18.camel@domain.hid>
-Content-Type: text/plain
-Date: Mon, 24 Aug 2009 10:40:48 +0200
-Message-Id: <1251103248.2922.14.camel@domain.hid>
-Mime-Version: 1.0
+In-Reply-To: <1251101267.3754.18.camel@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] No core files for segmentation faults in
  realtime tasks
@@ -20,7 +20,7 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Christoph Permes <christoph.permes@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Mon, 2009-08-24 at 10:07 +0200, Christoph Permes wrote:
+Christoph Permes wrote:
 > Hi,
 > 
 > I have a realtime application running in user space that sometimes terminates with a segmentation fault. 
@@ -32,26 +32,11 @@ On Mon, 2009-08-24 at 10:07 +0200, Christoph Permes wrote:
 > 
 > Is it somehow possible to enable writing core files also for realtime tasks?
 
-This feature is not disabled for real-time tasks actually, so there must
-be something else at work.
+In addition to what Philippe asked, why do you not try to run your
+application directly in gdb? Or with gdbserver? This would workardound
+the lack of core file...
 
-You may want to send your small test case, and give more details about
-your hardware and software configuration, at the very least the CPU
-architecture your code runs on, the Xenomai, I-pipe patch, and kernel
-release numbers.
-
-> 
-> Thanks, 
-> Christoph
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
 -- 
-Philippe.
-
+                                          Gilles
 
 
