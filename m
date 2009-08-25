@@ -1,20 +1,14 @@
-Message-ID: <4A939CE2.3080006@domain.hid>
-Date: Tue, 25 Aug 2009 10:12:18 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <EB48F2CADC239E44A8598CC0B0571102E4A9BE@XVS-DCFR-21.europe.corp.altran.com>
-	<4A8C23BE.8050904@domain.hid>
-	<EB48F2CADC239E44A8598CC0B0571102E4A9C2@domain.hid>
-	<4A8E628C.8010001@domain.hid>
-	<EB48F2CADC239E44A8598CC0B0571102E4A9C4@domain.hid>
-	<4A8F1E70.6090608@domain.hid>
-	<EB48F2CADC239E44A8598CC0B0571102E4A9C6@domain.hid>
-	<4A925F27.4070104@domain.hid>
-	<EB48F2CADC239E44A8598CC0B0571102E4A9C7@domain.hid>
-In-Reply-To: <EB48F2CADC239E44A8598CC0B0571102E4A9C7@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] RE :  Native message queue and synchronisation
+From: Christoph Permes <christoph.permes@domain.hid>
+In-Reply-To: <1251103248.2922.14.camel@domain.hid>
+References: <1251101267.3754.18.camel@domain.hid>
+	<1251103248.2922.14.camel@domain.hid>
+Date: Tue, 25 Aug 2009 10:10:39 +0200
+Message-Id: <1251187839.4303.8.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+Subject: Re: [Xenomai-help] No core files for segmentation faults in
+ realtime tasks
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,32 +18,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?Berruer_S=E9bastien?= <sebastien.berruer@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Berruer S=E9bastien wrote:
-> Hello,
->=20
-> It works for me.
->=20
-> It also solve some problem for me using the latency program in the test
-> suite. I suppose it was the same kind of lock.
+Am Montag, den 24.08.2009, 10:40 +0200 schrieb Philippe Gerum:
+> On Mon, 2009-08-24 at 10:07 +0200, Christoph Permes wrote:
+> > Hi,
+> > 
+> > I have a realtime application running in user space that sometimes terminates with a segmentation fault. 
+> > I get a message segfault at 4c4f5200 ip b7cb98d8 sp b7ef7354 error 4 in libc-2.7.so[b7c5e000+138000], 
+> > but there is no core file writen, although ulimit is set to unlimited.
+> > 
+> > I wrote a small test program that produces a segmentation fault and I get a core file when the segfault
+> > happens before the realtime task starts but not when it happens in the task.
+> > 
+> > Is it somehow possible to enable writing core files also for realtime tasks?
+> 
+> This feature is not disabled for real-time tasks actually, so there must
+> be something else at work.
+> 
+> You may want to send your small test case, and give more details about
+> your hardware and software configuration, at the very least the CPU
+> architecture your code runs on, the Xenomai, I-pipe patch, and kernel
+> release numbers.
+> 
 
-An issue with the latency test is the first thing you should mention. We
-know the latency program is supposed to work without any problem, not
-the programs you write.
+I'm using kernel 2.6.29 now, it turned out that this kernel version
+handles core dump files not the same way as 2.6.22 which I used
+previously.
+Now every core dump is written to the same file, while my old kernel
+generated a separate file for every core dump. Therefore it seemed that
+no core files are written.
+I solved the problem by adjusting /proc/sys/kernel/core_pattern to get
+the old behavior.
 
-Could you try something: with the patch still applied, could you try to
-compile Xenomai user-space without the -msoft-float option?
+Christoph
 
->=20
-> There is still the registration problem, that cause an error at the
-> deletion of the task. If it persists and I can find any information from
-> the mail archive, I'll opened a new thread.
-
-Please post a short example exhibiting the bug you think you found.
-
---=20
-                                          Gilles
 
 
