@@ -1,13 +1,10 @@
-Message-ID: <4A92B2F9.6080601@domain.hid>
-Date: Mon, 24 Aug 2009 17:34:17 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <142859.29324.qm@domain.hid>
+Date: Mon, 24 Aug 2009 22:01:14 -0700 (PDT)
+From: David Tao <david_xtao@domain.hid>
 MIME-Version: 1.0
-References: <200908241838362961884@domain.hid>
-In-Reply-To: <200908241838362961884@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] kernel doesn't boot ,
- after add the xenomai-2.4.8 patch
+Content-Type: multipart/alternative; boundary="0-1004941763-1251176474=:29324"
+Subject: [Xenomai-help] arch/arm/kernel/ipipe.c:421: error: implicit
+	declaration of function '__ipipe_mach_irq_mux_p'
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,29 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: wangxiyu8237 <wangxiyu8237@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Xenomai-help@domain.hid
 
-wangxiyu8237 wrote:
-> hello  :
->    
-> I'm porting xenomai to SAMSUMG s3c2410 processor (on SMDK2410) as per
-> porting guidelines. In the first phase, applied
-> adeos-ipipe-2.6.26-arm-1.12-00 patch found in xenomai-2.4.8 to kernel
-> 2.6.26.8 and have implemented required machine specific code.  add a
-> driver of CS8900, 
+--0-1004941763-1251176474=:29324
+Content-Type: text/plain; charset=us-ascii
 
-It looks like you have reinvented the wheel:
-- the linux kernel already has a driver for the cs89x0 ethernet interface;
-- Xenomai already has support for the s3c chips.
+Hi,
 
-> kernel booted but with a problem , kernel doesn't boot VFS and ipconfig. 
+I run into a build error when compiling ipipe.c as follows:
 
-Well, your I-pipe support is probably buggy. Did you check whether the
-hardware timer is still ticking when the kernel stops? I am afraid if
-you want to write your own I-pipe support you will have to debug it...
+  CC      arch/arm/kernel/ipipe.o
+ arch/arm/kernel/ipipe.c: In function '__ipipe_grab_irq':
+arch/arm/kernel/ipipe.c:421: error: implicit declaration of function '__ipipe_mach_irq_mux_p'
+make[1]: *** [arch/arm/kernel/ipipe.o] Error 1
+make: *** [arch/arm/kernel] Error 2
 
--- 
-                                          Gilles
+Kernel: 2.6.26
+Adeos patch:  adeos-ipipe-2.6.26-arm-1.12-00.patch
+Xenomai: 2.4.7, and 2.4.8
+Tool chain: Denx 4.2 for arm
+Target CPU: iMX25
 
+googling around find no such reports.
+
+Any help is highly appreciated.
+
+Best regards,
+David
+
+
+
+      
+--0-1004941763-1251176474=:29324
+Content-Type: text/html; charset=us-ascii
+
+<html><head><style type="text/css"><!-- DIV {margin:0px;} --></style></head><body><div style="font-family:'times new roman', 'new york', times, serif;font-size:12pt"><div>Hi,</div><div><br></div><div>I run into a build error when compiling ipipe.c as follows:</div><div><br></div><div><div>&nbsp;&nbsp;CC &nbsp; &nbsp; &nbsp;arch/arm/kernel/ipipe.o</div><div>&nbsp;arch/arm/kernel/ipipe.c: In function '__ipipe_grab_irq':</div><div>arch/arm/kernel/ipipe.c:421: error: implicit declaration of function '__ipipe_mach_irq_mux_p'</div><div>make[1]: *** [arch/arm/kernel/ipipe.o] Error 1</div><div>make: *** [arch/arm/kernel] Error 2</div><div><br></div><div>Kernel: 2.6.26</div><div>Adeos patch: &nbsp;adeos-ipipe-2.6.26-arm-1.12-00.patch</div><div>Xenomai: 2.4.7, and 2.4.8</div><div>Tool chain: Denx 4.2 for arm</div><div>Target CPU: iMX25</div><div><br></div><div>googling around find no such reports.</div><div><br></div><div>Any help is highly
+ appreciated.</div><div><br></div><div>Best regards,</div><div>David</div><div><br></div></div><div style="position:fixed"></div></div><br>
+
+      </body></html>
+--0-1004941763-1251176474=:29324--
 
