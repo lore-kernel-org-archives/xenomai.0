@@ -1,10 +1,14 @@
-Message-ID: <142859.29324.qm@domain.hid>
-Date: Mon, 24 Aug 2009 22:01:14 -0700 (PDT)
-From: David Tao <david_xtao@domain.hid>
+Message-ID: <4A938D09.9090502@domain.hid>
+Date: Tue, 25 Aug 2009 09:04:41 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-1004941763-1251176474=:29324"
-Subject: [Xenomai-help] arch/arm/kernel/ipipe.c:421: error: implicit
-	declaration of function '__ipipe_mach_irq_mux_p'
+References: <181804936ABC2349BE503168465576460BE76E09@domain.hid>
+In-Reply-To: <181804936ABC2349BE503168465576460BE76E09@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig45FAFEBC21E8065B3AE8E888"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Shared interrupt usage questions
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,43 +18,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai-help@domain.hid
+To: Steve Deiters <SteveDeiters@domain.hid>
+Cc: xenomai@xenomai.org
 
---0-1004941763-1251176474=:29324
-Content-Type: text/plain; charset=us-ascii
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig45FAFEBC21E8065B3AE8E888
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Steve Deiters wrote:
+> Is there any acceptable method to share interrupts in userspace using
+> the native or other skin?  I am writing a userspace driver for a
+> Freescale mpc5121e PSC serial controller, which has 12 programmable
+> serial controllers which share a single FIFO controller.  The single
+> FIFO controller has only a single IRQ line for all 12 PSCs.  This is
+> further complicated by the fact that I also have to share this IRQ line=
 
-I run into a build error when compiling ipipe.c as follows:
+> with the Linux domain, as it uses it for the console and other devices.=
 
-  CC      arch/arm/kernel/ipipe.o
- arch/arm/kernel/ipipe.c: In function '__ipipe_grab_irq':
-arch/arm/kernel/ipipe.c:421: error: implicit declaration of function '__ipipe_mach_irq_mux_p'
-make[1]: *** [arch/arm/kernel/ipipe.o] Error 1
-make: *** [arch/arm/kernel] Error 2
+>=20
+> I cannot create multiple descriptors for the same IRQ line using
+> rt_intr_create and the I_SHARED flag doesn't seem to be exported to
+> userspace.  Is it valid to create one interrupt object and have multipl=
+e
+> tasks call rt_intr_wait for the same interrupt object?
+> =20
+> As far as sharing with the Linux domain, from the documentation it seem=
+s
+> I would just pass I_PROPAGATE and this should then be transparent to th=
+e
+> Linux domain.  Are there additional concerns I should be aware of with
+> sharing the IRQ between domains?
+>=20
+> I have set this up with a single shared interrupt object and it seems t=
+o
+> function properly.  I just want to make sure I'm not putting myself in =
+a
+> condition where I could get some obscure race condition or have a
+> deadlocked interrupt server task.
+>=20
+> Thanks.
 
-Kernel: 2.6.26
-Adeos patch:  adeos-ipipe-2.6.26-arm-1.12-00.patch
-Xenomai: 2.4.7, and 2.4.8
-Tool chain: Denx 4.2 for arm
-Target CPU: iMX25
+I_PROPAGATE does not help resolving the IRQ sharing problem reliably.
+See
+http://www.xenomai.org/index.php/FAQs#What_can_I_do_if_Xenomai_and_Linux_=
+devices_share_the_same_IRQ.3F
+for more information and browse the mailing list archives.
 
-googling around find no such reports.
-
-Any help is highly appreciated.
-
-Best regards,
-David
+Jan
 
 
+--------------enig45FAFEBC21E8065B3AE8E888
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-      
---0-1004941763-1251176474=:29324
-Content-Type: text/html; charset=us-ascii
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-<html><head><style type="text/css"><!-- DIV {margin:0px;} --></style></head><body><div style="font-family:'times new roman', 'new york', times, serif;font-size:12pt"><div>Hi,</div><div><br></div><div>I run into a build error when compiling ipipe.c as follows:</div><div><br></div><div><div>&nbsp;&nbsp;CC &nbsp; &nbsp; &nbsp;arch/arm/kernel/ipipe.o</div><div>&nbsp;arch/arm/kernel/ipipe.c: In function '__ipipe_grab_irq':</div><div>arch/arm/kernel/ipipe.c:421: error: implicit declaration of function '__ipipe_mach_irq_mux_p'</div><div>make[1]: *** [arch/arm/kernel/ipipe.o] Error 1</div><div>make: *** [arch/arm/kernel] Error 2</div><div><br></div><div>Kernel: 2.6.26</div><div>Adeos patch: &nbsp;adeos-ipipe-2.6.26-arm-1.12-00.patch</div><div>Xenomai: 2.4.7, and 2.4.8</div><div>Tool chain: Denx 4.2 for arm</div><div>Target CPU: iMX25</div><div><br></div><div>googling around find no such reports.</div><div><br></div><div>Any help is highly
- appreciated.</div><div><br></div><div>Best regards,</div><div>David</div><div><br></div></div><div style="position:fixed"></div></div><br>
+iEYEARECAAYFAkqTjQkACgkQniDOoMHTA+k1xQCfVcqJpre1jwa9dJjnu+jptNeS
+BOwAn0k6T2vAMwrQG98DYnEGgbLMKsrI
+=P4sB
+-----END PGP SIGNATURE-----
 
-      </body></html>
---0-1004941763-1251176474=:29324--
+--------------enig45FAFEBC21E8065B3AE8E888--
 
