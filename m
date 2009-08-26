@@ -1,151 +1,77 @@
-Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
-Date: Wed, 16 Sep 2009 01:41:45 +0200
+Message-ID: <4A9566C9.7000805@domain.hid>
+Date: Wed, 26 Aug 2009 18:46:01 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Message-Id: <200909160141.46143.berlemont.hauw@domain.hid>
-Subject: [Xenomai-core] Pull request for head
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <2f7260f50908260246jed2b885q9c67375b19343920@domain.hid>
+In-Reply-To: <2f7260f50908260246jed2b885q9c67375b19343920@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Problem with PXA320 and xenomai 2.4.9
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: =?ISO-8859-1?Q?Imanol_Mart=EDnez?= <imanolmc@domain.hid>
+Cc: xenomai@xenomai.org
 
-The following changes since commit 13d66eb4c8f1648614095d43dd529a3c98fc5278:
-  Philippe Gerum (1):
-        x86: upgrade I-pipe support to 2.6.31-x86-2.4-05
+Imanol Mart=EDnez wrote:
+> Hello all,
+>=20
+> I have installed xenomai 2.4.9 in a linux 2.6.30 kernel. It seems that
+> all the boot is done correctly but when reaching the point to access the
+> nfs filesystem I get the following error:
+>=20
+> <4>[   32.879389] WARNING: at net/sched/sch_generic.c:226
+> dev_watchdog+0x2c0/0x2e0()
+> [   32.879389] WARNING: at net/sched/sch_generic.c:226
+> dev_watchdog+0x2c0/0x2e0()
+> <6>[   33.055929] NETDEV WATCHDOG: eth0 (): transmit timed out
+> [   33.055929] NETDEV WATCHDOG: eth0 (): transmit timed out
+>=20
+> and after some seconds
+>=20
+> <7>[   39.438510] eth0: Tx timed out, lost interrupt? TSR=3D0x1, ISR=3D0x=
+3,
+> t=3D160.
+> <7>[   49.765548] eth0: Tx timed out, lost interrupt? TSR=3D0x1, ISR=3D0x=
+2,
+> t=3D1025.
+> <7>[   51.765562] eth0: Tx timed out, lost interrupt? TSR=3D0x1, ISR=3D0x=
+2,
+> t=3D124
+>=20
+> Any idea or help to solve this problem...
 
-are available in the git repository at:
+Please check that when starting from the configuration where you have
+the bug, if you disable Xenomai (CONFIG_XENOMAI) and the interrupt
+pipeline (CONFIG_IPIPE), the system works.
 
-  ssh+git://git@domain.hid comedi
+If it works, could you try the attached patch?
+diff --git a/arch/arm/mach-pxa/irq.c b/arch/arm/mach-pxa/irq.c
+index f6e0300..f8a25d5 100644
+--- a/arch/arm/mach-pxa/irq.c
++++ b/arch/arm/mach-pxa/irq.c
+@@ -111,7 +111,11 @@ static void __init pxa_init_low_gpio_irq(set_wake_t fn)
 
-Alexis Berlemont (46):
-      Replace comedi_channel_* char-typed fields by unsigned long fields.
-      Update indentation, add flags related macros
-      Add missing flags for instructions (configuration type, counter status 
-bits, IO directions and events types).
-      Fix indentation
-      Fix indentation
-      Add range_unknown declaration
-      Add Comedi PCIMIO drivers set
-      Review the subdevice registration system: get closer from Comedi 
-upstream; Rework indentation in testing drivers; Remove useless drivers 
-management functions (comedi_init_drv(), comedi_cleanup_drv())
-      Replace the first argument type: comedi_cxt_t becomes comedi_dev_t; the 
-context structure is meaningless for the driver developer.
-      Change subdevice related callbacks: replace their first argument: 
-comedi_cxt_t -> comedi_dev_t; the context is meaningless for drivers 
-developers.
-      Apply driver API change on testing drivers
-      Slightly optimize the function comedi_get_chan()
-      Change the second argument of the callback do_cmd() (in subdevice 
-structure), the subdevice index is replaced by the command to apply (which 
-contains the subdevice index).
-      Fix typing mistake in the driver fake.c
-      Review the tracing macros, mimic v4l2's system
-      Add the subdevice registration index into the subdevice structure
-      Simplify the declaration of comedi_get_chan
-      Simplify munge function declaration
-      Remove comedi_get_nbchan(), a specific function which became useless, 
-and add comedi_get_subd(), a more general function which might be helpful at 
-attach / detach time.
-      Remove comedi_get_nbchan(), a specific function which became useless, 
-and add comedi_get_subd(), a more general function which might be helpful at 
-attach / detach time.
-      Review trace macros
-      Update 8255 driver
-      Replace forgotten rtdm_printk() by comedi_err()
-      Review traces
-      Update NI TIO driver according to driver API changes
-      Update NI MIO driver according to driver API changes
-      Update NI PCIMIO driver according to driver API changes and fix a bug at 
-the same time
-      Minor indentation change in fake driver source
-      Fix obvious bug in IRQ registering procedure
-      Fix trivial compilation bug.
-      Remove useless argument in the cancel callback
-      Review comedi_get_cmd's arguments: the subdevice descriptor should be 
-enough.
-      Fix trace type (info -> err)
-      Properly implement debug traces
-      Fix minor initialization bugs
-      Add more checks in chaninfo, rnginfo ioctls
-      Add comedi_presetup_transfer() function to be called before attach 
-procedure; this function was added to prevent IRQ descriptor overwrite.
-      Add a fake range descriptor; Add basic checks in *_info ioctls
-      Add fake range descriptor
-      Add missing types flags into COMEDI_SUBD_TYPES
-      Fix debug trace routines
-      Fix MSeries_PLL_Enable_Bit wrong definition
-      Add RTSI and clock precompilation constants
-      Improve comedi_buf_evt(): remove ugly subdevice guessing based on flags.
-      Apply modifications due to comedi_buf_evt() declaration change
-      Add missing RTSI / clock configuration routines
+        for (irq =3D IRQ_GPIO0; irq <=3D IRQ_GPIO1; irq++) {
+                set_irq_chip(irq, &pxa_low_gpio_chip);
++#ifndef CONFIG_IPIPE
+                set_irq_handler(irq, handle_edge_irq);
++#else /* CONFIG_IPIPE */
++               set_irq_handler(irq, handle_level_irq);
++#endif /* CONFIG_IPIPE */
+                set_irq_flags(irq, IRQF_VALID);
+        }
 
- include/comedi/buffer.h                            |   19 +-
- include/comedi/channel_range.h                     |   25 +-
- include/comedi/command.h                           |   22 +-
- include/comedi/device.h                            |    7 +-
- include/comedi/driver.h                            |   24 +-
- include/comedi/instruction.h                       |   79 +
- include/comedi/os_facilities.h                     |   44 +-
- include/comedi/subdevice.h                         |   50 +-
- include/comedi/transfer.h                          |    1 +
- ksrc/drivers/comedi/Config.in                      |    2 +
- ksrc/drivers/comedi/Kconfig                        |   21 +
- ksrc/drivers/comedi/Makefile                       |    4 +-
- ksrc/drivers/comedi/buffer.c                       |  232 +-
- ksrc/drivers/comedi/command.c                      |   64 +-
- ksrc/drivers/comedi/device.c                       |  117 +-
- ksrc/drivers/comedi/driver.c                       |   39 +-
- ksrc/drivers/comedi/driver_facilities.c            |  112 +-
- ksrc/drivers/comedi/instruction.c                  |   20 +-
- ksrc/drivers/comedi/intel/8255.c                   |  331 ++
- ksrc/drivers/comedi/intel/8255.h                   |   61 +
- ksrc/drivers/comedi/intel/Config.in                |    8 +
- ksrc/drivers/comedi/intel/Kconfig                  |    5 +
- ksrc/drivers/comedi/intel/Makefile                 |   30 +
- ksrc/drivers/comedi/national_instruments/Config.in |    8 +
- ksrc/drivers/comedi/national_instruments/Kconfig   |   20 +
- ksrc/drivers/comedi/national_instruments/Makefile  |   54 +
- .../comedi/national_instruments/mio_common.c       | 5190 
-++++++++++++++++++++
- ksrc/drivers/comedi/national_instruments/mite.c    |  810 +++
- ksrc/drivers/comedi/national_instruments/mite.h    |  435 ++
- ksrc/drivers/comedi/national_instruments/ni_mio.h  |  124 +
- ksrc/drivers/comedi/national_instruments/ni_stc.h  | 1420 ++++++
- ksrc/drivers/comedi/national_instruments/ni_tio.h  | 1184 +++++
- ksrc/drivers/comedi/national_instruments/pcimio.c  | 1591 ++++++
- .../comedi/national_instruments/tio_common.c       | 1982 ++++++++
- ksrc/drivers/comedi/rtdm_interface.c               |   29 +-
- ksrc/drivers/comedi/subdevice.c                    |  175 +-
- ksrc/drivers/comedi/testing/fake.c                 |  388 +-
- ksrc/drivers/comedi/testing/loop.c                 |  341 +-
- ksrc/drivers/comedi/transfer.c                     |  164 +-
- src/drvlib/comedi/descriptor.c                     |   19 +-
- 40 files changed, 14338 insertions(+), 913 deletions(-)
- create mode 100644 ksrc/drivers/comedi/intel/8255.c
- create mode 100644 ksrc/drivers/comedi/intel/8255.h
- create mode 100644 ksrc/drivers/comedi/intel/Config.in
- create mode 100644 ksrc/drivers/comedi/intel/Kconfig
- create mode 100644 ksrc/drivers/comedi/intel/Makefile
- create mode 100644 ksrc/drivers/comedi/national_instruments/Config.in
- create mode 100644 ksrc/drivers/comedi/national_instruments/Kconfig
- create mode 100644 ksrc/drivers/comedi/national_instruments/Makefile
- create mode 100644 ksrc/drivers/comedi/national_instruments/mio_common.c
- create mode 100644 ksrc/drivers/comedi/national_instruments/mite.c
- create mode 100644 ksrc/drivers/comedi/national_instruments/mite.h
- create mode 100644 ksrc/drivers/comedi/national_instruments/ni_mio.h
- create mode 100644 ksrc/drivers/comedi/national_instruments/ni_stc.h
- create mode 100644 ksrc/drivers/comedi/national_instruments/ni_tio.h
- create mode 100644 ksrc/drivers/comedi/national_instruments/pcimio.c
- create mode 100644 ksrc/drivers/comedi/national_instruments/tio_common.c
 
-Alexis.
+
+
+--=20
+                                          Gilles
+
 
