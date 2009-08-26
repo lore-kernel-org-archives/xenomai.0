@@ -1,14 +1,13 @@
-Message-ID: <4A9B8EF4.9050607@domain.hid>
-Date: Mon, 31 Aug 2009 10:51:00 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <EB48F2CADC239E44A8598CC0B0571102E4A9CC@XVS-DCFR-21.europe.corp.altran.com>	<4A979E12.6070508@domain.hid>
-	<EB48F2CADC239E44A8598CC0B0571102E4A9CE@XVS-DCFR-21.europe.corp.altran.com>
-In-Reply-To: <EB48F2CADC239E44A8598CC0B0571102E4A9CE@XVS-DCFR-21.europe.corp.altran.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] RE : Error compiling Xenomai 2.4.8 with I-pipe
- tracer
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1251243937.10269.32.camel@domain.hid>
+References: <1251243937.10269.32.camel@domain.hid>
+Content-Type: text/plain
+Date: Wed, 26 Aug 2009 09:44:23 +0200
+Message-Id: <1251272663.2944.7.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai 2.4.9: Debugger freezes when stepping
+ with gdb/gdbserver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,85 +17,197 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?Berruer_S=E9bastien?= <sebastien.berruer@domain.hid>
-Cc: xenomai@xenomai.org
+To: Andreas Glatz <andreasglatz@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Berruer S=E9bastien wrote:
-> Hello,
->=20
->>> I can't achieve the compilation process when I enable the I-pipe tracer.
->>> I've tried some mixed configurations but it always fails with an error.
->>> I use :
->>>
->>>  - gcc version 4.2.3 (Sourcery G++ Lite 2008q1-126)
->>>  - GNU C Library stable release version 2.5, by Roland McGrath et al.
->>
->>
->> It is a known toolchain issue, you are using a toolchain too recent for
->> this kernel version. This is a mainline bug, there is a fix, but I do
->> not know if it has been merged yet. Though according to the fix, this
->> gnu_mcount stuff comes with gcc 4.4, so I am not sure you use the
->> compiler you think you are using.
->=20
->=20
-> As I wrote, it's the version 2008q1 from CodeSourcery. I only type this
-> command:
-> arm-none-linux-gnueabi-gcc --version
->=20
-> We can suppose that they applied a patch on their own version.
->=20
->=20
->> So, either downgrade your toolchain (I bet 2007q3 works, since it is the
->> one I have been using for a long time), when you want to use the tracer.
->> Or apply the patches which have been published on the linux-arm-kernel
->> mailing list.
->=20
->=20
-> Using the 2007q3 toolchain, I get the same error than in the mailing list
-> thread: "at91sam9263 and user-space support compile fails". The use of th=
-is
-> toolchain doesn't solve the problem for me.
+On Tue, 2009-08-25 at 19:45 -0400, Andreas Glatz wrote:
+> Hi,
+> 
+> As I already told u, we upgraded to the newest Xenomai version (2.4.9)
+> and now we are experiencing problems when trying to step through 
+> the application with gdb/gdbserver which we haven't seen with previous
+> version of Xenomai/Linux kernel. Basically, if I run the whole thing
+> as described below on Xenomai 2.4.8 (with the alignment patch)
+> everything works fine...
+> 
+> Configuration:
+> - MPC8360
+> - Linux 2.6.30
+> - Ipipe 2.7-00
+> - Xenomai 2.4.9
+> - Alignment patch applied (see previous post)
+> 
+> I included some source code with this Email with
+> which I verified that it's not just on our side :p
+> 
+> 
+> 1) I cross-compiled the source with:
+> 
+> <snip>
+> powerpc-linux-gnu-gcc --version
+> powerpc-linux-gnu-gcc (GCC) 4.1.3 20080704 (prerelease) (Debian
+> 4.1.2-25)
+> 
+> powerpc-linux-gnu-gcc -Wall -O0 -g -o main
+> -I/opt/ROX-target/powerpc/usr/include/ -D_GNU_SOURCE -D_REENTRANT
+> -D__XENO__ -L/opt/ROX-target/powerpc//usr/lib -lpthread -lrtdk -lnative
+> main.c
+> </snip>
+> 
+> 
+> 2) I started gdbserver 6.8 on the target with:
+> 
+> <snip>
+> /root/gdbserver --multi :2345 &
+> </snip>
+> 
+> 
+> 3) I started powerpc-linux-gnu-gdb (6.8) on my host:
+> 
+> <snip>
+> powerpc-linux-gnu-gdb -x gdbinit_ROX_MPC83XX_hu
+> GNU gdb 6.8-debian
+> Copyright (C) 2008 Free Software Foundation, Inc.
+> License GPLv3+: GNU GPL version 3 or later
+> <http://gnu.org/licenses/gpl.html>
+> This is free software: you are free to change and redistribute it.
+> There is NO WARRANTY, to the extent permitted by law.  Type "show
+> copying"
+> and "show warranty" for details.
+> This GDB was configured as "--host=i486-linux-gnu
+> --target=powerpc-linux-gnu".
+> Breakpoint 1 at 0x10001c98: file main.c, line 37.
+> (gdb) b main.c:24
+> Breakpoint 2 at 0x10001b68: file main.c, line 24.
+> (gdb) run
+> Starting
+> program: /home/andreasglatz/ROX-RCLib/ROX-RCLibrary/ROX-MPC83XX/out/main 
+> [New Thread 3316]
+> Error while mapping shared library sections:
 
-No, 2007q3 works, without any doubt. What thread exactly are you
-refering to? I can not find it in the last 12 monthes mails. The only
-problem with 2007q3 is if you compile with -fomit-frame-pointer. When
-you are refering to a thread, it is bet to put an URL, like:
+That sounds bad. Could you try bissecting the I-pipe support, namely
+2.6.29.4-powerpc-2.5-01, 2.6.29.4-powerpc-2.6-00 and eventually
+2.6.30-powerpc-2.6-03 if no difference arises between the first two?
+TIA,
 
-https://mail.gna.org/public/xenomai-help/2009-08/msg00076.html
-
->=20
-> When I checked the toolchain I get from CodeSourcery, I saw that it doesn=
-'t
-> come with a cross-compile libc. If the package doesn't provide a complete
-> library, I suppose it doesn't come with header files either.
-
-What are you talking about? Codesourcery toolchain comes with several
-cross-compiled libcs (armv4, armv6) and all the necessary headers. Are
-you sure you have not downloaded the "free-standing" version?
-
->=20
->=20
-> Best regards,
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D
-> | BERRUER S=E9bastien
-> | Trainee at Altran Ouest
-> | Centre d'Affaires Alphasis
-> | 35760 Saint-Gr=E9goire - FRANCE
-> | Tel: 06-76-35-29-55
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D
->=20
->=20
-> ------------------------------------------------------------------------
->=20
+> /usr/lib/librtdk.so.0: No such file or directory.
+> Error while mapping shared library sections:
+> /usr/lib/libnative.so.1: No such file or directory.
+> warning: .dynamic section for "/usr/powerpc-linux-gnu/lib/libgcc_s.so.1"
+> is not at the expected address (wrong library or version mismatch?)
+> [Switching to Thread 3316]
+> 
+> Breakpoint 1, main () at main.c:37
+> 37		mlockall(MCL_CURRENT|MCL_FUTURE);
+> (gdb) c
+> Continuing.
+> [New Thread 3319]
+> [Switching to Thread 3319]
+> 
+> Breakpoint 2, first_task_body (cookie=0x10012390) at main.c:25
+> 25								second_task_body, (void*)n2);
+> (gdb) s
+> rt_task_spawn (task=0x100123a0, name=0x10012398 "second", stksize=0,
+> prio=2, mode=0, 
+>     entry=0x10001b0c <second_task_body>, cookie=0x10012398)
+>     at /opt/ROX-target/powerpc/usr/include/native/task.h:322
+> 322	    int err = rt_task_create(task,name,stksize,prio,mode);
+> (gdb) 
+> 
+> 
+> 
+> ^C^CInterrupted while waiting for the program.
+> Give up (and stop debugging it)? (y or n) ^C^Cy
+> 
+> 
+> y
+> Ignoring packet error, continuing...
+> (gdb) Quit
+> (gdb) 
+> The program is not being run.
+> (gdb)
+> </snip>
+> 
+> 
+> 4) That's how it looks on the remote side, which 
+> is still responsive:
+> 
+> <snip>
+> Remote debugging from host 10.200.19.189
+> Process /tmp/main created; pid = 3194
+> Info: In linux task
+> Info: In linux task
+> Info: In linux task
+> Info: In linux task
+> Info: In linux task
+> input_interrupt, count = 1 c = 36 ('$')
+> input_interrupt, count = 1 c = 63 ('?')
+> input_interrupt, count = 1 c = 35 ('#')
+> input_interrupt, count = 1 c = 51 ('3')
+> input_interrupt, count = 1 c = 102 ('f')
+> input_interrupt, count = 1 c = 36 ('$')
+> input_interrupt, count = 1 c = 63 ('?')
+> 
+> rx5000:~#
+> </snip>
+> 
+> 
+> 5) Additionally, dmesg shows that there was no crash.
+> That's the info I got from /proc/xenomai :
+> 
+> <snip>
+> rx5000:~# cat /proc/xenomai/
+> affinity    faults      heap        irq         registry/   sched
+> timebases   timerstat/
+> apc         hal         interfaces/ latency     rtdm/       stat
+> timer       version
+> rx5000:~# cat /proc/xenomai/faults 
+> TRAP         CPU0
+>   0:            1    (Data or instruction access)
+>   1:            0    (Alignment)
+>   2:            0    (Altivec unavailable)
+>   3:            1    (Program check exception)
+>   4:            0    (Machine check exception)
+>   5:            0    (Unknown)
+>   6:            0    (Instruction breakpoint)
+>   7:            0    (Run mode exception)
+>   8:            0    (Single-step exception)
+>   9:            0    (Non-recoverable exception)
+>  10:            0    (Software emulation)
+>  11:            0    (Debug)
+>  12:            0    (SPE)
+>  13:            0    (Altivec assist)
+>  14:            0    (Cache-locking exception)
+>  15:            0    (Kernel FP unavailable)
+> rx5000:~# cat /proc/xenomai/sched 
+> CPU  PID    PRI      PERIOD     TIMEOUT    TIMEBASE  STAT       NAME
+>   0  0       -1      0          0          master    R          ROOT
+>   0  3196     3      0          0          master    XT         first
+> rx5000:~# cat /proc/xenomai/stat  
+> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+>   0  0      0          1248       0     00500080  100.0  ROOT
+>   0  3196   1          1          0     00301380    0.0  first
+>   0  0      0          267261     0     00000000    0.0  IRQ512: [timer]
+> rx5000:~#
+> </snip>
+> 
+> Well, that's all I got for now... I'll try and recompile the
+> kernel with debugging enabled tomorrow.
+> 
+> Again, everything works fine with 2.6.26, Xeno 2.4.8, ... :S
+> 
+> Andreas
+> 
+> 
+> 
+> 
+> 
 > _______________________________________________
 > Xenomai-help mailing list
 > Xenomai-help@domain.hid
 > https://mail.gna.org/listinfo/xenomai-help
+-- 
+Philippe.
 
-
---=20
-                                          Gilles
 
 
