@@ -1,126 +1,111 @@
-Message-ID: <4AA82D6E.8070909@domain.hid>
-Date: Thu, 10 Sep 2009 00:34:22 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4A9553C7.6060307@domain.hid>
+Date: Wed, 26 Aug 2009 17:24:55 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1252532920.10115.9.camel@domain.hid>
-In-Reply-To: <1252532920.10115.9.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig0262544346171E46D95BD6A9"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] nucleus/pipe.c patch: check for lingering close
-	at xnpipe_connect()
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <abaf774b0908040623w1583f930xda88c125b64394b1@domain.hid>	<4A7BC4DC.70209@domain.hid>	<abaf774b0908190127y4092620cr9c19b65b6434d7b1@domain.hid>	<4A8BBA87.5010305@domain.hid>	<abaf774b0908190229q4d1e0641wfc2d6927a8b34e42@domain.hid>	<4A8BC7BE.5020201@domain.hid>	<abaf774b0908190246j61f0e841s60a1b284ab1bb86@domain.hid>	<4A8D295C.2080402@domain.hid>
+	<abaf774b0908260818k3de24ccah285b460b144a88fc@domain.hid>
+In-Reply-To: <abaf774b0908260818k3de24ccah285b460b144a88fc@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai 2.5-rc2 clock_gettime bad tv_nsec value
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Andreas Glatz <andreasglatz@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Steve <sbxenomai@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0262544346171E46D95BD6A9
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
-
-Andreas Glatz wrote:
+Steve wrote:
+> 2009/8/20 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org
+> <mailto:gilles.chanteperdrix@xenomai.org>>
+> 
+>     Steve wrote:
+>     > On 19/08/2009, Gilles Chanteperdrix
+>     <gilles.chanteperdrix@xenomai.org
+>     <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
+>     >> Steve wrote:
+>     >>> Were you going to delay handling this until later, or were you
+>     hoping
+>     >>> it wouldn't be a problem?  If it's the former then this is not my
+>     >>> number one priority at the moment, so from my perspective I can wait
+>     >>> until the next release candidate / release.
+>     >> To be completely frank, I was not really worried about this
+>     issue, since
+>     >> you had not answered, I thought that maybe the issue was in your test
+>     >> program.
+>     >>
+>     >>> Linux kernel: 2.6.29.4
+>     >>> Xenomai: 2.5-rc2
+>     >>> Adeos: adeos-ipipe-2.6.29.4-x86-2.4-01
+>     >>>
+>     >>> OS: Ubuntu (8.04 with updates)
+>     >>> Hardware:
+>     >>> Intel Core 2 CPU, kernel compiled using processor family
+>     'Pentium-4/etc'
+>     >> compiled for 32 or 64 bits?
+>     >>
+>     >> --
+>     >>                                           Gilles
+>     >>
+>     >>
+>     >
+>     > 32 bit,
+> 
+>     Ok. It turns out that the error is portable, and there is no other way
+>     than to fix the result after the multiplication (trying to round
+>     differently leads to the converse error). So, could you try the
+>     following patch:
+> 
+>     diff --git a/include/asm-generic/bits/timeconv.h
+>     b/include/asm-generic/bits/time
+>     index 79060b3..aa595fe 100644
+>     --- a/include/asm-generic/bits/timeconv.h
+>     +++ b/include/asm-generic/bits/timeconv.h
+>     @@ -60,10 +60,17 @@ long long xnarch_ns_to_tsc(long long ns)
+>      unsigned long long xnarch_divrem_billion(unsigned long long value,
+>                                             unsigned long *rem)
+>      {
+>     -       unsigned long long r;
+>     -       r = xnarch_nodiv_ullimd(value, bln_frac.frac, bln_frac.integ);
+>     -       *rem = value - r * 1000000000;
+>     -       return r;
+>     +       unsigned long long q;
+>     +       unsigned r;
+>     +
+>     +       q = xnarch_nodiv_ullimd(value, bln_frac.frac, bln_frac.integ);
+>     +       r = value - q * 1000000000;
+>     +       if (r >= 1000000000) {
+>     +               ++q;
+>     +               r -= 1000000000;
+>     +       }
+>     +       *rem = r;
+>     +       return q;
+>      }
+>      #else /* !XNARCH_HAVE_NODIV_LLIMD */
+>      long long xnarch_ns_to_tsc(long long ns)
+> 
+> 
+>     --
+>                                                Gilles.
+> 
 > Hi,
->=20
-> Currently, you can destroy RT_PIPE while a non-rt application is
-> connected. If that happens the pipe won't be fully closed but
-> some parts will be leftover for cleanup when closing the RT_PIPE
-> from the non-rt application (lingering close).
->=20
-> For us it would be very convenient if we didn't have to close
-> the non-rt side before restarting the rt-side (currently, the=20
-> rt-side complains bc the non-rt side didn't resolve the lingering
-> close).
->=20
-> Here is a patch where the rt-side resolves the lingering close
-> when connecting to the RT_PIPE. I tested it and it seems to work=20
-> fine. Do you have any concerns?
->=20
-> Andreas
->=20
+> 
+> I have applied the patch and it works - the kernel messages from the
+> previous patch are no longer produced, and my test program works without
+> clock_gettime tv_nsec checks.  Thank you.
+> 
+> Just for completeness, are we sure that the value given by r is never
+> more than 2 billion?  I only ask because the patch only deals with one
+> second worth of overrun.
 
-Whenever possible, please post patches inline (I had to manually copy it
-to allow commenting).
+Yes. The multiplication used to compute q may only be off by one.
 
-> --- pipe.orig.c	2009-09-09 17:23:10.000000000 -0400
-> +++ pipe.c	2009-09-09 17:32:48.000000000 -0400
-> @@ -309,17 +309,35 @@
->  int xnpipe_connect(int minor, struct xnpipe_operations *ops, void *xst=
-ate)
->  {
->  	struct xnpipe_state *state;
-> -	int need_sched =3D 0, ret;
-> +	int need_sched =3D 0, test_lclose =3D 0, ret;
->  	spl_t s;
-> =20
-> -	minor =3D xnpipe_minor_alloc(minor);
-> -	if (minor < 0)
-> +	ret =3D xnpipe_minor_alloc(minor);
-> +	if (ret >=3D 0)
-> +		minor =3D ret;
-> +	else=20
-> +	if(ret =3D=3D -EBUSY)
-> +		test_lclose =3D 1;
-> +	else=20
->  		return minor;
-> =20
->  	state =3D &xnpipe_states[minor];
-> =20
->  	xnlock_get_irqsave(&nklock, s);
-> =20
-> +	if(test_lclose) {
-> +		if(testbits(state->status, XNPIPE_KERN_LCLOSE)) {
-> +			clrbits(state->status, XNPIPE_KERN_LCLOSE);
-> +			xnlock_put_irqrestore(&nklock, s);
-> +			state->ops.release(state->xstate);
+-- 
+                                          Gilles
 
-You cannot bluntly call release() here. You may not run in Linux context
-while that handler demands this. Moreover, releasing the state is the
-job of the NRT user that opened it and obviously still has a hand on it.
-
-(And the locking is imbalanced here, but that is shadowed by the other
-flaws.)
-
-> +		} else {
-> +			xnlock_put_irqrestore(&nklock, s);
-> +			return -EBUSY;
-> +		}
-> +	}
-> +		=09
-> +	xnlock_get_irqsave(&nklock, s);
-> +
->  	ret =3D xnpipe_set_ops(state, ops);
->  	if (ret) {
->  		xnlock_put_irqrestore(&nklock, s);
-
-IIUC, you are looking for a way to keep a pipe open on the NRT side
-while the RT user is disappearing and re-appearing? Not sure if this is
-feasible at all with current xnpipe. But if it is, I think you rather
-have to introduce some kind of reset on the affected xnpipe_state.
-
-Jan
-
-
---------------enig0262544346171E46D95BD6A9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkqoLXUACgkQniDOoMHTA+lrXQCfaoWRynZ6kzCv4qbO7Uxzqh7v
-2s4An0FsWc86lCjWw1rsx5ssFEFE0BYC
-=fud9
------END PGP SIGNATURE-----
-
---------------enig0262544346171E46D95BD6A9--
 
