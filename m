@@ -1,12 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1251817203.4304.12.camel@domain.hid>
-References: <1251817203.4304.12.camel@domain.hid>
-Content-Type: text/plain
-Date: Sat, 12 Sep 2009 00:57:30 +0200
-Message-Id: <1252709850.2820.493.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4A966DB2.8030202@domain.hid>
+Date: Thu, 27 Aug 2009 13:27:46 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <4A96692B.6070704@domain.hid> <4A966AA5.1050406@domain.hid>
+	<4A966CDB.7060800@domain.hid>
+In-Reply-To: <4A966CDB.7060800@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Message queue flush
+Subject: Re: [Xenomai-help] Negative Latency results
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,32 +17,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Christoph Permes <christoph.permes@domain.hid>
+To: Peter Puchwein <peter.puchwein@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Tue, 2009-09-01 at 17:00 +0200, Christoph Permes wrote:
-> Hi,
+Peter Puchwein wrote:
+> Gilles Chanteperdrix wrote:
+>> Peter Puchwein wrote:
+>>> Hi,
+>>>
+>>> what does a negative latency in the latency-test mean?
+>>>
+>>> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
+>>> worst
+>>> RTD|     -56.443|     -54.519|     -33.519|       0|     -57.020|
+>>> -28.208
 > 
-> In my application I need to flush a queue if rt_queue_write returns
-> -ENOMEM to prevent the consumer process from reading old data.
+> Hi Gilles,
 > 
-> Is there any function in the native api that flushes a message queue,
-> like rt_pipe_flush for pipes?
+>> It means that the timer handler ticked before the date it was supposed
+>> to tick. This may have several causes:
+>> - /proc/xenomai/latency is too high, adjust it
+> 
+> where can the latency be configured?
 
-http://git.xenomai.org/?p=xenomai-head.git;a=commit;h=ea4ad49cbf13ba3870351a9d3e301041af4c0279
+in /proc/xenomai/latency
 
 > 
-> Thanks,
-> Christoph
+>> - hardware things stop the hardware counter used for timing, or slow it
+>> down, such as cpufreq, acpi_processor or even the bios on x86.
 > 
+> we've checked all config settings due to ACPI and they seem to be ok.
+
+Please show us your .config and boot logs.
+
 > 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+> We can live with this small negative latency, are there any known 
+> negative effects of the negative latency or can we just leave it.
+
+well 50us early is not exactly "small". A typical latency on x86 is
+under 20us, so -50 is way off. It is probably the sign that the timing
+is broken, so, it should be investigated and resolved IMO.
+
+
 -- 
-Philippe.
-
+                                          Gilles
 
 
