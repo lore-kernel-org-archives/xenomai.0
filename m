@@ -1,13 +1,11 @@
-Message-ID: <4AA6AF80.5090902@domain.hid>
-Date: Tue, 08 Sep 2009 21:24:48 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Thu, 27 Aug 2009 11:53:13 +0300 (EEST)
+From: "Rus V. Brushkoff" <rus@domain.hid>
+Message-ID: <Pine.LNX.4.64.0908271144200.1424@domain.hid>
 MIME-Version: 1.0
-References: <793108.19562.qm@domain.hid>
-	<89DE9B44-67FD-4DFE-BFE6-7445851AABCD@su.sabanciuniv.edu>
-In-Reply-To: <89DE9B44-67FD-4DFE-BFE6-7445851AABCD@su.sabanciuniv.edu>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] RT Task RPC over a POSIX/Native Queue
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+ReSent-To: xenomai@xenomai.org
+ReSent-Message-ID: <Pine.LNX.4.64.0908271158270.4210@domain.hid>
+Subject: [Xenomai-help] Xenomai-head and 2.6.30.5
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,33 +15,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Alphan Ulusoy <alphan@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Alphan Ulusoy wrote:
-> You can always use the Xenomai's _wonderful_ pipe functionality (and  
-> other task communication services as well) to communicate data back  
-> and forth between RT (Xenomai user -or- kernel space tasks) and non-RT  
-> (dedicated linux executables) tasks. This also ensures that your RT  
-> and non-RT domains are clearly separated by design, which is a good  
-> thing IMHO.
 
-Waiting for the non real-time task to post an answer through rt-pipes is
-as dangerous for the real-time task determinism as with message queues
-of any kind.
+ 	Hi,
 
-Besides, a task with low priority which oscillates between first and
-secondary modes does not threaten a primary mode only task determinism
-any more than a non real-time tasks. However, it can communicates with
-the primary mode only task with a lot more IPCs and synchronization
-mechanisms.
+  Have problems with this kernel :
 
-And there is no difference in design between an application separated
-between real-time and non real-time tasks on the one hand, and an
-application separated between real-time and oscillating tasks on the
-other hand. The real gain in design happens when you can split driver
-code from application code.
+  - adeos-ipipe-2.6.30-x86-2.4-05.patch fails on arch/x86/include/asm/irqflags.h
+  - kernel compiled with stack protector panics in __schedule while trying
+ 	to run any latency test. Backtrace is :
 
--- 
-					    Gilles.
+....................................
+panic
+__stack_check_fail
+__schedule
+_spin_unlock_irqrestore
+try_to_wake_up
+__wake_up_common
+__ipipe_restore_root
+__wake_up_sync_key
+schedule
+xnshadow_harden
+xnshadow_wait_barrier
+xnshadow_sys_barrier
+iosyscall_event
+__ipipe_dispatch_event
+iosyscall_event
+__ipipe_syscall_root
+sysenter_past_esp
+....................................
+
+May I need to donwgrade the kernel ?
+
+
+ 		Rus
 
