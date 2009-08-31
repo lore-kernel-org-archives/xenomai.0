@@ -1,13 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1251243937.10269.32.camel@domain.hid>
-References: <1251243937.10269.32.camel@domain.hid>
-Content-Type: text/plain
-Date: Wed, 26 Aug 2009 09:44:23 +0200
-Message-Id: <1251272663.2944.7.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai 2.4.9: Debugger freezes when stepping
- with gdb/gdbserver
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01CA2A22.6142D5D4"
+Date: Mon, 31 Aug 2009 12:04:08 +0200
+Message-ID: <EB48F2CADC239E44A8598CC0B0571102E4A9D0@domain.hid>
+References: <EB48F2CADC239E44A8598CC0B0571102E4A9CC@XVS-DCFR-21.europe.corp.altran.com>	<4A979E12.6070508@domain.hid>
+	<EB48F2CADC239E44A8598CC0B0571102E4A9CE@XVS-DCFR-21.europe.corp.altran.com>
+	<4A9B8EF4.9050607@domain.hid>
+From: =?iso-8859-1?Q?Berruer_S=E9bastien?= <sebastien.berruer@domain.hid>
+Subject: [Xenomai-help] =?iso-8859-1?q?RE=A0=3A__RE_=3A__Error_compiling_X?=
+	=?iso-8859-1?q?enomai_2=2E4=2E8_with_I-pipe_tracer?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,197 +19,162 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Andreas Glatz <andreasglatz@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Tue, 2009-08-25 at 19:45 -0400, Andreas Glatz wrote:
-> Hi,
-> 
-> As I already told u, we upgraded to the newest Xenomai version (2.4.9)
-> and now we are experiencing problems when trying to step through 
-> the application with gdb/gdbserver which we haven't seen with previous
-> version of Xenomai/Linux kernel. Basically, if I run the whole thing
-> as described below on Xenomai 2.4.8 (with the alignment patch)
-> everything works fine...
-> 
-> Configuration:
-> - MPC8360
-> - Linux 2.6.30
-> - Ipipe 2.7-00
-> - Xenomai 2.4.9
-> - Alignment patch applied (see previous post)
-> 
-> I included some source code with this Email with
-> which I verified that it's not just on our side :p
-> 
-> 
-> 1) I cross-compiled the source with:
-> 
-> <snip>
-> powerpc-linux-gnu-gcc --version
-> powerpc-linux-gnu-gcc (GCC) 4.1.3 20080704 (prerelease) (Debian
-> 4.1.2-25)
-> 
-> powerpc-linux-gnu-gcc -Wall -O0 -g -o main
-> -I/opt/ROX-target/powerpc/usr/include/ -D_GNU_SOURCE -D_REENTRANT
-> -D__XENO__ -L/opt/ROX-target/powerpc//usr/lib -lpthread -lrtdk -lnative
-> main.c
-> </snip>
-> 
-> 
-> 2) I started gdbserver 6.8 on the target with:
-> 
-> <snip>
-> /root/gdbserver --multi :2345 &
-> </snip>
-> 
-> 
-> 3) I started powerpc-linux-gnu-gdb (6.8) on my host:
-> 
-> <snip>
-> powerpc-linux-gnu-gdb -x gdbinit_ROX_MPC83XX_hu
-> GNU gdb 6.8-debian
-> Copyright (C) 2008 Free Software Foundation, Inc.
-> License GPLv3+: GNU GPL version 3 or later
-> <http://gnu.org/licenses/gpl.html>
-> This is free software: you are free to change and redistribute it.
-> There is NO WARRANTY, to the extent permitted by law.  Type "show
-> copying"
-> and "show warranty" for details.
-> This GDB was configured as "--host=i486-linux-gnu
-> --target=powerpc-linux-gnu".
-> Breakpoint 1 at 0x10001c98: file main.c, line 37.
-> (gdb) b main.c:24
-> Breakpoint 2 at 0x10001b68: file main.c, line 24.
-> (gdb) run
-> Starting
-> program: /home/andreasglatz/ROX-RCLib/ROX-RCLibrary/ROX-MPC83XX/out/main 
-> [New Thread 3316]
-> Error while mapping shared library sections:
+This is a multi-part message in MIME format.
 
-That sounds bad. Could you try bissecting the I-pipe support, namely
-2.6.29.4-powerpc-2.5-01, 2.6.29.4-powerpc-2.6-00 and eventually
-2.6.30-powerpc-2.6-03 if no difference arises between the first two?
-TIA,
+------_=_NextPart_001_01CA2A22.6142D5D4
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-> /usr/lib/librtdk.so.0: No such file or directory.
-> Error while mapping shared library sections:
-> /usr/lib/libnative.so.1: No such file or directory.
-> warning: .dynamic section for "/usr/powerpc-linux-gnu/lib/libgcc_s.so.1"
-> is not at the expected address (wrong library or version mismatch?)
-> [Switching to Thread 3316]
-> 
-> Breakpoint 1, main () at main.c:37
-> 37		mlockall(MCL_CURRENT|MCL_FUTURE);
-> (gdb) c
-> Continuing.
-> [New Thread 3319]
-> [Switching to Thread 3319]
-> 
-> Breakpoint 2, first_task_body (cookie=0x10012390) at main.c:25
-> 25								second_task_body, (void*)n2);
-> (gdb) s
-> rt_task_spawn (task=0x100123a0, name=0x10012398 "second", stksize=0,
-> prio=2, mode=0, 
->     entry=0x10001b0c <second_task_body>, cookie=0x10012398)
->     at /opt/ROX-target/powerpc/usr/include/native/task.h:322
-> 322	    int err = rt_task_create(task,name,stksize,prio,mode);
-> (gdb) 
-> 
-> 
-> 
-> ^C^CInterrupted while waiting for the program.
-> Give up (and stop debugging it)? (y or n) ^C^Cy
-> 
-> 
-> y
-> Ignoring packet error, continuing...
-> (gdb) Quit
-> (gdb) 
-> The program is not being run.
-> (gdb)
-> </snip>
-> 
-> 
-> 4) That's how it looks on the remote side, which 
-> is still responsive:
-> 
-> <snip>
-> Remote debugging from host 10.200.19.189
-> Process /tmp/main created; pid = 3194
-> Info: In linux task
-> Info: In linux task
-> Info: In linux task
-> Info: In linux task
-> Info: In linux task
-> input_interrupt, count = 1 c = 36 ('$')
-> input_interrupt, count = 1 c = 63 ('?')
-> input_interrupt, count = 1 c = 35 ('#')
-> input_interrupt, count = 1 c = 51 ('3')
-> input_interrupt, count = 1 c = 102 ('f')
-> input_interrupt, count = 1 c = 36 ('$')
-> input_interrupt, count = 1 c = 63 ('?')
-> 
-> rx5000:~#
-> </snip>
-> 
-> 
-> 5) Additionally, dmesg shows that there was no crash.
-> That's the info I got from /proc/xenomai :
-> 
-> <snip>
-> rx5000:~# cat /proc/xenomai/
-> affinity    faults      heap        irq         registry/   sched
-> timebases   timerstat/
-> apc         hal         interfaces/ latency     rtdm/       stat
-> timer       version
-> rx5000:~# cat /proc/xenomai/faults 
-> TRAP         CPU0
->   0:            1    (Data or instruction access)
->   1:            0    (Alignment)
->   2:            0    (Altivec unavailable)
->   3:            1    (Program check exception)
->   4:            0    (Machine check exception)
->   5:            0    (Unknown)
->   6:            0    (Instruction breakpoint)
->   7:            0    (Run mode exception)
->   8:            0    (Single-step exception)
->   9:            0    (Non-recoverable exception)
->  10:            0    (Software emulation)
->  11:            0    (Debug)
->  12:            0    (SPE)
->  13:            0    (Altivec assist)
->  14:            0    (Cache-locking exception)
->  15:            0    (Kernel FP unavailable)
-> rx5000:~# cat /proc/xenomai/sched 
-> CPU  PID    PRI      PERIOD     TIMEOUT    TIMEBASE  STAT       NAME
->   0  0       -1      0          0          master    R          ROOT
->   0  3196     3      0          0          master    XT         first
-> rx5000:~# cat /proc/xenomai/stat  
-> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
->   0  0      0          1248       0     00500080  100.0  ROOT
->   0  3196   1          1          0     00301380    0.0  first
->   0  0      0          267261     0     00000000    0.0  IRQ512: [timer]
-> rx5000:~#
-> </snip>
-> 
-> Well, that's all I got for now... I'll try and recompile the
-> kernel with debugging enabled tomorrow.
-> 
-> Again, everything works fine with 2.6.26, Xeno 2.4.8, ... :S
-> 
-> Andreas
-> 
-> 
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+Hello,
+=20
+>>> I can't achieve the compilation process when I enable the I-pipe =
+tracer.
+>>> I've tried some mixed configurations but it always fails with an =
+error.
+>>
+>> So, either downgrade your toolchain (I bet 2007q3 works, since it is =
+the
+>> one I have been using for a long time), when you want to use the =
+tracer.
+>> Or apply the patches which have been published on the =
+linux-arm-kernel
+>> mailing list.
+> =20
+> Using the 2007q3 toolchain, I get the same error than in the mailing =
+list
+> thread: "at91sam9263 and user-space support compile fails". The use of =
+this
+> toolchain doesn't solve the problem for me.
+
+I'm refering to:
+https://mail.gna.org/public/xenomai-help/2008-05/msg00123.html
+
+This person had the same problem that I have. The use of the 2007q3 =
+toolchain
+solved his problem.
+=20
+>> When I checked the toolchain I get from CodeSourcery, I saw that it =
+doesn't
+>> come with a cross-compile libc. If the package doesn't provide a =
+complete
+>> library, I suppose it doesn't come with header files either.
+>
+> What are you talking about? Codesourcery toolchain comes with several
+> cross-compiled libcs (armv4, armv6) and all the necessary headers. Are
+> you sure you have not downloaded the "free-standing" version?
+
+I downloaded the toolchain from:
+http://www.codesourcery.com/sgpp/lite/arm/portal/release316
+
+It's the free version but it's supposed to have a Newlib library. Why =
+can't I
+find any *.so? I only have *.a files. Must I only statically compile my =
+software?
 
 
+Best regards,
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D
+| BERRUER S=E9bastien
+| Trainee at Altran Ouest
+| Centre d'Affaires Alphasis
+| 35760 Saint-Gr=E9goire - FRANCE
+| Tel: 06-76-35-29-55
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D
+
+
+------_=_NextPart_001_01CA2A22.6142D5D4
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Diso-8859-1">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+6.5.7654.12">
+<TITLE>RE=A0: [Xenomai-help] RE :  Error compiling Xenomai 2.4.8 with =
+I-pipe tracer</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/plain format -->
+
+<P><FONT SIZE=3D2>Hello,<BR>
+<BR>
+&gt;&gt;&gt; I can't achieve the compilation process when I enable the =
+I-pipe tracer.<BR>
+&gt;&gt;&gt; I've tried some mixed configurations but it always fails =
+with an error.<BR>
+&gt;&gt;<BR>
+&gt;&gt; So, either downgrade your toolchain (I bet 2007q3 works, since =
+it is the<BR>
+&gt;&gt; one I have been using for a long time), when you want to use =
+the tracer.<BR>
+&gt;&gt; Or apply the patches which have been published on the =
+linux-arm-kernel<BR>
+&gt;&gt; mailing list.<BR>
+&gt;&nbsp;<BR>
+&gt; Using the 2007q3 toolchain, I get the same error than in the =
+mailing list<BR>
+&gt; thread: &quot;at91sam9263 and user-space support compile =
+fails&quot;. The use of this<BR>
+&gt; toolchain doesn't solve the problem for me.<BR>
+<BR>
+I'm refering to:<BR>
+<A =
+HREF=3D"https://mail.gna.org/public/xenomai-help/2008-05/msg00123.html">h=
+ttps://mail.gna.org/public/xenomai-help/2008-05/msg00123.html</A><BR>
+<BR>
+This person had the same problem that I have. The use of the 2007q3 =
+toolchain<BR>
+solved his problem.<BR>
+<BR>
+&gt;&gt; When I checked the toolchain I get from CodeSourcery, I saw =
+that it doesn't<BR>
+&gt;&gt; come with a cross-compile libc. If the package doesn't provide =
+a complete<BR>
+&gt;&gt; library, I suppose it doesn't come with header files =
+either.<BR>
+&gt;<BR>
+&gt; What are you talking about? Codesourcery toolchain comes with =
+several<BR>
+&gt; cross-compiled libcs (armv4, armv6) and all the necessary headers. =
+Are<BR>
+&gt; you sure you have not downloaded the &quot;free-standing&quot; =
+version?<BR>
+<BR>
+I downloaded the toolchain from:<BR>
+<A =
+HREF=3D"http://www.codesourcery.com/sgpp/lite/arm/portal/release316">http=
+://www.codesourcery.com/sgpp/lite/arm/portal/release316</A><BR>
+<BR>
+It's the free version but it's supposed to have a Newlib library. Why =
+can't I<BR>
+find any *.so? I only have *.a files. Must I only statically compile my =
+software?<BR>
+<BR>
+<BR>
+Best regards,<BR>
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D<BR>
+| BERRUER S=E9bastien<BR>
+| Trainee at Altran Ouest<BR>
+| Centre d'Affaires Alphasis<BR>
+| 35760 Saint-Gr=E9goire - FRANCE<BR>
+| Tel: 06-76-35-29-55<BR>
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D<BR>
+<BR>
+</FONT>
+</P>
+
+</BODY>
+</HTML>
+------_=_NextPart_001_01CA2A22.6142D5D4--
 
