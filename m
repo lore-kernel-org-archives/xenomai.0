@@ -1,16 +1,14 @@
-From: Christoph Permes <christoph.permes@domain.hid>
-In-Reply-To: <4A979E68.1040805@domain.hid>
-References: <1251273701.4345.9.camel@domain.hid>
-	<4A94EE84.5040101@domain.hid> <1251354286.4321.19.camel@domain.hid>
-	<4A9642D3.5040304@domain.hid> <1251374443.4321.40.camel@domain.hid>
-	<4A978959.5060604@domain.hid> <1251448708.4365.11.camel@domain.hid>
-	<4A979E68.1040805@domain.hid>
-Date: Mon, 31 Aug 2009 10:09:56 +0200
-Message-Id: <1251706196.4308.32.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain
-Subject: Re: [Xenomai-help] Segmentation fault in rt_printf print thread
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01CA2A14.E4A45364"
+Date: Mon, 31 Aug 2009 10:27:35 +0200
+Message-ID: <EB48F2CADC239E44A8598CC0B0571102E4A9CE@XVS-DCFR-21.europe.corp.altran.com>
+References: <EB48F2CADC239E44A8598CC0B0571102E4A9CC@XVS-DCFR-21.europe.corp.altran.com>
+	<4A979E12.6070508@domain.hid>
+From: =?iso-8859-1?Q?Berruer_S=E9bastien?= <sebastien.berruer@domain.hid>
+Subject: [Xenomai-help] =?iso-8859-1?q?RE=A0=3A__Error_compiling_Xenomai_2?=
+	=?iso-8859-1?q?=2E4=2E8_with_I-pipe_tracer?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,113 +18,160 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Am Freitag, den 28.08.2009, 11:07 +0200 schrieb Jan Kiszka:
-> Christoph Permes wrote:
-> 
-> Untested stuff as I should already be on the road. Here is another try,
-> but please don't expect replies from me over this weekend.
-> 
-> Jan
-> 
-> diff --git a/src/rtdk/rt_print.c b/src/rtdk/rt_print.c
-> index 0615247..06dabc1 100644
-> --- a/src/rtdk/rt_print.c
-> +++ b/src/rtdk/rt_print.c
-> @@ -16,6 +16,7 @@
->   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
->   */
->  
-> +#include <assert.h>
->  #include <errno.h>
->  #include <inttypes.h>
->  #include <limits.h>
-> @@ -37,7 +38,10 @@
->  
->  #define RT_PRINT_LINE_BREAK		256
->  
-> +#define RT_PRINT_HEAD_MAGIC		0xDEADBEAF
-> +
->  struct entry_head {
-> +	uint32_t magic;
->  	FILE *dest;
->  	uint32_t seq_no;
->  	char text[1];
-> @@ -103,6 +107,10 @@ int rt_vfprintf(FILE *stream, const char *format, va_list args)
->  	read_pos = buffer->read_pos;
->  	xnarch_read_memory_barrier();
->  
-> +	assert(write_pos == read_pos ||
-> +	       ((struct entry_head *)buffer->ring + buffer->read_pos)->magic ==
-> +	       RT_PRINT_HEAD_MAGIC);
-> +
->  	/* Is our write limit the end of the ring buffer? */
->  	if (write_pos >= read_pos) {
->  		/* Keep a savety margin to the end for at least an empty entry */
-> @@ -114,6 +122,7 @@ int rt_vfprintf(FILE *stream, const char *format, va_list args)
->  		if (len == 0 && read_pos > sizeof(struct entry_head)) {
->  			/* Write out empty entry */
->  			head = buffer->ring + write_pos;
-> +			head->magic = RT_PRINT_HEAD_MAGIC;
->  			head->seq_no = seq_no;
->  			head->text[0] = 0;
->  
-> @@ -136,6 +145,10 @@ int rt_vfprintf(FILE *stream, const char *format, va_list args)
->  
->  	res = vsnprintf(head->text, len, format, args);
->  
-> +	assert(write_pos == read_pos ||
-> +	       ((struct entry_head *)buffer->ring + buffer->read_pos)->magic ==
-> +	       RT_PRINT_HEAD_MAGIC);
-> +
->  	if (res < len) {
->  		/* Text was written completely, res contains its length */
->  		len = res;
-> @@ -147,6 +160,7 @@ int rt_vfprintf(FILE *stream, const char *format, va_list args)
->  
->  	/* If we were able to write some text, finalise the entry */
->  	if (len > 0) {
-> +		head->magic = RT_PRINT_HEAD_MAGIC;
->  		head->seq_no = ++seq_no;
->  		head->dest = stream;
->  
-> @@ -159,6 +173,7 @@ int rt_vfprintf(FILE *stream, const char *format, va_list args)
->  	    read_pos <= write_pos && read_pos > buffer->size - write_pos) {
->  		/* An empty entry marks the wrap-around */
->  		head = buffer->ring + write_pos;
-> +		head->magic = RT_PRINT_HEAD_MAGIC;
->  		head->seq_no = seq_no;
->  		head->text[0] = 0;
->  
-> @@ -382,6 +397,8 @@ static void print_buffers(void)
->  		head = buffer->ring + read_pos;
->  		len = strlen(head->text);
->  
-> +		assert(head->magic == RT_PRINT_HEAD_MAGIC);
-> +
->  		if (len) {
->  			/* Print out non-empty entry and proceed */
->  			fprintf(head->dest, "%s", head->text);
-> 
+This is a multi-part message in MIME format.
 
-I ran some tests over the weekend and got two more crashs. In both cases
-the assert statement in print_buffers() failed.
+------_=_NextPart_001_01CA2A14.E4A45364
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-After taking a closer look on the core file from last week and the new
-ones I found out that parts of the printed text were overwritten with
-one or more zero characters.
-As a result the strlen() statement in print_buffers() does not return
-the complete text length and the next try to read data from the buffer
-fails as the read position is not correct anymore.
+Hello,
 
-As a first workaround I will try to store the length returned by
-vsnprintf() in the entry_head struct and use this value for incrementing
-the read position to avoid the SEGV.
-
-Christoph
+>> I can't achieve the compilation process when I enable the I-pipe =
+tracer.
+>> I've tried some mixed configurations but it always fails with an =
+error.
+>> I use :
+>>=20
+>>  - gcc version 4.2.3 (Sourcery G++ Lite 2008q1-126)
+>>  - GNU C Library stable release version 2.5, by Roland McGrath et al.
+>=20
+>
+> It is a known toolchain issue, you are using a toolchain too recent =
+for
+> this kernel version. This is a mainline bug, there is a fix, but I do
+> not know if it has been merged yet. Though according to the fix, this
+> gnu_mcount stuff comes with gcc 4.4, so I am not sure you use the
+> compiler you think you are using.
 
 
+As I wrote, it's the version 2008q1 from CodeSourcery. I only type this
+command:
+arm-none-linux-gnueabi-gcc --version
 
+We can suppose that they applied a patch on their own version.
+
+
+> So, either downgrade your toolchain (I bet 2007q3 works, since it is =
+the
+> one I have been using for a long time), when you want to use the =
+tracer.
+> Or apply the patches which have been published on the linux-arm-kernel
+> mailing list.
+
+
+Using the 2007q3 toolchain, I get the same error than in the mailing =
+list
+thread: "at91sam9263 and user-space support compile fails". The use of =
+this
+toolchain doesn't solve the problem for me.
+
+When I checked the toolchain I get from CodeSourcery, I saw that it =
+doesn't
+come with a cross-compile libc. If the package doesn't provide a =
+complete
+library, I suppose it doesn't come with header files either.
+
+
+Best regards,
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D
+| BERRUER S=E9bastien
+| Trainee at Altran Ouest
+| Centre d'Affaires Alphasis
+| 35760 Saint-Gr=E9goire - FRANCE
+| Tel: 06-76-35-29-55
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D
+
+------_=_NextPart_001_01CA2A14.E4A45364
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Diso-8859-1">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+6.5.7654.12">
+<TITLE>RE=A0: [Xenomai-help] Error compiling Xenomai 2.4.8 with I-pipe =
+tracer</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/plain format -->
+
+<P><FONT SIZE=3D2>Hello,<BR>
+<BR>
+&gt;&gt; I can't achieve the compilation process when I enable the =
+I-pipe tracer.<BR>
+&gt;&gt; I've tried some mixed configurations but it always fails with =
+an error.<BR>
+&gt;&gt; I use :<BR>
+&gt;&gt;<BR>
+&gt;&gt;&nbsp; - gcc version 4.2.3 (Sourcery G++ Lite 2008q1-126)<BR>
+&gt;&gt;&nbsp; - GNU C Library stable release version 2.5, by Roland =
+McGrath et al.<BR>
+&gt;<BR>
+&gt;<BR>
+&gt; It is a known toolchain issue, you are using a toolchain too recent =
+for<BR>
+&gt; this kernel version. This is a mainline bug, there is a fix, but I =
+do<BR>
+&gt; not know if it has been merged yet. Though according to the fix, =
+this<BR>
+&gt; gnu_mcount stuff comes with gcc 4.4, so I am not sure you use =
+the<BR>
+&gt; compiler you think you are using.<BR>
+<BR>
+<BR>
+As I wrote, it's the version 2008q1 from CodeSourcery. I only type =
+this<BR>
+command:<BR>
+arm-none-linux-gnueabi-gcc --version<BR>
+<BR>
+We can suppose that they applied a patch on their own version.<BR>
+<BR>
+<BR>
+&gt; So, either downgrade your toolchain (I bet 2007q3 works, since it =
+is the<BR>
+&gt; one I have been using for a long time), when you want to use the =
+tracer.<BR>
+&gt; Or apply the patches which have been published on the =
+linux-arm-kernel<BR>
+&gt; mailing list.<BR>
+<BR>
+<BR>
+Using the 2007q3 toolchain, I get the same error than in the mailing =
+list<BR>
+thread: &quot;at91sam9263 and user-space support compile fails&quot;. =
+The use of this<BR>
+toolchain doesn't solve the problem for me.<BR>
+<BR>
+When I checked the toolchain I get from CodeSourcery, I saw that it =
+doesn't<BR>
+come with a cross-compile libc. If the package doesn't provide a =
+complete<BR>
+library, I suppose it doesn't come with header files either.<BR>
+<BR>
+<BR>
+Best regards,<BR>
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D<BR>
+| BERRUER S=E9bastien<BR>
+| Trainee at Altran Ouest<BR>
+| Centre d'Affaires Alphasis<BR>
+| 35760 Saint-Gr=E9goire - FRANCE<BR>
+| Tel: 06-76-35-29-55<BR>
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D<BR>
+</FONT>
+</P>
+
+</BODY>
+</HTML>
+------_=_NextPart_001_01CA2A14.E4A45364--
 
