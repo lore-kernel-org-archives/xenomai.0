@@ -1,43 +1,44 @@
-From: Christoph Permes <christoph.permes@domain.hid>
-Date: Wed, 26 Aug 2009 10:01:41 +0200
-Message-Id: <1251273701.4345.9.camel@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
+Content-Type: text/plain
+Date: Tue, 01 Sep 2009 10:48:58 +0200
+Message-Id: <1251794938.3205.20.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain
-Subject: [Xenomai-help] Segmentation fault in rt_printf print thread
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] Xenomai v2.4.9.1
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi, 
 
-I'm using rt_printf for debug output. When running tests for 20 hours or
-longer, sometimes I get a segmentation fault.
+We had a couple of brown paper bag issues in v2.4.9, particularly in the
+interrupt pipeline for the ARM port, but also a time conversion bug
+which basically affects any architecture with high frequency CPUs
+(x86-ers, this one is for you).
 
-The backtrace shows:
-#0  0xb7d008d8 in fputs () from /lib/libc.so.6
-#1  0xb7f26f61 in print_buffers () from /usr/xenomai/lib/librtdk.so.0
-#2  0xb7f26fb3 in printer_loop () from /usr/xenomai/lib/librtdk.so.0
-#3  0xb7c92f3b in start_thread () from /lib/libpthread.so.0
-#4  0xb7d6fb6e in clone () from /lib/libc.so.6
+So, here is v2.4.9.1 to fix those bugs:
+http://download.gna.org/xenomai/stable/xenomai-2.4.9.1.tar.bz2
 
-It seems to me that there is a bug in the print thread.
+Gilles Chanteperdrix (3):
+      arm: map all heaps with XNARCH_SHARED_HEAP_FLAGS to avoid cache aliasing issues
+      timeconv: fix xnarch_ns_to_tsc when using llmulshft
+      arm: disable Xscale fpu switching code
 
-My program runs on x86 using the following software versions:
-Kernel 2.6.29.5
-Xenomai 2.4.9
-I-Pipe patch: adeos-ipipe-2.6.29.5-x86-2.4-02.patch
+Philippe Gerum (7):
+      arm: upgrade I-pipe support to 2.6.30-arm-1.14-01
+      arm: upgrade I-pipe support to 2.6.30-arm-1.14-02, 2.6.28-arm-1.12-05, 2.6.29-arm-1.13-03
+      build: update version stamp
+      native: fix (harmless) uninitialized reference
+      doc: regenerate documentation
+      powerpc: upgrade legacy I-pipe support to 2.6.20-powerpc-1.9-02
 
-
-Thanks, 
-Christoph
+-- 
+Philippe.
 
 
 
