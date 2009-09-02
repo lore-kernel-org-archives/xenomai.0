@@ -1,7 +1,7 @@
-Date: Wed, 2 Sep 2009 15:00:11 +0300 (EEST)
+Date: Wed, 2 Sep 2009 15:04:42 +0300 (EEST)
 From: "Rus V. Brushkoff" <rus@domain.hid>
-In-Reply-To: <4A9E5917.8060200@domain.hid>
-Message-ID: <Pine.LNX.4.64.0909021441160.22914@domain.hid>
+In-Reply-To: <1251892483.3205.143.camel@domain.hid>
+Message-ID: <Pine.LNX.4.64.0909021501340.22914@domain.hid>
 References: <Pine.LNX.4.64.0909021159100.22914@domain.hid>
 	<4A9E3AAB.2070404@domain.hid>
 	<Pine.LNX.4.64.0909021233110.22914@domain.hid>
@@ -9,7 +9,7 @@ References: <Pine.LNX.4.64.0909021159100.22914@domain.hid>
 	<Pine.LNX.4.64.0909021359060.22914@domain.hid>
 	<4A9E5424.9070500@domain.hid>
 	<Pine.LNX.4.64.0909021418300.22914@domain.hid>
-	<4A9E5917.8060200@domain.hid>
+	<1251892483.3205.143.camel@domain.hid>
 MIME-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Subject: Re: [Xenomai-help] Deprecated kernel system calls in xenomai-head
@@ -23,11 +23,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai help <xenomai@xenomai.org>
 
-On Wed, 2 Sep 2009, Gilles Chanteperdrix wrote:
+On Wed, 2 Sep 2009, Philippe Gerum wrote:
 
+:> :> :> Can you show this paradigm on pipe.c exmaple from Xenomai docs ?
+:> :> :We are talking about drivers, then just design your driver as you would
+:> :> :design a Linux driver.
 :> :> :For instance, you would implement the "write" method of the driver to
 :> :> :pass data between the user-space task and the driver.
 :> :>  This is RT driver not simply Linux driver. The previous rt_pipe_read() 
@@ -42,32 +45,39 @@ On Wed, 2 Sep 2009, Gilles Chanteperdrix wrote:
 :> paradigm need to write the intermediate user-space RT task proxy - than 
 :> it is wrong. Simply because its adds unneeded complexity to developing RT 
 :> kernel hardware drivers.
+:The pipe support is indeed one of a kind, since it shares semantics
+:between RT and non-RT endpoints, and it should be possible to open the
+:non-RT side from programs which were _not_ linked against any Xenomai
+:library. E.g. cat /dev/rtp22 should get any data sent from a RT endpoint
+:bound to the same pseudo-device.
+
+ Yes, this is one of the issues - most of non-rt apps need to be relinked 
+with Xenomai and later supported, that can be impossible in the most 
+cases.
+
+:We will solve this issue by having a RTDM-based driver, implementing the
+:services of the current RT_PIPE support, eventually taping into the
+:nucleus core. A kernel-space RTDM driver will be able to send/recv data
+:via the standard inter-driver RTDM interface - this is what your device
+:driver should do. A user-space RT application will have access to a
+:socket-type service access point for sending/receiving packets;
+:semantics close to the AF_UNIX protocol family should be used there. A
+:non-RT application will still be able to open its endpoint via the usual
+:open(2) interface, i.e. such as cat /dev/rtpX works as before.
 :
-:You do not need a proxy. What you need to do is to create the previous
-:non real-time task as a Xenomai task, using rt_task_create, or the
-:Xenomai posix skin's pthread_create. Then you would change this task to
-:use RTDM's write instead of write. That is all. Everything else stays
-:the same. And as an additonal benefit, you have one less task running if
+:This work is scheduled for Xenomai v3; v2.5.x still provides the
+:kernel-based APIs available in earlier releases, and as such it is a bit
+:early for changing your code. This is also why there is no migration
+:cookbook from v2 -> v3 yet.
+:The "deprecated" messages are an early warning so that people notice
+:that things will change in the next major release, and that it may be a
+:good idea to reconsider any decision to build _applications_ in
+:kernel-space; you can still disable those messages via the
+:CONFIG_XENO_OPT_NOWARN_DEPRECATED switch if they get on your nerves.
 
- No, this means I need to change the previous non-rt user-space software 
-to RT one. Problem is that exists some projects that can't be simply 
-changed in this way, for example we use asterisk as non-rt user space 
-process - it changing means creating and supporting previously unneeded 
-patches.
-
-:Separating clearly the driver code running in kernel-space from the
-:application code running in user-space is clear win. It leads to a code
-:easier to maintain, and avoid taking risks of running too many code in
-:the unprotected kernel-space.
-
- I do not see the win in decreasing number of the API functions. So I see 
-the problem with porting Xenomai-2.4 apps, written by provided pipe.c 
-example from the docs, to Xenomai-2.5 and later. Next - I do not 
-understand why the previous model lets the _developer_ itself decide 
-which of the application tasks will be running in kernel and which will 
-be running in user space. The current model left the people without any 
-choice. So the current model itself decided instead of developer what is 
-better - I think this is wrong.
+ I think that marking some feature as deprecated need to be done _after_ 
+the ready up new solution exists, including examples in Xenomai docs. Now 
+Xenomai users are facing with problem that has no solution yet.
 
 
 		Rus
