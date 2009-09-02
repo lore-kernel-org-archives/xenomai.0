@@ -1,10 +1,10 @@
-Message-ID: <4A9D9A1E.8060203@domain.hid>
-Date: Tue, 01 Sep 2009 17:03:10 -0500
-From: Nikhil Gupta <gupta.nikhil83@domain.hid>
+Message-ID: <4A9E4022.7050705@domain.hid>
+Date: Wed, 02 Sep 2009 10:51:30 +0100
+From: dev.chmeie@domain.hid
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Xenomai for MPC8572DS
+Subject: [Xenomai-help] Any example freezes immediately
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,24 +16,25 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi all,
+Hi,
+My current state is as follows:
+-2.6.30.5 with ipipe running, apm + cpufreq disabled
+-xenomai userland compiled and installed
 
-This is my first post to the list. I've been trying to compile the Linux 
-kernel with the Xenomai patches for the Freescale MPC8572DS system. I am 
-using ELDK version 4.2 for ppc_85xx Build 2008-04-01. But during boot 
-the system hangs with the following message:
+When I try to run any of the examples I get 2 nice blinking leds on the 
+keyboard
+and additionally a kernel stack corruption message and a freezed pc.
 
-audit: initializing netlink socket (disabled)
-type=2000 audit(0.496:1): initialized
+What could be wrong? Maybe any other kernel options I missed?
 
-Specifically, I've tried the following versions from the DENX repositories:
+By the way, I get some index out of bounds warnings when compiling the 
+kernel.
+When I recall it correctly it was in a file asm/include/io.h or similar 
+of xenomai).
+But I still hadn't enough time to look into it.
 
-ipipe-2.6.git: 		ipipe-2.6.28, ipipe-2.6.30-powerpc-2.7-00,
-linux-2.6-denx.git:	DENX-v2.6.27.30, DENX-v2.6.29.4
+Thanks
 
-Without the scripts/prepare-kernel.sh step, the kernel boots fine. Can 
-someone please help me with this issue?
+Chris
 
-Regards,
-Nikhil Gupta.
 
