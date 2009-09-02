@@ -1,11 +1,11 @@
-Message-ID: <4A9E3AAB.2070404@domain.hid>
-Date: Wed, 02 Sep 2009 11:28:11 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+Date: Wed, 2 Sep 2009 12:32:41 +0300 (EEST)
+From: "Rus V. Brushkoff" <rus@domain.hid>
+In-Reply-To: <4A9E3AAB.2070404@domain.hid>
+Message-ID: <Pine.LNX.4.64.0909021231510.22914@domain.hid>
 References: <Pine.LNX.4.64.0909021159100.22914@domain.hid>
-In-Reply-To: <Pine.LNX.4.64.0909021159100.22914@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+	<4A9E3AAB.2070404@domain.hid>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Subject: Re: [Xenomai-help] Deprecated kernel system calls in xenomai-head
  and new application development paradigm
 List-Id: Help regarding installation and common use of Xenomai
@@ -17,16 +17,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Rus V. Brushkoff" <rus@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Rus V. Brushkoff wrote:
->   Now as rt_task_create/rt_task_start are deprecated, can anybody 
-> briefly describe how such driver need to be developed ?
+On Wed, 2 Sep 2009, Gilles Chanteperdrix wrote:
 
-Using the RTDM skin.
+:Rus V. Brushkoff wrote:
+:>   Now as rt_task_create/rt_task_start are deprecated, can anybody 
+:> briefly describe how such driver need to be developed ?
+:
+:Using the RTDM skin.
 
--- 
-                                          Gilles
+ You mean replace pair of rt_task_create/rt_task_start with 
+rtdm_task_init() call ?
 
+
+		Rus
 
