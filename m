@@ -1,60 +1,83 @@
-Message-ID: <4A9E8437.80900@domain.hid>
-Date: Wed, 02 Sep 2009 16:41:59 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Wolfgang Denk <wd@domain.hid>
 MIME-Version: 1.0
-References: <Pine.LNX.4.64.0909021159100.22914@domain.hid>	<4A9E3AAB.2070404@domain.hid>	<Pine.LNX.4.64.0909021233110.22914@domain.hid>	<4A9E4D84.20602@domain.hid>	<Pine.LNX.4.64.0909021359060.22914@domain.hid>	<4A9E5424.9070500@domain.hid>	<Pine.LNX.4.64.0909021418300.22914@domain.hid>	<4A9E5917.8060200@domain.hid>	<Pine.LNX.4.64.0909021441160.22914@domain.hid>	<1251895278.3205.190.camel@domain.hid>
-	<Pine.LNX.4.64.0909021611170.22914@domain.hid>
-In-Reply-To: <Pine.LNX.4.64.0909021611170.22914@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Deprecated kernel system calls in xenomai-head
- and new application development paradigm
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-type: text/plain; charset=ISO-8859-1
+Content-transfer-encoding: 8bit
+Date: Thu, 03 Sep 2009 12:58:07 +0200
+Message-Id: <20090903105807.06881832E8DE@gemini.denx.de>
+Subject: [Xenomai-core] RTLWS11 / XUM-2009, 28-30 September,
+	TU-Dresden - Call for Participation
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "Rus V. Brushkoff" <rus@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Xenomai Help <xenomai@xenomai.org>, Xenomai Core <xenomai@xenomai.org>
+Cc: Nicholas Mc Guire <mcguire@domain.hid>
 
-Rus V. Brushkoff wrote:
-> On Wed, 2 Sep 2009, Philippe Gerum wrote:
-> 
-> :>  Next - I do not 
-> :> understand why the previous model lets the _developer_ itself decide 
-> :> which of the application tasks will be running in kernel and which will 
-> :> be running in user space. The current model left the people without any 
-> :> choice. So the current model itself decided instead of developer what is 
-> :> better - I think this is wrong.
-> :
-> :With that kind of reasoning, you would keep on coding your RT
-> :application fully in kernel space, but we made some progress since 1997,
-> :fortunately.
-> 
->  Sorry, but device drivers for hardware that need RT processing can't be 
-> written in user space. Dealing with interrupts, PCI, DMA, I/O ports can 
-> be done only in kernel space. So it is not possible to decide at the 
-> Xenomai architect level wich driver task are optimal to run in which mode 
-> - it will depends from the particular development problem area.
->  So I think that forcing people to write the RT tasks only in user space 
-> will make unneded latencies, which will be inserted by data passing 
-> between user and kernel domains.
->  Next: the traditional and clean Unix programming concept suppose that 
-> user space applications are simple and operate on the files/pipes that 
-> are attached to kernel drivers. It will be better to leave this concept 
-> live as it proved its architect efficiency.
 
-You misunderstand us. We tell you that you should develop drivers in
-kernel-space, using the RTDM skin. The RTDM skin is made to resemble the
-Linux driver model, so that it will make your drivers easily portable to
-vanilla linux.
 
+                           CALL FOR PARTICIPATION
+ 
+                     The 11th Real Time Linux Workshop
+
+		         Xenomai User Meeting 2009
+
+ 
+                           September 28 to 30, 2009
+                        Technische Universitaet Dresden
+                         Faculty of Computer Science
+                      Chair of Operating Systems (TUDOS)
+                               Dresden, Germany
+ 
+      http://www.realtimelinuxfoundation.org/events/rtlws-2009/ws.html
+ 
+ 
+  The 11th Real Time Linux Workshop, held at the Technische Universitaet 
+  Dresden, Germany, from September 28-30 this year will bring together many 
+  of the Real Time Linux developers from all of the Real Time Linux Variants.
+ 
+  This workshop will feature a RT-Preempt track held by key RT-preempt 
+  developers, a broad spectrum of presentation on existing Real Time Linux
+  variants as well as applications utilizing Embedded and Real Time Linux
+ 
+  Further we plan hands-on sessions on key Real Time Linux systems.
+ 
+ 
+ RTLWS Agenda: http://www.osadl.org/RTLWS-Agenda.rtlws11-agenda.0.html
+ 
+ Registration: http://www.osadl.org/RTLWS11-Registration.form.0.html
+ 
+ Hotel Infos: http://www.osadl.org/RTLWS-Hotels.rtlws11-hotels.0.html
+
+			-- Nicholas Mc Guire <mcguire@domain.hid>
+ 
+
+
+ At the same time the Xenomai User Meeting 2009 will be held in close
+  proximity to RTLWS11 - details can be found at:
+
+ General Infos: http://www.denx.de/en/News/XenomaiUserMeeting2009
+
+ XUM-2009 Agenda: http://www.denx.de/en/view/News/XenomaiUserMeeting2009#Agenda
+
+ XUM-2009 Abstracts: http://www.denx.de/en-edit/News/Xum2009Abstracts
+
+
+
+
+
+
+
+Best regards,
+
+Wolfgang Denk
 
 -- 
-                                          Gilles
-
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
+Computers are not intelligent.  They only think they are.
 
