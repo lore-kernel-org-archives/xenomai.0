@@ -1,11 +1,14 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01CA2CA5.423BE4AE"
-Date: Thu, 3 Sep 2009 16:46:02 +0200
-Message-ID: <0B45E93C5FF65740AEAE690BF3848B7AD386E6@domain.hid>
-From: "Fillod Stephane" <stephane.fillod@domain.hid>
-Subject: Re: [Xenomai-help] Differences in RT_HEAP_INFO struct between
-	Xenomai2.4/2.5
+From: Andreas Glatz <andreasglatz@domain.hid>
+In-Reply-To: <1251272663.2944.7.camel@domain.hid>
+References: <1251243937.10269.32.camel@domain.hid>
+	<1251272663.2944.7.camel@domain.hid>
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+Date: Thu, 03 Sep 2009 16:44:17 -0400
+Message-Id: <1252010657.27175.52.camel@domain.hid>
+Mime-Version: 1.0
+Subject: Re: [Xenomai-help] Xenomai 2.4.9: Debugger freezes when
+	stepping	with gdb/gdbserver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,59 +18,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Rus V. Brushkoff" <rus@domain.hid>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
+Hi Philippe,
 
-------_=_NextPart_001_01CA2CA5.423BE4AE
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+On Wed, 2009-08-26 at 09:44 +0200, Philippe Gerum wrote:
+> On Tue, 2009-08-25 at 19:45 -0400, Andreas Glatz wrote:
+> > Hi,
+> > 
+> > As I already told u, we upgraded to the newest Xenomai version (2.4.9)
+> > and now we are experiencing problems when trying to step through 
+> > the application with gdb/gdbserver which we haven't seen with previous
+> > version of Xenomai/Linux kernel. Basically, if I run the whole thing
+> > as described below on Xenomai 2.4.8 (with the alignment patch)
+> > everything works fine...
+> > 
+> > Configuration:
+> > - MPC8360
+> > - Linux 2.6.30
+> > - Ipipe 2.7-00
+> > - Xenomai 2.4.9
+> > - Alignment patch applied (see previous post)
+> > 
 
-Rus V. Brushkoff wrote:
->   Trying to backport Xenomai app from 2.5 to 2.4 noticed that=20
-> rt_heap_info struct has no phys_addr field. Is this interface
-difference=20
-> supposed to exist ?
+> > <snip>
+> > powerpc-linux-gnu-gdb -x gdbinit_ROX_MPC83XX_hu
+> > GNU gdb 6.8-debian
+> > Copyright (C) 2008 Free Software Foundation, Inc.
+> > License GPLv3+: GNU GPL version 3 or later
+> > <http://gnu.org/licenses/gpl.html>
+> > This is free software: you are free to change and redistribute it.
+> > There is NO WARRANTY, to the extent permitted by law.  Type "show
+> > copying"
+> > and "show warranty" for details.
+> > This GDB was configured as "--host=i486-linux-gnu
+> > --target=powerpc-linux-gnu".
+> > Breakpoint 1 at 0x10001c98: file main.c, line 37.
+> > (gdb) b main.c:24
+> > Breakpoint 2 at 0x10001b68: file main.c, line 24.
+> > (gdb) run
+> > Starting
+> > program: /home/andreasglatz/ROX-RCLib/ROX-RCLibrary/ROX-MPC83XX/out/main 
+> > [New Thread 3316]
+> > Error while mapping shared library sections:
+> 
+> That sounds bad. Could you try bissecting the I-pipe support, namely
+> 2.6.29.4-powerpc-2.5-01, 2.6.29.4-powerpc-2.6-00 and eventually
+> 2.6.30-powerpc-2.6-03 if no difference arises between the first two?
+> TIA,
 
-At the cost of ABI disruption, you may backport the phys_addr field
-support with the attached patch.
+Finally I found some time to investigate that gdb/gdbserver issue.
 
---=20
-Stephane
+The good news is that it doesn't seem to be Xenomai or Ipipe related.
 
-------_=_NextPart_001_01CA2CA5.423BE4AE
-Content-Type: application/octet-stream;
-	name="xeno-phys-addr.patch"
-Content-Transfer-Encoding: base64
-Content-Description: xeno-phys-addr.patch
-Content-Disposition: attachment;
-	filename="xeno-phys-addr.patch"
+I could reproduce the same problem with a test application
+which used pthread_create instead of rt_task_create. And further 
+investigation confirmed that gdbserver hangs when trying to 
+single step because it doesn't receive SIGSTOP from the kernel
+for a child process which was created (gdbserver stops all the
+threads of an application when single stepping...).
 
-LS0tIGluY2x1ZGUvbmF0aXZlL2hlYXAuaAk4IFNlcCAyMDA4IDEwOjA4OjA4IC0wMDAwCTEuMS4x
-LjUKKysrIGluY2x1ZGUvbmF0aXZlL2hlYXAuaAkxNyBOb3YgMjAwOCAxMDo0NzoxMyAtMDAwMAkx
-LjUKQEAgLTUzLDYgKzUzLDggQEAgdHlwZWRlZiBzdHJ1Y3QgcnRfaGVhcF9pbmZvIHsKIAogICAg
-IGNoYXIgbmFtZVtYTk9CSkVDVF9OQU1FX0xFTl07IC8qICE8IFN5bWJvbGljIG5hbWUuICovCiAK
-KyAgICB1bnNpZ25lZCBsb25nIHBoeXNfYWRkcjsJLyogITwgUGh5c2ljYWwgYWRkcmVzcy4gKi8K
-KwogfSBSVF9IRUFQX0lORk87CiAKIHR5cGVkZWYgc3RydWN0IHJ0X2hlYXBfcGxhY2Vob2xkZXIg
-ewotLS0ga3NyYy9za2lucy9uYXRpdmUvaGVhcC5jCTEgRmViIDIwMDkgMTc6MjA6MzEgLTAwMDAJ
-MS4xLjEuOQorKysga3NyYy9za2lucy9uYXRpdmUvaGVhcC5jCTI2IEZlYiAyMDA5IDE2OjI2OjQx
-IC0wMDAwCTEuMTIKQEAgLTIwMiw4ICsyMDIsOCBAQCBzdGF0aWMgdm9pZCBfX2hlYXBfZmx1c2hf
-cHJpdmF0ZSh4bmhlYXBfCiAgKgogICogLSBIX0RNQSBjYXVzZXMgdGhlIGJsb2NrIHBvb2wgYXNz
-b2NpYXRlZCB0byB0aGUgaGVhcCB0byBiZQogICogYWxsb2NhdGVkIGluIHBoeXNpY2FsbHkgY29u
-dGlndW91cyBtZW1vcnksIHN1aXRhYmxlIGZvciBETUEKLSAqIG9wZXJhdGlvbnMgd2l0aCBJL08g
-ZGV2aWNlcy4gQGEgaGVhcHNpemUgYmV5b25kIDEyOEtpQiB3aWxsCi0gKiBiZSByb3VuZGVkIHVw
-IHRvIGEgdHdvIGV4cG9ub25lbnQgYWxsb2NhdGlvbi4KKyAqIG9wZXJhdGlvbnMgd2l0aCBJL08g
-ZGV2aWNlcy4gVGhlIHBoeXNpY2FsIGFkZHJlc3Mgb2YgdGhlCisgKiBoZWFwIGNhbiBiZSBvYnRh
-aW5lZCB0aHJvdWdoIGEgY2FsbCB0byBydF9oZWFwX2lucXVpcmUoKS4KICAqCiAgKiAtIEhfTk9O
-Q0FDSEVEIGNhdXNlcyB0aGUgaGVhcCBub3QgdG8gYmUgY2FjaGVkLiBUaGlzIGlzIG5lY2Vzc2Fy
-eSBvbgogICogcGxhdGZvcm1zIHN1Y2ggYXMgQVJNIHRvIHNoYXJlIGEgaGVhcCBiZXR3ZWVuIGtl
-cm5lbCBhbmQgdXNlci1zcGFjZS4KQEAgLTc1MSw2ICs3NTEsNyBAQCBpbnQgcnRfaGVhcF9pbnF1
-aXJlKFJUX0hFQVAgKmhlYXAsIFJUX0hFCiAJaW5mby0+dXNhYmxlbWVtID0geG5oZWFwX3VzYWJs
-ZV9tZW0oJmhlYXAtPmhlYXBfYmFzZSk7CiAJaW5mby0+dXNlZG1lbSA9IHhuaGVhcF91c2VkX21l
-bSgmaGVhcC0+aGVhcF9iYXNlKTsKIAlpbmZvLT5tb2RlID0gaGVhcC0+bW9kZTsKKwlpbmZvLT5w
-aHlzX2FkZHIgPSAoaGVhcC0+bW9kZSAmIEhfU0lOR0xFKSA/IHZpcnRfdG9fcGh5cyhoZWFwLT5z
-YmEpOjA7CiAKICAgICAgIHVubG9ja19hbmRfZXhpdDoKIAo=
+So something must have changed in 2.6.30 as everything runs fine on 
+2.6.26. I have to admit though that I haven't checked yet if
+things run fine on a Vanilla kernel.
 
-------_=_NextPart_001_01CA2CA5.423BE4AE--
+I think, I'm gonna do that first and try to report it to a gdb NG.
+
+Andreas
+
 
