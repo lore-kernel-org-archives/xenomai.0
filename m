@@ -1,14 +1,9 @@
-Mime-Version: 1.0 (Apple Message framework v1075.2)
-Content-Type: multipart/signed; boundary=Apple-Mail-20--746130653;
-	protocol="application/pkcs7-signature"; micalg=sha1
-From: Alphan Ulusoy <alphan@domain.hid>
-In-Reply-To: <4AA6AF80.5090902@domain.hid>
-Date: Tue, 8 Sep 2009 22:42:56 +0300
-Message-Id: <769D9865-1128-4D8E-BE41-6A38C7806D2E@su.sabanciuniv.edu>
-References: <793108.19562.qm@domain.hid>
-	<89DE9B44-67FD-4DFE-BFE6-7445851AABCD@su.sabanciuniv.edu>
-	<4AA6AF80.5090902@domain.hid>
-Subject: Re: [Xenomai-help] RT Task RPC over a POSIX/Native Queue
+MIME-Version: 1.0
+Date: Tue, 8 Sep 2009 16:59:38 -0300
+Message-ID: <7a15153d0909081259o47b0fcb7k46f679e7dfe83456@domain.hid>
+From: Felipe Castro <felipecpc1@domain.hid>
+Content-Type: multipart/alternative; boundary=001485f19a0e0cfc2304731668d0
+Subject: [Xenomai-help] High Latency on PXA
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,119 +13,150 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+
+--001485f19a0e0cfc2304731668d0
+Content-Type: text/plain; charset=ISO-8859-1
+
+I'm running Xenomai 2.4.8 with kernel 2.6.27 on a Voipac development kit
+with PXA270 processor.
+
+Once applied a patch (Thanks Giles) everythink looks to run ok , but running
+the latency test program i got:
+
+root@domain.hid$ ./latency -p 3000
+== Sampling period: 3000 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+warming up...
+RTT|  00:00:01  (periodic user-mode task, 3000 us period, priority 99)
+RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
+worst
+RTD|      14.153|      14.769|      39.999|       0|      14.153|
+39.999
+RTD|      14.153|      17.538|     209.538|       0|      14.153|
+209.538
+RTD|      14.153|      56.923|   13829.846|       4|      14.153|
+13829.846
+RTD|      13.846|      57.538|   13769.538|       8|      13.846|
+13829.846
+RTD|      14.153|      56.923|   13816.615|      12|      13.846|
+13829.846
+RTD|      14.153|      57.846|   13833.846|      16|      13.846|
+13833.846
+RTD|      14.153|      57.230|   13827.692|      20|      13.846|
+13833.846
+RTD|      14.153|      57.538|   13812.615|      24|      13.846|
+13833.846
+RTD|      13.846|      56.923|   13823.999|      28|      13.846|
+13833.846
+RTD|      14.153|      57.538|   13812.307|      32|      13.846|
+13833.846
+RTD|      14.153|     200.923|   13833.538|      36|      13.846|
+13833.846
+RTD|      13.846|     201.846|   14044.923|      40|      13.846|
+14044.923
+RTD|      13.846|     201.538|   14044.307|      44|      13.846|
+14044.923
+RTD|      13.846|     201.538|   14043.384|      48|      13.846|
+14044.923
+
+There are overrun and max. latency is to high ! Is there something to fix
+it.
+
+Running with tasks with more than 10ms there are overrun , and the results
+looks better ...
+
+root@domain.hid$ ./latency -p 10000
+== Sampling period: 10000 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+warming up...
+RTT|  00:00:01  (periodic user-mode task, 10000 us period, priority 99)
+RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
+worst
+RTD|      13.538|      14.769|      19.999|       0|      13.538|
+19.999
+RTD|      13.538|      18.769|      81.538|       0|      13.538|
+81.538
+RTD|      13.230|      85.846|    6833.538|       0|      13.230|
+6833.538
+RTD|      13.538|      87.076|    6807.999|       0|      13.230|
+6833.538
+RTD|      13.230|      85.230|    6827.999|       0|      13.230|
+6833.538
+RTD|      13.538|      87.384|    6804.307|       0|      13.230|
+6833.538
+RTD|      13.230|      85.846|    6841.846|       0|      13.230|
+6841.846
+RTD|      13.230|      87.999|    6801.538|       0|      13.230|
+6841.846
+RTD|      13.230|      84.923|    6820.615|       0|      13.230|
+6841.846
+RTD|      13.230|      88.615|    6795.692|       0|      13.230|
+6841.846
 
 
---Apple-Mail-20--746130653
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain;
-	charset=us-ascii;
-	format=flowed;
-	delsp=yes
 
-My post was probably not clear enough: I was thinking about something  
-more like a source-sink scheme: an RT task generating some data to be  
-processed (to be saved, printed, displayed, etc.) by the non-RT task  
-or a non-RT task streaming chunks of data to the RT-task (to be  
-decoded, etc.); not a non-RT => RT feedback mechanism.
+Thanks !x
 
-> Waiting for the non real-time task to post an answer through rt- 
-> pipes is
-> as dangerous for the real-time task determinism as with message queues
-> of any kind.
-
-For other cases, your above comment is totally accurate of course.
-
--- 
-alphan
-
-
-
-
-On 8 Sep, 2009, at 10:24 PM, Gilles Chanteperdrix wrote:
-
-> Alphan Ulusoy wrote:
->> You can always use the Xenomai's _wonderful_ pipe functionality (and
->> other task communication services as well) to communicate data back
->> and forth between RT (Xenomai user -or- kernel space tasks) and non- 
->> RT
->> (dedicated linux executables) tasks. This also ensures that your RT
->> and non-RT domains are clearly separated by design, which is a good
->> thing IMHO.
->
-> Waiting for the non real-time task to post an answer through rt- 
-> pipes is
-> as dangerous for the real-time task determinism as with message queues
-> of any kind.
->
-> Besides, a task with low priority which oscillates between first and
-> secondary modes does not threaten a primary mode only task determinism
-> any more than a non real-time tasks. However, it can communicates with
-> the primary mode only task with a lot more IPCs and synchronization
-> mechanisms.
->
-> And there is no difference in design between an application separated
-> between real-time and non real-time tasks on the one hand, and an
-> application separated between real-time and oscillating tasks on the
-> other hand. The real gain in design happens when you can split driver
-> code from application code.
->
-> -- 
-> 					    Gilles.
->
-
-
---Apple-Mail-20--746130653
-Content-Disposition: attachment;
-	filename=smime.p7s
-Content-Type: application/pkcs7-signature;
-	name=smime.p7s
+--001485f19a0e0cfc2304731668d0
+Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: base64
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIGMzCCAuww
-ggJVoAMCAQICEFlbEbpcrtRwEgeTD6b7/UYwDQYJKoZIhvcNAQEFBQAwYjELMAkGA1UEBhMCWkEx
-JTAjBgNVBAoTHFRoYXd0ZSBDb25zdWx0aW5nIChQdHkpIEx0ZC4xLDAqBgNVBAMTI1RoYXd0ZSBQ
-ZXJzb25hbCBGcmVlbWFpbCBJc3N1aW5nIENBMB4XDTA4MDkxMDE4MjkxMFoXDTA5MDkxMDE4Mjkx
-MFowSzEfMB0GA1UEAxMWVGhhd3RlIEZyZWVtYWlsIE1lbWJlcjEoMCYGCSqGSIb3DQEJARYZYWxw
-aGFuQHN1LnNhYmFuY2l1bml2LmVkdTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKju
-oEccePvK+1FqYYzkT3ZagQMkK86SRcJIznx9wqt7mIE6oYI/SjcjURCvuaoU4l0zG3dhC5Jlgg1A
-u5xtAQCxd/mrvyRm6fM+AMs+qvyZjVBLqAnHT/HxHTV3Ju5BE4U2G6Dj+x18WuRy/YSj4fihhdAI
-AcsPuJri8Dfvusecef7Xam6gcl0kkRexmEDiiMSb3SEziOdjQqAZEArTRMYZYGFANsMJvXzNN76I
-qyAkaAcr8IuUoXt0RYwwn2DhUcBTrg1SfIqYdTrWi7TmCVpudfND6hHlz8+RogQi7ohbMbwKFwKa
-3gXhcRnc1dABGNnyXDJR1nCWKMHq1KE72DUCAwEAAaM2MDQwJAYDVR0RBB0wG4EZYWxwaGFuQHN1
-LnNhYmFuY2l1bml2LmVkdTAMBgNVHRMBAf8EAjAAMA0GCSqGSIb3DQEBBQUAA4GBACe45E4PvEZO
-ZjwogK3R7lVPLQ4bfNF1hpUDfK0Kgba6jbDlIRSmx0Cz3xgMdC2SGpf3aCu+7PJQa4u0NA2QAlEs
-AMI9QFNtu0HhyXKtdR3a7sHRCR4XiczLQUHS4S9LRKueHGvWaVx6jQICMH9lJBlW62gnd2TgOcWP
-TGxJWK9YMIIDPzCCAqigAwIBAgIBDTANBgkqhkiG9w0BAQUFADCB0TELMAkGA1UEBhMCWkExFTAT
-BgNVBAgTDFdlc3Rlcm4gQ2FwZTESMBAGA1UEBxMJQ2FwZSBUb3duMRowGAYDVQQKExFUaGF3dGUg
-Q29uc3VsdGluZzEoMCYGA1UECxMfQ2VydGlmaWNhdGlvbiBTZXJ2aWNlcyBEaXZpc2lvbjEkMCIG
-A1UEAxMbVGhhd3RlIFBlcnNvbmFsIEZyZWVtYWlsIENBMSswKQYJKoZIhvcNAQkBFhxwZXJzb25h
-bC1mcmVlbWFpbEB0aGF3dGUuY29tMB4XDTAzMDcxNzAwMDAwMFoXDTEzMDcxNjIzNTk1OVowYjEL
-MAkGA1UEBhMCWkExJTAjBgNVBAoTHFRoYXd0ZSBDb25zdWx0aW5nIChQdHkpIEx0ZC4xLDAqBgNV
-BAMTI1RoYXd0ZSBQZXJzb25hbCBGcmVlbWFpbCBJc3N1aW5nIENBMIGfMA0GCSqGSIb3DQEBAQUA
-A4GNADCBiQKBgQDEpjxVc1X7TrnKmVoeaMB1BHCd3+n/ox7svc31W/Iadr1/DDph8r9RzgHU5VAK
-MNcCY1osiRVwjt3J8CuFWqo/cVbLrzwLB+fxH5E2JCoTzyvV84J3PQO+K/67GD4Hv0CAAmTXp6a7
-n2XRxSpUhQ9IBH+nttE8YQRAHmQZcmC3+wIDAQABo4GUMIGRMBIGA1UdEwEB/wQIMAYBAf8CAQAw
-QwYDVR0fBDwwOjA4oDagNIYyaHR0cDovL2NybC50aGF3dGUuY29tL1RoYXd0ZVBlcnNvbmFsRnJl
-ZW1haWxDQS5jcmwwCwYDVR0PBAQDAgEGMCkGA1UdEQQiMCCkHjAcMRowGAYDVQQDExFQcml2YXRl
-TGFiZWwyLTEzODANBgkqhkiG9w0BAQUFAAOBgQBIjNFQg+oLLswNo2asZw9/r6y+whehQ5aUnX9M
-Ibj4Nh+qLZ82L8D0HFAgk3A8/a3hYWLD2ToZfoSxmRsAxRoLgnSeJVCUYsfbJ3FXJY3dqZw5jowg
-T2Vfldr394fWxghOrvbqNOUQGls1TXfjViF4gtwhGTXeJLHTHUb/XV9lTzGCAxAwggMMAgEBMHYw
-YjELMAkGA1UEBhMCWkExJTAjBgNVBAoTHFRoYXd0ZSBDb25zdWx0aW5nIChQdHkpIEx0ZC4xLDAq
-BgNVBAMTI1RoYXd0ZSBQZXJzb25hbCBGcmVlbWFpbCBJc3N1aW5nIENBAhBZWxG6XK7UcBIHkw+m
-+/1GMAkGBSsOAwIaBQCgggFvMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkF
-MQ8XDTA5MDkwODE5NDI1NlowIwYJKoZIhvcNAQkEMRYEFARE1h2006qc6NjiifGF4e0aytPDMIGF
-BgkrBgEEAYI3EAQxeDB2MGIxCzAJBgNVBAYTAlpBMSUwIwYDVQQKExxUaGF3dGUgQ29uc3VsdGlu
-ZyAoUHR5KSBMdGQuMSwwKgYDVQQDEyNUaGF3dGUgUGVyc29uYWwgRnJlZW1haWwgSXNzdWluZyBD
-QQIQWVsRulyu1HASB5MPpvv9RjCBhwYLKoZIhvcNAQkQAgsxeKB2MGIxCzAJBgNVBAYTAlpBMSUw
-IwYDVQQKExxUaGF3dGUgQ29uc3VsdGluZyAoUHR5KSBMdGQuMSwwKgYDVQQDEyNUaGF3dGUgUGVy
-c29uYWwgRnJlZW1haWwgSXNzdWluZyBDQQIQWVsRulyu1HASB5MPpvv9RjANBgkqhkiG9w0BAQEF
-AASCAQBDkPI6ycza8QGf1f1IpXntFMGcb7DsPdmMf3qeZc596bWF/IPl0Ohq+2nkjvvA3XDgV2fB
-rVuBgX8LR8V7o7GEwQLWhikZSTEpYmVvGgn9J5vcDV+mzdcO40DqqAw9+JmuUiToynk9SaJaiOIO
-pf3yeou2mJZ9jj3J21PVmij+Kq5QqcwkIQ/qLLN/vX1atjix75TDx5Adt18L6FmzWUa5XEeDjUu5
-t7loHu9AASLqp8KALgkwylJ23di4OsRrEf14N9wI4hxH64jfxRfCtrgu9k8vnVDHnvgMOVBW8s0u
-S1nfTqi74pEq/c49ecailuZBtsemzoKkCEu7RVq40ro8AAAAAAAA
-
---Apple-Mail-20--746130653--
+SSYjMzk7bSBydW5uaW5nIFhlbm9tYWkgMi40Ljggd2l0aCBrZXJuZWwgMi42LjI3IG9uIGEgVm9p
+cGFjIGRldmVsb3BtZW50IGtpdCB3aXRoIFBYQTI3MCBwcm9jZXNzb3IuIDxicj48YnI+T25jZSBh
+cHBsaWVkIGEgcGF0Y2ggKFRoYW5rcyBHaWxlcykgZXZlcnl0aGluayBsb29rcyB0byBydW4gb2sg
+LCBidXQgcnVubmluZyB0aGUgbGF0ZW5jeSB0ZXN0IHByb2dyYW0gaSBnb3Q6PGJyPjxicj4Kcm9v
+dEB2cGFjMjcwOi91c3IveGVub21haS9iaW4kIC4vbGF0ZW5jeSAtcCAzMDAwPGJyPj09IFNhbXBs
+aW5nIHBlcmlvZDogMzAwMCB1czxicj49PSBUZXN0IG1vZGU6IHBlcmlvZGljIHVzZXItbW9kZSB0
+YXNrPGJyPj09IEFsbCByZXN1bHRzIGluIG1pY3Jvc2Vjb25kczxicj53YXJtaW5nIHVwLi4uPGJy
+PlJUVHygIDAwOjAwOjAxoCAocGVyaW9kaWMgdXNlci1tb2RlIHRhc2ssIDMwMDAgdXMgcGVyaW9k
+LCBwcmlvcml0eSA5OSk8YnI+ClJUSHwtLS0tLWxhdCBtaW58LS0tLS1sYXQgYXZnfC0tLS0tbGF0
+IG1heHwtb3ZlcnJ1bnwtLS0tbGF0IGJlc3R8LS0tbGF0IHdvcnN0PGJyPlJURHygoKCgoCAxNC4x
+NTN8oKCgoKAgMTQuNzY5fKCgoKCgIDM5Ljk5OXygoKCgoKAgMHygoKCgoCAxNC4xNTN8oKCgoKAg
+MzkuOTk5PGJyPlJURHygoKCgoCAxNC4xNTN8oKCgoKAgMTcuNTM4fKCgoKAgMjA5LjUzOHygoKCg
+oKAgMHygoKCgoCAxNC4xNTN8oKCgoCAyMDkuNTM4PGJyPgpSVER8oKCgoKAgMTQuMTUzfKCgoKCg
+IDU2LjkyM3ygoCAxMzgyOS44NDZ8oKCgoKCgIDR8oKCgoKAgMTQuMTUzfKCgIDEzODI5Ljg0Njxi
+cj5SVER8oKCgoKAgMTMuODQ2fKCgoKCgIDU3LjUzOHygoCAxMzc2OS41Mzh8oKCgoKCgIDh8oKCg
+oKAgMTMuODQ2fKCgIDEzODI5Ljg0Njxicj5SVER8oKCgoKAgMTQuMTUzfKCgoKCgIDU2LjkyM3yg
+oCAxMzgxNi42MTV8oKCgoKAgMTJ8oKCgoKAgMTMuODQ2fKCgIDEzODI5Ljg0Njxicj4KUlREfKCg
+oKCgIDE0LjE1M3ygoKCgoCA1Ny44NDZ8oKAgMTM4MzMuODQ2fKCgoKCgIDE2fKCgoKCgIDEzLjg0
+NnygoCAxMzgzMy44NDY8YnI+UlREfKCgoKCgIDE0LjE1M3ygoKCgoCA1Ny4yMzB8oKAgMTM4Mjcu
+NjkyfKCgoKCgIDIwfKCgoKCgIDEzLjg0NnygoCAxMzgzMy44NDY8YnI+UlREfKCgoKCgIDE0LjE1
+M3ygoKCgoCA1Ny41Mzh8oKAgMTM4MTIuNjE1fKCgoKCgIDI0fKCgoKCgIDEzLjg0NnygoCAxMzgz
+My44NDY8YnI+ClJURHygoKCgoCAxMy44NDZ8oKCgoKAgNTYuOTIzfKCgIDEzODIzLjk5OXygoKCg
+oCAyOHygoKCgoCAxMy44NDZ8oKAgMTM4MzMuODQ2PGJyPlJURHygoKCgoCAxNC4xNTN8oKCgoKAg
+NTcuNTM4fKCgIDEzODEyLjMwN3ygoKCgoCAzMnygoKCgoCAxMy44NDZ8oKAgMTM4MzMuODQ2PGJy
+PlJURHygoKCgoCAxNC4xNTN8oKCgoCAyMDAuOTIzfKCgIDEzODMzLjUzOHygoKCgoCAzNnygoKCg
+oCAxMy44NDZ8oKAgMTM4MzMuODQ2PGJyPgpSVER8oKCgoKAgMTMuODQ2fKCgoKAgMjAxLjg0Nnyg
+oCAxNDA0NC45MjN8oKCgoKAgNDB8oKCgoKAgMTMuODQ2fKCgIDE0MDQ0LjkyMzxicj5SVER8oKCg
+oKAgMTMuODQ2fKCgoKAgMjAxLjUzOHygoCAxNDA0NC4zMDd8oKCgoKAgNDR8oKCgoKAgMTMuODQ2
+fKCgIDE0MDQ0LjkyMzxicj5SVER8oKCgoKAgMTMuODQ2fKCgoKAgMjAxLjUzOHygoCAxNDA0My4z
+ODR8oKCgoKAgNDh8oKCgoKAgMTMuODQ2fKCgIDE0MDQ0LjkyMzxicj4KPGJyPlRoZXJlIGFyZSBv
+dmVycnVuIGFuZCBtYXguIGxhdGVuY3kgaXMgdG8gaGlnaCAhIElzIHRoZXJlIHNvbWV0aGluZyB0
+byBmaXggaXQuPGJyPjxicj5SdW5uaW5nIHdpdGggdGFza3Mgd2l0aCBtb3JlIHRoYW4gMTBtcyB0
+aGVyZSBhcmUgb3ZlcnJ1biAsIGFuZCB0aGUgcmVzdWx0cyBsb29rcyBiZXR0ZXIgLi4uPGJyPjxi
+cj5yb290QHZwYWMyNzA6L3Vzci94ZW5vbWFpL2JpbiQgLi9sYXRlbmN5IC1wIDEwMDAwPGJyPgo9
+PSBTYW1wbGluZyBwZXJpb2Q6IDEwMDAwIHVzPGJyPj09IFRlc3QgbW9kZTogcGVyaW9kaWMgdXNl
+ci1tb2RlIHRhc2s8YnI+PT0gQWxsIHJlc3VsdHMgaW4gbWljcm9zZWNvbmRzPGJyPndhcm1pbmcg
+dXAuLi48YnI+UlRUfKAgMDA6MDA6MDGgIChwZXJpb2RpYyB1c2VyLW1vZGUgdGFzaywgMTAwMDAg
+dXMgcGVyaW9kLCBwcmlvcml0eSA5OSk8YnI+UlRIfC0tLS0tbGF0IG1pbnwtLS0tLWxhdCBhdmd8
+LS0tLS1sYXQgbWF4fC1vdmVycnVufC0tLS1sYXQgYmVzdHwtLS1sYXQgd29yc3Q8YnI+ClJURHyg
+oKCgoCAxMy41Mzh8oKCgoKAgMTQuNzY5fKCgoKCgIDE5Ljk5OXygoKCgoKAgMHygoKCgoCAxMy41
+Mzh8oKCgoKAgMTkuOTk5PGJyPlJURHygoKCgoCAxMy41Mzh8oKCgoKAgMTguNzY5fKCgoKCgIDgx
+LjUzOHygoKCgoKAgMHygoKCgoCAxMy41Mzh8oKCgoKAgODEuNTM4PGJyPlJURHygoKCgoCAxMy4y
+MzB8oKCgoKAgODUuODQ2fKCgoCA2ODMzLjUzOHygoKCgoKAgMHygoKCgoCAxMy4yMzB8oKCgIDY4
+MzMuNTM4PGJyPgpSVER8oKCgoKAgMTMuNTM4fKCgoKCgIDg3LjA3NnygoKAgNjgwNy45OTl8oKCg
+oKCgIDB8oKCgoKAgMTMuMjMwfKCgoCA2ODMzLjUzODxicj5SVER8oKCgoKAgMTMuMjMwfKCgoKCg
+IDg1LjIzMHygoKAgNjgyNy45OTl8oKCgoKCgIDB8oKCgoKAgMTMuMjMwfKCgoCA2ODMzLjUzODxi
+cj5SVER8oKCgoKAgMTMuNTM4fKCgoKCgIDg3LjM4NHygoKAgNjgwNC4zMDd8oKCgoKCgIDB8oKCg
+oKAgMTMuMjMwfKCgoCA2ODMzLjUzODxicj4KUlREfKCgoKCgIDEzLjIzMHygoKCgoCA4NS44NDZ8
+oKCgIDY4NDEuODQ2fKCgoKCgoCAwfKCgoKCgIDEzLjIzMHygoKAgNjg0MS44NDY8YnI+UlREfKCg
+oKCgIDEzLjIzMHygoKCgoCA4Ny45OTl8oKCgIDY4MDEuNTM4fKCgoKCgoCAwfKCgoKCgIDEzLjIz
+MHygoKAgNjg0MS44NDY8YnI+UlREfKCgoKCgIDEzLjIzMHygoKCgoCA4NC45MjN8oKCgIDY4MjAu
+NjE1fKCgoKCgoCAwfKCgoKCgIDEzLjIzMHygoKAgNjg0MS44NDY8YnI+ClJURHygoKCgoCAxMy4y
+MzB8oKCgoKAgODguNjE1fKCgoCA2Nzk1LjY5MnygoKCgoKAgMHygoKCgoCAxMy4yMzB8oKCgIDY4
+NDEuODQ2PGJyPjxicj48YnI+PGJyPlRoYW5rcyAheDxicj48YnI+Cg==
+--001485f19a0e0cfc2304731668d0--
 
