@@ -1,17 +1,10 @@
-Message-ID: <4AA4CFA5.60907@domain.hid>
-Date: Mon, 07 Sep 2009 11:17:25 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <1251273701.4345.9.camel@domain.hid>	
-	<4A94EE84.5040101@domain.hid>	<1251354286.4321.19.camel@domain.hid>	
-	<4A9642D3.5040304@domain.hid>	<1251374443.4321.40.camel@domain.hid>	
-	<4A978959.5060604@domain.hid>	<1251448708.4365.11.camel@domain.hid>	
-	<4A979E68.1040805@domain.hid>	<1252308904.4548.10.camel@domain.hid>
-	<4AA4C7C0.9080705@domain.hid> <4AA4CB3A.8030703@domain.hid>
-In-Reply-To: <4AA4CB3A.8030703@domain.hid>
-Content-Type: text/plain; charset=iso-8859-1
+From: Christoph Permes <christoph.permes@domain.hid>
+Date: Tue, 08 Sep 2009 16:38:09 +0200
+Message-Id: <1252420689.4304.35.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Segmentation fault in rt_printf print thread
+Content-Type: text/plain
+Subject: [Xenomai-help] rt_heap cleanup issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,78 +14,164 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Christoph Permes wrote:
->>> Hi, 
->>>
->>> I've created a patch that provides a workaround for the segmentation
->>> fault:
->>>
->>> --- a/src/rtdk/rt_print.c	2009-05-21 16:34:54.000000000 +0200
->>> +++ b/src/rtdk/rt_print.c	2009-09-04 10:09:19.000000000 +0200
->>> @@ -40,6 +40,7 @@
->>>  struct entry_head {
->>>  	FILE *dest;
->>>  	uint32_t seq_no;
->>> +	uint32_t len;
->>>  	char text[1];
->>>  } __attribute__((packed));
->>>  
->>> @@ -113,6 +114,7 @@
->>>  			/* Write out empty entry */
->>>  			head = buffer->ring + write_pos;
->>>  			head->seq_no = __seq_no;
->>> +			head->len = 0;
->>>  			head->text[0] = 0;
->>>  
->>>  			/* Forward to the ring buffer start */
->>> @@ -146,6 +148,7 @@
->>>  	/* If we were able to write some text, finalise the entry */
->>>  	if (len > 0) {
->>>  		head->seq_no = ++__seq_no;
->>> +		head->len = len;
->>>  		head->dest = stream;
->>>  
->>>  		/* Move forward by text and head length */
->>> @@ -158,6 +161,7 @@
->>>  		/* An empty entry marks the wrap-around */
->>>  		head = buffer->ring + write_pos;
->>>  		head->seq_no = __seq_no;
->>> +		head->len = 0;
->>>  		head->text[0] = 0;
->>>  
->>>  		write_pos = 0;
->>> @@ -373,7 +377,7 @@
->>>  
->>>  		read_pos = buffer->read_pos;
->>>  		head = buffer->ring + read_pos;
->>> -		len = strlen(head->text);
->>> +		len = head->len;
->>>  
->>>  		if (len) {
->>>  			/* Print out non-empty entry and proceed */
->>>
->>> With this patch I get no segfaults anymore, but of course it would be
->>> interesting why parts of the ring buffer are overwritten with null
->>> characters.
->>>
->> Frankly, I'm suspecting some issue in your application here - at least
->> as long as you do not have some broken-out test case for us...
-> 
-> Would not it be possible to mprotect the rtdk buffer when it is not used
-> in order to catch any write to it outside of rtdk functions?
-> 
+Hi,
 
-Hmm, good idea, should work. Once set up, only rt_vsnprintf requires
-write access to the ring.
+I have a kernel module that allocates a shared memory and a non-realtime
+userspace application that reads data from the shared memory.
 
-Jan
+When loading and unloading kernel module and application multiple times,
+sometimes the shared memory is not cleaned up. The shared memory remains
+in /proc/xenomai/registry/native/heaps with size=0. A try to load the
+module again results in a kernel null pointer exception.
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+I have written a small example to reproduce the issue:
+
+/* kernel module */
+#include <linux/module.h>
+
+#include <native/heap.h>
+
+#define MY_SHARED_MEMORY_SIZE (1024 * 1024)
+
+// shared memory descriptor
+static RT_HEAP my_heap_desc;
+
+// global shared memory pointer
+void* my_shm_pointer = NULL;
+
+int init_module()
+{
+    char heap_name[] = "MY_SHARED_MEMORY";
+    int result;
+
+    // create the heap descriptor
+    result = rt_heap_create( &my_heap_desc, heap_name, MY_SHARED_MEMORY_SIZE, H_SHARED );
+    if ( result != 0 ) {
+        printk( KERN_ERR "Failed to create shared memory %s: %d\n", heap_name, result );
+        goto cleanup_return;
+    }
+
+    // allocate memory
+    result = rt_heap_alloc( &my_heap_desc, 0, TM_NONBLOCK, &my_shm_pointer );
+    if ( ( result != 0 ) || ( my_shm_pointer == NULL ) ) {
+        printk( KERN_ERR "KEC::SHM: Failed to allocate base shared memory %s: %d\n", heap_name, result );
+        goto cleanup_heap;
+    }
+
+    // initialize base memory
+    memset( my_shm_pointer, 0, MY_SHARED_MEMORY_SIZE );
+
+    printk( KERN_INFO "Shared memory %s opened (0x%08x).\n", heap_name, (unsigned int)my_shm_pointer );
+
+
+    return 0;
+
+ cleanup_heap:
+    my_shm_pointer = NULL;
+    rt_heap_delete( &my_heap_desc );
+
+ cleanup_return:
+
+    return -1;
+}
+
+void cleanup_module()
+{
+    int result = 0;
+
+    // delete heap descriptor
+    my_shm_pointer = NULL;
+
+    result = rt_heap_delete( &my_heap_desc );
+
+    printk( KERN_INFO "Shared memory closed (%d).\n", result );
+}
+
+
+/* userspace application */
+#include <signal.h>
+#include <stdio.h>
+
+#include <native/heap.h>
+
+int my_stop = 0;
+
+void my_signal_handler(int);
+
+int main()
+{
+  char heap_name[] = "MY_SHARED_MEMORY";
+  RT_HEAP my_heap;
+  void* my_shm_pointer = NULL;
+  int result = 0;
+
+
+  signal( SIGTERM, my_signal_handler );
+  signal( SIGINT, my_signal_handler );
+
+  result = rt_heap_bind( &my_heap, heap_name, TM_NONBLOCK );
+  if ( result != 0 ) {
+    printf( "rt_heap_bind() returned %d\n", result );
+    return -1;
+  }
+
+  result = rt_heap_alloc( &my_heap, 0, TM_NONBLOCK, &my_shm_pointer );
+  if ( result != 0 ) {
+    printf( "rt_heap_alloc() returned %d\n", result );
+    rt_heap_unbind( &my_heap );
+    return -1;
+  }
+
+  while ( !my_stop ) {
+    sleep( 1 );
+  }
+
+  my_shm_pointer = NULL;
+  rt_heap_unbind( &my_heap );
+
+  return 0;
+}
+
+void my_signal_handler(int sig)
+{
+    my_stop = 1;
+}
+
+
+I'm using kernel 2.6.29.5, Xenomai 2.4.9 on x86.
+
+The steps to reproduce the issue are:
+# insmod my_shm.ko
+# ./my_shm &
+# rmmod my_shm
+# killall my_shm
+# insmod my_shm.ko
+# ./my_shm &
+# rmmod my_shm
+# killall my_shm
+# cat /proc/xenomai/registry/native/heaps/MY_SHARED_MEMORY
+type=kernel:size=0:used:0:numaps=0    <--- strange
+# insmod my_shm.ko   <--- null pointer exception, system freeze
+
+There is no null pointer exception when killing the application before
+rmmod.
+
+Is it generally a problem if kernel modules are unloaded before all
+applications that use the shared memory are terminated?
+With userspace realtime applications cleanup works without any problems
+regardless of the order the applications are started/terminated.
+Maybe I am doing something wrong in the example code above?
+
+As my real application consists of several userspace applications
+(realtime and non-realtime) the startup and shutdown procedure is more
+complex so that it is not guaranteed that all userspace applications are
+finished when the kernel module is unloaded.
+
+Thanks,
+
+Christoph
+
+
 
