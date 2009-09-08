@@ -1,12 +1,14 @@
-Message-ID: <4AA6BC5D.8020704@domain.hid>
-Date: Tue, 08 Sep 2009 22:19:41 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <982599.63991.qm@domain.hid>
+References: <793108.19562.qm@domain.hid>
+	<4AA691B8.4090204@domain.hid>
+	<394564.56258.qm@domain.hid>
+	<4AA6D85C.8040707@domain.hid>
+Date: Tue, 8 Sep 2009 15:41:56 -0700 (PDT)
+From: Guvenc Gulce <gulceg@domain.hid>
+In-Reply-To: <4AA6D85C.8040707@domain.hid>
 MIME-Version: 1.0
-References: <7a15153d0909081259o47b0fcb7k46f679e7dfe83456@domain.hid>
-In-Reply-To: <7a15153d0909081259o47b0fcb7k46f679e7dfe83456@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] High Latency on PXA
+Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-help] RT Task RPC over a POSIX/Native Queue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,53 +18,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Felipe Castro <felipecpc1@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Felipe Castro wrote:
-> Spam detection software, running on the system "xenomai.org", has
-> identified this incoming email as possible spam.  The original message
-> has been attached to this so you can view it (if it isn't spam) or label
-> similar future email.  If you have any questions, see
-> the administrator of that system for details.
+Guvenc Gulce wrote:
 
-> 
-> Content preview:  I'm running Xenomai 2.4.8 with kernel 2.6.27 on a Voipac development
->    kit with PXA270 processor. Once applied a patch (Thanks Giles) everythink
->    looks to run ok , but running the latency test program i got: [...] 
-> 
-> Content analysis details:   (4.8 points, 4.5 required)
-> 
->  pts rule name              description
-> ---- ---------------------- --------------------------------------------------
->  1.1 URIBL_RHS_DOB          Contains an URI of a new domain (Day Old Bread)
->                             [URIs: gna.org]
->  2.0 HTML_MESSAGE           BODY: HTML included in message
->  1.8 MIME_BASE64_TEXT       RAW: Message text disguised using base64 encoding
-> 
-> The original message was not completely plain text, and may be unsafe to
-> open with some email clients; in particular, it may contain a virus,
-> or confirm that your address can receive spam.  If you wish to view
-> it, it may be safer to save it to a file and open it with an editor.
-> 
+>>> Leaving Xenomai domain is not bad per se. The reason why it is bad is
+>> 
+>>> that when re-entering Linux domain, you may have to wait an unbounded
+>>> time for Linux to let your task run.
+>> 
+>> Exactly and that would disturb the real-timeliness of the rt task.
+>> 
+>>> With your approach, the first RT task would not leave the Xenomai
+>>> domain, but it would wait for the second RT task to complete. And the
+>>> second RT task would risk to wait for the same unbounded time.
+>> 
+>> Why should the first RT Task wait for the second RT Task when 
+>> the second RT Task has lower priority than the first one ? If Xenomai 
+>> scheduler works as expected then the first rt task should be 
+>> able to continue to run after writing into Posix Queue (marshalled Linux 
+>> call) and collect the results of the called linux function when 
+>> the second rt task gets them and marshalls them back to a second 
+>> feedback Queue which can be read by the first RT Task when 
+>> it is appropriate for it. (Feedback Queue needs to be polled by the 
+>> first RT Task as there is no async communication possibility in 
+>> Userspace Realtime Environment) 
 
-Please avoid sending messages which look like spam, you will get faster
-responses since I do read my spam box only once a day.
+>> 
+>> The main advantage here is that the original RT Task never loses his 
+>> determinism as it might be doing some other jobs other than waiting 
+>> for the answers from the called linux functions.  
+>> 
+>>> So, in short, you gain nothing.
+>> I think the gain is that the original rt task stays deterministic and is still able 
+>> to call the linux functions and can continue to do his job which needs 
+>> determinism and may poll the feedback Queue some time later and 
+>> get the results of the called linux function. 
+>> Such a thing is impossible to do with the current Xenomai API, 
 
-> I'm running Xenomai 2.4.8 with kernel 2.6.27 on a Voipac development kit
-> with PXA270 processor.
+>Yes, you could do that, though, I do not see any real-world application
+>where this would make sense. I mean, if you call a function you
+>generally want to get the result immediately. What application do you
+>have in mind?
 
-Please switch to Xenomai 2.4.9.1.
+Opps.. I didnt realize that I was replying to you and not to the list.. 
 
-> 
-> Once applied a patch (Thanks Giles) everythink looks to run ok , but running
-> the latency test program i got:
+A typical application would be for example to offer a rt task the 
+possibility of network communication without disturbing its determinism. 
+If you send a data over the network, you dont necessarily expect 
+the reply immediately or write to the file system again without 
+disturbing the determinism. 
 
-All patches have been included in 2.4.9.1. What is your status with
-regard to floating points? Are you compiling with -msoft-float? It is
-mandatory on PXA.
+Regards,
+
+Guvenc
 
 
--- 
-					    Gilles.
+      
+
 
