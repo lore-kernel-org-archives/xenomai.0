@@ -1,15 +1,15 @@
-Message-ID: <4AA6DE47.8010804@domain.hid>
-Date: Wed, 09 Sep 2009 00:44:23 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+Message-ID: <934774.26170.qm@domain.hid>
 References: <793108.19562.qm@domain.hid>
 	<4AA691B8.4090204@domain.hid>
 	<394564.56258.qm@domain.hid>
 	<4AA6D85C.8040707@domain.hid>
 	<982599.63991.qm@domain.hid>
-In-Reply-To: <982599.63991.qm@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<4AA6DE47.8010804@domain.hid>
+Date: Tue, 8 Sep 2009 15:53:25 -0700 (PDT)
+From: Guvenc Gulce <gulceg@domain.hid>
+In-Reply-To: <4AA6DE47.8010804@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Subject: Re: [Xenomai-help] RT Task RPC over a POSIX/Native Queue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -20,8 +20,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
+
+rt_net is nice but then all network participants have to use rt_net otherwise 
+the realtime communication is not guaranteed on the wire.. in some cases 
+the real-timeliness on the wire may not be needed but the determinism 
+of the rt-task may still be an issue..
+
+I think it is a great flexibility to give an rt task the chance to communicate 
+with non rt_net clients and servers in the network without worrying about 
+losing its determinism. 
+
+Regards,
+
+Guvenc
+
+
+
+----- Original Message ----
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 To: Guvenc Gulce <gulceg@domain.hid>
 Cc: xenomai@xenomai.org
+Sent: Wednesday, September 9, 2009 12:44:23 AM
+Subject: Re: [Xenomai-help] RT Task RPC over a POSIX/Native Queue
 
 Guvenc Gulce wrote:
 > Guvenc Gulce wrote:
@@ -73,5 +95,10 @@ We have rtnet, a deterministic networking stack. For writing to the
 filesystem, we have rtdk.
 
 -- 
-					    Gilles.
+                        Gilles.
+
+
+
+      
+
 
