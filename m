@@ -1,14 +1,9 @@
-From: Paul <paul_c@domain.hid>
-Date: Tue, 8 Sep 2009 17:20:00 +0100
-References: <1252420689.4304.35.camel@domain.hid>
-In-Reply-To: <1252420689.4304.35.camel@domain.hid>
+Message-ID: <793108.19562.qm@domain.hid>
+Date: Tue, 8 Sep 2009 10:10:57 -0700 (PDT)
+From: Guvenc Gulce <gulceg@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <200909081720.00629.paul_c@domain.hid>
-Subject: Re: [Xenomai-help] rt_heap cleanup issue
+Content-Type: text/plain; charset=us-ascii
+Subject: [Xenomai-help] RT Task RPC over a POSIX/Native Queue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,32 +15,24 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-On Tuesday 08 September 2009, Christoph Permes wrote:
-> void cleanup_module()
-> {
-> =A0 =A0 int result =3D 0;
-> =A0 =A0 // delete heap descriptor
-> =A0 =A0 my_shm_pointer =3D NULL;
-> =A0 =A0 result =3D rt_heap_delete( &my_heap_desc );
-> =A0 =A0 printk( KERN_INFO "Shared memory closed (%d).\n", result );
-> }
+Hi 
+As far as I know an Xenomai RT Task can not call Linux API functions without leaving the Xenomai domain.
 
-void cleanup_module()
-{
-     int result =3D 0;
-     while ((result =3D rt_heap_delete( &my_heap_desc )) =3D=3D -EBUSY) {
-	set_current_state(TASK_INTERRUPTIBLE);
-	schedule_timeout(100);
-    }
-     printk( KERN_INFO "Shared memory closed (%d).\n", result );
-}
+I was thinking about a generic library/framework which would allow an Xenomai RT Task call a Linux API 
+function which would be then marshalled over a Posix/Native Queue to another Xenomai RT Task which then 
+would do the dirty job of calling Linux functions. The responses and function return values from linux functions 
+can be marshalled back to the original Xenomai RT-Task caller again over another Posix/Native Queue. In such 
+a scenario the original caller RT Task would stay always in Xenomai domain. 
 
-I'm sure Gilles will correct me if the code snippet is wrong, but this is o=
-ne=20
-method I use to ensure shared resources do not cause a segfault (or worse)=
-=20
-when unloading a kernel module.
+I would like to hear whether such an approach sounds feasible/reasonable given the fact that currently 
+Xenomai RT Tasks can not call Linux functions without leaving the Xenomai domain. Such a library/framework 
+would be a solution to overcome that constraint. I would be glad to hear some opinions about this.
+
+Thanks & Regards,
+
+Guvenc  
 
 
-Regards, Paul.
+      
+
 
