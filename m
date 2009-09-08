@@ -1,11 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1252420689.4304.35.camel@domain.hid>
+From: Paul <paul_c@domain.hid>
+Date: Tue, 8 Sep 2009 17:20:00 +0100
 References: <1252420689.4304.35.camel@domain.hid>
-Content-Type: text/plain
-Date: Tue, 08 Sep 2009 17:31:12 +0200
-Message-Id: <1252423872.2693.84.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <1252420689.4304.35.camel@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200909081720.00629.paul_c@domain.hid>
 Subject: Re: [Xenomai-help] rt_heap cleanup issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,51 +18,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Christoph Permes <christoph.permes@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Tue, 2009-09-08 at 16:38 +0200, Christoph Permes wrote:
-> Hi,
-> 
-> I have a kernel module that allocates a shared memory and a non-realtime
-> userspace application that reads data from the shared memory.
-> 
-> When loading and unloading kernel module and application multiple times,
-> sometimes the shared memory is not cleaned up. The shared memory remains
-> in /proc/xenomai/registry/native/heaps with size=0. A try to load the
-> module again results in a kernel null pointer exception.
+On Tuesday 08 September 2009, Christoph Permes wrote:
+> void cleanup_module()
+> {
+> =A0 =A0 int result =3D 0;
+> =A0 =A0 // delete heap descriptor
+> =A0 =A0 my_shm_pointer =3D NULL;
+> =A0 =A0 result =3D rt_heap_delete( &my_heap_desc );
+> =A0 =A0 printk( KERN_INFO "Shared memory closed (%d).\n", result );
+> }
 
-> There is no null pointer exception when killing the application before
-> rmmod.
-> 
-> Is it generally a problem if kernel modules are unloaded before all
-> applications that use the shared memory are terminated?
+void cleanup_module()
+{
+     int result =3D 0;
+     while ((result =3D rt_heap_delete( &my_heap_desc )) =3D=3D -EBUSY) {
+	set_current_state(TASK_INTERRUPTIBLE);
+	schedule_timeout(100);
+    }
+     printk( KERN_INFO "Shared memory closed (%d).\n", result );
+}
 
-Actually, you should not be able to do that at all. The bug here is that
-we should prevent you from unloading the module until all apps have
-removed their references on the heap.
-
-> With userspace realtime applications cleanup works without any problems
-> regardless of the order the applications are started/terminated.
-> Maybe I am doing something wrong in the example code above?
-> 
-> As my real application consists of several userspace applications
-> (realtime and non-realtime) the startup and shutdown procedure is more
-> complex so that it is not guaranteed that all userspace applications are
-> finished when the kernel module is unloaded.
-> 
-> Thanks,
-> 
-> Christoph
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+I'm sure Gilles will correct me if the code snippet is wrong, but this is o=
+ne=20
+method I use to ensure shared resources do not cause a segfault (or worse)=
+=20
+when unloading a kernel module.
 
 
+Regards, Paul.
 
