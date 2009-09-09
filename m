@@ -1,12 +1,18 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <Pine.LNX.4.64.0908271144200.1424@domain.hid>
-References: <Pine.LNX.4.64.0908271144200.1424@domain.hid>
-Content-Type: text/plain
-Date: Thu, 27 Aug 2009 11:23:40 +0200
-Message-Id: <1251365020.3052.6.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4AA76628.3080901@domain.hid>
+Date: Wed, 09 Sep 2009 10:24:08 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <793108.19562.qm@domain.hid>
+	<4AA691B8.4090204@domain.hid>
+	<394564.56258.qm@domain.hid>
+	<4AA6D85C.8040707@domain.hid>
+	<982599.63991.qm@domain.hid>
+	<4AA6DE47.8010804@domain.hid>
+	<934774.26170.qm@domain.hid>
+In-Reply-To: <934774.26170.qm@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai-head and 2.6.30.5
+Subject: Re: [Xenomai-help] RT Task RPC over a POSIX/Native Queue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,59 +22,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Rus V. Brushkoff" <rus@domain.hid>
+To: Guvenc Gulce <gulceg@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Thu, 2009-08-27 at 11:53 +0300, Rus V. Brushkoff wrote:
-> 	Hi,
+Guvenc Gulce wrote:
+> rt_net is nice but then all network participants have to use rt_net otherwise 
+> the realtime communication is not guaranteed on the wire.. in some cases 
+> the real-timeliness on the wire may not be needed but the determinism 
+> of the rt-task may still be an issue..
 > 
->   Have problems with this kernel :
-> 
->   - adeos-ipipe-2.6.30-x86-2.4-05.patch fails on arch/x86/include/asm/irqflags.h
+> I think it is a great flexibility to give an rt task the chance to communicate 
+> with non rt_net clients and servers in the network without worrying about 
+> losing its determinism. 
 
-This hunk can be fixed manually; there seems to be annoying whitespace
-changes in the way. 
+You can do that with rtnet.
 
->   - kernel compiled with stack protector panics in __schedule while trying
->  	to run any latency test. Backtrace is :
-> 
-
-Our task switch code does not support CC_STACKPROTECTOR yet; since we
-don't update the switch canary word, the vanilla checks likely choke on
-our switches. You may want to disable this option for running
-Xenomai/x86.
-
-> ....................................
-> panic
-> __stack_check_fail
-> __schedule
-> _spin_unlock_irqrestore
-> try_to_wake_up
-> __wake_up_common
-> __ipipe_restore_root
-> __wake_up_sync_key
-> schedule
-> xnshadow_harden
-> xnshadow_wait_barrier
-> xnshadow_sys_barrier
-> iosyscall_event
-> __ipipe_dispatch_event
-> iosyscall_event
-> __ipipe_syscall_root
-> sysenter_past_esp
-> ....................................
-> 
-> May I need to donwgrade the kernel ?
-> 
-> 
->  		Rus
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
 -- 
-Philippe.
-
+                                          Gilles
 
 
