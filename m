@@ -1,5 +1,5 @@
-Message-ID: <4AA80095.50502@domain.hid>
-Date: Wed, 09 Sep 2009 21:23:01 +0200
+Message-ID: <4AA820D4.8000302@domain.hid>
+Date: Wed, 09 Sep 2009 23:40:36 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <7a15153d0909081259o47b0fcb7k46f679e7dfe83456@domain.hid>	<4AA6BC5D.8020704@domain.hid>	<7a15153d0909090803o309c5883q5c02ebef4fa794d8@domain.hid>	<4AA7C4F7.6000903@domain.hid>
@@ -23,21 +23,26 @@ Cc: xenomai@xenomai.org
 Felipe Castro wrote:
 > i applied the adeos path that comes with xenomai 2.4.9.1 overriding the old
 > one that I was using, is that a problem ?
-
-Yes, please start from scratch. And I suspect you may not be running the
-kernel you think you are running since it is a 2.6.27, and there is no
-I-pipe patch for Linux 2.6.27 in xenomai 2.4.9.1.
-
 > 
 > the result is :
 > 
 > root@domain.hid:~$ cat /proc/ipipe/version
 > 1.12-02
+> 
+> 
+> On Wed, Sep 9, 2009 at 12:08 PM, Gilles Chanteperdrix <
+> gilles.chanteperdrix@xenomai.org> wrote:
+> 
+>> Felipe Castro wrote:
+>>> Yes , i compiled with msoft-float , anyway  I downloaded xenomai 2.4.9.1
+>>> and recompile my kernel,
+>>>
+>>> During the startup it was ok ,
+>>>
+>>> [    1.340935] NetWinder Floating Point Emulator V0.97 (double precision)
 
-xenomai 2.4.9.1 ships with the following I-pipe patches for ARM:
-adeos-ipipe-2.6.28-arm-1.12-05
-adeos-ipipe-2.6.29-arm-1.13-03
-adeos-ipipe-2.6.30-arm-1.14-02
+By the way, you should disable the floating point emulator, this way you
+would be sure that the user-space code is actually using soft-floats.
 
 -- 
 					    Gilles.
