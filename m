@@ -1,10 +1,15 @@
-From: Andreas Glatz <andreasglatz@domain.hid>
-Content-Type: multipart/mixed; boundary="=-nk/ESpEs/pT1bXNBOXA/"
-Date: Wed, 09 Sep 2009 17:48:40 -0400
-Message-Id: <1252532920.10115.9.camel@domain.hid>
-Mime-Version: 1.0
-Subject: [Xenomai-core] nucleus/pipe.c patch: check for lingering close at
-	xnpipe_connect()
+Message-ID: <4AA82D6E.8070909@domain.hid>
+Date: Thu, 10 Sep 2009 00:34:22 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <1252532920.10115.9.camel@domain.hid>
+In-Reply-To: <1252532920.10115.9.camel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig0262544346171E46D95BD6A9"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] nucleus/pipe.c patch: check for lingering close
+	at xnpipe_connect()
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,58 +18,109 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Andreas Glatz <andreasglatz@domain.hid>
+Cc: xenomai@xenomai.org
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig0262544346171E46D95BD6A9
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
+
+Andreas Glatz wrote:
+> Hi,
+>=20
+> Currently, you can destroy RT_PIPE while a non-rt application is
+> connected. If that happens the pipe won't be fully closed but
+> some parts will be leftover for cleanup when closing the RT_PIPE
+> from the non-rt application (lingering close).
+>=20
+> For us it would be very convenient if we didn't have to close
+> the non-rt side before restarting the rt-side (currently, the=20
+> rt-side complains bc the non-rt side didn't resolve the lingering
+> close).
+>=20
+> Here is a patch where the rt-side resolves the lingering close
+> when connecting to the RT_PIPE. I tested it and it seems to work=20
+> fine. Do you have any concerns?
+>=20
+> Andreas
+>=20
+
+Whenever possible, please post patches inline (I had to manually copy it
+to allow commenting).
+
+> --- pipe.orig.c	2009-09-09 17:23:10.000000000 -0400
+> +++ pipe.c	2009-09-09 17:32:48.000000000 -0400
+> @@ -309,17 +309,35 @@
+>  int xnpipe_connect(int minor, struct xnpipe_operations *ops, void *xst=
+ate)
+>  {
+>  	struct xnpipe_state *state;
+> -	int need_sched =3D 0, ret;
+> +	int need_sched =3D 0, test_lclose =3D 0, ret;
+>  	spl_t s;
+> =20
+> -	minor =3D xnpipe_minor_alloc(minor);
+> -	if (minor < 0)
+> +	ret =3D xnpipe_minor_alloc(minor);
+> +	if (ret >=3D 0)
+> +		minor =3D ret;
+> +	else=20
+> +	if(ret =3D=3D -EBUSY)
+> +		test_lclose =3D 1;
+> +	else=20
+>  		return minor;
+> =20
+>  	state =3D &xnpipe_states[minor];
+> =20
+>  	xnlock_get_irqsave(&nklock, s);
+> =20
+> +	if(test_lclose) {
+> +		if(testbits(state->status, XNPIPE_KERN_LCLOSE)) {
+> +			clrbits(state->status, XNPIPE_KERN_LCLOSE);
+> +			xnlock_put_irqrestore(&nklock, s);
+> +			state->ops.release(state->xstate);
+
+You cannot bluntly call release() here. You may not run in Linux context
+while that handler demands this. Moreover, releasing the state is the
+job of the NRT user that opened it and obviously still has a hand on it.
+
+(And the locking is imbalanced here, but that is shadowed by the other
+flaws.)
+
+> +		} else {
+> +			xnlock_put_irqrestore(&nklock, s);
+> +			return -EBUSY;
+> +		}
+> +	}
+> +		=09
+> +	xnlock_get_irqsave(&nklock, s);
+> +
+>  	ret =3D xnpipe_set_ops(state, ops);
+>  	if (ret) {
+>  		xnlock_put_irqrestore(&nklock, s);
+
+IIUC, you are looking for a way to keep a pipe open on the NRT side
+while the RT user is disappearing and re-appearing? Not sure if this is
+feasible at all with current xnpipe. But if it is, I think you rather
+have to introduce some kind of reset on the affected xnpipe_state.
+
+Jan
 
 
---=-nk/ESpEs/pT1bXNBOXA/
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+--------------enig0262544346171E46D95BD6A9
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Hi,
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-Currently, you can destroy RT_PIPE while a non-rt application is
-connected. If that happens the pipe won't be fully closed but
-some parts will be leftover for cleanup when closing the RT_PIPE
-from the non-rt application (lingering close).
+iEYEARECAAYFAkqoLXUACgkQniDOoMHTA+lrXQCfaoWRynZ6kzCv4qbO7Uxzqh7v
+2s4An0FsWc86lCjWw1rsx5ssFEFE0BYC
+=fud9
+-----END PGP SIGNATURE-----
 
-For us it would be very convenient if we didn't have to close
-the non-rt side before restarting the rt-side (currently, the 
-rt-side complains bc the non-rt side didn't resolve the lingering
-close).
-
-Here is a patch where the rt-side resolves the lingering close
-when connecting to the RT_PIPE. I tested it and it seems to work 
-fine. Do you have any concerns?
-
-Andreas
-
-
-
---=-nk/ESpEs/pT1bXNBOXA/
-Content-Disposition: attachment; filename=lclose.patch
-Content-Type: text/x-patch; name=lclose.patch; charset=UTF-8
-Content-Transfer-Encoding: base64
-
-LS0tIHBpcGUub3JpZy5jCTIwMDktMDktMDkgMTc6MjM6MTAuMDAwMDAwMDAwIC0wNDAwDQorKysg
-cGlwZS5jCTIwMDktMDktMDkgMTc6MzI6NDguMDAwMDAwMDAwIC0wNDAwDQpAQCAtMzA5LDE3ICsz
-MDksMzUgQEANCiBpbnQgeG5waXBlX2Nvbm5lY3QoaW50IG1pbm9yLCBzdHJ1Y3QgeG5waXBlX29w
-ZXJhdGlvbnMgKm9wcywgdm9pZCAqeHN0YXRlKQ0KIHsNCiAJc3RydWN0IHhucGlwZV9zdGF0ZSAq
-c3RhdGU7DQotCWludCBuZWVkX3NjaGVkID0gMCwgcmV0Ow0KKwlpbnQgbmVlZF9zY2hlZCA9IDAs
-IHRlc3RfbGNsb3NlID0gMCwgcmV0Ow0KIAlzcGxfdCBzOw0KIA0KLQltaW5vciA9IHhucGlwZV9t
-aW5vcl9hbGxvYyhtaW5vcik7DQotCWlmIChtaW5vciA8IDApDQorCXJldCA9IHhucGlwZV9taW5v
-cl9hbGxvYyhtaW5vcik7DQorCWlmIChyZXQgPj0gMCkNCisJCW1pbm9yID0gcmV0Ow0KKwllbHNl
-IA0KKwlpZihyZXQgPT0gLUVCVVNZKQ0KKwkJdGVzdF9sY2xvc2UgPSAxOw0KKwllbHNlIA0KIAkJ
-cmV0dXJuIG1pbm9yOw0KIA0KIAlzdGF0ZSA9ICZ4bnBpcGVfc3RhdGVzW21pbm9yXTsNCiANCiAJ
-eG5sb2NrX2dldF9pcnFzYXZlKCZua2xvY2ssIHMpOw0KIA0KKwlpZih0ZXN0X2xjbG9zZSkgew0K
-KwkJaWYodGVzdGJpdHMoc3RhdGUtPnN0YXR1cywgWE5QSVBFX0tFUk5fTENMT1NFKSkgew0KKwkJ
-CWNscmJpdHMoc3RhdGUtPnN0YXR1cywgWE5QSVBFX0tFUk5fTENMT1NFKTsNCisJCQl4bmxvY2tf
-cHV0X2lycXJlc3RvcmUoJm5rbG9jaywgcyk7DQorCQkJc3RhdGUtPm9wcy5yZWxlYXNlKHN0YXRl
-LT54c3RhdGUpOw0KKwkJfSBlbHNlIHsNCisJCQl4bmxvY2tfcHV0X2lycXJlc3RvcmUoJm5rbG9j
-aywgcyk7DQorCQkJcmV0dXJuIC1FQlVTWTsNCisJCX0NCisJfQ0KKwkJCQ0KKwl4bmxvY2tfZ2V0
-X2lycXNhdmUoJm5rbG9jaywgcyk7DQorDQogCXJldCA9IHhucGlwZV9zZXRfb3BzKHN0YXRlLCBv
-cHMpOw0KIAlpZiAocmV0KSB7DQogCQl4bmxvY2tfcHV0X2lycXJlc3RvcmUoJm5rbG9jaywgcyk7
-DQo=
-
-
---=-nk/ESpEs/pT1bXNBOXA/--
+--------------enig0262544346171E46D95BD6A9--
 
