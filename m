@@ -1,16 +1,18 @@
-From: Jonathan Haws <Jonathan.Haws@domain.hid>
-Date: Thu, 10 Sep 2009 14:54:28 -0600
-Message-ID: <BB99A6BA28709744BF22A68E6D7EB51F03248BDC03@domain.hid>
-References: <BB99A6BA28709744BF22A68E6D7EB51F03248BDB59@domain.hid>
-	<4AA95F97.6010802@domain.hid>
-	<BB99A6BA28709744BF22A68E6D7EB51F03248BDBCD@midas.usurf.usu.edu>
-	<4AA96689.3010502@domain.hid>
-In-Reply-To: <4AA96689.3010502@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Installation and Makefile Help
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <BB99A6BA28709744BF22A68E6D7EB51F03248BDBDA@midas.usurf.usu.edu>
+References: <BB99A6BA28709744BF22A68E6D7EB51F032442FBF6@domain.hid>
+	<4AA824F3.9090108@domain.hid>
+	<BB99A6BA28709744BF22A68E6D7EB51F03248BD696@domain.hid>
+	<4AA9147A.3070205@domain.hid>
+	<BB99A6BA28709744BF22A68E6D7EB51F03248BD775@domain.hid>
+	<1252597386.2820.193.camel@domain.hid>
+	<BB99A6BA28709744BF22A68E6D7EB51F03248BDBDA@midas.usurf.usu.edu>
+Content-Type: text/plain
+Date: Thu, 10 Sep 2009 22:57:01 +0200
+Message-Id: <1252616221.2820.227.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Testsuite fails on 2.5-rc3
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,64 +22,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jonathan Haws <Jonathan.Haws@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> >> Use DESTDIR, that is what it was made for. The makefiles use it
-> >> when running "make install", and xeno-config prepends it to the
-> >> directories it returns.
-> >>
-> >> So, in a makefile, you woud do:
-> >>
-> >> XENO_DESTDIR:=3D~/eldk/ppc_4xx
-> >> XENO_CONFIG:=3D$(XENO_DESTDIR)/usr/local/xenomai/bin/xeno-config
-> >> XENO_CPPFLAGS:=3D$(shell DESTDIR=3D$(XENO_DESTDIR) $(XENO_CONFIG) --
-> >> xeno-cflags) XENO_LIBS:=3D$(shell DESTDIR=3D$(XENO_DESTDIR)
-> >> $(XENO_CONFIG) --xeno- ldflags)
-> >
-> > Ah, that makes sense.  Thanks, Gilles.
-> >
-> >
-> >> Note that to ease working in a cross-compile embedded
-> environnement
-> >>  you may want to avoid copying header files, documentation,
-> etc...
-> >> in the directory that will be used to generate the root
-> filesystem.
-> >> In this case pass a different --prefix and --exec-prefix options
-> to
-> >>  xenomai configure script.
-> >
-> > So, in that case I would do something like the following:
-> >
-> > ./configure --exec-prefix=3D~/eldk/ppc_4xx/usr/local/xenomai \
-> > --prefix=3D/usr/local/xenomai --host=3Dppc-linux
-> >
-> > That would put headers, documentation, and other development files
-> in
-> > a usable location on the host and the libraries and executables in
-> > ~/eldk/ppc_4xx.
->=20
-> Well no, unfortunately not. To get things working properly, you have
-> to
-> pass ~/eldk/ppc_4xx as the DESTDIR when running "make install". At
-> least
-> that is the way the makefiles coming from automake are supposed to
-> be
-> used.
->=20
-> So, what you would do is rather:
-> ./configure --exec-prefix=3D/usr/local/xenomai --prefix=3D/xenomai-host
-> --host=3Dppc-linux
->=20
-> And then in the script generating the rootfs, prune the
-> ~/eldk/ppc_4xx/xenomai-host directory.
+On Thu, 2009-09-10 at 14:46 -0600, Jonathan Haws wrote:
+> > > > > Thu Jan  1 00:06:52 UTC 1970
+> > > > > running: ./run -- -T 120 # switchtest
+> > > > > *
+> > > > > *
+> > > > > * Type ^C to stop this application.
+> > > > > *
+> > > > > *
+> > > > > == Testing FPU check routines...
+> > > > > r0: 1 != 2
+> > > > > r1: 1 != 2
+> > > > > r2: 1 != 2
+> > > > > r3: 1 != 2
+> > > > > r4: 1 != 2
+> > > > > r5: 1 != 2
+> > > > > r6: 1 != 2
+> > > > > r7: 1 != 2
+> > > > > r8: 1 != 2
+> > > > > r9: 1 != 2
+> > > > > r10: 1 != 2
+> > > > > r11: 1 != 2
+> > > > > r12: 1 != 2
+> > > > > r13: 1 != 2
+> > > > > r14: 1 != 2
+> > > > > r15: 1 != 2
+> > > > > r16: 1 != 2
+> > > > > r17: 1 != 2
+> > > > > r18: 1 != 2
+> > > > > r19: 1 != 2
+> > > > > r20: 1 != 2
+> > > > > r21: 1 != 2
+> > > > > r22: 1 != 2
+> > > > > r23: 1 != 2
+> > > > > r24: 1 != 2
+> > > > > r25: 1 != 2
+> > > > > r26: 1 != 2
+> > > > > r27: 1 != 2
+> > > > > r28: 1 != 2
+> > > > > r29: 1 != 2
+> > > > > r30: 1 != 2
+> > > > > r31: 1 != 2
+> > > > > == FPU check routines: OK.
+> > > > > == Threads: sleeper_ufps-0 rtk-1Oops: Exception in kernel
+> > mode,
+> > > > sig: 11 [#1]
+> > > > > PREEMPT Kilauea
+> > > > > Modules linked in:
+> > > > > NIP: c01e876c LR: c01e86e8 CTR: c0070fb0
+> > > > > REGS: cf1e5440 TRAP: 0700   Not tainted  (2.6.30.3-wolverine-
+> > > > dirty)
+> > > > > MSR: 00029030 <EE,ME,CE,IR,DR>  CR: 40000002  XER: 0000005f
+> > > > > TASK = cd412000[819] 'switchtest' THREAD: cd448000
+> > > > > GPR00: 00000005 cf1e54f0 cd412000 00000000 00000005 00000001
+> > > > a4500f69 00000000
+> > > > > GPR08: 000011af 00000000 00000017 c0390000 20000002 00000000
+> > > > 00021030 c0070d8c
+> > > > > GPR16: cd471208 00000000 00000000 00000000 c0394108 c0381248
+> > > > 003d0900 00000000
+> > > > > GPR24: c02f5580 cf1e5500 cd4711d0 cd4560b8 00000006 cd471208
+> > > > 00000000 00000000
+> > > > > NIP [c01e876c] rtswitch_ktask+0xb0/0x3e4
+> > > > > LR [c01e86e8] rtswitch_ktask+0x2c/0x3e4
+> > > > > Call Trace:
+> > > > > Instruction dump:
+> > > > > 7c0003b8 7f9c0038 7f892278 21290000 7d3c0194 7d3c4b78 4182009c
+> > > > 1c1703e8
+> > > > > 39200000 7c002214 9001000c 91210008 <c8010008> fc200090
+> > fc400090
+> > > > fc600090
+> > > > > Kernel panic - not syncing: Fatal exception in interrupt
+> > > > > Call Trace:
+> > > > > Rebooting in 180 seconds..
+> > > >
+> > > > One thing I can tell for sure reading this trace is that the
+> > error
+> > > > is
+> > > > not caused by the FPU. The error is a "program check exception".
+> > >
+> > > So, what could be causing the program check in switchtest?  Could
+> > it be a misconfiguration of Xenomai in my kernel, or the fact that I
+> > had re-patched my kernel with a newer I-pipe patch and then I tried
+> > to re-patch again with an older patch?
+> > >
+> > 
+> > This one is an Heisenbug from switchtest. It was known to happen
+> > with
+> > FPU-disabled threads as well. I thought I had pinned it a month ago,
+> > but
+> > I was wrong.
+> 
+> Just FYI, I got xeno-test to run correctly under 2.5-rc3 (once I had /dev/rtheap and /dev/rtpXX in place) and got this exact same error with switchtest.  So, it happens in both the stable release and the development branch.
+> 
 
-Ah, yes.  I can see that now that I tried exactly what I just mentioned.  T=
-his make sense.
+2.4.9.1 and 2.5-rc3 are mostly in sync wrt to switchtest.
 
-Thanks.
+> Is this just an artifact of switchtest, or is it something that will come up in my own code?
 
-Jonathan
+Switchtest definitely has a bug, but the fact that it tests the FPU is
+not relevant to this issue (IOW, the test engine has a problem, not what
+is being tested).
+
+> 
+> Thanks,
+> 
+> Jonathan
+-- 
+Philippe.
+
 
 
