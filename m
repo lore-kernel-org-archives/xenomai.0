@@ -1,111 +1,62 @@
-Message-ID: <4A9553C7.6060307@domain.hid>
-Date: Wed, 26 Aug 2009 17:24:55 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <abaf774b0908040623w1583f930xda88c125b64394b1@domain.hid>	<4A7BC4DC.70209@domain.hid>	<abaf774b0908190127y4092620cr9c19b65b6434d7b1@domain.hid>	<4A8BBA87.5010305@domain.hid>	<abaf774b0908190229q4d1e0641wfc2d6927a8b34e42@domain.hid>	<4A8BC7BE.5020201@domain.hid>	<abaf774b0908190246j61f0e841s60a1b284ab1bb86@domain.hid>	<4A8D295C.2080402@domain.hid>
-	<abaf774b0908260818k3de24ccah285b460b144a88fc@domain.hid>
-In-Reply-To: <abaf774b0908260818k3de24ccah285b460b144a88fc@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+From: Andreas Glatz <andreasglatz@domain.hid>
+In-Reply-To: <4AA82D6E.8070909@domain.hid>
+References: <1252532920.10115.9.camel@domain.hid>  <4AA82D6E.8070909@domain.hid>
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai 2.5-rc2 clock_gettime bad tv_nsec value
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Date: Thu, 10 Sep 2009 12:49:45 -0400
+Message-Id: <1252601385.28464.29.camel@domain.hid>
+Mime-Version: 1.0
+Subject: Re: [Xenomai-core] nucleus/pipe.c patch: check for lingering close
+	at xnpipe_connect()
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Steve <sbxenomai@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Steve wrote:
-> 2009/8/20 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org
-> <mailto:gilles.chanteperdrix@xenomai.org>>
-> 
->     Steve wrote:
->     > On 19/08/2009, Gilles Chanteperdrix
->     <gilles.chanteperdrix@xenomai.org
->     <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
->     >> Steve wrote:
->     >>> Were you going to delay handling this until later, or were you
->     hoping
->     >>> it wouldn't be a problem?  If it's the former then this is not my
->     >>> number one priority at the moment, so from my perspective I can wait
->     >>> until the next release candidate / release.
->     >> To be completely frank, I was not really worried about this
->     issue, since
->     >> you had not answered, I thought that maybe the issue was in your test
->     >> program.
->     >>
->     >>> Linux kernel: 2.6.29.4
->     >>> Xenomai: 2.5-rc2
->     >>> Adeos: adeos-ipipe-2.6.29.4-x86-2.4-01
->     >>>
->     >>> OS: Ubuntu (8.04 with updates)
->     >>> Hardware:
->     >>> Intel Core 2 CPU, kernel compiled using processor family
->     'Pentium-4/etc'
->     >> compiled for 32 or 64 bits?
->     >>
->     >> --
->     >>                                           Gilles
->     >>
->     >>
->     >
->     > 32 bit,
-> 
->     Ok. It turns out that the error is portable, and there is no other way
->     than to fix the result after the multiplication (trying to round
->     differently leads to the converse error). So, could you try the
->     following patch:
-> 
->     diff --git a/include/asm-generic/bits/timeconv.h
->     b/include/asm-generic/bits/time
->     index 79060b3..aa595fe 100644
->     --- a/include/asm-generic/bits/timeconv.h
->     +++ b/include/asm-generic/bits/timeconv.h
->     @@ -60,10 +60,17 @@ long long xnarch_ns_to_tsc(long long ns)
->      unsigned long long xnarch_divrem_billion(unsigned long long value,
->                                             unsigned long *rem)
->      {
->     -       unsigned long long r;
->     -       r = xnarch_nodiv_ullimd(value, bln_frac.frac, bln_frac.integ);
->     -       *rem = value - r * 1000000000;
->     -       return r;
->     +       unsigned long long q;
->     +       unsigned r;
->     +
->     +       q = xnarch_nodiv_ullimd(value, bln_frac.frac, bln_frac.integ);
->     +       r = value - q * 1000000000;
->     +       if (r >= 1000000000) {
->     +               ++q;
->     +               r -= 1000000000;
->     +       }
->     +       *rem = r;
->     +       return q;
->      }
->      #else /* !XNARCH_HAVE_NODIV_LLIMD */
->      long long xnarch_ns_to_tsc(long long ns)
-> 
-> 
->     --
->                                                Gilles.
-> 
-> Hi,
-> 
-> I have applied the patch and it works - the kernel messages from the
-> previous patch are no longer produced, and my test program works without
-> clock_gettime tv_nsec checks.  Thank you.
-> 
-> Just for completeness, are we sure that the value given by r is never
-> more than 2 billion?  I only ask because the patch only deals with one
-> second worth of overrun.
+Hi,
 
-Yes. The multiplication used to compute q may only be off by one.
 
--- 
-                                          Gilles
+> 
+> Whenever possible, please post patches inline (I had to manually copy it
+> to allow commenting).
 
+Sure, no problem.
+
+
+> 
+> You cannot bluntly call release() here. You may not run in Linux context
+> while that handler demands this. 
+
+It's also called in xnpipe_disconnect() (if I follow 'goto cleanup' and
+the user-space isn't connected). So is there a different policy here?
+I mean should xnpipe_connect() just be called from rt context whereas
+xnpipe_disconnect() has to be called from non-rt context?
+
+
+> Moreover, releasing the state is the
+> job of the NRT user that opened it and obviously still has a hand on it.
+
+Yeah, that's the tricky part. I left that part out yet ...
+
+> 
+> (And the locking is imbalanced here, but that is shadowed by the other
+> flaws.)
+
+Agree.
+
+If we had that new pipe behaviour it could significantly 
+speed-up debugging for us because we wouldn't have to stop (and
+eventually start) all NRT applications before restarting the RT
+application.
+
+Thanks for commenting on my quick and dirty patch. I think, now
+I know where to continue.
+
+Andreas
 
