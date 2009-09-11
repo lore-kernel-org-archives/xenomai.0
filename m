@@ -1,13 +1,12 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200909081639.47736.smolorz@domain.hid>
-References: <200909081639.47736.smolorz@domain.hid>
+In-Reply-To: <1252682730.2820.414.camel@domain.hid>
+References: <1252682730.2820.414.camel@domain.hid>
 Content-Type: text/plain
-Date: Sat, 12 Sep 2009 00:23:10 +0200
-Message-Id: <1252707790.2820.492.camel@domain.hid>
+Date: Sat, 12 Sep 2009 01:21:41 +0200
+Message-Id: <1252711301.2820.508.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] rtcan: Add support for CAN PCI cards
- from ESD
+Subject: Re: [Xenomai-core] [Xenomai-help] RTIPC protocol driver set
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,29 +15,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Sebastian Smolorz <smolorz@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Tue, 2009-09-08 at 16:39 +0200, Sebastian Smolorz wrote:
-> This patch adds support for SJA1000 based PCI CAN interface cards from 
-> electronic system design gmbh.
-> 
-> The following list of boards are supported:
-> 
-> CAN-PCI/200 (tested)
-> CAN-PCI/266
-> CAN-PMC266
-> CAN-PCIe/2000
-> CAN-CPCI/200
-> CAN-PCI104
-> 
-> The patch is based on the Socket-CAN driver for those boards by Matthias 
-> Fuchs.
-> 
-> Signed-off-by: Sebastian Smolorz <smolorz@domain.hid>
-> Acked-by: Wolfgang Grandegger <wg@domain.hid>
+On Fri, 2009-09-11 at 17:25 +0200, Philippe Gerum wrote:
+> * IDDP stands for "intra-domain datagram protocol", i.e. a
+> Xenomai-to-Xenomai real-time datagram channel. This protocol may not be
+> as flexible as POSIX message queues (does not support message priority
+> but does out-of-bound sending though)
 
-Merged, thanks.
+Oops, I did it again. Please read "out-of-band".
 
 -- 
 Philippe.
