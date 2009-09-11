@@ -1,12 +1,15 @@
-Message-ID: <4AAA4AE9.5070101@domain.hid>
-Date: Fri, 11 Sep 2009 15:04:41 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Jonathan Haws <Jonathan.Haws@domain.hid>
+Date: Fri, 11 Sep 2009 07:49:56 -0600
+Message-ID: <BB99A6BA28709744BF22A68E6D7EB51F03248BDE8A@midas.usurf.usu.edu>
+References: <BB99A6BA28709744BF22A68E6D7EB51F03248BDDBD@midas.usurf.usu.edu>
+	<4AA9E0CA.5030201@domain.hid>
+In-Reply-To: <4AA9E0CA.5030201@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <4303dd240909110600tf787b85td93b46086953a0d9@domain.hid>
-In-Reply-To: <4303dd240909110600tf787b85td93b46086953a0d9@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problems with instalation of xenomai in ubuntu
+Subject: Re: [Xenomai-help] Negative Latency in test "in kernel timer
+ handler"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,68 +19,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Flavio de Castro Alves Filho <flavio.alves@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Flavio de Castro Alves Filho wrote:
-> Hello,
->  
-> I am new with Xenomai and I am having problems in booting a compiled
-> kernel into Ubuntu 8.10. I could compile the kernel with the appropriate
-> patch, configured grub to load the new kernel. But, when I boot the new
-> kernel, it performs all the boot configurations and at the end, when the
-> gnome is about to be loaded, the computer starts to blink the display
-> and then blocks.
->  
-> I am using the following configuration:
->  
-> - x86 platform (my notebook ... an intel core2duo machine)
-> - xenomai version 2.4.9
-> - linux 2.6.30
-> - ubuntu linux 8.10
-> I performed the following steps:
->  
-> - downloaded file linux-2.6.30.tar.bz2 from kernel.org <http://kernel.org>
-> - downloaded file xenomai-2.4.9.tar.bz2 from xenomai website
-> - from my home directory, I decompressed both files
-> - applied the patch, running the "scripts/prepare-kernel.sh" and
-> provided the path for my source files "/home/flavio/linux-2.6.30". The
-> script had correctly found the patch to be applied to my sources.
-> - make xconfig:
->    - disabled HPET timer support
->    - disabled PC Speaker
->    - disabled Power Management Support
->    - disabled CPU frequency scaling
->    - enabled VxWorks emulator
->    - enabled RTAI emulator
->    - enabled Testing drivers
-> - make
-> - make modules
-> - sudo make modules_install
-> - sudo make install
-> - cd /boot
-> - sudo update-initramfs -c -k 2.6.30
-> - created an entry in grub list:
->  
-> title Xenomai 2.4.9 Linux 2.6.30
-> root (hd0,2)
-> kernel /boot/vmlinuz-2.6.30 root=/dev/sda3 ro
-> initrd /boot/initrd.img-2.6.30
-> savedefault
-> boot
->  
-> Just as a remark, I performed before the same procedure, except for the
-> xenomai patch, and I could execute the linux 2.6.30 kernel in my computer.
->  
-> Had anybody passed by the same experience? I have no idea what the
-> problem could be.
+> > All,
+> >
+> > When I run the xeno-test to test my configuration, I noticed
+> > something interesting.  The test mode "in kernel timer handler"
+> shows
+> > a negative minimum latency.
+> >
+> > Is this typical behavior?  It seems like a negative latency is not
+> a
+> > phyical possibility, though I guess it does depend on your
+> reference
+> > point.
+>=20
+> Xenomai makes the timer tick a bit early to reduce the latency.
+> Generally, this anticipation is chosen to get a correct user-space
+> scheduling latency, so may make the timer tick a bit early when
+> looking
+> at (kernel-space) interrupt latency. In any case, you can read and
+> modify this anticipation by read and writing to the special file
+>=20
+> /proc/xenomai/latency
+>=20
+> The unit is nanoseconds.
 
-The keyboard blinking means that you have a kernel panic. Try to get the
-kernel panic text (using serial console or network console for
-instance), and send it. Some people even made a snapshot of the kernel
-panic on their screen.
+Exactly what I needed to know.  Thank you!
 
--- 
-                                          Gilles
+Jonathan
+
 
 
