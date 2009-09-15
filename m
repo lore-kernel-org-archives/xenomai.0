@@ -1,9 +1,12 @@
+Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Date: Wed, 16 Sep 2009 01:41:45 +0200
 MIME-Version: 1.0
-Date: Sun, 13 Sep 2009 15:35:58 +0300
-Message-ID: <9c789a000909130535j4dc046a1h3af2976ab504a000@domain.hid>
-From: Cristian Axenie <cristian.axenie@domain.hid>
-Content-Type: multipart/alternative; boundary=0016e6d566a1909330047374cad0
-Subject: [Xenomai-core] Comedi port over Xenomai fault question !
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Message-Id: <200909160141.46143.berlemont.hauw@domain.hid>
+Subject: [Xenomai-core] Pull request for head
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -12,135 +15,137 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org, xenomai@xenomai.org, Alexis Berlemont <berlemont.hauw@domain.hid>, Alexis Berlemont <alexis.berlemont@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
---0016e6d566a1909330047374cad0
-Content-Type: text/plain; charset=ISO-8859-1
+The following changes since commit 13d66eb4c8f1648614095d43dd529a3c98fc5278:
+  Philippe Gerum (1):
+        x86: upgrade I-pipe support to 2.6.31-x86-2.4-05
 
-Hello !
-I've took a snapshot of the xenomai-abe (Comedi port related) git repos
-pointing to the last update and tried it up and it seems that are some
-errors.
+are available in the git repository at:
 
-/usr/xenomai/sbin # ./comedi_config -v comedi0 comedi_pcimio
-Comedi: comedi_pcimio: pcimio_attach: found pci-6024e board
-Comedi: MITE: 0x90000000 mapped to c907a000 <6>Comedi: DAQ: 0x90001000
-mapped to c907c000
-Comedi: MITE: version = 2, type = 1, mite mode = 1, interface mode = 3
-Comedi: MITE: num channels = 1, write post fifo depth = 1, wins = 0, iowins
-= 2
-Comedi: comedi_pcimio: pcimio_attach: found irq 48
-Unable to handle kernel paging request for data at address 0x00012400
-Faulting instruction address:* 0xc023dd08*
-Oops: Kernel access of bad area, sig: 11 [#1]
-MPC831x RDB
-Modules linked in:
-*NIP: c023dd08* LR: c0246b70 CTR: 00000000
-REGS: c7a51c30 TRAP: 0300   Not tainted  (2.6.24.2)
-MSR: 00001032 <ME,IR,DR>  CR: 84008422  XER: 00000000
-DAR: 00012400, DSISR: 20000000
-TASK = c7864430[898] 'comedi_config' THREAD: c7a50000
-GPR00: c0246b70 c7a51ce0 c7864430 00012400 00000001 00000000 c79062c0
-c03c0000
-GPR08: 00000000 c7900a00 c03d6144 c03a37e8 c7906200 1004a5b8 c033e0b8
-c03c0000
-GPR16: c03ba578 c03d1a00 c02464fc c03b4d60 c0244e5c c024509c c024535c
-c0245380
-GPR24: c03da628 c02453a4 20001040 00000000 00000000 c03a2e50 c03c0000
-00012400
-Call Trace:
-[c7a51ce0] [c024bae0]  (unreliable)
-[c7a51d00] [c0246b70]
-[c7a51d20] [c0246bdc]
-[c7a51d40] [c024b88c]
-[c7a51d90] [c024c69c]
-[c7a51dc0] [c0238b2c]
-[c7a51de0] [c0238c64]
-[c7a51e20] [c0239094]
-[c7a51e40] [c023ba00]
-[c7a51e70] [c008b404]
-[c7a51eb0] [c008d634]
-[c7a51ec0] [c0059eb8]
-[c7a51ee0] [c004ad5c]
-[c7a51f30] [c0009644]
-[c7a51f40] [c0010ca4]
---- Exception: c01Instruction dump:
-7d6b1a14 39290010 38000001 7fe34a14 900b00b0 90ff0010 4bffff9c 9421ffe0
-7c0802a6 bf61000c 7c7f1b78 90010024 <83c30000> 7c0000a6 5400045e 7c000124
----[ end trace f35e90f95f5de008 ]---
+  ssh+git://git@domain.hid comedi
 
+Alexis Berlemont (46):
+      Replace comedi_channel_* char-typed fields by unsigned long fields.
+      Update indentation, add flags related macros
+      Add missing flags for instructions (configuration type, counter status 
+bits, IO directions and events types).
+      Fix indentation
+      Fix indentation
+      Add range_unknown declaration
+      Add Comedi PCIMIO drivers set
+      Review the subdevice registration system: get closer from Comedi 
+upstream; Rework indentation in testing drivers; Remove useless drivers 
+management functions (comedi_init_drv(), comedi_cleanup_drv())
+      Replace the first argument type: comedi_cxt_t becomes comedi_dev_t; the 
+context structure is meaningless for the driver developer.
+      Change subdevice related callbacks: replace their first argument: 
+comedi_cxt_t -> comedi_dev_t; the context is meaningless for drivers 
+developers.
+      Apply driver API change on testing drivers
+      Slightly optimize the function comedi_get_chan()
+      Change the second argument of the callback do_cmd() (in subdevice 
+structure), the subdevice index is replaced by the command to apply (which 
+contains the subdevice index).
+      Fix typing mistake in the driver fake.c
+      Review the tracing macros, mimic v4l2's system
+      Add the subdevice registration index into the subdevice structure
+      Simplify the declaration of comedi_get_chan
+      Simplify munge function declaration
+      Remove comedi_get_nbchan(), a specific function which became useless, 
+and add comedi_get_subd(), a more general function which might be helpful at 
+attach / detach time.
+      Remove comedi_get_nbchan(), a specific function which became useless, 
+and add comedi_get_subd(), a more general function which might be helpful at 
+attach / detach time.
+      Review trace macros
+      Update 8255 driver
+      Replace forgotten rtdm_printk() by comedi_err()
+      Review traces
+      Update NI TIO driver according to driver API changes
+      Update NI MIO driver according to driver API changes
+      Update NI PCIMIO driver according to driver API changes and fix a bug at 
+the same time
+      Minor indentation change in fake driver source
+      Fix obvious bug in IRQ registering procedure
+      Fix trivial compilation bug.
+      Remove useless argument in the cancel callback
+      Review comedi_get_cmd's arguments: the subdevice descriptor should be 
+enough.
+      Fix trace type (info -> err)
+      Properly implement debug traces
+      Fix minor initialization bugs
+      Add more checks in chaninfo, rnginfo ioctls
+      Add comedi_presetup_transfer() function to be called before attach 
+procedure; this function was added to prevent IRQ descriptor overwrite.
+      Add a fake range descriptor; Add basic checks in *_info ioctls
+      Add fake range descriptor
+      Add missing types flags into COMEDI_SUBD_TYPES
+      Fix debug trace routines
+      Fix MSeries_PLL_Enable_Bit wrong definition
+      Add RTSI and clock precompilation constants
+      Improve comedi_buf_evt(): remove ugly subdevice guessing based on flags.
+      Apply modifications due to comedi_buf_evt() declaration change
+      Add missing RTSI / clock configuration routines
 
-A quick disassembly shows that the error is generated in the mite driver as
-pointed next,
+ include/comedi/buffer.h                            |   19 +-
+ include/comedi/channel_range.h                     |   25 +-
+ include/comedi/command.h                           |   22 +-
+ include/comedi/device.h                            |    7 +-
+ include/comedi/driver.h                            |   24 +-
+ include/comedi/instruction.h                       |   79 +
+ include/comedi/os_facilities.h                     |   44 +-
+ include/comedi/subdevice.h                         |   50 +-
+ include/comedi/transfer.h                          |    1 +
+ ksrc/drivers/comedi/Config.in                      |    2 +
+ ksrc/drivers/comedi/Kconfig                        |   21 +
+ ksrc/drivers/comedi/Makefile                       |    4 +-
+ ksrc/drivers/comedi/buffer.c                       |  232 +-
+ ksrc/drivers/comedi/command.c                      |   64 +-
+ ksrc/drivers/comedi/device.c                       |  117 +-
+ ksrc/drivers/comedi/driver.c                       |   39 +-
+ ksrc/drivers/comedi/driver_facilities.c            |  112 +-
+ ksrc/drivers/comedi/instruction.c                  |   20 +-
+ ksrc/drivers/comedi/intel/8255.c                   |  331 ++
+ ksrc/drivers/comedi/intel/8255.h                   |   61 +
+ ksrc/drivers/comedi/intel/Config.in                |    8 +
+ ksrc/drivers/comedi/intel/Kconfig                  |    5 +
+ ksrc/drivers/comedi/intel/Makefile                 |   30 +
+ ksrc/drivers/comedi/national_instruments/Config.in |    8 +
+ ksrc/drivers/comedi/national_instruments/Kconfig   |   20 +
+ ksrc/drivers/comedi/national_instruments/Makefile  |   54 +
+ .../comedi/national_instruments/mio_common.c       | 5190 
+++++++++++++++++++++
+ ksrc/drivers/comedi/national_instruments/mite.c    |  810 +++
+ ksrc/drivers/comedi/national_instruments/mite.h    |  435 ++
+ ksrc/drivers/comedi/national_instruments/ni_mio.h  |  124 +
+ ksrc/drivers/comedi/national_instruments/ni_stc.h  | 1420 ++++++
+ ksrc/drivers/comedi/national_instruments/ni_tio.h  | 1184 +++++
+ ksrc/drivers/comedi/national_instruments/pcimio.c  | 1591 ++++++
+ .../comedi/national_instruments/tio_common.c       | 1982 ++++++++
+ ksrc/drivers/comedi/rtdm_interface.c               |   29 +-
+ ksrc/drivers/comedi/subdevice.c                    |  175 +-
+ ksrc/drivers/comedi/testing/fake.c                 |  388 +-
+ ksrc/drivers/comedi/testing/loop.c                 |  341 +-
+ ksrc/drivers/comedi/transfer.c                     |  164 +-
+ src/drvlib/comedi/descriptor.c                     |   19 +-
+ 40 files changed, 14338 insertions(+), 913 deletions(-)
+ create mode 100644 ksrc/drivers/comedi/intel/8255.c
+ create mode 100644 ksrc/drivers/comedi/intel/8255.h
+ create mode 100644 ksrc/drivers/comedi/intel/Config.in
+ create mode 100644 ksrc/drivers/comedi/intel/Kconfig
+ create mode 100644 ksrc/drivers/comedi/intel/Makefile
+ create mode 100644 ksrc/drivers/comedi/national_instruments/Config.in
+ create mode 100644 ksrc/drivers/comedi/national_instruments/Kconfig
+ create mode 100644 ksrc/drivers/comedi/national_instruments/Makefile
+ create mode 100644 ksrc/drivers/comedi/national_instruments/mio_common.c
+ create mode 100644 ksrc/drivers/comedi/national_instruments/mite.c
+ create mode 100644 ksrc/drivers/comedi/national_instruments/mite.h
+ create mode 100644 ksrc/drivers/comedi/national_instruments/ni_mio.h
+ create mode 100644 ksrc/drivers/comedi/national_instruments/ni_stc.h
+ create mode 100644 ksrc/drivers/comedi/national_instruments/ni_tio.h
+ create mode 100644 ksrc/drivers/comedi/national_instruments/pcimio.c
+ create mode 100644 ksrc/drivers/comedi/national_instruments/tio_common.c
 
-c023dcf4 <mite_release_channel>:
-mite_release_channel():
-/home/haustiq/development/eldk/ppc_6xx/usr/src/linux-2.6.24-xc1/drivers/xenomai/comedi/national_instruments/mite.c:308
-c023dcf4:    94 21 ff e0     stwu    r1,-32(r1)
-c023dcf8:    7c 08 02 a6     mflr    r0
-c023dcfc:    bf 61 00 0c     stmw    r27,12(r1)
-c023dd00:    7c 7f 1b 78     mr      r31,r3
-c023dd04:    90 01 00 24     stw     r0,36(r1)
-/home/haustiq/development/eldk/ppc_6xx/usr/src/linux-2.6.24-xc1/drivers/xenomai/comedi/national_instruments/mite.c:309
-*c023dd08:*    83 c3 00 00     lwz     r30,0(r3)
-
-
-Some hints would be appreciated !
-
-Best !
-
---0016e6d566a1909330047374cad0
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Hello !<br>I&#39;ve took a snapshot of the xenomai-abe (Comedi port related=
-) git repos pointing to the last update and tried it up and it seems that a=
-re some errors.<br><br>/usr/xenomai/sbin # ./comedi_config -v comedi0 comed=
-i_pcimio<br>
-Comedi: comedi_pcimio: pcimio_attach: found pci-6024e board<br>Comedi: MITE=
-: 0x90000000 mapped to c907a000 &lt;6&gt;Comedi: DAQ: 0x90001000 mapped to =
-c907c000<br>Comedi: MITE: version =3D 2, type =3D 1, mite mode =3D 1, inter=
-face mode =3D 3<br>
-Comedi: MITE: num channels =3D 1, write post fifo depth =3D 1, wins =3D 0, =
-iowins =3D 2<br>Comedi: comedi_pcimio: pcimio_attach: found irq 48<br>Unabl=
-e to handle kernel paging request for data at address 0x00012400<br>Faultin=
-g instruction address:<b> 0xc023dd08</b><br>
-Oops: Kernel access of bad area, sig: 11 [#1]<br>MPC831x RDB<br>Modules lin=
-ked in:<br><b>NIP: c023dd08</b> LR: c0246b70 CTR: 00000000<br>REGS: c7a51c3=
-0 TRAP: 0300=A0=A0 Not tainted=A0 (2.6.24.2)<br>MSR: 00001032 &lt;ME,IR,DR&=
-gt;=A0 CR: 84008422=A0 XER: 00000000<br>
-DAR: 00012400, DSISR: 20000000<br>TASK =3D c7864430[898] &#39;comedi_config=
-&#39; THREAD: c7a50000<br>GPR00: c0246b70 c7a51ce0 c7864430 00012400 000000=
-01 00000000 c79062c0 c03c0000 <br>GPR08: 00000000 c7900a00 c03d6144 c03a37e=
-8 c7906200 1004a5b8 c033e0b8 c03c0000 <br>
-GPR16: c03ba578 c03d1a00 c02464fc c03b4d60 c0244e5c c024509c c024535c c0245=
-380 <br>GPR24: c03da628 c02453a4 20001040 00000000 00000000 c03a2e50 c03c00=
-00 00012400 <br>Call Trace:<br>[c7a51ce0] [c024bae0]=A0 (unreliable)<br>[c7=
-a51d00] [c0246b70] <br>
-[c7a51d20] [c0246bdc] <br>[c7a51d40] [c024b88c] <br>[c7a51d90] [c024c69c] <=
-br>[c7a51dc0] [c0238b2c] <br>[c7a51de0] [c0238c64] <br>[c7a51e20] [c0239094=
-] <br>[c7a51e40] [c023ba00] <br>[c7a51e70] [c008b404] <br>[c7a51eb0] [c008d=
-634] <br>
-[c7a51ec0] [c0059eb8] <br>[c7a51ee0] [c004ad5c] <br>[c7a51f30] [c0009644] <=
-br>[c7a51f40] [c0010ca4] <br>--- Exception: c01Instruction dump:<br>7d6b1a1=
-4 39290010 38000001 7fe34a14 900b00b0 90ff0010 4bffff9c 9421ffe0 <br>7c0802=
-a6 bf61000c 7c7f1b78 90010024 &lt;83c30000&gt; 7c0000a6 5400045e 7c000124 <=
-br>
----[ end trace f35e90f95f5de008 ]---<br><br><br>A quick disassembly shows t=
-hat the error is generated in the mite driver as pointed next, <br><br>c023=
-dcf4 &lt;mite_release_channel&gt;:<br>mite_release_channel():<br>/home/haus=
-tiq/development/eldk/ppc_6xx/usr/src/linux-2.6.24-xc1/drivers/xenomai/comed=
-i/national_instruments/mite.c:308<br>
-c023dcf4:=A0=A0=A0 94 21 ff e0 =A0=A0=A0 stwu=A0=A0=A0 r1,-32(r1)<br>c023dc=
-f8:=A0=A0=A0 7c 08 02 a6 =A0=A0=A0 mflr=A0=A0=A0 r0<br>c023dcfc:=A0=A0=A0 b=
-f 61 00 0c =A0=A0=A0 stmw=A0=A0=A0 r27,12(r1)<br>c023dd00:=A0=A0=A0 7c 7f 1=
-b 78 =A0=A0=A0 mr=A0=A0=A0=A0=A0 r31,r3<br>c023dd04:=A0=A0=A0 90 01 00 24 =
-=A0=A0=A0 stw=A0=A0=A0=A0 r0,36(r1)<br>
-/home/haustiq/development/eldk/ppc_6xx/usr/src/linux-2.6.24-xc1/drivers/xen=
-omai/comedi/national_instruments/mite.c:309<br><b>c023dd08:</b>=A0=A0=A0 83=
- c3 00 00 =A0=A0=A0 lwz=A0=A0=A0=A0 r30,0(r3)<br><br><br>Some hints would b=
-e appreciated !<br>
-<br>Best !<br>
-
---0016e6d566a1909330047374cad0--
+Alexis.
 
