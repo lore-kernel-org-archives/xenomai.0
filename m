@@ -1,12 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <9aa019ba0909150827u38360ec1m7b749838ab0c54c4@domain.hid>
-References: <9aa019ba0909150827u38360ec1m7b749838ab0c54c4@domain.hid>
-Content-Type: text/plain
-Date: Wed, 16 Sep 2009 17:47:24 +0200
-Message-Id: <1253116044.2676.153.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Interrupt only runs once
+MIME-Version: 1.0
+Sender: alexis.berlemont@domain.hid
+In-Reply-To: <9c789a000909160114h4a3b5ebbj46e1abfeed07f61c@domain.hid>
+References: <9c789a000909130535j4dc046a1h3af2976ab504a000@domain.hid>
+	<72cf3fb0909151542h163e7c03h1a393a969caf0c58@domain.hid>
+	<9c789a000909160114h4a3b5ebbj46e1abfeed07f61c@domain.hid>
+Date: Thu, 17 Sep 2009 00:26:02 +0200
+Message-ID: <72cf3fb0909161526i5eb3178cnc2e9c7e154f624ef@domain.hid>
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-help] Comedi port over Xenomai fault question !
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,98 +18,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: James Kilts <jameskilts@domain.hid>
+To: Cristian Axenie <cristian.axenie@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Tue, 2009-09-15 at 10:27 -0500, James Kilts wrote:
-> I'm porting Xenomai/I-pipe to the NS921x (an arm9-based) platform, but
-> I'm having problems getting the interrupts to re-enable after the
-> first interrupt triggers.
-> 
-> A kernel driver module is being used to test the interrupt latency
-> using an input GPIO pin which triggers a dedicated external IRQ, to
-> which the ISR responds by toggling a different GPIO pin.  I realize
-> that there are test applications which do very similar things, and
-> that the RTDM skin is preferable over the native API.  Still, I would
-> like to understand why the interrupt is not being properly
-> acknowledged and reset.
-> 
-> If the ISR manually performs the ACK and EOI using platform specific
-> calls, subsequent interrupts are handled properly.  My understanding
-> was that Xenomai should re-enable the interrupt for processing without
-> such intervention.  How do I force Xenomai to clear and re-enable the
-> interrupt to handle subsequent interrupts?
+Hi,
 
-It looks like an I-pipe issue, not a Xenomai one. Xenomai asks the
-I-pipe to re-enable the interrupt line via the ipipe_end() handler, and
-for some reason, that handler does not seem to do the right thing on
-your board.
+>
+> I've applied the debug patches and I think that the problem is in the
+> ni_release_ai_mite_channel function because it seems that
+> mite_release_channel is never called.
+> It is possible that comedi_lock_irqsave to cause the problem or
+> devpriv->ai_mite_chan is NULL ?
+>
 
-Which I-pipe patch are you using (kernel version and I-pipe release)?
+You can remove comedi_lock_irqsave/restore, they are not critical. And
+you can proceed on adding some debug traces so as to check
+ai_mite_chan.
 
-> 
-> Thanks,
-> James
-> 
-> 
-> 
-> static int __init turnaround_irq_measure_init(void)
-> {
->     ....
-> 
->     retval = rt_intr_create(&irq_response_desc,
-> "ns9xxx_measure_irq_rt_response",
->                             TURNAROUND_INPUT_IRQ,
-> turnaround_irq_measure_response,
->                             NULL, NULL);
-> 
->     if (retval == 0)  // 0 is success
->     {
->         set_irq_type(TURNAROUND_INPUT_IRQ, IRQ_TYPE_EDGE_FALLING);
->         retval = rt_intr_enable(&irq_response_desc);
-> 
->         if (retval != 0)  // 0 is success
->         {
->             console_print("Turnaround test driver rt interrupt enable:
-> FAILED\n");
->         }
->     }
->     else
->     {
->         console_print("Turnaround test driver rt interrupt create:
-> FAILED\n");
->     }
-> 
->     return 0;
-> }
-> 
-> 
-> static int turnaround_irq_measure_response(struct xnintr *intr)
-> {
->     /* Set GPIO pin low */
->     gpio_set_value(TURNAROUND_OUTPUT_GPIO, 0);
-> 
->     /* Wait 50 microseconds */
->     rt_timer_spin(50000);
-> 
->     /* Set GPIO pin high */
->     gpio_set_value(TURNAROUND_OUTPUT_GPIO, 1);
-> 
->     /* Start listening again */
->     /* NOTE:  These two lines should not be necessary */
->     ns9xxx_ack_irq(TURNAROUND_INPUT_IRQ);
->     ns9xxx_eoi_irq(TURNAROUND_INPUT_IRQ);
-> 
->     return RT_INTR_HANDLED;
-> }
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+I will double check, the mite "init" function.
 
-
+Alexis.
 
