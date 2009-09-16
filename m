@@ -1,12 +1,15 @@
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-In-Reply-To: <72cf3fb0909151542h163e7c03h1a393a969caf0c58@domain.hid>
-References: <9c789a000909130535j4dc046a1h3af2976ab504a000@domain.hid>
-	<72cf3fb0909151542h163e7c03h1a393a969caf0c58@domain.hid>
-Date: Wed, 16 Sep 2009 11:14:21 +0300
-Message-ID: <9c789a000909160114h4a3b5ebbj46e1abfeed07f61c@domain.hid>
-From: Cristian Axenie <cristian.axenie@domain.hid>
-Content-Type: multipart/alternative; boundary=0016364d2a31736f140473ad7c94
-Subject: Re: [Xenomai-help] Comedi port over Xenomai fault question !
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 16 Sep 2009 11:40:08 +0200
+Message-ID: <EA8B423DB69FD24FA233008019A052AEE4CFBA@zue-s-15.zue.zwick.de>
+In-Reply-To: <EA8B423DB69FD24FA233008019A052AEDB2084@domain.hid>
+References: <EA8B423DB69FD24FA233008019A052AED867CB@zue-s-15.zue.zwick.de><1252436185.2693.93.camel@domain.hid>
+	<EA8B423DB69FD24FA233008019A052AEDB2084@domain.hid>
+From: "Meier, Hans" <Hans.Meier@domain.hid>
+Subject: Re: [Xenomai-help] Kernel panic with xenomai 2.4.7
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,509 +19,437 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Alexis Berlemont <berlemont.hauw@domain.hid>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
 
---0016364d2a31736f140473ad7c94
-Content-Type: text/plain; charset=ISO-8859-1
+Hi Philippe,=20
+hi Jan
 
-On Wed, Sep 16, 2009 at 1:42 AM, Alexis Berlemont <berlemont.hauw@domain.hid>wrote:
+Here we are with a full log of our oops on 2.6.28.7/2.4.7.
+Config is identical with exception of "oops to serial".
+As far as I can see this should be the same thing, even if there are =
+some differences compared to the part of the log that came out on the =
+screen last time.
 
-> Hi,
->
-> > I've took a snapshot of the xenomai-abe (Comedi port related) git repos
-> > pointing to the last update and tried it up and it seems that are some
-> > errors.
->
-> That is very nice of you to test the driver on your board. I had read
-> your former mail and was about to ask you to test the code on your
-> configuration.
->
-> >
-> > /usr/xenomai/sbin # ./comedi_config -v comedi0 comedi_pcimio
-> > Comedi: comedi_pcimio: pcimio_attach: found pci-6024e board
-> > Comedi: MITE: 0x90000000 mapped to c907a000 <6>Comedi: DAQ: 0x90001000
-> > mapped to c907c000
-> > Comedi: MITE: version = 2, type = 1, mite mode = 1, interface mode = 3
-> > Comedi: MITE: num channels = 1, write post fifo depth = 1, wins = 0,
-> iowins
-> > = 2
-> > Comedi: comedi_pcimio: pcimio_attach: found irq 48
-> > Unable to handle kernel paging request for data at address 0x00012400
-> > Faulting instruction address: 0xc023dd08
-> > Oops: Kernel access of bad area, sig: 11 [#1]
-> > MPC831x RDB
-> > Modules linked in:
-> > NIP: c023dd08 LR: c0246b70 CTR: 00000000
-> > REGS: c7a51c30 TRAP: 0300   Not tainted  (2.6.24.2)
-> > MSR: 00001032 <ME,IR,DR>  CR: 84008422  XER: 00000000
-> > DAR: 00012400, DSISR: 20000000
-> > TASK = c7864430[898] 'comedi_config' THREAD: c7a50000
-> > GPR00: c0246b70 c7a51ce0 c7864430 00012400 00000001 00000000 c79062c0
-> > c03c0000
-> > GPR08: 00000000 c7900a00 c03d6144 c03a37e8 c7906200 1004a5b8 c033e0b8
-> > c03c0000
-> > GPR16: c03ba578 c03d1a00 c02464fc c03b4d60 c0244e5c c024509c c024535c
-> > c0245380
-> > GPR24: c03da628 c02453a4 20001040 00000000 00000000 c03a2e50 c03c0000
-> > 00012400
-> > Call Trace:
-> > [c7a51ce0] [c024bae0]  (unreliable)
-> > [c7a51d00] [c0246b70]
-> > [c7a51d20] [c0246bdc]
-> > [c7a51d40] [c024b88c]
-> > [c7a51d90] [c024c69c]
-> > [c7a51dc0] [c0238b2c]
-> > [c7a51de0] [c0238c64]
-> > [c7a51e20] [c0239094]
-> > [c7a51e40] [c023ba00]
-> > [c7a51e70] [c008b404]
-> > [c7a51eb0] [c008d634]
-> > [c7a51ec0] [c0059eb8]
-> > [c7a51ee0] [c004ad5c]
-> > [c7a51f30] [c0009644]
-> > [c7a51f40] [c0010ca4]
-> > --- Exception: c01Instruction dump:
-> > 7d6b1a14 39290010 38000001 7fe34a14 900b00b0 90ff0010 4bffff9c 9421ffe0
-> > 7c0802a6 bf61000c 7c7f1b78 90010024 <83c30000> 7c0000a6 5400045e 7c000124
-> > ---[ end trace f35e90f95f5de008 ]---
-> >
-> >
-> > A quick disassembly shows that the error is generated in the mite driver
-> as
-> > pointed next,
-> >
-> > c023dcf4 <mite_release_channel>:
-> > mite_release_channel():
-> >
-> /home/haustiq/development/eldk/ppc_6xx/usr/src/linux-2.6.24-xc1/drivers/xenomai/comedi/national_instruments/mite.c:308
-> > c023dcf4:    94 21 ff e0     stwu    r1,-32(r1)
-> > c023dcf8:    7c 08 02 a6     mflr    r0
-> > c023dcfc:    bf 61 00 0c     stmw    r27,12(r1)
-> > c023dd00:    7c 7f 1b 78     mr      r31,r3
-> > c023dd04:    90 01 00 24     stw     r0,36(r1)
-> >
-> /home/haustiq/development/eldk/ppc_6xx/usr/src/linux-2.6.24-xc1/drivers/xenomai/comedi/national_instruments/mite.c:309
-> > c023dd08:    83 c3 00 00     lwz     r30,0(r3)
-> >
->
-> Without any access on you board, I have no other solution but to ask
-> you to add some debug traces in the driver so as to locate the
-> problem:
->
-> Could you try these two patches and send me the results. On my side,
-> this driver (partly) works on the NI 6221 board plugged into some x86
-> motherboard. Your configuration (6024e + PPC) is not that close but it
-> is just a segfault, we will figure this out quite quickly with ugly
-> printks.
->
->
-> diff --git a/ksrc/drivers/comedi/national_instruments/mite.c
-> b/ksrc/drivers/comedi/national_instruments/mite.c
-> index 8f1ccd7..56013d0 100644
-> --- a/ksrc/drivers/comedi/national_instruments/mite.c
-> +++ b/ksrc/drivers/comedi/national_instruments/mite.c
-> @@ -309,6 +309,22 @@ void mite_release_channel(struct mite_channel
-> *mite_chan)
->       struct mite_struct *mite = mite_chan->mite;
->       unsigned long flags;
->
-> +#if 1 /* debug */
-> +       int i;
-> +
-> +       printk("mite_release_channel: mite_chan = %p\n", mite_chan);
-> +       printk("mite_release_channel: mite_chan->channel = %p\n",
-> +              mite_chan->channel);
-> +       printk("mite_release_channel: mite = %p\n", mite);
-> +       printk("mite_release_channel: mite->mite_io_addr = %p\n",
-> +              mite->mite_io_addr);
-> +       for (i = 0; i < MAX_MITE_DMA_CHANNELS; i++) {
-> +               printk("mite_release_channel: \talloc[%d] = %u\n",
-> +                      i, mite->channel_allocated[i]);
-> +       }
-> +
-> +#endif /* debug */
-> +
->       // spin lock to prevent races with mite_request_channel
->       comedi_lock_irqsave(&mite->lock, flags);
->       if (mite->channel_allocated[mite_chan->channel]) {
-> @@ -318,13 +334,24 @@ void mite_release_channel(struct mite_channel
-> *mite_chan)
->                       CHCR_CLR_MRDY_IE | CHCR_CLR_DRDY_IE |
->                       CHCR_CLR_LC_IE | CHCR_CLR_CONT_RB_IE,
->                       mite->mite_io_addr + MITE_CHCR(mite_chan->channel));
-> +#if 1 /* debug */
-> +               printk("mite_release_channel: before disarm\n");
-> +#endif /* debug */
->               mite_dma_disarm(mite_chan);
-> +#if 1 /* debug */
-> +               printk("mite_release_channel: before reset\n");
-> +#endif /* debug */
->               mite_dma_reset(mite_chan);
-> +
->               mite->channel_allocated[mite_chan->channel] = 0;
->               mite_chan->ring = NULL;
->               mmiowb();
->       }
->       comedi_unlock_irqrestore(&mite->lock, flags);
-> +
-> +#if 1 /* debug */
-> +               printk("mite_release_channel: out\n");
-> +#endif /* debug */
->  }
->
->  void mite_dma_arm(struct mite_channel *mite_chan)
->
->
-> diff --git a/ksrc/drivers/comedi/national_instruments/mio_common.c
-> b/ksrc/drivers/comedi/national_instruments/mio_common.c
-> index 3f70c3e..e29c2c5 100644
-> --- a/ksrc/drivers/comedi/national_instruments/mio_common.c
-> +++ b/ksrc/drivers/comedi/national_instruments/mio_common.c
-> @@ -424,6 +424,10 @@ void ni_release_ai_mite_channel(comedi_dev_t *dev)
->
->       unsigned long flags;
->
-> +#if 1 /* debug */
-> +       printk("ni_release_ai_mite_channel: in\n");
-> +#endif /* debug */
-> +
->       comedi_lock_irqsave(&devpriv->mite_channel_lock, flags);
->       if (devpriv->ai_mite_chan) {
->               ni_set_ai_dma_channel(dev, -1);
-> @@ -432,6 +436,10 @@ void ni_release_ai_mite_channel(comedi_dev_t *dev)
->       }
->       comedi_unlock_irqrestore(&devpriv->mite_channel_lock, flags);
->
-> +#if 1 /* debug */
-> +       printk("ni_release_ai_mite_channel: out\n");
-> +#endif /* debug */
-> +
->  }
->
->  void ni_release_ao_mite_channel(comedi_dev_t *dev)
->
->
-Hy !
-I've applied the debug patches and I think that the problem is in the
-ni_release_ai_mite_channel function because it seems that
-mite_release_channel is never called.
-It is possible that comedi_lock_irqsave to cause the problem or
-devpriv->ai_mite_chan is NULL ?
+Meanwhile we tested a lot with 2.6.30/2.4.9.1 on up to six targets =
+without having seen any oops. So from our perspective this issue has =
+been fixed on the way from 2.6.28.7/2.4.7 to 2.6.30/2.4.9.1.
+
+Is the oops below what you expected?=20
+Does it then still make sense to focus on the step from ipipe =
+2.6.29.1-x86-2.3-01 to 2.6.29.4-x86-2.4-00 with 2.4.7 to see whether =
+this step makes the oops disappear?
+
+Best regards
+
+Hans
 
 
-here's the output :
+---
 
-/usr/xenomai/sbin # ./comedi_config -v comedi0 comedi_pcimio
-Comedi: comedi_pcimio: pcimio_attach: found pci-6024e board
-Comedi: MITE: 0x90000000 mapped to c907a000 <6>Comedi: DAQ: 0x90001000
-mapped to c907c000
-Comedi: MITE: version = 2, type = 1, mite mode = 1, interface mode = 3
-Comedi: MITE: num channels = 1, write post fifo depth = 1, wins = 0, iowins
-= 2
-Comedi: comedi_pcimio: pcimio_attach: found irq 48
-*ni_release_ai_mite_channel: in*
-Unable to handle kernel paging request for data at address 0x00012400
-Faulting instruction address: 0xc023dd18
-Oops: Kernel access of bad area, sig: 11 [#1]
-MPC831x RDB
-Modules linked in:
-NIP: c023dd18 LR: c0246c24 CTR: c0033b54
-REGS: c7a51c30 TRAP: 0300   Not tainted  (2.6.24.2)
-MSR: 00001032 <ME,IR,DR>  CR: 24008422  XER: 00000000
-DAR: 00012400, DSISR: 20000000
-TASK = c7827430[894] 'comedi_config' THREAD: c7a50000
-GPR00: c0246c24 c7a51ce0 c7827430 c033d078 00012400 0001306f 00000000
-c03a2f10
-GPR08: 00000070 c7900a00 c03d6144 c03a37e8 24008424 1004a5b8 c033e238
-c03c0000
-GPR16: c03ba578 c03d1a00 c02465a4 c03b4d60 c0244f04 c0245144 c0245404
-c0245428
-GPR24: c03da628 c024544c 20001040 00000000 00012400 c03a2e50 c03c0000
-00000001
+
+Oops: 0000 [#1] PREEMPT SMP
+last sysfs file: /sys/firmware/edd/int13_dev80/extensions
+Modules linked in: zirqack zmodule zbaseboard zwatchdog z7segdisplay =
+zbaseboarddetect ziomemmap loop i2c_i801 i2c_core intel_agp agpgart =
+nls_cp437 nls_iso8859_1 vfat fat ide_core ohci_hcd edd dm_mod =
+usb_storage reiserfs sg sd_mod mptspi mptscsih mptbase =
+scsi_transport_spi ata_piix ahci libata scsi_mod [last unloaded: =
+zbaseboarddetect]
+
+Pid: 3463, comm: ZwickAppConsole Not tainted =
+(2.6.28.7-xenomai-2.4.7-modcom.420 #1) CX-945 CPU Board
+EIP: 0060:[<c010628f>] EFLAGS: 00010002 CPU: 0
+EIP is at profile_pc+0x32/0x3b
+EAX: ffffffff EBX: c1f0b680 ECX: 00010000 EDX: 00000001
+ESI: c0375070 EDI: c1f0b584 EBP: edf97c98 ESP: edf97c90
+ DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068
+Process ZwickAppConsole (pid: 3463, ti=3Dedf96000 task=3Decdf3030 =
+task.ti=3Dedf96000)
+I-pipe domain Linux
+Stack:
+ c1f0b680 00000001 edf97ca8 c0138a1b c1f0b584 00000000 edf97cb0 c013bb12
+ edf97cc8 c013bb31 00000000 c1f0b584 00000000 fffffe7f edf97cd8 c011093a
+ c1f0b680 c01108d9 edf97d38 c0151c5e c1f0b680 c1f0c780 00000180 c01108d9
 Call Trace:
-[c7a51ce0] [c03f20a8]  (unreliable)
-[c7a51d00] [c0246c24]
-[c7a51d20] [c0246c9c]
-[c7a51d40] [c024b94c]
-[c7a51d90] [c024c75c]
-[c7a51dc0] [c0238b2c]
-[c7a51de0] [c0238c64]
-[c7a51e20] [c0239094]
-[c7a51e40] [c023ba00]
-[c7a51e70] [c008b404]
-[c7a51eb0] [c008d634]
-[c7a51ec0] [c0059eb8]
-[c7a51ee0] [c004ad5c]
-[c7a51f30] [c0009644]
-[c7a51f40] [c0010ca4]
---- Exception: c01Instruction dump:
-900b00b0 90ff0010 4bffff9c 9421ffe0 7c0802a6 bf61000c 7c7c1b78 3c60c034
-90010024 7f84e378 3863d078 3be00001 <83dc0000> 4bde279d 3c60c034 809c0004
----[ end trace 0304077a12ed39c2 ]---
+ [<c0138a1b>] ? profile_tick+0x4a/0x63
+ [<c013bb12>] ? tick_periodic+0x66/0x68
+ [<c013bb31>] ? tick_handle_periodic+0x1d/0x60
+ [<c011093a>] ? smp_apic_timer_interrupt+0x61/0x74
+ [<c01108d9>] ? smp_apic_timer_interrupt+0x0/0x74
+ [<c0151c5e>] ? __ipipe_sync_stage+0x139/0x13e
+ [<c01108d9>] ? smp_apic_timer_interrupt+0x0/0x74
+ [<c0151c63>] ? __xirq_end+0x0/0x45
+ [<c0151e05>] ? ipipe_suspend_domain+0x98/0xdb
+ [<c0151ecf>] ? __ipipe_walk_pipeline+0x87/0xc8
+ [<c0151f9b>] ? __ipipe_dispatch_wired_nocheck+0x8b/0x92
+ [<c015285f>] ? __ipipe_dispatch_wired+0x64/0x67
+ [<c0114b9e>] ? __ipipe_handle_irq+0xb2/0x1d7
+ [<c015c0ed>] ? xnpod_schedule+0xb33/0xe7a
+ [<c0104821>] ? ipipe_ipi3+0x35/0x58
+ [<c03700d8>] ? init_centaur+0xd3/0x260
+ [<c0115564>] ? mcount+0x0/0x23
+ [<c022d203>] ? security_socket_sendmsg+0x9/0x18
+ [<c02f4305>] ? sock_aio_write+0xd1/0xee
+ [<c015c5bd>] ? xnpod_suspend_thread+0x189/0x1ff
+ [<c01b1c41>] ? do_sync_readv_writev+0xae/0xec
+ [<c01342e5>] ? autoremove_wake_function+0x0/0x35
+ [<c024be8e>] ? __copy_from_user_ll+0xa/0xd8
+ [<c024c1be>] ? copy_from_user+0x3b/0x5e
+ [<c022dbe5>] ? cap_file_permission+0x8/0xc
+ [<c022cb78>] ? security_file_permission+0x14/0x16
+ [<c01b227a>] ? do_readv_writev+0x86/0x141
+ [<c02f4234>] ? sock_aio_write+0x0/0xee
+ [<c0162ed7>] ? losyscall_event+0xe/0x168
+ [<c01b2373>] ? vfs_writev+0x3e/0x4e
+ [<c01b2715>] ? sys_writev+0x40/0x65
+ [<c0103aaa>] ? sysenter_do_call+0x12/0x16
+Code: f2 00 00 89 c3 8b 70 2c 8b 53 30 8b 40 34 83 e2 03 25 00 00 02 00 =
+09 d0 83 f8 02 77 11 89 f0 e8 d4 88 03 00 85 c0 74 06 8b 43 14 <8b> 70 =
+04 89 f0 5b 5e 5d c3 55 89 e5 57 56 53 e8 c1 f2 00 00 8b
+EIP: [<c010628f>] profile_pc+0x32/0x3b SS:ESP 0068:edf97c90
+Kernel panic - not syncing: Fatal exception in interrupt
+------------[ cut here ]------------
+WARNING: at =
+/work/meierh/kernel/linux-2.6.28.7/xenomai-2.4.7/i386/linux/kernel/smp.c:=
+333 smp_call_function_mask+0x4c/0x196()
+Modules linked in: zirqack zmodule zbaseboard zwatchdog z7segdisplay =
+zbaseboarddetect ziomemmap loop i2c_i801 i2c_core intel_agp agpgart =
+nls_cp437 nls_iso8859_1 vfat fat ide_core ohci_hcd edd dm_mod =
+usb_storage reiserfs sg sd_mod mptspi mptscsih mptbase =
+scsi_transport_spi ata_piix ahci libata scsi_mod [last unloaded: =
+zbaseboarddetect]
+Pid: 3463, comm: ZwickAppConsole Tainted: G      D    =
+2.6.28.7-xenomai-2.4.7-modcom.420 #1
+Call Trace:
+ [<c012342a>] warn_on_slowpath+0x46/0x60
+ [<c0151451>] ? ipipe_check_context+0xa/0xec
+ [<c03778d6>] ? sub_preempt_count+0x10/0x6f
+ [<c024baa7>] ? delay_tsc+0x8b/0xa4
+ [<c024b978>] ? __delay+0xe/0x10
+ [<c0151451>] ? ipipe_check_context+0xa/0xec
+ [<c03778d6>] ? sub_preempt_count+0x10/0x6f
+ [<c02abe6e>] ? serial8250_console_write+0x106/0x110
+ [<c0151451>] ? ipipe_check_context+0xa/0xec
+ [<c0151451>] ? ipipe_check_context+0xa/0xec
+ [<c03778d6>] ? sub_preempt_count+0x10/0x6f
+ [<c012366f>] ? wake_up_klogd+0x8/0x29
+ [<c0123a9c>] ? release_console_sem+0x199/0x1a1
+ [<c0151451>] ? ipipe_check_context+0xa/0xec
+ [<c013e7e5>] smp_call_function_mask+0x4c/0x196
+ [<c010f288>] ? stop_this_cpu+0x0/0x48
+ [<c0373f26>] ? mutex_trylock+0x9/0x25
+ [<c0373f11>] ? mutex_unlock+0x8/0x14
+ [<c01442f3>] ? crash_kexec+0xa4/0xac
+ [<c0153994>] ? ipipe_trace_panic_dump+0xe/0x20f
+ [<c01062a3>] ? sys_iopl+0xb/0x6b
+ [<c0373f26>] ? mutex_trylock+0x9/0x25
+ [<c0373f11>] ? mutex_unlock+0x8/0x14
+ [<c010f288>] ? stop_this_cpu+0x0/0x48
+ [<c013e959>] smp_call_function+0x2a/0x53
+ [<c010f3c2>] native_smp_send_stop+0x20/0x65
+ [<c01234b4>] panic+0x5d/0xf4
+ [<c037616b>] oops_end+0x81/0x95
+ [<c01060e8>] die+0x5c/0x64
+ [<c0377810>] do_page_fault+0x5aa/0x660
+ [<c0115207>] __ipipe_handle_exception+0x1c6/0x209
+ [<c0375070>] ? _spin_lock_irqsave+0x41/0x5b
+ [<c037575b>] error_code+0x77/0x84
+ [<c0375070>] ? _spin_lock_irqsave+0x41/0x5b
+ [<c03700d8>] ? init_centaur+0xd3/0x260
+ [<c010628f>] ? profile_pc+0x32/0x3b
+ [<c0138a1b>] profile_tick+0x4a/0x63
+ [<c013bb12>] tick_periodic+0x66/0x68
+ [<c013bb31>] tick_handle_periodic+0x1d/0x60
+ [<c011093a>] smp_apic_timer_interrupt+0x61/0x74
+ [<c01108d9>] ? smp_apic_timer_interrupt+0x0/0x74
+ [<c0151c5e>] __ipipe_sync_stage+0x139/0x13e
+ [<c01108d9>] ? smp_apic_timer_interrupt+0x0/0x74
+ [<c0151c63>] ? __xirq_end+0x0/0x45
+ [<c0151e05>] ipipe_suspend_domain+0x98/0xdb
+ [<c0151ecf>] __ipipe_walk_pipeline+0x87/0xc8
+ [<c0151f9b>] __ipipe_dispatch_wired_nocheck+0x8b/0x92
+ [<c015285f>] __ipipe_dispatch_wired+0x64/0x67
+ [<c0114b9e>] __ipipe_handle_irq+0xb2/0x1d7
+ [<c015c0ed>] ? xnpod_schedule+0xb33/0xe7a
+ [<c0104821>] ipipe_ipi3+0x35/0x58
+ [<c03700d8>] ? init_centaur+0xd3/0x260
+ [<c0115564>] mcount+0x0/0x23
+ [<c022d203>] ? security_socket_sendmsg+0x9/0x18
+ [<c02f4305>] ? sock_aio_write+0xd1/0xee
+ [<c015c5bd>] ? xnpod_suspend_thread+0x189/0x1ff
+ [<c01b1c41>] ? do_sync_readv_writev+0xae/0xec
+ [<c01342e5>] ? autoremove_wake_function+0x0/0x35
+ [<c024be8e>] ? __copy_from_user_ll+0xa/0xd8
+ [<c024c1be>] ? copy_from_user+0x3b/0x5e
+ [<c022dbe5>] ? cap_file_permission+0x8/0xc
+ [<c022cb78>] ? security_file_permission+0x14/0x16
+ [<c01b227a>] ? do_readv_writev+0x86/0x141
+ [<c02f4234>] ? sock_aio_write+0x0/0xee
+ [<c0162ed7>] ? losyscall_event+0xe/0x168
+ [<c01b2373>] ? vfs_writev+0x3e/0x4e
+ [<c01b2715>] ? sys_writev+0x40/0x65
+ [<c0103aaa>] ? sysenter_do_call+0x12/0x16
+---[ end trace aa2d38baea368ab1 ]---
+------------[ cut here ]------------
+WARNING: at =
+/work/meierh/kernel/linux-2.6.28.7/xenomai-2.4.7/i386/linux/kernel/smp.c:=
+220 smp_call_function_single+0x58/0x122()
+Modules linked in: zirqack zmodule zbaseboard zwatchdog z7segdisplay =
+zbaseboarddetect ziomemmap loop i2c_i801 i2c_core intel_agp agpgart =
+nls_cp437 nls_iso8859_1 vfat fat ide_core ohci_hcd edd dm_mod =
+usb_storage reiserfs sg sd_mod mptspi mptscsih mptbase =
+scsi_transport_spi ata_piix ahci libata scsi_mod [last unloaded: =
+zbaseboarddetect]
+Pid: 3463, comm: ZwickAppConsole Tainted: G      D W  =
+2.6.28.7-xenomai-2.4.7-modcom.420 #1
+Call Trace:
+ [<c012342a>] warn_on_slowpath+0x46/0x60
+ [<c0151451>] ? ipipe_check_context+0xa/0xec
+ [<c03778d6>] ? sub_preempt_count+0x10/0x6f
+ [<c024baa7>] ? delay_tsc+0x8b/0xa4
+ [<c024b978>] ? __delay+0xe/0x10
+ [<c0151451>] ? ipipe_check_context+0xa/0xec
+ [<c03778d6>] ? sub_preempt_count+0x10/0x6f
+ [<c02abe6e>] ? serial8250_console_write+0x106/0x110
+ [<c0151451>] ? ipipe_check_context+0xa/0xec
+ [<c0151451>] ? ipipe_check_context+0xa/0xec
+ [<c013e6cf>] smp_call_function_single+0x58/0x122
+ [<c010f288>] ? stop_this_cpu+0x0/0x48
+ [<c012366f>] ? wake_up_klogd+0x8/0x29
+ [<c0123a9c>] ? release_console_sem+0x199/0x1a1
+ [<c0151451>] ? ipipe_check_context+0xa/0xec
+ [<c024676e>] ? find_first_bit+0xa/0x4a
+ [<c013e82c>] smp_call_function_mask+0x93/0x196
+ [<c010f288>] ? stop_this_cpu+0x0/0x48
+ [<c0373f26>] ? mutex_trylock+0x9/0x25
+ [<c0373f11>] ? mutex_unlock+0x8/0x14
+ [<c01442f3>] ? crash_kexec+0xa4/0xac
+ [<c0153994>] ? ipipe_trace_panic_dump+0xe/0x20f
+ [<c01062a3>] ? sys_iopl+0xb/0x6b
+ [<c0373f26>] ? mutex_trylock+0x9/0x25
+ [<c0373f11>] ? mutex_unlock+0x8/0x14
+ [<c010f288>] ? stop_this_cpu+0x0/0x48
+ [<c013e959>] smp_call_function+0x2a/0x53
+ [<c010f3c2>] native_smp_send_stop+0x20/0x65
+ [<c01234b4>] panic+0x5d/0xf4
+ [<c037616b>] oops_end+0x81/0x95
+ [<c01060e8>] die+0x5c/0x64
+ [<c0377810>] do_page_fault+0x5aa/0x660
+ [<c0115207>] __ipipe_handle_exception+0x1c6/0x209
+ [<c0375070>] ? _spin_lock_irqsave+0x41/0x5b
+ [<c037575b>] error_code+0x77/0x84
+ [<c0375070>] ? _spin_lock_irqsave+0x41/0x5b
+ [<c03700d8>] ? init_centaur+0xd3/0x260
+ [<c010628f>] ? profile_pc+0x32/0x3b
+ [<c0138a1b>] profile_tick+0x4a/0x63
+ [<c013bb12>] tick_periodic+0x66/0x68
+ [<c013bb31>] tick_handle_periodic+0x1d/0x60
+ [<c011093a>] smp_apic_timer_interrupt+0x61/0x74
+ [<c01108d9>] ? smp_apic_timer_interrupt+0x0/0x74
+ [<c0151c5e>] __ipipe_sync_stage+0x139/0x13e
+ [<c01108d9>] ? smp_apic_timer_interrupt+0x0/0x74
+ [<c0151c63>] ? __xirq_end+0x0/0x45
+ [<c0151e05>] ipipe_suspend_domain+0x98/0xdb
+ [<c0151ecf>] __ipipe_walk_pipeline+0x87/0xc8
+ [<c0151f9b>] __ipipe_dispatch_wired_nocheck+0x8b/0x92
+ [<c015285f>] __ipipe_dispatch_wired+0x64/0x67
+ [<c0114b9e>] __ipipe_handle_irq+0xb2/0x1d7
+ [<c015c0ed>] ? xnpod_schedule+0xb33/0xe7a
+ [<c0104821>] ipipe_ipi3+0x35/0x58
+ [<c03700d8>] ? init_centaur+0xd3/0x260
+ [<c0115564>] mcount+0x0/0x23
+ [<c022d203>] ? security_socket_sendmsg+0x9/0x18
+ [<c02f4305>] ? sock_aio_write+0xd1/0xee
+ [<c015c5bd>] ? xnpod_suspend_thread+0x189/0x1ff
+ [<c01b1c41>] ? do_sync_readv_writev+0xae/0xec
+ [<c01342e5>] ? autoremove_wake_function+0x0/0x35
+ [<c024be8e>] ? __copy_from_user_ll+0xa/0xd8
+ [<c024c1be>] ? copy_from_user+0x3b/0x5e
+ [<c022dbe5>] ? cap_file_permission+0x8/0xc
+ [<c022cb78>] ? security_file_permission+0x14/0x16
+ [<c01b227a>] ? do_readv_writev+0x86/0x141
+ [<c02f4234>] ? sock_aio_write+0x0/0xee
+ [<c0162ed7>] ? losyscall_event+0xe/0x168
+ [<c01b2373>] ? vfs_writev+0x3e/0x4e
+ [<c01b2715>] ? sys_writev+0x40/0x65
+ [<c0103aaa>] ? sysenter_do_call+0x12/0x16
+---[ end trace aa2d38baea368ab1 ]---
 
 
-> Regards.
->
-> Alexis.
->
+---
 
---0016364d2a31736f140473ad7c94
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<br><br><div class=3D"gmail_quote">On Wed, Sep 16, 2009 at 1:42 AM, Alexis =
-Berlemont <span dir=3D"ltr">&lt;<a href=3D"mailto:berlemont.hauw@domain.hid">b=
-erlemont.hauw@domain.hid</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_q=
-uote" style=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0=
-pt 0.8ex; padding-left: 1ex;">
-Hi,<br>
-<div class=3D"im"><br>
-&gt; I&#39;ve took a snapshot of the xenomai-abe (Comedi port related) git =
-repos<br>
-&gt; pointing to the last update and tried it up and it seems that are some=
-<br>
-&gt; errors.<br>
-<br>
-</div><div class=3D"im">That is very nice of you to test the driver on your=
- board. I had read<br>
-your former mail and was about to ask you to test the code on your<br>
-configuration.<br>
-<br>
-&gt;<br>
-</div><div><div></div><div class=3D"h5">&gt; /usr/xenomai/sbin # ./comedi_c=
-onfig -v comedi0 comedi_pcimio<br>
-&gt; Comedi: comedi_pcimio: pcimio_attach: found pci-6024e board<br>
-&gt; Comedi: MITE: 0x90000000 mapped to c907a000 &lt;6&gt;Comedi: DAQ: 0x90=
-001000<br>
-&gt; mapped to c907c000<br>
-&gt; Comedi: MITE: version =3D 2, type =3D 1, mite mode =3D 1, interface mo=
-de =3D 3<br>
-&gt; Comedi: MITE: num channels =3D 1, write post fifo depth =3D 1, wins =
-=3D 0, iowins<br>
-&gt; =3D 2<br>
-&gt; Comedi: comedi_pcimio: pcimio_attach: found irq 48<br>
-&gt; Unable to handle kernel paging request for data at address 0x00012400<=
-br>
-&gt; Faulting instruction address: 0xc023dd08<br>
-&gt; Oops: Kernel access of bad area, sig: 11 [#1]<br>
-&gt; MPC831x RDB<br>
-&gt; Modules linked in:<br>
-&gt; NIP: c023dd08 LR: c0246b70 CTR: 00000000<br>
-&gt; REGS: c7a51c30 TRAP: 0300 =A0 Not tainted =A0(2.6.24.2)<br>
-&gt; MSR: 00001032 &lt;ME,IR,DR&gt; =A0CR: 84008422 =A0XER: 00000000<br>
-&gt; DAR: 00012400, DSISR: 20000000<br>
-&gt; TASK =3D c7864430[898] &#39;comedi_config&#39; THREAD: c7a50000<br>
-&gt; GPR00: c0246b70 c7a51ce0 c7864430 00012400 00000001 00000000 c79062c0<=
-br>
-&gt; c03c0000<br>
-&gt; GPR08: 00000000 c7900a00 c03d6144 c03a37e8 c7906200 1004a5b8 c033e0b8<=
-br>
-&gt; c03c0000<br>
-&gt; GPR16: c03ba578 c03d1a00 c02464fc c03b4d60 c0244e5c c024509c c024535c<=
-br>
-&gt; c0245380<br>
-&gt; GPR24: c03da628 c02453a4 20001040 00000000 00000000 c03a2e50 c03c0000<=
-br>
-&gt; 00012400<br>
-&gt; Call Trace:<br>
-&gt; [c7a51ce0] [c024bae0] =A0(unreliable)<br>
-&gt; [c7a51d00] [c0246b70]<br>
-&gt; [c7a51d20] [c0246bdc]<br>
-&gt; [c7a51d40] [c024b88c]<br>
-&gt; [c7a51d90] [c024c69c]<br>
-&gt; [c7a51dc0] [c0238b2c]<br>
-&gt; [c7a51de0] [c0238c64]<br>
-&gt; [c7a51e20] [c0239094]<br>
-&gt; [c7a51e40] [c023ba00]<br>
-&gt; [c7a51e70] [c008b404]<br>
-&gt; [c7a51eb0] [c008d634]<br>
-&gt; [c7a51ec0] [c0059eb8]<br>
-&gt; [c7a51ee0] [c004ad5c]<br>
-&gt; [c7a51f30] [c0009644]<br>
-&gt; [c7a51f40] [c0010ca4]<br>
-&gt; --- Exception: c01Instruction dump:<br>
-&gt; 7d6b1a14 39290010 38000001 7fe34a14 900b00b0 90ff0010 4bffff9c 9421ffe=
-0<br>
-&gt; 7c0802a6 bf61000c 7c7f1b78 90010024 &lt;83c30000&gt; 7c0000a6 5400045e=
- 7c000124<br>
-&gt; ---[ end trace f35e90f95f5de008 ]---<br>
-&gt;<br>
-&gt;<br>
-&gt; A quick disassembly shows that the error is generated in the mite driv=
-er as<br>
-&gt; pointed next,<br>
-&gt;<br>
-&gt; c023dcf4 &lt;mite_release_channel&gt;:<br>
-&gt; mite_release_channel():<br>
-&gt; /home/haustiq/development/eldk/ppc_6xx/usr/src/linux-2.6.24-xc1/driver=
-s/xenomai/comedi/national_instruments/mite.c:308<br>
-&gt; c023dcf4: =A0 =A094 21 ff e0 =A0 =A0 stwu =A0 =A0r1,-32(r1)<br>
-&gt; c023dcf8: =A0 =A07c 08 02 a6 =A0 =A0 mflr =A0 =A0r0<br>
-&gt; c023dcfc: =A0 =A0bf 61 00 0c =A0 =A0 stmw =A0 =A0r27,12(r1)<br>
-&gt; c023dd00: =A0 =A07c 7f 1b 78 =A0 =A0 mr =A0 =A0 =A0r31,r3<br>
-&gt; c023dd04: =A0 =A090 01 00 24 =A0 =A0 stw =A0 =A0 r0,36(r1)<br>
-&gt; /home/haustiq/development/eldk/ppc_6xx/usr/src/linux-2.6.24-xc1/driver=
-s/xenomai/comedi/national_instruments/mite.c:309<br>
-&gt; c023dd08: =A0 =A083 c3 00 00 =A0 =A0 lwz =A0 =A0 r30,0(r3)<br>
-&gt;<br>
-<br>
-</div></div><div><div></div><div class=3D"h5">Without any access on you boa=
-rd, I have no other solution but to ask<br>
-you to add some debug traces in the driver so as to locate the<br>
-problem:<br>
-<br>
-Could you try these two patches and send me the results. On my side,<br>
-this driver (partly) works on the NI 6221 board plugged into some x86<br>
-motherboard. Your configuration (6024e + PPC) is not that close but it<br>
-is just a segfault, we will figure this out quite quickly with ugly<br>
-printks.<br>
-<br>
-<br>
-diff --git a/ksrc/drivers/comedi/national_instruments/mite.c<br>
-b/ksrc/drivers/comedi/national_instruments/mite.c<br>
-index 8f1ccd7..56013d0 100644<br>
---- a/ksrc/drivers/comedi/national_instruments/mite.c<br>
-+++ b/ksrc/drivers/comedi/national_instruments/mite.c<br>
-@@ -309,6 +309,22 @@ void mite_release_channel(struct mite_channel *mite_ch=
-an)<br>
- =A0 =A0 =A0 struct mite_struct *mite =3D mite_chan-&gt;mite;<br>
- =A0 =A0 =A0 unsigned long flags;<br>
-<br>
-+#if 1 /* debug */<br>
-+ =A0 =A0 =A0 int i;<br>
-+<br>
-+ =A0 =A0 =A0 printk(&quot;mite_release_channel: mite_chan =3D %p\n&quot;, =
-mite_chan);<br>
-+ =A0 =A0 =A0 printk(&quot;mite_release_channel: mite_chan-&gt;channel =3D =
-%p\n&quot;,<br>
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0mite_chan-&gt;channel);<br>
-+ =A0 =A0 =A0 printk(&quot;mite_release_channel: mite =3D %p\n&quot;, mite)=
-;<br>
-+ =A0 =A0 =A0 printk(&quot;mite_release_channel: mite-&gt;mite_io_addr =3D =
-%p\n&quot;,<br>
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0mite-&gt;mite_io_addr);<br>
-+ =A0 =A0 =A0 for (i =3D 0; i &lt; MAX_MITE_DMA_CHANNELS; i++) {<br>
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 printk(&quot;mite_release_channel: \talloc[%d=
-] =3D %u\n&quot;,<br>
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0i, mite-&gt;channel_allocated[=
-i]);<br>
-+ =A0 =A0 =A0 }<br>
-+<br>
-+#endif /* debug */<br>
-+<br>
- =A0 =A0 =A0 // spin lock to prevent races with mite_request_channel<br>
- =A0 =A0 =A0 comedi_lock_irqsave(&amp;mite-&gt;lock, flags);<br>
- =A0 =A0 =A0 if (mite-&gt;channel_allocated[mite_chan-&gt;channel]) {<br>
-@@ -318,13 +334,24 @@ void mite_release_channel(struct mite_channel *mite_c=
-han)<br>
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 CHCR_CLR_MRDY_IE | CHCR_CLR_DR=
-DY_IE |<br>
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 CHCR_CLR_LC_IE | CHCR_CLR_CONT=
-_RB_IE,<br>
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 mite-&gt;mite_io_addr + MITE_C=
-HCR(mite_chan-&gt;channel));<br>
-+#if 1 /* debug */<br>
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 printk(&quot;mite_release_channel: before dis=
-arm\n&quot;);<br>
-+#endif /* debug */<br>
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 mite_dma_disarm(mite_chan);<br>
-+#if 1 /* debug */<br>
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 printk(&quot;mite_release_channel: before res=
-et\n&quot;);<br>
-+#endif /* debug */<br>
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 mite_dma_reset(mite_chan);<br>
-+<br>
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 mite-&gt;channel_allocated[mite_chan-&gt;chann=
-el] =3D 0;<br>
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 mite_chan-&gt;ring =3D NULL;<br>
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 mmiowb();<br>
- =A0 =A0 =A0 }<br>
- =A0 =A0 =A0 comedi_unlock_irqrestore(&amp;mite-&gt;lock, flags);<br>
-+<br>
-+#if 1 /* debug */<br>
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 printk(&quot;mite_release_channel: out\n&quot=
-;);<br>
-+#endif /* debug */<br>
-=A0}<br>
-<br>
-=A0void mite_dma_arm(struct mite_channel *mite_chan)<br>
-<br>
-<br>
-diff --git a/ksrc/drivers/comedi/national_instruments/mio_common.c<br>
-b/ksrc/drivers/comedi/national_instruments/mio_common.c<br>
-index 3f70c3e..e29c2c5 100644<br>
---- a/ksrc/drivers/comedi/national_instruments/mio_common.c<br>
-+++ b/ksrc/drivers/comedi/national_instruments/mio_common.c<br>
-@@ -424,6 +424,10 @@ void ni_release_ai_mite_channel(comedi_dev_t *dev)<br>
-<br>
- =A0 =A0 =A0 unsigned long flags;<br>
-<br>
-+#if 1 /* debug */<br>
-+ =A0 =A0 =A0 printk(&quot;ni_release_ai_mite_channel: in\n&quot;);<br>
-+#endif /* debug */<br>
-+<br>
- =A0 =A0 =A0 comedi_lock_irqsave(&amp;devpriv-&gt;mite_channel_lock, flags)=
-;<br>
- =A0 =A0 =A0 if (devpriv-&gt;ai_mite_chan) {<br>
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 ni_set_ai_dma_channel(dev, -1);<br>
-@@ -432,6 +436,10 @@ void ni_release_ai_mite_channel(comedi_dev_t *dev)<br>
- =A0 =A0 =A0 }<br>
- =A0 =A0 =A0 comedi_unlock_irqrestore(&amp;devpriv-&gt;mite_channel_lock, f=
-lags);<br>
-<br>
-+#if 1 /* debug */<br>
-+ =A0 =A0 =A0 printk(&quot;ni_release_ai_mite_channel: out\n&quot;);<br>
-+#endif /* debug */<br>
-+<br>
-=A0}<br>
-<br>
-=A0void ni_release_ao_mite_channel(comedi_dev_t *dev)<br>
-<br></div></div></blockquote><div>=A0</div><div>Hy !<br>I&#39;ve applied th=
-e debug patches and I think that the problem is in the=A0 ni_release_ai_mit=
-e_channel function because it seems that mite_release_channel is never call=
-ed.<br>
-It is possible that comedi_lock_irqsave to cause the problem or devpriv-&gt=
-;ai_mite_chan is NULL ?<br><br><br>here&#39;s the output :<br><br>/usr/xeno=
-mai/sbin # ./comedi_config -v comedi0 comedi_pcimio<br>Comedi: comedi_pcimi=
-o: pcimio_attach: found pci-6024e board<br>
-Comedi: MITE: 0x90000000 mapped to c907a000 &lt;6&gt;Comedi: DAQ: 0x9000100=
-0 mapped to c907c000<br>Comedi: MITE: version =3D 2, type =3D 1, mite mode =
-=3D 1, interface mode =3D 3<br>Comedi: MITE: num channels =3D 1, write post=
- fifo depth =3D 1, wins =3D 0, iowins =3D 2<br>
-Comedi: comedi_pcimio: pcimio_attach: found irq 48<br><b>ni_release_ai_mite=
-_channel: in</b><br>Unable to handle kernel paging request for data at addr=
-ess 0x00012400<br>Faulting instruction address: 0xc023dd18<br>Oops: Kernel =
-access of bad area, sig: 11 [#1]<br>
-MPC831x RDB<br>Modules linked in:<br>NIP: c023dd18 LR: c0246c24 CTR: c0033b=
-54<br>REGS: c7a51c30 TRAP: 0300=A0=A0 Not tainted=A0 (2.6.24.2)<br>MSR: 000=
-01032 &lt;ME,IR,DR&gt;=A0 CR: 24008422=A0 XER: 00000000<br>DAR: 00012400, D=
-SISR: 20000000<br>
-TASK =3D c7827430[894] &#39;comedi_config&#39; THREAD: c7a50000<br>GPR00: c=
-0246c24 c7a51ce0 c7827430 c033d078 00012400 0001306f 00000000 c03a2f10 <br>=
-GPR08: 00000070 c7900a00 c03d6144 c03a37e8 24008424 1004a5b8 c033e238 c03c0=
-000 <br>
-GPR16: c03ba578 c03d1a00 c02465a4 c03b4d60 c0244f04 c0245144 c0245404 c0245=
-428 <br>GPR24: c03da628 c024544c 20001040 00000000 00012400 c03a2e50 c03c00=
-00 00000001 <br>Call Trace:<br>[c7a51ce0] [c03f20a8]=A0 (unreliable)<br>[c7=
-a51d00] [c0246c24] <br>
-[c7a51d20] [c0246c9c] <br>[c7a51d40] [c024b94c] <br>[c7a51d90] [c024c75c] <=
-br>[c7a51dc0] [c0238b2c] <br>[c7a51de0] [c0238c64] <br>[c7a51e20] [c0239094=
-] <br>[c7a51e40] [c023ba00] <br>[c7a51e70] [c008b404] <br>[c7a51eb0] [c008d=
-634] <br>
-[c7a51ec0] [c0059eb8] <br>[c7a51ee0] [c004ad5c] <br>[c7a51f30] [c0009644] <=
-br>[c7a51f40] [c0010ca4] <br>--- Exception: c01Instruction dump:<br>900b00b=
-0 90ff0010 4bffff9c 9421ffe0 7c0802a6 bf61000c 7c7c1b78 3c60c034 <br>900100=
-24 7f84e378 3863d078 3be00001 &lt;83dc0000&gt; 4bde279d 3c60c034 809c0004 <=
-br>
----[ end trace 0304077a12ed39c2 ]---<br><br></div><blockquote class=3D"gmai=
-l_quote" style=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0p=
-t 0pt 0.8ex; padding-left: 1ex;"><div><div class=3D"h5">
-<br>
-Regards.<br>
-<br>
-Alexis.<br>
-</div></div></blockquote></div><br>
-
---0016364d2a31736f140473ad7c94--
+> -----Urspr=FCngliche Nachricht-----
+> Von: xenomai-help-bounces@domain.hid =
+[mailto:xenomai-help-bounces@domain.hid] Im
+> Auftrag von Meier, Hans
+> Gesendet: Mittwoch, 9. September 2009 11:35
+> An: Philippe Gerum
+> Cc: xenomai@xenomai.org; Jan Kiszka
+> Betreff: Re: [Xenomai-help] Kernel panic with xenomai 2.4.7
+>=20
+> Hi Phillipe,
+> Hi Jan,
+>=20
+> Thanks for the fast responses!
+> We now decided to do the following:
+>=20
+> - we will continue to run our (up to now) single target with serial =
+card
+> on 2.6.28.7/2.4.7 to get a full log of the oops. If we get a log we =
+will
+> post it.
+>=20
+> - on some other targets we will run 2.6.30/2.4.9.1 to prove the =
+assumption
+> that we got rid of the problem (we are a little bit under time =
+pressure
+> and need to have something stable)
+>=20
+> - after the step above we will build two kernels that do only differ =
+in
+> this I-pipe version Phillipe mentioned, one before, one after, and run
+> both on targets with serial cards we already ordered, until oops or at
+> least let's say 5 days. If we get an oops on one of the targets, we =
+will
+> post the log.
+>=20
+> So, we will be back in one or two weeks.
+>=20
+> Best regards
+>=20
+> Hans
+>=20
+>=20
+> > -----Urspr=FCngliche Nachricht-----
+> > Von: Philippe Gerum [mailto:rpm@xenomai.org]
+> > Gesendet: Dienstag, 8. September 2009 20:56
+> > An: Meier, Hans
+> > Cc: xenomai@xenomai.org
+> > Betreff: Re: [Xenomai-help] Kernel panic with xenomai 2.4.7
+> >
+> > On Tue, 2009-09-08 at 19:48 +0200, Meier, Hans wrote:
+> > > Hi,
+> > >
+> > > we have been using xenomai for a long time and now for the first =
+time
+> we
+> > > have a kernel panic we would like you to have a look at (see =
+below).
+> > >
+> > > The panic (if all is the same thing) up to now has only occurred =
+after
+> > > >5h and <48h up time of our application on a core duo with linux
+> > > 2.6.28.7 patched with xenomai 2.4.7. Other, very recent tests with
+> linux
+> > > 2.6.30 and xenomai 2.4.9 and xenomai 2.4.9.1 haven't shown any =
+trouble
+> > > up to now, and reached >60h with the first trial. Other versions =
+we
+> > > haven't tested yet.
+> > >
+> > > So could you please take a look at the panic output (the only one =
+we
+> > > could see on the screen up to now, originally just a screen
+> photographed
+> > > with a mobile ...)? Might this be anything known and maybe fixed =
+in
+> > > xenomai 2.4.9? If not, can you guess what that might be from those =
+few
+> > > lines? This would help a lot! .config is attached, if you need =
+more
+> > > info, we will certainly provide it.
+> >
+> > Regarding this particular issue, I would suspect a CPU migration bug =
+we
+> > had until I-pipe 2.6.29.4-x86-2.4-00. You may want to try this patch
+> > with 2.4.7 to see if I'm right. Aside of this, 2.4.7 -> 2.4.9 closed
+> > quite a few bugs as well, but I would rather think of a pipeline =
+issue
+> > in the case below.
+> >
+> > >
+> > > Thanks in advance
+> > >
+> > > Hans
+> > >
+> > > --
+> > >
+> > > [<c010f288>] ? stop_this_cpu+0x0/0x48
+> > > [<c013e959>] smp_call_function+0x2a/0x53
+> > > [<c010f3c2>] native_smp_send_stop+0x20/0x65
+> > > [<c01234b4>] panic+0x5d/0xf4
+> > > [<c036fe43>] oops_end+0x81/0x95
+> > > [<c01060e8>] die+0x5c/0x64
+> > > [<c03714e8>] do_page_fault+0x5aa/0x660
+> > > [<c0115207>] __ipipe_handle_exception+0x1c6/0x209
+> > > [<c036f095>] ? _spin_unlock_irq+0x19/0x2d
+> > > [<c036f433>] error_code+0x77/0x84
+> > > [<c036f095>] ? _spin_unlock_irq+0x19/0x2d
+> > > [<c03600d8>] ? krb5_encrypt+0xd8/0xde
+> > > [<c010628f>] ? profile_pc+0x32/0x3b
+> > > [<c0138a1b>] profile_tick+0x4a/0x63
+> > > [<c013bb12>] tick_periodic+0x66/0x68
+> > > [<c013bb31>] tick_handle_periodic+0x1d/0x60
+> > > [<c011093a>] smp_apic_timer_interrupt+0x61/0x74
+> > > [<c01108d9>] ? smp_apic_timer_interrupt+0x0/0x74
+> > > [<c0151c5e>] __ipipe_sync_stage+0x139/0x13e
+> > > [<c01108d9>] ? smp_apic_timer_interrupt+0x0/0x74
+> > > [<c0151c63>] ? __xirq_end+0x0/0x45
+> > > [<c0151e05>] ipipe_suspend_domain+0x98/0xdb
+> > > [<c0151ecf>] __ipipe_walk_pipeline+0x87/0xc8
+> > > [<c0151f9b>] __ipipe_dispatch_wired_nocheck+0x8b/0x92
+> > > [<c015285f>] __ipipe_dispatch_wired+0x64/0x67
+> > > [<c0114b9e>] __ipipe_handle_irq+0xb2/0x1d7
+> > > [<c0104821>] ipipe_ipi3+0x35/0x58
+> > > [<c02f9261>] dev_hard_start_xmit+0x261/0x268
+> > > [<c03062a1>] ? __qdisc_run+0xcc/0x1af
+> > > [<c02fb8ae>] dev_queue_xmit+0x311/0x42b
+> > > [<c0311aa9>] ? ip_finish_output+0x21f/0x259
+> > > [<c0151451>] ? ipipe_check_context+0xa/0xec
+> > > [<c03126d8>] ? ip_output+0x71/0x76
+> > > [<c03106a8>] ? ip_local_out+0x1d/0x20
+> > > [<c031298d>] ? ip_queue_xmit+0x2b0/0x317
+> > > [<c011c54a>] ? default_wake_function+0x0/0x12
+> > > [<c0114ec4>] ? __ipipe_unstall_iret_root+0x64/0x68
+> > > [<c0103be3>] ? restore_nocheck_notrace+0x0/0xe
+> > > [<c02f2659>] ? __copy_skb_header+0xe/0xe0
+> > > [<c031f703>] ? __tcp_select_window+0xe/0x126
+> > > [<c0151451>] ? ipipe_check_context+0xa/0xec
+> > > [<c0320102>] ? tcp_transmit_skb+0x564/0x59e
+> > > [<c0110955>] ? native_apic_mem_write+0x8/0x1a
+> > > [<c0321747>] ? __tcp_push_pending_frames+0x626/0x6c4
+> > > [<c031f98b>] ? tcp_current_mss+0xa2/0xc3
+> > > [<c024be8e>] ? __copy_from_user_ll+0xa/0xd8
+> > > [<c024c1be>] ? copy_from_user+0x3b/0x5e
+> > > [<c031813b>] ? tcp_sendmsg+0x7d3/0x8b4
+> > > [<c0111802>] ? unmask_IO_APIC_irq+0xab/0xb2
+> > > [<c02ee6a5>] ? sock_aio_write+0xe5/0xee
+> > > [<c01b1c41>] ? do_sync_readv_writev+0xae/0xec
+> > > [<c01342e5>] ? autoremove_wake_funtion+0x0/0x35
+> > > [<c024be8e>] ? __copy_from_user_ll+0xa/0xd8
+> > > [<c024c1be>] ? copy_from_user+0x3b/0x5e
+> > > [<c022dbe5>] ? cap_file_permission+0x8/0xc
+> > > [<c022cb78>] ? security_file_permission+0x14/0x16
+> > > [<c01b227a>] ? do_readv_writev+0x86/0x141
+> > > [<c02ee5c0>] ? sock_aio_write+0x0/0xee
+> > > [<c0162ed7>] ? Iosyscall_event+0xe/0x168
+> > > [<c01b2373>] ? vfs_writev+0x3e/0x4e
+> > > [<c01b2715>] ? sys_writev+0x40/0x65
+> > > [<c0103aaa>] ? sysenter_do_call+0x12/0x16
+> > > ---[ end trace a1134258cad770fd ]---
+> > >
+> > > _______________________________________________
+> > > Xenomai-help mailing list
+> > > Xenomai-help@domain.hid
+> > > https://mail.gna.org/listinfo/xenomai-help
+> > --
+> > Philippe.
+> >
+>=20
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
