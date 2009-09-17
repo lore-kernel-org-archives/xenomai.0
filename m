@@ -1,93 +1,53 @@
-Message-ID: <4AC463C5.1060702@domain.hid>
-Date: Thu, 01 Oct 2009 10:09:41 +0200
-From: Matthieu Nottale <nottale@domain.hid>
 MIME-Version: 1.0
-References: <4AC1BCF9.8050908@domain.hid> <4AC4561B.5070004@domain.hid>
-	<4AC45853.2040107@domain.hid> <4AC45D39.3010605@domain.hid>
-In-Reply-To: <4AC45D39.3010605@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [bug] accept() in non-blocking mode fails with
- EPERM instead of EAGAIN
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+In-Reply-To: <4AB2745E.3030106@domain.hid>
+References: <9aa019ba0909150827u38360ec1m7b749838ab0c54c4@domain.hid>
+	<1253116044.2676.153.camel@domain.hid>
+	<9aa019ba0909171026i51de25a7g6e0c5fd60273747@domain.hid>
+	<4AB2745E.3030106@domain.hid>
+Date: Thu, 17 Sep 2009 15:45:02 -0500
+Message-ID: <9aa019ba0909171345t4a2996eavc950fa4de543fd6d@domain.hid>
+From: James Kilts <jameskilts@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-help] Interrupt only runs once
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->   
->> Jan Kiszka wrote:
->>     
->>> Matthieu Nottale wrote:
->>>       
->>>> Hi,
->>>>
->>>> I believe I found a bug in the Xenomai Posix skin while trying to use
->>>> boost::asio: The accept() call in asychronous mode
->>>> fails with ENOPEM instead of EAGAIN. Other than that, the call 'works'
->>>> in the sense that calling it again after a connection is established
->>>> returns a new file descriptor.
->>>>         
->>> On what kind of file descriptor descriping what kind of socket are you
->>> calling accept()? So far I'm not aware of any RTDM driver providing the
->>> corresponding service - well, at least not a public one (our RT-TCP
->>> stack is yet to be released). Or is it intended to pass the call to
->>> plain Linux, switching the caller into secondary more?
->>>       
->> There's a sample attached. Yes, it is a TCP stream. Howeve accept is
->> wrapped, so it may happen that EPERM is the result of the wrapping.
->>
->>     
->
-> Oops, missed that. Indeed, patch below should fix it.
->
-> Jan
->
-> diff --git a/src/skins/posix/rtdm.c b/src/skins/posix/rtdm.c
-> index 6e347fb..4e6685f 100644
-> --- a/src/skins/posix/rtdm.c
-> +++ b/src/skins/posix/rtdm.c
-> @@ -404,18 +404,21 @@ int __wrap_accept(int fd, struct sockaddr *addr, socklen_t * addrlen)
->  
->  		pthread_setcanceltype(oldtype, NULL);
->  
-> -		if (fd >= 0)
-> -			fd += __rtdm_fd_start;
-> +		if (fd < 0)
-> +			return set_errno(fd);
-> +
-> +		return fd + __rtdm_fd_start;
->  	} else {
->  		fd = __real_accept(fd, addr, addrlen);
->  
->  		if (fd >= __rtdm_fd_start) {
->  			__real_close(fd);
-> -			fd = -EMFILE;
-> +			errno = EMFILE;
-> +			fd = -1;
->  		}
-> -	}
->  
-> -	return set_errno(fd);
-> +		return fd;
-> +	}
->  }
->  
->  int __wrap_getsockname(int fd, struct sockaddr *name, socklen_t * namelen)
->
->   
-Thank you very much for this quick correction, without much knowledge of 
-xenomai I was afraid the fix would be much more complicated.
+> If your PIC needs an EOI, you can define the irq_finish macro in
+> include/mach/irqs.h like the AT91, and use the level handler.
+
+Thanks for the suggestion.  I'll give it a try when I have a moment.
 
 
-Best regards,
+> Ok. I had a look at handle_prio_irq in arch/arm/mach-ns9xxx/irq.c. What
+> this irq handler does is bad, really bad. If you care about interrupt
+> latencies, you should really use handle_level_irq. That is, replace the
+> #if 0 with a #if 1.
 
-    Matthieu
+There is a newer version of handle_prio_irq() that is very similar to
+handle_fasteoi_irq(), which is not checked into mainline Linux yet.
+And yes, the old version is quite bad.
+
+In any case, I thought handle_prio_irq should only be called when the
+Linux domain is passed the interrupt by I-pipe.  Should I-pipe be
+calling handle_prio_irq() or handle_level_irq() even when Linux is not
+registered to receive the IRQ?
+
+
+> By the way: do you plan to publish your patch?
+
+It would be desirable to have the patch published, although our
+current platform is Linux kernel version 2.6.28.9 with Xenomai 2.4.8
+and may require some work to get working on the latest branch.
+
+
+- James
 
