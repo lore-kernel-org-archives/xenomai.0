@@ -1,5 +1,5 @@
-Message-ID: <4AB2725C.90703@domain.hid>
-Date: Thu, 17 Sep 2009 19:31:08 +0200
+Message-ID: <4AB2745E.3030106@domain.hid>
+Date: Thu, 17 Sep 2009 19:39:42 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <9aa019ba0909150827u38360ec1m7b749838ab0c54c4@domain.hid>	<1253116044.2676.153.camel@domain.hid>
@@ -27,9 +27,15 @@ James Kilts wrote:
 > handlers, since this board doesn't fall into any of the existing handler
 > categories.
 
-If your PIC needs an EOI, you can define the irq_finish macro in
-include/mach/irqs.h like the AT91, and use the level handler. The I-pipe
-should handled that, since it already does for AT91.
+Ok. I had a look at handle_prio_irq in arch/arm/mach-ns9xxx/irq.c. What
+this irq handler does is bad, really bad. If you care about interrupt
+latencies, you should really use handle_level_irq. That is, replace the
+#if 0 with a #if 1.
+
+This issue has already been discussed (in a slightly different form) on
+both Xenomai and Linux-arm-kernel mailing lists.
+
+By the way: do you plan to publish your patch?
 
 -- 
 					    Gilles.
