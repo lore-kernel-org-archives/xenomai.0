@@ -1,10 +1,13 @@
-Message-ID: <4AB351BD.9050201@domain.hid>
-Date: Fri, 18 Sep 2009 11:24:13 +0200
+Message-ID: <4AB4C0C1.7000708@domain.hid>
+Date: Sat, 19 Sep 2009 13:30:09 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PULL REQUEST] rtipc: Fix 64-bit related warnings
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig1441C62225F07AEFF1329D22"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PULL REQUEST] x86-hal: Include fix for NMI watchdog
+	on 2.6.31
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,43 +19,62 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-The following changes since commit 13d66eb4c8f1648614095d43dd529a3c98fc5278:
-  Philippe Gerum (1):
-        x86: upgrade I-pipe support to 2.6.31-x86-2.4-05
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig1441C62225F07AEFF1329D22
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
+
+The following changes since commit 280f42f0874d00b8ea0ca8b966e568604eec17=
+f0:
+  Jan Kiszka (1):
+        rtipc: Fix 64-bit related warnings
 
 are available in the git repository at:
 
   git://xenomai.org/xenomai-jki.git for-upstream
 
 Jan Kiszka (1):
-      rtipc: Fix 64-bit related warnings
+      	x86-hal: Include fix for NMI watchdog on 2.6.31
 
- ksrc/drivers/ipc/internal.h |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+ ksrc/arch/x86/nmi.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
 
 ---
 
-rtipc: Fix 64-bit related warnings
-
+x86-hal: Include fix for NMI watchdog on 2.6.31
+   =20
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 
-diff --git a/ksrc/drivers/ipc/internal.h b/ksrc/drivers/ipc/internal.h
-index 737038e..296a988 100644
---- a/ksrc/drivers/ipc/internal.h
-+++ b/ksrc/drivers/ipc/internal.h
-@@ -70,12 +70,12 @@ static inline void *rtipc_context_to_state(struct rtdm_dev_context *context)
- 
- static inline void *rtipc_fd2map(int fd)
- {
--	return (void *)(fd + 1);
-+	return (void *)(long)(fd + 1);
- }
- 
- static inline int rtipc_map2fd(void *p)
- {
--	return (int)(p) - 1;
-+	return (long)p - 1;
- }
- 
- static inline nanosecs_rel_t rtipc_timeval_to_ns(const struct timeval *tv)
+diff --git a/ksrc/arch/x86/nmi.c b/ksrc/arch/x86/nmi.c
+index a9d9380..19cd16f 100644
+--- a/ksrc/arch/x86/nmi.c
++++ b/ksrc/arch/x86/nmi.c
+@@ -29,7 +29,9 @@
+ #include <linux/version.h>
+ #include <linux/nmi.h>
+ #if LINUX_VERSION_CODE >=3D KERNEL_VERSION(2,6,0)
+-#if LINUX_VERSION_CODE >=3D KERNEL_VERSION(2,6,19)
++#if LINUX_VERSION_CODE >=3D KERNEL_VERSION(2,6,31)
++#include <asm/perf_counter.h>
++#elif LINUX_VERSION_CODE >=3D KERNEL_VERSION(2,6,19)
+ #include <asm/intel_arch_perfmon.h>
+ #endif /* Linux < 2.6.19 */
+ #include <asm/nmi.h>
+
+
+--------------enig1441C62225F07AEFF1329D22
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkq0wMoACgkQitSsb3rl5xTO/wCZAZEdlZ50z3GjxeF8JsQV1Jjn
+jVoAoLfnWpkDv09gW9MQvkV1Cr3SEy8H
+=oCay
+-----END PGP SIGNATURE-----
+
+--------------enig1441C62225F07AEFF1329D22--
 
