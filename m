@@ -1,13 +1,9 @@
-Message-ID: <4ABD2060.1010102@domain.hid>
-Date: Fri, 25 Sep 2009 21:56:16 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <7a15153d0909251227y598abd0fmb4297cb2614b13af@domain.hid>	<4ABD1BAA.2090005@domain.hid>
-	<7a15153d0909251252r5ba268e1n885e3a6155b5212@domain.hid>
-In-Reply-To: <7a15153d0909251252r5ba268e1n885e3a6155b5212@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] High CPU Load
+Date: Wed, 23 Sep 2009 08:56:53 -0300
+Message-ID: <7a15153d0909230456l1a094dc6g6bea8ba7f077e567@domain.hid>
+From: Felipe Castro <felipecpc1@domain.hid>
+Content-Type: multipart/alternative; boundary=001636499c01375bea04743d69f6
+Subject: [Xenomai-help] Realtime data processing + VGA display
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,24 +13,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Felipe Castro <felipecpc1@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Felipe Castro wrote:
-> Well , that is what i thought but i need to stop the software otherwise my
-> tasks will be deleted .... That's the why i put this infinite loop .... how
-> can i do to keep my tasks running ?
+--001636499c01375bea04743d69f6
+Content-Type: text/plain; charset=ISO-8859-1
 
-	for(;;)
-		pause();
+Hi guys ,
 
-For instance. Or:
+I need some suggestion about how to deal with QT library, or another and
+xenomai real time path.
+What I'm working on, is a real time data processing and i need to show the
+results in a VGA display.
 
-	while (!finished)
-		pause();
+I have my data processing routine running in real time kernel with a high
+priority task, and now after 5ms i need to refresh all data in display.
 
-finished being a variable set to a non zero value by some signal handler.
+I don't know how to handle it to get my realtime response shown in display
+in a realtime too ...
 
--- 
-					    Gilles.
+I did some tests using a simple QT software but it appears to refresh to
+slow. Is it possible to do ? another question is , is there another library
+to handle VGA display tha you suggest me ?
+
+Thanks
+
+--001636499c01375bea04743d69f6
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi guys , <br><br>I need some suggestion about how to deal with QT library,=
+ or another and xenomai real time path. <br>What I&#39;m working on, is a r=
+eal time data processing and i need to show the results in a VGA display. <=
+br>
+<br>I have my data processing routine running in real time kernel with a hi=
+gh priority task, and now after 5ms i need to refresh all data in display. =
+<br><br>I don&#39;t know how to handle it to get my realtime response shown=
+ in display in a realtime too ... <br>
+<br>I did some tests using a simple QT software but it appears to refresh t=
+o slow. Is it possible to do ? another question is , is there another libra=
+ry to handle VGA display tha you suggest me ?<br><br>Thanks<br><br>
+
+--001636499c01375bea04743d69f6--
 
