@@ -1,47 +1,41 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20091002193943.41045832E408@domain.hid>
-References: <4AC2448B.1080500@domain.hid>
-	<1254396765.2703.234.camel@domain.hid> <4AC62883.1080908@domain.hid>
-	<1254505304.2703.347.camel@domain.hid>
-	<1254506494.8199.46.camel@domain.hid>
-	<1254510029.2703.355.camel@domain.hid>
-	<20091002193943.41045832E408@domain.hid>
-Content-Type: text/plain
-Date: Fri, 02 Oct 2009 21:45:15 +0200
-Message-Id: <1254512715.2703.368.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4ABBCD13.2000209@domain.hid>
+Date: Thu, 24 Sep 2009 21:48:35 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <181804936ABC2349BE503168465576460C3AE7CB@exchserver.basler.com>
+In-Reply-To: <181804936ABC2349BE503168465576460C3AE7CB@exchserver.basler.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] RFC: 2.5 todo list.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Printf stops working after receiving signal.
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Denk <wd@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Steve Deiters <SteveDeiters@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Fri, 2009-10-02 at 21:39 +0200, Wolfgang Denk wrote:
-> Dear Philippe Gerum,
+Steve Deiters wrote:
+> I have a simple little test program, attached below.  When I hit CTL-C
+> to break the program, not all of the "finished" lines will print.  If I
+> remove either the rt_task_shadow call or the sigwait at the end, it will
+> then print all of them.  Adding a fflush(stdout) to the end does nothing
+> to help it.
 > 
-> In message <1254510029.2703.355.camel@domain.hid> you wrote:
-> >
-> > I just pushed this commit to my remote tree (ipipe-2.6.30-powerpc
-> > branch); it should appear in a few hours once mirrored (cron job).
+> I'm not sure if there's some interaction with the Xenomai domain I am
+> just missing which is causing the print statements to be dropped.
 > 
-> It's out (I manually triggered a sync :-)*
+> This is running on a PowerPC kernel 2.6.24 with Xenoami 2.4.9.
 
-Thanks.
+Xenomai 2.4.9 has no I-pipe patch for Linux 2.6.24 for PowerPC. And you
+should be using Xenomai 2.4.9.1 and one of the patches it contains.
+Earlier patches and earlier revisions are buggy.
 
-> 
-> Best regards,
-> 
-> Wolfgang Denk
-> 
+
 -- 
-Philippe.
-
-
+					    Gilles.
 
