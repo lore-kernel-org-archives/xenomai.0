@@ -1,36 +1,41 @@
-Message-ID: <4AC66094.8030109@domain.hid>
-Date: Fri, 02 Oct 2009 22:20:36 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4AC2448B.1080500@domain.hid>		<1254396765.2703.234.camel@domain.hid>	<4AC62883.1080908@domain.hid>		<1254505304.2703.347.camel@domain.hid>
-	<4AC63CF0.7090001@domain.hid>	<1254511088.2703.367.camel@domain.hid>
-	<4AC65B9C.4010303@domain.hid>
-In-Reply-To: <4AC65B9C.4010303@domain.hid>
+Date: Thu, 24 Sep 2009 17:12:41 -0400
+Message-ID: <9b3e2dc20909241412n7567401bpd768a6678a5c9158@domain.hid>
+From: Stephen Sinclair <radarsat1@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] RFC: 2.5 todo list.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: [Xenomai-help] rtdm, where to initialize pci private data?
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Patrice Kadionik <patrice.kadionik@domain.hid>, Xenomai core <Xenomai-core@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->> Ok. How many interrupt controllers would be impacted by the PIC mute
->> feature?
-> 
-> Most of the ARM PICs (with their cascaded GPIOs). I have to admit that I
-> do not keep track of how many arm processors we actually support, but
-> there's a handful. Or maybe two.
+Hi,
 
-We support 9 arm SOCs families.
+I'm trying to port a PCI driver to Xenomai/RTDM.  I'm a bit confused
+about how to handle private data.  The open/close/ioctl functions
+receive a context pointer, which is a struct + the context_size
+length.  So this is where I guess you are supposed to put private
+data, initialized in the open() function.
 
--- 
-					    Gilles.
+However, the driver I'm porting does initialization (i.e,. gets base
+addresses, etc) in the probe() function.  It gets base addresses from
+the pci_dev struct which is passed to it.  In the probe function I
+have no rtdm_dev_context, so I can't initialize the private data
+there.  In the open function I have no pci_dev so I can't do it there
+either.  I could allocate some memory and store it in
+rtdm_device.device_data, but this isn't available to the
+open/close/ioctl functions.
+
+So I presume rtdm_context is created sometime during
+rtdm_dev_register() (called in probe), but how do I access it for
+writing?
+
+thanks,
+Steve
 
