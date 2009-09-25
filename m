@@ -1,167 +1,66 @@
-Resent-To: Philippe Gerum <rpm@xenomai.org>
-Resent-Message-Id: <4AE2B519.5030602@domain.hid>
-From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Sat, 24 Oct 2009 10:03:04 +0200
-Message-ID: <20091024080304.22784.63463.stgit@domain.hid>
-In-Reply-To: <20091024080304.22784.46688.stgit@domain.hid>
-References: <20091024080304.22784.46688.stgit@domain.hid>
+Date: Fri, 25 Sep 2009 21:22:06 +0800 (CST)
+From: =?gbk?B?uqvK2Mer?= <hshouqian@domain.hid>
+Message-ID: <26553515.371391253884926657.JavaMail.coremail@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 2/2] Syslog extension of rt_print
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_98448_29910483.1253884926656"
+Subject: [Xenomai-help] Porting rtai/linux applications to xenomai/linux
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org, Oliver Schlenker <oliver.schlenker@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai-help <xenomai@xenomai.org>
 
-From: Oliver Schlenker <oliver.schlenker@domain.hid>
+------=_Part_98448_29910483.1253884926656
+Content-Type: text/plain; charset=gbk
+Content-Transfer-Encoding: base64
 
-Extension of rt_print library with rt_syslog() and rt_vsyslog() to print
-messages rt-safe directly to syslog.
+CiAgICBIZWxsbyBldmVyeW9uZaOhSSdtIFBvcnRpbmcgcnRhaS9saW51eCBhcHBsaWNhdGlvbnMg
+dG8geGVub21haS9saW51eC4gSSB3YW50IHRvIHN3aXRoICBSVEFJIEFQSSB0byAgWGVubydzIG5h
+dGl2ZSBBUEkuIE5vdyBJIGhhdmUgYSBwcm9ibGVtOndlIGtub3cscnRhaSBwcm92aWRlcyBhIGtl
+cm5lbCBtb2R1bGU6IG1hdGgua28sIHNvIHdlIGNhbiB1c2UgbWF0aCBmdW50aW9ucyBpbiBvdXIg
+a2VybmVsIG1vZHVsZXMgb2Ygb3VyIGFwcGxpY2F0aW9ucyAsYnV0IHhlbm9tYWkgZG9lc24ndCBw
+cm92aWRlIHRoZSBzYW1lIGZ1bmN0aW9ucy4gd2hhdCBzaG91bGQgSSBkbz8gTXkga2VybmVsIG1v
+ZHVsZSBvZiBhcHBsaWNhdGlvbiBuZWVkICBzb21lIG1hdGggZnVuY3Rpb25zLgogICAgTWF5YmUg
+SSBzaG91bGQgcG9ydCB0aGUgbWF0aC5rbyBvZiBydGFpIHRvIHhlbm9tYWkgb3IgY29weSB0aGUg
+ZGVmaW5pdGlvbnMgb2YgbmVlZGVkIG1hdGggZnVudGlvbnMgdG8gdGhlIHNvdXJjZSBjb2RlIG9m
+IG15IGtlcm5lbCBtb2R1bGUgPyAKICAgIERvIHlvdSBvd24gYSBnb29kIG1ldGhvZCB0byBzb2x2
+ZSB0aGUgcHJvYmxlbT8gIEknbSBsb29raW5nIGZvcndhcmQgdG8geW91ciBhbnN3ZXJzISBUaGFu
+ayB5b3Uh
+------=_Part_98448_29910483.1253884926656
+Content-Type: text/html; charset=gbk
+Content-Transfer-Encoding: base64
 
-Signed-off-by: Oliver Schlenker <oliver.schlenker@domain.hid>
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
-
- include/rtdk.h      |    2 ++
- src/rtdk/rt_print.c |   39 ++++++++++++++++++++++++++++++++++++---
- 2 files changed, 38 insertions(+), 3 deletions(-)
-
-diff --git a/include/rtdk.h b/include/rtdk.h
-index 981bfda..9129ccb 100644
---- a/include/rtdk.h
-+++ b/include/rtdk.h
-@@ -52,6 +52,8 @@ int rt_vfprintf(FILE *stream, const char *format, va_list args);
- int rt_vprintf(const char *format, va_list args);
- int rt_fprintf(FILE *stream, const char *format, ...);
- int rt_printf(const char *format, ...);
-+void rt_syslog(int priority, char *format, ...);
-+void rt_vsyslog(int priority, char *format, va_list args);
- 
- int rt_print_init(size_t buffer_size, const char *name);
- void rt_print_cleanup(void);
-diff --git a/src/rtdk/rt_print.c b/src/rtdk/rt_print.c
-index dca9689..c6b5c55 100644
---- a/src/rtdk/rt_print.c
-+++ b/src/rtdk/rt_print.c
-@@ -25,6 +25,7 @@
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
-+#include <syslog.h>
- 
- #include <rtdk.h>
- #include <asm/xenomai/system.h>
-@@ -37,9 +38,12 @@
- 
- #define RT_PRINT_LINE_BREAK		256
- 
-+#define RT_PRINT_SYSLOG_STREAM		NULL
-+
- struct entry_head {
- 	FILE *dest;
- 	uint32_t seq_no;
-+	int priority;
- 	char text[1];
- } __attribute__((packed));
- 
-@@ -76,7 +80,8 @@ static void print_buffers(void);
- 
- /* *** rt_print API *** */
- 
--int rt_vfprintf(FILE *stream, const char *format, va_list args)
-+static int print_to_buffer(FILE *stream, int priority, const char *format,
-+			   va_list args)
- {
- 	struct print_buffer *buffer = pthread_getspecific(buffer_key);
- 	off_t write_pos, read_pos;
-@@ -115,6 +120,7 @@ int rt_vfprintf(FILE *stream, const char *format, va_list args)
- 			/* Write out empty entry */
- 			head = buffer->ring + write_pos;
- 			head->seq_no = seq_no;
-+			head->priority = 0;
- 			head->text[0] = 0;
- 
- 			/* Forward to the ring buffer start */
-@@ -148,6 +154,7 @@ int rt_vfprintf(FILE *stream, const char *format, va_list args)
- 	/* If we were able to write some text, finalise the entry */
- 	if (len > 0) {
- 		head->seq_no = ++seq_no;
-+		head->priority = priority;
- 		head->dest = stream;
- 
- 		/* Move forward by text and head length */
-@@ -160,6 +167,7 @@ int rt_vfprintf(FILE *stream, const char *format, va_list args)
- 		/* An empty entry marks the wrap-around */
- 		head = buffer->ring + write_pos;
- 		head->seq_no = seq_no;
-+		head->priority = priority;
- 		head->text[0] = 0;
- 
- 		write_pos = 0;
-@@ -173,6 +181,11 @@ int rt_vfprintf(FILE *stream, const char *format, va_list args)
- 	return res;
- }
- 
-+int rt_vfprintf(FILE *stream, const char *format, va_list args)
-+{
-+	return print_to_buffer(stream, 0, format, args);
-+}
-+
- int rt_vprintf(const char *format, va_list args)
- {
- 	return rt_vfprintf(stdout, format, args);
-@@ -202,6 +215,20 @@ int rt_printf(const char *format, ...)
- 	return n;
- }
- 
-+void rt_syslog(int priority, char *format, ...)
-+{
-+	va_list args;
-+
-+	va_start(args, format);
-+	print_to_buffer(RT_PRINT_SYSLOG_STREAM, priority, format, args);
-+	va_end(args);
-+}
-+
-+void rt_vsyslog(int priority, char *format, va_list args)
-+{
-+	print_to_buffer(RT_PRINT_SYSLOG_STREAM, priority, format, args);
-+}
-+
- static void set_buffer_name(struct print_buffer *buffer, const char *name)
- {
- 	int n;
-@@ -311,7 +338,6 @@ const char *rt_print_buffer_name(void)
- 	return buffer->name;
- }
- 
--
- /* *** Deferred Output Management *** */
- 
- static void cleanup_buffer(struct print_buffer *buffer)
-@@ -384,7 +410,14 @@ static void print_buffers(void)
- 
- 		if (len) {
- 			/* Print out non-empty entry and proceed */
--			fprintf(head->dest, "%s", head->text);
-+			/* Check if output goes to syslog */
-+			if (head->dest == RT_PRINT_SYSLOG_STREAM) {
-+				syslog(head->priority, "%s", head->text);
-+			} else {
-+				/* Output goes to specified stream */
-+				fprintf(head->dest, "%s", head->text);
-+			}
-+
- 			read_pos += sizeof(*head) + len;
- 		} else {
- 			/* Emptry entries mark the wrap-around */
+PGJyPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwO0hlbGxvJm5ic3A7ZXZlcnlvbmWjoUknbSZuYnNw
+O1BvcnRpbmcmbmJzcDtydGFpL2xpbnV4Jm5ic3A7YXBwbGljYXRpb25zJm5ic3A7dG8mbmJzcDt4
+ZW5vbWFpL2xpbnV4LiZuYnNwO0kmbmJzcDt3YW50Jm5ic3A7dG8mbmJzcDtzd2l0aCZuYnNwOyZu
+YnNwO1JUQUkmbmJzcDtBUEkmbmJzcDt0byZuYnNwOyZuYnNwO1hlbm8ncyZuYnNwO25hdGl2ZSZu
+YnNwO0FQSS4mbmJzcDtOb3cmbmJzcDtJJm5ic3A7aGF2ZSZuYnNwO2EmbmJzcDtwcm9ibGVtOndl
+Jm5ic3A7a25vdyxydGFpJm5ic3A7cHJvdmlkZXMmbmJzcDthJm5ic3A7a2VybmVsJm5ic3A7bW9k
+dWxlOiZuYnNwO21hdGgua28sJm5ic3A7c28mbmJzcDt3ZSZuYnNwO2NhbiZuYnNwO3VzZSZuYnNw
+O21hdGgmbmJzcDtmdW50aW9ucyZuYnNwO2luJm5ic3A7b3VyJm5ic3A7a2VybmVsJm5ic3A7bW9k
+dWxlcyZuYnNwO29mJm5ic3A7b3VyJm5ic3A7YXBwbGljYXRpb25zJm5ic3A7LGJ1dCZuYnNwO3hl
+bm9tYWkmbmJzcDtkb2Vzbid0Jm5ic3A7cHJvdmlkZSZuYnNwO3RoZSZuYnNwO3NhbWUmbmJzcDtm
+dW5jdGlvbnMuJm5ic3A7d2hhdCZuYnNwO3Nob3VsZCZuYnNwO0kmbmJzcDtkbz8mbmJzcDtNeSZu
+YnNwO2tlcm5lbCZuYnNwO21vZHVsZSZuYnNwO29mJm5ic3A7YXBwbGljYXRpb24mbmJzcDtuZWVk
+Jm5ic3A7Jm5ic3A7c29tZSZuYnNwO21hdGgmbmJzcDtmdW5jdGlvbnMuPGJyPiZuYnNwOyZuYnNw
+OyZuYnNwOyZuYnNwO01heWJlJm5ic3A7SSZuYnNwO3Nob3VsZCZuYnNwO3BvcnQmbmJzcDt0aGUm
+bmJzcDttYXRoLmtvJm5ic3A7b2YmbmJzcDtydGFpJm5ic3A7dG8mbmJzcDt4ZW5vbWFpJm5ic3A7
+b3ImbmJzcDtjb3B5Jm5ic3A7dGhlJm5ic3A7ZGVmaW5pdGlvbnMmbmJzcDtvZiZuYnNwO25lZWRl
+ZCZuYnNwO21hdGgmbmJzcDtmdW50aW9ucyZuYnNwO3RvJm5ic3A7dGhlJm5ic3A7c291cmNlJm5i
+c3A7Y29kZSZuYnNwO29mJm5ic3A7bXkmbmJzcDtrZXJuZWwmbmJzcDttb2R1bGUmbmJzcDs/Jm5i
+c3A7PGJyPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwO0RvJm5ic3A7eW91Jm5ic3A7b3duJm5ic3A7
+YSZuYnNwO2dvb2QmbmJzcDttZXRob2QmbmJzcDt0byZuYnNwO3NvbHZlJm5ic3A7dGhlJm5ic3A7
+cHJvYmxlbT8mbmJzcDsmbmJzcDtJJ20mbmJzcDtsb29raW5nJm5ic3A7Zm9yd2FyZCZuYnNwO3Rv
+Jm5ic3A7eW91ciZuYnNwO2Fuc3dlcnMhJm5ic3A7VGhhbmsmbmJzcDt5b3UhPGJyPjxicj48c3Bh
+biB0aXRsZT0ibmV0ZWFzZWZvb3RlciIvPjxoci8+CjxhIGhyZWY9Imh0dHA6Ly9uZXdzLjE2My5j
+b20vbWFkZWluY2hpbmEvaW5kZXguaHRtbD9mcm9tPW1haWxmb290ZXIiPiLW0Ln61sbU7CIsvbLK
+9tbQufo2MMTqzfnKwjwvYT4KPC9zcGFuPg==
+------=_Part_98448_29910483.1253884926656--
 
 
