@@ -1,11 +1,15 @@
-Message-ID: <4AC46376.9030902@domain.hid>
-Date: Thu, 01 Oct 2009 10:08:22 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] XUM follow-up: known problems and wishes for
-	RT-Socket-CAN
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 25 Sep 2009 09:33:08 -0500
+Message-ID: <181804936ABC2349BE503168465576460C3AEC94@domain.hid>
+References: <181804936ABC2349BE503168465576460C3AE7CB@exchserver.basler.com>	
+	<4ABBCD13.2000209@domain.hid>	
+	<181804936ABC2349BE503168465576460C3AE9C1@domain.hid> 
+	<4ABC709B.6090005@domain.hid>
+From: "Steve Deiters" <SteveDeiters@domain.hid>
+Subject: Re: [Xenomai-help] Printf stops working after receiving signal.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,22 +19,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hello,
+This is the name of the patch from the Xenomai source package it
+installs: adeos-ipipe-2.6.24.6-powerpc-DENX-2.4-03.patch.
 
-I also enjoyed a lot the XUM at Dresden and hope that it will be
-repeated regularly.
+I checked the adeos download site
+(http://download.gna.org/adeos/patches/v2.6/powerpc/older/) and there=
+ is
+no newer one listed for this version of the kernel.
 
-During the meeting, I heard some complaints about RT-Socket-CAN (aka
-RTCAN) not working properly in the past. I might have missed some
-related emails, sorry. Are there still pending issues?
 
-Furthermore, are there wishes to improve or even extend RT-Socket-CAN or
- to make it more compatible with the Socket-CAN version now part of the
-vanilla kernel?
+-----Original Message-----
+From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid]
+On Behalf Of Gilles Chanteperdrix
+Sent: Friday, September 25, 2009 2:26 AM
+To: Steve Deiters
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai-help] Printf stops working after receiving signal.
 
-Thanks for input,
+Steve Deiters wrote:
+> I upgraded to Xenomai 2.4.9.1 and get the same behavior.  Any other=20
+> ideas as to what may be causing this?
 
-Wolfgang.
+With one of the I-pipe patches which comes with Xenomai 2.4.9.1 ?
+
+--=20
+					    Gilles.
+
+_______________________________________________
+Xenomai-help mailing list
+Xenomai-help@domain.hid
+https://mail.gna.org/listinfo/xenomai-help
 
