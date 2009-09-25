@@ -1,12 +1,12 @@
-Message-ID: <4AC5F49E.3070608@domain.hid>
-Date: Fri, 02 Oct 2009 14:39:58 +0200
+Message-ID: <4ABCCFF8.1060607@domain.hid>
+Date: Fri, 25 Sep 2009 16:13:12 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4AC5E895.8010107@domain.hid>
-In-Reply-To: <4AC5E895.8010107@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Freeze on SMP x86-64
+References: <26553515.371391253884926657.JavaMail.coremail@domain.hid>
+In-Reply-To: <26553515.371391253884926657.JavaMail.coremail@domain.hid>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-help] Porting rtai/linux applications to xenomai/linux
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,32 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Roman Pisl <rpisl@domain.hid>
-Cc: xenomai@xenomai.org
+To: =?UTF-8?B?6Z+p5a6I6LCm?= <hshouqian@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Roman Pisl wrote:
-> Hello,
-> I just tried x86-64 SMP Linux/Xenomai on my workstation (Intel Core2
-> Quad) but it freezes immediately after latency test or clocktest is
-> started. It freezes even during the boot, when Xenomai debbuging is
-> enabled.
+韩守谦 wrote:
 > 
-> The same kernel binary runs seamlessly in KVM on the same machine.
-> 
-> When I completely disable ACPI, the kernel recognizes only one CPU and
-> the latency test works.
-> 
-> The same configuration but for 32bit x86 also runs without freeze.
-> 
-> Do you have any ideas?
+> Hello everyone！ I'm Porting rtai/linux applications to xenomai/linux.
+> I want to swith  RTAI API to  Xeno's native API. Now I have a
+> problem:we know,rtai provides a kernel module: math.ko, so we can use
+> math funtions in our kernel modules of our applications ,but xenomai
+> doesn't provide the same functions. what should I do? My kernel
+> module of application need  some math functions.
 
-Yes. As we repeated many times.
-Tell us the versions of Xenomai and of the I-pipe patch you use.
-Send us your .config
-Manage to get the kernel console output (using a serial cable connected
-to another PC, or the netconsole, some people even used to send us
-photos about kernel crashes).
+As we already told in former posts, we do not support the math module,
+and do not intend to support it.
+
+Using math functions in kernel-space is probably the sign of a design
+which does too many things in kernel-space. Move the computations to
+user-space. Besides, using hardware maths in kernel-space has become
+harder, since the linux kernel compilation flags contain -msoft-float by
+default.
 
 -- 
-					    Gilles.
+                                          Gilles
+
 
