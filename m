@@ -1,12 +1,13 @@
-Message-ID: <4AC60C71.4050404@domain.hid>
-Date: Fri, 02 Oct 2009 16:21:37 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4ABCD073.5020108@domain.hid>
+Date: Fri, 25 Sep 2009 16:15:15 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4AC5E895.8010107@domain.hid>
-In-Reply-To: <4AC5E895.8010107@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Freeze on SMP x86-64
+References: <26553515.371391253884926657.JavaMail.coremail@domain.hid>
+	<4ABCCFF8.1060607@domain.hid>
+In-Reply-To: <4ABCCFF8.1060607@domain.hid>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-help] Porting rtai/linux applications to xenomai/linux
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,35 +17,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Roman Pisl <rpisl@domain.hid>
-Cc: xenomai@xenomai.org
+To: =?UTF-8?B?6Z+p5a6I6LCm?= <hshouqian@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Roman Pisl wrote:
-> Hello,
-> I just tried x86-64 SMP Linux/Xenomai on my workstation (Intel Core2
-> Quad) but it freezes immediately after latency test or clocktest is
-> started. It freezes even during the boot, when Xenomai debbuging is
-> enabled.
+Gilles Chanteperdrix wrote:
+> 韩守谦 wrote:
+>> Hello everyone！ I'm Porting rtai/linux applications to xenomai/linux.
+>> I want to swith  RTAI API to  Xeno's native API. Now I have a
+>> problem:we know,rtai provides a kernel module: math.ko, so we can use
+>> math funtions in our kernel modules of our applications ,but xenomai
+>> doesn't provide the same functions. what should I do? My kernel
+>> module of application need  some math functions.
 > 
-> The same kernel binary runs seamlessly in KVM on the same machine.
+> As we already told in former posts, we do not support the math module,
+> and do not intend to support it.
 
-Did you run kvm (qemu) with -smp 2 (or even 4)?
-
-> 
-> When I completely disable ACPI, the kernel recognizes only one CPU and
-> the latency test works.
-> 
-> The same configuration but for 32bit x86 also runs without freeze.
-> 
-> Do you have any ideas?
-
-You could try playing with the NMI watchdog support (enable related
-Xenomai feature, pass nmi_watchdog=2 as kernel option). That may be able
-to generate some backtrace after the box is bricked - maybe...
-
-Jan
+https://mail.gna.org/public/xenomai-help/2007-08/msg00237.html
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+                                          Gilles
+
 
