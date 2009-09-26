@@ -1,15 +1,12 @@
-MIME-Version: 1.0
-Sender: peter.soetens@domain.hid
-In-Reply-To: <1253888606.2819.6.camel@domain.hid>
-References: <634c78ce0909250117p2f7dfbdfx74fe2d22b84ab1ee@domain.hid> 
-	<634c78ce0909250305t157d2d5br2601da181fbe998@domain.hid> 
-	<1253888606.2819.6.camel@domain.hid>
-From: Peter Soetens <peter@domain.hid>
-Date: Fri, 25 Sep 2009 22:35:10 +0200
-Message-ID: <634c78ce0909251335s1be168calfe61c5784bfc8c0a@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] compilation failure of hal_common.c
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1253799543.12598.26.camel@domain.hid>
+References: <1253799543.12598.26.camel@domain.hid>
+Content-Type: text/plain
+Date: Sat, 26 Sep 2009 12:03:45 +0200
+Message-Id: <1253959425.7408.28.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Q about registering for an interrupt on MPC8360e
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,44 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Andreas Glatz <AndreasGlatz@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On Fri, Sep 25, 2009 at 16:23, Philippe Gerum <rpm@xenomai.org> wrote:
-> On Fri, 2009-09-25 at 12:05 +0200, Peter Soetens wrote:
->> I'm trying to compile vanilla Linux 2.6.28.9 prepared with Xenomai
->> 2.4.9.1 for x86-64, SMP.
->>
->> I get this error in hal_common.c:
-...
->
-> Right. There seems to be a slight adjustment to do in my code (also
-> reads "I badly screwed up, damn it").
->
-> diff --git a/ksrc/arch/x86/hal-common.c b/ksrc/arch/x86/hal-common.c
-> index 1497fee..7286987 100644
-> --- a/ksrc/arch/x86/hal-common.c
-> +++ b/ksrc/arch/x86/hal-common.c
-> @@ -107,7 +107,7 @@ static inline void send_IPI_allbutself(int vector)
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0| vector);
-> =A0 =A0 =A0 =A0rthal_local_irq_restore_hw(flags);
-> =A0}
-> -#elif defined(__i386__) && LINUX_VERSION_CODE < KERNEL_VERSION(2,6,30)
-> +#elif LINUX_VERSION_CODE < KERNEL_VERSION(2,6,30)
-> =A0#include <mach_ipi.h>
-> =A0#else
-> =A0#define send_IPI_allbutself(vector) =A0 =A0apic->send_IPI_allbutself(v=
-ector)
->
-> Please let me know if that fixes the issue on your side as well.
+On Thu, 2009-09-24 at 09:39 -0400, Andreas Glatz wrote:
+> Hi,
+> 
+> Currently, we are trying to register for IRQ1-7 
+> of our MPC8360e.
+> 
+> We found that we have to do the following steps to 
+> get interrupts working:
+> 
+> 1) irq_of_parse_and_map(): To get and map the hardware interrupt
+> 2) request_irq(): Installs a dummy handler
+> 3) rt_intr_create(): Installs the real ISR
+> 
+> The application is running in user-space. 1) and 2) are 
+> called from and ioctl(). 3) is called directly from the 
+> user-space Xenomai application.
+> 
+> Is request_irq() required? IMHO it shouldn't be, right?
+> 
 
-Will try but won't be able to tell till after XUM :)
+Correct. rt_intr_enable() is required after rt_intr_create() to unmask
+the interrupt line (see @note from the rt_intr_create() doc). This is
+what request_irq() implicitly does by calling the startup() handler from
+the relevant IRQ chip controller.
 
->
-> PS: btw, I fail compiling 2.6.28.9 with KPROBES on, but this does not
-> look like a Xenomai issue this time.
+> Andreas
+> 
+> 
+> Xenomai: 2.4.9
+> Ipipe: 2.7
+> Kernel: 2.6.30
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+-- 
+Philippe.
 
-Same here, drew same conclusion.
 
-Peter
 
