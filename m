@@ -1,12 +1,13 @@
-From: Wolfgang Denk <wd@domain.hid>
+From: "Rob Stocks" <rjs@domain.hid>
+Date: Mon, 28 Sep 2009 11:43:12 +0100
+Message-ID: <013a01ca4028$7ab3e580$701bb080$@biz>
 MIME-Version: 1.0
-Content-type: text/plain; charset=ISO-8859-1
-In-reply-to: <7a15153d0909230456l1a094dc6g6bea8ba7f077e567@domain.hid>
-References: <7a15153d0909230456l1a094dc6g6bea8ba7f077e567@domain.hid>
-Date: Wed, 23 Sep 2009 19:52:32 +0200
-Message-Id: <20090923175232.AF318832E864@domain.hid>
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Realtime data processing + VGA display
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-gb
+Subject: [Xenomai-help] Kernel panic on reboot (Xenomai 2.4.9.1,
+	kernel 2.6.31, x86 SMP)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,63 +17,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Felipe Castro <felipecpc1@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Dear Felipe Castro,
+We have a problem with Xenomai v2.4.9.1, kernel 2.6.31, x86 SMP in that we
+get a kernel panic on reboot:
 
-In message <7a15153d0909230456l1a094dc6g6bea8ba7f077e567@domain.hid> =
-you wrote:
->
-> I need some suggestion about how to deal with QT library, or another an=
-d
-> xenomai real time path.
-> What I'm working on, is a real time data processing and i need to show =
-the
-> results in a VGA display.
->=20
-> I have my data processing routine running in real time kernel with a hi=
-gh
-> priority task, and now after 5ms i need to refresh all data in display.
+	swapper[0]: segfault at 15aba ip 0000e6ba sp 00000189 error 4
+	no vm86_info: BAD
+	Kernel panic - not syncing: Attempted to kill the idle task!
+	Pis: 0, comm.: swapper Not tainted 2.6.31-CROCUS #1
+	Call Trace:
+	 [<810280cb>] panic+0x49/0xed
+	 [<8102a6f6>] do_exit+0x55/0xdc4
+	 [<81028fec>] ? printk+0x9f/0x104
+	 [<810031ec>] ? reboot_interrupt+0x0/0x38
+	 [<81014af7>] save_v86_state+0xa6/0x168
+	 [<810031ec>] ? reboot_interrupt+0x0/0x38
+	 [<81002ac6>] work_notifysig_v86+0x06/0x18
+	 [<810031ec>] ? reboot_interrupt+0x0/0x38
+	reboot[1781]: segfault at 15aba ip 0000e6ba sp 00000189 error 4
+	no vm86_info: BAD
 
-What makes you think so? A refresh every 5 milliseconds means 200
-frames per second. No human eye is fast enough to see that. Even if
-you relax your timings by a factor of 10 (!) you get 20 frames per
-second, which is faster than you can actually see.
+Other than this, it seems to work fine.
 
-> I don't know how to handle it to get my realtime response shown in disp=
-lay
-> in a realtime too ...
+We had previously been using v2.4.7, kernel 2.6.28.7 which does not have
+this issue but for development, we would like to use X and we find that some
+X applications (e.g. Netbeans & eclipse) hang the system (with no indication
+of cause i.e. no console messages & nothing in the logs - the system just
+stops). However, when we use v2.4.9.1 with kernel 2.6.31, we can use X apps
+perfectly but we can't reboot!
 
-You don't need that, and you don't want that. Instead,  you  want  to
-split  your  design  into  a real-time part that does the data acqui-
-sition  and  processing,  and  a  non-realtime  part  that  does  the
-visualization.
+Anyone have any ideas/suggestions?
 
-There are few excations, like when you must control alarm signals;
-but in this case you normally want to have hardware support for that,
-i. e. separate alram lights, beepers etc.
 
-> I did some tests using a simple QT software but it appears to refresh t=
-o
-> slow. Is it possible to do ? another question is , is there another lib=
-rary
-> to handle VGA display tha you suggest me ?
 
-There are many options for the GUI, but you  should  not  attempt  to
-select  these  for  their  real-time  capabilities.  If  you  need  a
-RT-capable graphics environment, you can be  pretty  sure  that  your
-system is misdesigned.
-
-Best regards,
-
-Wolfgang Denk
-
---=20
-DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
-C++ was an interesting and valuable experiment, but we've learned its
-lessons and it's time to move on.
-                            - Peter Curran in <DCqM4z.BxB@isgtec.com>
 
