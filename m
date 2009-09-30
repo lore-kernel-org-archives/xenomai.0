@@ -1,83 +1,135 @@
-Message-ID: <4A9642D3.5040304@domain.hid>
-Date: Thu, 27 Aug 2009 10:24:51 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <1251273701.4345.9.camel@domain.hid> <4A94EE84.5040101@domain.hid>
-	<1251354286.4321.19.camel@domain.hid>
-In-Reply-To: <1251354286.4321.19.camel@domain.hid>
+Sender: peter.soetens@domain.hid
+In-Reply-To: <4AC36ACA.8080201@domain.hid>
+References: <4AC2448B.1080500@domain.hid>
+	<634c78ce0909300710i6d30b905kafdf7d76b2b31c7c@domain.hid> 
+	<4AC36ACA.8080201@domain.hid>
+From: Peter Soetens <peter@domain.hid>
+Date: Wed, 30 Sep 2009 18:58:59 +0200
+Message-ID: <634c78ce0909300958y531325d1se6b87bc3fed40824@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Segmentation fault in rt_printf print thread
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] RFC: 2.5 todo list.
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Christoph Permes <christoph.permes@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Christoph Permes wrote:
-> Am Mittwoch, den 26.08.2009, 10:12 +0200 schrieb Gilles Chanteperdrix:
->> Christoph Permes wrote:
->>> Hi, 
+On Wed, Sep 30, 2009 at 16:27, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> Peter Soetens wrote:
+>> On Tue, Sep 29, 2009 at 19:31, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>> Hi guys,
 >>>
->>> I'm using rt_printf for debug output. When running tests for 20 hours or
->>> longer, sometimes I get a segmentation fault.
->>>
->>> The backtrace shows:
->>> #0  0xb7d008d8 in fputs () from /lib/libc.so.6
->>> #1  0xb7f26f61 in print_buffers () from /usr/xenomai/lib/librtdk.so.0
->>> #2  0xb7f26fb3 in printer_loop () from /usr/xenomai/lib/librtdk.so.0
->>> #3  0xb7c92f3b in start_thread () from /lib/libpthread.so.0
->>> #4  0xb7d6fb6e in clone () from /lib/libc.so.6
->>>
->>> It seems to me that there is a bug in the print thread.
->>>
->>> My program runs on x86 using the following software versions:
->>> Kernel 2.6.29.5
->>> Xenomai 2.4.9
->>> I-Pipe patch: adeos-ipipe-2.6.29.5-x86-2.4-02.patch
->> Could you try the following patch?
+>>> full of energy after this tremendous first XUM, I would like to start a
+>>> discussion about what people would like to see in the 2.5 branch.
 >>
->> diff --git a/src/rtdk/rt_print.c b/src/rtdk/rt_print.c
->> index 0615247..a0aeec3 100644
->> --- a/src/rtdk/rt_print.c
->> +++ b/src/rtdk/rt_print.c
->> @@ -422,6 +422,7 @@ void __rt_print_init(void)
->>         pthread_attr_t thattr;
->>         const char *value_str;
->>         unsigned long long period;
->> +       unsigned stksize;
->>
->>         first_buffer = NULL;
->>         seq_no = 0;
->> @@ -457,6 +458,9 @@ void __rt_print_init(void)
->>         pthread_cond_init(&printer_wakeup, NULL);
->>
->>         pthread_attr_init(&thattr);
->> -       pthread_attr_setstacksize(&thattr, PTHREAD_STACK_MIN);
->> +       stksize = 32768;
->> +       if (stksize < PTHREAD_STACK_MIN)
->> +               stksize = PTHREAD_STACK_MIN;
->> +       pthread_attr_setstacksize(&thattr, stksize);
->>         pthread_create(&printer_thread, &thattr, printer_loop, NULL);
->>  }
->>
-> 
-> I have tried the patch but it crashed again with the same backtrace.
+>> So if we answer positively, we'll delay the release ? I'd rather get
+>> 2.5 out, and develop any new stuff on 2.6. I would also expect that
+>> this list (or part of ) goes to xenomai-help too.
+>
+> The facts are:
+> - our release cycle is long;
+> - we want to keep the ABI stable for each branch.
+> So, anything that we want "soon" and that breaks the ABI should be done
+> in the 2.5 branch, otherwise will have to wait 2.6.
 
-Could you try to find out, what memory access is precisely causing the
-SEGV? Maybe even what variables of the rt_printf code have invalid
-states? Or do you have a portable test case for us to reproduce the issue?
+Ok, but there is stuff in 2.5 I want "soon" too, which you would be delaying.
 
-Thanks,
-Jan
+>
+>>
+>>> Here is a first list, please feel free to criticize it:
+>>> - signals in primary domain (something that we almost forgot)
+>>
+>> I refrain from using signals in my apps. They only cause disaster when
+>> using 3rd party libraries. Only Ctrl-C (quit) and debugger signals are
+>> used, and a switch from primary to secondary is perfectly acceptable
+>> in these two cases.
+>
+> Yes, signals is a bit of a misnomer, what we actually want is for the
+> kernel to be able to cause the execution of an asynchronous callback in
+> user-space. For the native skin, it would be for the implementation of
+> some hooks. For the posix skin, it would be for the implementation of
+> signasl. The implementation of posix timers is based on signals (except
+> for SIGEV_THREAD, but who uses SIGEV_THREAD in an rt app...), having
+> them cause a switch to secondary mode make them unusable for practical
+> purposes. So, with the current version of Xenomai posix skin, you have
+> to implement your own timer method, having for instance a thread which
+> nanosleep()s until the next timer expiry and then executes the callback.
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Ok, but I don't use posix timers for the reasons above. I use
+clock_nanosleep instead, which offers the same functionality.
+
+>
+>>
+>>> - xnsynch_acquire using atomic_cmpxchg unconditionally (no #ifdefs)
+>>
+>> This is too core for me.
+>>
+>>> - statistics of all mapped named heaps in /proc/xenomai/heap
+>>
+>> Don't use heaps since we do all in user space (and I had the
+>> impression that heap was for kernel<->user.)
+>>
+>>> - unwapped access to user-space posix skin methods
+>>
+>> I wouldn't know why I need this. Do you we link with libpthread
+>> instead of libpthread-rt ?
+>
+> Well the wrap thing is a bit cumbersome. And having the calls be named
+> with exactly the posix name is useful only if you intend to compile
+> exactly the same code for xenomai and other posix systems. Otherwise,
+> you could decide to use a little prefix or suffix to each posix skin
+> service, and avoid the wrapping clumsyness.
+
+So like we did in the RTAI days. Maybe we can use rt_ by (safe!)
+default and allow a #define in case the users wants to use the
+wrapping and is aware that he needs to use the wrapping during
+linking.
+
+>
+>>
+>>> - fast semaphores in user-space
+>>
+>> I donn't know why I wouldn't need this.
+>>
+>>> - syscall-less select ?
+>>
+>> Since a syscall is not per-se bad (?) I also don't see what to win here.
+>
+> syscall are expensive (which is why we do syscall-less mutexes for
+> instance). The idea would be to put the bitfield with the ready file
+> descriptors in a shared heap, to avoid going for the syscall if fds are
+> already ready when entering select(). The scenario where we would gain
+> is on a loaded system, which is exactly when we want to avoid useless
+> syscalls.
+
+Then I'm tempted to be in favour, although I'd like to confirm first
+that select() is not broken as it is now. Are syscalls expensive
+because I'm running Xenomai, or is this the case in vanilla Linux too
+? Do we try to be better than Linux (until they use a similar 'fix' in
+libc) ?
+
+>
+>>
+>>> Actually, there are already a lot of things.
+>>> So, what do you think?
+>>
+>> I'm uttermost concerned with stability and to a lesser extent
+>> performance. I regard every feature change as changing those two
+>> criteria for the worse (unless its a feature that fixes a bug).
+>
+> Well... I disagree. Even when fixing bugs we can introduce other bugs.
+> What matters if you aim for stability and performance is improving the
+> tests, not avoiding modifications.
+
+You got me. But until the tests are improved, I beg you to be careful ;-)
+
+Peter
 
