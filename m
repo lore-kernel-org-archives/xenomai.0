@@ -1,65 +1,64 @@
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-In-Reply-To: <4AB2A308.4010508@domain.hid>
-References: <9aa019ba0909150827u38360ec1m7b749838ab0c54c4@domain.hid>
-	<1253116044.2676.153.camel@domain.hid>
-	<9aa019ba0909171026i51de25a7g6e0c5fd60273747@domain.hid>
-	<4AB2745E.3030106@domain.hid>
-	<9aa019ba0909171345t4a2996eavc950fa4de543fd6d@domain.hid>
-	<4AB2A308.4010508@domain.hid>
-Date: Thu, 24 Sep 2009 13:46:32 -0500
-Message-ID: <9aa019ba0909241146y9a97988m8aca04540e2289a1@domain.hid>
-From: James Kilts <jameskilts@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai-help] Interrupt only runs once
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 30 Sep 2009 18:44:45 -0400
+Message-ID: <6DDBE5621293434D9E66429533B6A231043B7714@domain.hid>
+References: <4AC2448B.1080500@domain.hid>
+From: "Andreas Glatz" <AndreasGlatz@domain.hid>
+Subject: Re: [Xenomai-core] RFC: 2.5 todo list.
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
-> you should really upgrade to 2.4.9.1.
+Hi,
 
-I'm now running Xenomai 2.4.9.1 on Linux 2.6.28.9.
+> full of energy after this tremendous first XUM, I would like to start =
+a
+> discussion about what people would like to see in the 2.5 branch.
 
-
->>> I had a look at handle_prio_irq in arch/arm/mach-ns9xxx/irq.c. What
->>> this irq handler does is bad, really bad. If you care about interrupt
->>> latencies, you should really use handle_level_irq. That is, replace the
->>> #if 0 with a #if 1.
-
-Interrupt latency in the Linux kernel is not important to me, but
-Xenomai interrupt latency is critical.  Just for the fun of it, I
-tried switching to handle_level_irq() and then adding an irq_finish()
-function similar to the AT91, but Linux locks up during the boot
-sequence while initializing the Ethernet stack.  The timing of ACK/EOI
-on this chip is sensitive.
-
-Currently the problem is that a Xenomai ISR on this system needs to
-respond to interrupts consistently under 50 microseconds.  When the
-system is running idle or when running "dd if=/dev/zero of=/dev/zero",
-it's able to respond to an IRQ trigger by toggling a GPIO within 35
-microseconds.  But if I run "top" and then flood the serial input
-buffer with carriage returns (holding down the enter key) the oscope
-occasionally shows a large delay, in about 1 out of every 30 ISR calls
-the GPIO toggles late on the order of 100-300 microseconds.  The
-timing is worse when I flood the system with pings, upwards of 3
-milliseconds to respond, although the majority remain under 35
-microseconds.
-
-These tests have been run using a LeCroy 1 GHz Oscilloscope.
-
-I've been through the Troubleshooting and verified that all power
-management, frequency modulation, etc. are disabled.  The serial port
-driver does not appear to be masking the interrupts.  Any ideas as to
-what could be causing these delays?
+True, it was an great opportunity to see and talk to you guys.
 
 
-Thanks for your help.
+Here is a first list, please feel free to criticize it:
+- signals in primary domain (something that we almost forgot)
 
-- James
+We don't need that immediately but I think it would be very
+handy to have a standard method to register callbacks which are
+called once a thread has been signalled and is scheduled.
+
+
+- xnsynch_acquire using atomic_cmpxchg unconditionally (no #ifdefs)
+
+Atomic operations are always good :)
+
+- statistics of all mapped named heaps in /proc/xenomai/heap
+
+That would be very handy from our point of view.
+
+- unwapped access to user-space posix skin methods
+
+We'r using native skin... so I can't say much about that.
+
+- fast semaphores in user-space
+- syscall-less select ?
+
+I think, that'd be great. I think that'd help to decrease
+the execution time significantly. I haven't told you yet, but I also
+have managed to compile and run our Switch application in kernel
+space. That decreased the access time to a shared hardware
+resource protected by mutexes and using queues by 20% (avg.
+access time was 270us in kernel-space instead of 330us in
+user-space according to the histograms I generated).
+
+
+Best regards,
+Andreas
 
