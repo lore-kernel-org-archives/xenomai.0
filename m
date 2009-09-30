@@ -1,5 +1,5 @@
-Message-ID: <4AC36ACA.8080201@domain.hid>
-Date: Wed, 30 Sep 2009 16:27:22 +0200
+Message-ID: <4AC371B2.8040109@domain.hid>
+Date: Wed, 30 Sep 2009 16:56:50 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4AC2448B.1080500@domain.hid>
@@ -31,80 +31,13 @@ Peter Soetens wrote:
 > 2.5 out, and develop any new stuff on 2.6. I would also expect that
 > this list (or part of ) goes to xenomai-help too.
 
-The facts are:
-- our release cycle is long;
-- we want to keep the ABI stable for each branch.
-So, anything that we want "soon" and that breaks the ABI should be done
-in the 2.5 branch, otherwise will have to wait 2.6.
-
-> 
->> Here is a first list, please feel free to criticize it:
->> - signals in primary domain (something that we almost forgot)
-> 
-> I refrain from using signals in my apps. They only cause disaster when
-> using 3rd party libraries. Only Ctrl-C (quit) and debugger signals are
-> used, and a switch from primary to secondary is perfectly acceptable
-> in these two cases.
-
-Yes, signals is a bit of a misnomer, what we actually want is for the
-kernel to be able to cause the execution of an asynchronous callback in
-user-space. For the native skin, it would be for the implementation of
-some hooks. For the posix skin, it would be for the implementation of
-signasl. The implementation of posix timers is based on signals (except
-for SIGEV_THREAD, but who uses SIGEV_THREAD in an rt app...), having
-them cause a switch to secondary mode make them unusable for practical
-purposes. So, with the current version of Xenomai posix skin, you have
-to implement your own timer method, having for instance a thread which
-nanosleep()s until the next timer expiry and then executes the callback.
-
-> 
->> - xnsynch_acquire using atomic_cmpxchg unconditionally (no #ifdefs)
-> 
-> This is too core for me.
-> 
->> - statistics of all mapped named heaps in /proc/xenomai/heap
-> 
-> Don't use heaps since we do all in user space (and I had the
-> impression that heap was for kernel<->user.)
-> 
->> - unwapped access to user-space posix skin methods
-> 
-> I wouldn't know why I need this. Do you we link with libpthread
-> instead of libpthread-rt ?
-
-Well the wrap thing is a bit cumbersome. And having the calls be named
-with exactly the posix name is useful only if you intend to compile
-exactly the same code for xenomai and other posix systems. Otherwise,
-you could decide to use a little prefix or suffix to each posix skin
-service, and avoid the wrapping clumsyness.
-
-> 
->> - fast semaphores in user-space
-> 
-> I donn't know why I wouldn't need this.
-> 
->> - syscall-less select ?
-> 
-> Since a syscall is not per-se bad (?) I also don't see what to win here.
-
-syscall are expensive (which is why we do syscall-less mutexes for
-instance). The idea would be to put the bitfield with the ready file
-descriptors in a shared heap, to avoid going for the syscall if fds are
-already ready when entering select(). The scenario where we would gain
-is on a loaded system, which is exactly when we want to avoid useless
-syscalls.
-
-> 
->> Actually, there are already a lot of things.
->> So, what do you think?
-> 
-> I'm uttermost concerned with stability and to a lesser extent
-> performance. I regard every feature change as changing those two
-> criteria for the worse (unless its a feature that fixes a bug).
-
-Well... I disagree. Even when fixing bugs we can introduce other bugs.
-What matters if you aim for stability and performance is improving the
-tests, not avoiding modifications.
+Actually, it is badly expressed. What I would like to know is what
+people had in mind, what they intended to put in the 2.5 version, so as
+to discuss of what we will put in it and what will be postponed, to have
+a more precise idea of the 2.5 development (or end of development, more
+precisely, since we already released rc3...) schedule. This comes from
+the fact that we had postponed this signals thing, and that it almost
+went forgotten, so, I would like to be sure that we do not forget anything.
 
 -- 
                                           Gilles
