@@ -1,5 +1,5 @@
-Message-ID: <4AC47F0B.9090001@domain.hid>
-Date: Thu, 01 Oct 2009 12:06:03 +0200
+Message-ID: <4AC4819F.4060809@domain.hid>
+Date: Thu, 01 Oct 2009 12:17:03 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4AC248FD.7050707@domain.hid> <1254391461.2703.176.camel@domain.hid>
@@ -47,17 +47,13 @@ Philippe Gerum wrote:
 > 
 > What bothers me is that we would duplicate what the kernel does in
 > do_signal() for most architectures, and go through many hops from the
-> actual signal notification to the execution of the handler. What about
-> delaying the logic a bit: pass userland a signal-pending information on
-> its way back from a syscall, to be detected by the XENOMAI_SYSCALL code
-> instead. If that notification flag is raised, the required information
-> to run the user-space handler would have been made available by the
-> nucleus as well, so that XENOMAI_SYSCALL would just have to act as a
-> trampoline to that handler.
 
-It will not work if the signals interrupt a task which is using the CPU
-without syscalls. With mutexes in user-space, a lot may happen in
-user-space without syscalls.
+Maybe we can re-use the linux kernel code? Maybe we can even make that
+code platform independent and put it in the nucleus, using the xnregs*
+macros, and maybe adding some more to alter the pt_regs structure to
+cause the return to user-space to pass by the callback, and to be able
+to push some data on the stack, imposing the need of a syscall to
+restore context.
 
 -- 
                                           Gilles
