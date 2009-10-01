@@ -1,14 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4AC49EEB.1090403@domain.hid>
-References: <4AC248FD.7050707@domain.hid>
-	<1254391461.2703.176.camel@domain.hid>  <4AC4819F.4060809@domain.hid>
-	<1254393031.2703.181.camel@domain.hid>  <4AC49EEB.1090403@domain.hid>
-Content-Type: text/plain
-Date: Thu, 01 Oct 2009 15:06:32 +0200
-Message-Id: <1254402392.2703.273.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] RFC: primary mode signals design.
+MIME-Version: 1.0
+Sender: peter.soetens@domain.hid
+From: Peter Soetens <peter@domain.hid>
+Date: Thu, 1 Oct 2009 16:30:06 +0200
+Message-ID: <634c78ce0910010730t29137af8w95b63ae21183b52b@domain.hid>
+Content-Type: multipart/mixed; boundary=0015174c1ca80a06070474e07d2d
+Subject: [Xenomai-core] select: native tasks with posix skin mqueues
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,86 +13,160 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: xenomai@xenomai.org, Xenomai core <Xenomai-core@domain.hid>
 
-On Thu, 2009-10-01 at 14:22 +0200, Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
-> > On Thu, 2009-10-01 at 12:17 +0200, Gilles Chanteperdrix wrote:
-> >> Philippe Gerum wrote:
-> >>> On Tue, 2009-09-29 at 19:50 +0200, Gilles Chanteperdrix wrote:
-> >>>> Hi,
-> >>>>
-> >>>> During my flights and connections, I had a thought about this primary
-> >>>> mode signals issue.
-> >>>>
-> >>>> Since the needs in term of primary mode signals greatly depends on what
-> >>>> the skins want to do with it (native wants hooks, posix wants posix
-> >>>> conformant signals), I think as much work as possible should be done in
-> >>>> the nucleus and skins implementation, not in the I-pipe (as usual). So,
-> >>>> I propose to:
-> >>>> 1- add an I-pipe SIGNAL_PENDING event
-> >>>> 2- add a bit somewhere in the task_struct or thread_info stuctures
-> >>>> indicating that signals are pending
-> >>>> 3- add a service to mark the bit, like:
-> >>>> int ipipe_mark_signal_pending(struct task_struct *task);
-> >>>> 4- in entry.S, when going back to user-space, test and clear the bit is
-> >>>> set, and if it was set, trigger the event
-> >>>> 5- implement services allowing to run a callback with some cookie when
-> >>>> returning to user-space, we may also need to be able to push on stack
-> >>>> some arguments that should be passed to the callback, (we need this
-> >>>> service internally anyway to push the pt_regs structure on stack, so
-> >>>> that the calling context can be restored after execution of the
-> >>>> callback, and we need a little help from user-space for this
-> >>>> restoration, probably in bind.h).
-> >>> What bothers me is that we would duplicate what the kernel does in
-> >>> do_signal() for most architectures, and go through many hops from the
-> >> Maybe we can re-use the linux kernel code? Maybe we can even make that
-> >> code platform independent and put it in the nucleus, using the xnregs*
-> >> macros, and maybe adding some more to alter the pt_regs structure to
-> >> cause the return to user-space to pass by the callback, and to be able
-> >> to push some data on the stack, imposing the need of a syscall to
-> >> restore context.
-> >>
-> > 
-> > Quite frankly, I doubt of it. That part of the Linux code is often
-> > hairy, touchy, platform and context dependent, so AFAICS, maintaining
-> > this sort of merge over time with different kernel releases over
-> > multiple archs would end up in a living nightmare.
-> 
-> The thing which is goddam platform dependent is the way pt_regs are
-> mapped to a structure passed as third argument to the posix signals with
-> the SA_SIGINFO flag. But in our case, this is something we will have to
-> cope with in the POSIX skin. Or completely forget about (I agree signals
-> are needed for the proper operation of posix timers, but this feature is
-> not really useful in a real-time application).
-> 
-> Other than that, what we are talking about is just altering pt_regs::pc
-> and xnregs_arg1(pt_regs), then push some data on the stack (so
-> xncopy_to_user and altering pt_regs::sp). And adding a core skin syscall
-> for the way back.
-> 
+--0015174c1ca80a06070474e07d2d
+Content-Type: text/plain; charset=ISO-8859-1
 
-I really do not see this as easy. x86 wants some fixup of the hw debug
-regs when watchpoints are pending, powerpc has 32/64 bit deps when
-unwinding the sigstack, not to speak of the very different ways
-blackfin, nios2 and others set up the sigstack. All this code is
-currently traversed by native kernel locking constructs, so I guess we
-would have to paste&copy most of the related bits.
+Hi,
 
-> Besides, the problem with your approach is that we can not pass data
-> between kernel and user. And this is required for the posix skin, at
-> least. And if we want a generic way to pass arguments to the user-space
-> callback (I mean, even in the case of the native skin switch hook, you
-> have to pass the ids of the switched tasks).
-> 
+I'm creating my RT threads using the native API and I'm creating
+mqueues, wrapped to the pthread_rt library.
+I can read and write the mqueue (and it goes through Xenomai), but
+when I select() on a receiving mqd_t, the select() calls returns that
+there is data available on the mq (it fills in the FD_SET), but keeps
+doing so even when it's empty (the select() is in a loop). Also, it's
+modeswitching like nuts.
 
-No issue in having the sigdata block being a union of possible per-skin
-structs. This is low core code, we can make it evolve as requirements
-arise without impacting outer interfaces.
+I found out that the __wrap_select is correctly called, but returns
+-EPERM. Kernel sources indicate that this is caused by
+pse51_current_thread() alias thread2pthread() returning null. Since
+EPERM is returned to userspace, the __real_select is called from user
+space, causing the mode switches and bad behaviour. This is almost
+certainly the thing that native + RTDM + select() is seeing too.
 
--- 
-Philippe.
+My mqueues-only work probably because mq.c only uses
+pse51_current_thread() in the mq_notify function. I'm guessing that
+mq_notify would also not work in combination with native skin.
 
+I had two options in fixing this: add a xnselector to the native task
+struct or to the nucleus xnthread_t. I choose the latter, such that
+every skin kan use select() + RTDM and migrate gradualy to the RTDM
+and/or Posix skin.
+I needed to free the xnselector structure in xnpod_delete_thread() , I
+chose a spot, but it causes a segfault in my native thread (which did
+the select) during program cleanup. Any advice ? Also, maybe we should
+separate select() from the posix skin and put it in a separate place
+(in RTDM as rtdm_select() ?), such that we can start building around
+it (posix just forwards to rtdm_select() then).
 
+A second patch was necessary to return the timeout case properly to
+userspace (independent of first patch).
+
+Tested with native + posix loaded and mq. If you never quit your
+application, this works :-)
+
+(maybe we discuss this better further on xenomai-core)
+
+Thanks for the wonderful XUM-2009 experience btw !
+
+Peter
+
+--0015174c1ca80a06070474e07d2d
+Content-Type: text/x-diff; charset=US-ASCII; 
+	name="0001-Move-posix-selector-in-nucleus-for-every-skin-to-use.patch"
+Content-Disposition: attachment; 
+	filename="0001-Move-posix-selector-in-nucleus-for-every-skin-to-use.patch"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_g09lh9bt0
+
+RnJvbSAwMzgwMjk4MTgxZjI5MjZlNmFiZTA1ZTZiM2QwYjAyMzg5ODkyYTdjIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBQZXRlciBTb2V0ZW5zIDxwZXRlckB0aGVzb3VyY2V3b3Jrcy5j
+b20+CkRhdGU6IFRodSwgMSBPY3QgMjAwOSAxNTo1Nzo1NCArMDIwMApTdWJqZWN0OiBbUEFUQ0hd
+IE1vdmUgcG9zaXggc2VsZWN0b3IgaW4gbnVjbGV1cyBmb3IgZXZlcnkgc2tpbiB0byB1c2UuCiBU
+aGlzIHBhdGNoIG1ha2VzIHRoZSBzZWxlY3QgaW1wbGVtZW50YXRpb24gaW4gc3lzY2FsbC5jIGlu
+ZGVwZW5kZW50IG9mIHRoZSBwb3NpeCBza2luLgoKLS0tCiBpbmNsdWRlL251Y2xldXMvdGhyZWFk
+LmggICB8ICAgIDMgKysrCiBrc3JjL251Y2xldXMvcG9kLmMgICAgICAgICB8ICAgIDYgKysrKysr
+CiBrc3JjL251Y2xldXMvdGhyZWFkLmMgICAgICB8ICAgIDIgKysKIGtzcmMvc2tpbnMvcG9zaXgv
+c3lzY2FsbC5jIHwgICAgNiArKystLS0KIGtzcmMvc2tpbnMvcG9zaXgvdGhyZWFkLmMgIHwgICAg
+NyAtLS0tLS0tCiBrc3JjL3NraW5zL3Bvc2l4L3RocmVhZC5oICB8ICAgIDQgLS0tLQogNiBmaWxl
+cyBjaGFuZ2VkLCAxNCBpbnNlcnRpb25zKCspLCAxNCBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQg
+YS9pbmNsdWRlL251Y2xldXMvdGhyZWFkLmggYi9pbmNsdWRlL251Y2xldXMvdGhyZWFkLmgKaW5k
+ZXggM2VlZmI1My4uODhhMTRjYyAxMDA2NDQKLS0tIGEvaW5jbHVkZS9udWNsZXVzL3RocmVhZC5o
+CisrKyBiL2luY2x1ZGUvbnVjbGV1cy90aHJlYWQuaApAQCAtMTQyLDYgKzE0Miw3IEBAIHN0cnVj
+dCB4bnRocmVhZDsKIHN0cnVjdCB4bnNjaGVkOwogc3RydWN0IHhuc3luY2g7CiBzdHJ1Y3QgeG5y
+cGk7CitzdHJ1Y3QgeG5zZWxlY3RvcjsKIAogdHlwZWRlZiBzdHJ1Y3QgeG50aHJvcHMgewogCkBA
+IC0yMDgsNiArMjA5LDggQEAgdHlwZWRlZiBzdHJ1Y3QgeG50aHJlYWQgewogCXhuc3RhdF9leGVj
+dGltZV90IGxhc3RwZXJpb2Q7IC8qIEludGVydmFsIG1hcmtlciBmb3IgZXhlY3V0aW9uIHRpbWUg
+cmVwb3J0cyAqLwogICAgIH0gc3RhdDsKIAorICAgIHN0cnVjdCB4bnNlbGVjdG9yICpzZWxlY3Rv
+cjsvKiBGb3Igc2VsZWN0LiAqLworCiAgICAgaW50IGVycmNvZGU7CQkvKiBMb2NhbCBlcnJubyAq
+LwogCiAgICAgeG5hc3JfdCBhc3I7CQkvKiBBc3luY2hyb25vdXMgc2VydmljZSByb3V0aW5lICov
+CmRpZmYgLS1naXQgYS9rc3JjL251Y2xldXMvcG9kLmMgYi9rc3JjL251Y2xldXMvcG9kLmMKaW5k
+ZXggOTM0OGNlMS4uMmRkMDhjYSAxMDA2NDQKLS0tIGEva3NyYy9udWNsZXVzL3BvZC5jCisrKyBi
+L2tzcmMvbnVjbGV1cy9wb2QuYwpAQCAtNDEsNiArNDEsNyBAQAogI2luY2x1ZGUgPG51Y2xldXMv
+cmVnaXN0cnkuaD4KICNpbmNsdWRlIDxudWNsZXVzL21vZHVsZS5oPgogI2luY2x1ZGUgPG51Y2xl
+dXMvc3RhdC5oPgorI2luY2x1ZGUgPG51Y2xldXMvc2VsZWN0Lmg+CiAjaW5jbHVkZSA8YXNtL3hl
+bm9tYWkvYml0cy9wb2QuaD4KIAogLyogZGVidWcgc3VwcG9ydCAqLwpAQCAtMTIwNCw2ICsxMjA1
+LDExIEBAIHZvaWQgeG5wb2RfZGVsZXRlX3RocmVhZCh4bnRocmVhZF90ICp0aHJlYWQpCiAJeG50
+aW1lcl9kZXN0cm95KCZ0aHJlYWQtPnJ0aW1lcik7CiAJeG50aW1lcl9kZXN0cm95KCZ0aHJlYWQt
+PnB0aW1lcik7CiAKKwlpZiAodGhyZWFkLT5zZWxlY3RvcikgeworCQl4bnNlbGVjdG9yX2Rlc3Ry
+b3kodGhyZWFkLT5zZWxlY3Rvcik7CisJCXRocmVhZC0+c2VsZWN0b3IgPSBOVUxMOworCX0KKwog
+CWlmICh4bnRocmVhZF90ZXN0X3N0YXRlKHRocmVhZCwgWE5QRU5EKSkKIAkJeG5zeW5jaF9mb3Jn
+ZXRfc2xlZXBlcih0aHJlYWQpOwogCmRpZmYgLS1naXQgYS9rc3JjL251Y2xldXMvdGhyZWFkLmMg
+Yi9rc3JjL251Y2xldXMvdGhyZWFkLmMKaW5kZXggNWZjZWFlYy4uZWQ5NzIyZSAxMDA2NDQKLS0t
+IGEva3NyYy9udWNsZXVzL3RocmVhZC5jCisrKyBiL2tzcmMvbnVjbGV1cy90aHJlYWQuYwpAQCAt
+OTUsNiArOTUsOCBAQCBpbnQgeG50aHJlYWRfaW5pdCh4bnRocmVhZF90ICp0aHJlYWQsCiAJdGhy
+ZWFkLT5hc3IgPSBYTlRIUkVBRF9JTlZBTElEX0FTUjsKIAl0aHJlYWQtPmFzcmxldmVsID0gMDsK
+IAorCXRocmVhZC0+c2VsZWN0b3IgPSBOVUxMOworCiAJdGhyZWFkLT5pcHJpbyA9IHByaW87CiAJ
+dGhyZWFkLT5icHJpbyA9IHByaW87CiAJdGhyZWFkLT5jcHJpbyA9IHByaW87CmRpZmYgLS1naXQg
+YS9rc3JjL3NraW5zL3Bvc2l4L3N5c2NhbGwuYyBiL2tzcmMvc2tpbnMvcG9zaXgvc3lzY2FsbC5j
+CmluZGV4IGQ5MzZmMjEuLmY0YWZkMjkgMTAwNjQ0Ci0tLSBhL2tzcmMvc2tpbnMvcG9zaXgvc3lz
+Y2FsbC5jCisrKyBiL2tzcmMvc2tpbnMvcG9zaXgvc3lzY2FsbC5jCkBAIC0yMzgyLDEyICsyMzgy
+LDEyIEBAIHN0YXRpYyBpbnQgX19zZWxlY3Qoc3RydWN0IHRhc2tfc3RydWN0ICpjdXJyLCBzdHJ1
+Y3QgcHRfcmVncyAqcmVncykKIAl4bnRtb2RlX3QgbW9kZSA9IFhOX1JFTEFUSVZFOwogCXN0cnVj
+dCB4bnNlbGVjdG9yICpzZWxlY3RvcjsKIAlzdHJ1Y3QgdGltZXZhbCB0djsKLQlwdGhyZWFkX3Qg
+dGhyZWFkOworCXhudGhyZWFkX3QqIHRocmVhZDsKIAlpbnQgaSwgZXJyLCBuZmRzOwogCXNpemVf
+dCBmZHNfc2l6ZTsKIAotCXRocmVhZCA9IHBzZTUxX2N1cnJlbnRfdGhyZWFkKCk7Ci0JaWYgKCF0
+aHJlYWQpCisJdGhyZWFkID0geG5wb2RfY3VycmVudF90aHJlYWQoKTsKKwlpZiAoICF0aHJlYWQg
+KQogCQlyZXR1cm4gLUVQRVJNOwogCiAJaWYgKF9feG5fcmVnX2FyZzUocmVncykpIHsKZGlmZiAt
+LWdpdCBhL2tzcmMvc2tpbnMvcG9zaXgvdGhyZWFkLmMgYi9rc3JjL3NraW5zL3Bvc2l4L3RocmVh
+ZC5jCmluZGV4IGFkNGFhYTUuLjZlODk2MjUgMTAwNjQ0Ci0tLSBhL2tzcmMvc2tpbnMvcG9zaXgv
+dGhyZWFkLmMKKysrIGIva3NyYy9za2lucy9wb3NpeC90aHJlYWQuYwpAQCAtNzgsMTIgKzc4LDYg
+QEAgc3RhdGljIHZvaWQgdGhyZWFkX2RlbGV0ZV9ob29rKHhudGhyZWFkX3QgKnhudGhyZWFkKQog
+CXBzZTUxX21hcmtfZGVsZXRlZCh0aHJlYWQpOwogCXBzZTUxX3NpZ25hbF9jbGVhbnVwX3RocmVh
+ZCh0aHJlYWQpOwogCXBzZTUxX3RpbWVyX2NsZWFudXBfdGhyZWFkKHRocmVhZCk7Ci0jaWZkZWYg
+Q09ORklHX1hFTk9fT1BUX1BPU0lYX1NFTEVDVAotCWlmICh0aHJlYWQtPnNlbGVjdG9yKSB7Ci0J
+CXhuc2VsZWN0b3JfZGVzdHJveSh0aHJlYWQtPnNlbGVjdG9yKTsKLQkJdGhyZWFkLT5zZWxlY3Rv
+ciA9IE5VTEw7Ci0JfQotI2VuZGlmIC8qIENPTkZJR19YRU5PX09QVF9QT1NJWF9TRUxFQ1QgKi8K
+IAogCXN3aXRjaCAodGhyZWFkX2dldGRldGFjaHN0YXRlKHRocmVhZCkpIHsKIAljYXNlIFBUSFJF
+QURfQ1JFQVRFX0RFVEFDSEVEOgpAQCAtMjE2LDcgKzIxMCw2IEBAIGludCBwdGhyZWFkX2NyZWF0
+ZShwdGhyZWFkX3QgKnRpZCwKIAlwc2U1MV9zaWduYWxfaW5pdF90aHJlYWQodGhyZWFkLCBjdXIp
+OwogCXBzZTUxX3RzZF9pbml0X3RocmVhZCh0aHJlYWQpOwogCXBzZTUxX3RpbWVyX2luaXRfdGhy
+ZWFkKHRocmVhZCk7Ci0JdGhyZWFkLT5zZWxlY3RvciA9IE5VTEw7CiAKIAlpZiAodGhyZWFkLT5h
+dHRyLnBvbGljeSA9PSBTQ0hFRF9SUikgewogCQl4bnRocmVhZF90aW1lX3NsaWNlKCZ0aHJlYWQt
+PnRocmVhZGJhc2UpID0gcHNlNTFfdGltZV9zbGljZTsKZGlmZiAtLWdpdCBhL2tzcmMvc2tpbnMv
+cG9zaXgvdGhyZWFkLmggYi9rc3JjL3NraW5zL3Bvc2l4L3RocmVhZC5oCmluZGV4IDMzYjE0ZmQu
+LmZjOGM2ZmUgMTAwNjQ0Ci0tLSBhL2tzcmMvc2tpbnMvcG9zaXgvdGhyZWFkLmgKKysrIGIva3Ny
+Yy9za2lucy9wb3NpeC90aHJlYWQuaApAQCAtMjEsNyArMjEsNiBAQAogI2RlZmluZSBfUE9TSVhf
+VEhSRUFEX0gKIAogI2luY2x1ZGUgPHBvc2l4L2ludGVybmFsLmg+Ci0jaW5jbHVkZSA8bnVjbGV1
+cy9zZWxlY3QuaD4KIAogdHlwZWRlZiB1bnNpZ25lZCBsb25nIGxvbmcgcHNlNTFfc2lnc2V0X3Q7
+CiAKQEAgLTkxLDkgKzkwLDYgQEAgc3RydWN0IHBzZTUxX3RocmVhZCB7CiAgICAgLyogRm9yIHRp
+bWVycy4gKi8KICAgICB4bnF1ZXVlX3QgdGltZXJzcTsKICAgICAKLSAgICAvKiBGb3Igc2VsZWN0
+LiAqLwotICAgIHN0cnVjdCB4bnNlbGVjdG9yICpzZWxlY3RvcjsKLQogI2lmZGVmIENPTkZJR19Y
+RU5PX09QVF9QRVJWQVNJVkUKICAgICBzdHJ1Y3QgcHNlNTFfaGtleSBoa2V5OwogI2VuZGlmIC8q
+IENPTkZJR19YRU5PX09QVF9QRVJWQVNJVkUgKi8KLS0gCjEuNi4wLjQKCg==
+--0015174c1ca80a06070474e07d2d
+Content-Type: text/x-diff; charset=US-ASCII; 
+	name="0002-posix-Fix-__wrap_select-when-timeout-happens.patch"
+Content-Disposition: attachment; 
+	filename="0002-posix-Fix-__wrap_select-when-timeout-happens.patch"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_g09lhyur1
+
+RnJvbSBjNDA2ZTdjZTg4MTkyN2MyNzQ0ZDYwNTAzZjA3MTBkOWI5MWZhNWY0IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBQZXRlciBTb2V0ZW5zIDxwZXRlckB0aGVzb3VyY2V3b3Jrcy5j
+b20+CkRhdGU6IFRodSwgMSBPY3QgMjAwOSAxNjoyMDo1MSArMDIwMApTdWJqZWN0OiBbUEFUQ0hd
+IHBvc2l4OiBGaXggX193cmFwX3NlbGVjdCgpIHdoZW4gdGltZW91dCBoYXBwZW5zLgoKLS0tCiBz
+cmMvc2tpbnMvcG9zaXgvc2VsZWN0LmMgfCAgICA2ICsrKysrKwogMSBmaWxlcyBjaGFuZ2VkLCA2
+IGluc2VydGlvbnMoKyksIDAgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvc3JjL3NraW5zL3Bv
+c2l4L3NlbGVjdC5jIGIvc3JjL3NraW5zL3Bvc2l4L3NlbGVjdC5jCmluZGV4IDMwNzZkOWMuLjIx
+MDQwMDkgMTAwNjQ0Ci0tLSBhL3NyYy9za2lucy9wb3NpeC9zZWxlY3QuYworKysgYi9zcmMvc2tp
+bnMvcG9zaXgvc2VsZWN0LmMKQEAgLTIzLDkgKzIzLDE1IEBAIGludCBfX3dyYXBfc2VsZWN0IChp
+bnQgX19uZmRzLCBmZF9zZXQgKl9fcmVzdHJpY3QgX19yZWFkZmRzLAogCQlyZXR1cm4gX19yZWFs
+X3NlbGVjdChfX25mZHMsIF9fcmVhZGZkcywKIAkJCQkgICAgIF9fd3JpdGVmZHMsIF9fZXhjZXB0
+ZmRzLCBfX3RpbWVvdXQpOwogCisJLyogdGltZW91dCAqLworCWlmIChlcnIgPT0gMCkKKwkJcmV0
+dXJuIDA7CisKKwkvKiBzdWNjZXNzICovCiAJaWYgKGVyciA+IDApCiAJCXJldHVybiBlcnI7CiAK
+KwkvKiBmYWlsdXJlICovCiAJZXJybm8gPSAtZXJyOwogCXJldHVybiAtMTsKIH0KLS0gCjEuNi4w
+LjQKCg==
+--0015174c1ca80a06070474e07d2d--
 
