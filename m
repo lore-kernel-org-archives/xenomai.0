@@ -1,10 +1,10 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4AC47F0B.9090001@domain.hid>
+In-Reply-To: <4AC4819F.4060809@domain.hid>
 References: <4AC248FD.7050707@domain.hid>
-	<1254391461.2703.176.camel@domain.hid>  <4AC47F0B.9090001@domain.hid>
+	<1254391461.2703.176.camel@domain.hid>  <4AC4819F.4060809@domain.hid>
 Content-Type: text/plain
-Date: Thu, 01 Oct 2009 12:27:15 +0200
-Message-Id: <1254392835.2703.177.camel@domain.hid>
+Date: Thu, 01 Oct 2009 12:30:31 +0200
+Message-Id: <1254393031.2703.181.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] RFC: primary mode signals design.
@@ -19,7 +19,7 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-On Thu, 2009-10-01 at 12:06 +0200, Gilles Chanteperdrix wrote:
+On Thu, 2009-10-01 at 12:17 +0200, Gilles Chanteperdrix wrote:
 > Philippe Gerum wrote:
 > > On Tue, 2009-09-29 at 19:50 +0200, Gilles Chanteperdrix wrote:
 > >> Hi,
@@ -49,23 +49,20 @@ On Thu, 2009-10-01 at 12:06 +0200, Gilles Chanteperdrix wrote:
 > > 
 > > What bothers me is that we would duplicate what the kernel does in
 > > do_signal() for most architectures, and go through many hops from the
-> > actual signal notification to the execution of the handler. What about
-> > delaying the logic a bit: pass userland a signal-pending information on
-> > its way back from a syscall, to be detected by the XENOMAI_SYSCALL code
-> > instead. If that notification flag is raised, the required information
-> > to run the user-space handler would have been made available by the
-> > nucleus as well, so that XENOMAI_SYSCALL would just have to act as a
-> > trampoline to that handler.
 > 
-> It will not work if the signals interrupt a task which is using the CPU
-> without syscalls. With mutexes in user-space, a lot may happen in
-> user-space without syscalls.
-
-That case is 100% pathological in primary mode, since it basically
-starves the whole machine from CPU, so I'm unsure this should be
-considered as a desirable feature.
-
+> Maybe we can re-use the linux kernel code? Maybe we can even make that
+> code platform independent and put it in the nucleus, using the xnregs*
+> macros, and maybe adding some more to alter the pt_regs structure to
+> cause the return to user-space to pass by the callback, and to be able
+> to push some data on the stack, imposing the need of a syscall to
+> restore context.
 > 
+
+Quite frankly, I doubt of it. That part of the Linux code is often
+hairy, touchy, platform and context dependent, so AFAICS, maintaining
+this sort of merge over time with different kernel releases over
+multiple archs would end up in a living nightmare.
+
 -- 
 Philippe.
 
