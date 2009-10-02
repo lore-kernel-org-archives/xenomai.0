@@ -1,13 +1,13 @@
-Message-ID: <4ABCD073.5020108@domain.hid>
-Date: Fri, 25 Sep 2009 16:15:15 +0200
+Message-ID: <4AC62D0D.4000907@domain.hid>
+Date: Fri, 02 Oct 2009 18:40:45 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <26553515.371391253884926657.JavaMail.coremail@domain.hid>
-	<4ABCCFF8.1060607@domain.hid>
-In-Reply-To: <4ABCCFF8.1060607@domain.hid>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai-help] Porting rtai/linux applications to xenomai/linux
+References: <4AC5E895.8010107@domain.hid> <1254490822.2703.310.camel@domain.hid>
+	<4AC60AA9.5060209@domain.hid>
+In-Reply-To: <4AC60AA9.5060209@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Freeze on SMP x86-64
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,24 +17,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?UTF-8?B?6Z+p5a6I6LCm?= <hshouqian@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Roman Pisl <rpisl@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> 韩守谦 wrote:
->> Hello everyone！ I'm Porting rtai/linux applications to xenomai/linux.
->> I want to swith  RTAI API to  Xeno's native API. Now I have a
->> problem:we know,rtai provides a kernel module: math.ko, so we can use
->> math funtions in our kernel modules of our applications ,but xenomai
->> doesn't provide the same functions. what should I do? My kernel
->> module of application need  some math functions.
+Roman Pisl wrote:
+> On 2.10.2009 15:40, Philippe Gerum wrote:
+>> On Fri, 2009-10-02 at 13:48 +0200, Roman Pisl wrote:
+>>> Hello,
+>>> I just tried x86-64 SMP Linux/Xenomai on my workstation (Intel Core2
+>>> Quad) but it freezes immediately after latency test or clocktest is
+>>> started. It freezes even during the boot, when Xenomai debbuging is
+>>> enabled.
+>>>
+>>> The same kernel binary runs seamlessly in KVM on the same machine.
+>>>
+>>> When I completely disable ACPI, the kernel recognizes only one CPU and
+>>> the latency test works.
+>>>
+>>> The same configuration but for 32bit x86 also runs without freeze.
+>>>
+>>> Do you have any ideas?
+>>>
+>> Try disabling PM_TIMER.
+>>
 > 
-> As we already told in former posts, we do not support the math module,
-> and do not intend to support it.
+> Do you mean CONFIG_X86_PM_TIMER? PM/ACPI probably requires this and as I 
+> described before - without ACPI Linux brings up only one CPU, the 
+> latency test works and doesn't freeze the machine.
 
-https://mail.gna.org/public/xenomai-help/2007-08/msg00237.html
+No, PM does not require this. The only reason why PM_TIMER is called a
+PM_TIMER is that it is a timer which continues to run independently on
+the modes of the processor. The x86 local timers stop when the processor
+is idle on some mahcines, this does not happen with the PM timer.
+
 
 -- 
-                                          Gilles
-
+					    Gilles.
 
