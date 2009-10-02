@@ -1,14 +1,10 @@
-From: Wolfgang Denk <wd@domain.hid>
+Message-ID: <4AC61F57.2010404@domain.hid>
+Date: Fri, 02 Oct 2009 17:42:15 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-type: text/plain; charset=ISO-8859-1
-Content-transfer-encoding: 8bit
-In-reply-to: <4AC5F4EC.6040803@domain.hid>
-References: <4AC5E2B7.9020701@domain.hid>
-	<b88603c30910020458n62c14adfp4bf27b63bb801425@domain.hid>
-	<4AC5F4EC.6040803@domain.hid>
-Date: Fri, 02 Oct 2009 16:08:46 +0200
-Message-Id: <20091002140846.AFF0B832E408@domain.hid>
-Subject: Re: [Xenomai-core] FCSE patch.
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] RTDM fd support.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,31 +13,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Dear Gilles,
+Hi Jan,
 
-In message <4AC5F4EC.6040803@domain.hid> you wrote:
-> 
-> > Let's hope the patch gets picked up and maintained by
-> > the kernel developers. If not, will Xenomai keep supporting it for
-> > upcoming kernels?
-> 
-> Yes, definitely.
+from discussions on the mailing list, it seems that we are going to need
+that unified file descriptors thing. However, since everybody wants
+2.5.0 to be released ASAP, we should try to think about any changes for
+this support which would break the ABI, do them now, and keep the rest
+for later.
 
-I have created a "arm-fcse" branch in our linux-2.6-denx repository
-which is the current kernel.org + the FCSE patches, so everybody who
-wants to test this can just pull this tree.  See
-http://git.denx.de/?p=linux-2.6-denx.git;a=shortlog;h=refs/heads/arm-fcse
+One such problem is the translation which currently exists between rtdm
+file descriptors and descriptors passed to the posix skin, by adding
+1024 - 128. So, I propose to fix this issue.
 
-Best regards,
+The idea Philippe had, and which I tend to agree to, was, in case of
+open/socket/accept, to open("/dev/null"), and use an association table
+somewhere to associate with the kernel-space descriptor number. Since
+we are at it, this association table could in fact be the file
+descriptor table, which we would put in the core skin ppd. The actual
+data structure should be sparse, a linked list does not scale, so,
+probably a hash would do. (I could also propose a solution based on avl
+trees, but their implementation is not nearly as simple).
 
-Wolfgang Denk
+Additionnally, this would allow our open/socket to conform to posix
+which states that open should return the lowest free file descriptor.
+
+Should I propose a patch in that direction? Do you see any other
+possible cause of ABI breakage when we migrate to an unified file
+descriptors structure?
+
+TIA,
+regards.
 
 -- 
-DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
-Swap read error.  You lose your mind.
+					    Gilles.
+
 
