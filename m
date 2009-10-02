@@ -1,15 +1,12 @@
-Message-ID: <4AC63536.2010802@domain.hid>
-Date: Fri, 02 Oct 2009 19:15:34 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1f3e02580909300343y3bf44fedh8dbc8d7e27fead4d@domain.hid>	
-	<4AC346C7.4040600@domain.hid>
-	<1f3e02580910020652p7bc52284p7e26573669e1a05b@domain.hid>
-In-Reply-To: <1f3e02580910020652p7bc52284p7e26573669e1a05b@domain.hid>
+In-Reply-To: <9b3e2dc20909241412n7567401bpd768a6678a5c9158@domain.hid>
+References: <9b3e2dc20909241412n7567401bpd768a6678a5c9158@domain.hid>
+Date: Fri, 2 Oct 2009 14:41:07 -0400
+Message-ID: <9b3e2dc20910021141s5167e427oea4c4aba91d0ce07@domain.hid>
+From: Stephen Sinclair <radarsat1@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [Guide] To patch Linux Kernel with Xenomai for
- Unknown core
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] rtdm, where to initialize pci private data?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,56 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Didenko Sergey <didenkos@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Didenko Sergey wrote:
->>> For now on I have done with:
->>>
->>> - prepare kernel with adeos patch
->>> - configure kernel with its original defconfig file (the original
->>> configuration is verified and working fine on target board)
->>> - building kernel (and here we are!)
->>>
->>> 2) I did add implementation for (even though the  I did not find any
->>> link to it in HOWTO, so I referred to PXA's implementation):
->>> __ipipe_check_tickdev (called from kernel\core.c)
->>>
->>> And for:
->>> mv88f6290_osmr0_set_mode
->>> mv88f6290_osmr0_set_next_event
->>> ckevt_mv88f6290_osmr0
->>> Even though all of them are required by __ipipe_mach_release_timer() I
->>> did not find in HOWTO how these functions should be implemented for
->>> MYCORE, so I referred to PXA's implementation again.
-> 
-> *Gilles:*
-> No, you should not add these functions. They already exist if your board
-> supports GENERIC_CLOCKEVENT and GENERIC_TIME.
-> 
-> *Sergey:*
-> Unfortunately no, there is no these functions for my board, there are only
-> for "arm\mach-pxa" and "arm\mach-sa1100".
+Just to follow up, I finally figured out I could just use
+rtdm_device->device_data to point to my private structure, and then
+access it from device operations by context->device->device_data.
 
-Then your board does not support GENERIC_CLOCKEVENT and GENERIC_TIME,
-and you should skip the section about it in the howto.
+Steve
 
-> 
-> *Q1: Does the fact that these options are enabled or disabled in kernel's
-> .config file effects on how kernel code has been patched?*
-> *
-> *
-> *Q2: Could anyone please explaine more exactly what do these options
-> (GENERIC_CLOCKEVENT
-> and GENERIC_TIME) mean? What are they doing and how? I realy want to
-> understand it, but can not find any information about it.*
-
-ask the internet.
-http://lkml.indiana.edu/hypermail/linux/kernel/0701.2/1799.html
-http://www.linuxworld.com/news/2007/022807-kernel.html
-http://kernelnewbies.org/Linux_2_6_21#head-8547911895fda9cdff32a94771c8f5706d66bba0
-http://lwn.net/Articles/223185/
-
--- 
-					    Gilles.
+On Thu, Sep 24, 2009 at 5:12 PM, Stephen Sinclair <radarsat1@domain.hid> wro=
+te:
+> Hi,
+>
+> I'm trying to port a PCI driver to Xenomai/RTDM. =C2=A0I'm a bit confused
+> about how to handle private data. =C2=A0The open/close/ioctl functions
+> receive a context pointer, which is a struct + the context_size
+> length. =C2=A0So this is where I guess you are supposed to put private
+> data, initialized in the open() function.
+>
+> However, the driver I'm porting does initialization (i.e,. gets base
+> addresses, etc) in the probe() function. =C2=A0It gets base addresses fro=
+m
+> the pci_dev struct which is passed to it. =C2=A0In the probe function I
+> have no rtdm_dev_context, so I can't initialize the private data
+> there. =C2=A0In the open function I have no pci_dev so I can't do it ther=
+e
+> either. =C2=A0I could allocate some memory and store it in
+> rtdm_device.device_data, but this isn't available to the
+> open/close/ioctl functions.
+>
+> So I presume rtdm_context is created sometime during
+> rtdm_dev_register() (called in probe), but how do I access it for
+> writing?
+>
+> thanks,
+> Steve
+>
 
