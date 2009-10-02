@@ -1,12 +1,12 @@
-Message-ID: <4AC62883.1080908@domain.hid>
-Date: Fri, 02 Oct 2009 18:21:23 +0200
+Message-ID: <4AC62B41.3050404@domain.hid>
+Date: Fri, 02 Oct 2009 18:33:05 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4AC2448B.1080500@domain.hid> <1254396765.2703.234.camel@domain.hid>
-In-Reply-To: <1254396765.2703.234.camel@domain.hid>
+References: <4AC61F57.2010404@domain.hid> <4AC62804.7090903@domain.hid>
+In-Reply-To: <4AC62804.7090903@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] RFC: 2.5 todo list.
+Subject: Re: [Xenomai-core] RTDM fd support.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,48 +15,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Philippe Gerum wrote:
-> On Tue, 2009-09-29 at 19:31 +0200, Gilles Chanteperdrix wrote:
->> Hi guys,
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Hi Jan,
 >>
->> full of energy after this tremendous first XUM,
-> 
-> Agreed, thanks to the DENX folks for having thought of it in the first
-> place, and organized it nicely.
-> 
->>  I would like to start a
->> discussion about what people would like to see in the 2.5 branch.
+>> from discussions on the mailing list, it seems that we are going to need
+>> that unified file descriptors thing. However, since everybody wants
+>> 2.5.0 to be released ASAP, we should try to think about any changes for
+>> this support which would break the ABI, do them now, and keep the rest
+>> for later.
 >>
+>> One such problem is the translation which currently exists between rtdm
+>> file descriptors and descriptors passed to the posix skin, by adding
+>> 1024 - 128. So, I propose to fix this issue.
+>>
+>> The idea Philippe had, and which I tend to agree to, was, in case of
+>> open/socket/accept, to open("/dev/null"), and use an association table
+>> somewhere to associate with the kernel-space descriptor number. Since
+>> we are at it, this association table could in fact be the file
+>> descriptor table, which we would put in the core skin ppd. The actual
+>> data structure should be sparse, a linked list does not scale, so,
+>> probably a hash would do. (I could also propose a solution based on avl
+>> trees, but their implementation is not nearly as simple).
+>>
+>> Additionnally, this would allow our open/socket to conform to posix
+>> which states that open should return the lowest free file descriptor.
+>>
+>> Should I propose a patch in that direction? Do you see any other
+>> possible cause of ABI breakage when we migrate to an unified file
+>> descriptors structure?
 > 
-> Jan has described the situation quite accurately already, regarding the
-> trade-off between getting everything we want into 2.5 so that no 2.6 is
-> required, and releasing the too long-awaited 2.5 asap.
-> 
-> As you mentioned already, the key issue is ABI stability.
-> Any change we want before 3.0 that breaks the ABI should preferably go
-> to 2.5, so that we don't end up maintaining 2.5.x, 2.6.x and 3.x. At any
-> rate, we could not afford the latter anyway. This is a different matter
-> than API issues; we already allowed API extensions during a stable
-> cycle, provided they do not break existing application code (except in
-> emergency cases), so I see no problem in pushing a few more services to
-> 2.5.1 and beyond, provided that condition is met.
-> 
->> Here is a first list, please feel free to criticize it:
->> - signals in primary domain (something that we almost forgot)
-> 
-> Yes, this one must be in. At least, we should break the ABI one more
-> time for this before releasing 2.5.0. This item has priority #1 for
-> me, since providing that infrastructure will enable a series of
-> additional services to be implemented properly. In fact, this is more a
-> matter of allowing nucleus callouts to user-space than anything else;
-> POSIX RT signals in full primary mode being an application of them.
+> Right now this sounds like a plan - but I don't feel 100% comfortable to
+> predict that we will get along with it. Converting some skin-specific
+> service to a generic one involves quite a lot of refactoring. It is not
+> really unlikely that we define some ABI now that will later turn out to
+> be insufficient for what we want to achieve.
 
-Ok. So, if we add the core skin fdtable, this leaves us with two items:
-- signals in primary domain
-- core skin fdtable
+For the posix skin, I can live with a two hops solution right now, and
+implement the one-hop solution later.
+
+user-space fd
+      |
+      | core skin fd table
+      v
+kernel-space fd
+      |
+      | posix skin registry
+      v
+actual object
+
+If we do this, there is not much re-factoring involved.
+
+The question really boils down to whether you accept this solution for
+the rtdm skin too.
 
 -- 
 					    Gilles.
