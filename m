@@ -1,10 +1,15 @@
+Message-ID: <4AC65976.4030707@domain.hid>
+Date: Fri, 02 Oct 2009 21:50:14 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Sender: lcasassa@domain.hid
-From: Linus Casassa <linus@domain.hid>
-Date: Fri, 2 Oct 2009 14:52:39 -0400
-Message-ID: <47a3101a0910021152ud2cac28yb23708144418fe64@domain.hid>
-Content-Type: multipart/alternative; boundary=000e0cd22d66d3c2c60474f845e5
-Subject: [Xenomai-help] Compiling xenomai task with bitbake
+References: <47a3101a0910011923t7a002c9av7f7df5c666f0cf1@domain.hid>
+	<47a3101a0910020554n39297325x72cd9b7adde9ab9f@domain.hid>
+	<4AC5F98B.2030708@domain.hid>
+	<47a3101a0910021200med708bfwf5c14d68e133f59@domain.hid>
+In-Reply-To: <47a3101a0910021200med708bfwf5c14d68e133f59@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Fwd: Xenomai 2.4.9.1
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,34 +19,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Linus Casassa <linus@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
---000e0cd22d66d3c2c60474f845e5
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Linus Casassa wrote:
+> I can compile xenomai 2.4.9.1 without problems on my computer.
+> 
+> Seems that bitbake is doing something I can't figure out.
 
-Does anyone have a .bb example file?
+Unfortunately, I can not help you with this, since I do not know
+bitbake, I do not even know what it is. Maybe someone else?
 
-xeno-config does not exist in bitbake so I get:
-native/task.h: No such file or directory
+Or maybe you could try some gumstix specific mailing list?
 
-Thanks for the help.
-
---=20
-Linus Casassa
-Estudiante Ingenier=EDa Civil Electr=F3nica
-Fono: 56-9-97776941
-
---000e0cd22d66d3c2c60474f845e5
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Does anyone have a .bb example file?<br><br>xeno-config does not exist in b=
-itbake so I get:<br>native/task.h: No such file or directory<br clear=3D"al=
-l"><br>Thanks for the help.<br><br>-- <br>Linus Casassa<br>Estudiante Ingen=
-ier=EDa Civil Electr=F3nica<br>
-
-Fono: 56-9-97776941<br>
-
---000e0cd22d66d3c2c60474f845e5--
+-- 
+					    Gilles.
 
