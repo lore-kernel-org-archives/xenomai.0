@@ -1,15 +1,16 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4AC65B9C.4010303@domain.hid>
-References: <4AC2448B.1080500@domain.hid>
-	<1254396765.2703.234.camel@domain.hid>  <4AC62883.1080908@domain.hid>
-	<1254505304.2703.347.camel@domain.hid>  <4AC63CF0.7090001@domain.hid>
-	<1254511088.2703.367.camel@domain.hid>  <4AC65B9C.4010303@domain.hid>
-Content-Type: text/plain
-Date: Fri, 02 Oct 2009 22:09:51 +0200
-Message-Id: <1254514191.2703.381.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] RFC: 2.5 todo list.
+Message-ID: <4AC65F5A.7040307@domain.hid>
+Date: Fri, 02 Oct 2009 22:15:22 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <4AC61F57.2010404@domain.hid> <4AC62804.7090903@domain.hid>
+	<4AC62B41.3050404@domain.hid> <4AC65172.8060900@domain.hid>
+	<4AC65CEB.7080107@domain.hid>
+In-Reply-To: <4AC65CEB.7080107@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigEF682DD8148B9A5D3BD3C031"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] RTDM fd support.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -19,91 +20,122 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Patrice Kadionik <patrice.kadionik@domain.hid>, Xenomai core <Xenomai-core@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-On Fri, 2009-10-02 at 21:59 +0200, Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
-> > On Fri, 2009-10-02 at 19:48 +0200, Gilles Chanteperdrix wrote:
-> >> Philippe Gerum wrote:
-> >>>> Ok. So, if we add the core skin fdtable, this leaves us with two items:
-> >>>> - signals in primary domain
-> >>>> - core skin fdtable
-> >>>>
-> >>> Ack. Add the following I-pipe stuff as well:
-> >>>
-> >>> - nios2 design upgrade. Those FPGA thingies require a bit of support to
-> >>> be included into the soft-core in order to run a real-time system, like
-> >>> a high precision timer and some stable monotonic clock source. Patrice
-> >>> Kadionik (the guy who lives there: http://uuu.enseirb.fr/~kadionik/)
-> >>> sent me an update for the FPGA design I used to do the initial port over
-> >>> nios2. This is mostly a matter of a couple of hours to fix and validate
-> >>> the I-pipe core accordingly, though.
-> >> Maybe you could ask for a hardware implementation of mul64by64_high...
-> > 
-> > It looks like custom instructions are restricted to input(32bit x 2) =>
-> > output(32bit).
-> > 
-> > Patrice, do you confirm, or would it be possible to implement such
-> > instruction, that would return the highest 32 bits from a 64 x 64
-> > multiply op? We need this to speed up some arithmetics, especially on a
-> > 50Mhz CPU.
-> 
-> We want the highest 64 bits.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigEF682DD8148B9A5D3BD3C031
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Yep, just noticed the glitch.
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> Gilles Chanteperdrix wrote:
+>>>>> Hi Jan,
+>>>>>
+>>>>> from discussions on the mailing list, it seems that we are going to=
+ need
+>>>>> that unified file descriptors thing. However, since everybody wants=
 
->  So, you need at least 4 registers. (4
-> inputs, 2 outputs, but we may assume that the 2 outputs override 2
-> inputs register).
-> 
-> > 
-> > If we can't, well, I will likely have to subject myself to write a small
-> > assembly block doing just this, because gcc's output is likely not going
-> > to look like the way Gilles wants.
-> 
-> Well, maybe there is a way to modify the plain C version to generate
-> better code by reducing the number of variables. But that is uncertain
-> business. Anyway, I do not want anything, if you are happy with the
-> plain C version, then by all means, keep it. You can measure the time
-> that the whole thing takes using the unit test.
-> 
+>>>>> 2.5.0 to be released ASAP, we should try to think about any changes=
+ for
+>>>>> this support which would break the ABI, do them now, and keep the r=
+est
+>>>>> for later.
+>>>>>
+>>>>> One such problem is the translation which currently exists between =
+rtdm
+>>>>> file descriptors and descriptors passed to the posix skin, by addin=
+g
+>>>>> 1024 - 128. So, I propose to fix this issue.
+>>>>>
+>>>>> The idea Philippe had, and which I tend to agree to, was, in case o=
+f
+>>>>> open/socket/accept, to open("/dev/null"), and use an association ta=
+ble
+>>>>> somewhere to associate with the kernel-space descriptor number. Sin=
+ce
+>>>>> we are at it, this association table could in fact be the file
+>>>>> descriptor table, which we would put in the core skin ppd. The actu=
+al
+>>>>> data structure should be sparse, a linked list does not scale, so,
+>>>>> probably a hash would do. (I could also propose a solution based on=
+ avl
+>>>>> trees, but their implementation is not nearly as simple).
+>>>>>
+>>>>> Additionnally, this would allow our open/socket to conform to posix=
 
-Looking at the output of the arith unit test, gcc did not seem to be
-that efficient producing code for llimd and friends, so I doubt we could
-spare having nodiv_ullimd rewrote.
+>>>>> which states that open should return the lowest free file descripto=
+r.
+>>>>>
+>>>>> Should I propose a patch in that direction? Do you see any other
+>>>>> possible cause of ABI breakage when we migrate to an unified file
+>>>>> descriptors structure?
+>>>> Right now this sounds like a plan - but I don't feel 100% comfortabl=
+e to
+>>>> predict that we will get along with it. Converting some skin-specifi=
+c
+>>>> service to a generic one involves quite a lot of refactoring. It is =
+not
+>>>> really unlikely that we define some ABI now that will later turn out=
+ to
+>>>> be insufficient for what we want to achieve.
+>>> For the posix skin, I can live with a two hops solution right now, an=
+d
+>>> implement the one-hop solution later.
+>>>
+>>> user-space fd
+>>>       |
+>>>       | core skin fd table
+>>>       v
+>>> kernel-space fd
+>>>       |
+>>>       | posix skin registry
+>>>       v
+>>> actual object
+>>>
+>>> If we do this, there is not much re-factoring involved.
+>>>
+>>> The question really boils down to whether you accept this solution fo=
+r
+>>> the rtdm skin too.
+>> Let me check if I got the idea: the first change would only modify the=
 
-> > 
-> >>> - powerpc32 updates for 2.6.30. Mainly to merge the once experimental
-> >>> bits that prevent most alignment faults from triggering a secondary mode
-> >>> switch. Andreas told me this works like a charm on 83xx, and I did not
-> >>> see any issue on 52xx, 85xx or 86xx either.
-> >>>
-> >>> - probably blackfin updates. I need to have a closer look, but I'm
-> >>> afraid I will have to resync with mainline before 2.5.0 is out. Blackfin
-> >>> folks never sleep it seems.
-> >>>
-> >>> - x86* updates to issue patches for the 2.6.30-stable and 2.6.31-stable
-> >>> series.
-> >>>
-> >>> You may have a few ARM patches brewing as well?
-> >> Actually yes. The "pic mute" feature was disabled on AT91 because it was
-> >> causing latency peaks, but I plan to enable it ultimately. I think the
-> >> latency peaks were due to the fact that I was testing a 2.4 with the bug
-> >> which we fixed in 2.4.9.1, I just need to check that. And if pic mute
-> >> works on AT91, then I would implement it for other SOCs. And an upgrade
-> >> to 2.6.31 would be fine too.
-> >>
-> > 
-> > Ok. How many interrupt controllers would be impacted by the PIC mute
-> > feature?
-> 
-> Most of the ARM PICs (with their cascaded GPIOs). I have to admit that I
-> do not keep track of how many arm processors we actually support, but
-> there's a handful. Or maybe two.
-> 
-> 
--- 
-Philippe.
+>> librtdm and the rtdm part of libpthread_rt, right?
+>=20
+> The idea was to also modify the kernel-space skins. Only make it
+> superficial: only modify the part which communicates the file
+> descriptors to user-space, to include a lookup through the fd table.
+>=20
+> So, this means that when a user-space applications calls read() for
+> instance, the fd table is used to get the kernel-space RTDM descriptor,=
+
+> and then the internal functions of the RTDM skin, go through their own
+> lookup mechanim to get the actual object.
+>=20
+> So, there are two lookups, that is the two hops I was talking about. I
+> was worried that you would not like the impact on performance.
+
+Yes, I'm a bit. And I do not get the significant advantage of this
+approach over the final one-hop approach anymore.
+
+Jan
 
 
+--------------enigEF682DD8148B9A5D3BD3C031
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkrGX14ACgkQitSsb3rl5xS/GACeP5Q+VupXpsFbLg0y8k1OtWkv
+MqAAoOkDuZDrnfKRcWr7PHr9LyLRDFHX
+=Ya9l
+-----END PGP SIGNATURE-----
+
+--------------enigEF682DD8148B9A5D3BD3C031--
 
