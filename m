@@ -1,7 +1,9 @@
 From: wolfgang.mauerer@domain.hid
-Date: Fri,  2 Oct 2009 10:52:34 +0200
-Message-Id: <1254473555-11957-1-git-send-email-wolfgang.mauerer@domain.hid>
-Subject: [Xenomai-core] [PATCH] Make marker string for faults less ambiguous
+Date: Fri,  2 Oct 2009 10:52:35 +0200
+Message-Id: <1254473555-11957-2-git-send-email-wolfgang.mauerer@domain.hid>
+In-Reply-To: <1254473555-11957-1-git-send-email-wolfgang.mauerer@domain.hid>
+References: <1254473555-11957-1-git-send-email-wolfgang.mauerer@domain.hid>
+Subject: [Xenomai-core] [PATCH] Document -EWOULDBLOCK for rtdm_event_wait
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -14,33 +16,31 @@ To: xenomai@xenomai.org
 
 From: Wolfgang Mauerer <wm@domain.hid>
 
-The trace mark string for faults uses an address
-element to notify about the location of the instruction
-that caused the fault. "address" is a bit dubious in
-this context because it can mean either faulting address
-or IP address. Replacing "address" with "ip" also makes
-the message more consistent with Linux' page_fault_entry
-trace point.
+rtdm_event_wait can return -EWOULDBLOCK when a
+negative (i.e., non-blocking) timeout has been specified,
+but this is not covered in the documentation.
 
 Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+Reported-by: Michael.Schwertfeger@domain.hid
 ---
- ksrc/nucleus/pod.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ ksrc/skins/rtdm/drvlib.c |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
 
-diff --git a/ksrc/nucleus/pod.c b/ksrc/nucleus/pod.c
-index 21763d5..37d35f5 100644
---- a/ksrc/nucleus/pod.c
-+++ b/ksrc/nucleus/pod.c
-@@ -2511,7 +2511,7 @@ int xnpod_trap_fault(xnarch_fltinfo_t *fltinfo)
- 	thread = xnpod_current_thread();
- 
- 	trace_mark(xn_nucleus, thread_fault,
--		   "thread %p thread_name %s address %lu type %d",
-+		   "thread %p thread_name %s ip %p type %d",
- 		   thread, xnthread_name(thread), xnarch_fault_pc(fltinfo),
- 		   xnarch_fault_trap(fltinfo));
- 
+diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
+index 69570d0..8177f7d 100644
+--- a/ksrc/skins/rtdm/drvlib.c
++++ b/ksrc/skins/rtdm/drvlib.c
+@@ -928,6 +928,9 @@ EXPORT_SYMBOL(rtdm_event_wait);
+  * - -EPERM @e may be returned if an illegal invocation environment is
+  * detected.
+  *
++ * - -EWOULDBLOCK is returned if a negative @a timeout (i.e., non-blocking
++ * operation) has been specified.
++ *
+  * Environments:
+  *
+  * This service can be called from:
 -- 
 1.6.4
 
