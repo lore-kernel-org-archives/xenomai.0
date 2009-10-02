@@ -1,12 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4AC653A2.2030302@domain.hid>
-References: <4AC2448B.1080500@domain.hid>
-	<1254396765.2703.234.camel@domain.hid> <4AC62883.1080908@domain.hid>
-	<4AC653A2.2030302@domain.hid>
-Content-Type: text/plain
-Date: Fri, 02 Oct 2009 21:52:12 +0200
-Message-Id: <1254513132.2703.375.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4AC65B9C.4010303@domain.hid>
+Date: Fri, 02 Oct 2009 21:59:24 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <4AC2448B.1080500@domain.hid>	
+	<1254396765.2703.234.camel@domain.hid>
+	<4AC62883.1080908@domain.hid>	
+	<1254505304.2703.347.camel@domain.hid> <4AC63CF0.7090001@domain.hid>
+	<1254511088.2703.367.camel@domain.hid>
+In-Reply-To: <1254511088.2703.367.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] RFC: 2.5 todo list.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -17,77 +19,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Patrice Kadionik <patrice.kadionik@domain.hid>, Xenomai core <Xenomai-core@domain.hid>
 
-On Fri, 2009-10-02 at 21:25 +0200, Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
-> > Philippe Gerum wrote:
-> >> On Tue, 2009-09-29 at 19:31 +0200, Gilles Chanteperdrix wrote:
-> >>> Hi guys,
-> >>>
-> >>> full of energy after this tremendous first XUM,
-> >> Agreed, thanks to the DENX folks for having thought of it in the first
-> >> place, and organized it nicely.
-> >>
-> >>>  I would like to start a
-> >>> discussion about what people would like to see in the 2.5 branch.
-> >>>
-> >> Jan has described the situation quite accurately already, regarding the
-> >> trade-off between getting everything we want into 2.5 so that no 2.6 is
-> >> required, and releasing the too long-awaited 2.5 asap.
-> >>
-> >> As you mentioned already, the key issue is ABI stability.
-> >> Any change we want before 3.0 that breaks the ABI should preferably go
-> >> to 2.5, so that we don't end up maintaining 2.5.x, 2.6.x and 3.x. At any
-> >> rate, we could not afford the latter anyway. This is a different matter
-> >> than API issues; we already allowed API extensions during a stable
-> >> cycle, provided they do not break existing application code (except in
-> >> emergency cases), so I see no problem in pushing a few more services to
-> >> 2.5.1 and beyond, provided that condition is met.
-> >>
-> >>> Here is a first list, please feel free to criticize it:
-> >>> - signals in primary domain (something that we almost forgot)
-> >> Yes, this one must be in. At least, we should break the ABI one more
-> >> time for this before releasing 2.5.0. This item has priority #1 for
-> >> me, since providing that infrastructure will enable a series of
-> >> additional services to be implemented properly. In fact, this is more a
-> >> matter of allowing nucleus callouts to user-space than anything else;
-> >> POSIX RT signals in full primary mode being an application of them.
-> > 
-> > Ok. So, if we add the core skin fdtable, this leaves us with two items:
-> > - signals in primary domain
+Philippe Gerum wrote:
+> On Fri, 2009-10-02 at 19:48 +0200, Gilles Chanteperdrix wrote:
+>> Philippe Gerum wrote:
+>>>> Ok. So, if we add the core skin fdtable, this leaves us with two items:
+>>>> - signals in primary domain
+>>>> - core skin fdtable
+>>>>
+>>> Ack. Add the following I-pipe stuff as well:
+>>>
+>>> - nios2 design upgrade. Those FPGA thingies require a bit of support to
+>>> be included into the soft-core in order to run a real-time system, like
+>>> a high precision timer and some stable monotonic clock source. Patrice
+>>> Kadionik (the guy who lives there: http://uuu.enseirb.fr/~kadionik/)
+>>> sent me an update for the FPGA design I used to do the initial port over
+>>> nios2. This is mostly a matter of a couple of hours to fix and validate
+>>> the I-pipe core accordingly, though.
+>> Maybe you could ask for a hardware implementation of mul64by64_high...
 > 
-> Sorry, I neither see the need nor feel comfortable about the impact /
-> side effects of such an extension.
+> It looks like custom instructions are restricted to input(32bit x 2) =>
+> output(32bit).
 > 
+> Patrice, do you confirm, or would it be possible to implement such
+> instruction, that would return the highest 32 bits from a 64 x 64
+> multiply op? We need this to speed up some arithmetics, especially on a
+> 50Mhz CPU.
 
-This extension is mandatory to allow callouts from the nucleus to a
-user-space application without forcing the latter to leave primary mode.
-This is direly needed when implementing some legacy RTOS services, and
-currently only available from kernel to kernel. We need this 1) to
-implement POSIX RT signals (a long term maintenance release like 2.5
-must have those), 2) implement missing services from existing skins
-(VxWorks comes to mind), 3) provide an upgrade path from 2.5.x to 3.x,
-for people who will have to move their apps to userland in v3, and as
-such should be able to anticipate that move with 2.5.
+We want the highest 64 bits. So, you need at least 4 registers. (4
+inputs, 2 outputs, but we may assume that the 2 outputs override 2
+inputs register).
 
-The impact is minimal, we have discussed the general idea in a previous
-thread actually. This is typically something that is implemented between
-the shadow support code and the generic syscall code, this does not have
-to leak anywhere else.
+> 
+> If we can't, well, I will likely have to subject myself to write a small
+> assembly block doing just this, because gcc's output is likely not going
+> to look like the way Gilles wants.
 
-> > - core skin fdtable
+Well, maybe there is a way to modify the plain C version to generate
+better code by reducing the number of variables. But that is uncertain
+business. Anyway, I do not want anything, if you are happy with the
+plain C version, then by all means, keep it. You can measure the time
+that the whole thing takes using the unit test.
+
 > 
-> If we can find a minimally invasive first version (see other thread)
-> that can be tested and stabilized within very few weeks, and later
-> changes will definitely only touch core code, I might be able to live
-> with this for 2.5.
+>>> - powerpc32 updates for 2.6.30. Mainly to merge the once experimental
+>>> bits that prevent most alignment faults from triggering a secondary mode
+>>> switch. Andreas told me this works like a charm on 83xx, and I did not
+>>> see any issue on 52xx, 85xx or 86xx either.
+>>>
+>>> - probably blackfin updates. I need to have a closer look, but I'm
+>>> afraid I will have to resync with mainline before 2.5.0 is out. Blackfin
+>>> folks never sleep it seems.
+>>>
+>>> - x86* updates to issue patches for the 2.6.30-stable and 2.6.31-stable
+>>> series.
+>>>
+>>> You may have a few ARM patches brewing as well?
+>> Actually yes. The "pic mute" feature was disabled on AT91 because it was
+>> causing latency peaks, but I plan to enable it ultimately. I think the
+>> latency peaks were due to the fact that I was testing a 2.4 with the bug
+>> which we fixed in 2.4.9.1, I just need to check that. And if pic mute
+>> works on AT91, then I would implement it for other SOCs. And an upgrade
+>> to 2.6.31 would be fine too.
+>>
 > 
-> Jan
-> 
+> Ok. How many interrupt controllers would be impacted by the PIC mute
+> feature?
+
+Most of the ARM PICs (with their cascaded GPIOs). I have to admit that I
+do not keep track of how many arm processors we actually support, but
+there's a handful. Or maybe two.
+
+
 -- 
-Philippe.
-
-
+					    Gilles.
 
