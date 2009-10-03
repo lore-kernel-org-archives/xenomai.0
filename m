@@ -1,15 +1,15 @@
-Message-ID: <4AC77260.9090800@domain.hid>
-Date: Sat, 03 Oct 2009 17:48:48 +0200
+Message-ID: <4AC77576.9070700@domain.hid>
+Date: Sat, 03 Oct 2009 18:01:58 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <021401ca40ef$f0503470$d0f09d50$@biz>
-In-Reply-To: <021401ca40ef$f0503470$d0f09d50$@biz>
+References: <4AC5E895.8010107@domain.hid> <4AC5F49E.3070608@domain.hid>
+	<4AC5FEAD.7000608@domain.hid>
+In-Reply-To: <4AC5FEAD.7000608@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig64F8B47C56CD8712494D645B"
+	boundary="------------enig316BD1572624BB1ED93874A6"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Kernel panic on reboot (Xenomai 2.4.9.1,
- kernel 2.6.31, x86 SMP)
+Subject: Re: [Xenomai-help] Freeze on SMP x86-64
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,103 +19,99 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Rob Stocks <rjs@domain.hid>
+To: Roman Pisl <rpisl@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig64F8B47C56CD8712494D645B
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enig316BD1572624BB1ED93874A6
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Rob Stocks wrote:
-> We have a problem with Xenomai v2.4.9.1, kernel 2.6.31, x86 SMP in that=
- we
-> get a kernel panic on reboot:
+Roman Pisl wrote:
+> On 2.10.2009 14:39, Gilles Chanteperdrix wrote:
+>> Roman Pisl wrote:
+>>> Hello,
+>>> I just tried x86-64 SMP Linux/Xenomai on my workstation (Intel Core2
+>>> Quad) but it freezes immediately after latency test or clocktest is
+>>> started. It freezes even during the boot, when Xenomai debbuging is
+>>> enabled.
+>>>
+>>> The same kernel binary runs seamlessly in KVM on the same machine.
+>>>
+>>> When I completely disable ACPI, the kernel recognizes only one CPU an=
+d
+>>> the latency test works.
+>>>
+>>> The same configuration but for 32bit x86 also runs without freeze.
+>>>
+>>> Do you have any ideas?
+>>
+>> Yes. As we repeated many times.
+>> Tell us the versions of Xenomai and of the I-pipe patch you use.
+>> Send us your .config
+>> Manage to get the kernel console output (using a serial cable connecte=
+d
+>> to another PC, or the netconsole, some people even used to send us
+>> photos about kernel crashes).
+>>
 >=20
-> 	swapper[0]: segfault at 15aba ip 0000e6ba sp 00000189 error 4
-> 	no vm86_info: BAD
-> 	Kernel panic - not syncing: Attempted to kill the idle task!
-> 	Pis: 0, comm.: swapper Not tainted 2.6.31-CROCUS #1
-> 	Call Trace:
-> 	 [<810280cb>] panic+0x49/0xed
-> 	 [<8102a6f6>] do_exit+0x55/0xdc4
-> 	 [<81028fec>] ? printk+0x9f/0x104
-> 	 [<810031ec>] ? reboot_interrupt+0x0/0x38
-> 	 [<81014af7>] save_v86_state+0xa6/0x168
-> 	 [<810031ec>] ? reboot_interrupt+0x0/0x38
-> 	 [<81002ac6>] work_notifysig_v86+0x06/0x18
-> 	 [<810031ec>] ? reboot_interrupt+0x0/0x38
-> 	reboot[1781]: segfault at 15aba ip 0000e6ba sp 00000189 error 4
-> 	no vm86_info: BAD
->=20
-> Other than this, it seems to work fine.
->=20
-> We had previously been using v2.4.7, kernel 2.6.28.7 which does not hav=
-e
-> this issue but for development, we would like to use X and we find that=
- some
-> X applications (e.g. Netbeans & eclipse) hang the system (with no indic=
-ation
-> of cause i.e. no console messages & nothing in the logs - the system ju=
-st
-> stops). However, when we use v2.4.9.1 with kernel 2.6.31, we can use X =
-apps
-> perfectly but we can't reboot!
->=20
-> Anyone have any ideas/suggestions?
+> I send dmesg output for both 32 and 64 bit. Unfortunately it just
+> freezes with no kernel panic output. When Xenomai debugging is enabled,=
 
-Patch below fixes it for me.
+> the kernel freezes after Xenomai is initialized (last message: Xenomai:=
 
-There seems to be another gremlin like this, but it needs a second
-check. I will post official patches once that is done.
+> starting RTDM services).
+
+Does this patch make any difference?
 
 Jan
 
------------>
+------->
 
-x86: Fix reboot for SMP
+x86: Fix irq_move_cleanup virtualization
 
-So far I-pipe called reboot_interrupt recursively as it virtualized the
-wrong entry call.
+Call the right function and avoid a recursion when this interrupt
+triggers.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
 
- arch/x86/include/asm/hw_irq.h |    1 +
- arch/x86/kernel/ipipe.c       |    2 +-
- 2 files changed, 2 insertions(+), 1 deletions(-)
+ arch/x86/kernel/ipipe.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.=
-h
-index d523a86..6a7c6bc 100644
---- a/arch/x86/include/asm/hw_irq.h
-+++ b/arch/x86/include/asm/hw_irq.h
-@@ -122,6 +122,7 @@ extern void smp_invalidate_interrupt(struct pt_regs *=
-);
- #else
- extern asmlinkage void smp_invalidate_interrupt(struct pt_regs *);
- #endif
-+extern asmlinkage void smp_reboot_interrupt(void);
- #endif
-=20
- extern void (*__initconst interrupt[NR_VECTORS-FIRST_EXTERNAL_VECTOR])(v=
-oid);
 diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-index af902c6..b8f9139 100644
+index b8f9139..d4789c8 100644
 --- a/arch/x86/kernel/ipipe.c
 +++ b/arch/x86/kernel/ipipe.c
-@@ -297,7 +297,7 @@ void __init __ipipe_enable_pipeline(void)
+@@ -290,7 +290,7 @@ void __init __ipipe_enable_pipeline(void)
 =20
  	ipipe_virtualize_irq(ipipe_root_domain,
- 			     ipipe_apic_vector_irq(REBOOT_VECTOR),
--			     (ipipe_irq_handler_t)&reboot_interrupt,
-+			     (ipipe_irq_handler_t)&smp_reboot_interrupt,
+ 			     ipipe_apic_vector_irq(IRQ_MOVE_CLEANUP_VECTOR),
+-			     (ipipe_irq_handler_t)&irq_move_cleanup_interrupt,
++			     (ipipe_irq_handler_t)&smp_irq_move_cleanup_interrupt,
  			     NULL,
  			     &__ipipe_ack_apic,
  			     IPIPE_STDROOT_MASK);
 
 
---------------enig64F8B47C56CD8712494D645B
+
+--------------
+
+PS:
+=2E..
+> [    0.005664] Checking 'hlt' instruction... OK.
+> [    0.020484] ACPI: Core revision 20090521
+> [    0.259694] ..TIMER: vector=3D0x30 apic1=3D0 pin1=3D2 apic2=3D-1 pin=
+2=3D-1
+> [    0.260001] ..MP-BIOS bug: 8254 timer not connected to IO-APIC
+
+This is an ipipe triggered oddity (if not bug), too. I'm seeing it over
+kvm as well, and it goes away when disabling ipipe. Does it ring some
+bell? Otherwise I will check this later.
+
+
+
+--------------enig316BD1572624BB1ED93874A6
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -124,10 +120,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkrHcmQACgkQitSsb3rl5xROKwCgh36pWBqBfz/nxGM5dTTVjBwi
-PzYAoM1nD7JLYQsngm9QObdNwOMrLLaT
-=/Flj
+iEYEARECAAYFAkrHdXoACgkQitSsb3rl5xSOOwCeO4APFJszNn/bXKe6I0FNVHbc
+pbkAoNEq0DMaspTIfo8Mwkt2w9xR6JHp
+=R9nB
 -----END PGP SIGNATURE-----
 
---------------enig64F8B47C56CD8712494D645B--
+--------------enig316BD1572624BB1ED93874A6--
 
