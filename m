@@ -1,15 +1,18 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4AC661D5.9090101@domain.hid>
-References: <4AC2448B.1080500@domain.hid>
-	<1254396765.2703.234.camel@domain.hid>  <4AC62883.1080908@domain.hid>
-	<1254505304.2703.347.camel@domain.hid>  <4AC63CF0.7090001@domain.hid>
-	<1254511088.2703.367.camel@domain.hid>  <4AC661D5.9090101@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sat, 03 Oct 2009 00:20:39 +0200
-Message-Id: <1254522039.2703.382.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] RFC: 2.5 todo list.
+Message-ID: <4AC78C48.7020904@domain.hid>
+Date: Sat, 03 Oct 2009 19:39:20 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <4AC61F57.2010404@domain.hid> <4AC62804.7090903@domain.hid>
+	<4AC62B41.3050404@domain.hid> <4AC65172.8060900@domain.hid>
+	<4AC65CEB.7080107@domain.hid> <4AC65F5A.7040307@domain.hid>
+	<4AC65FFC.5040902@domain.hid> <4AC66211.3030204@domain.hid>
+	<4AC6667E.10704@domain.hid>
+In-Reply-To: <4AC6667E.10704@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig80E5179EBE4F13640E9A541A"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] RTDM fd support.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,116 +21,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Patrice Kadionik <patrice.kadionik@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-On Fri, 2009-10-02 at 22:25 +0200, Patrice Kadionik wrote:
-> Hi all,
-> Philippe Gerum a =C3=A9crit :=20
-> > On Fri, 2009-10-02 at 19:48 +0200, Gilles Chanteperdrix wrote:
-> >  =20
-> > > Philippe Gerum wrote:
-> > >    =20
-> > > > > Ok. So, if we add the core skin fdtable, this leaves us with tw=
-o items:
-> > > > > - signals in primary domain
-> > > > > - core skin fdtable
-> > > > >=20
-> > > > >        =20
-> > > > Ack. Add the following I-pipe stuff as well:
-> > > >=20
-> > > > - nios2 design upgrade. Those FPGA thingies require a bit of supp=
-ort to
-> > > > be included into the soft-core in order to run a real-time system=
-, like
-> > > > a high precision timer and some stable monotonic clock source. Pa=
-trice
-> > > > Kadionik (the guy who lives there: http://uuu.enseirb.fr/~kadioni=
-k/)
-> > > > sent me an update for the FPGA design I used to do the initial po=
-rt over
-> > > > nios2. This is mostly a matter of a couple of hours to fix and va=
-lidate
-> > > > the I-pipe core accordingly, though.
-> > > >      =20
-> > > Maybe you could ask for a hardware implementation of mul64by64_high=
-...
-> > >    =20
-> >=20
-> > It looks like custom instructions are restricted to input(32bit x 2) =
-=3D>
-> > output(32bit).
-> >  =20
-> Yes you're right. Just 32-bit HW multipliers at this time for the NIOS
-> II softcore.
-> > Patrice, do you confirm, or would it be possible to implement such
-> > instruction, that would return the highest 32 bits from a 64 x 64
-> > multiply op? We need this to speed up some arithmetics, especially on=
- a
-> > 50Mhz CPU.
-> >=20
-> >  =20
-> Yes, it would be always possible to develop such a specific multiplier
-> in VHDL . I just have a doubt to integrate it as a NIOS II custom
-> instruction...
-> > If we can't, well, I will likely have to subject myself to write a sm=
-all
-> > assembly block doing just this, because gcc's output is likely not go=
-ing
-> > to look like the way Gilles wants.
-> >=20
-> >  =20
-> You have in the NIOS II Instruction Set Reference the multiply
-> extended (mulxuu...) instruction for this at this time.
->=20
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig80E5179EBE4F13640E9A541A
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Ok, let's go the assembly way.
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Then please summarize again what you want change from the user's POV (=
+fd
+>> range and arbitration, I guess, but also their scope?)
+>=20
+> Basically, when going from user-space to kernel-space, instead of a
+> simple translation, currently done with an addition in user-space for
+> most services, in kernel-space for select, there is a hash lookup, done=
+
+> in kernel-space.
+>=20
+>  and what impact
+>> that will have on the library and kernel ABIs.
+>=20
+> The impact on the ABI is that we no longer do the translation using
+> addition/substraction. If we broke all at once in version 2.5.x, we
+> could not run a 2.5.x-1 user-space support that does the
+> addition/substraction, with a 2.5.x kernel-space support which has the
+> unified file descriptors abstraction.
+>=20
+>  What would be part of
+>> step 1, what of step 2 later in 2.5.x?
+>=20
+> Step 1 is adding the fdtable, use it in the rtdm and posix skin before
+> returning a fd to user-space, and when getting an fd from user-space.
+> Remove the translation by addition/substraction in the rtdm part of
+> libpthread_rt.
+
+I assume this mapping will already make user-visible fds process-local,
+right?
+
+BTW, one downside of pushing the translation into the kernel part of the
+skins is that POSIX borderline threads will pay via an additional
+syscall + a futile lookup in the Xenomai fdtable. So far we can dispatch
+ very cheaply. On the other hand, POSIX users who care about performance
+could also user __real_* or avoid the automatic wrapping.
 
 >=20
-> Cheers,
+> Step 2 is replacing the rtdm and posix registries with an unified fd
+> support based on the fdtable, the real kernel-space file descriptors (I=
+
+> mean, the one which really belong to a kernel-space app) would be
+> implemented using a global fdtable. Duplicate the fdtable at fork, etc.=
+=2E.
 >=20
-> Patrice
-> > > > - powerpc32 updates for 2.6.30. Mainly to merge the once experime=
-ntal
-> > > > bits that prevent most alignment faults from triggering a seconda=
-ry mode
-> > > > switch. Andreas told me this works like a charm on 83xx, and I di=
-d not
-> > > > see any issue on 52xx, 85xx or 86xx either.
-> > > >=20
-> > > > - probably blackfin updates. I need to have a closer look, but I'=
-m
-> > > > afraid I will have to resync with mainline before 2.5.0 is out. B=
-lackfin
-> > > > folks never sleep it seems.
-> > > >=20
-> > > > - x86* updates to issue patches for the 2.6.30-stable and 2.6.31-=
-stable
-> > > > series.
-> > > >=20
-> > > > You may have a few ARM patches brewing as well?
-> > > >      =20
-> > > Actually yes. The "pic mute" feature was disabled on AT91 because i=
-t was
-> > > causing latency peaks, but I plan to enable it ultimately. I think =
-the
-> > > latency peaks were due to the fact that I was testing a 2.4 with th=
-e bug
-> > > which we fixed in 2.4.9.1, I just need to check that. And if pic mu=
-te
-> > > works on AT91, then I would implement it for other SOCs. And an upg=
-rade
-> > > to 2.6.31 would be fine too.
-> > >=20
-> > >    =20
-> >=20
-> > Ok. How many interrupt controllers would be impacted by the PIC mute
-> > feature?
-> >=20
-> >  =20
->=20
---=20
-Philippe.
+
+OK, if you are willing to draft a prototype for step 1, I'm open to
+discuss it. My requirements would be:
+ - per-process fdtables (and locks) for the first level lookup
+ - the second level lookup should be limited to device creation; simply
+   keep a permanent reference to the rtdm_context in the fdtable
+
+Jan
 
 
+--------------enig80E5179EBE4F13640E9A541A
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkrHjE0ACgkQitSsb3rl5xRTOwCeJE0DcB9bW+/Mwo4kzbsu3Lrr
+AUQAnRbAaIC5ddzTKKPEV9xaduODErHW
+=ROe8
+-----END PGP SIGNATURE-----
+
+--------------enig80E5179EBE4F13640E9A541A--
 
