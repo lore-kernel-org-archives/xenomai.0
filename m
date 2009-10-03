@@ -1,14 +1,12 @@
-Message-ID: <4ABCDC4B.6000303@domain.hid>
-Date: Fri, 25 Sep 2009 17:05:47 +0200
+Message-ID: <4AC72281.9090901@domain.hid>
+Date: Sat, 03 Oct 2009 12:08:01 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <181804936ABC2349BE503168465576460C3AE7CB@exchserver.basler.com>		<4ABBCD13.2000209@domain.hid>		<181804936ABC2349BE503168465576460C3AE9C1@domain.hid>
-	<4ABC709B.6090005@domain.hid>
-	<181804936ABC2349BE503168465576460C3AEC94@domain.hid>
-In-Reply-To: <181804936ABC2349BE503168465576460C3AEC94@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <47a3101a0910021728p63da56f7g59edabc521cc4dfe@domain.hid>
+In-Reply-To: <47a3101a0910021728p63da56f7g59edabc521cc4dfe@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Printf stops working after receiving signal.
+Subject: Re: [Xenomai-help] Xenomai on gumstix
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,22 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steve Deiters <SteveDeiters@domain.hid>
+To: Linus Casassa <linus@domain.hid>
 Cc: xenomai@xenomai.org
 
-Steve Deiters wrote:
-> This is the name of the patch from the Xenomai source package it
-> installs: adeos-ipipe-2.6.24.6-powerpc-DENX-2.4-03.patch.
+Linus Casassa wrote:
+> It works!
 > 
-> I checked the adeos download site
-> (http://download.gna.org/adeos/patches/v2.6/powerpc/older/) and there is
-> no newer one listed for this version of the kernel.
+> But I notice that the frequency is bad configured.
+> 
+> I am using the trivial-periodic example.
+> http://www.xenomai.org/documentation/xenomai-2.4/html/api/trivial-periodic_8c-example.html
+> 
+> I had to change
+> rt_task_set_periodic(NULL, TM_NOW, 1000000000);
+> to
+> rt_task_set_periodic(NULL, TM_NOW, 1000);
+> to get 1 second.
+> 
+> How can I fix this?
 
-Ok. I did not know that a patch for this version of the kernel was
-included in xenomai 2.4.9.1. But it is seems to have the bug that was
-fixed in later releases. Anyway, I will let Philippe answer you from there.
+You probably selected a periodic timer for the native skin. The example
+is made for the aperiodic timer.
 
 -- 
-                                          Gilles
-
+					    Gilles.
 
