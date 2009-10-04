@@ -1,15 +1,10 @@
-Message-ID: <4AC77576.9070700@domain.hid>
-Date: Sat, 03 Oct 2009 18:01:58 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Sat, 3 Oct 2009 18:58:06 -0700
+From: Joaquin Rapela <rapela@domain.hid>
+Message-ID: <20091004015806.GA31497@domain.hid>
 MIME-Version: 1.0
-References: <4AC5E895.8010107@domain.hid> <4AC5F49E.3070608@domain.hid>
-	<4AC5FEAD.7000608@domain.hid>
-In-Reply-To: <4AC5FEAD.7000608@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig316BD1572624BB1ED93874A6"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Freeze on SMP x86-64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [Xenomai-help] kernel panic & quick build guide
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,111 +14,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Roman Pisl <rpisl@domain.hid>
-Cc: xenomai@xenomai.org
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig316BD1572624BB1ED93874A6
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-Roman Pisl wrote:
-> On 2.10.2009 14:39, Gilles Chanteperdrix wrote:
->> Roman Pisl wrote:
->>> Hello,
->>> I just tried x86-64 SMP Linux/Xenomai on my workstation (Intel Core2
->>> Quad) but it freezes immediately after latency test or clocktest is
->>> started. It freezes even during the boot, when Xenomai debbuging is
->>> enabled.
->>>
->>> The same kernel binary runs seamlessly in KVM on the same machine.
->>>
->>> When I completely disable ACPI, the kernel recognizes only one CPU an=
-d
->>> the latency test works.
->>>
->>> The same configuration but for 32bit x86 also runs without freeze.
->>>
->>> Do you have any ideas?
->>
->> Yes. As we repeated many times.
->> Tell us the versions of Xenomai and of the I-pipe patch you use.
->> Send us your .config
->> Manage to get the kernel console output (using a serial cable connecte=
-d
->> to another PC, or the netconsole, some people even used to send us
->> photos about kernel crashes).
->>
->=20
-> I send dmesg output for both 32 and 64 bit. Unfortunately it just
-> freezes with no kernel panic output. When Xenomai debugging is enabled,=
-
-> the kernel freezes after Xenomai is initialized (last message: Xenomai:=
-
-> starting RTDM services).
-
-Does this patch make any difference?
-
-Jan
-
-------->
-
-x86: Fix irq_move_cleanup virtualization
-
-Call the right function and avoid a recursion when this interrupt
-triggers.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
-
- arch/x86/kernel/ipipe.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-index b8f9139..d4789c8 100644
---- a/arch/x86/kernel/ipipe.c
-+++ b/arch/x86/kernel/ipipe.c
-@@ -290,7 +290,7 @@ void __init __ipipe_enable_pipeline(void)
-=20
- 	ipipe_virtualize_irq(ipipe_root_domain,
- 			     ipipe_apic_vector_irq(IRQ_MOVE_CLEANUP_VECTOR),
--			     (ipipe_irq_handler_t)&irq_move_cleanup_interrupt,
-+			     (ipipe_irq_handler_t)&smp_irq_move_cleanup_interrupt,
- 			     NULL,
- 			     &__ipipe_ack_apic,
- 			     IPIPE_STDROOT_MASK);
+To: xenomai@xenomai.org
+Cc: Nadav Ivzan <ivzan@domain.hid>
 
 
+Hello list,
 
---------------
+I am following the "Xenomai quick build guide" http://www.xenomai.org/index.php/Xenomai_quick_build_quide to install xenomai version 2.4.4 with linux kernel 2.6.25.11. I am running ubuntu on an IBM Thinkpad Z60t. When I try to boot the
+2.6.25.11-xenomai-2.4.4 image I get the following kernel panic error: 
 
-PS:
-=2E..
-> [    0.005664] Checking 'hlt' instruction... OK.
-> [    0.020484] ACPI: Core revision 20090521
-> [    0.259694] ..TIMER: vector=3D0x30 apic1=3D0 pin1=3D2 apic2=3D-1 pin=
-2=3D-1
-> [    0.260001] ..MP-BIOS bug: 8254 timer not connected to IO-APIC
+> Please append a correct "root=" boot options; here are teh available partitions:
+> 0100    65536 ram0 (driver?)
+> 0101    65536 ram1 (driver?)
+...
+> 0300 78150744 hda driver: ide-disk
+> 0301    76670181 hda1
+> 0302           1 hda2
+> 0305     1477948 hda5
+>
+> Kernel panic - not syncing: VFS: Unable to mount root fs on unkown-block (0,0)
 
-This is an ipipe triggered oddity (if not bug), too. I'm seeing it over
-kvm as well, and it goes away when disabling ipipe. Does it ring some
-bell? Otherwise I will check this later.
+My xenomai entry in /boot/grub/menu.lst is:
 
+> title		kernel 2.6.25.11 with xenomai 2.4.4 and Ubuntu 8.04
+> root		(hd0,0)
+> kernel	/boot/vmlinuz-2.6.25.11-xenomai-2.4.4 root=/dev/sda1 ro xeno_nucleus.xenomai_gid=1001
 
+I googled this problem, and the main suggestion that I found is to compile my
+hard disk drivers not as a module, but compile it into the kernel itself. I am
+not sure if I am doing this correctly. In an attempt to do this, I selected the
+following options in menuconfig:
 
---------------enig316BD1572624BB1ED93874A6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+> Device Drivers  --->  SCSI device support  --->   <*> SCSI disk support
+(because my disk is SCSI)
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+> Device Drivers --->  ATA/ATAPI/MFM/RLL support  --->   Include IDE/ATA-2 DISK
+> support 
 
-iEYEARECAAYFAkrHdXoACgkQitSsb3rl5xSOOwCeO4APFJszNn/bXKe6I0FNVHbc
-pbkAoNEq0DMaspTIfo8Mwkt2w9xR6JHp
-=R9nB
------END PGP SIGNATURE-----
+> In the section   *** PCI IDE chipsets support *** of Device Drivers ---> I
+> compiled into the kernel all the drivers that were marked as modules.
 
---------------enig316BD1572624BB1ED93874A6--
+> In the section File systems  ---> I compiled into the kernel
+> <*> Ext3 journalling file system support
+> [*]   Ext3 extended attributes
+> [*]     Ext3 POSIX Access Control Lists
+> [*]     Ext3 Security Labels
+
+Am I missing an important options?
+
+Some info about my computer:
+
+> Thinkpad Z60t running Ubuntu 8.04.
+
+> # uname -a
+> Linux guest-wireless-204-140-139-048.usc.edu 2.6.24-24-generic #1 SMP Fri Jun 5 10:34:09 UTC 2009 i686 GNU/Linux
+
+My hard disk is a:
+
+> # lshw -C disk
+>
+>   *-disk                  
+>        description: ATA Disk
+>        product: TOSHIBA MK8032GS
+>        vendor: Toshiba
+>        physical id: 0
+>        bus info: scsi@domain.hid
+>        logical name: /dev/sda
+>        version: AS11
+>        serial: 95LX0568T
+>        size: 74GiB (80GB)
+>        capabilities: partitioned partitioned:dos
+>        configuration: ansiversion=5 signature=cccdcccd
+ 
+I would greatly appreciate any hint.
+
+Cordially, Joaquin
+
+-- 
+Joaquin Rapela
+PhD Student, Electrical Engineering
+University of Southern California
+Los Angeles, CA 90089-2520
+tel/fax: (213) 821-2070
+http://www-scf.usc.edu/~rapela
+----------------------------------
+
+"Everyone believes himself a priori to be perfectly free, even in his
+ individual actions, and thinks that at every moment he can commence another
+ manner of life ... But a posteriori, through experience, he finds to his
+ astonishment that he is not free, but subjected to necessity, that in spite of
+ all his resolutions and reflections he does not change his conduct, and that
+ from the beginning of his life to the end of it, he must carry out the very
+ character which he himself condemns."
+                                                             The Wisdom of Life
+                                                            Arthur Schopenhauer
 
