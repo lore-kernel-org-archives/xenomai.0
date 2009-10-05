@@ -1,10 +1,12 @@
-Date: Mon, 5 Oct 2009 10:39:15 +0800 (CST)
-From: han <hshouqian@domain.hid>
-Message-ID: <11140985.42301254710355962.JavaMail.coremail@domain.hid>
+Message-ID: <4AC9B7CC.6020503@domain.hid>
+Date: Mon, 05 Oct 2009 11:09:32 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_11285_19579904.1254710355961"
-Subject: [Xenomai-help] unknown symbol __fixunsdfdi
+References: <11140985.42301254710355962.JavaMail.coremail@domain.hid>
+In-Reply-To: <11140985.42301254710355962.JavaMail.coremail@domain.hid>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-help] unknown symbol __fixunsdfdi
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,62 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: han <hshouqian@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-------=_Part_11285_19579904.1254710355961
-Content-Type: text/plain; charset=gbk
-Content-Transfer-Encoding: base64
+han wrote:
+>     Hello everyone！
+> I'm Porting a rtai/linux application to xenomai/linux.  Now I come across a problem：
+> when I compile the kernel module of my program，I find a WARNING,
+>                     WARNING：“__fixunsdfdi”[freqmod.ko] undefined！
+> after compiling，I  insmod the module xeno_native.ko，
+> then insmod my kernel module freqmod.ko，then I come across an error：
+>             insmod:error inserting 'freqmod.ko':-1 Unknown symbol in module
+>     dmesg，it tells me: 
+>                      unknown symbol __fixunsdfdi。
+>  
+>    Before being portted to xenomai/linux (linux-2.6.24,xenomai-2.4.3,gcc-4.1.1)，
+> it run ok in rtai/linux （linux-2.6.24，rtai-3.7，gcc-4.1.1），
+> and I only transport the RTAI API to Xeno's native API. So what's wrong?  I'm looking forward to your answers! 
+>      Thank you very much !
 
-ICAgIEhlbGxvIGV2ZXJ5b25lo6FJJ20gUG9ydGluZyBhIHJ0YWkvbGludXggYXBwbGljYXRpb24g
-dG8geGVub21haS9saW51eC4gIE5vdyBJIGNvbWUgYWNyb3NzIGEgcHJvYmxlbaO6d2hlbiBJIGNv
-bXBpbGUgdGhlIGtlcm5lbCBtb2R1bGUgb2YgbXkgcHJvZ3JhbaOsSSBmaW5kIGEgV0FSTklORywK
-ICAgICAgICAgICAgICAgICAgICBXQVJOSU5Ho7qhsF9fZml4dW5zZGZkaaGxW2ZyZXFtb2Qua29d
-IHVuZGVmaW5lZKOhCmFmdGVyIGNvbXBpbGluZ6OsSSAgaW5zbW9kIHRoZSBtb2R1bGUgeGVub19u
-YXRpdmUua2+jrHRoZW4gaW5zbW9kIG15IGtlcm5lbCBtb2R1bGUgZnJlcW1vZC5rb6OsdGhlbiBJ
-IGNvbWUgYWNyb3NzIGFuIGVycm9yo7oKICAgICAgICAgICAgaW5zbW9kOmVycm9yIGluc2VydGlu
-ZyAnZnJlcW1vZC5rbyc6LTEgVW5rbm93biBzeW1ib2wgaW4gbW9kdWxlCiAgICBkbWVzZ6OsaXQg
-dGVsbHMgbWU6IAogICAgICAgICAgICAgICAgICAgICB1bmtub3duIHN5bWJvbCBfX2ZpeHVuc2Rm
-ZGmhowogCiAgIEJlZm9yZSBiZWluZyBwb3J0dGVkIHRvIHhlbm9tYWkvbGludXggKGxpbnV4LTIu
-Ni4yNCx4ZW5vbWFpLTIuNC4zLGdjYy00LjEuMSmjrGl0IHJ1biBvayBpbiBydGFpL2xpbnV4IKOo
-bGludXgtMi42LjI0o6xydGFpLTMuN6OsZ2NjLTQuMS4xo6mjrGFuZCBJIG9ubHkgdHJhbnNwb3J0
-IHRoZSBSVEFJIEFQSSB0byBYZW5vJ3MgbmF0aXZlIEFQSS4gU28gd2hhdCdzIHdyb25nPyAgSSdt
-IGxvb2tpbmcgZm9yd2FyZCB0byB5b3VyIGFuc3dlcnMhIAogICAgIFRoYW5rIHlvdSB2ZXJ5IG11
-Y2ggIQ==
-------=_Part_11285_19579904.1254710355961
-Content-Type: text/html; charset=gbk
-Content-Transfer-Encoding: base64
+You are using FPU in kernel-space. It is bad. If you really want to do
+that, you should import that function from the static libgcc.
 
-Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7SGVsbG8mbmJzcDtldmVyeW9uZaOhSSdtJm5ic3A7UG9y
-dGluZyZuYnNwO2EmbmJzcDtydGFpL2xpbnV4Jm5ic3A7YXBwbGljYXRpb24mbmJzcDt0byZuYnNw
-O3hlbm9tYWkvbGludXguJm5ic3A7Jm5ic3A7Tm93Jm5ic3A7SSZuYnNwO2NvbWUmbmJzcDthY3Jv
-c3MmbmJzcDthJm5ic3A7cHJvYmxlbaO6d2hlbiZuYnNwO0kmbmJzcDtjb21waWxlJm5ic3A7dGhl
-Jm5ic3A7a2VybmVsJm5ic3A7bW9kdWxlJm5ic3A7b2YmbmJzcDtteSZuYnNwO3Byb2dyYW2jrEkm
-bmJzcDtmaW5kJm5ic3A7YSZuYnNwO1dBUk5JTkcsPGJyPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNw
-OyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZu
-YnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwO1dBUk5JTkejuqGwX19maXh1
-bnNkZmRpobFbZnJlcW1vZC5rb10mbmJzcDt1bmRlZmluZWSjoTxicj5hZnRlciZuYnNwO2NvbXBp
-bGluZ6OsSSZuYnNwOyZuYnNwO2luc21vZCZuYnNwO3RoZSZuYnNwO21vZHVsZSZuYnNwO3hlbm9f
-bmF0aXZlLmtvo6x0aGVuJm5ic3A7aW5zbW9kJm5ic3A7bXkmbmJzcDtrZXJuZWwmbmJzcDttb2R1
-bGUmbmJzcDtmcmVxbW9kLmtvo6x0aGVuJm5ic3A7SSZuYnNwO2NvbWUmbmJzcDthY3Jvc3MmbmJz
-cDthbiZuYnNwO2Vycm9yo7o8YnI+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7
-Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7aW5zbW9kOmVycm9yJm5ic3A7aW5z
-ZXJ0aW5nJm5ic3A7J2ZyZXFtb2Qua28nOi0xJm5ic3A7VW5rbm93biZuYnNwO3N5bWJvbCZuYnNw
-O2luJm5ic3A7bW9kdWxlPGJyPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwO2RtZXNno6xpdCZuYnNw
-O3RlbGxzJm5ic3A7bWU6Jm5ic3A7PGJyPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZu
-YnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNw
-OyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwO3Vua25vd24mbmJzcDtzeW1ib2wm
-bmJzcDtfX2ZpeHVuc2RmZGmhozxicj4mbmJzcDs8YnI+Jm5ic3A7Jm5ic3A7Jm5ic3A7QmVmb3Jl
-Jm5ic3A7YmVpbmcmbmJzcDtwb3J0dGVkJm5ic3A7dG8mbmJzcDt4ZW5vbWFpL2xpbnV4Jm5ic3A7
-KGxpbnV4LTIuNi4yNCx4ZW5vbWFpLTIuNC4zLGdjYy00LjEuMSmjrGl0Jm5ic3A7cnVuJm5ic3A7
-b2smbmJzcDtpbiZuYnNwO3J0YWkvbGludXgmbmJzcDujqGxpbnV4LTIuNi4yNKOscnRhaS0zLjej
-rGdjYy00LjEuMaOpo6xhbmQmbmJzcDtJJm5ic3A7b25seSZuYnNwO3RyYW5zcG9ydCZuYnNwO3Ro
-ZSZuYnNwO1JUQUkmbmJzcDtBUEkmbmJzcDt0byZuYnNwO1hlbm8ncyZuYnNwO25hdGl2ZSZuYnNw
-O0FQSS4mbmJzcDtTbyZuYnNwO3doYXQncyZuYnNwO3dyb25nPyZuYnNwOyZuYnNwO0knbSZuYnNw
-O2xvb2tpbmcmbmJzcDtmb3J3YXJkJm5ic3A7dG8mbmJzcDt5b3VyJm5ic3A7YW5zd2VycyEmbmJz
-cDs8YnI+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7VGhhbmsmbmJzcDt5b3UmbmJzcDt2
-ZXJ5Jm5ic3A7bXVjaCZuYnNwOyE8YnI+PGJyPjxzcGFuIHRpdGxlPSJuZXRlYXNlZm9vdGVyIi8+
-PGhyLz4KPGEgaHJlZj0iaHR0cDovL25ld3MuMTYzLmNvbS9tYWRlaW5jaGluYS9pbmRleC5odG1s
-P2Zyb209bWFpbGZvb3RlciI+ItbQufrWxtTsIiy9ssr21tC5+jYwxOrN+crCPC9hPgo8L3NwYW4+
-------=_Part_11285_19579904.1254710355961--
+-- 
+                                          Gilles
 
 
