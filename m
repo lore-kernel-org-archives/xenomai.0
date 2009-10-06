@@ -1,57 +1,88 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 24 Sep 2009 18:10:41 -0500
-Message-ID: <181804936ABC2349BE503168465576460C3AE9C1@domain.hid>
-References: <181804936ABC2349BE503168465576460C3AE7CB@exchserver.basler.com>
-	<4ABBCD13.2000209@domain.hid>
-From: "Steve Deiters" <SteveDeiters@domain.hid>
-Subject: Re: [Xenomai-help] Printf stops working after receiving signal.
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1254853590.3718.28.camel@domain.hid>
+References: <4AC2448B.1080500@domain.hid>
+	<1254396765.2703.234.camel@domain.hid>  <4AC62883.1080908@domain.hid>
+	<1254505304.2703.347.camel@domain.hid>
+	<1254506494.8199.46.camel@domain.hid>
+	<1254510029.2703.355.camel@domain.hid>
+	<1254853590.3718.28.camel@domain.hid>
+Content-Type: text/plain
+Date: Tue, 06 Oct 2009 22:10:56 +0200
+Message-Id: <1254859856.2784.251.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] RFC: 2.5 todo list.
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Andreas Glatz <andreasglatz@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-I upgraded to Xenomai 2.4.9.1 and get the same behavior.  Any other
-ideas as to what may be causing this?
+On Tue, 2009-10-06 at 14:26 -0400, Andreas Glatz wrote:
+> On Fri, 2009-10-02 at 21:00 +0200, Philippe Gerum wrote:
+> > On Fri, 2009-10-02 at 14:01 -0400, Andreas Glatz wrote:
+> > > > 
+> > > > - powerpc32 updates for 2.6.30. Mainly to merge the once experimental
+> > > > bits that prevent most alignment faults from triggering a secondary mode
+> > > > switch. Andreas told me this works like a charm on 83xx, and I did not
+> > > > see any issue on 52xx, 85xx or 86xx either.
+> > > > 
+> > > 
+> > > Can I get a version of that patch for testing? Is it in your git
+> > > repository?
+> > 
+> > I just pushed this commit to my remote tree (ipipe-2.6.30-powerpc
+> > branch); it should appear in a few hours once mirrored (cron job).
+> > 
+> 
+> I finally had a chance to test the ipipe-2.6.30-powerpc version
+> from the git repository. Unfortunately, I noticed that our application
+> dies after some time and that this behaviour is related to that 
+> alignment patch (if I take it out everything runs fine for > 2 days).
+> 
+> Currently I'm investigating the reasons for that crash. It has
+> something to do with floating point registers not being restored
+> properly. Our alignment exceptions are mainly triggered by accesses 
+> to unaligned floating point data.
 
-Thanks.
+Does it work any better with this patch in?
+
+diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
+index 32cc3df..a04a5e3 100644
+--- a/arch/powerpc/kernel/process.c
++++ b/arch/powerpc/kernel/process.c
+@@ -80,7 +80,9 @@ void flush_fp_to_thread(struct task_struct *tsk)
+ 		 * FPU, and then when we get scheduled again we would store
+ 		 * bogus values for the remaining FP registers.
+ 		 */
+-		ipipe_preempt_disable(flags);
++		if (ipipe_root_domain_p)
++			preempt_disable();
++		local_irq_save_hw_cond(flags);
+ 		if (tsk->thread.regs->msr & MSR_FP) {
+ #ifdef CONFIG_SMP
+ 			/*
+@@ -94,7 +96,9 @@ void flush_fp_to_thread(struct task_struct *tsk)
+ #endif
+ 			giveup_fpu(tsk);
+ 		}
+- 		ipipe_preempt_enable(flags);
++		local_irq_restore_hw_cond(flags);
++		if (ipipe_root_domain_p)
++			preempt_enable();
+ 	}
+ }
+ 
+
+> 
+> Andreas
+-- 
+Philippe.
 
 
-
------Original Message-----
-From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
-Sent: Thursday, September 24, 2009 2:49 PM
-To: Steve Deiters
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] Printf stops working after receiving signal.
-
-Steve Deiters wrote:
-> I have a simple little test program, attached below.  When I hit CTL-C
-
-> to break the program, not all of the "finished" lines will print.  If=20
-> I remove either the rt_task_shadow call or the sigwait at the end, it=20
-> will then print all of them.  Adding a fflush(stdout) to the end does=20
-> nothing to help it.
->=20
-> I'm not sure if there's some interaction with the Xenomai domain I am=20
-> just missing which is causing the print statements to be dropped.
->=20
-> This is running on a PowerPC kernel 2.6.24 with Xenoami 2.4.9.
-
-Xenomai 2.4.9 has no I-pipe patch for Linux 2.6.24 for PowerPC. And you
-should be using Xenomai 2.4.9.1 and one of the patches it contains.
-Earlier patches and earlier revisions are buggy.
-
-
---=20
-					    Gilles.
 
