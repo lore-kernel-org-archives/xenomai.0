@@ -1,18 +1,16 @@
-Message-ID: <4AC78C48.7020904@domain.hid>
-Date: Sat, 03 Oct 2009 19:39:20 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <4AC61F57.2010404@domain.hid> <4AC62804.7090903@domain.hid>
-	<4AC62B41.3050404@domain.hid> <4AC65172.8060900@domain.hid>
-	<4AC65CEB.7080107@domain.hid> <4AC65F5A.7040307@domain.hid>
-	<4AC65FFC.5040902@domain.hid> <4AC66211.3030204@domain.hid>
-	<4AC6667E.10704@domain.hid>
-In-Reply-To: <4AC6667E.10704@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig80E5179EBE4F13640E9A541A"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] RTDM fd support.
+From: Andreas Glatz <andreasglatz@domain.hid>
+In-Reply-To: <1254510029.2703.355.camel@domain.hid>
+References: <4AC2448B.1080500@domain.hid>
+	<1254396765.2703.234.camel@domain.hid>  <4AC62883.1080908@domain.hid>
+	<1254505304.2703.347.camel@domain.hid>
+	<1254506494.8199.46.camel@domain.hid>
+	<1254510029.2703.355.camel@domain.hid>
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+Date: Tue, 06 Oct 2009 14:26:30 -0400
+Message-Id: <1254853590.3718.28.camel@domain.hid>
+Mime-Version: 1.0
+Subject: Re: [Xenomai-core] RFC: 2.5 todo list.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -21,83 +19,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig80E5179EBE4F13640E9A541A
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+On Fri, 2009-10-02 at 21:00 +0200, Philippe Gerum wrote:
+> On Fri, 2009-10-02 at 14:01 -0400, Andreas Glatz wrote:
+> > > 
+> > > - powerpc32 updates for 2.6.30. Mainly to merge the once experimental
+> > > bits that prevent most alignment faults from triggering a secondary mode
+> > > switch. Andreas told me this works like a charm on 83xx, and I did not
+> > > see any issue on 52xx, 85xx or 86xx either.
+> > > 
+> > 
+> > Can I get a version of that patch for testing? Is it in your git
+> > repository?
+> 
+> I just pushed this commit to my remote tree (ipipe-2.6.30-powerpc
+> branch); it should appear in a few hours once mirrored (cron job).
+> 
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Then please summarize again what you want change from the user's POV (=
-fd
->> range and arbitration, I guess, but also their scope?)
->=20
-> Basically, when going from user-space to kernel-space, instead of a
-> simple translation, currently done with an addition in user-space for
-> most services, in kernel-space for select, there is a hash lookup, done=
+I finally had a chance to test the ipipe-2.6.30-powerpc version
+from the git repository. Unfortunately, I noticed that our application
+dies after some time and that this behaviour is related to that 
+alignment patch (if I take it out everything runs fine for > 2 days).
 
-> in kernel-space.
->=20
->  and what impact
->> that will have on the library and kernel ABIs.
->=20
-> The impact on the ABI is that we no longer do the translation using
-> addition/substraction. If we broke all at once in version 2.5.x, we
-> could not run a 2.5.x-1 user-space support that does the
-> addition/substraction, with a 2.5.x kernel-space support which has the
-> unified file descriptors abstraction.
->=20
->  What would be part of
->> step 1, what of step 2 later in 2.5.x?
->=20
-> Step 1 is adding the fdtable, use it in the rtdm and posix skin before
-> returning a fd to user-space, and when getting an fd from user-space.
-> Remove the translation by addition/substraction in the rtdm part of
-> libpthread_rt.
+Currently I'm investigating the reasons for that crash. It has
+something to do with floating point registers not being restored
+properly. Our alignment exceptions are mainly triggered by accesses 
+to unaligned floating point data.
 
-I assume this mapping will already make user-visible fds process-local,
-right?
-
-BTW, one downside of pushing the translation into the kernel part of the
-skins is that POSIX borderline threads will pay via an additional
-syscall + a futile lookup in the Xenomai fdtable. So far we can dispatch
- very cheaply. On the other hand, POSIX users who care about performance
-could also user __real_* or avoid the automatic wrapping.
-
->=20
-> Step 2 is replacing the rtdm and posix registries with an unified fd
-> support based on the fdtable, the real kernel-space file descriptors (I=
-
-> mean, the one which really belong to a kernel-space app) would be
-> implemented using a global fdtable. Duplicate the fdtable at fork, etc.=
-=2E.
->=20
-
-OK, if you are willing to draft a prototype for step 1, I'm open to
-discuss it. My requirements would be:
- - per-process fdtables (and locks) for the first level lookup
- - the second level lookup should be limited to device creation; simply
-   keep a permanent reference to the rtdm_context in the fdtable
-
-Jan
-
-
---------------enig80E5179EBE4F13640E9A541A
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkrHjE0ACgkQitSsb3rl5xRTOwCeJE0DcB9bW+/Mwo4kzbsu3Lrr
-AUQAnRbAaIC5ddzTKKPEV9xaduODErHW
-=ROe8
------END PGP SIGNATURE-----
-
---------------enig80E5179EBE4F13640E9A541A--
+Andreas
 
