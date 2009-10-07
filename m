@@ -1,12 +1,12 @@
-Message-ID: <4AE08982.8050501@domain.hid>
-Date: Thu, 22 Oct 2009 18:34:10 +0200
+Message-ID: <4ACCB60C.2040007@domain.hid>
+Date: Wed, 07 Oct 2009 17:38:52 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <0000AEB3.4ADF1568@domain.hid>
-In-Reply-To: <0000AEB3.4ADF1568@domain.hid>
+References: <DIIE.000001A50000AC82@domain.hid>
+In-Reply-To: <DIIE.000001A50000AC82@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Re-2: :: rt_printf with daemonized task
+Subject: Re: [Xenomai-help] Re-8:  rt_printf with daemonized task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,88 +16,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "oliver.schlenker@domain.hid" <oliver.schlenker@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: oliver.schlenker@domain.hid
+Cc: xenomai@xenomai.org
 
 oliver.schlenker@domain.hid wrote:
-> -------- Original Message --------
-> Subject: Re: :: rt_printf with daemonized task (19-Okt-2009 16:00)
-> From:    Jan Kiszka <jan.kiszka@domain.hid>
-> To:      oliver.schlenker@domain.hid
-> 
->> If you move the definition of print_to_buffer right below this prototype
->> block, you would avoid having to add this prototype and you would have
->> likely generated a more reviewable patch. The large code movement below
->> is very hard to check regarding correctness as I do not see the actually
->> modified lines.
-> 
-> Ok, moved back definition of print_to_buffer to avoid large code movement
-> 
->>>  static void cleanup_buffer(struct print_buffer *buffer);
->>>  static void print_buffers(void);
->>> +static void forked_child_init(void);
->> Stray prototype.
-> 
-> deleted
-> 
->>>  
->>> +void rt_syslog(int priority, char *format, ...)
->>> +{
->>> +	va_list args;
->>> +
->>> +	va_start(args, format);
->>> +	print_to_buffer(RT_PRINT_SYSLOG_STREAM, priority, format, args);
->>> +	va_end(args);
->>> +
->>> +	return;
->> Unneeded return.
-> 
-> Deleted
-> 
->>> +}
->>> +
->>> +void rt_vsyslog(int priority, char *format, va_list args )
->>> +{
->>> +	print_to_buffer(RT_PRINT_SYSLOG_STREAM, priority, format, args);
->>> +
->>> +	return;
->> Here too.
-> 
-> Also deleted
-> 
->>> +}
->>> +
->>>  static void set_buffer_name(struct print_buffer *buffer, const char *name)
->>>  {
->>>  	int n;
->>>                      
->>>  
->>>  /* *** Deferred Output Management *** */
->>>  
->>> +static int print_to_buffer(FILE *stream, int priority,
->>> +							const char *format,va_list args)
->> When moving this function, please also indent this properly and take
->> care for a space after the ','.
-> 
-> should be correct now.
-> 
->> Jan
->>
->> -- 
->> Siemens AG, Corporate Technology, CT SE 2
->> Corporate Competence Center Embedded Linux
 > 
 > 
-> when patches are acked by you, should I do something with the patches
-> like sending to a special mailing list or is it ok to have them posted in
-> this list ?
+> As you expected, changing the syslog call from
+>     syslog( LOG_ERR | LOG_LOCAL4, head->text ); 
+> to
+>     syslog( LOG_ERR | LOG_LOCAL4, "%s", head->text ); 
+> 
+> did not change anything.
+> 
+> To track down the problem further, I have made a small test application :
+> 
+> #include <stdlib.h>
+> #include <stdio.h>
+> 
+> #include <native/task.h>
+> #include <native/timer.h>
+> #include <rtdk.h>
+> 
+> 
+> int main( int arc, char *argv[] )
+> {
+> int i;
+> 
+> rt_print_auto_init(1);
+> 
+> rt_printf("--------------- TEST RT-PRINTF  1 ------------\n");
+> 
+> 	sleep(1);
+> 
+> daemon(0,0);
+> 
+> 	rt_print_auto_init(1);
+> 
+> 	rt_printf("--------------- TEST RT-PRINTF  2 ------------\n");
+> 
+> 	sleep(10);
+> 
+> return(0);
+> }
+> 
+> 
+> 
+> This application gives the following results :
+> - If the daemon() function is not called, all rt_printf() do work well
+>   and output is shown in syslog
+> - If daemon() function is called, and first call to sleep(1) is omitted,
+>   there is no output in the syslog whatsoever.
+> - If daemon() function is called, and first call to sleep(1) is executed,
+>   there is output of the first rt_printf in the syslog but not of the second
+>   one.
+> 
+> I do not have any idea why daemonizing of the process is not giving
+> any output to the syslog.
 
-I was about to apply them to my tree and send out a git pull request to
-Philippe. Unfortunately I missed so far that your mail client or gateway
-damaged the patch format seriously (the '@@' markers are all missing).
-So if you have a clean "diff -up" of your changes, please sent them in a
-tarball to me or via a proper mail client / account that keeps emails
-intact. Otherwise I would have to reconstruct all changes by hand...
+As you are already looking at rt_printf.c: __rt_print_init spawns a
+pthread that polls the internal queues and issues the output to stdout
+or whatever. On fork (or daemonize), this thread is not replicated. So
+the child process simply has no printing thread.
+
+I think this should be fixable with a pthread_atfork hook, patches
+always welcome.
 
 Jan
 
