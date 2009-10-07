@@ -1,16 +1,11 @@
-Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
-Date: Mon, 19 Oct 2009 23:24:09 +0200
-References: <96eea0c80910151813v635d518dr6abd72986e2f07bd@domain.hid>
-	<96eea0c80910161648l1991b124w20ea9949e70f5ae0@domain.hid>
-	<200910171600.16265.berlemont.hauw@domain.hid>
-In-Reply-To: <200910171600.16265.berlemont.hauw@domain.hid>
+From: oliver.schlenker@domain.hid
+Date: Wed, 7 Oct 2009 15:20:24 +0000
+Message-ID: <DIIE.000001A50000AC82@domain.hid>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <200910192324.09986.berlemont.hauw@domain.hid>
-Subject: Re: [Xenomai-help] national instruments card and comedi-rtdm-dev
+Content-Type: text/plain;
+ charset="UTF-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai-help] Re-8:  rt_printf with daemonized task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,143 +15,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Peter Pastor <peter.pastor@domain.hid>
+To: gilles.chanteperdrix@xenomai.org
 Cc: xenomai@xenomai.org
 
-Hi,
+DQoNCg0KQXMgeW91IGV4cGVjdGVkLCBjaGFuZ2luZyB0aGUgc3lzbG9nIGNhbGwgZnJvbQ0KICAg
+IHN5c2xvZyggTE9HX0VSUiB8IExPR19MT0NBTDQsIGhlYWQtPnRleHQgKTsgDQp0bw0KICAgIHN5
+c2xvZyggTE9HX0VSUiB8IExPR19MT0NBTDQsICIlcyIsIGhlYWQtPnRleHQgKTsgDQoNCmRpZCBu
+b3QgY2hhbmdlIGFueXRoaW5nLg0KDQpUbyB0cmFjayBkb3duIHRoZSBwcm9ibGVtIGZ1cnRoZXIs
+IEkgaGF2ZSBtYWRlIGEgc21hbGwgdGVzdCBhcHBsaWNhdGlvbiA6DQoNCiNpbmNsdWRlIDxzdGRs
+aWIuaD4NCiNpbmNsdWRlIDxzdGRpby5oPg0KDQojaW5jbHVkZSA8bmF0aXZlL3Rhc2suaD4NCiNp
+bmNsdWRlIDxuYXRpdmUvdGltZXIuaD4NCiNpbmNsdWRlIDxydGRrLmg+DQoNCg0KaW50IG1haW4o
+IGludCBhcmMsIGNoYXIgKmFyZ3ZbXSApDQp7DQppbnQgaTsNCg0KcnRfcHJpbnRfYXV0b19pbml0
+KDEpOw0KDQpydF9wcmludGYoIi0tLS0tLS0tLS0tLS0tLSBURVNUIFJULVBSSU5URiAgMSAtLS0t
+LS0tLS0tLS1cbiIpOw0KDQoJc2xlZXAoMSk7DQoNCmRhZW1vbigwLDApOw0KDQoJcnRfcHJpbnRf
+YXV0b19pbml0KDEpOw0KDQoJcnRfcHJpbnRmKCItLS0tLS0tLS0tLS0tLS0gVEVTVCBSVC1QUklO
+VEYgIDIgLS0tLS0tLS0tLS0tXG4iKTsNCg0KCXNsZWVwKDEwKTsNCg0KcmV0dXJuKDApOw0KfQ0K
+DQoNCg0KVGhpcyBhcHBsaWNhdGlvbiBnaXZlcyB0aGUgZm9sbG93aW5nIHJlc3VsdHMgOg0KLSBJ
+ZiB0aGUgZGFlbW9uKCkgZnVuY3Rpb24gaXMgbm90IGNhbGxlZCwgYWxsIHJ0X3ByaW50ZigpIGRv
+IHdvcmsgd2VsbA0KICBhbmQgb3V0cHV0IGlzIHNob3duIGluIHN5c2xvZw0KLSBJZiBkYWVtb24o
+KSBmdW5jdGlvbiBpcyBjYWxsZWQsIGFuZCBmaXJzdCBjYWxsIHRvIHNsZWVwKDEpIGlzIG9taXR0
+ZWQsDQogIHRoZXJlIGlzIG5vIG91dHB1dCBpbiB0aGUgc3lzbG9nIHdoYXRzb2V2ZXIuDQotIElm
+IGRhZW1vbigpIGZ1bmN0aW9uIGlzIGNhbGxlZCwgYW5kIGZpcnN0IGNhbGwgdG8gc2xlZXAoMSkg
+aXMgZXhlY3V0ZWQsDQogIHRoZXJlIGlzIG91dHB1dCBvZiB0aGUgZmlyc3QgcnRfcHJpbnRmIGlu
+IHRoZSBzeXNsb2cgYnV0IG5vdCBvZiB0aGUgc2Vjb25kDQogIG9uZS4NCg0KSSBkbyBub3QgaGF2
+ZSBhbnkgaWRlYSB3aHkgZGFlbW9uaXppbmcgb2YgdGhlIHByb2Nlc3MgaXMgbm90IGdpdmluZw0K
+YW55IG91dHB1dCB0byB0aGUgc3lzbG9nLg0KDQoNCg0KT2xpdmVyDQoNCg0KDQoNCg0KLS0tLS0t
+LS0gT3JpZ2luYWwgTWVzc2FnZSAtLS0tLS0tLQ0KU3ViamVjdDogUmU6IFJlLTY6IFtYZW5vbWFp
+LWhlbHBdIHJ0X3ByaW50ZiB3aXRoIGRhZW1vbml6ZWQgdGFzayAoMDctT2t0LTIwMDkgMTU6NDkp
+DQpGcm9tOiAgICBHaWxsZXMgQ2hhbnRlcGVyZHJpeCA8Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVu
+b21haS5vcmc+DQpUbzogICAgICBvbGl2ZXIuc2NobGVua2VyQHNtbW90aW9uY29udHJvbC5kZQ0K
+DQo+IG9saXZlci5zY2hsZW5rZXJAc21tb3Rpb25jb250cm9sLmRlIHdyb3RlOg0KPiA+IA0KPiA+
+IA0KPiA+IGluIHRoZSBnbGliYyBkb2N1bWVudGF0aW9uIGl0J3Mgc3BlY2lmaWVkIGFzIGEgdm9p
+ZCBmdW5jdGlvbiA6DQo+ID4gDQo+ID4gMTguMi4yIHN5c2xvZywgdnN5c2xvZw0KPiA+IA0KPiA+
+IFRoZSBzeW1ib2xzIHJlZmVycmVkIHRvIGluIHRoaXMgc2VjdGlvbiBhcmUgZGVjbGFyZWQgaW4g
+dGhlIGZpbGUgc3lzbG9nLmguDQo+ID4g4oCUIEZ1bmN0aW9uOiB2b2lkIHN5c2xvZyAoaW50IGZh
+Y2lsaXR5X3ByaW9yaXR5LCBjaGFyICpmb3JtYXQsIC4uLikNCj4gDQo+IFNvLCB0aGUgZmlyc3Qg
+YXJndW1lbnQgaXMgYSBmb3JtYXQgc3RyaW5nPyBZb3Ugc2hvdWxkIHBhc3MgIiVzIiBmb2xsb3dl
+ZA0KPiBieSBoZWFkLT50ZXh0IHRoZW4sIG5vdCBoZWFkLT50ZXh0IGRpcmVjdGx5LiBJZiBoZWFk
+LT50ZXh0IGNvbnRhaW5zIHRoZQ0KPiAlIGNoYXJhY3RlcnMsIHlvdSB3aWxsIGdldCBlcnJvcnMu
+IEkgZG8gbm90IHRoaW5rIGZpeGluZyB0aGlzIHdpbGwgZml4DQo+IHlvdXIgaXNzdWVzIHRob3Vn
+aC4NCj4gDQo+IEkgaGF2ZSBubyBpZGVhIHdoeSBpdCBmYWlscy4gRGlkIHlvdSB0cnkgdG8gcHV0
+IGEgcHJpbnRmIGFzIHdlbGwgYXMgdGhlDQo+IHN5c2xvZyBjYWxsIHRvIGNoZWNrIHdoZXRoZXIg
+c3lzbG9nIGlzIHJlYWxseSBjYWxsZWQ/IEFyZSB5b3UgMTAwJSBzdXJlDQo+IHRoYXQgeW91IGRv
+IG5vdCBjbG9zZSBmaWxlIGRlc2NyaXB0b3JzIHdoZW4gZGFlbW9uaXppbmcgeW91ciBwcm9jZXNz
+Pw0KPiANCj4gDQo+IC0tIA0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICBHaWxsZXMNCj4gDQoNCg0KVG86IGdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3Jn
+DQpDYzogeGVub21haS1oZWxwQGduYS5vcmcNCg==
 
-On Saturday 17 October 2009 16:00:15 Alexis Berlemont wrote:
-> Hi,
->=20
-> On Saturday 17 October 2009 01:48:47 Peter Pastor wrote:
-> > Hey Alexis,
-> >
-> > >> That's because you did not retrieve the "comedi" branch, you are
-> > >> working
-> >
-> > the
-> >
-> > >> master branch which is left unused.
-> > >> You should create a branch on your local repository with the remote
-> >
-> > comedi
-> >
-> > >> branch as reference.
-> >
-> > Sorry... I managed to do it :) (I am new to git) However, I could not
-> > compile the kernel :(
-> >
-> > drivers/xenomai/comedi/intel/8255.c:50:47: error: macro
-> > "subdev_8255_interrupt" requires 2 arguments, but only 1 given
-> > drivers/xenomai/comedi/intel/8255.c:51: error: expected =E2=80=98=3D=E2=
-=80=99, =E2=80=98,=E2=80=99, =E2=80=98;=E2=80=99,
-> >  =E2=80=98asm=E2=80=99 or =E2=80=98__attribute__=E2=80=99 before =E2=80=
-=98{=E2=80=99 token
-> > drivers/xenomai/comedi/intel/8255.c: In function =E2=80=98do_config=E2=
-=80=99:
-> > drivers/xenomai/comedi/intel/8255.c:85: error: =E2=80=98CR_CW=E2=80=99 =
-undeclared (first
-> >  use in this function)
-> > drivers/xenomai/comedi/intel/8255.c:85: error: (Each undeclared
-> > identifier is reported only once
-> > drivers/xenomai/comedi/intel/8255.c:85: error: for each function it
-> > appears in.)
-> > drivers/xenomai/comedi/intel/8255.c:88: error: =E2=80=98CR_A_IO=E2=80=
-=99 undeclared
-> > (first use in this function)
-> > drivers/xenomai/comedi/intel/8255.c:90: error: =E2=80=98CR_B_IO=E2=80=
-=99 undeclared
-> > (first use in this function)
-> > drivers/xenomai/comedi/intel/8255.c:92: error: =E2=80=98CR_C_LO_IO=E2=
-=80=99 undeclared
-> > (first use in this function)
-> > drivers/xenomai/comedi/intel/8255.c:94: error: =E2=80=98CR_C_HI_IO=E2=
-=80=99 undeclared
-> > (first use in this function)
-> > drivers/xenomai/comedi/intel/8255.c:95: error: =E2=80=98_8255_CR=E2=80=
-=99 undeclared
-> > (first use in this function)
-> > drivers/xenomai/comedi/intel/8255.c: In function =E2=80=98subd_8255_ins=
-n_bits=E2=80=99:
-> > drivers/xenomai/comedi/intel/8255.c:146: error: =E2=80=98_8255_DATA=E2=
-=80=99 undeclared
-> > (first use in this function)
-> > drivers/xenomai/comedi/intel/8255.c:204:42: error: macro
-> > "subdev_8255_init" requires 2 arguments, but only 1 given
-> > drivers/xenomai/comedi/intel/8255.c: At top level:
-> > drivers/xenomai/comedi/intel/8255.c:205: error: expected =E2=80=98=3D=
-=E2=80=99, =E2=80=98,=E2=80=99, =E2=80=98;=E2=80=99,
-> > =E2=80=98asm=E2=80=99 or =E2=80=98__attribute__=E2=80=99 before =E2=80=
-=98{=E2=80=99 token
-> > drivers/xenomai/comedi/intel/8255.c: In function =E2=80=98dev_8255_atta=
-ch=E2=80=99:
-> > drivers/xenomai/comedi/intel/8255.c:274: error: =E2=80=98_8255_SIZE=E2=
-=80=99 undeclared
-> > (first use in this function)
-> > drivers/xenomai/comedi/intel/8255.c:282:25: error: macro
-> > "subdev_8255_init" requires 2 arguments, but only 1 given
-> > drivers/xenomai/comedi/intel/8255.c:282: error: =E2=80=98subdev_8255_in=
-it=E2=80=99
-> > undeclared (first use in this function)
-> > drivers/xenomai/comedi/intel/8255.c: In function =E2=80=98dev_8255_deta=
-ch=E2=80=99:
-> > drivers/xenomai/comedi/intel/8255.c:306: error: =E2=80=98_8255_SIZE=E2=
-=80=99 undeclared
-> > (first use in this function)
-> > make[4]: *** [drivers/xenomai/comedi/intel/8255.o] Error 1
-> > make[3]: *** [drivers/xenomai/comedi/intel] Error 2
-> > make[2]: *** [drivers/xenomai/comedi] Error 2
-> > make[1]: *** [drivers/xenomai] Error 2
-> > make: *** [drivers] Error 2
->=20
-> My fault. I forgot to handle some pre-compilation constants when the
->  drivers are compiled as modules.
->=20
-> I will update my git repository; meanwhile, you can statically link all t=
-he
-> comedi drivers into the kernel. That is a temporary solution until the fix
->  is available.
 
-I updated the git repository a few hours after my answer to your last mail.=
-=20
-Did you have any opportunity to test it ? Or did you test a statical=20
-configuration ?
-
-Many thanks.
-
-> > When I reconfigure the kernel to not compile 8255 and friends it does n=
-ot
-> > compile either...
-> >
-> > ... snip ...
-> >   AS      arch/x86/boot/header.o
-> >   LD      arch/x86/boot/setup.elf
-> >   OBJCOPY arch/x86/boot/setup.bin
-> >   BUILD   arch/x86/boot/bzImage
-> > Root device is (8, 1)
-> > Setup is 11692 bytes (padded to 11776 bytes).
-> > System is 2347 kB
-> > CRC 84c0200
-> > Kernel: arch/x86/boot/bzImage is ready  (#1)
-> > ERROR: "comedi_alloc_subd"
-> > [drivers/xenomai/comedi/testing/comedi_loop.ko] undefined!
-> > ERROR: "comedi_alloc_subd"
-> > [drivers/xenomai/comedi/testing/comedi_fake.ko] undefined!
-> > make[1]: *** [__modpost] Error 1
-> > make: *** [modules] Error 2
-> >
-> > I tried 2.6.31 and 2.6.30.5.
->=20
-> Another bug of mine. The EXPORT_SYMBOL was missing.
->=20
-> Once more, with a kernel in which the drivers are statically included, you
-> won't face this issue anymore.
->=20
-> > I really appreciate your help !
-> >
-> > Thanks,
-> >  peter
->=20
-Alexis.
-=20
 
