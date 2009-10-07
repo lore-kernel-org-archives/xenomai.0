@@ -1,11 +1,17 @@
-Message-ID: <4ACC890C.501@domain.hid>
-Date: Wed, 07 Oct 2009 14:26:52 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1254853590.3718.28.camel@domain.hid>
+References: <4AC2448B.1080500@domain.hid>
+	<1254396765.2703.234.camel@domain.hid>  <4AC62883.1080908@domain.hid>
+	<1254505304.2703.347.camel@domain.hid>
+	<1254506494.8199.46.camel@domain.hid>
+	<1254510029.2703.355.camel@domain.hid>
+	<1254853590.3718.28.camel@domain.hid>
+Content-Type: text/plain
+Date: Wed, 07 Oct 2009 17:40:49 +0200
+Message-Id: <1254930049.2781.2.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [pull request] librtdk: Mark __wrap_clock_gettime as
-	weak symbol
+Subject: Re: [Xenomai-core] RFC: 2.5 todo list.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -14,50 +20,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Andreas Glatz <andreasglatz@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-The following changes since commit cd669afa1b220242c157de74b9e3cd86c37b8433:
-  Philippe Gerum (1):
-        x86: upgrade I-pipe support to 2.6.30.8-x86-2.4-06, 2.6.31.1-x86-2.4-06
+On Tue, 2009-10-06 at 14:26 -0400, Andreas Glatz wrote:
+> On Fri, 2009-10-02 at 21:00 +0200, Philippe Gerum wrote:
+> > On Fri, 2009-10-02 at 14:01 -0400, Andreas Glatz wrote:
+> > > > 
+> > > > - powerpc32 updates for 2.6.30. Mainly to merge the once experimental
+> > > > bits that prevent most alignment faults from triggering a secondary mode
+> > > > switch. Andreas told me this works like a charm on 83xx, and I did not
+> > > > see any issue on 52xx, 85xx or 86xx either.
+> > > > 
+> > > 
+> > > Can I get a version of that patch for testing? Is it in your git
+> > > repository?
+> > 
+> > I just pushed this commit to my remote tree (ipipe-2.6.30-powerpc
+> > branch); it should appear in a few hours once mirrored (cron job).
+> > 
+> 
+> I finally had a chance to test the ipipe-2.6.30-powerpc version
+> from the git repository. Unfortunately, I noticed that our application
+> dies after some time and that this behaviour is related to that 
+> alignment patch (if I take it out everything runs fine for > 2 days).
+> 
+> Currently I'm investigating the reasons for that crash. It has
+> something to do with floating point registers not being restored
+> properly. Our alignment exceptions are mainly triggered by accesses 
+> to unaligned floating point data.
+> 
 
-are available in the git repository at:
+This patch fixes an issue I have just discovered when running two
+switchtest programs concurrently on 52xx; that issue was introduced by
+the no-switch-upon-alignment patch. The bug you saw may be related.
 
-  git://git.xenomai.org/xenomai-jki.git for-upstream
+http://download.gna.org/adeos/patches/v2.6/powerpc/adeos-ipipe-2.6.30.3-powerpc-DENX-2.7-01.patch
 
-Jan Kiszka (1):
-      librtdk: Mark __wrap_clock_gettime as weak symbol
-
- src/rtdk/assert_context.c |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
-
----
-
->From 4a2cb7b817cefc16a3840a2406f4f7031bdfd534 Mon Sep 17 00:00:00 2001
-From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Wed, 7 Oct 2009 13:53:27 +0200
-Subject: [PATCH] librtdk: Mark __wrap_clock_gettime as weak symbol
-
-This ensures that, in case both librtdk and libpthread_rt are used, the
-POSIX skin will be able to provide its Xenomai version of clock_gettime.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
- src/rtdk/assert_context.c |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
-
-diff --git a/src/rtdk/assert_context.c b/src/rtdk/assert_context.c
-index 2176db3..f67bcd8 100644
---- a/src/rtdk/assert_context.c
-+++ b/src/rtdk/assert_context.c
-@@ -66,6 +66,7 @@ int __wrap_gettimeofday(struct timeval *tv, struct timezone *tz)
- 	return __real_gettimeofday(tv, tz);
- }
- 
-+__attribute__ ((weak))
- int __wrap_clock_gettime(clockid_t clk_id, struct timespec *tp)
- {
- 	assert_nrt();
+> Andreas
 -- 
-1.6.0.2
+Philippe.
+
+
 
