@@ -1,11 +1,11 @@
-From: Virendra Agadi <virendra.agadi@domain.hid>
-Message-ID: <OF5D35AE5F.CE8ADA99-ON65257651.00198672-65257651.00198672@domain.hid>
-Date: Fri, 16 Oct 2009 10:08:48 +0530
+From: oliver.schlenker@domain.hid
+Date: Wed, 7 Oct 2009 13:44:23 +0000
+Message-ID: <DIIE.000001A60000AC7F@192.168.2.103>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"
-Subject: [Xenomai-help] AUTO: Virendra Agadi is out of the office.
-	(returning 10/22/2009)
+Content-Type: text/plain;
+ charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] Re-6:  rt_printf with daemonized task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,34 +15,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: gilles.chanteperdrix@xenomai.org
+Cc: xenomai@xenomai.org
 
 
-I am out of the office until 10/22/2009.
-
-I will respond to your message when I return on Thursday 22nd Oct 2009.
-Any Project related issues:
-please contact Sarath (Mailto: sarath.chandranv@domain.hid)
 
 
-Note: This is an automated response to your message  "Xenomai-help Digest,
-Vol 49, Issue 29" sent on 10/16/09 6:44:20.
+in the glibc documentation it's specified as a void function :
 
-This is the only notification you will receive while this person is away.
+18.2.2 syslog, vsyslog
 
-=====-----=====-----=====
-Notice: The information contained in this e-mail
-message and/or attachments to it may contain 
-confidential or privileged information. If you are 
-not the intended recipient, any dissemination, use, 
-review, distribution, printing or copying of the 
-information contained in this e-mail message 
-and/or attachments to it are strictly prohibited. If 
-you have received this communication in error, 
-please notify us by reply e-mail or telephone and 
-immediately and permanently delete the message 
-and any attachments. Thank you
+The symbols referred to in this section are declared in the file =
+syslog.h.
+=97 Function: void syslog (int facility_priority, char *format, ...)
 
+
+
+There are also no references to errno in the documentation.
+
+Did try already with explicit openlog() function call and setlogmask()
+but result is the same.
+
+
+Oliver
+
+
+-------- Original Message --------
+Subject: Re: Re-4: [Xenomai-help] rt_printf with daemonized task =
+(07-Okt-2009 15:39)
+From:    Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To:      oliver.schlenker@domain.hid
+
+> oliver.schlenker@domain.hid wrote:
+> > syslogd/klogd daemon is running correctly, it's used on the same
+> > system by a lot of other processes.
+>=20
+> Did you try to check the return value of the syslog() syscall?
+>=20
+> --=20
+>                                           Gilles
+>=20
+
+
+To: gilles.chanteperdrix@xenomai.org
+Cc: xenomai@xenomai.org
 
 
 
