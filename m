@@ -1,14 +1,12 @@
-Message-ID: <4ACDE467.9020202@domain.hid>
-Date: Thu, 08 Oct 2009 15:08:55 +0200
+Message-ID: <4ACDE654.9010200@domain.hid>
+Date: Thu, 08 Oct 2009 15:17:08 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <0000ACAE.4ACDAF68@domain.hid> <4ACDA23D.4000507@domain.hid>
-	<4ACDB034.7060801@domain.hid> <4ACDB1F8.6060305@domain.hid>
-	<4ACDBBF8.6090007@domain.hid> <4ACDD8B6.4020902@domain.hid>
-In-Reply-To: <4ACDD8B6.4020902@domain.hid>
+References: <0000ACCF.4ACDF0A2@domain.hid>
+In-Reply-To: <0000ACCF.4ACDF0A2@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Re : rt_printf with daemonized task
+Subject: Re: [Xenomai-help] :: rt_printf with daemonized task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,11 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "oliver.schlenker@domain.hid" <oliver.schlenker@domain.hid>
+To: "oliver.schlenker@domain.hid" <oliver.schlenker@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
+oliver.schlenker@domain.hid wrote:
+> 
+> 
+> 
+> 
+> -------- Original Message --------
+> Subject: Re: Re : rt_printf with daemonized task (08-Okt-2009 12:16)
+> From:    Jan Kiszka <jan.kiszka@domain.hid>
+> To:      oliver.schlenker@domain.hid
+> 
 >> Gilles Chanteperdrix wrote:
 >>> Jan Kiszka wrote:
 >>>> Gilles Chanteperdrix wrote:
@@ -59,12 +65,42 @@ Gilles Chanteperdrix wrote:
 >>> to the empty state.
 >> Famous last words: That should work without tweaking. A print_buffer
 >> only contains data references, nothing that points to some uncloned thread.
+>>
+>> Jan
+>>
+>> -- 
+>> Siemens AG, Corporate Technology, CT SE 2
+>> Corporate Competence Center Embedded Linux
 > 
-> Ok. But you walk the list of print_buffers every time, and these
-> print_buffers remain allocated in the child process. So, that is a kind
-> of memory leak.
+> To have a fork save rtprint library it's necessary to
+> 
+> 1. Reset rtdk thread buffer list
+>    
+>     I have no idea where to look at for the rtdk thread buffer list. Inside rt_print.c ?
 
-Hmm, right. They should be freed in the child right after forking.
+It's all there, it's called first_buffer. Just walk that list and call
+cleanup_buffers on the entries.
+
+>    
+> 2. Spawning another printer thread
+>     with code like :
+> 	pthread_attr_init(&thattr);
+> 	pthread_attr_setstacksize(&thattr, PTHREAD_STACK_MIN);
+> 	pthread_create(&__printer_thread, &thattr, printer_loop, NULL); 
+> 
+> 
+> Is there anything else to do ?
+> 
+
+Probably not, but I was already wrong before. :)
+
+> 
+> I'm also planning to add a function to the lib like :
+> 
+> rt_print_to_syslog( int priority )
+
+Better provide some rt_syslog(int priority, char *format, ...),
+corresponding to the standard service.
 
 Jan
 
