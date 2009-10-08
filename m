@@ -1,52 +1,53 @@
-Mime-Version: 1.0 (Apple Message framework v1076)
-Content-Type: text/plain; charset=us-ascii; format=flowed; delsp=yes
-From: Stefan Schaal <sschaal@domain.hid>
-In-Reply-To: <195F4A80-1B62-4673-804B-71CC6F6DD60C@usc.edu>
-Date: Sun, 1 Nov 2009 23:02:13 -0800
+Message-ID: <4ACDA7C6.3090004@domain.hid>
+Date: Thu, 08 Oct 2009 10:50:14 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <4ACC9BEC.8090200@domain.hid>
+In-Reply-To: <4ACC9BEC.8090200@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-Id: <84E78C77-1DC1-44EE-8703-62C89A204B81@domain.hid>
-References: <E65E9416-A152-4EFE-93C8-31A123514B6E@usc.edu>
-	<195F4A80-1B62-4673-804B-71CC6F6DD60C@usc.edu>
-Subject: [Xenomai-core] lots of mode switches in xenomai-head tree?
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Xenomai on RD129 (Samsung S3C2410A)
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Stefan Schaal <sschaal@domain.hid>
-Cc: Jonas Buchli <jonas@domain.hid>, Peter Pastor Sampedro <pastorsa@domain.hid>, xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Mau <liste@domain.hid>
+Cc: Xenomai-help@domain.hid
 
-Hi,
+Mau wrote:
+> Dear Sirs,
+> I have found this product from a company near me:
+> http://www.elpa.it/rd129it.html
+> It comes with linux preinstalled.
+> The kernel is a vanilla kernel 2.6.30 with the addition of a few kernel
+> drivers for unsupported peripherals.
+> On board there is a cpu Samsung S3C2410A, flash, ram and few other things.
+> I need to investigate the possibility to install xenomai on this thing.
+> 
+> I want to know if others have used similar boards with same or similar
+> processor with success, and how complex can be to make adeos and xenomai
+> work on such processor.
 
-   I am working with the latest xenomai-head tree (we need analogy for  
-our NI board ...). Under Xenomai 2.4.8 our code did not have any mode  
-switches. Using the xenomai-head, we get a lot of mode switches. Using  
-he backtrace_symbols_fd, we get print-outs like:
+This question is answered on xenomai web site. This is FAQ number 2.
+http://www.xenomai.org/index.php/FAQs
 
+> 
+> The other question is that since we need to apply two patches to the
+> vanilla kernel (the original + adeos) is there a preferred order?
 
-xsimulation[0x808553b]
-[0xffffe400]
-/usr/xenomai/lib/librtdk.so.0(assert_nrt+0x85)[0xb7fa2ea5]
-/usr/xenomai/lib/librtdk.so.0(__wrap_clock_gettime+0x17)[0xb7fa2ef7]
-xsimulation[0x807cd16]
-xsimulation[0x807d7fb]
-/usr/xenomai/lib/libnative.so.3[0xb7fab689]
-/lib/tls/i686/cmov/libpthread.so.0[0xb7f824ff]
-/lib/tls/i686/cmov/libc.so.6(clone+0x5e)[0xb7e8f49e]
+Well, if the order matters, it means that there is a conflict, and if
+there is a conflict, no matter what order you choose, you will have to
+solve it.
 
-Which indicates that the wrapper for clock_gettime causes this  
-trouble, which is also confirmed by commenting clock_gettime out, and  
-the  mode switches disappear.
+However, if I were you, I would choose to apply the I-pipe patch on the
+modified kernel sources tree, because it is probably simpler.
 
-  Maybe something that needs fixing?
-
-Best wishes,
-
--Stefan
-
-
+-- 
+                                          Gilles
 
 
