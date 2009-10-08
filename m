@@ -1,13 +1,17 @@
-Message-ID: <4ACE066D.6080404@domain.hid>
-Date: Thu, 08 Oct 2009 17:34:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4ACE3E1D.5000805@domain.hid>
+Date: Thu, 08 Oct 2009 21:31:41 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <1255014185.4690.56.camel@domain.hid> <4ACE0018.20705@domain.hid>
-	<4ACE02FF.1090709@domain.hid>
-In-Reply-To: <4ACE02FF.1090709@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_print segfault on program termination
+References: <abbab2d60910070942l2bfbc0bboca0232fb674e1ec0@domain.hid>	
+	<4ACCD2A0.8050804@domain.hid>
+	<abbab2d60910071418g24c9f604nd1945bbda1f773e3@domain.hid>
+In-Reply-To: <abbab2d60910071418g24c9f604nd1945bbda1f773e3@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig764A31BF57ED4BBF638D3BD2"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] XUM 2009 follow-up : Powerlink,
+	CANopen and sockets.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,64 +21,130 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Peter Puchwein <peter.puchwein@domain.hid>
-Cc: xenomai@xenomai.org
+To: Edouard TISSERANT <edouard.tisserant@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Peter Puchwein wrote:
-> Gilles Chanteperdrix wrote:
->> Christoph Permes wrote:
->>> Hi,
->>>
->>> We use a vmware virtual machine for simulation and testing our realtime
->>> applications.
->>> Every time when a realtime application terminates the following core
->>> dump occures:
->>>
->>> Program terminated with signal 11, Segmentation fault.
->>> [New process 11728]
->>> [New process 11726]
->>> [New process 11727]
->>> #0  0xb7e3e675 in free () from /lib/libc.so.6
->>> (gdb) bt
->>> #0  0xb7e3e675 in free () from /lib/libc.so.6
->>> #1  0xb80551dd in cleanup_buffer (buffer=0x81dd210) at rt_print.c:350
->>> #2  0xb7dbee27 in __nptl_deallocate_tsd () from /lib/libpthread.so.0
->>> #3  0xb7dbff49 in start_thread () from /lib/libpthread.so.0
->>> #4  0xb7e9cb6e in clone () from /lib/libc.so.6
->>>
->>> The line where the segfault occures is
->>> free(buffer->ring);
->>>
->>> The segfault never happens when running on a real machine, so it's no
->>> problem when running in production, but it is annoying when every run in
->>> the test environment leads to a segmentation fault.
->>>
->>> Maybe it is a timing related issue as there are no problems on a real
->>> machine.
->> Did you found the issue that was causing segmentation faults, or did you
->> keep your workaround?
->>
-> 
-> We kept our workaround, because we need an rt_print without 
-> mode-switching the realtime-task.
-> With the mode-switching version we didn't get any errors, so we couldn't 
-> find out more details about the error.
-> But it seems that there is a time-bounded issue in rt_print, depending 
-> on the speed of the system.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig764A31BF57ED4BBF638D3BD2
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-The error you had makes think that something corrupts the memory. So, by
-corrupting memory you can get:
-- segfaults in rt_printf
-- segfaults in free
-- segfaults in malloc
+[restoring CC]
 
-And probably many other effects. So, what you have done with your
-workaround is to paper over the corruption issue, and then the programs
-fails later. But I bet if you solve the first issue correctly, the
-second will disappear. At least, we will no longer be able to think that
-the first issue is the cause of the second.
+=2E..but accidentally to the core list - probably because I thought it is=
 
--- 
-                                          Gilles
+a core topic, but let's keep it where it started.
 
+Edouard TISSERANT wrote:
+>> [...] And I hope
+>> we will find the required resources/contributor to welcome a cleaned u=
+p
+>> RTnet stack inside the Xenomai 3 source tree one day.
+>=20
+> Could you detail that point ?  What is to be changed in RTnet to fit
+> with Xenomai 3 ?
+
+No ground shaking changes. I would just like to take the chance and drop
+legacy kernel 2.4 support and set a sufficiently high baseline in 2.6
+(just like Xenomai 3 will do), clean up the code from some dead
+fragments, lindent everything properly, switch to a config interface
+that uses socket ioctls instead of /dev/rtnet and go through the locking
+once again, specifically checking if it might be done simpler or more
+efficiently in some cases. Also drivers should undergo this process (and
+not all need to be ported over).
+
+>=20
+>>> Would it be theoretically
+>>> possible for RTnet to support Linux ethernet drivers through a hook
+>>> mechanism as mentioned in previous paragraph ?
+>> Everything is possible :), but it's hard to assess the feasibility bas=
+ed
+>> on this vague description. Just note that RTnet drivers also require
+>> some "hook" for deterministic buffer management, ie. they must not
+>> blindly allocate buffers for incoming frames from shared Linux pools.
+>=20
+> Of course there is no magic bullet to change an ethernet driver into a
+> real-time one, a porting effort will always be required. Nevertheless,
+> you could reduce this effort considerably and let most maintenance
+> effort to linux' maintainer of each driver. Let me explain...
+> While porting CAN driver to Xenomai I asked myself why there was no
+> "linux skin". Don't laugh. That skin would have been similar to RTDM
+> in purpose and would be have implemented a subset of linux interface
+> for fops, tasks, queues,locks, etc. That skin would require some
+> compiler, linker or loader magic to replace calls or re-bind symbols
+> initially used by module to some RT replacement. A fine grained
+> per-driver or per-subsystem symbol overloading approach could be also
+> envisioned.
+> Applying this to Ethernet drivers so that they become RTnet driver
+> looks like possible, but bringing up such a pipe dream may require
+> more effort that porting each driver individually. Your opinion ?
+
+What makes things complicated are the unavoidable semantical differences
+in the _use_ of whatever API. Specifically as long as there is no
+PREEMPT-RT or, even better, mainline user with such requirements, it
+will remain hard to maintain the required diffs.
+
+>> It would be great to start this endeavor with implementing the Powerli=
+nk
+>> MAC protocol inside RTnet. Just one question arises to me: How would t=
+he
+>> programming model look like? PF_PACKET via sockets? Or some special
+>> protocol, PF_POWERLINK?
+>=20
+> If we keep CANopen as a userspace library, PF_PACKET should be enough.
+> Application may have to open multiple sockets in order to distinguish
+> packets sent in Isochronous phase (poll requests and responses) and
+> those sent in Asynchronous phase. MAC discipline would guess what to
+
+"guess" - that sounds scary in the context of RT... :)
+
+> do with packets according to specified MAC addresses. In my sense a
+> packet interface is what best fit as a CANopen library back-end.
+
+So Powerlink simply uses a few Ethernet frame types, and we would simply
+pass them to/from user space via PF_SOCKET? If that fits, it would be nic=
+e.
+
+>=20
+>> When thinking further: If you move the node's object dictionary into
+>> user space, you will also have to design a local interprocess
+>> communication interface so that multiple processes can access it, righ=
+t?
+> This is perfectly true, and the only workaround is to have a special
+> PF_POWERLINK or protocol, or even better,  PF_CANOPEN (for re-use in
+> SocketCan). Problem is that I still don't see clearly how to implement
+> CANopen through socket paradigm in a simple and efficient way.
+> If the whole CANopen stack with object dictionary reside in kernel
+> space it is not conceivable anymore to have a static dictionary
+> implemented through generated C code. Would process(es) have to
+> declare their own CANopen nodes and OD entries through socket API
+> (with bind() and listen() ?). Or maybe could nodes and dictionary be
+> constructed with network interfaces administration tools ?
+> In the end I'm not sure at all that socket would be the right
+> interface for object dictionary entries.... A virtual file system with
+> mmap() and select() would certainly fit better.
+
+Well, let's start small, maybe even only with single-process support
+(ie. stuffing all the CANopen and high-level Powerlink stack into some
+library). We can still evolve the approach once more demanding use cases
+pop up, specifically as long as no special ABIs are set in stone.
+
+Jan
+
+
+--------------enig764A31BF57ED4BBF638D3BD2
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkrOPiEACgkQitSsb3rl5xQrHwCg7TJn35yem//EYJ9VtyVknEpN
+ENEAn0djLvzEIxoW0mTXk6MMauPBTHIE
+=+mOI
+-----END PGP SIGNATURE-----
+
+--------------enig764A31BF57ED4BBF638D3BD2--
 
