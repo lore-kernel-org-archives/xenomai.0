@@ -1,17 +1,14 @@
-Message-ID: <4ACE34FD.9090408@domain.hid>
-Date: Thu, 08 Oct 2009 20:52:45 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <abbab2d60910070942l2bfbc0bboca0232fb674e1ec0@domain.hid>	
-	<4ACCD2A0.8050804@domain.hid>
-	<abbab2d60910071418g24c9f604nd1945bbda1f773e3@domain.hid>
-In-Reply-To: <abbab2d60910071418g24c9f604nd1945bbda1f773e3@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigDE785CA8CC490DBB8B687642"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] XUM 2009 follow-up : Powerlink,
-	CANopen and sockets.
+Sender: alexis.berlemont@domain.hid
+In-Reply-To: <1255023424.2781.70.camel@domain.hid>
+References: <200910080126.13483.berlemont.hauw@domain.hid>
+	<1255023424.2781.70.camel@domain.hid>
+Date: Fri, 9 Oct 2009 00:00:20 +0200
+Message-ID: <72cf3fb0910081500y7f22500erb1415a16ea402919@domain.hid>
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-core] Some thoughts on Analogy "kernel side" framework
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -20,126 +17,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Edouard TISSERANT <edouard.tisserant@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDE785CA8CC490DBB8B687642
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-[restoring CC]
+On Thu, Oct 8, 2009 at 7:37 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On Thu, 2009-10-08 at 01:26 +0200, Alexis Berlemont wrote:
+>> Hi,
+>>
+>> The last week, I have been working on the global architecture of the ana=
+logy
+>> project.
+>>
+>> I tried to sum-up the main characteristics of Comedi. That was a start t=
+o
+>> figure out what shape analogy will get.
+>>
+>> Here are some notes on that subject:
+>>
+>> 1) Comedi drivers are not common Linux drivers. In these drivers:
+>> =A0 =A0 =A0 - there is neither fops structure nor ioctl operations
+>> =A0 =A0 =A0 - there is, of course, no cdev registration
+>> =A0 =A0 =A0 - The Linux API is sometimes wrapped into Comedi-specific fu=
+nctions (ex.
+>> irq).
+>>
+>> 2) Comedi imposes a specific organization: devices are composed of subde=
+vices
+>> which are themselves composed of channels. Then a Comedi driver:
+>> =A0 =A0 =A0 - declares a list of subdevices
+>> =A0 =A0 =A0 - displays a list of callbacks per subdevices (command, inst=
+ructions,
+>> trigger, etc.).
+>>
+>> 3) The Comedi midlayer is the link between the Linux driver programming =
+model
+>> and the Comedi drivers:
+>> =A0 =A0 =A0 - The Comedi core manages a set of pre-registered character =
+devices
+>> =A0 =A0 =A0 - Via a specific ioctl, the core assigns a dev file to some =
+driver and an
+>> "attach" callback is called within the driver.
+>> =A0 =A0 =A0 - The comedi core is in charge of routing the ioctls to the =
+proper subdevice
+>> callbacks.
+>>
+>> According to me, this architecture brings some troubles:
+>> 1) Not all the drivers perfectly fit into the midlayer:
+>> =A0 =A0 =A0 - Some components of acquisition cards do not comply with th=
+e subdevice model
+>> (ex. the mite in NI card).
+>> =A0 =A0 =A0 - We find card specific declarations in the Comedi core laye=
+r (ex.: some NI
+>> specific counter modes in comedi.h);
+>> 2) On the user space side, it is difficult to write a card independant
+>> application.
+>>
+>> All these points make me think that the idea of midlayer itself is not
+>> suitable in our case. Because of the fact that the drivers do not fit we=
+ll
+>> into the generic programing model, we find ourselves adapting user space
+>> programs to the card they will use.
+>>
+>> I would rather propose a framework composed of helper modules. Analogy d=
+rivers
+>> would be quite similar with common RTDM drivers (they would contain fops
+>> declarations, dev registrations, etc.);
+>>
+>> As a consequence, Analogy will be a set of tools:
+>> =A0 =A0 =A0 - ioctl routing function
+>> =A0 =A0 =A0 - acquisition device registration
+>> =A0 =A0 =A0 - asynchronous buffer management modules
+>> =A0 =A0 =A0 - etc.
+>>
+>
+> This sounds like a plan, but this also raises a major concern: what's
+> the status of your current code wrt the upcoming 2.5 now, given that you
+> seem to imply that the current Comedi/RTDM tree does not exhibit the
+> final architecture yet, and your proposal entails fundamental changes?
+>
+> It was made very clear during the recent XUM that 2.5 will be out this
+> year, which leaves us with enough time to tackle the current issues, but
+> likely not to reshuffle a complete framework.
+>
+> We could live with that framework only providing a single acquisition
+> driver in 2.5.0, but the former has to be stable, and the ABI written in
+> stone for the 2.5.x series. Provisions for transparent multi-ABI support
+> might be acceptable, but this still requires to be confident about what
+> would be needed in the long run, and that sudden change in your
+> architecture is worrisome.
 
-Edouard TISSERANT wrote:
->> [...] And I hope
->> we will find the required resources/contributor to welcome a cleaned u=
-p
->> RTnet stack inside the Xenomai 3 source tree one day.
->=20
-> Could you detail that point ?  What is to be changed in RTnet to fit
-> with Xenomai 3 ?
+If I understand well, I have gone too far too soon; the idea should be
+to keep the current framework as it is for 2.5.
 
-No ground shaking changes. I would just like to take the chance and drop
-legacy kernel 2.4 support and set a sufficiently high baseline in 2.6
-(just like Xenomai 3 will do), clean up the code from some dead
-fragments, lindent everything properly, switch to a config interface
-that uses socket ioctls instead of /dev/rtnet and go through the locking
-once again, specifically checking if it might be done simpler or more
-efficiently in some cases. Also drivers should undergo this process (and
-not all need to be ported over).
+However, my former mail was not a definitive plan. The first goal was
+to share ideas. So, do not worry too much. :)
 
->=20
->>> Would it be theoretically
->>> possible for RTnet to support Linux ethernet drivers through a hook
->>> mechanism as mentioned in previous paragraph ?
->> Everything is possible :), but it's hard to assess the feasibility bas=
-ed
->> on this vague description. Just note that RTnet drivers also require
->> some "hook" for deterministic buffer management, ie. they must not
->> blindly allocate buffers for incoming frames from shared Linux pools.
->=20
-> Of course there is no magic bullet to change an ethernet driver into a
-> real-time one, a porting effort will always be required. Nevertheless,
-> you could reduce this effort considerably and let most maintenance
-> effort to linux' maintainer of each driver. Let me explain...
-> While porting CAN driver to Xenomai I asked myself why there was no
-> "linux skin". Don't laugh. That skin would have been similar to RTDM
-> in purpose and would be have implemented a subset of linux interface
-> for fops, tasks, queues,locks, etc. That skin would require some
-> compiler, linker or loader magic to replace calls or re-bind symbols
-> initially used by module to some RT replacement. A fine grained
-> per-driver or per-subsystem symbol overloading approach could be also
-> envisioned.
-> Applying this to Ethernet drivers so that they become RTnet driver
-> looks like possible, but bringing up such a pipe dream may require
-> more effort that porting each driver individually. Your opinion ?
+> In short, assuming your current work description eventually holds,
+> what's your timing to deliver?
 
-What makes things complicated are the unavoidable semantical differences
-in the _use_ of whatever API. Specifically as long as there is no
-PREEMPT-RT or, even better, mainline user with such requirements, it
-will remain hard to maintain the required diffs.
+With my 1-2 hour(s) per night, I will need many months (at least 4).
 
->> It would be great to start this endeavor with implementing the Powerli=
-nk
->> MAC protocol inside RTnet. Just one question arises to me: How would t=
-he
->> programming model look like? PF_PACKET via sockets? Or some special
->> protocol, PF_POWERLINK?
->=20
-> If we keep CANopen as a userspace library, PF_PACKET should be enough.
-> Application may have to open multiple sockets in order to distinguish
-> packets sent in Isochronous phase (poll requests and responses) and
-> those sent in Asynchronous phase. MAC discipline would guess what to
+>> Eventually, instead of rewriting the whole Comedi drivers suite. I think=
+ we
+>> can develop an analogy driver which will route the analogy ioctls to the
+>> proper Comedi subdevice callbacks. I think everybody will agree to consi=
+der
+>> this point critical. We must retrieve the Comedi drivers as easy as poss=
+ible.
+>>
+>
+> Full ack.
 
-"guess" - that sounds scary in the context of RT... :)
-
-> do with packets according to specified MAC addresses. In my sense a
-> packet interface is what best fit as a CANopen library back-end.
-
-So Powerlink simply uses a few Ethernet frame types, and we would simply
-pass them to/from user space via PF_SOCKET? If that fits, it would be nic=
-e.
-
->=20
->> When thinking further: If you move the node's object dictionary into
->> user space, you will also have to design a local interprocess
->> communication interface so that multiple processes can access it, righ=
-t?
-> This is perfectly true, and the only workaround is to have a special
-> PF_POWERLINK or protocol, or even better,  PF_CANOPEN (for re-use in
-> SocketCan). Problem is that I still don't see clearly how to implement
-> CANopen through socket paradigm in a simple and efficient way.
-> If the whole CANopen stack with object dictionary reside in kernel
-> space it is not conceivable anymore to have a static dictionary
-> implemented through generated C code. Would process(es) have to
-> declare their own CANopen nodes and OD entries through socket API
-> (with bind() and listen() ?). Or maybe could nodes and dictionary be
-> constructed with network interfaces administration tools ?
-> In the end I'm not sure at all that socket would be the right
-> interface for object dictionary entries.... A virtual file system with
-> mmap() and select() would certainly fit better.
-
-Well, let's start small, maybe even only with single-process support
-(ie. stuffing all the CANopen and high-level Powerlink stack into some
-library). We can still evolve the approach once more demanding use cases
-pop up, specifically as long as no special ABIs are set in stone.
-
-Jan
-
-
---------------enigDE785CA8CC490DBB8B687642
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkrONP0ACgkQitSsb3rl5xSF9ACcDWFX3crTLzZRAjtsgf4wlMfc
-zRcAoNRVWEnH1lo84Yaw1E3RyYWdsjFl
-=aM0l
------END PGP SIGNATURE-----
-
---------------enigDE785CA8CC490DBB8B687642--
+Alexis.
 
