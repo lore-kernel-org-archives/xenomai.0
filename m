@@ -1,85 +1,57 @@
-Message-ID: <4AEE8D8A.5030108@domain.hid>
-Date: Mon, 02 Nov 2009 08:43:06 +0100
+Message-ID: <4ACDB034.7060801@domain.hid>
+Date: Thu, 08 Oct 2009 11:26:12 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <E65E9416-A152-4EFE-93C8-31A123514B6E@usc.edu>	<195F4A80-1B62-4673-804B-71CC6F6DD60C@usc.edu>
-	<84E78C77-1DC1-44EE-8703-62C89A204B81@domain.hid>
-In-Reply-To: <84E78C77-1DC1-44EE-8703-62C89A204B81@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigECD6792C88B634FA0F94E864"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] lots of mode switches in xenomai-head tree?
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <0000ACAE.4ACDAF68@domain.hid> <4ACDA23D.4000507@domain.hid>
+In-Reply-To: <4ACDA23D.4000507@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Re : rt_printf with daemonized task
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Stefan Schaal <sschaal@domain.hid>
-Cc: Jonas Buchli <jonas@domain.hid>, Peter Pastor Sampedro <pastorsa@domain.hid>, xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "oliver.schlenker@domain.hid" <oliver.schlenker@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigECD6792C88B634FA0F94E864
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Gilles Chanteperdrix wrote:
+> oliver.schlenker@domain.hid wrote:
+>>>> int main( int arc, char *argv[] ) { int i;
+>>>>
+>>>> rt_print_auto_init(1);
+>>>>
+>>>> rt_printf("--------------- TEST RT-PRINTF  1 ------------\n");
+>>>>
+>>>> sleep(1);
+>>>>
+>>>> daemon(0,0);
+>>>>
+>>>> rt_print_auto_init(1);
+>> Ok, understood, at least for the scenario where the rt_print feature
+>> is initialised befor the fork/daemon call. What I don't understand
+>> is, why it does not work if the rt_print feature is initialised after
+>> the fork / daemon.
+> 
+> From the way I understand your code, you never tried to initialize the
+> rt_print feature only after the fork, your code initializes it both
+> before and after.
+> 
 
-Stefan Schaal wrote:
-> Hi,
->=20
->    I am working with the latest xenomai-head tree (we need analogy for =
-=20
-> our NI board ...). Under Xenomai 2.4.8 our code did not have any mode  =
-
-> switches. Using the xenomai-head, we get a lot of mode switches. Using =
-=20
-> he backtrace_symbols_fd, we get print-outs like:
->=20
->=20
-> xsimulation[0x808553b]
-> [0xffffe400]
-> /usr/xenomai/lib/librtdk.so.0(assert_nrt+0x85)[0xb7fa2ea5]
-> /usr/xenomai/lib/librtdk.so.0(__wrap_clock_gettime+0x17)[0xb7fa2ef7]
-> xsimulation[0x807cd16]
-> xsimulation[0x807d7fb]
-> /usr/xenomai/lib/libnative.so.3[0xb7fab689]
-> /lib/tls/i686/cmov/libpthread.so.0[0xb7f824ff]
-> /lib/tls/i686/cmov/libc.so.6(clone+0x5e)[0xb7e8f49e]
->=20
-> Which indicates that the wrapper for clock_gettime causes this =20
-> trouble, which is also confirmed by commenting clock_gettime out, and  =
-
-> the  mode switches disappear.
->=20
->   Maybe something that needs fixing?
-
-Do you wrap & link against the POSIX library, ie. use that skin as well?
-If not, your code is actually using clock_gettime incorrectly as it then
-falls back to the Linux service which can trigger syscalls (or even
-deadlocks when the TSC is used).
-
-If you do use libpthread_rt, then my next question is if your work is
-based on today's git head or some older version not including 4a2cb7b817.=
-
+There are two initializations: The base init done via __rt_print_init on
+library loading and the one to be done per-thread via rt_print_init (or
+on first rt_printf). That printer thread is initialized via the former
+one. On fork, we do not need to re-run the full __rt_print_init
+(variables and resources are cloned on fork), we just need to spawn
+another printer thread.
 
 Jan
 
-
---------------enigECD6792C88B634FA0F94E864
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkrujY4ACgkQitSsb3rl5xQeggCgyLkz4zfAMRhB8LTEPW+JelO2
-rfYAn3/XyyJUHKI/xfUAto2uxlFsNs8X
-=aI0n
------END PGP SIGNATURE-----
-
---------------enigECD6792C88B634FA0F94E864--
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
