@@ -1,11 +1,14 @@
-From: oliver.schlenker@domain.hid
-Date: Thu, 8 Oct 2009 12:01:07 +0000
-Message-ID: <0000ACCF.4ACDF0A2@domain.hid>
+Message-ID: <4ACDD8B6.4020902@domain.hid>
+Date: Thu, 08 Oct 2009 14:19:02 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset="UTF-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai-help] :: rt_printf with daemonized task
+References: <0000ACAE.4ACDAF68@domain.hid> <4ACDA23D.4000507@domain.hid>
+	<4ACDB034.7060801@domain.hid> <4ACDB1F8.6060305@domain.hid>
+	<4ACDBBF8.6090007@domain.hid>
+In-Reply-To: <4ACDBBF8.6090007@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Re : rt_printf with daemonized task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,63 +18,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid, gilles.chanteperdrix@xenomai.org
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "oliver.schlenker@domain.hid" <oliver.schlenker@domain.hid>
 
-DQoNCg0KDQoNCi0tLS0tLS0tIE9yaWdpbmFsIE1lc3NhZ2UgLS0tLS0tLS0NClN1YmplY3Q6IFJl
-OiBSZSA6IHJ0X3ByaW50ZiB3aXRoIGRhZW1vbml6ZWQgdGFzayAoMDgtT2t0LTIwMDkgMTI6MTYp
-DQpGcm9tOiAgICBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KVG86ICAgICAg
-b2xpdmVyLnNjaGxlbmtlckBzbW1vdGlvbmNvbnRyb2wuZGUNCg0KPiBHaWxsZXMgQ2hhbnRlcGVy
-ZHJpeCB3cm90ZToNCj4gPiBKYW4gS2lzemthIHdyb3RlOg0KPiA+PiBHaWxsZXMgQ2hhbnRlcGVy
-ZHJpeCB3cm90ZToNCj4gPj4+IG9saXZlci5zY2hsZW5rZXJAc21tb3Rpb25jb250cm9sLmRlIHdy
-b3RlOg0KPiA+Pj4+Pj4gaW50IG1haW4oIGludCBhcmMsIGNoYXIgKmFyZ3ZbXSApIHsgaW50IGk7
-DQo+ID4+Pj4+Pg0KPiA+Pj4+Pj4gcnRfcHJpbnRfYXV0b19pbml0KDEpOw0KPiA+Pj4+Pj4NCj4g
-Pj4+Pj4+IHJ0X3ByaW50ZigiLS0tLS0tLS0tLS0tLS0tIFRFU1QgUlQtUFJJTlRGICAxIC0tLS0t
-LS0tLS0tLVxuIik7DQo+ID4+Pj4+Pg0KPiA+Pj4+Pj4gc2xlZXAoMSk7DQo+ID4+Pj4+Pg0KPiA+
-Pj4+Pj4gZGFlbW9uKDAsMCk7DQo+ID4+Pj4+Pg0KPiA+Pj4+Pj4gcnRfcHJpbnRfYXV0b19pbml0
-KDEpOw0KPiA+Pj4+IE9rLCB1bmRlcnN0b29kLCBhdCBsZWFzdCBmb3IgdGhlIHNjZW5hcmlvIHdo
-ZXJlIHRoZSBydF9wcmludCBmZWF0dXJlDQo+ID4+Pj4gaXMgaW5pdGlhbGlzZWQgYmVmb3IgdGhl
-IGZvcmsvZGFlbW9uIGNhbGwuIFdoYXQgSSBkb24ndCB1bmRlcnN0YW5kDQo+ID4+Pj4gaXMsIHdo
-eSBpdCBkb2VzIG5vdCB3b3JrIGlmIHRoZSBydF9wcmludCBmZWF0dXJlIGlzIGluaXRpYWxpc2Vk
-IGFmdGVyDQo+ID4+Pj4gdGhlIGZvcmsgLyBkYWVtb24uDQo+ID4+PiBGcm9tIHRoZSB3YXkgSSB1
-bmRlcnN0YW5kIHlvdXIgY29kZSwgeW91IG5ldmVyIHRyaWVkIHRvIGluaXRpYWxpemUgdGhlDQo+
-ID4+PiBydF9wcmludCBmZWF0dXJlIG9ubHkgYWZ0ZXIgdGhlIGZvcmssIHlvdXIgY29kZSBpbml0
-aWFsaXplcyBpdCBib3RoDQo+ID4+PiBiZWZvcmUgYW5kIGFmdGVyLg0KPiA+Pj4NCj4gPj4gVGhl
-cmUgYXJlIHR3byBpbml0aWFsaXphdGlvbnM6IFRoZSBiYXNlIGluaXQgZG9uZSB2aWEgX19ydF9w
-cmludF9pbml0IG9uDQo+ID4+IGxpYnJhcnkgbG9hZGluZyBhbmQgdGhlIG9uZSB0byBiZSBkb25l
-IHBlci10aHJlYWQgdmlhIHJ0X3ByaW50X2luaXQgKG9yDQo+ID4+IG9uIGZpcnN0IHJ0X3ByaW50
-ZikuIFRoYXQgcHJpbnRlciB0aHJlYWQgaXMgaW5pdGlhbGl6ZWQgdmlhIHRoZSBmb3JtZXINCj4g
-Pj4gb25lLiBPbiBmb3JrLCB3ZSBkbyBub3QgbmVlZCB0byByZS1ydW4gdGhlIGZ1bGwgX19ydF9w
-cmludF9pbml0DQo+ID4+ICh2YXJpYWJsZXMgYW5kIHJlc291cmNlcyBhcmUgY2xvbmVkIG9uIGZv
-cmspLCB3ZSBqdXN0IG5lZWQgdG8gc3Bhd24NCj4gPj4gYW5vdGhlciBwcmludGVyIHRocmVhZC4N
-Cj4gPiANCj4gPiBVbmxlc3MgSSBhbSB3cm9uZywgcnRkayBhbHNvIG1haW50YWlucyBhIGxpc3Qg
-b2YgdGhlIHRocmVhZCBidWZmZXJzDQo+ID4gd2hpY2ggbmVlZCB0byBiZSBwb2xsZWQuIEFmdGVy
-IHRoZSBmb3JrLCB0aGlzIGxpc3Qgd2lsbCBiZSBpbnRhY3QsIGJ1dA0KPiA+IHRoZSB0aHJlYWRz
-IHRvIHdoaWNoIGJlbG9uZyB0aGUgYnVmZmVycyB3aWxsIG5vIGxvbmdlciBleGlzdC4gU28sIElN
-TywNCj4gPiB0aGUgZm9yayBoYW5kbGVyIHNob3VsZCBhbHNvIGZyZWUgYWxsIHRoZXNlIGJ1ZmZl
-cnMgYW5kIHJlc2V0IHRoZSBsaXN0DQo+ID4gdG8gdGhlIGVtcHR5IHN0YXRlLg0KPiANCj4gRmFt
-b3VzIGxhc3Qgd29yZHM6IFRoYXQgc2hvdWxkIHdvcmsgd2l0aG91dCB0d2Vha2luZy4gQSBwcmlu
-dF9idWZmZXINCj4gb25seSBjb250YWlucyBkYXRhIHJlZmVyZW5jZXMsIG5vdGhpbmcgdGhhdCBw
-b2ludHMgdG8gc29tZSB1bmNsb25lZCB0aHJlYWQuDQo+IA0KPiBKYW4NCj4gDQo+IC0tIA0KPiBT
-aWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5vbG9neSwgQ1QgU0UgMg0KPiBDb3Jwb3JhdGUgQ29t
-cGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCg0KVG8gaGF2ZSBhIGZvcmsgc2F2ZSBydHBy
-aW50IGxpYnJhcnkgaXQncyBuZWNlc3NhcnkgdG8NCg0KMS4gUmVzZXQgcnRkayB0aHJlYWQgYnVm
-ZmVyIGxpc3QNCiAgIA0KICAgIEkgaGF2ZSBubyBpZGVhIHdoZXJlIHRvIGxvb2sgYXQgZm9yIHRo
-ZSBydGRrIHRocmVhZCBidWZmZXIgbGlzdC4gSW5zaWRlIHJ0X3ByaW50LmMgPw0KICAgDQoyLiBT
-cGF3bmluZyBhbm90aGVyIHByaW50ZXIgdGhyZWFkDQogICAgd2l0aCBjb2RlIGxpa2UgOg0KCXB0
-aHJlYWRfYXR0cl9pbml0KCZ0aGF0dHIpOw0KCXB0aHJlYWRfYXR0cl9zZXRzdGFja3NpemUoJnRo
-YXR0ciwgUFRIUkVBRF9TVEFDS19NSU4pOw0KCXB0aHJlYWRfY3JlYXRlKCZfX3ByaW50ZXJfdGhy
-ZWFkLCAmdGhhdHRyLCBwcmludGVyX2xvb3AsIE5VTEwpOyANCg0KDQpJcyB0aGVyZSBhbnl0aGlu
-ZyBlbHNlIHRvIGRvID8NCg0KDQpJJ20gYWxzbyBwbGFubmluZyB0byBhZGQgYSBmdW5jdGlvbiB0
-byB0aGUgbGliIGxpa2UgOg0KDQpydF9wcmludF90b19zeXNsb2coIGludCBwcmlvcml0eSApDQpJ
-ZiBwcmlvcml0eSBpcyB6ZXJvLCBhbGwgbWVzc2FnZXMgYXJlIGdvaW5nIHRvIGZwcmludGYoKSBv
-dXRwdXQuDQpJZiBwcmlvcml0eSBpcyBub24temVybywgYWxsIG1lc3NhZ2VzIGFyZSBnb2luZyB0
-byBzeXNsb2coIHByaW9yaXR5LCA8bWVzc2FnZT4gKSBvdXRwdXQuDQoNCklzIGl0IG9rIHRvIGFk
-ZCB0aGVyZWZvciBhIG5ldyB2YXJpYWJsZSB0byBzdHJ1Y3QgcHJpbnRfYnVmZmVyID8NCg0KDQpJ
-ZiBldmVyeXRoaW5nIGlzIGNvbWluZyB0byB3b3JrLCBJIHdvdWxkIGxpa2UgdG8gc2VuZCBpdCBh
-cyBhIHBhdGNoLg0KDQoNCg0KT2xpdmVyDQoNCg0KDQoNCg0KDQoNCg0KVG86IGphbi5raXN6a2FA
-c2llbWVucy5jb20NCiAgICBnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZw0KQ2M6IHhl
-bm9tYWktaGVscEBnbmEub3JnDQo=
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> oliver.schlenker@domain.hid wrote:
+>>>>>>> int main( int arc, char *argv[] ) { int i;
+>>>>>>>
+>>>>>>> rt_print_auto_init(1);
+>>>>>>>
+>>>>>>> rt_printf("--------------- TEST RT-PRINTF  1 ------------\n");
+>>>>>>>
+>>>>>>> sleep(1);
+>>>>>>>
+>>>>>>> daemon(0,0);
+>>>>>>>
+>>>>>>> rt_print_auto_init(1);
+>>>>> Ok, understood, at least for the scenario where the rt_print feature
+>>>>> is initialised befor the fork/daemon call. What I don't understand
+>>>>> is, why it does not work if the rt_print feature is initialised after
+>>>>> the fork / daemon.
+>>>> From the way I understand your code, you never tried to initialize the
+>>>> rt_print feature only after the fork, your code initializes it both
+>>>> before and after.
+>>>>
+>>> There are two initializations: The base init done via __rt_print_init on
+>>> library loading and the one to be done per-thread via rt_print_init (or
+>>> on first rt_printf). That printer thread is initialized via the former
+>>> one. On fork, we do not need to re-run the full __rt_print_init
+>>> (variables and resources are cloned on fork), we just need to spawn
+>>> another printer thread.
+>> Unless I am wrong, rtdk also maintains a list of the thread buffers
+>> which need to be polled. After the fork, this list will be intact, but
+>> the threads to which belong the buffers will no longer exist. So, IMO,
+>> the fork handler should also free all these buffers and reset the list
+>> to the empty state.
+> 
+> Famous last words: That should work without tweaking. A print_buffer
+> only contains data references, nothing that points to some uncloned thread.
 
+Ok. But you walk the list of print_buffers every time, and these
+print_buffers remain allocated in the child process. So, that is a kind
+of memory leak.
+
+> 
+> Jan
+> 
+
+
+-- 
+                                          Gilles
 
 
