@@ -1,12 +1,10 @@
-Message-ID: <4ACDEA32.70502@domain.hid>
-Date: Thu, 08 Oct 2009 15:33:38 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <0000ACDD.4ACE037F@192.168.2.103>
-In-Reply-To: <0000ACDD.4ACE037F@192.168.2.103>
-Content-Type: text/plain; charset=UTF-8
+From: Christoph Permes <christoph.permes@domain.hid>
+Date: Thu, 08 Oct 2009 17:03:05 +0200
+Message-Id: <1255014185.4690.56.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Re : rt_printf with daemonized task
+Content-Type: text/plain
+Subject: [Xenomai-help] rt_print segfault on program termination
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,58 +14,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: oliver.schlenker@domain.hid
-Cc: jan.kiszka@domain.hid, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-oliver.schlenker@domain.hid wrote:
-> Did change my test code in the meantime to :
-> 
-> 
-> #include <stdlib.h>
-> #include <stdio.h>
-> 
-> #include <native/task.h>
-> #include <native/timer.h>
-> #include <rtdk.h>
-> 
-> 
-> int main( int arc, char *argv[] )
-> {
-> int i;
-> 
-> daemon(0,1);
-> 
-> __rt_print_init();
-> 
-> rt_print_auto_init(1);
-> 
-> rt_printf("--------------- TEST RT-PRINTF ------------\n");
-> 
-> sleep(10);
-> 
-> return(0);
-> }
-> 
-> 
-> and everything works fine at first glance.
-> 
-> There is at least an output to syslog of the rt_printf message. I have
-> no idea if this creates an internal memory leak. For my application
-> it might be not a real problem, because the fork is done only once.
-> For application with several fork calls or a recursional fork calls it might be
-> not ok.
+Hi,
 
-Calling fork inside an application which has several running threads is
-already insane. Think about it: if the running threads had a mutex
-locked, the mutex will still appear as locked in the child process and
-can not be unlocked. The threads will not exist in the child process,
-but their stacks and allocated tsd will still exists. posix proposes
-pthread_atfork to solve these issues, but not forking in a process with
-threads is more sane (the exception being to call fork+exec or
-vfork+exec, since in that case the virtual memory space will be wiped
-out by exec, so we do not care about the leaks anyway).
+We use a vmware virtual machine for simulation and testing our realtime
+applications.
+Every time when a realtime application terminates the following core
+dump occures:
 
--- 
-                                          Gilles
+Program terminated with signal 11, Segmentation fault.
+[New process 11728]
+[New process 11726]
+[New process 11727]
+#0  0xb7e3e675 in free () from /lib/libc.so.6
+(gdb) bt
+#0  0xb7e3e675 in free () from /lib/libc.so.6
+#1  0xb80551dd in cleanup_buffer (buffer=0x81dd210) at rt_print.c:350
+#2  0xb7dbee27 in __nptl_deallocate_tsd () from /lib/libpthread.so.0
+#3  0xb7dbff49 in start_thread () from /lib/libpthread.so.0
+#4  0xb7e9cb6e in clone () from /lib/libc.so.6
+
+The line where the segfault occures is
+free(buffer->ring);
+
+The segfault never happens when running on a real machine, so it's no
+problem when running in production, but it is annoying when every run in
+the test environment leads to a segmentation fault.
+
+Maybe it is a timing related issue as there are no problems on a real
+machine.
+
+Thanks,
+Christoph
+
 
 
