@@ -1,14 +1,11 @@
-From: Leopold Palomo-Avellaneda <leo@domain.hid>
-Date: Thu, 29 Oct 2009 11:05:05 +0100
-References: <200910281314.00378.leo@domain.hid> <4AE85EE2.60209@domain.hid>
-In-Reply-To: <4AE85EE2.60209@domain.hid>
+From: oliver.schlenker@domain.hid
+Date: Thu, 8 Oct 2009 07:15:17 +0000
+Message-ID: <0000ACAC.4ACDADA4@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain;
-  charset="iso-8859-15"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200910291105.05820.leo@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai patches
+ charset="UTF-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai-help] rt_printf with daemonized task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,86 +15,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
+To: gilles.chanteperdrix@xenomai.org
 Cc: xenomai@xenomai.org
 
-Hi Stefan,
-
-first of all thanks for the guide. I knew more or less all the steps, but you 
-have helped me a lot.
-
-[...]
-
-> Try to modify the line starting with KVERSION=... in the file
-> /usr/src/kernel-patches/$ARCH/apply/xenomai
-> Replace the 4 digit version numbers with 3 digits.
-
-Ok, good to know. This is in same line as Gilles Chanteperdrix mail.
-
-[...]
->
-> 4) repack the archive (*tar.bz2 -> *orig.tar.gz):
-> ~/src/xenomai$ bzcat xenomai-2.4.7.tar.bz2 | gzip >
-> xenomai_2.4.7.orig.tar.gz && rm xenomai-2.4.7.tar.bz2
-
-I don't think that this is necessary. At last I didn't need it.
-
-> 5) extract the archive:
-> ~/src/xenomai$ tar -zxf xenomai_2.4.7.orig.tar.gz
->
-> 6) change dir:
-> ~/src/xenomai$ cd xenomai-2.4.7/
->
-> 7) update debian/changelog:
-> ~/src/xenomai/xenomai-2.4.7$ debchange -v 2.4.7-0 Release 2.4.7
-
-I did it with dch -i . Both are valid.
-
->
-> 8) build:
-> ~/src/xenomai/xenomai-2.4.7$ debuild
-
-it builds the tar.orig.gz
-
-[...]
-
->
-> 6) patch the kernel with xenomai:
-> ~/src/linux/linux-2.6.28.7$ /usr/src/kernel-patches/i386/apply/xenomai
->
-> 7) configure the kernel:
-> [optional] copy a kernel config to .config and run "make oldconfig"
-> [/optional] ~/src/linux/linux-2.6.28.7$ make menuconfig
->
-> 8) compile the kernel with make-kpkg:
-> ~/src/linux/linux-2.6.28.7$ fakeroot make-kpkg --initrd --append-to-version
-> -xenomai-2.4.7 --revision 1.0 binary-arch
-
-you can do it alltogether with:
-
-fakeroot make-kpkg --initrd --added-patches xenomai --config 
-menuconfig --append-to-version "-xenomai-2.4.10" -revision 1.0 binary-arch
-
-also, instead of binary-arch, with kernel_image kernel_headers it's ok.
+DQoNCg0KDQoNCi0tLS0tLS0tIE9yaWdpbmFsIE1lc3NhZ2UgLS0tLS0tLS0NClN1YmplY3Q6IFJl
+OiBSZS04OiBbWGVub21haS1oZWxwXSBydF9wcmludGYgd2l0aCBkYWVtb25pemVkIHRhc2sgKDA3
+LU9rdC0yMDA5IDE3OjI0KQ0KRnJvbTogICAgR2lsbGVzIENoYW50ZXBlcmRyaXggPGdpbGxlcy5j
+aGFudGVwZXJkcml4QHhlbm9tYWkub3JnPg0KVG86ICAgICAgb2xpdmVyLnNjaGxlbmtlckBzbW1v
+dGlvbmNvbnRyb2wuZGUNCg0KPiBvbGl2ZXIuc2NobGVua2VyQHNtbW90aW9uY29udHJvbC5kZSB3
+cm90ZToNCj4gPiANCj4gPiANCj4gPiBBcyB5b3UgZXhwZWN0ZWQsIGNoYW5naW5nIHRoZSBzeXNs
+b2cgY2FsbCBmcm9tDQo+ID4gICAgIHN5c2xvZyggTE9HX0VSUiB8IExPR19MT0NBTDQsIGhlYWQt
+PnRleHQgKTsgDQo+ID4gdG8NCj4gPiAgICAgc3lzbG9nKCBMT0dfRVJSIHwgTE9HX0xPQ0FMNCwg
+IiVzIiwgaGVhZC0+dGV4dCApOyANCj4gPiANCj4gPiBkaWQgbm90IGNoYW5nZSBhbnl0aGluZy4N
+Cj4gPiANCj4gPiBUbyB0cmFjayBkb3duIHRoZSBwcm9ibGVtIGZ1cnRoZXIsIEkgaGF2ZSBtYWRl
+IGEgc21hbGwgdGVzdCBhcHBsaWNhdGlvbiA6DQo+ID4gDQo+ID4gI2luY2x1ZGUgPHN0ZGxpYi5o
+Pg0KPiA+ICNpbmNsdWRlIDxzdGRpby5oPg0KPiA+IA0KPiA+ICNpbmNsdWRlIDxuYXRpdmUvdGFz
+ay5oPg0KPiA+ICNpbmNsdWRlIDxuYXRpdmUvdGltZXIuaD4NCj4gPiAjaW5jbHVkZSA8cnRkay5o
+Pg0KPiA+IA0KPiA+IA0KPiA+IGludCBtYWluKCBpbnQgYXJjLCBjaGFyICphcmd2W10gKQ0KPiA+
+IHsNCj4gPiBpbnQgaTsNCj4gPiANCj4gPiBydF9wcmludF9hdXRvX2luaXQoMSk7DQo+ID4gDQo+
+ID4gcnRfcHJpbnRmKCItLS0tLS0tLS0tLS0tLS0gVEVTVCBSVC1QUklOVEYgIDEgLS0tLS0tLS0t
+LS0tXG4iKTsNCj4gPiANCj4gPiAJc2xlZXAoMSk7DQo+ID4gDQo+ID4gZGFlbW9uKDAsMCk7DQo+
+ID4gDQo+ID4gCXJ0X3ByaW50X2F1dG9faW5pdCgxKTsNCj4gPiANCj4gPiAJcnRfcHJpbnRmKCIt
+LS0tLS0tLS0tLS0tLS0gVEVTVCBSVC1QUklOVEYgIDIgLS0tLS0tLS0tLS0tXG4iKTsNCj4gPiAN
+Cj4gPiAJc2xlZXAoMTApOw0KPiA+IA0KPiA+IHJldHVybigwKTsNCj4gPiB9DQo+ID4gDQo+ID4g
+DQo+ID4gDQo+ID4gVGhpcyBhcHBsaWNhdGlvbiBnaXZlcyB0aGUgZm9sbG93aW5nIHJlc3VsdHMg
+Og0KPiA+IC0gSWYgdGhlIGRhZW1vbigpIGZ1bmN0aW9uIGlzIG5vdCBjYWxsZWQsIGFsbCBydF9w
+cmludGYoKSBkbyB3b3JrIHdlbGwNCj4gPiAgIGFuZCBvdXRwdXQgaXMgc2hvd24gaW4gc3lzbG9n
+DQo+ID4gLSBJZiBkYWVtb24oKSBmdW5jdGlvbiBpcyBjYWxsZWQsIGFuZCBmaXJzdCBjYWxsIHRv
+IHNsZWVwKDEpIGlzIG9taXR0ZWQsDQo+ID4gICB0aGVyZSBpcyBubyBvdXRwdXQgaW4gdGhlIHN5
+c2xvZyB3aGF0c29ldmVyLg0KPiA+IC0gSWYgZGFlbW9uKCkgZnVuY3Rpb24gaXMgY2FsbGVkLCBh
+bmQgZmlyc3QgY2FsbCB0byBzbGVlcCgxKSBpcyBleGVjdXRlZCwNCj4gPiAgIHRoZXJlIGlzIG91
+dHB1dCBvZiB0aGUgZmlyc3QgcnRfcHJpbnRmIGluIHRoZSBzeXNsb2cgYnV0IG5vdCBvZiB0aGUg
+DQo+ID4gc2Vjb25kDQo+ID4gICBvbmUuDQo+ID4gDQo+ID4gSSBkbyBub3QgaGF2ZSBhbnkgaWRl
+YSB3aHkgZGFlbW9uaXppbmcgb2YgdGhlIHByb2Nlc3MgaXMgbm90IGdpdmluZw0KPiA+IGFueSBv
+dXRwdXQgdG8gdGhlIHN5c2xvZy4NCj4gDQo+IENvdWxkIHlvdSB0cnkgZGFlbW9uKDAsIDEpPw0K
+DQpObyBjaGFuZ2UuDQoNCj4gDQoNCkZpcnN0IG9mIGFsbCwgSSB3b3VsZCBsaWtlIHRvIGFwb2xv
+Z2l6ZSBmb3IgdGhlIGluY29udmVuaWVuY2UgSSBwdXQgb24geW91LiBJIHdhc24ndA0KYXdhcmUg
+b2YgdGhpcyBzaXR1YXRpb24uDQoNCj4gQ291bGQgeW91IGFsc28gdHJ5IHRvIHNlbmQgbm9ybWFs
+IHJlcGxpZXMgdG8gb3VyIHJlcGxpZXMsIG5vdCBtYWlscw0KPiB3aGljaCBkbyBub3QgYXBwZWFy
+IGFzIHJlcGxpZXMgYW5kIHN0YXJ0IG5ldyB0aHJlYWRzPw0KDQpIb3BlZnVsbHkgd2l0aCB0aGlz
+IG1haWwgaXQgZGlkIGNoYW5nZS4gSWYgbm90IHBsZWFzZSBsZXQgbWUga25vdyB3aGF0IHRvIGRv
+Lg0KDQo+IA0KPiBDb3VsZCB5b3UgYWxzbyByZW1vdmUgdGhlIGFubm95aW5nIGZlYXR1cmUgdGhh
+dCBhc2sgbWUgdG8gY29uZmlybSB0aGF0IEkNCj4gd2FudCB5b3UgdG8gYmUgbm90aWZpZWQgdGhh
+dCBJIHJlYWQgeW91ciBtYWlsPw0KDQpGZWF0dXJlIHNob3VsZCBub3cgYmUgdHVybmVkIG9mZiwg
+cGxlYXNlIGxldCBtZSBhbHNvIGtub3csIGlmIG5vdC4NCg0KPiANCj4gLS0gDQo+ICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEdpbGxlcw0KPiANCg0KDQpPbGl2ZXIN
+Cg0KDQpUbzogZ2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmcNCkNjOiB4ZW5vbWFpLWhl
+bHBAZ25hLm9yZw0K
 
 
-> if you have a multicore box, use CONCURRENCY_LEVEL= to speed up the build:
-> ~/src/linux/linux-2.6.28.7$ CONCURRENCY_LEVEL=2 fakeroot make-kpkg --initrd
-> --append-to-version -xenomai-2.4.7 --revision 1.0 binary-arch
-
-
-FANTASTIC!!!!
-
-the CONCURRENCY_LEVEL it's great. I didn't know it!!! thanks a lot.
-
-OTOH, the debian package has a bug. I cannot compile xenomai, using the debian 
-way on kernels 2.6.28, 2.6.29 and 2.6.30 because the package add something 
-that fails with make menuconfig. I should write a bug. Just for information, 
-it's not a xenomai upstream related question. ;-)
-
-Thanks for all,
-
-Best regards,
-
-Leo
 
