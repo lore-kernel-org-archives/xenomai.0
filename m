@@ -1,11 +1,16 @@
-From: oliver.schlenker@domain.hid
-Date: Thu, 8 Oct 2009 13:21:36 +0000
-Message-ID: <0000ACDD.4ACE037F@192.168.2.103>
+From: Wolfgang Denk <wd@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset="UTF-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai-help] Re : rt_printf with daemonized task
+Content-type: text/plain; charset=ISO-8859-1
+Content-transfer-encoding: 8bit
+In-reply-to: <4ACDA16B.70607@domain.hid>
+References: <abbab2d60910070942l2bfbc0bboca0232fb674e1ec0@domain.hid>
+	<4ACD86F4.4070407@domain.hid> <4ACD8DCC.50906@domain.hid>
+	<abbab2d60910080104n67bd5ef6t9e1a85b0bbcb7ac8@domain.hid>
+	<4ACDA16B.70607@domain.hid>
+Date: Thu, 08 Oct 2009 15:25:01 +0200
+Message-Id: <20091008132501.76A32E8B31D@gemini.denx.de>
+Subject: Re: [Xenomai-help] XUM 2009 follow-up : Powerlink,
+	CANopen and sockets.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,65 +20,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: gilles.chanteperdrix@xenomai.org, jan.kiszka@domain.hid
+To: Peter Puchwein <peter.puchwein@domain.hid>
 Cc: xenomai@xenomai.org
 
-DQoNCg0KDQoNCi0tLS0tLS0tIE9yaWdpbmFsIE1lc3NhZ2UgLS0tLS0tLS0NClN1YmplY3Q6IFJl
-OiBSZSA6IHJ0X3ByaW50ZiB3aXRoIGRhZW1vbml6ZWQgdGFzayAoMDgtT2t0LTIwMDkgMTQ6MTkp
-DQpGcm9tOiAgICBHaWxsZXMgQ2hhbnRlcGVyZHJpeCA8Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVu
-b21haS5vcmc+DQpUbzogICAgICBvbGl2ZXIuc2NobGVua2VyQHNtbW90aW9uY29udHJvbC5kZQ0K
-DQo+IEphbiBLaXN6a2Egd3JvdGU6DQo+ID4gR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6DQo+
-ID4+IEphbiBLaXN6a2Egd3JvdGU6DQo+ID4+PiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToN
-Cj4gPj4+PiBvbGl2ZXIuc2NobGVua2VyQHNtbW90aW9uY29udHJvbC5kZSB3cm90ZToNCj4gPj4+
-Pj4+PiBpbnQgbWFpbiggaW50IGFyYywgY2hhciAqYXJndltdICkgeyBpbnQgaTsNCj4gPj4+Pj4+
-Pg0KPiA+Pj4+Pj4+IHJ0X3ByaW50X2F1dG9faW5pdCgxKTsNCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4+
-IHJ0X3ByaW50ZigiLS0tLS0tLS0tLS0tLS0tIFRFU1QgUlQtUFJJTlRGICAxIC0tLS0tLS0tLS0t
-LVxuIik7DQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+PiBzbGVlcCgxKTsNCj4gPj4+Pj4+Pg0KPiA+Pj4+
-Pj4+IGRhZW1vbigwLDApOw0KPiA+Pj4+Pj4+DQo+ID4+Pj4+Pj4gcnRfcHJpbnRfYXV0b19pbml0
-KDEpOw0KPiA+Pj4+PiBPaywgdW5kZXJzdG9vZCwgYXQgbGVhc3QgZm9yIHRoZSBzY2VuYXJpbyB3
-aGVyZSB0aGUgcnRfcHJpbnQgZmVhdHVyZQ0KPiA+Pj4+PiBpcyBpbml0aWFsaXNlZCBiZWZvciB0
-aGUgZm9yay9kYWVtb24gY2FsbC4gV2hhdCBJIGRvbid0IHVuZGVyc3RhbmQNCj4gPj4+Pj4gaXMs
-IHdoeSBpdCBkb2VzIG5vdCB3b3JrIGlmIHRoZSBydF9wcmludCBmZWF0dXJlIGlzIGluaXRpYWxp
-c2VkIGFmdGVyDQo+ID4+Pj4+IHRoZSBmb3JrIC8gZGFlbW9uLg0KPiA+Pj4+IEZyb20gdGhlIHdh
-eSBJIHVuZGVyc3RhbmQgeW91ciBjb2RlLCB5b3UgbmV2ZXIgdHJpZWQgdG8gaW5pdGlhbGl6ZSB0
-aGUNCj4gPj4+PiBydF9wcmludCBmZWF0dXJlIG9ubHkgYWZ0ZXIgdGhlIGZvcmssIHlvdXIgY29k
-ZSBpbml0aWFsaXplcyBpdCBib3RoDQo+ID4+Pj4gYmVmb3JlIGFuZCBhZnRlci4NCj4gPj4+Pg0K
-PiA+Pj4gVGhlcmUgYXJlIHR3byBpbml0aWFsaXphdGlvbnM6IFRoZSBiYXNlIGluaXQgZG9uZSB2
-aWEgX19ydF9wcmludF9pbml0IA0KPiBvbg0KPiA+Pj4gbGlicmFyeSBsb2FkaW5nIGFuZCB0aGUg
-b25lIHRvIGJlIGRvbmUgcGVyLXRocmVhZCB2aWEgcnRfcHJpbnRfaW5pdCAob3INCj4gPj4+IG9u
-IGZpcnN0IHJ0X3ByaW50ZikuIFRoYXQgcHJpbnRlciB0aHJlYWQgaXMgaW5pdGlhbGl6ZWQgdmlh
-IHRoZSBmb3JtZXINCj4gPj4+IG9uZS4gT24gZm9yaywgd2UgZG8gbm90IG5lZWQgdG8gcmUtcnVu
-IHRoZSBmdWxsIF9fcnRfcHJpbnRfaW5pdA0KPiA+Pj4gKHZhcmlhYmxlcyBhbmQgcmVzb3VyY2Vz
-IGFyZSBjbG9uZWQgb24gZm9yayksIHdlIGp1c3QgbmVlZCB0byBzcGF3bg0KPiA+Pj4gYW5vdGhl
-ciBwcmludGVyIHRocmVhZC4NCj4gPj4gVW5sZXNzIEkgYW0gd3JvbmcsIHJ0ZGsgYWxzbyBtYWlu
-dGFpbnMgYSBsaXN0IG9mIHRoZSB0aHJlYWQgYnVmZmVycw0KPiA+PiB3aGljaCBuZWVkIHRvIGJl
-IHBvbGxlZC4gQWZ0ZXIgdGhlIGZvcmssIHRoaXMgbGlzdCB3aWxsIGJlIGludGFjdCwgYnV0DQo+
-ID4+IHRoZSB0aHJlYWRzIHRvIHdoaWNoIGJlbG9uZyB0aGUgYnVmZmVycyB3aWxsIG5vIGxvbmdl
-ciBleGlzdC4gU28sIElNTywNCj4gPj4gdGhlIGZvcmsgaGFuZGxlciBzaG91bGQgYWxzbyBmcmVl
-IGFsbCB0aGVzZSBidWZmZXJzIGFuZCByZXNldCB0aGUgbGlzdA0KPiA+PiB0byB0aGUgZW1wdHkg
-c3RhdGUuDQo+ID4gDQo+ID4gRmFtb3VzIGxhc3Qgd29yZHM6IFRoYXQgc2hvdWxkIHdvcmsgd2l0
-aG91dCB0d2Vha2luZy4gQSBwcmludF9idWZmZXINCj4gPiBvbmx5IGNvbnRhaW5zIGRhdGEgcmVm
-ZXJlbmNlcywgbm90aGluZyB0aGF0IHBvaW50cyB0byBzb21lIHVuY2xvbmVkIHRocmVhZC4NCj4g
-DQo+IE9rLiBCdXQgeW91IHdhbGsgdGhlIGxpc3Qgb2YgcHJpbnRfYnVmZmVycyBldmVyeSB0aW1l
-LCBhbmQgdGhlc2UNCj4gcHJpbnRfYnVmZmVycyByZW1haW4gYWxsb2NhdGVkIGluIHRoZSBjaGls
-ZCBwcm9jZXNzLiBTbywgdGhhdCBpcyBhIGtpbmQNCj4gb2YgbWVtb3J5IGxlYWsuDQo+IA0KPiA+
-IA0KPiA+IEphbg0KPiA+IA0KPiANCj4gDQo+IC0tIA0KPiAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICBHaWxsZXMNCj4gDQoNCkRpZCBjaGFuZ2UgbXkgdGVzdCBjb2Rl
-IGluIHRoZSBtZWFudGltZSB0byA6DQoNCg0KI2luY2x1ZGUgPHN0ZGxpYi5oPg0KI2luY2x1ZGUg
-PHN0ZGlvLmg+DQoNCiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPg0KI2luY2x1ZGUgPG5hdGl2ZS90
-aW1lci5oPg0KI2luY2x1ZGUgPHJ0ZGsuaD4NCg0KDQppbnQgbWFpbiggaW50IGFyYywgY2hhciAq
-YXJndltdICkNCnsNCmludCBpOw0KDQpkYWVtb24oMCwxKTsNCg0KX19ydF9wcmludF9pbml0KCk7
-DQoNCnJ0X3ByaW50X2F1dG9faW5pdCgxKTsNCg0KcnRfcHJpbnRmKCItLS0tLS0tLS0tLS0tLS0g
-VEVTVCBSVC1QUklOVEYgLS0tLS0tLS0tLS0tXG4iKTsNCg0Kc2xlZXAoMTApOw0KDQpyZXR1cm4o
-MCk7DQp9DQoNCg0KYW5kIGV2ZXJ5dGhpbmcgd29ya3MgZmluZSBhdCBmaXJzdCBnbGFuY2UuDQoN
-ClRoZXJlIGlzIGF0IGxlYXN0IGFuIG91dHB1dCB0byBzeXNsb2cgb2YgdGhlIHJ0X3ByaW50ZiBt
-ZXNzYWdlLiBJIGhhdmUNCm5vIGlkZWEgaWYgdGhpcyBjcmVhdGVzIGFuIGludGVybmFsIG1lbW9y
-eSBsZWFrLiBGb3IgbXkgYXBwbGljYXRpb24NCml0IG1pZ2h0IGJlIG5vdCBhIHJlYWwgcHJvYmxl
-bSwgYmVjYXVzZSB0aGUgZm9yayBpcyBkb25lIG9ubHkgb25jZS4NCkZvciBhcHBsaWNhdGlvbiB3
-aXRoIHNldmVyYWwgZm9yayBjYWxscyBvciBhIHJlY3Vyc2lvbmFsIGZvcmsgY2FsbHMgaXQgbWln
-aHQgYmUNCm5vdCBvay4NCg0KDQpPbGl2ZXINCg0KDQoNCg0KVG86IGdpbGxlcy5jaGFudGVwZXJk
-cml4QHhlbm9tYWkub3JnDQogICAgamFuLmtpc3prYUBzaWVtZW5zLmNvbQ0KQ2M6IHhlbm9tYWkt
-aGVscEBnbmEub3JnDQo=
+Dear Peter Puchwein,
 
+In message <4ACDA16B.70607@domain.hid> you wrote:
+> 
+> So the usage of the linux-based Ethercat implementations is completely 
+> free but Beckhoff want's to take care that EtherCAT products stay 
 
+This is not correct.
+
+OSADL had long discussions with Beckhoff about that before OSADL
+buried their ready to be released EtherCAT master stack.
+
+> compatible so they have their own license you sign if you use the 
+> technology.
+
+Right, and this additional license requirements imposed by Beckhoff
+prevents the use of EtherCAT in a GPL based contaxt (like the Linux
+kernel).
+
+> With this type of license the Opensource-Community is not happy I think, 
+> maybe of conflicts with the GPL.
+
+Indeed it it is a conflict with GPL.
+
+Best regards,
+
+Wolfgang Denk
+
+-- 
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
+Single tasking: Just Say No.
 
