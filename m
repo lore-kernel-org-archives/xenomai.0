@@ -1,12 +1,11 @@
-Message-ID: <4ACDE654.9010200@domain.hid>
-Date: Thu, 08 Oct 2009 15:17:08 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: oliver.schlenker@domain.hid
+Date: Thu, 8 Oct 2009 13:21:36 +0000
+Message-ID: <0000ACDD.4ACE037F@192.168.2.103>
 MIME-Version: 1.0
-References: <0000ACCF.4ACDF0A2@domain.hid>
-In-Reply-To: <0000ACCF.4ACDF0A2@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] :: rt_printf with daemonized task
+Content-Type: text/plain;
+ charset="UTF-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai-help] Re : rt_printf with daemonized task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,95 +15,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "oliver.schlenker@domain.hid" <oliver.schlenker@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: gilles.chanteperdrix@xenomai.org, jan.kiszka@domain.hid
+Cc: xenomai@xenomai.org
 
-oliver.schlenker@domain.hid wrote:
-> 
-> 
-> 
-> 
-> -------- Original Message --------
-> Subject: Re: Re : rt_printf with daemonized task (08-Okt-2009 12:16)
-> From:    Jan Kiszka <jan.kiszka@domain.hid>
-> To:      oliver.schlenker@domain.hid
-> 
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> oliver.schlenker@domain.hid wrote:
->>>>>>>> int main( int arc, char *argv[] ) { int i;
->>>>>>>>
->>>>>>>> rt_print_auto_init(1);
->>>>>>>>
->>>>>>>> rt_printf("--------------- TEST RT-PRINTF  1 ------------\n");
->>>>>>>>
->>>>>>>> sleep(1);
->>>>>>>>
->>>>>>>> daemon(0,0);
->>>>>>>>
->>>>>>>> rt_print_auto_init(1);
->>>>>> Ok, understood, at least for the scenario where the rt_print feature
->>>>>> is initialised befor the fork/daemon call. What I don't understand
->>>>>> is, why it does not work if the rt_print feature is initialised after
->>>>>> the fork / daemon.
->>>>> From the way I understand your code, you never tried to initialize the
->>>>> rt_print feature only after the fork, your code initializes it both
->>>>> before and after.
->>>>>
->>>> There are two initializations: The base init done via __rt_print_init on
->>>> library loading and the one to be done per-thread via rt_print_init (or
->>>> on first rt_printf). That printer thread is initialized via the former
->>>> one. On fork, we do not need to re-run the full __rt_print_init
->>>> (variables and resources are cloned on fork), we just need to spawn
->>>> another printer thread.
->>> Unless I am wrong, rtdk also maintains a list of the thread buffers
->>> which need to be polled. After the fork, this list will be intact, but
->>> the threads to which belong the buffers will no longer exist. So, IMO,
->>> the fork handler should also free all these buffers and reset the list
->>> to the empty state.
->> Famous last words: That should work without tweaking. A print_buffer
->> only contains data references, nothing that points to some uncloned thread.
->>
->> Jan
->>
->> -- 
->> Siemens AG, Corporate Technology, CT SE 2
->> Corporate Competence Center Embedded Linux
-> 
-> To have a fork save rtprint library it's necessary to
-> 
-> 1. Reset rtdk thread buffer list
->    
->     I have no idea where to look at for the rtdk thread buffer list. Inside rt_print.c ?
+DQoNCg0KDQoNCi0tLS0tLS0tIE9yaWdpbmFsIE1lc3NhZ2UgLS0tLS0tLS0NClN1YmplY3Q6IFJl
+OiBSZSA6IHJ0X3ByaW50ZiB3aXRoIGRhZW1vbml6ZWQgdGFzayAoMDgtT2t0LTIwMDkgMTQ6MTkp
+DQpGcm9tOiAgICBHaWxsZXMgQ2hhbnRlcGVyZHJpeCA8Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVu
+b21haS5vcmc+DQpUbzogICAgICBvbGl2ZXIuc2NobGVua2VyQHNtbW90aW9uY29udHJvbC5kZQ0K
+DQo+IEphbiBLaXN6a2Egd3JvdGU6DQo+ID4gR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6DQo+
+ID4+IEphbiBLaXN6a2Egd3JvdGU6DQo+ID4+PiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToN
+Cj4gPj4+PiBvbGl2ZXIuc2NobGVua2VyQHNtbW90aW9uY29udHJvbC5kZSB3cm90ZToNCj4gPj4+
+Pj4+PiBpbnQgbWFpbiggaW50IGFyYywgY2hhciAqYXJndltdICkgeyBpbnQgaTsNCj4gPj4+Pj4+
+Pg0KPiA+Pj4+Pj4+IHJ0X3ByaW50X2F1dG9faW5pdCgxKTsNCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4+
+IHJ0X3ByaW50ZigiLS0tLS0tLS0tLS0tLS0tIFRFU1QgUlQtUFJJTlRGICAxIC0tLS0tLS0tLS0t
+LVxuIik7DQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+PiBzbGVlcCgxKTsNCj4gPj4+Pj4+Pg0KPiA+Pj4+
+Pj4+IGRhZW1vbigwLDApOw0KPiA+Pj4+Pj4+DQo+ID4+Pj4+Pj4gcnRfcHJpbnRfYXV0b19pbml0
+KDEpOw0KPiA+Pj4+PiBPaywgdW5kZXJzdG9vZCwgYXQgbGVhc3QgZm9yIHRoZSBzY2VuYXJpbyB3
+aGVyZSB0aGUgcnRfcHJpbnQgZmVhdHVyZQ0KPiA+Pj4+PiBpcyBpbml0aWFsaXNlZCBiZWZvciB0
+aGUgZm9yay9kYWVtb24gY2FsbC4gV2hhdCBJIGRvbid0IHVuZGVyc3RhbmQNCj4gPj4+Pj4gaXMs
+IHdoeSBpdCBkb2VzIG5vdCB3b3JrIGlmIHRoZSBydF9wcmludCBmZWF0dXJlIGlzIGluaXRpYWxp
+c2VkIGFmdGVyDQo+ID4+Pj4+IHRoZSBmb3JrIC8gZGFlbW9uLg0KPiA+Pj4+IEZyb20gdGhlIHdh
+eSBJIHVuZGVyc3RhbmQgeW91ciBjb2RlLCB5b3UgbmV2ZXIgdHJpZWQgdG8gaW5pdGlhbGl6ZSB0
+aGUNCj4gPj4+PiBydF9wcmludCBmZWF0dXJlIG9ubHkgYWZ0ZXIgdGhlIGZvcmssIHlvdXIgY29k
+ZSBpbml0aWFsaXplcyBpdCBib3RoDQo+ID4+Pj4gYmVmb3JlIGFuZCBhZnRlci4NCj4gPj4+Pg0K
+PiA+Pj4gVGhlcmUgYXJlIHR3byBpbml0aWFsaXphdGlvbnM6IFRoZSBiYXNlIGluaXQgZG9uZSB2
+aWEgX19ydF9wcmludF9pbml0IA0KPiBvbg0KPiA+Pj4gbGlicmFyeSBsb2FkaW5nIGFuZCB0aGUg
+b25lIHRvIGJlIGRvbmUgcGVyLXRocmVhZCB2aWEgcnRfcHJpbnRfaW5pdCAob3INCj4gPj4+IG9u
+IGZpcnN0IHJ0X3ByaW50ZikuIFRoYXQgcHJpbnRlciB0aHJlYWQgaXMgaW5pdGlhbGl6ZWQgdmlh
+IHRoZSBmb3JtZXINCj4gPj4+IG9uZS4gT24gZm9yaywgd2UgZG8gbm90IG5lZWQgdG8gcmUtcnVu
+IHRoZSBmdWxsIF9fcnRfcHJpbnRfaW5pdA0KPiA+Pj4gKHZhcmlhYmxlcyBhbmQgcmVzb3VyY2Vz
+IGFyZSBjbG9uZWQgb24gZm9yayksIHdlIGp1c3QgbmVlZCB0byBzcGF3bg0KPiA+Pj4gYW5vdGhl
+ciBwcmludGVyIHRocmVhZC4NCj4gPj4gVW5sZXNzIEkgYW0gd3JvbmcsIHJ0ZGsgYWxzbyBtYWlu
+dGFpbnMgYSBsaXN0IG9mIHRoZSB0aHJlYWQgYnVmZmVycw0KPiA+PiB3aGljaCBuZWVkIHRvIGJl
+IHBvbGxlZC4gQWZ0ZXIgdGhlIGZvcmssIHRoaXMgbGlzdCB3aWxsIGJlIGludGFjdCwgYnV0DQo+
+ID4+IHRoZSB0aHJlYWRzIHRvIHdoaWNoIGJlbG9uZyB0aGUgYnVmZmVycyB3aWxsIG5vIGxvbmdl
+ciBleGlzdC4gU28sIElNTywNCj4gPj4gdGhlIGZvcmsgaGFuZGxlciBzaG91bGQgYWxzbyBmcmVl
+IGFsbCB0aGVzZSBidWZmZXJzIGFuZCByZXNldCB0aGUgbGlzdA0KPiA+PiB0byB0aGUgZW1wdHkg
+c3RhdGUuDQo+ID4gDQo+ID4gRmFtb3VzIGxhc3Qgd29yZHM6IFRoYXQgc2hvdWxkIHdvcmsgd2l0
+aG91dCB0d2Vha2luZy4gQSBwcmludF9idWZmZXINCj4gPiBvbmx5IGNvbnRhaW5zIGRhdGEgcmVm
+ZXJlbmNlcywgbm90aGluZyB0aGF0IHBvaW50cyB0byBzb21lIHVuY2xvbmVkIHRocmVhZC4NCj4g
+DQo+IE9rLiBCdXQgeW91IHdhbGsgdGhlIGxpc3Qgb2YgcHJpbnRfYnVmZmVycyBldmVyeSB0aW1l
+LCBhbmQgdGhlc2UNCj4gcHJpbnRfYnVmZmVycyByZW1haW4gYWxsb2NhdGVkIGluIHRoZSBjaGls
+ZCBwcm9jZXNzLiBTbywgdGhhdCBpcyBhIGtpbmQNCj4gb2YgbWVtb3J5IGxlYWsuDQo+IA0KPiA+
+IA0KPiA+IEphbg0KPiA+IA0KPiANCj4gDQo+IC0tIA0KPiAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBHaWxsZXMNCj4gDQoNCkRpZCBjaGFuZ2UgbXkgdGVzdCBjb2Rl
+IGluIHRoZSBtZWFudGltZSB0byA6DQoNCg0KI2luY2x1ZGUgPHN0ZGxpYi5oPg0KI2luY2x1ZGUg
+PHN0ZGlvLmg+DQoNCiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPg0KI2luY2x1ZGUgPG5hdGl2ZS90
+aW1lci5oPg0KI2luY2x1ZGUgPHJ0ZGsuaD4NCg0KDQppbnQgbWFpbiggaW50IGFyYywgY2hhciAq
+YXJndltdICkNCnsNCmludCBpOw0KDQpkYWVtb24oMCwxKTsNCg0KX19ydF9wcmludF9pbml0KCk7
+DQoNCnJ0X3ByaW50X2F1dG9faW5pdCgxKTsNCg0KcnRfcHJpbnRmKCItLS0tLS0tLS0tLS0tLS0g
+VEVTVCBSVC1QUklOVEYgLS0tLS0tLS0tLS0tXG4iKTsNCg0Kc2xlZXAoMTApOw0KDQpyZXR1cm4o
+MCk7DQp9DQoNCg0KYW5kIGV2ZXJ5dGhpbmcgd29ya3MgZmluZSBhdCBmaXJzdCBnbGFuY2UuDQoN
+ClRoZXJlIGlzIGF0IGxlYXN0IGFuIG91dHB1dCB0byBzeXNsb2cgb2YgdGhlIHJ0X3ByaW50ZiBt
+ZXNzYWdlLiBJIGhhdmUNCm5vIGlkZWEgaWYgdGhpcyBjcmVhdGVzIGFuIGludGVybmFsIG1lbW9y
+eSBsZWFrLiBGb3IgbXkgYXBwbGljYXRpb24NCml0IG1pZ2h0IGJlIG5vdCBhIHJlYWwgcHJvYmxl
+bSwgYmVjYXVzZSB0aGUgZm9yayBpcyBkb25lIG9ubHkgb25jZS4NCkZvciBhcHBsaWNhdGlvbiB3
+aXRoIHNldmVyYWwgZm9yayBjYWxscyBvciBhIHJlY3Vyc2lvbmFsIGZvcmsgY2FsbHMgaXQgbWln
+aHQgYmUNCm5vdCBvay4NCg0KDQpPbGl2ZXINCg0KDQoNCg0KVG86IGdpbGxlcy5jaGFudGVwZXJk
+cml4QHhlbm9tYWkub3JnDQogICAgamFuLmtpc3prYUBzaWVtZW5zLmNvbQ0KQ2M6IHhlbm9tYWkt
+aGVscEBnbmEub3JnDQo=
 
-It's all there, it's called first_buffer. Just walk that list and call
-cleanup_buffers on the entries.
 
->    
-> 2. Spawning another printer thread
->     with code like :
-> 	pthread_attr_init(&thattr);
-> 	pthread_attr_setstacksize(&thattr, PTHREAD_STACK_MIN);
-> 	pthread_create(&__printer_thread, &thattr, printer_loop, NULL); 
-> 
-> 
-> Is there anything else to do ?
-> 
-
-Probably not, but I was already wrong before. :)
-
-> 
-> I'm also planning to add a function to the lib like :
-> 
-> rt_print_to_syslog( int priority )
-
-Better provide some rt_syslog(int priority, char *format, ...),
-corresponding to the standard service.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
 
