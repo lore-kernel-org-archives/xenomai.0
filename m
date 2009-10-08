@@ -1,14 +1,15 @@
-Mime-Version: 1.0 (Apple Message framework v1076)
-Content-Type: text/plain; charset=us-ascii; format=flowed; delsp=yes
-From: Stefan Schaal <sschaal@domain.hid>
-In-Reply-To: <4AE9A1DB.1060506@domain.hid>
-Date: Thu, 29 Oct 2009 08:25:41 -0700
-Content-Transfer-Encoding: 7bit
-Message-Id: <67A93E2E-3273-45B0-ACCE-9FC7A104F9A5@domain.hid>
-References: <1B242B31-29DB-4363-8B08-8E77B2928C34@domain.hid>
-	<4AE9A1DB.1060506@domain.hid>
-Subject: Re: [Xenomai-help] analog output device with comedi/analogy --
-	suddenly threads don't work anymore
+MIME-Version: 1.0
+Sender: edouard.tisserant@domain.hid
+In-Reply-To: <4ACD8DCC.50906@domain.hid>
+References: <abbab2d60910070942l2bfbc0bboca0232fb674e1ec0@domain.hid>
+	<4ACD86F4.4070407@domain.hid> <4ACD8DCC.50906@domain.hid>
+Date: Thu, 8 Oct 2009 10:04:04 +0200
+Message-ID: <abbab2d60910080104n67bd5ef6t9e1a85b0bbcb7ac8@domain.hid>
+From: Edouard TISSERANT <edouard.tisserant@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] XUM 2009 follow-up : Powerlink,
+	CANopen and 	sockets.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,61 +19,119 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org, Peter Pastor Sampedro <pastorsa@domain.hid>
+To: Anders Blomdell <anders.blomdell@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi Gilles,
+Hello.
 
-   this works -- thanks a lot! I will also look out for the  
-configure.in fix and try this one afterwards.
+I agree, it is a shame for those patent holder to behave that way.
+Sure they don't even understand the way they are killing their own
+future business. Even more incredible is the weakness of the invention
+claimed by those patents.
 
-Best wishes,
+I also admit that Powerlink is far from being the smartest and more
+efficient real time Ethernet implementation, but it have the advantage
+to only require standard Ethernet controllers for both Masters and
+Slaves.
 
--Stefan
+Please, now, let's keep those problems out of that discussion, and
+focus on the only Ethernet based fieldbus we can implement freely
+without taking risk to be censored.
+
+Edouard
 
 
-On Oct 29, 2009, at 7:08, Gilles Chanteperdrix wrote:
-
-> Stefan Schaal wrote:
->> Hi,
+2009/10/8 Anders Blomdell <anders.blomdell@domain.hid>:
+> Peter Puchwein wrote:
+>> Edouard TISSERANT wrote:
+>>> Dear hackers,
+>>>
+>>> I've been passing last month seeking for the best way to implement
+>>> Powerlink with Xenomai. I still didn't find the absolute truth, and
+>>> would like to confront my point of view.
+>>>
+>>> In short, Powerlink is a kind of CANopen over polled ethernet.
+>>> Powerlink re-use a subset of CANopen concepts for high level
+>>> communications, whereas on the low level, a single master cyclically
+>>> poll each node for data. As you can imagine, communication cycle is
+>>> seriously influenced by each controlled node latency answering poll
+>>> requests from master.
+>>>
+>>> My intention is to write an efficient Powerlink implementation for
+>>> Xenomai, but suitable for later reuse in future Real Time Linux
+>>> implementation such as RT-PREEMPT. Discussing with RT-PREEMT gurus, I
+>>> understood that re-using native Linux queues could never be a
+>>> solution, as those queues induce way too long and unpredictable
+>>> latencies for such real-time ethernet (those latencies also apply for
+>>> SocketCan). Some software hook at ethernet driver level will be
+>>> necessary to reroute RT-related packets directly to the concerned RT
+>>> stack. With this approach, the whole stack would have to stay kernel
+>>> side to reduce latency in answering poll requests. Implementing the
+>>> whole CANopen stack kernel side is generally a bad idea, as it
+>>> complicate access to object dictionary from application, usually in
+>>> user space.
+>>>
+>>> RTnet proves that Real-Time ethernet can be implemented through the
+>>> socket paradigm. I believe that Time Division Medium Access (TDMA) of
+>>> RTnet could be interchanged with polled ethernet medium access
+>>> discipline from Powerlink. Thus, CANopen implementation part could
+>>> stay user side, and could pre-fill answers to poll requests, avoiding
+>>> long latencies. But what is the future of RTnet ? Will it be ported to
+>>> RT-PREEMPT or will it enter official Xenomai tree ? Will available
+>>> RTnet's drivers set continue to grow ? Would it be theoretically
+>>> possible for RTnet to support Linux ethernet drivers through a hook
+>>> mechanism as mentioned in previous paragraph ?
+>>>
+>>> My feeling is that, yes, we should try to fit implementation of
+>>> Powerlink data link layer inside RTnet as another MAC discipline, and
+>>> use a modified version of CanFestival for CANopen aspects, keeping it
+>>> a user space library. Please comment.
+>>>
+>>> Best regards,
+>>>
+>>> Edouard
+>>>
 >>
->>   this is following up on an installation of Alex's Xenomai tree on
->> Ubuntu 9.04 running the 2.6.29.5 kernel. While we managed to talk to
->> the  NI data acquisition board we have with this tree, we suddenly
->> discovered that some of our other software doesn't work anymore, in
->> particular threads. Below is a tiny program to run a thread, and the
->> compile statement we use. The thread never starts running. Does
->> anybody know what is going wrong here?
 >>
->> Thanks  a lot for any hint!
+>> Hi Edouard,
+>>
+>> we are successfully using the EtherCAT-Master (www.etherlab.org) with
+>> xenomai. We've choosen EtherCAT because of the high availability of
+>> components.
+>> With the features CoE (Can over Ethercat) and EoE (Ethernet over
+>> Ethercat) you have a lot of possibilities.
+>> Most common network drivers are already implemented for use with
+>> realtime implementations like Xenomai.
+> Beware that Beckhoff does not allow open-source implementations of the Et=
+herCAT
+> stack, they require you to sign a "shared source license" that prohibits =
+anybody
+> to use the code for any other purpose than a "standard compliant EtherCAT
+> master". We scrapped all our EtherCAT development (which was demonstrated=
+ at
+> JavaOne 2007) because of that very prohibitive license.
 >
-> Ok, you have been hit by a combo of two bugs:
-> - you are compiling with static libraries because dynamic libraries  
-> are
-> temporarily disabled (due to a bug in configure.in for which Jan has
-> provided the fix just today);
-> - the --wrap mechanism used by the Xenomai posix skin has a known  
-> issue
-> with static libraries.
+> /Anders
 >
-> Fortunately, we recently implemented a fix for this second bug: use  
-> the
-> wrap-link.sh script on the compilation command line.
->
-> As in:
->
-> /usr/xenomai/bin/wrap-link.sh gcc -o xtest xeno_thread_test.c
-> -I/Network/Servers/duerer/clmc/prog/
-> include -I/usr/xenomai/include -I/usr/xenomai/include/posix -
-> D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__ -Wl,@/usr/xenomai/ 
-> lib/
-> posix.wrappers -L/usr/xenomai/lib -lpthread_rt -lpthread -lrt
->
-> Please tell us if it still does not work.
->
-> -- 
->                                          Gilles
->
+> --
+> Anders Blomdell =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Email: anders.blomdell=
+@control.lth.se
+> Department of Automatic Control
+> Lund University =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Phone: =A0 =A0+46 46 2=
+22 4625
+> P.O. Box 118 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 Fax: =A0 =A0 =A0+46 =
+46 138118
+> SE-221 00 Lund, Sweden
 >
 
+
+
+--=20
+LOLITech
+24, rue Pierre Evrat
+88100 Saint-Di=E9 des Vosges
+tel: +33 3 29 57 60 42
+mob: +33 6 10 49 76 41
+edouard.tisserant@domain.hid
+http://www.lolitech.fr
 
