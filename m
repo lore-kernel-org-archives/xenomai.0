@@ -1,151 +1,240 @@
-MIME-Version: 1.0
-Date: Fri, 25 Sep 2009 15:12:52 +0900
-Message-ID: <1f3e02580909242312i2a817f43y6a63a8d15631d3ec@domain.hid>
-From: Didenko Sergey <didenkos@domain.hid>
-Content-Type: multipart/alternative; boundary=001636e1f73e99318f047460d664
-Subject: [Xenomai-help] Support for ARCH_MV88F6290
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <200910120051.30148.berlemont.hauw@domain.hid>
+References: <200910080126.13483.berlemont.hauw@domain.hid>
+	<72cf3fb0910081500y7f22500erb1415a16ea402919@domain.hid>
+	<1255075447.2781.111.camel@domain.hid>
+	<200910120051.30148.berlemont.hauw@domain.hid>
+Content-Type: text/plain
+Date: Mon, 12 Oct 2009 11:30:11 +0200
+Message-Id: <1255339811.2694.228.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Some thoughts on Analogy "kernel side" framework
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
-Cc: jorge.ramirez@domain.hid, "Me (Samsung Account)" <d.sergey@domain.hid>, mohamad.sharifi@domain.hid
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Alexis Berlemont <berlemont.hauw@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
---001636e1f73e99318f047460d664
-Content-Type: text/plain; charset=UTF-8
+On Mon, 2009-10-12 at 00:51 +0200, Alexis Berlemont wrote:
+> On Friday 09 October 2009 10:04:07 you wrote:
+> > On Fri, 2009-10-09 at 00:00 +0200, Alexis Berlemont wrote:
+> > > If I understand well, I have gone too far too soon; the idea should be
+> > > to keep the current framework as it is for 2.5.
+> > >
+> > > However, my former mail was not a definitive plan. The first goal was
+> > > to share ideas. So, do not worry too much. :)
+> > 
+> > Maintaining two different frameworks for the same purpose won't fly. I'm
+> > worried because the future of Comedi/RTDM as merged in the 2.5 tree just
+> > became unclear - to say the least - as from you introduced the idea of
+> > changing its architecture.
+> > 
+> > Your potential user-base has to know whether using the current
+> > Comedi/RTDM framework for new designs based on 2.5.x will still make
+> > sense in six months from now, when Analogy eventually emerges.
+> > 
+> > In other words, is there any upgrade path planned? What would this
+> > entail?
+> > 
+> > Would one have to rewrite custom DAQ drivers to port them from
+> > Comedi/RTDM to Analogy, or could rely on a some compat wrapper for
+> > supporting legacy Comedi/RTDM Driver-Kernel interface on top of the
+> > Analogy core?
+> > 
+> > Would that new architecture bring changes in the applications, i.e. what
+> > about the impact of such changes on the way userland interfaces to the
+> > acquisition framework and/or its drivers?
+> > 
+> > I would have thought that Comedi/RTDM in the 2.5 tree would become
+> > Analogy as is, and evolve over time in a careful manner so that people
+> > always have a reasonable upgrade path. But now, I'm unsure whether this
+> > is going to be the case, or we would end up with two different
+> > frameworks. So, what is the _exact_ plan?
+> 
+> Ok. I will try to give my rough ideas.
+> 
+> Comedi / RTDM is facing many questions:
+> 
+> 1) Peter Soetens, a Comedi user, once told us that the APIs (kernel and user) 
+> divergences with upstream were going to bring many troubles. maintaining 
+> tasks, difficulties to lure orginal Comedi users, etc. 
+> -> Should I ignore what was told that day or should I find a way to satisfy 
+> the main request which was a smooth transition between Comedi upstream and 
+> Comedi/RTDM.
+> 
 
-Hello All
+You don't seem to get the point yet: I'm in no way arguing about which
+technical direction you should head your project to, and I have no issue
+with your technical analysis.
 
-I'm porting Xenomai 2.4.9 to the Linux Kernel 2.6.29.
+The issue I have is with your project management: Comedi/RTDM is
+currently part of the Xenomai tree, scheduled for 2.5 for more than a
+year, and you are now in the "back to the future" mode, asking people
+their feedback about major changes your would like to see in your
+infrastructure, at a moment when one may have expected it to be stable.
+This won't fly.
 
-Target platform is MV 88F6290
-CPU: ARM926EJ-S
-Adeos patch: adeos-ipipe-2.6.29-arm-1.13-03.patch
+> 2) People developing with Comedilib do not seem to be the same guys working on 
+> the drivers. So, even if common users agreed with porting their applications 
+> on the new library interface, they could not integrate their needed drivers 
+> into the Xenomai drivers set. If you want a clue, have a look at the Comedi 
+> mailing list, there are plenty of mails starting with "Is there a Comedi 
+> driver for ..."
+> -> Should I still be confident that there will be contributions of drivers ?
+> 
 
-I do patch the kernel with xenomai and adeos:
-./prepare-kernel.sh --arch=arm --linux=/.../kernel/linux-2.6.29-v02.00.29/
---adeos=/.../xenomai-2.4.9/ksrc/arch/arm/patches/adeos-ipipe-2.6.29-arm-1.13-03.patch
+If your point is about mentioning that OS implementers should provide a
+stable framework to build over, for others to implement drivers for
+their own devices, well, ok, I was vaguely aware of this; thanks for the
+heads up anyway. Problem is that you have just shot yourself in the
+foot, by tagging Comedi/RTDM has unstable and unusable in the context of
+developing drivers.
 
-Then I compile the Linux kernel.
-At the time when I start to compile the kernel I have to answer for many
-questions regarding configuration, it is Ok!
-But finally I got the compile error like:
+If you tell people that you are about to rewrite the kernel side
+significantly before they had a chance to get their feet wet with it and
+consider basing their future work on it, you won't get any contribution,
+obviously. They will wait for your own dust to settle. Or they may not
+wait at all, and walk away.
 
-===
-arch/arm/kernel/ipipe.c: In function '__ipipe_grab_irq':
-arch/arm/kernel/ipipe.c:492: error: implicit declaration of function
-'__ipipe_mach_irq_mux_p'
-make[1]: *** [arch/arm/kernel/ipipe.o] Error 1
-make: *** [arch/arm/kernel] Error 2
-===
+At any rate, deprecating the current Comedi/RTDM architecture now, only
+a few weeks before Xenomai 2.5 is rolled out, has pretty bad timing, to
+say the least.
 
-the reason of this error is that there is no definition of the macro
-"__ipipe_mach_irq_mux_p" for the target platform as well as there are no the
-others CPU dependent definitions.
+> 3) The Comedi framework is too different from other well-known frameworks. 
+> However, I consider that audio and multimedia cards are not different from 
+> acquistion devices. All of them can be divided into subdevices or components 
+> but neither v4l2 nor alsa did implement subdevices configurations like Comedi 
+> did. v4l2 and alsa drivers are working both with devices fops-like structures 
+> but Comedi is working with per subdevices callbacks far from the Linux driver 
+> model. Etc.
+> -> Should I leave our framework like it is ? Are we sure that the fact the 
+> original Comedi framework is slowly losing contributions is a coincidence ?
+> 
 
-If I refer to the file "arch/arm/mach-at91/include/mach/irqs.h" all
-definitions like
-CONFIG_ARCH_AT91SAM9* are not defined
+Nobody tells you to freeze your work, and/or not to think of a better
+approach. But you need to do a better job of explaining how your
+potential users will get their upgrade path to your new architecture.
+And you did not. This is what having a plan means, not just telling
+people that you are not happy with the framework, and asking them how
+they would want it to be overhauled. Most of those who might want to
+base their work on Comedi/RTDM today would NOT want you to make the
+codebase a moving target.
 
-But, in the Xenomai's build questionnaire messages (build time) I found next
-lines:
+So, the plan I was talking about could be something along these lines:
 
-===
+- we have such issues with Comedi/RTDM (fair enough)
+- it is suggested to fix them later this way in Analogy
+then,
 
-*
-* System Type
-*
-ARM system type
-  1. Agilent AAEC-2000 based (ARCH_AAEC2000)
- .
- .
- .
-  38. Nuvoton W90X900 CPU (ARCH_W90X900)
-> 39. Marvell MV88F6290 (ARCH_MV88F6290)
-choice[1-39]: 39
+- we could provide an upgrade path from Comedi/RTDM (drivers and APIs)
+to Analogy that way...
+OR,
+- there is no reasonable upgrade path, so well, we would have to scrap
+Comedi/RTDM from the Xenomai 2.5 tree, because this makes no sense to
+issue a temporary framework for writing long-lived code such as drivers.
 
-===
+Btw, AFAICT, it does not make much sense to keep Comedi/RTDM as your
+project name within Xenomai 2.5; it should have been moved to Analogy
+already. You may change your underlying architecture at some point
+without changing the name of your project, and keeping "Comedi" in the
+naming seems confusing, since there is no way it could be merged with
+the original project anyway.
 
-Actually I did not select any system type anyhow. And it does not allow me
-to select it somehow, but the default choice is correct - system type is
-MV88F6290! I don't know why but it is a very nice that default system type
-is exactly what I need :) (please give some comments on it)
+> 4) I tried to exchange with the original Comedi developers (even on the LKML). 
+> Nothing emerged from my mails (except that the Comedi maintainers told me to 
+> send my contributions to Greg KH and Greg KH told me to send my contributions 
+> to the Comedi maintainers).
+> -> Do you have any sign that someone is working on the Comedi core ?
+> 
 
-The questions!
+That is not the point. There is a problem with Comedi, fair enough, but
+let's not import it to Xenomai. Unless I'm mistaken, that particular
+issue has been solved by switching gear to Analogy, so let's not rehash
+the reasons why it has been done, those are pretty obvious. Get away
+with this and move on.
 
-1) It looks like Xenomai do support the target SoC (MV88F6290), as well as
-do support processor type ARM926 it has.
-Then why I can not find the CPU dependent definitions in the patched
-kernel's source code?
-2) What does it takes for you to support this system and CPU if it is not
-supported yet?
+> 5) So far, Comedi/RTDM has only one driver which deserves interest: the 
+> National Instruments NI PCIMIO. And it took quite a long time to make it work 
+> by myself and I still have some work to do on it. A user still has some 
+> troubles with his specific PPC host board. We are striving to find the bug.
+> -> Do we really have a significant user base for Comedi/RTDM ?
+> 
 
-IF you do support for this system for 2.6.29 version of kernel It would be
-great because I can test it on my target board and give you all feed back
-with the results, and finally you can include it to the next patches.
+Nobody can force a user base to exist, but you could make it simpler for
+it to emerge, that is my point. By introducing uncertainty regarding
+your architecture a few weeks before the first release of your project
+in Xenomai, you are confusing people. This won't help having them write
+drivers for it.
 
-Looking forward to hearing from you any help regarding anything I can do to
-run the patched kernel on my board successfully.
+> 
+> These questions led me to the conclusions I shared in the ML:
+> 
+> 1) I have a true worrisome problem: Comedi/RTDM is not living because it lacks 
+> users on one side and contributors on the other side. The machine is not 
+> running.
 
-Sergey Didenko
+Users are expected to be your contributors when it comes to drivers,
+most of the time if not always. Tell them why they should be confident
+that building over Comedi/RTDM now is (still) a safe bet. That is the
+"plan" I referred to.
 
---001636e1f73e99318f047460d664
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+> 
+> 2) It is still time to make it overtake by assessing what went wrong. There 
+> are Comedi users but they cannot use our framework because of the lack of 
+> drivers.
+> 
 
-Hello All<br><br>I&#39;m porting Xenomai 2.4.9 to the Linux Kernel 2.6.29.<=
-br><br>Target platform is MV 88F6290<br>CPU: ARM926EJ-S<br>Adeos patch: ade=
-os-ipipe-2.6.29-arm-1.13-03.patch<br><br>I do patch the kernel with xenomai=
- and adeos:<br>
-./prepare-kernel.sh --arch=3Darm --linux=3D/.../kernel/linux-2.6.29-v02.00.=
-29/ --adeos=3D/.../xenomai-2.4.9/ksrc/arch/arm/patches/adeos-ipipe-2.6.29-a=
-rm-1.13-03.patch<br>
-<br>Then I compile the Linux kernel.<br>At the time when I start to compile=
- the kernel I have to answer for many questions regarding configuration, it=
- is Ok!<br>But finally I got the compile error like:<br><br>=3D=3D=3D<br>ar=
-ch/arm/kernel/ipipe.c: In function &#39;__ipipe_grab_irq&#39;:<br>
+Typical catch #22. You assume the framework has to be perfect for having
+drivers contributed, but the framework can't be perfect without drivers
+available in the first place. -EDEADLOCK (since you can't provide those
+drivers yourself).
 
-arch/arm/kernel/ipipe.c:492: error: implicit declaration of function &#39;_=
-_ipipe_mach_irq_mux_p&#39;<br>make[1]: *** [arch/arm/kernel/ipipe.o] Error =
-1<br>make: *** [arch/arm/kernel] Error 2<br>=3D=3D=3D<br><br>the reason of =
-this error is that there is no definition of the macro &quot;__ipipe_mach_i=
-rq_mux_p&quot; for the target platform as well as there are no the others C=
-PU dependent definitions.<br>
-<br>
-If I refer to the file &quot;arch/arm/mach-at91/include/mach/irqs.h&quot; a=
-ll definitions like <br>CONFIG_ARCH_AT91SAM9* are not defined<br><br>But, i=
-n the Xenomai&#39;s build questionnaire messages (build time) I found next =
-lines:<br>
+Instead of rehashing "we ought to be able to reuse Comedi drivers",
+maybe it's time to walk the walk, and make this possible over
+Comedi/RTDM. Any adaptation layer to do this would have to be long-lived
+and well maintained, this could be a reasonable incentive for people to
+base their work on Comedi/RTDM now. This only makes sense if that layer
+can shield them from most changes in the next architecture though.
 
-<br>=3D=3D=3D<br><br>*<br>* System Type<br>*<br>ARM system type<br>=C2=A0 1=
-. Agilent AAEC-2000 based (ARCH_AAEC2000)<br>=C2=A0.<br>=C2=A0.<br>=C2=A0.<=
-br>=C2=A0 38. Nuvoton W90X900 CPU (ARCH_W90X900)<br>&gt; 39. Marvell MV88F6=
-290 (ARCH_MV88F6290)<br>choice[1-39]: 39<br>
+> 3) The driver is the key. So, the kernel side is the key. We have to improve 
+> it in two ways:
+> - (almost) seamlessly recover the original Comedi drivers;
+> - get some feedback on the best way to implement such a framework and make it 
+> flexible, because, right now, I am pretty convinced I am in the middle of what 
+> people call "the midlayer mistake".
+> 
+>  So, I was not at the "plan" level yet when I sent the first mail of this 
+> thread. I am still in the "design" phase just in case a redesign needs to be 
+> done. 
+> 
 
-<br>=3D=3D=3D<br><br>Actually I did not select any system type anyhow. And =
-it does not allow me to select it somehow, but the default choice is correc=
-t - system type is MV88F6290! I don&#39;t know why but it is a very nice th=
-at default system type is exactly what I need :) (please give some comments=
- on it)<br>
+You already answered the question whether such redesign is required or
+not, right? Otherwise, what are we talking about?
 
-<br>The questions!<br><br>1) It looks like Xenomai do support the target So=
-C (MV88F6290), as well as do support processor type ARM926 it has.<br>Then =
-why I can not find the CPU dependent definitions in the patched kernel&#39;=
-s source code?<br>
+The design phase must be part of a more general course of action. I
+won't argue about technicalities regarding how your acquisition system
+should look like, you know better. But I'm asking you whether
+Comedi/RTDM (or Analogy 1.0, whatever) - as it is now in the Xenomai 2.5
+tree - still makes sense, with respect to what changing its architecture
+will entail?
 
-2) What does it takes for you to support this system and CPU if it is not s=
-upported yet?<br><br>IF you do support for this system for 2.6.29 version o=
-f kernel It would be great because I can test it on my target board and giv=
-e you all feed back with the results, and finally you can include it to the=
- next patches.<br>
-<br>Looking forward to hearing from you any help regarding anything I can d=
-o to run the patched kernel on my board successfully.<br><br>Sergey Didenko=
-<br>
+If so, will some layer be provided to migrate drivers from Analogy 1.0
+to 2.0, i.e. when the major architecture changes will have taken place?
 
---001636e1f73e99318f047460d664--
+> Alexis.
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+-- 
+Philippe.
+
+
 
