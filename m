@@ -1,9 +1,10 @@
-Message-ID: <4AD73ABD.60107@domain.hid>
-Date: Thu, 15 Oct 2009 17:07:41 +0200
+Message-ID: <4AD74B5B.1000907@domain.hid>
+Date: Thu, 15 Oct 2009 18:18:35 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4AD738F3.8030200@domain.hid>
-In-Reply-To: <4AD738F3.8030200@domain.hid>
+References: <4AD738F3.8030200@domain.hid> <4AD73ABD.60107@domain.hid>
+	<4AD748E0.7060401@domain.hid>
+In-Reply-To: <4AD748E0.7060401@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Question about 'native skin
@@ -17,34 +18,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Benjamin Biegel <biegel@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai help <xenomai@xenomai.org>
 
 Benjamin Biegel wrote:
-> Hello
+> Thanks Gilles for prompt answer!
 > 
-> I am new to the world of patching kernels etc. But i managed to install 
-> xenomai guided by http://www.xenomai.org/index.php/Xenomai_quick_build_quide
+> I did not change the kernel configurations. How do i access the boot
+> logs and kernel configuration so that i can send this?
 > 
-> However when trying to execute the ./trivial-periodic i get the 
-> following error:
-> 'Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled. (modproble 
-> xeno_native?)'
-> 
-> I honestly don't know what this indicates. Not even where the 
-> CONFIG_XENO_OPT_PERVASIVE flag is set.
+> Sorry for the bacis questions, but i'm very new to this. :)
 
-The CONFIG_* options are linux kernel configuration options. The message
-tells you that if you have compiled the native skin as module, you
-should load the module, and that since you want to use it in user-space,
-you should enable real-time in user-space, that is the
-CONFIG_XENO_OPT_PERVASIVE option.
+You are posting here on Xenomai mailing list, a list which will help you
+with everything about Xenomai, and a bit more. But answering questions
+on this list is already time consuming.
 
-Nevertheless, the default configuration should have all this. So, if you
-did not change the kernel configuration and get this error, could you
-show us your kerne boot logs, and kernel configuration?
+So, I do not have time enough to help you about Linux, but you will find
+a lot of information on the web. See for instance:
+http://kernelnewbies.org/
+
+And please do always keep the list in copy.
 
 -- 
                                           Gilles
+
 
 
