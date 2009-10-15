@@ -1,16 +1,14 @@
-Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
-Date: Mon, 12 Oct 2009 23:52:00 +0200
-References: <200910080126.13483.berlemont.hauw@domain.hid>
-	<200910120051.30148.berlemont.hauw@domain.hid>
-	<1255339811.2694.228.camel@domain.hid>
-In-Reply-To: <1255339811.2694.228.camel@domain.hid>
+From: Andreas Glatz <AndreasGlatz@domain.hid>
+Date: Thu, 15 Oct 2009 15:21:51 -0400
+Message-ID: <245373446233674495BCA5CA2FC1EB172FEEF2DCD7@domain.hid>
+References: <1254853590.3718.28.camel@domain.hid>,
+	<1254859856.2784.251.camel@domain.hid>
+In-Reply-To: <1254859856.2784.251.camel@domain.hid>
+Content-Language: en-US
+Content-Type: multipart/mixed;
+	boundary="_002_245373446233674495BCA5CA2FC1EB172FEEF2DCD7RCexchangeSVR_"
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-15"
-Content-Transfer-Encoding: 7bit
-Message-Id: <200910122352.00172.berlemont.hauw@domain.hid>
-Subject: Re: [Xenomai-core] Some thoughts on Analogy "kernel side" framework
+Subject: Re: [Xenomai-core] RFC: 2.5 todo list.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -19,260 +17,150 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Monday 12 October 2009 11:30:11 you wrote:
-> On Mon, 2009-10-12 at 00:51 +0200, Alexis Berlemont wrote:
-> > On Friday 09 October 2009 10:04:07 you wrote:
-> > > On Fri, 2009-10-09 at 00:00 +0200, Alexis Berlemont wrote:
-> > > > If I understand well, I have gone too far too soon; the idea should
-> > > > be to keep the current framework as it is for 2.5.
+--_002_245373446233674495BCA5CA2FC1EB172FEEF2DCD7RCexchangeSVR_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+Hi Philippe,
+
+Back at work. See inline replies below.
+
+
+> > > > > - powerpc32 updates for 2.6.30. Mainly to merge the once experime=
+ntal
+> > > > > bits that prevent most alignment faults from triggering a seconda=
+ry mode
+> > > > > switch. Andreas told me this works like a charm on 83xx, and I di=
+d not
+> > > > > see any issue on 52xx, 85xx or 86xx either.
+> > > > >
 > > > >
-> > > > However, my former mail was not a definitive plan. The first goal was
-> > > > to share ideas. So, do not worry too much. :)
+> > > > Can I get a version of that patch for testing? Is it in your git
+> > > > repository?
 > > >
-> > > Maintaining two different frameworks for the same purpose won't fly.
-> > > I'm worried because the future of Comedi/RTDM as merged in the 2.5 tree
-> > > just became unclear - to say the least - as from you introduced the
-> > > idea of changing its architecture.
+> > > I just pushed this commit to my remote tree (ipipe-2.6.30-powerpc
+> > > branch); it should appear in a few hours once mirrored (cron job).
 > > >
-> > > Your potential user-base has to know whether using the current
-> > > Comedi/RTDM framework for new designs based on 2.5.x will still make
-> > > sense in six months from now, when Analogy eventually emerges.
-> > >
-> > > In other words, is there any upgrade path planned? What would this
-> > > entail?
-> > >
-> > > Would one have to rewrite custom DAQ drivers to port them from
-> > > Comedi/RTDM to Analogy, or could rely on a some compat wrapper for
-> > > supporting legacy Comedi/RTDM Driver-Kernel interface on top of the
-> > > Analogy core?
-> > >
-> > > Would that new architecture bring changes in the applications, i.e.
-> > > what about the impact of such changes on the way userland interfaces to
-> > > the acquisition framework and/or its drivers?
-> > >
-> > > I would have thought that Comedi/RTDM in the 2.5 tree would become
-> > > Analogy as is, and evolve over time in a careful manner so that people
-> > > always have a reasonable upgrade path. But now, I'm unsure whether this
-> > > is going to be the case, or we would end up with two different
-> > > frameworks. So, what is the _exact_ plan?
 > >
-> > Ok. I will try to give my rough ideas.
+> > I finally had a chance to test the ipipe-2.6.30-powerpc version
+> > from the git repository. Unfortunately, I noticed that our application
+> > dies after some time and that this behaviour is related to that
+> > alignment patch (if I take it out everything runs fine for > 2 days).
 > >
-> > Comedi / RTDM is facing many questions:
-> >
-> > 1) Peter Soetens, a Comedi user, once told us that the APIs (kernel and
-> > user) divergences with upstream were going to bring many troubles.
-> > maintaining tasks, difficulties to lure orginal Comedi users, etc.
-> > -> Should I ignore what was told that day or should I find a way to
-> > satisfy the main request which was a smooth transition between Comedi
-> > upstream and Comedi/RTDM.
-> 
-> You don't seem to get the point yet: I'm in no way arguing about which
-> technical direction you should head your project to, and I have no issue
-> with your technical analysis.
-> 
-> The issue I have is with your project management: Comedi/RTDM is
-> currently part of the Xenomai tree, scheduled for 2.5 for more than a
-> year, and you are now in the "back to the future" mode, asking people
-> their feedback about major changes your would like to see in your
-> infrastructure, at a moment when one may have expected it to be stable.
-> This won't fly.
-> 
-> > 2) People developing with Comedilib do not seem to be the same guys
-> > working on the drivers. So, even if common users agreed with porting
-> > their applications on the new library interface, they could not integrate
-> > their needed drivers into the Xenomai drivers set. If you want a clue,
-> > have a look at the Comedi mailing list, there are plenty of mails
-> > starting with "Is there a Comedi driver for ..."
-> > -> Should I still be confident that there will be contributions of
-> > drivers ?
-> 
-> If your point is about mentioning that OS implementers should provide a
-> stable framework to build over, for others to implement drivers for
-> their own devices, well, ok, I was vaguely aware of this; thanks for the
-> heads up anyway. Problem is that you have just shot yourself in the
-> foot, by tagging Comedi/RTDM has unstable and unusable in the context of
-> developing drivers.
-> 
-> If you tell people that you are about to rewrite the kernel side
-> significantly before they had a chance to get their feet wet with it and
-> consider basing their future work on it, you won't get any contribution,
-> obviously. They will wait for your own dust to settle. Or they may not
-> wait at all, and walk away.
-> 
-> At any rate, deprecating the current Comedi/RTDM architecture now, only
-> a few weeks before Xenomai 2.5 is rolled out, has pretty bad timing, to
-> say the least.
-> 
-> > 3) The Comedi framework is too different from other well-known
-> > frameworks. However, I consider that audio and multimedia cards are not
-> > different from acquistion devices. All of them can be divided into
-> > subdevices or components but neither v4l2 nor alsa did implement
-> > subdevices configurations like Comedi did. v4l2 and alsa drivers are
-> > working both with devices fops-like structures but Comedi is working with
-> > per subdevices callbacks far from the Linux driver model. Etc.
-> > -> Should I leave our framework like it is ? Are we sure that the fact
-> > the original Comedi framework is slowly losing contributions is a
-> > coincidence ?
-> 
-> Nobody tells you to freeze your work, and/or not to think of a better
-> approach. But you need to do a better job of explaining how your
-> potential users will get their upgrade path to your new architecture.
-> And you did not. This is what having a plan means, not just telling
-> people that you are not happy with the framework, and asking them how
-> they would want it to be overhauled. Most of those who might want to
-> base their work on Comedi/RTDM today would NOT want you to make the
-> codebase a moving target.
-> 
-> So, the plan I was talking about could be something along these lines:
-> 
-> - we have such issues with Comedi/RTDM (fair enough)
-> - it is suggested to fix them later this way in Analogy
-> then,
-> 
-> - we could provide an upgrade path from Comedi/RTDM (drivers and APIs)
-> to Analogy that way...
-> OR,
-> - there is no reasonable upgrade path, so well, we would have to scrap
-> Comedi/RTDM from the Xenomai 2.5 tree, because this makes no sense to
-> issue a temporary framework for writing long-lived code such as drivers.
-> 
-> Btw, AFAICT, it does not make much sense to keep Comedi/RTDM as your
-> project name within Xenomai 2.5; it should have been moved to Analogy
-> already. You may change your underlying architecture at some point
-> without changing the name of your project, and keeping "Comedi" in the
-> naming seems confusing, since there is no way it could be merged with
-> the original project anyway.
-> 
-> > 4) I tried to exchange with the original Comedi developers (even on the
-> > LKML). Nothing emerged from my mails (except that the Comedi maintainers
-> > told me to send my contributions to Greg KH and Greg KH told me to send
-> > my contributions to the Comedi maintainers).
-> > -> Do you have any sign that someone is working on the Comedi core ?
-> 
-> That is not the point. There is a problem with Comedi, fair enough, but
-> let's not import it to Xenomai. Unless I'm mistaken, that particular
-> issue has been solved by switching gear to Analogy, so let's not rehash
-> the reasons why it has been done, those are pretty obvious. Get away
-> with this and move on.
-> 
-> > 5) So far, Comedi/RTDM has only one driver which deserves interest: the
-> > National Instruments NI PCIMIO. And it took quite a long time to make it
-> > work by myself and I still have some work to do on it. A user still has
-> > some troubles with his specific PPC host board. We are striving to find
-> > the bug. -> Do we really have a significant user base for Comedi/RTDM ?
-> 
-> Nobody can force a user base to exist, but you could make it simpler for
-> it to emerge, that is my point. By introducing uncertainty regarding
-> your architecture a few weeks before the first release of your project
-> in Xenomai, you are confusing people. This won't help having them write
-> drivers for it.
-> 
-> > These questions led me to the conclusions I shared in the ML:
-> >
-> > 1) I have a true worrisome problem: Comedi/RTDM is not living because it
-> > lacks users on one side and contributors on the other side. The machine
-> > is not running.
-> 
-> Users are expected to be your contributors when it comes to drivers,
-> most of the time if not always. Tell them why they should be confident
-> that building over Comedi/RTDM now is (still) a safe bet. That is the
-> "plan" I referred to.
-> 
-> > 2) It is still time to make it overtake by assessing what went wrong.
-> > There are Comedi users but they cannot use our framework because of the
-> > lack of drivers.
-> 
-> Typical catch #22. You assume the framework has to be perfect for having
-> drivers contributed, but the framework can't be perfect without drivers
-> available in the first place. -EDEADLOCK (since you can't provide those
-> drivers yourself).
-> 
-> Instead of rehashing "we ought to be able to reuse Comedi drivers",
-> maybe it's time to walk the walk, and make this possible over
-> Comedi/RTDM. Any adaptation layer to do this would have to be long-lived
-> and well maintained, this could be a reasonable incentive for people to
-> base their work on Comedi/RTDM now. This only makes sense if that layer
-> can shield them from most changes in the next architecture though.
-> 
-> > 3) The driver is the key. So, the kernel side is the key. We have to
-> > improve it in two ways:
-> > - (almost) seamlessly recover the original Comedi drivers;
-> > - get some feedback on the best way to implement such a framework and
-> > make it flexible, because, right now, I am pretty convinced I am in the
-> > middle of what people call "the midlayer mistake".
-> >
-> >  So, I was not at the "plan" level yet when I sent the first mail of this
-> > thread. I am still in the "design" phase just in case a redesign needs to
-> > be done.
-> 
-> You already answered the question whether such redesign is required or
-> not, right? 
+> > Currently I'm investigating the reasons for that crash. It has
+> > something to do with floating point registers not being restored
+> > properly. Our alignment exceptions are mainly triggered by accesses
+> > to unaligned floating point data.
+>=20
+> Does it work any better with this patch in?
 
-Clearly no. I would have been happy having technical talks about how people
-would see the design. I did not send the mail to impose a solution but to
-receive critics and to find out the best way. My opinion was just a starting
-point.
+I applied that patch but unfortunately our application still dies. I includ=
+ed
+an application with with you (hopefully) can reproduce the problem=20
+which we are seeing. Our system is a MPC8360 with 2.6.30, ipipe 2.7,
+xenomai 2.4.9.1.
 
-> Otherwise, what are we talking about?
+Here are the steps:
 
-No need to say more.
+1) apply ipipe with alignment patch, recompile kernel
+2) comile test1.c (attached) with:=20
+        gcc -Wall -O2 `xeno-config --xeno-cflags` \
+                                `xeno-config --xeno-ldflags` \
+                                 -l native -l rtdk  -o test1 test1.c
+3) Start test1 in one shell
+4) Open a second shell and start 'switchbench'
 
-I think I clearly understood your issues. I kept on focusing on the technical 
-aspects leaving the plan unclear, which is not the right path.
+Just when 'switchbench' is running, I get the following
+output from my test application:
+...
+Missmatch: 0xfff8000082064000
+Missmatch: 0xfff8000082064000
+Missmatch: 0xfff8000082064000
+Missmatch: 0xfff8000082064000=20
+...
 
-I also made a mistake by saying that I would create an analogy branch in my 
-git repository for a potential redesign. That did not leave place for the 
-current design.
+It seems that test1 is interrupted right between
+the lfd and stfd and the floating point regs aren't
+restored properly.
 
-My former mails should have dealt with what Analogy _was_ instead of what
-Analogy _would_ become.
+Just a side note: I had to add assembly code to my
+C program to force an alignment exception. gcc seems
+to be smart enough to avoid unaligned access. g++
+on the other hand (especially g++ 3.3.6 which we are=20
+using) seems to generate assembly code which causes
+alignment exceptions. So it seems that it's really g++'s=20
+fault. We also discovered that our g++ generates buggy=20
+floating point assembly code when compiling with the=20
+-O2 or -Os option. Currently, we compile our application
+with -msoft-float to avoid those issues which has the
+nice side effect that we also don't get alignment exceptions
+anymore.
 
-So here is what I propose:
+Many thanks,
+Andreas
 
-I like your idea "analogy 1 and analogy 2" but let's focus on 1.x series, the
-stable one (the experimental flag will vanish in Kconfig).
 
-       -> Goal: ensure a smooth transition between Comedi and Analogy.
+> diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.=
+c
+> index 32cc3df..a04a5e3 100644
+> --- a/arch/powerpc/kernel/process.c
+> +++ b/arch/powerpc/kernel/process.c
+> @@ -80,7 +80,9 @@ void flush_fp_to_thread(struct task_struct *tsk)
+>                  * FPU, and then when we get scheduled again we would sto=
+re
+>                  * bogus values for the remaining FP registers.
+>                  */
+> -               ipipe_preempt_disable(flags);
+> +               if (ipipe_root_domain_p)
+> +                       preempt_disable();
+> +               local_irq_save_hw_cond(flags);
+>                 if (tsk->thread.regs->msr & MSR_FP) {
+>  #ifdef CONFIG_SMP
+>                         /*
+> @@ -94,7 +96,9 @@ void flush_fp_to_thread(struct task_struct *tsk)
+>  #endif
+>                         giveup_fpu(tsk);
+>                 }
+> -               ipipe_preempt_enable(flags);
+> +               local_irq_restore_hw_cond(flags);
+> +               if (ipipe_root_domain_p)
+> +                       preempt_enable();
+>         }
+>  }
 
-       -> So far, the transition with Comedi is not good enough. So after the 
-2.5 Xenomai release, I will work on improving this issue; along with the 
-Analogy driver API, a Comedi driver API will be available in some intermediate 
-layer.
+--_002_245373446233674495BCA5CA2FC1EB172FEEF2DCD7RCexchangeSVR_
+Content-Type: text/x-csrc; name="test1.c"
+Content-Description: test1.c
+Content-Disposition: attachment; filename="test1.c"; size=1227;
+	creation-date="Thu, 15 Oct 2009 15:06:45 GMT";
+	modification-date="Thu, 15 Oct 2009 15:06:45 GMT"
+Content-Transfer-Encoding: base64
 
-       -> The calibration feature is still missing. I will work on that point.
+LyogdmltOiBzZXQgdHMgPSA0OiAqLwojaW5jbHVkZSA8c3lzL21tYW4uaD4KI2luY2x1ZGUgPHVu
+aXN0ZC5oPgojaW5jbHVkZSA8c2lnbmFsLmg+CiNpbmNsdWRlIDxzdHJpbmcuaD4KI2luY2x1ZGUg
+PHN0ZGFyZy5oPgojaW5jbHVkZSA8cnRkay5oPgojaW5jbHVkZSA8bmF0aXZlL3Rhc2suaD4KCnR5
+cGVkZWYgc3RydWN0IG1zZyB7Cgl1bnNpZ25lZCBjaGFyIGlkOwoJdW5pb24gewoJCXVuc2lnbmVk
+IGxvbmcgbG9uZyByYXc7CgkJc3RydWN0IHsKCQkJdW5zaWduZWQgc2hvcnQgdmFsMTsKCQkJdW5z
+aWduZWQgbG9uZyB2YWwyOwoJCQl1bnNpZ25lZCBzaG9ydCB2YWwzOwoJCX0gX19hdHRyaWJ1dGVf
+XygocGFja2VkKSk7Cgl9Owp9IF9fYXR0cmlidXRlX18oKHBhY2tlZCkpIG1zZ190OwoKc3RhdGlj
+IFJUX1RBU0sgdGFzazsKc3RhdGljIG1zZ190IG1zZzsKCmludCBtYWluKHZvaWQpCnsKCWludCBl
+cnI7CgoJbWxvY2thbGwoTUNMX0NVUlJFTlR8TUNMX0ZVVFVSRSk7CglydF9wcmludF9hdXRvX2lu
+aXQoMSk7CgoJZXJyID0gcnRfdGFza19zaGFkb3coJnRhc2ssICJtYWluIiwgMywgMCk7CglpZigh
+ZXJyKSB7CgkJLyogRmlsbCB0aGUgbWVzc2FnZSAqLwoJCW1zZy5pZCA9IDB4RkY7CgkJbXNnLnZh
+bDEgPSAweDEyMzQ7CgkJbXNnLnZhbDIgPSAweDU2Nzg5QUJDOwoJCW1zZy52YWwzID0gMHhERUYw
+OwoKCQl3aGlsZSgxKSB7CgkJCWRvdWJsZSBzYXZlOwoJCQl1bnNpZ25lZCBsb25nIGxvbmcgb3V0
+ID0gMDsKCgkJCS8qIEZvcmNlIGFuIGFsaWdubWVudCBleGNlcHRpb24KCQkJICAgYnkgYWNjZXNz
+aW5nIHVuYWxpZ25lZCBmbG9hdGluZwoJCQkgICBwb2ludCBkYXRhIChsZmQgMCwxKCUyKSkuICov
+CgkJCV9fYXNtX18gX192b2xhdGlsZV9fKAoJCQkic3RmZCAwLCUwICAgIyBzYXZlIGNvbnRlbnRz
+IG9mIGYwIFxuXHQiCgkJCSJsZmQgMCwxKCUyKSAjIHVuYWxpZ25lZCBhY2Nlc3MgXG5cdCIKCQkJ
+InN0ZmQgMCwlMSAgICMgc3RvcmUgZGF0YSBpbiAnb3V0JyBcblx0IgoJCQkibGZkIDAsJTAgICAg
+IyByZXN0b3JlIGNvbnRlbnRzIG9mIGYwIFxuXHQiIAoJCQk6ICI9bSIoc2F2ZSksICI9bSIob3V0
+KQoJCQk6ICJyIigmbXNnKQoJCQkpOwoKCQkJaWYoIG91dCAhPSBtc2cucmF3ICkKCQkJCXJ0X3By
+aW50ZigiTWlzc21hdGNoOiAweCVsbHhcbiIsIG91dCk7CgoJCQlydF90YXNrX3NsZWVwKDEwMDAw
+MFVMTCk7CgkJfQoJfQoJcmV0dXJuIGVycjsKfQoK
 
-Then Analogy users would have a stable base on which acquisition applications
-could evolve.
-
-So, to sum-up:
-
-In Xenomai 2.5: Analogy 1.0 :
-       -> the current code
-       ->  Support of a great part of National Instruments PCI cards (thanks 
-to the pcimio driver).
-
-In Xenomai x.x: Analogy 1.1:
-       -> Comedi compatibility layer
-       -> Auto calibration
-       -> Any Ideas / requests coming from users
-       -> More Analogy drivers.
-
-Is that ok ?
-
-> 
-> The design phase must be part of a more general course of action. I
-> won't argue about technicalities regarding how your acquisition system
-> should look like, you know better. But I'm asking you whether
-> Comedi/RTDM (or Analogy 1.0, whatever) - as it is now in the Xenomai 2.5
-> tree - still makes sense, with respect to what changing its architecture
-> will entail?
-> 
-> If so, will some layer be provided to migrate drivers from Analogy 1.0
-> to 2.0, i.e. when the major architecture changes will have taken place?
-> 
-
-Alexis.
+--_002_245373446233674495BCA5CA2FC1EB172FEEF2DCD7RCexchangeSVR_--
 
