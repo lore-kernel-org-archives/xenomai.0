@@ -1,12 +1,9 @@
-Message-ID: <4AD57CE3.4050206@domain.hid>
-Date: Wed, 14 Oct 2009 09:25:23 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1f3e02580910132319v3ce08b2frb811d749def9f17@domain.hid>
-In-Reply-To: <1f3e02580910132319v3ce08b2frb811d749def9f17@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Support for ARCH_MV88F6290
+Date: Thu, 15 Oct 2009 13:52:18 +0100
+Message-ID: <abaf774b0910150552o245f503bqa2c737bec0239ef2@domain.hid>
+From: Steve <sbxenomai@domain.hid>
+Content-Type: multipart/alternative; boundary=0015174785f2e544d00475f8bf95
+Subject: [Xenomai-help] Porting POSIX - wiki clarification
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,77 +13,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Didenko Sergey <didenkos@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Didenko Sergey wrote:
-> Dear Gilles
-> 
-> when I did change the HW Timer interrupt number (__ipipe_mach_timerint) from
-> 0 to 1
-> Patched kernel is able to boot up...but I'm not sure whether Xenomai is
-> running or not even I can see the messages that it is started...
-> To verify whether it is running or not I want to do latency test ..for
-> that..I'm following the HOWTO which says that I have to
-> 1) configure Xenomai
-> $ ./configure --build=i686-pc-linux-gnu --host=arm-linux
-> --enable-arm-mach=generic --enable-arm-tsc
-> 
-> 2) make Install
-> When I do "make DESTDIR=/nfs install" where /nfs - is the NFS path to rootfs
-> mounted by board.
-> I have next situation...
-> 
-> ===
-> 
-> [d.sergey@domain.hid xenomai-2.4.9.1]$ make DESTDIR=/nfs install
-> Making install in src
-> make[1]: Entering directory `/home/d.sergey/xemomai/xenomai-2.4.9.1/src'
-> Making install in include
-> make[2]: Entering directory
-> `/home/d.sergey/xemomai/xenomai-2.4.9.1/src/include'
-> make[3]: Entering directory
-> `/home/d.sergey/xemomai/xenomai-2.4.9.1/src/include'
-> make[3]: Nothing to be done for `install-exec-am'.
-> make[3]: Nothing to be done for `install-data-am'.
-> make[3]: Leaving directory
-> `/home/d.sergey/xemomai/xenomai-2.4.9.1/src/include'
-> make[2]: Leaving directory
-> `/home/d.sergey/xemomai/xenomai-2.4.9.1/src/include'
-> Making install in rtdk
-> make[2]: Entering directory
-> `/home/d.sergey/xemomai/xenomai-2.4.9.1/src/rtdk'
-> /bin/sh ../../libtool  --tag=CC   --mode=compile gcc -DHAVE_CONFIG_H -I.
-> -I../../src/include  -O2 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -march=armv4
-> -D__XENO__ -D__IN_XENO__ -Wstrict-prototypes -I../../include    -MT
-> librtdk_la-init.lo -MD -MP -MF .deps/librtdk_la-init.Tpo -c -o
-> librtdk_la-init.lo `test -f 'init.c' || echo './'`init.c
-> libtool: compile:  gcc -DHAVE_CONFIG_H -I. -I../../src/include -O2
-> -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -march=armv4 -D__XENO__ -D__IN_XENO__
-> -Wstrict-prototypes -I../../include -MT librtdk_la-init.lo -MD -MP -MF
-> .deps/librtdk_la-init.Tpo -c init.c  -fPIC -DPIC -o .libs/librtdk_la-init.o
-> init.c:1: error: bad value (armv4) for -march= switch
-> init.c:1: error: bad value (armv4) for -mtune= switch
-> make[2]: *** [librtdk_la-init.lo] Error 1
-> make[2]: Leaving directory `/home/d.sergey/xemomai/xenomai-2.4.9.1/src/rtdk'
-> make[1]: *** [install-recursive] Error 1
-> make[1]: Leaving directory `/home/d.sergey/xemomai/xenomai-2.4.9.1/src'
-> make: *** [install-recursive] Error 1
-> [d.sergey@domain.hid xenomai-2.4.9.1]$
+--0015174785f2e544d00475f8bf95
+Content-Type: text/plain; charset=ISO-8859-1
 
-Your problem here is that you are trying to use gcc (that is probably an
-x86 gcc) with options for an ARM gcc. It does not work. You have to
-ensure that the build system uses your cross-compiler.
+Hi,
 
-> 
-> ====
-> 
-> What is wrong?
-> How can I patch the rootfs with Xenomai libraries correctly?
+This may be a stupid question, but on the 'Porting POSIX applications to
+Xenomai' page of the wiki, discussing 'Access to drivers' in the Remedies
+section of Mode Switches, it says:
 
-I have no idea. But I can tell you that you do not need to patch
-anything. It should work out of the box.
+"From an application point of view, using the Xenomai POSIX skin wrapped
+services allow to manipulate file descriptors provided by the RTDM skin as
+ordinary file descriptors."
 
--- 
-					    Gilles.
+I just wanted to check, does this mean that from an application point of
+view, using the Xenomai POSIX skin wraped services allows for manipulation
+of file descriptors provided by the RTDM skin *as if they were* ordinary
+file descriptors.
+
+Or am I misunderstanding?
+
+Steve
+
+--0015174785f2e544d00475f8bf95
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi,<br><br>This may be a stupid question, but on the &#39;Porting POSIX app=
+lications to Xenomai&#39; page of the wiki, discussing &#39;Access to drive=
+rs&#39; in the Remedies section of Mode Switches, it says:<br><br>&quot;Fro=
+m an application point of view, using the Xenomai POSIX skin wrapped servic=
+es allow to manipulate file descriptors provided by the RTDM skin as ordina=
+ry file descriptors.&quot;<br>
+<br>I just wanted to check, does this mean that from an application point o=
+f view, using the Xenomai POSIX skin wraped services allows for manipulatio=
+n of file descriptors provided by the RTDM skin *as if they were* ordinary =
+file descriptors.<br>
+<br>Or am I misunderstanding?<br><br>Steve<br>
+
+--0015174785f2e544d00475f8bf95--
 
