@@ -1,11 +1,14 @@
 MIME-Version: 1.0
-In-Reply-To: <96eea0c80910151813v635d518dr6abd72986e2f07bd@domain.hid>
+Sender: alexis.berlemont@domain.hid
+In-Reply-To: <72cf3fb0910160345i494f81dr2c2d7ca4a1f5e66@domain.hid>
 References: <96eea0c80910151813v635d518dr6abd72986e2f07bd@domain.hid>
-Date: Fri, 16 Oct 2009 03:25:34 -0700
-Message-ID: <96eea0c80910160325v208ff0c7rd5d669a2bfdc86e6@domain.hid>
-From: Peter Pastor <peter.pastor@domain.hid>
-Content-Type: multipart/alternative; boundary=000e0cd6aa06ffe17504760ad038
-Subject: [Xenomai-help] Fwd: national instruments card and comedi-rtdm-dev
+	<72cf3fb0910160345i494f81dr2c2d7ca4a1f5e66@domain.hid>
+Date: Fri, 16 Oct 2009 12:46:37 +0200
+Message-ID: <72cf3fb0910160346r4e35aa9et42ebd3532875e868@domain.hid>
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] national instruments card and comedi-rtdm-dev
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,255 +20,186 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
---000e0cd6aa06ffe17504760ad038
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Hey,
+On Fri, Oct 16, 2009 at 3:13 AM, Peter Pastor <peter.pastor@domain.hid> wrot=
+e:
+> Hey,
+>
+> I am trying to get a national instrument data acquisition pci card workin=
+g
+> under linux 2.6.30.5 xenomai 2.5-rc3 using comedi. I successfully install=
+ed
+> the regular comedi drivers and I got data from the card, however, I also =
+got
+> mode switches. Therefore, I moved to the latest xenomai release which
+> includes the comedi interface. The installation worked out and I got a
+> xeno_comedi.ko module that I can load and a /usr/xenomai/lib/libcomedi.so=
+.0.
+> However, my program returns with...
+>
+> xenomai:~/xenomai_test> ./rt_comedi_test
+> ./rt_comedi_test: /usr/xenomai/lib/libcomedi.so.0: no version information
+> available (required by ./rt_comedi_test)
+> Xenomai: incompatible ABI revision level
+> (needed=3D1, current=3D2).
 
-After thinking about what I was doing :) I moved on an only compiled the
-drivers I needed (ni_pcimio.ko and ni_mite.ko) and loaded them
-successfully... first ni_mite.ko and then ni_pcimio.ko
+Is rt_comedi_test an application you developed ?
 
-root@domain.hid# lsmod |
-grep ni
-ni_pcimio              34280  0
-ni_mite                 6664  1 ni_pcimio
-xeno_comedi            36084  1 ni_pcimio
-
->From what I understand, I now need to use comedi_config to create the devic=
+> I figured, that I need a national instrument driver (ni_pcimio) to get th=
 e
-file  which is not necessarily in /dev/comedi0 but (maybe) somehow remapped
-into...
+> /dev/comedi0 up and running since there is no kernel module associated wi=
+th
+> the NI card...
 
-xenomai:/proc/xenomai/rtdm> ls
-comedi0  comedi1  comedi2  comedi3  comedi4  comedi5  comedi6
-comedi7 comedi8  comedi9  fildes  named_devices  open_fildes
-protocol_devices
+I think you should follow the common comedi way:
+1) Check you have the suitable driver loaded:
+# cat /proc/comedi/drivers
+-- =A0Comedi drivers --
 
-However, I get
+| idx | driver name
+| =A000 | comedi_pcimio
+| =A001 | 8255
+| =A002 | comedi_loop
+| =A003 | comedi_fake
 
-root@domain.hid# ./comedi_config -v comedi0 ni_pcimio
-comedi_config: comedi_snd_attach failed ret=3D-5
+2) Check the comedi RTDM devices available:
+# cat /proc/xenomai/rtdm/named_devices
+Hash =A0 =A0Name =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Dri=
+ver =A0 =A0 =A0 =A0 =A0/proc
+A1 =A0 =A0 =A0comedi0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 rtdm_=
+comedi =A0 =A0 comedi0
+A2 =A0 =A0 =A0comedi1 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 rtdm_=
+comedi =A0 =A0 comedi1
+A3 =A0 =A0 =A0comedi2 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 rtdm_=
+comedi =A0 =A0 comedi2
+A4 =A0 =A0 =A0comedi3 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 rtdm_=
+comedi =A0 =A0 comedi3
+A5 =A0 =A0 =A0comedi4 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 rtdm_=
+comedi =A0 =A0 comedi4
+A6 =A0 =A0 =A0comedi5 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 rtdm_=
+comedi =A0 =A0 comedi5
+A7 =A0 =A0 =A0comedi6 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 rtdm_=
+comedi =A0 =A0 comedi6
+A8 =A0 =A0 =A0comedi7 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 rtdm_=
+comedi =A0 =A0 comedi7
+A9 =A0 =A0 =A0comedi8 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 rtdm_=
+comedi =A0 =A0 comedi8
+AA =A0 =A0 =A0comedi9 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 rtdm_=
+comedi =A0 =A0 comedi9
+D6 =A0 =A0 =A0rttest0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 xeno_=
+timerbench rttest0
+D7 =A0 =A0 =A0rttest1 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 xeno_=
+switchtest rttest1
 
-dmesg shows then...
 
-[56710.390012] no device found
-[56710.390014] Available NI device IDs: 0x717f
-[56710.390017] Comedi: comedi_assign_driver: call(drv->attach) failed
-(ret=3D-5)
+3) =A0You have to attach the driver to the rtdm device you want to use
+with comedi_config (a tool available in Xenomai).
+#comedi_config comedi0 comedi_pcimio
+=A0 =A0 That command will assign comedi_pcimio driver to comedi0
 
-The test modules (comedi_fake and comedi_loop) which are provided by xenoma=
-i
-did work, but I couldn't make sense out of it.
+4) Eventually, you can test the acquistion is working with some test
+tool of ours :cmd_read
+# /usr/local/bin/cmd_read -v
+cmd_read: device comedi0 opened (fd=3D0)
+cmd_read: basic descriptor retrieved
+=A0 =A0 =A0 =A0 subdevices count =3D 14
+=A0 =A0 =A0 =A0 read subdevice index =3D 0
+=A0 =A0 =A0 =A0 write subdevice index =3D 1
+cmd_read: complex descriptor retrieved
+cmd_read: channel 0
+=A0 =A0 =A0 =A0 ranges count =3D 4
+=A0 =A0 =A0 =A0 range's size =3D 16 (bits)
+cmd_read: channel 1
+=A0 =A0 =A0 =A0 ranges count =3D 4
+=A0 =A0 =A0 =A0 range's size =3D 16 (bits)
+cmd_read: channel 2
+=A0 =A0 =A0 =A0 ranges count =3D 4
+=A0 =A0 =A0 =A0 range's size =3D 16 (bits)
+cmd_read: channel 3
+=A0 =A0 =A0 =A0 ranges count =3D 4
+=A0 =A0 =A0 =A0 range's size =3D 16 (bits)
+cmd_read: scan size =3D 8
+cmd_read: size to read =3D 800
+cmd_read: command successfully sent
+0x0 0x0 0x69 0x1 0x5f 0x33 0x33 0x58
+0xb3 0x3a 0xec 0x28 0x2a 0x2d 0x9e 0x3a
+0x73 0x3b 0x2f 0x35 0x78 0x32 0x7d 0x35
+0x8b 0x37 0xad 0x36 0x25 0x35 0x8f 0x35
+0xe 0x36 0x49 0x36 0xcd 0x35 0xef 0x35
+0xc5 0x35 0x1 0x36 0xdb 0x35 0xe 0x36
+0xc3 0x35 0xea 0x35 0xd1 0x35 0xe 0x36
+0xc6 0x35 0xe4 0x35 0xc7 0x35 0x9 0x36
+0xc3 0x35 0xe0 0x35 0xc1 0x35 0x1 0x36
+0xc0 0x35 0xd9 0x35 0xbb 0x35 0xfb 0x35
+0xb9 0x35 0xd5 0x35 0xb5 0x35 0xf3 0x35
+0xb2 0x35 0xce 0x35 0xae 0x35 0xee 0x35
 
-What am I missing, what should I try out ??
+Here is my output with a NI 6221.
 
-THANKS a lot,
- peter
+> xenomai:~/xenomai_test> lspci -v
+>
+> ...
+>
+> 06:00.0 Class ff00: National Instruments Device 717f
+> =A0=A0=A0 Flags: bus master, medium devsel, latency 64, IRQ 11
+> =A0=A0=A0 Memory at f7dfe000 (32-bit, non-prefetchable) [size=3D4K]
+> =A0=A0=A0 Memory at f7dff000 (32-bit, non-prefetchable) [size=3D4K]
+>
+> ...
+>
+> I "svn co http://svn.gna.org/svn/xenomai/branches/comedi-rtdm-dev" since =
+it
+> seems to contain the NI drivers... however, I got a compiler error that I
+> think relates to the fact that the system I am using has 4GB of ram
+> (highmem). I am using revision: 4727.
 
 
----------- Forwarded message ----------
-From: Peter Pastor <peter.pastor@domain.hid>
-Date: Thu, Oct 15, 2009 at 6:13 PM
-Subject: national instruments card and comedi-rtdm-dev
-To: xenomai@xenomai.org
+SVN is not our version control system anymore. You should use our git
+repository.
+
+If you want the last fix I made, take my comedi branch.
+Have a look at:
+http://git.xenomai.org/?p=3Dxenomai-abe.git;a=3Dshortlog;h=3Drefs/heads/com=
+edi
 
 
-Hey,
-
-I am trying to get a national instrument data acquisition pci card working
-under linux 2.6.30.5 xenomai 2.5-rc3 using comedi. I successfully installed
-the regular comedi drivers and I got data from the card, however, I also go=
-t
-mode switches. Therefore, I moved to the latest xenomai release which
-includes the comedi interface. The installation worked out and I got a
-xeno_comedi.ko module that I can load and a /usr/xenomai/lib/libcomedi.so.0=
-.
-However, my program returns with...
-
-xenomai:~/xenomai_test> ./rt_comedi_test
-./rt_comedi_test: /usr/xenomai/lib/libcomedi.so.0: no version information
-available (required by ./rt_comedi_test)
-Xenomai: incompatible ABI revision level
-(needed=3D1, current=3D2).
-
-I figured, that I need a national instrument driver (ni_pcimio) to get the
-/dev/comedi0 up and running since there is no kernel module associated with
-the NI card...
-
-xenomai:~/xenomai_test> lspci -v
-
-...
-
-06:00.0 Class ff00: National Instruments Device 717f
-    Flags: bus master, medium devsel, latency 64, IRQ 11
-    Memory at f7dfe000 (32-bit, non-prefetchable) [size=3D4K]
-    Memory at f7dff000 (32-bit, non-prefetchable) [size=3D4K]
-
-...
-
-I "svn co http://svn.gna.org/svn/xenomai/branches/comedi-rtdm-dev" since it
-seems to contain the NI drivers... however, I got a compiler error that I
-think relates to the fact that the system I am using has 4GB of ram
-(highmem). I am using revision: 4727.
-
-root@domain.hid# make
-make  all-recursive
-make[1]: Entering directory `/usr/src/comedi-rtdm-dev'
-Making all in comedi_kcore
-make[2]: Entering directory `/usr/src/comedi-rtdm-dev/comedi_kcore'
-make[3]: Entering directory `/usr/src/comedi-rtdm-dev'
-make[3]: Leaving directory `/usr/src/comedi-rtdm-dev'
-make[3]: Entering directory `/usr/src/linux-2.6.30.5'
-  CC [M]  /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_os_facilities.o
-  CC [M]  /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_command.o
-  CC [M]  /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_instruction.o
-  CC [M]  /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_driver.o
-  CC [M]  /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_subdevice.o
-  CC [M]  /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_buffer.o
-/usr/src/comedi-rtdm-dev/comedi_kcore/comedi_buffer.c: In function
-=91comedi_free_buffer=92:
-/usr/src/comedi-rtdm-dev/comedi_kcore/comedi_buffer.c:52: error: implicit
-declaration of function =91__va_to_kva=92
-make[4]: *** [/usr/src/comedi-rtdm-dev/comedi_kcore/comedi_buffer.o] Error =
-1
-make[3]: *** [_module_/usr/src/comedi-rtdm-dev/comedi_kcore] Error 2
-make[3]: Leaving directory `/usr/src/linux-2.6.30.5'
-make[2]: *** [comedi.ko] Error 2
-make[2]: Leaving directory `/usr/src/comedi-rtdm-dev/comedi_kcore'
-make[1]: *** [all-recursive] Error 1
-make[1]: Leaving directory `/usr/src/comedi-rtdm-dev'
-make: *** [all] Error 2
-
-I would be really happy if someone could give me some hints/advice on how t=
+> root@domain.hid# make
+> make=A0 all-recursive
+> make[1]: Entering directory `/usr/src/comedi-rtdm-dev'
+> Making all in comedi_kcore
+> make[2]: Entering directory `/usr/src/comedi-rtdm-dev/comedi_kcore'
+> make[3]: Entering directory `/usr/src/comedi-rtdm-dev'
+> make[3]: Leaving directory `/usr/src/comedi-rtdm-dev'
+> make[3]: Entering directory `/usr/src/linux-2.6.30.5'
+> =A0 CC [M]=A0 /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_os_facilities.=
 o
-get things working. What do I need to do ??
+> =A0 CC [M]=A0 /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_command.o
+> =A0 CC [M]=A0 /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_instruction.o
+> =A0 CC [M]=A0 /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_driver.o
+> =A0 CC [M]=A0 /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_subdevice.o
+> =A0 CC [M]=A0 /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_buffer.o
+> /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_buffer.c: In function
+> =91comedi_free_buffer=92:
+> /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_buffer.c:52: error: implicit
+> declaration of function =91__va_to_kva=92
+> make[4]: *** [/usr/src/comedi-rtdm-dev/comedi_kcore/comedi_buffer.o] Erro=
+r 1
+> make[3]: *** [_module_/usr/src/comedi-rtdm-dev/comedi_kcore] Error 2
+> make[3]: Leaving directory `/usr/src/linux-2.6.30.5'
+> make[2]: *** [comedi.ko] Error 2
+> make[2]: Leaving directory `/usr/src/comedi-rtdm-dev/comedi_kcore'
+> make[1]: *** [all-recursive] Error 1
+> make[1]: Leaving directory `/usr/src/comedi-rtdm-dev'
+> make: *** [all] Error 2
+>
+> I would be really happy if someone could give me some hints/advice on how=
+ to
+> get things working. What do I need to do ??
+>
+> Thanks a lot,
+> =A0peter
+>
 
-Thanks a lot,
- peter
-
---000e0cd6aa06ffe17504760ad038
-Content-Type: text/html; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
-
-Hey,<br><br>After thinking about what I was doing :) I moved on an only com=
-piled the drivers I needed (ni_pcimio.ko and ni_mite.ko) and loaded them su=
-ccessfully... first ni_mite.ko and then ni_pcimio.ko<br>
-<br>
-root@domain.hid# lsmod | gr=
-ep ni<br>
-ni_pcimio =A0 =A0 =A0 =A0 =A0 =A0 =A034280 =A00<br>
-ni_mite =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 6664 =A01 ni_pcimio<br>
-xeno_comedi =A0 =A0 =A0 =A0 =A0 =A036084 =A01 ni_pcimio<br>
-<br>
->From what I understand, I now need to use comedi_config to create the devic=
-e file=A0
-which is not necessarily in /dev/comedi0 but (maybe) somehow remapped<br>
-into...<br>
-<br>
-xenomai:/proc/xenomai/rtdm&gt; ls<br>
-comedi0 =A0comedi1 =A0comedi2 =A0comedi3 =A0comedi4 =A0comedi5 =A0comedi6<b=
-r>
-comedi7 comedi8 =A0comedi9 =A0fildes =A0named_devices =A0open_fildes<br>
-protocol_devices<br>
-<br>
-However, I get<br>
-<br>
-root@domain.hid# ./comedi_config -v comedi0 ni_pcimio<br>
-comedi_config: comedi_snd_attach failed ret=3D-5<br>
-<br>
-
-dmesg shows then...<br>
-<br>
-[56710.390012] no device found<br>
-[56710.390014] Available NI device IDs: 0x717f<br>
-[56710.390017] Comedi: comedi_assign_driver: call(drv-&gt;attach) failed (r=
-et=3D-5)<br>
-<br>
-The test modules (comedi_fake and comedi_loop) which are provided by xenoma=
-i did work, but I couldn&#39;t make sense out of it.<br>
-<br>What am I missing, what should I try out ??<br><br>THANKS a lot,<br>=A0=
-peter<br><br><br><div class=3D"gmail_quote">---------- Forwarded message --=
---------<br>From: <b class=3D"gmail_sendername">Peter Pastor</b> <span dir=
-=3D"ltr">&lt;<a href=3D"mailto:peter.pastor@domain.hid" target=3D"_blank">pe=
-ter.pastor@domain.hid</a>&gt;</span><br>
-
-Date: Thu, Oct 15, 2009 at 6:13 PM<br>Subject: national instruments card an=
-d comedi-rtdm-dev<br>To: <a href=3D"mailto:xenomai@xenomai.org" target=3D"=
-_blank">xenomai@xenomai.org</a><br><br><br>Hey,<br><br>I am trying to get =
-a national instrument data acquisition pci card working under linux 2.6.30.=
-5 xenomai 2.5-rc3 using comedi. I successfully installed the regular comedi=
- drivers and I got data from the card, however, I also got mode switches. T=
-herefore, I moved to the latest xenomai release which includes the comedi i=
-nterface. The installation worked out and I got a xeno_comedi.ko module tha=
-t I can load and a /usr/xenomai/lib/libcomedi.so.0. However, my program ret=
-urns with...<br>
-
-
-<br>xenomai:~/xenomai_test&gt; ./rt_comedi_test<br>./rt_comedi_test: /usr/x=
-enomai/lib/libcomedi.so.0: no version information available (required by ./=
-rt_comedi_test)<br>Xenomai: incompatible ABI revision level<br>(needed=3D1,=
- current=3D2).<br>
-
-
-<br>I figured, that I need a national instrument driver (ni_pcimio) to get =
-the /dev/comedi0 up and running since there is no kernel module associated =
-with the NI card...<br><br>xenomai:~/xenomai_test&gt; lspci -v<br><br>
-
-...<br>
-<br>06:00.0 Class ff00: National Instruments Device 717f<br>=A0=A0=A0 Flags=
-: bus master, medium devsel, latency 64, IRQ 11<br>=A0=A0=A0 Memory at f7df=
-e000 (32-bit, non-prefetchable) [size=3D4K]<br>=A0=A0=A0 Memory at f7dff000=
- (32-bit, non-prefetchable) [size=3D4K]<br>
-
-
-<br>...<br><br>I &quot;svn co <a href=3D"http://svn.gna.org/svn/xenomai/bra=
-nches/comedi-rtdm-dev" target=3D"_blank">http://svn.gna.org/svn/xenomai/bra=
-nches/comedi-rtdm-dev</a>&quot; since it seems to contain the NI drivers...=
- however, I got a compiler error that I think relates to the fact that the =
-system I am using has 4GB of ram  (highmem). I am using revision: 4727.<br>
-
-
-<br>root@domain.hid# make<br>make=A0 all-recursive<br=
->make[1]: Entering directory `/usr/src/comedi-rtdm-dev&#39;<br>Making all i=
-n comedi_kcore<br>make[2]: Entering directory `/usr/src/comedi-rtdm-dev/com=
-edi_kcore&#39;<br>
-
-
-make[3]: Entering directory `/usr/src/comedi-rtdm-dev&#39;<br>make[3]: Leav=
-ing directory `/usr/src/comedi-rtdm-dev&#39;<br>make[3]: Entering directory=
- `/usr/src/linux-2.6.30.5&#39;<br>=A0 CC [M]=A0 /usr/src/comedi-rtdm-dev/co=
-medi_kcore/comedi_os_facilities.o<br>
-
-
-=A0 CC [M]=A0 /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_command.o<br>=A0=
- CC [M]=A0 /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_instruction.o<br>=
-=A0 CC [M]=A0 /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_driver.o<br>=A0 =
-CC [M]=A0 /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_subdevice.o<br>
-
-
-=A0 CC [M]=A0 /usr/src/comedi-rtdm-dev/comedi_kcore/comedi_buffer.o<br>/usr=
-/src/comedi-rtdm-dev/comedi_kcore/comedi_buffer.c: In function =91comedi_fr=
-ee_buffer=92:<br>/usr/src/comedi-rtdm-dev/comedi_kcore/comedi_buffer.c:52: =
-error: implicit declaration of function =91__va_to_kva=92<br>
-
-
-make[4]: *** [/usr/src/comedi-rtdm-dev/comedi_kcore/comedi_buffer.o] Error =
-1<br>make[3]: *** [_module_/usr/src/comedi-rtdm-dev/comedi_kcore] Error 2<b=
-r>make[3]: Leaving directory `/usr/src/linux-2.6.30.5&#39;<br>make[2]: *** =
-[comedi.ko] Error 2<br>
-
-
-make[2]: Leaving directory `/usr/src/comedi-rtdm-dev/comedi_kcore&#39;<br>m=
-ake[1]: *** [all-recursive] Error 1<br>make[1]: Leaving directory `/usr/src=
-/comedi-rtdm-dev&#39;<br>make: *** [all] Error 2<br><br>I would be really h=
-appy if someone could give me some hints/advice on how to get things workin=
-g. What do I need to do ??<br>
-
-
-<br>Thanks a lot,<br><font color=3D"#888888">=A0peter<br>
-</font></div><br>
-
---000e0cd6aa06ffe17504760ad038--
+Alexis.
 
