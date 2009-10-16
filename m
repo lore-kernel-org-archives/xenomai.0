@@ -1,12 +1,10 @@
-From: Andreas Glatz <AndreasGlatz@domain.hid>
-Date: Thu, 15 Oct 2009 16:33:55 -0400
-Message-ID: <245373446233674495BCA5CA2FC1EB172FEEF2DCDB@RCexchangeSVR1.ruggedcom.local>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <4AD8A87C.4040706@domain.hid>
+Date: Fri, 16 Oct 2009 19:08:12 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: [Xenomai-core] Enabling and disabling of all interrupts with
-	priorities
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Native: Fixing auto-cleanup
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,47 +13,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai core <Xenomai-core@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
 Hi,
 
-Our legacy code has two functions to disable and enable interrupts going
-to the CPU core like cli() and sti() in the Linux kernel. Those function pa=
-irs
-are used to avoid interruptions in critical code sections by the scheduler
-or interrupts. Interruptions in those code sections can potentially cause=20
-race conditions and the failing of the application.
+our automatic object cleanup on process termination is "slightly" broken
+for the native skin. The inline and macro magic behind
+__native_*_flush_rq() blindly calls rt_*_delete(), but that's not
+correct for mutexes (we can leak memory and/or corrupt the system heap),
+queues and heaps (we may leak shared heaps).
 
-Xenomai doesn't have any equivalent API calls although those API
-calls should be easy to implement:
+I'm in the process of fixing this, but that latter two are tricky. They
+need user space information (the user space address of the mapping base)
+for ordinary cleanup, and this is not available otherwise.
 
-Assuming that the ISR Tasks have an priority of XNCORE_MAX_PRIO-1=20
-(currently it is XNCORE_MAX_PRIO) we could protect critical code sections=20
-by temporarily raising the priority of the task with the critical code sect=
-ion=20
-to XNCORE_MAX_PRIO.
+At the time we are called with our cleanup handler, can we assume that
+the dying process has already unmapped all its rtheap segments? In that
+case I could simply pass NULL as base address, and the deletion will
+succeed. If not, I would currently lack a good idea how to resolve this
+issue.
 
-Furthermore assuming that the critical code doesn't cause a switch to=20
-secondary mode, no one prevents the critical code from running. After
-that code section the priority is lowered to the previous level.
+Jan
 
-As one cannot prevent ppl from writing critical code which causes a=20
-mode switch, one can only check if a mode switch occured at the
-end of the critical sections and issue a warning if that was the case.
-
-I already have a version which works for me.=20
-
-I have some questions though:
-
-1) If Priority -1 is assigned to Linux (ROOT) what is priority 0 for?
-2) For what are priorities 100...257 reserved?
-3) Why did u pick the odd number of 257 as the max. priority?
-
-I also found out that rt_task_set_priority() returns the old priority and n=
-ot
-0 (as described in the documentation) if the call succeeds. If you issue
-rt_task_set_priority() in an ISR Task it even returns 257.
-
-Regards,
-Andreas =
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
