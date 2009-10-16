@@ -1,14 +1,13 @@
-Message-ID: <4AD8241C.6090200@domain.hid>
-Date: Fri, 16 Oct 2009 09:43:24 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4AD828D7.601@domain.hid>
+Date: Fri, 16 Oct 2009 10:03:35 +0200
+From: Peter Puchwein <peter.puchwein@domain.hid>
 MIME-Version: 1.0
-References: <1f3e02580910132319v3ce08b2frb811d749def9f17@domain.hid>	
-	<4AD57CE3.4050206@domain.hid>
-	<1f3e02580910152226h4fb94068kfce63fec4be38c3f@domain.hid>
-In-Reply-To: <1f3e02580910152226h4fb94068kfce63fec4be38c3f@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <1255014185.4690.56.camel@domain.hid> <4ACE0018.20705@domain.hid>
+	<4ACE02FF.1090709@domain.hid> <4ACE066D.6080404@domain.hid>
+In-Reply-To: <4ACE066D.6080404@domain.hid>
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Support for ARCH_MV88F6290
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-help] rt_print segfault on program termination
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,32 +17,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Didenko Sergey <didenkos@domain.hid>
-Cc: xenomai@xenomai.org, Jorge Ramirez <jorge.ramirez.ortiz@domain.hid>, mohamad.sharifi@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Didenko Sergey wrote:
-> CROSS_COMPILE - arm-none-linux-gnueabi
+Gilles Chanteperdrix wrote:
+> Peter Puchwein wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Christoph Permes wrote:
+>>>> Hi,
+>>>>
+>>>> We use a vmware virtual machine for simulation and testing our realtime
+>>>> applications.
+>>>> Every time when a realtime application terminates the following core
+>>>> dump occures:
+>>>>
+>>>> Program terminated with signal 11, Segmentation fault.
+>>>> [New process 11728]
+>>>> [New process 11726]
+>>>> [New process 11727]
+>>>> #0  0xb7e3e675 in free () from /lib/libc.so.6
+>>>> (gdb) bt
+>>>> #0  0xb7e3e675 in free () from /lib/libc.so.6
+>>>> #1  0xb80551dd in cleanup_buffer (buffer=0x81dd210) at rt_print.c:350
+>>>> #2  0xb7dbee27 in __nptl_deallocate_tsd () from /lib/libpthread.so.0
+>>>> #3  0xb7dbff49 in start_thread () from /lib/libpthread.so.0
+>>>> #4  0xb7e9cb6e in clone () from /lib/libc.so.6
+>>>>
+>>>> The line where the segfault occures is
+>>>> free(buffer->ring);
+>>>>
+>>>> The segfault never happens when running on a real machine, so it's no
+>>>> problem when running in production, but it is annoying when every run in
+>>>> the test environment leads to a segmentation fault.
+>>>>
+>>>> Maybe it is a timing related issue as there are no problems on a real
+>>>> machine.
+>>> Did you found the issue that was causing segmentation faults, or did you
+>>> keep your workaround?
+>>>
+>> We kept our workaround, because we need an rt_print without 
+>> mode-switching the realtime-task.
+>> With the mode-switching version we didn't get any errors, so we couldn't 
+>> find out more details about the error.
+>> But it seems that there is a time-bounded issue in rt_print, depending 
+>> on the speed of the system.
+> 
+> The error you had makes think that something corrupts the memory. So, by
+> corrupting memory you can get:
+> - segfaults in rt_printf
+> - segfaults in free
+> - segfaults in malloc
+> 
+> And probably many other effects. So, what you have done with your
+> workaround is to paper over the corruption issue, and then the programs
+> fails later. But I bet if you solve the first issue correctly, the
+> second will disappear. At least, we will no longer be able to think that
+> the first issue is the cause of the second.
+> 
 
-So, your compiler is named arm-none-linux-gnueabi-gcc
+Hi,
 
-> checking build system type... i686-pc-linux-gnu
-> checking host system type... arm-unknown-linux-gnu
-> checking for a BSD-compatible install... /usr/bin/install -c
-> checking for arm-linux-gcc... no
-> checking for gcc... gcc
-> configure: WARNING: using cross tools not prefixed with host triplet
+we found the error. We are sorry for the troubles, rt_printf works 
+absolutely fine, we've tested it with a lot of tasks under heavy load.
+We've found a bug in our application, that produces the memory corruption.
 
-No need to go further. Here you know that something went wrong.
-configure tells you that it will use gcc (the x86 compiler) as compiler
-because it could not find a compiler named arm-linux-gcc. This will
-definitely not work.
 
-Your compiler is arm-none-linux-gnueabi-gcc, not arm-linux-gcc, so, you
-should either configure passing --host=arm-none-linux-gnueabi, or define
-the CC variable to be arm-none-linux-gnueabi-gcc.
+Thanks for your help and the time you spent on searching for an error 
+that doesn't exist.
 
-This is explained in README.INSTALL.
+Peter
 
--- 
-					    Gilles.
+
+
+
+
+
+
+
 
