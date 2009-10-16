@@ -1,16 +1,13 @@
+Message-ID: <4AD83649.7080109@domain.hid>
+Date: Fri, 16 Oct 2009 11:00:57 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <4AD832CB.20004@domain.hid>
-References: <1f3e02580910132319v3ce08b2frb811d749def9f17@domain.hid>
-	<4AD57CE3.4050206@domain.hid>
-	<1f3e02580910152226h4fb94068kfce63fec4be38c3f@domain.hid>
-	<4AD8241C.6090200@domain.hid>
-	<1f3e02580910160130m69f35a2bl5ca2b40cabadbb56@domain.hid>
-	<4AD832CB.20004@domain.hid>
-Date: Fri, 16 Oct 2009 17:56:29 +0900
-Message-ID: <1f3e02580910160156t4635216if9ac722304750d65@domain.hid>
-From: Didenko Sergey <didenkos@domain.hid>
-Content-Type: multipart/alternative; boundary=0016368e223a5d3c24047609928b
-Subject: Re: [Xenomai-help] Support for ARCH_MV88F6290
+References: <446570.78791.qm@domain.hid>
+In-Reply-To: <446570.78791.qm@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] shm_open returns errno 38 - function not
+	implemented
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,90 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org, mohamad.sharifi@domain.hid
+To: Yigal Goldberger <yigal_gold@domain.hid>
+Cc: xenomai@xenomai.org
 
---0016368e223a5d3c24047609928b
-Content-Type: text/plain; charset=UTF-8
+Yigal Goldberger wrote:
+> Hi again,
+> 
+> I'm trying to create a shared memory area .
+> The system is a powerpc based board running linux kernel 2.6.29.4
+> and Xenomai 2.4.8 .
+> When I call shm_open from user space I get error 38 - function not implemented .
 
-Thank a lot Gilles, it is working!
+Normally, xenomai's shm_open tries to use the xenomai posix skin service
+first, and if it fails (because the shared memory option was not enabled
+in the posix skin configuration), falls back to linux service.
 
-2009/10/16 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+You get this error because:
+- Xenomai posix skin's shared memory services are not enabled;
+- your glibc does not support posix shared memory services (you can
+check this in xenomai's config.log, there is a test detecting it).
 
-> Didenko Sergey wrote:
-> > Thank you very much Gilles, now I have this done with no Warnings...good.
-> >
-> > Two things are remained:
-> >
-> > 1) warning message like "remember to run `libtool --finish
-> > /usr/xenomai/lib'" which are printed out when I do command
-> > make DESTDIR=/nfs/rootfs install
-> >
-> > How should I run it for the board's rootfs (located on /nfs/rootfs) ?
-> > Is this "libtool --finish /nfs/rootfs/usr/xenomai/lib" correct?
-> > Should I add this path to my board's environment variable?
->
-> You can safely ignore these messages.
->
-> >
-> > 2) I really need your help how to compile and run test-suit on my board.
->
-> If for instance you want to run latency on your board, then boot your
-> board, log on your board, then type:
->
-> cd /usr/xenomai/share/testsuite/latency
-> ./run -- -p 1000
->
-> --
->                                           Gilles
->
->
+Now, Xenomai posix skins's shared memory services are to be used if you
+want to share memory between a kernel-space real-time posix application,
+and a user-space real-time posix application.
 
---0016368e223a5d3c24047609928b
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+So, if this is what you want to do, enable the xenomai posix skin shared
+memory services in the kernel configuration (and please upgrade to
+xenomai 2.4.9.1, because some bugs in the shared memory support were
+fixed recently). If you want to share memory between two user-space
+applications, you can also use xenomai shared memory services, but you
+are probably better of upgrading your glibc to a glibc which support
+posix shared memories.
 
-Thank a lot Gilles, it is working!<div><br><div><div><br><div class=3D"gmai=
-l_quote">2009/10/16 Gilles Chanteperdrix <span dir=3D"ltr">&lt;<a href=3D"m=
-ailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a=
->&gt;</span><br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex;"><div class=3D"im">Didenko Sergey wrote:<br>
-&gt; Thank you very much Gilles, now I have this done with no Warnings...go=
-od.<br>
-&gt;<br>
-&gt; Two things are remained:<br>
-&gt;<br>
-&gt; 1) warning message like &quot;remember to run `libtool --finish<br>
-&gt; /usr/xenomai/lib&#39;&quot; which are printed out when I do command<br=
->
-&gt; make DESTDIR=3D/nfs/rootfs install<br>
-&gt;<br>
-&gt; How should I run it for the board&#39;s rootfs (located on /nfs/rootfs=
-) ?<br>
-&gt; Is this &quot;libtool --finish /nfs/rootfs/usr/xenomai/lib&quot; corre=
-ct?<br>
-&gt; Should I add this path to my board&#39;s environment variable?<br>
-<br>
-</div>You can safely ignore these messages.<br>
-<div class=3D"im"><br>
-&gt;<br>
-&gt; 2) I really need your help how to compile and run test-suit on my boar=
-d.<br>
-<br>
-</div>If for instance you want to run latency on your board, then boot your=
-<br>
-board, log on your board, then type:<br>
-<br>
-cd /usr/xenomai/share/testsuite/latency<br>
-./run -- -p 1000<br>
-<br>
---<br>
-<font color=3D"#888888"> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0Gilles<br>
-<br>
-</font></blockquote></div><br></div></div></div>
+-- 
+                                          Gilles
 
---0016368e223a5d3c24047609928b--
 
