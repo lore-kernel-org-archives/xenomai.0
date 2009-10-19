@@ -1,12 +1,11 @@
-Message-ID: <4ADC657A.2080609@domain.hid>
-Date: Mon, 19 Oct 2009 15:11:22 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: oliver.schlenker@domain.hid
+Date: Mon, 19 Oct 2009 13:12:42 +0000
+Message-ID: <0000AE42.4ADC81E9@domain.hid>
 MIME-Version: 1.0
-References: <b88603c30910190556u50fc55afnc5886b3fb15a2f3c@domain.hid>
-In-Reply-To: <b88603c30910190556u50fc55afnc5886b3fb15a2f3c@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai on Freescale i.MX25
+Content-Type: text/plain;
+ charset="UTF-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai-help] :: rt_printf with daemonized task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,51 +15,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Henri Roosen <henriroosen@domain.hid>
+To: jan.kiszka@domain.hid
 Cc: xenomai@xenomai.org
 
-Henri Roosen wrote:
-> Hello,
-> 
-> I want to use Xenomai (2.4.9.1) on a Freescale iMX25 processor. The
-> faq tells this processor is currently not supported by Xenomai, but
-> the similar iMX27 is. I would like to find out what needs to be done
-> to get Xenomai running on the iMX25 platform.
+DQoNCg0KDQoNCi0tLS0tLS0tIE9yaWdpbmFsIE1lc3NhZ2UgLS0tLS0tLS0NClN1YmplY3Q6IFJl
+OiA6OiBydF9wcmludGYgd2l0aCBkYWVtb25pemVkIHRhc2sgKDA5LU9rdC0yMDA5IDE2OjU5KQ0K
+RnJvbTogICAgSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4NClRvOiAgICAgIG9s
+aXZlci5zY2hsZW5rZXJAc21tb3Rpb25jb250cm9sLmRlDQoNCj4gDQo+IFllcyAodG8gdGhlIGZv
+cm1lciksIGF2b2lkaW5nIGNvZGUgZHVwbGljYXRpb24gd2FzIHRoZSBtb3RpdmF0aW9uIGZvcg0K
+PiB0aGlzIGZ1bmN0aW9ucy4NCj4gDQo+IEFub3RoZXIgd2lzaDogUGxlYXNlIHNwbGl0IHVwIHlv
+dXIgY2hhbmdlcyBpbnRvIHR3byBwYXRjaGVzOiBmaXJzdCB0aGUNCj4gYXRmb3JrIGZpeCwgb24g
+dG9wIG9mIGl0IHRoZSBzeXNsb2cgZXh0ZW5zaW9uLiBUaGF0IGFsbG93cyB1cywgZS5nLiwgdG8N
+Cj4gYXBwbHkgdGhlIGZpeCBhbHNvIHRvIDIuNC4NCg0KSGVyZSB3ZSBnbywgZmlyc3QgcGF0Y2gg
+Zm9yIGEgZm9yayBzYXZlIHJ0X3ByaW50IC4uLi4uDQoNCg0KPiANCj4gSmFuDQo+IA0KPiAtLSAN
+Cj4gU2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFNFIDINCj4gQ29ycG9yYXRl
+IENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQoNCg0KT2xpdmVyDQoNCg0KDQotLS0g
+cnRfcHJpbnQuYy5vcmlnaW5hbAkyMDA4LTA5LTEwIDEwOjM2OjI3LjAwMDAwMDAwMCArMDIwMA0K
+KysrIHJ0X3ByaW50LmMuZm9ya29ubHkJMjAwOS0xMC0xNiAxNjoxOToyNS45NDkyODk4MDAgKzAy
+MDANCiAgICAgICAgICAgICAgICAgICAgDQogCX0NCiB9DQogDQotdm9pZCBfX3J0X3ByaW50X2lu
+aXQodm9pZCkNCitzdGF0aWMgdm9pZCBzcGF3bl9wcmludGVyX3RocmVhZCh2b2lkKQ0KIHsNCiAJ
+cHRocmVhZF9hdHRyX3QgdGhhdHRyOw0KKw0KKwlwdGhyZWFkX2F0dHJfaW5pdCgmdGhhdHRyKTsN
+CisJcHRocmVhZF9hdHRyX3NldHN0YWNrc2l6ZSgmdGhhdHRyLCBQVEhSRUFEX1NUQUNLX01JTik7
+DQorCXB0aHJlYWRfY3JlYXRlKCZfX3ByaW50ZXJfdGhyZWFkLCAmdGhhdHRyLCBwcmludGVyX2xv
+b3AsIE5VTEwpOw0KK30NCisNCitzdGF0aWMgdm9pZCBmb3JrZWRfY2hpbGRfaW5pdCh2b2lkKQ0K
+K3sNCisJc3RydWN0IHByaW50X2J1ZmZlciAqbXlfYnVmZmVyID0gcHRocmVhZF9nZXRzcGVjaWZp
+YyhfX2J1ZmZlcl9rZXkpOw0KKwlzdHJ1Y3QgcHJpbnRfYnVmZmVyICoqcGJ1ZmZlciA9ICZfX2Zp
+cnN0X2J1ZmZlcjsNCisNCisJLyogcmUtaW5pdCB0byBhdm9pZCBmaW5kaW5nIGl0IGxvY2tlZCBi
+eSBzb21lIHBhcmVudCB0aHJlYWQgKi8NCisJcHRocmVhZF9tdXRleF9pbml0KCZfX2J1ZmZlcl9s
+b2NrLCBOVUxMKTsNCisNCisJd2hpbGUgKCpwYnVmZmVyKSB7DQorCQlpZiAoKnBidWZmZXIgPT0g
+bXlfYnVmZmVyKQ0KKwkJCXBidWZmZXIgPSAmKCpwYnVmZmVyKS0+bmV4dDsNCisJCWVsc2UNCisJ
+CQljbGVhbnVwX2J1ZmZlcigqcGJ1ZmZlcik7DQorCX0NCisNCisJc3Bhd25fcHJpbnRlcl90aHJl
+YWQoKTsNCit9DQorDQordm9pZCBfX3J0X3ByaW50X2luaXQodm9pZCkNCit7DQogCWNvbnN0IGNo
+YXIgKnZhbHVlX3N0cjsNCiAJdW5zaWduZWQgbG9uZyBsb25nIHBlcmlvZDsNCiANCiAgICAgICAg
+ICAgICAgICAgICANCiAJcHRocmVhZF9tdXRleF9pbml0KCZfX2J1ZmZlcl9sb2NrLCBOVUxMKTsN
+CiAJcHRocmVhZF9rZXlfY3JlYXRlKCZfX2J1ZmZlcl9rZXksICh2b2lkICgqKSh2b2lkKikpY2xl
+YW51cF9idWZmZXIpOw0KIA0KLQlwdGhyZWFkX2F0dHJfaW5pdCgmdGhhdHRyKTsNCi0JcHRocmVh
+ZF9hdHRyX3NldHN0YWNrc2l6ZSgmdGhhdHRyLCBQVEhSRUFEX1NUQUNLX01JTik7DQotCXB0aHJl
+YWRfY3JlYXRlKCZfX3ByaW50ZXJfdGhyZWFkLCAmdGhhdHRyLCBwcmludGVyX2xvb3AsIE5VTEwp
+Ow0KKwlzcGF3bl9wcmludGVyX3RocmVhZCgpOw0KKwlwdGhyZWFkX2F0Zm9yayhOVUxMLE5VTEws
+Zm9ya2VkX2NoaWxkX2luaXQpOw0KIH0gDQoNCg0KDQoNClRvOiBqYW4ua2lzemthQHNpZW1lbnMu
+Y29tDQpDYzogZ2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmcNCiAgICB4ZW5vbWFpLWhl
+bHBAZ25hLm9yZw0K
 
-There are only two or three things that need to be implemented to port
-the I-pipe patch for a new ARM board:
-1- the system timer, based on some kind of hardware timer;
-2- the TSC emulation (usually also based on a hardware timer, often the
-same as used for the system timer);
-3- if they exist, the GPIO interrupts de-multiplexing.
-
-If we assume that the iMX25 has the same hardware timers as iMX27, you
-probably only need to implement 3.
-
-In any case, a guide on how to port Xenomai on a new ARM platform exists
-here:
-http://www.xenomai.org/index.php/I-pipe:ArmPorting
-
-> 
-> Does anyone on this list have any input or have experience already
-> with Xenomai on an iMX25?
-> 
-> Also I am a little confused about the extra ipipe-2.6.26-mxc.diff
-> patch contained in Xenomai. Is the iMX27 supported for a 2.6.28 kernel
-> with the normal adeos-ipipe-2.6.28-arm-1.12-05.patch, or is it
-> supported only until the 2.6.26 kernel with the ipipe-2.6.26-mxc.diff
-> patch?
-
-ipipe-2.6.26-mxc.diff is a backport to 2.6.26 of the MXC patches which
-were included in 2.6.27, that is because the port to MXC was done
-between the time when the MXC patches were submitted on the
-linux-arm-kernel mailing list, and the time when they were merged and
-released with 2.6.27. Starting from 2.6.27 onwards, the I-pipe support
-for MXC is included into the I-pipe patch.
-
-So, yes, adeos-ipipe-2.6.28-arm-1.12-05.patch, should be ok.
-
--- 
-                                          Gilles
 
 
