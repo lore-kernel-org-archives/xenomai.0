@@ -1,13 +1,14 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <245373446233674495BCA5CA2FC1EB172FEEF2DCDB@RCexchangeSVR1.ruggedcom.local>
-References: <245373446233674495BCA5CA2FC1EB172FEEF2DCDB@RCexchangeSVR1.ruggedcom.local>
+In-Reply-To: <245373446233674495BCA5CA2FC1EB172FEEF2DCD7@domain.hid>
+References: <1254853590.3718.28.camel@domain.hid>
+	,<1254859856.2784.251.camel@domain.hid>
+	<245373446233674495BCA5CA2FC1EB172FEEF2DCD7@domain.hid>
 Content-Type: text/plain
-Date: Tue, 20 Oct 2009 15:57:06 +0200
-Message-Id: <1256047026.2862.138.camel@domain.hid>
+Date: Tue, 20 Oct 2009 18:35:42 +0200
+Message-Id: <1256056542.2862.141.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Enabling and disabling of all interrupts with
- priorities
+Subject: Re: [Xenomai-core] RFC: 2.5 todo list.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,90 +18,112 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Andreas Glatz <AndreasGlatz@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Thu, 2009-10-15 at 16:33 -0400, Andreas Glatz wrote:
-> Hi,
+On Thu, 2009-10-15 at 15:21 -0400, Andreas Glatz wrote:
+> Hi Philippe,
 > 
-> Our legacy code has two functions to disable and enable interrupts going
-> to the CPU core like cli() and sti() in the Linux kernel. Those function pairs
-> are used to avoid interruptions in critical code sections by the scheduler
-> or interrupts. Interruptions in those code sections can potentially cause 
-> race conditions and the failing of the application.
+> Back at work. See inline replies below.
 > 
-> Xenomai doesn't have any equivalent API calls although those API
-> calls should be easy to implement:
 > 
-
-Assuming we are talking about userland API allowing to control the
-interrupt state, Xenomai does not have any because it is wrong doing so
-in the first place. You may not switch interrupts off from userland,
-this won't work as expected.
-
-> Assuming that the ISR Tasks have an priority of XNCORE_MAX_PRIO-1 
-> (currently it is XNCORE_MAX_PRIO) we could protect critical code sections 
-> by temporarily raising the priority of the task with the critical code section 
-> to XNCORE_MAX_PRIO.
+> > > > > > - powerpc32 updates for 2.6.30. Mainly to merge the once experimental
+> > > > > > bits that prevent most alignment faults from triggering a secondary mode
+> > > > > > switch. Andreas told me this works like a charm on 83xx, and I did not
+> > > > > > see any issue on 52xx, 85xx or 86xx either.
+> > > > > >
+> > > > >
+> > > > > Can I get a version of that patch for testing? Is it in your git
+> > > > > repository?
+> > > >
+> > > > I just pushed this commit to my remote tree (ipipe-2.6.30-powerpc
+> > > > branch); it should appear in a few hours once mirrored (cron job).
+> > > >
+> > >
+> > > I finally had a chance to test the ipipe-2.6.30-powerpc version
+> > > from the git repository. Unfortunately, I noticed that our application
+> > > dies after some time and that this behaviour is related to that
+> > > alignment patch (if I take it out everything runs fine for > 2 days).
+> > >
+> > > Currently I'm investigating the reasons for that crash. It has
+> > > something to do with floating point registers not being restored
+> > > properly. Our alignment exceptions are mainly triggered by accesses
+> > > to unaligned floating point data.
+> > 
+> > Does it work any better with this patch in?
 > 
-
-What you have just described is a typical scheduler lock construct,
-which is semantically a bad thing as well, since it prevents the RTOS to
-care for priorities, but at least this would not introduce lethal bugs.
-You may want to have a look at rt_task_set_mode(0, T_LOCK...), this is
-likely what you need to emulate the legacy code construct, provided you
-don't care for interrupt preemption, like it seems.
-
-> Furthermore assuming that the critical code doesn't cause a switch to 
-> secondary mode, no one prevents the critical code from running. After
-> that code section the priority is lowered to the previous level.
-> 
-
-The builtin scheduler lock support deals properly with execution modes.
-Switching to secondary while holding the schedlock would not entail any
-issue.
-
-> As one cannot prevent ppl from writing critical code which causes a 
-> mode switch, one can only check if a mode switch occured at the
-> end of the critical sections and issue a warning if that was the case.
-> 
-> I already have a version which works for me. 
-> 
-> I have some questions though:
-> 
-> 1) If Priority -1 is assigned to Linux (ROOT) what is priority 0 for?
-
-0 is part of the regular real-time priority scale, up to 257. See
-include/nucleus/sched-rt.h in 2.5.
-
-> 2) For what are priorities 100...257 reserved?
-
-RTOS emulators having a different priority scale than a posixish 0-99
-range. E.g. VxWorks -> 255, 0.
-
-> 3) Why did u pick the odd number of 257 as the max. priority?
+> I applied that patch but unfortunately our application still dies. I included
+> an application with with you (hopefully) can reproduce the problem 
+> which we are seeing. Our system is a MPC8360 with 2.6.30, ipipe 2.7,
+> xenomai 2.4.9.1.
 > 
 
-257 is for the ISR server thread, guaranteed to be above all regular
-thread priorities.
+Confirmed on lite52xx as well. Will work on this.
 
-> I also found out that rt_task_set_priority() returns the old priority and not
-> 0 (as described in the documentation) if the call succeeds.
-
-True. This doc was fixed in -head, but still needs to be backported to
-2.4.
-
->  If you issue
-> rt_task_set_priority() in an ISR Task it even returns 257.
+> Here are the steps:
 > 
-
-Changing the ISR server priority may not be a good idea though.
-
-> Regards,
-> Andreas 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+> 1) apply ipipe with alignment patch, recompile kernel
+> 2) comile test1.c (attached) with: 
+>         gcc -Wall -O2 `xeno-config --xeno-cflags` \
+>                                 `xeno-config --xeno-ldflags` \
+>                                  -l native -l rtdk  -o test1 test1.c
+> 3) Start test1 in one shell
+> 4) Open a second shell and start 'switchbench'
+> 
+> Just when 'switchbench' is running, I get the following
+> output from my test application:
+> ...
+> Missmatch: 0xfff8000082064000
+> Missmatch: 0xfff8000082064000
+> Missmatch: 0xfff8000082064000
+> Missmatch: 0xfff8000082064000 
+> ...
+> 
+> It seems that test1 is interrupted right between
+> the lfd and stfd and the floating point regs aren't
+> restored properly.
+> 
+> Just a side note: I had to add assembly code to my
+> C program to force an alignment exception. gcc seems
+> to be smart enough to avoid unaligned access. g++
+> on the other hand (especially g++ 3.3.6 which we are 
+> using) seems to generate assembly code which causes
+> alignment exceptions. So it seems that it's really g++'s 
+> fault. We also discovered that our g++ generates buggy 
+> floating point assembly code when compiling with the 
+> -O2 or -Os option. Currently, we compile our application
+> with -msoft-float to avoid those issues which has the
+> nice side effect that we also don't get alignment exceptions
+> anymore.
+> 
+> Many thanks,
+> Andreas
+> 
+> 
+> > diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
+> > index 32cc3df..a04a5e3 100644
+> > --- a/arch/powerpc/kernel/process.c
+> > +++ b/arch/powerpc/kernel/process.c
+> > @@ -80,7 +80,9 @@ void flush_fp_to_thread(struct task_struct *tsk)
+> >                  * FPU, and then when we get scheduled again we would store
+> >                  * bogus values for the remaining FP registers.
+> >                  */
+> > -               ipipe_preempt_disable(flags);
+> > +               if (ipipe_root_domain_p)
+> > +                       preempt_disable();
+> > +               local_irq_save_hw_cond(flags);
+> >                 if (tsk->thread.regs->msr & MSR_FP) {
+> >  #ifdef CONFIG_SMP
+> >                         /*
+> > @@ -94,7 +96,9 @@ void flush_fp_to_thread(struct task_struct *tsk)
+> >  #endif
+> >                         giveup_fpu(tsk);
+> >                 }
+> > -               ipipe_preempt_enable(flags);
+> > +               local_irq_restore_hw_cond(flags);
+> > +               if (ipipe_root_domain_p)
+> > +                       preempt_enable();
+> >         }
+> >  }
 -- 
 Philippe.
 
