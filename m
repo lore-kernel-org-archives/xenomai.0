@@ -1,15 +1,15 @@
 Resent-To: Philippe Gerum <rpm@xenomai.org>
-Resent-Message-Id: <4ADDA26D.80903@domain.hid>
+Resent-Message-Id: <4ADDA26D.2050504@domain.hid>
 From: Jan Kiszka <jan.kiszka@domain.hid>
 Date: Tue, 20 Oct 2009 13:37:25 +0200
-Message-ID: <20091020113725.9069.28060.stgit@domain.hid>
+Message-ID: <20091020113725.9069.52444.stgit@domain.hid>
 In-Reply-To: <20091020113724.9069.23594.stgit@domain.hid>
 References: <20091020113724.9069.23594.stgit@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH v3 5/9] nucleus: Avoid returning errors
-	from	xnheap_destroy_mapped
+Subject: [Xenomai-core] [PATCH v3 3/9] nucleus: Fix race window in heap
+	mapping procedure
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -21,270 +21,195 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Allowing xnheap_delete_mapped to return an error and then attempting to
-recover from it does not work out very well: Corner cases are racy,
-intransparent to the user, and proper error handling imposes a lot of
-complexity on the caller - if it actually bothers to check the return
-value...
+There is a race window between setting the heap address via the IOCTL
+and actually mapping it. A heap that is invalidated after the IOCTL can
+still be mapped by user space. Fix this by pushing the heap validation
+into xnheap_mmap.
 
-Fortunately, there is no reason for this function to fail: If the heap
-is still mapped, just install the provide cleanup handler and switch to
-deferred removal. If the unmapping fails, we either raced with some
-other caller of unmap or user space provided a bogus address, or
-something else is wrong. In any case, leaving the cleanup callback
-behind is the best we can do anyway.
+Moreover, make sure that we update archdep.numaps along with declaring
+the heap valid. Otherwise xnheap_destroy_mapped may draw wrong
+conclusions about the heap mapping state.
 
-Removing the return value immediately allows to simplify the callers,
-namemly rt_queue_delete and rt_heap_delete.
-
-Note: This is still not 100% waterproof. If we issue
-xnheap_destroy_mapped from module cleanup passing a release handler
-that belongs to the module text, deferred release will cause a crash.
-But this corner case is no new regression, so let's keep the head in the
-sand.
+As archdep.numaps is now exclusively modified under heapq_lock, we can
+switch it to a non-atomic counter.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
 
- include/nucleus/heap.h    |    6 +++---
- ksrc/nucleus/heap.c       |   45 +++++++++++++++++++++++++++------------------
- ksrc/skins/native/heap.c  |   21 ++++++---------------
- ksrc/skins/native/queue.c |   21 ++++++---------------
- ksrc/skins/rtai/shm.c     |    6 +-----
- 5 files changed, 43 insertions(+), 56 deletions(-)
+ include/asm-generic/bits/heap.h |    2 +
+ include/asm-generic/system.h    |    2 +
+ ksrc/nucleus/heap.c             |   55 +++++++++++++++++++--------------------
+ ksrc/skins/native/heap.c        |    7 +++--
+ 4 files changed, 33 insertions(+), 33 deletions(-)
 
-diff --git a/include/nucleus/heap.h b/include/nucleus/heap.h
-index ca691bf..44db738 100644
---- a/include/nucleus/heap.h
-+++ b/include/nucleus/heap.h
-@@ -204,9 +204,9 @@ int xnheap_init_mapped(xnheap_t *heap,
- 		       u_long heapsize,
- 		       int memflags);
+diff --git a/include/asm-generic/bits/heap.h b/include/asm-generic/bits/heap.h
+index 40d31c8..4d0c41a 100644
+--- a/include/asm-generic/bits/heap.h
++++ b/include/asm-generic/bits/heap.h
+@@ -27,7 +27,7 @@
+ static inline void xnarch_init_heapcb (xnarch_heapcb_t *hcb)
  
--int xnheap_destroy_mapped(xnheap_t *heap,
--			  void (*release)(struct xnheap *heap),
--			  void __user *mapaddr);
-+void xnheap_destroy_mapped(xnheap_t *heap,
-+			   void (*release)(struct xnheap *heap),
-+			   void __user *mapaddr);
+ {
+-    atomic_set(&hcb->numaps,0);
++    hcb->numaps = 0;
+     hcb->kmflags = 0;
+     hcb->heapbase = NULL;
+ }
+diff --git a/include/asm-generic/system.h b/include/asm-generic/system.h
+index fcec613..c0f1698 100644
+--- a/include/asm-generic/system.h
++++ b/include/asm-generic/system.h
+@@ -270,7 +270,7 @@ struct xnheap;
  
- #define xnheap_mapped_offset(heap,ptr) \
- (((caddr_t)(ptr)) - ((caddr_t)(heap)->archdep.heapbase))
+ typedef struct xnarch_heapcb {
+ 
+-	atomic_t numaps;	/* # of active user-space mappings. */
++	unsigned long numaps;	/* # of active user-space mappings. */
+ 	int kmflags;		/* Kernel memory flags (0 if vmalloc()). */
+ 	void *heapbase;		/* Shared heap memory base. */
+ 	void (*release)(struct xnheap *heap); /* callback upon last unmap */
 diff --git a/ksrc/nucleus/heap.c b/ksrc/nucleus/heap.c
-index 4958daa..96c46f8 100644
+index 9ba5227..0a9bfdf 100644
 --- a/ksrc/nucleus/heap.c
 +++ b/ksrc/nucleus/heap.c
-@@ -1173,42 +1173,51 @@ int xnheap_init_mapped(xnheap_t *heap, u_long heapsize, int memflags)
- 	return 0;
- }
- 
--int xnheap_destroy_mapped(xnheap_t *heap, void (*release)(struct xnheap *heap),
--			  void __user *mapaddr)
-+void xnheap_destroy_mapped(xnheap_t *heap,
-+			   void (*release)(struct xnheap *heap),
-+			   void __user *mapaddr)
- {
--	int ret = 0, ccheck;
- 	unsigned long len;
- 
--	ccheck = mapaddr ? 1 : 0;
-+	/*
-+	 * Trying to unmap user memory without providing a release handler for
-+	 * deferred cleanup is a bug.
-+	 */
-+	XENO_ASSERT(NUCLEUS, !mapaddr || release, /* nop */);
+@@ -1027,7 +1027,7 @@ static void xnheap_vmclose(struct vm_area_struct *vma)
  
  	spin_lock(&kheapq_lock);
  
--	if (heap->archdep.numaps > ccheck) {
--		heap->archdep.release = release;
--		spin_unlock(&kheapq_lock);
--		return -EBUSY;
+-	if (atomic_dec_and_test(&heap->archdep.numaps)) {
++	if (--heap->archdep.numaps == 0) {
+ 		if (heap->archdep.release) {
+ 			removeq(&kheapq, &heap->link);
+ 			spin_unlock(&kheapq_lock);
+@@ -1067,31 +1067,15 @@ static inline xnheap_t *__validate_heap_addr(void *addr)
+ static int xnheap_ioctl(struct inode *inode,
+ 			struct file *file, unsigned int cmd, unsigned long arg)
+ {
+-	xnheap_t *heap;
+-	int err = 0;
+-
+-	spin_lock(&kheapq_lock);
+-
+-	heap = __validate_heap_addr((void *)arg);
+-
+-	if (!heap) {
+-		err = -EINVAL;
+-		goto unlock_and_exit;
 -	}
 -
- 	removeq(&kheapq, &heap->link); /* Prevent further mapping. */
-+
-+	heap->archdep.release = release;
-+
-+	if (heap->archdep.numaps == 0)
-+		mapaddr = NULL; /* nothing left to unmap */
-+	else
-+		release = NULL; /* will be called by Linux on unmap */
-+
- 	spin_unlock(&kheapq_lock);
- 
- 	len = xnheap_extentsize(heap);
- 
- 	if (mapaddr) {
- 		down_write(&current->mm->mmap_sem);
--		heap->archdep.release = NULL;
--		ret = do_munmap(current->mm, (unsigned long)mapaddr, len);
-+		do_munmap(current->mm, (unsigned long)mapaddr, len);
- 		up_write(&current->mm->mmap_sem);
- 	}
- 
--	if (ret == 0) {
-+	if (heap->archdep.numaps > 0) {
-+		/* The release handler is supposed to clean up the rest. */
-+		XENO_ASSERT(NUCLEUS, heap->archdep.release, /* nop */);
-+		return;
-+	}
-+
-+	if (!mapaddr) {
- 		__unreserve_and_free_heap(heap->archdep.heapbase, len,
- 					  heap->archdep.kmflags);
- 		if (release)
- 			release(heap);
- 	}
+-	file->private_data = heap;
 -
--	return ret;
- }
- 
- static struct file_operations xnheap_fops = {
-@@ -1260,11 +1269,11 @@ int xnheap_init_mapped(xnheap_t *heap, u_long heapsize, int memflags)
- 	return -ENOMEM;
- }
- 
--int xnheap_destroy_mapped(xnheap_t *heap, void (*release)(struct xnheap *heap),
--			  void __user *mapaddr)
-+void xnheap_destroy_mapped(xnheap_t *heap,
-+			   void (*release)(struct xnheap *heap),
-+			   void __user *mapaddr)
- {
- 	xnheap_destroy(heap, &xnheap_free_extent, NULL);
--	return 0;
- }
- #endif /* !CONFIG_XENO_OPT_PERVASIVE */
- 
-diff --git a/ksrc/skins/native/heap.c b/ksrc/skins/native/heap.c
-index 0d7ad83..f7411e8 100644
---- a/ksrc/skins/native/heap.c
-+++ b/ksrc/skins/native/heap.c
-@@ -357,9 +357,6 @@ static void __heap_post_release(struct xnheap *h)
-  *
-  * @return 0 is returned upon success. Otherwise:
-  *
-- * - -EBUSY is returned if @a heap is in use by another process and the
-- * descriptor is not destroyed.
-- *
-  * - -EINVAL is returned if @a heap is not a heap descriptor.
-  *
-  * - -EIDRM is returned if @a heap is a deleted heap descriptor.
-@@ -379,7 +376,7 @@ static void __heap_post_release(struct xnheap *h)
- 
- int rt_heap_delete_inner(RT_HEAP *heap, void __user *mapaddr)
- {
--	int err = 0;
-+	int err;
- 	spl_t s;
- 
- 	if (!xnpod_root_p())
-@@ -412,22 +409,16 @@ int rt_heap_delete_inner(RT_HEAP *heap, void __user *mapaddr)
- 
- #ifdef CONFIG_XENO_OPT_PERVASIVE
- 	if (heap->mode & H_MAPPABLE)
--		err = xnheap_destroy_mapped(&heap->heap_base,
--					    __heap_post_release, mapaddr);
-+		xnheap_destroy_mapped(&heap->heap_base,
-+				      __heap_post_release, mapaddr);
- 	else
- #endif /* CONFIG_XENO_OPT_PERVASIVE */
-+	{
- 		xnheap_destroy(&heap->heap_base, &__heap_flush_private, NULL);
--
--	xnlock_get_irqsave(&nklock, s);
--
--	if (err)
--		heap->magic = XENO_HEAP_MAGIC;
--	else if (!(heap->mode & H_MAPPABLE))
- 		__heap_post_release(&heap->heap_base);
-+	}
- 
--	xnlock_put_irqrestore(&nklock, s);
--
--	return err;
-+	return 0;
- }
- 
- int rt_heap_delete(RT_HEAP *heap)
-diff --git a/ksrc/skins/native/queue.c b/ksrc/skins/native/queue.c
-index f913675..3592a4a 100644
---- a/ksrc/skins/native/queue.c
-+++ b/ksrc/skins/native/queue.c
-@@ -326,9 +326,6 @@ static void __queue_post_release(struct xnheap *heap)
-  * - -EPERM is returned if this service was called from an
-  * asynchronous context.
-  *
-- * - -EBUSY is returned if an attempt is made to delete a shared queue
-- * which is still bound to a process.
-- *
-  * Environments:
-  *
-  * This service can be called from:
-@@ -341,7 +338,7 @@ static void __queue_post_release(struct xnheap *heap)
- 
- int rt_queue_delete_inner(RT_QUEUE *q, void __user *mapaddr)
- {
--	int err = 0;
-+	int err;
- 	spl_t s;
- 
- 	if (xnpod_asynch_p())
-@@ -373,22 +370,16 @@ int rt_queue_delete_inner(RT_QUEUE *q, void __user *mapaddr)
- 
- #ifdef CONFIG_XENO_OPT_PERVASIVE
- 	if (q->mode & Q_SHARED)
--		err = xnheap_destroy_mapped(&q->bufpool,
--					    __queue_post_release, mapaddr);
-+		xnheap_destroy_mapped(&q->bufpool,
-+				      __queue_post_release, mapaddr);
- 	else
- #endif /* CONFIG_XENO_OPT_PERVASIVE */
-+	{
- 		xnheap_destroy(&q->bufpool, &__queue_flush_private, NULL);
--
--	xnlock_get_irqsave(&nklock, s);
--
--	if (err)
--		q->magic = XENO_QUEUE_MAGIC;
--	else if (!(q->mode & Q_SHARED))
- 		__queue_post_release(&q->bufpool);
-+	}
- 
--	xnlock_put_irqrestore(&nklock, s);
--
--	return err;
-+	return 0;
- }
- 
- int rt_queue_delete(RT_QUEUE *q)
-diff --git a/ksrc/skins/rtai/shm.c b/ksrc/skins/rtai/shm.c
-index fddf455..4c56495 100644
---- a/ksrc/skins/rtai/shm.c
-+++ b/ksrc/skins/rtai/shm.c
-@@ -293,13 +293,11 @@ static int _shm_free(unsigned long name)
- 				 * [YES!]
- 				 */
- #ifdef CONFIG_XENO_OPT_PERVASIVE
--				ret = xnheap_destroy_mapped(p->heap, NULL, NULL);
-+				xnheap_destroy_mapped(p->heap, NULL, NULL);
- #else /* !CONFIG_XENO_OPT_PERVASIVE */
- 				xnheap_destroy(p->heap,
- 					       &__heap_flush_private, NULL);
- #endif /* !CONFIG_XENO_OPT_PERVASIVE */
--				if (ret)
--					goto unlock_and_exit;
- 				xnheap_free(&kheap, p->heap);
- 			}
- 			removeq(&xnshm_allocq, &p->link);
-@@ -311,8 +309,6 @@ static int _shm_free(unsigned long name)
- 		holder = nextq(&xnshm_allocq, holder);
- 	}
- 
 -      unlock_and_exit:
 -
- 	xnlock_put_irqrestore(&nklock, s);
+-	spin_unlock(&kheapq_lock);
+-
+-	return err;
++	file->private_data = (void *)arg;
++	return 0;
+ }
  
- 	return ret;
+ static int xnheap_mmap(struct file *file, struct vm_area_struct *vma)
+ {
+ 	unsigned long offset, size, vaddr;
+ 	xnheap_t *heap;
++	int err;
+ 
+ 	if (vma->vm_ops != NULL || file->private_data == NULL)
+ 		/* Caller should mmap() once for a given file instance, after
+@@ -1103,21 +1087,34 @@ static int xnheap_mmap(struct file *file, struct vm_area_struct *vma)
+ 
+ 	offset = vma->vm_pgoff << PAGE_SHIFT;
+ 	size = vma->vm_end - vma->vm_start;
+-	heap = (xnheap_t *)file->private_data;
+ 
++	spin_lock(&kheapq_lock);
++
++	heap = __validate_heap_addr(file->private_data);
++	if (!heap) {
++		spin_unlock(&kheapq_lock);
++		return -EINVAL;
++	}
++
++	heap->archdep.numaps++;
++
++	spin_unlock(&kheapq_lock);
++
++	err = -ENXIO;
+ 	if (offset + size > xnheap_extentsize(heap))
+-		return -ENXIO;
++		goto deref_out;
+ 
+ 	if (countq(&heap->extents) > 1)
+ 		/* Cannot map multi-extent heaps, we need the memory
+ 		   area we map from to be contiguous. */
+-		return -ENXIO;
++		goto deref_out;
+ 
+ 	vma->vm_ops = &xnheap_vmops;
+ 	vma->vm_private_data = file->private_data;
+ 
+ 	vaddr = (unsigned long)heap->archdep.heapbase + offset;
+ 
++	err = -EAGAIN;
+ 	if ((heap->archdep.kmflags & ~XNHEAP_GFP_NONCACHED) == 0) {
+ 		unsigned long maddr = vma->vm_start;
+ 
+@@ -1126,7 +1123,7 @@ static int xnheap_mmap(struct file *file, struct vm_area_struct *vma)
+ 
+ 		while (size > 0) {
+ 			if (xnarch_remap_vm_page(vma, maddr, vaddr))
+-				return -EAGAIN;
++				goto deref_out;
+ 
+ 			maddr += PAGE_SIZE;
+ 			vaddr += PAGE_SIZE;
+@@ -1136,13 +1133,15 @@ static int xnheap_mmap(struct file *file, struct vm_area_struct *vma)
+ 					      vma->vm_start,
+ 					      virt_to_phys((void *)vaddr),
+ 					      size, vma->vm_page_prot))
+-		return -EAGAIN;
++		goto deref_out;
+ 
+ 	xnarch_fault_range(vma);
+ 
+-	atomic_inc(&heap->archdep.numaps);
+-
+ 	return 0;
++
++deref_out:
++	xnheap_vmclose(vma);
++	return err;
+ }
+ 
+ int xnheap_init_mapped(xnheap_t *heap, u_long heapsize, int memflags)
+@@ -1188,7 +1187,7 @@ int xnheap_destroy_mapped(xnheap_t *heap, void (*release)(struct xnheap *heap),
+ 
+ 	spin_lock(&kheapq_lock);
+ 
+-	if (atomic_read(&heap->archdep.numaps) > ccheck) {
++	if (heap->archdep.numaps > ccheck) {
+ 		heap->archdep.release = release;
+ 		spin_unlock(&kheapq_lock);
+ 		return -EBUSY;
+diff --git a/ksrc/skins/native/heap.c b/ksrc/skins/native/heap.c
+index 0a24735..9c3810c 100644
+--- a/ksrc/skins/native/heap.c
++++ b/ksrc/skins/native/heap.c
+@@ -60,11 +60,12 @@ static int __heap_read_proc(char *page,
+ 	int len;
+ 	spl_t s;
+ 
+-	p += sprintf(p, "type=%s:size=%lu:used=%lu:numaps=%d\n",
++	p += sprintf(p, "type=%s:size=%lu:used=%lu:numaps=%lu\n",
+ 		     (heap->mode & H_SHARED) == H_SHARED ? "shared" :
+ 		     (heap->mode & H_MAPPABLE) ? "mappable" : "kernel",
+-		     xnheap_usable_mem(&heap->heap_base), xnheap_used_mem(&heap->heap_base),
+-		     atomic_read(&heap->heap_base.archdep.numaps));
++		     xnheap_usable_mem(&heap->heap_base),
++		     xnheap_used_mem(&heap->heap_base),
++		     heap->heap_base.archdep.numaps);
+ 
+ 	xnlock_get_irqsave(&nklock, s);
+ 
 
 
