@@ -1,11 +1,10 @@
-Message-ID: <4ADD83FF.5090707@domain.hid>
-Date: Tue, 20 Oct 2009 11:33:51 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: oliver.schlenker@domain.hid
+Date: Tue, 20 Oct 2009 10:03:04 +0000
+Message-ID: <0000AE71.4ADDA6F7@domain.hid>
 MIME-Version: 1.0
-References: <0000AE6B.4ADD9E65@domain.hid>
-In-Reply-To: <0000AE6B.4ADD9E65@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+ charset="UTF-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai-help] :: rt_printf with daemonized task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,50 +15,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "oliver.schlenker@domain.hid" <oliver.schlenker@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: jan.kiszka@domain.hid
+Cc: xenomai@xenomai.org
 
-oliver.schlenker@domain.hid wrote:
-> -------- Original Message --------
-> Subject: Re: :: rt_printf with daemonized task (19-Okt-2009 16:00)
-> From:    Jan Kiszka <jan.kiszka@domain.hid>
-> To:      oliver.schlenker@domain.hid
-> 
->> Thanks for the patches, but I still have remarks. :)
->>
->> First of all, both patches need proper titles, a few lines of
->> description (see git history to get a feeling), and a signed-off-by to
->> express that you are the copyright holder and are allowed to contribute
->> this to Xenomai.
->>
-> 
-> I'm not totally sure what to do now, because I have never used git before ...
-> 
-> In the header part of the xenomai source files there are not description
-> of any patches mentioned, and also no signed-off-by of the authors
-> of patches.
+DQoNCg0KDQoNCi0tLS0tLS0tIE9yaWdpbmFsIE1lc3NhZ2UgLS0tLS0tLS0NClN1YmplY3Q6IFJl
+OiA6OiBydF9wcmludGYgd2l0aCBkYWVtb25pemVkIHRhc2sgKDIwLU9rdC0yMDA5IDExOjMzKQ0K
+RnJvbTogICAgSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4NClRvOiAgICAgIG9s
+aXZlci5zY2hsZW5rZXJAc21tb3Rpb25jb250cm9sLmRlDQoNCj4gDQo+IFNlZSBodHRwOi8vdGhy
+ZWFkLmdtYW5lLm9yZy9nbWFuZS5saW51eC5yZWFsLXRpbWUueGVub21haS5kZXZlbC82NTcxIGZv
+cg0KPiBhbiBleGFtcGxlIG9mIGEgcGF0Y2ggdGhhdCBtYXkgKGJ1dCBuZWVkIG5vdCkgYmUgZ2Vu
+ZXJhdGVkIHZpYSBnaXQuIFdoYXQNCj4gY291bnRzIGlzIHRoZSBmb3JtYXQ6IHByb3BlciB0aXRs
+ZSwgYSBmZXcgbGluZXMgb2YgZGVzY3JpcHRpb24sIHNpZ25lZC1vZmYuDQo+IA0KPiBIVEgsDQo+
+IEphbg0KPiANCg0Kb2ssIGhlcmUgaXMgbXkgbmV4dCB0cmlhbCBmb3IgYSBwcm9wZXIgcGF0Y2gN
+Cg0KDQpPbGl2ZXINCg0KDQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQoN
+ClN1YmplY3QgOiBGb3JrLXNhdmUgdXNlIG9mIHJ0X3ByaW50DQoNCkZvcmsgc2F2ZSBpbml0aWFs
+aXNhdGlvbiBvZiBydF9wcmludCBsaWJyYXJ5LCBuZWNlc3NhcnkgY2hpbGQgaW5pdGlhbGlzYXRp
+b24gYXJlDQpkb25lIHZpYSBwdGhyZWFkX2F0Zm9yaygpIHdoZW4gY2hpbGQgcHJvY2VzcyBpcyBz
+dGFydGVkLg0KDQpTaWduZWQtb2ZmLWJ5OiBPbGl2ZXIgU2NobGVua2VyIDxvbGl2ZXIuc2NobGVu
+a2VyIDxhdD4gc20gbW90aW9uIGNvbnRyb2wuZGU+DQotLS0NCg0KLS0tIHJ0X3ByaW50LmMub3Jp
+Z2luYWwJMjAwOC0wOS0xMCAxMDozNjoyNy4wMDAwMDAwMDAgKzAyMDANCisrKyBydF9wcmludC5j
+LmZvcmtvbmx5CTIwMDktMTAtMTYgMTY6MTk6MjUuOTQ5Mjg5ODAwICswMjAwDQogICAgICAgICAg
+ICAgICAgICAgIA0KIAl9DQogfQ0KIA0KLXZvaWQgX19ydF9wcmludF9pbml0KHZvaWQpDQorc3Rh
+dGljIHZvaWQgc3Bhd25fcHJpbnRlcl90aHJlYWQodm9pZCkNCiB7DQogCXB0aHJlYWRfYXR0cl90
+IHRoYXR0cjsNCisNCisJcHRocmVhZF9hdHRyX2luaXQoJnRoYXR0cik7DQorCXB0aHJlYWRfYXR0
+cl9zZXRzdGFja3NpemUoJnRoYXR0ciwgUFRIUkVBRF9TVEFDS19NSU4pOw0KKwlwdGhyZWFkX2Ny
+ZWF0ZSgmX19wcmludGVyX3RocmVhZCwgJnRoYXR0ciwgcHJpbnRlcl9sb29wLCBOVUxMKTsNCit9
+DQorDQorc3RhdGljIHZvaWQgZm9ya2VkX2NoaWxkX2luaXQodm9pZCkNCit7DQorCXN0cnVjdCBw
+cmludF9idWZmZXIgKm15X2J1ZmZlciA9IHB0aHJlYWRfZ2V0c3BlY2lmaWMoX19idWZmZXJfa2V5
+KTsNCisJc3RydWN0IHByaW50X2J1ZmZlciAqKnBidWZmZXIgPSAmX19maXJzdF9idWZmZXI7DQor
+DQorCS8qIHJlLWluaXQgdG8gYXZvaWQgZmluZGluZyBpdCBsb2NrZWQgYnkgc29tZSBwYXJlbnQg
+dGhyZWFkICovDQorCXB0aHJlYWRfbXV0ZXhfaW5pdCgmX19idWZmZXJfbG9jaywgTlVMTCk7DQor
+DQorCXdoaWxlICgqcGJ1ZmZlcikgew0KKwkJaWYgKCpwYnVmZmVyID09IG15X2J1ZmZlcikNCisJ
+CQlwYnVmZmVyID0gJigqcGJ1ZmZlciktPm5leHQ7DQorCQllbHNlDQorCQkJY2xlYW51cF9idWZm
+ZXIoKnBidWZmZXIpOw0KKwl9DQorDQorCXNwYXduX3ByaW50ZXJfdGhyZWFkKCk7DQorfQ0KKw0K
+K3ZvaWQgX19ydF9wcmludF9pbml0KHZvaWQpDQorew0KIAljb25zdCBjaGFyICp2YWx1ZV9zdHI7
+DQogCXVuc2lnbmVkIGxvbmcgbG9uZyBwZXJpb2Q7DQogDQogICAgICAgICAgICAgICAgICAgDQog
+CXB0aHJlYWRfbXV0ZXhfaW5pdCgmX19idWZmZXJfbG9jaywgTlVMTCk7DQogCXB0aHJlYWRfa2V5
+X2NyZWF0ZSgmX19idWZmZXJfa2V5LCAodm9pZCAoKikodm9pZCopKWNsZWFudXBfYnVmZmVyKTsN
+CiANCi0JcHRocmVhZF9hdHRyX2luaXQoJnRoYXR0cik7DQotCXB0aHJlYWRfYXR0cl9zZXRzdGFj
+a3NpemUoJnRoYXR0ciwgUFRIUkVBRF9TVEFDS19NSU4pOw0KLQlwdGhyZWFkX2NyZWF0ZSgmX19w
+cmludGVyX3RocmVhZCwgJnRoYXR0ciwgcHJpbnRlcl9sb29wLCBOVUxMKTsNCisJc3Bhd25fcHJp
+bnRlcl90aHJlYWQoKTsNCisJcHRocmVhZF9hdGZvcmsoTlVMTCwgTlVMTCwgZm9ya2VkX2NoaWxk
+X2luaXQpOw0KIH0gDQoNCg0KDQoNClRvOiBqYW4ua2lzemthQHNpZW1lbnMuY29tDQpDYzogZ2ls
+bGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmcNCiAgICB4ZW5vbWFpLWhlbHBAZ25hLm9yZw0K
 
-See http://thread.gmane.org/gmane.linux.real-time.xenomai.devel/6571 for
-an example of a patch that may (but need not) be generated via git. What
-counts is the format: proper title, a few lines of description, signed-off.
 
-HTH,
-Jan
-
-> 
-> Maybe it's the best to change the patches according to your last two mails
-> and post it again in the list. So the patches are available to anybody
-> who would like to use them.
-> 
-> 
-> 
-> Oliver
-> 
-> To: jan.kiszka@domain.hid
-> Cc: gilles.chanteperdrix@xenomai.org
->     xenomai@xenomai.org
-
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
 
