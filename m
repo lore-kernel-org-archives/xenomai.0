@@ -1,15 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4ADCB96B.2040703@domain.hid>
-References: <20091019171611.3332.24615.stgit@domain.hid>
-	<20091019171612.3332.48569.stgit@domain.hid>
-	<4ADCAD4C.2000504@domain.hid>  <4ADCB96B.2040703@domain.hid>
-Content-Type: text/plain
-Date: Tue, 20 Oct 2009 12:32:13 +0200
-Message-Id: <1256034733.2862.118.camel@domain.hid>
-Mime-Version: 1.0
+Resent-To: Philippe Gerum <rpm@xenomai.org>
+Resent-Message-Id: <4ADDA26D.4000702@domain.hid>
+From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Tue, 20 Oct 2009 13:37:25 +0200
+Message-ID: <20091020113725.9069.88823.stgit@domain.hid>
+In-Reply-To: <20091020113724.9069.23594.stgit@domain.hid>
+References: <20091020113724.9069.23594.stgit@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH v2 2/3] nucleus: Include all heaps in
- statistics
+Subject: [Xenomai-core] [PATCH v3 6/9] rtai: Try to fix _shm_free
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,45 +17,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Mon, 2009-10-19 at 21:09 +0200, Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
-> > Jan Kiszka wrote:
-> >> @@ -234,12 +239,65 @@ int xnheap_init(xnheap_t *heap,
-> >>  
-> >>  	appendq(&heap->extents, &extent->link);
-> >>  
-> >> +	vsnprintf(heap->name, sizeof(heap->name), name, args);
-> >> +
-> >> +	spin_lock(&heapq_lock);
-> >> +	appendq(&heapq, &heap->stat_link);
-> >> +	spin_unlock(&heapq_lock);
-> > 
-> > You can not use a Linux spinlock in xnheap_init and xnheap_destroy:
-> > - this breaks the build for the simulator;
-> > - callers of xnheap_init and xnheap_destroy are not guaranteed to run on
-> > the root domain.
-> 
-> Oh, yes, unfortunately. That callers appear to be fixable, but that's
-> probably not worth it at this point.
+This is totally untested but should not make things worse than they
+already are.
 
-There is nothing to fix here. It's part of the service definition to be
-able to call it from primary mode.
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
 
->  I will have to rewrite
-> heap_read_proc to break out of nklock frequently. Also not nice, but
-> less invasive.
-> 
-> Jan
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
--- 
-Philippe.
+ ksrc/skins/rtai/shm.c |   31 +++++++++++++++++++------------
+ 1 files changed, 19 insertions(+), 12 deletions(-)
 
+diff --git a/ksrc/skins/rtai/shm.c b/ksrc/skins/rtai/shm.c
+index 4c56495..21c3b07 100644
+--- a/ksrc/skins/rtai/shm.c
++++ b/ksrc/skins/rtai/shm.c
+@@ -260,19 +260,24 @@ void *rt_heap_open(unsigned long name, int size, int suprt)
+ 	return _shm_alloc(name, size, suprt, 0, &opaque);
+ }
+ 
+-#ifndef CONFIG_XENO_OPT_PERVASIVE
++#ifdef CONFIG_XENO_OPT_PERVASIVE
++static void __heap_flush_shared(xnheap_t *heap)
++{
++	xnheap_free(&kheap, heap);
++}
++#else /* !CONFIG_XENO_OPT_PERVASIVE */
+ static void __heap_flush_private(xnheap_t *heap,
+ 				 void *heapmem, u_long heapsize, void *cookie)
+ {
+ 	xnarch_free_host_mem(heapmem, heapsize);
+ }
+-#endif /* CONFIG_XENO_OPT_PERVASIVE */
++#endif /* !CONFIG_XENO_OPT_PERVASIVE */
+ 
+ static int _shm_free(unsigned long name)
+ {
+-	int ret = 0;
+ 	xnholder_t *holder;
+ 	xnshm_a_t *p;
++	int ret;
+ 	spl_t s;
+ 
+ 	xnlock_get_irqsave(&nklock, s);
+@@ -283,27 +288,29 @@ static int _shm_free(unsigned long name)
+ 		p = link2shma(holder);
+ 
+ 		if (p->name == name && --p->ref == 0) {
++			removeq(&xnshm_allocq, &p->link);
+ 			if (p->handle)
+ 				xnregistry_remove(p->handle);
++
++			xnlock_put_irqrestore(&nklock, s);
++
+ 			if (p->heap == &kheap)
+ 				xnheap_free(&kheap, p->chunk);
+ 			else {
+-				/* Should release lock here? 
+-				 * Can destroy_mapped suspend ?
+-				 * [YES!]
+-				 */
+ #ifdef CONFIG_XENO_OPT_PERVASIVE
+-				xnheap_destroy_mapped(p->heap, NULL, NULL);
++				xnheap_destroy_mapped(p->heap,
++						      __heap_flush_shared,
++						      NULL);
+ #else /* !CONFIG_XENO_OPT_PERVASIVE */
+ 				xnheap_destroy(p->heap,
+ 					       &__heap_flush_private, NULL);
+-#endif /* !CONFIG_XENO_OPT_PERVASIVE */
+ 				xnheap_free(&kheap, p->heap);
++#endif /* !CONFIG_XENO_OPT_PERVASIVE */
+ 			}
+-			removeq(&xnshm_allocq, &p->link);
+ 			ret = p->size;
+ 			xnheap_free(&kheap, p);
+-			break;
++
++			return ret;
+ 		}
+ 
+ 		holder = nextq(&xnshm_allocq, holder);
+@@ -311,7 +318,7 @@ static int _shm_free(unsigned long name)
+ 
+ 	xnlock_put_irqrestore(&nklock, s);
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ int rt_shm_free(unsigned long name)
 
 
