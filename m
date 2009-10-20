@@ -1,10 +1,11 @@
-From: oliver.schlenker@domain.hid
-Date: Tue, 20 Oct 2009 09:26:31 +0000
-Message-ID: <0000AE6B.4ADD9E65@domain.hid>
+Message-ID: <4ADD83FF.5090707@domain.hid>
+Date: Tue, 20 Oct 2009 11:33:51 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <0000AE6B.4ADD9E65@domain.hid>
+In-Reply-To: <0000AE6B.4ADD9E65@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] :: rt_printf with daemonized task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -15,28 +16,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid
-Cc: xenomai@xenomai.org
+To: "oliver.schlenker@domain.hid" <oliver.schlenker@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQoNCg0KDQoNCi0tLS0tLS0tIE9yaWdpbmFsIE1lc3NhZ2UgLS0tLS0tLS0NClN1YmplY3Q6IFJl
-OiA6OiBydF9wcmludGYgd2l0aCBkYWVtb25pemVkIHRhc2sgKDE5LU9rdC0yMDA5IDE2OjAwKQ0K
-RnJvbTogICAgSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4NClRvOiAgICAgIG9s
-aXZlci5zY2hsZW5rZXJAc21tb3Rpb25jb250cm9sLmRlDQoNCj4gDQo+IFRoYW5rcyBmb3IgdGhl
-IHBhdGNoZXMsIGJ1dCBJIHN0aWxsIGhhdmUgcmVtYXJrcy4gOikNCj4gDQo+IEZpcnN0IG9mIGFs
-bCwgYm90aCBwYXRjaGVzIG5lZWQgcHJvcGVyIHRpdGxlcywgYSBmZXcgbGluZXMgb2YNCj4gZGVz
-Y3JpcHRpb24gKHNlZSBnaXQgaGlzdG9yeSB0byBnZXQgYSBmZWVsaW5nKSwgYW5kIGEgc2lnbmVk
-LW9mZi1ieSB0bw0KPiBleHByZXNzIHRoYXQgeW91IGFyZSB0aGUgY29weXJpZ2h0IGhvbGRlciBh
-bmQgYXJlIGFsbG93ZWQgdG8gY29udHJpYnV0ZQ0KPiB0aGlzIHRvIFhlbm9tYWkuDQo+IA0KDQpJ
-J20gbm90IHRvdGFsbHkgc3VyZSB3aGF0IHRvIGRvIG5vdywgYmVjYXVzZSBJIGhhdmUgbmV2ZXIg
-dXNlZCBnaXQgYmVmb3JlIC4uLg0KDQpJbiB0aGUgaGVhZGVyIHBhcnQgb2YgdGhlIHhlbm9tYWkg
-c291cmNlIGZpbGVzIHRoZXJlIGFyZSBub3QgZGVzY3JpcHRpb24NCm9mIGFueSBwYXRjaGVzIG1l
-bnRpb25lZCwgYW5kIGFsc28gbm8gc2lnbmVkLW9mZi1ieSBvZiB0aGUgYXV0aG9ycw0Kb2YgcGF0
-Y2hlcy4NCg0KTWF5YmUgaXQncyB0aGUgYmVzdCB0byBjaGFuZ2UgdGhlIHBhdGNoZXMgYWNjb3Jk
-aW5nIHRvIHlvdXIgbGFzdCB0d28gbWFpbHMNCmFuZCBwb3N0IGl0IGFnYWluIGluIHRoZSBsaXN0
-LiBTbyB0aGUgcGF0Y2hlcyBhcmUgYXZhaWxhYmxlIHRvIGFueWJvZHkNCndobyB3b3VsZCBsaWtl
-IHRvIHVzZSB0aGVtLg0KDQoNCg0KT2xpdmVyDQoNClRvOiBqYW4ua2lzemthQHNpZW1lbnMuY29t
-DQpDYzogZ2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmcNCiAgICB4ZW5vbWFpLWhlbHBA
-Z25hLm9yZw0K
+oliver.schlenker@domain.hid wrote:
+> -------- Original Message --------
+> Subject: Re: :: rt_printf with daemonized task (19-Okt-2009 16:00)
+> From:    Jan Kiszka <jan.kiszka@domain.hid>
+> To:      oliver.schlenker@domain.hid
+> 
+>> Thanks for the patches, but I still have remarks. :)
+>>
+>> First of all, both patches need proper titles, a few lines of
+>> description (see git history to get a feeling), and a signed-off-by to
+>> express that you are the copyright holder and are allowed to contribute
+>> this to Xenomai.
+>>
+> 
+> I'm not totally sure what to do now, because I have never used git before ...
+> 
+> In the header part of the xenomai source files there are not description
+> of any patches mentioned, and also no signed-off-by of the authors
+> of patches.
 
+See http://thread.gmane.org/gmane.linux.real-time.xenomai.devel/6571 for
+an example of a patch that may (but need not) be generated via git. What
+counts is the format: proper title, a few lines of description, signed-off.
 
+HTH,
+Jan
+
+> 
+> Maybe it's the best to change the patches according to your last two mails
+> and post it again in the list. So the patches are available to anybody
+> who would like to use them.
+> 
+> 
+> 
+> Oliver
+> 
+> To: jan.kiszka@domain.hid
+> Cc: gilles.chanteperdrix@xenomai.org
+>     xenomai@xenomai.org
+
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
