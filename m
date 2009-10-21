@@ -1,12 +1,11 @@
-Message-ID: <4ACCB2BE.5030708@domain.hid>
-Date: Wed, 07 Oct 2009 17:24:46 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: oliver.schlenker@domain.hid
+Date: Wed, 21 Oct 2009 12:06:33 +0000
+Message-ID: <0000AEB3.4ADF1568@domain.hid>
 MIME-Version: 1.0
-References: <DIIE.000001A50000AC82@domain.hid>
-In-Reply-To: <DIIE.000001A50000AC82@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Re-8:  rt_printf with daemonized task
+Content-Type: text/plain;
+ charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai-help] Re-2: :: rt_printf with daemonized task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,73 +15,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: oliver.schlenker@domain.hid
+To: jan.kiszka@domain.hid
 Cc: xenomai@xenomai.org
 
-oliver.schlenker@domain.hid wrote:
-> 
-> 
-> As you expected, changing the syslog call from
->     syslog( LOG_ERR | LOG_LOCAL4, head->text ); 
-> to
->     syslog( LOG_ERR | LOG_LOCAL4, "%s", head->text ); 
-> 
-> did not change anything.
-> 
-> To track down the problem further, I have made a small test application :
-> 
-> #include <stdlib.h>
-> #include <stdio.h>
-> 
-> #include <native/task.h>
-> #include <native/timer.h>
-> #include <rtdk.h>
-> 
-> 
-> int main( int arc, char *argv[] )
-> {
-> int i;
-> 
-> rt_print_auto_init(1);
-> 
-> rt_printf("--------------- TEST RT-PRINTF  1 ------------\n");
-> 
-> 	sleep(1);
-> 
-> daemon(0,0);
-> 
-> 	rt_print_auto_init(1);
-> 
-> 	rt_printf("--------------- TEST RT-PRINTF  2 ------------\n");
-> 
-> 	sleep(10);
-> 
-> return(0);
-> }
-> 
-> 
-> 
-> This application gives the following results :
-> - If the daemon() function is not called, all rt_printf() do work well
->   and output is shown in syslog
-> - If daemon() function is called, and first call to sleep(1) is omitted,
->   there is no output in the syslog whatsoever.
-> - If daemon() function is called, and first call to sleep(1) is executed,
->   there is output of the first rt_printf in the syslog but not of the second
->   one.
-> 
-> I do not have any idea why daemonizing of the process is not giving
-> any output to the syslog.
+DQoNCg0KLS0tLS0tLS0gT3JpZ2luYWwgTWVzc2FnZSAtLS0tLS0tLQ0KU3ViamVjdDogUmU6IDo6
+IHJ0X3ByaW50ZiB3aXRoIGRhZW1vbml6ZWQgdGFzayAoMTktT2t0LTIwMDkgMTY6MDApDQpGcm9t
+OiAgICBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KVG86ICAgICAgb2xpdmVy
+LnNjaGxlbmtlckBzbW1vdGlvbmNvbnRyb2wuZGUNCg0KPiBJZiB5b3UgbW92ZSB0aGUgZGVmaW5p
+dGlvbiBvZiBwcmludF90b19idWZmZXIgcmlnaHQgYmVsb3cgdGhpcyBwcm90b3R5cGUNCj4gYmxv
+Y2ssIHlvdSB3b3VsZCBhdm9pZCBoYXZpbmcgdG8gYWRkIHRoaXMgcHJvdG90eXBlIGFuZCB5b3Ug
+d291bGQgaGF2ZQ0KPiBsaWtlbHkgZ2VuZXJhdGVkIGEgbW9yZSByZXZpZXdhYmxlIHBhdGNoLiBU
+aGUgbGFyZ2UgY29kZSBtb3ZlbWVudCBiZWxvdw0KPiBpcyB2ZXJ5IGhhcmQgdG8gY2hlY2sgcmVn
+YXJkaW5nIGNvcnJlY3RuZXNzIGFzIEkgZG8gbm90IHNlZSB0aGUgYWN0dWFsbHkNCj4gbW9kaWZp
+ZWQgbGluZXMuDQoNCk9rLCBtb3ZlZCBiYWNrIGRlZmluaXRpb24gb2YgcHJpbnRfdG9fYnVmZmVy
+IHRvIGF2b2lkIGxhcmdlIGNvZGUgbW92ZW1lbnQNCg0KPiANCj4gPiAgc3RhdGljIHZvaWQgY2xl
+YW51cF9idWZmZXIoc3RydWN0IHByaW50X2J1ZmZlciAqYnVmZmVyKTsNCj4gPiAgc3RhdGljIHZv
+aWQgcHJpbnRfYnVmZmVycyh2b2lkKTsNCj4gPiArc3RhdGljIHZvaWQgZm9ya2VkX2NoaWxkX2lu
+aXQodm9pZCk7DQo+IA0KPiBTdHJheSBwcm90b3R5cGUuDQoNCmRlbGV0ZWQNCg0KPiA+ICANCj4g
+PiArdm9pZCBydF9zeXNsb2coaW50IHByaW9yaXR5LCBjaGFyICpmb3JtYXQsIC4uLikNCj4gPiAr
+ew0KPiA+ICsJdmFfbGlzdCBhcmdzOw0KPiA+ICsNCj4gPiArCXZhX3N0YXJ0KGFyZ3MsIGZvcm1h
+dCk7DQo+ID4gKwlwcmludF90b19idWZmZXIoUlRfUFJJTlRfU1lTTE9HX1NUUkVBTSwgcHJpb3Jp
+dHksIGZvcm1hdCwgYXJncyk7DQo+ID4gKwl2YV9lbmQoYXJncyk7DQo+ID4gKw0KPiA+ICsJcmV0
+dXJuOw0KPiANCj4gVW5uZWVkZWQgcmV0dXJuLg0KDQpEZWxldGVkDQoNCj4gDQo+ID4gK30NCj4g
+PiArDQo+ID4gK3ZvaWQgcnRfdnN5c2xvZyhpbnQgcHJpb3JpdHksIGNoYXIgKmZvcm1hdCwgdmFf
+bGlzdCBhcmdzICkNCj4gPiArew0KPiA+ICsJcHJpbnRfdG9fYnVmZmVyKFJUX1BSSU5UX1NZU0xP
+R19TVFJFQU0sIHByaW9yaXR5LCBmb3JtYXQsIGFyZ3MpOw0KPiA+ICsNCj4gPiArCXJldHVybjsN
+Cj4gDQo+IEhlcmUgdG9vLg0KDQpBbHNvIGRlbGV0ZWQNCg0KPiANCj4gPiArfQ0KPiA+ICsNCj4g
+PiAgc3RhdGljIHZvaWQgc2V0X2J1ZmZlcl9uYW1lKHN0cnVjdCBwcmludF9idWZmZXIgKmJ1ZmZl
+ciwgY29uc3QgY2hhciAqbmFtZSkNCj4gPiAgew0KPiA+ICAJaW50IG47DQo+ID4gICAgICAgICAg
+ICAgICAgICAgICAgDQo+ID4gIA0KPiA+ICAvKiAqKiogRGVmZXJyZWQgT3V0cHV0IE1hbmFnZW1l
+bnQgKioqICovDQo+ID4gIA0KPiA+ICtzdGF0aWMgaW50IHByaW50X3RvX2J1ZmZlcihGSUxFICpz
+dHJlYW0sIGludCBwcmlvcml0eSwNCj4gPiArCQkJCQkJCWNvbnN0IGNoYXIgKmZvcm1hdCx2YV9s
+aXN0IGFyZ3MpDQo+IA0KPiBXaGVuIG1vdmluZyB0aGlzIGZ1bmN0aW9uLCBwbGVhc2UgYWxzbyBp
+bmRlbnQgdGhpcyBwcm9wZXJseSBhbmQgdGFrZQ0KPiBjYXJlIGZvciBhIHNwYWNlIGFmdGVyIHRo
+ZSAnLCcuDQoNCnNob3VsZCBiZSBjb3JyZWN0IG5vdy4NCg0KPiANCj4gPiANCj4gDQo+IEphbg0K
+PiANCj4gLS0gDQo+IFNpZW1lbnMgQUcsIENvcnBvcmF0ZSBUZWNobm9sb2d5LCBDVCBTRSAyDQo+
+IENvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0KDQoNCndoZW4gcGF0
+Y2hlcyBhcmUgYWNrZWQgYnkgeW91LCBzaG91bGQgSSBkbyBzb21ldGhpbmcgd2l0aCB0aGUgcGF0
+Y2hlcw0KbGlrZSBzZW5kaW5nIHRvIGEgc3BlY2lhbCBtYWlsaW5nIGxpc3Qgb3IgaXMgaXQgb2sg
+dG8gaGF2ZSB0aGVtIHBvc3RlZCBpbg0KdGhpcyBsaXN0ID8NCg0KDQpPbGl2ZXINCg0KDQoNCi0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCg0KU3ViamVjdCA6IFN5c2xvZyBl
+eHRlbnNpb24gb2YgcnRfcHJpbnQNCg0KRXh0ZW5zaW9uIG9mIHJ0X3ByaW50IGxpYnJhcnkgd2l0
+aCBydF9zeXNsb2coKSBhbmQgcnRfdnN5c2xvZygpIHRvIHByaW50IG1lc3NhZ2VzDQpydC1zYWZl
+IGRpcmVjdGx5IHRvIHN5c2xvZw0KDQpTaWduZWQtb2ZmLWJ5OiBPbGl2ZXIgU2NobGVua2VyIDxv
+bGl2ZXIuc2NobGVua2VyIDxhdD4gc20gbW90aW9uIGNvbnRyb2wuZGU+DQotLS0NCg0KDQotLS0g
+cnRkay5oLm9yaWdpbmFsCTIwMDctMTItMDkgMTE6NDY6MzYuMDAwMDAwMDAwICswMTAwDQorKysg
+cnRkay5oCTIwMDktMTAtMDkgMTY6MzA6NTcuNzU5ODM2MzAwICswMjAwDQogICAgICAgICAgICAg
+ICAgIA0KIGludCBydF92cHJpbnRmKGNvbnN0IGNoYXIgKmZvcm1hdCwgdmFfbGlzdCBhcmdzKTsN
+CiBpbnQgcnRfZnByaW50ZihGSUxFICpzdHJlYW0sIGNvbnN0IGNoYXIgKmZvcm1hdCwgLi4uKTsN
+CiBpbnQgcnRfcHJpbnRmKGNvbnN0IGNoYXIgKmZvcm1hdCwgLi4uKTsNCit2b2lkIHJ0X3N5c2xv
+ZyhpbnQgcHJpb3JpdHksIGNoYXIgKmZvcm1hdCwgLi4uKTsNCit2b2lkIHJ0X3ZzeXNsb2coaW50
+IHByaW9yaXR5LCBjaGFyICpmb3JtYXQsIHZhX2xpc3QgYXJncyk7DQorDQogDQogaW50IHJ0X3By
+aW50X2luaXQoc2l6ZV90IGJ1ZmZlcl9zaXplLCBjb25zdCBjaGFyICpuYW1lKTsNCiB2b2lkIHJ0
+X3ByaW50X2NsZWFudXAodm9pZCk7IA0KDQoNCi0tLSBydF9wcmludC5jLmZvcmtvbmx5CTIwMDkt
+MTAtMTYgMTY6MTk6MjUuOTQ5Mjg5ODAwICswMjAwDQorKysgcnRfcHJpbnQuYy53c3lzbG9nCTIw
+MDktMTAtMjEgMTM6NDY6MzUuNTgwOTg1NzAwICswMjAwDQogICAgICAgICAgICAgICAgIA0KICNp
+bmNsdWRlIDxzdGRsaWIuaD4NCiAjaW5jbHVkZSA8c3RyaW5nLmg+DQogI2luY2x1ZGUgPHVuaXN0
+ZC5oPg0KKyNpbmNsdWRlIDxzeXNsb2cuaD4NCiANCiAjaW5jbHVkZSA8cnRkay5oPg0KICNpbmNs
+dWRlIDxhc20veGVub21haS9zeXN0ZW0uaD4NCiAgICAgICAgICAgICAgICAgIA0KIA0KICNkZWZp
+bmUgUlRfUFJJTlRfTElORV9CUkVBSwkJMjU2DQogDQorI2RlZmluZSBSVF9QUklOVF9TWVNMT0df
+U1RSRUFNIAlOVUxMDQorDQogc3RydWN0IGVudHJ5X2hlYWQgew0KIAlGSUxFICpkZXN0Ow0KIAl1
+aW50MzJfdCBzZXFfbm87DQorCWludCBwcmlvcml0eTsNCiAJY2hhciB0ZXh0WzFdOw0KIH0gX19h
+dHRyaWJ1dGVfXygocGFja2VkKSk7DQogDQogICAgICAgICAgICAgICAgIA0KIA0KIC8qICoqKiBy
+dF9wcmludCBBUEkgKioqICovDQogDQotaW50IHJ0X3ZmcHJpbnRmKEZJTEUgKnN0cmVhbSwgY29u
+c3QgY2hhciAqZm9ybWF0LCB2YV9saXN0IGFyZ3MpDQorc3RhdGljIGludCBwcmludF90b19idWZm
+ZXIoRklMRSAqc3RyZWFtLCBpbnQgcHJpb3JpdHksDQorCQkJCWNvbnN0IGNoYXIgKmZvcm1hdCwg
+dmFfbGlzdCBhcmdzKQ0KIHsNCiAJc3RydWN0IHByaW50X2J1ZmZlciAqYnVmZmVyID0gcHRocmVh
+ZF9nZXRzcGVjaWZpYyhfX2J1ZmZlcl9rZXkpOw0KIAlvZmZfdCB3cml0ZV9wb3MsIHJlYWRfcG9z
+Ow0KICAgICAgICAgICAgICAgICAgIA0KIAkJCS8qIFdyaXRlIG91dCBlbXB0eSBlbnRyeSAqLw0K
+IAkJCWhlYWQgPSBidWZmZXItPnJpbmcgKyB3cml0ZV9wb3M7DQogCQkJaGVhZC0+c2VxX25vID0g
+X19zZXFfbm87DQorCQkJaGVhZC0+cHJpb3JpdHkgPSAwOw0KIAkJCWhlYWQtPnRleHRbMF0gPSAw
+Ow0KIA0KIAkJCS8qIEZvcndhcmQgdG8gdGhlIHJpbmcgYnVmZmVyIHN0YXJ0ICovDQogICAgICAg
+ICAgICAgICAgICAgDQogCS8qIElmIHdlIHdlcmUgYWJsZSB0byB3cml0ZSBzb21lIHRleHQsIGZp
+bmFsaXNlIHRoZSBlbnRyeSAqLw0KIAlpZiAobGVuID4gMCkgew0KIAkJaGVhZC0+c2VxX25vID0g
+KytfX3NlcV9ubzsNCisJCWhlYWQtPnByaW9yaXR5ID0gcHJpb3JpdHk7DQogCQloZWFkLT5kZXN0
+ID0gc3RyZWFtOw0KIA0KIAkJLyogTW92ZSBmb3J3YXJkIGJ5IHRleHQgYW5kIGhlYWQgbGVuZ3Ro
+ICovDQogICAgICAgICAgICAgICAgICAgDQogCQkvKiBBbiBlbXB0eSBlbnRyeSBtYXJrcyB0aGUg
+d3JhcC1hcm91bmQgKi8NCiAJCWhlYWQgPSBidWZmZXItPnJpbmcgKyB3cml0ZV9wb3M7DQogCQlo
+ZWFkLT5zZXFfbm8gPSBfX3NlcV9ubzsNCisJCWhlYWQtPnByaW9yaXR5ID0gcHJpb3JpdHk7DQog
+CQloZWFkLT50ZXh0WzBdID0gMDsNCiANCiAJCXdyaXRlX3BvcyA9IDA7DQogICAgICAgICAgICAg
+ICAgICAgIA0KIAlyZXR1cm4gcmVzOw0KIH0NCiANCitpbnQgcnRfdmZwcmludGYoRklMRSAqc3Ry
+ZWFtLCBjb25zdCBjaGFyICpmb3JtYXQsIHZhX2xpc3QgYXJncykNCit7DQorCXJldHVybiBwcmlu
+dF90b19idWZmZXIoc3RyZWFtLCAwLCBmb3JtYXQsIGFyZ3MpOw0KK30NCisNCiBpbnQgcnRfdnBy
+aW50Zihjb25zdCBjaGFyICpmb3JtYXQsIHZhX2xpc3QgYXJncykNCiB7DQogCXJldHVybiBydF92
+ZnByaW50ZihzdGRvdXQsIGZvcm1hdCwgYXJncyk7DQogICAgICAgICAgICAgICAgICAgIA0KIAly
+ZXR1cm4gbjsNCiB9DQogDQordm9pZCBydF9zeXNsb2coaW50IHByaW9yaXR5LCBjaGFyICpmb3Jt
+YXQsIC4uLikNCit7DQorCXZhX2xpc3QgYXJnczsNCisNCisJdmFfc3RhcnQoYXJncywgZm9ybWF0
+KTsNCisJcHJpbnRfdG9fYnVmZmVyKFJUX1BSSU5UX1NZU0xPR19TVFJFQU0sIHByaW9yaXR5LCBm
+b3JtYXQsIGFyZ3MpOw0KKwl2YV9lbmQoYXJncyk7DQorfQ0KKw0KK3ZvaWQgcnRfdnN5c2xvZyhp
+bnQgcHJpb3JpdHksIGNoYXIgKmZvcm1hdCwgdmFfbGlzdCBhcmdzKQ0KK3sNCisJcHJpbnRfdG9f
+YnVmZmVyKFJUX1BSSU5UX1NZU0xPR19TVFJFQU0sIHByaW9yaXR5LCBmb3JtYXQsIGFyZ3MpOw0K
+K30NCisNCiBzdGF0aWMgdm9pZCBzZXRfYnVmZmVyX25hbWUoc3RydWN0IHByaW50X2J1ZmZlciAq
+YnVmZmVyLCBjb25zdCBjaGFyICpuYW1lKQ0KIHsNCiAJaW50IG47DQogICAgICAgICAgICAgICAg
+ICAgDQogDQogLyogKioqIERlZmVycmVkIE91dHB1dCBNYW5hZ2VtZW50ICoqKiAqLw0KIA0KKw0K
+IHN0YXRpYyB2b2lkIGNsZWFudXBfYnVmZmVyKHN0cnVjdCBwcmludF9idWZmZXIgKmJ1ZmZlcikN
+CiB7DQogCXN0cnVjdCBwcmludF9idWZmZXIgKnByZXYsICpuZXh0Ow0KICAgICAgICAgICAgICAg
+ICAgICANCiANCiAJCWlmIChsZW4pIHsNCiAJCQkvKiBQcmludCBvdXQgbm9uLWVtcHR5IGVudHJ5
+IGFuZCBwcm9jZWVkICovDQotCQkJZnByaW50ZihoZWFkLT5kZXN0LCAiJXMiLCBoZWFkLT50ZXh0
+KTsNCisJCQkvKiBDaGVjayBpZiBvdXRwdXQgZ29lcyB0byBzeXNsb2cgKi8NCisJCQlpZiAoaGVh
+ZC0+ZGVzdCA9PSBSVF9QUklOVF9TWVNMT0dfU1RSRUFNKSB7DQorCQkJICAgCXN5c2xvZyggaGVh
+ZC0+cHJpb3JpdHksICIlcyIsIGhlYWQtPnRleHQgKTsNCisJCQl9IGVsc2Ugew0KKwkJCQkvKiBP
+dXRwdXQgZ29lcyB0byBzcGVjaWZpZWQgc3RyZWFtICovDQorCQkJCWZwcmludGYoaGVhZC0+ZGVz
+dCwgIiVzIiwgaGVhZC0+dGV4dCk7DQorCQkJfQ0KKw0KIAkJCXJlYWRfcG9zICs9IHNpemVvZigq
+aGVhZCkgKyBsZW47DQogCQl9IGVsc2Ugew0KIAkJCS8qIEVtcHRyeSBlbnRyaWVzIG1hcmsgdGhl
+IHdyYXAtYXJvdW5kICovIA0KDQoNCg0KVG86IGphbi5raXN6a2FAc2llbWVucy5jb20NCkNjOiBn
+aWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZw0KICAgIHhlbm9tYWktaGVscEBnbmEub3Jn
+DQo=
 
-Could you try daemon(0, 1)?
-
-Could you also try to send normal replies to our replies, not mails
-which do not appear as replies and start new threads?
-
-Could you also remove the annoying feature that ask me to confirm that I
-want you to be notified that I read your mail?
-
--- 
-                                          Gilles
 
 
