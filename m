@@ -1,14 +1,14 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20091020113726.9069.95593.stgit@domain.hid>
-References: <20091020113724.9069.23594.stgit@domain.hid>
-	<20091020113726.9069.95593.stgit@domain.hid>
+In-Reply-To: <245373446233674495BCA5CA2FC1EB172FEEF2DCD7@domain.hid>
+References: <1254853590.3718.28.camel@domain.hid>
+	,<1254859856.2784.251.camel@domain.hid>
+	<245373446233674495BCA5CA2FC1EB172FEEF2DCD7@domain.hid>
 Content-Type: text/plain
-Date: Wed, 21 Oct 2009 01:41:06 +0200
-Message-Id: <1256082066.2862.178.camel@domain.hid>
+Date: Wed, 21 Oct 2009 16:32:39 +0200
+Message-Id: <1256135559.2862.418.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH v3 9/9] nucleus: Include all heaps in
-	statistics
+Subject: Re: [Xenomai-core] RFC: 2.5 todo list.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,586 +17,120 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: Andreas Glatz <AndreasGlatz@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Tue, 2009-10-20 at 13:37 +0200, Jan Kiszka wrote:
-> This extends /proc/xenomai/heap with statistics about all currently used
-> heaps. It takes care to flush nklock while iterating of this potentially
-> long list.
+On Thu, 2009-10-15 at 15:21 -0400, Andreas Glatz wrote:
+> Hi Philippe,
 > 
-> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
-> ---
+> Back at work. See inline replies below.
 > 
->  include/nucleus/heap.h    |   12 +++-
->  ksrc/drivers/ipc/iddp.c   |    3 +
->  ksrc/drivers/ipc/xddp.c   |    6 ++
->  ksrc/nucleus/heap.c       |  131 ++++++++++++++++++++++++++++++++++++++++-----
->  ksrc/nucleus/module.c     |    2 -
->  ksrc/nucleus/pod.c        |    5 +-
->  ksrc/nucleus/shadow.c     |    5 +-
->  ksrc/skins/native/heap.c  |    6 +-
->  ksrc/skins/native/pipe.c  |    4 +
->  ksrc/skins/native/queue.c |    6 +-
->  ksrc/skins/posix/shm.c    |    4 +
->  ksrc/skins/psos+/rn.c     |    6 +-
->  ksrc/skins/rtai/shm.c     |    7 ++
->  ksrc/skins/vrtx/heap.c    |    6 +-
->  ksrc/skins/vrtx/syscall.c |    3 +
->  15 files changed, 169 insertions(+), 37 deletions(-)
 > 
-> diff --git a/include/nucleus/heap.h b/include/nucleus/heap.h
-> index 44db738..f653cd7 100644
-> --- a/include/nucleus/heap.h
-> +++ b/include/nucleus/heap.h
-> @@ -115,6 +115,10 @@ typedef struct xnheap {
->  
->  	XNARCH_DECL_DISPLAY_CONTEXT();
->  
-> +	xnholder_t stat_link;	/* Link in heapq */
-> +
-> +	char name[48];
-
-s,48,XNOBJECT_NAME_LEN
-
-> +
->  } xnheap_t;
->  
->  extern xnheap_t kheap;
-> @@ -202,7 +206,8 @@ void xnheap_cleanup_proc(void);
->  
->  int xnheap_init_mapped(xnheap_t *heap,
->  		       u_long heapsize,
-> -		       int memflags);
-> +		       int memflags,
-> +		       const char *name, ...);
->  
-
-The va_list is handy, but this breaks the common pattern used throughout
-the rest of the nucleus, based on passing pre-formatted labels. So
-either we make all creation calls use va_lists (but xnthread would need
-more work), or we make xnheap_init_mapped use the not-so-handy current
-form.
-
-Actually, providing xnheap_set_name() and a name parameter/va_list to
-xnheap_init* is one too many, this clutters an inner interface
-uselessly. The latter should go away, assuming that anon heaps may still
-exist.
-
->  void xnheap_destroy_mapped(xnheap_t *heap,
->  			   void (*release)(struct xnheap *heap),
-> @@ -224,7 +229,10 @@ void xnheap_destroy_mapped(xnheap_t *heap,
->  int xnheap_init(xnheap_t *heap,
->  		void *heapaddr,
->  		u_long heapsize,
-> -		u_long pagesize);
-> +		u_long pagesize,
-> +		const char *name, ...);
-> +
-> +void xnheap_set_name(xnheap_t *heap, const char *name, ...);
->  
->  void xnheap_destroy(xnheap_t *heap,
->  		    void (*flushfn)(xnheap_t *heap,
-> diff --git a/ksrc/drivers/ipc/iddp.c b/ksrc/drivers/ipc/iddp.c
-> index a407946..b6382f1 100644
-> --- a/ksrc/drivers/ipc/iddp.c
-> +++ b/ksrc/drivers/ipc/iddp.c
-> @@ -559,7 +559,8 @@ static int __iddp_bind_socket(struct rtipc_private *priv,
->  		}
->  
->  		ret = xnheap_init(&sk->privpool,
-> -				  poolmem, poolsz, XNHEAP_PAGE_SIZE);
-> +				  poolmem, poolsz, XNHEAP_PAGE_SIZE,
-> +				  "ippd: %d", port);
->  		if (ret) {
->  			xnarch_free_host_mem(poolmem, poolsz);
->  			goto fail;
-> diff --git a/ksrc/drivers/ipc/xddp.c b/ksrc/drivers/ipc/xddp.c
-> index f62147a..a5dafef 100644
-> --- a/ksrc/drivers/ipc/xddp.c
-> +++ b/ksrc/drivers/ipc/xddp.c
-> @@ -703,7 +703,7 @@ static int __xddp_bind_socket(struct rtipc_private *priv,
->  		}
->  
->  		ret = xnheap_init(&sk->privpool,
-> -				  poolmem, poolsz, XNHEAP_PAGE_SIZE);
-> +				  poolmem, poolsz, XNHEAP_PAGE_SIZE, "");
->  		if (ret) {
->  			xnarch_free_host_mem(poolmem, poolsz);
->  			goto fail;
-> @@ -746,6 +746,10 @@ static int __xddp_bind_socket(struct rtipc_private *priv,
->  	sk->minor = ret;
->  	sa->sipc_port = ret;
->  	sk->name = *sa;
-> +
-> +	if (poolsz > 0)
-> +		xnheap_set_name(sk->bufpool, "xddp: %d", sa->sipc_port);
-> +
->  	/* Set default destination if unset at binding time. */
->  	if (sk->peer.sipc_port < 0)
->  		sk->peer = *sa;
-> diff --git a/ksrc/nucleus/heap.c b/ksrc/nucleus/heap.c
-> index 96c46f8..793d1c5 100644
-> --- a/ksrc/nucleus/heap.c
-> +++ b/ksrc/nucleus/heap.c
-> @@ -76,6 +76,9 @@ EXPORT_SYMBOL_GPL(kheap);
->  xnheap_t kstacks;	/* Private stack pool */
->  #endif
->  
-> +static DEFINE_XNQUEUE(heapq);	/* Heap list for /proc reporting */
-> +static unsigned long heapq_rev;
-> +
->  static void init_extent(xnheap_t *heap, xnextent_t *extent)
->  {
->  	caddr_t freepage;
-> @@ -108,7 +111,7 @@ static void init_extent(xnheap_t *heap, xnextent_t *extent)
->   */
->  
->  /*!
-> - * \fn xnheap_init(xnheap_t *heap,void *heapaddr,u_long heapsize,u_long pagesize)
-> + * \fn xnheap_init(xnheap_t *heap,void *heapaddr,u_long heapsize,u_long pagesize,const char *name,...)
->   * \brief Initialize a memory heap.
->   *
->   * Initializes a memory heap suitable for time-bounded allocation
-> @@ -145,6 +148,10 @@ static void init_extent(xnheap_t *heap, xnextent_t *extent)
->   * best one for your needs. In the current implementation, pagesize
->   * must be a power of two in the range [ 8 .. 32768 ] inclusive.
->   *
-> + * @param name Name displayed in statistic outputs. This parameter can
-> + * be a format string, in which case succeeding parameters will be used
-> + * to resolve the final name.
-> + *
->   * @return 0 is returned upon success, or one of the following error
->   * codes:
->   *
-> @@ -161,12 +168,13 @@ static void init_extent(xnheap_t *heap, xnextent_t *extent)
->   * Rescheduling: never.
->   */
->  
-> -int xnheap_init(xnheap_t *heap,
-> -		void *heapaddr, u_long heapsize, u_long pagesize)
-> +static int xnheap_init_va(xnheap_t *heap, void *heapaddr, u_long heapsize,
-> +			  u_long pagesize, const char *name, va_list args)
->  {
->  	unsigned cpu, nr_cpus = xnarch_num_online_cpus();
->  	u_long hdrsize, shiftsize, pageshift;
->  	xnextent_t *extent;
-> +	spl_t s;
->  
->  	/*
->  	 * Perform some parametrical checks first.
-> @@ -232,12 +240,71 @@ int xnheap_init(xnheap_t *heap,
->  
->  	appendq(&heap->extents, &extent->link);
->  
-> +	vsnprintf(heap->name, sizeof(heap->name), name, args);
-> +
-> +	xnlock_get_irqsave(&nklock, s);
-> +	appendq(&heapq, &heap->stat_link);
-> +	heapq_rev++;
-> +	xnlock_put_irqrestore(&nklock, s);
-> +
->  	xnarch_init_display_context(heap);
->  
->  	return 0;
->  }
-> +
-> +int xnheap_init(xnheap_t *heap, void *heapaddr, u_long heapsize,
-> +		u_long pagesize, const char *name, ...)
-> +{
-> +	va_list args;
-> +	int ret;
-> +
-> +	va_start(args, name);
-> +	ret = xnheap_init_va(heap, heapaddr, heapsize, pagesize, name, args);
-> +	va_end(args);
-> +
-> +	return ret;
-> +}
->  EXPORT_SYMBOL_GPL(xnheap_init);
->  
-> +/*!
-> + * \fn xnheap_set_name(xnheap_t *heap,const char *name,...)
-> + * \brief Overwrite the heap's name.
-
-At some point, there should be a common base struct containing
-everything needed to manipulate named objects, we would include in
-higher level containers. It seems we are over-specializing quite generic
-work.
-
-> + *
-> + * Set the heap name that will be used in statistic outputs. This service
-> + * is useful if the final name is not yet defined on xnheap_init().
-> + *
-> + * @param heap The address of a heap descriptor.
-> + *
-> + * @param name Name displayed in statistic outputs. This parameter can
-> + * be a format string, in which case succeeding parameters will be used
-> + * to resolve the final name.
-> + *
-> + * Environments:
-> + *
-> + * This service can be called from:
-> + *
-> + * - Kernel module initialization/cleanup code
-> + * - Kernel-based task
-> + * - User-space task
-> + *
-> + * Rescheduling: never.
-> + */
-> +
-> +void xnheap_set_name(xnheap_t *heap, const char *name, ...)
-> +{
-> +	va_list args;
-> +	spl_t s;
-> +
-> +	va_start(args, name);
-> +
-> +	xnlock_get_irqsave(&nklock, s);
-> +	vsnprintf(heap->name, sizeof(heap->name), name, args);
-> +	xnlock_put_irqrestore(&nklock, s);
-> +
-> +	va_end(args);
-> +}
-> +EXPORT_SYMBOL_GPL(xnheap_set_name);
-> +
->  /*! 
->   * \fn void xnheap_destroy(xnheap_t *heap, void (*flushfn)(xnheap_t *heap, void *extaddr, u_long extsize, void *cookie), void *cookie)
->   * \brief Destroys a memory heap.
-> @@ -273,6 +340,11 @@ void xnheap_destroy(xnheap_t *heap,
->  	xnholder_t *holder;
->  	spl_t s;
->  
-> +	xnlock_get_irqsave(&nklock, s);
-> +	removeq(&heapq, &heap->stat_link);
-> +	heapq_rev++;
-> +	xnlock_put_irqrestore(&nklock, s);
-> +
->  	if (!flushfn)
->  		return;
->  
-> @@ -1140,9 +1212,11 @@ deref_out:
->  	return err;
->  }
->  
-> -int xnheap_init_mapped(xnheap_t *heap, u_long heapsize, int memflags)
-> +int xnheap_init_mapped(xnheap_t *heap, u_long heapsize, int memflags,
-> +		       const char *name, ...)
->  {
->  	void *heapbase;
-> +	va_list args;
->  	int err;
->  
->  	/* Caller must have accounted for internal overhead. */
-> @@ -1156,7 +1230,9 @@ int xnheap_init_mapped(xnheap_t *heap, u_long heapsize, int memflags)
->  	if (!heapbase)
->  		return -ENOMEM;
->  
-> -	err = xnheap_init(heap, heapbase, heapsize, PAGE_SIZE);
-> +	va_start(args, name);
-> +	err = xnheap_init_va(heap, heapbase, heapsize, PAGE_SIZE, name, args);
-> +	va_end(args);
->  	if (err) {
->  		__unreserve_and_free_heap(heapbase, heapsize, memflags);
->  		return err;
-> @@ -1178,6 +1254,7 @@ void xnheap_destroy_mapped(xnheap_t *heap,
->  			   void __user *mapaddr)
->  {
->  	unsigned long len;
-> +	spl_t s;
->  
->  	/*
->  	 * Trying to unmap user memory without providing a release handler for
-> @@ -1185,6 +1262,11 @@ void xnheap_destroy_mapped(xnheap_t *heap,
->  	 */
->  	XENO_ASSERT(NUCLEUS, !mapaddr || release, /* nop */);
->  
-> +	xnlock_get_irqsave(&nklock, s);
-> +	removeq(&heapq, &heap->stat_link);
-> +	heapq_rev++;
-> +	xnlock_put_irqrestore(&nklock, s);
-> +
->  	spin_lock(&kheapq_lock);
->  
->  	removeq(&kheapq, &heap->link); /* Prevent further mapping. */
-> @@ -1285,22 +1367,41 @@ static int heap_read_proc(char *page,
->  			  char **start,
->  			  off_t off, int count, int *eof, void *data)
->  {
-> +	unsigned long rev;
-> +	xnholder_t *entry;
-> +	xnheap_t *heap;
->  	int len;
-> +	spl_t s;
->  
->  	if (!xnpod_active_p())
->  		return -ESRCH;
->  
-> -	len = sprintf(page, "size=%lu:used=%lu:pagesz=%lu  (main heap)\n",
-> -		      xnheap_usable_mem(&kheap),
-> -		      xnheap_used_mem(&kheap),
-> -		      xnheap_page_size(&kheap));
-> +	xnlock_get_irqsave(&nklock, s);
->  
-> -#if CONFIG_XENO_OPT_SYS_STACKPOOLSZ > 0
-> -	len += sprintf(page + len, "size=%lu:used=%lu:pagesz=%lu  (stack pool)\n",
-> -		       xnheap_usable_mem(&kstacks),
-> -		       xnheap_used_mem(&kstacks),
-> -		       xnheap_page_size(&kstacks));
-> -#endif
-> +restart:
-> +	len = 0;
-> +
-> +	entry = getheadq(&heapq);
-> +	while (entry) {
-> +		heap = container_of(entry, xnheap_t, stat_link);
-> +		len += sprintf(page + len,
-> +			       "size=%lu:used=%lu:pagesz=%lu  (%s)\n",
-> +			       xnheap_usable_mem(heap),
-> +			       xnheap_used_mem(heap),
-> +			       xnheap_page_size(heap),
-> +			       heap->name);
-> +
-> +		rev = heapq_rev;
-> +
-> +		xnlock_sync_irq(&nklock, s);
-> +
-> +		if (heapq_rev != rev)
-> +			goto restart;
-> +
-> +		entry = nextq(&heapq, entry);
-> +	}
-> +
-> +	xnlock_put_irqrestore(&nklock, s);
->  
->  	len -= off;
->  	if (len <= off + count)
-> diff --git a/ksrc/nucleus/module.c b/ksrc/nucleus/module.c
-> index 141276a..a0efc14 100644
-> --- a/ksrc/nucleus/module.c
-> +++ b/ksrc/nucleus/module.c
-> @@ -100,7 +100,7 @@ int __init __xeno_sys_init(void)
->  #ifndef __XENO_SIM__
->  	ret = xnheap_init_mapped(&__xnsys_global_ppd.sem_heap,
->  				 CONFIG_XENO_OPT_GLOBAL_SEM_HEAPSZ * 1024,
-> -				 XNARCH_SHARED_HEAP_FLAGS);
-> +				 XNARCH_SHARED_HEAP_FLAGS, "global sem heap");
->  	if (ret)
->  		goto cleanup_arch;
->  #endif
-> diff --git a/ksrc/nucleus/pod.c b/ksrc/nucleus/pod.c
-> index 370ad28..07fbcdb 100644
-> --- a/ksrc/nucleus/pod.c
-> +++ b/ksrc/nucleus/pod.c
-> @@ -384,9 +384,8 @@ int xnpod_init(void)
->  	heapaddr = xnarch_alloc_host_mem(xnmod_sysheap_size);
->  	if (heapaddr == NULL ||
->  	    xnheap_init(&kheap, heapaddr, xnmod_sysheap_size,
-> -			XNHEAP_PAGE_SIZE) != 0) {
-> +			XNHEAP_PAGE_SIZE, "main heap") != 0)
->  		return -ENOMEM;
-> -	}
->  
->  #if CONFIG_XENO_OPT_SYS_STACKPOOLSZ > 0
->  	/*
-> @@ -404,7 +403,7 @@ int xnpod_init(void)
->  	heapaddr = xnarch_alloc_stack_mem(CONFIG_XENO_OPT_SYS_STACKPOOLSZ * 1024);
->  	if (heapaddr == NULL ||
->  	    xnheap_init(&kstacks, heapaddr, CONFIG_XENO_OPT_SYS_STACKPOOLSZ * 1024,
-> -			XNHEAP_PAGE_SIZE) != 0) {
-> +			XNHEAP_PAGE_SIZE, "stack pool") != 0) {
->  		xnheap_destroy(&kheap, &xnpod_flush_heap, NULL);
->  		return -ENOMEM;
->  	}
-> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
-> index d6d1203..e8876d8 100644
-> --- a/ksrc/nucleus/shadow.c
-> +++ b/ksrc/nucleus/shadow.c
-> @@ -1886,7 +1886,9 @@ static void *xnshadow_sys_event(int event, void *data)
->  
->  		err = xnheap_init_mapped(&p->sem_heap,
->  					 CONFIG_XENO_OPT_SEM_HEAPSZ * 1024,
-> -					 XNARCH_SHARED_HEAP_FLAGS);
-> +					 XNARCH_SHARED_HEAP_FLAGS,
-> +					 "private sem heap [%d]",
-> +					 current->pid);
->  		if (err) {
->  			xnarch_free_host_mem(p, sizeof(*p));
->  			return ERR_PTR(err);
-> @@ -1896,6 +1898,7 @@ static void *xnshadow_sys_event(int event, void *data)
->  
->  	case XNSHADOW_CLIENT_DETACH:
->  		p = ppd2sys((xnshadow_ppd_t *) data);
-> +
->  		xnheap_destroy_mapped(&p->sem_heap, post_ppd_release, NULL);
->  
->  		return NULL;
-> diff --git a/ksrc/skins/native/heap.c b/ksrc/skins/native/heap.c
-> index 886758c..3072f99 100644
-> --- a/ksrc/skins/native/heap.c
-> +++ b/ksrc/skins/native/heap.c
-> @@ -266,7 +266,8 @@ int rt_heap_create(RT_HEAP *heap, const char *name, size_t heapsize, int mode)
->  					 heapsize,
->  					 ((mode & H_DMA) ? GFP_DMA : 0)
->  					 | ((mode & H_NONCACHED) ?
-> -					    XNHEAP_GFP_NONCACHED : 0));
-> +					    XNHEAP_GFP_NONCACHED : 0),
-> +					 "rt_heap: %s", name);
->  		if (err)
->  			return err;
->  
-> @@ -286,7 +287,8 @@ int rt_heap_create(RT_HEAP *heap, const char *name, size_t heapsize, int mode)
->  		if (!heapmem)
->  			return -ENOMEM;
->  
-> -		err = xnheap_init(&heap->heap_base, heapmem, heapsize, XNHEAP_PAGE_SIZE);
-> +		err = xnheap_init(&heap->heap_base, heapmem, heapsize,
-> +				  XNHEAP_PAGE_SIZE, "rt_heap: %s", name);
->  		if (err) {
->  			xnarch_free_host_mem(heapmem, heapsize);
->  			return err;
-> diff --git a/ksrc/skins/native/pipe.c b/ksrc/skins/native/pipe.c
-> index 672fa7a..18d9aa0 100644
-> --- a/ksrc/skins/native/pipe.c
-> +++ b/ksrc/skins/native/pipe.c
-> @@ -295,7 +295,9 @@ int rt_pipe_create(RT_PIPE *pipe, const char *name, int minor, size_t poolsize)
->  			return -ENOMEM;
->  
->  		/* Use natural page size */
-> -		err = xnheap_init(&pipe->privpool, poolmem, poolsize, XNHEAP_PAGE_SIZE);
-> +		err = xnheap_init(&pipe->privpool, poolmem, poolsize,
-> +				  XNHEAP_PAGE_SIZE,
-> +				  "rt_pipe: %d / %s", minor, name);
->  		if (err) {
->  			xnarch_free_host_mem(poolmem, poolsize);
->  			return err;
-> diff --git a/ksrc/skins/native/queue.c b/ksrc/skins/native/queue.c
-> index 249947a..becc0f0 100644
-> --- a/ksrc/skins/native/queue.c
-> +++ b/ksrc/skins/native/queue.c
-> @@ -229,7 +229,8 @@ int rt_queue_create(RT_QUEUE *q,
->  		err = xnheap_init_mapped(&q->bufpool,
->  					 poolsize,
->  					 ((mode & Q_DMA) ? GFP_DMA 
-> -					  : XNARCH_SHARED_HEAP_FLAGS));
-> +					  : XNARCH_SHARED_HEAP_FLAGS),
-> +					 "rt_queue: %s", name);
->  		if (err)
->  			return err;
->  
-> @@ -249,7 +250,8 @@ int rt_queue_create(RT_QUEUE *q,
->  		if (!poolmem)
->  			return -ENOMEM;
->  
-> -		err = xnheap_init(&q->bufpool, poolmem, poolsize, XNHEAP_PAGE_SIZE);
-> +		err = xnheap_init(&q->bufpool, poolmem, poolsize,
-> +				  XNHEAP_PAGE_SIZE, "rt_queue: %s", name);
->  		if (err) {
->  			xnarch_free_host_mem(poolmem, poolsize);
->  			return err;
-> diff --git a/ksrc/skins/posix/shm.c b/ksrc/skins/posix/shm.c
-> index c92096a..0f0bd1a 100644
-> --- a/ksrc/skins/posix/shm.c
-> +++ b/ksrc/skins/posix/shm.c
-> @@ -539,7 +539,9 @@ int ftruncate(int fd, off_t len)
->  			int flags = XNARCH_SHARED_HEAP_FLAGS |
->  				((desc_flags & O_DIRECT) ? GFP_DMA : 0);
->  
-> -			err = -xnheap_init_mapped(&shm->heapbase, len, flags);
-> +			err = -xnheap_init_mapped(&shm->heapbase, len, flags,
-> +						  "posix shm: %s",
-> +						  shm->nodebase.name);
->  			if (err)
->  				goto err_up;
->  
-> diff --git a/ksrc/skins/psos+/rn.c b/ksrc/skins/psos+/rn.c
-> index 98f4500..3eb3ab9 100644
-> --- a/ksrc/skins/psos+/rn.c
-> +++ b/ksrc/skins/psos+/rn.c
-> @@ -191,7 +191,8 @@ u_long rn_create(const char *name,
->  
->  		rnsize = xnheap_rounded_size(rnsize, PAGE_SIZE),
->  		err = xnheap_init_mapped(&rn->heapbase, rnsize, 
-> -					 XNARCH_SHARED_HEAP_FLAGS);
-> +					 XNARCH_SHARED_HEAP_FLAGS,
-> +					 "psosrn: %s", name);
->  
->  		if (err)
->  			return err;
-> @@ -206,7 +207,8 @@ u_long rn_create(const char *name,
->  		 * Caller must have accounted for overhead and
->  		 * alignment since it supplies the memory space.
->  		 */
-> -		if (xnheap_init(&rn->heapbase, rnaddr, rnsize, XNHEAP_PAGE_SIZE) != 0)
-> +		if (xnheap_init(&rn->heapbase, rnaddr, rnsize,
-> +				XNHEAP_PAGE_SIZE, "psosrn: %s", name) != 0)
->  			return ERR_TINYRN;
->  
->  	inith(&rn->link);
-> diff --git a/ksrc/skins/rtai/shm.c b/ksrc/skins/rtai/shm.c
-> index 21c3b07..0b33a57 100644
-> --- a/ksrc/skins/rtai/shm.c
-> +++ b/ksrc/skins/rtai/shm.c
-> @@ -151,7 +151,8 @@ static xnshm_a_t *create_new_heap(unsigned long name, int heapsize, int suprt)
->  	err = xnheap_init_mapped(p->heap,
->  				 heapsize,
->  				 (suprt == USE_GFP_KERNEL ? GFP_KERNEL : 0)
-> -				 | XNARCH_SHARED_HEAP_FLAGS);
-> +				 | XNARCH_SHARED_HEAP_FLAGS,
-> +				 "rtai heap: 0x%lx", name);
->  #else /* !CONFIG_XENO_OPT_PERVASIVE */
->  	{
->  		void *heapmem;
-> @@ -164,7 +165,9 @@ static xnshm_a_t *create_new_heap(unsigned long name, int heapsize, int suprt)
->  			err = -ENOMEM;
->  		} else {
->  
-> -			err = xnheap_init(p->heap, heapmem, heapsize, XNHEAP_PAGE_SIZE);
-> +			err = xnheap_init(p->heap, heapmem, heapsize,
-> +					  XNHEAP_PAGE_SIZE,
-> +					  "rtai heap: 0x%lx", name);
->  			if (err) {
->  				xnarch_free_host_mem(heapmem, heapsize);
->  			}
-> diff --git a/ksrc/skins/vrtx/heap.c b/ksrc/skins/vrtx/heap.c
-> index de60792..8f8a1d5 100644
-> --- a/ksrc/skins/vrtx/heap.c
-> +++ b/ksrc/skins/vrtx/heap.c
-> @@ -165,7 +165,8 @@ int sc_hcreate(char *heapaddr, u_long heapsize, unsigned log2psize, int *errp)
->  #ifdef CONFIG_XENO_OPT_PERVASIVE
->  		heapsize = xnheap_rounded_size(heapsize, PAGE_SIZE);
->  		err = xnheap_init_mapped(&heap->sysheap, heapsize, 
-> -					 XNARCH_SHARED_HEAP_FLAGS);
-> +					 XNARCH_SHARED_HEAP_FLAGS,
-> +					 "vrtx sysheap");
->  
->  		if (err) {
->  			*errp = ER_MEM;
-> @@ -184,7 +185,8 @@ int sc_hcreate(char *heapaddr, u_long heapsize, unsigned log2psize, int *errp)
->  		 * Caller must have accounted for overhead and
->  		 * alignment since it supplies the memory space.
->  		 */
-> -		err = xnheap_init(&heap->sysheap, heapaddr, heapsize, pagesize);
-> +		err = xnheap_init(&heap->sysheap, heapaddr, heapsize, pagesize,
-> +				  "vrtx sysheap");
->  
->  		if (err) {
->  			if (err == -EINVAL)
-> diff --git a/ksrc/skins/vrtx/syscall.c b/ksrc/skins/vrtx/syscall.c
-> index 1623066..e3d2e31 100644
-> --- a/ksrc/skins/vrtx/syscall.c
-> +++ b/ksrc/skins/vrtx/syscall.c
-> @@ -1052,7 +1052,8 @@ static int __sc_pcreate(struct pt_regs *regs)
->  	/* Block size. */
->  	bsize = __xn_reg_arg3(regs);
->  
-> -	err = xnheap_init_mapped(ptheap, ptsize, XNARCH_SHARED_HEAP_FLAGS);
-> +	err = xnheap_init_mapped(ptheap, ptsize, XNARCH_SHARED_HEAP_FLAGS,
-> +				 "vrtx ptheap");
->  
->  	if (err)
->  		goto free_heap;
+> > > > > > - powerpc32 updates for 2.6.30. Mainly to merge the once experimental
+> > > > > > bits that prevent most alignment faults from triggering a secondary mode
+> > > > > > switch. Andreas told me this works like a charm on 83xx, and I did not
+> > > > > > see any issue on 52xx, 85xx or 86xx either.
+> > > > > >
+> > > > >
+> > > > > Can I get a version of that patch for testing? Is it in your git
+> > > > > repository?
+> > > >
+> > > > I just pushed this commit to my remote tree (ipipe-2.6.30-powerpc
+> > > > branch); it should appear in a few hours once mirrored (cron job).
+> > > >
+> > >
+> > > I finally had a chance to test the ipipe-2.6.30-powerpc version
+> > > from the git repository. Unfortunately, I noticed that our application
+> > > dies after some time and that this behaviour is related to that
+> > > alignment patch (if I take it out everything runs fine for > 2 days).
+> > >
+> > > Currently I'm investigating the reasons for that crash. It has
+> > > something to do with floating point registers not being restored
+> > > properly. Our alignment exceptions are mainly triggered by accesses
+> > > to unaligned floating point data.
+> > 
+> > Does it work any better with this patch in?
 > 
+> I applied that patch but unfortunately our application still dies. I included
+> an application with with you (hopefully) can reproduce the problem 
+> which we are seeing. Our system is a MPC8360 with 2.6.30, ipipe 2.7,
+> xenomai 2.4.9.1.
+> 
+> Here are the steps:
+> 
+> 1) apply ipipe with alignment patch, recompile kernel
+> 2) comile test1.c (attached) with: 
+>         gcc -Wall -O2 `xeno-config --xeno-cflags` \
+>                                 `xeno-config --xeno-ldflags` \
+>                                  -l native -l rtdk  -o test1 test1.c
+> 3) Start test1 in one shell
+> 4) Open a second shell and start 'switchbench'
+> 
+> Just when 'switchbench' is running, I get the following
+> output from my test application:
+> ...
+> Missmatch: 0xfff8000082064000
+> Missmatch: 0xfff8000082064000
+> Missmatch: 0xfff8000082064000
+> Missmatch: 0xfff8000082064000 
+> ...
+
+There is a serious issue going on with this patch, because this
+optimization depends on the ability of Xenomai to properly handle
+non-linux, non-RT FPU usage in kernel space, which is not guaranteed so
+far for powerpc (x86 is ok regarding this, though).
+
+So I'm just reverting this patch, in order to get back to a correct
+behavior asap. This will require more thoughts later, when 2.5.0 is out.
+Sorry for the delay.
+
+> 
+> It seems that test1 is interrupted right between
+> the lfd and stfd and the floating point regs aren't
+> restored properly.
+> 
+> Just a side note: I had to add assembly code to my
+> C program to force an alignment exception. gcc seems
+> to be smart enough to avoid unaligned access. g++
+> on the other hand (especially g++ 3.3.6 which we are 
+> using) seems to generate assembly code which causes
+> alignment exceptions. So it seems that it's really g++'s 
+> fault. We also discovered that our g++ generates buggy 
+> floating point assembly code when compiling with the 
+> -O2 or -Os option. Currently, we compile our application
+> with -msoft-float to avoid those issues which has the
+> nice side effect that we also don't get alignment exceptions
+> anymore.
+> 
+> Many thanks,
+> Andreas
+> 
+> 
+> > diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
+> > index 32cc3df..a04a5e3 100644
+> > --- a/arch/powerpc/kernel/process.c
+> > +++ b/arch/powerpc/kernel/process.c
+> > @@ -80,7 +80,9 @@ void flush_fp_to_thread(struct task_struct *tsk)
+> >                  * FPU, and then when we get scheduled again we would store
+> >                  * bogus values for the remaining FP registers.
+> >                  */
+> > -               ipipe_preempt_disable(flags);
+> > +               if (ipipe_root_domain_p)
+> > +                       preempt_disable();
+> > +               local_irq_save_hw_cond(flags);
+> >                 if (tsk->thread.regs->msr & MSR_FP) {
+> >  #ifdef CONFIG_SMP
+> >                         /*
+> > @@ -94,7 +96,9 @@ void flush_fp_to_thread(struct task_struct *tsk)
+> >  #endif
+> >                         giveup_fpu(tsk);
+> >                 }
+> > -               ipipe_preempt_enable(flags);
+> > +               local_irq_restore_hw_cond(flags);
+> > +               if (ipipe_root_domain_p)
+> > +                       preempt_enable();
+> >         }
+> >  }
 -- 
 Philippe.
 
