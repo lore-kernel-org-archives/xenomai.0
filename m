@@ -1,13 +1,12 @@
-Message-ID: <4AE086A0.1050703@domain.hid>
-Date: Thu, 22 Oct 2009 18:21:52 +0200
+Message-ID: <4AE08982.8050501@domain.hid>
+Date: Thu, 22 Oct 2009 18:34:10 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <0B45E93C5FF65740AEAE690BF3848B7AD3878D@rennsmail04.eu.thmulti.com>
-	<4AE07632.7070404@domain.hid>
-In-Reply-To: <4AE07632.7070404@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <0000AEB3.4ADF1568@domain.hid>
+In-Reply-To: <0000AEB3.4ADF1568@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai and Libpcap
+Subject: Re: [Xenomai-help] Re-2: :: rt_printf with daemonized task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,61 +16,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "oliver.schlenker@domain.hid" <oliver.schlenker@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Fillod Stephane wrote:
->> Hej!
->>
->> Benjamin Biegel wrote:
->>> I have a question regarding the use of Libpcap together with Xenomai. 
->>> The Libpcap library provides the ability to capture Ethernet frames
->> with 
->>> my NIC in promiscuous mode + time stamp the received frames on
->> Ethernet 
->>> level (through the clock of the NIC).
->>>
->>> My question is this: How do i set up an Xenomai real-time environment 
->>> that makes the time-stamping very accurate. How do I have influence on
->>> when pcap is scheduled? How do I make sure pcap is not preempted by
->> the OS?
->>
->> You have to know that the Linux network stack and libpcap on behalf of
->> your process won't be able to run under hard real-time even with
->> Xenomai.
->>
->> What you're looking for is RTnet: http://www.rtnet.org
->> So far, performance for high speed networking is rather poor IMHO,
->> esp. regarding the API. Please follow this proposal[1] (sorry for 
->> formatting), and feel free to revive the thread and the discussion.
->>
->> [1]
->> http://thread.gmane.org/gmane.linux.real-time.rtnet.devel/262/focus=263
+oliver.schlenker@domain.hid wrote:
+> -------- Original Message --------
+> Subject: Re: :: rt_printf with daemonized task (19-Okt-2009 16:00)
+> From:    Jan Kiszka <jan.kiszka@domain.hid>
+> To:      oliver.schlenker@domain.hid
 > 
-> To be a bit more precise. Rtnet has a capture interface (rtcap), which
-> sends a copy of each packet received by the rtnet driver, to a Linux
-> driver, which you can capture with libpcap.
-
-Precisely. You can watch the traffic in real-time with wireshark etc.,
-simply write it to file with tcpdump -w, or do whatever you want.
-
+>> If you move the definition of print_to_buffer right below this prototype
+>> block, you would avoid having to add this prototype and you would have
+>> likely generated a more reviewable patch. The large code movement below
+>> is very hard to check regarding correctness as I do not see the actually
+>> modified lines.
 > 
-> As far as I remember, however, the timestamping of each packet is done
-> in the Linux domain, so, if you want to get the real timestamp, you have
-> to modify rtnet to get the timestamp done in the Xenomai domain.
-
-No, time stamping is actually done in the RTnet driver (it is a
-by-product of RTmac/TDMA).
-
+> Ok, moved back definition of print_to_buffer to avoid large code movement
 > 
-> Unfortunately, that is not all, because if you get Xenomai's timestamp,
-> they drift when compared to Linux timestamps. But if you look only at
-> relative timestamps over short period of times, that is Ok.
+>>>  static void cleanup_buffer(struct print_buffer *buffer);
+>>>  static void print_buffers(void);
+>>> +static void forked_child_init(void);
+>> Stray prototype.
 > 
+> deleted
+> 
+>>>  
+>>> +void rt_syslog(int priority, char *format, ...)
+>>> +{
+>>> +	va_list args;
+>>> +
+>>> +	va_start(args, format);
+>>> +	print_to_buffer(RT_PRINT_SYSLOG_STREAM, priority, format, args);
+>>> +	va_end(args);
+>>> +
+>>> +	return;
+>> Unneeded return.
+> 
+> Deleted
+> 
+>>> +}
+>>> +
+>>> +void rt_vsyslog(int priority, char *format, va_list args )
+>>> +{
+>>> +	print_to_buffer(RT_PRINT_SYSLOG_STREAM, priority, format, args);
+>>> +
+>>> +	return;
+>> Here too.
+> 
+> Also deleted
+> 
+>>> +}
+>>> +
+>>>  static void set_buffer_name(struct print_buffer *buffer, const char *name)
+>>>  {
+>>>  	int n;
+>>>                      
+>>>  
+>>>  /* *** Deferred Output Management *** */
+>>>  
+>>> +static int print_to_buffer(FILE *stream, int priority,
+>>> +							const char *format,va_list args)
+>> When moving this function, please also indent this properly and take
+>> care for a space after the ','.
+> 
+> should be correct now.
+> 
+>> Jan
+>>
+>> -- 
+>> Siemens AG, Corporate Technology, CT SE 2
+>> Corporate Competence Center Embedded Linux
+> 
+> 
+> when patches are acked by you, should I do something with the patches
+> like sending to a special mailing list or is it ok to have them posted in
+> this list ?
 
-Yes, timestamps will drift compared to a precise reference clock or even
-the Linux host clock. But I'm optimistic we can fix this in the neat future.
+I was about to apply them to my tree and send out a git pull request to
+Philippe. Unfortunately I missed so far that your mail client or gateway
+damaged the patch format seriously (the '@@' markers are all missing).
+So if you have a clean "diff -up" of your changes, please sent them in a
+tarball to me or via a proper mail client / account that keeps emails
+intact. Otherwise I would have to reconstruct all changes by hand...
 
 Jan
 
