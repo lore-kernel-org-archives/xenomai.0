@@ -1,17 +1,9 @@
+From: oliver.schlenker@domain.hid
+Date: Fri, 23 Oct 2009 07:24:47 +0000
+Message-ID: <0000AF07.4AE1765D@192.168.2.103>
 MIME-Version: 1.0
-Sender: alexis.berlemont@domain.hid
-In-Reply-To: <96eea0c80910212230l745bbf85s4493e8958dad356b@domain.hid>
-References: <96eea0c80910151813v635d518dr6abd72986e2f07bd@domain.hid>
-	<96eea0c80910161648l1991b124w20ea9949e70f5ae0@domain.hid>
-	<200910171600.16265.berlemont.hauw@domain.hid>
-	<200910192324.09986.berlemont.hauw@domain.hid>
-	<96eea0c80910212230l745bbf85s4493e8958dad356b@domain.hid>
-Date: Fri, 23 Oct 2009 08:49:00 +0200
-Message-ID: <72cf3fb0910222349x771f0158ie9a9d97911c8d2fe@domain.hid>
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] national instruments card and comedi-rtdm-dev
+Content-Type: multipart/mixed; boundary="----_=_NextPart_000_0000AF07.4AE1765D"
+Subject: Re: [Xenomai-help] Re-2: :: rt_printf with daemonized task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,179 +13,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Peter Pastor <peter.pastor@domain.hid>
+To: jan.kiszka@domain.hid
 Cc: xenomai@xenomai.org
 
-Hi,
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
 
-On Thu, Oct 22, 2009 at 7:30 AM, Peter Pastor <peter.pastor@domain.hid> wrot=
-e:
-> Hi Alexis,
->
-> Sorry for the delay, I was out of town.
->
-> I have tried the statical configuration and it seemed to work, i.e. I cou=
-ld
-> execute the example program /usr/xenomai/bin/cmd_read. However, I wanted =
-to
-> run the task in real-time and added the -r option which results in
-> root@domain.hid# ./cmd_read -vr
-> cmd_read: switching to real-time mode
-> cmd_read: device comedi0 opened (fd=3D0)
-> cmd_read: basic descriptor retrieved
-> =A0=A0=A0 =A0subdevices count =3D 14
-> =A0=A0=A0 =A0read subdevice index =3D 0
-> =A0=A0=A0 =A0write subdevice index =3D 1
-> cmd_read: complex descriptor retrieved
-> cmd_read: channel 0
-> =A0=A0=A0 =A0ranges count =3D 7
-> =A0=A0=A0 =A0range's size =3D 16 (bits)
-> cmd_read: channel 1
-> =A0=A0=A0 =A0ranges count =3D 7
-> =A0=A0=A0 =A0range's size =3D 16 (bits)
-> cmd_read: channel 2
-> =A0=A0=A0 =A0ranges count =3D 7
-> =A0=A0=A0 =A0range's size =3D 16 (bits)
-> cmd_read: channel 3
-> =A0=A0=A0 =A0ranges count =3D 7
-> =A0=A0=A0 =A0range's size =3D 16 (bits)
-> cmd_read: scan size =3D 8
-> cmd_read: size to read =3D 800
-> cmd_read: command successfully sent
-> 0xff 0xff 0xff 0xff 0xff 0xff 0x81 0xf9
-> 0xff 0xff 0xff 0xff 0xff 0xff 0xca 0xfb
-> ...snip...
-> 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
-> cmd_read: comedi_read failed (ret=3D-2)
+------_=_NextPart_000_0000AF07.4AE1765D
+Content-Type: text/plain;
+ charset="UTF-8"
+Content-Transfer-Encoding: base64
 
--2 is -ENOENT, which means there is nothing more to acquire. The
-return code should have been 0 but I 'd rather send -2, which is not
-very compliant. It is something I need to work on.
+DQoNCg0KDQoNCi0tLS0tLS0tIE9yaWdpbmFsIE1lc3NhZ2UgLS0tLS0tLS0NClN1YmplY3Q6IFJl
+OiBSZS0yOiA6OiBydF9wcmludGYgd2l0aCBkYWVtb25pemVkIHRhc2sgKDIyLU9rdC0yMDA5IDE4
+OjM0KQ0KRnJvbTogICAgSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4NClRvOiAg
+ICAgIG9saXZlci5zY2hsZW5rZXJAc21tb3Rpb25jb250cm9sLmRlDQoNCj4gDQo+IEkgd2FzIGFi
+b3V0IHRvIGFwcGx5IHRoZW0gdG8gbXkgdHJlZSBhbmQgc2VuZCBvdXQgYSBnaXQgcHVsbCByZXF1
+ZXN0IHRvDQo+IFBoaWxpcHBlLiBVbmZvcnR1bmF0ZWx5IEkgbWlzc2VkIHNvIGZhciB0aGF0IHlv
+dXIgbWFpbCBjbGllbnQgb3IgZ2F0ZXdheQ0KPiBkYW1hZ2VkIHRoZSBwYXRjaCBmb3JtYXQgc2Vy
+aW91c2x5ICh0aGUgJz4gU28gaWYgeW91IGhhdmUgYSBjbGVhbiAiZGlmZiAtdXAiIG9mIHlvdXIg
+Y2hhbmdlcywgcGxlYXNlIHNlbnQgdGhlbSBpbiBhDQo+IHRhcmJhbGwgdG8gbWUgb3IgdmlhIGEg
+cHJvcGVyIG1haWwgY2xpZW50IC8gYWNjb3VudCB0aGF0IGtlZXBzIGVtYWlscw0KPiBpbnRhY3Qu
+IE90aGVyd2lzZSBJIHdvdWxkIGhhdmUgdG8gcmVjb25zdHJ1Y3QgYWxsIGNoYW5nZXMgYnkgaGFu
+ZC4uLg0KPiANCj4gSmFuDQo+IA0KPiAtLSANCj4gU2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hu
+b2xvZ3ksIENUIFNFIDINCj4gQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExp
+bnV4DQoNCkkgd2Fzbid0IGF3YXJlIG9mIHN1Y2ggYSBiZWhhdmlvdXIgb2YgbXkgbWFpbCBjbGll
+bnQsIGJ1dCBpdCdzIGluZGVlZA0KbGlrZSB0aGF0LiBBbGwgJ2NvbW1hbmRzIGFuZCBmaWx0ZXJl
+ZCBvdXQgb2YgdGhlIG1haWwuIEkgY291bGQnbnQgZmluZCBhIHBvc3NpYmlsaXR5IHRvIHN3aXRj
+aCBvZmYNCnRoaXMgZmVhdHVyZXMgLi4uDQpUaGVyZWZvciBJIGRpZCBhdHRhY2ggdG8gdGhpcyBt
+YWlsIGEgdGFyYmFsbCB3aXRoIGFsbCBjaGFuZ2VzLiBUaGVzZSBwYXRjaGVzDQpoYXZlIGJlZW4g
+Y3JlYXRlZCB3aXRoICJkaWZmIC11cCIuIEZvcm1lciBvbmVzIGhhdmUgYmVlbiBjcmVhdGVkIHdp
+dGgganVzdA0KImRpZmYgLXUiLg0KDQpIb3BlZnVsbHkgaXQncyBwb3NzaWJsZSBub3cgdG8gaW50
+ZWdyYXRlIGl0IHdpdGhvdXQgYW55IGZ1cnRoZXIgcHJvYmxlbXMuDQoNCg0KT2xpdmVyDQoNClRv
+OiBqYW4ua2lzemthQHNpZW1lbnMuY29tDQpDYzogZ2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21h
+aS5vcmcNCiAgICB4ZW5vbWFpLWhlbHBAZ25hLm9yZw0KDQo=
 
-> The cmd_write however, seems to work
->
-> root@domain.hid# ./cmd_write -rv
-> cmd_write: switching to real-time mode
-> cmd_write: device comedi0 opened (fd=3D0)
-> cmd_write: basic descriptor retrieved
-> =A0=A0=A0 =A0subdevices count =3D 14
-> =A0=A0=A0 =A0read subdevice index =3D 0
-> =A0=A0=A0 =A0write subdevice index =3D 1
-> cmd_write: complex descriptor retrieved
-> cmd_write: channel 0
-> =A0=A0=A0 =A0ranges count =3D 3
-> =A0=A0=A0 =A0range's size =3D 16 (bits)
-> cmd_write: channel 1
-> =A0=A0=A0 =A0ranges count =3D 3
-> =A0=A0=A0 =A0range's size =3D 16 (bits)
-> cmd_write: scan size =3D 4
-> cmd_write: size to write=A0 =3D 400
-> cmd_write: command successfully sent
-> cmd_write: 400 bytes successfully written
->
-> also...
-> root@domain.hid# ./insn_read -rv
-> insn_read: switching to real-time mode
-> insn_read: device (null) opened (fd=3D0)
-> insn_read: basic descriptor retrieved
-> =A0=A0=A0 =A0subdevices count =3D 14
-> =A0=A0=A0 =A0read subdevice index =3D 0
-> =A0=A0=A0 =A0write subdevice index =3D 1
-> insn_read: complex descriptor retrieved
-> insn_read: channel width is 16 bits
-> insn_read: global scan size is 20
-> 0xff 0xff
-> 0x0 0x0
-> 0xff 0xff
-> 0x0 0x0
-> 0xff 0xff
-> 0x0 0x0
-> 0xff 0xff
-> 0x0 0x0
-> 0xff 0xff
-> 0x0 0x0
-> insn_read: 20 bytes successfully received
->
-> What I would like to make sure is that I can write to comedi0 without hav=
-ing
-> mode switches. Therefore I copied cmd_write and added a rt_task_spawn to
-> make sure that the task_body runs in real-time (even though the -r option
-> results in the same behavior.) This way, I could add/change code to check
-> for mode switches... However, since unfortunately I am debugging things
-> remotely I cannot "see" the output (the display) of our oscilloscope that=
- is
-> connected to the pci express card. I'll send an email as soon as I know
-> more.
+------_=_NextPart_000_0000AF07.4AE1765D
+Content-Type: application/octet-stream;
+ name="rt_print.patch.tgz"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="rt_print.patch.tgz";
+ modification-date="Fri, 23 Oct 2009 07:16:52 +0000"
 
-Be careful with the printf() I inserted in the test programs cmd_read,
-cmd_write; they will make you switch in the secondary domain.
+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
+TZqhisear7VEcfa9ofypPbWt238CfKV4AB4AAA==
 
-> Besides that, I updated to your latest xenomai and re-compiled having the
-> comedi drivers compiled as loadable modules. After booting the new kernel=
- I
-> can see the following:
->
-> xenomai:~> uname -a
-> Linux xenomai 2.6.30.5-xenomai-ipipe-comedi #6 SMP Wed Oct 21 20:05:37 PD=
-T
-> 2009 i686 GNU/Linux
-> xenomai:~> lspci -v
-> ...snip...
-> 06:00.0 Class ff00: National Instruments Device 717f
-> =A0=A0=A0 Flags: bus master, medium devsel, latency 64, IRQ 11
-> =A0=A0=A0 Memory at f7dfe000 (32-bit, non-prefetchable) [size=3D4K]
-> =A0=A0=A0 Memory at f7dff000 (32-bit, non-prefetchable) [size=3D4K]
-> =A0=A0=A0 Kernel driver in use: mite
-> =A0=A0=A0 Kernel modules: comedi_ni_pcimio
-> ...snip...
-> xenomai:~> lsmod | grep come
-> comedi_ni_tio=A0=A0=A0=A0=A0=A0=A0=A0=A0 26884=A0 0
-> comedi_8255=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 4420=A0 0
-> comedi_ni_mite=A0=A0=A0=A0=A0=A0=A0=A0 12708=A0 1 comedi_ni_tio
-> xeno_comedi=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 39908=A0 3 comedi_ni_tio,com=
-edi_8255,comedi_ni_mite
->
->
-> However, the problem is that there is:
->
-> root@domain.hid# ./comedi_config comedi0 comedi_pcimio
-> comedi_config: comedi_snd_attach failed ret=3D-22
->
-> also...
->
-> root@domain.hid# ./comedi_config comedi0 comedi_ni_mite
-> comedi_config: comedi_snd_attach failed ret=3D-22
->
-> root@domain.hid# dmesg
-> ...snip...
-> [=A0=A0 11.298460] Comedi: MITE: Available NI device IDs: 0x717f(used)
-> [=A0=A0 11.305333] comedi_8255: module license 'unspecified' taints kerne=
-l.
-> [=A0=A0 11.305337] Disabling lock debugging due to kernel taint
-> [=A0=A0 11.331840] comedi_ni_mio: Unknown symbol ni_tio_handle_interrupt
-> [=A0=A0 11.331936] comedi_ni_mio: Unknown symbol ni_tio_set_mite_channel
-> [=A0=A0 11.331986] comedi_ni_mio: Unknown symbol ni_tio_cmd_mask
-> [=A0=A0 11.332171] comedi_ni_mio: Unknown symbol ni_tio_init_counter
-> [=A0=A0 11.332317] comedi_ni_mio: Unknown symbol ni_tio_winsn
-> [=A0=A0 11.332416] comedi_ni_mio: Unknown symbol ni_gpct_device_destroy
-> [=A0=A0 11.332466] comedi_ni_mio: Unknown symbol ni_tio_insn_config
-> [=A0=A0 11.332696] comedi_ni_mio: Unknown symbol ni_tio_acknowledge_and_c=
-onfirm
-> [=A0=A0 11.332786] comedi_ni_mio: Unknown symbol ni_tio_cmdtest
-> [=A0=A0 11.332921] comedi_ni_mio: Unknown symbol ni_tio_cancel
-> [=A0=A0 11.332976] comedi_ni_mio: Unknown symbol ni_gpct_device_construct
-> [=A0=A0 11.333139] comedi_ni_mio: Unknown symbol ni_tio_rinsn
-> [=A0=A0 11.333189] comedi_ni_mio: Unknown symbol ni_tio_cmd
-> ...snip...
->
-> How can I fix this ? Or should I simply work with the statical linked com=
-edi
-> drivers ??
+------_=_NextPart_000_0000AF07.4AE1765D--
 
-I will update my git repository soon with these fixes. However, could
-you switch to the analogy branch ? As you may know, comedi/RTDM has
-been renamed as analogy:
-https://mail.gna.org/public/xenomai-core/2009-09/msg00016.html
-
-Alexis.
 
