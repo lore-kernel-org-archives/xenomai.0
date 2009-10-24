@@ -1,66 +1,88 @@
-Date: Fri, 25 Sep 2009 21:22:06 +0800 (CST)
-From: =?gbk?B?uqvK2Mer?= <hshouqian@domain.hid>
-Message-ID: <26553515.371391253884926657.JavaMail.coremail@domain.hid>
+Resent-To: Philippe Gerum <rpm@xenomai.org>
+Resent-Message-Id: <4AE2B519.9040908@domain.hid>
+From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Sat, 24 Oct 2009 10:03:04 +0200
+Message-ID: <20091024080304.22784.93196.stgit@domain.hid>
+In-Reply-To: <20091024080304.22784.46688.stgit@domain.hid>
+References: <20091024080304.22784.46688.stgit@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_98448_29910483.1253884926656"
-Subject: [Xenomai-help] Porting rtai/linux applications to xenomai/linux
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATCH 1/2] Fork-safe rt_print
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org, Oliver Schlenker <oliver.schlenker@domain.hid>
 
-------=_Part_98448_29910483.1253884926656
-Content-Type: text/plain; charset=gbk
-Content-Transfer-Encoding: base64
+From: Oliver Schlenker <oliver.schlenker@domain.hid>
 
-CiAgICBIZWxsbyBldmVyeW9uZaOhSSdtIFBvcnRpbmcgcnRhaS9saW51eCBhcHBsaWNhdGlvbnMg
-dG8geGVub21haS9saW51eC4gSSB3YW50IHRvIHN3aXRoICBSVEFJIEFQSSB0byAgWGVubydzIG5h
-dGl2ZSBBUEkuIE5vdyBJIGhhdmUgYSBwcm9ibGVtOndlIGtub3cscnRhaSBwcm92aWRlcyBhIGtl
-cm5lbCBtb2R1bGU6IG1hdGgua28sIHNvIHdlIGNhbiB1c2UgbWF0aCBmdW50aW9ucyBpbiBvdXIg
-a2VybmVsIG1vZHVsZXMgb2Ygb3VyIGFwcGxpY2F0aW9ucyAsYnV0IHhlbm9tYWkgZG9lc24ndCBw
-cm92aWRlIHRoZSBzYW1lIGZ1bmN0aW9ucy4gd2hhdCBzaG91bGQgSSBkbz8gTXkga2VybmVsIG1v
-ZHVsZSBvZiBhcHBsaWNhdGlvbiBuZWVkICBzb21lIG1hdGggZnVuY3Rpb25zLgogICAgTWF5YmUg
-SSBzaG91bGQgcG9ydCB0aGUgbWF0aC5rbyBvZiBydGFpIHRvIHhlbm9tYWkgb3IgY29weSB0aGUg
-ZGVmaW5pdGlvbnMgb2YgbmVlZGVkIG1hdGggZnVudGlvbnMgdG8gdGhlIHNvdXJjZSBjb2RlIG9m
-IG15IGtlcm5lbCBtb2R1bGUgPyAKICAgIERvIHlvdSBvd24gYSBnb29kIG1ldGhvZCB0byBzb2x2
-ZSB0aGUgcHJvYmxlbT8gIEknbSBsb29raW5nIGZvcndhcmQgdG8geW91ciBhbnN3ZXJzISBUaGFu
-ayB5b3Uh
-------=_Part_98448_29910483.1253884926656
-Content-Type: text/html; charset=gbk
-Content-Transfer-Encoding: base64
+Fork-safe initialisation of rt_print library, necessary child initialisation are
+done via pthread_atfork() when child process is started.
 
-PGJyPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwO0hlbGxvJm5ic3A7ZXZlcnlvbmWjoUknbSZuYnNw
-O1BvcnRpbmcmbmJzcDtydGFpL2xpbnV4Jm5ic3A7YXBwbGljYXRpb25zJm5ic3A7dG8mbmJzcDt4
-ZW5vbWFpL2xpbnV4LiZuYnNwO0kmbmJzcDt3YW50Jm5ic3A7dG8mbmJzcDtzd2l0aCZuYnNwOyZu
-YnNwO1JUQUkmbmJzcDtBUEkmbmJzcDt0byZuYnNwOyZuYnNwO1hlbm8ncyZuYnNwO25hdGl2ZSZu
-YnNwO0FQSS4mbmJzcDtOb3cmbmJzcDtJJm5ic3A7aGF2ZSZuYnNwO2EmbmJzcDtwcm9ibGVtOndl
-Jm5ic3A7a25vdyxydGFpJm5ic3A7cHJvdmlkZXMmbmJzcDthJm5ic3A7a2VybmVsJm5ic3A7bW9k
-dWxlOiZuYnNwO21hdGgua28sJm5ic3A7c28mbmJzcDt3ZSZuYnNwO2NhbiZuYnNwO3VzZSZuYnNw
-O21hdGgmbmJzcDtmdW50aW9ucyZuYnNwO2luJm5ic3A7b3VyJm5ic3A7a2VybmVsJm5ic3A7bW9k
-dWxlcyZuYnNwO29mJm5ic3A7b3VyJm5ic3A7YXBwbGljYXRpb25zJm5ic3A7LGJ1dCZuYnNwO3hl
-bm9tYWkmbmJzcDtkb2Vzbid0Jm5ic3A7cHJvdmlkZSZuYnNwO3RoZSZuYnNwO3NhbWUmbmJzcDtm
-dW5jdGlvbnMuJm5ic3A7d2hhdCZuYnNwO3Nob3VsZCZuYnNwO0kmbmJzcDtkbz8mbmJzcDtNeSZu
-YnNwO2tlcm5lbCZuYnNwO21vZHVsZSZuYnNwO29mJm5ic3A7YXBwbGljYXRpb24mbmJzcDtuZWVk
-Jm5ic3A7Jm5ic3A7c29tZSZuYnNwO21hdGgmbmJzcDtmdW5jdGlvbnMuPGJyPiZuYnNwOyZuYnNw
-OyZuYnNwOyZuYnNwO01heWJlJm5ic3A7SSZuYnNwO3Nob3VsZCZuYnNwO3BvcnQmbmJzcDt0aGUm
-bmJzcDttYXRoLmtvJm5ic3A7b2YmbmJzcDtydGFpJm5ic3A7dG8mbmJzcDt4ZW5vbWFpJm5ic3A7
-b3ImbmJzcDtjb3B5Jm5ic3A7dGhlJm5ic3A7ZGVmaW5pdGlvbnMmbmJzcDtvZiZuYnNwO25lZWRl
-ZCZuYnNwO21hdGgmbmJzcDtmdW50aW9ucyZuYnNwO3RvJm5ic3A7dGhlJm5ic3A7c291cmNlJm5i
-c3A7Y29kZSZuYnNwO29mJm5ic3A7bXkmbmJzcDtrZXJuZWwmbmJzcDttb2R1bGUmbmJzcDs/Jm5i
-c3A7PGJyPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwO0RvJm5ic3A7eW91Jm5ic3A7b3duJm5ic3A7
-YSZuYnNwO2dvb2QmbmJzcDttZXRob2QmbmJzcDt0byZuYnNwO3NvbHZlJm5ic3A7dGhlJm5ic3A7
-cHJvYmxlbT8mbmJzcDsmbmJzcDtJJ20mbmJzcDtsb29raW5nJm5ic3A7Zm9yd2FyZCZuYnNwO3Rv
-Jm5ic3A7eW91ciZuYnNwO2Fuc3dlcnMhJm5ic3A7VGhhbmsmbmJzcDt5b3UhPGJyPjxicj48c3Bh
-biB0aXRsZT0ibmV0ZWFzZWZvb3RlciIvPjxoci8+CjxhIGhyZWY9Imh0dHA6Ly9uZXdzLjE2My5j
-b20vbWFkZWluY2hpbmEvaW5kZXguaHRtbD9mcm9tPW1haWxmb290ZXIiPiLW0Ln61sbU7CIsvbLK
-9tbQufo2MMTqzfnKwjwvYT4KPC9zcGFuPg==
-------=_Part_98448_29910483.1253884926656--
+Signed-off-by: Oliver Schlenker <oliver.schlenker@domain.hid>
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+
+ src/rtdk/rt_print.c |   33 +++++++++++++++++++++++++++++----
+ 1 files changed, 29 insertions(+), 4 deletions(-)
+
+diff --git a/src/rtdk/rt_print.c b/src/rtdk/rt_print.c
+index 0615247..dca9689 100644
+--- a/src/rtdk/rt_print.c
++++ b/src/rtdk/rt_print.c
+@@ -417,9 +417,35 @@ static void *printer_loop(void *arg)
+ 	}
+ }
+ 
+-void __rt_print_init(void)
++static void spawn_printer_thread(void)
+ {
+ 	pthread_attr_t thattr;
++
++	pthread_attr_init(&thattr);
++	pthread_attr_setstacksize(&thattr, PTHREAD_STACK_MIN);
++	pthread_create(&printer_thread, &thattr, printer_loop, NULL);
++}
++
++static void forked_child_init(void)
++{
++	struct print_buffer *my_buffer = pthread_getspecific(buffer_key);
++	struct print_buffer **pbuffer = &first_buffer;
++
++	/* re-init to avoid finding it locked by some parent thread */
++	pthread_mutex_init(&buffer_lock, NULL);
++
++	while (*pbuffer) {
++		if (*pbuffer == my_buffer)
++			pbuffer = &(*pbuffer)->next;
++		else
++			cleanup_buffer(*pbuffer);
++	}
++
++	spawn_printer_thread();
++}
++
++void __rt_print_init(void)
++{
+ 	const char *value_str;
+ 	unsigned long long period;
+ 
+@@ -456,7 +482,6 @@ void __rt_print_init(void)
+ 
+ 	pthread_cond_init(&printer_wakeup, NULL);
+ 
+-	pthread_attr_init(&thattr);
+-	pthread_attr_setstacksize(&thattr, PTHREAD_STACK_MIN);
+-	pthread_create(&printer_thread, &thattr, printer_loop, NULL);
++	spawn_printer_thread();
++	pthread_atfork(NULL, NULL, forked_child_init);
+ }
 
 
