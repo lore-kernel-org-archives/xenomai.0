@@ -1,15 +1,13 @@
-Message-ID: <4AE0395F.1010800@domain.hid>
-Date: Thu, 22 Oct 2009 12:52:15 +0200
+Resent-To: Philippe Gerum <rpm@xenomai.org>
+Resent-Message-Id: <4AE2B519.70504@domain.hid>
 From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Sat, 24 Oct 2009 10:03:04 +0200
+Message-ID: <20091024080304.22784.46688.stgit@domain.hid>
 MIME-Version: 1.0
-References: <20091020113724.9069.23594.stgit@domain.hid>	
-	<20091020113726.9069.95593.stgit@domain.hid>
-	<1256082066.2862.178.camel@domain.hid>
-In-Reply-To: <1256082066.2862.178.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH v3 9/9] nucleus: Include all heaps in
-	statistics
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATCH 0/2] fork-safe rt_print, rt_syslog extension
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -19,233 +17,22 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org, Oliver Schlenker <oliver.schlenker@domain.hid>
 
-Philippe Gerum wrote:
-> On Tue, 2009-10-20 at 13:37 +0200, Jan Kiszka wrote:
->> This extends /proc/xenomai/heap with statistics about all currently used
->> heaps. It takes care to flush nklock while iterating of this potentially
->> long list.
->>
->> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->> ---
->>
->>  include/nucleus/heap.h    |   12 +++-
->>  ksrc/drivers/ipc/iddp.c   |    3 +
->>  ksrc/drivers/ipc/xddp.c   |    6 ++
->>  ksrc/nucleus/heap.c       |  131 ++++++++++++++++++++++++++++++++++++++++-----
->>  ksrc/nucleus/module.c     |    2 -
->>  ksrc/nucleus/pod.c        |    5 +-
->>  ksrc/nucleus/shadow.c     |    5 +-
->>  ksrc/skins/native/heap.c  |    6 +-
->>  ksrc/skins/native/pipe.c  |    4 +
->>  ksrc/skins/native/queue.c |    6 +-
->>  ksrc/skins/posix/shm.c    |    4 +
->>  ksrc/skins/psos+/rn.c     |    6 +-
->>  ksrc/skins/rtai/shm.c     |    7 ++
->>  ksrc/skins/vrtx/heap.c    |    6 +-
->>  ksrc/skins/vrtx/syscall.c |    3 +
->>  15 files changed, 169 insertions(+), 37 deletions(-)
->>
->> diff --git a/include/nucleus/heap.h b/include/nucleus/heap.h
->> index 44db738..f653cd7 100644
->> --- a/include/nucleus/heap.h
->> +++ b/include/nucleus/heap.h
->> @@ -115,6 +115,10 @@ typedef struct xnheap {
->>
->>       XNARCH_DECL_DISPLAY_CONTEXT();
->>
->> +     xnholder_t stat_link;   /* Link in heapq */
->> +
->> +     char name[48];
-> 
-> s,48,XNOBJECT_NAME_LEN
+Please pull Oliver's rt_print patches from
 
-OK, but XNOBJECT_NAME_LEN+16 (due to class prefixes and additional
-information like the minor ID).
+    git://xenomai.org/xenomai-jki.git for-upstream
 
-> 
->> +
->>  } xnheap_t;
->>
->>  extern xnheap_t kheap;
->> @@ -202,7 +206,8 @@ void xnheap_cleanup_proc(void);
->>
->>  int xnheap_init_mapped(xnheap_t *heap,
->>                      u_long heapsize,
->> -                    int memflags);
->> +                    int memflags,
->> +                    const char *name, ...);
->>
-> 
-> The va_list is handy, but this breaks the common pattern used throughout
-> the rest of the nucleus, based on passing pre-formatted labels. So
-> either we make all creation calls use va_lists (but xnthread would need
-> more work), or we make xnheap_init_mapped use the not-so-handy current
-> form.
-> 
-> Actually, providing xnheap_set_name() and a name parameter/va_list to
-> xnheap_init* is one too many, this clutters an inner interface
-> uselessly. The latter should go away, assuming that anon heaps may still
-> exist.
 
-If we want to print all heaps, we should at least set a name indicating
-their class. And therefore we need to pass a descriptive name along with
-/every/ heap initialization. Forcing the majority of xnheap_init users
-to additionally issue xnheap_set_name is the cluttering a wanted to
-avoid. Only a minority needs this split-up, and therefore you see both
-interfaces in my patch.
+Oliver Schlenker (2):
+      Fork-safe rt_print
+      Syslog extension of rt_print
 
-> 
->>  void xnheap_destroy_mapped(xnheap_t *heap,
->>                          void (*release)(struct xnheap *heap),
->> @@ -224,7 +229,10 @@ void xnheap_destroy_mapped(xnheap_t *heap,
->>  int xnheap_init(xnheap_t *heap,
->>               void *heapaddr,
->>               u_long heapsize,
->> -             u_long pagesize);
->> +             u_long pagesize,
->> +             const char *name, ...);
->> +
->> +void xnheap_set_name(xnheap_t *heap, const char *name, ...);
->>
->>  void xnheap_destroy(xnheap_t *heap,
->>                   void (*flushfn)(xnheap_t *heap,
->> diff --git a/ksrc/drivers/ipc/iddp.c b/ksrc/drivers/ipc/iddp.c
->> index a407946..b6382f1 100644
->> --- a/ksrc/drivers/ipc/iddp.c
->> +++ b/ksrc/drivers/ipc/iddp.c
->> @@ -559,7 +559,8 @@ static int __iddp_bind_socket(struct rtipc_private *priv,
->>               }
->>
->>               ret = xnheap_init(&sk->privpool,
->> -                               poolmem, poolsz, XNHEAP_PAGE_SIZE);
->> +                               poolmem, poolsz, XNHEAP_PAGE_SIZE,
->> +                               "ippd: %d", port);
->>               if (ret) {
->>                       xnarch_free_host_mem(poolmem, poolsz);
->>                       goto fail;
->> diff --git a/ksrc/drivers/ipc/xddp.c b/ksrc/drivers/ipc/xddp.c
->> index f62147a..a5dafef 100644
->> --- a/ksrc/drivers/ipc/xddp.c
->> +++ b/ksrc/drivers/ipc/xddp.c
->> @@ -703,7 +703,7 @@ static int __xddp_bind_socket(struct rtipc_private *priv,
->>               }
->>
->>               ret = xnheap_init(&sk->privpool,
->> -                               poolmem, poolsz, XNHEAP_PAGE_SIZE);
->> +                               poolmem, poolsz, XNHEAP_PAGE_SIZE, "");
->>               if (ret) {
->>                       xnarch_free_host_mem(poolmem, poolsz);
->>                       goto fail;
->> @@ -746,6 +746,10 @@ static int __xddp_bind_socket(struct rtipc_private *priv,
->>       sk->minor = ret;
->>       sa->sipc_port = ret;
->>       sk->name = *sa;
->> +
->> +     if (poolsz > 0)
->> +             xnheap_set_name(sk->bufpool, "xddp: %d", sa->sipc_port);
->> +
->>       /* Set default destination if unset at binding time. */
->>       if (sk->peer.sipc_port < 0)
->>               sk->peer = *sa;
->> diff --git a/ksrc/nucleus/heap.c b/ksrc/nucleus/heap.c
->> index 96c46f8..793d1c5 100644
->> --- a/ksrc/nucleus/heap.c
->> +++ b/ksrc/nucleus/heap.c
->> @@ -76,6 +76,9 @@ EXPORT_SYMBOL_GPL(kheap);
->>  xnheap_t kstacks;    /* Private stack pool */
->>  #endif
->>
->> +static DEFINE_XNQUEUE(heapq);        /* Heap list for /proc reporting */
->> +static unsigned long heapq_rev;
->> +
->>  static void init_extent(xnheap_t *heap, xnextent_t *extent)
->>  {
->>       caddr_t freepage;
->> @@ -108,7 +111,7 @@ static void init_extent(xnheap_t *heap, xnextent_t *extent)
->>   */
->>
->>  /*!
->> - * \fn xnheap_init(xnheap_t *heap,void *heapaddr,u_long heapsize,u_long pagesize)
->> + * \fn xnheap_init(xnheap_t *heap,void *heapaddr,u_long heapsize,u_long pagesize,const char *name,...)
->>   * \brief Initialize a memory heap.
->>   *
->>   * Initializes a memory heap suitable for time-bounded allocation
->> @@ -145,6 +148,10 @@ static void init_extent(xnheap_t *heap, xnextent_t *extent)
->>   * best one for your needs. In the current implementation, pagesize
->>   * must be a power of two in the range [ 8 .. 32768 ] inclusive.
->>   *
->> + * @param name Name displayed in statistic outputs. This parameter can
->> + * be a format string, in which case succeeding parameters will be used
->> + * to resolve the final name.
->> + *
->>   * @return 0 is returned upon success, or one of the following error
->>   * codes:
->>   *
->> @@ -161,12 +168,13 @@ static void init_extent(xnheap_t *heap, xnextent_t *extent)
->>   * Rescheduling: never.
->>   */
->>
->> -int xnheap_init(xnheap_t *heap,
->> -             void *heapaddr, u_long heapsize, u_long pagesize)
->> +static int xnheap_init_va(xnheap_t *heap, void *heapaddr, u_long heapsize,
->> +                       u_long pagesize, const char *name, va_list args)
->>  {
->>       unsigned cpu, nr_cpus = xnarch_num_online_cpus();
->>       u_long hdrsize, shiftsize, pageshift;
->>       xnextent_t *extent;
->> +     spl_t s;
->>
->>       /*
->>        * Perform some parametrical checks first.
->> @@ -232,12 +240,71 @@ int xnheap_init(xnheap_t *heap,
->>
->>       appendq(&heap->extents, &extent->link);
->>
->> +     vsnprintf(heap->name, sizeof(heap->name), name, args);
->> +
->> +     xnlock_get_irqsave(&nklock, s);
->> +     appendq(&heapq, &heap->stat_link);
->> +     heapq_rev++;
->> +     xnlock_put_irqrestore(&nklock, s);
->> +
->>       xnarch_init_display_context(heap);
->>
->>       return 0;
->>  }
->> +
->> +int xnheap_init(xnheap_t *heap, void *heapaddr, u_long heapsize,
->> +             u_long pagesize, const char *name, ...)
->> +{
->> +     va_list args;
->> +     int ret;
->> +
->> +     va_start(args, name);
->> +     ret = xnheap_init_va(heap, heapaddr, heapsize, pagesize, name, args);
->> +     va_end(args);
->> +
->> +     return ret;
->> +}
->>  EXPORT_SYMBOL_GPL(xnheap_init);
->>
->> +/*!
->> + * \fn xnheap_set_name(xnheap_t *heap,const char *name,...)
->> + * \brief Overwrite the heap's name.
-> 
-> At some point, there should be a common base struct containing
-> everything needed to manipulate named objects, we would include in
-> higher level containers. It seems we are over-specializing quite generic
-> work.
+ include/rtdk.h      |    2 +
+ src/rtdk/rt_print.c |   72 ++++++++++++++++++++++++++++++++++++++++++++++-----
+ 2 files changed, 67 insertions(+), 7 deletions(-)
 
-Probably right (though this case remains special to some degree because
-names may consist of numeric IDs that are formatted on visualization). I
-think I should rename 'name' to 'display_name' or so to clarify that we
-are not dealing with a generic object name here.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+PS: Trying to manage patches by hand is doomed to fail. I can only
+recommend anyone investing the time to get familiar with basic git
+commands. It quickly pays off, even for managing only private changes.
 
