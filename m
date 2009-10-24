@@ -1,10 +1,11 @@
-Message-ID: <4AE34A95.6020208@domain.hid>
-Date: Sat, 24 Oct 2009 20:42:29 +0200
-From: "A. Nolson" <alohanono@domain.hid>
-MIME-Version: 1.0
-References: <4AE333E9.5040802@domain.hid> <1256405868.2862.512.camel@domain.hid>
-In-Reply-To: <1256405868.2862.512.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4AE34A95.6020208@domain.hid>
+References: <4AE333E9.5040802@domain.hid>
+	<1256405868.2862.512.camel@domain.hid>  <4AE34A95.6020208@domain.hid>
+Content-Type: text/plain
+Date: Sun, 25 Oct 2009 00:07:33 +0200
+Message-Id: <1256422053.2862.531.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Virtual IRQ Numbers in powerpc?
 List-Id: Help regarding installation and common use of Xenomai
@@ -16,69 +17,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: "A. Nolson" <alohanono@domain.hid>
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Sat, 2009-10-24 at 19:05 +0200, A. Nolson wrote:
->   
->> Hi,
->>
->>  i have a PowerPC 405 based system using a 2.6.30 Xenomai patched kernel
->> and I want to manage some interrupts in userspace for some non-critical
->> custom drivers. I have an OF device-tree where I indicate my HW
->> interrupts (the ones I need to use are not shared with any already
->> managed interrupt in the kernel). I have been trying to initialize an
->> interrupt handler in userspace with rt_intr_create by using the real
->> interrupt numbers indicated in the dts . The handler gets loaded but no
->> interrupt shows up. I have seen that rt_intr_create indicates that the
->> irq number is "architecture dependant", but I haven't been able to spot
->> further explanations on this. I know that arch=powerpc use virtual
->> interrupts and I am wondering if I first need to map the real interrupt
->> in a virtual interrupt number before using it( like one would do in a
->> normal linux kernel driver ).
->>     
->
-> Yes, Xenomai/ppc uses virtual interrupt mappings (which are NOT related
-> at all with virtual I-pipe interrupts though). You should always use the
-> same IRQ numbers as the vanilla kernel exposes to its drivers, this is a
-> rule of thumb with all archs Xenomai supports.
->
-> To sum up, you should replace the real (OF) hw IRQ number in the call to
-> rt_intr_create() by its remapped counterpart.
->   
-Thanks a lot for the info Phillippe. Now the question(maybe obvious)
-would be, how do I remap the interrupts outside the kernel? I remember
-doing this in a kernel driver, but never in userspace that is where I
-need to develop now with Xenomai.
->   
->> I am doing this:
->>
->>     if( (err = rt_intr_create(&(dev->intr_desc), "GPIO IRQ", irqno,
->> I_NOAUTOENA)) < 0 ){
->>         pdbg(DBG_WARN, "Cannot create interrupt for GPIO
->> rt_intr_create=%i\n", err);
->>         return err;
->>     }
->>        
->>     rt_intr_enable (&(dev->intr_desc));
->>
->>     if( (err = rt_task_spawn(&(dev->interrupt_task), "Int", 0, irq_prio,
->> 0,fisr, (void*)&(dev->intr_desc))) < 0){
->>         pdbg(DBG_WARN, "Cannot Spawn ISR for GPIO. err = %d\n", err);
->>         return err;
->>     }
->>
->>  What am I missing?
->>
->> Thanks!
->>
->>  /Alfred
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->>     
+On Sat, 2009-10-24 at 20:42 +0200, A. Nolson wrote:
+> Philippe Gerum wrote:
+> > On Sat, 2009-10-24 at 19:05 +0200, A. Nolson wrote:
+> >   
+> >> Hi,
+> >>
+> >>  i have a PowerPC 405 based system using a 2.6.30 Xenomai patched kernel
+> >> and I want to manage some interrupts in userspace for some non-critical
+> >> custom drivers. I have an OF device-tree where I indicate my HW
+> >> interrupts (the ones I need to use are not shared with any already
+> >> managed interrupt in the kernel). I have been trying to initialize an
+> >> interrupt handler in userspace with rt_intr_create by using the real
+> >> interrupt numbers indicated in the dts . The handler gets loaded but no
+> >> interrupt shows up. I have seen that rt_intr_create indicates that the
+> >> irq number is "architecture dependant", but I haven't been able to spot
+> >> further explanations on this. I know that arch=powerpc use virtual
+> >> interrupts and I am wondering if I first need to map the real interrupt
+> >> in a virtual interrupt number before using it( like one would do in a
+> >> normal linux kernel driver ).
+> >>     
+> >
+> > Yes, Xenomai/ppc uses virtual interrupt mappings (which are NOT related
+> > at all with virtual I-pipe interrupts though). You should always use the
+> > same IRQ numbers as the vanilla kernel exposes to its drivers, this is a
+> > rule of thumb with all archs Xenomai supports.
+> >
+> > To sum up, you should replace the real (OF) hw IRQ number in the call to
+> > rt_intr_create() by its remapped counterpart.
+> >   
+> Thanks a lot for the info Phillippe. Now the question(maybe obvious)
+> would be, how do I remap the interrupts outside the kernel? I remember
+> doing this in a kernel driver, but never in userspace that is where I
+> need to develop now with Xenomai.
+
+You will still need a piece of kernel code to do that; Xenomai does not
+provide any userland interface for this purpose.
+
+Maybe you could just declare your custom devices in your dts file, with
+the appropriate "interrupts" properties, so that they get virtualized
+during the prom parsing stage, then mapped to the UIC they belong to?
+
+> >   
+> >> I am doing this:
+> >>
+> >>     if( (err = rt_intr_create(&(dev->intr_desc), "GPIO IRQ", irqno,
+> >> I_NOAUTOENA)) < 0 ){
+> >>         pdbg(DBG_WARN, "Cannot create interrupt for GPIO
+> >> rt_intr_create=%i\n", err);
+> >>         return err;
+> >>     }
+> >>        
+> >>     rt_intr_enable (&(dev->intr_desc));
+> >>
+> >>     if( (err = rt_task_spawn(&(dev->interrupt_task), "Int", 0, irq_prio,
+> >> 0,fisr, (void*)&(dev->intr_desc))) < 0){
+> >>         pdbg(DBG_WARN, "Cannot Spawn ISR for GPIO. err = %d\n", err);
+> >>         return err;
+> >>     }
+> >>
+> >>  What am I missing?
+> >>
+> >> Thanks!
+> >>
+> >>  /Alfred
+> >>
+> >> _______________________________________________
+> >> Xenomai-help mailing list
+> >> Xenomai-help@domain.hid
+> >> https://mail.gna.org/listinfo/xenomai-help
+> >>     
+> 
+-- 
+Philippe.
+
 
 
