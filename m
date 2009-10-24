@@ -1,9 +1,10 @@
-From: oliver.schlenker@domain.hid
-Date: Fri, 23 Oct 2009 07:24:47 +0000
-Message-ID: <0000AF07.4AE1765D@192.168.2.103>
+Message-ID: <4AE333E9.5040802@domain.hid>
+Date: Sat, 24 Oct 2009 19:05:45 +0200
+From: "A. Nolson" <alohanono@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="----_=_NextPart_000_0000AF07.4AE1765D"
-Subject: Re: [Xenomai-help] Re-2: :: rt_printf with daemonized task
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Virtual IRQ Numbers in powerpc?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -13,83 +14,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This message is in MIME format. Since your mail reader does not understand
-this format, some or all of this message may not be legible.
+Hi,
 
-------_=_NextPart_000_0000AF07.4AE1765D
-Content-Type: text/plain;
- charset="UTF-8"
-Content-Transfer-Encoding: base64
+ i have a PowerPC 405 based system using a 2.6.30 Xenomai patched kernel
+and I want to manage some interrupts in userspace for some non-critical
+custom drivers. I have an OF device-tree where I indicate my HW
+interrupts (the ones I need to use are not shared with any already
+managed interrupt in the kernel). I have been trying to initialize an
+interrupt handler in userspace with rt_intr_create by using the real
+interrupt numbers indicated in the dts . The handler gets loaded but no
+interrupt shows up. I have seen that rt_intr_create indicates that the
+irq number is "architecture dependant", but I haven't been able to spot
+further explanations on this. I know that arch=powerpc use virtual
+interrupts and I am wondering if I first need to map the real interrupt
+in a virtual interrupt number before using it( like one would do in a
+normal linux kernel driver ).
 
-DQoNCg0KDQoNCi0tLS0tLS0tIE9yaWdpbmFsIE1lc3NhZ2UgLS0tLS0tLS0NClN1YmplY3Q6IFJl
-OiBSZS0yOiA6OiBydF9wcmludGYgd2l0aCBkYWVtb25pemVkIHRhc2sgKDIyLU9rdC0yMDA5IDE4
-OjM0KQ0KRnJvbTogICAgSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4NClRvOiAg
-ICAgIG9saXZlci5zY2hsZW5rZXJAc21tb3Rpb25jb250cm9sLmRlDQoNCj4gDQo+IEkgd2FzIGFi
-b3V0IHRvIGFwcGx5IHRoZW0gdG8gbXkgdHJlZSBhbmQgc2VuZCBvdXQgYSBnaXQgcHVsbCByZXF1
-ZXN0IHRvDQo+IFBoaWxpcHBlLiBVbmZvcnR1bmF0ZWx5IEkgbWlzc2VkIHNvIGZhciB0aGF0IHlv
-dXIgbWFpbCBjbGllbnQgb3IgZ2F0ZXdheQ0KPiBkYW1hZ2VkIHRoZSBwYXRjaCBmb3JtYXQgc2Vy
-aW91c2x5ICh0aGUgJz4gU28gaWYgeW91IGhhdmUgYSBjbGVhbiAiZGlmZiAtdXAiIG9mIHlvdXIg
-Y2hhbmdlcywgcGxlYXNlIHNlbnQgdGhlbSBpbiBhDQo+IHRhcmJhbGwgdG8gbWUgb3IgdmlhIGEg
-cHJvcGVyIG1haWwgY2xpZW50IC8gYWNjb3VudCB0aGF0IGtlZXBzIGVtYWlscw0KPiBpbnRhY3Qu
-IE90aGVyd2lzZSBJIHdvdWxkIGhhdmUgdG8gcmVjb25zdHJ1Y3QgYWxsIGNoYW5nZXMgYnkgaGFu
-ZC4uLg0KPiANCj4gSmFuDQo+IA0KPiAtLSANCj4gU2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hu
-b2xvZ3ksIENUIFNFIDINCj4gQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExp
-bnV4DQoNCkkgd2Fzbid0IGF3YXJlIG9mIHN1Y2ggYSBiZWhhdmlvdXIgb2YgbXkgbWFpbCBjbGll
-bnQsIGJ1dCBpdCdzIGluZGVlZA0KbGlrZSB0aGF0LiBBbGwgJ2NvbW1hbmRzIGFuZCBmaWx0ZXJl
-ZCBvdXQgb2YgdGhlIG1haWwuIEkgY291bGQnbnQgZmluZCBhIHBvc3NpYmlsaXR5IHRvIHN3aXRj
-aCBvZmYNCnRoaXMgZmVhdHVyZXMgLi4uDQpUaGVyZWZvciBJIGRpZCBhdHRhY2ggdG8gdGhpcyBt
-YWlsIGEgdGFyYmFsbCB3aXRoIGFsbCBjaGFuZ2VzLiBUaGVzZSBwYXRjaGVzDQpoYXZlIGJlZW4g
-Y3JlYXRlZCB3aXRoICJkaWZmIC11cCIuIEZvcm1lciBvbmVzIGhhdmUgYmVlbiBjcmVhdGVkIHdp
-dGgganVzdA0KImRpZmYgLXUiLg0KDQpIb3BlZnVsbHkgaXQncyBwb3NzaWJsZSBub3cgdG8gaW50
-ZWdyYXRlIGl0IHdpdGhvdXQgYW55IGZ1cnRoZXIgcHJvYmxlbXMuDQoNCg0KT2xpdmVyDQoNClRv
-OiBqYW4ua2lzemthQHNpZW1lbnMuY29tDQpDYzogZ2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21h
-aS5vcmcNCiAgICB4ZW5vbWFpLWhlbHBAZ25hLm9yZw0KDQo=
+I am doing this:
 
-------_=_NextPart_000_0000AF07.4AE1765D
-Content-Type: application/octet-stream;
- name="rt_print.patch.tgz"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="rt_print.patch.tgz";
- modification-date="Fri, 23 Oct 2009 07:16:52 +0000"
+    if( (err = rt_intr_create(&(dev->intr_desc), "GPIO IRQ", irqno,
+I_NOAUTOENA)) < 0 ){
+        pdbg(DBG_WARN, "Cannot create interrupt for GPIO
+rt_intr_create=%i\n", err);
+        return err;
+    }
+       
+    rt_intr_enable (&(dev->intr_desc));
 
-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
-TZqhisear7VEcfa9ofypPbWt238CfKV4AB4AAA==
+    if( (err = rt_task_spawn(&(dev->interrupt_task), "Int", 0, irq_prio,
+0,fisr, (void*)&(dev->intr_desc))) < 0){
+        pdbg(DBG_WARN, "Cannot Spawn ISR for GPIO. err = %d\n", err);
+        return err;
+    }
 
-------_=_NextPart_000_0000AF07.4AE1765D--
+ What am I missing?
 
+Thanks!
+
+ /Alfred
 
