@@ -1,13 +1,12 @@
-Message-ID: <4AE82F22.6090203@domain.hid>
-Date: Wed, 28 Oct 2009 12:46:42 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Leopold Palomo-Avellaneda <leo@domain.hid>
+Date: Wed, 28 Oct 2009 13:13:59 +0100
 MIME-Version: 1.0
-References: <4AE82B39.5040301@domain.hid>
-In-Reply-To: <4AE82B39.5040301@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] RTnet install problem: Xenomai configuration
-	tool not found
+Content-Disposition: inline
+Message-Id: <200910281314.00378.leo@domain.hid>
+Subject: [Xenomai-help] Xenomai patches
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,30 +16,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Benjamin Biegel <biegel@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Benjamin Biegel wrote:
-> Hi
-> 
-> I follow the RTnet:Installation guide.
-> 
-> After saving in gconfig i get an error 'Checking for TR-extension... 
-> configure: error: ***Xenomai configuration tool not found'
+Hi,
 
-That Xenomai configuration tool is xeno-config, and it can be found in
-the /bin directory into which you installed your Xenomai user space part.
+I'm having a trouble installing xenomai in a debian machines. Actually the 
+official debian package is not useful. You cannot use it because there's no 
+kernel package that could be patched.
 
-Alternatively, if you are not interested in building the RTnet examples,
-disable them. Then you do not need this part at all.
+Anyway, I would like to ask about if, for example, a patch against a 2.6.30 
+could be used against 2.6.30.4 for example or reverse. I don't understand why 
+this four numbers instead of the classical 3. Or, how can I modify it to use 
+it.
 
-Jan
+Regards,
 
-PS: If you feel the existing documentation is fuzzy about this or not
-mentioning it at all, please do not hesitate to submit changes (write
-access to the wiki can easily be granted, just drop Bruno Rouchouse a note).
-
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Leo
 
