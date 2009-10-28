@@ -1,18 +1,9 @@
+Message-ID: <4AE7E36D.7040307@domain.hid>
+Date: Wed, 28 Oct 2009 07:23:41 +0100
+From: Francois Touchard <francois.touchard@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <96eea0c80910271908l4681fdb2r92f08efd5dd463c9@domain.hid>
-References: <96eea0c80910151813v635d518dr6abd72986e2f07bd@domain.hid>
-	<96eea0c80910161648l1991b124w20ea9949e70f5ae0@domain.hid>
-	<200910171600.16265.berlemont.hauw@domain.hid>
-	<200910192324.09986.berlemont.hauw@domain.hid>
-	<96eea0c80910212230l745bbf85s4493e8958dad356b@domain.hid>
-	<72cf3fb0910222349x771f0158ie9a9d97911c8d2fe@domain.hid>
-	<96eea0c80910271908l4681fdb2r92f08efd5dd463c9@domain.hid>
-Date: Wed, 28 Oct 2009 07:08:47 +0100
-Message-ID: <ddc6e05e0910272308g3fb50cfdueae2bbdd0da49a77@domain.hid>
-From: Remco den Breeje <remco@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] national instruments card and comedi-rtdm-dev
+Content-Type: multipart/mixed; boundary="------------060305060804000300090304"
+Subject: [Xenomai-help] PC freezes on call to driver functions
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,271 +13,628 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Peter Pastor <peter.pastor@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hi Peter,
+This is a multi-part message in MIME format.
+--------------060305060804000300090304
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-On Wed, Oct 28, 2009 at 3:08 AM, Peter Pastor <peter.pastor@domain.hid> wrot=
-e:
-[...]
-> [=A0=A0 11.460737] analogy_ni_mio: Unknown symbol ni_tio_cmd
-> ...snip...
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+Hello,<br>
+for teaching purposes, I have a very simple driver built with RTDM to
+catch interrupts generated on the parallel port via a pulse generator.
+On receipt of a command passed by ioctl, the driver measures the time
+interval between two interrupts and stores the result (in fact, the sum
+of n time intervals, n being passed as parameter of ioctl). The result
+is returned to the user by a read command.<br>
+If I call ioctl immediatly after the open command, the machine freezes
+and only the reset button is effective. If I insert a print command
+between open and ioctl, everything works fine.<br>
+I use Xenomai 2.4.9.1 and Linux 2.6.29.5. The processor is a Pentium 4.
+I attach the sources of the driver and the user application.<br>
+Any hint ? TIA<br>
+Francois<br>
+<div class="moz-signature">-- <br>
+<meta http-equiv="CONTENT-TYPE" content="text/html; ">
+<title></title>
+<meta name="GENERATOR" content="StarOffice 7  (Linux)">
+<meta name="CREATED" content="20040220;23305400">
+<meta name="CHANGEDBY" content="Francois Touchard">
+<meta name="CHANGED" content="20050323;22195800">
+<table style="page-break-before: always;" border="1"
+ bordercolor="#000000" cellpadding="4" cellspacing="0" rules="none"
+ width="100%">
+  <tbody>
+    <tr>
+      <td>
+      <p>Fran&ccedil;ois TOUCHARD</p>
+      </td>
+      <td>
+      <p><a href="mailto:francois.touchard@domain.hid">mailto:francois.touchard@domain.hid</a></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="230">
+      <p>ESIL/CPPM</p>
+      </td>
+      <td valign="top" width="316">
+      <p><a href="http://pages-perso.esil.univmed.fr/%7Etouchard">http://pages-perso.esil.univmed.fr/~touchard</a></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p><br>
+<br>
+</p>
+</div>
+<br>
+<div class="moz-signature">-- <br>
+<meta http-equiv="CONTENT-TYPE" content="text/html; ">
+<title></title>
+<meta name="GENERATOR" content="StarOffice 7  (Linux)">
+<meta name="CREATED" content="20040220;23305400">
+<meta name="CHANGEDBY" content="Francois Touchard">
+<meta name="CHANGED" content="20050323;22195800">
+<table style="page-break-before: always;" border="1"
+ bordercolor="#000000" cellpadding="4" cellspacing="0" rules="none"
+ width="100%">
+  <tbody>
+    <tr>
+      <td>
+      <p>Fran&ccedil;ois TOUCHARD</p>
+      </td>
+      <td>
+      <p><a href="mailto:francois.touchard@domain.hid">mailto:francois.touchard@domain.hid</a></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="230">
+      <p>ESIL/CPPM</p>
+      </td>
+      <td valign="top" width="316">
+      <p><a href="http://pages-perso.esil.univmed.fr/%7Etouchard">http://pages-perso.esil.univmed.fr/~touchard</a></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p><br>
+<br>
+</p>
+</div>
+</body>
+</html>
 
-I think Alexis solved that one with last nights commit
-8063e1b21350bc6822565f29ad8d53c2a6491238
+--------------060305060804000300090304
+Content-Type: text/x-csrc;
+ name="pulse_drv.c"
+Content-Disposition: inline;
+ filename="pulse_drv.c"
+Content-Transfer-Encoding: quoted-printable
+X-MIME-Autoconverted: from 8bit to quoted-printable by ccsrelay01.in2p3.fr id n9S6OHBB012277
 
-If not, you may be able to work around that problem by removing the
-'_GPL' string in all EXPORT_SYMBOL_GPL statements in tio_common.c
+/************************************************************************=
+****************
+* pulseDrv.c V6
+* oct 2009 (c) Fran=C3=A7ois Touchard
+*************************************************************************=
+***************/
 
-Cheers,
-Remco den Breeje
+#include <linux/module.h>
+#include <rtdm/rtdm_driver.h>
+#include <semaphore.h>
+#include <pthread.h>
+#include <time.h>
+#include <errno.h>
 
->
-> root@domain.hid:~# lspci -v
-> ...snip...
-> 06:00.0 Class ff00: National Instruments Device 717f
-> =A0=A0=A0 Flags: bus master, medium devsel, latency 64, IRQ 11
-> =A0=A0=A0 Memory at f7dfe000 (32-bit, non-prefetchable) [size=3D4K]
-> =A0=A0=A0 Memory at f7dff000 (32-bit, non-prefetchable) [size=3D4K]
-> =A0=A0=A0 Kernel driver in use: mite
-> =A0=A0=A0 Kernel modules: analogy_ni_pcimio
-> ...snip...
->
-> root@domain.hid:~# lsmod | grep analogy
-> analogy_ni_tio=A0=A0=A0=A0=A0=A0=A0=A0 26852=A0 0
-> analogy_8255=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 4388=A0 0
-> analogy_ni_mite=A0=A0=A0=A0=A0=A0=A0 12644=A0 1 analogy_ni_tio
-> xeno_analogy=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 39108=A0 3 analogy_ni_tio,anal=
-ogy_8255,
-> analogy_ni_mite
->
-> I don't really know how to use analogy_config... since
->
-> root@domain.hid# ./analogy_config analogy0 analogy_ni_mite
-> comedi_config: comedi_snd_attach failed ret=3D-22
-> when I run
->
-> root@domain.hid# ./cmd_read
-> cmd_read: a4l_fill_desc failed (ret=3D-22)
-> *** glibc detected *** ./cmd_read: free(): invalid next size (fast): 0x08=
-052008 ***
-> =3D=3D=3D=3D=3D=3D=3D Backtrace: =3D=3D=3D=3D=3D=3D=3D=3D=3D
-> /lib/tls/i686/cmov/libc.so.6[0xb7f5f604]
-> /lib/tls/i686/cmov/libc.so.6(cfree+0x96)[0xb7f615b6]
-> ./cmd_read[0x80496ae]
-> /lib/tls/i686/cmov/libc.so.6(__libc_start_main+0xe5)[0xb7f06775]
-> ./cmd_read[0x8048f41]
-> =3D=3D=3D=3D=3D=3D=3D Memory map: =3D=3D=3D=3D=3D=3D=3D=3D
-> 08048000-0804e000 r-xp 00000000 08:01 13109565=A0=A0 /usr/xenomai/bin/cmd=
-_read
-> 0804e000-0804f000 r--p 00005000 08:01 13109565=A0=A0 /usr/xenomai/bin/cmd=
-_read
-> 0804f000-08050000 rw-p 00006000 08:01 13109565=A0=A0 /usr/xenomai/bin/cmd=
-_read
-> 08050000-08073000 rw-p 00000000 00:00 0=A0=A0=A0=A0=A0=A0=A0=A0=A0 [heap]
-> b7d00000-b7d21000 rw-p 00000000 00:00 0
-> b7d21000-b7e00000 ---p 00000000 00:00 0
-> b7ecf000-b7edc000 r-xp 00000000 08:01 11894849=A0=A0 /lib/libgcc_s.so.1
-> b7edc000-b7edd000 r--p 0000c000 08:01 11894849=A0=A0 /lib/libgcc_s.so.1
-> ...
->
-> which is I guess due to the unsuccessful analogy_config. My question is, =
-which driver do I have to use ?
->
-> Thanks,
-> =A0peter
->
-> On Thu, Oct 22, 2009 at 11:49 PM, Alexis Berlemont <berlemont.hauw@domain.hid=
-r> wrote:
->>
->> Hi,
->>
->> On Thu, Oct 22, 2009 at 7:30 AM, Peter Pastor <peter.pastor@domain.hid> w=
-rote:
->> > Hi Alexis,
->> >
->> > Sorry for the delay, I was out of town.
->> >
->> > I have tried the statical configuration and it seemed to work, i.e. I =
-could
->> > execute the example program /usr/xenomai/bin/cmd_read. However, I want=
-ed to
->> > run the task in real-time and added the -r option which results in
->> > root@domain.hid# ./cmd_read -vr
->> > cmd_read: switching to real-time mode
->> > cmd_read: device comedi0 opened (fd=3D0)
->> > cmd_read: basic descriptor retrieved
->> > =A0=A0=A0 =A0subdevices count =3D 14
->> > =A0=A0=A0 =A0read subdevice index =3D 0
->> > =A0=A0=A0 =A0write subdevice index =3D 1
->> > cmd_read: complex descriptor retrieved
->> > cmd_read: channel 0
->> > =A0=A0=A0 =A0ranges count =3D 7
->> > =A0=A0=A0 =A0range's size =3D 16 (bits)
->> > cmd_read: channel 1
->> > =A0=A0=A0 =A0ranges count =3D 7
->> > =A0=A0=A0 =A0range's size =3D 16 (bits)
->> > cmd_read: channel 2
->> > =A0=A0=A0 =A0ranges count =3D 7
->> > =A0=A0=A0 =A0range's size =3D 16 (bits)
->> > cmd_read: channel 3
->> > =A0=A0=A0 =A0ranges count =3D 7
->> > =A0=A0=A0 =A0range's size =3D 16 (bits)
->> > cmd_read: scan size =3D 8
->> > cmd_read: size to read =3D 800
->> > cmd_read: command successfully sent
->> > 0xff 0xff 0xff 0xff 0xff 0xff 0x81 0xf9
->> > 0xff 0xff 0xff 0xff 0xff 0xff 0xca 0xfb
->> > ...snip...
->> > 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
->> > cmd_read: comedi_read failed (ret=3D-2)
->>
->> -2 is -ENOENT, which means there is nothing more to acquire. The
->> return code should have been 0 but I 'd rather send -2, which is not
->> very compliant. It is something I need to work on.
->>
->> > The cmd_write however, seems to work
->> >
->> > root@domain.hid# ./cmd_write -rv
->> > cmd_write: switching to real-time mode
->> > cmd_write: device comedi0 opened (fd=3D0)
->> > cmd_write: basic descriptor retrieved
->> > =A0=A0=A0 =A0subdevices count =3D 14
->> > =A0=A0=A0 =A0read subdevice index =3D 0
->> > =A0=A0=A0 =A0write subdevice index =3D 1
->> > cmd_write: complex descriptor retrieved
->> > cmd_write: channel 0
->> > =A0=A0=A0 =A0ranges count =3D 3
->> > =A0=A0=A0 =A0range's size =3D 16 (bits)
->> > cmd_write: channel 1
->> > =A0=A0=A0 =A0ranges count =3D 3
->> > =A0=A0=A0 =A0range's size =3D 16 (bits)
->> > cmd_write: scan size =3D 4
->> > cmd_write: size to write=A0 =3D 400
->> > cmd_write: command successfully sent
->> > cmd_write: 400 bytes successfully written
->> >
->> > also...
->> > root@domain.hid# ./insn_read -rv
->> > insn_read: switching to real-time mode
->> > insn_read: device (null) opened (fd=3D0)
->> > insn_read: basic descriptor retrieved
->> > =A0=A0=A0 =A0subdevices count =3D 14
->> > =A0=A0=A0 =A0read subdevice index =3D 0
->> > =A0=A0=A0 =A0write subdevice index =3D 1
->> > insn_read: complex descriptor retrieved
->> > insn_read: channel width is 16 bits
->> > insn_read: global scan size is 20
->> > 0xff 0xff
->> > 0x0 0x0
->> > 0xff 0xff
->> > 0x0 0x0
->> > 0xff 0xff
->> > 0x0 0x0
->> > 0xff 0xff
->> > 0x0 0x0
->> > 0xff 0xff
->> > 0x0 0x0
->> > insn_read: 20 bytes successfully received
->> >
->> > What I would like to make sure is that I can write to comedi0 without =
-having
->> > mode switches. Therefore I copied cmd_write and added a rt_task_spawn =
-to
->> > make sure that the task_body runs in real-time (even though the -r opt=
-ion
->> > results in the same behavior.) This way, I could add/change code to ch=
-eck
->> > for mode switches... However, since unfortunately I am debugging thing=
-s
->> > remotely I cannot "see" the output (the display) of our oscilloscope t=
-hat is
->> > connected to the pci express card. I'll send an email as soon as I kno=
-w
->> > more.
->>
->> Be careful with the printf() I inserted in the test programs cmd_read,
->> cmd_write; they will make you switch in the secondary domain.
->>
->> > Besides that, I updated to your latest xenomai and re-compiled having =
-the
->> > comedi drivers compiled as loadable modules. After booting the new ker=
-nel I
->> > can see the following:
->> >
->> > xenomai:~> uname -a
->> > Linux xenomai 2.6.30.5-xenomai-ipipe-comedi #6 SMP Wed Oct 21 20:05:37=
- PDT
->> > 2009 i686 GNU/Linux
->> > xenomai:~> lspci -v
->> > ...snip...
->> > 06:00.0 Class ff00: National Instruments Device 717f
->> > =A0=A0=A0 Flags: bus master, medium devsel, latency 64, IRQ 11
->> > =A0=A0=A0 Memory at f7dfe000 (32-bit, non-prefetchable) [size=3D4K]
->> > =A0=A0=A0 Memory at f7dff000 (32-bit, non-prefetchable) [size=3D4K]
->> > =A0=A0=A0 Kernel driver in use: mite
->> > =A0=A0=A0 Kernel modules: comedi_ni_pcimio
->> > ...snip...
->> > xenomai:~> lsmod | grep come
->> > comedi_ni_tio=A0=A0=A0=A0=A0=A0=A0=A0=A0 26884=A0 0
->> > comedi_8255=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 4420=A0 0
->> > comedi_ni_mite=A0=A0=A0=A0=A0=A0=A0=A0 12708=A0 1 comedi_ni_tio
->> > xeno_comedi=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 39908=A0 3 comedi_ni_tio,=
-comedi_8255,comedi_ni_mite
->> >
->> >
->> > However, the problem is that there is:
->> >
->> > root@domain.hid# ./comedi_config comedi0 comedi_pcimio
->> > comedi_config: comedi_snd_attach failed ret=3D-22
->> >
->> > also...
->> >
->> > root@domain.hid# ./comedi_config comedi0 comedi_ni_mite
->> > comedi_config: comedi_snd_attach failed ret=3D-22
->> >
->> > root@domain.hid# dmesg
->> > ...snip...
->> > [=A0=A0 11.298460] Comedi: MITE: Available NI device IDs: 0x717f(used)
->> > [=A0=A0 11.305333] comedi_8255: module license 'unspecified' taints ke=
-rnel.
->> > [=A0=A0 11.305337] Disabling lock debugging due to kernel taint
->> > [=A0=A0 11.331840] comedi_ni_mio: Unknown symbol ni_tio_handle_interru=
-pt
->> > [=A0=A0 11.331936] comedi_ni_mio: Unknown symbol ni_tio_set_mite_chann=
-el
->> > [=A0=A0 11.331986] comedi_ni_mio: Unknown symbol ni_tio_cmd_mask
->> > [=A0=A0 11.332171] comedi_ni_mio: Unknown symbol ni_tio_init_counter
->> > [=A0=A0 11.332317] comedi_ni_mio: Unknown symbol ni_tio_winsn
->> > [=A0=A0 11.332416] comedi_ni_mio: Unknown symbol ni_gpct_device_destro=
-y
->> > [=A0=A0 11.332466] comedi_ni_mio: Unknown symbol ni_tio_insn_config
->> > [=A0=A0 11.332696] comedi_ni_mio: Unknown symbol ni_tio_acknowledge_an=
-d_confirm
->> > [=A0=A0 11.332786] comedi_ni_mio: Unknown symbol ni_tio_cmdtest
->> > [=A0=A0 11.332921] comedi_ni_mio: Unknown symbol ni_tio_cancel
->> > [=A0=A0 11.332976] comedi_ni_mio: Unknown symbol ni_gpct_device_constr=
-uct
->> > [=A0=A0 11.333139] comedi_ni_mio: Unknown symbol ni_tio_rinsn
->> > [=A0=A0 11.333189] comedi_ni_mio: Unknown symbol ni_tio_cmd
->> > ...snip...
->> >
->> > How can I fix this ? Or should I simply work with the statical linked =
-comedi
->> > drivers ??
->>
->> I will update my git repository soon with these fixes. However, could
->> you switch to the analogy branch ? As you may know, comedi/RTDM has
->> been renamed as analogy:
->> https://mail.gna.org/public/xenomai-core/2009-09/msg00016.html
->>
->> Alexis.
->
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->
+#define DEBUG
+#define VERSION "V6.0.2"
+
+#include "pulse.h"
+
+
+/**
+* global buffer
+*/
+
+rtStat_t RtStat;
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("francois.touchard@domain.hid");
+
+rtdm_irq_t irq;
+rtdm_task_t meas_thr;
+
+int IRQ_ON=3D0;
+
+
+rtdm_sem_t sem;
+
+/************************************************************************=
+*************/
+/*         measurement thread                                            =
+            */
+/************************************************************************=
+*************/
+void measurement_thread(void *cookie)
+{
+	struct timespec tc;
+	unsigned int deltatmus;
+	nanosecs_abs_t tcns, tpns, deltatns;
+	int count=3D0;
+#ifdef DEBUG
+	rtdm_printk("thread launched. Maxcount : %d\n", RtStat.maxcount);
+#endif
+
+	while (1) {
+		rtdm_sem_down(&sem);
+
+		tcns =3D rtdm_clock_read();	=09
+		if (count > 0) {
+			deltatns =3D tcns - tpns;
+			deltatmus =3D ((long int) deltatns)/1000;
+			RtStat.sum =3D RtStat.sum + deltatmus;
+			if (count =3D=3D 1) {
+				RtStat.min =3D deltatmus;
+				RtStat.max =3D deltatmus;
+			} else {
+				if (deltatmus < RtStat.min) RtStat.min =3D deltatmus;
+				if (deltatmus > RtStat.max) RtStat.max =3D deltatmus;
+			}
+		} else {
+			RtStat.sum =3D 0;
+			deltatmus =3D 0;
+			tpns=3D0;
+		}
+#ifdef DEBUG
+		rtdm_printk("%s : got IRQ %d : %d mus (sum : %d, min : %d, max %d)\n",=20
+				DEVICE_NAME, count, deltatmus, RtStat.sum,
+				RtStat.min, RtStat.max);
+#endif
+		tpns =3D tcns;
+		count ++;
+
+		if (count > RtStat.maxcount) {
+#ifdef DEBUG
+			rtdm_printk("thread exit\n");
+#endif
+			rtdm_task_destroy(&meas_thr);
+		}
+	}
+}
+
+/************************************************************************=
+*************/
+/*         Interrupt routine                                             =
+            */
+/************************************************************************=
+*************/
+static int pulse_isr(rtdm_irq_t *irq)
+{
+	rtdm_sem_up(&sem);
+	return 0;
+}
+
+/**
+* open the device
+* statistical data is reset to 0
+*/
+/************************************************************************=
+*************/
+/*          Driver open                                                  =
+            */
+/************************************************************************=
+*************/
+static  int PulseOpen_nrt(	struct rtdm_dev_context *context,=20
+				rtdm_user_info_t 	*user_info,=20
+				int 			oflags)=20
+{
+	RtStat.sum =3D 0;
+#ifdef DEBUG
+	rtdm_printk("%s : device opened in nrt context\n", DEVICE_NAME);
+#endif
+	return 0;
+}
+
+static  int PulseOpen_rt(	struct rtdm_dev_context *context,=20
+				rtdm_user_info_t 	*user_info,=20
+				int 			oflags)=20
+{
+	RtStat.sum =3D 0;
+#ifdef DEBUG
+	rtdm_printk("%s : device opened in rt context\n", DEVICE_NAME);
+#endif
+	return 0;
+}
+
+/************************************************************************=
+*************/
+/*          Driver close                                                 =
+            */
+/************************************************************************=
+*************/
+
+static int PulseClose_nrt(	struct rtdm_dev_context *context,=20
+				rtdm_user_info_t 	*user_info)=20
+{
+	if (IRQ_ON) {
+		rtdm_irq_free(&irq);
+	}
+#ifdef DEBUG
+	rtdm_printk("%s : device closed in nrt context\n", DEVICE_NAME);
+#endif
+	return 0;
+}
+
+
+static int PulseClose_rt(	struct rtdm_dev_context *context,=20
+				rtdm_user_info_t 	*user_info)=20
+{
+	if (IRQ_ON) {
+		rtdm_irq_free(&irq);
+	}
+#ifdef DEBUG
+	rtdm_printk("%s : device closed in rt context\n", DEVICE_NAME);
+#endif
+	return 0;
+}
+
+/************************************************************************=
+************/
+/*          Driver ioctl                                                 =
+           */
+/************************************************************************=
+************/
+
+static int PulseIoctl_nrt(	struct rtdm_dev_context *context,=20
+				rtdm_user_info_t 	*user_info,=20
+				int 			cmd,=20
+				void 			*arg)
+{
+	int ret;
+
+	switch (cmd) {
+		case RPP_ISR:
+			IRQ_ON=3D1;
+
+#ifdef DEBUG
+			rtdm_printk("ISR measurement\n");
+#endif
+			rtdm_irq_free(&irq);
+
+// Stores maximum number of captured interrupts (passed in ioctl argument=
+) in kernel space
+			ret =3D rtdm_safe_copy_from_user(user_info,=20
+					&RtStat.maxcount, arg, sizeof(int));
+			if (ret) {
+				rtdm_printk("%s : error on rtdm_safe_copy_from_user %d\n",
+					 DEVICE_NAME, ret);
+				rtdm_irq_free(&irq);
+				return ret;
+			}
+
+#ifdef DEBUG
+			rtdm_printk("%s : maxcount %d copied from user to kernel\n",
+				 DEVICE_NAME, RtStat.maxcount);
+#endif
+// Semaphore initialisation
+			rtdm_sem_init(&sem, 0);
+
+			RtStat.sum =3D 0;
+
+// Measurement task initialisation. No argument passed, priority : 30, no=
+n cyclic task
+			ret =3D rtdm_task_init(&meas_thr, "AcqPulse", measurement_thread,
+					NULL, 30, 0);
+			if (ret) {
+				rtdm_printk("%s : error on rtdm_task_init %d\n"
+					,DEVICE_NAME, ret);
+			}
+// irq handler initialisation
+			ret =3D rtdm_irq_request(&irq, PulseInt_Irq,=20
+						pulse_isr, 0, "pulse", 0);
+			if (ret) {
+				rtdm_printk("%s : error on rtdm_irq_request %d\n"
+					,DEVICE_NAME, ret);
+				return ret;
+			}
+#ifdef DEBUG
+			rtdm_printk("%s : IRQ enabled\n", DEVICE_NAME);
+#endif
+
+// enable interrupts on parallel port interface
+			outb(PulseCtr_Enable, PulseInt_Ctrl);
+
+// wait for the end of measurement. Polling every 100 ms
+			rtdm_task_join_nrt(&meas_thr, 100);
+
+			rtdm_sem_destroy(&sem);
+			rtdm_irq_free(&irq);
+// Disable interrupts on parallel port interface
+			outb(PulseCtr_Disable, PulseInt_Ctrl);
+
+
+			return 0;
+		case RPP_POLL:
+#ifdef DEBUG
+			rtdm_printk("POLL measurement, arg %d\n", (int) arg);
+#endif
+			return -1;
+		default:
+			rtdm_printk("invalid ioctl\n");
+			return -1;
+	}
+}
+
+/************************************************************************=
+************/
+/*          Driver read                                                  =
+          */
+/************************************************************************=
+************/
+
+static ssize_t PulseRead_rt(	struct rtdm_dev_context *context,=20
+				rtdm_user_info_t 	*user_info,=20
+				void 			*buf,=20
+				size_t 			nbyte)
+{=09
+	int ret;
+	char *out_pos =3D (char *) buf;
+
+#ifdef DEBUG
+	rtdm_printk("%s : read device\n", DEVICE_NAME);
+#endif
+	ret =3D rtdm_safe_copy_to_user(user_info, out_pos, &RtStat, sizeof(rtSta=
+t_t));
+	if (ret) {
+		rtdm_printk("%s : error on rtdm_copy_to_user %d\n", DEVICE_NAME, ret);
+		return ret;
+	}
+#ifdef DEBUG
+	rtdm_printk("%s : copied from kernel to user\n", DEVICE_NAME);
+#endif=09
+	return sizeof(rtStat_t);;
+}
+
+
+/************************************************************************=
+*********/
+/*    	Structure describing the device                                   =
+       */
+/************************************************************************=
+*********/
+
+static struct rtdm_device device =3D {
+	struct_version : RTDM_DEVICE_STRUCT_VER,
+	device_flags : RTDM_NAMED_DEVICE,
+	context_size : sizeof(rtStat_t),
+	device_name : DEVICE_NAME,
+=09
+	open_nrt : PulseOpen_nrt,
+	open_rt : PulseOpen_rt,
+	ops : {
+		close_nrt :	 PulseClose_nrt,
+		close_rt :	 PulseClose_rt,
+		ioctl_nrt :	 PulseIoctl_nrt,
+		ioctl_rt :	 PulseIoctl_nrt,
+		read_nrt :	 PulseRead_rt,
+		read_rt :	 PulseRead_rt,
+		write_nrt :	 NULL,
+		write_rt :	 NULL,
+		recvmsg_rt:	 NULL,
+		recvmsg_nrt:	 NULL,
+		sendmsg_rt:	 NULL,
+		sendmsg_nrt:	 NULL,
+	},
+
+	device_class : RTDM_CLASS_EXPERIMENTAL,
+	device_sub_class : 4711,
+	profile_version : 1,
+	driver_name : DRIVER_NAME,
+	driver_version : RTDM_DRIVER_VER(0,1,2),
+	peripheral_name : "Pulse",
+	provider_name : "esil_info",
+	proc_name : device.device_name,
+};
+
+int __init pulse_init(void) {
+	rtdm_dev_register (&device);
+	rtdm_printk("PulseDrv %s loaded. ", VERSION);
+#ifdef DEBUG
+	rtdm_printk("DEBUG mode\n");
+#else
+	rtdm_printk("NODEBUG mode\n");
+#endif
+	return 0;
+}
+
+void __exit pulse_exit(void) {
+	rtdm_dev_unregister(&device, 1000);
+	rtdm_printk("PulseDrv %s unloaded\n", VERSION);
+}
+
+module_init(pulse_init);
+module_exit(pulse_exit);
+
+
+
+--------------060305060804000300090304
+Content-Type: text/x-csrc;
+ name="user.c"
+Content-Disposition: inline;
+ filename="user.c"
+Content-Transfer-Encoding: 7bit
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/mman.h>
+#include <pthread.h>
+#include <sched.h>
+#include <errno.h>
+
+#include "pulse.h"
+
+#define USER_NAME "pulse user"
+#define DEBUG
+
+int device;
+int nmeas;
+
+void *thread_code(void *cookie) {
+	int ret;
+	rtStat_t Stat;
+	float freq, period;
+
+//	device = rt_dev_open(DEVICE_NAME, 0);
+	device = open(DEVICE_NAME, 0);
+	if (device < 0) {
+		printf("%s : Error open %s %s\n", USER_NAME, DEVICE_NAME, strerror(device));
+		exit(1);
+	}
+#ifdef DEBUG
+	printf("thread : opened\n");
+#endif
+
+//	ret = rt_dev_ioctl(device, RPP_ISR, &nmeas);
+	ret = ioctl(device, RPP_ISR, &nmeas);
+	if (ret < 0) {
+		printf("%s : Error while ioctl : %s \n", USER_NAME, strerror(-ret));
+		exit(1);
+	}
+#ifdef DEBUG
+	printf("thread : ioctl\n");
+#endif
+
+//	ret = rt_dev_read(device, &Stat, sizeof(rtStat_t));
+	ret = read(device, &Stat, sizeof(rtStat_t));
+	if (ret < 0) {
+		printf("%s : Error while read : %s \n", USER_NAME, strerror(-ret));
+		exit(1);
+	}
+
+	period = ((float) Stat.sum/ (float)Stat.maxcount)/1.E6;
+	freq = 1./period;
+	printf ("period %f s   frequency %f Hz \n", period, freq);
+	printf ("min : %f   max : %f   delta t : %f\n", 
+			(float)Stat.min/1.E6, (float)Stat.max/1.E6,
+			(float)(Stat.max-Stat.min)/1.E6);
+
+	printf("thread : read\n");
+
+//	ret = rt_dev_close(device);
+	ret = close(device);
+	if (ret < 0) {
+		printf("Error while closing %s\n", USER_NAME);
+		exit(1);
+	}
+	printf("thread : closed\n");
+	pthread_exit(NULL);
+}
+
+
+int main(int argc, char *argv[]) {
+	int device, ret;
+	pthread_t tid;
+	pthread_attr_t attr;
+	struct sched_param sp;
+
+
+
+	if (argc == 2) {
+		nmeas = atoi(argv[1]);
+	} else {
+		nmeas = 5;
+	}
+
+	ret = mlockall(MCL_CURRENT | MCL_FUTURE);
+	if (ret) {
+		printf("error mlockall\n");
+		exit(1);
+	}
+
+	ret = pthread_attr_init(&attr);
+	if (ret) {
+		printf("error pthread_attr_init\n");
+		exit(1);
+	}
+	ret = pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+	if (ret) {
+		printf("error pthread_attr_setinheritsched\n");
+		exit(1);
+	}
+	ret = pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+	if (ret) {
+		printf("error pthread_attr_setschedpolicy\n");
+		exit(1);
+	}
+	sp.sched_priority = 1;
+	ret = pthread_attr_setschedparam(&attr, &sp);
+	if (ret) {
+		printf("error pthread_attr_setschedparam\n");
+		exit(1);
+	}
+
+	ret = pthread_create(&tid, &attr, thread_code, NULL);
+		if (ret) {
+		printf("error pthread_create\n");
+		exit(1);
+	}
+	ret = pthread_join(tid, NULL);
+	if (ret) {
+		printf("error pthread_join\n");
+		exit(1);
+	}	
+	printf("main : joined\n");
+//	scanf("%c", &ret);
+	return 0;
+
+}
+
+
+
+--------------060305060804000300090304
+Content-Type: text/x-chdr;
+ name="pulse.h"
+Content-Disposition: inline;
+ filename="pulse.h"
+Content-Transfer-Encoding: 7bit
+
+/************************************************* 
+* Fichier pulse.h
+*************************************************/
+
+#define DEVICE_NAME "Pulse"
+#define DRIVER_NAME "PulseDrv"
+
+typedef enum {
+	RPP_ISR,
+	RPP_POLL,
+} Ioctl_ops;
+
+typedef enum {
+	PulseInt_Port = 0x378,		/*------------------------Data access */
+	PulseInt_Sts  = PulseInt_Port+1,	/*Status register */
+	PulseInt_Ctrl = PulseInt_Port+2,	/*Control register */
+	PulseInt_Irq  = 7,			/*Interrupt vector */
+	PulseCtr_Enable  = 0x10,		/* Control register command */
+	PulseCtr_Disable = 0x00,
+	PulseSts_Ack = 0x40,
+} PulseInt_t;
+
+typedef struct RtStat_s {
+	long int sum;
+	int maxcount;
+	long int min;
+	long int max;
+} rtStat_t;
+
+
+
+--------------060305060804000300090304--
 
