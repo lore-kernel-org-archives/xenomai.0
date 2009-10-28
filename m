@@ -1,14 +1,12 @@
-Message-ID: <4AE858C5.80304@domain.hid>
-Date: Wed, 28 Oct 2009 15:44:21 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4AE858F0.4010600@domain.hid>
+Date: Wed, 28 Oct 2009 15:45:04 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4AE82B39.5040301@domain.hid> <4AE82F22.6090203@domain.hid>
-	<4AE855A8.2070106@domain.hid>
-In-Reply-To: <4AE855A8.2070106@domain.hid>
+References: <b88603c30910280734i7a823063s75b420720fdf3707@domain.hid>
+In-Reply-To: <b88603c30910280734i7a823063s75b420720fdf3707@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] RTnet install problem: Xenomai configuration
-	tool not found
+Subject: Re: [Xenomai-help] Read TSC results in bus error (ARM iMX25)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,27 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Benjamin Biegel <biegel@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Henri Roosen <henriroosen@domain.hid>
+Cc: xenomai@xenomai.org
 
-Benjamin Biegel wrote:
-> Hej Jan
+Henri Roosen wrote:
+> Hi,
 > 
-> Should I ask the whole forum or you directly? If that is ok?
-
-Following up via the mailing lists is preferred (hence, CCed).
-
+> I'm trying to bringup Xenomai 2.4.9.1 on a freescale iMX25 board and
+> linux kernel 2.6.28. Until now all was straightforward by following
+> the ArmPorting page on the Xenomai website and because the iMX25 is
+> very similar to the already supported iMX3. The kernel boots and the
+> xenomai timer is running.
 > 
-> Upon setting up the RTnet i try the loopback test described in http://www.xenomai.org/index.php/RTnet:Installation_%26_Testing. But after running ./rtnet start the PC freezes (except the mouse cursor). The first time i tried it managed to show 'Waiting for slaves' but now it just freezes with no printout.
+> However the testsuite apps (latency) are not working because the
+> rt_timer_tsc() call results in a Bus error: 'Unhandled fault: external
+> abort on non-linefetch (0x008) at 0x4001f024)'.
 > 
-> My PC uses the e1000 module. I have Xenomai 2.4.9.1 and ubuntu with linux kernel 2.6.28.9.
+> I verified at the xeno_arm_features_check() call the physical address
+> of the GPT1 counter register is correct (0x53f90024 which matches the
+> datasheet). The mmap call succeeds and the virtual address is at
+> 0x4001f024. However, when de-referencing that pointer in the
+> __xn_rdtsc() call the bus error occurs.
+> 
+> Anyone have an idea what I am missing?
 
-Check if you have CONFIG_PCI_MSI enabled and, if yes, try running
-without it. Not a solution, but maybe a workaround.
+Ok. I have already heard about that, and have not yet had time to
+investigate it. However, I have seen in the kernel configuration which
+restricts the access to /dev/mem, would you have such an option enabled?
 
-Jan
+Could you send me your .config ?
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+                                          Gilles
+
 
