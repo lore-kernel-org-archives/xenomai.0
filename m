@@ -1,16 +1,12 @@
-Message-ID: <4AE55A4D.6010106@domain.hid>
-Date: Mon, 26 Oct 2009 09:14:05 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Date: Wed, 28 Oct 2009 01:27:11 +0100
 MIME-Version: 1.0
-References: <20091024080304.22784.46688.stgit@domain.hid>
-	<1256402324.2862.495.camel@domain.hid>
-In-Reply-To: <1256402324.2862.495.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig3464591323B45C2052A882AF"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [PATCH 0/2] fork-safe rt_print,
-	rt_syslog extension
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Message-Id: <200910280127.11388.berlemont.hauw@domain.hid>
+Subject: [Xenomai-core] [PULL REQUEST] Analogy: many bugfixes
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -19,61 +15,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org, Oliver Schlenker <oliver.schlenker@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig3464591323B45C2052A882AF
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi Philippe,
 
-Philippe Gerum wrote:
-> On Sat, 2009-10-24 at 10:03 +0200, Jan Kiszka wrote:
->> Please pull Oliver's rt_print patches from
->>
->>     git://xenomai.org/xenomai-jki.git for-upstream
->>
->>
->> Oliver Schlenker (2):
->>       Fork-safe rt_print
->>       Syslog extension of rt_print
->>
->>  include/rtdk.h      |    2 +
->>  src/rtdk/rt_print.c |   72 ++++++++++++++++++++++++++++++++++++++++++=
-++++-----
->>  2 files changed, 67 insertions(+), 7 deletions(-)
->>
->> PS: Trying to manage patches by hand is doomed to fail. I can only
->> recommend anyone investing the time to get familiar with basic git
->> commands. It quickly pays off, even for managing only private changes.=
+Sorry, I forgot the "prefix" rule for the short log for many commits. I will 
+take more care starting from now.
 
->=20
-> Please, make sure to provide a prefix in your short log; this makes
-> sorting the short logs for changes by topic a bit easier. E.g.
->=20
-> rtdk: fork-safe rt_print
-> rtdk: syslog extension of rt_print
->=20
+Alexis.
 
-As you already merged it - too late to fix. Sorry, will try to avoid
-forgetting this in the future.
+The following changes since commit 39614e10be1d7fc5344b56646b8801cbf8756e08:
+  Alexis Berlemont (1):
+        Add error messages for the IOCTL interface (attach, instruction, cmd, 
+etc.)
 
-Jan
+are available in the git repository at:
 
+  ssh+git://git.xenomai.org/xenomai-abe.git analogy ..BRANCH.NOT.VERIFIED..
 
---------------enig3464591323B45C2052A882AF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Alexis Berlemont (4):
+      Fix testing drivers' renaming issues
+      Some Comedi -> Analogy forgotten renamings
+      Add modules descriptions and license specifications
+      Fix comments
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+Breeje, R. (Remco) den (2):
+      Add a missing dependency for the NI MIO driver (NI TIO)
+      In cmd_read, fix received bytes storing
 
-iEYEARECAAYFAkrlWk0ACgkQitSsb3rl5xQr4ACgqyzdc5YWaMT4Qzmw+JvIYCHs
-ZKIAoJrCHo8QJrEuinM+9lKE7WtTFJOV
-=myhD
------END PGP SIGNATURE-----
+Philippe Gerum (1):
+      analogy: fix debug options dependencies
 
---------------enig3464591323B45C2052A882AF--
+ ksrc/drivers/analogy/Kconfig                       |    2 +
+ ksrc/drivers/analogy/instruction.c                 |    2 +-
+ ksrc/drivers/analogy/intel/8255.c                  |   10 +-
+ ksrc/drivers/analogy/national_instruments/Kconfig  |    2 +-
+ .../analogy/national_instruments/mio_common.c      |    3 +
+ ksrc/drivers/analogy/national_instruments/mite.c   |    2 +-
+ ksrc/drivers/analogy/national_instruments/pcimio.c |    2 +
+ .../analogy/national_instruments/tio_common.c      |    2 +-
+ ksrc/drivers/analogy/testing/Config.in             |    4 +-
+ ksrc/drivers/analogy/testing/Kconfig               |    8 +-
+ ksrc/drivers/analogy/testing/Makefile              |   26 ++--
+ ksrc/drivers/analogy/testing/fake.c                |  116 +++++++++---------
+ ksrc/drivers/analogy/testing/loop.c                |  136 
+++++++++++----------
+ src/utils/analogy/analogy_config.c                 |   22 ++--
+ src/utils/analogy/cmd_read.c                       |   54 ++++----
+ src/utils/analogy/cmd_write.c                      |   44 +++---
+ src/utils/analogy/insn_read.c                      |   32 +++---
+ 17 files changed, 239 insertions(+), 228 deletions(-)
+
+Alexis.
 
