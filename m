@@ -1,18 +1,14 @@
-Message-ID: <4AE8748B.3070706@domain.hid>
-Date: Wed, 28 Oct 2009 17:42:51 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4AE8789B.2020907@domain.hid>
+Date: Wed, 28 Oct 2009 18:00:11 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <b88603c30910280734i7a823063s75b420720fdf3707@domain.hid>	
-	<4AE858F0.4010600@domain.hid>	
-	<b88603c30910280753uea312e1p3d5f62012814d355@domain.hid>	
-	<4AE860FB.4090903@domain.hid>	
-	<b88603c30910280825t39954bddl48f33c76181b9938@domain.hid>	
-	<4AE86335.5030106@domain.hid>
-	<b88603c30910280917x1eaa89f2q26c7283e381d05f1@domain.hid>
-In-Reply-To: <b88603c30910280917x1eaa89f2q26c7283e381d05f1@domain.hid>
+References: <4AE82B39.5040301@domain.hid> <4AE82F22.6090203@domain.hid>
+	<4AE86123.9060602@domain.hid>
+In-Reply-To: <4AE86123.9060602@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Read TSC results in bus error (ARM iMX25)
+Subject: Re: [Xenomai-help] RTnet install problem: Xenomai configuration
+	tool not found
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,31 +18,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Henri Roosen <henriroosen@domain.hid>
-Cc: xenomai@xenomai.org
+To: Benjamin Biegel <biegel@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Henri Roosen wrote:
-> This code is part of the iMX25 bsp that is not part of any kernel yet,
-> so generating a patch is not possible. Seems the upcoming 2.6.32
-> kernel will have support for iMX25, but the -rc5 still has
-> build-failures for this platform.
+[ Please keep the CCs intact. ]
 
-Ok. But could you point me to the code in the mach-mx3 tree? I do not
-find any cpu.c. The Denx Qong box probably has the same issue as imx25,
-and I would be interested in fixing it.
-
+Benjamin Biegel wrote:
+> Is this in my /boot/config-2.6.28.9 file? Here i see that CONFIG_PCI_MSI=y.
 > 
-> Maybe the complete BSP with ipipe for the iMX25 and 2.6.28 kernel
-> might be interesting for release (similar as the patch
-> ipipe-2.6.26-mxc.diff), but is still in an early development state:
-> now the latency app runs I see it runs fine only for a few minutes and
-> then gets overruns... asks for debugging ;-)
+> Is this something set up when i compile the patched kernel? Or how do I run without the above setting?
 
-Ok. You can try and use the I-pipe tracer. And make sure to run latency
--p 1000. I can have a look at your I-pipe code to see if I do not see
-anything obvious.
+Reconfigure your kernel (make menuconfig/xconfig/<whatever>config) and
+rebuild it. Without MSI support, interrupts will fall back to IOAPIC
+handling which /may/ cause other problems (shared IRQ conflicts between
+Xenomai and Linux), but let's check this first.
+
+Jan
 
 -- 
-                                          Gilles
-
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
