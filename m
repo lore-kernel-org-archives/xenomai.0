@@ -1,12 +1,14 @@
-Message-ID: <4AE858F0.4010600@domain.hid>
-Date: Wed, 28 Oct 2009 15:45:04 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Leopold Palomo Avellaneda <leo@domain.hid>
+Date: Wed, 28 Oct 2009 15:53:36 +0100
+References: <200910281314.00378.leo@domain.hid> <4AE84AED.20108@domain.hid>
+In-Reply-To: <4AE84AED.20108@domain.hid>
 MIME-Version: 1.0
-References: <b88603c30910280734i7a823063s75b420720fdf3707@domain.hid>
-In-Reply-To: <b88603c30910280734i7a823063s75b420720fdf3707@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Read TSC results in bus error (ARM iMX25)
+Content-Disposition: inline
+Message-Id: <200910281553.36891.leo@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai patches
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,37 +18,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Henri Roosen <henriroosen@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Henri Roosen wrote:
-> Hi,
-> 
-> I'm trying to bringup Xenomai 2.4.9.1 on a freescale iMX25 board and
-> linux kernel 2.6.28. Until now all was straightforward by following
-> the ArmPorting page on the Xenomai website and because the iMX25 is
-> very similar to the already supported iMX3. The kernel boots and the
-> xenomai timer is running.
-> 
-> However the testsuite apps (latency) are not working because the
-> rt_timer_tsc() call results in a Bus error: 'Unhandled fault: external
-> abort on non-linefetch (0x008) at 0x4001f024)'.
-> 
-> I verified at the xeno_arm_features_check() call the physical address
-> of the GPT1 counter register is correct (0x53f90024 which matches the
-> datasheet). The mmap call succeeds and the virtual address is at
-> 0x4001f024. However, when de-referencing that pointer in the
-> __xn_rdtsc() call the bus error occurs.
-> 
-> Anyone have an idea what I am missing?
+A Dimecres 28 Octubre 2009, Gilles Chanteperdrix va escriure:
+> Leopold Palomo-Avellaneda wrote:
+> > Hi,
+> >
+> > I'm having a trouble installing xenomai in a debian machines. Actually
+> > the official debian package is not useful. You cannot use it because
+> > there's no kernel package that could be patched.
+>
+> The debian packages are not maintained by the Xenomai project. So, if
+> you are having problems with these, please contact Roland Stigge. 
 
-Ok. I have already heard about that, and have not yet had time to
-investigate it. However, I have seen in the kernel configuration which
-restricts the access to /dev/mem, would you have such an option enabled?
+[...]
 
-Could you send me your .config ?
+yes, I know. Sorry for the noise. My fingers were faster than my brain. This 
+comment have to go as bug to the package, not to the xenomai list.
+
+>
+> > Anyway, I would like to ask about if, for example, a patch against a
+> > 2.6.30 could be used against 2.6.30.4 for example or reverse.
+>
+> Usually, I-pipe patches are for the base release, but work with later
+> releases. When it happens that there is a conflict, and we find out
+> about it, we release another I-pipe patch e.g for 2.6.30.4. In that
+> case, you need to use the I-pipe patch for 2.6.30.4 for 2.6.30.4 and later.
+
+well, as I understand if you release a I-pipe patch for a kernel 2.x.y 
+it "should work" for all the releases 2.x.y.z (z>0) in "theory", but if 
+there's a problem, then you release a patch for 2.x.y.z and this patch then 
+works for 2.x.y.z (where z is the version where the conflict occurred, no?
+
+But this patch also works with the previous versions (0 < z < ...) ?
+
+
+> > I don't understand why
+> > this four numbers instead of the classical 3. Or, how can I modify it to
+> > use it.
+>
+> These are releases from the stable branch:
+> http://kernelnewbies.org/FAQ/VariousKernelTrees
+
+Ok,
+
+thanks for the link. Well explained.
+
+Regards,
+
+Leo
 
 -- 
-                                          Gilles
-
+--
+Linux User 152692     PGP: 0xF944807E
+Catalonia
+-------------------------------------
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
