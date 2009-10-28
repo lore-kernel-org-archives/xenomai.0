@@ -1,13 +1,11 @@
-Message-ID: <4ACD86F4.4070407@domain.hid>
-Date: Thu, 08 Oct 2009 08:30:12 +0200
-From: Peter Puchwein <peter.puchwein@domain.hid>
 MIME-Version: 1.0
-References: <abbab2d60910070942l2bfbc0bboca0232fb674e1ec0@domain.hid>
-In-Reply-To: <abbab2d60910070942l2bfbc0bboca0232fb674e1ec0@domain.hid>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Subject: Re: [Xenomai-help] XUM 2009 follow-up : Powerlink,
-	CANopen and sockets.
+In-Reply-To: <BAY128-W15F1BB0D7C2FA8AD5E98D8C7B80@domain.hid>
+References: <BAY128-W15F1BB0D7C2FA8AD5E98D8C7B80@domain.hid>
+Date: Wed, 28 Oct 2009 16:44:11 +0200
+Message-ID: <b131c9f0910280744l11a60c12if84cadeeb659cbc6@domain.hid>
+From: vikesh rambaran <vikesh.rambaran@domain.hid>
+Content-Type: multipart/alternative; boundary=00163600d539f514fa0476ffd365
+Subject: Re: [Xenomai-help] Xenomai and CodeBlocks
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,74 +15,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Edouard TISSERANT <edouard.tisserant@domain.hid>
+To: "Peter ." <pcs_007@domain.hid>
 Cc: xenomai@xenomai.org
 
-Edouard TISSERANT wrote:
-> Dear hackers,
-> 
-> I've been passing last month seeking for the best way to implement
-> Powerlink with Xenomai. I still didn't find the absolute truth, and
-> would like to confront my point of view.
-> 
-> In short, Powerlink is a kind of CANopen over polled ethernet.
-> Powerlink re-use a subset of CANopen concepts for high level
-> communications, whereas on the low level, a single master cyclically
-> poll each node for data. As you can imagine, communication cycle is
-> seriously influenced by each controlled node latency answering poll
-> requests from master.
-> 
-> My intention is to write an efficient Powerlink implementation for
-> Xenomai, but suitable for later reuse in future Real Time Linux
-> implementation such as RT-PREEMPT. Discussing with RT-PREEMT gurus, I
-> understood that re-using native Linux queues could never be a
-> solution, as those queues induce way too long and unpredictable
-> latencies for such real-time ethernet (those latencies also apply for
-> SocketCan). Some software hook at ethernet driver level will be
-> necessary to reroute RT-related packets directly to the concerned RT
-> stack. With this approach, the whole stack would have to stay kernel
-> side to reduce latency in answering poll requests. Implementing the
-> whole CANopen stack kernel side is generally a bad idea, as it
-> complicate access to object dictionary from application, usually in
-> user space.
-> 
-> RTnet proves that Real-Time ethernet can be implemented through the
-> socket paradigm. I believe that Time Division Medium Access (TDMA) of
-> RTnet could be interchanged with polled ethernet medium access
-> discipline from Powerlink. Thus, CANopen implementation part could
-> stay user side, and could pre-fill answers to poll requests, avoiding
-> long latencies. But what is the future of RTnet ? Will it be ported to
-> RT-PREEMPT or will it enter official Xenomai tree ? Will available
-> RTnet's drivers set continue to grow ? Would it be theoretically
-> possible for RTnet to support Linux ethernet drivers through a hook
-> mechanism as mentioned in previous paragraph ?
-> 
-> My feeling is that, yes, we should try to fit implementation of
-> Powerlink data link layer inside RTnet as another MAC discipline, and
-> use a modified version of CanFestival for CANopen aspects, keeping it
-> a user space library. Please comment.
-> 
-> Best regards,
-> 
-> Edouard
-> 
+--00163600d539f514fa0476ffd365
+Content-Type: text/plain; charset=ISO-8859-1
+
+Hi Peter
+
+------------------------------
+> From: pcs_007@domain.hid
+> To: xenomai@xenomai.org
+> Subject: Xenomai and CodeBlocks
+> Date: Wed, 28 Oct 2009 08:42:48 +1100
+>
+> Hello,
+>
+> I am trying to get Xenomai Code to compile and run correctly under
+> CodeBlocks 8.02.
+>
+> I have followed the advice in this mailing list by another subscriber. This
+> is what I have followed:
+>
+> To use the Xenomai realtime framework in  Code::Blocks IDE,
+>
+> 1. Add these commands to "Project build options", "Compiler settings",
+> "Other options"
+>
+> `/usr/xenomai/bin/xeno-config --xeno-cflags`
+> `/usr/xenomai/bin/xeno-config --xeno-ldflags`
+>
+>  [you can type the commands on the command line without the apostrophes to
+> get an idea of the output]
+>
+> 2. Under "Project build options", "linker settings" add libraries as
+> required
+>
+> eg native, rtdm ...
+>
+> [See /usr/xenomai/lib for available libraries]
+>
+> 3. Under "Project build options", "Search Directories", "Linker" add
+>
+> /usr/xenomai/lib
+>
+> The code compiles, but when it tries to run it comes up with the error:
+>
+> /home/computer/Desktop/projects/MyProject/bin/Debug/MyProject: error while loading shared libraries: libnative.so.1: cannot open shared object file: No such file or directory
+>
+> Has anyone used CodeBlocks to compile Xenomai applications correctly?
+>
+> Thanks.
+>
+>
+>
+The error that you're getting is not specific to codeblocks.
+
+Try adding /usr/xenomai/lib to /etc/ld.so.conf
+Create the /etc/ld.so.conf  file if it does not exist.
+
+Then run "sudo ldconfig"
+
+This updates the shared library cache
+
+Hope this helps
+Vicki
+
+--00163600d539f514fa0476ffd365
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi Peter<br><br><div class=3D"gmail_quote"><blockquote class=3D"gmail_quote=
+" style=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0=
+.8ex; padding-left: 1ex;"><div><hr>From: <a href=3D"mailto:pcs_007@domain.hid.=
+com" target=3D"_blank">pcs_007@domain.hid</a><br>
+To: <a href=3D"mailto:xenomai@xenomai.org" target=3D"_blank">xenomai-help@=
+gna.org</a><br>Subject: Xenomai and CodeBlocks<br>Date: Wed, 28 Oct 2009 08=
+:42:48 +1100<br><br>
 
 
-Hi Edouard,
-
-we are successfully using the EtherCAT-Master (www.etherlab.org) with 
-xenomai. We've choosen EtherCAT because of the high availability of 
-components.
-With the features CoE (Can over Ethercat) and EoE (Ethernet over 
-Ethercat) you have a lot of possibilities.
-Most common network drivers are already implemented for use with 
-realtime implementations like Xenomai.
-
-Peter
 
 
 
 
+Hello,<br><br>I am trying to get Xenomai Code to compile and run correctly =
+under CodeBlocks 8.02.<br><br>I have followed the advice in this mailing li=
+st by another subscriber. This is what I have followed:<br><pre>To use the =
+Xenomai realtime framework in  Code::Blocks IDE,<br>
+<br>1. Add these commands to &quot;Project build options&quot;, &quot;Compi=
+ler settings&quot;,<br>&quot;Other options&quot;<br><br>`/usr/xenomai/bin/x=
+eno-config --xeno-cflags`<br>`/usr/xenomai/bin/xeno-config --xeno-ldflags`<=
+br>
+<br> [you can type the commands on the command line without the apostrophes=
+ to<br>get an idea of the output]<br><br>2. Under &quot;Project build optio=
+ns&quot;, &quot;linker settings&quot; add libraries as<br>required<br><br>
+eg native, rtdm ...<br><br>[See /usr/xenomai/lib for available libraries]<b=
+r><br>3. Under &quot;Project build options&quot;, &quot;Search Directories&=
+quot;, &quot;Linker&quot; add<br><br>/usr/xenomai/lib<br><br>The code compi=
+les, but when it tries to run it comes up with the error:<br>
+<br>/home/computer/Desktop/projects/MyProject/bin/Debug/MyProject: error wh=
+ile loading shared libraries: libnative.so.1: cannot open shared object fil=
+e: No such file or directory<br><br>Has anyone used CodeBlocks to compile X=
+enomai applications correctly?<br>
+<br>Thanks.<br></pre><div class=3D"hm"><br></div></div></blockquote></div><=
+br>The error that you&#39;re getting is not specific to codeblocks.<br><br>=
+Try adding /usr/xenomai/lib to /etc/ld.so.conf <br>Create the /etc/ld.so.co=
+nf=A0 file if it does not exist.<br>
+<br>Then run &quot;sudo ldconfig&quot; <br><br>This updates the shared libr=
+ary cache<br><br>Hope this helps<br>Vicki<br><br><br><br>
 
-
+--00163600d539f514fa0476ffd365--
 
