@@ -1,15 +1,17 @@
+Message-ID: <4AE9F68A.6000700@domain.hid>
+Date: Thu, 29 Oct 2009 21:09:46 +0100
+From: Benjamin Biegel <biegel@domain.hid>
 MIME-Version: 1.0
-Sender: edouard.tisserant@domain.hid
-In-Reply-To: <4ACD8DCC.50906@domain.hid>
-References: <abbab2d60910070942l2bfbc0bboca0232fb674e1ec0@domain.hid>
-	<4ACD86F4.4070407@domain.hid> <4ACD8DCC.50906@domain.hid>
-Date: Thu, 8 Oct 2009 10:04:04 +0200
-Message-ID: <abbab2d60910080104n67bd5ef6t9e1a85b0bbcb7ac8@domain.hid>
-From: Edouard TISSERANT <edouard.tisserant@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] XUM 2009 follow-up : Powerlink,
-	CANopen and 	sockets.
+References: <4AE82B39.5040301@domain.hid>
+	<4AE82F22.6090203@domain.hid>	<4AE86123.9060602@domain.hid>
+	<4AE8789B.2020907@domain.hid> <4AE879BF.5070308@domain.hid>
+	<4AE97077.1020205@domain.hid> <4AE980C6.2030104@domain.hid>
+	<4AE98AF7.5090706@domain.hid> <4AE99653.3090303@domain.hid>
+In-Reply-To: <4AE99653.3090303@domain.hid>
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] RTnet install problem: Xenomai
+ configuration	tool not found
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,119 +21,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Anders Blomdell <anders.blomdell@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Hello.
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+Just to close the thread.<br>
+<br>
+The following solved the problem:<br>
+I disabled the on-board NIC and added a PCI-NIC and changed this
+PCI-NIC to eth0. This NIC shared interrupt with an unused USB-port only.<br>
+<br>
+Thanks again for helping me out!<br>
+<br>
+Benjamin<br>
+<br>
+Jan Kiszka wrote:
+<blockquote cite="mid:4AE99653.3090303@domain.hid" type="cite">
+  <pre wrap="">[argh, please don't post html mails, they are unreadable in text mode]
 
-I agree, it is a shame for those patent holder to behave that way.
-Sure they don't even understand the way they are killing their own
-future business. Even more incredible is the weakness of the invention
-claimed by those patents.
+Benjamin Biegel wrote:
+  </pre>
+  <blockquote type="cite">
+    <pre wrap="">Jan Kiszka wrote:
 
-I also admit that Powerlink is far from being the smartest and more
-efficient real time Ethernet implementation, but it have the advantage
-to only require standard Ethernet controllers for both Masters and
-Slaves.
-
-Please, now, let's keep those problems out of that discussion, and
-focus on the only Ethernet based fieldbus we can implement freely
-without taking risk to be censored.
-
-Edouard
+Benjamin Biegel wrote:
 
 
-2009/10/8 Anders Blomdell <anders.blomdell@domain.hid>:
-> Peter Puchwein wrote:
->> Edouard TISSERANT wrote:
->>> Dear hackers,
->>>
->>> I've been passing last month seeking for the best way to implement
->>> Powerlink with Xenomai. I still didn't find the absolute truth, and
->>> would like to confront my point of view.
->>>
->>> In short, Powerlink is a kind of CANopen over polled ethernet.
->>> Powerlink re-use a subset of CANopen concepts for high level
->>> communications, whereas on the low level, a single master cyclically
->>> poll each node for data. As you can imagine, communication cycle is
->>> seriously influenced by each controlled node latency answering poll
->>> requests from master.
->>>
->>> My intention is to write an efficient Powerlink implementation for
->>> Xenomai, but suitable for later reuse in future Real Time Linux
->>> implementation such as RT-PREEMPT. Discussing with RT-PREEMT gurus, I
->>> understood that re-using native Linux queues could never be a
->>> solution, as those queues induce way too long and unpredictable
->>> latencies for such real-time ethernet (those latencies also apply for
->>> SocketCan). Some software hook at ethernet driver level will be
->>> necessary to reroute RT-related packets directly to the concerned RT
->>> stack. With this approach, the whole stack would have to stay kernel
->>> side to reduce latency in answering poll requests. Implementing the
->>> whole CANopen stack kernel side is generally a bad idea, as it
->>> complicate access to object dictionary from application, usually in
->>> user space.
->>>
->>> RTnet proves that Real-Time ethernet can be implemented through the
->>> socket paradigm. I believe that Time Division Medium Access (TDMA) of
->>> RTnet could be interchanged with polled ethernet medium access
->>> discipline from Powerlink. Thus, CANopen implementation part could
->>> stay user side, and could pre-fill answers to poll requests, avoiding
->>> long latencies. But what is the future of RTnet ? Will it be ported to
->>> RT-PREEMPT or will it enter official Xenomai tree ? Will available
->>> RTnet's drivers set continue to grow ? Would it be theoretically
->>> possible for RTnet to support Linux ethernet drivers through a hook
->>> mechanism as mentioned in previous paragraph ?
->>>
->>> My feeling is that, yes, we should try to fit implementation of
->>> Powerlink data link layer inside RTnet as another MAC discipline, and
->>> use a modified version of CanFestival for CANopen aspects, keeping it
->>> a user space library. Please comment.
->>>
->>> Best regards,
->>>
->>> Edouard
->>>
->>
->>
->> Hi Edouard,
->>
->> we are successfully using the EtherCAT-Master (www.etherlab.org) with
->> xenomai. We've choosen EtherCAT because of the high availability of
->> components.
->> With the features CoE (Can over Ethercat) and EoE (Ethernet over
->> Ethercat) you have a lot of possibilities.
->> Most common network drivers are already implemented for use with
->> realtime implementations like Xenomai.
-> Beware that Beckhoff does not allow open-source implementations of the Et=
-herCAT
-> stack, they require you to sign a "shared source license" that prohibits =
-anybody
-> to use the code for any other purpose than a "standard compliant EtherCAT
-> master". We scrapped all our EtherCAT development (which was demonstrated=
- at
-> JavaOne 2007) because of that very prohibitive license.
->
-> /Anders
->
-> --
-> Anders Blomdell =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Email: anders.blomdell=
-@control.lth.se
-> Department of Automatic Control
-> Lund University =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Phone: =A0 =A0+46 46 2=
-22 4625
-> P.O. Box 118 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 Fax: =A0 =A0 =A0+46 =
-46 138118
-> SE-221 00 Lund, Sweden
->
+Thanks for your help.
+
+I now recompiled with the your suggestions. The config-file generated my gconfig is attached.
+
+The xenomai examples work. But when i do the local loopback test described in:
+<a class="moz-txt-link-freetext" href="http://www.xenomai.org/index.php/RTnet:Installation_%26_Testing">http://www.xenomai.org/index.php/RTnet:Installation_%26_Testing</a>
+the computer freezes after some time after the command './rtnet start'. It does not even show 'waiting for slaves'.
+
+If i do the ctrl + backslash quit after running './rtnet start' i can see with lsmod that rtmac rtcft rt_loopback rt_e1000 rtpacket rtipv4 rtnet are loaded. But even if i do this forced quit the PC freezes.
 
 
 
---=20
-LOLITech
-24, rue Pierre Evrat
-88100 Saint-Di=E9 des Vosges
-tel: +33 3 29 57 60 42
-mob: +33 6 10 49 76 41
-edouard.tisserant@domain.hid
-http://www.lolitech.fr
+I guess the freeze is finally triggered by rtifconfig rteth0 up. What is
+/proc/interrupts reporting when you loaded standard e1000 and enabled
+the interface under Linux (/me is looking for IRQ conflicts)?
+
+
+When i boot Xenomai normally and look in /proc/interrupts, i get the list attached. Is this what can show IRQ conflicts? lsmod shows that e1000 is loaded at boot.
+
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->
+OK, so the e1000 (eth0) IRQ is now shared with your ATA controller - not
+good.
+
+Unless your e1000 is on a real PCI card that could be flips around in
+some slots and/or its IRQ can configured in the BIOS, I'm afraid there
+is no way around MSI. But if MSI should not used by the e1000 even if
+enabled, then your system is actually unusable for RT-Ethernet. So, try
+to re-enable MSI and check if the IRQ assignment changes. eth0 must
+finally end up with an exclusively used IRQ.
+
+Jan
+
+  </pre>
+</blockquote>
+<br>
+</body>
+</html>
 
