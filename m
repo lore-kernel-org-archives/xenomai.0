@@ -1,13 +1,9 @@
-Message-ID: <4AE957DF.3090904@domain.hid>
-Date: Thu, 29 Oct 2009 09:52:47 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1B242B31-29DB-4363-8B08-8E77B2928C34@domain.hid>
-In-Reply-To: <1B242B31-29DB-4363-8B08-8E77B2928C34@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] analog output device with comedi/analogy --
- suddenly threads don't work anymore
+Date: Thu, 29 Oct 2009 18:29:01 +0900
+Message-ID: <1f3e02580910290229t5ad46268r5e7799a46950db5e@domain.hid>
+From: Didenko Sergey <didenkos@domain.hid>
+Content-Type: multipart/alternative; boundary=001636d34bfea94bee04770f8a5b
+Subject: [Xenomai-help] [VxWorks API] Compile and Link
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,40 +13,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stefan Schaal <sschaal@domain.hid>
-Cc: xenomai@xenomai.org, Peter Pastor Sampedro <pastorsa@domain.hid>
+To: xenomai@xenomai.org
 
-Stefan Schaal wrote:
-> Hi,
-> 
->    this is following up on an installation of Alex's Xenomai tree on  
-> Ubuntu 9.04 running the 2.6.29.5 kernel. While we managed to talk to  
-> the  NI data acquisition board we have with this tree, we suddenly  
-> discovered that some of our other software doesn't work anymore, in  
-> particular threads. Below is a tiny program to run a thread, and the  
-> compile statement we use. The thread never starts running. Does  
-> anybody know what is going wrong here?
-> 
-> Thanks  a lot for any hint!
-> 
-> Best wishes,
-> 
-> -Stefan
-> 
-> compile statement:
-> 
-> gcc -o xtest xeno_thread_test.c -I/Network/Servers/duerer/clmc/prog/ 
-> include -I/usr/xenomai/include -I/usr/xenomai/include/posix - 
-> D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__ -Wl,@/usr/xenomai/lib/ 
-> posix.wrappers -L/usr/xenomai/lib -lpthread_rt -lpthread -lrt
-> 
-> 
-> run the executable:
-> 
-> unix> xtest (which should generate some print-outs, but it doesn't ...)
+--001636d34bfea94bee04770f8a5b
+Content-Type: text/plain; charset=UTF-8
 
-Could you send me (privately), the xtest binary?
+Dear experts
 
--- 
-					    Gilles.
+assuming I have:
+
+xenomai_tree - path to Xenomai source code
+project_tree - path to my project (originally based on VxWorks)
+
+Which directories and files should I include to the project's makefile to be
+able to compile and link it with Xenimai's VxWorks APIs instead of VxWorks's
+API's?
+Do I need only *.h and *.c files or any libraries are required?
+
+Sergey
+
+--001636d34bfea94bee04770f8a5b
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Dear experts<br><br>assuming I have:<br><br>xenomai_tree - path to Xenomai =
+source code<br>project_tree - path to my project (originally based on VxWor=
+ks)<br><br>Which directories and files should I include to the project&#39;=
+s makefile to be able to compile and link it with Xenimai&#39;s VxWorks API=
+s instead of VxWorks&#39;s API&#39;s?<br>
+Do I need only *.h and *.c files or any libraries are required?<br><br>Serg=
+ey<br><br>
+
+--001636d34bfea94bee04770f8a5b--
 
