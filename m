@@ -1,17 +1,15 @@
-Message-ID: <4AE99653.3090303@domain.hid>
-Date: Thu, 29 Oct 2009 14:19:15 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Leopold Palomo-Avellaneda <leo@domain.hid>
+Date: Thu, 29 Oct 2009 15:00:06 +0100
+References: <200910281314.00378.leo@domain.hid>
+	<200910291225.27382.leo@domain.hid> <4AE987D6.2030501@domain.hid>
+In-Reply-To: <4AE987D6.2030501@domain.hid>
 MIME-Version: 1.0
-References: <4AE82B39.5040301@domain.hid>
-	<4AE82F22.6090203@domain.hid>	<4AE86123.9060602@domain.hid>
-	<4AE8789B.2020907@domain.hid> <4AE879BF.5070308@domain.hid>
-	<4AE97077.1020205@domain.hid> <4AE980C6.2030104@domain.hid>
-	<4AE98AF7.5090706@domain.hid>
-In-Reply-To: <4AE98AF7.5090706@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] RTnet install problem: Xenomai
- configuration	tool not found
+Content-Disposition: inline
+Message-Id: <200910291500.07164.leo@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai patches
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,50 +19,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Benjamin Biegel <biegel@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Stefan Kisdaroczi <kisda@domain.hid>
+Cc: xenomai@xenomai.org
 
-[argh, please don't post html mails, they are unreadable in text mode]
+A Dijous 29 Octubre 2009, Stefan Kisdaroczi va escriure:
+> Leopold Palomo-Avellaneda schrieb:
+> > A Dijous 29 Octubre 2009, Gilles Chanteperdrix va escriure:
+> >> Leopold Palomo-Avellaneda wrote:
+> >>> A Dijous 29 Octubre 2009, Gilles Chanteperdrix va escriure:
+> >>>> Gilles Chanteperdrix wrote:
+> >>>>> Leopold Palomo-Avellaneda wrote:
+> >>>>>> OTOH, the debian package has a bug. I cannot compile xenomai, using
+> >>>>>> the debian way on kernels 2.6.28, 2.6.29 and 2.6.30 because the
+> >>>>>> package add something that fails with make menuconfig. I should
+> >>>>>> write a bug. Just for information, it's not a xenomai upstream
+> >>>>>> related question. ;-)
+> >>>>>
+> >>>>> Please check xenomai-2.4.9.1. It may happen that the bug has been
+> >>>>> already solved.
+> >>>>
+> >>>> 2.4.10
+> >>>
+> >>> nops, sorry again my fingers were so fast ...
+> >>>
+> >>> we are talking about the same? I got:
+> >>>
+> >>> cripts/kconfig/conf -o arch/x86/Kconfig
+> >>> arch/x86/Kconfig:74: unexpected option "select"
+> >>> arch/x86/Kconfig:75: unexpected option "select"
+> >>> make[3]: *** [oldconfig] Error 1
+> >>> make[2]: *** [oldconfig] Error 2
+> >>
+> >> I am not talking about any specific bug. It was just a general advice.
+> >> In any case, we are not responsible for the Xenomai packages made by the
+> >> Debian team, but if you find bugs in the debian directory which is part
+> >> of the Xenomai package, we are interested in fixing them, of course.
+> >
+> > well, I have found two things:
+> >
+> > 1) the debian directory is very similar in both (upstream and debian
+> > official). The method to create the package is described in the xenomai
+> > wiki
+>
+> I diffed the two debian directories 3 weeks ago. There are some changes in
+> the debian version which are not in the xenomai repository. And there are
+> some fixes in the xenomai debian directory which are not in the official
+> debian package.
 
-Benjamin Biegel wrote:
-> Jan Kiszka wrote:
-> 
-> Benjamin Biegel wrote:
-> 
-> 
-> Thanks for your help.
-> 
-> I now recompiled with the your suggestions. The config-file generated my gconfig is attached.
-> 
-> The xenomai examples work. But when i do the local loopback test described in:
-> http://www.xenomai.org/index.php/RTnet:Installation_%26_Testing
-> the computer freezes after some time after the command './rtnet start'. It does not even show 'waiting for slaves'.
-> 
-> If i do the ctrl + backslash quit after running './rtnet start' i can see with lsmod that rtmac rtcft rt_loopback rt_e1000 rtpacket rtipv4 rtnet are loaded. But even if i do this forced quit the PC freezes.
-> 
-> 
-> 
-> I guess the freeze is finally triggered by rtifconfig rteth0 up. What is
-> /proc/interrupts reporting when you loaded standard e1000 and enabled
-> the interface under Linux (/me is looking for IRQ conflicts)?
-> 
-> 
-> When i boot Xenomai normally and look in /proc/interrupts, i get the list attached. Is this what can show IRQ conflicts? lsmod shows that e1000 is loaded at boot.
-> 
+ok. Good point. I didn't realize about it. I only checked the changelog, 
 
-OK, so the e1000 (eth0) IRQ is now shared with your ATA controller - not
-good.
+> The official debian version in testing is targeted for Debian 6.0 Squeeze
+> and as far as i remember there are small changes which will break the build
+> for Debian 5.0 Lenny. 
 
-Unless your e1000 is on a real PCI card that could be flips around in
-some slots and/or its IRQ can configured in the BIOS, I'm afraid there
-is no way around MSI. But if MSI should not used by the e1000 even if
-enabled, then your system is actually unusable for RT-Ethernet. So, try
-to re-enable MSI and check if the IRQ assignment changes. eth0 must
-finally end up with an exclusively used IRQ.
+Well, I'm working with backports. The only appreciate difference is the change 
+applied in the scripts/prepare-kernel.sh, as you mentioned after. I don't 
+know if this change could originate problems in Lenny. I will investigate.
 
-Jan
+> This changes shouldnt get merged IMHO to the xenomai 
+> debian version. I will try to create patches to synchronize the two
+> versions.
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Why? what did you have seen to avoid it? :-)
+
+> > and have been working so well till now (at least in my case). The script
+> > or the patch applied in the versions of the kernel 2.6.28>= introduces
+> > something that make fail the make menuconfig step. If you apply the patch
+> > with the script (scripts/prepare-kernel.sh) the make menuconfig works
+>
+> The following commit fixed (at least for 2.6.28) the patching of
+> init/Kconfig. This fix is not in the official debian package, only in the
+> xenomai repository.
+
+Ok, I see. Thanks. I will check it.
+
+Regards,
+
+Leo
 
