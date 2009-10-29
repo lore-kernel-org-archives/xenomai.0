@@ -1,11 +1,15 @@
-From: oliver.schlenker@domain.hid
-Date: Thu, 8 Oct 2009 07:22:49 +0000
-Message-ID: <0000ACAE.4ACDAF68@domain.hid>
+From: Leopold Palomo-Avellaneda <leo@domain.hid>
+Date: Thu, 29 Oct 2009 12:25:26 +0100
+References: <200910281314.00378.leo@domain.hid>
+	<200910291123.21542.leo@domain.hid> <4AE974A0.30509@domain.hid>
+In-Reply-To: <4AE974A0.30509@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain;
- charset="UTF-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai-help] Re : rt_printf with daemonized task
+  charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200910291225.27382.leo@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai patches
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,58 +19,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-DQoNCg0KDQoNCi0tLS0tLS0tIE9yaWdpbmFsIE1lc3NhZ2UgLS0tLS0tLS0NClN1YmplY3Q6IFJl
-OiBSZS04OiAgcnRfcHJpbnRmIHdpdGggZGFlbW9uaXplZCB0YXNrICgwNy1Pa3QtMjAwOSAxNzoz
-OCkNCkZyb206ICAgIEphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+DQpUbzogICAg
-ICBvbGl2ZXIuc2NobGVua2VyQHNtbW90aW9uY29udHJvbC5kZQ0KDQo+IG9saXZlci5zY2hsZW5r
-ZXJAc21tb3Rpb25jb250cm9sLmRlIHdyb3RlOg0KPiA+IA0KPiA+IA0KPiA+IEFzIHlvdSBleHBl
-Y3RlZCwgY2hhbmdpbmcgdGhlIHN5c2xvZyBjYWxsIGZyb20NCj4gPiAgICAgc3lzbG9nKCBMT0df
-RVJSIHwgTE9HX0xPQ0FMNCwgaGVhZC0+dGV4dCApOyANCj4gPiB0bw0KPiA+ICAgICBzeXNsb2co
-IExPR19FUlIgfCBMT0dfTE9DQUw0LCAiJXMiLCBoZWFkLT50ZXh0ICk7IA0KPiA+IA0KPiA+IGRp
-ZCBub3QgY2hhbmdlIGFueXRoaW5nLg0KPiA+IA0KPiA+IFRvIHRyYWNrIGRvd24gdGhlIHByb2Js
-ZW0gZnVydGhlciwgSSBoYXZlIG1hZGUgYSBzbWFsbCB0ZXN0IGFwcGxpY2F0aW9uIDoNCj4gPiAN
-Cj4gPiAjaW5jbHVkZSA8c3RkbGliLmg+DQo+ID4gI2luY2x1ZGUgPHN0ZGlvLmg+DQo+ID4gDQo+
-ID4gI2luY2x1ZGUgPG5hdGl2ZS90YXNrLmg+DQo+ID4gI2luY2x1ZGUgPG5hdGl2ZS90aW1lci5o
-Pg0KPiA+ICNpbmNsdWRlIDxydGRrLmg+DQo+ID4gDQo+ID4gDQo+ID4gaW50IG1haW4oIGludCBh
-cmMsIGNoYXIgKmFyZ3ZbXSApDQo+ID4gew0KPiA+IGludCBpOw0KPiA+IA0KPiA+IHJ0X3ByaW50
-X2F1dG9faW5pdCgxKTsNCj4gPiANCj4gPiBydF9wcmludGYoIi0tLS0tLS0tLS0tLS0tLSBURVNU
-IFJULVBSSU5URiAgMSAtLS0tLS0tLS0tLS1cbiIpOw0KPiA+IA0KPiA+IAlzbGVlcCgxKTsNCj4g
-PiANCj4gPiBkYWVtb24oMCwwKTsNCj4gPiANCj4gPiAJcnRfcHJpbnRfYXV0b19pbml0KDEpOw0K
-PiA+IA0KPiA+IAlydF9wcmludGYoIi0tLS0tLS0tLS0tLS0tLSBURVNUIFJULVBSSU5URiAgMiAt
-LS0tLS0tLS0tLS1cbiIpOw0KPiA+IA0KPiA+IAlzbGVlcCgxMCk7DQo+ID4gDQo+ID4gcmV0dXJu
-KDApOw0KPiA+IH0NCj4gPiANCj4gPiANCj4gPiANCj4gPiBUaGlzIGFwcGxpY2F0aW9uIGdpdmVz
-IHRoZSBmb2xsb3dpbmcgcmVzdWx0cyA6DQo+ID4gLSBJZiB0aGUgZGFlbW9uKCkgZnVuY3Rpb24g
-aXMgbm90IGNhbGxlZCwgYWxsIHJ0X3ByaW50ZigpIGRvIHdvcmsgd2VsbA0KPiA+ICAgYW5kIG91
-dHB1dCBpcyBzaG93biBpbiBzeXNsb2cNCj4gPiAtIElmIGRhZW1vbigpIGZ1bmN0aW9uIGlzIGNh
-bGxlZCwgYW5kIGZpcnN0IGNhbGwgdG8gc2xlZXAoMSkgaXMgb21pdHRlZCwNCj4gPiAgIHRoZXJl
-IGlzIG5vIG91dHB1dCBpbiB0aGUgc3lzbG9nIHdoYXRzb2V2ZXIuDQo+ID4gLSBJZiBkYWVtb24o
-KSBmdW5jdGlvbiBpcyBjYWxsZWQsIGFuZCBmaXJzdCBjYWxsIHRvIHNsZWVwKDEpIGlzIGV4ZWN1
-dGVkLA0KPiA+ICAgdGhlcmUgaXMgb3V0cHV0IG9mIHRoZSBmaXJzdCBydF9wcmludGYgaW4gdGhl
-IHN5c2xvZyBidXQgbm90IG9mIHRoZSANCj4gPiBzZWNvbmQNCj4gPiAgIG9uZS4NCj4gPiANCj4g
-PiBJIGRvIG5vdCBoYXZlIGFueSBpZGVhIHdoeSBkYWVtb25pemluZyBvZiB0aGUgcHJvY2VzcyBp
-cyBub3QgZ2l2aW5nDQo+ID4gYW55IG91dHB1dCB0byB0aGUgc3lzbG9nLg0KPiANCj4gQXMgeW91
-IGFyZSBhbHJlYWR5IGxvb2tpbmcgYXQgcnRfcHJpbnRmLmM6IF9fcnRfcHJpbnRfaW5pdCBzcGF3
-bnMgYQ0KPiBwdGhyZWFkIHRoYXQgcG9sbHMgdGhlIGludGVybmFsIHF1ZXVlcyBhbmQgaXNzdWVz
-IHRoZSBvdXRwdXQgdG8gc3Rkb3V0DQo+IG9yIHdoYXRldmVyLiBPbiBmb3JrIChvciBkYWVtb25p
-emUpLCB0aGlzIHRocmVhZCBpcyBub3QgcmVwbGljYXRlZC4gU28NCj4gdGhlIGNoaWxkIHByb2Nl
-c3Mgc2ltcGx5IGhhcyBubyBwcmludGluZyB0aHJlYWQuDQoNCk9rLCB1bmRlcnN0b29kLCBhdCBs
-ZWFzdCBmb3IgdGhlIHNjZW5hcmlvIHdoZXJlIHRoZSBydF9wcmludCBmZWF0dXJlIGlzIGluaXRp
-YWxpc2VkDQpiZWZvciB0aGUgZm9yay9kYWVtb24gY2FsbC4NCldoYXQgSSBkb24ndCB1bmRlcnN0
-YW5kIGlzLCB3aHkgaXQgZG9lcyBub3Qgd29yayBpZiB0aGUgcnRfcHJpbnQgZmVhdHVyZSBpcyBp
-bml0aWFsaXNlZCBhZnRlciB0aGUgZm9yayAvIGRhZW1vbi4NCg0KPiANCj4gSSB0aGluayB0aGlz
-IHNob3VsZCBiZSBmaXhhYmxlIHdpdGggYSBwdGhyZWFkX2F0Zm9yayBob29rLCBwYXRjaGVzDQo+
-IGFsd2F5cyB3ZWxjb21lLg0KDQpJIHdvdWxkIGxpa2UgdG8gZm9sbG93IHVwIHRoaXMgdHJhY2su
-IEkgaGF2ZSB0byBoYXZlIGEgbG9vayBhdCBwdGhyZWFkX2F0Zm9yayBmaXJzdCwNCmJlY2F1c2Ug
-SSdtIG5vdCBzbyBmYW1pbGlhciB3aXRoIHRoZSBwdGhyZWFkIGZ1bmN0aW9ucy4NClRoZXJlZm9y
-IGFueSBoaW50IHdoYXQgc2hvdWxkIGJlIGRvbmUgd2l0aCBwdGhyZWFkX2F0Zm9yayBpcyB2ZXJ5
-IHdlbGNvbWUuDQoNCg0KPiANCj4gSmFuDQo+IA0KPiAtLSANCj4gU2llbWVucyBBRywgQ29ycG9y
-YXRlIFRlY2hub2xvZ3ksIENUIFNFIDINCj4gQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVt
-YmVkZGVkIExpbnV4DQoNCg0KDQpPbGl2ZXINCg0KVG86IGphbi5raXN6a2FAc2llbWVucy5jb20N
-CkNjOiBnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZw0KICAgIHhlbm9tYWktaGVscEBn
-bmEub3JnDQo=
+A Dijous 29 Octubre 2009, Gilles Chanteperdrix va escriure:
+> Leopold Palomo-Avellaneda wrote:
+> > A Dijous 29 Octubre 2009, Gilles Chanteperdrix va escriure:
+> >> Gilles Chanteperdrix wrote:
+> >>> Leopold Palomo-Avellaneda wrote:
+> >>>> OTOH, the debian package has a bug. I cannot compile xenomai, using
+> >>>> the debian way on kernels 2.6.28, 2.6.29 and 2.6.30 because the
+> >>>> package add something that fails with make menuconfig. I should write
+> >>>> a bug. Just for information, it's not a xenomai upstream related
+> >>>> question. ;-)
+> >>>
+> >>> Please check xenomai-2.4.9.1. It may happen that the bug has been
+> >>> already solved.
+> >>
+> >> 2.4.10
+> >
+> > nops, sorry again my fingers were so fast ...
+> >
+> > we are talking about the same? I got:
+> >
+> > cripts/kconfig/conf -o arch/x86/Kconfig
+> > arch/x86/Kconfig:74: unexpected option "select"
+> > arch/x86/Kconfig:75: unexpected option "select"
+> > make[3]: *** [oldconfig] Error 1
+> > make[2]: *** [oldconfig] Error 2
+>
+> I am not talking about any specific bug. It was just a general advice.
+> In any case, we are not responsible for the Xenomai packages made by the
+> Debian team, but if you find bugs in the debian directory which is part
+> of the Xenomai package, we are interested in fixing them, of course.
+
+well, I have found two things:
+
+1) the debian directory is very similar in both (upstream and debian=20
+official). The method to create the package is described in the xenomai wik=
+i=20
+and have been working so well till now (at least in my case). The script or=
+=20
+the patch applied in the versions of the kernel 2.6.28>=3D introduces somet=
+hing=20
+that make fail the make menuconfig step. If you apply the patch with the=20
+script (scripts/prepare-kernel.sh) the make menuconfig works
+
+2) after the step of preparing the kernel, (with xenomai 2.4.10) when I=20
+compile the kernel (2.6.30., it fails in:
+
+ CC      arch/x86/xenomai/hal-common.o
+arch/x86/xenomai/hal_32.c: In function =E2=80=98rthal_latency_above_max=E2=
+=80=99:
+arch/x86/xenomai/hal_32.c:139: warning: passing argument 1 of =E2=80=98die_=
+nmi=E2=80=99 from=20
+incompatible pointer type
+arch/x86/xenomai/hal_32.c:139: warning: passing argument 2 of =E2=80=98die_=
+nmi=E2=80=99 from=20
+incompatible pointer type
+arch/x86/xenomai/hal_32.c:139: error: too few arguments to function =E2=80=
+=98die_nmi=E2=80=99
+make[2]: *** [arch/x86/xenomai/hal_32.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+  LD      arch/x86/oprofile/built-in.o
+  CC      net/socket.o
+
+
+Now, I'm compiling 2.6.29 with 2.4.10 ...
+
+Leo
+
 
 
 
