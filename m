@@ -1,5 +1,5 @@
-Message-ID: <4AE952BF.1090203@domain.hid>
-Date: Thu, 29 Oct 2009 09:30:55 +0100
+Message-ID: <4AE957DF.3090904@domain.hid>
+Date: Thu, 29 Oct 2009 09:52:47 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1B242B31-29DB-4363-8B08-8E77B2928C34@domain.hid>
@@ -32,10 +32,24 @@ Stefan Schaal wrote:
 > anybody know what is going wrong here?
 > 
 > Thanks  a lot for any hint!
+> 
+> Best wishes,
+> 
+> -Stefan
+> 
+> compile statement:
+> 
+> gcc -o xtest xeno_thread_test.c -I/Network/Servers/duerer/clmc/prog/ 
+> include -I/usr/xenomai/include -I/usr/xenomai/include/posix - 
+> D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__ -Wl,@/usr/xenomai/lib/ 
+> posix.wrappers -L/usr/xenomai/lib -lpthread_rt -lpthread -lrt
+> 
+> 
+> run the executable:
+> 
+> unix> xtest (which should generate some print-outs, but it doesn't ...)
 
-On what platform, what version of Xenomai? Are not there any kernel
-messages?
-
+Could you send me (privately), the xtest binary?
 
 -- 
 					    Gilles.
