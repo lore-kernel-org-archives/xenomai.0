@@ -1,5 +1,5 @@
 From: Leopold Palomo-Avellaneda <leo@domain.hid>
-Date: Thu, 29 Oct 2009 11:21:11 +0100
+Date: Thu, 29 Oct 2009 11:23:20 +0100
 References: <200910281314.00378.leo@domain.hid>
 	<4AE96ABD.1060809@domain.hid> <4AE96B17.8000704@domain.hid>
 In-Reply-To: <4AE96B17.8000704@domain.hid>
@@ -8,7 +8,7 @@ Content-Type: text/plain;
   charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Message-Id: <200910291121.11647.leo@domain.hid>
+Message-Id: <200910291123.21542.leo@domain.hid>
 Subject: Re: [Xenomai-help] Xenomai patches
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -35,5 +35,16 @@ A Dijous 29 Octubre 2009, Gilles Chanteperdrix va escriure:
 >
 > 2.4.10
 
-nops
+nops, sorry again my fingers were so fast ...
+
+we are talking about the same? I got:
+
+cripts/kconfig/conf -o arch/x86/Kconfig
+arch/x86/Kconfig:74: unexpected option "select"
+arch/x86/Kconfig:75: unexpected option "select"
+make[3]: *** [oldconfig] Error 1
+make[2]: *** [oldconfig] Error 2
+
+
+Leo
 
