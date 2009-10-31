@@ -1,63 +1,42 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <125483.39803.qm@domain.hid>
-References: <125483.39803.qm@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sat, 31 Oct 2009 12:01:59 +0100
-Message-ID: <1256986919.2065.364.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Basic Xenomai Questions?
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+MIME-Version: 1.0
+Date: Sat, 31 Oct 2009 15:21:01 +0600
+Message-ID: <64f64b850910310221v2148ed6dqc4a05ccd8ec7030f@domain.hid>
+From: Dmitry Romannikov <rom2006@domain.hid>
+Content-Type: multipart/alternative; boundary=001636416e65bc9ba8047737a957
+Subject: [Xenomai-help]  queue on the uclinux
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Wael Showair <showair2003@domain.hid>
-Cc: Xenomai-core@domain.hid
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-On Fri, 2009-10-30 at 18:22 -0700, Wael Showair wrote:
-> Hi All,
-> i am beginner to Xenomai & i m trying to understand how will it go in
-> the future so i have 2 questions:
-> 
-> 
-> 1. the patch of Adeos just enables the sharing of hardware between
-> different OS, (Linux Vanilla kernel & Xenomai Nucleus), does it make
-> this step only?
-> 
-> 
-> 
-> 
-> 2. In Xenomai 2, there r 2 different kernels Normal Linux Vanilla &
-> Xenomai Nucleus, but i read that Xenomai 3 will tend to use
->  PREEMPT_RT support which leads to the only one Native kernel will
-> exist, does it mean that the Nucleus will vanish & will it be the
-> patched RT Vanilla Linux Kernel itself?
-> or does it mean that the Nuecleuse will no longer be a part of the
-> kernel space so it will be in user space?
-> I beleive in the nucleus of Xenomai must exist in all cases?
-> 
+--001636416e65bc9ba8047737a957
+Content-Type: text/plain; charset=ISO-8859-1
 
-http://www.xenomai.org/index.php/Xenomai:Roadmap#Toward_Xenomai_3
+Hello!
+I've have problem with queues on the uclinux. queue was created without
+errors (returned zero) (queue was created in the kernel space), but I cannot
+bind it in user space (always returned -12 - cannot allocate memory). the
+same story with heap.
+I use uClinux 2009R1, bf537 and xenomai 2.4.7.
+best regards,
+Dmitry Romannikov.
 
-> 
-> 
-> 
-> Regards,
-> Wael
-> 
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+--001636416e65bc9ba8047737a957
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
+<div>Hello!<br></div><div>I&#39;ve have problem with queues on the uclinux.=
+ queue was created without errors (returned zero) (queue was created in the=
+ kernel space), but I cannot bind it in user space (always returned -12 - c=
+annot allocate memory). the same story with heap.=A0</div>
+<div>I use uClinux 2009R1, bf537 and xenomai 2.4.7.</div><div></div><div>be=
+st regards,</div><div>Dmitry Romannikov.</div>
 
--- 
-Philippe.
-
-
+--001636416e65bc9ba8047737a957--
 
