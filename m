@@ -1,65 +1,49 @@
-Message-ID: <4AC77B9F.1050506@domain.hid>
-Date: Sat, 03 Oct 2009 18:28:15 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <125483.39803.qm@domain.hid>
+Date: Fri, 30 Oct 2009 18:22:24 -0700 (PDT)
+From: Wael Showair <showair2003@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigA1922958D04CD47766D3EEEF"
-Sender: jan.kiszka@domain.hid
-Subject: [Adeos-main] [PULL REQUEST] 2.6.31-x86 fixes
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+Content-Type: multipart/alternative; boundary="0-2142297539-1256952144=:39803"
+Subject: [Xenomai-core] Basic Xenomai Questions?
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Xenomai-core@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA1922958D04CD47766D3EEEF
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+--0-2142297539-1256952144=:39803
+Content-Type: text/plain; charset=us-ascii
 
-The following changes since commit 1618abf5ec6d7005ced0d4c733e7a81215bc8e=
-78:
-  Philippe Gerum (1):
-        Arch-dependent I-pipe/x86 support for 2.6.31
+Hi All,
+i am beginner to Xenomai & i m trying to understand how will it go in the future so i have 2 questions:
 
-are available in the git repository at:
-
-  git://git.kiszka.org/ipipe-2.6.git queues/2.6.31-x86
-
-Jan Kiszka (3):
-      x86: Fix reboot for SMP
-      x86: Fix irq_move_cleanup virtualization
-      x86: Silence warning when CONFIG_INTR_REMAP is not enabled
-
- arch/x86/include/asm/hw_irq.h  |    1 +
- arch/x86/kernel/apic/io_apic.c |    4 ++++
- arch/x86/kernel/ipipe.c        |    4 ++--
- 3 files changed, 7 insertions(+), 2 deletions(-)
+1. the patch of Adeos just enables the sharing of hardware between different OS, (Linux Vanilla kernel & Xenomai Nucleus), does it make this step only?
 
 
-PS: Patch 1 ("Fix reboot for SMP") may also be applied to 2.6.30 if
-that kernel is still supported.
+2. In Xenomai 2, there r 2 different kernels Normal Linux Vanilla & Xenomai Nucleus, but i read that Xenomai 3 will tend to use
+ PREEMPT_RT support which leads to the only one Native kernel will exist, does it mean that the Nucleus will vanish & will it be the patched RT Vanilla Linux Kernel itself?
+or does it mean that the Nuecleuse will no longer be a part of the kernel space so it will be in user space?
+I beleive in the nucleus of Xenomai must exist in all cases?
 
 
---------------enigA1922958D04CD47766D3EEEF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Regards,
+Wael
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkrHe7EACgkQitSsb3rl5xQQJACg1NCbZt0shzUzLVlE2vJf7CBE
-PQAAoJVqc7+Q6tBZSjygkOwif5vnBjVB
-=4fSt
------END PGP SIGNATURE-----
+      
+--0-2142297539-1256952144=:39803
+Content-Type: text/html; charset=us-ascii
 
---------------enigA1922958D04CD47766D3EEEF--
+<html><head><style type="text/css"><!-- DIV {margin:0px;} --></style></head><body><div style="font-family:verdana, helvetica, sans-serif;font-size:12pt"><div><div>Hi All,</div><div>i am beginner to Xenomai &amp; i m trying to understand how will it go in the future so i have 2 questions:</div><div><br></div><div>1.&nbsp;the patch of Adeos&nbsp;just enables the sharing of hardware between different OS, (Linux Vanilla kernel &amp; Xenomai Nucleus), does it make this&nbsp;step only?</div><div><br></div><div><br></div><div>2. In Xenomai 2, there r 2 different kernels Normal Linux Vanilla &amp; Xenomai Nucleus, but i read that Xenomai 3 will tend to use</div><div>&nbsp;PREEMPT_RT support which leads to the only one Native kernel will exist, does it mean that the Nucleus will vanish &amp; will it be the patched RT Vanilla Linux Kernel itself?</div><div>or does it mean that the Nuecleuse will no longer be a part of the kernel space so it will be in user
+ space?</div><div>I beleive in the nucleus of Xenomai must exist in all cases?</div><div><br></div><div><br></div><div>Regards,</div><div>Wael</div></div><div style="position:fixed"></div>
+
+
+<!-- cg11.c2.mail.ac4.yahoo.com compressed/chunked Fri Oct 30 05:08:16 PDT 2009 -->
+</div><br>
+
+      </body></html>
+--0-2142297539-1256952144=:39803--
 
