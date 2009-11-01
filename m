@@ -1,70 +1,73 @@
-Message-ID: <4ACDA5A9.6070408@domain.hid>
-Date: Thu, 08 Oct 2009 10:41:13 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <1f3e02580910080127k766f2407o317ae8a2ce088b4a@domain.hid>
-In-Reply-To: <1f3e02580910080127k766f2407o317ae8a2ce088b4a@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <566451a98761369f757a.1257105488@domain.hid>
+References: <566451a98761369f757a.1257105488@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Sun, 01 Nov 2009 22:34:29 +0100
+Message-ID: <1257111269.2065.596.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Support for ARCH_MV88F6290
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [PATCH] Check frequency in xnarch_init_timeconv()
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Didenko Sergey <didenkos@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Bernhard Walle <bernhard@domain.hid>
 Cc: xenomai@xenomai.org
 
-Didenko Sergey wrote:
-> Dear Xenomai Experts,
+On Sun, 2009-11-01 at 19:58 +0000, Bernhard Walle wrote:
+> In some conditions, while testing Xenomai in VirtualBox, I had the error that
+> xnarch_init_timeconv() is called from init_32.h with a frequency of 0. That
+> leads to a division by zero, followed by a system oops.
 > 
-> So far I did not progress too much.
+> Of course that is a bug in the virtualisation and Linux reports a CPU frequency
+> of 0 in /proc/cpuinfo. However, there's no harm if Xenomai checks that instead
+> of crashing the whole system.
 > 
-> What I have now is that patched Linux is starting to boot as original
-> kernel and it hangs right after line
-> [42949373.240000] ata1: SATA max UDMA/133 irq 27
-> As you can see after line
 > 
-> [42949373.230000] ?^<6>Xenomai: real-time nucleus v2.4.9.1 (Big Bad
-> Moon) loaded.
-> 
-> System does not go to timer_interrupt() function any more.
 
-That is expected. Once Xenomai runs, it takes over the timer interrupt.
+I agree with the conclusion, not with the fix.
 
+- the userland part reuses the frequency value returned by the nucleus,
+so testing the issue up front when the nucleus initializes would be
+enough. No need to propagate error detection to userland.
+
+- the kernel side should rather test RTHAL_CPU_FREQ for consistency in
+the generic hal init code, and bail out with an error if 0 is detected,
+since there is no way for the nucleus to operate properly with such
+setting anyway.
+
+It turns out that no change have to be done in xnarch_init_timeconv()
+which should remain a void routine, but its argument - RTHAL_CPU_FREQ -
+should rather be tested as early as possible for consistency, directly
+from kernel space.
+
+> Signed-off-by: Bernhard Walle <bernhard@domain.hid>
 > 
-> What I'm worring about is that the system has 2 timers, one is
-> free-running with disabled interrupts, second one is interrupt-driven
-> clockevent timer.
-
-No problem. Use the clockevent timer for hardware timer, use the
-free-running counter for tsc emulation.
-
 > 
-> =========================== Code - Start
-> (...)
-> =========================== Code - End
+>  include/asm-arm/bits/init.h         |   4 +++-
+>  include/asm-blackfin/bits/init.h    |   4 +++-
+>  include/asm-generic/bits/timeconv.h |  18 +++++++++++++++++-
+>  include/asm-nios2/bits/init.h       |   4 +++-
+>  include/asm-powerpc/bits/init.h     |   4 +++-
+>  include/asm-x86/bits/init_32.h      |   4 +++-
+>  include/asm-x86/bits/init_64.h      |   4 +++-
+>  src/skins/native/timer.c            |   7 ++++++-
+>  src/skins/posix/clock.c             |   8 +++++++-
+>  9 files changed, 48 insertions(+), 9 deletions(-)
 > 
-> According to HOWTO Xenomai needs free-running counter, in my case it is
-> Timer 0, but all functions are configured to work with Timer 1, which is
-> not free running.
 > 
-> What would you sugest to do?
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
-No, the howto does not say that you need a free-running counter. It
-shows the example of a free-running counter and tell you to look at the
-integrator or s3cxxxx code if you want to know how to implement the
-I-pipe support for a decrementer. The reason being that I wrote the
-howto, and I never had to work with a decrementer.
-
-If you really want us to help you should show us the code that you
-added, not the code that we can already find in the linux kernel sources.
 
 -- 
-                                          Gilles
+Philippe.
+
 
 
