@@ -1,58 +1,48 @@
-Message-ID: <4B0028D6.1050804@domain.hid>
-Date: Sun, 15 Nov 2009 17:14:14 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Mon, 2 Nov 2009 10:54:37 +0100
+From: Richard Cochran <richardcochran@domain.hid>
+Message-ID: <20091102095437.GA19825@domain.hid>
+References: <4AE333E9.5040802@domain.hid> <1256422425.2862.538.camel@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigDA6F1179858AA1527FCEAEFB"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [pull request] rtdm: Fix copy&paste mistake in
-	instrumentation
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1256422425.2862.538.camel@domain.hid>
+Subject: Re: [Xenomai-help] Virtual IRQ Numbers in powerpc?
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDA6F1179858AA1527FCEAEFB
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On Sun, Oct 25, 2009 at 12:13:45AM +0200, Philippe Gerum wrote:
+> 
+> adeos-ipipe-2.6.30-powerpc-DENX-2.7-00:   fine
+> adeos-ipipe-2.6.30.3-powerpc-DENX-2.7-01: BROKEN
+> adeos-ipipe-2.6.30.3-powerpc-DENX-2.7-02: fine
 
-The following changes since commit cd3465f1862a4aa29e488a3876097d9e425ef9=
-07:
-  Philippe Gerum (1):
-        nios2: upgrade I-pipe support to 2.6.30-nios2-1.1-00
+I am using git to track ipipe, but these two commits
 
-are available in the git repository at:
+  da0e45d1e84389bdf5e750e9179767fd274f7031
+  9010961a407699a3908d7c2a842a8ece6084cee3
 
-  git://git.xenomai.org/xenomai-jki for-upstream
+don't show up when I pull from
 
-Jan Kiszka (1):
-      rtdm: Fix copy&paste mistake in instrumentation
+  git://git.denx.de/ipipe-2.6.git
 
- ksrc/skins/rtdm/core.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+I think that is because the commit are not in any branch. I think they
+should be in branch ipipe-2.6.30-powerpc.
+
+See this:
+
+  http://git.denx.de/?p=ipipe-2.6.git;a=shortlog;h=9010961a407699a3908d7c2a842a8ece6084cee3
+
+Richard
 
 
---------------enigDA6F1179858AA1527FCEAEFB
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAksAKNoACgkQitSsb3rl5xQWKwCgwi65N21NUtEynzQYVAtaMO3y
-Hl4AnjC/+9DSysMuVc3n5jra+Mo//HLq
-=U2MV
------END PGP SIGNATURE-----
-
---------------enigDA6F1179858AA1527FCEAEFB--
 
