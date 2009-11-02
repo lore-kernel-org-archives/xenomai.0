@@ -1,12 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <64f64b850910310221v2148ed6dqc4a05ccd8ec7030f@domain.hid>
-References: <64f64b850910310221v2148ed6dqc4a05ccd8ec7030f@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 02 Nov 2009 18:08:38 +0100
-Message-ID: <1257181718.2065.620.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4AEF22C3.4070303@domain.hid>
+Date: Mon, 02 Nov 2009 19:19:47 +0100
+From: Pierre Ficheux <pierre.ficheux@domain.hid>
+MIME-Version: 1.0
+References: <20091020113724.9069.23594.stgit@domain.hid>		<20091020113725.9069.28060.stgit@domain.hid>		<1256404942.2862.498.camel@domain.hid>		<1257177854.2065.616.camel@domain.hid>		<4AEF0BCC.2020208@domain.hid>	<1257180716.2065.618.camel@domain.hid>	<4AEF0F7F.2060603@domain.hid>
+	<4AEF1E91.6030407@domain.hid>
+In-Reply-To: <4AEF1E91.6030407@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] queue on the uclinux
+Subject: [Xenomai-help] Xenomai on ARMadeus
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,32 +17,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Dmitry Romannikov <rom2006@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai-help@domain.hid
 
-On Sat, 2009-10-31 at 15:21 +0600, Dmitry Romannikov wrote:
-> Hello!
-> 
-> I've have problem with queues on the uclinux. queue was created
-> without errors (returned zero) (queue was created in the kernel
-> space), but I cannot bind it in user space (always returned -12 -
-> cannot allocate memory). the same story with heap. 
-> I use uClinux 2009R1, bf537 and xenomai 2.4.7.
+Hi,
 
-Commit 59ba07f8 from git://xenomai.org/xenomai-2.4.git
-fixes the issue.
+I've just tried to use Xenomai on ARMadeus board (APF9328, kernel
+2.6.29). I got the following message when starting "latency" :
 
-> 
-> best regards,
-> Dmitry Romannikov.
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+Any idea?
+
+# /usr/xenomai/bin/latency
+== Sampling period: 100 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+warming up...
+Unhandled fault: external abort on non-linefetch (0x01a) at 0x40006010
+
+
+# uname -a
+Linux armadeus 2.6.29.6 #1 PREEMPT Fri Oct 30 13:11:26 CET 2009 armv4tl
+unknown
+
+# cat /proc/ipipe/version
+1.13-00
+
+
+Looks like there was a discussion  about a similar problem some days ago
+ with Gilles  (Freescale CPU too).
+
+http://www.mail-archive.com/xenomai@xenomai.org
+
+Thx,
+
+regards
 
 
 -- 
-Philippe.
+Pierre FICHEUX -/- CTO OW/OS4I, France -\- pierre.ficheux@domain.hid
+                                         http://www.os4i.com
+                                         http://www.ficheux.org
+I would love to change the world, but they won't give me the source code
 
 
 
