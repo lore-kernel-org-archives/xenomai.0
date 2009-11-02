@@ -1,13 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20091102095437.GA19825@domain.hid>
-References: <4AE333E9.5040802@domain.hid> <1256422425.2862.538.camel@domain.hid>
-	<20091102095437.GA19825@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 02 Nov 2009 21:00:19 +0100
-Message-ID: <1257192019.2210.5.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4AEF5D4B.2090106@domain.hid>
+Date: Mon, 02 Nov 2009 23:29:31 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <20091020113724.9069.23594.stgit@domain.hid>	<20091020113725.9069.28060.stgit@domain.hid>	<1256404942.2862.498.camel@domain.hid>	<1257177854.2065.616.camel@domain.hid>	<4AEF0BCC.2020208@domain.hid>	<1257180716.2065.618.camel@domain.hid>	<4AEF0F7F.2060603@domain.hid>
+	<4AEF1E91.6030407@domain.hid>	<4AEF22C3.4070303@domain.hid>
+	<4AEF273B.3090402@domain.hid> <20091102201924.5f392e15@domain.hid>
+In-Reply-To: <20091102201924.5f392e15@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Virtual IRQ Numbers in powerpc?
+Subject: Re: [Xenomai-help] Xenomai on ARMadeus
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,46 +18,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Richard Cochran <richardcochran@domain.hid>
+To: "gwenhael.goavec" <gwen@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Mon, 2009-11-02 at 10:54 +0100, Richard Cochran wrote:
-> On Sun, Oct 25, 2009 at 12:13:45AM +0200, Philippe Gerum wrote:
-> > 
-> > adeos-ipipe-2.6.30-powerpc-DENX-2.7-00:   fine
-> > adeos-ipipe-2.6.30.3-powerpc-DENX-2.7-01: BROKEN
-> > adeos-ipipe-2.6.30.3-powerpc-DENX-2.7-02: fine
+gwenhael.goavec wrote:
+> On Mon, 02 Nov 2009 19:38:51 +0100
+> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+> wrote:
 > 
-> I am using git to track ipipe, but these two commits
+>> By the way, did you make any change to the I-pipe patch to get it
+>> running on this board?
 > 
->   da0e45d1e84389bdf5e750e9179767fd274f7031
->   9010961a407699a3908d7c2a842a8ece6084cee3
+> The only change realized, is made because Armadeus and
+> I-pipe does the same change on
+> mach-imx/include/mach/imxfb.h :
 > 
-> don't show up when I pull from
+> --- a/arch/arm/mach-imx/include/mach/imxfb.h
+> +++ b/arch/arm/mach-imx/include/mach/imxfb.h
+> @@ -14,7 +14,6 @@
+>  #define PCR_BPIX_8 (3 << 25)
+>  #define PCR_BPIX_12    (4 << 25)
+>  #define PCR_BPIX_16    (4 << 25)
+> +#define PCR_BPIX_MASK   (7 << 25)
+>  #define PCR_PIXPOL (1 << 24)
+>  #define PCR_FLMPOL (1 << 23)
+>  #define PCR_LPPOL  (1 << 22)
 > 
->   git://git.denx.de/ipipe-2.6.git
+> I take this opportunity to ask a question:
+> on APF27 with imx27, I found that the system freeze
+> when an interrupt handler is in place and an
+> interruption happens.
+> if interrupt handler is in place without interruption no
+> problems and if interruption happens without interrupt
+> handler it's ok too.
 > 
-> I think that is because the commit are not in any branch. I think they
-> should be in branch ipipe-2.6.30-powerpc.
+> If someone could help or advise me. 
+> thank you very much
 > 
-> See this:
+> Gwenhael
 > 
->   http://git.denx.de/?p=ipipe-2.6.git;a=shortlog;h=9010961a407699a3908d7c2a842a8ece6084cee3
+> Signed-off-by: gwenhael.goavec-merou@domain.hid
 
-Those commits seem to still be in flight from my remote staging tree to
-the public one, waiting for a mirroring to happen. They are indeed part
-of ipipe-2.6.30-powerpc; those are actually the latest commits on top of
-2.7-01, leading to 2.7-02.
-
-> 
-> Richard
-> 
-> 
-> 
-
+What version of the I-pipe patch?
 
 -- 
-Philippe.
-
-
+					    Gilles.
 
