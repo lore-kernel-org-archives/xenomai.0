@@ -1,14 +1,14 @@
-Message-ID: <4AEE8FA7.7040804@domain.hid>
-Date: Mon, 02 Nov 2009 08:52:07 +0100
+Message-ID: <4AEE9067.5050904@domain.hid>
+Date: Mon, 02 Nov 2009 08:55:19 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <ba9b368a0911012316h393aae27y7418e74b2c8a8428@domain.hid>
-In-Reply-To: <ba9b368a0911012316h393aae27y7418e74b2c8a8428@domain.hid>
+References: <4AED83C0.8050002@domain.hid>
+In-Reply-To: <4AED83C0.8050002@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigE087FB683D2F624DC44BB1FF"
+	boundary="------------enigF5153AC118AE746ACDCF77B0"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] A few questions about rt_printf
+Subject: Re: [Xenomai-help] Two real time NICs in same PC? (RTnet)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,85 +18,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniel Adams <dadams81@domain.hid>
+To: Benjamin Biegel <biegel@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE087FB683D2F624DC44BB1FF
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enigF5153AC118AE746ACDCF77B0
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Daniel Adams wrote:
-> Hi,
+Benjamin Biegel wrote:
+> I have only found documentation about the possibility to run a=20
+> non-RT-NIC and a RT-NIC at the same time, which is possible.
 >=20
-> I was looking at using the rt_printf / rt_fprintf for doing deferred lo=
-gging
-> and I have a few questions.
->=20
-> 1) I was reading through the source and I noticed there is no locking o=
-f the
-> buffer write_pos between tasks during the initial snprint into the buff=
-er.
-> Is the rt_printf service thread safe? There are calls to
-> xnarch_read_memory_barrier() and xnarch_write_memory_barrier(), but I'm=
+> But is it possible on the same PC to have:
+> - One NIC being master or slave in an RTnet network
+> - One other NIC capturing frames with RTcap
+> ?
 
-> assuming they are for SMP and IO ordering although I'm not 100% on what=
- the
-> barriers imply as I'm fairly new to this kind of hardware.
-
-rt_printf buffers are single-writer/single-reader (one per thread)
-lock-less ring buffers, they are safe on both UP and SMP.
+Yes, this is possible. It is even the default if you use RTnet's startup
+script and config (only one NIC is configured, and if there are two NICs
+of the same type, only the first one is claimed by RTnet).
 
 >=20
-> 2) Can the service be called from Linux tasks and Xenomai tasks? We wer=
-e
-> trying to get away with a common logging interface (wrapping the servic=
-e)
-> which would allow writing to different streams. If it can't be called f=
-rom a
-> Linux process then we will have an issue if we try to write to the same=
+> (The whole point is to have a network of PCs running RTnet, so that=20
+> their clocks are synchronized. Then have these same PCs capture frames =
 
-> stream from different write tasks.
+> via RTcap. In this way the captured timestamps can be compared and =20
+> Ethernet  frame travel times can be calculated.)
 
-Yes, in fact the rr_printf/syslog services of rtdk even work without a
-single bit of Xenomai, so they can be used in any context.
+Note that the measurement jitter /may/ still be in the same order of
+your travel delays.
 
->=20
-> 3) Why is there multiple buffers allowing multiple FIFO's. I've read th=
-e
-> code and can't really see how the extra buffers are used from a users
-> perspective (I can see how the service prints / manages them). It appea=
-rs
-> that whatever buffer you create with rt_print_init or rt_auto_init is t=
-he
-> buffer that get's used for writing too. Is there a way to select the bu=
-ffer
-> you want to write to? Also a call to rt_print_init causes a pre-existin=
-g
-> buffer to be written to io from within the callers context and then cre=
-ates
-> a new buffer / ring buffer, so that no matter what you are always writi=
-ng to
-> the head of the linked list of buffers. How do I get access to an old b=
-uffer
-> once it has been printed? Is there something I'm missing?
-
-See above, buffers are per thread so that we don't need locking.
-
->=20
-> I really think I must be missing something, sorry if these are obvious
-> questions.
->=20
-> Thanks
->=20
-> Dan Adams
->=20
-
-HTH,
 Jan
 
 
---------------enigE087FB683D2F624DC44BB1FF
+--------------enigF5153AC118AE746ACDCF77B0
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -105,10 +61,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkruj6cACgkQitSsb3rl5xR1BACcDgP1fpODfSgXHi1hhhjejhz1
-d9wAn35B+glg2I5owTvOni9klClNQOPl
-=f+QE
+iEYEARECAAYFAkrukGcACgkQitSsb3rl5xSxOQCgpB6rBKtU2tUEXPNd4l7dRTtU
+vEsAoII0Mqzz8AlqhPRWF23E1F6wwJ5f
+=awvq
 -----END PGP SIGNATURE-----
 
---------------enigE087FB683D2F624DC44BB1FF--
+--------------enigF5153AC118AE746ACDCF77B0--
 
