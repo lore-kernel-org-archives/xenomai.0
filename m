@@ -1,16 +1,13 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 11 Nov 2009 07:38:06 -0500
-Message-ID: <6FCCA913376DD7488F4139A4D11B8F48FD1129@domain.hid>
-In-Reply-To: <4AF9D976.4020701@domain.hid>
-References: <6FCCA913376DD7488F4139A4D11B8F48FD1044@domain.hid>	<4AF99CAD.9070105@domain.hid>	<6FCCA913376DD7488F4139A4D11B8F48FD107D@troe2k1.cs.myharris.net>	<4AF9AD44.10000@domain.hid>	<6FCCA913376DD7488F4139A4D11B8F48FD1085@domain.hid>	<4AF9B6F2.9040206@domain.hid>
-	<6FCCA913376DD7488F4139A4D11B8F48FD10A9@domain.hid>
-	<4AF9D976.4020701@domain.hid>
-From: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
-Subject: Re: [Xenomai-core] rtdm_iomap_to_user with phys addr > 4GB
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <20091103133407.GA9836@domain.hid>
+References: <20091103133407.GA9836@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 03 Nov 2009 15:44:24 +0100
+Message-ID: <1257259464.2210.32.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [Xenomai core] Freeze on MPC8572 and P2020 with
+ SMP
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -19,169 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Richard Cochran <richardcochran@domain.hid>
+Cc: xenomai@xenomai.org
 
-=20
+On Tue, 2009-11-03 at 14:34 +0100, Richard Cochran wrote:
+> I have compiled and run ipipe-2.6.30.3-powerpc-2.7-02 and Xenomai
+> v2.4.9.1 (well, actually c4c3c82791951df998ac4dc463f79a76884577b6), on
+> two similar Freescale boards, the MPC8572DS and the P2020DS. Both are
+> dual core, and both run fine using vanilla Linux 2.6.30 with SMP.
+> 
+> If I enable ipipe only, I can still boot SMP. If Xenomai is enabled,
+> then the machine freezes as soon as Xenomai is started. (As a module,
+> Xenomai locks the machine when loading).
 
->-----Original Message-----
->From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid
->Sent: Tuesday, November 10, 2009 4:22 PM
->To: Herrera-Bendezu, Luis
->Cc: xenomai@xenomai.org
->Subject: Re: rtdm_iomap_to_user with phys addr > 4GB
->
->Herrera-Bendezu, Luis wrote:
->> =20
->>=20
->>> -----Original Message-----
->>> From: Jan Kiszka [mailto:jan.kiszka@domain.hid
->>> Sent: Tuesday, November 10, 2009 1:55 PM
->>> To: Herrera-Bendezu, Luis
->>> Cc: xenomai@xenomai.org
->>> Subject: Re: rtdm_iomap_to_user with phys addr > 4GB
->>>
->>>
->>> Herrera-Bendezu, Luis wrote:
->>>> =20
->>>>
->>>>> -----Original Message-----
->>>>> From: Jan Kiszka [mailto:jan.kiszka@domain.hid
->>>>> Sent: Tuesday, November 10, 2009 1:13 PM
->>>>> To: Herrera-Bendezu, Luis
->>>>> Cc: xenomai@xenomai.org
->>>>> Subject: Re: rtdm_iomap_to_user with phys addr > 4GB
->>>>>
->>>>>
->>>>> Herrera-Bendezu, Luis wrote:
->>>>>> =20
->>>>>>
->>>>>>> -----Original Message-----
->>>>>>> From: Jan Kiszka [mailto:jan.kiszka@domain.hid
->>>>>>> Sent: Tuesday, November 10, 2009 12:03 PM
->>>>>>> To: Herrera-Bendezu, Luis
->>>>>>> Cc: xenomai@xenomai.org
->>>>>>> Subject: Re: rtdm_iomap_to_user with phys addr > 4GB
->>>>>>>
->>>>>>>
->>>>>>> Herrera-Bendezu, Luis wrote:
->>>>>>>> Hello,
->>>>>>>>
->>>>>>>> I am writing an RTDM driver to replace one that uses UIO.=20
->>>>> The device
->>>>>>>> resides in a physical address > 4 GB on a PPC440EPx. The=20
->>> UIO could
->>>>>>>> not handle this address so I made a proposal to address it,=20
->>>>>>> details at:
->>>=20
->http://lists.ozlabs.org/pipermail/linuxppc-dev/2009-April/070097.html
->>>>>>>> Function rtdm_iomap_to_user() has same issue with the=20
->>> physical I/O
->>>>>>>> address
->>>>>>>>    unsigned long src_addr
->>>>>>>>
->>>>>>>> I am new to Xenomai and would like to get some ideas on=20
->>>>> how to solve
->>>>>>>> this
->>>>>>>> issue.
->>>>>>> I think UIO as well as RTDM suffers from the same problem=20
->>> here: The
->>>>>>> kernel service used to remap the physical memory=20
->(remap_pfn_range)
->>>>>>> accepts unsigned long, not phys_addr_t. How is this=20
->>>>> supposed to work?
->>>>>>> Jan
->>>>>>>
->>>>>>> --=20
->>>>>>> Siemens AG, Corporate Technology, CT SE 2
->>>>>>> Corporate Competence Center Embedded Linux
->>>>>>>
->>>>>> Actually, remap_pfn_range() gets passed the physical address left
->>>>>> shifted by PAGE_SIZE in both UIO and RTDM=20
->>>>> (xnarch_remap_io_page_range,
->>>>>> wrap_remap_io_page_range).
->>>>> No, the target address is expressed in pages, the source in bytes.
->>>>>
->>>> That is true for rtdm_mmap_to_user but not for=20
->>> rtdm_iomap_to_user. See
->>>> how
->>>> mmap_data struct is set in both functions.
->>>        struct rtdm_mmap_data mmap_data =3D
->>>                { NULL, src_addr, vm_ops, vm_private_data };
->>>
->>> with src_addr =3D "physical I/O address to be mapped", setting
->>> mmap_data.src_paddr -- are you looking at different code?
->>>
->> No, that is the code.
->
->But there is nothing shifted, the shifting takes place in=20
->Xenomai's wrapper.
->
->>> Besides this, the key is how remap_pfn_page interprets the source
->>> address argument.
->>>
->> I had used UIO with success (as described in link above).=20
->The equivalent
->> code in UIO is (uio.c):
->> static int uio_mmap_physical(struct vm_area_struct *vma)
->> {
->> 	struct uio_device *idev =3D vma->vm_private_data;
->> 	int mi =3D uio_find_mem_index(vma);
->> 	if (mi < 0)
->> 		return -EINVAL;
->>=20
->> 	vma->vm_flags |=3D VM_IO | VM_RESERVED;
->>=20
->> 	vma->vm_page_prot =3D pgprot_noncached(vma->vm_page_prot);
->>=20
->> 	return remap_pfn_range(vma,
->> 			       vma->vm_start,
->> 			       idev->info->mem[mi].addr >> PAGE_SHIFT,
->> 			       vma->vm_end - vma->vm_start,
->> 			       vma->vm_page_prot);
->> }
->>=20
->> where idev->info->mem[mi].addr, mem[.] is the list of=20
->mappable regions.
->> Note that for UIO, the user application needs to mmap these=20
->regions to
->> user space. This is a step that is not needed on RTDM, right?
->
->OK, now I got my mistake: Confused by the wrong argument names of our
->wrap_remap_io_page_range (and probably others) I thought that the
->destination is given as page number, not the source.
->
->But before adding some fancy new service for this use case, I'd like to
->understand how common it actually is (crazy embedded designs=20
->tend to pop
->up and deprecate faster than such APIs...).
-I do not think this is a new service but a limitation in the design.
-The kernel supports it (application can mmap the device using /dev/mem)
-and the PPC (440EPx in particular) has PCI and internal peripherals
-located at addresses above 4 GB (I2C, SPI, etc.).
->
->And what was the final conclusion on LKML? As far as I understood the
->UIO maintainer, the proposal was rejected. Any different follow-ups on
->this that I missed? Of course, if you have a special design you can
->always patch your kernel and Xenomai to fit these special purposes. But
->for upstream support, kernel or Xenomai, it requires a clean and
->portable model.
-There were no follow-ups and the reply concerning the required changes
-was:
-"I guess you'd have to look at the whole memory management stuff of each
- architecture to find out which kind of memory can be mapped with
-addresses
- above unsigned long. Hardware often needs more than one contigous
-pages.
- It might well be possible that a certain arch could have RAM for user
-virtual
- addresses above 4GB, but no hardware. I don't know PPC well enough to
-say
- anything about its behaviour."
+Did you try enabling the pipeline debug options, like
+CONFIG_IPIPE_DEBUG_CONTEXT and CONFIG_IPIPE_DEBUG_INTERNAL?
 
-In the mean time, it would be helpful if you have some suggestions on
-how to
-change RTDM to handle this case.
+> 
+> Without SMP, it seems to run fine (and latency numbers are excellent!)
+> 
+> I seem to recall having seen that Xenomai SMP was working on some
+> other Freescale powerpc chips. Looking for any advice...
 
-Thanks,
-Luis
+Xenomai runs on Emerson's mvme7100 powered by a 8641D, but FSL eval
+boards which are known to work with Xenomai are uniprocessor only so
+far. SMP-wise, PA-Semi's PA6T (ppc64) and Emerson's mvme7100 (ppc32) are
+known to work, but I can't tell for any other hw.
+
+> 
+> Thanks,
+> 
+> Richard
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+
+
+-- 
+Philippe.
+
+
 
