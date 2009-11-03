@@ -1,12 +1,10 @@
-Content-class: urn:content-classes:message
+Date: Tue, 3 Nov 2009 14:34:07 +0100
+From: Richard Cochran <richardcochran@domain.hid>
+Message-ID: <20091103133407.GA9836@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 10 Nov 2009 11:42:14 -0500
-Message-ID: <6FCCA913376DD7488F4139A4D11B8F48FD1044@domain.hid>
-From: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
-Subject: [Xenomai-core] rtdm_iomap_to_user with phys addr > 4GB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [Xenomai-core] [Xenomai core] Freeze on MPC8572 and P2020 with SMP
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,22 +15,22 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hello,
 
-I am writing an RTDM driver to replace one that uses UIO. The device
-resides in a physical address > 4 GB on a PPC440EPx. The UIO could
-not handle this address so I made a proposal to address it, details at:
-http://lists.ozlabs.org/pipermail/linuxppc-dev/2009-April/070097.html
+I have compiled and run ipipe-2.6.30.3-powerpc-2.7-02 and Xenomai
+v2.4.9.1 (well, actually c4c3c82791951df998ac4dc463f79a76884577b6), on
+two similar Freescale boards, the MPC8572DS and the P2020DS. Both are
+dual core, and both run fine using vanilla Linux 2.6.30 with SMP.
 
-Function rtdm_iomap_to_user() has same issue with the physical I/O
-address
-   unsigned long src_addr
+If I enable ipipe only, I can still boot SMP. If Xenomai is enabled,
+then the machine freezes as soon as Xenomai is started. (As a module,
+Xenomai locks the machine when loading).
 
-I am new to Xenomai and would like to get some ideas on how to solve
-this
-issue.
+Without SMP, it seems to run fine (and latency numbers are excellent!)
+
+I seem to recall having seen that Xenomai SMP was working on some
+other Freescale powerpc chips. Looking for any advice...
 
 Thanks,
 
-Luis G. Herrera-Bendezu
+Richard
 
