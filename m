@@ -1,20 +1,15 @@
-Date: Tue, 3 Nov 2009 08:36:56 +0100
-From: "gwenhael.goavec" <gwen@domain.hid>
-Message-ID: <20091103083656.2009150a@domain.hid>
-In-Reply-To: <4AEF5D4B.2090106@domain.hid>
-References: <20091020113724.9069.23594.stgit@domain.hid>
-	<20091020113725.9069.28060.stgit@domain.hid>
-	<1256404942.2862.498.camel@domain.hid>
-	<1257177854.2065.616.camel@domain.hid>
-	<4AEF0BCC.2020208@domain.hid>
-	<1257180716.2065.618.camel@domain.hid>
-	<4AEF0F7F.2060603@domain.hid> <4AEF1E91.6030407@domain.hid>
-	<4AEF22C3.4070303@domain.hid> <4AEF273B.3090402@domain.hid>
-	<20091102201924.5f392e15@domain.hid> <4AEF5D4B.2090106@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai on ARMadeus
+Message-ID: <4AEFEAB5.4050007@domain.hid>
+Date: Tue, 03 Nov 2009 09:32:53 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <4AED83C0.8050002@domain.hid> <4AEE9067.5050904@domain.hid>
+	<4AEF0E04.3070902@domain.hid>
+In-Reply-To: <4AEF0E04.3070902@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigFA3EA555DF2FE8A606995159"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Two real time NICs in same PC? (RTnet)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,58 +19,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Benjamin Biegel <biegel@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Mon, 02 Nov 2009 23:29:31 +0100
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-wrote:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigFA3EA555DF2FE8A606995159
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-> gwenhael.goavec wrote:
-> > On Mon, 02 Nov 2009 19:38:51 +0100
-> > Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-> > wrote:
-> > 
-> >> By the way, did you make any change to the I-pipe patch to get it
-> >> running on this board?
-> > 
-> > The only change realized, is made because Armadeus and
-> > I-pipe does the same change on
-> > mach-imx/include/mach/imxfb.h :
-> > 
-> > --- a/arch/arm/mach-imx/include/mach/imxfb.h
-> > +++ b/arch/arm/mach-imx/include/mach/imxfb.h
-> > @@ -14,7 +14,6 @@
-> >  #define PCR_BPIX_8 (3 << 25)
-> >  #define PCR_BPIX_12    (4 << 25)
-> >  #define PCR_BPIX_16    (4 << 25)
-> > +#define PCR_BPIX_MASK   (7 << 25)
-> >  #define PCR_PIXPOL (1 << 24)
-> >  #define PCR_FLMPOL (1 << 23)
-> >  #define PCR_LPPOL  (1 << 22)
-> > 
-> > I take this opportunity to ask a question:
-> > on APF27 with imx27, I found that the system freeze
-> > when an interrupt handler is in place and an
-> > interruption happens.
-> > if interrupt handler is in place without interruption no
-> > problems and if interruption happens without interrupt
-> > handler it's ok too.
-> > 
-> > If someone could help or advise me. 
-> > thank you very much
-> > 
-> > Gwenhael
-> > 
-> > Signed-off-by: gwenhael.goavec-merou@domain.hid
-> 
-> What version of the I-pipe patch?
-> 
-> -- 
-> 					    Gilles.
+Benjamin Biegel wrote:
+> Thanks!
+>=20
+> I can see in the source that the capture stamping uses the rtdm_clock_r=
+ead().
+>=20
+> When several PCs are on the same RTnet, they get synchronized due to th=
+e TDMA.=20
+> But what clock is it that is synchronized on the PCs? How do I read and=
+ use this=20
+> clock? What file can i see this in?
 
-Version 1.13-03 for 2.6.29 
+Check examples/xenomai/native/tdma-api.c.
 
-Gwenhael
+>=20
+> Would it be possible to stamp received frames through this synchronized=
+ clock=20
+> instead of the system clock?
 
-Signed-off-by: gwenhael.goavec-merou@domain.hid
+No, but you could do the calculation afterwards.
+
+Jan
+
+
+--------------enigFA3EA555DF2FE8A606995159
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkrv6rUACgkQitSsb3rl5xQouACguJrB3u3UvdzqTjzcFmc1nzPU
+eCQAn2CvvXJlbbXfIUI9OCPCQrvJCpO6
+=ZMiA
+-----END PGP SIGNATURE-----
+
+--------------enigFA3EA555DF2FE8A606995159--
 
