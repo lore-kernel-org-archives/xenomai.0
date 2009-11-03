@@ -1,12 +1,13 @@
-Message-ID: <4AF0B4B4.3020609@domain.hid>
-Date: Tue, 03 Nov 2009 23:54:44 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Date: Wed, 4 Nov 2009 00:04:48 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigAD084DE36831CC9675A28883"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [pull request] rtdm: Add padding to rtser_config
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Message-Id: <200911040004.48756.berlemont.hauw@domain.hid>
+Subject: [Xenomai-core] [PULL REQUEST] analogy: critical bugfixes for the NI
+	PCIMIO driver
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,95 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>, Paolo Bernini <paolo.bernini@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAD084DE36831CC9675A28883
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-The following changes since commit 6b1a185b460765c933b17932d77be6967d2e42=
-dc:
-  Philippe Gerum (1):
-        nucleus: fix locking in shared heap deletion
+Here are some important fixes for the NI PCIMIO driver. 
+
+I would like to thank Cristian Axenie for giving me access to his development 
+environment. These bugs were particularly noticeable on his PPC board (any 
+acquisition triggered a CPU reboot).
+
+Alexis.
+
+The following changes since commit 255cf6b2bf8dca9dad05a1c169dcecf6e742955e:
+  Alexis Berlemont (1):
+        analogy: force NI TIO / MIO selections when NI PCIMIO is set
 
 are available in the git repository at:
 
-  git://git.xenomai.org/xenomai-jki.git for-upstream
+  ssh+git://git.xenomai.org/xenomai-abe.git analogy 
 
-Jan Kiszka (1):
-      rtdm: Add padding to rtser_config
+Alexis Berlemont (4):
+      analogy: force NI MITE selection when NI PCIMIO is set
+      analogy: fix a critical bug in the NI PCIMIO driver
+      analogy: rename 8255 and NI PCIMIO driver
+      analogy: fix a bug in NI PCIMIO driver
 
- include/rtdm/rtserial.h |    6 ++++--
- 1 files changed, 4 insertions(+), 2 deletions(-)
-
----
-
-rtdm: Add padding to rtser_config
-
-The current layout of rtser_config is unfortunate as it may result in
-different layout depending on the compiler alignment setting. Namely,
-rx_timeout may be aligned on 8-byte boundaries in user land while it may
-not be aligned in the kernel, or vice versa.
-
-Avoid this ambiguity by adding a reserved padding field. Bump profile
-revision number due to ABI breakage.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
- include/rtdm/rtserial.h |    6 ++++--
- 1 files changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/include/rtdm/rtserial.h b/include/rtdm/rtserial.h
-index 30bb564..48712b2 100644
---- a/include/rtdm/rtserial.h
-+++ b/include/rtdm/rtserial.h
-@@ -29,7 +29,7 @@
-  * Feel free to comment on this profile via the Xenomai mailing list
-  * (Xenomai-core@domain.hid) or directly to the author (jan.kiszka@domain.hid).=
-
-  *
-- * @b Profile @b Revision: 2
-+ * @b Profile @b Revision: 3
-  * @n
-  * @n
-  * @par Device Characteristics
-@@ -79,7 +79,7 @@
-=20
- #include <rtdm/rtdm.h>
-=20
--#define RTSER_PROFILE_VER		2
-+#define RTSER_PROFILE_VER		3
-=20
- /*!
-  * @anchor RTSER_DEF_BAUD   @name RTSER_DEF_BAUD
-@@ -263,6 +263,8 @@ typedef struct rtser_config {
- 	/** reception FIFO interrupt threshold, see @ref RTSER_FIFO_xxx */
- 	int		fifo_depth;
-=20
-+	int		reserved;
-+
- 	/** reception timeout, see @ref RTSER_TIMEOUT_xxx for special
- 	 *  values */
- 	nanosecs_rel_t	rx_timeout;
---=20
-1.6.0.2
-
-
---------------enigAD084DE36831CC9675A28883
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkrwtLoACgkQitSsb3rl5xRPwwCfeNNbA5Ac8/gkD/99Z4shI6Wx
-L4AAoJCGaecNySDaig8+9VVVzX/6Dbfr
-=V1Re
------END PGP SIGNATURE-----
-
---------------enigAD084DE36831CC9675A28883--
+ ksrc/drivers/analogy/intel/8255.c                  |    2 +-
+ ksrc/drivers/analogy/national_instruments/Kconfig  |    1 +
+ .../analogy/national_instruments/mio_common.c      |   12 ++++++++----
+ ksrc/drivers/analogy/national_instruments/pcimio.c |    2 +-
+ 4 files changed, 11 insertions(+), 6 deletions(-)
 
