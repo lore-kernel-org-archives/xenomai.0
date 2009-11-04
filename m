@@ -1,9 +1,9 @@
+Message-ID: <4AF1474C.7000701@domain.hid>
+Date: Wed, 04 Nov 2009 10:20:12 +0100
+From: Alexandre Coffignal <alexandre.coffignal@domain.hid>
 MIME-Version: 1.0
-Date: Wed, 4 Nov 2009 18:02:37 +0900
-Message-ID: <1f3e02580911040102r1dead1d3lbc66d9a4d9d26d33@domain.hid>
-From: Didenko Sergey <didenkos@domain.hid>
-Content-Type: multipart/alternative; boundary=00504502b00d534b1d047787dfec
-Subject: [Xenomai-help] [ARM_MV 88F6290] Task limit, msg receive error
+Content-Type: multipart/mixed; boundary="------------090506060407060002010607"
+Subject: [Xenomai-help] How to fix t_delete call in psos skin?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,76 +15,141 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
---00504502b00d534b1d047787dfec
-Content-Type: text/plain; charset=UTF-8
-
-Dear Experts
-
-we are facing 2 problems now:
-
-1) in our test application (very simple one) we can create maximum 50 tasks,
-next task is failed to create with error *12*
-*- Is there any task number limit?*
-*- what does 12 mean?*
-
-2) in our project (originally developed for VxWorks), msgQReceive
-function returns
--1 and sets errno to 4
-*We think that it might be related to XNBREAK thread's flag.*
-Current settings are:
-CONFIG_XENO_OPT_SYS_HEAPSZ=256
-CONFIG_XENO_OPT_SYS_STACKPOOLSZ=128
-- we did verify that total stack size of created VxWorks's tasks is about 60
-KB
-- we did verify that message queue's ID and task's ID were valid.
-
-*- any idea why function msgQReceive fails ?*
-
-Sergey
-
---00504502b00d534b1d047787dfec
-Content-Type: text/html; charset=UTF-8
+This is a multi-part message in MIME format.
+--------------090506060407060002010607
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-Dear Experts<div><br></div><div>we are facing 2 problems now:</div><div><br=
-></div><div>1) in our test application (very simple one) we can create maxi=
-mum 50 tasks, next task is failed to create with error <b>12</b></div><div>
-<b>- Is there any task number limit?</b></div><div><b>- what does 12 mean?<=
-/b></div><div><br></div><div>2) in our project (originally developed for Vx=
-Works), <span class=3D"Apple-style-span" style=3D"font-weight: bold; ">msgQ=
-Receive <span class=3D"Apple-style-span" style=3D"font-weight: normal; ">fu=
-nction=C2=A0</span>returns -1<span class=3D"Apple-style-span" style=3D"font=
--weight: normal; "> and </span>sets=C2=A0errno=C2=A0to 4</span></div>
-<div><b><span class=3D"Apple-style-span" style=3D"font-weight: normal;">We =
-think that it might be related to XNBREAK thread&#39;s flag.</span></b></di=
-v><div>Current settings are:</div><div><div><span class=3D"Apple-style-span=
-" style=3D"font-family: arial, sans-serif; border-collapse: collapse; font-=
-size: 17px; white-space: pre; -webkit-border-horizontal-spacing: 2px; -webk=
-it-border-vertical-spacing: 2px; ">CONFIG_XENO_OPT_SYS_HEAPSZ=3D256</span><=
-/div>
-<div><font class=3D"Apple-style-span" face=3D"arial, sans-serif" size=3D"5"=
-><span class=3D"Apple-style-span" style=3D"border-collapse: collapse; font-=
-size: 17px; white-space: pre; -webkit-border-horizontal-spacing: 2px; -webk=
-it-border-vertical-spacing: 2px; ">CONFIG_XENO_OPT_SYS_STACKPOOLSZ=3D128</s=
-pan></font></div>
-- we did verify that total stack size of created VxWorks&#39;s tasks is abo=
-ut 60 KB</div><div>- we did verify that message queue&#39;s ID and task&#39=
-;s ID were valid.<br><div><font class=3D"Apple-style-span" face=3D"arial, s=
-ans-serif" size=3D"5"><span class=3D"Apple-style-span" style=3D"border-coll=
-apse: collapse; font-size: 17px; white-space: pre; -webkit-border-horizonta=
-l-spacing: 2px; -webkit-border-vertical-spacing: 2px; "><br>
-</span></font></div></div><div><b><span class=3D"Apple-style-span" style=3D=
-"font-weight: normal;">- any idea why function=C2=A0<span class=3D"Apple-st=
-yle-span" style=3D"font-weight: bold; ">msgQReceive <span class=3D"Apple-st=
-yle-span" style=3D"font-weight: normal;">fails</span><span class=3D"Apple-s=
-tyle-span" style=3D"font-weight: normal; ">=C2=A0?</span></span></span></b>=
-</div>
-<div><br></div><div>Sergey</div><div><div><div><br></div><div><font class=
-=3D"Apple-style-span" face=3D"arial, sans-serif" size=3D"5"><span class=3D"=
-Apple-style-span" style=3D"border-collapse: collapse; font-size: 17px; whit=
-e-space: pre; -webkit-border-horizontal-spacing: 2px; -webkit-border-vertic=
-al-spacing: 2px;"><br>
-</span></font></div></div></div>
+Hello,
 
---00504502b00d534b1d047787dfec--
+I'm trying to use t_delete routine in psos skin (xenomai-2.4.7) from a=20
+user space application .
+I'm encountring two different behaviors:
+-1- Calling t_delete(0) from a psos task seems to work perfectly (e.g.=20
+task self deletes).
+-2- Calling t_delete(task_id) with another task id (e.g. current task=20
+tries to delete another task) doesn't result in task deletion but=20
+returns 0 (success).
+
+I've been through both psos skin (ksrc/psos+/task.c) and nucleus=20
+(ksrc/nucleus/pod.c) source code.
+
+xnpod_delete_thread() behaves differently depending on previously=20
+described t_delete calls:
+
+-1- First case (t_delete(0)):
+
+Execution skip condition in ksrc/nucleus/pod.c at line 1173:
+
+  if (xnthread_user_task(thread) !=3D NULL &&
+      !xnthread_test_state(thread, XNDORMANT) &&
+      !xnpod_current_p(thread)) {
+      if (!xnpod_userspace_p())
+          xnshadow_send_sig(thread, SIGKILL, 1);
+      /*
+       * Otherwise, assume the interface library has issued
+       * pthread_cancel on the target thread, which should
+       * cause the current service to be called for
+       * self-deletion of that thread.
+       */
+      goto unlock_and_exit;
+  }
+#endif /* CONFIG_XENO_OPT_PERVASIVE */
+
+and continues to run after it. This results in a successful deletion.
+
+
+-2- Second case:
+
+Execution enters one of the first conditions (if=20
+(xnthread_user_task(thread))...)  but skip the second one :=20
+xnshadow_send_sig(thread, SIGKILL, 1) is not executed;
+goto unlock_and_exit; instruction is then executed.
+->Our thread is never deleted.
+
+-3-
+Modifing actual source code by commenting goto intruction or moving it=20
+into second condition (if (!xnpod_userspace_p()) mentioned above)=20
+results in a working t_delete (task_id).
+
+- I'm not sure of the possible side effects of such a modification?
+- Is it correct to do so?
+
+
+As mentioned in the source code comment, it is assumed "the interface=20
+library has issued pthread_cancel" ...
+I assume it might be missing somewhere?
+
+Please can you help on this topic?
+
+Thanks in advance.
+
+Please find a patch regarding this modification.
+
+diff --git a/ksrc/nucleus/pod.c b/ksrc/nucleus/pod.c
+index 9348ce1..ee362df 100644
+--- a/ksrc/nucleus/pod.c
++++ b/ksrc/nucleus/pod.c
+@@ -1177,14 +1177,16 @@ void xnpod_delete_thread(xnthread_t *thread)
+            !xnthread_test_state(thread, XNDORMANT) &&
+            !xnpod_current_p(thread)) {
+                if (!xnpod_userspace_p())
++               {
+                        xnshadow_send_sig(thread, SIGKILL, 1);
++                       goto unlock_and_exit;
++               }
+                /*
+                 * Otherwise, assume the interface library has issued
+                 * pthread_cancel on the target thread, which should
+                 * cause the current service to be called for
+                 * self-deletion of that thread.
+                 */
+-               goto unlock_and_exit;
+        }
+ #endif /* CONFIG_XENO_OPT_PERVASIVE */
+=20
+
+
+Fabrice.
+
+
+--------------------------------
+C=E9noSYS <http://www.cenosys.com>
+10, Rue Xavier Bichat
+F-72000 Le MANS
+--------------------------------
+
+
+
+--------------090506060407060002010607
+Content-Type: text/x-patch;
+ name="pod.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="pod.patch"
+
+diff --git a/ksrc/nucleus/pod.c b/ksrc/nucleus/pod.c
+index 9348ce1..ee362df 100644
+--- a/ksrc/nucleus/pod.c
++++ b/ksrc/nucleus/pod.c
+@@ -1177,14 +1177,16 @@ void xnpod_delete_thread(xnthread_t *thread)
+ 	    !xnthread_test_state(thread, XNDORMANT) &&
+ 	    !xnpod_current_p(thread)) {
+ 		if (!xnpod_userspace_p())
++		{
+ 			xnshadow_send_sig(thread, SIGKILL, 1);
++			goto unlock_and_exit;
++		}
+ 		/*
+ 		 * Otherwise, assume the interface library has issued
+ 		 * pthread_cancel on the target thread, which should
+ 		 * cause the current service to be called for
+ 		 * self-deletion of that thread.
+ 		 */
+-		goto unlock_and_exit;
+ 	}
+ #endif /* CONFIG_XENO_OPT_PERVASIVE */
+ 
+
+--------------090506060407060002010607--
 
