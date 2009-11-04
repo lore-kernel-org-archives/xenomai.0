@@ -1,10 +1,12 @@
-Content-Type: text/plain; charset=us-ascii; format=flowed; delsp=yes
 Mime-Version: 1.0 (Apple Message framework v1076)
+Content-Type: text/plain; charset=us-ascii; format=flowed; delsp=yes
 From: Stefan Schaal <sschaal@domain.hid>
-Date: Tue, 3 Nov 2009 17:18:14 -0800
+In-Reply-To: <B0122F57-107F-4E31-A663-D4DE560C08B8@domain.hid>
+Date: Tue, 3 Nov 2009 22:35:27 -0800
 Content-Transfer-Encoding: 7bit
-Message-Id: <B0122F57-107F-4E31-A663-D4DE560C08B8@domain.hid>
-Subject: [Xenomai-help] bring down the system
+Message-Id: <C790DE41-A093-46C5-9F44-D3F0EA839CF5@domain.hid>
+References: <B0122F57-107F-4E31-A663-D4DE560C08B8@domain.hid>
+Subject: Re: [Xenomai-help] bring down the system
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,12 +16,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
-Cc: Peter Pastor <pastor@domain.hid>
+To: Stefan Schaal <sschaal@domain.hid>
+Cc: xenomai@xenomai.org, Peter Pastor <pastor@domain.hid>
+
+Sorry, I attached the wrong C-program in the previous posting ....  
+here is the corrected version:
 
 Hi,
 
-   attached is a little C program that spawns off a task which runs a  
+  attached is a little C program that spawns off a task which runs a  
 heavy tiny math job. Despite my 8 processor machine, taking this one  
 task to 99% CPU load slows down the entire computer, often such that  
 there is no return except for a forced restart.
@@ -50,29 +55,27 @@ unix> xtest
 
 
 
-
-
-
-
 ------------------------------------------------  xeno_spawn_test.c  
 ---------------------------------------------
 #include <sys/mman.h>
+#include <native/task.h>
 #include <pthread.h>
 #include <stdio.h>
+#include <math.h>
 
-pthread_t cthread;
+RT_TASK task;
 
-// a quick thread to run ....
-void *
-run_thread(void *dummy)
+// a quick task run ....
+void
+run_task(void *dummy)
 {
    int i;
+   double foo = 1.0;
 
-   for (i=1; i<=1000; ++i) {
-     printf("%d thread is runnning\n",i);
-     sleep(1);
-   }
-   return NULL;
+   for (i=1; i<=100000000; ++i)
+     foo = foo*1.1;
+
+   return;
 }
 
 // main program
@@ -82,20 +85,19 @@ main() {
    int rc;
    pthread_attr_t pth_attr;
 
-#ifdef __XENO__
    mlockall(MCL_CURRENT | MCL_FUTURE);
-#endif
 
-   if ((rc=pthread_attr_init(&pth_attr)))
-       printf("pthread_attr_init returned %d\n",rc);
+   // spawn the task
+   if ((rc=rt_task_spawn(&task,"run_task",100000,1,T_JOINABLE|T_FPU| 
+T_CPU(1),run_task,NULL)))
+       printf("rt_task_spawn returned %d\n",rc);
 
-   if ((rc=pthread_create( &cthread, &pth_attr, run_thread, NULL)))
-       printf("pthread_create returned with %d\n",rc);
-
-   // wait a bit to get some print outs from the thread
-   sleep(10);
+   rt_task_join(&task);
 
    return 1;
 }
+
+
+
 
 
