@@ -1,16 +1,9 @@
-Message-ID: <4AF12F3B.9010303@domain.hid>
-Date: Tue, 03 Nov 2009 23:37:31 -0800
-From: Jonas Buchli <jonas@domain.hid>
 MIME-Version: 1.0
-References: <B0122F57-107F-4E31-A663-D4DE560C08B8@domain.hid>
-	<C790DE41-A093-46C5-9F44-D3F0EA839CF5@domain.hid>
-	<20091104065257.A164B3F6C1@domain.hid>
-	<4AF12B70.3020004@domain.hid>
-	<20091104072605.D26E63F6C1@domain.hid>
-In-Reply-To: <20091104072605.D26E63F6C1@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] bring down the system
+Date: Wed, 4 Nov 2009 18:02:37 +0900
+Message-ID: <1f3e02580911040102r1dead1d3lbc66d9a4d9d26d33@domain.hid>
+From: Didenko Sergey <didenkos@domain.hid>
+Content-Type: multipart/alternative; boundary=00504502b00d534b1d047787dfec
+Subject: [Xenomai-help] [ARM_MV 88F6290] Task limit, msg receive error
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,74 +13,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Denk <wd@domain.hid>
-Cc: Peter Pastor <pastor@domain.hid>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-> In message <4AF12B70.3020004@domain.hid> you wrote:
->> did you compile with exactly our compile statement or with additional 
->> flags (i.e. optimization)?
-> 
-> With optimization, of course.
+--00504502b00d534b1d047787dfec
+Content-Type: text/plain; charset=UTF-8
 
-well, we did not want to burden with you the 70k lines of code, that 
-even when compiled optimized leads to the lock ups, and tried to come up 
-with this little test case, but to be useful it needs to be compiled 
-with the statement provided i guess ;)
+Dear Experts
 
-could you try if you can reproduce it when not compiled with optimization?
+we are facing 2 problems now:
 
-> What sort of machine is this?
+1) in our test application (very simple one) we can create maximum 50 tasks,
+next task is failed to create with error *12*
+*- Is there any task number limit?*
+*- what does 12 mean?*
 
-it's a 8 cpu dell rack server (sorry i don't have the model at hand and 
-am not at the same site as the machine right now).
+2) in our project (originally developed for VxWorks), msgQReceive
+function returns
+-1 and sets errno to 4
+*We think that it might be related to XNBREAK thread's flag.*
+Current settings are:
+CONFIG_XENO_OPT_SYS_HEAPSZ=256
+CONFIG_XENO_OPT_SYS_STACKPOOLSZ=128
+- we did verify that total stack size of created VxWorks's tasks is about 60
+KB
+- we did verify that message queue's ID and task's ID were valid.
 
-i attach the content of /proc/cpuinfo what other info would you need?
+*- any idea why function msgQReceive fails ?*
 
-thanks a lot for looking into this!
-jonas
+Sergey
 
+--00504502b00d534b1d047787dfec
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
---------------------------------------------------
-/proc/cpuinfo (only for one processor, omitted the others, there are 8)
+Dear Experts<div><br></div><div>we are facing 2 problems now:</div><div><br=
+></div><div>1) in our test application (very simple one) we can create maxi=
+mum 50 tasks, next task is failed to create with error <b>12</b></div><div>
+<b>- Is there any task number limit?</b></div><div><b>- what does 12 mean?<=
+/b></div><div><br></div><div>2) in our project (originally developed for Vx=
+Works), <span class=3D"Apple-style-span" style=3D"font-weight: bold; ">msgQ=
+Receive <span class=3D"Apple-style-span" style=3D"font-weight: normal; ">fu=
+nction=C2=A0</span>returns -1<span class=3D"Apple-style-span" style=3D"font=
+-weight: normal; "> and </span>sets=C2=A0errno=C2=A0to 4</span></div>
+<div><b><span class=3D"Apple-style-span" style=3D"font-weight: normal;">We =
+think that it might be related to XNBREAK thread&#39;s flag.</span></b></di=
+v><div>Current settings are:</div><div><div><span class=3D"Apple-style-span=
+" style=3D"font-family: arial, sans-serif; border-collapse: collapse; font-=
+size: 17px; white-space: pre; -webkit-border-horizontal-spacing: 2px; -webk=
+it-border-vertical-spacing: 2px; ">CONFIG_XENO_OPT_SYS_HEAPSZ=3D256</span><=
+/div>
+<div><font class=3D"Apple-style-span" face=3D"arial, sans-serif" size=3D"5"=
+><span class=3D"Apple-style-span" style=3D"border-collapse: collapse; font-=
+size: 17px; white-space: pre; -webkit-border-horizontal-spacing: 2px; -webk=
+it-border-vertical-spacing: 2px; ">CONFIG_XENO_OPT_SYS_STACKPOOLSZ=3D128</s=
+pan></font></div>
+- we did verify that total stack size of created VxWorks&#39;s tasks is abo=
+ut 60 KB</div><div>- we did verify that message queue&#39;s ID and task&#39=
+;s ID were valid.<br><div><font class=3D"Apple-style-span" face=3D"arial, s=
+ans-serif" size=3D"5"><span class=3D"Apple-style-span" style=3D"border-coll=
+apse: collapse; font-size: 17px; white-space: pre; -webkit-border-horizonta=
+l-spacing: 2px; -webkit-border-vertical-spacing: 2px; "><br>
+</span></font></div></div><div><b><span class=3D"Apple-style-span" style=3D=
+"font-weight: normal;">- any idea why function=C2=A0<span class=3D"Apple-st=
+yle-span" style=3D"font-weight: bold; ">msgQReceive <span class=3D"Apple-st=
+yle-span" style=3D"font-weight: normal;">fails</span><span class=3D"Apple-s=
+tyle-span" style=3D"font-weight: normal; ">=C2=A0?</span></span></span></b>=
+</div>
+<div><br></div><div>Sergey</div><div><div><div><br></div><div><font class=
+=3D"Apple-style-span" face=3D"arial, sans-serif" size=3D"5"><span class=3D"=
+Apple-style-span" style=3D"border-collapse: collapse; font-size: 17px; whit=
+e-space: pre; -webkit-border-horizontal-spacing: 2px; -webkit-border-vertic=
+al-spacing: 2px;"><br>
+</span></font></div></div></div>
 
-
-processor	: 0
-vendor_id	: GenuineIntel
-cpu family	: 6
-model		: 23
-model name	: Intel(R) Xeon(R) CPU           E5440  @ 2.83GHz
-stepping	: 10
-cpu MHz		: 2826.146
-cache size	: 6144 KB
-physical id	: 0
-siblings	: 4
-core id		: 0
-cpu cores	: 4
-apicid		: 0
-initial apicid	: 0
-fdiv_bug	: no
-hlt_bug		: no
-f00f_bug	: no
-coma_bug	: no
-fpu		: yes
-fpu_exception	: yes
-cpuid level	: 13
-wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov 
-pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe nx lm 
-constant_tsc arch_perfmon pebs bts pni dtes64 monitor ds_cpl vmx est tm2 
-ssse3 cx16 xtpr pdcm dca sse4_1 xsave lahf_lm tpr_shadow vnmi flexpriority
-bogomips	: 5652.29
-clflush size	: 64
-power management:
-
-
--- 
---------------------------------------------------------------
-Jonas Buchli, Dr.sc., MSc EE
-Computational Learning and Motor Control Lab
-University of Southern California
-http://www-clmc.usc.edu/
-+1 (213) 740 67 17
---------------------------------------------------------------
+--00504502b00d534b1d047787dfec--
 
