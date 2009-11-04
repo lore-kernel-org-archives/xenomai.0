@@ -1,16 +1,13 @@
-Message-ID: <4AF15AE1.9040402@domain.hid>
-Date: Wed, 04 Nov 2009 11:43:45 +0100
+Message-ID: <4AF15C82.8050804@domain.hid>
+Date: Wed, 04 Nov 2009 11:50:42 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <985eb86f0911030429i5c419a6ak8f6e1f2a43250819@domain.hid>	
-	<985eb86f0911030815t68e7bf14i14ab0d7374c8ce5a@domain.hid>	
-	<4AF1545D.4060207@domain.hid>
-	<985eb86f0911040238w2497849et58282e8b7840d60e@domain.hid>
-In-Reply-To: <985eb86f0911040238w2497849et58282e8b7840d60e@domain.hid>
+References: <B0122F57-107F-4E31-A663-D4DE560C08B8@domain.hid>
+	<C790DE41-A093-46C5-9F44-D3F0EA839CF5@domain.hid>
+In-Reply-To: <C790DE41-A093-46C5-9F44-D3F0EA839CF5@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [Xenomai-core] Fwd: How to fix static priority
- to processes known in advance
+Subject: Re: [Xenomai-help] bring down the system
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,23 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: tarek ben ali <tarekbenali@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Stefan Schaal <sschaal@domain.hid>
+Cc: xenomai@xenomai.org, Peter Pastor <pastor@domain.hid>
 
-tarek ben ali wrote:
-> Thanks for your reply,
-> Can I do this with /sched_setscheduler/()
-> <http://www.opengroup.org/onlinepubs/000095399/functions/sched_setscheduler.html>
-> function by indicates the pid of the process that I want to set its
-> priority?
+Stefan Schaal wrote:
+> Sorry, I attached the wrong C-program in the previous posting ....  
+> here is the corrected version:
 > 
-sched_setscheduler() allows to set the priority of an existing process.
-sched_setscheduler() does not set the priorities of Xenomai threads.
+> Hi,
+> 
+>   attached is a little C program that spawns off a task which runs a  
+> heavy tiny math job. Despite my 8 processor machine, taking this one  
+> task to 99% CPU load slows down the entire computer, often such that  
+> there is no return except for a forced restart.
+> 
+> I run the xenomai-head git, updated on Oct. 29 the last time, on a  
+> i386 ubuntu system with kernel 2.6.29.5.
+> 
+> Does anybody know what is going wrong here, i.e., am I not permitted  
+> to take my CPUs to the max load?
 
-Anyway, when running Xenomai, you usually want to give a high priority
-only to some particular threads. See:
+No, you can not do that. When a Xenomai task runs, Linux does not, and
+for your system to work correctly, Linux should run from time to time,
+so, the typical Xenomai setup is a periodic task which wakes up, does
+some job, and goes back to sleep, leaving some time for linux to run.
 
-http://www.xenomai.org/documentation/xenomai-2.4/html/api/group__posix__sched.html
 -- 
                                           Gilles
 
