@@ -1,12 +1,16 @@
-Message-ID: <4AF1591E.7080408@domain.hid>
-Date: Wed, 04 Nov 2009 11:36:14 +0100
+Message-ID: <4AF15AE1.9040402@domain.hid>
+Date: Wed, 04 Nov 2009 11:43:45 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1f3e02580911040102r1dead1d3lbc66d9a4d9d26d33@domain.hid>
-In-Reply-To: <1f3e02580911040102r1dead1d3lbc66d9a4d9d26d33@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <985eb86f0911030429i5c419a6ak8f6e1f2a43250819@domain.hid>	
+	<985eb86f0911030815t68e7bf14i14ab0d7374c8ce5a@domain.hid>	
+	<4AF1545D.4060207@domain.hid>
+	<985eb86f0911040238w2497849et58282e8b7840d60e@domain.hid>
+In-Reply-To: <985eb86f0911040238w2497849et58282e8b7840d60e@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [ARM_MV 88F6290] Task limit, msg receive error
+Subject: Re: [Xenomai-help] [Xenomai-core] Fwd: How to fix static priority
+ to processes known in advance
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,38 +20,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Didenko Sergey <didenkos@domain.hid>
-Cc: xenomai@xenomai.org
+To: tarek ben ali <tarekbenali@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Didenko Sergey wrote:
-> Dear Experts
-
-Hi, you do not need to flatter us to get answers :-)
-
+tarek ben ali wrote:
+> Thanks for your reply,
+> Can I do this with /sched_setscheduler/()
+> <http://www.opengroup.org/onlinepubs/000095399/functions/sched_setscheduler.html>
+> function by indicates the pid of the process that I want to set its
+> priority?
 > 
-> we are facing 2 problems now:
-> 
-> 1) in our test application (very simple one) we can create maximum 50
-> tasks, next task is failed to create with error *12*
-> *- Is there any task number limit?*
-> *- what does 12 mean?*
+sched_setscheduler() allows to set the priority of an existing process.
+sched_setscheduler() does not set the priorities of Xenomai threads.
 
-Please read the TROUBLESHOOTING guide which comes with Xenomai, for the
-question about the task number limit.
+Anyway, when running Xenomai, you usually want to give a high priority
+only to some particular threads. See:
 
-For the error codes, see:
-http://www.xenomai.org/index.php/Resolving_Error_Codes
-
-> 
-> 2) in our project (originally developed for VxWorks), msgQReceive
-> function returns -1 and sets errno to 4
-> *We think that it might be related to XNBREAK thread's flag.*
-
-Yes, error 4 is EINTR, it means that msgQReceive was interrupted by a
-signal. We can only tell you whether this is normal if you tell us in
-exactly what conditions you get this error (a test case reduced to the
-minimum would be welcome).
-
+http://www.xenomai.org/documentation/xenomai-2.4/html/api/group__posix__sched.html
 -- 
                                           Gilles
 
