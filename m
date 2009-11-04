@@ -1,19 +1,11 @@
-Date: Wed, 4 Nov 2009 19:19:07 +0100
-From: Richard Cochran <richardcochran@domain.hid>
-Message-ID: <20091104181907.GA24561@domain.hid>
-References: <20091103133407.GA9836@domain.hid>
-	<1257259464.2210.32.camel@domain.hid>
-	<20091104055659.GA5280@domain.hid>
-	<1257328464.2210.66.camel@domain.hid>
-	<20091104111536.GA14614@domain.hid>
-	<1257334005.2210.86.camel@domain.hid>
-	<20091104140832.GA32220@domain.hid>
+From: "Guanghui, Cheng" <cheng.guanghui.ml@domain.hid>
+Date: Thu, 5 Nov 2009 05:12:20 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20091104140832.GA32220@domain.hid>
-Subject: Re: [Xenomai-core] [Xenomai core] Freeze on MPC8572 and P2020 with
-	SMP
+Message-Id: <200911050512.20207.cheng.guanghui.ml@domain.hid>
+Content-Type: multipart/alternative; boundary="Boundary-00=_04e8KN+rO1dNb8Z"
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] a problem about hpet device
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -22,43 +14,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, Nov 04, 2009 at 03:08:32PM +0100, Richard Cochran wrote:
-> On Wed, Nov 04, 2009 at 12:26:45PM +0100, Philippe Gerum wrote:
-> > Ok, this is a porting issue. The critical IPI (IPIPE_CRITICAL_IPI) does
-> > not seem to be properly handled on this platform.
+--Boundary-00=_04e8KN+rO1dNb8Z
+Content-Type: text/plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
 
-Okay, after playing with the BDI3000 today, I have found out that both
-cores end up running in infinite loops.
+Hello:
+	I need to use hpet device as my clock event source in my os
+and i have mapped this device to local place. But when i read the
+configuration or value all the bit is 1. Is it something wrong?
+	Thanks
+						Guanghui
 
-Core 0 runs this loop in ipipe_critical_enter() at
-arch/powerpc/kernel/ipipe.c:278
+--Boundary-00=_04e8KN+rO1dNb8Z
+Content-Type: text/html;
+  charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-	while (!cpus_equal(__ipipe_cpu_sync_map, lock_map))
-		cpu_relax();
-
-Dissambles to...
-
-0xc000a5d4 <ipipe_critical_enter+368>: lwz     r0,-23316(r30)
-0xc000a5d8 <ipipe_critical_enter+372>: xor     r0,r3,r0
-0xc000a5dc <ipipe_critical_enter+376>: andi.   r9,r0,3
-0xc000a5e0 <ipipe_critical_enter+380>: bne+    0xc000a5d4 <ipipe_critical_enter+368>
-
-Core 1 runs an infinite loop in cpu_idle() calling into
-ipipe_suspend_domain() now and again. The stack looks like:
-
-#0  ipipe_suspend_domain () at kernel/ipipe/core.c:614
-#1  0xc0008c0c in cpu_idle () at arch/powerpc/kernel/idle.c:62
-#2  0xc030262c in start_secondary () at arch/powerpc/kernel/smp.c:556
-#3  0xc0001ca8 in __secondary_start ()
-
-I realize this is only the symptom, but now I'll study the code
-leading up to this condition.
-
-Any ideas on the prossible cause, Philippe?
-
-Thanks,
-Richard
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-=
+html40/strict.dtd"><html><head><meta name=3D"qrichtext" content=3D"1" /><st=
+yle type=3D"text/css">p, li { white-space: pre-wrap; }</style></head><body =
+style=3D" font-family:'=E5=BE=AE=E8=BD=AF=E9=9B=85=E9=BB=91'; font-size:13p=
+t; font-weight:400; font-style:normal;"><p style=3D" margin-top:0px; margin=
+=2Dbottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-=
+indent:0px;">Hello:<br />	I need to use hpet device as my clock event sourc=
+e in my os<br />and i have mapped this device to local place. But when i re=
+ad the<br />configuration or value all the bit is 1. Is it something wrong?=
+<br />	Thanks<br />						Guanghui</p></body></html>
+--Boundary-00=_04e8KN+rO1dNb8Z--
 
