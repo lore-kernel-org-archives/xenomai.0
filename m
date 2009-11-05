@@ -1,10 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <72cf3fb0911050101x6e67ceabp724d38b8c459bab1@domain.hid>
-Message-ID: <0016e64cae6a9b846804779c4a17@domain.hid>
-Date: Thu, 05 Nov 2009 09:24:17 +0000
-From: peter.pastor@domain.hid
-Content-Type: multipart/alternative; boundary=0016e64cae6a9b845204779c4a14
-Subject: Re: [Xenomai-help] real-time parallel port communication
+From: Vincent Vanbesien <vincent.vanbesien@domain.hid>
+Date: Thu, 5 Nov 2009 10:48:23 +0100
+Message-ID: <9b6d86ab0911050148k55e1d4a2k5c7e373da1357352@domain.hid>
+Content-Type: multipart/alternative; boundary=001485f6cd12fd955504779ca113
+Subject: [Xenomai-help] Porting Adeos-Ipipe on AVR32 (NGW 100).
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,101 +13,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Alexis Berlemont <berlemont.hauw@domain.hid>, Peter Pastor <peter.pastor@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
---0016e64cae6a9b845204779c4a14
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed; delsp=yes
+--001485f6cd12fd955504779ca113
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Hey Alexis,
+It is maybe not the first time you receive this email sorry for
+disappointment.
 
-Thanks for the response !!
+Hello,
+We are two students from Nantes (FRANCE) and we have to port adeos-Ipipe on
+an AVR32.
+We would like to know if there is already something which have been done
+about that ? We checked the  Ipipe repository
+http://git.denx.de/?p=3Dipipe-2.6.git;a=3Dsummary and we did not find anyth=
+ing
+which would have benn done about the architecture AVR32.
+best regards
+BinomeB and BinomeA
+Polytech'Nantes
 
-> Does the comedi driver suit your need ?
-I actually can't tell since I haven't tried it out. I will try whether outb  
-does the job. However, it would be really cool if you could port the comedi  
-driver for the parallel port to analogy (hope this does not take too long).
+Bonjour,
+nous sommes deux =E9tudiants de Nantes et nous devons porter adeos-Ipipe su=
+r
+un AVR32.
+On aimerais savoir si quelque chose a d=E9j=E0 =E9t=E9 fait =E0 ce sujet. N=
+ous avons
+v=E9rifi=E9 le d=E9p=F4t Ipipe http://git.denx.de/?p=3Dipipe-2.6.git;a=3Dsu=
+mmary mais
+nous n'avons rien trouv=E9 de fait sur l'architecture AVR32.
+merci d'avance
+BinomeB and BinomeA
+Polytech'Nantes
 
-Thanks a lot,
-Peter
-
-On Nov 5, 2009 1:01am, Alexis Berlemont <berlemont.hauw@domain.hid> wrote:
-> Hi,
-
-
-
-> On Thu, Nov 5, 2009 at 6:05 AM, Peter Pastor peter.pastor@domain.hid>  
-> wrote:
-
-> > Hello there,
-
-> >
-
-> > I need to get real-time communication over a parallel port working. I  
-> got
-
-> > the serial port to run in real-time using the drivers provided by  
-> xenomai.
-
-> > However, I haven't found similar drivers for the parallel port yet.  
-> Does the
-
-> > new analogy branch contain real-time drivers for the parallel port ??
-
-
-
-> No. But there is a comedi driver for the parallel port. That would not
-
-> take too long to convert it for analogy.
-
-
-
-> Does the comedi driver suit your need ?
-
-
-
-> > I would be happy for any hints. Also, would be cool if somebody could  
-> point
-
-> > me to some example programs.
-
-> >
-
-> > Thanks,
-
-> > peter
-
-> >
-
-> Alexis.
-
-
---0016e64cae6a9b845204779c4a14
+--001485f6cd12fd955504779ca113
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Hey Alexis,<br /><br />Thanks for the response !!<br /><br />&gt; Does the =
-comedi driver suit your need ?<br />I actually can&#39;t tell since I haven=
-&#39;t tried it out. I will try whether outb does the job. However, it woul=
-d be really cool if you could port the comedi driver for the parallel port =
-to analogy (hope this does not take too long).<br /><br />Thanks a lot,<br =
-/> Peter<br /><br />On Nov 5, 2009 1:01am, Alexis Berlemont &lt;berlemont.h=
-auw@domain.hid&gt; wrote:<br />&gt; Hi,<br />&gt; <br />&gt; <br />&gt; <br />=
-&gt; On Thu, Nov 5, 2009 at 6:05 AM, Peter Pastor peter.pastor@domain.hid&gt=
-; wrote:<br />&gt; <br />&gt; &gt; Hello there,<br />&gt; <br />&gt; &gt;<b=
-r />&gt; <br />&gt; &gt; I need to get real-time communication over a paral=
-lel port working. I got<br />&gt; <br />&gt; &gt; the serial port to run in=
- real-time using the drivers provided by xenomai.<br />&gt; <br />&gt; &gt;=
- However, I haven&#39;t found similar drivers for the parallel port yet. Do=
-es the<br />&gt; <br />&gt; &gt; new analogy branch contain real-time drive=
-rs for the parallel port ??<br />&gt; <br />&gt; <br />&gt; <br />&gt; No. =
-But there is a comedi driver for the parallel port. That would not<br />&gt=
-; <br />&gt; take too long to convert it for analogy.<br />&gt; <br />&gt; =
-<br />&gt; <br />&gt; Does the comedi driver suit your need ?<br />&gt; <br=
- />&gt; <br />&gt; <br />&gt; &gt; I would be happy for any hints. Also, wo=
-uld be cool if somebody could point<br />&gt; <br />&gt; &gt; me to some ex=
-ample programs.<br />&gt; <br />&gt; &gt;<br />&gt; <br />&gt; &gt; Thanks,=
-<br />&gt; <br />&gt; &gt; =A0peter<br />&gt; <br />&gt; &gt;<br />&gt; <br=
- />&gt; Alexis.<br />&gt;
---0016e64cae6a9b845204779c4a14--
+It is maybe not the first time you receive this email sorry for disappointm=
+ent.<br><br>Hello,<br>
+We are two students from Nantes (FRANCE) and we have to port adeos-Ipipe on=
+ an AVR32.<br>
+We would like to know if there is already something which have been done ab=
+out that ? We checked the=A0 Ipipe repository<br>
+<a href=3D"http://git.denx.de/?p=3Dipipe-2.6.git;a=3Dsummary" target=3D"_bl=
+ank">http://git.denx.de/?p=3Dipipe-2.6.git;a=3Dsummary</a> and we did not f=
+ind anything which would have benn done about the architecture AVR32.<br>
+best regards<br>
+BinomeB and BinomeA<br>
+Polytech&#39;Nantes<br>
+<br>
+Bonjour,<br>
+nous sommes deux =E9tudiants de Nantes et nous devons porter adeos-Ipipe su=
+r un AVR32.<br>
+On aimerais savoir si quelque chose a d=E9j=E0 =E9t=E9 fait =E0 ce sujet. N=
+ous avons v=E9rifi=E9 le d=E9p=F4t Ipipe <a href=3D"http://git.denx.de/?p=
+=3Dipipe-2.6.git;a=3Dsummary" target=3D"_blank">http://git.denx.de/?p=3Dipi=
+pe-2.6.git;a=3Dsummary</a> mais nous n&#39;avons rien trouv=E9 de fait sur =
+l&#39;architecture AVR32.<br>
+
+
+
+merci d&#39;avance<br>
+BinomeB and BinomeA<br>
+Polytech&#39;Nantes<br>
+
+--001485f6cd12fd955504779ca113--
 
