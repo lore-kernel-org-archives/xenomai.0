@@ -1,11 +1,13 @@
-Message-ID: <4AF30B2A.3050205@domain.hid>
-Date: Thu, 05 Nov 2009 18:28:10 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4AF22E85.50400@domain.hid>
+References: <634c78ce0910010730t29137af8w95b63ae21183b52b@domain.hid>
+	<4AF22E85.50400@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Thu, 05 Nov 2009 21:10:48 +0100
+Message-ID: <1257451848.2210.173.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH] native: Properly update lockcnt on recursive
- call from secondary mode
+Subject: Re: [Xenomai-core] select: native tasks with posix skin mqueues
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -14,47 +16,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-We cannot assume that only non-recursive rt_mutex_acquire calls will
-happen; the application may be buggy and come from secondary mode. Make
-sure to update the user space recursion counter correctly in any case so
-that at least the mutex is kept in a valid state.
+On Thu, 2009-11-05 at 02:46 +0100, Gilles Chanteperdrix wrote:
+> Peter Soetens wrote:
+> > Hi,
+> > 
+> > I'm creating my RT threads using the native API and I'm creating
+> > mqueues, wrapped to the pthread_rt library.
+> > I can read and write the mqueue (and it goes through Xenomai), but
+> > when I select() on a receiving mqd_t, the select() calls returns that
+> > there is data available on the mq (it fills in the FD_SET), but keeps
+> > doing so even when it's empty (the select() is in a loop). Also, it's
+> > modeswitching like nuts.
+> > 
+> > I found out that the __wrap_select is correctly called, but returns
+> > -EPERM. Kernel sources indicate that this is caused by
+> > pse51_current_thread() alias thread2pthread() returning null. Since
+> > EPERM is returned to userspace, the __real_select is called from user
+> > space, causing the mode switches and bad behaviour. This is almost
+> > certainly the thing that native + RTDM + select() is seeing too.
+> > 
+> > My mqueues-only work probably because mq.c only uses
+> > pse51_current_thread() in the mq_notify function. I'm guessing that
+> > mq_notify would also not work in combination with native skin.
+> > 
+> > I had two options in fixing this: add a xnselector to the native task
+> > struct or to the nucleus xnthread_t. I choose the latter, such that
+> > every skin kan use select() + RTDM and migrate gradualy to the RTDM
+> > and/or Posix skin.
+> > I needed to free the xnselector structure in xnpod_delete_thread() , I
+> > chose a spot, but it causes a segfault in my native thread (which did
+> > the select) during program cleanup. Any advice ? Also, maybe we should
+> > separate select() from the posix skin and put it in a separate place
+> > (in RTDM as rtdm_select() ?), such that we can start building around
+> > it (posix just forwards to rtdm_select() then).
+> > 
+> > A second patch was necessary to return the timeout case properly to
+> > userspace (independent of first patch).
+> > 
+> > Tested with native + posix loaded and mq. If you never quit your
+> > application, this works :-)
+> 
+> Hi,
+> 
+> I have included a lightly modified version of this patch on head, I do
+> not see any crash.  However, I have some doubts about the current
+> implementation: calling xnselector_destroy() opens opportunities for a
+> rescheduling, which I am not sure is really what we want in the middle
+> of xnpod_delete_thread(). Philippe, what do you think?
+> 
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
+Same as you do: that would break.
 
-Can be pulled from 'for-upstream' as well.
+> Regards.
+> 
 
- src/skins/native/mutex.c |   14 ++++++++++++++
- 1 files changed, 14 insertions(+), 0 deletions(-)
 
-diff --git a/src/skins/native/mutex.c b/src/skins/native/mutex.c
-index 29843c7..98844ef 100644
---- a/src/skins/native/mutex.c
-+++ b/src/skins/native/mutex.c
-@@ -96,6 +96,20 @@ static int rt_mutex_acquire_inner(RT_MUTEX *mutex, RTIME timeout, xntmode_t mode
- 
- 		if (timeout == TM_NONBLOCK && mode == XN_RELATIVE)
- 			return -EWOULDBLOCK;
-+	} else if (xnsynch_fast_owner_check(mutex->fastlock, cur) == 0) {
-+		/*
-+		 * The application is buggy as it jumped to secondary mode
-+		 * while holding the mutex. Nevertheless, we have to keep the
-+		 * mutex state consistent.
-+		 *
-+		 * We make no efforts to migrate or warn here. There is
-+		 * CONFIG_XENO_OPT_DEBUG_SYNCH_RELAX to catch such bugs.
-+		 */
-+		if (mutex->lockcnt == UINT_MAX)
-+			return -EAGAIN;
-+
-+		mutex->lockcnt++;
-+		return 0;
- 	}
- #endif /* CONFIG_XENO_FASTSYNCH */
- 
 -- 
-1.6.0.2
+Philippe.
+
+
 
