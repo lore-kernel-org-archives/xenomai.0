@@ -1,15 +1,15 @@
-Message-ID: <4AF2911A.2050008@domain.hid>
-Date: Thu, 05 Nov 2009 09:47:22 +0100
+Message-ID: <4AF29229.2090205@domain.hid>
+Date: Thu, 05 Nov 2009 09:51:53 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <96eea0c80911042105r19d11a70w1d47de4427c00e58@domain.hid>
-	<ddc6e05e0911042339i50e112c9x10e089206c7e9524@domain.hid>
-In-Reply-To: <ddc6e05e0911042339i50e112c9x10e089206c7e9524@domain.hid>
+References: <BB99A6BA28709744BF22A68E6D7EB51F03310307D6@domain.hid>	<4AF20D2B.30508@domain.hid>
+	<BB99A6BA28709744BF22A68E6D7EB51F033103081D@midas.usurf.usu.edu>
+In-Reply-To: <BB99A6BA28709744BF22A68E6D7EB51F033103081D@midas.usurf.usu.edu>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigEE8BB9395DEFC7365FE14FE2"
+	boundary="------------enig7C668D3BC42DFBFB999652DD"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] real-time parallel port communication
+Subject: Re: [Xenomai-help] Sharing Semaphores in Kernel and User Space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,47 +19,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Remco den Breeje <remco@domain.hid>
-Cc: xenomai@xenomai.org, Peter Pastor <peter.pastor@domain.hid>
+To: Jonathan Haws <Jonathan.Haws@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigEE8BB9395DEFC7365FE14FE2
+--------------enig7C668D3BC42DFBFB999652DD
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Remco den Breeje wrote:
-> On Thu, Nov 5, 2009 at 6:05 AM, Peter Pastor <peter.pastor@domain.hid> w=
-rote:
->> Hello there,
->>
->> I need to get real-time communication over a parallel port working. I =
-got
->> the serial port to run in real-time using the drivers provided by xeno=
-mai.
->> However, I haven't found similar drivers for the parallel port yet. Do=
-es the
->> new analogy branch contain real-time drivers for the parallel port ??
->>
->> I would be happy for any hints. Also, would be cool if somebody could =
-point
->> me to some example programs.
->>
->> Thanks,
->>  peter
->>
+Jonathan Haws wrote:
+>>> I am writing a driver that needs to wake up a user space thread on
+>> a
+>>> hardware interrupt.  I am reading about the Xenomai APIs
+>> semaphores
+>>> and want to know if I create a semaphore in my kernel module with
+>> a
+>>> given name using rt_sem_create, can I call rt_sem_bind in user
+>> space
+>>> to bind to that same semaphore?
+>>>
+>>> I am sure hoping the answer is yes!
+>> The answer is yes, but...
+>> this programming model is deprecated. You should be implementing a
+>> driver using the RTDM API, as you would do with Linux.
 >=20
-> outb(char, 0x378) works for me. Or do you need something more fancy?
+> The driver is a really dumb driver - all it really does is setup pointe=
+rs to the PCI BARs and installs the interrupt.  I provide an mmap routine=
+ to map the BARs to user space so I can control the device from there.
+>=20
+> Would this still be necessary to use the RTDM API?  I guess to install =
+the interrupt, but there really is not anything else the driver does.
 
-Interrupt handling, I bet. User space drivers are feasible, but can have
-poor re-use factors.
+Abstraction is the primary job of a driver. Pushing things to user space
+quickly blurs the boundaries and ends up in tricky to maintain blob on
+the long term.
 
-I think the key to a parallel port driver is an RTDM device profile that
-matches more than one use case. Suggestions welcome.
+>=20
+> I was also reading the RTDM API and am confused about the rtdm_iomap_to=
+_user() function - is that to be called from my user space application an=
+d it will then call the mmap routine that I have in place for my driver?
+
+It's part of the function set that a driver can use, not an application.
+This function will do all the work required to let some I/O memory show
+up in the user space's memory range.
 
 Jan
 
 
---------------enigEE8BB9395DEFC7365FE14FE2
+--------------enig7C668D3BC42DFBFB999652DD
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -68,10 +75,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkrykRoACgkQitSsb3rl5xTedwCfY6hFV3tcF1JlmS4yCckaN79o
-wbIAoLA2IYsiVwwAr81biYXoW0u/zho+
-=1IDs
+iEYEARECAAYFAkrykioACgkQitSsb3rl5xTPdQCdHAjM52mxt1F1MKGC4kK13ibp
+pawAnA8QNR+nayl59tfZfx/FIKZFiC6S
+=ZdqI
 -----END PGP SIGNATURE-----
 
---------------enigEE8BB9395DEFC7365FE14FE2--
+--------------enig7C668D3BC42DFBFB999652DD--
 
