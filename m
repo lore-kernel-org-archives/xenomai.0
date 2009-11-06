@@ -1,17 +1,9 @@
-Message-ID: <4AF3F8E0.5080908@domain.hid>
-Date: Fri, 06 Nov 2009 11:22:24 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <725957.56219.qm@domain.hid>
-	<4AF04886.9040903@domain.hid>
-	<1f3e02580911030745o128df8aeve4bdd44bad9c3db7@domain.hid>
-	<4AF15D68.7060001@domain.hid>
-	<873433.54790.qm@domain.hid>
-	<1f3e02580911060139q60bc91f8k4e71d933a50895ba@domain.hid>
-In-Reply-To: <1f3e02580911060139q60bc91f8k4e71d933a50895ba@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Porting I-Pipe for new ARM board
+Date: Fri, 6 Nov 2009 08:44:13 -0800
+Message-ID: <96eea0c80911060844q10526fc0qd17651dc09a1ba82@domain.hid>
+From: Peter Pastor <peter.pastor@domain.hid>
+Content-Type: multipart/alternative; boundary=00151774177acf72830477b68d43
+Subject: Re: [Xenomai-help] real-time parallel port communication
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,31 +13,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sergey Didenko <didenkos@domain.hid>
-Cc: Xenomai-help@domain.hid
+To: xenomai@xenomai.org, pierre.ficheux@domain.hid
 
-Sergey Didenko wrote:
-> Hello
-> 
-> Here it is!
-> I'm very sorry for this delay, it was related to 2 facts:
-> 1) before publishing I wanted to put the code in order and to verify
-> once again
-> 2) I was extremely busy these days, especially with the project on
-> Xenoimai and I could not do anything with that code except making my
-> project work on it.
-> 
-> I want to say only that it is working and you can use it with some
-> changes for your board.
-> One more time sorry for very late reply.
-> 
-> Gilles, did you get this code (I sent it to you 11.05) ?
+--00151774177acf72830477b68d43
+Content-Type: text/plain; charset=ISO-8859-1
 
-No, I did not receive anything. Anyway, please send your modifications a
-patch against your kernel patched with the original I-pipe patch. That
-is the only way for us to review your code efficiently.
+Hey Pierre,
 
--- 
-                                          Gilles
+I need the parallel port driver to do input/output at a relatively high
+frequency. In case your driver is suited for that, it would be cool if I
+could try it out :)
 
+Thanks,
+ Peter
+
+>Peter Pastor a ?crit :
+>> Hello there,
+>>
+>> I need to get real-time communication over a parallel port working. I
+>> got the serial port to run in real-time using the drivers provided by
+>> xenomai. However, I haven't found similar drivers for the parallel port
+>> yet. Does the new analogy branch contain real-time drivers for the
+>> parallel port ??
+>>
+>> I would be happy for any hints. Also, would be cool if somebody could
+>> point me to some example programs.
+>>
+>
+>I wrote a sample RTDM driver based on outb (char, 0x378). What do you
+>want to do with // port? input? output? interrupt? somthing like old
+>style "Centronics" ?
+>
+>regards
+
+--00151774177acf72830477b68d43
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div>Hey Pierre,</div><div><br></div><div>I need the parallel port driver t=
+o do input/output at a relatively high frequency. In case your driver is su=
+ited for that, it would be cool if I could try it out :)=A0</div><div><br>
+</div><div>Thanks,</div><div>=A0Peter</div><div><br></div><div>&gt;Peter Pa=
+stor a ?crit :</div><div>&gt;&gt; Hello there,</div><div>&gt;&gt;</div><div=
+>&gt;&gt; I need to get real-time communication over a parallel port workin=
+g. I</div>
+<div>&gt;&gt; got the serial port to run in real-time using the drivers pro=
+vided by</div>
+
+
+<div>&gt;&gt; xenomai. However, I haven&#39;t found similar drivers for the=
+ parallel port</div><div>&gt;&gt; yet. Does the new analogy branch contain =
+real-time drivers for the</div><div>&gt;&gt; parallel port ??</div><div>
+
+
+
+&gt;&gt;</div><div>&gt;&gt; I would be happy for any hints. Also, would be =
+cool if somebody could</div><div>&gt;&gt; point me to some example programs=
+.</div><div>&gt;&gt;</div><div>&gt;</div><div>&gt;I wrote a sample RTDM dri=
+ver based on outb (char, 0x378). What do you</div>
+
+
+
+<div>&gt;want to do with // port? input? output? interrupt? somthing like o=
+ld</div><div>&gt;style &quot;Centronics&quot; ?</div><div>&gt;</div><div>&g=
+t;regards</div>
+
+--00151774177acf72830477b68d43--
 
