@@ -1,17 +1,14 @@
-Message-ID: <4AF3DF51.70402@domain.hid>
-Date: Fri, 06 Nov 2009 09:33:21 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <873433.54790.qm@domain.hid>
+References: <725957.56219.qm@domain.hid>
+	<4AF04886.9040903@domain.hid>
+	<1f3e02580911030745o128df8aeve4bdd44bad9c3db7@domain.hid>
+	<4AF15D68.7060001@domain.hid>
+Date: Fri, 6 Nov 2009 01:08:47 -0800 (PST)
+From: Wael Showair <showair2003@domain.hid>
+In-Reply-To: <4AF15D68.7060001@domain.hid>
 MIME-Version: 1.0
-References: <BB99A6BA28709744BF22A68E6D7EB51F03310307D6@domain.hid>	<4AF20D2B.30508@domain.hid>
-	<BB99A6BA28709744BF22A68E6D7EB51F033103081D@midas.usurf.usu.edu>
-	<4AF29229.2090205@domain.hid>
-	<BB99A6BA28709744BF22A68E6D7EB51F03310309AA@midas.usurf.usu.edu>
-In-Reply-To: <BB99A6BA28709744BF22A68E6D7EB51F03310309AA@midas.usurf.usu.edu>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig4492952CF9C35445E151F38F"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Sharing Semaphores in Kernel and User Space
+Content-Type: multipart/alternative; boundary="0-919356750-1257498527=:54790"
+Subject: Re: [Xenomai-help] Porting I-Pipe for new ARM board
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,98 +18,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jonathan Haws <Jonathan.Haws@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Didenko Sergey <didenkos@domain.hid>
+Cc: Xenomai-help@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4492952CF9C35445E151F38F
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+--0-919356750-1257498527=:54790
+Content-Type: text/plain; charset=us-ascii
 
-Jonathan Haws wrote:
->>>>> I am writing a driver that needs to wake up a user space thread
->> on
->>>> a
->>>>> hardware interrupt.  I am reading about the Xenomai APIs
->>>> semaphores
->>>>> and want to know if I create a semaphore in my kernel module
->> with
->>>> a
->>>>> given name using rt_sem_create, can I call rt_sem_bind in user
->>>> space
->>>>> to bind to that same semaphore?
->>>>>
->>>>> I am sure hoping the answer is yes!
->>>> The answer is yes, but...
->>>> this programming model is deprecated. You should be implementing
->> a
->>>> driver using the RTDM API, as you would do with Linux.
->>> The driver is a really dumb driver - all it really does is setup
->> pointers to the PCI BARs and installs the interrupt.  I provide an
->> mmap routine to map the BARs to user space so I can control the
->> device from there.
->>> Would this still be necessary to use the RTDM API?  I guess to
->> install the interrupt, but there really is not anything else the
->> driver does.
->>
->> Abstraction is the primary job of a driver. Pushing things to user
->> space
->> quickly blurs the boundaries and ends up in tricky to maintain blob
->> on
->> the long term.
->=20
-> That is what I am trying to do, abstract away the details of interfacin=
-g with the hardware, however the user does need to have access to the BAR=
-s to be able to configure the device at runtime in an efficient manner.  =
-IOCTL calls are too slow for our application.  We do not need this driver=
- to be very portable either - this is custom built hardware specific to o=
-ur application only.
+Hi Sergey & Gilles,
+Could anyone of you please put any version of the patch on the mailing-list.
+you said you can send it to me within 10 hours or on last Monday?
 
-No one says that every transfered byte need to be encapsulated into an
-IOCTL. There can be clever device models that only issue driver calls
-when the caller needs to wait on an event. Of course, this also depends
-on the hardware's capabilities.
-
->=20
->>> I was also reading the RTDM API and am confused about the
->> rtdm_iomap_to_user() function - is that to be called from my user
->> space application and it will then call the mmap routine that I have
->> in place for my driver?
->>
->> It's part of the function set that a driver can use, not an
->> application.
->> This function will do all the work required to let some I/O memory
->> show
->> up in the user space's memory range.
->=20
-> So, how would it be used?  Does the driver call this routine with some =
-specific memory in mind and it returns a user space pointer?  If so, how =
-does that pointer get passed back to user space?
-
-It's typically in a driver's IOCTL handler that processes a user request
-to set up the memory mapping for a specific device. So you pass the
-pointer back and forth as an argument to this IOCTL. For details on the
-service just look at its doc:
-
-http://www.xenomai.org/documentation/xenomai-2.4/html/api/group__util.htm=
-l#gd3cd99bd0049763a4bf4c41edb249785
-
-Jan
+i really want to my kernel to boot on orion marvell processor.
+thanks for your help
 
 
---------------enig4492952CF9C35445E151F38F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkrz31UACgkQitSsb3rl5xQknQCg8CeqJBl566xA65V+iM+oEIiN
-FgEAni9ArdFRh3HQ45fjyCuCe0caEGcR
-=jSlP
------END PGP SIGNATURE-----
+________________________________
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Didenko Sergey <didenkos@domain.hid>
+Cc: Wael Showair <showair2003@domain.hid>; Xenomai-help@domain.hid
+Sent: Wed, November 4, 2009 12:54:32 PM
+Subject: Re: [Xenomai-help] Porting I-Pipe for new ARM board
 
---------------enig4492952CF9C35445E151F38F--
+Didenko Sergey wrote:
+> Gilles, I gues you are talking about the code which I got for MV 88F6290.
+> With some changes it is working on my board now, so, Wael, if you
+> want, I can send it to you in 10 hours, it should work on your board.
+
+Hi Sergey,
+
+Do you intend to publish your patch, or should we restart from the one
+which Philippe did?
+
+Regards.
+
+-- 
+                                          Gilles
+
+
+      
+--0-919356750-1257498527=:54790
+Content-Type: text/html; charset=us-ascii
+
+<html><head><style type="text/css"><!-- DIV {margin:0px;} --></style></head><body><div style="font-family:verdana,helvetica,sans-serif;font-size:12pt"><div>Hi Sergey &amp; Gilles,<br>Could anyone of you please put any version of the patch on the mailing-list.<br>you said you can send it to me within 10 hours or on last Monday?<br><br>i really want to my kernel to boot on orion marvell processor.<br>thanks for your help<br></div><div style="font-family: verdana,helvetica,sans-serif; font-size: 12pt;"><br><div style="font-family: arial,helvetica,sans-serif; font-size: 13px;"><font size="2" face="Tahoma"><hr size="1"><b><span style="font-weight: bold;">From:</span></b> Gilles Chanteperdrix &lt;gilles.chanteperdrix@xenomai.org&gt;<br><b><span style="font-weight: bold;">To:</span></b> Didenko Sergey &lt;didenkos@domain.hid&gt;<br><b><span style="font-weight: bold;">Cc:</span></b> Wael Showair &lt;showair2003@domain.hid&gt;; Xenomai-help@domain.hid<br><b><span
+ style="font-weight: bold;">Sent:</span></b> Wed, November 4, 2009 12:54:32 PM<br><b><span style="font-weight: bold;">Subject:</span></b> Re: [Xenomai-help] Porting I-Pipe for new ARM board<br></font><br>
+Didenko Sergey wrote:<br>&gt; Gilles, I gues you are talking about the code which I got for MV 88F6290.<br>&gt; With some changes it is working on my board now, so, Wael, if you<br>&gt; want, I can send it to you in 10 hours, it should work on your board.<br><br>Hi Sergey,<br><br>Do you intend to publish your patch, or should we restart from the one<br>which Philippe did?<br><br>Regards.<br><br>-- <br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Gilles<br><br></div></div>
+<!-- cg10.c2.mail.ac4.yahoo.com compressed/chunked Fri Nov  6 00:48:50 PST 2009 -->
+</div><br>
+
+      </body></html>
+--0-919356750-1257498527=:54790--
 
