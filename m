@@ -1,12 +1,17 @@
+Message-ID: <4AF3DF51.70402@domain.hid>
+Date: Fri, 06 Nov 2009 09:33:21 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <4AF1591E.7080408@domain.hid>
-References: <1f3e02580911040102r1dead1d3lbc66d9a4d9d26d33@domain.hid> 
-	<4AF1591E.7080408@domain.hid>
-From: Sergey Didenko <didenkos@domain.hid>
-Date: Fri, 6 Nov 2009 10:49:45 +0900
-Message-ID: <1f3e02580911051749v682be0f3j4dcffd1ebe344cc@domain.hid>
-Content-Type: multipart/alternative; boundary=000e0cd32a9a1c96ff0477aa104b
-Subject: Re: [Xenomai-help] [ARM_MV 88F6290] Task limit, msg receive error
+References: <BB99A6BA28709744BF22A68E6D7EB51F03310307D6@domain.hid>	<4AF20D2B.30508@domain.hid>
+	<BB99A6BA28709744BF22A68E6D7EB51F033103081D@midas.usurf.usu.edu>
+	<4AF29229.2090205@domain.hid>
+	<BB99A6BA28709744BF22A68E6D7EB51F03310309AA@midas.usurf.usu.edu>
+In-Reply-To: <BB99A6BA28709744BF22A68E6D7EB51F03310309AA@midas.usurf.usu.edu>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig4492952CF9C35445E151F38F"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Sharing Semaphores in Kernel and User Space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,132 +21,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jonathan Haws <Jonathan.Haws@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
---000e0cd32a9a1c96ff0477aa104b
-Content-Type: text/plain; charset=UTF-8
-
-2009/11/4 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-
-> Didenko Sergey wrote:
-> > Dear Experts
->
-> Hi, you do not need to flatter us to get answers :-)
->
-
-Then, who are you if not the experts in Xenomai?
-Do not be so modest ;-)
-
-
-> >
-> > we are facing 2 problems now:
-> >
-> > 1) in our test application (very simple one) we can create maximum 50
-> > tasks, next task is failed to create with error *12*
-> > *- Is there any task number limit?*
-> > *- what does 12 mean?*
->
-> Please read the TROUBLESHOOTING guide which comes with Xenomai, for the
-> question about the task number limit.
->
-
-So, to solve that problem we did try, as guide says: "A work-around consists
-of setting a
-lower user-limit for initial stack allocation, like calling "ulimit
--s <initial-size-in-kbytes>" in your parent shell before running
-your application", but it did not help at all.
-
-We were able to increase the number of created tasks by increasing the value
-of CONFIG_XENO_OPT_SYS_HEAPSZ and CONFIG_XENO_OPT_REGESTRY_NRSLOTS in
-configuration for kernel.
-For instance, in our test application, finally, we were able to create up to
-500 tasks (stack is 10 KB) when options were like
-CONFIG_XENO_OPT_SYS_HEAPSZ = 4096
-CONFIG_XENO_OPT_REGESTRY_NRSLOTS = 1024
-
-
-> For the error codes, see:
-> http://www.xenomai.org/index.php/Resolving_Error_Codes
->
-> >
-> > 2) in our project (originally developed for VxWorks), msgQReceive
-> > function returns -1 and sets errno to 4
-> > *We think that it might be related to XNBREAK thread's flag.*
->
-> Yes, error 4 is EINTR, it means that msgQReceive was interrupted by a
-> signal. We can only tell you whether this is normal if you tell us in
-> exactly what conditions you get this error (a test case reduced to the
-> minimum would be welcome).
->
-> It was our application's problem, now it is solved.
-
-Sergey
-
---000e0cd32a9a1c96ff0477aa104b
-Content-Type: text/html; charset=UTF-8
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig4492952CF9C35445E151F38F
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-<div class=3D"gmail_quote">2009/11/4 Gilles Chanteperdrix <span dir=3D"ltr"=
->&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdr=
-ix@domain.hid</a>&gt;</span><br><blockquote class=3D"gmail_quote" style=3D=
-"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex;">
+Jonathan Haws wrote:
+>>>>> I am writing a driver that needs to wake up a user space thread
+>> on
+>>>> a
+>>>>> hardware interrupt.  I am reading about the Xenomai APIs
+>>>> semaphores
+>>>>> and want to know if I create a semaphore in my kernel module
+>> with
+>>>> a
+>>>>> given name using rt_sem_create, can I call rt_sem_bind in user
+>>>> space
+>>>>> to bind to that same semaphore?
+>>>>>
+>>>>> I am sure hoping the answer is yes!
+>>>> The answer is yes, but...
+>>>> this programming model is deprecated. You should be implementing
+>> a
+>>>> driver using the RTDM API, as you would do with Linux.
+>>> The driver is a really dumb driver - all it really does is setup
+>> pointers to the PCI BARs and installs the interrupt.  I provide an
+>> mmap routine to map the BARs to user space so I can control the
+>> device from there.
+>>> Would this still be necessary to use the RTDM API?  I guess to
+>> install the interrupt, but there really is not anything else the
+>> driver does.
+>>
+>> Abstraction is the primary job of a driver. Pushing things to user
+>> space
+>> quickly blurs the boundaries and ends up in tricky to maintain blob
+>> on
+>> the long term.
+>=20
+> That is what I am trying to do, abstract away the details of interfacin=
+g with the hardware, however the user does need to have access to the BAR=
+s to be able to configure the device at runtime in an efficient manner.  =
+IOCTL calls are too slow for our application.  We do not need this driver=
+ to be very portable either - this is custom built hardware specific to o=
+ur application only.
 
-Didenko Sergey wrote:<br>
-&gt; Dear Experts<br>
-<br>
-Hi, you do not need to flatter us to get answers :-)<br></blockquote><div>=
-=C2=A0</div><div>Then, who are you if not the experts in Xenomai?</div><div=
->Do not be so modest ;-)</div><div><br></div><blockquote class=3D"gmail_quo=
-te" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex;=
-">
+No one says that every transfered byte need to be encapsulated into an
+IOCTL. There can be clever device models that only issue driver calls
+when the caller needs to wait on an event. Of course, this also depends
+on the hardware's capabilities.
+
+>=20
+>>> I was also reading the RTDM API and am confused about the
+>> rtdm_iomap_to_user() function - is that to be called from my user
+>> space application and it will then call the mmap routine that I have
+>> in place for my driver?
+>>
+>> It's part of the function set that a driver can use, not an
+>> application.
+>> This function will do all the work required to let some I/O memory
+>> show
+>> up in the user space's memory range.
+>=20
+> So, how would it be used?  Does the driver call this routine with some =
+specific memory in mind and it returns a user space pointer?  If so, how =
+does that pointer get passed back to user space?
+
+It's typically in a driver's IOCTL handler that processes a user request
+to set up the memory mapping for a specific device. So you pass the
+pointer back and forth as an argument to this IOCTL. For details on the
+service just look at its doc:
+
+http://www.xenomai.org/documentation/xenomai-2.4/html/api/group__util.htm=
+l#gd3cd99bd0049763a4bf4c41edb249785
+
+Jan
 
 
-<div class=3D"im"><br>
-&gt;<br>
-&gt; we are facing 2 problems now:<br>
-&gt;<br>
-&gt; 1) in our test application (very simple one) we can create maximum 50<=
-br>
-&gt; tasks, next task is failed to create with error *12*<br>
-&gt; *- Is there any task number limit?*<br>
-</div>&gt; *- what does 12 mean?*<br>
-<br>
-Please read the TROUBLESHOOTING guide which comes with Xenomai, for the<br>
-question about the task number limit.<br></blockquote><div><br></div><div>S=
-o, to solve that problem we did try, as guide says: &quot;A work-around con=
-sists of setting a</div><div><div>lower user-limit for initial stack alloca=
-tion, like calling &quot;ulimit -s=C2=A0&lt;initial-size-in-kbytes&gt;&quot=
-; in your parent shell before running your=C2=A0application&quot;, but it d=
-id not help at all.</div>
+--------------enig4492952CF9C35445E151F38F
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-<div><br></div><div>We were able to increase the number of created tasks by=
- increasing the value of CONFIG_XENO_OPT_SYS_HEAPSZ and=C2=A0CONFIG_XENO_OP=
-T_REGESTRY_NRSLOTS in configuration for kernel.</div><div>For instance, in =
-our test application, finally, we were able to create up to 500 tasks (stac=
-k is 10 KB) when options were like</div>
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-<div>CONFIG_XENO_OPT_SYS_HEAPSZ =3D 4096</div><div>CONFIG_XENO_OPT_REGESTRY=
-_NRSLOTS =3D 1024</div><div><br></div></div><blockquote class=3D"gmail_quot=
-e" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex;"=
->
-<br>
-For the error codes, see:<br>
-<a href=3D"http://www.xenomai.org/index.php/Resolving_Error_Codes" target=
-=3D"_blank">http://www.xenomai.org/index.php/Resolving_Error_Codes</a><br>
-<div class=3D"im"><br>
-&gt;<br>
-&gt; 2) in our project (originally developed for VxWorks), msgQReceive<br>
-&gt; function returns -1 and sets errno to 4<br>
-</div>&gt; *We think that it might be related to XNBREAK thread&#39;s flag.=
-*<br>
-<br>
-Yes, error 4 is EINTR, it means that msgQReceive was interrupted by a<br>
-signal. We can only tell you whether this is normal if you tell us in<br>
-exactly what conditions you get this error (a test case reduced to the<br>
-minimum would be welcome).<br>
-<br></blockquote><div>It was our application&#39;s problem, now it is solve=
-d.</div><div><br></div><div>Sergey</div></div>
+iEYEARECAAYFAkrz31UACgkQitSsb3rl5xQknQCg8CeqJBl566xA65V+iM+oEIiN
+FgEAni9ArdFRh3HQ45fjyCuCe0caEGcR
+=jSlP
+-----END PGP SIGNATURE-----
 
---000e0cd32a9a1c96ff0477aa104b--
+--------------enig4492952CF9C35445E151F38F--
 
