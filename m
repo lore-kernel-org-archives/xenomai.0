@@ -1,12 +1,10 @@
-Message-ID: <4AF46574.6010105@domain.hid>
-Date: Fri, 06 Nov 2009 19:05:40 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <9b6d86ab0911050148k55e1d4a2k5c7e373da1357352@domain.hid>
-In-Reply-To: <9b6d86ab0911050148k55e1d4a2k5c7e373da1357352@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Porting Adeos-Ipipe on AVR32 (NGW 100).
+Sender: lcasassa@domain.hid
+From: Linus Casassa <linus@domain.hid>
+Date: Sat, 7 Nov 2009 12:04:29 -0300
+Message-ID: <47a3101a0911070704o5307a23dhef368d04cc25fc6@domain.hid>
+Content-Type: multipart/alternative; boundary=000e0cd1b4302077c30477c948a2
+Subject: [Xenomai-help] Gumstix arm pxa
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,37 +14,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Vincent Vanbesien <vincent.vanbesien@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai help <xenomai@xenomai.org>
 
-Vincent Vanbesien wrote:
-> It is maybe not the first time you receive this email sorry for
-> disappointment.
-> 
-> Hello,
-> We are two students from Nantes (FRANCE) and we have to port adeos-Ipipe
-> on an AVR32.
-> We would like to know if there is already something which have been done
-> about that ? We checked the  Ipipe repository
-> http://git.denx.de/?p=ipipe-2.6.git;a=summary and we did not find
-> anything which would have benn done about the architecture AVR32.
-> best regards
-> BinomeB and BinomeA
-> Polytech'Nantes
+--000e0cd1b4302077c30477c948a2
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Hi.
 
-I do not think there is an ongoing port. Some rumours about a port about
-to be started came to our ears, but no news since then.
+What is the minimum time I can get in a periodic task? My board has an arm
+pxa 400 MHz processor.
 
-Note however, that the project policy about merging a port is to require
-someone (maybe you ?) to maintain the port, that is maintain
-the I-pipe patch, and test every release of xenomai on the actual hardware.
-
-Regards.
-
--- 
-                                          Gilles
+I ask because I can't get less time than 200 ms. If I try 10 ms the system
+hangs and I have to restart the board. I notice that 200 ms are 200 ticks.
+Is there a way to obtain 1 ms periodic task?
 
 
+The periodic task flips the state of a GIPO so I can measure the accuracy o=
+f
+the periodic task. I noticed that when the system hangs the GPIO continues
+flipping his state but with a period of 33us when it should be 10ms for
+example.
+
+I am using xenomai 2.9.1 with kernel 2.6.24.
+
+Any suggestions?
+
+Thanks.
+
+--=20
+Linus Casassa
+Estudiante Ingenier=EDa Civil Electr=F3nica
+Fono: 56-9-97776941
+
+--000e0cd1b4302077c30477c948a2
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div>Hi.</div>
+<div>=A0</div>
+<div>What is the minimum time I can get in a periodic task? My board has=A0=
+an arm pxa 400 MHz processor. </div>
+<div>=A0</div>
+<div>I ask because I can&#39;t get less time than 200 ms. If I try 10 ms th=
+e system hangs and I have to restart the board. I notice that 200 ms are 20=
+0 ticks.<br>Is there a way to obtain 1 ms periodic task? </div>
+<div>=A0</div>
+<div>=A0</div>
+<div>The periodic task flips the state of a GIPO so I can measure the accur=
+acy of the periodic task. I noticed that when the system hangs the GPIO con=
+tinues flipping his state but with a period of 33us when it should be 10ms =
+for example.</div>
+
+
+<div>=A0</div>
+<div>I am using xenomai 2.9.1 with kernel 2.6.24.</div>
+<div>=A0</div>
+<div>Any suggestions?</div>
+<div>=A0</div>
+<div>Thanks.</div>
+<div>=A0</div>
+<div>-- <br>Linus Casassa<br>Estudiante Ingenier=EDa Civil Electr=F3nica<br=
+>Fono: 56-9-97776941<br></div>
+
+--000e0cd1b4302077c30477c948a2--
 
