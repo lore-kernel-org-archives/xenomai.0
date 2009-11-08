@@ -1,13 +1,9 @@
-Message-ID: <4AF68CA8.6010105@domain.hid>
-Date: Sun, 08 Nov 2009 10:17:28 +0100
 From: Bernhard Walle <bernhard@domain.hid>
-MIME-Version: 1.0
-References: <566451a98761369f757a.1257105488@domain.hid>
-	<1257111269.2065.596.camel@domain.hid>
-In-Reply-To: <1257111269.2065.596.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] Check frequency in xnarch_init_timeconv()
+Date: Sun,  8 Nov 2009 10:18:26 +0100
+Message-Id: <1257671906-18311-1-git-send-email-bernhard@domain.hid>
+In-Reply-To: <4AF68CA8.6010105@domain.hid>
+References: <4AF68CA8.6010105@domain.hid>
+Subject: [Xenomai-core] [PATCH] Check CPU frequency
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,31 +12,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: bernhard@domain.hid
 
-Hi,
+In some conditions, while testing Xenomai in VirtualBox, I had the error that
+xnarch_init_timeconv() is called from init_32.h with a frequency of 0. That
+leads to a division by zero, followed by a system oops.
 
-Philippe Gerum schrieb:
-> 
-> I agree with the conclusion, not with the fix.
+Of course that is a bug in the virtualisation and Linux reports a CPU frequency
+of 0 in /proc/cpuinfo. However, there's no harm if Xenomai checks that instead
+of crashing the whole system.
 
-Thanks for reviewing the patch and sorry for the late answer.
+Signed-off-by: Bernhard Walle <bernhard@domain.hid>
+---
+ ksrc/arch/generic/hal.c |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
 
-> - the kernel side should rather test RTHAL_CPU_FREQ for consistency in
-> the generic hal init code, and bail out with an error if 0 is detected,
-> since there is no way for the nucleus to operate properly with such
-> setting anyway.
-> 
-> It turns out that no change have to be done in xnarch_init_timeconv()
-> which should remain a void routine, but its argument - RTHAL_CPU_FREQ -
-> should rather be tested as early as possible for consistency, directly
-> from kernel space.
-
-I'll post a new patch right now.
-
-
-Regards,
-Bernhard
+diff --git a/ksrc/arch/generic/hal.c b/ksrc/arch/generic/hal.c
+index 4d2fd38..8a5ec39 100644
+--- a/ksrc/arch/generic/hal.c
++++ b/ksrc/arch/generic/hal.c
+@@ -822,6 +822,13 @@ int rthal_init(void)
+      * The arch-dependent support must have updated the various
+      * frequency args as required.
+      */
++
++    /* check the CPU frequency first and abort if it's invalid */
++    if (rthal_cpufreq_arg == 0) {
++        printk(KERN_ERR "Xenomai has detected a CPU frequency of 0. Aborting.\n");
++        return -ENODEV;
++    }
++
+     rthal_tunables.cpu_freq = rthal_cpufreq_arg;
+     rthal_tunables.timer_freq = rthal_timerfreq_arg;
+     rthal_tunables.clock_freq = rthal_clockfreq_arg;
+-- 
+1.6.3.3
 
 
