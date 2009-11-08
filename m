@@ -1,67 +1,77 @@
-Message-ID: <4B13BC09.7040007@domain.hid>
-Date: Mon, 30 Nov 2009 13:35:21 +0100
-From: Jonas Buchli <jonas@domain.hid>
+Message-ID: <4AF71EA1.4060304@domain.hid>
+Date: Sun, 08 Nov 2009 20:40:17 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B13B144.3030008@domain.hid> <4B13B8D0.3040700@domain.hid>
-In-Reply-To: <4B13B8D0.3040700@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <9b6d86ab0911050148k55e1d4a2k5c7e373da1357352@domain.hid>
+	<4AF46574.6010105@domain.hid>
+	<9b6d86ab0911081134j48a89bcbo6f9b0d394ec3b26d@domain.hid>
+In-Reply-To: <9b6d86ab0911081134j48a89bcbo6f9b0d394ec3b26d@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] problem with xeno_nucleus.xenomai_gid boot option
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+Subject: Re: [Adeos-main] [Xenomai-help] Porting Adeos-Ipipe on AVR32 (NGW
+	100).
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Vincent Vanbesien <vincent.vanbesien@domain.hid>, Adeos <adeos-main@gna.org>
 
-yes that totally clarifies it and makes total sense! :)
+Vincent Vanbesien wrote:
+> 2009/11/6 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+> 
+>> Vincent Vanbesien wrote:
+>>> It is maybe not the first time you receive this email sorry for
+>>> disappointment.
+>>>
+>>> Hello,
+>>> We are two students from Nantes (FRANCE) and we have to port adeos-Ipipe
+>>> on an AVR32.
+>>> We would like to know if there is already something which have been done
+>>> about that ? We checked the  Ipipe repository
+>>> http://git.denx.de/?p=ipipe-2.6.git;a=summary and we did not find
+>>> anything which would have benn done about the architecture AVR32.
+>>> best regards
+>>> BinomeB and BinomeA
+>>> Polytech'Nantes
+>> Hi,
+>>
+>> I do not think there is an ongoing port. Some rumours about a port about
+>> to be started came to our ears, but no news since then.
+>>
+>> Note however, that the project policy about merging a port is to require
+>> someone (maybe you ?) to maintain the port, that is maintain
+>> the I-pipe patch, and test every release of xenomai on the actual hardware.
+>>
+>> Regards.
+>>
+>> --
+>>                                           Gilles
+>>
+>>
+>>
+> Hello,
+> We are starting to port Adeos for the IRQs part. So now we have to program
+> the function __ipipe_handle_irq for the AVR32 architecture. First we are
+> reading the one for x86. It seems there are generic functions as for example
+> "ipipe_apic_vector_irq". We tried to find its definition but we didn't
+> achieve.
+> Do you know where is the definition? And do you know if there is
+> documentation about generic functions?
+> We know the following Adeos
+> documentation<http://home.gna.org/adeos/doc/api/globals.html>but there
+> is no function which begins with "ipipe_"
+> Regards
+> BinomeA and BinomeB
 
-thanks a lot!
-jonas
+Your questions would make sense on the Adeos mailing list.
 
-
-Jan Kiszka wrote:
-> Jonas Buchli wrote:
->> dear all,
->>
->> i am trying to setup a xenomai system to run RT tasks as a non-root 
->> user, we are adding the xeno_nucleus.xenomai_gid kernel option, but 
->> dmesg gives the following output:
->>
->> ---------------------------------------------------------------------
->> embedded-pc104:> dmesg | grep gid
->> Kernel command line: root=UUID=d6b0719f-bd4b-4420-9a20-8d732c90f153 ro 
->> lapic console=ttyS0,115200n8 console=tty xeno_nucleus.xenomai_gid=1002
->> Unknown boot option `xeno_nucleus.xenomai_gid=1002': ignoring
->> ---------------------------------------------------------------------
->>
->> however, the first trick described here works:
->> http://www.xenomai.org/index.php/Non-root_RT
->>
->> --------------------------------------------------------------
->> embedded-pc104:> sudo modprobe xeno_nucleus xenomai_gid=1002
->> --------------------------------------------------------------
->>
->> any idea what we are missing?
-> 
-> Hopefully clarified in the wiki:
-> 
-> http://www.xenomai.org/index.php?title=Non-root_RT&diff=2143&oldid=1946
-> 
-> Jan
-> 
+But as a general advice, I think you should read the PPC or ARM port,
+not the x86 port, x86 is a very peculiar architecture.
 
 -- 
---------------------------------------------------------------
-Jonas Buchli, Dr.sc., MSc EE
-Computational Learning and Motor Control Lab
-University of Southern California
-http://www-clmc.usc.edu/
-+1 (213) 740 67 17
---------------------------------------------------------------
+					    Gilles.
 
