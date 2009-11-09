@@ -1,11 +1,11 @@
-Message-ID: <4AF816E0.9040809@domain.hid>
-Date: Mon, 09 Nov 2009 14:19:28 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+In-Reply-To: <4AF813D2.2000001@domain.hid>
 References: <ddc6e05e0911090400r37e0160aha2c3088dc673c0aa@domain.hid>
-In-Reply-To: <ddc6e05e0911090400r37e0160aha2c3088dc673c0aa@domain.hid>
+	<4AF813D2.2000001@domain.hid>
+Date: Mon, 9 Nov 2009 15:22:27 +0100
+Message-ID: <ddc6e05e0911090622m52d0297fo24061b6bea475a8e@domain.hid>
+From: Remco den Breeje <remco@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Context-sharing semaphores
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,47 +15,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Remco den Breeje <remco@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Remco den Breeje wrote:
-> Hi all,
-> 
-> I'm having trouble trying to share a semaphore that is created in
-> user-space context with a rtdm-driver that runs in kernel-space. I was
-> hoping you could explain me what I'm doing wrong.
-> 
-> I'm using a posix-skin based user-space Xenomai application that runs
-> a loop which is triggered by a semaphore.
-> This semaphore is posted by a pthread that runs at a specific
-> frequency. However, I want to be able to synchronize this loop with an
-> external hardware trigger that is read out by a rtdm-driver. To do so,
-> I try to disable the semaphore-post in the user-mode pthread, and
-> re-use the existing semaphore in kernel-mode (the rtdm-driver).
-> Unfortunately, the rtdm-driver is not able to find the user-space
-> created semaphore.
-> 
-> I wrote a little test-program to explain the problem. If required, I
-> will post the complete test-program, but for now I will show some
-> code-snippets.
-> 
-> In the user-space application a semphore is created using the sem_open sys-call:
-> 
->   clockSem = sem_open(SEMNAME, O_CREAT, 0, 0);
-> 
-> clockSem, which is a pointer to sem_t returns an address (!= SEM_FAILED).
-> With an ioctl-call I try to open the same semaphore in kernel-mode:
-> 
->   sem_p = sem_open(SEMNAME, 0);
-> 
-> This fails. sem_p equals SEM_FAILED, and errno is set to 2 (ENOENT).
-> 
-> I'm runing Linux 2.6.29.4 x86 32bit, Xenomai 2.4.8, ipipe 2.4-01
+On Mon, Nov 9, 2009 at 2:06 PM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> The design. :)
 
-This is supposed to work. Please post the full user-space and
-kernel-space code so that we can investigate.
+I totally agree :) However, I'm using generated (user-space) code that
+I want to modify as little as possible. So with a simple ioctl-call I
+want to be able to switch between software (pthread) and hardware
+triggering (rtdm-driver).
 
--- 
-                                          Gilles
+> The proper design is to use a rtdm semaphore or event *inside* the
+> kernel and let the application block on it when it calls a related IOCTL
+> or other device function that shall synchronize on that condition.
+>
+> Don't share resources like this between kernel and user space. It's
+> unclean, specifically as you once may want to access driver managed data
+> along the sleeping/waking as well.
+>
+> Jan
 
+The sem_open documentation states  "a connection between the semaphore
+named name and the calling context (kernel-space as a whole, or
+user-space process)". I interpreted this as exactly what I want - a
+synchronization between user- and kernel-space. Please correct me if
+I'm wrong.
+
+>
+> --
+> Siemens AG, Corporate Technology, CT SE 2
+> Corporate Competence Center Embedded Linux
+>
+
+Attached you find an example.
+You can run it by executing: `make && sudo insmod ./km.ko && sudo ./um
+; sudo rmmod km`
+
+My syslog-output is: "Error opening clock semaphore (2)"
+
+Thanks,
+
+Remco den Breeje
 
