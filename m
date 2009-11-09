@@ -1,5 +1,5 @@
-Message-ID: <4AF82B3F.2040308@domain.hid>
-Date: Mon, 09 Nov 2009 15:46:23 +0100
+Message-ID: <4AF82BFA.1080903@domain.hid>
+Date: Mon, 09 Nov 2009 15:49:30 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <ddc6e05e0911090400r37e0160aha2c3088dc673c0aa@domain.hid>	<4AF813D2.2000001@domain.hid>	<ddc6e05e0911090622m52d0297fo24061b6bea475a8e@domain.hid>
@@ -22,7 +22,14 @@ Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 Remco den Breeje wrote:
 > Classic.
 
-Ok. I see nothing wrong, I will have a look at this tonight.
+Ah. Sorry. Found the bug in the mean time. It is in the Makefile. You do
+not pass the compilation flags for compilation for Xenomai posix skin.
+So, your user space application uses plain linux semaphores.
+
+See:
+doc/txt/pse51-skin.txt in xenomai sources
+or:
+http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Compilation_flags.
 
 -- 
                                           Gilles
