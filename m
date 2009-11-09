@@ -1,18 +1,14 @@
-Message-ID: <4AF88A77.4030902@domain.hid>
-Date: Mon, 09 Nov 2009 22:32:39 +0100
+Message-ID: <4AF88CB1.6010700@domain.hid>
+Date: Mon, 09 Nov 2009 22:42:09 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <47a3101a0911070704o5307a23dhef368d04cc25fc6@domain.hid>
-	<4AF59B0F.1020300@domain.hid>
-	<47a3101a0911072306g42ddc0dfld0571e04fe1bf18b@domain.hid>
-	<4AF6AA34.3040308@domain.hid> <4AF6E380.3010703@domain.hid>
-	<47a3101a0911080922x1eda27ccja276c3f1a06e0941@domain.hid>
-	<4AF701AC.5050702@domain.hid>
-	<748872BF-565F-4637-BDBC-6534B04DFA24@domain.hid>
-In-Reply-To: <748872BF-565F-4637-BDBC-6534B04DFA24@domain.hid>
+References: <BB99A6BA28709744BF22A68E6D7EB51F03248BDB59@domain.hid>	<4AA95F97.6010802@domain.hid>	<BB99A6BA28709744BF22A68E6D7EB51F03248BDBCD@midas.usurf.usu.edu>	<4AA96689.3010502@domain.hid>
+	<BB99A6BA28709744BF22A68E6D7EB51F03248BDC03@domain.hid>
+	<BB99A6BA28709744BF22A68E6D7EB51F03310B0104@domain.hid>
+In-Reply-To: <BB99A6BA28709744BF22A68E6D7EB51F03310B0104@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Gumstix arm pxa
+Subject: Re: [Xenomai-help] Installation and Makefile Help
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,37 +18,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stefan Schaal <sschaal@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>, Linus Casassa <linus@domain.hid>
+To: Jonathan Haws <Jonathan.Haws@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Stefan Schaal wrote:
-> Hi Gilles,
+Jonathan Haws wrote:
+> else
 > 
->    if aperiodic has better accuracy, what is the minimal time  
-> resolution one can obtain, e.g., on a x86 (I assume that asking for  
-> too short a wait can lead to system freezes)? Coming from the vxWorks  
+> #	We are calling make from the kernel build system, therefore we simply define
+> #	what the modules are.
+> 	
+> 	obj-m := fpgaDriver.o
 
-The sleep time resolution is bound to the frequency of the hardware
-timer used. I do not know x86 details that much, but I seem to remember
-that the 8254 timer, the worst one, has a frequency around 1 MHz, which
-gives you a resolution of 1us, enough for most uses I believe.
+EXTRA_CFLAGS+=-Iinclude/xenomai
 
-> philosophy, we have been running a 100000ns periodic clock (x86) to  
-> work with semaphores and timing statements. Seemingly, you recommend  
-> not to use the periodic clock. The rt_timer_ns2ticks and  
-> rt_timer_ticks2ns seem to return 0 if the aperiodic clock is used. Is  
-> this reasonable, or should they return that ticks and nanoseconds have  
-> the same value in this case?
 > 
->    Sorry, I am just learning about this different way of using a ROS.
+> endif
 
-either your system is misconfigured (if you have a periodic timer, any
-time duration smaller than the timer period will give you a duration of
-0 ticks, results are rounded toward 0), or there is a bug somewhere.
+You can put that in a file named "Kbuild" too, this avoids the big if.
 
-cat /proc/xenomai/timebases will tell you.
-
-What xenomai version are you using exactly ?
+There are Makefile examples in xenomai sources "examples" sub-directory.
 
 -- 
 					    Gilles.
