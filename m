@@ -1,13 +1,9 @@
-Message-ID: <4AF7F0E4.1020800@domain.hid>
-Date: Mon, 09 Nov 2009 11:37:24 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <200911091459.18335.anisha.kaul@domain.hid>
-In-Reply-To: <200911091459.18335.anisha.kaul@domain.hid>
+Date: Mon, 9 Nov 2009 13:00:38 +0100
+Message-ID: <ddc6e05e0911090400r37e0160aha2c3088dc673c0aa@domain.hid>
+From: Remco den Breeje <remco@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Function for writing to serial port through
- Xenomai API
+Subject: [Xenomai-core] Context-sharing semaphores
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,27 +12,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Anisha Kaul <anisha.kaul@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Anisha Kaul wrote:
-> Dear all,
+Hi all,
 
-Hi,
+I'm having trouble trying to share a semaphore that is created in
+user-space context with a rtdm-driver that runs in kernel-space. I was
+hoping you could explain me what I'm doing wrong.
 
-> 
-> I know that outb() being a linux system call can be used to write to the 
-> serial/parallel ports. Currently I am working on a real time operating system 
-> with Xenomai and a micro kernel. If I use outb() for port access, control 
-> will shift to the soft-real time linux which I don't want. Is there any way I 
-> can access ports using (Xenomai) functions rather than the linux system 
-> calls ?
+I'm using a posix-skin based user-space Xenomai application that runs
+a loop which is triggered by a semaphore.
+This semaphore is posted by a pthread that runs at a specific
+frequency. However, I want to be able to synchronize this loop with an
+external hardware trigger that is read out by a rtdm-driver. To do so,
+I try to disable the semaphore-post in the user-mode pthread, and
+re-use the existing semaphore in kernel-mode (the rtdm-driver).
+Unfortunately, the rtdm-driver is not able to find the user-space
+created semaphore.
 
-Well, Xenomai has a real-time driver for the serial port, so, you could
-use that. Other than that outb does not cause its caller to switch to
-secondary mode if you have made the proper call to ioperm or iopl.
+I wrote a little test-program to explain the problem. If required, I
+will post the complete test-program, but for now I will show some
+code-snippets.
 
--- 
-                                          Gilles
+In the user-space application a semphore is created using the sem_open sys-call:
 
+  clockSem = sem_open(SEMNAME, O_CREAT, 0, 0);
+
+clockSem, which is a pointer to sem_t returns an address (!= SEM_FAILED).
+With an ioctl-call I try to open the same semaphore in kernel-mode:
+
+  sem_p = sem_open(SEMNAME, 0);
+
+This fails. sem_p equals SEM_FAILED, and errno is set to 2 (ENOENT).
+
+I'm runing Linux 2.6.29.4 x86 32bit, Xenomai 2.4.8, ipipe 2.4-01
+
+Thanks,
+
+Remco den Breeje
 
