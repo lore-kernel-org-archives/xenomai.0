@@ -1,15 +1,16 @@
-Message-ID: <4AF927F7.5020100@domain.hid>
-Date: Tue, 10 Nov 2009 09:44:39 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <200911101355.24692.anisha.kaul@domain.hid>
-In-Reply-To: <200911101355.24692.anisha.kaul@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigEAA33C5990FA199B237B9DC8"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] difference between rt_task_spawn and
-	rtdm_task_init
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <200911101820.31854.anisha.kaul@domain.hid>
+References: <200911101311.12900.anisha.kaul@domain.hid>
+	<200911101454.52764.anisha.kaul@domain.hid>
+	<4AF95898.6050806@domain.hid>
+	<200911101820.31854.anisha.kaul@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 10 Nov 2009 14:33:56 +0100
+Message-ID: <1257860036.2210.600.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] [Xenomai-core] switches between hard real time
+ and soft real time
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,42 +21,36 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Anisha Kaul <anisha.kaul@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigEAA33C5990FA199B237B9DC8
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Tue, 2009-11-10 at 18:20 +0530, Anisha Kaul wrote:
+> hi,
+> 
+> Is there any command or technique to know when your kernel module is running 
+> on hard-real time and when it switches to soft-real time (because of any 
+> linux system call) ?
 
-[ Redirected to xenomai-help - this is a support question. ]
+Off-topic on this list. Please switch to xenomai-help.
 
-Anisha Kaul wrote:
-> Hello,
->=20
-> Both "rt_task_spawn" and "rtdm_task_init" functions are said to start a=
- task=20
-> in the real time, so what is the difference in their functioning ?
+> 
+> thanks,
+> anisha
+> 
+> -------------------------------------
+> Hi-Tech Gears Limited, Gurgaon, India
+> 
+> 
+> 
+> 
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
-RTDM services are for use by drivers inside the kernel. Native services
-are for _applications_, which can technically still be run in kernel
-space but should practically only be designed for user space.
 
-Jan
+-- 
+Philippe.
 
 
---------------enigEAA33C5990FA199B237B9DC8
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkr5J/cACgkQitSsb3rl5xQX8QCgrwttfhq/0vSujWp/w6hChims
-NdoAoNUNCyVIqKtF0wzRgDFkJiNMCNXi
-=Kaqv
------END PGP SIGNATURE-----
-
---------------enigEAA33C5990FA199B237B9DC8--
 
