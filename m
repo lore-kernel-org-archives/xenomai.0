@@ -1,15 +1,13 @@
-Mime-Version: 1.0 (Apple Message framework v1076)
-Content-Type: text/plain; charset=us-ascii; format=flowed; delsp=yes
-From: Stefan Schaal <sschaal@domain.hid>
-In-Reply-To: <1E9219AE-B3C3-49D8-8625-CBC768C8E4EF@usc.edu>
-Date: Mon, 2 Nov 2009 11:22:04 -0800
+Message-ID: <4AF8B50E.4010900@domain.hid>
+Date: Tue, 10 Nov 2009 01:34:22 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <4AF8A72E.1060204@domain.hid>
+In-Reply-To: <4AF8A72E.1060204@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Message-Id: <1F88BE18-9D5E-4B96-B60E-3E9733778999@domain.hid>
-References: <E65E9416-A152-4EFE-93C8-31A123514B6E@usc.edu>	<195F4A80-1B62-4673-804B-71CC6F6DD60C@usc.edu>
-	<84E78C77-1DC1-44EE-8703-62C89A204B81@domain.hid>
-	<4AEE8D8A.5030108@domain.hid>
-	<1E9219AE-B3C3-49D8-8625-CBC768C8E4EF@usc.edu>
-Subject: Re: [Xenomai-core] lots of mode switches in xenomai-head tree?
+Subject: Re: [Xenomai-core] [PATCH] hal: Ensure atomicity
+	of	rthal_local_irq_disabled
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,74 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Stefan Schaal <sschaal@domain.hid>
-Cc: Jonas Buchli <jonas@domain.hid>, Peter Pastor Sampedro <pastorsa@domain.hid>, Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi Jan,
+Jan Kiszka wrote:
+> [Patch is now also available in 'for-upstream']
+> 
+> ipipe_test_pipeline_from is not atomic /wrt reading the current cpu
+> number (or an offset for the per-cpu area) and actually reading the
+> virtualized interrupt state. Work around this by disabling hard IRQs
+> while accessing this service.
+> 
+> This fixes false-positives of RTDM driver debug checks.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+> ---
+>  include/asm-generic/hal.h |    9 ++++++++-
+>  1 files changed, 8 insertions(+), 1 deletions(-)
+> 
+> diff --git a/include/asm-generic/hal.h b/include/asm-generic/hal.h
+> index 97c549e..3095b85 100644
+> --- a/include/asm-generic/hal.h
+> +++ b/include/asm-generic/hal.h
+> @@ -117,7 +117,14 @@ typedef spinlock_t rthal_spinlock_t;
+>  #endif /* !CONFIG_XENO_OPT_PIPELINE_HEAD */
+>  #define rthal_local_irq_flags(x)	((x) = ipipe_test_pipeline_from(&rthal_domain) & 1)
+>  #define rthal_local_irq_test()		ipipe_test_pipeline_from(&rthal_domain)
+> -#define rthal_local_irq_disabled()	ipipe_test_pipeline_from(&rthal_domain)
+> +#define rthal_local_irq_disabled()				\
+> +({								\
+> +	unsigned long __flags, __ret;				\
+> +	local_irq_save_hw(__flags);				\
+> +	__ret = ipipe_test_pipeline_from(&rthal_domain);	\
+> +	local_irq_restore_hw(__flags);				\
+> +	__ret;							\
+> +})
 
-   you pointer to the 4a2cb7b817 help! We had  -lrtdk  before - 
-lpthread -lpthread_rt in our compile statement. Just in 2.4.8, this  
-seems to make no difference.
+Maybe we can avoid that on UP systems?
 
--Stefan
-
-
-On Nov 2, 2009, at 10:42, Stefan Schaal wrote:
-
-> Hi Jan,
->
->  we updated the git on Oct. 29 (3 days ago). We do use the posix  
-> skin, i.e., we use the xeno-config --posix-ldflags. This worked all  
-> fine without mode switches under Xenomai 2.4.8. My git does include  
-> 4a2cb7b817. I will try to reproduce the error in a test program.
->
-> -Stefan
->
->
-> On Nov 1, 2009, at 23:43, Jan Kiszka wrote:
->
->> Stefan Schaal wrote:
->>> Hi,
->>>
->>>  I am working with the latest xenomai-head tree (we need analogy for
->>> our NI board ...). Under Xenomai 2.4.8 our code did not have any  
->>> mode
->>> switches. Using the xenomai-head, we get a lot of mode switches.  
->>> Using
->>> he backtrace_symbols_fd, we get print-outs like:
->>>
->>>
->>> xsimulation[0x808553b]
->>> [0xffffe400]
->>> /usr/xenomai/lib/librtdk.so.0(assert_nrt+0x85)[0xb7fa2ea5]
->>> /usr/xenomai/lib/librtdk.so.0(__wrap_clock_gettime+0x17)[0xb7fa2ef7]
->>> xsimulation[0x807cd16]
->>> xsimulation[0x807d7fb]
->>> /usr/xenomai/lib/libnative.so.3[0xb7fab689]
->>> /lib/tls/i686/cmov/libpthread.so.0[0xb7f824ff]
->>> /lib/tls/i686/cmov/libc.so.6(clone+0x5e)[0xb7e8f49e]
->>>
->>> Which indicates that the wrapper for clock_gettime causes this
->>> trouble, which is also confirmed by commenting clock_gettime out,  
->>> and
->>> the  mode switches disappear.
->>>
->>> Maybe something that needs fixing?
->>
->> Do you wrap & link against the POSIX library, ie. use that skin as  
->> well?
->> If not, your code is actually using clock_gettime incorrectly as it  
->> then
->> falls back to the Linux service which can trigger syscalls (or even
->> deadlocks when the TSC is used).
->>
->> If you do use libpthread_rt, then my next question is if your work is
->> based on today's git head or some older version not including  
->> 4a2cb7b817.
->>
->> Jan
->>
->
->
-
+-- 
+					    Gilles.
 
