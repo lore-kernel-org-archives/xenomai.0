@@ -1,15 +1,13 @@
-Message-ID: <4AF9571F.7090500@domain.hid>
-Date: Tue, 10 Nov 2009 13:05:51 +0100
+Message-ID: <4AF95898.6050806@domain.hid>
+Date: Tue, 10 Nov 2009 13:12:08 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4AF87D53.9090102@domain.hid> <4AF947FA.4030908@domain.hid>
-In-Reply-To: <4AF947FA.4030908@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig3C9CEF727C3D779C0CDFF59B"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [pull request] heap reference and trivial build
- fixes
+References: <200911101311.12900.anisha.kaul@domain.hid>	<200911101343.09183.anisha.kaul@domain.hid>	<4AF9260E.2020805@domain.hid>
+	<200911101454.52764.anisha.kaul@domain.hid>
+In-Reply-To: <200911101454.52764.anisha.kaul@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] tasklet using Xenomai
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,63 +16,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Anisha Kaul <anisha.kaul@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig3C9CEF727C3D779C0CDFF59B
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Anisha Kaul wrote:
+>>> Thanks for the prompt reply !
+>>>
+>>> The tasklet I am talking about is supposed to re-set the registers of the
+>>> serial port each time an interrupt occurs ! We can do this the following
+>>> way in using Linux system calls :
+>>>
+>>> void resetRegisters (unsigned long currentlyUnused);
+>>>
+>>> DECLARE_TASKLET  (rs232Tasklet, resetRegisters, 0);
+>>>
+>>> void resetRegisters (unsigned long currentlyUnused)
+>>> {
+>>>         outb (0x83, PORT + 3);
+>>>         outb (0x01, PORT + 0);
+>>>         outb (0x00, PORT + 1);
+>>>         outb (0x03, PORT + 3);
+>>>         outb (0x01, PORT + 1);
+>>>         outb (0x63, PORT + 2);
+>>>         outb (0x08, PORT + 4);
+>>> }
+>> This looks like a weird use of tasklets under mainline. Moreover, they
+>> are practically deprecated there.
+>>
+>>> How am I supposed to do this using Xenomai ?
+>> Have you considered simply using the rt_16550A driver for your purpose?
+>> You didn't told us your use case from an application POV, so it's hard
+>> to say if the driver meets your requirements. But it does not require
+>> you fiddling with hardware directly.
+>>
+>> Jan
+> 
+> 
+> " This looks like a weird use of tasklets under mainline. Moreover, they are 
+> practically deprecated there."
+> 
+> Why do you say this ?
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> The following changes since commit 6d7d6bc436ef3d1fb51fa8de06d4ecf004e=
-3b6a5:
->>   Gilles Chanteperdrix (1):
->>         nucleus: defer selector block deletion to an APC.
->>
->> are available in the git repository at:
->>
->>   git://git.xenomai.org/xenomai-jki.git for-upstream
->>
->> Jan Kiszka (2):
->>       nucleus: Track heap mapping on to mm-clone
->>       nucleus: Fix trivial build warning
->>
->>  ksrc/nucleus/heap.c   |   12 +++++++++++-
->>  ksrc/nucleus/module.c |    2 +-
->>  2 files changed, 12 insertions(+), 2 deletions(-)
->=20
-> Hi Jan,
->=20
-> do you agree if I add the notification to the xenomai-git mailing list
-> for your tree? It makes it possible to review your patches without any
-> action on your side. Note that a recent modification to the notificatio=
-n
-> mechanism only shows the relevant patches.
->=20
+The function you defer from interrupt context into a tasklet is
+comparably cheap, specifically on modern systems. So the management
+overhead is expect to be in the same dimension as the workload (you do
+not gain noticeably shorter IRQ-off times this way).
 
-No problem. Ah, the new filter looks nice!
+> 
+> " Have you considered simply using the rt_16550A driver for your purpose? "
+> 
+> I was not aware that a serial port driver for real time does exist ! 
+> Secondly, here we are writing a robotic application where we want to stop the 
+> robot if we receive data 'x' or move the robot if we receive data 'y'. 
+> Can you tell me how can we achieve this functionality with rt_16550A driver.
 
-And how would my new workflow look like? Just silently push into
-'for-upstream'?
+Check existing examples and the RTDM serial profile documentation.
+
+> Is rt_16550A driver fully stable ?
+
+Yes, it's used, among other things, in robotics for many years.
 
 Jan
 
-
---------------enig3C9CEF727C3D779C0CDFF59B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkr5VyUACgkQitSsb3rl5xSGvwCeI6p0GTrTb4Zbt5ndmNWuEFby
-WCEAnA9w353LwYoUv0yJ0GPqxBAr4oy/
-=5SVU
------END PGP SIGNATURE-----
-
---------------enig3C9CEF727C3D779C0CDFF59B--
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
