@@ -1,15 +1,13 @@
-References: <200911101311.12900.anisha.kaul@domain.hid>
-	<200911101343.09183.anisha.kaul@domain.hid>
-	<4AF9260E.2020805@domain.hid>
-In-Reply-To: <4AF9260E.2020805@domain.hid>
-MIME-Version: 1.0
-Date: Tue, 10 Nov 2009 14:54:52 +0530
-Message-ID: <200911101454.52764.anisha.kaul@domain.hid>
-From: Anisha Kaul <anisha.kaul@domain.hid>
-content-type: text/plain; charset=utf-8
-content-transfer-encoding: 7bit
-content-disposition: inline
-Subject: Re: [Xenomai-core] tasklet using Xenomai
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4AF8B50E.4010900@domain.hid>
+References: <4AF8A72E.1060204@domain.hid>  <4AF8B50E.4010900@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 10 Nov 2009 11:28:35 +0100
+Message-ID: <1257848915.2210.487.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH] hal: Ensure atomicity of
+ rthal_local_irq_disabled
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,63 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-> > Thanks for the prompt reply !
-> >
-> > The tasklet I am talking about is supposed to re-set the registers of the
-> > serial port each time an interrupt occurs ! We can do this the following
-> > way in using Linux system calls :
-> >
-> > void resetRegisters (unsigned long currentlyUnused);
-> >
-> > DECLARE_TASKLET  (rs232Tasklet, resetRegisters, 0);
-> >
-> > void resetRegisters (unsigned long currentlyUnused)
-> > {
-> >         outb (0x83, PORT + 3);
-> >         outb (0x01, PORT + 0);
-> >         outb (0x00, PORT + 1);
-> >         outb (0x03, PORT + 3);
-> >         outb (0x01, PORT + 1);
-> >         outb (0x63, PORT + 2);
-> >         outb (0x08, PORT + 4);
-> > }
->
-> This looks like a weird use of tasklets under mainline. Moreover, they
-> are practically deprecated there.
->
-> > How am I supposed to do this using Xenomai ?
->
-> Have you considered simply using the rt_16550A driver for your purpose?
-> You didn't told us your use case from an application POV, so it's hard
-> to say if the driver meets your requirements. But it does not require
-> you fiddling with hardware directly.
->
-> Jan
+On Tue, 2009-11-10 at 01:34 +0100, Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+> > [Patch is now also available in 'for-upstream']
+> > 
+> > ipipe_test_pipeline_from is not atomic /wrt reading the current cpu
+> > number (or an offset for the per-cpu area) and actually reading the
+> > virtualized interrupt state. Work around this by disabling hard IRQs
+> > while accessing this service.
+> > 
+> > This fixes false-positives of RTDM driver debug checks.
+> > 
+> > Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+> > ---
+> >  include/asm-generic/hal.h |    9 ++++++++-
+> >  1 files changed, 8 insertions(+), 1 deletions(-)
+> > 
+> > diff --git a/include/asm-generic/hal.h b/include/asm-generic/hal.h
+> > index 97c549e..3095b85 100644
+> > --- a/include/asm-generic/hal.h
+> > +++ b/include/asm-generic/hal.h
+> > @@ -117,7 +117,14 @@ typedef spinlock_t rthal_spinlock_t;
+> >  #endif /* !CONFIG_XENO_OPT_PIPELINE_HEAD */
+> >  #define rthal_local_irq_flags(x)	((x) = ipipe_test_pipeline_from(&rthal_domain) & 1)
+> >  #define rthal_local_irq_test()		ipipe_test_pipeline_from(&rthal_domain)
+> > -#define rthal_local_irq_disabled()	ipipe_test_pipeline_from(&rthal_domain)
+> > +#define rthal_local_irq_disabled()				\
+> > +({								\
+> > +	unsigned long __flags, __ret;				\
+> > +	local_irq_save_hw(__flags);				\
+> > +	__ret = ipipe_test_pipeline_from(&rthal_domain);	\
+> > +	local_irq_restore_hw(__flags);				\
+> > +	__ret;							\
+> > +})
+> 
+> Maybe we can avoid that on UP systems?
+> 
 
-
-" This looks like a weird use of tasklets under mainline. Moreover, they are 
-practically deprecated there."
-
-Why do you say this ?
-
-" Have you considered simply using the rt_16550A driver for your purpose? "
-
-I was not aware that a serial port driver for real time does exist ! 
-Secondly, here we are writing a robotic application where we want to stop the 
-robot if we receive data 'x' or move the robot if we receive data 'y'. 
-Can you tell me how can we achieve this functionality with rt_16550A driver.
-Is rt_16550A driver fully stable ?
-
-thanks,
-anisha
-
--------------------------------------
-Hi-Tech Gears Limited, Gurgaon, India
+Yes, we should rather use local_irq_save/restore_hw_smp().
 
 
+-- 
+Philippe.
 
 
 
