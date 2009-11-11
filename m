@@ -1,11 +1,7 @@
-Message-ID: <4AFA8A4A.9030603@domain.hid>
-Date: Wed, 11 Nov 2009 10:56:26 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [pull request] DEBUG_SYNCH_RELAX fix and some
-	cleanups
+From: Fabian Godehardt <fg@domain.hid>
+Date: Wed, 11 Nov 2009 12:41:49 +0100
+Message-Id: <1257939709-28983-1-git-send-email-fg@domain.hid>
+Subject: [Xenomai-core] [PATCH] scripts: use new 'head -n' syntax.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -14,30 +10,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-The following changes since commit 3b0152276752561805bf113eaa7b699d93c473c5:
-  Bernhard Walle (1):
-        hal: check CPU frequency
+Executing configure on a chroot which uses a modern equivalent of
+_POSIX_VERSION breaks on scripts/prepare-kernel.sh:
 
-are available in the git repository at:
+  patching file mm/vmalloc.c
+  head: `-1' option is obsolete; use `-n 1'
+  Try `head --help' for more information.
 
-  git://git.xenomai.org/xenomai-jki.git for-upstream
+This patch converts prepare-kernel.sh to the new 'head -n' syntax.
 
-Specifically the last patch is important for us as hell broke loose
-here once we enabled it for our customer. The first one is a resend, the
-other two are a cleanup and a minor instrumentation fix.
+Signed-off-by: Fabian Godehardt <fg@domain.hid>
+---
+ scripts/prepare-kernel.sh |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
-Jan Kiszka (4):
-      hal: Ensure atomicity of rthal_local_irq_disabled
-      nucleus: Cosmetic cleanup of lostage_handler
-      nucleus: Improve lostage_work instrumentation
-      nucleus: Fix endless loop of DEBUG_SYNCH_RELAX
+diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
+index d499563..b052ec3 100755
+--- a/scripts/prepare-kernel.sh
++++ b/scripts/prepare-kernel.sh
+@@ -408,10 +408,10 @@ if test -r $linux_tree/arch/$linux_arch/include/asm/ipipe.h; then
+    asm_ipipe_h=$linux_tree/$linux_include_asm/ipipe.h
+ else
+    linux_include_asm=include/asm-$linux_arch
+-   asm_ipipe_h=`ls $linux_tree/include/asm-{$linux_arch,$xenomai_arch}/ipipe.h 2>/dev/null|head -1`
++   asm_ipipe_h=`ls $linux_tree/include/asm-{$linux_arch,$xenomai_arch}/ipipe.h 2>/dev/null|head -n1`
+ fi
+ 
+-adeos_version=`grep '^#define.*IPIPE_ARCH_STRING.*"' $asm_ipipe_h 2>/dev/null|head -1|sed -e 's,.*"\(.*\)"$,\1,'`
++adeos_version=`grep '^#define.*IPIPE_ARCH_STRING.*"' $asm_ipipe_h 2>/dev/null|head -n1|sed -e 's,.*"\(.*\)"$,\1,'`
+ 
+ if test \! "x$adeos_version" = x; then
+    if test x$verbose = x1; then
+-- 
+1.5.3.7
 
- include/asm-generic/hal.h |   19 ++++++++++++++++++-
- include/nucleus/thread.h  |    1 +
- ksrc/nucleus/shadow.c     |   28 +++++++++++++++++-----------
- ksrc/nucleus/synch.c      |   11 ++++++++---
- 4 files changed, 44 insertions(+), 15 deletions(-)
 
