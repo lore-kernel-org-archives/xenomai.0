@@ -1,89 +1,224 @@
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Date: Mon, 2 Nov 2009 15:16:13 +0800
-Message-ID: <ba9b368a0911012316h393aae27y7418e74b2c8a8428@domain.hid>
-From: Daniel Adams <dadams81@domain.hid>
-Content-Type: multipart/alternative; boundary=000e0cd2549c1ceb2704775e2734
-Subject: [Xenomai-help] A few questions about rt_printf
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 11 Nov 2009 10:40:41 -0500
+Message-ID: <6FCCA913376DD7488F4139A4D11B8F48FD1188@domain.hid>
+In-Reply-To: <4AFAC4E1.1090109@domain.hid>
+References: <6FCCA913376DD7488F4139A4D11B8F48FD1044@domain.hid>	<4AF99CAD.9070105@domain.hid>	<6FCCA913376DD7488F4139A4D11B8F48FD107D@troe2k1.cs.myharris.net>	<4AF9AD44.10000@domain.hid>	<6FCCA913376DD7488F4139A4D11B8F48FD1085@domain.hid>	<4AF9B6F2.9040206@domain.hid>	<6FCCA913376DD7488F4139A4D11B8F48FD10A9@domain.hid>	<4AF9D976.4020701@domain.hid>
+	<6FCCA913376DD7488F4139A4D11B8F48FD1129@domain.hid>
+	<4AFAC4E1.1090109@domain.hid>
+From: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
+Subject: Re: [Xenomai-core] rtdm_iomap_to_user with phys addr > 4GB
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
---000e0cd2549c1ceb2704775e2734
-Content-Type: text/plain; charset=ISO-8859-1
+=20
 
-Hi,
+>-----Original Message-----
+>From: Jan Kiszka [mailto:jan.kiszka@domain.hid
+>Sent: Wednesday, November 11, 2009 9:06 AM
+>To: Herrera-Bendezu, Luis
+>Cc: xenomai@xenomai.org
+>Subject: Re: rtdm_iomap_to_user with phys addr > 4GB
+>
+>
+>Herrera-Bendezu, Luis wrote:
+>> =20
+>>=20
+>>> -----Original Message-----
+>>> From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid
+>>> Sent: Tuesday, November 10, 2009 4:22 PM
+>>> To: Herrera-Bendezu, Luis
+>>> Cc: xenomai@xenomai.org
+>>> Subject: Re: rtdm_iomap_to_user with phys addr > 4GB
+>>>
+>>> Herrera-Bendezu, Luis wrote:
+>>>> =20
+>>>>
+>>>>> -----Original Message-----
+>>>>> From: Jan Kiszka [mailto:jan.kiszka@domain.hid
+>>>>> Sent: Tuesday, November 10, 2009 1:55 PM
+>>>>> To: Herrera-Bendezu, Luis
+>>>>> Cc: xenomai@xenomai.org
+>>>>> Subject: Re: rtdm_iomap_to_user with phys addr > 4GB
+>>>>>
+>>>>>
+>>>>> Herrera-Bendezu, Luis wrote:
+>>>>>> =20
+>>>>>>
+>>>>>>> -----Original Message-----
+>>>>>>> From: Jan Kiszka [mailto:jan.kiszka@domain.hid
+>>>>>>> Sent: Tuesday, November 10, 2009 1:13 PM
+>>>>>>> To: Herrera-Bendezu, Luis
+>>>>>>> Cc: xenomai@xenomai.org
+>>>>>>> Subject: Re: rtdm_iomap_to_user with phys addr > 4GB
+>>>>>>>
+>>>>>>>
+>>>>>>> Herrera-Bendezu, Luis wrote:
+>>>>>>>> =20
+>>>>>>>>
+>>>>>>>>> -----Original Message-----
+>>>>>>>>> From: Jan Kiszka [mailto:jan.kiszka@domain.hid
+>>>>>>>>> Sent: Tuesday, November 10, 2009 12:03 PM
+>>>>>>>>> To: Herrera-Bendezu, Luis
+>>>>>>>>> Cc: xenomai@xenomai.org
+>>>>>>>>> Subject: Re: rtdm_iomap_to_user with phys addr > 4GB
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Herrera-Bendezu, Luis wrote:
+>>>>>>>>>> Hello,
+>>>>>>>>>>
+>>>>>>>>>> I am writing an RTDM driver to replace one that uses UIO.=20
+>>>>>>> The device
+>>>>>>>>>> resides in a physical address > 4 GB on a PPC440EPx. The=20
+>>>>> UIO could
+>>>>>>>>>> not handle this address so I made a proposal to address it,=20
+>>>>>>>>> details at:
+>>>=20
+>http://lists.ozlabs.org/pipermail/linuxppc-dev/2009-April/070097.html
+>>>>>>>>>> Function rtdm_iomap_to_user() has same issue with the=20
+>>>>> physical I/O
+>>>>>>>>>> address
+>>>>>>>>>>    unsigned long src_addr
+>>>>>>>>>>
+>>>>>>>>>> I am new to Xenomai and would like to get some ideas on=20
+>>>>>>> how to solve
+>>>>>>>>>> this
+>>>>>>>>>> issue.
+>>>>>>>>> I think UIO as well as RTDM suffers from the same problem=20
+>>>>> here: The
+>>>>>>>>> kernel service used to remap the physical memory=20
+>>> (remap_pfn_range)
+>>>>>>>>> accepts unsigned long, not phys_addr_t. How is this=20
+>>>>>>> supposed to work?
+>>>>>>>>> Jan
+>>>>>>>>>
+>>>>>>>>> --=20
+>>>>>>>>> Siemens AG, Corporate Technology, CT SE 2
+>>>>>>>>> Corporate Competence Center Embedded Linux
+>>>>>>>>>
+>>>>>>>> Actually, remap_pfn_range() gets passed the physical=20
+>address left
+>>>>>>>> shifted by PAGE_SIZE in both UIO and RTDM=20
+>>>>>>> (xnarch_remap_io_page_range,
+>>>>>>>> wrap_remap_io_page_range).
+>>>>>>> No, the target address is expressed in pages, the=20
+>source in bytes.
+>>>>>>>
+>>>>>> That is true for rtdm_mmap_to_user but not for=20
+>>>>> rtdm_iomap_to_user. See
+>>>>>> how
+>>>>>> mmap_data struct is set in both functions.
+>>>>>        struct rtdm_mmap_data mmap_data =3D
+>>>>>                { NULL, src_addr, vm_ops, vm_private_data };
+>>>>>
+>>>>> with src_addr =3D "physical I/O address to be mapped", setting
+>>>>> mmap_data.src_paddr -- are you looking at different code?
+>>>>>
+>>>> No, that is the code.
+>>> But there is nothing shifted, the shifting takes place in=20
+>>> Xenomai's wrapper.
+>>>
+>>>>> Besides this, the key is how remap_pfn_page interprets the source
+>>>>> address argument.
+>>>>>
+>>>> I had used UIO with success (as described in link above).=20
+>>> The equivalent
+>>>> code in UIO is (uio.c):
+>>>> static int uio_mmap_physical(struct vm_area_struct *vma)
+>>>> {
+>>>> 	struct uio_device *idev =3D vma->vm_private_data;
+>>>> 	int mi =3D uio_find_mem_index(vma);
+>>>> 	if (mi < 0)
+>>>> 		return -EINVAL;
+>>>>
+>>>> 	vma->vm_flags |=3D VM_IO | VM_RESERVED;
+>>>>
+>>>> 	vma->vm_page_prot =3D pgprot_noncached(vma->vm_page_prot);
+>>>>
+>>>> 	return remap_pfn_range(vma,
+>>>> 			       vma->vm_start,
+>>>> 			       idev->info->mem[mi].addr >> PAGE_SHIFT,
+>>>> 			       vma->vm_end - vma->vm_start,
+>>>> 			       vma->vm_page_prot);
+>>>> }
+>>>>
+>>>> where idev->info->mem[mi].addr, mem[.] is the list of=20
+>>> mappable regions.
+>>>> Note that for UIO, the user application needs to mmap these=20
+>>> regions to
+>>>> user space. This is a step that is not needed on RTDM, right?
+>>> OK, now I got my mistake: Confused by the wrong argument=20
+>names of our
+>>> wrap_remap_io_page_range (and probably others) I thought that the
+>>> destination is given as page number, not the source.
+>>>
+>>> But before adding some fancy new service for this use case,=20
+>I'd like to
+>>> understand how common it actually is (crazy embedded designs=20
+>>> tend to pop
+>>> up and deprecate faster than such APIs...).
+>> I do not think this is a new service but a limitation in the design.
+>> The kernel supports it (application can mmap the device=20
+>using /dev/mem)
+>> and the PPC (440EPx in particular) has PCI and internal peripherals
+>> located at addresses above 4 GB (I2C, SPI, etc.).
+>
+>I think /dev/mem works by chance as it uses off_t to address=20
+>the source,
+>and that is 64 bit even on 32 bit hosts.
+>
+>But I just collected the confirmation that this extension of the PPC's
+>physical address range is indeed an increasingly common thing. It's
+>still a fairly new one, so the kernel is obviously also still in the
+>conversion process. Maybe poking those people again makes some sense.
+>
+>>> And what was the final conclusion on LKML? As far as I=20
+>understood the
+>>> UIO maintainer, the proposal was rejected. Any different=20
+>follow-ups on
+>>> this that I missed? Of course, if you have a special design you can
+>>> always patch your kernel and Xenomai to fit these special=20
+>purposes. But
+>>> for upstream support, kernel or Xenomai, it requires a clean and
+>>> portable model.
+>> There were no follow-ups and the reply concerning the=20
+>required changes
+>> was:
+>> "I guess you'd have to look at the whole memory management=20
+>stuff of each
+>>  architecture to find out which kind of memory can be mapped with
+>> addresses
+>>  above unsigned long. Hardware often needs more than one contigous
+>> pages.
+>>  It might well be possible that a certain arch could have=20
+>RAM for user
+>> virtual
+>>  addresses above 4GB, but no hardware. I don't know PPC well=20
+>enough to
+>> say
+>>  anything about its behaviour."
+>>=20
+>> In the mean time, it would be helpful if you have some suggestions on
+>> how to
+>> change RTDM to handle this case.
+>>=20
+>
+>I think we can change rtdm_iomap_to_user to take src_addr as=20
+>phys_addr_t
+>and propagate this internally properly. We also need to add a wrapper
+>for phys_addr_t for kernels that doesn't support this (<2.6.28). To my
+>current understanding, this should be sufficient, right?
+Yes, I will give it a try and discuss results.
 
-I was looking at using the rt_printf / rt_fprintf for doing deferred logging
-and I have a few questions.
-
-1) I was reading through the source and I noticed there is no locking of the
-buffer write_pos between tasks during the initial snprint into the buffer.
-Is the rt_printf service thread safe? There are calls to
-xnarch_read_memory_barrier() and xnarch_write_memory_barrier(), but I'm
-assuming they are for SMP and IO ordering although I'm not 100% on what the
-barriers imply as I'm fairly new to this kind of hardware.
-
-2) Can the service be called from Linux tasks and Xenomai tasks? We were
-trying to get away with a common logging interface (wrapping the service)
-which would allow writing to different streams. If it can't be called from a
-Linux process then we will have an issue if we try to write to the same
-stream from different write tasks.
-
-3) Why is there multiple buffers allowing multiple FIFO's. I've read the
-code and can't really see how the extra buffers are used from a users
-perspective (I can see how the service prints / manages them). It appears
-that whatever buffer you create with rt_print_init or rt_auto_init is the
-buffer that get's used for writing too. Is there a way to select the buffer
-you want to write to? Also a call to rt_print_init causes a pre-existing
-buffer to be written to io from within the callers context and then creates
-a new buffer / ring buffer, so that no matter what you are always writing to
-the head of the linked list of buffers. How do I get access to an old buffer
-once it has been printed? Is there something I'm missing?
-
-I really think I must be missing something, sorry if these are obvious
-questions.
-
-Thanks
-
-Dan Adams
-
---000e0cd2549c1ceb2704775e2734
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Hi,<br><br>I was looking at using the rt_printf / rt_fprintf for doing defe=
-rred logging and I have a few questions. <br><br>1) I was reading through t=
-he source and I noticed there is no locking of the buffer write_pos between=
- tasks during the initial snprint into the buffer. Is the rt_printf service=
- thread safe? There are calls to xnarch_read_memory_barrier() and xnarch_wr=
-ite_memory_barrier(), but I&#39;m assuming they are for SMP and IO ordering=
- although I&#39;m not 100% on what the barriers imply as I&#39;m fairly new=
- to this kind of hardware. <br>
-<br>2) Can the service be called from Linux tasks and Xenomai tasks? We wer=
-e trying to get away with a common logging interface (wrapping the service)=
- which would allow writing to different streams. If it can&#39;t be called =
-from a Linux process then we will have an issue if we try to write to the s=
-ame stream from different write tasks.<br>
-<br>3) Why is there multiple buffers allowing multiple FIFO&#39;s. I&#39;ve=
- read the code and can&#39;t really see how the extra buffers are used from=
- a users perspective (I can see how the service prints / manages them). It =
-appears that whatever buffer you create with rt_print_init or rt_auto_init =
-is the buffer that get&#39;s used for writing too. Is there a way to select=
- the buffer you want to write to? Also a call to rt_print_init causes a pre=
--existing buffer to be written to io from within the callers context and th=
-en creates a new buffer / ring buffer, so that no matter what you are alway=
-s writing to the head of the linked list of buffers. How do I get access to=
- an old buffer once it has been printed? Is there something I&#39;m missing=
-?<br>
-<br>I really think I must be missing something, sorry if these are obvious =
-questions.<br><br>Thanks<br><br>Dan Adams<br>
-
---000e0cd2549c1ceb2704775e2734--
+Luis
 
