@@ -1,11 +1,13 @@
-References: <200911111422.11402.anisha.kaul@domain.hid>
-	<4AFA8197.7070005@domain.hid>
-In-Reply-To: <4AFA8197.7070005@domain.hid>
+Message-ID: <4AFACA6E.8000301@domain.hid>
+Date: Wed, 11 Nov 2009 15:30:06 +0100
+From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-Date: Wed, 11 Nov 2009 19:32:10 +0530
-Message-ID: <200911111932.10783.anisha.kaul@domain.hid>
-From: Anisha Kaul <anisha.kaul@domain.hid>
-content-type: multipart/mixed; boundary="Boundary-00=_iPs+KNJ5wtSv+FB"
+References: <200911111422.11402.anisha.kaul@domain.hid>	<4AFA8197.7070005@domain.hid>
+	<200911111932.10783.anisha.kaul@domain.hid>
+In-Reply-To: <200911111932.10783.anisha.kaul@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig9360095453A104693FA000C6"
 Subject: Re: [Xenomai-help] unable to open serial port from a kernel module
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,158 +18,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Anisha Kaul <anisha.kaul@domain.hid>, xenomai@xenomai.org
 
---Boundary-00=_iPs+KNJ5wtSv+FB
-content-type: text/plain; charset=iso-8859-1
-content-transfer-encoding: 7bit
-content-disposition: inline
-
-On Wednesday November 11 2009 14  : 49  : 19 you wrote:
-> Anisha Kaul wrote:
-> > hi,
-> >
-> > when i use rt_dev_open ("/dev/ttyS0", 0); from the function init_module
-> > () of a self written kernel module, it returns -19 ! What must be the
-> > reason, can't a file be opened from a kernel module ?
->
-> Please read documentation and examples more carefully: "rtdev0" is the
-> answer.
->
-> Jan
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig9360095453A104693FA000C6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-I forgot to attach the kernel module file as well as the user space file in 
-the previous mail. Hereby I have included both of them !
+> int main ()
+> {
+>     mlockall (MCL_CURRENT|MCL_FUTURE);
 
-kernel module file: serialPortISR.c
-user space file   : userSpace.c
+you need to call rt_task_shadow(...) here (see docs),
+which turns the current Linux task into a native Xenomai task.
 
-thanks,
-anisha
+>     rt_heap_bind  (&heap_desc, "MyHeap", TM_NONBLOCK);
+>     rt_heap_alloc (&heap_desc, 1, TM_NONBLOCK, &shmem);
 
---Boundary-00=_iPs+KNJ5wtSv+FB
-content-type: text/x-csrc; charset=iso-8859-1; name="serialPortISR.c"
-content-transfer-encoding: 7bit
-content-disposition: attachment; filename="serialPortISR.c"
+check all return values. I guess its -19 too without rt_task_shadow.
 
-#include <native/task.h>
-#include <native/heap.h>
-#include <native/intr.h>
-#include <linux/kernel.h>
-#include <rtdm/rtdm_driver.h>
+> /***************************************/
+>     int result =3D rt_dev_open  ("rtdev0", 0);
+>=20
+>     printf ("\n%d passed ", result);
+>=20
+>     rt_dev_write (result, "abcd", 4);
+> /***************************************/
+> }
 
-#define PORT 0x3F8
+good luck,
+kisda
 
-RT_INTR serialRT;
-RT_HEAP heap_desc;
-rtdm_task_t task;
-char*   shmem;
 
-static rtdm_task_t tasklet;
+Anisha Kaul schrieb:
+> On Wednesday November 11 2009 14  : 49  : 19 you wrote:
+>> Anisha Kaul wrote:
+>>> hi,
+>>>
+>>> when i use rt_dev_open ("/dev/ttyS0", 0); from the function init_modu=
+le
+>>> () of a self written kernel module, it returns -19 ! What must be the=
 
-static int times;
-rtdm_task_proc_t resetRegisters (void * f)
-{
-    outb (0x83, PORT + 3);
-    outb (0x01, PORT + 0);
-    outb (0x00, PORT + 1);
-    outb (0x03, PORT + 3);
-    outb (0x01, PORT + 1);
-    outb (0x27, PORT + 2);
-    outb (0x08, PORT + 4);
+>>> reason, can't a file be opened from a kernel module ?
+>> Please read documentation and examples more carefully: "rtdev0" is the=
 
-    return NULL;
-}
-
-rt_isr_t isrSerialPort (int irq, void *dev_id, struct pt_regs *regs)
-{
-    times++;
-    printk (KERN_ALERT "\nisrSerialPort called %d ", times);
-
-    *shmem = inb (PORT);
-
-    printk ("\nsharedMem: %s", shmem);
-
-    rtdm_task_init (&tasklet, "tasklet", resetRegisters, NULL, 1, 0);
-    
-    return (rt_isr_t) IRQ_HANDLED;
-}
-
-int init_module ()
-{
-    rt_intr_create (&serialRT, "softbrainISR", 4, isrSerialPort, NULL, I_SHARED);
-    rt_intr_enable (&serialRT);
-
-    outb (0x83, PORT + 3);
-    outb (0x01, PORT + 0);
-    outb (0x00, PORT + 1);
-    outb (0x03, PORT + 3);
-    outb (0x01, PORT + 1);
-    outb (0x27, PORT + 2);
-    outb (0x08, PORT + 4);
-
-    rt_heap_create (&heap_desc, "MyHeap", 16384, H_SHARED);
-    rt_heap_alloc (&heap_desc, 0, TM_NONBLOCK, (void*)&shmem);
-
-    return result;
-}
-
-void cleanup_module ()
-{
-    rt_heap_free (&heap_desc, &shmem);
-    rt_intr_delete (&serialRT);
-
-    printk (KERN_ALERT "\ncleanup_module called\n");
-}
-
-MODULE_LICENSE ("GPL");
-
---Boundary-00=_iPs+KNJ5wtSv+FB
-content-type: text/x-csrc; charset=iso-8859-1; name="userSpace.c"
-content-transfer-encoding: 7bit
-content-disposition: attachment; filename="userSpace.c"
-
-#include <sys/mman.h>
-#include <native/task.h>
-#include <native/timer.h>
-#include <native/heap.h>
-#include <string.h>
-#include <rtdm/rtdm.h>
-
-RT_TASK task_desc;
-RT_HEAP heap_desc;
-void*   shmem;
-
-int main ()
-{
-    mlockall (MCL_CURRENT|MCL_FUTURE);
-
-    rt_heap_bind  (&heap_desc, "MyHeap", TM_NONBLOCK);
-    rt_heap_alloc (&heap_desc, 1, TM_NONBLOCK, &shmem);
-
-/***************************************/
-    int result = rt_dev_open  ("rtdev0", 0);
-
-    printf ("\n%d passed ", result);
-
-    rt_dev_write (result, "abcd", 4);
-/***************************************/
-}
-
---Boundary-00=_iPs+KNJ5wtSv+FB
-content-type: text/plain; charset=us-ascii
-content-transfer-encoding: 7bit
-content-disposition: inline
+>> answer.
+>>
+>> Jan
+>=20
+> Hi,
+>=20
+> I forgot to attach the kernel module file as well as the user space fil=
+e in=20
+> the previous mail. Hereby I have included both of them !
+>=20
+> kernel module file: serialPortISR.c
+> user space file   : userSpace.c
+>=20
+> thanks,
+> anisha
+>=20
+>=20
+> -----------------------------------------------------------------------=
+-
+>=20
+>=20
+>=20
+> -------------------------------------
+> Hi-Tech Gears Limited, Gurgaon, India
+>=20
+>=20
+>=20
+> -----------------------------------------------------------------------=
+-
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
 
 
--------------------------------------
-Hi-Tech Gears Limited, Gurgaon, India
+--------------enig9360095453A104693FA000C6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
---Boundary-00=_iPs+KNJ5wtSv+FB--
+iD8DBQFK+sp0IPTw9rIdn6oRAsxqAJ9bp5OtYixm2M2UeIH/YDa9gbhFngCfZiKu
+APnOOokhiYvhD2exvmGVXJA=
+=U6Bj
+-----END PGP SIGNATURE-----
 
-
+--------------enig9360095453A104693FA000C6--
 
