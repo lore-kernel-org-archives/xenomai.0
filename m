@@ -1,22 +1,16 @@
-Message-ID: <4AFC22E9.8020107@domain.hid>
-Date: Thu, 12 Nov 2009 15:59:53 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Date: Fri, 13 Nov 2009 00:24:32 +0100
+References: <200911101536.55579.leo@domain.hid>
+	<200911110055.23162.berlemont.hauw@domain.hid>
+	<200911121533.55248.leo@domain.hid>
+In-Reply-To: <200911121533.55248.leo@domain.hid>
 MIME-Version: 1.0
-References: <20091020113724.9069.23594.stgit@domain.hid>
-	<20091020113725.9069.28060.stgit@domain.hid>
-	<1256404942.2862.498.camel@domain.hid>
-	<1257177854.2065.616.camel@domain.hid>
-	<4AEF0BCC.2020208@domain.hid>
-	<1257180716.2065.618.camel@domain.hid>
-	<4AEF0F7F.2060603@domain.hid> <4AEF1E91.6030407@domain.hid>
-	<4AEF22C3.4070303@domain.hid> <4AEF273B.3090402@domain.hid>
-	<20091102201924.5f392e15@domain.hid> <4AEF5D4B.2090106@domain.hid>
-	<20091103082204.248eed59@domain.hid> <4AF17E50.1000707@domain.hid>
-	<fbc4f538a6f4d84cfe514aba0985a525.squirrel@domain.hid>
-In-Reply-To: <fbc4f538a6f4d84cfe514aba0985a525.squirrel@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Xenomai on ARMadeus
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Message-Id: <200911130024.32690.berlemont.hauw@domain.hid>
+Subject: Re: [Xenomai-help] rtdm and comedi
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,88 +20,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?Gwenha=EBl_Goavec-Merou?= <gwen@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gwenha=EBl Goavec-Merou wrote:
-> Sorry for the late
->> gwenhael.goavec wrote:
->>> On Mon, 02 Nov 2009 23:29:31 +0100
->>> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>> wrote:
->>>
->>>> gwenhael.goavec wrote:
->>>>> On Mon, 02 Nov 2009 19:38:51 +0100
->>>>> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>>>> wrote:
->>>>>
->>>>>> By the way, did you make any change to the I-pipe patch to get it
->>>>>> running on this board?
->>>>> The only change realized, is made because Armadeus and
->>>>> I-pipe does the same change on
->>>>> mach-imx/include/mach/imxfb.h :
->>>>>
->>>>> --- a/arch/arm/mach-imx/include/mach/imxfb.h
->>>>> +++ b/arch/arm/mach-imx/include/mach/imxfb.h
->>>>> @@ -14,7 +14,6 @@
->>>>>  #define PCR_BPIX_8 (3 << 25)
->>>>>  #define PCR_BPIX_12    (4 << 25)
->>>>>  #define PCR_BPIX_16    (4 << 25)
->>>>> +#define PCR_BPIX_MASK   (7 << 25)
->>>>>  #define PCR_PIXPOL (1 << 24)
->>>>>  #define PCR_FLMPOL (1 << 23)
->>>>>  #define PCR_LPPOL  (1 << 22)
->>>>>
->>>>> I take this opportunity to ask a question:
->>>>> on APF27 with imx27, I found that the system freeze
->>>>> when an interrupt handler is in place and an
->>>>> interruption happens.
->>>>> if interrupt handler is in place without interruption no
->>>>> problems and if interruption happens without interrupt
->>>>> handler it's ok too.
->>>>>
->>>>> If someone could help or advise me.
->>>>> thank you very much
->> The reason I knew for this problem was if handle_edge_irq was used for
->> some interrupts. But problems of this kind for IMX GPIOs are fixed in
->> 1.3-03.
->>
->> Do you have this problem with in-kernel or out-of-tree drivers? With
->> real-time or non real-time interrupts? Could you show us
->> /proc/interrupts before the system freezes?
->>
-> I use an RTDM real-time driver for testing
-> GPIO interrupt don't appears in /proc/interrupts
->=20
-> ~ # cat /proc/interrupts
->            CPU0
->  20:         69           -  IMX-uart
->  26:       1664           -  i.MX Timer Tick
->  29:      84439           -  mxc_nd
->  50:         75           -  fec
->  53:          0           -  VPU_CODEC_IRQ
-> Err:          0
+Hi, 
 
-Appear in /proc/interrupts only the Linux domain interrupts.
-Xenomai domain interrupts appear in /proc/xenomai/irq.
+On Thursday 12 November 2009 15:33:54 Leopold Palomo-Avellaneda wrote:
+> A Dimecres 11 Novembre 2009, Alexis Berlemont va escriure:
+> > Hi,
+> >
+> > On Tuesday 10 November 2009 15:36:55 Leopold Palomo-Avellaneda wrote:
+> > > Hi,
+> > >
+> > > I would like to ask about comedi and xenomai because I'm a bit lost
+> > > with the situation in xenomai. I think that Alexis Berlemont did a
+> > > branch of xenomai with support for some drivers from comedi in xenomai.
+> >
+> > We have the comedi core layer and the NI PCIMIO driver which are ported
+> > to rtdm.
+> 
+> Ok.
+> 
+> > Concerning the branch you mentioned, if you speak about the comedi branch
+> > on my git repository, you must have noticed that this branch is no more
+> > active (I should remove it).
+> > Comedi/RTDM was renamed as analogy, here is a mail which explains the
+> > motivations.
+> > https://mail.gna.org/public/xenomai-core/2009-09/msg00016.html
+> 
+> Ok, I read it. I was looking for it, but I didn't find it (probably my
+>  fault, because I had it in my xenomai folder :-(
+> 
+> Reading again, following the links you mentioned and think about it
+>  carefully and I think that yours mails, specially in the xenomai list and
+>  comedi have not had the needed attention. And it's a pity.
+> 
+> Maybe I'm wrong, but comedi is a very good project and needed to people
+>  that are working with acquisition of data from external sources. Comedi
+>  also, have had some relevance, AFAIK in some project because work with
+>  RTAI and rtlinux. I think that it's important (needed feature in most
+>  cases) to have the determinist OS to measure devices. I have see that
+>  people doesn't switch to xenomai from rtai because of comedi.
+> 
+> Also, my opinion is that you cannot compete against proprietary systems as
+> labView if you don't have drivers in realtime to acquire data. In my field,
+> the robotic area, for example, although we don't have a top high
+>  requirements in realtime, a simple device, as a force sensor, it's
+>  important (in some cases needed) to use it in realtime.
+> 
+> I don't know if I have understood all the threads in the several mail list,
+> but it's a discouraging thing to work on something, that you think that
+>  it's good to improve a project and not have fed back from upstream. Worst
+>  is to distract you between lists .... In the case of the comedi project, I
+>  have understand that it's moving to be integrated to the kernel tree, so
+>  the realtime or it's used with the rt_preeemt patch or rtai and rtlinux or
+>  you will not be able to use it, no? If it's true, I'm not sure if some
+>  people are aware about it.
+> 
+> And about analogy, I don't understand quiet well what do you have in mind.
+>  Are you trying to create a new project like comedi for xenomai with rtdm?
+>
+With Analogy, we are trying to provide a fully deterministic (from kernel 
+space to user applications) framework for acquisition drivers. That is made 
+possible thanks to the use of the RTDM skin provided by Xenomai.
 
-Now, if you are sure to use the latest I-pipe patch, you should try and
-follow the course of the interrupts masking, acking, calling the handler
-and unmasking, to understand what happens. The most likely problem is
-that your interrupt handler gets called in an infinite loop, for some
-reason. The reason may be that the interrupt controller is configured
-for the wrong type (edge/level) of irq, or simply that your interrupt
-handler is bogus, or something else.
+Analogy is the evolution of Comedi within the Xenomai project, in other words, 
+it looks like Comedi but we can take the liberty to make it evolve according 
+to the user needs (users who needs an RTOS).
 
-We could help you if you showed us the driver code, and told us what
-kind of interrupt (edge, level) the hardware is using.
+I hope that Analogy will allow people to use Xenomai in the robotic area and 
+many other fields where real-time acquisitions are critical.
 
-You could also try to implement the driver as a plain linux driver and
-run it over the xenomai patched kernel and a plain linux kernel, to see
-if the problem is in the interrupt handling code, I-pipe irq handling
-code, or something else.
+If you have any request / idea regarding this project, feel free to ask.
 
---=20
-                                          Gilles
+Regards,
 
+Alexis.
 
