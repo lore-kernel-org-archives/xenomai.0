@@ -1,11 +1,14 @@
-Message-ID: <4AFD6013.9020608@domain.hid>
-Date: Fri, 13 Nov 2009 14:33:07 +0100
-From: Benjamin Biegel <biegel@domain.hid>
+Message-ID: <4AFE90A8.7090403@domain.hid>
+Date: Sat, 14 Nov 2009 12:12:40 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <4AFD01D3.1070604@domain.hid> <4AFD4C7F.1000106@domain.hid>
-In-Reply-To: <4AFD4C7F.1000106@domain.hid>
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+	<4AFD6013.9020608@domain.hid>
+In-Reply-To: <4AFD6013.9020608@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigA2C8D73E92EFD009AAF80A86"
+Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-help] What has highest priority RTcap or
 	TDMA-synchronization reception?
 List-Id: Help regarding installation and common use of Xenomai
@@ -17,69 +20,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: Benjamin Biegel <biegel@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
-</head>
-<body bgcolor="#ffffff" text="#000000">
-Thanks Jan<br>
-<br>
-We use this setup: Two computers are RTnet-slaves synchronized to
-provide them common time. These two computers also have a second NIC
-which tap a target Ethernet network using RTcap. In this way we can
-measure Ethernet travel times on the target network.<br>
-<br>
-This works well. The only problem is that we don't know exactly how to
-handle if a TDMA sync arrives at the same time as RTcap captures a
-frame on the target network. <br>
-<br>
-We ran a test where we only read the system time from kernel space
-using rt_timer_read(). This reading and saving to a file takes
-approximately 1 us. However this time increases to approx 16 us when
-the reading is made when a synchronization TDMA packet is being
-handled. <br>
-<br>
-We would like to detect when this happens so we can discard the frame
-travel times that collide with the TDMA sync. <br>
-<br>
-I hope this makes sense<br>
-<br>
-Benjamin<br>
-<br>
-&nbsp;Kiszka wrote:
-<blockquote cite="mid:4AFD4C7F.1000106@domain.hid" type="cite">
-  <pre wrap="">Benjamin Biegel wrote:
-  </pre>
-  <blockquote type="cite">
-    <pre wrap="">What has highest priority RTcap or TDMA-synchronization reception?
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigA2C8D73E92EFD009AAF80A86
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-We have a PC with two NICs, so one has TDMA, and one other captures with 
-RTcap. If two frames arrive at the same time on both NICS, which is 
-handled? Is it the first one, or does one have higher priority than the 
-other?
+Benjamin Biegel wrote:
+> Thanks Jan
+>=20
+> We use this setup: Two computers are RTnet-slaves synchronized to provi=
+de them common time. These two computers also have a second NIC which tap=
+ a target Ethernet network using RTcap. In this way we can measure Ethern=
+et travel times on the target network.
+>=20
+> This works well. The only problem is that we don't know exactly how to =
+handle if a TDMA sync arrives at the same time as RTcap captures a frame =
+on the target network.
+>=20
+> We ran a test where we only read the system time from kernel space usin=
+g rt_timer_read(). This reading and saving to a file takes approximately =
+1 us. However this time increases to approx 16 us when the reading is mad=
+e when a synchronization TDMA packet is being handled.
+>=20
+> We would like to detect when this happens so we can discard the frame t=
+ravel times that collide with the TDMA sync.
+>=20
+> I hope this makes sense
 
-Any help directly or where to look is appreciated.
-    </pre>
-  </blockquote>
-  <pre wrap=""><!---->
-Timestamping and packet queuing of both sources work at exactly the same
-priority and even go through a common path, the Stack Manager task. So
-the ordering is more or less random. But the final delivery happens at
-different level: TDMA is handled at high RT prio, RTcap captured frames
-are forwarded to Linux, thus are then saved at the according low prio.
+Note that the synchronization accuracy via TDMA is not in the order of a
+few microseconds, rather a few 10 us. That's because no clever approach
+to compensate jitters of the reception interrupt is applied. So your
+worrying about the jitter caused by the second NIC actually has to be
+extended by worries about jitter of other host interrupts. They might be
+smaller as I-pipe will suppress non-RT IRQs far more quickly, but they
+are more and can line up and cause larger jitters as well.
 
-But why are you running two NICs instead of attaching RTcap to the
-TDMA-managed interface? Or are they connected to different Ethernets?
+If you want to get rid of most of them: use a multicore box and isolate
+the RTnet NIC IRQ on a dedicated core. All Linux IRQs except for the
+timer IRQ can then be avoided.
+
+And I still see no point in using a second NIC if the first one is only
+_receiving_ TDMA sync frames. It's true that timestamps taken by RTcap
+on outgoing frames will naturally slightly differ from those taken by a
+listen-only observer - but to my understanding this scenarios does not
+apply to you case. So RTcap will work just fine when attached already to
+the first NIC.
 
 Jan
 
-  </pre>
-</blockquote>
-<br>
-</body>
-</html>
+
+--------------enigA2C8D73E92EFD009AAF80A86
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkr+kK4ACgkQitSsb3rl5xQwbwCgiWDwmVIFZ9hXlnC9L0jw0QPz
+/4YAnAvAKcPtYgeYpLn+4X4qNK0LbDXM
+=ysr4
+-----END PGP SIGNATURE-----
+
+--------------enigA2C8D73E92EFD009AAF80A86--
 
