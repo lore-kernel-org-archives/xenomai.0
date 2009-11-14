@@ -1,11 +1,14 @@
+Message-ID: <4AFF363D.6020206@domain.hid>
+Date: Sat, 14 Nov 2009 23:59:09 +0100
+From: Benjamin Biegel <biegel@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <47a3101a0911111337q643dbe48m1dc5ee484f2c93a9@domain.hid>
-References: <47a3101a0911111337q643dbe48m1dc5ee484f2c93a9@domain.hid>
-Date: Sat, 14 Nov 2009 15:00:45 -0200
-Message-ID: <8b216e9e0911140900x5f9a131p7ffee135c89a6596@domain.hid>
-From: =?ISO-8859-1?Q?Felipe_Brand=E3o_Cavalcanti?= <cavalkaf@domain.hid>
-Content-Type: multipart/alternative; boundary=001636c5bc03ab7457047857b70b
-Subject: Re: [Xenomai-help] RTDM Serial port Gumstix PXA270
+References: <4AFD01D3.1070604@domain.hid> <4AFD4C7F.1000106@domain.hid>
+	<4AFD6013.9020608@domain.hid> <4AFE90A8.7090403@domain.hid>
+In-Reply-To: <4AFE90A8.7090403@domain.hid>
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] What has highest priority RTcap or
+	TDMA-synchronization reception?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,135 +18,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Linus Casassa <linus@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
---001636c5bc03ab7457047857b70b
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+Again thanks!<br>
+<br>
+I will look into the RTnet isolation. How would you suggest I obtain
+knowledge about multicore box etc?<br>
+<br>
+Just to explain the use of two NICs, if I can. The reason is that our
+goal is to measure travel times on any Ethernet, without altering this
+Ethernet. To do this we plug in two transparent y-splitters the two
+places we want to measure at ravel time between (e.g. on either side of
+a switch). These two y-splitter outputs are fed to two NICs on each PC.
+They cannot be plugged into the same NIC as the TDMA is on, then it
+would be through a switch, which would increase further delay as I see
+it...<br>
+<br>
+Ben<br>
+<br>
+<br>
+Jan Kiszka wrote:
+<blockquote cite="mid:4AFE90A8.7090403@domain.hid" type="cite">
+  <pre wrap="">Benjamin Biegel wrote:
+  </pre>
+  <blockquote type="cite">
+    <pre wrap="">Thanks Jan
 
-I had the same issue - however, instead of writing a RTDM driver, I
-manipulated the memory registers directly, taking advantage of the ARM
-architeture way of manipulating drivers. I do have the code available, if
-you are interested, and plan on publishing a few technical documents on
-getting Xenomai to work with the PXA270 (the Gumstix platform), including a
-section on accessing all of the peripherals in real-time.
+We use this setup: Two computers are RTnet-slaves synchronized to provide them common time. These two computers also have a second NIC which tap a target Ethernet network using RTcap. In this way we can measure Ethernet travel times on the target network.
 
-I would like to know if there is a "cleaner" solution, other than porting
-the current driver to RTDM.
+This works well. The only problem is that we don't know exactly how to handle if a TDMA sync arrives at the same time as RTcap captures a frame on the target network.
 
-Hope this helps,
---=20
-      -Felipe Brand=E3o Cavalcanti
-      LARA - Robotics and Automation Laboratory
-      Department of Electrical Engineering
-      UnB - University of Bras=EDlia, Brazil
-      http://www.lara.unb.br/~fbcavalcanti/
+We ran a test where we only read the system time from kernel space using rt_timer_read(). This reading and saving to a file takes approximately 1 us. However this time increases to approx 16 us when the reading is made when a synchronization TDMA packet is being handled.
 
-On Wed, Nov 11, 2009 at 7:37 PM, Linus Casassa <linus@domain.hid> wrote:
+We would like to detect when this happens so we can discard the frame travel times that collide with the TDMA sync.
 
-> Hi.
->
-> I am using open/read/write for a serial port. But the read function delay=
-s
-> 8 ms from the last bit received untill it returns the chars.
->
-> Obviously you would say open/read/write functions are not realtime
-> functions.
->
-> I changed open/read/write to rt_dev_open/rt_dev_read/rt_dev_write but the
-> open function returns -19.
->
-> I am using /dev/ttyS2.
-> Looking the proc directory I found that there is an interrupt on the seri=
-al
-> port I want to use: FFUART
->
-> root@domain.hid:~$ cat /proc/interrupts
->            CPU0
->   3:          2          SC  ohci_hcd:usb1
->   6:          0          SC  pxa_i2c-i2c.1
->  18:          0          SC  pxa_i2c-i2c.0
->  22:         76          SC  FFUART
->  23:        204          SC  pxa2xx-mci
->  25:          0          SC  DMA
->  26:     198061          SC  ost0
-> 163:       4720        GPIO  eth0
-> Err:          0
-> root@domain.hid:~$
->
-> Thanks.
->
-> --
-> Linus Casassa
-> Estudiante Ingenier=EDa Civil Electr=F3nica
-> Fono: 56-9-97776941
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->
->
+I hope this makes sense
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->
+Note that the synchronization accuracy via TDMA is not in the order of a
+few microseconds, rather a few 10 us. That's because no clever approach
+to compensate jitters of the reception interrupt is applied. So your
+worrying about the jitter caused by the second NIC actually has to be
+extended by worries about jitter of other host interrupts. They might be
+smaller as I-pipe will suppress non-RT IRQs far more quickly, but they
+are more and can line up and cause larger jitters as well.
 
---001636c5bc03ab7457047857b70b
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+If you want to get rid of most of them: use a multicore box and isolate
+the RTnet NIC IRQ on a dedicated core. All Linux IRQs except for the
+timer IRQ can then be avoided.
 
-I had the same issue - however, instead of writing a RTDM driver, I manipul=
-ated the memory registers directly, taking advantage of the ARM architeture=
- way of manipulating drivers. I do have the code available, if you are inte=
-rested, and plan on publishing a few technical documents on getting Xenomai=
- to work with the PXA270 (the Gumstix platform), including a section on acc=
-essing all of the peripherals in real-time.<br>
-<br>I would like to know if there is a &quot;cleaner&quot; solution, other =
-than porting the current driver to RTDM.<br><br>Hope this helps,<br>-- <br>=
- =A0 =A0 =A0 -Felipe Brand=E3o Cavalcanti<br> =A0 =A0 =A0 LARA - Robotics a=
-nd Automation Laboratory<br>
- =A0 =A0 =A0 Department of Electrical Engineering<br> =A0 =A0 =A0 UnB - Uni=
-versity of Bras=EDlia, Brazil<br> =A0 =A0 =A0 <a href=3D"http://www.lara.un=
-b.br/~fbcavalcanti/">http://www.lara.unb.br/~fbcavalcanti/</a><br><br><div =
-class=3D"gmail_quote">
-On Wed, Nov 11, 2009 at 7:37 PM, Linus Casassa <span dir=3D"ltr">&lt;<a hre=
-f=3D"mailto:linus@domain.hid">linus@domain.hid</a>&gt;</span> wrote:<br><blockquote=
- class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, 204, 204); =
-margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-Hi.<br><br>I am using open/read/write for a serial port. But the read funct=
-ion delays 8 ms from the last bit received untill it returns the chars.<br>=
-<br>Obviously you would say open/read/write functions are not realtime func=
-tions.<br>
+And I still see no point in using a second NIC if the first one is only
+_receiving_ TDMA sync frames. It's true that timestamps taken by RTcap
+on outgoing frames will naturally slightly differ from those taken by a
+listen-only observer - but to my understanding this scenarios does not
+apply to you case. So RTcap will work just fine when attached already to
+the first NIC.
 
+Jan
 
-<br>I changed open/read/write to rt_dev_open/rt_dev_read/rt_dev_write but t=
-he open function returns -19.<br><br>I am using /dev/ttyS2.<br>Looking the =
-proc directory I found that there is an interrupt on the serial port I want=
- to use: FFUART<br>
-
-
-<br>root@domain.hid:~$ cat /proc/interrupts <br>=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0=A0 CPU0<br>=A0 3:=A0=A0=A0=A0=A0=A0=A0=A0=A0 2=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0 SC=A0 ohci_hcd:usb1<br>=A0 6:=A0=A0=A0=A0=A0=A0=A0=A0=A0 0=A0=
-=A0=A0=A0=A0=A0=A0=A0=A0 SC=A0 pxa_i2c-i2c.1<br>=A018:=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0 0=A0=A0=A0=A0=A0=A0=A0=A0=A0 SC=A0 pxa_i2c-i2c.0<br>=A022:=A0=A0=A0=
-=A0=A0=A0=A0=A0 76=A0=A0=A0=A0=A0=A0=A0=A0=A0 SC=A0 FFUART<br>
-
-
-=A023:=A0=A0=A0=A0=A0=A0=A0 204=A0=A0=A0=A0=A0=A0=A0=A0=A0 SC=A0 pxa2xx-mci=
-<br>=A025:=A0=A0=A0=A0=A0=A0=A0=A0=A0 0=A0=A0=A0=A0=A0=A0=A0=A0=A0 SC=A0 DM=
-A<br>=A026:=A0=A0=A0=A0 198061=A0=A0=A0=A0=A0=A0=A0=A0=A0 SC=A0 ost0<br>163=
-:=A0=A0=A0=A0=A0=A0 4720=A0=A0=A0=A0=A0=A0=A0 GPIO=A0 eth0<br>Err:=A0=A0=A0=
-=A0=A0=A0=A0=A0=A0 0<br>root@domain.hid:~$ <br><br clear=3D"all"=
->
-
-
-Thanks.<br><font color=3D"#888888"><br>-- <br>Linus Casassa<br>Estudiante I=
-ngenier=EDa Civil Electr=F3nica<br>Fono: 56-9-97776941<br>
-</font><br>_______________________________________________<br>
-Xenomai-help mailing list<br>
-<a href=3D"mailto:Xenomai-help@domain.hid">Xenomai-help@domain.hid</a><br>
-<a href=3D"https://mail.gna.org/listinfo/xenomai-help" target=3D"_blank">ht=
-tps://mail.gna.org/listinfo/xenomai-help</a><br>
-<br></blockquote></div>
-
---001636c5bc03ab7457047857b70b--
+  </pre>
+</blockquote>
+<br>
+</body>
+</html>
 
