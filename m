@@ -1,17 +1,11 @@
-Message-ID: <4B002B59.90402@domain.hid>
-Date: Sun, 15 Nov 2009 17:24:57 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <4AFD01D3.1070604@domain.hid> <4AFD4C7F.1000106@domain.hid>
-	<4AFD6013.9020608@domain.hid> <4AFE90A8.7090403@domain.hid>
-	<4AFF363D.6020206@domain.hid>
-In-Reply-To: <4AFF363D.6020206@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigDB1678A226133E5C47C641B9"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] What has highest priority RTcap or
-	TDMA-synchronization reception?
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01CA66D0.99C79DC6"
+Date: Mon, 16 Nov 2009 09:22:24 -0600
+Message-ID: <181804936ABC2349BE503168465576460CBA4A79@domain.hid>
+From: "Steve Deiters" <SteveDeiters@domain.hid>
+Subject: [Xenomai-help] Killing Xenomai task on kernel shutdown
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,59 +15,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Benjamin Biegel <biegel@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDB1678A226133E5C47C641B9
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01CA66D0.99C79DC6
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: quoted-printable
 
-Benjamin Biegel wrote:
-> Again thanks!
->=20
-> I will look into the RTnet isolation. How would you suggest I obtain kn=
-owledge=20
-> about multicore box etc?
+Are Xenomai tasks supposed to outlive the kernel?  I have a Xenomai task
+that continues to run after the kernel is shut down.
+=20
+I have a PowerPC board which has an external watchdog.  To keep this
+happy I have a periodic Xenomai task that I create early in the kernel
+startup with an initcall.  However, when the kernel shuts down I would
+like to stop/delete the task so that the watchdog will restart the
+processor.  Right now it seems that the task continues to run after
+kernel shutdown.  If nothing else I can just manually stop it on
+shutdown.
+=20
+I'm not sure if there's a way to hook into the kernel shutdown.  I have
+found the exitcall macros, but they seem to be only used for module
+unloading and do not seem to be called on a regular shutdown.  The
+initcall is in a board specific startup file.  If possible, I'd like to
+keep the task deletion also in the same file.  I just do not know if
+there is a hook available for this.
+=20
+Thanks.
 
-linux/Documentation/cgroups/cpusets.txt and
-linux/Documentation/IRQ-affinity.txt for the beginning. Xenomai manages
-affinity via explicit API calls (not done by RTnet, though) or
-/proc/xenomai/affinity.
+------_=_NextPart_001_01CA66D0.99C79DC6
+Content-Type: text/html; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
 
->=20
-> Just to explain the use of two NICs, if I can. The reason is that our g=
-oal is to=20
-> measure travel times on any Ethernet, without altering this Ethernet. T=
-o do this=20
-> we plug in two transparent y-splitters the two places we want to measur=
-e at=20
-> ravel time between (e.g. on either side of a switch). These two y-split=
-ter=20
-> outputs are fed to two NICs on each PC. They cannot be plugged into the=
- same NIC=20
-> as the TDMA is on, then it would be through a switch, which would incre=
-ase=20
-> further delay as I see it...
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; charset=3Dus-ascii=
+">
+<META content=3D"MSHTML 6.00.6000.16809" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D567241015-16112009>Are=
+ Xenomai tasks=20
+supposed to outlive the kernel?&nbsp; I have a Xenomai task that continu=
+es to=20
+run after the kernel is shut down.</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D567241015-16112009></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D567241015-16112009>I have=
+ a PowerPC=20
+board which has an external watchdog.&nbsp; To keep this happy I have=
+ a periodic=20
+Xenomai task that I create early in the kernel startup with an initcall.=
+&nbsp;=20
+However, when the kernel shuts down I would like to stop/delete&nbsp;the=
+ task so=20
+that the watchdog will restart the processor.&nbsp; Right now it seems=
+ that the=20
+task continues to run after kernel shutdown.&nbsp; If nothing else I can=
+ just=20
+manually stop it on shutdown.</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D567241015-16112009></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D567241015-16112009>I'm=
+ not sure if=20
+there's a way to hook into the kernel shutdown.&nbsp; I have found the=
+ exitcall=20
+macros, but they seem to be only used for module unloading and do not=
+ seem to be=20
+called on a regular shutdown.&nbsp; </SPAN></FONT><FONT face=3DArial siz=
+e=3D2><SPAN=20
+class=3D567241015-16112009>The initcall is in a board specific startup=
+ file.&nbsp;=20
+If possible, I'd like to keep the task deletion also in the same file.&n=
+bsp; I=20
+just do not know if there is a hook available for this.</SPAN></FONT></D=
+IV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D567241015-16112009></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D567241015-16112009>Thanks.</SPAN></FONT></DIV></BODY></HTML>
 
-I see, they are attached to quasi different Ethernets.
+------_=_NextPart_001_01CA66D0.99C79DC6--
 
-Jan
-
-
---------------enigDB1678A226133E5C47C641B9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAksAK2EACgkQitSsb3rl5xSV0ACgwQRmhRo0Li1M+lmKbR7HcWsU
-sswAoNpM3J/kjIaKn9utMdhJQIS0n248
-=KPq3
------END PGP SIGNATURE-----
-
---------------enigDB1678A226133E5C47C641B9--
 
