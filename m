@@ -1,54 +1,45 @@
-From: Wolfgang Denk <wd@domain.hid>
+Message-ID: <4B0147E1.7050102@domain.hid>
+Date: Mon, 16 Nov 2009 13:38:57 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-type: text/plain; charset=ISO-8859-1
-Content-transfer-encoding: 8bit
-In-reply-to: <4AF12B70.3020004@domain.hid>
-References: <B0122F57-107F-4E31-A663-D4DE560C08B8@domain.hid>
-	<C790DE41-A093-46C5-9F44-D3F0EA839CF5@domain.hid>
-	<20091104065257.A164B3F6C1@domain.hid>
-	<4AF12B70.3020004@domain.hid>
-Date: Wed, 04 Nov 2009 08:26:05 +0100
-Message-Id: <20091104072605.D26E63F6C1@domain.hid>
-Subject: Re: [Xenomai-help] bring down the system
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <20091020113724.9069.23594.stgit@domain.hid>	
+	<20091020113726.9069.95593.stgit@domain.hid>	
+	<1256082066.2862.178.camel@domain.hid>
+	<4AE0395F.1010800@domain.hid>	 <4AFAB527.5050503@domain.hid>
+	<1258306730.2348.96.camel@domain.hid>
+In-Reply-To: <1258306730.2348.96.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH v3 9/9] nucleus: Include all heaps in
+	statistics
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jonas Buchli <jonas@domain.hid>
-Cc: Peter Pastor <pastor@domain.hid>, xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Dear Jonas Buchli,
-
-In message <4AF12B70.3020004@domain.hid> you wrote:
+Philippe Gerum wrote:
+> ...
+> I would rather pick your suggestion to introduce a display-oriented name
+> we could call a label instead, to make clear that we are only dealing
+> with pretty-printing in /proc.
 > 
-> did you compile with exactly our compile statement or with additional 
-> flags (i.e. optimization)?
-
-With optimization, of course.
-
-> compiling with our statement, just throwing in the -S flag, i am getting 
-> a very getting different assembly code - while has been a while i have 
-> been reading assembly, it seems our loop is not getting optimized away.
+> I.e.
 > 
-> anyway, the point here is not about if this is a meaningful program or 
-> not, but we are getting system lock ups and this one is a minimal 
-> program that does reproduce the problem for us.
+> - xnheap_init() remains unchanged
+> - xnheap_set_label(fmt, args...) is introduced
+> 
 
-What sort of machine is this?
+OK, will take this route!
 
-Best regards,
-
-Wolfgang Denk
+Jan
 
 -- 
-DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
-Do you suppose the reason the ends of the `Intel Inside'  logo  don't
-match up is that it was drawn on a Pentium?
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
