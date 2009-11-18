@@ -1,13 +1,13 @@
-Message-ID: <4B0323A5.1030507@domain.hid>
-Date: Tue, 17 Nov 2009 23:28:53 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-References: <47a3101a0911171342y39faa155r9ed7010f672f4e31@domain.hid>
-	<47a3101a0911171420g2ec0ee69x6a16a55bbdacb40a@domain.hid>
-In-Reply-To: <47a3101a0911171420g2ec0ee69x6a16a55bbdacb40a@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Wifistix kernel 2.6.24
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 18 Nov 2009 08:41:45 +0100
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A01D8FADC@ARVMAIL1.mra.roland-man.biz>
+In-Reply-To: <4B02C974.8050701@domain.hid>
+From: <roderik.wildenburg@domain.hid>
+Subject: Re: [Xenomai-help] network stall
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,24 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Linus Casassa <linus@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: wg@domain.hid, gilles.chanteperdrix@xenomai.org
+Cc: xenomai@xenomai.org
 
-Linus Casassa wrote:
-> Ups I didn't have pxa2xx and pxa2xx_cs module.
-> 
-> Now I have this error:
-> 
-> root@domain.hid:~$ modprobe wlan0
-> Segmentation fault
+>=20
+> Are there any FEC related kernel messages? Maybe (likely) the=20
+> problem is
 
-Ok. I did not answer to your first mail because I thought your post to
-the Xenomai mailing list was a mistake. But apparently it was not since
-you post again.
+We will check this.
 
-So, let me clarify: here you post on Xenomai mailing list, this is a
-list where people talk about problems related to Xenomai.
 
--- 
-					    Gilles.
+> caused by Ethernet packet bombardments (I suspect bursts of ARP
+> request). You could try to simulate such bombardments by=20
+> using pktgen. I
+> can send you a script in case you are interested.
+
+Sure I am interested! Would you be so kind to send me the script?
+
+Roderik
+
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
