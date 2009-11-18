@@ -1,12 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A01D8F93D@ARVMAIL1.mra.roland-man.biz>
-References: <5D63919D95F87E4D9D34FF7748CE2C2A01D8F93D@ARVMAIL1.mra.roland-man.biz>
-Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 18 Nov 2009 14:37:25 +0100
-Message-ID: <1258551445.2348.148.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4B0413DC.6090603@domain.hid>
+Date: Wed, 18 Nov 2009 16:33:48 +0100
+From: "Alessio Margan @ IIT" <alessio.margan@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] network stall
+Subject: [Xenomai-help] Analogy Sensoray s526
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,69 +14,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: roderik.wildenburg@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Tue, 2009-11-17 at 10:42 +0100, roderik.wildenburg@domain.hid
-wrote:
-> On one of our platforms (PPC 5200B Kernel 2.4, Xenomai 2.4.8, PCI-bus) =
-we face rare network stalls (once a day).
-> In this situation network communication seems to be completly dead, but=
- obviously only the receive direction is affected as receive-interrupts i=
-n /proc/interrupts aren=C2=B4t incremented while transmit interrupts are =
-incremented.
-> Wireshark-protocoll (taken via port mirroring of the switch) says that =
-packets are sent to the target, but tcpdump on the target does not show t=
-hese packets (which is obvious, if receive-interrupt isn=C2=B4t operation=
-al).
-> In the send direction only arp-requests are monitored (on the target an=
-d on the switch).
-> Unfortunatelly this situation can=C2=B4t be reproduced in an laboratory=
- environment
->=20
-> On our other platform, which is very similar (PPC 5200B Kernel 2.4, Xen=
-omai 2.4.8) but without PCI we don=C2=B4t have this problem. Therefore I =
-am thinking whether Ipipe (in combination with PCI) could be responsible =
-for the interrupt lock?
->=20
-> Does anybody have an idea/suggestion how we can track down the reason f=
-or interrupt blockade?
-> Are there some helpful /proc entries (/proc/ipipe wasn=C2=B4t very usef=
-ul for me)?
-> Unfortunatelly, as far as I know, Ipipe-tacer is only available for Ker=
-nel 2.6. Am I right?
+Hi,
+I'm new to Xenomai and I am a bit confused about the status of Analogy.
+One project in our lab=20
+http://www.iit.it/en/advanced-robotics/projects/hydraulically-actuated-quad=
+ruped-hyq.html
+needs real time capabilities and due to hw configuration (pc104 cpu=20
+board + 1 to 5 s526 Sensory boards) we choose RTAI+COMEDI.
+We would like to switch to Xenomai, the Sensory s526 board will be=20
+supported ?
+With Xenomai-abe tree could I use the comedi kernel module for s526 ?
 
-Yes.
-
->=20
->=20
-> I would appreciate any suggestion very much!
->=20
-
-Make sure to disable CONFIG_XENO_OPT_ISHIELD. This option was reported
-to introduce interrupt propagation issues at least once, certainly adds
-some overhead, and won't buy you anything with your configuration. It
-has been removed from 2.5.
-
-> Roderik
->=20
-> --------------------------------------------------------
-> manroland AG
-> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Ral=
-l, Paul Steidle  =20
-> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592
-> USt-Ident-Nr. DE 250200933
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
-
+Thanks
+Alessio
 --=20
-Philippe.
 
+ISTITUTO ITALIANO
+DI TECNOLOGIA
+
+Alessio Margan
+/Senior Technician/
+mail me <mailto:alessio.margan@domain.hid>
+
+Via Morego, 30 16163 Genova=20
+<http://maps.google.com/maps?f=3Dq&hl=3Den&geocode=3D&q=3Dvia+morego,+30+ge=
+nova&sll=3D37.0625,-95.677068&sspn=3D85.420533,191.601563&ie=3DUTF8&ll=3D44=
+.474913,8.907037&spn=3D0.004685,0.011652&t=3Dh&z=3D17&iwloc=3Daddr>
+
+www.iit.it <http://www.iit.it>
+
+*Legal Disclaimer*
+This electronic message contains information that is confidential. The=20
+information is intended for the use of the addressee only. If you are=20
+not the addressee we would appreciate your notification in this respect.=20
+Please note that any disclosure, copy, distribution or use of the=20
+contents of this message is prohibited and may be unlawful. We have=20
+taken every reasonable precaution to ensure that any kind of attachment=20
+to this e-mail has been swept for viruses. However, we cannot accept=20
+liability for any damage sustained as a result of software viruses and=20
+would advise you to carry out your own virus checks before opening any=20
+attachment.
+*Avvertenza legale*
+Questo messaggio Email contiene informazioni confidenziali riservate ai=20
+soli destinatari. Qualora veniate in possesso di tali informazioni senza=20
+essere definito come destinatario vi reghiamo di leggere le seguenti=20
+note. Ogni apertura, copia, distribuzione del contenuto del messaggio e=20
+dei suoi allegati =E8 proibito e potrebbe violare le presenti leggi.=20
+Abbiamo attivato ogni possibile e ragionevole precauzione per assicurare=20
+che gli allegati non contengano virus. Comunque non assumeremo alcuna=20
+responsabilit=E0 per ogni eventuale danno causato da virus software e=20
+simili in quanto =E8 onere del destinatario verificarne l=92assenza in ogni=
+=20
+allegato attuando propri indipendenti controlli.
 
 
