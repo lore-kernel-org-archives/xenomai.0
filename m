@@ -1,10 +1,14 @@
-Message-ID: <4B0413DC.6090603@domain.hid>
-Date: Wed, 18 Nov 2009 16:33:48 +0100
-From: "Alessio Margan @ IIT" <alessio.margan@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] Analogy Sensoray s526
+Sender: lcasassa@domain.hid
+In-Reply-To: <4B0323A5.1030507@domain.hid>
+References: <47a3101a0911171342y39faa155r9ed7010f672f4e31@domain.hid> 
+	<47a3101a0911171420g2ec0ee69x6a16a55bbdacb40a@domain.hid> 
+	<4B0323A5.1030507@domain.hid>
+From: Linus Casassa <linus@domain.hid>
+Date: Wed, 18 Nov 2009 12:59:20 -0300
+Message-ID: <47a3101a0911180759m640331e8qa55c582906c7cc5a@domain.hid>
+Content-Type: multipart/alternative; boundary=000e0cd290008a57110478a7546d
+Subject: Re: [Xenomai-help] Wifistix kernel 2.6.24
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,59 +18,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Hi,
-I'm new to Xenomai and I am a bit confused about the status of Analogy.
-One project in our lab=20
-http://www.iit.it/en/advanced-robotics/projects/hydraulically-actuated-quad=
-ruped-hyq.html
-needs real time capabilities and due to hw configuration (pc104 cpu=20
-board + 1 to 5 s526 Sensory boards) we choose RTAI+COMEDI.
-We would like to switch to Xenomai, the Sensory s526 board will be=20
-supported ?
-With Xenomai-abe tree could I use the comedi kernel module for s526 ?
+--000e0cd290008a57110478a7546d
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Thanks
-Alessio
+I am so sorry! I meant the gumstix mailing list!
+
+On Tue, Nov 17, 2009 at 7:28 PM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> Linus Casassa wrote:
+> > Ups I didn't have pxa2xx and pxa2xx_cs module.
+> >
+> > Now I have this error:
+> >
+> > root@domain.hid:~$ modprobe wlan0
+> > Segmentation fault
+>
+> Ok. I did not answer to your first mail because I thought your post to
+> the Xenomai mailing list was a mistake. But apparently it was not since
+> you post again.
+>
+> So, let me clarify: here you post on Xenomai mailing list, this is a
+> list where people talk about problems related to Xenomai.
+>
+> --
+>                                             Gilles.
+>
+
+
+
 --=20
+Linus Casassa
+Estudiante Ingenier=EDa Civil Electr=F3nica
+Fono: 56-9-97776941
 
-ISTITUTO ITALIANO
-DI TECNOLOGIA
+--000e0cd290008a57110478a7546d
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Alessio Margan
-/Senior Technician/
-mail me <mailto:alessio.margan@domain.hid>
+I am so sorry! I meant the gumstix mailing list!<br><br><div class=3D"gmail=
+_quote">On Tue, Nov 17, 2009 at 7:28 PM, Gilles Chanteperdrix <span dir=3D"=
+ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.chantep=
+erdrix@domain.hid</a>&gt;</span> wrote:<br>
 
-Via Morego, 30 16163 Genova=20
-<http://maps.google.com/maps?f=3Dq&hl=3Den&geocode=3D&q=3Dvia+morego,+30+ge=
-nova&sll=3D37.0625,-95.677068&sspn=3D85.420533,191.601563&ie=3DUTF8&ll=3D44=
-.474913,8.907037&spn=3D0.004685,0.011652&t=3Dh&z=3D17&iwloc=3Daddr>
+<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
+204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><div class=3D"im"=
+>Linus Casassa wrote:<br>
+&gt; Ups I didn&#39;t have pxa2xx and pxa2xx_cs module.<br>
+&gt;<br>
+&gt; Now I have this error:<br>
+&gt;<br>
+&gt; root@domain.hid:~$ modprobe wlan0<br>
+&gt; Segmentation fault<br>
+<br>
+</div>Ok. I did not answer to your first mail because I thought your post t=
+o<br>
+the Xenomai mailing list was a mistake. But apparently it was not since<br>
+you post again.<br>
+<br>
+So, let me clarify: here you post on Xenomai mailing list, this is a<br>
+list where people talk about problems related to Xenomai.<br>
+<br>
+--<br>
+<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.<br>
+</font></blockquote></div><br><br clear=3D"all"><br>-- <br>Linus Casassa<br=
+>Estudiante Ingenier=EDa Civil Electr=F3nica<br>Fono: 56-9-97776941<br>
 
-www.iit.it <http://www.iit.it>
-
-*Legal Disclaimer*
-This electronic message contains information that is confidential. The=20
-information is intended for the use of the addressee only. If you are=20
-not the addressee we would appreciate your notification in this respect.=20
-Please note that any disclosure, copy, distribution or use of the=20
-contents of this message is prohibited and may be unlawful. We have=20
-taken every reasonable precaution to ensure that any kind of attachment=20
-to this e-mail has been swept for viruses. However, we cannot accept=20
-liability for any damage sustained as a result of software viruses and=20
-would advise you to carry out your own virus checks before opening any=20
-attachment.
-*Avvertenza legale*
-Questo messaggio Email contiene informazioni confidenziali riservate ai=20
-soli destinatari. Qualora veniate in possesso di tali informazioni senza=20
-essere definito come destinatario vi reghiamo di leggere le seguenti=20
-note. Ogni apertura, copia, distribuzione del contenuto del messaggio e=20
-dei suoi allegati =E8 proibito e potrebbe violare le presenti leggi.=20
-Abbiamo attivato ogni possibile e ragionevole precauzione per assicurare=20
-che gli allegati non contengano virus. Comunque non assumeremo alcuna=20
-responsabilit=E0 per ogni eventuale danno causato da virus software e=20
-simili in quanto =E8 onere del destinatario verificarne l=92assenza in ogni=
-=20
-allegato attuando propri indipendenti controlli.
-
+--000e0cd290008a57110478a7546d--
 
