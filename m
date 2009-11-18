@@ -1,14 +1,11 @@
-Message-ID: <4B0183FB.6030400@domain.hid>
-Date: Mon, 16 Nov 2009 17:55:23 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Andreas Glatz <AndreasGlatz@domain.hid>
+Date: Wed, 18 Nov 2009 09:46:17 -0500
+Message-ID: <245373446233674495BCA5CA2FC1EB173017033105@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <E1NA3bT-0002c1-7v@domain.hid> <4B01792A.4090206@domain.hid>
-	<4B017F7A.4090409@domain.hid> <4B0180A6.80207@domain.hid>
-In-Reply-To: <4B0180A6.80207@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : nucleus: Include all
-	heaps in statistics
+Subject: [Xenomai-core] Patch to prevent loss of initial thread priority
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,40 +14,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> GIT version control wrote:
->>>> +void xnheap_set_label(xnheap_t *heap, const char *label, ...)
->>>> +{
->>>> +	va_list args;
->>>> +	spl_t s;
->>>> +
->>>> +	va_start(args, label);
->>>> +
->>>> +	xnlock_get_irqsave(&nklock, s);
->>>> +	vsnprintf(heap->label, sizeof(heap->label), label, args);
->>>> +	xnlock_put_irqrestore(&nklock, s);
->>> Why do we need locking here ?
->>>
->> We already registered the heap, so I want to avoid that someone dumping
->> /proc sees an inconsistent string - or even an unterminated one.
-> 
-> There are other ways to avoid that, but, I am over-reacting to printf.
-> But it is not really a printf, it is an snprintf, which is not that heavy.
+Hi,
 
-Right, this was a lazy approach due to the fact that we call snprintf
-under nklock already.
+We had the problem that one of our threads, which we initially assigned pri=
+ority 29, ended up having priority 89.
+I know that PI is the reason why the priority of the thread was first bumpe=
+d up to 89 and then to 90 because
+two higher priority threads started blocking on two different mutexes owned=
+ by the thread (initial priority 29).
+I expected that the priority would be reset to the initial value (29) after=
+ leaving the critical section but that was=20
+not the case. The thread seemed to have forgotten its initial priority and =
+the priority of the thread just dropped to 89.
 
-Jan
+After some investigation with lttng, I think, I found the reason for that e=
+rratic behaviour (see patch below). the=20
+second change of thread priority was done with xnsynch_renice_sleeper(). Th=
+e thread already had the XNBOOST
+flag set and its initial priority saved to bprio which got overwritten.
 
-PS: I just force-updated my queue for a cosmetic change
-("unlabeled (%p)" -> "unlabeled @0x%p").
+Andreas
 
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+diff -ruN linux/kernel/xenomai/nucleus/synch.c linux-lttng/kernel/xenomai/n=
+ucleus/synch.c
+--- linux/kernel/xenomai/nucleus/synch.c    2009-10-30 14:21:34.000000000 -=
+0400
++++ linux-lttng/kernel/xenomai/nucleus/synch.c  2009-11-18 09:24:17.0000000=
+00 -0500
+@@ -323,11 +341,14 @@
+            insertpqf(&owner->claimq, &synch->link, thread->cprio);
+        } else {
+            /* The resource was NOT claimed, claim it now
+-            * and boost the owner. */
++            * and boost the owner if it hasn't already=20
++            * been boosted. */
+            __setbits(synch->status, XNSYNCH_CLAIMED);
+            insertpqf(&owner->claimq, &synch->link, thread->cprio);
+-           owner->bprio =3D owner->cprio;
+-           xnthread_set_state(owner, XNBOOST);
++           if (!xnthread_test_state(owner, XNBOOST)) {
++               owner->bprio =3D owner->cprio;
++               xnthread_set_state(owner, XNBOOST);
++           }
+        }
+        /* Renice the owner thread, progressing in the PI
+           chain as needed. */=
 
