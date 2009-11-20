@@ -1,12 +1,12 @@
-Message-ID: <4B06912C.8020607@domain.hid>
-Date: Fri, 20 Nov 2009 13:53:00 +0100
-From: Benjamin Biegel <biegel@domain.hid>
+From: Sebastian Smolorz <smolorz@domain.hid>
+Date: Fri, 20 Nov 2009 16:09:12 +0100
+References: <4B058624.6000401@domain.hid>
+In-Reply-To: <4B058624.6000401@domain.hid>
 MIME-Version: 1.0
-References: <4B068626.8060000@domain.hid> <4B068939.9060405@domain.hid>
-In-Reply-To: <4B068939.9060405@domain.hid>
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] I can send -but how to receive using
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_YErBL2jwn5SImxr"
+Message-Id: <200911201609.12842.smolorz@domain.hid>
+Subject: Re: [Xenomai-help] problem with RT-Socket-CAN xeno_can_isa module
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,52 +16,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Alessio Margan @ IIT" <alessio.margan@domain.hid>
+Cc: xenomai@xenomai.org
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
-</head>
-<body bgcolor="#ffffff" text="#000000">
-Originally we had one nomac PC on a TDMA network, which did only work
-from the nomac-PC to TDMA-PC. After your post we tried using two PCs
-with both nomac - which works. This is what we need, so thanks!<br>
-<br>
-Benjamin<br>
-<br>
-<br>
-Jan Kiszka wrote:
-<blockquote cite="mid:4B068939.9060405@domain.hid" type="cite">
-  <pre wrap="">Benjamin Biegel wrote:
-  </pre>
-  <blockquote type="cite">
-    <pre wrap="">Hello
+--Boundary-00=_YErBL2jwn5SImxr
+Content-Type: Text/Plain;
+  charset="windows-1252"
+Content-Transfer-Encoding: 7bit
 
-I have inserted the modules rtnet, rtipv4, rtpacket, rt_eepro100, rtcfg, 
-rtmac and nomac.
+Alessio Margan @ IIT wrote:
+> I've got a problem using RT-Socket-CAN with module xeno_can_isa.
+> The system has a pcan-pc/104 board with a sja1000
+> The first tme I load to module with
+> sudo modprobe xeno_can_isa io=0x300,0x320 irq=10,11
+> everything work fine, then if I try to unload the module seems that the
+> ioport region remain allocated from xeno_can_isa
+> but the module is unloaded and if I try to load it again the command
+> fail with "Device or resource busy" and I have to reboot.
 
-But after setting up vnic0 i can only send packets (this works) but not 
-receive any.
+Does this patch work for you?
 
-I use
-rtifconfig rteth0 up IP MASK promisc
-nomaccfg rteth0 attach
-ifconfig vnic 0 up IP MASK
+-- 
+Sebastian
 
-    </pre>
-  </blockquote>
-  <pre wrap=""><!---->
-Did you set up a peer box with nomac as well - or who is supposed to
-send you packets? If so, does sending&amp;receiving work for rteth0 itself
-(e.g. rtping)?
+--Boundary-00=_YErBL2jwn5SImxr
+Content-Type: text/x-patch;
+  charset="UTF-8";
+  name="rtcan_isa.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="rtcan_isa.patch"
 
-Jan
+--- rtcan_isa.c~	2009-11-20 15:58:31.000000000 +0100
++++ rtcan_isa.c	2009-11-20 15:59:21.000000000 +0100
+@@ -189,6 +189,7 @@ static void rtcan_isa_exit(void)
+ 		if (!dev)
+ 			continue;
+ 		rtcan_sja1000_unregister(dev);
++                release_region(io[i], RTCAN_ISA_PORT_SIZE);
+ 		rtcan_dev_free(dev);
+ 	}
+ }
 
-  </pre>
-</blockquote>
-<br>
-</body>
-</html>
+--Boundary-00=_YErBL2jwn5SImxr--
 
