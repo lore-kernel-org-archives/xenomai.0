@@ -1,14 +1,11 @@
-Message-ID: <4B0AD2CF.1050103@domain.hid>
-Date: Mon, 23 Nov 2009 19:22:07 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4B0AD497.6080605@domain.hid>
+Date: Mon, 23 Nov 2009 19:29:43 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <200911231521.32461.smolorz@domain.hid>
-	<4B0AC853.6030603@domain.hid> <4B0ACEE1.5030602@domain.hid>
-In-Reply-To: <4B0ACEE1.5030602@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] can: Free I/O region when unloading the
- xeno_can_isa.ko driver
+Subject: [Xenomai-core] [pull request] RTDM: phys_addr mapping and ISA CAN
+	driver fix
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,32 +14,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Wolfgang Grandegger wrote:
->> Sebastian Smolorz wrote:
->>> can: Free I/O region when unloading the xeno_can_isa.ko driver
->>>
->>> Signed-off-by: Sebastian Smolorz <smolorz@domain.hid>
->> Signed-off-by: Wolfgang Grandegger <wg@domain.hid>
->>
->> Philippe, should I apply the patch?
-> 
-> Do you have write access to the head git? Even if, this is not how that
-> tree is operated today. Either send pull request from a personal tree or
-> wait for Philippe to pick it up directly.
+The following changes since commit 3fded6232aad90e2c6799857a21aa492a0fa8e22:
+  Philippe Gerum (1):
+        Merge commit 'jan'
 
-Well, you are right. I actually never tried.
+are available in the git repository at:
 
-> But I can also pick up Sebastian's patch and push it through my tree
-> (along with the other RTDM-related commit I've queued).
+  git://git.xenomai.org/xenomai-jki.git for-upstream
 
-You are welcome.
+Luis Herrera-Bendezu (1):
+      rtdm: Extend rtdm_iomap_to_user to map phys addr > 4G
 
-Thanks,
+Sebastian Smolorz (1):
+      can: Free I/O region when unloading the xeno_can_isa.ko driver
 
-Wolfgang.
-
+ include/asm-generic/system.h         |    2 +-
+ include/asm-generic/wrappers.h       |    4 ++++
+ include/rtdm/rtdm_driver.h           |    2 +-
+ ksrc/drivers/can/sja1000/rtcan_isa.c |    5 +++--
+ ksrc/skins/rtdm/drvlib.c             |    9 +++++----
+ 5 files changed, 14 insertions(+), 8 deletions(-)
 
