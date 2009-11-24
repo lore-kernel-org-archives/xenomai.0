@@ -1,14 +1,15 @@
 Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
 From: Alexis Berlemont <berlemont.hauw@domain.hid>
-Date: Tue, 24 Nov 2009 23:51:46 +0100
+Date: Tue, 24 Nov 2009 23:57:52 +0100
 References: <4bed572e0911221135s64fc4726x1cd7235f116e11a4@domain.hid>
 	<200911232310.44441.berlemont.hauw@domain.hid>
 	<4bed572e0911241334x7691431dh37a17c461be53d98@domain.hid>
 In-Reply-To: <4bed572e0911241334x7691431dh37a17c461be53d98@domain.hid>
 MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_COGDL6P3LZM2ueA"
-Message-Id: <200911242351.46562.berlemont.hauw@domain.hid>
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Message-Id: <200911242357.52347.berlemont.hauw@domain.hid>
 Subject: Re: [Xenomai-help] Help on analogy_ni_pcimio (Alexis Berlemont?)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -22,28 +23,19 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Ettore Pedretti <ep41@domain.hid>
 Cc: xenomai@xenomai.org
 
---Boundary-00=_COGDL6P3LZM2ueA
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-
-Hi,
-
 On Tuesday 24 November 2009 22:34:33 Ettore Pedretti wrote:
 > Hi,
 > 
 > Would it help at this stage if I re-enable IO APIC, run your program
 > and send you the call-stack dump? I am willing to test your patch on
 > our hardware as soon as you got one ready, if that can be of help.
-> 
+
+Sorry, I did not answer your question. The bug occurs in both configurations; 
+so, do not bother changing your configuration for the moment.
+
 > Cheers
 > Ettore
 > 
-
-Please, find the patch attached (this patch is against the tag v2.5-rc4).
-
-Many thanks for your time.
-
 > 2009/11/23 Alexis Berlemont <berlemont.hauw@domain.hid>:
 > > Hi,
 > >
@@ -528,106 +520,4 @@ Many thanks for your time.
 > >
 > > Alexis.
 > 
-Alexis.
-
---Boundary-00=_COGDL6P3LZM2ueA
-Content-Type: text/x-patch;
-  charset="UTF-8";
-  name="patch_debug_1.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="patch_debug_1.diff"
-
-diff --git a/include/analogy/device.h b/include/analogy/device.h
-index 27a3bd0..2a2f7bc 100644
---- a/include/analogy/device.h
-+++ b/include/analogy/device.h
-@@ -58,6 +58,16 @@ struct a4l_device {
- };
- typedef struct a4l_device a4l_dev_t;
- 
-+#if 1 /* debug */
-+static inline void debug_dump_irq(a4l_dev_t *dev, char *s)
-+{
-+	a4l_irq_desc_t *dsc = &dev->transfer.irq_desc;
-+	rtdm_printk("debug_dump_irq: %s\n", s);
-+	rtdm_printk("\t handler=%p, irq=%d, cookie=%p\n", 
-+		    dsc->handler, dsc->irq, dsc->cookie);
-+}
-+#endif /* debug */
-+
- #endif /* __KERNEL__ */
- 
- /* DEVCFG ioctl argument structure */
-diff --git a/ksrc/drivers/analogy/national_instruments/mio_common.c b/ksrc/drivers/analogy/national_instruments/mio_common.c
-index d23ee12..6586563 100644
---- a/ksrc/drivers/analogy/national_instruments/mio_common.c
-+++ b/ksrc/drivers/analogy/national_instruments/mio_common.c
-@@ -4746,6 +4746,10 @@ int ni_E_init(a4l_dev_t *dev)
- 		a4l_err(dev, "bug! boardtype.n_aochan > MAX_N_AO_CHAN\n");
- 		return -EINVAL;
- 	}
-+
-+#if 1 /* debug */
-+	debug_dump_irq(dev, "ni_E_init start");
-+#endif /* debug */
- 	
- 	/* analog input subdevice */
- 
-@@ -5145,6 +5149,10 @@ int ni_E_init(a4l_dev_t *dev)
- 	if(ret != NI_FREQ_OUT_SUBDEV)
- 		return ret;
- 
-+#if 1 /* debug */
-+	debug_dump_irq(dev, "ni_E_init before config");
-+#endif /* debug */
-+
- 	/* ai configuration */
- 	ni_ai_reset(a4l_get_subd(dev, NI_AI_SUBDEV));
- 	if ((boardtype.reg_type & ni_reg_6xxx_mask) == 0) {
-@@ -5193,6 +5201,10 @@ int ni_E_init(a4l_dev_t *dev)
- 		ni_writeb(0x0, M_Offset_AO_Calibration);
- 	}
- 
-+#if 1 /* debug */
-+	debug_dump_irq(dev, "ni_E_init after config");
-+#endif /* debug */
-+
- 	return 0;
- }
- 
-diff --git a/ksrc/drivers/analogy/national_instruments/pcimio.c b/ksrc/drivers/analogy/national_instruments/pcimio.c
-index 2c03112..ef3f58a 100644
---- a/ksrc/drivers/analogy/national_instruments/pcimio.c
-+++ b/ksrc/drivers/analogy/national_instruments/pcimio.c
-@@ -1532,6 +1532,10 @@ static int pcimio_attach(a4l_dev_t *dev, a4l_lnkdesc_t *arg)
- 
- 	irq = mite_irq(devpriv->mite);
- 
-+#if 1 /* debug */
-+	debug_dump_irq(dev, "before request");
-+#endif /* debug */
-+
- 	if(irq == 0){
- 		a4l_warn(dev, "pcimio_attach: unknown irq (bad)\n\n");
- 	}else{
-@@ -1543,7 +1547,16 @@ static int pcimio_attach(a4l_dev_t *dev, a4l_lnkdesc_t *arg)
- 			a4l_err(dev, "pcimio_attach: irq not available\n");
- 	}
- 
-+#if 1 /* debug */
-+	debug_dump_irq(dev, "after request");
-+#endif /* debug */
-+
- 	ret = ni_E_init(dev);
-+
-+#if 1 /* debug */
-+	debug_dump_irq(dev, "after ni_E_init");
-+#endif /* debug */
-+
- 	if(ret < 0)
- 		return ret;
- 
-
---Boundary-00=_COGDL6P3LZM2ueA--
 
