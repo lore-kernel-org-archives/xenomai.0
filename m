@@ -1,17 +1,17 @@
 Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <4B0F20AD.6050808@domain.hid>
-Date: Fri, 27 Nov 2009 01:43:25 +0100
+Message-ID: <4B0F21BC.3080709@domain.hid>
+Date: Fri, 27 Nov 2009 01:47:56 +0100
 From: Alexis Berlemont <berlemont.hauw@domain.hid>
 MIME-Version: 1.0
-References: <4bed572e0911221135s64fc4726x1cd7235f116e11a4@domain.hid>	
-	<200911232310.44441.berlemont.hauw@domain.hid>	
-	<4bed572e0911241334x7691431dh37a17c461be53d98@domain.hid>	
-	<200911242357.52347.berlemont.hauw@domain.hid>	
-	<4bed572e0911260022o70a984b1r98e6728044969d93@domain.hid>	
+References: <4bed572e0911221135s64fc4726x1cd7235f116e11a4@domain.hid>
+	<200911232310.44441.berlemont.hauw@domain.hid>
+	<4bed572e0911241334x7691431dh37a17c461be53d98@domain.hid>
+	<200911242357.52347.berlemont.hauw@domain.hid>
+	<4bed572e0911260022o70a984b1r98e6728044969d93@domain.hid>
 	<72cf3fb0911260134m36c1d5b0s9b24843b11610455@domain.hid>
-	<1259245325.2348.730.camel@domain.hid>
-In-Reply-To: <1259245325.2348.730.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+	<4bed572e0911261538m787ec9c9qf2a76d8e892f2d48@domain.hid>
+In-Reply-To: <4bed572e0911261538m787ec9c9qf2a76d8e892f2d48@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Help on analogy_ni_pcimio (Alexis Berlemont?)
 List-Id: Help regarding installation and common use of Xenomai
@@ -23,13 +23,13 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Ettore Pedretti <epedrett@domain.hid>
 Cc: xenomai@xenomai.org
 
-Hi Philippe,
+Hi,
 
-Philippe Gerum wrote:
-> On Thu, 2009-11-26 at 10:34 +0100, Alexis Berlemont wrote:
+Ettore Pedretti wrote:
+> 2009/11/26 Alexis Berlemont <berlemont.hauw@domain.hid>:
 >> On Thu, Nov 26, 2009 at 9:22 AM, Ettore Pedretti <epedrett@domain.hid> wrote:
 >>> Hi Alexis,
 >>>
@@ -105,11 +105,7 @@ Philippe Gerum wrote:
 >>> Pid: 3566, comm: insmod Not tainted (2.6.31.1 #1) X6DA8
 >>> EIP: 0060:[<00000000>] EFLAGS: 00010246 CPU: 1
 >>> EIP is at 0x0
->>> EAX: 00000030
-> 
-> This is likely IRQ 48, with rthal_irq_enable jumping to address zero.
-> 
->>  EBX: 00000000 ECX: 00000030 EDX: c1250b80
+>>> EAX: 00000030 EBX: 00000000 ECX: 00000030 EDX: c1250b80
 >>> ESI: f8e24500 EDI: 00000000 EBP: f6c03f1c ESP: f6c03f18
 >>>  DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068
 >>> Process insmod (pid: 3566, ti=f6c02000 task=f78634b0 task.ti=f6c02000)
@@ -140,34 +136,76 @@ Philippe Gerum wrote:
 >> So if I understand well, you "insmoded" the little test module which
 >> does nothing but calling rtdm_irq_request() and the NULL pointer bug
 >> occured.
->>
+> 
+> Correct
+> 
 >> This bug occurred before calling analogy_config, you did not tried to
 >> attach the ni_pcimio driver, right ?
->>
+> 
+> I insmod-ed the test module that gave that error dump. I later tried
+> to attach the driver which causes the usual error. The stack-dumps I
+> sent are solely related to insmod of test program.
+> 
 >> If I am right, it seems like the bug is not located in analogy but
 >> between Xenomai's nucleus and Ipipe, which is ... weird.
 >>
-> 
-> The IRQ requested does not seem to have been associated with any chip
-> controller, which is likely the basic issue.
-
-I had a look at arch/x86/kernel/apic/io_apic.c and the only controllers 
-which seem left unhandled by ipipe are the remapped ones (and the hpet 
-but I doubt it could be the hpet). Do you see any other possibility ?
-
-Do you think that writing a little test module which requests the irq 
-(through Linux API) is a good idea ?
-
-After having loaded this module, the problematic controller should be 
-listed in /proc/interrupts...
-
 >> What is your kernel configuration ? no IO_APIC ?
->> Which irq did you try to request ? 48 or 5 ?
->>
->> Which CPU are you using ?
->>
 > 
-> Looks like something being used in x86_32 mode.
+> I put back my config to IO_APIC. Should I disable that again?
+> attached is my kernel configuration (configAnalogy)
+> 
+> 
+>> Which irq did you try to request ? 48 or 5 ?
+> 
+> I do not know. do I have to pass parameters to insmod?
+
+No, you just have to change the irq number in the source code and 
+recompile it. However, if you have re-enabled the IO-APIC in the kernel 
+config, that should be ok (48 was already set in the code).
+
+> 
+> This is my /proc/interrupts if that is helpful
+>            CPU0       CPU1
+>   0:        222          0   IO-APIC-edge      timer
+>   1:          0          9   IO-APIC-edge      i8042
+>   2:          0          0    XT-PIC-XT        cascade
+>  12:          0        132   IO-APIC-edge      i8042
+>  14:          0          8   IO-APIC-edge      ata_piix
+>  15:          0      12358   IO-APIC-edge      ata_piix
+>  20:          0          0   IO-APIC-fasteoi   astropci0
+>  28:          0        235   IO-APIC-fasteoi   sata_mv
+>  54:          0      77950   IO-APIC-fasteoi   eth0
+> NMI:          0          0   Non-maskable interrupts
+> LOC:   45365307   45365133   Local timer interrupts
+> SPU:          0          0   Spurious interrupts
+> CNT:          0          0   Performance counter interrupts
+> PND:          0          0   Performance pending work
+> RES:       2555       2212   Rescheduling interrupts
+> CAL:         60         58   Function call interrupts
+> TLB:        419        200   TLB shootdowns
+> TRM:          0          0   Thermal event interrupts
+> THR:          0          0   Threshold APIC interrupts
+> MCE:          0          0   Machine check exceptions
+> MCP:        152        152   Machine check polls
+> ERR:          0
+> MIS:          0
+> 
+> and my /proc/xenomai/irq
+> 
+> IRQ         CPU0        CPU1
+> 516:           0           0         [IPI]
+> 519:    46161773    46161772         [timer]
+> 520:           0           0         [critical sync]
+> 546:           0           0         [virtual]
+> 
+> 
+>> Which CPU are you using ?
+> 
+> CPU0: Intel(R) Xeon(TM) CPU 3.00GHz stepping 03
+> CPU1: Intel(R) Xeon(TM) CPU 3.00GHz stepping 03
+> 
+> As Philippe rightly pointed out this is a 32-bit install although the
+> CPUs are 64 bit
 > 
 >> Thank you for your time.
 >>
@@ -666,24 +704,7 @@ listed in /proc/interrupts...
 >>>> Xenomai-help@domain.hid
 >>>> https://mail.gna.org/listinfo/xenomai-help
 >>>>
->>>
->>>
->>> --
->>> Ettore Pedretti, SUPA
->>> School of Physics and Astronomy
->>> University of St Andrews, North Haugh,
->>> St Andrews, Fife, KY16 9SS, Scotland
->>> Ph: +44 1334 461669, Fax: +44-1334-463104
->>> The University of St Andrews is a charity registered in Scotland : No SC013532
->>>
->>>
->> Alexis.
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
-> 
-> 
+>> >
 
+Alexis.
 
