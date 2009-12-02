@@ -1,15 +1,16 @@
-Message-ID: <4B30AD3E.5020900@domain.hid>
-Date: Tue, 22 Dec 2009 12:27:58 +0100
+Message-ID: <4B1684D7.2080501@domain.hid>
+Date: Wed, 02 Dec 2009 16:16:39 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <mailman.20465.1261407746.2717.xenomai-git@xenomai.org>
-	<4B2FAA92.2040606@domain.hid> <4B3019A8.2030501@domain.hid>
-In-Reply-To: <4B3019A8.2030501@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig30D40B560E2766C3BFDC2B62"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] Xenomai-git Digest, Vol 9, Issue 40
+References: <4B1663B9.8030306@domain.hid>
+	<4B166A5B.6030400@domain.hid>	<4B166EFB.8050309@domain.hid>
+	<4B16769A.9060700@domain.hid>	<4B167A55.8080407@domain.hid>
+	<4B167B4B.3010804@domain.hid> <4B167FC4.8080904@domain.hid>
+	<4B1681DA.3090108@domain.hid>
+In-Reply-To: <4B1681DA.3090108@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Realtime gettimeofday()
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -19,85 +20,62 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig30D40B560E2766C3BFDC2B62
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Cc: Wolfgang Mauerer <wm@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
->> xenomai-git-request@domain.hid wrote:
->>> Date: Mon, 21 Dec 2009 16:04:33 +0100
->>> From: GIT version control <git@domain.hid>
->>> Subject: [Xenomai-git] Gilles Chanteperdrix : rtcan: use the new
->>> 	pci_ids	header for pci rtcan drivers
->>> To: xenomai-git@xenomai.org
->>> Message-ID: <E1NMjoH-0003St-31@domain.hid>
->>> Content-Type: text/plain; charset=3DUTF-8
->>>
->>> Module: xenomai-head
->>> Branch: master
->>> Commit: 5662ced95f1f51dbf4285d5ff5a6da84cc74af83
->>> URL:    http://git.xenomai.org/?p=3Dxenomai-head.git;a=3Dcommit;h=3D5=
-662ced95f1f51dbf4285d5ff5a6da84cc74af83
->>>
->>> Author: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>> Date:   Sun Dec 20 02:43:36 2009 +0100
->>>
->>> rtcan: use the new pci_ids header for pci rtcan drivers
->>>
->>> ---
->>>
->>>  ksrc/drivers/can/sja1000/rtcan_ems_pci.c   |    1 +
->>>  ksrc/drivers/can/sja1000/rtcan_esd_pci.c   |    1 +
->>>  ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c |    1 +
->>>  ksrc/drivers/can/sja1000/rtcan_peak_pci.c  |    1 +
->>>  4 files changed, 4 insertions(+), 0 deletions(-)
->>>
->>> diff --git a/ksrc/drivers/can/sja1000/rtcan_ems_pci.c b/ksrc/drivers/=
-can/sja1000/rtcan_ems_pci.c
->>> index f69b5b8..a0921b4 100644
->>> --- a/ksrc/drivers/can/sja1000/rtcan_ems_pci.c
->>> +++ b/ksrc/drivers/can/sja1000/rtcan_ems_pci.c
->>> @@ -23,6 +23,7 @@
->>>  #include <linux/delay.h>
->>>  #include <linux/pci.h>
->>>  #include <asm/io.h>
->>> +#include <asm-generic/xenomai/pci_ids.h>
->> Is there any prerequisite for including this header? If not, can't we
->> drag it in via Xenomai's rtdm_driver.h? That avoids diverging too much=
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> Why? It delivers us the core mechanism we need for the rest as well -
+>>>> and it does not require fancy I-pipe hooks.
+>>> Because relying on the vdso/vsyscall only works on x86. Whereas
+>>> implementing clock slew down/acceleration at nucleus level and simply
+>>> sharing data between kernel and user through the the global sem heap,
+>>> works for all architectures.
+>> There are three kind of archs:
+>>  - those that already support vgettimeofday & friends (x86, powerpc,
+>>    maybe more)
+>>  - those that do not yet though they could (I strongly suspect arm falls
+>>    into this category as well)
+>>  - those that never will (due to lacking user-readable time sources)
+>>
+>> We need temporary/permanent i-pipe workarounds for the last two, but I
+>> see no point in complicating the first category. This design aims at a
+>> longer term.
+> 
+> Well, I may be wrong, but I prefer generic code to arch-specific code.
+> Nucleus code to handle clock slow down/acceleration would be generic;
+> I-pipe code to signal NTP syscalls would be generic (and yes, even if
+> I-pipe patches are generated for all architectures, whether the code is
+> generic or specific makes a big difference);
+> User-space code to implement clock_gettime(CLOCK_REALTIME) using data
+> shared through the global sem heap would be generic.
+> 
+> So, I think this design is future proof and easy to maintain. And I do
+> not see how it complicates x86 situation, since it is only made of
+> generic code.
 
->> from the "only Linux or RTDM" rule in our drivers.
->=20
-> I understand, RTcan would not compile with RTAI. This header is also
+Well, OK, then place a small optional I-pipe hook into that part that
+normally writes the update into the vdso page (I think that is
+arch-specific anyway), replicating it into a specified page the nucleus
+may set up on a globally shared heap. That hook also has to maintain a
+seqlock like Linux does, ie. generating the same layout and semantics.
+It's just the transport mechanism, we can easily select it based on the
+arch's level of support.
 
-Right (though I was more concerned about native RTDM :) ).
+But I'm against any needless redirection through the nucleus (including
+potential nklocks etc.).
 
-> used by the smi module, which is not an RTDM module, that said we can
-> include it through RTDM for RTDM drivers, and smi module would include
-> it directly.
->=20
+> 
+> Looks like we found a troll to occupy this afternoon :-).
+> 
 
-Great, TIA.
+Yeah, would be a nice one if there weren't that qemu-kvm migration
+issues I have to trace down in parallel... :)
 
 Jan
 
-
---------------enig30D40B560E2766C3BFDC2B62
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkswrT8ACgkQitSsb3rl5xTAggCdEGqiIFPHYfH4p2zLaW4iZBm/
-RXMAnA3nPnprGw8G4ygWGYeZVtJcjNcp
-=UTPR
------END PGP SIGNATURE-----
-
---------------enig30D40B560E2766C3BFDC2B62--
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
