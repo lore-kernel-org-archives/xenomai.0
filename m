@@ -1,12 +1,15 @@
-Message-ID: <4B2EBA98.5060002@domain.hid>
-Date: Mon, 21 Dec 2009 01:00:24 +0100
+Message-ID: <4B1681DA.3090108@domain.hid>
+Date: Wed, 02 Dec 2009 16:03:54 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B2EB7DA.7020709@domain.hid>
-In-Reply-To: <4B2EB7DA.7020709@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <4B1663B9.8030306@domain.hid>
+	<4B166A5B.6030400@domain.hid>	<4B166EFB.8050309@domain.hid>
+	<4B16769A.9060700@domain.hid>	<4B167A55.8080407@domain.hid>
+	<4B167B4B.3010804@domain.hid> <4B167FC4.8080904@domain.hid>
+In-Reply-To: <4B167FC4.8080904@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Remove outdated x86 adeos patches
+Subject: Re: [Xenomai-core] Realtime gettimeofday()
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,18 +19,44 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: Wolfgang Mauerer <wm@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> Hi Philippe,
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Why? It delivers us the core mechanism we need for the rest as well -
+>>> and it does not require fancy I-pipe hooks.
+>> Because relying on the vdso/vsyscall only works on x86. Whereas
+>> implementing clock slew down/acceleration at nucleus level and simply
+>> sharing data between kernel and user through the the global sem heap,
+>> works for all architectures.
 > 
-> as adeos-ipipe-2.4.35.5-i386-1.3-05.patch and
-> adeos-ipipe-2.6.29.5-x86-2.4-02.patch are no longer up to date /wrt to
-> latest i-pipe fixes, I would suggest to remove them for 2.5-final.
-> Avoids that people trap into known issues.
+> There are three kind of archs:
+>  - those that already support vgettimeofday & friends (x86, powerpc,
+>    maybe more)
+>  - those that do not yet though they could (I strongly suspect arm falls
+>    into this category as well)
+>  - those that never will (due to lacking user-readable time sources)
+> 
+> We need temporary/permanent i-pipe workarounds for the last two, but I
+> see no point in complicating the first category. This design aims at a
+> longer term.
 
-What latest fixes? Are they expected to oops or something?
+Well, I may be wrong, but I prefer generic code to arch-specific code.
+Nucleus code to handle clock slow down/acceleration would be generic;
+I-pipe code to signal NTP syscalls would be generic (and yes, even if
+I-pipe patches are generated for all architectures, whether the code is
+generic or specific makes a big difference);
+User-space code to implement clock_gettime(CLOCK_REALTIME) using data
+shared through the global sem heap would be generic.
+
+So, I think this design is future proof and easy to maintain. And I do
+not see how it complicates x86 situation, since it is only made of
+generic code.
+
+Looks like we found a troll to occupy this afternoon :-).
 
 -- 
-					    Gilles.
+                                          Gilles
+
 
