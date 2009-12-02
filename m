@@ -1,162 +1,220 @@
-Message-ID: <4B047FB4.7010509@domain.hid>
-Date: Thu, 19 Nov 2009 00:13:56 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4B15AFC0.6020805@domain.hid>
+Date: Wed, 02 Dec 2009 01:07:28 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B042121.2050509@domain.hid>	<1258562983.2348.168.camel@domain.hid>	<4B042B0F.2080003@domain.hid>	<1258564904.2348.170.camel@domain.hid>	<4B042E1C.40505@domain.hid>
-	<4B0430E6.30304@domain.hid>
-	<1258566503.2348.178.camel@domain.hid>
-	<4B047EF3.4060904@domain.hid>
-In-Reply-To: <4B047EF3.4060904@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig7962E434DAEDD0D381DB1BCF"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Adeos-main] [PATCH] x86: Move ipipe_suspend_domain out of
-	IRQ-disabled section
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] [pull request] Signals support.
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Xenomai core <Xenomai-core@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig7962E434DAEDD0D381DB1BCF
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->> On Wed, 2009-11-18 at 18:37 +0100, Jan Kiszka wrote:
->>> Jan Kiszka wrote:
->>>> Philippe Gerum wrote:
->>>>> On Wed, 2009-11-18 at 18:12 +0100, Jan Kiszka wrote:
->>>>>> This fixes the valid complaint about safe_halt being called with t=
-he
->>>>>> root domain unstalled.
->>>>> The fix should go to the caller. ipipe_suspend_domain() acts as a
->>>>> logical barrier: after that point, you may assume that the current
->>>>> domain is unstalled.
->>>> The caller so far expect to find no interruption window between retu=
-rn
->>>> from ipipe_suspend_domain and yet another local_irq_disable. It expe=
-cts
->>>> to remain stalled all the time until safe_halt.
->>> Checked again: Opening the IRQ window here is bogus, may cause
->>> rescheduling delays to Linux (if not much worse things).
->>>
->>> I suppose it's better to adjust the assumption that ipipe_suspend_dom=
-ain
->>> behaves like "sti; hlt". Are there users that rely on this?
->>> __ipipe_walk_pipeline does not look like it would.
->> I chose to never apply the mantra "never care for out of tree code" fo=
-r
->> Adeos, granted, at the expense of quite a lot of headaches, but that
->> layer is a standalone building block which exports a stable API since
->> years.
->>
->> I may revert that decision in a foreseeable future, when X3 starts
->> notably. But I'm still reluctant to break such a significant assumptio=
-n
->> in the current patch series.
->>
->> I would rather move ipipe_suspend_domain() out of the atomic section o=
-n
->> x86 (granted, this should be done carefully if ever possible).
->=20
-> Likely feasible. The good news is I missed the fact that there is
-> another check for needs_resched later on, right before the actual halt.=
+here come the pull request for user-space signals support. The simple 
+solution; handling signals upon system call return, has been implemented
+since the other solution (handling signals upon any return to 
+user-space) required to change the I-pipe patch, and so made the 
+upcoming 2.5 only compatible with newer patches.
 
-> So the problem should be curable by moving ipipe_suspend_domain, at
-> least on x86.
->=20
-> Jan
->=20
-> -------->
->=20
-> x86: Move ipipe_suspend_domain out of IRQ-disabled section
->=20
-> ipipe_suspend_domain reenables IRQs on return, so we have to move it
-> before the point where the kernel disables it for halt.
->=20
-> This fixes the valid complaint about safe_halt being called with the
-> root domain unstalled.
->=20
-> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
-> ---
->  arch/x86/kernel/process_32.c |    3 ++-
->  arch/x86/kernel/process_64.c |    4 +++-
->  2 files changed, 5 insertions(+), 2 deletions(-)
->=20
-> diff --git a/arch/x86/kernel/process_32.c b/arch/x86/kernel/process_32.=
-c
-> index a8a5cd1..e31de9e 100644
-> --- a/arch/x86/kernel/process_32.c
-> +++ b/arch/x86/kernel/process_32.c
-> @@ -111,10 +111,11 @@ void cpu_idle(void)
->  			if (cpu_is_offline(cpu))
->  				play_dead();
->=20
-> +			ipipe_suspend_domain();
-> +
->  			local_irq_disable();
->  			/* Don't trace irqs off for idle */
->  			stop_critical_timings();
-> -  			ipipe_suspend_domain();
->  			pm_idle();
->  			start_critical_timings();
->  		}
-> diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.=
-c
-> index 02efd18..b30dc4d 100644
-> --- a/arch/x86/kernel/process_64.c
-> +++ b/arch/x86/kernel/process_64.c
-> @@ -136,6 +136,9 @@ void cpu_idle(void)
->=20
->  			if (cpu_is_offline(smp_processor_id()))
->  				play_dead();
-> +
-> +			ipipe_suspend_domain();
-> +
->  			/*
->  			 * Idle routines should keep interrupts disabled
->  			 * from here on, until they go to idle.
-> @@ -145,7 +148,6 @@ void cpu_idle(void)
->  			enter_idle();
->  			/* Don't trace irqs off for idle */
->  			stop_critical_timings();
-> -  			ipipe_suspend_domain();
->  			pm_idle();
->  			start_critical_timings();
->  			/* In many cases the interrupt that ended idle
->=20
+We pass to kernel-space a sixth argument which is a pointer where 
+information about received signals is stored by kernel.
 
-Oops, forgot to switch off line wrapping. You can pull from
+The only architecture for which the implementation is peculiar is 
+x86_32, because the register used as sixth argument is ebp, also used 
+for the libc backtrace function implementation, so I tried to find a 
+solution which makes backtracing still possible (otherwise we would have
+said bye-bye to involuntary mode changes chasing with SIGXCPU) without 
+breaking too many things.
 
-git://git.kiszka.org/ipipe-2.6.git queues/2.6.31-x86
+A new test, creatively called sigtest allows to unit-test the signal
+support.
 
-instead.
+The following changes since commit 5a29ba38d7563097b73f53615fb3fcb7a7e5a6a5:
+  Philippe Gerum (1):
+        nucleus: initialize heap->stat_link holder
 
-Jan
+are available in the git repository at:
+
+  git+ssh://git.xenomai.org/xenomai-gch.git for-head
+
+Gilles Chanteperdrix (12):
+      bind: Replace bind.h with a convenience library.
+      skins: add per-skin user-space signal handler, and dispatch function.
+      arm: implement signals handling
+      powerpc: implement signals handling
+      x86_64: implement signals handling
+      x86_32: implement signals handling
+      nucleus: implement kernel-space per-thread per-skin signals handling.
+      skins: move sigshadow to libxeno_common
+      posix: fix pthread_cond_wait restarting
+      native: fix rt_cond_wait restarting
+      testsuite: add user-space real-time signals unit test
+      build: bootstrap
+
+Philippe Gerum (2):
+      blackfin: introduce support for real-time signals
+      nios: implement signals handling
+
+ Makefile.in                                        |  193 +-
+ aclocal.m4                                         |  323 +-
+ config/Makefile.in                                 |   43 +-
+ configure                                          | 5869 ++++++++++++--------
+ configure.in                                       |    5 +
+ doc/Makefile.in                                    |  131 +-
+ doc/docbook/Makefile.in                            |  131 +-
+ doc/docbook/custom-stylesheets/Makefile.in         |  131 +-
+ doc/docbook/custom-stylesheets/xsl/Makefile.in     |  131 +-
+ .../custom-stylesheets/xsl/common/Makefile.in      |   43 +-
+ doc/docbook/custom-stylesheets/xsl/fo/Makefile.in  |   43 +-
+ .../custom-stylesheets/xsl/html/Makefile.in        |   43 +-
+ doc/docbook/xenomai/Makefile.in                    |   43 +-
+ doc/doxygen/Makefile.in                            |   43 +-
+ doc/man/Makefile.in                                |  215 +-
+ doc/txt/Makefile.in                                |   82 +-
+ include/Makefile.am                                |    2 +-
+ include/Makefile.in                                |  194 +-
+ include/analogy/Makefile.in                        |  105 +-
+ include/asm-arm/Makefile.in                        |  170 +-
+ include/asm-arm/bits/Makefile.in                   |  105 +-
+ include/asm-arm/features.h                         |    2 +-
+ include/asm-arm/syscall.h                          |   66 +-
+ include/asm-blackfin/Makefile.in                   |  170 +-
+ include/asm-blackfin/bits/Makefile.in              |  105 +-
+ include/asm-blackfin/features.h                    |    2 +-
+ include/asm-blackfin/syscall.h                     |  241 +-
+ include/asm-generic/Makefile.in                    |  170 +-
+ include/asm-generic/bits/Makefile.in               |  105 +-
+ include/asm-generic/bits/bind.h                    |  305 +-
+ include/asm-generic/bits/current.h                 |    3 +
+ include/asm-generic/bits/sigshadow.h               |   74 +-
+ include/asm-generic/syscall.h                      |   58 +-
+ include/asm-nios2/Makefile.in                      |  170 +-
+ include/asm-nios2/bits/Makefile.in                 |  105 +-
+ include/asm-nios2/syscall.h                        |   73 +-
+ include/asm-powerpc/Makefile.in                    |  170 +-
+ include/asm-powerpc/bits/Makefile.in               |  105 +-
+ include/asm-powerpc/features.h                     |    2 +-
+ include/asm-powerpc/syscall.h                      |   58 +-
+ include/asm-sim/Makefile.in                        |  170 +-
+ include/asm-sim/bits/Makefile.in                   |  105 +-
+ include/asm-x86/Makefile.in                        |  170 +-
+ include/asm-x86/bits/Makefile.in                   |  105 +-
+ include/asm-x86/features_32.h                      |    2 +-
+ include/asm-x86/features_64.h                      |    2 +-
+ include/asm-x86/syscall.h                          |  219 +-
+ include/native/Makefile.in                         |  105 +-
+ include/native/cond.h                              |    6 +-
+ include/native/syscall.h                           |    3 +-
+ include/nucleus/Makefile.in                        |  105 +-
+ include/nucleus/shadow.h                           |    6 +
+ include/nucleus/thread.h                           |    7 +
+ include/posix/Makefile.in                          |  170 +-
+ include/posix/sys/Makefile.in                      |  105 +-
+ include/psos+/Makefile.in                          |  105 +-
+ include/rtai/Makefile.in                           |  105 +-
+ include/rtdm/Makefile.in                           |  105 +-
+ include/testing/sigtest_syscall.h                  |   16 +
+ include/uitron/Makefile.in                         |  105 +-
+ include/vrtx/Makefile.in                           |  105 +-
+ include/vxworks/Makefile.in                        |  105 +-
+ ksrc/drivers/testing/Config.in                     |    2 +
+ ksrc/drivers/testing/Kconfig                       |   10 +-
+ ksrc/drivers/testing/Makefile                      |    8 +-
+ ksrc/drivers/testing/sigtest_module.c              |  137 +
+ ksrc/nucleus/pod.c                                 |    5 +-
+ ksrc/nucleus/shadow.c                              |  119 +-
+ ksrc/nucleus/thread.c                              |    4 +
+ ksrc/skins/native/cond.c                           |   51 +-
+ ksrc/skins/native/syscall.c                        |   74 +-
+ ksrc/skins/posix/syscall.c                         |   29 +-
+ ksrc/skins/psos+/syscall.c                         |    1 +
+ ksrc/skins/rtai/syscall.c                          |    1 +
+ ksrc/skins/rtdm/syscall.c                          |    1 +
+ ksrc/skins/uitron/syscall.c                        |    1 +
+ ksrc/skins/vrtx/syscall.c                          |    1 +
+ ksrc/skins/vxworks/syscall.c                       |    1 +
+ scripts/Makefile.in                                |  104 +-
+ src/Makefile.in                                    |  131 +-
+ src/drvlib/Makefile.in                             |  131 +-
+ src/drvlib/analogy/Makefile.in                     |  149 +-
+ src/include/Makefile.in                            |   47 +-
+ src/include/xeno_config.h.in                       |    3 -
+ src/rtdk/Makefile.in                               |  137 +-
+ src/skins/Makefile.am                              |    2 +-
+ src/skins/Makefile.in                              |  133 +-
+ src/skins/common/Makefile.am                       |   12 +
+ src/skins/common/Makefile.in                       |  537 ++
+ src/skins/common/bind.c                            |   99 +
+ src/skins/common/current.c                         |   74 +
+ src/skins/common/sem_heap.c                        |   88 +
+ src/skins/common/sem_heap.h                        |   12 +
+ src/skins/common/sigshadow.c                       |   75 +
+ src/skins/native/Makefile.am                       |    2 +
+ src/skins/native/Makefile.in                       |  206 +-
+ src/skins/native/cond.c                            |   55 +-
+ src/skins/native/init.c                            |    2 +-
+ src/skins/posix/Makefile.am                        |    2 +
+ src/skins/posix/Makefile.in                        |  194 +-
+ src/skins/posix/cond.c                             |   44 +-
+ src/skins/posix/init.c                             |    3 +-
+ src/skins/psos+/Makefile.am                        |    2 +
+ src/skins/psos+/Makefile.in                        |  158 +-
+ src/skins/psos+/init.c                             |    3 +-
+ src/skins/rtai/Makefile.am                         |    2 +
+ src/skins/rtai/Makefile.in                         |  128 +-
+ src/skins/rtai/init.c                              |    3 +-
+ src/skins/rtdm/Makefile.am                         |    2 +
+ src/skins/rtdm/Makefile.in                         |  128 +-
+ src/skins/rtdm/init.c                              |    3 +-
+ src/skins/uitron/Makefile.am                       |    2 +
+ src/skins/uitron/Makefile.in                       |  146 +-
+ src/skins/uitron/init.c                            |    3 +-
+ src/skins/vrtx/Makefile.am                         |    2 +
+ src/skins/vrtx/Makefile.in                         |  182 +-
+ src/skins/vrtx/init.c                              |    2 +-
+ src/skins/vxworks/Makefile.am                      |    2 +
+ src/skins/vxworks/Makefile.in                      |  188 +-
+ src/skins/vxworks/init.c                           |    2 +-
+ src/testsuite/Makefile.am                          |    2 +-
+ src/testsuite/Makefile.in                          |  133 +-
+ src/testsuite/clocktest/Makefile.in                |  133 +-
+ src/testsuite/cyclic/Makefile.in                   |  133 +-
+ src/testsuite/irqbench/Makefile.in                 |  137 +-
+ src/testsuite/klatency/Makefile.in                 |  133 +-
+ src/testsuite/latency/Makefile.in                  |  133 +-
+ src/testsuite/sigtest/Makefile.am                  |   29 +
+ src/testsuite/sigtest/Makefile.in                  |  553 ++
+ src/testsuite/sigtest/runinfo.in                   |    1 +
+ src/testsuite/sigtest/sigtest.c                    |  315 ++
+ src/testsuite/switchtest/Makefile.in               |  133 +-
+ src/testsuite/unit/Makefile.in                     |  149 +-
+ src/utils/Makefile.in                              |  131 +-
+ src/utils/analogy/Makefile.in                      |  185 +-
+ src/utils/can/Makefile.in                          |  185 +-
+ src/utils/ps/Makefile.in                           |  129 +-
+ 137 files changed, 9130 insertions(+), 9084 deletions(-)
+ create mode 100644 include/testing/sigtest_syscall.h
+ create mode 100644 ksrc/drivers/testing/sigtest_module.c
+ create mode 100644 src/skins/common/Makefile.am
+ create mode 100644 src/skins/common/Makefile.in
+ create mode 100644 src/skins/common/bind.c
+ create mode 100644 src/skins/common/current.c
+ create mode 100644 src/skins/common/sem_heap.c
+ create mode 100644 src/skins/common/sem_heap.h
+ create mode 100644 src/skins/common/sigshadow.c
+ create mode 100644 src/testsuite/sigtest/Makefile.am
+ create mode 100644 src/testsuite/sigtest/Makefile.in
+ create mode 100644 src/testsuite/sigtest/runinfo.in
+ create mode 100644 src/testsuite/sigtest/sigtest.c
 
 
---------------enig7962E434DAEDD0D381DB1BCF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAksEf7QACgkQitSsb3rl5xQHewCfXdYEY1hAcUMcE5JQKCl0Hx1X
-Oa8AoJY752bsXcWdKRFYQ6ZNKe5GfSti
-=BvBa
------END PGP SIGNATURE-----
-
---------------enig7962E434DAEDD0D381DB1BCF--
+-- 
+					    Gilles.
 
