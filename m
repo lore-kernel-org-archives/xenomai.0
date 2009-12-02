@@ -1,25 +1,11 @@
-Message-ID: <4B1D081E.8050400@domain.hid>
-Date: Mon, 07 Dec 2009 14:50:22 +0100
+Message-ID: <4B167A55.8080407@domain.hid>
+Date: Wed, 02 Dec 2009 15:31:49 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4B1663B9.8030306@domain.hid>	
-	<4B166A5B.6030400@domain.hid>	<4B166EFB.8050309@domain.hid>	
-	<4B16769A.9060700@domain.hid>	<4B167A55.8080407@domain.hid>	
-	<4B167B4B.3010804@domain.hid> <4B167FC4.8080904@domain.hid>	
-	<4B1681DA.3090108@domain.hid> <4B1684D7.2080501@domain.hid>	
-	<4B1690EC.8030002@domain.hid> <4B16949B.2040806@domain.hid>	
-	<4B169CF7.2060108@domain.hid> <4B16D403.1070202@domain.hid>	
-	<4B16E417.3000400@domain.hid> <4B16E813.6050906@domain.hid>	
-	<36FCBE44-88E0-4AAA-9E83-1A9F9AB3F5D9@domain.hid>	
-	<4B17980A.3060503@domain.hid> <4B17B8E6.1060108@domain.hid>	
-	<4B17B9B1.3070606@domain.hid>	
-	<F41A4C16-8EF2-4B29-B79D-4549F0106D37@domain.hid>	
-	<4B17BF4E.7080509@domain.hid> <4B18201D.30003@domain.hid>	
-	<4B1830BD.7050804@domain.hid>
-	<1260029489.2174.87.camel@domain.hid>
-	<4B1CC76C.9030700@domain.hid> <4B1D066C.1030702@domain.hid>
-In-Reply-To: <4B1D066C.1030702@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <4B1663B9.8030306@domain.hid> <4B166A5B.6030400@domain.hid>
+	<4B166EFB.8050309@domain.hid> <4B16769A.9060700@domain.hid>
+In-Reply-To: <4B16769A.9060700@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Realtime gettimeofday()
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -35,129 +21,97 @@ Cc: Wolfgang Mauerer <wm@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org
 
 Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> On Thu, 2009-12-03 at 22:42 +0100, Gilles Chanteperdrix wrote:
->>>> Wolfgang Mauerer wrote:
->>>>> Gilles Chanteperdrix wrote:
->>>>>> Wolfgang Mauerer wrote:
->>>>>>> Hi,
->>>>>>>
->>>>>>> On 03.12.2009, at 14:14, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org 
->>>>>>>  > wrote:
->>>>>>>
->>>>>>>> Wolfgang Mauerer wrote:
->>>>>>>>> Hi,
->>>>>>>>>
->>>>>>>>> Gilles Chanteperdrix wrote:
->>>>>>>>>> Wolfgang Mauerer wrote:
->>>>>>>>>>> So that means, in essence, that you would accept probabilistic
->>>>>>>>>>> algorithms in realtime context?
->>>>>>>>>> Ah, today's troll!
->>>>>>>>> though it seems that I have to replace Jan this time ;-)
->>>>>>>>>> As I think I explained, the use of a seqlock in real-time context  
->>>>>>>>>> when
->>>>>>>>>> the seqlock writer only happens in linux context is not  
->>>>>>>>>> probabilistic.
->>>>>>>>>> It will work every time the first pass.
->>>>>>>>> I still don't see why it should succeed every time: What about
->>>>>>>>> the case that the Linux kernel on CPU0 updates the data, while
->>>>>>>>> Xenomai accesses them on another CPU? This can lead to
->>>>>>>>> inconsistent data, and they must be reread on the Xenomai side.
->>>>>>>> Yeah, right. I was not thinking about SMP. But admit that in this  
->>>>>>>> case,
->>>>>>>> there will be only one retry, there is nothing pathological.
->>>>> that's right. Which makes it bounded again, so it's maybe
->>>>> the best way to go.
->>>>>>>>> I'm asking because if this case can not happen, then there's
->>>>>>>>> nothing left to to as I have the code already at hand.
->>>>>>>> You have reworked the nucleus timers handling to adapt to this new
->>>>>>>> real-time clock ?
->>>>>>> Nope. Sorry, I was a bit unclear: I'm just referring to the gtod  
->>>>>>> syscall that does the timer handling, Not any other adaptions.
->>>>>> Ok, but what good is the gtod syscall if you can not use it as a time
->>>>>> reference for other timing related services?
->>>>> it suffices for our project's current purposes ;-)
->>>>>
->>>>> But it's certainly not the full solution. Before, we
->>>>> should have a decision wrt. the design issues, but I
->>>>> won't be able to continue working on this before
->>>>> mid of next week to look at the changed required for timer
->>>>> handling and come up with code.
->>>> Ok. To summarize what we have said, here is how I see we could implement
->>>> the NTP synchronized clock fully, and portably:
->>>> 1- allocate at nucleus init time, an area in the global sem heap for
->>>> this clock house-keeping
->>>> 2- add an event to the I-pipe patch when vsyscall_update is called
->>>> 3- implement the nucleus callback for the I-pipe event which copies
->>>> relevant data with our own version of seqlock called with hardware irqs
->>>> off, to the area allocated in 1 if the current clock source is the tsc
->>>> 4- rework the nucleus clocks and timers handling to use these data
->>>> 5- pass the offset of the data allocated in 1 to user-space through the
->>>> xnsysinfo, or xnfeatinfo structures
->>>> 6- rework clock_gettime to use these data, using the user-space
->>>> counterpart of the seqlock used in 3
+>> Gilles Chanteperdrix wrote:
+>>> Wolfgang Mauerer wrote:
+>>>> Hi,
 >>>>
->>>> The real hard work is 4, and note that something which I did not mention
->>>> yesterday, is that we not only have to change the real-time clock
->>>> implementation, we also have to change the monotonic clock
->>>> implementation, otherwise the two clocks will drift apart.
->>>>
->>>> I think making such a change now is unreasonable.
->>>>
->>>> So, solution 1, we can implement 5, passing a null offset to mean that
->>>> the support is unimplemented by the kernel and not even use it in
->>>> user-space. Keeping the work for later in the 2.5 life cycle.
->>>>
->>>> Solution 2, we keep this change for 3.0.
->>>>
->>>> Solution 3, we implement a way to read that clock without synchronizing
->>>> the nucleus with it (that is, everything but 4). One way to do this,
->>>> which I do not like, is to add a dummy clock id to the posix skin, for
->>>> instance CLOCK_LINUX_NTP_REALTIME, and implement the clock reading for
->>>> that clock id in clock_gettime. This clock id, when passed to any other
->>>> service, causes EINVAL to be returned, making it clear that this clock
->>>> can not be used for anything else. Note that if we do that, even if we
->>>> implement the full support later, we will have to keep that dummy clock
->>>> id forever.
->>>>
->>>> My preference goes to solution 1. Philippe, what do you think?
->>> Way too late for this kind of change; 2.5.0 will be out this month.
->>> Timer related issues are prone to introduce nasty subtle regressions.
->>> Let's plan this for 3.0. The earlier 2.5.0 will be out, the earlier 3.0
->>> will start.
->> No, this was not about turning the nucleus timer handling upside down
->> for 2.5.0, this was first of all about establishing the required kernel
->> to user space ABI for 2.5. Can we agree on the latter?
+>>>> we'd like to implement a gettimeofday() mechanism that works
+>>>> in realtime context, both from user- and kernelland. Most importantly,
+>>>> the correctins made to the wall time by the NTP protcol on Linux
+>>>> must be transferred into the Xenomai domain.
+>>> Yes, the real issue is NTP, because other than that, you can simply
+>>> implement gettimeofday in terms of clock_gettime(CLOCK_REALTIME).
+>> Not truly as Linux processes that tune the host clock do not affect the
+>> Xenomai world.
+>>
+>>> This issue has been discussed several times, but never a lot. We have a
+>>> simple solution: starting with 2.4 (if I remember correctly) xenomai
+>>> provides clock_settime, so you can simply rely on clock_gettime, and
+>>> call clock_settime from time to time to resync the Xenomai clock with
+>>> Linux NTP-enhanced clock. This is not pretty, you get a drift increasing
+>>> over time, then suddenly been reset. But I guess this has been enough
+>>> for current users, until now. You control the maximum drift by how often
+>>> you call clock_settime.
+>>>
+>>> Would not it be enough for your use of xenomai?
+>> Nope for the reasons you mentioned.
+>>
+>> Moreover, reading the Xenomai real-time clock requires a syscall,
+>> gettimeofday can work without that penalty (given non-broken TSC).
+>>
+>> Next issue is that the different clock bases of
+>> clock_gettime(CLOCK_REALTIME) and (real) gettimeofday + the switch-back
+>> or even lock-up side-effects of the latter have been quite a PITA in our
+>> project.
+>>
+>> And finally, the vision is to have NTP-accurate (or whatever the sync
+>> source is, eg. IEEE1588) absolute timing also for the nucleus one day.
+>> Having an RT-safe way to obtain the NTP parameters from any context is
+>> the first step.
 > 
-> Ok. It is solution 1 then. In order to get things evolving more easily
-> than my first solution, here is what is proposed.
-> 
-> We define a structure which will be shared between kernel and user,
-> which contains all data exported by kernel to user, as well as flags
-> indicating which member of the structure is available. The definition of
-> the struct for 2.5.0 will be:
-> 
-> struct xnshared  {
-> 	unsigned long long features;
-> };
-> 
-> This struct will be allocated in the global sem heap, and features will
-> be null for the time being.
-> 
-> Every time we need to share some data between kernel and user (including
-> for the ntp support), we will add data to the structure, and use a
-> "features" bit to mean that the data are available from kernel. It will
-> work as long as we add data from release to release and never remove it.
+> clock_gettime(CLOCK_MONOTONIC) works without syscall too. And note that
+> the real-time clock could work without a syscall for the current scheme,
+> but you were the one to explicitly refuse this.
 
-...while features can still be removed by clearing their bits again.
-Sounds good to me.
+Yes, because we need a scheme like Wolfgang suggests to ensure
+consistent states during updates. And we didn't had such thing back then.
 
 > 
-> So, for 2.5.0, the xnshared structure will be allocated, but the
-> features member will be null. We will pass the offset of this structure
-> in the global sem heap in the sysinfo structure.
+> My opinion with regard to these issues is that the I-pipe patch should
+> send us an event when the parameters are adjusted (the wall clock time
+> changed by Linux, or the slow down/acceleration caused by the NTP
+> daemon). And that we should duplicate the processing done by the Linux
+> kernel for the Xenomai clock.
 
-Ack.
+That may be a solution for only half of the problem.
+
+> Doing this in user-space without a syscall
+> is another issue that will be possible to handle when we have solved the
+> kernel-space clock issue. Of course, it supposes that Xenomai should use
+> the same clocksource as Linux, so, that we should implement the HPET
+> clock source for x86 (on other architectures, we already use the same
+> clock source).
+
+Solving the user space transfer automatically includes a solution for
+the Linux-to-Xenomai transfer. I really suggest that we discuss a
+complete solution to avoid leaving design issues behind that require
+another ABI change later on.
+
+> 
+> Another possibility is to implement syscalls to allow adjusting the
+> nucleus real-time clock parameters the same way ntp does, and to require
+> a special ntp daemon that would use these syscalls instead of the linux
+> kernel syscalls. After all, if we adjust Xenomai clock, Linux clock will
+> follow without any adjustment. On an embedded system, requiring a
+> recompiled NTP is not much of an issue.
+> 
+> So, to summarize, here is what I think we should do:
+> - implement the HPET clock source
+
+What for? The days of HPET are counted (both as clock and event source),
+modern systems provide proper TSCs.
+
+> - implement the I-pipe events signalling wall clock adjustment and NTP
+> related adjustments
+> - or implement syscalls to allow NTP related adjustments (we already
+> have the syscall allowing to change wall clock)
+> - rework the nucleus real-time clock to use these adjustements
+> - implement the user-space syscall-less version of the real-time clock read.
+> 
+> Trying to go directly to the last point looks premature to me.
+
+Why? It delivers us the core mechanism we need for the rest as well -
+and it does not require fancy I-pipe hooks.
 
 Jan
 
