@@ -1,10 +1,10 @@
-Message-ID: <4B162421.20907@domain.hid>
-Date: Wed, 02 Dec 2009 09:24:01 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4B1633A6.40902@domain.hid>
+Date: Wed, 02 Dec 2009 10:30:14 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
 References: <c024fefc0912011838r6d34e396se2a276e5d7316786@domain.hid>
 In-Reply-To: <c024fefc0912011838r6d34e396se2a276e5d7316786@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Xenomai Ready PC
 List-Id: Help regarding installation and common use of Xenomai
@@ -19,6 +19,8 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Adrian Boeing <me@domain.hid>
 Cc: xenomai@xenomai.org
 
+Hi Adrian,
+
 Adrian Boeing wrote:
 > Hi,
 > 
@@ -32,8 +34,12 @@ Adrian Boeing wrote:
 > We have been having some difficulty getting Xenomai/Linux working on
 > some industrial PCs.
 
-What kind of difficulty? Maybe we could try and solve it?
+There are "good" and "bad" PC for real-time (with Xenomai), I know.
+Unfortunately, I can not give valuable recommendations. But for CAN with
+Xenomai you should use RT-Socket-CAN, which supports various SJA1000
+based CAN cards. A (x)PCI card is preferred. See:
 
--- 
-					    Gilles.
+http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/can/sja1000/Kconfig
+
+Wolfgang.
 
