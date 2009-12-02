@@ -1,16 +1,9 @@
-Message-ID: <4B17B8E6.1060108@domain.hid>
-Date: Thu, 03 Dec 2009 14:11:02 +0100
-From: Wolfgang Mauerer <wm@domain.hid>
+Message-ID: <4B166EFB.8050309@domain.hid>
+Date: Wed, 02 Dec 2009 14:43:23 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4B1663B9.8030306@domain.hid>	<4B166A5B.6030400@domain.hid>	<4B166EFB.8050309@domain.hid>	<4B16769A.9060700@domain.hid>	<4B167A55.8080407@domain.hid>	<4B167B4B.3010804@domain.hid>
-	<4B167FC4.8080904@domain.hid>	<4B1681DA.3090108@domain.hid>
-	<4B1684D7.2080501@domain.hid>	<4B1690EC.8030002@domain.hid>
-	<4B16949B.2040806@domain.hid> <4B169CF7.2060108@domain.hid>
-	<4B16D403.1070202@domain.hid> <4B16E417.3000400@domain.hid>
-	<4B16E813.6050906@domain.hid>
-	<36FCBE44-88E0-4AAA-9E83-1A9F9AB3F5D9@domain.hid>
-	<4B17980A.3060503@domain.hid>
-In-Reply-To: <4B17980A.3060503@domain.hid>
+References: <4B1663B9.8030306@domain.hid> <4B166A5B.6030400@domain.hid>
+In-Reply-To: <4B166A5B.6030400@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Realtime gettimeofday()
@@ -23,31 +16,53 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
-
-Hi,
+Cc: Wolfgang Mauerer <wm@domain.hid>, xenomai@xenomai.org
 
 Gilles Chanteperdrix wrote:
 > Wolfgang Mauerer wrote:
-
->> So that means, in essence, that you would accept probabilistic  
->> algorithms in realtime context?
+>> Hi,
+>>
+>> we'd like to implement a gettimeofday() mechanism that works
+>> in realtime context, both from user- and kernelland. Most importantly,
+>> the correctins made to the wall time by the NTP protcol on Linux
+>> must be transferred into the Xenomai domain.
 > 
-> Ah, today's troll!
+> Yes, the real issue is NTP, because other than that, you can simply
+> implement gettimeofday in terms of clock_gettime(CLOCK_REALTIME).
 
-though it seems that I have to replace Jan this time ;-)
+Not truly as Linux processes that tune the host clock do not affect the
+Xenomai world.
+
 > 
-> As I think I explained, the use of a seqlock in real-time context when
-> the seqlock writer only happens in linux context is not probabilistic.
-> It will work every time the first pass.
+> This issue has been discussed several times, but never a lot. We have a
+> simple solution: starting with 2.4 (if I remember correctly) xenomai
+> provides clock_settime, so you can simply rely on clock_gettime, and
+> call clock_settime from time to time to resync the Xenomai clock with
+> Linux NTP-enhanced clock. This is not pretty, you get a drift increasing
+> over time, then suddenly been reset. But I guess this has been enough
+> for current users, until now. You control the maximum drift by how often
+> you call clock_settime.
+> 
+> Would not it be enough for your use of xenomai?
 
-I still don't see why it should succeed every time: What about
-the case that the Linux kernel on CPU0 updates the data, while
-Xenomai accesses them on another CPU? This can lead to
-inconsistent data, and they must be reread on the Xenomai side.
+Nope for the reasons you mentioned.
 
-I'm asking because if this case can not happen, then there's
-nothing left to to as I have the code already at hand.
+Moreover, reading the Xenomai real-time clock requires a syscall,
+gettimeofday can work without that penalty (given non-broken TSC).
 
-Thanks, Wolfgang
+Next issue is that the different clock bases of
+clock_gettime(CLOCK_REALTIME) and (real) gettimeofday + the switch-back
+or even lock-up side-effects of the latter have been quite a PITA in our
+project.
+
+And finally, the vision is to have NTP-accurate (or whatever the sync
+source is, eg. IEEE1588) absolute timing also for the nucleus one day.
+Having an RT-safe way to obtain the NTP parameters from any context is
+the first step.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
