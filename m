@@ -1,12 +1,10 @@
-Message-ID: <4B1850B6.4010906@domain.hid>
-Date: Fri, 04 Dec 2009 00:58:46 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <EA8B423DB69FD24FA233008019A052AE015C06A9@domain.hid>
-In-Reply-To: <EA8B423DB69FD24FA233008019A052AE015C06A9@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem with pthread_cond_wait
+Sender: aboeing@domain.hid
+Date: Fri, 4 Dec 2009 17:11:32 +0800
+Message-ID: <c024fefc0912040111s78a97159vde8d7391b5702acf@domain.hid>
+From: Adrian Boeing <me@domain.hid>
+Content-Type: multipart/alternative; boundary=0016e64ca3566c99d60479e37e80
+Subject: [Xenomai-help] Problem with Xenomai Install
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,102 +14,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Soboljew, Patrick" <Patrick.Soboljew@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai help <xenomai@xenomai.org>
 
-Soboljew, Patrick wrote:
-> Hello all,
-> 
-> I have a strange problem concerning the posix skin of xenomai (Ver.
-> 2.4.9.1). Whenever two or more threads call 'pthread_cond_wait' and I
-> want to interrupt the program with SIGINT (CTRL-c) only the main thread
-> and the first thread that called 'pthread_cond_wait' get the signal. The
-> remaining threads are not interrupted so I have created some zombies
-> here. I discovered this problem when I tried to debug some code with the
-> ACE/TAO Framework which calls these functions in a similar way. The
-> debugger also has problems to interrupt these threads.
-> 
-> The small code example illustrates what I did.
-> 
-> Has anyone an idea what exactly causes this problem?
+--0016e64ca3566c99d60479e37e80
+Content-Type: text/plain; charset=ISO-8859-1
 
-The problem is the way pthread_cond_wait handles interruption by 
-signals: the thread tries to re-acquire the mutex before returning to 
-user-space, so as to make the system call restartable, so may be 
-suspended if the mutex is not free (which happens for the second thread 
-in your test program), so that it does not return to user-space, the 
-signal remains pending and unhandled, and you get the disturbing 
-behaviour when hitting ctrl-c or when running inside gdb.
+Hi,
 
-We can fix that by making the syscall non restartable, and let the 
-user-space handle the mutex re-locking (which it fortunately already 
-does). 
+I have installed Xenomai on a PC, but when I try to run any of the examples
+(rtprint, trivial-periodic, etc...) the system freezes.
 
-Note that restarting automatically pthread_cond_wait is not even 
-correct, since we could miss a pthread_cond_signal if it was sent 
-between the time when the thread was unblocked from the cond wait, and 
-the time it starts waiting again. So, in this case, it is better to 
-return to the caller, you get a spurious wake-up, which means that the 
-caller must run pthread_cond_wait in a loop for the program to run 
-correctly.
+Does anyone know what may have caused this?
 
-Anyway, here is a quick fix, could you try it?
+I am using Ubuntu, 2.6.24.6 kernel, and /proc/xenomai/version is 2.4.10
 
-Notes for Philippe: the quick fix does not break the ABI, but also 
-changes the behaviour of non restartable syscalls, they forcibly return 
--EINTR. This may look like a disrupting change for the 2.4 branch, but 
-there is actually currently only one non-restartable syscall in Xenomai 
-2.4: pthread_mutex_unlock, and it is ready to handle -EINTR. However, at
-this chance, we should mark a few more syscalls as non restartable, 
-notably nanosleep and select, because they use relative timeouts. I 
-think a lot of syscalls in the native skin are using relative timeouts 
-too, and should be marked as non-restartable, but this implies
-documenting the return value -EINTR.
+I created the xenomai install by:
+1. Getting linux source (apt-get source linux-image-$(uname -r)
+2. Getting Xenomai & Adeos
+3. Added a new CAN driver to Xenomai
+4. Prepareing xenomai (scripts/prepare-kernel.sh --linux=~/linux-2.6.24/
+--adeos=~/Desktop/adeos-ipipe-2.6.24-x86-2.0.7-patch)
+5. Make kernel (make-kpkg --ignited kernel_image modules)
+6. Add kernel to grub (dpkg -i)
+7. Installed Xenomai libraries (make install)
+8. Set up the C libs (cp /etc/ld.so.conf.d/libc.conf
+/etc/ld.so.conf.d/xenomai.conf)
 
-diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
-index 0b02f70..b361480 100644
---- a/ksrc/nucleus/shadow.c
-+++ b/ksrc/nucleus/shadow.c
-@@ -823,7 +823,7 @@ static inline void request_syscall_restart(xnthread_t *thread,
- 		if (__xn_interrupted_p(regs)) {
- 			__xn_error_return(regs,
- 					  (sysflags & __xn_exec_norestart) ?
--					  -ERESTARTNOHAND : -ERESTARTSYS);
-+					  -EINTR : -ERESTARTSYS);
- 			notify = !xnthread_test_state(thread, XNDEBUG);
- 		}
- 
-diff --git a/ksrc/skins/posix/syscall.c b/ksrc/skins/posix/syscall.c
-index d936f21..4c16589 100644
---- a/ksrc/skins/posix/syscall.c
-+++ b/ksrc/skins/posix/syscall.c
-@@ -1518,6 +1518,7 @@ static int __pthread_cond_wait_prologue(struct task_struct *curr,
- 						    timed,
- 						    XN_INFINITE);
- 
-+#if 0
- 	if (err == EINTR) {
- 		do {
- 			xnthread_clear_info(cur, XNKICKED);
-@@ -1528,7 +1529,7 @@ static int __pthread_cond_wait_prologue(struct task_struct *curr,
- 		xnthread_set_info(cur, XNKICKED);
- 		err = EINTR;
- 	}
--
-+#endif
- 
- 	if (!err || err == EINTR || err == ETIMEDOUT)
- 		__xn_copy_to_user(curr, (void __user *) __xn_reg_arg3(regs),
-@@ -2834,7 +2835,7 @@ static xnsysent_t __systab[] = {
- 	[__pse51_cond_init] = {&__pthread_cond_init, __xn_exec_any},
- 	[__pse51_cond_destroy] = {&__pthread_cond_destroy, __xn_exec_any},
- 	[__pse51_cond_wait_prologue] =
--	{&__pthread_cond_wait_prologue, __xn_exec_primary},
-+	{&__pthread_cond_wait_prologue, __xn_exec_primary | __xn_exec_norestart},
- 	[__pse51_cond_wait_epilogue] =
- 	    {&__pthread_cond_wait_epilogue, __xn_exec_primary},
- 	[__pse51_cond_signal] = {&__pthread_cond_signal, __xn_exec_any},
+I also noticed I don't have a /usr/src/xenomai, but have the xenomai source
+in my home directory from when I first downloaded it.
 
--- 
-					    Gilles.
+Thanks,
+-Adrian
+
+--0016e64ca3566c99d60479e37e80
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi,<div><br></div><div>I have installed Xenomai on a PC, but when I try to =
+run any of the examples (rtprint, trivial-periodic, etc...) the system free=
+zes.</div><div><br></div><div>Does anyone know what may have caused this?</=
+div>
+<div><br></div><div>I am using Ubuntu, 2.6.24.6 kernel, and /proc/xenomai/v=
+ersion is 2.4.10</div><div><br></div><div><div>I created the xenomai instal=
+l by:</div><div>1. Getting linux source (apt-get source linux-image-$(uname=
+ -r)</div>
+<div>2. Getting Xenomai &amp; Adeos</div><div>3. Added a new CAN driver to =
+Xenomai</div><div>4. Prepareing xenomai (scripts/prepare-kernel.sh --linux=
+=3D~/linux-2.6.24/ --adeos=3D~/Desktop/adeos-ipipe-2.6.24-x86-2.0.7-patch)<=
+/div>
+<div>5. Make kernel (make-kpkg --ignited kernel_image modules)</div><div>6.=
+ Add kernel to grub (dpkg -i)</div><div>7. Installed Xenomai libraries (mak=
+e install)</div><div>8. Set up the C libs (cp /etc/ld.so.conf.d/libc.conf /=
+etc/ld.so.conf.d/xenomai.conf)</div>
+<div><br></div><div>I also noticed I don&#39;t have a /usr/src/xenomai, but=
+ have the xenomai source in my home directory from when I first downloaded =
+it.</div><div><br></div><div>Thanks,</div><div>-Adrian</div></div><div>
+<font class=3D"Apple-style-span" face=3D"&#39;Times New Roman&#39;" size=3D=
+"3"><span class=3D"Apple-style-span" style=3D"font-size: 12px; "><br></span=
+></font></div><div><font class=3D"Apple-style-span" face=3D"&#39;Times New =
+Roman&#39;" size=3D"3"><span class=3D"Apple-style-span" style=3D"font-size:=
+ 12px;"><br>
+</span></font></div>
+
+--0016e64ca3566c99d60479e37e80--
 
