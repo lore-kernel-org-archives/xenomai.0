@@ -1,11 +1,12 @@
-Content-class: urn:content-classes:message
+Message-ID: <4B19A1AE.9090603@domain.hid>
+Date: Sat, 05 Dec 2009 00:56:30 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01CA753C.943B2182"
-Date: Fri, 4 Dec 2009 17:50:40 -0600
-Message-ID: <181804936ABC2349BE503168465576460CFD20DE@exchserver.basler.com>
-From: "Steve Deiters" <SteveDeiters@domain.hid>
-Subject: [Xenomai-help] xeno-config --xeno-ldflags does not add -lnative
+References: <181804936ABC2349BE503168465576460CFD20DE@exchserver.basler.com>
+In-Reply-To: <181804936ABC2349BE503168465576460CFD20DE@exchserver.basler.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] xeno-config --xeno-ldflags does not add -lnative
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,64 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Steve Deiters <SteveDeiters@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
+Steve Deiters wrote:
+> When I run the command mentioned in the subject, it does not include a
+> switch for -lnative.  I have to add this to the LDFLAGS in my Makefile
+> manually in order to link.  Is this expected or do I just have something
+> configured wrong?  The output I get is:
+>  
+> "-L/usr/xenomai/lib -lpthread"
+>  
+> I am using the xeno-config that comes with Xenomai 2.4.10.
 
-------_=_NextPart_001_01CA753C.943B2182
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+It is expected. These flags work for all skins, not only the native
+skin, so you have to add the proper -l for the skin you want to use.
+Only the posix skin has dedicated xeno_config options, because of the
+peculiar values of the flags it requires.
 
-When I run the command mentioned in the subject, it does not include a
-switch for -lnative.  I have to add this to the LDFLAGS in my Makefile
-manually in order to link.  Is this expected or do I just have something
-configured wrong?  The output I get is:
-=20
-"-L/usr/xenomai/lib -lpthread"
-=20
-I am using the xeno-config that comes with Xenomai 2.4.10.
-=20
-Thanks.
-=20
-=20
-
-------_=_NextPart_001_01CA753C.943B2182
-Content-Type: text/html; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META http-equiv=3DContent-Type content=3D"text/html; charset=3Dus-ascii=
-">
-<META content=3D"MSHTML 6.00.6000.16809" name=3DGENERATOR></HEAD>
-<BODY>
-<DIV><FONT face=3DArial size=3D2><SPAN class=3D808334623-04122009>When=
- I run the=20
-command mentioned in the subject, it does not include a switch for=20
--lnative.&nbsp; I have to add this to the LDFLAGS in my Makefile manuall=
-y in=20
-order to link.&nbsp; Is this expected or do I just have something config=
-ured=20
-wrong?&nbsp; The output I get is:</SPAN></FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D808334623-04122009></SPAN></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN class=3D808334623-04122009>"-L/us=
-r/xenomai/lib=20
--lpthread"</SPAN></FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D808334623-04122009></SPAN></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN class=3D808334623-04122009>I am=
- using the=20
-xeno-config that comes with Xenomai 2.4.10.</SPAN></FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D808334623-04122009></SPAN></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D808334623-04122009>Thanks.</SPAN></FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D808334623-04122009></SPAN></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D808334623-04122009></SPAN></FONT>&nbsp;</DIV></BODY></HTML>
-
-------_=_NextPart_001_01CA753C.943B2182--
-
+-- 
+					    Gilles.
 
