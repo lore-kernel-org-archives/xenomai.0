@@ -1,12 +1,11 @@
-Message-ID: <4B194E6F.7090806@domain.hid>
-Date: Fri, 04 Dec 2009 19:01:19 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <c024fefc0912040111s78a97159vde8d7391b5702acf@domain.hid>
-In-Reply-To: <c024fefc0912040111s78a97159vde8d7391b5702acf@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem with Xenomai Install
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01CA753C.943B2182"
+Date: Fri, 4 Dec 2009 17:50:40 -0600
+Message-ID: <181804936ABC2349BE503168465576460CFD20DE@exchserver.basler.com>
+From: "Steve Deiters" <SteveDeiters@domain.hid>
+Subject: [Xenomai-help] xeno-config --xeno-ldflags does not add -lnative
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,26 +15,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Adrian Boeing <me@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Adrian Boeing wrote:
-> Hi,
-> 
-> I have installed Xenomai on a PC, but when I try to run any of the
-> examples (rtprint, trivial-periodic, etc...) the system freezes.
-> 
-> Does anyone know what may have caused this?
+This is a multi-part message in MIME format.
 
-Probably a oops. You should try and run the examples from text mode to
-see the oops text. Or redirect the kernel console to a serial port.
+------_=_NextPart_001_01CA753C.943B2182
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> I am using Ubuntu, 2.6.24.6 kernel, and /proc/xenomai/version is 2.4.10
+When I run the command mentioned in the subject, it does not include a
+switch for -lnative.  I have to add this to the LDFLAGS in my Makefile
+manually in order to link.  Is this expected or do I just have something
+configured wrong?  The output I get is:
+=20
+"-L/usr/xenomai/lib -lpthread"
+=20
+I am using the xeno-config that comes with Xenomai 2.4.10.
+=20
+Thanks.
+=20
+=20
 
-Kernel too old. Things have been fixed on x86 since then.
+------_=_NextPart_001_01CA753C.943B2182
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
--- 
-                                          Gilles
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; charset=3Dus-ascii=
+">
+<META content=3D"MSHTML 6.00.6000.16809" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D808334623-04122009>When=
+ I run the=20
+command mentioned in the subject, it does not include a switch for=20
+-lnative.&nbsp; I have to add this to the LDFLAGS in my Makefile manuall=
+y in=20
+order to link.&nbsp; Is this expected or do I just have something config=
+ured=20
+wrong?&nbsp; The output I get is:</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D808334623-04122009></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D808334623-04122009>"-L/us=
+r/xenomai/lib=20
+-lpthread"</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D808334623-04122009></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D808334623-04122009>I am=
+ using the=20
+xeno-config that comes with Xenomai 2.4.10.</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D808334623-04122009></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D808334623-04122009>Thanks.</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D808334623-04122009></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D808334623-04122009></SPAN></FONT>&nbsp;</DIV></BODY></HTML>
+
+------_=_NextPart_001_01CA753C.943B2182--
 
 
