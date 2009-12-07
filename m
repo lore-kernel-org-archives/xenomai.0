@@ -1,10 +1,26 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sun, 06 Dec 2009 18:58:36 +0100
-Message-ID: <1260122316.2174.162.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4B1CC76C.9030700@domain.hid>
+Date: Mon, 07 Dec 2009 10:14:20 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <4B1663B9.8030306@domain.hid>	
+	<4B166A5B.6030400@domain.hid>	<4B166EFB.8050309@domain.hid>	
+	<4B16769A.9060700@domain.hid>	<4B167A55.8080407@domain.hid>	
+	<4B167B4B.3010804@domain.hid> <4B167FC4.8080904@domain.hid>	
+	<4B1681DA.3090108@domain.hid> <4B1684D7.2080501@domain.hid>	
+	<4B1690EC.8030002@domain.hid> <4B16949B.2040806@domain.hid>	
+	<4B169CF7.2060108@domain.hid> <4B16D403.1070202@domain.hid>	
+	<4B16E417.3000400@domain.hid> <4B16E813.6050906@domain.hid>	
+	<36FCBE44-88E0-4AAA-9E83-1A9F9AB3F5D9@domain.hid>	
+	<4B17980A.3060503@domain.hid> <4B17B8E6.1060108@domain.hid>	
+	<4B17B9B1.3070606@domain.hid>	
+	<F41A4C16-8EF2-4B29-B79D-4549F0106D37@domain.hid>	
+	<4B17BF4E.7080509@domain.hid> <4B18201D.30003@domain.hid>	
+	<4B1830BD.7050804@domain.hid>
+	<1260029489.2174.87.camel@domain.hid>
+In-Reply-To: <1260029489.2174.87.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Xenomai v2.5-rc5
+Subject: Re: [Xenomai-core] Realtime gettimeofday()
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,148 +29,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Wolfgang Mauerer <wm@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+Philippe Gerum wrote:
+> On Thu, 2009-12-03 at 22:42 +0100, Gilles Chanteperdrix wrote:
+>> Wolfgang Mauerer wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Wolfgang Mauerer wrote:
+>>>>> Hi,
+>>>>>
+>>>>> On 03.12.2009, at 14:14, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org 
+>>>>>  > wrote:
+>>>>>
+>>>>>> Wolfgang Mauerer wrote:
+>>>>>>> Hi,
+>>>>>>>
+>>>>>>> Gilles Chanteperdrix wrote:
+>>>>>>>> Wolfgang Mauerer wrote:
+>>>>>>>>> So that means, in essence, that you would accept probabilistic
+>>>>>>>>> algorithms in realtime context?
+>>>>>>>> Ah, today's troll!
+>>>>>>> though it seems that I have to replace Jan this time ;-)
+>>>>>>>> As I think I explained, the use of a seqlock in real-time context  
+>>>>>>>> when
+>>>>>>>> the seqlock writer only happens in linux context is not  
+>>>>>>>> probabilistic.
+>>>>>>>> It will work every time the first pass.
+>>>>>>> I still don't see why it should succeed every time: What about
+>>>>>>> the case that the Linux kernel on CPU0 updates the data, while
+>>>>>>> Xenomai accesses them on another CPU? This can lead to
+>>>>>>> inconsistent data, and they must be reread on the Xenomai side.
+>>>>>> Yeah, right. I was not thinking about SMP. But admit that in this  
+>>>>>> case,
+>>>>>> there will be only one retry, there is nothing pathological.
+>>> that's right. Which makes it bounded again, so it's maybe
+>>> the best way to go.
+>>>>>>> I'm asking because if this case can not happen, then there's
+>>>>>>> nothing left to to as I have the code already at hand.
+>>>>>> You have reworked the nucleus timers handling to adapt to this new
+>>>>>> real-time clock ?
+>>>>> Nope. Sorry, I was a bit unclear: I'm just referring to the gtod  
+>>>>> syscall that does the timer handling, Not any other adaptions.
+>>>> Ok, but what good is the gtod syscall if you can not use it as a time
+>>>> reference for other timing related services?
+>>> it suffices for our project's current purposes ;-)
+>>>
+>>> But it's certainly not the full solution. Before, we
+>>> should have a decision wrt. the design issues, but I
+>>> won't be able to continue working on this before
+>>> mid of next week to look at the changed required for timer
+>>> handling and come up with code.
+>> Ok. To summarize what we have said, here is how I see we could implement
+>> the NTP synchronized clock fully, and portably:
+>> 1- allocate at nucleus init time, an area in the global sem heap for
+>> this clock house-keeping
+>> 2- add an event to the I-pipe patch when vsyscall_update is called
+>> 3- implement the nucleus callback for the I-pipe event which copies
+>> relevant data with our own version of seqlock called with hardware irqs
+>> off, to the area allocated in 1 if the current clock source is the tsc
+>> 4- rework the nucleus clocks and timers handling to use these data
+>> 5- pass the offset of the data allocated in 1 to user-space through the
+>> xnsysinfo, or xnfeatinfo structures
+>> 6- rework clock_gettime to use these data, using the user-space
+>> counterpart of the seqlock used in 3
+>>
+>> The real hard work is 4, and note that something which I did not mention
+>> yesterday, is that we not only have to change the real-time clock
+>> implementation, we also have to change the monotonic clock
+>> implementation, otherwise the two clocks will drift apart.
+>>
+>> I think making such a change now is unreasonable.
+>>
+>> So, solution 1, we can implement 5, passing a null offset to mean that
+>> the support is unimplemented by the kernel and not even use it in
+>> user-space. Keeping the work for later in the 2.5 life cycle.
+>>
+>> Solution 2, we keep this change for 3.0.
+>>
+>> Solution 3, we implement a way to read that clock without synchronizing
+>> the nucleus with it (that is, everything but 4). One way to do this,
+>> which I do not like, is to add a dummy clock id to the posix skin, for
+>> instance CLOCK_LINUX_NTP_REALTIME, and implement the clock reading for
+>> that clock id in clock_gettime. This clock id, when passed to any other
+>> service, causes EINVAL to be returned, making it clear that this clock
+>> can not be used for anything else. Note that if we do that, even if we
+>> implement the full support later, we will have to keep that dummy clock
+>> id forever.
+>>
+>> My preference goes to solution 1. Philippe, what do you think?
+> 
+> Way too late for this kind of change; 2.5.0 will be out this month.
+> Timer related issues are prone to introduce nasty subtle regressions.
+> Let's plan this for 3.0. The earlier 2.5.0 will be out, the earlier 3.0
+> will start.
 
-Here is 2.5-rc5. Alex still seems to be in frantic mode these days, so
-the Analogy DAQ framework got a lot of changes in. Aside of this, the
-most notable addition since -rc4 is real-time signal handling, aka "I
-want my event handler running in primary mode". This is still an
-internal feature for now, but Gilles will likely give some details
-about it, maybe when the first in-tree user shows up.
+No, this was not about turning the nucleus timer handling upside down
+for 2.5.0, this was first of all about establishing the required kernel
+to user space ABI for 2.5. Can we agree on the latter?
 
-http://download.gna.org/xenomai/testing/xenomai-2.5-rc5.tar.bz2
-
---
-
-Alexandre Coffignal (1):
-      psos: fix q_vreceive
-
-Alexis Berlemont (32):
-      analogy: force NI TIO / MIO selections when NI PCIMIO is set
-      analogy: force NI MITE selection when NI PCIMIO is set
-      analogy: fix a critical bug in the NI PCIMIO driver
-      analogy: rename 8255 and NI PCIMIO driver
-      analogy: fix a bug in NI PCIMIO driver
-      analogy: improve ioctl error handling
-      analogy: fix a bug in the attach procedure
-      analogy: remove EXPERIMENTAL flag from 2.4 Config.in files
-      analogy: fix a mistyping error
-      analogy: fix functions declarations in the 8255 driver
-      analogy: add an analogy driver for standard parallel port
-      analogy: add default attach options for analogy_parport driver
-      analogy: make analogy_parport compile only for x86 architectures
-      analogy: use the A4L_INSN_* constants to configure the DIO subdevice
-      analogy: minor cosmetic change in instruction header
-      analogy: change prefix for traces (a4l -> Analogy)
-      analogy: some coding style corrections
-      analogy: fix a minor bug (filename management) in insn_read
-      analogy: add a test program which performs synchronous write
-      analogy: fix missing renamings for testing drivers
-      analogy: fix doxygen documentation generation for analogy
-      analogy: minor indentation fix
-      analogy: fix positive error code in transfer cleanup
-      analogy: add some details on the error codes for the syscall API
-      analogy: add error codes descriptions for the asynchronous API
-      analogy: fix a scan size miscalculation in cmd_read
-      analogy: report scan size miscalculation fix in cmd_write and insn_*
-      analogy: add error messages in instruction handling
-      analogy: add error codes descriptions for synchronous operations
-      analogy: add error codes descriptions for descriptor routines
-      analogy: add error codes descriptions for range management routines
-      analogy: fix mistakes in license declarations
-
-Andreas Glatz (1):
-      nucleus: do not lose base priority in nested PIP boosts
-
-Bernhard Walle (1):
-      hal: check CPU frequency
-
-Fabian Godehardt (1):
-      scripts: use new 'head -n' syntax.
-
-Gilles Chanteperdrix (17):
-      rtipc: Remove rt-ipcs exit functions from the exit section.
-      rtipc: xCompile the rt-ipcs driver by default
-      nucleus: defer selector block deletion to an APC.
-      bind: Replace bind.h with a convenience library.
-      skins: add per-skin user-space signal handler, and dispatch function.
-      arm: implement signals handling
-      x86_64: implement signals handling
-      x86_32: implement signals handling
-      nucleus: implement kernel-space per-thread per-skin signals handling.
-      skins: move sigshadow to libxeno_common
-      posix: fix pthread_cond_wait restarting
-      native: fix rt_cond_wait restarting
-      testsuite: add user-space real-time signals unit test
-      build: bootstrap
-      signals: reduce signals handling memory footprint
-      posix: cosmetic cleanup of pthread_cond_*wait
-      posix: revert commit 58c1b922a96fedaef110c925a0dddb0e86dbcaf4
-
-Jan Kiszka (13):
-      buildsystem: Fix shared libs generation
-      rtdm: Add padding to rtser_config
-      native: Properly update lockcnt on recursive call from secondary mode
-      nucleus: Track heap mapping on to mm-clone
-      nucleus: Fix trivial build warning
-      hal: Ensure atomicity of rthal_local_irq_disabled
-      nucleus: Cosmetic cleanup of lostage_handler
-      nucleus: Improve lostage_work instrumentation
-      nucleus: Fix endless loop of DEBUG_SYNCH_RELAX
-      nucleus: Fix build warning of thread_fault instrumentation
-      rtdm: Fix copy&paste mistake in instrumentation
-      nucleus: Include all heaps in statistics
-      nucleus: Allow runtime setting of xeno_nucleus.watchdog_timeout
-
-Luis Herrera-Bendezu (1):
-      rtdm: Extend rtdm_iomap_to_user to map phys addr > 4G
-
-Peter Soetens (2):
-      nucleus: move posix selector in nucleus for every skin to use.
-      posix: Fix __wrap_select() when timeout happens.
-
-Philippe Gerum (33):
-      build: bootstrap
-      native: pass errno back as returned by kernel
-      nucleus: fix shared heaps for MMU-less configs
-      nucleus: fix deferred release handling for shared heaps
-      nucleus: fix locking in shared heap deletion
-      nucleus: set vma private data early enough
-      nucleus: wrap find_task_by_pid()
-      doc: fix typo
-      wrappers: introduce DEFINE_SPINLOCK in 2.4 section
-      powerpc: upgrade I-pipe support to 2.6.30.3-powerpc-2.7-03
-      wrappers: make sure pgprot_noncached() is always defined
-      nios2: upgrade I-pipe support to 2.6.30-nios2-1.1-00
-      nios2: upgrade I-pipe support to 2.6.30-nios2-1.1-00
-      nucleus: initialize heap->stat_link holder
-      powerpc: implement signals handling
-      blackfin: introduce support for real-time signals
-      nios: implement signals handling
-      skins: give a more explicit message about ABI version mismatches
-      native: fix signal related code in the FASTSYNC-disabled case
-      sigtest: fix UCLIBC check
-      blackfin: fix syscall template
-      nios2: fix syscall template
-      blackfin: do not stack registers already marked as clobbered
-      powerpc: upgrade I-pipe support to 2.6.30.3-powerpc-2.7-04
-      build: introduce CONFIG_XENO_SHARED to reflect shlib support
-      build: bootstrap
-      x86: upgrade I-pipe support to 2.6.31.1-x86-2.4-07
-      x86: upgrade I-pipe support to 2.6.31.1-x86-2.4-08
-      wrappers: fix for Linux 2.4
-      testsuite: fix sigtest build rules for Linux 2.4
-      analogy: fix Linux 2.4 build
-      build: update version stamp
-      doc: regenerate
-
-Sebastian Smolorz (1):
-      can: Free I/O region when unloading the xeno_can_isa.ko driver
-
+Jan
 
 -- 
-Philippe.
-
-
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
