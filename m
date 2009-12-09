@@ -1,13 +1,13 @@
-Message-ID: <4B1FAF0E.2060709@domain.hid>
-Date: Wed, 09 Dec 2009 15:07:10 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Wed, 09 Dec 2009 15:50:02 +0100
+From: Petr Cervenka <grugh@domain.hid>
+References: <1260281665.792922.9257.nullmailer@domain.hid>
+	<4B1E6B1B.5080306@domain.hid>
+In-Reply-To: <4B1E6B1B.5080306@domain.hid>
 MIME-Version: 1.0
-References: <4B1F9E26.7070900@domain.hid> <4B1FA901.7070903@domain.hid>
-	<4B1FACFB.2010809@domain.hid>
-In-Reply-To: <4B1FACFB.2010809@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=UTF-8
+Message-Id: <1260370202.738468.27358.nullmailer@domain.hid>
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Waiting w/o burning CPU
+Subject: Re: [Xenomai-help] xenomai 2.4.10 - invalid opcode: 0000
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,54 +17,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jozsef Lazar <jlazar@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Jozsef Lazar wrote:
-> Gilles Chanteperdrix =EDrta:
->> Jozsef Lazar wrote:
->>  =20
->>> Hi,
->>>
->>> Could anyone tell me which Xenomai function should I use to wait (even =
 
->>> up to 100msecs) without burning CPU. I tried using nanosleep() but it=20
->>> was always returning with 1 (one) and analyzing my output pins with an =
-
->>> oscilloscope I couldn't see any time delays. Now I use rt_timer_spin() =
-
->>> but I'm not sure whether I'm doing any wrong to my rt threads (or anyon=
-e=20
->>> else in the kernel). My environment: a kernel driver with lots of rt=20
->>> threads controlling stepper motors. The function where I want to wait i=
-s=20
->>> a work_struct task (called by a schedule_work). Thanks.
->>>    =20
+Jan Kiszka wrote:
+>
+>Petr Cervenka wrote:
+>> Hello,
+>> I tried to upgrade linux kernel and xenomai and now I have problems wi=
+th
+>> freezing computer because of "invalid opcode: 0000".
+>> It happens without any real-time app. running. Most often when I run X
+>> with KDE and netbeans (almost 100% probability), but it can freeze als=
+o
+>> during the boot.
+>> It perhaps depends on system load (CPU, disk, IO, ...?).
 >>
->> A work_struct task is a Linux task, not a xenomai thread. Xenomai
->> functions work for Xenomai thread. The behaviour of nanosleep is
->> documented here:
+>> My configuration:
+>> SW:
+>> linux kernel 2.6.30.9, arch: x86_64
+>> xenomai-2.4.10, smp
 >>
->> http://www.xenomai.org/documentation/xenomai-2.4/html/api/group__posix__=
-time.html#ga9ce6a1ed91a601dee133c8b6cf8b721a
+>> also:
+>> rtnet-0.9.11 - no driver loaded
+>> peak-linux-driver-6.11 - no device connected
 >>
->> 1 is EPERM.
+>> HW:
+>> CPU: Intel Core2Duo  E7400
+>> chipset: Intel 3210
+>> system partition is on CF (compact flash) mounted in CF-SATA converter=
+.
 >>
->>  =20
-> Thank you for your answer. I thought that I have such a problem. Any
-> suggestions which function should I use?
+>> Do you have any advices or tips? Thanks in advice.
+>> I can provide you by any needed information (.config of linux kernel,
+>> full systemlog, ...), just ask me.
+>
+>Yes, please. I assume your system is otherwise stable (without
+>Xenomai/I-pipe enabled).
+>
+>It would also be nice if you could retry over 2.6.31.x with latest ipipe
+>patch. And try to switch on CONFIG_IPIPE_DEBUG_TRACE_MCOUNT. That may
+>give a function back-trace on oops, maybe providing more pointers where
+>we come from (but it may also make the issue disappear).
+>
+>Jan
+>
 
-Linux provides several functions for suspending threads, such as msleep,
-schedule_timeout_interruptible, wait_event_interruptible, whatever you
-want. Anyway this question is related to Linux, not to Xenomai, so you
-will find better answers in other places than on Xenomai mailing-lists,
-I am not even sure you can suspend a work queue.
+1) When I disable Xenomai and I-pipe, the system is more or less stable. =
+At least I was not able to produce the error (any error).
+I also ran memtest during the night without any error.
 
-Please do not drop the CC to mailing list when replying.
+2) It is repeatable also in 2.6.31.7. with adeos-ipipe-2.6.31.1-x86-2.4-0=
+8.patch
 
-Regards.
+3) Switching CONFIG_IPIPE_DEBUG_TRACE_MCOUNT on doesn't make the error to=
+ dissapear. So maybe the catched logs could provide you more info.
 
---=20
-                                          Gilles
+I realized that the error could be different, but there is almost every t=
+ime "__ipipe_handle_irq" call in the call stack
 
+Also a very strange thing happened: When I tried to build "stable" kernel=
+ with disabled Xenomai and I-pipe, I was booted in the "unstable" kernel.=
+ It corrupted the .config file in some time between "make xconfig" and fr=
+eeze during building. When I checked the .config file next time (because =
+it failed to continue the compile) big part from the beginning was missin=
+g and some other binary data were appended to the end.
+
+Petr Cervenka
 
