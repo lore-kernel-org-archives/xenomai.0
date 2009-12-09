@@ -1,14 +1,12 @@
-Message-ID: <4B1FA80F.3070405@domain.hid>
-Date: Wed, 09 Dec 2009 14:37:19 +0100
+Message-ID: <4B1FA901.7070903@domain.hid>
+Date: Wed, 09 Dec 2009 14:41:21 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <c024fefc0912040111s78a97159vde8d7391b5702acf@domain.hid>	
-	<4B194E6F.7090806@domain.hid>
-	<c024fefc0912082017i59c0c688pbfe8178ba0201f6a@domain.hid>
-In-Reply-To: <c024fefc0912082017i59c0c688pbfe8178ba0201f6a@domain.hid>
+References: <4B1F9E26.7070900@domain.hid>
+In-Reply-To: <4B1F9E26.7070900@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem with Xenomai Install
+Subject: Re: [Xenomai-help] Waiting w/o burning CPU
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,41 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Adrian Boeing <aboeing@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Jozsef Lazar <jlazar@domain.hid>
+Cc: xenomai@xenomai.org
 
-Adrian Boeing wrote:
-> I have created a new install with Ubuntu 9.04, kernel 2.6.28-10
+Jozsef Lazar wrote:
+> Hi,
 > 
-> When I run trivial-periodic the computer resets.
-> 
-> This is how I created the kernel:
-> apt-get build-dep linux-image-$(uname -r)
-> apt-get source linux-image-$(uname -r)
-> download xenomai&adeos
-> scripts/prepare-kernel.sh
-> cp /boot/config-$(uname -r) .
-> make menuconfig      {I had to drop the #CPU's to 2}
-> make
-> sudo make modules_install install
-> make bzImage
-> sudo make-kpkg --initrd kernel_image modules
-> dpkg -i PACKAGENAME
-> 
-> cd xenomai
-> ./configure
-> make
-> sudo make install
-> cd /etc/ld.so.conf.d/
-> cp libc.conf xenomai.conf
-> cd examples native
-> make
-> sudo ./trivial peridoic <--- crashes computer (causes a reset)
+> Could anyone tell me which Xenomai function should I use to wait (even 
+> up to 100msecs) without burning CPU. I tried using nanosleep() but it 
+> was always returning with 1 (one) and analyzing my output pins with an 
+> oscilloscope I couldn't see any time delays. Now I use rt_timer_spin() 
+> but I'm not sure whether I'm doing any wrong to my rt threads (or anyone 
+> else in the kernel). My environment: a kernel driver with lots of rt 
+> threads controlling stepper motors. The function where I want to wait is 
+> a work_struct task (called by a schedule_work). Thanks.
 
-Please enable all xenomai and ipipe debugs, disable any kernel option
-which could cause debugs in case of panic (such as panic=x). And try and
-send us the kernel logs when the bug happens by redirecting the kernel
-console on a serial port.
+A work_struct task is a Linux task, not a xenomai thread. Xenomai
+functions work for Xenomai thread. The behaviour of nanosleep is
+documented here:
+
+http://www.xenomai.org/documentation/xenomai-2.4/html/api/group__posix__time.html#ga9ce6a1ed91a601dee133c8b6cf8b721a
+
+1 is EPERM.
 
 -- 
                                           Gilles
