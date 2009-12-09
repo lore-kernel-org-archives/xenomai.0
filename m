@@ -1,15 +1,13 @@
-From: Josh Karch <JKarch@domain.hid>
-Date: Wed, 9 Dec 2009 10:04:59 -0800
-Message-ID: <843773D242212C4882D4EDFFBF665F7F0155A93AA7@domain.hid>
-References: <843773D242212C4882D4EDFFBF665F7F0155A93A9D@FW-SBS.fw.local>,
-	<4B1FE230.8070702@domain.hid>
-In-Reply-To: <4B1FE230.8070702@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <4B1FEC63.9070100@domain.hid>
+Date: Wed, 09 Dec 2009 19:28:51 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Xenomai scheduling while atomic bug--debugging
- parameters
+References: <1260281665.792922.9257.nullmailer@domain.hid>	<4B1E6B1B.5080306@domain.hid>
+	<1260370202.738468.27358.nullmailer@domain.hid>
+In-Reply-To: <1260370202.738468.27358.nullmailer@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] xenomai 2.4.10 - invalid opcode: 0000
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,50 +17,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Petr Cervenka <grugh@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Gilles,
+Petr Cervenka wrote:
+> Jan Kiszka wrote:
+>> Petr Cervenka wrote:
+>>> Hello,
+>>> I tried to upgrade linux kernel and xenomai and now I have problems with
+>>> freezing computer because of "invalid opcode: 0000".
+>>> It happens without any real-time app. running. Most often when I run X
+>>> with KDE and netbeans (almost 100% probability), but it can freeze also
+>>> during the boot.
+>>> It perhaps depends on system load (CPU, disk, IO, ...?).
+>>>
+>>> My configuration:
+>>> SW:
+>>> linux kernel 2.6.30.9, arch: x86_64
+>>> xenomai-2.4.10, smp
+>>>
+>>> also:
+>>> rtnet-0.9.11 - no driver loaded
+>>> peak-linux-driver-6.11 - no device connected
+>>>
+>>> HW:
+>>> CPU: Intel Core2Duo  E7400
+>>> chipset: Intel 3210
+>>> system partition is on CF (compact flash) mounted in CF-SATA converter.
+>>>
+>>> Do you have any advices or tips? Thanks in advice.
+>>> I can provide you by any needed information (.config of linux kernel,
+>>> full systemlog, ...), just ask me.
+>> Yes, please. I assume your system is otherwise stable (without
+>> Xenomai/I-pipe enabled).
+>>
+>> It would also be nice if you could retry over 2.6.31.x with latest ipipe
+>> patch. And try to switch on CONFIG_IPIPE_DEBUG_TRACE_MCOUNT. That may
+>> give a function back-trace on oops, maybe providing more pointers where
+>> we come from (but it may also make the issue disappear).
+>>
+>> Jan
+>>
+> 
+> 1) When I disable Xenomai and I-pipe, the system is more or less stable. At least I was not able to produce the error (any error).
+> I also ran memtest during the night without any error.
+> 
+> 2) It is repeatable also in 2.6.31.7. with adeos-ipipe-2.6.31.1-x86-2.4-08.patch
+> 
+> 3) Switching CONFIG_IPIPE_DEBUG_TRACE_MCOUNT on doesn't make the error to dissapear. So maybe the catched logs could provide you more info.
 
-sounds good-- for now I'm recompiling the kernel with all debug options dis=
-abled to see if my program will run stable, but I can make another compilin=
-g with all options enabled for kernel debugging, ipipe debugging, and xenom=
-ai debugging, run it, send a config.  I have a couple of questions:
-1) is it possible to disable all of these debugging parameters in the kerne=
-l boot parameter or do I have to recompile
-2) What is the best way to collect a trace?  Right now I have copied from k=
-ern.log, messages, and syslog (in /var/log), although they are all similar.
-3) Is there a quick way to recompile the kernel with these options without =
-having to rebuild all the kernel modules or do I need to do a clean and reb=
-uild?
+Not yet. Is CONFIG_IPIPE_DEBUG_TRACE_ENABLE on? Also
+CONFIG_FRAME_POINTER should be on. And please provide your .config for
+reference.
 
-Thank you,
+> 
+> I realized that the error could be different, but there is almost every time "__ipipe_handle_irq" call in the call stack
+> 
+> Also a very strange thing happened: When I tried to build "stable" kernel with disabled Xenomai and I-pipe, I was booted in the "unstable" kernel. It corrupted the .config file in some time between "make xconfig" and freeze during building. When I checked the .config file next time (because it failed to continue the compile) big part from the beginning was missing and some other binary data were appended to the end.
 
-Joshua Karch
-________________________________________
-From: Gilles Chanteperdrix [gilles.chanteperdrix@xenomai.org]
-Sent: Wednesday, December 09, 2009 9:45 AM
-To: Josh Karch
-Cc:=20
-Subject: Re: [Xenomai-help] Xenomai scheduling while atomic bug--debugging =
-parameters
+I don't get this yet: It happens when you build/install a kernel while
+running an i-pipe enabled kernel?
 
-Josh Karch wrote:
-> parameters and see if that resolves the problem:  Any ideas on
-> whether that issue was addressed in 2.4.10?
+Jan
 
-Looking a the thread you show us, the user which had the original
-problem seem not to have sent any further data, so chances are that the
-issue was not addressed.
-
-The data we are interested in are:
-- better stack traces (frame pointer are possibly disabled in your
-kernel, it would probably be better if you enabled them)
-- kernel configuration
-- a run with all xenomai and I-pipe debug options enabled
-
-TIA.
-
---
-                                          Gilles
-
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
