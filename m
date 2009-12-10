@@ -1,12 +1,16 @@
-Content-class: urn:content-classes:message
+Message-ID: <4B20C5DE.2040606@domain.hid>
+Date: Thu, 10 Dec 2009 10:56:46 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 10 Dec 2009 10:36:22 +0100
-Message-ID: <EA8B423DB69FD24FA233008019A052AE016689FC@zue-s-15.zue.zwick.de>
-From: "Soboljew, Patrick" <Patrick.Soboljew@domain.hid>
-Subject: [Xenomai-help] Problem with gettimeofday
+References: <843773D242212C4882D4EDFFBF665F7F0155A93A9D@FW-SBS.fw.local>,
+	<4B1FE230.8070702@domain.hid>	<843773D242212C4882D4EDFFBF665F7F0155A93AA7@domain.hid>,
+	<4B1FEF97.9000509@domain.hid>
+	<843773D242212C4882D4EDFFBF665F7F0155A93AAA@FW-SBS.fw.local>
+In-Reply-To: <843773D242212C4882D4EDFFBF665F7F0155A93AAA@FW-SBS.fw.local>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai scheduling while atomic bug--debugging
+	parameters
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,85 +20,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Josh Karch <JKarch@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+Josh Karch wrote:
+> Hi Jan,
+> 
+> I did a complete make mrproper on the system and recompiled without debugging parameters, 
 
-Hello all,
+mrproper is not required, the kernel is supposed to detect what needs to
+be rebuild based on the .config changes.
 
-I have a problem concering the system time in xenomai 2.4.9.1 kernel
-2.6.30. The framework I use calls gettimeofday() to get the absolute
-system time which is then passed to pthread_cond_timedwait. The problem
-is that when I add for example 1ms wait time the pthread_cond_timedwait
-waits much longer. I've checked /proc/xenomai/sched and I can see that
-the timeout is far too large. So I wrote a small test program to isolate
-the problem. I compared the results (only the seconds which is enough to
-show the problem) and there is a huge difference.
+> which took a few hours on the machine because the modules take up a lot. I probably should prune all unused modules (eg video, pcmcia, sound, etc) that I'm not using.
 
-On my system (Intel Core2, 1,6 GHz) the output of the test program shows
-the following output:
-Time1: 1260437136
-Time2: 1145908535
+Yep.
 
-The curious thing is: I have a vmware image with a xenomai kernel (same
-version). The problem cannot be reproduced here.=20
+> 
+> I guess I will have to back up my current /lib/modules/2.6.30.8 when I recompile with all debug support for that experiment, grab the data, and then get that to you once my testing (hopefully) is successful on this change without kernel debugging options.
+> 
 
-Anybody an idea?
+Gilles already said this: We also need your .config to check if you are
+stressing an uncommon configuration or if we are even able to reproduce
+it locally.
 
-Thanks for your help,
-Patrick Soboljew
+Jan
 
-
-
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D Example Code begin =
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-#include <pthread.h>
-#include <sys/mman.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <sys/time.h>
-
-void SetupRtThread()
-{
-    int RetVal =3D 0;
-    struct sched_param SParam;
-    SParam.sched_priority =3D 1;
-    int Policy =3D SCHED_FIFO;
-    if ((RetVal =3D pthread_setschedparam(pthread_self(), Policy,
-&SParam)) !=3D 0)
-    {
-        printf("pthread_setschedparam: %s", strerror(RetVal));
-        exit(RetVal);
-    }
-}
-
-
-int main (int /*argc*/, char** /*argv[]*/)
-{
-    mlockall(MCL_CURRENT | MCL_FUTURE);
-    SetupRtThread();
-
-    printf("1\n");
-
-    timeval Time1;
-    if (gettimeofday(&Time1,0) !=3D 0)
-    {
-        fprintf(stderr, "Error gettimeofday\n");
-        return -1;
-    }
-
-    timespec Time2;
-    if (clock_gettime(CLOCK_REALTIME, &Time2) !=3D 0)
-    {
-        fprintf(stderr, "Error clock_gettime");
-        return -1;
-    }
-    printf("Time1: %ld\n", Time1.tv_sec);
-    printf("Time2: %ld\n", Time2.tv_sec);
-
-    return 0;
-}
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D Example Code end =
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
