@@ -1,10 +1,9 @@
-Message-ID: <4B209B9C.7010309@domain.hid>
-Date: Thu, 10 Dec 2009 07:56:28 +0100
-From: Bernhard Pfund <bernhard@domain.hid>
+Message-ID: <500245.60842.qm@domain.hid>
+Date: Thu, 10 Dec 2009 16:48:49 +0000 (GMT)
+From: A C <adrien_chiron@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] I-pipe for 2.6.32 PPC
+Content-Type: multipart/alternative; boundary="0-857040023-1260463729=:60842"
+Subject: [Adeos-main] Porting Adeos-Ipipe on AVR32 (NGW 100).
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,12 +14,30 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: adeos-main@gna.org
 
-Philippe, all
+--0-857040023-1260463729=:60842
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-I'm currently working with a fairly new ppc development board (P2020RDB) by 
-Freescale. The board's BSP went mainline with 2.6.32 and I'd like to deploy an 
-I-pipe enabled DENX kernel for testing. Now, is there an I-pipe patch for said 
-kernel on the release schedule anywhere soon?
+Hello,=0A=0AWe started to port Adeos for the IRQs part. =0A=0ASimple questi=
+on: Why the function raw_irqs_disabled_flags(flags) is the same with or wit=
+hout ipipe ? (as we saw in some arch).=0A=0A(in the case with ipipe) =0AWhy=
+=0Anot use __ipipe_test_root() -in the same way as the function=0A__raw_loc=
+al_save_flags()- to write the new function=0Araw_irqs_disabled_flags(flags)=
+?=0A=0ARegards=0A=0AAdrien Chiron & Vincent Vanbesien=0A=0A=0A      
+--0-857040023-1260463729=:60842
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-TIA::Bernhard
+<html><head><style type=3D"text/css"><!-- DIV {margin:0px;} --></style></he=
+ad><body><div style=3D"font-family:times new roman,new york,times,serif;fon=
+t-size:12pt"><div>Hello,<br><br>We started to port Adeos for the IRQs part.=
+ <br><br>Simple question: Why the function raw_irqs_disabled_flags(flags) i=
+s the same with or without ipipe ? (as we saw in some arch).<br> <br>(in th=
+e case with ipipe) <br>Why=0Anot use __ipipe_test_root() -in the same way a=
+s the function=0A__raw_local_save_flags()- to write the new function=0Araw_=
+irqs_disabled_flags(flags)?<br><br>Regards<br><br>Adrien Chiron &amp; Vince=
+nt Vanbesien</div>=0A<!-- cg20.c41.mail.ird.yahoo.com compressed/chunked Th=
+u Dec 10 06:37:13 PST 2009 -->=0A</div><br>=0A=0A=0A=0A=0A      </body></ht=
+ml>
+--0-857040023-1260463729=:60842--
 
