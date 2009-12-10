@@ -1,32 +1,26 @@
-Message-ID: <4B3B7D5C.6030405@domain.hid>
-Date: Wed, 30 Dec 2009 17:18:36 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4B209B9C.7010309@domain.hid>
+Date: Thu, 10 Dec 2009 07:56:28 +0100
+From: Bernhard Pfund <bernhard@domain.hid>
 MIME-Version: 1.0
-References: <7aa37e720912300036y19249efx6886fa6396eea808@domain.hid>
-In-Reply-To: <7aa37e720912300036y19249efx6886fa6396eea808@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] ST7105
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: man5 nano <nano.man56@domain.hid>
-Cc: xenomai@xenomai.org
+Subject: [Adeos-main] I-pipe for 2.6.32 PPC
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
 
-man5 nano wrote:
-> Hello,
-> 
-> Is there an attempt to bring Xenomai on ST7105.
+Philippe, all
 
-People have already talked about porting Xenomai on SH, but so far we
-got no contribution.
+I'm currently working with a fairly new ppc development board (P2020RDB) by 
+Freescale. The board's BSP went mainline with 2.6.32 and I'd like to deploy an 
+I-pipe enabled DENX kernel for testing. Now, is there an I-pipe patch for said 
+kernel on the release schedule anywhere soon?
 
--- 
-					    Gilles.
+TIA::Bernhard
 
