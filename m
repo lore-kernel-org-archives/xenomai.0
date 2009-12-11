@@ -1,12 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <500245.60842.qm@domain.hid>
-References: <500245.60842.qm@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 10 Dec 2009 19:11:22 +0100
-Message-ID: <1260468682.2370.100.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4B223227.4020208@domain.hid>
+Date: Fri, 11 Dec 2009 12:51:03 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] Porting Adeos-Ipipe on AVR32 (NGW 100).
+Subject: [Adeos-main] [pull request] Avoid double bug reports
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,54 +13,86 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: A C <adrien_chiron@domain.hid>
-Cc: adeos-main@gna.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
 
-On Thu, 2009-12-10 at 16:48 +0000, A C wrote:
-> Hello,
-> 
-> We started to port Adeos for the IRQs part. 
-> 
-> Simple question: Why the function raw_irqs_disabled_flags(flags) is
-> the same with or without ipipe ? (as we saw in some arch).
-> 
+The following changes since commit 88fd7426f3565647b4f5ef93d8e612e059dae873:
+  Philippe Gerum (1):
+        Make generic atomic ops Adeos-aware
 
-Because the pipeline code must guarantee that, for all standard linux
-IRQ state accessors/modifiers (e.g. local_irq_save/restore(),
-raw_irqs_disabled_flags()) the same values are used to assert/test the
-interrupt on/off states (e.g. MSR_EE, X86_EFLAGS_IF and so on), in the
-virtualized IRQ flags, than the real IRQ flags linux uses when the
-pipeline is disabled, for any given arch.
+are available in the git repository at:
 
-e.g. on x86, albeit ugly, it must be allowed to open-code:
+  git://git.kiszka.org/ipipe-2.6.git queues/2.6.31-noarch
 
-raw_local_save_flags(flags);
-if (flags & X86_EFLAGS_IF)
-	interrupts_are_enabled();
+Jan Kiszka (2):
+      noarch: Don't check for internal errors during oops
+      noarch: Set oops_in_progress on failing context check
 
-even if the pipeline is enabled.
+ kernel/ipipe/core.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
-> (in the case with ipipe) 
-> Why not use __ipipe_test_root() -in the same way as the function
-> __raw_local_save_flags()- to write the new function
-> raw_irqs_disabled_flags(flags)?
+-------
 
-Because this would break the above rule, since __ipipe_test_root()
-returns 0/1.
+noarch: Don't check for internal errors during oops
 
-> 
-> Regards
-> 
-> Adrien Chiron & Vincent Vanbesien
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
+We are busted already, verifying the context here only generates
+confusing output or causes even more corruptions.
 
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ kernel/ipipe/core.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/kernel/ipipe/core.c b/kernel/ipipe/core.c
+index ffaceaa..c9bc5b4 100644
+--- a/kernel/ipipe/core.c
++++ b/kernel/ipipe/core.c
+@@ -312,7 +312,7 @@ void __ipipe_unstall_root(void)
+ 
+ #ifdef CONFIG_IPIPE_DEBUG_INTERNAL
+ 	/* This helps catching bad usage from assembly call sites. */
+-	BUG_ON(!__ipipe_root_domain_p);
++	BUG_ON(!__ipipe_root_domain_p && !oops_in_progress);
+ #endif
+ 
+ 	p = ipipe_root_cpudom_ptr();
+@@ -328,7 +328,7 @@ void __ipipe_unstall_root(void)
+ void __ipipe_restore_root(unsigned long x)
+ {
+ #ifdef CONFIG_IPIPE_DEBUG_INTERNAL
+-	BUG_ON(!ipipe_root_domain_p);
++	BUG_ON(!ipipe_root_domain_p && !oops_in_progress);
+ #endif
+ 
+ 	if (x)
 -- 
-Philippe.
+1.6.0.2
 
+------
 
+noarch: Set oops_in_progress on failing context check
+
+This helps to avoid raising multiple bugs that may even precede the
+actually issue in the output.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ kernel/ipipe/core.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/kernel/ipipe/core.c b/kernel/ipipe/core.c
+index c9bc5b4..aa2e5a0 100644
+--- a/kernel/ipipe/core.c
++++ b/kernel/ipipe/core.c
+@@ -1676,7 +1676,7 @@ void ipipe_check_context(struct ipipe_domain *border_domain)
+ 
+ 	ipipe_context_check_off();
+ 	ipipe_trace_panic_freeze();
+-	ipipe_set_printk_sync(__ipipe_current_domain);
++	oops_in_progress = 1;
+ 
+ 	if (this_domain->priority > border_domain->priority)
+ 		printk(KERN_ERR "I-pipe: Detected illicit call from domain "
+-- 
+1.6.0.2
 
