@@ -1,29 +1,51 @@
-Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <4B355246.4060609@domain.hid>
-Date: Sat, 26 Dec 2009 01:01:10 +0100
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Message-ID: <20091212160901.e8khhce7vvcgsogo@domain.hid>
+Date: Sat, 12 Dec 2009 16:09:01 +0100
+From: bernhard@domain.hid
+References: <4B209B9C.7010309@domain.hid>
+	<1260612808.2370.152.camel@domain.hid>
+In-Reply-To: <1260612808.2370.152.camel@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+	charset=UTF-8;
+	DelSp="Yes";
+	format="flowed"
+Content-Disposition: inline
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PULL REQUEST] analogy: one forgotten option
-	dependency
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+Subject: Re: [Adeos-main] I-pipe for 2.6.32 PPC
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main@gna.org
 
-The following changes since commit eecb6ee65712a8b412be455344f84fc13ced555b:
-   Alexis Berlemont (1):
-         analogy: make the MITE option depends on the PCI option
+Zitat von Philippe Gerum <rpm@xenomai.org>:
 
-are available in the git repository at:
+> On Thu, 2009-12-10 at 07:56 +0100, Bernhard Pfund wrote:
+>> Philippe, all
+>>
+>> I'm currently working with a fairly new ppc development board (P2020RDB) by
+>> Freescale. The board's BSP went mainline with 2.6.32 and I'd like   
+>> to deploy an
+>> I-pipe enabled DENX kernel for testing. Now, is there an I-pipe   
+>> patch for said
+>> kernel on the release schedule anywhere soon?
+>
+> Likely not before January.
+>
+>>
+>> TIA::Bernhard
+>>
+> --
+> Philippe.
+>
 
-   ssh+git://git.xenomai.org/xenomai-abe.git analogy
+OK, thanks.
 
-Alexis.
+Bernhard
+
 
