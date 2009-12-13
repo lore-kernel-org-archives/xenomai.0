@@ -1,5 +1,5 @@
-Message-ID: <4B25029C.9020703@domain.hid>
-Date: Sun, 13 Dec 2009 16:05:00 +0100
+Message-ID: <4B250469.2070204@domain.hid>
+Date: Sun, 13 Dec 2009 16:12:41 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <801038.31731.qm@domain.hid>
@@ -34,24 +34,17 @@ Yigal Goldberger wrote:
 > 
 > Below is the 2 code parts that Initialize the file descriptor of the reading thread , and the reading select - read loop :
 > 
-
-
->    while (TRUE)
->    {
-> 	if (thistlp->nbytes_to_read == 1)
-> 	{
-> 		int xxx = tcgetattr (thistlp->fd, &thistlp->ttykey);
-> 	}
 > 
-> 	if ((nbytes = select (thistlp->fd+1, &input, NULL, NULL,pIo_timeout /*NULL*/)) < 0)
+> The code  creating the file descriptor :
+> 
+> 
+> fd = open (devname, O_RDWR | O_NOCTTY | O_NDELAY | O_NONBLOCK );
 
-Please read select documentation, this use of select is wrong in at
-least two ways:
-- select return value is not a number of bytes, it is a number of file
-descriptors;
-- the input fdset is modified by select to indicate which file
-descriptors are ready, so you must reset it to the proper value before
-each call to select.
+By the way, depending on the value of "devname" here, the file
+descriptor may or may not be related to a real-time driver. And I
+suspect in your case, it is not, because I do not think things like
+cfsetispeed/cfsetospeed work with the real-time 16550 driver (the only
+serial driver which is part of xenomai distribution).
 
 -- 
 					    Gilles.
