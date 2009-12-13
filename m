@@ -1,15 +1,12 @@
-Message-ID: <4B241D1B.1030002@domain.hid>
-Date: Sat, 12 Dec 2009 23:45:47 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4B25029C.9020703@domain.hid>
+Date: Sun, 13 Dec 2009 16:05:00 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1260281665.792922.9257.nullmailer@domain.hid>	<4B1E6B1B.5080306@domain.hid>	<1260370202.738468.27358.nullmailer@domain.hid>	<4B1FEC63.9070100@domain.hid>	<1260439679.561436.26932.nullmailer@domain.hid>
-	<4B20E2D7.8060103@domain.hid>
-In-Reply-To: <4B20E2D7.8060103@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig417CD806B156CB6806292DFA"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] xenomai 2.4.10 - invalid opcode: 0000
+References: <801038.31731.qm@domain.hid>
+In-Reply-To: <801038.31731.qm@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] serial com errors
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,42 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-Cc: Petr Cervenka <grugh@domain.hid>, xenomai-help <xenomai@xenomai.org>
+To: Yigal Goldberger <yigal_gold@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig417CD806B156CB6806292DFA
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Jan Kiszka wrote:
-> ...
-> Reproducible with your .config under kvm, will investigate later.
->=20
-
-It looks like we have a problem with CONFIG_PREEMPT on x86-SMP at the
-moment (2.6.30&.31, maybe also older kernels). You may try with
-CONFIG_PREEMPT_VOLUNTARY/NONE, but I can't promise that this heals the
-issue, maybe it just makes it far less probable.
-
-The corruption is easy to reproduce - but always at different spots,
-thus it's very hard to catch. Still investigating.
-
-Jan
+Yigal Goldberger wrote:
+> Hi Again,
+> 
+> I hope it's not too long and tiring ...
+> But the relevant code (I think...) is the initialization stage , and the select and read loop that blocks and reads .
+> 
+> 
+> The problem is as follows :
+> I have 2 threads listening on two different serial coms . running the same code below . Using select to block and wait for bytes to be available on the port , and then reading them with the read function .
+> These 2 threads are Xenomai threads with priority higher then the thread that is responsible of working on the data .
+> I see that when reaceiving with BAUDRATES lower than 115200 (38400) no problem occures , and when receving on both port with BAUDRATE 115200 , I get errors in the received bytes ( which is identified by a wrong checksum ,and sometimes with a "No more room in flip buffer" printout on the console as well as errno 11 (EAGAIN) ) . When I added a 10 mili second sleep to the executing thread (the thread that uses the data )the problem seems to disappear .
+> 
+> 
+> Below is the 2 code parts that Initialize the file descriptor of the reading thread , and the reading select - read loop :
+> 
 
 
---------------enig417CD806B156CB6806292DFA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+>    while (TRUE)
+>    {
+> 	if (thistlp->nbytes_to_read == 1)
+> 	{
+> 		int xxx = tcgetattr (thistlp->fd, &thistlp->ttykey);
+> 	}
+> 
+> 	if ((nbytes = select (thistlp->fd+1, &input, NULL, NULL,pIo_timeout /*NULL*/)) < 0)
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+Please read select documentation, this use of select is wrong in at
+least two ways:
+- select return value is not a number of bytes, it is a number of file
+descriptors;
+- the input fdset is modified by select to indicate which file
+descriptors are ready, so you must reset it to the proper value before
+each call to select.
 
-iEUEARECAAYFAkskHSIACgkQitSsb3rl5xRcVwCg1Qjrmew7dA7qjCTcaVNc7Rzm
-iRsAl1/xvv0k0qKhRK1AUh92ApFSFfY=
-=tLBB
------END PGP SIGNATURE-----
-
---------------enig417CD806B156CB6806292DFA--
+-- 
+					    Gilles.
 
