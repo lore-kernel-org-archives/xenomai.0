@@ -1,10 +1,11 @@
-Message-ID: <4B264562.4090803@domain.hid>
-Date: Mon, 14 Dec 2009 15:02:10 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <4B26C135.9020305@domain.hid>
+Date: Mon, 14 Dec 2009 23:50:29 +0100
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
 MIME-Version: 1.0
-References: <4B263E6A.7040104@domain.hid> <4B264295.9080308@domain.hid>
-In-Reply-To: <4B264295.9080308@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4B263E6A.7040104@domain.hid>
+In-Reply-To: <4B263E6A.7040104@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Build tests.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -15,37 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Alexis Berlemont <alexis.berlemont@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Hi Jan,
+Hi Gilles,
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Hi,
->>
->> I am working on automated build tests of several configurations of
->> Xenomai head. While running them, I found a few issues, and would need
->> acks, since it is in parts others maintain.
->>
->> Alex: https://mail.gna.org/public/xenomai-git/2009-12/msg00112.html
->>
->> Wolfgang: https://mail.gna.org/public/xenomai-git/2009-12/msg00113.html
->>
+Gilles Chanteperdrix wrote:
+> Hi,
 > 
-> Though I'm not Wolfgang:
+> I am working on automated build tests of several configurations of
+> Xenomai head. While running them, I found a few issues, and would need
+> acks, since it is in parts others maintain.
 > 
->  config XENO_DRIVERS_CAN_SJA1000_PEAK_DNG
-> -       depends on XENO_DRIVERS_CAN_SJA1000
-> +       depends on XENO_DRIVERS_CAN_SJA1000 && !PARPORT
->         tristate "PEAK Parallel Port Dongle"
->         help
+> Alex: https://mail.gna.org/public/xenomai-git/2009-12/msg00112.html
+
+Thank you for the fix.
+
+> Wolfgang: https://mail.gna.org/public/xenomai-git/2009-12/msg00113.html
 > 
-> That's not obviously related. Why do we need it?
+> Anyone: https://mail.gna.org/public/xenomai-git/2009-12/msg00114.html
+> 
+> Philippe (check powerpc 2.4):
+> https://mail.gna.org/public/xenomai-git/2009-12/msg00115.html
+> 
+> The current status of the tests may be found here:
+> http://sisyphus.hd.free.fr/~gilles/bx/
+> 
+> TIA,
+> Regards.
+> 
 
-As the help text explains, parport should be disabled. See:
-
-http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/can/sja1000/Kconfig#066
-
-Wolfgang.
+Alexis.
 
