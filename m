@@ -1,69 +1,79 @@
-Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <4B35543D.2000809@domain.hid>
-Date: Sat, 26 Dec 2009 01:09:33 +0100
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Message-ID: <4B2673F2.4010609@domain.hid>
+Date: Mon, 14 Dec 2009 18:20:50 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4B309A29.6030405@domain.hid> <4B316C4B.1030009@domain.hid>
-	<4B320DF6.9010506@domain.hid>
-In-Reply-To: <4B320DF6.9010506@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Build tests: analogy, blackfin, rtcan and nios2.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+Subject: [Adeos-main] [pull request] noarch: fix ftrace code patching
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
 
-Hi Gilles,
+The following changes since commit 779cfc6a68bcc9c4acb1eec3922c25eb43b08a2f:
+  Jan Kiszka (1):
+        Set oops_in_progress on failing context check
 
-Gilles Chanteperdrix wrote:
-> Alexis Berlemont wrote:
->> Hi Gilles,
->>
->> Gilles Chanteperdrix wrote:
->>> Hi,
->>>
->>> Since I started talking about it, I have run build tests fixing a few
->>> things here and there. The current status is this (still at the same
->>> place: http://sisyphus.hd.free.fr/~gilles/bx):
->>>
->>> * analogy: I have tried to disable some parts of analogy when compiling
->>> on machines without CONFIG_PCI, as compiling parts using PCI on a
->>> machine without PCI support, give various levels of warning and even
->>> errors depending on the architecture. Doing this, I stumbled across this
->>> compilation error:
->>> http://sisyphus.hd.free.fr/~gilles/bx/beagle/2.6.28-arm-none-linux-gnueabi-gcc-4.3.3/log.html#1
->>> this is with CONFIG_NI_MIO, but without CONFIG_NI_MITE.
->>>
->>> So, Alex, could you:
->>> - fix that error, if this combination is supposed to make sense
->> Yes it makes sense. I think the MITE is integrated into all PCI boards
->> but the driver should work with the MITE disabled (one day, we could add
->> the ISA boards).
->>> - fix the Kconfig/Makefile so that no PCI code is compiled if CONFIG_PCI
->>> is not set (I tried and do this myself, but better one who knows than
->>> 100 who have to search...). As I said, doing this result in various
->>> levels of success depending on the architecture.
->> Ack. I will fix these problems as quickly as possible.
-> 
-> Ok. The fix for the second problem would be nice to have soon, as
-> analogy breaks the build on blackfin for this reason. If it is of any
-> help, you can send me a patch for this fix only which I will apply on my
-> side while you are working on other changes.
-> 
+are available in the git repository at:
 
-I modified the common part of the NI driver so that the PCI code can be 
-disabled without any compilation issues.
+  git://git.kiszka.org/ipipe-2.6 queues/2.6.31-noarch
 
-I made a pull request which contains the fixes.
+Jan Kiszka (1):
+      Disable both real and virtual interrupts during ftrace code changes
 
-Merry Christmas.
+ kernel/trace/ftrace.c |   12 ++++++++----
+ 1 files changed, 8 insertions(+), 4 deletions(-)
 
-Alexis.
+------
+
+Disable both real and virtual interrupts during ftrace code changes
+
+This is required as the call stack contains some further local_irq_save/
+restore which would otherwise reenable real interrupts spuriously.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ kernel/trace/ftrace.c |   12 ++++++++----
+ 1 files changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 5c007b6..9ca1e65 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -2802,9 +2802,11 @@ static int ftrace_convert_nops(struct module *mod,
+ 	}
+ 
+ 	/* disable interrupts to prevent kstop machine */
+-	local_irq_save_hw_notrace(flags);
++	local_irq_save(flags);
++	local_irq_disable_hw();
+ 	ftrace_update_code(mod);
+-	local_irq_restore_hw_notrace(flags);
++	local_irq_enable_hw();
++	local_irq_restore(flags);
+ 	mutex_unlock(&ftrace_lock);
+ 
+ 	return 0;
+@@ -2887,9 +2889,11 @@ void __init ftrace_init(void)
+ 	/* Keep the ftrace pointer to the stub */
+ 	addr = (unsigned long)ftrace_stub;
+ 
+-	local_irq_save_hw_notrace(flags);
++	local_irq_save(flags);
++	local_irq_disable_hw();
+ 	ftrace_dyn_arch_init(&addr);
+-	local_irq_restore_hw_notrace(flags);
++	local_irq_enable_hw();
++	local_irq_restore(flags);
+ 
+ 	/* ftrace_dyn_arch_init places the return code in addr */
+ 	if (addr)
+-- 
+1.6.0.2
 
