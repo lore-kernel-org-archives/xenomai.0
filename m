@@ -1,13 +1,13 @@
-Message-ID: <4B27A62C.2050300@domain.hid>
-Date: Tue, 15 Dec 2009 16:07:24 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4B1663B9.8030306@domain.hid> <4B166A5B.6030400@domain.hid>
-	<20091215150008.GA10925@domain.hid>
-In-Reply-To: <20091215150008.GA10925@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4B1CCE12.4080106@domain.hid>
+References: <4B1CCE12.4080106@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 15 Dec 2009 17:54:23 +0100
+Message-ID: <1260896063.2216.172.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Realtime gettimeofday()
+Subject: Re: [Xenomai-core] [Fwd: Re: [Xenomai-help] How to fix t_delete
+ call in psos skin?]
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,40 +16,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Richard Cochran <richardcochran@domain.hid>
+To: Fabrice Gasnier <fabrice.gasnier@domain.hid>
 Cc: xenomai@xenomai.org
 
-Richard Cochran wrote:
-> On Wed, Dec 02, 2009 at 02:23:39PM +0100, Gilles Chanteperdrix wrote:
->> This issue has been discussed several times, but never a lot. We have a
->> simple solution: starting with 2.4 (if I remember correctly) xenomai
->> provides clock_settime, so you can simply rely on clock_gettime, and
->> call clock_settime from time to time to resync the Xenomai clock with
->> Linux NTP-enhanced clock. This is not pretty, you get a drift increasing
->> over time, then suddenly been reset. But I guess this has been enough
->> for current users, until now. You control the maximum drift by how often
->> you call clock_settime.
+On Mon, 2009-12-07 at 10:42 +0100, Fabrice Gasnier wrote:
+> Hello,
 > 
-> Well, it looks like I will need to use this method, too, until the
-> "real" solution comes along. But that leaves me with more questions:
+> I come back to you to submit a slightly different patch.
+> I observed that __psos_t_delete sometimes returns ERR_OBJID after 
+> pthread_cancel has been issued, due to thread isn't found on kernel side.
+> The attached patch uses the same mechanism as in native API 
+> (rt_task_delete) where equivalent error is being filtered.
 > 
-> 1. My program is written using the native skin, and I need to time
-> stamp some data while in primary mode. Can I safely call the posix
-> skin's clock_gettime() function from my native thread?
 
-Yes.
+Correct.
 
+> Please find attached this patch (formated with git format-patch origin).
 > 
-> 2. I will need a non-critical thread to go the gettimeofday() -
-> clock_settime() adjustment hack once in a while. Can I safely start a
-> both a posix skin thread and a native thread from the same main
-> program?
+> If it's looks like ok on your side, do you think this patch can be 
+> integrated in xenomai project?
+> 
 
-Yes. But you should better use __real_clock_gettime than gettimeofday,
-since it returns a struct timespec which you may feed into clock_settime
-without any further adjustments.
+Yes, this patch makes sense. Time for nitpicking now:
+
+
++	#ifdef CONFIG_XENO_OPT_PERVASIVE
++    u_long pthread; /* hidden pthread_t identifier. */
++	#endif
++
+
+Preprocessor statements should start at column 1.
+
++	if (!__xn_access_ok(curr, VERIFY_READ, bulk.a1, sizeof(name))) {
++		return -EFAULT;
++	}
+
+Single executable statement in conditional needs no braces.
+
+@@ -99,7 +107,10 @@ static int __t_create(struct task_struct *curr,
+struct pt_regs *regs)
+ 		 * about the new thread id, so we can manipulate its
+ 		 * TCB pointer freely. */
+ 		tid = xnthread_handle(&task->threadbase);
+-		__xn_copy_to_user(curr, (void __user *)__xn_reg_arg4(regs), &tid,
++		#ifdef CONFIG_XENO_OPT_PERVASIVE
++		task->pthread = bulk.a5; /* hidden pthread_t identifier. */
++		#endif
+
+Same as above regarding the indentation, but most importantly, testing
+CONFIG_OPT_XENO_PERVASIVE is redundant, since this file is only compiled
+when in pervasive mode.
+
++		#ifdef CONFIG_XENO_OPT_PERVASIVE
++		pthread = task->pthread; /* hidden pthread_t identifier. */
++		#endif
+
+Same as above.
+
+Additionally, please make sure to prefix the commit message with the
+sub-system impacted, i.e. psos in this case, and be more descriptive
+regarding to the fix involved.
+
+E.g.
+git commit -a -m "psos: send pthread_cancel() upon t_delete"
+
 
 -- 
-                                          Gilles
+Philippe.
+
 
 
