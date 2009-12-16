@@ -1,15 +1,13 @@
-Message-ID: <4B167FC4.8080904@domain.hid>
-Date: Wed, 02 Dec 2009 15:55:00 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4B289EEC.1040803@domain.hid>
+Date: Wed, 16 Dec 2009 09:48:44 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B1663B9.8030306@domain.hid>
-	<4B166A5B.6030400@domain.hid>	<4B166EFB.8050309@domain.hid>
-	<4B16769A.9060700@domain.hid>	<4B167A55.8080407@domain.hid>
-	<4B167B4B.3010804@domain.hid>
-In-Reply-To: <4B167B4B.3010804@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4B263E6A.7040104@domain.hid>
+	<1260871765.2216.102.camel@domain.hid>
+In-Reply-To: <1260871765.2216.102.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Realtime gettimeofday()
+Subject: Re: [Xenomai-core] Build tests.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,33 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Wolfgang Mauerer <wm@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Alexis Berlemont <alexis.berlemont@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Why? It delivers us the core mechanism we need for the rest as well -
->> and it does not require fancy I-pipe hooks.
+Philippe Gerum wrote:
+> On Mon, 2009-12-14 at 14:32 +0100, Gilles Chanteperdrix wrote:
+>> Hi,
+>>
+>> I am working on automated build tests of several configurations of
+>> Xenomai head. While running them, I found a few issues, and would need
+>> acks, since it is in parts others maintain.
+>>
+>> Alex: https://mail.gna.org/public/xenomai-git/2009-12/msg00112.html
+>>
+>> Wolfgang: https://mail.gna.org/public/xenomai-git/2009-12/msg00113.html
+>>
+>> Anyone: https://mail.gna.org/public/xenomai-git/2009-12/msg00114.html
+>>
+>> Philippe (check powerpc 2.4):
+>> https://mail.gna.org/public/xenomai-git/2009-12/msg00115.html
+>>
 > 
-> Because relying on the vdso/vsyscall only works on x86. Whereas
-> implementing clock slew down/acceleration at nucleus level and simply
-> sharing data between kernel and user through the the global sem heap,
-> works for all architectures.
+> We have to include asm/mmu.h to get phys_addr_t defined.
+> The default declaration of this type for pre-2.6.28 kernels breaks
+> 2.6.20. Better rely on phys_addr_t being defined in linux/types.h, or
+> specifically in our wrappers for older kernels. What a mess.
+> 
+> Tested here on blackfin 2.6.3x, x86* 2.6.27-2.6.30, nios2 2.6.3x, ppc
+> 2.4.x, 2.6.20, 2.6.3x. You may want to check this against ARM as well.
 
-There are three kind of archs:
- - those that already support vgettimeofday & friends (x86, powerpc,
-   maybe more)
- - those that do not yet though they could (I strongly suspect arm falls
-   into this category as well)
- - those that never will (due to lacking user-readable time sources)
+Ok. Tested in the last run (same address as usual,
+http://sisyphus.hd.free.fr/~gilles/bx), and no more traces of
+phys_addr_t. The patch is in my repository.
 
-We need temporary/permanent i-pipe workarounds for the last two, but I
-see no point in complicating the first category. This design aims at a
-longer term.
-
-Jan
+However, we have two more issues:
+- a section mismatch issue with analogy which appears in the pasemi
+compilations (I guess the issues is there on all platforms, but only
+pasemi has the proper debugging option enabled)
+- missing PCI ids in the RTCAN drivers when building for ppc with linux
+2.6.20.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
