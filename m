@@ -1,11 +1,16 @@
-Message-ID: <4B27C3E2.7090902@domain.hid>
-Date: Tue, 15 Dec 2009 18:14:10 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4B253028.10607@domain.hid>
+References: <4B240D0B.50603@domain.hid>
+	<1260723757.2216.2.camel@domain.hid>
+	<4B252909.9090304@domain.hid>
+	<1260727502.2216.19.camel@domain.hid> <4B253028.10607@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 16 Dec 2009 12:26:09 +0100
+Message-ID: <1260962769.2216.203.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [pull request extension #2] x86-64: Fix scheduling
-	over irq stack
+Subject: Re: [Adeos-main] [pull request] x86: critical fix for
+ native_safe_halt
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -14,74 +19,76 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: adeos-main <adeos-main@gna.org>
 
-That was obviously the major CONFIG_PREEMPT bug for x86-64. My test VM
-is running now without problems, also in SMP mode, and the fix makes
-sense /wrt the traces I got. Uff, that was hard...
+On Sun, 2009-12-13 at 19:19 +0100, Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> > On Sun, 2009-12-13 at 18:48 +0100, Jan Kiszka wrote:
+> >> Philippe Gerum wrote:
+> >>> On Sat, 2009-12-12 at 22:37 +0100, Jan Kiszka wrote:
+> >>>> Recent moving of ipipe_suspend_domain finally exposed a deeper flaw in
+> >>>> cpu_idle on x86: We failed to check the pipeline log before issuing the
+> >>>> real hlt. This caused IRQ latencies or even drops for Linux,
+> >>>> specifically on SMP. Credits go to plain QEMU whose slow SMP mode caused
+> >>>> ipipe_critical_enter to deadlock frequently enough.
+> >>>>
+> >>>> The first patch of this series fixes this (see below), the second one
+> >>>> simply removes the two useless ipipe_suspend_domain calls.
+> >>>>
+> >>> What your patch does as well, is killing the ability to run low priority
+> >>> domains below the root level.
+> >> Yes, I'm killing the dream.
+> >>
+> >> I heavily doubt that the functions I removed in the second patch ever
+> >> contributed something good to this. It's always the job of the lowest
+> >> domain to issue hardware halt, not of some arbitrary mid-prio domain.
+
+Actually, no it's not. You may use a low-priority domain to run idle
+level jobs outside of the linux infrastructure for that purpose (e.g.
+RCU). A high priority domain may want to post events for a low priority
+domain to act upon when a mid priority domain is about to enter the CPU
+idle state.
+
+> >> Moreover, what would be the practical use for such model in the context
+> >> of Linux?
+> > 
+> > That is _not_ the point. The point is, when submitting a patch, please
+> > make sure to raise all the concerns it might introduce wrt to changing
+> > the base features. I'm not opposed to make the feature set evolve, but I
+> > don't want this to happen "by mistake".
+> 
+> Just pushed
+> 
+> "x86: Drop redundant ipipe_suspend_domain from cpu_idle
+> 
+> Allowing domains below root always required more than these calls (Linux
+> would have to give up idle management). And syncing the root domain now
+> takes place in __ipipe_halt_root. So remove these suspension calls."
+> 
+> as commit message for the second patch. Is that what you are looking for?
+> 
+
+Not exactly, because your comment states that what was removed was
+intrinsically useless, it was not, and has been used, even if only in a
+couple of occasions, mainly to enable a debugging hack. This is why I
+choked on removing a feature silently. But at the same time, we are in a
+simplification trend of the I-pipe toward X3, so I agree on the final
+goal you are pursuing with that patch.
+
+In short, let's move on, I'll merge that as well, now that everything is
+on the table, and there is no objection anyway.
+
+> Jan
+> 
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
 
 
-The following changes since commit 5f0fb9e88fd1ece94e6391971d5e4e9fc6b9ab9d:
-  Philippe Gerum (1):
-        Merge branch 'ipipe-2.6.31-noarch' into ipipe-2.6.31-x86
-
-are available in the git repository at:
-
-  git://git.kiszka.org/ipipe-2.6 queues/2.6.31-x86
-
-Jan Kiszka (4):
-      x86: Properly virtualize native_safe_halt
-      x86: Drop redundant ipipe_suspend_domain from cpu_idle
-      x86-64: Make stack switch in call_softirq atomic
-      x86-64: Avoid calling preempt_schedule_irq over the irq stack
-
- arch/x86/include/asm/ipipe_base.h |    2 ++
- arch/x86/include/asm/irqflags.h   |   10 +++++++---
- arch/x86/kernel/entry_64.S        |   12 ++++++++++++
- arch/x86/kernel/ipipe.c           |   23 +++++++++++++++++++++++
- arch/x86/kernel/process_32.c      |    2 --
- arch/x86/kernel/process_64.c      |    3 ---
- 6 files changed, 44 insertions(+), 8 deletions(-)
-
--------
-
-x86-64: Avoid calling preempt_schedule_irq over the irq stack
-
-A subtle race existed between call_softirq and __do_softirq on the one
-side and the preempt_schedule_irq invocation on the other:
-
-If we preempted the stack switch of call_softirq while the preemption
-counter was not properly set, we ended up scheduling out the interrupt
-stack. And that caused severe corruptions when the stack was reused
-before we returned.
-
-Fix it by catching this case based on irq_count.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
- arch/x86/kernel/entry_64.S |    8 ++++++++
- 1 files changed, 8 insertions(+), 0 deletions(-)
-
-diff --git a/arch/x86/kernel/entry_64.S b/arch/x86/kernel/entry_64.S
-index 5237029..57798d5 100644
---- a/arch/x86/kernel/entry_64.S
-+++ b/arch/x86/kernel/entry_64.S
-@@ -1011,6 +1011,14 @@ ENTRY(retint_kernel)
- 	jnc  retint_restore_args
- 	bt   $9,EFLAGS-ARGOFFSET(%rsp)	/* interrupts off? */
- 	jnc  retint_restore_args
-+#ifdef CONFIG_IPIPE
-+	/*
-+	 * We may have preempted call_softirq before __do_softirq raised or
-+	 * after it lowered the preemption counter.
-+	 */
-+	cmpl $0,PER_CPU_VAR(irq_count)
-+	jge  retint_restore_args
-+#endif
- 	PREEMPT_SCHEDULE_IRQ
- 	jmp exit_intr
- #endif
 -- 
-1.6.0.2
+Philippe.
+
+
 
