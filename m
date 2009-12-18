@@ -1,15 +1,16 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4B28AE06.5070503@domain.hid>
-References: <4B1CCE12.4080106@domain.hid>
-	<1260896063.2216.172.camel@domain.hid>
-	<4B28AE06.5070503@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 18 Dec 2009 19:18:59 +0100
-Message-ID: <1261160339.2216.623.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Fwd: Re: [Xenomai-help] How to fix t_delete
- call in psos skin?]
+Mime-Version: 1.0 (Apple Message framework v1077)
+Content-Type: text/plain; charset=us-ascii
+From: Stefan Schaal <sschaal@domain.hid>
+In-Reply-To: <4AE9E5AC.7050401@domain.hid>
+Date: Fri, 18 Dec 2009 13:10:42 -0800
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <1F6D4575-0CF0-49E6-A7ED-1A045BE8D5B4@domain.hid>
+References: <1B242B31-29DB-4363-8B08-8E77B2928C34@domain.hid>
+	<4AE9A1DB.1060506@domain.hid>
+	<67A93E2E-3273-45B0-ACCE-9FC7A104F9A5@domain.hid>
+	<FF6D4747-95BE-4B18-8B77-864B7DA5EAEF@usc.edu>
+	<4AE9E5AC.7050401@domain.hid>
+Subject: [Xenomai-core] digital I/O with analgoy using ni_pcmcia
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,91 +19,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Fabrice Gasnier <fabrice.gasnier@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Jonas Buchli <jonas@domain.hid>, Peter Pastor Sampedro <pastorsa@domain.hid>, Ludovic Righetti <ludovic.righetti@domain.hid>
 
-On Wed, 2009-12-16 at 10:53 +0100, Fabrice Gasnier wrote:
-> Hello,
-> Please find attached a new patch that should take your latest remarks 
-> into account.
+Hi everybody,
 
-Merged, thanks.
+  we have an NI6259 board working xenomai 2.5, using the analogy APIs. =
+Read/write to analog channels is quite straightforward and can be =
+inferred from the cmd_read and cmd_write source code. Now I would also =
+like to use the digital I/O of this board (e.g., the 32 digital I/O =
+lines). In Comedi, there are functions to set the DIO lines to =
+input/output mode (comedi_dio_config), and then functions to read/write, =
+like comedi_dio_read and comedi_dio_write. Does xenomai/analogy already =
+have similar functionality?
 
-> Regards,
-> 
-> Fabrice.
-> 
-> > On Mon, 2009-12-07 at 10:42 +0100, Fabrice Gasnier wrote:
-> >   
-> >> Hello,
-> >>
-> >> I come back to you to submit a slightly different patch.
-> >> I observed that __psos_t_delete sometimes returns ERR_OBJID after 
-> >> pthread_cancel has been issued, due to thread isn't found on kernel side.
-> >> The attached patch uses the same mechanism as in native API 
-> >> (rt_task_delete) where equivalent error is being filtered.
-> >>
-> >>     
-> >
-> > Correct.
-> >
-> >   
-> >> Please find attached this patch (formated with git format-patch origin).
-> >>
-> >> If it's looks like ok on your side, do you think this patch can be 
-> >> integrated in xenomai project?
-> >>
-> >>     
-> >
-> > Yes, this patch makes sense. Time for nitpicking now:
-> >
-> >
-> > +	#ifdef CONFIG_XENO_OPT_PERVASIVE
-> > +    u_long pthread; /* hidden pthread_t identifier. */
-> > +	#endif
-> > +
-> >
-> > Preprocessor statements should start at column 1.
-> >
-> > +	if (!__xn_access_ok(curr, VERIFY_READ, bulk.a1, sizeof(name))) {
-> > +		return -EFAULT;
-> > +	}
-> >
-> > Single executable statement in conditional needs no braces.
-> >
-> > @@ -99,7 +107,10 @@ static int __t_create(struct task_struct *curr,
-> > struct pt_regs *regs)
-> >  		 * about the new thread id, so we can manipulate its
-> >  		 * TCB pointer freely. */
-> >  		tid = xnthread_handle(&task->threadbase);
-> > -		__xn_copy_to_user(curr, (void __user *)__xn_reg_arg4(regs), &tid,
-> > +		#ifdef CONFIG_XENO_OPT_PERVASIVE
-> > +		task->pthread = bulk.a5; /* hidden pthread_t identifier. */
-> > +		#endif
-> >
-> > Same as above regarding the indentation, but most importantly, testing
-> > CONFIG_OPT_XENO_PERVASIVE is redundant, since this file is only compiled
-> > when in pervasive mode.
-> >
-> > +		#ifdef CONFIG_XENO_OPT_PERVASIVE
-> > +		pthread = task->pthread; /* hidden pthread_t identifier. */
-> > +		#endif
-> >
-> > Same as above.
-> >
-> > Additionally, please make sure to prefix the commit message with the
-> > sub-system impacted, i.e. psos in this case, and be more descriptive
-> > regarding to the fix involved.
-> >
-> > E.g.
-> > git commit -a -m "psos: send pthread_cancel() upon t_delete"
-> >
-> >
-> >   
+Thanks a lot,
 
-
--- 
-Philippe.
-
-
+-Stefan=
 
