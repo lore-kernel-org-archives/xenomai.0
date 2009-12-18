@@ -1,13 +1,10 @@
-Date: Thu, 17 Dec 2009 09:28:43 +0100
-From: Petr Cervenka <grugh@domain.hid>
-References: <1260281665.792922.9257.nullmailer@domain.hid>	<4B1E6B1B.5080306@domain.hid>	<1260370202.738468.27358.nullmailer@domain.hid>	<4B1FEC63.9070100@domain.hid>	<1260439679.561436.26932.nullmailer@domain.hid>	<4B20E2D7.8060103@domain.hid>
-	<4B241D1B.1030002@domain.hid> <4B27C8B0.3030902@domain.hid>
-In-Reply-To: <4B27C8B0.3030902@domain.hid>
+Message-ID: <4B2B3DC0.3000804@domain.hid>
+Date: Fri, 18 Dec 2009 03:30:56 -0500
+From: Josh Bowman <jbowman@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Message-Id: <1261038523.290410.13204.nullmailer@domain.hid>
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] xenomai 2.4.10 - invalid opcode: 0000
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Linux-Xenomai Priority Coupling and T_RPIOFF
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,41 +14,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-
-Jan Kiszka wrote:
->Jan Kiszka wrote:
->> Jan Kiszka wrote:
->>> ...
->>> Reproducible with your .config under kvm, will investigate later.
->>>
->>=20
->> It looks like we have a problem with CONFIG_PREEMPT on x86-SMP at the
->> moment (2.6.30&.31, maybe also older kernels). You may try with
->> CONFIG_PREEMPT_VOLUNTARY/NONE, but I can't promise that this heals the
->> issue, maybe it just makes it far less probable.
->>=20
->> The corruption is easy to reproduce - but always at different spots,
->> thus it's very hard to catch. Still investigating.
->>=20
->
->I think I found all gremlins, the last one [1] was probably the major
->contributor. Could you try if the patches in [2] help you? Works for me
->so far.
->
->Jan
->
->[1]http://permalink.gmane.org/gmane.linux.kernel.adeos.general/1491
->[2]http://git.kiszka.org/?p=3Dipipe-2.6.git;a=3Dshortlog;h=3Drefs/heads/=
-queues/2.6.31-x86
->
-CONFIG_PREEMPT_NONE seems to be stable for our PC.
-I also applied all patches after "ipipe-2.6.31.1-x86-2.4-08" and switched=
- back to CONFIG_PREEMPT and it is also stable.
-
-Thank you very much for your help and Merry X-Mas.
-
-Petr
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+Hi,<br>
+<br>
+I'm trying to turn off the "priority coupling" feature for a specific
+Xenomai task in our application. (The task in question is a
+communications thread, and the only time it goes into secondary mode is
+when it calls read() or write() on a TCP socket. At that time, it will <i>not</i>
+be holding the RT_MUTEX that protects the data it shares with the other
+xenomai tasks, so it should not impact the scheduling of the other real
+time tasks in the system.&nbsp; But giving Linux a real time priority could
+starve out other equal- and lower-priority real time tasks in the
+system.)<br>
+<br>
+Anyway, turning off the CONFIG_XENO_OPT_PRIOCPL kernel option works
+fine, and seems to do want I want. But there's a note in the config
+documentation that says I should be able to leave that option On, and
+just turn off priority coupling for a specific task at runtime.&nbsp;
+According to the API docs, it seems I should be able to write:<br>
+<br>
+<tt>&nbsp;&nbsp;&nbsp; int prevMode = 0;<br>
+&nbsp;&nbsp;&nbsp; int err = rt_task_set_mode( 0, T_RPIOFF, &amp;prevMode );</tt><br>
+<br>
+from the context of the xenomai task.&nbsp; (I've also tried passing 0
+instead of &amp;prevMode.)&nbsp; Either way, it always seems to return
+-EINVAL (meaning "either <em>setmask</em> or <em>clrmask</em>
+specifies invalid bits.")<br>
+<br>
+So I have two questions:<br>
+1.&nbsp; Is there a bug here, or am I misreading the docs? How do I turn off
+priority coupling at runtime?<br>
+2.&nbsp; Is there any reason I would want to leave CONFIG_XENO_OPT_PRIOCPL
+enabled?<br>
+<br>
+I'm using Xenomai 2.4.10 on x86 with Linux 2.6.28.9 and ipipe
+2.6.28.9-x86-2.2-07.&nbsp; (I've also tested with Linux 2.6.30.8 and ipipe
+2.6.30.8-x86-2.4-06, with the same result.)<br>
+<br>
+Thanks for your help,<br>
+Josh<br>
+</body>
+</html>
 
