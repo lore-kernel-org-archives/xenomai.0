@@ -1,10 +1,12 @@
-Message-ID: <4B2E043F.6080801@domain.hid>
-Date: Sun, 20 Dec 2009 12:02:23 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4B2EB7DA.7020709@domain.hid>
+Date: Mon, 21 Dec 2009 00:48:42 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] build tests pull request.
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig67C42982A2E6D5A7149CB041"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Remove outdated x86 adeos patches
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,54 +15,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai core <Xenomai-core@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-The following changes since commit e467b58dadfbb83adc41cdb79344412bf4f4b0ec:
-  Philippe Gerum (1):
-        blackfin: fix reference commit numbers
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig67C42982A2E6D5A7149CB041
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-are available in the git repository at:
+Hi Philippe,
 
-  git://git.xenomai.org/xenomai-gch.git for-head
+as adeos-ipipe-2.4.35.5-i386-1.3-05.patch and
+adeos-ipipe-2.6.29.5-x86-2.4-02.patch are no longer up to date /wrt to
+latest i-pipe fixes, I would suggest to remove them for 2.5-final.
+Avoids that people trap into known issues.
 
-Alexis Berlemont (1):
-      analogy: do not export static variables
+Jan
 
-Gilles Chanteperdrix (9):
-      nmi: fix build for linux 2.4
-      analogy: fix build for 2.4 kernel
-      rtcan: make rtcan pci board depend on CONFIG_PCI
-      posix: add missing space to Config.in
-      xconfig 2.4: make xconfig work again with linux 2.4
-      build: fix prepare-kernel.sh
-      drivers: add a pci_ids.h driver
-      x86: use the new pci_ids header for the smi module
-      rtcan: use the new pci_ids header for pci rtcan drivers
 
-Philippe Gerum (1):
-      wrappers: fix definition of phys_addr_t
+--------------enig67C42982A2E6D5A7149CB041
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
- include/asm-generic/Makefile.am                  |    1 +
- include/asm-generic/pci_ids.h                    |   25 ++++++++++++++++++++++
- include/asm-generic/wrappers.h                   |    6 -----
- include/asm-powerpc/wrappers.h                   |    4 +++
- include/asm-x86/wrappers_32.h                    |    4 +++
- ksrc/arch/x86/nmi.c                              |    8 +++++++
- ksrc/arch/x86/smi.c                              |   12 +---------
- ksrc/drivers/analogy/intel/Config.in             |    2 +-
- ksrc/drivers/analogy/intel/Makefile              |    6 +++-
- ksrc/drivers/analogy/national_instruments/mite.c |    1 -
- ksrc/drivers/can/sja1000/Kconfig                 |   10 ++++----
- ksrc/drivers/can/sja1000/rtcan_ems_pci.c         |    1 +
- ksrc/drivers/can/sja1000/rtcan_esd_pci.c         |    1 +
- ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c       |    1 +
- ksrc/drivers/can/sja1000/rtcan_peak_pci.c        |    1 +
- ksrc/drivers/testing/Config.in                   |    4 +-
- ksrc/skins/posix/Config.in                       |    2 +-
- scripts/prepare-kernel.sh                        |    3 +-
- 18 files changed, 62 insertions(+), 30 deletions(-)
- create mode 100644 include/asm-generic/pci_ids.h
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
--- 
-					    Gilles.
+iEYEARECAAYFAksut+kACgkQitSsb3rl5xTtaACfb2x/zw2bbLlFuMpfkfu4GgXx
+378AnAqj6ajHJH2akyAR7y7hR5nL93vK
+=ED9y
+-----END PGP SIGNATURE-----
+
+--------------enig67C42982A2E6D5A7149CB041--
 
