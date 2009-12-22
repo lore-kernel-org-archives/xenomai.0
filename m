@@ -1,12 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4B309A29.6030405@domain.hid>
-References: <4B309A29.6030405@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 22 Dec 2009 11:43:11 +0100
-Message-ID: <1261478591.19080.133.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Build tests: analogy, blackfin, rtcan and nios2.
+Message-ID: <4B30AD3E.5020900@domain.hid>
+Date: Tue, 22 Dec 2009 12:27:58 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <mailman.20465.1261407746.2717.xenomai-git@xenomai.org>
+	<4B2FAA92.2040606@domain.hid> <4B3019A8.2030501@domain.hid>
+In-Reply-To: <4B3019A8.2030501@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig30D40B560E2766C3BFDC2B62"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] Xenomai-git Digest, Vol 9, Issue 40
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,65 +21,83 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-On Tue, 2009-12-22 at 11:06 +0100, Gilles Chanteperdrix wrote:
-> Hi,
-> 
-> Since I started talking about it, I have run build tests fixing a few
-> things here and there. The current status is this (still at the same
-> place: http://sisyphus.hd.free.fr/~gilles/bx):
-> 
-> * analogy: I have tried to disable some parts of analogy when compiling
-> on machines without CONFIG_PCI, as compiling parts using PCI on a
-> machine without PCI support, give various levels of warning and even
-> errors depending on the architecture. Doing this, I stumbled across this
-> compilation error:
-> http://sisyphus.hd.free.fr/~gilles/bx/beagle/2.6.28-arm-none-linux-gnueabi-gcc-4.3.3/log.html#1
-> this is with CONFIG_NI_MIO, but without CONFIG_NI_MITE.
-> 
-> So, Alex, could you:
-> - fix that error, if this combination is supposed to make sense
-> - fix the Kconfig/Makefile so that no PCI code is compiled if CONFIG_PCI
-> is not set (I tried and do this myself, but better one who knows than
-> 100 who have to search...). As I said, doing this result in various
-> levels of success depending on the architecture.
-> 
-> * blackfin: I finally compiled blackfin!
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig30D40B560E2766C3BFDC2B62
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Good. So now you can try fixing the climate.
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> xenomai-git-request@domain.hid wrote:
+>>> Date: Mon, 21 Dec 2009 16:04:33 +0100
+>>> From: GIT version control <git@domain.hid>
+>>> Subject: [Xenomai-git] Gilles Chanteperdrix : rtcan: use the new
+>>> 	pci_ids	header for pci rtcan drivers
+>>> To: xenomai-git@xenomai.org
+>>> Message-ID: <E1NMjoH-0003St-31@domain.hid>
+>>> Content-Type: text/plain; charset=3DUTF-8
+>>>
+>>> Module: xenomai-head
+>>> Branch: master
+>>> Commit: 5662ced95f1f51dbf4285d5ff5a6da84cc74af83
+>>> URL:    http://git.xenomai.org/?p=3Dxenomai-head.git;a=3Dcommit;h=3D5=
+662ced95f1f51dbf4285d5ff5a6da84cc74af83
+>>>
+>>> Author: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>>> Date:   Sun Dec 20 02:43:36 2009 +0100
+>>>
+>>> rtcan: use the new pci_ids header for pci rtcan drivers
+>>>
+>>> ---
+>>>
+>>>  ksrc/drivers/can/sja1000/rtcan_ems_pci.c   |    1 +
+>>>  ksrc/drivers/can/sja1000/rtcan_esd_pci.c   |    1 +
+>>>  ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c |    1 +
+>>>  ksrc/drivers/can/sja1000/rtcan_peak_pci.c  |    1 +
+>>>  4 files changed, 4 insertions(+), 0 deletions(-)
+>>>
+>>> diff --git a/ksrc/drivers/can/sja1000/rtcan_ems_pci.c b/ksrc/drivers/=
+can/sja1000/rtcan_ems_pci.c
+>>> index f69b5b8..a0921b4 100644
+>>> --- a/ksrc/drivers/can/sja1000/rtcan_ems_pci.c
+>>> +++ b/ksrc/drivers/can/sja1000/rtcan_ems_pci.c
+>>> @@ -23,6 +23,7 @@
+>>>  #include <linux/delay.h>
+>>>  #include <linux/pci.h>
+>>>  #include <asm/io.h>
+>>> +#include <asm-generic/xenomai/pci_ids.h>
+>> Is there any prerequisite for including this header? If not, can't we
+>> drag it in via Xenomai's rtdm_driver.h? That avoids diverging too much=
 
->  had to build a toolchain for
-> that as the binary-only toolchain from analog.com uses glibc 2.8 and
-> mine is 2.7. However, blackfin does not compile very well, as can be
-> seen by the log:
-> http://sisyphus.hd.free.fr/~gilles/bx/bf537-stamp/2.6.30-bfin-uclinux-gcc-4.1.2/log.html#1
-> It may happen that my toolchain is buggy or outdated though.
+>> from the "only Linux or RTDM" rule in our drivers.
+>=20
+> I understand, RTcan would not compile with RTAI. This header is also
 
-4.1.2 might still have the mcount prologue issue, so no tracer, but
-aside of this, it seems ok here.
+Right (though I was more concerned about native RTDM :) ).
 
-I've just pushed fixes for the NMI braindamage for blackfin.
+> used by the smi module, which is not an RTDM module, that said we can
+> include it through RTDM for RTDM drivers, and smi module would include
+> it directly.
+>=20
 
-> 
-> * rtcan: on blackfin we seem to have a conflict with rtcan.
-> The warning is about CAN_ERR_MASK, sure blackfin is a bit strange to
-> define this in core headers which are included everywhere. This said,
-> not prefixing a Xenomai symbol with something like XN seems to be asking
-> for trouble. Wolfgang, do you think it would be possible to rename the
-> symbols with such prefix? Or do you share some code with socket-can that
-> you do not want to touch?
-> 
-> * nios2: I am lacking some important file needed to even start to compile.
-> 
+Great, TIA.
 
-I'm on this.
-
-> Thanks in advance for your efforts.
-> Regards.
-> 
+Jan
 
 
--- 
-Philippe.
+--------------enig30D40B560E2766C3BFDC2B62
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
+iEYEARECAAYFAkswrT8ACgkQitSsb3rl5xTAggCdEGqiIFPHYfH4p2zLaW4iZBm/
+RXMAnA3nPnprGw8G4ygWGYeZVtJcjNcp
+=UTPR
+-----END PGP SIGNATURE-----
+
+--------------enig30D40B560E2766C3BFDC2B62--
 
