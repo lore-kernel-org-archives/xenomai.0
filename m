@@ -1,15 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4B2FFF5F.60706@domain.hid>
-References: <4B2EB7DA.7020709@domain.hid> <4B2EBA98.5060002@domain.hid>
-	<4B2F3898.2060900@domain.hid>
-	<1261436483.19080.124.camel@domain.hid>
-	<4B2FFF5F.60706@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 22 Dec 2009 11:00:59 +0100
-Message-ID: <1261476059.19080.125.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4B309A29.6030405@domain.hid>
+Date: Tue, 22 Dec 2009 11:06:33 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Remove outdated x86 adeos patches
+Subject: [Xenomai-core] Build tests: analogy, blackfin, rtcan and nios2.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,52 +13,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Xenomai core <Xenomai-core@domain.hid>
 
-On Tue, 2009-12-22 at 00:06 +0100, Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
-> > On Mon, 2009-12-21 at 09:58 +0100, Jan Kiszka wrote:
-> >> Gilles Chanteperdrix wrote:
-> >>> Jan Kiszka wrote:
-> >>>> Hi Philippe,
-> >>>>
-> >>>> as adeos-ipipe-2.4.35.5-i386-1.3-05.patch and
-> >>>> adeos-ipipe-2.6.29.5-x86-2.4-02.patch are no longer up to date /wrt to
-> >>>> latest i-pipe fixes, I would suggest to remove them for 2.5-final.
-> >>>> Avoids that people trap into known issues.
-> >>> What latest fixes? Are they expected to oops or something?
-> >> 2.6.29 on x86-64: definitely (irq stack corruption). 32 bits and 2.4.35
-> >> are lacking the halt fix (I bet other arch beyond x86 that use a
-> >> hlt-like idle do so as well). It's not that they aren't fixable, it's
-> >> just the question if we should bother anymore.
-> >>
-> > 
-> > Ack.
-> > 
-> > I don't even know whether anybody ever tried to run Xenomai over 2.4/x86
-> > anyway, and I don't think this would ever make sense to do so today, so
-> > 2.4.35 will be removed.
-> > 
-> > 2.6.29.4 will go away as well, since 2.6.30.8 and 2.6.31.1 have been
-> > fixed, and hopefully, 2.6.33/86 will be supported in a foreseeable
-> > future.
-> > 
-> > In any case, the README in the patches/ directory clearly states 
-> > that adventurous people may try other options available from
-> > http://download.gna.org/adeos/patches/
-> 
-> Ok. However, if we want to check that Xenomai 2.5 still compiles with
-> linux 2.4 base patches, can we keep at least one 2.4 patch in the
-> repository?
 
-2.4.25-ppc is here to stay.
+Hi,
 
-> 
+Since I started talking about it, I have run build tests fixing a few
+things here and there. The current status is this (still at the same
+place: http://sisyphus.hd.free.fr/~gilles/bx):
 
+* analogy: I have tried to disable some parts of analogy when compiling
+on machines without CONFIG_PCI, as compiling parts using PCI on a
+machine without PCI support, give various levels of warning and even
+errors depending on the architecture. Doing this, I stumbled across this
+compilation error:
+http://sisyphus.hd.free.fr/~gilles/bx/beagle/2.6.28-arm-none-linux-gnueabi-gcc-4.3.3/log.html#1
+this is with CONFIG_NI_MIO, but without CONFIG_NI_MITE.
+
+So, Alex, could you:
+- fix that error, if this combination is supposed to make sense
+- fix the Kconfig/Makefile so that no PCI code is compiled if CONFIG_PCI
+is not set (I tried and do this myself, but better one who knows than
+100 who have to search...). As I said, doing this result in various
+levels of success depending on the architecture.
+
+* blackfin: I finally compiled blackfin! had to build a toolchain for
+that as the binary-only toolchain from analog.com uses glibc 2.8 and
+mine is 2.7. However, blackfin does not compile very well, as can be
+seen by the log:
+http://sisyphus.hd.free.fr/~gilles/bx/bf537-stamp/2.6.30-bfin-uclinux-gcc-4.1.2/log.html#1
+It may happen that my toolchain is buggy or outdated though.
+
+* rtcan: on blackfin we seem to have a conflict with rtcan.
+The warning is about CAN_ERR_MASK, sure blackfin is a bit strange to
+define this in core headers which are included everywhere. This said,
+not prefixing a Xenomai symbol with something like XN seems to be asking
+for trouble. Wolfgang, do you think it would be possible to rename the
+symbols with such prefix? Or do you share some code with socket-can that
+you do not want to touch?
+
+* nios2: I am lacking some important file needed to even start to compile.
+
+Thanks in advance for your efforts.
+Regards.
 
 -- 
-Philippe.
-
-
+					    Gilles.
 
