@@ -1,12 +1,15 @@
-Message-ID: <4B30C544.2020202@domain.hid>
-Date: Tue, 22 Dec 2009 14:10:28 +0100
-From: Patrice Kadionik <kadionik@domain.hid>
+Message-ID: <4B30C825.90509@domain.hid>
+Date: Tue, 22 Dec 2009 14:22:45 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B309A29.6030405@domain.hid>
-In-Reply-To: <4B309A29.6030405@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] Build tests: analogy, blackfin, rtcan and nios2.
+References: <1261411260-839-1-git-send-email-wolfgang.mauerer@domain.hid>
+	<4B30958D.6060108@domain.hid> <4B30B4D0.5010504@domain.hid>
+	<4B30BA01.7060402@domain.hid> <4B30C5C1.4080406@domain.hid>
+In-Reply-To: <4B30C5C1.4080406@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH] Add support for sharing kernel/userland
+ data	between Xenomai and Linux
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,85 +18,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai core <Xenomai-core@domain.hid>
+To: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+Cc: "Kiszka, Jan" <jan.kiszka@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Gilles,
+Wolfgang Mauerer wrote:
+> Gilles Chanteperdrix wrote:
+>> Wolfgang Mauerer wrote:
+>>>>> +enum xnshared_features {
+>>>>> +/*	XNSHARED_FEAT_A = 1,
+>>>>> +	XNSHARED_FEAT_B, */
+>>>>> +	XNSHARED_MAX_FEATURES,
+>>>>> +};
+>>>> Xenomai style is to use defines bit with the bit shifted directly, so,
+>>>> XNSHARED_FEAT_A would rather be 0x0000000000000001, and I am not sure an
+>>>> enum can be 64 bits.
+>>> oh yeah, enums are always ints, as a superficial look into the
+>>> ANSI standard tells me. Wasn't thinking about that. Using
+>>> your direct definition makes sense (although it's a bit
+>>> unlikely that there will ever be more than 2^32 shared
+>>> features...)
+>> Err, since features are bits, the limit is 32 features, not 2^32, and if
+>> we make the features member an unsigned long long in the first place, it
+>> is because we expect to be able to use the 64 bits, no?
+> 
+> Argl. Yes. /me realises that christmas holidays are severely required...
+>>>> Ok. There is a real question here. Whether we want to put this code in
+>>>> module.c or shadow.c. I have no definite answer. Arguments for each file:
+>>>>
+>>>> module.c: the shared area will be used for NTP by the clock/timer
+>>>> subsystem, so will be used in kernel-space, even without
+>>>> CONFIG_XENO_OPT_PERVASIVE.
+>>>>
+>>>> shadow.c: global shared heap is uncached on ARM, so, I am not sure we
+>>>> really want the timer/clock system to use the same area as user-space.
+>>>> So, we are probably better off using different copies of the same data
+>>>> in kernel-space and user-space (with a price of a copy every time the
+>>>> data change and CONFIG_XENO_OPT_PERVASIVE is enabled). This would allow
+>>>> us to move that code in shadow.c
+>>> Is there any compelling advantage for shadow.c? Using a copy operation
+>>> every time the data change seems a bit contrary to the reason for
+>>> the new mechanism in the first place, namely to have a light-weight
+>>> means of sharing data.
+>> The way I see it, the NTP data will be used by the nucleus clock and
+>> timer subsystem, so several times for each timer tick, so having them on
+>> an uncached memory will have a performance hit.
+>>
+>> The copy, on the other hand, would take place over a non real-time
+>> context, only once every update of NTP data, i.e. once every 10ms.
+> 
+>> So, let us move it to shadow.c.
+> 
+> I see your point, but it has the disadvantage that the time spent
+> in the Linux kernel for the copy operations in the vsyscall is
+> increased -- which might affect the Linux domain, since this is
+> an optimised hot path. Naturally, in the absence of any quantitative
+> measurements, this is all just speculation, but if access to the global
+> semaphore heap is unchached only on ARM, we provide an unnecessary
+> optimisation for n-1 out of n architectures supported by Xenomai.
+> 
+> Having the time-keeping code in the Xenomai kernel benefit from NTP
+> corrections provided by the Linux side is a bit separate from the
+> ABI change, which would be the same irregardless of whether we
+> use a second copy for kernel-side NTP operations or not.
 
-Gilles Chanteperdrix a =E9crit :
-> Hi,
->
-> Since I started talking about it, I have run build tests fixing a few
-> things here and there. The current status is this (still at the same
-> place: http://sisyphus.hd.free.fr/~gilles/bx):
->
-> * analogy: I have tried to disable some parts of analogy when compiling
-> on machines without CONFIG_PCI, as compiling parts using PCI on a
-> machine without PCI support, give various levels of warning and even
-> errors depending on the architecture. Doing this, I stumbled across thi=
-s
-> compilation error:
-> http://sisyphus.hd.free.fr/~gilles/bx/beagle/2.6.28-arm-none-linux-gnue=
-abi-gcc-4.3.3/log.html#1
-> this is with CONFIG_NI_MIO, but without CONFIG_NI_MITE.
->
-> So, Alex, could you:
-> - fix that error, if this combination is supposed to make sense
-> - fix the Kconfig/Makefile so that no PCI code is compiled if CONFIG_PC=
-I
-> is not set (I tried and do this myself, but better one who knows than
-> 100 who have to search...). As I said, doing this result in various
-> levels of success depending on the architecture.
->
-> * blackfin: I finally compiled blackfin! had to build a toolchain for
-> that as the binary-only toolchain from analog.com uses glibc 2.8 and
-> mine is 2.7. However, blackfin does not compile very well, as can be
-> seen by the log:
-> http://sisyphus.hd.free.fr/~gilles/bx/bf537-stamp/2.6.30-bfin-uclinux-g=
-cc-4.1.2/log.html#1
-> It may happen that my toolchain is buggy or outdated though.
->
-> * rtcan: on blackfin we seem to have a conflict with rtcan.
-> The warning is about CAN_ERR_MASK, sure blackfin is a bit strange to
-> define this in core headers which are included everywhere. This said,
-> not prefixing a Xenomai symbol with something like XN seems to be askin=
-g
-> for trouble. Wolfgang, do you think it would be possible to rename the
-> symbols with such prefix? Or do you share some code with socket-can tha=
-t
-> you do not want to touch?
->
-> * nios2: I am lacking some important file needed to even start to compi=
-le.
->
->  =20
-You may use this tutorial on how to use Xenomai on NIOS 2 softcore=20
-processor:=20
-http://uuu.enseirb.fr/~kadionik/nios-xenomai/Xenomai%20on%20NIOS%20II%20S=
-oftcore%20Processor.%20A%20step%20by%20step%20Guide.pdf
+Exactly, the issue are distinct, the ABI change is a pure user-space
+issue, so, should only be compiled if CONFIG_XENO_OPT_PERVASIVE is defined.
 
-Regards,
+ Would it
+> therefore make sense to restrict the data exchange to the global heap
+> semaphore, and add an architecture-specific hook for ARM
+> later on to generate an extra kernel space copy of the NTP data? The
+> Linux vsyscall time keeping information is architecture-specific, so
 
-Pat.
-> Thanks in advance for your efforts.
-> Regards.
->
->  =20
+No. We will make it generic. Nothing arch specific is needed. We will
+not copy the vsyscall time keeping information, we will copy the data
+passed to update_vsyscall, which are the same on all architectures.
+
+> arch specific hooks make sense in this area anyway. We could therefore
+> restrict the second copy to ARM without much effort. Or am I missing
+> something in your considerations?
+
+This xnvdso feature is needed for user-space only. Let us move it to
+shadow.c.
+
+>> The really really nice thing to do, would be a unit test which checks
+>> for a specific value of the ABI features. So, we can run
+>> "check_xeno_abi_features 0", to check that the thing actually works with
+>> release 2.5.0.
+> 
+> okay, so I'll make sure to have the userland bits ready in time
+> before the 2.5.0 release.
+
+You can implement the user-space part only in a unit test, if it is
+easier. All that I ask, is to be able to test that it works.
+
+> 
+> Cheers, Wolfgang
 
 
---=20
-Patrice Kadionik. F6KQH / F4CUQ
------------
-
-+----------------------------------------------------------------------+
-+"Tout doit etre aussi simple que possible, pas seulement plus simple" +
-+----------------------------------------------------------------------+
-+ Patrice Kadionik             http://www.enseirb.fr/~kadionik         +
-+ IMS Laboratory               http://www.ims-bordeaux.fr/             +
-+ ENSEIRB                      http://www.enseirb.fr                   +
-+ PO BOX 99                    fax   : +33 5.56.37.20.23               +
-+ 33402 TALENCE Cedex          voice : +33 5.56.84.23.47               +
-+ FRANCE                       mailto:patrice.kadionik@domain.hid +
-+----------------------------------------------------------------------+
-
-
+-- 
+					    Gilles.
 
