@@ -1,12 +1,14 @@
-Message-ID: <4B30B154.2010203@domain.hid>
-Date: Tue, 22 Dec 2009 12:45:24 +0100
+Message-ID: <4B30B231.3080705@domain.hid>
+Date: Tue, 22 Dec 2009 12:49:05 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B309A29.6030405@domain.hid> <4B30AF29.4050303@domain.hid>
-In-Reply-To: <4B30AF29.4050303@domain.hid>
+References: <1261411260-839-1-git-send-email-wolfgang.mauerer@domain.hid>
+	<4B30958D.6060108@domain.hid>
+In-Reply-To: <4B30958D.6060108@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Build tests: analogy, blackfin, rtcan and nios2.
+Subject: Re: [Xenomai-core] [PATCH] Add support for sharing kernel/userland
+ data	between Xenomai and Linux
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,27 +17,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>, Wolfgang Grandegger <wg@domain.hid>
+To: wolfgang.mauerer@domain.hid
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> * rtcan: on blackfin we seem to have a conflict with rtcan.
->> The warning is about CAN_ERR_MASK, sure blackfin is a bit strange to
->> define this in core headers which are included everywhere. This said,
->> not prefixing a Xenomai symbol with something like XN seems to be asking
->> for trouble. Wolfgang, do you think it would be possible to rename the
->> symbols with such prefix? Or do you share some code with socket-can that
->> you do not want to touch?
-> 
-> CAN_ERR_MASK is part of the Socket-CAN interface (include/linux/can.h),
-> it must not be called differently. Blackfin is obviously doing namespace
-> pollution which should be fixed upstream and meanwhile worked around in
-> Xenomai (e.g. via #undef CAN_ERR_MASK).
+Gilles Chanteperdrix wrote:
+> wolfgang.mauerer@domain.hid wrote:
+>> +/*
+>> + * We re-use the global semaphore heap to provide a multi-purpose shared
+>> + * memory area between Xenomai and Linux - for both kernel and userland
+>> + */
+>> +void __init xnheap_init_shared(void)
+>> +{
+>> +	xnshared = (struct xnshared *)xnheap_alloc(&__xnsys_global_ppd.sem_heap,
+>> +						  sizeof(struct xnshared));
 
-Ok. But according to the build logs, it is redefined in rtdm/rtcan.h.
-The error seems to have been fixed upstream, since we get this warning
-with 2.6.30 and not with 2.6.31.
+Also:
+
+Xenomai style: s/sizeof(struct xnshared)/sizeof(*xnshared)/
 
 -- 
 					    Gilles.
