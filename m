@@ -1,11 +1,12 @@
-Message-ID: <4B30B4D0.5010504@domain.hid>
-Date: Tue, 22 Dec 2009 13:00:16 +0100
-From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+Message-ID: <4B30BA01.7060402@domain.hid>
+Date: Tue, 22 Dec 2009 13:22:25 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1261411260-839-1-git-send-email-wolfgang.mauerer@domain.hid>
-	<4B30958D.6060108@domain.hid>
-In-Reply-To: <4B30958D.6060108@domain.hid>
-Content-Type: multipart/mixed; boundary="------------030207050002030608030800"
+	<4B30958D.6060108@domain.hid> <4B30B4D0.5010504@domain.hid>
+In-Reply-To: <4B30B4D0.5010504@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [PATCH] Add support for sharing kernel/userland
  data	between Xenomai and Linux
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -16,403 +17,111 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 Cc: "Kiszka, Jan" <jan.kiszka@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
---------------030207050002030608030800
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Wolfgang Mauerer wrote:
+>>> +enum xnshared_features {
+>>> +/*	XNSHARED_FEAT_A = 1,
+>>> +	XNSHARED_FEAT_B, */
+>>> +	XNSHARED_MAX_FEATURES,
+>>> +};
+>> Xenomai style is to use defines bit with the bit shifted directly, so,
+>> XNSHARED_FEAT_A would rather be 0x0000000000000001, and I am not sure an
+>> enum can be 64 bits.
+> 
+> oh yeah, enums are always ints, as a superficial look into the
+> ANSI standard tells me. Wasn't thinking about that. Using
+> your direct definition makes sense (although it's a bit
+> unlikely that there will ever be more than 2^32 shared
+> features...)
 
-Gilles Chanteperdrix wrote:
-> wolfgang.mauerer@domain.hid wrote:
->> From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+Err, since features are bits, the limit is 32 features, not 2^32, and if
+we make the features member an unsigned long long in the first place, it
+is because we expect to be able to use the 64 bits, no?
+
+>> Ok. There is a real question here. Whether we want to put this code in
+>> module.c or shadow.c. I have no definite answer. Arguments for each file:
 >>
->> A new structure (struct xnshared) is introduced. It allows us to share
->> generic data between user and kernel of Linux and Xenomai; a bitmap
->> of feature flags located at the beginning of the structure identifies
->> which data are shared. The structure is allocated in the global semaphore
->> heap, and xnsysinfo.xnshared_offset identifies the offset of the
->> structure within the heap.
+>> module.c: the shared area will be used for NTP by the clock/timer
+>> subsystem, so will be used in kernel-space, even without
+>> CONFIG_XENO_OPT_PERVASIVE.
 >>
->> Currently, no shared features are yet supported - the patch only
->> introduces the necessary ABI changes. When the need arises
->> to share data between said entities, the structure must
->> be accordingly extended, and a new feature bit must be added
->> to the flags.
+>> shadow.c: global shared heap is uncached on ARM, so, I am not sure we
+>> really want the timer/clock system to use the same area as user-space.
+>> So, we are probably better off using different copies of the same data
+>> in kernel-space and user-space (with a price of a copy every time the
+>> data change and CONFIG_XENO_OPT_PERVASIVE is enabled). This would allow
+>> us to move that code in shadow.c
 > 
-> Hi,
+> Is there any compelling advantage for shadow.c? Using a copy operation
+> every time the data change seems a bit contrary to the reason for
+> the new mechanism in the first place, namely to have a light-weight
+> means of sharing data.
+
+The way I see it, the NTP data will be used by the nucleus clock and
+timer subsystem, so several times for each timer tick, so having them on
+an uncached memory will have a performance hit.
+
+The copy, on the other hand, would take place over a non real-time
+context, only once every update of NTP data, i.e. once every 10ms.
+
+So, let us move it to shadow.c.
+
+>>>  	
+>>>  #ifdef __KERNEL__
+>>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
+>>> index 0c94a60..0373a8d 100644
+>>> --- a/ksrc/nucleus/shadow.c
+>>> +++ b/ksrc/nucleus/shadow.c
+>>> @@ -50,6 +50,7 @@
+>>>  #include <nucleus/trace.h>
+>>>  #include <nucleus/stat.h>
+>>>  #include <nucleus/sys_ppd.h>
+>>> +#include <nucleus/xnshared.h>
+>>>  #include <asm/xenomai/features.h>
+>>>  #include <asm/xenomai/syscall.h>
+>>>  #include <asm/xenomai/bits/shadow.h>
+>>> @@ -1746,6 +1747,9 @@ static int xnshadow_sys_info(struct pt_regs *regs)
+>>>  
+>>>  	info.cpufreq = xnarch_get_cpu_freq();
+>>>  
+>>> +	info.xnshared_offset =
+>>> +	  xnheap_mapped_offset(&xnsys_ppd_get(1)->sem_heap, xnshared);
+>>> +
+>>>  	return __xn_safe_copy_to_user((void __user *)infarg, &info, sizeof(info));
+>>>  }
+>>>  
+>> And the user-space part? It would be nice to at least define the
+>> structure in user-space and read the "features" member, to check that
+>> the inclusion of the nucleus/xnshared header works and that we read 0
+>> and there is no gag on all architectures
+
+We can not expect to read 0, since we want this user-space to continue
+working with later versions of the ABI. Actually, we can not expect
+features to be of an specific form (I was thinking (1 << max_bit) - 1,
+but it would mean that we can not remove feature bits).
+
 > 
-> it is nice that you proposed that patch, I wanted to do it, but did not
-> yet. Some comments however.
+> I haven't included the userland part on purpose because I wanted
+> to make sure that the ABI change is merged for 2.5 - all the rest
+> can be added later without problems. It will follow once I've
+> polished the code (if having the userland part should be
+> a prerequisite for merging the ABI change, I can try to speed
+> things up a bit; otherwise, I'd submit the userland read side
+> together with the NTP base mechanics).
 
-you're welcome ;-) I have some more patches pending that I have not
-sent yet because they need some polishing, so it might make
-sense to coordinate things first before you start to work on any of
-the issues.
+It would be embarassing (though unlikely) to think having changed the
+ABI, and finally find out, when we start to use it, that the ABI change
+does not work. So, please add the user-space code. So, that our run-time
+tests on various architectures can be used to check that the
+modification actually works.
 
-A patch including the changes you requested is attached.
-> 
-> First, I think xnshared/xnshared_offset is a bit of a long name. I was
-> thinking about xnvdso, but is is only slightly shorter. Any other idea,
-> anyone?
-we can use xnvdso and xnvdso_off to save a few chars, I don't have any
-real preferences wrt. naming.
-> 
->> Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
->> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->> ---
->>  include/asm-generic/syscall.h |    1 +
->>  include/nucleus/xnshared.h    |   33 +++++++++++++++++++++++++++++++++
->>  ksrc/nucleus/module.c         |   23 +++++++++++++++++++++++
->>  ksrc/nucleus/shadow.c         |    4 ++++
->>  4 files changed, 61 insertions(+), 0 deletions(-)
->>  create mode 100644 include/nucleus/xnshared.h
->>
->> diff --git a/include/asm-generic/syscall.h b/include/asm-generic/syscall.h
->> index 483b99f..7d68580 100644
->> --- a/include/asm-generic/syscall.h
->> +++ b/include/asm-generic/syscall.h
->> @@ -53,6 +53,7 @@
->>  typedef struct xnsysinfo {
->>  	unsigned long long cpufreq;	/* CPU frequency */
->>  	unsigned long tickval;		/* Tick duration (ns) */
->> +	unsigned long xnshared_offset;  /* Offset of xnshared in the sem heap */
->>  } xnsysinfo_t;
->>  
->>  #define SIGSHADOW  SIGWINCH
->> diff --git a/include/nucleus/xnshared.h b/include/nucleus/xnshared.h
->> new file mode 100644
->> index 0000000..4293cda
->> --- /dev/null
->> +++ b/include/nucleus/xnshared.h
->> @@ -0,0 +1,33 @@
->> +#ifndef XNSHARED_H
->> +#define XNSHARED_H
->> +
->> +/*
->> + * Data shared between Xenomai kernel/userland and the Linux kernel/userland
->> + * on the global semaphore heap. The features element indicates which data are
->> + * shared. Notice that xnshared may only grow, but never shrink.
->> + */
->> +struct xnshared {
->> +	unsigned long long features;
->> +
->> +	/* Embed domain specific structures that describe the
->> +	 * shared data here */
->> +};
->> +
->> +/*
->> + * For each shared feature, add a flag below. For now, it is still
->> + * empty.
->> + */
->> +enum xnshared_features {
->> +/*	XNSHARED_FEAT_A = 1,
->> +	XNSHARED_FEAT_B, */
->> +	XNSHARED_MAX_FEATURES,
->> +};
-> 
-> Xenomai style is to use defines bit with the bit shifted directly, so,
-> XNSHARED_FEAT_A would rather be 0x0000000000000001, and I am not sure an
-> enum can be 64 bits.
+The really really nice thing to do, would be a unit test which checks
+for a specific value of the ABI features. So, we can run
+"check_xeno_abi_features 0", to check that the thing actually works with
+release 2.5.0.
 
-oh yeah, enums are always ints, as a superficial look into the
-ANSI standard tells me. Wasn't thinking about that. Using
-your direct definition makes sense (although it's a bit
-unlikely that there will ever be more than 2^32 shared
-features...)
-> 
->> +
->> +extern struct xnshared *xnshared;
->> +
->> +static inline int xnshared_test_feature(enum xnshared_features feature)
->> +{
->> +	return xnshared && xnshared->features & (1 << feature);
->> +}
-> 
-> xnshared can not be null (you panic when allocation fails), and please
-> use testbits for this function.
-okay
-> 
->> +
->> +#endif
->> diff --git a/ksrc/nucleus/module.c b/ksrc/nucleus/module.c
->> index 5404182..3963fbd 100644
->> --- a/ksrc/nucleus/module.c
->> +++ b/ksrc/nucleus/module.c
->> @@ -34,6 +34,7 @@
->>  #include <nucleus/pipe.h>
->>  #endif /* CONFIG_XENO_OPT_PIPE */
->>  #include <nucleus/select.h>
->> +#include <nucleus/xnshared.h>
->>  #include <asm/xenomai/bits/init.h>
->>  
->>  MODULE_DESCRIPTION("Xenomai nucleus");
->> @@ -51,6 +52,9 @@ u_long xnmod_sysheap_size;
->>  
->>  int xeno_nucleus_status = -EINVAL;
->>  
->> +struct xnshared *xnshared;
->> +EXPORT_SYMBOL_GPL(xnshared);
->> +
->>  struct xnsys_ppd __xnsys_global_ppd;
->>  EXPORT_SYMBOL_GPL(__xnsys_global_ppd);
->>  
->> @@ -82,6 +86,23 @@ void xnmod_alloc_glinks(xnqueue_t *freehq)
->>  }
->>  EXPORT_SYMBOL_GPL(xnmod_alloc_glinks);
->>  
->> +/*
->> + * We re-use the global semaphore heap to provide a multi-purpose shared
->> + * memory area between Xenomai and Linux - for both kernel and userland
->> + */
->> +void __init xnheap_init_shared(void)
->> +{
->> +	xnshared = (struct xnshared *)xnheap_alloc(&__xnsys_global_ppd.sem_heap,
->> +						  sizeof(struct xnshared));
->> +
->> +	if (!xnshared)
->> +		xnpod_fatal("Xenomai: cannot allocate memory for xnshared!\n");
->> +
->> +	/* Currently, we don't support any sharing, but later versions will
->> +	 * add flags here */
->> +	xnshared->features = 0ULL;
->> +}
->> +
->>  int __init __xeno_sys_init(void)
->>  {
->>  	int ret;
->> @@ -106,6 +127,8 @@ int __init __xeno_sys_init(void)
->>  		goto cleanup_arch;
->>  
->>  	xnheap_set_label(&__xnsys_global_ppd.sem_heap, "global sem heap");
->> +
->> +	xnheap_init_shared();
->>  #endif
-> 
-> Ok. There is a real question here. Whether we want to put this code in
-> module.c or shadow.c. I have no definite answer. Arguments for each file:
-> 
-> module.c: the shared area will be used for NTP by the clock/timer
-> subsystem, so will be used in kernel-space, even without
-> CONFIG_XENO_OPT_PERVASIVE.
-> 
-> shadow.c: global shared heap is uncached on ARM, so, I am not sure we
-> really want the timer/clock system to use the same area as user-space.
-> So, we are probably better off using different copies of the same data
-> in kernel-space and user-space (with a price of a copy every time the
-> data change and CONFIG_XENO_OPT_PERVASIVE is enabled). This would allow
-> us to move that code in shadow.c
-
-Is there any compelling advantage for shadow.c? Using a copy operation
-every time the data change seems a bit contrary to the reason for
-the new mechanism in the first place, namely to have a light-weight
-means of sharing data.
-> 
->>  	
->>  #ifdef __KERNEL__
->> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
->> index 0c94a60..0373a8d 100644
->> --- a/ksrc/nucleus/shadow.c
->> +++ b/ksrc/nucleus/shadow.c
->> @@ -50,6 +50,7 @@
->>  #include <nucleus/trace.h>
->>  #include <nucleus/stat.h>
->>  #include <nucleus/sys_ppd.h>
->> +#include <nucleus/xnshared.h>
->>  #include <asm/xenomai/features.h>
->>  #include <asm/xenomai/syscall.h>
->>  #include <asm/xenomai/bits/shadow.h>
->> @@ -1746,6 +1747,9 @@ static int xnshadow_sys_info(struct pt_regs *regs)
->>  
->>  	info.cpufreq = xnarch_get_cpu_freq();
->>  
->> +	info.xnshared_offset =
->> +	  xnheap_mapped_offset(&xnsys_ppd_get(1)->sem_heap, xnshared);
->> +
->>  	return __xn_safe_copy_to_user((void __user *)infarg, &info, sizeof(info));
->>  }
->>  
-> 
-> And the user-space part? It would be nice to at least define the
-> structure in user-space and read the "features" member, to check that
-> the inclusion of the nucleus/xnshared header works and that we read 0
-> and there is no gag on all architectures
-
-I haven't included the userland part on purpose because I wanted
-to make sure that the ABI change is merged for 2.5 - all the rest
-can be added later without problems. It will follow once I've
-polished the code (if having the userland part should be
-a prerequisite for merging the ABI change, I can try to speed
-things up a bit; otherwise, I'd submit the userland read side
-together with the NTP base mechanics).
-
-> Also:
->
-> Xenomai style: s/sizeof(struct xnshared)/sizeof(*xnshared)/
-
-okay, changed.
-
-Cheers, Wolfgang
-
---------------030207050002030608030800
-Content-Type: text/x-patch;
- name="xnvdso.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="xnvdso.diff"
-
-commit c291a380d610060240c76fc3cadfce6450abfdc8
-Author: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
-Date:   Fri Dec 11 10:59:00 2009 +0100
-
-    Add support for sharing kernel/userland data between Xenomai and Linux
-    
-    A new structure (struct xnshared) is introduced. It allows us to share
-    generic data between user and kernel of Linux and Xenomai; a bitmap
-    of feature flags located at the beginning of the structure identifies
-    which data are shared. The structure is allocated in the global semaphore
-    heap, and xnsysinfo.xnshared_offset identifies the offset of the
-    structure within the heap.
-    
-    Currently, no shared features are yet supported - the patch only
-    introduces the necessary ABI changes. When the need arises
-    to share data between said entities, the structure must
-    be accordingly extended, and a new feature bit must be added
-    to the flags.
-    
-    Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
-    Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
-
-diff --git a/include/asm-generic/syscall.h b/include/asm-generic/syscall.h
-index 483b99f..8f1ddc6 100644
---- a/include/asm-generic/syscall.h
-+++ b/include/asm-generic/syscall.h
-@@ -53,6 +53,7 @@
- typedef struct xnsysinfo {
- 	unsigned long long cpufreq;	/* CPU frequency */
- 	unsigned long tickval;		/* Tick duration (ns) */
-+	unsigned long xnvdso_off;  	/* Offset of xnvdso in the sem heap */
- } xnsysinfo_t;
- 
- #define SIGSHADOW  SIGWINCH
-diff --git a/include/nucleus/xnvdso.h b/include/nucleus/xnvdso.h
-new file mode 100644
-index 0000000..cc2ec20
---- /dev/null
-+++ b/include/nucleus/xnvdso.h
-@@ -0,0 +1,36 @@
-+#ifndef XNVDSO_H
-+#define XNVDSO_H
-+
-+/*
-+ * Data shared between Xenomai kernel/userland and the Linux kernel/userland
-+ * on the global semaphore heap. The features element indicates which data are
-+ * shared. Notice that struct xnvdso may only grow, but never shrink.
-+ */
-+struct xnvdso {
-+	unsigned long long features;
-+
-+	/* Embed domain specific structures that describe the
-+	 * shared data here */
-+};
-+
-+/*
-+ * For each shared feature, add a flag below. For now, the set is still
-+ * empty.
-+ */
-+/*
-+#define XNVDSO_FEAT_A	0x0000000000000001
-+#define XNVDSO_FEAT_B	0x0000000000000002
-+#define XNVDSO_FEAT_C	0x0000000000000004
-+#define XNVDSO_FEATURES	(XNVDSO_FEAT_A | XNVDSO_FEAT_B | XVDSO_FEAT_C)
-+*/
-+
-+#define XNVDSO_FEATURES 0x0000000000000000
-+
-+extern struct xnvdso *xnvdso;
-+
-+static inline int xnvdso_test_feature(unsigned long long feature)
-+{
-+	return testbits(xnvdso->features, feature);
-+}
-+
-+#endif
-diff --git a/ksrc/nucleus/module.c b/ksrc/nucleus/module.c
-index 5404182..40ee9a6 100644
---- a/ksrc/nucleus/module.c
-+++ b/ksrc/nucleus/module.c
-@@ -34,6 +34,7 @@
- #include <nucleus/pipe.h>
- #endif /* CONFIG_XENO_OPT_PIPE */
- #include <nucleus/select.h>
-+#include <nucleus/xnvdso.h>
- #include <asm/xenomai/bits/init.h>
- 
- MODULE_DESCRIPTION("Xenomai nucleus");
-@@ -51,6 +52,9 @@ u_long xnmod_sysheap_size;
- 
- int xeno_nucleus_status = -EINVAL;
- 
-+struct xnvdso *xnvdso;
-+EXPORT_SYMBOL_GPL(xnvdso);
-+
- struct xnsys_ppd __xnsys_global_ppd;
- EXPORT_SYMBOL_GPL(__xnsys_global_ppd);
- 
-@@ -82,6 +86,21 @@ void xnmod_alloc_glinks(xnqueue_t *freehq)
- }
- EXPORT_SYMBOL_GPL(xnmod_alloc_glinks);
- 
-+/*
-+ * We re-use the global semaphore heap to provide a multi-purpose shared
-+ * memory area between Xenomai and Linux - for both kernel and userland
-+ */
-+void __init xnheap_init_shared(void)
-+{
-+	xnvdso = (struct xnvdso *)xnheap_alloc(&__xnsys_global_ppd.sem_heap,
-+						  sizeof(*xnvdso));
-+
-+	if (!xnvdso)
-+		xnpod_fatal("Xenomai: cannot allocate memory for xnvdso!\n");
-+
-+	xnvdso->features = XNVDSO_FEATURES;
-+}
-+
- int __init __xeno_sys_init(void)
- {
- 	int ret;
-@@ -106,6 +125,8 @@ int __init __xeno_sys_init(void)
- 		goto cleanup_arch;
- 
- 	xnheap_set_label(&__xnsys_global_ppd.sem_heap, "global sem heap");
-+
-+	xnheap_init_shared();
- #endif
- 	
- #ifdef __KERNEL__
-diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
-index 0c94a60..d8bced3 100644
---- a/ksrc/nucleus/shadow.c
-+++ b/ksrc/nucleus/shadow.c
-@@ -50,6 +50,7 @@
- #include <nucleus/trace.h>
- #include <nucleus/stat.h>
- #include <nucleus/sys_ppd.h>
-+#include <nucleus/xnvdso.h>
- #include <asm/xenomai/features.h>
- #include <asm/xenomai/syscall.h>
- #include <asm/xenomai/bits/shadow.h>
-@@ -1746,6 +1747,9 @@ static int xnshadow_sys_info(struct pt_regs *regs)
- 
- 	info.cpufreq = xnarch_get_cpu_freq();
- 
-+	info.xnvdso_off =
-+	  xnheap_mapped_offset(&xnsys_ppd_get(1)->sem_heap, xnvdso);
-+
- 	return __xn_safe_copy_to_user((void __user *)infarg, &info, sizeof(info));
- }
- 
-
---------------030207050002030608030800--
+-- 
+					    Gilles.
 
