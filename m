@@ -1,10 +1,10 @@
-Message-ID: <4B309A29.6030405@domain.hid>
-Date: Tue, 22 Dec 2009 11:06:33 +0100
+Message-ID: <4B309BC7.3070607@domain.hid>
+Date: Tue, 22 Dec 2009 11:13:27 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Build tests: analogy, blackfin, rtcan and nios2.
+Subject: [Xenomai-core] Pull request: build fixes.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,47 +15,27 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Xenomai core <Xenomai-core@domain.hid>
 
+The following changes since commit 0cb257bf7393b5a53eb35b021b95730bd40dd561:
+  Philippe Gerum (1):
+        Merge commit 'gilles'
 
-Hi,
+are available in the git repository at:
 
-Since I started talking about it, I have run build tests fixing a few
-things here and there. The current status is this (still at the same
-place: http://sisyphus.hd.free.fr/~gilles/bx):
+  git://git.xenomai.org/xenomai-gch.git for-head
 
-* analogy: I have tried to disable some parts of analogy when compiling
-on machines without CONFIG_PCI, as compiling parts using PCI on a
-machine without PCI support, give various levels of warning and even
-errors depending on the architecture. Doing this, I stumbled across this
-compilation error:
-http://sisyphus.hd.free.fr/~gilles/bx/beagle/2.6.28-arm-none-linux-gnueabi-gcc-4.3.3/log.html#1
-this is with CONFIG_NI_MIO, but without CONFIG_NI_MITE.
+Gilles Chanteperdrix (3):
+      arith: avoid ARM Linux do_div compile-time optimizations.
+      analogy: do not compile pcimio on kernels without PCI support
+      rtdm: include the new pci_ids driver through rtdm
 
-So, Alex, could you:
-- fix that error, if this combination is supposed to make sense
-- fix the Kconfig/Makefile so that no PCI code is compiled if CONFIG_PCI
-is not set (I tried and do this myself, but better one who knows than
-100 who have to search...). As I said, doing this result in various
-levels of success depending on the architecture.
-
-* blackfin: I finally compiled blackfin! had to build a toolchain for
-that as the binary-only toolchain from analog.com uses glibc 2.8 and
-mine is 2.7. However, blackfin does not compile very well, as can be
-seen by the log:
-http://sisyphus.hd.free.fr/~gilles/bx/bf537-stamp/2.6.30-bfin-uclinux-gcc-4.1.2/log.html#1
-It may happen that my toolchain is buggy or outdated though.
-
-* rtcan: on blackfin we seem to have a conflict with rtcan.
-The warning is about CAN_ERR_MASK, sure blackfin is a bit strange to
-define this in core headers which are included everywhere. This said,
-not prefixing a Xenomai symbol with something like XN seems to be asking
-for trouble. Wolfgang, do you think it would be possible to rename the
-symbols with such prefix? Or do you share some code with socket-can that
-you do not want to touch?
-
-* nios2: I am lacking some important file needed to even start to compile.
-
-Thanks in advance for your efforts.
-Regards.
+ include/asm-generic/arith.h                       |   14 +++++++++++---
+ include/rtdm/rtdm_driver.h                        |    3 +++
+ ksrc/drivers/analogy/national_instruments/Kconfig |    2 +-
+ ksrc/drivers/can/sja1000/rtcan_ems_pci.c          |    1 -
+ ksrc/drivers/can/sja1000/rtcan_esd_pci.c          |    1 -
+ ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c        |    1 -
+ ksrc/drivers/can/sja1000/rtcan_peak_pci.c         |    1 -
+ 7 files changed, 15 insertions(+), 8 deletions(-)
 
 -- 
 					    Gilles.
