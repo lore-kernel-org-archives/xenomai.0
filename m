@@ -1,61 +1,130 @@
-MIME-Version: 1.0
-Sender: peter.soetens@domain.hid
-From: Peter Soetens <peter@domain.hid>
-Date: Fri, 4 Dec 2009 14:35:13 +0100
-Message-ID: <634c78ce0912040535l753f267cycb3ea7057bfc432c@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai-help] undefined symbols in xeno_nucleus
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+Date: Wed, 23 Dec 2009 10:25:52 +0100
+Message-Id: <1261560352-9120-3-git-send-email-wolfgang.mauerer@domain.hid>
+In-Reply-To: <1261560352-9120-1-git-send-email-wolfgang.mauerer@domain.hid>
+References: <1261560352-9120-1-git-send-email-wolfgang.mauerer@domain.hid>
+Subject: [Xenomai-core] [PATCH 2/2] Testcase for the xnvdso mechanism
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 
-When compiling xenomai-head (master) from today with vanilla Linux
-2.6.31.1 for amd64/smp, most of xenomai compiled as modules, I get at
-the end of the build process this:
+This testcase checks if the value in xnvdso->features matches the
+value of XNVDSO_FEATURES, that is, if the information is correctly
+transferred from kernel to userland.
 
-  Building modules, stage 2.
-  MODPOST 2169 modules
-ERROR: "per_cpu__cpu_tlbstate"
-[kernel/xenomai/nucleus/xeno_nucleus.ko] undefined!
-ERROR: "per_cpu__irq_stack_union"
-[kernel/xenomai/nucleus/xeno_nucleus.ko] undefined!
-WARNING: modpost: Found 12 section mismatch(es).
-To see full details build your kernel with:
-'make CONFIG_DEBUG_SECTION_MISMATCH=y'
-make[2]: *** [__modpost] Error 1
+Notice that the approach will fail once configurations are supported
+that know of multiple features and implement only some of them.
+In this case, the testcase needs to be extended accordingly
+to check that only the expected features are present.
 
-And grepping for them gives:
+Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ src/testsuite/unit/Makefile.am |   15 +++++++++++++-
+ src/testsuite/unit/runinfo.in  |    1 +
+ src/testsuite/unit/xnvdso.c    |   43 ++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 58 insertions(+), 1 deletions(-)
+ create mode 100644 src/testsuite/unit/xnvdso.c
 
-$ wcgrep per_cpu__cpu_tlbstate
-./System.map:154:000000000001e100 D per_cpu__cpu_tlbstate
-./.tmp_System.map:154:000000000001e100 D per_cpu__cpu_tlbstate
+diff --git a/src/testsuite/unit/Makefile.am b/src/testsuite/unit/Makefile.am
+index 24d077a..c77cc54 100644
+--- a/src/testsuite/unit/Makefile.am
++++ b/src/testsuite/unit/Makefile.am
+@@ -2,7 +2,8 @@ testdir = $(exec_prefix)/share/xenomai/testsuite/unit
+ 
+ CCLD = $(top_srcdir)/scripts/wrap-link.sh $(CC)
+ 
+-bin_PROGRAMS = arith wakeup-time mutex-torture-posix mutex-torture-native
++bin_PROGRAMS = arith wakeup-time mutex-torture-posix mutex-torture-native \
++               xnvdso
+ 
+ arith_SOURCES = arith.c arith-noinline.c arith-noinline.h
+ 
+@@ -53,6 +54,18 @@ mutex_torture_native_LDADD = \
+ 	../../skins/native/libnative.la \
+ 	-lpthread -lm
+ 
++xnvdso_SOURCES = xnvdso.c
++
++xnvdso_CPPFLAGS = \
++	@XENO_USER_CFLAGS@ \
++	-I$(top_srcdir)/include
++
++xnvdso_LDFLAGS = @XENO_USER_LDFLAGS@
++
++xnvdso_LDADD = \
++	../../skins/native/libnative.la \
++	-lpthread -lm
++
+ install-data-local:
+ 	$(mkinstalldirs) $(DESTDIR)$(testdir)
+ 	@sed -e's,@exec_prefix\@,$(exec_prefix),g' $(srcdir)/runinfo.in > $(DESTDIR)$(testdir)/.runinfo
+diff --git a/src/testsuite/unit/runinfo.in b/src/testsuite/unit/runinfo.in
+index f4cd208..a22afc0 100644
+--- a/src/testsuite/unit/runinfo.in
++++ b/src/testsuite/unit/runinfo.in
+@@ -2,3 +2,4 @@ arith:native:!@exec_prefix@domain.hid
+ wakeup-time:native:!@exec_prefix@domain.hid
+ mutex-torture-posix:posix:!@exec_prefix@domain.hid
+ mutex-torture-native:native:!@exec_prefix@domain.hid
++xnvdso:native:!@exec_prefix@domain.hid
+diff --git a/src/testsuite/unit/xnvdso.c b/src/testsuite/unit/xnvdso.c
+new file mode 100644
+index 0000000..6d7d8e1
+--- /dev/null
++++ b/src/testsuite/unit/xnvdso.c
+@@ -0,0 +1,43 @@
++/*
++ * VDSO feature set testcase
++ * by Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
++ */
++
++#include <stdio.h>
++#include <asm/xenomai/syscall.h>
++#include <nucleus/xnvdso.h>
++
++extern unsigned long xeno_sem_heap[2];
++
++int main(int argc, char **argv)
++{
++	int err;
++	xnsysinfo_t sysinfo;
++	struct xnvdso *xnvdso;
++
++	if (!xeno_sem_heap[1]) {
++		fprintf(stderr, "Could not determine position of the "
++			"global semaphore heap\n");
++		return 1;
++	}
++
++	/* The muxid is irrelevant for this test as long as it's valid */
++	err = XENOMAI_SYSCALL2(__xn_sys_info, 1, &sysinfo);
++	if (err < 0) {
++		fprintf(stderr, "sys_sys_info failed: %d\n", err);
++		return 1;
++	}
++
++	printf("Address of the global semaphore heap: 0x%lx\n",
++	       xeno_sem_heap[1]);
++	printf("Offset of xnvdso: %lu\n", sysinfo.xnvdso_off);
++
++	xnvdso = (struct xnvdso *)(xeno_sem_heap[1] + sysinfo.xnvdso_off);
++	printf("Contents of the features flag: %llu\n", xnvdso->features);
++
++	if (xnvdso->features == XNVDSO_FEATURES)
++		return 0;
++
++	fprintf(stderr, "error: xnvdso->features != XNVDSO_FEATURES\n");
++	return 1;
++}
+-- 
+1.6.4
 
-$ vader ~/src/xenomai/linux-2.6.31.1 $ wcgrep per_cpu__irq_stack_union
-./System.map:3:0000000000000000 D per_cpu__irq_stack_union
-./System.map:42431:ffffffff81774000 A init_per_cpu__irq_stack_union
-./.tmp_System.map:3:0000000000000000 D per_cpu__irq_stack_union
-./.tmp_System.map:42431:ffffffff81774000 A init_per_cpu__irq_stack_union
-./arch/x86/kernel/asm-offsets.s:18246:  .string "per_cpu__irq_stack_union"
-./arch/x86/kernel/vmlinux.lds.S:382:. = ASSERT((per_cpu__irq_stack_union == 0),
-./arch/x86/kernel/vmlinux.lds:573:init_per_cpu__irq_stack_union =
-per_cpu__irq_stack_union + __per_cpu_load;
-./arch/x86/kernel/vmlinux.lds:579:. = ASSERT((per_cpu__irq_stack_union == 0),
-
-Any idea what went wrong ?
-
-Also, I hit the 'sparse irqs' issue where ipipe.h complains about
-CONFIG_NR_IRQS being too high but the true cause is another option.
-Maybe the #error in ipipe.h should be:
-
-#error "CONFIG_NR_CPUS is too large, please lower it or disable
-CONFIG_SPARSE_IRQ."
-
-Peter
 
