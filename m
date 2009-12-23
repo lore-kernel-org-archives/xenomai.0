@@ -1,17 +1,18 @@
-Message-ID: <4B327375.7030304@domain.hid>
-Date: Wed, 23 Dec 2009 20:45:57 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4B326F1A.3000905@domain.hid> <4B325C12.7000902@domain.hid>
-	<4B32482C.7010508@domain.hid> <4B30E2EE.6000308@domain.hid>
+Date: Thu, 24 Dec 2009 03:53:50 +0800 (CST)
+From: robert165 <robert165@domain.hid>
+Message-ID: <32551956.441241261598030189.JavaMail.coremail@domain.hid>
+In-Reply-To: <4B327375.7030304@domain.hid>
+References: <4B327375.7030304@domain.hid> <4B326F1A.3000905@domain.hid>
+	<4B325C12.7000902@domain.hid> <4B32482C.7010508@domain.hid>
+	<4B30E2EE.6000308@domain.hid>
 	<17562953.1358371261493595174.JavaMail.coremail@domain.hid>
 	<23404643.433811261586259575.JavaMail.coremail@domain.hid>
 	<1201618.436081261588028205.JavaMail.coremail@domain.hid>
 	<18018862.440661261596184606.JavaMail.coremail@domain.hid>
 	<5349479.441121261597341772.JavaMail.coremail@domain.hid>
-In-Reply-To: <5349479.441121261597341772.JavaMail.coremail@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_114507_832462.1261598030189"
 Subject: Re: [Xenomai-help] xeno-test can not run
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -22,37 +23,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: robert165 <robert165@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai-help <xenomai@xenomai.org>
 
-robert165 wrote:
-> 
->>> OK, I have found the FCSE option with kernel 2.6.28.
->>> My working computer is not here, so I tested in a VMware and a old
->>> kernel 2.6.20 at first. Then I download a 2.6.28 kernel and things be OK
->>> now.
->>
->>I took care to tell you clearly that the FCSE option was available in
->>the latest versions of the I-pipe patches, which were in the Xenomai
->>2.4.10 release. Obviously the patch for kernel 2.6.20 is not part of
->>Xenomai 2.4.10.
->>
->>> 
->>>>Properly loading the system means hammering it real hard. And if you do
->>>>that, you will get real results. Around 260us in user-space without
->>>>FCSE, or 200us with FCSE.
->>> 
->>>  "hammering it real hard ", you mean work in real application?
->>> Sorry, my English is so terrible, I just know that hammer is a tool for strike.
->>
->>Yes, so hammering means striking with a hammer... It is an image.
-> 
-> I used nfs filesystem in the test, that's the point?
+------=_Part_114507_832462.1261598030189
+Content-Type: text/plain; charset=gbk
+Content-Transfer-Encoding: base64
 
-The point is to generate activity on your system, to stress it. But real
-hard.
+CgoKCgrU2jIwMDktMTItMjSjrCJHaWxsZXMgQ2hhbnRlcGVyZHJpeCIgPGdpbGxlcy5jaGFudGVw
+ZXJkcml4QHhlbm9tYWkub3JnPiDQtLXAo7oKPnJvYmVydDE2NSB3cm90ZToKPj4gCj4+Pj4gT0ss
+IEkgaGF2ZSBmb3VuZCB0aGUgRkNTRSBvcHRpb24gd2l0aCBrZXJuZWwgMi42LjI4Lgo+Pj4+IE15
+IHdvcmtpbmcgY29tcHV0ZXIgaXMgbm90IGhlcmUsIHNvIEkgdGVzdGVkIGluIGEgVk13YXJlIGFu
+ZCBhIG9sZAo+Pj4+IGtlcm5lbCAyLjYuMjAgYXQgZmlyc3QuIFRoZW4gSSBkb3dubG9hZCBhIDIu
+Ni4yOCBrZXJuZWwgYW5kIHRoaW5ncyBiZSBPSwo+Pj4+IG5vdy4KPj4+Cj4+PkkgdG9vayBjYXJl
+IHRvIHRlbGwgeW91IGNsZWFybHkgdGhhdCB0aGUgRkNTRSBvcHRpb24gd2FzIGF2YWlsYWJsZSBp
+bgo+Pj50aGUgbGF0ZXN0IHZlcnNpb25zIG9mIHRoZSBJLXBpcGUgcGF0Y2hlcywgd2hpY2ggd2Vy
+ZSBpbiB0aGUgWGVub21haQo+Pj4yLjQuMTAgcmVsZWFzZS4gT2J2aW91c2x5IHRoZSBwYXRjaCBm
+b3Iga2VybmVsIDIuNi4yMCBpcyBub3QgcGFydCBvZgo+Pj5YZW5vbWFpIDIuNC4xMC4KPj4+Cj4+
+Pj4gCj4+Pj4+UHJvcGVybHkgbG9hZGluZyB0aGUgc3lzdGVtIG1lYW5zIGhhbW1lcmluZyBpdCBy
+ZWFsIGhhcmQuIEFuZCBpZiB5b3UgZG8KPj4+Pj50aGF0LCB5b3Ugd2lsbCBnZXQgcmVhbCByZXN1
+bHRzLiBBcm91bmQgMjYwdXMgaW4gdXNlci1zcGFjZSB3aXRob3V0Cj4+Pj4+RkNTRSwgb3IgMjAw
+dXMgd2l0aCBGQ1NFLgo+Pj4+IAo+Pj4+ICAiaGFtbWVyaW5nIGl0IHJlYWwgaGFyZCAiLCB5b3Ug
+bWVhbiB3b3JrIGluIHJlYWwgYXBwbGljYXRpb24/Cj4+Pj4gU29ycnksIG15IEVuZ2xpc2ggaXMg
+c28gdGVycmlibGUsIEkganVzdCBrbm93IHRoYXQgaGFtbWVyIGlzIGEgdG9vbCBmb3Igc3RyaWtl
+Lgo+Pj4KPj4+WWVzLCBzbyBoYW1tZXJpbmcgbWVhbnMgc3RyaWtpbmcgd2l0aCBhIGhhbW1lci4u
+LiBJdCBpcyBhbiBpbWFnZS4KPj4gCj4+IEkgdXNlZCBuZnMgZmlsZXN5c3RlbSBpbiB0aGUgdGVz
+dCwgdGhhdCdzIHRoZSBwb2ludD8KPgo+VGhlIHBvaW50IGlzIHRvIGdlbmVyYXRlIGFjdGl2aXR5
+IG9uIHlvdXIgc3lzdGVtLCB0byBzdHJlc3MgaXQuIEJ1dCByZWFsCj5oYXJkLgoKWWVzLCBJIHVu
+ZGVyc3RhbmQgbm93LiAKVGhhbmsgeW91IGFnYWluIGZvciB5b3VyIGdlbmVyb3VzIGhlbHAhCgpS
+b2JlcnQKCgo=
+------=_Part_114507_832462.1261598030189
+Content-Type: text/html; charset=gbk
+Content-Transfer-Encoding: base64
 
+PGRpdj48YnI+PGJyPjwvZGl2PjxkaXY+PC9kaXY+PGJyPjxwcmU+1NoyMDA5LTEyLTI0o6wiR2ls
+bGVzIENoYW50ZXBlcmRyaXgiICZsdDtnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZyZn
+dDsg0LS1wKO6CiZndDtyb2JlcnQxNjUgd3JvdGU6CiZndDsmZ3Q7IAomZ3Q7Jmd0OyZndDsmZ3Q7
+IE9LLCBJIGhhdmUgZm91bmQgdGhlIEZDU0Ugb3B0aW9uIHdpdGgga2VybmVsIDIuNi4yOC4KJmd0
+OyZndDsmZ3Q7Jmd0OyBNeSB3b3JraW5nIGNvbXB1dGVyIGlzIG5vdCBoZXJlLCBzbyBJIHRlc3Rl
+ZCBpbiBhIFZNd2FyZSBhbmQgYSBvbGQKJmd0OyZndDsmZ3Q7Jmd0OyBrZXJuZWwgMi42LjIwIGF0
+IGZpcnN0LiBUaGVuIEkgZG93bmxvYWQgYSAyLjYuMjgga2VybmVsIGFuZCB0aGluZ3MgYmUgT0sK
+Jmd0OyZndDsmZ3Q7Jmd0OyBub3cuCiZndDsmZ3Q7Jmd0OwomZ3Q7Jmd0OyZndDtJIHRvb2sgY2Fy
+ZSB0byB0ZWxsIHlvdSBjbGVhcmx5IHRoYXQgdGhlIEZDU0Ugb3B0aW9uIHdhcyBhdmFpbGFibGUg
+aW4KJmd0OyZndDsmZ3Q7dGhlIGxhdGVzdCB2ZXJzaW9ucyBvZiB0aGUgSS1waXBlIHBhdGNoZXMs
+IHdoaWNoIHdlcmUgaW4gdGhlIFhlbm9tYWkKJmd0OyZndDsmZ3Q7Mi40LjEwIHJlbGVhc2UuIE9i
+dmlvdXNseSB0aGUgcGF0Y2ggZm9yIGtlcm5lbCAyLjYuMjAgaXMgbm90IHBhcnQgb2YKJmd0OyZn
+dDsmZ3Q7WGVub21haSAyLjQuMTAuCiZndDsmZ3Q7Jmd0OwomZ3Q7Jmd0OyZndDsmZ3Q7IAomZ3Q7
+Jmd0OyZndDsmZ3Q7Jmd0O1Byb3Blcmx5IGxvYWRpbmcgdGhlIHN5c3RlbSBtZWFucyBoYW1tZXJp
+bmcgaXQgcmVhbCBoYXJkLiBBbmQgaWYgeW91IGRvCiZndDsmZ3Q7Jmd0OyZndDsmZ3Q7dGhhdCwg
+eW91IHdpbGwgZ2V0IHJlYWwgcmVzdWx0cy4gQXJvdW5kIDI2MHVzIGluIHVzZXItc3BhY2Ugd2l0
+aG91dAomZ3Q7Jmd0OyZndDsmZ3Q7Jmd0O0ZDU0UsIG9yIDIwMHVzIHdpdGggRkNTRS4KJmd0OyZn
+dDsmZ3Q7Jmd0OyAKJmd0OyZndDsmZ3Q7Jmd0OyAgImhhbW1lcmluZyBpdCByZWFsIGhhcmQgIiwg
+eW91IG1lYW4gd29yayBpbiByZWFsIGFwcGxpY2F0aW9uPwomZ3Q7Jmd0OyZndDsmZ3Q7IFNvcnJ5
+LCBteSBFbmdsaXNoIGlzIHNvIHRlcnJpYmxlLCBJIGp1c3Qga25vdyB0aGF0IGhhbW1lciBpcyBh
+IHRvb2wgZm9yIHN0cmlrZS4KJmd0OyZndDsmZ3Q7CiZndDsmZ3Q7Jmd0O1llcywgc28gaGFtbWVy
+aW5nIG1lYW5zIHN0cmlraW5nIHdpdGggYSBoYW1tZXIuLi4gSXQgaXMgYW4gaW1hZ2UuCiZndDsm
+Z3Q7IAomZ3Q7Jmd0OyBJIHVzZWQgbmZzIGZpbGVzeXN0ZW0gaW4gdGhlIHRlc3QsIHRoYXQncyB0
+aGUgcG9pbnQ/CiZndDsKJmd0O1RoZSBwb2ludCBpcyB0byBnZW5lcmF0ZSBhY3Rpdml0eSBvbiB5
+b3VyIHN5c3RlbSwgdG8gc3RyZXNzIGl0LiBCdXQgcmVhbAomZ3Q7aGFyZC4KPGJyPlllcywgSSB1
+bmRlcnN0YW5kIG5vdy4gPGJyPlRoYW5rIHlvdSBhZ2FpbiBmb3IgeW91ciBnZW5lcm91cyBoZWxw
+ITxicj48c3BhbiBpZD0icmVwbHlfY29udGVudF82MjkxMTE2MCI+PHByZT5Sb2JlcnQ8YnI+PC9w
+cmU+PC9zcGFuPjxicj48L3ByZT48YnI+PGJyPjxzcGFuIHRpdGxlPSJuZXRlYXNlZm9vdGVyIi8+
+PC9zcGFuPg==
+------=_Part_114507_832462.1261598030189--
 
--- 
-					    Gilles.
 
