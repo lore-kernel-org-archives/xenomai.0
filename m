@@ -1,98 +1,57 @@
-Message-ID: <4B3A12B8.9030902@domain.hid>
-Date: Tue, 29 Dec 2009 15:31:20 +0100
+Message-ID: <4B320DF6.9010506@domain.hid>
+Date: Wed, 23 Dec 2009 13:32:54 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B379DFC.6000800@domain.hid>	<27218735.319731261932640576.JavaMail.coremail@domain.hid>
-	<27741962.171501262064832984.JavaMail.coremail@domain.hid>
-In-Reply-To: <27741962.171501262064832984.JavaMail.coremail@domain.hid>
+References: <4B309A29.6030405@domain.hid> <4B316C4B.1030009@domain.hid>
+In-Reply-To: <4B316C4B.1030009@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] test result on at91rm9200
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Build tests: analogy, blackfin, rtcan and nios2.
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: robert165 <robert165@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Alexis Berlemont <berlemont.hauw@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-robert165 wrote:
->=20
->=20
->=20
-> =E5=9C=A82009-12-28=EF=BC=8C"Gilles Chanteperdrix" <gilles.chanteperdri=
-x@domain.hid> =E5=86=99=E9=81=93=EF=BC=9A
->>robert165 wrote:
->>> Hi,
->>> I have tested xenomai on my at91rm9200 board, I used
->>> xenomai 2.4.10 + linux-2.6.28 + adeos-ipipe-2.6.28-arm-1.12-05.patch
->>> Test result seems very poor, is that correct?
+Alexis Berlemont wrote:
+> Hi Gilles,
+> 
+> Gilles Chanteperdrix wrote:
+>> Hi,
 >>
->>Your test results are rather good for an at91rm9200 board, which is the=
-
->>sure sign that you are not loading the system enough.
+>> Since I started talking about it, I have run build tests fixing a few
+>> things here and there. The current status is this (still at the same
+>> place: http://sisyphus.hd.free.fr/~gilles/bx):
 >>
->>As I already told, you, the expected results are:
->>- user-space latency of 260us without FCSE
->>- user-space latency of 200us with FCSE
->>- kernel-space latency of 50us if running with unlocked context switche=
-s
->>(an option which is only available in the upcoming 2.5 branch).
+>> * analogy: I have tried to disable some parts of analogy when compiling
+>> on machines without CONFIG_PCI, as compiling parts using PCI on a
+>> machine without PCI support, give various levels of warning and even
+>> errors depending on the architecture. Doing this, I stumbled across this
+>> compilation error:
+>> http://sisyphus.hd.free.fr/~gilles/bx/beagle/2.6.28-arm-none-linux-gnueabi-gcc-4.3.3/log.html#1
+>> this is with CONFIG_NI_MIO, but without CONFIG_NI_MITE.
 >>
->>> And is there any introduction of the tests, as their purper, their
->>> meanling...
->>
->>The latency test computes some latencies (either user-space scheduling
->>latency, kernel-space scheduling latency, or kernel-space interrupt
->>latency, depending on the options). The switchtest tests context
->>switches. The switchbench measures context switching time. cyclictest
->>does the same thing as the latency test (only, you need to run it with
->>the right options to avoid running in fact with Linux timer), and in
->>general return similar results. Here I do not know what is the meaning
->>of cyclictest results you got, but if you want to know, I am afraid you=
+>> So, Alex, could you:
+>> - fix that error, if this combination is supposed to make sense
+> Yes it makes sense. I think the MITE is integrated into all PCI boards
+> but the driver should work with the MITE disabled (one day, we could add
+> the ISA boards).
+>> - fix the Kconfig/Makefile so that no PCI code is compiled if CONFIG_PCI
+>> is not set (I tried and do this myself, but better one who knows than
+>> 100 who have to search...). As I said, doing this result in various
+>> levels of success depending on the architecture.
+> Ack. I will fix these problems as quickly as possible.
 
->>wil have to investigate, or simply ignore them.
->>
->=20
-> Thanks for your introdution, and is there any document of it.=20
-> The man pages just explain  parametres  of test scripts.  I could
-> not understand the output of some test.
+Ok. The fix for the second problem would be nice to have soon, as
+analogy breaks the build on blackfin for this reason. If it is of any
+help, you can send me a patch for this fix only which I will apply on my
+side while you are working on other changes.
 
-No there is no document. But patches are welcome, as usual. As far as I
-can tell, I explained you what the tests do, there is not much more to
-tell. Which test's output did you not understand?
-
->=20
->>>=20
->>> Test is under loads as followed,
->>>     dd if=3D/dev/zero of=3D/dev/null > /dev/null &
->>>     ping 172.18.23.10 > /dev/null &
->>>     while ls; do ls; done > /dev/null &
->>
->>This load is laughable. Do you find that they really stress the system,=
-
->>that they make it really unresponsive? Do you really expect a test whic=
-h
->>sends one packet every second over network to stress the system in some=
-
->>way? That is what I meant when I said hammering the system real hard.
->=20
-> The reason I procuce the load is:=20
-> https://mail.gna.org/public/xenomai-help/2008-01/msg00023.html
-> How can I produce a real hard load. Are there any direction about it.
-
-The mail you are refering to is using ping -f, not ping, and talks about
-stressing cache by running the cache calibrator. The way we do our tests
-evolved a bit since then. We use netcat instead of ping -f, and the
-hackbench test to stress the linux scheduler. That is when FCSE is
-enabled in guaranteed mode. Without FCSE, we use ltp (the linux testing
-project) and netcat.
-
---=20
+-- 
 					    Gilles.
-
 
