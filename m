@@ -1,11 +1,16 @@
-Message-ID: <4B30E2EE.6000308@domain.hid>
-Date: Tue, 22 Dec 2009 16:17:02 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Thu, 24 Dec 2009 03:42:21 +0800 (CST)
+From: robert165 <robert165@domain.hid>
+Message-ID: <5349479.441121261597341772.JavaMail.coremail@domain.hid>
+In-Reply-To: <4B326F1A.3000905@domain.hid>
+References: <4B326F1A.3000905@domain.hid> <4B325C12.7000902@domain.hid>
+	<4B32482C.7010508@domain.hid> <4B30E2EE.6000308@domain.hid>
+	<17562953.1358371261493595174.JavaMail.coremail@domain.hid>
+	<23404643.433811261586259575.JavaMail.coremail@domain.hid>
+	<1201618.436081261588028205.JavaMail.coremail@domain.hid>
+	<18018862.440661261596184606.JavaMail.coremail@domain.hid>
 MIME-Version: 1.0
-References: <17562953.1358371261493595174.JavaMail.coremail@domain.hid>
-In-Reply-To: <17562953.1358371261493595174.JavaMail.coremail@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_114475_29881271.1261597341771"
 Subject: Re: [Xenomai-help] xeno-test can not run
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,58 +21,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: robert165 <robert165@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai-help <xenomai@xenomai.org>
 
-robert165 wrote:
-> Hi all=EF=BC=8C
-> I installed xenomai-2.4.4 on AT91RM9200DK, all have done OK. But the
-> board halted when running xeno-test.
-> would anyone help me, thanks a lot.
-> Besides, which version of xenomai is a good choice for real application=
+------=_Part_114475_29881271.1261597341771
+Content-Type: text/plain; charset=gbk
+Content-Transfer-Encoding: 7bit
 
-> with arm?
 
-Any version is as good as we can make it, but if you want to be able to
-report a bug, and not to stumble upon bugs which have been fixed, you
-should be using the latest versoin.
 
-There is also the recent discovery of a very old bug of basically all
-the I-pipe patches on arm, so, you should be using Xenomai 2.4.10 and
-the patches it provides. Add to that the integration of the FCSE patch
-into the I-pipe patch which will give you much better real-time
-performances.
+>> OK, I have found the FCSE option with kernel 2.6.28.
+>> My working computer is not here, so I tested in a VMware and a old
+>> kernel 2.6.20 at first. Then I download a 2.6.28 kernel and things be OK
+>> now.
+>
+>I took care to tell you clearly that the FCSE option was available in
+>the latest versions of the I-pipe patches, which were in the Xenomai
+>2.4.10 release. Obviously the patch for kernel 2.6.20 is not part of
+>Xenomai 2.4.10.
+>
+>> 
+>>>Properly loading the system means hammering it real hard. And if you do
+>>>that, you will get real results. Around 260us in user-space without
+>>>FCSE, or 200us with FCSE.
+>> 
+>>  "hammering it real hard ", you mean work in real application?
+>> Sorry, my English is so terrible, I just know that hammer is a tool for strike.
+>
+>Yes, so hammering means striking with a hammer... It is an image.
 
-> I used linux-2.6.20.21 + 2.6.20-at91.patch +
-> adeos-ipipe-2.6.20-arm-1.8-03.patch + xenomai-2.4.4
-> The run info is as follows, and the full log is attached.
-> =20
-> Thu Jan  1 00:07:57 UTC 1998
-> running: top
-> [H[JMem: 5692K used, 24184K free, 0K shrd, 0K buff, 1884K cached
-> Load average: 0.71, 0.17, 0.06    (State: S=3Dsleeping R=3Drunning, W=3D=
-waiting)
-> [7m  PID USER     STATUS   RSS  PPID %CPU %MEM COMMAND[0m
->  1025 0        R        376     1 98.0  1.2 dd
->  1212 0        R        676  1211  2.9  2.2 top
->   738 0        S        760     1  0.0  2.5 sh
->   743 0        S        612   738  0.0  2.0 xeno-test
->     1 0        S        568     0  0.0  1.9 init
->   798 0        S        472   743  0.0  1.5 xeno-test
-> Thu Jan  1 00:07:58 UTC 1998
-> running: ./run -- -sh -T 120 -t0 # latency
-> *
-> *
-> * Type ^C to stop this application.
-> *
-> *
+I used nfs filesystem in the test, that's the point?
 
-That is a bug which has been around for too long due to my lazyness, but
-which Philippe has finally fixed in 2.4.10. The default period of the
-latency test is 100us, which is too short for an ARM. Run latency with
--p 1000 to ask for a 1ms period.
+>
+>> 
+>> By the way, shall we talk by MSN? My ID is robert165@domain.hid
+>
+>No. I had not noticed that you were sending me these mails privately.
+>Xenomai has mailing lists, they are meant to be used so that other can
+>find answers to the questions you are asking. I am not at your personal
+>service.
 
---=20
-					    Gilles.
+I am so sorry, I did not noticed that too. 
+Thanks for your help sincerely.
+
+Robert
+
+------=_Part_114475_29881271.1261597341771
+Content-Type: text/html; charset=gbk
+Content-Transfer-Encoding: 7bit
+
+<div></div><br><pre>&gt;&gt; OK, I have found the FCSE option with kernel 2.6.28.
+&gt;&gt; My working computer is not here, so I tested in a VMware and a old
+&gt;&gt; kernel 2.6.20 at first. Then I download a 2.6.28 kernel and things be OK
+&gt;&gt; now.
+&gt;
+&gt;I took care to tell you clearly that the FCSE option was available in
+&gt;the latest versions of the I-pipe patches, which were in the Xenomai
+&gt;2.4.10 release. Obviously the patch for kernel 2.6.20 is not part of
+&gt;Xenomai 2.4.10.
+&gt;
+&gt;&gt; 
+&gt;&gt;&gt;Properly loading the system means hammering it real hard. And if you do
+&gt;&gt;&gt;that, you will get real results. Around 260us in user-space without
+&gt;&gt;&gt;FCSE, or 200us with FCSE.
+&gt;&gt; 
+&gt;&gt;  "hammering it real hard ", you mean work in real application?
+&gt;&gt; Sorry, my English is so terrible, I just know that hammer is a tool for strike.
+&gt;
+&gt;Yes, so hammering means striking with a hammer... It is an image.
+<br>I used nfs filesystem in the test, that's the point?<br><br>&gt;
+&gt;&gt; 
+&gt;&gt; By the way, shall we talk by MSN? My ID is robert165@domain.hid
+&gt;
+&gt;No. I had not noticed that you were sending me these mails privately.
+&gt;Xenomai has mailing lists, they are meant to be used so that other can
+&gt;find answers to the questions you are asking. I am not at your personal
+&gt;service.
+<br>I am so sorry, I did not noticed that too. <br>Thanks for your help sincerely.<br><br>Robert<br></pre><br><br><span title="neteasefooter"/></span>
+------=_Part_114475_29881271.1261597341771--
 
 
