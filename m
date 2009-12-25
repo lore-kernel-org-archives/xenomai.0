@@ -1,64 +1,79 @@
-Message-ID: <4B3B218E.7010009@domain.hid>
-Date: Wed, 30 Dec 2009 10:46:54 +0100
-From: "Alessio Margan @ IIT" <alessio.margan@domain.hid>
+Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <4B354A20.90806@domain.hid>
+Date: Sat, 26 Dec 2009 00:26:24 +0100
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] CANOpen library
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] [PULL REQUEST] analogy: build fixes and many bug
+	fixes.
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-Hi,
-I'm looking for a CANOpen library suitable for xenomai.
-Any suggestions ...
-TIA
-Alessio
---=20
+The following changes since commit e305035eb6adc4220fe179477f3e300ad944f85c:
+   Alexis Berlemont (1):
+         analogy: fix bad error handling path in test programs
 
-ISTITUTO ITALIANO
-DI TECNOLOGIA
+are available in the git repository at:
 
-Alessio Margan
-/Senior Technician/
-mail me <mailto:alessio.margan@domain.hid>
+   ssh+git://git.xenomai.org/xenomai-abe.git analogy
 
-Via Morego, 30 16163 Genova=20
-<http://maps.google.com/maps?f=3Dq&hl=3Den&geocode=3D&q=3Dvia+morego,+30+ge=
-nova&sll=3D37.0625,-95.677068&sspn=3D85.420533,191.601563&ie=3DUTF8&ll=3D44=
-.474913,8.907037&spn=3D0.004685,0.011652&t=3Dh&z=3D17&iwloc=3Daddr>
+Alexis Berlemont (22):
+       analogy: fix potentiel NULL instructions handlers executions
+       analogy: fix the default writing subdevice.
+       analogy: properly manage cancel operations on synchronous subdevices
+       analogy: add a kernel error message when a driver rejects a command
+       analogy: add missing channel and range descriptors in the loop driver
+       analogy: in cmd_read, set a higher scan interval
+       analogy: fix wrong names of conversion functions
+       analogy: improve the test program insn_write
+       analogy: fix a bug in the conversion routines
+       analogy: minor change in the driver description
+       analogy: add a simple helper function
+       analogy: slight change in a kernel error message
+       analogy: fix Doxygen documentation (a4l_sync_read, a4l_sync_write)
+       analogy: fix a bug in the execution of a list of instructions
+       analogy: review the conversion routines in the user library
+       analogy: improve the test program cmd_read
+       analogy: minor Doxygen change
+       analogy: fix wrong use of the type unsigned long long in time 
+retrieval
+       analogy: fix a bug in the user/kernel copy of the instruction's data
+       analogy: fix a first part of the compilation issues when mite is 
+disabled
+       analogy: fix the compilation issues when mite is disabled
+       analogy: replace EXPORT_SYMBOL() by EXPORT_SYMBOL_GPL()
 
-www.iit.it <http://www.iit.it>
-
-*Legal Disclaimer*
-This electronic message contains information that is confidential. The=20
-information is intended for the use of the addressee only. If you are=20
-not the addressee we would appreciate your notification in this respect.=20
-Please note that any disclosure, copy, distribution or use of the=20
-contents of this message is prohibited and may be unlawful. We have=20
-taken every reasonable precaution to ensure that any kind of attachment=20
-to this e-mail has been swept for viruses. However, we cannot accept=20
-liability for any damage sustained as a result of software viruses and=20
-would advise you to carry out your own virus checks before opening any=20
-attachment.
-*Avvertenza legale*
-Questo messaggio Email contiene informazioni confidenziali riservate ai=20
-soli destinatari. Qualora veniate in possesso di tali informazioni senza=20
-essere definito come destinatario vi reghiamo di leggere le seguenti=20
-note. Ogni apertura, copia, distribuzione del contenuto del messaggio e=20
-dei suoi allegati =E8 proibito e potrebbe violare le presenti leggi.=20
-Abbiamo attivato ogni possibile e ragionevole precauzione per assicurare=20
-che gli allegati non contengano virus. Comunque non assumeremo alcuna=20
-responsabilit=E0 per ogni eventuale danno causato da virus software e=20
-simili in quanto =E8 onere del destinatario verificarne l=92assenza in ogni=
-=20
-allegato attuando propri indipendenti controlli.
-
+  include/analogy/analogy.h                          |   48 +-
+  include/analogy/instruction.h                      |    8 +-
+  include/analogy/os_facilities.h                    |    4 +-
+  ksrc/drivers/analogy/command.c                     |    8 +-
+  ksrc/drivers/analogy/driver_facilities.c           |   58 +-
+  ksrc/drivers/analogy/instruction.c                 |   67 ++-
+  ksrc/drivers/analogy/intel/8255.c                  |   28 +-
+  ksrc/drivers/analogy/intel/parport.c               |   38 +-
+  .../analogy/national_instruments/mio_common.c      |  579 
+++++++++++++--------
+  ksrc/drivers/analogy/national_instruments/mite.c   |   42 +-
+  ksrc/drivers/analogy/national_instruments/ni_tio.h |   20 +-
+  ksrc/drivers/analogy/national_instruments/pcimio.c |    2 +
+  .../analogy/national_instruments/tio_common.c      |   92 ++--
+  ksrc/drivers/analogy/os_facilities.c               |   10 +-
+  ksrc/drivers/analogy/testing/fake.c                |   19 +-
+  ksrc/drivers/analogy/testing/loop.c                |   20 +-
+  ksrc/drivers/analogy/transfer.c                    |    3 +-
+  src/drvlib/analogy/range.c                         |  369 ++++++++++++--
+  src/drvlib/analogy/sync.c                          |    4 +-
+  src/utils/analogy/cmd_read.c                       |  138 ++++-
+  src/utils/analogy/cmd_write.c                      |    4 +-
+  src/utils/analogy/insn_read.c                      |  180 +++++--
+  src/utils/analogy/insn_write.c                     |   84 ++-
+  23 files changed, 1272 insertions(+), 553 deletions(-)
 
