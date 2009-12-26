@@ -1,59 +1,104 @@
-Message-ID: <4B3CC62D.6070709@domain.hid>
-Date: Thu, 31 Dec 2009 16:41:33 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <725957.56219.qm@domain.hid>	<4AF04886.9040903@domain.hid>	<1f3e02580911030745o128df8aeve4bdd44bad9c3db7@domain.hid>	<4AF15D68.7060001@domain.hid>	<873433.54790.qm@domain.hid>	<1f3e02580911060139q60bc91f8k4e71d933a50895ba@domain.hid>	<20091215213210.19d5b6a5@domain.hid>	<1f3e02580912151715n1f587e87x48834799baf7eea7@domain.hid>
-	<4303dd240912310452m6db83032rb42d13777efbf5a3@domain.hid>
-In-Reply-To: <4303dd240912310452m6db83032rb42d13777efbf5a3@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4B36515C.1070708@domain.hid>
+References: <4B309A29.6030405@domain.hid> <4B316C4B.1030009@domain.hid>
+	<4B320DF6.9010506@domain.hid> <4B35543D.2000809@domain.hid>
+	<4B36515C.1070708@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Sat, 26 Dec 2009 19:27:42 +0100
+Message-ID: <1261852062.19080.288.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Porting I-Pipe for new ARM board
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Build tests: analogy, blackfin, rtcan and nios2.
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Flavio de Castro Alves Filho <flavio.alves@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Flavio de Castro Alves Filho wrote:
-> Hello,
->  
-> I am currently working on the port of Xenomai for the TI OMAP L-138
-> processor (DaVinci platform). I didn't finish yet. As soon as I finish,
-> I will send the patch, and I intend to do so next week.
->  
-> I followed the instructions from Xenomai's wiki page. Until now, I am
-> able to boot my ported kernel with the I-Pipe feature. When I build the
-> kernel with Xenomai feature, the kernel stops to boot.
->  
-> I have some questions:
->  
-> 1) How is the better way to debug the boot process? When my kernel stops
-> booting, after the message "Uncompressing .........." the boot halts. I
-> don't know what is going on and I don't know what to do in order to
-> follow the processes internally. Both debuggers (kernel and i-ipipe) are
-> enabled in the kernel configuration.
+On Sat, 2009-12-26 at 19:09 +0100, Gilles Chanteperdrix wrote:
+> Alexis Berlemont wrote:
+> > Hi Gilles,
+> > 
+> > Gilles Chanteperdrix wrote:
+> >> Alexis Berlemont wrote:
+> >>> Hi Gilles,
+> >>>
+> >>> Gilles Chanteperdrix wrote:
+> >>>> Hi,
+> >>>>
+> >>>> Since I started talking about it, I have run build tests fixing a few
+> >>>> things here and there. The current status is this (still at the same
+> >>>> place: http://sisyphus.hd.free.fr/~gilles/bx):
+> >>>>
+> >>>> * analogy: I have tried to disable some parts of analogy when compiling
+> >>>> on machines without CONFIG_PCI, as compiling parts using PCI on a
+> >>>> machine without PCI support, give various levels of warning and even
+> >>>> errors depending on the architecture. Doing this, I stumbled across this
+> >>>> compilation error:
+> >>>> http://sisyphus.hd.free.fr/~gilles/bx/beagle/2.6.28-arm-none-linux-gnueabi-gcc-4.3.3/log.html#1
+> >>>> this is with CONFIG_NI_MIO, but without CONFIG_NI_MITE.
+> >>>>
+> >>>> So, Alex, could you:
+> >>>> - fix that error, if this combination is supposed to make sense
+> >>> Yes it makes sense. I think the MITE is integrated into all PCI boards
+> >>> but the driver should work with the MITE disabled (one day, we could add
+> >>> the ISA boards).
+> >>>> - fix the Kconfig/Makefile so that no PCI code is compiled if CONFIG_PCI
+> >>>> is not set (I tried and do this myself, but better one who knows than
+> >>>> 100 who have to search...). As I said, doing this result in various
+> >>>> levels of success depending on the architecture.
+> >>> Ack. I will fix these problems as quickly as possible.
+> >> Ok. The fix for the second problem would be nice to have soon, as
+> >> analogy breaks the build on blackfin for this reason. If it is of any
+> >> help, you can send me a patch for this fix only which I will apply on my
+> >> side while you are working on other changes.
+> >>
+> > 
+> > I modified the common part of the NI driver so that the PCI code can be 
+> > disabled without any compilation issues.
+> > 
+> > I made a pull request which contains the fixes.
+> 
+> Thanks, but well, the compilation still fails on blackfin:
+> http://sisyphus.hd.free.fr/~gilles/bx/bf537-stamp/2.6.30-bfin-uclinux-gcc-4.1.2/log.html#13
+> 
 
-This is tips and tricks number 1:
-http://www.xenomai.org/index.php/I-pipe:ArmPorting#Tips_and_tricks.
+This is because arch/blackfin/include/asm/pci.h does not include
+asm-generic/pci-dma-compat.h in 2.6.30 yet. Upstream fixed this is
+2.6.31.
 
->  
-> 2) How tested the code must be done in order to send you a patch? Is
-> there any minimal set of tests that I should perform just before sending
-> you a patch for revision?
+So either we patch in some ugliness like below, or I issue a revised
+pipeline patch for 2.6.30.6 which fixes this upstream bug.
 
-The validation tool I use is LTP. You can check that LTP returns the
-same results with a vanilla kernel, and with the Xenomai patched kernel
-when running LTP while a latency test is running. Unfortunately, to run
-ltp on low-end arms, I had to make a few local changes. Which means I am
-using an out-dated, patched version of LTP:
-http://sisyphus.hd.free.fr/~gilles/ltp-20081130-patched.tar.bz2
+diff --git a/include/asm-blackfin/wrappers.h b/include/asm-blackfin/wrappers.h
+index 6556e74..6111f64 100644
+--- a/include/asm-blackfin/wrappers.h
++++ b/include/asm-blackfin/wrappers.h
+@@ -27,6 +27,11 @@
+ #include <asm-generic/xenomai/wrappers.h> /* Read the generic portion. */
+ #include <linux/interrupt.h>
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,31)
++#include <linux/pci.h>
++#include <asm-generic/pci-dma-compat.h>
++#endif
++
+ #define wrap_phys_mem_prot(filp,pfn,size,prot)	(prot)
+ 
+ #define wrap_strncpy_from_user(dstP, srcP, n)	strncpy_from_user(dstP, srcP, n)
+
+> And we get a new warning on most platforms (x86 and powerpc, and ixp4xx,
+> which is an ARM with PCI support).
+> 
+
 
 -- 
-					    Gilles.
+Philippe.
+
+
 
