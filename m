@@ -1,14 +1,15 @@
-From: Andreas Glatz <AndreasGlatz@domain.hid>
-Date: Thu, 7 Jan 2010 10:58:33 -0500
-Message-ID: <245373446233674495BCA5CA2FC1EB1733A1170AE9@domain.hid>
-References: <1262343652.19080.526.camel@domain.hid>,
-	<201001071639.35486.peter@domain.hid>
-In-Reply-To: <201001071639.35486.peter@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <4B369415.1090200@domain.hid>
+Date: Sat, 26 Dec 2009 23:54:13 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [Xenomai-help] Xenomai v2.5.0 -- Important Notice
+References: <4B309A29.6030405@domain.hid> <4B316C4B.1030009@domain.hid>	
+	<4B320DF6.9010506@domain.hid> <4B35543D.2000809@domain.hid>	
+	<4B36515C.1070708@domain.hid>
+	<1261852062.19080.288.camel@domain.hid>
+In-Reply-To: <1261852062.19080.288.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Build tests: analogy, blackfin, rtcan and nios2.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,45 +19,66 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-I think, "Hear, Hear" is appropriate for Canada as there is still the queen=
- on the dollar bills.
+Philippe Gerum wrote:
+> On Sat, 2009-12-26 at 19:09 +0100, Gilles Chanteperdrix wrote:
+>> Alexis Berlemont wrote:
+>>> Hi Gilles,
+>>>
+>>> Gilles Chanteperdrix wrote:
+>>>> Alexis Berlemont wrote:
+>>>>> Hi Gilles,
+>>>>>
+>>>>> Gilles Chanteperdrix wrote:
+>>>>>> Hi,
+>>>>>>
+>>>>>> Since I started talking about it, I have run build tests fixing a few
+>>>>>> things here and there. The current status is this (still at the same
+>>>>>> place: http://sisyphus.hd.free.fr/~gilles/bx):
+>>>>>>
+>>>>>> * analogy: I have tried to disable some parts of analogy when compiling
+>>>>>> on machines without CONFIG_PCI, as compiling parts using PCI on a
+>>>>>> machine without PCI support, give various levels of warning and even
+>>>>>> errors depending on the architecture. Doing this, I stumbled across this
+>>>>>> compilation error:
+>>>>>> http://sisyphus.hd.free.fr/~gilles/bx/beagle/2.6.28-arm-none-linux-gnueabi-gcc-4.3.3/log.html#1
+>>>>>> this is with CONFIG_NI_MIO, but without CONFIG_NI_MITE.
+>>>>>>
+>>>>>> So, Alex, could you:
+>>>>>> - fix that error, if this combination is supposed to make sense
+>>>>> Yes it makes sense. I think the MITE is integrated into all PCI boards
+>>>>> but the driver should work with the MITE disabled (one day, we could add
+>>>>> the ISA boards).
+>>>>>> - fix the Kconfig/Makefile so that no PCI code is compiled if CONFIG_PCI
+>>>>>> is not set (I tried and do this myself, but better one who knows than
+>>>>>> 100 who have to search...). As I said, doing this result in various
+>>>>>> levels of success depending on the architecture.
+>>>>> Ack. I will fix these problems as quickly as possible.
+>>>> Ok. The fix for the second problem would be nice to have soon, as
+>>>> analogy breaks the build on blackfin for this reason. If it is of any
+>>>> help, you can send me a patch for this fix only which I will apply on my
+>>>> side while you are working on other changes.
+>>>>
+>>> I modified the common part of the NI driver so that the PCI code can be 
+>>> disabled without any compilation issues.
+>>>
+>>> I made a pull request which contains the fixes.
+>> Thanks, but well, the compilation still fails on blackfin:
+>> http://sisyphus.hd.free.fr/~gilles/bx/bf537-stamp/2.6.30-bfin-uclinux-gcc-4.1.2/log.html#13
+>>
+> 
+> This is because arch/blackfin/include/asm/pci.h does not include
+> asm-generic/pci-dma-compat.h in 2.6.30 yet. Upstream fixed this is
+> 2.6.31.
+> 
+> So either we patch in some ugliness like below, or I issue a revised
+> pipeline patch for 2.6.30.6 which fixes this upstream bug.
 
-Andreas
-________________________________________
-From: xenomai-core-bounces@domain.hid [xenomai-core-bounces@domain.hid] On Behalf=
- Of Peter Soetens [peter@domain.hid]
-Sent: Thursday, January 07, 2010 10:39 AM
-To: Philippe Gerum
-Cc: xenomai-help; xenomai@xenomai.org
-Subject: Re: [Xenomai-core] [Xenomai-help] Xenomai v2.5.0 -- Important Noti=
-ce
+Ok. As you wish. Could you also have a look at the bf561 compilation? It
+seems rtdm gets undefined references to some rthal_atomic* operations.
+http://sisyphus.hd.free.fr/~gilles/bx/bf537-stamp/2.6.31-bfin-uclinux-gcc-4.1.2/log.html#1
 
-On Friday 01 January 2010 12:00:52 Philippe Gerum wrote:
-> Here is Xenomai 2.5.0.
-...
-> http://download.gna.org/xenomai/stable/xenomai-2.5.0.tar.bz2
->
-> Happy new year, btw.
-
-A Big Thank You from the user community to all contributors, Philippe, Gill=
-es
-and Jan in particular, seems appropriate here, but it hasn't been spoken ev=
-en
-after a week. Therefor, I'll unilaterally and only for once assume to be th=
-e
-spokesman of this world-wide fan club and do the honors:
-
-A Big Thank You, and a happy new year to you too !
-
-Those who accord, Say "Hear, Hear", "+1" or "Me too", depending on their
-geological or social situation.
-
-The Xenomai User Community.
-
-_______________________________________________
-Xenomai-core mailing list
-Xenomai-core@domain.hid
-https://mail.gna.org/listinfo/xenomai-core
+-- 
+					    Gilles.
 
