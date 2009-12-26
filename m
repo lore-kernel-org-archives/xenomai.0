@@ -1,96 +1,69 @@
-Message-ID: <4B253028.10607@domain.hid>
-Date: Sun, 13 Dec 2009 19:19:20 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <4B35543D.2000809@domain.hid>
+Date: Sat, 26 Dec 2009 01:09:33 +0100
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
 MIME-Version: 1.0
-References: <4B240D0B.50603@domain.hid>	
-	<1260723757.2216.2.camel@domain.hid>
-	<4B252909.9090304@domain.hid>
-	<1260727502.2216.19.camel@domain.hid>
-In-Reply-To: <1260727502.2216.19.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC55779BE74258F9783B68649"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Adeos-main] [pull request] x86: critical fix for
-	native_safe_halt
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+References: <4B309A29.6030405@domain.hid> <4B316C4B.1030009@domain.hid>
+	<4B320DF6.9010506@domain.hid>
+In-Reply-To: <4B320DF6.9010506@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Build tests: analogy, blackfin, rtcan and nios2.
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC55779BE74258F9783B68649
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Hi Gilles,
 
-Philippe Gerum wrote:
-> On Sun, 2009-12-13 at 18:48 +0100, Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> On Sat, 2009-12-12 at 22:37 +0100, Jan Kiszka wrote:
->>>> Recent moving of ipipe_suspend_domain finally exposed a deeper flaw =
-in
->>>> cpu_idle on x86: We failed to check the pipeline log before issuing =
-the
->>>> real hlt. This caused IRQ latencies or even drops for Linux,
->>>> specifically on SMP. Credits go to plain QEMU whose slow SMP mode ca=
-used
->>>> ipipe_critical_enter to deadlock frequently enough.
->>>>
->>>> The first patch of this series fixes this (see below), the second on=
-e
->>>> simply removes the two useless ipipe_suspend_domain calls.
->>>>
->>> What your patch does as well, is killing the ability to run low prior=
-ity
->>> domains below the root level.
->> Yes, I'm killing the dream.
+Gilles Chanteperdrix wrote:
+> Alexis Berlemont wrote:
+>> Hi Gilles,
 >>
->> I heavily doubt that the functions I removed in the second patch ever
->> contributed something good to this. It's always the job of the lowest
->> domain to issue hardware halt, not of some arbitrary mid-prio domain.
->> Moreover, what would be the practical use for such model in the contex=
-t
->> of Linux?
->=20
-> That is _not_ the point. The point is, when submitting a patch, please
-> make sure to raise all the concerns it might introduce wrt to changing
-> the base features. I'm not opposed to make the feature set evolve, but =
-I
-> don't want this to happen "by mistake".
+>> Gilles Chanteperdrix wrote:
+>>> Hi,
+>>>
+>>> Since I started talking about it, I have run build tests fixing a few
+>>> things here and there. The current status is this (still at the same
+>>> place: http://sisyphus.hd.free.fr/~gilles/bx):
+>>>
+>>> * analogy: I have tried to disable some parts of analogy when compiling
+>>> on machines without CONFIG_PCI, as compiling parts using PCI on a
+>>> machine without PCI support, give various levels of warning and even
+>>> errors depending on the architecture. Doing this, I stumbled across this
+>>> compilation error:
+>>> http://sisyphus.hd.free.fr/~gilles/bx/beagle/2.6.28-arm-none-linux-gnueabi-gcc-4.3.3/log.html#1
+>>> this is with CONFIG_NI_MIO, but without CONFIG_NI_MITE.
+>>>
+>>> So, Alex, could you:
+>>> - fix that error, if this combination is supposed to make sense
+>> Yes it makes sense. I think the MITE is integrated into all PCI boards
+>> but the driver should work with the MITE disabled (one day, we could add
+>> the ISA boards).
+>>> - fix the Kconfig/Makefile so that no PCI code is compiled if CONFIG_PCI
+>>> is not set (I tried and do this myself, but better one who knows than
+>>> 100 who have to search...). As I said, doing this result in various
+>>> levels of success depending on the architecture.
+>> Ack. I will fix these problems as quickly as possible.
+> 
+> Ok. The fix for the second problem would be nice to have soon, as
+> analogy breaks the build on blackfin for this reason. If it is of any
+> help, you can send me a patch for this fix only which I will apply on my
+> side while you are working on other changes.
+> 
 
-Just pushed
+I modified the common part of the NI driver so that the PCI code can be 
+disabled without any compilation issues.
 
-"x86: Drop redundant ipipe_suspend_domain from cpu_idle
+I made a pull request which contains the fixes.
 
-Allowing domains below root always required more than these calls (Linux
-would have to give up idle management). And syncing the root domain now
-takes place in __ipipe_halt_root. So remove these suspension calls."
+Merry Christmas.
 
-as commit message for the second patch. Is that what you are looking for?=
-
-
-Jan
-
-
---------------enigC55779BE74258F9783B68649
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkslMCwACgkQitSsb3rl5xRwPgCgm8yBf7CUcYCMqyqRoampWqji
-9ycAoNt+F5PY9QsP+MGnqJFRF05cWzzT
-=Mj+e
------END PGP SIGNATURE-----
-
---------------enigC55779BE74258F9783B68649--
+Alexis.
 
