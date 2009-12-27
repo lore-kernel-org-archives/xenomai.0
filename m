@@ -1,15 +1,16 @@
-Message-ID: <4B4AE4AB.8010905@domain.hid>
-Date: Mon, 11 Jan 2010 09:43:23 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <1262955043-5304-1-git-send-email-gilles.chanteperdrix@xenomai.org>
-	<4B4ADB17.4070905@domain.hid> <4B4ADEE2.9070000@domain.hid>
-In-Reply-To: <4B4ADEE2.9070000@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig9B017F3053DEAAE76F505D83"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [PATCH 1/1] rtdk: various fixes.
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4B369415.1090200@domain.hid>
+References: <4B309A29.6030405@domain.hid> <4B316C4B.1030009@domain.hid>
+	<4B320DF6.9010506@domain.hid> <4B35543D.2000809@domain.hid>
+	<4B36515C.1070708@domain.hid>
+	<1261852062.19080.288.camel@domain.hid>
+	<4B369415.1090200@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Sun, 27 Dec 2009 01:22:00 +0100
+Message-ID: <1261873320.19080.305.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Build tests: analogy, blackfin, rtcan and nios2.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -19,159 +20,72 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig9B017F3053DEAAE76F505D83
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+On Sat, 2009-12-26 at 23:54 +0100, Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+> > On Sat, 2009-12-26 at 19:09 +0100, Gilles Chanteperdrix wrote:
+> >> Alexis Berlemont wrote:
+> >>> Hi Gilles,
+> >>>
+> >>> Gilles Chanteperdrix wrote:
+> >>>> Alexis Berlemont wrote:
+> >>>>> Hi Gilles,
+> >>>>>
+> >>>>> Gilles Chanteperdrix wrote:
+> >>>>>> Hi,
+> >>>>>>
+> >>>>>> Since I started talking about it, I have run build tests fixing a few
+> >>>>>> things here and there. The current status is this (still at the same
+> >>>>>> place: http://sisyphus.hd.free.fr/~gilles/bx):
+> >>>>>>
+> >>>>>> * analogy: I have tried to disable some parts of analogy when compiling
+> >>>>>> on machines without CONFIG_PCI, as compiling parts using PCI on a
+> >>>>>> machine without PCI support, give various levels of warning and even
+> >>>>>> errors depending on the architecture. Doing this, I stumbled across this
+> >>>>>> compilation error:
+> >>>>>> http://sisyphus.hd.free.fr/~gilles/bx/beagle/2.6.28-arm-none-linux-gnueabi-gcc-4.3.3/log.html#1
+> >>>>>> this is with CONFIG_NI_MIO, but without CONFIG_NI_MITE.
+> >>>>>>
+> >>>>>> So, Alex, could you:
+> >>>>>> - fix that error, if this combination is supposed to make sense
+> >>>>> Yes it makes sense. I think the MITE is integrated into all PCI boards
+> >>>>> but the driver should work with the MITE disabled (one day, we could add
+> >>>>> the ISA boards).
+> >>>>>> - fix the Kconfig/Makefile so that no PCI code is compiled if CONFIG_PCI
+> >>>>>> is not set (I tried and do this myself, but better one who knows than
+> >>>>>> 100 who have to search...). As I said, doing this result in various
+> >>>>>> levels of success depending on the architecture.
+> >>>>> Ack. I will fix these problems as quickly as possible.
+> >>>> Ok. The fix for the second problem would be nice to have soon, as
+> >>>> analogy breaks the build on blackfin for this reason. If it is of any
+> >>>> help, you can send me a patch for this fix only which I will apply on my
+> >>>> side while you are working on other changes.
+> >>>>
+> >>> I modified the common part of the NI driver so that the PCI code can be 
+> >>> disabled without any compilation issues.
+> >>>
+> >>> I made a pull request which contains the fixes.
+> >> Thanks, but well, the compilation still fails on blackfin:
+> >> http://sisyphus.hd.free.fr/~gilles/bx/bf537-stamp/2.6.30-bfin-uclinux-gcc-4.1.2/log.html#13
+> >>
+> > 
+> > This is because arch/blackfin/include/asm/pci.h does not include
+> > asm-generic/pci-dma-compat.h in 2.6.30 yet. Upstream fixed this is
+> > 2.6.31.
+> > 
+> > So either we patch in some ugliness like below, or I issue a revised
+> > pipeline patch for 2.6.30.6 which fixes this upstream bug.
+> 
+> Ok. As you wish. Could you also have a look at the bf561 compilation? It
+> seems rtdm gets undefined references to some rthal_atomic* operations.
+> http://sisyphus.hd.free.fr/~gilles/bx/bf537-stamp/2.6.31-bfin-uclinux-gcc-4.1.2/log.html#1
+> 
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> When exiting a process, rtdk buffers are not flushed. Fix that by
->>> introducing a destructor for the library which flushes the buffers.
->>>
->>> When forking, if the main thread has an rt_printf buffer, it is reuse=
-d by
->>> the child, which is a good thing, however, it is not emptied, so coul=
-d cause
->>> the same message to be printed twice. Fix that by emptying the main t=
-hread
->>> buffer upon fork.
->>>
->>> When spawning the rt_print thread, it uses a stack size of
->>> PTHREAD_STACK_MIN, which may be too small for printf to work reliably=
- on
->>> some architectures, set the stack size to the
->>> empirically-known-to-be-working size of... 32Kb.
->>> ---
->>>  src/rtdk/init.c     |    5 +++++
->>>  src/rtdk/internal.h |    1 +
->>>  src/rtdk/rt_print.c |   21 ++++++++++++++++++++-
->>>  3 files changed, 26 insertions(+), 1 deletions(-)
->>>
->>> diff --git a/src/rtdk/init.c b/src/rtdk/init.c
->>> index 2084c73..b864175 100644
->>> --- a/src/rtdk/init.c
->>> +++ b/src/rtdk/init.c
->>> @@ -22,3 +22,8 @@ static __attribute__ ((constructor)) void __init_rt=
-dk(void)
->>>  {
->>>  	__rt_print_init();
->>>  }
->>> +
->>> +static __attribute__ ((destructor)) void __exit_rtdk(void)
->>> +{
->>> +	__rt_print_exit();
->>> +}
->>> diff --git a/src/rtdk/internal.h b/src/rtdk/internal.h
->>> index bd15b2d..345d4fa 100644
->>> --- a/src/rtdk/internal.h
->>> +++ b/src/rtdk/internal.h
->>> @@ -23,6 +23,7 @@
->>>  #include <sys/time.h>
->>> =20
->>>  void __rt_print_init(void);
->>> +void __rt_print_exit(void);
->>> =20
->>>  void __real_free(void *ptr);
->>>  void *__real_malloc(size_t size);
->>> diff --git a/src/rtdk/rt_print.c b/src/rtdk/rt_print.c
->>> index c6b5c55..dae7d7b 100644
->>> --- a/src/rtdk/rt_print.c
->>> +++ b/src/rtdk/rt_print.c
->>> @@ -455,7 +455,7 @@ static void spawn_printer_thread(void)
->>>  	pthread_attr_t thattr;
->>> =20
->>>  	pthread_attr_init(&thattr);
->>> -	pthread_attr_setstacksize(&thattr, PTHREAD_STACK_MIN);
->>> +	pthread_attr_setstacksize(&thattr, 32768);
->> Mmh... maybe rather $something +PTHREAD_STACK_MIN?
->=20
-> No, PTHREAD_STACK_MIN sucks, it is not appropriate, and have very
-> varying values on different platforms. On some plaforms, with some
-> versions of glibc, it is 4096, way too small, so that printf generates =
-a
-> segfault due to a stack overflow.
->=20
-> However, due to the work done when solving the stack issue reported by
-> Stefan, I hid the magic constants in a function called xeno_stacksize
-> and xeno_stacksize(0) gives a reasonnable default value.
+Missing exports. Will fix.
 
-OK, then go for this service (is it already merged)?
-
->=20
->>>  	pthread_create(&printer_thread, &thattr, printer_loop, NULL);
->>>  }
->>> =20
->>> @@ -464,6 +464,15 @@ static void forked_child_init(void)
->>>  	struct print_buffer *my_buffer =3D pthread_getspecific(buffer_key);=
-
->>>  	struct print_buffer **pbuffer =3D &first_buffer;
->>> =20
->>> +	if (my_buffer) {
->>> +		/* Any content of my_buffer should be printed by our parent,
->>> +		   not us. */
->>> +		memset(my_buffer->ring, 0, my_buffer->size);
->>> +
->>> +		my_buffer->read_pos  =3D 0;
->>> +		my_buffer->write_pos =3D 0;
->>> +	}
->>> +
->> Ack.
->>
->>>  	/* re-init to avoid finding it locked by some parent thread */
->>>  	pthread_mutex_init(&buffer_lock, NULL);
->>> =20
->>> @@ -518,3 +527,13 @@ void __rt_print_init(void)
->>>  	spawn_printer_thread();
->>>  	pthread_atfork(NULL, NULL, forked_child_init);
->>>  }
->>> +
->>> +void __rt_print_exit(void)
->>> +{
->>> +	if (buffers) {
->>> +		/* Flush the buffers. Do not call print_buffers here
->>> +		 * since we do not know if our stack is big enough. */
->>> +		nanosleep(&print_period, NULL);
->>> +		nanosleep(&print_period, NULL);
->>> +	}
->>> +}
->> IIRC, that's what cleanup_buffer is supposed to do, triggered by the
->> pthread key destruction. Can you explain why it failed in your scenari=
-o.
->=20
-> pthread_key destruction is called when a thread is cancelled. My
-> testcase was calling exit.
-
-exit() does not trigger these cleanup hooks? Too bad.
-
-> Besides, cleanup_buffer flushes the buffers
-> from the context of the calling thread, which is a bad idea, due to the=
-
-> stack sizes situation.
-
-If a thread requesting rt_printk services is not capable of performing
-this work during it's cleanup, when there is no significant stack load,
-I would say it's misconfigured /wrt stack size.
-
-Jan
+-- 
+Philippe.
 
 
---------------enig9B017F3053DEAAE76F505D83
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAktK5LAACgkQitSsb3rl5xR9LQCgt8IKNq4tz2hjh0TIshV8OK3Z
-cWMAoNM/xpLLtKNWB8045OcqvzNtJaWu
-=QeIW
------END PGP SIGNATURE-----
-
---------------enig9B017F3053DEAAE76F505D83--
 
