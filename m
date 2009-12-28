@@ -1,14 +1,13 @@
-From: Wolfgang Grandegger <wg@domain.hid>
-Date: Thu, 14 Jan 2010 13:07:47 +0100
-Message-Id: <1263470867-1533-6-git-send-email-wg@domain.hid>
-In-Reply-To: <1263470867-1533-5-git-send-email-wg@domain.hid>
-References: <1263470867-1533-1-git-send-email-wg@domain.hid>
-	<1263470867-1533-2-git-send-email-wg@domain.hid>
-	<1263470867-1533-3-git-send-email-wg@domain.hid>
-	<1263470867-1533-4-git-send-email-wg@domain.hid>
-	<1263470867-1533-5-git-send-email-wg@domain.hid>
-Subject: [Xenomai-core] [PATCH xenomai-2.5 3/3] rtcan: mscan: new OF
-	platform driver for MPC521x and MPC5200
+Message-ID: <4B38C355.3090306@domain.hid>
+Date: Mon, 28 Dec 2009 15:40:21 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <1261560352-9120-1-git-send-email-wolfgang.mauerer@domain.hid>	<1261560352-9120-3-git-send-email-wolfgang.mauerer@domain.hid>	<4B31E503.8030208@domain.hid>
+	<4B31EADB.8040305@domain.hid> <4B31EB70.3090108@domain.hid>
+In-Reply-To: <4B31EB70.3090108@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH 2/2] Testcase for the xnvdso mechanism
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,48 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai-core@domain.hid
-Cc: /bin/bash@domain.hid
+To: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+Cc: "Kiszka, Jan" <jan.kiszka@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-pdir=../send-rtcan-mscan-mpc5xxx/
-sprefix="PATCH xenomai-2.5"
-commitid=b197fe0f370d92ee1838b370fbf927ca50a0e573
-subject="rtcan: mscan: new OF platform driver for MPC521x and MPC5200"
-blurb="\
-This patch series adds RT-Socket-CAN support for the MSCAN on the MPC512x
-from Freescale by introducing a new OF platform driver for both, the\\
-MPC521x and MPC5200, while still keeping the old driver for the MPC5200\\
-for compatibility with older kernel versions\\
-\\
-Wolfgang"
+Gilles Chanteperdrix wrote:
+> Wolfgang Mauerer wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Wolfgang Mauerer wrote:
+>>>> This testcase checks if the value in xnvdso->features matches the
+>>>> value of XNVDSO_FEATURES, that is, if the information is correctly
+>>>> transferred from kernel to userland.
+>>>>
+>>>> Notice that the approach will fail once configurations are supported
+>>>> that know of multiple features and implement only some of them.
+>>>> In this case, the testcase needs to be extended accordingly
+>>>> to check that only the expected features are present.
+>>> Please allow to pass the value we want to check on the test command line.
+>> here you go. I suppose keeping XNVDSO_FEATURES as default value
+>> unless something different is specified is okay?
+> 
+> Yes, ok. I am fine with the two patches.
 
-rm -f $pdir/*.patch
-mkdir $pdir
-opt="--dry-run"
-test "$1" = "send" && opt=""
+Ok. I merged them, but renamed a bit the symbols to get things more in
+line with what we do usually.
 
-git format-patch -n -o $pdir --cover-letter --subject-prefix="$sprefix" \
-    $commitid
+xnvdso is the struct
+nkvdso is the global variable
+the xnsysinfo_t member is now simply vdso.
 
-mv $pdir/0000-cover-letter.patch /tmp/0000-cover-letter.patch
-sed "
-s/\*\*\* SUBJECT HERE \*\*\*/$subject/
-s/\*\*\* BLURB HERE \*\*\*/$blurb/
-" /tmp/0000-cover-letter.patch > $pdir/0000-cover-letter.patch
-
-echo "====================================================================="
-cat $pdir/0000-cover-letter.patch
-echo "====================================================================="
-
-opt="--dry-run"
-test "$1" = "send" && opt=""
-
-git format-patch -o $pdir --subject-prefix="$sprefix" $commitid
-
-echo "opt=$opt"
-git send-email $opt \
-    --to "Xenomai-core@domain.hid" \
-    --from="Wolfgang Grandegger <wg@domain.hid>" \
-    $pdir
-
+-- 
+					    Gilles.
 
