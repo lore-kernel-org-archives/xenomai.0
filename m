@@ -1,13 +1,15 @@
-Message-ID: <4B3A30AA.5040103@domain.hid>
-Date: Tue, 29 Dec 2009 17:39:06 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4B3A12B8.9030902@domain.hid>
-	<4B379DFC.6000800@domain.hid>	<27218735.319731261932640576.JavaMail.coremail@domain.hid>	<27741962.171501262064832984.JavaMail.coremail@domain.hid>
+Date: Wed, 30 Dec 2009 00:47:48 +0800 (CST)
+From: robert165 <robert165@domain.hid>
+Message-ID: <10837997.427871262105268378.JavaMail.coremail@domain.hid>
+In-Reply-To: <4B3A30AA.5040103@domain.hid>
+References: <4B3A30AA.5040103@domain.hid> <4B3A12B8.9030902@domain.hid>
+	<4B379DFC.6000800@domain.hid>
+	<27218735.319731261932640576.JavaMail.coremail@domain.hid>
+	<27741962.171501262064832984.JavaMail.coremail@domain.hid>
 	<32053907.426821262104373569.JavaMail.coremail@domain.hid>
-In-Reply-To: <32053907.426821262104373569.JavaMail.coremail@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_111582_1048784.1262105268377"
 Subject: Re: [Xenomai-help] test result on at91rm9200
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,90 +20,142 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: robert165 <robert165@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-robert165 wrote:
->=20
->=20
->=20
-> =E5=9C=A82009-12-29=EF=BC=8C"Gilles Chanteperdrix" <gilles.chanteperdri=
-x@domain.hid> =E5=86=99=E9=81=93=EF=BC=9A
->>robert165 wrote:
->>>=20
->>>=20
->>>=20
->>> =E5=9C=A82009-12-28=EF=BC=8C"Gilles Chanteperdrix" <gilles.chanteperd=
-rix@domain.hid> =E5=86=99=E9=81=93=EF=BC=9A
->>>>robert165 wrote:
->>>>> Hi,
->>>>> I have tested xenomai on my at91rm9200 board, I used
->>>>> xenomai 2.4.10 + linux-2.6.28 + adeos-ipipe-2.6.28-arm-1.12-05.patc=
-h
->>>>> Test result seems very poor, is that correct?
->>>>
->>>>Your test results are rather good for an at91rm9200 board, which is t=
-he
->>>>sure sign that you are not loading the system enough.
->>>>
->>>>As I already told, you, the expected results are:
->>>>- user-space latency of 260us without FCSE
->>>>- user-space latency of 200us with FCSE
->>>>- kernel-space latency of 50us if running with unlocked context switc=
-hes
->>>>(an option which is only available in the upcoming 2.5 branch).
->>>>
->>>>> And is there any introduction of the tests, as their purper, their
->>>>> meanling...
->>>>
->>>>The latency test computes some latencies (either user-space schedulin=
-g
->>>>latency, kernel-space scheduling latency, or kernel-space interrupt
->>>>latency, depending on the options). The switchtest tests context
->>>>switches. The switchbench measures context switching time. cyclictest=
+------=_Part_111582_1048784.1262105268377
+Content-Type: text/plain; charset=gbk
+Content-Transfer-Encoding: base64
 
->>>>does the same thing as the latency test (only, you need to run it wit=
-h
->>>>the right options to avoid running in fact with Linux timer), and in
->>>>general return similar results. Here I do not know what is the meanin=
-g
->>>>of cyclictest results you got, but if you want to know, I am afraid y=
-ou
->>>>wil have to investigate, or simply ignore them.
->>>>
->>>=20
->>> Thanks for your introdution, and is there any document of it.=20
->>> The man pages just explain  parametres  of test scripts.  I could
->>> not understand the output of some test.
->>
->>No there is no document. But patches are welcome, as usual. As far as I=
+CgoKCgrU2jIwMDktMTItMzCjrCJHaWxsZXMgQ2hhbnRlcGVyZHJpeCIgPGdpbGxlcy5jaGFudGVw
+ZXJkcml4QHhlbm9tYWkub3JnPiDQtLXAo7oKPnJvYmVydDE2NSB3cm90ZToKPj4gCj4+IAo+PiAK
+Pj4g1NoyMDA5LTEyLTI5o6wiR2lsbGVzIENoYW50ZXBlcmRyaXgiIDxnaWxsZXMuY2hhbnRlcGVy
+ZHJpeEB4ZW5vbWFpLm9yZz4g0LS1wKO6Cj4+PnJvYmVydDE2NSB3cm90ZToKPj4+PiAKPj4+PiAK
+Pj4+PiAKPj4+PiDU2jIwMDktMTItMjijrCJHaWxsZXMgQ2hhbnRlcGVyZHJpeCIgPGdpbGxlcy5j
+aGFudGVwZXJkcml4QHhlbm9tYWkub3JnPiDQtLXAo7oKPj4+Pj5yb2JlcnQxNjUgd3JvdGU6Cj4+
+Pj4+PiBIaSwKPj4+Pj4+IEkgaGF2ZSB0ZXN0ZWQgeGVub21haSBvbiBteSBhdDkxcm05MjAwIGJv
+YXJkLCBJIHVzZWQKPj4+Pj4+IHhlbm9tYWkgMi40LjEwICsgbGludXgtMi42LjI4ICsgYWRlb3Mt
+aXBpcGUtMi42LjI4LWFybS0xLjEyLTA1LnBhdGNoCj4+Pj4+PiBUZXN0IHJlc3VsdCBzZWVtcyB2
+ZXJ5IHBvb3IsIGlzIHRoYXQgY29ycmVjdD8KPj4+Pj4KPj4+Pj5Zb3VyIHRlc3QgcmVzdWx0cyBh
+cmUgcmF0aGVyIGdvb2QgZm9yIGFuIGF0OTFybTkyMDAgYm9hcmQsIHdoaWNoIGlzIHRoZQo+Pj4+
+PnN1cmUgc2lnbiB0aGF0IHlvdSBhcmUgbm90IGxvYWRpbmcgdGhlIHN5c3RlbSBlbm91Z2guCj4+
+Pj4+Cj4+Pj4+QXMgSSBhbHJlYWR5IHRvbGQsIHlvdSwgdGhlIGV4cGVjdGVkIHJlc3VsdHMgYXJl
+Ogo+Pj4+Pi0gdXNlci1zcGFjZSBsYXRlbmN5IG9mIDI2MHVzIHdpdGhvdXQgRkNTRQo+Pj4+Pi0g
+dXNlci1zcGFjZSBsYXRlbmN5IG9mIDIwMHVzIHdpdGggRkNTRQo+Pj4+Pi0ga2VybmVsLXNwYWNl
+IGxhdGVuY3kgb2YgNTB1cyBpZiBydW5uaW5nIHdpdGggdW5sb2NrZWQgY29udGV4dCBzd2l0Y2hl
+cwo+Pj4+PihhbiBvcHRpb24gd2hpY2ggaXMgb25seSBhdmFpbGFibGUgaW4gdGhlIHVwY29taW5n
+IDIuNSBicmFuY2gpLgo+Pj4+Pgo+Pj4+Pj4gQW5kIGlzIHRoZXJlIGFueSBpbnRyb2R1Y3Rpb24g
+b2YgdGhlIHRlc3RzLCBhcyB0aGVpciBwdXJwZXIsIHRoZWlyCj4+Pj4+PiBtZWFubGluZy4uLgo+
+Pj4+Pgo+Pj4+PlRoZSBsYXRlbmN5IHRlc3QgY29tcHV0ZXMgc29tZSBsYXRlbmNpZXMgKGVpdGhl
+ciB1c2VyLXNwYWNlIHNjaGVkdWxpbmcKPj4+Pj5sYXRlbmN5LCBrZXJuZWwtc3BhY2Ugc2NoZWR1
+bGluZyBsYXRlbmN5LCBvciBrZXJuZWwtc3BhY2UgaW50ZXJydXB0Cj4+Pj4+bGF0ZW5jeSwgZGVw
+ZW5kaW5nIG9uIHRoZSBvcHRpb25zKS4gVGhlIHN3aXRjaHRlc3QgdGVzdHMgY29udGV4dAo+Pj4+
+PnN3aXRjaGVzLiBUaGUgc3dpdGNoYmVuY2ggbWVhc3VyZXMgY29udGV4dCBzd2l0Y2hpbmcgdGlt
+ZS4gY3ljbGljdGVzdAo+Pj4+PmRvZXMgdGhlIHNhbWUgdGhpbmcgYXMgdGhlIGxhdGVuY3kgdGVz
+dCAob25seSwgeW91IG5lZWQgdG8gcnVuIGl0IHdpdGgKPj4+Pj50aGUgcmlnaHQgb3B0aW9ucyB0
+byBhdm9pZCBydW5uaW5nIGluIGZhY3Qgd2l0aCBMaW51eCB0aW1lciksIGFuZCBpbgo+Pj4+Pmdl
+bmVyYWwgcmV0dXJuIHNpbWlsYXIgcmVzdWx0cy4gSGVyZSBJIGRvIG5vdCBrbm93IHdoYXQgaXMg
+dGhlIG1lYW5pbmcKPj4+Pj5vZiBjeWNsaWN0ZXN0IHJlc3VsdHMgeW91IGdvdCwgYnV0IGlmIHlv
+dSB3YW50IHRvIGtub3csIEkgYW0gYWZyYWlkIHlvdQo+Pj4+PndpbCBoYXZlIHRvIGludmVzdGln
+YXRlLCBvciBzaW1wbHkgaWdub3JlIHRoZW0uCj4+Pj4+Cj4+Pj4gCj4+Pj4gVGhhbmtzIGZvciB5
+b3VyIGludHJvZHV0aW9uLCBhbmQgaXMgdGhlcmUgYW55IGRvY3VtZW50IG9mIGl0LiAKPj4+PiBU
+aGUgbWFuIHBhZ2VzIGp1c3QgZXhwbGFpbiAgcGFyYW1ldHJlcyAgb2YgdGVzdCBzY3JpcHRzLiAg
+SSBjb3VsZAo+Pj4+IG5vdCB1bmRlcnN0YW5kIHRoZSBvdXRwdXQgb2Ygc29tZSB0ZXN0Lgo+Pj4K
+Pj4+Tm8gdGhlcmUgaXMgbm8gZG9jdW1lbnQuIEJ1dCBwYXRjaGVzIGFyZSB3ZWxjb21lLCBhcyB1
+c3VhbC4gQXMgZmFyIGFzIEkKPj4+Y2FuIHRlbGwsIEkgZXhwbGFpbmVkIHlvdSB3aGF0IHRoZSB0
+ZXN0cyBkbywgdGhlcmUgaXMgbm90IG11Y2ggbW9yZSB0bwo+Pj50ZWxsLiBXaGljaCB0ZXN0J3Mg
+b3V0cHV0IGRpZCB5b3Ugbm90IHVuZGVyc3RhbmQ/Cj4+Pgo+PiAKPj4gd2hlbiBydW5uaW5nOiAu
+L3J1biAtLSAtcCAxMDAwIC1UIDE4MCAtdDIgIyBsYXRlbmN5Cj4+IHJlc3VsdCBnYXZlIG5lZ2F0
+aXZlIG51bWJlcnMgbGlrZSAKPj4gUlRIfC0tLS0tbGF0IG1pbnwtLS0tLWxhdCBhdmd8LS0tLS1s
+YXQgbWF4fC1vdmVycnVufC0tLS1sYXQgYmVzdHwtLS1sYXQgd29yc3QKPj4gUlREfCAgICAgIC0z
+LjczOXwgICAgICAxMS4zMzB8ICAgICAgMzkuNTMwfCAgICAgICAwfCAgICAgIC0zLjczOXwgICAg
+ICAzOS41MzAKPj4gSXMgdGhhdCBtZWFucyB0aW1lciBpbnRlcnJ1cHRzIGFyZSBub3QgcGVyZmVj
+dCwgYW5kIG1heSBvY2N1ciBiZWZvcmUgb3IgYWZ0ZXIgdGhlIGV4YWN0IG1vbWVudC4KPj4gSWYg
+c28sIHRoZSBhdmcgc2hvdWxkIGNhbGN1bGF0ZSBieSB0aGUgYWJzb2x1dGUgdmFsdWUgb2YgdGhl
+IGxhdGVuY3ksIGFuZCB0aGUgYmVzdCBzaG91bGQgYmUgCj4+IHRoZSBsZWFzdCBhYnNvbHV0ZSB2
+YWx1ZS4KPgo+SXQgaXMgYSBtYXR0ZXIgb2YgcG9pbnQgb2Ygdmlldy4gRnJvbSBvdXIgcG9pbnQg
+b2YgdmlldywgdGhlIHRpbWVyCj5pbnRlcnJ1cHQgdGlja2luZyBpbiBhZHZhbmNlIGlzIGEgZmVh
+dHVyZSwgaXQgY29tcGVuc2F0ZXMgYSBiaXQgZm9yIHRoZQo+bGF0ZW5jeS4gQW55d2F5LCBpZiB5
+b3UgZG8gbm90IGxpa2UgaXQsIGp1c3QKPmVjaG8gMCA+IC9wcm9jL3hlbm9tYWkvbGF0ZW5jeQo+
+Cj5UaGUgdGltZXIgaW50ZXJydXB0cyBoYXBwZW4gYXQgdGhlIHRpbWUgdGhleSBhcmUgcHJvZ3Jh
+bW1lZCwgb25seSBpdCBpcwo+dGhlaXIgaGFuZGxpbmcgd2hpY2ggbWF5IGJlIGRlbGF5ZWQsIG1v
+c3QgcHJvYmFibHkgZHVlIHRvIGludGVycnVwdHMKPm1hc2tpbmcgc2VjdGlvbnMuCj4KT0ssIEkg
+dW5kZXJzdGFuZCBpdCBub3csIHRoYW5rcy4KClJvYmVydAo=
+------=_Part_111582_1048784.1262105268377
+Content-Type: text/html; charset=gbk
+Content-Transfer-Encoding: base64
 
->>can tell, I explained you what the tests do, there is not much more to
->>tell. Which test's output did you not understand?
->>
->=20
-> when running: ./run -- -p 1000 -T 180 -t2 # latency
-> result gave negative numbers like=20
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat=
- worst
-> RTD|      -3.739|      11.330|      39.530|       0|      -3.739|      =
-39.530
-> Is that means timer interrupts are not perfect, and may occur before or=
- after the exact moment.
-> If so, the avg should calculate by the absolute value of the latency, a=
-nd the best should be=20
-> the least absolute value.
-
-It is a matter of point of view. From our point of view, the timer
-interrupt ticking in advance is a feature, it compensates a bit for the
-latency. Anyway, if you do not like it, just
-echo 0 > /proc/xenomai/latency
-
-The timer interrupts happen at the time they are programmed, only it is
-their handling which may be delayed, most probably due to interrupts
-masking sections.
-
---=20
-					    Gilles.
+PGRpdj48YnI+PGJyPjwvZGl2PjxkaXY+PC9kaXY+PGJyPjxwcmU+1NoyMDA5LTEyLTMwo6wiR2ls
+bGVzIENoYW50ZXBlcmRyaXgiICZsdDs8YSBocmVmPSJtYWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRy
+aXhAeGVub21haS5vcmciPmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnPC9hPiZndDsg
+0LS1wKO6CiZndDtyb2JlcnQxNjUgd3JvdGU6CiZndDsmZ3Q7IAomZ3Q7Jmd0OyAKJmd0OyZndDsg
+CiZndDsmZ3Q7INTaMjAwOS0xMi0yOaOsIkdpbGxlcyBDaGFudGVwZXJkcml4IiAmbHQ7PGEgaHJl
+Zj0ibWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnIj5naWxsZXMuY2hhbnRl
+cGVyZHJpeEB4ZW5vbWFpLm9yZzwvYT4mZ3Q7INC0tcCjugomZ3Q7Jmd0OyZndDtyb2JlcnQxNjUg
+d3JvdGU6CiZndDsmZ3Q7Jmd0OyZndDsgCiZndDsmZ3Q7Jmd0OyZndDsgCiZndDsmZ3Q7Jmd0OyZn
+dDsgCiZndDsmZ3Q7Jmd0OyZndDsg1NoyMDA5LTEyLTI4o6wiR2lsbGVzIENoYW50ZXBlcmRyaXgi
+ICZsdDs8YSBocmVmPSJtYWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmciPmdp
+bGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnPC9hPiZndDsg0LS1wKO6CiZndDsmZ3Q7Jmd0
+OyZndDsmZ3Q7cm9iZXJ0MTY1IHdyb3RlOgomZ3Q7Jmd0OyZndDsmZ3Q7Jmd0OyZndDsgSGksCiZn
+dDsmZ3Q7Jmd0OyZndDsmZ3Q7Jmd0OyBJIGhhdmUgdGVzdGVkIHhlbm9tYWkgb24gbXkgYXQ5MXJt
+OTIwMCBib2FyZCwgSSB1c2VkCiZndDsmZ3Q7Jmd0OyZndDsmZ3Q7Jmd0OyB4ZW5vbWFpIDIuNC4x
+MCArIGxpbnV4LTIuNi4yOCArIGFkZW9zLWlwaXBlLTIuNi4yOC1hcm0tMS4xMi0wNS5wYXRjaAom
+Z3Q7Jmd0OyZndDsmZ3Q7Jmd0OyZndDsgVGVzdCByZXN1bHQgc2VlbXMgdmVyeSBwb29yLCBpcyB0
+aGF0IGNvcnJlY3Q/CiZndDsmZ3Q7Jmd0OyZndDsmZ3Q7CiZndDsmZ3Q7Jmd0OyZndDsmZ3Q7WW91
+ciB0ZXN0IHJlc3VsdHMgYXJlIHJhdGhlciBnb29kIGZvciBhbiBhdDkxcm05MjAwIGJvYXJkLCB3
+aGljaCBpcyB0aGUKJmd0OyZndDsmZ3Q7Jmd0OyZndDtzdXJlIHNpZ24gdGhhdCB5b3UgYXJlIG5v
+dCBsb2FkaW5nIHRoZSBzeXN0ZW0gZW5vdWdoLgomZ3Q7Jmd0OyZndDsmZ3Q7Jmd0OwomZ3Q7Jmd0
+OyZndDsmZ3Q7Jmd0O0FzIEkgYWxyZWFkeSB0b2xkLCB5b3UsIHRoZSBleHBlY3RlZCByZXN1bHRz
+IGFyZToKJmd0OyZndDsmZ3Q7Jmd0OyZndDstIHVzZXItc3BhY2UgbGF0ZW5jeSBvZiAyNjB1cyB3
+aXRob3V0IEZDU0UKJmd0OyZndDsmZ3Q7Jmd0OyZndDstIHVzZXItc3BhY2UgbGF0ZW5jeSBvZiAy
+MDB1cyB3aXRoIEZDU0UKJmd0OyZndDsmZ3Q7Jmd0OyZndDstIGtlcm5lbC1zcGFjZSBsYXRlbmN5
+IG9mIDUwdXMgaWYgcnVubmluZyB3aXRoIHVubG9ja2VkIGNvbnRleHQgc3dpdGNoZXMKJmd0OyZn
+dDsmZ3Q7Jmd0OyZndDsoYW4gb3B0aW9uIHdoaWNoIGlzIG9ubHkgYXZhaWxhYmxlIGluIHRoZSB1
+cGNvbWluZyAyLjUgYnJhbmNoKS4KJmd0OyZndDsmZ3Q7Jmd0OyZndDsKJmd0OyZndDsmZ3Q7Jmd0
+OyZndDsmZ3Q7IEFuZCBpcyB0aGVyZSBhbnkgaW50cm9kdWN0aW9uIG9mIHRoZSB0ZXN0cywgYXMg
+dGhlaXIgcHVycGVyLCB0aGVpcgomZ3Q7Jmd0OyZndDsmZ3Q7Jmd0OyZndDsgbWVhbmxpbmcuLi4K
+Jmd0OyZndDsmZ3Q7Jmd0OyZndDsKJmd0OyZndDsmZ3Q7Jmd0OyZndDtUaGUgbGF0ZW5jeSB0ZXN0
+IGNvbXB1dGVzIHNvbWUgbGF0ZW5jaWVzIChlaXRoZXIgdXNlci1zcGFjZSBzY2hlZHVsaW5nCiZn
+dDsmZ3Q7Jmd0OyZndDsmZ3Q7bGF0ZW5jeSwga2VybmVsLXNwYWNlIHNjaGVkdWxpbmcgbGF0ZW5j
+eSwgb3Iga2VybmVsLXNwYWNlIGludGVycnVwdAomZ3Q7Jmd0OyZndDsmZ3Q7Jmd0O2xhdGVuY3ks
+IGRlcGVuZGluZyBvbiB0aGUgb3B0aW9ucykuIFRoZSBzd2l0Y2h0ZXN0IHRlc3RzIGNvbnRleHQK
+Jmd0OyZndDsmZ3Q7Jmd0OyZndDtzd2l0Y2hlcy4gVGhlIHN3aXRjaGJlbmNoIG1lYXN1cmVzIGNv
+bnRleHQgc3dpdGNoaW5nIHRpbWUuIGN5Y2xpY3Rlc3QKJmd0OyZndDsmZ3Q7Jmd0OyZndDtkb2Vz
+IHRoZSBzYW1lIHRoaW5nIGFzIHRoZSBsYXRlbmN5IHRlc3QgKG9ubHksIHlvdSBuZWVkIHRvIHJ1
+biBpdCB3aXRoCiZndDsmZ3Q7Jmd0OyZndDsmZ3Q7dGhlIHJpZ2h0IG9wdGlvbnMgdG8gYXZvaWQg
+cnVubmluZyBpbiBmYWN0IHdpdGggTGludXggdGltZXIpLCBhbmQgaW4KJmd0OyZndDsmZ3Q7Jmd0
+OyZndDtnZW5lcmFsIHJldHVybiBzaW1pbGFyIHJlc3VsdHMuIEhlcmUgSSBkbyBub3Qga25vdyB3
+aGF0IGlzIHRoZSBtZWFuaW5nCiZndDsmZ3Q7Jmd0OyZndDsmZ3Q7b2YgY3ljbGljdGVzdCByZXN1
+bHRzIHlvdSBnb3QsIGJ1dCBpZiB5b3Ugd2FudCB0byBrbm93LCBJIGFtIGFmcmFpZCB5b3UKJmd0
+OyZndDsmZ3Q7Jmd0OyZndDt3aWwgaGF2ZSB0byBpbnZlc3RpZ2F0ZSwgb3Igc2ltcGx5IGlnbm9y
+ZSB0aGVtLgomZ3Q7Jmd0OyZndDsmZ3Q7Jmd0OwomZ3Q7Jmd0OyZndDsmZ3Q7IAomZ3Q7Jmd0OyZn
+dDsmZ3Q7IFRoYW5rcyBmb3IgeW91ciBpbnRyb2R1dGlvbiwgYW5kIGlzIHRoZXJlIGFueSBkb2N1
+bWVudCBvZiBpdC4gCiZndDsmZ3Q7Jmd0OyZndDsgVGhlIG1hbiBwYWdlcyBqdXN0IGV4cGxhaW4g
+IHBhcmFtZXRyZXMgIG9mIHRlc3Qgc2NyaXB0cy4gIEkgY291bGQKJmd0OyZndDsmZ3Q7Jmd0OyBu
+b3QgdW5kZXJzdGFuZCB0aGUgb3V0cHV0IG9mIHNvbWUgdGVzdC4KJmd0OyZndDsmZ3Q7CiZndDsm
+Z3Q7Jmd0O05vIHRoZXJlIGlzIG5vIGRvY3VtZW50LiBCdXQgcGF0Y2hlcyBhcmUgd2VsY29tZSwg
+YXMgdXN1YWwuIEFzIGZhciBhcyBJCiZndDsmZ3Q7Jmd0O2NhbiB0ZWxsLCBJIGV4cGxhaW5lZCB5
+b3Ugd2hhdCB0aGUgdGVzdHMgZG8sIHRoZXJlIGlzIG5vdCBtdWNoIG1vcmUgdG8KJmd0OyZndDsm
+Z3Q7dGVsbC4gV2hpY2ggdGVzdCdzIG91dHB1dCBkaWQgeW91IG5vdCB1bmRlcnN0YW5kPwomZ3Q7
+Jmd0OyZndDsKJmd0OyZndDsgCiZndDsmZ3Q7IHdoZW4gcnVubmluZzogLi9ydW4gLS0gLXAgMTAw
+MCAtVCAxODAgLXQyICMgbGF0ZW5jeQomZ3Q7Jmd0OyByZXN1bHQgZ2F2ZSBuZWdhdGl2ZSBudW1i
+ZXJzIGxpa2UgCiZndDsmZ3Q7IFJUSHwtLS0tLWxhdCBtaW58LS0tLS1sYXQgYXZnfC0tLS0tbGF0
+IG1heHwtb3ZlcnJ1bnwtLS0tbGF0IGJlc3R8LS0tbGF0IHdvcnN0CiZndDsmZ3Q7IFJURHwgICAg
+ICAtMy43Mzl8ICAgICAgMTEuMzMwfCAgICAgIDM5LjUzMHwgICAgICAgMHwgICAgICAtMy43Mzl8
+ICAgICAgMzkuNTMwCiZndDsmZ3Q7IElzIHRoYXQgbWVhbnMgdGltZXIgaW50ZXJydXB0cyBhcmUg
+bm90IHBlcmZlY3QsIGFuZCBtYXkgb2NjdXIgYmVmb3JlIG9yIGFmdGVyIHRoZSBleGFjdCBtb21l
+bnQuCiZndDsmZ3Q7IElmIHNvLCB0aGUgYXZnIHNob3VsZCBjYWxjdWxhdGUgYnkgdGhlIGFic29s
+dXRlIHZhbHVlIG9mIHRoZSBsYXRlbmN5LCBhbmQgdGhlIGJlc3Qgc2hvdWxkIGJlIAomZ3Q7Jmd0
+OyB0aGUgbGVhc3QgYWJzb2x1dGUgdmFsdWUuCiZndDsKJmd0O0l0IGlzIGEgbWF0dGVyIG9mIHBv
+aW50IG9mIHZpZXcuIEZyb20gb3VyIHBvaW50IG9mIHZpZXcsIHRoZSB0aW1lcgomZ3Q7aW50ZXJy
+dXB0IHRpY2tpbmcgaW4gYWR2YW5jZSBpcyBhIGZlYXR1cmUsIGl0IGNvbXBlbnNhdGVzIGEgYml0
+IGZvciB0aGUKJmd0O2xhdGVuY3kuIEFueXdheSwgaWYgeW91IGRvIG5vdCBsaWtlIGl0LCBqdXN0
+CiZndDtlY2hvIDAgJmd0OyAvcHJvYy94ZW5vbWFpL2xhdGVuY3kKJmd0OwomZ3Q7VGhlIHRpbWVy
+IGludGVycnVwdHMgaGFwcGVuIGF0IHRoZSB0aW1lIHRoZXkgYXJlIHByb2dyYW1tZWQsIG9ubHkg
+aXQgaXMKJmd0O3RoZWlyIGhhbmRsaW5nIHdoaWNoIG1heSBiZSBkZWxheWVkLCBtb3N0IHByb2Jh
+Ymx5IGR1ZSB0byBpbnRlcnJ1cHRzCiZndDttYXNraW5nIHNlY3Rpb25zLgomZ3Q7Ck9LLCBJIHVu
+ZGVyc3RhbmQgaXQgbm93LCB0aGFua3MuPGJyPjxicj5Sb2JlcnQ8YnI+PC9wcmU+PGJyPjxicj48
+c3BhbiB0aXRsZT0ibmV0ZWFzZWZvb3RlciIvPjwvc3Bhbj4=
+------=_Part_111582_1048784.1262105268377--
 
 
