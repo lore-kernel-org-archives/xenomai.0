@@ -1,57 +1,355 @@
-Message-ID: <4B320DF6.9010506@domain.hid>
-Date: Wed, 23 Dec 2009 13:32:54 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B309A29.6030405@domain.hid> <4B316C4B.1030009@domain.hid>
-In-Reply-To: <4B316C4B.1030009@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Build tests: analogy, blackfin, rtcan and nios2.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+In-Reply-To: <1262083807.19080.378.camel@domain.hid>
+References: <b88603c30912290148v7c67f028vce0a432c352ee41f@domain.hid>
+	<1262081910.19080.363.camel@domain.hid>
+	<1262083807.19080.378.camel@domain.hid>
+Date: Tue, 29 Dec 2009 17:16:10 +0100
+Message-ID: <b88603c30912290816y575f5dd2qaa4f6452c1ae36d5@domain.hid>
+From: Henri Roosen <henriroosen@domain.hid>
+Content-Type: multipart/mixed; boundary=001636458f960dcb2a047be057e8
+Subject: Re: [Xenomai-help] Long latency exactly every hour
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Alexis Berlemont <berlemont.hauw@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Alexis Berlemont wrote:
-> Hi Gilles,
-> 
-> Gilles Chanteperdrix wrote:
->> Hi,
->>
->> Since I started talking about it, I have run build tests fixing a few
->> things here and there. The current status is this (still at the same
->> place: http://sisyphus.hd.free.fr/~gilles/bx):
->>
->> * analogy: I have tried to disable some parts of analogy when compiling
->> on machines without CONFIG_PCI, as compiling parts using PCI on a
->> machine without PCI support, give various levels of warning and even
->> errors depending on the architecture. Doing this, I stumbled across this
->> compilation error:
->> http://sisyphus.hd.free.fr/~gilles/bx/beagle/2.6.28-arm-none-linux-gnueabi-gcc-4.3.3/log.html#1
->> this is with CONFIG_NI_MIO, but without CONFIG_NI_MITE.
->>
->> So, Alex, could you:
->> - fix that error, if this combination is supposed to make sense
-> Yes it makes sense. I think the MITE is integrated into all PCI boards
-> but the driver should work with the MITE disabled (one day, we could add
-> the ISA boards).
->> - fix the Kconfig/Makefile so that no PCI code is compiled if CONFIG_PCI
->> is not set (I tried and do this myself, but better one who knows than
->> 100 who have to search...). As I said, doing this result in various
->> levels of success depending on the architecture.
-> Ack. I will fix these problems as quickly as possible.
+--001636458f960dcb2a047be057e8
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Ok. The fix for the second problem would be nice to have soon, as
-analogy breaks the build on blackfin for this reason. If it is of any
-help, you can send me a patch for this fix only which I will apply on my
-side while you are working on other changes.
+Thanks Philippe for your quick response!
 
--- 
-					    Gilles.
+I instrumented the code like below. I only see the first trace entry
+(0x11) in the log. If I interpret that correctly, the
+i8042_read_status() which is actually only an inb(0x64); stalls the
+system when fetching the data!? Could you comment on that. Is there
+maybe another explanation?
+
+The i8042 is implemented in the Vortex86DX chip which is a system on
+chip. If this conclusion is correct I might try and contact someone at
+Vortex to find out if they can confirm this behaviour.
+
+
+        spin_lock_irqsave(&i8042_lock, flags);
+        ipipe_trace_special(0x11, 0);
+        str =3D i8042_read_status();
+        if (unlikely(~str & I8042_STR_OBF)) {
+                ipipe_trace_special(0xf1, 0);
+                spin_unlock_irqrestore(&i8042_lock, flags);
+                if (irq) dbg("Interrupt %d, without any data", irq);
+                ret =3D 0;
+                goto out;
+        }
+        ipipe_trace_special(0x12, 0);
+        data =3D i8042_read_data();
+        ipipe_trace_special(0x13, 0);
+        spin_unlock_irqrestore(&i8042_lock, flags);
+
+
+Thanks,
+Henri
+
+
+On Tue, Dec 29, 2009 at 11:50 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On Tue, 2009-12-29 at 11:18 +0100, Philippe Gerum wrote:
+>> On Tue, 2009-12-29 at 10:48 +0100, Henri Roosen wrote:
+>> > Hi,
+>> >
+>> > I have a small board with a Vortex86DX processor, which is a x86
+>> > compatible processor. I have a Linux Xenomai kernel 2.6.30.10 running
+>> > with ipipe 2.4-09 and Xenomai 2.4.10. The .config file is attached to
+>> > this email.
+>> >
+>> > The latency test program runs fine with latencies < 40us, but exactly
+>> > every hour I get one latency which is about 450us. In our system that
+>> > is killing.
+>> >
+>> > I switched off all the SMI and NMI on the board so that will not cause
+>> > the latency. Also I don't see any NMI's or ERR interrupts in
+>> > /proc/interrupts.
+>> >
+>> > I enabled the ipipe tracer and did a couple of runs. What I noticed is
+>> > that the long delay is happening every time at ipipe_check_context in
+>> > the Linux domain (see attached trace_464.log and trace2_438.log). What
+>> > could be blocking the next common_interrupt for so long or what is
+>> > happening there?
+>> >
+>>
+>> Actually, the bad guy is not ipipe_check_context(), but i8042_interrupt,
+>> from the serio driver, one line above in the report. For some reason, it
+>> spins there for quite a while.
+>>
+>> If you look at the various interrupt statuses reported on that line, you
+>> will see that interrupts are still enabled at hw level, but stalled only
+>> for Linux. So what that interrupt handler does, seems to defer the next
+>> interrupt at PIC/device level, but nothing masks it at CPU level.
+>
+> Well, unless some code there fiddles with the interrupt mask internally,
+> in a way that does not get reported to the tracer, in which case what
+> the tracer reports would be suspicious/incomplete wrt the hw interrupt
+> status.
+>
+>>
+>> A possible way to debug this is to add more tracepoints to the suspected
+>> code. You have a special tracer call for adding manual instrumentation,
+>> named "ipipe_trace_special()". You could use it this way, e.g.
+>>
+>> static irqreturn_t i8042_interrupt(int irq, void *dev_id)
+>> {
+>> =A0 =A0 =A0 struct i8042_port *port;
+>> =A0 =A0 =A0 unsigned long flags;
+>> =A0 =A0 =A0 unsigned char str, data;
+>> =A0 =A0 =A0 unsigned int dfl;
+>> =A0 =A0 =A0 unsigned int port_no;
+>> =A0 =A0 =A0 int ret =3D 1;
+>>
+>> =A0 =A0 =A0 spin_lock_irqsave(&i8042_lock, flags);
+>> + =A0 =A0 ipipe_trace_special(0x11, 0);
+>> =A0 =A0 =A0 str =3D i8042_read_status();
+>> =A0 =A0 =A0 if (unlikely(~str & I8042_STR_OBF)) {
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 spin_unlock_irqrestore(&i8042_lock, flags);
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (irq) dbg("Interrupt %d, without any data=
+", irq);
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 ret =3D 0;
+>> + =A0 =A0 =A0 =A0 =A0 =A0 ipipe_trace_special(0x12, 0);
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 goto out;
+>> =A0 =A0 =A0 }
+>> =A0 =A0 =A0 data =3D i8042_read_data();
+>> + =A0 =A0 ipipe_trace_special(0x13, 0);
+>> =A0 =A0 =A0 spin_unlock_irqrestore(&i8042_lock, flags);
+>>
+>> and so on, until you think you have covered enough paths to find the
+>> culprit in the tracer log. The basic idea is to catch the high latency
+>> between two consecutive calls of the special tracepoints, ideally close
+>> enough from each other to allow a precise pinpointing of the faulty
+>> code.
+>>
+>> See there for more:
+>> http://www.xenomai.org/index.php/I-pipe:Tracer
+>>
+>> > All help for debugging and solving this problem is appreciated.
+>> >
+>> > Thanks,
+>> > Henri.
+>> > _______________________________________________
+>> > Xenomai-help mailing list
+>> > Xenomai-help@domain.hid
+>> > https://mail.gna.org/listinfo/xenomai-help
+>>
+>>
+>
+>
+> --
+> Philippe.
+>
+>
+>
+
+--001636458f960dcb2a047be057e8
+Content-Type: text/x-log; charset=US-ASCII; name="trace4.log"
+Content-Disposition: attachment; filename="trace4.log"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_g3svv7el0
+
+SS1waXBlIGZyb3plbiBiYWNrLXRyYWNpbmcgc2VydmljZSBvbiAyLjYuMzAuMTAvaXBpcGUtMi40
+LTA5Ci0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLQpDUFU6IDAsIEZyZWV6ZTogMzM2MDEyMjg5NTEwMCBjeWNsZXMsIFRyYWNlIFBvaW50
+czogMTAwICgrMTApCkNhbGlicmF0ZWQgbWluaW11bSB0cmFjZS1wb2ludCBvdmVyaGVhZDogMC41
+ODcgdXMKCiArLS0tLS0gSGFyZCBJUlFzICgnfCc6IGxvY2tlZCkKIHwrLS0tLSA8dW51c2VkPgog
+fHwrLS0tIDx1bnVzZWQ+CiB8fHwrLS0gWGVub21haQogfHx8fCstIExpbnV4ICgnKic6IGRvbWFp
+biBzdGFsbGVkLCAnKyc6IGN1cnJlbnQsICcjJzogY3VycmVudCtzdGFsbGVkKQogfHx8fHwgICAg
+ICAgICAgICAgICAgICAgICAgICArLS0tLS0tLS0tLSBEZWxheSBmbGFnICgnKyc6ID4gMSB1cywg
+JyEnOiA+IDEwIHVzKQogfHx8fHwgICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgICArLSBO
+TUkgbm9pc2UgKCdOJykKIHx8fHx8ICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgfAog
+ICAgICBUeXBlICAgIFVzZXIgVmFsLiAgIFRpbWUgICAgRGVsYXkgIEZ1bmN0aW9uIChQYXJlbnQp
+Cjp8ICAgK2JlZ2luICAgMHhmZmZmZmZjZiAgLTU1OSsgICAxLjM0NSAgY29tbW9uX2ludGVycnVw
+dCsweDJmIChwb2xsX2lkbGUrMHg0NikKOnwgICArZnVuYyAgICAgICAgICAgICAgICAtNTU3KyAg
+IDEuMDAyICBfX2lwaXBlX2hhbmRsZV9pcnErMHg5IChjb21tb25faW50ZXJydXB0KzB4MzYpCjp8
+ICAgK2Z1bmMgICAgICAgICAgICAgICAgLTU1NiAgICAwLjk1MiAgX19pcGlwZV9hY2tfaXJxKzB4
+MyAoX19pcGlwZV9oYW5kbGVfaXJxKzB4ODApCjp8ICAgK2Z1bmMgICAgICAgICAgICAgICAgLTU1
+NSAgICAxLjAwMCAgX19pcGlwZV9hY2tfbGV2ZWxfaXJxKzB4NSAoX19pcGlwZV9hY2tfaXJxKzB4
+YykKOnwgICArZnVuYyAgICAgICAgICAgICAgICAtNTU0KyAgIDEuMTA1ICBtYXNrX2FuZF9hY2tf
+ODI1OUErMHg2IChfX2lwaXBlX2Fja19sZXZlbF9pcnErMHgyOSkKOnwgICArZnVuYyAgICAgICAg
+ICAgICAgICAtNTUzKyAgIDEuODU0ICBfX2lwaXBlX3NwaW5fbG9ja19pcnFzYXZlKzB4NCAobWFz
+a19hbmRfYWNrXzgyNTlBKzB4MjApCjp8ICAgI2Z1bmMgICAgICAgICAgICAgICAgLTU1MisgICAx
+LjEyOSAgX19pcGlwZV9zcGluX3VubG9ja19pcnFyZXN0b3JlKzB4NCAobWFza19hbmRfYWNrXzgy
+NTlBKzB4NzMpCjp8ICAgK2Z1bmMgICAgICAgICAgICAgICAgLTU1MCAgICAwLjk5MiAgX19pcGlw
+ZV9kaXNwYXRjaF93aXJlZCsweDUgKF9faXBpcGVfaGFuZGxlX2lycSsweDg5KQo6fCAgICtmdW5j
+ICAgICAgICAgICAgICAgIC01NDkrICAgMS4wMDkgIF9faXBpcGVfZGlzcGF0Y2hfd2lyZWRfbm9j
+aGVjaysweDYgKF9faXBpcGVfZGlzcGF0Y2hfd2lyZWQrMHg0ZikKOnwgICMgZnVuYyAgICAgICAg
+ICAgICAgICAtNTQ4KyAgIDEuMDI4ICB4bmludHJfY2xvY2tfaGFuZGxlcisweDkgKF9faXBpcGVf
+ZGlzcGF0Y2hfd2lyZWRfbm9jaGVjaysweDNlKQo6fCAgIyBmdW5jICAgICAgICAgICAgICAgIC01
+NDcrICAgMS4yNDYgIHhudGltZXJfdGlja19hcGVyaW9kaWMrMHg5ICh4bmludHJfY2xvY2tfaGFu
+ZGxlcisweDJhKQo6fCAgIyBmdW5jICAgICAgICAgICAgICAgIC01NDYrICAgMS4wMjggIHhudGhy
+ZWFkX3BlcmlvZGljX2hhbmRsZXIrMHgzICh4bnRpbWVyX3RpY2tfYXBlcmlvZGljKzB4NWIpCjp8
+ICAjIGZ1bmMgICAgICAgICAgICAgICAgLTU0NSsgICAxLjIwNSAgeG5wb2RfcmVzdW1lX3RocmVh
+ZCsweDkgKHhudGhyZWFkX3BlcmlvZGljX2hhbmRsZXIrMHgyOCkKOnwgICMgWyAxMjYxXSBzYW1w
+bGluIDk5ICAtNTQ0KyAgIDEuNTI1ICB4bnBvZF9yZXN1bWVfdGhyZWFkKzB4NTUgKHhudGhyZWFk
+X3BlcmlvZGljX2hhbmRsZXIrMHgyOCkKOnwgICMgZnVuYyAgICAgICAgICAgICAgICAtNTQyKyAg
+IDEuMDM5ICB4bnRpbWVyX25leHRfbG9jYWxfc2hvdCsweDkgKHhudGltZXJfdGlja19hcGVyaW9k
+aWMrMHgxOTIpCjp8ICAjIGV2ZW50ICAgdGlja0AtNDY1ICAgLTU0MSsgICAzLjk5NiAgeG50aW1l
+cl9uZXh0X2xvY2FsX3Nob3QrMHg2NCAoeG50aW1lcl90aWNrX2FwZXJpb2RpYysweDE5MikKOnwg
+ICMgZnVuYyAgICAgICAgICAgICAgICAtNTM3ICAgIDAuODE1ICB4bnBvZF9zY2hlZHVsZSsweDkg
+KHhuaW50cl9jbG9ja19oYW5kbGVyKzB4OGIpCjp8ICAjIFsgICAgMF0gLTw/Pi0gICAtMSAgLTUz
+NisgICAyLjA4MiAgeG5wb2Rfc2NoZWR1bGUrMHg4ZSAoeG5pbnRyX2Nsb2NrX2hhbmRsZXIrMHg4
+YikKOnwgICMgWyAxMjYxXSBzYW1wbGluIDk5ICAtNTM0KyAgIDEuMTU4ICB4bnBvZF9zY2hlZHVs
+ZSsweDgzMyAoeG5wb2Rfc3VzcGVuZF90aHJlYWQrMHgyMWUpCjp8ICAjIGZ1bmMgICAgICAgICAg
+ICAgICAgLTUzMyAgICAwLjk1OSAgeG50aW1lcl9nZXRfb3ZlcnJ1bnMrMHg5ICh4bnBvZF93YWl0
+X3RocmVhZF9wZXJpb2QrMHg5NikKOnwgICMgZnVuYyAgICAgICAgICAgICAgICAtNTMyICAgIDAu
+ODI5ICBfX2lwaXBlX3Jlc3RvcmVfcGlwZWxpbmVfaGVhZCsweDQgKHhucG9kX3dhaXRfdGhyZWFk
+X3BlcmlvZCsweGJlKQo6fCAgKyBlbmQgICAgIDB4ODAwMDAwMDAgIC01MzErICAgMi4yNDUgIF9f
+aXBpcGVfcmVzdG9yZV9waXBlbGluZV9oZWFkKzB4NmUgKHhucG9kX3dhaXRfdGhyZWFkX3Blcmlv
+ZCsweGJlKQo6fCAgKyBiZWdpbiAgIDB4ZmZmZmZmY2UgIC01MjkrICAgMS4xOTkgIGNvbW1vbl9p
+bnRlcnJ1cHQrMHgyZiAoX19pcGlwZV9yZXN0b3JlX3BpcGVsaW5lX2hlYWQrMHg3MCkKOnwgICsg
+ZnVuYyAgICAgICAgICAgICAgICAtNTI4KyAgIDEuMTYyICBfX2lwaXBlX2hhbmRsZV9pcnErMHg5
+IChjb21tb25faW50ZXJydXB0KzB4MzYpCjp8ICArIGZ1bmMgICAgICAgICAgICAgICAgLTUyNyAg
+ICAwLjg5OSAgX19pcGlwZV9zZXRfaXJxX3BlbmRpbmcrMHg2IChfX2lwaXBlX2hhbmRsZV9pcnEr
+MHhiNCkKOnwgICsgZnVuYyAgICAgICAgICAgICAgICAtNTI2ICAgIDAuODk2ICBfX2lwaXBlX2Fj
+a19pcnErMHgzIChfX2lwaXBlX2hhbmRsZV9pcnErMHhjOSkKOnwgICsgZnVuYyAgICAgICAgICAg
+ICAgICAtNTI1KyAgIDEuMDkyICBfX2lwaXBlX2Fja19sZXZlbF9pcnErMHg1IChfX2lwaXBlX2Fj
+a19pcnErMHhjKQo6fCAgKyBmdW5jICAgICAgICAgICAgICAgIC01MjQgICAgMC44OTIgIG1hc2tf
+YW5kX2Fja184MjU5QSsweDYgKF9faXBpcGVfYWNrX2xldmVsX2lycSsweDI5KQo6fCAgKyBmdW5j
+ICAgICAgICAgICAgICAgIC01MjMrICAgMy41ODMgIF9faXBpcGVfc3Bpbl9sb2NrX2lycXNhdmUr
+MHg0IChtYXNrX2FuZF9hY2tfODI1OUErMHgyMCkKOnwgICMgZnVuYyAgICAgICAgICAgICAgICAt
+NTE5ICAgIDAuODk2ICBfX2lwaXBlX3NwaW5fdW5sb2NrX2lycXJlc3RvcmUrMHg0IChtYXNrX2Fu
+ZF9hY2tfODI1OUErMHg3MykKOnwgICsgZW5kICAgICAweGZmZmZmZmNlICAtNTE5KyAgIDEuMTM5
+ICBjb21tb25faW50ZXJydXB0KzB4NDAgKF9faXBpcGVfcmVzdG9yZV9waXBlbGluZV9oZWFkKzB4
+NzApCjp8ICArIGJlZ2luICAgMHg4MDAwMDAwMSAgLTUxNyAgICAwLjk0NiAgX19pcGlwZV9kaXNw
+YXRjaF9ldmVudCsweGZiIChfX2lwaXBlX3N5c2NhbGxfcm9vdCsweDRiKQo6fCAgKyBlbmQgICAg
+IDB4ODAwMDAwMDEgIC01MTcrICAgMS44NDkgIF9faXBpcGVfZGlzcGF0Y2hfZXZlbnQrMHgxOWEg
+KF9faXBpcGVfc3lzY2FsbF9yb290KzB4NGIpCjogICArIGZ1bmMgICAgICAgICAgICAgICAgLTUx
+NSAgICAwLjg2MSAgX19pcGlwZV9zeXNjYWxsX3Jvb3QrMHg5IChzeXN0ZW1fY2FsbCsweDJkKQo6
+ICAgKyBmdW5jICAgICAgICAgICAgICAgIC01MTQgICAgMC44MzYgIF9faXBpcGVfZGlzcGF0Y2hf
+ZXZlbnQrMHg5IChfX2lwaXBlX3N5c2NhbGxfcm9vdCsweDRiKQo6fCAgKyBiZWdpbiAgIDB4ODAw
+MDAwMDEgIC01MTMrICAgMS40MzUgIF9faXBpcGVfZGlzcGF0Y2hfZXZlbnQrMHgyYyAoX19pcGlw
+ZV9zeXNjYWxsX3Jvb3QrMHg0YikKOnwgICsgZW5kICAgICAweDgwMDAwMDAxICAtNTEyICAgIDAu
+ODQyICBfX2lwaXBlX2Rpc3BhdGNoX2V2ZW50KzB4YzkgKF9faXBpcGVfc3lzY2FsbF9yb290KzB4
+NGIpCjogICArIGZ1bmMgICAgICAgICAgICAgICAgLTUxMSAgICAwLjk0NiAgaGlzeXNjYWxsX2V2
+ZW50KzB4OSAoX19pcGlwZV9kaXNwYXRjaF9ldmVudCsweGQ4KQo6ICAgKyBmdW5jICAgICAgICAg
+ICAgICAgIC01MTArICAgMS4xODUgIF9fcnRfdGFza193YWl0X3BlcmlvZCsweDcgKGhpc3lzY2Fs
+bF9ldmVudCsweDEyNykKOiAgICsgZnVuYyAgICAgICAgICAgICAgICAtNTA5ICAgIDAuODU5ICBy
+dF90YXNrX3dhaXRfcGVyaW9kKzB4MyAoX19ydF90YXNrX3dhaXRfcGVyaW9kKzB4MzMpCjogICAr
+IGZ1bmMgICAgICAgICAgICAgICAgLTUwOCAgICAwLjgwMiAgeG5wb2Rfd2FpdF90aHJlYWRfcGVy
+aW9kKzB4OSAocnRfdGFza193YWl0X3BlcmlvZCsweDMxKQo6fCAgKyBiZWdpbiAgIDB4ODAwMDAw
+MDAgIC01MDcrICAgMS4zNDkgIHhucG9kX3dhaXRfdGhyZWFkX3BlcmlvZCsweDI5IChydF90YXNr
+X3dhaXRfcGVyaW9kKzB4MzEpCjp8ICAjIGZ1bmMgICAgICAgICAgICAgICAgLTUwNisgICAxLjE2
+MiAgeG5wb2Rfc3VzcGVuZF90aHJlYWQrMHg5ICh4bnBvZF93YWl0X3RocmVhZF9wZXJpb2QrMHg3
+NSkKOnwgICMgZnVuYyAgICAgICAgICAgICAgICAtNTA0ICAgIDAuODE1ICB4bnBvZF9zY2hlZHVs
+ZSsweDkgKHhucG9kX3N1c3BlbmRfdGhyZWFkKzB4MjFlKQo6fCAgIyBbIDEyNjFdIHNhbXBsaW4g
+OTkgIC01MDQrICAgMS43MTggIHhucG9kX3NjaGVkdWxlKzB4OGUgKHhucG9kX3N1c3BlbmRfdGhy
+ZWFkKzB4MjFlKQo6fCAgIyBbICAgIDBdIC08Pz4tICAgLTEgIC01MDIrICAgMS4zODIgIHhucG9k
+X3NjaGVkdWxlKzB4ODMzICh4bmludHJfY2xvY2tfaGFuZGxlcisweDhiKQo6fCAgICtmdW5jICAg
+ICAgICAgICAgICAgIC01MDAgICAgMC45NDYgIF9faXBpcGVfd2Fsa19waXBlbGluZSsweDYgKF9f
+aXBpcGVfZGlzcGF0Y2hfd2lyZWRfbm9jaGVjaysweDZkKQo6fCAgICtmdW5jICAgICAgICAgICAg
+ICAgIC01MDArICAgMS4yNTkgIF9faXBpcGVfc3luY19zdGFnZSsweDkgKF9faXBpcGVfd2Fsa19w
+aXBlbGluZSsweDdhKQo6fCAgICNlbmQgICAgIDB4ODAwMDAwMDAgIC00OTgrICAgMS4yNDkgIF9f
+aXBpcGVfc3luY19zdGFnZSsweGE0IChfX2lwaXBlX3dhbGtfcGlwZWxpbmUrMHg3YSkKOiAgICAj
+ZnVuYyAgICAgICAgICAgICAgICAtNDk3ICAgIDAuOTEyICBkb19JUlErMHg5IChfX2lwaXBlX3N5
+bmNfc3RhZ2UrMHhmMikKOiAgICAjZnVuYyAgICAgICAgICAgICAgICAtNDk2ICAgIDAuODk5ICBp
+cnFfZW50ZXIrMHgzIChkb19JUlErMHgyNikKOiAgICAjZnVuYyAgICAgICAgICAgICAgICAtNDk1
+ICAgIDAuODUyICBpZGxlX2NwdSsweDMgKGlycV9lbnRlcisweGYpCjogICAgI2Z1bmMgICAgICAg
+ICAgICAgICAgLTQ5NCsgICAxLjM4NiAgaXBpcGVfY2hlY2tfY29udGV4dCsweDMgKGlycV9lbnRl
+cisweDE5KQo6ICAgICNmdW5jICAgICAgICAgICAgICAgIC00OTMgICAgMC44NjkgIGhhbmRsZV9p
+cnErMHg0IChkb19JUlErMHgzOCkKOiAgICAjZnVuYyAgICAgICAgICAgICAgICAtNDkyKyAgIDEu
+MDI1ICBpcnFfdG9fZGVzYysweDMgKGhhbmRsZV9pcnErMHgxMCkKOiAgICAjZnVuYyAgICAgICAg
+ICAgICAgICAtNDkxKyAgIDEuMTMyICBoYW5kbGVfbGV2ZWxfaXJxKzB4NSAoaGFuZGxlX2lycSsw
+eDFmKQo6ICAgICNmdW5jICAgICAgICAgICAgICAgIC00OTArICAgMS4wNDkgIGhhbmRsZV9JUlFf
+ZXZlbnQrMHg5IChoYW5kbGVfbGV2ZWxfaXJxKzB4M2QpCjogICAgI2Z1bmMgICAgICAgICAgICAg
+ICAgLTQ4OSAgICAwLjgwOSAgX19pcGlwZV91bnN0YWxsX3Jvb3QrMHgzIChoYW5kbGVfSVJRX2V2
+ZW50KzB4MWUpCjp8ICAgI2JlZ2luICAgMHg4MDAwMDAwMCAgLTQ4OCsgICAxLjE0OCAgX19pcGlw
+ZV91bnN0YWxsX3Jvb3QrMHgxYSAoaGFuZGxlX0lSUV9ldmVudCsweDFlKQo6fCAgICtlbmQgICAg
+IDB4ODAwMDAwMDAgIC00ODcrICAgMS41MzUgIF9faXBpcGVfdW5zdGFsbF9yb290KzB4NWQgKGhh
+bmRsZV9JUlFfZXZlbnQrMHgxZSkKOiAgICArZnVuYyAgICAgICAgICAgICAgICAtNDg1ICAgIDAu
+OTczICBpODA0Ml9pbnRlcnJ1cHQrMHg5IChoYW5kbGVfSVJRX2V2ZW50KzB4NTYpCjogICAgK2Z1
+bmMgICAgICAgICAgICAgICAgLTQ4NCsgICAxLjI0NSAgaXBpcGVfY2hlY2tfY29udGV4dCsweDMg
+KGk4MDQyX2ludGVycnVwdCsweDFiKQo6ICAgICMoMHgxMSkgIDB4MDAwMDAwMDAgIC00ODMhIDQz
+NC4wMjkgIGk4MDQyX2ludGVycnVwdCsweDNjIChoYW5kbGVfSVJRX2V2ZW50KzB4NTYpCjp8ICAg
+I2JlZ2luICAgMHhmZmZmZmZjZiAgIC00OSsgICAxLjQ2OCAgY29tbW9uX2ludGVycnVwdCsweDJm
+IChpODA0Ml9pbnRlcnJ1cHQrMHg0MykKOnwgICAjZnVuYyAgICAgICAgICAgICAgICAgLTQ4ICAg
+IDAuOTU2ICBfX2lwaXBlX2hhbmRsZV9pcnErMHg5IChjb21tb25faW50ZXJydXB0KzB4MzYpCjp8
+ICAgI2Z1bmMgICAgICAgICAgICAgICAgIC00NyAgICAwLjk1MiAgX19pcGlwZV9hY2tfaXJxKzB4
+MyAoX19pcGlwZV9oYW5kbGVfaXJxKzB4ODApCjp8ICAgI2Z1bmMgICAgICAgICAgICAgICAgIC00
+NiAgICAwLjk3NSAgX19pcGlwZV9hY2tfbGV2ZWxfaXJxKzB4NSAoX19pcGlwZV9hY2tfaXJxKzB4
+YykKOnwgICAjZnVuYyAgICAgICAgICAgICAgICAgLTQ1ICAgIDAuODU2ICBtYXNrX2FuZF9hY2tf
+ODI1OUErMHg2IChfX2lwaXBlX2Fja19sZXZlbF9pcnErMHgyOSkKOnwgICAjZnVuYyAgICAgICAg
+ICAgICAgICAgLTQ0KyAgIDEuNzUxICBfX2lwaXBlX3NwaW5fbG9ja19pcnFzYXZlKzB4NCAobWFz
+a19hbmRfYWNrXzgyNTlBKzB4MjApCjp8ICAgI2Z1bmMgICAgICAgICAgICAgICAgIC00MiAgICAw
+LjkyMiAgX19pcGlwZV9zcGluX3VubG9ja19pcnFyZXN0b3JlKzB4NCAobWFza19hbmRfYWNrXzgy
+NTlBKzB4NzMpCjp8ICAgI2Z1bmMgICAgICAgICAgICAgICAgIC00MSAgICAwLjkxOSAgX19pcGlw
+ZV9kaXNwYXRjaF93aXJlZCsweDUgKF9faXBpcGVfaGFuZGxlX2lycSsweDg5KQo6fCAgICNmdW5j
+ICAgICAgICAgICAgICAgICAtNDAgICAgMC45MTggIF9faXBpcGVfZGlzcGF0Y2hfd2lyZWRfbm9j
+aGVjaysweDYgKF9faXBpcGVfZGlzcGF0Y2hfd2lyZWQrMHg0ZikKOnwgICMqZnVuYyAgICAgICAg
+ICAgICAgICAgLTM5ICAgIDAuOTE5ICB4bmludHJfY2xvY2tfaGFuZGxlcisweDkgKF9faXBpcGVf
+ZGlzcGF0Y2hfd2lyZWRfbm9jaGVjaysweDNlKQo6fCAgIypmdW5jICAgICAgICAgICAgICAgICAt
+MzgrICAgMS4xNzkgIHhudGltZXJfdGlja19hcGVyaW9kaWMrMHg5ICh4bmludHJfY2xvY2tfaGFu
+ZGxlcisweDJhKQo6fCAgIypmdW5jICAgICAgICAgICAgICAgICAtMzcgICAgMC45NTkgIHhudGhy
+ZWFkX3BlcmlvZGljX2hhbmRsZXIrMHgzICh4bnRpbWVyX3RpY2tfYXBlcmlvZGljKzB4NWIpCjp8
+ICAjKmZ1bmMgICAgICAgICAgICAgICAgIC0zNisgICAxLjExMiAgeG5wb2RfcmVzdW1lX3RocmVh
+ZCsweDkgKHhudGhyZWFkX3BlcmlvZGljX2hhbmRsZXIrMHgyOCkKOnwgICMqWyAxMjYxXSBzYW1w
+bGluIDk5ICAgLTM1KyAgIDEuNzk0ICB4bnBvZF9yZXN1bWVfdGhyZWFkKzB4NTUgKHhudGhyZWFk
+X3BlcmlvZGljX2hhbmRsZXIrMHgyOCkKOnwgICMqZnVuYyAgICAgICAgICAgICAgICAgLTMzKyAg
+IDEuMDI5ICB4bnRpbWVyX25leHRfbG9jYWxfc2hvdCsweDkgKHhudGltZXJfdGlja19hcGVyaW9k
+aWMrMHgxOTIpCjp8ICAjKmV2ZW50ICAgdGlja0AzMyAgICAgIC0zMisgICAzLjA2MSAgeG50aW1l
+cl9uZXh0X2xvY2FsX3Nob3QrMHg2NCAoeG50aW1lcl90aWNrX2FwZXJpb2RpYysweDE5MikKOnwg
+ICMqZnVuYyAgICAgICAgICAgICAgICAgLTI5ICAgIDAuOTA4ICB4bnBvZF9zY2hlZHVsZSsweDkg
+KHhuaW50cl9jbG9ja19oYW5kbGVyKzB4OGIpCjp8ICAjKlsgICAgMF0gLTw/Pi0gICAtMSAgIC0y
+OCsgICAyLjI5OCAgeG5wb2Rfc2NoZWR1bGUrMHg4ZSAoeG5pbnRyX2Nsb2NrX2hhbmRsZXIrMHg4
+YikKOnwgICMqWyAxMjYxXSBzYW1wbGluIDk5ICAgLTI2KyAgIDEuMzAxICB4bnBvZF9zY2hlZHVs
+ZSsweDgzMyAoeG5wb2Rfc3VzcGVuZF90aHJlYWQrMHgyMWUpCjp8ICAjKmZ1bmMgICAgICAgICAg
+ICAgICAgIC0yNSsgICAxLjU4NSAgeG50aW1lcl9nZXRfb3ZlcnJ1bnMrMHg5ICh4bnBvZF93YWl0
+X3RocmVhZF9wZXJpb2QrMHg5NikKOnwgICMqZnVuYyAgICAgICAgICAgICAgICAgLTIzICAgIDAu
+ODg2ICBfX2lwaXBlX3Jlc3RvcmVfcGlwZWxpbmVfaGVhZCsweDQgKHhucG9kX3dhaXRfdGhyZWFk
+X3BlcmlvZCsweGJlKQo6fCAgKyplbmQgICAgIDB4ODAwMDAwMDAgICAtMjIrICAgMS4xMTUgIF9f
+aXBpcGVfcmVzdG9yZV9waXBlbGluZV9oZWFkKzB4NmUgKHhucG9kX3dhaXRfdGhyZWFkX3Blcmlv
+ZCsweGJlKQo6fCAgKypiZWdpbiAgIDB4ODAwMDAwMDEgICAtMjErICAgMS4xODIgIF9faXBpcGVf
+ZGlzcGF0Y2hfZXZlbnQrMHhmYiAoX19pcGlwZV9zeXNjYWxsX3Jvb3QrMHg0YikKOnwgICsqZW5k
+ICAgICAweDgwMDAwMDAxICAgLTIwKyAgIDQuMjAxICBfX2lwaXBlX2Rpc3BhdGNoX2V2ZW50KzB4
+MTlhIChfX2lwaXBlX3N5c2NhbGxfcm9vdCsweDRiKQo6ICAgKypmdW5jICAgICAgICAgICAgICAg
+ICAtMTYgICAgMC45NjIgIF9faXBpcGVfc3lzY2FsbF9yb290KzB4OSAoc3lzdGVtX2NhbGwrMHgy
+ZCkKOiAgICsqZnVuYyAgICAgICAgICAgICAgICAgLTE1ICAgIDAuODY5ICBfX2lwaXBlX2Rpc3Bh
+dGNoX2V2ZW50KzB4OSAoX19pcGlwZV9zeXNjYWxsX3Jvb3QrMHg0YikKOnwgICsqYmVnaW4gICAw
+eDgwMDAwMDAxICAgLTE0KyAgIDEuNDcyICBfX2lwaXBlX2Rpc3BhdGNoX2V2ZW50KzB4MmMgKF9f
+aXBpcGVfc3lzY2FsbF9yb290KzB4NGIpCjp8ICArKmVuZCAgICAgMHg4MDAwMDAwMSAgIC0xMyAg
+ICAwLjg3OSAgX19pcGlwZV9kaXNwYXRjaF9ldmVudCsweGM5IChfX2lwaXBlX3N5c2NhbGxfcm9v
+dCsweDRiKQo6ICAgKypmdW5jICAgICAgICAgICAgICAgICAtMTIrICAgMS45NDIgIGhpc3lzY2Fs
+bF9ldmVudCsweDkgKF9faXBpcGVfZGlzcGF0Y2hfZXZlbnQrMHhkOCkKOiAgICsqZnVuYyAgICAg
+ICAgICAgICAgICAgLTEwKyAgIDEuNDU1ICB4bnNoYWRvd19zeXNfdHJhY2UrMHg2IChoaXN5c2Nh
+bGxfZXZlbnQrMHgxMjcpCjogICArKmZ1bmMgICAgICAgICAgICAgICAgICAtOCAgICAwLjk3NiAg
+aXBpcGVfdHJhY2VfZnJvemVuX3Jlc2V0KzB4NCAoeG5zaGFkb3dfc3lzX3RyYWNlKzB4NWUpCjog
+ICArKmZ1bmMgICAgICAgICAgICAgICAgICAtNyAgICAwLjkxOSAgX19pcGlwZV9nbG9iYWxfcGF0
+aF9sb2NrKzB4MyAoaXBpcGVfdHJhY2VfZnJvemVuX3Jlc2V0KzB4MTMpCjogICArKmZ1bmMgICAg
+ICAgICAgICAgICAgICAtNiAgICAwLjc2OCAgX19pcGlwZV9zcGluX2xvY2tfaXJxc2F2ZSsweDQg
+KF9faXBpcGVfZ2xvYmFsX3BhdGhfbG9jaysweDEyKQo6fCAgKypiZWdpbiAgIDB4ODAwMDAwMDEg
+ICAgLTYrICAgMy44MjEgIF9faXBpcGVfc3Bpbl9sb2NrX2lycXNhdmUrMHgxYiAoX19pcGlwZV9n
+bG9iYWxfcGF0aF9sb2NrKzB4MTIpCjp8ICAjKmZ1bmMgICAgICAgICAgICAgICAgICAtMiAgICAw
+Ljk5MiAgX19pcGlwZV9zcGluX3VubG9ja19pcnFjb21wbGV0ZSsweDQgKF9faXBpcGVfZ2xvYmFs
+X3BhdGhfdW5sb2NrKzB4NWEpCjp8ICArKmVuZCAgICAgMHg4MDAwMDAwMSAgICAtMSsgICAxLjMx
+OSAgX19pcGlwZV9zcGluX3VubG9ja19pcnFjb21wbGV0ZSsweDM2IChfX2lwaXBlX2dsb2JhbF9w
+YXRoX3VubG9jaysweDVhKQo8ICAgKypmcmVlemUgIDB4MDAwNmMxZDUgICAgIDAgICAgMS40MTgg
+IHhuc2hhZG93X3N5c190cmFjZSsweDY3IChoaXN5c2NhbGxfZXZlbnQrMHgxMjcpCiB8ICArKmJl
+Z2luICAgMHg4MDAwMDAwMSAgICAgMSAgICAwLjc3OSAgX19pcGlwZV9kaXNwYXRjaF9ldmVudCsw
+eGZiIChfX2lwaXBlX3N5c2NhbGxfcm9vdCsweDRiKQogfCAgKyplbmQgICAgIDB4ODAwMDAwMDEg
+ICAgIDIgICAgMS44NjkgIF9faXBpcGVfZGlzcGF0Y2hfZXZlbnQrMHgxOWEgKF9faXBpcGVfc3lz
+Y2FsbF9yb290KzB4NGIpCiAgICArKmZ1bmMgICAgICAgICAgICAgICAgICAgNCAgICAwLjg3NSAg
+X19pcGlwZV9zeXNjYWxsX3Jvb3QrMHg5IChzeXN0ZW1fY2FsbCsweDJkKQogICAgKypmdW5jICAg
+ICAgICAgICAgICAgICAgIDQgICAgMC43OTUgIF9faXBpcGVfZGlzcGF0Y2hfZXZlbnQrMHg5IChf
+X2lwaXBlX3N5c2NhbGxfcm9vdCsweDRiKQogfCAgKypiZWdpbiAgIDB4ODAwMDAwMDEgICAgIDUg
+ICAgMC44OTkgIF9faXBpcGVfZGlzcGF0Y2hfZXZlbnQrMHgyYyAoX19pcGlwZV9zeXNjYWxsX3Jv
+b3QrMHg0YikKIHwgICsqZW5kICAgICAweDgwMDAwMDAxICAgICA2ICAgIDAuODQ2ICBfX2lwaXBl
+X2Rpc3BhdGNoX2V2ZW50KzB4YzkgKF9faXBpcGVfc3lzY2FsbF9yb290KzB4NGIpCiAgICArKmZ1
+bmMgICAgICAgICAgICAgICAgICAgNyAgICAwLjk2MiAgaGlzeXNjYWxsX2V2ZW50KzB4OSAoX19p
+cGlwZV9kaXNwYXRjaF9ldmVudCsweGQ4KQogICAgKypmdW5jICAgICAgICAgICAgICAgICAgIDgg
+ICAgMC44MzEgIF9fcnRfdGFza193YWl0X3BlcmlvZCsweDcgKGhpc3lzY2FsbF9ldmVudCsweDEy
+NykKICAgICsqZnVuYyAgICAgICAgICAgICAgICAgICA5ICAgIDAuODk2ICBydF90YXNrX3dhaXRf
+cGVyaW9kKzB4MyAoX19ydF90YXNrX3dhaXRfcGVyaW9kKzB4MzMpCiAgICArKmZ1bmMgICAgICAg
+ICAgICAgICAgICAxMCAgICAwLjAwMCAgeG5wb2Rfd2FpdF90aHJlYWRfcGVyaW9kKzB4OSAocnRf
+dGFza193YWl0X3BlcmlvZCsweDMxKQo=
+--001636458f960dcb2a047be057e8--
 
