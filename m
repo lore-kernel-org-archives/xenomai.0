@@ -1,13 +1,13 @@
-Date: Wed, 30 Dec 2009 00:32:53 +0800 (CST)
-From: robert165 <robert165@domain.hid>
-Message-ID: <32053907.426821262104373569.JavaMail.coremail@domain.hid>
-In-Reply-To: <4B3A12B8.9030902@domain.hid>
-References: <4B3A12B8.9030902@domain.hid> <4B379DFC.6000800@domain.hid>
-	<27218735.319731261932640576.JavaMail.coremail@domain.hid>
-	<27741962.171501262064832984.JavaMail.coremail@domain.hid>
+Message-ID: <4B3A30AA.5040103@domain.hid>
+Date: Tue, 29 Dec 2009 17:39:06 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_111310_5524103.1262104373569"
+References: <4B3A12B8.9030902@domain.hid>
+	<4B379DFC.6000800@domain.hid>	<27218735.319731261932640576.JavaMail.coremail@domain.hid>	<27741962.171501262064832984.JavaMail.coremail@domain.hid>
+	<32053907.426821262104373569.JavaMail.coremail@domain.hid>
+In-Reply-To: <32053907.426821262104373569.JavaMail.coremail@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] test result on at91rm9200
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,110 +18,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: robert165 <robert165@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-------=_Part_111310_5524103.1262104373569
-Content-Type: text/plain; charset=gbk
-Content-Transfer-Encoding: base64
+robert165 wrote:
+>=20
+>=20
+>=20
+> =E5=9C=A82009-12-29=EF=BC=8C"Gilles Chanteperdrix" <gilles.chanteperdri=
+x@domain.hid> =E5=86=99=E9=81=93=EF=BC=9A
+>>robert165 wrote:
+>>>=20
+>>>=20
+>>>=20
+>>> =E5=9C=A82009-12-28=EF=BC=8C"Gilles Chanteperdrix" <gilles.chanteperd=
+rix@domain.hid> =E5=86=99=E9=81=93=EF=BC=9A
+>>>>robert165 wrote:
+>>>>> Hi,
+>>>>> I have tested xenomai on my at91rm9200 board, I used
+>>>>> xenomai 2.4.10 + linux-2.6.28 + adeos-ipipe-2.6.28-arm-1.12-05.patc=
+h
+>>>>> Test result seems very poor, is that correct?
+>>>>
+>>>>Your test results are rather good for an at91rm9200 board, which is t=
+he
+>>>>sure sign that you are not loading the system enough.
+>>>>
+>>>>As I already told, you, the expected results are:
+>>>>- user-space latency of 260us without FCSE
+>>>>- user-space latency of 200us with FCSE
+>>>>- kernel-space latency of 50us if running with unlocked context switc=
+hes
+>>>>(an option which is only available in the upcoming 2.5 branch).
+>>>>
+>>>>> And is there any introduction of the tests, as their purper, their
+>>>>> meanling...
+>>>>
+>>>>The latency test computes some latencies (either user-space schedulin=
+g
+>>>>latency, kernel-space scheduling latency, or kernel-space interrupt
+>>>>latency, depending on the options). The switchtest tests context
+>>>>switches. The switchbench measures context switching time. cyclictest=
 
-CgoKCgrU2jIwMDktMTItMjmjrCJHaWxsZXMgQ2hhbnRlcGVyZHJpeCIgPGdpbGxlcy5jaGFudGVw
-ZXJkcml4QHhlbm9tYWkub3JnPiDQtLXAo7oKPnJvYmVydDE2NSB3cm90ZToKPj4gCj4+IAo+PiAK
-Pj4g1NoyMDA5LTEyLTI4o6wiR2lsbGVzIENoYW50ZXBlcmRyaXgiIDxnaWxsZXMuY2hhbnRlcGVy
-ZHJpeEB4ZW5vbWFpLm9yZz4g0LS1wKO6Cj4+PnJvYmVydDE2NSB3cm90ZToKPj4+PiBIaSwKPj4+
-PiBJIGhhdmUgdGVzdGVkIHhlbm9tYWkgb24gbXkgYXQ5MXJtOTIwMCBib2FyZCwgSSB1c2VkCj4+
-Pj4geGVub21haSAyLjQuMTAgKyBsaW51eC0yLjYuMjggKyBhZGVvcy1pcGlwZS0yLjYuMjgtYXJt
-LTEuMTItMDUucGF0Y2gKPj4+PiBUZXN0IHJlc3VsdCBzZWVtcyB2ZXJ5IHBvb3IsIGlzIHRoYXQg
-Y29ycmVjdD8KPj4+Cj4+PllvdXIgdGVzdCByZXN1bHRzIGFyZSByYXRoZXIgZ29vZCBmb3IgYW4g
-YXQ5MXJtOTIwMCBib2FyZCwgd2hpY2ggaXMgdGhlCj4+PnN1cmUgc2lnbiB0aGF0IHlvdSBhcmUg
-bm90IGxvYWRpbmcgdGhlIHN5c3RlbSBlbm91Z2guCj4+Pgo+Pj5BcyBJIGFscmVhZHkgdG9sZCwg
-eW91LCB0aGUgZXhwZWN0ZWQgcmVzdWx0cyBhcmU6Cj4+Pi0gdXNlci1zcGFjZSBsYXRlbmN5IG9m
-IDI2MHVzIHdpdGhvdXQgRkNTRQo+Pj4tIHVzZXItc3BhY2UgbGF0ZW5jeSBvZiAyMDB1cyB3aXRo
-IEZDU0UKPj4+LSBrZXJuZWwtc3BhY2UgbGF0ZW5jeSBvZiA1MHVzIGlmIHJ1bm5pbmcgd2l0aCB1
-bmxvY2tlZCBjb250ZXh0IHN3aXRjaGVzCj4+PihhbiBvcHRpb24gd2hpY2ggaXMgb25seSBhdmFp
-bGFibGUgaW4gdGhlIHVwY29taW5nIDIuNSBicmFuY2gpLgo+Pj4KPj4+PiBBbmQgaXMgdGhlcmUg
-YW55IGludHJvZHVjdGlvbiBvZiB0aGUgdGVzdHMsIGFzIHRoZWlyIHB1cnBlciwgdGhlaXIKPj4+
-PiBtZWFubGluZy4uLgo+Pj4KPj4+VGhlIGxhdGVuY3kgdGVzdCBjb21wdXRlcyBzb21lIGxhdGVu
-Y2llcyAoZWl0aGVyIHVzZXItc3BhY2Ugc2NoZWR1bGluZwo+Pj5sYXRlbmN5LCBrZXJuZWwtc3Bh
-Y2Ugc2NoZWR1bGluZyBsYXRlbmN5LCBvciBrZXJuZWwtc3BhY2UgaW50ZXJydXB0Cj4+PmxhdGVu
-Y3ksIGRlcGVuZGluZyBvbiB0aGUgb3B0aW9ucykuIFRoZSBzd2l0Y2h0ZXN0IHRlc3RzIGNvbnRl
-eHQKPj4+c3dpdGNoZXMuIFRoZSBzd2l0Y2hiZW5jaCBtZWFzdXJlcyBjb250ZXh0IHN3aXRjaGlu
-ZyB0aW1lLiBjeWNsaWN0ZXN0Cj4+PmRvZXMgdGhlIHNhbWUgdGhpbmcgYXMgdGhlIGxhdGVuY3kg
-dGVzdCAob25seSwgeW91IG5lZWQgdG8gcnVuIGl0IHdpdGgKPj4+dGhlIHJpZ2h0IG9wdGlvbnMg
-dG8gYXZvaWQgcnVubmluZyBpbiBmYWN0IHdpdGggTGludXggdGltZXIpLCBhbmQgaW4KPj4+Z2Vu
-ZXJhbCByZXR1cm4gc2ltaWxhciByZXN1bHRzLiBIZXJlIEkgZG8gbm90IGtub3cgd2hhdCBpcyB0
-aGUgbWVhbmluZwo+Pj5vZiBjeWNsaWN0ZXN0IHJlc3VsdHMgeW91IGdvdCwgYnV0IGlmIHlvdSB3
-YW50IHRvIGtub3csIEkgYW0gYWZyYWlkIHlvdQo+Pj53aWwgaGF2ZSB0byBpbnZlc3RpZ2F0ZSwg
-b3Igc2ltcGx5IGlnbm9yZSB0aGVtLgo+Pj4KPj4gCj4+IFRoYW5rcyBmb3IgeW91ciBpbnRyb2R1
-dGlvbiwgYW5kIGlzIHRoZXJlIGFueSBkb2N1bWVudCBvZiBpdC4gCj4+IFRoZSBtYW4gcGFnZXMg
-anVzdCBleHBsYWluICBwYXJhbWV0cmVzICBvZiB0ZXN0IHNjcmlwdHMuICBJIGNvdWxkCj4+IG5v
-dCB1bmRlcnN0YW5kIHRoZSBvdXRwdXQgb2Ygc29tZSB0ZXN0Lgo+Cj5ObyB0aGVyZSBpcyBubyBk
-b2N1bWVudC4gQnV0IHBhdGNoZXMgYXJlIHdlbGNvbWUsIGFzIHVzdWFsLiBBcyBmYXIgYXMgSQo+
-Y2FuIHRlbGwsIEkgZXhwbGFpbmVkIHlvdSB3aGF0IHRoZSB0ZXN0cyBkbywgdGhlcmUgaXMgbm90
-IG11Y2ggbW9yZSB0bwo+dGVsbC4gV2hpY2ggdGVzdCdzIG91dHB1dCBkaWQgeW91IG5vdCB1bmRl
-cnN0YW5kPwo+Cgp3aGVuIHJ1bm5pbmc6IC4vcnVuIC0tIC1wIDEwMDAgLVQgMTgwIC10MiAjIGxh
-dGVuY3kKcmVzdWx0IGdhdmUgbmVnYXRpdmUgbnVtYmVycyBsaWtlIApSVEh8LS0tLS1sYXQgbWlu
-fC0tLS0tbGF0IGF2Z3wtLS0tLWxhdCBtYXh8LW92ZXJydW58LS0tLWxhdCBiZXN0fC0tLWxhdCB3
-b3JzdApSVER8ICAgICAgLTMuNzM5fCAgICAgIDExLjMzMHwgICAgICAzOS41MzB8ICAgICAgIDB8
-ICAgICAgLTMuNzM5fCAgICAgIDM5LjUzMApJcyB0aGF0IG1lYW5zIHRpbWVyIGludGVycnVwdHMg
-YXJlIG5vdCBwZXJmZWN0LCBhbmQgbWF5IG9jY3VyIGJlZm9yZSBvciBhZnRlciB0aGUgZXhhY3Qg
-bW9tZW50LgpJZiBzbywgdGhlIGF2ZyBzaG91bGQgY2FsY3VsYXRlIGJ5IHRoZSBhYnNvbHV0ZSB2
-YWx1ZSBvZiB0aGUgbGF0ZW5jeSwgYW5kIHRoZSBiZXN0IHNob3VsZCBiZSAKdGhlIGxlYXN0IGFi
-c29sdXRlIHZhbHVlLgoKVGhhbmtzIGFnYWluLgoKUm9iZXJ0Cg==
-------=_Part_111310_5524103.1262104373569
-Content-Type: text/html; charset=gbk
-Content-Transfer-Encoding: base64
+>>>>does the same thing as the latency test (only, you need to run it wit=
+h
+>>>>the right options to avoid running in fact with Linux timer), and in
+>>>>general return similar results. Here I do not know what is the meanin=
+g
+>>>>of cyclictest results you got, but if you want to know, I am afraid y=
+ou
+>>>>wil have to investigate, or simply ignore them.
+>>>>
+>>>=20
+>>> Thanks for your introdution, and is there any document of it.=20
+>>> The man pages just explain  parametres  of test scripts.  I could
+>>> not understand the output of some test.
+>>
+>>No there is no document. But patches are welcome, as usual. As far as I=
 
-PGRpdj48YnI+PGJyPjwvZGl2PjxkaXY+PC9kaXY+PGJyPjxwcmU+1NoyMDA5LTEyLTI5o6wiR2ls
-bGVzIENoYW50ZXBlcmRyaXgiICZsdDtnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZyZn
-dDsg0LS1wKO6CiZndDtyb2JlcnQxNjUgd3JvdGU6CiZndDsmZ3Q7IAomZ3Q7Jmd0OyAKJmd0OyZn
-dDsgCiZndDsmZ3Q7INTaMjAwOS0xMi0yOKOsIkdpbGxlcyBDaGFudGVwZXJkcml4IiAmbHQ7Z2ls
-bGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmcmZ3Q7INC0tcCjugomZ3Q7Jmd0OyZndDtyb2Jl
-cnQxNjUgd3JvdGU6CiZndDsmZ3Q7Jmd0OyZndDsgSGksCiZndDsmZ3Q7Jmd0OyZndDsgSSBoYXZl
-IHRlc3RlZCB4ZW5vbWFpIG9uIG15IGF0OTFybTkyMDAgYm9hcmQsIEkgdXNlZAomZ3Q7Jmd0OyZn
-dDsmZ3Q7IHhlbm9tYWkgMi40LjEwICsgbGludXgtMi42LjI4ICsgYWRlb3MtaXBpcGUtMi42LjI4
-LWFybS0xLjEyLTA1LnBhdGNoCiZndDsmZ3Q7Jmd0OyZndDsgVGVzdCByZXN1bHQgc2VlbXMgdmVy
-eSBwb29yLCBpcyB0aGF0IGNvcnJlY3Q/CiZndDsmZ3Q7Jmd0OwomZ3Q7Jmd0OyZndDtZb3VyIHRl
-c3QgcmVzdWx0cyBhcmUgcmF0aGVyIGdvb2QgZm9yIGFuIGF0OTFybTkyMDAgYm9hcmQsIHdoaWNo
-IGlzIHRoZQomZ3Q7Jmd0OyZndDtzdXJlIHNpZ24gdGhhdCB5b3UgYXJlIG5vdCBsb2FkaW5nIHRo
-ZSBzeXN0ZW0gZW5vdWdoLgomZ3Q7Jmd0OyZndDsKJmd0OyZndDsmZ3Q7QXMgSSBhbHJlYWR5IHRv
-bGQsIHlvdSwgdGhlIGV4cGVjdGVkIHJlc3VsdHMgYXJlOgomZ3Q7Jmd0OyZndDstIHVzZXItc3Bh
-Y2UgbGF0ZW5jeSBvZiAyNjB1cyB3aXRob3V0IEZDU0UKJmd0OyZndDsmZ3Q7LSB1c2VyLXNwYWNl
-IGxhdGVuY3kgb2YgMjAwdXMgd2l0aCBGQ1NFCiZndDsmZ3Q7Jmd0Oy0ga2VybmVsLXNwYWNlIGxh
-dGVuY3kgb2YgNTB1cyBpZiBydW5uaW5nIHdpdGggdW5sb2NrZWQgY29udGV4dCBzd2l0Y2hlcwom
-Z3Q7Jmd0OyZndDsoYW4gb3B0aW9uIHdoaWNoIGlzIG9ubHkgYXZhaWxhYmxlIGluIHRoZSB1cGNv
-bWluZyAyLjUgYnJhbmNoKS4KJmd0OyZndDsmZ3Q7CiZndDsmZ3Q7Jmd0OyZndDsgQW5kIGlzIHRo
-ZXJlIGFueSBpbnRyb2R1Y3Rpb24gb2YgdGhlIHRlc3RzLCBhcyB0aGVpciBwdXJwZXIsIHRoZWly
-CiZndDsmZ3Q7Jmd0OyZndDsgbWVhbmxpbmcuLi4KJmd0OyZndDsmZ3Q7CiZndDsmZ3Q7Jmd0O1Ro
-ZSBsYXRlbmN5IHRlc3QgY29tcHV0ZXMgc29tZSBsYXRlbmNpZXMgKGVpdGhlciB1c2VyLXNwYWNl
-IHNjaGVkdWxpbmcKJmd0OyZndDsmZ3Q7bGF0ZW5jeSwga2VybmVsLXNwYWNlIHNjaGVkdWxpbmcg
-bGF0ZW5jeSwgb3Iga2VybmVsLXNwYWNlIGludGVycnVwdAomZ3Q7Jmd0OyZndDtsYXRlbmN5LCBk
-ZXBlbmRpbmcgb24gdGhlIG9wdGlvbnMpLiBUaGUgc3dpdGNodGVzdCB0ZXN0cyBjb250ZXh0CiZn
-dDsmZ3Q7Jmd0O3N3aXRjaGVzLiBUaGUgc3dpdGNoYmVuY2ggbWVhc3VyZXMgY29udGV4dCBzd2l0
-Y2hpbmcgdGltZS4gY3ljbGljdGVzdAomZ3Q7Jmd0OyZndDtkb2VzIHRoZSBzYW1lIHRoaW5nIGFz
-IHRoZSBsYXRlbmN5IHRlc3QgKG9ubHksIHlvdSBuZWVkIHRvIHJ1biBpdCB3aXRoCiZndDsmZ3Q7
-Jmd0O3RoZSByaWdodCBvcHRpb25zIHRvIGF2b2lkIHJ1bm5pbmcgaW4gZmFjdCB3aXRoIExpbnV4
-IHRpbWVyKSwgYW5kIGluCiZndDsmZ3Q7Jmd0O2dlbmVyYWwgcmV0dXJuIHNpbWlsYXIgcmVzdWx0
-cy4gSGVyZSBJIGRvIG5vdCBrbm93IHdoYXQgaXMgdGhlIG1lYW5pbmcKJmd0OyZndDsmZ3Q7b2Yg
-Y3ljbGljdGVzdCByZXN1bHRzIHlvdSBnb3QsIGJ1dCBpZiB5b3Ugd2FudCB0byBrbm93LCBJIGFt
-IGFmcmFpZCB5b3UKJmd0OyZndDsmZ3Q7d2lsIGhhdmUgdG8gaW52ZXN0aWdhdGUsIG9yIHNpbXBs
-eSBpZ25vcmUgdGhlbS4KJmd0OyZndDsmZ3Q7CiZndDsmZ3Q7IAomZ3Q7Jmd0OyBUaGFua3MgZm9y
-IHlvdXIgaW50cm9kdXRpb24sIGFuZCBpcyB0aGVyZSBhbnkgZG9jdW1lbnQgb2YgaXQuIAomZ3Q7
-Jmd0OyBUaGUgbWFuIHBhZ2VzIGp1c3QgZXhwbGFpbiAgcGFyYW1ldHJlcyAgb2YgdGVzdCBzY3Jp
-cHRzLiAgSSBjb3VsZAomZ3Q7Jmd0OyBub3QgdW5kZXJzdGFuZCB0aGUgb3V0cHV0IG9mIHNvbWUg
-dGVzdC4KJmd0OwomZ3Q7Tm8gdGhlcmUgaXMgbm8gZG9jdW1lbnQuIEJ1dCBwYXRjaGVzIGFyZSB3
-ZWxjb21lLCBhcyB1c3VhbC4gQXMgZmFyIGFzIEkKJmd0O2NhbiB0ZWxsLCBJIGV4cGxhaW5lZCB5
-b3Ugd2hhdCB0aGUgdGVzdHMgZG8sIHRoZXJlIGlzIG5vdCBtdWNoIG1vcmUgdG8KJmd0O3RlbGwu
-IFdoaWNoIHRlc3QncyBvdXRwdXQgZGlkIHlvdSBub3QgdW5kZXJzdGFuZD8KJmd0Owo8YnI+d2hl
-biBydW5uaW5nOiAuL3J1biAtLSAtcCAxMDAwIC1UIDE4MCAtdDIgIyBsYXRlbmN5PGJyPnJlc3Vs
-dCBnYXZlIG5lZ2F0aXZlIG51bWJlcnMgbGlrZSA8YnI+UlRIfC0tLS0tbGF0IG1pbnwtLS0tLWxh
-dCBhdmd8LS0tLS1sYXQgbWF4fC1vdmVycnVufC0tLS1sYXQgYmVzdHwtLS1sYXQgd29yc3Q8YnI+
-UlREfCAgICAgIC0zLjczOXwgICAgICAxMS4zMzB8ICAgICAgMzkuNTMwfCAgICAgICAwfCAgICAg
-IC0zLjczOXwgICAgICAzOS41MzA8YnI+SXMgdGhhdCBtZWFucyB0aW1lciBpbnRlcnJ1cHRzIGFy
-ZSBub3QgcGVyZmVjdCwgYW5kIG1heSBvY2N1ciBiZWZvcmUgb3IgYWZ0ZXIgdGhlIGV4YWN0IG1v
-bWVudC48YnI+SWYgc28sIHRoZSBhdmcgc2hvdWxkIGNhbGN1bGF0ZSBieSB0aGUgYWJzb2x1dGUg
-dmFsdWUgb2YgdGhlIGxhdGVuY3ksIGFuZCB0aGUgYmVzdCBzaG91bGQgYmUgPGJyPnRoZSBsZWFz
-dCBhYnNvbHV0ZSB2YWx1ZS48YnI+PGJyPlRoYW5rcyBhZ2Fpbi48YnI+PGJyPlJvYmVydDxicj48
-L3ByZT48YnI+PGJyPjxzcGFuIHRpdGxlPSJuZXRlYXNlZm9vdGVyIi8+PC9zcGFuPg==
-------=_Part_111310_5524103.1262104373569--
+>>can tell, I explained you what the tests do, there is not much more to
+>>tell. Which test's output did you not understand?
+>>
+>=20
+> when running: ./run -- -p 1000 -T 180 -t2 # latency
+> result gave negative numbers like=20
+> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat=
+ worst
+> RTD|      -3.739|      11.330|      39.530|       0|      -3.739|      =
+39.530
+> Is that means timer interrupts are not perfect, and may occur before or=
+ after the exact moment.
+> If so, the avg should calculate by the absolute value of the latency, a=
+nd the best should be=20
+> the least absolute value.
+
+It is a matter of point of view. From our point of view, the timer
+interrupt ticking in advance is a feature, it compensates a bit for the
+latency. Anyway, if you do not like it, just
+echo 0 > /proc/xenomai/latency
+
+The timer interrupts happen at the time they are programmed, only it is
+their handling which may be delayed, most probably due to interrupts
+masking sections.
+
+--=20
+					    Gilles.
 
 
