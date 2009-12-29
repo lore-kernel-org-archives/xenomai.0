@@ -1,13 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1262081910.19080.363.camel@domain.hid>
-References: <b88603c30912290148v7c67f028vce0a432c352ee41f@domain.hid>
-	<1262081910.19080.363.camel@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 29 Dec 2009 11:50:07 +0100
-Message-ID: <1262083807.19080.378.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Long latency exactly every hour
+Message-ID: <4B3A12B8.9030902@domain.hid>
+Date: Tue, 29 Dec 2009 15:31:20 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <4B379DFC.6000800@domain.hid>	<27218735.319731261932640576.JavaMail.coremail@domain.hid>
+	<27741962.171501262064832984.JavaMail.coremail@domain.hid>
+In-Reply-To: <27741962.171501262064832984.JavaMail.coremail@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] test result on at91rm9200
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,98 +17,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Henri Roosen <henriroosen@domain.hid>
-Cc: xenomai@xenomai.org
+To: robert165 <robert165@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On Tue, 2009-12-29 at 11:18 +0100, Philippe Gerum wrote:
-> On Tue, 2009-12-29 at 10:48 +0100, Henri Roosen wrote:
-> > Hi,
-> > 
-> > I have a small board with a Vortex86DX processor, which is a x86
-> > compatible processor. I have a Linux Xenomai kernel 2.6.30.10 running
-> > with ipipe 2.4-09 and Xenomai 2.4.10. The .config file is attached to
-> > this email.
-> > 
-> > The latency test program runs fine with latencies < 40us, but exactly
-> > every hour I get one latency which is about 450us. In our system that
-> > is killing.
-> > 
-> > I switched off all the SMI and NMI on the board so that will not cause
-> > the latency. Also I don't see any NMI's or ERR interrupts in
-> > /proc/interrupts.
-> > 
-> > I enabled the ipipe tracer and did a couple of runs. What I noticed is
-> > that the long delay is happening every time at ipipe_check_context in
-> > the Linux domain (see attached trace_464.log and trace2_438.log). What
-> > could be blocking the next common_interrupt for so long or what is
-> > happening there?
-> > 
-> 
-> Actually, the bad guy is not ipipe_check_context(), but i8042_interrupt,
-> from the serio driver, one line above in the report. For some reason, it
-> spins there for quite a while.
-> 
-> If you look at the various interrupt statuses reported on that line, you
-> will see that interrupts are still enabled at hw level, but stalled only
-> for Linux. So what that interrupt handler does, seems to defer the next
-> interrupt at PIC/device level, but nothing masks it at CPU level.
+robert165 wrote:
+>=20
+>=20
+>=20
+> =E5=9C=A82009-12-28=EF=BC=8C"Gilles Chanteperdrix" <gilles.chanteperdri=
+x@domain.hid> =E5=86=99=E9=81=93=EF=BC=9A
+>>robert165 wrote:
+>>> Hi,
+>>> I have tested xenomai on my at91rm9200 board, I used
+>>> xenomai 2.4.10 + linux-2.6.28 + adeos-ipipe-2.6.28-arm-1.12-05.patch
+>>> Test result seems very poor, is that correct?
+>>
+>>Your test results are rather good for an at91rm9200 board, which is the=
 
-Well, unless some code there fiddles with the interrupt mask internally,
-in a way that does not get reported to the tracer, in which case what
-the tracer reports would be suspicious/incomplete wrt the hw interrupt
-status.
+>>sure sign that you are not loading the system enough.
+>>
+>>As I already told, you, the expected results are:
+>>- user-space latency of 260us without FCSE
+>>- user-space latency of 200us with FCSE
+>>- kernel-space latency of 50us if running with unlocked context switche=
+s
+>>(an option which is only available in the upcoming 2.5 branch).
+>>
+>>> And is there any introduction of the tests, as their purper, their
+>>> meanling...
+>>
+>>The latency test computes some latencies (either user-space scheduling
+>>latency, kernel-space scheduling latency, or kernel-space interrupt
+>>latency, depending on the options). The switchtest tests context
+>>switches. The switchbench measures context switching time. cyclictest
+>>does the same thing as the latency test (only, you need to run it with
+>>the right options to avoid running in fact with Linux timer), and in
+>>general return similar results. Here I do not know what is the meaning
+>>of cyclictest results you got, but if you want to know, I am afraid you=
 
-> 
-> A possible way to debug this is to add more tracepoints to the suspected
-> code. You have a special tracer call for adding manual instrumentation,
-> named "ipipe_trace_special()". You could use it this way, e.g.
-> 
-> static irqreturn_t i8042_interrupt(int irq, void *dev_id)
-> {
-> 	struct i8042_port *port;
-> 	unsigned long flags;
-> 	unsigned char str, data;
-> 	unsigned int dfl;
-> 	unsigned int port_no;
-> 	int ret = 1;
-> 
-> 	spin_lock_irqsave(&i8042_lock, flags);
-> +	ipipe_trace_special(0x11, 0);
-> 	str = i8042_read_status();
-> 	if (unlikely(~str & I8042_STR_OBF)) {
-> 		spin_unlock_irqrestore(&i8042_lock, flags);
-> 		if (irq) dbg("Interrupt %d, without any data", irq);
-> 		ret = 0;
-> + 		ipipe_trace_special(0x12, 0);
-> 		goto out;
-> 	}
-> 	data = i8042_read_data();
-> + 	ipipe_trace_special(0x13, 0);
-> 	spin_unlock_irqrestore(&i8042_lock, flags);
-> 
-> and so on, until you think you have covered enough paths to find the
-> culprit in the tracer log. The basic idea is to catch the high latency
-> between two consecutive calls of the special tracepoints, ideally close
-> enough from each other to allow a precise pinpointing of the faulty
-> code.
-> 
-> See there for more:
-> http://www.xenomai.org/index.php/I-pipe:Tracer
-> 
-> > All help for debugging and solving this problem is appreciated.
-> > 
-> > Thanks,
-> > Henri.
-> > _______________________________________________
-> > Xenomai-help mailing list
-> > Xenomai-help@domain.hid
-> > https://mail.gna.org/listinfo/xenomai-help
-> 
-> 
+>>wil have to investigate, or simply ignore them.
+>>
+>=20
+> Thanks for your introdution, and is there any document of it.=20
+> The man pages just explain  parametres  of test scripts.  I could
+> not understand the output of some test.
 
+No there is no document. But patches are welcome, as usual. As far as I
+can tell, I explained you what the tests do, there is not much more to
+tell. Which test's output did you not understand?
 
--- 
-Philippe.
+>=20
+>>>=20
+>>> Test is under loads as followed,
+>>>     dd if=3D/dev/zero of=3D/dev/null > /dev/null &
+>>>     ping 172.18.23.10 > /dev/null &
+>>>     while ls; do ls; done > /dev/null &
+>>
+>>This load is laughable. Do you find that they really stress the system,=
 
+>>that they make it really unresponsive? Do you really expect a test whic=
+h
+>>sends one packet every second over network to stress the system in some=
+
+>>way? That is what I meant when I said hammering the system real hard.
+>=20
+> The reason I procuce the load is:=20
+> https://mail.gna.org/public/xenomai-help/2008-01/msg00023.html
+> How can I produce a real hard load. Are there any direction about it.
+
+The mail you are refering to is using ping -f, not ping, and talks about
+stressing cache by running the cache calibrator. The way we do our tests
+evolved a bit since then. We use netcat instead of ping -f, and the
+hackbench test to stress the linux scheduler. That is when FCSE is
+enabled in guaranteed mode. Without FCSE, we use ltp (the linux testing
+project) and netcat.
+
+--=20
+					    Gilles.
 
 
