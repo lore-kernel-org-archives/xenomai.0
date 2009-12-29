@@ -1,11 +1,13 @@
-Message-ID: <258879.2941.qm@domain.hid>
-Date: Mon, 28 Dec 2009 09:57:13 -0800 (PST)
-From: Yigal Goldberger <yigal_gold@domain.hid>
+Date: Tue, 29 Dec 2009 13:33:52 +0800 (CST)
+From: robert165 <robert165@domain.hid>
+Message-ID: <27741962.171501262064832984.JavaMail.coremail@domain.hid>
+In-Reply-To: <4B379DFC.6000800@domain.hid>
+References: <4B379DFC.6000800@domain.hid>
+	<27218735.319731261932640576.JavaMail.coremail@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] Fw: Re: signaling to a thread waiting on an event in
-	the kernel
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_44620_25384589.1262064832983"
+Subject: Re: [Xenomai-help] test result on at91rm9200
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,120 +17,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-Hi,
-CC'ing the mailing list .
+------=_Part_44620_25384589.1262064832983
+Content-Type: text/plain; charset=gbk
+Content-Transfer-Encoding: base64
 
---- On Mon, 12/28/09, Yigal Goldberger <yigal_gold@domain.hid> wrote:
+CgoKCgrU2jIwMDktMTItMjijrCJHaWxsZXMgQ2hhbnRlcGVyZHJpeCIgPGdpbGxlcy5jaGFudGVw
+ZXJkcml4QHhlbm9tYWkub3JnPiDQtLXAo7oKPnJvYmVydDE2NSB3cm90ZToKPj4gSGksCj4+IEkg
+aGF2ZSB0ZXN0ZWQgeGVub21haSBvbiBteSBhdDkxcm05MjAwIGJvYXJkLCBJIHVzZWQKPj4geGVu
+b21haSAyLjQuMTAgKyBsaW51eC0yLjYuMjggKyBhZGVvcy1pcGlwZS0yLjYuMjgtYXJtLTEuMTIt
+MDUucGF0Y2gKPj4gVGVzdCByZXN1bHQgc2VlbXMgdmVyeSBwb29yLCBpcyB0aGF0IGNvcnJlY3Q/
+Cj4KPllvdXIgdGVzdCByZXN1bHRzIGFyZSByYXRoZXIgZ29vZCBmb3IgYW4gYXQ5MXJtOTIwMCBi
+b2FyZCwgd2hpY2ggaXMgdGhlCj5zdXJlIHNpZ24gdGhhdCB5b3UgYXJlIG5vdCBsb2FkaW5nIHRo
+ZSBzeXN0ZW0gZW5vdWdoLgo+Cj5BcyBJIGFscmVhZHkgdG9sZCwgeW91LCB0aGUgZXhwZWN0ZWQg
+cmVzdWx0cyBhcmU6Cj4tIHVzZXItc3BhY2UgbGF0ZW5jeSBvZiAyNjB1cyB3aXRob3V0IEZDU0UK
+Pi0gdXNlci1zcGFjZSBsYXRlbmN5IG9mIDIwMHVzIHdpdGggRkNTRQo+LSBrZXJuZWwtc3BhY2Ug
+bGF0ZW5jeSBvZiA1MHVzIGlmIHJ1bm5pbmcgd2l0aCB1bmxvY2tlZCBjb250ZXh0IHN3aXRjaGVz
+Cj4oYW4gb3B0aW9uIHdoaWNoIGlzIG9ubHkgYXZhaWxhYmxlIGluIHRoZSB1cGNvbWluZyAyLjUg
+YnJhbmNoKS4KPgo+PiBBbmQgaXMgdGhlcmUgYW55IGludHJvZHVjdGlvbiBvZiB0aGUgdGVzdHMs
+IGFzIHRoZWlyIHB1cnBlciwgdGhlaXIKPj4gbWVhbmxpbmcuLi4KPgo+VGhlIGxhdGVuY3kgdGVz
+dCBjb21wdXRlcyBzb21lIGxhdGVuY2llcyAoZWl0aGVyIHVzZXItc3BhY2Ugc2NoZWR1bGluZwo+
+bGF0ZW5jeSwga2VybmVsLXNwYWNlIHNjaGVkdWxpbmcgbGF0ZW5jeSwgb3Iga2VybmVsLXNwYWNl
+IGludGVycnVwdAo+bGF0ZW5jeSwgZGVwZW5kaW5nIG9uIHRoZSBvcHRpb25zKS4gVGhlIHN3aXRj
+aHRlc3QgdGVzdHMgY29udGV4dAo+c3dpdGNoZXMuIFRoZSBzd2l0Y2hiZW5jaCBtZWFzdXJlcyBj
+b250ZXh0IHN3aXRjaGluZyB0aW1lLiBjeWNsaWN0ZXN0Cj5kb2VzIHRoZSBzYW1lIHRoaW5nIGFz
+IHRoZSBsYXRlbmN5IHRlc3QgKG9ubHksIHlvdSBuZWVkIHRvIHJ1biBpdCB3aXRoCj50aGUgcmln
+aHQgb3B0aW9ucyB0byBhdm9pZCBydW5uaW5nIGluIGZhY3Qgd2l0aCBMaW51eCB0aW1lciksIGFu
+ZCBpbgo+Z2VuZXJhbCByZXR1cm4gc2ltaWxhciByZXN1bHRzLiBIZXJlIEkgZG8gbm90IGtub3cg
+d2hhdCBpcyB0aGUgbWVhbmluZwo+b2YgY3ljbGljdGVzdCByZXN1bHRzIHlvdSBnb3QsIGJ1dCBp
+ZiB5b3Ugd2FudCB0byBrbm93LCBJIGFtIGFmcmFpZCB5b3UKPndpbCBoYXZlIHRvIGludmVzdGln
+YXRlLCBvciBzaW1wbHkgaWdub3JlIHRoZW0uCj4KClRoYW5rcyBmb3IgeW91ciBpbnRyb2R1dGlv
+biwgYW5kIGlzIHRoZXJlIGFueSBkb2N1bWVudCBvZiBpdC4gClRoZSBtYW4gcGFnZXMganVzdCBl
+eHBsYWluICBwYXJhbWV0cmVzICBvZiB0ZXN0IHNjcmlwdHMuICBJIGNvdWxkCm5vdCB1bmRlcnN0
+YW5kIHRoZSBvdXRwdXQgb2Ygc29tZSB0ZXN0LgoKPj4gCj4+IFRlc3QgaXMgdW5kZXIgbG9hZHMg
+YXMgZm9sbG93ZWQsCj4+ICAgICBkZCBpZj0vZGV2L3plcm8gb2Y9L2Rldi9udWxsID4gL2Rldi9u
+dWxsICYKPj4gICAgIHBpbmcgMTcyLjE4LjIzLjEwID4gL2Rldi9udWxsICYKPj4gICAgIHdoaWxl
+IGxzOyBkbyBsczsgZG9uZSA+IC9kZXYvbnVsbCAmCj4KPlRoaXMgbG9hZCBpcyBsYXVnaGFibGUu
+IERvIHlvdSBmaW5kIHRoYXQgdGhleSByZWFsbHkgc3RyZXNzIHRoZSBzeXN0ZW0sCj50aGF0IHRo
+ZXkgbWFrZSBpdCByZWFsbHkgdW5yZXNwb25zaXZlPyBEbyB5b3UgcmVhbGx5IGV4cGVjdCBhIHRl
+c3Qgd2hpY2gKPnNlbmRzIG9uZSBwYWNrZXQgZXZlcnkgc2Vjb25kIG92ZXIgbmV0d29yayB0byBz
+dHJlc3MgdGhlIHN5c3RlbSBpbiBzb21lCj53YXk/IFRoYXQgaXMgd2hhdCBJIG1lYW50IHdoZW4g
+SSBzYWlkIGhhbW1lcmluZyB0aGUgc3lzdGVtIHJlYWwgaGFyZC4KClRoZSByZWFzb24gSSBwcm9j
+dWNlIHRoZSBsb2FkIGlzOiAKaHR0cHM6Ly9tYWlsLmduYS5vcmcvcHVibGljL3hlbm9tYWktaGVs
+cC8yMDA4LTAxL21zZzAwMDIzLmh0bWwKSG93IGNhbiBJIHByb2R1Y2UgYSByZWFsIGhhcmQgbG9h
+ZC4gQXJlIHRoZXJlIGFueSBkaXJlY3Rpb24gYWJvdXQgaXQuCgo+LS0gCj4JCQkJCSAgICBHaWxs
+ZXMuCgpUaGFua3MgZm9yIHlvdXIgcGF0aWVudCBoZWxwIC4KClJvYmVydAo=
+------=_Part_44620_25384589.1262064832983
+Content-Type: text/html; charset=gbk
+Content-Transfer-Encoding: base64
 
-> From: Yigal Goldberger <yigal_gold@domain.hid>
-> Subject: Re: [Xenomai-help] signaling to a thread waiting on an event in =
-the kernel
-> To: "Philippe Gerum" <rpm@xenomai.org>
-> Date: Monday, December 28, 2009, 6:01 PM
-> Hi Philippe,
-> Thanks for quickly responding .
-> My system is a powerpc based board ( MPC8272 by freesacle
-> ).
-> The kernel is 2.6.29.4 .
-> Xenomai v2.4.8.
->=20
-> My app hangs on the RTDM syscall invoking
-> rtdm_event_timedwait() from your
-> driver .(It does not return from this function call at
-> all)
-> The system does not lock up badly . My so called Monitor
-> process (the process that issues the kill(Pid,SIGTERM),
-> functions well and communicates fine.
-> I'd like to mention that when the application process is
-> not blocked (in normal operation) it does respond to the
-> signal and terminates correctly , but when it is "stuck"|
-> such as on the infinite event wait it becomes non responsive
-> to external signals.
->=20
-> Thanks,
-> Yigal.
->=20
->=20
->=20
->=20
->=20
->=20
-> --- On Mon, 12/28/09, Philippe Gerum <rpm@xenomai.org>
-> wrote:
->=20
-> > From: Philippe Gerum <rpm@xenomai.org>
-> > Subject: Re: [Xenomai-help] signaling to a thread
-> waiting on an event in the kernel
-> > To: "Yigal Goldberger" <yigal_gold@domain.hid>
-> > Cc: xenomai@xenomai.org
-> > Date: Monday, December 28, 2009, 4:52 PM
-> > On Mon, 2009-12-28 at 01:59 -0800,
-> > Yigal Goldberger wrote:
-> > > Hi,
-> > >=20
-> > > I want to have the ability to restart a process
-> at all
-> > times.
-> > > I have a situation where a thread is waiting on
-> an
-> > event in the kernel with :=20
-> > > rtdm_event_timedwait(&args,0,NULL)
-> >=20
-> > >=A0=A0=A0- infinite wait (I need this infinite
-> > wait ...)=20
-> > >=20
-> > > and I cannot restart it with=A0 :
-> > >=20
-> > > kill(Pid,SIGTERM) .
-> > >=20
-> > > from a different process .
-> > >=20
-> > > Suggestions are most welcome.
-> > >=20
-> >=20
-> > Please be more specific:
-> >=20
-> > - what happens when SIGTERM is sent, exactly? does
-> your app
-> > hang on the
-> > RTDM syscall invoking rtdm_event_timedwait() from
-> your
-> > driver, or does
-> > the entire system lock up badly?
-> > - did you check whether rtdm_event_timedwait()
-> returned
-> > with an error
-> > code, such as -EINTR?
-> > - which platform, whick kernel release, which Xenomai
-> > release are you
-> > running?
-> >=20
-> > Btw, rtdm_event_wait(&event) is a shorthand for
-> > rtdm_event_timedwait(&event,0,NULL).
-> >=20
-> > > Yigal Goldberger.
-> > >=20
-> > >=20
-> > >=20
-> > >=20
-> > >=A0 =A0 =A0=A0=A0
-> > >=20
-> > > _______________________________________________
-> > > Xenomai-help mailing list
-> > > Xenomai-help@domain.hid
-> > > https://mail.gna.org/listinfo/xenomai-help
-> >=20
-> >=20
-> > --=20
-> > Philippe.
-> >=20
-> >=20
-> >=20
->=20
->=20
->=20
->
-=0A=0A=0A      
+PGRpdj48YnI+PGJyPjwvZGl2PjxkaXY+PC9kaXY+PGJyPjxwcmU+1NoyMDA5LTEyLTI4o6wiR2ls
+bGVzIENoYW50ZXBlcmRyaXgiICZsdDtnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZyZn
+dDsg0LS1wKO6CiZndDtyb2JlcnQxNjUgd3JvdGU6CiZndDsmZ3Q7IEhpLAomZ3Q7Jmd0OyBJIGhh
+dmUgdGVzdGVkIHhlbm9tYWkgb24gbXkgYXQ5MXJtOTIwMCBib2FyZCwgSSB1c2VkCiZndDsmZ3Q7
+IHhlbm9tYWkgMi40LjEwICsgbGludXgtMi42LjI4ICsgYWRlb3MtaXBpcGUtMi42LjI4LWFybS0x
+LjEyLTA1LnBhdGNoCiZndDsmZ3Q7IFRlc3QgcmVzdWx0IHNlZW1zIHZlcnkgcG9vciwgaXMgdGhh
+dCBjb3JyZWN0PwomZ3Q7CiZndDtZb3VyIHRlc3QgcmVzdWx0cyBhcmUgcmF0aGVyIGdvb2QgZm9y
+IGFuIGF0OTFybTkyMDAgYm9hcmQsIHdoaWNoIGlzIHRoZQomZ3Q7c3VyZSBzaWduIHRoYXQgeW91
+IGFyZSBub3QgbG9hZGluZyB0aGUgc3lzdGVtIGVub3VnaC4KJmd0OwomZ3Q7QXMgSSBhbHJlYWR5
+IHRvbGQsIHlvdSwgdGhlIGV4cGVjdGVkIHJlc3VsdHMgYXJlOgomZ3Q7LSB1c2VyLXNwYWNlIGxh
+dGVuY3kgb2YgMjYwdXMgd2l0aG91dCBGQ1NFCiZndDstIHVzZXItc3BhY2UgbGF0ZW5jeSBvZiAy
+MDB1cyB3aXRoIEZDU0UKJmd0Oy0ga2VybmVsLXNwYWNlIGxhdGVuY3kgb2YgNTB1cyBpZiBydW5u
+aW5nIHdpdGggdW5sb2NrZWQgY29udGV4dCBzd2l0Y2hlcwomZ3Q7KGFuIG9wdGlvbiB3aGljaCBp
+cyBvbmx5IGF2YWlsYWJsZSBpbiB0aGUgdXBjb21pbmcgMi41IGJyYW5jaCkuCiZndDsKJmd0OyZn
+dDsgQW5kIGlzIHRoZXJlIGFueSBpbnRyb2R1Y3Rpb24gb2YgdGhlIHRlc3RzLCBhcyB0aGVpciBw
+dXJwZXIsIHRoZWlyCiZndDsmZ3Q7IG1lYW5saW5nLi4uCiZndDsKJmd0O1RoZSBsYXRlbmN5IHRl
+c3QgY29tcHV0ZXMgc29tZSBsYXRlbmNpZXMgKGVpdGhlciB1c2VyLXNwYWNlIHNjaGVkdWxpbmcK
+Jmd0O2xhdGVuY3ksIGtlcm5lbC1zcGFjZSBzY2hlZHVsaW5nIGxhdGVuY3ksIG9yIGtlcm5lbC1z
+cGFjZSBpbnRlcnJ1cHQKJmd0O2xhdGVuY3ksIGRlcGVuZGluZyBvbiB0aGUgb3B0aW9ucykuIFRo
+ZSBzd2l0Y2h0ZXN0IHRlc3RzIGNvbnRleHQKJmd0O3N3aXRjaGVzLiBUaGUgc3dpdGNoYmVuY2gg
+bWVhc3VyZXMgY29udGV4dCBzd2l0Y2hpbmcgdGltZS4gY3ljbGljdGVzdAomZ3Q7ZG9lcyB0aGUg
+c2FtZSB0aGluZyBhcyB0aGUgbGF0ZW5jeSB0ZXN0IChvbmx5LCB5b3UgbmVlZCB0byBydW4gaXQg
+d2l0aAomZ3Q7dGhlIHJpZ2h0IG9wdGlvbnMgdG8gYXZvaWQgcnVubmluZyBpbiBmYWN0IHdpdGgg
+TGludXggdGltZXIpLCBhbmQgaW4KJmd0O2dlbmVyYWwgcmV0dXJuIHNpbWlsYXIgcmVzdWx0cy4g
+SGVyZSBJIGRvIG5vdCBrbm93IHdoYXQgaXMgdGhlIG1lYW5pbmcKJmd0O29mIGN5Y2xpY3Rlc3Qg
+cmVzdWx0cyB5b3UgZ290LCBidXQgaWYgeW91IHdhbnQgdG8ga25vdywgSSBhbSBhZnJhaWQgeW91
+CiZndDt3aWwgaGF2ZSB0byBpbnZlc3RpZ2F0ZSwgb3Igc2ltcGx5IGlnbm9yZSB0aGVtLgomZ3Q7
+Cjxicj5UaGFua3MgZm9yIHlvdXIgaW50cm9kdXRpb24sIGFuZCBpcyB0aGVyZSBhbnkgZG9jdW1l
+bnQgb2YgaXQuIDxicj5UaGUgbWFuIHBhZ2VzIGp1c3QgZXhwbGFpbiAgcGFyYW1ldHJlcyAgb2Yg
+dGVzdCBzY3JpcHRzLiAgSSBjb3VsZDxicj5ub3QgdW5kZXJzdGFuZCB0aGUgb3V0cHV0IG9mIHNv
+bWUgdGVzdC48YnI+PGJyPiZndDsmZ3Q7IAomZ3Q7Jmd0OyBUZXN0IGlzIHVuZGVyIGxvYWRzIGFz
+IGZvbGxvd2VkLAomZ3Q7Jmd0OyAgICAgZGQgaWY9L2Rldi96ZXJvIG9mPS9kZXYvbnVsbCAmZ3Q7
+IC9kZXYvbnVsbCAmYW1wOwomZ3Q7Jmd0OyAgICAgcGluZyAxNzIuMTguMjMuMTAgJmd0OyAvZGV2
+L251bGwgJmFtcDsKJmd0OyZndDsgICAgIHdoaWxlIGxzOyBkbyBsczsgZG9uZSAmZ3Q7IC9kZXYv
+bnVsbCAmYW1wOwomZ3Q7CiZndDtUaGlzIGxvYWQgaXMgbGF1Z2hhYmxlLiBEbyB5b3UgZmluZCB0
+aGF0IHRoZXkgcmVhbGx5IHN0cmVzcyB0aGUgc3lzdGVtLAomZ3Q7dGhhdCB0aGV5IG1ha2UgaXQg
+cmVhbGx5IHVucmVzcG9uc2l2ZT8gRG8geW91IHJlYWxseSBleHBlY3QgYSB0ZXN0IHdoaWNoCiZn
+dDtzZW5kcyBvbmUgcGFja2V0IGV2ZXJ5IHNlY29uZCBvdmVyIG5ldHdvcmsgdG8gc3RyZXNzIHRo
+ZSBzeXN0ZW0gaW4gc29tZQomZ3Q7d2F5PyBUaGF0IGlzIHdoYXQgSSBtZWFudCB3aGVuIEkgc2Fp
+ZCBoYW1tZXJpbmcgdGhlIHN5c3RlbSByZWFsIGhhcmQuCjxicj5UaGUgcmVhc29uIEkgcHJvY3Vj
+ZSB0aGUgbG9hZCBpczogPGJyPmh0dHBzOi8vbWFpbC5nbmEub3JnL3B1YmxpYy94ZW5vbWFpLWhl
+bHAvMjAwOC0wMS9tc2cwMDAyMy5odG1sPGJyPkhvdyBjYW4gSSBwcm9kdWNlIGEgcmVhbCBoYXJk
+IGxvYWQuIEFyZSB0aGVyZSBhbnkgZGlyZWN0aW9uIGFib3V0IGl0Ljxicj48YnI+Jmd0Oy0tIAom
+Z3Q7CQkJCQkgICAgR2lsbGVzLgo8YnI+VGhhbmtzIGZvciB5b3VyIHBhdGllbnQgaGVscCAuPGJy
+Pjxicj5Sb2JlcnQ8YnI+PC9wcmU+PGJyPjxicj48c3BhbiB0aXRsZT0ibmV0ZWFzZWZvb3RlciIv
+Pjwvc3Bhbj4=
+------=_Part_44620_25384589.1262064832983--
+
 
