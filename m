@@ -1,9 +1,9 @@
-Message-ID: <4B3B7FE7.4000504@domain.hid>
-Date: Wed, 30 Dec 2009 17:29:27 +0100
+Message-ID: <4B3B8137.3090304@domain.hid>
+Date: Wed, 30 Dec 2009 17:35:03 +0100
 From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <4B3B7831.8060806@domain.hid> <4B3B7D11.6050400@domain.hid>
-In-Reply-To: <4B3B7D11.6050400@domain.hid>
+References: <4B3B7831.8060806@domain.hid> <4B3B8021.7040201@domain.hid>
+In-Reply-To: <4B3B8021.7040201@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Build problem with xenomai-2.4 git head
@@ -41,17 +41,26 @@ Gilles Chanteperdrix wrote:
 >>
 >> Any idea why the functions are missing?
 > 
-> Yes, it is due to a recent patch. Though when they do not exist, they
-> should not be called, could you show us the results of:
+> Could you try the following patch? It seems to fix things here:
 > 
-> grep HAVE_SHM src/include/xeno_config.h
+> diff --git a/src/skins/posix/wrappers.c b/src/skins/posix/wrappers.c
+> index 77c1d59..0e7d2f1 100644
+> --- a/src/skins/posix/wrappers.c
+> +++ b/src/skins/posix/wrappers.c
+> @@ -32,6 +32,7 @@
+>  #include <sys/ioctl.h>
+>  #include <sys/mman.h>
+>  #include <sys/select.h>
+> +#include <xeno_config.h>
+> 
+>  #undef __real_ftruncate
+>  #undef __real_mmap
 
-  $ export CROSS_COMPILE=ppc_6xx-
-  $ export ARCH=powerpc
-  $ ./configure --host=ppc-linux
-  $ grep HAVE_SHM src/include/xeno_config.h
-  #define HAVE_SHM_OPEN 1
-  #define HAVE_SHM_UNLINK 1
+That patch helps. The build works now without reporting any error.
+
+Thanks,
 
 Wolfgang.
+
+
 
