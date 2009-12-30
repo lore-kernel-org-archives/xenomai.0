@@ -1,5 +1,5 @@
-Message-ID: <4B3B7D11.6050400@domain.hid>
-Date: Wed, 30 Dec 2009 17:17:21 +0100
+Message-ID: <4B3B8021.7040201@domain.hid>
+Date: Wed, 30 Dec 2009 17:30:25 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4B3B7831.8060806@domain.hid>
@@ -40,12 +40,20 @@ Wolfgang Grandegger wrote:
 > 
 > Any idea why the functions are missing?
 
-Yes, it is due to a recent patch. Though when they do not exist, they
-should not be called, could you show us the results of:
+Could you try the following patch? It seems to fix things here:
 
-grep HAVE_SHM src/include/xeno_config.h
+diff --git a/src/skins/posix/wrappers.c b/src/skins/posix/wrappers.c
+index 77c1d59..0e7d2f1 100644
+--- a/src/skins/posix/wrappers.c
++++ b/src/skins/posix/wrappers.c
+@@ -32,6 +32,7 @@
+ #include <sys/ioctl.h>
+ #include <sys/mman.h>
+ #include <sys/select.h>
++#include <xeno_config.h>
 
-in xenomai build tree?
+ #undef __real_ftruncate
+ #undef __real_mmap
 
 
 -- 
