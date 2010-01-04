@@ -1,13 +1,13 @@
-Message-ID: <4B426A3D.5020706@domain.hid>
-Date: Mon, 04 Jan 2010 23:22:53 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <4B4278B6.1080205@domain.hid>
+Date: Tue, 05 Jan 2010 00:24:38 +0100
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
 MIME-Version: 1.0
-References: <725957.56219.qm@domain.hid>	<4AF04886.9040903@domain.hid>	<1f3e02580911030745o128df8aeve4bdd44bad9c3db7@domain.hid>	<4AF15D68.7060001@domain.hid>	<873433.54790.qm@domain.hid>	<1f3e02580911060139q60bc91f8k4e71d933a50895ba@domain.hid>	<20091215213210.19d5b6a5@domain.hid>	<1f3e02580912151715n1f587e87x48834799baf7eea7@domain.hid>	<4303dd240912310452m6db83032rb42d13777efbf5a3@domain.hid>	<4B3CC62D.6070709@domain.hid>
-	<1262643246.20365.10.camel@domain.hid>
-In-Reply-To: <1262643246.20365.10.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <4B421E02.6060006@domain.hid>
+In-Reply-To: <4B421E02.6060006@domain.hid>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Porting I-Pipe for new ARM board
+Subject: Re: [Xenomai-help] enable  __a4l_dbg
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,23 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: flavio.alves@domain.hid
-Cc: xenomai@xenomai.org
+To: "Alessio Margan @ IIT" <alessio.margan@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Flavio Alves wrote:
-> <1>Unable to handle kernel NULL pointer dereference at virtual address 00000000 
-> Looking at the code (and perform some analysis) I saw that the call that
-> is crashing the kernel is:
+Hi,
+
+Alessio Margan @ IIT wrote:
+> Hi,
 > 
->  __asm__("ldmia %1, %M0\n":
-> 	    "=r"(result.full): "r"(local_tsc), "m"(*local_tsc));
+> Where is defined #ifdef CONFIG_XENO_DRIVERS_A4L_DEBUG to enable __a4l_dbg
+> I can not found
+That was a bug which was fixed before the 2.5 release:
+
+commit e75f87874d126289007c4c69db4606a34ad759a7
+Author: Alexis Berlemont <alexis.berlemont@domain.hid>
+Date: Tue Dec 29 00:14:31 2009 +0100
+
+analogy: fix a bug in the configuration of the debug trace system
+
+In the kernel configuration menu, go to the Analogy drivers sub-menu and
+set the options "Analogy debug trace", "Analogy core debug level
+threshold" and "Analogy driver debug level threshold".
+
 > 
-> And looking into the implementation of this function for other
-> platforms, I can see that it is the same instruction, without
-> difference.
+> TIA
+> 
+> Alessio
 
-On all other platforms the "local_tsc" pointer is not NULL...
-
--- 
-					    Gilles.
+Alexis.
 
