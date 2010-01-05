@@ -1,56 +1,48 @@
-Message-ID: <4B655AA4.1020002@domain.hid>
-Date: Sun, 31 Jan 2010 11:25:40 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <201001292104.42395.lux-integ@domain.hid>
-In-Reply-To: <201001292104.42395.lux-integ@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <307528.52616.qm@domain.hid>
+References: <307528.52616.qm@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 05 Jan 2010 14:42:49 +0100
+Message-ID: <1262698969.2220.91.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] help with xenomai-2.5.0 on pure64bit linux x86_64
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: lux-integ <lux-integ@domain.hid>
-Cc: xenomai@xenomai.org
+Subject: Re: [Adeos-main] __ipipe_walk_pipeline()
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: A C <adrien_chiron@domain.hid>
+Cc: adeos <adeos-main@gna.org>
 
-lux-integ wrote:
-> d) but when I type make  I encountered a failure  like so:-
+On Tue, 2010-01-05 at 13:03 +0000, A C wrote:
+> Hello,
+> In  __ipipe_handle_irq, there is a call to the function
+> __ipipe_walk_pipeline() "that plays interrupts pending in the log", is
+> it really the execution of the treatement linked to an interruption ? 
+> If yes, what happens when there is a new interruption ? In fact, we
+> know that Hw interrupts are off on entry. So, if a new interruption
+> for a more prioritary domain comes during the execution of
+> __ipipe_walk_pipeline() for a less prioritary domain, how
+> __ipipe_walk_pipeline() is preempted ?
+
+Look for __ipipe_run_isr().
+
+> Cheers
+> Adrien Chiron & Vincent Vanbesien
 > 
->   HOSTCC  scripts/basic/fixdep
->   HOSTCC  scripts/basic/docproc
->   HOSTCC  scripts/basic/hash
->   HOSTCC  scripts/kconfig/conf.o
->   HOSTCC  scripts/kconfig/kxgettext.o
->   SHIPPED scripts/kconfig/zconf.tab.c
->   SHIPPED scripts/kconfig/lex.zconf.c
->   SHIPPED scripts/kconfig/zconf.hash.c
->   HOSTCC  scripts/kconfig/zconf.tab.o
->   HOSTLD  scripts/kconfig/conf
-> scripts/kconfig/conf -s arch/x86/Kconfig
->   CHK     include/linux/version.h
->   UPD     include/linux/version.h
->   CHK     include/linux/utsrelease.h
->   UPD     include/linux/utsrelease.h
->   SYMLINK include/asm -> include/asm-x86
->   CC      kernel/bounds.s
->   GEN     include/linux/bounds.h
->   CC      arch/x86/kernel/asm-offsets.s
-> In file included from include/linux/sched.h:62,
->                  from arch/x86/kernel/asm-offsets_64.c:8,
->                  from arch/x86/kernel/asm-offsets.c:4:
-> include/linux/ipipe.h:76:2: error: #error "CONFIG_NR_CPUS is too large, please 
-> lower it."
-> make[1]: *** [arch/x86/kernel/asm-offsets.s] Error 1
+> 
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
 
-This is starting to become an FAQ, and will undoubtedly be fixed in
-future versions. In the meantime, please disable CONFIG_SPARSE_IRQ.
 
 -- 
-Gilles Chanteperdrix
+Philippe.
+
+
 
