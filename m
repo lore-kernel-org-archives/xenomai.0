@@ -1,15 +1,10 @@
-Message-ID: <4B369415.1090200@domain.hid>
-Date: Sat, 26 Dec 2009 23:54:13 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4B4632D1.3020709@domain.hid>
+Date: Thu, 07 Jan 2010 20:15:29 +0100
+From: "Alessio Margan @ IIT" <alessio.margan@domain.hid>
 MIME-Version: 1.0
-References: <4B309A29.6030405@domain.hid> <4B316C4B.1030009@domain.hid>	
-	<4B320DF6.9010506@domain.hid> <4B35543D.2000809@domain.hid>	
-	<4B36515C.1070708@domain.hid>
-	<1261852062.19080.288.camel@domain.hid>
-In-Reply-To: <1261852062.19080.288.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Build tests: analogy, blackfin, rtcan and nios2.
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-core] [PATCH] Sensoray 526 analogy driver
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,67 +13,106 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: Xenomai-core@domain.hid
 
-Philippe Gerum wrote:
-> On Sat, 2009-12-26 at 19:09 +0100, Gilles Chanteperdrix wrote:
->> Alexis Berlemont wrote:
->>> Hi Gilles,
->>>
->>> Gilles Chanteperdrix wrote:
->>>> Alexis Berlemont wrote:
->>>>> Hi Gilles,
->>>>>
->>>>> Gilles Chanteperdrix wrote:
->>>>>> Hi,
->>>>>>
->>>>>> Since I started talking about it, I have run build tests fixing a few
->>>>>> things here and there. The current status is this (still at the same
->>>>>> place: http://sisyphus.hd.free.fr/~gilles/bx):
->>>>>>
->>>>>> * analogy: I have tried to disable some parts of analogy when compiling
->>>>>> on machines without CONFIG_PCI, as compiling parts using PCI on a
->>>>>> machine without PCI support, give various levels of warning and even
->>>>>> errors depending on the architecture. Doing this, I stumbled across this
->>>>>> compilation error:
->>>>>> http://sisyphus.hd.free.fr/~gilles/bx/beagle/2.6.28-arm-none-linux-gnueabi-gcc-4.3.3/log.html#1
->>>>>> this is with CONFIG_NI_MIO, but without CONFIG_NI_MITE.
->>>>>>
->>>>>> So, Alex, could you:
->>>>>> - fix that error, if this combination is supposed to make sense
->>>>> Yes it makes sense. I think the MITE is integrated into all PCI boards
->>>>> but the driver should work with the MITE disabled (one day, we could add
->>>>> the ISA boards).
->>>>>> - fix the Kconfig/Makefile so that no PCI code is compiled if CONFIG_PCI
->>>>>> is not set (I tried and do this myself, but better one who knows than
->>>>>> 100 who have to search...). As I said, doing this result in various
->>>>>> levels of success depending on the architecture.
->>>>> Ack. I will fix these problems as quickly as possible.
->>>> Ok. The fix for the second problem would be nice to have soon, as
->>>> analogy breaks the build on blackfin for this reason. If it is of any
->>>> help, you can send me a patch for this fix only which I will apply on my
->>>> side while you are working on other changes.
->>>>
->>> I modified the common part of the NI driver so that the PCI code can be 
->>> disabled without any compilation issues.
->>>
->>> I made a pull request which contains the fixes.
->> Thanks, but well, the compilation still fails on blackfin:
->> http://sisyphus.hd.free.fr/~gilles/bx/bf537-stamp/2.6.30-bfin-uclinux-gcc-4.1.2/log.html#13
->>
-> 
-> This is because arch/blackfin/include/asm/pci.h does not include
-> asm-generic/pci-dma-compat.h in 2.6.30 yet. Upstream fixed this is
-> 2.6.31.
-> 
-> So either we patch in some ugliness like below, or I issue a revised
-> pipeline patch for 2.6.30.6 which fixes this upstream bug.
+Hi,
 
-Ok. As you wish. Could you also have a look at the bf561 compilation? It
-seems rtdm gets undefined references to some rthal_atomic* operations.
-http://sisyphus.hd.free.fr/~gilles/bx/bf537-stamp/2.6.31-bfin-uclinux-gcc-4.1.2/log.html#1
+I've got a doubt about s526 driver on reading analog input.
 
--- 
-					    Gilles.
+I read analog data in this way
+
+sampl_t data;
+a4l_insn_t insn_tab =3D {
+.type =3D A4L_INSN_READ,
+.idx_subd =3D idx_subd,
+.chan_desc =3D CHAN(idx_chan),
+.data_size =3D sizeof(data),
+.data =3D &data};
+
+/* Sends the read instruction to the Analogy layer */
+ret =3D a4l_snd_insn(&dsc, &insn_tab);
+
+on driver side data_size is the number of samples not the nr of byte to=20
+read,
+the driver expect data_size to be the number of samples and data to be a=20
+vector of samples
+
+uint16_t *data =3D (uint16_t *)insn->data;
+
+/* convert n samples */
+for (n =3D 0; n < insn->data_size; n++) {
+/* trigger conversion */
+outw(value, ADDR_REG(REG_ADC));
+a4l_info(dev, "s526_ai_rinsn: Wrote 0x%04x to ADC\n", value);
+a4l_info(dev, "s526_ai_rinsn: ADC reg=3D0x%04x\n", inw(ADDR_REG(REG_ADC)));
+
+#define TIMEOUT 100
+
+/* wait for conversion to end */
+for (i =3D 0; i < TIMEOUT; i++) {
+status =3D inw(ADDR_REG(REG_ISR));
+if (status & ISR_ADC_DONE) {
+outw(ISR_ADC_DONE, ADDR_REG(REG_ISR));
+break;
+}
+}
+if (i =3D=3D TIMEOUT) {
+a4l_warn(dev, "s526_ai_rinsn: ADC(0x%04x) timeout\n",=20
+inw(ADDR_REG(REG_ISR)));
+return -ETIMEDOUT;
+}
+
+/* read data */
+d =3D inw(ADDR_REG(REG_ADD));
+a4l_info(dev, "s526_ai_rinsn: AI[%d]=3D0x%04x\n", n, (unsigned short)(d &=20
+0xFFFF));
+
+/* munge data */
+data[n] =3D d ^ 0x8000;
+}
+
+TIA
+
+Alessio
+
+--=20
+
+ISTITUTO ITALIANO
+DI TECNOLOGIA
+
+Alessio Margan
+/Senior Technician/
+mail me <mailto:alessio.margan@domain.hid>
+
+Via Morego, 30 16163 Genova=20
+<http://maps.google.com/maps?f=3Dq&hl=3Den&geocode=3D&q=3Dvia+morego,+30+ge=
+nova&sll=3D37.0625,-95.677068&sspn=3D85.420533,191.601563&ie=3DUTF8&ll=3D44=
+.474913,8.907037&spn=3D0.004685,0.011652&t=3Dh&z=3D17&iwloc=3Daddr>
+
+www.iit.it <http://www.iit.it>
+
+*Legal Disclaimer*
+This electronic message contains information that is confidential. The=20
+information is intended for the use of the addressee only. If you are=20
+not the addressee we would appreciate your notification in this respect.=20
+Please note that any disclosure, copy, distribution or use of the=20
+contents of this message is prohibited and may be unlawful. We have=20
+taken every reasonable precaution to ensure that any kind of attachment=20
+to this e-mail has been swept for viruses. However, we cannot accept=20
+liability for any damage sustained as a result of software viruses and=20
+would advise you to carry out your own virus checks before opening any=20
+attachment.
+*Avvertenza legale*
+Questo messaggio Email contiene informazioni confidenziali riservate ai=20
+soli destinatari. Qualora veniate in possesso di tali informazioni senza=20
+essere definito come destinatario vi reghiamo di leggere le seguenti=20
+note. Ogni apertura, copia, distribuzione del contenuto del messaggio e=20
+dei suoi allegati =E8 proibito e potrebbe violare le presenti leggi.=20
+Abbiamo attivato ogni possibile e ragionevole precauzione per assicurare=20
+che gli allegati non contengano virus. Comunque non assumeremo alcuna=20
+responsabilit=E0 per ogni eventuale danno causato da virus software e=20
+simili in quanto =E8 onere del destinatario verificarne l=92assenza in ogni=
+=20
+allegato attuando propri indipendenti controlli.
+
 
