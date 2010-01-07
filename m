@@ -1,13 +1,14 @@
-Message-ID: <4B460269.5050905@domain.hid>
-Date: Thu, 07 Jan 2010 16:48:57 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4B460255.30200@domain.hid>
+Date: Thu, 07 Jan 2010 16:48:37 +0100
+From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-References: <b88603c31001040212m7b20037fre7668fd46587881d@domain.hid>	<1262617295.2220.30.camel@domain.hid>	<1262618363.2220.33.camel@domain.hid>
-	<b88603c31001040725v15b517c9rafd80a78298b5880@domain.hid>
-In-Reply-To: <b88603c31001040725v15b517c9rafd80a78298b5880@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Deadlock with test apps in 2.5.0
+References: <4B45F088.9010603@domain.hid> <4B45F163.4000504@domain.hid>
+In-Reply-To: <4B45F163.4000504@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF3781EFE9618E104D6A0ACBB"
+Subject: Re: [Xenomai-help] native skin 2.5.0: rt_task_create() segfaults if
+ stacksize parameter too small
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,87 +18,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Henri Roosen <henriroosen@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Henri Roosen wrote:
-> Correct, that is the same behavior I get. When I then kill the latency
-> app, the other process is released and can go on.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF3781EFE9618E104D6A0ACBB
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Ok. I may have found an issue. Here is a patch, could you try it?
+Am 07.01.2010 15:36, schrieb Gilles Chanteperdrix:
+> Stefan Kisdaroczi wrote:
+>> hi,
+>>
+>> i have upgraded xenomai to 2.5.0 (x86,32bit). My application segfaults=
+ when I
+>> try to create a task with stacksize 2048, this worked with 2.4.10.
+>> Because my app is written in pascal i have reproduced the problem with=
+ the
+>> xenomai trivial-periodic.c example:
+>>
+>> -	rt_task_create(&demo_task, "trivial", 0, 99, 0);
+>> +	rt_task_create(&demo_task, "trivial",16911, 99, 0);
+>>
+>> Stacksize 0 -> default stack size : ok
+>> Stacksize > 0 and <=3D 16911 : Segmentation fault
+>> Stacksize >=3D 16912 : ok
+>>
+>> Any hints ?
+>=20
+> What does the task do? If it uses printf, printf needs a lot of room on=
 
-diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
-index 22bac6f..5de5227 100644
---- a/ksrc/nucleus/shadow.c
-+++ b/ksrc/nucleus/shadow.c
-@@ -174,6 +174,29 @@ static inline void set_switch_lock_owner(struct task_struct *p)
- 
- #define rpi_p(t)	((t)->rpi != NULL)
- 
-+static inline struct xnthread *rpi_next(struct xnsched *sched)
-+{
-+	struct xnthread *thread;
-+	spl_t s;
-+
-+	thread = xnsched_peek_rpi(sched);
-+	while (thread && 
-+	       xnthread_user_task(thread)->state != TASK_RUNNING &&
-+	       !xnthread_test_info(thread, XNATOMIC)) {
-+		xnsched_pop_rpi(thread);
-+		thread->rpi = NULL;
-+		xnlock_put_irqrestore(&sched->rpilock, s);
-+		/* Do NOT nest the rpilock and nklock locks. */
-+		xnlock_get_irqsave(&nklock, s);
-+		xnsched_suspend_rpi(thread);
-+		xnlock_put_irqrestore(&nklock, s);
-+		xnlock_get_irqsave(&sched->rpilock, s);
-+		thread = xnsched_peek_rpi(sched);
-+	}
-+
-+	return thread;
-+}
-+
- static void rpi_push(struct xnsched *sched, struct xnthread *thread)
- {
- 	struct xnsched_class *sched_class;
-@@ -236,7 +259,7 @@ static void rpi_pop(struct xnthread *thread)
- 		return;
- 	}
- 
--	top = xnsched_peek_rpi(sched);
-+	top = rpi_next(sched);
- 	if (likely(top == NULL)) {
- 		prio = XNSCHED_IDLE_PRIO;
- 		sched_class = &xnsched_class_idle;
-@@ -310,7 +333,7 @@ static void rpi_clear_remote(struct xnthread *thread)
- 	xnsched_pop_rpi(thread);
- 	thread->rpi = NULL;
- 
--	if (xnsched_peek_rpi(rpi) == NULL)
-+	if (rpi_next(rpi) == NULL)
- 		rcpu = xnsched_cpu(rpi);
- 
- 	xnlock_put_irqrestore(&rpi->rpilock, s);
-@@ -407,7 +430,7 @@ static inline void rpi_switch(struct task_struct *next_task)
- 	    xnthread_test_state(next, XNRPIOFF)) {
- 		xnlock_get_irqsave(&sched->rpilock, s);
- 
--		top = xnsched_peek_rpi(sched);
-+		top = rpi_next(sched);
- 		if (top) {
- 			newprio = top->cprio;
- 			newclass = top->sched_class;
-@@ -495,7 +518,7 @@ void xnshadow_rpi_check(void)
- 	struct xnthread *top;
-  
-  	xnlock_get(&sched->rpilock);
-- 	top = xnsched_peek_rpi(sched);
-+ 	top = rpi_next(sched);
-  	xnlock_put(&sched->rpilock);
- 
- 	if (top == NULL && xnsched_root_class(sched) != &xnsched_class_idle)
+> the stack.
+>=20
+
+To clarify:
+It does not depend on the task body, the task is not even started.
+The segfault happens when calling rt_task_create(), before rt_task_start(=
+)
+is called.
+
+kisda
 
 
--- 
-					    Gilles.
+--------------enigF3781EFE9618E104D6A0ACBB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iD8DBQFLRgJaIPTw9rIdn6oRAj+kAJ0bWzPC/0pp4UjAlP8asU5LvAEQagCaA/f9
+82aLAyFVNa1j5mWAfeceSuw=
+=fzxL
+-----END PGP SIGNATURE-----
+
+--------------enigF3781EFE9618E104D6A0ACBB--
 
