@@ -1,55 +1,81 @@
-From: lux-integ <lux-integ@domain.hid>
-Date: Sun, 31 Jan 2010 14:26:08 +0000
-References: <201001292104.42395.lux-integ@domain.hid>
-	<4B657977.6050906@domain.hid>
-	<1264944150.16492.72.camel@domain.hid>
-In-Reply-To: <1264944150.16492.72.camel@domain.hid>
-MIME-Version: 1.0
-Content-Disposition: inline
-Message-Id: <201001311426.09046.lux-integ@domain.hid>
-Content-Type: text/plain;
-  charset="utf-8"
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <449944.37907.qm@domain.hid>
+References: <449944.37907.qm@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Thu, 07 Jan 2010 15:25:05 +0100
+Message-ID: <1262874305.2220.107.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] help with xenomai-2.5.0 on pure64bit linux x86_64
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+Subject: Re: [Adeos-main] __ipipe_grab_irq
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: A C <adrien_chiron@domain.hid>
+Cc: adeos <adeos-main@gna.org>
 
-On Sunday 31 January 2010 01:22:30 pm Philippe Gerum wrote:
-> This is likely our old friend CONFIG_SPARSE_IRQ which is at work. Just
-> disable this, until we have introduced the required changes to support
-> more than 1024 IRQs.
->
-> > [ BTW, if you plan to use some PCI device with DMA under Xenomai,
-> > enabling IOMMU is not a good idea. Reprogramming the IOMMU will then
-> > become part of the critical path, but that code is not prepared for
-> > real-time use. Better disable it during the build or on boot-up. ]
+On Thu, 2010-01-07 at 13:48 +0000, A C wrote:
+> Hello,
+> in the function __ipipe_grab_irq for the NIOS2, there is the following
+> block :
+> 
+> if (likely(irq == __ipipe_hrtimer_irq)) {
+>         __raw_get_cpu_var(__ipipe_tick_regs).estatus = regs->estatus;
+>         __raw_get_cpu_var(__ipipe_tick_regs).ea = regs->ea;
+>         if (!__ipipe_root_domain_p) {
+>             __raw_get_cpu_var(__ipipe_tick_regs).estatus &=
+> ~NIOS2_STATUS_PIE_MSK); 
+>               }
+>     }
 
-II did all of this   to .config
-CONFIG_HPET_TIMER=n
-CONFIG_HPET_EMULATE_RTC=n
-CONFIG_SPARSE_IRQ=n
+This should read:
 
-and the kernel compiled OK  unfortunately  on booting it   reported 
-Kernel Panic - not syncing: VFS: Unable to mount root.....
-[ 3.111473 ] Pid: 1, comm: swapper Not tainted 2.6.32.2Xen25F .... then a 
-trace.
+diff --git a/arch/nios2/kernel/ipipe.c b/arch/nios2/kernel/ipipe.c
+index e88d788..2ec178c 100644
+--- a/arch/nios2/kernel/ipipe.c
++++ b/arch/nios2/kernel/ipipe.c
+@@ -290,7 +290,7 @@ int __ipipe_grab_irq(int irq, struct pt_regs *regs)
+ {
+ 	if (likely(irq == __ipipe_hrtimer_irq)) {
+ 		__raw_get_cpu_var(__ipipe_tick_regs).estatus = regs->estatus;
+-		__raw_get_cpu_var(__ipipe_tick_regs).ea = regs->ea;
++		__raw_get_cpu_var(__ipipe_tick_regs).ra = regs->ra;
+ 		if (!__ipipe_root_domain_p) {
+ 			__raw_get_cpu_var(__ipipe_tick_regs).estatus
+ 				&= ~NIOS2_STATUS_PIE_MSK;
 
-I had the same response when I disabled the IOMMU stuff
+> 
+> We do not understand why there is an unusual case for an interruption
+> from the timer. We understand each lines but not the global nature.
+> Any help ?
+> 
 
-( I suspect this could be  absence  of SATA support though I think I have  
-SATA enabled).   Seems  I will have to fiddle a little more with the kernel 
-config.
+The linux kernel does basic sampling-based profiling and assesses the
+current load average by looking at which code the timer tick did
+preempt. Since we have a deferred interrupt model, and possibly many
+non-linux tick interrupts passed to the upper domain(s), we have to
+somehow forge a timer tick frame specifically for linux, which we then
+pass to the regular tick handler (to any regular IRQ handler in fact,
+since only the tick handler uses this info), for keeping those
+computations accurate.
 
-thanks for all your help.
+> Cheers
+> Adrien Chiron & Vincent Vanbesien
+> 
+> 
+> 
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
 
-lux-integ
+
+-- 
+Philippe.
+
+
 
