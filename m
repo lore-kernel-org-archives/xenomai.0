@@ -1,156 +1,103 @@
-Message-ID: <4B54ACC8.9030006@domain.hid>
-Date: Mon, 18 Jan 2010 19:47:36 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4B460269.5050905@domain.hid>
+Date: Thu, 07 Jan 2010 16:48:57 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B546AD0.3060106@domain.hid> <4B546BEC.8030703@domain.hid>
-In-Reply-To: <4B546BEC.8030703@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <b88603c31001040212m7b20037fre7668fd46587881d@domain.hid>	<1262617295.2220.30.camel@domain.hid>	<1262618363.2220.33.camel@domain.hid>
+	<b88603c31001040725v15b517c9rafd80a78298b5880@domain.hid>
+In-Reply-To: <b88603c31001040725v15b517c9rafd80a78298b5880@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] rtcan_rtt: Various fixes and improvement
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Deadlock with test apps in 2.5.0
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Henri Roosen <henriroosen@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Wolfgang Grandegger wrote:
->> This patch fixes type long overflows, invalid command line argument
->> types and gives the receiver and transmitter thread dedicated names.
->>
->> Signed-off-by: Wolfgang Grandegger <wg@domain.hid>
->>
->> diff --git a/examples/rtdm/profiles/can/rtcan_rtt.c
->> b/examples/rtdm/profiles/can/rtcan_rtt.c
->> index 93c84a6..2280562 100644
->> --- a/examples/rtdm/profiles/can/rtcan_rtt.c
->> +++ b/examples/rtdm/profiles/can/rtcan_rtt.c
->> @@ -94,6 +94,7 @@ void *transmitter(void *arg)
->>      frame.can_id = can_id;
->>      frame.can_dlc = sizeof(*rtt_time);
->>
->> +    pthread_set_name_np(pthread_self(), "rtcan_rtt_transmitter");
-> 
-> Maybe we should put this between #ifdef __XENO__, so that the code
-> compiles under plain posix too?
+Henri Roosen wrote:
+> Correct, that is the same behavior I get. When I then kill the latency
+> app, the other process is released and can go on.
 
-Good idea but it requires a few more changes. See below:
+Ok. I may have found an issue. Here is a patch, could you try it?
 
-Thanks,
-
-Wolfgang.
-
-
-[PATCH v3] rtcan_rtt: Various fixes and improvement
-
-This patch fixes type long overflows, invalid command line argument
-types and gives the receiver and transmitter thread dedicated names.
-Furthermore, it now also compiles under plain POSIX by using the macro
-definition __XENO__ as suggested by Gilles.
-
-Signed-off-by: Wolfgang Grandegger <wg@domain.hid>
-
-diff --git a/examples/rtdm/profiles/can/rtcan_rtt.c b/examples/rtdm/profiles/can/rtcan_rtt.c
-index 93c84a6..b4ff74a 100644
---- a/examples/rtdm/profiles/can/rtcan_rtt.c
-+++ b/examples/rtdm/profiles/can/rtcan_rtt.c
-@@ -45,14 +45,21 @@
- #include <limits.h>
- #include <getopt.h>
- #include <netinet/in.h>
-+#include <net/if.h>
-+#include <sys/ioctl.h>
- #include <sys/mman.h>
+diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
+index 22bac6f..5de5227 100644
+--- a/ksrc/nucleus/shadow.c
++++ b/ksrc/nucleus/shadow.c
+@@ -174,6 +174,29 @@ static inline void set_switch_lock_owner(struct task_struct *p)
  
-+#ifdef __XENO__
- #include <rtdm/rtcan.h>
-+#else
-+#include <linux/can.h>
-+#include <linux/can/raw.h>
-+#endif
+ #define rpi_p(t)	((t)->rpi != NULL)
  
- #define NSEC_PER_SEC 1000000000
- 
- static unsigned int cycle = 10000; /* 10 ms */
--static can_id_t can_id = 0x1;
-+static canid_t can_id = 0x1;
- 
- static pthread_t txthread, rxthread;
- static int txsock, rxsock;
-@@ -94,6 +101,9 @@ void *transmitter(void *arg)
-     frame.can_id = can_id;
-     frame.can_dlc = sizeof(*rtt_time);
- 
-+#ifdef __XENO__
-+    pthread_set_name_np(pthread_self(), "rtcan_rtt_transmitter");
-+#endif
-     pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
- 
-     clock_gettime(CLOCK_MONOTONIC, &next_period);
-@@ -113,10 +123,10 @@ void *transmitter(void *arg)
++static inline struct xnthread *rpi_next(struct xnsched *sched)
++{
++	struct xnthread *thread;
++	spl_t s;
++
++	thread = xnsched_peek_rpi(sched);
++	while (thread && 
++	       xnthread_user_task(thread)->state != TASK_RUNNING &&
++	       !xnthread_test_info(thread, XNATOMIC)) {
++		xnsched_pop_rpi(thread);
++		thread->rpi = NULL;
++		xnlock_put_irqrestore(&sched->rpilock, s);
++		/* Do NOT nest the rpilock and nklock locks. */
++		xnlock_get_irqsave(&nklock, s);
++		xnsched_suspend_rpi(thread);
++		xnlock_put_irqrestore(&nklock, s);
++		xnlock_get_irqsave(&sched->rpilock, s);
++		thread = xnsched_peek_rpi(sched);
++	}
++
++	return thread;
++}
++
+ static void rpi_push(struct xnsched *sched, struct xnthread *thread)
+ {
+ 	struct xnsched_class *sched_class;
+@@ -236,7 +259,7 @@ static void rpi_pop(struct xnthread *thread)
+ 		return;
  	}
  
-         clock_gettime(CLOCK_MONOTONIC, &time);
--	*rtt_time = time.tv_sec * NSEC_PER_SEC + time.tv_nsec;
-+	*rtt_time = (long long)time.tv_sec * NSEC_PER_SEC + time.tv_nsec;
+-	top = xnsched_peek_rpi(sched);
++	top = rpi_next(sched);
+ 	if (likely(top == NULL)) {
+ 		prio = XNSCHED_IDLE_PRIO;
+ 		sched_class = &xnsched_class_idle;
+@@ -310,7 +333,7 @@ static void rpi_clear_remote(struct xnthread *thread)
+ 	xnsched_pop_rpi(thread);
+ 	thread->rpi = NULL;
  
-         /* Transmit the message containing the local time */
--	if (send(txsock, (void *)&frame, sizeof(can_frame_t), 0) < 0) {
-+	if (send(txsock, (void *)&frame, sizeof(struct can_frame), 0) < 0) {
-             if (errno == EBADF)
-                 printf("terminating transmitter thread\n");
-             else
-@@ -136,12 +146,16 @@ void *receiver(void *arg)
-     long long *rtt_time = (long long *)frame.data;
-     struct rtt_stat rtt_stat = {0, 1000000000000000000LL, -1000000000000000000LL,
- 				0, 0, 0};
-+
-+#ifdef __XENO__
-+    pthread_set_name_np(pthread_self(), "rtcan_rtt_receiver");
-+#endif
-     pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
+-	if (xnsched_peek_rpi(rpi) == NULL)
++	if (rpi_next(rpi) == NULL)
+ 		rcpu = xnsched_cpu(rpi);
  
-     rtt_stat.counts_per_sec = 1000000 / cycle;
+ 	xnlock_put_irqrestore(&rpi->rpilock, s);
+@@ -407,7 +430,7 @@ static inline void rpi_switch(struct task_struct *next_task)
+ 	    xnthread_test_state(next, XNRPIOFF)) {
+ 		xnlock_get_irqsave(&sched->rpilock, s);
  
-     while (1) {
--	if (recv(rxsock, (void *)&frame, sizeof(can_frame_t), 0) < 0) {
-+	if (recv(rxsock, (void *)&frame, sizeof(struct can_frame), 0) < 0) {
- 	    if (errno == EBADF)
-                 printf("terminating receiver thread\n");
-             else
-@@ -150,7 +164,7 @@ void *receiver(void *arg)
-         }
- 	if (repeater) {
- 	    /* Transmit the message back as is */
--	    if (send(txsock, (void *)&frame, sizeof(can_frame_t), 0) < 0) {
-+	    if (send(txsock, (void *)&frame, sizeof(struct can_frame), 0) < 0) {
- 		if (errno == EBADF)
- 		    printf("terminating transmitter thread\n");
- 		else
-@@ -161,7 +175,7 @@ void *receiver(void *arg)
- 	} else {
- 	    clock_gettime(CLOCK_MONOTONIC, &time);
- 	    if (rxcount > 0) {
--		rtt_stat.rtt = (time.tv_sec * 1000000000LL +
-+		rtt_stat.rtt = ((long long)time.tv_sec * 1000000000LL +
- 				time.tv_nsec - *rtt_time);
- 		rtt_stat.rtt_sum += rtt_stat.rtt;
- 		if (rtt_stat.rtt <  rtt_stat.rtt_min)
-@@ -201,7 +215,7 @@ int main(int argc, char *argv[])
-     struct option long_options[] = {
- 	{ "id", required_argument, 0, 'i'},
- 	{ "cycle", required_argument, 0, 'c'},
--	{ "repeater", required_argument, 0, 'r'},
-+	{ "repeater", no_argument, 0, 'r'},
- 	{ "help", no_argument, 0, 'h'},
- 	{ 0, 0, 0, 0},
-     };
+-		top = xnsched_peek_rpi(sched);
++		top = rpi_next(sched);
+ 		if (top) {
+ 			newprio = top->cprio;
+ 			newclass = top->sched_class;
+@@ -495,7 +518,7 @@ void xnshadow_rpi_check(void)
+ 	struct xnthread *top;
+  
+  	xnlock_get(&sched->rpilock);
+- 	top = xnsched_peek_rpi(sched);
++ 	top = rpi_next(sched);
+  	xnlock_put(&sched->rpilock);
+ 
+ 	if (top == NULL && xnsched_root_class(sched) != &xnsched_class_idle)
 
- 
 
+-- 
+					    Gilles.
 
