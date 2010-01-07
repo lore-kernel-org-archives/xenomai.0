@@ -1,11 +1,12 @@
-Message-ID: <4B45F088.9010603@domain.hid>
-Date: Thu, 07 Jan 2010 15:32:40 +0100
-From: Stefan Kisdaroczi <kisda@domain.hid>
+Message-ID: <4B45F163.4000504@domain.hid>
+Date: Thu, 07 Jan 2010 15:36:19 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig793225E50CD085583EDCC1C7"
-Subject: [Xenomai-help] native skin 2.5.0: rt_task_create() segfaults if
+References: <4B45F088.9010603@domain.hid>
+In-Reply-To: <4B45F088.9010603@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] native skin 2.5.0: rt_task_create() segfaults if
  stacksize parameter too small
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,48 +17,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Stefan Kisdaroczi <kisda@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig793225E50CD085583EDCC1C7
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Stefan Kisdaroczi wrote:
+> hi,
+> 
+> i have upgraded xenomai to 2.5.0 (x86,32bit). My application segfaults when I
+> try to create a task with stacksize 2048, this worked with 2.4.10.
+> Because my app is written in pascal i have reproduced the problem with the
+> xenomai trivial-periodic.c example:
+> 
+> -	rt_task_create(&demo_task, "trivial", 0, 99, 0);
+> +	rt_task_create(&demo_task, "trivial",16911, 99, 0);
+> 
+> Stacksize 0 -> default stack size : ok
+> Stacksize > 0 and <= 16911 : Segmentation fault
+> Stacksize >= 16912 : ok
+> 
+> Any hints ?
 
-hi,
+What does the task do? If it uses printf, printf needs a lot of room on
+the stack.
 
-i have upgraded xenomai to 2.5.0 (x86,32bit). My application segfaults wh=
-en I
-try to create a task with stacksize 2048, this worked with 2.4.10.
-Because my app is written in pascal i have reproduced the problem with th=
-e
-xenomai trivial-periodic.c example:
-
--	rt_task_create(&demo_task, "trivial", 0, 99, 0);
-+	rt_task_create(&demo_task, "trivial",16911, 99, 0);
-
-Stacksize 0 -> default stack size : ok
-Stacksize > 0 and <=3D 16911 : Segmentation fault
-Stacksize >=3D 16912 : ok
-
-Any hints ?
-
-thank you
-kisda
-
-
---------------enig793225E50CD085583EDCC1C7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iD8DBQFLRfCOIPTw9rIdn6oRAobHAJ0YkGSDac1FWqV6zhz9uuXRBS50oACff+yP
-KcACxJva9vkNrVYFDNl3Onc=
-=DRGf
------END PGP SIGNATURE-----
-
---------------enig793225E50CD085583EDCC1C7--
+-- 
+					    Gilles.
 
