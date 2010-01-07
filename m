@@ -1,23 +1,13 @@
-Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <4B465DCF.5080003@domain.hid>
-Date: Thu, 07 Jan 2010 23:18:55 +0100
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
 MIME-Version: 1.0
-References: <4bed572e0911221135s64fc4726x1cd7235f116e11a4@domain.hid>	
-	<4B16F674.5090200@domain.hid>	
-	<4bed572e0912150741l37bea514t773c71f645fbeba5@domain.hid>	
-	<4B28208B.7000305@domain.hid>	
-	<4bed572e0912160458i32834958q9512476f1603979d@domain.hid>	
-	<4B2BF4D9.6000503@domain.hid>	
-	<4bed572e1001051015l21e71e8eyaec207701c2e21ad@domain.hid>	
-	<4B43BE72.6040101@domain.hid>	
-	<4bed572e1001060557x12ffd808k193573c565830a1b@domain.hid>	
-	<4B450B7E.80106@domain.hid>
-	<4bed572e1001071124x55a964f8u22558c05c2a4485c@domain.hid>
-In-Reply-To: <4bed572e1001071124x55a964f8u22558c05c2a4485c@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Help on analogy_ni_pcimio (Alexis Berlemont?)
+In-Reply-To: <201001072250.51238.leo@domain.hid>
+References: <1262343652.19080.526.camel@domain.hid>
+	<201001071639.35486.peter@domain.hid>
+	<4B4603A4.70909@domain.hid> <201001072250.51238.leo@domain.hid>
+Date: Thu, 7 Jan 2010 21:00:55 -0200
+Message-ID: <4303dd241001071500y7387bd2fhcc8b64d506d44df3@domain.hid>
+From: Flavio de Castro Alves Filho <flavio.alves@domain.hid>
+Content-Type: multipart/alternative; boundary=00032555b4ce1d62d8047c9b0bc4
+Subject: Re: [Xenomai-help] Xenomai v2.5.0 -- Important Notice
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -27,102 +17,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ettore Pedretti <epedrett@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Ettore Pedretti wrote:
-> Hi,
-> 
-> I did not quite understand how to checkout  the analogy branch. When I
-> do git branch -a either in xenomai-head or in xenomai-2.5 I get only:
-> 
-> * master
->   origin/HEAD
->   origin/master
-> 
-> no other branch is available for checkout. I'm obviously missing something.
-The analogy branch is located in my repository. So you need to add my
-repository as a remote one:
-git remote add xenomai-abe git://xenomai.org/xenomai-abe.git
-git fetch xenomai-abe
+--00032555b4ce1d62d8047c9b0bc4
+Content-Type: text/plain; charset=ISO-8859-1
 
++1 from Brazil
 
-Now, the branch should be available:
-git branch -r
-...
-    xenomai-abe/analogy
-...
+2010/1/7 Leopold Palomo Avellaneda <leo@domain.hid>
 
-You just have to create a new branch on your repo:
-git branch --track xenomai-abe/analogy analogy
+> A Dijous 07 Gener 2010, Stefan Kisdaroczi va escriure:
+> > Am 07.01.2010 16:39, schrieb Peter Soetens:
+> > > On Friday 01 January 2010 12:00:52 Philippe Gerum wrote:
+> > >> Here is Xenomai 2.5.0.
+> > >
+> > > ...
+> > >
+> > >> http://download.gna.org/xenomai/stable/xenomai-2.5.0.tar.bz2
+> > >>
+> > >> Happy new year, btw.
+> > >
+> > > A Big Thank You from the user community to all contributors, Philippe,
+> > > Gilles and Jan in particular, seems appropriate here, but it hasn't
+> been
+> > > spoken even after a week. Therefor, I'll unilaterally and only for once
+> > > assume to be the spokesman of this world-wide fan club and do the
+> honors:
+> > >
+> > > A Big Thank You, and a happy new year to you too !
+> >
+> > +1 from switzerland
+> >
+> +1 from Catalonia
+>
+> --
+> --
+> Linux User 152692     PGP: 0xF944807E
+> Catalonia
+> -------------------------------------
+> A: Because it messes up the order in which people normally read text.
+> Q: Why is top-posting such a bad thing?
+> A: Top-posting.
+> Q: What is the most annoying thing in e-mail?
+>
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+>
 
-> 
-> I tried to apply the patch but it failed. At the end I edited
-> mio_common.c directly. I hope I did not introduce any error.
-> Everything compiled and installed fine.
-> 
-> The attach command did not complain this time:
-> 
-> analogy_config analogy0 analogy_ni_pcimio
-> 
-> The error trace is attached (dmesg_07Jan2010.txt). I also attached the
-> kernel config as you asked: (config_analogy).
-> 
-> However the device /dev/analogy0 does not seem to be created.
-> 
-> The content of /proc/analogy/drivers is:
-> 
-> --  Analogy drivers --
-> 
-> | idx | driver name
-> |  00 | analogy_ni_pcimio
-> |  01 | analogy_8255
-> 
-> /proc/analogy/devices is:
-> 
-> --  Analogy devices --
-> 
-> | idx | status | driver
-> |  00 | Linked | analogy_ni_pcimio
-> |  01 | Unused | No driver
-> |  02 | Unused | No driver
-> |  03 | Unused | No driver
-> |  04 | Unused | No driver
-> |  05 | Unused | No driver
-> |  06 | Unused | No driver
-> |  07 | Unused | No driver
-> |  08 | Unused | No driver
-> |  09 | Unused | No driver
-> 
-> /proc/analogy/00-analogy_ni_pcimio
-> 
-> --  Subdevices --
-> 
-> | idx | type
-> |  00 | Unused subdevice
-> |  01 | Analog output subdevice
-> |  02 | Digital input/output subdevice
-> |  03 | Unused subdevice
-> |  04 | Unused subdevice
-> |  05 | Calibration subdevice
-> |  06 | Memory subdevice
-> |  07 | Digital input/output subdevice
-> |  08 | Unused subdevice
-> |  09 | Serial subdevice
-> |  10 | Unused subdevice
-> |  11 | Counter subdevice
-> |  12 | Counter subdevice
-> |  13 | Counter subdevice
-> 
-> When I try cmd_write I get this
-> 
-> cmd_write: triggering failed (ret=-16)
-> 
-> I was expecting complaints about /dev/analogy0 not existing. I'm confused.
-> 
-> Progress though!
-> 
-> Ettore
-> 
-Alexis.
+--00032555b4ce1d62d8047c9b0bc4
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
++1 from Brazil<br><br><div class=3D"gmail_quote">2010/1/7 Leopold Palomo Av=
+ellaneda <span dir=3D"ltr">&lt;<a href=3D"mailto:leo@domain.hid">leo@domain.hid=
+arxa.net</a>&gt;</span><br><blockquote class=3D"gmail_quote" style=3D"borde=
+r-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-le=
+ft: 1ex;">
+A Dijous 07 Gener 2010, Stefan Kisdaroczi va escriure:<br>
+<div class=3D"im">&gt; Am 07.01.2010 16:39, schrieb Peter Soetens:<br>
+&gt; &gt; On Friday 01 January 2010 12:00:52 Philippe Gerum wrote:<br>
+&gt; &gt;&gt; Here is Xenomai 2.5.0.<br>
+&gt; &gt;<br>
+&gt; &gt; ...<br>
+&gt; &gt;<br>
+&gt; &gt;&gt; <a href=3D"http://download.gna.org/xenomai/stable/xenomai-2.5=
+.0.tar.bz2" target=3D"_blank">http://download.gna.org/xenomai/stable/xenoma=
+i-2.5.0.tar.bz2</a><br>
+&gt; &gt;&gt;<br>
+&gt; &gt;&gt; Happy new year, btw.<br>
+&gt; &gt;<br>
+&gt; &gt; A Big Thank You from the user community to all contributors, Phil=
+ippe,<br>
+&gt; &gt; Gilles and Jan in particular, seems appropriate here, but it hasn=
+&#39;t been<br>
+&gt; &gt; spoken even after a week. Therefor, I&#39;ll unilaterally and onl=
+y for once<br>
+&gt; &gt; assume to be the spokesman of this world-wide fan club and do the=
+ honors:<br>
+&gt; &gt;<br>
+&gt; &gt; A Big Thank You, and a happy new year to you too !<br>
+&gt;<br>
+&gt; +1 from switzerland<br>
+&gt;<br>
+</div>+1 from Catalonia<br>
+<br>
+--<br>
+<font color=3D"#888888">--<br>
+Linux User 152692 =A0 =A0 PGP: 0xF944807E<br>
+Catalonia<br>
+-------------------------------------<br>
+A: Because it messes up the order in which people normally read text.<br>
+Q: Why is top-posting such a bad thing?<br>
+A: Top-posting.<br>
+Q: What is the most annoying thing in e-mail?<br>
+</font><div><div></div><div class=3D"h5"><br>
+_______________________________________________<br>
+Xenomai-help mailing list<br>
+<a href=3D"mailto:Xenomai-help@domain.hid">Xenomai-help@domain.hid</a><br>
+<a href=3D"https://mail.gna.org/listinfo/xenomai-help" target=3D"_blank">ht=
+tps://mail.gna.org/listinfo/xenomai-help</a><br>
+</div></div></blockquote></div><br>
+
+--00032555b4ce1d62d8047c9b0bc4--
 
