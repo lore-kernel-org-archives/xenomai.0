@@ -1,6 +1,6 @@
 Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <4B46590F.2060308@domain.hid>
-Date: Thu, 07 Jan 2010 22:58:39 +0100
+Message-ID: <4B465DCF.5080003@domain.hid>
+Date: Thu, 07 Jan 2010 23:18:55 +0100
 From: Alexis Berlemont <berlemont.hauw@domain.hid>
 MIME-Version: 1.0
 References: <4bed572e0911221135s64fc4726x1cd7235f116e11a4@domain.hid>	
@@ -30,8 +30,6 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Ettore Pedretti <epedrett@domain.hid>
 Cc: xenomai@xenomai.org
 
-Hi,
-
 Ettore Pedretti wrote:
 > Hi,
 > 
@@ -43,6 +41,21 @@ Ettore Pedretti wrote:
 >   origin/master
 > 
 > no other branch is available for checkout. I'm obviously missing something.
+The analogy branch is located in my repository. So you need to add my
+repository as a remote one:
+git remote add xenomai-abe git://xenomai.org/xenomai-abe.git
+git fetch xenomai-abe
+
+
+Now, the branch should be available:
+git branch -r
+...
+    xenomai-abe/analogy
+...
+
+You just have to create a new branch on your repo:
+git branch --track xenomai-abe/analogy analogy
+
 > 
 > I tried to apply the patch but it failed. At the end I edited
 > mio_common.c directly. I hope I did not introduce any error.
@@ -56,32 +69,6 @@ Ettore Pedretti wrote:
 > kernel config as you asked: (config_analogy).
 > 
 > However the device /dev/analogy0 does not seem to be created.
-
-That's the common behaviour. The dev files you find in the /dev
-directory belong to the Linux drivers. The RTDM dev nodes can be listed
-in the following proc file:
-
-# cat /proc/xenomai/rtdm/named_devices
-Hash Name Driver /proc
-1B analogy0 rtdm_analogy analogy0
-1C analogy1 rtdm_analogy analogy1
-1D analogy2 rtdm_analogy analogy2
-1E analogy3 rtdm_analogy analogy3
-1F analogy4 rtdm_analogy analogy4
-20 analogy5 rtdm_analogy analogy5
-21 analogy6 rtdm_analogy analogy6
-22 analogy7 rtdm_analogy analogy7
-23 analogy8 rtdm_analogy analogy8
-24 analogy9 rtdm_analogy analogy9
-
-Roughly, a user application which communicates with RTDM drivers does
-not use the same channels as a user application which communicates with
-Linux drivers. Unlike Linux' ones, the RTDM devices are not reachable
-through specific files.
-
-So, instead of calling open("/dev/analogy0",...), we call
-rtdm_open("analogy0", ...).
-
 > 
 > The content of /proc/analogy/drivers is:
 > 
@@ -106,8 +93,6 @@ rtdm_open("analogy0", ...).
 > |  07 | Unused | No driver
 > |  08 | Unused | No driver
 > |  09 | Unused | No driver
-Ok. The attach procedure went well.
-
 > 
 > /proc/analogy/00-analogy_ni_pcimio
 > 
@@ -132,11 +117,6 @@ Ok. The attach procedure went well.
 > When I try cmd_write I get this
 > 
 > cmd_write: triggering failed (ret=-16)
--16 means -EBUSY. Did you get this error at the first launch?
-
-Before checking asynchronous writes (with cmd_write), could you test the
-synchronous writes (with insn_write)?
-
 > 
 > I was expecting complaints about /dev/analogy0 not existing. I'm confused.
 > 
@@ -144,6 +124,5 @@ synchronous writes (with insn_write)?
 > 
 > Ettore
 > 
-
 Alexis.
 
