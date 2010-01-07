@@ -1,49 +1,51 @@
-Message-ID: <4B72FBF1.2020109@domain.hid>
-Date: Wed, 10 Feb 2010 19:33:21 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <449944.37907.qm@domain.hid>
+Date: Thu, 7 Jan 2010 13:48:23 +0000 (GMT)
+From: A C <adrien_chiron@domain.hid>
 MIME-Version: 1.0
-References: <245373446233674495BCA5CA2FC1EB173713B4D0CD@RCexchangeSVR1.ruggedcom.local>,
-	<4B72F95E.3080402@domain.hid>
-	<245373446233674495BCA5CA2FC1EB173713B4D0CF@RCexchangeSVR1.ruggedcom.local>
-In-Reply-To: <245373446233674495BCA5CA2FC1EB173713B4D0CF@RCexchangeSVR1.ruggedcom.local>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Kernel oops when reading /proc/xenomai/stats
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Andreas Glatz <AndreasGlatz@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Content-Type: multipart/alternative; boundary="0-255680901-1262872103=:37907"
+Subject: [Adeos-main] __ipipe_grab_irq
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos <adeos-main@gna.org>
 
-Andreas Glatz wrote:
-> Hi,
-> 
-> 
->>> That's the kernel oops with additional debugging info (starts with 'HUHU' - see code below the oops):
->>>
->>> HUHU count=1 xnintr_count=-12
->> That's not good. What is your Xenomai version?
-> 
-> Hardware=MPC8360, Linux=2.6.32, Xenomai=2.4.10, ipipe=2.8-00
-> 
->> Does everything work fine if you application terminates normally and
->> deletes the rt_intr objects explicitly?
-> 
-> Checking...
-> 
+--0-255680901-1262872103=:37907
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-And then you may want to track this down at the site that decrements
-xnintr_count, ie. rt_intr_delete -> xnintr_detach.
+Hello,=0Ain the function __ipipe_grab_irq for the NIOS2, there is the follo=
+wing block :=0A=0Aif (likely(irq =3D=3D __ipipe_hrtimer_irq)) {=0A        _=
+_raw_get_cpu_var(__ipipe_tick_regs).estatus =3D regs->estatus;=0A        __=
+raw_get_cpu_var(__ipipe_tick_regs).ea =3D regs->ea;=0A        if (!__ipipe_=
+root_domain_p) {=0A            __raw_get_cpu_var(__ipipe_tick_regs).estatus=
+ &=3D ~NIOS2_STATUS_PIE_MSK); =0A              }=0A    }=0A=0AWe do not und=
+erstand why there is an unusual case for an interruption from the timer. We=
+ understand each lines but not the global nature. Any help ?=0A=0ACheers=0A=
+Adrien Chiron & Vincent Vanbesien=0A=0A=0A      
+--0-255680901-1262872103=:37907
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+<html><head><style type=3D"text/css"><!-- DIV {margin:0px;} --></style></he=
+ad><body><div style=3D"font-family:times new roman,new york,times,serif;fon=
+t-size:12pt"><div>Hello,<br>in the function __ipipe_grab_irq for the NIOS2,=
+ there is the following block :<br><br>if (likely(irq =3D=3D __ipipe_hrtime=
+r_irq)) {<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; __raw_get_cpu_var(__ipip=
+e_tick_regs).estatus =3D regs-&gt;estatus;<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbs=
+p;&nbsp; __raw_get_cpu_var(__ipipe_tick_regs).ea =3D regs-&gt;ea;<br>&nbsp;=
+&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; if (!__ipipe_root_domain_p) {<br>&nbsp;&nbs=
+p;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; __raw_get_cpu_var(__ipipe_ti=
+ck_regs).estatus &amp;=3D ~NIOS2_STATUS_PIE_MSK); <br>&nbsp;&nbsp; &nbsp;&n=
+bsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; }<br>&nbsp;&nbsp;&nbsp; }<br><br=
+>We do not understand why there is an unusual case for an interruption from=
+ the timer. We understand each lines but not the global nature. Any help
+ ?<br><br>Cheers<br>Adrien Chiron &amp; Vincent Vanbesien<br><br></div>=0A<=
+!-- cg5.c41.mail.ird.yahoo.com compressed Thu Jan  7 04:51:55 PST 2010 -->=
+=0A</div><br>=0A=0A=0A=0A=0A      </body></html>
+--0-255680901-1262872103=:37907--
 
