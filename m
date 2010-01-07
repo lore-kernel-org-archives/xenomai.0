@@ -1,14 +1,14 @@
-Message-ID: <4B460255.30200@domain.hid>
-Date: Thu, 07 Jan 2010 16:48:37 +0100
+Message-ID: <4B4603A4.70909@domain.hid>
+Date: Thu, 07 Jan 2010 16:54:12 +0100
 From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-References: <4B45F088.9010603@domain.hid> <4B45F163.4000504@domain.hid>
-In-Reply-To: <4B45F163.4000504@domain.hid>
+References: <1262343652.19080.526.camel@domain.hid>
+	<201001071639.35486.peter@domain.hid>
+In-Reply-To: <201001071639.35486.peter@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigF3781EFE9618E104D6A0ACBB"
-Subject: Re: [Xenomai-help] native skin 2.5.0: rt_task_create() segfaults if
- stacksize parameter too small
+	boundary="------------enigA88729F71FDC34EF28303441"
+Subject: Re: [Xenomai-help] Xenomai v2.5.0 -- Important Notice
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,49 +18,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF3781EFE9618E104D6A0ACBB
-Content-Type: text/plain; charset=UTF-8
+--------------enigA88729F71FDC34EF28303441
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Am 07.01.2010 15:36, schrieb Gilles Chanteperdrix:
-> Stefan Kisdaroczi wrote:
->> hi,
+Am 07.01.2010 16:39, schrieb Peter Soetens:
+> On Friday 01 January 2010 12:00:52 Philippe Gerum wrote:
+>> Here is Xenomai 2.5.0.
+> ...
+>> http://download.gna.org/xenomai/stable/xenomai-2.5.0.tar.bz2
 >>
->> i have upgraded xenomai to 2.5.0 (x86,32bit). My application segfaults=
- when I
->> try to create a task with stacksize 2048, this worked with 2.4.10.
->> Because my app is written in pascal i have reproduced the problem with=
- the
->> xenomai trivial-periodic.c example:
->>
->> -	rt_task_create(&demo_task, "trivial", 0, 99, 0);
->> +	rt_task_create(&demo_task, "trivial",16911, 99, 0);
->>
->> Stacksize 0 -> default stack size : ok
->> Stacksize > 0 and <=3D 16911 : Segmentation fault
->> Stacksize >=3D 16912 : ok
->>
->> Any hints ?
+>> Happy new year, btw.
 >=20
-> What does the task do? If it uses printf, printf needs a lot of room on=
+> A Big Thank You from the user community to all contributors, Philippe, =
+Gilles=20
+> and Jan in particular, seems appropriate here, but it hasn't been spoke=
+n even=20
+> after a week. Therefor, I'll unilaterally and only for once assume to b=
+e the=20
+> spokesman of this world-wide fan club and do the honors:
+>=20
+> A Big Thank You, and a happy new year to you too !
 
-> the stack.
++1 from switzerland
+
+> Those who accord, Say "Hear, Hear", "+1" or "Me too", depending on thei=
+r=20
+> geological or social situation.
+>=20
+> The Xenomai User Community.
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 >=20
 
-To clarify:
-It does not depend on the task body, the task is not even started.
-The segfault happens when calling rt_task_create(), before rt_task_start(=
-)
-is called.
-
-kisda
 
 
---------------enigF3781EFE9618E104D6A0ACBB
+--------------enigA88729F71FDC34EF28303441
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -69,10 +68,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.3 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iD8DBQFLRgJaIPTw9rIdn6oRAj+kAJ0bWzPC/0pp4UjAlP8asU5LvAEQagCaA/f9
-82aLAyFVNa1j5mWAfeceSuw=
-=fzxL
+iD8DBQFLRgOkIPTw9rIdn6oRAjwWAJ9ZAOEwewuir4HKwDranAW50nnYhgCbBo7v
+kq56ME2VyhdC5fL4CtexxOE=
+=VuKa
 -----END PGP SIGNATURE-----
 
---------------enigF3781EFE9618E104D6A0ACBB--
+--------------enigA88729F71FDC34EF28303441--
 
