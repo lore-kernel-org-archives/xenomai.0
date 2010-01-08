@@ -1,5 +1,5 @@
-Message-ID: <4B478825.9000006@domain.hid>
-Date: Fri, 08 Jan 2010 20:31:49 +0100
+Message-ID: <4B478866.3060208@domain.hid>
+Date: Fri, 08 Jan 2010 20:32:54 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <725957.56219.qm@domain.hid>	
@@ -33,20 +33,9 @@ Flavio de Castro Alves Filho wrote:
 > Not this time :-(
 > 
 > I increased the value, but it didn't work.
-> 
-> I was thinking here. The problem related in the first message of this thread
-> is exactly the same problem that I am having:
-> 
-> http://www.mail-archive.com/xenomai@xenomai.org
 
-The answer is here:
-http://www.mail-archive.com/xenomai@xenomai.org
-
-Sergey copied the PXA hardware timer support (a free-running counter
-with a match register) instead of writing the code for his real hardware
-timer (a decrementer). This could not work.
-
-So, now, the only thing I can suggest you is to show us your code.
+This is not what you should be doing. What you should be doing is read
+the datasheet to know what the minimum value is.
 
 -- 
 					    Gilles.
