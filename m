@@ -1,19 +1,13 @@
-Message-ID: <4B476768.2080502@domain.hid>
-Date: Fri, 08 Jan 2010 18:12:08 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Josh Karch <JKarch@domain.hid>
+Date: Fri, 8 Jan 2010 09:36:15 -0800
+Message-ID: <843773D242212C4882D4EDFFBF665F7F0159B20B4F@FW-SBS.fw.local>
+References: <0B45E93C5FF65740AEAE690BF3848B7AD388CC@rennsmail04.eu.thmulti.com>
+In-Reply-To: <0B45E93C5FF65740AEAE690BF3848B7AD388CC@rennsmail04.eu.thmulti.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <4B45F088.9010603@domain.hid>
-	<4B45F163.4000504@domain.hid>	<4B460255.30200@domain.hid>
-	<4B46125D.4010602@domain.hid>	<4B471B48.6040301@domain.hid>
-	<4B471D96.7050001@domain.hid>	<4B473206.90209@domain.hid>
-	<4B47338E.9080304@domain.hid>	<4B4735F4.6060503@domain.hid>
-	<4B4738FE.4020605@domain.hid> <4B473A59.4090905@domain.hid>
-	<4B4755DA.3060201@domain.hid>
-In-Reply-To: <4B4755DA.3060201@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] native skin 2.5.0: rt_task_create() segfaults if
- stacksize parameter too small
+Subject: Re: [Xenomai-help] [Xenomai-core] Xenomai v2.5.0 -- Important Notice
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,109 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-Stefan Kisdaroczi wrote:
-> Am 08.01.2010 14:59, schrieb Stefan Kisdaroczi:
->> Am 08.01.2010 14:54, schrieb Gilles Chanteperdrix:
->>> Stefan Kisdaroczi wrote:
->>>> Am 08.01.2010 14:30, schrieb Gilles Chanteperdrix:
->>>>> Stefan Kisdaroczi wrote:
->>>>>> Am 08.01.2010 12:57, schrieb Gilles Chanteperdrix:
->>>>>>> Stefan Kisdaroczi wrote:
->>>>>>>> Am 07.01.2010 17:57, schrieb Gilles Chanteperdrix:
->>>>>>>>> Stefan Kisdaroczi wrote:
->>>>>>>>>> Am 07.01.2010 15:36, schrieb Gilles Chanteperdrix:
->>>>>>>>>>> Stefan Kisdaroczi wrote:
->>>>>>>>>>>> hi,
->>>>>>>>>>>>
->>>>>>>>>>>> i have upgraded xenomai to 2.5.0 (x86,32bit). My application segfaults when I
->>>>>>>>>>>> try to create a task with stacksize 2048, this worked with 2.4.10.
->>>>>>>>>>>> Because my app is written in pascal i have reproduced the problem with the
->>>>>>>>>>>> xenomai trivial-periodic.c example:
->>>>>>>>>>>>
->>>>>>>>>>>> -	rt_task_create(&demo_task, "trivial", 0, 99, 0);
->>>>>>>>>>>> +	rt_task_create(&demo_task, "trivial",16911, 99, 0);
->>>>>>>>>>>>
->>>>>>>>>>>> Stacksize 0 -> default stack size : ok
->>>>>>>>>>>> Stacksize > 0 and <= 16911 : Segmentation fault
->>>>>>>>>>>> Stacksize >= 16912 : ok
->>>>>>>>>>>>
->>>>>>>>>>>> Any hints ?
->>>>>>>>>>> What does the task do? If it uses printf, printf needs a lot of room on
->>>>>>>>>>> the stack.
->>>>>>>>>>>
->>>>>>>>>> To clarify:
->>>>>>>>>> It does not depend on the task body, the task is not even started.
->>>>>>>>>> The segfault happens when calling rt_task_create(), before rt_task_start()
->>>>>>>>>> is called.
->>>>>>>>> Actually, when calling rt_task_create, the thread is created, under the
->>>>>>>>> hood, and waits to be started. So the segmentation fault is most
->>>>>>>>> certainly due to a stack overflow in the newly created thread.
->>>>>>>>>
->>>>>>>>> And I am afraid I know why it happens: the newly merged user-space
->>>>>>>>> signals support requires roughly 16 * sizeof(struct siginfo) on stack.
->>>>>>>>> But this amounts to two Kbytes here. Could you run the following program
->>>>>>>>> on your target ?
->>>>>>>> salut gilles,
->>>>>>>>
->>>>>>>> as the stacksize is already checked and increased to PTHREAD_STACK_MIN if
->>>>>>>> the value is too small, i suggest to take the stacksize needed by xenomai
->>>>>>>> into account too. The attached patch is clearly wrong, but it solved the
->>>>>>>> problem for me.
->>>>>>> PTHREAD_STACK_MIN varies a lot depending on architectures and even
->>>>>>> depending on the glibc versions. Which is why we took 32 Kb as the
->>>>>>> default stack size. Since the default is enough even for struct xnsig,
->>>>>>> if you are asking a smaller size, you may have good reasons to do so. We
->>>>>>> should check that the size is at least sizeof(struct xnsig), but since
->>>>>>> PTHREAD_STACK_MIN is larger than struct xnsig, it should work as is.
->>>>>>>
->>>>>>> The point is that your system seems to require 16 Kb whereas
->>>>>>> sizeof(struct xnsig) is only 2Kb. So, there is something wrong somewhere
->>>>>>> else.
->>>>>>>
->>>>>>> Could you run the segfaulting program inside gdb, and print the frames
->>>>>>> infos ?
->>>>>> gdb logfile attached
->>>>> Ok. Could you get the value of the "esp" register at the time of the
->>>>> failure, as well as the contents of /proc/<pid>/smaps where <pid> is the
->>>>> pid of the failing application ? You can run the cat /proc/<pid>/smaps
->>>>> when the process is stopped in gdb.
->>> How much is PTHREAD_STACK_MIN on your system by the way ?
->>>
->> 16 kbyte defined in /usr/include/bits/local_lim.h
-> 
-> I still think that the idea behind my patch was not so bad and that the
-> problem is simply because the value is calculated to small.
-> 
-> I have found the following sentence at [1] & [2]:
-> "You can get the absolute minimum limit on stack size by calling the macro
-> PTHREAD_STACK_MIN, which returns the amount of stack space required for a
-> thread that executes a NULL procedure."
-> 
-> As the xnsig structure needs 2k on the stack, its not a "NULL procedure".
-> For me that means that if _my_ main task function is a "NULL procedure",
-> I need at least PTHREAD_STACK_MIN + XN_STACK_MIN.
-> XN_STACK_MIN = sizeof(xnsig) + ? -> 4k ?
-> 
-> Finally, as I don't know and dont want to know that values in my app,
-> and they can change with newer glibc's and xenomai, I think the minimal
-> stacksize should be calculated like this ( if stksize != 0 ) :
-> 
->   stacksize = PTHREAD_STACK_MIN + XN_STACK_MIN + stksize;
-> 
-> This way, my main task function has always the same free stacksize when
-> called, and I know how much I need (at least I think I know ;-). If it
-> still segfaults, its in my code and its my fault.
-> 
-> But I may be completely wrong.
+Another satisfied customer from CA.  Thanks guys for a great RT platform!
 
-No. I think you are right, we will make the minimum PTHREAD_STACK_MIN +
-getpagesize() to account for differences between architectures.
+Josh Karch
 
-Patch will come soon.
+-----Original Message-----
+From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] On=
+ Behalf Of Fillod Stephane
+Sent: Friday, January 08, 2010 8:44 AM
+To: xenomai-help; xenomai@xenomai.org
+Subject: Re: [Xenomai-help] [Xenomai-core] Xenomai v2.5.0 -- Important Noti=
+ce
 
--- 
-					    Gilles.
+[...]
+> A Big Thank You, and a happy new year to you too !=20
+>
+> Those who accord, Say "Hear, Hear", "+1" or "Me too", depending on
+their=20
+> geological or social situation.
+
++1 depuis la France
+
+--=20
+Stephane
+
+_______________________________________________
+Xenomai-help mailing list
+Xenomai-help@domain.hid
+https://mail.gna.org/listinfo/xenomai-help
 
