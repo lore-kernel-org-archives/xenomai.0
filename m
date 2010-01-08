@@ -1,5 +1,5 @@
-Message-ID: <4B473898.7030303@domain.hid>
-Date: Fri, 08 Jan 2010 14:52:24 +0100
+Message-ID: <4B4738FE.4020605@domain.hid>
+Date: Fri, 08 Jan 2010 14:54:06 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4B45F088.9010603@domain.hid> <4B45F163.4000504@domain.hid>
@@ -87,12 +87,8 @@ Stefan Kisdaroczi wrote:
 >> failure, as well as the contents of /proc/<pid>/smaps where <pid> is the
 >> pid of the failing application ? You can run the cat /proc/<pid>/smaps
 >> when the process is stopped in gdb.
-> 
-> attached.
 
-The values seem to depend on the run, I am afraid you will have to do it
-all again at once. Once thing can be told for sure from your posts: a
-Linux signal frame is stacked over Xenomai stack frame.
+How much is PTHREAD_STACK_MIN on your system by the way ?
 
 -- 
 					    Gilles.
