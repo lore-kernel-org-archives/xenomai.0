@@ -1,18 +1,19 @@
-Message-ID: <4B473C35.9060906@domain.hid>
-Date: Fri, 08 Jan 2010 15:07:49 +0100
-From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-References: <4B45F088.9010603@domain.hid> <4B45F163.4000504@domain.hid>
-	<4B460255.30200@domain.hid> <4B46125D.4010602@domain.hid>
-	<4B471B48.6040301@domain.hid> <4B471D96.7050001@domain.hid>
-	<4B473206.90209@domain.hid> <4B47338E.9080304@domain.hid>
-	<4B4735F4.6060503@domain.hid> <4B473898.7030303@domain.hid>
-In-Reply-To: <4B473898.7030303@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig311FE0EFFF8488B8A3DFE0B0"
-Subject: Re: [Xenomai-help] native skin 2.5.0: rt_task_create() segfaults if
- stacksize parameter too small
+In-Reply-To: <4B44E349.1000305@domain.hid>
+References: <725957.56219.qm@domain.hid>
+	<4B3CC62D.6070709@domain.hid>
+	<1262643246.20365.10.camel@domain.hid>
+	<4B426A3D.5020706@domain.hid> <1262775394.7828.9.camel@domain.hid>
+	<4B446D99.708@domain.hid>
+	<4303dd241001060338w7876debaxa9e290b89d79a143@domain.hid>
+	<4B4497BE.7040605@domain.hid>
+	<4303dd241001061116q40315012v3b0459c3b245efa@domain.hid>
+	<4B44E349.1000305@domain.hid>
+Date: Fri, 8 Jan 2010 12:11:29 -0200
+Message-ID: <4303dd241001080611t6ab0dafch785bcf967572e69a@domain.hid>
+From: Flavio de Castro Alves Filho <flavio.alves@domain.hid>
+Content-Type: multipart/alternative; boundary=00032555ac0295ba53047ca7c3b1
+Subject: Re: [Xenomai-help] Porting I-Pipe for new ARM board
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,364 +23,176 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig311FE0EFFF8488B8A3DFE0B0
-Content-Type: multipart/mixed;
- boundary="------------090202090206040505040701"
+--00032555ac0295ba53047ca7c3b1
+Content-Type: text/plain; charset=ISO-8859-1
 
-This is a multi-part message in MIME format.
---------------090202090206040505040701
-Content-Type: text/plain; charset=UTF-8
+Hello Gilles,
+
+Unfortunately the patch didn't help... :-(
+
+But ... adding more traces on the code, I can see the irq number when the
+function __ipipe_grab_irq() is called.
+
+When everything works fine, the irq number is 21 (IRQ_DA8XX_TINT12_0).
+
+And, sometime, the irq number starts to be 22 (IRQ_DA8XX_TINT34_0). It is
+the other timer present at the processor. I believe that, somehow, the
+information about the timer (at least, the interrupt location) has been
+changed by some code.
+
+I will investigate more, according to these observations. I accept
+suggestions :-)
+
+Best regards,
+
+Flavio
+
+Flavio de Castro Alves Filho
+Phi Innovations - Embedded Software Services
+www.phiinnovations.com
+Phone: +55 11 84 94 56 76
+Skype: flavio.de.castro.alves.filho
+
+
+2010/1/6 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+
+> Flavio de Castro Alves Filho wrote:
+> > I believe there is a lockup during the irq handling process.
+> >
+> > I could not find where it is blocking.
+> >
+> > I performed the following tests:
+> >
+> > 1) add traces in every function related to interrupt ... and none was
+> called
+>
+> Well, obviously, you missed some, because your boot logs indicate
+> clearly that at least the timer interrupt is working.
+>
+> If you are interested in what happens at I-pipe level, the functions you
+> are interested in are ipipe_grab_irq, ipipe_handle_irq,
+> ipipe_mach_demux_irq, etc...
+>
+> >
+> > 2) add traces in every function in time.c file. After the last message
+> > ("ata1: SATA max UDMA/133 irq 67"), the following functions were called:
+> > - read_cycles()
+> > - timer32_read()
+> >
+> > Looking at these functions, they seam to be fine. I have no clue about
+> where
+> > to start debugging.
+> >
+> > Thank you for all your help.
+>
+> Try this:
+>
+> diff --git a/arch/arm/mach-davinci/irq.c b/arch/arm/mach-davinci/irq.c
+> index 5a324c9..22ddbe2 100644
+> --- a/arch/arm/mach-davinci/irq.c
+> +++ b/arch/arm/mach-davinci/irq.c
+> @@ -360,9 +360,11 @@ void __init davinci_irq_init(void)
+>        for (i = 0; i < DAVINCI_N_AINTC_IRQ; i++) {
+>                set_irq_chip(i, &davinci_irq_chip_0);
+>                set_irq_flags(i, IRQF_VALID | IRQF_PROBE);
+> +#ifndef CONFIG_IPIPE
+>                if (i != IRQ_TINT1_TINT34)
+>                        set_irq_handler(i, handle_edge_irq);
+>                else
+> +#endif /* CONFIG_IPIPE */
+>                        set_irq_handler(i, handle_level_irq);
+>        }
+>  }
+>
+> --
+>                                             Gilles.
+>
+
+--00032555ac0295ba53047ca7c3b1
+Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Am 08.01.2010 14:52, schrieb Gilles Chanteperdrix:
-> Stefan Kisdaroczi wrote:
->> Am 08.01.2010 14:30, schrieb Gilles Chanteperdrix:
->>> Stefan Kisdaroczi wrote:
->>>> Am 08.01.2010 12:57, schrieb Gilles Chanteperdrix:
->>>>> Stefan Kisdaroczi wrote:
->>>>>> Am 07.01.2010 17:57, schrieb Gilles Chanteperdrix:
->>>>>>> Stefan Kisdaroczi wrote:
->>>>>>>> Am 07.01.2010 15:36, schrieb Gilles Chanteperdrix:
->>>>>>>>> Stefan Kisdaroczi wrote:
->>>>>>>>>> hi,
->>>>>>>>>>
->>>>>>>>>> i have upgraded xenomai to 2.5.0 (x86,32bit). My application s=
-egfaults when I
->>>>>>>>>> try to create a task with stacksize 2048, this worked with 2.4=
-=2E10.
->>>>>>>>>> Because my app is written in pascal i have reproduced the prob=
-lem with the
->>>>>>>>>> xenomai trivial-periodic.c example:
->>>>>>>>>>
->>>>>>>>>> -	rt_task_create(&demo_task, "trivial", 0, 99, 0);
->>>>>>>>>> +	rt_task_create(&demo_task, "trivial",16911, 99, 0);
->>>>>>>>>>
->>>>>>>>>> Stacksize 0 -> default stack size : ok
->>>>>>>>>> Stacksize > 0 and <=3D 16911 : Segmentation fault
->>>>>>>>>> Stacksize >=3D 16912 : ok
->>>>>>>>>>
->>>>>>>>>> Any hints ?
->>>>>>>>> What does the task do? If it uses printf, printf needs a lot of=
- room on
->>>>>>>>> the stack.
->>>>>>>>>
->>>>>>>> To clarify:
->>>>>>>> It does not depend on the task body, the task is not even starte=
-d.
->>>>>>>> The segfault happens when calling rt_task_create(), before rt_ta=
-sk_start()
->>>>>>>> is called.
->>>>>>> Actually, when calling rt_task_create, the thread is created, und=
-er the
->>>>>>> hood, and waits to be started. So the segmentation fault is most
->>>>>>> certainly due to a stack overflow in the newly created thread.
->>>>>>>
->>>>>>> And I am afraid I know why it happens: the newly merged user-spac=
-e
->>>>>>> signals support requires roughly 16 * sizeof(struct siginfo) on s=
-tack.
->>>>>>> But this amounts to two Kbytes here. Could you run the following =
-program
->>>>>>> on your target ?
->>>>>> salut gilles,
->>>>>>
->>>>>> as the stacksize is already checked and increased to PTHREAD_STACK=
-_MIN if
->>>>>> the value is too small, i suggest to take the stacksize needed by =
-xenomai
->>>>>> into account too. The attached patch is clearly wrong, but it solv=
-ed the
->>>>>> problem for me.
->>>>> PTHREAD_STACK_MIN varies a lot depending on architectures and even
->>>>> depending on the glibc versions. Which is why we took 32 Kb as the
->>>>> default stack size. Since the default is enough even for struct xns=
-ig,
->>>>> if you are asking a smaller size, you may have good reasons to do s=
-o. We
->>>>> should check that the size is at least sizeof(struct xnsig), but si=
-nce
->>>>> PTHREAD_STACK_MIN is larger than struct xnsig, it should work as is=
-=2E
->>>>>
->>>>> The point is that your system seems to require 16 Kb whereas
->>>>> sizeof(struct xnsig) is only 2Kb. So, there is something wrong some=
-where
->>>>> else.
->>>>>
->>>>> Could you run the segfaulting program inside gdb, and print the fra=
-mes
->>>>> infos ?
->>>> gdb logfile attached
->>> Ok. Could you get the value of the "esp" register at the time of the
->>> failure, as well as the contents of /proc/<pid>/smaps where <pid> is =
-the
->>> pid of the failing application ? You can run the cat /proc/<pid>/smap=
-s
->>> when the process is stopped in gdb.
->>
->> attached.
->=20
-> The values seem to depend on the run, I am afraid you will have to do i=
-t
-> all again at once. Once thing can be told for sure from your posts: a
-> Linux signal frame is stacked over Xenomai stack frame.
->=20
+Hello Gilles,<br><br>Unfortunately the patch didn&#39;t help... :-(<br><br>=
+But ... adding more traces on the code, I can see the irq number when the f=
+unction __ipipe_grab_irq() is called.<br><br>When everything works fine, th=
+e irq number is 21 (IRQ_DA8XX_TINT12_0).<br>
 
-attached
+<br>And, sometime, the irq number starts to be 22 (IRQ_DA8XX_TINT34_0).
+It is the other timer present at the processor. I believe that,
+somehow, the information about the timer (at least, the interrupt
+location) has been changed by some code.<br>
+<br>I will investigate more, according to these observations. I accept sugg=
+estions :-)<br><br>Best regards,<br><br>Flavio<br><br clear=3D"all">Flavio =
+de Castro Alves Filho<br>Phi Innovations - Embedded Software Services<br>
+<a href=3D"http://www.phiinnovations.com">www.phiinnovations.com</a><br>Pho=
+ne: +55 11 84 94 56 76<br>Skype: flavio.de.castro.alves.filho<br>
+<br><br><div class=3D"gmail_quote">2010/1/6 Gilles Chanteperdrix <span dir=
+=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.cha=
+nteperdrix@domain.hid</a>&gt;</span><br><blockquote class=3D"gmail_quote" =
+style=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8=
+ex; padding-left: 1ex;">
+<div class=3D"im">Flavio de Castro Alves Filho wrote:<br>
+</div><div class=3D"im">&gt; I believe there is a lockup during the irq han=
+dling process.<br>
+&gt;<br>
+&gt; I could not find where it is blocking.<br>
+&gt;<br>
+&gt; I performed the following tests:<br>
+&gt;<br>
+&gt; 1) add traces in every function related to interrupt ... and none was =
+called<br>
+<br>
+</div>Well, obviously, you missed some, because your boot logs indicate<br>
+clearly that at least the timer interrupt is working.<br>
+<br>
+If you are interested in what happens at I-pipe level, the functions you<br=
+>
+are interested in are ipipe_grab_irq, ipipe_handle_irq,<br>
+ipipe_mach_demux_irq, etc...<br>
+<div class=3D"im"><br>
+&gt;<br>
+&gt; 2) add traces in every function in time.c file. After the last message=
+<br>
+&gt; (&quot;ata1: SATA max UDMA/133 irq 67&quot;), the following functions =
+were called:<br>
+&gt; - read_cycles()<br>
+&gt; - timer32_read()<br>
+&gt;<br>
+&gt; Looking at these functions, they seam to be fine. I have no clue about=
+ where<br>
+&gt; to start debugging.<br>
+&gt;<br>
+&gt; Thank you for all your help.<br>
+<br>
+</div>Try this:<br>
+<br>
+diff --git a/arch/arm/mach-davinci/irq.c b/arch/arm/mach-davinci/irq.c<br>
+index 5a324c9..22ddbe2 100644<br>
+--- a/arch/arm/mach-davinci/irq.c<br>
++++ b/arch/arm/mach-davinci/irq.c<br>
+@@ -360,9 +360,11 @@ void __init davinci_irq_init(void)<br>
+ =A0 =A0 =A0 =A0for (i =3D 0; i &lt; DAVINCI_N_AINTC_IRQ; i++) {<br>
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0set_irq_chip(i, &amp;davinci_irq_chip_0);<b=
+r>
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0set_irq_flags(i, IRQF_VALID | IRQF_PROBE);<=
+br>
++#ifndef CONFIG_IPIPE<br>
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0if (i !=3D IRQ_TINT1_TINT34)<br>
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0set_irq_handler(i, handle_e=
+dge_irq);<br>
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0else<br>
++#endif /* CONFIG_IPIPE */<br>
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0set_irq_handler(i, handle_l=
+evel_irq);<br>
+ =A0 =A0 =A0 =A0}<br>
+=A0}<br>
+<br>
+--<br>
+<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.<br>
+</font></blockquote></div><br>
 
---------------090202090206040505040701
-Content-Type: text/plain;
- name="gdb-and-smaps.txt"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="gdb-and-smaps.txt"
-
-U3RhcnRpbmcgcHJvZ3JhbTogL2hvbWUvc2tpL3NyYy94ZW5vdGVzdC90cml2aWFsLXBlcmlv
-ZGljIApbVGhyZWFkIGRlYnVnZ2luZyB1c2luZyBsaWJ0aHJlYWRfZGIgZW5hYmxlZF0KW05l
-dyBUaHJlYWQgMHhiNzVlYjZjMCAoTFdQIDIxNTA5KV0KW05ldyBUaHJlYWQgMHhiNzVlYWI5
-MCAoTFdQIDIxNTEyKV0KClByb2dyYW0gcmVjZWl2ZWQgc2lnbmFsIFNJR1NFR1YsIFNlZ21l
-bnRhdGlvbiBmYXVsdC4KW1N3aXRjaGluZyB0byBUaHJlYWQgMHhiNzVlYWI5MCAoTFdQIDIx
-NTEyKV0KMHhiNzc4NDc4MyBpbiA/PyAoKSBmcm9tIC9saWIvbGQtbGludXguc28uMgojMCAg
-MHhiNzc4NDc4MyBpbiA/PyAoKSBmcm9tIC9saWIvbGQtbGludXguc28uMgojMSAgMHhiNzc4
-YTJlMCBpbiA/PyAoKSBmcm9tIC9saWIvbGQtbGludXguc28uMgojMiAgMHhiNzc1MDdmZCBp
-biB4ZW5vX3NpZ3dpbmNoX2hhbmRsZXIgKCkgZnJvbSAvdXNyL2xpYi9saWJuYXRpdmUuc28u
-MwojMyAgMHhiNzc1MDhhNiBpbiB4ZW5vX3NpZ3NoYWRvd19oYW5kbGVyICgpIGZyb20gL3Vz
-ci9saWIvbGlibmF0aXZlLnNvLjMKIzQgIDxzaWduYWwgaGFuZGxlciBjYWxsZWQ+CiM1ICAw
-eGI3NzRmMWUwIGluID8/ICgpIGZyb20gL3Vzci9saWIvbGlibmF0aXZlLnNvLjMKIzYgIDB4
-Yjc1ZWEzYjggaW4gPz8gKCkKIzcgIDB4Yjc3NTIyMDggaW4gPz8gKCkgZnJvbSAvdXNyL2xp
-Yi9saWJuYXRpdmUuc28uMwojOCAgMHhiNzc1MjNjMCBpbiA/PyAoKSBmcm9tIC91c3IvbGli
-L2xpYm5hdGl2ZS5zby4zCiM5ICAweGI3NzUwNzAwIGluID8/ICgpIGZyb20gL3Vzci9saWIv
-bGlibmF0aXZlLnNvLjMKIzEwIDB4MDAwMDAwMDAgaW4gPz8gKCkKZWF4ICAgICAgICAgICAg
-MHhiNzc2YzJhOAktMTIxNjk1MzY4OAplY3ggICAgICAgICAgICAweGI3NWU4OWRjCS0xMjE4
-NTQxMDkyCmVkeCAgICAgICAgICAgIDB4ZDAJMjA4CmVieCAgICAgICAgICAgIDB4Yjc3NTIy
-MDgJLTEyMTcwNjAzNDQKZXNwICAgICAgICAgICAgMHhiNzVlODAwMAkweGI3NWU4MDAwCmVi
-cCAgICAgICAgICAgIDB4Yjc1ZTgwMDAJMHhiNzVlODAwMAplc2kgICAgICAgICAgICAweDYz
-CTk5CmVkaSAgICAgICAgICAgIDB4MWMJMjgKZWlwICAgICAgICAgICAgMHhiNzc4NDc4Mwkw
-eGI3Nzg0NzgzCmVmbGFncyAgICAgICAgIDB4MTAyMDYJWyBQRiBJRiBSRiBdCmNzICAgICAg
-ICAgICAgIDB4NzMJMTE1CnNzICAgICAgICAgICAgIDB4N2IJMTIzCmRzICAgICAgICAgICAg
-IDB4N2IJMTIzCmVzICAgICAgICAgICAgIDB4N2IJMTIzCmZzICAgICAgICAgICAgIDB4MAkw
-CmdzICAgICAgICAgICAgIDB4MzMJNTEKU3RhY2sgZnJhbWUgYXQgMHhiNzVlODAwODoKIGVp
-cCA9IDB4Yjc3ODQ3ODM7IHNhdmVkIGVpcCAweGI3NzhhMmUwCiBjYWxsZWQgYnkgZnJhbWUg
-YXQgMHhiNzVlODAyMAogQXJnbGlzdCBhdCAweGI3NWU3ZmZjLCBhcmdzOiAKIExvY2FscyBh
-dCAweGI3NWU3ZmZjLCBQcmV2aW91cyBmcmFtZSdzIHNwIGlzIDB4Yjc1ZTgwMDgKIFNhdmVk
-IHJlZ2lzdGVyczoKICBlYnAgYXQgMHhiNzVlODAwMCwgZWlwIGF0IDB4Yjc1ZTgwMDQKU3Rh
-Y2sgZnJhbWUgYXQgMHhiNzVlODAyMDoKIGVpcCA9IDB4Yjc3OGEyZTA7IHNhdmVkIGVpcCAw
-eGI3NzUwN2ZkCiBjYWxsZWQgYnkgZnJhbWUgYXQgMHhiNzVlODhhMCwgY2FsbGVyIG9mIGZy
-YW1lIGF0IDB4Yjc1ZTgwMDgKIEFyZ2xpc3QgYXQgMHhiNzVlODAwNCwgYXJnczogCiBMb2Nh
-bHMgYXQgMHhiNzVlODAwNCwgUHJldmlvdXMgZnJhbWUncyBzcCBpcyAweGI3NWU4MDIwCiBT
-YXZlZCByZWdpc3RlcnM6CiAgZWlwIGF0IDB4Yjc1ZTgwMWMKU3RhY2sgZnJhbWUgYXQgMHhi
-NzVlODhhMDoKIGVpcCA9IDB4Yjc3NTA3ZmQgaW4geGVub19zaWd3aW5jaF9oYW5kbGVyOyBz
-YXZlZCBlaXAgMHhiNzc1MDhhNgogY2FsbGVkIGJ5IGZyYW1lIGF0IDB4Yjc1ZTg5NTAsIGNh
-bGxlciBvZiBmcmFtZSBhdCAweGI3NWU4MDIwCiBBcmdsaXN0IGF0IDB4Yjc1ZTg4OTgsIGFy
-Z3M6IAogTG9jYWxzIGF0IDB4Yjc1ZTg4OTgsIFByZXZpb3VzIGZyYW1lJ3Mgc3AgaXMgMHhi
-NzVlODhhMAogU2F2ZWQgcmVnaXN0ZXJzOgogIGVicCBhdCAweGI3NWU4ODk4LCBlaXAgYXQg
-MHhiNzVlODg5YwpTdGFjayBmcmFtZSBhdCAweGI3NWU4OTUwOgogZWlwID0gMHhiNzc1MDhh
-NiBpbiB4ZW5vX3NpZ3NoYWRvd19oYW5kbGVyOyBzYXZlZCBlaXAgMHhiNzc3NjQwYwogY2Fs
-bGVkIGJ5IGZyYW1lIGF0IDB4Yjc1ZThhNTgsIGNhbGxlciBvZiBmcmFtZSBhdCAweGI3NWU4
-OGEwCiBBcmdsaXN0IGF0IDB4Yjc1ZTg5NDgsIGFyZ3M6IAogTG9jYWxzIGF0IDB4Yjc1ZTg5
-NDgsIFByZXZpb3VzIGZyYW1lJ3Mgc3AgaXMgMHhiNzVlODk1MAogU2F2ZWQgcmVnaXN0ZXJz
-OgogIGVicCBhdCAweGI3NWU4OTQ4LCBlaXAgYXQgMHhiNzVlODk0YwpTdGFjayBmcmFtZSBh
-dCAweGI3NWU4YTU4OgogZWlwID0gMHhiNzc3NjQwYyBpbiBfX2tlcm5lbF9ydF9zaWdyZXR1
-cm47IHNhdmVkIGVpcCAweGI3NzRmMWUwCiBjYWxsZWQgYnkgZnJhbWUgYXQgMHhiNzVlOGE1
-YywgY2FsbGVyIG9mIGZyYW1lIGF0IDB4Yjc1ZTg5NTAKIEFyZ2xpc3QgYXQgdW5rbm93biBh
-ZGRyZXNzLgogTG9jYWxzIGF0IHVua25vd24gYWRkcmVzcywgUHJldmlvdXMgZnJhbWUncyBz
-cCBpcyAweGI3NWU4YTU4CiBTYXZlZCByZWdpc3RlcnM6CiAgZWF4IGF0IDB4Yjc1ZThhMWMs
-IGVjeCBhdCAweGI3NWU4YTE4LCBlZHggYXQgMHhiNzVlOGExNCwgZWJ4IGF0IDB4Yjc1ZThh
-MTAsCiAgZWJwIGF0IDB4Yjc1ZThhMDgsIGVzaSBhdCAweGI3NWU4YTA0LCBlZGkgYXQgMHhi
-NzVlOGEwMCwgZWlwIGF0IDB4Yjc1ZThhMjgKU3RhY2sgZnJhbWUgYXQgMHhiNzVlOGE1YzoK
-IGVpcCA9IDB4Yjc3NGYxZTA7IHNhdmVkIGVpcCAweGI3NWVhM2I4CiBjYWxsZWQgYnkgZnJh
-bWUgYXQgMHhiNzVlOGE2MCwgY2FsbGVyIG9mIGZyYW1lIGF0IDB4Yjc1ZThhNTgKIEFyZ2xp
-c3QgYXQgMHhiNzVlOGE1NCwgYXJnczogCiBMb2NhbHMgYXQgMHhiNzVlOGE1NCwgUHJldmlv
-dXMgZnJhbWUncyBzcCBpcyAweGI3NWU4YTVjCiBTYXZlZCByZWdpc3RlcnM6CiAgZWlwIGF0
-IDB4Yjc1ZThhNTgKU3RhY2sgZnJhbWUgYXQgMHhiNzVlOGE2MDoKIGVpcCA9IDB4Yjc1ZWEz
-Yjg7IHNhdmVkIGVpcCAweGI3NzUyMjA4CiBjYWxsZWQgYnkgZnJhbWUgYXQgMHhiNzVlOGE2
-NCwgY2FsbGVyIG9mIGZyYW1lIGF0IDB4Yjc1ZThhNWMKIEFyZ2xpc3QgYXQgMHhiNzVlOGE1
-OCwgYXJnczogCiBMb2NhbHMgYXQgMHhiNzVlOGE1OCwgUHJldmlvdXMgZnJhbWUncyBzcCBp
-cyAweGI3NWU4YTYwCiBTYXZlZCByZWdpc3RlcnM6CiAgZWlwIGF0IDB4Yjc1ZThhNWMKU3Rh
-Y2sgZnJhbWUgYXQgMHhiNzVlOGE2NDoKIGVpcCA9IDB4Yjc3NTIyMDg7IHNhdmVkIGVpcCAw
-eGI3NzUyM2MwCiBjYWxsZWQgYnkgZnJhbWUgYXQgMHhiNzVlOGE2OCwgY2FsbGVyIG9mIGZy
-YW1lIGF0IDB4Yjc1ZThhNjAKIEFyZ2xpc3QgYXQgMHhiNzVlOGE1YywgYXJnczogCiBMb2Nh
-bHMgYXQgMHhiNzVlOGE1YywgUHJldmlvdXMgZnJhbWUncyBzcCBpcyAweGI3NWU4YTY0CiBT
-YXZlZCByZWdpc3RlcnM6CiAgZWlwIGF0IDB4Yjc1ZThhNjAKU3RhY2sgZnJhbWUgYXQgMHhi
-NzVlOGE2ODoKIGVpcCA9IDB4Yjc3NTIzYzAgaW4geGVub19zaWdzaGFkb3dfaW5zdGFsbGVk
-OyBzYXZlZCBlaXAgMHhiNzc1MDcwMAogY2FsbGVkIGJ5IGZyYW1lIGF0IDB4Yjc1ZThhNmMs
-IGNhbGxlciBvZiBmcmFtZSBhdCAweGI3NWU4YTY0CiBBcmdsaXN0IGF0IDB4Yjc1ZThhNjAs
-IGFyZ3M6IAogTG9jYWxzIGF0IDB4Yjc1ZThhNjAsIFByZXZpb3VzIGZyYW1lJ3Mgc3AgaXMg
-MHhiNzVlOGE2OAogU2F2ZWQgcmVnaXN0ZXJzOgogIGVpcCBhdCAweGI3NWU4YTY0ClN0YWNr
-IGZyYW1lIGF0IDB4Yjc1ZThhNmM6CiBlaXAgPSAweGI3NzUwNzAwIGluIHhlbm9fc2lnc2hh
-ZG93X2luc3RhbGw7IHNhdmVkIGVpcCAweDAKIGNhbGxlZCBieSBmcmFtZSBhdCAweGI3NWU4
-YTcwLCBjYWxsZXIgb2YgZnJhbWUgYXQgMHhiNzVlOGE2OAogQXJnbGlzdCBhdCAweGI3NWU4
-YTY0LCBhcmdzOiAKIExvY2FscyBhdCAweGI3NWU4YTY0LCBQcmV2aW91cyBmcmFtZSdzIHNw
-IGlzIDB4Yjc1ZThhNmMKIFNhdmVkIHJlZ2lzdGVyczoKICBlaXAgYXQgMHhiNzVlOGE2OApT
-dGFjayBmcmFtZSBhdCAweGI3NWU4YTcwOgogZWlwID0gMHgwOyBzYXZlZCBlaXAgMHgwCiBj
-YWxsZXIgb2YgZnJhbWUgYXQgMHhiNzVlOGE2YwogQXJnbGlzdCBhdCAweGI3NWU4YTY4LCBh
-cmdzOiAKIExvY2FscyBhdCAweGI3NWU4YTY4LCBQcmV2aW91cyBmcmFtZSdzIHNwIGlzIDB4
-Yjc1ZThhNzAKIFNhdmVkIHJlZ2lzdGVyczoKICBlaXAgYXQgMHhiNzVlOGE2YwpUaGUgcHJv
-Z3JhbSBpcyBydW5uaW5nLiAgRXhpdCBhbnl3YXk/ICh5IG9yIG4pCgoKMDgwNDgwMDAtMDgw
-NDkwMDAgci14cCAwMDAwMDAwMCAwODowMSAxOTc2ODQ1ICAgIC9ob21lL3NraS9zcmMveGVu
-b3Rlc3QvdHJpdmlhbC1wZXJpb2RpYwpTaXplOiAgICAgICAgICAgICAgICAgIDQga0IKUnNz
-OiAgICAgICAgICAgICAgICAgICA0IGtCClBzczogICAgICAgICAgICAgICAgICAgNCBrQgpT
-aGFyZWRfQ2xlYW46ICAgICAgICAgIDAga0IKU2hhcmVkX0RpcnR5OiAgICAgICAgICAwIGtC
-ClByaXZhdGVfQ2xlYW46ICAgICAgICAgNCBrQgpQcml2YXRlX0RpcnR5OiAgICAgICAgIDAg
-a0IKUmVmZXJlbmNlZDogICAgICAgICAgICA0IGtCClN3YXA6ICAgICAgICAgICAgICAgICAg
-MCBrQgpLZXJuZWxQYWdlU2l6ZTogICAgICAgIDQga0IKTU1VUGFnZVNpemU6ICAgICAgICAg
-ICA0IGtCCjA4MDQ5MDAwLTA4MDRhMDAwIHJ3LXAgMDAwMDAwMDAgMDg6MDEgMTk3Njg0NSAg
-ICAvaG9tZS9za2kvc3JjL3hlbm90ZXN0L3RyaXZpYWwtcGVyaW9kaWMKU2l6ZTogICAgICAg
-ICAgICAgICAgICA0IGtCClJzczogICAgICAgICAgICAgICAgICAgNCBrQgpQc3M6ICAgICAg
-ICAgICAgICAgICAgIDQga0IKU2hhcmVkX0NsZWFuOiAgICAgICAgICAwIGtCClNoYXJlZF9E
-aXJ0eTogICAgICAgICAgMCBrQgpQcml2YXRlX0NsZWFuOiAgICAgICAgIDAga0IKUHJpdmF0
-ZV9EaXJ0eTogICAgICAgICA0IGtCClJlZmVyZW5jZWQ6ICAgICAgICAgICAgNCBrQgpTd2Fw
-OiAgICAgICAgICAgICAgICAgIDAga0IKS2VybmVsUGFnZVNpemU6ICAgICAgICA0IGtCCk1N
-VVBhZ2VTaXplOiAgICAgICAgICAgNCBrQgowOTllYjAwMC0wOWEwYzAwMCBydy1wIDAwMDAw
-MDAwIDAwOjAwIDAgICAgICAgICAgW2hlYXBdClNpemU6ICAgICAgICAgICAgICAgIDEzMiBr
-QgpSc3M6ICAgICAgICAgICAgICAgICAxMzIga0IKUHNzOiAgICAgICAgICAgICAgICAgMTMy
-IGtCClNoYXJlZF9DbGVhbjogICAgICAgICAgMCBrQgpTaGFyZWRfRGlydHk6ICAgICAgICAg
-IDAga0IKUHJpdmF0ZV9DbGVhbjogICAgICAgICAwIGtCClByaXZhdGVfRGlydHk6ICAgICAg
-IDEzMiBrQgpSZWZlcmVuY2VkOiAgICAgICAgICAxMzIga0IKU3dhcDogICAgICAgICAgICAg
-ICAgICAwIGtCCktlcm5lbFBhZ2VTaXplOiAgICAgICAgNCBrQgpNTVVQYWdlU2l6ZTogICAg
-ICAgICAgIDQga0IKYjc1ZTcwMDAtYjc1ZTgwMDAgLS0tcCAwMDAwMDAwMCAwMDowMCAwIApT
-aXplOiAgICAgICAgICAgICAgICAgIDQga0IKUnNzOiAgICAgICAgICAgICAgICAgICA0IGtC
-ClBzczogICAgICAgICAgICAgICAgICAgNCBrQgpTaGFyZWRfQ2xlYW46ICAgICAgICAgIDAg
-a0IKU2hhcmVkX0RpcnR5OiAgICAgICAgICAwIGtCClByaXZhdGVfQ2xlYW46ICAgICAgICAg
-MCBrQgpQcml2YXRlX0RpcnR5OiAgICAgICAgIDQga0IKUmVmZXJlbmNlZDogICAgICAgICAg
-ICA0IGtCClN3YXA6ICAgICAgICAgICAgICAgICAgMCBrQgpLZXJuZWxQYWdlU2l6ZTogICAg
-ICAgIDQga0IKTU1VUGFnZVNpemU6ICAgICAgICAgICA0IGtCCmI3NWU4MDAwLWI3NWVjMDAw
-IHJ3LXAgMDAwMDAwMDAgMDA6MDAgMCAKU2l6ZTogICAgICAgICAgICAgICAgIDE2IGtCClJz
-czogICAgICAgICAgICAgICAgICAxNiBrQgpQc3M6ICAgICAgICAgICAgICAgICAgMTYga0IK
-U2hhcmVkX0NsZWFuOiAgICAgICAgICAwIGtCClNoYXJlZF9EaXJ0eTogICAgICAgICAgMCBr
-QgpQcml2YXRlX0NsZWFuOiAgICAgICAgIDAga0IKUHJpdmF0ZV9EaXJ0eTogICAgICAgIDE2
-IGtCClJlZmVyZW5jZWQ6ICAgICAgICAgICAxNiBrQgpTd2FwOiAgICAgICAgICAgICAgICAg
-IDAga0IKS2VybmVsUGFnZVNpemU6ICAgICAgICA0IGtCCk1NVVBhZ2VTaXplOiAgICAgICAg
-ICAgNCBrQgpiNzVlYzAwMC1iNzc0MTAwMCByLXhwIDAwMDAwMDAwIDA4OjAxIDQ4MTAwNDgg
-ICAgL2xpYi9pNjg2L2Ntb3YvbGliYy0yLjcuc28KU2l6ZTogICAgICAgICAgICAgICAxMzY0
-IGtCClJzczogICAgICAgICAgICAgICAgMTM2NCBrQgpQc3M6ICAgICAgICAgICAgICAgICA0
-MDQga0IKU2hhcmVkX0NsZWFuOiAgICAgICAxMzY0IGtCClNoYXJlZF9EaXJ0eTogICAgICAg
-ICAgMCBrQgpQcml2YXRlX0NsZWFuOiAgICAgICAgIDAga0IKUHJpdmF0ZV9EaXJ0eTogICAg
-ICAgICAwIGtCClJlZmVyZW5jZWQ6ICAgICAgICAgMTM2NCBrQgpTd2FwOiAgICAgICAgICAg
-ICAgICAgIDAga0IKS2VybmVsUGFnZVNpemU6ICAgICAgICA0IGtCCk1NVVBhZ2VTaXplOiAg
-ICAgICAgICAgNCBrQgpiNzc0MTAwMC1iNzc0MjAwMCByLS1wIDAwMTU1MDAwIDA4OjAxIDQ4
-MTAwNDggICAgL2xpYi9pNjg2L2Ntb3YvbGliYy0yLjcuc28KU2l6ZTogICAgICAgICAgICAg
-ICAgICA0IGtCClJzczogICAgICAgICAgICAgICAgICAgNCBrQgpQc3M6ICAgICAgICAgICAg
-ICAgICAgIDQga0IKU2hhcmVkX0NsZWFuOiAgICAgICAgICAwIGtCClNoYXJlZF9EaXJ0eTog
-ICAgICAgICAgMCBrQgpQcml2YXRlX0NsZWFuOiAgICAgICAgIDAga0IKUHJpdmF0ZV9EaXJ0
-eTogICAgICAgICA0IGtCClJlZmVyZW5jZWQ6ICAgICAgICAgICAgNCBrQgpTd2FwOiAgICAg
-ICAgICAgICAgICAgIDAga0IKS2VybmVsUGFnZVNpemU6ICAgICAgICA0IGtCCk1NVVBhZ2VT
-aXplOiAgICAgICAgICAgNCBrQgpiNzc0MjAwMC1iNzc0NDAwMCBydy1wIDAwMTU2MDAwIDA4
-OjAxIDQ4MTAwNDggICAgL2xpYi9pNjg2L2Ntb3YvbGliYy0yLjcuc28KU2l6ZTogICAgICAg
-ICAgICAgICAgICA4IGtCClJzczogICAgICAgICAgICAgICAgICAgOCBrQgpQc3M6ICAgICAg
-ICAgICAgICAgICAgIDgga0IKU2hhcmVkX0NsZWFuOiAgICAgICAgICAwIGtCClNoYXJlZF9E
-aXJ0eTogICAgICAgICAgMCBrQgpQcml2YXRlX0NsZWFuOiAgICAgICAgIDAga0IKUHJpdmF0
-ZV9EaXJ0eTogICAgICAgICA4IGtCClJlZmVyZW5jZWQ6ICAgICAgICAgICAgOCBrQgpTd2Fw
-OiAgICAgICAgICAgICAgICAgIDAga0IKS2VybmVsUGFnZVNpemU6ICAgICAgICA0IGtCCk1N
-VVBhZ2VTaXplOiAgICAgICAgICAgNCBrQgpiNzc0NDAwMC1iNzc0NzAwMCBydy1wIDAwMDAw
-MDAwIDAwOjAwIDAgClNpemU6ICAgICAgICAgICAgICAgICAxMiBrQgpSc3M6ICAgICAgICAg
-ICAgICAgICAgMTIga0IKUHNzOiAgICAgICAgICAgICAgICAgIDEyIGtCClNoYXJlZF9DbGVh
-bjogICAgICAgICAgMCBrQgpTaGFyZWRfRGlydHk6ICAgICAgICAgIDAga0IKUHJpdmF0ZV9D
-bGVhbjogICAgICAgICAwIGtCClByaXZhdGVfRGlydHk6ICAgICAgICAxMiBrQgpSZWZlcmVu
-Y2VkOiAgICAgICAgICAgMTIga0IKU3dhcDogICAgICAgICAgICAgICAgICAwIGtCCktlcm5l
-bFBhZ2VTaXplOiAgICAgICAgNCBrQgpNTVVQYWdlU2l6ZTogICAgICAgICAgIDQga0IKYjc3
-NDcwMDAtYjc3NTIwMDAgci14cCAwMDAwMDAwMCAwODowMSA5NTg1MzQgICAgIC91c3IvbGli
-L2xpYm5hdGl2ZS5zby4zLjAuMApTaXplOiAgICAgICAgICAgICAgICAgNDQga0IKUnNzOiAg
-ICAgICAgICAgICAgICAgIDQ0IGtCClBzczogICAgICAgICAgICAgICAgICA0NCBrQgpTaGFy
-ZWRfQ2xlYW46ICAgICAgICAgIDAga0IKU2hhcmVkX0RpcnR5OiAgICAgICAgICAwIGtCClBy
-aXZhdGVfQ2xlYW46ICAgICAgICAxMiBrQgpQcml2YXRlX0RpcnR5OiAgICAgICAgMzIga0IK
-UmVmZXJlbmNlZDogICAgICAgICAgIDQ0IGtCClN3YXA6ICAgICAgICAgICAgICAgICAgMCBr
-QgpLZXJuZWxQYWdlU2l6ZTogICAgICAgIDQga0IKTU1VUGFnZVNpemU6ICAgICAgICAgICA0
-IGtCCmI3NzUyMDAwLWI3NzUzMDAwIHJ3LXAgMDAwMGEwMDAgMDg6MDEgOTU4NTM0ICAgICAv
-dXNyL2xpYi9saWJuYXRpdmUuc28uMy4wLjAKU2l6ZTogICAgICAgICAgICAgICAgICA0IGtC
-ClJzczogICAgICAgICAgICAgICAgICAgNCBrQgpQc3M6ICAgICAgICAgICAgICAgICAgIDQg
-a0IKU2hhcmVkX0NsZWFuOiAgICAgICAgICAwIGtCClNoYXJlZF9EaXJ0eTogICAgICAgICAg
-MCBrQgpQcml2YXRlX0NsZWFuOiAgICAgICAgIDAga0IKUHJpdmF0ZV9EaXJ0eTogICAgICAg
-ICA0IGtCClJlZmVyZW5jZWQ6ICAgICAgICAgICAgNCBrQgpTd2FwOiAgICAgICAgICAgICAg
-ICAgIDAga0IKS2VybmVsUGFnZVNpemU6ICAgICAgICA0IGtCCk1NVVBhZ2VTaXplOiAgICAg
-ICAgICAgNCBrQgpiNzc1MzAwMC1iNzc2ODAwMCByLXhwIDAwMDAwMDAwIDA4OjAxIDQ4MTAw
-NjIgICAgL2xpYi9pNjg2L2Ntb3YvbGlicHRocmVhZC0yLjcuc28KU2l6ZTogICAgICAgICAg
-ICAgICAgIDg0IGtCClJzczogICAgICAgICAgICAgICAgICA4NCBrQgpQc3M6ICAgICAgICAg
-ICAgICAgICAgMjQga0IKU2hhcmVkX0NsZWFuOiAgICAgICAgIDgwIGtCClNoYXJlZF9EaXJ0
-eTogICAgICAgICAgMCBrQgpQcml2YXRlX0NsZWFuOiAgICAgICAgIDAga0IKUHJpdmF0ZV9E
-aXJ0eTogICAgICAgICA0IGtCClJlZmVyZW5jZWQ6ICAgICAgICAgICA4NCBrQgpTd2FwOiAg
-ICAgICAgICAgICAgICAgIDAga0IKS2VybmVsUGFnZVNpemU6ICAgICAgICA0IGtCCk1NVVBh
-Z2VTaXplOiAgICAgICAgICAgNCBrQgpiNzc2ODAwMC1iNzc2YTAwMCBydy1wIDAwMDE0MDAw
-IDA4OjAxIDQ4MTAwNjIgICAgL2xpYi9pNjg2L2Ntb3YvbGlicHRocmVhZC0yLjcuc28KU2l6
-ZTogICAgICAgICAgICAgICAgICA4IGtCClJzczogICAgICAgICAgICAgICAgICAgOCBrQgpQ
-c3M6ICAgICAgICAgICAgICAgICAgIDgga0IKU2hhcmVkX0NsZWFuOiAgICAgICAgICAwIGtC
-ClNoYXJlZF9EaXJ0eTogICAgICAgICAgMCBrQgpQcml2YXRlX0NsZWFuOiAgICAgICAgIDAg
-a0IKUHJpdmF0ZV9EaXJ0eTogICAgICAgICA4IGtCClJlZmVyZW5jZWQ6ICAgICAgICAgICAg
-OCBrQgpTd2FwOiAgICAgICAgICAgICAgICAgIDAga0IKS2VybmVsUGFnZVNpemU6ICAgICAg
-ICA0IGtCCk1NVVBhZ2VTaXplOiAgICAgICAgICAgNCBrQgpiNzc2YTAwMC1iNzc2ZDAwMCBy
-dy1wIDAwMDAwMDAwIDAwOjAwIDAgClNpemU6ICAgICAgICAgICAgICAgICAxMiBrQgpSc3M6
-ICAgICAgICAgICAgICAgICAgMTIga0IKUHNzOiAgICAgICAgICAgICAgICAgIDEyIGtCClNo
-YXJlZF9DbGVhbjogICAgICAgICAgMCBrQgpTaGFyZWRfRGlydHk6ICAgICAgICAgIDAga0IK
-UHJpdmF0ZV9DbGVhbjogICAgICAgICAwIGtCClByaXZhdGVfRGlydHk6ICAgICAgICAxMiBr
-QgpSZWZlcmVuY2VkOiAgICAgICAgICAgMTIga0IKU3dhcDogICAgICAgICAgICAgICAgICAw
-IGtCCktlcm5lbFBhZ2VTaXplOiAgICAgICAgNCBrQgpNTVVQYWdlU2l6ZTogICAgICAgICAg
-IDQga0IKYjc3NmYwMDAtYjc3NzIwMDAgcnctcyAwMDAwMDAwMCAwMDowZCAxNTUxICAgICAg
-IC9kZXYvcnRoZWFwClNpemU6ICAgICAgICAgICAgICAgICAxMiBrQgpSc3M6ICAgICAgICAg
-ICAgICAgICAgMTIga0IKUHNzOiAgICAgICAgICAgICAgICAgICA2IGtCClNoYXJlZF9DbGVh
-bjogICAgICAgICAxMiBrQgpTaGFyZWRfRGlydHk6ICAgICAgICAgIDAga0IKUHJpdmF0ZV9D
-bGVhbjogICAgICAgICAwIGtCClByaXZhdGVfRGlydHk6ICAgICAgICAgMCBrQgpSZWZlcmVu
-Y2VkOiAgICAgICAgICAgMTIga0IKU3dhcDogICAgICAgICAgICAgICAgICAwIGtCCktlcm5l
-bFBhZ2VTaXplOiAgICAgICAgNCBrQgpNTVVQYWdlU2l6ZTogICAgICAgICAgIDQga0IKYjc3
-NzIwMDAtYjc3NzUwMDAgcnctcyAwMDAwMDAwMCAwMDowZCAxNTUxICAgICAgIC9kZXYvcnRo
-ZWFwClNpemU6ICAgICAgICAgICAgICAgICAxMiBrQgpSc3M6ICAgICAgICAgICAgICAgICAg
-MTIga0IKUHNzOiAgICAgICAgICAgICAgICAgIDEyIGtCClNoYXJlZF9DbGVhbjogICAgICAg
-ICAgMCBrQgpTaGFyZWRfRGlydHk6ICAgICAgICAgIDAga0IKUHJpdmF0ZV9DbGVhbjogICAg
-ICAgIDEyIGtCClByaXZhdGVfRGlydHk6ICAgICAgICAgMCBrQgpSZWZlcmVuY2VkOiAgICAg
-ICAgICAgMTIga0IKU3dhcDogICAgICAgICAgICAgICAgICAwIGtCCktlcm5lbFBhZ2VTaXpl
-OiAgICAgICAgNCBrQgpNTVVQYWdlU2l6ZTogICAgICAgICAgIDQga0IKYjc3NzUwMDAtYjc3
-NzYwMDAgcnctcCAwMDAwMDAwMCAwMDowMCAwIApTaXplOiAgICAgICAgICAgICAgICAgIDQg
-a0IKUnNzOiAgICAgICAgICAgICAgICAgICA0IGtCClBzczogICAgICAgICAgICAgICAgICAg
-NCBrQgpTaGFyZWRfQ2xlYW46ICAgICAgICAgIDAga0IKU2hhcmVkX0RpcnR5OiAgICAgICAg
-ICAwIGtCClByaXZhdGVfQ2xlYW46ICAgICAgICAgMCBrQgpQcml2YXRlX0RpcnR5OiAgICAg
-ICAgIDQga0IKUmVmZXJlbmNlZDogICAgICAgICAgICA0IGtCClN3YXA6ICAgICAgICAgICAg
-ICAgICAgMCBrQgpLZXJuZWxQYWdlU2l6ZTogICAgICAgIDQga0IKTU1VUGFnZVNpemU6ICAg
-ICAgICAgICA0IGtCCmI3Nzc2MDAwLWI3Nzc3MDAwIHIteHAgMDAwMDAwMDAgMDA6MDAgMCAg
-ICAgICAgICBbdmRzb10KU2l6ZTogICAgICAgICAgICAgICAgICA0IGtCClJzczogICAgICAg
-ICAgICAgICAgICAgNCBrQgpQc3M6ICAgICAgICAgICAgICAgICAgIDAga0IKU2hhcmVkX0Ns
-ZWFuOiAgICAgICAgICA0IGtCClNoYXJlZF9EaXJ0eTogICAgICAgICAgMCBrQgpQcml2YXRl
-X0NsZWFuOiAgICAgICAgIDAga0IKUHJpdmF0ZV9EaXJ0eTogICAgICAgICAwIGtCClJlZmVy
-ZW5jZWQ6ICAgICAgICAgICAgNCBrQgpTd2FwOiAgICAgICAgICAgICAgICAgIDAga0IKS2Vy
-bmVsUGFnZVNpemU6ICAgICAgICA0IGtCCk1NVVBhZ2VTaXplOiAgICAgICAgICAgNCBrQgpi
-Nzc3NzAwMC1iNzc5MTAwMCByLXhwIDAwMDAwMDAwIDA4OjAxIDQ4MDA1MTQgICAgL2xpYi9s
-ZC0yLjcuc28KU2l6ZTogICAgICAgICAgICAgICAgMTA0IGtCClJzczogICAgICAgICAgICAg
-ICAgIDEwNCBrQgpQc3M6ICAgICAgICAgICAgICAgICAgMTAga0IKU2hhcmVkX0NsZWFuOiAg
-ICAgICAgMTAwIGtCClNoYXJlZF9EaXJ0eTogICAgICAgICAgMCBrQgpQcml2YXRlX0NsZWFu
-OiAgICAgICAgIDAga0IKUHJpdmF0ZV9EaXJ0eTogICAgICAgICA0IGtCClJlZmVyZW5jZWQ6
-ICAgICAgICAgIDEwNCBrQgpTd2FwOiAgICAgICAgICAgICAgICAgIDAga0IKS2VybmVsUGFn
-ZVNpemU6ICAgICAgICA0IGtCCk1NVVBhZ2VTaXplOiAgICAgICAgICAgNCBrQgpiNzc5MTAw
-MC1iNzc5MzAwMCBydy1wIDAwMDFhMDAwIDA4OjAxIDQ4MDA1MTQgICAgL2xpYi9sZC0yLjcu
-c28KU2l6ZTogICAgICAgICAgICAgICAgICA4IGtCClJzczogICAgICAgICAgICAgICAgICAg
-OCBrQgpQc3M6ICAgICAgICAgICAgICAgICAgIDgga0IKU2hhcmVkX0NsZWFuOiAgICAgICAg
-ICAwIGtCClNoYXJlZF9EaXJ0eTogICAgICAgICAgMCBrQgpQcml2YXRlX0NsZWFuOiAgICAg
-ICAgIDAga0IKUHJpdmF0ZV9EaXJ0eTogICAgICAgICA4IGtCClJlZmVyZW5jZWQ6ICAgICAg
-ICAgICAgOCBrQgpTd2FwOiAgICAgICAgICAgICAgICAgIDAga0IKS2VybmVsUGFnZVNpemU6
-ICAgICAgICA0IGtCCk1NVVBhZ2VTaXplOiAgICAgICAgICAgNCBrQgpiZmQ2YTAwMC1iZmQ3
-ZjAwMCBydy1wIDAwMDAwMDAwIDAwOjAwIDAgICAgICAgICAgW3N0YWNrXQpTaXplOiAgICAg
-ICAgICAgICAgICAgODQga0IKUnNzOiAgICAgICAgICAgICAgICAgIDg0IGtCClBzczogICAg
-ICAgICAgICAgICAgICA4NCBrQgpTaGFyZWRfQ2xlYW46ICAgICAgICAgIDAga0IKU2hhcmVk
-X0RpcnR5OiAgICAgICAgICAwIGtCClByaXZhdGVfQ2xlYW46ICAgICAgICAgMCBrQgpQcml2
-YXRlX0RpcnR5OiAgICAgICAgODQga0IKUmVmZXJlbmNlZDogICAgICAgICAgIDg0IGtCClN3
-YXA6ICAgICAgICAgICAgICAgICAgMCBrQgpLZXJuZWxQYWdlU2l6ZTogICAgICAgIDQga0IK
-TU1VUGFnZVNpemU6ICAgICAgICAgICA0IGtCCg==
---------------090202090206040505040701--
-
---------------enig311FE0EFFF8488B8A3DFE0B0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iD8DBQFLRzw1IPTw9rIdn6oRAqq5AJ92TCjq+6LhGxq9j5uBbsgBPMe7rQCeOWQk
-qitwryWx8FFvNtpusFHkucg=
-=CPSK
------END PGP SIGNATURE-----
-
---------------enig311FE0EFFF8488B8A3DFE0B0--
+--00032555ac0295ba53047ca7c3b1--
 
