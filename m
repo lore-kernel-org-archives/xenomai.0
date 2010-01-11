@@ -1,5 +1,5 @@
-Message-ID: <4B4AE900.1070703@domain.hid>
-Date: Mon, 11 Jan 2010 10:01:52 +0100
+Message-ID: <4B4B0458.9000403@domain.hid>
+Date: Mon, 11 Jan 2010 11:58:32 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1262955043-5304-1-git-send-email-gilles.chanteperdrix@xenomai.org>	<4B4ADB17.4070905@domain.hid>
@@ -16,7 +16,6 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
 Jan Kiszka wrote:
@@ -87,61 +86,9 @@ Jan Kiszka wrote:
 >> and xeno_stacksize(0) gives a reasonnable default value.
 > 
 > OK, then go for this service (is it already merged)?
-> 
->>>>  	pthread_create(&printer_thread, &thattr, printer_loop, NULL);
->>>>  }
->>>>  
->>>> @@ -464,6 +464,15 @@ static void forked_child_init(void)
->>>>  	struct print_buffer *my_buffer = pthread_getspecific(buffer_key);
->>>>  	struct print_buffer **pbuffer = &first_buffer;
->>>>  
->>>> +	if (my_buffer) {
->>>> +		/* Any content of my_buffer should be printed by our parent,
->>>> +		   not us. */
->>>> +		memset(my_buffer->ring, 0, my_buffer->size);
->>>> +
->>>> +		my_buffer->read_pos  = 0;
->>>> +		my_buffer->write_pos = 0;
->>>> +	}
->>>> +
->>> Ack.
->>>
->>>>  	/* re-init to avoid finding it locked by some parent thread */
->>>>  	pthread_mutex_init(&buffer_lock, NULL);
->>>>  
->>>> @@ -518,3 +527,13 @@ void __rt_print_init(void)
->>>>  	spawn_printer_thread();
->>>>  	pthread_atfork(NULL, NULL, forked_child_init);
->>>>  }
->>>> +
->>>> +void __rt_print_exit(void)
->>>> +{
->>>> +	if (buffers) {
->>>> +		/* Flush the buffers. Do not call print_buffers here
->>>> +		 * since we do not know if our stack is big enough. */
->>>> +		nanosleep(&print_period, NULL);
->>>> +		nanosleep(&print_period, NULL);
->>>> +	}
->>>> +}
->>> IIRC, that's what cleanup_buffer is supposed to do, triggered by the
->>> pthread key destruction. Can you explain why it failed in your scenario.
->> pthread_key destruction is called when a thread is cancelled. My
->> testcase was calling exit.
-> 
-> exit() does not trigger these cleanup hooks? Too bad.
-> 
->> Besides, cleanup_buffer flushes the buffers
->> from the context of the calling thread, which is a bad idea, due to the
->> stack sizes situation.
-> 
-> If a thread requesting rt_printk services is not capable of performing
-> this work during it's cleanup, when there is no significant stack load,
-> I would say it's misconfigured /wrt stack size.
 
-Ok, but is is printf which causes the significant stack load. It is fine
-with me. However, in the case of exit, the main thread is not even
-necessarily supposed to be able to call rt_printf, so, I think leaving
-the job to the printing thread is better.
+it is pending, was waiting for Stefan confirmation that it fixed his
+issue, should be pushed soon.
 
 -- 
 Gilles Chanteperdrix, Free Electrons
