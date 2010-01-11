@@ -1,13 +1,10 @@
-Message-ID: <4B4B0458.9000403@domain.hid>
-Date: Mon, 11 Jan 2010 11:58:32 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4B4B4D13.1050206@domain.hid>
+Date: Mon, 11 Jan 2010 17:08:51 +0100
+From: "Alessio Margan @ IIT" <alessio.margan@domain.hid>
 MIME-Version: 1.0
-References: <1262955043-5304-1-git-send-email-gilles.chanteperdrix@xenomai.org>	<4B4ADB17.4070905@domain.hid>
-	<4B4ADEE2.9070000@domain.hid> <4B4AE4AB.8010905@domain.hid>
-In-Reply-To: <4B4AE4AB.8010905@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 1/1] rtdk: various fixes.
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-core] [PATCH] Sensoray 526 analogy driver
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,83 +13,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai-core@domain.hid
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Gilles Chanteperdrix wrote:
->>>> When exiting a process, rtdk buffers are not flushed. Fix that by
->>>> introducing a destructor for the library which flushes the buffers.
->>>>
->>>> When forking, if the main thread has an rt_printf buffer, it is reused by
->>>> the child, which is a good thing, however, it is not emptied, so could cause
->>>> the same message to be printed twice. Fix that by emptying the main thread
->>>> buffer upon fork.
->>>>
->>>> When spawning the rt_print thread, it uses a stack size of
->>>> PTHREAD_STACK_MIN, which may be too small for printf to work reliably on
->>>> some architectures, set the stack size to the
->>>> empirically-known-to-be-working size of... 32Kb.
->>>> ---
->>>>  src/rtdk/init.c     |    5 +++++
->>>>  src/rtdk/internal.h |    1 +
->>>>  src/rtdk/rt_print.c |   21 ++++++++++++++++++++-
->>>>  3 files changed, 26 insertions(+), 1 deletions(-)
->>>>
->>>> diff --git a/src/rtdk/init.c b/src/rtdk/init.c
->>>> index 2084c73..b864175 100644
->>>> --- a/src/rtdk/init.c
->>>> +++ b/src/rtdk/init.c
->>>> @@ -22,3 +22,8 @@ static __attribute__ ((constructor)) void __init_rtdk(void)
->>>>  {
->>>>  	__rt_print_init();
->>>>  }
->>>> +
->>>> +static __attribute__ ((destructor)) void __exit_rtdk(void)
->>>> +{
->>>> +	__rt_print_exit();
->>>> +}
->>>> diff --git a/src/rtdk/internal.h b/src/rtdk/internal.h
->>>> index bd15b2d..345d4fa 100644
->>>> --- a/src/rtdk/internal.h
->>>> +++ b/src/rtdk/internal.h
->>>> @@ -23,6 +23,7 @@
->>>>  #include <sys/time.h>
->>>>  
->>>>  void __rt_print_init(void);
->>>> +void __rt_print_exit(void);
->>>>  
->>>>  void __real_free(void *ptr);
->>>>  void *__real_malloc(size_t size);
->>>> diff --git a/src/rtdk/rt_print.c b/src/rtdk/rt_print.c
->>>> index c6b5c55..dae7d7b 100644
->>>> --- a/src/rtdk/rt_print.c
->>>> +++ b/src/rtdk/rt_print.c
->>>> @@ -455,7 +455,7 @@ static void spawn_printer_thread(void)
->>>>  	pthread_attr_t thattr;
->>>>  
->>>>  	pthread_attr_init(&thattr);
->>>> -	pthread_attr_setstacksize(&thattr, PTHREAD_STACK_MIN);
->>>> +	pthread_attr_setstacksize(&thattr, 32768);
->>> Mmh... maybe rather $something +PTHREAD_STACK_MIN?
->> No, PTHREAD_STACK_MIN sucks, it is not appropriate, and have very
->> varying values on different platforms. On some plaforms, with some
->> versions of glibc, it is 4096, way too small, so that printf generates a
->> segfault due to a stack overflow.
->>
->> However, due to the work done when solving the stack issue reported by
->> Stefan, I hid the magic constants in a function called xeno_stacksize
->> and xeno_stacksize(0) gives a reasonnable default value.
-> 
-> OK, then go for this service (is it already merged)?
+Hi,
 
-it is pending, was waiting for Stefan confirmation that it fixed his
-issue, should be pushed soon.
+I try to configure sensoray counters to generate PWM signal
 
--- 
-Gilles Chanteperdrix, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+#define SUBD_CNT 0
+#define SUBD_AI 1
+#define SUBD_AO 2
+#define SUBD_DIO 3
+
+insn.type =3D A4L_INSN_CONFIG;
+insn.idx_subd =3D SUBD_COUNTER;
+insn.chan_desc =3D CHAN(channel);
+insn.data_size =3D sizeof(dataC) / sizeof(dataC[0]);
+insn.data =3D data;
+data[0] =3D A4L_INSN_CONFIG_GPCT_PULSE_TRAIN_GENERATOR;
+data[1] =3D cmReg.value;
+data[2] =3D down_ticks;
+data[3] =3D up_ticks;
+
+ret =3D a4l_snd_insn(&dsc, &insn);
+
+in a4l_do_insn the subdevice is check in this way but the test for=20
+counter, and I think also for dio, fails due
+to A4L_SUBD_MASK_SPECIAL bit
+
+#define A4L_SUBD_UNUSED (A4L_SUBD_MASK_SPECIAL|0x1)
+#define A4L_SUBD_COUNTER (A4L_SUBD_MASK_SPECIAL|0x40)
+#define A4L_SUBD_DIO (A4L_SUBD_MASK_SPECIAL|0x20)
+
+/* Checks the subdevice's characteristics */
+if ((subd->flags & A4L_SUBD_UNUSED) !=3D 0) {
+__a4l_err("a4l_do_insn: wrong subdevice selected 0x%X\n",subd->flags);
+return -EINVAL;
+}
+
+there is something wrong or I miss something ?
+
+TIA
+
+Alessio
+
+
+--=20
+
+ISTITUTO ITALIANO
+DI TECNOLOGIA
+
+Alessio Margan
+/Senior Technician/
+mail me <mailto:alessio.margan@domain.hid>
+
+Via Morego, 30 16163 Genova=20
+<http://maps.google.com/maps?f=3Dq&hl=3Den&geocode=3D&q=3Dvia+morego,+30+ge=
+nova&sll=3D37.0625,-95.677068&sspn=3D85.420533,191.601563&ie=3DUTF8&ll=3D44=
+.474913,8.907037&spn=3D0.004685,0.011652&t=3Dh&z=3D17&iwloc=3Daddr>
+
+www.iit.it <http://www.iit.it>
+
+*Legal Disclaimer*
+This electronic message contains information that is confidential. The=20
+information is intended for the use of the addressee only. If you are=20
+not the addressee we would appreciate your notification in this respect.=20
+Please note that any disclosure, copy, distribution or use of the=20
+contents of this message is prohibited and may be unlawful. We have=20
+taken every reasonable precaution to ensure that any kind of attachment=20
+to this e-mail has been swept for viruses. However, we cannot accept=20
+liability for any damage sustained as a result of software viruses and=20
+would advise you to carry out your own virus checks before opening any=20
+attachment.
+*Avvertenza legale*
+Questo messaggio Email contiene informazioni confidenziali riservate ai=20
+soli destinatari. Qualora veniate in possesso di tali informazioni senza=20
+essere definito come destinatario vi reghiamo di leggere le seguenti=20
+note. Ogni apertura, copia, distribuzione del contenuto del messaggio e=20
+dei suoi allegati =E8 proibito e potrebbe violare le presenti leggi.=20
+Abbiamo attivato ogni possibile e ragionevole precauzione per assicurare=20
+che gli allegati non contengano virus. Comunque non assumeremo alcuna=20
+responsabilit=E0 per ogni eventuale danno causato da virus software e=20
+simili in quanto =E8 onere del destinatario verificarne l=92assenza in ogni=
+=20
+allegato attuando propri indipendenti controlli.
+
 
