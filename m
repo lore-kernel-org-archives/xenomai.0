@@ -1,14 +1,14 @@
-Message-ID: <4B4C4EF9.601@domain.hid>
-Date: Tue, 12 Jan 2010 11:29:13 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Landau, Bracha" <BLandau@domain.hid>
+Date: Tue, 12 Jan 2010 13:32:34 +0200
+Message-ID: <065A7D06F7D4E546A18E80E08D066E18146A301A0A@ILMA1.IL.NDS.COM>
+References: <065A7D06F7D4E546A18E80E08D066E18146A3016C3@domain.hid>
+	<4B4B64AF.3040704@domain.hid>
+In-Reply-To: <4B4B64AF.3040704@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <001101ca930a$1052fa70$30f8ef50$@kalatchev@domain.hid>
-	<4B4BADDD.7070900@domain.hid>
-In-Reply-To: <4B4BADDD.7070900@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Viper board (ARM XScale) problems
-	with	Xenomai-2.4.10
+Subject: Re: [Xenomai-help] xenomai user app working very slowly
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,48 +18,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ivan Kalatchev <ivan.kalatchev@domain.hid>
-Cc: Xenomai-help@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Ivan Kalatchev wrote:
->> and not be part of the common code? 
-> 
-> handle_edge_irq is a misnomer, it should be called
-> "handle_edge_irq_by_bogus_interrupt_controller"
-> handle_level_irq is perfectly fine for edge irqs if the interrupt
-> controller does not loose edge irqs when they are masked.
-> 
-> The point is that handle_edge_irq is incompatible with Xenomai. So, we
-> replace handle_edge_irq with handle_level_irq in the hope that your edge
-> controller is not buggy. I did not invent this, I read it on the linux
-> arm kernel mailing list, and for the sake of preempt_rt, people are
-> doing the same thing (only without a #ifdef) in the mainline kernel,
-> they maybe even did it in 2.6.33, or it is pending for 2.6.34.
-> 
-> The point is: you think that everything works fine, but I really doubt
-> it. Normally, with handle_edge_irq, the I-pipes receives the irq, acks
-> it, does not mask it, and then go to some other business with irqs on,
-> the problem is that since the interrupt handler was not run, the
-> peripheral from which originates the interrupt may trigger it again, and
-> then you get a lock-up. This is what the code you disabled fixes. And
-> this is the only fix we have at hand for now.
-
-Ok, I have dug the linux arm kernel mailing list archives. It turns out
-that PXA, SA1100 and AT91 have buggy PICs which need absolutely
-handle_edge_irq.
-
-That said, I think that the lockup issue does not happen with any
-peripheral when the interrupt controller is configured in edge mode. I
-think the problem happens when a peripheral with a "level" behaviour is
-plugged on a pin configured as edge.
-
-In short, you are right, we will ask people who have the lockup issue to
-call set_irq_handler(handle_level_irq) for the drivers who have the
-problem. Only, the way you presented your mail made me think that your
-modification was a hacker's random change rather than a fully thought
-out/documented one.
-
--- 
-					    Gilles.
+QWZ0ZXIgcmVhZGluZyBvbmUgb2YgdGhlIGxpbmtzIGJlbG93LCBJIGFkZGVkIGNhbGxzIHRvIHB0
+aHJlYWRfc2V0c3RhY2tzaXplIHRvIGxpbWl0IG1lbW9yeSB1c2FnZSwgYW5kIHRoaXMgaW1wcm92
+ZWQgdGhlIHRpbWluZy4NCkhvd2V2ZXIsIEkgc3RpbGwgaGF2ZSBzZXZlcmFsIHByb2JsZW1zIHdp
+dGggdGhlIGFwcGxpY2F0aW9uLg0KSW4gYSB0aHJlYWQgSSBoYXZlIGEgY2FsbCB0byBzZWxlY3Qg
+d2hpY2ggd2FpdHMgb24gdHdvIG1lc3NhZ2UgcXVldWVzLiBFYWNoIG9mIHRoZXNlIGlzIGEgcmVh
+bC10aW1lIG1lc3NhZ2UgcXVldWUuIEluIHRoZSByZWd1bGFyIGFwcGxpY2F0aW9uIHRoaXMgd29y
+a3MgZmluZSwgYnV0IGluIHRoZSB4ZW5vbWFpIGFwcGxpY2F0aW9uIHRoZSBzZWxlY3QgcmV0dXJu
+cyB3aXRoIGJvdGggc2V0cyByZXR1cm5pbmcgdHJ1ZSB0byAiRkRfSVNTRVQiLCB3aGVuIHRoZXJl
+IHJlYWxseSBpcyBub3RoaW5nIHRvIHJlYWQgZnJvbSB0aGUgcXVldWUuDQpJIGRpZCBub3QgZmlu
+ZCBhbnl0aGluZyBpbiB0aGUgbGlua3MgdGhhdCByZWZlcnMgdG8gcHJvYmxlbXMgd2l0aCBzZWxl
+Y3QgKGFzIGxvbmcgYXMgdGhleSBhcmUgYm90aCByL3QgZGVzY3JpcHRvcnMsIHdoaWNoIHRoZXkg
+YXJlKS4NCg0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogR2lsbGVzIENoYW50
+ZXBlcmRyaXggW21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEBnbWFpbC5jb21dDQpTZW50OiBN
+b25kYXksIEphbnVhcnkgMTEsIDIwMTAgNzo1MCBQTQ0KVG86IExhbmRhdSwgQnJhY2hhDQpDYzog
+eGVub21haS1oZWxwQGduYS5vcmcNClN1YmplY3Q6IFJlOiBbWGVub21haS1oZWxwXSB4ZW5vbWFp
+IHVzZXIgYXBwIHdvcmtpbmcgdmVyeSBzbG93bHkNCg0KTGFuZGF1LCBCcmFjaGEgd3JvdGU6DQo+
+IEkgY29udmVydGVkIG15IHJlZ3VsYXIgcG9zaXggYXBwbGljYXRpb24gdG8gYSB4ZW5vbWFpLXBv
+c2l4DQo+IGFwcGxpY2F0aW9uLCBob3BpbmcgdG8gc2VlIGFuIGltcHJvdmVtZW50IGluIHBlcmZv
+cm1hbmNlLiBIb3dldmVyLA0KPiB0aGUgbmV3IHhlbm9tYWkgYXBwbGljYXRpb24gcnVucyBlLXgt
+dC1yLWUtbS1lLWwteSBzbG93bHksIGFuZCBzZWVtcw0KPiB0byB0YWtlIHVuZHVlIGFtb3VudHMg
+b2YgQ1BVIHRpbWUuDQo+DQo+IEkgY29uZmlndXJlZCB0aGUgeGVub21haSB3aXRoIC1lbmFibGUt
+c21wIGFuZCAtZW5hYmxlLXg4Ni1zZXAuIEl0IGlzDQo+IGFuIEF0b20gcHJvY2Vzc29yIChhIHNp
+bmdsZSBjcHUpLg0KPg0KPiBBbnkgaWRlYXMgd2h5IHRoaXMgaXMgaGFwcGVuaW5nPw0KDQpDaGVj
+azoNCmh0dHA6Ly93d3cueGVub21haS5vcmcvaW5kZXgucGhwL1BvcnRpbmdfUE9TSVhfYXBwbGlj
+YXRpb25zX3RvX1hlbm9tYWkNCmFuZDoNCmh0dHA6Ly93d3cueGVub21haS5vcmcvaW5kZXgucGhw
+L0ZBUXMjV2hhdF9tYXlfY2F1c2VfYV9mcmVlemVfb3JfbWFjaGluZV9sb2NrdXAuM0YNCg0KSWYg
+eW91IGRvIG5vdCBmaW5kIHdoYXQgaXMgd3JvbmcsIHBsZWFzZSBpc29sYXRlIHRoZSBpc3N1ZSB5
+b3UgaGF2ZSBpbiBhDQpzbWFsbCBzZWxmLWNvbnRhaW5lZCB0ZXN0IGNhc2UsIHdoaWNoIHdlIGNh
+biBjb21waWxlIGFuZCBydW4gdG8NCmludmVzdGlnYXRlIHlvdXIgaXNzdWUuDQoNCkkgaW5zaXN0
+IG9uICJ3aGljaCB3ZSBjYW4gY29tcGlsZSIsIHdlIGFyZSBub3QgaW50ZXJlc3RlZCBpbiBwYXJ0
+aWFsDQpwaWVjZXMgb2YgY29kZSB3aXRoIGVsbGlwc2lzIHdoZXJlIHdlIGhhdmUgdG8gZmlndXJl
+IG91dCB3aGF0IHlvdSBhZGQgdG8NCnJ1biB5b3VyIHRlc3QuDQoNCi0tDQogICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEdpbGxlcy4NCg0KVGhpcyBtZXNzYWdlIGlz
+IGNvbmZpZGVudGlhbCBhbmQgaW50ZW5kZWQgb25seSBmb3IgdGhlIGFkZHJlc3NlZS4gSWYgeW91
+IGhhdmUgcmVjZWl2ZWQgdGhpcyBtZXNzYWdlIGluIGVycm9yLCBwbGVhc2UgaW1tZWRpYXRlbHkg
+bm90aWZ5IHRoZSBwb3N0bWFzdGVyQG5kcy5jb20gYW5kIGRlbGV0ZSBpdCBmcm9tIHlvdXIgc3lz
+dGVtIGFzIHdlbGwgYXMgYW55IGNvcGllcy4gVGhlIGNvbnRlbnQgb2YgZS1tYWlscyBhcyB3ZWxs
+IGFzIHRyYWZmaWMgZGF0YSBtYXkgYmUgbW9uaXRvcmVkIGJ5IE5EUyBmb3IgZW1wbG95bWVudCBh
+bmQgc2VjdXJpdHkgcHVycG9zZXMuDQpUbyBwcm90ZWN0IHRoZSBlbnZpcm9ubWVudCBwbGVhc2Ug
+ZG8gbm90IHByaW50IHRoaXMgZS1tYWlsIHVubGVzcyBuZWNlc3NhcnkuDQoNCkFuIE5EUyBHcm91
+cCBMaW1pdGVkIGNvbXBhbnkuIHd3dy5uZHMuY29tDQo=
 
