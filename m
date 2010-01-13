@@ -1,18 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20100112185012.GQ8605@domain.hid>
-References: <4B209B9C.7010309@domain.hid>
-	<20100108105925.GA14163@domain.hid>
-	<1262949018.2455.5.camel@domain.hid>
-	<1263312199.2455.169.camel@domain.hid>
-	<20100112172443.GP8605@domain.hid>
-	<1263318551.2455.188.camel@domain.hid>
-	<20100112185012.GQ8605@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 12 Jan 2010 20:23:35 +0100
-Message-ID: <1263324215.2455.293.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4B4DDB2F.40307@domain.hid>
+Date: Wed, 13 Jan 2010 15:39:43 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <1262955043-5304-1-git-send-email-gilles.chanteperdrix@xenomai.org>	<4B4ADB17.4070905@domain.hid>
+	<4B4ADEE2.9070000@domain.hid> <4B4AE4AB.8010905@domain.hid>
+In-Reply-To: <4B4AE4AB.8010905@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Adeos-main] I-pipe for 2.6.32 PPC
+Subject: Re: [Xenomai-core] [PATCH 1/1] rtdk: various fixes.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -21,83 +16,198 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Lennart Sorensen <lsorense@domain.hid>
-Cc: Bernhard Pfund <bernhard@domain.hid>, xenomai@xenomai.org, adeos-main@gna.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Tue, 2010-01-12 at 13:50 -0500, Lennart Sorensen wrote:
-> On Tue, Jan 12, 2010 at 06:49:11PM +0100, Philippe Gerum wrote:
-> > > > As expected, upgrading from 2.6.30 to 2.6.32 for ppc64 was a real pain.
-> > > > Anyway, here is a patch which applies against 2.6.32.2 mainline; it is
-> > > > pretty large because it also includes DENX-originated bits, from v2.6.32
-> > > > to DENX-v2.6.32.
-> > > > 
-> > > > http://download.gna.org/adeos/patches/tmp/adeos-ipipe-2.6.32.2-powerpc-2.8-00.patch
-> > > > 
-> > > > This is expected to work over Xenomai 2.5.0. Tested over 52xx, 85xx, 4xx
-> > > > for the 32bit support, pasemi for the 64bit part. I did not manage to
-> > > > put my hands on a working ppc32/SMP board to give it a shot yet, so,
-> > > > well, I wish you luck. This said, ppc64/SMP has been validated, so there
-> > > > is hope.
-> > > > 
-> > > > Sidenote: ftrace may induce a massive stack consumption on ppc64 under
-> > > > certain circumstances, causing kernel stack overflows. A way to work
-> > > > around this should be to enable CONFIG_IRQSTACKS, but this won't work
-> > > > with Xenomai over ppc64 yet, albeit this does work over ppc32. 
-> > > > 
-> > > > This patch is in a staging directory for now; waiting for some feedback
-> > > > to go further.
-> > > 
-> > > Any chance of getting it without the DENX bits since some of us really
-> > > really don't care for those and want to apply against Linus's releases
-> > > only.  Having the patch always fail to apply is rather annoying.
-> > > 
-> > 
-> > It turns out that it really, really annoys me not to have the DENX bits
-> > in when working on embedded powerpc targets, but you do have the option
-> > of cloning git://git.denx.de/ipipe-2.6.git, and diff whatever you see
-> > fit with commit 9d81556f or later.
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> When exiting a process, rtdk buffers are not flushed. Fix that by
+>>>> introducing a destructor for the library which flushes the buffers.
+>>>>
+>>>> When forking, if the main thread has an rt_printf buffer, it is reused by
+>>>> the child, which is a good thing, however, it is not emptied, so could cause
+>>>> the same message to be printed twice. Fix that by emptying the main thread
+>>>> buffer upon fork.
+>>>>
+>>>> When spawning the rt_print thread, it uses a stack size of
+>>>> PTHREAD_STACK_MIN, which may be too small for printf to work reliably on
+>>>> some architectures, set the stack size to the
+>>>> empirically-known-to-be-working size of... 32Kb.
+>>>> ---
+>>>>  src/rtdk/init.c     |    5 +++++
+>>>>  src/rtdk/internal.h |    1 +
+>>>>  src/rtdk/rt_print.c |   21 ++++++++++++++++++++-
+>>>>  3 files changed, 26 insertions(+), 1 deletions(-)
+>>>>
+>>>> diff --git a/src/rtdk/init.c b/src/rtdk/init.c
+>>>> index 2084c73..b864175 100644
+>>>> --- a/src/rtdk/init.c
+>>>> +++ b/src/rtdk/init.c
+>>>> @@ -22,3 +22,8 @@ static __attribute__ ((constructor)) void __init_rtdk(void)
+>>>>  {
+>>>>  	__rt_print_init();
+>>>>  }
+>>>> +
+>>>> +static __attribute__ ((destructor)) void __exit_rtdk(void)
+>>>> +{
+>>>> +	__rt_print_exit();
+>>>> +}
+>>>> diff --git a/src/rtdk/internal.h b/src/rtdk/internal.h
+>>>> index bd15b2d..345d4fa 100644
+>>>> --- a/src/rtdk/internal.h
+>>>> +++ b/src/rtdk/internal.h
+>>>> @@ -23,6 +23,7 @@
+>>>>  #include <sys/time.h>
+>>>>  
+>>>>  void __rt_print_init(void);
+>>>> +void __rt_print_exit(void);
+>>>>  
+>>>>  void __real_free(void *ptr);
+>>>>  void *__real_malloc(size_t size);
+>>>> diff --git a/src/rtdk/rt_print.c b/src/rtdk/rt_print.c
+>>>> index c6b5c55..dae7d7b 100644
+>>>> --- a/src/rtdk/rt_print.c
+>>>> +++ b/src/rtdk/rt_print.c
+>>>> @@ -455,7 +455,7 @@ static void spawn_printer_thread(void)
+>>>>  	pthread_attr_t thattr;
+>>>>  
+>>>>  	pthread_attr_init(&thattr);
+>>>> -	pthread_attr_setstacksize(&thattr, PTHREAD_STACK_MIN);
+>>>> +	pthread_attr_setstacksize(&thattr, 32768);
+>>> Mmh... maybe rather $something +PTHREAD_STACK_MIN?
+>> No, PTHREAD_STACK_MIN sucks, it is not appropriate, and have very
+>> varying values on different platforms. On some plaforms, with some
+>> versions of glibc, it is 4096, way too small, so that printf generates a
+>> segfault due to a stack overflow.
+>>
+>> However, due to the work done when solving the stack issue reported by
+>> Stefan, I hid the magic constants in a function called xeno_stacksize
+>> and xeno_stacksize(0) gives a reasonnable default value.
 > 
-> It seems to me that releasing xenomai and ipipe releases that don't
-> apply cleanly to official linux release versions is just rediculous.
-> The x86 parts seem to work fine with Linus's releases, why should any
-> other architecture be different?  It is rather inconvinient for a lot
-> of people.
+> OK, then go for this service (is it already merged)?
 > 
-> I don't believe there is any clean way to generate an ipipe patch for
-> Linus's official releases when they contain bits intended to go with
-> the DENX tree.  There are just too many changes all over the place.
+>>>>  	pthread_create(&printer_thread, &thattr, printer_loop, NULL);
+>>>>  }
+>>>>  
+>>>> @@ -464,6 +464,15 @@ static void forked_child_init(void)
+>>>>  	struct print_buffer *my_buffer = pthread_getspecific(buffer_key);
+>>>>  	struct print_buffer **pbuffer = &first_buffer;
+>>>>  
+>>>> +	if (my_buffer) {
+>>>> +		/* Any content of my_buffer should be printed by our parent,
+>>>> +		   not us. */
+>>>> +		memset(my_buffer->ring, 0, my_buffer->size);
+>>>> +
+>>>> +		my_buffer->read_pos  = 0;
+>>>> +		my_buffer->write_pos = 0;
+>>>> +	}
+>>>> +
+>>> Ack.
+>>>
+>>>>  	/* re-init to avoid finding it locked by some parent thread */
+>>>>  	pthread_mutex_init(&buffer_lock, NULL);
+>>>>  
+>>>> @@ -518,3 +527,13 @@ void __rt_print_init(void)
+>>>>  	spawn_printer_thread();
+>>>>  	pthread_atfork(NULL, NULL, forked_child_init);
+>>>>  }
+>>>> +
+>>>> +void __rt_print_exit(void)
+>>>> +{
+>>>> +	if (buffers) {
+>>>> +		/* Flush the buffers. Do not call print_buffers here
+>>>> +		 * since we do not know if our stack is big enough. */
+>>>> +		nanosleep(&print_period, NULL);
+>>>> +		nanosleep(&print_period, NULL);
+>>>> +	}
+>>>> +}
+>>> IIRC, that's what cleanup_buffer is supposed to do, triggered by the
+>>> pthread key destruction. Can you explain why it failed in your scenario.
+>> pthread_key destruction is called when a thread is cancelled. My
+>> testcase was calling exit.
 > 
+> exit() does not trigger these cleanup hooks? Too bad.
 > 
-
-This is likely because your knowledge overwhelms mine. I'm only a moron,
-so git diff with a proper commit number, or even patch -R does work for
-me. Simple things always work for simple idiots, it's a fact of life.
-
-> Users of the DENX tree are a tiny minority compared to the users of the
-> official kernel releases.  That majority should be the target of releases.
+>> Besides, cleanup_buffer flushes the buffers
+>> from the context of the calling thread, which is a bad idea, due to the
+>> stack sizes situation.
 > 
+> If a thread requesting rt_printk services is not capable of performing
+> this work during it's cleanup, when there is no significant stack load,
+> I would say it's misconfigured /wrt stack size.
 
-If you do think that the situation for x86 must be applicable to any
-other architecture, then I really can't do anything for you, except
-perhaps suggest to get your feet a bit more wet with those, and probably
-do some reality check against your knowledge of the embedded world.
+Do you agree with this rebased patch?
 
-Aside of this, I don't intend to get dragged into such a discussion,
-it's a pure loss of time. So please, take what I can offer, or just
-blame me for being an idiot to have a different perspective from yours,
-but don't waste my bandwidth. I need it direly to be able to issue
-patches you can use, even at the expense of cloning a git tree.
-
-However, if you do think that some good reason might exist to work with
-DENX material when it comes to powerpc over embedded platforms, but want
-to help in issuing a mainline-based version of the pipeline patches
-regularly, then I would agree to ease your task.
-
-So, instead of complaining about how things are not done the way you
-want, do you agree to help in changing this situation, or what? 
+diff --git a/src/rtdk/init.c b/src/rtdk/init.c
+index 2084c73..b864175 100644
+--- a/src/rtdk/init.c
++++ b/src/rtdk/init.c
+@@ -22,3 +22,8 @@ static __attribute__ ((constructor)) void __init_rtdk(void)
+ {
+ 	__rt_print_init();
+ }
++
++static __attribute__ ((destructor)) void __exit_rtdk(void)
++{
++	__rt_print_exit();
++}
+diff --git a/src/rtdk/internal.h b/src/rtdk/internal.h
+index bd15b2d..345d4fa 100644
+--- a/src/rtdk/internal.h
++++ b/src/rtdk/internal.h
+@@ -23,6 +23,7 @@
+ #include <sys/time.h>
+ 
+ void __rt_print_init(void);
++void __rt_print_exit(void);
+ 
+ void __real_free(void *ptr);
+ void *__real_malloc(size_t size);
+diff --git a/src/rtdk/rt_print.c b/src/rtdk/rt_print.c
+index 1d2b70a..fc170d0 100644
+--- a/src/rtdk/rt_print.c
++++ b/src/rtdk/rt_print.c
+@@ -29,6 +29,7 @@
+ 
+ #include <rtdk.h>
+ #include <asm/xenomai/system.h>
++#include <asm-generic/stacksize.h>
+ 
+ #define RT_PRINT_BUFFER_ENV		"RT_PRINT_BUFFER"
+ #define RT_PRINT_DEFAULT_BUFFER		16*1024
+@@ -464,6 +465,15 @@ static void forked_child_init(void)
+ 	struct print_buffer *my_buffer = pthread_getspecific(buffer_key);
+ 	struct print_buffer **pbuffer = &first_buffer;
+ 
++	if (my_buffer) {
++		/* Any content of my_buffer should be printed by our parent,
++		   not us. */
++		memset(my_buffer->ring, 0, my_buffer->size);
++
++		my_buffer->read_pos  = 0;
++		my_buffer->write_pos = 0;
++	}
++
+ 	/* re-init to avoid finding it locked by some parent thread */
+ 	pthread_mutex_init(&buffer_lock, NULL);
+ 
+@@ -518,3 +528,13 @@ void __rt_print_init(void)
+ 	spawn_printer_thread();
+ 	pthread_atfork(NULL, NULL, forked_child_init);
+ }
++
++void __rt_print_exit(void)
++{
++	if (buffers) {
++		/* Flush the buffers. Do not call print_buffers here
++		 * since we do not know if our stack is big enough. */
++		nanosleep(&print_period, NULL);
++		nanosleep(&print_period, NULL);
++	}
++}
 
 -- 
-Philippe.
-
-
+					    Gilles.
 
