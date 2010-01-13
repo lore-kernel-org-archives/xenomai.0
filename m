@@ -1,5 +1,5 @@
-Message-ID: <4B4D058B.3050706@domain.hid>
-Date: Wed, 13 Jan 2010 00:28:11 +0100
+Message-ID: <4B4D11CF.7030007@domain.hid>
+Date: Wed, 13 Jan 2010 01:20:31 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <001101ca930a$1052fa70$30f8ef50$@kalatchev@domain.hid>	<4B4BADDD.7070900@domain.hid>	<001f01ca9390$5fa20db0$1ee62910$@kalatchev@domain.hid>	<4B4C84AC.3020207@domain.hid>	<002001ca9399$99b07c40$cd1174c0$@kalatchev@domain.hid>	<4B4C96D5.7060902@domain.hid>	<002101ca93a1$a39d4050$ead7c0f0$@kalatchev@domain.hid>	<4B4CA076.1050205@domain.hid>	<002501ca93ae$2b168850$814398f0$@kalatchev@domain.hid>	<4B4CD5E8.7040904@domain.hid>
@@ -51,8 +51,67 @@ Ivan Kalatchev wrote:
 > 
 > but in arith.h there are only 2 arguments ??
 
-Ok, forgot I had a gcc 3.3.4 here, I can do the tests myself. I will
-send you a patch once done.
+Ok. The attached patch seems to fix it. Note however that I could not 
+finish a linux 2.6.30 kernel compilation with my old toolchain because 
+of s some assembly error in mm/page_alloc.c, looks like a toolchain bug 
+detected by the kernel (.err is invoked directly).
+
+I ran the arith unit test on arm926ejs. the do_div based llimd 
+implementation gives:
+out of line llimd: 0x79364d9364d9362f: 9880.462 ns, rejected 11/10000
+that is almost 10us
+the C version of nodiv_llimd (with 3 lines of inline assembly) gives:
+out of line nodiv_llimd: 0x79364d9364d9362f: 551.893 ns, rejected 26/10000
+the arm assembly version of nodiv_llimd gives:
+out of line nodiv_llimd: 0x79364d9364d9362f: 379.022 ns, rejected 29/10000
+
+Here comes the patch:
+diff --git a/include/asm-arm/arith.h b/include/asm-arm/arith.h
+index eca69ba..6908681 100644
+--- a/include/asm-arm/arith.h
++++ b/include/asm-arm/arith.h
+@@ -14,9 +14,9 @@ rthal_arm_nodiv_ullimd(const unsigned long long op,
+ #else /* arm <= v3 */
+ #define __rthal_add96and64(l0, l1, l2, s0, s1)         \
+        do {                                            \
+-               __asm__ ("adds %2, %4\n\t"              \
+-                        "adcs %1, %3\n\t"              \
+-                        "adc %0, #0\n\t"               \
++               __asm__ ("adds %2, %2, %4\n\t"          \
++                        "adcs %1, %1, %3\n\t"          \
++                        "adc %0, %0, #0\n\t"           \
+                         : "+r"(l0), "+r"(l1), "+r"(l2) \
+                         : "r"(s0), "r"(s1): "cc");     \
+        } while (0)
+@@ -46,17 +46,17 @@ rthal_arm_nodiv_ullimd(const unsigned long long op,
+
+        __asm__ ("umull %[tl], %[rl], %[opl], %[fracl]\n\t"
+                 "umull %[rm], %[rh], %[oph], %[frach]\n\t"
+-                "adds %[rl], %[tl], lsr #31\n\t"
+-                "adcs %[rm], #0\n\t"
+-                "adc %[rh], #0\n\t"
++                "adds %[rl], %[rl], %[tl], lsr #31\n\t"
++                "adcs %[rm], %[rm], #0\n\t"
++                "adc %[rh], %[rh], #0\n\t"
+                 "umull %[tl], %[th], %[oph], %[fracl]\n\t"
+-                "adds %[rl], %[tl]\n\t"
+-                "adcs %[rm], %[th]\n\t"
+-                "adc %[rh], #0\n\t"
++                "adds %[rl], %[rl], %[tl]\n\t"
++                "adcs %[rm], %[rm], %[th]\n\t"
++                "adc %[rh], %[rh], #0\n\t"
+                 "umull %[tl], %[th], %[opl], %[frach]\n\t"
+-                "adds %[rl], %[tl]\n\t"
+-                "adcs %[rm], %[th]\n\t"
+-                "adc %[rh], #0\n\t"
++                "adds %[rl], %[rl], %[tl]\n\t"
++                "adcs %[rm], %[rm], %[th]\n\t"
++                "adc %[rh], %[rh], #0\n\t"
+                 "umlal %[rm], %[rh], %[opl], %[integ]\n\t"
+                 "mla %[rh], %[oph], %[integ], %[rh]\n\t"
+                 : [rl]"=r"(rl), [rm]"=r"(rm), [rh]"=r"(rh),
+
+Regards.
 
 -- 
 					    Gilles.
