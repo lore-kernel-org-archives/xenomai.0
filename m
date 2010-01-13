@@ -1,18 +1,10 @@
-Message-ID: <4B4DD1BA.2020508@domain.hid>
-Date: Wed, 13 Jan 2010 14:59:22 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4B4E00B3.5090607@domain.hid>
+Date: Wed, 13 Jan 2010 18:19:47 +0100
+From: "Alessio Margan @ IIT" <alessio.margan@domain.hid>
 MIME-Version: 1.0
-References: <001101ca930a$1052fa70$30f8ef50$@kalatchev@domain.hid>	<4B4BADDD.7070900@domain.hid>	<001f01ca9390$5fa20db0$1ee62910$@kalatchev@domain.hid>	<4B4C84AC.3020207@domain.hid>	<002001ca9399$99b07c40$cd1174c0$@kalatchev@domain.hid>	<4B4C96D5.7060902@domain.hid>	<002101ca93a1$a39d4050$ead7c0f0$@kalatchev@domain.hid>	<4B4CA076.1050205@domain.hid>	<002501ca93ae$2b168850$814398f0$@kalatchev@domain.hid>	<4B4CD5E8.7040904@domain.hid>
-	<004301ca93d8$4f6ca660$ee45f320$@kalatchev@domain.hid>
-	<4B4CFAF1.80204@domain.hid>
-	<004401ca93d9$61d05530$2570ff90$@kalatchev@domain.hid>
-	<4B4D11CF.7030007@domain.hid>
-	<004b01ca9458$0240e240$06c2a6c0$@kalatchev@domain.hid>
-In-Reply-To: <004b01ca9458$0240e240$06c2a6c0$@kalatchev@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Viper board (ARM XScale)
-	problems	with	Xenomai-2.4.10
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] problem with libanalogy
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,27 +14,128 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ivan Kalatchev <ivan.kalatchev@domain.hid>
-Cc: 'Xenomai help' <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Ivan Kalatchev wrote:
-> Hi Gilles,
-> 
-> Repeating of the first argument did solved the problem! I've built
-> 2.5.0 and will start to play with it. By the way, for some reason
-> patch itself didn't work - said something about malformed patch at
-> line 16:
-> 
-> @@ -46,17 +46,17 @@ rthal_arm_nodiv_ullimd(const unsigned long long
-> op,
-> 
-> I couldn't see what the problem was, so just updated everything
-> manually.
+Hi,
 
-Sorry, my fault, I pasted the patch from terminal emulator, but this
-does not work, my terminal emulator converts tabs to spaces, patch wants
-tabs.
+I've got "Segmentation fault" from libanalogy.so.1
+Here is part of code ...
 
--- 
-					    Gilles.
+int s526Analogy::Open()
+{
+int ret =3D 0;
+boardIsOpen =3D false;
+
+ret =3D a4l_open(&dsc, dev_name);
+if (ret < 0) {
+fprintf(stderr, "s526Analogy::Open : a4l_open %s failed (ret=3D%d)\n",=20
+dev_name, ret);
+return boardIsOpen;
+}
+
+fprintf(stderr, "s526Analogy::Open : name : %s\nsubd %d\nrd subd %d\nwr=20
+subd %d\nfd %d\nmagic %x\nsize %d\n",
+dsc.board_name,
+dsc.nb_subd,
+dsc.idx_read_subd,
+dsc.idx_write_subd,
+dsc.fd,
+dsc.magic,
+dsc.sbsize);
+
+dsc.sbdata =3D malloc(dsc.sbsize);
+if (dsc.sbdata =3D=3D NULL) {
+ret =3D -ENOMEM;
+fprintf(stderr, "s526Analogy::Open : info buffer allocation failed\n");
+return boardIsOpen;
+}
+ret =3D a4l_fill_desc(&dsc);
+if (ret < 0) {
+fprintf(stderr, "s526Analogy::Open : a4l_fill_desc failed (ret=3D%d)\n", re=
+t);
+return boardIsOpen;
+}
+
+boardIsOpen =3D true;
+printf("Open %s\n", dev_name);
+
+return boardIsOpen;
+}
+
+and here is the back trace from gdb ....
+
+s526Analogy::Open : name : analogy_s526
+subd 4
+rd subd 1
+wr subd 2
+fd 0
+magic 1234abcd
+size 1560
+
+Program received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 0xb7151990 (LWP 6138)]
+0xb773a64a in a4l_sys_desc () from /usr/xenomai/lib/libanalogy.so.1
+Current language: auto; currently asm
+(gdb) bt
+#0 0xb773a64a in a4l_sys_desc () from /usr/xenomai/lib/libanalogy.so.1
+#1 0xb773a748 in a4l_fill_desc () from /usr/xenomai/lib/libanalogy.so.1
+#2 0x0804ebb2 in s526Analogy::Open (this=3D0x805e560) at s526Analogy.cpp:55
+#3 0x0804f8c6 in configure_board () at s526Main.cpp:95
+#4 0x0804f96a in main () at s526Main.cpp:115
+(gdb)
+
+dmesg give me ...
+
+app[6454]: segfault at 40 ip b772964a sp bfd372d0 error 4 in=20
+libanalogy.so.1.0.0[b7728000+3000]
+
+
+Yesterday I pull xenomai-head to get last commits, before I've run the=20
+application without this segfault.
+
+TIA
+
+Alessio
+
+
+--=20
+
+ISTITUTO ITALIANO
+DI TECNOLOGIA
+
+Alessio Margan
+/Senior Technician/
+mail me <mailto:alessio.margan@domain.hid>
+
+Via Morego, 30 16163 Genova=20
+<http://maps.google.com/maps?f=3Dq&hl=3Den&geocode=3D&q=3Dvia+morego,+30+ge=
+nova&sll=3D37.0625,-95.677068&sspn=3D85.420533,191.601563&ie=3DUTF8&ll=3D44=
+.474913,8.907037&spn=3D0.004685,0.011652&t=3Dh&z=3D17&iwloc=3Daddr>
+
+www.iit.it <http://www.iit.it>
+
+*Legal Disclaimer*
+This electronic message contains information that is confidential. The=20
+information is intended for the use of the addressee only. If you are=20
+not the addressee we would appreciate your notification in this respect.=20
+Please note that any disclosure, copy, distribution or use of the=20
+contents of this message is prohibited and may be unlawful. We have=20
+taken every reasonable precaution to ensure that any kind of attachment=20
+to this e-mail has been swept for viruses. However, we cannot accept=20
+liability for any damage sustained as a result of software viruses and=20
+would advise you to carry out your own virus checks before opening any=20
+attachment.
+*Avvertenza legale*
+Questo messaggio Email contiene informazioni confidenziali riservate ai=20
+soli destinatari. Qualora veniate in possesso di tali informazioni senza=20
+essere definito come destinatario vi reghiamo di leggere le seguenti=20
+note. Ogni apertura, copia, distribuzione del contenuto del messaggio e=20
+dei suoi allegati =E8 proibito e potrebbe violare le presenti leggi.=20
+Abbiamo attivato ogni possibile e ragionevole precauzione per assicurare=20
+che gli allegati non contengano virus. Comunque non assumeremo alcuna=20
+responsabilit=E0 per ogni eventuale danno causato da virus software e=20
+simili in quanto =E8 onere del destinatario verificarne l=92assenza in ogni=
+=20
+allegato attuando propri indipendenti controlli.
+
 
