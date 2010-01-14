@@ -1,17 +1,12 @@
-From: "Landau, Bracha" <BLandau@domain.hid>
-Date: Thu, 14 Jan 2010 15:53:02 +0200
-Message-ID: <065A7D06F7D4E546A18E80E08D066E18146A341B1B@ILMA1.IL.NDS.COM>
-References: <065A7D06F7D4E546A18E80E08D066E18146A3016C3@domain.hid>
-	<4B4B64AF.3040704@domain.hid>
-	<065A7D06F7D4E546A18E80E08D066E18146A301A0A@ILMA1.IL.NDS.COM>
-	<4B4C5EDA.5000703@domain.hid>
-In-Reply-To: <4B4C5EDA.5000703@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <4B4F2DA5.4000606@domain.hid>
+Date: Thu, 14 Jan 2010 15:43:49 +0100
+From: Simon Boulay <simon.boulay@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] xenomai user app working very slowly - "select"
- issue
+References: <4B4E00B3.5090607@domain.hid>
+In-Reply-To: <4B4E00B3.5090607@domain.hid>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] problem with libanalogy
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,50 +16,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-SSByZWJ1aWx0IHdpdGggMi41LjAgYW5kIHRoYXQgcGFydGljdWxhciBwcm9ibGVtIGlzIGdvbmUu
-DQpIb3dldmVyLCBJIHNlZSBhIGRpZmZlcmVudCBiZWhhdmlvciBiZXR3ZWVuIHRoZSByZWd1bGFy
-IGltcGxlbWVudGF0aW9uIGFuZCB0aGUgeGVub21haSBpbXBsZW1lbnRhdGlvbjoNCg0KSSBoYXZl
-IGEgc2VyaWVzIG9mIGlkZW50aWNhbCB0aHJlYWRzIHdhaXRpbmcsIHVzaW5nIHNlbGVjdCwgb24g
-b25lIG9mIHR3byBtZXNzYWdlIHF1ZXVlcy4gT25lIG1lc3NhZ2UgcXVldWVzIGlzIHdhaXRlZCB1
-cG9uIG9ubHkgYnkgdGhhdCB0aHJlYWQsIGFuZCB0aGUgb3RoZXIgaXMgd2FpdGVkIHVwb24gYnkg
-YWxsIHRoZSB0aHJlYWRzLiBXaGVuIHRoZSBzZWxlY3QgcmV0dXJucyB0aGUgdGhyZWFkIHJlYWRz
-IGZyb20gdGhlIHF1ZXVlIHRoYXQgaGFzIGlucHV0IHJlYWR5Lg0KDQpJIHNlbnQgbWVzc2FnZXMg
-dG8gdGhlIGdlbmVyYWwgcXVldWUgKGkuZS4sIHRoZSBvbmUgd2FpdGVkIHVwb24gYnkgbXVsdGlw
-bGUgdGhyZWFkcykuDQoNCkluIHRoZSByZWd1bGFyIChub24teGVub21haSkgaW1wbGVtZW50YXRp
-b24sIEkgc2VlIHRoYXQgdGhlIG1lc3NhZ2VzIHdlcmUgcHJvY2Vzc2VkIG1vcmUtb3ItbGVzcyBl
-cXVhbGx5IGFtb25nIGFsbCB0aGUgd2FpdGluZyB0aHJlYWRzLg0KDQpJbiB0aGUgeGVub21haSBp
-bXBsZW1lbnRhdGlvbiwgYWxsIHRoZSBtZXNzYWdlcyB3ZXJlIHByb2Nlc3NlZCBieSBhIHNpbmds
-ZSB0aHJlYWQuDQoNCklzIHRoZXJlIGFueSB3YXkgdG8gbWFrZSB0aGUgc2NoZWR1bGluZyBkb25l
-IG1vcmUgImZhaXJseSIgaW4geGVub21haT8NCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0N
-CkZyb206IEdpbGxlcyBDaGFudGVwZXJkcml4IFttYWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRyaXhA
-eGVub21haS5vcmddDQpTZW50OiBUdWVzZGF5LCBKYW51YXJ5IDEyLCAyMDEwIDE6MzcgUE0NClRv
-OiBMYW5kYXUsIEJyYWNoYQ0KQ2M6IEdpbGxlcyBDaGFudGVwZXJkcml4OyB4ZW5vbWFpLWhlbHBA
-Z25hLm9yZw0KU3ViamVjdDogUmU6IFtYZW5vbWFpLWhlbHBdIHhlbm9tYWkgdXNlciBhcHAgd29y
-a2luZyB2ZXJ5IHNsb3dseQ0KDQpMYW5kYXUsIEJyYWNoYSB3cm90ZToNCj4gQWZ0ZXIgcmVhZGlu
-ZyBvbmUgb2YgdGhlIGxpbmtzIGJlbG93LCBJIGFkZGVkIGNhbGxzIHRvDQo+IHB0aHJlYWRfc2V0
-c3RhY2tzaXplIHRvIGxpbWl0IG1lbW9yeSB1c2FnZSwgYW5kIHRoaXMgaW1wcm92ZWQgdGhlDQo+
-IHRpbWluZy4gSG93ZXZlciwgSSBzdGlsbCBoYXZlIHNldmVyYWwgcHJvYmxlbXMgd2l0aCB0aGUg
-YXBwbGljYXRpb24uDQo+IEluIGEgdGhyZWFkIEkgaGF2ZSBhIGNhbGwgdG8gc2VsZWN0IHdoaWNo
-IHdhaXRzIG9uIHR3byBtZXNzYWdlDQo+IHF1ZXVlcy4gRWFjaCBvZiB0aGVzZSBpcyBhIHJlYWwt
-dGltZSBtZXNzYWdlIHF1ZXVlLiBJbiB0aGUgcmVndWxhcg0KPiBhcHBsaWNhdGlvbiB0aGlzIHdv
-cmtzIGZpbmUsIGJ1dCBpbiB0aGUgeGVub21haSBhcHBsaWNhdGlvbiB0aGUNCj4gc2VsZWN0IHJl
-dHVybnMgd2l0aCBib3RoIHNldHMgcmV0dXJuaW5nIHRydWUgdG8gIkZEX0lTU0VUIiwgd2hlbg0K
-PiB0aGVyZSByZWFsbHkgaXMgbm90aGluZyB0byByZWFkIGZyb20gdGhlIHF1ZXVlLiBJIGRpZCBu
-b3QgZmluZA0KPiBhbnl0aGluZyBpbiB0aGUgbGlua3MgdGhhdCByZWZlcnMgdG8gcHJvYmxlbXMg
-d2l0aCBzZWxlY3QgKGFzIGxvbmcgYXMNCj4gdGhleSBhcmUgYm90aCByL3QgZGVzY3JpcHRvcnMs
-IHdoaWNoIHRoZXkgYXJlKS4NCg0KUGxlYXNlIHZlcmlmeSB0aGF0IHlvdSBzdGlsbCBoYXZlIHRo
-ZSBzYW1lIGlzc3VlIHdpdGggWGVub21haSBsYXRlc3QNCnN0YWJsZSByZWxlYXNlICh2Mi41LjAp
-LCB0aGVuIHNlbmQgYSB0ZXN0IGNhc2Ugd2hpY2ggaGFzIHRoaXMgaXNzdWUuDQoNCi0tDQogICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEdpbGxlcy4NCg0KVGhpcyBt
-ZXNzYWdlIGlzIGNvbmZpZGVudGlhbCBhbmQgaW50ZW5kZWQgb25seSBmb3IgdGhlIGFkZHJlc3Nl
-ZS4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBtZXNzYWdlIGluIGVycm9yLCBwbGVhc2UgaW1t
-ZWRpYXRlbHkgbm90aWZ5IHRoZSBwb3N0bWFzdGVyQG5kcy5jb20gYW5kIGRlbGV0ZSBpdCBmcm9t
-IHlvdXIgc3lzdGVtIGFzIHdlbGwgYXMgYW55IGNvcGllcy4gVGhlIGNvbnRlbnQgb2YgZS1tYWls
-cyBhcyB3ZWxsIGFzIHRyYWZmaWMgZGF0YSBtYXkgYmUgbW9uaXRvcmVkIGJ5IE5EUyBmb3IgZW1w
-bG95bWVudCBhbmQgc2VjdXJpdHkgcHVycG9zZXMuDQpUbyBwcm90ZWN0IHRoZSBlbnZpcm9ubWVu
-dCBwbGVhc2UgZG8gbm90IHByaW50IHRoaXMgZS1tYWlsIHVubGVzcyBuZWNlc3NhcnkuDQoNCkFu
-IE5EUyBHcm91cCBMaW1pdGVkIGNvbXBhbnkuIHd3dy5uZHMuY29tDQo=
+Hi,
+
+On 01/13/2010 06:19 PM, Alessio Margan @ IIT wrote:
+> Hi,
+>
+> I've got "Segmentation fault" from libanalogy.so.1
+> Here is part of code ...
+>
+> int s526Analogy::Open()
+> {
+> int ret = 0;
+> boardIsOpen = false;
+>
+> ret = a4l_open(&dsc, dev_name);
+> if (ret<  0) {
+> fprintf(stderr, "s526Analogy::Open : a4l_open %s failed (ret=%d)\n",
+> dev_name, ret);
+> return boardIsOpen;
+> }
+>
+> fprintf(stderr, "s526Analogy::Open : name : %s\nsubd %d\nrd subd %d\nwr
+> subd %d\nfd %d\nmagic %x\nsize %d\n",
+> dsc.board_name,
+> dsc.nb_subd,
+> dsc.idx_read_subd,
+> dsc.idx_write_subd,
+> dsc.fd,
+> dsc.magic,
+> dsc.sbsize);
+>
+> dsc.sbdata = malloc(dsc.sbsize);
+> if (dsc.sbdata == NULL) {
+> ret = -ENOMEM;
+> fprintf(stderr, "s526Analogy::Open : info buffer allocation failed\n");
+> return boardIsOpen;
+> }
+> ret = a4l_fill_desc(&dsc);
+> if (ret<  0) {
+> fprintf(stderr, "s526Analogy::Open : a4l_fill_desc failed (ret=%d)\n", ret);
+> return boardIsOpen;
+> }
+>
+> boardIsOpen = true;
+> printf("Open %s\n", dev_name);
+>
+> return boardIsOpen;
+> }
+>
+> and here is the back trace from gdb ....
+>
+> s526Analogy::Open : name : analogy_s526
+> subd 4
+> rd subd 1
+> wr subd 2
+> fd 0
+> magic 1234abcd
+> size 1560
+>
+> Program received signal SIGSEGV, Segmentation fault.
+> [Switching to Thread 0xb7151990 (LWP 6138)]
+> 0xb773a64a in a4l_sys_desc () from /usr/xenomai/lib/libanalogy.so.1
+> Current language: auto; currently asm
+> (gdb) bt
+> #0 0xb773a64a in a4l_sys_desc () from /usr/xenomai/lib/libanalogy.so.1
+> #1 0xb773a748 in a4l_fill_desc () from /usr/xenomai/lib/libanalogy.so.1
+> #2 0x0804ebb2 in s526Analogy::Open (this=0x805e560) at s526Analogy.cpp:55
+> #3 0x0804f8c6 in configure_board () at s526Main.cpp:95
+> #4 0x0804f96a in main () at s526Main.cpp:115
+> (gdb)
+>
+> dmesg give me ...
+>
+> app[6454]: segfault at 40 ip b772964a sp bfd372d0 error 4 in
+> libanalogy.so.1.0.0[b7728000+3000]
+>
+>
+> Yesterday I pull xenomai-head to get last commits, before I've run the
+> application without this segfault.
+I can't reproduce your problem.
+Does the same thing happen with the following command:
+insn_read -v -d analogy0?
+
+Simon.
+
+ >
+> TIA
+>
+> Alessio
+>
+>
+
 
