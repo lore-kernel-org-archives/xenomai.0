@@ -1,15 +1,8 @@
-Content-Class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 14 Jan 2010 10:47:53 +0100
-Message-ID: <3FF315C710820E47A04E55C6F7D9B0AD1586F9@domain.hid>
-In-reply-to: <201001071639.35486.peter@domain.hid>
-References: <1262343652.19080.526.camel@domain.hid>
-	<201001071639.35486.peter@domain.hid>
-From: <roderik.wildenburg@domain.hid>
-Subject: Re: [Xenomai-core] [Xenomai-help] Xenomai v2.5.0 -- Important Notice
+From: Wolfgang Grandegger <wg@domain.hid>
+Date: Thu, 14 Jan 2010 13:07:42 +0100
+Message-Id: <1263470867-1533-1-git-send-email-wg@domain.hid>
+Subject: [Xenomai-core] [PATCH xenomai-2.5 0/3] rtcan: mscan: new OF
+	platform driver for MPC521x and MPC5200
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,38 +11,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: peter@domain.hid, rpm@xenomai.org
-Cc: xenomai@xenomai.org, xenomai@xenomai.org
+To: Xenomai-core@domain.hid
+Cc: Wolfgang Grandegger <wg@domain.hid>
 
-> A Big Thank You from the user community to all contributors, Philippe,
-> Gilles
-> and Jan in particular, seems appropriate here, but it hasn't been
-spoken
-> even
-> after a week. Therefor, I'll unilaterally and only for once assume to
-be
-> the
-> spokesman of this world-wide fan club and do the honors:
->=20
-> A Big Thank You, and a happy new year to you too !
->=20
-> Those who accord, Say "Hear, Hear", "+1" or "Me too", depending on
-their
-> geological or social situation.
->=20
-> The Xenomai User Community.
+From: Wolfgang Grandegger <wg@domain.hid>
 
-I completely agree! Thank you for this great RTOS powering our machines!
-So:
+This patch series adds RT-Socket-CAN support for the MSCAN on the MPC512x
+from Freescale by introducing a new OF platform driver for both, the
+MPC521x and MPC5200, while still keeping the old driver for the MPC5200
+for compatibility with older kernel versions.
 
-"We too"  from manroland / Germany
+Wolfgang
 
---------------------------------------------------------
-manroland AG
-Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle  =20
-Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592
-USt-Ident-Nr. DE 250200933
+Wolfgang Grandegger (3):
+  rtcan: mscan: use tabs for indention and white space cleanup
+  rtcan: mscan: use proper io accessor functions for register access
+  rtcan: mscan: new OF platform driver for MPC521x and MPC5200
+
+ ksrc/drivers/can/mscan/Kconfig               |   21 +-
+ ksrc/drivers/can/mscan/Makefile              |   11 +-
+ ksrc/drivers/can/mscan/rtcan_mscan.c         | 1245 +++++++++++---------------
+ ksrc/drivers/can/mscan/rtcan_mscan.h         |   38 +
+ ksrc/drivers/can/mscan/rtcan_mscan_mpc52xx.c |  254 ++++++
+ ksrc/drivers/can/mscan/rtcan_mscan_mpc5xxx.c |  374 ++++++++
+ ksrc/drivers/can/mscan/rtcan_mscan_proc.c    |  184 ++--
+ ksrc/drivers/can/mscan/rtcan_mscan_regs.h    |   74 +-
+ 8 files changed, 1371 insertions(+), 830 deletions(-)
+ create mode 100644 ksrc/drivers/can/mscan/rtcan_mscan.h
+ create mode 100644 ksrc/drivers/can/mscan/rtcan_mscan_mpc52xx.c
+ create mode 100644 ksrc/drivers/can/mscan/rtcan_mscan_mpc5xxx.c
+
 
