@@ -1,12 +1,17 @@
-Message-ID: <4B4F2DA5.4000606@domain.hid>
-Date: Thu, 14 Jan 2010 15:43:49 +0100
-From: Simon Boulay <simon.boulay@domain.hid>
+Message-ID: <4B4F2F05.1040407@domain.hid>
+Date: Thu, 14 Jan 2010 15:49:41 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B4E00B3.5090607@domain.hid>
-In-Reply-To: <4B4E00B3.5090607@domain.hid>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+References: <065A7D06F7D4E546A18E80E08D066E18146A3016C3@domain.hid>
+	<4B4B64AF.3040704@domain.hid>
+	<065A7D06F7D4E546A18E80E08D066E18146A301A0A@ILMA1.IL.NDS.COM>
+	<4B4C5EDA.5000703@domain.hid>
+	<065A7D06F7D4E546A18E80E08D066E18146A341B1B@ILMA1.IL.NDS.COM>
+In-Reply-To: <065A7D06F7D4E546A18E80E08D066E18146A341B1B@ILMA1.IL.NDS.COM>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] problem with libanalogy
+Subject: Re: [Xenomai-help] xenomai user app working very slowly - "select"
+ issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,97 +21,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: "Landau, Bracha" <BLandau@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+Landau, Bracha wrote:
+> I rebuilt with 2.5.0 and that particular problem is gone.
+> However, I see a different behavior between the regular implementation and the xenomai implementation:
+> 
+> I have a series of identical threads waiting, using select, on one of two message queues. One message queues is waited upon only by that thread, and the other is waited upon by all the threads. When the select returns the thread reads from the queue that has input ready.
+> 
+> I sent messages to the general queue (i.e., the one waited upon by multiple threads).
+> 
+> In the regular (non-xenomai) implementation, I see that the messages were processed more-or-less equally among all the waiting threads.
+> 
+> In the xenomai implementation, all the messages were processed by a single thread.
+> 
+> Is there any way to make the scheduling done more "fairly" in xenomai?
 
-On 01/13/2010 06:19 PM, Alessio Margan @ IIT wrote:
-> Hi,
->
-> I've got "Segmentation fault" from libanalogy.so.1
-> Here is part of code ...
->
-> int s526Analogy::Open()
-> {
-> int ret = 0;
-> boardIsOpen = false;
->
-> ret = a4l_open(&dsc, dev_name);
-> if (ret<  0) {
-> fprintf(stderr, "s526Analogy::Open : a4l_open %s failed (ret=%d)\n",
-> dev_name, ret);
-> return boardIsOpen;
-> }
->
-> fprintf(stderr, "s526Analogy::Open : name : %s\nsubd %d\nrd subd %d\nwr
-> subd %d\nfd %d\nmagic %x\nsize %d\n",
-> dsc.board_name,
-> dsc.nb_subd,
-> dsc.idx_read_subd,
-> dsc.idx_write_subd,
-> dsc.fd,
-> dsc.magic,
-> dsc.sbsize);
->
-> dsc.sbdata = malloc(dsc.sbsize);
-> if (dsc.sbdata == NULL) {
-> ret = -ENOMEM;
-> fprintf(stderr, "s526Analogy::Open : info buffer allocation failed\n");
-> return boardIsOpen;
-> }
-> ret = a4l_fill_desc(&dsc);
-> if (ret<  0) {
-> fprintf(stderr, "s526Analogy::Open : a4l_fill_desc failed (ret=%d)\n", ret);
-> return boardIsOpen;
-> }
->
-> boardIsOpen = true;
-> printf("Open %s\n", dev_name);
->
-> return boardIsOpen;
-> }
->
-> and here is the back trace from gdb ....
->
-> s526Analogy::Open : name : analogy_s526
-> subd 4
-> rd subd 1
-> wr subd 2
-> fd 0
-> magic 1234abcd
-> size 1560
->
-> Program received signal SIGSEGV, Segmentation fault.
-> [Switching to Thread 0xb7151990 (LWP 6138)]
-> 0xb773a64a in a4l_sys_desc () from /usr/xenomai/lib/libanalogy.so.1
-> Current language: auto; currently asm
-> (gdb) bt
-> #0 0xb773a64a in a4l_sys_desc () from /usr/xenomai/lib/libanalogy.so.1
-> #1 0xb773a748 in a4l_fill_desc () from /usr/xenomai/lib/libanalogy.so.1
-> #2 0x0804ebb2 in s526Analogy::Open (this=0x805e560) at s526Analogy.cpp:55
-> #3 0x0804f8c6 in configure_board () at s526Main.cpp:95
-> #4 0x0804f96a in main () at s526Main.cpp:115
-> (gdb)
->
-> dmesg give me ...
->
-> app[6454]: segfault at 40 ip b772964a sp bfd372d0 error 4 in
-> libanalogy.so.1.0.0[b7728000+3000]
->
->
-> Yesterday I pull xenomai-head to get last commits, before I've run the
-> application without this segfault.
-I can't reproduce your problem.
-Does the same thing happen with the following command:
-insn_read -v -d analogy0?
+The SCHED_FIFO policy is the contrary of fairness. Have you try to use
+the SCHED_FIFO policy with Linux too?
 
-Simon.
+There is not much point using several thread to select on the same file
+descriptor. The point of select is rather the reverse: being able to
+wait for several file descriptors with only one thread. If you have
 
- >
-> TIA
->
-> Alessio
->
->
+If the thread have different priorities, the woken up thread is always
+the thread with the highest priority.
 
+Other than that, I do not really understand what you are talking about,
+your description of the problem is rather vague. Please post a test case.
+
+-- 
+Gilles Chanteperdrix, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
 
