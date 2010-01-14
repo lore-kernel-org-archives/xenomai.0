@@ -1,13 +1,17 @@
+From: "Landau, Bracha" <BLandau@domain.hid>
+Date: Thu, 14 Jan 2010 15:53:02 +0200
+Message-ID: <065A7D06F7D4E546A18E80E08D066E18146A341B1B@ILMA1.IL.NDS.COM>
+References: <065A7D06F7D4E546A18E80E08D066E18146A3016C3@domain.hid>
+	<4B4B64AF.3040704@domain.hid>
+	<065A7D06F7D4E546A18E80E08D066E18146A301A0A@ILMA1.IL.NDS.COM>
+	<4B4C5EDA.5000703@domain.hid>
+In-Reply-To: <4B4C5EDA.5000703@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <4B4D9A5E.5090806@domain.hid>
-References: <48abf2c21001121700g756e50a6vebce458922f3749a@domain.hid>
-	<4B4D9A5E.5090806@domain.hid>
-Date: Wed, 13 Jan 2010 15:45:42 -0200
-Message-ID: <4303dd241001130945h4edec80apb562ca09b71b07ea@domain.hid>
-From: Flavio de Castro Alves Filho <flavio.alves@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] How can I use Xenomai on TI OMAP L138
+Subject: Re: [Xenomai-help] xenomai user app working very slowly - "select"
+ issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,45 +21,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello Peter,
-
-I checked here in Brazil with our local representative from Texas, and
-he informed me that this processor will have long support. He could
-not tell exactly how long.
-
-This processor was designed initially for mass products. Maybe that's
-a reason for long term support.
-
-Best regards,
-
-Flavio
-
-Flavio de Castro Alves Filho
-Phi Innovations - Embedded Software Services
-www.phiinnovations.com
-Phone: +55 11 84 94 56 76
-Skype: flavio.de.castro.alves.filho
-
-
-
-2010/1/13 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
-> Peter Pan wrote:
->> I see that OMAP3 family is supported. I'm wondering how long
->> will TI OMAP L13x be supported? Is porting work in Xenomai or
->> in adeos project? Excuse me if I'm asking in the wrong place.
->
-> Yes, there is ongoing port on OMAP L138. See the thread starting at:
-> https://mail.gna.org/public/xenomai-help/2010-01/msg00002.html
->
-> --
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0Gilles.
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->
+SSByZWJ1aWx0IHdpdGggMi41LjAgYW5kIHRoYXQgcGFydGljdWxhciBwcm9ibGVtIGlzIGdvbmUu
+DQpIb3dldmVyLCBJIHNlZSBhIGRpZmZlcmVudCBiZWhhdmlvciBiZXR3ZWVuIHRoZSByZWd1bGFy
+IGltcGxlbWVudGF0aW9uIGFuZCB0aGUgeGVub21haSBpbXBsZW1lbnRhdGlvbjoNCg0KSSBoYXZl
+IGEgc2VyaWVzIG9mIGlkZW50aWNhbCB0aHJlYWRzIHdhaXRpbmcsIHVzaW5nIHNlbGVjdCwgb24g
+b25lIG9mIHR3byBtZXNzYWdlIHF1ZXVlcy4gT25lIG1lc3NhZ2UgcXVldWVzIGlzIHdhaXRlZCB1
+cG9uIG9ubHkgYnkgdGhhdCB0aHJlYWQsIGFuZCB0aGUgb3RoZXIgaXMgd2FpdGVkIHVwb24gYnkg
+YWxsIHRoZSB0aHJlYWRzLiBXaGVuIHRoZSBzZWxlY3QgcmV0dXJucyB0aGUgdGhyZWFkIHJlYWRz
+IGZyb20gdGhlIHF1ZXVlIHRoYXQgaGFzIGlucHV0IHJlYWR5Lg0KDQpJIHNlbnQgbWVzc2FnZXMg
+dG8gdGhlIGdlbmVyYWwgcXVldWUgKGkuZS4sIHRoZSBvbmUgd2FpdGVkIHVwb24gYnkgbXVsdGlw
+bGUgdGhyZWFkcykuDQoNCkluIHRoZSByZWd1bGFyIChub24teGVub21haSkgaW1wbGVtZW50YXRp
+b24sIEkgc2VlIHRoYXQgdGhlIG1lc3NhZ2VzIHdlcmUgcHJvY2Vzc2VkIG1vcmUtb3ItbGVzcyBl
+cXVhbGx5IGFtb25nIGFsbCB0aGUgd2FpdGluZyB0aHJlYWRzLg0KDQpJbiB0aGUgeGVub21haSBp
+bXBsZW1lbnRhdGlvbiwgYWxsIHRoZSBtZXNzYWdlcyB3ZXJlIHByb2Nlc3NlZCBieSBhIHNpbmds
+ZSB0aHJlYWQuDQoNCklzIHRoZXJlIGFueSB3YXkgdG8gbWFrZSB0aGUgc2NoZWR1bGluZyBkb25l
+IG1vcmUgImZhaXJseSIgaW4geGVub21haT8NCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0N
+CkZyb206IEdpbGxlcyBDaGFudGVwZXJkcml4IFttYWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRyaXhA
+eGVub21haS5vcmddDQpTZW50OiBUdWVzZGF5LCBKYW51YXJ5IDEyLCAyMDEwIDE6MzcgUE0NClRv
+OiBMYW5kYXUsIEJyYWNoYQ0KQ2M6IEdpbGxlcyBDaGFudGVwZXJkcml4OyB4ZW5vbWFpLWhlbHBA
+Z25hLm9yZw0KU3ViamVjdDogUmU6IFtYZW5vbWFpLWhlbHBdIHhlbm9tYWkgdXNlciBhcHAgd29y
+a2luZyB2ZXJ5IHNsb3dseQ0KDQpMYW5kYXUsIEJyYWNoYSB3cm90ZToNCj4gQWZ0ZXIgcmVhZGlu
+ZyBvbmUgb2YgdGhlIGxpbmtzIGJlbG93LCBJIGFkZGVkIGNhbGxzIHRvDQo+IHB0aHJlYWRfc2V0
+c3RhY2tzaXplIHRvIGxpbWl0IG1lbW9yeSB1c2FnZSwgYW5kIHRoaXMgaW1wcm92ZWQgdGhlDQo+
+IHRpbWluZy4gSG93ZXZlciwgSSBzdGlsbCBoYXZlIHNldmVyYWwgcHJvYmxlbXMgd2l0aCB0aGUg
+YXBwbGljYXRpb24uDQo+IEluIGEgdGhyZWFkIEkgaGF2ZSBhIGNhbGwgdG8gc2VsZWN0IHdoaWNo
+IHdhaXRzIG9uIHR3byBtZXNzYWdlDQo+IHF1ZXVlcy4gRWFjaCBvZiB0aGVzZSBpcyBhIHJlYWwt
+dGltZSBtZXNzYWdlIHF1ZXVlLiBJbiB0aGUgcmVndWxhcg0KPiBhcHBsaWNhdGlvbiB0aGlzIHdv
+cmtzIGZpbmUsIGJ1dCBpbiB0aGUgeGVub21haSBhcHBsaWNhdGlvbiB0aGUNCj4gc2VsZWN0IHJl
+dHVybnMgd2l0aCBib3RoIHNldHMgcmV0dXJuaW5nIHRydWUgdG8gIkZEX0lTU0VUIiwgd2hlbg0K
+PiB0aGVyZSByZWFsbHkgaXMgbm90aGluZyB0byByZWFkIGZyb20gdGhlIHF1ZXVlLiBJIGRpZCBu
+b3QgZmluZA0KPiBhbnl0aGluZyBpbiB0aGUgbGlua3MgdGhhdCByZWZlcnMgdG8gcHJvYmxlbXMg
+d2l0aCBzZWxlY3QgKGFzIGxvbmcgYXMNCj4gdGhleSBhcmUgYm90aCByL3QgZGVzY3JpcHRvcnMs
+IHdoaWNoIHRoZXkgYXJlKS4NCg0KUGxlYXNlIHZlcmlmeSB0aGF0IHlvdSBzdGlsbCBoYXZlIHRo
+ZSBzYW1lIGlzc3VlIHdpdGggWGVub21haSBsYXRlc3QNCnN0YWJsZSByZWxlYXNlICh2Mi41LjAp
+LCB0aGVuIHNlbmQgYSB0ZXN0IGNhc2Ugd2hpY2ggaGFzIHRoaXMgaXNzdWUuDQoNCi0tDQogICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEdpbGxlcy4NCg0KVGhpcyBt
+ZXNzYWdlIGlzIGNvbmZpZGVudGlhbCBhbmQgaW50ZW5kZWQgb25seSBmb3IgdGhlIGFkZHJlc3Nl
+ZS4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBtZXNzYWdlIGluIGVycm9yLCBwbGVhc2UgaW1t
+ZWRpYXRlbHkgbm90aWZ5IHRoZSBwb3N0bWFzdGVyQG5kcy5jb20gYW5kIGRlbGV0ZSBpdCBmcm9t
+IHlvdXIgc3lzdGVtIGFzIHdlbGwgYXMgYW55IGNvcGllcy4gVGhlIGNvbnRlbnQgb2YgZS1tYWls
+cyBhcyB3ZWxsIGFzIHRyYWZmaWMgZGF0YSBtYXkgYmUgbW9uaXRvcmVkIGJ5IE5EUyBmb3IgZW1w
+bG95bWVudCBhbmQgc2VjdXJpdHkgcHVycG9zZXMuDQpUbyBwcm90ZWN0IHRoZSBlbnZpcm9ubWVu
+dCBwbGVhc2UgZG8gbm90IHByaW50IHRoaXMgZS1tYWlsIHVubGVzcyBuZWNlc3NhcnkuDQoNCkFu
+IE5EUyBHcm91cCBMaW1pdGVkIGNvbXBhbnkuIHd3dy5uZHMuY29tDQo=
 
