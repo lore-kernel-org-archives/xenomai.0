@@ -1,54 +1,35 @@
-Message-ID: <4B582AC4.5030104@domain.hid>
-Date: Thu, 21 Jan 2010 11:21:56 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4B57134A.3090702@domain.hid> <4B5816E7.2080108@domain.hid>
-	<4B58233A.4070708@domain.hid>
-In-Reply-To: <4B58233A.4070708@domain.hid>
+Date: Fri, 15 Jan 2010 10:10:55 +0100
+Message-ID: <b88603c31001150110h29380b4bnecbff46fa5d5d69b@domain.hid>
+From: Henri Roosen <henriroosen@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] assert RTS signal during transmit in
- EIA-485 half duplex mode for 16550A compatible controllers.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: [Xenomai-help] IRQ handler argument corrupt when shared interrupts
+	are enabled (Xenomai 2.4.10)
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Alexandre Coffignal <alexandre.coffignal@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Alexandre Coffignal wrote:
-> Hello,
-> 
-> Thanks you for your response.
-> 
-> I used this patch to communicate with a slave equipment in rs485 (modbus
-> protocol). The data is transmitted over a 2-wire twisted pair bus.
-> Master initiates all communication activity, by sending data. To do this
-> it must set RTS line to high state during all it's transmission. Before
-> slave answer, master must lower the RTS line.
+Xenomai 2.4.10:
 
-Will the slave wait on the deassertion of RTS? Or what will happen if
-RTS is still high and the slave starts its answer?
+IRQ handler argument is not the same as the argument I provided when
+registering the IRQ handler. Problem only occurs when shared interrupt
+support is enabled in the kernel config. NOTE: even though the
+registered IRQ handler not a shared interrupt handler (flags = 0).
 
-> 
-> my slave equipment answer in less than 200us, so i must know when xmit
-> is completing to lower the RTS line
-> 
-> An extension to RTSER_RTIOC_WAIT_EVENT may be a good solution but do you
-> know if an extension to RTSER_RTIOC_WAIT_EVENT can guarantee this timing?
-> 
+The problem is not reproducable on Xenomai 2.5.0.
 
-Given a proper platform (check its capabilities with the latency or the
-irqbench test), yes. It's a myth that such things can only be done in
-kernel space.
+So I was looking for the fix code in the 2.5.0 but couldn't find it.
+Is this a know problem that has only been fixed on 2.5.0, or does the
+bug just not show in 2.5.0? Could someone point out which commit on
+2.5.0 fixes the problem?
 
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Thanks,
+Henri.
 
