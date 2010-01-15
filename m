@@ -1,22 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4B508AE7.8090300@domain.hid>
-References: <4B209B9C.7010309@domain.hid>
-	<20100108105925.GA14163@domain.hid>
-	<1262949018.2455.5.camel@domain.hid>
-	<1263312199.2455.169.camel@domain.hid>
-	<20100112172443.GP8605@domain.hid>
-	<1263318551.2455.188.camel@domain.hid>
-	<20100112185012.GQ8605@domain.hid>
-	<1263324215.2455.293.camel@domain.hid>
-	<20100112221802.GR8605@domain.hid>
-	<1263567811.2428.487.camel@domain.hid>
-	<4B508AE7.8090300@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 15 Jan 2010 18:28:53 +0100
-Message-ID: <1263576533.2428.529.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4B50AF89.1000909@domain.hid>
+Date: Fri, 15 Jan 2010 19:10:17 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <1263470867-1533-1-git-send-email-wg@domain.hid>
+	<4B5076F9.40508@domain.hid> <4B507B06.4080206@domain.hid>
+In-Reply-To: <4B507B06.4080206@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Adeos-main] I-pipe for 2.6.32 PPC
+Subject: Re: [Xenomai-core] [PATCH xenomai-2.5 0/3] rtcan: mscan: new
+ OF	platform driver for MPC521x and MPC5200
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -26,48 +18,41 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Wolfgang Grandegger <wg@domain.hid>
-Cc: adeos-main@gna.org, xenomai@xenomai.org, Lennart Sorensen <lsorense@domain.hid>
+Cc: Xenomai-core@domain.hid, Wolfgang Grandegger <wg@domain.hid>
 
-On Fri, 2010-01-15 at 16:33 +0100, Wolfgang Grandegger wrote:
-> Hi Philippe,
+Wolfgang Grandegger wrote:
+> Gilles Chanteperdrix wrote:
+>> Wolfgang Grandegger wrote:
+>>> From: Wolfgang Grandegger <wg@domain.hid>
+>>>
+>>> This patch series adds RT-Socket-CAN support for the MSCAN on the MPC512x
+>>> from Freescale by introducing a new OF platform driver for both, the
+>>> MPC521x and MPC5200, while still keeping the old driver for the MPC5200
+>>> for compatibility with older kernel versions.
+>> Hi Wolfgang,
+>>
+>> there seems to be something missing, because I get a compilation error
+>> on lite-5200:
+>> http://sisyphus.hd.free.fr/~gilles/bx/#powerpc
 > 
-> Philippe Gerum wrote:
-> [snip]
-> > On Tue, 2010-01-12 at 17:18 -0500, Lennart Sorensen wrote: 
-> > You did port the pipeline to 2.6.32/ppc32 for running on mpc8360, which
-> > fits your needs. But the pipeline patch has to be upgraded for ppc64 as
-> > well. Even for ppc32, a patch is normally validated for a set of 4xx,
-> > 512x, 52xx, 82xx, 85xx, and 86xx platforms, by the Xenomai standards:
-> > http://www.xenomai.org/index.php/Embedded_Device_Support#Supported_Evaluation_Boards_3
-> > 
-> > Btw, your patch never made it to the list, since this is a
-> > subscriber-only list, and last time I checked, you were not subscribed.
-> > Or maybe you posted from a different mail address, but I did not see
-> > your mail though. I usually acknowledge public contributions.
-> 
-> Here is the story. Lennart mentioned on the linuxppc-dev mailing list,
-> that he has a iPipe patch for 2.6.32:
->  http://lists.ozlabs.org/pipermail/linuxppc-dev/2009-December/079191.html
-> 
-> I asked him privately, if the patch is available and he sent it to me
-> with the note, that I can publish it on the mailing list if I feel it's
-> useful. This patch helped me to go ahead immediately with some related
-> development work. I also forwarded the patch to you.
+> Well, I obviously did not test the driver with old versions of the Linux
+> kernel, sorry. 
 
-It must be stuck somewhere, I really can't find it in my mailbox. I'll
-check on my side again. Thanks.
+No problem, that is what the build test is for.
 
-> 
-> Wolfgang.
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
 
+> For 2.6.29 and 2.6.30 the following patch should fix the build:
+
+Ok. I applied a slightly different modification (fixing in wrappers.h).
+I am waiting for your fix for 2.4 for pushing.
+
+
+> For 2.4 I will have a close look now.
+> 
+> This proves, your regression test build tool is really useful.
+
+That is, if you assume people in the wild are trying older versions...
 
 -- 
-Philippe.
-
-
+					    Gilles.
 
