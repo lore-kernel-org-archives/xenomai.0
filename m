@@ -1,14 +1,11 @@
-Message-ID: <4B4F32C6.50600@domain.hid>
-Date: Thu, 14 Jan 2010 16:05:42 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <4B4FBBFD.5050203@domain.hid>
+Date: Fri, 15 Jan 2010 01:51:09 +0100
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
 MIME-Version: 1.0
-References: <1263470867-1533-1-git-send-email-wg@domain.hid>	<1263470867-1533-2-git-send-email-wg@domain.hid>	<1263470867-1533-3-git-send-email-wg@domain.hid>	<1263470867-1533-4-git-send-email-wg@domain.hid>	<1263470867-1533-5-git-send-email-wg@domain.hid>
-	<4B4F0A8A.7060106@domain.hid> <4B4F30C3.8040005@domain.hid>
-In-Reply-To: <4B4F30C3.8040005@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH xenomai-2.5 3/3] rtcan: mscan: new
- OF	platform driver for MPC521x and MPC5200
+Subject: [Xenomai-core] [PULL REQUEST] analogy: bug fixes
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,26 +14,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai-core@domain.hid
+To: xenomai-core <xenomai@xenomai.org>
 
-Hi Gilles,
+The following changes since commit 963fc21168ca6b29ab7c7ea95d56a393c475bdce:
+   Gilles Chanteperdrix (1):
+         bootstrap
 
-Gilles Chanteperdrix wrote:
-...
-> Would you want a git tree on Xenomai server? This way you could use git
-> push and git-request-pull ?
+are available in the git repository at:
 
-Well, seems a bit overkill to me at the moment. There are only a few
-patches per year related to RT-Socket-CAN. If you think it does easy
-your work, please let me know.
+   git://git.xenomai.org/xenomai-abe.git analogy
 
-> There is not much point for me in proof-reading your patches, since I do
-> not know much about rt-socket-can.
+Alexis Berlemont (4):
+       analogy: [NI mite] initialize channels' status
+       analogy: [NI mite] add debug traces
+       analogy: [NI mite] initialize the mite structures after their 
+allocations
+       analogy: fix a bug in the initialization of the user root descriptor
 
-No problem. I'm happy if you just apply it ;-).
+  ksrc/drivers/analogy/national_instruments/mite.c |   70 
+++++++++++++++--------
+  src/drvlib/analogy/descriptor.c                  |   12 +++-
+  2 files changed, 56 insertions(+), 26 deletions(-)
 
-Thanks,
-
-Wolfgang.
+Alexis.
 
