@@ -1,13 +1,22 @@
-Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <4B3918B1.6050502@domain.hid>
-Date: Mon, 28 Dec 2009 21:44:33 +0100
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
-MIME-Version: 1.0
-References: <729c4a400912260654vf4f99d1ta6105bdace1b4098@domain.hid>
-In-Reply-To: <729c4a400912260654vf4f99d1ta6105bdace1b4098@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4B508AE7.8090300@domain.hid>
+References: <4B209B9C.7010309@domain.hid>
+	<20100108105925.GA14163@domain.hid>
+	<1262949018.2455.5.camel@domain.hid>
+	<1263312199.2455.169.camel@domain.hid>
+	<20100112172443.GP8605@domain.hid>
+	<1263318551.2455.188.camel@domain.hid>
+	<20100112185012.GQ8605@domain.hid>
+	<1263324215.2455.293.camel@domain.hid>
+	<20100112221802.GR8605@domain.hid>
+	<1263567811.2428.487.camel@domain.hid>
+	<4B508AE7.8090300@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Fri, 15 Jan 2010 18:28:53 +0100
+Message-ID: <1263576533.2428.529.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] Sensoray 526 analogy driver
+Subject: Re: [Xenomai-core] [Adeos-main] I-pipe for 2.6.32 PPC
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,50 +25,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Simon Boulay <simon.boulay@domain.hid>, "Alessio Margan @ IIT" <alessio.margan@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: adeos-main@gna.org, xenomai@xenomai.org, Lennart Sorensen <lsorense@domain.hid>
 
-Hi Simon,
+On Fri, 2010-01-15 at 16:33 +0100, Wolfgang Grandegger wrote:
+> Hi Philippe,
+> 
+> Philippe Gerum wrote:
+> [snip]
+> > On Tue, 2010-01-12 at 17:18 -0500, Lennart Sorensen wrote: 
+> > You did port the pipeline to 2.6.32/ppc32 for running on mpc8360, which
+> > fits your needs. But the pipeline patch has to be upgraded for ppc64 as
+> > well. Even for ppc32, a patch is normally validated for a set of 4xx,
+> > 512x, 52xx, 82xx, 85xx, and 86xx platforms, by the Xenomai standards:
+> > http://www.xenomai.org/index.php/Embedded_Device_Support#Supported_Evaluation_Boards_3
+> > 
+> > Btw, your patch never made it to the list, since this is a
+> > subscriber-only list, and last time I checked, you were not subscribed.
+> > Or maybe you posted from a different mail address, but I did not see
+> > your mail though. I usually acknowledge public contributions.
+> 
+> Here is the story. Lennart mentioned on the linuxppc-dev mailing list,
+> that he has a iPipe patch for 2.6.32:
+>  http://lists.ozlabs.org/pipermail/linuxppc-dev/2009-December/079191.html
+> 
+> I asked him privately, if the patch is available and he sent it to me
+> with the note, that I can publish it on the mailing list if I feel it's
+> useful. This patch helped me to go ahead immediately with some related
+> development work. I also forwarded the patch to you.
 
-Simon Boulay wrote:
- > Hi,
- >
- > Here is a patch which adds the support of the Sensoray Model 526 board
- > to analogy.
+It must be stuck somewhere, I really can't find it in my mailbox. I'll
+check on my side again. Thanks.
 
-Great ! I had a look at the code, that is fine for me. I just have few
-remarks:
-- some "printk" were left commented in the original comedi driver, you
-correctly translated them into a4l_info; however, could you use a4l_dbg
-instead and remove the comments ?
-- the sources of the original driver contain many areas of commented
-code and "#if 0 #else #endif" directives. In order to keep coherency
-with the original driver, I think the import of the driver should be
-done as it is; nonetheless, the second step would be to clean it inside
-the git repository.
+> 
+> Wolfgang.
+> 
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
 
-I think it is wise to wait for the release of 2.5 before integrating it. 
-It will be made available in Xenomai 2.5.1.
 
- > The driver compiles against head but have not been tested on real 
-hardware yet.
-Alessio was interested by this driver; Alessio, the driver is yours as
-soon as it is available in my git repository.
-
- > It has been ported from comedi (staging version) and should work as 
-in comedi:
- > - Encoder works
- > - Analog input works
- > - Analog output works
- > - PWM output works
- > - Commands are not supported yet.
- >
- > Regards,
-Many thanks for your work !
-
- > Simon.
- >
-Alexis.
+-- 
+Philippe.
 
 
 
