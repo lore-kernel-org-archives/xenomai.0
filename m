@@ -1,326 +1,264 @@
-Message-ID: <4B4735F4.6060503@domain.hid>
-Date: Fri, 08 Jan 2010 14:41:08 +0100
-From: Stefan Kisdaroczi <kisda@domain.hid>
-MIME-Version: 1.0
-References: <4B45F088.9010603@domain.hid> <4B45F163.4000504@domain.hid>
-	<4B460255.30200@domain.hid> <4B46125D.4010602@domain.hid>
-	<4B471B48.6040301@domain.hid> <4B471D96.7050001@domain.hid>
-	<4B473206.90209@domain.hid> <4B47338E.9080304@domain.hid>
-In-Reply-To: <4B47338E.9080304@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC8F22473034945DAAEE9C192"
-Subject: Re: [Xenomai-help] native skin 2.5.0: rt_task_create() segfaults if
- stacksize parameter too small
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1263672300-20868-1-git-send-email-gilles.chanteperdrix@xenomai.org>
+References: <4B521B97.7010203@domain.hid>
+	<1263672300-20868-1-git-send-email-gilles.chanteperdrix@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Date: Sat, 16 Jan 2010 21:30:54 +0100
+Message-ID: <1263673854.2428.889.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH 1/3] nucleus: allow xnlock debugging even
+ on UP kernels
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC8F22473034945DAAEE9C192
-Content-Type: multipart/mixed;
- boundary="------------060300050002060502080108"
+On Sat, 2010-01-16 at 21:04 +0100, Gilles Chanteperdrix wrote:
+> ---
+>  include/asm-generic/bits/pod.h |    2 +-
+>  include/asm-generic/system.h   |   19 +++++++++++++------
+>  include/nucleus/queue.h        |   16 ++++++++--------
+>  ksrc/nucleus/intr.c            |    4 ++--
+>  ksrc/nucleus/pod.c             |   16 ++++++++--------
+>  ksrc/skins/posix/signal.c      |    4 +---
+>  6 files changed, 33 insertions(+), 28 deletions(-)
 
-This is a multi-part message in MIME format.
---------------060300050002060502080108
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Agreed on the basic principle, but I would not overload
+CONFIG_XENO_OPT_DEBUG_NUCLEUS for the purpose of monitoring locking
+times anymore. I would rather create a specific option for such
+monitoring, which would be enabled by default if CONFIG_SMP=y.
 
-Am 08.01.2010 14:30, schrieb Gilles Chanteperdrix:
-> Stefan Kisdaroczi wrote:
->> Am 08.01.2010 12:57, schrieb Gilles Chanteperdrix:
->>> Stefan Kisdaroczi wrote:
->>>> Am 07.01.2010 17:57, schrieb Gilles Chanteperdrix:
->>>>> Stefan Kisdaroczi wrote:
->>>>>> Am 07.01.2010 15:36, schrieb Gilles Chanteperdrix:
->>>>>>> Stefan Kisdaroczi wrote:
->>>>>>>> hi,
->>>>>>>>
->>>>>>>> i have upgraded xenomai to 2.5.0 (x86,32bit). My application seg=
-faults when I
->>>>>>>> try to create a task with stacksize 2048, this worked with 2.4.1=
-0.
->>>>>>>> Because my app is written in pascal i have reproduced the proble=
-m with the
->>>>>>>> xenomai trivial-periodic.c example:
->>>>>>>>
->>>>>>>> -	rt_task_create(&demo_task, "trivial", 0, 99, 0);
->>>>>>>> +	rt_task_create(&demo_task, "trivial",16911, 99, 0);
->>>>>>>>
->>>>>>>> Stacksize 0 -> default stack size : ok
->>>>>>>> Stacksize > 0 and <=3D 16911 : Segmentation fault
->>>>>>>> Stacksize >=3D 16912 : ok
->>>>>>>>
->>>>>>>> Any hints ?
->>>>>>> What does the task do? If it uses printf, printf needs a lot of r=
-oom on
->>>>>>> the stack.
->>>>>>>
->>>>>> To clarify:
->>>>>> It does not depend on the task body, the task is not even started.=
+This makes possible to trace spinning times only, while reducing the
+odds of getting time-related artefacts in the way, that would otherwise
+be caused by other debug code.
 
->>>>>> The segfault happens when calling rt_task_create(), before rt_task=
-_start()
->>>>>> is called.
->>>>> Actually, when calling rt_task_create, the thread is created, under=
- the
->>>>> hood, and waits to be started. So the segmentation fault is most
->>>>> certainly due to a stack overflow in the newly created thread.
->>>>>
->>>>> And I am afraid I know why it happens: the newly merged user-space
->>>>> signals support requires roughly 16 * sizeof(struct siginfo) on sta=
-ck.
->>>>> But this amounts to two Kbytes here. Could you run the following pr=
-ogram
->>>>> on your target ?
->>>> salut gilles,
->>>>
->>>> as the stacksize is already checked and increased to PTHREAD_STACK_M=
-IN if
->>>> the value is too small, i suggest to take the stacksize needed by xe=
-nomai
->>>> into account too. The attached patch is clearly wrong, but it solved=
- the
->>>> problem for me.
->>> PTHREAD_STACK_MIN varies a lot depending on architectures and even
->>> depending on the glibc versions. Which is why we took 32 Kb as the
->>> default stack size. Since the default is enough even for struct xnsig=
-,
->>> if you are asking a smaller size, you may have good reasons to do so.=
- We
->>> should check that the size is at least sizeof(struct xnsig), but sinc=
-e
->>> PTHREAD_STACK_MIN is larger than struct xnsig, it should work as is.
->>>
->>> The point is that your system seems to require 16 Kb whereas
->>> sizeof(struct xnsig) is only 2Kb. So, there is something wrong somewh=
-ere
->>> else.
->>>
->>> Could you run the segfaulting program inside gdb, and print the frame=
-s
->>> infos ?
->>
->> gdb logfile attached
->=20
-> Ok. Could you get the value of the "esp" register at the time of the
-> failure, as well as the contents of /proc/<pid>/smaps where <pid> is th=
-e
-> pid of the failing application ? You can run the cat /proc/<pid>/smaps
-> when the process is stopped in gdb.
+> 
+> diff --git a/include/asm-generic/bits/pod.h b/include/asm-generic/bits/pod.h
+> index 6cf2f6e..5cebcd4 100644
+> --- a/include/asm-generic/bits/pod.h
+> +++ b/include/asm-generic/bits/pod.h
+> @@ -278,7 +278,7 @@ unsigned long long xnarch_get_cpu_time(void)
+>  
+>  EXPORT_SYMBOL(xnarch_get_cpu_time);
+>  
+> -#ifdef CONFIG_SMP
+> +#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
+>  void __xnlock_spin(xnlock_t *lock /*, */ XNLOCK_DBG_CONTEXT_ARGS)
+>  {
+>  	unsigned int spin_limit;
+> diff --git a/include/asm-generic/system.h b/include/asm-generic/system.h
+> index e872711..b59e364 100644
+> --- a/include/asm-generic/system.h
+> +++ b/include/asm-generic/system.h
+> @@ -91,7 +91,7 @@ static inline unsigned xnarch_current_cpu(void)
+>  	return rthal_processor_id();
+>  }
+>  
+> -#if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
+> +#if XENO_DEBUG(NUCLEUS)
+>  
+>  typedef struct {
+>  
+> @@ -148,11 +148,14 @@ xnlock_dbg_spinning(xnlock_t *lock, int cpu, unsigned int *spin_limit,
+>  	if (--*spin_limit == 0) {
+>  		rthal_emergency_console();
+>  		printk(KERN_ERR "Xenomai: stuck on nucleus lock %p\n"
+> -				"         waiter = %s:%u (%s(), CPU #%d)\n"
+> -				"         owner  = %s:%u (%s(), CPU #%d)\n",
+> +				"	  waiter = %s:%u (%s(), CPU #%d)\n"
+> +				"	  owner	 = %s:%u (%s(), CPU #%d)\n",
+>  		       lock, file, line, function, cpu,
+>  		       lock->file, lock->line, lock->function, lock->cpu);
+>  		show_stack(NULL, NULL);
+> +#ifndef CONFIG_SMP
+> +		BUG();
+> +#endif
+>  	}
+>  }
+>  
+> @@ -319,7 +322,7 @@ static inline int xnarch_root_domain_p(void)
+>  	return rthal_current_domain == rthal_root_domain;
+>  }
+>  
+> -#ifdef CONFIG_SMP
+> +#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
+>  
+>  #define xnlock_get(lock)		__xnlock_get(lock  XNLOCK_DBG_CONTEXT)
+>  #define xnlock_get_irqsave(lock,x) \
+> @@ -395,7 +398,11 @@ static inline void xnlock_put_irqrestore(xnlock_t *lock, spl_t flags)
+>  
+>  static inline int xnarch_send_ipi(xnarch_cpumask_t cpumask)
+>  {
+> +#ifdef CONFIG_SMP
+>  	return rthal_send_ipi(RTHAL_SERVICE_IPI0, cpumask);
+> +#else /* !CONFIG_SMP */
+> +	return 0;
+> +#endif /* !CONFIG_SMP */
+>  }
+>  
+>  static inline int xnlock_is_owner(xnlock_t *lock)
+> @@ -403,7 +410,7 @@ static inline int xnlock_is_owner(xnlock_t *lock)
+>  	return atomic_read(&lock->owner) == xnarch_current_cpu();
+>  }
+>  
+> -#else /* !CONFIG_SMP */
+> +#else /* !(CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
+>  
+>  #define xnlock_init(lock)		do { } while(0)
+>  #define xnlock_get(lock)		do { } while(0)
+> @@ -424,7 +431,7 @@ static inline int xnarch_send_ipi (xnarch_cpumask_t cpumask)
+>  	return 0;
+>  }
+>  
+> -#endif /* !CONFIG_SMP */
+> +#endif /* !(CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
+>  
+>  #define xnlock_sync_irq(lock, x)			\
+>  	do {						\
+> diff --git a/include/nucleus/queue.h b/include/nucleus/queue.h
+> index b84fa3c..13cde9f 100644
+> --- a/include/nucleus/queue.h
+> +++ b/include/nucleus/queue.h
+> @@ -65,17 +65,17 @@ typedef struct xnqueue {
+>  
+>  	xnholder_t head;
+>  	int elems;
+> -#if defined(__KERNEL__) && XENO_DEBUG(QUEUES) && defined(CONFIG_SMP)
+> -	xnlock_t lock;
+> -#endif				/* __KERNEL__ && XENO_DEBUG(QUEUES) && CONFIG_SMP */
+> +#if defined(__KERNEL__) && XENO_DEBUG(QUEUES)
+> +	DECLARE_XNLOCK(lock);
+> +#endif /* __KERNEL__ && XENO_DEBUG(QUEUES) */
+>  
+>  } xnqueue_t;
+>  
+> -#if XENO_DEBUG(QUEUES) && defined(CONFIG_SMP)
+> +#if XENO_DEBUG(QUEUES)
+>  #define XNQUEUE_INITIALIZER(q) { { &(q).head, &(q).head }, 0, XNARCH_LOCK_UNLOCKED }
+> -#else /* !(XENO_DEBUG(QUEUES) && CONFIG_SMP) */
+> +#else /* !(XENO_DEBUG(QUEUES) */
+>  #define XNQUEUE_INITIALIZER(q) { { &(q).head, &(q).head }, 0 }
+> -#endif /* XENO_DEBUG(QUEUES) && CONFIG_SMP */
+> +#endif /* XENO_DEBUG(QUEUES) */
+>  
+>  #define DEFINE_XNQUEUE(q) xnqueue_t q = XNQUEUE_INITIALIZER(q)
+>  
+> @@ -83,9 +83,9 @@ static inline void initq(xnqueue_t *qslot)
+>  {
+>  	inith(&qslot->head);
+>  	qslot->elems = 0;
+> -#if defined(__KERNEL__) && XENO_DEBUG(QUEUES) && defined(CONFIG_SMP)
+> +#if defined(__KERNEL__) && XENO_DEBUG(QUEUES)
+>  	xnlock_init(&qslot->lock);
+> -#endif /* __KERNEL__ && XENO_DEBUG(QUEUES) && CONFIG_SMP */
+> +#endif /* __KERNEL__ && XENO_DEBUG(QUEUES) */
+>  }
+>  
+>  #if XENO_DEBUG(QUEUES)
+> diff --git a/ksrc/nucleus/intr.c b/ksrc/nucleus/intr.c
+> index 97458f5..cfe3041 100644
+> --- a/ksrc/nucleus/intr.c
+> +++ b/ksrc/nucleus/intr.c
+> @@ -404,7 +404,7 @@ static inline int xnintr_irq_detach(xnintr_t *intr)
+>  
+>  #else /* !CONFIG_XENO_OPT_SHIRQ */
+>  
+> -#ifdef CONFIG_SMP
+> +#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
+>  typedef struct xnintr_irq {
+>  
+>  	DECLARE_XNLOCK(lock);
+> @@ -412,7 +412,7 @@ typedef struct xnintr_irq {
+>  } ____cacheline_aligned_in_smp xnintr_irq_t;
+>  
+>  static xnintr_irq_t xnirqs[XNARCH_NR_IRQS];
+> -#endif /* CONFIG_SMP */
+> +#endif /* CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
+>  
+>  static inline xnintr_t *xnintr_shirq_first(unsigned irq)
+>  {
+> diff --git a/ksrc/nucleus/pod.c b/ksrc/nucleus/pod.c
+> index 4144ccd..bc7b241 100644
+> --- a/ksrc/nucleus/pod.c
+> +++ b/ksrc/nucleus/pod.c
+> @@ -58,9 +58,9 @@ xnpod_t nkpod_struct;
+>  EXPORT_SYMBOL_GPL(nkpod_struct);
+>  
+>  DEFINE_XNLOCK(nklock);
+> -#ifdef CONFIG_SMP
+> +#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
+>  EXPORT_SYMBOL_GPL(nklock);
+> -#endif /* CONFIG_SMP */
+> +#endif /* CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
+>  
+>  u_long nklatency = 0;
+>  EXPORT_SYMBOL_GPL(nklatency);
+> @@ -3087,7 +3087,7 @@ EXPORT_SYMBOL_GPL(xnpod_set_thread_tslice);
+>  #include <linux/proc_fs.h>
+>  #include <linux/ctype.h>
+>  
+> -#if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
+> +#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
+>  
+>  xnlockinfo_t xnlock_stats[RTHAL_NR_CPUS];
+>  
+> @@ -3134,7 +3134,7 @@ static int lock_read_proc(char *page,
+>  }
+>  EXPORT_SYMBOL_GPL(xnlock_stats);
+>  
+> -#endif /* CONFIG_SMP && XENO_DEBUG(NUCLEUS) */
+> +#endif /* CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
+>  
+>  static int latency_read_proc(char *page,
+>  			     char **start,
+> @@ -3217,17 +3217,17 @@ void xnpod_init_proc(void)
+>  	rthal_add_proc_leaf("version", &version_read_proc, NULL, NULL,
+>  			    rthal_proc_root);
+>  
+> -#if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
+> +#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
+>  	rthal_add_proc_leaf("lock", &lock_read_proc, NULL, NULL,
+>  			    rthal_proc_root);
+> -#endif /* CONFIG_SMP && XENO_DEBUG(NUCLEUS) */
+> +#endif /* CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
+>  }
+>  
+>  void xnpod_cleanup_proc(void)
+>  {
+> -#if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
+> +#if defined(CONFIG_SMP) || XENO_DEBUG(NUCLEUS)
+>  	remove_proc_entry("lock", rthal_proc_root);
+> -#endif /* CONFIG_SMP && XENO_DEBUG(NUCLEUS) */
+> +#endif /* CONFIG_SMP || XENO_DEBUG(NUCLEUS) */
+>  	remove_proc_entry("version", rthal_proc_root);
+>  	remove_proc_entry("latency", rthal_proc_root);
+>  
+> diff --git a/ksrc/skins/posix/signal.c b/ksrc/skins/posix/signal.c
+> index 5d2baf7..193674c 100644
+> --- a/ksrc/skins/posix/signal.c
+> +++ b/ksrc/skins/posix/signal.c
+> @@ -64,9 +64,7 @@ typedef void siginfo_handler_t(int, siginfo_t *, void *);
+>  #define SIGRTMAX 64
+>  static struct sigaction actions[SIGRTMAX];
+>  static pse51_siginfo_t pse51_infos_pool[PSE51_SIGQUEUE_MAX];
+> -#ifdef CONFIG_SMP
+> -static xnlock_t pse51_infos_lock = XNARCH_LOCK_UNLOCKED;
+> -#endif
+> +DEFINE_XNLOCK(pse51_infos_lock);
+>  static xnpqueue_t pse51_infos_free_list;
+>  
+>  static pse51_siginfo_t *pse51_new_siginfo(int sig, int code, union sigval value)
 
-attached.
 
-kisda
+-- 
+Philippe.
 
 
---------------060300050002060502080108
-Content-Type: text/plain;
- name="registers.txt"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="registers.txt"
-
-U3RhcnRpbmcgcHJvZ3JhbTogL2hvbWUvc2tpL3NyYy94ZW5vdGVzdC90cml2aWFsLXBlcmlv
-ZGljIApbVGhyZWFkIGRlYnVnZ2luZyB1c2luZyBsaWJ0aHJlYWRfZGIgZW5hYmxlZF0KW05l
-dyBUaHJlYWQgMHhiNzU4MDZjMCAoTFdQIDIxMzgzKV0KW05ldyBUaHJlYWQgMHhiNzU3ZmI5
-MCAoTFdQIDIxMzg2KV0KClByb2dyYW0gcmVjZWl2ZWQgc2lnbmFsIFNJR1NFR1YsIFNlZ21l
-bnRhdGlvbiBmYXVsdC4KW1N3aXRjaGluZyB0byBUaHJlYWQgMHhiNzU3ZmI5MCAoTFdQIDIx
-Mzg2KV0KMHhiNzcxOTc4MyBpbiA/PyAoKSBmcm9tIC9saWIvbGQtbGludXguc28uMgojMCAg
-MHhiNzcxOTc4MyBpbiA/PyAoKSBmcm9tIC9saWIvbGQtbGludXguc28uMgojMSAgMHhiNzcx
-ZjJlMCBpbiA/PyAoKSBmcm9tIC9saWIvbGQtbGludXguc28uMgojMiAgMHhiNzZlNTdmZCBp
-biB4ZW5vX3NpZ3dpbmNoX2hhbmRsZXIgKCkgZnJvbSAvdXNyL2xpYi9saWJuYXRpdmUuc28u
-MwojMyAgMHhiNzZlNThhNiBpbiB4ZW5vX3NpZ3NoYWRvd19oYW5kbGVyICgpIGZyb20gL3Vz
-ci9saWIvbGlibmF0aXZlLnNvLjMKIzQgIDxzaWduYWwgaGFuZGxlciBjYWxsZWQ+CiM1ICAw
-eGI3NmU0MWUwIGluID8/ICgpIGZyb20gL3Vzci9saWIvbGlibmF0aXZlLnNvLjMKIzYgIDB4
-Yjc1N2YzYjggaW4gPz8gKCkKIzcgIDB4Yjc2ZTcyMDggaW4gPz8gKCkgZnJvbSAvdXNyL2xp
-Yi9saWJuYXRpdmUuc28uMwojOCAgMHhiNzZlNzNjMCBpbiA/PyAoKSBmcm9tIC91c3IvbGli
-L2xpYm5hdGl2ZS5zby4zCiM5ICAweGI3NmU1NzAwIGluID8/ICgpIGZyb20gL3Vzci9saWIv
-bGlibmF0aXZlLnNvLjMKIzEwIDB4MDAwMDAwMDAgaW4gPz8gKCkKZWF4ICAgICAgICAgICAg
-MHhiNzcwMTJhOAktMTIxNzM5MTk2MAplY3ggICAgICAgICAgICAweGI3NTdkOWRjCS0xMjE4
-OTc5MzY0CmVkeCAgICAgICAgICAgIDB4ZDAJMjA4CmVieCAgICAgICAgICAgIDB4Yjc2ZTcy
-MDgJLTEyMTc0OTg2MTYKZXNwICAgICAgICAgICAgMHhiNzU3ZDAwMAkweGI3NTdkMDAwCmVi
-cCAgICAgICAgICAgIDB4Yjc1N2QwMDAJMHhiNzU3ZDAwMAplc2kgICAgICAgICAgICAweDYz
-CTk5CmVkaSAgICAgICAgICAgIDB4MWMJMjgKZWlwICAgICAgICAgICAgMHhiNzcxOTc4Mwkw
-eGI3NzE5NzgzCmVmbGFncyAgICAgICAgIDB4MTAyMDYJWyBQRiBJRiBSRiBdCmNzICAgICAg
-ICAgICAgIDB4NzMJMTE1CnNzICAgICAgICAgICAgIDB4N2IJMTIzCmRzICAgICAgICAgICAg
-IDB4N2IJMTIzCmVzICAgICAgICAgICAgIDB4N2IJMTIzCmZzICAgICAgICAgICAgIDB4MAkw
-CmdzICAgICAgICAgICAgIDB4MzMJNTEK
---------------060300050002060502080108
-Content-Type: text/plain;
- name="smaps.txt"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="smaps.txt"
-
-MDgwNDgwMDAtMDgwNDkwMDAgci14cCAwMDAwMDAwMCAwODowMSAxOTc2ODQ1ICAgIC9ob21l
-L3NraS9zcmMveGVub3Rlc3QvdHJpdmlhbC1wZXJpb2RpYwpTaXplOiAgICAgICAgICAgICAg
-ICAgIDQga0IKUnNzOiAgICAgICAgICAgICAgICAgICA0IGtCClBzczogICAgICAgICAgICAg
-ICAgICAgNCBrQgpTaGFyZWRfQ2xlYW46ICAgICAgICAgIDAga0IKU2hhcmVkX0RpcnR5OiAg
-ICAgICAgICAwIGtCClByaXZhdGVfQ2xlYW46ICAgICAgICAgNCBrQgpQcml2YXRlX0RpcnR5
-OiAgICAgICAgIDAga0IKUmVmZXJlbmNlZDogICAgICAgICAgICA0IGtCClN3YXA6ICAgICAg
-ICAgICAgICAgICAgMCBrQgpLZXJuZWxQYWdlU2l6ZTogICAgICAgIDQga0IKTU1VUGFnZVNp
-emU6ICAgICAgICAgICA0IGtCCjA4MDQ5MDAwLTA4MDRhMDAwIHJ3LXAgMDAwMDAwMDAgMDg6
-MDEgMTk3Njg0NSAgICAvaG9tZS9za2kvc3JjL3hlbm90ZXN0L3RyaXZpYWwtcGVyaW9kaWMK
-U2l6ZTogICAgICAgICAgICAgICAgICA0IGtCClJzczogICAgICAgICAgICAgICAgICAgNCBr
-QgpQc3M6ICAgICAgICAgICAgICAgICAgIDQga0IKU2hhcmVkX0NsZWFuOiAgICAgICAgICAw
-IGtCClNoYXJlZF9EaXJ0eTogICAgICAgICAgMCBrQgpQcml2YXRlX0NsZWFuOiAgICAgICAg
-IDAga0IKUHJpdmF0ZV9EaXJ0eTogICAgICAgICA0IGtCClJlZmVyZW5jZWQ6ICAgICAgICAg
-ICAgNCBrQgpTd2FwOiAgICAgICAgICAgICAgICAgIDAga0IKS2VybmVsUGFnZVNpemU6ICAg
-ICAgICA0IGtCCk1NVVBhZ2VTaXplOiAgICAgICAgICAgNCBrQgowOWU1MjAwMC0wOWU3MzAw
-MCBydy1wIDAwMDAwMDAwIDAwOjAwIDAgICAgICAgICAgW2hlYXBdClNpemU6ICAgICAgICAg
-ICAgICAgIDEzMiBrQgpSc3M6ICAgICAgICAgICAgICAgICAxMzIga0IKUHNzOiAgICAgICAg
-ICAgICAgICAgMTMyIGtCClNoYXJlZF9DbGVhbjogICAgICAgICAgMCBrQgpTaGFyZWRfRGly
-dHk6ICAgICAgICAgIDAga0IKUHJpdmF0ZV9DbGVhbjogICAgICAgICAwIGtCClByaXZhdGVf
-RGlydHk6ICAgICAgIDEzMiBrQgpSZWZlcmVuY2VkOiAgICAgICAgICAxMzIga0IKU3dhcDog
-ICAgICAgICAgICAgICAgICAwIGtCCktlcm5lbFBhZ2VTaXplOiAgICAgICAgNCBrQgpNTVVQ
-YWdlU2l6ZTogICAgICAgICAgIDQga0IKYjc1N2MwMDAtYjc1N2QwMDAgLS0tcCAwMDAwMDAw
-MCAwMDowMCAwIApTaXplOiAgICAgICAgICAgICAgICAgIDQga0IKUnNzOiAgICAgICAgICAg
-ICAgICAgICA0IGtCClBzczogICAgICAgICAgICAgICAgICAgNCBrQgpTaGFyZWRfQ2xlYW46
-ICAgICAgICAgIDAga0IKU2hhcmVkX0RpcnR5OiAgICAgICAgICAwIGtCClByaXZhdGVfQ2xl
-YW46ICAgICAgICAgMCBrQgpQcml2YXRlX0RpcnR5OiAgICAgICAgIDQga0IKUmVmZXJlbmNl
-ZDogICAgICAgICAgICA0IGtCClN3YXA6ICAgICAgICAgICAgICAgICAgMCBrQgpLZXJuZWxQ
-YWdlU2l6ZTogICAgICAgIDQga0IKTU1VUGFnZVNpemU6ICAgICAgICAgICA0IGtCCmI3NTdk
-MDAwLWI3NTgxMDAwIHJ3LXAgMDAwMDAwMDAgMDA6MDAgMCAKU2l6ZTogICAgICAgICAgICAg
-ICAgIDE2IGtCClJzczogICAgICAgICAgICAgICAgICAxNiBrQgpQc3M6ICAgICAgICAgICAg
-ICAgICAgMTYga0IKU2hhcmVkX0NsZWFuOiAgICAgICAgICAwIGtCClNoYXJlZF9EaXJ0eTog
-ICAgICAgICAgMCBrQgpQcml2YXRlX0NsZWFuOiAgICAgICAgIDAga0IKUHJpdmF0ZV9EaXJ0
-eTogICAgICAgIDE2IGtCClJlZmVyZW5jZWQ6ICAgICAgICAgICAxNiBrQgpTd2FwOiAgICAg
-ICAgICAgICAgICAgIDAga0IKS2VybmVsUGFnZVNpemU6ICAgICAgICA0IGtCCk1NVVBhZ2VT
-aXplOiAgICAgICAgICAgNCBrQgpiNzU4MTAwMC1iNzZkNjAwMCByLXhwIDAwMDAwMDAwIDA4
-OjAxIDQ4MTAwNDggICAgL2xpYi9pNjg2L2Ntb3YvbGliYy0yLjcuc28KU2l6ZTogICAgICAg
-ICAgICAgICAxMzY0IGtCClJzczogICAgICAgICAgICAgICAgMTM2NCBrQgpQc3M6ICAgICAg
-ICAgICAgICAgICA0MTkga0IKU2hhcmVkX0NsZWFuOiAgICAgICAxMzY0IGtCClNoYXJlZF9E
-aXJ0eTogICAgICAgICAgMCBrQgpQcml2YXRlX0NsZWFuOiAgICAgICAgIDAga0IKUHJpdmF0
-ZV9EaXJ0eTogICAgICAgICAwIGtCClJlZmVyZW5jZWQ6ICAgICAgICAgMTM2NCBrQgpTd2Fw
-OiAgICAgICAgICAgICAgICAgIDAga0IKS2VybmVsUGFnZVNpemU6ICAgICAgICA0IGtCCk1N
-VVBhZ2VTaXplOiAgICAgICAgICAgNCBrQgpiNzZkNjAwMC1iNzZkNzAwMCByLS1wIDAwMTU1
-MDAwIDA4OjAxIDQ4MTAwNDggICAgL2xpYi9pNjg2L2Ntb3YvbGliYy0yLjcuc28KU2l6ZTog
-ICAgICAgICAgICAgICAgICA0IGtCClJzczogICAgICAgICAgICAgICAgICAgNCBrQgpQc3M6
-ICAgICAgICAgICAgICAgICAgIDQga0IKU2hhcmVkX0NsZWFuOiAgICAgICAgICAwIGtCClNo
-YXJlZF9EaXJ0eTogICAgICAgICAgMCBrQgpQcml2YXRlX0NsZWFuOiAgICAgICAgIDAga0IK
-UHJpdmF0ZV9EaXJ0eTogICAgICAgICA0IGtCClJlZmVyZW5jZWQ6ICAgICAgICAgICAgNCBr
-QgpTd2FwOiAgICAgICAgICAgICAgICAgIDAga0IKS2VybmVsUGFnZVNpemU6ICAgICAgICA0
-IGtCCk1NVVBhZ2VTaXplOiAgICAgICAgICAgNCBrQgpiNzZkNzAwMC1iNzZkOTAwMCBydy1w
-IDAwMTU2MDAwIDA4OjAxIDQ4MTAwNDggICAgL2xpYi9pNjg2L2Ntb3YvbGliYy0yLjcuc28K
-U2l6ZTogICAgICAgICAgICAgICAgICA4IGtCClJzczogICAgICAgICAgICAgICAgICAgOCBr
-QgpQc3M6ICAgICAgICAgICAgICAgICAgIDgga0IKU2hhcmVkX0NsZWFuOiAgICAgICAgICAw
-IGtCClNoYXJlZF9EaXJ0eTogICAgICAgICAgMCBrQgpQcml2YXRlX0NsZWFuOiAgICAgICAg
-IDAga0IKUHJpdmF0ZV9EaXJ0eTogICAgICAgICA4IGtCClJlZmVyZW5jZWQ6ICAgICAgICAg
-ICAgOCBrQgpTd2FwOiAgICAgICAgICAgICAgICAgIDAga0IKS2VybmVsUGFnZVNpemU6ICAg
-ICAgICA0IGtCCk1NVVBhZ2VTaXplOiAgICAgICAgICAgNCBrQgpiNzZkOTAwMC1iNzZkYzAw
-MCBydy1wIDAwMDAwMDAwIDAwOjAwIDAgClNpemU6ICAgICAgICAgICAgICAgICAxMiBrQgpS
-c3M6ICAgICAgICAgICAgICAgICAgMTIga0IKUHNzOiAgICAgICAgICAgICAgICAgIDEyIGtC
-ClNoYXJlZF9DbGVhbjogICAgICAgICAgMCBrQgpTaGFyZWRfRGlydHk6ICAgICAgICAgIDAg
-a0IKUHJpdmF0ZV9DbGVhbjogICAgICAgICAwIGtCClByaXZhdGVfRGlydHk6ICAgICAgICAx
-MiBrQgpSZWZlcmVuY2VkOiAgICAgICAgICAgMTIga0IKU3dhcDogICAgICAgICAgICAgICAg
-ICAwIGtCCktlcm5lbFBhZ2VTaXplOiAgICAgICAgNCBrQgpNTVVQYWdlU2l6ZTogICAgICAg
-ICAgIDQga0IKYjc2ZGMwMDAtYjc2ZTcwMDAgci14cCAwMDAwMDAwMCAwODowMSA5NTg1MzQg
-ICAgIC91c3IvbGliL2xpYm5hdGl2ZS5zby4zLjAuMApTaXplOiAgICAgICAgICAgICAgICAg
-NDQga0IKUnNzOiAgICAgICAgICAgICAgICAgIDQ0IGtCClBzczogICAgICAgICAgICAgICAg
-ICA0NCBrQgpTaGFyZWRfQ2xlYW46ICAgICAgICAgIDAga0IKU2hhcmVkX0RpcnR5OiAgICAg
-ICAgICAwIGtCClByaXZhdGVfQ2xlYW46ICAgICAgICAxMiBrQgpQcml2YXRlX0RpcnR5OiAg
-ICAgICAgMzIga0IKUmVmZXJlbmNlZDogICAgICAgICAgIDQ0IGtCClN3YXA6ICAgICAgICAg
-ICAgICAgICAgMCBrQgpLZXJuZWxQYWdlU2l6ZTogICAgICAgIDQga0IKTU1VUGFnZVNpemU6
-ICAgICAgICAgICA0IGtCCmI3NmU3MDAwLWI3NmU4MDAwIHJ3LXAgMDAwMGEwMDAgMDg6MDEg
-OTU4NTM0ICAgICAvdXNyL2xpYi9saWJuYXRpdmUuc28uMy4wLjAKU2l6ZTogICAgICAgICAg
-ICAgICAgICA0IGtCClJzczogICAgICAgICAgICAgICAgICAgNCBrQgpQc3M6ICAgICAgICAg
-ICAgICAgICAgIDQga0IKU2hhcmVkX0NsZWFuOiAgICAgICAgICAwIGtCClNoYXJlZF9EaXJ0
-eTogICAgICAgICAgMCBrQgpQcml2YXRlX0NsZWFuOiAgICAgICAgIDAga0IKUHJpdmF0ZV9E
-aXJ0eTogICAgICAgICA0IGtCClJlZmVyZW5jZWQ6ICAgICAgICAgICAgNCBrQgpTd2FwOiAg
-ICAgICAgICAgICAgICAgIDAga0IKS2VybmVsUGFnZVNpemU6ICAgICAgICA0IGtCCk1NVVBh
-Z2VTaXplOiAgICAgICAgICAgNCBrQgpiNzZlODAwMC1iNzZmZDAwMCByLXhwIDAwMDAwMDAw
-IDA4OjAxIDQ4MTAwNjIgICAgL2xpYi9pNjg2L2Ntb3YvbGlicHRocmVhZC0yLjcuc28KU2l6
-ZTogICAgICAgICAgICAgICAgIDg0IGtCClJzczogICAgICAgICAgICAgICAgICA4NCBrQgpQ
-c3M6ICAgICAgICAgICAgICAgICAgMjcga0IKU2hhcmVkX0NsZWFuOiAgICAgICAgIDgwIGtC
-ClNoYXJlZF9EaXJ0eTogICAgICAgICAgMCBrQgpQcml2YXRlX0NsZWFuOiAgICAgICAgIDAg
-a0IKUHJpdmF0ZV9EaXJ0eTogICAgICAgICA0IGtCClJlZmVyZW5jZWQ6ICAgICAgICAgICA4
-NCBrQgpTd2FwOiAgICAgICAgICAgICAgICAgIDAga0IKS2VybmVsUGFnZVNpemU6ICAgICAg
-ICA0IGtCCk1NVVBhZ2VTaXplOiAgICAgICAgICAgNCBrQgpiNzZmZDAwMC1iNzZmZjAwMCBy
-dy1wIDAwMDE0MDAwIDA4OjAxIDQ4MTAwNjIgICAgL2xpYi9pNjg2L2Ntb3YvbGlicHRocmVh
-ZC0yLjcuc28KU2l6ZTogICAgICAgICAgICAgICAgICA4IGtCClJzczogICAgICAgICAgICAg
-ICAgICAgOCBrQgpQc3M6ICAgICAgICAgICAgICAgICAgIDgga0IKU2hhcmVkX0NsZWFuOiAg
-ICAgICAgICAwIGtCClNoYXJlZF9EaXJ0eTogICAgICAgICAgMCBrQgpQcml2YXRlX0NsZWFu
-OiAgICAgICAgIDAga0IKUHJpdmF0ZV9EaXJ0eTogICAgICAgICA4IGtCClJlZmVyZW5jZWQ6
-ICAgICAgICAgICAgOCBrQgpTd2FwOiAgICAgICAgICAgICAgICAgIDAga0IKS2VybmVsUGFn
-ZVNpemU6ICAgICAgICA0IGtCCk1NVVBhZ2VTaXplOiAgICAgICAgICAgNCBrQgpiNzZmZjAw
-MC1iNzcwMjAwMCBydy1wIDAwMDAwMDAwIDAwOjAwIDAgClNpemU6ICAgICAgICAgICAgICAg
-ICAxMiBrQgpSc3M6ICAgICAgICAgICAgICAgICAgMTIga0IKUHNzOiAgICAgICAgICAgICAg
-ICAgIDEyIGtCClNoYXJlZF9DbGVhbjogICAgICAgICAgMCBrQgpTaGFyZWRfRGlydHk6ICAg
-ICAgICAgIDAga0IKUHJpdmF0ZV9DbGVhbjogICAgICAgICAwIGtCClByaXZhdGVfRGlydHk6
-ICAgICAgICAxMiBrQgpSZWZlcmVuY2VkOiAgICAgICAgICAgMTIga0IKU3dhcDogICAgICAg
-ICAgICAgICAgICAwIGtCCktlcm5lbFBhZ2VTaXplOiAgICAgICAgNCBrQgpNTVVQYWdlU2l6
-ZTogICAgICAgICAgIDQga0IKYjc3MDQwMDAtYjc3MDcwMDAgcnctcyAwMDAwMDAwMCAwMDow
-ZCAxNTUxICAgICAgIC9kZXYvcnRoZWFwClNpemU6ICAgICAgICAgICAgICAgICAxMiBrQgpS
-c3M6ICAgICAgICAgICAgICAgICAgMTIga0IKUHNzOiAgICAgICAgICAgICAgICAgICA2IGtC
-ClNoYXJlZF9DbGVhbjogICAgICAgICAxMiBrQgpTaGFyZWRfRGlydHk6ICAgICAgICAgIDAg
-a0IKUHJpdmF0ZV9DbGVhbjogICAgICAgICAwIGtCClByaXZhdGVfRGlydHk6ICAgICAgICAg
-MCBrQgpSZWZlcmVuY2VkOiAgICAgICAgICAgMTIga0IKU3dhcDogICAgICAgICAgICAgICAg
-ICAwIGtCCktlcm5lbFBhZ2VTaXplOiAgICAgICAgNCBrQgpNTVVQYWdlU2l6ZTogICAgICAg
-ICAgIDQga0IKYjc3MDcwMDAtYjc3MGEwMDAgcnctcyAwMDAwMDAwMCAwMDowZCAxNTUxICAg
-ICAgIC9kZXYvcnRoZWFwClNpemU6ICAgICAgICAgICAgICAgICAxMiBrQgpSc3M6ICAgICAg
-ICAgICAgICAgICAgMTIga0IKUHNzOiAgICAgICAgICAgICAgICAgIDEyIGtCClNoYXJlZF9D
-bGVhbjogICAgICAgICAgMCBrQgpTaGFyZWRfRGlydHk6ICAgICAgICAgIDAga0IKUHJpdmF0
-ZV9DbGVhbjogICAgICAgIDEyIGtCClByaXZhdGVfRGlydHk6ICAgICAgICAgMCBrQgpSZWZl
-cmVuY2VkOiAgICAgICAgICAgMTIga0IKU3dhcDogICAgICAgICAgICAgICAgICAwIGtCCktl
-cm5lbFBhZ2VTaXplOiAgICAgICAgNCBrQgpNTVVQYWdlU2l6ZTogICAgICAgICAgIDQga0IK
-Yjc3MGEwMDAtYjc3MGIwMDAgcnctcCAwMDAwMDAwMCAwMDowMCAwIApTaXplOiAgICAgICAg
-ICAgICAgICAgIDQga0IKUnNzOiAgICAgICAgICAgICAgICAgICA0IGtCClBzczogICAgICAg
-ICAgICAgICAgICAgNCBrQgpTaGFyZWRfQ2xlYW46ICAgICAgICAgIDAga0IKU2hhcmVkX0Rp
-cnR5OiAgICAgICAgICAwIGtCClByaXZhdGVfQ2xlYW46ICAgICAgICAgMCBrQgpQcml2YXRl
-X0RpcnR5OiAgICAgICAgIDQga0IKUmVmZXJlbmNlZDogICAgICAgICAgICA0IGtCClN3YXA6
-ICAgICAgICAgICAgICAgICAgMCBrQgpLZXJuZWxQYWdlU2l6ZTogICAgICAgIDQga0IKTU1V
-UGFnZVNpemU6ICAgICAgICAgICA0IGtCCmI3NzBiMDAwLWI3NzBjMDAwIHIteHAgMDAwMDAw
-MDAgMDA6MDAgMCAgICAgICAgICBbdmRzb10KU2l6ZTogICAgICAgICAgICAgICAgICA0IGtC
-ClJzczogICAgICAgICAgICAgICAgICAgNCBrQgpQc3M6ICAgICAgICAgICAgICAgICAgIDAg
-a0IKU2hhcmVkX0NsZWFuOiAgICAgICAgICA0IGtCClNoYXJlZF9EaXJ0eTogICAgICAgICAg
-MCBrQgpQcml2YXRlX0NsZWFuOiAgICAgICAgIDAga0IKUHJpdmF0ZV9EaXJ0eTogICAgICAg
-ICAwIGtCClJlZmVyZW5jZWQ6ICAgICAgICAgICAgNCBrQgpTd2FwOiAgICAgICAgICAgICAg
-ICAgIDAga0IKS2VybmVsUGFnZVNpemU6ICAgICAgICA0IGtCCk1NVVBhZ2VTaXplOiAgICAg
-ICAgICAgNCBrQgpiNzcwYzAwMC1iNzcyNjAwMCByLXhwIDAwMDAwMDAwIDA4OjAxIDQ4MDA1
-MTQgICAgL2xpYi9sZC0yLjcuc28KU2l6ZTogICAgICAgICAgICAgICAgMTA0IGtCClJzczog
-ICAgICAgICAgICAgICAgIDEwNCBrQgpQc3M6ICAgICAgICAgICAgICAgICAgMTEga0IKU2hh
-cmVkX0NsZWFuOiAgICAgICAgMTAwIGtCClNoYXJlZF9EaXJ0eTogICAgICAgICAgMCBrQgpQ
-cml2YXRlX0NsZWFuOiAgICAgICAgIDAga0IKUHJpdmF0ZV9EaXJ0eTogICAgICAgICA0IGtC
-ClJlZmVyZW5jZWQ6ICAgICAgICAgIDEwNCBrQgpTd2FwOiAgICAgICAgICAgICAgICAgIDAg
-a0IKS2VybmVsUGFnZVNpemU6ICAgICAgICA0IGtCCk1NVVBhZ2VTaXplOiAgICAgICAgICAg
-NCBrQgpiNzcyNjAwMC1iNzcyODAwMCBydy1wIDAwMDFhMDAwIDA4OjAxIDQ4MDA1MTQgICAg
-L2xpYi9sZC0yLjcuc28KU2l6ZTogICAgICAgICAgICAgICAgICA4IGtCClJzczogICAgICAg
-ICAgICAgICAgICAgOCBrQgpQc3M6ICAgICAgICAgICAgICAgICAgIDgga0IKU2hhcmVkX0Ns
-ZWFuOiAgICAgICAgICAwIGtCClNoYXJlZF9EaXJ0eTogICAgICAgICAgMCBrQgpQcml2YXRl
-X0NsZWFuOiAgICAgICAgIDAga0IKUHJpdmF0ZV9EaXJ0eTogICAgICAgICA4IGtCClJlZmVy
-ZW5jZWQ6ICAgICAgICAgICAgOCBrQgpTd2FwOiAgICAgICAgICAgICAgICAgIDAga0IKS2Vy
-bmVsUGFnZVNpemU6ICAgICAgICA0IGtCCk1NVVBhZ2VTaXplOiAgICAgICAgICAgNCBrQgpi
-ZmQ5NjAwMC1iZmRhYjAwMCBydy1wIDAwMDAwMDAwIDAwOjAwIDAgICAgICAgICAgW3N0YWNr
-XQpTaXplOiAgICAgICAgICAgICAgICAgODQga0IKUnNzOiAgICAgICAgICAgICAgICAgIDg0
-IGtCClBzczogICAgICAgICAgICAgICAgICA4NCBrQgpTaGFyZWRfQ2xlYW46ICAgICAgICAg
-IDAga0IKU2hhcmVkX0RpcnR5OiAgICAgICAgICAwIGtCClByaXZhdGVfQ2xlYW46ICAgICAg
-ICAgMCBrQgpQcml2YXRlX0RpcnR5OiAgICAgICAgODQga0IKUmVmZXJlbmNlZDogICAgICAg
-ICAgIDg0IGtCClN3YXA6ICAgICAgICAgICAgICAgICAgMCBrQgpLZXJuZWxQYWdlU2l6ZTog
-ICAgICAgIDQga0IKTU1VUGFnZVNpemU6ICAgICAgICAgICA0IGtCCg==
---------------060300050002060502080108--
-
---------------enigC8F22473034945DAAEE9C192
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iD8DBQFLRzX0IPTw9rIdn6oRAp5BAJ9Tk2Yu1qsj76SVAKKd1ZQCxrV8wACfd7G2
-tEGsS//M45HYLbsTbnQX2vM=
-=lxJi
------END PGP SIGNATURE-----
-
---------------enigC8F22473034945DAAEE9C192--
 
