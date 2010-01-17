@@ -1,67 +1,75 @@
-Message-ID: <4B421E02.6060006@domain.hid>
-Date: Mon, 04 Jan 2010 17:57:38 +0100
-From: "Alessio Margan @ IIT" <alessio.margan@domain.hid>
+From: Wolfgang Denk <wd@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] enable  __a4l_dbg
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-type: text/plain; charset=ISO-8859-1
+Content-transfer-encoding: 8bit
+In-reply-to: <1263765606.2428.908.camel@domain.hid>
+References: <4B209B9C.7010309@domain.hid>
+	<20100108105925.GA14163@domain.hid>
+	<1262949018.2455.5.camel@domain.hid>
+	<1263312199.2455.169.camel@domain.hid>
+	<20100112172443.GP8605@domain.hid>
+	<1263318551.2455.188.camel@domain.hid>
+	<20100112185012.GQ8605@domain.hid>
+	<1263324215.2455.293.camel@domain.hid>
+	<20100112221802.GR8605@domain.hid>
+	<20100114075343.GA5179@domain.hid>
+	<1263765606.2428.908.camel@domain.hid>
+Date: Sun, 17 Jan 2010 23:51:08 +0100
+Message-Id: <20100117225108.71A21C88AE@gemini.denx.de>
+Subject: Re: [Xenomai-core] [Adeos-main] I-pipe for 2.6.32 PPC
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Lennart Sorensen <lsorense@domain.hid>, adeos-main@gna.org, xenomai@xenomai.org
 
-Hi,
+Dear Philippe,
 
-Where is defined #ifdef CONFIG_XENO_DRIVERS_A4L_DEBUG to enable __a4l_dbg
-I can not found
+in message <1263765606.2428.908.camel@domain.hid> you wrote:
+>
+> What we may be aiming at, if workable, is something like:
+> 
+> ipipe-*-mainline
+> ipipe-*-amcc
+> ipipe-*-512x
 
-TIA
+This sounds fine to me.
 
-Alessio
---=20
+I guess we don't even need a 'ipipe-*-amcc' branch - the only things
+that should be in our tree but not in mainline are the Synopsis USB
+and S-ATA drivers (which are in such a state that they have no chance
+of being accepted for mainline), and these additional features are
+probably not of relevance for use with Xenomai.
 
-ISTITUTO ITALIANO
-DI TECNOLOGIA
+ACK for 'ipipe-*-512x', but this is a work-in-progress tree, with the
+clear intention to push this stuff into mainline ASAP.
 
-Alessio Margan
-/Senior Technician/
-mail me <mailto:alessio.margan@domain.hid>
+> Maybe one for the PA6T as well, if we want to keep supporting the old A2
+> board rev. I'm unsure right now, since B0 is fine in mainline already.
 
-Via Morego, 30 16163 Genova=20
-<http://maps.google.com/maps?f=3Dq&hl=3Den&geocode=3D&q=3Dvia+morego,+30+ge=
-nova&sll=3D37.0625,-95.677068&sspn=3D85.420533,191.601563&ie=3DUTF8&ll=3D44=
-.474913,8.907037&spn=3D0.004685,0.011652&t=3Dh&z=3D17&iwloc=3Daddr>
+Are there any significant differences between A2 and Bx as far as
+Xenomai in concerned? I mean, would a mainline patch (for Bx) be
+missing anything so it doesn't run on A2?
 
-www.iit.it <http://www.iit.it>
+> A mainline pipeline branch for everything that directly works over
+> mainline, and platform-specific branches for those that do not. Those
+> special branches would then disappear as soon as mainline is fine for
+> the platforms they host as well.
 
-*Legal Disclaimer*
-This electronic message contains information that is confidential. The=20
-information is intended for the use of the addressee only. If you are=20
-not the addressee we would appreciate your notification in this respect.=20
-Please note that any disclosure, copy, distribution or use of the=20
-contents of this message is prohibited and may be unlawful. We have=20
-taken every reasonable precaution to ensure that any kind of attachment=20
-to this e-mail has been swept for viruses. However, we cannot accept=20
-liability for any damage sustained as a result of software viruses and=20
-would advise you to carry out your own virus checks before opening any=20
-attachment.
-*Avvertenza legale*
-Questo messaggio Email contiene informazioni confidenziali riservate ai=20
-soli destinatari. Qualora veniate in possesso di tali informazioni senza=20
-essere definito come destinatario vi reghiamo di leggere le seguenti=20
-note. Ogni apertura, copia, distribuzione del contenuto del messaggio e=20
-dei suoi allegati =E8 proibito e potrebbe violare le presenti leggi.=20
-Abbiamo attivato ogni possibile e ragionevole precauzione per assicurare=20
-che gli allegati non contengano virus. Comunque non assumeremo alcuna=20
-responsabilit=E0 per ogni eventuale danno causato da virus software e=20
-simili in quanto =E8 onere del destinatario verificarne l=92assenza in ogni=
-=20
-allegato attuando propri indipendenti controlli.
+I like this approach :-)
 
+Best regards,
+
+Wolfgang Denk
+
+-- 
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
+"We don't care.  We don't have to.  We're the Phone Company."
 
