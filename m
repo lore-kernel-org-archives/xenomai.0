@@ -1,20 +1,21 @@
-Message-ID: <4B5AD08B.1080009@domain.hid>
-Date: Sat, 23 Jan 2010 11:33:47 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <4B59D952.30202@domain.hid>	
-	<1264181859.2350.152.camel@domain.hid>	
-	<4B59E2D4.5040004@domain.hid> <4B59E33E.1040203@domain.hid>	
-	<1264182738.2350.158.camel@domain.hid>	
-	<4B59E87F.80108@domain.hid>	
-	<1264183719.2350.159.camel@domain.hid>	
-	<1264240767.2350.164.camel@domain.hid>	
-	<4B5ACAD7.5070607@domain.hid>
-	<1264241541.2350.166.camel@domain.hid>
-In-Reply-To: <1264241541.2350.166.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <20100114075343.GA5179@domain.hid>
+References: <4B209B9C.7010309@domain.hid>
+	<20100108105925.GA14163@domain.hid>
+	<1262949018.2455.5.camel@domain.hid>
+	<1263312199.2455.169.camel@domain.hid>
+	<20100112172443.GP8605@domain.hid>
+	<1263318551.2455.188.camel@domain.hid>
+	<20100112185012.GQ8605@domain.hid>
+	<1263324215.2455.293.camel@domain.hid>
+	<20100112221802.GR8605@domain.hid>
+	<20100114075343.GA5179@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Sun, 17 Jan 2010 23:00:06 +0100
+Message-ID: <1263765606.2428.908.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Domain switch during page fault handling
+Subject: Re: [Xenomai-core] [Adeos-main] I-pipe for 2.6.32 PPC
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -23,147 +24,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Richard Cochran <richardcochran@domain.hid>
+Cc: adeos-main@gna.org, xenomai@xenomai.org, Lennart Sorensen <lsorense@domain.hid>
 
-Philippe Gerum wrote:
-> On Sat, 2010-01-23 at 11:09 +0100, Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> On Fri, 2010-01-22 at 19:08 +0100, Philippe Gerum wrote:
->>>> On Fri, 2010-01-22 at 19:03 +0100, Jan Kiszka wrote:
->>>>> Philippe Gerum wrote:
->>>>>> On Fri, 2010-01-22 at 18:41 +0100, Jan Kiszka wrote:
->>>>>>> Gilles Chanteperdrix wrote:
->>>>>>>> Philippe Gerum wrote:
->>>>>>>>> On Fri, 2010-01-22 at 17:58 +0100, Jan Kiszka wrote: 
->>>>>>>>>> Hi guys,
->>>>>>>>>>
->>>>>>>>>> we are currently trying to catch an ugly Linux pipeline state corruption
->>>>>>>>>> on x86-64.
->>>>>>>>>>
->>>>>>>>>> Conceptual question: If a Xenomai task causes a fault, we enter
->>>>>>>>>> ipipe_trap_notify over the primary domain and leave it over the root
->>>>>>>>>> domain, right? Now, if the root domain happened to be stalled when the
->>>>>>>>>> exception happened, where should it normally be unstalled again,
->>>>>>>>>> *for_that_task*? Our problem is that we generate a code path where this
->>>>>>>>>> does not happen.
->>>>>>>>> xnhadow_relax -> ipipe_reenter_root -> finish_task_switch ->
->>>>>>>>> finish_lock_switch -> unstall
->>>>>>>>>
->>>>>>>>> Since xnshadow_relax is called on behalf the event dispatcher, we should
->>>>>>>>> expect it to return with the root domain unstalled after a domain
->>>>>>>>> downgrade, from primary to root.
->>>>>>>> Ok, but what about local_irq_restore_nosync at the end of the function ?
->>>>>>>>
->>>>>>> That is, IMO, our problem: It replays the root state on fault entry, but
->>>>>>> that one is totally unrelated to the (Xenomai) task that caused the fault.
->>>>>> The code seems fishy. Try restoring only when the incoming domain was
->>>>>> the root one. Indeed.
->>>>>>
->>>>> Something like this?
->>>>>
->>>>> diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
->>>>> index 4442d96..0558ea3 100644
->>>>> --- a/arch/x86/kernel/ipipe.c
->>>>> +++ b/arch/x86/kernel/ipipe.c
->>>>> @@ -702,19 +702,21 @@ static int __ipipe_xlate_signo[] = {
->>>>>  
->>>>>  int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
->>>>>  {
->>>>> +	bool restore_flags = false;
->>>>>  	unsigned long flags;
->>>>>  
->>>>> -	/* Pick up the root domain state of the interrupted context. */
->>>>> -	local_save_flags(flags);
->>>>> +	if (ipipe_root_domain_p && irqs_disabled_hw()) {
->>>>> +		/* Pick up the root domain state of the interrupted context. */
->>>>> +		local_save_flags(flags);
->>>>>  
->>>>> -	if (ipipe_root_domain_p) {
->>>>>  		/*
->>>>>  		 * Replicate hw interrupt state into the virtual mask before
->>>>>  		 * calling the I-pipe event handler over the root domain. Also
->>>>>  		 * required later when calling the Linux exception handler.
->>>>>  		 */
->>>>> -		if (irqs_disabled_hw())
->>>>> -			local_irq_disable();
->>>>> +		local_irq_disable();
->>>>> +
->>>>> +		restore_flags = true;
->>>>>  	}
->>>>>  #ifdef CONFIG_KGDB
->>>>>  	/* catch exception KGDB is interested in over non-root domains */
->>>>> @@ -725,7 +727,8 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
->>>>>  #endif /* CONFIG_KGDB */
->>>>>  
->>>>>  	if (unlikely(ipipe_trap_notify(vector, regs))) {
->>>>> -		local_irq_restore_nosync(flags);
->>>>> +		if (restore_flags)
->>>>> +			local_irq_restore_nosync(flags);
->>>>>  		return 1;
->>>>>  	}
->>>>>  
->>>>> @@ -770,7 +773,8 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
->>>>>  	 * Relevant for 64-bit: Restore root domain state as the low-level
->>>>>  	 * return code will not align it to regs.flags.
->>>>>  	 */
->>>>> -	local_irq_restore_nosync(flags);
->>>>> +	if (restore_flags)
->>>>> +		local_irq_restore_nosync(flags);
->>>>>  
->>>>>  	return 0;
->>>>>  }
->>>>>
->>>>>
->>>>> We are currently not able to test this on the system that triggers it,
->>>>> but we'll do so tomorrow (yeah...).
->>>>>
->>>> Should work. Famous last words.
->>>>
->>> Strike that. This won't work, because the fixup code will use the saved
->>> flags even when root is not the incoming domain and/or hw IRQs are on on
->>> entry. In short, local_save_flags() must be done unconditionally, as
->>> previously.
->> It will accidentally work for 64-bit where __fixup_if is empty. And for
->> 32-bit, I would say we need to make it depend on restore_flags as well.
->>
+On Thu, 2010-01-14 at 08:53 +0100, Richard Cochran wrote: 
+> On Tue, Jan 12, 2010 at 05:18:02PM -0500, Lennart Sorensen wrote:
+> > Well I have not been able to find the magic invocation that lets me take
+> > the DENX tree (which I have had around for a long time just to look at
+> > occationally, whenever I was trying to get an ipipe patch to apply),
+> > apply the ipipe patch, revert the DENX changes to get back to a release
+> > kernel, and generate a diff of the ipipe changes.  It has never worked
+> > when I tried.
 > 
-> AFAIK, Gilles is working on this. We just need to avoid stepping on
-> 32bit toes to fix 64.
+> Lennart,
+> 
+> It is not so hard (using git) to remove the Denx patches from the
+> ipipe tree. I did this myself for 2.6.30 in about a half an hour. If
+> you don't know how to use git, then you would have to consider the
+> additional time you need to get to understand it. (For me, it was only
+> a year or so ;)
+> 
+> In the ipipe tree, the Denx commits have been "squashed" together into
+> one or two really large commits. So, you can just cherry pick the
+> adeos commits into a new branch, with a few minor fixups.
+> 
+> Philippe,
+> 
+> I actually agree with Lennart that the Denx stuff is an
+> annoyance. When considering my "no-denx" branch that I made, I could
+> not see any significant Denx change that adeos builds upon. There were
+> a few Denx fixes for one specific board that were close to the adeos
+> changes, but these were only a few, and easy to fix. So, I could not
+> understand why Denx is a prerequisite for adeos.
 > 
 
-OK.
+As I explained earlier in my reply to Lennart, the DENX tree is not a
+pre-requisite for having the pipeline run on each and every hw platform,
+but this is still the case for some, because they are not
+stable/complete/good enough in mainline yet. The reason to stick with it
+stems from this fact.
 
-Just realized that my suggestion would conflict with the comment above
-__fixup_if. So I think we first need to clarify the various scenarios
-again to avoid breaking one while fixing another.
+What has to be reassessed, is the number of platforms Xenomai supports
+that still need DENX bits today; if only a few of them remain in this
+category, then it's probably sound to start maintaining the pipeline
+support for them in a separate tree, rebasing I-pipe mainline over Linux
+mainline for ppc as well. I have no issue with that.
 
-Entry over non-root, exit over non-root:
- - no need to fiddle with the root state
+> I understand that Denx sponsored the original PowerPC Xenomai port. Is
+> the reason that ipipe is based on Denx simply to honor that fact? If
+> so, I would not think it a bad reason at all.
+> 
 
-Entry over root, exit over root, !irqs_disabled_hw():
- - no need to fiddle with the root state
- - 32 bit: regs fixup required?
+No, it's not, because if I had chosen to base the pipeline code for ppc
+over mainline at that time, I would have maintained a DENX-based version
+for the very reason you mentioned, until it proves useless.
 
-Entry over root, exit over root, irqs_disabled_hw():
- - save root state & disable root IRQs on entry
- - 32 bit: replicate saved state into regs.eflags before calling linux
-   handler
- - restore saved state on exit
+> However, I would still prefer the following ordering for the changes:
+> 
+> 1. stable linux (2.6.xx.y)
+> 2. adeos arch indepedendent
+> 3. adeos powerpc
+> 4. denx
+> 5. adeos for denx (minimal changes, I expect)
+> 
 
-Entry over non-root, exit over root:
- - ?
+What we may be aiming at, if workable, is something like:
 
-I tend to think that, for the 32-bit cases, we should pick up the flags
-from the root state _after_ returning from ipipe_trap_notify and only if
-we are truly running in the root domain then. That should be the value
-the migration left behind, so the correct one, right?
+ipipe-*-mainline
+ipipe-*-amcc
+ipipe-*-512x
 
-Any scenario missing?
+Maybe one for the PA6T as well, if we want to keep supporting the old A2
+board rev. I'm unsure right now, since B0 is fine in mainline already.
 
-Jan
+A mainline pipeline branch for everything that directly works over
+mainline, and platform-specific branches for those that do not. Those
+special branches would then disappear as soon as mainline is fine for
+the platforms they host as well.
+
+> Richard
+> 
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
+
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Philippe.
+
+
+
+
+
 
