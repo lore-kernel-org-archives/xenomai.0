@@ -1,13 +1,15 @@
-Message-ID: <4B50BAF4.9070604@domain.hid>
-Date: Fri, 15 Jan 2010 19:59:00 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <245373446233674495BCA5CA2FC1EB1733A1170AF7@domain.hid>
-	<4B50B2C4.1020904@domain.hid>
-In-Reply-To: <4B50B2C4.1020904@domain.hid>
+In-Reply-To: <4B503E3F.9040708@domain.hid>
+References: <b88603c31001150110h29380b4bnecbff46fa5d5d69b@domain.hid>
+	<4B5038D3.2040203@domain.hid>
+	<b88603c31001150156gd8fbce6s1aa860fa3f04b8d0@domain.hid>
+	<4B503E3F.9040708@domain.hid>
+Date: Mon, 18 Jan 2010 09:45:42 +0100
+Message-ID: <b88603c31001180045k4dd958f9w64b39889b0683425@domain.hid>
+From: Henri Roosen <henriroosen@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Calling native API in user-space signal handler
+Subject: Re: [Xenomai-help] IRQ handler argument corrupt when shared
+	interrupts are enabled (Xenomai 2.4.10)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,57 +19,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Andreas Glatz <AndreasGlatz@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Andreas Glatz wrote:
->> Hi,
+Ok, found out it was an issue in my build environment: The modules
+were build against the wrong kernel tree. This explains the corruption
+of the xnintr_t object.
+
+Sorry for the inconvenience and thanks for the replies.
+
+Thanks,
+Henri.
+
+On Fri, Jan 15, 2010 at 11:06 AM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> Henri Roosen wrote:
+>> On Fri, Jan 15, 2010 at 10:43 AM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>>> Henri Roosen wrote:
+>>>> Xenomai 2.4.10:
+>>>>
+>>>> IRQ handler argument is not the same as the argument I provided when
+>>>> registering the IRQ handler. Problem only occurs when shared interrupt
+>>>> support is enabled in the kernel config. NOTE: even though the
+>>>> registered IRQ handler not a shared interrupt handler (flags = 0).
+>>> What API are you referring to, RTDM, native, or nucleus? What's your arch?
 >>
->> I wrote my on SIGSEGV signal handler which gathers information about
->> the fault and passes that info to a separate process for
->> post-processing.
+>> I am using the RTDM API on x86, kernel 2.6.30.10.
 >>
->> I'm wondering if it's always save to call native API functions in a
->> signal handler?
+>>>> The problem is not reproducable on Xenomai 2.5.0.
+>>>>
+>>>> So I was looking for the fix code in the 2.5.0 but couldn't find it.
+>>>> Is this a know problem that has only been fixed on 2.5.0, or does the
+>>>> bug just not show in 2.5.0? Could someone point out which commit on
+>>>> 2.5.0 fixes the problem?
+>>> I don't recall such a problem or any potential fix ATM.
 >>
->> (As according to man 7 signal', it's just save to call a subset of
->> Glibc functions from within a signal handler.)
-> 
-> It is definitely not safe to assume that you may call any function in a
-> signal handler.
-> 
-> Calling pthread_mutex_lock in a signal handler can cause a multithreaded
-> application to deadlock for instance (if the preempted code was also in
-> the middle of a pthread_mutex_lock), so that calling the apparently
-> inocuous printf might deadlock.
-> 
-> Now, for the Xenomai services. You can in fact call any function whose
-> implementation is in fact a simple syscall. If a function does more than
-> simply emitting a syscall, then all bets are off. And of course, we can
-> not guarantee you that a function which is emitting a syscall now will
-> not get more complicated in later releases.
-> 
-> Another safe solution is to use the "ptrace" syscall, the one used by
-> gdb, instead of installing a handler for SIGSEGV. Granted, this will
-> become a bit more completely, but should be more safe.
-> 
-> Or enable generation of core files.
-> 
-
-While it is true that one should be very careful with invoking services
-from signal handler, for the debugging case SIGSEGV, printing, writing
-to files, or even some diagnostic Xenomai native services will work in
-(almost) all practical cases.
-
-We have such handlers in the (test) field, and they did not cause
-troubles so far though they call tons of unsafe services. Of course they
-would lock up if the crash happened while holding some of the locks
-acquired during print-out as well. But normally things crash elsewhere...
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+>> Thanks Jan, that is good to know. I'll dig into it a little further...
+>> Glad it is very reproducable over here ;-)
+>>
+>
+> Given that the size of xnintr_t aka rtdm_irq_t changes under
+> CONFIG_XENO_OPT_SHIRQ, your driver build could be inconsistent.
+> Alternatively, you face some memory corruption of the xnintr_t object
+> after registration, and that happens to hit the cookie on 2.4.10 while
+> it may wreck something else on 2.5. I would dig in this directions first
+> as I think the core service itself is fairly stable.
+>
+> Jan
+>
+> --
+> Siemens AG, Corporate Technology, CT T DE IT 1
+> Corporate Competence Center Embedded Linux
+>
 
