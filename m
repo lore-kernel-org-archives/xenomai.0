@@ -1,15 +1,10 @@
+Message-ID: <4B5473FE.7050704@domain.hid>
+Date: Mon, 18 Jan 2010 15:45:18 +0100
+From: "Alessio Margan @ IIT" <alessio.margan@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <4B503E3F.9040708@domain.hid>
-References: <b88603c31001150110h29380b4bnecbff46fa5d5d69b@domain.hid>
-	<4B5038D3.2040203@domain.hid>
-	<b88603c31001150156gd8fbce6s1aa860fa3f04b8d0@domain.hid>
-	<4B503E3F.9040708@domain.hid>
-Date: Mon, 18 Jan 2010 09:45:42 +0100
-Message-ID: <b88603c31001180045k4dd958f9w64b39889b0683425@domain.hid>
-From: Henri Roosen <henriroosen@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai-help] IRQ handler argument corrupt when shared
-	interrupts are enabled (Xenomai 2.4.10)
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] thread and posix skin
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,55 +14,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Ok, found out it was an issue in my build environment: The modules
-were build against the wrong kernel tree. This explains the corruption
-of the xnintr_t object.
+Hi,
 
-Sorry for the inconvenience and thanks for the replies.
+I've got problem using pthread_make_periodic_np and pthread_wait_np.
+Should I make some particular initializations ?
+CONFIG_XENO_OPT_TIMING_PERIOD=3Dy have sense ?
+In the examples and testsuite I 've just seen the use of clock_nanosleep=20
+with pthread,
+should I use it instead of pthread_make_periodic_np ?
 
-Thanks,
-Henri.
+This is the thread routine, I get error on pthread_wait_np() return code=20
+110.
 
-On Fri, Jan 15, 2010 at 11:06 AM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> Henri Roosen wrote:
->> On Fri, Jan 15, 2010 at 10:43 AM, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->>> Henri Roosen wrote:
->>>> Xenomai 2.4.10:
->>>>
->>>> IRQ handler argument is not the same as the argument I provided when
->>>> registering the IRQ handler. Problem only occurs when shared interrupt
->>>> support is enabled in the kernel config. NOTE: even though the
->>>> registered IRQ handler not a shared interrupt handler (flags = 0).
->>> What API are you referring to, RTDM, native, or nucleus? What's your arch?
->>
->> I am using the RTDM API on x86, kernel 2.6.30.10.
->>
->>>> The problem is not reproducable on Xenomai 2.5.0.
->>>>
->>>> So I was looking for the fix code in the 2.5.0 but couldn't find it.
->>>> Is this a know problem that has only been fixed on 2.5.0, or does the
->>>> bug just not show in 2.5.0? Could someone point out which commit on
->>>> 2.5.0 fixes the problem?
->>> I don't recall such a problem or any potential fix ATM.
->>
->> Thanks Jan, that is good to know. I'll dig into it a little further...
->> Glad it is very reproducable over here ;-)
->>
->
-> Given that the size of xnintr_t aka rtdm_irq_t changes under
-> CONFIG_XENO_OPT_SHIRQ, your driver build could be inconsistent.
-> Alternatively, you face some memory corruption of the xnintr_t object
-> after registration, and that happens to hit the cookie on 2.4.10 while
-> it may wreck something else on 2.5. I would dig in this directions first
-> as I think the core service itself is fairly stable.
->
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT T DE IT 1
-> Corporate Competence Center Embedded Linux
->
+
+void * rt_thread(void * arg, rt_thread_hook_t * hook)
+{
+thread_info_t * th_info =3D (thread_info_t *)arg;
+int ret =3D 0;
+struct timespec starttp, periodtp;
+//
+if ( hook ) { hook->init(0); }
+
+printf("THREAD INIT: name =3D %s, period %ld us\n",
+th_info->name, th_info->period.period.tv_usec);
+
+ret =3D pthread_set_name_np(pthread_self(), th_info->name);
+if ( ret !=3D 0 ) {
+printf("%s : pthread_set_name_np() return code %d\n",
+th_info->name, ret);
+exit(1);
+}
+
+periodtp.tv_sec =3D 0ULL;
+periodtp.tv_nsec =3D th_info->period.period.tv_usec * 1000ULL;
+clock_gettime(CLOCK_REALTIME, &starttp);
+
+starttp.tv_sec +=3D 1ULL;
+starttp.tv_nsec +=3D periodtp.tv_nsec;
+
+ret =3D pthread_make_periodic_np(pthread_self(), &starttp, &periodtp);
+if ( ret !=3D 0 ) {
+printf("%s : pthread_make_periodic_np() return code %d\n",
+th_info->name, ret);
+exit(1);
+}
+
+while (loop) {
+
+if ( hook ) { hook->loop(0); }
+
+// return 0 if the period expires as expected
+ret =3D pthread_wait_np(NULL);
+if ( ret !=3D 0 ) {
+printf("%s : pthread_wait_np() return code %d\n", th_info->name, ret);
+exit(1);
+}
+
+}
+
+//
+if ( hook ) { hook->shutdown(0); }
+
+printf("THREAD %s ENDS\n", th_info->name);
+
+return 0;
+}
+
+
+TIA
+
+Alessio
+
+
+--=20
+
+ISTITUTO ITALIANO
+DI TECNOLOGIA
+
+Alessio Margan
+/Senior Technician/
+mail me <mailto:alessio.margan@domain.hid>
+
+Via Morego, 30 16163 Genova=20
+<http://maps.google.com/maps?f=3Dq&hl=3Den&geocode=3D&q=3Dvia+morego,+30+ge=
+nova&sll=3D37.0625,-95.677068&sspn=3D85.420533,191.601563&ie=3DUTF8&ll=3D44=
+.474913,8.907037&spn=3D0.004685,0.011652&t=3Dh&z=3D17&iwloc=3Daddr>
+
+www.iit.it <http://www.iit.it>
+
+*Legal Disclaimer*
+This electronic message contains information that is confidential. The=20
+information is intended for the use of the addressee only. If you are=20
+not the addressee we would appreciate your notification in this respect.=20
+Please note that any disclosure, copy, distribution or use of the=20
+contents of this message is prohibited and may be unlawful. We have=20
+taken every reasonable precaution to ensure that any kind of attachment=20
+to this e-mail has been swept for viruses. However, we cannot accept=20
+liability for any damage sustained as a result of software viruses and=20
+would advise you to carry out your own virus checks before opening any=20
+attachment.
+*Avvertenza legale*
+Questo messaggio Email contiene informazioni confidenziali riservate ai=20
+soli destinatari. Qualora veniate in possesso di tali informazioni senza=20
+essere definito come destinatario vi reghiamo di leggere le seguenti=20
+note. Ogni apertura, copia, distribuzione del contenuto del messaggio e=20
+dei suoi allegati =E8 proibito e potrebbe violare le presenti leggi.=20
+Abbiamo attivato ogni possibile e ragionevole precauzione per assicurare=20
+che gli allegati non contengano virus. Comunque non assumeremo alcuna=20
+responsabilit=E0 per ogni eventuale danno causato da virus software e=20
+simili in quanto =E8 onere del destinatario verificarne l=92assenza in ogni=
+=20
+allegato attuando propri indipendenti controlli.
+
 
