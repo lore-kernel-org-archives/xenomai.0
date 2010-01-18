@@ -1,109 +1,156 @@
-Message-ID: <4B45F5D5.1080001@domain.hid>
-Date: Thu, 07 Jan 2010 15:55:17 +0100
-From: Stefan Kisdaroczi <kisda@domain.hid>
+Message-ID: <4B54ACC8.9030006@domain.hid>
+Date: Mon, 18 Jan 2010 19:47:36 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <4B45F088.9010603@domain.hid> <4B45F163.4000504@domain.hid>
-In-Reply-To: <4B45F163.4000504@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigCAF3905C3F3621DF554D09DB"
-Subject: Re: [Xenomai-help] native skin 2.5.0: rt_task_create() segfaults if
- stacksize parameter too small
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <4B546AD0.3060106@domain.hid> <4B546BEC.8030703@domain.hid>
+In-Reply-To: <4B546BEC.8030703@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH] rtcan_rtt: Various fixes and improvement
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigCAF3905C3F3621DF554D09DB
-Content-Type: multipart/mixed;
- boundary="------------070505030906080604060201"
-
-This is a multi-part message in MIME format.
---------------070505030906080604060201
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-Am 07.01.2010 15:36, schrieb Gilles Chanteperdrix:
-> Stefan Kisdaroczi wrote:
->> hi,
+Gilles Chanteperdrix wrote:
+> Wolfgang Grandegger wrote:
+>> This patch fixes type long overflows, invalid command line argument
+>> types and gives the receiver and transmitter thread dedicated names.
 >>
->> i have upgraded xenomai to 2.5.0 (x86,32bit). My application segfaults=
- when I
->> try to create a task with stacksize 2048, this worked with 2.4.10.
->> Because my app is written in pascal i have reproduced the problem with=
- the
->> xenomai trivial-periodic.c example:
+>> Signed-off-by: Wolfgang Grandegger <wg@domain.hid>
 >>
->> -	rt_task_create(&demo_task, "trivial", 0, 99, 0);
->> +	rt_task_create(&demo_task, "trivial",16911, 99, 0);
+>> diff --git a/examples/rtdm/profiles/can/rtcan_rtt.c
+>> b/examples/rtdm/profiles/can/rtcan_rtt.c
+>> index 93c84a6..2280562 100644
+>> --- a/examples/rtdm/profiles/can/rtcan_rtt.c
+>> +++ b/examples/rtdm/profiles/can/rtcan_rtt.c
+>> @@ -94,6 +94,7 @@ void *transmitter(void *arg)
+>>      frame.can_id = can_id;
+>>      frame.can_dlc = sizeof(*rtt_time);
 >>
->> Stacksize 0 -> default stack size : ok
->> Stacksize > 0 and <=3D 16911 : Segmentation fault
->> Stacksize >=3D 16912 : ok
->>
->> Any hints ?
->=20
-> What does the task do?
+>> +    pthread_set_name_np(pthread_self(), "rtcan_rtt_transmitter");
+> 
+> Maybe we should put this between #ifdef __XENO__, so that the code
+> compiles under plain posix too?
 
-Nothing :-)
+Good idea but it requires a few more changes. See below:
 
-I have attached a patch for the trivial-periodic.c example to reproduce t=
-he problem.
+Thanks,
 
-thx
-kisda
+Wolfgang.
 
---------------070505030906080604060201
-Content-Type: text/plain;
- name="trivial-stacksize.diff"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="trivial-stacksize.diff"
 
-LS0tIHRyaXZpYWwtcGVyaW9kaWMub2xkCTIwMDktMDMtMzEgMTA6NTE6MTAuMDAwMDAwMDAw
-ICswMjAwCisrKyB0cml2aWFsLXBlcmlvZGljLmMJMjAxMC0wMS0wNyAxNjoyNDoyOC4wMDAw
-MDAwMDAgKzAxMDAKQEAgLTEyLDMwICsxMiw2IEBAIFJUX1RBU0sgZGVtb190YXNrOwogCiB2
-b2lkIGRlbW8odm9pZCAqYXJnKQogewotCVJUSU1FIG5vdywgcHJldmlvdXM7Ci0KLQkvKgot
-CSAqIEFyZ3VtZW50czogJnRhc2sgKE5VTEw9c2VsZiksCi0JICogICAgICAgICAgICBzdGFy
-dCB0aW1lLAotCSAqICAgICAgICAgICAgcGVyaW9kIChoZXJlOiAxIHMpCi0JICovCi0JcnRf
-dGFza19zZXRfcGVyaW9kaWMoTlVMTCwgVE1fTk9XLCAxMDAwMDAwMDAwKTsKLQlwcmV2aW91
-cyA9IHJ0X3RpbWVyX3JlYWQoKTsKLQotCXdoaWxlICgxKSB7Ci0JCXJ0X3Rhc2tfd2FpdF9w
-ZXJpb2QoTlVMTCk7Ci0JCW5vdyA9IHJ0X3RpbWVyX3JlYWQoKTsKLQotCQkvKgotCQkgKiBO
-T1RFOiBwcmludGYgbWF5IGhhdmUgdW5leHBlY3RlZCBpbXBhY3Qgb24gdGhlIHRpbWluZyBv
-ZgotCQkgKiAgICAgICB5b3VyIHByb2dyYW0uIEl0IGlzIHVzZWQgaGVyZSBpbiB0aGUgY3Jp
-dGljYWwgbG9vcAotCQkgKiAgICAgICBvbmx5IGZvciBkZW1vbnN0cmF0aW9uIHB1cnBvc2Vz
-LgotCQkgKi8KLQkJcHJpbnRmKCJUaW1lIHNpbmNlIGxhc3QgdHVybjogJWxkLiUwNmxkIG1z
-XG4iLAotCQkgICAgICAgKGxvbmcpKG5vdyAtIHByZXZpb3VzKSAvIDEwMDAwMDAsCi0JCSAg
-ICAgICAobG9uZykobm93IC0gcHJldmlvdXMpICUgMTAwMDAwMCk7Ci0JCSAgICAgICBwcmV2
-aW91cyA9IG5vdzsKLQl9CiB9CiAKIHZvaWQgY2F0Y2hfc2lnbmFsKGludCBzaWcpCkBAIC01
-Nyw3ICszMyw3IEBAIGludCBtYWluKGludCBhcmdjLCBjaGFyKiBhcmd2W10pCiAJICogICAg
-ICAgICAgICBwcmlvcml0eSwKIAkgKiAgICAgICAgICAgIG1vZGUgKEZQVSwgc3RhcnQgc3Vz
-cGVuZGVkLCAuLi4pCiAJICovCi0JcnRfdGFza19jcmVhdGUoJmRlbW9fdGFzaywgInRyaXZp
-YWwiLCAwLCA5OSwgMCk7CisJcnRfdGFza19jcmVhdGUoJmRlbW9fdGFzaywgInRyaXZpYWwi
-LDE2OTExLCA5OSwgMCk7CiAKIAkvKgogCSAqIEFyZ3VtZW50czogJnRhc2ssCg==
---------------070505030906080604060201--
+[PATCH v3] rtcan_rtt: Various fixes and improvement
 
---------------enigCAF3905C3F3621DF554D09DB
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+This patch fixes type long overflows, invalid command line argument
+types and gives the receiver and transmitter thread dedicated names.
+Furthermore, it now also compiles under plain POSIX by using the macro
+definition __XENO__ as suggested by Gilles.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+Signed-off-by: Wolfgang Grandegger <wg@domain.hid>
 
-iD8DBQFLRfXVIPTw9rIdn6oRAsy5AJ9d1okxvsnhFo8XST6SNB701Dk2nQCfc6sA
-VU+Tj2+IaCtnilJmWqrmXWg=
-=uIFN
------END PGP SIGNATURE-----
+diff --git a/examples/rtdm/profiles/can/rtcan_rtt.c b/examples/rtdm/profiles/can/rtcan_rtt.c
+index 93c84a6..b4ff74a 100644
+--- a/examples/rtdm/profiles/can/rtcan_rtt.c
++++ b/examples/rtdm/profiles/can/rtcan_rtt.c
+@@ -45,14 +45,21 @@
+ #include <limits.h>
+ #include <getopt.h>
+ #include <netinet/in.h>
++#include <net/if.h>
++#include <sys/ioctl.h>
+ #include <sys/mman.h>
+ 
++#ifdef __XENO__
+ #include <rtdm/rtcan.h>
++#else
++#include <linux/can.h>
++#include <linux/can/raw.h>
++#endif
+ 
+ #define NSEC_PER_SEC 1000000000
+ 
+ static unsigned int cycle = 10000; /* 10 ms */
+-static can_id_t can_id = 0x1;
++static canid_t can_id = 0x1;
+ 
+ static pthread_t txthread, rxthread;
+ static int txsock, rxsock;
+@@ -94,6 +101,9 @@ void *transmitter(void *arg)
+     frame.can_id = can_id;
+     frame.can_dlc = sizeof(*rtt_time);
+ 
++#ifdef __XENO__
++    pthread_set_name_np(pthread_self(), "rtcan_rtt_transmitter");
++#endif
+     pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
+ 
+     clock_gettime(CLOCK_MONOTONIC, &next_period);
+@@ -113,10 +123,10 @@ void *transmitter(void *arg)
+ 	}
+ 
+         clock_gettime(CLOCK_MONOTONIC, &time);
+-	*rtt_time = time.tv_sec * NSEC_PER_SEC + time.tv_nsec;
++	*rtt_time = (long long)time.tv_sec * NSEC_PER_SEC + time.tv_nsec;
+ 
+         /* Transmit the message containing the local time */
+-	if (send(txsock, (void *)&frame, sizeof(can_frame_t), 0) < 0) {
++	if (send(txsock, (void *)&frame, sizeof(struct can_frame), 0) < 0) {
+             if (errno == EBADF)
+                 printf("terminating transmitter thread\n");
+             else
+@@ -136,12 +146,16 @@ void *receiver(void *arg)
+     long long *rtt_time = (long long *)frame.data;
+     struct rtt_stat rtt_stat = {0, 1000000000000000000LL, -1000000000000000000LL,
+ 				0, 0, 0};
++
++#ifdef __XENO__
++    pthread_set_name_np(pthread_self(), "rtcan_rtt_receiver");
++#endif
+     pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
+ 
+     rtt_stat.counts_per_sec = 1000000 / cycle;
+ 
+     while (1) {
+-	if (recv(rxsock, (void *)&frame, sizeof(can_frame_t), 0) < 0) {
++	if (recv(rxsock, (void *)&frame, sizeof(struct can_frame), 0) < 0) {
+ 	    if (errno == EBADF)
+                 printf("terminating receiver thread\n");
+             else
+@@ -150,7 +164,7 @@ void *receiver(void *arg)
+         }
+ 	if (repeater) {
+ 	    /* Transmit the message back as is */
+-	    if (send(txsock, (void *)&frame, sizeof(can_frame_t), 0) < 0) {
++	    if (send(txsock, (void *)&frame, sizeof(struct can_frame), 0) < 0) {
+ 		if (errno == EBADF)
+ 		    printf("terminating transmitter thread\n");
+ 		else
+@@ -161,7 +175,7 @@ void *receiver(void *arg)
+ 	} else {
+ 	    clock_gettime(CLOCK_MONOTONIC, &time);
+ 	    if (rxcount > 0) {
+-		rtt_stat.rtt = (time.tv_sec * 1000000000LL +
++		rtt_stat.rtt = ((long long)time.tv_sec * 1000000000LL +
+ 				time.tv_nsec - *rtt_time);
+ 		rtt_stat.rtt_sum += rtt_stat.rtt;
+ 		if (rtt_stat.rtt <  rtt_stat.rtt_min)
+@@ -201,7 +215,7 @@ int main(int argc, char *argv[])
+     struct option long_options[] = {
+ 	{ "id", required_argument, 0, 'i'},
+ 	{ "cycle", required_argument, 0, 'c'},
+-	{ "repeater", required_argument, 0, 'r'},
++	{ "repeater", no_argument, 0, 'r'},
+ 	{ "help", no_argument, 0, 'h'},
+ 	{ 0, 0, 0, 0},
+     };
 
---------------enigCAF3905C3F3621DF554D09DB--
+ 
+
 
