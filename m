@@ -1,12 +1,19 @@
-Message-ID: <4B5883B8.3090406@domain.hid>
-Date: Thu, 21 Jan 2010 17:41:28 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Landau, Bracha" <BLandau@domain.hid>
+Date: Thu, 21 Jan 2010 18:45:25 +0200
+Message-ID: <065A7D06F7D4E546A18E80E08D066E18146A3CE4D0@domain.hid>
+References: <065A7D06F7D4E546A18E80E08D066E18146A3016C3@domain.hid>
+	<4B4B64AF.3040704@domain.hid>
+	<065A7D06F7D4E546A18E80E08D066E18146A301A0A@ILMA1.IL.NDS.COM>
+	<4B4C5EDA.5000703@domain.hid>
+	<065A7D06F7D4E546A18E80E08D066E18146A341B1B@ILMA1.IL.NDS.COM>
+	<4B4F2F05.1040407@domain.hid>
+	<065A7D06F7D4E546A18E80E08D066E18146A3CE4CA@ILMA1.IL.NDS.COM>
+	<4B5881AB.4080102@domain.hid> <4B5883B8.3090406@domain.hid>
+In-Reply-To: <4B5883B8.3090406@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <065A7D06F7D4E546A18E80E08D066E18146A3016C3@domain.hid>	<4B4B64AF.3040704@domain.hid>	<065A7D06F7D4E546A18E80E08D066E18146A301A0A@ILMA1.IL.NDS.COM>		<4B4C5EDA.5000703@domain.hid>	<065A7D06F7D4E546A18E80E08D066E18146A341B1B@ILMA1.IL.NDS.COM>	<4B4F2F05.1040407@domain.hid>	<065A7D06F7D4E546A18E80E08D066E18146A3CE4CA@ILMA1.IL.NDS.COM>
-	<4B5881AB.4080102@domain.hid>
-In-Reply-To: <4B5881AB.4080102@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] xenomai user app working very slowly - "select"
  issue
 List-Id: Help regarding installation and common use of Xenomai
@@ -18,25 +25,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Landau, Bracha" <BLandau@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Landau, Bracha wrote:
->> You say "There is not much point using several thread to select on the same file descriptor. The point of select is rather the reverse: being able to wait for several file descriptors with only one thread"
->> I rely on this in my design. Are you saying that Xenomai does not support having a few threads wait on the same file descriptor?
-> 
-> No, I say this is braindamaged design, because you will get lots of
-> spurious wakeups. But it should work.
-
-And to get it working, you have to be sure to put all the file
-descriptors in non-blocking mode, and be ready for the read/recv
-operation to fail with errno set to -EWOULDBLOCK, because if two threads
-wake up because select signaled that the same file descriptor is ready,
-one thread will win the race, and read will succeed, the other will not.
-If the file descriptor is not in non-blocking mode, the second read will
-block its caller.
-
--- 
-					    Gilles.
+RWFjaCB0aHJlYWQgcmVwcmVzZW50cyBhIGRpZmZlcmVudCBwaHlzaWNhbCByZXNvdXJjZS4gVGhl
+IG1lc3NhZ2UgcXVldWUgZmVlZGluZyBpbnRvIHRoZSB0aHJlYWQgY29udGFpbnMgbWVzc2FnZXMg
+dGhhdCBtYXkgYmUgc2VydmljZWQgYnkgYW55IG9uZSBvZiB0aGUgcmVzb3VyY2VzLg0KDQoxKSBX
+aHkgd291bGQgdGhlcmUgYmUgc3B1cmlvdXMgd2FrZXVwcz8NCjIpIEkgZGlkIHRoZSBtcV9vcGVu
+IGFzIG5vbmJsb2NraW5nLg0KMykgSXQgZGlkICJ3b3JrIiwgYnV0IGFsbCB0aGUgbWVzc2FnZXMg
+d2VyZSBzZXJ2aWNlZCBieSBhIHNpbmdsZSB0aHJlYWQuIFRoaXMgaXMgYXMgb3Bwb3NlZCB0byB0
+aGUgcmVndWxhciAobm9uLXhlbm9tYWkpIGltcGxlbWVudGF0aW9uLCBpbiB3aGljaCB0aGUgbWVz
+c2FnZXMgYXJlIGRpc3RyaWJ1dGVkIGV2ZW5seSBhbW9uZyB0aGUgdGhyZWFkcy4NCg0KDQoNCi0t
+LS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFp
+bHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXQ0KU2VudDogVGh1cnNkYXksIEph
+bnVhcnkgMjEsIDIwMTAgNjo0MSBQTQ0KVG86IExhbmRhdSwgQnJhY2hhDQpDYzogeGVub21haS1o
+ZWxwQGduYS5vcmcNClN1YmplY3Q6IFJlOiBbWGVub21haS1oZWxwXSB4ZW5vbWFpIHVzZXIgYXBw
+IHdvcmtpbmcgdmVyeSBzbG93bHkgLSAic2VsZWN0IiBpc3N1ZQ0KDQpHaWxsZXMgQ2hhbnRlcGVy
+ZHJpeCB3cm90ZToNCj4gTGFuZGF1LCBCcmFjaGEgd3JvdGU6DQo+PiBZb3Ugc2F5ICJUaGVyZSBp
+cyBub3QgbXVjaCBwb2ludCB1c2luZyBzZXZlcmFsIHRocmVhZCB0byBzZWxlY3Qgb24gdGhlIHNh
+bWUgZmlsZSBkZXNjcmlwdG9yLiBUaGUgcG9pbnQgb2Ygc2VsZWN0IGlzIHJhdGhlciB0aGUgcmV2
+ZXJzZTogYmVpbmcgYWJsZSB0byB3YWl0IGZvciBzZXZlcmFsIGZpbGUgZGVzY3JpcHRvcnMgd2l0
+aCBvbmx5IG9uZSB0aHJlYWQiDQo+PiBJIHJlbHkgb24gdGhpcyBpbiBteSBkZXNpZ24uIEFyZSB5
+b3Ugc2F5aW5nIHRoYXQgWGVub21haSBkb2VzIG5vdCBzdXBwb3J0IGhhdmluZyBhIGZldyB0aHJl
+YWRzIHdhaXQgb24gdGhlIHNhbWUgZmlsZSBkZXNjcmlwdG9yPw0KPg0KPiBObywgSSBzYXkgdGhp
+cyBpcyBicmFpbmRhbWFnZWQgZGVzaWduLCBiZWNhdXNlIHlvdSB3aWxsIGdldCBsb3RzIG9mDQo+
+IHNwdXJpb3VzIHdha2V1cHMuIEJ1dCBpdCBzaG91bGQgd29yay4NCg0KQW5kIHRvIGdldCBpdCB3
+b3JraW5nLCB5b3UgaGF2ZSB0byBiZSBzdXJlIHRvIHB1dCBhbGwgdGhlIGZpbGUNCmRlc2NyaXB0
+b3JzIGluIG5vbi1ibG9ja2luZyBtb2RlLCBhbmQgYmUgcmVhZHkgZm9yIHRoZSByZWFkL3JlY3YN
+Cm9wZXJhdGlvbiB0byBmYWlsIHdpdGggZXJybm8gc2V0IHRvIC1FV09VTERCTE9DSywgYmVjYXVz
+ZSBpZiB0d28gdGhyZWFkcw0Kd2FrZSB1cCBiZWNhdXNlIHNlbGVjdCBzaWduYWxlZCB0aGF0IHRo
+ZSBzYW1lIGZpbGUgZGVzY3JpcHRvciBpcyByZWFkeSwNCm9uZSB0aHJlYWQgd2lsbCB3aW4gdGhl
+IHJhY2UsIGFuZCByZWFkIHdpbGwgc3VjY2VlZCwgdGhlIG90aGVyIHdpbGwgbm90Lg0KSWYgdGhl
+IGZpbGUgZGVzY3JpcHRvciBpcyBub3QgaW4gbm9uLWJsb2NraW5nIG1vZGUsIHRoZSBzZWNvbmQg
+cmVhZCB3aWxsDQpibG9jayBpdHMgY2FsbGVyLg0KDQotLQ0KICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICBHaWxsZXMuDQoNClRoaXMgbWVzc2FnZSBpcyBjb25maWRl
+bnRpYWwgYW5kIGludGVuZGVkIG9ubHkgZm9yIHRoZSBhZGRyZXNzZWUuIElmIHlvdSBoYXZlIHJl
+Y2VpdmVkIHRoaXMgbWVzc2FnZSBpbiBlcnJvciwgcGxlYXNlIGltbWVkaWF0ZWx5IG5vdGlmeSB0
+aGUgcG9zdG1hc3RlckBuZHMuY29tIGFuZCBkZWxldGUgaXQgZnJvbSB5b3VyIHN5c3RlbSBhcyB3
+ZWxsIGFzIGFueSBjb3BpZXMuIFRoZSBjb250ZW50IG9mIGUtbWFpbHMgYXMgd2VsbCBhcyB0cmFm
+ZmljIGRhdGEgbWF5IGJlIG1vbml0b3JlZCBieSBORFMgZm9yIGVtcGxveW1lbnQgYW5kIHNlY3Vy
+aXR5IHB1cnBvc2VzLg0KVG8gcHJvdGVjdCB0aGUgZW52aXJvbm1lbnQgcGxlYXNlIGRvIG5vdCBw
+cmludCB0aGlzIGUtbWFpbCB1bmxlc3MgbmVjZXNzYXJ5Lg0KDQpBbiBORFMgR3JvdXAgTGltaXRl
+ZCBjb21wYW55LiB3d3cubmRzLmNvbQ0K
 
