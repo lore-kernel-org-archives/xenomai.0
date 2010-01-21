@@ -1,12 +1,19 @@
-Message-ID: <4B587D31.4070503@domain.hid>
-Date: Thu, 21 Jan 2010 17:13:37 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Landau, Bracha" <BLandau@domain.hid>
+Date: Thu, 21 Jan 2010 18:29:10 +0200
+Message-ID: <065A7D06F7D4E546A18E80E08D066E18146A3CE4CA@ILMA1.IL.NDS.COM>
+References: <065A7D06F7D4E546A18E80E08D066E18146A3016C3@domain.hid>
+	<4B4B64AF.3040704@domain.hid>
+	<065A7D06F7D4E546A18E80E08D066E18146A301A0A@ILMA1.IL.NDS.COM>
+	<4B4C5EDA.5000703@domain.hid>
+	<065A7D06F7D4E546A18E80E08D066E18146A341B1B@ILMA1.IL.NDS.COM>
+	<4B4F2F05.1040407@domain.hid>
+In-Reply-To: <4B4F2F05.1040407@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <Gophermail.2.0.1001210959431.7980@domain.hid>
-In-Reply-To: <Gophermail.2.0.1001210959431.7980@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] using the RTAI skin
+Subject: Re: [Xenomai-help] xenomai user app working very slowly - "select"
+ issue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,42 +23,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: gohlx002@domain.hid
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-gohlx002@domain.hid wrote:
-> Hello all,
-> 
-> I'm doing some investigation on migrating my application from RTAI to 
-> Xenomai. From the description of a Xenomai skin, it seems like I might be 
-> able to use the RTAI skin to run my application "as is". Along this line, I 
-> put together a small test application in RTAI that would be very 
-> illustrative if I can get it to run in Xenomai. The first step is of course 
-> compiling it which I haven't been able to do because of missing references 
-> to all the RTAI functions (e.g. rt_task_init_schmod). If someone feels like 
-> helping out, we could work through this whole process (from an RTAI app to 
-> running on Xenomai) and turn this into another example to add to the 
-> examples folder for future reference. Here's the application I'm trying to 
-> compile (the Makefile I just adapted from the native examples folder and 
-> changed the application name):
-
-The RTAI skin is mostly kernel-space. User-space only supports a few 
-things (like shared memory). In an case, to find what is supported, 
-check src/skins/rtai in xenomai sources tree.
-
-In the makefile, what is important is:
-
-XENO_DESTDIR=/path/to/xenomai/installation/root
-XENO_CONFIG=$(XENO_DESTDIR)/usr/local/bin/xeno-config)
-XENO_RTAI_CPPFLAGS=$(shell DESTDIR=$(XENO_DESTDIR) $(XENO_CONFIG) --cflags)
-XENO_RTAI_LDFLAGS=$(shell DESTDIR=$(XENO_DESTDIR) $(XENO_CONFIG) --ldflags) -lrtai
-
-then add XENO_RTAI_CPPFLAGS to your program CPPFLAGS or CFLAGS, and
-add XENO_RTAI_LDFLAGS to your program LDFLAGS.
-
--- 
-Gilles Chanteperdrix, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+WW91IHNheSAiVGhlcmUgaXMgbm90IG11Y2ggcG9pbnQgdXNpbmcgc2V2ZXJhbCB0aHJlYWQgdG8g
+c2VsZWN0IG9uIHRoZSBzYW1lIGZpbGUgZGVzY3JpcHRvci4gVGhlIHBvaW50IG9mIHNlbGVjdCBp
+cyByYXRoZXIgdGhlIHJldmVyc2U6IGJlaW5nIGFibGUgdG8gd2FpdCBmb3Igc2V2ZXJhbCBmaWxl
+IGRlc2NyaXB0b3JzIHdpdGggb25seSBvbmUgdGhyZWFkIg0KSSByZWx5IG9uIHRoaXMgaW4gbXkg
+ZGVzaWduLiBBcmUgeW91IHNheWluZyB0aGF0IFhlbm9tYWkgZG9lcyBub3Qgc3VwcG9ydCBoYXZp
+bmcgYSBmZXcgdGhyZWFkcyB3YWl0IG9uIHRoZSBzYW1lIGZpbGUgZGVzY3JpcHRvcj8NCg0KLS0t
+LS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEdpbGxlcyBDaGFudGVwZXJkcml4IFttYWls
+dG86Z2lsbGVzLmNoYW50ZXBlcmRyaXhAZnJlZS1lbGVjdHJvbnMuY29tXQ0KU2VudDogVGh1cnNk
+YXksIEphbnVhcnkgMTQsIDIwMTAgNDo1MCBQTQ0KVG86IExhbmRhdSwgQnJhY2hhDQpDYzogeGVu
+b21haS1oZWxwQGduYS5vcmcNClN1YmplY3Q6IFJlOiBbWGVub21haS1oZWxwXSB4ZW5vbWFpIHVz
+ZXIgYXBwIHdvcmtpbmcgdmVyeSBzbG93bHkgLSAic2VsZWN0IiBpc3N1ZQ0KDQpMYW5kYXUsIEJy
+YWNoYSB3cm90ZToNCj4gSSByZWJ1aWx0IHdpdGggMi41LjAgYW5kIHRoYXQgcGFydGljdWxhciBw
+cm9ibGVtIGlzIGdvbmUuDQo+IEhvd2V2ZXIsIEkgc2VlIGEgZGlmZmVyZW50IGJlaGF2aW9yIGJl
+dHdlZW4gdGhlIHJlZ3VsYXIgaW1wbGVtZW50YXRpb24gYW5kIHRoZSB4ZW5vbWFpIGltcGxlbWVu
+dGF0aW9uOg0KPg0KPiBJIGhhdmUgYSBzZXJpZXMgb2YgaWRlbnRpY2FsIHRocmVhZHMgd2FpdGlu
+ZywgdXNpbmcgc2VsZWN0LCBvbiBvbmUgb2YgdHdvIG1lc3NhZ2UgcXVldWVzLiBPbmUgbWVzc2Fn
+ZSBxdWV1ZXMgaXMgd2FpdGVkIHVwb24gb25seSBieSB0aGF0IHRocmVhZCwgYW5kIHRoZSBvdGhl
+ciBpcyB3YWl0ZWQgdXBvbiBieSBhbGwgdGhlIHRocmVhZHMuIFdoZW4gdGhlIHNlbGVjdCByZXR1
+cm5zIHRoZSB0aHJlYWQgcmVhZHMgZnJvbSB0aGUgcXVldWUgdGhhdCBoYXMgaW5wdXQgcmVhZHku
+DQo+DQo+IEkgc2VudCBtZXNzYWdlcyB0byB0aGUgZ2VuZXJhbCBxdWV1ZSAoaS5lLiwgdGhlIG9u
+ZSB3YWl0ZWQgdXBvbiBieSBtdWx0aXBsZSB0aHJlYWRzKS4NCj4NCj4gSW4gdGhlIHJlZ3VsYXIg
+KG5vbi14ZW5vbWFpKSBpbXBsZW1lbnRhdGlvbiwgSSBzZWUgdGhhdCB0aGUgbWVzc2FnZXMgd2Vy
+ZSBwcm9jZXNzZWQgbW9yZS1vci1sZXNzIGVxdWFsbHkgYW1vbmcgYWxsIHRoZSB3YWl0aW5nIHRo
+cmVhZHMuDQo+DQo+IEluIHRoZSB4ZW5vbWFpIGltcGxlbWVudGF0aW9uLCBhbGwgdGhlIG1lc3Nh
+Z2VzIHdlcmUgcHJvY2Vzc2VkIGJ5IGEgc2luZ2xlIHRocmVhZC4NCj4NCj4gSXMgdGhlcmUgYW55
+IHdheSB0byBtYWtlIHRoZSBzY2hlZHVsaW5nIGRvbmUgbW9yZSAiZmFpcmx5IiBpbiB4ZW5vbWFp
+Pw0KDQpUaGUgU0NIRURfRklGTyBwb2xpY3kgaXMgdGhlIGNvbnRyYXJ5IG9mIGZhaXJuZXNzLiBI
+YXZlIHlvdSB0cnkgdG8gdXNlDQp0aGUgU0NIRURfRklGTyBwb2xpY3kgd2l0aCBMaW51eCB0b28/
+DQoNClRoZXJlIGlzIG5vdCBtdWNoIHBvaW50IHVzaW5nIHNldmVyYWwgdGhyZWFkIHRvIHNlbGVj
+dCBvbiB0aGUgc2FtZSBmaWxlDQpkZXNjcmlwdG9yLiBUaGUgcG9pbnQgb2Ygc2VsZWN0IGlzIHJh
+dGhlciB0aGUgcmV2ZXJzZTogYmVpbmcgYWJsZSB0bw0Kd2FpdCBmb3Igc2V2ZXJhbCBmaWxlIGRl
+c2NyaXB0b3JzIHdpdGggb25seSBvbmUgdGhyZWFkLiBJZiB5b3UgaGF2ZQ0KDQpJZiB0aGUgdGhy
+ZWFkIGhhdmUgZGlmZmVyZW50IHByaW9yaXRpZXMsIHRoZSB3b2tlbiB1cCB0aHJlYWQgaXMgYWx3
+YXlzDQp0aGUgdGhyZWFkIHdpdGggdGhlIGhpZ2hlc3QgcHJpb3JpdHkuDQoNCk90aGVyIHRoYW4g
+dGhhdCwgSSBkbyBub3QgcmVhbGx5IHVuZGVyc3RhbmQgd2hhdCB5b3UgYXJlIHRhbGtpbmcgYWJv
+dXQsDQp5b3VyIGRlc2NyaXB0aW9uIG9mIHRoZSBwcm9ibGVtIGlzIHJhdGhlciB2YWd1ZS4gUGxl
+YXNlIHBvc3QgYSB0ZXN0IGNhc2UuDQoNCi0tDQpHaWxsZXMgQ2hhbnRlcGVyZHJpeCwgRnJlZSBF
+bGVjdHJvbnMNCktlcm5lbCwgZHJpdmVycywgcmVhbC10aW1lIGFuZCBlbWJlZGRlZCBMaW51eA0K
+ZGV2ZWxvcG1lbnQsIGNvbnN1bHRpbmcsIHRyYWluaW5nIGFuZCBzdXBwb3J0Lg0KaHR0cDovL2Zy
+ZWUtZWxlY3Ryb25zLmNvbQ0KDQpUaGlzIG1lc3NhZ2UgaXMgY29uZmlkZW50aWFsIGFuZCBpbnRl
+bmRlZCBvbmx5IGZvciB0aGUgYWRkcmVzc2VlLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIG1l
+c3NhZ2UgaW4gZXJyb3IsIHBsZWFzZSBpbW1lZGlhdGVseSBub3RpZnkgdGhlIHBvc3RtYXN0ZXJA
+bmRzLmNvbSBhbmQgZGVsZXRlIGl0IGZyb20geW91ciBzeXN0ZW0gYXMgd2VsbCBhcyBhbnkgY29w
+aWVzLiBUaGUgY29udGVudCBvZiBlLW1haWxzIGFzIHdlbGwgYXMgdHJhZmZpYyBkYXRhIG1heSBi
+ZSBtb25pdG9yZWQgYnkgTkRTIGZvciBlbXBsb3ltZW50IGFuZCBzZWN1cml0eSBwdXJwb3Nlcy4N
+ClRvIHByb3RlY3QgdGhlIGVudmlyb25tZW50IHBsZWFzZSBkbyBub3QgcHJpbnQgdGhpcyBlLW1h
+aWwgdW5sZXNzIG5lY2Vzc2FyeS4NCg0KQW4gTkRTIEdyb3VwIExpbWl0ZWQgY29tcGFueS4gd3d3
+Lm5kcy5jb20NCg==
 
