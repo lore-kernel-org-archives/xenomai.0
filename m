@@ -1,118 +1,36 @@
-Message-ID: <fd55ced7db48fe30f8139df895fb9d4c.squirrel@domain.hid>
-Date: Sat, 30 Jan 2010 14:28:47 +0100 (CET)
-From: sinisa.denic@domain.hid
+Message-ID: <4B59D952.30202@domain.hid>
+Date: Fri, 22 Jan 2010 17:58:58 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] xenomai 2.5.0 uclibc 0.30 compatibility?
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Domain switch during page fault handling
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-Hello, I have a problem building Xenomai 2.5.0 with an
-arm-linux-uclibgnueabi toolchain.
-Previous version Xenomai 2.4.10 builds with no problems at all(excluding
-testsuite clock compiling)
-Now I'm getting this 'twisted' error compiling posix skin:
+Hi guys,
 
-.........everithing before has built without problems
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-make[3]: Nothing to be done for `all'.
-make[3]: Leaving directory
-`/opt/pct210_build/xenomai-2.5.0-eabi/src/skins/native'
-Making all in posix
-make[3]: Entering directory
-`/opt/pct210_build/xenomai-2.5.0-eabi/src/skins/posix'
-/bin/sh ../../../libtool  --tag=3DCC   --mode=3Dcompile
-/opt/toolchains/arm926t-uclibcgnueabi/usr/bin/arm-linux-gcc
--DHAVE_CONFIG_H -I.
--I../../../src/include  -O2 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe
--march=3Darmv5
--D__XENO__ -D__IN_XENO__ -Wstrict-prototypes -I../../../include
--I../../../include/posix -I../../../ksrc/skins   -MT
-libpthread_rt_la-init.lo -MD -MP -MF .deps/libpthread_rt_la-init.Tpo -c -=
-o
-libpthread_rt_la-init.lo `test -f 'init.c' || echo './'`init.c
-libtool:
-compile:  /opt/toolchains/arm926t-uclibcgnueabi/usr/bin/arm-linux-gcc
--DHAVE_CONFIG_H -I. -I../../../src/include -O2 -D_GNU_SOURCE -D_REENTRANT
--Wall
--pipe -march=3Darmv5 -D__XENO__ -D__IN_XENO__ -Wstrict-prototypes
--I../../../include
--I../../../include/posix -I../../../ksrc/skins -MT
-libpthread_rt_la-init.lo -MD -MP -MF .deps/libpthread_rt_la-init.Tpo -c
-init.c  -fPIC -DPIC -o .libs/libpthread_rt_la-init.o
-init.c:1: warning: target CPU does not support interworking
-In file included from ../../../src/include/asm/xenomai/atomic.h:82,
-                 from ../../../include/nucleus/system.h:26,
-                 from ../../../src/include/asm/xenomai/system.h:223,
-                 from ../../../include/nucleus/types.h:40,
-                 from ../../../include/nucleus/thread.h:25,
-                 from ../../../include/posix/pthread.h:136,
+we are currently trying to catch an ugly Linux pipeline state corruption
+on x86-64.
 
-from
-/opt/toolchains/arm926t-uclibcgnueabi/usr/include/bits/uClibc_mutex.h:15,
+Conceptual question: If a Xenomai task causes a fault, we enter
+ipipe_trap_notify over the primary domain and leave it over the root
+domain, right? Now, if the root domain happened to be stalled when the
+exception happened, where should it normally be unstalled again,
+*for_that_task*? Our problem is that we generate a code path where this
+does not happen.
 
-from
-/opt/toolchains/arm926t-uclibcgnueabi/usr/include/bits/uClibc_stdio.h:119=
-,
+Jan
 
-from /opt/toolchains/arm926t-uclibcgnueabi/usr/include/stdio.h:72,
-                 from init.c:19:
-../../../src/include/asm/xenomai/syscall.h: In
-function &#8216;xeno_arm_features_check&#8217;:
-../../../src/include/asm/xenomai/syscall.h:377: error:
-&#8216;stderr&#8217; undeclared
-(first use in this function)
-../../../src/include/asm/xenomai/syscall.h:377: error: (Each undeclared
-identifier is reported only once
-../../../src/include/asm/xenomai/syscall.h:377: error: for each function =
-it
-appears in.)
-make[3]: *** [libpthread_rt_la-init.lo] Error 1
-make[3]: Leaving directory
-`/opt/pct210_build/xenomai-2.5.0-eabi/src/skins/posix'
-make[2]: *** [all-recursive] Error 1
-make[2]: Leaving directory `/opt/pct210_build/xenomai-2.5.0-eabi/src/skin=
-s'
-make[1]: *** [all-recursive] Error 1
-make[1]: Leaving directory `/opt/pct210_build/xenomai-2.5.0-eabi/src'
-make: *** [all-recursive] Error 1
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Here is a part of configuration log:
-root@domain.hid# head config.log
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-This file contains any messages produced by compilers while
-running configure, to aid debugging if configure makes a mistake.
-
-It was created by Xenomai configure 2.5.0, which was
-generated by GNU Autoconf 2.64.  Invocation command line was
-
-
-$ ./configure --build=3Di686-linux --host=3Darm-linux
---prefix=3D/usr/xenomai-2.5.0-eabi
---enable-shared
-CC=3D/opt/toolchains/arm926t-uclibcgnueabi/usr/bin/arm-linux-gcc
-LD=3D/opt/toolchains/arm926t-uclibcgnueabi/usr/bin/arm-linux-ld
---enable-arm-mach=3Dat91sam926x
-
-## --------- ##
-## Platform. ##
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Any idea would be wellcome.
-Is this due to uClibc maybe?
-Regards for guys from community, Philippe, Jan, Gilles...
-
-
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
