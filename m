@@ -1,10 +1,11 @@
-Message-ID: <4B59E2D4.5040004@domain.hid>
-Date: Fri, 22 Jan 2010 18:39:32 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4B59E33E.1040203@domain.hid>
+Date: Fri, 22 Jan 2010 18:41:18 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <4B59D952.30202@domain.hid>
 	<1264181859.2350.152.camel@domain.hid>
-In-Reply-To: <1264181859.2350.152.camel@domain.hid>
+	<4B59E2D4.5040004@domain.hid>
+In-Reply-To: <4B59E2D4.5040004@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Domain switch during page fault handling
@@ -16,32 +17,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, Wolfgang Mauerer <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>, "Mauerer,
+	Wolfgang" <wolfgang.mauerer@domain.hid>
 
-Philippe Gerum wrote:
-> On Fri, 2010-01-22 at 17:58 +0100, Jan Kiszka wrote: 
->> Hi guys,
+Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+>> On Fri, 2010-01-22 at 17:58 +0100, Jan Kiszka wrote: 
+>>> Hi guys,
+>>>
+>>> we are currently trying to catch an ugly Linux pipeline state corruption
+>>> on x86-64.
+>>>
+>>> Conceptual question: If a Xenomai task causes a fault, we enter
+>>> ipipe_trap_notify over the primary domain and leave it over the root
+>>> domain, right? Now, if the root domain happened to be stalled when the
+>>> exception happened, where should it normally be unstalled again,
+>>> *for_that_task*? Our problem is that we generate a code path where this
+>>> does not happen.
+>> xnhadow_relax -> ipipe_reenter_root -> finish_task_switch ->
+>> finish_lock_switch -> unstall
 >>
->> we are currently trying to catch an ugly Linux pipeline state corruption
->> on x86-64.
->>
->> Conceptual question: If a Xenomai task causes a fault, we enter
->> ipipe_trap_notify over the primary domain and leave it over the root
->> domain, right? Now, if the root domain happened to be stalled when the
->> exception happened, where should it normally be unstalled again,
->> *for_that_task*? Our problem is that we generate a code path where this
->> does not happen.
+>> Since xnshadow_relax is called on behalf the event dispatcher, we should
+>> expect it to return with the root domain unstalled after a domain
+>> downgrade, from primary to root.
 > 
-> xnhadow_relax -> ipipe_reenter_root -> finish_task_switch ->
-> finish_lock_switch -> unstall
+> Ok, but what about local_irq_restore_nosync at the end of the function ?
 > 
-> Since xnshadow_relax is called on behalf the event dispatcher, we should
-> expect it to return with the root domain unstalled after a domain
-> downgrade, from primary to root.
 
-Ok, but what about local_irq_restore_nosync at the end of the function ?
+That is, IMO, our problem: It replays the root state on fault entry, but
+that one is totally unrelated to the (Xenomai) task that caused the fault.
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
