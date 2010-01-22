@@ -1,10 +1,10 @@
-Message-ID: <4B59DC16.7010908@domain.hid>
-Date: Fri, 22 Jan 2010 18:10:46 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <4B59D952.30202@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <4B59D952.30202@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4B59D952.30202@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Fri, 22 Jan 2010 18:37:39 +0100
+Message-ID: <1264181859.2350.152.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Domain switch during page fault handling
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -15,10 +15,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
+On Fri, 2010-01-22 at 17:58 +0100, Jan Kiszka wrote: 
 > Hi guys,
 > 
 > we are currently trying to catch an ugly Linux pipeline state corruption
@@ -31,16 +31,23 @@ Jan Kiszka wrote:
 > *for_that_task*? Our problem is that we generate a code path where this
 > does not happen.
 
-In other words, and now it's starting to become a pure ipipe topic:
+xnhadow_relax -> ipipe_reenter_root -> finish_task_switch ->
+finish_lock_switch -> unstall
 
-If we migrated during ipipe_trap_notify, shouldn't we restore the root
-domain state afterwards from the state of the previously active domain
-on entry of __ipipe_handle_exception? I bet that would fix our case, but
-I'm yet unsure about side effects and the intended semantic behind this.
+Since xnshadow_relax is called on behalf the event dispatcher, we should
+expect it to return with the root domain unstalled after a domain
+downgrade, from primary to root.
 
-Jan
+Normally.
+
+> 
+> Jan
+> 
+
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Philippe.
+
+
+
 
