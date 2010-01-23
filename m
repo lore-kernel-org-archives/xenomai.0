@@ -1,12 +1,12 @@
-Message-ID: <4B5AD11A.8010709@domain.hid>
-Date: Sat, 23 Jan 2010 11:36:10 +0100
+Message-ID: <4B5ADAD8.9070002@domain.hid>
+Date: Sat, 23 Jan 2010 12:17:44 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <4B59D952.30202@domain.hid>	<1264181859.2350.152.camel@domain.hid>	<4B59E2D4.5040004@domain.hid>
 	<4B59E33E.1040203@domain.hid>	<1264182738.2350.158.camel@domain.hid>	<4B59E87F.80108@domain.hid>	<1264183719.2350.159.camel@domain.hid>	<1264240767.2350.164.camel@domain.hid>	<4B5ACAD7.5070607@domain.hid>
 	<1264241541.2350.166.camel@domain.hid>
-	<4B5ACD80.3030208@domain.hid>
-In-Reply-To: <4B5ACD80.3030208@domain.hid>
+	<4B5ACD80.3030208@domain.hid> <4B5AD11A.8010709@domain.hid>
+In-Reply-To: <4B5AD11A.8010709@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Domain switch during page fault handling
@@ -22,170 +22,173 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>, "Mauerer,
 	Wolfgang" <wolfgang.mauerer@domain.hid>
 
-Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->> On Sat, 2010-01-23 at 11:09 +0100, Jan Kiszka wrote:
->>> Philippe Gerum wrote:
->>>> On Fri, 2010-01-22 at 19:08 +0100, Philippe Gerum wrote:
->>>>> On Fri, 2010-01-22 at 19:03 +0100, Jan Kiszka wrote:
->>>>>> Philippe Gerum wrote:
->>>>>>> On Fri, 2010-01-22 at 18:41 +0100, Jan Kiszka wrote:
->>>>>>>> Gilles Chanteperdrix wrote:
->>>>>>>>> Philippe Gerum wrote:
->>>>>>>>>> On Fri, 2010-01-22 at 17:58 +0100, Jan Kiszka wrote: 
->>>>>>>>>>> Hi guys,
->>>>>>>>>>>
->>>>>>>>>>> we are currently trying to catch an ugly Linux pipeline state corruption
->>>>>>>>>>> on x86-64.
->>>>>>>>>>>
->>>>>>>>>>> Conceptual question: If a Xenomai task causes a fault, we enter
->>>>>>>>>>> ipipe_trap_notify over the primary domain and leave it over the root
->>>>>>>>>>> domain, right? Now, if the root domain happened to be stalled when the
->>>>>>>>>>> exception happened, where should it normally be unstalled again,
->>>>>>>>>>> *for_that_task*? Our problem is that we generate a code path where this
->>>>>>>>>>> does not happen.
->>>>>>>>>> xnhadow_relax -> ipipe_reenter_root -> finish_task_switch ->
->>>>>>>>>> finish_lock_switch -> unstall
->>>>>>>>>>
->>>>>>>>>> Since xnshadow_relax is called on behalf the event dispatcher, we should
->>>>>>>>>> expect it to return with the root domain unstalled after a domain
->>>>>>>>>> downgrade, from primary to root.
->>>>>>>>> Ok, but what about local_irq_restore_nosync at the end of the function ?
->>>>>>>>>
->>>>>>>> That is, IMO, our problem: It replays the root state on fault entry, but
->>>>>>>> that one is totally unrelated to the (Xenomai) task that caused the fault.
->>>>>>> The code seems fishy. Try restoring only when the incoming domain was
->>>>>>> the root one. Indeed.
->>>>>>>
->>>>>> Something like this?
->>>>>>
->>>>>> diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
->>>>>> index 4442d96..0558ea3 100644
->>>>>> --- a/arch/x86/kernel/ipipe.c
->>>>>> +++ b/arch/x86/kernel/ipipe.c
->>>>>> @@ -702,19 +702,21 @@ static int __ipipe_xlate_signo[] = {
->>>>>>  
->>>>>>  int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
->>>>>>  {
->>>>>> +	bool restore_flags = false;
->>>>>>  	unsigned long flags;
->>>>>>  
->>>>>> -	/* Pick up the root domain state of the interrupted context. */
->>>>>> -	local_save_flags(flags);
->>>>>> +	if (ipipe_root_domain_p && irqs_disabled_hw()) {
->>>>>> +		/* Pick up the root domain state of the interrupted context. */
->>>>>> +		local_save_flags(flags);
->>>>>>  
->>>>>> -	if (ipipe_root_domain_p) {
->>>>>>  		/*
->>>>>>  		 * Replicate hw interrupt state into the virtual mask before
->>>>>>  		 * calling the I-pipe event handler over the root domain. Also
->>>>>>  		 * required later when calling the Linux exception handler.
->>>>>>  		 */
->>>>>> -		if (irqs_disabled_hw())
->>>>>> -			local_irq_disable();
->>>>>> +		local_irq_disable();
->>>>>> +
->>>>>> +		restore_flags = true;
->>>>>>  	}
->>>>>>  #ifdef CONFIG_KGDB
->>>>>>  	/* catch exception KGDB is interested in over non-root domains */
->>>>>> @@ -725,7 +727,8 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
->>>>>>  #endif /* CONFIG_KGDB */
->>>>>>  
->>>>>>  	if (unlikely(ipipe_trap_notify(vector, regs))) {
->>>>>> -		local_irq_restore_nosync(flags);
->>>>>> +		if (restore_flags)
->>>>>> +			local_irq_restore_nosync(flags);
->>>>>>  		return 1;
->>>>>>  	}
->>>>>>  
->>>>>> @@ -770,7 +773,8 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
->>>>>>  	 * Relevant for 64-bit: Restore root domain state as the low-level
->>>>>>  	 * return code will not align it to regs.flags.
->>>>>>  	 */
->>>>>> -	local_irq_restore_nosync(flags);
->>>>>> +	if (restore_flags)
->>>>>> +		local_irq_restore_nosync(flags);
->>>>>>  
->>>>>>  	return 0;
->>>>>>  }
->>>>>>
->>>>>>
->>>>>> We are currently not able to test this on the system that triggers it,
->>>>>> but we'll do so tomorrow (yeah...).
->>>>>>
->>>>> Should work. Famous last words.
->>>>>
->>>> Strike that. This won't work, because the fixup code will use the saved
->>>> flags even when root is not the incoming domain and/or hw IRQs are on on
->>>> entry. In short, local_save_flags() must be done unconditionally, as
->>>> previously.
->>> It will accidentally work for 64-bit where __fixup_if is empty. And for
->>> 32-bit, I would say we need to make it depend on restore_flags as well.
->>>
->> AFAIK, Gilles is working on this. We just need to avoid stepping on
->> 32bit toes to fix 64.
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> The arguably less ambitious following patch works for me on x86_32:
+>>
+>> diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+>> index 4442d96..a7e1241 100644
+>> --- a/arch/x86/kernel/ipipe.c
+>> +++ b/arch/x86/kernel/ipipe.c
+>> @@ -703,6 +703,7 @@ static int __ipipe_xlate_signo[] = {
+>>  int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
+>>  {
+>>  	unsigned long flags;
+>> +	unsigned root_on_entry = 0;
+>>  
+>>  	/* Pick up the root domain state of the interrupted context. */
+>>  	local_save_flags(flags);
+>> @@ -715,6 +716,7 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
+>>  		 */
+>>  		if (irqs_disabled_hw())
+>>  			local_irq_disable();
+>> +		root_on_entry = 1;
+>>  	}
+>>  #ifdef CONFIG_KGDB
+>>  	/* catch exception KGDB is interested in over non-root domains */
+>> @@ -725,7 +727,8 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
+>>  #endif /* CONFIG_KGDB */
+>>  
+>>  	if (unlikely(ipipe_trap_notify(vector, regs))) {
+>> -		local_irq_restore_nosync(flags);
+>> +		if (root_on_entry)
+>> +			local_irq_restore_nosync(flags);
+>>  		return 1;
+>>  	}
+>>  
+>> @@ -734,7 +737,8 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
+>>  	 * handler, restore the original IF from exception entry as the
+>>  	 * low-level return code will evaluate it.
+>>  	 */
+>> -	__fixup_if(raw_irqs_disabled_flags(flags), regs);
+>> +	if (root_on_entry)
+>> +		__fixup_if(raw_irqs_disabled_flags(flags), regs);
 > 
-> The arguably less ambitious following patch works for me on x86_32:
+> See my other mail, this is conflicting with what was once documented as
+> the purpose of this fixup. I think we need to pick up the current root
+> state here and push it into regs - if we are running over root.
 > 
-> diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-> index 4442d96..a7e1241 100644
-> --- a/arch/x86/kernel/ipipe.c
-> +++ b/arch/x86/kernel/ipipe.c
-> @@ -703,6 +703,7 @@ static int __ipipe_xlate_signo[] = {
->  int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
->  {
->  	unsigned long flags;
-> +	unsigned root_on_entry = 0;
->  
->  	/* Pick up the root domain state of the interrupted context. */
->  	local_save_flags(flags);
-> @@ -715,6 +716,7 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
->  		 */
->  		if (irqs_disabled_hw())
->  			local_irq_disable();
-> +		root_on_entry = 1;
->  	}
->  #ifdef CONFIG_KGDB
->  	/* catch exception KGDB is interested in over non-root domains */
-> @@ -725,7 +727,8 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
->  #endif /* CONFIG_KGDB */
->  
->  	if (unlikely(ipipe_trap_notify(vector, regs))) {
-> -		local_irq_restore_nosync(flags);
-> +		if (root_on_entry)
-> +			local_irq_restore_nosync(flags);
->  		return 1;
->  	}
->  
-> @@ -734,7 +737,8 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
->  	 * handler, restore the original IF from exception entry as the
->  	 * low-level return code will evaluate it.
->  	 */
-> -	__fixup_if(raw_irqs_disabled_flags(flags), regs);
-> +	if (root_on_entry)
-> +		__fixup_if(raw_irqs_disabled_flags(flags), regs);
 
-See my other mail, this is conflicting with what was once documented as
-the purpose of this fixup. I think we need to pick up the current root
-state here and push it into regs - if we are running over root.
+What about this (draft, not yet tested)?
 
->  
->  	if (unlikely(!ipipe_root_domain_p)) {
->  		/* Detect unhandled faults over non-root domains. */
-> @@ -770,7 +774,8 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
->  	 * Relevant for 64-bit: Restore root domain state as the low-level
->  	 * return code will not align it to regs.flags.
->  	 */
-> -	local_irq_restore_nosync(flags);
-> +	if (root_on_entry)
-> +		local_irq_restore_nosync(flags);
->  
->  	return 0;
->  }
-> 
-> 
+diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+index 4442d96..99c5346 100644
+--- a/arch/x86/kernel/ipipe.c
++++ b/arch/x86/kernel/ipipe.c
+@@ -702,19 +702,17 @@ static int __ipipe_xlate_signo[] = {
+ 
+ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
+ {
++	bool restore_flags = false;
+ 	unsigned long flags;
+ 
+-	/* Pick up the root domain state of the interrupted context. */
+-	local_save_flags(flags);
+-
+-	if (ipipe_root_domain_p) {
++	if (ipipe_root_domain_p && irqs_disabled_hw()) {
+ 		/*
+ 		 * Replicate hw interrupt state into the virtual mask before
+ 		 * calling the I-pipe event handler over the root domain. Also
+ 		 * required later when calling the Linux exception handler.
+ 		 */
+-		if (irqs_disabled_hw())
+-			local_irq_disable();
++		local_irq_save(flags);
++		restore_flags = true;
+ 	}
+ #ifdef CONFIG_KGDB
+ 	/* catch exception KGDB is interested in over non-root domains */
+@@ -725,18 +723,20 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
+ #endif /* CONFIG_KGDB */
+ 
+ 	if (unlikely(ipipe_trap_notify(vector, regs))) {
+-		local_irq_restore_nosync(flags);
++		if (restore_flags)
++			local_irq_restore_nosync(flags);
+ 		return 1;
+ 	}
+ 
+-	/*
+-	 * 32-bit: In case we migrated to root domain inside the event
+-	 * handler, restore the original IF from exception entry as the
+-	 * low-level return code will evaluate it.
+-	 */
+-	__fixup_if(raw_irqs_disabled_flags(flags), regs);
+-
+-	if (unlikely(!ipipe_root_domain_p)) {
++	if (likely(ipipe_root_domain_p)) {
++		/*
++		 * 32-bit: In case we migrated to root domain inside the event
++		 * handler, align regs.flags with the root domain state as the
++		 * low-level return code will evaluate it.
++		 */
++		__fixup_if(test_bit(IPIPE_STALL_FLAG,
++				    &ipipe_root_cpudom_var(status)), regs);
++	} else {
+ 		/* Detect unhandled faults over non-root domains. */
+ 		struct ipipe_domain *ipd = ipipe_current_domain;
+ 
+@@ -770,21 +770,26 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
+ 	 * Relevant for 64-bit: Restore root domain state as the low-level
+ 	 * return code will not align it to regs.flags.
+ 	 */
+-	local_irq_restore_nosync(flags);
++	if (restore_flags)
++		local_irq_restore_nosync(flags);
+ 
+ 	return 0;
+ }
+ 
+ int __ipipe_divert_exception(struct pt_regs *regs, int vector)
+ {
++	bool restore_flags = false;
+ 	unsigned long flags;
+ 
+-	/* Same root state handling as in __ipipe_handle_exception. */
+-	local_save_flags(flags);
+-
+ 	if (ipipe_root_domain_p) {
+ 		if (irqs_disabled_hw())
+-			local_irq_disable();
++			/*
++			 * Same root state handling as in
++			 * __ipipe_handle_exception.
++			 */
++			local_irq_save(flags);
++			restore_flags = true;
++		}
+ 	}
+ #ifdef CONFIG_KGDB
+ 	/* catch int1 and int3 over non-root domains */
+@@ -804,16 +809,22 @@ int __ipipe_divert_exception(struct pt_regs *regs, int vector)
+ #endif /* CONFIG_KGDB */
+ 
+ 	if (unlikely(ipipe_trap_notify(vector, regs))) {
+-		local_irq_restore_nosync(flags);
++		if (restore_flags)
++			local_irq_restore_nosync(flags);
+ 		return 1;
+ 	}
+ 
++
++	if (likely(ipipe_root_domain_p)) {
++		/* see __ipipe_handle_exception */
++		__fixup_if(test_bit(IPIPE_STALL_FLAG,
++				    &ipipe_root_cpudom_var(status)), regs);
++	}
++
+ 	/*
+-	 * 32-bit: Due to possible migration inside the event handler, we have
+-	 * to restore IF so that low-level return code sets the root domain
+-	 * state correctly.
++	 * No need to restore root state in the 64-bit case, the Linux handler
++	 * and the return code will take care of it.
+ 	 */
+-	__fixup_if(raw_irqs_disabled_flags(flags), regs);
+ 
+ 	return 0;
+ }
 
 Jan
 
