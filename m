@@ -1,9 +1,15 @@
-Message-ID: <4B5ACD80.3030208@domain.hid>
-Date: Sat, 23 Jan 2010 11:20:48 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4B5AD08B.1080009@domain.hid>
+Date: Sat, 23 Jan 2010 11:33:47 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4B59D952.30202@domain.hid>	<1264181859.2350.152.camel@domain.hid>	<4B59E2D4.5040004@domain.hid>
-	<4B59E33E.1040203@domain.hid>	<1264182738.2350.158.camel@domain.hid>	<4B59E87F.80108@domain.hid>	<1264183719.2350.159.camel@domain.hid>	<1264240767.2350.164.camel@domain.hid>	<4B5ACAD7.5070607@domain.hid>
+References: <4B59D952.30202@domain.hid>	
+	<1264181859.2350.152.camel@domain.hid>	
+	<4B59E2D4.5040004@domain.hid> <4B59E33E.1040203@domain.hid>	
+	<1264182738.2350.158.camel@domain.hid>	
+	<4B59E87F.80108@domain.hid>	
+	<1264183719.2350.159.camel@domain.hid>	
+	<1264240767.2350.164.camel@domain.hid>	
+	<4B5ACAD7.5070607@domain.hid>
 	<1264241541.2350.166.camel@domain.hid>
 In-Reply-To: <1264241541.2350.166.camel@domain.hid>
 Content-Type: text/plain; charset=UTF-8
@@ -18,8 +24,7 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, "Mauerer,
-	Wolfgang" <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>
+Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 Philippe Gerum wrote:
 > On Sat, 2010-01-23 at 11:09 +0100, Jan Kiszka wrote:
@@ -125,61 +130,40 @@ Philippe Gerum wrote:
 > 
 > AFAIK, Gilles is working on this. We just need to avoid stepping on
 > 32bit toes to fix 64.
+> 
 
-The arguably less ambitious following patch works for me on x86_32:
+OK.
 
-diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-index 4442d96..a7e1241 100644
---- a/arch/x86/kernel/ipipe.c
-+++ b/arch/x86/kernel/ipipe.c
-@@ -703,6 +703,7 @@ static int __ipipe_xlate_signo[] = {
- int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
- {
- 	unsigned long flags;
-+	unsigned root_on_entry = 0;
- 
- 	/* Pick up the root domain state of the interrupted context. */
- 	local_save_flags(flags);
-@@ -715,6 +716,7 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
- 		 */
- 		if (irqs_disabled_hw())
- 			local_irq_disable();
-+		root_on_entry = 1;
- 	}
- #ifdef CONFIG_KGDB
- 	/* catch exception KGDB is interested in over non-root domains */
-@@ -725,7 +727,8 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
- #endif /* CONFIG_KGDB */
- 
- 	if (unlikely(ipipe_trap_notify(vector, regs))) {
--		local_irq_restore_nosync(flags);
-+		if (root_on_entry)
-+			local_irq_restore_nosync(flags);
- 		return 1;
- 	}
- 
-@@ -734,7 +737,8 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
- 	 * handler, restore the original IF from exception entry as the
- 	 * low-level return code will evaluate it.
- 	 */
--	__fixup_if(raw_irqs_disabled_flags(flags), regs);
-+	if (root_on_entry)
-+		__fixup_if(raw_irqs_disabled_flags(flags), regs);
- 
- 	if (unlikely(!ipipe_root_domain_p)) {
- 		/* Detect unhandled faults over non-root domains. */
-@@ -770,7 +774,8 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
- 	 * Relevant for 64-bit: Restore root domain state as the low-level
- 	 * return code will not align it to regs.flags.
- 	 */
--	local_irq_restore_nosync(flags);
-+	if (root_on_entry)
-+		local_irq_restore_nosync(flags);
- 
- 	return 0;
- }
+Just realized that my suggestion would conflict with the comment above
+__fixup_if. So I think we first need to clarify the various scenarios
+again to avoid breaking one while fixing another.
 
+Entry over non-root, exit over non-root:
+ - no need to fiddle with the root state
+
+Entry over root, exit over root, !irqs_disabled_hw():
+ - no need to fiddle with the root state
+ - 32 bit: regs fixup required?
+
+Entry over root, exit over root, irqs_disabled_hw():
+ - save root state & disable root IRQs on entry
+ - 32 bit: replicate saved state into regs.eflags before calling linux
+   handler
+ - restore saved state on exit
+
+Entry over non-root, exit over root:
+ - ?
+
+I tend to think that, for the 32-bit cases, we should pick up the flags
+from the root state _after_ returning from ipipe_trap_notify and only if
+we are truly running in the root domain then. That should be the value
+the migration left behind, so the correct one, right?
+
+Any scenario missing?
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
