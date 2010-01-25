@@ -1,10 +1,10 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Date: Sun, 17 Jan 2010 23:04:47 +0100
-Message-Id: <1263765889-17273-2-git-send-email-gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <1263765889-17273-1-git-send-email-gilles.chanteperdrix@xenomai.org>
-References: <1263765889-17273-1-git-send-email-gilles.chanteperdrix@xenomai.org>
-Subject: [Xenomai-core] [PATCH 1/3] nucleus: allow xnlock debugging even on
-	UP kernels
+Message-ID: <4B5D58E2.60603@domain.hid>
+Date: Mon, 25 Jan 2010 09:40:02 +0100
+From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------020505030903070504040003"
+Subject: [Xenomai-core] Fwd: Re: [RFC][PATCH] x86: Fix root domain state
+ restoring on exception return
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,286 +13,163 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: "Kiszka, Jan" <jan.kiszka@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, adeos-main@gna.org
 
----
- include/asm-generic/bits/pod.h |    2 +-
- include/asm-generic/system.h   |   27 +++++++++++++++++----------
- include/nucleus/queue.h        |   16 ++++++++--------
- ksrc/nucleus/Kconfig           |   12 ++++++++++++
- ksrc/nucleus/intr.c            |    4 ++--
- ksrc/nucleus/pod.c             |   16 ++++++++--------
- ksrc/skins/posix/signal.c      |    4 +---
- 7 files changed, 49 insertions(+), 32 deletions(-)
+This is a multi-part message in MIME format.
+--------------020505030903070504040003
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-diff --git a/include/asm-generic/bits/pod.h b/include/asm-generic/bits/pod.h
-index 6cf2f6e..bd8db49 100644
---- a/include/asm-generic/bits/pod.h
-+++ b/include/asm-generic/bits/pod.h
-@@ -278,7 +278,7 @@ unsigned long long xnarch_get_cpu_time(void)
+(sorry if you get this twice, the cc addresses were screwed up
+by copy and paste last time)
+
+Kiszka, Jan wrote:
+
+> If we enter __ipipe_handle_exception over a non-root domain and leave it
+> due to migration in the event handler over root, we must not restore the
+> root domain state so far saved on entry. This caused subtle pipeline
+> state corruptions. Actually, we only need to save the state if we enter
+> over the root domain and have to align its state to the hardware
+> interrupt mask.
+>
+> Moreover, the x86-32 regs.eflags fix-up must happen based on the current
+> root domain state to avoid more spurious corruptions.
+
+unfortunately, this won't boot on x86-32: During CPU bug checking
+in check_hlt, the kernel will really go into the halt state and
+never recover. By modifying __ipipe_handle_exception to use
+raw_irqs_disabled_flags as argument to __fixup_if instead of
+raw_irqs_disabled, everything is back to normal again. However,
+I'm not sure if this is a) the proper solution or b) won't cause
+problems somewhere else, so a discussion would be highly welcome...
+
+Cheers, Wolfgang
+
+--------------020505030903070504040003
+Content-Type: text/x-patch;
+ name="ipipe.diff"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="ipipe.diff"
+
+diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+index 4442d96..5527e3c 100644
+--- a/arch/x86/kernel/ipipe.c
++++ b/arch/x86/kernel/ipipe.c
+@@ -702,19 +702,20 @@ static int __ipipe_xlate_signo[] = {
  
- EXPORT_SYMBOL(xnarch_get_cpu_time);
- 
--#ifdef CONFIG_SMP
-+#if defined(CONFIG_SMP) || XENO_DEBUG(XNLOCK)
- void __xnlock_spin(xnlock_t *lock /*, */ XNLOCK_DBG_CONTEXT_ARGS)
+ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
  {
- 	unsigned int spin_limit;
-diff --git a/include/asm-generic/system.h b/include/asm-generic/system.h
-index e872711..176de1b 100644
---- a/include/asm-generic/system.h
-+++ b/include/asm-generic/system.h
-@@ -43,8 +43,8 @@
- /* debug support */
- #include <nucleus/assert.h>
+-	unsigned long flags;
++	bool restore_flags = false;
++	unsigned long flags = 0;
  
--#ifndef CONFIG_XENO_OPT_DEBUG_NUCLEUS
--#define CONFIG_XENO_OPT_DEBUG_NUCLEUS 0
-+#ifndef CONFIG_XENO_OPT_DEBUG_XNLOCK
-+#define CONFIG_XENO_OPT_DEBUG_XNLOCK 0
- #endif
+ 	/* Pick up the root domain state of the interrupted context. */
+ 	local_save_flags(flags);
  
- #ifdef __cplusplus
-@@ -91,7 +91,7 @@ static inline unsigned xnarch_current_cpu(void)
- 	return rthal_processor_id();
- }
- 
--#if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
-+#if XENO_DEBUG(XNLOCK)
- 
- typedef struct {
- 
-@@ -148,11 +148,14 @@ xnlock_dbg_spinning(xnlock_t *lock, int cpu, unsigned int *spin_limit,
- 	if (--*spin_limit == 0) {
- 		rthal_emergency_console();
- 		printk(KERN_ERR "Xenomai: stuck on nucleus lock %p\n"
--				"         waiter = %s:%u (%s(), CPU #%d)\n"
--				"         owner  = %s:%u (%s(), CPU #%d)\n",
-+				"	  waiter = %s:%u (%s(), CPU #%d)\n"
-+				"	  owner	 = %s:%u (%s(), CPU #%d)\n",
- 		       lock, file, line, function, cpu,
- 		       lock->file, lock->line, lock->function, lock->cpu);
- 		show_stack(NULL, NULL);
-+#ifndef CONFIG_SMP
-+		BUG();
-+#endif
+-	if (ipipe_root_domain_p) {
++	if (ipipe_root_domain_p && irqs_disabled_hw()) {
+ 		/*
+ 		 * Replicate hw interrupt state into the virtual mask before
+ 		 * calling the I-pipe event handler over the root domain. Also
+ 		 * required later when calling the Linux exception handler.
+ 		 */
+-		if (irqs_disabled_hw())
+-			local_irq_disable();
++		local_irq_save(flags);
++		restore_flags = true;
  	}
- }
+ #ifdef CONFIG_KGDB
+ 	/* catch exception KGDB is interested in over non-root domains */
+@@ -725,7 +726,8 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
+ #endif /* CONFIG_KGDB */
  
-@@ -198,7 +201,7 @@ static inline int xnlock_dbg_release(xnlock_t *lock)
+ 	if (unlikely(ipipe_trap_notify(vector, regs))) {
+-		local_irq_restore_nosync(flags);
++		if (restore_flags)
++			local_irq_restore_nosync(flags);
+ 		return 1;
+ 	}
+ 
+@@ -734,9 +736,14 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
+ 	 * handler, restore the original IF from exception entry as the
+ 	 * low-level return code will evaluate it.
+ 	 */
+-	__fixup_if(raw_irqs_disabled_flags(flags), regs);
+-
+-	if (unlikely(!ipipe_root_domain_p)) {
++	if (likely(ipipe_root_domain_p)) {
++		/*
++		* 32-bit: In case we migrated to root domain inside the event
++		* handler, align regs.flags with the root domain state as the
++		* low-level return code will evaluate it.
++		*/
++		__fixup_if(raw_irqs_disabled_flags(flags), regs);
++	} else {
+ 		/* Detect unhandled faults over non-root domains. */
+ 		struct ipipe_domain *ipd = ipipe_current_domain;
+ 
+@@ -770,21 +777,26 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
+ 	 * Relevant for 64-bit: Restore root domain state as the low-level
+ 	 * return code will not align it to regs.flags.
+ 	 */
+-	local_irq_restore_nosync(flags);
++	if (restore_flags)
++		local_irq_restore_nosync(flags);
+ 
  	return 0;
  }
  
--#else /* !(CONFIG_SMP && XENO_DEBUG(NUCLEUS)) */
-+#else /* !XENO_DEBUG(XNLOCK) */
- 
- typedef struct { atomic_t owner; } xnlock_t;
- 
-@@ -222,7 +225,7 @@ static inline int xnlock_dbg_release(xnlock_t *lock)
- 	return 0;
- }
- 
--#endif /* !(CONFIG_SMP && XENO_DEBUG(NUCLEUS)) */
-+#endif /* !XENO_DEBUG(XNLOCK) */
- 
- #define XNARCH_NR_CPUS			RTHAL_NR_CPUS
- 
-@@ -319,7 +322,7 @@ static inline int xnarch_root_domain_p(void)
- 	return rthal_current_domain == rthal_root_domain;
- }
- 
--#ifdef CONFIG_SMP
-+#if defined(CONFIG_SMP) || XENO_DEBUG(XNLOCK)
- 
- #define xnlock_get(lock)		__xnlock_get(lock  XNLOCK_DBG_CONTEXT)
- #define xnlock_get_irqsave(lock,x) \
-@@ -395,7 +398,11 @@ static inline void xnlock_put_irqrestore(xnlock_t *lock, spl_t flags)
- 
- static inline int xnarch_send_ipi(xnarch_cpumask_t cpumask)
+ int __ipipe_divert_exception(struct pt_regs *regs, int vector)
  {
-+#ifdef CONFIG_SMP
- 	return rthal_send_ipi(RTHAL_SERVICE_IPI0, cpumask);
-+#else /* !CONFIG_SMP */
-+	return 0;
-+#endif /* !CONFIG_SMP */
- }
+-	unsigned long flags;
+-
+-	/* Same root state handling as in __ipipe_handle_exception. */
+-	local_save_flags(flags);
++	bool restore_flags = false;
++	unsigned long flags = 0;
  
- static inline int xnlock_is_owner(xnlock_t *lock)
-@@ -403,7 +410,7 @@ static inline int xnlock_is_owner(xnlock_t *lock)
- 	return atomic_read(&lock->owner) == xnarch_current_cpu();
- }
+ 	if (ipipe_root_domain_p) {
+-		if (irqs_disabled_hw())
+-			local_irq_disable();
++		if (irqs_disabled_hw()) {
++			/*
++			 * Same root state handling as in
++			 * __ipipe_handle_exception.
++			 */
++			local_irq_save(flags);
++			restore_flags = true;
++		}
+ 	}
+ #ifdef CONFIG_KGDB
+ 	/* catch int1 and int3 over non-root domains */
+@@ -804,16 +816,20 @@ int __ipipe_divert_exception(struct pt_regs *regs, int vector)
+ #endif /* CONFIG_KGDB */
  
--#else /* !CONFIG_SMP */
-+#else /* !(CONFIG_SMP || XENO_DEBUG(XNLOCK) */
+ 	if (unlikely(ipipe_trap_notify(vector, regs))) {
+-		local_irq_restore_nosync(flags);
++		if (restore_flags)
++			local_irq_restore_nosync(flags);
+ 		return 1;
+ 	}
  
- #define xnlock_init(lock)		do { } while(0)
- #define xnlock_get(lock)		do { } while(0)
-@@ -424,7 +431,7 @@ static inline int xnarch_send_ipi (xnarch_cpumask_t cpumask)
- 	return 0;
- }
- 
--#endif /* !CONFIG_SMP */
-+#endif /* !(CONFIG_SMP || XENO_DEBUG(XNLOCK)) */
- 
- #define xnlock_sync_irq(lock, x)			\
- 	do {						\
-diff --git a/include/nucleus/queue.h b/include/nucleus/queue.h
-index b84fa3c..13cde9f 100644
---- a/include/nucleus/queue.h
-+++ b/include/nucleus/queue.h
-@@ -65,17 +65,17 @@ typedef struct xnqueue {
- 
- 	xnholder_t head;
- 	int elems;
--#if defined(__KERNEL__) && XENO_DEBUG(QUEUES) && defined(CONFIG_SMP)
--	xnlock_t lock;
--#endif				/* __KERNEL__ && XENO_DEBUG(QUEUES) && CONFIG_SMP */
-+#if defined(__KERNEL__) && XENO_DEBUG(QUEUES)
-+	DECLARE_XNLOCK(lock);
-+#endif /* __KERNEL__ && XENO_DEBUG(QUEUES) */
- 
- } xnqueue_t;
- 
--#if XENO_DEBUG(QUEUES) && defined(CONFIG_SMP)
-+#if XENO_DEBUG(QUEUES)
- #define XNQUEUE_INITIALIZER(q) { { &(q).head, &(q).head }, 0, XNARCH_LOCK_UNLOCKED }
--#else /* !(XENO_DEBUG(QUEUES) && CONFIG_SMP) */
-+#else /* !(XENO_DEBUG(QUEUES) */
- #define XNQUEUE_INITIALIZER(q) { { &(q).head, &(q).head }, 0 }
--#endif /* XENO_DEBUG(QUEUES) && CONFIG_SMP */
-+#endif /* XENO_DEBUG(QUEUES) */
- 
- #define DEFINE_XNQUEUE(q) xnqueue_t q = XNQUEUE_INITIALIZER(q)
- 
-@@ -83,9 +83,9 @@ static inline void initq(xnqueue_t *qslot)
- {
- 	inith(&qslot->head);
- 	qslot->elems = 0;
--#if defined(__KERNEL__) && XENO_DEBUG(QUEUES) && defined(CONFIG_SMP)
-+#if defined(__KERNEL__) && XENO_DEBUG(QUEUES)
- 	xnlock_init(&qslot->lock);
--#endif /* __KERNEL__ && XENO_DEBUG(QUEUES) && CONFIG_SMP */
-+#endif /* __KERNEL__ && XENO_DEBUG(QUEUES) */
- }
- 
- #if XENO_DEBUG(QUEUES)
-diff --git a/ksrc/nucleus/Kconfig b/ksrc/nucleus/Kconfig
-index 9055783..8e4c0b1 100644
---- a/ksrc/nucleus/Kconfig
-+++ b/ksrc/nucleus/Kconfig
-@@ -255,6 +255,18 @@ config XENO_OPT_DEBUG_NUCLEUS
- 	Do not switch this option on unless you really know what you
- 	are doing.
- 
-+config XENO_OPT_DEBUG_XNLOCK
-+	bool "Spinlocks Debugging support"
-+	depends on XENO_OPT_DEBUG
-+	default y if SMP
-+	help
++	if (likely(ipipe_root_domain_p)) {
++		/* see __ipipe_handle_exception */
++		__fixup_if(raw_irqs_disabled(), regs);
++	}
 +
-+	This option activates measurements of Xenomai spinlocks
-+	spinning time and duration. It should have a low overhad, and
-+	helps finding latency spots due to masking
-+	sections. Statistics about the longest masking section may be
-+	found in /proc/xenomai/lock.
-+
- config XENO_OPT_DEBUG_QUEUES
- 	bool "Queue Debugging support"
- 	depends on XENO_OPT_DEBUG
-diff --git a/ksrc/nucleus/intr.c b/ksrc/nucleus/intr.c
-index 97458f5..50f7945 100644
---- a/ksrc/nucleus/intr.c
-+++ b/ksrc/nucleus/intr.c
-@@ -404,7 +404,7 @@ static inline int xnintr_irq_detach(xnintr_t *intr)
+ 	/*
+-	 * 32-bit: Due to possible migration inside the event handler, we have
+-	 * to restore IF so that low-level return code sets the root domain
+-	 * state correctly.
++	 * No need to restore root state in the 64-bit case, the Linux handler
++	 * and the return code will take care of it.
+ 	 */
+-	__fixup_if(raw_irqs_disabled_flags(flags), regs);
  
- #else /* !CONFIG_XENO_OPT_SHIRQ */
- 
--#ifdef CONFIG_SMP
-+#if defined(CONFIG_SMP) || XENO_DEBUG(XNLOCK)
- typedef struct xnintr_irq {
- 
- 	DECLARE_XNLOCK(lock);
-@@ -412,7 +412,7 @@ typedef struct xnintr_irq {
- } ____cacheline_aligned_in_smp xnintr_irq_t;
- 
- static xnintr_irq_t xnirqs[XNARCH_NR_IRQS];
--#endif /* CONFIG_SMP */
-+#endif /* CONFIG_SMP || XENO_DEBUG(XNLOCK) */
- 
- static inline xnintr_t *xnintr_shirq_first(unsigned irq)
- {
-diff --git a/ksrc/nucleus/pod.c b/ksrc/nucleus/pod.c
-index 4144ccd..63f0fbe 100644
---- a/ksrc/nucleus/pod.c
-+++ b/ksrc/nucleus/pod.c
-@@ -58,9 +58,9 @@ xnpod_t nkpod_struct;
- EXPORT_SYMBOL_GPL(nkpod_struct);
- 
- DEFINE_XNLOCK(nklock);
--#ifdef CONFIG_SMP
-+#if defined(CONFIG_SMP) || XENO_DEBUG(XNLOCK)
- EXPORT_SYMBOL_GPL(nklock);
--#endif /* CONFIG_SMP */
-+#endif /* CONFIG_SMP || XENO_DEBUG(XNLOCK) */
- 
- u_long nklatency = 0;
- EXPORT_SYMBOL_GPL(nklatency);
-@@ -3087,7 +3087,7 @@ EXPORT_SYMBOL_GPL(xnpod_set_thread_tslice);
- #include <linux/proc_fs.h>
- #include <linux/ctype.h>
- 
--#if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
-+#if defined(CONFIG_SMP) || XENO_DEBUG(XNLOCK)
- 
- xnlockinfo_t xnlock_stats[RTHAL_NR_CPUS];
- 
-@@ -3134,7 +3134,7 @@ static int lock_read_proc(char *page,
+ 	return 0;
  }
- EXPORT_SYMBOL_GPL(xnlock_stats);
- 
--#endif /* CONFIG_SMP && XENO_DEBUG(NUCLEUS) */
-+#endif /* CONFIG_SMP || XENO_DEBUG(XNLOCK) */
- 
- static int latency_read_proc(char *page,
- 			     char **start,
-@@ -3217,17 +3217,17 @@ void xnpod_init_proc(void)
- 	rthal_add_proc_leaf("version", &version_read_proc, NULL, NULL,
- 			    rthal_proc_root);
- 
--#if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
-+#if defined(CONFIG_SMP) || XENO_DEBUG(XNLOCK)
- 	rthal_add_proc_leaf("lock", &lock_read_proc, NULL, NULL,
- 			    rthal_proc_root);
--#endif /* CONFIG_SMP && XENO_DEBUG(NUCLEUS) */
-+#endif /* CONFIG_SMP || XENO_DEBUG(XNLOCK) */
- }
- 
- void xnpod_cleanup_proc(void)
- {
--#if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
-+#if defined(CONFIG_SMP) || XENO_DEBUG(XNLOCK)
- 	remove_proc_entry("lock", rthal_proc_root);
--#endif /* CONFIG_SMP && XENO_DEBUG(NUCLEUS) */
-+#endif /* CONFIG_SMP || XENO_DEBUG(XNLOCK) */
- 	remove_proc_entry("version", rthal_proc_root);
- 	remove_proc_entry("latency", rthal_proc_root);
- 
-diff --git a/ksrc/skins/posix/signal.c b/ksrc/skins/posix/signal.c
-index 5d2baf7..193674c 100644
---- a/ksrc/skins/posix/signal.c
-+++ b/ksrc/skins/posix/signal.c
-@@ -64,9 +64,7 @@ typedef void siginfo_handler_t(int, siginfo_t *, void *);
- #define SIGRTMAX 64
- static struct sigaction actions[SIGRTMAX];
- static pse51_siginfo_t pse51_infos_pool[PSE51_SIGQUEUE_MAX];
--#ifdef CONFIG_SMP
--static xnlock_t pse51_infos_lock = XNARCH_LOCK_UNLOCKED;
--#endif
-+DEFINE_XNLOCK(pse51_infos_lock);
- static xnpqueue_t pse51_infos_free_list;
- 
- static pse51_siginfo_t *pse51_new_siginfo(int sig, int code, union sigval value)
--- 
-1.5.6.5
 
+--------------020505030903070504040003--
 
