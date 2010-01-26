@@ -1,67 +1,57 @@
-Message-ID: <4B5223BD.5050703@domain.hid>
-Date: Sat, 16 Jan 2010 21:38:21 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <1263470867-1533-1-git-send-email-wg@domain.hid>
-	<4B5076F9.40508@domain.hid> <4B507B06.4080206@domain.hid>
-	<4B50AF89.1000909@domain.hid> <4B50D9C7.8090901@domain.hid>
-	<4B5188DC.4080606@domain.hid>
-In-Reply-To: <4B5188DC.4080606@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH xenomai-2.5 0/3] rtcan: mscan: new
- OF	platform driver for MPC521x and MPC5200
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Date: Tue, 26 Jan 2010 15:16:10 +0100
+Message-ID: <b88603c31001260616wf2194d3t193de281af1318ad@domain.hid>
+From: Henri Roosen <henriroosen@domain.hid>
+Content-Type: multipart/mixed; boundary=0016e6d783728286aa047e11ed22
+Subject: [Xenomai-help] Xenomai 2.5.0: rt_task_shadow fails when libnative
+	is statically linked.
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai-core@domain.hid, Wolfgang Grandegger <wg@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Wolfgang Grandegger wrote:
->> Hi Gilles
->>
->> Gilles Chanteperdrix wrote:
->>> Wolfgang Grandegger wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> Wolfgang Grandegger wrote:
->>>>>> From: Wolfgang Grandegger <wg@domain.hid>
->>>>>>
->>>>>> This patch series adds RT-Socket-CAN support for the MSCAN on the MPC512x
->>>>>> from Freescale by introducing a new OF platform driver for both, the
->>>>>> MPC521x and MPC5200, while still keeping the old driver for the MPC5200
->>>>>> for compatibility with older kernel versions.
->>>>> Hi Wolfgang,
->>>>>
->>>>> there seems to be something missing, because I get a compilation error
->>>>> on lite-5200:
->>>>> http://sisyphus.hd.free.fr/~gilles/bx/#powerpc
->>>> Well, I obviously did not test the driver with old versions of the Linux
->>>> kernel, sorry. 
->>> No problem, that is what the build test is for.
->>>
->>>
->>>> For 2.6.29 and 2.6.30 the following patch should fix the build:
->>> Ok. I applied a slightly different modification (fixing in wrappers.h).
->>> I am waiting for your fix for 2.4 for pushing.
->> See patch below. It will contain your fixes in wrappers.h. I will do some
->> final testing on real hardware on monday.
-> 
-> All green, pushed. Only with one change: I removed the explicit
-> inclusion of wrappers.h in rtcan_mscan_mpc52xx.c, as it is already
-> included thanks to rtdm_driver.h, and Jan told us that we should not do
-> that if we want the code to be compiled for rtdm-native.
+--0016e6d783728286aa047e11ed22
+Content-Type: text/plain; charset=ISO-8859-1
 
-And it is not even needed, as I just verified.
+Hi all,
 
-Thanks,
+I get segmentation fault when calling rt_task_shadow. Actually
+somewhere in the pthread library called from sigshadow_install_once();
 
-Wolfgang.
+This only happens on Xenomai 2.5 when libnative is statically linked.
+Tested ok on 2.4.10 both dynamically and statically linked. I use
+kernel version 2.6.30.10, xenomai 2.5.0 on x86.
 
+Any idea what is wrong?
 
+Reproduced it with basic app that is attached to this email. Compiled with:
+gcc -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__
+-I/usr/xenomai/include tst_basic.c -o tst_basic
+/usr/xenomai/lib/libnative.a -lpthread
+
+Segfailt in dmesg on xenomai 2.5.0:
+tst_basic_2.5[1351]: segfault at 0 ip b7ff5a54 sp bfc9b46c error 4 in
+libpthread-2.9.so[b7feb000+13000]
+
+--0016e6d783728286aa047e11ed22
+Content-Type: text/x-csrc; charset=US-ASCII; name="tst_basic.c"
+Content-Disposition: attachment; filename="tst_basic.c"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_g4wru6wv0
+
+I2luY2x1ZGUgPHN0ZGxpYi5oPgojaW5jbHVkZSA8c3RkaW8uaD4KI2luY2x1ZGUgPHN5cy9tbWFu
+Lmg+CiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPgoKc3RhdGljIFJUX1RBU0sgcnRfdGFza19kZXNj
+OwoKaW50IG1haW4odm9pZCkKewoJaW50IHJldDsKCglyZXQgPSBtbG9ja2FsbChNQ0xfQ1VSUkVO
+VCB8IE1DTF9GVVRVUkUpOwoJaWYgKHJldCkgewoJCWZwcmludGYoc3RkZXJyLCAibWxvY2thbGwg
+ZmFpbGVkICVkIiwgcmV0KTsKCQlleGl0KDEpOwoJfQoKCXJldCA9IHJ0X3Rhc2tfc2hhZG93KCZy
+dF90YXNrX2Rlc2MsICJNQUlOIiwgOTksIDApOwoJaWYgKHJldCkgewoJCWZwcmludGYoc3RkZXJy
+LCAicnRfdGFza19zaGFkb3cgZmFpbGVkICVkIiwgcmV0KTsKCQlleGl0KDEpOwoJfQoKCXdoaWxl
+ICgxKQoJCXJ0X3Rhc2tfc2xlZXAoMTAwMDAwMDBMTCk7CgoJcmV0dXJuIDA7Cn0KCg==
+--0016e6d783728286aa047e11ed22--
 
