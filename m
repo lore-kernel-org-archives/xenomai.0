@@ -1,12 +1,10 @@
-From: lux-integ <lux-integ@domain.hid>
-Date: Fri, 29 Jan 2010 21:04:42 +0000
+Message-ID: <fd55ced7db48fe30f8139df895fb9d4c.squirrel@domain.hid>
+Date: Sat, 30 Jan 2010 14:28:47 +0100 (CET)
+From: sinisa.denic@domain.hid
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <201001292104.42395.lux-integ@domain.hid>
-Subject: [Xenomai-help] help with xenomai-2.5.0  on pure64bit linux x86_64
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] xenomai 2.5.0 uclibc 0.30 compatibility?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,171 +16,103 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Greetings
+Hello, I have a problem building Xenomai 2.5.0 with an
+arm-linux-uclibgnueabi toolchain.
+Previous version Xenomai 2.4.10 builds with no problems at all(excluding
+testsuite clock compiling)
+Now I'm getting this 'twisted' error compiling posix skin:
 
- I am new to xenomai and I am attempting to   install    a RT-kernel on a pure 
-64-bit  (not multilib) amd64 linux setup.  The machine has a Sempron CPU and 
-2 GBytes of RAM.  The distribution is cross-lfs  compiled from sources.  This 
-is what I have done:-
+.........everithing before has built without problems
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+make[3]: Nothing to be done for `all'.
+make[3]: Leaving directory
+`/opt/pct210_build/xenomai-2.5.0-eabi/src/skins/native'
+Making all in posix
+make[3]: Entering directory
+`/opt/pct210_build/xenomai-2.5.0-eabi/src/skins/posix'
+/bin/sh ../../../libtool  --tag=3DCC   --mode=3Dcompile
+/opt/toolchains/arm926t-uclibcgnueabi/usr/bin/arm-linux-gcc
+-DHAVE_CONFIG_H -I.
+-I../../../src/include  -O2 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe
+-march=3Darmv5
+-D__XENO__ -D__IN_XENO__ -Wstrict-prototypes -I../../../include
+-I../../../include/posix -I../../../ksrc/skins   -MT
+libpthread_rt_la-init.lo -MD -MP -MF .deps/libpthread_rt_la-init.Tpo -c -=
+o
+libpthread_rt_la-init.lo `test -f 'init.c' || echo './'`init.c
+libtool:
+compile:  /opt/toolchains/arm926t-uclibcgnueabi/usr/bin/arm-linux-gcc
+-DHAVE_CONFIG_H -I. -I../../../src/include -O2 -D_GNU_SOURCE -D_REENTRANT
+-Wall
+-pipe -march=3Darmv5 -D__XENO__ -D__IN_XENO__ -Wstrict-prototypes
+-I../../../include
+-I../../../include/posix -I../../../ksrc/skins -MT
+libpthread_rt_la-init.lo -MD -MP -MF .deps/libpthread_rt_la-init.Tpo -c
+init.c  -fPIC -DPIC -o .libs/libpthread_rt_la-init.o
+init.c:1: warning: target CPU does not support interworking
+In file included from ../../../src/include/asm/xenomai/atomic.h:82,
+                 from ../../../include/nucleus/system.h:26,
+                 from ../../../src/include/asm/xenomai/system.h:223,
+                 from ../../../include/nucleus/types.h:40,
+                 from ../../../include/nucleus/thread.h:25,
+                 from ../../../include/posix/pthread.h:136,
 
-a) I   fetched fresh kernel2.6.32.2  source-code   and placed it 
-in /usr/src/linux like so:-
-`linux' -> `linux-2.6.32.2'
+from
+/opt/toolchains/arm926t-uclibcgnueabi/usr/include/bits/uClibc_mutex.h:15,
 
-b) ..I then  applied  the  xenomai patch as such:-
-$SOURCES/xenomai-2.5.0/scripts/prepare-kernel.sh --linux=/usr/src/linux  --adeos=$SOURCES/xenomai-2.5.0/ksrc/arch/x86/patches/adeos-ipipe-2.6.32.2-x86-2.5-00.patch  --arch=x86_64
+from
+/opt/toolchains/arm926t-uclibcgnueabi/usr/include/bits/uClibc_stdio.h:119=
+,
 
-patching file arch/x86/Kconfig
-patching file arch/x86/include/asm/apic.h
-patching file arch/x86/include/asm/apicdef.h
-patching file arch/x86/include/asm/entry_arch.h
-patching file arch/x86/include/asm/hw_irq.h
-patching file arch/x86/include/asm/i387.h
-patching file arch/x86/include/asm/i8259.h
-patching file arch/x86/include/asm/ipi.h
-patching file arch/x86/include/asm/ipipe.h
-patching file arch/x86/include/asm/ipipe_32.h
-patching file arch/x86/include/asm/ipipe_64.h
-patching file arch/x86/include/asm/ipipe_base.h
-patching file arch/x86/include/asm/irq_vectors.h
-patching file arch/x86/include/asm/irqflags.h
-patching file arch/x86/include/asm/mmu_context.h
-patching file arch/x86/include/asm/nmi.h
-patching file arch/x86/include/asm/processor.h
-patching file arch/x86/include/asm/system.h
-patching file arch/x86/include/asm/traps.h
-patching file arch/x86/kernel/Makefile
-patching file arch/x86/kernel/apic/apic.c
-patching file arch/x86/kernel/apic/apic_flat_64.c
-patching file arch/x86/kernel/apic/io_apic.c
-patching file arch/x86/kernel/apic/ipi.c
-patching file arch/x86/kernel/apic/nmi.c
-patching file arch/x86/kernel/apic/x2apic_cluster.c
-patching file arch/x86/kernel/apic/x2apic_phys.c
-patching file arch/x86/kernel/cpu/mtrr/cyrix.c
-patching file arch/x86/kernel/cpu/mtrr/generic.c
-patching file arch/x86/kernel/dumpstack.c
-patching file arch/x86/kernel/dumpstack_32.c
-patching file arch/x86/kernel/dumpstack_64.c
-patching file arch/x86/kernel/entry_32.S
-patching file arch/x86/kernel/entry_64.S
-patching file arch/x86/kernel/i8253.c
-patching file arch/x86/kernel/i8259.c
-patching file arch/x86/kernel/ipipe.c
-patching file arch/x86/kernel/irq.c
-patching file arch/x86/kernel/irqinit.c
-patching file arch/x86/kernel/process.c
-patching file arch/x86/kernel/process_32.c
-patching file arch/x86/kernel/process_64.c
-patching file arch/x86/kernel/smp.c
-patching file arch/x86/kernel/smpboot.c
-patching file arch/x86/kernel/time.c
-patching file arch/x86/kernel/traps.c
-patching file arch/x86/kernel/vm86_32.c
-patching file arch/x86/lib/mmx_32.c
-patching file arch/x86/lib/thunk_64.S
-patching file arch/x86/mm/fault.c
-patching file arch/x86/mm/tlb.c
-patching file drivers/pci/htirq.c
-patching file drivers/serial/8250.c
-patching file fs/exec.c
-patching file include/asm-generic/atomic.h
-patching file include/asm-generic/bitops/atomic.h
-patching file include/asm-generic/cmpxchg-local.h
-patching file include/asm-generic/percpu.h
-patching file include/linux/hardirq.h
-patching file include/linux/ipipe.h
-patching file include/linux/ipipe_base.h
-patching file include/linux/ipipe_compat.h
-patching file include/linux/ipipe_lock.h
-patching file include/linux/ipipe_percpu.h
-patching file include/linux/ipipe_tickdev.h
-patching file include/linux/ipipe_trace.h
-patching file include/linux/irq.h
-patching file include/linux/kernel.h
-patching file include/linux/preempt.h
-patching file include/linux/sched.h
-patching file include/linux/spinlock.h
-patching file include/linux/spinlock_api_smp.h
-patching file init/Kconfig
-patching file init/main.c
-patching file kernel/Makefile
-patching file kernel/exit.c
-patching file kernel/fork.c
-patching file kernel/ipipe/Kconfig
-patching file kernel/ipipe/Kconfig.debug
-patching file kernel/ipipe/Makefile
-patching file kernel/ipipe/core.c
-patching file kernel/ipipe/tracer.c
-patching file kernel/irq/chip.c
-patching file kernel/irq/handle.c
-patching file kernel/lockdep.c
-patching file kernel/panic.c
-patching file kernel/power/hibernate.c
-patching file kernel/printk.c
-patching file kernel/sched.c
-patching file kernel/signal.c
-patching file kernel/spinlock.c
-patching file kernel/time/tick-common.c
-patching file kernel/time/tick-sched.c
-patching file kernel/timer.c
-patching file kernel/trace/ftrace.c
-patching file lib/Kconfig.debug
-patching file lib/bust_spinlocks.c
-patching file lib/ioremap.c
-patching file lib/smp_processor_id.c
-patching file mm/memory.c
-patching file mm/mmu_context.c
-patching file mm/vmalloc.c
+from /opt/toolchains/arm926t-uclibcgnueabi/usr/include/stdio.h:72,
+                 from init.c:19:
+../../../src/include/asm/xenomai/syscall.h: In
+function &#8216;xeno_arm_features_check&#8217;:
+../../../src/include/asm/xenomai/syscall.h:377: error:
+&#8216;stderr&#8217; undeclared
+(first use in this function)
+../../../src/include/asm/xenomai/syscall.h:377: error: (Each undeclared
+identifier is reported only once
+../../../src/include/asm/xenomai/syscall.h:377: error: for each function =
+it
+appears in.)
+make[3]: *** [libpthread_rt_la-init.lo] Error 1
+make[3]: Leaving directory
+`/opt/pct210_build/xenomai-2.5.0-eabi/src/skins/posix'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory `/opt/pct210_build/xenomai-2.5.0-eabi/src/skin=
+s'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/opt/pct210_build/xenomai-2.5.0-eabi/src'
+make: *** [all-recursive] Error 1
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Here is a part of configuration log:
+root@domain.hid# head config.log
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
 
-c) I configured the kernel using make menuconfig  disabling smp support  (here 
-is the relevent section of my kernel configuration):-
-# CONFIG_X86_DS is not set
-CONFIG_HPET_TIMER=y
-CONFIG_HPET_EMULATE_RTC=y
-CONFIG_DMI=y
-CONFIG_GART_IOMMU=y
-CONFIG_CALGARY_IOMMU=y
-CONFIG_CALGARY_IOMMU_ENABLED_BY_DEFAULT=y
-CONFIG_AMD_IOMMU=y
-CONFIG_AMD_IOMMU_STATS=y
-CONFIG_SWIOTLB=y
-CONFIG_IOMMU_HELPER=y
-CONFIG_IOMMU_API=y
-CONFIG_NR_CPUS=1
+It was created by Xenomai configure 2.5.0, which was
+generated by GNU Autoconf 2.64.  Invocation command line was
 
 
-d) but when I type make  I encountered a failure  like so:-
+$ ./configure --build=3Di686-linux --host=3Darm-linux
+--prefix=3D/usr/xenomai-2.5.0-eabi
+--enable-shared
+CC=3D/opt/toolchains/arm926t-uclibcgnueabi/usr/bin/arm-linux-gcc
+LD=3D/opt/toolchains/arm926t-uclibcgnueabi/usr/bin/arm-linux-ld
+--enable-arm-mach=3Dat91sam926x
 
-  HOSTCC  scripts/basic/fixdep
-  HOSTCC  scripts/basic/docproc
-  HOSTCC  scripts/basic/hash
-  HOSTCC  scripts/kconfig/conf.o
-  HOSTCC  scripts/kconfig/kxgettext.o
-  SHIPPED scripts/kconfig/zconf.tab.c
-  SHIPPED scripts/kconfig/lex.zconf.c
-  SHIPPED scripts/kconfig/zconf.hash.c
-  HOSTCC  scripts/kconfig/zconf.tab.o
-  HOSTLD  scripts/kconfig/conf
-scripts/kconfig/conf -s arch/x86/Kconfig
-  CHK     include/linux/version.h
-  UPD     include/linux/version.h
-  CHK     include/linux/utsrelease.h
-  UPD     include/linux/utsrelease.h
-  SYMLINK include/asm -> include/asm-x86
-  CC      kernel/bounds.s
-  GEN     include/linux/bounds.h
-  CC      arch/x86/kernel/asm-offsets.s
-In file included from include/linux/sched.h:62,
-                 from arch/x86/kernel/asm-offsets_64.c:8,
-                 from arch/x86/kernel/asm-offsets.c:4:
-include/linux/ipipe.h:76:2: error: #error "CONFIG_NR_CPUS is too large, please 
-lower it."
-make[1]: *** [arch/x86/kernel/asm-offsets.s] Error 1
+## --------- ##
+## Platform. ##
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Any idea would be wellcome.
+Is this due to uClibc maybe?
+Regards for guys from community, Philippe, Jan, Gilles...
 
 
-
-
-========
-help would be appreciated
 
