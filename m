@@ -1,13 +1,12 @@
-From: Sinisa Denic <sinisa.denic@domain.hid>
-Date: Mon, 1 Feb 2010 10:11:30 +0100
+Message-ID: <4B655AA4.1020002@domain.hid>
+Date: Sun, 31 Jan 2010 11:25:40 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <201002011011.30715.sinisa.denic@domain.hid>
-Subject: [Xenomai-help] =?utf-8?q?=2E/src/include/asm/xenomai/syscall=2Eh?=
-	=?utf-8?b?OjM3NzogZXJyb3I6IOKAmHN0ZGVycuKAmSB1bmRlY2xhcmVk?=
+References: <201001292104.42395.lux-integ@domain.hid>
+In-Reply-To: <201001292104.42395.lux-integ@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] help with xenomai-2.5.0 on pure64bit linux x86_64
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,54 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org.
+To: lux-integ <lux-integ@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi there, last days I've got in some troubles building xeno2.5 with uclibc=
-=20
-eabi toolchain, here is snippet:
-=2D------------------------------------------------------------------------=
-=2D-------------------------
-init.c:1: warning: target CPU does not support interworking
-In file included from ../../../src/include/asm/xenomai/atomic.h:82,
-                 from ../../../include/nucleus/system.h:26,
-                 from ../../../src/include/asm/xenomai/system.h:223,
-                 from ../../../include/nucleus/types.h:40,
-                 from ../../../include/nucleus/thread.h:25,
-                 from ../../../include/posix/pthread.h:136,
-                =20
-from /opt/toolchains/arm926t-uclibcgnueabi/usr/include/bits/uClibc_mutex.h:=
-15,
-                =20
-from /opt/toolchains/arm926t-uclibcgnueabi/usr/include/bits/uClibc_stdio.h:=
-119,
-                =20
-from /opt/toolchains/arm926t-uclibcgnueabi/usr/include/stdio.h:72,
-                 from init.c:19:
-=2E./../../src/include/asm/xenomai/syscall.h: In=20
-function =E2=80=98xeno_arm_features_check=E2=80=99:
-=2E./../../src/include/asm/xenomai/syscall.h:377: error: =E2=80=98stderr=E2=
-=80=99 undeclared=20
-(first use in this function)
-=2E./../../src/include/asm/xenomai/syscall.h:377: error: (Each undeclared=20
-identifier is reported only once
-=2E./../../src/include/asm/xenomai/syscall.h:377: error: for each function =
-it=20
-appears in.)
-make[3]: *** [libpthread_rt_la-init.lo] Error 1
-make[3]: Leaving directory=20
-`/opt/pct210_build/xenomai-2.5.0-eabi/src/skins/posix'
-make[2]: *** [all-recursive] Error 1
-make[2]: Leaving directory `/opt/pct210_build/xenomai-2.5.0-eabi/src/skins'
-make[1]: *** [all-recursive] Error 1
-make[1]: Leaving directory `/opt/pct210_build/xenomai-2.5.0-eabi/src'
-=2D------------------------------------------------------------------
-head config.log
-=20
-$ ./configure --build=3Di686-linux --host=3Darm-linux --prefix=3D/usr/xenom=
-ai-2.5.0-eabi --enable-shared=20
-CC=3D/opt/toolchains/arm926t-uclibcgnueabi/usr/bin/arm-linux-gcc=20
-LD=3D/opt/toolchains/arm926t-uclibcgnueabi/usr/bin/arm-linux-ld --enable-ar=
-m-mach=3Dat91sam926x
+lux-integ wrote:
+> d) but when I type make  I encountered a failure  like so:-
+> 
+>   HOSTCC  scripts/basic/fixdep
+>   HOSTCC  scripts/basic/docproc
+>   HOSTCC  scripts/basic/hash
+>   HOSTCC  scripts/kconfig/conf.o
+>   HOSTCC  scripts/kconfig/kxgettext.o
+>   SHIPPED scripts/kconfig/zconf.tab.c
+>   SHIPPED scripts/kconfig/lex.zconf.c
+>   SHIPPED scripts/kconfig/zconf.hash.c
+>   HOSTCC  scripts/kconfig/zconf.tab.o
+>   HOSTLD  scripts/kconfig/conf
+> scripts/kconfig/conf -s arch/x86/Kconfig
+>   CHK     include/linux/version.h
+>   UPD     include/linux/version.h
+>   CHK     include/linux/utsrelease.h
+>   UPD     include/linux/utsrelease.h
+>   SYMLINK include/asm -> include/asm-x86
+>   CC      kernel/bounds.s
+>   GEN     include/linux/bounds.h
+>   CC      arch/x86/kernel/asm-offsets.s
+> In file included from include/linux/sched.h:62,
+>                  from arch/x86/kernel/asm-offsets_64.c:8,
+>                  from arch/x86/kernel/asm-offsets.c:4:
+> include/linux/ipipe.h:76:2: error: #error "CONFIG_NR_CPUS is too large, please 
+> lower it."
+> make[1]: *** [arch/x86/kernel/asm-offsets.s] Error 1
 
-Thank you in advance,Sinisa.
+This is starting to become an FAQ, and will undoubtedly be fixed in
+future versions. In the meantime, please disable CONFIG_SPARSE_IRQ.
+
+-- 
+Gilles Chanteperdrix
 
