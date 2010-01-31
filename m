@@ -1,17 +1,11 @@
-Message-ID: <4B5F7694.4040403@domain.hid>
-Date: Wed, 27 Jan 2010 00:11:16 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Sender: messages-noreply@domain.hid
+Date: Sun, 31 Jan 2010 04:55:46 -0800 (PST)
+From: Tarek Ben Ali <tarekbenali@domain.hid>
+Message-ID: <364587821.2859281.1264942546711.JavaMail.app@domain.hid>
 MIME-Version: 1.0
-References: <4B5EB6D2.9040206@domain.hid> <4B5ED445.1040908@domain.hid>
-	<4B5ED4F7.4030006@domain.hid> <4B5EE589.2040406@domain.hid>
-	<4B5EE6AA.5030807@domain.hid> <4B5EEA87.3020505@domain.hid>
-	<4B5EECD2.2090804@domain.hid> <4B5EF1CE.9010402@domain.hid>
-	<4B5EF2E9.2030405@domain.hid> <4B5EF966.1020206@domain.hid>
-In-Reply-To: <4B5EF966.1020206@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH v2] x86: Fix root domain state restoring
- on exception return
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_2859280_280483798.1264942546710"
+Subject: [Xenomai-core] Tarek Ben Ali souhaite rester en contact sur LinkedIn
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -20,114 +14,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, adeos-main <adeos-main@gna.org>, xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Wolfgang Mauerer wrote:
-> Jan Kiszka wrote:
->> Wolfgang Mauerer wrote:
->>> Jan Kiszka wrote:
->>>> Wolfgang Mauerer wrote:
->>>>> Jan Kiszka wrote:
->>>>>> Wolfgang Mauerer wrote:
->>>>>>> Jan Kiszka wrote:
->>>>>>>> Wolfgang Mauerer wrote:
->>>>>>>>> Jan Kiszka wrote:
->>>>>>>>>> If we enter __ipipe_handle_exception over a non-root domain and leave it
->>>>>>>>>> due to migration in the event handler over root, we must not restore the
->>>>>>>>>> root domain state so far saved on entry. This caused subtle pipeline
->>>>>>>>>> state corruptions. Instead, only save and restore them if we were
->>>>>>>>>> entering over root.
->>>>>>>>>>
->>>>>>>>>> However, the x86-32 regs.flags fixup is required nevertheless to take
->>>>>>>>>> care of mismatches between the root domain state and the hardware flags
->>>>>>>>>> on entry. That may happen if we fault in the iret path. But also in this
->>>>>>>>>> case we must not restore an invalid root domain state. So if we entered
->>>>>>>>>> over non-root, pick up the input for __fixup_if from the root domain
->>>>>>>>>> after running the ipipe handler.
->>>>>>>>>>
->>>>>>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->>>>>>>>>> ---
->>>>>>>>>>
->>>>>>>>>> Next try. But this time I think I finally understood what scenario
->>>>>>>>>> __fixup_if is actually fixing. Please correct me if I'm still missing
->>>>>>>>>> one.
->>>>>>>>> looks good - it works for my test cases and solves the problems with
->>>>>>>>> the hw/pipeline state mismatch during early bootup. But do you happen
->>>>>>>>> to have any scenario at hand with ipipe_domain_root_p && !root_entry?
->>>>>>>>> Couldn't trigger this one yet so only the raw_irqs_disabled_flags
->>>>>>>>> fixup is excercised, though I guess it can't do any harm to really
->>>>>>>>> ensure that the explanation fits reality this time...
->>>>>>>> You mean non-root entry -> migration -> __fixup_if? In that case we pick
->>>>>>>> up the flags for fixup _after_ the migration (raw_irqs_disabled()). Or
->>>>>>>> what do you mean?
->>>>>>> (...)
->>>>>>>>>> -	if (unlikely(!ipipe_root_domain_p)) {
->>>>>>>>>> +	if (likely(ipipe_root_domain_p)) {
->>>>>>>>>> +		/*
->>>>>>>>>> +		 * 32-bit: In case we faulted in the iret path, regs.flags do
->>>>>>>>>> +		 * not match the root domain state as the low-level return
->>>>>>>>>> +		 * code will evaluate it. Fix this up, either by the root
->>>>>>>>>> +		 * state sampled on entry or, if we migrated to root, with the
->>>>>>>>>> +		 * current state.
->>>>>>>>>> +		 */
->>>>>>>>>> +		__fixup_if(root_entry ? raw_irqs_disabled_flags(flags) :
->>>>>>>>>> +					raw_irqs_disabled(), regs);
->>>>>>> I'm referring to the case that evaluates to
->>>>>>> __fixup_if(raw_irqs_disabled(), regs); That is, something that
->>>>>>> triggers
->>>>>>>
->>>>>>> 		if (!root_entry)
->>>>>>> 			do_something();
->>>>>>>
->>>>>>> Could be that we're talking about to the same case, although I'm not
->>>>>>> sure ;-)
->>>>>> Right, that's the case I described above. What problem do you precisely
->>>>>> see or what concerns to you have about the suggested behavior?
->>>>> None. I'd just like to be able to trigger it to avoid that
->>>>> there are any unforseen problems we're still missing.
->>>>> Since this corner of Ipipe seems to have proven tricky before
->>>>> AFAIK, I thought it might perhaps be worth while to really excercise
->>>>> every possible code path.
->>>> To trigger it, you need to recreate the scenario that our colleagues
->>>> managed to generate on the MARS: Have Linux IRQs disabled (or enabled,
->>>> to have both variations), schedule in a Xenomai task, let it raise a
->>>> fault so that Xenomai migrates it back.
->>> Yep, but allocating a large amount of memory in non-rt, switching to
->>> rt and then accessing this and switching back to non-rt
->>> in the hope of generating many faults so that the scenario would be
->>> synthesised without expensive and hard to access hardware was
->>> unsuccessful, so my little innocent question was really just if you
->>> happened to have a testcase.
->> OK, then I totally misunderstood your question.
-> 
-> Seems we have nevertheless finally managed to reach an agreement on
-> what we mean ;-)
->> You do not need to generate a fixable fault, and unfixable one (*(int
->> *)NULL = 0;) should suffice.
-> 
-> yeah, although that would maybe be a bit ugly wrt. handling the SEGV
-> and continuing to allow continuous faults without
-> having to restart the program all the time.
-> 
-> As we just discussed offline, this would anyway not yet trigger the
-> "fault in iret"-scenario, and I don't think it's worth while spending
-> the large extra effort for this considering that the code will sooner
-> or later die anyway. Or does maybe anyone have an idea how to trigger
-> such a fault with simple means?
+------=_Part_2859280_280483798.1264942546710
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-I think I will write a test case which tests the few cases we really
-have, and check that __ipipe_handle_exception works as expected.
-A small rtdm driver with some specialized ioctls should do.
+LinkedIn
+------------
 
-> 
-> Cheers, Wolfgang
-> 
+  =20
+J'aimerais vous inviter =C3=A0 rejoindre mon r=C3=A9seau professionnel en l=
+igne, sur le site LinkedIn. Tarek Ben Ali
+
+Tarek Ben Ali
+Systems Integrator chez Alpha Engineering Tunisia=20
+Tunisie
+
+Veuillez confirmer que vous connaissez Tarek Ben Ali
+https://www.linkedin.com/e/isd/1035877486/Ddk8ijJy/
 
 
--- 
-Gilles Chanteperdrix, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+=20
+------
+(c) 2010, LinkedIn Corporation
+------=_Part_2859280_280483798.1264942546710
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+
+<html>
+  <body>
+
+ =20
+
+<table border=3D"0" width=3D"550" cellpadding=3D"0" cellspacing=3D"0" style=
+=3D"max-width:550px; border-top:4px solid #39C; font: 12px arial, sans-seri=
+f; margin: 0 auto;"><tr><td> =20
+  <h1 style=3D"color: #000; font: bold 23px arial; margin:5px 0;" >LinkedIn=
+</h1>
+
+<div style=3D"font:13px arial, sans-serif; width:540px"> =20
+   =20
+    <p>
+      J'aimerais vous inviter =C3=A0 rejoindre mon r=C3=A9seau professionne=
+l en ligne, sur le site LinkedIn. Tarek Ben Ali
+    </p>
+   =20
+    <table cellpadding=3D"0" cellspacing=3D"0" style=3D"margin-bottom: 10px=
+;">
+      <tr>
+          <td style=3D"width: 50px;">
+              <IMG style=3D"padding: 5px;" src=3D"http://media.linkedin.com=
+/media/p/1/000/048/0a2/246ff0a.jpg" class=3D"photo" width=3D"40" height=3D"=
+40">
+          </td>
+        <td style=3D"font: 13px arial, sans-serif; width: 490px;">
+          <div style=3D"padding: 5px 5px 5px 0">
+            Tarek Ben Ali<br>
+                Systems Integrator chez Alpha Engineering Tunisia=20
+            <br>
+                    Tunisie
+          </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <p>
+              <a href=3D"https://www.linkedin.com/e/isd/1035877486/Ddk8ijJy=
+/" style=3D"background-color:#ffcc00; display:inline-block; border-right: 1=
+px solid #7a5a20; border-bottom: 1px solid #7a5a20; padding:10px; text-deco=
+ration: none; color: #000; text-align: center; white-space:none; font-weigh=
+t: bold;">Veuillez confirmer que vous connaissez Tarek</a>
+    </p>
+</div>
+
+
+
+
+  <p style=3D"width: 550px; margin: 3px auto; font: 10px arial, sans-serif;=
+ color: #999;">=C2=A9 2010, LinkedIn Corporation</p>
+
+</body>
+</html>
+------=_Part_2859280_280483798.1264942546710--
 
