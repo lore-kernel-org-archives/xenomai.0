@@ -1,15 +1,12 @@
-Message-ID: <4B67EE95.9090509@domain.hid>
-Date: Tue, 02 Feb 2010 10:21:25 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <b88603c31001260616wf2194d3t193de281af1318ad@domain.hid>	
-	<4B675733.3040902@domain.hid> <4B676938.4070805@domain.hid>
-	<b88603c31002020118n20fd45ddqc723221174a48691@domain.hid>
-In-Reply-To: <b88603c31002020118n20fd45ddqc723221174a48691@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Brian Zenowich <bz@domain.hid>
+In-Reply-To: <729916.37479.qm@domain.hid>
+References: <729916.37479.qm@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 02 Feb 2010 11:21:27 -0500
+Message-ID: <1265127687.3317.61.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai 2.5.0: rt_task_shadow fails when
- libnative is statically linked.
+Subject: Re: [Xenomai-help] Problem with Xeno-test: "Something died a XXX or"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,18 +16,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Henri Roosen <henriroosen@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Henri Roosen wrote:
-> I can confirm this works for me too.
+Hello,
+
 > 
-> But aren't there any reasons to declare those functions with the
-> 'weak' attribute?
+> I try to install Xenomai on Ubunut Hardy 8.04. Versions used are:
+> - xenomai-2.4.6.1
+> - linux-kernel 2-6.24.6 
+> - adeos patch: adeos-ipipe-2.6.24-x86-2.0-07.patch
+> 
+> I tried many .config files but it is always the same problem with
+> Xeno-test. It seems that there is a problem with the "generate load"
+> part of the script.
+> Attached, are two files. One is xeno-test without modifying it. The
+> other is xeno-test results but with the "generate load'" part removed.
+> 
+> Latency (in user space and kernel) seem to be great. Around 7 us in
+> user-space and 4 us in kernel for worst case.
 
-The weak attribute is a directive to the linker or the loader, so, we do
-not need it when we declare things, only when we define them.
+I know this thread is a year old now, but there was never a solution
+posted. I ran into the same problem a few months ago, solved it, ran
+into it again yesterday, and forgot how I solved it before.
+
+So, just to document the solution for posterity's sake (or for anyone
+Googling for a solution):
+
+The xeno-test script fails with "something died a <xxxx>" when it is run
+under the dash shell for me. The xeno-test script specifies "/bin/sh" as
+a shell, and under my distro (Ubuntu 9.10 now), /bin/sh => dash, not
+bash. The dash shell is designed to be a fast, efficient,
+non-interactive shell mainly for running scripts, and therefore has a
+limited feature set when compared with bash. 
+
+It seems dash is not able to handle whatever xeno-test is asking it to
+do at that moment. But the xeno-test script works fine (for me) when run
+with "bash xeno-test".
+
+There. Now I just need to sit back and let all the little web-crawling
+robots index the heck out of this email. Soon, this solution will show
+up in a half-dozen "mailing list archive" sites, and I'll never have to
+re-solve it again! :-)
+
+Sincerely,
+
 
 -- 
-					    Gilles.
+Brian Zenowich <bz@domain.hid>
+Robotics Engineer @ Barrett Technology, Inc.
+625 Mount Auburn Street, Cambridge, MA 02138, USA
+Tel: 617-252-9000 x38
+Web: http://www.barrett.com
+
 
