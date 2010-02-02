@@ -1,13 +1,11 @@
-Message-ID: <4B68530A.10804@domain.hid>
-Date: Tue, 02 Feb 2010 17:30:02 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <729916.37479.qm@domain.hid>	<1265127687.3317.61.camel@domain.hid>
-	<4B685262.9070606@domain.hid>
-In-Reply-To: <4B685262.9070606@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem with Xeno-test: "Something died a XXX or"
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01CAA457.3B7CC830"
+Date: Tue, 2 Feb 2010 16:29:56 -0600
+Message-ID: <181804936ABC2349BE503168465576460D8F07F0@domain.hid>
+From: "Steve Deiters" <SteveDeiters@domain.hid>
+Subject: [Xenomai-help] pthread_make_periodic_np initial start date
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,49 +15,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Brian Zenowich <bz@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Brian Zenowich wrote:
->> Hello,
->>
->>> I try to install Xenomai on Ubunut Hardy 8.04. Versions used are:
->>> - xenomai-2.4.6.1
->>> - linux-kernel 2-6.24.6 
->>> - adeos patch: adeos-ipipe-2.6.24-x86-2.0-07.patch
->>>
->>> I tried many .config files but it is always the same problem with
->>> Xeno-test. It seems that there is a problem with the "generate load"
->>> part of the script.
->>> Attached, are two files. One is xeno-test without modifying it. The
->>> other is xeno-test results but with the "generate load'" part removed.
->>>
->>> Latency (in user space and kernel) seem to be great. Around 7 us in
->>> user-space and 4 us in kernel for worst case.
->> I know this thread is a year old now, but there was never a solution
->> posted. I ran into the same problem a few months ago, solved it, ran
->> into it again yesterday, and forgot how I solved it before.
->>
->> So, just to document the solution for posterity's sake (or for anyone
->> Googling for a solution):
->>
->> The xeno-test script fails with "something died a <xxxx>" when it is run
->> under the dash shell for me. The xeno-test script specifies "/bin/sh" as
->> a shell, and under my distro (Ubuntu 9.10 now), /bin/sh => dash, not
->> bash. The dash shell is designed to be a fast, efficient,
->> non-interactive shell mainly for running scripts, and therefore has a
->> limited feature set when compared with bash. 
->>
->> It seems dash is not able to handle whatever xeno-test is asking it to
->> do at that moment. But the xeno-test script works fine (for me) when run
->> with "bash xeno-test".
-> 
-> That is not a good solution. bash is not available on embedded platform.
-> The real platform is to fix the script to run with dash. And it is far
+This is a multi-part message in MIME format.
 
-I meant: "the real solution".
+------_=_NextPart_001_01CAA457.3B7CC830
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
--- 
-					    Gilles.
+Is there a way to specify no initial delay when calling
+pthread_make_periodic_np?  If I pass a value directly obtained from
+clock_gettime, it will return a ETIMEDOUT error due to time passing
+before I make the call.  I could add a small delay to the value obtained
+from clock_gettime, but I would be concerned that due to other
+happenings in the system, the absolute date may still have passed by the
+time it gets around to calling pthread_make_periodic_np.
+
+What I would be looking for I guess is what happens when I call
+rt_task_set_periodic with an idate parameter of TM_NOW.  Is there any
+way to simulate this behavior?
+
+Thanks.
+
+
+------_=_NextPart_001_01CAA457.3B7CC830
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; charset=3Dus-asc=
+ii">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version 6.5.7638.=
+1">
+<TITLE>pthread_make_periodic_np initial start date</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/rtf format -->
+
+<P><SPAN LANG=3D"en-us"><FONT SIZE=3D2 FACE=3D"Arial">Is there a way to=
+ specify no initial delay when calling pthread_make_periodic_np?&nbsp;=
+ If I pass a value directly obtained from clock_gettime, it will return=
+ a ETIMEDOUT error</FONT><FONT SIZE=3D2 FACE=3D"Arial"> due to time pass=
+ing before I make the call</FONT><FONT SIZE=3D2 FACE=3D"Arial">.&nbsp;=
+ I could add a small delay to the value obtained from clock_gettime, but=
+ I would be concerned that due to other happenings in the system, the=
+ absolute date may still have passed by the time it gets around to calli=
+ng pthread_make_periodic_np.</FONT></SPAN></P>
+
+<P><SPAN LANG=3D"en-us"><FONT SIZE=3D2 FACE=3D"Arial">What I would be=
+ looking for I guess is what happens when I call rt_task_set_periodic=
+ with an idate parameter of TM_NOW.&nbsp; Is there any way to simulate=
+ this behavior?</FONT></SPAN></P>
+
+<P><SPAN LANG=3D"en-us"><FONT SIZE=3D2 FACE=3D"Arial">Thanks.</FONT></SP=
+AN>
+</P>
+
+</BODY>
+</HTML>
+------_=_NextPart_001_01CAA457.3B7CC830--
+
 
