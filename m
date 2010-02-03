@@ -1,12 +1,13 @@
-Message-ID: <4B68A8CA.1090607@domain.hid>
-Date: Tue, 02 Feb 2010 23:35:54 +0100
+Message-ID: <4B69C0A8.6040402@domain.hid>
+Date: Wed, 03 Feb 2010 19:30:00 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <181804936ABC2349BE503168465576460D8F07F0@domain.hid>
-In-Reply-To: <181804936ABC2349BE503168465576460D8F07F0@domain.hid>
+References: <fd55ced7db48fe30f8139df895fb9d4c.squirrel@domain.hid>	<201002011232.30431.sinisa.denic@domain.hid>	<4B66D203.7000309@domain.hid>
+	<201002011532.31310.sinisa.denic@domain.hid>
+In-Reply-To: <201002011532.31310.sinisa.denic@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pthread_make_periodic_np initial start date
+Subject: Re: [Xenomai-help] xenomai 2.5.0 uclibc 0.30 compatibility?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,29 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steve Deiters <SteveDeiters@domain.hid>
-Cc: xenomai@xenomai.org
+To: Sinisa Denic <sinisa.denic@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Steve Deiters wrote:
-> Is there a way to specify no initial delay when calling
-> pthread_make_periodic_np?  If I pass a value directly obtained from
-> clock_gettime, it will return a ETIMEDOUT error due to time passing
-> before I make the call.  I could add a small delay to the value obtained
-> from clock_gettime, but I would be concerned that due to other
-> happenings in the system, the absolute date may still have passed by the
-> time it gets around to calling pthread_make_periodic_np.
+Sinisa Denic wrote:
+> On Monday 01 February 2010 14:07:15 Gilles Chanteperdrix wrote:
+>> Sinisa Denic wrote:
+>>> On Sunday 31 January 2010 11:31:28 Gilles Chanteperdrix wrote:
+>>>> This is bad news, the problem is that uclibc's stdio.h needs pthread.h,
+>>>> which because of the -I flags we pass is xenomai's pthread.h, which
+>>>> includes asm/syscall.h, which needs stdio.h.
+>>> Same thing,
+>>> I can't figure out which file to include in pthread.h
+>>> posix/init.c - same error
+>>> include/asm-arm/xenomai/syscall.h - produce error from start building
+>>> rtdm ...
+>> In every .c file where you get the error, you should try and include
+>> pthread.h before anything else.
 > 
-> What I would be looking for I guess is what happens when I call
-> rt_task_set_periodic with an idate parameter of TM_NOW.  Is there any
-> way to simulate this behavior?
+> 
+> Ok, now I've got it built. In attach there is a patch, maybe usefull to 
+> someone.
 
-pthread_make_periodic_np is a legacy from RTLinux. You should be using
-clock_nanosleep instead.
-
-That said, pthread_make_periodic_np internally uses the same service as
-rt_task_set_periodic, and TM_NOW is just 0. So, you can probably pass a
-timespec with tv_sec and tv_nsec both 0.
-
+Xenomai v2.5.1 should include a cleaner fix (along with the I-pipe for
+Linux 2.6.30 fixed for the arm926ejs issue, as well as some improvements
+on at91). So, it would be nice if you could test this release and report.
 
 -- 
 					    Gilles.
