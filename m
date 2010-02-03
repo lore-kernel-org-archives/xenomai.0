@@ -1,12 +1,14 @@
-Message-ID: <4B69DD73.3040004@domain.hid>
-Date: Wed, 03 Feb 2010 21:32:51 +0100
+Message-ID: <4B69DDE6.1000903@domain.hid>
+Date: Wed, 03 Feb 2010 21:34:46 +0100
 From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
+References: <4B69D077.7000307@domain.hid> <4B69D2F8.6000201@domain.hid>
+In-Reply-To: <4B69D2F8.6000201@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig1D49DCCD2CECC5DBE45AF231"
-Subject: [Xenomai-help] unofficial Xenomai 2.5.x apt archive for Debian and
-	Ubuntu
+	boundary="------------enig90881601ADCBBDF841E23D66"
+Subject: Re: [Xenomai-help] howto build debion packages from a Xenomai Git
+ repository
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,48 +18,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1D49DCCD2CECC5DBE45AF231
+--------------enig90881601ADCBBDF841E23D66
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Am 03.02.2010 20:48, schrieb Gilles Chanteperdrix:
+> Stefan Kisdaroczi wrote:
+>> Hi all,
+>>
+>> below a howto which works for me on a Debian Lenny system.
+>>
+>> Regards, Stefan
+>=20
+> That is nice. Would you mind putting it in the wiki, including the
+> kernel build? If you agree, please tell me what your login on the wiki
+> is, and I will give you the permissions to write.
 
-i've put a apt repository online with binary xenomai packages (private, u=
-nofficial).
-There is a tree for Debian 5.0 'Lenny' and another for Ubuntu 9.10 'Karmi=
-c Koala' (amd64,i386).
+ok, my login is 'kisda'.
 
-I'm tracking the Xenomai branch 2.5 and have just uploaded the Xenomai 2.=
-5.1 deb's. Give it a try.
+> The page we have looks outdated, it mentions inclusion in the official
+> debian distribution, which looks currently unmaintained, and still uses=
 
-First, you need to add the apt key of my repository:
-# wget -q -O - http://homepage.hispeed.ch/kisda/xenomai/apt.key | apt-key=
- add -
-
-Next, put the following lines in your /etc/apt/sources.list file:
-
- For Debian 5.0 'Lenny' - amd64,i386:
-
-  deb http://homepage.hispeed.ch/kisda/xenomai/ lenny 2.5
-  deb-src http://homepage.hispeed.ch/kisda/xenomai/ lenny 2.5
-
- For Ubuntu 9.10 'Karmic Koala' - amd64,i386:
-
-  deb http://homepage.hispeed.ch/kisda/xenomai/ karmic 2.5
-  deb-src http://homepage.hispeed.ch/kisda/xenomai/ karmic 2.5
-
-Finally, update apt-index and install the Xenomai packages:
- apt-get update
- apt-get install xenomai-runtime xenomai-doc libxenomai1 libxenomai-dev l=
-inux-patch-xenomai
-
-Regards, Stefan
+> svn whereas we switched to git:
+> http://www.xenomai.org/index.php/Building_Debian_packages
+>=20
+> Regards.
+>=20
 
 
---------------enig1D49DCCD2CECC5DBE45AF231
+
+--------------enig90881601ADCBBDF841E23D66
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -66,10 +60,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.3 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iD8DBQFLad1zIPTw9rIdn6oRAlE4AJ9OK0uEaYOtgsr0LUGP2FQPeI9eiwCeIz3D
-chGOcGbs757X6HKm985CCng=
-=ZZck
+iD8DBQFLad3mIPTw9rIdn6oRAoi3AJ9eDY/SDjAQnOr9qpBw6OFqjWtRNQCfQX1d
+201GjD5RdW841q/ZNUzwzto=
+=tKFf
 -----END PGP SIGNATURE-----
 
---------------enig1D49DCCD2CECC5DBE45AF231--
+--------------enig90881601ADCBBDF841E23D66--
 
