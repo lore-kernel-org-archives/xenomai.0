@@ -1,15 +1,11 @@
-Message-ID: <4B6AC9D7.6080107@domain.hid>
-Date: Thu, 04 Feb 2010 14:21:27 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Ivan Kalatchev" <ivan.kalatchev@domain.hid>
+Date: Thu, 4 Feb 2010 08:43:00 -0500
+Message-ID: <004b01caa59f$f82b2280$e8816780$@kalatchev@domain.hid>
 MIME-Version: 1.0
-References: <fd55ced7db48fe30f8139df895fb9d4c.squirrel@domain.hid>
-	<201002011532.31310.sinisa.denic@domain.hid>
-	<4B69C0A8.6040402@domain.hid>
-	<201002041404.32949.sinisa.denic@domain.hid>
-In-Reply-To: <201002041404.32949.sinisa.denic@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] xenomai 2.5.0 uclibc 0.30 compatibility?
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_004C_01CAA576.0F551A80"
+Content-Language: en-ca
+Subject: [Xenomai-help] Problem compiling 2.5.1
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,105 +15,287 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sinisa Denic <sinisa.denic@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai-help@domain.hid
 
-Sinisa Denic wrote:
-> On Wednesday 03 February 2010 19:30:00 you wrote:
->> Sinisa Denic wrote:
->>> On Monday 01 February 2010 14:07:15 Gilles Chanteperdrix wrote:
->>>> Sinisa Denic wrote:
->>>>> On Sunday 31 January 2010 11:31:28 Gilles Chanteperdrix wrote:
->>>>>> This is bad news, the problem is that uclibc's stdio.h needs
->>>>>> pthread.h, which because of the -I flags we pass is xenomai's
->>>>>> pthread.h, which includes asm/syscall.h, which needs stdio.h.
->>>>> Same thing,
->>>>> I can't figure out which file to include in pthread.h
->>>>> posix/init.c - same error
->>>>> include/asm-arm/xenomai/syscall.h - produce error from start buildi=
-ng
->>>>> rtdm ...
->>>> In every .c file where you get the error, you should try and include=
+This is a multi-part message in MIME format.
 
->>>> pthread.h before anything else.
->>> Ok, now I've got it built. In attach there is a patch, maybe usefull =
-to
->>> someone.
->> Xenomai v2.5.1 should include a cleaner fix (along with the I-pipe for=
+------=_NextPart_000_004C_01CAA576.0F551A80
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
->> Linux 2.6.30 fixed for the arm926ejs issue, as well as some improvemen=
-ts
->> on at91). So, it would be nice if you could test this release and repo=
-rt.
-> Ok , previos problems didn't appear, but now I'm getting this:
->=20
-> latency.c:12:22: error: execinfo.h: No such file or directory
-> latency.c: In function =E2=80=98mode_sw=E2=80=99:
-> latency.c:460: warning: implicit declaration of function =E2=80=98backt=
-race=E2=80=99
-> latency.c:461: warning: implicit declaration of=20
-> function =E2=80=98backtrace_symbols_fd=E2=80=99
-> make[3]: *** [latency-latency.o] Error 1
-> make[3]: Leaving directory=20
-> `/opt/pct210_build/xenomai-2.5.1-eabi/src/testsuite/latency'
-> make[2]: *** [all-recursive] Error 1
-> make[2]: Leaving directory=20
-> `/opt/pct210_build/xenomai-2.5.1-eabi/src/testsuite'
-> make[1]: *** [all-recursive] Error 1
-> make[1]: Leaving directory `/opt/pct210_build/xenomai-2.5.1-eabi/src'
-> make: *** [all-recursive] Error 1
->=20
-> In order to compile xeno2.5.1 I skipped testsuite building and it passe=
-d
+I have compiler error when compiling xenomai-2.5.1. Again probably because
+my tool chain is outdated - gcc 3.4.4.
 
-Ok. Could you try the following patch?
+ 
 
-diff --git a/src/testsuite/latency/latency.c
-b/src/testsuite/latency/latency.c
-index ca5f1bf..f397b42 100644
---- a/src/testsuite/latency/latency.c
-+++ b/src/testsuite/latency/latency.c
-@@ -9,7 +9,9 @@
- #include <sys/time.h>
- #include <unistd.h>
+make[3]: Entering directory
+`/mnt/drive-1/build/xenomai-2.5.1/src/skins/native'
 
-+#ifndef __UCLIBC__
- #include <execinfo.h>
-+#endif /* !__UCLIBC__ */
+/bin/sh ../../../libtool --tag=CC   --mode=compile arm-linux-gcc
+-DHAVE_CONFIG_H -I. -I../../../src/include  -O2 -D_GNU_SOURCE -D_REENTRANT
+-Wall -pipe -march=armv5 -D__XENO__ -D__IN_XENO__ -Wstrict-prototypes
+-I../../../include    -MT libnative_la-timer.lo -MD -MP -MF
+.deps/libnative_la-timer.Tpo -c -o libnative_la-timer.lo `test -f 'timer.c'
+|| echo './'`timer.c
 
- #include <native/task.h>
- #include <native/timer.h>
-@@ -447,7 +449,13 @@ void faulthand(int sig)
+libtool: compile:  arm-linux-gcc -DHAVE_CONFIG_H -I. -I../../../src/include
+-O2 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -march=armv5 -D__XENO__
+-D__IN_XENO__ -Wstrict-prototypes -I../../../include -MT
+libnative_la-timer.lo -MD -MP -MF .deps/libnative_la-timer.Tpo -c timer.c
+-fPIC -DPIC -o .libs/libnative_la-timer.o
 
- void mode_sw(int sig)
- {
-+#ifndef __UCLIBC__
- 	const char buffer[] =3D "Mode switch, aborting. Backtrace:\n";
-+#else /* __UCLIBC__ */
-+	const char buffer[] =3D "Mode switch, aborting."
-+		" Backtrace unavailable with uclibc.\n";
-+#endif /* __UCLIBC__ */
-+=09
- 	static void *bt[200];
- 	unsigned n;
+{standard input}: Assembler messages:
 
-@@ -457,8 +465,10 @@ void mode_sw(int sig)
- 	}
+{standard input}:102: Error: bad instruction `lsrs sl,r7,#30'
 
- 	write(STDERR_FILENO, buffer, sizeof(buffer));
-+#ifndef __UCLIBC__
- 	n =3D backtrace(bt, sizeof(bt)/sizeof(bt[0]));
- 	backtrace_symbols_fd(bt, n, STDERR_FILENO);
-+#endif /* !__UCLIBC__ */
+make[3]: *** [libnative_la-timer.lo] Error 1
 
- 	signal(sig, SIG_DFL);
- 	kill(getpid(), sig);
+make[3]: Leaving directory
+`/mnt/drive-1/build/xenomai-2.5.1/src/skins/native'
+
+make[2]: *** [all-recursive] Error 1
+
+make[2]: Leaving directory `/mnt/drive-1/build/xenomai-2.5.1/src/skins'
+
+make[1]: *** [all-recursive] Error 1
+
+make[1]: Leaving directory `/mnt/drive-1/build/xenomai-2.5.1/src'
+
+make: *** [all-recursive] Error 1
+
+ 
+
+Is there way to modify assembler code so that code would compile ?  
+
+ 
+
+Regards,
+
+ 
+
+Ivan Kalatchev
+
+Senior Software Developer
+
+ESG Canada Inc.
+
+ 
+
+20 Hyperion Court, 
+
+Kingston, ON, Canada
+
+K7K 7K2
+
+Tel: 1 613 548-8287 ext. 247
+
+ 
 
 
---=20
-Gilles Chanteperdrix, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+------=_NextPart_000_004C_01CAA576.0F551A80
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
+xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
+xmlns=3D"http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dus-ascii">
+<meta name=3DGenerator content=3D"Microsoft Word 12 (filtered medium)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:"Arial Unicode MS";
+	panose-1:2 11 6 4 2 2 2 2 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:"\@Arial Unicode MS";
+	panose-1:2 11 6 4 2 2 2 2 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page Section1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 72.0pt 72.0pt 72.0pt;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext=3D"edit">
+  <o:idmap v:ext=3D"edit" data=3D"1" />
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body lang=3DEN-CA link=3Dblue vlink=3Dpurple>
+
+<div class=3DSection1>
+
+<p class=3DMsoNormal>I have compiler error when compiling xenomai-2.5.1. =
+Again
+probably because my tool chain is outdated - gcc 3.4.4.<o:p></o:p></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal style=3D'text-autospace:none'><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>make[3]: Entering directory
+`/mnt/drive-1/build/xenomai-2.5.1/src/skins/native'<o:p></o:p></span></p>=
+
+
+<p class=3DMsoNormal style=3D'text-autospace:none'><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>/bin/sh ../../../libtool =
+--tag=3DCC&nbsp;&nbsp;
+--mode=3Dcompile arm-linux-gcc -DHAVE_CONFIG_H -I. =
+-I../../../src/include&nbsp;
+-O2 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -march=3Darmv5 -D__XENO__
+-D__IN_XENO__ -Wstrict-prototypes -I../../../include&nbsp;&nbsp;&nbsp; =
+-MT
+libnative_la-timer.lo -MD -MP -MF .deps/libnative_la-timer.Tpo -c -o
+libnative_la-timer.lo `test -f 'timer.c' || echo =
+'./'`timer.c<o:p></o:p></span></p>
+
+<p class=3DMsoNormal style=3D'text-autospace:none'><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>libtool: compile:&nbsp; arm-linux-gcc
+-DHAVE_CONFIG_H -I. -I../../../src/include -O2 -D_GNU_SOURCE =
+-D_REENTRANT -Wall
+-pipe -march=3Darmv5 -D__XENO__ -D__IN_XENO__ -Wstrict-prototypes
+-I../../../include -MT libnative_la-timer.lo -MD -MP -MF
+.deps/libnative_la-timer.Tpo -c timer.c&nbsp; -fPIC -DPIC -o
+.libs/libnative_la-timer.o<o:p></o:p></span></p>
+
+<p class=3DMsoNormal style=3D'text-autospace:none'><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>{standard input}: Assembler =
+messages:<o:p></o:p></span></p>
+
+<p class=3DMsoNormal style=3D'text-autospace:none'><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>{standard input}:102: Error: bad instruction =
+`lsrs
+sl,r7,#30'<o:p></o:p></span></p>
+
+<p class=3DMsoNormal style=3D'text-autospace:none'><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>make[3]: *** [libnative_la-timer.lo] Error =
+1<o:p></o:p></span></p>
+
+<p class=3DMsoNormal style=3D'text-autospace:none'><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>make[3]: Leaving directory
+`/mnt/drive-1/build/xenomai-2.5.1/src/skins/native'<o:p></o:p></span></p>=
+
+
+<p class=3DMsoNormal style=3D'text-autospace:none'><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>make[2]: *** [all-recursive] Error =
+1<o:p></o:p></span></p>
+
+<p class=3DMsoNormal style=3D'text-autospace:none'><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>make[2]: Leaving directory
+`/mnt/drive-1/build/xenomai-2.5.1/src/skins'<o:p></o:p></span></p>
+
+<p class=3DMsoNormal style=3D'text-autospace:none'><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>make[1]: *** [all-recursive] Error =
+1<o:p></o:p></span></p>
+
+<p class=3DMsoNormal style=3D'text-autospace:none'><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>make[1]: Leaving directory
+`/mnt/drive-1/build/xenomai-2.5.1/src'<o:p></o:p></span></p>
+
+<p class=3DMsoNormal style=3D'text-autospace:none'><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>make: *** [all-recursive] Error =
+1<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal>Is there way to modify assembler code so that code =
+would
+compile ? &nbsp;<o:p></o:p></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal>Regards,<o:p></o:p></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal><span =
+style=3D'font-size:10.0pt;font-family:"Arial","sans-serif"'>Ivan
+Kalatchev<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span =
+style=3D'font-size:10.0pt;font-family:"Arial","sans-serif"'>Senior
+Software Developer<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span =
+style=3D'font-size:10.0pt;font-family:"Arial","sans-serif"'>ESG
+Canada Inc.<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span =
+style=3D'font-size:10.0pt;font-family:"Arial","sans-serif"'><o:p>&nbsp;</=
+o:p></span></p>
+
+<p class=3DMsoNormal><span =
+style=3D'font-size:10.0pt;font-family:"Arial","sans-serif"'>20
+Hyperion Court, <o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span =
+style=3D'font-size:10.0pt;font-family:"Arial","sans-serif"'>Kingston,
+ON, Canada<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span =
+style=3D'font-size:10.0pt;font-family:"Arial","sans-serif"'>K7K
+7K2<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span =
+style=3D'font-size:10.0pt;font-family:"Arial","sans-serif"'>Tel:
+1 613 548-8287 ext. 247</span><b><i><o:p></o:p></i></b></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+</div>
+
+</body>
+
+</html>
+
+------=_NextPart_000_004C_01CAA576.0F551A80--
 
 
