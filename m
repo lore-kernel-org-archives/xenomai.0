@@ -1,9 +1,10 @@
-Message-ID: <4B6AD557.3060904@domain.hid>
-Date: Thu, 04 Feb 2010 15:10:31 +0100
+Message-ID: <4B6AD743.2090002@domain.hid>
+Date: Thu, 04 Feb 2010 15:18:43 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <004b01caa59f$f82b2280$e8816780$@kalatchev@domain.hid>
-In-Reply-To: <004b01caa59f$f82b2280$e8816780$@kalatchev@domain.hid>
+	<4B6AD557.3060904@domain.hid>
+In-Reply-To: <4B6AD557.3060904@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Problem compiling 2.5.1
@@ -19,21 +20,25 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Ivan Kalatchev <ivan.kalatchev@domain.hid>
 Cc: Xenomai-help@domain.hid
 
-Ivan Kalatchev wrote:
-> I have compiler error when compiling xenomai-2.5.1. Again probably because
-> my tool chain is outdated - gcc 3.4.4.
-> (...)
-> {standard input}:102: Error: bad instruction `lsrs sl,r7,#30'
-> (...)
+Gilles Chanteperdrix wrote:
+> Ivan Kalatchev wrote:
+>> I have compiler error when compiling xenomai-2.5.1. Again probably because
+>> my tool chain is outdated - gcc 3.4.4.
+>> (...)
+>> {standard input}:102: Error: bad instruction `lsrs sl,r7,#30'
+>> (...)
+>>
+>> Is there way to modify assembler code so that code would compile ?  
 > 
-> Is there way to modify assembler code so that code would compile ?  
+> Ok. lsrs looks like a valid instruction, but s1 looks strange as a
 
-Ok. lsrs looks like a valid instruction, but s1 looks strange as a
-register name. The problem may be to call the variable "s", could you
-try to call it "sign" instead ? This way:
+It is "sl", not "s1", and sl is a valid name for r10. The problem is
+indeed lsrs, it is in fact a synonym for the equivalent mov with shifted
+second operand in older assembly sources. So, please try the following
+patch:
 
 diff --git a/include/asm-arm/arith.h b/include/asm-arm/arith.h
-index 9af5c5c..4ea5aae 100644
+index 9af5c5c..e86975c 100644
 --- a/include/asm-arm/arith.h
 +++ b/include/asm-arm/arith.h
 @@ -32,6 +32,7 @@ rthal_arm_nodiv_llimd(const long long op,
@@ -53,33 +58,16 @@ index 9af5c5c..4ea5aae 100644
  static inline __attribute__((__const__)) unsigned long long
  rthal_arm_nodiv_ullimd(const unsigned long long op,
  		       const unsigned long long frac,
-@@ -101,19 +100,19 @@ rthal_arm_nodiv_llimd(const long long op,
+@@ -101,7 +100,7 @@ rthal_arm_nodiv_llimd(const long long op,
  	__rthal_u64tou32(op, oph, opl);
  	__rthal_u64tou32(frac, frach, fracl);
  	
 -	__asm__ ("lsrs %[s], %[oph], #30\n\t"
-+	__asm__ ("lsrs %[sign], %[oph], #30\n\t"
++	__asm__ ("movs %[s], %[oph], lsr #30\n\t"
  		 "beq 1f\n\t"
  		 "rsbs  %[opl], %[opl], #0\n\t"
  		 "rsc  %[oph], %[oph], #0\n"
- 		 "1:\t"
- 		 rthal_arm_nodiv_ullimd_str
--		 "teq %[s], #0\n\t"
-+		 "teq %[sign], #0\n\t"
- 		 "beq 2f\n\t"
- 		 "rsbs  %[rm], %[rm], #0\n\t"
- 		 "rsc  %[rh], %[rh], #0\n"
- 		 "2:\t"
- 		 : [rl]"=r"(rl), [rm]"=r"(rm), [rh]"=r"(rh),
--		   [tl]"=r"(tl), [th]"=r"(th), [s]"=r"(s)
-+		   [tl]"=r"(tl), [th]"=r"(th), [sign]"=r"(s)
- 		 : [opl]"r"(opl), [oph]"r"(oph),
- 		   [fracl]"r"(fracl), [frach]"r"(frach),
- 		   [integ]"r"(integ)
 
-
-If it does not work, tell me and we will disable this implementation of
-rthal_nodiv_llimd for gcc versions < 4.
 
 -- 
 					    Gilles.
