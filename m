@@ -1,12 +1,15 @@
-Message-ID: <4B6ADA01.2080803@domain.hid>
-Date: Thu, 04 Feb 2010 15:30:25 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Ivan Kalatchev" <ivan.kalatchev@domain.hid>
+References: <004b01caa59f$f82b2280$e8816780$@kalatchev@domain.hid>
+	<4B6AD557.3060904@domain.hid> <4B6AD743.2090002@domain.hid>
+In-Reply-To: <4B6AD743.2090002@domain.hid>
+Date: Thu, 4 Feb 2010 09:49:46 -0500
+Message-ID: <005601caa5a9$4c3861e0$e4a925a0$@kalatchev@domain.hid>
 MIME-Version: 1.0
-References: <20100204105700.GB20669@domain.hid>
-In-Reply-To: <20100204105700.GB20669@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+	charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Force switch back to primary domain
+Content-Language: en-ca
+Subject: Re: [Xenomai-help] Problem compiling 2.5.1
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,53 +19,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Tschaeche IT-Services <services@domain.hid>
-Cc: xenomai@xenomai.org
+To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai-help@domain.hid
 
-Tschaeche IT-Services wrote:
-> Hi all,
-> 
-> my scenario is as follows:
-> 
-> - Xenomai 2.4.10, Linux 2.6.30.10
+Thanks Gilles,
 
-It would be nice if you could try Xenomai 2.5.1, the latest stable
-release, to see if you are not having a problem that we already fixed.
+This modification worked. I have xenomai compiled fine now
 
-> - rtdm-driver, defining ioctl_rt and ioctl_nrt
-> - user space task migrated with rt_task_shadow()
-> 	to primary domain
-> - user space task is in a loop calling rt_dev_ioctl()
-> 
-> what happens:
-> 
-> as long as user space task does not switch to secondary domain
-> user space task comes into ioctl_rt of my driver, which
-> waits on an event with rtdm_event_wait() - fine :-)
-> 
-> 
-> but, when user space task gets a Linux signal (SIGTRAP
-> caused by breakpoint), user space task switches
-> to secondary domain executing the signal handler,
-> which returns after handling the signal - fine up to here.
-> 
-> then, i would like to switch back to primary domain using:
-> 
-> 	rt_task_set_mode(0, T_PRIMARY, NULL);
+Regards,
 
-You do not need to do that.
+Ivan
 
+> -----Original Message-----
+> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+> Sent: February-04-10 9:19 AM
+> To: Ivan Kalatchev
+> Cc: Xenomai-help@domain.hid
+> Subject: Re: [Xenomai-help] Problem compiling 2.5.1
 > 
-> which returns without error. but, when calling rt_dev_ioctl()
-> again, the non realtime version function of the driver ioctl_nrt
-> is called (where i can't use rtdm_event_wait()).
+> Gilles Chanteperdrix wrote:
+> > Ivan Kalatchev wrote:
+> >> I have compiler error when compiling xenomai-2.5.1. Again probably
+> because
+> >> my tool chain is outdated - gcc 3.4.4.
+> >> (...)
+> >> {standard input}:102: Error: bad instruction `lsrs sl,r7,#30'
+> >> (...)
+> >>
+> >> Is there way to modify assembler code so that code would compile ?
+> >
+> > Ok. lsrs looks like a valid instruction, but s1 looks strange as a
+> 
+> It is "sl", not "s1", and sl is a valid name for r10. The problem is
+> indeed lsrs, it is in fact a synonym for the equivalent mov with
+> shifted
+> second operand in older assembly sources. So, please try the following
+> patch:
+> 
+> diff --git a/include/asm-arm/arith.h b/include/asm-arm/arith.h
+> index 9af5c5c..e86975c 100644
+> --- a/include/asm-arm/arith.h
+> +++ b/include/asm-arm/arith.h
+> @@ -32,6 +32,7 @@ rthal_arm_nodiv_llimd(const long long op,
+> 
+>  #include <asm-generic/xenomai/arith.h>
+> 
+> +#if __LINUX_ARM_ARCH__ >= 4
+>  #define rthal_arm_nodiv_ullimd_str			\
+>  	"umull %[tl], %[rl], %[opl], %[fracl]\n\t"	\
+>  	"umull %[rm], %[rh], %[oph], %[frach]\n\t"	\
+> @@ -49,8 +50,6 @@ rthal_arm_nodiv_llimd(const long long op,
+>  	"umlal %[rm], %[rh], %[opl], %[integ]\n\t"	\
+>  	"mla %[rh], %[oph], %[integ], %[rh]\n\t"
+> 
+> -
+> -#if __LINUX_ARM_ARCH__ >= 4
+>  static inline __attribute__((__const__)) unsigned long long
+>  rthal_arm_nodiv_ullimd(const unsigned long long op,
+>  		       const unsigned long long frac,
+> @@ -101,7 +100,7 @@ rthal_arm_nodiv_llimd(const long long op,
+>  	__rthal_u64tou32(op, oph, opl);
+>  	__rthal_u64tou32(frac, frach, fracl);
+> 
+> -	__asm__ ("lsrs %[s], %[oph], #30\n\t"
+> +	__asm__ ("movs %[s], %[oph], lsr #30\n\t"
+>  		 "beq 1f\n\t"
+>  		 "rsbs  %[opl], %[opl], #0\n\t"
+>  		 "rsc  %[oph], %[oph], #0\n"
+> 
+> 
+> --
+> 					    Gilles.
 
-in ioctl_nrt, return -ENOSYS, Xenomai will switch back your task to
-primary mode, and call the rt ioctl.
 
--- 
-Gilles Chanteperdrix, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
 
