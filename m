@@ -1,15 +1,17 @@
-Message-ID: <4B6AA0EF.5010406@domain.hid>
-Date: Thu, 04 Feb 2010 11:26:55 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4B69D077.7000307@domain.hid> <4B69D2F8.6000201@domain.hid>
-	<4B69DDE6.1000903@domain.hid> <4B69DE8B.8080409@domain.hid>
-	<4B6A9EE2.8010907@domain.hid>
-In-Reply-To: <4B6A9EE2.8010907@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4B6588AC.4070105@domain.hid>
+References: <201001292104.42395.lux-integ@domain.hid>
+	<4B657977.6050906@domain.hid>
+	<1264944150.16492.72.camel@domain.hid>
+	<4B6584DA.2010707@domain.hid>
+	<1264944906.16492.74.camel@domain.hid>
+	<4B6588AC.4070105@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Thu, 04 Feb 2010 11:46:10 +0100
+Message-ID: <1265280370.2348.130.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] howto build debion packages from a Xenomai Git
- repository
+Subject: Re: [Xenomai-help] help with xenomai-2.5.0 on pure64bit linux x86_64
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,40 +21,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Stefan Kisdaroczi wrote:
-> Am 03.02.2010 21:37, schrieb Gilles Chanteperdrix:
->> Stefan Kisdaroczi wrote:
->>> Am 03.02.2010 20:48, schrieb Gilles Chanteperdrix:
->>>> Stefan Kisdaroczi wrote:
->>>>> Hi all,
->>>>>
->>>>> below a howto which works for me on a Debian Lenny system.
->>>>>
->>>>> Regards, Stefan
->>>> That is nice. Would you mind putting it in the wiki, including the
->>>> kernel build? If you agree, please tell me what your login on the wiki
->>>> is, and I will give you the permissions to write.
->>> ok, my login is 'kisda'.
->> you should have the permission to write now.
+On Sun, 2010-01-31 at 14:42 +0100, Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> > On Sun, 2010-01-31 at 14:25 +0100, Jan Kiszka wrote:
+> >> Philippe Gerum wrote:
+> >>> On Sun, 2010-01-31 at 13:37 +0100, Jan Kiszka wrote:
+> >>>> lux-integ wrote:
+> >>>>> Greetings
+> >>>>>
+> >>>>>  I am new to xenomai and I am attempting to   install    a RT-kernel on a pure 
+> >>>>> 64-bit  (not multilib) amd64 linux setup.  The machine has a Sempron CPU and 
+> >>>>> 2 GBytes of RAM.  The distribution is cross-lfs  compiled from sources.  This 
+> >>>>> is what I have done:-
+> >>>>>
+> >>>>> a) I   fetched fresh kernel2.6.32.2  source-code   and placed it 
+> >>>>> in /usr/src/linux like so:-
+> >>>>> `linux' -> `linux-2.6.32.2'
+> >>>>>
+> >>>>> b) ..I then  applied  the  xenomai patch as such:-
+> >>>>> $SOURCES/xenomai-2.5.0/scripts/prepare-kernel.sh --linux=/usr/src/linux  --adeos=$SOURCES/xenomai-2.5.0/ksrc/arch/x86/patches/adeos-ipipe-2.6.32.2-x86-2.5-00.patch  --arch=x86_64
+> >>>>
+
+<snip>
+
+> >>> This is likely our old friend CONFIG_SPARSE_IRQ which is at work. Just
+> >>> disable this, until we have introduced the required changes to support
+> >>> more than 1024 IRQs.
+> >> If that is true, then please include a simple "depends on !CONFIG_IPIPE"
+> >> in the x86 patch for the meantime.
+> >>
+> > 
+> > No. Work to lift this limitation is in progress here.
 > 
-> Worked. I did not modify the kernel building howto, but i plan to extend it
-> according to the howto I sent last year to the list:
-> https://mail.gna.org/public/xenomai-help/2009-10/msg00203.html
+> That's even nicer (if 'lift' means removing any limitation of
+> CONFIG_NR_CPUS).
+> 
+> Jan
+> 
 
-Ok, no problem. You may remove the note about xenomai having been merged
-into an official debian package, since the official debian package is 5
-releases behind Xenomai, and ships with versions of the I-pipe patches
-which have been announced as bogus on Xenomai mailing lists. So, it is
-not a good idea to advise people to use that.
+Could someone gives this patch a go, with CONFIG_SPARSE_IRQ on (or some
+unreasonable number of CPUs in 64bit mode, whichever comes first)?
 
-You may also want to mention your "unofficial" apt repository.
+http://download.gna.org/adeos/patches/v2.6/x86/adeos-ipipe-2.6.32.7-x86-2.6-00.patch
+
+TIA,
+
 
 -- 
-Gilles Chanteperdrix, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+Philippe.
+
+
 
