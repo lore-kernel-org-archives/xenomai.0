@@ -1,12 +1,12 @@
-Message-ID: <4B71684B.4020307@domain.hid>
-Date: Tue, 09 Feb 2010 14:51:07 +0100
-From: Alexandre Coffignal <alexandre.coffignal@domain.hid>
+Message-ID: <4B7168ED.5050102@domain.hid>
+Date: Tue, 09 Feb 2010 14:53:49 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4B71666A.6040508@domain.hid>
-	<4B716732.3040306@domain.hid>
-In-Reply-To: <4B716732.3040306@domain.hid>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	<1265723261.2368.18.camel@domain.hid>
+In-Reply-To: <1265723261.2368.18.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Xenomai FAILED to register object
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,14 +17,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Thank
-I just realized my mistake, I must be very tired
-
-Gilles Chanteperdrix a écrit :
-> Alexandre Coffignal wrote:
->   
+Philippe Gerum wrote:
+> On Tue, 2010-02-09 at 14:43 +0100, Alexandre Coffignal wrote:
 >> Hi all,
 >>
 >> I use xenomai to port PSOS application, so I am using xenomai PSOS skin,
@@ -39,34 +36,16 @@ Gilles Chanteperdrix a écrit :
 >>
 >> and this message in dmess
 >>     Xenomai: FAILED to register object MAIN (unknown type), status -17
->>     
->
-> Because the main thread is already shadowed by the posix skin. It is
-> already a xenomai task.
->
->   
+> 
+> Don't call both of them "MAIN".
 
+I think the problem is that both skins try to shadow the main thread.
+This can be disabled for the posix skin by passing --enable-dlopen-skins
+on configure command line.
 
 -- 
-Alexandre COFFIGNAL, Chef de Projet
-Email: alexandre.coffignal@domain.hid
-<mailto:alexandre.coffignal@domain.hid>
-------------------------------------
-CénoSYS <http://www.cenosys.com>
-10, Rue Xavier Bichat
-F-72000 Le MANS
-Tel: +33(0) 243 511 797
-web : http://www.cenosys.com
-------------------------------------
-CONFIDENTIALITE : Ce message électronique et tous les fichiers attachés
-qu'il contient sont confidentiels et destinés exclusivement à l'usage de
-la personne à laquelle ils sont adressés. Si vous avez reçu ce message
-par erreur, merci de le retourner immédiatement a son émetteur sans en
-conserver de copie.
-
-CONFIDENTIALITY : This e-mail and any attachments are confidential and
-may also be privileged. If you are not the named recipient, please
-notify the sender immediately and do not disclose the contents to an
-other person, use it for any purpose, or store or copy the information
-in any medium.
+Gilles Chanteperdrix, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
 
