@@ -1,10 +1,10 @@
-Message-ID: <4B716732.3040306@domain.hid>
-Date: Tue, 09 Feb 2010 14:46:26 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4B71666A.6040508@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <4B71666A.6040508@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <4B71666A.6040508@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 09 Feb 2010 14:47:41 +0100
+Message-ID: <1265723261.2368.18.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Xenomai FAILED to register object
 List-Id: Help regarding installation and common use of Xenomai
@@ -19,7 +19,7 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Alexandre Coffignal <alexandre.coffignal@domain.hid>
 Cc: xenomai@xenomai.org
 
-Alexandre Coffignal wrote:
+On Tue, 2010-02-09 at 14:43 +0100, Alexandre Coffignal wrote:
 > Hi all,
 > 
 > I use xenomai to port PSOS application, so I am using xenomai PSOS skin,
@@ -35,12 +35,16 @@ Alexandre Coffignal wrote:
 > and this message in dmess
 >     Xenomai: FAILED to register object MAIN (unknown type), status -17
 
-Because the main thread is already shadowed by the posix skin. It is
-already a xenomai task.
+Don't call both of them "MAIN".
+
+> 
+> Thank in advance
+> 
+> 
+
 
 -- 
-Gilles Chanteperdrix, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+Philippe.
+
+
 
