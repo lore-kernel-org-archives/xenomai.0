@@ -1,13 +1,14 @@
-Message-ID: <4B730226.608@domain.hid>
-Date: Wed, 10 Feb 2010 19:59:50 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4B730A04.9040908@domain.hid>
+Date: Wed, 10 Feb 2010 20:33:24 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B72DB97.1020203@domain.hid> <4B72ED6B.5010805@domain.hid>
-	<4B72FA73.5090900@domain.hid> <4B730049.3000906@domain.hid>
-In-Reply-To: <4B730049.3000906@domain.hid>
+References: <E1NfBdX-0001ga-4b@domain.hid> <4B72A7E2.5020001@domain.hid>
+	<4B72A9DA.1090104@domain.hid>
+In-Reply-To: <4B72A9DA.1090104@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] xnselect_destroy fails to wake up waiters
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : Make
+ xnarch_init_timeconv an uninlined weak function
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,80 +17,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Hi Gilles,
->>>>
->>>> I tend to think that xnselect_destroy should signal an event on the
->>>> dying fd instead of just clearing the binding. The task blocking on
->>>> select currently does not get a hint that the fd is dead and will block
->>>> on select until some other event arrives. That's unfortunately not
->>>> standard conforming.
->>> Could you test the following patch? The fd will be in the "pending" set
->>> until the fd is reused, but that should be harmless as long as the fd is
->>> not in the "expected" set.
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> GIT version control wrote:
+>>> Module: xenomai-jki
+>>> Branch: for-upstream
+>>> Commit: 6b40653e9c3c4a2433bb4e91344fc378eb860f75
+>>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=6b40653e9c3c4a2433bb4e91344fc378eb860f75
 >>>
->>> diff --git a/ksrc/nucleus/select.c b/ksrc/nucleus/select.c
->>> index fd56bfb..17c5e0b 100644
->>> --- a/ksrc/nucleus/select.c
->>> +++ b/ksrc/nucleus/select.c
->>> @@ -131,7 +131,8 @@ int xnselect_bind(struct xnselect *select_block,
->>>  		__FD_SET(index, &selector->fds[type].pending);
->>>  		if (xnselect_wakeup(selector))
->>>  			xnpod_schedule();
->>> -	}
->>> +	} else
->>> +		__FD_CLR(index, &selector->fds[type].pending);
->>>  
->>>  	return 0;
->>>  }
->>> @@ -178,6 +179,7 @@ EXPORT_SYMBOL_GPL(__xnselect_signal);
->>>  void xnselect_destroy(struct xnselect *select_block)
->>>  {
->>>  	xnholder_t *holder;
->>> +	int resched;
->>>  	spl_t s;
->>>  
->>>  	xnlock_get_irqsave(&nklock, s);
->>> @@ -190,11 +192,18 @@ void xnselect_destroy(struct xnselect *select_block)
->>>  
->>>  		__FD_CLR(binding->bit_index,
->>>  			 &selector->fds[binding->type].expected);
->>> -		__FD_CLR(binding->bit_index,
->>> -			 &selector->fds[binding->type].pending);
->>> +		if (!__FD_ISSET(binding->bit_index,
->>> +				&selector->fds[binding->type].pending)) {
->>> +			__FD_SET(binding->bit_index,
->>> +				 &selector->fds[binding->type].pending);
->>> +			if (xnselect_wakeup(selector))
->>> +				resched = 1;
->>> +		}
->>>  		removeq(&selector->bindings, &binding->slink);
->>>  		xnlock_put_irqrestore(&nklock, s);
->>>  
->>> +		if (resched)
->>> +			xnpod_schedule();
->>>  		xnfree(binding);
->>>  		
->>>  		xnlock_get_irqsave(&nklock, s);
+>>> Author: Jan Kiszka <jan.kiszka@domain.hid>
+>>> Date:   Wed Feb 10 13:24:29 2010 +0100
 >>>
->> Works perfectly! You may test yourself using the RT-TCP examples from
->> latest RTnet git. :)
+>>> Make xnarch_init_timeconv an uninlined weak function
+>>>
+>>> Otherwise the wrong set of time conversion variables might get
+>>> initialized when using > 1 skin libraries.
+>> If that would be possible, then it is the conversion variables which
+>> should made be weak, not the function.
+>>
+>> The way I see it, the posix and native skins currently get a different
+>> set of variables and functions, which works, but with your change, since
+>> there is only one function, only one set of variable gets initialized by
+>> the two function calls. And one skin just broke.
+>>
+>> Or am I missing something? Does the patch fix a problem you really had?
 > 
-> Ok. Merged. It would need some work, as my test targets are all running
-> nfs. But that is certainly possible, as I think rtnetproxy now supports
-> UDP, does it?
+> Frankly, I wasn't able to test in the field yet as replacing the libs
+> there is non-trivial. But I was able to observe that only one set of
+> functions is used - which is logical considering the weak marks. And
+> this breaks due to the static inline initialization.
+> 
+> However, let's mark both functions and variables weak to fix the issue
+> and avoid leaving unused variables around. Will update my patch in a minute.
 
-Yep, should work, Wolfgang added it for the manroland scenario.
-
-Jan
+Ok. I am reverting this patch until you provide me with another
+solution. It causes latency to segfault purely and simply at startup on
+my dual PIII.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
