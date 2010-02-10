@@ -1,16 +1,23 @@
-From: Andreas Glatz <AndreasGlatz@domain.hid>
-Date: Wed, 10 Feb 2010 17:52:48 -0500
-Message-ID: <245373446233674495BCA5CA2FC1EB173713B4D0D1@domain.hid>
-References: <245373446233674495BCA5CA2FC1EB173713B4D0CD@RCexchangeSVR1.ruggedcom.local>,
-	<4B72F95E.3080402@domain.hid>
-	<245373446233674495BCA5CA2FC1EB173713B4D0CF@RCexchangeSVR1.ruggedcom.local>,
-	<4B72FBF1.2020109@domain.hid>
-In-Reply-To: <4B72FBF1.2020109@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <4B733A96.2060700@domain.hid>
+Date: Thu, 11 Feb 2010 00:00:38 +0100
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Kernel oops when reading /proc/xenomai/stats
+References: <4bed572e0911221135s64fc4726x1cd7235f116e11a4@domain.hid>
+	<4bed572e0912160458i32834958q9512476f1603979d@domain.hid>
+	<4B2BF4D9.6000503@domain.hid>
+	<4bed572e1001051015l21e71e8eyaec207701c2e21ad@domain.hid>
+	<4B43BE72.6040101@domain.hid>
+	<4bed572e1001060557x12ffd808k193573c565830a1b@domain.hid>
+	<4B450B7E.80106@domain.hid>
+	<4bed572e1001071124x55a964f8u22558c05c2a4485c@domain.hid>
+	<4B46590F.2060308@domain.hid>
+	<4bed572e1001080314n4d723074ld77459d1dffc8c3e@domain.hid>
+	<8b216e9e1002090921n61b662ag7a7e7fd6d3d337f4@domain.hid>
+In-Reply-To: <8b216e9e1002090921n61b662ag7a7e7fd6d3d337f4@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Help on analogy_ni_pcimio (Alexis Berlemont?)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,91 +27,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?ISO-8859-1?Q?Felipe_Brand=E3o_Cavalcanti?= <cavalkaf@domain.hid>
+Cc: xenomai@xenomai.org
 
 Hi,
 
->>>> That's the kernel oops with additional debugging info (starts with 'HU=
-HU' - see code below the oops):
->>>>
->>>> HUHU count=3D1 xnintr_count=3D-12
->>> That's not good. What is your Xenomai version?
->>
->> Hardware=3DMPC8360, Linux=3D2.6.32, Xenomai=3D2.4.10, ipipe=3D2.8-00
->>
->>> Does everything work fine if you application terminates normally and
->>> deletes the rt_intr objects explicitly?
->>
->> Checking...
->>
->
-> And then you may want to track this down at the site that decrements
-> xnintr_count, ie. rt_intr_delete -> xnintr_detach.
+Felipe Brand=E3o Cavalcanti wrote:
+> Hello,
+>=20
+> I just installed Xenomai 2.5.1, however, I am having the exact same=20
+> problem - the computer completely crashes when running analogy_config=20
+> analogy0 analogy_ni_pcimio. However, I could not get any significant=20
+> debug info before the system crashes.
+>=20
+> This is the exact behavior I had with Xenomai 2.5.0.
+>=20
+> I am running Ubuntu 9.04 on a with a AMD Sempron 2800+ with a National=20
+> Instruments 6221-37 DAQ card. Xenomai seems to be running pretty well.
+I am surprised that it is the same bug. If I remember well, there were=20
+two bugs:
+- the first one was specific to NI 67xx cards and was fixed
+- the second one was supposed to be fixed with the following commits:
+analogy: [NI mite] initialize the mite structures after their allocations
+analogy: [NI mite] initialize channels' status
 
-This Email contains three patches.
+I am afraid we are facing a bright new one...
 
-The problem was in rt_intr_delete():=20
+>=20
+> So, is this a known issue? Can I help with the debug messages/logs in=20
+> any way?
+Even if your system crashes, you might be able to catch the log traces=20
+printed just before. In such a case, could you set the analogy debug=20
+options like this:
+CONFIG_XENO_DRIVERS_ANALOGY_DEBUG=3Dy
+CONFIG_XENO_DRIVERS_ANALOGY_DEBUG_LEVEL=3D0
+CONFIG_XENO_DRIVERS_ANALOGY_DRIVER_DEBUG_LEVEL=3D1
 
-First xnintr_detach() was called followed by xnintr_destroy() which in
-turn called xnintr_detach() once more. I'm assuming xnintr_destroy()
-is the right one to call.
+And send your kernel traces, after having launched the attach procedure=20
+(which, if I understand well, should have triggered the bug).
 
---- A/kernel/xenomai/skins/native/intr.c	2009-12-08 18:30:05.000000000 -050=
-0
-+++ B/kernel/xenomai/skins/native/intr.c	2010-02-10 17:30:41.000000000 -050=
-0
-@@ -373,8 +373,7 @@
-=20
- 	xnlock_put_irqrestore(&nklock, s);
-=20
--	err =3D xnintr_detach(&intr->intr_base);
--	xnintr_destroy(&intr->intr_base);
-+	err =3D xnintr_destroy(&intr->intr_base);
-=20
- 	if (rc =3D=3D XNSYNCH_RESCHED)
- 		/* Some task has been woken up as a result of the deletion:
+>=20
+> Thanks for the help,
+>      -Felipe Brand=E3o Cavalcanti
+>=20
+> (Sorry to reply to such an old thread.. but my problem seemed a lot like =
 
-This change makes xnintr_destroy() return the return value of=20
-xnintr_detach() as described in the comment.=20
-
---- A/kernel/xenomai/nucleus/intr.c	2009-12-08 18:30:05.000000000 -0500
-+++ B/kernel/xenomai/nucleus/intr.c	2010-02-10 17:25:47.000000000 -0500
-@@ -638,7 +640,7 @@
-  * @param intr The descriptor address of the interrupt object to
-  * destroy.
-  *
-- * @return 0 is returned on success. Otherwise, -EBUSY is returned if
-+ * @return 0 is returned on success. Otherwise, -EINVAL is returned if
-  * an error occurred while detaching the interrupt (see
-  * xnintr_detach()).
-  *
-@@ -654,8 +656,7 @@
-=20
- int xnintr_destroy(xnintr_t *intr)
- {
--	xnintr_detach(intr);
--	return 0;
-+	return xnintr_detach(intr);
- }
-=20
- /*!
-
-I also found a minor issue. I think noone ever noticed that because
-the second parameter passed to xeno_flush_rq() is always named rq.
-
---- A/include/xenomai/native/ppd.h	2009-12-08 18:30:05.000000000 -0500
-+++ B/include/xenomai/native/ppd.h	2010-02-10 17:36:18.000000000 -0500
-@@ -104,7 +104,7 @@
- 			if (unlikely(err)) {				\
- 				if ((__rq) !=3D &__native_global_rholder.__name##q) { \
- 					xnlock_get_irqsave(&nklock, s);	\
--					nholder =3D popq((rq), holder);	\
-+					nholder =3D popq((__rq), holder);	\
- 					appendq(&__native_global_rholder.__name##q, holder); \
- 					obj->rqueue =3D &__native_global_rholder.__name##q; \
- 				}
-
-
-Andreas=
+> this one.)
+>=20
+Alexis.
 
