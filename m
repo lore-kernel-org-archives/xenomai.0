@@ -1,13 +1,11 @@
-Message-ID: <4B72EA44.2090706@domain.hid>
-Date: Wed, 10 Feb 2010 18:17:56 +0100
+Message-ID: <4B72ED6B.5010805@domain.hid>
+Date: Wed, 10 Feb 2010 18:31:23 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B72DB97.1020203@domain.hid> <4B72DF9F.9090103@domain.hid>
-	<4B72E0D3.50004@domain.hid> <4B72E428.6000606@domain.hid>
-	<4B72E7E8.2050603@domain.hid>
-In-Reply-To: <4B72E7E8.2050603@domain.hid>
+References: <4B72DB97.1020203@domain.hid>
+In-Reply-To: <4B72DB97.1020203@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] xnselect_destroy fails to wake up waiters
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,47 +19,62 @@ To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Gilles Chanteperdrix wrote:
->>>> Jan Kiszka wrote:
->>>>> Hi Gilles,
->>>>>
->>>>> I tend to think that xnselect_destroy should signal an event on the=
+> Hi Gilles,
+> 
+> I tend to think that xnselect_destroy should signal an event on the
+> dying fd instead of just clearing the binding. The task blocking on
+> select currently does not get a hint that the fd is dead and will block
+> on select until some other event arrives. That's unfortunately not
+> standard conforming.
 
->>>>> dying fd instead of just clearing the binding. The task blocking on=
+Could you test the following patch? The fd will be in the "pending" set
+until the fd is reused, but that should be harmless as long as the fd is
+not in the "expected" set.
 
->>>>> select currently does not get a hint that the fd is dead and will b=
-lock
->>>>> on select until some other event arrives. That's unfortunately not
->>>>> standard conforming.
->>>> Ok. Got it, I was mixing xnselect_destroy and xnselector_destroy. Ye=
-s,
->>>> right, something should be done. What is supposed to happen? Is it
->>>> supposed to be signaled as an exceptional condition?
->>>>
->>> It should be signaled so that the caller tries to read/write/whatever=
+diff --git a/ksrc/nucleus/select.c b/ksrc/nucleus/select.c
+index fd56bfb..17c5e0b 100644
+--- a/ksrc/nucleus/select.c
++++ b/ksrc/nucleus/select.c
+@@ -131,7 +131,8 @@ int xnselect_bind(struct xnselect *select_block,
+ 		__FD_SET(index, &selector->fds[type].pending);
+ 		if (xnselect_wakeup(selector))
+ 			xnpod_schedule();
+-	}
++	} else
++		__FD_CLR(index, &selector->fds[type].pending);
+ 
+ 	return 0;
+ }
+@@ -178,6 +179,7 @@ EXPORT_SYMBOL_GPL(__xnselect_signal);
+ void xnselect_destroy(struct xnselect *select_block)
+ {
+ 	xnholder_t *holder;
++	int resched;
+ 	spl_t s;
+ 
+ 	xnlock_get_irqsave(&nklock, s);
+@@ -190,11 +192,18 @@ void xnselect_destroy(struct xnselect *select_block)
+ 
+ 		__FD_CLR(binding->bit_index,
+ 			 &selector->fds[binding->type].expected);
+-		__FD_CLR(binding->bit_index,
+-			 &selector->fds[binding->type].pending);
++		if (!__FD_ISSET(binding->bit_index,
++				&selector->fds[binding->type].pending)) {
++			__FD_SET(binding->bit_index,
++				 &selector->fds[binding->type].pending);
++			if (xnselect_wakeup(selector))
++				resched = 1;
++		}
+ 		removeq(&selector->bindings, &binding->slink);
+ 		xnlock_put_irqrestore(&nklock, s);
+ 
++		if (resched)
++			xnpod_schedule();
+ 		xnfree(binding);
+ 		
+ 		xnlock_get_irqsave(&nklock, s);
 
->>> and then gets the information that the fd is down.
->> Looks to me like you get a wakeup for nothing... From the spec:
->> http://www.opengroup.org/onlinepubs/009695399/functions/select.html
->>
->> I do not see anything specified for the fds closure.
->=20
-> "A descriptor shall be considered ready for reading when a call to an
-> input function with O_NONBLOCK clear would not block, whether or not th=
-e
-> function would transfer data successfully. (The function might return
-> data, an end-of-file indication, or an error other than one indicating
-> that it is blocked, and in each of these cases the descriptor shall be
-> considered ready for reading.)"
-
-Ok. But I need to think a bit for a correct implementation. The na=C3=AFv=
-e
-implementation would result in the closed fd being constantly signaled
-and select no longer blocking.
-
---=20
+-- 
 					    Gilles.
-
 
