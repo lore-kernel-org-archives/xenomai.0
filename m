@@ -1,9 +1,10 @@
-Message-ID: <4B72FA73.5090900@domain.hid>
-Date: Wed, 10 Feb 2010 19:26:59 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4B730049.3000906@domain.hid>
+Date: Wed, 10 Feb 2010 19:51:53 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4B72DB97.1020203@domain.hid> <4B72ED6B.5010805@domain.hid>
-In-Reply-To: <4B72ED6B.5010805@domain.hid>
+	<4B72FA73.5090900@domain.hid>
+In-Reply-To: <4B72FA73.5090900@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] xnselect_destroy fails to wake up waiters
@@ -15,75 +16,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Hi Gilles,
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Hi Gilles,
+>>>
+>>> I tend to think that xnselect_destroy should signal an event on the
+>>> dying fd instead of just clearing the binding. The task blocking on
+>>> select currently does not get a hint that the fd is dead and will block
+>>> on select until some other event arrives. That's unfortunately not
+>>> standard conforming.
+>> Could you test the following patch? The fd will be in the "pending" set
+>> until the fd is reused, but that should be harmless as long as the fd is
+>> not in the "expected" set.
 >>
->> I tend to think that xnselect_destroy should signal an event on the
->> dying fd instead of just clearing the binding. The task blocking on
->> select currently does not get a hint that the fd is dead and will block
->> on select until some other event arrives. That's unfortunately not
->> standard conforming.
+>> diff --git a/ksrc/nucleus/select.c b/ksrc/nucleus/select.c
+>> index fd56bfb..17c5e0b 100644
+>> --- a/ksrc/nucleus/select.c
+>> +++ b/ksrc/nucleus/select.c
+>> @@ -131,7 +131,8 @@ int xnselect_bind(struct xnselect *select_block,
+>>  		__FD_SET(index, &selector->fds[type].pending);
+>>  		if (xnselect_wakeup(selector))
+>>  			xnpod_schedule();
+>> -	}
+>> +	} else
+>> +		__FD_CLR(index, &selector->fds[type].pending);
+>>  
+>>  	return 0;
+>>  }
+>> @@ -178,6 +179,7 @@ EXPORT_SYMBOL_GPL(__xnselect_signal);
+>>  void xnselect_destroy(struct xnselect *select_block)
+>>  {
+>>  	xnholder_t *holder;
+>> +	int resched;
+>>  	spl_t s;
+>>  
+>>  	xnlock_get_irqsave(&nklock, s);
+>> @@ -190,11 +192,18 @@ void xnselect_destroy(struct xnselect *select_block)
+>>  
+>>  		__FD_CLR(binding->bit_index,
+>>  			 &selector->fds[binding->type].expected);
+>> -		__FD_CLR(binding->bit_index,
+>> -			 &selector->fds[binding->type].pending);
+>> +		if (!__FD_ISSET(binding->bit_index,
+>> +				&selector->fds[binding->type].pending)) {
+>> +			__FD_SET(binding->bit_index,
+>> +				 &selector->fds[binding->type].pending);
+>> +			if (xnselect_wakeup(selector))
+>> +				resched = 1;
+>> +		}
+>>  		removeq(&selector->bindings, &binding->slink);
+>>  		xnlock_put_irqrestore(&nklock, s);
+>>  
+>> +		if (resched)
+>> +			xnpod_schedule();
+>>  		xnfree(binding);
+>>  		
+>>  		xnlock_get_irqsave(&nklock, s);
+>>
 > 
-> Could you test the following patch? The fd will be in the "pending" set
-> until the fd is reused, but that should be harmless as long as the fd is
-> not in the "expected" set.
-> 
-> diff --git a/ksrc/nucleus/select.c b/ksrc/nucleus/select.c
-> index fd56bfb..17c5e0b 100644
-> --- a/ksrc/nucleus/select.c
-> +++ b/ksrc/nucleus/select.c
-> @@ -131,7 +131,8 @@ int xnselect_bind(struct xnselect *select_block,
->  		__FD_SET(index, &selector->fds[type].pending);
->  		if (xnselect_wakeup(selector))
->  			xnpod_schedule();
-> -	}
-> +	} else
-> +		__FD_CLR(index, &selector->fds[type].pending);
->  
->  	return 0;
->  }
-> @@ -178,6 +179,7 @@ EXPORT_SYMBOL_GPL(__xnselect_signal);
->  void xnselect_destroy(struct xnselect *select_block)
->  {
->  	xnholder_t *holder;
-> +	int resched;
->  	spl_t s;
->  
->  	xnlock_get_irqsave(&nklock, s);
-> @@ -190,11 +192,18 @@ void xnselect_destroy(struct xnselect *select_block)
->  
->  		__FD_CLR(binding->bit_index,
->  			 &selector->fds[binding->type].expected);
-> -		__FD_CLR(binding->bit_index,
-> -			 &selector->fds[binding->type].pending);
-> +		if (!__FD_ISSET(binding->bit_index,
-> +				&selector->fds[binding->type].pending)) {
-> +			__FD_SET(binding->bit_index,
-> +				 &selector->fds[binding->type].pending);
-> +			if (xnselect_wakeup(selector))
-> +				resched = 1;
-> +		}
->  		removeq(&selector->bindings, &binding->slink);
->  		xnlock_put_irqrestore(&nklock, s);
->  
-> +		if (resched)
-> +			xnpod_schedule();
->  		xnfree(binding);
->  		
->  		xnlock_get_irqsave(&nklock, s);
-> 
+> Works perfectly! You may test yourself using the RT-TCP examples from
+> latest RTnet git. :)
 
-Works perfectly! You may test yourself using the RT-TCP examples from
-latest RTnet git. :)
-
-Thanks,
-Jan
+Ok. Merged. It would need some work, as my test targets are all running
+nfs. But that is certainly possible, as I think rtnetproxy now supports
+UDP, does it?
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
