@@ -1,6 +1,6 @@
 Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <4B733A96.2060700@domain.hid>
-Date: Thu, 11 Feb 2010 00:00:38 +0100
+Message-ID: <4B733B49.6080409@domain.hid>
+Date: Thu, 11 Feb 2010 00:03:37 +0100
 From: Alexis Berlemont <berlemont.hauw@domain.hid>
 MIME-Version: 1.0
 References: <4bed572e0911221135s64fc4726x1cd7235f116e11a4@domain.hid>
@@ -44,7 +44,7 @@ Felipe Brand=E3o Cavalcanti wrote:
 >=20
 > I am running Ubuntu 9.04 on a with a AMD Sempron 2800+ with a National=20
 > Instruments 6221-37 DAQ card. Xenomai seems to be running pretty well.
-I am surprised that it is the same bug. If I remember well, there were=20
+I am surprised that it is the same bug. If I remember well, there were
 two bugs:
 - the first one was specific to NI 67xx cards and was fixed
 - the second one was supposed to be fixed with the following commits:
@@ -56,14 +56,14 @@ I am afraid we are facing a bright new one...
 >=20
 > So, is this a known issue? Can I help with the debug messages/logs in=20
 > any way?
-Even if your system crashes, you might be able to catch the log traces=20
-printed just before. In such a case, could you set the analogy debug=20
+Even if your system crashes, you might be able to catch the log traces
+printed just before. In such a case, could you set the analogy debug
 options like this:
 CONFIG_XENO_DRIVERS_ANALOGY_DEBUG=3Dy
 CONFIG_XENO_DRIVERS_ANALOGY_DEBUG_LEVEL=3D0
 CONFIG_XENO_DRIVERS_ANALOGY_DRIVER_DEBUG_LEVEL=3D1
 
-And send your kernel traces, after having launched the attach procedure=20
+And send your kernel traces, after having launched the attach procedure
 (which, if I understand well, should have triggered the bug).
 
 >=20
