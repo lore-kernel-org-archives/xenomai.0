@@ -1,5 +1,5 @@
-Message-ID: <4B72DC76.2070303@domain.hid>
-Date: Wed, 10 Feb 2010 17:19:02 +0100
+Message-ID: <4B72DF9F.9090103@domain.hid>
+Date: Wed, 10 Feb 2010 17:32:31 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4B72DB97.1020203@domain.hid>
@@ -27,8 +27,9 @@ Jan Kiszka wrote:
 > on select until some other event arrives. That's unfortunately not
 > standard conforming.
 
-xnsynch_destroy unblocks the thread normally...
-
+Ok. Got it, I was mixing xnselect_destroy and xnselector_destroy. Yes,
+right, something should be done. What is supposed to happen? Is it
+supposed to be signaled as an exceptional condition?
 
 -- 
 					    Gilles.
