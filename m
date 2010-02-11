@@ -1,21 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <b88603c31002150107s115bec57x1ea9f635e54eab50@domain.hid>
-References: <20100204105700.GB20669@domain.hid>
-	<4B6C2D59.9060200@domain.hid>
-	<b88603c31002050727p1decfdacm919d3f2278fdf2f0@domain.hid>
-	<4B7019AA.8020102@domain.hid>
-	<b88603c31002080633v1b9ee7b4s2a6ee82eeaab644d@domain.hid>
-	<4B71339F.6050300@domain.hid> <4B713462.6000300@domain.hid>
-	<b88603c31002090214j2d21f572sba26ed3883bc0612@domain.hid>
-	<b88603c31002120757m386b5662nd8844a8fbccb22f0@domain.hid>
-	<4B758DC6.4040508@domain.hid>
-	<b88603c31002150107s115bec57x1ea9f635e54eab50@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 15 Feb 2010 10:36:47 +0100
-Message-ID: <1266226607.2375.67.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4B73BC00.5030807@domain.hid>
+Date: Thu, 11 Feb 2010 09:12:48 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <e325d111002110009x3d586e04h40487b06847237ce@domain.hid>
+In-Reply-To: <e325d111002110009x3d586e04h40487b06847237ce@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Force switch back to primary domain
+Subject: Re: [Xenomai-help] CONFIG_NR_CPUS is too large, please lower it.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,64 +16,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Henri Roosen <henriroosen@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Kim Chuan Lim <lim.kim.chuan@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Mon, 2010-02-15 at 10:07 +0100, Henri Roosen wrote:
-> Hi Gilles,
-> 
-> Thanks for your support on this! We changed our application so it uses
-> the pthread library to create threads. Just to be on the safe side.
-> And I can confirm this works now on Xenomai 2.5.1.
-> 
-> Might be a good idea to change the documentation of rt_task_shadow
-> what the requirements are for a task to be shadowed. Because "the
-> calling regular Linux task" does not apply anymore for Xenomai 2.5.x.
-> 
+Kim Chuan Lim wrote:
+> May i know how to solve the following problem?
 
-It actually never applied to any Xenomai release. Having the thread
-created by the standard POSIX call has always been assumed by the
-libraries (and by myself in the first place).
-
-
-> Thanks,
-> Henri.
-> 
-> On Fri, Feb 12, 2010 at 6:20 PM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
-> > Henri Roosen wrote:
-> >> Ok, found some time to investigate the mutex problem we see on 2.5.1.
-> >>
-> >> I managed to reproduce with a basic app that uses the same way of
-> >> thread creation as we have in our app.
-> >> Please find attached the basic app. Note, it runs fine on Xenomai
-> >> 2.4.10. Fails on 2.5.1.
-> >>
-> >> Also, the problem does not show when creating the threads with rt_task_create.
-> >>
-> >> So the main question is, should it be possible to create threads with
-> >> the clone() system call and then shadowing the threads into the
-> >> Xenomai domain with rt_task_shadow()? And are we just lucky it runs
-> >> this way in 2.4.10?
-> >
-> > To get __thread working, I think you should pass CLONE_SETTLS to clone,
-> > with something as the tls argument. But what to pass probably depends on
-> > the internals of the glibc. I would also pass CLONE_THREAD, since you
-> > want to create a thread in the same thread groups as other threads.
-> >
-> >
-> > --
-> >                                            Gilles.
-> >
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
+Browse the mailing list archives.
 
 -- 
-Philippe.
-
-
+					    Gilles.
 
