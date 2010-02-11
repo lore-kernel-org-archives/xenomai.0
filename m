@@ -1,122 +1,69 @@
-Message-ID: <4B8D11A6.9070400@domain.hid>
-Date: Tue, 02 Mar 2010 14:24:54 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4B73EC53.4040504@domain.hid>
+Date: Thu, 11 Feb 2010 12:38:59 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <E1NmR5I-0003k9-N5@domain.hid>
-	<4B8D0359.4070504@domain.hid>	<4B8D0466.7040403@domain.hid>
-	<4B8D0542.1020904@domain.hid> <4B8D05B3.1020202@domain.hid>
-	<4B8D07D7.4040108@domain.hid> <4B8D091A.7070908@domain.hid>
-	<4B8D0BA5.505@domain.hid> <4B8D0CE7.6020101@domain.hid>
-In-Reply-To: <4B8D0CE7.6020101@domain.hid>
+References: <COL105-W63501BC66B1F8543331511C34E0@domain.hid>
+In-Reply-To: <COL105-W63501BC66B1F8543331511C34E0@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : Native: Fix return
- code of in-kernel rt_cond_wait[_until]
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Installation: scripts/prepare-kernel.sh not
+ return "Links installed. Build system ready."
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: =?UTF-8?B?5a2QIOWwjw==?= <hapcobot@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> Gilles Chanteperdrix wrote:
->>>>>> Jan Kiszka wrote:
->>>>>>> Gilles Chanteperdrix wrote:
->>>>>>>> GIT version control wrote:
->>>>>>>>> Module: xenomai-jki
->>>>>>>>> Branch: for-upstream
->>>>>>>>> Commit: f1dfda551b6997f74141986759932e2723a9f024
->>>>>>>>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=f1dfda551b6997f74141986759932e2723a9f024
->>>>>>>>>
->>>>>>>>> Author: Jan Kiszka <jan.kiszka@domain.hid>
->>>>>>>>> Date:   Tue Mar  2 13:17:35 2010 +0100
->>>>>>>>>
->>>>>>>>> Native: Fix return code of in-kernel rt_cond_wait[_until]
->>>>>>>>>
->>>>>>>>> In rt_cond_wait_inner, do not let rt_cond_wait_epilogue overwrite the
->>>>>>>>> primary error code of rt_cond_wait_prologue. This restores the in-kernel
->>>>>>>>> semantics of rt_cond_wait[_until] that were valid before 97323b3287.
->>>>>>>>>
->>>>>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->>>>>>>>>
->>>>>>>>> ---
->>>>>>>>>
->>>>>>>>>  ksrc/skins/native/cond.c |    8 ++++----
->>>>>>>>>  1 files changed, 4 insertions(+), 4 deletions(-)
->>>>>>>>>
->>>>>>>>> diff --git a/ksrc/skins/native/cond.c b/ksrc/skins/native/cond.c
->>>>>>>>> index 10727d1..2dc0069 100644
->>>>>>>>> --- a/ksrc/skins/native/cond.c
->>>>>>>>> +++ b/ksrc/skins/native/cond.c
->>>>>>>>> @@ -472,10 +472,10 @@ static int rt_cond_wait_inner(RT_COND *cond, RT_MUTEX *mutex,
->>>>>>>>>  	err = rt_cond_wait_prologue(cond, mutex, &lockcnt, 
->>>>>>>>>  				    timeout_mode, timeout);
->>>>>>>>>  
->>>>>>>>> -	if(!err || err == -ETIMEDOUT || err == -EINTR)
->>>>>>>>> -		do {
->>>>>>>>> -			err = rt_cond_wait_epilogue(mutex, lockcnt);
->>>>>>>>> -		} while (err == -EINTR);
->>>>>>>>> +	if (!err || err == -ETIMEDOUT || err == -EINTR) {
->>>>>>>>> +		while (rt_cond_wait_epilogue(mutex, lockcnt) == -EINTR)
->>>>>>>>> +			; /* empty */
->>>>>>>>> +	}
->>>>>>>> Not ok. If rt_cond_wait_epilogue returns an error other than -EINTR, we
->>>>>>>> want this error to be returned.
->>>>>>> As I said: This is what we used to do in 2.4 (and early 2.5-rc), and due
->>>>>>> to the absence of spec on this topic, I would vote for restoring old
->>>>>>> behavior.
->>>>>> if rt_cond_wait_epilogue returns an error other than -EINTR, there is an
->>>>>> error to be signaled, so, it should be returned to the user, not 0 or
->>>>>> -ETIMEDOUT which would let the user think that he got the mutex back,
->>>>>> whereas the mutex is probably not properly locked.
->>>>> And if prologue returned -EINTR, and epilogue ran successfully, we do
->>>>> not want to return -EINTR to the user either.
->>>> We surely want as the cond_wait did NOT succeed in that case.
->>> No, we do not know whether it succeeded, the condition may well have
->>> been signaled while we no longer were waiting on the synch object. So,
->>> we should return 0, and let the test the user must have in his code
->>> decide whether the wakeup was spurious or not. In POSIX land, spurious
->>> condition wake-up are permitted, I bet we want the same for the
->>> rt_cond_wait interface. Which is why, BTW, all books on the pthread
->>> interface recommend to use:
->>>
->>>
->>> while (!cond)
->>> 	pthread_cond_wait
->>>
->>> and not:
->>>
->>> if (!cond)
->>> 	pthread_cond_wait
->>>
->> This is not user space, this is (deprecated) kernel space. Let's not
->> fiddle with this old interface, just restore what we had so that
->> existing apps can rest in peace. User space is different due to signal
->> handling anyway.
-> 
-> Ok for returning -EINTR, it is documented. Kernel-space is not so
-> different from user-space, rt_task_unblock could wake-up a kernel-space
-> task blocked in a call to rt_cond_wait.
-> 
-> However, if the epilogue returns an error, we must return it.
-> 
+=E5=AD=90 =E5=B0=8F wrote:
+> Hi,
+>=20
+>=20
+>=20
+> I have a doubt about installing Xenomai, when running
+> scripts/prepare-kernel.sh.
+>=20
+> According to the guide for installing Xenomai at
+>=20
+> http://www.captain.at/xenomai-2.1-installation.php
+>=20
+>=20
+>=20
+> I am supposed to see the following text after successfully running
+> prepare-kernel.sh:
+>=20
+>=20
+>=20
+> Adeos/i386 1.1-00 (newgen) installed.
+>=20
+> Links installed.
+>=20
+> Build system ready.
+>=20
+>=20
+>=20
+> But when I tried Xenomai 2.3.0 with Linux kernel 2.6.19, and Xenomai
+> 2.4.4 with Linux kernel 2.6.25.11, both in Ubuntu 8.04.4 LTS with
+> kernel 2.6.24-27, I did not get the above text, although there were
+> no error returned.
+>=20
+>=20
+>=20
+> I would like to know why I did not  get the above text. Can I proceed
+> with my installation?
 
-OK for this. Pushed an update, but I also modified it further to avoid
-returning without the mutex lock unless that one is also failing. Maybe
-in-kernel POSIX requires the same fix, will check.
+The last stable release of Xenomai is 2.5.1. Please do not start new
+development with older releases.
 
-Jan
+You will find up to date installation instructions on xenomai web site:
+http://www.xenomai.org
 
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+--=20
+					    Gilles.
+
 
