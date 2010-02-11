@@ -1,23 +1,10 @@
-Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <4B733B49.6080409@domain.hid>
-Date: Thu, 11 Feb 2010 00:03:37 +0100
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
 MIME-Version: 1.0
-References: <4bed572e0911221135s64fc4726x1cd7235f116e11a4@domain.hid>
-	<4bed572e0912160458i32834958q9512476f1603979d@domain.hid>
-	<4B2BF4D9.6000503@domain.hid>
-	<4bed572e1001051015l21e71e8eyaec207701c2e21ad@domain.hid>
-	<4B43BE72.6040101@domain.hid>
-	<4bed572e1001060557x12ffd808k193573c565830a1b@domain.hid>
-	<4B450B7E.80106@domain.hid>
-	<4bed572e1001071124x55a964f8u22558c05c2a4485c@domain.hid>
-	<4B46590F.2060308@domain.hid>
-	<4bed572e1001080314n4d723074ld77459d1dffc8c3e@domain.hid>
-	<8b216e9e1002090921n61b662ag7a7e7fd6d3d337f4@domain.hid>
-In-Reply-To: <8b216e9e1002090921n61b662ag7a7e7fd6d3d337f4@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+Date: Thu, 11 Feb 2010 03:09:33 -0500
+Message-ID: <e325d111002110009x3d586e04h40487b06847237ce@domain.hid>
+From: Kim Chuan Lim <lim.kim.chuan@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Help on analogy_ni_pcimio (Alexis Berlemont?)
+Subject: [Xenomai-help] CONFIG_NR_CPUS is too large, please lower it.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -27,52 +14,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?Felipe_Brand=E3o_Cavalcanti?= <cavalkaf@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hi,
+May i know how to solve the following problem?
 
-Felipe Brand=E3o Cavalcanti wrote:
-> Hello,
->=20
-> I just installed Xenomai 2.5.1, however, I am having the exact same=20
-> problem - the computer completely crashes when running analogy_config=20
-> analogy0 analogy_ni_pcimio. However, I could not get any significant=20
-> debug info before the system crashes.
->=20
-> This is the exact behavior I had with Xenomai 2.5.0.
->=20
-> I am running Ubuntu 9.04 on a with a AMD Sempron 2800+ with a National=20
-> Instruments 6221-37 DAQ card. Xenomai seems to be running pretty well.
-I am surprised that it is the same bug. If I remember well, there were
-two bugs:
-- the first one was specific to NI 67xx cards and was fixed
-- the second one was supposed to be fixed with the following commits:
-analogy: [NI mite] initialize the mite structures after their allocations
-analogy: [NI mite] initialize channels' status
+In file included from include/linux/sched.h:64,
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 from arch/x86/kernel/asm-o=
+ffsets_32.c:8,
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 from arch/x86/kernel/asm-o=
+ffsets.c:2:
+include/linux/ipipe.h:76:2: error: #error "CONFIG_NR_CPUS is too
+large, please lower it."
+make[1]: *** [arch/x86/kernel/asm-offsets.s] Error 1
+make: *** [prepare0] Error 2
 
-I am afraid we are facing a bright new one...
+the current CONFIG_NR_CPUS is set to 2 in .config file.
 
->=20
-> So, is this a known issue? Can I help with the debug messages/logs in=20
-> any way?
-Even if your system crashes, you might be able to catch the log traces
-printed just before. In such a case, could you set the analogy debug
-options like this:
-CONFIG_XENO_DRIVERS_ANALOGY_DEBUG=3Dy
-CONFIG_XENO_DRIVERS_ANALOGY_DEBUG_LEVEL=3D0
-CONFIG_XENO_DRIVERS_ANALOGY_DRIVER_DEBUG_LEVEL=3D1
+The following is my proc/cpuinfo
 
-And send your kernel traces, after having launched the attach procedure
-(which, if I understand well, should have triggered the bug).
 
->=20
-> Thanks for the help,
->      -Felipe Brand=E3o Cavalcanti
->=20
-> (Sorry to reply to such an old thread.. but my problem seemed a lot like =
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 15
+model		: 4
+model name	: Intel(R) Pentium(R) 4 CPU 3.00GHz
+stepping	: 10
+cpu MHz		: 2400.000
+cache size	: 2048 KB
+physical id	: 0
+siblings	: 2
+core id		: 0
+cpu cores	: 1
+apicid		: 0
+initial apicid	: 0
+fdiv_bug	: no
+hlt_bug		: no
+f00f_bug	: no
+coma_bug	: no
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 5
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic mtrr pge mca cmov pat
+pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe nx lm
+constant_tsc pebs bts pni dtes64 monitor ds_cpl est cid cx16 xtpr
+lahf_lm
+bogomips	: 6000.64
+clflush size	: 64
+power management:
 
-> this one.)
->=20
-Alexis.
+processor	: 1
+vendor_id	: GenuineIntel
+cpu family	: 15
+model		: 4
+model name	: Intel(R) Pentium(R) 4 CPU 3.00GHz
+stepping	: 10
+cpu MHz		: 2400.000
+cache size	: 2048 KB
+physical id	: 0
+siblings	: 2
+core id		: 0
+cpu cores	: 1
+apicid		: 1
+initial apicid	: 1
+fdiv_bug	: no
+hlt_bug		: no
+f00f_bug	: no
+coma_bug	: no
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 5
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic mtrr pge mca cmov pat
+pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe nx lm
+constant_tsc pebs bts pni dtes64 monitor ds_cpl est cid cx16 xtpr
+lahf_lm
+bogomips	: 6000.57
+clflush size	: 64
+power management:
 
