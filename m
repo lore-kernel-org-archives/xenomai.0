@@ -1,40 +1,55 @@
-Message-ID: <709633.57305.qm@domain.hid>
-Date: Tue, 19 Jan 2010 13:13:00 +0000 (GMT)
-From: A C <adrien_chiron@domain.hid>
+Message-ID: <4B75802B.1030900@domain.hid>
+Date: Fri, 12 Feb 2010 17:22:03 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-1510047286-1263906780=:57305"
-Subject: [Adeos-main] hw interrupts off, __ipipe_handle_irq
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: adeos <adeos-main@gna.org>
+References: <4B757217.3060406@domain.hid> <4B757306.5070102@domain.hid>
+	<4B7575B9.2060707@domain.hid> <4B757BC8.7020305@domain.hid>
+In-Reply-To: <4B757BC8.7020305@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Yet another ((weak)) bug
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
---0-1510047286-1263906780=:57305
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> Hi Gilles,
+>>>>
+>>>> this one requires some fixing too:
+>>>>
+>>>> xeno_sem_heap is marked weak. xeno_init_sem_heaps is called once per
+>>>> initialized skin. It unmaps any existing heap and creates a new one.
+>>>> That's already fragile during constructor run, but it's lethal during
+>>>> process runtime, ie. when using dlopen.
+>>>>
+>>>> I think the solution is to handle forks separately and only remap in
+>>>> that case. Digging in this direction now.
+>>>>
+>>>> BTW, what triggers the re-run of xeno_init_sem_heaps after a fork so far?
+>>> It must be done for the child process to get a private heap different
+>>> from the parent process. I would guess it is handled by pthread_atfork.
+>> Ah, only the POSIX skin does that. However, sem-heaps must not be
+>> POSIX-only. OK, patch in the make.
+> 
+> Ok. I am thinking more and more that you are right about making
+> libxeno_common a standalone library. Only the name stinks, we should
+> find a better one.
 
-Hello,=0Ain the comment before the definition of the function __ipipe_handl=
-e_irq(), it is written : "hw interrupts are off on entry". For the isr of t=
-he nios2, is it done (disable hw interrupts) in entry.s or in __ipipe_grab_=
-irq() ? In fact, we do not find where it is done.=0ARegards=0AAdrien Chiron=
- & Vincent Vanbesien=0A=0A=0A=0A      
---0-1510047286-1263906780=:57305
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+libxnskin or so?
 
-<html><head><style type=3D"text/css"><!-- DIV {margin:0px;} --></style></he=
-ad><body><div style=3D"font-family:times new roman,new york,times,serif;fon=
-t-size:12pt"><div>Hello,<br>in the comment before the definition of the fun=
-ction __ipipe_handle_irq(), it is written : "hw interrupts are off on entry=
-". For the isr of the nios2, is it done (disable hw interrupts) in entry.s =
-or in __ipipe_grab_irq() ? In fact, we do not find where it is done.<br>Reg=
-ards<br>Adrien Chiron &amp; Vincent Vanbesien<br></div>=0A<!-- cg21.c41.mai=
-l.ird.yahoo.com compressed Tue Jan 19 05:04:58 PST 2010 -->=0A</div><br>=0A=
-=0A=0A=0A=0A      </body></html>
---0-1510047286-1263906780=:57305--
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
