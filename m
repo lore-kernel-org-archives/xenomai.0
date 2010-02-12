@@ -1,13 +1,13 @@
-Message-ID: <4B75859C.2040500@domain.hid>
-Date: Fri, 12 Feb 2010 17:45:16 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4B758E7A.5060408@domain.hid>
+Date: Fri, 12 Feb 2010 18:23:06 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B757217.3060406@domain.hid> <4B757306.5070102@domain.hid>
-	<4B7575B9.2060707@domain.hid> <4B7579C8.3010303@domain.hid>
-In-Reply-To: <4B7579C8.3010303@domain.hid>
+References: <E1NfybE-0003dg-9e@domain.hid>
+In-Reply-To: <E1NfybE-0003dg-9e@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Yet another ((weak)) bug
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : Fix remapping of
+ global sem_heap on fork
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,40 +16,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Hi Gilles,
->>>>
->>>> this one requires some fixing too:
->>>>
->>>> xeno_sem_heap is marked weak. xeno_init_sem_heaps is called once per
->>>> initialized skin. It unmaps any existing heap and creates a new one.
->>>> That's already fragile during constructor run, but it's lethal during
->>>> process runtime, ie. when using dlopen.
->>>>
->>>> I think the solution is to handle forks separately and only remap in
->>>> that case. Digging in this direction now.
->>>>
->>>> BTW, what triggers the re-run of xeno_init_sem_heaps after a fork so far?
->>> It must be done for the child process to get a private heap different
->>> from the parent process. I would guess it is handled by pthread_atfork.
->> Ah, only the POSIX skin does that. However, sem-heaps must not be
->> POSIX-only. OK, patch in the make.
+GIT version control wrote:
+> Module: xenomai-jki
+> Branch: for-upstream
+> Commit: 40e5b366397db3dde0ebde861a739dc2cd624b5a
+> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=40e5b366397db3dde0ebde861a739dc2cd624b5a
 > 
-> Actually, xeno_skin_bind_opt should call pthread_atfork, since the child
->  process should be bound again, whatever the skin.
+> Author: Jan Kiszka <jan.kiszka@domain.hid>
+> Date:   Fri Feb 12 17:40:09 2010 +0100
+> 
+> Fix remapping of global sem_heap on fork
+> 
+> As xeno_init_sem_heaps might be called multiple times even without fork,
+> we must not remap the global heap here. Register an atfork handler
+> instead that handles this case and simple reject multiple heap creation
+> requests for the same process.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+> 
+> ---
+> 
+>  src/skins/common/sem_heap.c |   29 ++++++++++++++++++-----------
+>  1 files changed, 18 insertions(+), 11 deletions(-)
+> 
+> diff --git a/src/skins/common/sem_heap.c b/src/skins/common/sem_heap.c
+> index 89f325a..12b256f 100644
+> --- a/src/skins/common/sem_heap.c
+> +++ b/src/skins/common/sem_heap.c
+> @@ -1,6 +1,6 @@
+>  #include <stdio.h>
+>  #include <stdlib.h>
+> -
+> +#include <pthread.h>
+>  #include <unistd.h>
+>  #include <sys/types.h>
+>  #include <sys/stat.h>
+> @@ -65,24 +65,31 @@ static void unmap_sem_heap(unsigned long heap_addr, unsigned shared)
+>  	munmap((void *) heap_addr, hinfo.size);
+>  }
+>  
+> +static void remap_on_fork(void)
+> +{
+> +	unmap_sem_heap(xeno_sem_heap[0], 0);
+> +
+> +	if (xeno_sem_heap[0] == (unsigned long) MAP_FAILED) {
+> +		perror("Xenomai: mmap(local sem heap)");
+> +		exit(EXIT_FAILURE);
+> +	}
 
-That's a another thing, but it's true. First of all I just pushed a fix
-for the sem_heap issue that makes our test case happy.
-
-Jan
+Looks bogus to me. Where do the remap occur ?
+Looks like your test case does not try forking.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
