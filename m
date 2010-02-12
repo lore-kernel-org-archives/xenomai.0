@@ -1,5 +1,5 @@
-Message-ID: <4B7579C8.3010303@domain.hid>
-Date: Fri, 12 Feb 2010 16:54:48 +0100
+Message-ID: <4B757BC8.7020305@domain.hid>
+Date: Fri, 12 Feb 2010 17:03:20 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4B757217.3060406@domain.hid> <4B757306.5070102@domain.hid>
@@ -41,8 +41,10 @@ Jan Kiszka wrote:
 > Ah, only the POSIX skin does that. However, sem-heaps must not be
 > POSIX-only. OK, patch in the make.
 
-Actually, xeno_skin_bind_opt should call pthread_atfork, since the child
- process should be bound again, whatever the skin.
+Ok. I am thinking more and more that you are right about making
+libxeno_common a standalone library. Only the name stinks, we should
+find a better one.
+
 
 -- 
 					    Gilles.
