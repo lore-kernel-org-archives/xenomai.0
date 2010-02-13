@@ -1,10 +1,10 @@
-Message-ID: <4B76B7F2.2050303@domain.hid>
-Date: Sat, 13 Feb 2010 15:32:18 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4B76C045.2070602@domain.hid>
+Date: Sat, 13 Feb 2010 16:07:49 +0100
+From: Roland Stigge <stigge@domain.hid>
 MIME-Version: 1.0
-References: <4B6E8167.6010907@domain.hid>
-In-Reply-To: <4B6E8167.6010907@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <4B6E8167.6010907@domain.hid> <4B76B7F2.2050303@domain.hid>
+In-Reply-To: <4B76B7F2.2050303@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Xenomai in Debian
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -15,53 +15,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Roland Stigge <stigge@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai-core <xenomai@xenomai.org>
 
-Roland Stigge wrote:
-> Hi,
-> 
-> I'm just working on the Xenomai 2.5.1 Debian package and encountered 
-> non-PIC code (evil! ;-) in the shared libraries (skins libraries).
+Hi Gilles,
 
-Hi Roland,
+first - I'm sorry if you sometimes feel offended by my work on Xenomai 
+in Debian. I understand that you are very much connected to your project 
+and want to have it working perfectly everywhere.
 
-I just had a look at the Debian package, and there are a few things that
-I do not like:
-- the package ships with patches for 2.6.24. These I-pipe patches are
-outdated and have been publicly announced as being bogus on the Xenomai
-mailing lists;
-- xenomai 2.5.1 seems to have introduced a conflict with sigtest, my
-fault, you seem to have fixed this by prefixing all xenomai binaries
-with xenomai-, there was a simple solution which would have been for us
-to rename only sigtest.
+Unfortunately, my time to work on this is limited and the last uploads 
+were work in progress - to provide latest Xenomai in Debian. Further 
+work on it was planned for this weekend.
 
-This looks to me like a bad idea. You are breaking the documented user
-interface.
+But please also understand that Debian developers will possibly 
+prioritize work on upstream packages where they feel their work is 
+appreciated. So please think about your tone before sending email and 
+driving people away from Xenomai.
 
-Applications which were compiling for older versions of xenomai using
-xeno-config will simply stop working with the new version, not because
-of Xenomai incompatibilities, but simply because of a decision of the
-maintainer of Xenomai Debian package. Not mentioning how preposterous it
-looks to have things called xenomai-xeno-config.
+Gilles Chanteperdrix wrote:
+> - the package ships with patches for 2.6.24. These I-pipe patches are
+> outdated and have been publicly announced as being bogus on the Xenomai
+> mailing lists;
 
-I have already asked publicly for this, but will ask it once again:
-please inform the xenomai mailing list of the debian xenomai package
-bugs, and get us involved in their resolution. I do not really
-understand why you are refusing to do this. As far as I know, we never
-refused any patch coming from you.
+Thanks for pointing that out! Will be removed.
 
-If you refuse to comply to this simple request, I will have to advise
-publicly people not to use the "official" debian packages, including on
-the xenomai project's wiki, and in the text documentation which ships
-with Xenomai. Because the debian packaging of xenomai simply do not
-meets the quality standards of the Xenomai project. I do not mean that
-our quality is perfect, but one of the motto of the Xenomai project is
-to avoid breaking uselessly the interfaces, and you just did it.
+> - xenomai 2.5.1 seems to have introduced a conflict with sigtest, my
+> fault, you seem to have fixed this by prefixing all xenomai binaries
+> with xenomai-, there was a simple solution which would have been for us
+> to rename only sigtest.
 
-Thanks in advance.
-Regards.
+First, I was thinking about this solution also, of course. But many of 
+the Xenomai binaries' names are very generic and not easily recognizable 
+as related to Xenomai ("latency", "arith", etc.).  (Please consider that 
+there are 10000s of binaries in Debian's /usr/bin.) So I decided to 
+rename them all, for consistency. Therefore, also "xenomai-xeno-config". 
+:-) It's one exception. I was completely aware of this and also didn't 
+find it very beautiful.
 
--- 
-					    Gilles.
+The alternative would have been a separate directory for them, e.g. 
+somewhere under /usr/lib/xenomai. But that would lead to them not being 
+available in user's PATHs. So I decided otherwise.
+
+> This looks to me like a bad idea. You are breaking the documented user
+> interface.
+
+Feel free to make suggestions for improvement.
+
+> I have already asked publicly for this, but will ask it once again:
+> please inform the xenomai mailing list of the debian xenomai package
+> bugs, and get us involved in their resolution.
+
+I'm doing this if it concerns you. E.g. your non-PIC bug. Problems with 
+Debian packaging are Debian's task. I'm open to all suggestions, but 
+please CC me, I'm not following the Xenomai list so closely.
+
+ > Because the debian packaging of xenomai simply do not
+ > meets the quality standards of the Xenomai project.
+
+Please stop. Debian sid is the equivalent of a development branch of 
+Xenomai. It's unreleased code. I also don't flame you for bugs in 
+Xenomai but instead send patches. So please let's work friendly each one 
+on his own project and don't flame.
+
+Thanks for considering.
+
+bye,
+   Roland
+
 
