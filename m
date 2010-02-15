@@ -1,58 +1,57 @@
-MIME-Version: 1.0
-In-Reply-To: <4B73BC00.5030807@domain.hid>
-References: <e325d111002110009x3d586e04h40487b06847237ce@domain.hid>
-	<4B73BC00.5030807@domain.hid>
-Date: Thu, 11 Feb 2010 16:31:45 +0800
-Message-ID: <e325d111002110031y62a47914gb8d8788150dc3e1c@domain.hid>
-From: Kim Chuan Lim <lim.kim.chuan@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] CONFIG_NR_CPUS is too large, please lower it.
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4B79A113.2020300@domain.hid>
+References: <4B79A113.2020300@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 15 Feb 2010 20:48:05 +0100
+Message-ID: <1266263285.2375.141.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Adeos-main] bug: patch support for intel atom n270
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Chris Cole <clecol@domain.hid>
+Cc: adeos-main@gna.org
 
-google site:https://mail.gna.org/public/xenomai-help CONFIG_NR_CPUS
+On Mon, 2010-02-15 at 14:31 -0500, Chris Cole wrote:
+> Hello all,
+> This is my first time on this list. I've been using RTAI (and the Adeos 
+> HAL patch) for quite
+> some time now on a AMD Geode platform. I just recently got a new Intel 
+> Atom N270 CPU
+> which I've installed Ubuntu Karmic on, however I can't get an Adeos/RTAI 
+> patched kernel
+> (with a known working .config) to boot on the system...it simply hangs 
+> upon booting the kernel.
+> Is it possible to get Intel Atom support and/or is this a known bug?
+> 
 
-from the first result
-https://mail.gna.org/public/xenomai-help/2009-09/msg00098.html
+You should post to the RTAI mailing list to get help on fixing the RTAI
+code.
 
-"Hello,
+You may want to try running a standard Adeos patch on your system
+without RTAI, and see if your machine boots; you can get them from:
+http://download.gna.org/adeos/patches/v2.6/x86/
 
-I finally had the time to investigate more and traced back the error
-to a variable related to the number of IRQs on the system.  I should
-have previously mentioned that this is a 64-bit system by the way, so
-I found several related #ifdefs in irq_vector.h and apicnum.h.
+If it does work, then maybe this will give the RTAI folks a hint to help
+you better.
 
-Anyways, I got the kernel to compile properly after disabling the flag
-CONFIG_SPARSE_IRQ.  This made the CONFIG_NR_CPUS error go away, even
-after setting it back to 64.  Also, it booted successfully, so I am on
-to the next stage of my project.
-
-Although, admittedly I have no idea what the potential consequences of
-turning off CONFIG_SPARSE_IRQ could be.
-
-thanks,
-Steve"
+> Thanks,
+>   Chris
+> 
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
 
 
-On Thu, Feb 11, 2010 at 4:12 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
->
-> Kim Chuan Lim wrote:
-> > May i know how to solve the following problem?
->
-> Browse the mailing list archives.
->
-> --
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0Gilles.
+-- 
+Philippe.
+
+
 
