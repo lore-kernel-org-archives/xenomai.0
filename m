@@ -1,19 +1,19 @@
-Message-ID: <4B79155E.8070108@domain.hid>
-Date: Mon, 15 Feb 2010 10:35:26 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <20100204105700.GB20669@domain.hid>	
-	<4B6C2D59.9060200@domain.hid>	
-	<b88603c31002050727p1decfdacm919d3f2278fdf2f0@domain.hid>	
-	<4B7019AA.8020102@domain.hid>	
-	<b88603c31002080633v1b9ee7b4s2a6ee82eeaab644d@domain.hid>	
-	<4B71339F.6050300@domain.hid> <4B713462.6000300@domain.hid>	
-	<b88603c31002090214j2d21f572sba26ed3883bc0612@domain.hid>	
-	<b88603c31002120757m386b5662nd8844a8fbccb22f0@domain.hid>	
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <b88603c31002150107s115bec57x1ea9f635e54eab50@domain.hid>
+References: <20100204105700.GB20669@domain.hid>
+	<4B6C2D59.9060200@domain.hid>
+	<b88603c31002050727p1decfdacm919d3f2278fdf2f0@domain.hid>
+	<4B7019AA.8020102@domain.hid>
+	<b88603c31002080633v1b9ee7b4s2a6ee82eeaab644d@domain.hid>
+	<4B71339F.6050300@domain.hid> <4B713462.6000300@domain.hid>
+	<b88603c31002090214j2d21f572sba26ed3883bc0612@domain.hid>
+	<b88603c31002120757m386b5662nd8844a8fbccb22f0@domain.hid>
 	<4B758DC6.4040508@domain.hid>
 	<b88603c31002150107s115bec57x1ea9f635e54eab50@domain.hid>
-In-Reply-To: <b88603c31002150107s115bec57x1ea9f635e54eab50@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 15 Feb 2010 10:36:47 +0100
+Message-ID: <1266226607.2375.67.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Force switch back to primary domain
 List-Id: Help regarding installation and common use of Xenomai
@@ -26,9 +26,9 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Henri Roosen <henriroosen@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Henri Roosen wrote:
+On Mon, 2010-02-15 at 10:07 +0100, Henri Roosen wrote:
 > Hi Gilles,
 > 
 > Thanks for your support on this! We changed our application so it uses
@@ -38,15 +38,51 @@ Henri Roosen wrote:
 > Might be a good idea to change the documentation of rt_task_shadow
 > what the requirements are for a task to be shadowed. Because "the
 > calling regular Linux task" does not apply anymore for Xenomai 2.5.x.
+> 
 
-Just to understand the original motivation: what use case was behind
-home-brewed thread creation? Note that it's a bit uncommon and can cause
-troubles all around once you start using libpthread directly - or
-indirectly.
+It actually never applied to any Xenomai release. Having the thread
+created by the standard POSIX call has always been assumed by the
+libraries (and by myself in the first place).
 
-Jan
+
+> Thanks,
+> Henri.
+> 
+> On Fri, Feb 12, 2010 at 6:20 PM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+> > Henri Roosen wrote:
+> >> Ok, found some time to investigate the mutex problem we see on 2.5.1.
+> >>
+> >> I managed to reproduce with a basic app that uses the same way of
+> >> thread creation as we have in our app.
+> >> Please find attached the basic app. Note, it runs fine on Xenomai
+> >> 2.4.10. Fails on 2.5.1.
+> >>
+> >> Also, the problem does not show when creating the threads with rt_task_create.
+> >>
+> >> So the main question is, should it be possible to create threads with
+> >> the clone() system call and then shadowing the threads into the
+> >> Xenomai domain with rt_task_shadow()? And are we just lucky it runs
+> >> this way in 2.4.10?
+> >
+> > To get __thread working, I think you should pass CLONE_SETTLS to clone,
+> > with something as the tls argument. But what to pass probably depends on
+> > the internals of the glibc. I would also pass CLONE_THREAD, since you
+> > want to create a thread in the same thread groups as other threads.
+> >
+> >
+> > --
+> >                                            Gilles.
+> >
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Philippe.
+
+
 
