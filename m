@@ -1,20 +1,18 @@
-Message-ID: <4B799016.2040305@domain.hid>
-Date: Mon, 15 Feb 2010 19:19:02 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <8b216e9e1002100327h3aa332ddl13ec590fcb81f0b7@domain.hid>
-	<4B746FFE.20204@domain.hid>
-	<8b216e9e1002111430h5687cb9udfad3e08da08d83a@domain.hid>
+In-Reply-To: <4B799016.2040305@domain.hid>
+References: <8b216e9e1002100327h3aa332ddl13ec590fcb81f0b7@domain.hid> 
 	<4B750157.6080000@domain.hid>
-	<8b216e9e1002121023qa0f4d6n33c773110cfc78fd@domain.hid>
-	<4B759DF9.9040800@domain.hid> <4B759F35.3050704@domain.hid>
-	<8b216e9e1002131157k6f1a7ccbiba5e67b8855c77b2@domain.hid>
+	<8b216e9e1002121023qa0f4d6n33c773110cfc78fd@domain.hid> 
+	<4B759DF9.9040800@domain.hid> <4B759F35.3050704@domain.hid> 
+	<8b216e9e1002131157k6f1a7ccbiba5e67b8855c77b2@domain.hid> 
 	<4B770554.3080809@domain.hid>
-	<8b216e9e1002131225v16024e66p521d7eaad376441d@domain.hid>
-	<8b216e9e1002150919p250b5270tab0bf5f242e87a25@domain.hid>
-In-Reply-To: <8b216e9e1002150919p250b5270tab0bf5f242e87a25@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+	<8b216e9e1002131225v16024e66p521d7eaad376441d@domain.hid> 
+	<8b216e9e1002150919p250b5270tab0bf5f242e87a25@domain.hid> 
+	<4B799016.2040305@domain.hid>
+From: =?ISO-8859-1?Q?Felipe_Brand=E3o_Cavalcanti?= <cavalkaf@domain.hid>
+Date: Mon, 15 Feb 2010 16:34:22 -0200
+Message-ID: <8b216e9e1002151034n362f83afwfd6b9355ec071540@domain.hid>
+Content-Type: multipart/alternative; boundary=001636e0b231dea7d1047fa7de9b
 Subject: Re: [Xenomai-help] Problems when cross-compiling Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -25,91 +23,257 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?Felipe_Brand=E3o_Cavalcanti?= <cavalkaf@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Felipe Brand=E3o Cavalcanti wrote:
-> 2010/2/13 Felipe Brand=E3o Cavalcanti <cavalkaf@domain.hid>
->=20
->>
->> 2010/2/13 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>
->> Felipe Brand=E3o Cavalcanti wrote:
->>>> OK - I did apply the patch to 2.6.30.10, with some very minor
->>> modifications
->>>> in the sound system and in the headers (MACH_TYPE_IGEP0020 wasn't
->>> defined).
->>>> I also applied the latest Adeos Ipipe patch.
->>>>
->>>> However, the compiled kernel doesn't boot - it actually just sits th=
-ere,
->>>> doing nothing:
->>>>
->>>> Bytes transferred =3D 2555616 (26fee0 hex)
->>>> ## Booting kernel from Legacy Image at 80000000 ...
->>>>    Image Name:   Linux-2.6.30.10
->>>>    Image Type:   ARM Linux Kernel Image (uncompressed)
->>>>    Data Size:    2555552 Bytes =3D  2.4 MB
->>>>    Load Address: 80008000
->>>>    Entry Point:  80008000
->>>>    Verifying Checksum ... OK
->>>>    Loading Kernel Image ... OK
->>>> OK
->>>>
->>>> Starting kernel ...
->>>>
->>>> Uncompressing
->>>>
->>> Linux................................................................=
-.........................................................................=
-.........................
->>>> done, booting the kernel.
->>>>
->>>> My guess is that Linux is simply not sending anything through my ser=
-ial
->>>> (i.e., debug) port. Should I attempt to port over the serial driver,=
- or
->>> is
->>>> this something else?
->>>> I am also downloading kernel 2.6.32 to see if I can make it boot on =
+--001636e0b231dea7d1047fa7de9b
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+2010/2/15 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+
+> Felipe Brand=E3o Cavalcanti wrote:
+> > 2010/2/13 Felipe Brand=E3o Cavalcanti <cavalkaf@domain.hid>
+> >
+> >>
+> >> 2010/2/13 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+> >>
+> >> Felipe Brand=E3o Cavalcanti wrote:
+> >>>> OK - I did apply the patch to 2.6.30.10, with some very minor
+> >>> modifications
+> >>>> in the sound system and in the headers (MACH_TYPE_IGEP0020 wasn't
+> >>> defined).
+> >>>> I also applied the latest Adeos Ipipe patch.
+> >>>>
+> >>>> However, the compiled kernel doesn't boot - it actually just sits
+> there,
+> >>>> doing nothing:
+> >>>>
+> >>>> Bytes transferred =3D 2555616 (26fee0 hex)
+> >>>> ## Booting kernel from Legacy Image at 80000000 ...
+> >>>>    Image Name:   Linux-2.6.30.10
+> >>>>    Image Type:   ARM Linux Kernel Image (uncompressed)
+> >>>>    Data Size:    2555552 Bytes =3D  2.4 MB
+> >>>>    Load Address: 80008000
+> >>>>    Entry Point:  80008000
+> >>>>    Verifying Checksum ... OK
+> >>>>    Loading Kernel Image ... OK
+> >>>> OK
+> >>>>
+> >>>> Starting kernel ...
+> >>>>
+> >>>> Uncompressing
+> >>>>
+> >>>
+> Linux....................................................................=
+...........................................................................=
+...................
+> >>>> done, booting the kernel.
+> >>>>
+> >>>> My guess is that Linux is simply not sending anything through my
+> serial
+> >>>> (i.e., debug) port. Should I attempt to port over the serial driver,
+> or
+> >>> is
+> >>>> this something else?
+> >>>> I am also downloading kernel 2.6.32 to see if I can make it boot on =
 my
->>> IGEP.
->>>
->>> Do you pass the proper "console=3D" argument to the kernel? Is the su=
-pport
->>> for serial driver enabled in the kernel?
->>>
->>> If yes, then apply trick #1 from the "Tips and tricks" section in the
->>> "porting I-pipe to a new board" HOWTO on Xenomai website.
->>>
->>>
->> Yeah, I called it with the console=3D argument, and support is enabled=
-. Just
->> tested 2.6.32 - working fine in my board!
->>
->> I will try 2.6.30 again, but this time with no I-pipe patch, as well a=
+> >>> IGEP.
+> >>>
+> >>> Do you pass the proper "console=3D" argument to the kernel? Is the
+> support
+> >>> for serial driver enabled in the kernel?
+> >>>
+> >>> If yes, then apply trick #1 from the "Tips and tricks" section in the
+> >>> "porting I-pipe to a new board" HOWTO on Xenomai website.
+> >>>
+> >>>
+> >> Yeah, I called it with the console=3D argument, and support is enabled=
+.
+> Just
+> >> tested 2.6.32 - working fine in my board!
+> >>
+> >> I will try 2.6.30 again, but this time with no I-pipe patch, as well a=
 s
->> enabling the low-level debug options.
->>
->>
->=20
-> OK - so I compiled the kernel with a series of kernel debug options, to=
- find
-> out what was going on. However, the kernel is stuck in a very strange
-> position - just after starting the network!
+> >> enabling the low-level debug options.
+> >>
+> >>
+> >
+> > OK - so I compiled the kernel with a series of kernel debug options, to
+> find
+> > out what was going on. However, the kernel is stuck in a very strange
+> > position - just after starting the network!
+>
+> The NET message is not really related to starting the network (it is
+> only a network protocol which tells you that it suceeeded in registering
+> to the socket infrastructure), to know where the bug happens, you have
+> to add printks to see what happens. The main difference between the
+> latest I-pipe patch and previous releases is in the GPIO demux handling.
+>
+> Since I have an IGEPv2 on my office, would you mind letting me work on
+> this, say, next week, and give you a status when done?
+>
+>
+Actually, I am running this without I-pipe, so I guess the problem is in th=
+e
+basic Linux support.
+And I am in no hurry - I would actually be really glad if you could take a
+look at the board and send me some info when you have some time!
 
-The NET message is not really related to starting the network (it is
-only a network protocol which tells you that it suceeeded in registering
-to the socket infrastructure), to know where the bug happens, you have
-to add printks to see what happens. The main difference between the
-latest I-pipe patch and previous releases is in the GPIO demux handling.
+In the meantime, the almost-working version 2.6.28 should be fine for our
+first tests. I am also willing to help out in anything you need, but I
+really don't have that much experience in the low-level Linux stuff - but I
+would like to learn!
 
-Since I have an IGEPv2 on my office, would you mind letting me work on
-this, say, next week, and give you a status when done?
+Once again, thanks very much for the help,
+    -Felipe Brand=E3o Cavalcanti
+
+
+>  --
+> Gilles Chanteperdrix, Free Electrons
+> Kernel, drivers, real-time and embedded Linux
+> development, consulting, training and support.
+> http://free-electrons.com
+>
+
+
 
 --=20
-Gilles Chanteperdrix, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+      -Felipe Brand=E3o Cavalcanti
+      LARA - Robotics and Automation Laboratory
+      Department of Electrical Engineering
+      UnB - University of Bras=EDlia, Brazil
+      http://www.lara.unb.br/~fbcavalcanti/
+
+--001636e0b231dea7d1047fa7de9b
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<br><br><div class=3D"gmail_quote">2010/2/15 Gilles Chanteperdrix <span dir=
+=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gil=
+les.chanteperdrix@domain.hid</a>&gt;</span><br><blockquote class=3D=
+"gmail_quote" style=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0=
+pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+
+<div><div></div><div class=3D"h5">Felipe Brand=E3o Cavalcanti wrote:<br>
+&gt; 2010/2/13 Felipe Brand=E3o Cavalcanti &lt;<a href=3D"mailto:cavalkaf@domain.hid=
+mail.com">cavalkaf@domain.hid</a>&gt;<br>
+&gt;<br>
+&gt;&gt;<br>
+&gt;&gt; 2010/2/13 Gilles Chanteperdrix &lt;<a href=3D"mailto:gilles.chante=
+perdrix@domain.hid">gilles.chanteperdrix@xenomai.org</a>&gt;<br>
+&gt;&gt;<br>
+&gt;&gt; Felipe Brand=E3o Cavalcanti wrote:<br>
+&gt;&gt;&gt;&gt; OK - I did apply the patch to 2.6.30.10, with some very mi=
+nor<br>
+&gt;&gt;&gt; modifications<br>
+&gt;&gt;&gt;&gt; in the sound system and in the headers (MACH_TYPE_IGEP0020=
+ wasn&#39;t<br>
+&gt;&gt;&gt; defined).<br>
+&gt;&gt;&gt;&gt; I also applied the latest Adeos Ipipe patch.<br>
+&gt;&gt;&gt;&gt;<br>
+&gt;&gt;&gt;&gt; However, the compiled kernel doesn&#39;t boot - it actuall=
+y just sits there,<br>
+&gt;&gt;&gt;&gt; doing nothing:<br>
+&gt;&gt;&gt;&gt;<br>
+&gt;&gt;&gt;&gt; Bytes transferred =3D 2555616 (26fee0 hex)<br>
+&gt;&gt;&gt;&gt; ## Booting kernel from Legacy Image at 80000000 ...<br>
+&gt;&gt;&gt;&gt; =A0 =A0Image Name: =A0 Linux-2.6.30.10<br>
+&gt;&gt;&gt;&gt; =A0 =A0Image Type: =A0 ARM Linux Kernel Image (uncompresse=
+d)<br>
+&gt;&gt;&gt;&gt; =A0 =A0Data Size: =A0 =A02555552 Bytes =3D =A02.4 MB<br>
+&gt;&gt;&gt;&gt; =A0 =A0Load Address: 80008000<br>
+&gt;&gt;&gt;&gt; =A0 =A0Entry Point: =A080008000<br>
+&gt;&gt;&gt;&gt; =A0 =A0Verifying Checksum ... OK<br>
+&gt;&gt;&gt;&gt; =A0 =A0Loading Kernel Image ... OK<br>
+&gt;&gt;&gt;&gt; OK<br>
+&gt;&gt;&gt;&gt;<br>
+&gt;&gt;&gt;&gt; Starting kernel ...<br>
+&gt;&gt;&gt;&gt;<br>
+&gt;&gt;&gt;&gt; Uncompressing<br>
+&gt;&gt;&gt;&gt;<br>
+&gt;&gt;&gt; Linux.........................................................=
+...........................................................................=
+..............................<br>
+&gt;&gt;&gt;&gt; done, booting the kernel.<br>
+&gt;&gt;&gt;&gt;<br>
+&gt;&gt;&gt;&gt; My guess is that Linux is simply not sending anything thro=
+ugh my serial<br>
+&gt;&gt;&gt;&gt; (i.e., debug) port. Should I attempt to port over the seri=
+al driver, or<br>
+&gt;&gt;&gt; is<br>
+&gt;&gt;&gt;&gt; this something else?<br>
+&gt;&gt;&gt;&gt; I am also downloading kernel 2.6.32 to see if I can make i=
+t boot on my<br>
+&gt;&gt;&gt; IGEP.<br>
+&gt;&gt;&gt;<br>
+&gt;&gt;&gt; Do you pass the proper &quot;console=3D&quot; argument to the =
+kernel? Is the support<br>
+&gt;&gt;&gt; for serial driver enabled in the kernel?<br>
+&gt;&gt;&gt;<br>
+&gt;&gt;&gt; If yes, then apply trick #1 from the &quot;Tips and tricks&quo=
+t; section in the<br>
+&gt;&gt;&gt; &quot;porting I-pipe to a new board&quot; HOWTO on Xenomai web=
+site.<br>
+&gt;&gt;&gt;<br>
+&gt;&gt;&gt;<br>
+&gt;&gt; Yeah, I called it with the console=3D argument, and support is ena=
+bled. Just<br>
+&gt;&gt; tested 2.6.32 - working fine in my board!<br>
+&gt;&gt;<br>
+&gt;&gt; I will try 2.6.30 again, but this time with no I-pipe patch, as we=
+ll as<br>
+&gt;&gt; enabling the low-level debug options.<br>
+&gt;&gt;<br>
+&gt;&gt;<br>
+&gt;<br>
+&gt; OK - so I compiled the kernel with a series of kernel debug options, t=
+o find<br>
+&gt; out what was going on. However, the kernel is stuck in a very strange<=
+br>
+&gt; position - just after starting the network!<br>
+<br>
+</div></div>The NET message is not really related to starting the network (=
+it is<br>
+only a network protocol which tells you that it suceeeded in registering<br=
+>
+to the socket infrastructure), to know where the bug happens, you have<br>
+to add printks to see what happens. The main difference between the<br>
+latest I-pipe patch and previous releases is in the GPIO demux handling.<br=
+>
+<br>
+Since I have an IGEPv2 on my office, would you mind letting me work on<br>
+this, say, next week, and give you a status when done?<br>
+<div><div></div><div class=3D"h5"><br></div></div></blockquote><div><br>Act=
+ually, I am running this without I-pipe, so I guess the problem is in the b=
+asic Linux support.<br>And I am in no hurry - I would actually be really gl=
+ad if you could take a look at the board and send me some info when you hav=
+e some time!<br>
+
+<br>In the meantime, the almost-working version 2.6.28 should be fine for o=
+ur first tests. I am also willing to help out in anything you need, but I r=
+eally don&#39;t have that much experience in the low-level Linux stuff - bu=
+t I would like to learn!<br>
+
+<br>Once again, thanks very much for the help,<br>=A0=A0=A0 -Felipe Brand=
+=E3o Cavalcanti<br>=A0</div><blockquote class=3D"gmail_quote" style=3D"bord=
+er-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-l=
+eft: 1ex;">
+<div>
+<div class=3D"h5">
+--<br>
+Gilles Chanteperdrix, Free Electrons<br>
+Kernel, drivers, real-time and embedded Linux<br>
+development, consulting, training and support.<br>
+<a href=3D"http://free-electrons.com" target=3D"_blank">http://free-electro=
+ns.com</a><br>
+</div></div></blockquote></div><br><br clear=3D"all"><br>-- <br> =A0 =A0 =
+=A0 -Felipe Brand=E3o Cavalcanti<br> =A0 =A0 =A0 LARA - Robotics and Automa=
+tion Laboratory<br> =A0 =A0 =A0 Department of Electrical Engineering<br> =
+=A0 =A0 =A0 UnB - University of Bras=EDlia, Brazil<br>
+
+ =A0 =A0 =A0 <a href=3D"http://www.lara.unb.br/~fbcavalcanti/">http://www.l=
+ara.unb.br/~fbcavalcanti/</a><br>
+
+--001636e0b231dea7d1047fa7de9b--
 
