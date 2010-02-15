@@ -1,46 +1,31 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4B882134.8090001@domain.hid>
-References: <1e62d1371002261025t6c65ed03s726ab070d9b25ace@domain.hid>
-	<4B882134.8090001@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 26 Feb 2010 23:47:41 +0100
-Message-ID: <1267224461.3405.44.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4B79A113.2020300@domain.hid>
+Date: Mon, 15 Feb 2010 14:31:31 -0500
+From: Chris Cole <clecol@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Hello,
- A really dumb/newbie question ! (Is FPU supported on Blackfin
- (in	kernel) ? )
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Subject: [Adeos-main] bug: patch support for intel atom n270
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
 
-On Fri, 2010-02-26 at 20:29 +0100, Gilles Chanteperdrix wrote:
-> Fawad Lateef wrote:
-> > Hello,
-> > 
-> > I am working on porting x86 RTAI based application/kernel-modules to
-> > Xenomai for Blackfin (BF537). We are using RTAI's FPU and I want to
-> > ask: Do Xenomai support FPU operations on Blackfin platform (in
-> > kernel) ?
-> 
-> I am no blackfin expert, but from the code, I am afraid not. But it
-> seems Linux does not support Blackfin FPU either. And in fact, blackfins
-> have no FPU.
-> 
+Hello all,
+This is my first time on this list. I've been using RTAI (and the Adeos 
+HAL patch) for quite
+some time now on a AMD Geode platform. I just recently got a new Intel 
+Atom N270 CPU
+which I've installed Ubuntu Karmic on, however I can't get an Adeos/RTAI 
+patched kernel
+(with a known working .config) to boot on the system...it simply hangs 
+upon booting the kernel.
+Is it possible to get Intel Atom support and/or is this a known bug?
 
-Confirmed.
-
-
--- 
-Philippe.
-
-
+Thanks,
+  Chris
 
