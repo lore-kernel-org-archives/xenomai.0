@@ -1,56 +1,92 @@
-Message-ID: <4B607553.7010706@domain.hid>
-Date: Wed, 27 Jan 2010 18:18:11 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [PATCH] x86: Update FIRST_SYSTEM_VECTOR
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+Mime-Version: 1.0 (Apple Message framework v1077)
+Content-Type: text/plain; charset=us-ascii
+From: Stefan Schaal <sschaal@domain.hid>
+In-Reply-To: <4B7DC07C.5@domain.hid>
+Date: Thu, 18 Feb 2010 21:43:04 -0800
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <6D7DAD32-5300-47EB-9A04-ECA065395014@domain.hid>
+References: <0C632A1C-3B64-462B-9892-380CB14F6AD8@domain.hid> <4B7DC07C.5@domain.hid>
+Subject: Re: [Xenomai-core] Analogy DIO speed
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Alexis Berlemont <berlemont.hauw@domain.hid>
+Cc: Peter Pastor Sampedro <pastorsa@domain.hid>, xenomai@xenomai.org
 
-Adjust FIRST_SYSTEM_VECTOR so that it includes all the recently invented
-system vectors.
+Hi Alexis,
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
+On Feb 18, 2010, at 14:34, Alexis Berlemont wrote:
 
-If someone has a good idea how to let this hunk explode in the future
-after the list was once again extended, I'm all ears.
+> I have some problems with
+>> implementing commands on my NI6259 so far.
+> Could you remind me what was the problem ?
 
- arch/x86/include/asm/irq_vectors.h |    5 +++--
- 1 files changed, 3 insertions(+), 2 deletions(-)
+See the print-outs below for the problem we have.
 
-diff --git a/arch/x86/include/asm/irq_vectors.h b/arch/x86/include/asm/irq_vectors.h
-index f983bc6..6178f92 100644
---- a/arch/x86/include/asm/irq_vectors.h
-+++ b/arch/x86/include/asm/irq_vectors.h
-@@ -103,8 +103,6 @@
- #define NUM_INVALIDATE_TLB_VECTORS	   8
- #endif
- 
--#define FIRST_SYSTEM_VECTOR		0xef
--
- /*
-  * Local APIC timer IRQ vector is on a different priority level,
-  * to work around the 'lost local interrupt if more than 2 IRQ
-@@ -129,6 +127,9 @@
-  */
- #define MCE_SELF_VECTOR			0xeb
- 
-+/* I-pipe: Lowest number of vectors above */
-+#define FIRST_SYSTEM_VECTOR		0xea
-+
- /*
-  * First APIC vector available to drivers: (vectors 0x30-0xee) we
-  * start at 0x31(0x41) to spread out vectors evenly between priority
--- 
-1.6.0.2
+Thanks so much for looking into this!
+
+-Stefan
+
+
+
+
+Using the cmd_write() function that you provide in analogy, we get the =
+following problem:
+
+root@domain.hid# ./cmd_write -v
+cmd_write: device analogy0 opened (fd=3D0)
+cmd_write: basic descriptor retrieved
+	 subdevices count =3D 14
+	 read subdevice index =3D 0
+	 write subdevice index =3D 1
+cmd_write: complex descriptor retrieved
+cmd_write: channel 0
+	 ranges count =3D 3
+	 range's size =3D 16 (bits)
+cmd_write: channel 1
+	 ranges count =3D 3
+	 range's size =3D 16 (bits)
+cmd_write: scan size =3D 4
+cmd_write: size to write  =3D 400
+cmd_write: command successfully sent
+cmd_write: triggering failed (ret=3D-32)
+
+root@domain.hid# dmesg -c
+[133345.213865] Analogy: analogy_ni_pcimio: ni_mio_common: interrupt: =
+b_status=3D0002 m1_status=3D80a80000
+[133345.332719] Analogy: analogy_ni_pcimio: ni_ao_wait_for_dma_load: =
+timed out waiting for dma load<3>Analogy: a4l_do_special_insn: execution =
+of the instruction failed (err=3D-32)
+
+
+Another problem we have is with the --mmap option:
+
+root@domain.hid# ./cmd_write -v --mmap
+cmd_write: device analogy0 opened (fd=3D0)
+cmd_write: basic descriptor retrieved
+	 subdevices count =3D 14
+	 read subdevice index =3D 0
+	 write subdevice index =3D 1
+cmd_write: complex descriptor retrieved
+cmd_write: channel 0
+	 ranges count =3D 3
+	 range's size =3D 16 (bits)
+cmd_write: channel 1
+	 ranges count =3D 3
+	 range's size =3D 16 (bits)
+cmd_write: scan size =3D 4
+cmd_write: size to write  =3D 400
+cmd_write: buffer size =3D 65536 bytes
+cmd_write: a4l_mmap() failed (ret=3D-22)
+
+
+root@domain.hid# dmesg -c
+[133408.942998] Analogy: a4l_ioctl_mmap: mmap not allowed on this =
+subdevice
+
 
