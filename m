@@ -1,5 +1,5 @@
-Message-ID: <4B805A4C.3010705@domain.hid>
-Date: Sat, 20 Feb 2010 22:55:24 +0100
+Message-ID: <4B8066B3.9070604@domain.hid>
+Date: Sat, 20 Feb 2010 23:48:19 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <181804936ABC2349BE503168465576460DD4DE8B@exchserver.basler.com>
@@ -26,32 +26,58 @@ To: Steve Deiters <SteveDeiters@domain.hid>
 Cc: xenomai@xenomai.org
 
 Steve Deiters wrote:
-
-> I have read that.  In the README it lists the 2.6.24.6-DENX-2.4-03 patch
-> in the list of older patches, and only makes a note that they are not
-> guaranteed to work, but likely will as you try to maintain backward
-> compatibility.  This patch was included in Xenomai 2.4.10 as
-> 'ksrc/arch/powerpc/patches/adeos-ipipe-2.6.24.6-powerpc-DENX-2.4-03.patc
-> h', which seems to be leading to my confusion as this patch and kernel
-> version seem to no longer work, and you are telling me it should have
-> never worked.
-
-I told you that it could appear to work, but was in fact buggy.
-
+>> -----Original Message-----
+>> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org] 
+>> Sent: Saturday, February 20, 2010 1:04 PM
+>> To: Steve Deiters
+>> Cc: xenomai@xenomai.org
+>> Subject: Re: [Xenomai-help] Supported I-pipe versions?
+>>
+>> Steve Deiters wrote:
+>>>> -----Original Message-----
+>>>> From: Gilles Chanteperdrix 
+>> [mailto:gilles.chanteperdrix@xenomai.org]
+>>>> Sent: Saturday, February 20, 2010 4:39 AM
+>>>> To: Steve Deiters
+>>>> Cc: xenomai@xenomai.org
+>>>> Subject: Re: [Xenomai-help] Supported I-pipe versions?
+>>>>
+>>>> Steve Deiters wrote:
+>>>>> Sorry to keep bringing this up, but does anybody know if 
+>> there are 
+>>>>> compatibility issues with Xenomai 2.5.1, PowerPC Linux
+>>>> 2.6.24.6, and
+>>>>> the following adeos patch:
+>>>>>
+>> http://download.gna.org/adeos/patches/v2.6/powerpc/older/adeos-ipipe-
+>>>> 2
+>>>>> .6
+>>>>> .24.6-powerpc-DENX-2.4-03.patch?
+>>>> 2.6.24 has a bug which has only be fixed with recent patches. 
+>>>> So, even if you use it with an older Xenomai version, and 
+>> it seems to 
+>>>> work, in fact it does not.
+>>>>
+>>>> -- 
+>>>> 					    Gilles.
+>>>>
+>>> Could you elaborate on this a bit more?  Is there a bug in 
+>> the kernel 
+>>> or the I-pipe patch?
+>> The I-pipe patch. For details, search the archives, the bug 
+>> was announced publicly on this list.
 > 
-> 
-> So as to not dwell on this issue, is there a recommended version of the
-> Linux kernel for running a PowerPC?  I was using a branch of the DENX
-> tree for 2.6.24.6, as it had support for the MPC5121e.  The latest
-> mainstream kernel that seems to have good support for this is the 2.6.33
-> series, but I do not see an adeos patch for that version of the kernel
-> either.  Maybe the 2.6.32 patch will work, but I haven't tried it.
+> I will check the list archives.
 
-The latest mainstream kernel release is 2.6.32, 2.6.33 was not yet
-released, as you will find out by connecting to http://www.kernel.org.
-So, there is a patch for the latest mainstream kernel release, and it is
-included in Xenomai package, so, as said in the README file, you should
-get better chances than by using a one year old kernel.
+The commit I am referring to is:
+
+http://git.denx.de/?p=ipipe-2.6.git;a=commit;h=b1947dc2ed54e0f838965918dbb36cf8c8d97fb6
+
+Which took place in the 2.6.29 development branch. In 2.5.1, you should
+not see the bug if you are compiling with unlocked context switches.
+
+I made a public announce for the same problem on ARM, but not for powerpc.
+
 
 -- 
 					    Gilles.
