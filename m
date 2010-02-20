@@ -1,13 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <201002191543.41733.lux-integ@domain.hid>
-References: <201002191543.41733.lux-integ@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 19 Feb 2010 16:52:00 +0100
-Message-ID: <1266594720.26785.116.camel@domain.hid>
-Mime-Version: 1.0
+From: lux-integ <lux-integ@domain.hid>
+Date: Sat, 20 Feb 2010 01:27:28 +0000
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] help with adeos-ipipe-2.6.32.7-x86-2.6-00.patch
- patch on pure 64-bit x86_64 setup
+Content-Disposition: inline
+Message-Id: <201002200127.28962.lux-integ@domain.hid>
+Subject: [Xenomai-help] CONFIG_XENOMAI enabled makes unbootable x86_64 setup
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,170 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: lux-integ <lux-integ@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, 2010-02-19 at 15:43 +0000, lux-integ wrote:
-> Greetings,
-> 
-> I am having some difficulty using this  patch:-
-> http://download.gna.org/adeos/patches/v2.6/x86/adeos-ipipe-2.6.32.7-x86-2.6-00.patch
-> 
->  with Xenomai-2.51.  (The machine uses AMD64cpu athlonX2,  Linux is CLFS/pure 
-> 64-bit, gcc-4.4.2, gibc-2.10.2 (I think))
-> 
-> this is what I did:
-> a) I downloaded  Xenomai-2.5.1  AND  linux kernel source linux-2.6.32.7  AND  
-> the patch above
-> b) I patched the kernel source    like so:-
-> 
-> $SOURCES/xenomai-2.5.1/scripts/prepare-kernel.sh --linux=/usr/src/linux  --adeos=$SOURCES/xenomai251-fix/adeos-ipipe-2.6.32.7-x86-2.6-00.patch  --arch=x86_64
-> 
+Greetings 
 
-Do not remove or move the Xenomai source tree afterwards, or re-run
-prepare-kernel.sh adding --forcelink. Xenomai source files are symlinked
-from the kernel.
+my test rig has an amd64CPU-based machine with Linux (clfs pure 64bit).  I am 
+learning to use xenomai. For the patch downloadable from  
+http://download.gna.org/adeos/patches/v2.6/x86/adeos-ipipe-2.6.32.7-x86-2.6-00.patch
 
-> results are below:-
-> ------------------------------------------------------------
-> linux-2.6.32.7' -> `linux-2.6.32.7XN251-smp'
-> `linux' -> `linux-2.6.32.7XN251-smp'
-> ###################################
->  patching with downloaded 2.6.00.patch
-> ###################################
-> patching file arch/x86/Kconfig
-> patching file arch/x86/include/asm/apic.h
-> patching file arch/x86/include/asm/apicdef.h
-> patching file arch/x86/include/asm/entry_arch.h
-> patching file arch/x86/include/asm/hw_irq.h
-> patching file arch/x86/include/asm/i387.h
-> patching file arch/x86/include/asm/i8259.h
-> patching file arch/x86/include/asm/ipi.h
-> patching file arch/x86/include/asm/ipipe.h
-> patching file arch/x86/include/asm/ipipe_32.h
-> patching file arch/x86/include/asm/ipipe_64.h
-> patching file arch/x86/include/asm/ipipe_base.h
-> patching file arch/x86/include/asm/irq_vectors.h
-> patching file arch/x86/include/asm/irqflags.h
-> patching file arch/x86/include/asm/mmu_context.h
-> patching file arch/x86/include/asm/nmi.h
-> patching file arch/x86/include/asm/processor.h
-> patching file arch/x86/include/asm/system.h
-> patching file arch/x86/include/asm/traps.h
-> patching file arch/x86/kernel/Makefile
-> patching file arch/x86/kernel/apic/apic.c
-> patching file arch/x86/kernel/apic/apic_flat_64.c
-> patching file arch/x86/kernel/apic/io_apic.c
-> patching file arch/x86/kernel/apic/ipi.c
-> patching file arch/x86/kernel/apic/nmi.c
-> patching file arch/x86/kernel/apic/x2apic_cluster.c
-> patching file arch/x86/kernel/apic/x2apic_phys.c
-> patching file arch/x86/kernel/cpu/mtrr/cyrix.c
-> patching file arch/x86/kernel/cpu/mtrr/generic.c
-> patching file arch/x86/kernel/dumpstack.c
-> patching file arch/x86/kernel/dumpstack_32.c
-> patching file arch/x86/kernel/dumpstack_64.c
-> patching file arch/x86/kernel/entry_32.S
-> patching file arch/x86/kernel/entry_64.S
-> patching file arch/x86/kernel/i8253.c
-> patching file arch/x86/kernel/i8259.c
-> patching file arch/x86/kernel/ipipe.c
-> patching file arch/x86/kernel/irq.c
-> patching file arch/x86/kernel/irqinit.c
-> patching file arch/x86/kernel/process.c
-> patching file arch/x86/kernel/process_32.c
-> patching file arch/x86/kernel/process_64.c
-> patching file arch/x86/kernel/smp.c
-> patching file arch/x86/kernel/smpboot.c
-> patching file arch/x86/kernel/time.c
-> patching file arch/x86/kernel/traps.c
-> patching file arch/x86/kernel/vm86_32.c
-> patching file arch/x86/lib/mmx_32.c
-> patching file arch/x86/lib/thunk_64.S
-> patching file arch/x86/mm/fault.c
-> patching file arch/x86/mm/tlb.c
-> patching file drivers/pci/htirq.c
-> patching file drivers/serial/8250.c
-> patching file fs/exec.c
-> patching file include/asm-generic/atomic.h
-> patching file include/asm-generic/bitops/atomic.h
-> patching file include/asm-generic/cmpxchg-local.h
-> patching file include/asm-generic/percpu.h
-> patching file include/linux/hardirq.h
-> patching file include/linux/ipipe.h
-> patching file include/linux/ipipe_base.h
-> patching file include/linux/ipipe_compat.h
-> patching file include/linux/ipipe_lock.h
-> patching file include/linux/ipipe_percpu.h
-> patching file include/linux/ipipe_tickdev.h
-> patching file include/linux/ipipe_trace.h
-> patching file include/linux/irq.h
-> patching file include/linux/kernel.h
-> patching file include/linux/preempt.h
-> patching file include/linux/sched.h
-> patching file include/linux/spinlock.h
-> patching file include/linux/spinlock_api_smp.h
-> patching file init/Kconfig
-> patching file init/main.c
-> patching file kernel/Makefile
-> patching file kernel/exit.c
-> patching file kernel/fork.c
-> patching file kernel/ipipe/Kconfig
-> patching file kernel/ipipe/Kconfig.debug
-> patching file kernel/ipipe/Makefile
-> patching file kernel/ipipe/core.c
-> patching file kernel/ipipe/tracer.c
-> patching file kernel/irq/chip.c
-> patching file kernel/irq/handle.c
-> patching file kernel/lockdep.c
-> patching file kernel/panic.c
-> patching file kernel/power/hibernate.c
-> patching file kernel/printk.c
-> patching file kernel/sched.c
-> patching file kernel/signal.c
-> patching file kernel/spinlock.c
-> patching file kernel/time/tick-common.c
-> patching file kernel/time/tick-sched.c
-> patching file kernel/timer.c
-> patching file kernel/trace/ftrace.c
-> patching file lib/Kconfig.debug
-> patching file lib/bust_spinlocks.c
-> patching file lib/ioremap.c
-> patching file lib/smp_processor_id.c
-> patching file mm/memory.c
-> patching file mm/mmu_context.c
-> patching file mm/vmalloc.c
-> ###################################################
->      kernel-2.6.32.7  is now patched XENOMAI-2.6-00 
->   sources are in  /usr/src/linux-2.6.32.7XN251-smp
->  configuire and install kernel manually
-> ###################################################
-> 
-> I  then tried to run    make mrproper     like so:-
-> root [ /usr/src/linux ]# make mrproper
-> 
-> results are below:-
-> -------------------------------------------------------------
-> scripts/Makefile.clean:17: /usr/src/linux-2.6.32.7XN251-smp/arch/x86/xenomai/Makefile: 
-> No such file or directory
-> make[1]: *** No rule to make target 
-> `/usr/src/linux-2.6.32.7XN251-smp/arch/x86/xenomai/Makefile'.  Stop.
-> make: *** [_clean_arch/x86/xenomai] Error 2
-> 
-> 
-> help would be appreciated
-> 
-> sincerely
-> lux-ineg
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+I found the kernel would not boot   with  CONFIG_XENOMAI  enabled.  The 
+relevent part of the  downloaded  config file is:-
 
+# Real-time sub-system
+#
+# CONFIG_XENOMAI is not set
+CONFIG_XENO_GENERIC_STACKPOOL=y
+CONFIG_XENO_FASTSYNCH=y
+CONFIG_FREEZER=y
 
--- 
-Philippe.
+Could someone elaborate on when and where CONFIG_XENOMAI  is enabled?
 
-
+thanks in advance
+lux-integ
 
