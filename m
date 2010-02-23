@@ -1,15 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4B8407B5.10109@domain.hid>
-References: <4B6E8167.6010907@domain.hid> <4B76B7F2.2050303@domain.hid>
-	<4B76C045.2070602@domain.hid>
-	<1266140329.27019.17.camel@domain.hid>
-	<4B8407B5.10109@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 23 Feb 2010 18:46:03 +0100
-Message-ID: <1266947163.26785.300.camel@domain.hid>
-Mime-Version: 1.0
+Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <4B84634F.4080606@domain.hid>
+Date: Wed, 24 Feb 2010 00:22:55 +0100
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
+MIME-Version: 1.0
+References: <0C632A1C-3B64-462B-9892-380CB14F6AD8@domain.hid> <4B7DC07C.5@domain.hid>
+	<6D7DAD32-5300-47EB-9A04-ECA065395014@domain.hid>
+In-Reply-To: <6D7DAD32-5300-47EB-9A04-ECA065395014@domain.hid>
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Xenomai in Debian
+Subject: Re: [Xenomai-core] Analogy DIO speed
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,55 +17,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
-Cc: xenomai@xenomai.org
+To: Stefan Schaal <sschaal@domain.hid>
+Cc: Peter Pastor Sampedro <pastorsa@domain.hid>, xenomai@xenomai.org
 
-On Tue, 2010-02-23 at 17:52 +0100, Stefan Kisdaroczi wrote:
-> Hi,
+Hi,
+
+Stefan Schaal wrote:
+> Hi Alexis,
 > 
-> Am 14.02.2010 10:38, schrieb Philippe Gerum:
-> > 
-> > <snip>
-> > In the future, maybe we could simply provide a wrapper script accepting
-> > sub-commands, such as "xeno latency, xeno sigtest" etc, to be put
-> > into /usr/bin by distros, which would hide the actual location of those
-> > binaries?
-> >
-> > In any case, thanks for your work so far. We probably need to discuss
-> > the packaging issues on this list, so that we get both consistency and
-> > usability in the future.
-> > 
-> > Gilles and Roland, if this is fine with you, I'll handle the liaison
-> > role with upstream packagers, so please CC me explicitly on those mails.
-> > We'll sort out this issue, it doesn't look that bad anyway.
+> On Feb 18, 2010, at 14:34, Alexis Berlemont wrote:
 > 
-> Roland added a xeno wrapper to the debian.org xenomai package 2.5.1-3.
+>> I have some problems with
+>>> implementing commands on my NI6259 so far.
+>> Could you remind me what was the problem ?
 > 
-> I synced now the debian/ directories from debian.org and xenomai.org:
->  - For debian.org I sent patches to the Debian bugtracker [1] [2].
->    Another patch for dpkg-cross support [3] I sent to Roland privately.
->  - For xenomai.org I attached patches to this mail (against -2.5.git).
+> See the print-outs below for the problem we have.
 > 
-> If both parties apply the patches the debian directories are in sync,
-> except some minor differences in the debian/control file, see patch
-> do-not-commit-please.patch. I would like to keep these changes out so
-> that the xenomai.org packages are compatible with Debian 5.0 Lenny.
-> The debian.org packages are for Debian 6.0 Squeeze.
+> Thanks so much for looking into this!
+> 
+> -Stefan
+> 
+> 
+> 
+> 
+> Using the cmd_write() function that you provide in analogy, we get the following problem:
+> 
+I am currently trying to fix this bug, which is not that easy. I just
+have one question (that I remember I have already asked you in some way,
+but I just want to be sure):
+Does this bug occur the very first time you launched cmd_write (I mean
+after a reboot) ?
+
+> root@domain.hid# ./cmd_write -v
+> cmd_write: device analogy0 opened (fd=0)
+> cmd_write: basic descriptor retrieved
+> 	 subdevices count = 14
+> 	 read subdevice index = 0
+> 	 write subdevice index = 1
+> cmd_write: complex descriptor retrieved
+> cmd_write: channel 0
+> 	 ranges count = 3
+> 	 range's size = 16 (bits)
+> cmd_write: channel 1
+> 	 ranges count = 3
+> 	 range's size = 16 (bits)
+> cmd_write: scan size = 4
+> cmd_write: size to write  = 400
+> cmd_write: command successfully sent
+> cmd_write: triggering failed (ret=-32)
+> 
+> root@domain.hid# dmesg -c
+> [133345.213865] Analogy: analogy_ni_pcimio: ni_mio_common: interrupt: b_status=0002 m1_status=80a80000
+> [133345.332719] Analogy: analogy_ni_pcimio: ni_ao_wait_for_dma_load: timed out waiting for dma load<3>Analogy: a4l_do_special_insn: execution of the instruction failed (err=-32)
+> 
+> 
+> Another problem we have is with the --mmap option:
+> 
+> root@domain.hid# ./cmd_write -v --mmap
+> cmd_write: device analogy0 opened (fd=0)
+> cmd_write: basic descriptor retrieved
+> 	 subdevices count = 14
+> 	 read subdevice index = 0
+> 	 write subdevice index = 1
+> cmd_write: complex descriptor retrieved
+> cmd_write: channel 0
+> 	 ranges count = 3
+> 	 range's size = 16 (bits)
+> cmd_write: channel 1
+> 	 ranges count = 3
+> 	 range's size = 16 (bits)
+> cmd_write: scan size = 4
+> cmd_write: size to write  = 400
+> cmd_write: buffer size = 65536 bytes
+> cmd_write: a4l_mmap() failed (ret=-22)
+> 
+> 
+> root@domain.hid# dmesg -c
+> [133408.942998] Analogy: a4l_ioctl_mmap: mmap not allowed on this subdevice
+> 
 > 
 
-Merged into my queue (except the last one as mentioned). This will be
-pushed upstream to Gilles for 2.5.2. Thanks.
-
-> Thanks
-> kisda
-> 
-> [1] http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=571099
-> [2] http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=571104
-> [3] http://git.xenomai.org/?p=xenomai-2.5.git;a=commitdiff;h=5bcd18f714f4cbeaaac0cc4a08e6c9f375aa3b77
-
-
--- 
-Philippe.
-
-
+Alexis.
 
