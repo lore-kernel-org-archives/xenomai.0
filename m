@@ -1,13 +1,14 @@
-Message-ID: <4B86B0DB.4000600@domain.hid>
-Date: Thu, 25 Feb 2010 18:18:19 +0100
+Message-ID: <4B86C214.3020407@domain.hid>
+Date: Thu, 25 Feb 2010 19:31:48 +0100
 From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-References: <4B6E8167.6010907@domain.hid>	<4B76B7F2.2050303@domain.hid>	<4B76C045.2070602@domain.hid>	<1266140329.27019.17.camel@domain.hid>	<4B867EB5.9090504@domain.hid>	<4B867FF9.2020709@domain.hid>
-	<4B868228.10206@domain.hid> <4B868958.3000503@domain.hid>
-In-Reply-To: <4B868958.3000503@domain.hid>
+References: <4B6E8167.6010907@domain.hid>	<4B76B7F2.2050303@domain.hid>	<4B76C045.2070602@domain.hid>	<1266140329.27019.17.camel@domain.hid>	<4B867EB5.9090504@domain.hid>
+	<4B867FF9.2020709@domain.hid> <4B868228.10206@domain.hid>
+	<4B868CC1.6030103@domain.hid>
+In-Reply-To: <4B868CC1.6030103@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigB0A499F71932D7CC335A3F34"
+	boundary="------------enig55287CC6090C137CB4E53163"
 Subject: Re: [Xenomai-core] Xenomai in Debian
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,142 +18,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jeff Weber <jweber@domain.hid>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigB0A499F71932D7CC335A3F34
-Content-Type: multipart/mixed;
- boundary="------------000609030908040807060400"
-
-This is a multi-part message in MIME format.
---------------000609030908040807060400
+--------------enig55287CC6090C137CB4E53163
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Am 25.02.2010 15:29, schrieb Stefan Kisdaroczi:
-> Am 25.02.2010 14:59, schrieb Stefan Kisdaroczi:
->> Am 25.02.2010 14:49, schrieb Gilles Chanteperdrix:
->>> Stefan Kisdaroczi wrote:
->>>> Hi,
->>>>
->>>> Am 14.02.2010 10:38, schrieb Philippe Gerum:
->>>>> <snip>
->>>>> In any case, thanks for your work so far. We probably need to discu=
-ss
->>>>> the packaging issues on this list, so that we get both consistency =
-and
->>>>> usability in the future.
->>>>>
->>>>> Gilles and Roland, if this is fine with you, I'll handle the liaiso=
-n
->>>>> role with upstream packagers, so please CC me explicitly on those m=
-ails.
->>>>> We'll sort out this issue, it doesn't look that bad anyway.
->>>>
->>>> udev/xenomai.rules sets the group for realtime devices to "xenomai".=
+Hi Jeff,
 
->>>> Patch attached to create the group "xenomai" on installation.
->>>>
->>>> Additionally, it would be nice to set "xeno_nucleus.xenomai_gid" to
->>>> group "xenomai" too. Is this possible with a udev rule ?
->>>
->>> Well, no, xeno_nucleus.xenomai_gid is a kernel parameter, so it is bo=
-ot
->>> loader stuff. However, if xeno_nucleus is compiled as a module, you c=
+Am 25.02.2010 15:44, schrieb Jeff Weber:
+> Hello Stefan:
+>=20
+> I've been watching with interest the recent active work integrating
+> Debian and Xenomai.  I am currently porting an embedded application to
+> Xenomai, and am surveying candidate Linux distributions.
+>=20
+> I did a test build, install of Xenomai on a Debian Lenny distributionI
+> per the HOWTO:
+> http://xenomai.org/index.php/Xenomai_quick_build_quide
+>=20
+> and updated my grub menu.lst with the new kernel, and all worked well.
+> I did spend a significant amount of time tuning my kernel config file t=
+o
+> my target board.
+>=20
+> Can you help me understand the advantages of using the Debian packages,=
+
+> over the process I followed above?  I am still unclear on the advantage=
+s
+> of using the Debian Xenomia packages.
+
+Advantages:
+- Installing software is easy, maintaining a system is harder. Using debi=
 an
->>> add parameters in /etc/modprobe.d. Well, that would have been the pla=
-ce
->>> to do it some time ago. I may not be completely up-to-date.
->>
->> Hi Gilles,
->>
->> can a init.d script with
->>   echo "<gid>" > /sys/module/xeno_nucleus/parameters/xenomai_gid
->> work in module and builtin case ?
+  packages helps you upgrading/removing xenomai on a system.
+- If you need xenomai on more than one machine, you build once and instal=
+l
+  the same deb's on all machines.
+- You are testing different distributions now. If you install distributio=
+n xyz
+  on your system and want later to switch back to lenny, you just have to=
+
+  keep the deb's and you are fine. Nothing to compile.
+- You don't need any xenomai knowhow to install a deb. If, for example, y=
+our
+  co-worker needs to be able to setup xenomai too and he has the deb's a
+  simple "dpkg -i *.deb" on a lenny system will do it and it will work,
+  and you can enjoy your holidays ;-)
+
+> Which kernels can I use?
 >=20
-> it seems that init.d will work for the builtin case and modprobe.d for =
-the
-> module case. So adding both should work "in all cases" :-)
-> I'll give it a try ...
+> Do I still need to tune a kernel config file?
 
-Attached a patch that adds a init-script /etc/init.d/xenomai to the packa=
-ge libxenomai1.
-If group xenomai and the file /sys/module/xeno_nucleus/parameters/xenomai=
-_gid are found,
-xenomai_gid is set on startup.
+You still need to tune the config and build a kernel, there is no binary
+kernel-image with xenomai support. However, if you use make-kpkg to build=
 
-Now looking at modprobe.d ...
+the kernel it will build a *.deb. If you install this deb you dont
+have to fiddle with grub menu.lst, the kernel is automatically added.
 
->>>>
->>>> regards
->>>> kisda
->>>>
->>>>
->>>> --------------------------------------------------------------------=
-----
->>>>
->>>> _______________________________________________
->>>> Xenomai-core mailing list
->>>> Xenomai-core@domain.hid
->>>> https://mail.gna.org/listinfo/xenomai-core
->>>
->>>
->>
->>
->>
->>
->> _______________________________________________
->> Xenomai-core mailing list
->> Xenomai-core@domain.hid
->> https://mail.gna.org/listinfo/xenomai-core
+Please always CC the mailing list. Thank you.
+
+Regards
+Stefan
+
+> If not, how is the kernel pre-configured?
 >=20
->=20
->=20
->=20
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+> thanks,
+> Jeff
 
 
---------------000609030908040807060400
-Content-Type: text/plain;
- name="xenomai-init.patch"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="xenomai-init.patch"
 
-ZGlmZiAtdU5ycCB4ZW5vbWFpLTIuNS4xL2RlYmlhbi9saWJ4ZW5vbWFpMS54ZW5vbWFpLmlu
-aXQgeGVub21haS0yLjUuMS5uZXcvZGViaWFuL2xpYnhlbm9tYWkxLnhlbm9tYWkuaW5pdAot
-LS0geGVub21haS0yLjUuMS9kZWJpYW4vbGlieGVub21haTEueGVub21haS5pbml0CTE5NzAt
-MDEtMDEgMDE6MDA6MDAuMDAwMDAwMDAwICswMTAwCisrKyB4ZW5vbWFpLTIuNS4xLm5ldy9k
-ZWJpYW4vbGlieGVub21haTEueGVub21haS5pbml0CTIwMTAtMDItMjUgMTc6MTM6NTEuMDAw
-MDAwMDAwICswMTAwCkBAIC0wLDAgKzEsMzcgQEAKKyMhL2Jpbi9zaCAtZQorIyMjIEJFR0lO
-IElOSVQgSU5GTworIyBQcm92aWRlczogICAgICAgICAgeGVub21haQorIyBSZXF1aXJlZC1T
-dGFydDogICAgbW91bnRrZXJuZnMKKyMgUmVxdWlyZWQtU3RvcDoKKyMgRGVmYXVsdC1TdGFy
-dDogICAgIFMKKyMgRGVmYXVsdC1TdG9wOgorIyBTaG9ydC1EZXNjcmlwdGlvbjogU2V0IHhl
-bm9fbnVjbGV1cyBncm91cAorIyMjIEVORCBJTklUIElORk8KKworR1JPVVA9eGVub21haQor
-SU5JVE5BTUU9L2V0Yy9pbml0LmQveGVub21haQorRklMRU5BTUU9L3N5cy9tb2R1bGUveGVu
-b19udWNsZXVzL3BhcmFtZXRlcnMveGVub21haV9naWQKK0dJRD0kKGdldGVudCBncm91cCAk
-R1JPVVAgfCBjdXQgLWQ6IC1mMykKKwordGVzdCAtZSAkRklMRU5BTUUgfHwgZXhpdCAwCit0
-ZXN0IC1uICIkR0lEIiB8fCBleGl0IDAKKworY2FzZSAiJDEiIGluCisgIHN0YXJ0KQorICAg
-ICAgICBlY2hvICIkR0lEIiA+ICRGSUxFTkFNRQorICAgICAgICA7OworICBzdG9wKQorICAg
-ICAgICBlY2hvICItMSIgPiAkRklMRU5BTUUKKyAgICAgICAgOzsKKyAgcmVzdGFydHxmb3Jj
-ZS1yZWxvYWQpCisgICAgICAgICQwIHN0b3AKKyAgICAgICAgJDAgc3RhcnQKKyAgICAgICAg
-OzsKKyAgKikKKyAgICAgICAgZWNobyAiVXNhZ2U6ICRJTklUTkFNRSB7c3RhcnR8c3RvcHxy
-ZXN0YXJ0fGZvcmNlLXJlbG9hZH0iCisgICAgICAgIGV4aXQgMQorICAgICAgICA7OworZXNh
-YworCitleGl0IDAKKwpkaWZmIC11TnJwIHhlbm9tYWktMi41LjEvZGViaWFuL3J1bGVzIHhl
-bm9tYWktMi41LjEubmV3L2RlYmlhbi9ydWxlcwotLS0geGVub21haS0yLjUuMS9kZWJpYW4v
-cnVsZXMJMjAxMC0wMi0yNSAxNjo1NjowNS4wMDAwMDAwMDAgKzAxMDAKKysrIHhlbm9tYWkt
-Mi41LjEubmV3L2RlYmlhbi9ydWxlcwkyMDEwLTAyLTI1IDE3OjMzOjIwLjAwMDAwMDAwMCAr
-MDEwMApAQCAtMTMyLDYgKzEzMiw3IEBAIGJpbmFyeS1pbmRlcDogYnVpbGQgaW5zdGFsbAog
-YmluYXJ5LWFyY2g6IGJ1aWxkIGluc3RhbGwKIAlkaF90ZXN0ZGlyIC1zCiAJZGhfdGVzdHJv
-b3QgLXMKKwlkaF9pbnN0YWxsaW5pdCAtcyAtLW5hbWU9eGVub21haQogCWRoX2luc3RhbGxt
-YW4gLXMKIAlkaF9pbnN0YWxsZG9jcyAtcyAtQSBDUkVESVRTIFJFQURNRS5JTlNUQUxMIFRS
-T1VCTEVTSE9PVElORwogCWRoX2xpbmsgLXMK
---------------000609030908040807060400--
-
---------------enigB0A499F71932D7CC335A3F34
+--------------enig55287CC6090C137CB4E53163
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -161,10 +99,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.3 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iD8DBQFLhrDgIPTw9rIdn6oRAlnAAJ9lPyoFMk0Ti+JGwbG4tThr5y8ZFwCfSY6i
-ZDu5TvhL0VumjHofyaa7gTU=
-=gkyv
+iD8DBQFLhsIZIPTw9rIdn6oRAhFVAJ9BgZ6QEkqTatuQ2ypHFW09bP3begCeKUzR
+WfG2EdYxlHSYCW0ZZvKusS8=
+=vl/W
 -----END PGP SIGNATURE-----
 
---------------enigB0A499F71932D7CC335A3F34--
+--------------enig55287CC6090C137CB4E53163--
 
