@@ -1,78 +1,54 @@
-Message-ID: <4B61C591.7030403@domain.hid>
-Date: Thu, 28 Jan 2010 18:12:49 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <4B615E0E.7070601@domain.hid> <4B61C195.8000500@domain.hid>
-In-Reply-To: <4B61C195.8000500@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <20100223105754.GA14607@domain.hid>
+References: <20100112172443.GP8605@domain.hid>
+	<1263318551.2455.188.camel@domain.hid>
+	<20100112185012.GQ8605@domain.hid>
+	<1263324215.2455.293.camel@domain.hid>
+	<20100112221802.GR8605@domain.hid>
+	<1263567811.2428.487.camel@domain.hid>
+	<20100115161415.GA24305@domain.hid>
+	<1263576144.2428.527.camel@domain.hid>
+	<20100223075308.GA6661@domain.hid>
+	<1266919677.26785.279.camel@domain.hid>
+	<20100223105754.GA14607@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Thu, 25 Feb 2010 17:48:08 +0100
+Message-ID: <1267116488.3405.0.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [PATCH v3] x86: Fix handling of IRQ_MOVE_CLEANUP_VECTOR
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+Subject: Re: [Xenomai-core] [Adeos-main] I-pipe for 2.6.32 PPC
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Richard Cochran <richardcochran@domain.hid>
+Cc: adeos-main@gna.org, xenomai@xenomai.org, Lennart Sorensen <lsorense@domain.hid>
 
-IRQ_MOVE_CLEANUP_VECTOR is at 0x20, ie. far below FIRST_SYSTEM_VECTOR.
-So we must not translate it when calling ipipe_virtualize_irq, and we
-have to demux it properly in __ipipe_handle_irq.
+On Tue, 2010-02-23 at 11:57 +0100, Richard Cochran wrote:
+> On Tue, Feb 23, 2010 at 11:07:57AM +0100, Philippe Gerum wrote:
+> > With ipipe-2.6.33 solely tracking mainline, only the few temporary trees
+> > with not-mainlined-yet features/support will pull from the DENX tree to
+> > get them.
+> 
+> Okay, its now clear to me. Thanks for the explanation.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
+You are welcome. Out of curiosity, what was unclear exactly?
 
-Changes in v3:
- - special demux only required for SMP
+> 
+> Richard
+> 
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
 
-Changes in v2:
- - special demux code for __ipipe_handle_irq
 
- arch/x86/kernel/ipipe.c |   13 ++++++++++---
- 1 files changed, 10 insertions(+), 3 deletions(-)
-
-diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-index b471355..b5b0966 100644
---- a/arch/x86/kernel/ipipe.c
-+++ b/arch/x86/kernel/ipipe.c
-@@ -289,7 +289,7 @@ void __init __ipipe_enable_pipeline(void)
- 			     IPIPE_STDROOT_MASK);
- 
- 	ipipe_virtualize_irq(ipipe_root_domain,
--			     ipipe_apic_vector_irq(IRQ_MOVE_CLEANUP_VECTOR),
-+			     IRQ_MOVE_CLEANUP_VECTOR,
- 			     (ipipe_irq_handler_t)&smp_irq_move_cleanup_interrupt,
- 			     NULL,
- 			     &__ipipe_ack_apic,
-@@ -311,7 +311,10 @@ void __init __ipipe_enable_pipeline(void)
- 	 * IPIPE_SYSTEM_MASK has been passed for them, that's ok. */
- 
- 	for (irq = 0; irq < NR_IRQS; irq++)
--		/* Fails for IPIPE_CRITICAL_IPI but that's ok. */
-+		/*
-+		 * Fails for IPIPE_CRITICAL_IPI and IRQ_MOVE_CLEANUP_VECTOR,
-+		 * but that's ok.
-+		 */
- 		ipipe_virtualize_irq(ipipe_root_domain,
- 				     irq,
- 				     (ipipe_irq_handler_t)&do_IRQ,
-@@ -900,8 +903,12 @@ int __ipipe_handle_irq(struct pt_regs *regs)
- #ifdef CONFIG_X86_LOCAL_APIC
- 		if (vector >= FIRST_SYSTEM_VECTOR)
- 			irq = ipipe_apic_vector_irq(vector);
-+#ifdef CONFIG_SMP
-+		else if (vector == IRQ_MOVE_CLEANUP_VECTOR)
-+			irq = vector;
-+#endif /* CONFIG_SMP */
- 		else
--#endif
-+#endif /* CONFIG_X86_LOCAL_APIC */
- 			irq = __get_cpu_var(vector_irq)[vector];
- 		m_ack = 0;
- 	} else { /* This is a self-triggered one. */
 -- 
-1.6.0.2
+Philippe.
+
+
 
