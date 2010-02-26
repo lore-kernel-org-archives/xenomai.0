@@ -1,14 +1,19 @@
-Message-ID: <4B86C214.3020407@domain.hid>
-Date: Thu, 25 Feb 2010 19:31:48 +0100
+Message-ID: <4B87C8FA.6020802@domain.hid>
+Date: Fri, 26 Feb 2010 14:13:30 +0100
 From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-References: <4B6E8167.6010907@domain.hid>	<4B76B7F2.2050303@domain.hid>	<4B76C045.2070602@domain.hid>	<1266140329.27019.17.camel@domain.hid>	<4B867EB5.9090504@domain.hid>
-	<4B867FF9.2020709@domain.hid> <4B868228.10206@domain.hid>
-	<4B868CC1.6030103@domain.hid>
-In-Reply-To: <4B868CC1.6030103@domain.hid>
+References: <4B6E8167.6010907@domain.hid> <4B76B7F2.2050303@domain.hid>	
+	<4B76C045.2070602@domain.hid>	
+	<1266140329.27019.17.camel@domain.hid>	
+	<4B8407B5.10109@domain.hid>	
+	<1266947163.26785.300.camel@domain.hid>	
+	<4B85246A.2020907@domain.hid>	
+	<1267017080.26785.324.camel@domain.hid>
+	<1267017203.26785.325.camel@domain.hid>
+In-Reply-To: <1267017203.26785.325.camel@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig55287CC6090C137CB4E53163"
+	boundary="------------enig66894882A34406C5A6154339"
 Subject: Re: [Xenomai-core] Xenomai in Debian
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,79 +23,150 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jeff Weber <jweber@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig55287CC6090C137CB4E53163
+--------------enig66894882A34406C5A6154339
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Hi Jeff,
+Am 24.02.2010 14:13, schrieb Philippe Gerum:
+> On Wed, 2010-02-24 at 14:11 +0100, Philippe Gerum wrote:
+>> On Wed, 2010-02-24 at 14:06 +0100, Stefan Kisdaroczi wrote:
+>>> Hi Philippe,
+>>>
+>>> Am 23.02.2010 18:46, schrieb Philippe Gerum:
+>>>> On Tue, 2010-02-23 at 17:52 +0100, Stefan Kisdaroczi wrote:
+>>>>> Hi,
+>>>>>
+>>>>> Am 14.02.2010 10:38, schrieb Philippe Gerum:
+>>>>>>
+>>>>>> <snip>
+>>>>>> In the future, maybe we could simply provide a wrapper script acce=
+pting
+>>>>>> sub-commands, such as "xeno latency, xeno sigtest" etc, to be put
+>>>>>> into /usr/bin by distros, which would hide the actual location of =
+those
+>>>>>> binaries?
+>>>>>>
+>>>>>> In any case, thanks for your work so far. We probably need to disc=
+uss
+>>>>>> the packaging issues on this list, so that we get both consistency=
+ and
+>>>>>> usability in the future.
+>>>>>>
+>>>>>> Gilles and Roland, if this is fine with you, I'll handle the liais=
+on
+>>>>>> role with upstream packagers, so please CC me explicitly on those =
+mails.
+>>>>>> We'll sort out this issue, it doesn't look that bad anyway.
+>>>>>
+>>>>> Roland added a xeno wrapper to the debian.org xenomai package 2.5.1=
+-3.
+>>>>>
+>>>>> I synced now the debian/ directories from debian.org and xenomai.or=
+g:
+>>>>>  - For debian.org I sent patches to the Debian bugtracker [1] [2].
+>>>>>    Another patch for dpkg-cross support [3] I sent to Roland privat=
+ely.
+>>>>>  - For xenomai.org I attached patches to this mail (against -2.5.gi=
+t).
+>>>>>
+>>>>> If both parties apply the patches the debian directories are in syn=
+c,
+>>>>> except some minor differences in the debian/control file, see patch=
 
-Am 25.02.2010 15:44, schrieb Jeff Weber:
-> Hello Stefan:
+>>>>> do-not-commit-please.patch. I would like to keep these changes out =
+so
+>>>>> that the xenomai.org packages are compatible with Debian 5.0 Lenny.=
+
+>>>>> The debian.org packages are for Debian 6.0 Squeeze.
+>>>>>
+>>>>
+>>>> Merged into my queue (except the last one as mentioned). This will b=
+e
+>>>> pushed upstream to Gilles for 2.5.2. Thanks.
+>>>
+>>> I took a look at your branch for-upstream. Your commit
+>>>   scripts: add wrapper script to run standard Xenomai commands
+>>>   6e0574791f48cbf8b3421a68c5789254e7d084b7
+>>> adds the same wrapper as my patch 0005-debian-wrapper-script-usr-bin-=
+xeno-to-call-executa.patch
+>>>   debian: wrapper script /usr/bin/xeno to call executables in /usr/li=
+b/xenomai/
+>>>   fbe86cc50d3a65cd23e93d43adba4ed369fe70b1
+>>> Please revert the commit of my patch, we need another fix for debian/=
+rules for "your" wrapper.
+>>>
+>>
+>> Ok, I thought your patch set was based on my tree, so I did not check
+>> thoroughly. I did not send any pull request to Gilles, so no harm done=
+=2E
+>>
+>>> How do I call configure to install the wrapper in /usr/bin and
+>>> the programs like latency, switchtest etc. to /usr/lib/xenomai ?
+>>>
+>>
+>> We need some fixage in scripts/wrappers/Makefile.am to do that. I'll
+>> prepare this asap.
 >=20
-> I've been watching with interest the recent active work integrating
-> Debian and Xenomai.  I am currently porting an embedded application to
-> Xenomai, and am surveying candidate Linux distributions.
->=20
-> I did a test build, install of Xenomai on a Debian Lenny distributionI
-> per the HOWTO:
-> http://xenomai.org/index.php/Xenomai_quick_build_quide
->=20
-> and updated my grub menu.lst with the new kernel, and all worked well.
-> I did spend a significant amount of time tuning my kernel config file t=
-o
-> my target board.
->=20
-> Can you help me understand the advantages of using the Debian packages,=
+> scripts/Makefile.am...
 
-> over the process I followed above?  I am still unclear on the advantage=
-s
-> of using the Debian Xenomia packages.
+Hi Philippe,
 
-Advantages:
-- Installing software is easy, maintaining a system is harder. Using debi=
-an
-  packages helps you upgrading/removing xenomai on a system.
-- If you need xenomai on more than one machine, you build once and instal=
-l
-  the same deb's on all machines.
-- You are testing different distributions now. If you install distributio=
-n xyz
-  on your system and want later to switch back to lenny, you just have to=
+I just tried the --with-testdir switch. It worked, but i'm not really sur=
+e if
+this is the right track.
 
-  keep the deb's and you are fine. Nothing to compile.
-- You don't need any xenomai knowhow to install a deb. If, for example, y=
-our
-  co-worker needs to be able to setup xenomai too and he has the deb's a
-  simple "dpkg -i *.deb" on a lenny system will do it and it will work,
-  and you can enjoy your holidays ;-)
+Roland's packages install all binaries to /usr/lib/xenomai, except xeno a=
+nd
+xeno-config. You state in your commit message more or less the same goal:=
 
-> Which kernels can I use?
->=20
-> Do I still need to tune a kernel config file?
+"At some point, all remaining executables or scripts left under $prefix/b=
+in should match
+xeno*, to further reduce the odds of causing name collisions."
 
-You still need to tune the config and build a kernel, there is no binary
-kernel-image with xenomai support. However, if you use make-kpkg to build=
+Using --with-testdir all tests (latency,switchtest,...) are now in /usr/l=
+ib/xenomai.
+To install the "utils" (rtcansend,insn_write,insn_write,cmd_read,...) to =
+the same
+directory using --with-testdir sounds not obviously. You could add a seco=
+nd switch
+--with-utildir, but a second dir will not work for the xeno-wrapper-scrip=
+t.
 
-the kernel it will build a *.deb. If you install this deb you dont
-have to fiddle with grub menu.lst, the kernel is automatically added.
+I think something like using --bindir=3D/usr/lib/xenomai and --wrapperdir=
+=3D/usr/bin
+is probably better, as there are less exceptions.
 
-Please always CC the mailing list. Thank you.
+For the test I patched xeno.in: exec @XENO_TEST_DIR@/$@
 
-Regards
 Stefan
 
-> If not, how is the kernel pre-configured?
+>>
+>>> Stefan
+>>>
+>>>>
+>>>>> Thanks
+>>>>> kisda
+>>>>>
+>>>>> [1] http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D571099
+>>>>> [2] http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D571104
+>>>>> [3] http://git.xenomai.org/?p=3Dxenomai-2.5.git;a=3Dcommitdiff;h=3D=
+5bcd18f714f4cbeaaac0cc4a08e6c9f375aa3b77
+>>>>
+>>>>
+>>>
+>>>
+>>
+>>
 >=20
-> thanks,
-> Jeff
+>=20
 
 
 
---------------enig55287CC6090C137CB4E53163
+--------------enig66894882A34406C5A6154339
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -99,10 +175,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.3 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iD8DBQFLhsIZIPTw9rIdn6oRAhFVAJ9BgZ6QEkqTatuQ2ypHFW09bP3begCeKUzR
-WfG2EdYxlHSYCW0ZZvKusS8=
-=vl/W
+iD8DBQFLh8j/IPTw9rIdn6oRAsGhAJ0WzJInRPRPS+QWsWNRv1OVzgY0cwCfS1wG
+3FDtBVAnj/RejP0L6KNzc4Y=
+=FYJu
 -----END PGP SIGNATURE-----
 
---------------enig55287CC6090C137CB4E53163--
+--------------enig66894882A34406C5A6154339--
 
