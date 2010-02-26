@@ -1,19 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4B87C8FA.6020802@domain.hid>
-References: <4B6E8167.6010907@domain.hid> <4B76B7F2.2050303@domain.hid>
-	<4B76C045.2070602@domain.hid>
-	<1266140329.27019.17.camel@domain.hid>
-	<4B8407B5.10109@domain.hid>
-	<1266947163.26785.300.camel@domain.hid>
-	<4B85246A.2020907@domain.hid>
-	<1267017080.26785.324.camel@domain.hid>
-	<1267017203.26785.325.camel@domain.hid>
-	<4B87C8FA.6020802@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 26 Feb 2010 14:28:57 +0100
-Message-ID: <1267190937.3405.10.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Message-ID: <4B87CE3E.2070402@domain.hid>
+Date: Fri, 26 Feb 2010 14:35:58 +0100
+From: Stefan Kisdaroczi <kisda@domain.hid>
+MIME-Version: 1.0
+References: <4B6E8167.6010907@domain.hid>	<4B76B7F2.2050303@domain.hid>	<4B76C045.2070602@domain.hid>	<1266140329.27019.17.camel@domain.hid>	<4B867EB5.9090504@domain.hid>	<4B867FF9.2020709@domain.hid>	<4B868228.10206@domain.hid>
+	<4B868958.3000503@domain.hid> <4B86B0DB.4000600@domain.hid>
+In-Reply-To: <4B86B0DB.4000600@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig050B67FC72DFD433907B61AC"
 Subject: Re: [Xenomai-core] Xenomai in Debian
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -23,133 +17,149 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, 2010-02-26 at 14:13 +0100, Stefan Kisdaroczi wrote:
-> Am 24.02.2010 14:13, schrieb Philippe Gerum:
-> > On Wed, 2010-02-24 at 14:11 +0100, Philippe Gerum wrote:
-> >> On Wed, 2010-02-24 at 14:06 +0100, Stefan Kisdaroczi wrote:
-> >>> Hi Philippe,
-> >>>
-> >>> Am 23.02.2010 18:46, schrieb Philippe Gerum:
-> >>>> On Tue, 2010-02-23 at 17:52 +0100, Stefan Kisdaroczi wrote:
-> >>>>> Hi,
-> >>>>>
-> >>>>> Am 14.02.2010 10:38, schrieb Philippe Gerum:
-> >>>>>>
-> >>>>>> <snip>
-> >>>>>> In the future, maybe we could simply provide a wrapper script accepting
-> >>>>>> sub-commands, such as "xeno latency, xeno sigtest" etc, to be put
-> >>>>>> into /usr/bin by distros, which would hide the actual location of those
-> >>>>>> binaries?
-> >>>>>>
-> >>>>>> In any case, thanks for your work so far. We probably need to discuss
-> >>>>>> the packaging issues on this list, so that we get both consistency and
-> >>>>>> usability in the future.
-> >>>>>>
-> >>>>>> Gilles and Roland, if this is fine with you, I'll handle the liaison
-> >>>>>> role with upstream packagers, so please CC me explicitly on those mails.
-> >>>>>> We'll sort out this issue, it doesn't look that bad anyway.
-> >>>>>
-> >>>>> Roland added a xeno wrapper to the debian.org xenomai package 2.5.1-3.
-> >>>>>
-> >>>>> I synced now the debian/ directories from debian.org and xenomai.org:
-> >>>>>  - For debian.org I sent patches to the Debian bugtracker [1] [2].
-> >>>>>    Another patch for dpkg-cross support [3] I sent to Roland privately.
-> >>>>>  - For xenomai.org I attached patches to this mail (against -2.5.git).
-> >>>>>
-> >>>>> If both parties apply the patches the debian directories are in sync,
-> >>>>> except some minor differences in the debian/control file, see patch
-> >>>>> do-not-commit-please.patch. I would like to keep these changes out so
-> >>>>> that the xenomai.org packages are compatible with Debian 5.0 Lenny.
-> >>>>> The debian.org packages are for Debian 6.0 Squeeze.
-> >>>>>
-> >>>>
-> >>>> Merged into my queue (except the last one as mentioned). This will be
-> >>>> pushed upstream to Gilles for 2.5.2. Thanks.
-> >>>
-> >>> I took a look at your branch for-upstream. Your commit
-> >>>   scripts: add wrapper script to run standard Xenomai commands
-> >>>   6e0574791f48cbf8b3421a68c5789254e7d084b7
-> >>> adds the same wrapper as my patch 0005-debian-wrapper-script-usr-bin-xeno-to-call-executa.patch
-> >>>   debian: wrapper script /usr/bin/xeno to call executables in /usr/lib/xenomai/
-> >>>   fbe86cc50d3a65cd23e93d43adba4ed369fe70b1
-> >>> Please revert the commit of my patch, we need another fix for debian/rules for "your" wrapper.
-> >>>
-> >>
-> >> Ok, I thought your patch set was based on my tree, so I did not check
-> >> thoroughly. I did not send any pull request to Gilles, so no harm done.
-> >>
-> >>> How do I call configure to install the wrapper in /usr/bin and
-> >>> the programs like latency, switchtest etc. to /usr/lib/xenomai ?
-> >>>
-> >>
-> >> We need some fixage in scripts/wrappers/Makefile.am to do that. I'll
-> >> prepare this asap.
-> > 
-> > scripts/Makefile.am...
-> 
-> Hi Philippe,
-> 
-> I just tried the --with-testdir switch. It worked, but i'm not really sure if
-> this is the right track.
-> 
-> Roland's packages install all binaries to /usr/lib/xenomai, except xeno and
-> xeno-config. You state in your commit message more or less the same goal:
-> "At some point, all remaining executables or scripts left under $prefix/bin should match
-> xeno*, to further reduce the odds of causing name collisions."
-> 
-> Using --with-testdir all tests (latency,switchtest,...) are now in /usr/lib/xenomai.
-> To install the "utils" (rtcansend,insn_write,insn_write,cmd_read,...) to the same
-> directory using --with-testdir sounds not obviously. You could add a second switch
-> --with-utildir, but a second dir will not work for the xeno-wrapper-script.
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig050B67FC72DFD433907B61AC
+Content-Type: multipart/mixed;
+ boundary="------------030509060107080400090407"
 
-CAN and other utilities should definitely remain in $bindir. The fact
-that they are not prefixed by xeno* is another thing; CAN utilities are
-already prefixed, maybe Analogy ones should be named in a bit less
-generic way, although they are not raising any conflict today. I wrote
-that what's under $bindir "should" match xeno* when a risk of collision
-exists, but there is no point in enforcing a stricter rule at this
-point. In any case, I don't want to enforce a never-in-bindir rule for
-all Xenomai binaries, we can still pick their names in a way that avoids
-obvious issues.
+This is a multi-part message in MIME format.
+--------------030509060107080400090407
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-The real problem was about tests, for which using rather generic names
-made sense. This is what that patch is for.
+Am 25.02.2010 18:18, schrieb Stefan Kisdaroczi:
+> <snip>
+>>>
+>>> Hi Gilles,
+>>>
+>>> can a init.d script with
+>>>   echo "<gid>" > /sys/module/xeno_nucleus/parameters/xenomai_gid
+>>> work in module and builtin case ?
+>>
+>> it seems that init.d will work for the builtin case and modprobe.d for=
+ the
+>> module case. So adding both should work "in all cases" :-)
+>> I'll give it a try ...
+>=20
+> Attached a patch that adds a init-script /etc/init.d/xenomai to the pac=
+kage libxenomai1.
+> If group xenomai and the file /sys/module/xeno_nucleus/parameters/xenom=
+ai_gid are found,
+> xenomai_gid is set on startup.
+>=20
+> Now looking at modprobe.d ...
 
-> I think something like using --bindir=/usr/lib/xenomai and --wrapperdir=/usr/bin
-> is probably better, as there are less exceptions.
-> 
-> For the test I patched xeno.in: exec @XENO_TEST_DIR@/$@
-> 
-> Stefan
-> 
-> >>
-> >>> Stefan
-> >>>
-> >>>>
-> >>>>> Thanks
-> >>>>> kisda
-> >>>>>
-> >>>>> [1] http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=571099
-> >>>>> [2] http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=571104
-> >>>>> [3] http://git.xenomai.org/?p=xenomai-2.5.git;a=commitdiff;h=5bcd18f714f4cbeaaac0cc4a08e6c9f375aa3b77
-> >>>>
-> >>>>
-> >>>
-> >>>
-> >>
-> >>
-> > 
-> > 
-> 
-> 
+I have attached a patch against debian xenomai version 2.5.1-4, changes:
+ - create group xenomai on install
+ - added a init-script which sets /sys/.../xenomai_gid if
+   /sys/.../xenomai_gid exists
+ - added a modprobe-script that adds the xenomai_gid parameter if the use=
+r
+   did call modprobe without xenomai_gid=3D
 
+With this changes, all users which are member of the group xenomai are ab=
+le
+to run xenomai apps, with xeno_nucleus builtin or as a module.
 
--- 
-Philippe.
+Please do not merge anywhere for now, comments are welcome.
 
+Stefan
 
+--------------030509060107080400090407
+Content-Type: text/plain;
+ name="xenomai-group-debian.patch"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="xenomai-group-debian.patch"
+
+ZGlmZiAtdU5ycCB4ZW5vbWFpLTIuNS4xLm9yaWcvZGViaWFuL2xpYnhlbm9tYWkxLmRpcnMg
+eGVub21haS0yLjUuMS9kZWJpYW4vbGlieGVub21haTEuZGlycw0KLS0tIHhlbm9tYWktMi41
+LjEub3JpZy9kZWJpYW4vbGlieGVub21haTEuZGlycwkyMDEwLTAyLTI2IDAxOjAxOjA3LjAw
+MDAwMDAwMCArMDEwMA0KKysrIHhlbm9tYWktMi41LjEvZGViaWFuL2xpYnhlbm9tYWkxLmRp
+cnMJMjAxMC0wMi0yNiAwMToxNjoxMy4wMDAwMDAwMDAgKzAxMDANCkBAIC0xLDIgKzEsMyBA
+QA0KK2V0Yy9tb2Rwcm9iZS5kDQogZXRjL3VkZXYvcnVsZXMuZA0KIHVzci9zaGFyZS9saW50
+aWFuL292ZXJyaWRlcw0KZGlmZiAtdU5ycCB4ZW5vbWFpLTIuNS4xLm9yaWcvZGViaWFuL2xp
+Ynhlbm9tYWkxLm1vZHByb2JlIHhlbm9tYWktMi41LjEvZGViaWFuL2xpYnhlbm9tYWkxLm1v
+ZHByb2JlDQotLS0geGVub21haS0yLjUuMS5vcmlnL2RlYmlhbi9saWJ4ZW5vbWFpMS5tb2Rw
+cm9iZQkxOTcwLTAxLTAxIDAxOjAwOjAwLjAwMDAwMDAwMCArMDEwMA0KKysrIHhlbm9tYWkt
+Mi41LjEvZGViaWFuL2xpYnhlbm9tYWkxLm1vZHByb2JlCTIwMTAtMDItMjYgMDE6MDc6NDEu
+MDAwMDAwMDAwICswMTAwDQpAQCAtMCwwICsxLDMgQEANCitpbnN0YWxsIHhlbm9fbnVjbGV1
+cyAvc2Jpbi9tb2Rwcm9iZSAtLWlnbm9yZS1pbnN0YWxsIHhlbm9fbnVjbGV1cyAkQ01ETElO
+RV9PUFRTIFwNCisgICQoL3Vzci9iaW4vdGVzdCAkKC9iaW4vZWNobyAtbiAnJENNRExJTkVf
+T1BUUycgfCAvYmluL2dyZXAgeGVub21haV9naWQpIFwNCisgICAgfHwgL3Vzci9iaW4vZ2V0
+ZW50IGdyb3VwIHhlbm9tYWkgfCAvdXNyL2Jpbi9jdXQgLWQ6IC1mMyB8IC9iaW4vc2VkIC1l
+ICdzL14veGVub21haV9naWRcPS8nKQ0KZGlmZiAtdU5ycCB4ZW5vbWFpLTIuNS4xLm9yaWcv
+ZGViaWFuL2xpYnhlbm9tYWkxLnBvc3RpbnN0IHhlbm9tYWktMi41LjEvZGViaWFuL2xpYnhl
+bm9tYWkxLnBvc3RpbnN0DQotLS0geGVub21haS0yLjUuMS5vcmlnL2RlYmlhbi9saWJ4ZW5v
+bWFpMS5wb3N0aW5zdAkyMDEwLTAyLTI2IDAxOjAxOjA3LjAwMDAwMDAwMCArMDEwMA0KKysr
+IHhlbm9tYWktMi41LjEvZGViaWFuL2xpYnhlbm9tYWkxLnBvc3RpbnN0CTIwMTAtMDItMjYg
+MDE6MDY6MDAuMDAwMDAwMDAwICswMTAwDQpAQCAtMSw2ICsxLDIyIEBADQogIyEvYmluL3No
+IC1lDQogDQotcm0gLWYgL2V0Yy91ZGV2L3J1bGVzLmQveGVub21haS5ydWxlcw0KLWxuIC1z
+ZiAuLi94ZW5vbWFpLnJ1bGVzIC9ldGMvdWRldi9ydWxlcy5kL3hlbm9tYWkucnVsZXMNCitj
+YXNlICIkMSIgaW4NCisgICAgY29uZmlndXJlKQ0KKyAgICAgICAgIyBBZGQgdGhlIHhlbm9t
+YWkgZ3JvdXAgdW5sZXNzIGl0J3MgYWxyZWFkeSB0aGVyZQ0KKyAgICAgICAgaWYgISBnZXRl
+bnQgZ3JvdXAgeGVub21haSA+L2Rldi9udWxsOyB0aGVuDQorICAgICAgICAgICAgYWRkZ3Jv
+dXAgLS1xdWlldCAtLXN5c3RlbSB4ZW5vbWFpIHx8IHRydWUNCisgICAgICAgIGZpDQorICAg
+ICAgICBybSAtZiAvZXRjL3VkZXYvcnVsZXMuZC94ZW5vbWFpLnJ1bGVzDQorICAgICAgICBs
+biAtc2YgLi4veGVub21haS5ydWxlcyAvZXRjL3VkZXYvcnVsZXMuZC94ZW5vbWFpLnJ1bGVz
+DQorICAgIDs7DQorDQorICAgIGFib3J0LXVwZ3JhZGV8YWJvcnQtcmVtb3ZlfGFib3J0LWRl
+Y29uZmlndXJlKQ0KKyAgICA7Ow0KKw0KKyAgICAqKQ0KKyAgICAgICAgZWNobyAicG9zdGlu
+c3QgY2FsbGVkIHdpdGggdW5rbm93biBhcmd1bWVudCBcYCQxJyIgPiYyDQorICAgICAgICBl
+eGl0IDENCisgICAgOzsNCitlc2FjDQogDQogI0RFQkhFTFBFUiMNCmRpZmYgLXVOcnAgeGVu
+b21haS0yLjUuMS5vcmlnL2RlYmlhbi9saWJ4ZW5vbWFpMS54ZW5vbWFpLmluaXQgeGVub21h
+aS0yLjUuMS9kZWJpYW4vbGlieGVub21haTEueGVub21haS5pbml0DQotLS0geGVub21haS0y
+LjUuMS5vcmlnL2RlYmlhbi9saWJ4ZW5vbWFpMS54ZW5vbWFpLmluaXQJMTk3MC0wMS0wMSAw
+MTowMDowMC4wMDAwMDAwMDAgKzAxMDANCisrKyB4ZW5vbWFpLTIuNS4xL2RlYmlhbi9saWJ4
+ZW5vbWFpMS54ZW5vbWFpLmluaXQJMjAxMC0wMi0yNiAwMTo0ODoyOC4wMDAwMDAwMDAgKzAx
+MDANCkBAIC0wLDAgKzEsMzYgQEANCisjIS9iaW4vc2ggLWUNCisjIyMgQkVHSU4gSU5JVCBJ
+TkZPDQorIyBQcm92aWRlczogICAgICAgICAgeGVub21haQ0KKyMgUmVxdWlyZWQtU3RhcnQ6
+ICAgIG1vdW50a2VybmZzDQorIyBSZXF1aXJlZC1TdG9wOg0KKyMgRGVmYXVsdC1TdGFydDog
+ICAgIFMNCisjIERlZmF1bHQtU3RvcDoNCisjIFNob3J0LURlc2NyaXB0aW9uOiBTZXQgeGVu
+b19udWNsZXVzIGdyb3VwDQorIyMjIEVORCBJTklUIElORk8NCisNCitHUk9VUD14ZW5vbWFp
+DQorSU5JVE5BTUU9L2V0Yy9pbml0LmQveGVub21haQ0KK0ZJTEVOQU1FPS9zeXMvbW9kdWxl
+L3hlbm9fbnVjbGV1cy9wYXJhbWV0ZXJzL3hlbm9tYWlfZ2lkDQorR0lEPSQoZ2V0ZW50IGdy
+b3VwICRHUk9VUCB8IGN1dCAtZDogLWYzKQ0KKw0KK3Rlc3QgLWUgJEZJTEVOQU1FIHx8IGV4
+aXQgMA0KK3Rlc3QgLW4gIiRHSUQiIHx8IGV4aXQgMA0KKw0KK2Nhc2UgIiQxIiBpbg0KKyAg
+c3RhcnQpDQorICAgICAgICBlY2hvICIkR0lEIiA+ICRGSUxFTkFNRQ0KKyAgICAgICAgOzsN
+CisgIHN0b3ApDQorICAgICAgICBlY2hvICItMSIgPiAkRklMRU5BTUUNCisgICAgICAgIDs7
+DQorICByZXN0YXJ0fGZvcmNlLXJlbG9hZCkNCisgICAgICAgICQwIHN0YXJ0DQorICAgICAg
+ICA7Ow0KKyAgKikNCisgICAgICAgIGVjaG8gIlVzYWdlOiAkSU5JVE5BTUUge3N0YXJ0fHN0
+b3B8cmVzdGFydHxmb3JjZS1yZWxvYWR9Ig0KKyAgICAgICAgZXhpdCAxDQorICAgICAgICA7
+Ow0KK2VzYWMNCisNCitleGl0IDANCisNCmRpZmYgLXVOcnAgeGVub21haS0yLjUuMS5vcmln
+L2RlYmlhbi9ydWxlcyB4ZW5vbWFpLTIuNS4xL2RlYmlhbi9ydWxlcw0KLS0tIHhlbm9tYWkt
+Mi41LjEub3JpZy9kZWJpYW4vcnVsZXMJMjAxMC0wMi0yNiAwMTowMTowNy4wMDAwMDAwMDAg
+KzAxMDANCisrKyB4ZW5vbWFpLTIuNS4xL2RlYmlhbi9ydWxlcwkyMDEwLTAyLTI2IDAxOjE3
+OjE5LjAwMDAwMDAwMCArMDEwMA0KQEAgLTEwMCw2ICsxMDAsNyBAQCBpbnN0YWxsOiBidWls
+ZA0KIAlmb3IgZiBpbiAkKENVUkRJUikva3NyYy9udWNsZXVzL3VkZXYvKi5ydWxlcyA7IGRv
+IFwNCiAJICAgIGNhdCAkJGYgPj4gJChDVVJESVIpL2RlYmlhbi9saWJ4ZW5vbWFpMS9ldGMv
+dWRldi94ZW5vbWFpLnJ1bGVzIDsgXA0KIAlkb25lDQorCWluc3RhbGwgLW0gNjQ0IGRlYmlh
+bi9saWJ4ZW5vbWFpMS5tb2Rwcm9iZSAkKENVUkRJUikvZGViaWFuL2xpYnhlbm9tYWkxL2V0
+Yy9tb2Rwcm9iZS5kL3hlbm9tYWkNCiAJIyByZW1vdmUgZW1wdHkgZGlyZWN0b3J5DQogCXJt
+IC1yZiAkKENVUkRJUikvZGViaWFuL3hlbm9tYWktZG9jL3Vzci9zaGFyZS9kb2MveGVub21h
+aS1kb2MvcHMNCiAJY3AgZGViaWFuL2xpYnhlbm9tYWkxLmxpbnRpYW4gJChDVVJESVIpL2Rl
+Ymlhbi9saWJ4ZW5vbWFpMS91c3Ivc2hhcmUvbGludGlhbi9vdmVycmlkZXMvbGlieGVub21h
+aTENCkBAIC0xMzIsNiArMTMzLDcgQEAgYmluYXJ5LWluZGVwOiBidWlsZCBpbnN0YWxsDQog
+YmluYXJ5LWFyY2g6IGJ1aWxkIGluc3RhbGwNCiAJZGhfdGVzdGRpciAtcw0KIAlkaF90ZXN0
+cm9vdCAtcw0KKwlkaF9pbnN0YWxsaW5pdCAtcyAtLW5hbWU9eGVub21haQ0KIAlkaF9pbnN0
+YWxsbWFuIC1zDQogCWRoX2luc3RhbGxkb2NzIC1zIC1BIENSRURJVFMgUkVBRE1FLklOU1RB
+TEwgVFJPVUJMRVNIT09USU5HDQogCWRoX2xpbmsgLXMNCg==
+--------------030509060107080400090407--
+
+--------------enig050B67FC72DFD433907B61AC
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iD8DBQFLh84+IPTw9rIdn6oRAktXAJ4zuFusdJRzbK1DNOSJmBE3reSBeACfS11s
+N8zNcJ0RorA3WiJM5ZtKfi0=
+=yyqZ
+-----END PGP SIGNATURE-----
+
+--------------enig050B67FC72DFD433907B61AC--
 
