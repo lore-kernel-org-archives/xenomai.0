@@ -1,12 +1,13 @@
-Message-ID: <4B88203F.2020907@domain.hid>
-Date: Fri, 26 Feb 2010 20:25:51 +0100
+Message-ID: <4B8903E1.3020805@domain.hid>
+Date: Sat, 27 Feb 2010 12:37:05 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <E1Nl4tX-0001N9-Hb@domain.hid> <4B881E9D.1050101@domain.hid>
-In-Reply-To: <4B881E9D.1050101@domain.hid>
+	<4B88203F.2020907@domain.hid>
+In-Reply-To: <4B88203F.2020907@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig8C3F90DEE77196CBE347B748"
+	boundary="------------enig8137396683B5A436C621F03D"
 Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : RTDM+POSIX: Avoid
  leaking binding objects on errors
@@ -22,35 +23,40 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig8C3F90DEE77196CBE347B748
-Content-Type: text/plain; charset=UTF-8
+--------------enig8137396683B5A436C621F03D
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> GIT version control wrote:
->> diff --git a/ksrc/skins/posix/mq.c b/ksrc/skins/posix/mq.c
->> index 11f47c0..a896031 100644
->> --- a/ksrc/skins/posix/mq.c
->> +++ b/ksrc/skins/posix/mq.c
->> @@ -1283,6 +1283,7 @@ int pse51_mq_select_bind(mqd_t fd, struct xnsele=
-ctor *selector,
->>  	return 0;
->> =20
->>        unlock_and_error:
->> +	xnfree(binding):
->>  	xnlock_put_irqrestore(&nklock, s);
->>  	return err;
->>  }
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> GIT version control wrote:
+>>> diff --git a/ksrc/skins/posix/mq.c b/ksrc/skins/posix/mq.c
+>>> index 11f47c0..a896031 100644
+>>> --- a/ksrc/skins/posix/mq.c
+>>> +++ b/ksrc/skins/posix/mq.c
+>>> @@ -1283,6 +1283,7 @@ int pse51_mq_select_bind(mqd_t fd, struct xnsel=
+ector *selector,
+>>>  	return 0;
+>>> =20
+>>>        unlock_and_error:
+>>> +	xnfree(binding):
+>>>  	xnlock_put_irqrestore(&nklock, s);
+>>>  	return err;
+>>>  }
+>> Ok. Will pull. But I really need to fix that.
+>>
 >=20
-> Ok. Will pull. But I really need to fix that.
+> Ack - now that I see it myself.
 >=20
 
-Ack - now that I see it myself.
+I fixed this in my branch and added another patch to transform EIDRM
+into EBADF when selecting a (half-)deleted RTDM device. Please merge.
 
+Thanks,
 Jan
 
 
---------------enig8C3F90DEE77196CBE347B748
+--------------enig8137396683B5A436C621F03D
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -59,10 +65,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkuIIEcACgkQitSsb3rl5xQOHwCdGwl1EzkZ3nA/1yQgB28fqXqS
-ZUMAoMiFdfiY8vDgV/yVlqv+9qp6oZH1
-=CHOp
+iEYEARECAAYFAkuJA+UACgkQitSsb3rl5xRprACfXmt62wHXTnMgEgnLOBq/ovgq
+ESsAoJDzVEJ4x8cmPVCohHEQbDAyu+hr
+=RnjJ
 -----END PGP SIGNATURE-----
 
---------------enig8C3F90DEE77196CBE347B748--
+--------------enig8137396683B5A436C621F03D--
 
