@@ -1,79 +1,80 @@
-Message-ID: <4B8E281F.1040308@domain.hid>
-Date: Wed, 03 Mar 2010 10:13:03 +0100
+Message-ID: <4B8C2490.1040604@domain.hid>
+Date: Mon, 01 Mar 2010 21:33:20 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4B8E24B4.9000806@domain.hid> <4B8E260D.7070809@domain.hid>
-In-Reply-To: <4B8E260D.7070809@domain.hid>
+References: <CF7FB0793253794F9F45991443E5FE2006483DE98C@us194mx002.tycoelectronics.net>	<4B86EDC2.7010905@domain.hid>
+	<4B86FCBB.10203@domain.hid>	<4B86FFA0.3000403@domain.hid>
+	<4B870134.2040802@domain.hid>	<CF7FB0793253794F9F45991443E5FE2006483DE98D@us194mx002.tycoelectronics.net>	<4B87FC70.90903@domain.hid>
+	<CF7FB0793253794F9F45991443E5FE2006483DE98F@us194mx002.tycoelectronics.net>
+	<CF7FB0793253794F9F45991443E5FE2006483DE993@domain.hid>
+In-Reply-To: <CF7FB0793253794F9F45991443E5FE2006483DE993@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig5F8929E07E00059078630840"
+	boundary="------------enig4E2F5D5E81CA25BAE20858CC"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] Potential heap corruption on thread cleanup
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] mlockall error after calling mlockall()
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>, Gernot Hillier <gernot.hillier@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: "Charlton, John" <john.charlton@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig5F8929E07E00059078630840
-Content-Type: text/plain; charset=UTF-8
+--------------enig4E2F5D5E81CA25BAE20858CC
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Hi Gilles,
->>
->> I'm pushing your findings to the list, also as my colleagues showed
->> strong interest - this thing may explain rare corruptions for us as we=
-ll.
->>
->> I thought a bit about that likely u_mode-related crash in your test ca=
-se
->> and have the following theory so far: If the xeno_current_mode storage=
-
->> is allocated on the application heap (!HAVE_THREAD, that's also what w=
-e
->> are forced to use), it is automatically freed on thread termination in=
-
->> the context of the dying thread. If the thread is already migrated to
->> secondary or if that happens while it is cleaned up (i.e. before calli=
-ng
->> for exit into the kernel), there is no problem, Xenomai will not touch=
-
->> the mode storage anymore. But if the thread happens to delete the
->> storage "silently", without any migration, the final exit will trigger=
-
->> one further access. And that takes place against an invalid head area =
-at
->> this point.
->>
->> Does this make sense?
+Charlton, John wrote:
+> I added some printk output to the cond.c file in xenomai-2.5.1 and it s=
+hows that  xnsync_sleep_on returned -ETIMEDOUT as it should:
+> Xenomai: registered exported object M1-1908 (mutexes)
+> Xenomai: registered exported object C1-1908 (condvars)
+> xnsynch_sleep_on returned: -110
+> xnsynch_sleep_on returned: -110
+> xnsynch_sleep_on returned: -110
+> xnsynch_sleep_on returned: -110
+> xnsynch_sleep_on returned: -110
+> xnsynch_sleep_on returned: -110
+> xnsynch_sleep_on returned: -4
+> Xenomai: native: cleaning up cond "C1-1908" (ret=3D0).
+> Xenomai: unregistered exported object C1-1908 (condvars)
+> Xenomai: native: cleaning up mutex "M1-1908" (ret=3D0).
+> Xenomai: unregistered exported object M1-1908 (mutexes)
+> Xenomai: POSIX: destroyed thread df5a0800
 >=20
-> Yes, it is the issue we observed.
+> I put the printk on line cond.c:433 after err is set in rt_cond_wait_pr=
+ologue():
 >=20
->> If that is true, all we need to do is to force a migration before
->> releasing the mode storage. Could you check this?
+> 	info =3D xnsynch_sleep_on(&cond->synch_base,
+> 				timeout, timeout_mode);
+> 	if (info & XNRMID)
+> 		err =3D -EIDRM;	/* Condvar deleted while pending. */
+> 	else if (info & XNTIMEO) {
+> 		err =3D -ETIMEDOUT;	/* Timeout. */
+>         }
+> 	else if (info & XNBREAK) {
+> 		err =3D -EINTR;	/* Unblocked. */
+> 	}
+>         printk(KERN_DEBUG "xnsynch_sleep_on returned: %d\n", err);
 >=20
-> No, that does not fly. Calling, for instance, __wrap_pthread_mutex_lock=
+> I put a printk in rt_cond_wait_inner() which is called directly by rt_c=
+ond_wait() from user mode but did not see the output in the dmesg output =
+for that one.
 
-> in another TSD cleanup function is which could be called after the
-> current_mode TSD cleanup is allowed and could trigger a switch to
-> primary mode and a write to the u_mode.
->=20
-
-Good point. Mmh. Another, but ABI-breaking, way would be to add a
-syscall for deregistering the u_mode pointer...
+One of our problems is the prologue/epilogue split up (both in kernel
+and user space): the epilogue can eat the error code or the prologue,
+including the -ETIMEDOUT.
 
 Jan
 
 
---------------enig5F8929E07E00059078630840
+--------------enig4E2F5D5E81CA25BAE20858CC
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -82,10 +83,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkuOKCIACgkQitSsb3rl5xSW/wCgidtGB99HnZ5LCNRyXlH8PvMp
-ZEEAoKlP99ZOwYkRlyZtVPam7ONuk6P7
-=8XFt
+iEYEARECAAYFAkuMJJAACgkQitSsb3rl5xTYDgCbBCSH/uWtiaVNh7AxQbpTEHEq
+VHcAoLuBaztL+/QeKTFB270zIQWY9+Av
+=1CCC
 -----END PGP SIGNATURE-----
 
---------------enig5F8929E07E00059078630840--
+--------------enig4E2F5D5E81CA25BAE20858CC--
 
