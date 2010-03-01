@@ -1,5 +1,5 @@
-Message-ID: <4B8BC277.4010108@domain.hid>
-Date: Mon, 01 Mar 2010 14:34:47 +0100
+Message-ID: <4B8BC2CC.6070404@domain.hid>
+Date: Mon, 01 Mar 2010 14:36:12 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <E1Nl4tX-0001N9-Hb@domain.hid>
@@ -68,14 +68,10 @@ Jan Kiszka wrote:
 > 
 > It is way easier and more consistent to unblock reader and writers via
 > destroying the sync object than to signal it and add tests for specific
-> states to detect that. Keep in mind that this pattern is in use even
-> without select support. Diverging from it just to add select awareness
-> to some driver would be a step back.
+> states to detect that.
 
-Ok. As you wish. But in that case, please provide a unit test case which
-we can run on all architectures to validate your modifications. We will
-not put this test case in xenomai repository but will create a
-repository for test cases later on.
+>From my point of view, having an object with partially destroyed parts
+is asking for trouble.
 
 -- 
 					    Gilles.
