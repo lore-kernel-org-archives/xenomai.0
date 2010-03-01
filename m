@@ -1,6 +1,6 @@
-Message-ID: <4B8BE901.8050009@domain.hid>
-Date: Mon, 01 Mar 2010 17:19:13 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4B8BEA64.7090108@domain.hid>
+Date: Mon, 01 Mar 2010 17:25:08 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <E1Nl4tX-0001N9-Hb@domain.hid>
 	<4B881E9D.1050101@domain.hid>	<4B88203F.2020907@domain.hid>
@@ -10,7 +10,8 @@ References: <E1Nl4tX-0001N9-Hb@domain.hid>
 	<4B8BC277.4010108@domain.hid> <4B8BC62F.6090403@domain.hid>
 	<4B8BCC09.8030100@domain.hid> <4B8BCDB5.2010103@domain.hid>
 	<4B8BCF48.70603@domain.hid> <4B8BD4D4.2060109@domain.hid>
-In-Reply-To: <4B8BD4D4.2060109@domain.hid>
+	<4B8BDE7F.8060908@domain.hid>
+In-Reply-To: <4B8BDE7F.8060908@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : RTDM+POSIX: Avoid
@@ -23,30 +24,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Jan Kiszka wrote:
-> Right, the trick is likely to properly maintain the output fds of
-> bind_all in that not only pending fds are set, but others are cleared -
-> avoids the third bitmap. Still playing with such an approach.
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> To be more precise, it looks to me like each call to bind_one is
+>>> supposed to set the bit of the corresponding fd, so, if bind_one fails
+>>> because the fd is in the transitory state (the one which I do not like),
+>>> bind_all should simply set this bit to 1. And there does not seem to be
+>>> any need for additional parameters, additional space on stack, or
+>>> anything else.
+>> Right, the trick is likely to properly maintain the output fds of
+>> bind_all in that not only pending fds are set, but others are cleared -
+>> avoids the third bitmap. Still playing with such an approach.
+> 
+> Another precision, xnselect_bind accesses directly the "pending" set of
+> the xnselector structure, so, you have the right to do that for the fds
+> which failed binding but which you want to mark as pending.
 
-What we are trying to do, in a nutshell, is to create a notion of
-stateless binding between a file descriptor and an xnselector. If we
-really want to do this, we will have to extend the xnselect interface.
-But this looks really wrong to me.
+Right, /me was blind, the issue can trivially be fixed inside RTDM by
+binding as pending even if the object is marked deleted. I'm now just
+cleaning up some other RTDM bits at this chance, pull request will follow.
 
-It seems possible to keep the bindings around as long as the file
-descriptor exists. The binding is here for this reason, to express the
-link between the file descriptor and the thread which runs select, and
-its lifecycle should be the same as the file descriptor. And if you want
-to signal that such a file descriptor is ready for reading/writing, even
-if it is closed, you should be using xnselect_signal. The interface is
-there, it is meant for that.
-
-So, the more I think about it, the more I think that we are going in the
-wrong direction.
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
