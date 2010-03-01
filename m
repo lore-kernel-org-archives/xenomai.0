@@ -1,6 +1,6 @@
-Message-ID: <4B8C33FC.3080806@domain.hid>
-Date: Mon, 01 Mar 2010 22:39:08 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4B8C358E.9050303@domain.hid>
+Date: Mon, 01 Mar 2010 22:45:50 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CF7FB0793253794F9F45991443E5FE2006483DE98C@us194mx002.tycoelectronics.net>	<4B86EDC2.7010905@domain.hid>
 	<4B86FCBB.10203@domain.hid>	<4B86FFA0.3000403@domain.hid>
@@ -11,12 +11,10 @@ References: <CF7FB0793253794F9F45991443E5FE2006483DE98C@us194mx002.tycoelectroni
 	<4B8C26F7.3020306@domain.hid> <4B8C2797.2000501@domain.hid>
 	<4B8C29E1.7070404@domain.hid> <4B8C2B3E.8020505@domain.hid>
 	<4B8C2C35.6030006@domain.hid> <4B8C2FE6.5000406@domain.hid>
-	<4B8C30DA.3000705@domain.hid>
-In-Reply-To: <4B8C30DA.3000705@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig802343509418D54681BCAF93"
-Sender: jan.kiszka@domain.hid
+	<4B8C30DA.3000705@domain.hid> <4B8C33FC.3080806@domain.hid>
+In-Reply-To: <4B8C33FC.3080806@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] mlockall error after calling mlockall()
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -27,80 +25,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig802343509418D54681BCAF93
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
 
 Jan Kiszka wrote:
 > Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Same issue exists in user space. And rt_cond_wait_inner needs fixing=
-=2E
->>>> And then there is a spurious sign inversion:
+>> Jan Kiszka wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Jan Kiszka wrote:
+>>>>> Same issue exists in user space. And rt_cond_wait_inner needs fixing.
+>>>>> And then there is a spurious sign inversion:
+>>>>>
+>>>>> diff --git a/src/skins/native/cond.c b/src/skins/native/cond.c
+>>>>> index 478321d..f874678 100644
+>>>>> --- a/src/skins/native/cond.c
+>>>>> +++ b/src/skins/native/cond.c
+>>>>> @@ -96,9 +96,9 @@ int rt_cond_wait_until(RT_COND *cond, RT_MUTEX *mutex, RTIME timeout)
+>>>>>  				&saved_lockcnt, XN_REALTIME, &timeout);
+>>>>>  
+>>>>>  	while (err == -EINTR)
+>>>>> -		err = -XENOMAI_SKINCALL2(__native_muxid,
+>>>>> -					 __native_cond_wait_epilogue, mutex,
+>>>>> -					 saved_lockcnt);
+>>>>> +		err = XENOMAI_SKINCALL2(__native_muxid,
+>>>>> +					__native_cond_wait_epilogue, mutex,
+>>>>> +					saved_lockcnt);
+>>>>>  #endif /* !CONFIG_XENO_FASTSYNCH */
+>>>> Ok for the sign inversion, but in this case the status is Ok. We call
+>>>> cond_wait_epilogue only if prologue returned -EINTR, and update the
+>>>> status, this is what we want.
 >>>>
->>>> diff --git a/src/skins/native/cond.c b/src/skins/native/cond.c
->>>> index 478321d..f874678 100644
->>>> --- a/src/skins/native/cond.c
->>>> +++ b/src/skins/native/cond.c
->>>> @@ -96,9 +96,9 @@ int rt_cond_wait_until(RT_COND *cond, RT_MUTEX *mu=
-tex, RTIME timeout)
->>>>  				&saved_lockcnt, XN_REALTIME, &timeout);
->>>> =20
->>>>  	while (err =3D=3D -EINTR)
->>>> -		err =3D -XENOMAI_SKINCALL2(__native_muxid,
->>>> -					 __native_cond_wait_epilogue, mutex,
->>>> -					 saved_lockcnt);
->>>> +		err =3D XENOMAI_SKINCALL2(__native_muxid,
->>>> +					__native_cond_wait_epilogue, mutex,
->>>> +					saved_lockcnt);
->>>>  #endif /* !CONFIG_XENO_FASTSYNCH */
->>> Ok for the sign inversion, but in this case the status is Ok. We call=
-
->>> cond_wait_epilogue only if prologue returned -EINTR, and update the
->>> status, this is what we want.
+>>>> There is only one way out which will not break the ABI: do not call
+>>>> cond_wait_epilogue in the kernel-space cond_wait_prologue.
+>>>>
+>>> Unfortunately, that ABI is broken: If we get -ETIMEDOUT on cond wait an
+>>> -EINTR on mutex lock, we lose the former, don't we?
 >>>
->>> There is only one way out which will not break the ABI: do not call
->>> cond_wait_epilogue in the kernel-space cond_wait_prologue.
+>>> If we can't find a workaround, I'm for breaking the ABI for this
+>>> particular service - but let's search for an alternative first.
 >>>
->> Unfortunately, that ABI is broken: If we get -ETIMEDOUT on cond wait a=
-n
->> -EINTR on mutex lock, we lose the former, don't we?
+>> The only way around ABI changes: save the return code of cond_wait
+>> /somewhere/ across prologue and epilogue syscalls - but where???
 >>
->> If we can't find a workaround, I'm for breaking the ABI for this
->> particular service - but let's search for an alternative first.
->>
->=20
-> The only way around ABI changes: save the return code of cond_wait
-> /somewhere/ across prologue and epilogue syscalls - but where???
->=20
+> 
+> In-kernel RT_TASK, that's probably the only place. Once
+> __rt_cond_wait_epilogue has acquired the mutex (or failed without
+> receiving a -EINTR), it can then pick up the original error that this
+> task received from rt_cond_wait_prologue and return it. What do you think?
 
-In-kernel RT_TASK, that's probably the only place. Once
-__rt_cond_wait_epilogue has acquired the mutex (or failed without
-receiving a -EINTR), it can then pick up the original error that this
-task received from rt_cond_wait_prologue and return it. What do you think=
-?
+I was thinking about the same idea, by using the xnthread errno.
+However, it is not reentrant, in the sense that if a signal handler
+emits a syscall which overrides this value, we are toast.
 
-Jan
-
-
---------------enig802343509418D54681BCAF93
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkuMNAAACgkQitSsb3rl5xSN5QCgstX0gSD3iVZg6J1iYL0QOtUq
-gzkAn2QWz0zyEa9oowWZSZsbrfwVJUKQ
-=TMEW
------END PGP SIGNATURE-----
-
---------------enig802343509418D54681BCAF93--
+-- 
+					    Gilles.
 
