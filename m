@@ -1,10 +1,13 @@
-Message-ID: <4B8BF542.6040308@domain.hid>
-Date: Mon, 01 Mar 2010 18:11:30 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4B8C3595.6030908@domain.hid>
+Date: Mon, 01 Mar 2010 22:45:57 +0100
+From: Roland Stigge <stigge@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+References: <4B6E8167.6010907@domain.hid> <4B76B7F2.2050303@domain.hid>
+	<4B76C045.2070602@domain.hid> <4B8BF390.6020703@domain.hid>
+In-Reply-To: <4B8BF390.6020703@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [pull request] RTDM fixes and cleanups
+Subject: Re: [Xenomai-core] Xenomai in Debian
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,24 +19,24 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-The following changes since commit 95412b8c10ba7ba199089a3cbb60c67c8d718186:
-  Gilles Chanteperdrix (1):
-        timeconv: revert 97b78d45bf4c5571fccd9675fae8bb008a341769
+Hi Gilles,
 
-are available in the git repository at:
+thanks for your mail!
 
-  git://git.xenomai.org/xenomai-jki.git for-upstream
+And don't worry - there's an updated Xenomai version in Debian sid now
+thanks to everyone from the Xenomai dev list. Sven put quite some effort
+into syncing the two projects. If there are any problems, feel free to
+"bug" me. ;-)
 
-Jan Kiszka (5):
-      RTDM+POSIX: Avoid leaking binding objects on errors
-      RTDM: Bind deleted sem/event objects, but mark them pending
-      RTDM: Consistently use xnsynch_test_flags to test for RTDM_SYNCH_DELETED
-      RTDM: Avoid calling cleanup_instance with held spin lock
-      RTDM: Add smp barrier to rtdm_context_unlock
+Regarding the xenomai-announce list, this sounds like a good idea since
+many projects have it, including Debian. For me personally, my work much
+depends on free ressources and Debian release schedule urgency. Btw: The
+Debian watch system automatically generates an email when xenomai has
+got a new release. :-) So also no hurry here.
 
- include/rtdm/rtdm_driver.h |    1 +
- ksrc/skins/posix/mq.c      |    1 +
- ksrc/skins/rtdm/core.c     |   45 ++++++++++++++++++++++---------------------
- ksrc/skins/rtdm/drvlib.c   |   40 ++++++++++++++++++++------------------
- 4 files changed, 46 insertions(+), 41 deletions(-)
+See you,
+
+bye,
+  Roland
+
 
