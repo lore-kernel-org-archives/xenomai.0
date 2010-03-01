@@ -1,5 +1,5 @@
-Message-ID: <4B8BCEAA.3070002@domain.hid>
-Date: Mon, 01 Mar 2010 15:26:50 +0100
+Message-ID: <4B8BCF48.70603@domain.hid>
+Date: Mon, 01 Mar 2010 15:29:28 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <E1Nl4tX-0001N9-Hb@domain.hid>
@@ -106,10 +106,12 @@ Jan Kiszka wrote:
 > processing it unless an fd is marked deleted. Would also avoid passing a
 > separate fds to it.
 
-I do not like calling FD_ZERO all the time either. Please take the time
-to explain me your implementation (I understood the reason, not the
-implementation itself), and to think calmly about the implementation. I
-am not going to merge anything before tonight anyway.
+To be more precise, it looks to me like each call to bind_one is
+supposed to set the bit of the corresponding fd, so, if bind_one fails
+because the fd is in the transitory state (the one which I do not like),
+bind_all should simply set this bit to 1. And there does not seem to be
+any need for additional parameters, additional space on stack, or
+anything else.
 
 -- 
 					    Gilles.
