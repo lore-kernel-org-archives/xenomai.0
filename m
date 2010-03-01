@@ -1,5 +1,5 @@
-Message-ID: <4B8C30DA.3000705@domain.hid>
-Date: Mon, 01 Mar 2010 22:25:46 +0100
+Message-ID: <4B8C33FC.3080806@domain.hid>
+Date: Mon, 01 Mar 2010 22:39:08 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <CF7FB0793253794F9F45991443E5FE2006483DE98C@us194mx002.tycoelectronics.net>	<4B86EDC2.7010905@domain.hid>
@@ -11,10 +11,11 @@ References: <CF7FB0793253794F9F45991443E5FE2006483DE98C@us194mx002.tycoelectroni
 	<4B8C26F7.3020306@domain.hid> <4B8C2797.2000501@domain.hid>
 	<4B8C29E1.7070404@domain.hid> <4B8C2B3E.8020505@domain.hid>
 	<4B8C2C35.6030006@domain.hid> <4B8C2FE6.5000406@domain.hid>
-In-Reply-To: <4B8C2FE6.5000406@domain.hid>
+	<4B8C30DA.3000705@domain.hid>
+In-Reply-To: <4B8C30DA.3000705@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigF0D070D584B268E76912FDD3"
+	boundary="------------enig802343509418D54681BCAF93"
 Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-help] mlockall error after calling mlockall()
 List-Id: Help regarding installation and common use of Xenomai
@@ -30,56 +31,64 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF0D070D584B268E76912FDD3
+--------------enig802343509418D54681BCAF93
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
 Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Same issue exists in user space. And rt_cond_wait_inner needs fixing.=
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> Same issue exists in user space. And rt_cond_wait_inner needs fixing=
+=2E
+>>>> And then there is a spurious sign inversion:
+>>>>
+>>>> diff --git a/src/skins/native/cond.c b/src/skins/native/cond.c
+>>>> index 478321d..f874678 100644
+>>>> --- a/src/skins/native/cond.c
+>>>> +++ b/src/skins/native/cond.c
+>>>> @@ -96,9 +96,9 @@ int rt_cond_wait_until(RT_COND *cond, RT_MUTEX *mu=
+tex, RTIME timeout)
+>>>>  				&saved_lockcnt, XN_REALTIME, &timeout);
+>>>> =20
+>>>>  	while (err =3D=3D -EINTR)
+>>>> -		err =3D -XENOMAI_SKINCALL2(__native_muxid,
+>>>> -					 __native_cond_wait_epilogue, mutex,
+>>>> -					 saved_lockcnt);
+>>>> +		err =3D XENOMAI_SKINCALL2(__native_muxid,
+>>>> +					__native_cond_wait_epilogue, mutex,
+>>>> +					saved_lockcnt);
+>>>>  #endif /* !CONFIG_XENO_FASTSYNCH */
+>>> Ok for the sign inversion, but in this case the status is Ok. We call=
 
->>> And then there is a spurious sign inversion:
+>>> cond_wait_epilogue only if prologue returned -EINTR, and update the
+>>> status, this is what we want.
 >>>
->>> diff --git a/src/skins/native/cond.c b/src/skins/native/cond.c
->>> index 478321d..f874678 100644
->>> --- a/src/skins/native/cond.c
->>> +++ b/src/skins/native/cond.c
->>> @@ -96,9 +96,9 @@ int rt_cond_wait_until(RT_COND *cond, RT_MUTEX *mut=
-ex, RTIME timeout)
->>>  				&saved_lockcnt, XN_REALTIME, &timeout);
->>> =20
->>>  	while (err =3D=3D -EINTR)
->>> -		err =3D -XENOMAI_SKINCALL2(__native_muxid,
->>> -					 __native_cond_wait_epilogue, mutex,
->>> -					 saved_lockcnt);
->>> +		err =3D XENOMAI_SKINCALL2(__native_muxid,
->>> +					__native_cond_wait_epilogue, mutex,
->>> +					saved_lockcnt);
->>>  #endif /* !CONFIG_XENO_FASTSYNCH */
->> Ok for the sign inversion, but in this case the status is Ok. We call
->> cond_wait_epilogue only if prologue returned -EINTR, and update the
->> status, this is what we want.
+>>> There is only one way out which will not break the ABI: do not call
+>>> cond_wait_epilogue in the kernel-space cond_wait_prologue.
+>>>
+>> Unfortunately, that ABI is broken: If we get -ETIMEDOUT on cond wait a=
+n
+>> -EINTR on mutex lock, we lose the former, don't we?
 >>
->> There is only one way out which will not break the ABI: do not call
->> cond_wait_epilogue in the kernel-space cond_wait_prologue.
+>> If we can't find a workaround, I'm for breaking the ABI for this
+>> particular service - but let's search for an alternative first.
 >>
 >=20
-> Unfortunately, that ABI is broken: If we get -ETIMEDOUT on cond wait an=
-
-> -EINTR on mutex lock, we lose the former, don't we?
->=20
-> If we can't find a workaround, I'm for breaking the ABI for this
-> particular service - but let's search for an alternative first.
+> The only way around ABI changes: save the return code of cond_wait
+> /somewhere/ across prologue and epilogue syscalls - but where???
 >=20
 
-The only way around ABI changes: save the return code of cond_wait
-/somewhere/ across prologue and epilogue syscalls - but where???
+In-kernel RT_TASK, that's probably the only place. Once
+__rt_cond_wait_epilogue has acquired the mutex (or failed without
+receiving a -EINTR), it can then pick up the original error that this
+task received from rt_cond_wait_prologue and return it. What do you think=
+?
 
 Jan
 
 
---------------enigF0D070D584B268E76912FDD3
+--------------enig802343509418D54681BCAF93
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -88,10 +97,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkuMMNoACgkQitSsb3rl5xT4jQCgxH1ZSFIWRage+s5DkA3mgXi7
-NiQAoJr3wntw82DNwx/18l0SG8okxfIT
-=mJLY
+iEYEARECAAYFAkuMNAAACgkQitSsb3rl5xSN5QCgstX0gSD3iVZg6J1iYL0QOtUq
+gzkAn2QWz0zyEa9oowWZSZsbrfwVJUKQ
+=TMEW
 -----END PGP SIGNATURE-----
 
---------------enigF0D070D584B268E76912FDD3--
+--------------enig802343509418D54681BCAF93--
 
