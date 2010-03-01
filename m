@@ -1,61 +1,113 @@
-Message-ID: <4B8E28D2.6020808@domain.hid>
-Date: Wed, 03 Mar 2010 10:16:02 +0100
+Message-ID: <4B8C29E1.7070404@domain.hid>
+Date: Mon, 01 Mar 2010 21:56:01 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B8E24B4.9000806@domain.hid> <4B8E260D.7070809@domain.hid>
-	<4B8E281F.1040308@domain.hid>
-In-Reply-To: <4B8E281F.1040308@domain.hid>
+References: <CF7FB0793253794F9F45991443E5FE2006483DE98C@us194mx002.tycoelectronics.net>	<4B86EDC2.7010905@domain.hid>
+	<4B86FCBB.10203@domain.hid>	<4B86FFA0.3000403@domain.hid>
+	<4B870134.2040802@domain.hid>	<CF7FB0793253794F9F45991443E5FE2006483DE98D@us194mx002.tycoelectronics.net>	<4B87FC70.90903@domain.hid>
+	<CF7FB0793253794F9F45991443E5FE2006483DE98F@us194mx002.tycoelectronics.net>
+	<CF7FB0793253794F9F45991443E5FE2006483DE993@domain.hid>
+	<4B8C2490.1040604@domain.hid> <4B8C25B9.8090705@domain.hid>
+	<4B8C26F7.3020306@domain.hid> <4B8C2797.2000501@domain.hid>
+In-Reply-To: <4B8C2797.2000501@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Potential heap corruption on thread cleanup
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] mlockall error after calling mlockall()
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>, Gernot Hillier <gernot.hillier@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Hi Gilles,
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> Charlton, John wrote:
+>>>>> I added some printk output to the cond.c file in xenomai-2.5.1 and it shows that  xnsync_sleep_on returned -ETIMEDOUT as it should:
+>>>>> Xenomai: registered exported object M1-1908 (mutexes)
+>>>>> Xenomai: registered exported object C1-1908 (condvars)
+>>>>> xnsynch_sleep_on returned: -110
+>>>>> xnsynch_sleep_on returned: -110
+>>>>> xnsynch_sleep_on returned: -110
+>>>>> xnsynch_sleep_on returned: -110
+>>>>> xnsynch_sleep_on returned: -110
+>>>>> xnsynch_sleep_on returned: -110
+>>>>> xnsynch_sleep_on returned: -4
+>>>>> Xenomai: native: cleaning up cond "C1-1908" (ret=0).
+>>>>> Xenomai: unregistered exported object C1-1908 (condvars)
+>>>>> Xenomai: native: cleaning up mutex "M1-1908" (ret=0).
+>>>>> Xenomai: unregistered exported object M1-1908 (mutexes)
+>>>>> Xenomai: POSIX: destroyed thread df5a0800
+>>>>>
+>>>>> I put the printk on line cond.c:433 after err is set in rt_cond_wait_prologue():
+>>>>>
+>>>>> 	info = xnsynch_sleep_on(&cond->synch_base,
+>>>>> 				timeout, timeout_mode);
+>>>>> 	if (info & XNRMID)
+>>>>> 		err = -EIDRM;	/* Condvar deleted while pending. */
+>>>>> 	else if (info & XNTIMEO) {
+>>>>> 		err = -ETIMEDOUT;	/* Timeout. */
+>>>>>         }
+>>>>> 	else if (info & XNBREAK) {
+>>>>> 		err = -EINTR;	/* Unblocked. */
+>>>>> 	}
+>>>>>         printk(KERN_DEBUG "xnsynch_sleep_on returned: %d\n", err);
+>>>>>
+>>>>> I put a printk in rt_cond_wait_inner() which is called directly by rt_cond_wait() from user mode but did not see the output in the dmesg output for that one.
+>>>> One of our problems is the prologue/epilogue split up (both in kernel
+>>>> and user space): the epilogue can eat the error code or the prologue,
+>>>> including the -ETIMEDOUT.
+>>> Ah. My fault. Looks user-space is Ok though. Only kernel-space has a
+>>> problem.
 >>>
->>> I'm pushing your findings to the list, also as my colleagues showed
->>> strong interest - this thing may explain rare corruptions for us as well.
->>>
->>> I thought a bit about that likely u_mode-related crash in your test case
->>> and have the following theory so far: If the xeno_current_mode storage
->>> is allocated on the application heap (!HAVE_THREAD, that's also what we
->>> are forced to use), it is automatically freed on thread termination in
->>> the context of the dying thread. If the thread is already migrated to
->>> secondary or if that happens while it is cleaned up (i.e. before calling
->>> for exit into the kernel), there is no problem, Xenomai will not touch
->>> the mode storage anymore. But if the thread happens to delete the
->>> storage "silently", without any migration, the final exit will trigger
->>> one further access. And that takes place against an invalid head area at
->>> this point.
->>>
->>> Does this make sense?
->> Yes, it is the issue we observed.
+>> Both are affected.
 >>
->>> If that is true, all we need to do is to force a migration before
->>> releasing the mode storage. Could you check this?
->> No, that does not fly. Calling, for instance, __wrap_pthread_mutex_lock
->> in another TSD cleanup function is which could be called after the
->> current_mode TSD cleanup is allowed and could trigger a switch to
->> primary mode and a write to the u_mode.
->>
+>> Could you help me with what issues
+>> 97323b3287b5ee8cad99a7fa67cd050bc51f76c4 should fix?
 > 
-> Good point. Mmh. Another, but ABI-breaking, way would be to add a
-> syscall for deregistering the u_mode pointer...
+> Ah, restart after RT-signals! So far we blocked on the concluding
+> rt_mutex_lock without breaking out to user space, now we have to loop
+> over -EINTR to allow signals, right?
 
-That is the thing we did to verify that we had this bug. But this
-syscall would be also called too soon, and suffers from the TSD cleanup
-functions order again.
+Yes, it is needed even for handling linux signals (getting gdb working 
+for instance). However, since we do not want rt_cond_wait to result into
+two syscalls all the time, we handle everything in the first syscall if 
+possible.
+
+Try this:
+
+diff --git a/ksrc/skins/native/syscall.c b/ksrc/skins/native/syscall.c
+index 40e5cfd..d4e885c 100644
+--- a/ksrc/skins/native/syscall.c
++++ b/ksrc/skins/native/syscall.c
+@@ -1869,9 +1869,12 @@ static int __rt_cond_wait_prologue(struct pt_regs *regs)
+
+        err = rt_cond_wait_prologue(cond, mutex, &lockcnt, timeout_mode, timeout);
+
+-       if (err == 0 || err == -ETIMEDOUT)
+-               err = rt_cond_wait_epilogue(mutex, lockcnt);
+-
++       if (err == 0 || err == -ETIMEDOUT) {
++               int loc_err = rt_cond_wait_epilogue(mutex, lockcnt);
++               if (loc_err < 0)
++                       err = loc_err;
++       }
++
+        if (err == -EINTR && __xn_reg_arg3(regs)
+            && __xn_safe_copy_to_user((void __user *)__xn_reg_arg3(regs),
+                                      &lockcnt, sizeof(lockcnt)))
+
+> 
+> Jan
+> 
+
 
 -- 
 					    Gilles.
