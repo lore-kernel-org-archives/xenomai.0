@@ -1,5 +1,5 @@
-Message-ID: <4B8BDCED.8030501@domain.hid>
-Date: Mon, 01 Mar 2010 16:27:41 +0100
+Message-ID: <4B8BDE7F.8060908@domain.hid>
+Date: Mon, 01 Mar 2010 16:34:23 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <E1Nl4tX-0001N9-Hb@domain.hid>
@@ -118,8 +118,14 @@ Jan Kiszka wrote:
 > bind_all in that not only pending fds are set, but others are cleared -
 > avoids the third bitmap. Still playing with such an approach.
 
-xnselect_bind, called by bind_one should take care of setting/clearing
-individual bits, at least, it is the way it currently works.
+Another precision, xnselect_bind accesses directly the "pending" set of
+the xnselector structure, so, you have the right to do that for the fds
+which failed binding but which you want to mark as pending.
+
+> 
+> Jan
+> 
+
 
 -- 
 					    Gilles.
