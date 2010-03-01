@@ -1,13 +1,14 @@
-Message-ID: <4B8BC2CC.6070404@domain.hid>
-Date: Mon, 01 Mar 2010 14:36:12 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4B8BC62F.6090403@domain.hid>
+Date: Mon, 01 Mar 2010 14:50:39 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <E1Nl4tX-0001N9-Hb@domain.hid>
 	<4B881E9D.1050101@domain.hid>	<4B88203F.2020907@domain.hid>
 	<4B8903E1.3020805@domain.hid> <4B8B7540.609@domain.hid>
 	<4B8B84BC.90300@domain.hid> <4B8B971D.5080807@domain.hid>
 	<4B8B98F5.10602@domain.hid> <4B8BA361.1040807@domain.hid>
-In-Reply-To: <4B8BA361.1040807@domain.hid>
+	<4B8BC277.4010108@domain.hid>
+In-Reply-To: <4B8BC277.4010108@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : RTDM+POSIX: Avoid
@@ -20,59 +21,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Gilles Chanteperdrix wrote:
->>>> Jan Kiszka wrote:
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> Gilles Chanteperdrix wrote:
 >>>>> Jan Kiszka wrote:
 >>>>>> Jan Kiszka wrote:
->>>>>>> Gilles Chanteperdrix wrote:
->>>>>>>> GIT version control wrote:
->>>>>>>>> diff --git a/ksrc/skins/posix/mq.c b/ksrc/skins/posix/mq.c
->>>>>>>>> index 11f47c0..a896031 100644
->>>>>>>>> --- a/ksrc/skins/posix/mq.c
->>>>>>>>> +++ b/ksrc/skins/posix/mq.c
->>>>>>>>> @@ -1283,6 +1283,7 @@ int pse51_mq_select_bind(mqd_t fd, struct xnselector *selector,
->>>>>>>>>  	return 0;
->>>>>>>>>  
->>>>>>>>>        unlock_and_error:
->>>>>>>>> +	xnfree(binding):
->>>>>>>>>  	xnlock_put_irqrestore(&nklock, s);
->>>>>>>>>  	return err;
->>>>>>>>>  }
->>>>>>>> Ok. Will pull. But I really need to fix that.
+>>>>>>> Jan Kiszka wrote:
+>>>>>>>> Gilles Chanteperdrix wrote:
+>>>>>>>>> GIT version control wrote:
+>>>>>>>>>> diff --git a/ksrc/skins/posix/mq.c b/ksrc/skins/posix/mq.c
+>>>>>>>>>> index 11f47c0..a896031 100644
+>>>>>>>>>> --- a/ksrc/skins/posix/mq.c
+>>>>>>>>>> +++ b/ksrc/skins/posix/mq.c
+>>>>>>>>>> @@ -1283,6 +1283,7 @@ int pse51_mq_select_bind(mqd_t fd, struct xnselector *selector,
+>>>>>>>>>>  	return 0;
+>>>>>>>>>>  
+>>>>>>>>>>        unlock_and_error:
+>>>>>>>>>> +	xnfree(binding):
+>>>>>>>>>>  	xnlock_put_irqrestore(&nklock, s);
+>>>>>>>>>>  	return err;
+>>>>>>>>>>  }
+>>>>>>>>> Ok. Will pull. But I really need to fix that.
+>>>>>>>>>
+>>>>>>>> Ack - now that I see it myself.
 >>>>>>>>
->>>>>>> Ack - now that I see it myself.
+>>>>>>> I fixed this in my branch and added another patch to transform EIDRM
+>>>>>>> into EBADF when selecting a (half-)deleted RTDM device. Please merge.
 >>>>>>>
->>>>>> I fixed this in my branch and added another patch to transform EIDRM
->>>>>> into EBADF when selecting a (half-)deleted RTDM device. Please merge.
->>>>>>
->>>>> Wait! When the sync object behind some file descriptor is deleted but
->>>>> the descriptor itself is still existing, we rather have to return that
->>>>> fd signaled from select() instead of letting the call fail. I beed to
->>>>> look into this again.
->>>> It looks to me like a transitory state, we can wait for the sync object
->>>> to be deleted to have the fd destructor signaled. It should not be long.
->>> That's not an issue of waiting for this. See e.g. TCP: peer closes
->>> connection -> internal sync objects will be destroyed (to make
->>> read/write fail). But the fd will remain valid until the local side
->>> closes it as well.
->> It looks to me like this is going to complicate things a lot, and will
->> be a source of regressions. Why can we not have sync objects be
->> destroyed when the fd is really destroyed and use a status bit of some
->> kind to signal read/write that the fd was closed by peer?
+>>>>>> Wait! When the sync object behind some file descriptor is deleted but
+>>>>>> the descriptor itself is still existing, we rather have to return that
+>>>>>> fd signaled from select() instead of letting the call fail. I beed to
+>>>>>> look into this again.
+>>>>> It looks to me like a transitory state, we can wait for the sync object
+>>>>> to be deleted to have the fd destructor signaled. It should not be long.
+>>>> That's not an issue of waiting for this. See e.g. TCP: peer closes
+>>>> connection -> internal sync objects will be destroyed (to make
+>>>> read/write fail). But the fd will remain valid until the local side
+>>>> closes it as well.
+>>> It looks to me like this is going to complicate things a lot, and will
+>>> be a source of regressions. Why can we not have sync objects be
+>>> destroyed when the fd is really destroyed and use a status bit of some
+>>> kind to signal read/write that the fd was closed by peer?
+>> It is way easier and more consistent to unblock reader and writers via
+>> destroying the sync object than to signal it and add tests for specific
+>> states to detect that. Keep in mind that this pattern is in use even
+>> without select support. Diverging from it just to add select awareness
+>> to some driver would be a step back.
 > 
-> It is way easier and more consistent to unblock reader and writers via
-> destroying the sync object than to signal it and add tests for specific
-> states to detect that.
+> Ok. As you wish. But in that case, please provide a unit test case which
+> we can run on all architectures to validate your modifications. We will
+> not put this test case in xenomai repository but will create a
+> repository for test cases later on.
 
->From my point of view, having an object with partially destroyed parts
-is asking for trouble.
+As it requires quite some infrastructure to get there (or do I miss some
+preexisting select unit test?), I can just point to RTnet + TCP for now:
+run rtnet/examples/xenomai/posix/rttcp-server + client over rtlo and
+terminate the client prematurely. This does not happen if you run the
+very same test without RTnet loaded (ie. against Linux' TCP).
+
+Just pushed the corresponding fix.
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
