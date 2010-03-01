@@ -1,15 +1,17 @@
-Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <4B8B092E.1070104@domain.hid>
-Date: Mon, 01 Mar 2010 01:24:14 +0100
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Message-ID: <4B8B7540.609@domain.hid>
+Date: Mon, 01 Mar 2010 09:05:20 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <0C632A1C-3B64-462B-9892-380CB14F6AD8@domain.hid> <4B7DC07C.5@domain.hid>
-	<6D7DAD32-5300-47EB-9A04-ECA065395014@domain.hid>
-	<4B84634F.4080606@domain.hid>
-In-Reply-To: <4B84634F.4080606@domain.hid>
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Analogy DIO speed
+References: <E1Nl4tX-0001N9-Hb@domain.hid>
+	<4B881E9D.1050101@domain.hid>	<4B88203F.2020907@domain.hid>
+	<4B8903E1.3020805@domain.hid>
+In-Reply-To: <4B8903E1.3020805@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigEE1CD0CF35DD5DEFDE767B5A"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : RTDM+POSIX: Avoid
+ leaking binding objects on errors
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,105 +20,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Stefan Schaal <sschaal@domain.hid>
-Cc: Peter Pastor Sampedro <pastorsa@domain.hid>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Alexis Berlemont wrote:
-> Hi,
-> 
-> Stefan Schaal wrote:
->> Hi Alexis,
->>
->> On Feb 18, 2010, at 14:34, Alexis Berlemont wrote:
->>
->>> I have some problems with
->>>> implementing commands on my NI6259 so far.
->>> Could you remind me what was the problem ?
->>
->> See the print-outs below for the problem we have.
->>
->> Thanks so much for looking into this!
->>
->> -Stefan
->>
->>
->>
->>
->> Using the cmd_write() function that you provide in analogy, we get the 
->> following problem:
->>
-> I am currently trying to fix this bug, which is not that easy. I just
-> have one question (that I remember I have already asked you in some way,
-> but I just want to be sure):
-> Does this bug occur the very first time you launched cmd_write (I mean
-> after a reboot) ?
->
-I managed at last to fix the bug you were facing (at least I hope so).
-The problem was located in the trigger callback which waited for a
-bit-status (fifo half full) before going further; however, sometimes the
-DMA interrupt already occurred and cleaned everything behind your back.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigEE1CD0CF35DD5DEFDE767B5A
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-I have not made a pull request because the current implementation is not
-perfect.
+Jan Kiszka wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> GIT version control wrote:
+>>>> diff --git a/ksrc/skins/posix/mq.c b/ksrc/skins/posix/mq.c
+>>>> index 11f47c0..a896031 100644
+>>>> --- a/ksrc/skins/posix/mq.c
+>>>> +++ b/ksrc/skins/posix/mq.c
+>>>> @@ -1283,6 +1283,7 @@ int pse51_mq_select_bind(mqd_t fd, struct xnse=
+lector *selector,
+>>>>  	return 0;
+>>>> =20
+>>>>        unlock_and_error:
+>>>> +	xnfree(binding):
+>>>>  	xnlock_put_irqrestore(&nklock, s);
+>>>>  	return err;
+>>>>  }
+>>> Ok. Will pull. But I really need to fix that.
+>>>
+>> Ack - now that I see it myself.
+>>
+>=20
+> I fixed this in my branch and added another patch to transform EIDRM
+> into EBADF when selecting a (half-)deleted RTDM device. Please merge.
+>=20
 
-If you have some time, could you clone my git repository (branch:
-analogy) and check that a simple call to cmd_write does not trigger the
-bug anymore ?
+Wait! When the sync object behind some file descriptor is deleted but
+the descriptor itself is still existing, we rather have to return that
+fd signaled from select() instead of letting the call fail. I beed to
+look into this again.
 
-Many thanks.
->> root@domain.hid# ./cmd_write -v
->> cmd_write: device analogy0 opened (fd=0)
->> cmd_write: basic descriptor retrieved
->>      subdevices count = 14
->>      read subdevice index = 0
->>      write subdevice index = 1
->> cmd_write: complex descriptor retrieved
->> cmd_write: channel 0
->>      ranges count = 3
->>      range's size = 16 (bits)
->> cmd_write: channel 1
->>      ranges count = 3
->>      range's size = 16 (bits)
->> cmd_write: scan size = 4
->> cmd_write: size to write  = 400
->> cmd_write: command successfully sent
->> cmd_write: triggering failed (ret=-32)
->>
->> root@domain.hid# dmesg -c
->> [133345.213865] Analogy: analogy_ni_pcimio: ni_mio_common: interrupt: 
->> b_status=0002 m1_status=80a80000
->> [133345.332719] Analogy: analogy_ni_pcimio: ni_ao_wait_for_dma_load: 
->> timed out waiting for dma load<3>Analogy: a4l_do_special_insn: 
->> execution of the instruction failed (err=-32)
->>
->>
->> Another problem we have is with the --mmap option:
->>
->> root@domain.hid# ./cmd_write -v --mmap
->> cmd_write: device analogy0 opened (fd=0)
->> cmd_write: basic descriptor retrieved
->>      subdevices count = 14
->>      read subdevice index = 0
->>      write subdevice index = 1
->> cmd_write: complex descriptor retrieved
->> cmd_write: channel 0
->>      ranges count = 3
->>      range's size = 16 (bits)
->> cmd_write: channel 1
->>      ranges count = 3
->>      range's size = 16 (bits)
->> cmd_write: scan size = 4
->> cmd_write: size to write  = 400
->> cmd_write: buffer size = 65536 bytes
->> cmd_write: a4l_mmap() failed (ret=-22)
->>
->>
->> root@domain.hid# dmesg -c
->> [133408.942998] Analogy: a4l_ioctl_mmap: mmap not allowed on this 
->> subdevice
->>
->>
-> 
-> Alexis.
-Alexis.
+Jan
+
+
+--------------enigEE1CD0CF35DD5DEFDE767B5A
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkuLdUcACgkQitSsb3rl5xQRMACgtp0ekbEmyRn/t4AoAv8rA8cT
+e5UAoNrhV6TfafBBOombxdn04oOiKARt
+=xbWx
+-----END PGP SIGNATURE-----
+
+--------------enigEE1CD0CF35DD5DEFDE767B5A--
 
