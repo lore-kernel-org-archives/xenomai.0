@@ -1,10 +1,12 @@
-Message-ID: <4B8D0EEA.3090409@domain.hid>
-Date: Tue, 02 Mar 2010 14:13:14 +0100
-From: Daniele Nicolodi <daniele@domain.hid>
+Message-ID: <4B8D10C5.9050108@domain.hid>
+Date: Tue, 02 Mar 2010 14:21:09 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4B8D0EEA.3090409@domain.hid>
+In-Reply-To: <4B8D0EEA.3090409@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Which process synchronization primitive?
+Subject: Re: [Xenomai-help] Which process synchronization primitive?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,30 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Daniele Nicolodi <daniele@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hello. I'm writing a data acquisition system (the code will be released
-open source soon) and i chose to use Xenomai to obtain real time
-performances.
+Daniele Nicolodi wrote:
+> Hello. I'm writing a data acquisition system (the code will be released
+> open source soon) and i chose to use Xenomai to obtain real time
+> performances.
+> 
+> The design of the system is inspired from JACK http://jackaudio.org/.
+> Different functionalities are implemented in separate processes that
+> communicate via a shared memory segment. However I need a processes
+> synchronization primitive. In the first toy implementation of the system
+> I have been using simple pipes and blocking reads (as is done in jack)
+> and it work quite well. However I learned this mechanism is not suitable
+> for real time.
+> 
+> Given that I would like to use the Xenomai Posix skin, so that my
+> applications will build also without Xenomai support, which process
+> synchronization primitive you suggest? Which is the overhead of
+> different solutions?
+> 
+> I think message queues can work well but I'm not sure they are the best
+> choice when I do not have to communicate any message. Would be
+> semaphores best suited to my needs?
 
-The design of the system is inspired from JACK http://jackaudio.org/.
-Different functionalities are implemented in separate processes that
-communicate via a shared memory segment. However I need a processes
-synchronization primitive. In the first toy implementation of the system
-I have been using simple pipes and blocking reads (as is done in jack)
-and it work quite well. However I learned this mechanism is not suitable
-for real time.
+You can use process-shared mutexes or semaphores. But there is something
+which must be said clearly: compiling or not with Xenomai support is all
+or nothing. Either you build all the applications with Xenomai posix
+support or none of them. There is no way you can synchronize a real-time
+thread with a non real-time thread without loosing determinism. And
+beware of the kind of priority inversions which would result from
+calling a Linux system call while holding a mutex shared with real-time
+processes, as explained here:
 
-Given that I would like to use the Xenomai Posix skin, so that my
-applications will build also without Xenomai support, which process
-synchronization primitive you suggest? Which is the overhead of
-different solutions?
+http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Chasing_the_unwanted_mode_switches.
 
-I think message queues can work well but I'm not sure they are the best
-choice when I do not have to communicate any message. Would be
-semaphores best suited to my needs?
-
-Thanks. Cheers,
 -- 
-Daniele
+					    Gilles.
 
