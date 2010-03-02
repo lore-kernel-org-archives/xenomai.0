@@ -1,6 +1,6 @@
-Message-ID: <4B8D14BE.8050503@domain.hid>
-Date: Tue, 02 Mar 2010 14:38:06 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4B8D154B.6050005@domain.hid>
+Date: Tue, 02 Mar 2010 14:40:27 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <E1NmR5I-0003k9-N5@domain.hid>
 	<4B8D0359.4070504@domain.hid>	<4B8D0466.7040403@domain.hid>
@@ -22,7 +22,7 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
 Jan Kiszka wrote:
@@ -44,20 +44,14 @@ Jan Kiszka wrote:
 > 
 > We _must_ reacquire the mutex - but, granted, we actually have to take
 > care of invalid cond objects. Lot's of bugs...
+> 
 
-No. If the error is another error than 0, -ETIMEDOUT, or -EINTR, it
-means that the error was detected prior to freeing the mutex. So, we do
-not have to re-acquire the mutex. Quoting POSIX:
+Was only an issue of my POSIX patch, native was not touching cond in the
+epilogue. Update pushed.
 
-"Except in the case of [ETIMEDOUT], all these error checks shall act as
-if they were performed immediately at the beginning of processing for
-the function and shall cause an error return, in effect, prior to
-modifying the state of the mutex specified by mutex or the condition
-variable specified by cond."
-
-POSIX does not talk about -EINTR, because it states that in this case,
-we should return 0 to the application.
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
