@@ -1,109 +1,78 @@
-From: "Charlton, John" <john.charlton@domain.hid>
-Date: Mon, 1 Mar 2010 15:30:23 -0500
-Message-ID: <CF7FB0793253794F9F45991443E5FE2006483DE993@domain.hid>
-References: <CF7FB0793253794F9F45991443E5FE2006483DE98C@us194mx002.tycoelectronics.net>
-	<4B86EDC2.7010905@domain.hid> <4B86FCBB.10203@domain.hid>
-	<4B86FFA0.3000403@domain.hid> <4B870134.2040802@domain.hid>
-	<CF7FB0793253794F9F45991443E5FE2006483DE98D@us194mx002.tycoelectronics.net>
-	<4B87FC70.90903@domain.hid>
-	<CF7FB0793253794F9F45991443E5FE2006483DE98F@us194mx002.tycoelectronics.net>
-In-Reply-To: <CF7FB0793253794F9F45991443E5FE2006483DE98F@us194mx002.tycoelectronics.net>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <4B8D58AB.8090203@domain.hid>
+Date: Tue, 02 Mar 2010 19:27:55 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] mlockall error after calling mlockall()
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <4B8D55AD.9090901@domain.hid> <4B8D5768.7080402@domain.hid>
+	<4B8D57D4.3040200@domain.hid>
+In-Reply-To: <4B8D57D4.3040200@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Posix mutex unit test fails on git head
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "Charlton, John" <john.charlton@domain.hid>, 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "'jan.kiszka@domain.hid'" <jan.kiszka@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-I added some printk output to the cond.c file in xenomai-2.5.1 and it shows=
- that  xnsync_sleep_on returned -ETIMEDOUT as it should:
-Xenomai: registered exported object M1-1908 (mutexes)
-Xenomai: registered exported object C1-1908 (condvars)
-xnsynch_sleep_on returned: -110
-xnsynch_sleep_on returned: -110
-xnsynch_sleep_on returned: -110
-xnsynch_sleep_on returned: -110
-xnsynch_sleep_on returned: -110
-xnsynch_sleep_on returned: -110
-xnsynch_sleep_on returned: -4
-Xenomai: native: cleaning up cond "C1-1908" (ret=3D0).
-Xenomai: unregistered exported object C1-1908 (condvars)
-Xenomai: native: cleaning up mutex "M1-1908" (ret=3D0).
-Xenomai: unregistered exported object M1-1908 (mutexes)
-Xenomai: POSIX: destroyed thread df5a0800
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Jan Kiszka wrote:
+>>> Gilles,
+>>>
+>>> can you (or someone else) confirm this:
+>>>
+>>> # mutex-torture-posix
+>>> simple_wait
+>>> simple mutex_lock 1: 1 (Operation not permitted)
+>>>
+>>> I'm on a x86_64 target (2.6.32.8 with latest I-pipe), Xenomai is
+>>> unpatched git head.
+>>>
+>> Looks like a bug in the test case: We do not wrap sched_setscheduler
+>> which it uses, and my config does not auto-shadow main. Fix will follow.
+> 
+> The test works here, but fails in cond_signaler, mutex_lock 2, just
+> checked out v2.5.1 to see if we already had the bug.
+> 
 
-I put the printk on line cond.c:433 after err is set in rt_cond_wait_prolog=
-ue():
+Weird. Works for me with this fix:
 
-	info =3D xnsynch_sleep_on(&cond->synch_base,
-				timeout, timeout_mode);
-	if (info & XNRMID)
-		err =3D -EIDRM;	/* Condvar deleted while pending. */
-	else if (info & XNTIMEO) {
-		err =3D -ETIMEDOUT;	/* Timeout. */
-        }
-	else if (info & XNBREAK) {
-		err =3D -EINTR;	/* Unblocked. */
-	}
-        printk(KERN_DEBUG "xnsynch_sleep_on returned: %d\n", err);
-
-I put a printk in rt_cond_wait_inner() which is called directly by rt_cond_=
-wait() from user mode but did not see the output in the dmesg output for th=
-at one.
-
---
-
-John
+diff --git a/src/testsuite/unit/mutex-torture.c b/src/testsuite/unit/mutex-torture.c
+index 70bda14..ebdd4f2 100644
+--- a/src/testsuite/unit/mutex-torture.c
++++ b/src/testsuite/unit/mutex-torture.c
+@@ -657,7 +657,7 @@ int main(void)
+ 	/* Set scheduling parameters for the current process */
+ #ifdef XENO_POSIX
+ 	sparam.sched_priority = 2;
+-	sched_setscheduler(0, SCHED_FIFO, &sparam);
++	pthread_setschedparam(pthread_self(), SCHED_FIFO, &sparam);
+ #else /* __NATIVE_SKIN__ */
+ 	rt_task_shadow(&main_tid, "main_task", 2, 0);
+ #endif /* __NATIVE_SKIN__ */
 
 
------Original Message-----
-From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] On=
- Behalf Of Charlton, John
-Sent: Monday, March 01, 2010 10:52 AM
-To: 'Gilles Chanteperdrix'
-Cc: xenomai@xenomai.org; 'jan.kiszka@domain.hid'
-Subject: Re: [Xenomai-help] mlockall error after calling mlockall()
+# mutex-torture-posix
+simple_wait
+recursive_wait
+errorcheck_wait
+mode_switch
+pi_wait
+lock_stealing
+lock_stealing mutex_trylock: not supported
+simple_condwait
+recursive_condwait
+cond_signaler, mutex_lock 2 waited 0.854 us
 
-I am attaching a much simpler tar ball that demonstrates the difference bet=
-ween xenomai-2.4.6.1 and xenomai-2.5.1 rt_cond_wait() function.  The differ=
-ence is that in the new version of xenomai-2.5.1 the rt_cond_wait() functio=
-n does wait for the condition for the specified timeout interval but when i=
-t timesout it returns 0 and I have not been able to get it to return -ETIME=
-DOUT.  The CanFestival timers_xeno task depends on the value of -ETIMEDOUT =
-being returned when a timeout occurs.
 
---
+Jan
 
-John
-
------Original Message-----
-From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
-Sent: Friday, February 26, 2010 11:53 AM
-To: Charlton, John
-Cc: 'jan.kiszka@domain.hid'; xenomai@xenomai.org
-Subject: Re: [Xenomai-help] mlockall error after calling mlockall()
-
-Charlton, John wrote:
-> I am attaching a simpler portion of the timer loop that demonstrates=20
-> the problem.  As I said before the problem does not occur with
-> xenomai-2.4.6.1/linux-2.6.27.7 but does occur with=20
-> xenomai-2.5.1/linux-2.6.32.7.
->=20
-> I had some problems applying your patch so I will let you know if I am=20
-> able to do that.
-
-But did you have the watchdog enabled with 2.4.6.1 ?
-
---=20
-					    Gilles.
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
