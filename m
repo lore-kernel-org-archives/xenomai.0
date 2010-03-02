@@ -1,152 +1,139 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4B8E9439.1080700@domain.hid>
-References: <4B6E8167.6010907@domain.hid> <4B76B7F2.2050303@domain.hid>
-	<4B76C045.2070602@domain.hid>
-	<1266140329.27019.17.camel@domain.hid>
-	<4B8407B5.10109@domain.hid>
-	<1266947163.26785.300.camel@domain.hid>
-	<4B85246A.2020907@domain.hid>
-	<1267017080.26785.324.camel@domain.hid>
-	<1267017203.26785.325.camel@domain.hid>
-	<4B87C8FA.6020802@domain.hid>
-	<1267190937.3405.10.camel@domain.hid>
-	<4B87D121.6020103@domain.hid>
-	<1267193228.3405.24.camel@domain.hid>
-	<4B8E9439.1080700@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 03 Mar 2010 18:21:20 +0100
-Message-ID: <1267636880.2190.29.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Xenomai in Debian
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <4B8D2F9D.3050500@domain.hid>
+Date: Tue, 02 Mar 2010 16:32:45 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <8b216e9e1002100327h3aa332ddl13ec590fcb81f0b7@domain.hid>	
+	<8b216e9e1002121023qa0f4d6n33c773110cfc78fd@domain.hid>	
+	<4B759DF9.9040800@domain.hid>
+	<4B759F35.3050704@domain.hid>	
+	<8b216e9e1002131157k6f1a7ccbiba5e67b8855c77b2@domain.hid>	
+	<4B770554.3080809@domain.hid>	
+	<8b216e9e1002131225v16024e66p521d7eaad376441d@domain.hid>	
+	<8b216e9e1002150919p250b5270tab0bf5f242e87a25@domain.hid>	
+	<4B799016.2040305@domain.hid>	
+	<8b216e9e1002151034n362f83afwfd6b9355ec071540@domain.hid>
+	<8b216e9e1003020729t58db73fdv88d9927695baae75@domain.hid>
+In-Reply-To: <8b216e9e1003020729t58db73fdv88d9927695baae75@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Problems when cross-compiling Xenomai
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: =?UTF-8?B?RmVsaXBlIEJyYW5kw6NvIENhdmFsY2FudGk=?= <cavalkaf@domain.hid>
+Cc: xenomai@xenomai.org, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-On Wed, 2010-03-03 at 17:54 +0100, Stefan Kisdaroczi wrote:
-> Am 26.02.2010 15:07, schrieb Philippe Gerum:
-> > On Fri, 2010-02-26 at 14:48 +0100, Stefan Kisdaroczi wrote:
-> >> Am 26.02.2010 14:28, schrieb Philippe Gerum:
-> >>> On Fri, 2010-02-26 at 14:13 +0100, Stefan Kisdaroczi wrote:
-> >>>> Am 24.02.2010 14:13, schrieb Philippe Gerum:
-> >>>>> On Wed, 2010-02-24 at 14:11 +0100, Philippe Gerum wrote:
-> >>>>>> On Wed, 2010-02-24 at 14:06 +0100, Stefan Kisdaroczi wrote:
-> >>>>>>> Hi Philippe,
-> >>>>>>>
-> >>>>>>> Am 23.02.2010 18:46, schrieb Philippe Gerum:
-> >>>>>>>> On Tue, 2010-02-23 at 17:52 +0100, Stefan Kisdaroczi wrote:
-> >>>>>>>>> Hi,
-> >>>>>>>>>
-> >>>>>>>>> Am 14.02.2010 10:38, schrieb Philippe Gerum:
-> >>>>>>>>>>
-> >>>>>>>>>> <snip>
-> >>>>>>>>>> In the future, maybe we could simply provide a wrapper script accepting
-> >>>>>>>>>> sub-commands, such as "xeno latency, xeno sigtest" etc, to be put
-> >>>>>>>>>> into /usr/bin by distros, which would hide the actual location of those
-> >>>>>>>>>> binaries?
-> >>>>>>>>>>
-> >>>>>>>>>> In any case, thanks for your work so far. We probably need to discuss
-> >>>>>>>>>> the packaging issues on this list, so that we get both consistency and
-> >>>>>>>>>> usability in the future.
-> >>>>>>>>>>
-> >>>>>>>>>> Gilles and Roland, if this is fine with you, I'll handle the liaison
-> >>>>>>>>>> role with upstream packagers, so please CC me explicitly on those mails.
-> >>>>>>>>>> We'll sort out this issue, it doesn't look that bad anyway.
-> >>>>>>>>>
-> >>>>>>>>> Roland added a xeno wrapper to the debian.org xenomai package 2.5.1-3.
-> >>>>>>>>>
-> >>>>>>>>> I synced now the debian/ directories from debian.org and xenomai.org:
-> >>>>>>>>>  - For debian.org I sent patches to the Debian bugtracker [1] [2].
-> >>>>>>>>>    Another patch for dpkg-cross support [3] I sent to Roland privately.
-> >>>>>>>>>  - For xenomai.org I attached patches to this mail (against -2.5.git).
-> >>>>>>>>>
-> >>>>>>>>> If both parties apply the patches the debian directories are in sync,
-> >>>>>>>>> except some minor differences in the debian/control file, see patch
-> >>>>>>>>> do-not-commit-please.patch. I would like to keep these changes out so
-> >>>>>>>>> that the xenomai.org packages are compatible with Debian 5.0 Lenny.
-> >>>>>>>>> The debian.org packages are for Debian 6.0 Squeeze.
-> >>>>>>>>>
-> >>>>>>>>
-> >>>>>>>> Merged into my queue (except the last one as mentioned). This will be
-> >>>>>>>> pushed upstream to Gilles for 2.5.2. Thanks.
-> >>>>>>>
-> >>>>>>> I took a look at your branch for-upstream. Your commit
-> >>>>>>>   scripts: add wrapper script to run standard Xenomai commands
-> >>>>>>>   6e0574791f48cbf8b3421a68c5789254e7d084b7
-> >>>>>>> adds the same wrapper as my patch 0005-debian-wrapper-script-usr-bin-xeno-to-call-executa.patch
-> >>>>>>>   debian: wrapper script /usr/bin/xeno to call executables in /usr/lib/xenomai/
-> >>>>>>>   fbe86cc50d3a65cd23e93d43adba4ed369fe70b1
-> >>>>>>> Please revert the commit of my patch, we need another fix for debian/rules for "your" wrapper.
-> >>>>>>>
-> >>>>>>
-> >>>>>> Ok, I thought your patch set was based on my tree, so I did not check
-> >>>>>> thoroughly. I did not send any pull request to Gilles, so no harm done.
-> >>>>>>
-> >>>>>>> How do I call configure to install the wrapper in /usr/bin and
-> >>>>>>> the programs like latency, switchtest etc. to /usr/lib/xenomai ?
-> >>>>>>>
-> >>>>>>
-> >>>>>> We need some fixage in scripts/wrappers/Makefile.am to do that. I'll
-> >>>>>> prepare this asap.
-> >>>>>
-> >>>>> scripts/Makefile.am...
-> >>>>
-> >>>> Hi Philippe,
-> >>>>
-> >>>> I just tried the --with-testdir switch. It worked, but i'm not really sure if
-> >>>> this is the right track.
-> >>>>
-> >>>> Roland's packages install all binaries to /usr/lib/xenomai, except xeno and
-> >>>> xeno-config. You state in your commit message more or less the same goal:
-> >>>> "At some point, all remaining executables or scripts left under $prefix/bin should match
-> >>>> xeno*, to further reduce the odds of causing name collisions."
-> >>>>
-> >>>> Using --with-testdir all tests (latency,switchtest,...) are now in /usr/lib/xenomai.
-> >>>> To install the "utils" (rtcansend,insn_write,insn_write,cmd_read,...) to the same
-> >>>> directory using --with-testdir sounds not obviously. You could add a second switch
-> >>>> --with-utildir, but a second dir will not work for the xeno-wrapper-script.
-> >>>>
-> >>>
-> >>> CAN and other utilities should definitely remain in $bindir. The fact
-> >>> that they are not prefixed by xeno* is another thing; CAN utilities are
-> >>> already prefixed, maybe Analogy ones should be named in a bit less
-> >>> generic way, although they are not raising any conflict today. I wrote
-> >>> that what's under $bindir "should" match xeno* when a risk of collision
-> >>> exists, but there is no point in enforcing a stricter rule at this
-> >>> point. In any case, I don't want to enforce a never-in-bindir rule for
-> >>> all Xenomai binaries, we can still pick their names in a way that avoids
-> >>> obvious issues.
-> >>>
-> >>> The real problem was about tests, for which using rather generic names
-> >>> made sense. This is what that patch is for.
-> >>
-> >> ok, got the goal now, thanks for the explanation.
-> >> But "xeno.in" needs a fix to use @XENO_TEST_DIR@, no?
-> >>
-> > 
-> > Yes, I overlooked that. In fact, I think we may not even need the new
-> > xeno wrapper at all, but we probably want to rewrite xeno-test to wrap
-> > to what is in XENO_TEST_DIR now.
-> > 
-> > I would suggest to hold the changes to the debian/ area for now, until
-> 
-> Agree with holding back wrapper-changes, but please consider the attached patch
-> with small fixes, thanks. (against rpm/for-upstream)
-> 
+Felipe Brand=C3=A3o Cavalcanti wrote:
+> 2010/2/15 Felipe Brand=C3=A3o Cavalcanti <cavalkaf@domain.hid>
+>=20
+>>
+>> 2010/2/15 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org=
+m>
+>>
+>>   Felipe Brand=C3=A3o Cavalcanti wrote:
+>>>> 2010/2/13 Felipe Brand=C3=A3o Cavalcanti <cavalkaf@domain.hid>
+>>>>
+>>>>> 2010/2/13 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>>>>>
+>>>>> Felipe Brand=C3=A3o Cavalcanti wrote:
+>>>>>>> OK - I did apply the patch to 2.6.30.10, with some very minor
+>>>>>> modifications
+>>>>>>> in the sound system and in the headers (MACH_TYPE_IGEP0020 wasn't=
 
-Merged, thanks.
+>>>>>> defined).
+>>>>>>> I also applied the latest Adeos Ipipe patch.
+>>>>>>>
+>>>>>>> However, the compiled kernel doesn't boot - it actually just sits=
 
+>>> there,
+>>>>>>> doing nothing:
+>>>>>>>
+>>>>>>> Bytes transferred =3D 2555616 (26fee0 hex)
+>>>>>>> ## Booting kernel from Legacy Image at 80000000 ...
+>>>>>>>    Image Name:   Linux-2.6.30.10
+>>>>>>>    Image Type:   ARM Linux Kernel Image (uncompressed)
+>>>>>>>    Data Size:    2555552 Bytes =3D  2.4 MB
+>>>>>>>    Load Address: 80008000
+>>>>>>>    Entry Point:  80008000
+>>>>>>>    Verifying Checksum ... OK
+>>>>>>>    Loading Kernel Image ... OK
+>>>>>>> OK
+>>>>>>>
+>>>>>>> Starting kernel ...
+>>>>>>>
+>>>>>>> Uncompressing
+>>>>>>>
+>>> Linux................................................................=
+=2E......................................................................=
+=2E..........................
+>>>>>>> done, booting the kernel.
+>>>>>>>
+>>>>>>> My guess is that Linux is simply not sending anything through my
+>>> serial
+>>>>>>> (i.e., debug) port. Should I attempt to port over the serial driv=
+er,
+>>> or
+>>>>>> is
+>>>>>>> this something else?
+>>>>>>> I am also downloading kernel 2.6.32 to see if I can make it boot =
+on
+>>> my
+>>>>>> IGEP.
+>>>>>>
+>>>>>> Do you pass the proper "console=3D" argument to the kernel? Is the=
 
+>>> support
+>>>>>> for serial driver enabled in the kernel?
+>>>>>>
+>>>>>> If yes, then apply trick #1 from the "Tips and tricks" section in =
+the
+>>>>>> "porting I-pipe to a new board" HOWTO on Xenomai website.
+>>>>>>
+>>>>>>
+>>>>> Yeah, I called it with the console=3D argument, and support is enab=
+led.
+>>> Just
+>>>>> tested 2.6.32 - working fine in my board!
+>>>>>
+>>>>> I will try 2.6.30 again, but this time with no I-pipe patch, as wel=
+l as
+>>>>> enabling the low-level debug options.
+>>>>>
+>>>>>
+>>>> OK - so I compiled the kernel with a series of kernel debug options,=
+ to
+>>> find
+>>>> out what was going on. However, the kernel is stuck in a very strang=
+e
+>>>> position - just after starting the network!
+>>> The NET message is not really related to starting the network (it is
+>>> only a network protocol which tells you that it suceeeded in register=
+ing
+>>> to the socket infrastructure), to know where the bug happens, you hav=
+e
+>>> to add printks to see what happens. The main difference between the
+>>> latest I-pipe patch and previous releases is in the GPIO demux handli=
+ng.
+>>>
+>>> Since I have an IGEPv2 on my office, would you mind letting me work o=
+n
+>>> this, say, next week, and give you a status when done?
+>>
+> So, any updates in this issue? I would love to get this working this
+> month... do you have any tips on how to proceed to do the low-level
+> debugging? I really have no clue on where the system is getting stuck.
 
--- 
-Philippe.
+No, will try and get a Xenomai-patched 2.6.30 running on IGEP real soon
+now... However, ARM I-pipe patches for something more recent than 2.6.30
+should come soon, so, will not try really hard.
 
+--=20
+					    Gilles.
 
 
