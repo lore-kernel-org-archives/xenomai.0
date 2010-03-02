@@ -1,12 +1,12 @@
-Message-ID: <4B8D156F.7000604@domain.hid>
-Date: Tue, 02 Mar 2010 14:41:03 +0100
-From: Daniele Nicolodi <daniele@domain.hid>
-MIME-Version: 1.0
-References: <4B8D0EEA.3090409@domain.hid> <4B8D10C5.9050108@domain.hid>
-In-Reply-To: <4B8D10C5.9050108@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4B8D079B.1090008@domain.hid>
+References: <4B8D079B.1090008@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 02 Mar 2010 15:01:45 +0100
+Message-ID: <1267538505.3405.135.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Which process synchronization primitive?
+Subject: Re: [Xenomai-help] PCI cause system freeze
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,42 +16,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Alex Monti <alexmonti_82@domain.hid>
 Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
->> I think message queues can work well but I'm not sure they are the best
->> choice when I do not have to communicate any message. Would be
->> semaphores best suited to my needs?
+On Tue, 2010-03-02 at 13:42 +0100, Alex Monti wrote:
+> Hi all,
+> I'm testing realtime linux on Powerpc and I'm finding some serious problem with Adeos patch.
+> My platform is mpc5121e rev 4 based one and I'm using 2.6.29.4 DENX kernel with Xenomai patch.
+> My board boots, Xenomai works, but when I try to enable a Network Pci card, system always freeze.
 > 
-> You can use process-shared mutexes or semaphores.
-
-There is somewhere a comparison of the overhead of the different
-solutions? Do I need to do my own benchmarks? Is the API the only
-difference?
-
-> But there is something
-> which must be said clearly: compiling or not with Xenomai support is all
-> or nothing. Either you build all the applications with Xenomai posix
-> support or none of them. There is no way you can synchronize a real-time
-> thread with a non real-time thread without loosing determinism.
-
-I understood this reading the documentation (and it is fairly
-intuitive). I would like to use the posix skin to be able to compile my
-application also on an host without xenomai support (and of course give
-up the real time capability).
-
-> And
-> beware of the kind of priority inversions which would result from
-> calling a Linux system call while holding a mutex shared with real-time
-> processes, as explained here:
+> In details:
 > 
-> http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Chasing_the_unwanted_mode_switches.
+> With only 2.6.29.4 DENX kernel (without Xenomai patch) all works fine: board boots, all peripherals work (included network card).
+> 
+> When I apply the Xenomai patch, board boots,  Xenomai works and loading module of the network adapter (insmod .../module_name) has no problems but when I try to enable the interface (ifconfig eth1 up), system always freeze.
+> 
+> I've tried two network adapters (Intel e100 and Realtek r8169) so problem is not the driver.
+> I've tried RTAI patch but result is always the same.
+> 
+> I think problem is in the ADEOS patch because it is the only thing common to all tests (same version for both patch).
 
-I was just reading this.
+Except that RTAI patches are different from vanilla Adeos patches, but
+this not the issue.
 
-Thanks! Cheers,
+The issue is that mpc5121 has been validated over 2.6.24.6, not 2.6.29.
+In short, mpc5121 is not officially supported over anything > 2.6.24
+yet.
+
+> 
+> Modifing driver of e100 I realize that system crash enabling irq (I think, not sure: I added some printk within the driver and the last function call that I see is e100_enable_irq).
+> 
+> Any suggestion? Any help is very usefull!!!
+> Thanks
+> 
+> 
+> 
+>  <http://lxr.free-electrons.com/ident?i=e100_enable_irq>
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+
+
 -- 
-Daniele
+Philippe.
+
 
 
