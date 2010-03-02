@@ -1,6 +1,6 @@
-Message-ID: <4B8D162E.90305@domain.hid>
-Date: Tue, 02 Mar 2010 14:44:14 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4B8D164D.7000906@domain.hid>
+Date: Tue, 02 Mar 2010 14:44:45 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <E1NmR5I-0003k9-N5@domain.hid>
 	<4B8D0359.4070504@domain.hid>	<4B8D0466.7040403@domain.hid>
@@ -8,8 +8,8 @@ References: <E1NmR5I-0003k9-N5@domain.hid>
 	<4B8D07D7.4040108@domain.hid> <4B8D091A.7070908@domain.hid>
 	<4B8D0BA5.505@domain.hid> <4B8D0CE7.6020101@domain.hid>
 	<4B8D11A6.9070400@domain.hid> <4B8D12FA.6040807@domain.hid>
-	<4B8D13E9.3010109@domain.hid> <4B8D154B.6050005@domain.hid>
-In-Reply-To: <4B8D154B.6050005@domain.hid>
+	<4B8D13E9.3010109@domain.hid> <4B8D14BE.8050503@domain.hid>
+In-Reply-To: <4B8D14BE.8050503@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : Native: Fix return
@@ -22,10 +22,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Jan Kiszka wrote:
+Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
 >> Gilles Chanteperdrix wrote:
 >>> Jan Kiszka wrote:
@@ -44,14 +44,25 @@ Jan Kiszka wrote:
 >>> call the epilogue safely.
 >> We _must_ reacquire the mutex - but, granted, we actually have to take
 >> care of invalid cond objects. Lot's of bugs...
->>
 > 
-> Was only an issue of my POSIX patch, native was not touching cond in the
-> epilogue. Update pushed.
+> No. If the error is another error than 0, -ETIMEDOUT, or -EINTR, it
+> means that the error was detected prior to freeing the mutex. So, we do
+> not have to re-acquire the mutex. Quoting POSIX:
+> 
+> "Except in the case of [ETIMEDOUT], all these error checks shall act as
+> if they were performed immediately at the beginning of processing for
+> the function and shall cause an error return, in effect, prior to
+> modifying the state of the mutex specified by mutex or the condition
+> variable specified by cond."
+> 
+> POSIX does not talk about -EINTR, because it states that in this case,
+> we should return 0 to the application.
 
-Ok. I have work to do, so, will stop commenting each of your patches.
-But no, I will not take this one.
+OK, but EIDRM was missing in your list. Will adjust both patches.
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
