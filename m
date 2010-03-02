@@ -1,12 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4B8C49FA.7050002@domain.hid>
-References: <4B8C49FA.7050002@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 02 Mar 2010 10:27:07 +0100
-Message-ID: <1267522027.3405.132.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4B8D079B.1090008@domain.hid>
+Date: Tue, 02 Mar 2010 13:42:03 +0100
+From: Alex Monti <alexmonti_82@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Running SOLO without superuser privileges?
+Subject: [Xenomai-help] PCI cause system freeze
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,33 +14,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Michael Buksas <mwbuksas@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, 2010-03-01 at 16:12 -0700, Michael Buksas wrote:
-> Hi all,
-> 
-> Is it possible to run, or perhaps build Xenomai/SOLO to run without 
-> superuser privileges?  I don't need real-time performance guarantees for 
-> this particular application.
+Hi all,
+I'm testing realtime linux on Powerpc and I'm finding some serious problem with Adeos patch.
+My platform is mpc5121e rev 4 based one and I'm using 2.6.29.4 DENX kernel with Xenomai patch.
+My board boots, Xenomai works, but when I try to enable a Network Pci card, system always freeze.
 
-No, this won't work. The entire emulation engine assumes that your
-threads may be given different static priorities above 0; the current
-implementation won't work with SCHED_OTHER threads. Besides, this does
-not make much sense to emulate a priority-based scheduler without any
-consideration for priority levels.
+In details:
 
-/etc/security/limits.conf may help to allow selected non-root users to
-gain RT priority.
+With only 2.6.29.4 DENX kernel (without Xenomai patch) all works fine: board boots, all peripherals work (included network card).
 
-> 
-> Thanks,
-> Mike Buksas
-> 
+When I apply the Xenomai patch, board boots,  Xenomai works and loading module of the network adapter (insmod .../module_name) has no problems but when I try to enable the interface (ifconfig eth1 up), system always freeze.
+
+I've tried two network adapters (Intel e100 and Realtek r8169) so problem is not the driver.
+I've tried RTAI patch but result is always the same.
+
+I think problem is in the ADEOS patch because it is the only thing common to all tests (same version for both patch).
+
+Modifing driver of e100 I realize that system crash enabling irq (I think, not sure: I added some printk within the driver and the last function call that I see is e100_enable_irq).
+
+Any suggestion? Any help is very usefull!!!
+Thanks
 
 
--- 
-Philippe.
 
+ <http://lxr.free-electrons.com/ident?i=e100_enable_irq>
 
 
