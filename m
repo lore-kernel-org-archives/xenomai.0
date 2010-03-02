@@ -1,77 +1,76 @@
-Message-ID: <4B9E7949.5060606@domain.hid>
-Date: Mon, 15 Mar 2010 19:15:37 +0100
+Message-ID: <4B8D58F7.80507@domain.hid>
+Date: Tue, 02 Mar 2010 19:29:11 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <alpine.DEB.1.10.1003151439040.27204@domain.hid>	
-	<1268663424.27899.226.camel@domain.hid>	
-	<4B9E6312.6010109@domain.hid>	
-	<1268673002.27899.230.camel@domain.hid>	
-	<4B9E7520.8000107@domain.hid>
-	<1268676605.27899.233.camel@domain.hid>
-In-Reply-To: <1268676605.27899.233.camel@domain.hid>
+References: <4B8D55AD.9090901@domain.hid> <4B8D5768.7080402@domain.hid>
+	<4B8D57D4.3040200@domain.hid> <4B8D58AB.8090203@domain.hid>
+In-Reply-To: <4B8D58AB.8090203@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem throwing a C++ Exception on Blackfin
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Posix mutex unit test fails on git head
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> On Mon, 2010-03-15 at 18:57 +0100, Gilles Chanteperdrix wrote:
->> Philippe Gerum wrote:
->>> On Mon, 2010-03-15 at 17:40 +0100, Gilles Chanteperdrix wrote:
->>>> Philippe Gerum wrote:
->>>>> On Mon, 2010-03-15 at 15:00 +0100, Kolja Waschk wrote:
->>>>>> Hi,
->>>>>>
->>>>>> first I have to admit that my report is actually about a problem with a quite old Xenomai (Nucleus 2.4.7, I-pipe 1.10) in "stock" Blackfin uClinux kernel 2.6.28 as it comes in Blackfin uClinux-dist 2009R1-RC6.
->>>>>>
->>>>>> Testing a newer code base would probably require some days of work to update a custom driver and bring up other problems, so I'm trying to find out whether it is worth the effort at this time. Maybe someone can (roughly) identify the problem's cause (from memory?) and help me to decide whether there is a simple solution, or an upgrade is necessary:
->>>>>>
->>>>> No obvious answer to this. 2.6.28/bfin has problems, the whole exception
->>>>> management on blackfin is a problem per se. 2.6.28/bfin + I-pipe has
->>>>> even more problems. You may want to try 2.6.31.6, while keeping the rest
->>>>> of your uClinux-dist base. Nasty issues were fixed in the 2.6.30
->>>>> timeframe.
->>>> Are you sure C++ exceptions need hardware exceptions at all? That the
->>>> problem is not rather that we have some C code without exception
->>>> handling traversed by exceptions? Should not the Xenomai support
->>>> libraries be compiled with -fexceptions to allow mixing them with code
->>>> which throws/catches exceptions?
->>> It's not about using hw to process C++ exceptions. It's about having
->>> problems handling hw exceptions in kernel space triggered by C++
->>> exceptions in user-space.
->> The main problem may be why C++ exceptions in user-space do trigger hw
->> exceptions in kernel-space. And I would tend to think that a missing
->> -fexceptions could be the cause. Except that in the testcase, the
->> exception does not traverse any Xenomai library code, since it is thrown
->> and handled in the same function.
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Jan Kiszka wrote:
+>>>> Gilles,
+>>>>
+>>>> can you (or someone else) confirm this:
+>>>>
+>>>> # mutex-torture-posix
+>>>> simple_wait
+>>>> simple mutex_lock 1: 1 (Operation not permitted)
+>>>>
+>>>> I'm on a x86_64 target (2.6.32.8 with latest I-pipe), Xenomai is
+>>>> unpatched git head.
+>>>>
+>>> Looks like a bug in the test case: We do not wrap sched_setscheduler
+>>> which it uses, and my config does not auto-shadow main. Fix will follow.
+>> The test works here, but fails in cond_signaler, mutex_lock 2, just
+>> checked out v2.5.1 to see if we already had the bug.
+>>
 > 
-> That is one issue, but the basic issue we should be after first, is that
-> we have a CPLB miss triggered by a kernel memory access. Fixing a
-> possible user-space issue should come next, so that we don't paper over
-> that bug.
+> Weird. Works for me with this fix:
+> 
+> diff --git a/src/testsuite/unit/mutex-torture.c b/src/testsuite/unit/mutex-torture.c
+> index 70bda14..ebdd4f2 100644
+> --- a/src/testsuite/unit/mutex-torture.c
+> +++ b/src/testsuite/unit/mutex-torture.c
+> @@ -657,7 +657,7 @@ int main(void)
+>  	/* Set scheduling parameters for the current process */
+>  #ifdef XENO_POSIX
+>  	sparam.sched_priority = 2;
+> -	sched_setscheduler(0, SCHED_FIFO, &sparam);
+> +	pthread_setschedparam(pthread_self(), SCHED_FIFO, &sparam);
+>  #else /* __NATIVE_SKIN__ */
+>  	rt_task_shadow(&main_tid, "main_task", 2, 0);
+>  #endif /* __NATIVE_SKIN__ */
+> 
+> 
+> # mutex-torture-posix
+> simple_wait
+> recursive_wait
+> errorcheck_wait
+> mode_switch
+> pi_wait
+> lock_stealing
+> lock_stealing mutex_trylock: not supported
+> simple_condwait
+> recursive_condwait
+> cond_signaler, mutex_lock 2 waited 0.854 us
 
-Yes, of course.
-
-FWIW, I tried the test program on ARM, and it runs just fine (except
-that it is missing the obvious mlockall). If we do not catch the
-exception, the glibc is also completely able to handle it and generate a
-"clean" abort. So, I guess there is no -fexceptions issue.
-
-Sorry for the noise.
+No, that is a bug. We should have waited 10ms, and we wait less than a us.
 
 -- 
-Gilles Chanteperdrix, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+					    Gilles.
 
