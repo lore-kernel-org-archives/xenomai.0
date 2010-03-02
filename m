@@ -1,20 +1,13 @@
-Message-ID: <4B8D23FB.9090009@domain.hid>
-Date: Tue, 02 Mar 2010 15:43:07 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4B8D323C.5050306@domain.hid>
+Date: Tue, 02 Mar 2010 16:43:56 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <E1NmR5I-0003k9-N5@domain.hid>	<4B8D0359.4070504@domain.hid>	<4B8D0466.7040403@domain.hid>	<4B8D0542.1020904@domain.hid>
-	<4B8D05B3.1020202@domain.hid>	<4B8D07D7.4040108@domain.hid>
-	<4B8D091A.7070908@domain.hid>	<4B8D0BA5.505@domain.hid>
-	<4B8D0CE7.6020101@domain.hid>	<4B8D11A6.9070400@domain.hid>
-	<4B8D12FA.6040807@domain.hid>	<4B8D13E9.3010109@domain.hid>
-	<4B8D14BE.8050503@domain.hid>	<4B8D164D.7000906@domain.hid>
-	<4B8D16B9.8090609@domain.hid>	<4B8D1A07.4050804@domain.hid>
-	<4B8D1AD8.5070507@domain.hid> <4B8D1FE6.50503@domain.hid>
-In-Reply-To: <4B8D1FE6.50503@domain.hid>
+References: <E1NmUAX-0004WJ-Eq@domain.hid>
+In-Reply-To: <E1NmUAX-0004WJ-Eq@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : Native: Fix return
- code of in-kernel rt_cond_wait[_until]
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : Native: Work around
+ for error code corruption in rt_cond_wait[ _until]
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -23,67 +16,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Gilles Chanteperdrix wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Gilles Chanteperdrix wrote:
->>>> Jan Kiszka wrote:
->>>>> Gilles Chanteperdrix wrote:
->>>>>> Jan Kiszka wrote:
->>>>>>> Gilles Chanteperdrix wrote:
->>>>>>>> Jan Kiszka wrote:
->>>>>>>>> Gilles Chanteperdrix wrote:
->>>>>>>>>> Ok for returning -EINTR, it is documented. Kernel-space is not so
->>>>>>>>>> different from user-space, rt_task_unblock could wake-up a kernel-space
->>>>>>>>>> task blocked in a call to rt_cond_wait.
->>>>>>>>>>
->>>>>>>>>> However, if the epilogue returns an error, we must return it.
->>>>>>>>>>
->>>>>>>>> OK for this. Pushed an update, but I also modified it further to avoid
->>>>>>>>> returning without the mutex lock unless that one is also failing. Maybe
->>>>>>>>> in-kernel POSIX requires the same fix, will check.
->>>>>>>> Still not OK. You should reacquire the mutex only if the error is 0,
->>>>>>>> -ETIMEDOUT or -EINTR. With any other error, we do not know if we can
->>>>>>>> call the epilogue safely.
->>>>>>> We _must_ reacquire the mutex - but, granted, we actually have to take
->>>>>>> care of invalid cond objects. Lot's of bugs...
->>>>>> No. If the error is another error than 0, -ETIMEDOUT, or -EINTR, it
->>>>>> means that the error was detected prior to freeing the mutex. So, we do
->>>>>> not have to re-acquire the mutex. Quoting POSIX:
->>>>>>
->>>>>> "Except in the case of [ETIMEDOUT], all these error checks shall act as
->>>>>> if they were performed immediately at the beginning of processing for
->>>>>> the function and shall cause an error return, in effect, prior to
->>>>>> modifying the state of the mutex specified by mutex or the condition
->>>>>> variable specified by cond."
->>>>>>
->>>>>> POSIX does not talk about -EINTR, because it states that in this case,
->>>>>> we should return 0 to the application.
->>>>> OK, but EIDRM was missing in your list. Will adjust both patches.
->>>> No, EIDRM is part of the "other errors than ETIMEDOUT and 0"
->>>>
->>> I interpret the spec fairly differently here: It states that we have to
->>> leave the mutex state behind *as if* the error was already detected on
->>> entry - thus we are expected to restore its state.
->> No. We must return prior to modifying its state. Not change its state
->> then restore it.
->>
->> There is no EIDRM anyway, I return 0, and the user gets EINVAL when
->> calling pthread_cond_wait again.
+GIT version control wrote:
+> Module: xenomai-jki
+> Branch: for-upstream
+> Commit: 4b5370dce6f3a655ac104b93b032f3b639206fd5
+> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=4b5370dce6f3a655ac104b93b032f3b639206fd5
 > 
-> No, this is not even the way it works. EIDRM can not happen, because
-> pthread_cond_destroy will return EBUSY as long as a thread is blocked in
-> a call to pthread_cond_wait. This is allowed by POSIX.
+> Author: Jan Kiszka <jan.kiszka@domain.hid>
+> Date:   Tue Mar  2 16:24:59 2010 +0100
 > 
+> Native: Work around for error code corruption in rt_cond_wait[_until]
+> 
+> User space suffers from losing the error code of the cond wait prologue.
+> We actually had to return the prologue error to user space and use that
+> one after the epilogue succeeded, but the existing kernel ABI does not
+> allow this, nor is existing user space prepared for this.
+> 
+> As a work around, keep the prologue error code in xnthread's errcode and
+> restore it from there when user space re-enters the kernel for the
+> epilogue. This requires no ABI changes, but suffers from potential
+> overwriting if the same or some other errcode touching service is called
+> from a user space signal handler in between the calls. Moreover, current
+> user space also prevents that we can return -EINTR on interruption while
+> blocked on the condition variable, which was possible before.
+> 
+> A true fix will require a new syscall and updated user space libs.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+> 
+> ---
+> 
+>  ksrc/skins/native/syscall.c |   19 +++++++++++++++----
+>  1 files changed, 15 insertions(+), 4 deletions(-)
+> 
+> diff --git a/ksrc/skins/native/syscall.c b/ksrc/skins/native/syscall.c
+> index 462ee7e..930a28d 100644
+> --- a/ksrc/skins/native/syscall.c
+> +++ b/ksrc/skins/native/syscall.c
+> @@ -1841,7 +1841,7 @@ static int __rt_cond_wait_prologue(struct pt_regs *regs)
+>  	RT_MUTEX *mutex;
+>  	RT_COND *cond;
+>  	RTIME timeout;
+> -	int err;
+> +	int err, epilogue_err;
+>  
+>  	if (__xn_safe_copy_from_user(&cph, (void __user *)__xn_reg_arg1(regs),
+>  				     sizeof(cph)))
+> @@ -1868,11 +1868,15 @@ static int __rt_cond_wait_prologue(struct pt_regs *regs)
+>  		return -EFAULT;
+>  
+>  	err = rt_cond_wait_prologue(cond, mutex, &lockcnt, timeout_mode, timeout);
+> +	xnpod_current_thread()->errcode = err;
+>  
+>  	/* Reacquire the mutex if it was unlocked in the prologue and we were
+>  	   not interrupted. */
+> -	if (lockcnt && err != -EINTR)
+> -		err = rt_cond_wait_epilogue(mutex, lockcnt);
+> +	if (lockcnt && err != -EINTR) {
+> +		epilogue_err = rt_cond_wait_epilogue(mutex, lockcnt);
+> +		if (!err)
+> +			err = epilogue_err;
 
-Right, POSIX is fine as is. Native is still different, though.
-
-Jan
+IMO, Here should be:
+		if (epilogue_err < 0)
+			err = epilogue_err;
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
+
 
