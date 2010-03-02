@@ -1,107 +1,98 @@
-Message-ID: <COL105-W63501BC66B1F8543331511C34E0@domain.hid>
-Content-Type: multipart/alternative;
-	boundary="_3ebbddee-dfeb-48ad-948a-2b5fa606d844_"
-From: =?gb2312?B?19Mg0KE=?= <hapcobot@domain.hid>
-Date: Thu, 11 Feb 2010 19:35:09 +0800
+Message-ID: <4B8D0466.7040403@domain.hid>
+Date: Tue, 02 Mar 2010 13:28:22 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: [Xenomai-help] Installation: scripts/prepare-kernel.sh not return
- "Links installed. Build system ready."
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <E1NmR5I-0003k9-N5@domain.hid> <4B8D0359.4070504@domain.hid>
+In-Reply-To: <4B8D0359.4070504@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig1A81C1D1B81C3807EBB60D05"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : Native: Fix return
+ code of in-kernel rt_cond_wait[_until]
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
---_3ebbddee-dfeb-48ad-948a-2b5fa606d844_
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: 8bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig1A81C1D1B81C3807EBB60D05
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Gilles Chanteperdrix wrote:
+> GIT version control wrote:
+>> Module: xenomai-jki
+>> Branch: for-upstream
+>> Commit: f1dfda551b6997f74141986759932e2723a9f024
+>> URL:    http://git.xenomai.org/?p=3Dxenomai-jki.git;a=3Dcommit;h=3Df1d=
+fda551b6997f74141986759932e2723a9f024
+>>
+>> Author: Jan Kiszka <jan.kiszka@domain.hid>
+>> Date:   Tue Mar  2 13:17:35 2010 +0100
+>>
+>> Native: Fix return code of in-kernel rt_cond_wait[_until]
+>>
+>> In rt_cond_wait_inner, do not let rt_cond_wait_epilogue overwrite the
+>> primary error code of rt_cond_wait_prologue. This restores the in-kern=
+el
+>> semantics of rt_cond_wait[_until] that were valid before 97323b3287.
+>>
+>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+>>
+>> ---
+>>
+>>  ksrc/skins/native/cond.c |    8 ++++----
+>>  1 files changed, 4 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/ksrc/skins/native/cond.c b/ksrc/skins/native/cond.c
+>> index 10727d1..2dc0069 100644
+>> --- a/ksrc/skins/native/cond.c
+>> +++ b/ksrc/skins/native/cond.c
+>> @@ -472,10 +472,10 @@ static int rt_cond_wait_inner(RT_COND *cond, RT_=
+MUTEX *mutex,
+>>  	err =3D rt_cond_wait_prologue(cond, mutex, &lockcnt,=20
+>>  				    timeout_mode, timeout);
+>> =20
+>> -	if(!err || err =3D=3D -ETIMEDOUT || err =3D=3D -EINTR)
+>> -		do {
+>> -			err =3D rt_cond_wait_epilogue(mutex, lockcnt);
+>> -		} while (err =3D=3D -EINTR);
+>> +	if (!err || err =3D=3D -ETIMEDOUT || err =3D=3D -EINTR) {
+>> +		while (rt_cond_wait_epilogue(mutex, lockcnt) =3D=3D -EINTR)
+>> +			; /* empty */
+>> +	}
+>=20
+> Not ok. If rt_cond_wait_epilogue returns an error other than -EINTR, we=
+
+> want this error to be returned.
+
+As I said: This is what we used to do in 2.4 (and early 2.5-rc), and due
+to the absence of spec on this topic, I would vote for restoring old
+behavior.
+
+Jan
 
 
-Hi, 
+--------------enig1A81C1D1B81C3807EBB60D05
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
- 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-I have a doubt about installing Xenomai, when running scripts/prepare-kernel.sh. 
+iEYEARECAAYFAkuNBG4ACgkQitSsb3rl5xR49ACg0rreEN8hu5ktJF+tZYiDMfLw
+1gsAoLXV9iLgGllq0eu5kIBX6J141PMw
+=MAlM
+-----END PGP SIGNATURE-----
 
-According to the guide for installing Xenomai at 
-
-http://www.captain.at/xenomai-2.1-installation.php
-
- 
-
-I am supposed to see the following text after successfully running prepare-kernel.sh:
-
- 
-
-Adeos/i386 1.1-00 (newgen) installed.
-
-Links installed.
-
-Build system ready.
-
- 
-
-But when I tried Xenomai 2.3.0 with Linux kernel 2.6.19, and Xenomai 2.4.4 with Linux kernel 2.6.25.11, both in Ubuntu 8.04.4 LTS with kernel 2.6.24-27, I did not get the above text, although there were no error returned. 
-
- 
-
-I would like to know why I did not  get the above text. Can I proceed with my installation?
-
- 
-
-Thank you!
-
-Henry
-
- 
- 		 	   		  
-_________________________________________________________________
-Hotmail: Free, trusted and rich email service.
-https://signup.live.com/signup.aspx?id=60969
---_3ebbddee-dfeb-48ad-948a-2b5fa606d844_
-Content-Type: text/html; charset="gb2312"
-Content-Transfer-Encoding: 8bit
-
-<html>
-<head>
-<style><!--
-.hmmessage P
-{
-margin:0px;
-padding:0px
-}
-body.hmmessage
-{
-font-size: 10pt;
-font-family:Verdana
-}
---></style>
-</head>
-<body class='hmmessage'>
-Hi, <BR>
-&nbsp;<BR>
-I have a doubt about installing Xenomai, when running scripts/prepare-kernel.sh. <BR>
-According to the guide for installing Xenomai at <BR>
-<A href="http://www.captain.at/xenomai-2.1-installation.php">http://www.captain.at/xenomai-2.1-installation.php</A><BR>
-&nbsp;<BR>
-I am supposed to&nbsp;see the following text after successfully running prepare-kernel.sh:<BR>
-&nbsp;<BR>
-Adeos/i386 1.1-00 (newgen) installed.<BR>
-Links installed.<BR>
-Build system ready.<BR>
-&nbsp;<BR>
-But when I&nbsp;tried Xenomai 2.3.0 with Linux kernel 2.6.19, and Xenomai 2.4.4 with Linux kernel 2.6.25.11, both in Ubuntu 8.04.4 LTS with kernel 2.6.24-27, I did not get the above text, although there were no error returned. <BR>
-&nbsp;<BR>
-I would like to know why I did not&nbsp; get the above text. Can&nbsp;I proceed with my installation?<BR>
-&nbsp;<BR>
-Thank you!<BR>
-Henry<BR>
-&nbsp;<BR> 		 	   		  <br /><hr />Hotmail: Free, trusted and rich email service. <a href='https://signup.live.com/signup.aspx?id=60969' target='_new'>Get it now.</a></body>
-</html>
---_3ebbddee-dfeb-48ad-948a-2b5fa606d844_--
+--------------enig1A81C1D1B81C3807EBB60D05--
 
