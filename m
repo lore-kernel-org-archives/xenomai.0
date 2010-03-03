@@ -1,14 +1,14 @@
-Message-ID: <4B8D5C2F.6060005@domain.hid>
-Date: Tue, 02 Mar 2010 19:42:55 +0100
+Message-ID: <4B8E97FC.5060502@domain.hid>
+Date: Wed, 03 Mar 2010 18:10:20 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <201003021527.30130.sinisa.denic@domain.hid>
-	<4B8D2166.7080704@domain.hid>
-	<201003021631.32165.sinisa.denic@domain.hid>
-In-Reply-To: <201003021631.32165.sinisa.denic@domain.hid>
+References: <4B8D0EEA.3090409@domain.hid> <4B8D10C5.9050108@domain.hid>
+	<4B8D156F.7000604@domain.hid> <4B8D535A.10209@domain.hid>
+	<4B8E9649.1060902@domain.hid>
+In-Reply-To: <4B8E9649.1060902@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] ARM cached,non-cached memory
+Subject: Re: [Xenomai-help] Which process synchronization primitive?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,54 +18,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sinisa Denic <sinisa.denic@domain.hid>
+To: Daniele Nicolodi <daniele@domain.hid>
 Cc: Xenomai help <xenomai@xenomai.org>
 
-Sinisa Denic wrote:
-> On Tuesday 02 March 2010 15:32:06 you wrote:
->> Sinisa Denic wrote:
->>> Hi, last year working with xenomai 2.4.2-3 we met problem (BUG) with
->>> memory caching on ARM AT91sam9260 arch.
->>> Then we were advised using non-cached memory and we've used it till
->>> now,but in our next application it has big performace slow down effect
->>> and I'm interested is this BUG solved in latest 2.4.10 - xenomai
->>> Regards,Sinisa
->> No, this is not a BUG in Xenomai. It is an architectural BUG^H^Hehaviour
->> of ARMv5, they have a VIVT cache, which is the cause of these issues.
->> Alternatively to using non-cached memory, you can use cached memory, and
->> flush cache when needed. Beware however defining "when needed", may be
->> complicated.
+Daniele Nicolodi wrote:
+> Gilles Chanteperdrix wrote:
+>> Daniele Nicolodi wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>>> I think message queues can work well but I'm not sure they are the best
+>>>>> choice when I do not have to communicate any message. Would be
+>>>>> semaphores best suited to my needs?
+>>>> You can use process-shared mutexes or semaphores.
+>>> There is somewhere a comparison of the overhead of the different
+>>> solutions? Do I need to do my own benchmarks? Is the API the only
+>>> difference?
+>> Mutexes have the lowest overhead, since they can be handled in
+>> user-space starting with the 2.5 branch.
 >>
->> A note: Xenomai 2.4.10 is not the latest, the latest is Xenomai 2.5.1
->> and it has a lot of performance improvements for ARM.
+>> Differences betwenn mutexes and semaphores are the same with Xenomai
+>> than with any other known API: mutexes are binary semaphores with a
+>> notion of ownership.
 > 
-> Ok,sorry for my mistake I thought it is due to the xenomai.
-> Of course we know new xeno 2.5.1 and all about ARM improvements, 
-> but we are afraid of switching to new kernel(current 2.6.21) and thus to new 
-> xenomai, because we have short time to deliver product and thus to well test 
-> all new components. 
-> Apart from memory caching 2.4 works well for us.
+> Thanks for the clarification. I have been reviewing the documentation
+> and I think that what I need is a mutex with a condition variable shared
+> between processes, or a semaphore.
+> 
+> The reason is that in my application I have processes that consume data
+> produced by other processes, and I need to suspend the execution of the
+> consumer until the producer has new data to handle.
+> 
+> Are condition variables also implemented in user space, so that their
+> overhead is smaller compared to semaphores?
 
-Ok. Understood.
+No. Condition variables imply scheduler decisions and context switches,
+which can only occur in kernel-space, so, it would not really make sense
+to implement them in user-space. The only case for which it would be
+interesting is when you are signaling a condition while no thread is
+waiting for it, but this case, is not really interesting in practice.
 
-
-> We work on critical relay protection device and new potential bug isn't  
-> desirable at all.
-> I hope that xenomai 2.5.1 is heavily tested and stable for ARM arch,despite of 
-> some problems on the mailing list eg. native skin etc.
-
-There is no such thing as bug-free software, as you probably know, but
-we do our best to have the best stability possible. We have recently
-fixed Xenomai for running on AT91SAM9263, and got good results over a
-long testing period, the hardware support looks stable. The issue we
-have such as with the native API are plain deterministic stupid bugs,
-nothing which has any influence on stability.
-
-> Al in all thank you very much we hope to see you in Belgrade soon.
-> Sinisa
-
-That could be arranged :-)
+Please do not forget to C the mailing list.
 
 -- 
-					    Gilles.
+Gilles Chanteperdrix, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
 
