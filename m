@@ -1,14 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4B9BCB7F.9070307@domain.hid>
-References: <1268327902.27899.106.camel@domain.hid>
-	<4B9BC504.8070704@domain.hid>  <4B9BCB7F.9070307@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sat, 13 Mar 2010 19:42:10 +0100
-Message-ID: <1268505730.27899.173.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PULL REQUEST] Blackfin upgrade and minor fixes
- for 2.5.x
+Message-ID: <4B8E24B4.9000806@domain.hid>
+Date: Wed, 03 Mar 2010 09:58:28 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig06E4259D8E56E4F7F76DFE1B"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Potential heap corruption on thread cleanup
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,42 +16,52 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>, Gernot Hillier <gernot.hillier@domain.hid>
 
-On Sat, 2010-03-13 at 18:29 +0100, Gilles Chanteperdrix wrote:
-> Gilles Chanteperdrix wrote:
-> > Philippe Gerum wrote:
-> >> The following changes since commit 55b0aa9de28891fcfd4b4ab097583bd7619223ab:
-> >>   Philippe Gerum (1):
-> >>         native: introduce rt_task_same()
-> >>
-> >> are available in the git repository at:
-> >>
-> >>   git://xenomai.org/xenomai-rpm.git for-upstream
-> >>
-> >> Philippe Gerum (5):
-> >>       testsuite/latency: fix false positive in mode switch detection
-> >>       powerpc: remove dandling reference
-> >>       blackfin: upgrade I-pipe support to 2.6.33-blackfin-1.13-00
-> > 
-> > Could you upgrade the blackfin README file to include the tag to use,
-> > for applying this patch?
-> > 
-> 
-> In fact, it seems the ipipe-blackfin git has no tags.
-> 
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig06E4259D8E56E4F7F76DFE1B
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-ipipe-blackfin only contains reference snapshots of the kernel code for
-the pre 2.6.33 releases we still support; the Blackfin dev trunk we used
-to be based on is periodically rebased, which requires us to keep those
-stable snapshots.
+Hi Gilles,
 
-ipipe-blackfin is now dead, only kept for reference. The pipeline dev
-now occurs in ipipe-2.6 with other supports for mainlined architectures.
-
--- 
-Philippe.
+I'm pushing your findings to the list, also as my colleagues showed
+strong interest - this thing may explain rare corruptions for us as well.=
 
 
+I thought a bit about that likely u_mode-related crash in your test case
+and have the following theory so far: If the xeno_current_mode storage
+is allocated on the application heap (!HAVE_THREAD, that's also what we
+are forced to use), it is automatically freed on thread termination in
+the context of the dying thread. If the thread is already migrated to
+secondary or if that happens while it is cleaned up (i.e. before calling
+for exit into the kernel), there is no problem, Xenomai will not touch
+the mode storage anymore. But if the thread happens to delete the
+storage "silently", without any migration, the final exit will trigger
+one further access. And that takes place against an invalid head area at
+this point.
+
+Does this make sense?
+
+If that is true, all we need to do is to force a migration before
+releasing the mode storage. Could you check this?
+
+Jan
+
+
+--------------enig06E4259D8E56E4F7F76DFE1B
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkuOJLgACgkQitSsb3rl5xRYQQCfVwIN2ttHEiaESEbEmVndoyNQ
+2/8An0yDgcFI5v3pOop3P4PkfAwkBgtY
+=3On7
+-----END PGP SIGNATURE-----
+
+--------------enig06E4259D8E56E4F7F76DFE1B--
 
