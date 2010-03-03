@@ -1,55 +1,79 @@
-Message-ID: <4B8C23F9.3050109@domain.hid>
-Date: Mon, 01 Mar 2010 21:30:49 +0100
+Message-ID: <4B8E281F.1040308@domain.hid>
+Date: Wed, 03 Mar 2010 10:13:03 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <CF7FB0793253794F9F45991443E5FE2006483DE98C@us194mx002.tycoelectronics.net>	<4B86EDC2.7010905@domain.hid>
-	<4B86FCBB.10203@domain.hid> <4B86FFA0.3000403@domain.hid>
-	<4B870134.2040802@domain.hid>
-	<CF7FB0793253794F9F45991443E5FE2006483DE98D@us194mx002.tycoelectronics.net>
-	<4B87FC70.90903@domain.hid>
-	<CF7FB0793253794F9F45991443E5FE2006483DE98F@us194mx002.tycoelectronics.net>
-In-Reply-To: <CF7FB0793253794F9F45991443E5FE2006483DE98F@us194mx002.tycoelectronics.net>
+References: <4B8E24B4.9000806@domain.hid> <4B8E260D.7070809@domain.hid>
+In-Reply-To: <4B8E260D.7070809@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig58A4F38C250CB3B442FB13B8"
+	boundary="------------enig5F8929E07E00059078630840"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] mlockall error after calling mlockall()
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Potential heap corruption on thread cleanup
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "Charlton, John" <john.charlton@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>, Gernot Hillier <gernot.hillier@domain.hid>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig58A4F38C250CB3B442FB13B8
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enig5F8929E07E00059078630840
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Charlton, John wrote:
-> I am attaching a much simpler tar ball that demonstrates the difference=
- between xenomai-2.4.6.1 and xenomai-2.5.1 rt_cond_wait() function.  The =
-difference is that in the new version of xenomai-2.5.1 the rt_cond_wait()=
- function does wait for the condition for the specified timeout interval =
-but when it timesout it returns 0 and I have not been able to get it to r=
-eturn -ETIMEDOUT.  The CanFestival timers_xeno task depends on the value =
-of -ETIMEDOUT being returned when a timeout occurs.
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Hi Gilles,
+>>
+>> I'm pushing your findings to the list, also as my colleagues showed
+>> strong interest - this thing may explain rare corruptions for us as we=
+ll.
+>>
+>> I thought a bit about that likely u_mode-related crash in your test ca=
+se
+>> and have the following theory so far: If the xeno_current_mode storage=
+
+>> is allocated on the application heap (!HAVE_THREAD, that's also what w=
+e
+>> are forced to use), it is automatically freed on thread termination in=
+
+>> the context of the dying thread. If the thread is already migrated to
+>> secondary or if that happens while it is cleaned up (i.e. before calli=
+ng
+>> for exit into the kernel), there is no problem, Xenomai will not touch=
+
+>> the mode storage anymore. But if the thread happens to delete the
+>> storage "silently", without any migration, the final exit will trigger=
+
+>> one further access. And that takes place against an invalid head area =
+at
+>> this point.
+>>
+>> Does this make sense?
+>=20
+> Yes, it is the issue we observed.
+>=20
+>> If that is true, all we need to do is to force a migration before
+>> releasing the mode storage. Could you check this?
+>=20
+> No, that does not fly. Calling, for instance, __wrap_pthread_mutex_lock=
+
+> in another TSD cleanup function is which could be called after the
+> current_mode TSD cleanup is allowed and could trigger a switch to
+> primary mode and a write to the u_mode.
 >=20
 
-Yes, there are unfortunately breakages in rt_cond_wait[_until] - fairly
-obvious ones when looking from the right angle... :-/. I'm looking into
-this.
+Good point. Mmh. Another, but ABI-breaking, way would be to add a
+syscall for deregistering the u_mode pointer...
 
-Thanks,
 Jan
 
 
---------------enig58A4F38C250CB3B442FB13B8
+--------------enig5F8929E07E00059078630840
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -58,10 +82,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkuMI/0ACgkQitSsb3rl5xQUKACguujI6U9nF3BNb8t/TdoB/hy8
-F2UAoN4HAW2NS6q4M42GcpNCeyaeXGAD
-=aE3e
+iEYEARECAAYFAkuOKCIACgkQitSsb3rl5xSW/wCgidtGB99HnZ5LCNRyXlH8PvMp
+ZEEAoKlP99ZOwYkRlyZtVPam7ONuk6P7
+=8XFt
 -----END PGP SIGNATURE-----
 
---------------enig58A4F38C250CB3B442FB13B8--
+--------------enig5F8929E07E00059078630840--
 
