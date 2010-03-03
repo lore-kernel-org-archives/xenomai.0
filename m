@@ -1,60 +1,151 @@
-Message-ID: <SNT125-W47B0622A941FB9CEDA2C479C350@domain.hid>
-Content-Type: multipart/alternative;
-	boundary="_0f781b37-f8c9-4bd4-8cc4-dfdb1189cdee_"
-From: =?gb2312?B?t9HW7Mfg?= <mouse19875@domain.hid>
-Date: Mon, 8 Mar 2010 21:25:07 +0800
+Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <4B8EF7A3.2080500@domain.hid>
+Date: Thu, 04 Mar 2010 00:58:27 +0100
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
 MIME-Version: 1.0
-Subject: [Xenomai-help] a problem about Calibrating delay loop...
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <0C632A1C-3B64-462B-9892-380CB14F6AD8@domain.hid> <4B7DC07C.5@domain.hid>
+	<6D7DAD32-5300-47EB-9A04-ECA065395014@domain.hid>
+	<4B84634F.4080606@domain.hid> <4B8B092E.1070104@domain.hid>
+	<4F095F5B-0A5E-40D2-AC8E-F99034E9571A@usc.edu>
+In-Reply-To: <4F095F5B-0A5E-40D2-AC8E-F99034E9571A@usc.edu>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Analogy DIO speed
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Stefan Schaal <sschaal@domain.hid>
+Cc: Peter Pastor Sampedro <pastorsa@domain.hid>, xenomai@xenomai.org
 
---_0f781b37-f8c9-4bd4-8cc4-dfdb1189cdee_
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+Hi Stefan,
 
-CkhJIGFsbCwKCiAgICAgSSBhbSBwb3J0aW5nIHhlbm9tYWktMi41LjEgdG8gYXJtIGFyY2hpdGVj
-dHVyZShTYW1zdW5nIFMzQzI0NDApLkV2ZXJ5dGhpbmcgaXMgb2sgd2hlbiBJIGRvIHBhdGNoIGFu
-ZCBjb21waWxlLkJ1dCB0aGUgYm9hcmQgc3RhcnQgdXAsY29uc29sZSBsb2NrIGFuZCBzYXkiY2Fs
-YnJhdGluZyBkZWxheSBsb29wLi4uIi4oYmVmb3JlIHBhdGNoIHhlbm9tYWkgaW50byBrZXJuZWws
-dGhlIGtlcm5lbCBpbWFnZSBjYW4gd29yayB3ZWxsKQoKICAgICBYZW5vbWFpIHNheSB0aGF0IGl0
-IHN1cHBvcnRzICJTM0MyNHh4IGZhbWlseSIgLGJ1dCBJIGFsd2F5cyBtZWV0IHRoaXMgcHJvYmxl
-bS4KCiAgICAgU29tZW9uZSBzYWlkIHRoZSB0aW1lciBpbnRlcnJ1cHQgZG9lcyBub3Qgd29yayxJ
-IGRvbid0IGtub3cgaG93IHRvIHdhdGNoIGl0IGFuZCB3b3JrIG91dCB0aGlzIHByb2JsZW0uCgog
-ICAgIERvIHlvdSBrbm93IHNvbWUgbWV0aG9kcyB0aGF0IGNhbiAgc29sdmUgaXQgPyAKCnRoYW5r
-cwoKanVzdGluIGZlaQogCQkgCSAgIAkJICAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K1Ly74cu1srvH5bXYt72jv8C0ytTK
-1M6iyO212M281+7Qwm1zbrultq+5psTco6EKaHR0cDovL2RpdHUubGl2ZS5jb20vP2Zvcm09VEwm
-c3dtPTE=
+Sorry for the late reply, I was unavailable yesterday.
 
---_0f781b37-f8c9-4bd4-8cc4-dfdb1189cdee_
-Content-Type: text/html; charset="gb2312"
-Content-Transfer-Encoding: base64
+Stefan Schaal wrote:
+> Hi Alexis,
+> 
+>  we pulled your analogy branch, and now cmd_write works. Great, and thanks a lot! Next, I tried to use commands with the digital IO subdevice on our board (subdevice #2), but the get an error message:
+> 
+> 
+> [ 2482.771913] Analogy: a4l_check_cmddesc: scan_begin_src, trigger unsupported
+Unfortunately, cmd_write was not designed to work with digital
+subdevices; the command's fields are not appropriate, I am trying to
+make it work quite quickly.
 
-PGh0bWw+CjxoZWFkPgo8c3R5bGU+PCEtLQouaG1tZXNzYWdlIFAKewptYXJnaW46MHB4OwpwYWRk
-aW5nOjBweAp9CmJvZHkuaG1tZXNzYWdlCnsKZm9udC1zaXplOiAxMHB0Owpmb250LWZhbWlseTpW
-ZXJkYW5hCn0KLS0+PC9zdHlsZT4KPC9oZWFkPgo8Ym9keSBjbGFzcz0naG1tZXNzYWdlJz4KSEkg
-YWxsLDxCUj4KJm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7IEkgYW0gcG9ydGluZyB4ZW5vbWFpLTIu
-NS4xIHRvIGFybSBhcmNoaXRlY3R1cmUoU2Ftc3VuZyBTM0MyNDQwKS5FdmVyeXRoaW5nIGlzIG9r
-IHdoZW4gSSBkbyBwYXRjaCBhbmQgY29tcGlsZS5CdXQgdGhlIGJvYXJkIHN0YXJ0IHVwLGNvbnNv
-bGUgbG9jayBhbmQgc2F5ImNhbGJyYXRpbmcgZGVsYXkgbG9vcC4uLiIuKGJlZm9yZSBwYXRjaCB4
-ZW5vbWFpIGludG8ga2VybmVsLHRoZSBrZXJuZWwgaW1hZ2UgY2FuIHdvcmsgd2VsbCk8QlI+CiZu
-YnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwO1hlbm9tYWkgc2F5IHRoYXQgaXQgc3VwcG9ydHMg
-IlMzQzI0eHggZmFtaWx5IiAsYnV0IEkgYWx3YXlzIG1lZXQgdGhpcyBwcm9ibGVtLjxCUj4KJm5i
-c3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7IFNvbWVvbmUgc2FpZCB0aGUgdGltZXIgaW50ZXJydXB0IGRv
-ZXMgbm90IHdvcmssSSBkb24ndCBrbm93IGhvdyB0byB3YXRjaCBpdCBhbmQgd29yayBvdXQgdGhp
-cyBwcm9ibGVtLjxCUj4KJm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7RG8geW91IGtub3cm
-bmJzcDtzb21lIG1ldGhvZHMmbmJzcDt0aGF0IGNhbiAmbmJzcDtzb2x2ZSBpdCA/IDxCUj4KdGhh
-bmtzPEJSPgpqdXN0aW4gZmVpPEJSPiAJCSAJICAgCQkgIDxiciAvPjxociAvPrj8tuDIyMCx18rR
-tr6h1NrQwrDmTVNOytfSs6OhIDxhIGhyZWY9J2h0dHA6Ly9jbi5tc24uY29tLycgdGFyZ2V0PSdf
-bmV3Jz7Bor/Mt8POyqOhPC9hPjwvYm9keT4KPC9odG1sPg==
-
---_0f781b37-f8c9-4bd4-8cc4-dfdb1189cdee_--
+> 
+> 
+> Is there just missing support for the DIO subdevices using commands?
+> 
+> Best wishes,
+> 
+> -Stefan
+> 
+> 
+> ps.: feel free to use our machine for debugging -- it now has the latest version of your software installed with linux kernel 2.6.29.5.
+> 
+> 
+> 
+> 
+> 
+> On Feb 28, 2010, at 16:24, Alexis Berlemont wrote:
+> 
+>> Alexis Berlemont wrote:
+>>> Hi,
+>>> Stefan Schaal wrote:
+>>>> Hi Alexis,
+>>>>
+>>>> On Feb 18, 2010, at 14:34, Alexis Berlemont wrote:
+>>>>
+>>>>> I have some problems with
+>>>>>> implementing commands on my NI6259 so far.
+>>>>> Could you remind me what was the problem ?
+>>>> See the print-outs below for the problem we have.
+>>>>
+>>>> Thanks so much for looking into this!
+>>>>
+>>>> -Stefan
+>>>>
+>>>>
+>>>>
+>>>>
+>>>> Using the cmd_write() function that you provide in analogy, we get the following problem:
+>>>>
+>>> I am currently trying to fix this bug, which is not that easy. I just
+>>> have one question (that I remember I have already asked you in some way,
+>>> but I just want to be sure):
+>>> Does this bug occur the very first time you launched cmd_write (I mean
+>>> after a reboot) ?
+>>>
+>> I managed at last to fix the bug you were facing (at least I hope so).
+>> The problem was located in the trigger callback which waited for a
+>> bit-status (fifo half full) before going further; however, sometimes the
+>> DMA interrupt already occurred and cleaned everything behind your back.
+>>
+>> I have not made a pull request because the current implementation is not
+>> perfect.
+>>
+>> If you have some time, could you clone my git repository (branch:
+>> analogy) and check that a simple call to cmd_write does not trigger the
+>> bug anymore ?
+>>
+>> Many thanks.
+>>>> root@domain.hid# ./cmd_write -v
+>>>> cmd_write: device analogy0 opened (fd=0)
+>>>> cmd_write: basic descriptor retrieved
+>>>>    subdevices count = 14
+>>>>    read subdevice index = 0
+>>>>    write subdevice index = 1
+>>>> cmd_write: complex descriptor retrieved
+>>>> cmd_write: channel 0
+>>>>    ranges count = 3
+>>>>    range's size = 16 (bits)
+>>>> cmd_write: channel 1
+>>>>    ranges count = 3
+>>>>    range's size = 16 (bits)
+>>>> cmd_write: scan size = 4
+>>>> cmd_write: size to write  = 400
+>>>> cmd_write: command successfully sent
+>>>> cmd_write: triggering failed (ret=-32)
+>>>>
+>>>> root@domain.hid# dmesg -c
+>>>> [133345.213865] Analogy: analogy_ni_pcimio: ni_mio_common: interrupt: b_status=0002 m1_status=80a80000
+>>>> [133345.332719] Analogy: analogy_ni_pcimio: ni_ao_wait_for_dma_load: timed out waiting for dma load<3>Analogy: a4l_do_special_insn: execution of the instruction failed (err=-32)
+>>>>
+>>>>
+>>>> Another problem we have is with the --mmap option:
+>>>>
+>>>> root@domain.hid# ./cmd_write -v --mmap
+>>>> cmd_write: device analogy0 opened (fd=0)
+>>>> cmd_write: basic descriptor retrieved
+>>>>    subdevices count = 14
+>>>>    read subdevice index = 0
+>>>>    write subdevice index = 1
+>>>> cmd_write: complex descriptor retrieved
+>>>> cmd_write: channel 0
+>>>>    ranges count = 3
+>>>>    range's size = 16 (bits)
+>>>> cmd_write: channel 1
+>>>>    ranges count = 3
+>>>>    range's size = 16 (bits)
+>>>> cmd_write: scan size = 4
+>>>> cmd_write: size to write  = 400
+>>>> cmd_write: buffer size = 65536 bytes
+>>>> cmd_write: a4l_mmap() failed (ret=-22)
+>>>>
+>>>>
+>>>> root@domain.hid# dmesg -c
+>>>> [133408.942998] Analogy: a4l_ioctl_mmap: mmap not allowed on this subdevice
+>>>>
+>>>>
+>>> Alexis.
+>> Alexis.
+>>
+> 
+> 
+Alexis.
 
