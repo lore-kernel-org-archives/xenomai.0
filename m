@@ -1,13 +1,12 @@
-Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <4BA2C094.6060109@domain.hid>
-Date: Fri, 19 Mar 2010 01:08:52 +0100
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Message-ID: <4B8E260D.7070809@domain.hid>
+Date: Wed, 03 Mar 2010 10:04:13 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B991999.1070406@domain.hid> <4BA0E8D9.4060901@domain.hid>
-In-Reply-To: <4BA0E8D9.4060901@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <4B8E24B4.9000806@domain.hid>
+In-Reply-To: <4B8E24B4.9000806@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Analogy a4l_ioctl_bufinfo() bug?
+Subject: Re: [Xenomai-core] Potential heap corruption on thread cleanup
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,31 +15,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Daniele Nicolodi <daniele@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>, Gernot Hillier <gernot.hillier@domain.hid>
 
-Daniele Nicolodi wrote:
-> Daniele Nicolodi wrote:
->> Hello. As reported in the xenomai-help mailing list I'm investigating
->> why a4l_mmap() is not supported for the ni pcimio driver. Hacking on the
->> driver I discovered that, apparently, the only problem in supporting
->> mmap of the device buffer is in the a4l_ioctl_bufinfo() function.
+Jan Kiszka wrote:
+> Hi Gilles,
 > 
-> The atached patch solves the problem. My solution is to avoid to mess
-> with the subdevice buffer if a transmission is not occouring. This makes
-> ni pcimio driver work as expected. The second patch enables mmapping for
-> the ni pcimio driver.
-Merged. Thank you.
+> I'm pushing your findings to the list, also as my colleagues showed
+> strong interest - this thing may explain rare corruptions for us as well.
 > 
-> Cheers,
+> I thought a bit about that likely u_mode-related crash in your test case
+> and have the following theory so far: If the xeno_current_mode storage
+> is allocated on the application heap (!HAVE_THREAD, that's also what we
+> are forced to use), it is automatically freed on thread termination in
+> the context of the dying thread. If the thread is already migrated to
+> secondary or if that happens while it is cleaned up (i.e. before calling
+> for exit into the kernel), there is no problem, Xenomai will not touch
+> the mode storage anymore. But if the thread happens to delete the
+> storage "silently", without any migration, the final exit will trigger
+> one further access. And that takes place against an invalid head area at
+> this point.
 > 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+> Does this make sense?
 
-Alexis.
+Yes, it is the issue we observed.
+
+> 
+> If that is true, all we need to do is to force a migration before
+> releasing the mode storage. Could you check this?
+
+No, that does not fly. Calling, for instance, __wrap_pthread_mutex_lock
+in another TSD cleanup function is which could be called after the
+current_mode TSD cleanup is allowed and could trigger a switch to
+primary mode and a write to the u_mode.
+
+-- 
+					    Gilles.
 
