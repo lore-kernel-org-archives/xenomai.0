@@ -1,72 +1,60 @@
-From: Huan Fang <huanf@domain.hid>
-Date: Tue, 16 Mar 2010 16:15:05 +0100
-Message-ID: <B66DE711C138E84F96E6A2EDD078830B5F2A4D39CD@MAIL02.ug.kth.se>
-References: <B66DE711C138E84F96E6A2EDD078830B5F2A4D39CB@MAIL02.ug.kth.se>,
-	<4B9B8020.1080605@domain.hid>
-In-Reply-To: <4B9B8020.1080605@domain.hid>
-Content-Language: en-GB
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <4B8F98CF.4080908@domain.hid>
+Date: Thu, 04 Mar 2010 12:26:07 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] RTDM rtdm_task_sleep in kernel not always wakes
- up
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <4B8D9711.5090704@domain.hid> <4B8F8E11.9060902@domain.hid>
+In-Reply-To: <4B8F8E11.9060902@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [pull request] Fixes and workarounds for the
+	cond issues
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "Charlton, John" <john.charlton@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-Hello,
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> The following changes since commit af93ec87f975b387243127090b578d57922b38dc:
+>>   Gilles Chanteperdrix (1):
+>>         posix: fix recursive condvar implementation
+>>
+>> are available in the git repository at:
+>>
+>>   git://git.xenomai.org/xenomai-jki.git for-upstream
+>>
+>> These patches pass basic testings, specifically our extended testsuite,
+>> but I'm still unhappy with the workaround. Specifically the fact that we
+>> lose -EINTR as valid return code for the Native side is fairly annoying.
+>>
+>> For that reason, I will continue to work out fixed prologue/epilogue
+>> syscalls for both skins that up-to-date user space will be able to
+>> benefit from (native kernel space part is already done). The majority of
+>> users will continue to update kernel and user space synchronously
+>> anyway, for the rest we will provide these workarounds here.
+> 
+> Let us calm down, and avoid pushing changes which are worse than the
+> issue they try and correct. I will not publish anything on these issues
+> before this week-end. Instead of modifying the mutex-torture unt test, I
+> will try and write a condvar-torture unit test, which exhaustively test
+> all the return values of pthread_cond_wait/rt_cond_wait, including
+> interruption by signals during the cond_wait, and the epilogue.
 
-The wait_event_interruptible_timeout is running in non real time context of=
- ioctl_nrt part.
-I also tried to replace it with an infinite loop like while(condition); the=
-n the rt process is never waken up and the nrt process is stuck at the whil=
-e loop in ioctl.
-Is it because the Linux kernel is not fully preemptible even if I already c=
-onfigured the CONFIG_PREEMPT=3Dy (No PREEMPT_RT patch)?
+Fine with me. By then, we may also have feedback from our field tests.
+And should have finished writing the new syscall sets.
 
-Best Regards,
-Huan
-________________________________________
-From: Gilles Chanteperdrix [gilles.chanteperdrix@xenomai.org]
-Sent: 13 March 2010 13:08
-To: Huan Fang
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] RTDM rtdm_task_sleep in kernel not always wakes=
- up
+Will you also split up the torture test to leave the timed mutex test
+case in or should I do this?
 
-Huan Fang wrote:
-> Hello. I am writing a driver using RTDM. Just for testing, I have a
-> rt kernel thread waiting for event signal sent from nrt_ioctl. After
-> the thread is activated, it calls rtdm_task_busy_sleep(100000); then
-> rtdm_task_sleep(100000); When the RT thread is really sleeping, the
-> nrt_ioctl resumes and sleeps via wait_event_interruptible_timeout(2
-> jiffiles).
->
-> Normally, RT thread wakes up after 100us. But the thread seems to
-> hang after 20-30 such loops and never wake up. When I kill the
-> process. I saw that wait_event_interruptible_timeout returns a -512.
->  The worse thing is I saw kernel panic sometimes during such context
-> switches.
+Jan
 
-Hi,
-
-If you are using wait_event_interruptible_timeout from the context of a
-xenomai thread running in primary mode, it is normal to get kernel
-oopses. If you do not do that, then I did not get your explanation, and
-I think the best thing to do is to send us a self contained example,
-including driver code and user-space code. Something that we can compile
-and run to see what you are observing.
-
-Regards.
-
---
-                                            Gilles.
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
