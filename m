@@ -1,12 +1,14 @@
-Message-ID: <4B8D5768.7080402@domain.hid>
-Date: Tue, 02 Mar 2010 19:22:32 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4B8FB971.9080907@domain.hid>
+Date: Thu, 04 Mar 2010 14:45:21 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B8D55AD.9090901@domain.hid>
-In-Reply-To: <4B8D55AD.9090901@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4B8D9711.5090704@domain.hid> <4B8F8E11.9060902@domain.hid>
+	<4B8F98CF.4080908@domain.hid>
+In-Reply-To: <4B8F98CF.4080908@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Posix mutex unit test fails on git head
+Subject: Re: [Xenomai-core] [pull request] Fixes and workarounds for the
+	cond issues
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,28 +17,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "Charlton, John" <john.charlton@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> Gilles,
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> The following changes since commit af93ec87f975b387243127090b578d57922b38dc:
+>>>   Gilles Chanteperdrix (1):
+>>>         posix: fix recursive condvar implementation
+>>>
+>>> are available in the git repository at:
+>>>
+>>>   git://git.xenomai.org/xenomai-jki.git for-upstream
+>>>
+>>> These patches pass basic testings, specifically our extended testsuite,
+>>> but I'm still unhappy with the workaround. Specifically the fact that we
+>>> lose -EINTR as valid return code for the Native side is fairly annoying.
+>>>
+>>> For that reason, I will continue to work out fixed prologue/epilogue
+>>> syscalls for both skins that up-to-date user space will be able to
+>>> benefit from (native kernel space part is already done). The majority of
+>>> users will continue to update kernel and user space synchronously
+>>> anyway, for the rest we will provide these workarounds here.
+>> Let us calm down, and avoid pushing changes which are worse than the
+>> issue they try and correct. I will not publish anything on these issues
+>> before this week-end. Instead of modifying the mutex-torture unt test, I
+>> will try and write a condvar-torture unit test, which exhaustively test
+>> all the return values of pthread_cond_wait/rt_cond_wait, including
+>> interruption by signals during the cond_wait, and the epilogue.
 > 
-> can you (or someone else) confirm this:
+> Fine with me. By then, we may also have feedback from our field tests.
+> And should have finished writing the new syscall sets.
+
+Do not bother, I intend to handle all this.
+
 > 
-> # mutex-torture-posix
-> simple_wait
-> simple mutex_lock 1: 1 (Operation not permitted)
+> Will you also split up the torture test to leave the timed mutex test
+> case in or should I do this?
+
+Ok. Will add the timeout tests to the mutex torture test.
+
 > 
-> I'm on a x86_64 target (2.6.32.8 with latest I-pipe), Xenomai is
-> unpatched git head.
+> Jan
 > 
 
-Looks like a bug in the test case: We do not wrap sched_setscheduler
-which it uses, and my config does not auto-shadow main. Fix will follow.
-
-Jan
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
