@@ -1,13 +1,13 @@
-Message-ID: <4B90E936.8080502@domain.hid>
-Date: Fri, 05 Mar 2010 12:21:26 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4B90EB0D.6060705@domain.hid>
+Date: Fri, 05 Mar 2010 12:29:17 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4B8E24B4.9000806@domain.hid>
 	<4B8E260D.7070809@domain.hid>	<4B8E281F.1040308@domain.hid>
 	<4B8E28D2.6020808@domain.hid> <4B8FFBCD.9020305@domain.hid>
 	<4B8FFDC0.4080903@domain.hid> <4B90173C.9080008@domain.hid>
-	<4B901B53.2050605@domain.hid>
-In-Reply-To: <4B901B53.2050605@domain.hid>
+	<4B90E628.1090005@domain.hid>
+In-Reply-To: <4B90E628.1090005@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Potential heap corruption on thread cleanup
@@ -19,11 +19,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>, "Hillier,
-	Gernot" <gernot.hillier@domain.hid>
+To: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>, "Hillier, Gernot" <gernot.hillier@domain.hid>
 
-Gilles Chanteperdrix wrote:
+Wolfgang Mauerer wrote:
 > Jan Kiszka wrote:
 >> Gilles Chanteperdrix wrote:
 >>> Jan Kiszka wrote:
@@ -81,84 +80,25 @@ Gilles Chanteperdrix wrote:
 >> state, "invalid", we can make all mutex users assume they need the slow
 >> syscall path on uncontended acquisition. And assert_nrt will probably be
 >> happy about a syscall replacement for u_mode when it became invalid.
->>
->> This invalid state (maybe u_mode == -1 with TLS, and mode_key == NULL
->> without it) is entered during thread clean up with the help of a TSD
->> destructor. The destructor will then deregister our u_mode storage from
->> the kernel so that it doesn't matter if we release the memory
->> immediately and explicitly (w/o TLS) or leave this to glibc (/w TLS).
->> And in this model, it also doesn't matter when precisely the destructor
->> is called.
 > 
-> We have to add a syscall to propagate this value to kernel-space, and
-> clutter the kernel-space code which uses u_mode with tests to see if
-> u_mode is valid or not, and we have to clutter the code which uses
-> u_mode in user-space to handle that invalid state. And every time we add
-> a user of u_mode, we have to think about the invalid state. A lot of
-> clutter.
-> 
-> The two last issues may be removed by handling the invalid state only in
-> the function which returns the current mode. If the state is invalid,
-> then issue the syscall. Admittedly, we get two syscalls for mutex locks,
-> but who cares.
-> 
-> However, what for? Allocating u_mode in the process private sem_heap, as
-> I suggest since the beggining, looks so much simpler. No test, no
-> special case, the address is always valid as long as the tcb is valid.
+> Thinking about the "fast" part in "fast userspace mutex": Would it be an
+> argument in favour of not using the global semaphore heap that said
+> memory is uncached on some architectures? Or is that irrelevant?
 
-Try implementing it.
-
-I will post a prototype for my approach within a minute. Its major
-implementation advantage is that there is no need to touch any skin,
-neither on user nor kernel side, and that there is no need for backward
-compatible syscalls.
-
-Another advantage of my approach is that it does not touch the fast
-paths of mutex handling (before deregistration) - well, at lest almost
-for non-TLS, but absolutely not for TLS.
-
-> 
->>>> But I thought a bit more about a workaround for the existing ABI. We
->>>> basically need a way to free some memory as late as possible on thread
->>>> deletion. Even when leaving garbage collection that no one really wants
->>>> aside, there might be some semi-perfect user-space-only solution:
->>>>
->>>> pthread_create_key says that TSD destructors are re-run after the first
->>>> round if their key value is still non-NULL. So we could at least work
->>>> around the already rare case that some TSD destructor past ours tries to
->>>> access an RT mutex or otherwise migrates the thread to RT again. For
->>>> this, we just need a counter (next to the mode storages) for the round.
->>>> If we are in round #1, we would restore the key value again instead of
->>>> freeing it. On run #n < PTHREAD_DESTRUCTOR_ITERATIONS, we would finally
->>>> free it in the hope we are the last interested in it. This just requires
->>>> PTHREAD_DESTRUCTOR_ITERATIONS > 1, and that the application does not do
->>>> this ugly dance as well AND also performs Xenomai calls.
->>> I have thought of another simpler fix: we leak the u_mode when
->>> kernel-support is too old, and whine loudly about it. For the other case
->> Leaking is not nice, but I guess an application will crash sooner over
->> the bug than this leak becomes a reason for a failure.
->>
->>> (newer kernel-support with older user-space support), I was thinking
->>> about something else, which I still find complicated and far from
->>> perfect: handling the exit syscall by setting the u_mode pointer to NULL
->>> because we know at that time the u_mode pointer points to free memory.
->>>
->> That would reduce the probability of a crash, right. Probably the best
->> we can do for old user land. And I don't think if should take more than
->> two lines of code in the syscall dispatching path.
-> 
-> A bit more, we have to deal with the old user-space detection.
-
-Nope, we can clear (more precisely: redirect) u_mode unconditionally.
-
-> Noise would came from the kernel with this solution too.
-> 
-
-Yes, it remains band-aid.
-
-Jan
+Several answers:
+- whether memory is cached is mostly irrelevant for real-time. The worst
+case remains the same. Of course it is a bit less irrelevant when we are
+trying to get free time to run a general-purpose OS as idle task.
+- we are talking about arms, right. When not using FCSE, the cache is
+small and the kernel flushes it at every context switch, so the chances
+for getting a cache miss are in fact pretty high.
+- on arm, the cost of a system call is still way higher than two RAM
+accesses.
+- simpler solutions usually yield less bugs, as shown by the bug whe are
+discussing.
+- according to the comments we read on the mailing list about 2.5.1
+stability, having something which works correctly is kind of urgent.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
