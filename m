@@ -1,12 +1,10 @@
-Message-ID: <4B92317F.3010706@domain.hid>
-Date: Sat, 06 Mar 2010 11:42:07 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4B9236DD.2030900@domain.hid>
+Date: Sat, 06 Mar 2010 12:05:01 +0100
+From: Daniele Nicolodi <daniele@domain.hid>
 MIME-Version: 1.0
-References: <201003021527.30130.sinisa.denic@domain.hid>
-In-Reply-To: <201003021527.30130.sinisa.denic@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] ARM cached,non-cached memory
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] xenomai/asm/xenomai/syscall.h is not c99 aware
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,59 +14,109 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sinisa Denic <sinisa.denic@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Sinisa Denic wrote:
-> Hi, last year working with xenomai 2.4.2-3 we met problem (BUG) with memory 
-> caching on ARM AT91sam9260 arch. 
-> Then we were advised using non-cached memory and we've used it till now,but in 
-> our next application it has big performace slow down effect and I'm 
-> interested is this BUG solved in latest 2.4.10 - xenomai 
-> Regards,Sinisa
+Hello. I'm compiling my programs with the -std=3Dc99 switch. However the
+inclusion of pthread.h from xenomai distribution causes the compilation
+to fail with syntax errors.
 
-Actually, there may be something we can do. In heap.c, could you try 
-replacing calls to pgprot_noncached with calls to pgprot_writecombine ?
+This simple program demonstrates the problem:
 
-Here is a patch doing this for 2.4 head. I do not know whether it will
-apply to the version you are using. But I guess you will get the idea.
+#include <pthread.h>
 
-diff --git a/ksrc/nucleus/heap.c b/ksrc/nucleus/heap.c
-index 1c02183..d40844b 100644
---- a/ksrc/nucleus/heap.c
-+++ b/ksrc/nucleus/heap.c
-@@ -962,7 +962,7 @@ static inline void *__alloc_and_reserve_heap(size_t size, in
-t kmflags)
-                else
-                        ptr = __vmalloc(size,
-                                        GFP_KERNEL | __GFP_HIGHMEM,
--                                       pgprot_noncached(PAGE_KERNEL));
-+                                       pgprot_writecombine(PAGE_KERNEL));
-                if (ptr == NULL)
-                        return NULL;
+int main(int argc, char **argv)
+{
+     return 0;
+}
 
-@@ -1126,7 +1126,7 @@ static int xnheap_mmap(struct file *file, struct vm_area_struct *vma)
-                unsigned long maddr = vma->vm_start;
+If I compile it with 'gcc -std=3Dc99 $(xeno-config --posis-cflags)' i
+obtain the following errors:
 
-                if (heap->archdep.kmflags == XNHEAP_GFP_NONCACHED)
--                       vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-+                       vma->vm_page_prot = pgprot_writecombine(vma->vm_page_pro
-t);
+In file included from /usr/include/xenomai/nucleus/trace.h:52,
+                 from /usr/include/xenomai/nucleus/system.h:27,
+                 from /usr/include/xenomai/asm/xenomai/system_32.h:130,
+                 from /usr/include/xenomai/asm/xenomai/system.h:2,
+                 from /usr/include/xenomai/nucleus/types.h:40,
+                 from /usr/include/xenomai/nucleus/thread.h:25,
+                 from /usr/include/xenomai/posix/pthread.h:136,
+                 from test-c99.c:1:
+/usr/include/xenomai/asm/xenomai/syscall.h:130: error: expected
+declaration specifiers or =91...=92 before string constant
+/usr/include/xenomai/asm/xenomai/syscall.h:130: warning: data definition
+has no type or storage class
+/usr/include/xenomai/asm/xenomai/syscall.h:130: warning: type defaults
+to =91int=92 in declaration of =91asm=92
+/usr/include/xenomai/asm/xenomai/syscall.h: In function =91__xn_get_ebp=92=
+:
+/usr/include/xenomai/asm/xenomai/syscall.h:173: warning: statement with
+no effect
+/usr/include/xenomai/asm/xenomai/syscall.h:173: error: expected =91;=92
+before =91volatile=92
+/usr/include/xenomai/asm/xenomai/syscall.h: In function =91__xn_rdtsc=92:
+/usr/include/xenomai/asm/xenomai/syscall.h:436: warning: statement with
+no effect
+/usr/include/xenomai/asm/xenomai/syscall.h:436: error: expected =91;=92
+before =91volatile=92
+In file included from /usr/include/xenomai/nucleus/system.h:27,
+                 from /usr/include/xenomai/asm/xenomai/system_32.h:130,
+                 from /usr/include/xenomai/asm/xenomai/system.h:2,
+                 from /usr/include/xenomai/nucleus/types.h:40,
+                 from /usr/include/xenomai/nucleus/thread.h:25,
+                 from /usr/include/xenomai/posix/pthread.h:136,
+                 from test-c99.c:1:
+/usr/include/xenomai/nucleus/trace.h: In function =91xntrace_max_begin=92=
+:
+/usr/include/xenomai/nucleus/trace.h:56: error: expected =91;=92 before
+=91volatile=92
+/usr/include/xenomai/nucleus/trace.h:56: warning: statement with no effec=
+t
+/usr/include/xenomai/nucleus/trace.h: In function =91xntrace_max_end=92:
+/usr/include/xenomai/nucleus/trace.h:61: error: expected =91;=92 before
+=91volatile=92
+/usr/include/xenomai/nucleus/trace.h:61: warning: statement with no effec=
+t
+/usr/include/xenomai/nucleus/trace.h: In function =91xntrace_max_reset=92=
+:
+/usr/include/xenomai/nucleus/trace.h:66: error: expected =91;=92 before
+=91volatile=92
+/usr/include/xenomai/nucleus/trace.h:66: warning: statement with no effec=
+t
+/usr/include/xenomai/nucleus/trace.h: In function =91xntrace_user_start=92=
+:
+/usr/include/xenomai/nucleus/trace.h:71: error: expected =91;=92 before
+=91volatile=92
+/usr/include/xenomai/nucleus/trace.h:71: warning: statement with no effec=
+t
+/usr/include/xenomai/nucleus/trace.h: In function =91xntrace_user_stop=92=
+:
+/usr/include/xenomai/nucleus/trace.h:76: error: expected =91;=92 before
+=91volatile=92
+/usr/include/xenomai/nucleus/trace.h:76: warning: statement with no effec=
+t
+/usr/include/xenomai/nucleus/trace.h: In function =91xntrace_user_freeze=92=
+:
+/usr/include/xenomai/nucleus/trace.h:81: error: expected =91;=92 before
+=91volatile=92
+/usr/include/xenomai/nucleus/trace.h:81: warning: statement with no effec=
+t
+/usr/include/xenomai/nucleus/trace.h: In function =91xntrace_special=92:
+/usr/include/xenomai/nucleus/trace.h:87: error: expected =91;=92 before
+=91volatile=92
+/usr/include/xenomai/nucleus/trace.h:87: warning: statement with no effec=
+t
+/usr/include/xenomai/nucleus/trace.h: In function =91xntrace_special_u64=92=
+:
+/usr/include/xenomai/nucleus/trace.h:92: error: expected =91;=92 before
+=91volatile=92
+/usr/include/xenomai/nucleus/trace.h:92: warning: statement with no effec=
+t
 
-                while (size > 0) {
-                        if (xnarch_remap_vm_page(vma, maddr, vaddr))
-@@ -1147,7 +1147,7 @@ static int xnheap_mmap(struct file *file, struct vm_area_s
-truct *vma)
-        (void)vaddr;
-        if ((heap->archdep.kmflags & ~XNHEAP_GFP_NONCACHED) != 0 ||
-            heap->archdep.kmflags == XNHEAP_GFP_NONCACHED)
--               vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-+               vma->vm_page_prot = pgprot_writecombine(vma->vm_page_prot);
- #endif /* !CONFIG_MMU */
+Of course i do not obtain any error it i remove the xenomai specific
+include directories options from the gcc command line.
 
-        atomic_inc(&heap->archdep.numaps);
+Can this problem be solved? Can I help somehow?
 
-
--- 
-					    Gilles.
+Thanks. Cheers,
+--=20
+Daniele
 
