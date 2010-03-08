@@ -1,14 +1,12 @@
-Message-ID: <4B952D13.3080306@domain.hid>
-Date: Mon, 08 Mar 2010 18:00:03 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4B952D21.5090204@domain.hid>
+Date: Mon, 08 Mar 2010 18:00:17 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <mailman.4538.1268063562.8399.xenomai-git@xenomai.org>
-	<4B9527FD.3040806@domain.hid>
-In-Reply-To: <4B9527FD.3040806@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <4B95253E.3030303@domain.hid>
+In-Reply-To: <4B95253E.3030303@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Xenomai-git] common: do not let u_mode
- exceptional cases leak out of current.[ch]
+Subject: Re: [Xenomai-core] u_mode and condvar fixes.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,62 +15,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Jan Kiszka wrote:
-> xenomai-git-request@domain.hid wrote:
->> diff --git a/include/asm-generic/bits/current.h b/include/asm-generic/bits/current.h
->> index f0e569c..b9ac680 100644
->> --- a/include/asm-generic/bits/current.h
->> +++ b/include/asm-generic/bits/current.h
+Gilles Chanteperdrix wrote:
+> Hi,
 > 
-> ...
+> I pushed the changes fixing the u_mode (taken from Jan, slightly
+> modified) and condvar stuff (not entirely taken from Jan's changes), as
+> well as the modifications coming from Philippe's branch.
 > 
->> @@ -33,25 +33,16 @@ static inline xnhandle_t xeno_get_current(void)
->>  {
->>  	void *val = pthread_getspecific(xeno_current_key);
->>  
->> -	if (!val)
->> -		return XN_NO_HANDLE;
->> -
->> -	return (xnhandle_t)val;
->> +	return (xnhandle_t)val ?: xeno_slow_get_current();
->>  }
-> 
-> So when used with normal Linux threads, this will always trigger the
-> syscall of xeno_slow_get_current()?
-> 
->> diff --git a/src/rtdk/assert_context.c b/src/rtdk/assert_context.c
->> index bad19f3..f67bcd8 100644
->> --- a/src/rtdk/assert_context.c
->> +++ b/src/rtdk/assert_context.c
->> @@ -30,12 +30,9 @@ void assert_nrt(void)
->>  	xnthread_info_t info;
->>  	int err;
->>  
->> -	if (xeno_get_current() != XN_NO_HANDLE)
->> -		return;
->> +	if (unlikely(xeno_get_current() != XN_NO_HANDLE &&
->> +		     !(xeno_get_current_mode() & XNRELAX))) {
-> 
-> Then please provide a different API for assert_nrt as this makes the
-> service too heavy for common use.
+> However, two questions remain open:
+> - as in Jan's original patch, the u_mode stuff tests the presence of the
+> new syscall by testing whether it returns -ENOSYS. Now that we have the
+> vdso, I wonder if we should not use a vdso bit for this. This would give
+> us a systematic way of testing such syscalls extension.
 
-It is a non real-time thread. Its performances are not critical. A
-non-blocking syscall is not that heavy. Especially compared to the
-execution time of malloc. Ok, will not argue on this any more, as
-obviously our opinions differ in that area.
+I would prefer this path over -ENOSYS testing as well. We could collect
+the bits once and just test for it in-place. No more setup needed then
+when adding more (for cond e.g.).
 
-The point is that NULL (XN_NO_HANDLE) means at the same time a freed
-mode and a mode after the TSD cleanup was run. So, emitting a syscall in
-that case is the simplest thing we can do. And no, I did not find it
-expensive. But in fact, using an additional syscall, assert_nrt could be
-implemented as a simple dummy syscall which returns 0 and asks the
-caller to be put in primary mode (and it would be even lighter). So, I
-guess if you did not implemented that way, it means that you already
-wanted to avoid the syscall.
+> - the condvar fix only fixes the general case, using errno, it does not
+> add any new syscall. I am not entirely convinced we really need to add
+> new syscalls. In fact we could use special values in the existing ones.
+> Or have access in kernel-space to the a process' vdso flags, allowing to
+> adapt according to these flags. I am simply wondering what is the
+> cleanest way.
+
+I think the cleanest way are separate syscalls. The existing prologue
+syscalls of both skins are already at their limits (5 arguments), so
+adding something here is not easy. Of course, you could switch the
+behavior per process depending on negotiated caps. But will this be
+simpler? What of the dispatching work for separate syscalls could be
+avoided that way?
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
