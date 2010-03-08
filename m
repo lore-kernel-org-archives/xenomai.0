@@ -1,13 +1,14 @@
-Message-ID: <4B953580.7020309@domain.hid>
-Date: Mon, 08 Mar 2010 18:36:00 +0100
+Message-ID: <4B953647.9040005@domain.hid>
+Date: Mon, 08 Mar 2010 18:39:19 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4B95253E.3030303@domain.hid> <4B952D21.5090204@domain.hid>
-	<4B953426.6070905@domain.hid>
-In-Reply-To: <4B953426.6070905@domain.hid>
+References: <mailman.4536.1268063545.8399.xenomai-git@xenomai.org>
+	<4B9533D9.7050203@domain.hid> <4B95356E.8060408@domain.hid>
+In-Reply-To: <4B95356E.8060408@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] u_mode and condvar fixes.
+Subject: Re: [Xenomai-core] [Xenomai-git] posix: fix pthread_cond_*wait
+	return value overwriting
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,51 +18,65 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Hi,
->>>
->>> I pushed the changes fixing the u_mode (taken from Jan, slightly
->>> modified) and condvar stuff (not entirely taken from Jan's changes), as
->>> well as the modifications coming from Philippe's branch.
->>>
->>> However, two questions remain open:
->>> - as in Jan's original patch, the u_mode stuff tests the presence of the
->>> new syscall by testing whether it returns -ENOSYS. Now that we have the
->>> vdso, I wonder if we should not use a vdso bit for this. This would give
->>> us a systematic way of testing such syscalls extension.
->> I would prefer this path over -ENOSYS testing as well. We could collect
->> the bits once and just test for it in-place. No more setup needed then
->> when adding more (for cond e.g.).
->>
->>> - the condvar fix only fixes the general case, using errno, it does not
->>> add any new syscall. I am not entirely convinced we really need to add
->>> new syscalls. In fact we could use special values in the existing ones.
->>> Or have access in kernel-space to the a process' vdso flags, allowing to
->>> adapt according to these flags. I am simply wondering what is the
->>> cleanest way.
->> I think the cleanest way are separate syscalls. The existing prologue
->> syscalls of both skins are already at their limits (5 arguments), so
->> adding something here is not easy.
+>> xenomai-git-request@domain.hid wrote:
+>>> diff --git a/ksrc/skins/posix/syscall.c b/ksrc/skins/posix/syscall.c
+>>> index 6c3ec3a..2a97a2d 100644
+>>> --- a/ksrc/skins/posix/syscall.c
+>>> +++ b/ksrc/skins/posix/syscall.c
+>>> @@ -1520,7 +1520,7 @@ static int __pthread_cond_wait_prologue(struct pt_regs *regs)
+>>>  	union __xeno_mutex mx, *umx;
+>>>  	unsigned timed, count;
+>>>  	struct timespec ts;
+>>> -	int err;
+>>> +	int err, perr = 0;
+>>>  
+>>>  	ucnd = (union __xeno_cond *)__xn_reg_arg1(regs);
+>>>  	umx = (union __xeno_mutex *)__xn_reg_arg2(regs);
+>>> @@ -1560,7 +1560,10 @@ static int __pthread_cond_wait_prologue(struct pt_regs *regs)
+>>>  						    &mx.shadow_mutex,
+>>>  						    &count, timed, XN_INFINITE);
+>>>  
+>>> -	if (err == 0 || err == ETIMEDOUT) {
+>>> +	switch(err) {
+>>> +	case 0:
+>>> +	case ETIMEDOUT:
+>>> +		perr = errno = err;
+>>>  		err = -pse51_cond_timedwait_epilogue(cur, &cnd.shadow_cond,
+>>>  					    	    &mx.shadow_mutex, count);
+>>>  		if (err == 0 &&
+>>> @@ -1569,14 +1572,20 @@ static int __pthread_cond_wait_prologue(struct pt_regs *regs)
+>>>  					   &mx.shadow_mutex.lockcnt,
+>>>  					   sizeof(umx->shadow_mutex.lockcnt)))
+>>>  			return -EFAULT;
+>>> +		break;
+>>> +
+>>> +	case EINTR:
+>>> +		perr = err;
+>> Minor cleanup: This is not needed as err != 0, so perr will not be
+>> evaluated anymore. Same for native.
 > 
-> That can be done:
-> the prologue syscall has a "timed" parameter to which the old versions
-> always passed O or 1, we only have to pass 2 or 3 to mean 0 and 1, only
-> with the newer user-space. As for the epilogue syscall, we can multiplex
-> the prologue return value (ten bits for instance is plenty) in the upper
-> bits of the count returned to user-space. A recursive lock count of 4
-> million is a reasonable limit anyway. I just wonder if these tricks are
-> worth the trouble.
+> No, err may be 0, if the epilogue returns 0.
+> 
+> The following table should explains how I came to this solution:
+> 
+> perr		err		wanted		err == 0 ? perr : err
+> 0		0		0          	0
+> 0		EINTR		EINTR      	EINTR
+> 0		*		*          	*
+> ETIMEDOUT  	0		ETIMEDOUT  	ETIMEDOUNT
+> ETIMEDOUT  	EINTR		EINTR      	EINTR
+> 		    	  (epi ETIMEDOUT)
+> ETIMEDOUT  	*		*		*
+> EINTR	   	-(perr)		EINTR      	EINTR
+> *	   	-(perr)		*		*
 > 
 
-That's the question.
-
-If you look at my patches, there is a lot of code in common for path
-syscalls. I don't think it will noticeably increase, it should just be
-the dispatching method that will vary.
+Right for my second suggestion. But err = [-]EINTR from the prologue
+will remain != 0.
 
 Jan
 
