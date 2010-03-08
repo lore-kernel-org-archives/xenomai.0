@@ -1,151 +1,87 @@
-Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <4B8EF7A3.2080500@domain.hid>
-Date: Thu, 04 Mar 2010 00:58:27 +0100
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
+Message-ID: <4B950116.1020307@domain.hid>
+Date: Mon, 08 Mar 2010 14:52:22 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <0C632A1C-3B64-462B-9892-380CB14F6AD8@domain.hid> <4B7DC07C.5@domain.hid>
-	<6D7DAD32-5300-47EB-9A04-ECA065395014@domain.hid>
-	<4B84634F.4080606@domain.hid> <4B8B092E.1070104@domain.hid>
-	<4F095F5B-0A5E-40D2-AC8E-F99034E9571A@usc.edu>
-In-Reply-To: <4F095F5B-0A5E-40D2-AC8E-F99034E9571A@usc.edu>
-Content-Type: text/plain; charset=us-ascii; format=flowed
+References: <201003021527.30130.sinisa.denic@domain.hid>
+	<4B92317F.3010706@domain.hid>
+	<201003080858.11552.sinisa.denic@domain.hid>
+In-Reply-To: <201003080858.11552.sinisa.denic@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Analogy DIO speed
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] ARM cached,non-cached memory
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Stefan Schaal <sschaal@domain.hid>
-Cc: Peter Pastor Sampedro <pastorsa@domain.hid>, xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Sinisa Denic <sinisa.denic@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi Stefan,
+Sinisa Denic wrote:
+> On Saturday 06 March 2010 11:42:07 you wrote:
+>> Sinisa Denic wrote:
+>>> Hi, last year working with xenomai 2.4.2-3 we met problem (BUG) with
+>>> memory caching on ARM AT91sam9260 arch.
+>>> Then we were advised using non-cached memory and we've used it till
+>>> now,but in our next application it has big performace slow down effect
+>>> and I'm interested is this BUG solved in latest 2.4.10 - xenomai
+>>> Regards,Sinisa
+>> Actually, there may be something we can do. In heap.c, could you try
+>> replacing calls to pgprot_noncached with calls to pgprot_writecombine ?
+>>
+>> Here is a patch doing this for 2.4 head. I do not know whether it will
+>> apply to the version you are using. But I guess you will get the idea.
+>>
+>> diff --git a/ksrc/nucleus/heap.c b/ksrc/nucleus/heap.c
+>> index 1c02183..d40844b 100644
+>> --- a/ksrc/nucleus/heap.c
+>> +++ b/ksrc/nucleus/heap.c
+>> @@ -962,7 +962,7 @@ static inline void *__alloc_and_reserve_heap(size_t
+>> size, in t kmflags)
+>>                 else
+>>                         ptr = __vmalloc(size,
+>>                                         GFP_KERNEL | __GFP_HIGHMEM,
+>> -                                       pgprot_noncached(PAGE_KERNEL));
+>> +                                       pgprot_writecombine(PAGE_KERNEL));
+>>                 if (ptr == NULL)
+>>                         return NULL;
+>>
+>> @@ -1126,7 +1126,7 @@ static int xnheap_mmap(struct file *file, struct
+>> vm_area_struct *vma) unsigned long maddr = vma->vm_start;
+>>
+>>                 if (heap->archdep.kmflags == XNHEAP_GFP_NONCACHED)
+>> -                       vma->vm_page_prot =
+>> pgprot_noncached(vma->vm_page_prot); +                      
+>> vma->vm_page_prot = pgprot_writecombine(vma->vm_page_pro t);
+>>
+>>                 while (size > 0) {
+>>                         if (xnarch_remap_vm_page(vma, maddr, vaddr))
+>> @@ -1147,7 +1147,7 @@ static int xnheap_mmap(struct file *file, struct
+>> vm_area_s truct *vma)
+>>         (void)vaddr;
+>>         if ((heap->archdep.kmflags & ~XNHEAP_GFP_NONCACHED) != 0 ||
+>>             heap->archdep.kmflags == XNHEAP_GFP_NONCACHED)
+>> -               vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+>> +               vma->vm_page_prot = pgprot_writecombine(vma->vm_page_prot);
+>>  #endif /* !CONFIG_MMU */
+>>
+>>         atomic_inc(&heap->archdep.numaps);
+> 
+> Ah, thank you Gilles we've already reconciled with destiny not to having 
+> cached memory. 
+> This is good news,but as I've read "write-combining does not guarantee that 
+> the combination of writes and reads is done in the correct order" and we 
+> could meet inconsistency in data - maybe.. 
+> Does Xeno treat this problem properly?
 
-Sorry for the late reply, I was unavailable yesterday.
+The ARM kernel routinely uses this mode for shared mapping mapped at
+several places in the same address space. So, I think it works. Are you
+sure the sentence you quote applies to ARMv5?
 
-Stefan Schaal wrote:
-> Hi Alexis,
-> 
->  we pulled your analogy branch, and now cmd_write works. Great, and thanks a lot! Next, I tried to use commands with the digital IO subdevice on our board (subdevice #2), but the get an error message:
-> 
-> 
-> [ 2482.771913] Analogy: a4l_check_cmddesc: scan_begin_src, trigger unsupported
-Unfortunately, cmd_write was not designed to work with digital
-subdevices; the command's fields are not appropriate, I am trying to
-make it work quite quickly.
-
-> 
-> 
-> Is there just missing support for the DIO subdevices using commands?
-> 
-> Best wishes,
-> 
-> -Stefan
-> 
-> 
-> ps.: feel free to use our machine for debugging -- it now has the latest version of your software installed with linux kernel 2.6.29.5.
-> 
-> 
-> 
-> 
-> 
-> On Feb 28, 2010, at 16:24, Alexis Berlemont wrote:
-> 
->> Alexis Berlemont wrote:
->>> Hi,
->>> Stefan Schaal wrote:
->>>> Hi Alexis,
->>>>
->>>> On Feb 18, 2010, at 14:34, Alexis Berlemont wrote:
->>>>
->>>>> I have some problems with
->>>>>> implementing commands on my NI6259 so far.
->>>>> Could you remind me what was the problem ?
->>>> See the print-outs below for the problem we have.
->>>>
->>>> Thanks so much for looking into this!
->>>>
->>>> -Stefan
->>>>
->>>>
->>>>
->>>>
->>>> Using the cmd_write() function that you provide in analogy, we get the following problem:
->>>>
->>> I am currently trying to fix this bug, which is not that easy. I just
->>> have one question (that I remember I have already asked you in some way,
->>> but I just want to be sure):
->>> Does this bug occur the very first time you launched cmd_write (I mean
->>> after a reboot) ?
->>>
->> I managed at last to fix the bug you were facing (at least I hope so).
->> The problem was located in the trigger callback which waited for a
->> bit-status (fifo half full) before going further; however, sometimes the
->> DMA interrupt already occurred and cleaned everything behind your back.
->>
->> I have not made a pull request because the current implementation is not
->> perfect.
->>
->> If you have some time, could you clone my git repository (branch:
->> analogy) and check that a simple call to cmd_write does not trigger the
->> bug anymore ?
->>
->> Many thanks.
->>>> root@domain.hid# ./cmd_write -v
->>>> cmd_write: device analogy0 opened (fd=0)
->>>> cmd_write: basic descriptor retrieved
->>>>    subdevices count = 14
->>>>    read subdevice index = 0
->>>>    write subdevice index = 1
->>>> cmd_write: complex descriptor retrieved
->>>> cmd_write: channel 0
->>>>    ranges count = 3
->>>>    range's size = 16 (bits)
->>>> cmd_write: channel 1
->>>>    ranges count = 3
->>>>    range's size = 16 (bits)
->>>> cmd_write: scan size = 4
->>>> cmd_write: size to write  = 400
->>>> cmd_write: command successfully sent
->>>> cmd_write: triggering failed (ret=-32)
->>>>
->>>> root@domain.hid# dmesg -c
->>>> [133345.213865] Analogy: analogy_ni_pcimio: ni_mio_common: interrupt: b_status=0002 m1_status=80a80000
->>>> [133345.332719] Analogy: analogy_ni_pcimio: ni_ao_wait_for_dma_load: timed out waiting for dma load<3>Analogy: a4l_do_special_insn: execution of the instruction failed (err=-32)
->>>>
->>>>
->>>> Another problem we have is with the --mmap option:
->>>>
->>>> root@domain.hid# ./cmd_write -v --mmap
->>>> cmd_write: device analogy0 opened (fd=0)
->>>> cmd_write: basic descriptor retrieved
->>>>    subdevices count = 14
->>>>    read subdevice index = 0
->>>>    write subdevice index = 1
->>>> cmd_write: complex descriptor retrieved
->>>> cmd_write: channel 0
->>>>    ranges count = 3
->>>>    range's size = 16 (bits)
->>>> cmd_write: channel 1
->>>>    ranges count = 3
->>>>    range's size = 16 (bits)
->>>> cmd_write: scan size = 4
->>>> cmd_write: size to write  = 400
->>>> cmd_write: buffer size = 65536 bytes
->>>> cmd_write: a4l_mmap() failed (ret=-22)
->>>>
->>>>
->>>> root@domain.hid# dmesg -c
->>>> [133408.942998] Analogy: a4l_ioctl_mmap: mmap not allowed on this subdevice
->>>>
->>>>
->>> Alexis.
->> Alexis.
->>
-> 
-> 
-Alexis.
+-- 
+					    Gilles.
 
