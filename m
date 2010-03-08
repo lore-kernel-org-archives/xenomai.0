@@ -1,12 +1,13 @@
-Message-ID: <4B952D21.5090204@domain.hid>
-Date: Mon, 08 Mar 2010 18:00:17 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4B952D6C.4060006@domain.hid>
+Date: Mon, 08 Mar 2010 18:01:32 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B95253E.3030303@domain.hid>
-In-Reply-To: <4B95253E.3030303@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <mailman.4538.1268063562.8399.xenomai-git@xenomai.org>
+	<4B952AC1.5070106@domain.hid>
+In-Reply-To: <4B952AC1.5070106@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] u_mode and condvar fixes.
+Subject: Re: [Xenomai-core] [Xenomai-git] common: modify leak warning
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,43 +16,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Hi,
+Jan Kiszka wrote:
+> xenomai-git-request@domain.hid wrote:
+>> diff --git a/src/skins/common/current.c b/src/skins/common/current.c
+>> index 7277189..5d418a4 100644
+>> --- a/src/skins/common/current.c
+>> +++ b/src/skins/common/current.c
+>> @@ -29,8 +29,6 @@ static inline unsigned long *create_current_mode(void)
+>>  
+>>  static inline void free_current_mode(unsigned long *mode) { }
+>>  
+>> -#define XENO_MODE_LEAK_WARNING ""
+>> -
+>>  #else /* !HAVE___THREAD */
+>>  
+>>  pthread_key_t xeno_current_key;
+>> @@ -56,8 +54,9 @@ static inline void free_current_mode(unsigned long *mode)
+>>  }
+>>  
+>>  #define XENO_MODE_LEAK_WARNING \
+>> -	"         To reduce the probality, we leak a few bytes of heap " \
+>> -	"per thread.\n"
+>> +	"Xenomai: WARNING, this version of Xenomai kernel is anterior to" \
+>> +	" 2.5.2.\nIn order to avoid getting memory corruption, we leak 4" \
+>> +	" bytes per thread.\nUpgrade is recommended.\n"
+>>  
+>>  #endif /* !HAVE___THREAD */
+>>  
+>> @@ -70,20 +69,18 @@ static void cleanup_current_mode(void *key)
+>>  
+>>  	err = XENOMAI_SYSCALL0(__xn_sys_drop_u_mode);
+>>  
+>> -	if (err) {
+>> +	if (!err)
+>> +		free_current_mode(mode);
+>> +#ifdef XENO_MODE_LEAK_WARNING
+>> +	else {
+>>  		static int warned;
+>>  
+>>  		if (!warned) {
+>>  			warned = 1;
+>> -			fprintf(stderr,
+>> -				"\nXenomai: WARNING, this Xenomai kernel can "
+>> -					"cause spurious application\n"
+>> -				"         crashes on thread termination. "
+>> -					"Upgrade is highly recommended.\n%s\n",
+>> -				XENO_MODE_LEAK_WARNING);
+>> +			fprintf(stderr, XENO_MODE_LEAK_WARNING);
+>>  		}
+>> -	} else
+>> -		free_current_mode(mode);
+>> +	}
+>> +#endif /* XENO_MODE_LEAK_WARNING */
+>>  }
+>>  
+>>  static void init_current_keys(void)
+>>
 > 
-> I pushed the changes fixing the u_mode (taken from Jan, slightly
-> modified) and condvar stuff (not entirely taken from Jan's changes), as
-> well as the modifications coming from Philippe's branch.
-> 
-> However, two questions remain open:
-> - as in Jan's original patch, the u_mode stuff tests the presence of the
-> new syscall by testing whether it returns -ENOSYS. Now that we have the
-> vdso, I wonder if we should not use a vdso bit for this. This would give
-> us a systematic way of testing such syscalls extension.
+> This no longer issues a warning for the __thread case. We might have
+> been lucky that there was no issue in practice, but are we sure? That
+> was my motivation to warn about both scenarios.
 
-I would prefer this path over -ENOSYS testing as well. We could collect
-the bits once and just test for it in-place. No more setup needed then
-when adding more (for cond e.g.).
-
-> - the condvar fix only fixes the general case, using errno, it does not
-> add any new syscall. I am not entirely convinced we really need to add
-> new syscalls. In fact we could use special values in the existing ones.
-> Or have access in kernel-space to the a process' vdso flags, allowing to
-> adapt according to these flags. I am simply wondering what is the
-> cleanest way.
-
-I think the cleanest way are separate syscalls. The existing prologue
-syscalls of both skins are already at their limits (5 arguments), so
-adding something here is not easy. Of course, you could switch the
-behavior per process depending on negotiated caps. But will this be
-simpler? What of the dispatching work for separate syscalls could be
-avoided that way?
-
-Jan
+No, you are right. I got all mixed up. I assumed that since we were
+setting the current_mode to an invalid state, we were safe. But
+obviously, this does not work with the older kernel-space support.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
