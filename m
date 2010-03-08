@@ -1,15 +1,10 @@
-From: Sinisa Denic <sinisa.denic@domain.hid>
-Date: Mon, 8 Mar 2010 08:58:11 +0100
-References: <201003021527.30130.sinisa.denic@domain.hid>
-	<4B92317F.3010706@domain.hid>
-In-Reply-To: <4B92317F.3010706@domain.hid>
+Message-ID: <SNT125-W47B0622A941FB9CEDA2C479C350@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="_0f781b37-f8c9-4bd4-8cc4-dfdb1189cdee_"
+From: =?gb2312?B?t9HW7Mfg?= <mouse19875@domain.hid>
+Date: Mon, 8 Mar 2010 21:25:07 +0800
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <201003080858.11552.sinisa.denic@domain.hid>
-Subject: Re: [Xenomai-help] ARM cached,non-cached memory
+Subject: [Xenomai-help] a problem about Calibrating delay loop...
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,64 +14,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org.
+To: xenomai@xenomai.org
 
-On Saturday 06 March 2010 11:42:07 you wrote:
-> Sinisa Denic wrote:
-> > Hi, last year working with xenomai 2.4.2-3 we met problem (BUG) with
-> > memory caching on ARM AT91sam9260 arch.
-> > Then we were advised using non-cached memory and we've used it till
-> > now,but in our next application it has big performace slow down effect
-> > and I'm interested is this BUG solved in latest 2.4.10 - xenomai
-> > Regards,Sinisa
->
-> Actually, there may be something we can do. In heap.c, could you try
-> replacing calls to pgprot_noncached with calls to pgprot_writecombine ?
->
-> Here is a patch doing this for 2.4 head. I do not know whether it will
-> apply to the version you are using. But I guess you will get the idea.
->
-> diff --git a/ksrc/nucleus/heap.c b/ksrc/nucleus/heap.c
-> index 1c02183..d40844b 100644
-> --- a/ksrc/nucleus/heap.c
-> +++ b/ksrc/nucleus/heap.c
-> @@ -962,7 +962,7 @@ static inline void *__alloc_and_reserve_heap(size_t
-> size, in t kmflags)
->                 else
->                         ptr = __vmalloc(size,
->                                         GFP_KERNEL | __GFP_HIGHMEM,
-> -                                       pgprot_noncached(PAGE_KERNEL));
-> +                                       pgprot_writecombine(PAGE_KERNEL));
->                 if (ptr == NULL)
->                         return NULL;
->
-> @@ -1126,7 +1126,7 @@ static int xnheap_mmap(struct file *file, struct
-> vm_area_struct *vma) unsigned long maddr = vma->vm_start;
->
->                 if (heap->archdep.kmflags == XNHEAP_GFP_NONCACHED)
-> -                       vma->vm_page_prot =
-> pgprot_noncached(vma->vm_page_prot); +                      
-> vma->vm_page_prot = pgprot_writecombine(vma->vm_page_pro t);
->
->                 while (size > 0) {
->                         if (xnarch_remap_vm_page(vma, maddr, vaddr))
-> @@ -1147,7 +1147,7 @@ static int xnheap_mmap(struct file *file, struct
-> vm_area_s truct *vma)
->         (void)vaddr;
->         if ((heap->archdep.kmflags & ~XNHEAP_GFP_NONCACHED) != 0 ||
->             heap->archdep.kmflags == XNHEAP_GFP_NONCACHED)
-> -               vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-> +               vma->vm_page_prot = pgprot_writecombine(vma->vm_page_prot);
->  #endif /* !CONFIG_MMU */
->
->         atomic_inc(&heap->archdep.numaps);
+--_0f781b37-f8c9-4bd4-8cc4-dfdb1189cdee_
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 
-Ah, thank you Gilles we've already reconciled with destiny not to having 
-cached memory. 
-This is good news,but as I've read "write-combining does not guarantee that 
-the combination of writes and reads is done in the correct order" and we 
-could meet inconsistency in data - maybe.. 
-Does Xeno treat this problem properly?
-Sinisa
+CkhJIGFsbCwKCiAgICAgSSBhbSBwb3J0aW5nIHhlbm9tYWktMi41LjEgdG8gYXJtIGFyY2hpdGVj
+dHVyZShTYW1zdW5nIFMzQzI0NDApLkV2ZXJ5dGhpbmcgaXMgb2sgd2hlbiBJIGRvIHBhdGNoIGFu
+ZCBjb21waWxlLkJ1dCB0aGUgYm9hcmQgc3RhcnQgdXAsY29uc29sZSBsb2NrIGFuZCBzYXkiY2Fs
+YnJhdGluZyBkZWxheSBsb29wLi4uIi4oYmVmb3JlIHBhdGNoIHhlbm9tYWkgaW50byBrZXJuZWws
+dGhlIGtlcm5lbCBpbWFnZSBjYW4gd29yayB3ZWxsKQoKICAgICBYZW5vbWFpIHNheSB0aGF0IGl0
+IHN1cHBvcnRzICJTM0MyNHh4IGZhbWlseSIgLGJ1dCBJIGFsd2F5cyBtZWV0IHRoaXMgcHJvYmxl
+bS4KCiAgICAgU29tZW9uZSBzYWlkIHRoZSB0aW1lciBpbnRlcnJ1cHQgZG9lcyBub3Qgd29yayxJ
+IGRvbid0IGtub3cgaG93IHRvIHdhdGNoIGl0IGFuZCB3b3JrIG91dCB0aGlzIHByb2JsZW0uCgog
+ICAgIERvIHlvdSBrbm93IHNvbWUgbWV0aG9kcyB0aGF0IGNhbiAgc29sdmUgaXQgPyAKCnRoYW5r
+cwoKanVzdGluIGZlaQogCQkgCSAgIAkJICAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K1Ly74cu1srvH5bXYt72jv8C0ytTK
+1M6iyO212M281+7Qwm1zbrultq+5psTco6EKaHR0cDovL2RpdHUubGl2ZS5jb20vP2Zvcm09VEwm
+c3dtPTE=
+
+--_0f781b37-f8c9-4bd4-8cc4-dfdb1189cdee_
+Content-Type: text/html; charset="gb2312"
+Content-Transfer-Encoding: base64
+
+PGh0bWw+CjxoZWFkPgo8c3R5bGU+PCEtLQouaG1tZXNzYWdlIFAKewptYXJnaW46MHB4OwpwYWRk
+aW5nOjBweAp9CmJvZHkuaG1tZXNzYWdlCnsKZm9udC1zaXplOiAxMHB0Owpmb250LWZhbWlseTpW
+ZXJkYW5hCn0KLS0+PC9zdHlsZT4KPC9oZWFkPgo8Ym9keSBjbGFzcz0naG1tZXNzYWdlJz4KSEkg
+YWxsLDxCUj4KJm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7IEkgYW0gcG9ydGluZyB4ZW5vbWFpLTIu
+NS4xIHRvIGFybSBhcmNoaXRlY3R1cmUoU2Ftc3VuZyBTM0MyNDQwKS5FdmVyeXRoaW5nIGlzIG9r
+IHdoZW4gSSBkbyBwYXRjaCBhbmQgY29tcGlsZS5CdXQgdGhlIGJvYXJkIHN0YXJ0IHVwLGNvbnNv
+bGUgbG9jayBhbmQgc2F5ImNhbGJyYXRpbmcgZGVsYXkgbG9vcC4uLiIuKGJlZm9yZSBwYXRjaCB4
+ZW5vbWFpIGludG8ga2VybmVsLHRoZSBrZXJuZWwgaW1hZ2UgY2FuIHdvcmsgd2VsbCk8QlI+CiZu
+YnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwO1hlbm9tYWkgc2F5IHRoYXQgaXQgc3VwcG9ydHMg
+IlMzQzI0eHggZmFtaWx5IiAsYnV0IEkgYWx3YXlzIG1lZXQgdGhpcyBwcm9ibGVtLjxCUj4KJm5i
+c3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7IFNvbWVvbmUgc2FpZCB0aGUgdGltZXIgaW50ZXJydXB0IGRv
+ZXMgbm90IHdvcmssSSBkb24ndCBrbm93IGhvdyB0byB3YXRjaCBpdCBhbmQgd29yayBvdXQgdGhp
+cyBwcm9ibGVtLjxCUj4KJm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7RG8geW91IGtub3cm
+bmJzcDtzb21lIG1ldGhvZHMmbmJzcDt0aGF0IGNhbiAmbmJzcDtzb2x2ZSBpdCA/IDxCUj4KdGhh
+bmtzPEJSPgpqdXN0aW4gZmVpPEJSPiAJCSAJICAgCQkgIDxiciAvPjxociAvPrj8tuDIyMCx18rR
+tr6h1NrQwrDmTVNOytfSs6OhIDxhIGhyZWY9J2h0dHA6Ly9jbi5tc24uY29tLycgdGFyZ2V0PSdf
+bmV3Jz7Bor/Mt8POyqOhPC9hPjwvYm9keT4KPC9odG1sPg==
+
+--_0f781b37-f8c9-4bd4-8cc4-dfdb1189cdee_--
 
