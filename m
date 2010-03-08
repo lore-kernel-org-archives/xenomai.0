@@ -1,11 +1,11 @@
-Message-ID: <4B953462.9070001@domain.hid>
-Date: Mon, 08 Mar 2010 18:31:14 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4B95356E.8060408@domain.hid>
+Date: Mon, 08 Mar 2010 18:35:42 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <mailman.4536.1268063545.8399.xenomai-git@xenomai.org>
 	<4B9533D9.7050203@domain.hid>
 In-Reply-To: <4B9533D9.7050203@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [Xenomai-git] posix: fix pthread_cond_*wait
 	return value overwriting
@@ -17,7 +17,7 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
@@ -59,11 +59,22 @@ Jan Kiszka wrote:
 > Minor cleanup: This is not needed as err != 0, so perr will not be
 > evaluated anymore. Same for native.
 
-In fact, you could even limit perr = err to "case 0:".
+No, err may be 0, if the epilogue returns 0.
 
-Jan
+The following table should explains how I came to this solution:
+
+perr		err		wanted		err == 0 ? perr : err
+0		0		0          	0
+0		EINTR		EINTR      	EINTR
+0		*		*          	*
+ETIMEDOUT  	0		ETIMEDOUT  	ETIMEDOUNT
+ETIMEDOUT  	EINTR		EINTR      	EINTR
+		    	  (epi ETIMEDOUT)
+ETIMEDOUT  	*		*		*
+EINTR	   	-(perr)		EINTR      	EINTR
+*	   	-(perr)		*		*
+
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
