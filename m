@@ -1,10 +1,14 @@
-Message-ID: <4B95253E.3030303@domain.hid>
-Date: Mon, 08 Mar 2010 17:26:38 +0100
+Message-ID: <4B952690.1060009@domain.hid>
+Date: Mon, 08 Mar 2010 17:32:16 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+References: <4B8D9711.5090704@domain.hid>
+	<CF7FB0793253794F9F45991443E5FE2006483DE99F@us194mx002.tycoelectronics.net>
+In-Reply-To: <CF7FB0793253794F9F45991443E5FE2006483DE99F@us194mx002.tycoelectronics.net>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] u_mode and condvar fixes.
+Subject: Re: [Xenomai-core] [pull request] Fixes and workarounds for the
+	cond issues
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,29 +17,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai core <Xenomai-core@domain.hid>
+To: "Charlton, John" <john.charlton@domain.hid>
+Cc: "'jan.kiszka@domain.hid'" <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+
+Charlton, John wrote:
+> I merged some changes from git://git.xenomai.org/xenomai-jki.git
+for-upstream to my xenomai-2.5.1 release distribution
+> to include the rt_cond_wait and pthread_cond_[timed]wait work
+> arounds.
+I also merged changes to the mutex_torture.c. Everything builds and most
+tests seem to pass but I get the following output from the mutex-torture
+tests:
+> 
+> root@domain.hid# ./mutex-torture-native
+> simple_wait
+> recursive_wait
+> timed_mutex
+> FAILURE: timed_waiter, waited 3.870 us
+> root@domain.hid# ./mutex-torture-posix
+> simple_wait
+> recursive_wait
+> errorcheck_wait
+> timed_mutex
+> FAILURE: timed_mutex mutex_destroy: 22 (Invalid argument)
+> 
+> Do you have suggestions on how to resolve these errors hopefully
+> without moving to the full development branch?
 
 
-Hi,
-
-I pushed the changes fixing the u_mode (taken from Jan, slightly
-modified) and condvar stuff (not entirely taken from Jan's changes), as
-well as the modifications coming from Philippe's branch.
-
-However, two questions remain open:
-- as in Jan's original patch, the u_mode stuff tests the presence of the
-new syscall by testing whether it returns -ENOSYS. Now that we have the
-vdso, I wonder if we should not use a vdso bit for this. This would give
-us a systematic way of testing such syscalls extension.
-- the condvar fix only fixes the general case, using errno, it does not
-add any new syscall. I am not entirely convinced we really need to add
-new syscalls. In fact we could use special values in the existing ones.
-Or have access in kernel-space to the a process' vdso flags, allowing to
-adapt according to these flags. I am simply wondering what is the
-cleanest way.
-
-What do you think?
-Thanks in advance.
+Ok. I found and fixed this bug. It was a bug in the testcase. It would
+really help us, however, if you could pull the full development branch,
+and just give it a quick test to see if it fixes the current issue. It
+is our hope that this development branch is close to what 2.5.2 will be.
 
 -- 
 					    Gilles.
