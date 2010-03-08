@@ -1,13 +1,12 @@
-Message-ID: <4B9533D9.7050203@domain.hid>
-Date: Mon, 08 Mar 2010 18:28:57 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4B953426.6070905@domain.hid>
+Date: Mon, 08 Mar 2010 18:30:14 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <mailman.4536.1268063545.8399.xenomai-git@xenomai.org>
-In-Reply-To: <mailman.4536.1268063545.8399.xenomai-git@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4B95253E.3030303@domain.hid> <4B952D21.5090204@domain.hid>
+In-Reply-To: <4B952D21.5090204@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [Xenomai-git] posix: fix pthread_cond_*wait return
-	value overwriting
+Subject: Re: [Xenomai-core] u_mode and condvar fixes.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,69 +15,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-xenomai-git-request@domain.hid wrote:
-> diff --git a/ksrc/skins/posix/syscall.c b/ksrc/skins/posix/syscall.c
-> index 6c3ec3a..2a97a2d 100644
-> --- a/ksrc/skins/posix/syscall.c
-> +++ b/ksrc/skins/posix/syscall.c
-> @@ -1520,7 +1520,7 @@ static int __pthread_cond_wait_prologue(struct pt_regs *regs)
->  	union __xeno_mutex mx, *umx;
->  	unsigned timed, count;
->  	struct timespec ts;
-> -	int err;
-> +	int err, perr = 0;
->  
->  	ucnd = (union __xeno_cond *)__xn_reg_arg1(regs);
->  	umx = (union __xeno_mutex *)__xn_reg_arg2(regs);
-> @@ -1560,7 +1560,10 @@ static int __pthread_cond_wait_prologue(struct pt_regs *regs)
->  						    &mx.shadow_mutex,
->  						    &count, timed, XN_INFINITE);
->  
-> -	if (err == 0 || err == ETIMEDOUT) {
-> +	switch(err) {
-> +	case 0:
-> +	case ETIMEDOUT:
-> +		perr = errno = err;
->  		err = -pse51_cond_timedwait_epilogue(cur, &cnd.shadow_cond,
->  					    	    &mx.shadow_mutex, count);
->  		if (err == 0 &&
-> @@ -1569,14 +1572,20 @@ static int __pthread_cond_wait_prologue(struct pt_regs *regs)
->  					   &mx.shadow_mutex.lockcnt,
->  					   sizeof(umx->shadow_mutex.lockcnt)))
->  			return -EFAULT;
-> +		break;
-> +
-> +	case EINTR:
-> +		perr = err;
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Hi,
+>>
+>> I pushed the changes fixing the u_mode (taken from Jan, slightly
+>> modified) and condvar stuff (not entirely taken from Jan's changes), as
+>> well as the modifications coming from Philippe's branch.
+>>
+>> However, two questions remain open:
+>> - as in Jan's original patch, the u_mode stuff tests the presence of the
+>> new syscall by testing whether it returns -ENOSYS. Now that we have the
+>> vdso, I wonder if we should not use a vdso bit for this. This would give
+>> us a systematic way of testing such syscalls extension.
+> 
+> I would prefer this path over -ENOSYS testing as well. We could collect
+> the bits once and just test for it in-place. No more setup needed then
+> when adding more (for cond e.g.).
+> 
+>> - the condvar fix only fixes the general case, using errno, it does not
+>> add any new syscall. I am not entirely convinced we really need to add
+>> new syscalls. In fact we could use special values in the existing ones.
+>> Or have access in kernel-space to the a process' vdso flags, allowing to
+>> adapt according to these flags. I am simply wondering what is the
+>> cleanest way.
+> 
+> I think the cleanest way are separate syscalls. The existing prologue
+> syscalls of both skins are already at their limits (5 arguments), so
+> adding something here is not easy.
 
-Minor cleanup: This is not needed as err != 0, so perr will not be
-evaluated anymore. Same for native.
+That can be done:
+the prologue syscall has a "timed" parameter to which the old versions
+always passed O or 1, we only have to pass 2 or 3 to mean 0 and 1, only
+with the newer user-space. As for the epilogue syscall, we can multiplex
+the prologue return value (ten bits for instance is plenty) in the upper
+bits of the count returned to user-space. A recursive lock count of 4
+million is a reasonable limit anyway. I just wonder if these tricks are
+worth the trouble.
 
-> +		errno = 0;	/* epilogue should return 0. */
-> +		break;
->  	}
->  
-> -	if (err == EINTR
-> -	    && __xn_safe_copy_to_user((void __user *)__xn_reg_arg3(regs),
-> -				      &count, sizeof(count)))
-> +	if (err == EINTR 
-> +	    &&__xn_safe_copy_to_user((void __user *)__xn_reg_arg3(regs),
-> +				     &count, sizeof(count)))
->  			return -EFAULT;
-> -	
-> -	return -err;
-> +
-> +	return err == 0 ? -perr : -err;
->  }
->  
->  /* pthread_cond_wait_epilogue(cond, mutex, count) */
+ Of course, you could switch the
+> behavior per process depending on negotiated caps. But will this be
+> simpler? What of the dispatching work for separate syscalls could be
+> avoided that way?
+> 
+> Jan
+> 
 
-Jan
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+
+
+
+					    Gilles.
 
