@@ -1,10 +1,11 @@
-Message-ID: <4B96501F.3000701@domain.hid>
-Date: Tue, 09 Mar 2010 14:41:51 +0100
+Message-ID: <4B96592A.9060707@domain.hid>
+Date: Tue, 09 Mar 2010 15:20:26 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <mailman.4538.1268063562.8399.xenomai-git@xenomai.org>	<4B9527FD.3040806@domain.hid>	<4B952D13.3080306@domain.hid>	<4B952EFD.5020509@domain.hid>	<4B95308A.1000309@domain.hid>
-	<4B953139.2050503@domain.hid> <4B953986.3030107@domain.hid>
-In-Reply-To: <4B953986.3030107@domain.hid>
+References: <mailman.4538.1268063562.8399.xenomai-git@xenomai.org>
+	<4B9527FD.3040806@domain.hid> <4B952D13.3080306@domain.hid>
+	<4B952EFD.5020509@domain.hid> <4B95308A.1000309@domain.hid>
+In-Reply-To: <4B95308A.1000309@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [Xenomai-git] common: do not let u_mode
@@ -20,60 +21,88 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> So why this fallback? Does it simplify something else that I miss ATM?
->> After the TSD cleanup is run, the TSD are set to NULL. Actually, I
->> assumed that when doing this change. I need to check.
+Jan Kiszka wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> xenomai-git-request@domain.hid wrote:
+>>>>> diff --git a/include/asm-generic/bits/current.h b/include/asm-generic/bits/current.h
+>>>>> index f0e569c..b9ac680 100644
+>>>>> --- a/include/asm-generic/bits/current.h
+>>>>> +++ b/include/asm-generic/bits/current.h
+>>>> ...
+>>>>
+>>>>> @@ -33,25 +33,16 @@ static inline xnhandle_t xeno_get_current(void)
+>>>>>  {
+>>>>>  	void *val = pthread_getspecific(xeno_current_key);
+>>>>>  
+>>>>> -	if (!val)
+>>>>> -		return XN_NO_HANDLE;
+>>>>> -
+>>>>> -	return (xnhandle_t)val;
+>>>>> +	return (xnhandle_t)val ?: xeno_slow_get_current();
+>>>>>  }
+>>>> So when used with normal Linux threads, this will always trigger the
+>>>> syscall of xeno_slow_get_current()?
+>>>>
+>>>>> diff --git a/src/rtdk/assert_context.c b/src/rtdk/assert_context.c
+>>>>> index bad19f3..f67bcd8 100644
+>>>>> --- a/src/rtdk/assert_context.c
+>>>>> +++ b/src/rtdk/assert_context.c
+>>>>> @@ -30,12 +30,9 @@ void assert_nrt(void)
+>>>>>  	xnthread_info_t info;
+>>>>>  	int err;
+>>>>>  
+>>>>> -	if (xeno_get_current() != XN_NO_HANDLE)
+>>>>> -		return;
+>>>>> +	if (unlikely(xeno_get_current() != XN_NO_HANDLE &&
+>>>>> +		     !(xeno_get_current_mode() & XNRELAX))) {
+>>>> Then please provide a different API for assert_nrt as this makes the
+>>>> service too heavy for common use.
+>>> It is a non real-time thread. Its performances are not critical. A
+>>> non-blocking syscall is not that heavy. Especially compared to the
+>>> execution time of malloc. Ok, will not argue on this any more, as
+>>> obviously our opinions differ in that area.
+>> Sorry, disagree. We are using it in mixed applications where both RT
+>> latency as well as non-RT throughput matters. The assert_nrt fast was
+>> designed to remain lightweight for both non-Xenomai threads as well as
+>> migrated threads.
+>>
+>>> The point is that NULL (XN_NO_HANDLE) means at the same time a freed
+>>> mode and a mode after the TSD cleanup was run. So, emitting a syscall in
+>>> that case is the simplest thing we can do. And no, I did not find it
+>>> expensive. But in fact, using an additional syscall, assert_nrt could be
+>>> implemented as a simple dummy syscall which returns 0 and asks the
+>>> caller to be put in primary mode (and it would be even lighter). So, I
+>>> guess if you did not implemented that way, it means that you already
+>>> wanted to avoid the syscall.
+>> Can't follow on this yet.
 > 
-> That is the way I implemented it in the kernel-space skin. But reading
-> the spec again, I may have been overzealous:
-> http://www.opengroup.org/onlinepubs/000095399/functions/pthread_key_create.html
+> ...specifically as an unset current key is a bug for a Xenomai thread.
+> Every skin library is supposed to set it, so there should be no need for
+> falling back to a syscall for them, and there is no point in trying it
+> for non-Xenomai threads.
+> 
+> So why this fallback? Does it simplify something else that I miss ATM?
 
->From the results of the following test case:
+So, to summarize, the problem here, is that current == XN_NO_HANDLE may
+mean that the current thread is not a real-time thread, or that it is a
+real-time thread, but that we are in the TSD cleanup, and the current
+TSD was set to 0, as is done for TSD which have no destructor.
 
-#include <stdio.h>
-#include <pthread.h>
+We need get_current() to be correct, for the implementation of mutexes,
+and in that case we want the additional syscall. We need get_current()
+to be correct for clock_gettime(), because as I understand, calling
+linux' vdso clock_gettime may deadlock if we are not in secondary mode,
+I do not know if you think that using a syscall for clock_gettime over
+plain linux threads matters in that case.
 
-pthread_key_t key;
-pthread_key_t other_key;
-
-void dest(void *foo)
-{
-	if ((long)foo == 1) {
-		printf("other tsd, self == 0x%016lx, first pass: %p\n",
-		       pthread_self(), pthread_getspecific(other_key));
-		pthread_setspecific(key, (void *)2L);
-	} else
-		printf("other tsd, self == 0x%016lx, second pass: %p\n",
-		       pthread_self(), pthread_getspecific(other_key));
-}
-
-void *thread(void *cookie)
-{
-	pthread_setspecific(key, (void *)1L);
-	pthread_setspecific(other_key, (void *)1L);
-	return cookie;
-}
-
-int main(void)
-{
-	pthread_t tid;
-
-	pthread_key_create(&key, dest);
-	pthread_key_create(&other_key, NULL);
-
-	pthread_create(&tid, NULL, thread, NULL);
-	pthread_join(tid, NULL);
-	
-	return 0;
-}
-
-It appears that the glibc I run here is implemented the same way as I
-implemented it in xenomai kernel-space posix skin.
-
-So, we still have this issue.
+For the wrapping of malloc and free, I would say we do not really care
+to absolutely get the real current. I do not think that a syscall for
+each call to malloc and free is that prohibitive, their execution time
+may already been long anyway, and the current implementation is correct.
+It is only sub-optimal for your very peculiar case, so, I will let you
+sweat on this issue.
 
 -- 
 					    Gilles.
