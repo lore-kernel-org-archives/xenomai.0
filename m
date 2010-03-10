@@ -1,14 +1,11 @@
-From: "Charlton, John" <john.charlton@domain.hid>
-Date: Wed, 10 Mar 2010 10:46:07 -0500
-Message-ID: <CF7FB0793253794F9F45991443E5FE20076A70F4CC@us194mx002.tycoelectronics.net>
-References: <4B97B141.4080703@domain.hid> <4B97B298.4080304@domain.hid>
-In-Reply-To: <4B97B298.4080304@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <4B97EB5C.2090600@domain.hid>
+Date: Wed, 10 Mar 2010 19:56:28 +0100
+From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] xeno-config --skin=posix --ldflags
-	lacks	wrapping switches
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigA612F451E221BB5DD73AD331"
+Subject: [Xenomai-core] proc_file_read: Apparent buffer overflow
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,41 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This change was causing us some problems with posix threads using an rtcan =
-socket for CAN communications.  The error being returned was: Operation not=
- permitted.  When I reverted to the old version using --posix-ldflags the e=
-rror went away.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigA612F451E221BB5DD73AD331
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Thanks,
---
-John
+Hi,
 
------Original Message-----
-From: xenomai-core-bounces@domain.hid [mailto:xenomai-core-bounces@domain.hid] On=
- Behalf Of Gilles Chanteperdrix
-Sent: Wednesday, March 10, 2010 9:54 AM
-To: Jan Kiszka
-Cc: xenomai-core
-Subject: Re: [Xenomai-core] xeno-config --skin=3Dposix --ldflags lacks wrap=
-ping switches
+cat /proc/xenomai/heap returns the first 4096 Bytes and fails then with "=
+Bad address".
+On the console I see: "proc_file_read: Apparent buffer overflow!"
 
-Jan Kiszka wrote:
-> Hi Gilles,
->=20
-> in contrast to --posix-ldflags, the new --skin=3Dposix --ldflags does=20
-> not include the wrapping switches - intentionally? If yes, what is the=20
-> official way to obtain them now?
+xeno 2.5.1, linux 2.6.32.8, x86 32bit UP, native skin, lot of rt_queues:
+# ls -1 /proc/xenomai/registry/native/queues/ | wc -l
+233
+# ls -1 /proc/xenomai/registry/native/heaps/ | wc -l
+26
 
-No, that is completely unintentional.
+regards
+Stefan
 
---=20
-					    Gilles.
 
-_______________________________________________
-Xenomai-core mailing list
-Xenomai-core@domain.hid
-https://mail.gna.org/listinfo/xenomai-core
+
+--------------enigA612F451E221BB5DD73AD331
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iD8DBQFLl+thIPTw9rIdn6oRAiG5AJ9q7SIPiVNnhWMcC7P/9SpV9gOhlwCeLqpG
+jhvGjvkZOVkQTKor5KHXyD0=
+=R51d
+-----END PGP SIGNATURE-----
+
+--------------enigA612F451E221BB5DD73AD331--
 
