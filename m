@@ -1,12 +1,11 @@
-Message-ID: <4B968BAC.5090205@domain.hid>
-Date: Tue, 09 Mar 2010 18:55:56 +0100
-From: Stefan Kisdaroczi <kisda@domain.hid>
+Message-ID: <4B977F1F.8030304@domain.hid>
+Date: Wed, 10 Mar 2010 12:14:39 +0100
+From: Daniele Nicolodi <daniele@domain.hid>
 MIME-Version: 1.0
-References: <4B968538.7030204@domain.hid>
-In-Reply-To: <4B968538.7030204@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig402BC12BDBB362E0328A85BE"
+References: <4B968538.7030204@domain.hid> <4B968BAC.5090205@domain.hid>
+In-Reply-To: <4B968BAC.5090205@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] COMEDI vs Analogy
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,54 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: daniele@domain.hid
+To: Stefan Kisdaroczi <kisda@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig402BC12BDBB362E0328A85BE
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Stefan Kisdaroczi wrote:
+> Hi Daniele,
+> 
+> https://mail.gna.org/public/xenomai-core/2009-09/msg00016.html
+> 
+> regards, Stefan
 
-Am 09.03.2010 18:28, schrieb Daniele Nicolodi:
-> Hello. Now that i have most of my data acquisition application
-> infrastructure mostly working it is time to get real data.
->=20
-> In my non-RT code I successfully use Comedi drivers and I saw some work=
+Thanks Stefan for the pointer. Your link contains almost everything I
+want to know. I agree that Comedi design is far from perfect and I
+appreciate the effort of coding something better. However Comedi was a
+functional solution, Analogy looks half backed. Even few drivers ported
+from Comedi do not support all the functionalities of Comedi (my
+application right now uses the TRIG_WAKE_EOS command functionality, that
+the documentation report as not supported). And it does not cure all the
+problems of Comedi (for example channel setup and data acquisition are
+still coupled in a single operation in synchronous acquisitions).
 
-> for make those work over RTDM. However in the latest source tree I see
-> only references to the newer Analogy drivers.
->=20
-> It looks like Analogy is the evolution of Comedi+RTDM, however it
-> supports a mush smaller range of devices. There is still a way to use
-> Comedi with RTDM or Analogy is the only way forward?
->=20
-> Comedi is now included into the staging kernel drivers. There is any
-> plan to merge the Analogy and Comedi efforts? It would be unfortunate t=
-o
-> end up with two independent sets of drivers and user land libraries.
->=20
-> Thanks. Cheers,
+I would like to have the possibility to use (the far from perfect but
+working) Comedi over RTDM while Analogy is worked out. Would it be
+possible to recover the early work done to port Comedi over RTDM and put
+it to some use? Given enough informations I can try to do it myself.
 
-Hi Daniele,
-
-https://mail.gna.org/public/xenomai-core/2009-09/msg00016.html
-
-regards, Stefan
-
-
---------------enig402BC12BDBB362E0328A85BE
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iD8DBQFLlouyIPTw9rIdn6oRAvPAAJ9c6S47kc3hiAykOeTZDlIgKuv7ywCfdxLg
-VM16iWoS3OiBsvykO4NjHr4=
-=Z5lx
------END PGP SIGNATURE-----
-
---------------enig402BC12BDBB362E0328A85BE--
+Thanks. Best regards,
+-- 
+Daniele
 
