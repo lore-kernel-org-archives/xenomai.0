@@ -1,14 +1,10 @@
-Message-ID: <4B97F0AC.2060003@domain.hid>
-Date: Wed, 10 Mar 2010 20:19:08 +0100
+Message-ID: <4B990EF1.1000400@domain.hid>
+Date: Thu, 11 Mar 2010 16:40:33 +0100
 From: Daniele Nicolodi <daniele@domain.hid>
 MIME-Version: 1.0
-References: <4B968538.7030204@domain.hid>
-	<4B968BAC.5090205@domain.hid>		<4B977F1F.8030304@domain.hid>	<1268220794.27899.50.camel@domain.hid>
-	<4B97A662.3040004@domain.hid>
-In-Reply-To: <4B97A662.3040004@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] COMEDI vs Analogy
+Subject: [Xenomai-help] Experimenting with Analogy. Bugs found?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,37 +14,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Daniele Nicolodi wrote:
-> Philippe Gerum wrote:
->> If you do want to help, you may want investing your time in developing
->> and testing a better code base like Analogy with other people, instead
->> of re-opening a dead development effort all alone.
-> 
-> Let's try to have a more constructive approach. What is required  to
-> support the TRIG_WAKE_EOS command functionality in the ni pcimio driver
-> in Analogy?
+Hello. I'm testing Analogy on my x86 system with a NI 6251 ADC board (I
+can test with other NI ADCs if it useful to someone).
 
-Well. After playing a bit with Analogy, it looks like TRIG_WAKE_EOS is
-not unsupported (as is stated in the documentation). It works!
+The lack of overview documentation is making my progress slow, but I
+have a couple of acquisition routines working quite well.
 
-I'm using a NI 6251 PCI ADC. I have verified that TRIG_WAKE_EOS works as
-expected up to a sampling frequency of 800-1000 Hz, sampling 8 channels
-at time. If I use an higher sampling rate, my acquisition loops
-receives, at each iteration, more data than the data corresponding at
-one scan, but always in multiples of one scan.
+So far I have discovered that the TRI_WAKE_EOS flags works quite ok on
+my hardware, despite being indicates as unsupported in the
+documentation. Messing with the drivers I also discovered that
+a4l_mmap() is also working. There is just a bug to iron out (I can
+provide more details on my hacking if someone is interested in helping
+my track down the issue).
 
-I guess this is due to the fact that the reading process is not able to
-keep peace with the ADC board. It is however strange that I'm unable to
-go to higher sampling rates. I'm able to have, easily, periodic tasks
-running up to more than 10 kHz. There is a way to improve the performance?
+At the moment I'm facing two problems:
 
-I tried to directly mmap the acqusition buffer, instead of doing copies
-through reads, but it turned out that there are no Analogy drivers that
-support mmap acces to the data buffer (not in xenomai 2.5.1 sources at
-least). Can I somehow help in implementing this missing feature?
+1. I setup an asynchronous acquisition. I then use a loop to
+a4l_sys_read() the acquired data. When the acquisition command is over,
+as configured with the .stop_src and .stop_arg in the command data
+structure, the a4l_sys_read() returns an ENOENT error. The comedi way of
+signaling the acquisition command end is to return 0, as is done for
+files to signal the end of file. I think this is an API deficiency but I
+haven't looked at how much work is to fix it.
+
+2. Looks like it is not possible to setup an endless acquisition. If I
+set .stop_src = TRIG_NONE and .stop_arg = 0, the command submission goes
+fine, but I obtain an ENOENT error at the first a4l_sys_read(). I have
+no idea on where to look to track down this issue.
 
 Thanks. Cheers,
 -- 
