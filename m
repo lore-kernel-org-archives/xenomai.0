@@ -1,11 +1,11 @@
-Message-ID: <4B97EB5C.2090600@domain.hid>
-Date: Wed, 10 Mar 2010 19:56:28 +0100
-From: Stefan Kisdaroczi <kisda@domain.hid>
+Message-ID: <4B99083C.20903@domain.hid>
+Date: Thu, 11 Mar 2010 16:11:56 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigA612F451E221BB5DD73AD331"
-Subject: [Xenomai-core] proc_file_read: Apparent buffer overflow
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] [pull request] assert_nrt_fast / updated corruption
+	warning
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -14,43 +14,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA612F451E221BB5DD73AD331
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+The following changes since commit 4277a0e209cc1226ef1e1bfa3fcea40a57fb1ff3:
+  Gilles Chanteperdrix (1):
+        arm: upgrade I-pipe support to 2.6.28.10-arm-1.12-07, 2.6.29-arm-1.13-05 and 2.6.30-arm-1.15-01
 
-Hi,
+are available in the git repository at:
 
-cat /proc/xenomai/heap returns the first 4096 Bytes and fails then with "=
-Bad address".
-On the console I see: "proc_file_read: Apparent buffer overflow!"
+  git://git.xenomai.org/xenomai-jki.git for-upstream
 
-xeno 2.5.1, linux 2.6.32.8, x86 32bit UP, native skin, lot of rt_queues:
-# ls -1 /proc/xenomai/registry/native/queues/ | wc -l
-233
-# ls -1 /proc/xenomai/registry/native/heaps/ | wc -l
-26
+Jan Kiszka (3):
+      common: Introduce xeno_get_current_fast
+      rtdk: Introduce assert_nrt_fast
+      common: Restore memory corruption warning for non-leak case
 
-regards
-Stefan
-
-
-
---------------enigA612F451E221BB5DD73AD331
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iD8DBQFLl+thIPTw9rIdn6oRAiG5AJ9q7SIPiVNnhWMcC7P/9SpV9gOhlwCeLqpG
-jhvGjvkZOVkQTKor5KHXyD0=
-=R51d
------END PGP SIGNATURE-----
-
---------------enigA612F451E221BB5DD73AD331--
+ include/asm-generic/bits/current.h |   10 +++++++++
+ src/rtdk/assert_context.c          |   39 ++++++++++++++++++++++++-----------
+ src/skins/common/current.c         |   12 +++++++---
+ 3 files changed, 45 insertions(+), 16 deletions(-)
 
