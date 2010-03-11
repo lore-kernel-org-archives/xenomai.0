@@ -1,11 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 11 Mar 2010 18:18:22 +0100
-Message-ID: <1268327902.27899.106.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PULL REQUEST] Blackfin upgrade and minor fixes for
-	2.5.x
+MIME-Version: 1.0
+In-Reply-To: <4B992463.8050202@domain.hid>
+References: <4B992463.8050202@domain.hid>
+From: Simon Boulay <simon.boulay@domain.hid>
+Date: Thu, 11 Mar 2010 18:43:58 +0100
+Message-ID: <8809f7c51003110943m286addf8ud0d7714485d35ec3@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai-core] Analogy a4l_fill_desc() bug
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,35 +16,35 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
+On Thu, Mar 11, 2010 at 6:12 PM, Daniele Nicolodi <daniele@domain.hid> wrote:
+> Hello.
+Hello.
 
-The following changes since commit 55b0aa9de28891fcfd4b4ab097583bd7619223ab:
-  Philippe Gerum (1):
-        native: introduce rt_task_same()
+> I found a bug in a4l_fill_desc(). If I call it on a descriptor obtained
+> for an unattached device, the memory allocated for the sbdata descriptor
+> field is corrupted in a bad way. When, after the failing a4l_fill_desc()
+> call, I free() it, glibc complains about an "invalid next size" for the
+> memory chunk.
 
-are available in the git repository at:
-
-  git://xenomai.org/xenomai-rpm.git for-upstream
-
-Philippe Gerum (5):
-      testsuite/latency: fix false positive in mode switch detection
-      powerpc: remove dandling reference
-      blackfin: upgrade I-pipe support to 2.6.33-blackfin-1.13-00
-      scripts/xeno-config: fix --skin=posix --ldflags call form
-      nucleus: warn about denied syscalls
-
- ksrc/arch/blackfin/patches/README                  |   58 +-
- .../adeos-ipipe-2.6.33-blackfin-1.13-00.patch      | 7596 +++++++++++++++++
- .../adeos-ipipe-2008R1.5-RC3-bf5xx-1.8-00.patch    | 8629 --------------------
- ksrc/arch/powerpc/patches/README                   |    8 +-
- ksrc/nucleus/shadow.c                              |   13 +-
- scripts/xeno-config.in                             |    3 +-
- src/testsuite/latency/latency.c                    |   27 +-
- 7 files changed, 7664 insertions(+), 8670 deletions(-)
- create mode 100644 ksrc/arch/blackfin/patches/adeos-ipipe-2.6.33-blackfin-1.13-00.patch
- delete mode 100644 ksrc/arch/blackfin/patches/adeos-ipipe-2008R1.5-RC3-bf5xx-1.8-00.patch
-
--- 
-Philippe.
+> I'm on x86 architecture using kernel 2.6.30.10 with xenomai 2.5.1.
+I can't talk for Alex (the analogy developer) and I'm pretty sure he
+will help you by the end of the week...
+This bug reminds me an old one which have been fixed. I think that you
+should work with the analogy branch of Alex (abe) repository here:
+http://git.xenomai.org/?p=xenomai-abe.git;a=shortlog;h=refs/heads/analogy
+There is a lot of fixes there; especially for NI driver.
 
 
+Simon.
+
+>
+> Thanks. Cheers,
+> --
+> Daniele
+>
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+>
 
