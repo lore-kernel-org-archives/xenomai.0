@@ -1,12 +1,11 @@
-Message-ID: <4B9A4C6A.1010600@domain.hid>
-Date: Fri, 12 Mar 2010 15:15:06 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Huan Fang <huanf@domain.hid>
+Date: Fri, 12 Mar 2010 19:21:42 +0100
+Message-ID: <B66DE711C138E84F96E6A2EDD078830B5F2A4D39CB@MAIL02.ug.kth.se>
+Content-Language: en-GB
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <1DE138B7F8CE402AB05AC211D832BE49@domain.hid>
-In-Reply-To: <1DE138B7F8CE402AB05AC211D832BE49@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Testsuite syntax error on Virtex5 PPC440
+Subject: [Xenomai-help] RTDM rtdm_task_sleep in kernel not always wakes up
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,21 +15,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Alessandro Avanzi <a.avanzi@domain.hid>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Alessandro Avanzi wrote:
-> Hello. I installed Xenomai kernel support on the 2.6.32.3 kernel provided by
-> Xilinx using a mod. DENX patch. Then I installed the user support on a ramdisk,
-> and packed the kernel, the ramdisk and the device tree all togheter in an .elf file
-> to be dowloaded on the board (based on Xilinx Virtex5 FXT with PPC440).
-> At booting I got the following  
+Hello. I am writing a driver using RTDM. Just for testing, I have a rt kern=
+el thread waiting for event signal sent from nrt_ioctl. After the thread is=
+ activated, it calls
+ rtdm_task_busy_sleep(100000); then
+ rtdm_task_sleep(100000);
+ When the RT thread is really sleeping, the nrt_ioctl resumes and sleeps vi=
+a wait_event_interruptible_timeout(2 jiffiles).
 
-What version of Xenomai? What shell are you using? If using busybox, you
-should select the "ash" shell. It is the most compatible with POSIX sh,
-and is supposed to work. If you want to use another shell, then do not
-try and use Xenomai scripts, run the binaries directly.
+Normally, RT thread wakes up after 100us. But the thread seems to hang afte=
+r 20-30 such loops and never wake up.=20
+When I kill the process. I saw that wait_event_interruptible_timeout return=
+s a -512.=20
+The worse thing is I saw kernel panic sometimes during such context switche=
+s.
 
--- 
-					    Gilles.
+Huan=
 
