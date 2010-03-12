@@ -1,10 +1,11 @@
-Message-ID: <4B968DB5.5020302@domain.hid>
-Date: Tue, 09 Mar 2010 19:04:37 +0100
+Message-ID: <4B9A0C25.5010602@domain.hid>
+Date: Fri, 12 Mar 2010 10:40:53 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [pull request] Improve ftrace interaction
+Subject: [Adeos-main] [pull request] x86: Fix up regs unconditionally on
+	exceptions
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -16,35 +17,101 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: adeos-main <adeos-main@gna.org>
 
-The following changes since commit 7c90959b7e4eb5ef8a775ec17005c23f30daade1:
+The following changes since commit 14023bef1806dd640030d3eaf73c26736345bc30:
   Philippe Gerum (1):
-        ipipe: introduce 3-level IRQ pending map
+        ipipe-2.6.32.7-x86-2.6-01
 
 are available in the git repository at:
 
-  git://git.kiszka.org/ipipe-2.6 queues/2.6.32-noarch
+  git://git.kiszka.org/ipipe-2.6 queues/2.6.32-x86
 
-These patches address various possible configuration errors around
-ftrace that can cause hard crashes over I-pipe kernels. Moreover, one
-patch enables the safe use of ftrace's PID filtering that comes for free
-for the I-pipe tracer now.
-
-The patches also apply on 2.6.33-noarch but were only tested on
-2.6.32-x86.
+Found while making KVM work over I-pipe/Xenomai. Its hardware
+activation code triggered a planned #GP in IRQ context.
 
 
-Jan Kiszka (5):
-      Use ipipe_safe_current in ftrace_pid_func
-      Prevent unsafe ftrace usage over I-pipe
-      Disable branch tracing/profiling under I-pipe
-      Do no kill ftrace on failing function test
-      Fix ipipe_safe_current definition for !CONFIG_IPIPE
+Jan Kiszka (1):
+      x86: Fix up regs unconditionally on exceptions
 
- include/linux/ftrace.h        |    1 +
- include/linux/ipipe.h         |    2 +-
- kernel/ipipe/tracer.c         |    3 ++-
- kernel/trace/Kconfig          |    2 ++
- kernel/trace/ftrace.c         |    7 ++++++-
- kernel/trace/trace_selftest.c |    2 ++
- 6 files changed, 14 insertions(+), 3 deletions(-)
+ arch/x86/kernel/ipipe.c |   24 +++++++++++++-----------
+ 1 files changed, 13 insertions(+), 11 deletions(-)
+
+------
+
+x86: Fix up regs unconditionally on exceptions
+
+Some Linux exception handlers - at least do_general_protection -
+evaluate regs->flags, and that on both x86-32 and -64. So we should fix
+up the flags according to the pipeline state unconditionally.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ arch/x86/kernel/ipipe.c |   24 +++++++++++++-----------
+ 1 files changed, 13 insertions(+), 11 deletions(-)
+
+diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+index 36cd591..dfb76ad 100644
+--- a/arch/x86/kernel/ipipe.c
++++ b/arch/x86/kernel/ipipe.c
+@@ -495,8 +495,6 @@ out:
+ 	local_irq_restore_hw(flags);
+ }
+ 
+-#ifdef CONFIG_X86_32
+-
+ static inline void __fixup_if(int s, struct pt_regs *regs)
+ {
+ 	/*
+@@ -510,6 +508,8 @@ static inline void __fixup_if(int s, struct pt_regs *regs)
+ 		regs->flags |= X86_EFLAGS_IF;
+ }
+ 
++#ifdef CONFIG_X86_32
++
+ /*
+  * Check the stall bit of the root domain to make sure the existing
+  * preemption opportunity upon in-kernel resumption could be
+@@ -571,10 +571,6 @@ asmlinkage void __ipipe_unstall_iret_root(struct pt_regs regs)
+ 
+ #else /* !CONFIG_X86_32 */
+ 
+-static inline void __fixup_if(int s, struct pt_regs *regs)
+-{
+-}
+-
+ #ifdef CONFIG_PREEMPT
+ 
+ asmlinkage void preempt_schedule_irq(void);
+@@ -746,11 +742,11 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
+ 
+ 	if (likely(ipipe_root_domain_p)) {
+ 		/*
+-		 * 32-bit: In case we faulted in the iret path, regs.flags do
+-		 * not match the root domain state as the low-level return
+-		 * code will evaluate it. Fix this up, either by the root
+-		 * state sampled on entry or, if we migrated to root, with the
+-		 * current state.
++		 * In case we faulted in the iret path, regs.flags do not
++		 * match the root domain state. The fault handler or the
++		 * low-level return code may evaluate it. Fix this up, either
++		 * by the root state sampled on entry or, if we migrated to
++		 * root, with the current state.
+ 		 */
+ 		__fixup_if(root_entry ? raw_irqs_disabled_flags(flags) :
+ 					raw_irqs_disabled(), regs);
+@@ -876,7 +872,13 @@ int __ipipe_syscall_root(struct pt_regs *regs)
+ 
+ 	local_irq_save_hw(flags);
+ 	p = ipipe_root_cpudom_ptr();
++#ifdef CONFIG_X86_32
++	/*
++	 * Fix-up only required on 32-bit as only here the IRET return code
++	 * will evaluate the flags.
++	 */
+ 	__fixup_if(test_bit(IPIPE_STALL_FLAG, &p->status), regs);
++#endif
+ 	/*
+ 	 * If allowed, sync pending VIRQs before _TIF_NEED_RESCHED is
+ 	 * tested.
+-- 
+1.6.0.2
 
