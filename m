@@ -1,50 +1,166 @@
-Message-ID: <4B8F8E11.9060902@domain.hid>
-Date: Thu, 04 Mar 2010 11:40:17 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <4B9C2100.6090806@domain.hid>
+Date: Sun, 14 Mar 2010 00:34:24 +0100
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
 MIME-Version: 1.0
-References: <4B8D9711.5090704@domain.hid>
-In-Reply-To: <4B8D9711.5090704@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <4B97BA0C.9000702@domain.hid> <4B9AD0DE.4020103@domain.hid>	
+	<1268472523.27899.135.camel@domain.hid>	
+	<4B9BB9B1.5050003@domain.hid>
+	<1268498034.27899.167.camel@domain.hid>
+In-Reply-To: <1268498034.27899.167.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [pull request] Fixes and workarounds for the
-	cond issues
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Analogy cmd_write example explanation
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "Charlton, John" <john.charlton@domain.hid>, xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> The following changes since commit af93ec87f975b387243127090b578d57922b38dc:
->   Gilles Chanteperdrix (1):
->         posix: fix recursive condvar implementation
+Philippe Gerum wrote:
+> On Sat, 2010-03-13 at 17:13 +0100, Alexis Berlemont wrote:
+>> Hi,
+>>
+>> Philippe Gerum wrote:
+>>> On Sat, 2010-03-13 at 00:40 +0100, Alexis Berlemont wrote:
+>>>> Hi,
+>>>>
+>>>> Sorry for answering so late. I took a few days off far from any internet
+>>>> connection.
+>>>>
+>>>> It seems you sent many mails related with Analogy. Many thanks for your
+>>>> interest. I have not read all of them yet. However, I am beginning by
+>>>> this one (which seems unanswered). The answer is quick and easy :)
+>>>>
+>>>> Daniele Nicolodi wrote:
+>>>>> Hello. I'm looking into the analogy cmd_write example.
+>>>>>
+>>>>> I'm not sure I understand the reason for the rt_task_set_mode() function
+>>>>> call into the data acquisition loop (lines 413 or 464 in the code
+>>>>> shipped with xenomai 2.5.1).
+>>>>>
+>>>>> I do not understand why we have to set the primary mode at every
+>>>>> iteration, when we set it before for the task (line 380).
+>>>>>
+>>>>> Is it because the dump_function() uses system calls that can make the
+>>>>> task to switch to secondary mode, or there is a deeper reason I'm missing?
+>>>>>
+>>>> You are right. The dumping routine triggers a switch to secondary mode.
+>>>> That is why, the program switches back to primary mode after.
+>>> This is wrong. The Xenomai core will switch your real-time thread to
+>>> primary mode automatically when running a4l_insn* calls that end up
+>>> invoking rt_dev_ioctl(), since you did declare a real-time entry point
+>>> for this one.
+>>>
+>> I don't understand. I thought that rt_dev_ioctl() triggered an
+>> __rtdm_ioctl syscall, which, according to the rtdm systab, is declared
+>> with the flags "__xn_exec_current | __xn_exec_adaptive".
+>>
+>> So as __rt_dev_ioctl (the kernel handler behind the ioctl syscall) will
+>> return -ENOSYS neither in RT nor in NRT mode (because analogy declares
+>> both RT and NRT fops entries), I thought there was no automatic
+>> mode-switching.
 > 
-> are available in the git repository at:
-> 
->   git://git.xenomai.org/xenomai-jki.git for-upstream
-> 
-> These patches pass basic testings, specifically our extended testsuite,
-> but I'm still unhappy with the workaround. Specifically the fact that we
-> lose -EINTR as valid return code for the Native side is fairly annoying.
-> 
-> For that reason, I will continue to work out fixed prologue/epilogue
-> syscalls for both skins that up-to-date user space will be able to
-> benefit from (native kernel space part is already done). The majority of
-> users will continue to update kernel and user space synchronously
-> anyway, for the rest we will provide these workarounds here.
+> The point is that your ioctl_nrt handler should return -ENOSYS when it
+> detects that the current request should be processed by the converse
+> domain, to trigger the switch to primary mode. This is why the adaptive
+> tag is provided in the first place.
+The problem is that rtdm does not provide any function to know whether
+the thread is shadowed. We just have rtdm_in_rt_context() which tells us
+whether the thread is RT or not. If it is NRT, we cannot distinguish a
+Linux thread from a Xenomai one.
 
-Let us calm down, and avoid pushing changes which are worse than the
-issue they try and correct. I will not publish anything on these issues
-before this week-end. Instead of modifying the mutex-torture unt test, I
-will try and write a condvar-torture unit test, which exhaustively test
-all the return values of pthread_cond_wait/rt_cond_wait, including
-interruption by signals during the cond_wait, and the epilogue.
+I thought with a little patch like this in ksrc/skins/rtdm/core.c, we 
+could force -ENOSYS if the calling thread was a Xenomai NRT thread:
 
--- 
-					    Gilles.
+  diff --git a/ksrc/skins/rtdm/core.c b/ksrc/skins/rtdm/core.c
+index 8677c47..cc0cfe9 100644
+--- a/ksrc/skins/rtdm/core.c
++++ b/ksrc/skins/rtdm/core.c
+@@ -423,6 +423,9 @@ do {									\
+  									\
+  	if (rtdm_in_rt_context())					\
+  		ret = ops->operation##_rt(context, user_info, args);	\
++	else if (xnshadow_thread(user_info) != NULL &&			\
++		 ops->operation##_rt != (void *)rtdm_no_support)	\
++		ret = -ENOSYS;						\
+  	else								\
+  		ret = ops->operation##_nrt(context, user_info, args);	\
+  									\
+
+However, that patch triggers a problem, some Analogy ioctls (mmap and
+bufconfig) needs to be done in NRT context. So, the forcing makes their
+executions impossible.
+
+Maybe the solution would be adding a function rtdm_in_shadowed_context()
+in the rtdm api:
+
+static inline int rtdm_in_shadow_context(rtdm_user_info_t *user_info)
+{
+	return (xnshadow_thread(user_info) != NULL);
+}
+
+> 
+> If the above can't be done, this means that such ioctl request has a
+> different implementation for a real-time task, depending on whether it
+> runs in primary or secondary mode, which would turn out to be the basic
+> issue: this would be ambiguous and very much error-prone. This is where
+> relying on rt_task_set_mode() may reveal design issues.
+> 
+>> So, for me, an RT task running in secondary mode, which triggers an RTDM
+>> ioctl, stays in the current mode (NRT mode) if the RTDM IOCTL NRT
+>> handler is available. For me, switching back to primary mode if the RT
+>> handler is available is not the current behaviour.
+>>
+>> What did I miss ?
+>>
+>>> Let's summarize the whole point of forcing primary mode through
+>>> rt_task_set_mode(): it's bad, it's wrong, it's counter-productive
+>>> CPU-wise, it usually reveals a design issue in the calling code in most
+>>> cases.
+>>>
+>>> The only application-level use case where switching to primary mode
+>>> eagerly this way might make sense, is when the code first switches to
+>>> secondary, then runs an awful lot of CPU-intensive code without issuing
+>>> any syscall, one might want to keep un-preempted from Linux IRQs. In
+>>> such a case, the question which arises immediately is: why the hell does
+>>> one ever tolerate switching to secondary mode initially, if strict
+>>> timely behavior is wanted later on? 
+>>>
+>>> That crap is a freaking mistake of mine, when I exported such
+>>> anti-feature via the native API mindlessly, to provide a work-around for
+>>> rare situations some internal Xenomai code might benefit from. I should
+>>> have provided an internal syscall instead, to hide this monster deep
+>>> into the abyssal zone it should never have left.
+>>>
+>>> In short: DO NOT USE THIS.
+>> I will remove it in cmd_read and cmd_write.
+>>
+>>>> Almost all the Analogy programs (cmd_read, cmd_write, insn_read,
+>>>> insn_write, insn_bits) are just demonstration examples. That is why the
+>>>> code is so linear, lengthy and repetitive. Furthermore, the code was not
+>>>> meant to be efficient. I just wanted to test the RT and NRT entries.
+>>>>
+>>>> By the way, I started to improve them. One change (which is still
+>>>> missing) is the use of rtdk.
+>>>>
+>>>>> Thanks. Cheers,
+>>>> Alexis.
+>>>>
+>>>> _______________________________________________
+>>>> Xenomai-help mailing list
+>>>> Xenomai-help@domain.hid
+>>>> https://mail.gna.org/listinfo/xenomai-help
+>>>
+>> Alexis.
+> 
+> 
+
+Alexis.
 
