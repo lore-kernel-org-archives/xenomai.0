@@ -1,13 +1,13 @@
-Message-ID: <4B9BC504.8070704@domain.hid>
-Date: Sat, 13 Mar 2010 18:01:56 +0100
+Message-ID: <4B9BC530.3050604@domain.hid>
+Date: Sat, 13 Mar 2010 18:02:40 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1268327902.27899.106.camel@domain.hid>
-In-Reply-To: <1268327902.27899.106.camel@domain.hid>
+References: <4B99083C.20903@domain.hid>
+In-Reply-To: <4B99083C.20903@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PULL REQUEST] Blackfin upgrade and minor fixes
-	for 2.5.x
+Subject: Re: [Xenomai-core] [pull request] assert_nrt_fast / updated
+	corruption warning
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,25 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> The following changes since commit 55b0aa9de28891fcfd4b4ab097583bd7619223ab:
->   Philippe Gerum (1):
->         native: introduce rt_task_same()
+Jan Kiszka wrote:
+> The following changes since commit 4277a0e209cc1226ef1e1bfa3fcea40a57fb1ff3:
+>   Gilles Chanteperdrix (1):
+>         arm: upgrade I-pipe support to 2.6.28.10-arm-1.12-07, 2.6.29-arm-1.13-05 and 2.6.30-arm-1.15-01
 > 
 > are available in the git repository at:
 > 
->   git://xenomai.org/xenomai-rpm.git for-upstream
+>   git://git.xenomai.org/xenomai-jki.git for-upstream
 > 
-> Philippe Gerum (5):
->       testsuite/latency: fix false positive in mode switch detection
->       powerpc: remove dandling reference
->       blackfin: upgrade I-pipe support to 2.6.33-blackfin-1.13-00
-
-Could you upgrade the blackfin README file to include the tag to use,
-for applying this patch?
+> Jan Kiszka (3):
+>       common: Introduce xeno_get_current_fast
+>       rtdk: Introduce assert_nrt_fast
+>       common: Restore memory corruption warning for non-leak case
+> 
+>  include/asm-generic/bits/current.h |   10 +++++++++
+>  src/rtdk/assert_context.c          |   39 ++++++++++++++++++++++++-----------
+>  src/skins/common/current.c         |   12 +++++++---
+>  3 files changed, 45 insertions(+), 16 deletions(-)
+> 
+Pulled.
 
 -- 
 					    Gilles.
