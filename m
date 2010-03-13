@@ -1,11 +1,12 @@
-Message-ID: <4B9A0C25.5010602@domain.hid>
-Date: Fri, 12 Mar 2010 10:40:53 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4B968DB5.5020302@domain.hid>
+References: <4B968DB5.5020302@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Sat, 13 Mar 2010 16:59:29 +0100
+Message-ID: <1268495969.27899.144.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [pull request] x86: Fix up regs unconditionally on
-	exceptions
+Subject: Re: [Adeos-main] [pull request] Improve ftrace interaction
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -14,104 +15,113 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: adeos-main <adeos-main@gna.org>
 
-The following changes since commit 14023bef1806dd640030d3eaf73c26736345bc30:
-  Philippe Gerum (1):
-        ipipe-2.6.32.7-x86-2.6-01
+On Tue, 2010-03-09 at 19:04 +0100, Jan Kiszka wrote:
+> The following changes since commit 7c90959b7e4eb5ef8a775ec17005c23f30daade1:
+>   Philippe Gerum (1):
+>         ipipe: introduce 3-level IRQ pending map
+> 
+> are available in the git repository at:
+> 
+>   git://git.kiszka.org/ipipe-2.6 queues/2.6.32-noarch
+> 
+> These patches address various possible configuration errors around
+> ftrace that can cause hard crashes over I-pipe kernels. Moreover, one
+> patch enables the safe use of ftrace's PID filtering that comes for free
+> for the I-pipe tracer now.
+> 
+> The patches also apply on 2.6.33-noarch but were only tested on
+> 2.6.32-x86.
+> 
+> 
+> Jan Kiszka (5):
+>       Use ipipe_safe_current in ftrace_pid_func
+>       Prevent unsafe ftrace usage over I-pipe
 
-are available in the git repository at:
+This one looks pretty ugly. I would rather define a entry point for
+registering ftrace hooks allowed to run in NMI context, and deny the
+regular unsafe registration routine when the I-pipe tracer is enabled.
+E.g.
 
-  git://git.kiszka.org/ipipe-2.6 queues/2.6.32-x86
-
-Found while making KVM work over I-pipe/Xenomai. Its hardware
-activation code triggered a planned #GP in IRQ context.
-
-
-Jan Kiszka (1):
-      x86: Fix up regs unconditionally on exceptions
-
- arch/x86/kernel/ipipe.c |   24 +++++++++++++-----------
- 1 files changed, 13 insertions(+), 11 deletions(-)
-
-------
-
-x86: Fix up regs unconditionally on exceptions
-
-Some Linux exception handlers - at least do_general_protection -
-evaluate regs->flags, and that on both x86-32 and -64. So we should fix
-up the flags according to the pipeline state unconditionally.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
- arch/x86/kernel/ipipe.c |   24 +++++++++++++-----------
- 1 files changed, 13 insertions(+), 11 deletions(-)
-
-diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-index 36cd591..dfb76ad 100644
---- a/arch/x86/kernel/ipipe.c
-+++ b/arch/x86/kernel/ipipe.c
-@@ -495,8 +495,6 @@ out:
- 	local_irq_restore_hw(flags);
- }
- 
--#ifdef CONFIG_X86_32
--
- static inline void __fixup_if(int s, struct pt_regs *regs)
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 872f2fe..c4ac9d5 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -2992,7 +2992,7 @@ void ftrace_kill(void)
+  *       with "notrace", otherwise it will go into a
+  *       recursive loop.
+  */
+-int register_ftrace_function(struct ftrace_ops *ops)
++static int _register_ftrace_function(struct ftrace_ops *ops)
  {
- 	/*
-@@ -510,6 +508,8 @@ static inline void __fixup_if(int s, struct pt_regs *regs)
- 		regs->flags |= X86_EFLAGS_IF;
+ 	int ret;
+ 
+@@ -3008,6 +3008,23 @@ int register_ftrace_function(struct ftrace_ops *ops)
+ 	return ret;
  }
  
-+#ifdef CONFIG_X86_32
++#ifdef CONFIG_IPIPE_TRACE
++int register_ftrace_function(struct ftrace_ops *ops)
++{
++	return -EINVAL;
++}
 +
- /*
-  * Check the stall bit of the root domain to make sure the existing
-  * preemption opportunity upon in-kernel resumption could be
-@@ -571,10 +571,6 @@ asmlinkage void __ipipe_unstall_iret_root(struct pt_regs regs)
- 
- #else /* !CONFIG_X86_32 */
- 
--static inline void __fixup_if(int s, struct pt_regs *regs)
--{
--}
--
- #ifdef CONFIG_PREEMPT
- 
- asmlinkage void preempt_schedule_irq(void);
-@@ -746,11 +742,11 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
- 
- 	if (likely(ipipe_root_domain_p)) {
- 		/*
--		 * 32-bit: In case we faulted in the iret path, regs.flags do
--		 * not match the root domain state as the low-level return
--		 * code will evaluate it. Fix this up, either by the root
--		 * state sampled on entry or, if we migrated to root, with the
--		 * current state.
-+		 * In case we faulted in the iret path, regs.flags do not
-+		 * match the root domain state. The fault handler or the
-+		 * low-level return code may evaluate it. Fix this up, either
-+		 * by the root state sampled on entry or, if we migrated to
-+		 * root, with the current state.
- 		 */
- 		__fixup_if(root_entry ? raw_irqs_disabled_flags(flags) :
- 					raw_irqs_disabled(), regs);
-@@ -876,7 +872,13 @@ int __ipipe_syscall_root(struct pt_regs *regs)
- 
- 	local_irq_save_hw(flags);
- 	p = ipipe_root_cpudom_ptr();
-+#ifdef CONFIG_X86_32
-+	/*
-+	 * Fix-up only required on 32-bit as only here the IRET return code
-+	 * will evaluate the flags.
-+	 */
- 	__fixup_if(test_bit(IPIPE_STALL_FLAG, &p->status), regs);
++int register_ftrace_nmi_function(struct ftrace_ops *ops)
++{
++	return _register_ftrace_function(ops);
++}
++#else
++int register_ftrace_function(struct ftrace_ops *ops)
++{
++	return _register_ftrace_function(ops);
++}
 +#endif
- 	/*
- 	 * If allowed, sync pending VIRQs before _TIF_NEED_RESCHED is
- 	 * tested.
++
+
+diff --git a/kernel/ipipe/tracer.c b/kernel/ipipe/tracer.c
+index 0a37201..e408cab 100644
+--- a/kernel/ipipe/tracer.c
++++ b/kernel/ipipe/tracer.c
+@@ -1331,7 +1331,7 @@ static int __ipipe_wr_enable(struct file *file, const char __user *buffer,
+ 		if (!val)
+ 			unregister_ftrace_function(&ipipe_trace_ops);
+ 	} else if (val)
+-		register_ftrace_function(&ipipe_trace_ops);
++		register_ftrace_nmi_function(&ipipe_trace_ops);
+ 
+ 	ipipe_trace_enable = val;
+ 
+@@ -1405,7 +1405,7 @@ void __init __ipipe_init_tracer(void)
+ #ifdef CONFIG_IPIPE_TRACE_ENABLE
+ 	ipipe_trace_enable = 1;
+ #ifdef CONFIG_IPIPE_TRACE_MCOUNT
+-	register_ftrace_function(&ipipe_trace_ops);
++	register_ftrace_nmi_function(&ipipe_trace_ops);
+ #endif /* CONFIG_IPIPE_TRACE_MCOUNT */
+ #endif /* CONFIG_IPIPE_TRACE_ENABLE */
+ 
+>       Disable branch tracing/profiling under I-pipe
+>       Do no kill ftrace on failing function test
+>       Fix ipipe_safe_current definition for !CONFIG_IPIPE
+> 
+>  include/linux/ftrace.h        |    1 +
+>  include/linux/ipipe.h         |    2 +-
+>  kernel/ipipe/tracer.c         |    3 ++-
+>  kernel/trace/Kconfig          |    2 ++
+>  kernel/trace/ftrace.c         |    7 ++++++-
+>  kernel/trace/trace_selftest.c |    2 ++
+>  6 files changed, 14 insertions(+), 3 deletions(-)
+> 
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
+
+
 -- 
-1.6.0.2
+Philippe.
+
+
 
