@@ -1,97 +1,100 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1268865353.2396.0.camel@domain.hid>
-References: <1268865353.2396.0.camel@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 18 Mar 2010 21:56:54 +0100
-Message-ID: <1268945814.27899.397.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] gpio-keys with xenomai
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: peter.breuer@domain.hid
-Cc: xenomai@xenomai.org
+Message-ID: <4B9CA590.7040102@domain.hid>
+Date: Sun, 14 Mar 2010 10:00:00 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <4B968DB5.5020302@domain.hid>
+	<1268495969.27899.144.camel@domain.hid>
+In-Reply-To: <1268495969.27899.144.camel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig962A8A59433F6B876C5D05C3"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Adeos-main] [pull request] Improve ftrace interaction
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
 
-On Wed, 2010-03-17 at 23:35 +0100, Peter Breuer wrote:
-> Hello everyone,
-> I am new to xenomai, so please be patient.
-> I am working with an AT91SAM9621S (Board SBC6000X) and I successfully
-> patched my linux 2.6.24 with xenomai 2.4.9.1. I also have a signal on on
-> of the GPIOs and I want a program to react, every time the signal
-> arrives (~10Hz).
-> Before compiling I added some lines to the board description file
-> (arch/arm/mach-at91/board-sbc9621.c):
-> ...
-> static struct gpio_keys_button sbc9261_buttons[] = {
-> ...
-> //begin changes
->     {
->         .gpio        = AT91_PIN_PC4,
->         .code        = BTN_2,
->         .desc        = "GPIO 1",
->         .active_low    = 1,
->     },
-> //end changes
-> };
-> ...
-> static void __init sbc9261_add_device_buttons(void)
-> {
-> ...
-> //begin changes
->     at91_set_gpio_input(AT91_PIN_PC4, 1);    /* btn1 */
->     at91_set_deglitch(AT91_PIN_PC4, 1);
-> //end changes
-> 
->     platform_device_register(&sbc9261_button_device);
-> }
-> 
-> Now a new event showed up in /dev/input/
-> Without the xenomai patch there was an interrupt, that I could listen to
-> with a program (open(/dev/input/event2) and select for listening) and
-> react to the signal.
-> With the xenomai patch nothing is coming trough, and even though GPIO 1
-> still shows up in /proc/interrupts, it doesnt show up
-> in /proc/xenomai/irq.
-> I tried to use the native API (I used the usr_irq.c) to create and wait
-> for the signal, but nothin happend (rt_intr_wait() returned -1).
-> I would be very happy about every hint in the right direction.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig962A8A59433F6B876C5D05C3
+Content-Type: multipart/mixed;
+ boundary="------------040400070000050503030301"
 
-rt_intr_wait() should be called from a real-time task, obtained from
-rt_task_create/spawn; failure to do so causes the Xenomai core to
-dismiss your request with -EPERM.
+This is a multi-part message in MIME format.
+--------------040400070000050503030301
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-There is a simple rule of thumb to know whether a Xenomai syscall shall
-be called from a real-time task: if a Xenomai service may block the
-caller, or has an effect on some of its dynamic properties (like its
-real-time scheduling priority, some of its runtime options or current
-execution mode within the Xenomai domain etc.), then it may only be
-called on behalf of a real-time task.
+Philippe Gerum wrote:
+> On Tue, 2010-03-09 at 19:04 +0100, Jan Kiszka wrote:
+>> The following changes since commit 7c90959b7e4eb5ef8a775ec17005c23f30d=
+aade1:
+>>   Philippe Gerum (1):
+>>         ipipe: introduce 3-level IRQ pending map
+>>
+>> are available in the git repository at:
+>>
+>>   git://git.kiszka.org/ipipe-2.6 queues/2.6.32-noarch
+>>
+>> These patches address various possible configuration errors around
+>> ftrace that can cause hard crashes over I-pipe kernels. Moreover, one
+>> patch enables the safe use of ftrace's PID filtering that comes for fr=
+ee
+>> for the I-pipe tracer now.
+>>
+>> The patches also apply on 2.6.33-noarch but were only tested on
+>> 2.6.32-x86.
+>>
+>>
+>> Jan Kiszka (5):
+>>       Use ipipe_safe_current in ftrace_pid_func
+>>       Prevent unsafe ftrace usage over I-pipe
+>=20
+> This one looks pretty ugly. I would rather define a entry point for
+> registering ftrace hooks allowed to run in NMI context, and deny the
+> regular unsafe registration routine when the I-pipe tracer is enabled.
 
-Additionally, you should call rt_intr_enable() to explicitly unmask the
-interrupt channel, since it is left masked upon creation. Maybe that is
-what is missing (user_irq.c is wrong in this respect) to get the first
-IRQ.
+I just learned yesterday from Frederic that the ftrace ring buffer
+should be NMI-safe by now. I need to look into this again, maybe we can
+make _much_ more of ftrace usable for I-pipe. IOW: Series on hold.
 
-> greetings,
-> Peter 
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+Jan
 
 
--- 
-Philippe.
 
+--------------040400070000050503030301
+Content-Type: application/pgp-signature;
+ name="signature.asc"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline;
+ filename="signature.asc"
 
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjIuMC45IChH
+TlUvTGludXgpCkNvbW1lbnQ6IFVzaW5nIEdudVBHIHdpdGggU1VTRSAtIGh0dHA6Ly9lbmln
+bWFpbC5tb3pkZXYub3JnCgppRVlFQVJFQ0FBWUZBa3VjcFUwQUNna1FpdFNzYjNybDV4UkVs
+d0NlSTNhTk1QWW51Y2t0cHI0OU9tWHhzL0Z0CkxId0FvSjZRc0h0SUMwcDlLNnVmTjJYVmpY
+d2VHOGxaCj1nNmFUCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQoK
+--------------040400070000050503030301--
+
+--------------enig962A8A59433F6B876C5D05C3
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkucpZAACgkQitSsb3rl5xSUKwCg4R0zeZklkI1QKNex+LGj8b1/
+03IAoNJPo9x9cX6NAi3ltEvrj49mHDgM
+=r3kV
+-----END PGP SIGNATURE-----
+
+--------------enig962A8A59433F6B876C5D05C3--
 
