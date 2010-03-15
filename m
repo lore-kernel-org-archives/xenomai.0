@@ -1,12 +1,13 @@
-Message-ID: <4B9DF4A7.1000102@domain.hid>
-Date: Mon, 15 Mar 2010 09:49:43 +0100
+Message-ID: <4B9DF62A.30701@domain.hid>
+Date: Mon, 15 Mar 2010 09:56:10 +0100
 From: Daniele Nicolodi <daniele@domain.hid>
 MIME-Version: 1.0
-References: <4B990EF1.1000400@domain.hid> <4B9ADF5C.5060306@domain.hid>
-In-Reply-To: <4B9ADF5C.5060306@domain.hid>
+References: <4B968538.7030204@domain.hid>	<4B968BAC.5090205@domain.hid>		<4B977F1F.8030304@domain.hid>	<1268220794.27899.50.camel@domain.hid>	<4B97A662.3040004@domain.hid>
+	<4B97F0AC.2060003@domain.hid> <4B9ADC6C.8060307@domain.hid>
+In-Reply-To: <4B9ADC6C.8060307@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Experimenting with Analogy. Bugs found?
+Subject: Re: [Xenomai-help] COMEDI vs Analogy
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,43 +24,81 @@ Alexis Berlemont wrote:
 > Hi,
 > 
 > Daniele Nicolodi wrote:
->> Hello. I'm testing Analogy on my x86 system with a NI 6251 ADC board (I
->> can test with other NI ADCs if it useful to someone).
+>> Daniele Nicolodi wrote:
+>>> Philippe Gerum wrote:
+>>>> If you do want to help, you may want investing your time in developing
+>>>> and testing a better code base like Analogy with other people, instead
+>>>> of re-opening a dead development effort all alone.
+>>> Let's try to have a more constructive approach. What is required  to
+>>> support the TRIG_WAKE_EOS command functionality in the ni pcimio driver
+>>> in Analogy?
+>> Well. After playing a bit with Analogy, it looks like TRIG_WAKE_EOS is
+>> not unsupported (as is stated in the documentation). It works!
 >>
->> The lack of overview documentation is making my progress slow, but I
->> have a couple of acquisition routines working quite well.
+>> I'm using a NI 6251 PCI ADC. I have verified that TRIG_WAKE_EOS works as
+>> expected up to a sampling frequency of 800-1000 Hz, sampling 8 channels
+>> at time. If I use an higher sampling rate, my acquisition loops
+>> receives, at each iteration, more data than the data corresponding at
+>> one scan, but always in multiples of one scan.
+>>
+>> I guess this is due to the fact that the reading process is not able to
+>> keep peace with the ADC board. It is however strange that I'm unable to
+>> go to higher sampling rates. I'm able to have, easily, periodic tasks
+>> running up to more than 10 kHz. There is a way to improve the performance?
+>>
+>> I tried to directly mmap the acqusition buffer, instead of doing copies
+>> through reads, but it turned out that there are no Analogy drivers that
+>> support mmap acces to the data buffer (not in xenomai 2.5.1 sources at
+>> least). Can I somehow help in implementing this missing feature?
+>>
+> The mmap features is only enabled in the test drivers (fake and loop).
+> The reason is that I did not have enough time to test it on the driver
+> NI PCIMIO.
 > 
-> Which documentation are talking about ? For me the docs are:
-> - the Doxygen doc (Xenomai API -> modules -> Analogy API):
-> http://www.xenomai.org/documentation/xenomai-2.5/html/api/index.html
-> - the wiki pages in the section "Device Drivers':
-> http://www.xenomai.org/index.php/Driver_documentation
+> If you want to test it you just have to add a flag in the AI subdevice
+> descriptor (on the driver side, you just add the mmap
 > 
-> Are you talking about these ones. Where did you see TRI_WAKE_EOS was not 
-> supported ?
+> subd->flags |= A4L_SUBD_MMAP;
+> 
+> The NI PCIMIO driver contains so many functionalities that it takes me a
+> lot of time to test only a part of them. By the way, let's start a topic
+> I will develop in other mails. That may clarify a little bit the situation.
+> 
+> I went on holidays with two requests in mind:
+> - Stefan Schaal would like to use cmd_write on the NI digital subdevice;
+> - Cristian Axenie would like to get an API to configure the NI counting
+> subdevice.
+> 
+> I spent all my free time on them (when my wife and my daughter were
+> asleep) and I am still unable to provide them any suitable solution. And
+> do you know why ? I had a look at all the comedi drivers which
+> implements asynchronous digital transfers and counting features: each
+> one uses a different way.
+> 
+> The most striking examples were in the configuration of the counting
+> stuff. At least four comedi drivers manage gpct: the NI ones, s526,
+> me4000 and vmk80xx. Each one has defined its one configuration
+> instruction, in other words, its one interface. That means for me that a
+> user application must be specific to a driver to work properly (in some
+> cases, you must even give the registers values).
+> 
+> Such a situation is, for me, not acceptable. Any acquisition user
+> application should work with any acquisition driver and especially
+> because of the acquisition framework.
+> 
+> Starting from here, it is really difficult for me to find out what
+> interface I should implement so as to satisfy all of them.
+> 
+> One more thing: my job is related in no way with acquisition stuff. I
+> spent quite a lot of time in documentation reading (DAQ-STC, etc.) to be
+> sure I miss nothing. So, if you have experience to share, I am really
+> interested.
 
-
-Hi, I'm refering exactly to this documentation. When I say that overview
-documentation is missing I'm referring to the fact that there isn't a
-document that describes which are the steps you need to perform to set
-up an acquisition, and why you need to do so. I think that the most
-under documented API section is the one about getting devices,
-subdevices and channels properties and capabilities. I can try to find
-some spare time to help on this.
-
-About the TRIG_WAKE_EOS, I'm referring to this page:
-
-http://www.xenomai.org/documentation/xenomai-2.5/html/api/group__async1__lib.html
-
-It says:
-
-#define 	TRIG_WAKE_EOS   0x0020
- 	Trigger not implemented yet.
-
-And there are no other mentions of it in the documentation.
+May I ask where your interest in data acquisition software arises from?
+It may be difficult to understand the problems in data acquisition
+software development if you never have to write one.
 
 Cheers,
 -- 
 Daniele
-
 
