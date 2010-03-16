@@ -1,5 +1,7 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <alpine.DEB.1.10.1003161001560.29063@domain.hid>
+Date: Tue, 16 Mar 2010 10:23:39 +0100 (CET)
+From: Kolja Waschk <xenoka09@domain.hid>
+In-Reply-To: <1268730959.27899.245.camel@domain.hid>
+Message-ID: <alpine.DEB.1.10.1003161021420.29063@domain.hid>
 References: <alpine.DEB.1.10.1003151439040.27204@domain.hid>
 	<1268663424.27899.226.camel@domain.hid>
 	<4B9E6312.6010109@domain.hid>
@@ -8,12 +10,12 @@ References: <alpine.DEB.1.10.1003151439040.27204@domain.hid>
 	<1268676605.27899.233.camel@domain.hid>
 	<4B9E7949.5060606@domain.hid>
 	<alpine.DEB.1.10.1003161001560.29063@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 16 Mar 2010 10:15:59 +0100
-Message-ID: <1268730959.27899.245.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+	<1268730959.27899.245.camel@domain.hid>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Sender: "Kolja Waschk,,," <xenoka09@domain.hid>
 Subject: Re: [Xenomai-help] Problem throwing a C++ Exception on Blackfin
+Reply-To: xenoka09@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,30 +25,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Kolja Waschk <kawk@domain.hid>
-Cc: xenomai@xenomai.org, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Tue, 2010-03-16 at 10:09 +0100, Kolja Waschk wrote:
-> > "clean" abort. So, I guess there is no -fexceptions issue.
-> > Sorry for the noise.
-> 
-> Hm, it seems I'm to blame for unnecessary noise on this list - the problem appears even without any task switching in the process. Sorry that I didn't consider to try that first, I was somehow sure it's related to the extra task. I think I better move over to the uClinux etc Forums...
-> 
-> Even this is sufficient to trigger the problem: int main(){try{throw "foo";}catch(...){}};
+> Still, you should try disabling CONFIG_IPIPE on your kernel to see
 
-Still, you should try disabling CONFIG_IPIPE on your kernel to see
-whether this makes a difference on 2.6.28. If it does, then you may want
-to try 2.6.31.6 instead.
+I'll do and report here if it makes a difference.
 
-> 
-> Kolja
-> 
-> 
-> 
+> whether this makes a difference on 2.6.28. If it does, then you may want
+> to try 2.6.31.6 instead.
 
+It now does happen with 2.6.31.6 as well.
 
--- 
-Philippe.
-
+Thanks for your suggestions!
+Kolja
 
 
