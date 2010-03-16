@@ -1,64 +1,42 @@
-Message-ID: <4B8F9962.8070301@domain.hid>
-Date: Thu, 04 Mar 2010 12:28:34 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4B9FE7FC.5090907@domain.hid>
+Date: Tue, 16 Mar 2010 21:20:12 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B8D9711.5090704@domain.hid> <4B8F8E11.9060902@domain.hid>
-	<4B8F98CF.4080908@domain.hid>
-In-Reply-To: <4B8F98CF.4080908@domain.hid>
+References: <20100316150037.11405209mnid677k@domain.hid>	<4B9FB4A8.6000903@domain.hid>	<20100316183247.34995yxgivc3ilj4@domain.hid>	<4B9FC1F2.1070002@domain.hid>
+	<20100316191024.117214qo52wr9aps@domain.hid>
+In-Reply-To: <20100316191024.117214qo52wr9aps@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [pull request] Fixes and workarounds for the
-	cond issues
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Mini2440 on the kernel 2.6.30.1
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Charlton, John" <john.charlton@domain.hid>, xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Michel He <michel.he@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> The following changes since commit af93ec87f975b387243127090b578d57922b38dc:
->>>   Gilles Chanteperdrix (1):
->>>         posix: fix recursive condvar implementation
->>>
->>> are available in the git repository at:
->>>
->>>   git://git.xenomai.org/xenomai-jki.git for-upstream
->>>
->>> These patches pass basic testings, specifically our extended testsuite,
->>> but I'm still unhappy with the workaround. Specifically the fact that we
->>> lose -EINTR as valid return code for the Native side is fairly annoying.
->>>
->>> For that reason, I will continue to work out fixed prologue/epilogue
->>> syscalls for both skins that up-to-date user space will be able to
->>> benefit from (native kernel space part is already done). The majority of
->>> users will continue to update kernel and user space synchronously
->>> anyway, for the rest we will provide these workarounds here.
->> Let us calm down, and avoid pushing changes which are worse than the
->> issue they try and correct. I will not publish anything on these issues
->> before this week-end. Instead of modifying the mutex-torture unt test, I
->> will try and write a condvar-torture unit test, which exhaustively test
->> all the return values of pthread_cond_wait/rt_cond_wait, including
->> interruption by signals during the cond_wait, and the epilogue.
-> 
-> Fine with me. By then, we may also have feedback from our field tests.
-> And should have finished writing the new syscall sets.
-    / \
-    /me
-> 
-> Will you also split up the torture test to leave the timed mutex test
-> case in or should I do this?
-> 
+Michel He wrote:
+> How can I exactly figure out which driver is using the Timer 3 ? I  
+> wonder if there's a list of interrupt somewhere ? in irq.c ->  
+> watch-dog and ac97, Both are disactivated from the kernel.
 
-Jan
+You are the one who mentioned timer 3 in the first place, but if no
+other code than the I-pipe uses it then, that is not your problem. You
+have basically no way of knowing that two drivers are accessing the same
+hardware registers. Only code inspection cal tell you that.
+
+Please stop top-posting, it makes things really hard to follow for those
+who read us.
+
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Gilles Chanteperdrix, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
 
