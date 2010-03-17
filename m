@@ -1,13 +1,13 @@
-Date: Wed, 17 Mar 2010 22:07:57 +0800 (CST)
-From: robert165 <robert165@domain.hid>
-Message-ID: <132c37c.bd80.1276c73c215.Coremail.robert165@domain.hid>
-In-Reply-To: <4C2CF9F5.7000408@domain.hid>
-References: <4C2CF9F5.7000408@domain.hid>
-	<bcc5a9cc1002071243i27ed36a9k38152e5d29034ad4@domain.hid>
+Message-ID: <4BA0EFBD.4040500@domain.hid>
+Date: Wed, 17 Mar 2010 16:05:33 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_126294_14459823.1268834877973"
-Subject: [Xenomai-help] Sleep in rtdm driver
+References: <4C2CF9F5.7000408@domain.hid>	<bcc5a9cc1002071243i27ed36a9k38152e5d29034ad4@domain.hid>
+	<132c37c.bd80.1276c73c215.Coremail.robert165@domain.hid>
+In-Reply-To: <132c37c.bd80.1276c73c215.Coremail.robert165@domain.hid>
+Content-Type: text/plain; charset=x-gbk
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Sleep in rtdm driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,40 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: robert165 <robert165@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-------=_Part_126294_14459823.1268834877973
-Content-Type: text/plain; charset=gbk
-Content-Transfer-Encoding: 7bit
+robert165 wrote:
+> Hi everyone!
+> 
+> I'm writing a gpio driver in RTDM. I start it with the demo "Hard real time RTDM driver skeleton v1.1" of Jan Kiszka.
+> If I used rtdm_task_sleep in rt_ioctrl  function,  it return that "Xenomai: assertion failed at kernel/xenomai/skins/rtdm/drvlib.c:372 (!xnpod_unblockable_p())"  when running.
+> It is said that rtdm_task_sleep can be called from Kernel-based task. Why I can't use it in my driver. Optionally, I can do this in user-space by periodic calling the driver, but it seems slower than in kernel space.
 
-Hi everyone!
+The terms "kernel-based task" or "user space task" can be misleading.
+This services requires a real-time task context. That can either be a
+kernel-based *RT* task or a Xenomai shadow (aka *RT*) task in user space
+that has invoked some driver service, and that driver can then call
+rtdm_task_sleep on behalf of the user space task.
 
-I'm writing a gpio driver in RTDM. I start it with the demo "Hard real time RTDM driver skeleton v1.1" of Jan Kiszka.
-If I used rtdm_task_sleep in rt_ioctrl  function,  it return that "Xenomai: assertion failed at kernel/xenomai/skins/rtdm/drvlib.c:372 (!xnpod_unblockable_p())"  when running.
-It is said that rtdm_task_sleep can be called from Kernel-based task. Why I can't use it in my driver. Optionally, I can do this in user-space by periodic calling the driver, but it seems slower than in kernel space.
- 
-Thank you very much!
- 
-Best regards
- 
-Luo
- 
+Blocking RTDM service *must not* be called by ordinary Linux kernel
+threads or on behalf of ordinary (non-shadowed) Linux user space
+threads. That's why the assertion failed for you.
 
-------=_Part_126294_14459823.1268834877973
-Content-Type: text/html; charset=gbk
-Content-Transfer-Encoding: 7bit
+HTH,
+Jan
 
-<DIV>Hi&nbsp;everyone!</DIV>
-<DIV><BR>I'm writing a gpio driver&nbsp;in RTDM. I start it with the demo "Hard real time RTDM driver skeleton v1.1" of Jan Kiszka.</DIV>
-<DIV>If I used rtdm_task_sleep in rt_ioctrl&nbsp; function,&nbsp; it return that "Xenomai: assertion failed at kernel/xenomai/skins/rtdm/drvlib.c:372 (!xnpod_unblockable_p())"&nbsp; when running.</DIV>
-<DIV>It is said that rtdm_task_sleep can be called from Kernel-based task. Why&nbsp;I can't use it in my driver. Optionally, I can do this in user-space by periodic calling the driver, but it seems&nbsp;slower than&nbsp;in kernel space.</DIV>
-<DIV>&nbsp;</DIV>
-<DIV>Thank you very much!</DIV>
-<DIV>&nbsp;</DIV>
-<DIV>Best regards</DIV>
-<DIV>&nbsp;</DIV>
-<DIV>Luo</DIV>
-<DIV>&nbsp;<BR></DIV><br><br><span title="neteasefooter"/></span>
-------=_Part_126294_14459823.1268834877973--
-
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
