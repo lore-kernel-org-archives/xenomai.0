@@ -1,76 +1,40 @@
-Message-ID: <4BB358B9.6040805@domain.hid>
-Date: Wed, 31 Mar 2010 16:14:17 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <4BB1C51F.4010106@domain.hid> <4BB1C5B7.7040400@domain.hid>
-	<4BB1D0EB.30401@domain.hid> <4BB213AD.5020606@domain.hid>
-	<4BB32F45.4010603@domain.hid> <4BB355EF.7070503@domain.hid>
-	<4BB35651.1020307@domain.hid> <4BB3570F.2070702@domain.hid>
-In-Reply-To: <4BB3570F.2070702@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4BA297A5.8030507@domain.hid>
+References: <4B97BA0C.9000702@domain.hid>  <4B9AD0DE.4020103@domain.hid>
+	<1268472523.27899.135.camel@domain.hid>
+	<4B9BB9B1.5050003@domain.hid>
+	<1268498034.27899.167.camel@domain.hid>
+	<4B9C2100.6090806@domain.hid>
+	<1268584465.27899.197.camel@domain.hid>
+	<4B9DE6BF.2000409@domain.hid> <4B9EC305.4060707@domain.hid>
+	<1268944507.27899.386.camel@domain.hid>
+	<4BA297A5.8030507@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Thu, 18 Mar 2010 22:39:57 +0100
+Message-ID: <1268948397.27899.419.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [git pull] RTDM: Fix potential NULL pointer
-	dereference
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Analogy cmd_write example explanation
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Alexis Berlemont <berlemont.hauw@domain.hid>
+Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> Jan Kiszka wrote:
->>>>>> Gilles Chanteperdrix wrote:
->>>>>>> Jan Kiszka wrote:
->>>>>>>> The following changes since commit 6b3e8f2e5c69397814cb2f4029cdfbaff16e113e:
->>>>>>>>   Gilles Chanteperdrix (1):
->>>>>>>>         doc: regenerate
->>>>>>>>
->>>>>>>> are available in the git repository at:
->>>>>>>>
->>>>>>>>   git://git.xenomai.org/xenomai-jki.git for-upstream
->>>>>>>>
->>>>>>>> Unfortunately too late for 2.5.2, fortunately only relevant if something
->>>>>>>> else went wrong in create_instance (ENOMEM or application error).
->>>>>>>>
->>>>>>>> Wolfgang Mauerer (1):
->>>>>>>>       RTDM: Fix potential NULL pointer dereference
->>>>>>>>
->>>>>>>>  ksrc/skins/rtdm/core.c |    2 +-
->>>>>>>>  1 files changed, 1 insertions(+), 1 deletions(-)
->>>>>>>>
->>>>>>> Was not there any plan to remove this code and have a more "posix
->>>>>>> compliant" close? I thought this had been merged?
->>>>>> Yes. But that requires more work than it would have been appropriate for
->>>>>> 2.5.2.
->>>>> Ok, but could we have it for 2.5.3?
->>>>>
->>>> Will see what I can do (no budget for this, so no promise).
->>> The patches are floating around for some time (I was in CC of the mail
->>> Philippe sent you about this some time ago), I guess some testing is
->>> needed, this is why you need some time? Could we help with this testing?
->>>
->> Then I totally lost track of this. What series are you referring to?
-> 
-> A (private) mail entitled "Re: RTDM close() refactoring" from Philippe,
-> with in fact, a unique patch.
-> 
+On Thu, 2010-03-18 at 22:14 +0100, Alexis Berlemont wrote:
+> Yes I understand. I did that two days ago. My git repository will be
+> updated. Is it ok for you ?
 
-Ah, now I found it. That discussion ended last September with a "Don't
-bother yet" by Philippe as he said you pointed out some remaining issues
-/wrt POSIX compliance. So I stopped bothering.
-
-Jan
+Yes, looks good.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Philippe.
+
+
 
