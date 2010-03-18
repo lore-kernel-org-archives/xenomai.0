@@ -1,11 +1,13 @@
-Message-ID: <4BA0E8D9.4060901@domain.hid>
-Date: Wed, 17 Mar 2010 15:36:09 +0100
-From: Daniele Nicolodi <daniele@domain.hid>
+Message-ID: <4BA24469.1040508@domain.hid>
+Date: Thu, 18 Mar 2010 16:19:05 +0100
+From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-References: <4B991999.1070406@domain.hid>
-In-Reply-To: <4B991999.1070406@domain.hid>
-Content-Type: multipart/mixed; boundary="------------070107000903010202060203"
-Subject: Re: [Xenomai-core] Analogy a4l_ioctl_bufinfo() bug?
+References: <4B97EB5C.2090600@domain.hid>
+In-Reply-To: <4B97EB5C.2090600@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig76363FF74A0EF9413FF04E91"
+Subject: Re: [Xenomai-core] proc_file_read: Apparent buffer overflow
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,104 +18,45 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------070107000903010202060203
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig76363FF74A0EF9413FF04E91
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Daniele Nicolodi wrote:
-> Hello. As reported in the xenomai-help mailing list I'm investigating
-> why a4l_mmap() is not supported for the ni pcimio driver. Hacking on the
-> driver I discovered that, apparently, the only problem in supporting
-> mmap of the device buffer is in the a4l_ioctl_bufinfo() function.
+Am 10.03.2010 19:56, schrieb Stefan Kisdaroczi:
+> Hi,
+>=20
+> cat /proc/xenomai/heap returns the first 4096 Bytes and fails then with=
+ "Bad address".
+> On the console I see: "proc_file_read: Apparent buffer overflow!"
+>=20
+> xeno 2.5.1, linux 2.6.32.8, x86 32bit UP, native skin, lot of rt_queues=
+:
+> # ls -1 /proc/xenomai/registry/native/queues/ | wc -l
+> 233
+> # ls -1 /proc/xenomai/registry/native/heaps/ | wc -l
+> 26
 
-The atached patch solves the problem. My solution is to avoid to mess
-with the subdevice buffer if a transmission is not occouring. This makes
-ni pcimio driver work as expected. The second patch enables mmapping for
-the ni pcimio driver.
+With some luck i get a oops doing cat /proc/xenomai/heap.
+Looking at the while() loop in heap_read_proc() in ksrc/nucleus/heap.c
+its obvious.
 
-Cheers,
--- 
-Daniele
+Stefan
 
 
---------------070107000903010202060203
-Content-Type: text/x-diff;
- name="analogy03.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="analogy03.patch"
+--------------enig76363FF74A0EF9413FF04E91
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-commit d0bbc69a106012a2152ff8ff8fe4897ae0c34bcd
-Author: Daniele Nicolodi <nicolodi@domain.hid>
-Date:   Wed Mar 17 15:24:22 2010 +0100
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-    Fix a4i_ioctl_bufinfo to do not try to copy data from the subdevice buffer if a transfer is not occuring.
+iD8DBQFLokRpIPTw9rIdn6oRAnaPAJ45m1LBv80tAnJf/7auAh5uNXzxNwCdGNfu
+AN+W90Msf6tlryCaeFJ7t1Y=
+=7SK7
+-----END PGP SIGNATURE-----
 
-diff --git a/ksrc/drivers/analogy/buffer.c b/ksrc/drivers/analogy/buffer.c
-index 0c66b4a..1a8acf7 100644
---- a/ksrc/drivers/analogy/buffer.c
-+++ b/ksrc/drivers/analogy/buffer.c
-@@ -560,6 +560,14 @@ int a4l_ioctl_bufinfo(a4l_cxt_t * cxt, void *arg)
- 
- 	buf = dev->transfer.bufs[info.idx_subd];
- 
-+	/* If a transfer is not occuring, simply return buffer
-+	   informations, otherwise make the transfer progress */
-+	if (! test_bit(A4L_TSF_BUSY,
-+		       &(dev->transfer.status[info.idx_subd]))) {
-+		info.rw_count = 0;
-+		goto a4l_ioctl_bufinfo_out;
-+	}
-+
- 	ret = __handle_event(buf);
- 
- 	if (info.idx_subd == dev->transfer.idx_read_subd) {
-@@ -621,6 +629,8 @@ int a4l_ioctl_bufinfo(a4l_cxt_t * cxt, void *arg)
- 		buf->mng_count += tmp_cnt;
- 	}
- 
-+a4l_ioctl_bufinfo_out:	
-+
- 	/* Sets the buffer size */
- 	info.buf_size = buf->size;
- 
-
---------------070107000903010202060203
-Content-Type: text/x-diff;
- name="analogy02.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="analogy02.patch"
-
-commit 230e1c7da63e2324e25ae9bf959f5c10d3d8c3ec
-Author: Daniele Nicolodi <nicolodi@domain.hid>
-Date:   Wed Mar 17 15:26:26 2010 +0100
-
-    Enable subdevice buffer mmapping for ni pcimio driver.
-
-diff --git a/ksrc/drivers/analogy/national_instruments/mio_common.c b/ksrc/drivers/analogy/national_instruments/mio_common.c
-index 1a39206..a51a3cd 100644
---- a/ksrc/drivers/analogy/national_instruments/mio_common.c
-+++ b/ksrc/drivers/analogy/national_instruments/mio_common.c
-@@ -4913,7 +4913,7 @@ int ni_E_init(a4l_dev_t *dev)
- 		a4l_dbg(1, drv_dbg, dev, 
- 			"mio_common: AI: %d channels\n", boardtype.n_adchan);
- 
--		subd->flags = A4L_SUBD_AI | A4L_SUBD_CMD;
-+		subd->flags = A4L_SUBD_AI | A4L_SUBD_CMD | A4L_SUBD_MMAP;
- 		subd->rng_desc = ni_range_lkup[boardtype.gainlkup];
- 
- 		subd->chan_desc = kmalloc(sizeof(a4l_chdesc_t) + 
-@@ -4981,7 +4981,7 @@ int ni_E_init(a4l_dev_t *dev)
- 		
- 
- 		if (boardtype.ao_fifo_depth) {
--			subd->flags |= A4L_SUBD_CMD;
-+			subd->flags |= A4L_SUBD_CMD | A4L_SUBD_MMAP;
- 			subd->do_cmd = &ni_ao_cmd;
- 			subd->cmd_mask = &mio_ao_cmd_mask;
- 			subd->do_cmdtest = &ni_ao_cmdtest;
-
---------------070107000903010202060203--
+--------------enig76363FF74A0EF9413FF04E91--
 
