@@ -1,15 +1,12 @@
-Date: Wed, 24 Mar 2010 10:54:13 +0800 (CST)
-From: robert165 <robert165@domain.hid>
-Message-ID: <2d0b8e.10245.1278e1771a8.Coremail.robert165@domain.hid>
-In-Reply-To: <4BA8F900.5000602@domain.hid>
-References: <4BA8F900.5000602@domain.hid> <4BA39C3D.1040802@domain.hid>
-	<4BA4EF75.7010202@domain.hid> <4BA74820.2090401@domain.hid>
-	<4BA8752E.8090407@domain.hid> <4BA8C15E.5050707@domain.hid>
-	<4BA8F517.3060705@domain.hid> <4BA8F732.10206@domain.hid>
+Message-ID: <4BA243D6.5010404@domain.hid>
+Date: Thu, 18 Mar 2010 16:16:38 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_171999_23513692.1269399253416"
-Subject: [Xenomai-help] Problem in irq_handle
+References: <B66DE711C138E84F96E6A2EDD078830B5F2A4D39CE@MAIL02.ug.kth.se>
+In-Reply-To: <B66DE711C138E84F96E6A2EDD078830B5F2A4D39CE@MAIL02.ug.kth.se>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] deadlock for rtdm_mutex
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,49 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-help <xenomai@xenomai.org>
+To: Huan Fang <huanf@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-------=_Part_171999_23513692.1269399253416
-Content-Type: text/plain; charset=gbk
-Content-Transfer-Encoding: 7bit
+Huan Fang wrote:
+> Hi,
+> 
+> Sometimes I got below assertion failed:
+> 
+> xenomai/skins/rtdm/drvlib.c:1544 (mutex_owner != curr_thread)
+> 
+> Looking into the code,
+> /* Redefinition to clarify XENO_ASSERT output */
+> 		#define mutex_owner xnsynch_owner(&mutex->synch_base)
+> 		XENO_ASSERT(RTDM, mutex_owner != curr_thread,
+> 			    err = -EDEADLK; goto unlock_out;);
+> 
+> Does it mean if the current owner of mutex is different from the requesting thread, then a -EDEADLK error is returned?(which is not documented in RTDM api doc)
 
-Hi Jan,
-I am new to xenomai, I am writing a gpio driver based on  your "RTDM skeleton v1.1". There is a problem that when I complied and run your skeleton in a at91rm9200 broad with TIMERINT, the output is not show one line one second but very fast. The problem is still whenever I changed the following codes in demo_interrupt()
- 
-#ifdef TIMERINT
-        if (events > XXX){
-                rtdm_event_signal(&ctx->irq_event);
-                 event=0;
-          }
-       ...
-      events++;
- 
-And, it seems likely in my own irq_handle of a gpio irq. When the irq arrive, the irq_handle repeats many times. Should I mask the same irq in irq_handle? I did it by write the PIO interrupt mask register, but no effect.
- 
-Best wishes.
- 
-Luo
+If the mutex is contended, the owner _must_ be different from the
+current thread.
 
-------=_Part_171999_23513692.1269399253416
-Content-Type: text/html; charset=gbk
-Content-Transfer-Encoding: 7bit
+> In my case, if one thread tries to lock same mutex twice, the assertion is thrown out as well. Could you please explain a bit how does Xenomai detect deadlock?
 
-<DIV>Hi Jan,</DIV>
-<DIV>I am new to xenomai, I&nbsp;am writing a gpio driver&nbsp;based on &nbsp;your "RTDM skeleton v1.1". There is a problem that when I complied and run your skeleton in a at91rm9200 broad with TIMERINT, the output is not show&nbsp;one line&nbsp;one second but very fast. The problem is still whenever I changed the following codes in demo_interrupt()</DIV>
-<DIV>&nbsp;</DIV>
-<DIV>#ifdef TIMERINT</DIV>
-<DIV>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (events &gt; XXX){</DIV>
-<DIV>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rtdm_event_signal(&amp;ctx-&gt;irq_event);</DIV>
-<DIV>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; event=0;</DIV>
-<DIV>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</DIV>
-<DIV>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...</DIV>
-<DIV>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; events++;</DIV>
-<DIV>&nbsp;</DIV>
-<DIV>And, it seems likely in my own irq_handle of a gpio irq. When the irq arrive, the irq_handle repeats many times. Should I mask the same irq in irq_handle? I did it by write the PIO interrupt mask register, but no effect.</DIV>
-<DIV>&nbsp;</DIV>
-<DIV>Best wishes.</DIV>
-<DIV>&nbsp;</DIV>
-<DIV>Luo<BR></DIV><br><br><span title="neteasefooter"/></span>
-------=_Part_171999_23513692.1269399253416--
+Quite simple: RTDM mutexes do not support recursion, so you must not
+acquire them twice in the same thread. That's a reasonable
+simplification of the design you find in the mainline kernel as well e.g.
 
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
