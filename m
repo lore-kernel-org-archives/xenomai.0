@@ -1,15 +1,14 @@
-Message-ID: <4BB1287B.6020205@domain.hid>
-Date: Tue, 30 Mar 2010 00:23:55 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <4BA2B7FE.70206@domain.hid>
+Date: Fri, 19 Mar 2010 00:32:14 +0100
+From: Alexis Berlemont <berlemont.hauw@domain.hid>
 MIME-Version: 1.0
-References: <507168.65506.qm@domain.hid>,
-	<4BAF58F7.7070707@domain.hid>
-	<B66DE711C138E84F96E6A2EDD078830B5F2A4D39D0@domain.hid>
-In-Reply-To: <B66DE711C138E84F96E6A2EDD078830B5F2A4D39D0@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Problem to cross-compile
-	Xenomai	user-space	support
+References: <4B990EF1.1000400@domain.hid> <4B9ADF5C.5060306@domain.hid>
+	<4B9FF458.4050908@domain.hid>
+In-Reply-To: <4B9FF458.4050908@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Experimenting with Analogy. Bugs found?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,36 +18,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Huan Fang <huanf@domain.hid>
-Cc: Chtourou Sonda <chtourou_sonda@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Daniele Nicolodi <daniele@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Huan Fang wrote:
-> eck_vdso-check-vdso.o ../../skins/native/libnative.la -lpthread -lm
-> libtool: link: ../../../scripts/wrap-link.sh nios2-linux-gcc -Wl,-elf2f=
-lt -o check-vdso check_vdso-check-vdso.o  ../../skins/native/.libs/libnat=
-ive.a -lpthread -lm
-> check-vdso.elf2flt(.text+0x16c): In function `main':
-> : undefined reference to `xeno_sem_heap'
-> check-vdso.elf2flt(.text+0x170): In function `main':
-> : undefined reference to `xeno_sem_heap'
-> collect2: ld returned 1 exit status
-> make[3]: *** [check-vdso] Erreur 1
-> make[3]: quittant le r=C3=A9pertoire =C2=AB /home/sonda/Desktop/xenomai=
--2.5.1/src/testsuite/unit =C2=BB
-> make[2]: *** [all-recursive] Erreur 1
-> make[2]: quittant le r=C3=A9pertoire =C2=AB /home/sonda/Desktop/xenomai=
--2.5.1/src/testsuite =C2=BB
-> make[1]: *** [all-recursive] Erreur 1
-> make[1]: quittant le r=C3=A9pertoire =C2=AB /home/sonda/Desktop/xenomai=
--2.5.1/src =C2=BB
-> make: *** [all-recursive] Erreur 1
->=20
-> what can I do? Please help
+Daniele Nicolodi wrote:
+> Alexis Berlemont wrote:
+>> Hi,
+>>
+>> Daniele Nicolodi wrote:
+>>> Hello. I'm testing Analogy on my x86 system with a NI 6251 ADC board (I
+>>> can test with other NI ADCs if it useful to someone).
+>>>
+>>> The lack of overview documentation is making my progress slow, but I
+>>> have a couple of acquisition routines working quite well.
+>> Which documentation are talking about ? For me the docs are:
+>> - the Doxygen doc (Xenomai API -> modules -> Analogy API):
+>> http://www.xenomai.org/documentation/xenomai-2.5/html/api/index.html
+>> - the wiki pages in the section "Device Drivers':
+>> http://www.xenomai.org/index.php/Driver_documentation
+>>
+>> Are you talking about these ones. Where did you see TRI_WAKE_EOS was not 
+>> supported ?
+> 
+> 
+> Hi, I'm refering exactly to this documentation. When I say that overview
+> documentation is missing I'm referring to the fact that there isn't a
+> document that describes which are the steps you need to perform to set
+> up an acquisition, and why you need to do so. I think that the most
+> under documented API section is the one about getting devices,
+> subdevices and channels properties and capabilities. I can try to find
+> some spare time to help on this.
+> 
+> About the TRIG_WAKE_EOS, I'm referring to this page:
+> 
+> http://www.xenomai.org/documentation/xenomai-2.5/html/api/group__async1__lib.html
+> 
+> It says:
+> 
+> #define 	TRIG_WAKE_EOS   0x0020
+>  	Trigger not implemented yet.
+> 
+OK I fixed the documentation.
+> And there are no other mentions of it in the documentation.
+> 
+> Cheers,
 
-Please try xenomai 2.5.2
-
-
---=20
-					    Gilles.
-
+Alexis.
 
