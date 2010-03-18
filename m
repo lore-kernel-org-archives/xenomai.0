@@ -1,12 +1,11 @@
-Date: Fri, 19 Mar 2010 12:17:30 +0800 (CST)
-From: robert165 <robert165@domain.hid>
-Message-ID: <1840c10.3803.12774a3e688.Coremail.robert165@domain.hid>
-In-Reply-To: <4BA2445F.4050808@domain.hid>
-References: <4BA2445F.4050808@domain.hid>
-	<1a6dfa8.17766.12771270c36.Coremail.robert165@domain.hid>
+Message-ID: <4BA2445F.4050808@domain.hid>
+Date: Thu, 18 Mar 2010 16:18:55 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_37363_29958842.1268972250760"
+References: <1a6dfa8.17766.12771270c36.Coremail.robert165@domain.hid>
+In-Reply-To: <1a6dfa8.17766.12771270c36.Coremail.robert165@domain.hid>
+Content-Type: text/plain; charset=x-gbk
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] Sleep in rtdm driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,87 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: robert165 <robert165@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-------=_Part_37363_29958842.1268972250760
-Content-Type: text/plain; charset=gbk
-Content-Transfer-Encoding: base64
+robert165 wrote:
+> Hi,
+>=20
+>=20
+>=20
+> =D4=DA2010-03-18 00:19:47=A3=AC"Philippe Gerum" <rpm@xenomai.org> =D0=B4=
+=B5=C0=A3=BA
+>> On Wed, 2010-03-17 at 22:07 +0800, robert165 wrote:
+>>> Hi everyone!
+>>>
+>>> I'm writing a gpio driver in RTDM. I start it with the demo "Hard rea=
+l
+>>> time RTDM driver skeleton v1.1" of Jan Kiszka.
+>>> If I used rtdm_task_sleep in rt_ioctrl  function,  it return that
+>>> "Xenomai: assertion failed at kernel/xenomai/skins/rtdm/drvlib.c:372
+>>> (!xnpod_unblockable_p())"  when running.
+>>> It is said that rtdm_task_sleep can be called from Kernel-based task.
+>>> Why I can't use it in my driver. Optionally, I can do this in
+>>> user-space by periodic calling the driver, but it seems slower than i=
+n
+>>> kernel space.
+>> I'm puzzled: what does "slower" mean, regarding what operation?
+> I am sorry, I means is it more effective if doing things in kernel spac=
+e.  I think when periodic calling driver in user-space, it may spent more=
+ in context switching.
 
-CgoKCtTaMjAxMC0wMy0xOCAyMzoxODo1NaOsIkphbiBLaXN6a2EiIDxqYW4ua2lzemthQHNpZW1l
-bnMuY29tPiDQtLXAo7oKPnJvYmVydDE2NSB3cm90ZToKPj4gSGksCj4+IAo+PiAKPj4gCj4+INTa
-MjAxMC0wMy0xOCAwMDoxOTo0N6OsIlBoaWxpcHBlIEdlcnVtIiA8cnBtQHhlbm9tYWkub3JnPiDQ
-tLXAo7oKPj4+IE9uIFdlZCwgMjAxMC0wMy0xNyBhdCAyMjowNyArMDgwMCwgcm9iZXJ0MTY1IHdy
-b3RlOgo+Pj4+IEhpIGV2ZXJ5b25lIQo+Pj4+Cj4+Pj4gSSdtIHdyaXRpbmcgYSBncGlvIGRyaXZl
-ciBpbiBSVERNLiBJIHN0YXJ0IGl0IHdpdGggdGhlIGRlbW8gIkhhcmQgcmVhbAo+Pj4+IHRpbWUg
-UlRETSBkcml2ZXIgc2tlbGV0b24gdjEuMSIgb2YgSmFuIEtpc3prYS4KPj4+PiBJZiBJIHVzZWQg
-cnRkbV90YXNrX3NsZWVwIGluIHJ0X2lvY3RybCAgZnVuY3Rpb24sICBpdCByZXR1cm4gdGhhdAo+
-Pj4+ICJYZW5vbWFpOiBhc3NlcnRpb24gZmFpbGVkIGF0IGtlcm5lbC94ZW5vbWFpL3NraW5zL3J0
-ZG0vZHJ2bGliLmM6MzcyCj4+Pj4gKCF4bnBvZF91bmJsb2NrYWJsZV9wKCkpIiAgd2hlbiBydW5u
-aW5nLgo+Pj4+IEl0IGlzIHNhaWQgdGhhdCBydGRtX3Rhc2tfc2xlZXAgY2FuIGJlIGNhbGxlZCBm
-cm9tIEtlcm5lbC1iYXNlZCB0YXNrLgo+Pj4+IFdoeSBJIGNhbid0IHVzZSBpdCBpbiBteSBkcml2
-ZXIuIE9wdGlvbmFsbHksIEkgY2FuIGRvIHRoaXMgaW4KPj4+PiB1c2VyLXNwYWNlIGJ5IHBlcmlv
-ZGljIGNhbGxpbmcgdGhlIGRyaXZlciwgYnV0IGl0IHNlZW1zIHNsb3dlciB0aGFuIGluCj4+Pj4g
-a2VybmVsIHNwYWNlLgo+Pj4gSSdtIHB1enpsZWQ6IHdoYXQgZG9lcyAic2xvd2VyIiBtZWFuLCBy
-ZWdhcmRpbmcgd2hhdCBvcGVyYXRpb24/Cj4+IEkgYW0gc29ycnksIEkgbWVhbnMgaXMgaXQgbW9y
-ZSBlZmZlY3RpdmUgaWYgZG9pbmcgdGhpbmdzIGluIGtlcm5lbCBzcGFjZS4gIEkgdGhpbmsgd2hl
-biBwZXJpb2RpYyBjYWxsaW5nIGRyaXZlciBpbiB1c2VyLXNwYWNlLCBpdCBtYXkgc3BlbnQgbW9y
-ZSBpbiBjb250ZXh0IHN3aXRjaGluZy4KPgo+SWYgeW91IHJlYWxseSBkZXBlbmQgb24gdGhpcyBt
-aW5vciBkaWZmZXJlbmNlLCB5b3UgYXJlIGFscmVhZHkgZGVzaWduaW5nCj53aXRoIGEgdG9vIHNt
-YWxsIHNhZmV0eSBtYXJnaW4uCj4KPkhhdmUgeW91IG1lYXN1cmVkIHRoZSBkaWZmZXJlbmNlcyBh
-bmQgY29tcGFyZWQgdGhlbSB0byB5b3VyIHJlcXVpcmVtZW50cz8KTm8sIHRoZSBkaWZmZXJlbmNl
-IGlzIG5vdCBzbyBpbXBvcnRhbnQuIEkganVzdCB3YW50IHRvIGtvd24gdGhlIHRoZSByZWFzb24g
-d2h5IEkgZ290IHRoZSBlcnJvciBtZXNzYWdlIHRoYXQgeW91IGhhdmUgZXhwbGFpbmVkIHRvIG1l
-IGNsZWFybHkuIApUaGFua3MgZm9yIGhlbHAh
-------=_Part_37363_29958842.1268972250760
-Content-Type: text/html; charset=gbk
-Content-Transfer-Encoding: base64
+If you really depend on this minor difference, you are already designing
+with a too small safety margin.
 
-PERJVj48QlI+PC9ESVY+CjxESVY+PC9ESVY+PEJSPjxQUkU+1NoyMDEwLTAzLTE4Jm5ic3A7MjM6
-MTg6NTWjrCJKYW4mbmJzcDtLaXN6a2EiJm5ic3A7Jmx0O2phbi5raXN6a2FAc2llbWVucy5jb20m
-Z3Q7Jm5ic3A70LS1wKO6CiZndDtyb2JlcnQxNjUmbmJzcDt3cm90ZToKJmd0OyZndDsmbmJzcDtI
-aSwKJmd0OyZndDsmbmJzcDsKJmd0OyZndDsmbmJzcDsKJmd0OyZndDsmbmJzcDsKJmd0OyZndDsm
-bmJzcDvU2jIwMTAtMDMtMTgmbmJzcDswMDoxOTo0N6OsIlBoaWxpcHBlJm5ic3A7R2VydW0iJm5i
-c3A7Jmx0O3JwbUB4ZW5vbWFpLm9yZyZndDsmbmJzcDvQtLXAo7oKJmd0OyZndDsmZ3Q7Jm5ic3A7
-T24mbmJzcDtXZWQsJm5ic3A7MjAxMC0wMy0xNyZuYnNwO2F0Jm5ic3A7MjI6MDcmbmJzcDsrMDgw
-MCwmbmJzcDtyb2JlcnQxNjUmbmJzcDt3cm90ZToKJmd0OyZndDsmZ3Q7Jmd0OyZuYnNwO0hpJm5i
-c3A7ZXZlcnlvbmUhCiZndDsmZ3Q7Jmd0OyZndDsKJmd0OyZndDsmZ3Q7Jmd0OyZuYnNwO0knbSZu
-YnNwO3dyaXRpbmcmbmJzcDthJm5ic3A7Z3BpbyZuYnNwO2RyaXZlciZuYnNwO2luJm5ic3A7UlRE
-TS4mbmJzcDtJJm5ic3A7c3RhcnQmbmJzcDtpdCZuYnNwO3dpdGgmbmJzcDt0aGUmbmJzcDtkZW1v
-Jm5ic3A7IkhhcmQmbmJzcDtyZWFsCiZndDsmZ3Q7Jmd0OyZndDsmbmJzcDt0aW1lJm5ic3A7UlRE
-TSZuYnNwO2RyaXZlciZuYnNwO3NrZWxldG9uJm5ic3A7djEuMSImbmJzcDtvZiZuYnNwO0phbiZu
-YnNwO0tpc3prYS4KJmd0OyZndDsmZ3Q7Jmd0OyZuYnNwO0lmJm5ic3A7SSZuYnNwO3VzZWQmbmJz
-cDtydGRtX3Rhc2tfc2xlZXAmbmJzcDtpbiZuYnNwO3J0X2lvY3RybCZuYnNwOyZuYnNwO2Z1bmN0
-aW9uLCZuYnNwOyZuYnNwO2l0Jm5ic3A7cmV0dXJuJm5ic3A7dGhhdAomZ3Q7Jmd0OyZndDsmZ3Q7
-Jm5ic3A7Ilhlbm9tYWk6Jm5ic3A7YXNzZXJ0aW9uJm5ic3A7ZmFpbGVkJm5ic3A7YXQmbmJzcDtr
-ZXJuZWwveGVub21haS9za2lucy9ydGRtL2RydmxpYi5jOjM3MgomZ3Q7Jmd0OyZndDsmZ3Q7Jm5i
-c3A7KCF4bnBvZF91bmJsb2NrYWJsZV9wKCkpIiZuYnNwOyZuYnNwO3doZW4mbmJzcDtydW5uaW5n
-LgomZ3Q7Jmd0OyZndDsmZ3Q7Jm5ic3A7SXQmbmJzcDtpcyZuYnNwO3NhaWQmbmJzcDt0aGF0Jm5i
-c3A7cnRkbV90YXNrX3NsZWVwJm5ic3A7Y2FuJm5ic3A7YmUmbmJzcDtjYWxsZWQmbmJzcDtmcm9t
-Jm5ic3A7S2VybmVsLWJhc2VkJm5ic3A7dGFzay4KJmd0OyZndDsmZ3Q7Jmd0OyZuYnNwO1doeSZu
-YnNwO0kmbmJzcDtjYW4ndCZuYnNwO3VzZSZuYnNwO2l0Jm5ic3A7aW4mbmJzcDtteSZuYnNwO2Ry
-aXZlci4mbmJzcDtPcHRpb25hbGx5LCZuYnNwO0kmbmJzcDtjYW4mbmJzcDtkbyZuYnNwO3RoaXMm
-bmJzcDtpbgomZ3Q7Jmd0OyZndDsmZ3Q7Jm5ic3A7dXNlci1zcGFjZSZuYnNwO2J5Jm5ic3A7cGVy
-aW9kaWMmbmJzcDtjYWxsaW5nJm5ic3A7dGhlJm5ic3A7ZHJpdmVyLCZuYnNwO2J1dCZuYnNwO2l0
-Jm5ic3A7c2VlbXMmbmJzcDtzbG93ZXImbmJzcDt0aGFuJm5ic3A7aW4KJmd0OyZndDsmZ3Q7Jmd0
-OyZuYnNwO2tlcm5lbCZuYnNwO3NwYWNlLgomZ3Q7Jmd0OyZndDsmbmJzcDtJJ20mbmJzcDtwdXp6
-bGVkOiZuYnNwO3doYXQmbmJzcDtkb2VzJm5ic3A7InNsb3dlciImbmJzcDttZWFuLCZuYnNwO3Jl
-Z2FyZGluZyZuYnNwO3doYXQmbmJzcDtvcGVyYXRpb24/CiZndDsmZ3Q7Jm5ic3A7SSZuYnNwO2Ft
-Jm5ic3A7c29ycnksJm5ic3A7SSZuYnNwO21lYW5zJm5ic3A7aXMmbmJzcDtpdCZuYnNwO21vcmUm
-bmJzcDtlZmZlY3RpdmUmbmJzcDtpZiZuYnNwO2RvaW5nJm5ic3A7dGhpbmdzJm5ic3A7aW4mbmJz
-cDtrZXJuZWwmbmJzcDtzcGFjZS4mbmJzcDsmbmJzcDtJJm5ic3A7dGhpbmsmbmJzcDt3aGVuJm5i
-c3A7cGVyaW9kaWMmbmJzcDtjYWxsaW5nJm5ic3A7ZHJpdmVyJm5ic3A7aW4mbmJzcDt1c2VyLXNw
-YWNlLCZuYnNwO2l0Jm5ic3A7bWF5Jm5ic3A7c3BlbnQmbmJzcDttb3JlJm5ic3A7aW4mbmJzcDtj
-b250ZXh0Jm5ic3A7c3dpdGNoaW5nLgomZ3Q7CiZndDtJZiZuYnNwO3lvdSZuYnNwO3JlYWxseSZu
-YnNwO2RlcGVuZCZuYnNwO29uJm5ic3A7dGhpcyZuYnNwO21pbm9yJm5ic3A7ZGlmZmVyZW5jZSwm
-bmJzcDt5b3UmbmJzcDthcmUmbmJzcDthbHJlYWR5Jm5ic3A7ZGVzaWduaW5nCiZndDt3aXRoJm5i
-c3A7YSZuYnNwO3RvbyZuYnNwO3NtYWxsJm5ic3A7c2FmZXR5Jm5ic3A7bWFyZ2luLgomZ3Q7CiZn
-dDtIYXZlJm5ic3A7eW91Jm5ic3A7bWVhc3VyZWQmbmJzcDt0aGUmbmJzcDtkaWZmZXJlbmNlcyZu
-YnNwO2FuZCZuYnNwO2NvbXBhcmVkJm5ic3A7dGhlbSZuYnNwO3RvJm5ic3A7eW91ciZuYnNwO3Jl
-cXVpcmVtZW50cz8KTm8sIHRoZSBkaWZmZXJlbmNlIGlzIG5vdCBzbyBpbXBvcnRhbnQuIEkganVz
-dCB3YW50IHRvIGtvd24gdGhlIHRoZSByZWFzb24gd2h5IEkgZ290IHRoZSBlcnJvciBtZXNzYWdl
-IHRoYXQgeW91IGhhdmUgZXhwbGFpbmVkIHRvIG1lIGNsZWFybHkuIDwvUFJFPjxQUkU+VGhhbmtz
-IGZvciBoZWxwITwvUFJFPjxicj48YnI+PHNwYW4gdGl0bGU9Im5ldGVhc2Vmb290ZXIiLz48L3Nw
-YW4+
-------=_Part_37363_29958842.1268972250760--
+Have you measured the differences and compared them to your requirements?
 
+Jan
+
+--=20
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
