@@ -1,123 +1,93 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4B968DB5.5020302@domain.hid>
-References: <4B968DB5.5020302@domain.hid>
+In-Reply-To: <1268865353.2396.0.camel@domain.hid>
+References: <1268865353.2396.0.camel@domain.hid>
 Content-Type: text/plain; charset="UTF-8"
-Date: Sat, 13 Mar 2010 16:59:29 +0100
-Message-ID: <1268495969.27899.144.camel@domain.hid>
+Date: Thu, 18 Mar 2010 21:56:54 +0100
+Message-ID: <1268945814.27899.397.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [pull request] Improve ftrace interaction
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>
+Subject: Re: [Xenomai-help] gpio-keys with xenomai
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: peter.breuer@domain.hid
+Cc: xenomai@xenomai.org
 
-On Tue, 2010-03-09 at 19:04 +0100, Jan Kiszka wrote:
-> The following changes since commit 7c90959b7e4eb5ef8a775ec17005c23f30daade1:
->   Philippe Gerum (1):
->         ipipe: introduce 3-level IRQ pending map
+On Wed, 2010-03-17 at 23:35 +0100, Peter Breuer wrote:
+> Hello everyone,
+> I am new to xenomai, so please be patient.
+> I am working with an AT91SAM9621S (Board SBC6000X) and I successfully
+> patched my linux 2.6.24 with xenomai 2.4.9.1. I also have a signal on on
+> of the GPIOs and I want a program to react, every time the signal
+> arrives (~10Hz).
+> Before compiling I added some lines to the board description file
+> (arch/arm/mach-at91/board-sbc9621.c):
+> ...
+> static struct gpio_keys_button sbc9261_buttons[] = {
+> ...
+> //begin changes
+>     {
+>         .gpio        = AT91_PIN_PC4,
+>         .code        = BTN_2,
+>         .desc        = "GPIO 1",
+>         .active_low    = 1,
+>     },
+> //end changes
+> };
+> ...
+> static void __init sbc9261_add_device_buttons(void)
+> {
+> ...
+> //begin changes
+>     at91_set_gpio_input(AT91_PIN_PC4, 1);    /* btn1 */
+>     at91_set_deglitch(AT91_PIN_PC4, 1);
+> //end changes
 > 
-> are available in the git repository at:
+>     platform_device_register(&sbc9261_button_device);
+> }
 > 
->   git://git.kiszka.org/ipipe-2.6 queues/2.6.32-noarch
-> 
-> These patches address various possible configuration errors around
-> ftrace that can cause hard crashes over I-pipe kernels. Moreover, one
-> patch enables the safe use of ftrace's PID filtering that comes for free
-> for the I-pipe tracer now.
-> 
-> The patches also apply on 2.6.33-noarch but were only tested on
-> 2.6.32-x86.
-> 
-> 
-> Jan Kiszka (5):
->       Use ipipe_safe_current in ftrace_pid_func
->       Prevent unsafe ftrace usage over I-pipe
+> Now a new event showed up in /dev/input/
+> Without the xenomai patch there was an interrupt, that I could listen to
+> with a program (open(/dev/input/event2) and select for listening) and
+> react to the signal.
+> With the xenomai patch nothing is coming trough, and even though GPIO 1
+> still shows up in /proc/interrupts, it doesnt show up
+> in /proc/xenomai/irq.
+> I tried to use the native API (I used the usr_irq.c) to create and wait
+> for the signal, but nothin happend (rt_intr_wait() returned -1).
+> I would be very happy about every hint in the right direction.
 
-This one looks pretty ugly. I would rather define a entry point for
-registering ftrace hooks allowed to run in NMI context, and deny the
-regular unsafe registration routine when the I-pipe tracer is enabled.
-E.g.
+rt_intr_wait() should be called from a real-time task, obtained from
+rt_task_create/spawn; failure to do so causes the Xenomai core to
+dismiss your request with -EPERM.
 
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index 872f2fe..c4ac9d5 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -2992,7 +2992,7 @@ void ftrace_kill(void)
-  *       with "notrace", otherwise it will go into a
-  *       recursive loop.
-  */
--int register_ftrace_function(struct ftrace_ops *ops)
-+static int _register_ftrace_function(struct ftrace_ops *ops)
- {
- 	int ret;
- 
-@@ -3008,6 +3008,23 @@ int register_ftrace_function(struct ftrace_ops *ops)
- 	return ret;
- }
- 
-+#ifdef CONFIG_IPIPE_TRACE
-+int register_ftrace_function(struct ftrace_ops *ops)
-+{
-+	return -EINVAL;
-+}
-+
-+int register_ftrace_nmi_function(struct ftrace_ops *ops)
-+{
-+	return _register_ftrace_function(ops);
-+}
-+#else
-+int register_ftrace_function(struct ftrace_ops *ops)
-+{
-+	return _register_ftrace_function(ops);
-+}
-+#endif
-+
+There is a simple rule of thumb to know whether a Xenomai syscall shall
+be called from a real-time task: if a Xenomai service may block the
+caller, or has an effect on some of its dynamic properties (like its
+real-time scheduling priority, some of its runtime options or current
+execution mode within the Xenomai domain etc.), then it may only be
+called on behalf of a real-time task.
 
-diff --git a/kernel/ipipe/tracer.c b/kernel/ipipe/tracer.c
-index 0a37201..e408cab 100644
---- a/kernel/ipipe/tracer.c
-+++ b/kernel/ipipe/tracer.c
-@@ -1331,7 +1331,7 @@ static int __ipipe_wr_enable(struct file *file, const char __user *buffer,
- 		if (!val)
- 			unregister_ftrace_function(&ipipe_trace_ops);
- 	} else if (val)
--		register_ftrace_function(&ipipe_trace_ops);
-+		register_ftrace_nmi_function(&ipipe_trace_ops);
- 
- 	ipipe_trace_enable = val;
- 
-@@ -1405,7 +1405,7 @@ void __init __ipipe_init_tracer(void)
- #ifdef CONFIG_IPIPE_TRACE_ENABLE
- 	ipipe_trace_enable = 1;
- #ifdef CONFIG_IPIPE_TRACE_MCOUNT
--	register_ftrace_function(&ipipe_trace_ops);
-+	register_ftrace_nmi_function(&ipipe_trace_ops);
- #endif /* CONFIG_IPIPE_TRACE_MCOUNT */
- #endif /* CONFIG_IPIPE_TRACE_ENABLE */
- 
->       Disable branch tracing/profiling under I-pipe
->       Do no kill ftrace on failing function test
->       Fix ipipe_safe_current definition for !CONFIG_IPIPE
+Additionally, you should call rt_intr_enable() to explicitly unmask the
+interrupt channel, since it is left masked upon creation. Maybe that is
+what is missing (user_irq.c is wrong in this respect) to get the first
+IRQ.
+
+> greetings,
+> Peter 
 > 
->  include/linux/ftrace.h        |    1 +
->  include/linux/ipipe.h         |    2 +-
->  kernel/ipipe/tracer.c         |    3 ++-
->  kernel/trace/Kconfig          |    2 ++
->  kernel/trace/ftrace.c         |    7 ++++++-
->  kernel/trace/trace_selftest.c |    2 ++
->  6 files changed, 14 insertions(+), 3 deletions(-)
+> 
 > 
 > _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
 
 -- 
