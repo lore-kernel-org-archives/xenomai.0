@@ -1,10 +1,11 @@
-Date: Thu, 18 Mar 2010 20:02:16 +0800 (CST)
-From: robert165 <robert165@domain.hid>
-Message-ID: <1a6dfa8.17766.12771270c36.Coremail.robert165@domain.hid>
+Date: Thu, 18 Mar 2010 14:29:30 +0100 (CET)
+From: Kolja Waschk <xenoka09@domain.hid>
+Message-ID: <alpine.DEB.1.10.1003181256580.1499@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_250059_17116480.1268913736758"
-Subject: Re: [Xenomai-help] Sleep in rtdm driver
+Content-Type: TEXT/PLAIN; format=flowed; charset=US-ASCII
+Sender: "Kolja Waschk,,," <xenoka09@domain.hid>
+Subject: [Xenomai-help] Problem with absolute timeout
+Reply-To: xenoka09@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,64 +15,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-------=_Part_250059_17116480.1268913736758
-Content-Type: text/plain; charset=gbk
-Content-Transfer-Encoding: base64
+Hi,
 
-SGksCgoKCtTaMjAxMC0wMy0xOCAwMDoxOTo0N6OsIlBoaWxpcHBlIEdlcnVtIiA8cnBtQHhlbm9t
-YWkub3JnPiDQtLXAo7oKPk9uIFdlZCwgMjAxMC0wMy0xNyBhdCAyMjowNyArMDgwMCwgcm9iZXJ0
-MTY1IHdyb3RlOgo+PiBIaSBldmVyeW9uZSEKPj4gCj4+IEknbSB3cml0aW5nIGEgZ3BpbyBkcml2
-ZXIgaW4gUlRETS4gSSBzdGFydCBpdCB3aXRoIHRoZSBkZW1vICJIYXJkIHJlYWwKPj4gdGltZSBS
-VERNIGRyaXZlciBza2VsZXRvbiB2MS4xIiBvZiBKYW4gS2lzemthLgo+PiBJZiBJIHVzZWQgcnRk
-bV90YXNrX3NsZWVwIGluIHJ0X2lvY3RybCAgZnVuY3Rpb24sICBpdCByZXR1cm4gdGhhdAo+PiAi
-WGVub21haTogYXNzZXJ0aW9uIGZhaWxlZCBhdCBrZXJuZWwveGVub21haS9za2lucy9ydGRtL2Ry
-dmxpYi5jOjM3Mgo+PiAoIXhucG9kX3VuYmxvY2thYmxlX3AoKSkiICB3aGVuIHJ1bm5pbmcuCj4+
-IEl0IGlzIHNhaWQgdGhhdCBydGRtX3Rhc2tfc2xlZXAgY2FuIGJlIGNhbGxlZCBmcm9tIEtlcm5l
-bC1iYXNlZCB0YXNrLgo+PiBXaHkgSSBjYW4ndCB1c2UgaXQgaW4gbXkgZHJpdmVyLiBPcHRpb25h
-bGx5LCBJIGNhbiBkbyB0aGlzIGluCj4+IHVzZXItc3BhY2UgYnkgcGVyaW9kaWMgY2FsbGluZyB0
-aGUgZHJpdmVyLCBidXQgaXQgc2VlbXMgc2xvd2VyIHRoYW4gaW4KPj4ga2VybmVsIHNwYWNlLgo+
-Cj5JJ20gcHV6emxlZDogd2hhdCBkb2VzICJzbG93ZXIiIG1lYW4sIHJlZ2FyZGluZyB3aGF0IG9w
-ZXJhdGlvbj8KSSBhbSBzb3JyeSwgSSBtZWFucyBpcyBpdCBtb3JlIGVmZmVjdGl2ZSBpZiBkb2lu
-ZyB0aGluZ3MgaW4ga2VybmVsIHNwYWNlLiAgSSB0aGluayB3aGVuIHBlcmlvZGljIGNhbGxpbmcg
-ZHJpdmVyIGluIHVzZXItc3BhY2UsIGl0IG1heSBzcGVudCBtb3JlIGluIGNvbnRleHQgc3dpdGNo
-aW5nLgpUaGFua3MgYSBsb3QuCg==
-------=_Part_250059_17116480.1268913736758
-Content-Type: text/html; charset=gbk
-Content-Transfer-Encoding: base64
+Sorry for bothering the list with this probably silly problem, but I just don't have the right idea.
 
-PERJVj5IaSw8QlI+PC9ESVY+CjxESVY+PC9ESVY+PEJSPjxQUkU+1NoyMDEwLTAzLTE4Jm5ic3A7
-MDA6MTk6NDejrCJQaGlsaXBwZSZuYnNwO0dlcnVtIiZuYnNwOyZsdDs8QSBocmVmPSJtYWlsdG86
-cnBtQHhlbm9tYWkub3JnIj5ycG1AeGVub21haS5vcmc8L0E+Jmd0OyZuYnNwO9C0tcCjugomZ3Q7
-T24mbmJzcDtXZWQsJm5ic3A7MjAxMC0wMy0xNyZuYnNwO2F0Jm5ic3A7MjI6MDcmbmJzcDsrMDgw
-MCwmbmJzcDtyb2JlcnQxNjUmbmJzcDt3cm90ZToKJmd0OyZndDsmbmJzcDtIaSZuYnNwO2V2ZXJ5
-b25lIQomZ3Q7Jmd0OyZuYnNwOwomZ3Q7Jmd0OyZuYnNwO0knbSZuYnNwO3dyaXRpbmcmbmJzcDth
-Jm5ic3A7Z3BpbyZuYnNwO2RyaXZlciZuYnNwO2luJm5ic3A7UlRETS4mbmJzcDtJJm5ic3A7c3Rh
-cnQmbmJzcDtpdCZuYnNwO3dpdGgmbmJzcDt0aGUmbmJzcDtkZW1vJm5ic3A7IkhhcmQmbmJzcDty
-ZWFsCiZndDsmZ3Q7Jm5ic3A7dGltZSZuYnNwO1JURE0mbmJzcDtkcml2ZXImbmJzcDtza2VsZXRv
-biZuYnNwO3YxLjEiJm5ic3A7b2YmbmJzcDtKYW4mbmJzcDtLaXN6a2EuCiZndDsmZ3Q7Jm5ic3A7
-SWYmbmJzcDtJJm5ic3A7dXNlZCZuYnNwO3J0ZG1fdGFza19zbGVlcCZuYnNwO2luJm5ic3A7cnRf
-aW9jdHJsJm5ic3A7Jm5ic3A7ZnVuY3Rpb24sJm5ic3A7Jm5ic3A7aXQmbmJzcDtyZXR1cm4mbmJz
-cDt0aGF0CiZndDsmZ3Q7Jm5ic3A7Ilhlbm9tYWk6Jm5ic3A7YXNzZXJ0aW9uJm5ic3A7ZmFpbGVk
-Jm5ic3A7YXQmbmJzcDtrZXJuZWwveGVub21haS9za2lucy9ydGRtL2RydmxpYi5jOjM3MgomZ3Q7
-Jmd0OyZuYnNwOygheG5wb2RfdW5ibG9ja2FibGVfcCgpKSImbmJzcDsmbmJzcDt3aGVuJm5ic3A7
-cnVubmluZy4KJmd0OyZndDsmbmJzcDtJdCZuYnNwO2lzJm5ic3A7c2FpZCZuYnNwO3RoYXQmbmJz
-cDtydGRtX3Rhc2tfc2xlZXAmbmJzcDtjYW4mbmJzcDtiZSZuYnNwO2NhbGxlZCZuYnNwO2Zyb20m
-bmJzcDtLZXJuZWwtYmFzZWQmbmJzcDt0YXNrLgomZ3Q7Jmd0OyZuYnNwO1doeSZuYnNwO0kmbmJz
-cDtjYW4ndCZuYnNwO3VzZSZuYnNwO2l0Jm5ic3A7aW4mbmJzcDtteSZuYnNwO2RyaXZlci4mbmJz
-cDtPcHRpb25hbGx5LCZuYnNwO0kmbmJzcDtjYW4mbmJzcDtkbyZuYnNwO3RoaXMmbmJzcDtpbgom
-Z3Q7Jmd0OyZuYnNwO3VzZXItc3BhY2UmbmJzcDtieSZuYnNwO3BlcmlvZGljJm5ic3A7Y2FsbGlu
-ZyZuYnNwO3RoZSZuYnNwO2RyaXZlciwmbmJzcDtidXQmbmJzcDtpdCZuYnNwO3NlZW1zJm5ic3A7
-c2xvd2VyJm5ic3A7dGhhbiZuYnNwO2luCiZndDsmZ3Q7Jm5ic3A7a2VybmVsJm5ic3A7c3BhY2Uu
-CiZndDsKJmd0O0knbSZuYnNwO3B1enpsZWQ6Jm5ic3A7d2hhdCZuYnNwO2RvZXMmbmJzcDsic2xv
-d2VyIiZuYnNwO21lYW4sJm5ic3A7cmVnYXJkaW5nJm5ic3A7d2hhdCZuYnNwO29wZXJhdGlvbj88
-L1BSRT48UFJFPkkgYW0gc29ycnksIEkgbWVhbnMgaXMgaXQgbW9yZSBlZmZlY3RpdmUgaWYgZG9p
-bmcgdGhpbmdzIGluIGtlcm5lbCBzcGFjZS4gIEkgdGhpbmsgd2hlbiBwZXJpb2RpYyZuYnNwO2Nh
-bGxpbmcgZHJpdmVyIGluIHVzZXItc3BhY2UsIGl0IG1heSBzcGVudCBtb3JlIGluIGNvbnRleHQg
-c3dpdGNoaW5nLjwvUFJFPjxQUkU+VGhhbmtzIGEgbG90LjxCUj48U1BBTiB0aXRsZT0ibmV0ZWFz
-ZWZvb3RlciI+PC9TUEFOPjwvUFJFPjxicj48YnI+PHNwYW4gdGl0bGU9Im5ldGVhc2Vmb290ZXIi
-Lz48L3NwYW4+
-------=_Part_250059_17116480.1268913736758--
+The POSIX skin sem_timedwait() call doesn't wait!? I expected the following test code to take 2 seconds until it finishes (and that holds true on a PC), but instead, it returns immediately. What am I doing wrong here?
+
+
+#include <errno.h>
+#include <sys/time.h>
+#include <semaphore.h>
+
+int main()
+{
+     int r;
+     sem_t s;
+     struct timeval tv;
+     struct timespec ts;
+
+     r = sem_init(&s, 0, 0);
+     if (r != 0) { perror("sem_init"); return errno; }
+
+     r = gettimeofday(&tv, 0);
+     if (r != 0) { perror("gettimeofday"); return errno; }
+
+     // Same result with TIMEVAL_TO_TIMESPEC
+     ts.tv_sec = tv.tv_sec;
+     ts.tv_nsec = tv.tv_usec * 1000;
+
+     ts.tv_sec += 2;
+
+     r = sem_timedwait(&s, &ts);
+     if (r != 0) { perror("sem_timedwait"); return errno; }
+}
+
+The result is always !0, errno = 110(ETIMEDOUT), immediately after starting.
+
+/tmp # time ./totest 
+sem_timedwait: Connection timed out
+Command exited with non-zero status 110
+real	0m 0.00s
+user	0m 0.00s
+sys	0m 0.00s
+
+
+Test environment: Blackfin uClinux-dist 2009R1.1-RC4 (Xenomai 2.4.7, 2.6.28.10/I-Pipe 1.10.0)
+but also tried and failed with Xenomai 2.5-rc4 in Kernel 2.6.31.6.
+
+Thanks for any hints!
+Kolja
+
 
 
