@@ -1,11 +1,14 @@
-Content-class: urn:content-classes:message
+Date: Thu, 18 Mar 2010 16:33:54 +0800 (CST)
+From: robert165 <robert165@domain.hid>
+Message-ID: <109fe98.1077f.12770684796.Coremail.robert165@domain.hid>
+In-Reply-To: <4BA0EFBD.4040500@domain.hid>
+References: <4BA0EFBD.4040500@domain.hid> <4C2CF9F5.7000408@domain.hid>
+	<bcc5a9cc1002071243i27ed36a9k38152e5d29034ad4@domain.hid>
+	<132c37c.bd80.1276c73c215.Coremail.robert165@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01CAC64C.034D10D2"
-Date: Wed, 17 Mar 2010 20:36:23 -0700
-Message-ID: <2319761F7FA0D1479BA77EC2E0A8E7BCDD10C3@domain.hid>
-From: "Sherk Chung" <sherk.chung@domain.hid>
-Subject: [Xenomai-help] Seeking RT SPI driver for Atmel AT91 series CPU
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_175726_14179911.1268901234582"
+Subject: Re: [Xenomai-help] Sleep in rtdm driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,110 +18,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
+------=_Part_175726_14179911.1268901234582
+Content-Type: text/plain; charset=gbk
+Content-Transfer-Encoding: base64
 
-------_=_NextPart_001_01CAC64C.034D10D2
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+CgoKCtTaMjAxMC0wMy0xNyAyMzowNTozM6OsIkphbiBLaXN6a2EiIGphbi5raXN6a2FAc2llbWVu
+cy5jb20+INC0tcCjugo+cm9iZXJ0MTY1IHdyb3RlOgo+PiBIaSBldmVyeW9uZSEKPj4gCj4+IEkn
+bSB3cml0aW5nIGEgZ3BpbyBkcml2ZXIgaW4gUlRETS4gSSBzdGFydCBpdCB3aXRoIHRoZSBkZW1v
+ICJIYXJkIHJlYWwgdGltZSBSVERNIGRyaXZlciBza2VsZXRvbiB2MS4xIiBvZiBKYW4gS2lzemth
+Lgo+PiBJZiBJIHVzZWQgcnRkbV90YXNrX3NsZWVwIGluIHJ0X2lvY3RybCAgZnVuY3Rpb24sICBp
+dCByZXR1cm4gdGhhdCAiWGVub21haTogYXNzZXJ0aW9uIGZhaWxlZCBhdCBrZXJuZWwveGVub21h
+aS9za2lucy9ydGRtL2RydmxpYi5jOjM3MiAoIXhucG9kX3VuYmxvY2thYmxlX3AoKSkiICB3aGVu
+IHJ1bm5pbmcuCj4+IEl0IGlzIHNhaWQgdGhhdCBydGRtX3Rhc2tfc2xlZXAgY2FuIGJlIGNhbGxl
+ZCBmcm9tIEtlcm5lbC1iYXNlZCB0YXNrLiBXaHkgSSBjYW4ndCB1c2UgaXQgaW4gbXkgZHJpdmVy
+LiBPcHRpb25hbGx5LCBJIGNhbiBkbyB0aGlzIGluIHVzZXItc3BhY2UgYnkgcGVyaW9kaWMgY2Fs
+bGluZyB0aGUgZHJpdmVyLCBidXQgaXQgc2VlbXMgc2xvd2VyIHRoYW4gaW4ga2VybmVsIHNwYWNl
+Lgo+Cj5UaGUgdGVybXMgImtlcm5lbC1iYXNlZCB0YXNrIiBvciAidXNlciBzcGFjZSB0YXNrIiBj
+YW4gYmUgbWlzbGVhZGluZy4KPlRoaXMgc2VydmljZXMgcmVxdWlyZXMgYSByZWFsLXRpbWUgdGFz
+ayBjb250ZXh0LiBUaGF0IGNhbiBlaXRoZXIgYmUgYQo+a2VybmVsLWJhc2VkICpSVCogdGFzayBv
+ciBhIFhlbm9tYWkgc2hhZG93IChha2EgKlJUKikgdGFzayBpbiB1c2VyIHNwYWNlCj50aGF0IGhh
+cyBpbnZva2VkIHNvbWUgZHJpdmVyIHNlcnZpY2UsIGFuZCB0aGF0IGRyaXZlciBjYW4gdGhlbiBj
+YWxsCj5ydGRtX3Rhc2tfc2xlZXAgb24gYmVoYWxmIG9mIHRoZSB1c2VyIHNwYWNlIHRhc2suCgpU
+aGFua3MgZm9yIHlvdXIgZGVtbywgSSBzdGFydGVkIG15IGNvZGUgd2l0aCBpdC4KSXMgdGhhdCBt
+ZWFucyB0aGUgZGVtb19pb2N0cmxfcnQgIGlzIG5vdCBhIGtlcm5lbCBiYXNlZCAnUlQnIHRhc2s/
+ICBCdXQgd2h5IHVzaW5nIHJ0ZG1fZXZlbnRfdGltZXdhaXQgaW4gZGVtb19yZWFkX3J0IGlzIE9L
+PyAKVGhhbmtzIGZvciBoZWxwLgo+QmxvY2tpbmcgUlRETSBzZXJ2aWNlICptdXN0IG5vdCogYmUg
+Y2FsbGVkIGJ5IG9yZGluYXJ5IExpbnV4IGtlcm5lbAo+dGhyZWFkcyBvciBvbiBiZWhhbGYgb2Yg
+b3JkaW5hcnkgKG5vbi1zaGFkb3dlZCkgTGludXggdXNlciBzcGFjZQo+dGhyZWFkcy4gVGhhdCdz
+IHdoeSB0aGUgYXNzZXJ0aW9uIGZhaWxlZCBmb3IgeW91Lgo+Cj5IVEgsCj5KYW4KPgo+LS0gCj5T
+aWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5vbG9neSwgQ1QgVCBERSBJVCAxCj5Db3Jwb3JhdGUg
+Q29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgK
+------=_Part_175726_14179911.1268901234582
+Content-Type: text/html; charset=gbk
+Content-Transfer-Encoding: base64
 
-We're contemplating using Xenomai on an Atmel AT91SAM9G20 (ARM) CPU
-board, but we need a real-time serial peripheral interface (SPI) driver
-for the chip's onboard SPI interface.  Does anyone have an SPI driver
-for the Atmel AT91 series CPU's they could share, or point me to where I
-can find one?
+PERJVj48QlI+PC9ESVY+CjxESVY+PC9ESVY+PEJSPjxQUkU+1NoyMDEwLTAzLTE3Jm5ic3A7MjM6
+MDU6MzOjrCJKYW4mbmJzcDtLaXN6a2EiJm5ic3A7amFuLmtpc3prYUBzaWVtZW5zLmNvbSZndDsm
+bmJzcDvQtLXAo7oKJmd0O3JvYmVydDE2NSZuYnNwO3dyb3RlOgomZ3Q7Jmd0OyZuYnNwO0hpJm5i
+c3A7ZXZlcnlvbmUhCiZndDsmZ3Q7Jm5ic3A7CiZndDsmZ3Q7Jm5ic3A7SSdtJm5ic3A7d3JpdGlu
+ZyZuYnNwO2EmbmJzcDtncGlvJm5ic3A7ZHJpdmVyJm5ic3A7aW4mbmJzcDtSVERNLiZuYnNwO0km
+bmJzcDtzdGFydCZuYnNwO2l0Jm5ic3A7d2l0aCZuYnNwO3RoZSZuYnNwO2RlbW8mbmJzcDsiSGFy
+ZCZuYnNwO3JlYWwmbmJzcDt0aW1lJm5ic3A7UlRETSZuYnNwO2RyaXZlciZuYnNwO3NrZWxldG9u
+Jm5ic3A7djEuMSImbmJzcDtvZiZuYnNwO0phbiZuYnNwO0tpc3prYS4KJmd0OyZndDsmbmJzcDtJ
+ZiZuYnNwO0kmbmJzcDt1c2VkJm5ic3A7cnRkbV90YXNrX3NsZWVwJm5ic3A7aW4mbmJzcDtydF9p
+b2N0cmwmbmJzcDsmbmJzcDtmdW5jdGlvbiwmbmJzcDsmbmJzcDtpdCZuYnNwO3JldHVybiZuYnNw
+O3RoYXQmbmJzcDsiWGVub21haTombmJzcDthc3NlcnRpb24mbmJzcDtmYWlsZWQmbmJzcDthdCZu
+YnNwO2tlcm5lbC94ZW5vbWFpL3NraW5zL3J0ZG0vZHJ2bGliLmM6MzcyJm5ic3A7KCF4bnBvZF91
+bmJsb2NrYWJsZV9wKCkpIiZuYnNwOyZuYnNwO3doZW4mbmJzcDtydW5uaW5nLgomZ3Q7Jmd0OyZu
+YnNwO0l0Jm5ic3A7aXMmbmJzcDtzYWlkJm5ic3A7dGhhdCZuYnNwO3J0ZG1fdGFza19zbGVlcCZu
+YnNwO2NhbiZuYnNwO2JlJm5ic3A7Y2FsbGVkJm5ic3A7ZnJvbSZuYnNwO0tlcm5lbC1iYXNlZCZu
+YnNwO3Rhc2suJm5ic3A7V2h5Jm5ic3A7SSZuYnNwO2Nhbid0Jm5ic3A7dXNlJm5ic3A7aXQmbmJz
+cDtpbiZuYnNwO215Jm5ic3A7ZHJpdmVyLiZuYnNwO09wdGlvbmFsbHksJm5ic3A7SSZuYnNwO2Nh
+biZuYnNwO2RvJm5ic3A7dGhpcyZuYnNwO2luJm5ic3A7dXNlci1zcGFjZSZuYnNwO2J5Jm5ic3A7
+cGVyaW9kaWMmbmJzcDtjYWxsaW5nJm5ic3A7dGhlJm5ic3A7ZHJpdmVyLCZuYnNwO2J1dCZuYnNw
+O2l0Jm5ic3A7c2VlbXMmbmJzcDtzbG93ZXImbmJzcDt0aGFuJm5ic3A7aW4mbmJzcDtrZXJuZWwm
+bmJzcDtzcGFjZS4KJmd0OwomZ3Q7VGhlJm5ic3A7dGVybXMmbmJzcDsia2VybmVsLWJhc2VkJm5i
+c3A7dGFzayImbmJzcDtvciZuYnNwOyJ1c2VyJm5ic3A7c3BhY2UmbmJzcDt0YXNrIiZuYnNwO2Nh
+biZuYnNwO2JlJm5ic3A7bWlzbGVhZGluZy4KJmd0O1RoaXMmbmJzcDtzZXJ2aWNlcyZuYnNwO3Jl
+cXVpcmVzJm5ic3A7YSZuYnNwO3JlYWwtdGltZSZuYnNwO3Rhc2smbmJzcDtjb250ZXh0LiZuYnNw
+O1RoYXQmbmJzcDtjYW4mbmJzcDtlaXRoZXImbmJzcDtiZSZuYnNwO2EKJmd0O2tlcm5lbC1iYXNl
+ZCZuYnNwOypSVCombmJzcDt0YXNrJm5ic3A7b3ImbmJzcDthJm5ic3A7WGVub21haSZuYnNwO3No
+YWRvdyZuYnNwOyhha2EmbmJzcDsqUlQqKSZuYnNwO3Rhc2smbmJzcDtpbiZuYnNwO3VzZXImbmJz
+cDtzcGFjZQomZ3Q7dGhhdCZuYnNwO2hhcyZuYnNwO2ludm9rZWQmbmJzcDtzb21lJm5ic3A7ZHJp
+dmVyJm5ic3A7c2VydmljZSwmbmJzcDthbmQmbmJzcDt0aGF0Jm5ic3A7ZHJpdmVyJm5ic3A7Y2Fu
+Jm5ic3A7dGhlbiZuYnNwO2NhbGwKJmd0O3J0ZG1fdGFza19zbGVlcCZuYnNwO29uJm5ic3A7YmVo
+YWxmJm5ic3A7b2YmbmJzcDt0aGUmbmJzcDt1c2VyJm5ic3A7c3BhY2UmbmJzcDt0YXNrLgo8L1BS
+RT48UFJFPlRoYW5rcyBmb3IgeW91ciBkZW1vLCBJIHN0YXJ0ZWQgbXkgY29kZSB3aXRoIGl0Ljwv
+UFJFPjxQUkU+SXMgdGhhdCBtZWFucyB0aGUgZGVtb19pb2N0cmxfcnQgIGlzIG5vdCBhIGtlcm5l
+bCBiYXNlZCAnUlQnIHRhc2s/ICBCdXQgd2h5IHVzaW5nIHJ0ZG1fZXZlbnRfdGltZXdhaXQgaW4g
+ZGVtb19yZWFkX3J0IGlzIE9LPyA8L1BSRT48UFJFPlRoYW5rcyBmb3IgaGVscC48L1BSRT48UFJF
+PiZndDtCbG9ja2luZyZuYnNwO1JURE0mbmJzcDtzZXJ2aWNlJm5ic3A7Km11c3QmbmJzcDtub3Qq
+Jm5ic3A7YmUmbmJzcDtjYWxsZWQmbmJzcDtieSZuYnNwO29yZGluYXJ5Jm5ic3A7TGludXgmbmJz
+cDtrZXJuZWwKJmd0O3RocmVhZHMmbmJzcDtvciZuYnNwO29uJm5ic3A7YmVoYWxmJm5ic3A7b2Ym
+bmJzcDtvcmRpbmFyeSZuYnNwOyhub24tc2hhZG93ZWQpJm5ic3A7TGludXgmbmJzcDt1c2VyJm5i
+c3A7c3BhY2UKJmd0O3RocmVhZHMuJm5ic3A7VGhhdCdzJm5ic3A7d2h5Jm5ic3A7dGhlJm5ic3A7
+YXNzZXJ0aW9uJm5ic3A7ZmFpbGVkJm5ic3A7Zm9yJm5ic3A7eW91LgomZ3Q7CiZndDtIVEgsCiZn
+dDtKYW4KJmd0OwomZ3Q7LS0mbmJzcDsKJmd0O1NpZW1lbnMmbmJzcDtBRywmbmJzcDtDb3Jwb3Jh
+dGUmbmJzcDtUZWNobm9sb2d5LCZuYnNwO0NUJm5ic3A7VCZuYnNwO0RFJm5ic3A7SVQmbmJzcDsx
+CiZndDtDb3Jwb3JhdGUmbmJzcDtDb21wZXRlbmNlJm5ic3A7Q2VudGVyJm5ic3A7RW1iZWRkZWQm
+bmJzcDtMaW51eAo8L1BSRT48YnI+PGJyPjxzcGFuIHRpdGxlPSJuZXRlYXNlZm9vdGVyIi8+PC9z
+cGFuPg==
+------=_Part_175726_14179911.1268901234582--
 
-=20
-
-Thanks in advance.
-
-=20
-
-
-------_=_NextPart_001_01CAC64C.034D10D2
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
-xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
-
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 12 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:"Calibri","sans-serif";
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.0in 1.0in 1.0in;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-<!--[if gte mso 9]><xml>
- <o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
- <o:shapelayout v:ext=3D"edit">
-  <o:idmap v:ext=3D"edit" data=3D"1" />
- </o:shapelayout></xml><![endif]-->
-</head>
-
-<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal>We&#8217;re contemplating using Xenomai on an Atmel
-AT91SAM9G20 (ARM) CPU board, but we need a real-time serial peripheral
-interface (SPI) driver for the chip&#8217;s onboard SPI interface.&nbsp; =
-Does
-anyone have an SPI driver for the Atmel AT91 series CPU&#8217;s they =
-could
-share, or point me to where I can find one?<o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-<p class=3DMsoNormal>Thanks in advance.<o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01CAC64C.034D10D2--
 
