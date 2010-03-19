@@ -1,12 +1,21 @@
-Message-ID: <4B8E260D.7070809@domain.hid>
-Date: Wed, 03 Mar 2010 10:04:13 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Fri, 19 Mar 2010 11:20:09 +0100
+From: Richard Cochran <richardcochran@domain.hid>
+Message-ID: <20100319102009.GA15905@domain.hid>
+References: <20100112185012.GQ8605@domain.hid>
+	<1263324215.2455.293.camel@domain.hid>
+	<20100112221802.GR8605@domain.hid>
+	<1263567811.2428.487.camel@domain.hid>
+	<20100115161415.GA24305@domain.hid>
+	<1263576144.2428.527.camel@domain.hid>
+	<20100223075308.GA6661@domain.hid>
+	<1266919677.26785.279.camel@domain.hid>
+	<20100223105754.GA14607@domain.hid>
+	<1267116488.3405.0.camel@domain.hid>
 MIME-Version: 1.0
-References: <4B8E24B4.9000806@domain.hid>
-In-Reply-To: <4B8E24B4.9000806@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Potential heap corruption on thread cleanup
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1267116488.3405.0.camel@domain.hid>
+Subject: Re: [Xenomai-core] [Adeos-main] I-pipe for 2.6.32 PPC
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,40 +24,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>, Gernot Hillier <gernot.hillier@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main@gna.org, xenomai@xenomai.org, Lennart Sorensen <lsorense@domain.hid>
 
-Jan Kiszka wrote:
-> Hi Gilles,
+On Thu, Feb 25, 2010 at 05:48:08PM +0100, Philippe Gerum wrote:
 > 
-> I'm pushing your findings to the list, also as my colleagues showed
-> strong interest - this thing may explain rare corruptions for us as well.
-> 
-> I thought a bit about that likely u_mode-related crash in your test case
-> and have the following theory so far: If the xeno_current_mode storage
-> is allocated on the application heap (!HAVE_THREAD, that's also what we
-> are forced to use), it is automatically freed on thread termination in
-> the context of the dying thread. If the thread is already migrated to
-> secondary or if that happens while it is cleaned up (i.e. before calling
-> for exit into the kernel), there is no problem, Xenomai will not touch
-> the mode storage anymore. But if the thread happens to delete the
-> storage "silently", without any migration, the final exit will trigger
-> one further access. And that takes place against an invalid head area at
-> this point.
-> 
-> Does this make sense?
+> You are welcome. Out of curiosity, what was unclear exactly?
 
-Yes, it is the issue we observed.
+We just had a nice discussion regarding powerpc support in
+ipipe/mainline/denx. Now it is clear to me, what your plan is!
 
-> 
-> If that is true, all we need to do is to force a migration before
-> releasing the mode storage. Could you check this?
+Thanks for your efforts,
 
-No, that does not fly. Calling, for instance, __wrap_pthread_mutex_lock
-in another TSD cleanup function is which could be called after the
-current_mode TSD cleanup is allowed and could trigger a switch to
-primary mode and a write to the u_mode.
+Richard
 
--- 
-					    Gilles.
 
