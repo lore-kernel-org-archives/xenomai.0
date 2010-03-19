@@ -1,14 +1,13 @@
 Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <4BA2BFCF.8010000@domain.hid>
-Date: Fri, 19 Mar 2010 01:05:35 +0100
+Message-ID: <4BA2C094.6060109@domain.hid>
+Date: Fri, 19 Mar 2010 01:08:52 +0100
 From: Alexis Berlemont <berlemont.hauw@domain.hid>
 MIME-Version: 1.0
-References: <4BA259D1.4020704@domain.hid>
-In-Reply-To: <4BA259D1.4020704@domain.hid>
-Content-Type: text/plain; charset=us-ascii; format=flowed
+References: <4B991999.1070406@domain.hid> <4BA0E8D9.4060901@domain.hid>
+In-Reply-To: <4BA0E8D9.4060901@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Analogy: cancel ongoing commands when a device
- is closed
+Subject: Re: [Xenomai-core] Analogy a4l_ioctl_bufinfo() bug?
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -21,20 +20,27 @@ To: Daniele Nicolodi <daniele@domain.hid>
 Cc: xenomai@xenomai.org
 
 Daniele Nicolodi wrote:
-> After fixing analogy to permit continuous acquisition, I discovered that
-> ongoing commands are not canceled when a device is closed (I obtain a
-> DMA buffer owerwrite warning in the kernel log when I abruptly terminate
->  my acquisition program).
+> Daniele Nicolodi wrote:
+>> Hello. As reported in the xenomai-help mailing list I'm investigating
+>> why a4l_mmap() is not supported for the ni pcimio driver. Hacking on the
+>> driver I discovered that, apparently, the only problem in supporting
+>> mmap of the device buffer is in the a4l_ioctl_bufinfo() function.
 > 
-> I think this is quite a surprising behavior. I would expect that the
-> commands are canceled when there isn't a data consumer any more. Would
-> it be possible to cancel any ongoing command on device close? If there
-> is agreement on this, I can look into providing a patch.
+> The atached patch solves the problem. My solution is to avoid to mess
+> with the subdevice buffer if a transmission is not occouring. This makes
+> ni pcimio driver work as expected. The second patch enables mmapping for
+> the ni pcimio driver.
+Merged. Thank you.
 > 
-The close should indeed stop any occurring acquisition. I implemented
-this behaviour. It is in my git repository.
-
-> Thanks. Cheers,
+> Cheers,
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
 Alexis.
 
