@@ -1,122 +1,90 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1271597170.16659.34.camel@domain.hid>
-References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
-	<5a62361072f2d0555ba65eba6dc2d322ad2f51e9.1271596366.git.Jan Kiszka
-	jan.kiszka@domain.hid> <1271597170.16659.34.camel@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sun, 18 Apr 2010 15:30:09 +0200
-Message-ID: <1271597409.16659.37.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH v3 02/24] RTDM: Add rtdm_rt_capable()
- service
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <4BA74820.2090401@domain.hid>
+Date: Mon, 22 Mar 2010 11:36:16 +0100
+From: Stefan Kisdaroczi <kisda@domain.hid>
+MIME-Version: 1.0
+References: <4BA39C3D.1040802@domain.hid> <4BA4EF75.7010202@domain.hid>
+In-Reply-To: <4BA4EF75.7010202@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigCA6217EB41BB095D5680F42C"
+Subject: Re: [Xenomai-help] crash after termination
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>, Alexis Berlemont <berlemont.hauw@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On Sun, 2010-04-18 at 15:26 +0200, Philippe Gerum wrote:
-> On Sun, 2010-04-18 at 15:12 +0200, Jan Kiszka wrote:
-> > From: Jan Kiszka <jan.kiszka@domain.hid>
-> > 
-> > This adds rtdm_rt_capable(), a function that can be used by drivers to
-> > detect callers that could issue a service request also from the
-> > (typically preferred) real-time context. If that is the case, the driver
-> > can trigger a restart of the request if the current context is not
-> > real-time.
-> > 
-> > CC: Philippe Gerum <rpm@xenomai.org>
-> > CC: Alexis Berlemont <berlemont.hauw@domain.hid>
-> > Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
-> > ---
-> >  include/rtdm/rtdm_driver.h |    6 ++++++
-> >  ksrc/skins/rtdm/drvlib.c   |   25 +++++++++++++++++++++++++
-> >  2 files changed, 31 insertions(+), 0 deletions(-)
-> > 
-> > diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
-> > index 0fc1496..45be404 100644
-> > --- a/include/rtdm/rtdm_driver.h
-> > +++ b/include/rtdm/rtdm_driver.h
-> > @@ -1296,6 +1296,12 @@ static inline int rtdm_in_rt_context(void)
-> >  {
-> >  	return (rthal_current_domain != rthal_root_domain);
-> >  }
-> > +
-> > +static inline int rtdm_rt_capable(void)
-> > +{
-> > +	return xnpod_shadow_p();
-> > +}
-> > +
-> 
-> This won't do what your comment states; xnpod_shadow_p() would always
-> return false on behalf of a relaxed shadow, since it tests the status
-> bits of the current Xenomai thread, which has to be the root one in that
-> case. xnpod_shadow_p is to be used in primary context only, to
-> distinguish between kernel-based and userland Xenomai callers. 
-> 
-> What you want is probably something like:
-> 
-> static inline int rtdm_rt_capable(void)
-> {
-> 	return xnshadow_thread(current) != NULL;
-> }
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigCA6217EB41BB095D5680F42C
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Btw, the predicate as you defined it would not work over kernel-based
-Xenomai threads. rtdm_rt_capable() is ambiguous here.
+Am 20.03.2010 16:53, schrieb Jan Kiszka:
+> Stefan Kisdaroczi wrote:
+>> hi all,
+>>
+>> after termination of my xenomai applications, my box crashed often (3 =
+of 4 times) with xenomai 2.5.1.
+>> Today I updated to current git-2.5, rebuilt xenomai and the kernel. St=
+ill crashes.
+>> I have captured two traces over a serial connection. I have attached t=
+he kernel config, the two
+>> traces and the cpuinfo (UP x86 Pentium III). Help is welcome. Thank yo=
+u.
+>=20
+> Both crashes seem to be caused by corrupted skbs. There are (at least)
+> two uncommon network component in your kernel: ARCNET and ISDN. Do you
+> make use of them or are they just passively loaded? If the former: Can
 
-> 
-> 
-> >  #endif /* !DOXYGEN_CPP */
-> >  
-> >  int rtdm_exec_in_rt(struct rtdm_dev_context *context,
-> > diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
-> > index 3b04493..6e26501 100644
-> > --- a/ksrc/skins/rtdm/drvlib.c
-> > +++ b/ksrc/skins/rtdm/drvlib.c
-> > @@ -2341,6 +2341,31 @@ int rtdm_strncpy_from_user(rtdm_user_info_t *user_info, char *dst,
-> >   */
-> >  int rtdm_in_rt_context(void);
-> >  
-> > +/**
-> > + * Test if the caller is capable of running in real-time context
-> > + *
-> > + * @return Non-zero is returned if the caller is able to execute in real-time
-> > + * context (independent of its current execution mode), 0 otherwise.
-> > + *
-> > + * @note This function can be used by drivers that provide different
-> > + * implementations for the same service depending on the execution mode of
-> > + * the caller. If a caller requests such a service in non-real-time context
-> > + * but is capable of running in real-time as well, it might be appropriate
-> > + * for the driver to reject the request via -ENOSYS so that RTDM can switch
-> > + * the caller and restart the request in real-time context.
-> > + *
-> > + * Environments:
-> > + *
-> > + * This service can be called from:
-> > + *
-> > + * - Kernel module initialization/cleanup code
-> > + * - Kernel-based task
-> > + * - User-space task (RT, non-RT)
-> > + *
-> > + * Rescheduling: never.
-> > + */
-> > +int rtdm_rt_capable(void);
-> > +
-> >  #endif /* DOXYGEN_CPP */
-> >  
-> >  /** @} Utility Services */
-> 
-> 
+Just passively loaded.
+
+> you retry without them? >(The Kernel's ISDN stuff is of, well, mixed
+> quality, and ARCNET is so old and uncommon that the code /may/ have
+> bit-rotted -
+
+I disable them.
+
+> just an attempt to detract the attention from Xenomai. :) )
+
+I think the problem is in my apps, but I had some hope that
+some changes for 2.5.2 (about thread cleanup,fork) would help.
+
+> What other network components are actively involved in your scenario?
+
+Only TCP/IP (non-realtime). Currently a dozen xenomai native tasks are
+doing standard socket calls. If everything works, there will be about
+60 tasks using socket calls, but its still a long way.
+
+I focus now first on another problem I have in my apps with a shared heap=
+,
+so one question about that: There was no H_NONCACHED flag at the time I
+did write some library code. I use a rt_heap as shared memory between 8
+processes on x86. According to the documentation H_NONCACHED is only
+relevant for ARM, is that true?
+
+Thanks for the help Jan.
+Stefan
 
 
--- 
-Philippe.
+--------------enigCA6217EB41BB095D5680F42C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
+iD8DBQFLp0glIPTw9rIdn6oRApCeAJ9szaQsxvTnUT0tVDKd8m3sm2lEcQCfbwAe
+wnr0dc+wXVPB/XfTOjmfNKQ=
+=QL1+
+-----END PGP SIGNATURE-----
+
+--------------enigCA6217EB41BB095D5680F42C--
 
