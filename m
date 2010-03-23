@@ -1,220 +1,103 @@
+Message-ID: <4BA8752E.8090407@domain.hid>
+Date: Tue, 23 Mar 2010 09:00:46 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Sun, 18 Apr 2010 16:15:52 +0200
-Message-Id: <446c51e387f476f8ceef28e92cf02931a3a57046.1271600150.git.jan.kiszka@domain.hid>
-In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
-References: <cover.1271600150.git.jan.kiszka@domain.hid>
-In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
-References: <cover.1271600150.git.jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <4BA39C3D.1040802@domain.hid> <4BA4EF75.7010202@domain.hid>
+	<4BA74820.2090401@domain.hid>
+In-Reply-To: <4BA74820.2090401@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig6E118EADF4D2CC5B706D0E00"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 11/23] nucleus: Convert faults proc entry to
-	seq_file mechanism
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] crash after termination
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, Wolfgang Mauerer <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Stefan Kisdaroczi <kisda@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig6E118EADF4D2CC5B706D0E00
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-The entries depend on the number of CPUs and can thus overflow a single page.
+Stefan Kisdaroczi wrote:
+> Am 20.03.2010 16:53, schrieb Jan Kiszka:
+>> Stefan Kisdaroczi wrote:
+>>> hi all,
+>>>
+>>> after termination of my xenomai applications, my box crashed often (3=
+ of 4 times) with xenomai 2.5.1.
+>>> Today I updated to current git-2.5, rebuilt xenomai and the kernel. S=
+till crashes.
+>>> I have captured two traces over a serial connection. I have attached =
+the kernel config, the two
+>>> traces and the cpuinfo (UP x86 Pentium III). Help is welcome. Thank y=
+ou.
+>> Both crashes seem to be caused by corrupted skbs. There are (at least)=
 
-Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
- ksrc/arch/generic/hal.c |  148 +++++++++++++++++++++++++++++++++++++----------
- 1 files changed, 118 insertions(+), 30 deletions(-)
+>> two uncommon network component in your kernel: ARCNET and ISDN. Do you=
 
-diff --git a/ksrc/arch/generic/hal.c b/ksrc/arch/generic/hal.c
-index c2239ca..ca221b5 100644
---- a/ksrc/arch/generic/hal.c
-+++ b/ksrc/arch/generic/hal.c
-@@ -47,6 +47,7 @@
- #include <asm/xenomai/hal.h>
- #ifdef CONFIG_PROC_FS
- #include <linux/proc_fs.h>
-+#include <linux/seq_file.h>
- #endif /* CONFIG_PROC_FS */
- #include <stdarg.h>
- 
-@@ -642,46 +643,133 @@ static int hal_read_proc(char *page,
-     return len;
- }
- 
--static int faults_read_proc(char *page,
--                            char **start,
--                            off_t off, int count, int *eof, void *data)
-+struct faults_seq_iterator {
-+	unsigned int nentries;
-+	struct faults_seq_info {
-+		unsigned int trap;
-+	} faults_info[0];
-+};
-+
-+static int __faults_seq_open(struct inode *inode,
-+			     struct file *file, struct seq_operations *ops)
- {
--    int len = 0, cpu, trap;
--    char *p = page;
-+	struct faults_seq_iterator *iter = NULL;
-+	struct faults_seq_info *faults_info;
-+	struct seq_file *seq;
-+	unsigned int ntraps = 0;
-+	unsigned int trap;
-+	int err;
-+
-+	for (trap = 0; rthal_fault_labels[trap] != NULL; trap++) {
-+		if (!*rthal_fault_labels[trap])
-+			continue;
-+		ntraps++;
-+	}
- 
--    p += sprintf(p, "TRAP ");
-+	iter = kmalloc(sizeof(*iter)
-+		       + ntraps * sizeof(struct faults_seq_info),
-+		       GFP_KERNEL);
-+	if (!iter)
-+		return -ENOMEM;
- 
--    for_each_online_cpu(cpu) {
--        p += sprintf(p, "        CPU%d", cpu);
--    }
-+	err = seq_open(file, ops);
- 
--    for (trap = 0; rthal_fault_labels[trap] != NULL; trap++) {
-+	if (err) {
-+		kfree(iter);
-+		return err;
-+	}
- 
--        if (!*rthal_fault_labels[trap])
--            continue;
-+	iter->nentries = 0;
- 
--        p += sprintf(p, "\n%3d: ", trap);
-+	for (trap = 0; rthal_fault_labels[trap] != NULL; trap++) {
-+		if (!*rthal_fault_labels[trap])
-+			continue;
- 
--        for_each_online_cpu(cpu) {
--            p += sprintf(p, "%12u", rthal_realtime_faults[cpu][trap]);
--        }
-+		faults_info = &iter->faults_info[iter->nentries++];
- 
--        p += sprintf(p, "    (%s)", rthal_fault_labels[trap]);
--    }
-+		faults_info->trap = trap;
-+	}
- 
--    p += sprintf(p, "\n");
-+	seq = file->private_data;
-+	seq->private = iter;
- 
--    len = p - page - off;
--    if (len <= off + count)
--        *eof = 1;
--    *start = page + off;
--    if (len > count)
--        len = count;
--    if (len < 0)
--        len = 0;
-+	return 0;
-+}
- 
--    return len;
-+static void *faults_seq_start(struct seq_file *seq, loff_t *pos)
-+{
-+	struct faults_seq_iterator *iter = seq->private;
-+
-+	if (*pos > iter->nentries)
-+		return NULL;
-+
-+	if (*pos == 0)
-+		return SEQ_START_TOKEN;
-+
-+	return iter->faults_info + *pos - 1;
- }
-+static void *faults_seq_next(struct seq_file *seq, void *v, loff_t *pos)
-+{
-+	struct faults_seq_iterator *iter = seq->private;
-+
-+	(*pos)++;
-+
-+	if (*pos > iter->nentries)
-+		return NULL;
-+
-+	return iter->faults_info + *pos - 1;
-+}
-+
-+static void faults_seq_stop(struct seq_file *f, void *v)
-+{
-+	/* Nothing to do */
-+}
-+
-+static int faults_seq_show(struct seq_file *f, void *v)
-+{
-+	unsigned int cpu;
-+	struct faults_seq_info *p = v;
-+
-+	if (v == SEQ_START_TOKEN) {
-+		seq_puts(f, "TRAP ");
-+
-+		for_each_online_cpu(cpu) {
-+			seq_printf(f, "        CPU%d\n", cpu);
-+		}
-+	}
-+	else {
-+		seq_printf(f, "%3d: ", p->trap);
-+
-+		for_each_online_cpu(cpu) {
-+			seq_printf(f, "%12u",
-+				   rthal_realtime_faults[cpu][p->trap]);
-+		}
-+
-+		seq_printf(f, "    (%s)\n", rthal_fault_labels[p->trap]);
-+	}
-+
-+	return 0;
-+}
-+
-+static struct seq_operations faults_op = {
-+	.start	= faults_seq_start,
-+	.next	= faults_seq_next,
-+	.stop	= faults_seq_stop,
-+	.show	= faults_seq_show
-+};
-+
-+static int faults_seq_open(struct inode *inode, struct file *file)
-+{
-+	return __faults_seq_open(inode, file, &faults_op);
-+}
-+
-+static struct file_operations faults_seq_operations = {
-+	.owner		= THIS_MODULE,
-+	.open		= faults_seq_open,
-+	.read		= seq_read,
-+	.llseek		= seq_lseek,
-+	.release	= seq_release_private,
-+};
- 
- static int apc_read_proc(char *page,
-                          char **start,
-@@ -779,8 +867,8 @@ static int rthal_proc_register(void)
- 	wrap_proc_dir_entry_owner(rthal_proc_root);
- 
- 	rthal_add_proc_leaf("hal", &hal_read_proc, NULL, NULL, rthal_proc_root);
--	rthal_add_proc_leaf("faults",
--			    &faults_read_proc, NULL, NULL, rthal_proc_root);
-+	rthal_add_proc_seq("faults", &faults_seq_operations, 0,
-+			   rthal_proc_root);
- 	rthal_add_proc_leaf("apc", &apc_read_proc, NULL, NULL, rthal_proc_root);
- 
- 	rthal_nmi_proc_register();
--- 
-1.6.0.2
+>> make use of them or are they just passively loaded? If the former: Can=
 
+>=20
+> Just passively loaded.
+>=20
+>> you retry without them? >(The Kernel's ISDN stuff is of, well, mixed
+>> quality, and ARCNET is so old and uncommon that the code /may/ have
+>> bit-rotted -
+>=20
+> I disable them.
+>=20
+>> just an attempt to detract the attention from Xenomai. :) )
+>=20
+> I think the problem is in my apps, but I had some hope that
+> some changes for 2.5.2 (about thread cleanup,fork) would help.
+
+Is your application partially or fully kernel homed? Because no user
+space application is allowed to crash your host, anything else is a bug
+in the kernel as well.
+
+>=20
+>> What other network components are actively involved in your scenario?
+>=20
+> Only TCP/IP (non-realtime). Currently a dozen xenomai native tasks are
+> doing standard socket calls. If everything works, there will be about
+> 60 tasks using socket calls, but its still a long way.
+>=20
+> I focus now first on another problem I have in my apps with a shared he=
+ap,
+> so one question about that: There was no H_NONCACHED flag at the time I=
+
+> did write some library code. I use a rt_heap as shared memory between 8=
+
+> processes on x86. According to the documentation H_NONCACHED is only
+> relevant for ARM, is that true?
+
+AFAIK, yes.
+
+Jan
+
+
+--------------enig6E118EADF4D2CC5B706D0E00
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEUEARECAAYFAkuodTIACgkQitSsb3rl5xRybgCWKezDFDDxbPNLyJI86AyKL6cx
+SACfRqAELy1N+W+5AhrYxu0UqUJQmGk=
+=VxJO
+-----END PGP SIGNATURE-----
+
+--------------enig6E118EADF4D2CC5B706D0E00--
 
