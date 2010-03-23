@@ -1,92 +1,88 @@
-Message-ID: <4BCC71AF.4030903@domain.hid>
-Date: Mon, 19 Apr 2010 17:07:27 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4BA8F517.3060705@domain.hid>
+Date: Tue, 23 Mar 2010 18:06:31 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4BCC619E.2@domain.hid> <4BCC6CEE.70907@domain.hid>
-	<4BCC6E3C.3090301@domain.hid> <4BCC7092.1030809@domain.hid>
-In-Reply-To: <4BCC7092.1030809@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <4BA39C3D.1040802@domain.hid> <4BA4EF75.7010202@domain.hid>
+	<4BA74820.2090401@domain.hid> <4BA8752E.8090407@domain.hid>
+	<4BA8C15E.5050707@domain.hid>
+In-Reply-To: <4BA8C15E.5050707@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig85C9007074BB411C922F7200"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] crash after termination
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Stefan Kisdaroczi <kisda@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Gilles Chanteperdrix wrote:
->>>> Hi,
->>>>
->>>> I found some code which was referencing directly some
->>>> CONFIG_XENO_OPT_DEBUG_ variables with things like:
->>>>
->>>> #ifdef CONFIG_XENO_OPT_DEBUG_FOO
->>>>
->>>> This usage is incompatible with the pre-requisites of the assert.h
->>>> header that CONFIG_XENO_OPT_DEBUG_FOO should be defined at all times.
->>>> While grepping for CONFIG_XENO_OPT_DEBUG_, I found that we also have
->>>> many duplicates of construction like:
->>>> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
->>>> #define CONFIG_XENO_OPT_DEBUG_FOO 0
->>>> #endif /* CONFIG_XENO_OPT_DEBUG_FOO */
->>>>
->>>> So, a patch follows which:
->>>> - replace the #ifdef with some #if XENO_DEBUG(FOO)
->>> Should probably come as a separate patch.
->> Come on, the patch is simple, one patch for this is enough.
-> 
-> One part is an obvious fix, the other a refactoring under discussion.
-> 
->>>> - move all the initializations to assert.h
->>>>
->>>> This will make any reference to CONFIG_XENO_OPT_DEBUG_FOO outside of
->>>> assert.h suspicious, and easy to detect.
->>> How many duplicates did you find?
->> A lot, especially for CONFIG_XENO_OPT_DEBUG_NUCLEUS
-> 
-> That's because the CONFIG_XENO_OPT_DEBUG_NUCLEUS defines were misplaced.
-> Besides that we had one CONFIG_XENO_OPT_DEBUG_QUEUE duplicate, but tons
-> of proper users. I don't see such an immediate need.
-> 
-> When adding this kind of switching, it's till more handy to have things
-> locally in your subsystem. That also makes reviewing easier when you
-> only find changes in files that belong to a subsystem.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig85C9007074BB411C922F7200
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-That is not the main point, the main point is that putting all these
-defines in one files allow to detect easily direct references to the
-symbols.
+Stefan Kisdaroczi wrote:
+> Hi Jan,
+>=20
+> Only user space using the native skin. Some additional notes:
+> I'm using the freepascal compiler and link against libnative, i dont us=
+e gcc.
+> There is one process starting the other ten processes using fork() & ex=
+ecl().
+> The tasks do a lot of mode switching between primary/secondary.
+> The stacksize for the tasks is 1MB. We only use between 4K-16K of stack=
+ in our
+> applications. So there should be still a bit less than 1 MB for socket =
+calls
+> and printf, is this to low ?
 
-> 
->>> Generally, I'm more a fan of decentralized management here (e.g. this
->>> avoids needless patch conflicts in central files).
->> If we maintain the list in alphabetical order (which I have done), we 
->> reduce the likeliness for conflicts. The aim of doing this is also that 
->> I can check that the sources are clean with:
->>
->> find xenomai-2.5 ! -name 'assert.h' -name '*.[ch]' | xargs grep CONFIG_XENO_OPT_DEBUG_
->>
->> And that I can add this test to the automated build test.
->>
->> Note that forgetting to add a #define to the list yields an immediate
->> compilation error. So, the patch makes things completely safe.
-> 
-> What did you change to make this happen (for new users of XENO_DEBUG)?
+Also stack overflows must not crash the kernel, they may only cause
+application crashes.
 
-Nothing. If you forget to add the define, and do not enable the debug
-option (which everybody does most of the time), you get a compilation
-error.
+>=20
+> I rebuilt the kernel without arcnet and isdn and disabled smp too, usin=
+g 2.5.1.
+> It still crashes every time on termination. If I pull the network conne=
+ctor,
+> I could start and shutdown the applications 5 times without problem. If=
+ the
+> network is connected, as soon as there is some network activity like ss=
+h/samba
+> on termination the box crashes. Sometimes it gets even back to the prom=
+pt before
+> crashing. Its a rtl8139 network card, but happens in a virtualbox-vm wi=
+th a pcnet
+> card too. In the traces is always a "do_IRQ+0x...", so I think the prob=
+lem is
+> related to IRQ-handling.
 
-What I changed, however, is that the above find | grep allows
-immediately to detect direct users of the symbols.
+That sounds promising! If you can provide your test case to us (or me
+privately), we could try to reproduce - inside a proper hypervisor which
+has proper debugging facilities. :)
 
--- 
-					    Gilles.
+Jan
+
+
+--------------enig85C9007074BB411C922F7200
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkuo9RcACgkQitSsb3rl5xQTxQCgm3sNo5nIrEopyaeZLaevBjyZ
+zwIAn3/Ko2BlzL6QqX34waJNxwZE1YQw
+=m/jH
+-----END PGP SIGNATURE-----
+
+--------------enig85C9007074BB411C922F7200--
 
