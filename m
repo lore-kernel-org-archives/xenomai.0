@@ -1,17 +1,11 @@
-Message-ID: <4BA8F900.5000602@domain.hid>
-Date: Tue, 23 Mar 2010 18:23:12 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <4BA39C3D.1040802@domain.hid>
-	<4BA4EF75.7010202@domain.hid>	<4BA74820.2090401@domain.hid>
-	<4BA8752E.8090407@domain.hid>	<4BA8C15E.5050707@domain.hid>
-	<4BA8F517.3060705@domain.hid> <4BA8F732.10206@domain.hid>
-In-Reply-To: <4BA8F732.10206@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigAC25C7D063040F117DD50A31"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] crash after termination
+From: Peter Breuer <peter.breuer@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 24 Mar 2010 01:18:35 +0100
+Message-ID: <1269389915.1931.3.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] gpio-keys with xenomai
+Reply-To: peter.breuer@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,78 +15,178 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAC25C7D063040F117DD50A31
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Hello, 
+I finally had the time to test some different settings...
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Stefan Kisdaroczi wrote:
->>> Hi Jan,
->>>
->>> Only user space using the native skin. Some additional notes:
->>> I'm using the freepascal compiler and link against libnative, i dont =
-use gcc.
->>> There is one process starting the other ten processes using fork() & =
-execl().
->>> The tasks do a lot of mode switching between primary/secondary.
->>> The stacksize for the tasks is 1MB. We only use between 4K-16K of sta=
-ck in our
->>> applications. So there should be still a bit less than 1 MB for socke=
-t calls
->>> and printf, is this to low ?
->> Also stack overflows must not crash the kernel, they may only cause
->> application crashes.
->>
->>> I rebuilt the kernel without arcnet and isdn and disabled smp too, us=
-ing 2.5.1.
->>> It still crashes every time on termination. If I pull the network con=
-nector,
->>> I could start and shutdown the applications 5 times without problem. =
-If the
->>> network is connected, as soon as there is some network activity like =
-ssh/samba
->>> on termination the box crashes. Sometimes it gets even back to the pr=
-ompt before
->>> crashing. Its a rtl8139 network card, but happens in a virtualbox-vm =
-with a pcnet
->>> card too. In the traces is always a "do_IRQ+0x...", so I think the pr=
-oblem is
->>> related to IRQ-handling.
->> That sounds promising! If you can provide your test case to us (or me
->> privately), we could try to reproduce - inside a proper hypervisor whi=
-ch
->> has proper debugging facilities. :)
->=20
-> I do not know if this could be related, but you have two drivers we 813=
-9
-> in their name. Could there be a conflict?
->=20
+I wrote the following program:
+#include <sys/mman.h>
+#include <native/task.h>
+#include <native/intr.h>
 
-I would say only the 8139cp gets hold of all the hardware - unless there
-cards plugged that only the 8139too supported. Otherwise, that 8139too
-should simply remain unused.
+#define IRQ_NUMBER 100  /* Intercept interrupt */
+#define IRQ_MODE   I_NOAUTOENA //I_PROPAGATE //0
+#define TASK_PRIO  99 /* Highest RT priority */
+#define TASK_MODE  T_FPU  /*  */
+#define TASK_STKSZ 0  /* Stack size (use default one) */
+#define PIPE_MINOR 0
 
-Jan
+RT_INTR intr_desc;
+
+RT_TASK server_desc;
 
 
---------------enigAC25C7D063040F117DD50A31
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+void irq_server (void *cookie)
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+{
+        int err =
+rt_intr_create(&intr_desc,"MyIrq",IRQ_NUMBER,IRQ_MODE);
+        printf("int create: %d\n", err);
+        err = rt_intr_enable(&intr_desc);
+        printf("enable int: %d\n", err);
+        printf("begin..\n");
+        err = rt_intr_wait(&intr_desc,TM_INFINITE);
+        printf("int wait:%d\n", err);
 
-iEYEARECAAYFAkuo+QQACgkQitSsb3rl5xRtrwCfYR7wtclD41MEYlMKrUMRFTqn
-rIcAn3StcDqR1HYZvdJu/AaEyUuJU8ZA
-=/EOA
------END PGP SIGNATURE-----
+}
 
---------------enigAC25C7D063040F117DD50A31--
+int main (int argc, char *argv[])
+
+{
+        int err;
+        int a;
+        printf("Programmstart\n");
+        mlockall(MCL_CURRENT|MCL_FUTURE);
+
+        err = rt_task_create(&server_desc,
+                                "MyIrqServer",
+                                TASK_STKSZ,
+                                TASK_PRIO,
+                                TASK_MODE);
+        printf("task create: %d\n", err);
+        rt_task_start(&server_desc,&irq_server,NULL);
+}
+
+void cleanup (void)
+
+{
+    rt_intr_delete(&intr_desc);
+    rt_task_delete(&server_desc);
+}
+
+When I start it with the compiled xenomai, it runs until the
+rt_intr_wait() and then quits, without any message. It doesnt even
+execute printf("int wait:%d\n", err)
+create_task, create_intr and enable_intr all return 0. 
+When I start the programm with a kernel, where xenomai isnt compiled in,
+then it quits and complains about it. 
+When I start the programm with xenomai debug settings compiled in the
+kernel, the system freezes at task creating. Heres the output:
+Programmstart
+taskXenomai: fatal: bug at kernel/xenomai/nucleus/shadow.c
+:1128 (!irqs_disabled_hw())
+CPU PID PRI TIMEOUT STAT NAME
+0 0 -1 0 00400088 ROOT
+> 0 923 99 0 00300180 MyIrqServer
+Master time base: clock=114327768
+[<c002bde4>] (show_stack+0x0/0x48) from [<c006e69c>] (xnshadow_harden
++0x1d0/0x21c)
+[<c006e4cc>] (xnshadow_harden+0x0/0x21c) from [<c006ec00>]
+(xnshadow_wait_barrier+0x124/0x138)
+[<c006eadc>] (xnshadow_wait_barrier+0x0/0x138) from [<c006fbe4>]
+(xnshadow_sys_barrier+0x14/0x18)
+r6:c309a000 r5:c309bfb0 r4:00000001
+[<c006fbd0>] (xnshadow_sys_barrier+0x0/0x18) from [<c006ff70>]
+(losyscall_event+0xb4/0x1ac)
+[<c006febc>] (losyscall_event+0x0/0x1ac) from [<c0061214>]
+(__ipipe_dispatch_event+0xd0/0x1c8)
+[<c0061144>] (__ipipe_dispatch_event+0x0/0x1c8) from [<c002cc5c>]
+(__ipipe_syscall_root+0x80/0x100)
+[<c002cbdc>] (__ipipe_syscall_root+0x0/0x100) from [<c0028108>]
+(vector_swi+0x68/0xa8)
+
+Any ideas? 
+is the irq-number, that I need for the rt_intr_create() the same number
+that is shown in /proc/interrupts?
+thx, greetings, 
+Peter
+
+
+
+Am Donnerstag, den 18.03.2010, 21:14 +0100 schrieb Gilles Chanteperdrix:
+> Peter Breuer wrote:
+> > Hello everyone,
+> > I am new to xenomai, so please be patient.
+> > I am working with an AT91SAM9621S (Board SBC6000X) and I
+successfully
+> > patched my linux 2.6.24 with xenomai 2.4.9.1. I also have a signal
+on on
+> > of the GPIOs and I want a program to react, every time the signal
+> > arrives (~10Hz).
+> > Before compiling I added some lines to the board description file
+> > (arch/arm/mach-at91/board-sbc9621.c):
+> > ...
+> > static struct gpio_keys_button sbc9261_buttons[] = {
+> > ...
+> > //begin changes
+> >     {
+> >         .gpio        = AT91_PIN_PC4,
+> >         .code        = BTN_2,
+> >         .desc        = "GPIO 1",
+> >         .active_low    = 1,
+> >     },
+> > //end changes
+> > };
+> > ...
+> > static void __init sbc9261_add_device_buttons(void)
+> > {
+> > ...
+> > //begin changes
+> >     at91_set_gpio_input(AT91_PIN_PC4, 1);    /* btn1 */
+> >     at91_set_deglitch(AT91_PIN_PC4, 1);
+> > //end changes
+> > 
+> >     platform_device_register(&sbc9261_button_device);
+> > }
+> > 
+> > Now a new event showed up in /dev/input/
+> > Without the xenomai patch there was an interrupt, that I could
+listen to
+> > with a program (open(/dev/input/event2) and select for listening)
+and
+> > react to the signal.
+> 
+> That is one thing. It could be due to a edge vs level issue. First
+when
+> you tell this, you must be 100% sure that you are exactly using the
+same
+> configuration except for the xenomai settings. Second, please try and
+> recompile a kernel with only CONFIG_IPIPE enabled, but not with
+> CONFIG_XENOMAI.
+
+> > With the xenomai patch nothing is coming trough, and even though
+GPIO 1
+> > still shows up in /proc/interrupts, it doesnt show up
+> > in /proc/xenomai/irq.
+> 
+> That is not your problem. Irqs appear in /proc/xenomai/irq only when
+the
+> IRQ is used in the real-time domain.
+> 
+> > I tried to use the native API (I used the usr_irq.c) to create and
+wait
+> > for the signal, but nothin happend (rt_intr_wait() returned -1).
+> 
+> That is yet another story. Error codes are documented in the API
+> documentation. -1 is -EPERM. It usually means that the task calling
+the
+> function is not a real-time task and should be one.
+> 
+> > I would be very happy about every hint in the right direction.
+> > greetings,
+> > Peter 
+> > 
+> > 
+
 
