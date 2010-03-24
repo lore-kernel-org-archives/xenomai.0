@@ -1,17 +1,11 @@
-Message-ID: <4BA9E7E0.6040206@domain.hid>
-Date: Wed, 24 Mar 2010 11:22:24 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <4BA8F900.5000602@domain.hid>
-	<4BA39C3D.1040802@domain.hid>	<4BA4EF75.7010202@domain.hid>
-	<4BA74820.2090401@domain.hid>	<4BA8752E.8090407@domain.hid>
-	<4BA8C15E.5050707@domain.hid>	<4BA8F517.3060705@domain.hid>
-	<4BA8F732.10206@domain.hid>
-	<2d0b8e.10245.1278e1771a8.Coremail.robert165@domain.hid>
-In-Reply-To: <2d0b8e.10245.1278e1771a8.Coremail.robert165@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem in irq_handle
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01CACBA2.D776AE0C"
+Date: Wed, 24 Mar 2010 17:39:18 -0500
+Message-ID: <181804936ABC2349BE503168465576460E388C67@domain.hid>
+From: "Steve Deiters" <SteveDeiters@domain.hid>
+Subject: [Xenomai-help] Patch series for Denx ipipe?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,26 +15,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: robert165 <robert165@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
+To: xenomai@xenomai.org
 
-robert165 wrote:
-> Hi Jan, I am new to xenomai, I am writing a gpio driver based on
-> your "RTDM skeleton v1.1". There is a problem that when I complied
-> and run your skeleton in a at91rm9200 broad with TIMERINT, the output
-> is not show one line one second but very fast. The problem is still
-> whenever I changed the following codes in demo_interrupt()
-> 
-> #ifdef TIMERINT if (events > XXX){ 
-> rtdm_event_signal(&ctx->irq_event); event=0; } ... events++;
-> 
-> And, it seems likely in my own irq_handle of a gpio irq. When the irq
-> arrive, the irq_handle repeats many times. Should I mask the same irq
-> in irq_handle? I did it by write the PIO interrupt mask register, but
-> no effect.
+This is a multi-part message in MIME format.
 
-Which interrupt is TIMERINT?
+------_=_NextPart_001_01CACBA2.D776AE0C
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
--- 
-					    Gilles.
+Hello,
+=20
+I was wondering if anyone knows if there is a patch series available for
+the Denx ipipe Git heads?  I was wanting to try out the version for the
+2.6.33 kernel with the latest Xenomai, but the Git head already has all
+the patches applied to the kernel when I download a snapshot
+(http://git.denx.de/?p=3Dipipe-2.6.git;a=3Dshortlog;h=3Drefs/heads/ipipe=
+-2.6.3
+3-powerpc).  I was looking for a patch so that I could easily use it
+with the Xenomai installer.  If one doesn't exist, does anyone know
+which kernel tree this might be based off of so I can try to make a
+patch myself?
+=20
+Thanks.
+=20
+=20
+
+------_=_NextPart_001_01CACBA2.D776AE0C
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; charset=3Dus-ascii=
+">
+<META content=3D"MSHTML 6.00.6000.16809" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D430123222-24032010>Hello,</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D430123222-24032010></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D430123222-24032010>I was=
+ wondering if=20
+anyone knows if there is a patch series available for the Denx ipipe Git=20
+heads?&nbsp; I was wanting to try out the version for the 2.6.33 kernel=
+ with the=20
+latest Xenomai, but the Git head already has all the patches applied to=
+ the=20
+kernel&nbsp;when I download a snapshot (<A=20
+href=3D"http://git.denx.de/?p=3Dipipe-2.6.git;a=3Dshortlog;h=3Drefs/head=
+s/ipipe-2.6.33-powerpc">http://git.denx.de/?p=3Dipipe-2.6.git;a=3Dshortl=
+og;h=3Drefs/heads/ipipe-2.6.33-powerpc</A>).&nbsp;=20
+I was looking for a patch so that I could easily use it with the Xenomai=20
+installer.&nbsp; If one doesn't exist, does anyone know which kernel tre=
+e this=20
+might be based off of so I can try to make a patch myself?</SPAN></FONT>=
+</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D430123222-24032010></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D430123222-24032010>Thanks.</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D430123222-24032010></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D430123222-24032010></SPAN></FONT>&nbsp;</DIV></BODY></HTML>
+
+------_=_NextPart_001_01CACBA2.D776AE0C--
+
 
