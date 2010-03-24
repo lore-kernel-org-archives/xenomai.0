@@ -1,12 +1,17 @@
-Message-ID: <4BA289AC.3050209@domain.hid>
-Date: Thu, 18 Mar 2010 21:14:36 +0100
+Message-ID: <4BA9E7E0.6040206@domain.hid>
+Date: Wed, 24 Mar 2010 11:22:24 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1268865353.2396.0.camel@domain.hid>
-In-Reply-To: <1268865353.2396.0.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4BA8F900.5000602@domain.hid>
+	<4BA39C3D.1040802@domain.hid>	<4BA4EF75.7010202@domain.hid>
+	<4BA74820.2090401@domain.hid>	<4BA8752E.8090407@domain.hid>
+	<4BA8C15E.5050707@domain.hid>	<4BA8F517.3060705@domain.hid>
+	<4BA8F732.10206@domain.hid>
+	<2d0b8e.10245.1278e1771a8.Coremail.robert165@domain.hid>
+In-Reply-To: <2d0b8e.10245.1278e1771a8.Coremail.robert165@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] gpio-keys with xenomai
+Subject: Re: [Xenomai-help] Problem in irq_handle
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,83 +21,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: peter.breuer@domain.hid
-Cc: xenomai@xenomai.org
+To: robert165 <robert165@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
 
-Peter Breuer wrote:
-> Hello everyone,
-> I am new to xenomai, so please be patient.
-> I am working with an AT91SAM9621S (Board SBC6000X) and I successfully
-> patched my linux 2.6.24 with xenomai 2.4.9.1. I also have a signal on on
-> of the GPIOs and I want a program to react, every time the signal
-> arrives (~10Hz).
-> Before compiling I added some lines to the board description file
-> (arch/arm/mach-at91/board-sbc9621.c):
-> ...
-> static struct gpio_keys_button sbc9261_buttons[] = {
-> ...
-> //begin changes
->     {
->         .gpio        = AT91_PIN_PC4,
->         .code        = BTN_2,
->         .desc        = "GPIO 1",
->         .active_low    = 1,
->     },
-> //end changes
-> };
-> ...
-> static void __init sbc9261_add_device_buttons(void)
-> {
-> ...
-> //begin changes
->     at91_set_gpio_input(AT91_PIN_PC4, 1);    /* btn1 */
->     at91_set_deglitch(AT91_PIN_PC4, 1);
-> //end changes
+robert165 wrote:
+> Hi Jan, I am new to xenomai, I am writing a gpio driver based on
+> your "RTDM skeleton v1.1". There is a problem that when I complied
+> and run your skeleton in a at91rm9200 broad with TIMERINT, the output
+> is not show one line one second but very fast. The problem is still
+> whenever I changed the following codes in demo_interrupt()
 > 
->     platform_device_register(&sbc9261_button_device);
-> }
+> #ifdef TIMERINT if (events > XXX){ 
+> rtdm_event_signal(&ctx->irq_event); event=0; } ... events++;
 > 
-> Now a new event showed up in /dev/input/
-> Without the xenomai patch there was an interrupt, that I could listen to
-> with a program (open(/dev/input/event2) and select for listening) and
-> react to the signal.
+> And, it seems likely in my own irq_handle of a gpio irq. When the irq
+> arrive, the irq_handle repeats many times. Should I mask the same irq
+> in irq_handle? I did it by write the PIO interrupt mask register, but
+> no effect.
 
-That is one thing. It could be due to a edge vs level issue. First when
-you tell this, you must be 100% sure that you are exactly using the same
-configuration except for the xenomai settings. Second, please try and
-recompile a kernel with only CONFIG_IPIPE enabled, but not with
-CONFIG_XENOMAI.
-
-> With the xenomai patch nothing is coming trough, and even though GPIO 1
-> still shows up in /proc/interrupts, it doesnt show up
-> in /proc/xenomai/irq.
-
-That is not your problem. Irqs appear in /proc/xenomai/irq only when the
-IRQ is used in the real-time domain.
-
-> I tried to use the native API (I used the usr_irq.c) to create and wait
-> for the signal, but nothin happend (rt_intr_wait() returned -1).
-
-That is yet another story. Error codes are documented in the API
-documentation. -1 is -EPERM. It usually means that the task calling the
-function is not a real-time task and should be one.
-
-> I would be very happy about every hint in the right direction.
-> greetings,
-> Peter 
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
-
+Which interrupt is TIMERINT?
 
 -- 
-Gilles Chanteperdrix, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+					    Gilles.
 
