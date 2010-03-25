@@ -1,20 +1,9 @@
-Message-ID: <4BAB72F0.9090500@domain.hid>
-Date: Thu, 25 Mar 2010 15:28:00 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <507168.65506.qm@domain.hid>
+Date: Thu, 25 Mar 2010 20:24:15 +0000 (GMT)
+From: Chtourou Sonda <chtourou_sonda@domain.hid>
 MIME-Version: 1.0
-References: <4BAB1709.9000601@domain.hid>
-	<4BA9E7E0.6040206@domain.hid>	<4BA8F900.5000602@domain.hid>
-	<4BA39C3D.1040802@domain.hid>	<4BA4EF75.7010202@domain.hid>
-	<4BA74820.2090401@domain.hid>	<4BA8752E.8090407@domain.hid>
-	<4BA8C15E.5050707@domain.hid>	<4BA8F517.3060705@domain.hid>
-	<4BA8F732.10206@domain.hid>	<2d0b8e.10245.1278e1771a8.Coremail.robert165@domain.hid>	<63e73d99.3c71.127933ea91c.Coremail.robert165@domain.hid>	<1a51bc0.b6de.127955f4dc7.Coremail.robert165@domain.hid>
-	<4BAB69F9.7070105@domain.hid>
-In-Reply-To: <4BAB69F9.7070105@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigF0A877EB98B5A43E4776B031"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Problem in irq_handle
+Content-Type: multipart/alternative; boundary="0-1965044213-1269548655=:65506"
+Subject: [Xenomai-help] Problem to cross-compile Xenomai user-space support
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,85 +13,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF0A877EB98B5A43E4776B031
-Content-Type: text/plain; charset=UTF-8
+--0-1965044213-1269548655=:65506
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> robert165 wrote:
->>
->>
->> =E5=9C=A82010-03-25 15:55:53=EF=BC=8C"Gilles Chanteperdrix"
->> <gilles.chanteperdrix@xenomai.org> =E5=86=99=E9=81=93=EF=BC=9A
->>> robert165 wrote:
->>>> =E5=9C=A82010-03-24 18:22:24=EF=BC=8C"Gilles Chanteperdrix"
->>>> <gilles.chanteperdrix@xenomai.org> =E5=86=99=E9=81=93=EF=BC=9A
->>>>> robert165 wrote:
->>>>>> Hi Jan, I am new to xenomai, I am writing a gpio driver based
->>>>>> on your "RTDM skeleton v1.1". There is a problem that when I
->>>>>> complied and run your skeleton in a at91rm9200 broad with
->>>>>> TIMERINT, the output is not show one line one second but very
->>>>>> fast. The problem is still whenever I changed the following
->>>>>> codes in demo_interrupt()
->>>>>>
->>>>>> #ifdef TIMERINT if (events > XXX){=20
->>>>>> rtdm_event_signal(&ctx->irq_event); event=3D0; } ... events++;
->>>>>>
->>>>>> And, it seems likely in my own irq_handle of a gpio irq. When
->>>>>> the irq arrive, the irq_handle repeats many times. Should I
->>>>>> mask the same irq in irq_handle? I did it by write the PIO
->>>>>> interrupt mask register, but no effect.
->>>>> Which interrupt is TIMERINT?
->>>> TIMERINT is timer interrupt.
->>>>
->>>> It is in the demo of rtdm driver, the sourse is:
->>>>
->>>> http://www.captain.at/xenomai-real-time-driver-example.php
->>>>
->>>> Best wishes,
->>> Yes, but I was wondering which timer interrupt: - if you are
->>> talking about the AT91 "system interrupt", it is shared between
->>> several peripherals, including the DBGU serial port, and can not be
->>> used in a real-time driver for this reason; - if you are talking
->>> about the TC interrupt, it is handled by the I-pipe, and you can
->>> not register a handler for your own driver either.
->>>
->>> IOW, what value of TIMERINT do you use?
->> What I said is  the the original codes of Jan, I just compiled and
->> run it without any modification. The value of TIMERINT is 0.
->=20
-> Ok. In fact, I am afraid Jan's code is for x86, not AT91. Since that
-> driver was written, RTDM gained support for timers, so, hooking into th=
-e
-> timer interrupt is no longer needed if you want a handler to be
-> triggered periodically.
+Dears, =0A=0A=0AI built the uClinux kernel for NIOS II and it run well on t=
+he target board. I followed the typical actions available here : http://www=
+.nioswiki.com/ =0A=0ANow, I want to add a co-scheduler xenomai to the kerne=
+l (uclinux) to reduce its latency. I followed these steps: (http://www.xeno=
+mai.org/documentation/xenomai-2.5/README.INSTALL)=0A$ $xenomai-2.5.1/script=
+s/prepare-kernel.sh --arch=3Dnios2 --adeos=3D$xenomai-2.5.1/ksrc/arch/nios2=
+/patches/adeos-ipipe-2.6.30-nios2-1.1-00.patch=0A=A0 --linux=3D$linux_tree=
+=0A$ $xenomai-2.5.1/configure --host=3Dnios2-linux=0A$ make install DESTDIR=
+=3D$uClinux-dist/romfs=0A=0ABut, in this step, I got this error:=0A=0Aeck_v=
+dso-check-vdso.o ../../skins/native/libnative.la -lpthread -lm=0Alibtool: l=
+ink: ../../../scripts/wrap-link.sh nios2-linux-gcc -Wl,-elf2flt -o check-vd=
+so check_vdso-check-vdso.o=A0 ../../skins/native/.libs/libnative.a -lpthrea=
+d -lm=0Acheck-vdso.elf2flt(.text+0x16c): In function `main':=0A: undefined =
+reference to `xeno_sem_heap'=0Acheck-vdso.elf2flt(.text+0x170): In function=
+ `main':=0A: undefined reference to `xeno_sem_heap'=0Acollect2: ld returned=
+ 1 exit status=0Amake[3]: *** [check-vdso] Erreur 1=0Amake[3]: quittant le =
+r=E9pertoire =AB /home/sonda/Desktop/xenomai-2.5.1/src/testsuite/unit =BB=
+=0Amake[2]: *** [all-recursive] Erreur 1=0Amake[2]: quittant le r=E9pertoir=
+e =AB /home/sonda/Desktop/xenomai-2.5.1/src/testsuite =BB=0Amake[1]: *** [a=
+ll-recursive] Erreur 1=0Amake[1]: quittant le r=E9pertoire =AB /home/sonda/=
+Desktop/xenomai-2.5.1/src =BB=0Amake: *** [all-recursive] Erreur 1=0A=0Awha=
+t can I do? Please help=0ARegards,=0A=0A=0A      
+--0-1965044213-1269548655=:65506
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-I have to reject any credits for suggesting to hook into the timer IRQ
-(or I would suffer from serious dementia). That example on captain.at is
-not suited for tutorial purposes without further explanations.
-Unfortunately, there is more stuff on that site. I tried to contact
-Hannes on that some time ago but did not receive any reply.
-
-Jan
-
-
---------------enigF0A877EB98B5A43E4776B031
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkurcvUACgkQitSsb3rl5xSV0gCeL6a2lXAFNEZLBk/73vFjyfqy
-Y90AniluybQ4eSEGA0/tIbXef/yP9wU/
-=QIwV
------END PGP SIGNATURE-----
-
---------------enigF0A877EB98B5A43E4776B031--
+<html><head><style type=3D"text/css"><!-- DIV {margin:0px;} --></style></he=
+ad><body><div style=3D"font-family:times new roman, new york, times, serif;=
+font-size:12pt"><DIV>=0A<P style=3D"MARGIN: 0cm 0cm 10pt" class=3DMsoNormal=
+><SPAN style=3D"mso-ansi-language: EN-US" lang=3DEN-US><FONT face=3DCalibri=
+>Dears, <BR style=3D"mso-special-character: line-break"><BR style=3D"mso-sp=
+ecial-character: line-break"><?xml:namespace prefix =3D o ns =3D "urn:schem=
+as-microsoft-com:office:office" /><o:p></o:p></FONT></SPAN></P>=0A<P style=
+=3D"MARGIN: 0cm 0cm 10pt" class=3DMsoNormal><SPAN style=3D"mso-ansi-languag=
+e: EN-US" lang=3DEN-US><FONT face=3DCalibri>I built the uClinux kernel for =
+NIOS II and it run well on the target board. I followed the typical actions=
+ available here : http://www.nioswiki.com/ <BR><BR>Now, I want to add a co-=
+scheduler xenomai to the kernel (uclinux) to reduce its latency. I followed=
+ these steps: (http://www.xenomai.org/documentation/xenomai-2.5/README.INST=
+ALL)<BR>$ $xenomai-2.5.1/scripts/prepare-kernel.sh --arch=3Dnios2 --adeos=
+=3D$xenomai-2.5.1/ksrc/arch/nios2/patches/adeos-ipipe-2.6.30-nios2-1.1-00.p=
+atch<BR>&nbsp; --linux=3D$linux_tree<BR>$ $xenomai-2.5.1/configure --host=
+=3Dnios2-linux<BR>$ make install DESTDIR=3D$uClinux-dist/romfs<BR><BR>But, =
+in this step, I got this error:<BR><BR>eck_vdso-check-vdso.o ../../skins/na=
+tive/libnative.la -lpthread -lm<BR>libtool: link: ../../../scripts/wrap-lin=
+k.sh nios2-linux-gcc -Wl,-elf2flt -o check-vdso check_vdso-check-vdso.o&nbs=
+p;
+ ../../skins/native/.libs/libnative.a -lpthread -lm<BR>check-vdso.elf2flt(.=
+text+0x16c): In function `main':<BR>: undefined reference to `xeno_sem_heap=
+'<BR>check-vdso.elf2flt(.text+0x170): In function `main':<BR>: undefined re=
+ference to `xeno_sem_heap'<BR>collect2: ld returned 1 exit status<BR>make[3=
+]: *** [check-vdso] Erreur 1<BR>make[3]: quittant le r=E9pertoire =AB /home=
+/sonda/Desktop/xenomai-2.5.1/src/testsuite/unit =BB<BR>make[2]: *** [all-re=
+cursive] Erreur 1<BR>make[2]: quittant le r=E9pertoire =AB /home/sonda/Desk=
+top/xenomai-2.5.1/src/testsuite =BB<BR>make[1]: *** [all-recursive] Erreur =
+1<BR>make[1]: quittant le r=E9pertoire =AB /home/sonda/Desktop/xenomai-2.5.=
+1/src =BB<BR>make: *** [all-recursive] Erreur 1<BR><BR>what can I do? Pleas=
+e help</FONT></SPAN></P>=0A<P style=3D"MARGIN: 0cm 0cm 10pt" class=3DMsoNor=
+mal><SPAN style=3D"mso-ansi-language: EN-US" lang=3DEN-US><FONT face=3DCali=
+bri><o:p>Regards,</o:p></FONT></SPAN></P></DIV></div><br>=0A=0A=0A=0A=0A   =
+   </body></html>
+--0-1965044213-1269548655=:65506--
 
