@@ -1,11 +1,17 @@
-Content-class: urn:content-classes:message
+Date: Thu, 25 Mar 2010 10:55:09 +0800 (CST)
+From: robert165 <robert165@domain.hid>
+Message-ID: <63e73d99.3c71.127933ea91c.Coremail.robert165@domain.hid>
+In-Reply-To: <4BA9E7E0.6040206@domain.hid>
+References: <4BA9E7E0.6040206@domain.hid> <4BA8F900.5000602@domain.hid>
+	<4BA39C3D.1040802@domain.hid> <4BA4EF75.7010202@domain.hid>
+	<4BA74820.2090401@domain.hid> <4BA8752E.8090407@domain.hid>
+	<4BA8C15E.5050707@domain.hid> <4BA8F517.3060705@domain.hid>
+	<4BA8F732.10206@domain.hid>
+	<2d0b8e.10245.1278e1771a8.Coremail.robert165@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01CACBA2.D776AE0C"
-Date: Wed, 24 Mar 2010 17:39:18 -0500
-Message-ID: <181804936ABC2349BE503168465576460E388C67@domain.hid>
-From: "Steve Deiters" <SteveDeiters@domain.hid>
-Subject: [Xenomai-help] Patch series for Denx ipipe?
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_40463_1667571630.1269485709596"
+Subject: Re: [Xenomai-help] Problem in irq_handle
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,70 +21,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai-help <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
+------=_Part_40463_1667571630.1269485709596
+Content-Type: text/plain; charset=gbk
+Content-Transfer-Encoding: base64
 
-------_=_NextPart_001_01CACBA2.D776AE0C
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+CgoKCtTaMjAxMC0wMy0yNCAxODoyMjoyNKOsIkdpbGxlcyBDaGFudGVwZXJkcml4IiA8Z2lsbGVz
+LmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmc+INC0tcCjugo+cm9iZXJ0MTY1IHdyb3RlOgo+PiBI
+aSBKYW4sIEkgYW0gbmV3IHRvIHhlbm9tYWksIEkgYW0gd3JpdGluZyBhIGdwaW8gZHJpdmVyIGJh
+c2VkIG9uCj4+IHlvdXIgIlJURE0gc2tlbGV0b24gdjEuMSIuIFRoZXJlIGlzIGEgcHJvYmxlbSB0
+aGF0IHdoZW4gSSBjb21wbGllZAo+PiBhbmQgcnVuIHlvdXIgc2tlbGV0b24gaW4gYSBhdDkxcm05
+MjAwIGJyb2FkIHdpdGggVElNRVJJTlQsIHRoZSBvdXRwdXQKPj4gaXMgbm90IHNob3cgb25lIGxp
+bmUgb25lIHNlY29uZCBidXQgdmVyeSBmYXN0LiBUaGUgcHJvYmxlbSBpcyBzdGlsbAo+PiB3aGVu
+ZXZlciBJIGNoYW5nZWQgdGhlIGZvbGxvd2luZyBjb2RlcyBpbiBkZW1vX2ludGVycnVwdCgpCj4+
+IAo+PiAjaWZkZWYgVElNRVJJTlQgaWYgKGV2ZW50cyA+IFhYWCl7IAo+PiBydGRtX2V2ZW50X3Np
+Z25hbCgmY3R4LT5pcnFfZXZlbnQpOyBldmVudD0wOyB9IC4uLiBldmVudHMrKzsKPj4gCj4+IEFu
+ZCwgaXQgc2VlbXMgbGlrZWx5IGluIG15IG93biBpcnFfaGFuZGxlIG9mIGEgZ3BpbyBpcnEuIFdo
+ZW4gdGhlIGlycQo+PiBhcnJpdmUsIHRoZSBpcnFfaGFuZGxlIHJlcGVhdHMgbWFueSB0aW1lcy4g
+U2hvdWxkIEkgbWFzayB0aGUgc2FtZSBpcnEKPj4gaW4gaXJxX2hhbmRsZT8gSSBkaWQgaXQgYnkg
+d3JpdGUgdGhlIFBJTyBpbnRlcnJ1cHQgbWFzayByZWdpc3RlciwgYnV0Cj4+IG5vIGVmZmVjdC4K
+Pgo+V2hpY2ggaW50ZXJydXB0IGlzIFRJTUVSSU5UPwoKVElNRVJJTlQgaXMgdGltZXIgaW50ZXJy
+dXB0LgpJdCBpcyBpbiB0aGUgZGVtbyBvZiBydGRtIGRyaXZlciwgdGhlIHNvdXJzZSBpczoKaHR0
+cDovL3d3dy5jYXB0YWluLmF0L3hlbm9tYWktcmVhbC10aW1lLWRyaXZlci1leGFtcGxlLnBocApC
+ZXN0IHdpc2hlcywgCkx1bw==
+------=_Part_40463_1667571630.1269485709596
+Content-Type: text/html; charset=gbk
+Content-Transfer-Encoding: base64
 
-Hello,
-=20
-I was wondering if anyone knows if there is a patch series available for
-the Denx ipipe Git heads?  I was wanting to try out the version for the
-2.6.33 kernel with the latest Xenomai, but the Git head already has all
-the patches applied to the kernel when I download a snapshot
-(http://git.denx.de/?p=3Dipipe-2.6.git;a=3Dshortlog;h=3Drefs/heads/ipipe=
--2.6.3
-3-powerpc).  I was looking for a patch so that I could easily use it
-with the Xenomai installer.  If one doesn't exist, does anyone know
-which kernel tree this might be based off of so I can try to make a
-patch myself?
-=20
-Thanks.
-=20
-=20
-
-------_=_NextPart_001_01CACBA2.D776AE0C
-Content-Type: text/html; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META http-equiv=3DContent-Type content=3D"text/html; charset=3Dus-ascii=
-">
-<META content=3D"MSHTML 6.00.6000.16809" name=3DGENERATOR></HEAD>
-<BODY>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D430123222-24032010>Hello,</SPAN></FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D430123222-24032010></SPAN></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN class=3D430123222-24032010>I was=
- wondering if=20
-anyone knows if there is a patch series available for the Denx ipipe Git=20
-heads?&nbsp; I was wanting to try out the version for the 2.6.33 kernel=
- with the=20
-latest Xenomai, but the Git head already has all the patches applied to=
- the=20
-kernel&nbsp;when I download a snapshot (<A=20
-href=3D"http://git.denx.de/?p=3Dipipe-2.6.git;a=3Dshortlog;h=3Drefs/head=
-s/ipipe-2.6.33-powerpc">http://git.denx.de/?p=3Dipipe-2.6.git;a=3Dshortl=
-og;h=3Drefs/heads/ipipe-2.6.33-powerpc</A>).&nbsp;=20
-I was looking for a patch so that I could easily use it with the Xenomai=20
-installer.&nbsp; If one doesn't exist, does anyone know which kernel tre=
-e this=20
-might be based off of so I can try to make a patch myself?</SPAN></FONT>=
-</DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D430123222-24032010></SPAN></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D430123222-24032010>Thanks.</SPAN></FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D430123222-24032010></SPAN></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D430123222-24032010></SPAN></FONT>&nbsp;</DIV></BODY></HTML>
-
-------_=_NextPart_001_01CACBA2.D776AE0C--
+PERJVj48QlI+PC9ESVY+CjxESVY+PC9ESVY+PEJSPjxQUkU+1NoyMDEwLTAzLTI0Jm5ic3A7MTg6
+MjI6MjSjrCJHaWxsZXMmbmJzcDtDaGFudGVwZXJkcml4IiZuYnNwOyZsdDtnaWxsZXMuY2hhbnRl
+cGVyZHJpeEB4ZW5vbWFpLm9yZyZndDsmbmJzcDvQtLXAo7oKJmd0O3JvYmVydDE2NSZuYnNwO3dy
+b3RlOgomZ3Q7Jmd0OyZuYnNwO0hpJm5ic3A7SmFuLCZuYnNwO0kmbmJzcDthbSZuYnNwO25ldyZu
+YnNwO3RvJm5ic3A7eGVub21haSwmbmJzcDtJJm5ic3A7YW0mbmJzcDt3cml0aW5nJm5ic3A7YSZu
+YnNwO2dwaW8mbmJzcDtkcml2ZXImbmJzcDtiYXNlZCZuYnNwO29uCiZndDsmZ3Q7Jm5ic3A7eW91
+ciZuYnNwOyJSVERNJm5ic3A7c2tlbGV0b24mbmJzcDt2MS4xIi4mbmJzcDtUaGVyZSZuYnNwO2lz
+Jm5ic3A7YSZuYnNwO3Byb2JsZW0mbmJzcDt0aGF0Jm5ic3A7d2hlbiZuYnNwO0kmbmJzcDtjb21w
+bGllZAomZ3Q7Jmd0OyZuYnNwO2FuZCZuYnNwO3J1biZuYnNwO3lvdXImbmJzcDtza2VsZXRvbiZu
+YnNwO2luJm5ic3A7YSZuYnNwO2F0OTFybTkyMDAmbmJzcDticm9hZCZuYnNwO3dpdGgmbmJzcDtU
+SU1FUklOVCwmbmJzcDt0aGUmbmJzcDtvdXRwdXQKJmd0OyZndDsmbmJzcDtpcyZuYnNwO25vdCZu
+YnNwO3Nob3cmbmJzcDtvbmUmbmJzcDtsaW5lJm5ic3A7b25lJm5ic3A7c2Vjb25kJm5ic3A7YnV0
+Jm5ic3A7dmVyeSZuYnNwO2Zhc3QuJm5ic3A7VGhlJm5ic3A7cHJvYmxlbSZuYnNwO2lzJm5ic3A7
+c3RpbGwKJmd0OyZndDsmbmJzcDt3aGVuZXZlciZuYnNwO0kmbmJzcDtjaGFuZ2VkJm5ic3A7dGhl
+Jm5ic3A7Zm9sbG93aW5nJm5ic3A7Y29kZXMmbmJzcDtpbiZuYnNwO2RlbW9faW50ZXJydXB0KCkK
+Jmd0OyZndDsmbmJzcDsKJmd0OyZndDsmbmJzcDsjaWZkZWYmbmJzcDtUSU1FUklOVCZuYnNwO2lm
+Jm5ic3A7KGV2ZW50cyZuYnNwOyZndDsmbmJzcDtYWFgpeyZuYnNwOwomZ3Q7Jmd0OyZuYnNwO3J0
+ZG1fZXZlbnRfc2lnbmFsKCZhbXA7Y3R4LSZndDtpcnFfZXZlbnQpOyZuYnNwO2V2ZW50PTA7Jm5i
+c3A7fSZuYnNwOy4uLiZuYnNwO2V2ZW50cysrOwomZ3Q7Jmd0OyZuYnNwOwomZ3Q7Jmd0OyZuYnNw
+O0FuZCwmbmJzcDtpdCZuYnNwO3NlZW1zJm5ic3A7bGlrZWx5Jm5ic3A7aW4mbmJzcDtteSZuYnNw
+O293biZuYnNwO2lycV9oYW5kbGUmbmJzcDtvZiZuYnNwO2EmbmJzcDtncGlvJm5ic3A7aXJxLiZu
+YnNwO1doZW4mbmJzcDt0aGUmbmJzcDtpcnEKJmd0OyZndDsmbmJzcDthcnJpdmUsJm5ic3A7dGhl
+Jm5ic3A7aXJxX2hhbmRsZSZuYnNwO3JlcGVhdHMmbmJzcDttYW55Jm5ic3A7dGltZXMuJm5ic3A7
+U2hvdWxkJm5ic3A7SSZuYnNwO21hc2smbmJzcDt0aGUmbmJzcDtzYW1lJm5ic3A7aXJxCiZndDsm
+Z3Q7Jm5ic3A7aW4mbmJzcDtpcnFfaGFuZGxlPyZuYnNwO0kmbmJzcDtkaWQmbmJzcDtpdCZuYnNw
+O2J5Jm5ic3A7d3JpdGUmbmJzcDt0aGUmbmJzcDtQSU8mbmJzcDtpbnRlcnJ1cHQmbmJzcDttYXNr
+Jm5ic3A7cmVnaXN0ZXIsJm5ic3A7YnV0CiZndDsmZ3Q7Jm5ic3A7bm8mbmJzcDtlZmZlY3QuCiZn
+dDsKJmd0O1doaWNoJm5ic3A7aW50ZXJydXB0Jm5ic3A7aXMmbmJzcDtUSU1FUklOVD88L1BSRT48
+UFJFPgpUSU1FUklOVCBpcyB0aW1lciBpbnRlcnJ1cHQuPC9QUkU+PFBSRT5JdCBpcyBpbiB0aGUg
+ZGVtbyBvZiBydGRtIGRyaXZlciwgdGhlIHNvdXJzZSBpczo8L1BSRT48UFJFPmh0dHA6Ly93d3cu
+Y2FwdGFpbi5hdC94ZW5vbWFpLXJlYWwtdGltZS1kcml2ZXItZXhhbXBsZS5waHA8L1BSRT48UFJF
+PkJlc3Qgd2lzaGVzLCA8L1BSRT48UFJFPkx1bzwvUFJFPjxicj48YnI+PHNwYW4gdGl0bGU9Im5l
+dGVhc2Vmb290ZXIiLz48L3NwYW4+
+------=_Part_40463_1667571630.1269485709596--
 
 
