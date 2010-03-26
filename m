@@ -1,12 +1,9 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <181804936ABC2349BE503168465576460E388C67@domain.hid>
-References: <181804936ABC2349BE503168465576460E388C67@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 26 Mar 2010 06:20:45 +0100
-Message-ID: <1269580845.2418.133.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Patch series for Denx ipipe?
+MIME-Version: 1.0
+Date: Fri, 26 Mar 2010 15:28:14 +0100
+Message-ID: <d9506c611003260728r4a2b5ae6yf240c7499132ff54@domain.hid>
+From: Cyril Wallois <walloiscyril@domain.hid>
+Content-Type: multipart/alternative; boundary=00148532615942b5510482b4f922
+Subject: [Xenomai-help] Interrupt with rtnet
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,40 +13,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steve Deiters <SteveDeiters@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, 2010-03-24 at 17:39 -0500, Steve Deiters wrote:
-> Hello,
->  
-> I was wondering if anyone knows if there is a patch series available
-> for the Denx ipipe Git heads?  I was wanting to try out the version
-> for the 2.6.33 kernel with the latest Xenomai, but the Git head
-> already has all the patches applied to the kernel when I download a
-> snapshot
-> (http://git.denx.de/?p=ipipe-2.6.git;a=shortlog;h=refs/heads/ipipe-2.6.33-powerpc).  I was looking for a patch so that I could easily use it with the Xenomai installer. 
+--00148532615942b5510482b4f922
+Content-Type: text/plain; charset=ISO-8859-1
 
-prepare-kernel.sh will detect that your kernel is pre-patched, and won't
-ask for a separate pipeline patch.
+Hi all,
 
->  If one doesn't exist, does anyone know which kernel tree this might
-> be based off of so I can try to make a patch myself?
+I work on an embedded system ( ARMadeus apf9328) with the linux kernel
+2.6.29.6 and Xenomai 2.4.8.
 
-See there:
-http://git.xenomai.org/?p=xenomai-2.5.git;a=blob;f=ksrc/arch/powerpc/patches/README;h=010a86ecabce19212a8eaa1e0aaf8dc43b4805f3;hb=HEAD
+I am developping the ethernet driver (davicom dm9000) to run RTNet with
+Xenomai, now I debug it :
 
->  
-> Thanks.
->  
->  
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+-material interrupt doesn't seems to be be take into account by Xenomai,
+when I send a packet an interrupt signal is send by the ethernet controller
+but he stay at low level. Any Idea ?
 
+Regards,
 
--- 
-Philippe.
+WALLOIS Cyril
 
+--00148532615942b5510482b4f922
+Content-Type: text/html; charset=ISO-8859-1
 
+Hi all,<br><div class="gmail_quote"><br>I work on an embedded system ( ARMadeus apf9328) with the linux kernel 2.6.29.6 and Xenomai 2.4.8.<br><br>I am developping the ethernet driver (davicom dm9000) to run RTNet with Xenomai, now I debug it :<br>
+
+<br>-material interrupt doesn&#39;t seems to be be take into account by Xenomai, when I send a packet an interrupt signal is send by the ethernet controller but he stay at low level. Any Idea ?<br>
+<br>Regards,<br><font color="#888888"><br>WALLOIS Cyril<br>
+</font></div><br>
+
+--00148532615942b5510482b4f922--
 
