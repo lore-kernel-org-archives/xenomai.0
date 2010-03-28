@@ -1,100 +1,113 @@
-Message-ID: <4B9CA590.7040102@domain.hid>
-Date: Sun, 14 Mar 2010 10:00:00 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Mon, 29 Mar 2010 01:35:56 +0200
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <20100328233556.GC2542@domain.hid>
+References: <4BACBFDC.4080909@domain.hid>
 MIME-Version: 1.0
-References: <4B968DB5.5020302@domain.hid>
-	<1268495969.27899.144.camel@domain.hid>
-In-Reply-To: <1268495969.27899.144.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig962A8A59433F6B876C5D05C3"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Adeos-main] [pull request] Improve ftrace interaction
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4BACBFDC.4080909@domain.hid>
+Subject: Re: [Xenomai-core] Bug in a4l_get_chan
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Daniele Nicolodi <daniele@domain.hid>
+Cc: Alexis Berlemont <berlemont.hauw@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig962A8A59433F6B876C5D05C3
-Content-Type: multipart/mixed;
- boundary="------------040400070000050503030301"
+Daniele Nicolodi wrote:
+> Hello Alexis,
+> 
+> I found that a4l_get_chan() in buffer.c does not work for subdevices
+> that use a global channels description struct (mode =
+> A4L_CHAN_GLOBAL_CHANDESC in the a4l_chdesc_t structure).
+> 
+> The problem is that a4l_get_chan() iterates (twice) on the chan_desc
+> array looking for channel descriptions at indexes higher than 0, also in
+> the case where those are not populated because the subdevice uses a
+> single channel description structure for all channels.
+> 
+> This bug is quite bas, as it triggers a kernel oops for a integer
+> division by zero when an a4l_cmd_t command is issued with a channels
+> description array that does not have the channel id 0 as first acquired
+> channel. You can easily reproduce the bug using the ni_pcimio driver,
+> using cmd_read with the parameter -c 1.
+> 
+> I'm looking into providing a patch, but I have some difficulties in
+> understanding the rational of this part of analogy code...
 
-This is a multi-part message in MIME format.
---------------040400070000050503030301
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+I have some troubles with my dev environment (and I am in a hurry). So
+I was not able to test this patch on my NI board. 
 
-Philippe Gerum wrote:
-> On Tue, 2010-03-09 at 19:04 +0100, Jan Kiszka wrote:
->> The following changes since commit 7c90959b7e4eb5ef8a775ec17005c23f30d=
-aade1:
->>   Philippe Gerum (1):
->>         ipipe: introduce 3-level IRQ pending map
->>
->> are available in the git repository at:
->>
->>   git://git.kiszka.org/ipipe-2.6 queues/2.6.32-noarch
->>
->> These patches address various possible configuration errors around
->> ftrace that can cause hard crashes over I-pipe kernels. Moreover, one
->> patch enables the safe use of ftrace's PID filtering that comes for fr=
-ee
->> for the I-pipe tracer now.
->>
->> The patches also apply on 2.6.33-noarch but were only tested on
->> 2.6.32-x86.
->>
->>
->> Jan Kiszka (5):
->>       Use ipipe_safe_current in ftrace_pid_func
->>       Prevent unsafe ftrace usage over I-pipe
->=20
-> This one looks pretty ugly. I would rather define a entry point for
-> registering ftrace hooks allowed to run in NMI context, and deny the
-> regular unsafe registration routine when the I-pipe tracer is enabled.
+However, with your accurate description, I think this patch should
+solve the problem:
 
-I just learned yesterday from Frederic that the ftrace ring buffer
-should be NMI-safe by now. I need to look into this again, maybe we can
-make _much_ more of ftrace usable for I-pipe. IOW: Series on hold.
+diff --git a/ksrc/drivers/analogy/buffer.c b/ksrc/drivers/analogy/buffer.c
+index bbd79ec..3ec558a 100644
+--- a/ksrc/drivers/analogy/buffer.c
++++ b/ksrc/drivers/analogy/buffer.c
+@@ -112,7 +112,7 @@ a4l_cmd_t *a4l_get_cmd(a4l_subd_t *subd)
+ int a4l_get_chan(a4l_subd_t *subd)
+ {
+ 	a4l_dev_t *dev = subd->dev;
+-	int i, tmp_count, tmp_size = 0;	
++	int i, j, tmp_count, tmp_size = 0;	
+ 	a4l_cmd_t *cmd;
+ 
+ 	/* Check that subdevice supports commands */
+@@ -132,9 +132,11 @@ int a4l_get_chan(a4l_subd_t *subd)
+ 	/* We assume channels can have different sizes;
+ 	   so, we have to compute the global size of the channels
+ 	   in this command... */
+-	for (i = 0; i < cmd->nb_chan; i++)
+-		tmp_size += dev->transfer.subds[subd->idx]->chan_desc->
+-			chans[CR_CHAN(cmd->chan_descs[i])].nb_bits;
++	for (i = 0; i < cmd->nb_chan; i++) {
++		j = (subd->chan_desc->mode != A4L_CHAN_GLOBAL_CHANDESC) ? 
++			CR_CHAN(cmd->chan_descs[i]) : 0;
++		tmp_size += subd->chan_desc->chans[j].nb_bits;
++	}
+ 
+ 	/* Translation bits -> bytes */
+ 	tmp_size /= 8;
+@@ -146,9 +148,11 @@ int a4l_get_chan(a4l_subd_t *subd)
+ 
+ 	/* ...and find the channel the last munged sample 
+ 	   was related with */
+-	for (i = 0; tmp_count > 0 && i < cmd->nb_chan; i++)
+-		tmp_count -= dev->transfer.subds[subd->idx]->chan_desc->
+-			chans[CR_CHAN(cmd->chan_descs[i])].nb_bits;
++	for (i = 0; tmp_count > 0 && i < cmd->nb_chan; i++) {
++		j = (subd->chan_desc->mode != A4L_CHAN_GLOBAL_CHANDESC) ? 
++			CR_CHAN(cmd->chan_descs[i]) : 0;
++		tmp_count -= subd->chan_desc->chans[j].nb_bits;
++	}
+ 
+ 	if (tmp_count == 0)
+ 		return i;
 
-Jan
+Concerning, the rationale of the this code, I understand what you
+mean. Firstly, the function is badly named, it is quite hard to find
+out its role. Secondly, the case I try to manage is intricate (but
+real). 
+
+I will try to explain it tomorrow (with a proposal of a little patch to
+set a better name for this function).
 
 
+> 
+> Cheers,
+> -- 
+> Daniele
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
---------------040400070000050503030301
-Content-Type: application/pgp-signature;
- name="signature.asc"
-Content-Transfer-Encoding: base64
-Content-Disposition: inline;
- filename="signature.asc"
-
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjIuMC45IChH
-TlUvTGludXgpCkNvbW1lbnQ6IFVzaW5nIEdudVBHIHdpdGggU1VTRSAtIGh0dHA6Ly9lbmln
-bWFpbC5tb3pkZXYub3JnCgppRVlFQVJFQ0FBWUZBa3VjcFUwQUNna1FpdFNzYjNybDV4UkVs
-d0NlSTNhTk1QWW51Y2t0cHI0OU9tWHhzL0Z0CkxId0FvSjZRc0h0SUMwcDlLNnVmTjJYVmpY
-d2VHOGxaCj1nNmFUCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQoK
---------------040400070000050503030301--
-
---------------enig962A8A59433F6B876C5D05C3
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkucpZAACgkQitSsb3rl5xSUKwCg4R0zeZklkI1QKNex+LGj8b1/
-03IAoNJPo9x9cX6NAi3ltEvrj49mHDgM
-=r3kV
------END PGP SIGNATURE-----
-
---------------enig962A8A59433F6B876C5D05C3--
+-- 
+Alexis.
 
