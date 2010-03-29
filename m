@@ -1,13 +1,11 @@
-Message-ID: <4BB0F428.5050905@domain.hid>
-Date: Mon, 29 Mar 2010 20:40:40 +0200
-From: Daniele Nicolodi <daniele@domain.hid>
+Message-ID: <4BB10712.708@domain.hid>
+Date: Mon, 29 Mar 2010 22:01:22 +0200
+From: Roland Stigge <stigge@domain.hid>
 MIME-Version: 1.0
-References: <4BA259D1.4020704@domain.hid> <4BA2BFCF.8010000@domain.hid>
-In-Reply-To: <4BA2BFCF.8010000@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Analogy: cancel ongoing commands when a device
- is closed
+References: <4BAFBF32.8030507@domain.hid>
+In-Reply-To: <4BAFBF32.8030507@domain.hid>
+Content-Type: multipart/mixed; boundary="------------080102090406090409070006"
+Subject: Re: [Xenomai-core] [announce] Xenomai v2.5.2
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,42 +14,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Alexis Berlemont <berlemont.hauw@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai core <Xenomai-core@domain.hid>
 
-Alexis Berlemont wrote:
-> Daniele Nicolodi wrote:
->> After fixing analogy to permit continuous acquisition, I discovered that
->> ongoing commands are not canceled when a device is closed (I obtain a
->> DMA buffer owerwrite warning in the kernel log when I abruptly terminate
->>  my acquisition program).
->>
->> I think this is quite a surprising behavior. I would expect that the
->> commands are canceled when there isn't a data consumer any more. Would
->> it be possible to cancel any ongoing command on device close? If there
->> is agreement on this, I can look into providing a patch.
->>
-> The close should indeed stop any occurring acquisition. I implemented
-> this behaviour. It is in my git repository.
+This is a multi-part message in MIME format.
+--------------080102090406090409070006
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi Alexis. I have been working with analogy from your git three and I
-should say that the new behavior, in my use case, is worst than the
-previous.
+Hi!
 
-Now, when a device is closed, all accurring acquisition are terminated,
-also the ones that haven't been started by the current process. While it
-is possible to use at the same time two different subdevices, from two
-different processes, now it is not possible to terminate one process and
-leave the other one running. I think that the correct behavior would be
-to terminate just the acquisitions started by the current process.
-However, I have no idea on how difficult this would be.
+Gilles Chanteperdrix wrote:
+> here comes Xenomai v2.5.2, codenamed "Souls Of Distortion" available
+> from Xenomai download area:
+> http://download.gna.org/xenomai/stable/xenomai-2.5.2.tar.bz2
 
-This bring me also to the fact that there isn't currently a way to
-prevent two concurrent processes to access the same subdevice,
-interfering each other. Would it possible to have a lock() method, as
-comedi has?
+Cool, thanks!
 
-Thanks. Cheers,
--- 
-Daniele
+I'm attaching a patch from Debian. I needed to introduce it because
+without it, --with-test didn't cause /usr/bin/xeno to access the
+executables in the specified directory.
+
+Thanks for considering!
+
+bye,
+  Roland
+
+--------------080102090406090409070006
+Content-Type: text/x-patch;
+ name="xenomai.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="xenomai.patch"
+
+--- xenomai-2.5.2.orig/scripts/xeno.in
++++ xenomai-2.5.2/scripts/xeno.in
+@@ -6,9 +6,6 @@
+ # e.g. "xeno latency"
+ #
+ 
+-prefix="@prefix@"
+-exec_prefix="@exec_prefix@"
+-BINDIR="@bindir@"
+-unset prefix exec_prefix
++XENO_TEST_DIR="@XENO_TEST_DIR@"
+ 
+-exec $BINDIR/$@
++exec $XENO_TEST_DIR/$@
+
+--------------080102090406090409070006--
 
