@@ -1,14 +1,10 @@
-Sender: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <4BA2B7FE.70206@domain.hid>
-Date: Fri, 19 Mar 2010 00:32:14 +0100
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
-MIME-Version: 1.0
-References: <4B990EF1.1000400@domain.hid> <4B9ADF5C.5060306@domain.hid>
-	<4B9FF458.4050908@domain.hid>
-In-Reply-To: <4B9FF458.4050908@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+From: Robert Berger <gmane@domain.hid>
+Date: Tue, 30 Mar 2010 07:45:53 +0300
+Message-ID: <horvm4$cil$1@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Experimenting with Analogy. Bugs found?
+Subject: [Xenomai-help] find bits and pieces for Denx PPC/ipipe/xenomai?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,49 +14,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniele Nicolodi <daniele@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Daniele Nicolodi wrote:
-> Alexis Berlemont wrote:
->> Hi,
->>
->> Daniele Nicolodi wrote:
->>> Hello. I'm testing Analogy on my x86 system with a NI 6251 ADC board (I
->>> can test with other NI ADCs if it useful to someone).
+Hi,
+
+It looks like something changed in the way to find all the bits and
+pieces to patch/build the Denx PPC/ipipe/xenomai combo.
+
+Looking here:
+http://git.xenomai.org/?p=xenomai-head.git;a=blob;f=ksrc/arch/powerpc/patches/README;h=010a86ecabce19212a8eaa1e0aaf8dc43b4805f3;hb=master
+
+I read:
+
 >>>
->>> The lack of overview documentation is making my progress slow, but I
->>> have a couple of acquisition routines working quite well.
->> Which documentation are talking about ? For me the docs are:
->> - the Doxygen doc (Xenomai API -> modules -> Analogy API):
->> http://www.xenomai.org/documentation/xenomai-2.5/html/api/index.html
->> - the wiki pages in the section "Device Drivers':
->> http://www.xenomai.org/index.php/Driver_documentation
->>
->> Are you talking about these ones. Where did you see TRI_WAKE_EOS was not 
->> supported ?
-> 
-> 
-> Hi, I'm refering exactly to this documentation. When I say that overview
-> documentation is missing I'm referring to the fact that there isn't a
-> document that describes which are the steps you need to perform to set
-> up an acquisition, and why you need to do so. I think that the most
-> under documented API section is the one about getting devices,
-> subdevices and channels properties and capabilities. I can try to find
-> some spare time to help on this.
-> 
-> About the TRIG_WAKE_EOS, I'm referring to this page:
-> 
-> http://www.xenomai.org/documentation/xenomai-2.5/html/api/group__async1__lib.html
-> 
-> It says:
-> 
-> #define 	TRIG_WAKE_EOS   0x0020
->  	Trigger not implemented yet.
-> 
-OK I fixed the documentation.
-> And there are no other mentions of it in the documentation.
-> 
-> Cheers,
 
-Alexis.
+from Linux v2.6.22 to v2.6.32
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+>From git://www.denx.de/git/linux-2.6-denx.git
+
+Patch release			Commit #
+----------------------------	----------------------------------------
+2.6.22-DENX-*/powerpc		3e833ffb06a4ce14f2680a0afe9abd5342188e17
+...
+2.6.32.3-DENX-*/powerpc		224f363857f05ab44dab3441112965f0a7966788
+
+		from Linux v2.6.20 to v2.6.21
+		from Linux v2.6.33 onward
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+>From ftp://ftp.free.fr/mirrors/ftp.kernel.org/linux/kernel/v2.6/
+
+	All patches are based on mainline kernel releases.
+
+<<<
+
+Does this mean, that the patches are not anymore against the DENX git
+repository, but against mainline?
+
+What I would do up to now is to find in the denx git repository the
+corresponding commit or similar;)
+
+There seems to be an 2.6.33 ipipe patch:
+
+http://git.xenomai.org/?p=xenomai-head.git;a=blob;f=ksrc/arch/powerpc/patches/adeos-ipipe-2.6.33-powerpc-2.9-00.patch;h=7b84ba91606e7873227ef70d99aa077362248f4a;hb=master
+
+So I would apply this on:
+http://git.denx.de/?p=linux-2.6-denx.git;a=shortlog;h=refs/heads/DENX-v2.6.33-stable
+
+Or should I use
+http://git.denx.de/?p=ipipe-2.6.git;a=summary
+
+Or something completely different?
+
+With
+
+http://git.xenomai.org/?p=xenomai-head.git;a=summary
+
+I'm confused what's the recommended way to get the latest and greatest
+ipipe/kernel/xenomai combination based on a DENX ppc kernel tree.
+
+Please advise.
+
+Regards,
+
+Robert
+
+-- 
+Robert Berger
+Embedded Software Specialist
+
+Reliable Embedded Systems
+Consulting Training Engineering
+Tel.: (+30) 697 593 3428
+Fax.:(+30) 210 684 7881
+email: robert.berger@domain.hid
+URL: http://www.reliableembeddedsystems.com
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+..."Pointers are like jumps, leading wildly from one part of the data
+structure to another. Their introduction into high-level languages has
+been a step backwards from which we may never recover." - C. A. R.
+Hoare, "Hints on Programming Language Design", 1973
+
+My public pgp key is available at:
+http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x90320BF1
+
+
 
