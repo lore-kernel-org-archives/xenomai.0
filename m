@@ -1,48 +1,44 @@
-Message-ID: <4BDB451E.6010109@domain.hid>
-Date: Fri, 30 Apr 2010 23:01:18 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Wolfgang Denk <wd@domain.hid>
 MIME-Version: 1.0
-References: <4BDADC13.2070500@domain.hid>
-	<1272658402.24705.108.camel@domain.hid>
-In-Reply-To: <1272658402.24705.108.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RFC] Fix excessive host tick latencies
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-type: text/plain; charset=ISO-8859-1
+Content-transfer-encoding: 8bit
+In-reply-to: <4BB3BCF9.9080809@domain.hid>
+References: <hp0bdv$mp4$1@domain.hid>
+	<4BB3BCF9.9080809@domain.hid>
+Date: Thu, 01 Apr 2010 01:12:36 +0200
+Message-Id: <20100331231236.75D8AE73028@domain.hid>
+Subject: Re: [Xenomai-help] cyclictest -tn where n!=1 causes segfault with
+	Kilauea
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Robert Berger <gmane@domain.hid>
+Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Fri, 2010-04-30 at 15:33 +0200, Jan Kiszka wrote:
->> Hi Philippe,
->>
->> I'm not 100% sure if this plugs all remaining wholes in the deferred
->> host tick processing, but at least the most easiest reproducible one is
->> cured now for me (Linux latency peak after termination of 'latency').
->> Please let me know if you see more potential issues, otherwise I would
->> include this in my for-upstream queue.
-> 
-> That patch is correct, please queue it. Anything that breaks the
-> assumption described in the following comment from
-> xntimer_next_local_shot() is wrong wrt tick deferral: "The host tick
-> deferral is cleared whenever Xenomai is about to yield control to the
-> host kernel".
-> 
-> In short, when the code will match the comments and documentation, we
-> will be done with debugging.
+Dear Robert,
 
-What I meant is that with the nucleus debugging fixed, we may not even
-enter __xnpod_schedule often enough to handle the host tick propagation.
-So, maybe we should make xnpod_schedule call __xnpod_schedule if XNHTICK
-or XNHDEFER are set.
+In message <4BB3BCF9.9080809@domain.hid> you wrote:
+> 
+> ulimit -s
+> 8192
+
+And what happens when you start cyclictest after running
+"ulimit -s unlimited" ?
+
+Best regards,
+
+Wolfgang Denk
 
 -- 
-					    Gilles.
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
+All he had was nothing, but that was something, and now it  had  been
+taken away.                             - Terry Pratchett, _Sourcery_
 
