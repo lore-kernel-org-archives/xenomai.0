@@ -1,12 +1,14 @@
-Date: Wed, 31 Mar 2010 23:13:05 -0400
-From: qiuhj@domain.hid
-Message-ID: <17209834.21270091585450.JavaMail.root@domain.hid>
-In-Reply-To: <8592949.31238754988785.JavaMail.root@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help]  uITRON skin problem
-Reply-To: qiuhj@domain.hid
+From: Robert Berger <gmane@domain.hid>
+Date: Thu, 01 Apr 2010 07:26:15 +0300
+Message-ID: <hp179e$1aj$1@domain.hid>
+References: <hp0bdv$mp4$1@domain.hid>	<4BB3BCF9.9080809@domain.hid>
+	<20100331231236.75D8AE73028@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+In-Reply-To: <20100331231236.75D8AE73028@domain.hid>
+Subject: Re: [Xenomai-help] cyclictest -tn where n!=1 causes segfault with
+	Kilauea
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,31 +20,37 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi
+Hi Wolfgang,
 
-I want to porting uitron based application to linux, and I decided to use x=
-enomai uitron skin.
+Wolfgang Denk wrote:
+> Dear Robert,
+> 
+> In message <4BB3BCF9.9080809@domain.hid> you wrote:
+>> ulimit -s
+>> 8192
+> 
+> And what happens when you start cyclictest after running
+> "ulimit -s unlimited" ?
 
-I patched the kernel, make the xenomai package and installed user space lib=
-rary and header file=20
+ulimit -s unlimited
+-bash-3.2# ./cyclictest -t3
+Segmentation fault
 
-The application can be built , but something was wrong when I ran the progr=
-am
+We are still dying somewhere here:
 
-The error message is =E2=80=9CXenomai uITRON skin init: shd_tsk() failed, s=
-tatus -33=E2=80=9D
-
-I found the error code =E2=80=9C-33=E2=80=9D mean parameter error ,but I ca=
-n not understood, any help?
-
-Any doc for uitron api ?
-
-Thank you!
-
-=20
+Program terminated with signal 11, Segmentation fault.
+#0  0x0ff4e37c in xeno_fault_stack ()
+   from /usr/local/xenomai-head/lib/libxenomai.so.0
+(gdb)
 
 
---
-This message was sent on behalf of qiuhj@domain.hid at openSubscriber.com
-http://opensubscriber.com/message/xenomai@xenomai.org
+Regards,
+
+Robert
+> 
+> Best regards,
+> 
+> Wolfgang Denk
+> 
+
 
