@@ -1,150 +1,140 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1271694331.16659.136.camel@domain.hid>
-References: <4BCC619E.2@domain.hid> <4BCC6CEE.70907@domain.hid>
-	<4BCC6E3C.3090301@domain.hid> <4BCC7092.1030809@domain.hid>
-	<4BCC71AF.4030903@domain.hid> <4BCC77BD.9040900@domain.hid>
-	<4BCC78D5.3010405@domain.hid>  <4BCC7D88.4070403@domain.hid>
-	<1271693411.16659.128.camel@domain.hid>
-	<4BCC814C.6050003@domain.hid>
-	<1271694331.16659.136.camel@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 19 Apr 2010 18:43:53 +0200
-Message-ID: <1271695433.16659.141.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4BB4F857.5020906@domain.hid>
+Date: Thu, 01 Apr 2010 21:47:35 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <4B97BA0C.9000702@domain.hid>
+	<4B9AD0DE.4020103@domain.hid>	<1268472523.27899.135.camel@domain.hid>	<4B9BB9B1.5050003@domain.hid>	<1268498034.27899.167.camel@domain.hid>	<4B9C2100.6090806@domain.hid>
+	<1268584465.27899.197.camel@domain.hid>
+In-Reply-To: <1268584465.27899.197.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Analogy cmd_write example explanation
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Alexis Berlemont <berlemont.hauw@domain.hid>, Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-On Mon, 2010-04-19 at 18:25 +0200, Philippe Gerum wrote:
-> On Mon, 2010-04-19 at 18:14 +0200, Jan Kiszka wrote:
-> > Philippe Gerum wrote:
-> > > On Mon, 2010-04-19 at 17:58 +0200, Jan Kiszka wrote:
-> > >> Gilles Chanteperdrix wrote:
-> > >>> Jan Kiszka wrote:
-> > >>>> Gilles Chanteperdrix wrote:
-> > >>>>> Jan Kiszka wrote:
-> > >>>>>> Gilles Chanteperdrix wrote:
-> > >>>>>>> Jan Kiszka wrote:
-> > >>>>>>>> Gilles Chanteperdrix wrote:
-> > >>>>>>>>> Hi,
-> > >>>>>>>>>
-> > >>>>>>>>> I found some code which was referencing directly some
-> > >>>>>>>>> CONFIG_XENO_OPT_DEBUG_ variables with things like:
-> > >>>>>>>>>
-> > >>>>>>>>> #ifdef CONFIG_XENO_OPT_DEBUG_FOO
-> > >>>>>>>>>
-> > >>>>>>>>> This usage is incompatible with the pre-requisites of the assert.h
-> > >>>>>>>>> header that CONFIG_XENO_OPT_DEBUG_FOO should be defined at all times.
-> > >>>>>>>>> While grepping for CONFIG_XENO_OPT_DEBUG_, I found that we also have
-> > >>>>>>>>> many duplicates of construction like:
-> > >>>>>>>>> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
-> > >>>>>>>>> #define CONFIG_XENO_OPT_DEBUG_FOO 0
-> > >>>>>>>>> #endif /* CONFIG_XENO_OPT_DEBUG_FOO */
-> > >>>>>>>>>
-> > >>>>>>>>> So, a patch follows which:
-> > >>>>>>>>> - replace the #ifdef with some #if XENO_DEBUG(FOO)
-> > >>>>>>>> Should probably come as a separate patch.
-> > >>>>>>> Come on, the patch is simple, one patch for this is enough.
-> > >>>>>> One part is an obvious fix, the other a refactoring under discussion.
-> > >>>>>>
-> > >>>>>>>>> - move all the initializations to assert.h
-> > >>>>>>>>>
-> > >>>>>>>>> This will make any reference to CONFIG_XENO_OPT_DEBUG_FOO outside of
-> > >>>>>>>>> assert.h suspicious, and easy to detect.
-> > >>>>>>>> How many duplicates did you find?
-> > >>>>>>> A lot, especially for CONFIG_XENO_OPT_DEBUG_NUCLEUS
-> > >>>>>> That's because the CONFIG_XENO_OPT_DEBUG_NUCLEUS defines were misplaced.
-> > >>>>>> Besides that we had one CONFIG_XENO_OPT_DEBUG_QUEUE duplicate, but tons
-> > >>>>>> of proper users. I don't see such an immediate need.
-> > >>>>>>
-> > >>>>>> When adding this kind of switching, it's till more handy to have things
-> > >>>>>> locally in your subsystem. That also makes reviewing easier when you
-> > >>>>>> only find changes in files that belong to a subsystem.
-> > >>>>> That is not the main point, the main point is that putting all these
-> > >>>>> defines in one files allow to detect easily direct references to the
-> > >>>>> symbols.
-> > >>>>>
-> > >>>>>>>> Generally, I'm more a fan of decentralized management here (e.g. this
-> > >>>>>>>> avoids needless patch conflicts in central files).
-> > >>>>>>> If we maintain the list in alphabetical order (which I have done), we 
-> > >>>>>>> reduce the likeliness for conflicts. The aim of doing this is also that 
-> > >>>>>>> I can check that the sources are clean with:
-> > >>>>>>>
-> > >>>>>>> find xenomai-2.5 ! -name 'assert.h' -name '*.[ch]' | xargs grep CONFIG_XENO_OPT_DEBUG_
-> > >>>>>>>
-> > >>>>>>> And that I can add this test to the automated build test.
-> > >>>>>>>
-> > >>>>>>> Note that forgetting to add a #define to the list yields an immediate
-> > >>>>>>> compilation error. So, the patch makes things completely safe.
-> > >>>>>> What did you change to make this happen (for new users of XENO_DEBUG)?
-> > >>>>> Nothing. If you forget to add the define, and do not enable the debug
-> > >>>>> option (which everybody does most of the time), you get a compilation
-> > >>>>> error.
-> > >>>> The alternative (and decentralized) approach for fixing this consists of
-> > >>>> Kconfig magic for generating the value:
-> > >>>>
-> > >>>> config XENO_OPT_DEBUG_FOO
-> > >>>> 	bool "..."
-> > >>>>
-> > >>>> config XENO_OPT_DEBUG_FOO_P
-> > >>>> 	int
-> > >>>> 	default "1" if XENO_OPT_DEBUG_FOO
-> > >>>> 	default "0"
-> > >>>>
-> > >>>> and XENO_DEBUG() could be extended to test for
-> > >>>> CONFIG_XENO_OPT_DEBUG_FOO_P when given "FOO". I'm just not sure if this
-> > >>>> can be expressed for legacy 2.4 kernels, so it might have to wait for
-> > >>>> Xenomai 3.
-> > > 
-> > > Well, actually, I would not merge this in Xenomai 3. I find this rather
-> > > overkill; mainline first I mean, and mainline, i.e. the Xenomai code
-> > > base only requires a simple and straightforward way to get debug
-> > > switches right. Having to make Kconfig a kitchen sink for some unknown
-> > > out of tree modules to be happy is not really my preferred approach in
-> > > this particular case.
-> > > 
-> > > Don't get me wrong, I'm not opposed to a more decentralized approach on
-> > > the paper, it's just that I only care about the mainline tree here.
-> > 
-> > The point is not out-of-tree but robustness. Neither the current
-> > decentralized #ifdef-#define nor its centralized brother meet this
-> > criteria. An approach like the above which forces you to provide all
-> > required bits before any of the cases (disabled/enabled) starts to work
-> > does so.
+Philippe Gerum wrote:
+> On Sun, 2010-03-14 at 00:34 +0100, Alexis Berlemont wrote:
+>> Philippe Gerum wrote:
+>>> On Sat, 2010-03-13 at 17:13 +0100, Alexis Berlemont wrote:
+>>>> Hi,
+>>>>
+>>>> Philippe Gerum wrote:
+>>>>> On Sat, 2010-03-13 at 00:40 +0100, Alexis Berlemont wrote:
+>>>>>> Hi,
+>>>>>>
+>>>>>> Sorry for answering so late. I took a few days off far from any internet
+>>>>>> connection.
+>>>>>>
+>>>>>> It seems you sent many mails related with Analogy. Many thanks for your
+>>>>>> interest. I have not read all of them yet. However, I am beginning by
+>>>>>> this one (which seems unanswered). The answer is quick and easy :)
+>>>>>>
+>>>>>> Daniele Nicolodi wrote:
+>>>>>>> Hello. I'm looking into the analogy cmd_write example.
+>>>>>>>
+>>>>>>> I'm not sure I understand the reason for the rt_task_set_mode() function
+>>>>>>> call into the data acquisition loop (lines 413 or 464 in the code
+>>>>>>> shipped with xenomai 2.5.1).
+>>>>>>>
+>>>>>>> I do not understand why we have to set the primary mode at every
+>>>>>>> iteration, when we set it before for the task (line 380).
+>>>>>>>
+>>>>>>> Is it because the dump_function() uses system calls that can make the
+>>>>>>> task to switch to secondary mode, or there is a deeper reason I'm missing?
+>>>>>>>
+>>>>>> You are right. The dumping routine triggers a switch to secondary mode.
+>>>>>> That is why, the program switches back to primary mode after.
+>>>>> This is wrong. The Xenomai core will switch your real-time thread to
+>>>>> primary mode automatically when running a4l_insn* calls that end up
+>>>>> invoking rt_dev_ioctl(), since you did declare a real-time entry point
+>>>>> for this one.
+>>>>>
+>>>> I don't understand. I thought that rt_dev_ioctl() triggered an
+>>>> __rtdm_ioctl syscall, which, according to the rtdm systab, is declared
+>>>> with the flags "__xn_exec_current | __xn_exec_adaptive".
+>>>>
+>>>> So as __rt_dev_ioctl (the kernel handler behind the ioctl syscall) will
+>>>> return -ENOSYS neither in RT nor in NRT mode (because analogy declares
+>>>> both RT and NRT fops entries), I thought there was no automatic
+>>>> mode-switching.
+>>> The point is that your ioctl_nrt handler should return -ENOSYS when it
+>>> detects that the current request should be processed by the converse
+>>> domain, to trigger the switch to primary mode. This is why the adaptive
+>>> tag is provided in the first place.
+>> The problem is that rtdm does not provide any function to know whether
+>> the thread is shadowed. We just have rtdm_in_rt_context() which tells us
+>> whether the thread is RT or not. If it is NRT, we cannot distinguish a
+>> Linux thread from a Xenomai one.
+>>
+>> I thought with a little patch like this in ksrc/skins/rtdm/core.c, we 
+>> could force -ENOSYS if the calling thread was a Xenomai NRT thread:
+>>
+>>   diff --git a/ksrc/skins/rtdm/core.c b/ksrc/skins/rtdm/core.c
+>> index 8677c47..cc0cfe9 100644
+>> --- a/ksrc/skins/rtdm/core.c
+>> +++ b/ksrc/skins/rtdm/core.c
+>> @@ -423,6 +423,9 @@ do {									\
+>>   									\
+>>   	if (rtdm_in_rt_context())					\
+>>   		ret = ops->operation##_rt(context, user_info, args);	\
+>> +	else if (xnshadow_thread(user_info) != NULL &&			\
+>> +		 ops->operation##_rt != (void *)rtdm_no_support)	\
+>> +		ret = -ENOSYS;						\
+>>   	else								\
+>>   		ret = ops->operation##_nrt(context, user_info, args);	\
+>>   									\
 > 
-> Flexibility and robustness have to be combined. Explicit declaration in
-> Kconfig is against flexibility, because this is one external thing more
-> to take care of, for adding something as simple as a debug switch. So if
-> decentralized is not important to you, then let's stop discussing about
-> this, and find a centralized way that includes robustness, to avoid
-> untested paths. IIRC, this was precisely the essence of Gilles's initial
-> proposal.
+> No, this would be a half-working kludge. But I think you have pinpointed
+> a more general issue with RTDM: syscalls should be tagged as both
+> adaptive and conforming, instead of bearing the __xn_exec_current bit.
+> Actually, we do want the current domain to change when it is not the
+> most appropriate, which __xn_exec_current prevents so far.
+> 
+> What we rather want is to have shadows migrating to primary mode when
+> running rtdm_ioctl, since this is the preferred mode of operation for
+> Xenomai threads, so that ioctl_rt is always invoked first when present,
+> giving an opportunity to forward the request to secondary mode by
+> returning -ENOSYS. Conforming calls always enforce the preferred runtime
+> mode, i.e. primary for Xenomai shadows, secondary for plain Linux tasks.
+> That logic applies to all RTDM syscalls actually.
+> 
+> __xn_exec_current allows application code to infer that the RTDM driver
+> might behave differently depending on the current runtime mode of the
+> calling thread, which is very much error-prone, and likely not what was
+> envisioned initially.
 
-By centralized, I don't mean into a single header file, I mean in the
-mainline code, possibly where it belongs if the symbol is purely local
-otherwise globally to avoid duplicates, using a common declaration
-pattern, with a builtin foolproof mechanism to trap misuses. We don't
-need Kconfig for that.
+Argh.... The switchtest driver is relying on __xn_exec_current to have
+context switches occur precisely in the mode we want. __xn_exec_adaptive
+introduce more context switches around which we can not place separate
+checks for fpu context, so, in short, breaks it badly. Fixing this
+requires turning the switchtest driver into a skin with its own syscalls.
 
-> 
-> > 
-> > Jan
-> > 
-> 
-> 
+Note the sequence which occurs when a shadowed thread running in
+secondary mode calls an ioctl for which only an nrt implementation occurs:
+the thread is hardened to handle the ioctl
+ioctl_rt is called which returns -ENOSYS
+the thread is relaxed
+ioctl_nrt is called
 
+It boils down to putting an rt_task_set_mode(PRIMARY) before each rtdm
+syscall made by a thread with a shadow, and in fact seems to result in
+as bad a result. Is it really what we want? The __xn_exec_current bit
+resulted in a more lazy behaviour.
+
+Also note that, at least when using the posix skin, almost all threads
+have shadows, and only the priority makes the difference between a
+really critical thread, and non critical threads with the null priority.
+So, this will happen all the time.
 
 -- 
-Philippe.
-
-
+					    Gilles.
 
