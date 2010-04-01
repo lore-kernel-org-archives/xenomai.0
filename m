@@ -1,14 +1,14 @@
-From: Robert Berger <gmane@domain.hid>
-Date: Thu, 01 Apr 2010 07:26:15 +0300
-Message-ID: <hp179e$1aj$1@domain.hid>
-References: <hp0bdv$mp4$1@domain.hid>	<4BB3BCF9.9080809@domain.hid>
-	<20100331231236.75D8AE73028@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-In-Reply-To: <20100331231236.75D8AE73028@domain.hid>
-Subject: Re: [Xenomai-help] cyclictest -tn where n!=1 causes segfault with
-	Kilauea
+Date: Thu, 1 Apr 2010 13:08:58 +0800 (CST)
+From: robert165 <robert165@domain.hid>
+Message-ID: <42083976.646c.127b7c5afba.Coremail.robert165@domain.hid>
+In-Reply-To: <2319761F7FA0D1479BA77EC2E0A8E7BCDD1634@domain.hid>
+References: <2319761F7FA0D1479BA77EC2E0A8E7BCDD1634@domain.hid>
+	<2319761F7FA0D1479BA77EC2E0A8E7BCDD10C3@domain.hid>
+	<1b813fc.1aaf.127b31aa895.Coremail.robert165@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_67358_1799048873.1270098538426"
+Subject: Re: [Xenomai-help] Seeking RT SPI driver for Atmel AT91 series CPU
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,39 +18,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Sherk Chung <sherk.chung@domain.hid>, xenomai-help <xenomai@xenomai.org>
 
-Hi Wolfgang,
+------=_Part_67358_1799048873.1270098538426
+Content-Type: text/plain; charset=gbk
+Content-Transfer-Encoding: base64
 
-Wolfgang Denk wrote:
-> Dear Robert,
-> 
-> In message <4BB3BCF9.9080809@domain.hid> you wrote:
->> ulimit -s
->> 8192
-> 
-> And what happens when you start cyclictest after running
-> "ulimit -s unlimited" ?
+IAoKIAoK1NoyMDEwLTAzLTMxIDIzOjMxOjQ3o6wiU2hlcmsgQ2h1bmciIDxzaGVyay5jaHVuZ0Bw
+aXZvdGFsc3lzLmNvbT4g0LS1wKO6CgoKSGkgUm9iZXJ0LAoKIAoKTm8sIEkgd2FzIG5vdCBhYmxl
+IHRvIGZpbmQgb25lIGF2YWlsYWJsZSBmb3IgdGhlIEFUOTEsIGl0IHNlZW1zIG5vdCBtYW55IHBl
+b3BsZSB1c2UgU1BJIGZvciB0aGF0IGNoaXAuICAgV2UgYXJlIGNvbnNpZGVyaW5nIGhpcmluZyBh
+IGZpcm0gdG8gYnVpbGQgYSBkcml2ZXIgZm9yIHVzLgoKIAoKLVNoZXJrCgpPSy4gVGhhbmtzIGEg
+bG90LgoKUmVnYXJkcwoKTHVv
+------=_Part_67358_1799048873.1270098538426
+Content-Type: text/html; charset=gbk
+Content-Transfer-Encoding: base64
 
-ulimit -s unlimited
--bash-3.2# ./cyclictest -t3
-Segmentation fault
-
-We are still dying somewhere here:
-
-Program terminated with signal 11, Segmentation fault.
-#0  0x0ff4e37c in xeno_fault_stack ()
-   from /usr/local/xenomai-head/lib/libxenomai.so.0
-(gdb)
-
-
-Regards,
-
-Robert
-> 
-> Best regards,
-> 
-> Wolfgang Denk
-> 
+PFAgY2xhc3M9Ik1zb05vcm1hbCI+PFNQQU4gc3R5bGU9IkZPTlQtRkFNSUxZOiAnQ2FsaWJyaScs
+J3NhbnMtc2VyaWYnOyBDT0xPUjogIzFmNDk3ZDsgRk9OVC1TSVpFOiAxMXB0Ij48bzpwPjxGT05U
+IGNvbG9yPSIjMDAwMDAwIj48L0ZPTlQ+PC9vOnA+PC9TUEFOPiZuYnNwOzwvUD4KPFAgY2xhc3M9
+Ik1zb05vcm1hbCI+PFNQQU4gc3R5bGU9IkZPTlQtRkFNSUxZOiAnQ2FsaWJyaScsJ3NhbnMtc2Vy
+aWYnOyBDT0xPUjogIzFmNDk3ZDsgRk9OVC1TSVpFOiAxMXB0Ij48bzpwPjxGT05UIGNvbG9yPSIj
+MDAwMDAwIj48L0ZPTlQ+PC9vOnA+PC9TUEFOPiZuYnNwOzwvUD7U2jIwMTAtMDMtMzEgMjM6MzE6
+NDejrCJTaGVyayZuYnNwO0NodW5nIiZuYnNwOyZsdDtzaGVyay5jaHVuZ0BwaXZvdGFsc3lzLmNv
+bSZndDsg0LS1wKO6PEJSPgo8QkxPQ0tRVU9URSBzdHlsZT0iQk9SREVSLUxFRlQ6ICNjY2MgMXB4
+IHNvbGlkOyBNQVJHSU46IDBweCAwcHggMHB4IDAuOGV4OyBQQURESU5HLUxFRlQ6IDFleCIgaWQ9
+ImlzUmVwbHlDb250ZW50Ij4KPERJViBjbGFzcz0iU2VjdGlvbjEiPgo8UCBjbGFzcz0iTXNvTm9y
+bWFsIj48U1BBTiBzdHlsZT0iRk9OVC1GQU1JTFk6ICdDYWxpYnJpJywnc2Fucy1zZXJpZic7IENP
+TE9SOiAjMWY0OTdkOyBGT05ULVNJWkU6IDExcHQiPkhpIFJvYmVydCw8bzpwPjwvbzpwPjwvU1BB
+Tj48L1A+CjxQIGNsYXNzPSJNc29Ob3JtYWwiPjxTUEFOIHN0eWxlPSJGT05ULUZBTUlMWTogJ0Nh
+bGlicmknLCdzYW5zLXNlcmlmJzsgQ09MT1I6ICMxZjQ5N2Q7IEZPTlQtU0laRTogMTFwdCI+PG86
+cD4mbmJzcDs8L286cD48L1NQQU4+PC9QPgo8UCBjbGFzcz0iTXNvTm9ybWFsIj48U1BBTiBzdHls
+ZT0iRk9OVC1GQU1JTFk6ICdDYWxpYnJpJywnc2Fucy1zZXJpZic7IENPTE9SOiAjMWY0OTdkOyBG
+T05ULVNJWkU6IDExcHQiPk5vLCBJIHdhcyBub3QgYWJsZSB0byBmaW5kIG9uZSBhdmFpbGFibGUg
+Zm9yIHRoZSBBVDkxLCBpdCBzZWVtcyBub3QgbWFueSBwZW9wbGUgdXNlIFNQSSBmb3IgdGhhdCBj
+aGlwLiZuYnNwOyZuYnNwOyBXZSBhcmUgY29uc2lkZXJpbmcgaGlyaW5nIGEgZmlybSB0byBidWls
+ZCBhIGRyaXZlciBmb3IgdXMuPG86cD48L286cD48L1NQQU4+PC9QPgo8UCBjbGFzcz0iTXNvTm9y
+bWFsIj48U1BBTiBzdHlsZT0iRk9OVC1GQU1JTFk6ICdDYWxpYnJpJywnc2Fucy1zZXJpZic7IENP
+TE9SOiAjMWY0OTdkOyBGT05ULVNJWkU6IDExcHQiPjxvOnA+Jm5ic3A7PC9vOnA+PC9TUEFOPjwv
+UD4KPFAgY2xhc3M9Ik1zb05vcm1hbCI+PFNQQU4gc3R5bGU9IkZPTlQtRkFNSUxZOiAnQ2FsaWJy
+aScsJ3NhbnMtc2VyaWYnOyBDT0xPUjogIzFmNDk3ZDsgRk9OVC1TSVpFOiAxMXB0Ij4tU2hlcms8
+L1NQQU4+PC9QPjwvRElWPjwvQkxPQ0tRVU9URT48U1BBTiBzdHlsZT0iRk9OVC1GQU1JTFk6ICdD
+YWxpYnJpJywnc2Fucy1zZXJpZic7IENPTE9SOiAjMWY0OTdkOyBGT05ULVNJWkU6IDExcHQiPgo8
+UCBjbGFzcz0iTXNvTm9ybWFsIj48U1BBTiBzdHlsZT0iRk9OVC1GQU1JTFk6ICdDYWxpYnJpJywn
+c2Fucy1zZXJpZic7IENPTE9SOiAjMWY0OTdkOyBGT05ULVNJWkU6IDExcHQiPjxvOnA+PEZPTlQg
+Y29sb3I9IiMwMDAwMDAiPk9LLiBUaGFua3MgYSBsb3QuPC9GT05UPjwvbzpwPjwvU1BBTj48L1A+
+CjxQIGNsYXNzPSJNc29Ob3JtYWwiPjxTUEFOIHN0eWxlPSJGT05ULUZBTUlMWTogJ0NhbGlicmkn
+LCdzYW5zLXNlcmlmJzsgQ09MT1I6ICMxZjQ5N2Q7IEZPTlQtU0laRTogMTFwdCI+PG86cD48Rk9O
+VCBjb2xvcj0iIzAwMDAwMCI+UmVnYXJkczwvRk9OVD48L286cD48L1NQQU4+PC9QPgo8UCBjbGFz
+cz0iTXNvTm9ybWFsIj48U1BBTiBzdHlsZT0iRk9OVC1GQU1JTFk6ICdDYWxpYnJpJywnc2Fucy1z
+ZXJpZic7IENPTE9SOiAjMWY0OTdkOyBGT05ULVNJWkU6IDExcHQiPjxvOnA+PEZPTlQgY29sb3I9
+IiMwMDAwMDAiPkx1bzwvRk9OVD48L286cD48L1NQQU4+PC9QPjwvU1BBTj48YnI+PGJyPjxzcGFu
+IHRpdGxlPSJuZXRlYXNlZm9vdGVyIi8+PC9zcGFuPg==
+------=_Part_67358_1799048873.1270098538426--
 
 
