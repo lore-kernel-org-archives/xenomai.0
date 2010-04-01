@@ -1,14 +1,12 @@
-From: Wolfgang Denk <wd@domain.hid>
+Date: Wed, 31 Mar 2010 23:13:05 -0400
+From: qiuhj@domain.hid
+Message-ID: <17209834.21270091585450.JavaMail.root@domain.hid>
+In-Reply-To: <8592949.31238754988785.JavaMail.root@domain.hid>
 MIME-Version: 1.0
-Content-type: text/plain; charset=ISO-8859-1
-Content-transfer-encoding: 8bit
-In-reply-to: <4BB3BCF9.9080809@domain.hid>
-References: <hp0bdv$mp4$1@domain.hid>
-	<4BB3BCF9.9080809@domain.hid>
-Date: Thu, 01 Apr 2010 01:12:36 +0200
-Message-Id: <20100331231236.75D8AE73028@domain.hid>
-Subject: Re: [Xenomai-help] cyclictest -tn where n!=1 causes segfault with
-	Kilauea
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help]  uITRON skin problem
+Reply-To: qiuhj@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,27 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Robert Berger <gmane@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Dear Robert,
+Hi
 
-In message <4BB3BCF9.9080809@domain.hid> you wrote:
-> 
-> ulimit -s
-> 8192
+I want to porting uitron based application to linux, and I decided to use x=
+enomai uitron skin.
 
-And what happens when you start cyclictest after running
-"ulimit -s unlimited" ?
+I patched the kernel, make the xenomai package and installed user space lib=
+rary and header file=20
 
-Best regards,
+The application can be built , but something was wrong when I ran the progr=
+am
 
-Wolfgang Denk
+The error message is =E2=80=9CXenomai uITRON skin init: shd_tsk() failed, s=
+tatus -33=E2=80=9D
 
--- 
-DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
-All he had was nothing, but that was something, and now it  had  been
-taken away.                             - Terry Pratchett, _Sourcery_
+I found the error code =E2=80=9C-33=E2=80=9D mean parameter error ,but I ca=
+n not understood, any help?
+
+Any doc for uitron api ?
+
+Thank you!
+
+=20
+
+
+--
+This message was sent on behalf of qiuhj@domain.hid at openSubscriber.com
+http://opensubscriber.com/message/xenomai@xenomai.org
 
