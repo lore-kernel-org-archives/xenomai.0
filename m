@@ -1,100 +1,66 @@
-Message-ID: <4BCC9107.1080605@domain.hid>
-Date: Mon, 19 Apr 2010 19:21:11 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4BB5B7B1.3030601@domain.hid>
+Date: Fri, 02 Apr 2010 11:24:01 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4BCC619E.2@domain.hid> <4BCC6CEE.70907@domain.hid>	
-	<4BCC6E3C.3090301@domain.hid> <4BCC7092.1030809@domain.hid>	
-	<4BCC71AF.4030903@domain.hid> <4BCC77BD.9040900@domain.hid>	
-	<4BCC78D5.3010405@domain.hid> <4BCC7D88.4070403@domain.hid>
-	<1271693411.16659.128.camel@domain.hid>
-	<4BCC814C.6050003@domain.hid> <4BCC8484.1020108@domain.hid>
-In-Reply-To: <4BCC8484.1020108@domain.hid>
+References: <20100401230843.GF3755@domain.hid>
+	<4BB53566.3010601@domain.hid> <4BB53643.2080604@domain.hid>
+	<4BB5AA44.6000006@domain.hid> <4BB5AACE.7020602@domain.hid>
+	<4BB5B1BD.6020903@domain.hid> <4BB5B2D3.80708@domain.hid>
+In-Reply-To: <4BB5B2D3.80708@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] New scheduler class
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
+Jan Kiszka wrote:
 > Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>>>>> config XENO_OPT_DEBUG_FOO
->>>>>> 	bool "..."
->>>>>>
->>>>>> config XENO_OPT_DEBUG_FOO_P
->>>>>> 	int
->>>>>> 	default "1" if XENO_OPT_DEBUG_FOO
->>>>>> 	default "0"
->>>>>>
->>>>>> and XENO_DEBUG() could be extended to test for
->>>>>> CONFIG_XENO_OPT_DEBUG_FOO_P when given "FOO". I'm just not sure if this
->>>>>> can be expressed for legacy 2.4 kernels, so it might have to wait for
->>>>>> Xenomai 3.
->>> Well, actually, I would not merge this in Xenomai 3. I find this rather
->>> overkill; mainline first I mean, and mainline, i.e. the Xenomai code
->>> base only requires a simple and straightforward way to get debug
->>> switches right. Having to make Kconfig a kitchen sink for some unknown
->>> out of tree modules to be happy is not really my preferred approach in
->>> this particular case.
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> Gilles Chanteperdrix wrote:
+>>>>> Jan Kiszka wrote:
+>>>>>> Andreas Glatz wrote:
+>>>>>>> Hi Philippe,
+>>>>>>>
+>>>>>>> At the Xenomai Users Meeting last year I asked you if Xenomai would offer a possibility to lower the priority of certain Xenomai tasks below that of Linux. We need this feature since we have tasks in our RT application which should only run when Linux is idle (A statistics collection task which part of the RT application and hard to isolate from this application).
+>>>>>>>
+>>>>>> What prevents using a borderline thread (if you need to interact with
+>>>>>> blocking Xenomai services) with SCHED_OTHER and a Linux nice level of 19?
+>>>>> Well, this does not really guarantee that the thread will run only when
+>>>>> linux is idle. The thread will eat some cpu time, the nice level is not
+>>>>> a strict priority, as you know.
+>>>> Where do you really need anything stricter? It's the opposite of "I need
+>>>> true 100% CPU for my task, and that forever."
+>>>>
+>>>>> But in fact, I wonder why Andreas wants
+>>>>> a new scheduling policy for xenomai, what is needed, is simply a
+>>>>> SCHED_IDLE (maybe it exists ?!) policy for Linux.
+>>>>>
+>>>> There is no such thing AFAIK. If you are concerned that some CPU
+>>>> intensive low prio job eats too much CPU, you normally reduce its
+>>>> nice-level and/or confine its CPU bandwidth via cgroups.
+>>> SCHED_IDLE exists.
 >>>
->>> Don't get me wrong, I'm not opposed to a more decentralized approach on
->>> the paper, it's just that I only care about the mainline tree here.
->> The point is not out-of-tree but robustness. Neither the current
->> decentralized #ifdef-#define nor its centralized brother meet this
->> criteria. An approach like the above which forces you to provide all
->> required bits before any of the cases (disabled/enabled) starts to work
->> does so.
+>> Ah, as "nice 20". Same mechanism, just another level.
+>>
 > 
-> Ok. What about:
+> ...and before trying something else:
 > 
-> #define __name2(a, b) a ## b
-> #define name2(a, b) __name2(a, b)
-> 
-> #define DECLARE_ASSERT_SYMBOL(sym)					\
-> 	static const int CONFIG_XENO_OPT_DEBUG_##sym##0 = 0,		\
-> 		__CONFIG_XENO_OPT_DEBUG_##sym = name2(CONFIG_XENO_OPT_DEBUG_##sym, 0)
-> 
-> #define XENO_ASSERT(subsystem,cond,action)  do { \
->     if (unlikely(__CONFIG_XENO_OPT_DEBUG_##subsystem > 0 && !(cond))) { \
->         xnarch_trace_panic_freeze(); \
->         xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LINE__, (#cond)); \
->         xnarch_trace_panic_dump(); \
->         action; \
->     } \
-> } while(0)
-> 
-> DECLARE_ASSERT_SYMBOL(NUCLEUS);
-> 
-> It fails to compile when the debug symbol is set and
-> DECLARE_ASSERT_SYMBOL is missing, which plugs the failure of my previous
-> attempt.
+> "SCHED_IDLE: This is even weaker than nice 19, but its not a true
+> idle timer scheduler in order to avoid to get into priority
+> inversion problems which would deadlock the machine."
 
-I'm still wrapping my head around this. What would be the usage,
-
-#ifndef CONFIG_XENO_OPT_DEBUG_FOO
-#define CONFIG_XENO_OPT_DEBUG_FOO 0
-#endif
-
-DECLARE_ASSERT_SYMBOL(FOO);
-
-? If the compiler is smart enough to still drop the asserts based on
-static const, I'm fine as this is an improvement.
-
-Still, IMHO, this solution would not even win the second league beauty
-contest (now it comes with as many additional lines as the
-Kconfig-approach).
-
-Jan
+Mmmm, priority inversion? I thought the kernel had priority inheritance?
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
