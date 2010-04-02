@@ -1,64 +1,82 @@
-Message-ID: <4BCC8D00.10103@domain.hid>
-Date: Mon, 19 Apr 2010 19:04:00 +0200
+Message-ID: <4BB5AA44.6000006@domain.hid>
+Date: Fri, 02 Apr 2010 10:26:44 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <cover.1271672940.git.jan.kiszka@domain.hid>
-	<4BCC8296.8000901@domain.hid> <4BCC88E8.5050304@domain.hid>
-	<4BCC8A7A.1040604@domain.hid>
-In-Reply-To: <4BCC8A7A.1040604@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH v4 00/25] [git pull v4] RTDM fixes and
-	reworks
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <20100401230843.GF3755@domain.hid>
+	<4BB53566.3010601@domain.hid> <4BB53643.2080604@domain.hid>
+In-Reply-To: <4BB53643.2080604@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig0840A3301C4E1934E9169B53"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] New scheduler class
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig0840A3301C4E1934E9169B53
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
 Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> The following changes since commit 2bed24477882dd7937d59f4e33a0811981c7362c:
->>>>   Gilles Chanteperdrix (1):
->>>>         arm: declare the VFP inline asm snippets as volatile.
->>>>
->>>> are available in the git repository at:
->>>>
->>>>   git://git.xenomai.org/xenomai-jki.git for-upstream
->>> Ok, seems this merge broke the build test:
->>> http://sisyphus.hd.free.fr/~gilles/bx/
+>> Andreas Glatz wrote:
+>>> Hi Philippe,
 >>>
->>> Could you please have a look?
->> The section mismatch should be resolved in my queue.
->>
->> Regarding the other bug:
->>
->> In file included from ./2.4.25-DENX-ppc_6xx-gcc-3.3.3/include/linux/workqueue.h:14,
->>                  from core.c:29:
->> ./2.4.25-DENX-ppc_6xx-gcc-3.3.3/include/linux/tqueue.h: In function `queue_task':
->> ./2.4.25-DENX-ppc_6xx-gcc-3.3.3/include/linux/tqueue.h:105: warning: implicit declaration of function `barrier'
->> core.c: In function `close_callback':
->> core.c:257: warning: implicit declaration of function `schedule_delayed_work'
->>
->> Does that kernel come with a linux/workqueue.h? What does it include?
-> 
-> I guess either this kernel containes a workqueue.h or it gets it via the
-> compat directory.
+>>> At the Xenomai Users Meeting last year I asked you if Xenomai would o=
+ffer a possibility to lower the priority of certain Xenomai tasks below t=
+hat of Linux. We need this feature since we have tasks in our RT applicat=
+ion which should only run when Linux is idle (A statistics collection tas=
+k which part of the RT application and hard to isolate from this applicat=
+ion).
+>>>
+>> What prevents using a borderline thread (if you need to interact with
+>> blocking Xenomai services) with SCHED_OTHER and a Linux nice level of =
+19?
+>=20
+> Well, this does not really guarantee that the thread will run only when=
 
-It has MTD compat workqueue under central include/linux/workqueue.h. I
-tend to consider this a bug of that tree, but we can workaround it. See
-for-upstream.
+> linux is idle. The thread will eat some cpu time, the nice level is not=
+
+> a strict priority, as you know.
+
+Where do you really need anything stricter? It's the opposite of "I need
+true 100% CPU for my task, and that forever."
+
+> But in fact, I wonder why Andreas wants
+> a new scheduling policy for xenomai, what is needed, is simply a
+> SCHED_IDLE (maybe it exists ?!) policy for Linux.
+>=20
+
+There is no such thing AFAIK. If you are concerned that some CPU
+intensive low prio job eats too much CPU, you normally reduce its
+nice-level and/or confine its CPU bandwidth via cgroups.
 
 Jan
 
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+
+--------------enig0840A3301C4E1934E9169B53
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAku1qkoACgkQitSsb3rl5xSnlgCghbk3LVsirsEWaVx+sKDIJoGw
+eYcAn0GDy2T5gCLQTCX+dbjQPF4N5AAW
+=A1yX
+-----END PGP SIGNATURE-----
+
+--------------enig0840A3301C4E1934E9169B53--
 
