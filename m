@@ -1,13 +1,21 @@
-Message-ID: <4BB91622.9020807@domain.hid>
-Date: Mon, 05 Apr 2010 00:43:46 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <2319761F7FA0D1479BA77EC2E0A8E7BCDD1848@domain.hid>
-In-Reply-To: <2319761F7FA0D1479BA77EC2E0A8E7BCDD1848@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Andreas Glatz <AndreasGlatz@domain.hid>
+Date: Sun, 4 Apr 2010 19:04:55 -0400
+Message-ID: <245373446233674495BCA5CA2FC1EB17378D015932@domain.hid>
+References: <20100401230843.GF3755@domain.hid>
+	<4BB53566.3010601@domain.hid> <4BB53643.2080604@domain.hid>
+	<j2yb88603c31004020058i3aae7947s1428f1b87f4b1097@domain.hid>
+	<4BB5B64B.6040803@domain.hid> <4BB5B7C1.4020301@domain.hid>
+	<4BB5B874.5090904@domain.hid>
+	<k2pb88603c31004020232z28e10d59vc546b1b8803113f2@domain.hid>
+	<4BB5BA2D.1080604@domain.hid>
+	<k2rb88603c31004020243k8d9681f8y453b25393bb5d3a0@domain.hid>,
+	<4BB5C1D5.8030804@domain.hid>
+In-Reply-To: <4BB5C1D5.8030804@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Sharing data between multiple Xenomai tasks in
- the	same process
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] New scheduler class
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,72 +25,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sherk Chung <sherk.chung@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>, Henri Roosen <henriroosen@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Sherk Chung wrote:
-> Hi folks, I have some basic questions regarding having multiple task
-> threads running in a Xenomai process.=20
+> > Actually that is what I thought in the first place, however Jan's
+> > comment "That's not true, Xenomai threads can run in non-RT scheduling
+> > classes as well. They may just gain RT priority while holding some
+> > lock that is requested by a RT thread as well." made me think I was
+> > wrong...
+> >
+> > So we would really need a SCHED_IDLE for Xenomai then to solve this pro=
+blem?
+>
+> I don't think so. But we do need to solve the issue that a non-RT thread
+> stays too long in primary mode and is thus scheduled by Xenomai with the
+> wrong priority /wrt other Linux task at its level.
 >=20
-> =20
->=20
-> We would like to have a Xenomai process with multiple threads (tasks). =
+> For the time being, you can work around this by issuing a Linux syscall
+> before entering long processing loops - unless your task doesn't do this
+> anyway, e.g. to perform some Linux I/O.
+>
 
-> The primary task needs to hard-real-time, the others secondary ones wil=
-l
-> be using non-real-time drivers so they will be degraded to
-> soft-real-time.  In order to share information between all the tasks, w=
-e
-> are thinking of doing something simple, such as having a global
-> structure that all threads can access.  I understand that we=E2=80=99ll=
- need
-> mutexes to preserve data integrity, and that the primary task might be
-> caught waiting for a lock to release which might cause timing jitter.=20
-> But assuming we have that issue under control, are here any other
-> Xenomai related issues that we should be aware of that might cause the
-> hard-real-time task to degrade to soft-real-time by doing this?
->=20
-> =20
->=20
-> Some things I=E2=80=99d like to verify:
->=20
-> -        It=E2=80=99s generally ok to run multiple Xenomai tasks within=
- a single
-> process.
->=20
-> -        If one of the secondary tasks is degraded to soft-real-time,
-> the degradation will be limited only to that particular secondary task,=
+I think that's need. Currently the statistics task takes a mutex and waits =
+on a message queue for messages. That's the only time it should potentially=
+ run in primary mode. After it returns the Mutex it should continue running=
+ with a policy similar to SCHED_IDLE to give other tasks a chance to run. I=
+ see how switching back to secondary mode could be achieved by issuing a Li=
+nux syscall. Is there another way which doesn't involve changing the source=
+ code of our application? (The proper way?)
 
-> not to the entire process (so the primary thread will remain hard-real-=
-time)
->=20
-> -        Having a global structure that all tasks can access is an
-> acceptable way to share data across Xenomai tasks (no
-> pipes/queues/sharedmem necessary in this scenario)
->=20
-> -        There is no risk of the primary task degrading to
-> soft-real-time by sharing a global structure with the secondary tasks
-> that are degraded to soft-real-time
->=20
-> =20
->=20
-> I=E2=80=99m guessing there is no issue but just wanted to make sure.
+Andreas
 
-Hi,
 
-It is Ok to protect shared data between a critical task and a non
-critical task with a mutex, provided that:
-- you enable priority inheritance for the mutex;
-- the non critical thread never calls a Linux service while holding the
-mutex.
-
-Xenomais is able to detect such situation and to send the faulting
-thread a signal in that case: enable CONFIG_XENO_OPT_DEBUG_SYNCH_RELAX
-in the configuration, and set, for the critical thread, the T_WARNSW bit
-with rt_task_set_mode if using the native API, or the PTHREAD_WARNSW bit
-with pthread_set_mode_np if using the POSIX API.
-
---=20
-					    Gilles.
 
 
