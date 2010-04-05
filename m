@@ -1,21 +1,10 @@
-From: Andreas Glatz <AndreasGlatz@domain.hid>
-Date: Sun, 4 Apr 2010 19:04:55 -0400
-Message-ID: <245373446233674495BCA5CA2FC1EB17378D015932@domain.hid>
-References: <20100401230843.GF3755@domain.hid>
-	<4BB53566.3010601@domain.hid> <4BB53643.2080604@domain.hid>
-	<j2yb88603c31004020058i3aae7947s1428f1b87f4b1097@domain.hid>
-	<4BB5B64B.6040803@domain.hid> <4BB5B7C1.4020301@domain.hid>
-	<4BB5B874.5090904@domain.hid>
-	<k2pb88603c31004020232z28e10d59vc546b1b8803113f2@domain.hid>
-	<4BB5BA2D.1080604@domain.hid>
-	<k2rb88603c31004020243k8d9681f8y453b25393bb5d3a0@domain.hid>,
-	<4BB5C1D5.8030804@domain.hid>
-In-Reply-To: <4BB5C1D5.8030804@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <4BBA5480.9090608@domain.hid>
+Date: Mon, 05 Apr 2010 14:22:08 -0700
+From: Bob Feretich <bob.feretich@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] New scheduler class
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Adeos patch interference with Angstrom 2.6.29-r46
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,37 +14,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>, Henri Roosen <henriroosen@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-> > Actually that is what I thought in the first place, however Jan's
-> > comment "That's not true, Xenomai threads can run in non-RT scheduling
-> > classes as well. They may just gain RT priority while holding some
-> > lock that is requested by a RT thread as well." made me think I was
-> > wrong...
-> >
-> > So we would really need a SCHED_IDLE for Xenomai then to solve this pro=
-blem?
->
-> I don't think so. But we do need to solve the issue that a non-RT thread
-> stays too long in primary mode and is thus scheduled by Xenomai with the
-> wrong priority /wrt other Linux task at its level.
->=20
-> For the time being, you can work around this by issuing a Linux syscall
-> before entering long processing loops - unless your task doesn't do this
-> anyway, e.g. to perform some Linux I/O.
->
+First, thanks for the help getting me started with Xenomai in 
+openembedded. Special thanks to Felipe Brandao Cavalcanti for the files 
+he posted. (I was sidetracked on another project, so I could not 
+follow-up sooner.)
 
-I think that's need. Currently the statistics task takes a mutex and waits =
-on a message queue for messages. That's the only time it should potentially=
- run in primary mode. After it returns the Mutex it should continue running=
- with a policy similar to SCHED_IDLE to give other tasks a chance to run. I=
- see how switching back to secondary mode could be achieved by issuing a Li=
-nux syscall. Is there another way which doesn't involve changing the source=
- code of our application? (The proper way?)
+I added  adeos-ipipe-2.6.29-arm-1.13-04.patch to the end of the normal 
+set of kernel patches to be applied against Angstrom 
+linux-omap-2.6.29.bb recipe file (it builds the -r46 revision). There 
+are conflicts with four Angstrom patches. There are two conflicts that I 
+am concerned about. (The first two below.)
 
-Andreas
+Conflict with 
+'0001-implement-TIF_RESTORE_SIGMASK-support-and-enable-the.patch'.
+patching file arch/arm/include/asm/thread_info.h
+Hunk #1 FAILED at 136.
+Hunk #2 FAILED at 146.
+2 out of 2 hunks FAILED -- rejects in file 
+arch/arm/include/asm/thread_info.h
+Adeos wants TIF_MMSWITCH_INT   20, but the other patch wants 
+TIF_RESTORE_SIGMASK   20.
+Can I define TIF_MMSWITCH_INT  as 21? Will that bother anything?
 
+Conflict with 'no-cortex-deadlock.patch'.
+patching file arch/arm/kernel/entry-common.S
+Hunk #5 FAILED at 82.
+Hunk #6 succeeded at 272 (offset 4 lines).
+Hunk #8 succeeded at 494 (offset -6 lines).
+1 out of 8 hunks FAILED -- rejects in file arch/arm/kernel/entry-common.S
+Some Arm silicon require the "dmb" instruction in this fix to avoid 
+deadlock. Does Xenomai account for this elsewhere?
 
+Conflict with '/cache/l1cache-shift.patch'
+patching file arch/arm/mm/Kconfig
+Hunk #1 FAILED at 717.
+1 out of 1 hunk FAILED -- rejects in file arch/arm/mm/Kconfig
+No real conflict, the other patch just added a config entry that the 
+Adeos patch wasn't expecting.
 
+Conflict with 'vfp/03-vfp-corruption.patch'
+patching file arch/arm/vfp/vfphw.S
+Hunk #5 succeeded at 136 with fuzz 1.
+Hunk #6 FAILED at 156.
+1 out of 6 hunks FAILED -- rejects in file arch/arm/vfp/vfphw.S
+I allowed the #ifdef CONFIG_PREEMPT segment to match before the Adeos 
+insertion.
+
+Please advise.
+
+Regards,
+Bob Feretich
 
