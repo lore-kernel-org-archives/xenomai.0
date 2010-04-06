@@ -1,142 +1,333 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4BCC9159.5040802@domain.hid>
-References: <4BCC619E.2@domain.hid> <4BCC6CEE.70907@domain.hid>
-	<4BCC6E3C.3090301@domain.hid> <4BCC7092.1030809@domain.hid>
-	<4BCC71AF.4030903@domain.hid> <4BCC77BD.9040900@domain.hid>
-	<4BCC78D5.3010405@domain.hid>  <4BCC7D88.4070403@domain.hid>
-	<1271693411.16659.128.camel@domain.hid>
-	<4BCC814C.6050003@domain.hid>
-	<1271694331.16659.136.camel@domain.hid>
-	<1271695433.16659.141.camel@domain.hid>
-	<4BCC9159.5040802@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 19 Apr 2010 19:23:39 +0200
-Message-ID: <1271697819.16659.157.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <4BBB9D96.7060808@domain.hid>
+Date: Tue, 06 Apr 2010 13:46:14 -0700
+From: Bob Feretich <bob.feretich@domain.hid>
+MIME-Version: 1.0
+References: <4BBA5480.9090608@domain.hid> <4BBA61AD.5020100@domain.hid>
+In-Reply-To: <4BBA61AD.5020100@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="------------020606010405060107040406"
+Subject: Re: [Xenomai-help] Adeos patch interference with Angstrom 2.6.29-r46
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-On Mon, 2010-04-19 at 19:22 +0200, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> > On Mon, 2010-04-19 at 18:25 +0200, Philippe Gerum wrote:
-> >> On Mon, 2010-04-19 at 18:14 +0200, Jan Kiszka wrote:
-> >>> Philippe Gerum wrote:
-> >>>> On Mon, 2010-04-19 at 17:58 +0200, Jan Kiszka wrote:
-> >>>>> Gilles Chanteperdrix wrote:
-> >>>>>> Jan Kiszka wrote:
-> >>>>>>> Gilles Chanteperdrix wrote:
-> >>>>>>>> Jan Kiszka wrote:
-> >>>>>>>>> Gilles Chanteperdrix wrote:
-> >>>>>>>>>> Jan Kiszka wrote:
-> >>>>>>>>>>> Gilles Chanteperdrix wrote:
-> >>>>>>>>>>>> Hi,
-> >>>>>>>>>>>>
-> >>>>>>>>>>>> I found some code which was referencing directly some
-> >>>>>>>>>>>> CONFIG_XENO_OPT_DEBUG_ variables with things like:
-> >>>>>>>>>>>>
-> >>>>>>>>>>>> #ifdef CONFIG_XENO_OPT_DEBUG_FOO
-> >>>>>>>>>>>>
-> >>>>>>>>>>>> This usage is incompatible with the pre-requisites of the assert.h
-> >>>>>>>>>>>> header that CONFIG_XENO_OPT_DEBUG_FOO should be defined at all times.
-> >>>>>>>>>>>> While grepping for CONFIG_XENO_OPT_DEBUG_, I found that we also have
-> >>>>>>>>>>>> many duplicates of construction like:
-> >>>>>>>>>>>> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
-> >>>>>>>>>>>> #define CONFIG_XENO_OPT_DEBUG_FOO 0
-> >>>>>>>>>>>> #endif /* CONFIG_XENO_OPT_DEBUG_FOO */
-> >>>>>>>>>>>>
-> >>>>>>>>>>>> So, a patch follows which:
-> >>>>>>>>>>>> - replace the #ifdef with some #if XENO_DEBUG(FOO)
-> >>>>>>>>>>> Should probably come as a separate patch.
-> >>>>>>>>>> Come on, the patch is simple, one patch for this is enough.
-> >>>>>>>>> One part is an obvious fix, the other a refactoring under discussion.
-> >>>>>>>>>
-> >>>>>>>>>>>> - move all the initializations to assert.h
-> >>>>>>>>>>>>
-> >>>>>>>>>>>> This will make any reference to CONFIG_XENO_OPT_DEBUG_FOO outside of
-> >>>>>>>>>>>> assert.h suspicious, and easy to detect.
-> >>>>>>>>>>> How many duplicates did you find?
-> >>>>>>>>>> A lot, especially for CONFIG_XENO_OPT_DEBUG_NUCLEUS
-> >>>>>>>>> That's because the CONFIG_XENO_OPT_DEBUG_NUCLEUS defines were misplaced.
-> >>>>>>>>> Besides that we had one CONFIG_XENO_OPT_DEBUG_QUEUE duplicate, but tons
-> >>>>>>>>> of proper users. I don't see such an immediate need.
-> >>>>>>>>>
-> >>>>>>>>> When adding this kind of switching, it's till more handy to have things
-> >>>>>>>>> locally in your subsystem. That also makes reviewing easier when you
-> >>>>>>>>> only find changes in files that belong to a subsystem.
-> >>>>>>>> That is not the main point, the main point is that putting all these
-> >>>>>>>> defines in one files allow to detect easily direct references to the
-> >>>>>>>> symbols.
-> >>>>>>>>
-> >>>>>>>>>>> Generally, I'm more a fan of decentralized management here (e.g. this
-> >>>>>>>>>>> avoids needless patch conflicts in central files).
-> >>>>>>>>>> If we maintain the list in alphabetical order (which I have done), we 
-> >>>>>>>>>> reduce the likeliness for conflicts. The aim of doing this is also that 
-> >>>>>>>>>> I can check that the sources are clean with:
-> >>>>>>>>>>
-> >>>>>>>>>> find xenomai-2.5 ! -name 'assert.h' -name '*.[ch]' | xargs grep CONFIG_XENO_OPT_DEBUG_
-> >>>>>>>>>>
-> >>>>>>>>>> And that I can add this test to the automated build test.
-> >>>>>>>>>>
-> >>>>>>>>>> Note that forgetting to add a #define to the list yields an immediate
-> >>>>>>>>>> compilation error. So, the patch makes things completely safe.
-> >>>>>>>>> What did you change to make this happen (for new users of XENO_DEBUG)?
-> >>>>>>>> Nothing. If you forget to add the define, and do not enable the debug
-> >>>>>>>> option (which everybody does most of the time), you get a compilation
-> >>>>>>>> error.
-> >>>>>>> The alternative (and decentralized) approach for fixing this consists of
-> >>>>>>> Kconfig magic for generating the value:
-> >>>>>>>
-> >>>>>>> config XENO_OPT_DEBUG_FOO
-> >>>>>>> 	bool "..."
-> >>>>>>>
-> >>>>>>> config XENO_OPT_DEBUG_FOO_P
-> >>>>>>> 	int
-> >>>>>>> 	default "1" if XENO_OPT_DEBUG_FOO
-> >>>>>>> 	default "0"
-> >>>>>>>
-> >>>>>>> and XENO_DEBUG() could be extended to test for
-> >>>>>>> CONFIG_XENO_OPT_DEBUG_FOO_P when given "FOO". I'm just not sure if this
-> >>>>>>> can be expressed for legacy 2.4 kernels, so it might have to wait for
-> >>>>>>> Xenomai 3.
-> >>>> Well, actually, I would not merge this in Xenomai 3. I find this rather
-> >>>> overkill; mainline first I mean, and mainline, i.e. the Xenomai code
-> >>>> base only requires a simple and straightforward way to get debug
-> >>>> switches right. Having to make Kconfig a kitchen sink for some unknown
-> >>>> out of tree modules to be happy is not really my preferred approach in
-> >>>> this particular case.
-> >>>>
-> >>>> Don't get me wrong, I'm not opposed to a more decentralized approach on
-> >>>> the paper, it's just that I only care about the mainline tree here.
-> >>> The point is not out-of-tree but robustness. Neither the current
-> >>> decentralized #ifdef-#define nor its centralized brother meet this
-> >>> criteria. An approach like the above which forces you to provide all
-> >>> required bits before any of the cases (disabled/enabled) starts to work
-> >>> does so.
-> >> Flexibility and robustness have to be combined. Explicit declaration in
-> >> Kconfig is against flexibility, because this is one external thing more
-> >> to take care of, for adding something as simple as a debug switch. So if
-> 
-> You already have to take care of Kconfig if you want a debug switch.
-> 
+This is a multi-part message in MIME format.
+--------------020606010405060107040406
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Sure, but I don't find useful to clutter it even more to get it working.
+I am using the TI OMAP3530 on a BeagleBoard. I need better real time 
+support than vanilla Angstrom offers, so I am attempting to integrate 
+Xenomai into it. The 2.6.29-R46 kernel version seems to be the latest 
+supported by Angstrom for the BeagleBoard (as of two weeks ago). The 
+distribution comes with a large number of patches. I know that Xenomai 
+was tested against a vanilla kernel, but I believe that it is likely 
+that if I omit all the Angstrom patches, some Angstrom functionality 
+will be broken. I seems easier to start with a known working system and 
+integrate one thing (Xenomai) into it than to try to rebuild all of 
+Angstrom around a Xenomai patched kernel.
 
-> Jan
-> 
+I plan to port a couple of my device drivers from the Linux environment 
+to become real time drivers and write a real time user task that makes 
+heavy use of the OMAP NEON and VFP units. The real time user task will 
+asynchronously publish state/status to subscribed Linux applications. In 
+general, I need to read a set of sensors and do some heavy number 
+crunching on the results every millisecond. Actions requiring 
+tens-of-milliseconds or less latency will be performed in the Xenomai 
+environment.
+
+More below...
+
+On 4/5/2010 3:18 PM, Gilles Chanteperdrix wrote:
+> Bob Feretich wrote:
+>   
+>> First, thanks for the help getting me started with Xenomai in 
+>> openembedded. Special thanks to Felipe Brandao Cavalcanti for the files 
+>> he posted. (I was sidetracked on another project, so I could not 
+>> follow-up sooner.)
+>>
+>> I added  adeos-ipipe-2.6.29-arm-1.13-04.patch to the end of the normal 
+>> set of kernel patches to be applied against Angstrom 
+>> linux-omap-2.6.29.bb recipe file (it builds the -r46 revision). There 
+>> are conflicts with four Angstrom patches. There are two conflicts that I 
+>> am concerned about. (The first two below.)
+>>     
+>
+> Hi,
+>
+> first of all, the Adeos patch is made for the vanilla kernel, not for
+> patched versions, and validated with that kernel. So, I would recommend
+> you to upgrade the kernel, instead of using a kernel with backported
+> changes. Maintaining the Adeos patch is enough time consuming.
+>
+> Second, on what processor do you intend to run Xenomai? Some of the
+> patches may not be needed at all for the processor you want to use, so
+> you should not even bother to try and apply them.
+>   
+Addressed above.
+>> Conflict with 
+>> '0001-implement-TIF_RESTORE_SIGMASK-support-and-enable-the.patch'.
+>> patching file arch/arm/include/asm/thread_info.h
+>> Hunk #1 FAILED at 136.
+>> Hunk #2 FAILED at 146.
+>> 2 out of 2 hunks FAILED -- rejects in file 
+>> arch/arm/include/asm/thread_info.h
+>> Adeos wants TIF_MMSWITCH_INT   20, but the other patch wants 
+>> TIF_RESTORE_SIGMASK   20.
+>> Can I define TIF_MMSWITCH_INT  as 21? Will that bother anything?
+>>     
+> You need to inspect the code carefully to see if 21 is not used for
+> anything else.
+>   
+I examined the patch closely. the value 21 is not used for anything else.
+>> Conflict with 'no-cortex-deadlock.patch'.
+>> patching file arch/arm/kernel/entry-common.S
+>> Hunk #5 FAILED at 82.
+>> Hunk #6 succeeded at 272 (offset 4 lines).
+>> Hunk #8 succeeded at 494 (offset -6 lines).
+>> 1 out of 8 hunks FAILED -- rejects in file arch/arm/kernel/entry-common.S
+>> Some Arm silicon require the "dmb" instruction in this fix to avoid 
+>> deadlock. Does Xenomai account for this elsewhere?
+>>     
+> What you see is what you get. All the changes made by Xenomai are
+> available in the Adeos patch. Without seeing the code I can not tell. Is
+> the processor you want to use affected by this patch?
+>   
+I determined that this patch is not needed. BeagleBoard Rev. B7 and 
+above use ES3.0 silicon. This patch seems to be needed for ES2.0 and 
+earlier silicon.
+>> Conflict with '/cache/l1cache-shift.patch'
+>> patching file arch/arm/mm/Kconfig
+>> Hunk #1 FAILED at 717.
+>> 1 out of 1 hunk FAILED -- rejects in file arch/arm/mm/Kconfig
+>> No real conflict, the other patch just added a config entry that the 
+>> Adeos patch wasn't expecting.
+>>     
+I'm sure that the above patch is not a problem.
+>> Conflict with 'vfp/03-vfp-corruption.patch'
+>> patching file arch/arm/vfp/vfphw.S
+>> Hunk #5 succeeded at 136 with fuzz 1.
+>> Hunk #6 FAILED at 156.
+>> 1 out of 6 hunks FAILED -- rejects in file arch/arm/vfp/vfphw.S
+>> I allowed the #ifdef CONFIG_PREEMPT segment to match before the Adeos 
+>> insertion.
+>>     
+> Risky business, we patch a bit the vfp support, and are going to patch
+> it even further in next revisions. Here again, without the code, I can
+> not tell.
+>   
+Your statement concerns me. I need NEON/VFP support and here are four 
+patches applied to it by the distribution.
+           file://vfp/02-vfp-ptrace.patch;patch=1 \
+           file://vfp/03-vfp-corruption.patch;patch=1 \
+           file://vfp/04-vfp-threads.patch;patch=1 \
+           file://vfp/05-vfp-signal-handlers.patch;patch=1 \
+Are these patches well known? Can you identify them from the above?
+
+The specific area of detected conflict is with vfp/03-vfp-corruption.patch.
+The conflicting part of the patch just seems to be decrementing a 
+preemption counter.
+@@ -154,16 +156,18 @@ look_for_VFP_exceptions:
+     @ Fall into hand on to next handler - appropriate coproc instr
+     @ not recognised by VFP
+ 
++    enable_irq_cond
+     DBGSTR    "not VFP"
+ #ifdef CONFIG_PREEMPT
+    get_thread_info    r10
+    ldr    r4, [r10, #TI_PREEMPT]    @ get preempt count
+    sub    r11, r4, #1        @ decrement it
+    str    r11, [r10, #TI_PREEMPT]
+ #endif
+     mov    pc, lr
+
+The #ifdef/#endif block were the unexpected statements. I think that 
+moving the enable_irq_cond after the #ifdef block is probably the 
+correct thing to do. I am assuming hat Xenomai is trying to enable some 
+kind of interrupt just before this segment returns.
+
+Regards,
+Bob Feretich
 
 
--- 
-Philippe.
 
 
+--------------020606010405060107040406
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+I am using the TI OMAP3530 on a BeagleBoard. I need better real time
+support than vanilla Angstrom offers, so I am attempting to integrate
+Xenomai into it. The 2.6.29-R46 kernel version seems to be the latest
+supported by Angstrom for the BeagleBoard (as of two weeks ago). The
+distribution comes with a large number of patches. I know that Xenomai
+was tested against a vanilla kernel, but I believe that it is likely
+that if I omit all the Angstrom patches, some Angstrom functionality
+will be broken. I seems easier to start with a known working system and
+integrate one thing (Xenomai) into it than to try to rebuild all of
+Angstrom around a Xenomai patched kernel.<br>
+<br>
+I plan to port a couple of my device drivers from the Linux environment
+to become real time drivers and write a real time user task that makes
+heavy use of the OMAP NEON and VFP units. The real time user task will
+asynchronously publish state/status to subscribed Linux applications.
+In general, I need to read a set of sensors and do some heavy number
+crunching on the results every millisecond. Actions requiring
+tens-of-milliseconds or less latency will be performed in the Xenomai
+environment.<br>
+<br>
+More below...<br>
+<br>
+On 4/5/2010 3:18 PM, Gilles Chanteperdrix wrote:
+<blockquote cite="mid:4BBA61AD.5020100@domain.hid" type="cite">
+  <pre wrap="">Bob Feretich wrote:
+  </pre>
+  <blockquote type="cite">
+    <pre wrap="">First, thanks for the help getting me started with Xenomai in 
+openembedded. Special thanks to Felipe Brandao Cavalcanti for the files 
+he posted. (I was sidetracked on another project, so I could not 
+follow-up sooner.)
+
+I added  adeos-ipipe-2.6.29-arm-1.13-04.patch to the end of the normal 
+set of kernel patches to be applied against Angstrom 
+linux-omap-2.6.29.bb recipe file (it builds the -r46 revision). There 
+are conflicts with four Angstrom patches. There are two conflicts that I 
+am concerned about. (The first two below.)
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->
+Hi,
+
+first of all, the Adeos patch is made for the vanilla kernel, not for
+patched versions, and validated with that kernel. So, I would recommend
+you to upgrade the kernel, instead of using a kernel with backported
+changes. Maintaining the Adeos patch is enough time consuming.
+
+Second, on what processor do you intend to run Xenomai? Some of the
+patches may not be needed at all for the processor you want to use, so
+you should not even bother to try and apply them.
+  </pre>
+</blockquote>
+Addressed above.<br>
+<blockquote cite="mid:4BBA61AD.5020100@domain.hid" type="cite">
+  <blockquote type="cite">
+    <pre wrap="">Conflict with 
+'0001-implement-TIF_RESTORE_SIGMASK-support-and-enable-the.patch'.
+patching file arch/arm/include/asm/thread_info.h
+Hunk #1 FAILED at 136.
+Hunk #2 FAILED at 146.
+2 out of 2 hunks FAILED -- rejects in file 
+arch/arm/include/asm/thread_info.h
+Adeos wants TIF_MMSWITCH_INT   20, but the other patch wants 
+TIF_RESTORE_SIGMASK   20.
+Can I define TIF_MMSWITCH_INT  as 21? Will that bother anything?
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->You need to inspect the code carefully to see if 21 is not used for
+anything else.
+  </pre>
+</blockquote>
+I examined the patch closely. the value 21 is not used for anything
+else.<br>
+<blockquote cite="mid:4BBA61AD.5020100@domain.hid" type="cite">
+  <blockquote type="cite">
+    <pre wrap="">Conflict with 'no-cortex-deadlock.patch'.
+patching file arch/arm/kernel/entry-common.S
+Hunk #5 FAILED at 82.
+Hunk #6 succeeded at 272 (offset 4 lines).
+Hunk #8 succeeded at 494 (offset -6 lines).
+1 out of 8 hunks FAILED -- rejects in file arch/arm/kernel/entry-common.S
+Some Arm silicon require the "dmb" instruction in this fix to avoid 
+deadlock. Does Xenomai account for this elsewhere?
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->What you see is what you get. All the changes made by Xenomai are
+available in the Adeos patch. Without seeing the code I can not tell. Is
+the processor you want to use affected by this patch?
+  </pre>
+</blockquote>
+I determined that this patch is not needed. BeagleBoard Rev. B7 and
+above use ES3.0 silicon. This patch seems to be needed for ES2.0 and
+earlier silicon.<br>
+<blockquote cite="mid:4BBA61AD.5020100@domain.hid" type="cite">
+  <blockquote type="cite">
+    <pre wrap="">Conflict with '/cache/l1cache-shift.patch'
+patching file arch/arm/mm/Kconfig
+Hunk #1 FAILED at 717.
+1 out of 1 hunk FAILED -- rejects in file arch/arm/mm/Kconfig
+No real conflict, the other patch just added a config entry that the 
+Adeos patch wasn't expecting.
+    </pre>
+  </blockquote>
+</blockquote>
+I'm sure that the above patch is not a problem.<br>
+<blockquote cite="mid:4BBA61AD.5020100@domain.hid" type="cite">
+  <blockquote type="cite">
+    <pre wrap="">Conflict with 'vfp/03-vfp-corruption.patch'
+patching file arch/arm/vfp/vfphw.S
+Hunk #5 succeeded at 136 with fuzz 1.
+Hunk #6 FAILED at 156.
+1 out of 6 hunks FAILED -- rejects in file arch/arm/vfp/vfphw.S
+I allowed the #ifdef CONFIG_PREEMPT segment to match before the Adeos 
+insertion.
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->Risky business, we patch a bit the vfp support, and are going to patch
+it even further in next revisions. Here again, without the code, I can
+not tell.
+  </pre>
+</blockquote>
+Your statement concerns me. I need NEON/VFP support and here are four
+patches applied to it by the distribution.<br>
+           <a class="moz-txt-link-freetext" href="file://vfp/02-vfp-ptrace.patch;patch=1">file://vfp/02-vfp-ptrace.patch;patch=1</a> \<br>
+           <a class="moz-txt-link-freetext" href="file://vfp/03-vfp-corruption.patch;patch=1">file://vfp/03-vfp-corruption.patch;patch=1</a> \<br>
+           <a class="moz-txt-link-freetext" href="file://vfp/04-vfp-threads.patch;patch=1">file://vfp/04-vfp-threads.patch;patch=1</a> \<br>
+           <a class="moz-txt-link-freetext" href="file://vfp/05-vfp-signal-handlers.patch;patch=1">file://vfp/05-vfp-signal-handlers.patch;patch=1</a> \<br>
+Are these patches well known? Can you identify them from the above?<br>
+<br>
+The specific area of detected conflict is with
+vfp/03-vfp-corruption.patch.<br>
+The conflicting part of the patch just seems to be decrementing a
+preemption counter.<br>
+<tt>@@ -154,16 +156,18 @@ look_for_VFP_exceptions:<br>
+     @ Fall into hand on to next handler - appropriate coproc instr<br>
+     @ not recognised by VFP<br>
+ <br>
++    enable_irq_cond<br>
+     DBGSTR    "not VFP"<br>
+ #ifdef CONFIG_PREEMPT<br>
+    get_thread_info    r10<br>
+    ldr    r4, [r10, #TI_PREEMPT]    @ get preempt count<br>
+    sub    r11, r4, #1        @ decrement it<br>
+    str    r11, [r10, #TI_PREEMPT]<br>
+ #endif<br>
+     mov    pc, lr</tt><br>
+<br>
+The #ifdef/#endif block were the unexpected statements. I think that
+moving the <tt>enable_irq_cond</tt> after the #ifdef block is probably
+the correct thing to do. I am assuming hat Xenomai is trying to enable
+some kind of interrupt just before this segment returns.<br>
+<br>
+Regards,<br>
+Bob Feretich<br>
+<br>
+<br>
+<br>
+</body>
+</html>
+
+--------------020606010405060107040406--
 
