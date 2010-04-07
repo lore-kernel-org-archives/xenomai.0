@@ -1,11 +1,13 @@
-Content-class: urn:content-classes:message
+Message-ID: <4BBBD4F7.2040708@domain.hid>
+Date: Tue, 06 Apr 2010 17:42:31 -0700
+From: Bob Feretich <bob.feretich@domain.hid>
 MIME-Version: 1.0
+References: <4BBA5480.9090608@domain.hid> <4BBA61AD.5020100@domain.hid>
+	<4BBB9D96.7060808@domain.hid> <4BBB9FBC.5010400@domain.hid>
+In-Reply-To: <4BBB9FBC.5010400@domain.hid>
 Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01CAD5CD.1F2F0A16"
-Date: Tue, 6 Apr 2010 14:08:42 -0700
-Message-ID: <2319761F7FA0D1479BA77EC2E0A8E7BCDD191D@alpine.pivotalsys.com>
-From: "Sherk Chung" <sherk.chung@domain.hid>
-Subject: [Xenomai-help] Standard API for RTDM SPI driver
+	boundary="------------080108090501060008070400"
+Subject: Re: [Xenomai-help] Adeos patch interference with Angstrom 2.6.29-r46
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,110 +17,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
+--------------080108090501060008070400
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-------_=_NextPart_001_01CAD5CD.1F2F0A16
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+I'll move to the mainline kernel.
+When do you expect a patch that supports the OMAP VFP will be available?
 
-Hi folks, after a fruitless search for a real-time SPI driver we are
-considering having one developed.  It looks like there is a Xenomai RTDM
-API for serial and CAN, but not for SPI.  Would it make sense to try to
-come up with an RTDM API for SPI before we kick off the driver
-development so that anything we build will conform to some standard.
-Any suggestions on what a SPI RTDM API should look like?
+Regards,
+Bob
 
-=20
+On 4/6/2010 1:55 PM, Gilles Chanteperdrix wrote:
+> Bob Feretich wrote:
+>   
+>> Your statement concerns me. I need NEON/VFP support and here are four
+>> patches applied to it by the distribution.
+>>            file://vfp/02-vfp-ptrace.patch;patch=1 \
+>>            file://vfp/03-vfp-corruption.patch;patch=1 \
+>>            file://vfp/04-vfp-threads.patch;patch=1 \
+>>            file://vfp/05-vfp-signal-handlers.patch;patch=1 \
+>> Are these patches well known? Can you identify them from the above?
+>>     
+>
+> These URLs are relative to your system, I can not load the corresponding
+> file from this mail. But yes, these patches sound familiar to me and at
+> least some of then have been integrated in later versions of the Linux
+> kernel. The beagle board is supported by the mainline kernel, you have
+> no reason to use a distribution-specific fork.
+>
+> Also note that the VFP support is broken in the Adeos I-pipe patch for
+> Linux 2.6.29. It has been fixed in the upcoming Adeos I-pipe patch for
+> Linux 2.6.31. Patch for 2.6.33, and maybe 2.6.32 should follow soon.
+>
+>
+>   
 
--Sherk
+--------------080108090501060008070400
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-
-------_=_NextPart_001_01CAD5CD.1F2F0A16
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
-xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
 <head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 12 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:"Calibri","sans-serif";
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.0in 1.0in 1.0in;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-<!--[if gte mso 9]><xml>
- <o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
- <o:shapelayout v:ext=3D"edit">
-  <o:idmap v:ext=3D"edit" data=3D"1" />
- </o:shapelayout></xml><![endif]-->
+  <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
 </head>
+<body bgcolor="#ffffff" text="#000000">
+I'll move to the mainline kernel.<br>
+When do you expect a patch that supports the OMAP VFP will be available?<br>
+<br>
+Regards,<br>
+Bob<br>
+<br>
+On 4/6/2010 1:55 PM, Gilles Chanteperdrix wrote:
+<blockquote cite="mid:4BBB9FBC.5010400@domain.hid" type="cite">
+  <pre wrap="">Bob Feretich wrote:
+  </pre>
+  <blockquote type="cite">
+    <pre wrap="">Your statement concerns me. I need NEON/VFP support and here are four
+patches applied to it by the distribution.
+           <a class="moz-txt-link-freetext" href="file://vfp/02-vfp-ptrace.patch;patch=1">file://vfp/02-vfp-ptrace.patch;patch=1</a> \
+           <a class="moz-txt-link-freetext" href="file://vfp/03-vfp-corruption.patch;patch=1">file://vfp/03-vfp-corruption.patch;patch=1</a> \
+           <a class="moz-txt-link-freetext" href="file://vfp/04-vfp-threads.patch;patch=1">file://vfp/04-vfp-threads.patch;patch=1</a> \
+           <a class="moz-txt-link-freetext" href="file://vfp/05-vfp-signal-handlers.patch;patch=1">file://vfp/05-vfp-signal-handlers.patch;patch=1</a> \
+Are these patches well known? Can you identify them from the above?
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->
+These URLs are relative to your system, I can not load the corresponding
+file from this mail. But yes, these patches sound familiar to me and at
+least some of then have been integrated in later versions of the Linux
+kernel. The beagle board is supported by the mainline kernel, you have
+no reason to use a distribution-specific fork.
 
-<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
+Also note that the VFP support is broken in the Adeos I-pipe patch for
+Linux 2.6.29. It has been fixed in the upcoming Adeos I-pipe patch for
+Linux 2.6.31. Patch for 2.6.33, and maybe 2.6.32 should follow soon.
 
-<div class=3DSection1>
 
-<p class=3DMsoNormal>Hi folks, after a fruitless search for a real-time =
-SPI
-driver we are considering having one developed.&nbsp; It looks like =
-there is a
-Xenomai RTDM API for serial and CAN, but not for SPI.&nbsp; Would it =
-make sense to
-try to come up with an RTDM API for SPI before we kick off the driver
-development so that anything we build will conform to some =
-standard.&nbsp; Any
-suggestions on what a SPI RTDM API should look like?<o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-<p class=3DMsoNormal>-Sherk<o:p></o:p></p>
-
-</div>
-
+  </pre>
+</blockquote>
 </body>
-
 </html>
 
-------_=_NextPart_001_01CAD5CD.1F2F0A16--
+--------------080108090501060008070400--
 
