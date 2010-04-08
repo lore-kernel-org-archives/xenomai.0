@@ -1,10 +1,10 @@
-Message-ID: <4BBDD084.50400@domain.hid>
-Date: Thu, 08 Apr 2010 14:48:04 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4BBDEB36.5070800@domain.hid>
+Date: Thu, 08 Apr 2010 16:41:58 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <2319761F7FA0D1479BA77EC2E0A8E7BCDD191D@alpine.pivotalsys.com>
 In-Reply-To: <2319761F7FA0D1479BA77EC2E0A8E7BCDD191D@alpine.pivotalsys.com>
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Standard API for RTDM SPI driver
 List-Id: Help regarding installation and common use of Xenomai
@@ -24,22 +24,20 @@ Sherk Chung wrote:
 > considering having one developed.  It looks like there is a Xenomai RTDM
 > API for serial and CAN, but not for SPI.  Would it make sense to try to
 > come up with an RTDM API for SPI before we kick off the driver
-> development so that anything we build will conform to some standard.
+> development so that anything we build will conform to some standard. 
 > Any suggestions on what a SPI RTDM API should look like?
-> 
 
-Check the mailing list archive, there was once some SPI driver announced
-for the BFIN 537 [1]. I do not recall much details, but I could imagine
-that this is a quite good starting point.
+>From my point of view, we need two APIs: the first in kernel-space, to
+be used by device drivers which want to use SPI, which will probably
+look a lot like Linux SPI API.
 
-In any case, feel free to discuss your interface design here as well as
-post early prototypes.
+Another for applications using RTDM, which will be an RTDM device
+profile, or socket protocol. This named device or socket protocol
+implementation will be generic, and simply use the kernel-space API.
 
-Jan
-
-[1] http://thread.gmane.org/gmane.linux.real-time.xenomai.devel/3451
+But I think you should propose the APIs, so that we do not discuss in
+the void.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
