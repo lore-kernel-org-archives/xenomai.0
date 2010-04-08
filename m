@@ -1,14 +1,12 @@
-Message-ID: <4BBDC923.3060002@domain.hid>
-Date: Thu, 08 Apr 2010 14:16:35 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4BBDD084.50400@domain.hid>
+Date: Thu, 08 Apr 2010 14:48:04 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4BBA5480.9090608@domain.hid> <4BBA61AD.5020100@domain.hid>
-	<4BBB9D96.7060808@domain.hid> <4BBB9FBC.5010400@domain.hid>
-	<4BBBD4F7.2040708@domain.hid>
-In-Reply-To: <4BBBD4F7.2040708@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <2319761F7FA0D1479BA77EC2E0A8E7BCDD191D@alpine.pivotalsys.com>
+In-Reply-To: <2319761F7FA0D1479BA77EC2E0A8E7BCDD191D@alpine.pivotalsys.com>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Adeos patch interference with Angstrom 2.6.29-r46
+Subject: Re: [Xenomai-help] Standard API for RTDM SPI driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,19 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bob Feretich <bob.feretich@domain.hid>
+To: Sherk Chung <sherk.chung@domain.hid>
 Cc: xenomai@xenomai.org
 
-Bob Feretich wrote:
-> I'll move to the mainline kernel.
-> When do you expect a patch that supports the OMAP VFP will be available?
+Sherk Chung wrote:
+> Hi folks, after a fruitless search for a real-time SPI driver we are
+> considering having one developed.  It looks like there is a Xenomai RTDM
+> API for serial and CAN, but not for SPI.  Would it make sense to try to
+> come up with an RTDM API for SPI before we kick off the driver
+> development so that anything we build will conform to some standard.
+> Any suggestions on what a SPI RTDM API should look like?
+> 
 
-You can have a preview here:
-http://sisyphus.hd.free.fr/~gilles/pub/adeos-ipipe-2.6.31-arm-1.15-01.patch
+Check the mailing list archive, there was once some SPI driver announced
+for the BFIN 537 [1]. I do not recall much details, but I could imagine
+that this is a quite good starting point.
 
-I am working on it, and have some more work to do, so, 1.15-02 will
-probably be released in the next days (say, less than a week from now).
+In any case, feel free to discuss your interface design here as well as
+post early prototypes.
+
+Jan
+
+[1] http://thread.gmane.org/gmane.linux.real-time.xenomai.devel/3451
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
