@@ -1,12 +1,9 @@
-Message-ID: <4BBDEB36.5070800@domain.hid>
-Date: Thu, 08 Apr 2010 16:41:58 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <2319761F7FA0D1479BA77EC2E0A8E7BCDD191D@alpine.pivotalsys.com>
-In-Reply-To: <2319761F7FA0D1479BA77EC2E0A8E7BCDD191D@alpine.pivotalsys.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Standard API for RTDM SPI driver
+Date: Fri, 9 Apr 2010 12:14:24 +0100
+Message-ID: <l2sa16d1e451004090414saf9c9e7s3defe4d713ae55e@domain.hid>
+From: Serge Gale <supernovagt@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai-help] What off the shelf system will run Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,28 +13,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sherk Chung <sherk.chung@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Sherk Chung wrote:
-> Hi folks, after a fruitless search for a real-time SPI driver we are
-> considering having one developed.  It looks like there is a Xenomai RTDM
-> API for serial and CAN, but not for SPI.  Would it make sense to try to
-> come up with an RTDM API for SPI before we kick off the driver
-> development so that anything we build will conform to some standard. 
-> Any suggestions on what a SPI RTDM API should look like?
+Hi,
 
->From my point of view, we need two APIs: the first in kernel-space, to
-be used by device drivers which want to use SPI, which will probably
-look a lot like Linux SPI API.
+I am very much of a noob in this topic. My company needs a Real Time
+OS for development and I have been asked to research the area. I have
+no knowledge in this area what so ever so please forgive if I sound
+rather dumb.
+I have looked at a few available OS's such as VxWorks, RTLinux by
+WindRiver and the GPL one and of course Xenomai. My choice is Xenomai,
+but what I have to do now is to see what hardware it requires.
+Is there are an off the shelf rack unit available that I can buy that
+will run Xenomai? I need to specify hardware for the system to run on
+so I would greatly appreciate if someone can point me out in the right
+direction please.
 
-Another for applications using RTDM, which will be an RTDM device
-profile, or socket protocol. This named device or socket protocol
-implementation will be generic, and simply use the kernel-space API.
+Many thanks
 
-But I think you should propose the APIs, so that we do not discuss in
-the void.
-
--- 
-					    Gilles.
+Serge
 
