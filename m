@@ -1,110 +1,61 @@
-Message-ID: <4BCC9247.10709@domain.hid>
-Date: Mon, 19 Apr 2010 19:26:31 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4BCC619E.2@domain.hid> <4BCC6CEE.70907@domain.hid>	
-	<4BCC6E3C.3090301@domain.hid> <4BCC7092.1030809@domain.hid>	
-	<4BCC71AF.4030903@domain.hid> <4BCC77BD.9040900@domain.hid>	
-	<4BCC78D5.3010405@domain.hid> <4BCC7D88.4070403@domain.hid>
-	<1271693411.16659.128.camel@domain.hid>
-	<4BCC814C.6050003@domain.hid> <4BCC8484.1020108@domain.hid>
-	<4BCC9107.1080605@domain.hid>
-In-Reply-To: <4BCC9107.1080605@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Robert Berger <gmane@domain.hid>
+Date: Sat, 10 Apr 2010 22:43:08 +0300
+Message-ID: <hpqkbk$5m2$1@domain.hid>
+References: <hp0bdv$mp4$1@domain.hid> <4BB4FE00.7040101@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+In-Reply-To: <4BB4FE00.7040101@domain.hid>
+Subject: Re: [Xenomai-help] cyclictest -tn where n!=1 causes segfault with
+	Kilauea
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Philippe Gerum wrote:
->>>>>>> config XENO_OPT_DEBUG_FOO
->>>>>>> 	bool "..."
->>>>>>>
->>>>>>> config XENO_OPT_DEBUG_FOO_P
->>>>>>> 	int
->>>>>>> 	default "1" if XENO_OPT_DEBUG_FOO
->>>>>>> 	default "0"
->>>>>>>
->>>>>>> and XENO_DEBUG() could be extended to test for
->>>>>>> CONFIG_XENO_OPT_DEBUG_FOO_P when given "FOO". I'm just not sure if this
->>>>>>> can be expressed for legacy 2.4 kernels, so it might have to wait for
->>>>>>> Xenomai 3.
->>>> Well, actually, I would not merge this in Xenomai 3. I find this rather
->>>> overkill; mainline first I mean, and mainline, i.e. the Xenomai code
->>>> base only requires a simple and straightforward way to get debug
->>>> switches right. Having to make Kconfig a kitchen sink for some unknown
->>>> out of tree modules to be happy is not really my preferred approach in
->>>> this particular case.
->>>>
->>>> Don't get me wrong, I'm not opposed to a more decentralized approach on
->>>> the paper, it's just that I only care about the mainline tree here.
->>> The point is not out-of-tree but robustness. Neither the current
->>> decentralized #ifdef-#define nor its centralized brother meet this
->>> criteria. An approach like the above which forces you to provide all
->>> required bits before any of the cases (disabled/enabled) starts to work
->>> does so.
->> Ok. What about:
->>
->> #define __name2(a, b) a ## b
->> #define name2(a, b) __name2(a, b)
->>
->> #define DECLARE_ASSERT_SYMBOL(sym)					\
->> 	static const int CONFIG_XENO_OPT_DEBUG_##sym##0 = 0,		\
->> 		__CONFIG_XENO_OPT_DEBUG_##sym = name2(CONFIG_XENO_OPT_DEBUG_##sym, 0)
->>
->> #define XENO_ASSERT(subsystem,cond,action)  do { \
->>     if (unlikely(__CONFIG_XENO_OPT_DEBUG_##subsystem > 0 && !(cond))) { \
->>         xnarch_trace_panic_freeze(); \
->>         xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LINE__, (#cond)); \
->>         xnarch_trace_panic_dump(); \
->>         action; \
->>     } \
->> } while(0)
->>
->> DECLARE_ASSERT_SYMBOL(NUCLEUS);
->>
->> It fails to compile when the debug symbol is set and
->> DECLARE_ASSERT_SYMBOL is missing, which plugs the failure of my previous
->> attempt.
+Gilles Chanteperdrix wrote:
+> Robert Berger wrote:
+>> ./cyclictest -t2
+>> Segmentation fault
 > 
-> I'm still wrapping my head around this. What would be the usage,
+> This issue is fixed by commit 428aa42410efe575f7bb9729447e6dc49159ef5e
+> http://git.xenomai.org/?p=xenomai-2.5.git;a=commit;h=428aa42410efe575f7bb9729447e6dc49159ef5e
 > 
-> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
-> #define CONFIG_XENO_OPT_DEBUG_FOO 0
-> #endif
-> 
-> DECLARE_ASSERT_SYMBOL(FOO);
-> 
-> ? If the compiler is smart enough to still drop the asserts based on
-> static const, I'm fine as this is an improvement.
 
-No, you just use DECLARE_ASSERT_SYMBOL(FOO)
+Confirmed!
 
-> 
-> Still, IMHO, this solution would not even win the second league beauty
-> contest (now it comes with as many additional lines as the
-> Kconfig-approach).
+What's currently under git in combination with a 2.6.33 tag from the
+DENX tree works now on the kilauea board.
 
-Yes, it is not pretty but to add a config option you just add the usual
-Kconfig stuff, then DECLARE_ASSERT_SYMBOL in the code instead of the
-#ifndef #define foo 0 #endif.
+Regards,
 
-If you do not do it, you get a compilation error whether the option is
-enabled or not.
-
-It can be decentralized, the find | grep mentioned earlier will still work.
+Robert
 
 -- 
-					    Gilles.
+Robert Berger
+Embedded Software Specialist
+
+Reliable Embedded Systems
+Consulting Training Engineering
+Tel.: (+30) 697 593 3428
+Fax.:(+30) 210 684 7881
+email: robert.berger@domain.hid
+URL: http://www.reliableembeddedsystems.com
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--
+...The nice thing about standards is that there are so many of them to
+choose from - Andrew S. Tanenbaum
+
+My public pgp key is available at:
+http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x90320BF1
+
+
+
+
 
