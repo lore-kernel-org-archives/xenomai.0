@@ -1,172 +1,157 @@
-Message-ID: <4BCC9D8D.10906@domain.hid>
-Date: Mon, 19 Apr 2010 20:14:37 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4BC1FAC9.5040904@domain.hid>
+Date: Sun, 11 Apr 2010 18:37:29 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4BCC619E.2@domain.hid>
-	<4BCC6CEE.70907@domain.hid>		<4BCC6E3C.3090301@domain.hid>
-	<4BCC7092.1030809@domain.hid>		<4BCC71AF.4030903@domain.hid>
-	<4BCC77BD.9040900@domain.hid>		<4BCC78D5.3010405@domain.hid>
-	<4BCC7D88.4070403@domain.hid>	<1271693411.16659.128.camel@domain.hid>	<4BCC814C.6050003@domain.hid>
-	<4BCC8484.1020108@domain.hid>	<4BCC9107.1080605@domain.hid>
-	<4BCC9247.10709@domain.hid>	<4BCC9628.7030809@domain.hid>
-	<4BCC9ADA.2020909@domain.hid>
-In-Reply-To: <4BCC9ADA.2020909@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <4B9A0C25.5010602@domain.hid>
+In-Reply-To: <4B9A0C25.5010602@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigAC612F268ADF433E11954A0E"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Adeos-main] [pull request] x86: Fix up regs unconditionally on
+	exceptions
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigAC612F268ADF433E11954A0E
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> Jan Kiszka wrote:
->>>>>> Philippe Gerum wrote:
->>>>>>>>>> config XENO_OPT_DEBUG_FOO
->>>>>>>>>> 	bool "..."
->>>>>>>>>>
->>>>>>>>>> config XENO_OPT_DEBUG_FOO_P
->>>>>>>>>> 	int
->>>>>>>>>> 	default "1" if XENO_OPT_DEBUG_FOO
->>>>>>>>>> 	default "0"
->>>>>>>>>>
->>>>>>>>>> and XENO_DEBUG() could be extended to test for
->>>>>>>>>> CONFIG_XENO_OPT_DEBUG_FOO_P when given "FOO". I'm just not sur=
-e if this
->>>>>>>>>> can be expressed for legacy 2.4 kernels, so it might have to w=
-ait for
->>>>>>>>>> Xenomai 3.
->>>>>>> Well, actually, I would not merge this in Xenomai 3. I find this =
-rather
->>>>>>> overkill; mainline first I mean, and mainline, i.e. the Xenomai c=
-ode
->>>>>>> base only requires a simple and straightforward way to get debug
->>>>>>> switches right. Having to make Kconfig a kitchen sink for some un=
-known
->>>>>>> out of tree modules to be happy is not really my preferred approa=
-ch in
->>>>>>> this particular case.
->>>>>>>
->>>>>>> Don't get me wrong, I'm not opposed to a more decentralized appro=
-ach on
->>>>>>> the paper, it's just that I only care about the mainline tree her=
-e.
->>>>>> The point is not out-of-tree but robustness. Neither the current
->>>>>> decentralized #ifdef-#define nor its centralized brother meet this=
+Jan Kiszka wrote:
+> The following changes since commit 14023bef1806dd640030d3eaf73c26736345=
+bc30:
+>   Philippe Gerum (1):
+>         ipipe-2.6.32.7-x86-2.6-01
+>=20
+> are available in the git repository at:
+>=20
+>   git://git.kiszka.org/ipipe-2.6 queues/2.6.32-x86
+>=20
+> Found while making KVM work over I-pipe/Xenomai. Its hardware
+> activation code triggered a planned #GP in IRQ context.
+>=20
+>=20
+> Jan Kiszka (1):
+>       x86: Fix up regs unconditionally on exceptions
+>=20
+>  arch/x86/kernel/ipipe.c |   24 +++++++++++++-----------
+>  1 files changed, 13 insertions(+), 11 deletions(-)
+>=20
+> ------
+>=20
+> x86: Fix up regs unconditionally on exceptions
+>=20
+> Some Linux exception handlers - at least do_general_protection -
+> evaluate regs->flags, and that on both x86-32 and -64. So we should fix=
 
->>>>>> criteria. An approach like the above which forces you to provide a=
-ll
->>>>>> required bits before any of the cases (disabled/enabled) starts to=
- work
->>>>>> does so.
->>>>> Ok. What about:
->>>>>
->>>>> #define __name2(a, b) a ## b
->>>>> #define name2(a, b) __name2(a, b)
->>>>>
->>>>> #define DECLARE_ASSERT_SYMBOL(sym)					\
->>>>> 	static const int CONFIG_XENO_OPT_DEBUG_##sym##0 =3D 0,		\
->>>>> 		__CONFIG_XENO_OPT_DEBUG_##sym =3D name2(CONFIG_XENO_OPT_DEBUG_##s=
-ym, 0)
->>>>>
->>>>> #define XENO_ASSERT(subsystem,cond,action)  do { \
->>>>>     if (unlikely(__CONFIG_XENO_OPT_DEBUG_##subsystem > 0 && !(cond)=
-)) { \
->>>>>         xnarch_trace_panic_freeze(); \
->>>>>         xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LI=
-NE__, (#cond)); \
->>>>>         xnarch_trace_panic_dump(); \
->>>>>         action; \
->>>>>     } \
->>>>> } while(0)
->>>>>
->>>>> DECLARE_ASSERT_SYMBOL(NUCLEUS);
->>>>>
->>>>> It fails to compile when the debug symbol is set and
->>>>> DECLARE_ASSERT_SYMBOL is missing, which plugs the failure of my pre=
-vious
->>>>> attempt.
->>>> I'm still wrapping my head around this. What would be the usage,
->>>>
->>>> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
->>>> #define CONFIG_XENO_OPT_DEBUG_FOO 0
->>>> #endif
->>>>
->>>> DECLARE_ASSERT_SYMBOL(FOO);
->>>>
->>>> ? If the compiler is smart enough to still drop the asserts based on=
+> up the flags according to the pipeline state unconditionally.
 
->>>> static const, I'm fine as this is an improvement.
->>> No, you just use DECLARE_ASSERT_SYMBOL(FOO)
->> Would be nice - if it worked.
->>
->>>> Still, IMHO, this solution would not even win the second league beau=
-ty
->>>> contest (now it comes with as many additional lines as the
->>>> Kconfig-approach).
->>> Yes, it is not pretty but to add a config option you just add the usu=
-al
->>> Kconfig stuff, then DECLARE_ASSERT_SYMBOL in the code instead of the
->>> #ifndef #define foo 0 #endif.
->>>
->>> If you do not do it, you get a compilation error whether the option i=
-s
->>> enabled or not.
->>>
->>> It can be decentralized, the find | grep mentioned earlier will still=
- work.
->> If we can make it work like that, I'm all for it. But:
->>
->> error: initializer element is not constant
->> (when disabled)
->>
->> or
->>
->> error: =E2=80=98y0=E2=80=99 undeclared here (not in a function)
->> (when enabled)
->>
->> I'm afraid the preprocessor is not powerful enough for this task (we
->> would need macros that include preprocessor conditionals).
->=20
-> The following seems to work for me:
->=20
-> #define __name2(a, b) a ## b
-> #define name2(a, b) __name2(a, b)
->=20
-> #define DECLARE_ASSERT_SYMBOL(sym)                                     =
- \
->         static const int CONFIG_XENO_OPT_DEBUG_##sym##0 =3D 0
->=20
-> #define XENO_DEBUG(sym) (name2(CONFIG_XENO_OPT_DEBUG_##sym,0) > 0)
->=20
-> #define XENO_ASSERT(subsystem,cond,action)  do { \
->     if (unlikely(XENO_DEBUG(subsystem) && !(cond))) { \
->         xnarch_trace_panic_freeze(); \
->         xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LINE__=
-, (#cond)); \
->         xnarch_trace_panic_dump(); \
->         action; \
->     } \
-> } while(0)
->=20
-> DECLARE_ASSERT_SYMBOL(NUCLEUS);
->=20
+Forgotten or intentionally skipped for 2.6-02?
 
-We only loose the detection of the debug symbol used and not declared if
-it is enabled. But this looks to me like a minor issue. Still trying thou=
-gh.
+Hmm, I see that even the fixed-up comment in __ipipe_handle_exception is
+not correct anymore. I can push an updated version if you're fine with
+picking this up.
 
---=20
-					    Gilles.
+Jan
 
+>=20
+> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+> ---
+>  arch/x86/kernel/ipipe.c |   24 +++++++++++++-----------
+>  1 files changed, 13 insertions(+), 11 deletions(-)
+>=20
+> diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+> index 36cd591..dfb76ad 100644
+> --- a/arch/x86/kernel/ipipe.c
+> +++ b/arch/x86/kernel/ipipe.c
+> @@ -495,8 +495,6 @@ out:
+>  	local_irq_restore_hw(flags);
+>  }
+> =20
+> -#ifdef CONFIG_X86_32
+> -
+>  static inline void __fixup_if(int s, struct pt_regs *regs)
+>  {
+>  	/*
+> @@ -510,6 +508,8 @@ static inline void __fixup_if(int s, struct pt_regs=
+ *regs)
+>  		regs->flags |=3D X86_EFLAGS_IF;
+>  }
+> =20
+> +#ifdef CONFIG_X86_32
+> +
+>  /*
+>   * Check the stall bit of the root domain to make sure the existing
+>   * preemption opportunity upon in-kernel resumption could be
+> @@ -571,10 +571,6 @@ asmlinkage void __ipipe_unstall_iret_root(struct p=
+t_regs regs)
+> =20
+>  #else /* !CONFIG_X86_32 */
+> =20
+> -static inline void __fixup_if(int s, struct pt_regs *regs)
+> -{
+> -}
+> -
+>  #ifdef CONFIG_PREEMPT
+> =20
+>  asmlinkage void preempt_schedule_irq(void);
+> @@ -746,11 +742,11 @@ int __ipipe_handle_exception(struct pt_regs *regs=
+, long error_code, int vector)
+> =20
+>  	if (likely(ipipe_root_domain_p)) {
+>  		/*
+> -		 * 32-bit: In case we faulted in the iret path, regs.flags do
+> -		 * not match the root domain state as the low-level return
+> -		 * code will evaluate it. Fix this up, either by the root
+> -		 * state sampled on entry or, if we migrated to root, with the
+> -		 * current state.
+> +		 * In case we faulted in the iret path, regs.flags do not
+> +		 * match the root domain state. The fault handler or the
+> +		 * low-level return code may evaluate it. Fix this up, either
+> +		 * by the root state sampled on entry or, if we migrated to
+> +		 * root, with the current state.
+>  		 */
+>  		__fixup_if(root_entry ? raw_irqs_disabled_flags(flags) :
+>  					raw_irqs_disabled(), regs);
+> @@ -876,7 +872,13 @@ int __ipipe_syscall_root(struct pt_regs *regs)
+> =20
+>  	local_irq_save_hw(flags);
+>  	p =3D ipipe_root_cpudom_ptr();
+> +#ifdef CONFIG_X86_32
+> +	/*
+> +	 * Fix-up only required on 32-bit as only here the IRET return code
+> +	 * will evaluate the flags.
+> +	 */
+>  	__fixup_if(test_bit(IPIPE_STALL_FLAG, &p->status), regs);
+> +#endif
+>  	/*
+>  	 * If allowed, sync pending VIRQs before _TIF_NEED_RESCHED is
+>  	 * tested.
+
+
+
+--------------enigAC612F268ADF433E11954A0E
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkvB+s0ACgkQitSsb3rl5xTzWwCg01fcw7i7E8Su8XwS9h/jDQfA
+b1MAn35J8vU+wCDVN6fUoFrfMYEH9pYA
+=Xr+f
+-----END PGP SIGNATURE-----
+
+--------------enigAC612F268ADF433E11954A0E--
 
