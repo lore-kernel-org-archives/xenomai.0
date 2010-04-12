@@ -1,13 +1,14 @@
-From: Robert Berger <gmane@domain.hid>
-Date: Sat, 10 Apr 2010 22:43:08 +0300
-Message-ID: <hpqkbk$5m2$1@domain.hid>
-References: <hp0bdv$mp4$1@domain.hid> <4BB4FE00.7040101@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-In-Reply-To: <4BB4FE00.7040101@domain.hid>
-Subject: Re: [Xenomai-help] cyclictest -tn where n!=1 causes segfault with
-	Kilauea
+MIME-Version: 1.0
+In-Reply-To: <4AB26CAC.8020005@domain.hid>
+References: <4303dd240909110600tf787b85td93b46086953a0d9@domain.hid>
+	<4AB235D9.5060602@domain.hid>
+	<4303dd240909171004l134ecbb7pc8011dcc90b91c44@domain.hid>
+	<4AB26CAC.8020005@domain.hid>
+Date: Mon, 12 Apr 2010 07:46:35 -0300
+Message-ID: <x2x4303dd241004120346g45cddcf6q488bf7bb01609c4f@domain.hid>
+From: Flavio de Castro Alves Filho <flavio.alves@domain.hid>
+Content-Type: multipart/alternative; boundary=0016e64f7faee73e31048407dbe9
+Subject: Re: [Xenomai-help] Problems with instalation of xenomai in ubuntu
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,45 +18,99 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Robert Berger wrote:
->> ./cyclictest -t2
->> Segmentation fault
-> 
-> This issue is fixed by commit 428aa42410efe575f7bb9729447e6dc49159ef5e
-> http://git.xenomai.org/?p=xenomai-2.5.git;a=commit;h=428aa42410efe575f7bb9729447e6dc49159ef5e
-> 
+--0016e64f7faee73e31048407dbe9
+Content-Type: text/plain; charset=ISO-8859-1
 
-Confirmed!
+Hello,
 
-What's currently under git in combination with a 2.6.33 tag from the
-DENX tree works now on the kilauea board.
+I could have here an operating Xenomai in Ubuntu.
 
-Regards,
+I performed all the steps discussed here. I could solve the screen blinking
+issue removing the splash screen initialization during boot.
 
-Robert
+And to perform the kernel build, I used the procedures described in
+https://wiki.ubuntu.com/KernelTeam/GitKernelBuild in order to have deb
+packages for my new Xenomai kernel.
 
--- 
-Robert Berger
-Embedded Software Specialist
+Best regards.
 
-Reliable Embedded Systems
-Consulting Training Engineering
-Tel.: (+30) 697 593 3428
-Fax.:(+30) 210 684 7881
-email: robert.berger@domain.hid
-URL: http://www.reliableembeddedsystems.com
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
---
-...The nice thing about standards is that there are so many of them to
-choose from - Andrew S. Tanenbaum
+Flavio
 
-My public pgp key is available at:
-http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x90320BF1
+Flavio de Castro Alves Filho
+Phi Innovations - Embedded Software Services
+www.phiinnovations.com
+Phone: +55 19 81 55 72 40
+Skype: flavio.de.castro.alves.filho
 
 
+2009/9/17 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
+> Flavio de Castro Alves Filho wrote:
+> > Hello,
+> >
+> > I could complete here the installation of the Xenomai in my ubuntu.
+> >
+> > It was really something related to the display installation. I disable
+> the
+> > automatic boot of gnome and I could continue the work. Now I have a
+> working
+> > kernel with xenomai.
+> >
+> > Thank you for you help.
+>
+> Ok. But in any case, enabling ACPI is highly recommended. Booting with
+> ACPI disabled is known to cause crashes in some circonstances.
+>
+> --
+>                                             Gilles.
+>
 
+--0016e64f7faee73e31048407dbe9
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hello,<br><br>I could have here an operating Xenomai in Ubuntu.<br><br>I pe=
+rformed all the steps discussed here. I could solve the screen blinking iss=
+ue removing the splash screen initialization during boot.<br><br>And to per=
+form the kernel build, I used the procedures described in <a href=3D"https:=
+//wiki.ubuntu.com/KernelTeam/GitKernelBuild">https://wiki.ubuntu.com/Kernel=
+Team/GitKernelBuild</a> in order to have deb packages for my new Xenomai ke=
+rnel.<br>
+<br>Best regards.<br><br>Flavio<br><br clear=3D"all">Flavio de Castro Alves=
+ Filho<br>Phi Innovations - Embedded Software Services<br><a href=3D"http:/=
+/www.phiinnovations.com">www.phiinnovations.com</a><br>Phone: +55 19 81 55 =
+72 40<br>
+Skype: flavio.de.castro.alves.filho<br>
+<br><br><div class=3D"gmail_quote">2009/9/17 Gilles Chanteperdrix <span dir=
+=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.cha=
+nteperdrix@domain.hid</a>&gt;</span><br><blockquote class=3D"gmail_quote" =
+style=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8=
+ex; padding-left: 1ex;">
+<div class=3D"im">Flavio de Castro Alves Filho wrote:<br>
+&gt; Hello,<br>
+&gt;<br>
+</div><div class=3D"im">&gt; I could complete here the installation of the =
+Xenomai in my ubuntu.<br>
+&gt;<br>
+&gt; It was really something related to the display installation. I disable=
+ the<br>
+&gt; automatic boot of gnome and I could continue the work. Now I have a wo=
+rking<br>
+&gt; kernel with xenomai.<br>
+&gt;<br>
+&gt; Thank you for you help.<br>
+<br>
+</div>Ok. But in any case, enabling ACPI is highly recommended. Booting wit=
+h<br>
+ACPI disabled is known to cause crashes in some circonstances.<br>
+<br>
+--<br>
+<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.<br>
+</font></blockquote></div><br>
+
+--0016e64f7faee73e31048407dbe9--
 
