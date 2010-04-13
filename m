@@ -1,14 +1,12 @@
-Date: Mon, 5 Apr 2010 23:54:16 +0200
-From: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <20100405215416.GA2522@domain.hid>
-References: <4BA259D1.4020704@domain.hid> <4BA2BFCF.8010000@domain.hid>
-	<4BB0F428.5050905@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4BB0F428.5050905@domain.hid>
-Subject: Re: [Xenomai-core] Analogy: cancel ongoing commands when a device
- is closed
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4BB10712.708@domain.hid>
+References: <4BAFBF32.8030507@domain.hid>  <4BB10712.708@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 13 Apr 2010 17:41:19 +0200
+Message-ID: <1271173279.2365.136.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [announce] Xenomai v2.5.2
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,73 +15,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Daniele Nicolodi <daniele@domain.hid>
-Cc: Alexis Berlemont <berlemont.hauw@domain.hid>, xenomai@xenomai.org
+To: Roland Stigge <stigge@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Hi,
-
-Daniele Nicolodi wrote:
-> Alexis Berlemont wrote:
-> > Daniele Nicolodi wrote:
-> >> After fixing analogy to permit continuous acquisition, I discovered that
-> >> ongoing commands are not canceled when a device is closed (I obtain a
-> >> DMA buffer owerwrite warning in the kernel log when I abruptly terminate
-> >>  my acquisition program).
-> >>
-> >> I think this is quite a surprising behavior. I would expect that the
-> >> commands are canceled when there isn't a data consumer any more. Would
-> >> it be possible to cancel any ongoing command on device close? If there
-> >> is agreement on this, I can look into providing a patch.
-> >>
-> > The close should indeed stop any occurring acquisition. I implemented
-> > this behaviour. It is in my git repository.
+On Mon, 2010-03-29 at 22:01 +0200, Roland Stigge wrote:
+> Hi!
 > 
-> Hi Alexis. I have been working with analogy from your git three and I
-> should say that the new behavior, in my use case, is worst than the
-> previous.
+> Gilles Chanteperdrix wrote:
+> > here comes Xenomai v2.5.2, codenamed "Souls Of Distortion" available
+> > from Xenomai download area:
+> > http://download.gna.org/xenomai/stable/xenomai-2.5.2.tar.bz2
 > 
-> Now, when a device is closed, all accurring acquisition are terminated,
-> also the ones that haven't been started by the current process. While it
-> is possible to use at the same time two different subdevices, from two
-> different processes, now it is not possible to terminate one process and
-> leave the other one running. I think that the correct behavior would be
-> to terminate just the acquisitions started by the current process.
-> However, I have no idea on how difficult this would be.
+> Cool, thanks!
+> 
+> I'm attaching a patch from Debian. I needed to introduce it because
+> without it, --with-test didn't cause /usr/bin/xeno to access the
+> executables in the specified directory.
+> 
+> Thanks for considering!
 > 
 
-We had two alternatives: either stopping nothing or cancelling "any
-ongoing command" related with the device. Cancelling only acquisitions
-initiated by a specific process implies the implementation of some
-tricky mechanism above the file approach (open, ioctl, close). I am
-afraid that we will create some complex code for an issue which should
-be solved by a suitable device file organization (maybe many dev files
-instead of a single one). 
+Ack. We need even more, we have to consider both $prefix and
+XENO_TEST_DIR, when looking for a possible target. I've queued a patch
+addressing this. Thanks.
 
-I will have a look at what you asked but I cannot ensure anything, I
-have no clear solution in mind.
-
-> This bring me also to the fact that there isn't currently a way to
-> prevent two concurrent processes to access the same subdevice,
-> interfering each other. Would it possible to have a lock() method, as
-> comedi has?
-
-There is a lock mechanism but it is not exposed as it is in
-comedi. The lock system is at the subdevice level: you cannot initiate
-an instruction if a command is occuring (the reverse is true of
-course). This is handled with a subdevice status bitfield atomically
-accessed. Have a look at a4l_reserve_transfer() and tell me if I miss
-something. 
-
-> 
-> Thanks. Cheers,
-> -- 
-> Daniele
-> 
+> bye,
+>   Roland
 > _______________________________________________
 > Xenomai-core mailing list
 > Xenomai-core@domain.hid
 > https://mail.gna.org/listinfo/xenomai-core
 
+
 -- 
-Alexis.
+Philippe.
+
+
 
