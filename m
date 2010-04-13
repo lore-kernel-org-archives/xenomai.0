@@ -1,13 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4BC1FAC9.5040904@domain.hid>
-References: <4B9A0C25.5010602@domain.hid>  <4BC1FAC9.5040904@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sun, 11 Apr 2010 19:38:51 +0200
-Message-ID: <1271007531.2365.1.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4BC4AC9D.9070001@domain.hid>
+Date: Tue, 13 Apr 2010 19:40:45 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [pull request] x86: Fix up regs unconditionally on
-	exceptions
+Subject: [Adeos-main] [PATCH] x86: Virtualize cr2
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -16,126 +13,97 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: adeos-main <adeos-main@gna.org>
 
-On Sun, 2010-04-11 at 18:37 +0200, Jan Kiszka wrote:
-> Jan Kiszka wrote:
-> > The following changes since commit 14023bef1806dd640030d3eaf73c26736345bc30:
-> >   Philippe Gerum (1):
-> >         ipipe-2.6.32.7-x86-2.6-01
-> > 
-> > are available in the git repository at:
-> > 
-> >   git://git.kiszka.org/ipipe-2.6 queues/2.6.32-x86
-> > 
-> > Found while making KVM work over I-pipe/Xenomai. Its hardware
-> > activation code triggered a planned #GP in IRQ context.
-> > 
-> > 
-> > Jan Kiszka (1):
-> >       x86: Fix up regs unconditionally on exceptions
-> > 
-> >  arch/x86/kernel/ipipe.c |   24 +++++++++++++-----------
-> >  1 files changed, 13 insertions(+), 11 deletions(-)
-> > 
-> > ------
-> > 
-> > x86: Fix up regs unconditionally on exceptions
-> > 
-> > Some Linux exception handlers - at least do_general_protection -
-> > evaluate regs->flags, and that on both x86-32 and -64. So we should fix
-> > up the flags according to the pipeline state unconditionally.
-> 
-> Forgotten or intentionally skipped for 2.6-02?
+Ensure that we always call the Linux page fault handler with the correct
+cr2 value set. So far this is not the case if a second fault happens
+while we execute the domain fault handler (which may, e.g., perform a
+sleepy migration before returning).
 
-Intentionally left aside for now. This is a touchy code, and I want to
-make sure to properly assess the implications of such change before
-merging.
+Instead of re-writing cr2 directly in hardware, make use of the paravirt
+capabilities of Linux and simply overload read/write_cr2 for this
+purpose.
 
-> 
-> Hmm, I see that even the fixed-up comment in __ipipe_handle_exception is
-> not correct anymore. I can push an updated version if you're fine with
-> picking this up.
-> 
-> Jan
-> 
-> > 
-> > Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
-> > ---
-> >  arch/x86/kernel/ipipe.c |   24 +++++++++++++-----------
-> >  1 files changed, 13 insertions(+), 11 deletions(-)
-> > 
-> > diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-> > index 36cd591..dfb76ad 100644
-> > --- a/arch/x86/kernel/ipipe.c
-> > +++ b/arch/x86/kernel/ipipe.c
-> > @@ -495,8 +495,6 @@ out:
-> >  	local_irq_restore_hw(flags);
-> >  }
-> >  
-> > -#ifdef CONFIG_X86_32
-> > -
-> >  static inline void __fixup_if(int s, struct pt_regs *regs)
-> >  {
-> >  	/*
-> > @@ -510,6 +508,8 @@ static inline void __fixup_if(int s, struct pt_regs *regs)
-> >  		regs->flags |= X86_EFLAGS_IF;
-> >  }
-> >  
-> > +#ifdef CONFIG_X86_32
-> > +
-> >  /*
-> >   * Check the stall bit of the root domain to make sure the existing
-> >   * preemption opportunity upon in-kernel resumption could be
-> > @@ -571,10 +571,6 @@ asmlinkage void __ipipe_unstall_iret_root(struct pt_regs regs)
-> >  
-> >  #else /* !CONFIG_X86_32 */
-> >  
-> > -static inline void __fixup_if(int s, struct pt_regs *regs)
-> > -{
-> > -}
-> > -
-> >  #ifdef CONFIG_PREEMPT
-> >  
-> >  asmlinkage void preempt_schedule_irq(void);
-> > @@ -746,11 +742,11 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
-> >  
-> >  	if (likely(ipipe_root_domain_p)) {
-> >  		/*
-> > -		 * 32-bit: In case we faulted in the iret path, regs.flags do
-> > -		 * not match the root domain state as the low-level return
-> > -		 * code will evaluate it. Fix this up, either by the root
-> > -		 * state sampled on entry or, if we migrated to root, with the
-> > -		 * current state.
-> > +		 * In case we faulted in the iret path, regs.flags do not
-> > +		 * match the root domain state. The fault handler or the
-> > +		 * low-level return code may evaluate it. Fix this up, either
-> > +		 * by the root state sampled on entry or, if we migrated to
-> > +		 * root, with the current state.
-> >  		 */
-> >  		__fixup_if(root_entry ? raw_irqs_disabled_flags(flags) :
-> >  					raw_irqs_disabled(), regs);
-> > @@ -876,7 +872,13 @@ int __ipipe_syscall_root(struct pt_regs *regs)
-> >  
-> >  	local_irq_save_hw(flags);
-> >  	p = ipipe_root_cpudom_ptr();
-> > +#ifdef CONFIG_X86_32
-> > +	/*
-> > +	 * Fix-up only required on 32-bit as only here the IRET return code
-> > +	 * will evaluate the flags.
-> > +	 */
-> >  	__fixup_if(test_bit(IPIPE_STALL_FLAG, &p->status), regs);
-> > +#endif
-> >  	/*
-> >  	 * If allowed, sync pending VIRQs before _TIF_NEED_RESCHED is
-> >  	 * tested.
-> 
-> 
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ arch/x86/include/asm/ipipe.h  |    2 ++
+ arch/x86/include/asm/system.h |    5 +++++
+ arch/x86/kernel/ipipe.c       |   10 ++++++++++
+ 3 files changed, 17 insertions(+), 0 deletions(-)
 
-
--- 
-Philippe.
-
+diff --git a/arch/x86/include/asm/ipipe.h b/arch/x86/include/asm/ipipe.h
+index 32b2ece..baec016 100644
+--- a/arch/x86/include/asm/ipipe.h
++++ b/arch/x86/include/asm/ipipe.h
+@@ -33,6 +33,8 @@
+ 
+ DECLARE_PER_CPU(struct pt_regs, __ipipe_tick_regs);
+ 
++DECLARE_PER_CPU(unsigned long, __ipipe_cr2);
++
+ static inline unsigned __ipipe_get_irq_vector(int irq)
+ {
+ #ifdef CONFIG_X86_IO_APIC
+diff --git a/arch/x86/include/asm/system.h b/arch/x86/include/asm/system.h
+index 2760033..093687e 100644
+--- a/arch/x86/include/asm/system.h
++++ b/arch/x86/include/asm/system.h
+@@ -308,8 +308,13 @@ static inline void native_wbinvd(void)
+ #else
+ #define read_cr0()	(native_read_cr0())
+ #define write_cr0(x)	(native_write_cr0(x))
++#ifdef CONFIG_IPIPE
++#define read_cr2()	__raw_get_cpu_var(__ipipe_cr2)
++#define write_cr2(x)	__raw_get_cpu_var(__ipipe_cr2) = (x)
++#else /* !CONFIG_IPIPE */
+ #define read_cr2()	(native_read_cr2())
+ #define write_cr2(x)	(native_write_cr2(x))
++#endif /* !CONFIG_IPIPE */
+ #define read_cr3()	(native_read_cr3())
+ #define write_cr3(x)	(native_write_cr3(x))
+ #define read_cr4()	(native_read_cr4())
+diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+index b1b6912..9425fbd 100644
+--- a/arch/x86/kernel/ipipe.c
++++ b/arch/x86/kernel/ipipe.c
+@@ -53,6 +53,9 @@ int __ipipe_tick_irq = 0;	/* Legacy timer */
+ 
+ DEFINE_PER_CPU(struct pt_regs, __ipipe_tick_regs);
+ 
++DEFINE_PER_CPU(unsigned long, __ipipe_cr2);
++EXPORT_PER_CPU_SYMBOL_GPL(__ipipe_cr2);
++
+ #ifdef CONFIG_SMP
+ 
+ static cpumask_t __ipipe_cpu_sync_map;
+@@ -712,6 +715,7 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
+ {
+ 	bool root_entry = false;
+ 	unsigned long flags = 0;
++	unsigned long cr2 = 0;
+ 
+ 	if (ipipe_root_domain_p) {
+ 		root_entry = true;
+@@ -734,6 +738,9 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
+ 		return 1;
+ #endif /* CONFIG_KGDB */
+ 
++	if (vector == ex_do_page_fault)
++		cr2 = native_read_cr2();
++
+ 	if (unlikely(ipipe_trap_notify(vector, regs))) {
+ 		if (root_entry)
+ 			local_irq_restore_nosync(flags);
+@@ -779,6 +786,9 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
+ 		}
+ 	}
+ 
++	if (vector == ex_do_page_fault)
++		write_cr2(cr2);
++
+ 	__ipipe_std_extable[vector](regs, error_code);
+ 
+ 	/*
 
 
