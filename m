@@ -1,21 +1,17 @@
-Message-ID: <4BC7118E.2050200@domain.hid>
-Date: Thu, 15 Apr 2010 15:15:58 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20100415164539.471058da98lp4sjk@domain.hid>
+Date: Thu, 15 Apr 2010 16:45:39 +0200
+From: Michel He <michel.he@domain.hid>
+References: <20100331143432.44386sa8ez2p2q2o@domain.hid>
+	<4BB34F3A.3060105@domain.hid>
+In-Reply-To: <4BB34F3A.3060105@domain.hid>
 MIME-Version: 1.0
-References: <4BB5B7C1.4020301@domain.hid> <4BB5B874.5090904@domain.hid>
-	<k2pb88603c31004020232z28e10d59vc546b1b8803113f2@domain.hid>
-	<4BB5BA2D.1080604@domain.hid>
-	<245373446233674495BCA5CA2FC1EB17378D015932@domain.hid>
-	<4BBAD880.5040603@domain.hid>
-	<20100415001912.GB26116@domain.hid>
-	<1271328418.2365.622.camel@domain.hid>
-	<20100415123607.GC26116@domain.hid>
-	<4BC70920.9060002@domain.hid>
-	<20100415125925.GD26116@domain.hid>
-In-Reply-To: <20100415125925.GD26116@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] New scheduler class
+Content-Type: text/plain;
+ charset=ISO-8859-1;
+ DelSp="Yes";
+ format="flowed"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] netrpc
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,54 +21,220 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Andreas Glatz <andreasglatz@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Andreas Glatz wrote:
-> On Thu, Apr 15, 2010 at 08:40:00AM -0400, Gilles Chanteperdrix wrote:
->> Andreas Glatz wrote:
->>> Hi,
->>>
->>> On Thu, Apr 15, 2010 at 06:46:58AM -0400, Philippe Gerum wrote:
->>>> On Wed, 2010-04-14 at 20:19 -0400, Andreas Glatz wrote:
->>>>
->>>>> One thing I've noticed though, and this is not related to the patch (I verified it on a
->>>>> vanilla Xenomai system): Consider the example I included. It prints average cycle times
->>>>> and the cycle time variance of the high priority task ("T2"). I noticed a big difference
->>>>> in the cycle time variance when switching the first task ("T1") to secondary mode with
->>>>> rt_task_set_mode() and setting the scheduler policy to either SCHED_FIFO, SCHED_IDLE or
->>>>> SCHED_NORMAL. I'm assuming someone asked this before and I didn't pay attention :)
->>>>> Can someone give me a short explanation or point me somewhere to get an explanation for
->>>>> this behaviour? I didn't expect such a difference in variance:
->>>>>
->>>> Moving back to secondary mode is nothing more than triggering the
->>>> rescheduling procedure linux-wise, so the time credit for
->>>> SCHED_OTHER/IDLE tasks decay as usual during your work loop, preemption
->>>> by high priority task is more likely and so on. This variance is just
->>>> the sign that those tasks cannot ask for more than what their scheduling
->>>> policy grants.
->>>>
->>> I think, I didn't express myself clearly enough. I was more puzzled about 
->>> the variance of the pure RT task (task w/o any secondary mode switches).
->>> So it seems that changing the scheduling policy of the "relaxed" task has
->>> an influence on the variance of the pure RT task. So the RT task seems
->>> to wait for the "relaxed" task. But where exacly does it wait for it? Mmmmm...
->> When waiting for the mutex?
->>
-> 
-> Ok. Maybe it's as ovvious as that. But I'm not quite there yet. Let me explain:
-> I know that the "relaxed" task ("T1") is in primary mode between rt_mutex_aquire()
-> and rt_mutex_release(). In other words when the pure RT task ("T2") starts waiting
-> on the mutex, "T1" should be primary mode and not be affected by the Linux 
-> scheduling policy. After "T1" releases the mutex it switches back to secondary mode.
-> So I would expect the variance to be constant. 
+For message passing from task to task, I use the 3 available =20
+procedures rt_task_send(), rt_task_reply(), rt_task_receive().
 
-Right. Maybe the problem is that the first call made by a thread to
-rt_printf causes a switch to secondary mode (auto mode, means that the
-first call to rt_printf calls malloc). You can confirm that by arming
-the T_WARNSW bit.
+The job is when one message emitted from the source to one =20
+destination, however the message can be catched by an other task (not =20
+the good correspondant). In Xenomai, when the message is NOT for a =20
+task, it couldn't be passed to a next task. Tasks can receive any =20
+message but not being able to relay it to the destination. (there's no =20
+such function mentionned inside the API doc).
+
+I build an example. (cf code sample)
+
+any help is welcome
+
+code sample :
+
+/*
+  *
+  *  Created on: 15 avr. 2010
+  *      Author: hemichel
+  */
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <sys/io.h>
+#include <sys/mman.h>
+#include <native/task.h>
+#include <native/queue.h>
+#include <native/intr.h>
+
+#define STACK_SIZE 8192
+#define STD_PRIO 1
+
+RT_TASK test_task_ptr,test_task2_ptr,test_task3_ptr;
+int int_count =3D 0;
+int end =3D 0;
+
+#define PEER_RATE_NS 10000000
+//                     --s-ms-us-ns
+RTIME task_period_ns =3D   1000000000llu;
+
+void testtask(void *cookie) {
+=09RT_TASK_MCB mcb_send, mcb_reply;
+=09int flowid, i, rv;
+=09unsigned char datasend[16];
+=09unsigned char datareply[16];
+
+=09int count =3D 0;
+=09int ret;
+=09unsigned long overrun;
+=09ret =3D rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(task_period_=
+ns));
+=09if (ret) {
+=09=09printf("error while set periodic, code %d\n",ret);
+=09=09return;
+=09}
+
+=09mcb_send.opcode =3D 0x03;
+=09datasend[0]=3D'a';
+=09mcb_send.data =3D datasend;
+=09mcb_send.size =3D sizeof(datasend);
+
+=09mcb_reply.size =3D sizeof(datareply);
+=09mcb_reply.data =3D datareply;
+
+=09while(!end){
+=09=09ret =3D rt_task_set_mode(0, T_PRIMARY, NULL);
+=09=09if (ret) {
+=09=09=09printf("error while rt_task_set_mode, code %d\n",ret);
+=09=09=09return;
+=09=09}
+=09=09ret =3D rt_task_wait_period(&overrun);
+=09=09if (ret) {
+=09=09=09printf("error while rt_task_wait_period, code %d\n",ret);
+=09=09=09return;
+=09=09}
+=09=09count++;
+=09=09printf("message from testtask: count=3D%d\n", count);
+
+=09=09rv =3D rt_task_send(&test_task2_ptr,&mcb_send,&mcb_reply,PEER_RATE_NS)=
+;
+=09=09if (rv < 0) printf("rt_task_send error\n");
+=09=09else rt_printf("response mcb_reply=3D%d\n",mcb_reply.data[0]);
+=09=09fflush(NULL);
+=09}
+}
 
 
--- 
-					    Gilles.
+void testtask2(void *cookie) {
+=09RT_TASK_MCB mcb_rcv, mcb_reply;
+=09int flowid, i, rv;
+=09unsigned char datareply[16];
+
+=09int count =3D 12;
+=09int ret;
+=09unsigned long overrun;
+=09ret =3D rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(task_period_=
+ns));
+=09if (ret) {
+=09=09printf("error while set periodic, code %d\n",ret);
+=09=09return;
+=09}
+
+=09while(!end){
+=09=09ret =3D rt_task_set_mode(0, T_PRIMARY, NULL);
+=09=09if (ret) {
+=09=09=09printf("error while rt_task_set_mode, code %d\n",ret);
+=09=09=09return;
+=09=09}
+=09=09ret =3D rt_task_wait_period(&overrun);
+=09=09if (ret) {
+=09=09=09printf("error while rt_task_wait_period, code %d\n",ret);
+=09=09=09return;
+=09=09}
+
+=09=09mcb_rcv.data =3D (caddr_t)datareply;
+=09=09mcb_rcv.size =3D sizeof(datareply);
+
+=09=09flowid =3D rt_task_receive(&mcb_rcv,PEER_RATE_NS);
+=09=09rt_printf("task 2: flowid=3D%d rcv.size=3D%d bytes to receive buf, =20
+opcode=3D%d\n",\
+=09=09=09=09flowid,mcb_rcv.size,mcb_rcv.opcode);
+=09=09if(flowid >=3D 0)
+=09=09{
+=09=09=09if (mcb_rcv.opcode =3D=3D 2) {
+=09=09=09=09//this is mine
+=09=09=09=09mcb_reply.opcode =3D 0x2;
+=09=09=09=09mcb_reply.size =3D 1;
+=09=09=09=09datareply[0]=3Dcount;
+=09=09=09=09mcb_reply.data =3D datareply;
+=09=09=09=09rt_task_reply(flowid, &mcb_reply);
+=09=09=09=09rt_printf("replied from task2 to flowid=3D%d\n",flowid);
+=09=09=09}
+=09=09=09else {
+=09=09=09=09rt_printf("task2 : not mined\n");
+                                 //how to relay the catched msg to next ?
+=09=09=09}
+=09=09}
+
+=09=09fflush(NULL);
+=09}
+}
+
+
+void testtask3(void *cookie) {
+=09RT_TASK_MCB mcb_rcv, mcb_reply;
+=09int flowid, i, rv;
+=09unsigned char datareply[16];
+
+=09int count =3D 13;
+=09int ret;
+=09unsigned long overrun;
+=09ret =3D rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(task_period_=
+ns));
+=09if (ret) {
+=09=09printf("error while set periodic, code %d\n",ret);
+=09=09return;
+=09}
+
+=09while(!end){
+=09=09ret =3D rt_task_set_mode(0, T_PRIMARY, NULL);
+=09=09if (ret) {
+=09=09=09printf("error while rt_task_set_mode, code %d\n",ret);
+=09=09=09return;
+=09=09}
+=09=09ret =3D rt_task_wait_period(&overrun);
+=09=09if (ret) {
+=09=09=09printf("error while rt_task_wait_period, code %d\n",ret);
+=09=09=09return;
+=09=09}
+
+=09=09mcb_rcv.data =3D (caddr_t)datareply;
+=09=09mcb_rcv.size =3D sizeof(datareply);
+
+=09=09flowid =3D rt_task_receive(&mcb_rcv,PEER_RATE_NS);
+=09=09rt_printf("task 3 : flowid=3D%d rcv.size=3D%d bytes to receive buf, =
+=20
+opcode=3D%d\n",\
+=09=09=09=09flowid,mcb_rcv.size,mcb_rcv.opcode);
+=09=09if(flowid >=3D 0)
+=09=09{
+=09=09=09if (mcb_rcv.opcode =3D=3D 3) {
+=09=09=09=09//this is mine
+=09=09=09=09mcb_reply.opcode =3D 0x3;
+=09=09=09=09mcb_reply.size =3D 1;
+=09=09=09=09datareply[0]=3Dcount;
+=09=09=09=09mcb_reply.data =3D datareply;
+=09=09=09=09rt_task_reply(flowid, &mcb_reply);
+=09=09=09=09rt_printf("replied from task3 to flowid=3D%d\n",flowid);
+=09=09=09}
+=09=09=09else {
+=09=09=09=09rt_printf("task3 : not mined\n");
+                                 //how to relay the catched msg to next ?
+=09=09=09}
+
+=09=09}
+
+=09=09fflush(NULL);
+=09}
+}
+
+
+
+Jan Kiszka <jan.kiszka@domain.hid> a =E9crit=A0:
+
+> Well, you could start with mapping the existing RTAI API calls in
+> xrtai-lab on local Native calls. That will already give you a
+> non-distributed port.
+
 
