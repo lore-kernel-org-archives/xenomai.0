@@ -1,14 +1,19 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <g2q132366a01004140505v20bff90ds352bcc1e7e516006@domain.hid>
-References: <g2u132366a01004140355v13765a3hcd5940f489b25dba@domain.hid>
-	<4BC5A1D3.5020202@domain.hid>
-	<g2q132366a01004140505v20bff90ds352bcc1e7e516006@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 14 Apr 2010 15:13:10 +0200
-Message-ID: <1271250790.2365.516.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] prepare_kernel.sh for PowerPC
+Date: Wed, 14 Apr 2010 20:19:12 -0400
+Message-ID: <20100415001912.GB26116@domain.hid>
+References: <4BB53566.3010601@domain.hid> <4BB53643.2080604@domain.hid>
+	<j2yb88603c31004020058i3aae7947s1428f1b87f4b1097@domain.hid>
+	<4BB5B64B.6040803@domain.hid> <4BB5B7C1.4020301@domain.hid>
+	<4BB5B874.5090904@domain.hid>
+	<k2pb88603c31004020232z28e10d59vc546b1b8803113f2@domain.hid>
+	<4BB5BA2D.1080604@domain.hid>
+	<245373446233674495BCA5CA2FC1EB17378D015932@domain.hid>
+	<4BBAD880.5040603@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <4BBAD880.5040603@domain.hid>
+From: Andreas Glatz <andreasglatz@domain.hid>
+Subject: Re: [Xenomai-help] New scheduler class
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,170 +23,347 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Luc ANTOLINOS <luciogistr@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Andreas Glatz <AndreasGlatz@domain.hid>
 
-On Wed, 2010-04-14 at 14:05 +0200, Luc ANTOLINOS wrote:
-> On 14 April 2010 13:06, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
-> > arch/ppc existed in other versions of Linux sources, with which we
-> > maintain compatibility.
-> > Could you show us the output of prepare-kernel.sh when you use ppc as
-> > architecture?
-> /usr/src/xenomai-2.5.2# scripts/prepare-kernel.sh
-> Linux tree [default /lib/modules/2.6.26-2-486/source]: /usr/src/linux-2.6.33
-> Target architecture [default i686]: ppc
+Hi,
 
-You want powerpc there.
-
-> Adeos patch [default
-> /usr/src/xenomai-2.5.2/ksrc/arch/powerpc/patches/adeos-ipipe-2.6.33-powerpc-2.9-00.patch]:
-> patching file arch/powerpc/Kconfig
-> patching file arch/powerpc/boot/Makefile
-> patching file arch/powerpc/include/asm/exception-64s.h
-> patching file arch/powerpc/include/asm/ftrace.h
-> patching file arch/powerpc/include/asm/hw_irq.h
-> patching file arch/powerpc/include/asm/ipipe.h
-> patching file arch/powerpc/include/asm/ipipe_base.h
-> patching file arch/powerpc/include/asm/ipipe_hwirq.h
-> patching file arch/powerpc/include/asm/irqflags.h
-> patching file arch/powerpc/include/asm/mmu_context.h
-> patching file arch/powerpc/include/asm/mpic.h
-> patching file arch/powerpc/include/asm/paca.h
-> patching file arch/powerpc/include/asm/ptrace.h
-> patching file arch/powerpc/include/asm/qe_ic.h
-> patching file arch/powerpc/include/asm/reg.h
-> patching file arch/powerpc/include/asm/smp.h
-> patching file arch/powerpc/include/asm/thread_info.h
-> patching file arch/powerpc/include/asm/time.h
-> patching file arch/powerpc/kernel/Makefile
-> patching file arch/powerpc/kernel/asm-offsets.c
-> patching file arch/powerpc/kernel/cputable.c
-> patching file arch/powerpc/kernel/entry_32.S
-> patching file arch/powerpc/kernel/entry_64.S
-> patching file arch/powerpc/kernel/exceptions-64s.S
-> patching file arch/powerpc/kernel/fpu.S
-> patching file arch/powerpc/kernel/head_32.S
-> patching file arch/powerpc/kernel/head_40x.S
-> patching file arch/powerpc/kernel/head_44x.S
-> patching file arch/powerpc/kernel/head_64.S
-> patching file arch/powerpc/kernel/head_8xx.S
-> patching file arch/powerpc/kernel/head_booke.h
-> patching file arch/powerpc/kernel/head_fsl_booke.S
-> patching file arch/powerpc/kernel/idle.c
-> patching file arch/powerpc/kernel/idle_power4.S
-> patching file arch/powerpc/kernel/ipipe.c
-> patching file arch/powerpc/kernel/irq.c
-> patching file arch/powerpc/kernel/ppc_ksyms.c
-> patching file arch/powerpc/kernel/process.c
-> patching file arch/powerpc/kernel/prom_init_check.sh
-> patching file arch/powerpc/kernel/setup_32.c
-> patching file arch/powerpc/kernel/setup_64.c
-> patching file arch/powerpc/kernel/smp.c
-> patching file arch/powerpc/kernel/time.c
-> patching file arch/powerpc/kernel/traps.c
-> patching file arch/powerpc/lib/code-patching.c
-> patching file arch/powerpc/lib/feature-fixups.c
-> patching file arch/powerpc/mm/fault.c
-> patching file arch/powerpc/mm/hash_low_32.S
-> patching file arch/powerpc/mm/hash_native_64.c
-> patching file arch/powerpc/mm/hash_utils_64.c
-> patching file arch/powerpc/mm/mmu_context_nohash.c
-> patching file arch/powerpc/mm/slb.c
-> patching file arch/powerpc/mm/stab.c
-> patching file arch/powerpc/mm/tlb_hash32.c
-> patching file arch/powerpc/platforms/82xx/pq2ads-pci-pic.c
-> patching file arch/powerpc/platforms/85xx/tqm85xx.c
-> patching file arch/powerpc/platforms/cell/spu_base.c
-> patching file arch/powerpc/platforms/iseries/irq.c
-> patching file arch/powerpc/platforms/powermac/pic.c
-> patching file arch/powerpc/platforms/ps3/htab.c
-> patching file arch/powerpc/platforms/ps3/interrupt.c
-> patching file arch/powerpc/platforms/pseries/lpar.c
-> patching file arch/powerpc/sysdev/cpm2_pic.c
-> patching file arch/powerpc/sysdev/i8259.c
-> patching file arch/powerpc/sysdev/ipic.c
-> patching file arch/powerpc/sysdev/mpc8xx_pic.c
-> patching file arch/powerpc/sysdev/mpic.c
-> patching file arch/powerpc/sysdev/qe_lib/qe_ic.c
-> patching file arch/powerpc/sysdev/tsi108_pci.c
-> patching file arch/powerpc/sysdev/uic.c
-> patching file drivers/pci/htirq.c
-> patching file drivers/serial/8250.c
-> patching file fs/exec.c
-> patching file fs/proc/array.c
-> patching file include/asm-generic/atomic.h
-> patching file include/asm-generic/bitops/atomic.h
-> patching file include/asm-generic/cmpxchg-local.h
-> patching file include/asm-generic/percpu.h
-> patching file include/linux/autoconf.h
-> patching file include/linux/bounds.h
-> patching file include/linux/compile.h
-> patching file include/linux/hardirq.h
-> patching file include/linux/ipipe.h
-> patching file include/linux/ipipe_base.h
-> patching file include/linux/ipipe_lock.h
-> patching file include/linux/ipipe_percpu.h
-> patching file include/linux/ipipe_tickdev.h
-> patching file include/linux/ipipe_trace.h
-> patching file include/linux/irq.h
-> patching file include/linux/kernel.h
-> patching file include/linux/preempt.h
-> patching file include/linux/rwlock.h
-> patching file include/linux/rwlock_api_smp.h
-> patching file include/linux/sched.h
-> patching file include/linux/spinlock.h
-> patching file include/linux/spinlock_api_smp.h
-> patching file include/linux/spinlock_up.h
-> patching file include/linux/utsrelease.h
-> patching file init/Kconfig
-> patching file init/main.c
-> patching file kernel/Makefile
-> patching file kernel/exit.c
-> patching file kernel/fork.c
-> patching file kernel/ipipe/Kconfig
-> patching file kernel/ipipe/Kconfig.debug
-> patching file kernel/ipipe/Makefile
-> patching file kernel/ipipe/core.c
-> patching file kernel/ipipe/tracer.c
-> patching file kernel/irq/chip.c
-> patching file kernel/irq/handle.c
-> patching file kernel/lockdep.c
-> patching file kernel/panic.c
-> patching file kernel/power/hibernate.c
-> patching file kernel/printk.c
-> patching file kernel/sched.c
-> patching file kernel/signal.c
-> patching file kernel/spinlock.c
-> patching file kernel/time/tick-common.c
-> patching file kernel/time/tick-sched.c
-> patching file kernel/timer.c
-> patching file kernel/trace/ftrace.c
-> patching file lib/Kconfig.debug
-> patching file lib/bust_spinlocks.c
-> patching file lib/ioremap.c
-> patching file lib/smp_processor_id.c
-> patching file mm/memory.c
-> patching file mm/mmu_context.c
-> patching file mm/vmalloc.c
+On Tue, Apr 06, 2010 at 02:45:20AM -0400, Jan Kiszka wrote:
+> Andreas Glatz wrote:
+> >>> Actually that is what I thought in the first place, however Jan's
+> >>> comment "That's not true, Xenomai threads can run in non-RT scheduling
+> >>> classes as well. They may just gain RT priority while holding some
+> >>> lock that is requested by a RT thread as well." made me think I was
+> >>> wrong...
+> >>>
+> >>> So we would really need a SCHED_IDLE for Xenomai then to solve this problem?
+> >> I don't think so. But we do need to solve the issue that a non-RT thread
+> >> stays too long in primary mode and is thus scheduled by Xenomai with the
+> >> wrong priority /wrt other Linux task at its level.
+> >>
+> >> For the time being, you can work around this by issuing a Linux syscall
+> >> before entering long processing loops - unless your task doesn't do this
+> >> anyway, e.g. to perform some Linux I/O.
+> >>
+> > 
+> > I think that's need. Currently the statistics task takes a mutex and waits on a message queue for messages. That's the only time it should potentially run in primary mode. After it returns the Mutex it should continue running with a policy similar to SCHED_IDLE to give other tasks a chance to run. I see how switching back to secondary mode could be achieved by issuing a Linux syscall. Is there another way which doesn't involve changing the source code of our application? (The proper way?)
 > 
-> <== Here the scripts hangs
-> 
-> I think the problem is line 412 :
-> asm_ipipe_h=`ls
-> $linux_tree/include/asm-{$linux_arch,$xenomai_arch}/ipipe.h
-> 2>/dev/null|head -n1`
-> In this case, ls fail and then asm_ipipe_h is empty.
-> Line 415 wait forever on stdin :
-> adeos_version=`grep '^#define.*IPIPE_ARCH_STRING.*"' $asm_ipipe_h
-> 2>/dev/null|head -n1|sed -e 's,.*"\(.*\)"$,\1,'`
-> 
-> 
-> 
+> The proper way would be to not having to change the application code.
+> But this workaround (Linux syscall or *_set_mode()) is required until we
+> improve the nucleus.
+
+I generated a patch against 2.4.10.1 to get this behaviour (see further down). Instead of having 
+to review and insert a Linux syscall or *_set_mode() in the application code I just call 
+rt_task_set_mode(0, T_IDLE, NULL) at the beginning of the task body of the task which 
+should mostly run in secondary mode under SCHED_IDLE (see example further down). The task 
+marked with T_IDLE will switch to primary mode at every Xenomai skincall and immediately 
+switch back to secondary mode once the Xenomai skincall is done. 
+
+We identified just one case where this task has to stay in primary mode. This is between 
+rt_mutex_aquire() and rt_mutex_release() since it may undergo a priority inversion boost. 
+If the task stayed in secondary mode during that time it either would potentally delay the 
+execution of a high priority task or would kill the system.
+
+The patch seems to work for us. Our statistics task which blocked the system for a long 
+time (and made the UI running under Linux unresponsive) is running with T_IDLE. If Linux is 
+heavily loaded now the statistics will get out of sync but the UI will still be responsive.
+
+One thing I've noticed though, and this is not related to the patch (I verified it on a 
+vanilla Xenomai system): Consider the example I included. It prints average cycle times 
+and the cycle time variance of the high priority task ("T2"). I noticed a big difference 
+in the cycle time variance when switching the first task ("T1") to secondary mode with 
+rt_task_set_mode() and setting the scheduler policy to either SCHED_FIFO, SCHED_IDLE or 
+SCHED_NORMAL. I'm assuming someone asked this before and I didn't pay attention :) 
+Can someone give me a short explanation or point me somewhere to get an explanation for
+this behaviour? I didn't expect such a difference in variance:
+
+SCHED_FIFO:
+task=2 count=1000 average=10505us variance=851(us)^2
+task=2 count=1000 average=10504us variance=176(us)^2
+task=2 count=1000 average=10505us variance=716(us)^2
+task=2 count=1000 average=10504us variance=148(us)^2
+task=2 count=1000 average=10504us variance=143(us)^2
+task=2 count=1000 average=10504us variance=141(us)^2
+task=2 count=1000 average=10504us variance=138(us)^2
+
+SCHED_NORMAL:
+task=2 count=1000 average=10501us variance=2115(us)^2
+task=2 count=1000 average=10504us variance=3121(us)^2
+task=2 count=1000 average=10500us variance=161(us)^2
+task=2 count=1000 average=10501us variance=1136(us)^2
+task=2 count=1000 average=10500us variance=194(us)^2
+task=2 count=1000 average=10501us variance=1971(us)^2
+task=2 count=1000 average=10500us variance=132(us)^2
+task=2 count=1000 average=10501us variance=1173(us)^2
+
+SCHED_IDLE:
+task=2 count=1000 average=10504us variance=3413(us)^2
+task=2 count=1000 average=10503us variance=3567(us)^2
+task=2 count=1000 average=10504us variance=3409(us)^2
+task=2 count=1000 average=10504us variance=1743(us)^2
+task=2 count=1000 average=10504us variance=2710(us)^2
+task=2 count=1000 average=10504us variance=2548(us)^2
+task=2 count=1000 average=10504us variance=2364(us)^2
+task=2 count=1000 average=10504us variance=2867(us)^2
+task=2 count=1000 average=10504us variance=2755(us)^2
 
 
--- 
-Philippe.
+Regards, Andreas
 
+(Xenomai 2.4.10.1, Linux 2.6.32, Ipipe 2.8)
+
+
+EXAMPLE APPLICATION:
+
+#include <stdio.h>
+#include <unistd.h>
+#include <native/task.h>
+#include <native/sem.h>
+#include <native/mutex.h>
+#include <sys/mman.h>
+#include <rtdk.h>
+#include <sched.h>
+#include <linux/sched.h>
+
+typedef struct test {
+    RTIME timestamp;
+    RTIME sum;
+    RTIME sumsq;
+    int count;
+} test_t;
+
+static test_t test1 = {0, 0, 0, 0}, test2 = {0, 0, 0, 0};
+static RT_TASK task1, task2;
+static RT_MUTEX mutex1, mutex2;
+
+static void task_body( void* cookie )
+{
+    RTIME timestamp, delta;
+    test_t* ptr = (test_t*)cookie;
+    int num = ( ptr == &test1) ? 1 : 2;
+
+    if( num == 1 ) rt_task_set_mode(0, 0x00080000, NULL);
+
+    while(1)
+    {
+        rt_mutex_acquire(&mutex1, TM_INFINITE);
+
+        timestamp = __xn_rdtsc();
+        delta = (timestamp - ptr->timestamp) >> 6 /* in us */;
+        ptr->sum += delta;
+        ptr->sumsq += delta*delta;
+        ptr->timestamp = timestamp;
+        if( ++ptr->count >= 1000 ) {
+            RTIME avg, var;
+            avg = ptr->sum/ptr->count;
+            var = (ptr->sumsq - (ptr->sum*ptr->sum)/ptr->count)/(ptr->count-1);
+
+            if( num == 2 )
+                rt_printf("task=%d count=%d average=%lluus variance=%llu(us)^2\n",
+                          num, ptr->count, avg, var);
+
+            ptr->sum = 0;
+            ptr->sumsq = 0;
+            ptr->count = 0;
+        }
+
+		// If commented T1 basically runs in a while(1) {}
+		// loop without any sleeps. UI should be responsive
+		// since T1 runs with SCHED_IDLE.
+		// If uncommented the sleep causes T2 to boost the
+		// priority of T1. 
+        if( num == 1 ) rt_task_sleep(10000000);
+
+		// T1 automatically switches to secondary mode after
+		// this call.
+        rt_mutex_release(&mutex1);
+
+        // Give T1 time to run
+        if( num == 2 ) rt_task_sleep(10000000);
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    int err;
+
+    mlockall(MCL_CURRENT|MCL_FUTURE);
+
+    rt_print_auto_init(1);
+
+    test1.timestamp = test2.timestamp = __xn_rdtsc();
+    err  = rt_mutex_create(&mutex1, "M1");
+    err += rt_mutex_create(&mutex2, "M2");
+    err += rt_task_spawn(&task1, "T1", 0, 33, 0, task_body, (void*)&test1);
+    err += rt_task_spawn(&task2, "T2", 0, 66, 0, task_body, (void*)&test2);
+    if( !err )
+    {
+        pause();
+    }
+
+    return err;
+}
+
+IDLE PATCH:
+
+diff -ruN linux-2.6.32-5RR9/include/asm-generic/xenomai/syscall.h linux-2.6.32-5RR9-new/include/asm-generic/xenomai/syscall.h
+--- linux-2.6.32-5RR9/include/asm-generic/xenomai/syscall.h	2010-04-13 20:02:21.000000000 -0400
++++ linux-2.6.32-5RR9-new/include/asm-generic/xenomai/syscall.h	2010-04-14 10:38:09.000000000 -0400
+@@ -89,6 +89,8 @@
+ #define __xn_exec_adaptive   0x40
+ /* Do not restart syscall upon signal receipt. */
+ #define __xn_exec_norestart  0x80
++/* Do not switch to secondary mode after syscall if thread has XNIDLE flag set (see #XNIDLE) */
++#define __xn_exec_norelax    0x100
+ /* Context-agnostic syscall. Will actually run in Xenomai domain. */
+ #define __xn_exec_any        0x0
+ /* Short-hand for shadow init syscall. */
+diff -ruN linux-2.6.32-5RR9/include/xenomai/native/task.h linux-2.6.32-5RR9-new/include/xenomai/native/task.h
+--- linux-2.6.32-5RR9/include/xenomai/native/task.h	2010-04-13 20:02:21.000000000 -0400
++++ linux-2.6.32-5RR9-new/include/xenomai/native/task.h	2010-04-14 10:38:09.000000000 -0400
+@@ -52,6 +52,7 @@
+ #define T_SHIELD   XNSHIELD   /**< See #XNSHIELD  */ 
+ #define T_WARNSW   XNTRAPSW   /**< See #XNTRAPSW  */ 
+ #define T_RPIOFF   XNRPIOFF   /**< See #XNRPIOFF  */ 
++#define T_IDLE     XNIDLE     /**< See #XNIDLE    */
+ #define T_PRIMARY  0x00000200	/* Recycle internal bits status which */
+ #define T_JOINABLE 0x00000400	/* won't be passed to the nucleus.  */
+ /*! @} */ /* Ends doxygen-group native_task_status */
+diff -ruN linux-2.6.32-5RR9/include/xenomai/nucleus/thread.h linux-2.6.32-5RR9-new/include/xenomai/nucleus/thread.h
+--- linux-2.6.32-5RR9/include/xenomai/nucleus/thread.h	2010-04-13 20:02:21.000000000 -0400
++++ linux-2.6.32-5RR9-new/include/xenomai/nucleus/thread.h	2010-04-14 10:38:09.000000000 -0400
+@@ -55,6 +55,7 @@
+ #define XNSHIELD  0x00010000 /**< IRQ shield is enabled (shadow only) */
+ #define XNTRAPSW  0x00020000 /**< Trap execution mode switches */
+ #define XNRPIOFF  0x00040000 /**< Stop priority coupling (shadow only) */
++#define XNIDLE    0x00080000 /**< Switches to secondary mode after syscalls if not holding mutexes */
+ 
+ #define XNFPU     0x00100000 /**< Thread uses FPU */
+ #define XNSHADOW  0x00200000 /**< Shadow thread */
+@@ -90,7 +91,7 @@
+ }
+ 
+ #define XNTHREAD_BLOCK_BITS   (XNSUSP|XNPEND|XNDELAY|XNDORMANT|XNRELAX|XNHELD)
+-#define XNTHREAD_MODE_BITS    (XNLOCK|XNRRB|XNASDI|XNSHIELD|XNTRAPSW|XNRPIOFF)
++#define XNTHREAD_MODE_BITS    (XNLOCK|XNRRB|XNASDI|XNSHIELD|XNTRAPSW|XNRPIOFF|XNIDLE)
+ 
+ /* These state flags are available to the real-time interfaces */
+ #define XNTHREAD_STATE_SPARE0  0x10000000
+@@ -186,6 +187,8 @@
+ 
+     xnpqueue_t claimq;		/* Owned resources claimed by others (PIP) */
+ 
++    int lockcnt;			/* Mutexes which are currently locked by this thread */
++
+     struct xnsynch *wchan;	/* Resource the thread pends on */
+ 
+     struct xnsynch *wwake;	/* Wait channel the thread was resumed from */
+diff -ruN linux-2.6.32-5RR9/kernel/xenomai/nucleus/shadow.c linux-2.6.32-5RR9-new/kernel/xenomai/nucleus/shadow.c
+--- linux-2.6.32-5RR9/kernel/xenomai/nucleus/shadow.c	2010-04-13 20:02:22.000000000 -0400
++++ linux-2.6.32-5RR9-new/kernel/xenomai/nucleus/shadow.c	2010-04-14 18:04:20.000000000 -0400
+@@ -1187,7 +1187,7 @@
+ void xnshadow_relax(int notify)
+ {
+ 	xnthread_t *thread = xnpod_current_thread();
+-	int prio;
++	int prio, policy;
+ 	spl_t s;
+ 
+ 	XENO_BUGON(NUCLEUS, xnthread_test_state(thread, XNROOT));
+@@ -1217,9 +1217,9 @@
+ 		xnpod_fatal("xnshadow_relax() failed for thread %s[%d]",
+ 			    thread->name, xnthread_user_pid(thread));
+ 
+-	prio = normalize_priority(xnthread_current_priority(thread));
+-	rthal_reenter_root(get_switch_lock_owner(),
+-			   prio ? SCHED_FIFO : SCHED_NORMAL, prio);
++	prio = xnthread_test_state(thread, XNIDLE) ? 0 : normalize_priority(xnthread_current_priority(thread));
++	policy = xnthread_test_state(thread, XNIDLE) ? SCHED_IDLE : (prio ? SCHED_FIFO : SCHED_NORMAL);
++	rthal_reenter_root(get_switch_lock_owner(), policy, prio);
+ 
+ 	xnstat_counter_inc(&thread->stat.ssw);	/* Account for secondary mode switch. */
+ 
+@@ -2001,8 +2001,13 @@
+ 
+ 	if (xnpod_shadow_p() && signal_pending(p))
+ 		request_syscall_restart(thread, regs, sysflags);
+-	else if ((sysflags & __xn_exec_switchback) != 0 && switched)
+-		xnshadow_harden();	/* -EPERM will be trapped later if needed. */
++	else if ((sysflags & __xn_exec_switchback) != 0 && switched) {
++		if (!xnthread_test_state(thread, XNIDLE) || 
++		    (xnthread_test_state(thread, XNIDLE) && (sysflags & __xn_exec_norelax) != 0))
++		xnshadow_harden();  /* -EPERM will be trapped later if needed. */
++	} else if ((sysflags & __xn_exec_norelax) == 0 && xnpod_primary_p() && 
++			   xnpod_current_thread()->lockcnt == 0 && xnthread_test_state(thread, XNIDLE))
++		xnshadow_relax(0);
+ 
+ 	return RTHAL_EVENT_STOP;
+ 
+@@ -2137,6 +2142,9 @@
+ 		request_syscall_restart(xnshadow_thread(current), regs, sysflags);
+ 	else if ((sysflags & __xn_exec_switchback) != 0 && switched)
+ 		xnshadow_relax(0);
++	else if ((sysflags & __xn_exec_norelax) == 0 && xnpod_primary_p() && 
++			 xnpod_current_thread()->lockcnt == 0 && xnthread_test_state(thread, XNIDLE))
++		xnshadow_relax(0);
+ 
+ 	return RTHAL_EVENT_STOP;
+ }
+diff -ruN linux-2.6.32-5RR9/kernel/xenomai/nucleus/thread.c linux-2.6.32-5RR9-new/kernel/xenomai/nucleus/thread.c
+--- linux-2.6.32-5RR9/kernel/xenomai/nucleus/thread.c	2010-04-13 20:02:22.000000000 -0400
++++ linux-2.6.32-5RR9-new/kernel/xenomai/nucleus/thread.c	2010-04-14 10:38:09.000000000 -0400
+@@ -124,6 +124,7 @@
+ 	thread->rpi = NULL;
+ #endif /* CONFIG_XENO_OPT_PRIOCPL */
+ 	initpq(&thread->claimq);
++	thread->lockcnt = 0;
+ 
+ 	xnarch_init_display_context(thread);
+ 
+diff -ruN linux-2.6.32-5RR9/kernel/xenomai/skins/native/mutex.c linux-2.6.32-5RR9-new/kernel/xenomai/skins/native/mutex.c
+--- linux-2.6.32-5RR9/kernel/xenomai/skins/native/mutex.c	2010-04-13 20:02:22.000000000 -0400
++++ linux-2.6.32-5RR9-new/kernel/xenomai/skins/native/mutex.c	2010-04-14 10:38:09.000000000 -0400
+@@ -396,6 +396,8 @@
+ 		/* xnsynch_sleep_on() might have stolen the resource,
+ 		   so we need to put our internal data in sync. */
+ 		mutex->lockcnt = 1;
++		
++		thread->lockcnt++;
+ 	}
+ 
+       unlock_and_exit:
+@@ -462,6 +464,8 @@
+ 	if (--mutex->lockcnt > 0)
+ 		goto unlock_and_exit;
+ 
++	xnpod_current_thread()->lockcnt--;
++
+ 	if (xnsynch_wakeup_one_sleeper(&mutex->synch_base)) {
+ 		mutex->lockcnt = 1;
+ 		xnpod_schedule();
+diff -ruN linux-2.6.32-5RR9/kernel/xenomai/skins/native/syscall.c linux-2.6.32-5RR9-new/kernel/xenomai/skins/native/syscall.c
+--- linux-2.6.32-5RR9/kernel/xenomai/skins/native/syscall.c	2010-04-13 20:02:22.000000000 -0400
++++ linux-2.6.32-5RR9-new/kernel/xenomai/skins/native/syscall.c	2010-04-14 10:38:09.000000000 -0400
+@@ -3932,7 +3932,7 @@
+ 	[__native_mutex_create] = {&__rt_mutex_create, __xn_exec_any},
+ 	[__native_mutex_bind] = {&__rt_mutex_bind, __xn_exec_conforming},
+ 	[__native_mutex_delete] = {&__rt_mutex_delete, __xn_exec_any},
+-	[__native_mutex_acquire] = {&__rt_mutex_acquire, __xn_exec_primary},
++	[__native_mutex_acquire] = {&__rt_mutex_acquire, __xn_exec_primary|__xn_exec_norelax},
+ 	[__native_mutex_release] = {&__rt_mutex_release, __xn_exec_primary},
+ 	[__native_mutex_inquire] = {&__rt_mutex_inquire, __xn_exec_any},
+ 	[__native_cond_create] = {&__rt_cond_create, __xn_exec_any},
+diff -ruN linux-2.6.32-5RR9/kernel/xenomai/skins/native/task.c linux-2.6.32-5RR9-new/kernel/xenomai/skins/native/task.c
+--- linux-2.6.32-5RR9/kernel/xenomai/skins/native/task.c	2010-04-13 20:02:22.000000000 -0400
++++ linux-2.6.32-5RR9-new/kernel/xenomai/skins/native/task.c	2010-04-14 10:38:09.000000000 -0400
+@@ -1498,7 +1498,7 @@
+ 	}
+ 
+ 	if (((clrmask | setmask) &
+-	     ~(T_LOCK | T_RRB | T_NOSIG | T_SHIELD | T_WARNSW)) != 0)
++	     ~(T_LOCK | T_RRB | T_NOSIG | T_SHIELD | T_WARNSW | T_IDLE)) != 0)
+ 		return -EINVAL;
+ 
+ 	if (!xnpod_primary_p())
 
 
