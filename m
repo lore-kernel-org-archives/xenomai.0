@@ -9,8 +9,8 @@ References: <4BB53566.3010601@domain.hid> <4BB53643.2080604@domain.hid>
 	<245373446233674495BCA5CA2FC1EB17378D015932@domain.hid>
 	<4BBAD880.5040603@domain.hid> <20100415001912.GB26116@domain.hid>
 Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 15 Apr 2010 11:02:00 +0200
-Message-ID: <1271322120.2365.605.camel@domain.hid>
+Date: Thu, 15 Apr 2010 12:46:58 +0200
+Message-ID: <1271328418.2365.622.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] New scheduler class
@@ -26,75 +26,7 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Andreas Glatz <andreasglatz@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
 
-
-Hi,
-
 On Wed, 2010-04-14 at 20:19 -0400, Andreas Glatz wrote:
-> Hi,
-> 
-> On Tue, Apr 06, 2010 at 02:45:20AM -0400, Jan Kiszka wrote:
-> > Andreas Glatz wrote:
-> > >>> Actually that is what I thought in the first place, however Jan's
-> > >>> comment "That's not true, Xenomai threads can run in non-RT scheduling
-> > >>> classes as well. They may just gain RT priority while holding some
-> > >>> lock that is requested by a RT thread as well." made me think I was
-> > >>> wrong...
-> > >>>
-> > >>> So we would really need a SCHED_IDLE for Xenomai then to solve this problem?
-> > >> I don't think so. But we do need to solve the issue that a non-RT thread
-> > >> stays too long in primary mode and is thus scheduled by Xenomai with the
-> > >> wrong priority /wrt other Linux task at its level.
-> > >>
-> > >> For the time being, you can work around this by issuing a Linux syscall
-> > >> before entering long processing loops - unless your task doesn't do this
-> > >> anyway, e.g. to perform some Linux I/O.
-> > >>
-> > > 
-> > > I think that's need. Currently the statistics task takes a mutex and waits on a message queue for messages. That's the only time it should potentially run in primary mode. After it returns the Mutex it should continue running with a policy similar to SCHED_IDLE to give other tasks a chance to run. I see how switching back to secondary mode could be achieved by issuing a Linux syscall. Is there another way which doesn't involve changing the source code of our application? (The proper way?)
-> > 
-> > The proper way would be to not having to change the application code.
-> > But this workaround (Linux syscall or *_set_mode()) is required until we
-> > improve the nucleus.
-> 
-> I generated a patch against 2.4.10.1 to get this behaviour (see further down). Instead of having 
-> to review and insert a Linux syscall or *_set_mode() in the application code I just call 
-> rt_task_set_mode(0, T_IDLE, NULL) at the beginning of the task body of the task which 
-> should mostly run in secondary mode under SCHED_IDLE (see example further down). The task 
-> marked with T_IDLE will switch to primary mode at every Xenomai skincall and immediately 
-> switch back to secondary mode once the Xenomai skincall is done. 
-> 
-> We identified just one case where this task has to stay in primary mode. This is between 
-> rt_mutex_aquire() and rt_mutex_release() since it may undergo a priority inversion boost. 
-> If the task stayed in secondary mode during that time it either would potentally delay the 
-> execution of a high priority task or would kill the system.
-> 
-> The patch seems to work for us. Our statistics task which blocked the system for a long 
-> time (and made the UI running under Linux unresponsive) is running with T_IDLE. If Linux is 
-> heavily loaded now the statistics will get out of sync but the UI will still be responsive.
-> 
-
-The logic of this patch looks ok for the native skin, given that 2.4.x
-does not provide a centralized implementation for dealing with exclusive
-resources, like 2.5.x with xnsynch_acquire/release, and always emits a
-syscall to manage those resources.
-
-This said, you could spare the T_IDLE tag by assuming that any non-RT
-shadow thread has to switch back to secondary mode after a syscall,
-unless the owned resource count is non-zero. This is where we are
-heading to in 2.5.x, since the preferred mode of operation for such
-thread has to be fundamentally "relaxed" (otherwise, one would have
-created a RT thread, right).
-
-I'm also unsure you should force SCHED_IDLE, instead of picking
-SCHED_OTHER for a more general approach to this issue. You can't assume
-that userland does want to be reniced that way, at least not from the
-nucleus. But I guess this fits your problem though.
-
-To sum up, since we can't really provide a true SCHED_IDLE policy on
-linux (i.e. not a nice-level hack), and implementing a sched class in
-Xenomai having a lower priority than the existing xnsched_class_idle (in
-2.5.x) is not feasible (we could not run any userland task in it
-anyway), we'd better stick with SCHED_OTHER.
 
 > One thing I've noticed though, and this is not related to the patch (I verified it on a 
 > vanilla Xenomai system): Consider the example I included. It prints average cycle times 
@@ -105,6 +37,14 @@ anyway), we'd better stick with SCHED_OTHER.
 > Can someone give me a short explanation or point me somewhere to get an explanation for
 > this behaviour? I didn't expect such a difference in variance:
 > 
+
+Moving back to secondary mode is nothing more than triggering the
+rescheduling procedure linux-wise, so the time credit for
+SCHED_OTHER/IDLE tasks decay as usual during your work loop, preemption
+by high priority task is more likely and so on. This variance is just
+the sign that those tasks cannot ask for more than what their scheduling
+policy grants.
+
 > SCHED_FIFO:
 > task=2 count=1000 average=10505us variance=851(us)^2
 > task=2 count=1000 average=10504us variance=176(us)^2
