@@ -1,12 +1,13 @@
-Message-ID: <4BC856E5.1050600@domain.hid>
-Date: Fri, 16 Apr 2010 14:24:05 +0200
+Message-ID: <4BC85722.3030202@domain.hid>
+Date: Fri, 16 Apr 2010 14:25:06 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4BC848F0.3090704@domain.hid>
-In-Reply-To: <4BC848F0.3090704@domain.hid>
+References: <E1O2jBI-0000y0-DS@xenomai.org>
+In-Reply-To: <E1O2jBI-0000y0-DS@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [git pull] RTDM fixes and reworks
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : rttest: Resolved test
+ device conflicts via separate name spaces
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,34 +16,110 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Alexis Berlemont <berlemont.hauw@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> The following changes since commit 113ea4d56e8b215cb56ae7673013163ea5a5987d:
->   Gilles Chanteperdrix (1):
->         switchtest: increase stack sizes
+GIT version control wrote:
+> Module: xenomai-jki
+> Branch: for-upstream
+> Commit: dede8fde31b175ddccaee610b7b0ff21560872a5
+> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=dede8fde31b175ddccaee610b7b0ff21560872a5
 > 
-> are available in the git repository at:
+> Author: Jan Kiszka <jan.kiszka@domain.hid>
+> Date:   Sun Apr 11 17:35:51 2010 +0200
 > 
->   git://git.xenomai.org/xenomai-jki.git for-upstream
+> rttest: Resolved test device conflicts via separate name spaces
 > 
+> Usually, all devices of some RTDM class use the same naming scheme. But
+> as test devices are different as they do not provide compatible APIs,
+> let's give them separate name space for their device names. That finally
+> resolves all the detection troubles that showed up once more than one
+> test device was registered.
 > 
-> This is the first of likely three rounds of patches for 2.5.x. It mostly
-> deals with introducing rtdm_rt_capable to replace the
-> __xn_exec_conforming marks of RTDM syscalls and with deprecating RT
-> open/socket/close for RTDM devices. The latter affects quite a few
-> devices in our tree, so I'm CC'ing the maintainers to check if they see
-> any problems in dropping RT creation/closure at this point.
+> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 > 
-> Besides some smaller fixes and an irqbench refactoring, this series also
-> contains a solution for the confusions about incompatible rttest<n>
-> devices. It simply avoids collisions be using different device names for
-> the different device subclasses.
+> ---
+> 
+>  include/rtdm/rttesting.h              |   10 ++++--
+>  ksrc/drivers/testing/irqbench.c       |    4 +-
+>  ksrc/drivers/testing/switchtest.c     |    4 +-
+>  ksrc/drivers/testing/timerbench.c     |    4 +-
+>  src/testsuite/irqbench/irqloop.c      |    3 +-
+>  src/testsuite/latency/latency.c       |    2 +-
+>  src/testsuite/switchtest/switchtest.c |   50 +++++++-------------------------
+>  7 files changed, 27 insertions(+), 50 deletions(-)
+> 
+> diff --git a/include/rtdm/rttesting.h b/include/rtdm/rttesting.h
+> index ce0418e..56df43b 100644
+> --- a/include/rtdm/rttesting.h
+> +++ b/include/rtdm/rttesting.h
+> @@ -29,13 +29,14 @@
+>   * Feel free to comment on this profile via the Xenomai mailing list
+>   * (xenomai@xenomai.org) or directly to the author (jan.kiszka@domain.hid).
+>   *
+> - * @b Profile @b Revision: 1
+> + * @b Profile @b Revision: 2
+>   * @n
+>   * @n
+>   * @par Device Characteristics
+>   * @ref rtdm_device.device_flags "Device Flags": @c RTDM_NAMED_DEVICE @n
+>   * @n
+> - * @ref rtdm_device.device_name "Device Name": @c "rttest<N>", N >= 0 @n
+> + * @ref rtdm_device.device_name "Device Name": @c "rttest[-<subclass>]<N>",
+> + * N >= 0, optional subclass name to simplify device discovery @n
+>   * @n
+>   * @ref rtdm_device.device_class "Device Class": @c RTDM_CLASS_TESTING @n
+>   * @n
+> @@ -61,7 +62,7 @@
+>  
+>  #include <rtdm/rtdm.h>
+>  
+> -#define RTTST_PROFILE_VER		1
+> +#define RTTST_PROFILE_VER		2
+>  
+>  typedef struct rttst_bench_res {
+>  	long long avg;
+> @@ -145,8 +146,11 @@ struct rttst_swtest_error {
+>  /*!
+>   * @name Sub-Classes of RTDM_CLASS_TESTING
+>   * @{ */
+> +/** subclass name: "tmbench" */
+>  #define RTDM_SUBCLASS_TIMERBENCH	0
+> +/** subclass name: "irqbench" */
+>  #define RTDM_SUBCLASS_IRQBENCH		1
+> +/** subclass name: "switchtst" */
+>  #define RTDM_SUBCLASS_SWITCHTEST	2
+>  /** @} */
+>  
+> diff --git a/ksrc/drivers/testing/irqbench.c b/ksrc/drivers/testing/irqbench.c
+> index 3dfb646..db520cb 100644
+> --- a/ksrc/drivers/testing/irqbench.c
+> +++ b/ksrc/drivers/testing/irqbench.c
+> @@ -515,8 +515,8 @@ static int __init __irqbench_init(void)
+>  	int err;
+>  
+>  	do {
+> -		snprintf(device.device_name, RTDM_MAX_DEVNAME_LEN, "rttest%d",
+> -			 start_index);
+> +		snprintf(device.device_name, RTDM_MAX_DEVNAME_LEN,
+> +			 "rttest-irqbench%d", start_index);
+>  		err = rtdm_dev_register(&device);
+>  
+>  		start_index++;
+> diff --git a/ksrc/drivers/testing/switchtest.c b/ksrc/drivers/testing/switchtest.c
+> index 057094b..47702fc 100644
+> --- a/ksrc/drivers/testing/switchtest.c
+> +++ b/ksrc/drivers/testing/switchtest.c
+> @@ -750,8 +750,8 @@ int __init __switchtest_init(void)
+>  	int err;
+>  
+>  	do {
+> -		snprintf(device.device_name, RTDM_MAX_DEVNAME_LEN, "rttest%d",
+> -			 start_index);
+> +		snprintf(device.device_name, RTDM_MAX_DEVNAME_LEN,
+> +			 "rttest-switchtst%d", start_index);
 
-switchtest already used another solution for that problem: the different
-devices use different ioctls. So, IMO we already had a solution for that
-issue.
+Why not rttest-switchtest ?
+
 
 -- 
 					    Gilles.
