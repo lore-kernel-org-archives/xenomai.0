@@ -1,11 +1,10 @@
-Message-ID: <4BC6DE29.1090504@domain.hid>
-Date: Thu, 15 Apr 2010 11:36:41 +0200
-From: Stefan Kisdaroczi <kisda@domain.hid>
+Message-ID: <4BC848F0.3090704@domain.hid>
+Date: Fri, 16 Apr 2010 13:24:32 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig587F235CF840421D9AEBCD12"
-Subject: [Xenomai-core] [PATCH] debian: sync with 2.5.2-1 from debian.org
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] [git pull] RTDM fixes and reworks
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -14,89 +13,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Alexis Berlemont <berlemont.hauw@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig587F235CF840421D9AEBCD12
-Content-Type: multipart/mixed;
- boundary="------------040508060202090107090305"
+The following changes since commit 113ea4d56e8b215cb56ae7673013163ea5a5987d:
+  Gilles Chanteperdrix (1):
+        switchtest: increase stack sizes
 
-This is a multi-part message in MIME format.
---------------040508060202090107090305
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+are available in the git repository at:
 
-patch against rpm/for-upstream
+  git://git.xenomai.org/xenomai-jki.git for-upstream
 
-Stefan
 
---------------040508060202090107090305
-Content-Type: text/plain;
- name="0001-debian-sync-with-2.5.2-1-from-debian.org.patch"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="0001-debian-sync-with-2.5.2-1-from-debian.org.patch"
+This is the first of likely three rounds of patches for 2.5.x. It mostly
+deals with introducing rtdm_rt_capable to replace the
+__xn_exec_conforming marks of RTDM syscalls and with deprecating RT
+open/socket/close for RTDM devices. The latter affects quite a few
+devices in our tree, so I'm CC'ing the maintainers to check if they see
+any problems in dropping RT creation/closure at this point.
 
-RnJvbSA2ODg4MjE1MmYzODNlMzZlY2RlOGNiYjNlMGY2NDc0ZGViNjQxOTdiIE1vbiBTZXAg
-MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBTdGVmYW4gS2lzZGFyb2N6aSA8a2lzZGFAaGlzcGVl
-ZC5jaD4KRGF0ZTogVGh1LCAxNSBBcHIgMjAxMCAxMToxMToyNiArMDIwMApTdWJqZWN0OiBb
-UEFUQ0hdIGRlYmlhbjogc3luYyB3aXRoIDIuNS4yLTEgZnJvbSBkZWJpYW4ub3JnCgotLS0K
-IGRlYmlhbi9jaGFuZ2Vsb2cgICAgICAgICAgICAgICB8ICAgIDYgKysrKysrCiBkZWJpYW4v
-bGlieGVub21haTEubGludGlhbiAgICAgfCAgICA3ICsrKysrKy0KIGRlYmlhbi9ydWxlcyAg
-ICAgICAgICAgICAgICAgICB8ICAgIDEgKwogZGViaWFuL3hlbm9tYWktcnVudGltZS5pbnN0
-YWxsIHwgICAgMSArCiA0IGZpbGVzIGNoYW5nZWQsIDE0IGluc2VydGlvbnMoKyksIDEgZGVs
-ZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZGViaWFuL2NoYW5nZWxvZyBiL2RlYmlhbi9jaGFu
-Z2Vsb2cKaW5kZXggNmQyZDNjZi4uM2U0YTQ0YiAxMDA2NDQKLS0tIGEvZGViaWFuL2NoYW5n
-ZWxvZworKysgYi9kZWJpYW4vY2hhbmdlbG9nCkBAIC0xLDMgKzEsOSBAQAoreGVub21haSAo
-Mi41LjItMSkgdW5zdGFibGU7IHVyZ2VuY3k9bG93CisKKyAgKiBOZXcgdXBzdHJlYW0gcmVs
-ZWFzZQorCisgLS0gUm9sYW5kIFN0aWdnZSA8c3RpZ2dlQGFudGNvbS5kZT4gIE1vbiwgMjkg
-TWFyIDIwMTAgMjA6NTE6MDcgKzAyMDAKKwogeGVub21haSAoMi41LjEtNCkgdW5zdGFibGU7
-IHVyZ2VuY3k9bG93CiAKICAgKiBBZGRlZCBwYXRjaGVzIGJ5IFN0ZWZhbiBLaXNkYXJvY3pp
-IDxraXNkYUBoaXNwZWVkLmNoPjoKZGlmZiAtLWdpdCBhL2RlYmlhbi9saWJ4ZW5vbWFpMS5s
-aW50aWFuIGIvZGViaWFuL2xpYnhlbm9tYWkxLmxpbnRpYW4KaW5kZXggZmUwZGE0Ni4uZjU2
-OTRhMyAxMDA2NDQKLS0tIGEvZGViaWFuL2xpYnhlbm9tYWkxLmxpbnRpYW4KKysrIGIvZGVi
-aWFuL2xpYnhlbm9tYWkxLmxpbnRpYW4KQEAgLTEsMiArMSw3IEBACi0jIG5vIGNvbnRhaW5l
-ZCBzaGFyZWQgbGlicmFyeSBuYW1lcyByZWZlciB0byAieGVub21haSIsIHRoZXJlZm9yZSBv
-d24gbmFtZQorIyBUaGUgcGFja2FnZSBsaWJ4ZW5vbWFpMSBmaXJzdCBkaWRuJ3QgY29udGFp
-biBhIGxpYnJhcnkgY2FsbGVkICp4ZW5vbWFpKi4KKyMgVGhlcmVmb3JlLCBJIGNhbGxlZCBp
-dCBsaWJ4ZW5vbWFpMS4gTm93LCB1cHN0cmVhbSBpbnRyb2R1Y2VkIGxpYnhlbm9tYWkwIGlu
-CisjIHRoZSBwYWNrYWdlLiAgSSdtIGxlYXZpbmcgdGhlIHBhY2thZ2UgbmFtZSBsaWJ4ZW5v
-bWFpMSBmb3Igbm93IHNpbmNlCisjIGRvd25ncmFkaW5nIHRoZSBudW1iZXIgaW4gdGhlIHBh
-Y2thZ2UgbmFtZSBpcyBwcm9iYWJseSBhIGJhZCBpZGVhLCBhbmQKKyMgc3luY2hyb25pemlu
-ZyB0aGUgcGFja2FnZSBuYW1lIHdpdGggdGhlIFNPIHZlcnNpb24gbnVtYmVyIGlzbid0IGVh
-c2lseQorIyBwb3NzaWJsZSBhbnl3YXkgc2luY2UgdGhlIHBhY2thZ2UgY29udGFpbnMgc2V2
-ZXJhbCBsaWJyYXJpZXMuCiBsaWJ4ZW5vbWFpMTogcGFja2FnZS1uYW1lLWRvZXNudC1tYXRj
-aC1zb25hbWVzIGxpYmFuYWxvZ3kxIGxpYm5hdGl2ZTMgbGlicHNvczAgbGlicHRocmVhZC1y
-dDEgbGlicnRhaTAgbGlicnRkazAgbGlicnRkbTEgbGlidWl0cm9uMCBsaWJ2cnR4MCBsaWJ2
-eHdvcmtzMSBsaWJ4ZW5vbWFpMApkaWZmIC0tZ2l0IGEvZGViaWFuL3J1bGVzIGIvZGViaWFu
-L3J1bGVzCmluZGV4IDRjYjUzYTMuLjM4OTkxZTIgMTAwNzU1Ci0tLSBhL2RlYmlhbi9ydWxl
-cworKysgYi9kZWJpYW4vcnVsZXMKQEAgLTM4LDYgKzM4LDcgQEAgZW5kaWYKIAlDT05GSUdf
-T1BUUyArPSAtLXByZWZpeD0vdXNyIFwKIAkgICAgICAgICAgICAtLWluY2x1ZGVkaXI9L3Vz
-ci9pbmNsdWRlL3hlbm9tYWkgXAogCSAgICAgICAgICAgIC0tbWFuZGlyPS91c3Ivc2hhcmUv
-bWFuIFwKKwkJICAgIC0td2l0aC10ZXN0ZGlyPS91c3IvbGliL3hlbm9tYWkKIAogaWZuZXEg
-KCQoREVCX0hPU1RfR05VX1RZUEUpLCQoREVCX0JVSUxEX0dOVV9UWVBFKSkKIAlDT05GSUdf
-T1BUUyArPSAtLWJ1aWxkICQoREVCX0JVSUxEX0dOVV9UWVBFKSAtLWhvc3QgJChERUJfSE9T
-VF9HTlVfVFlQRSkKZGlmZiAtLWdpdCBhL2RlYmlhbi94ZW5vbWFpLXJ1bnRpbWUuaW5zdGFs
-bCBiL2RlYmlhbi94ZW5vbWFpLXJ1bnRpbWUuaW5zdGFsbAppbmRleCBjOWVlZTc1Li5kMWRi
-ZTEzIDEwMDY0NAotLS0gYS9kZWJpYW4veGVub21haS1ydW50aW1lLmluc3RhbGwKKysrIGIv
-ZGViaWFuL3hlbm9tYWktcnVudGltZS5pbnN0YWxsCkBAIC0yLDMgKzIsNCBAQCB1c3IvYmlu
-CiB1c3Ivc2JpbgogdXNyL3NoYXJlL21hbgogdXNyL3NoYXJlL3hlbm9tYWkKK3Vzci9saWIv
-eGVub21haQotLSAKMS41LjYuNQoK
---------------040508060202090107090305--
+Besides some smaller fixes and an irqbench refactoring, this series also
+contains a solution for the confusions about incompatible rttest<n>
+devices. It simply avoids collisions be using different device names for
+the different device subclasses.
 
---------------enig587F235CF840421D9AEBCD12
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Please review and merge if no concerns remain.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+BTW, the other two rounds I mentioned will deal with /proc overflow
+fixes and avoiding RTDM context polling on close (I still need to finish
+my unit test, therefore this delay). Those should follow over the
+weekend.
 
-iD8DBQFLxt4vIPTw9rIdn6oRAuZ1AJ4qan/1GrSddTsBs+ZK1ZtO1jkgbQCfRTc0
-31mj0bPyvkexwlPMMYxwNb0=
-=8LmW
------END PGP SIGNATURE-----
 
---------------enig587F235CF840421D9AEBCD12--
+Jan Kiszka (16):
+      RTDM: Add rtdm_rt_capable() service
+      RTDM: Bump API version and document changes
+      Revert "rtdm: tag syscalls as conforming"
+      RTDM: Deprecate open_rt, socket_rt, and close_rt
+      RTIPC: Fix memory leak on failing socket creation
+      RTIPC: Drop support for RT socket creation/deletion
+      RTCAN: Drop support for socket creation/deletion in real-time
+      16550A: Drop support for device opening/closing in real-time
+      Analogy: Drop support for opening/closing in real-time
+      RTDM: Instrument rtdm_context_lock/unlock to detect misuses
+      RTDM: Add rtdm_context_put()
+      Fix historic msleep wrapping
+      irqbench: Fix x86-64 build
+      irqbench: Refactor user space helpers
+      irqbench: Auto-detect bases of port address and IRQ values
+      rttest: Resolved test device conflicts via separate name spaces
+
+Wolfgang Mauerer (1):
+      RTDM: Fix potential NULL pointer dereference
+
+ configure.in                          |    2 +-
+ include/asm-generic/wrappers.h        |    2 +-
+ include/rtdm/rtdm.h                   |    4 +-
+ include/rtdm/rtdm_driver.h            |   27 ++-
+ include/rtdm/rttesting.h              |   10 +-
+ ksrc/drivers/analogy/rtdm_interface.c |    2 -
+ ksrc/drivers/can/rtcan_raw.c          |    2 -
+ ksrc/drivers/ipc/rtipc.c              |   13 +-
+ ksrc/drivers/serial/16550A.c          |   51 +---
+ ksrc/drivers/testing/irqbench.c       |    4 +-
+ ksrc/drivers/testing/switchtest.c     |    4 +-
+ ksrc/drivers/testing/timerbench.c     |    4 +-
+ ksrc/skins/rtdm/API.CHANGES           |    9 +
+ ksrc/skins/rtdm/core.c                |   41 +++-
+ ksrc/skins/rtdm/device.c              |   13 +-
+ ksrc/skins/rtdm/drvlib.c              |   25 ++
+ ksrc/skins/rtdm/syscall.c             |   10 +-
+ src/testsuite/irqbench/Makefile.am    |    2 +-
+ src/testsuite/irqbench/irqbench.c     |  480 ++++++++++++++++-----------------
+ src/testsuite/irqbench/irqloop.c      |  304 +++++++++++----------
+ src/testsuite/latency/latency.c       |    2 +-
+ src/testsuite/switchtest/switchtest.c |   50 +---
+ 22 files changed, 554 insertions(+), 507 deletions(-)
 
