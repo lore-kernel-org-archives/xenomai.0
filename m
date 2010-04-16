@@ -1,5 +1,7 @@
-Date: Fri, 16 Apr 2010 11:29:42 -0400
-Message-ID: <20100416152942.GJ26116@domain.hid>
+Message-ID: <4BC88901.5060902@domain.hid>
+Date: Fri, 16 Apr 2010 17:57:53 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <k2pb88603c31004020232z28e10d59vc546b1b8803113f2@domain.hid>
 	<4BB5BA2D.1080604@domain.hid>
 	<245373446233674495BCA5CA2FC1EB17378D015932@domain.hid>
@@ -10,11 +12,10 @@ References: <k2pb88603c31004020232z28e10d59vc546b1b8803113f2@domain.hid>
 	<4BC70920.9060002@domain.hid>
 	<20100415125925.GD26116@domain.hid>
 	<4BC7118E.2050200@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <4BC7118E.2050200@domain.hid>
-From: Andreas Glatz <andreasglatz@domain.hid>
+	<20100416152942.GJ26116@domain.hid>
+In-Reply-To: <20100416152942.GJ26116@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] New scheduler class
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -25,73 +26,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Andreas Glatz <AndreasGlatz@domain.hid>, Jan Kiszka <jan.kiszka@domain.hid>
+To: Andreas Glatz <andreasglatz@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
 
-On Thu, Apr 15, 2010 at 09:15:58AM -0400, Gilles Chanteperdrix wrote:
-> Andreas Glatz wrote:
-> > On Thu, Apr 15, 2010 at 08:40:00AM -0400, Gilles Chanteperdrix wrote:
-> >> Andreas Glatz wrote:
-> >>> Hi,
-> >>>
-> >>> On Thu, Apr 15, 2010 at 06:46:58AM -0400, Philippe Gerum wrote:
-> >>>> On Wed, 2010-04-14 at 20:19 -0400, Andreas Glatz wrote:
-> >>>>
-> >>>>> One thing I've noticed though, and this is not related to the patch (I verified it on a
-> >>>>> vanilla Xenomai system): Consider the example I included. It prints average cycle times
-> >>>>> and the cycle time variance of the high priority task ("T2"). I noticed a big difference
-> >>>>> in the cycle time variance when switching the first task ("T1") to secondary mode with
-> >>>>> rt_task_set_mode() and setting the scheduler policy to either SCHED_FIFO, SCHED_IDLE or
-> >>>>> SCHED_NORMAL. I'm assuming someone asked this before and I didn't pay attention :)
-> >>>>> Can someone give me a short explanation or point me somewhere to get an explanation for
-> >>>>> this behaviour? I didn't expect such a difference in variance:
-> >>>>>
-> >>>> Moving back to secondary mode is nothing more than triggering the
-> >>>> rescheduling procedure linux-wise, so the time credit for
-> >>>> SCHED_OTHER/IDLE tasks decay as usual during your work loop, preemption
-> >>>> by high priority task is more likely and so on. This variance is just
-> >>>> the sign that those tasks cannot ask for more than what their scheduling
-> >>>> policy grants.
-> >>>>
-> >>> I think, I didn't express myself clearly enough. I was more puzzled about 
-> >>> the variance of the pure RT task (task w/o any secondary mode switches).
-> >>> So it seems that changing the scheduling policy of the "relaxed" task has
-> >>> an influence on the variance of the pure RT task. So the RT task seems
-> >>> to wait for the "relaxed" task. But where exacly does it wait for it? Mmmmm...
-> >> When waiting for the mutex?
-> >>
-> > 
-> > Ok. Maybe it's as ovvious as that. But I'm not quite there yet. Let me explain:
-> > I know that the "relaxed" task ("T1") is in primary mode between rt_mutex_aquire()
-> > and rt_mutex_release(). In other words when the pure RT task ("T2") starts waiting
-> > on the mutex, "T1" should be primary mode and not be affected by the Linux 
-> > scheduling policy. After "T1" releases the mutex it switches back to secondary mode.
-> > So I would expect the variance to be constant. 
+Andreas Glatz wrote:
+> On Thu, Apr 15, 2010 at 09:15:58AM -0400, Gilles Chanteperdrix wrote:
+>> Andreas Glatz wrote:
+>>> On Thu, Apr 15, 2010 at 08:40:00AM -0400, Gilles Chanteperdrix wrote:
+>>>> Andreas Glatz wrote:
+>>>>> Hi,
+>>>>>
+>>>>> On Thu, Apr 15, 2010 at 06:46:58AM -0400, Philippe Gerum wrote:
+>>>>>> On Wed, 2010-04-14 at 20:19 -0400, Andreas Glatz wrote:
+>>>>>>
+>>>>>>> One thing I've noticed though, and this is not related to the patch (I verified it on a
+>>>>>>> vanilla Xenomai system): Consider the example I included. It prints average cycle times
+>>>>>>> and the cycle time variance of the high priority task ("T2"). I noticed a big difference
+>>>>>>> in the cycle time variance when switching the first task ("T1") to secondary mode with
+>>>>>>> rt_task_set_mode() and setting the scheduler policy to either SCHED_FIFO, SCHED_IDLE or
+>>>>>>> SCHED_NORMAL. I'm assuming someone asked this before and I didn't pay attention :)
+>>>>>>> Can someone give me a short explanation or point me somewhere to get an explanation for
+>>>>>>> this behaviour? I didn't expect such a difference in variance:
+>>>>>>>
+>>>>>> Moving back to secondary mode is nothing more than triggering the
+>>>>>> rescheduling procedure linux-wise, so the time credit for
+>>>>>> SCHED_OTHER/IDLE tasks decay as usual during your work loop, preemption
+>>>>>> by high priority task is more likely and so on. This variance is just
+>>>>>> the sign that those tasks cannot ask for more than what their scheduling
+>>>>>> policy grants.
+>>>>>>
+>>>>> I think, I didn't express myself clearly enough. I was more puzzled about 
+>>>>> the variance of the pure RT task (task w/o any secondary mode switches).
+>>>>> So it seems that changing the scheduling policy of the "relaxed" task has
+>>>>> an influence on the variance of the pure RT task. So the RT task seems
+>>>>> to wait for the "relaxed" task. But where exacly does it wait for it? Mmmmm...
+>>>> When waiting for the mutex?
+>>>>
+>>> Ok. Maybe it's as ovvious as that. But I'm not quite there yet. Let me explain:
+>>> I know that the "relaxed" task ("T1") is in primary mode between rt_mutex_aquire()
+>>> and rt_mutex_release(). In other words when the pure RT task ("T2") starts waiting
+>>> on the mutex, "T1" should be primary mode and not be affected by the Linux 
+>>> scheduling policy. After "T1" releases the mutex it switches back to secondary mode.
+>>> So I would expect the variance to be constant. 
+>> Right. Maybe the problem is that the first call made by a thread to
+>> rt_printf causes a switch to secondary mode (auto mode, means that the
+>> first call to rt_printf calls malloc). You can confirm that by arming
+>> the T_WARNSW bit.
+>>
 > 
-> Right. Maybe the problem is that the first call made by a thread to
-> rt_printf causes a switch to secondary mode (auto mode, means that the
-> first call to rt_printf calls malloc). You can confirm that by arming
-> the T_WARNSW bit.
->
+> Ok. You where right, too. The reason for the high variance (compared to the case
+> where both tasks always run in primary mode) comes from the fact that the pure 
+> RT task ("T2") starts blocking on rt_mutex_aquire() which in term boosts the 
+> priority of the "relaxed" task ("T1") running in primary mode (since it is between
+> rt_mutex_aquire/rt_mutex_release). 
+> 
+> At a first glance this made no sense to me since I thought that there shouldn't 
+> be any difference between the case where both tasks always run in primary mode 
+> and the case where "T1" switches to secondary mode only outside of 
+> rt_mutex_aquire/rt_mutex_release.
+> 
+> Now I found the reason: If I pass the flag T_PRIOFF to "T1" (the task which 
+> occasionally switches to secondary mode) I get the same variances for both cases
+> which I described in the previous paragraph. So the reason is clear: T2 not only
+> boosts the RT priority but also the Linux priority. Apparently, boosting the
+> Linux priority takes much longer and depends on the scheduling policy.
+> 
+> Is this a desired behaviour?
 
-Ok. You where right, too. The reason for the high variance (compared to the case
-where both tasks always run in primary mode) comes from the fact that the pure 
-RT task ("T2") starts blocking on rt_mutex_aquire() which in term boosts the 
-priority of the "relaxed" task ("T1") running in primary mode (since it is between
-rt_mutex_aquire/rt_mutex_release). 
+The thing is that when you hold a mutex shared with a primary mode
+thread, you should not switch to secondary mode. Xenomai 2.5 is able to
+detect this behaviour and send you a signal in that case, if the primary
+mode thread has the T_WARNSW bit armed. I have tried to explain this here:
 
-At a first glance this made no sense to me since I thought that there shouldn't 
-be any difference between the case where both tasks always run in primary mode 
-and the case where "T1" switches to secondary mode only outside of 
-rt_mutex_aquire/rt_mutex_release.
+http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Chasing_the_unwanted_mode_switches.
 
-Now I found the reason: If I pass the flag T_PRIOFF to "T1" (the task which 
-occasionally switches to secondary mode) I get the same variances for both cases
-which I described in the previous paragraph. So the reason is clear: T2 not only
-boosts the RT priority but also the Linux priority. Apparently, boosting the
-Linux priority takes much longer and depends on the scheduling policy.
 
-Is this a desired behaviour?
-
-Andreas
+-- 
+					    Gilles.
 
