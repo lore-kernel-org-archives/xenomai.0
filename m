@@ -1,14 +1,11 @@
-Message-ID: <4BC7923B.1090809@domain.hid>
-Date: Fri, 16 Apr 2010 00:24:59 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <t2w95dbcd241004151500ne05d5991q4a8f6463f2b37ba1@domain.hid>
 References: <t2w95dbcd241004151500ne05d5991q4a8f6463f2b37ba1@domain.hid>
-	<4BC790B0.7090604@domain.hid>
-In-Reply-To: <4BC790B0.7090604@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig5963DF3BEC0FABF86AEF2146"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset="UTF-8"
+Date: Fri, 16 Apr 2010 09:27:54 +0200
+Message-ID: <1271402874.2365.715.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Adeos-main] [Vortx86DX] What's wrong with kernels upper than
  2.6.30.10 ?
 List-Id: General discussion about Adeos <adeos-main.gna.org>
@@ -22,89 +19,69 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 To: Gilles DOFFE <g.doffe@domain.hid>
 Cc: adeos-main <adeos-main@gna.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig5963DF3BEC0FABF86AEF2146
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Fri, 2010-04-16 at 00:00 +0200, Gilles DOFFE wrote:
+> Hello,
+> 
+> I try to install a real-time Linux kernel on a Roboard based on a
+> Vortex86DX (a x486 with TSC).
+> 
+> All works fine with :
+> Linux Kernel 2.6.30.10
+> Xenomai 2.5.1
+> Adeos patch adeos-ipipe-2.6.30.8-x86-2.4-09.patch
+> 
+> But, for all kernels upper or equal to 2.6.31, I always get a double
+> fault when testing WP bit. I have this double fault just after that :
+> 
+> Checking if this processor honours the WP bit even in supervisor
+> mode...
+> 
+> I traced with some simple printk that the problem occurs in this
+> function, at the end or after the call of fix_to_virt  :
+> 
+> static noinline int do_test_wp_bit(void)
+> {
+>         char tmp_reg;
+>         int flag;
+> 
+>         __asm__ __volatile__(
+>                 "       movb %0, %1     \n"
+>                 "1:     movb %1, %0     \n"
+>                 "       xorl %2, %2     \n"
+>                 "2:                     \n"
+>                 _ASM_EXTABLE(1b,2b)
+>                 :"=m" (*(char *)fix_to_virt(FIX_WP_TEST)),
+>                  "=q" (tmp_reg),
+>                  "=r" (flag)
+>                 :"2" (1)
+>                 :"memory");
+> 
+>         return flag;
+> }
+> 
+> I'm (quasi) sure that the problem is not that function, due to it
+> works when the kernel is not patched.
+> But where should I search ?
 
-Jan Kiszka wrote:
-> Gilles DOFFE wrote:
->> Hello,
->>
->> I try to install a real-time Linux kernel on a Roboard based on a Vort=
-ex86DX
->> (a x486 with TSC).
->>
->> All works fine with :
->> Linux Kernel 2.6.30.10
->> Xenomai 2.5.1
->> Adeos patch adeos-ipipe-2.6.30.8-x86-2.4-09.patch
->>
->> But, for all kernels upper or equal to 2.6.31, I always get a double f=
-ault
->> when testing WP bit. I have this double fault just after that :
->>
->> *Checking if this processor honours the WP bit even in supervisor mode=
-=2E..*
->>
->> I traced with some simple printk that the problem occurs in this funct=
-ion,
->> at the end or after the call of fix_to_virt  :
->>
->> *static noinline int do_test_wp_bit(void)
->> {
->>         char tmp_reg;
->>         int flag;
->>
->>         __asm__ __volatile__(
->>                 "       movb %0, %1     \n"
->>                 "1:     movb %1, %0     \n"
->>                 "       xorl %2, %2     \n"
->>                 "2:                     \n"
->>                 _ASM_EXTABLE(1b,2b)
->>                 :"=3Dm" (*(char *)fix_to_virt(FIX_WP_TEST)),
->>                  "=3Dq" (tmp_reg),
->>                  "=3Dr" (flag)
->>                 :"2" (1)
->>                 :"memory");
->>
->>         return flag;
->> }*
->>
->> I'm (quasi) sure that the problem is not that function, due to it work=
-s when
->> the kernel is not patched.
->> But where should I search ?
->>
->> Can you give me some indications ?
->=20
-> Does applying this patch [1] happen to change the picture?
-
-To answer myself: As the Vortex is 32-bit, this patch cannot make a
-difference.
-
->=20
-> If not, please provide your .config.
-
-So this is now important. Probably reproducible in a VM, thus also
-easily debuggable.
-
-Jan
+Try backporting these two 2.6.32 patches to your kernel; this should be
+straightforward:
+http://git.denx.de/?p=ipipe-2.6.git;a=commit;h=576f57f82dfd6c3ac285b0af76e5e0ce617679ba
+http://git.denx.de/?p=ipipe-2.6.git;a=commit;h=a250e984a76fd327a0d8cfada5290b27e99f1e4d
 
 
---------------enig5963DF3BEC0FABF86AEF2146
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+> 
+> Can you give me some indications ?
+> 
+> Thanks,
+> Gilles 
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkvHkjsACgkQitSsb3rl5xSU8QCgtowv4o0i3tL2hW3NCuYGkIWi
-3YkAn0k2/UWJN83ygDDZcb3cZJ/zX8rL
-=aG19
------END PGP SIGNATURE-----
+-- 
+Philippe.
 
---------------enig5963DF3BEC0FABF86AEF2146--
+
 
