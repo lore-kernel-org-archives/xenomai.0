@@ -1,12 +1,11 @@
-Message-ID: <4BC8682E.4090406@domain.hid>
-Date: Fri, 16 Apr 2010 15:37:50 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4BC86E70.1010707@domain.hid>
+Date: Fri, 16 Apr 2010 16:04:32 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <E1O2jBF-0000vQ-JB@xenomai.org> <4BC855E6.106@domain.hid>
-	<4BC85899.90700@domain.hid> <4BC85EF5.3000008@domain.hid>
-	<4BC8617E.4060307@domain.hid> <4BC865F1.5000303@domain.hid>
-	<4BC8674B.5090302@domain.hid>
-In-Reply-To: <4BC8674B.5090302@domain.hid>
+References: <E1O2jBF-0000vQ-JB@xenomai.org> <4BC855E6.106@domain.hid>	
+	<4BC85899.90700@domain.hid>
+	<1271423429.2365.719.camel@domain.hid>
+In-Reply-To: <1271423429.2365.719.camel@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [Xenomai-git] Wolfgang Mauerer : RTDM: Fix
@@ -19,77 +18,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Gilles Chanteperdrix wrote:
->>>> Jan Kiszka wrote:
->>>>> Gilles Chanteperdrix wrote:
->>>>>> GIT version control wrote:
->>>>>>> Module: xenomai-jki
->>>>>>> Branch: for-upstream
->>>>>>> Commit: 55ebde80258b5b6c3d29d37b5f30a3199faf0881
->>>>>>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=55ebde80258b5b6c3d29d37b5f30a3199faf0881
->>>>>>>
->>>>>>> Author: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
->>>>>>> Date:   Tue Mar 30 11:13:33 2010 +0200
->>>>>>>
->>>>>>> RTDM: Fix potential NULL pointer dereference
->>>>>>>
->>>>>>> The rework in 95278926edc559d4 misses the case that context can be NULL,
->>>>>>> which can (and has) triggered a kernel oops. Take care of this case.
->>>>>>>
->>>>>>> Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
->>>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->>>>>> I still think that fix is a useles waste of time. Let us merge
->>>>>> Philippe's patches instead.
->>>>> Please accept that Philippe's patch is orthogonal to this bug.
->>>>>
->>>>> And it didn't work as-is. I'll post a rework which has the same benefit
->>>>> (avoiding to poll on pending context references) - once it is tested.
->>>> Ok. I am fine with any variation as long as:
->>>> - close returns immediately even if the request is not taken into
->>>> account immediately;
->>>> - the file descriptor index is available again as soon as close returns;
->>>> - the kernel objects attached to the file descriptor are destroyed when
->>>> the last reference to it is closed.
->>> That's precisely what I implemented. Additionally, I had to take care of
->>> RTDM drivers deferring the close via EAGAIN and some other minor aspects.
->> I am afraid EAGAIN gets translated automatically into ENOMERGE ;-)
-> 
-> Sorry, I'm also concerned about legacy compatibility. So this is a
-> must-have.
-> 
-> But don't worry, this is an internal detail between driver and RTDM.
-> Neither the user nor drivers that makes no use of it will notice.
-> 
->>>> In shoft: POSIX conformance.
->>> At least blocking has nothing to do with POSIX (some drivers will
->>> continue to block in their close handlers). And - AFAIU - the order of
->>> releasing the fd internally and blocking on something during close is
->>> not specified.
->> The point is that the close handler should not be called when close is
->> called, but when the last reference to the file descriptor is closed,
->> asynchronously if need be. So, it may block. But the close service
->> should return immediately.
+Philippe Gerum wrote:
+> On Fri, 2010-04-16 at 14:31 +0200, Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> GIT version control wrote:
+>>>> Module: xenomai-jki
+>>>> Branch: for-upstream
+>>>> Commit: 55ebde80258b5b6c3d29d37b5f30a3199faf0881
+>>>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=55ebde80258b5b6c3d29d37b5f30a3199faf0881
+>>>>
+>>>> Author: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+>>>> Date:   Tue Mar 30 11:13:33 2010 +0200
+>>>>
+>>>> RTDM: Fix potential NULL pointer dereference
+>>>>
+>>>> The rework in 95278926edc559d4 misses the case that context can be NULL,
+>>>> which can (and has) triggered a kernel oops. Take care of this case.
+>>>>
+>>>> Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+>>>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+>>> I still think that fix is a useles waste of time. Let us merge
+>>> Philippe's patches instead.
+>> Please accept that Philippe's patch is orthogonal to this bug.
 >>
->> Maybe it is not POSIX, but it is the way it should be, and the way
->> people expect a sane driver API to answer. Crappy drivers which do not
->> answer to SIGINT are simply not acceptable and only a waste developer
->> time (and POSIX mandates EINTR in that case).
+>> And it didn't work as-is. I'll post a rework which has the same benefit
+>> (avoiding to poll on pending context references) - once it is tested.
 > 
-> We can't change these bits. The close handler will continue to be called
-> when the request is issued and possibly once again (or more if it asks
-> for this via EAGAIN) when the final release happens.
+> You mean that your current implementation, does poll, right? Because
+> mine does not, that was the point of it, also to solve races in
+> cross-context management IIRC.
 
-As fare as I remember Philippe's patch fixed these bits. I have no
-problem if the polling happens in a kernel thread (or workqueue, as far
-as I remember Philippe's patch), and the close service has already
-returned and freed the file descriptor.
+Polling is part of the RTDM API: If a driver requests it via EAGAIN, we
+have to provide it. We may deprecate this feature long-term, but for now
+there are no drop-in replacements available and we have drivers in the
+field that make use of it.
+
+> That patch dates back to the 2.5 -rc
+> cycle, when I needed it to have a decent behavior while working on the
+> RTIPC stuff. It should not be that difficult to forward port it to
+> -head, I guess. Let me know if I can help.
+
+Thanks. The patch is done, it just waits for the final tests as I wrote.
+I would be happy if you could test it as well if you have something that
+nicely stresses e.g. RTIPC in this domain.
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
