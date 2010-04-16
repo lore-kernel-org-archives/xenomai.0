@@ -1,13 +1,12 @@
-Message-ID: <4BC855E6.106@domain.hid>
-Date: Fri, 16 Apr 2010 14:19:50 +0200
+Message-ID: <4BC856E5.1050600@domain.hid>
+Date: Fri, 16 Apr 2010 14:24:05 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <E1O2jBF-0000vQ-JB@xenomai.org>
-In-Reply-To: <E1O2jBF-0000vQ-JB@xenomai.org>
+References: <4BC848F0.3090704@domain.hid>
+In-Reply-To: <4BC848F0.3090704@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Xenomai-git] Wolfgang Mauerer : RTDM: Fix
- potential NULL pointer dereference
+Subject: Re: [Xenomai-core] [git pull] RTDM fixes and reworks
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,28 +15,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Alexis Berlemont <berlemont.hauw@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-GIT version control wrote:
-> Module: xenomai-jki
-> Branch: for-upstream
-> Commit: 55ebde80258b5b6c3d29d37b5f30a3199faf0881
-> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=55ebde80258b5b6c3d29d37b5f30a3199faf0881
+Jan Kiszka wrote:
+> The following changes since commit 113ea4d56e8b215cb56ae7673013163ea5a5987d:
+>   Gilles Chanteperdrix (1):
+>         switchtest: increase stack sizes
 > 
-> Author: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
-> Date:   Tue Mar 30 11:13:33 2010 +0200
+> are available in the git repository at:
 > 
-> RTDM: Fix potential NULL pointer dereference
+>   git://git.xenomai.org/xenomai-jki.git for-upstream
 > 
-> The rework in 95278926edc559d4 misses the case that context can be NULL,
-> which can (and has) triggered a kernel oops. Take care of this case.
 > 
-> Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
-> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+> This is the first of likely three rounds of patches for 2.5.x. It mostly
+> deals with introducing rtdm_rt_capable to replace the
+> __xn_exec_conforming marks of RTDM syscalls and with deprecating RT
+> open/socket/close for RTDM devices. The latter affects quite a few
+> devices in our tree, so I'm CC'ing the maintainers to check if they see
+> any problems in dropping RT creation/closure at this point.
+> 
+> Besides some smaller fixes and an irqbench refactoring, this series also
+> contains a solution for the confusions about incompatible rttest<n>
+> devices. It simply avoids collisions be using different device names for
+> the different device subclasses.
 
-I still think that fix is a useles waste of time. Let us merge
-Philippe's patches instead.
-
+switchtest already used another solution for that problem: the different
+devices use different ioctls. So, IMO we already had a solution for that
+issue.
 
 -- 
 					    Gilles.
