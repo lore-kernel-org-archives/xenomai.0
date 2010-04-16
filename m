@@ -1,14 +1,21 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20100415164539.471058da98lp4sjk@domain.hid>
-References: <20100331143432.44386sa8ez2p2q2o@domain.hid>
-	<4BB34F3A.3060105@domain.hid>
-	<20100415164539.471058da98lp4sjk@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 15 Apr 2010 17:03:21 +0200
-Message-ID: <1271343801.2365.703.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] netrpc
+Date: Fri, 16 Apr 2010 11:29:42 -0400
+Message-ID: <20100416152942.GJ26116@domain.hid>
+References: <k2pb88603c31004020232z28e10d59vc546b1b8803113f2@domain.hid>
+	<4BB5BA2D.1080604@domain.hid>
+	<245373446233674495BCA5CA2FC1EB17378D015932@domain.hid>
+	<4BBAD880.5040603@domain.hid>
+	<20100415001912.GB26116@domain.hid>
+	<1271328418.2365.622.camel@domain.hid>
+	<20100415123607.GC26116@domain.hid>
+	<4BC70920.9060002@domain.hid>
+	<20100415125925.GD26116@domain.hid>
+	<4BC7118E.2050200@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <4BC7118E.2050200@domain.hid>
+From: Andreas Glatz <andreasglatz@domain.hid>
+Subject: Re: [Xenomai-help] New scheduler class
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,245 +25,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Michel He <michel.he@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Andreas Glatz <AndreasGlatz@domain.hid>, Jan Kiszka <jan.kiszka@domain.hid>
 
-On Thu, 2010-04-15 at 16:45 +0200, Michel He wrote:
-> For message passing from task to task, I use the 3 available =20
-> procedures rt_task_send(), rt_task_reply(), rt_task_receive().
->=20
-> The job is when one message emitted from the source to one =20
-> destination, however the message can be catched by an other task (not =20
-> the good correspondant). In Xenomai, when the message is NOT for a =20
-> task, it couldn't be passed to a next task. Tasks can receive any =20
-> message but not being able to relay it to the destination. (there's no =20
-> such function mentionned inside the API doc).
+On Thu, Apr 15, 2010 at 09:15:58AM -0400, Gilles Chanteperdrix wrote:
+> Andreas Glatz wrote:
+> > On Thu, Apr 15, 2010 at 08:40:00AM -0400, Gilles Chanteperdrix wrote:
+> >> Andreas Glatz wrote:
+> >>> Hi,
+> >>>
+> >>> On Thu, Apr 15, 2010 at 06:46:58AM -0400, Philippe Gerum wrote:
+> >>>> On Wed, 2010-04-14 at 20:19 -0400, Andreas Glatz wrote:
+> >>>>
+> >>>>> One thing I've noticed though, and this is not related to the patch (I verified it on a
+> >>>>> vanilla Xenomai system): Consider the example I included. It prints average cycle times
+> >>>>> and the cycle time variance of the high priority task ("T2"). I noticed a big difference
+> >>>>> in the cycle time variance when switching the first task ("T1") to secondary mode with
+> >>>>> rt_task_set_mode() and setting the scheduler policy to either SCHED_FIFO, SCHED_IDLE or
+> >>>>> SCHED_NORMAL. I'm assuming someone asked this before and I didn't pay attention :)
+> >>>>> Can someone give me a short explanation or point me somewhere to get an explanation for
+> >>>>> this behaviour? I didn't expect such a difference in variance:
+> >>>>>
+> >>>> Moving back to secondary mode is nothing more than triggering the
+> >>>> rescheduling procedure linux-wise, so the time credit for
+> >>>> SCHED_OTHER/IDLE tasks decay as usual during your work loop, preemption
+> >>>> by high priority task is more likely and so on. This variance is just
+> >>>> the sign that those tasks cannot ask for more than what their scheduling
+> >>>> policy grants.
+> >>>>
+> >>> I think, I didn't express myself clearly enough. I was more puzzled about 
+> >>> the variance of the pure RT task (task w/o any secondary mode switches).
+> >>> So it seems that changing the scheduling policy of the "relaxed" task has
+> >>> an influence on the variance of the pure RT task. So the RT task seems
+> >>> to wait for the "relaxed" task. But where exacly does it wait for it? Mmmmm...
+> >> When waiting for the mutex?
+> >>
+> > 
+> > Ok. Maybe it's as ovvious as that. But I'm not quite there yet. Let me explain:
+> > I know that the "relaxed" task ("T1") is in primary mode between rt_mutex_aquire()
+> > and rt_mutex_release(). In other words when the pure RT task ("T2") starts waiting
+> > on the mutex, "T1" should be primary mode and not be affected by the Linux 
+> > scheduling policy. After "T1" releases the mutex it switches back to secondary mode.
+> > So I would expect the variance to be constant. 
+> 
+> Right. Maybe the problem is that the first call made by a thread to
+> rt_printf causes a switch to secondary mode (auto mode, means that the
+> first call to rt_printf calls malloc). You can confirm that by arming
+> the T_WARNSW bit.
+>
 
-Well, actually, no, there is none. Those services are aimed at being
-plain simple client/server primitives, which assume that you do know
-which server wants to receive your traffic. Providing a service to
-re-queue the request for others to pick it, does not seem the right
-approach, since there is no way you can tell whether the-other-guy will
-schedule in before the current server goes back to its receive point,
-unless you synchronize both servers, which would end up being quite
-silly. However, your application can emulate this behavior much more
-sanely, you don't need kernel support for that.
+Ok. You where right, too. The reason for the high variance (compared to the case
+where both tasks always run in primary mode) comes from the fact that the pure 
+RT task ("T2") starts blocking on rt_mutex_aquire() which in term boosts the 
+priority of the "relaxed" task ("T1") running in primary mode (since it is between
+rt_mutex_aquire/rt_mutex_release). 
 
-Btw, you should really remove rt_task_set_mode(...T_PRIMARY...) from
-your code, because this is unfortunately totally useless overhead. Not
-really your fault, T_PRIMARY should not have been provided this way.
+At a first glance this made no sense to me since I thought that there shouldn't 
+be any difference between the case where both tasks always run in primary mode 
+and the case where "T1" switches to secondary mode only outside of 
+rt_mutex_aquire/rt_mutex_release.
 
->=20
-> I build an example. (cf code sample)
->=20
-> any help is welcome
->=20
-> code sample :
->=20
-> /*
->   *
->   *  Created on: 15 avr. 2010
->   *      Author: hemichel
->   */
->=20
-> #include <stdio.h>
-> #include <unistd.h>
-> #include <stdlib.h>
-> #include <string.h>
-> #include <signal.h>
-> #include <sys/time.h>
-> #include <sys/io.h>
-> #include <sys/mman.h>
-> #include <native/task.h>
-> #include <native/queue.h>
-> #include <native/intr.h>
->=20
-> #define STACK_SIZE 8192
-> #define STD_PRIO 1
->=20
-> RT_TASK test_task_ptr,test_task2_ptr,test_task3_ptr;
-> int int_count =3D 0;
-> int end =3D 0;
->=20
-> #define PEER_RATE_NS 10000000
-> //                     --s-ms-us-ns
-> RTIME task_period_ns =3D   1000000000llu;
->=20
-> void testtask(void *cookie) {
-> 	RT_TASK_MCB mcb_send, mcb_reply;
-> 	int flowid, i, rv;
-> 	unsigned char datasend[16];
-> 	unsigned char datareply[16];
->=20
-> 	int count =3D 0;
-> 	int ret;
-> 	unsigned long overrun;
-> 	ret =3D rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(task_period=
-_ns));
-> 	if (ret) {
-> 		printf("error while set periodic, code %d\n",ret);
-> 		return;
-> 	}
->=20
-> 	mcb_send.opcode =3D 0x03;
-> 	datasend[0]=3D'a';
-> 	mcb_send.data =3D datasend;
-> 	mcb_send.size =3D sizeof(datasend);
->=20
-> 	mcb_reply.size =3D sizeof(datareply);
-> 	mcb_reply.data =3D datareply;
->=20
-> 	while(!end){
-> 		ret =3D rt_task_set_mode(0, T_PRIMARY, NULL);
-> 		if (ret) {
-> 			printf("error while rt_task_set_mode, code %d\n",ret);
-> 			return;
-> 		}
-> 		ret =3D rt_task_wait_period(&overrun);
-> 		if (ret) {
-> 			printf("error while rt_task_wait_period, code %d\n",ret);
-> 			return;
-> 		}
-> 		count++;
-> 		printf("message from testtask: count=3D%d\n", count);
->=20
-> 		rv =3D rt_task_send(&test_task2_ptr,&mcb_send,&mcb_reply,PEER_RATE_NS);
-> 		if (rv < 0) printf("rt_task_send error\n");
-> 		else rt_printf("response mcb_reply=3D%d\n",mcb_reply.data[0]);
-> 		fflush(NULL);
-> 	}
-> }
->=20
->=20
-> void testtask2(void *cookie) {
-> 	RT_TASK_MCB mcb_rcv, mcb_reply;
-> 	int flowid, i, rv;
-> 	unsigned char datareply[16];
->=20
-> 	int count =3D 12;
-> 	int ret;
-> 	unsigned long overrun;
-> 	ret =3D rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(task_period=
-_ns));
-> 	if (ret) {
-> 		printf("error while set periodic, code %d\n",ret);
-> 		return;
-> 	}
->=20
-> 	while(!end){
-> 		ret =3D rt_task_set_mode(0, T_PRIMARY, NULL);
-> 		if (ret) {
-> 			printf("error while rt_task_set_mode, code %d\n",ret);
-> 			return;
-> 		}
-> 		ret =3D rt_task_wait_period(&overrun);
-> 		if (ret) {
-> 			printf("error while rt_task_wait_period, code %d\n",ret);
-> 			return;
-> 		}
->=20
-> 		mcb_rcv.data =3D (caddr_t)datareply;
-> 		mcb_rcv.size =3D sizeof(datareply);
->=20
-> 		flowid =3D rt_task_receive(&mcb_rcv,PEER_RATE_NS);
-> 		rt_printf("task 2: flowid=3D%d rcv.size=3D%d bytes to receive buf, =20
-> opcode=3D%d\n",\
-> 				flowid,mcb_rcv.size,mcb_rcv.opcode);
-> 		if(flowid >=3D 0)
-> 		{
-> 			if (mcb_rcv.opcode =3D=3D 2) {
-> 				//this is mine
-> 				mcb_reply.opcode =3D 0x2;
-> 				mcb_reply.size =3D 1;
-> 				datareply[0]=3Dcount;
-> 				mcb_reply.data =3D datareply;
-> 				rt_task_reply(flowid, &mcb_reply);
-> 				rt_printf("replied from task2 to flowid=3D%d\n",flowid);
-> 			}
-> 			else {
-> 				rt_printf("task2 : not mined\n");
->                                  //how to relay the catched msg to next ?
-> 			}
-> 		}
->=20
-> 		fflush(NULL);
-> 	}
-> }
->=20
->=20
-> void testtask3(void *cookie) {
-> 	RT_TASK_MCB mcb_rcv, mcb_reply;
-> 	int flowid, i, rv;
-> 	unsigned char datareply[16];
->=20
-> 	int count =3D 13;
-> 	int ret;
-> 	unsigned long overrun;
-> 	ret =3D rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(task_period=
-_ns));
-> 	if (ret) {
-> 		printf("error while set periodic, code %d\n",ret);
-> 		return;
-> 	}
->=20
-> 	while(!end){
-> 		ret =3D rt_task_set_mode(0, T_PRIMARY, NULL);
-> 		if (ret) {
-> 			printf("error while rt_task_set_mode, code %d\n",ret);
-> 			return;
-> 		}
-> 		ret =3D rt_task_wait_period(&overrun);
-> 		if (ret) {
-> 			printf("error while rt_task_wait_period, code %d\n",ret);
-> 			return;
-> 		}
->=20
-> 		mcb_rcv.data =3D (caddr_t)datareply;
-> 		mcb_rcv.size =3D sizeof(datareply);
->=20
-> 		flowid =3D rt_task_receive(&mcb_rcv,PEER_RATE_NS);
-> 		rt_printf("task 3 : flowid=3D%d rcv.size=3D%d bytes to receive buf, =20
-> opcode=3D%d\n",\
-> 				flowid,mcb_rcv.size,mcb_rcv.opcode);
-> 		if(flowid >=3D 0)
-> 		{
-> 			if (mcb_rcv.opcode =3D=3D 3) {
-> 				//this is mine
-> 				mcb_reply.opcode =3D 0x3;
-> 				mcb_reply.size =3D 1;
-> 				datareply[0]=3Dcount;
-> 				mcb_reply.data =3D datareply;
-> 				rt_task_reply(flowid, &mcb_reply);
-> 				rt_printf("replied from task3 to flowid=3D%d\n",flowid);
-> 			}
-> 			else {
-> 				rt_printf("task3 : not mined\n");
->                                  //how to relay the catched msg to next ?
-> 			}
->=20
-> 		}
->=20
-> 		fflush(NULL);
-> 	}
-> }
->=20
->=20
->=20
-> Jan Kiszka <jan.kiszka@domain.hid> a =C3=A9crit :
->=20
-> > Well, you could start with mapping the existing RTAI API calls in
-> > xrtai-lab on local Native calls. That will already give you a
-> > non-distributed port.
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+Now I found the reason: If I pass the flag T_PRIOFF to "T1" (the task which 
+occasionally switches to secondary mode) I get the same variances for both cases
+which I described in the previous paragraph. So the reason is clear: T2 not only
+boosts the RT priority but also the Linux priority. Apparently, boosting the
+Linux priority takes much longer and depends on the scheduling policy.
 
+Is this a desired behaviour?
 
---=20
-Philippe.
-
-
+Andreas
 
