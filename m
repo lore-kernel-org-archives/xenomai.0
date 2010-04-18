@@ -1,12 +1,13 @@
-Message-ID: <4BC9F9DA.5000508@domain.hid>
-Date: Sat, 17 Apr 2010 20:11:38 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4BC9F841.20009@domain.hid>
-In-Reply-To: <4BC9F841.20009@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [git pull v2] RTDM fixes and reworks
+From: Jan Kiszka <Jan Kiszka jan.kiszka@domain.hid>
+Date: Sun, 18 Apr 2010 15:12:26 +0200
+Message-Id: <5a62361072f2d0555ba65eba6dc2d322ad2f51e9.1271596366.git.Jan
+	Kiszka jan.kiszka@domain.hid>
+In-Reply-To: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
+References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
+In-Reply-To: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
+References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATCH v3 02/24] RTDM: Add rtdm_rt_capable() service
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,44 +16,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Alexis Berlemont <berlemont.hauw@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>, Alexis Berlemont <berlemont.hauw@domain.hid>
 
-Jan Kiszka wrote:
-> The following changes since commit 113ea4d56e8b215cb56ae7673013163ea5a5987d:
->   Gilles Chanteperdrix (1):
->         switchtest: increase stack sizes
-> 
-> are available in the git repository at:
-> 
->   git://git.xenomai.org/xenomai-jki.git for-upstream
-> 
-> 
-> Changes in v2:
->  - compat support for rttest device names
->  - documented RTDM close procedure
->  - internal rework of the close procedure
->  - basic RTDM unit test, so far targeting at the close rework
->  - some additional small cleanup patches
-> 
-> Beyond that series, there is now also our full /proc rework updated in
-> git, see
-> 
->   git://git.xenomai.org/xenomai-jki.git queues/proc
-> 
-> I will send a separate pull request for that one later, either on top of
-> this (if there are no further concerns) or against master (it should
-> be orthogonal).
+From: Jan Kiszka <jan.kiszka@domain.hid>
 
-Ok, could you git-send-mail the patches to the list? Reviewing them in
-the xenomai-git mailing list is not that convenient, I am afraid to miss
-some of them.
+This adds rtdm_rt_capable(), a function that can be used by drivers to
+detect callers that could issue a service request also from the
+(typically preferred) real-time context. If that is the case, the driver
+can trigger a restart of the request if the current context is not
+real-time.
 
-One thing I did not see in your close test (but may have missed it, I
-just can not find back the specific mail containing it), you should
-check that, if a driver returns -EAGAIN, and open is called right after
-close, the caller gets the same file descriptor.
+CC: Philippe Gerum <rpm@xenomai.org>
+CC: Alexis Berlemont <berlemont.hauw@domain.hid>
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ include/rtdm/rtdm_driver.h |    6 ++++++
+ ksrc/skins/rtdm/drvlib.c   |   25 +++++++++++++++++++++++++
+ 2 files changed, 31 insertions(+), 0 deletions(-)
 
+diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
+index 0fc1496..45be404 100644
+--- a/include/rtdm/rtdm_driver.h
++++ b/include/rtdm/rtdm_driver.h
+@@ -1296,6 +1296,12 @@ static inline int rtdm_in_rt_context(void)
+ {
+ 	return (rthal_current_domain != rthal_root_domain);
+ }
++
++static inline int rtdm_rt_capable(void)
++{
++	return xnpod_shadow_p();
++}
++
+ #endif /* !DOXYGEN_CPP */
+ 
+ int rtdm_exec_in_rt(struct rtdm_dev_context *context,
+diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
+index 3b04493..6e26501 100644
+--- a/ksrc/skins/rtdm/drvlib.c
++++ b/ksrc/skins/rtdm/drvlib.c
+@@ -2341,6 +2341,31 @@ int rtdm_strncpy_from_user(rtdm_user_info_t *user_info, char *dst,
+  */
+ int rtdm_in_rt_context(void);
+ 
++/**
++ * Test if the caller is capable of running in real-time context
++ *
++ * @return Non-zero is returned if the caller is able to execute in real-time
++ * context (independent of its current execution mode), 0 otherwise.
++ *
++ * @note This function can be used by drivers that provide different
++ * implementations for the same service depending on the execution mode of
++ * the caller. If a caller requests such a service in non-real-time context
++ * but is capable of running in real-time as well, it might be appropriate
++ * for the driver to reject the request via -ENOSYS so that RTDM can switch
++ * the caller and restart the request in real-time context.
++ *
++ * Environments:
++ *
++ * This service can be called from:
++ *
++ * - Kernel module initialization/cleanup code
++ * - Kernel-based task
++ * - User-space task (RT, non-RT)
++ *
++ * Rescheduling: never.
++ */
++int rtdm_rt_capable(void);
++
+ #endif /* DOXYGEN_CPP */
+ 
+ /** @} Utility Services */
 -- 
-					    Gilles.
+1.6.0.2
+
 
