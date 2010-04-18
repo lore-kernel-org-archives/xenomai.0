@@ -1,13 +1,14 @@
 From: Jan Kiszka <Jan Kiszka jan.kiszka@domain.hid>
-Date: Sun, 18 Apr 2010 15:12:42 +0200
-Message-Id: <35eafa7c55fbb2c6f68873ae2c62bc7e644c9eed.1271596367.git.Jan
+Date: Sun, 18 Apr 2010 15:12:45 +0200
+Message-Id: <bb57f6aaf099a7a0e51538b7498c8cefdea0a646.1271596367.git.Jan
 	Kiszka jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH v3 18/24] testing: Clean up Kconfig rules
+Subject: [Xenomai-core] [PATCH v3 21/24] Add list_first_entry wrapper for
+	older kernels
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -21,63 +22,28 @@ Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@domain.hid>
 
-To exclude modules from built-in, make them depend on 'm' is sufficient.
-
+CC: Philippe Gerum <rpm@xenomai.org>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- ksrc/drivers/testing/Config.in |    2 +-
- ksrc/drivers/testing/Kconfig   |   14 +++++---------
- 2 files changed, 6 insertions(+), 10 deletions(-)
+ include/asm-generic/wrappers.h |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
 
-diff --git a/ksrc/drivers/testing/Config.in b/ksrc/drivers/testing/Config.in
-index 3552670..215c38d 100644
---- a/ksrc/drivers/testing/Config.in
-+++ b/ksrc/drivers/testing/Config.in
-@@ -15,6 +15,6 @@ dep_tristate 'Context switches test driver' CONFIG_XENO_DRIVERS_SWITCHTEST $CONF
+diff --git a/include/asm-generic/wrappers.h b/include/asm-generic/wrappers.h
+index 64ec43f..d864397 100644
+--- a/include/asm-generic/wrappers.h
++++ b/include/asm-generic/wrappers.h
+@@ -559,6 +559,11 @@ static inline void wrap_proc_dir_entry_owner(struct proc_dir_entry *entry)
+ #endif /* LINUX_VERSION_CODE < KERNEL_VERSION(2,6,30) */
+ #endif /* CONFIG_PROC_FS */
  
- dep_tristate 'Kernel-only latency measurement module' CONFIG_XENO_DRIVERS_KLATENCY $CONFIG_XENO_DRIVERS_TIMERBENCH m
- 
--dep_tristate 'User-space real-time signals testing module' CONFIG_XENO_DRIVERS_SIGTEST $CONFIG_MODULES m
-+dep_tristate 'User-space real-time signals testing module' CONFIG_XENO_DRIVERS_SIGTEST m
- 
- endmenu
-diff --git a/ksrc/drivers/testing/Kconfig b/ksrc/drivers/testing/Kconfig
-index 05d6a49..883ede1 100644
---- a/ksrc/drivers/testing/Kconfig
-+++ b/ksrc/drivers/testing/Kconfig
-@@ -1,9 +1,5 @@
- menu "Testing drivers"
- 
--config XENO_TESTING_MODULE
--        depends on MODULES
--	def_tristate m
--
- config XENO_DRIVERS_TESTING_LEGACY_NAMES
- 	depends on XENO_SKIN_RTDM
- 	bool "Use legacy names for testing drivers"
-@@ -22,7 +18,7 @@ config XENO_DRIVERS_TIMERBENCH
- 	See testsuite/latency for a possible front-end.
- 
- config XENO_DRIVERS_KLATENCY
--	depends on XENO_DRIVERS_TIMERBENCH && XENO_TESTING_MODULE
-+	depends on XENO_DRIVERS_TIMERBENCH && m
- 	tristate "Kernel-only latency measurement module"
- 	help
- 	Kernel module for kernel-only latency measurement.
-@@ -44,9 +40,9 @@ config XENO_DRIVERS_SWITCHTEST
- 	FPU switches.
- 
- config XENO_DRIVERS_SIGTEST
--       depends on XENO_TESTING_MODULE
--       tristate "User-space real-time signals testing module"
--       help
--       Elementary skin for unit testing user-space real-time signals.
-+	depends on m
-+	tristate "User-space real-time signals testing module"
-+	help
-+	Elementary skin for unit testing user-space real-time signals.
- 
- endmenu
++#ifndef list_first_entry
++#define list_first_entry(ptr, type, member) \
++	list_entry((ptr)->next, type, member)
++#endif
++
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,32)
+ #define rthal_irq_descp(irq)	(irq_desc + (irq))
+ #else /* LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,32) */
 -- 
 1.6.0.2
 
