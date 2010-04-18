@@ -1,13 +1,13 @@
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Sun, 18 Apr 2010 16:15:43 +0200
-Message-Id: <efa29f58ac36fc911f3103b5be20c1ea51749313.1271600150.git.jan.kiszka@domain.hid>
+Date: Sun, 18 Apr 2010 16:15:44 +0200
+Message-Id: <63113a0fd9c595c3aa7bf0155b6f4aea2f4fe07a.1271600150.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
 References: <cover.1271600150.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
 References: <cover.1271600150.git.jan.kiszka@domain.hid>
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 02/23] RTDM: Plug race between
-	proc_read_dev_info and device deregistration
+Subject: [Xenomai-core] [PATCH 03/23] RTDM: Properly clean up on proc setup
+	errors
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -21,64 +21,59 @@ Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@domain.hid>
 
-As the device references passed to proc_read_dev_info may become invalid
-while we dereference it, we need to acquire nrt_dev_lock and check the
-pointer against our list of registered devices.
-
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- ksrc/skins/rtdm/proc.c |   29 ++++++++++++++++++++++++++---
- 1 files changed, 26 insertions(+), 3 deletions(-)
+ ksrc/skins/rtdm/proc.c |   14 +++++++++-----
+ 1 files changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/ksrc/skins/rtdm/proc.c b/ksrc/skins/rtdm/proc.c
-index c797764..b889f73 100644
+index b889f73..70ee4a2 100644
 --- a/ksrc/skins/rtdm/proc.c
 +++ b/ksrc/skins/rtdm/proc.c
-@@ -203,11 +203,33 @@ static int proc_read_fildes(char *buf, char **start, off_t offset,
- static int proc_read_dev_info(char *buf, char **start, off_t offset,
- 			      int count, int *eof, void *data)
- {
--	/* accessing the device during unregister (remove_proc_entry) might be
--	   racy, but no official workaround is known yet */
--	struct rtdm_device *device = data;
-+	struct rtdm_device *device;
-+	int i;
- 	RTDM_PROC_PRINT_VARS(256);
+@@ -292,34 +292,38 @@ int __init rtdm_proc_init(void)
+ 	/* Initialise /proc entries */
+ 	rtdm_proc_root = create_proc_entry("xenomai/rtdm", S_IFDIR, NULL);
+ 	if (!rtdm_proc_root)
+-		return -EAGAIN;
++		goto error;
  
-+	if (down_interruptible(&nrt_dev_lock))
-+		return -ERESTARTSYS;
-+
-+	/*
-+	 * As the device may have disappeared while the handler was called,
-+	 * first match the pointer against registered devices.
-+	 */
-+	for (i = 0; i < devname_hashtab_size; i++)
-+		list_for_each_entry(device, &rtdm_named_devices[i],
-+				    reserved.entry)
-+			if (device == data)
-+				goto found;
-+
-+	for (i = 0; i < protocol_hashtab_size; i++)
-+		list_for_each_entry(device, &rtdm_protocol_devices[i],
-+				    reserved.entry)
-+			if (device == data)
-+				goto found;
-+
-+	up(&nrt_dev_lock);
-+	return -ENODEV;
-+
-+found:
- 	if (!RTDM_PROC_PRINT("driver:\t\t%s\nversion:\t%d.%d.%d\n",
- 			     device->driver_name,
- 			     RTDM_DRIVER_MAJOR_VER(device->driver_version),
-@@ -232,6 +254,7 @@ static int proc_read_dev_info(char *buf, char **start, off_t offset,
- 			atomic_read(&device->reserved.refcount));
+ 	proc_entry = create_proc_entry("named_devices", S_IFREG | S_IRUGO,
+ 				       rtdm_proc_root);
+ 	if (!proc_entry)
+-		return -EAGAIN;
++		goto error;
+ 	proc_entry->read_proc = proc_read_named_devs;
  
-       done:
-+	up(&nrt_dev_lock);
- 	RTDM_PROC_PRINT_DONE;
+ 	proc_entry = create_proc_entry("protocol_devices", S_IFREG | S_IRUGO,
+ 				       rtdm_proc_root);
+ 	if (!proc_entry)
+-		return -EAGAIN;
++		goto error;
+ 	proc_entry->read_proc = proc_read_proto_devs;
+ 
+ 	proc_entry =
+ 	    create_proc_entry("open_fildes", S_IFREG | S_IRUGO, rtdm_proc_root);
+ 	if (!proc_entry)
+-		return -EAGAIN;
++		goto error;
+ 	proc_entry->read_proc = proc_read_open_fildes;
+ 	proc_entry->write_proc = proc_kill_open_fildes;
+ 
+ 	proc_entry =
+ 	    create_proc_entry("fildes", S_IFREG | S_IRUGO, rtdm_proc_root);
+ 	if (!proc_entry)
+-		return -EAGAIN;
++		goto error;
+ 	proc_entry->read_proc = proc_read_fildes;
+ 
+ 	return 0;
++
++error:
++	rtdm_proc_cleanup();
++	return -EAGAIN;
  }
  
+ void rtdm_proc_cleanup(void)
 -- 
 1.6.0.2
 
