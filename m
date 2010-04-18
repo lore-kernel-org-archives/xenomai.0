@@ -1,14 +1,14 @@
 From: Jan Kiszka <Jan Kiszka jan.kiszka@domain.hid>
-Date: Sun, 18 Apr 2010 15:12:25 +0200
-Message-Id: <55ebde80258b5b6c3d29d37b5f30a3199faf0881.1271596366.git.Jan
+Date: Sun, 18 Apr 2010 15:12:28 +0200
+Message-Id: <cd312c55d8718d09cc73811bd1f714fdd79715d5.1271596367.git.Jan
 	Kiszka jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH v3 01/24] RTDM: Fix potential NULL pointer
-	dereference
+Subject: [Xenomai-core] [PATCH v3 04/24] Revert "rtdm: tag syscalls as
+	conforming"
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,32 +18,46 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, Wolfgang Mauerer <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>, Alexis Berlemont <berlemont.hauw@domain.hid>
 
-From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+From: Jan Kiszka <jan.kiszka@domain.hid>
 
-The rework in 95278926edc559d4 misses the case that context can be NULL,
-which can (and has) triggered a kernel oops. Take care of this case.
+This reverts commit 13bfdd477ab880499d2e8f3b82c49ef4d2cccff0. We better
+let the driver trigger the confoming switch once it detects such a case
+by using the new service rtdm_rt_capable(). Always being comforming
+caused regressions for existing designs.
 
-Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+CC: Philippe Gerum <rpm@xenomai.org>
+CC: Alexis Berlemont <berlemont.hauw@domain.hid>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- ksrc/skins/rtdm/core.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ ksrc/skins/rtdm/syscall.c |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/ksrc/skins/rtdm/core.c b/ksrc/skins/rtdm/core.c
-index 8677c47..8cccf52 100644
---- a/ksrc/skins/rtdm/core.c
-+++ b/ksrc/skins/rtdm/core.c
-@@ -175,7 +175,7 @@ static int cleanup_instance(struct rtdm_device *device,
+diff --git a/ksrc/skins/rtdm/syscall.c b/ksrc/skins/rtdm/syscall.c
+index d869887..80785ab 100644
+--- a/ksrc/skins/rtdm/syscall.c
++++ b/ksrc/skins/rtdm/syscall.c
+@@ -154,14 +154,14 @@ static xnsysent_t __systab[] = {
+ 	[__rtdm_close] =
+ 	    {sys_rtdm_close, __xn_exec_current | __xn_exec_adaptive},
+ 	[__rtdm_ioctl] =
+-	    {sys_rtdm_ioctl, __xn_exec_conforming | __xn_exec_adaptive},
+-	[__rtdm_read] = {sys_rtdm_read, __xn_exec_conforming | __xn_exec_adaptive},
++	    {sys_rtdm_ioctl, __xn_exec_current | __xn_exec_adaptive},
++	[__rtdm_read] = {sys_rtdm_read, __xn_exec_current | __xn_exec_adaptive},
+ 	[__rtdm_write] =
+-	    {sys_rtdm_write, __xn_exec_conforming | __xn_exec_adaptive},
++	    {sys_rtdm_write, __xn_exec_current | __xn_exec_adaptive},
+ 	[__rtdm_recvmsg] =
+-	    {sys_rtdm_recvmsg, __xn_exec_conforming | __xn_exec_adaptive},
++	    {sys_rtdm_recvmsg, __xn_exec_current | __xn_exec_adaptive},
+ 	[__rtdm_sendmsg] =
+-	    {sys_rtdm_sendmsg, __xn_exec_conforming | __xn_exec_adaptive},
++	    {sys_rtdm_sendmsg, __xn_exec_current | __xn_exec_adaptive},
+ };
  
- 	xnlock_get_irqsave(&rt_fildes_lock, s);
- 
--	if (unlikely(atomic_read(&context->close_lock_count) > 1)) {
-+	if (context && unlikely(atomic_read(&context->close_lock_count) > 1)) {
- 		xnlock_put_irqrestore(&rt_fildes_lock, s);
- 		return -EAGAIN;
- 	}
+ static struct xnskin_props __props = {
 -- 
 1.6.0.2
 
