@@ -1,13 +1,13 @@
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Sun, 18 Apr 2010 16:15:54 +0200
-Message-Id: <947b4a579d955c162b545cb4001750aa685c46b8.1271600150.git.jan.kiszka@domain.hid>
+Date: Sun, 18 Apr 2010 16:15:52 +0200
+Message-Id: <446c51e387f476f8ceef28e92cf02931a3a57046.1271600150.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
 References: <cover.1271600150.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
 References: <cover.1271600150.git.jan.kiszka@domain.hid>
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 13/23] nucleus: Add infrastructure for
-	supporting the seq_file mechanism in registry objects
+Subject: [Xenomai-core] [PATCH 11/23] nucleus: Convert faults proc entry to
+	seq_file mechanism
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -21,139 +21,199 @@ Cc: Jan Kiszka <jan.kiszka@domain.hid>, Wolfgang Mauerer <wolfgang.mauerer@domai
 
 From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 
-We augment struct xnpnode with a new element for representing file_operations that
-allow for using more generic file system methods than read_proc. However, we
-have to retain read_proc and write_proc for now since not all proc entries are
-immediately converted. However, we should be able to get rid of them in the
-future because writing can as well be implemented in conjunction to the
-seq_file mechanism.
-
-NOTE: When the proc file depends on a data argument given to registry_enter, it
-can be obtained in seq_open via PDE(inode)->data. In turn, it should be
-associated with the seq_file instance, which is easy enough for single_open
-(just use it as third argument). It must be done manually for
-seq_open; note that seq_file is available as file->private after
-the call. ((struct seq_file *)file->private)->private = PDE(inode)->data
-is your friend.
+The entries depend on the number of CPUs and can thus overflow a single page.
 
 Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- include/asm-generic/hal.h  |    6 ++++++
- include/nucleus/registry.h |   19 ++++++++++++-------
- ksrc/arch/generic/hal.c    |   18 ++++++++++++++++++
- ksrc/nucleus/registry.c    |   14 +++++++++++++-
- 4 files changed, 49 insertions(+), 8 deletions(-)
+ ksrc/arch/generic/hal.c |  148 +++++++++++++++++++++++++++++++++++++----------
+ 1 files changed, 118 insertions(+), 30 deletions(-)
 
-diff --git a/include/asm-generic/hal.h b/include/asm-generic/hal.h
-index 61da1b7..04979cd 100644
---- a/include/asm-generic/hal.h
-+++ b/include/asm-generic/hal.h
-@@ -557,6 +557,12 @@ struct proc_dir_entry *rthal_add_proc_seq(const char *name,
- 					  const struct file_operations *fops,
- 					  size_t size,
- 					  struct proc_dir_entry *parent);
-+
-+struct proc_dir_entry *rthal_add_proc_seq_data(const char *name,
-+					       const struct file_operations *fops,
-+					       size_t size,
-+					       void *data,
-+					       struct proc_dir_entry *parent);
- #endif /* CONFIG_PROC_FS */
- 
- #ifdef CONFIG_IPIPE_TRACE
-diff --git a/include/nucleus/registry.h b/include/nucleus/registry.h
-index 56826db..3685308 100644
---- a/include/nucleus/registry.h
-+++ b/include/nucleus/registry.h
-@@ -73,6 +73,7 @@ void xnregistry_cleanup(void);
- #ifdef CONFIG_PROC_FS
- 
- #include <linux/proc_fs.h>
-+#include <linux/fs.h>
- 
- #define XNOBJECT_PROC_RESERVED1 ((struct proc_dir_entry *)1)
- #define XNOBJECT_PROC_RESERVED2 ((struct proc_dir_entry *)2)
-@@ -90,13 +91,17 @@ typedef struct xnptree {
- 
- typedef struct xnpnode {
- 
--    struct proc_dir_entry *dir;
--    const char *type;
--    int entries;
--    read_proc_t *read_proc;
--    write_proc_t *write_proc;
--    link_proc_t *link_proc;
--    xnptree_t *root;
-+	struct proc_dir_entry *dir;
-+	const char *type;
-+	int entries;
-+
-+	/* NOTE: Use either read_proc/write_proc, link_proc or fops. */
-+	read_proc_t *read_proc;
-+	write_proc_t *write_proc;
-+	link_proc_t *link_proc;
-+	struct file_operations *fops;
-+
-+	xnptree_t *root;
- 
- } xnpnode_t;
- 
 diff --git a/ksrc/arch/generic/hal.c b/ksrc/arch/generic/hal.c
-index c97659a..3b38895 100644
+index c2239ca..ca221b5 100644
 --- a/ksrc/arch/generic/hal.c
 +++ b/ksrc/arch/generic/hal.c
-@@ -901,6 +901,24 @@ struct proc_dir_entry *rthal_add_proc_seq(const char *name,
- }
- EXPORT_SYMBOL_GPL(rthal_add_proc_seq);
+@@ -47,6 +47,7 @@
+ #include <asm/xenomai/hal.h>
+ #ifdef CONFIG_PROC_FS
+ #include <linux/proc_fs.h>
++#include <linux/seq_file.h>
+ #endif /* CONFIG_PROC_FS */
+ #include <stdarg.h>
  
-+struct proc_dir_entry
-+*rthal_add_proc_seq_data(const char *name,
-+			 const struct file_operations *fops,
-+			 size_t size,
-+			 void *data,
-+			 struct proc_dir_entry *parent)
-+{
-+	struct proc_dir_entry *entry;
+@@ -642,46 +643,133 @@ static int hal_read_proc(char *page,
+     return len;
+ }
+ 
+-static int faults_read_proc(char *page,
+-                            char **start,
+-                            off_t off, int count, int *eof, void *data)
++struct faults_seq_iterator {
++	unsigned int nentries;
++	struct faults_seq_info {
++		unsigned int trap;
++	} faults_info[0];
++};
 +
-+	entry = rthal_add_proc_seq(name, fops, size, parent);
-+
-+	if (entry)
-+		entry->data = data;
-+
-+	return entry;
-+}
-+EXPORT_SYMBOL_GPL(rthal_add_proc_seq_data);
-+
- static int rthal_proc_register(void)
++static int __faults_seq_open(struct inode *inode,
++			     struct file *file, struct seq_operations *ops)
  {
- 	rthal_proc_root = create_proc_entry("xenomai", S_IFDIR, 0);
-diff --git a/ksrc/nucleus/registry.c b/ksrc/nucleus/registry.c
-index 9958dd3..c71da5d 100644
---- a/ksrc/nucleus/registry.c
-+++ b/ksrc/nucleus/registry.c
-@@ -338,8 +338,20 @@ static DECLARE_WORK_FUNC(registry_proc_callback)
- 			object->proc = add_proc_link(object->key,
- 						     pnode->link_proc,
- 						     object->objaddr, dir);
-+		else if (pnode->fops)
-+			/* Entry is a proper file */
-+			object->proc = rthal_add_proc_seq_data(object->key,
-+							       pnode->fops,
-+							       0,
-+							       object->objaddr,
-+							       dir);
- 		else
--			/* Entry allows to get/set object properties. */
-+			/*
-+			 * Entry allows us to get/set object properties
-+			 * via read/write_proc. Note that this type
-+			 * is deprecated since support in the Linux kernel
-+			 * will go away.
-+			 */
- 			object->proc = rthal_add_proc_leaf(object->key,
- 							   pnode->read_proc,
- 							   pnode->write_proc,
+-    int len = 0, cpu, trap;
+-    char *p = page;
++	struct faults_seq_iterator *iter = NULL;
++	struct faults_seq_info *faults_info;
++	struct seq_file *seq;
++	unsigned int ntraps = 0;
++	unsigned int trap;
++	int err;
++
++	for (trap = 0; rthal_fault_labels[trap] != NULL; trap++) {
++		if (!*rthal_fault_labels[trap])
++			continue;
++		ntraps++;
++	}
+ 
+-    p += sprintf(p, "TRAP ");
++	iter = kmalloc(sizeof(*iter)
++		       + ntraps * sizeof(struct faults_seq_info),
++		       GFP_KERNEL);
++	if (!iter)
++		return -ENOMEM;
+ 
+-    for_each_online_cpu(cpu) {
+-        p += sprintf(p, "        CPU%d", cpu);
+-    }
++	err = seq_open(file, ops);
+ 
+-    for (trap = 0; rthal_fault_labels[trap] != NULL; trap++) {
++	if (err) {
++		kfree(iter);
++		return err;
++	}
+ 
+-        if (!*rthal_fault_labels[trap])
+-            continue;
++	iter->nentries = 0;
+ 
+-        p += sprintf(p, "\n%3d: ", trap);
++	for (trap = 0; rthal_fault_labels[trap] != NULL; trap++) {
++		if (!*rthal_fault_labels[trap])
++			continue;
+ 
+-        for_each_online_cpu(cpu) {
+-            p += sprintf(p, "%12u", rthal_realtime_faults[cpu][trap]);
+-        }
++		faults_info = &iter->faults_info[iter->nentries++];
+ 
+-        p += sprintf(p, "    (%s)", rthal_fault_labels[trap]);
+-    }
++		faults_info->trap = trap;
++	}
+ 
+-    p += sprintf(p, "\n");
++	seq = file->private_data;
++	seq->private = iter;
+ 
+-    len = p - page - off;
+-    if (len <= off + count)
+-        *eof = 1;
+-    *start = page + off;
+-    if (len > count)
+-        len = count;
+-    if (len < 0)
+-        len = 0;
++	return 0;
++}
+ 
+-    return len;
++static void *faults_seq_start(struct seq_file *seq, loff_t *pos)
++{
++	struct faults_seq_iterator *iter = seq->private;
++
++	if (*pos > iter->nentries)
++		return NULL;
++
++	if (*pos == 0)
++		return SEQ_START_TOKEN;
++
++	return iter->faults_info + *pos - 1;
+ }
++static void *faults_seq_next(struct seq_file *seq, void *v, loff_t *pos)
++{
++	struct faults_seq_iterator *iter = seq->private;
++
++	(*pos)++;
++
++	if (*pos > iter->nentries)
++		return NULL;
++
++	return iter->faults_info + *pos - 1;
++}
++
++static void faults_seq_stop(struct seq_file *f, void *v)
++{
++	/* Nothing to do */
++}
++
++static int faults_seq_show(struct seq_file *f, void *v)
++{
++	unsigned int cpu;
++	struct faults_seq_info *p = v;
++
++	if (v == SEQ_START_TOKEN) {
++		seq_puts(f, "TRAP ");
++
++		for_each_online_cpu(cpu) {
++			seq_printf(f, "        CPU%d\n", cpu);
++		}
++	}
++	else {
++		seq_printf(f, "%3d: ", p->trap);
++
++		for_each_online_cpu(cpu) {
++			seq_printf(f, "%12u",
++				   rthal_realtime_faults[cpu][p->trap]);
++		}
++
++		seq_printf(f, "    (%s)\n", rthal_fault_labels[p->trap]);
++	}
++
++	return 0;
++}
++
++static struct seq_operations faults_op = {
++	.start	= faults_seq_start,
++	.next	= faults_seq_next,
++	.stop	= faults_seq_stop,
++	.show	= faults_seq_show
++};
++
++static int faults_seq_open(struct inode *inode, struct file *file)
++{
++	return __faults_seq_open(inode, file, &faults_op);
++}
++
++static struct file_operations faults_seq_operations = {
++	.owner		= THIS_MODULE,
++	.open		= faults_seq_open,
++	.read		= seq_read,
++	.llseek		= seq_lseek,
++	.release	= seq_release_private,
++};
+ 
+ static int apc_read_proc(char *page,
+                          char **start,
+@@ -779,8 +867,8 @@ static int rthal_proc_register(void)
+ 	wrap_proc_dir_entry_owner(rthal_proc_root);
+ 
+ 	rthal_add_proc_leaf("hal", &hal_read_proc, NULL, NULL, rthal_proc_root);
+-	rthal_add_proc_leaf("faults",
+-			    &faults_read_proc, NULL, NULL, rthal_proc_root);
++	rthal_add_proc_seq("faults", &faults_seq_operations, 0,
++			   rthal_proc_root);
+ 	rthal_add_proc_leaf("apc", &apc_read_proc, NULL, NULL, rthal_proc_root);
+ 
+ 	rthal_nmi_proc_register();
 -- 
 1.6.0.2
 
