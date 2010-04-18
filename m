@@ -1,14 +1,14 @@
 From: Jan Kiszka <Jan Kiszka jan.kiszka@domain.hid>
-Date: Sun, 18 Apr 2010 15:12:33 +0200
-Message-Id: <fb797fa054a6a3adcc9b734be1a1e15290b00b4b.1271596367.git.Jan
+Date: Sun, 18 Apr 2010 15:12:32 +0200
+Message-Id: <eb8a9c34d4e9a977ec209069e55fa965b4357692.1271596367.git.Jan
 	Kiszka jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH v3 09/24] 16550A: Drop support for device
-	opening/closing in real-time
+Subject: [Xenomai-core] [PATCH v3 08/24] RTCAN: Drop support for socket
+	creation/deletion in real-time
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -22,108 +22,31 @@ Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@domain.hid>
 
-This is deprected now, RT callers will automatically be switched to
-non-RT. Along this, simplify the allocation logic for the RX timestamp
-history buffer. We only support allocations from non-RT now and migrate
-RT callers as required.
+This is deprecated now, RT callers will automatically be migrated to
+NRT to perform the requests.
 
+CC: Wolfgang Grandegger <wg@domain.hid>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- ksrc/drivers/serial/16550A.c |   51 +++++++++++------------------------------
- 1 files changed, 14 insertions(+), 37 deletions(-)
+ ksrc/drivers/can/rtcan_raw.c |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
 
-diff --git a/ksrc/drivers/serial/16550A.c b/ksrc/drivers/serial/16550A.c
-index db8a515..4c46d86 100644
---- a/ksrc/drivers/serial/16550A.c
-+++ b/ksrc/drivers/serial/16550A.c
-@@ -297,7 +297,7 @@ static int rt_16550_interrupt(rtdm_irq_t * irq_context)
+diff --git a/ksrc/drivers/can/rtcan_raw.c b/ksrc/drivers/can/rtcan_raw.c
+index 0cf0bb9..9ee0950 100644
+--- a/ksrc/drivers/can/rtcan_raw.c
++++ b/ksrc/drivers/can/rtcan_raw.c
+@@ -999,11 +999,9 @@ static struct rtdm_device rtcan_proto_raw_dev = {
+     protocol_family:    PF_CAN,
+     socket_type:        SOCK_RAW,
  
- static int rt_16550_set_config(struct rt_16550_context *ctx,
- 			       const struct rtser_config *config,
--			       uint64_t ** in_history_ptr)
-+			       uint64_t **in_history_ptr)
- {
- 	rtdm_lockctx_t lock_ctx;
- 	unsigned long base = ctx->base_addr;
-@@ -537,12 +537,7 @@ int rt_16550_close(struct rtdm_dev_context *context,
+-    socket_rt:          rtcan_raw_socket,
+     socket_nrt:         rtcan_raw_socket,
  
- 	rt_16550_cleanup_ctx(ctx);
+     ops: {
+-        close_rt:       rtcan_raw_close,
+         close_nrt:      rtcan_raw_close,
  
--	if (in_history) {
--		if (test_bit(RTDM_CREATED_IN_NRT, &context->context_flags))
--			kfree(in_history);
--		else
--			rtdm_free(in_history);
--	}
-+	kfree(in_history);
- 
- 	return 0;
- }
-@@ -602,40 +597,24 @@ int rt_16550_ioctl(struct rtdm_dev_context *context,
- 
- 		if (testbits(config->config_mask,
- 			     RTSER_SET_TIMESTAMP_HISTORY)) {
--			if (test_bit(RTDM_CREATED_IN_NRT,
--				     &context->context_flags)
--			    && rtdm_in_rt_context()) {
--				/* Already fail here if we MAY allocate or
--				   release a non-RT buffer in RT context. */
--				return -EPERM;
--			}
-+			/*
-+			 * Reflect the call to non-RT as we will likely
-+			 * allocate or free the buffer.
-+			 */
-+			if (rtdm_in_rt_context())
-+				return -ENOSYS;
- 
- 			if (testbits(config->timestamp_history,
--				     RTSER_RX_TIMESTAMP_HISTORY)) {
--				if (test_bit(RTDM_CREATED_IN_NRT,
--					     &context->context_flags))
--					hist_buf =
--					    kmalloc(IN_BUFFER_SIZE *
--						    sizeof(nanosecs_abs_t),
--						    GFP_KERNEL);
--				else
--					hist_buf =
--					    rtdm_malloc(IN_BUFFER_SIZE *
--						sizeof(nanosecs_abs_t));
--					if (!hist_buf)
--						return -ENOMEM;
--			}
-+				     RTSER_RX_TIMESTAMP_HISTORY))
-+				hist_buf = kmalloc(IN_BUFFER_SIZE *
-+						   sizeof(nanosecs_abs_t),
-+						   GFP_KERNEL);
- 		}
- 
- 		rt_16550_set_config(ctx, config, &hist_buf);
- 
--		if (hist_buf) {
--			if (test_bit(RTDM_CREATED_IN_NRT,
--				     &context->context_flags))
--				kfree(hist_buf);
--			else
--				rtdm_free(hist_buf);
--		}
-+		if (hist_buf)
-+			kfree(hist_buf);
- 
- 		break;
- 	}
-@@ -1107,11 +1086,9 @@ static const struct rtdm_device __initdata device_tmpl = {
- 	.context_size		= sizeof(struct rt_16550_context),
- 	.device_name		= "",
- 
--	.open_rt		= rt_16550_open,
- 	.open_nrt		= rt_16550_open,
- 
- 	.ops = {
--		.close_rt	= rt_16550_close,
- 		.close_nrt	= rt_16550_close,
- 
- 		.ioctl_rt	= rt_16550_ioctl,
+         ioctl_rt:       rtcan_raw_ioctl,
 -- 
 1.6.0.2
 
