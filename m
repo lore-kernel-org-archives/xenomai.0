@@ -1,13 +1,14 @@
 From: Jan Kiszka <Jan Kiszka jan.kiszka@domain.hid>
-Date: Sun, 18 Apr 2010 15:12:26 +0200
-Message-Id: <5a62361072f2d0555ba65eba6dc2d322ad2f51e9.1271596366.git.Jan
+Date: Sun, 18 Apr 2010 15:12:27 +0200
+Message-Id: <f2c6b7b2df771c2197ec976c77f97beec2496009.1271596367.git.Jan
 	Kiszka jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH v3 02/24] RTDM: Add rtdm_rt_capable() service
+Subject: [Xenomai-core] [PATCH v3 03/24] RTDM: Bump API version and document
+	changes
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,77 +18,55 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>, Alexis Berlemont <berlemont.hauw@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@domain.hid>
 
-This adds rtdm_rt_capable(), a function that can be used by drivers to
-detect callers that could issue a service request also from the
-(typically preferred) real-time context. If that is the case, the driver
-can trigger a restart of the request if the current context is not
-real-time.
-
-CC: Philippe Gerum <rpm@xenomai.org>
-CC: Alexis Berlemont <berlemont.hauw@domain.hid>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- include/rtdm/rtdm_driver.h |    6 ++++++
- ksrc/skins/rtdm/drvlib.c   |   25 +++++++++++++++++++++++++
- 2 files changed, 31 insertions(+), 0 deletions(-)
+ include/rtdm/rtdm.h         |    4 ++--
+ ksrc/skins/rtdm/API.CHANGES |    6 ++++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
-index 0fc1496..45be404 100644
---- a/include/rtdm/rtdm_driver.h
-+++ b/include/rtdm/rtdm_driver.h
-@@ -1296,6 +1296,12 @@ static inline int rtdm_in_rt_context(void)
- {
- 	return (rthal_current_domain != rthal_root_domain);
- }
-+
-+static inline int rtdm_rt_capable(void)
-+{
-+	return xnpod_shadow_p();
-+}
-+
- #endif /* !DOXYGEN_CPP */
- 
- int rtdm_exec_in_rt(struct rtdm_dev_context *context,
-diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
-index 3b04493..6e26501 100644
---- a/ksrc/skins/rtdm/drvlib.c
-+++ b/ksrc/skins/rtdm/drvlib.c
-@@ -2341,6 +2341,31 @@ int rtdm_strncpy_from_user(rtdm_user_info_t *user_info, char *dst,
+diff --git a/include/rtdm/rtdm.h b/include/rtdm/rtdm.h
+index 6e02083..1e6e41e 100644
+--- a/include/rtdm/rtdm.h
++++ b/include/rtdm/rtdm.h
+@@ -31,7 +31,7 @@
+  * RT/non-RT systems like Xenomai. RTDM conforms to POSIX
+  * semantics (IEEE Std 1003.1) where available and applicable.
+  *
+- * @b API @b Revision: 7
++ * @b API @b Revision: 8
   */
- int rtdm_in_rt_context(void);
  
-+/**
-+ * Test if the caller is capable of running in real-time context
-+ *
-+ * @return Non-zero is returned if the caller is able to execute in real-time
-+ * context (independent of its current execution mode), 0 otherwise.
-+ *
-+ * @note This function can be used by drivers that provide different
-+ * implementations for the same service depending on the execution mode of
-+ * the caller. If a caller requests such a service in non-real-time context
-+ * but is capable of running in real-time as well, it might be appropriate
-+ * for the driver to reject the request via -ENOSYS so that RTDM can switch
-+ * the caller and restart the request in real-time context.
-+ *
-+ * Environments:
-+ *
-+ * This service can be called from:
-+ *
-+ * - Kernel module initialization/cleanup code
-+ * - Kernel-based task
-+ * - User-space task (RT, non-RT)
-+ *
-+ * Rescheduling: never.
-+ */
-+int rtdm_rt_capable(void);
+ /*!
+@@ -76,7 +76,7 @@ typedef struct task_struct rtdm_user_info_t;
+  * @anchor api_versioning @name API Versioning
+  * @{ */
+ /** Common user and driver API version */
+-#define RTDM_API_VER			7
++#define RTDM_API_VER			8
+ 
+ /** Minimum API revision compatible with the current release */
+ #define RTDM_API_MIN_COMPAT_VER		6
+diff --git a/ksrc/skins/rtdm/API.CHANGES b/ksrc/skins/rtdm/API.CHANGES
+index ca9012b..84487f7 100644
+--- a/ksrc/skins/rtdm/API.CHANGES
++++ b/ksrc/skins/rtdm/API.CHANGES
+@@ -5,6 +5,12 @@ Scheduled modifications (unsorted):
+  o Support for deferring IRQ line re-enabling from handler to thread context.
+  o Support for user-space drivers.
+ 
++Revision 8:
++ o Added rtdm_rt_capable.
 +
- #endif /* DOXYGEN_CPP */
- 
- /** @} Utility Services */
++Revision 7:
++ o Added callbacks and services to enable select support.
++
+ Revision 6:
+  o Added profile_version field to rtdm_device.
+  o Requested IRQ lines are now enabled on return of rtdm_irq_request.
 -- 
 1.6.0.2
 
