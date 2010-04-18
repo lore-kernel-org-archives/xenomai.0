@@ -1,13 +1,13 @@
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Sun, 18 Apr 2010 16:16:03 +0200
-Message-Id: <61ed5c23099e3e841433e28729fa3f6ba2c45d6c.1271600150.git.jan.kiszka@domain.hid>
+Date: Sun, 18 Apr 2010 16:16:04 +0200
+Message-Id: <b41dbc593c386b7c72e5eece3013f26666f27625.1271600150.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
 References: <cover.1271600150.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
 References: <cover.1271600150.git.jan.kiszka@domain.hid>
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 22/23] native: Convert queue registry proc
-	entry to seq_file
+Subject: [Xenomai-core] [PATCH 23/23] nucleus: Convert timebases proc entry
+	to seq_file
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -21,58 +21,75 @@ Cc: Jan Kiszka <jan.kiszka@domain.hid>, Wolfgang Mauerer <wolfgang.mauerer@domai
 
 From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 
+Admittedly, the proc page cannot overflow right now, but since the number
+of time bases is at least in theory unlimited, let's convert the file
+while we are at it. Also properly take the nklock when accessing the
+nktimebase list.
+
 Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- ksrc/skins/native/queue.c |   44 +++++++++++++++++++++++---------------------
- 1 files changed, 23 insertions(+), 21 deletions(-)
+ ksrc/nucleus/timebase.c |   64 +++++++++++++++++++++++++----------------------
+ 1 files changed, 34 insertions(+), 30 deletions(-)
 
-diff --git a/ksrc/skins/native/queue.c b/ksrc/skins/native/queue.c
-index 6a71165..72a640d 100644
---- a/ksrc/skins/native/queue.c
-+++ b/ksrc/skins/native/queue.c
-@@ -49,19 +49,17 @@
+diff --git a/ksrc/nucleus/timebase.c b/ksrc/nucleus/timebase.c
+index 48be711..c3717e9 100644
+--- a/ksrc/nucleus/timebase.c
++++ b/ksrc/nucleus/timebase.c
+@@ -810,57 +810,61 @@ void xntbase_remove_proc(xntbase_t *base)
  
- #ifdef CONFIG_PROC_FS
+ #endif /* CONFIG_XENO_OPT_STATS */
  
--static int __queue_read_proc(char *page,
--			     char **start,
--			     off_t off, int count, int *eof, void *data)
-+#include <linux/seq_file.h>
-+
-+static int queue_seq_show(struct seq_file *f, void *v)
+-static int timebase_read_proc(char *page,
+-			      char **start,
+-			      off_t off, int count, int *eof, void *data)
++static int timebase_seq_show(struct seq_file *f, void *v)
  {
--	RT_QUEUE *q = (RT_QUEUE *)data;
+ 	xnholder_t *holder;
+ 	xntbase_t *tbase;
 -	char *p = page;
--	int len;
-+	RT_QUEUE *q = (RT_QUEUE *)f->private;
- 	spl_t s;
+-	int len = 0;
++	spl_t s;
++
++	seq_printf(f, "%-10s %10s  %10s   %s\n",
++		   "NAME", "RESOLUTION", "JIFFIES", "STATUS");
  
--	p += sprintf(p, "type=%s:poolsz=%lu:usedmem=%lu:limit=%d:mcount=%d\n",
--		     q->mode & Q_SHARED ? "shared" : "local",
--		     xnheap_usable_mem(&q->bufpool), xnheap_used_mem(&q->bufpool),
--		     q->qlimit, countq(&q->pendq));
-+	seq_printf(f, "type=%s:poolsz=%lu:usedmem=%lu:limit=%d:mcount=%d\n",
-+		   q->mode & Q_SHARED ? "shared" : "local",
-+		   xnheap_usable_mem(&q->bufpool), xnheap_used_mem(&q->bufpool),
-+		   q->qlimit, countq(&q->pendq));
+-	p += sprintf(p, "%-10s %10s  %10s   %s\n",
+-		     "NAME", "RESOLUTION", "JIFFIES", "STATUS");
++	xnlock_get_irqsave(&nklock, s);
  
- 	xnlock_get_irqsave(&nklock, s);
+ 	for (holder = getheadq(&nktimebaseq);
+ 	     holder != NULL; holder = nextq(&nktimebaseq, holder)) {
+ 		tbase = link2tbase(holder);
+ 		if (xntbase_periodic_p(tbase))
+-			p += sprintf(p, "%-10s %10lu  %10Lu   %s%s%s\n",
+-				     tbase->name,
+-				     tbase->tickvalue,
+-				     tbase->jiffies,
+-				     xntbase_enabled_p(tbase) ? "enabled" : "disabled",
+-				     xntbase_timeset_p(tbase) ? ",set" : ",unset",
+-				     xntbase_isolated_p(tbase) ? ",isolated" : "");
++			seq_printf(f, "%-10s %10lu  %10Lu   %s%s%s\n",
++				   tbase->name,
++				   tbase->tickvalue,
++				   tbase->jiffies,
++				   xntbase_enabled_p(tbase) ? "enabled" : "disabled",
++				   xntbase_timeset_p(tbase) ? ",set" : ",unset",
++				   xntbase_isolated_p(tbase) ? ",isolated" : "");
+ 		else
+-			p += sprintf(p, "%-10s %10s  %10s   %s\n",
+-				     tbase->name,
+-				     "1",
+-				     "n/a",
+-				     "enabled,set");
++			seq_printf(f, "%-10s %10s  %10s   %s\n",
++				   tbase->name,
++				   "1",
++				   "n/a",
++				   "enabled,set");
+ 	}
  
-@@ -74,7 +72,7 @@ static int __queue_read_proc(char *page,
- 
- 		while (holder) {
- 			xnthread_t *sleeper = link2thread(holder, plink);
--			p += sprintf(p, "+%s\n", xnthread_name(sleeper));
-+			seq_printf(f, "+%s\n", xnthread_name(sleeper));
- 			holder =
- 			    nextpq(xnsynch_wait_queue(&q->synch_base), holder);
- 		}
-@@ -82,18 +80,21 @@ static int __queue_read_proc(char *page,
- 
- 	xnlock_put_irqrestore(&nklock, s);
- 
--	len = (p - page) - off;
+-	len = p - page - off;
 -	if (len <= off + count)
 -		*eof = 1;
 -	*start = page + off;
@@ -80,36 +97,37 @@ index 6a71165..72a640d 100644
 -		len = count;
 -	if (len < 0)
 -		len = 0;
++	xnlock_put_irqrestore(&nklock, s);
++
 +	return 0;
 +}
  
 -	return len;
-+static int queue_seq_open(struct inode *inode, struct file *file)
++static int timebase_seq_open(struct inode *inode, struct file *file)
 +{
-+	return single_open(file, queue_seq_show, PDE(inode)->data);
++	return single_open(file, timebase_seq_show, NULL);
  }
  
-+static struct file_operations queue_proc_fops = {
++static struct file_operations timebase_proc_fops = {
 +        .owner          = THIS_MODULE,
-+        .open           = queue_seq_open,
++        .open           = timebase_seq_open,
 +        .read           = seq_read,
 +        .llseek         = seq_lseek,
 +};
 +
- extern xnptree_t __native_ptree;
+ void xntbase_init_proc(void)
+ {
+ #ifdef CONFIG_XENO_OPT_STATS
+ 	tmstat_proc_root =
+ 		create_proc_entry("timerstat", S_IFDIR, rthal_proc_root);
+ #endif /* CONFIG_XENO_OPT_STATS */
+-	rthal_add_proc_leaf("timebases", &timebase_read_proc, NULL, NULL,
+-			    rthal_proc_root);
++	rthal_add_proc_seq("timebases", &timebase_proc_fops, 0,
++			  rthal_proc_root);
+ }
  
- static xnpnode_t __queue_pnode = {
-@@ -101,8 +102,9 @@ static xnpnode_t __queue_pnode = {
- 	.dir = NULL,
- 	.type = "queues",
- 	.entries = 0,
--	.read_proc = &__queue_read_proc,
-+	.read_proc = NULL,
- 	.write_proc = NULL,
-+	.fops = &queue_proc_fops,
- 	.root = &__native_ptree,
- };
- 
+ void xntbase_cleanup_proc(void)
 -- 
 1.6.0.2
 
