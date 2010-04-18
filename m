@@ -1,103 +1,117 @@
-Message-ID: <4BA8752E.8090407@domain.hid>
-Date: Tue, 23 Mar 2010 09:00:46 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <4BA39C3D.1040802@domain.hid> <4BA4EF75.7010202@domain.hid>
-	<4BA74820.2090401@domain.hid>
-In-Reply-To: <4BA74820.2090401@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig6E118EADF4D2CC5B706D0E00"
+Date: Sun, 18 Apr 2010 16:15:55 +0200
+Message-Id: <44af668cf3431ede8ab56b9e9100ea06bf397f2f.1271600150.git.jan.kiszka@domain.hid>
+In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
+References: <cover.1271600150.git.jan.kiszka@domain.hid>
+In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
+References: <cover.1271600150.git.jan.kiszka@domain.hid>
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] crash after termination
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] [PATCH 14/23] native: Convert the alarm registry
+	proc entry to seq_single
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, Wolfgang Mauerer <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6E118EADF4D2CC5B706D0E00
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 
-Stefan Kisdaroczi wrote:
-> Am 20.03.2010 16:53, schrieb Jan Kiszka:
->> Stefan Kisdaroczi wrote:
->>> hi all,
->>>
->>> after termination of my xenomai applications, my box crashed often (3=
- of 4 times) with xenomai 2.5.1.
->>> Today I updated to current git-2.5, rebuilt xenomai and the kernel. S=
-till crashes.
->>> I have captured two traces over a serial connection. I have attached =
-the kernel config, the two
->>> traces and the cpuinfo (UP x86 Pentium III). Help is welcome. Thank y=
-ou.
->> Both crashes seem to be caused by corrupted skbs. There are (at least)=
+Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ ksrc/skins/native/alarm.c |   43 +++++++++++++++++++++++--------------------
+ 1 files changed, 23 insertions(+), 20 deletions(-)
 
->> two uncommon network component in your kernel: ARCNET and ISDN. Do you=
+diff --git a/ksrc/skins/native/alarm.c b/ksrc/skins/native/alarm.c
+index 1130dfb..4ff14a7 100644
+--- a/ksrc/skins/native/alarm.c
++++ b/ksrc/skins/native/alarm.c
+@@ -45,20 +45,18 @@
+ 
+ #ifdef CONFIG_PROC_FS
+ 
+-static int __alarm_read_proc(char *page,
+-			     char **start,
+-			     off_t off, int count, int *eof, void *data)
++#include <linux/seq_file.h>
++
++static int alarm_seq_show(struct seq_file *f, void *v)
+ {
+-	RT_ALARM *alarm = (RT_ALARM *)data;
+-	char *p = page;
+-	int len;
++	RT_ALARM *alarm = (RT_ALARM *)f->private;
+ 	spl_t s;
+ 
+ 	xnlock_get_irqsave(&nklock, s);
+ 
+-	p += sprintf(p, "interval=%Lu:expiries=%lu\n",
+-		     rt_timer_tsc2ns(xntimer_interval(&alarm->timer_base)),
+-		     alarm->expiries);
++	seq_printf(f, "interval=%Lu:expiries=%lu\n",
++		   rt_timer_tsc2ns(xntimer_interval(&alarm->timer_base)),
++		   alarm->expiries);
+ 
+ #ifdef CONFIG_XENO_OPT_PERVASIVE
+ 	{
+@@ -67,7 +65,7 @@ static int __alarm_read_proc(char *page,
+ 
+ 		while (holder) {
+ 			xnthread_t *sleeper = link2thread(holder, plink);
+-			p += sprintf(p, "+%s\n", xnthread_name(sleeper));
++			seq_printf(f, "+%s\n", xnthread_name(sleeper));
+ 			holder =
+ 			    nextpq(xnsynch_wait_queue(&alarm->synch_base),
+ 				   holder);
+@@ -77,18 +75,22 @@ static int __alarm_read_proc(char *page,
+ 
+ 	xnlock_put_irqrestore(&nklock, s);
+ 
+-	len = (p - page) - off;
+-	if (len <= off + count)
+-		*eof = 1;
+-	*start = page + off;
+-	if (len > count)
+-		len = count;
+-	if (len < 0)
+-		len = 0;
++	return 0;
++}
+ 
+-	return len;
++static int alarm_seq_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, alarm_seq_show, PDE(inode)->data);
+ }
+ 
++static struct file_operations alarm_proc_fops = {
++        .owner          = THIS_MODULE,
++        .open           = alarm_seq_open,
++        .read           = seq_read,
++        .llseek         = seq_lseek,
++};
++
++
+ extern xnptree_t __native_ptree;
+ 
+ static xnpnode_t __alarm_pnode = {
+@@ -96,8 +98,9 @@ static xnpnode_t __alarm_pnode = {
+ 	.dir = NULL,
+ 	.type = "alarms",
+ 	.entries = 0,
+-	.read_proc = &__alarm_read_proc,
++	.read_proc = NULL,
+ 	.write_proc = NULL,
++	.fops = &alarm_proc_fops,
+ 	.root = &__native_ptree,
+ };
+ 
+-- 
+1.6.0.2
 
->> make use of them or are they just passively loaded? If the former: Can=
-
->=20
-> Just passively loaded.
->=20
->> you retry without them? >(The Kernel's ISDN stuff is of, well, mixed
->> quality, and ARCNET is so old and uncommon that the code /may/ have
->> bit-rotted -
->=20
-> I disable them.
->=20
->> just an attempt to detract the attention from Xenomai. :) )
->=20
-> I think the problem is in my apps, but I had some hope that
-> some changes for 2.5.2 (about thread cleanup,fork) would help.
-
-Is your application partially or fully kernel homed? Because no user
-space application is allowed to crash your host, anything else is a bug
-in the kernel as well.
-
->=20
->> What other network components are actively involved in your scenario?
->=20
-> Only TCP/IP (non-realtime). Currently a dozen xenomai native tasks are
-> doing standard socket calls. If everything works, there will be about
-> 60 tasks using socket calls, but its still a long way.
->=20
-> I focus now first on another problem I have in my apps with a shared he=
-ap,
-> so one question about that: There was no H_NONCACHED flag at the time I=
-
-> did write some library code. I use a rt_heap as shared memory between 8=
-
-> processes on x86. According to the documentation H_NONCACHED is only
-> relevant for ARM, is that true?
-
-AFAIK, yes.
-
-Jan
-
-
---------------enig6E118EADF4D2CC5B706D0E00
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEUEARECAAYFAkuodTIACgkQitSsb3rl5xRybgCWKezDFDDxbPNLyJI86AyKL6cx
-SACfRqAELy1N+W+5AhrYxu0UqUJQmGk=
-=VxJO
------END PGP SIGNATURE-----
-
---------------enig6E118EADF4D2CC5B706D0E00--
 
