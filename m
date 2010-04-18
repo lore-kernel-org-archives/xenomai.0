@@ -1,13 +1,13 @@
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Sun, 18 Apr 2010 16:15:57 +0200
-Message-Id: <a3bb84c5cca9ccd872df09ce432a3c8ee72c9de2.1271600150.git.jan.kiszka@domain.hid>
+Date: Sun, 18 Apr 2010 16:16:03 +0200
+Message-Id: <61ed5c23099e3e841433e28729fa3f6ba2c45d6c.1271600150.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
 References: <cover.1271600150.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
 References: <cover.1271600150.git.jan.kiszka@domain.hid>
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 16/23] native: Convert cond registry proc
-	entry to the seq_file mechanism
+Subject: [Xenomai-core] [PATCH 22/23] native: Convert queue registry proc
+	entry to seq_file
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -24,41 +24,51 @@ From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- ksrc/skins/native/cond.c |   36 +++++++++++++++++++-----------------
- 1 files changed, 19 insertions(+), 17 deletions(-)
+ ksrc/skins/native/queue.c |   44 +++++++++++++++++++++++---------------------
+ 1 files changed, 23 insertions(+), 21 deletions(-)
 
-diff --git a/ksrc/skins/native/cond.c b/ksrc/skins/native/cond.c
-index 86f83ff..081c2af 100644
---- a/ksrc/skins/native/cond.c
-+++ b/ksrc/skins/native/cond.c
-@@ -50,13 +50,11 @@
+diff --git a/ksrc/skins/native/queue.c b/ksrc/skins/native/queue.c
+index 6a71165..72a640d 100644
+--- a/ksrc/skins/native/queue.c
++++ b/ksrc/skins/native/queue.c
+@@ -49,19 +49,17 @@
  
  #ifdef CONFIG_PROC_FS
  
--static int __cond_read_proc(char *page,
--			    char **start,
--			    off_t off, int count, int *eof, void *data)
+-static int __queue_read_proc(char *page,
+-			     char **start,
+-			     off_t off, int count, int *eof, void *data)
 +#include <linux/seq_file.h>
 +
-+static int cond_seq_show(struct seq_file *f, void *v)
++static int queue_seq_show(struct seq_file *f, void *v)
  {
--	RT_COND *cond = (RT_COND *)data;
+-	RT_QUEUE *q = (RT_QUEUE *)data;
 -	char *p = page;
 -	int len;
-+	RT_COND *cond = (RT_COND *)f->private;
++	RT_QUEUE *q = (RT_QUEUE *)f->private;
  	spl_t s;
  
+-	p += sprintf(p, "type=%s:poolsz=%lu:usedmem=%lu:limit=%d:mcount=%d\n",
+-		     q->mode & Q_SHARED ? "shared" : "local",
+-		     xnheap_usable_mem(&q->bufpool), xnheap_used_mem(&q->bufpool),
+-		     q->qlimit, countq(&q->pendq));
++	seq_printf(f, "type=%s:poolsz=%lu:usedmem=%lu:limit=%d:mcount=%d\n",
++		   q->mode & Q_SHARED ? "shared" : "local",
++		   xnheap_usable_mem(&q->bufpool), xnheap_used_mem(&q->bufpool),
++		   q->qlimit, countq(&q->pendq));
+ 
  	xnlock_get_irqsave(&nklock, s);
-@@ -70,7 +68,7 @@ static int __cond_read_proc(char *page,
+ 
+@@ -74,7 +72,7 @@ static int __queue_read_proc(char *page,
  
  		while (holder) {
  			xnthread_t *sleeper = link2thread(holder, plink);
 -			p += sprintf(p, "+%s\n", xnthread_name(sleeper));
 +			seq_printf(f, "+%s\n", xnthread_name(sleeper));
  			holder =
- 			    nextpq(xnsynch_wait_queue(&cond->synch_base),
- 				   holder);
-@@ -79,18 +77,21 @@ static int __cond_read_proc(char *page,
+ 			    nextpq(xnsynch_wait_queue(&q->synch_base), holder);
+ 		}
+@@ -82,18 +80,21 @@ static int __queue_read_proc(char *page,
  
  	xnlock_put_irqrestore(&nklock, s);
  
@@ -74,29 +84,29 @@ index 86f83ff..081c2af 100644
 +}
  
 -	return len;
-+static int cond_seq_open(struct inode *inode, struct file *file)
++static int queue_seq_open(struct inode *inode, struct file *file)
 +{
-+	return single_open(file, cond_seq_show, PDE(inode)->data);
++	return single_open(file, queue_seq_show, PDE(inode)->data);
  }
  
-+static struct file_operations cond_proc_fops = {
++static struct file_operations queue_proc_fops = {
 +        .owner          = THIS_MODULE,
-+        .open           = cond_seq_open,
++        .open           = queue_seq_open,
 +        .read           = seq_read,
 +        .llseek         = seq_lseek,
 +};
 +
  extern xnptree_t __native_ptree;
  
- static xnpnode_t __cond_pnode = {
-@@ -98,8 +99,9 @@ static xnpnode_t __cond_pnode = {
+ static xnpnode_t __queue_pnode = {
+@@ -101,8 +102,9 @@ static xnpnode_t __queue_pnode = {
  	.dir = NULL,
- 	.type = "condvars",
+ 	.type = "queues",
  	.entries = 0,
--	.read_proc = &__cond_read_proc,
+-	.read_proc = &__queue_read_proc,
 +	.read_proc = NULL,
  	.write_proc = NULL,
-+	.fops = &cond_proc_fops,
++	.fops = &queue_proc_fops,
  	.root = &__native_ptree,
  };
  
