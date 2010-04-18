@@ -1,13 +1,13 @@
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Sun, 18 Apr 2010 16:15:51 +0200
-Message-Id: <e866125b4390585adf2fca793310a19608df2153.1271600150.git.jan.kiszka@domain.hid>
+Date: Sun, 18 Apr 2010 16:15:54 +0200
+Message-Id: <947b4a579d955c162b545cb4001750aa685c46b8.1271600150.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
 References: <cover.1271600150.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
 References: <cover.1271600150.git.jan.kiszka@domain.hid>
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 10/23] nucleus: Convert irq proc entry to
-	seqfile
+Subject: [Xenomai-core] [PATCH 13/23] nucleus: Add infrastructure for
+	supporting the seq_file mechanism in registry objects
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -21,217 +21,139 @@ Cc: Jan Kiszka <jan.kiszka@domain.hid>, Wolfgang Mauerer <wolfgang.mauerer@domai
 
 From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 
-On a system with many CPUs, the size of the data can exceed
-a single page.
+We augment struct xnpnode with a new element for representing file_operations that
+allow for using more generic file system methods than read_proc. However, we
+have to retain read_proc and write_proc for now since not all proc entries are
+immediately converted. However, we should be able to get rid of them in the
+future because writing can as well be implemented in conjunction to the
+seq_file mechanism.
+
+NOTE: When the proc file depends on a data argument given to registry_enter, it
+can be obtained in seq_open via PDE(inode)->data. In turn, it should be
+associated with the seq_file instance, which is easy enough for single_open
+(just use it as third argument). It must be done manually for
+seq_open; note that seq_file is available as file->private after
+the call. ((struct seq_file *)file->private)->private = PDE(inode)->data
+is your friend.
 
 Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- ksrc/nucleus/intr.c |  149 +++++++++++++++++++++++++++++++--------------------
- 1 files changed, 90 insertions(+), 59 deletions(-)
+ include/asm-generic/hal.h  |    6 ++++++
+ include/nucleus/registry.h |   19 ++++++++++++-------
+ ksrc/arch/generic/hal.c    |   18 ++++++++++++++++++
+ ksrc/nucleus/registry.c    |   14 +++++++++++++-
+ 4 files changed, 49 insertions(+), 8 deletions(-)
 
-diff --git a/ksrc/nucleus/intr.c b/ksrc/nucleus/intr.c
-index a6de4ea..79fa3e4 100644
---- a/ksrc/nucleus/intr.c
-+++ b/ksrc/nucleus/intr.c
-@@ -984,27 +984,27 @@ int xnintr_query_next(int irq, xnintr_iterator_t *iterator, char *name_buf)
+diff --git a/include/asm-generic/hal.h b/include/asm-generic/hal.h
+index 61da1b7..04979cd 100644
+--- a/include/asm-generic/hal.h
++++ b/include/asm-generic/hal.h
+@@ -557,6 +557,12 @@ struct proc_dir_entry *rthal_add_proc_seq(const char *name,
+ 					  const struct file_operations *fops,
+ 					  size_t size,
+ 					  struct proc_dir_entry *parent);
++
++struct proc_dir_entry *rthal_add_proc_seq_data(const char *name,
++					       const struct file_operations *fops,
++					       size_t size,
++					       void *data,
++					       struct proc_dir_entry *parent);
+ #endif /* CONFIG_PROC_FS */
+ 
+ #ifdef CONFIG_IPIPE_TRACE
+diff --git a/include/nucleus/registry.h b/include/nucleus/registry.h
+index 56826db..3685308 100644
+--- a/include/nucleus/registry.h
++++ b/include/nucleus/registry.h
+@@ -73,6 +73,7 @@ void xnregistry_cleanup(void);
  #ifdef CONFIG_PROC_FS
  
  #include <linux/proc_fs.h>
-+#include <linux/seq_file.h>
- #include <linux/ctype.h>
++#include <linux/fs.h>
  
--static int format_irq_proc(unsigned int irq, char *str)
-+static void format_irq_proc(unsigned int irq, struct seq_file *f)
+ #define XNOBJECT_PROC_RESERVED1 ((struct proc_dir_entry *)1)
+ #define XNOBJECT_PROC_RESERVED2 ((struct proc_dir_entry *)2)
+@@ -90,13 +91,17 @@ typedef struct xnptree {
+ 
+ typedef struct xnpnode {
+ 
+-    struct proc_dir_entry *dir;
+-    const char *type;
+-    int entries;
+-    read_proc_t *read_proc;
+-    write_proc_t *write_proc;
+-    link_proc_t *link_proc;
+-    xnptree_t *root;
++	struct proc_dir_entry *dir;
++	const char *type;
++	int entries;
++
++	/* NOTE: Use either read_proc/write_proc, link_proc or fops. */
++	read_proc_t *read_proc;
++	write_proc_t *write_proc;
++	link_proc_t *link_proc;
++	struct file_operations *fops;
++
++	xnptree_t *root;
+ 
+ } xnpnode_t;
+ 
+diff --git a/ksrc/arch/generic/hal.c b/ksrc/arch/generic/hal.c
+index c97659a..3b38895 100644
+--- a/ksrc/arch/generic/hal.c
++++ b/ksrc/arch/generic/hal.c
+@@ -901,6 +901,24 @@ struct proc_dir_entry *rthal_add_proc_seq(const char *name,
+ }
+ EXPORT_SYMBOL_GPL(rthal_add_proc_seq);
+ 
++struct proc_dir_entry
++*rthal_add_proc_seq_data(const char *name,
++			 const struct file_operations *fops,
++			 size_t size,
++			 void *data,
++			 struct proc_dir_entry *parent)
++{
++	struct proc_dir_entry *entry;
++
++	entry = rthal_add_proc_seq(name, fops, size, parent);
++
++	if (entry)
++		entry->data = data;
++
++	return entry;
++}
++EXPORT_SYMBOL_GPL(rthal_add_proc_seq_data);
++
+ static int rthal_proc_register(void)
  {
- 	xnintr_t *intr;
--	char *p = str;
- 	spl_t s;
- 
- 	if (rthal_virtual_irq_p(irq)) {
--		p += sprintf(p, "         [virtual]");
--		return p - str;
-+		seq_puts(f, "         [virtual]");
-+		return;
- 	} else if (irq == XNARCH_TIMER_IRQ) {
--		p += sprintf(p, "         [timer]");
--		return p - str;
-+		seq_puts(f, "         [timer]");
-+		return ;
- #ifdef CONFIG_SMP
- 	} else if (irq == RTHAL_SERVICE_IPI0) {
--		p += sprintf(p, "         [IPI]");
--		return p - str;
-+		seq_puts(f, "         [IPI]");
-+		return;
- 	} else if (irq == RTHAL_CRITICAL_IPI) {
--		p += sprintf(p, "         [critical sync]");
--		return p - str;
-+		seq_puts(f, "         [critical sync]");
-+		return;
- #endif /* CONFIG_SMP */
- 	}
- 
-@@ -1012,61 +1012,17 @@ static int format_irq_proc(unsigned int irq, char *str)
- 
- 	intr = xnintr_shirq_first(irq);
- 	if (intr) {
--		strcpy(p, "        "); p += 8;
-+		seq_puts(f, "        ");
- 
- 		do {
--			*p = ' '; p += 1;
--			strcpy(p, intr->name); p += strlen(intr->name);
-+			seq_putc(f, ' ');
-+			seq_printf(f, "%s", intr->name);
- 
- 			intr = xnintr_shirq_next(intr);
- 		} while (intr);
- 	}
- 
- 	xnlock_put_irqrestore(&intrlock, s);
--
--	return p - str;
--}
--
--static int irq_read_proc(char *page,
--			 char **start,
--			 off_t off, int count, int *eof, void *data)
--{
--	int len = 0, cpu, irq;
--	char *p = page;
--
--	p += sprintf(p, "IRQ ");
--
--	for_each_online_cpu(cpu) {
--		p += sprintf(p, "        CPU%d", cpu);
--	}
--
--	for (irq = 0; irq < XNARCH_NR_IRQS; irq++) {
--		if (rthal_irq_handler(&rthal_domain, irq) == NULL)
--			continue;
--
--		p += sprintf(p, "\n%3d:", irq);
--
--		for_each_online_cpu(cpu) {
--			p += sprintf(p, "%12lu",
--				     rthal_cpudata_irq_hits(&rthal_domain, cpu,
--							    irq));
--		}
--
--		p += format_irq_proc(irq, p);
--	}
--
--	p += sprintf(p, "\n");
--
--	len = p - page - off;
--	if (len <= off + count)
--		*eof = 1;
--	*start = page + off;
--	if (len > count)
--		len = count;
--	if (len < 0)
--		len = 0;
--
--	return len;
- }
- 
- #ifdef CONFIG_SMP
-@@ -1094,6 +1050,75 @@ static int affinity_read_proc(char *page,
- 	return len;
- }
- 
-+static void *irq_seq_start(struct seq_file *seq, loff_t *pos)
-+{
-+	/*
-+	 * Note: Position 0 is the header, so we need to
-+	 * use <= instead of <
-+	 */
-+	return (*pos <= XNARCH_NR_IRQS) ? pos : NULL;
-+}
-+
-+static void irq_seq_stop(struct seq_file *f, void *v)
-+{
-+	/* Nothing to do */
-+}
-+
-+static void *irq_seq_next(struct seq_file *f, void *v, loff_t *pos)
-+{
-+	(*pos)++;
-+
-+	if (*pos > XNARCH_NR_IRQS)
-+		return NULL;
-+
-+	return pos;
-+}
-+
-+static int irq_seq_show(struct seq_file *f, void *v)
-+{
-+	unsigned int i = *(loff_t *) v;
-+	unsigned int irq, cpu;
-+
-+	if (i == 0) {
-+		seq_puts(f, "IRQ ");
-+		for_each_online_cpu(cpu) {
-+			seq_printf(f, "        CPU%u", cpu);
-+		}
-+		seq_putc(f, '\n');
-+
-+		return 0;
-+	}
-+
-+	irq = i - 1;
-+	if (rthal_irq_handler(&rthal_domain, irq) == NULL)
-+		return 0;
-+
-+	seq_printf(f, "%3d:", irq);
-+
-+	for_each_online_cpu(cpu) {
-+		seq_printf(f, "%12lu",
-+			   rthal_cpudata_irq_hits(&rthal_domain, cpu,
-+						  irq));
-+	}
-+
-+	format_irq_proc(irq, f);
-+	seq_putc(f, '\n');
-+
-+	return 0;
-+}
-+
-+static struct seq_operations irq_seq_ops = {
-+	.start	= irq_seq_start,
-+	.next	= irq_seq_next,
-+	.stop	= irq_seq_stop,
-+	.show	= irq_seq_show,
-+};
-+
-+static int irq_open(struct inode *inode, struct file *filp)
-+{
-+	return seq_open(filp, &irq_seq_ops);
-+}
-+
- static int affinity_write_proc(struct file *file,
- 			       const char __user * buffer,
- 			       unsigned long count, void *data)
-@@ -1124,10 +1149,16 @@ static int affinity_write_proc(struct file *file,
- }
- #endif /* CONFIG_SMP */
- 
-+static struct file_operations irq_seq_operations = {
-+	.open		= irq_open,
-+	.read		= seq_read,
-+	.llseek		= seq_lseek,
-+	.release	= seq_release,
-+};
-+
- void xnintr_init_proc(void)
- {
--	rthal_add_proc_leaf("irq", &irq_read_proc, NULL, NULL,
--			    rthal_proc_root);
-+	rthal_add_proc_seq("irq", &irq_seq_operations, 0, rthal_proc_root);
- #ifdef CONFIG_SMP
- 	rthal_add_proc_leaf("affinity", &affinity_read_proc,
- 			    &affinity_write_proc, NULL, rthal_proc_root);
+ 	rthal_proc_root = create_proc_entry("xenomai", S_IFDIR, 0);
+diff --git a/ksrc/nucleus/registry.c b/ksrc/nucleus/registry.c
+index 9958dd3..c71da5d 100644
+--- a/ksrc/nucleus/registry.c
++++ b/ksrc/nucleus/registry.c
+@@ -338,8 +338,20 @@ static DECLARE_WORK_FUNC(registry_proc_callback)
+ 			object->proc = add_proc_link(object->key,
+ 						     pnode->link_proc,
+ 						     object->objaddr, dir);
++		else if (pnode->fops)
++			/* Entry is a proper file */
++			object->proc = rthal_add_proc_seq_data(object->key,
++							       pnode->fops,
++							       0,
++							       object->objaddr,
++							       dir);
+ 		else
+-			/* Entry allows to get/set object properties. */
++			/*
++			 * Entry allows us to get/set object properties
++			 * via read/write_proc. Note that this type
++			 * is deprecated since support in the Linux kernel
++			 * will go away.
++			 */
+ 			object->proc = rthal_add_proc_leaf(object->key,
+ 							   pnode->read_proc,
+ 							   pnode->write_proc,
 -- 
 1.6.0.2
 
