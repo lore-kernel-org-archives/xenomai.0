@@ -1,14 +1,14 @@
 From: Jan Kiszka <Jan Kiszka jan.kiszka@domain.hid>
-Date: Sun, 18 Apr 2010 15:12:34 +0200
-Message-Id: <44f06d48e0f1ef368c413dec575d216e0cd7c55f.1271596367.git.Jan
+Date: Sun, 18 Apr 2010 15:12:35 +0200
+Message-Id: <ea98452b8643e324bd4f56bf110ced16a39749d2.1271596367.git.Jan
 	Kiszka jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH v3 10/24] Analogy: Drop support for
-	opening/closing in real-time
+Subject: [Xenomai-core] [PATCH v3 11/24] RTDM: Instrument
+	rtdm_context_lock/unlock to detect misuses
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,35 +18,80 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>, Alexis Berlemont <berlemont.hauw@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@domain.hid>
 
-This is deprected now, RT callers will automatically be switched to
-non-RT.
+rtdm_context_lock must only be called on context structures that are
+already locked, and rtdm_context_unlock must be kept in balance with
+rtdm_context_get/rtdm_context_lock. Try to check for mistakes by
+requiring non-null clock_lock_count on entry of both services.
 
-CC: Alexis Berlemont <berlemont.hauw@domain.hid>
+Also fix a typo and clarify the use cases and restrictions of
+rtdm_context_lock.
+
+CC: Philippe Gerum <rpm@xenomai.org>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- ksrc/drivers/analogy/rtdm_interface.c |    2 --
- 1 files changed, 0 insertions(+), 2 deletions(-)
+ include/rtdm/rtdm_driver.h |    4 ++++
+ ksrc/skins/rtdm/core.c     |   10 +++++++---
+ 2 files changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/ksrc/drivers/analogy/rtdm_interface.c b/ksrc/drivers/analogy/rtdm_interface.c
-index f769e4a..99abf2f 100644
---- a/ksrc/drivers/analogy/rtdm_interface.c
-+++ b/ksrc/drivers/analogy/rtdm_interface.c
-@@ -227,11 +227,9 @@ static struct rtdm_device rtdm_devs[A4L_NB_DEVICES] =
- 		.context_size =		sizeof(struct a4l_dummy_context),
- 		.device_name = 		"",
+diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
+index 7d5983c..310df09 100644
+--- a/include/rtdm/rtdm_driver.h
++++ b/include/rtdm/rtdm_driver.h
+@@ -555,11 +555,15 @@ struct rtdm_dev_context *rtdm_context_get(int fd);
+ #ifndef DOXYGEN_CPP /* Avoid static inline tags for RTDM in doxygen */
+ static inline void rtdm_context_lock(struct rtdm_dev_context *context)
+ {
++	XENO_ASSERT(RTDM, atomic_read(&context->close_lock_count) > 0,
++		    /* just warn if context was a dangling pointer */);
+ 	atomic_inc(&context->close_lock_count);
+ }
  
--		.open_rt =		a4l_rt_open,
- 		.open_nrt =		a4l_rt_open,
+ static inline void rtdm_context_unlock(struct rtdm_dev_context *context)
+ {
++	XENO_ASSERT(RTDM, atomic_read(&context->close_lock_count) > 0,
++		    /* just warn if context was a dangling pointer */);
+ 	smp_mb__before_atomic_dec();
+ 	atomic_dec(&context->close_lock_count);
+ }
+diff --git a/ksrc/skins/rtdm/core.c b/ksrc/skins/rtdm/core.c
+index 8cccf52..ba4dc63 100644
+--- a/ksrc/skins/rtdm/core.c
++++ b/ksrc/skins/rtdm/core.c
+@@ -87,7 +87,7 @@ struct rtdm_dev_context *rtdm_context_get(int fd)
+ 		return NULL;
+ 	}
  
- 		.ops = {
--			.close_rt =	a4l_rt_close,
- 			.ioctl_rt =	a4l_rt_ioctl,
- 			.read_rt =	a4l_rt_read,
- 			.write_rt =	a4l_rt_write,
+-	rtdm_context_lock(context);
++	atomic_inc(&context->close_lock_count);
+ 
+ 	xnlock_put_irqrestore(&rt_fildes_lock, s);
+ 
+@@ -328,7 +328,7 @@ again:
+ 	}
+ 
+ 	set_bit(RTDM_CLOSING, &context->context_flags);
+-	rtdm_context_lock(context);
++	atomic_inc(&context->close_lock_count);
+ 
+ 	xnlock_put_irqrestore(&rt_fildes_lock, s);
+ 
+@@ -588,7 +588,11 @@ EXPORT_SYMBOL(rtdm_select_bind);
+  * @param[in] context Device context
+  *
+  * @note rtdm_context_get() automatically increments the lock counter. You
+- * only need to call this function in special scenrios.
++ * only need to call this function in special scenarios, e.g. when keeping
++ * additional references to the context structure that have different
++ * lifetimes. Only use rtdm_context_lock() on contexts that are currently
++ * locked via an earlier rtdm_context_get()/rtdm_contex_lock() or while
++ * running a device operation handler.
+  *
+  * Environments:
+  *
 -- 
 1.6.0.2
 
