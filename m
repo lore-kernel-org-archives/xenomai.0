@@ -1,14 +1,14 @@
 From: Jan Kiszka <Jan Kiszka jan.kiszka@domain.hid>
-Date: Sun, 18 Apr 2010 15:12:44 +0200
-Message-Id: <f11f7b041b6755301d2e710c21c506ded5715f0b.1271596367.git.Jan
+Date: Sun, 18 Apr 2010 15:12:40 +0200
+Message-Id: <a578a4ed6d5e999f3a624f8ae1b5841f408ca1c0.1271596367.git.Jan
 	Kiszka jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH v3 20/24] RTDM: Document device close
-	procedure
+Subject: [Xenomai-core] [PATCH v3 16/24] irqbench: Auto-detect bases of port
+	address and IRQ values
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -22,41 +22,44 @@ Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@domain.hid>
 
-Interating over the close handler when it returns -EAGAIN or in case a
-pending reference to the device context exists is RTDM practice since
-day one. Documenting this is seriously overdue.
-
-CC: Philippe Gerum <rpm@xenomai.org>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- include/rtdm/rtdm_driver.h |   11 +++++++++--
- 1 files changed, 9 insertions(+), 2 deletions(-)
+ src/testsuite/irqbench/irqbench.c |    2 +-
+ src/testsuite/irqbench/irqloop.c  |    4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
-index 3f79abc..bd8a9d0 100644
---- a/include/rtdm/rtdm_driver.h
-+++ b/include/rtdm/rtdm_driver.h
-@@ -193,11 +193,18 @@ typedef int (*rtdm_socket_handler_t)(struct rtdm_dev_context *context,
-  *
-  * @param[in] context Context structure associated with opened device instance
-  * @param[in] user_info Opaque pointer to information about user mode caller,
-- * NULL if kernel mode call
-+ * NULL if kernel mode or deferred user mode call
-  *
-  * @return 0 on success. On failure return either -ENOSYS, to request that
-  * this handler be called again from the opposite realtime/non-realtime
-- * context, or another negative error code.
-+ * context, -EAGAIN to request a recall after a grace period, or a valid
-+ * negative error code according to IEEE Std 1003.1.
-+ *
-+ * @note Drivers must be prepared for that case that the close handler is
-+ * invoked more than once per open context (even if the handler already
-+ * completed an earlier run successfully). The driver has to avoid releasing
-+ * resources twice as well as returning false errors on successive close
-+ * invocations.
-  *
-  * @see @c close() in IEEE Std 1003.1,
-  * http://www.opengroup.org/onlinepubs/009695399 */
+diff --git a/src/testsuite/irqbench/irqbench.c b/src/testsuite/irqbench/irqbench.c
+index 844f187..ca7a313 100644
+--- a/src/testsuite/irqbench/irqbench.c
++++ b/src/testsuite/irqbench/irqbench.c
+@@ -211,7 +211,7 @@ int main(int argc, char *argv[])
+ 			break;
+ 
+ 		case 'a':
+-			port_ioaddr = strtol(optarg, NULL, (strncmp(optarg, "0x", 2) == 0) ? 16 : 10);
++			port_ioaddr = strtol(optarg, NULL, 0);
+ 			ioaddr_set = 1;
+ 			break;
+ 
+diff --git a/src/testsuite/irqbench/irqloop.c b/src/testsuite/irqbench/irqloop.c
+index 3b4de4f..d4623b4 100644
+--- a/src/testsuite/irqbench/irqloop.c
++++ b/src/testsuite/irqbench/irqloop.c
+@@ -101,12 +101,12 @@ int main(int argc, char *argv[])
+ 			break;
+ 
+ 		case 'a':
+-			config.port_ioaddr = strtol(optarg, NULL, (strncmp(optarg, "0x", 2) == 0) ? 16 : 10);
++			config.port_ioaddr = strtol(optarg, NULL, 0);
+ 			ioaddr_set = 1;
+ 			break;
+ 
+ 		case 'i':
+-			config.port_irq = atoi(optarg);
++			config.port_irq = strtol(optarg, NULL, 0);
+ 			irq_set = 1;
+ 			break;
+ 
 -- 
 1.6.0.2
 
