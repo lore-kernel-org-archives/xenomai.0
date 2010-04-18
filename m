@@ -1,9 +1,12 @@
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Sun, 18 Apr 2010 16:15:41 +0200
-Message-Id: <cover.1271600150.git.jan.kiszka@domain.hid>
+Date: Sun, 18 Apr 2010 16:15:45 +0200
+Message-Id: <38f32e3b3d5b65330c335c6ab86d95b5f76cce40.1271600150.git.jan.kiszka@domain.hid>
+In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
+References: <cover.1271600150.git.jan.kiszka@domain.hid>
+In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
+References: <cover.1271600150.git.jan.kiszka@domain.hid>
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 00/23] [git pull] procfs overflow fixes and
-	seq_file conversions
+Subject: [Xenomai-core] [PATCH 04/23] RTDM: Convert fildes proc to single-seq
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,77 +16,80 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-The following changes since commit 113ea4d56e8b215cb56ae7673013163ea5a5987d:
-  Gilles Chanteperdrix (1):
-        switchtest: increase stack sizes
+From: Jan Kiszka <jan.kiszka@domain.hid>
 
-are available in the git repository at:
+As read_proc is deprecated and will die soon, we have to convert to
+single-seq. Start with RTDM's fildes proc entry.
 
-  git://git.xenomai.org/xenomai-jki.git queues/proc
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ ksrc/skins/rtdm/proc.c |   31 ++++++++++++++++++++-----------
+ 1 files changed, 20 insertions(+), 11 deletions(-)
 
-This series fixes some of the potential (but when they happen fatal)
-overflows in our procfs outputs. Specifically, it fixes all issues in
-RTDM (one of them hit us in the field) and the recently reported
-overflow in /proc/xenomai/heap. Moreover, Wolfgang started the lengthy
-conversion of the registry by introducing a new seq_file-based interface
-and already moving the native skin over.
-
-The future belongs to seq_file, so some of the patches are strictly
-spoken not yet required. But we better start this effort before the last
-legacy interface user was converted and the old interface is suddenly
-dropped from the kernel. This may not be that far away. A patch of mine
-to improve error reporting of the old interface was rejected with
-"->read_proc is going to be removed, so there is no point."
-
-Jan Kiszka (9):
-  hal: Mark file ops of rthal_add_proc_seq const
-  RTDM: Plug race between proc_read_dev_info and device deregistration
-  RTDM: Properly clean up on proc setup errors
-  RTDM: Convert fildes proc to single-seq
-  RTDM: Convert device information proc entry to single-seq
-  RTDM: Convert open_fildes reading to seq_file
-  RTDM: Extend device name space in open_fildes proc output
-  RTDM: Convert device listings to seq_file
-  nucleus: Convert heap proc entry to seq_file
-
-Wolfgang Mauerer (14):
-  nucleus: Convert irq proc entry to seqfile
-  nucleus: Convert faults proc entry to seq_file mechanism
-  nucleus: Convert apc proc file to the seq_file mechanism
-  nucleus: Add infrastructure for supporting the seq_file mechanism in
-    registry objects
-  native: Convert the alarm registry proc entry to seq_single
-  native: Convert buffer registry proc entry to the seq_file mechanism
-  native: Convert cond registry proc entry to the seq_file mechanism
-  native: convert the proc entry for the semaphore registry to seq_file
-  native: Convert intr registry proc files to seq_file
-  native: Convert event registry proc file to seq_file
-  native: Convert heap registry proc file to seq_file
-  native: Convert mutex registry proc entry to seq_file
-  native: Convert queue registry proc entry to seq_file
-  nucleus: Convert timebases proc entry to seq_file
-
- include/asm-generic/hal.h  |    8 +-
- include/nucleus/registry.h |   19 +-
- ksrc/arch/generic/hal.c    |  269 +++++++++++++++++++------
- ksrc/nucleus/heap.c        |  121 +++++++++--
- ksrc/nucleus/intr.c        |  149 ++++++++------
- ksrc/nucleus/registry.c    |   14 ++-
- ksrc/nucleus/timebase.c    |   64 +++---
- ksrc/skins/native/alarm.c  |   43 ++--
- ksrc/skins/native/buffer.c |   46 +++--
- ksrc/skins/native/cond.c   |   36 ++--
- ksrc/skins/native/event.c  |   40 ++--
- ksrc/skins/native/heap.c   |   50 +++---
- ksrc/skins/native/intr.c   |   44 ++--
- ksrc/skins/native/mutex.c  |   42 ++--
- ksrc/skins/native/queue.c  |   44 ++--
- ksrc/skins/native/sem.c    |   38 ++--
- ksrc/skins/rtdm/device.c   |   21 +--
- ksrc/skins/rtdm/internal.h |   19 ++
- ksrc/skins/rtdm/proc.c     |  481 +++++++++++++++++++++++++++++---------------
- 19 files changed, 1008 insertions(+), 540 deletions(-)
+diff --git a/ksrc/skins/rtdm/proc.c b/ksrc/skins/rtdm/proc.c
+index 70ee4a2..ff264b6 100644
+--- a/ksrc/skins/rtdm/proc.c
++++ b/ksrc/skins/rtdm/proc.c
+@@ -17,6 +17,8 @@
+  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  */
+ 
++#include <linux/seq_file.h>
++
+ #include "rtdm/internal.h"
+ 
+ /* Derived from Erwin Rol's rtai_proc_fs.h.
+@@ -189,17 +191,26 @@ static int proc_kill_open_fildes(struct file *file, const char __user *buffer,
+ 	return count;
+ }
+ 
+-static int proc_read_fildes(char *buf, char **start, off_t offset,
+-			    int count, int *eof, void *data)
++static int fildes_show(struct seq_file *seq, void *v)
+ {
+-	RTDM_PROC_PRINT_VARS(80);
+-
+-	RTDM_PROC_PRINT("total=%d:open=%d:free=%d\n", RTDM_FD_MAX,
+-			open_fildes, RTDM_FD_MAX - open_fildes);
++	seq_printf(seq, "total=%d:open=%d:free=%d\n",
++		   RTDM_FD_MAX, open_fildes, RTDM_FD_MAX - open_fildes);
++	return 0;
++}
+ 
+-	RTDM_PROC_PRINT_DONE;
++static int fildes_proc_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, fildes_show, NULL);
+ }
+ 
++static const struct file_operations fildes_operations = {
++	.owner		= THIS_MODULE,
++	.open		= fildes_proc_open,
++	.read		= seq_read,
++	.llseek		= seq_lseek,
++	.release	= single_release,
++};
++
+ static int proc_read_dev_info(char *buf, char **start, off_t offset,
+ 			      int count, int *eof, void *data)
+ {
+@@ -313,11 +324,9 @@ int __init rtdm_proc_init(void)
+ 	proc_entry->read_proc = proc_read_open_fildes;
+ 	proc_entry->write_proc = proc_kill_open_fildes;
+ 
+-	proc_entry =
+-	    create_proc_entry("fildes", S_IFREG | S_IRUGO, rtdm_proc_root);
+-	if (!proc_entry)
++	if (!rthal_add_proc_seq("fildes", &fildes_operations, 0,
++				rtdm_proc_root))
+ 		goto error;
+-	proc_entry->read_proc = proc_read_fildes;
+ 
+ 	return 0;
+ 
+-- 
+1.6.0.2
 
 
