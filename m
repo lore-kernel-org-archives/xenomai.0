@@ -1,13 +1,13 @@
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Sun, 18 Apr 2010 16:15:47 +0200
-Message-Id: <edc6915e9665ff9f56aa1e466add3773f0e91b40.1271600150.git.jan.kiszka@domain.hid>
+Date: Sun, 18 Apr 2010 16:15:51 +0200
+Message-Id: <e866125b4390585adf2fca793310a19608df2153.1271600150.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
 References: <cover.1271600150.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
 References: <cover.1271600150.git.jan.kiszka@domain.hid>
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 06/23] RTDM: Convert open_fildes reading to
-	seq_file
+Subject: [Xenomai-core] [PATCH 10/23] nucleus: Convert irq proc entry to
+	seqfile
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,190 +17,221 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, Wolfgang Mauerer <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 
-This avoids overflows in case the number of open file descriptors gets
-too high.
+On a system with many CPUs, the size of the data can exceed
+a single page.
 
+Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- ksrc/skins/rtdm/proc.c |  119 ++++++++++++++++++++++++++++++++----------------
- 1 files changed, 80 insertions(+), 39 deletions(-)
+ ksrc/nucleus/intr.c |  149 +++++++++++++++++++++++++++++++--------------------
+ 1 files changed, 90 insertions(+), 59 deletions(-)
 
-diff --git a/ksrc/skins/rtdm/proc.c b/ksrc/skins/rtdm/proc.c
-index 9b5d349..e83c0c4 100644
---- a/ksrc/skins/rtdm/proc.c
-+++ b/ksrc/skins/rtdm/proc.c
-@@ -76,6 +76,10 @@ static int proc_read_named_devs(char *buf, char **start, off_t offset,
- 	RTDM_PROC_PRINT_DONE;
- }
+diff --git a/ksrc/nucleus/intr.c b/ksrc/nucleus/intr.c
+index a6de4ea..79fa3e4 100644
+--- a/ksrc/nucleus/intr.c
++++ b/ksrc/nucleus/intr.c
+@@ -984,27 +984,27 @@ int xnintr_query_next(int irq, xnintr_iterator_t *iterator, char *name_buf)
+ #ifdef CONFIG_PROC_FS
  
-+static void dummy_seq_stop(struct seq_file *seq, void *v)
-+{
-+}
-+
- static int proc_read_proto_devs(char *buf, char **start, off_t offset,
- 				int count, int *eof, void *data)
- {
-@@ -111,61 +115,90 @@ static int proc_read_proto_devs(char *buf, char **start, off_t offset,
- 	RTDM_PROC_PRINT_DONE;
- }
+ #include <linux/proc_fs.h>
++#include <linux/seq_file.h>
+ #include <linux/ctype.h>
  
--static int proc_read_open_fildes(char *buf, char **start, off_t offset,
--				 int count, int *eof, void *data)
-+static void *open_fildes_seq_start(struct seq_file *seq, loff_t *pos)
+-static int format_irq_proc(unsigned int irq, char *str)
++static void format_irq_proc(unsigned int irq, struct seq_file *f)
  {
--	int i;
--	int close_lock_count;
-+	if (*pos > RTDM_FD_MAX)
-+		return NULL;
-+
-+	if (*pos == 0)
-+		return SEQ_START_TOKEN;
-+
-+	return &fildes_table[*pos - 1];
-+}
-+
-+static void *open_fildes_seq_next(struct seq_file *seq, void *v, loff_t *pos)
-+{
-+	++*pos;
-+
-+	if (*pos > RTDM_FD_MAX)
-+		return NULL;
-+
-+	return &fildes_table[*pos - 1];
-+}
-+
-+static int open_fildes_seq_show(struct seq_file *seq, void *v)
-+{
-+	struct rtdm_fildes *fildes = v;
-+	struct rtdm_dev_context *context;
- 	struct rtdm_device *device;
- 	struct rtdm_process owner;
-+	int close_lock_count;
+ 	xnintr_t *intr;
+-	char *p = str;
  	spl_t s;
--	RTDM_PROC_PRINT_VARS(80);
  
--	if (!RTDM_PROC_PRINT("Index\tLocked\tDevice\t\tOwner [PID]\n"))
--		goto done;
-+	if (v == SEQ_START_TOKEN) {
-+		seq_printf(seq, "Index\tLocked\tDevice\t\tOwner [PID]\n");
+ 	if (rthal_virtual_irq_p(irq)) {
+-		p += sprintf(p, "         [virtual]");
+-		return p - str;
++		seq_puts(f, "         [virtual]");
++		return;
+ 	} else if (irq == XNARCH_TIMER_IRQ) {
+-		p += sprintf(p, "         [timer]");
+-		return p - str;
++		seq_puts(f, "         [timer]");
++		return ;
+ #ifdef CONFIG_SMP
+ 	} else if (irq == RTHAL_SERVICE_IPI0) {
+-		p += sprintf(p, "         [IPI]");
+-		return p - str;
++		seq_puts(f, "         [IPI]");
++		return;
+ 	} else if (irq == RTHAL_CRITICAL_IPI) {
+-		p += sprintf(p, "         [critical sync]");
+-		return p - str;
++		seq_puts(f, "         [critical sync]");
++		return;
+ #endif /* CONFIG_SMP */
+ 	}
+ 
+@@ -1012,61 +1012,17 @@ static int format_irq_proc(unsigned int irq, char *str)
+ 
+ 	intr = xnintr_shirq_first(irq);
+ 	if (intr) {
+-		strcpy(p, "        "); p += 8;
++		seq_puts(f, "        ");
+ 
+ 		do {
+-			*p = ' '; p += 1;
+-			strcpy(p, intr->name); p += strlen(intr->name);
++			seq_putc(f, ' ');
++			seq_printf(f, "%s", intr->name);
+ 
+ 			intr = xnintr_shirq_next(intr);
+ 		} while (intr);
+ 	}
+ 
+ 	xnlock_put_irqrestore(&intrlock, s);
+-
+-	return p - str;
+-}
+-
+-static int irq_read_proc(char *page,
+-			 char **start,
+-			 off_t off, int count, int *eof, void *data)
+-{
+-	int len = 0, cpu, irq;
+-	char *p = page;
+-
+-	p += sprintf(p, "IRQ ");
+-
+-	for_each_online_cpu(cpu) {
+-		p += sprintf(p, "        CPU%d", cpu);
+-	}
+-
+-	for (irq = 0; irq < XNARCH_NR_IRQS; irq++) {
+-		if (rthal_irq_handler(&rthal_domain, irq) == NULL)
+-			continue;
+-
+-		p += sprintf(p, "\n%3d:", irq);
+-
+-		for_each_online_cpu(cpu) {
+-			p += sprintf(p, "%12lu",
+-				     rthal_cpudata_irq_hits(&rthal_domain, cpu,
+-							    irq));
+-		}
+-
+-		p += format_irq_proc(irq, p);
+-	}
+-
+-	p += sprintf(p, "\n");
+-
+-	len = p - page - off;
+-	if (len <= off + count)
+-		*eof = 1;
+-	*start = page + off;
+-	if (len > count)
+-		len = count;
+-	if (len < 0)
+-		len = 0;
+-
+-	return len;
+ }
+ 
+ #ifdef CONFIG_SMP
+@@ -1094,6 +1050,75 @@ static int affinity_read_proc(char *page,
+ 	return len;
+ }
+ 
++static void *irq_seq_start(struct seq_file *seq, loff_t *pos)
++{
++	/*
++	 * Note: Position 0 is the header, so we need to
++	 * use <= instead of <
++	 */
++	return (*pos <= XNARCH_NR_IRQS) ? pos : NULL;
++}
++
++static void irq_seq_stop(struct seq_file *f, void *v)
++{
++	/* Nothing to do */
++}
++
++static void *irq_seq_next(struct seq_file *f, void *v, loff_t *pos)
++{
++	(*pos)++;
++
++	if (*pos > XNARCH_NR_IRQS)
++		return NULL;
++
++	return pos;
++}
++
++static int irq_seq_show(struct seq_file *f, void *v)
++{
++	unsigned int i = *(loff_t *) v;
++	unsigned int irq, cpu;
++
++	if (i == 0) {
++		seq_puts(f, "IRQ ");
++		for_each_online_cpu(cpu) {
++			seq_printf(f, "        CPU%u", cpu);
++		}
++		seq_putc(f, '\n');
++
 +		return 0;
 +	}
- 
- 	if (down_interruptible(&nrt_dev_lock))
- 		return -ERESTARTSYS;
- 
--	for (i = 0; i < RTDM_FD_MAX; i++) {
--		struct rtdm_dev_context *context;
--
--		xnlock_get_irqsave(&rt_fildes_lock, s);
-+	xnlock_get_irqsave(&rt_fildes_lock, s);
- 
--		context = fildes_table[i].context;
--		if (!context) {
--			xnlock_put_irqrestore(&rt_fildes_lock, s);
--			continue;
--		}
-+	context = fildes->context;
-+	if (!context) {
-+		xnlock_put_irqrestore(&rt_fildes_lock, s);
-+		goto unlock_out;
++
++	irq = i - 1;
++	if (rthal_irq_handler(&rthal_domain, irq) == NULL)
++		return 0;
++
++	seq_printf(f, "%3d:", irq);
++
++	for_each_online_cpu(cpu) {
++		seq_printf(f, "%12lu",
++			   rthal_cpudata_irq_hits(&rthal_domain, cpu,
++						  irq));
 +	}
- 
--		close_lock_count = atomic_read(&context->close_lock_count);
--		device = context->device;
-+	close_lock_count = atomic_read(&context->close_lock_count);
-+	device = context->device;
- 
--		if (context->reserved.owner)
--			memcpy(&owner, context->reserved.owner, sizeof(owner));
--		else {
--			strcpy(owner.name, "<kernel>");
--			owner.pid = -1;
--		}
-+	if (context->reserved.owner)
-+		memcpy(&owner, context->reserved.owner, sizeof(owner));
-+	else {
-+		strcpy(owner.name, "<kernel>");
-+		owner.pid = -1;
-+	}
- 
--		xnlock_put_irqrestore(&rt_fildes_lock, s);
-+	xnlock_put_irqrestore(&rt_fildes_lock, s);
- 
--		if (!RTDM_PROC_PRINT("%d\t%d\t%-15s %s [%d]\n", i,
--				     close_lock_count,
--				     (device->device_flags&RTDM_NAMED_DEVICE) ?
--				     device->device_name : device->proc_name,
--				     owner.name, owner.pid))
--			break;
--	}
-+	seq_printf(seq, "%d\t%d\t%-15s %s [%d]\n",
-+		   (int)(fildes - fildes_table), close_lock_count,
-+		   (device->device_flags & RTDM_NAMED_DEVICE) ?
-+				device->device_name : device->proc_name,
-+		   owner.name, owner.pid);
- 
-+unlock_out:
- 	up(&nrt_dev_lock);
++
++	format_irq_proc(irq, f);
++	seq_putc(f, '\n');
++
 +	return 0;
 +}
- 
--      done:
--	RTDM_PROC_PRINT_DONE;
-+static const struct seq_operations open_fildes_op = {
-+	.start	= open_fildes_seq_start,
-+	.next	= open_fildes_seq_next,
-+	.stop	= dummy_seq_stop,
-+	.show	= open_fildes_seq_show
++
++static struct seq_operations irq_seq_ops = {
++	.start	= irq_seq_start,
++	.next	= irq_seq_next,
++	.stop	= irq_seq_stop,
++	.show	= irq_seq_show,
 +};
 +
-+static int open_fildes_seq_open(struct inode *inode, struct file *file)
++static int irq_open(struct inode *inode, struct file *filp)
 +{
-+	return seq_open(file, &open_fildes_op);
++	return seq_open(filp, &irq_seq_ops);
++}
++
+ static int affinity_write_proc(struct file *file,
+ 			       const char __user * buffer,
+ 			       unsigned long count, void *data)
+@@ -1124,10 +1149,16 @@ static int affinity_write_proc(struct file *file,
  }
+ #endif /* CONFIG_SMP */
  
--static int proc_kill_open_fildes(struct file *file, const char __user *buffer,
--				 unsigned long count, void *data)
-+static ssize_t
-+proc_kill_open_fildes(struct file *file, const char __user *buffer,
-+		      size_t count, loff_t *ppos)
- {
- 	char krnl_buf[32];
- 	int fd;
-@@ -191,6 +224,15 @@ static int proc_kill_open_fildes(struct file *file, const char __user *buffer,
- 	return count;
- }
- 
-+static const struct file_operations open_fildes_operations = {
-+	.owner		= THIS_MODULE,
-+	.open		= open_fildes_seq_open,
++static struct file_operations irq_seq_operations = {
++	.open		= irq_open,
 +	.read		= seq_read,
-+	.write		= proc_kill_open_fildes,
 +	.llseek		= seq_lseek,
-+	.release	= seq_release_private,
++	.release	= seq_release,
 +};
 +
- static int fildes_show(struct seq_file *seq, void *v)
+ void xnintr_init_proc(void)
  {
- 	seq_printf(seq, "total=%d:open=%d:free=%d\n",
-@@ -331,11 +373,10 @@ int __init rtdm_proc_init(void)
- 	proc_entry->read_proc = proc_read_proto_devs;
- 
- 	proc_entry =
--	    create_proc_entry("open_fildes", S_IFREG | S_IRUGO, rtdm_proc_root);
-+		rthal_add_proc_seq("open_fildes", &open_fildes_operations, 0,
-+				   rtdm_proc_root);
- 	if (!proc_entry)
- 		goto error;
--	proc_entry->read_proc = proc_read_open_fildes;
--	proc_entry->write_proc = proc_kill_open_fildes;
- 
- 	if (!rthal_add_proc_seq("fildes", &fildes_operations, 0,
- 				rtdm_proc_root))
+-	rthal_add_proc_leaf("irq", &irq_read_proc, NULL, NULL,
+-			    rthal_proc_root);
++	rthal_add_proc_seq("irq", &irq_seq_operations, 0, rthal_proc_root);
+ #ifdef CONFIG_SMP
+ 	rthal_add_proc_leaf("affinity", &affinity_read_proc,
+ 			    &affinity_write_proc, NULL, rthal_proc_root);
 -- 
 1.6.0.2
 
