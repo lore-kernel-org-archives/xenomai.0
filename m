@@ -1,14 +1,13 @@
 From: Jan Kiszka <Jan Kiszka jan.kiszka@domain.hid>
-Date: Sun, 18 Apr 2010 15:12:46 +0200
-Message-Id: <84a4abc30b01ff85b213e41e4cc3d8faa7e5a690.1271596367.git.Jan
+Date: Sun, 18 Apr 2010 15:12:42 +0200
+Message-Id: <35eafa7c55fbb2c6f68873ae2c62bc7e644c9eed.1271596367.git.Jan
 	Kiszka jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 References: <cover.1271596366.git.Jan Kiszka jan.kiszka@domain.hid>
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH v3 22/24] Add legacy kernel support for
-	delayed_work
+Subject: [Xenomai-core] [PATCH v3 18/24] testing: Clean up Kconfig rules
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -22,62 +21,63 @@ Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@domain.hid>
 
-Note that the kernel 2.4 version of schedule_delayed_work is not
-universally usable.
+To exclude modules from built-in, make them depend on 'm' is sufficient.
 
-CC: Philippe Gerum <rpm@xenomai.org>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- include/asm-generic/wrappers.h   |    3 +++
- include/compat/linux/workqueue.h |   13 +++++++++++++
- 2 files changed, 16 insertions(+), 0 deletions(-)
+ ksrc/drivers/testing/Config.in |    2 +-
+ ksrc/drivers/testing/Kconfig   |   14 +++++---------
+ 2 files changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/include/asm-generic/wrappers.h b/include/asm-generic/wrappers.h
-index d864397..7513781 100644
---- a/include/asm-generic/wrappers.h
-+++ b/include/asm-generic/wrappers.h
-@@ -192,6 +192,7 @@ do {									\
- #define DECLARE_WORK(n,f,d)      	struct tq_struct n = __WORK_INITIALIZER(n, f, d)
- #define DECLARE_WORK_NODATA(n, f)	DECLARE_WORK(n, f, NULL)
- #define DECLARE_WORK_FUNC(f)		void f(void *cookie)
-+#define DECLARE_DELAYED_WORK_NODATA(n, f) DECLARE_WORK(n, f, NULL)
+diff --git a/ksrc/drivers/testing/Config.in b/ksrc/drivers/testing/Config.in
+index 3552670..215c38d 100644
+--- a/ksrc/drivers/testing/Config.in
++++ b/ksrc/drivers/testing/Config.in
+@@ -15,6 +15,6 @@ dep_tristate 'Context switches test driver' CONFIG_XENO_DRIVERS_SWITCHTEST $CONF
  
- /* Msleep is unknown before 2.4.28 */
- #if LINUX_VERSION_CODE < KERNEL_VERSION(2,4,28)
-@@ -436,9 +437,11 @@ unsigned long find_next_bit(const unsigned long *addr,
- #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,20)
- #define DECLARE_WORK_NODATA(f, n)	DECLARE_WORK(f, n, NULL)
- #define DECLARE_WORK_FUNC(f)		void f(void *cookie)
-+#define DECLARE_DELAYED_WORK_NODATA(n, f) DECLARE_DELAYED_WORK(n, f, NULL)
- #else /* >= 2.6.20 */
- #define DECLARE_WORK_NODATA(f, n)	DECLARE_WORK(f, n)
- #define DECLARE_WORK_FUNC(f)		void f(struct work_struct *work)
-+#define DECLARE_DELAYED_WORK_NODATA(n, f) DECLARE_DELAYED_WORK(n, f)
- #endif /* >= 2.6.20 */
+ dep_tristate 'Kernel-only latency measurement module' CONFIG_XENO_DRIVERS_KLATENCY $CONFIG_XENO_DRIVERS_TIMERBENCH m
  
- #endif /* LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0) */
-diff --git a/include/compat/linux/workqueue.h b/include/compat/linux/workqueue.h
-index 3ac37aa..6fad03c 100644
---- a/include/compat/linux/workqueue.h
-+++ b/include/compat/linux/workqueue.h
-@@ -28,4 +28,17 @@
- #define schedule_work(x)         schedule_task(x)
- #define flush_scheduled_work()   flush_scheduled_tasks()
+-dep_tristate 'User-space real-time signals testing module' CONFIG_XENO_DRIVERS_SIGTEST $CONFIG_MODULES m
++dep_tristate 'User-space real-time signals testing module' CONFIG_XENO_DRIVERS_SIGTEST m
  
-+/*
-+ * WARNING: This is not identical to 2.6 schedule_delayed_work as it delayes
-+ * the caller to schedule the task after the specified delay. That's fine for
-+ * our current use cases, though.
-+ */
-+#define schedule_delayed_work(work, delay) do {			\
-+	if (delay) {						\
-+		set_current_state(TASK_UNINTERRUPTIBLE);	\
-+		schedule_timeout(delay);			\
-+	}							\
-+	schedule_task(work);					\
-+} while (0)
-+
- #endif /* _XENO_COMPAT_LINUX_WORKQUEUE_H */
+ endmenu
+diff --git a/ksrc/drivers/testing/Kconfig b/ksrc/drivers/testing/Kconfig
+index 05d6a49..883ede1 100644
+--- a/ksrc/drivers/testing/Kconfig
++++ b/ksrc/drivers/testing/Kconfig
+@@ -1,9 +1,5 @@
+ menu "Testing drivers"
+ 
+-config XENO_TESTING_MODULE
+-        depends on MODULES
+-	def_tristate m
+-
+ config XENO_DRIVERS_TESTING_LEGACY_NAMES
+ 	depends on XENO_SKIN_RTDM
+ 	bool "Use legacy names for testing drivers"
+@@ -22,7 +18,7 @@ config XENO_DRIVERS_TIMERBENCH
+ 	See testsuite/latency for a possible front-end.
+ 
+ config XENO_DRIVERS_KLATENCY
+-	depends on XENO_DRIVERS_TIMERBENCH && XENO_TESTING_MODULE
++	depends on XENO_DRIVERS_TIMERBENCH && m
+ 	tristate "Kernel-only latency measurement module"
+ 	help
+ 	Kernel module for kernel-only latency measurement.
+@@ -44,9 +40,9 @@ config XENO_DRIVERS_SWITCHTEST
+ 	FPU switches.
+ 
+ config XENO_DRIVERS_SIGTEST
+-       depends on XENO_TESTING_MODULE
+-       tristate "User-space real-time signals testing module"
+-       help
+-       Elementary skin for unit testing user-space real-time signals.
++	depends on m
++	tristate "User-space real-time signals testing module"
++	help
++	Elementary skin for unit testing user-space real-time signals.
+ 
+ endmenu
 -- 
 1.6.0.2
 
