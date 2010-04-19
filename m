@@ -1,11 +1,10 @@
-Message-ID: <4BCC7092.1030809@domain.hid>
-Date: Mon, 19 Apr 2010 17:02:42 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <4BCC619E.2@domain.hid> <4BCC6CEE.70907@domain.hid>
-	<4BCC6E3C.3090301@domain.hid>
-In-Reply-To: <4BCC6E3C.3090301@domain.hid>
-Content-Type: text/plain; charset=utf-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4BCC619E.2@domain.hid>
+References: <4BCC619E.2@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 19 Apr 2010 17:06:26 +0200
+Message-ID: <1271689586.16659.123.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -19,69 +18,41 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Hi,
->>>
->>> I found some code which was referencing directly some
->>> CONFIG_XENO_OPT_DEBUG_ variables with things like:
->>>
->>> #ifdef CONFIG_XENO_OPT_DEBUG_FOO
->>>
->>> This usage is incompatible with the pre-requisites of the assert.h
->>> header that CONFIG_XENO_OPT_DEBUG_FOO should be defined at all times.
->>> While grepping for CONFIG_XENO_OPT_DEBUG_, I found that we also have
->>> many duplicates of construction like:
->>> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
->>> #define CONFIG_XENO_OPT_DEBUG_FOO 0
->>> #endif /* CONFIG_XENO_OPT_DEBUG_FOO */
->>>
->>> So, a patch follows which:
->>> - replace the #ifdef with some #if XENO_DEBUG(FOO)
->> Should probably come as a separate patch.
+On Mon, 2010-04-19 at 15:58 +0200, Gilles Chanteperdrix wrote:
+> Hi,
 > 
-> Come on, the patch is simple, one patch for this is enough.
+> I found some code which was referencing directly some
+> CONFIG_XENO_OPT_DEBUG_ variables with things like:
+> 
+> #ifdef CONFIG_XENO_OPT_DEBUG_FOO
+> 
+> This usage is incompatible with the pre-requisites of the assert.h
+> header that CONFIG_XENO_OPT_DEBUG_FOO should be defined at all times.
+> While grepping for CONFIG_XENO_OPT_DEBUG_, I found that we also have
+> many duplicates of construction like:
+> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
+> #define CONFIG_XENO_OPT_DEBUG_FOO 0
+> #endif /* CONFIG_XENO_OPT_DEBUG_FOO */
+> 
+> So, a patch follows which:
+> - replace the #ifdef with some #if XENO_DEBUG(FOO)
+> - move all the initializations to assert.h
+> 
 
-One part is an obvious fix, the other a refactoring under discussion.
+Yes, that makes a lot of sense. Declaring DEBUG options locally was a
+sloppy fix for this annoying issue I used a lot myself. This has to be
+centralized somewhere.
 
+> This will make any reference to CONFIG_XENO_OPT_DEBUG_FOO outside of
+> assert.h suspicious, and easy to detect.
 > 
->>> - move all the initializations to assert.h
->>>
->>> This will make any reference to CONFIG_XENO_OPT_DEBUG_FOO outside of
->>> assert.h suspicious, and easy to detect.
->> How many duplicates did you find?
+> Thanks in advance for any comments.
+> Regards.
 > 
-> A lot, especially for CONFIG_XENO_OPT_DEBUG_NUCLEUS
 
-That's because the CONFIG_XENO_OPT_DEBUG_NUCLEUS defines were misplaced.
-Besides that we had one CONFIG_XENO_OPT_DEBUG_QUEUE duplicate, but tons
-of proper users. I don't see such an immediate need.
-
-When adding this kind of switching, it's till more handy to have things
-locally in your subsystem. That also makes reviewing easier when you
-only find changes in files that belong to a subsystem.
-
-> 
->> Generally, I'm more a fan of decentralized management here (e.g. this
->> avoids needless patch conflicts in central files).
-> 
-> If we maintain the list in alphabetical order (which I have done), we 
-> reduce the likeliness for conflicts. The aim of doing this is also that 
-> I can check that the sources are clean with:
-> 
-> find xenomai-2.5 ! -name 'assert.h' -name '*.[ch]' | xargs grep CONFIG_XENO_OPT_DEBUG_
-> 
-> And that I can add this test to the automated build test.
-> 
-> Note that forgetting to add a #define to the list yields an immediate
-> compilation error. So, the patch makes things completely safe.
-
-What did you change to make this happen (for new users of XENO_DEBUG)?
-
-Jan
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Philippe.
+
+
 
