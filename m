@@ -1,50 +1,64 @@
-Message-ID: <4BB5A57B.8070403@domain.hid>
-Date: Fri, 02 Apr 2010 10:06:19 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4BCC8D00.10103@domain.hid>
+Date: Mon, 19 Apr 2010 19:04:00 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <20100401230843.GF3755@domain.hid>	
-	<4BB53566.3010601@domain.hid> <4BB53643.2080604@domain.hid>
-	<j2yb88603c31004020058i3aae7947s1428f1b87f4b1097@domain.hid>
-In-Reply-To: <j2yb88603c31004020058i3aae7947s1428f1b87f4b1097@domain.hid>
+References: <cover.1271672940.git.jan.kiszka@domain.hid>
+	<4BCC8296.8000901@domain.hid> <4BCC88E8.5050304@domain.hid>
+	<4BCC8A7A.1040604@domain.hid>
+In-Reply-To: <4BCC8A7A.1040604@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] New scheduler class
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [PATCH v4 00/25] [git pull v4] RTDM fixes and
+	reworks
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Henri Roosen <henriroosen@domain.hid>
-Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Henri Roosen wrote:
-> We have the same requirement for which we also have no solution. One
-> of our threads has a configurable priority of which at the lowest
-> priority the thread should behave like an idle task that is only
-> scheduled when all xenomai threads are idle and also the Linux domain
-> is idle. The thread might use rtdm-drivers and xenomai mutexes and
-> therefore has to be moved to the Xenomai domain. But then it always
-> has higher priority than any threads scheduled in linux.
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> The following changes since commit 2bed24477882dd7937d59f4e33a0811981c7362c:
+>>>>   Gilles Chanteperdrix (1):
+>>>>         arm: declare the VFP inline asm snippets as volatile.
+>>>>
+>>>> are available in the git repository at:
+>>>>
+>>>>   git://git.xenomai.org/xenomai-jki.git for-upstream
+>>> Ok, seems this merge broke the build test:
+>>> http://sisyphus.hd.free.fr/~gilles/bx/
+>>>
+>>> Could you please have a look?
+>> The section mismatch should be resolved in my queue.
+>>
+>> Regarding the other bug:
+>>
+>> In file included from ./2.4.25-DENX-ppc_6xx-gcc-3.3.3/include/linux/workqueue.h:14,
+>>                  from core.c:29:
+>> ./2.4.25-DENX-ppc_6xx-gcc-3.3.3/include/linux/tqueue.h: In function `queue_task':
+>> ./2.4.25-DENX-ppc_6xx-gcc-3.3.3/include/linux/tqueue.h:105: warning: implicit declaration of function `barrier'
+>> core.c: In function `close_callback':
+>> core.c:257: warning: implicit declaration of function `schedule_delayed_work'
+>>
+>> Does that kernel come with a linux/workqueue.h? What does it include?
 > 
-> Actually, when seen from the first domain, this requirement would be
-> solved when we could set a first domain priority for the second
-> domain... Gilles, is that what is meant by the SCHED_IDLE policy for
-> Linux?
+> I guess either this kernel containes a workqueue.h or it gets it via the
+> compat directory.
 
-What I meant is that this problem really looks like a problem with Linux
-scheduler, not with Xenomai scheduler. You want your task scheduled when
-Linux has not any other task to run, the fact that it will be run when
-Xenomai has no other task to run simply follows from the fact that Linux
-tasks are already run when Xenomai has not any Xenomai task to run.
+It has MTD compat workqueue under central include/linux/workqueue.h. I
+tend to consider this a bug of that tree, but we can workaround it. See
+for-upstream.
 
-And in fact SCHED_IDLE already exists and does what you expect. However,
-I do not know if a task running with SCHED_IDLE may have a shadow (I
-guess not), that is our real problem now.
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
