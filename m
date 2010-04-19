@@ -1,132 +1,869 @@
-Message-ID: <289790.83729.qm@domain.hid>
-Date: Tue, 23 Mar 2010 22:05:16 +0800 (CST)
-From: =?utf-8?B?5p2wIHpoYW8=?= <zhjunjie2007@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-589563824-1269353116=:83729"
-Subject: [Xenomai-help] dm9000 doesn't work well with the
-	adeos-ipipe-2.6.28.10-arm-1.12-06.patch
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Mon, 19 Apr 2010 12:28:55 +0200
+Message-Id: <98308c9f1e20645f50a7d673ad22ad05666d8ba2.1271672940.git.jan.kiszka@domain.hid>
+In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
+References: <cover.1271672940.git.jan.kiszka@domain.hid>
+In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
+References: <cover.1271672940.git.jan.kiszka@domain.hid>
+Subject: [Xenomai-core] [PATCH v4 15/25] irqbench: Refactor user space
+	helpers
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
---0-589563824-1269353116=:83729
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Indent according to our style, push irqbench's inner loop into separate
+function. No functional changes.
 
-Hi all,
-I have compiled a kernel 2.6.28.10 +=C2=A0 xenomai2.5.1 and successfully bo=
-oted on=C2=A0s3c2440 based board with DM9000, but ethernet comunication doe=
-sn't work and I see the following messagge; when i remove the Kernel Featur=
-es->interrupt pipeline support, the ethernet work well.Can someone help me?
-# ping 172.20.36.100
-PING 172.20.36.100 (172.20.36.100): 56 data bytes
-------------[ cut here ]------------
-WARNING: at net/sched/sch_generic.c:226 dev_watchdog+0x184/0x270()
-NETDEV WATCHDOG: eth0 (): transmit timed out
-Modules linked in:
-[<c002ec28>] (dump_stack+0x0/0x14) from [<c004acd0>] (warn_slowpath+0x5c/0x=
-78)
-[<c004ac74>] (warn_slowpath+0x0/0x78) from [<c023f58c>] (dev_watchdog+0x184=
-/0x270)
-=C2=A0r3:c397b800 r2:c03465e0
-=C2=A0r6:00000001 r5:00000001 r4:c397b800
-[<c023f408>] (dev_watchdog+0x0/0x270) from [<c0054710>] (run_timer_softirq+=
-0x17c/0x1f8)
-=C2=A0r7:c023f408 r6:c03a7920 r5:00000100 r4:c0364000
-[<c0054594>] (run_timer_softirq+0x0/0x1f8) from [<c004f9f0>] (__do_softirq+=
-0x60/0x118)
-[<c004f990>] (__do_softirq+0x0/0x118) from [<c004fd1c>] (irq_exit+0x44/0x4c=
-)
-[<c004fcd8>] (irq_exit+0x0/0x4c) from [<c002a068>] (asm_do_IRQ+0x68/0x80)
-[<c002a000>] (asm_do_IRQ+0x0/0x80) from [<c0071d08>] (__ipipe_sync_stage+0x=
-1d4/0x288)
-Exception stack(0xc0365eb0 to 0xc0365ef8)
-5ea0:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 c0=
-3a9ec0 c03a9ec0 c036ec3c c036ec38=20
-5ec0: c03a9ec0 000003c0 00000001 c0365ef8 c0365edc c00720dc c0071b44 c03a9e=
-c0=20
-5ee0: 0000001e c03aa2e0 c03a9ec4 c0365f24 c0365efc c002fbf8=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=20
-=C2=A0r6:0000001e r5:c03aa2e0 r4:c036ec3c
-[<c0071b34>] (__ipipe_sync_stage+0x0/0x288) from [<c00720dc>] (__ipipe_walk=
-_pipeline+0x9c/0xc4)
-[<c0072040>] (__ipipe_walk_pipeline+0x0/0xc4) from [<c002fbf8>] (__ipipe_ha=
-ndle_irq+0x158/0x1a8)
-=C2=A0r7:c03a9ec4 r6:c03aa2e0 r5:0000001e r4:c03a9ec0
-[<c002faa0>] (__ipipe_handle_irq+0x0/0x1a8) from [<c002fd68>] (__ipipe_grab=
-_irq+0xb0/0xcc)
-[<c002fcb8>] (__ipipe_grab_irq+0x0/0xcc) from [<c002ab28>] (__irq_svc+0x28/=
-0xa8)
-=C2=A0r6:00004000 r5:f4000000 r4:ffffffff
-[<c002bb28>] (s3c24xx_default_idle+0x0/0x44) from [<c002bd2c>] (default_idl=
-e+0x7c/0x90)
-[<c002bcb0>] (default_idle+0x0/0x90) from [<c002bd84>] (cpu_idle+0x44/0x58)
-[<c002bd40>] (cpu_idle+0x0/0x58) from [<c02a27f4>] (rest_init+0x54/0x68)
-=C2=A0r5:c0385d28 r4:c03ab288
-[<c02a27a0>] (rest_init+0x0/0x68) from [<c0008b04>] (start_kernel+0x2b4/0x3=
-24)
-[<c0008850>] (start_kernel+0x0/0x324) from [<30008034>] (0x30008034)
-=C2=A0r6:c0025f08 r5:c03861ec r4:c0007175
----[ end trace da8f6a8a6146042c ]---
-=0A=0A=0A      
---0-589563824-1269353116=:83729
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ src/testsuite/irqbench/irqbench.c |  480 ++++++++++++++++++-------------------
+ src/testsuite/irqbench/irqloop.c  |  303 ++++++++++++------------
+ 2 files changed, 393 insertions(+), 390 deletions(-)
 
-<table cellspacing=3D"0" cellpadding=3D"0" border=3D"0" ><tr><td valign=3D"=
-top" style=3D"font: inherit;">Hi all,<BR>I have compiled a kernel 2.6.28.10=
- +&nbsp; xenomai2.5.1 and successfully booted on&nbsp;s3c2440 based board w=
-ith DM9000, but ethernet comunication doesn't work and I see the following =
-messagge; when i remove the Kernel Features-&gt;interrupt pipeline support,=
- the ethernet work well.Can someone help me?<BR># ping 172.20.36.100<BR>PIN=
-G 172.20.36.100 (172.20.36.100): 56 data bytes<BR>------------[ cut here ]-=
------------<BR>WARNING: at net/sched/sch_generic.c:226 dev_watchdog+0x184/0=
-x270()<BR>NETDEV WATCHDOG: eth0 (): transmit timed out<BR>Modules linked in=
-:<BR>[&lt;c002ec28&gt;] (dump_stack+0x0/0x14) from [&lt;c004acd0&gt;] (warn=
-_slowpath+0x5c/0x78)<BR>[&lt;c004ac74&gt;] (warn_slowpath+0x0/0x78) from [&=
-lt;c023f58c&gt;] (dev_watchdog+0x184/0x270)<BR>&nbsp;r3:c397b800 r2:c03465e=
-0<BR>&nbsp;r6:00000001 r5:00000001 r4:c397b800<BR>[&lt;c023f408&gt;]
- (dev_watchdog+0x0/0x270) from [&lt;c0054710&gt;] (run_timer_softirq+0x17c/=
-0x1f8)<BR>&nbsp;r7:c023f408 r6:c03a7920 r5:00000100 r4:c0364000<BR>[&lt;c00=
-54594&gt;] (run_timer_softirq+0x0/0x1f8) from [&lt;c004f9f0&gt;] (__do_soft=
-irq+0x60/0x118)<BR>[&lt;c004f990&gt;] (__do_softirq+0x0/0x118) from [&lt;c0=
-04fd1c&gt;] (irq_exit+0x44/0x4c)<BR>[&lt;c004fcd8&gt;] (irq_exit+0x0/0x4c) =
-from [&lt;c002a068&gt;] (asm_do_IRQ+0x68/0x80)<BR>[&lt;c002a000&gt;] (asm_d=
-o_IRQ+0x0/0x80) from [&lt;c0071d08&gt;] (__ipipe_sync_stage+0x1d4/0x288)<BR=
->Exception stack(0xc0365eb0 to 0xc0365ef8)<BR>5ea0:&nbsp;&nbsp;&nbsp;&nbsp;=
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
-sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; c03a9ec0 c03a9ec0 c036ec3c c036e=
-c38 <BR>5ec0: c03a9ec0 000003c0 00000001 c0365ef8 c0365edc c00720dc c0071b4=
-4 c03a9ec0 <BR>5ee0: 0000001e c03aa2e0 c03a9ec4 c0365f24 c0365efc
- c002fbf8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <BR>&nbsp;r6:0000001e r5:c03aa2e=
-0 r4:c036ec3c<BR>[&lt;c0071b34&gt;] (__ipipe_sync_stage+0x0/0x288) from [&l=
-t;c00720dc&gt;] (__ipipe_walk_pipeline+0x9c/0xc4)<BR>[&lt;c0072040&gt;] (__=
-ipipe_walk_pipeline+0x0/0xc4) from [&lt;c002fbf8&gt;] (__ipipe_handle_irq+0=
-x158/0x1a8)<BR>&nbsp;r7:c03a9ec4 r6:c03aa2e0 r5:0000001e r4:c03a9ec0<BR>[&l=
-t;c002faa0&gt;] (__ipipe_handle_irq+0x0/0x1a8) from [&lt;c002fd68&gt;] (__i=
-pipe_grab_irq+0xb0/0xcc)<BR>[&lt;c002fcb8&gt;] (__ipipe_grab_irq+0x0/0xcc) =
-from [&lt;c002ab28&gt;] (__irq_svc+0x28/0xa8)<BR>&nbsp;r6:00004000 r5:f4000=
-000 r4:ffffffff<BR>[&lt;c002bb28&gt;] (s3c24xx_default_idle+0x0/0x44) from =
-[&lt;c002bd2c&gt;] (default_idle+0x7c/0x90)<BR>[&lt;c002bcb0&gt;] (default_=
-idle+0x0/0x90) from [&lt;c002bd84&gt;] (cpu_idle+0x44/0x58)<BR>[&lt;c002bd4=
-0&gt;] (cpu_idle+0x0/0x58) from [&lt;c02a27f4&gt;]
- (rest_init+0x54/0x68)<BR>&nbsp;r5:c0385d28 r4:c03ab288<BR>[&lt;c02a27a0&gt=
-;] (rest_init+0x0/0x68) from [&lt;c0008b04&gt;] (start_kernel+0x2b4/0x324)<=
-BR>[&lt;c0008850&gt;] (start_kernel+0x0/0x324) from [&lt;30008034&gt;] (0x3=
-0008034)<BR>&nbsp;r6:c0025f08 r5:c03861ec r4:c0007175<BR>---[ end trace da8=
-f6a8a6146042c ]---<BR></td></tr></table><br>=0A=0A=0A=0A      &nbsp;
---0-589563824-1269353116=:83729--
+diff --git a/src/testsuite/irqbench/irqbench.c b/src/testsuite/irqbench/irqbench.c
+index 6b22711..844f187 100644
+--- a/src/testsuite/irqbench/irqbench.c
++++ b/src/testsuite/irqbench/irqbench.c
+@@ -51,268 +51,266 @@
+ #define STAT(base) (base + 1) /* Status register */
+ #define CTRL(base) (base + 2) /* Control register */
+ 
+-double tsc2ns_scale;
+-long long min_lat = LONG_MAX;
+-long long max_lat = LONG_MIN;
+-long long avg_lat = 0;
+-long outer_loops = 0;
+-int warmup = 1;
+-int terminate = 0;
++static double tsc2ns_scale;
++static long long min_lat = LONG_MAX;
++static long long max_lat = LONG_MIN;
++static long long avg_lat;
++static long outer_loops;
++static int warmup = 1;
++static int terminate;
++static unsigned long port_ioaddr = 0x3F8;
++static int port_type = SERPORT;
++static unsigned int toggle;
++static long loop_avg;
++static long long period = 100000;
++static int trigger_trace;
+ 
+ static inline long long rdtsc(void)
+ {
+-    unsigned long long tsc;
++	unsigned long long tsc;
+ 
+-    __asm__ __volatile__("rdtsc" : "=A" (tsc));
+-    return tsc;
++	__asm__ __volatile__("rdtsc" : "=A" (tsc));
++	return tsc;
+ }
+ 
+-
+ static long tsc2ns(long long tsc)
+ {
+-    if ((tsc > LONG_MAX) || (tsc < LONG_MIN)) {
+-        fprintf(stderr, "irqbench: overflow (%lld ns)!\n",
+-                (long long)(tsc2ns_scale * (double)tsc));
+-        exit(2);
+-    }
+-    return (long)(tsc2ns_scale * (double)tsc);
++	if (tsc > LONG_MAX || tsc < LONG_MIN) {
++		fprintf(stderr, "irqbench: overflow (%lld ns)!\n",
++			(long long)(tsc2ns_scale * (double)tsc));
++		exit(2);
++	}
++	return (long)(tsc2ns_scale * (double)tsc);
+ }
+ 
+-
+ static inline long long ns2tsc(long long ns)
+ {
+-    return (long long)(((double)ns) / tsc2ns_scale);
++	return (long long)(((double)ns) / tsc2ns_scale);
+ }
+ 
+-
+-void calibrate_tsc(void)
++static void calibrate_tsc(void)
+ {
+-    FILE *proc;
+-    char *lineptr = NULL;
+-    size_t len;
+-    double cpu_mhz;
+-
+-    proc = fopen("/proc/cpuinfo", "r");
+-    if (proc == NULL) {
+-        perror("irqbench: Unable to open /proc/cpuinfo");
+-        exit(1);
+-    }
+-
+-    while (getline(&lineptr, &len, proc) != -1)
+-        if (strncmp(lineptr, "cpu MHz", 7) == 0) {
+-            sscanf(strchr(lineptr, ':') + 1, "%lf", &cpu_mhz);
+-            break;
+-        }
+-
+-    if (lineptr)
+-        free(lineptr);
+-    fclose(proc);
+-
+-    printf("CPU frequency: %.3lf MHz\n", cpu_mhz);
+-
+-    tsc2ns_scale = 1000.0 / cpu_mhz;
++	FILE *proc;
++	char *lineptr = NULL;
++	size_t len;
++	double cpu_mhz;
++
++	proc = fopen("/proc/cpuinfo", "r");
++	if (proc == NULL) {
++		perror("irqbench: Unable to open /proc/cpuinfo");
++		exit(1);
++	}
++
++	while (getline(&lineptr, &len, proc) != -1)
++		if (strncmp(lineptr, "cpu MHz", 7) == 0) {
++			sscanf(strchr(lineptr, ':') + 1, "%lf", &cpu_mhz);
++			break;
++		}
++
++	if (lineptr)
++		free(lineptr);
++	fclose(proc);
++
++	printf("CPU frequency: %.3lf MHz\n", cpu_mhz);
++
++	tsc2ns_scale = 1000.0 / cpu_mhz;
+ }
+ 
+-
+-void sighand(int signal)
++static void sighand(int signal)
+ {
+-    if (warmup)
+-        exit(0);
+-    else
+-        terminate = 1;
++	if (warmup)
++		exit(0);
++	else
++		terminate = 1;
+ }
+ 
++static void do_inner_loop(void)
++{
++	long long start, delay, timeout;
++	long lat;
++
++	__asm__ __volatile__("cli");
++
++	if (port_type ==  SERPORT) {
++		start = rdtsc();
++
++		toggle ^= MCR_RTS;
++		outb(toggle, MCR(port_ioaddr));
++
++		timeout = start + period * 100;
++		while ((inb(MSR(port_ioaddr)) & MSR_DELTA) == 0 &&
++		       rdtsc() < timeout);
++
++		delay = rdtsc() - start;
++	} else {
++		int status = inb(STAT(port_ioaddr));
++
++		outb(0x08, DATA(port_ioaddr));
++
++		start = rdtsc();
++
++		outb(0x00, DATA(port_ioaddr));
++
++		timeout = start + period * 100;
++		while (inb(STAT(port_ioaddr)) == status &&
++		       rdtsc() < timeout);
++
++		delay = rdtsc() - start;
++	}
++
++	if (!warmup) {
++		lat = tsc2ns(delay);
++
++		loop_avg += lat;
++		if (lat < min_lat)
++			min_lat = lat;
++		if (lat > max_lat) {
++			max_lat = lat;
++			if (trigger_trace) {
++				if (port_type == SERPORT) {
++					toggle ^= MCR_DTR;
++					outb(toggle, MCR(port_ioaddr));
++				} else {
++					outb(0x18, DATA(port_ioaddr));
++					outb(0x10, DATA(port_ioaddr));
++				}
++			}
++		}
++	}
++
++	__asm__ __volatile__("sti");
++
++	while (rdtsc() < start + period);
++}
+ 
+ int main(int argc, char *argv[])
+ {
+-    int                 port_type   = SERPORT;
+-    unsigned long       port_ioaddr = 0x3F8;
+-    int                 ioaddr_set = 0;
+-    long long           period = 100000;
+-    long long           timeout;
+-    long long           start, delay;
+-    unsigned long long  count = 1;
+-    unsigned int        toggle = 0;
+-    int                 trigger_trace = 0;
+-    int                 c;
+-
+-
+-    signal(SIGINT, sighand);
+-    signal(SIGTERM, sighand);
+-    signal(SIGHUP, sighand);
+-    signal(SIGALRM, sighand);
+-
+-    calibrate_tsc();
+-
+-    while ((c = getopt(argc,argv,"p:T:o:a:f")) != EOF)
+-        switch (c) {
+-            case 'p':
+-                period = atoi(optarg) * 1000;
+-                break;
+-
+-            case 'T':
+-                alarm(atoi(optarg));
+-                break;
+-
+-            case 'o':
+-                port_type = atoi(optarg);
+-                break;
+-
+-            case 'a':
+-                port_ioaddr = strtol(optarg, NULL,
+-                    (strncmp(optarg, "0x", 2) == 0) ? 16 : 10);
+-                ioaddr_set = 1;
+-                break;
+-
+-            case 'f':
+-                trigger_trace = 1;
+-                break;
+-
+-            default:
+-                fprintf(stderr, "usage: irqbench [options]\n"
+-                        "  [-p <period_us>]             # signal period, default=100 us\n"
+-                        "  [-T <test_duration_seconds>] # default=0, so ^C to end\n"
+-                        "  [-o <port_type>]             # 0=serial (default), 1=parallel\n"
+-                        "  [-a <port_io_address>]       # default=0x3f8/0x378\n"
+-                        "  [-f]                         # freeze trace for each new max latency\n");
+-                exit(2);
+-        }
+-
+-    /* set defaults for parallel port */
+-    if (port_type == 1 && !ioaddr_set)
+-        port_ioaddr = 0x378;
+-
+-    if (iopl(3) < 0) {
+-        fprintf(stderr, "irqbench: superuser permissions required\n");
+-        exit(1);
+-    }
+-    mlockall(MCL_CURRENT | MCL_FUTURE);
+-
+-    switch (port_type) {
+-        case SERPORT:
+-            toggle = MCR_OUT2;
+-            inb(MSR(port_ioaddr));
+-            break;
+-
+-        case PARPORT:
+-            outb(CTRL_INIT, CTRL(port_ioaddr));
+-            break;
+-
+-        default:
+-            fprintf(stderr, "irqbench: invalid port type\n");
+-            exit(1);
+-    }
+-
+-    period = ns2tsc(period);
+-
+-    printf("Port type:     %s\n"
+-           "Port address:  0x%lx\n\n",
+-           (port_type == SERPORT) ? "serial" : "parallel", port_ioaddr);
+-
+-    printf("Waiting on target...\n");
+-
+-    while (1)
+-        if (port_type ==  SERPORT) {
+-            toggle ^= MCR_RTS;
+-            outb(toggle, MCR(port_ioaddr));
+-            usleep(100000);
+-            if ((inb(MSR(port_ioaddr)) & MSR_DELTA) != 0)
+-                break;
+-        } else {
+-            int status = inb(STAT(port_ioaddr));
+-
+-            outb(0x08, DATA(port_ioaddr));
+-            outb(0x00, DATA(port_ioaddr));
+-            usleep(100000);
+-            if (inb(STAT(port_ioaddr)) != status)
+-                break;
+-        }
+-
+-    printf("Warming up...\n");
+-
+-    while (!terminate) {
+-        long long loop_timeout = rdtsc() + ns2tsc(1000000000LL);
+-        long loop_avg = 0;
+-        int inner_loops = 0;
+-
+-        while (rdtsc() < loop_timeout) {
+-            long lat;
+-
+-            __asm__ __volatile__("cli");
+-
+-            if (port_type ==  SERPORT) {
+-                start = rdtsc();
+-
+-                toggle ^= MCR_RTS;
+-                outb(toggle, MCR(port_ioaddr));
+-
+-                timeout = start + period * 100;
+-                while (((inb(MSR(port_ioaddr)) & MSR_DELTA) == 0) &&
+-                       (rdtsc() < timeout));
+-
+-                delay = rdtsc() - start;
+-            } else {
+-                int status = inb(STAT(port_ioaddr));
+-
+-                outb(0x08, DATA(port_ioaddr));
+-
+-                start = rdtsc();
+-
+-                outb(0x00, DATA(port_ioaddr));
+-
+-                timeout = start + period * 100;
+-                while ((inb(STAT(port_ioaddr)) == status) &&
+-                       (rdtsc() < timeout));
+-
+-                delay = rdtsc() - start;
+-            }
+-
+-            if (!warmup) {
+-                lat = tsc2ns(delay);
+-
+-                loop_avg += lat;
+-                if (lat < min_lat)
+-                    min_lat = lat;
+-                if (lat > max_lat) {
+-                    max_lat = lat;
+-                    if (trigger_trace) {
+-                        if (port_type == SERPORT) {
+-                            toggle ^= MCR_DTR;
+-                            outb(toggle, MCR(port_ioaddr));
+-                        } else {
+-                            outb(0x18, DATA(port_ioaddr));
+-                            outb(0x10, DATA(port_ioaddr));
+-                        }
+-                    }
+-                }
+-            }
+-
+-            __asm__ __volatile__("sti");
+-
+-            inner_loops++;
+-
+-            while (rdtsc() < start + period);
+-        }
+-
+-        count += inner_loops;
+-
+-        if (!warmup && !terminate) {
+-            loop_avg /= inner_loops;
+-
+-            printf("%llu: %.3f / %.3f / %.3f us\n", count,
+-                ((double)min_lat) / 1000.0, ((double)loop_avg) / 1000.0,
+-                ((double)max_lat) / 1000.0);
+-
+-            avg_lat += loop_avg;
+-            outer_loops++;
+-        } else
+-            warmup = 0;
+-    }
+-
+-    avg_lat /= outer_loops;
+-    printf("---\n%llu: %.3f / %.3f / %.3f us\n", count,
+-           ((double)min_lat) / 1000.0, ((double)avg_lat) / 1000.0,
+-           ((double)max_lat) / 1000.0);
+-
+-    return 0;
++	int ioaddr_set = 0;
++	unsigned long long count = 1;
++	int c;
++
++	signal(SIGINT, sighand);
++	signal(SIGTERM, sighand);
++	signal(SIGHUP, sighand);
++	signal(SIGALRM, sighand);
++
++	calibrate_tsc();
++
++	while ((c = getopt(argc, argv, "p:T:o:a:f")) != EOF)
++		switch (c) {
++		case 'p':
++			period = atoi(optarg) * 1000;
++			break;
++
++		case 'T':
++			alarm(atoi(optarg));
++			break;
++
++		case 'o':
++			port_type = atoi(optarg);
++			break;
++
++		case 'a':
++			port_ioaddr = strtol(optarg, NULL, (strncmp(optarg, "0x", 2) == 0) ? 16 : 10);
++			ioaddr_set = 1;
++			break;
++
++		case 'f':
++			trigger_trace = 1;
++			break;
++
++		default:
++			fprintf(stderr, "usage: irqbench [options]\n"
++				"  [-p <period_us>]             # signal period, default=100 us\n"
++				"  [-T <test_duration_seconds>] # default=0, so ^C to end\n"
++				"  [-o <port_type>]             # 0=serial (default), 1=parallel\n"
++				"  [-a <port_io_address>]       # default=0x3f8/0x378\n"
++				"  [-f]                         # freeze trace for each new max latency\n");
++			exit(2);
++		}
++
++	/* set defaults for parallel port */
++	if (port_type == 1 && !ioaddr_set)
++		port_ioaddr = 0x378;
++
++	if (iopl(3) < 0) {
++		fprintf(stderr, "irqbench: superuser permissions required\n");
++		exit(1);
++	}
++	mlockall(MCL_CURRENT | MCL_FUTURE);
++
++	switch (port_type) {
++	case SERPORT:
++		toggle = MCR_OUT2;
++		inb(MSR(port_ioaddr));
++		break;
++
++	case PARPORT:
++		outb(CTRL_INIT, CTRL(port_ioaddr));
++		break;
++
++	default:
++		fprintf(stderr, "irqbench: invalid port type\n");
++		exit(1);
++	}
++
++	period = ns2tsc(period);
++
++	printf("Port type:     %s\n"
++	       "Port address:  0x%lx\n\n",
++	       (port_type == SERPORT) ? "serial" : "parallel", port_ioaddr);
++
++	printf("Waiting on target...\n");
++
++	while (1)
++		if (port_type ==  SERPORT) {
++			toggle ^= MCR_RTS;
++			outb(toggle, MCR(port_ioaddr));
++			usleep(100000);
++			if ((inb(MSR(port_ioaddr)) & MSR_DELTA) != 0)
++				break;
++		} else {
++			int status = inb(STAT(port_ioaddr));
++
++			outb(0x08, DATA(port_ioaddr));
++			outb(0x00, DATA(port_ioaddr));
++			usleep(100000);
++			if (inb(STAT(port_ioaddr)) != status)
++				break;
++		}
++
++	printf("Warming up...\n");
++
++	while (!terminate) {
++		long long loop_timeout = rdtsc() + ns2tsc(1000000000LL);
++		int inner_loops = 0;
++
++		loop_avg = 0;
++		while (rdtsc() < loop_timeout) {
++			do_inner_loop();
++			inner_loops++;
++		}
++
++		count += inner_loops;
++
++		if (!warmup && !terminate) {
++			loop_avg /= inner_loops;
++
++			printf("%llu: %.3f / %.3f / %.3f us\n", count,
++			       ((double)min_lat) / 1000.0,
++			       ((double)loop_avg) / 1000.0,
++			       ((double)max_lat) / 1000.0);
++
++			avg_lat += loop_avg;
++			outer_loops++;
++		} else
++			warmup = 0;
++	}
++
++	avg_lat /= outer_loops;
++	printf("---\n%llu: %.3f / %.3f / %.3f us\n", count,
++	       ((double)min_lat) / 1000.0, ((double)avg_lat) / 1000.0,
++	       ((double)max_lat) / 1000.0);
++
++	return 0;
+ }
+diff --git a/src/testsuite/irqbench/irqloop.c b/src/testsuite/irqbench/irqloop.c
+index e97123f..3b4de4f 100644
+--- a/src/testsuite/irqbench/irqloop.c
++++ b/src/testsuite/irqbench/irqloop.c
+@@ -29,165 +29,170 @@
+ static int benchdev;
+ static int terminate;
+ 
+-void *irq_thread(void *arg)
++static void *irq_thread(void *arg)
+ {
+-    struct sched_param param = { .sched_priority = (long)arg };
++	struct sched_param param = { .sched_priority = (long)arg };
+ 
+-    pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
++	pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
+ 
+-    while (1) {
+-        if (ioctl(benchdev, RTTST_RTIOC_IRQBENCH_WAIT_IRQ) ||
+-            ioctl(benchdev, RTTST_RTIOC_IRQBENCH_REPLY_IRQ))
+-            break;
+-    }
++	while (1) {
++		if (ioctl(benchdev, RTTST_RTIOC_IRQBENCH_WAIT_IRQ) ||
++		    ioctl(benchdev, RTTST_RTIOC_IRQBENCH_REPLY_IRQ))
++			break;
++	}
+ 
+-    param.sched_priority = 0;
+-    pthread_setschedparam(pthread_self(), SCHED_OTHER, &param);
++	param.sched_priority = 0;
++	pthread_setschedparam(pthread_self(), SCHED_OTHER, &param);
+ 
+-    return NULL;
++	return NULL;
+ }
+ 
+-
+-void sighand(int sig)
++static void sighand(int sig)
+ {
+-    terminate = 1;
++	terminate = 1;
+ }
+ 
+-
+ int main(int argc, char *argv[])
+ {
+-    const char *mode_name[] =
+-        { "user-space task", "kernel-space task",
+-          "IRQ handler", "hard-IRQ handler" };
+-    const char *port_type_name[] = { "serial", "parallel" };
+-    char devname[RTDM_MAX_DEVNAME_LEN];
+-    int benchdev_no = 0;
+-    struct rttst_irqbench_config config = {
+-        mode:               RTTST_IRQBENCH_USER_TASK,
+-        priority:           sched_get_priority_max(SCHED_FIFO),
+-        calibration_loops:  0,
+-        port_type:          RTTST_IRQBENCH_SERPORT,
+-        port_ioaddr:        0x3f8,
+-        port_irq:           4
+-    };
+-    struct rttst_irqbench_stats stats;
+-    unsigned long long last_received = 0;
+-    pthread_t thr;
+-    int ioaddr_set = 0;
+-    int irq_set = 0;
+-    int c;
+-    int timeout = 10;
+-
+-
+-    while ((c = getopt(argc,argv,"D:t:P:o:a:i:")) != EOF)
+-        switch (c) {
+-            case 'D':
+-                benchdev_no = atoi(optarg);
+-                break;
+-
+-            case 't':
+-                config.mode = atoi(optarg);
+-                break;
+-
+-            case 'P':
+-                config.priority = atoi(optarg);
+-                break;
+-
+-            case 'o':
+-                config.port_type = atoi(optarg);
+-                break;
+-
+-            case 'a':
+-                config.port_ioaddr = strtol(optarg, NULL,
+-                    (strncmp(optarg, "0x", 2) == 0) ? 16 : 10);
+-                ioaddr_set = 1;
+-                break;
+-
+-            case 'i':
+-                config.port_irq = atoi(optarg);
+-                irq_set = 1;
+-                break;
+-
+-            default:
+-                fprintf(stderr, "usage: irqloop [options]\n"
+-                        "  [-D <testing_device_no>] # number of testing device, default=0\n"
+-                        "  [-t <test_mode>]         # 0=user task (default), 1=kernel task,\n"
+-                        "                           # 2=IRQ handler, 3=hard-IRQ handler\n"
+-                        "  [-P <priority>]          # task priority (test mode 0 and 1 only)\n"
+-                        "  [-o <port_type>]         # 0=serial (default), 1=parallel\n"
+-                        "  [-a <port_io_address>]   # default=0x3f8/0x378\n"
+-                        "  [-i <port_irq>]          # default=4/7\n");
+-                exit(2);
+-        }
+-
+-    /* set defaults for parallel port */
+-    if (config.port_type == 1) {
+-        if (!ioaddr_set)
+-            config.port_ioaddr = 0x378;
+-        if (!irq_set)
+-            config.port_irq = 0x7;
+-    }
+-
+-    signal(SIGINT, sighand);
+-    signal(SIGTERM, sighand);
+-    signal(SIGHUP, sighand);
+-
+-    mlockall(MCL_CURRENT|MCL_FUTURE);
+-
+-    snprintf(devname, RTDM_MAX_DEVNAME_LEN, "/dev/rttest%d", benchdev_no);
+-    benchdev = open(devname, O_RDWR);
+-    if (benchdev < 0) {
+-        perror("irqloop: failed to open benchmark device");
+-        fprintf(stderr, "(modprobe xeno_irqbench?)\n");
+-        return 1;
+-    }
+-
+-    if (config.mode == RTTST_IRQBENCH_USER_TASK) {
+-        pthread_attr_t attr;
+-
+-        pthread_attr_init(&attr);
+-        pthread_attr_setstacksize(&attr, PTHREAD_STACK_MIN);
+-
+-        pthread_create(&thr, &attr, irq_thread, (void *)(long)config.priority);
+-    }
+-
+-    if (ioctl(benchdev, RTTST_RTIOC_IRQBENCH_START, &config)) {
+-        perror("irqloop: error starting test");
+-        goto cleanup;
+-    }
+-
+-    printf("Test mode:    %s\n"
+-           "Port type:    %s\n"
+-           "Port address: 0x%lx\n"
+-           "Port IRQ:     %d\n\n\n\n",
+-           mode_name[config.mode], port_type_name[config.port_type],
+-           config.port_ioaddr, config.port_irq);
+-
+-    while (!terminate) {
+-        if (ioctl(benchdev, RTTST_RTIOC_IRQBENCH_GET_STATS, &stats) < 0) {
+-            perror("irqloop: error reading stats");
+-            break;
+-        }
+-
+-        if ((last_received > 0) && (stats.irqs_received == last_received)) {
+-            if (--timeout == 0)
+-                break; /* timed out */
+-        } else
+-            timeout = 10;
+-        last_received = stats.irqs_received;
+-
+-        printf("\033[2AReceived IRQs:     %lld\nAcknowledged IRQs: %lld\n",
+-                stats.irqs_received, stats.irqs_acknowledged);
+-        usleep(250000);
+-    }
+-
+-    ioctl(benchdev, RTTST_RTIOC_IRQBENCH_STOP);
+-
+-  cleanup:
+-    close(benchdev);
+-    if (config.mode == RTTST_IRQBENCH_USER_TASK) {
+-        pthread_cancel(thr);
+-        pthread_join(thr, NULL);
+-    }
+-    return 0;
++	const char *mode_name[] = {
++		[RTTST_IRQBENCH_USER_TASK]	= "user-space task",
++		[RTTST_IRQBENCH_KERNEL_TASK]	= "kernel-space task",
++		[RTTST_IRQBENCH_HANDLER]	= "IRQ handler",
++		[RTTST_IRQBENCH_HARD_IRQ]	= "hard-IRQ handler",
++	};
++	const char *port_type_name[] = {
++		[RTTST_IRQBENCH_SERPORT]	= "serial",
++		[RTTST_IRQBENCH_PARPORT]	= "parallel",
++	};
++	char devname[RTDM_MAX_DEVNAME_LEN];
++	int benchdev_no = 0;
++	struct rttst_irqbench_config config = {
++		.mode			= RTTST_IRQBENCH_USER_TASK,
++		.priority		= sched_get_priority_max(SCHED_FIFO),
++		.calibration_loops	= 0,
++		.port_type		= RTTST_IRQBENCH_SERPORT,
++		.port_ioaddr		= 0x3f8,
++		.port_irq		= 4
++	};
++	struct rttst_irqbench_stats stats;
++	unsigned long long last_received = 0;
++	pthread_t thr;
++	int ioaddr_set = 0;
++	int irq_set = 0;
++	int c;
++	int timeout = 10;
++
++	while ((c = getopt(argc, argv, "D:t:P:o:a:i:")) != EOF)
++		switch (c) {
++		case 'D':
++			benchdev_no = atoi(optarg);
++			break;
++
++		case 't':
++			config.mode = atoi(optarg);
++			break;
++
++		case 'P':
++			config.priority = atoi(optarg);
++			break;
++
++		case 'o':
++			config.port_type = atoi(optarg);
++			break;
++
++		case 'a':
++			config.port_ioaddr = strtol(optarg, NULL, (strncmp(optarg, "0x", 2) == 0) ? 16 : 10);
++			ioaddr_set = 1;
++			break;
++
++		case 'i':
++			config.port_irq = atoi(optarg);
++			irq_set = 1;
++			break;
++
++		default:
++			fprintf(stderr, "usage: irqloop [options]\n"
++				"  [-D <testing_device_no>] # number of testing device, default=0\n"
++				"  [-t <test_mode>]         # 0=user task (default), 1=kernel task,\n"
++				"                           # 2=IRQ handler, 3=hard-IRQ handler\n"
++				"  [-P <priority>]          # task priority (test mode 0 and 1 only)\n"
++				"  [-o <port_type>]         # 0=serial (default), 1=parallel\n"
++				"  [-a <port_io_address>]   # default=0x3f8/0x378\n"
++				"  [-i <port_irq>]          # default=4/7\n");
++			exit(2);
++		}
++
++	/* set defaults for parallel port */
++	if (config.port_type == 1) {
++		if (!ioaddr_set)
++			config.port_ioaddr = 0x378;
++		if (!irq_set)
++			config.port_irq = 0x7;
++	}
++
++	signal(SIGINT, sighand);
++	signal(SIGTERM, sighand);
++	signal(SIGHUP, sighand);
++
++	mlockall(MCL_CURRENT|MCL_FUTURE);
++
++	snprintf(devname, RTDM_MAX_DEVNAME_LEN, "/dev/rttest%d", benchdev_no);
++	benchdev = open(devname, O_RDWR);
++	if (benchdev < 0) {
++		perror("irqloop: failed to open benchmark device");
++		fprintf(stderr, "(modprobe xeno_irqbench?)\n");
++		return 1;
++	}
++
++	if (config.mode == RTTST_IRQBENCH_USER_TASK) {
++		pthread_attr_t attr;
++
++		pthread_attr_init(&attr);
++		pthread_attr_setstacksize(&attr, PTHREAD_STACK_MIN);
++
++		pthread_create(&thr, &attr, irq_thread, (void *)(long)config.priority);
++	}
++
++	if (ioctl(benchdev, RTTST_RTIOC_IRQBENCH_START, &config)) {
++		perror("irqloop: error starting test");
++		goto cleanup;
++	}
++
++	printf("Test mode:    %s\n"
++	       "Port type:    %s\n"
++	       "Port address: 0x%lx\n"
++	       "Port IRQ:     %d\n\n\n\n",
++	       mode_name[config.mode], port_type_name[config.port_type],
++	       config.port_ioaddr, config.port_irq);
++
++	while (!terminate) {
++		if (ioctl(benchdev, RTTST_RTIOC_IRQBENCH_GET_STATS,
++			  &stats) < 0) {
++			perror("irqloop: error reading stats");
++			break;
++		}
++
++		if ((last_received > 0) &&
++		    (stats.irqs_received == last_received)) {
++			if (--timeout == 0)
++				break; /* timed out */
++		} else
++			timeout = 10;
++		last_received = stats.irqs_received;
++
++		printf("\033[2AReceived IRQs:     %lld\n"
++		       "Acknowledged IRQs: %lld\n",
++		       stats.irqs_received, stats.irqs_acknowledged);
++		usleep(250000);
++	}
++
++	ioctl(benchdev, RTTST_RTIOC_IRQBENCH_STOP);
++
++cleanup:
++	close(benchdev);
++	if (config.mode == RTTST_IRQBENCH_USER_TASK) {
++		pthread_cancel(thr);
++		pthread_join(thr, NULL);
++	}
++	return 0;
+ }
+-- 
+1.6.0.2
 
 
