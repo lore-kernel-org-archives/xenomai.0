@@ -1,11 +1,12 @@
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Mon, 19 Apr 2010 12:28:42 +0200
-Message-Id: <c6fc15b891bca9854ca9e6f8f7d07960bfcec6a2.1271672940.git.jan.kiszka@domain.hid>
+Date: Mon, 19 Apr 2010 12:28:51 +0200
+Message-Id: <b52d6a13471e15f4b8ad51f0aa57d9a090950dcf.1271672940.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
 References: <cover.1271672940.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
 References: <cover.1271672940.git.jan.kiszka@domain.hid>
-Subject: [Xenomai-core] [PATCH v4 02/25] RTDM: Add rtdm_rt_capable() service
+Subject: [Xenomai-core] [PATCH v4 11/25] RTDM: Instrument
+	rtdm_context_lock/unlock to detect misuses
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,75 +16,78 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Alexis Berlemont <berlemont.hauw@domain.hid>, xenomai-core <xenomai@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This adds rtdm_rt_capable(), a function that can be used by drivers to
-detect callers that could issue a service request also from the
-(typically preferred) real-time context. If that is the case, the driver
-can trigger a restart of the request if the current context is not
-real-time.
+rtdm_context_lock must only be called on context structures that are
+already locked, and rtdm_context_unlock must be kept in balance with
+rtdm_context_get/rtdm_context_lock. Try to check for mistakes by
+requiring non-null clock_lock_count on entry of both services.
+
+Also fix a typo and clarify the use cases and restrictions of
+rtdm_context_lock.
 
 CC: Philippe Gerum <rpm@xenomai.org>
-CC: Alexis Berlemont <berlemont.hauw@domain.hid>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- include/rtdm/rtdm_driver.h |    6 ++++++
- ksrc/skins/rtdm/drvlib.c   |   25 +++++++++++++++++++++++++
- 2 files changed, 31 insertions(+), 0 deletions(-)
+ include/rtdm/rtdm_driver.h |    4 ++++
+ ksrc/skins/rtdm/core.c     |   10 +++++++---
+ 2 files changed, 11 insertions(+), 3 deletions(-)
 
 diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
-index 0fc1496..d124157 100644
+index d68f542..3fc9071 100644
 --- a/include/rtdm/rtdm_driver.h
 +++ b/include/rtdm/rtdm_driver.h
-@@ -1296,6 +1296,12 @@ static inline int rtdm_in_rt_context(void)
+@@ -555,11 +555,15 @@ struct rtdm_dev_context *rtdm_context_get(int fd);
+ #ifndef DOXYGEN_CPP /* Avoid static inline tags for RTDM in doxygen */
+ static inline void rtdm_context_lock(struct rtdm_dev_context *context)
  {
- 	return (rthal_current_domain != rthal_root_domain);
++	XENO_ASSERT(RTDM, atomic_read(&context->close_lock_count) > 0,
++		    /* just warn if context was a dangling pointer */);
+ 	atomic_inc(&context->close_lock_count);
  }
-+
-+static inline int rtdm_rt_capable(void)
-+{
-+	return (!xnpod_root_p() || xnshadow_thread(current) != NULL);
-+}
-+
- #endif /* !DOXYGEN_CPP */
  
- int rtdm_exec_in_rt(struct rtdm_dev_context *context,
-diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
-index 3b04493..6e26501 100644
---- a/ksrc/skins/rtdm/drvlib.c
-+++ b/ksrc/skins/rtdm/drvlib.c
-@@ -2341,6 +2341,31 @@ int rtdm_strncpy_from_user(rtdm_user_info_t *user_info, char *dst,
-  */
- int rtdm_in_rt_context(void);
+ static inline void rtdm_context_unlock(struct rtdm_dev_context *context)
+ {
++	XENO_ASSERT(RTDM, atomic_read(&context->close_lock_count) > 0,
++		    /* just warn if context was a dangling pointer */);
+ 	smp_mb__before_atomic_dec();
+ 	atomic_dec(&context->close_lock_count);
+ }
+diff --git a/ksrc/skins/rtdm/core.c b/ksrc/skins/rtdm/core.c
+index 8cccf52..ba4dc63 100644
+--- a/ksrc/skins/rtdm/core.c
++++ b/ksrc/skins/rtdm/core.c
+@@ -87,7 +87,7 @@ struct rtdm_dev_context *rtdm_context_get(int fd)
+ 		return NULL;
+ 	}
  
-+/**
-+ * Test if the caller is capable of running in real-time context
-+ *
-+ * @return Non-zero is returned if the caller is able to execute in real-time
-+ * context (independent of its current execution mode), 0 otherwise.
-+ *
-+ * @note This function can be used by drivers that provide different
-+ * implementations for the same service depending on the execution mode of
-+ * the caller. If a caller requests such a service in non-real-time context
-+ * but is capable of running in real-time as well, it might be appropriate
-+ * for the driver to reject the request via -ENOSYS so that RTDM can switch
-+ * the caller and restart the request in real-time context.
-+ *
-+ * Environments:
-+ *
-+ * This service can be called from:
-+ *
-+ * - Kernel module initialization/cleanup code
-+ * - Kernel-based task
-+ * - User-space task (RT, non-RT)
-+ *
-+ * Rescheduling: never.
-+ */
-+int rtdm_rt_capable(void);
-+
- #endif /* DOXYGEN_CPP */
+-	rtdm_context_lock(context);
++	atomic_inc(&context->close_lock_count);
  
- /** @} Utility Services */
+ 	xnlock_put_irqrestore(&rt_fildes_lock, s);
+ 
+@@ -328,7 +328,7 @@ again:
+ 	}
+ 
+ 	set_bit(RTDM_CLOSING, &context->context_flags);
+-	rtdm_context_lock(context);
++	atomic_inc(&context->close_lock_count);
+ 
+ 	xnlock_put_irqrestore(&rt_fildes_lock, s);
+ 
+@@ -588,7 +588,11 @@ EXPORT_SYMBOL(rtdm_select_bind);
+  * @param[in] context Device context
+  *
+  * @note rtdm_context_get() automatically increments the lock counter. You
+- * only need to call this function in special scenrios.
++ * only need to call this function in special scenarios, e.g. when keeping
++ * additional references to the context structure that have different
++ * lifetimes. Only use rtdm_context_lock() on contexts that are currently
++ * locked via an earlier rtdm_context_get()/rtdm_contex_lock() or while
++ * running a device operation handler.
+  *
+  * Environments:
+  *
 -- 
 1.6.0.2
 
