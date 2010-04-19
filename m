@@ -1,71 +1,64 @@
-Message-ID: <4BB523E8.705@domain.hid>
-Date: Fri, 02 Apr 2010 00:53:28 +0200
+Message-ID: <4BCC8A7A.1040604@domain.hid>
+Date: Mon, 19 Apr 2010 18:53:14 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4B97BA0C.9000702@domain.hid> <4B9AD0DE.4020103@domain.hid>	
-	<1268472523.27899.135.camel@domain.hid>	
-	<4B9BB9B1.5050003@domain.hid>	
-	<1268498034.27899.167.camel@domain.hid>	
-	<4B9C2100.6090806@domain.hid>	
-	<1268584465.27899.197.camel@domain.hid>	
-	<4BB4F857.5020906@domain.hid> <4BB50C8B.2000405@domain.hid>	
-	<1270156940.2418.403.camel@domain.hid>
-	<4BB50F7C.1020102@domain.hid>	
-	<1270157507.2418.409.camel@domain.hid>
-	<4BB511C7.1050507@domain.hid>	
-	<1270158532.2418.420.camel@domain.hid>
-	<4BB51631.5030609@domain.hid>
-	<1270159246.2418.432.camel@domain.hid>
-	<4BB51931.3080307@domain.hid>
-In-Reply-To: <4BB51931.3080307@domain.hid>
+References: <cover.1271672940.git.jan.kiszka@domain.hid>
+	<4BCC8296.8000901@domain.hid> <4BCC88E8.5050304@domain.hid>
+In-Reply-To: <4BCC88E8.5050304@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Analogy cmd_write example explanation
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [PATCH v4 00/25] [git pull v4] RTDM fixes and
+	reworks
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Alexis Berlemont <berlemont.hauw@domain.hid>, xenomai@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> Philippe Gerum wrote:
->> On Thu, 2010-04-01 at 23:54 +0200, Jan Kiszka wrote:
->>> Philippe Gerum wrote:
->>>> The bottom line for me, is that T_PRIMARY, as a user-space visible
->>>> "feature" should be dropped at some point, and never ever considered as
->>>> a way to fix the RTDM syscall issue anymore. I don't mind saving an
->>>> extra-context switch even in what I think should be _rare_ cases, but
->>>> this has to be done in a way that does not introduce the same kind of
->>>> misunderstanding the eager mode switching allowed by rt_task_set_mode()
->>>> did in the past.
->>>>
->>>> Really, I'm convinced that an awful lot of people are currently running
->>>> under-performing at best, or even broken applications today, because of
->>>> that, thing.
->>> We are not discussing T_PRIMARY here. We are discussing something like
->>> an "rtdm_is_rt_capable()" addition for those _few_ RTDM drivers that
->>> actually want to provide Ianus-like services.
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> The following changes since commit 2bed24477882dd7937d59f4e33a0811981c7362c:
+>>>   Gilles Chanteperdrix (1):
+>>>         arm: declare the VFP inline asm snippets as volatile.
 >>>
->> Yes, we do discuss of T_PRIMARY in between the lines.
+>>> are available in the git repository at:
+>>>
+>>>   git://git.xenomai.org/xenomai-jki.git for-upstream
+>> Ok, seems this merge broke the build test:
+>> http://sisyphus.hd.free.fr/~gilles/bx/
 >>
+>> Could you please have a look?
 > 
-> You can take it away, and the rtdm_is_rt_capable-approach would still
-> work, but that without affecting existing designs.
+> The section mismatch should be resolved in my queue.
+> 
+> Regarding the other bug:
+> 
+> In file included from ./2.4.25-DENX-ppc_6xx-gcc-3.3.3/include/linux/workqueue.h:14,
+>                  from core.c:29:
+> ./2.4.25-DENX-ppc_6xx-gcc-3.3.3/include/linux/tqueue.h: In function `queue_task':
+> ./2.4.25-DENX-ppc_6xx-gcc-3.3.3/include/linux/tqueue.h:105: warning: implicit declaration of function `barrier'
+> core.c: In function `close_callback':
+> core.c:257: warning: implicit declaration of function `schedule_delayed_work'
+> 
+> Does that kernel come with a linux/workqueue.h? What does it include?
 
-Ok. I almost regret I launched this troll. We have discussed some time
-with Philippe, and I agree with him that drivers which this change
-really broke were already broken. The only side-effect is the double
-switch issue, which, per-se is not that much a trouble in real-world
-applications. So what I propose is a special RTDM driver flag that would
-somehow fix the issue for the switchtest driver, and would only be used
-by that driver and not exported in the rtdm headers, and of course not
-documented.
+I guess either this kernel containes a workqueue.h or it gets it via the
+compat directory.
+
+> That's a custom patch, isn't it?
+
+This kernel is generated as explained in the README:
+git clone git://www.denx.de/git/linuxppc_2_4_devel
+git checkout 5bab6d641ff5ba139f9f41869502cb7c96d785bc
+patch -p1 < adeos-ipipe-2.4.25-ppc-DENX-2.2-01.patch
+
+Nothing custom about it,
 
 -- 
 					    Gilles.
