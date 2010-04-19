@@ -1,12 +1,12 @@
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Mon, 19 Apr 2010 12:28:41 +0200
-Message-Id: <383d88a88155ae3ae71bbfddeacd742612d03245.1271672940.git.jan.kiszka@domain.hid>
+Date: Mon, 19 Apr 2010 12:28:48 +0200
+Message-Id: <5bc8a9f46c6a1b27f58f516ce789692ff5f485ab.1271672940.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
 References: <cover.1271672940.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
 References: <cover.1271672940.git.jan.kiszka@domain.hid>
-Subject: [Xenomai-core] [PATCH v4 01/25] RTDM: Fix potential NULL pointer
-	dereference
+Subject: [Xenomai-core] [PATCH v4 08/25] RTCAN: Drop support for socket
+	creation/deletion in real-time
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,32 +16,33 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>, xenomai-core <xenomai@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+This is deprecated now, RT callers will automatically be migrated to
+NRT to perform the requests.
 
-The rework in 95278926edc559d4 misses the case that context can be NULL,
-which can (and has) triggered a kernel oops. Take care of this case.
-
-Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+CC: Wolfgang Grandegger <wg@domain.hid>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- ksrc/skins/rtdm/core.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ ksrc/drivers/can/rtcan_raw.c |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
 
-diff --git a/ksrc/skins/rtdm/core.c b/ksrc/skins/rtdm/core.c
-index 8677c47..8cccf52 100644
---- a/ksrc/skins/rtdm/core.c
-+++ b/ksrc/skins/rtdm/core.c
-@@ -175,7 +175,7 @@ static int cleanup_instance(struct rtdm_device *device,
+diff --git a/ksrc/drivers/can/rtcan_raw.c b/ksrc/drivers/can/rtcan_raw.c
+index 0cf0bb9..9ee0950 100644
+--- a/ksrc/drivers/can/rtcan_raw.c
++++ b/ksrc/drivers/can/rtcan_raw.c
+@@ -999,11 +999,9 @@ static struct rtdm_device rtcan_proto_raw_dev = {
+     protocol_family:    PF_CAN,
+     socket_type:        SOCK_RAW,
  
- 	xnlock_get_irqsave(&rt_fildes_lock, s);
+-    socket_rt:          rtcan_raw_socket,
+     socket_nrt:         rtcan_raw_socket,
  
--	if (unlikely(atomic_read(&context->close_lock_count) > 1)) {
-+	if (context && unlikely(atomic_read(&context->close_lock_count) > 1)) {
- 		xnlock_put_irqrestore(&rt_fildes_lock, s);
- 		return -EAGAIN;
- 	}
+     ops: {
+-        close_rt:       rtcan_raw_close,
+         close_nrt:      rtcan_raw_close,
+ 
+         ioctl_rt:       rtcan_raw_ioctl,
 -- 
 1.6.0.2
 
