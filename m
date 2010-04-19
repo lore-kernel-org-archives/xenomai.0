@@ -1,94 +1,172 @@
+Message-ID: <4BCC9ADA.2020909@domain.hid>
+Date: Mon, 19 Apr 2010 20:03:06 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <1272554724.28983.444.camel@domain.hid>
-References: <i2z48abf2c21004282309r50f047bck4be213c0aac6efe1@domain.hid>
-	<4BD99F8C.3090800@domain.hid>
-	<p2y48abf2c21004290820g1dabc981y5a1dbd141f64059e@domain.hid>
-	<1272554724.28983.444.camel@domain.hid>
-Date: Fri, 30 Apr 2010 08:16:37 +0800
-Message-ID: <y2x48abf2c21004291716m769fc355ld978b2da54d4ea1d@domain.hid>
-From: Peter Pan <pppeterpppan@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4BCC619E.2@domain.hid> <4BCC6CEE.70907@domain.hid>	
+	<4BCC6E3C.3090301@domain.hid> <4BCC7092.1030809@domain.hid>	
+	<4BCC71AF.4030903@domain.hid> <4BCC77BD.9040900@domain.hid>	
+	<4BCC78D5.3010405@domain.hid> <4BCC7D88.4070403@domain.hid>
+	<1271693411.16659.128.camel@domain.hid>
+	<4BCC814C.6050003@domain.hid> <4BCC8484.1020108@domain.hid>
+	<4BCC9107.1080605@domain.hid> <4BCC9247.10709@domain.hid>
+	<4BCC9628.7030809@domain.hid>
+In-Reply-To: <4BCC9628.7030809@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] cyclictest gives out segmentation fault with
-	xenomai 2.5.2 in powerpc arch
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-It's an EVM board of PPC460GT.
-
-I think the processor is very powerful, that may make xenomai workable
-on our system.
-
-I'll try to reduce the latency to a proper value.
-
-Thanks alot.
-
-2010/4/29 Philippe Gerum <rpm@xenomai.org>:
-> On Thu, 2010-04-29 at 23:20 +0800, Peter Pan wrote:
->> I searched through the archive, some one says that there is a git
->> commit to sole the problem. I downloaded the latest xenomai-2.5 git,
->> the problem is gone.
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Jan Kiszka wrote:
+>>>>> Philippe Gerum wrote:
+>>>>>>>>> config XENO_OPT_DEBUG_FOO
+>>>>>>>>> 	bool "..."
+>>>>>>>>>
+>>>>>>>>> config XENO_OPT_DEBUG_FOO_P
+>>>>>>>>> 	int
+>>>>>>>>> 	default "1" if XENO_OPT_DEBUG_FOO
+>>>>>>>>> 	default "0"
+>>>>>>>>>
+>>>>>>>>> and XENO_DEBUG() could be extended to test for
+>>>>>>>>> CONFIG_XENO_OPT_DEBUG_FOO_P when given "FOO". I'm just not sure=
+ if this
+>>>>>>>>> can be expressed for legacy 2.4 kernels, so it might have to wa=
+it for
+>>>>>>>>> Xenomai 3.
+>>>>>> Well, actually, I would not merge this in Xenomai 3. I find this r=
+ather
+>>>>>> overkill; mainline first I mean, and mainline, i.e. the Xenomai co=
+de
+>>>>>> base only requires a simple and straightforward way to get debug
+>>>>>> switches right. Having to make Kconfig a kitchen sink for some unk=
+nown
+>>>>>> out of tree modules to be happy is not really my preferred approac=
+h in
+>>>>>> this particular case.
+>>>>>>
+>>>>>> Don't get me wrong, I'm not opposed to a more decentralized approa=
+ch on
+>>>>>> the paper, it's just that I only care about the mainline tree here=
+=2E
+>>>>> The point is not out-of-tree but robustness. Neither the current
+>>>>> decentralized #ifdef-#define nor its centralized brother meet this
+>>>>> criteria. An approach like the above which forces you to provide al=
+l
+>>>>> required bits before any of the cases (disabled/enabled) starts to =
+work
+>>>>> does so.
+>>>> Ok. What about:
+>>>>
+>>>> #define __name2(a, b) a ## b
+>>>> #define name2(a, b) __name2(a, b)
+>>>>
+>>>> #define DECLARE_ASSERT_SYMBOL(sym)					\
+>>>> 	static const int CONFIG_XENO_OPT_DEBUG_##sym##0 =3D 0,		\
+>>>> 		__CONFIG_XENO_OPT_DEBUG_##sym =3D name2(CONFIG_XENO_OPT_DEBUG_##sy=
+m, 0)
+>>>>
+>>>> #define XENO_ASSERT(subsystem,cond,action)  do { \
+>>>>     if (unlikely(__CONFIG_XENO_OPT_DEBUG_##subsystem > 0 && !(cond))=
+) { \
+>>>>         xnarch_trace_panic_freeze(); \
+>>>>         xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LIN=
+E__, (#cond)); \
+>>>>         xnarch_trace_panic_dump(); \
+>>>>         action; \
+>>>>     } \
+>>>> } while(0)
+>>>>
+>>>> DECLARE_ASSERT_SYMBOL(NUCLEUS);
+>>>>
+>>>> It fails to compile when the debug symbol is set and
+>>>> DECLARE_ASSERT_SYMBOL is missing, which plugs the failure of my prev=
+ious
+>>>> attempt.
+>>> I'm still wrapping my head around this. What would be the usage,
+>>>
+>>> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
+>>> #define CONFIG_XENO_OPT_DEBUG_FOO 0
+>>> #endif
+>>>
+>>> DECLARE_ASSERT_SYMBOL(FOO);
+>>>
+>>> ? If the compiler is smart enough to still drop the asserts based on
+>>> static const, I'm fine as this is an improvement.
+>> No, you just use DECLARE_ASSERT_SYMBOL(FOO)
+>=20
+> Would be nice - if it worked.
+>=20
+>>> Still, IMHO, this solution would not even win the second league beaut=
+y
+>>> contest (now it comes with as many additional lines as the
+>>> Kconfig-approach).
+>> Yes, it is not pretty but to add a config option you just add the usua=
+l
+>> Kconfig stuff, then DECLARE_ASSERT_SYMBOL in the code instead of the
+>> #ifndef #define foo 0 #endif.
 >>
->> But I found another problem. When I use the "latency" test, all the
->> min latency time gives out a minus value. Is that normal?
->
-> Yes. Your board has better internal latency than the default calibration
-> expects (i.e. time to traverse the Xenomai stack from IRQ receipt to
-> activating the thread), so the timer shot is anticipated too much.
-> Try reducing the value stored in /proc/xenomai/latency, until your
-> system is calibrated. You can wire this value in your Kconfig
-> afterwards.
->
-> Which ppc hw are you running Xenomai on?
->
+>> If you do not do it, you get a compilation error whether the option is=
+
+>> enabled or not.
 >>
->> 2010/4/29 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->> > Peter Pan wrote:
->> >> I downloaded the ipipe-2.6 from git.denx.de, head =A0 =A0 is
->> >> "ipipe-2.6.32-powerpc". Then I downloaded xenomai-2.5.2 and patch the
->> >> kernel. Then I install the xenomai applications into our rootfs. I
->> >> just run cyclictest in /usr/xenomai/share/xenomai/testsuit/cyclic/run=
-,
->> >> it gives out following line:
->> >>
->> >> *
->> >> *
->> >> * Type ^C to stop this application.
->> >> *
->> >> *
->> >> 0.00 0.05 0.03 2/24 1010
->> >>
->> >> T: 0 ( =A0 =A00) P:99 I: 1000000 C: =A0 =A0 =A0 0 Min: 1000000 Act: =
-=A0 =A0 =A0 0 Avg:
->> >> =A0 =A0 =A0 0 Max:-1000000
->> >> Segmentation fault
->> >
->> > Probably a stack overflow. Could you run the application inside gdb to
->> > check that?
->> >
->> > --
->> > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0Gilles.
->> >
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->
->
-> --
-> Philippe.
->
->
->
+>> It can be decentralized, the find | grep mentioned earlier will still =
+work.
+>=20
+> If we can make it work like that, I'm all for it. But:
+>=20
+> error: initializer element is not constant
+> (when disabled)
+>=20
+> or
+>=20
+> error: =E2=80=98y0=E2=80=99 undeclared here (not in a function)
+> (when enabled)
+>=20
+> I'm afraid the preprocessor is not powerful enough for this task (we
+> would need macros that include preprocessor conditionals).
+
+The following seems to work for me:
+
+#define __name2(a, b) a ## b
+#define name2(a, b) __name2(a, b)
+
+#define DECLARE_ASSERT_SYMBOL(sym)                                      \=
+
+        static const int CONFIG_XENO_OPT_DEBUG_##sym##0 =3D 0
+
+#define XENO_DEBUG(sym) (name2(CONFIG_XENO_OPT_DEBUG_##sym,0) > 0)
+
+#define XENO_ASSERT(subsystem,cond,action)  do { \
+    if (unlikely(XENO_DEBUG(subsystem) && !(cond))) { \
+        xnarch_trace_panic_freeze(); \
+        xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LINE__, =
+(#cond)); \
+        xnarch_trace_panic_dump(); \
+        action; \
+    } \
+} while(0)
+
+DECLARE_ASSERT_SYMBOL(NUCLEUS);
+
+
+>=20
+> Jan
+>=20
+
+
+--=20
+					    Gilles.
+
 
