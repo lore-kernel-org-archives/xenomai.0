@@ -1,86 +1,142 @@
-Message-ID: <4BBAD880.5040603@domain.hid>
-Date: Tue, 06 Apr 2010 08:45:20 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <20100401230843.GF3755@domain.hid>		<4BB53566.3010601@domain.hid>
-	<4BB53643.2080604@domain.hid>		<j2yb88603c31004020058i3aae7947s1428f1b87f4b1097@domain.hid>		<4BB5B64B.6040803@domain.hid>
-	<4BB5B7C1.4020301@domain.hid>		<4BB5B874.5090904@domain.hid>		<k2pb88603c31004020232z28e10d59vc546b1b8803113f2@domain.hid>		<4BB5BA2D.1080604@domain.hid>	<k2rb88603c31004020243k8d9681f8y453b25393bb5d3a0@domain.hid>,
-	<4BB5C1D5.8030804@domain.hid>
-	<245373446233674495BCA5CA2FC1EB17378D015932@domain.hid>
-In-Reply-To: <245373446233674495BCA5CA2FC1EB17378D015932@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig347B36EA5A3AF3232D8F64DD"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] New scheduler class
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4BCC9159.5040802@domain.hid>
+References: <4BCC619E.2@domain.hid> <4BCC6CEE.70907@domain.hid>
+	<4BCC6E3C.3090301@domain.hid> <4BCC7092.1030809@domain.hid>
+	<4BCC71AF.4030903@domain.hid> <4BCC77BD.9040900@domain.hid>
+	<4BCC78D5.3010405@domain.hid>  <4BCC7D88.4070403@domain.hid>
+	<1271693411.16659.128.camel@domain.hid>
+	<4BCC814C.6050003@domain.hid>
+	<1271694331.16659.136.camel@domain.hid>
+	<1271695433.16659.141.camel@domain.hid>
+	<4BCC9159.5040802@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 19 Apr 2010 19:23:39 +0200
+Message-ID: <1271697819.16659.157.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Andreas Glatz <AndreasGlatz@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig347B36EA5A3AF3232D8F64DD
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Mon, 2010-04-19 at 19:22 +0200, Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> > On Mon, 2010-04-19 at 18:25 +0200, Philippe Gerum wrote:
+> >> On Mon, 2010-04-19 at 18:14 +0200, Jan Kiszka wrote:
+> >>> Philippe Gerum wrote:
+> >>>> On Mon, 2010-04-19 at 17:58 +0200, Jan Kiszka wrote:
+> >>>>> Gilles Chanteperdrix wrote:
+> >>>>>> Jan Kiszka wrote:
+> >>>>>>> Gilles Chanteperdrix wrote:
+> >>>>>>>> Jan Kiszka wrote:
+> >>>>>>>>> Gilles Chanteperdrix wrote:
+> >>>>>>>>>> Jan Kiszka wrote:
+> >>>>>>>>>>> Gilles Chanteperdrix wrote:
+> >>>>>>>>>>>> Hi,
+> >>>>>>>>>>>>
+> >>>>>>>>>>>> I found some code which was referencing directly some
+> >>>>>>>>>>>> CONFIG_XENO_OPT_DEBUG_ variables with things like:
+> >>>>>>>>>>>>
+> >>>>>>>>>>>> #ifdef CONFIG_XENO_OPT_DEBUG_FOO
+> >>>>>>>>>>>>
+> >>>>>>>>>>>> This usage is incompatible with the pre-requisites of the assert.h
+> >>>>>>>>>>>> header that CONFIG_XENO_OPT_DEBUG_FOO should be defined at all times.
+> >>>>>>>>>>>> While grepping for CONFIG_XENO_OPT_DEBUG_, I found that we also have
+> >>>>>>>>>>>> many duplicates of construction like:
+> >>>>>>>>>>>> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
+> >>>>>>>>>>>> #define CONFIG_XENO_OPT_DEBUG_FOO 0
+> >>>>>>>>>>>> #endif /* CONFIG_XENO_OPT_DEBUG_FOO */
+> >>>>>>>>>>>>
+> >>>>>>>>>>>> So, a patch follows which:
+> >>>>>>>>>>>> - replace the #ifdef with some #if XENO_DEBUG(FOO)
+> >>>>>>>>>>> Should probably come as a separate patch.
+> >>>>>>>>>> Come on, the patch is simple, one patch for this is enough.
+> >>>>>>>>> One part is an obvious fix, the other a refactoring under discussion.
+> >>>>>>>>>
+> >>>>>>>>>>>> - move all the initializations to assert.h
+> >>>>>>>>>>>>
+> >>>>>>>>>>>> This will make any reference to CONFIG_XENO_OPT_DEBUG_FOO outside of
+> >>>>>>>>>>>> assert.h suspicious, and easy to detect.
+> >>>>>>>>>>> How many duplicates did you find?
+> >>>>>>>>>> A lot, especially for CONFIG_XENO_OPT_DEBUG_NUCLEUS
+> >>>>>>>>> That's because the CONFIG_XENO_OPT_DEBUG_NUCLEUS defines were misplaced.
+> >>>>>>>>> Besides that we had one CONFIG_XENO_OPT_DEBUG_QUEUE duplicate, but tons
+> >>>>>>>>> of proper users. I don't see such an immediate need.
+> >>>>>>>>>
+> >>>>>>>>> When adding this kind of switching, it's till more handy to have things
+> >>>>>>>>> locally in your subsystem. That also makes reviewing easier when you
+> >>>>>>>>> only find changes in files that belong to a subsystem.
+> >>>>>>>> That is not the main point, the main point is that putting all these
+> >>>>>>>> defines in one files allow to detect easily direct references to the
+> >>>>>>>> symbols.
+> >>>>>>>>
+> >>>>>>>>>>> Generally, I'm more a fan of decentralized management here (e.g. this
+> >>>>>>>>>>> avoids needless patch conflicts in central files).
+> >>>>>>>>>> If we maintain the list in alphabetical order (which I have done), we 
+> >>>>>>>>>> reduce the likeliness for conflicts. The aim of doing this is also that 
+> >>>>>>>>>> I can check that the sources are clean with:
+> >>>>>>>>>>
+> >>>>>>>>>> find xenomai-2.5 ! -name 'assert.h' -name '*.[ch]' | xargs grep CONFIG_XENO_OPT_DEBUG_
+> >>>>>>>>>>
+> >>>>>>>>>> And that I can add this test to the automated build test.
+> >>>>>>>>>>
+> >>>>>>>>>> Note that forgetting to add a #define to the list yields an immediate
+> >>>>>>>>>> compilation error. So, the patch makes things completely safe.
+> >>>>>>>>> What did you change to make this happen (for new users of XENO_DEBUG)?
+> >>>>>>>> Nothing. If you forget to add the define, and do not enable the debug
+> >>>>>>>> option (which everybody does most of the time), you get a compilation
+> >>>>>>>> error.
+> >>>>>>> The alternative (and decentralized) approach for fixing this consists of
+> >>>>>>> Kconfig magic for generating the value:
+> >>>>>>>
+> >>>>>>> config XENO_OPT_DEBUG_FOO
+> >>>>>>> 	bool "..."
+> >>>>>>>
+> >>>>>>> config XENO_OPT_DEBUG_FOO_P
+> >>>>>>> 	int
+> >>>>>>> 	default "1" if XENO_OPT_DEBUG_FOO
+> >>>>>>> 	default "0"
+> >>>>>>>
+> >>>>>>> and XENO_DEBUG() could be extended to test for
+> >>>>>>> CONFIG_XENO_OPT_DEBUG_FOO_P when given "FOO". I'm just not sure if this
+> >>>>>>> can be expressed for legacy 2.4 kernels, so it might have to wait for
+> >>>>>>> Xenomai 3.
+> >>>> Well, actually, I would not merge this in Xenomai 3. I find this rather
+> >>>> overkill; mainline first I mean, and mainline, i.e. the Xenomai code
+> >>>> base only requires a simple and straightforward way to get debug
+> >>>> switches right. Having to make Kconfig a kitchen sink for some unknown
+> >>>> out of tree modules to be happy is not really my preferred approach in
+> >>>> this particular case.
+> >>>>
+> >>>> Don't get me wrong, I'm not opposed to a more decentralized approach on
+> >>>> the paper, it's just that I only care about the mainline tree here.
+> >>> The point is not out-of-tree but robustness. Neither the current
+> >>> decentralized #ifdef-#define nor its centralized brother meet this
+> >>> criteria. An approach like the above which forces you to provide all
+> >>> required bits before any of the cases (disabled/enabled) starts to work
+> >>> does so.
+> >> Flexibility and robustness have to be combined. Explicit declaration in
+> >> Kconfig is against flexibility, because this is one external thing more
+> >> to take care of, for adding something as simple as a debug switch. So if
+> 
+> You already have to take care of Kconfig if you want a debug switch.
+> 
 
-Andreas Glatz wrote:
->>> Actually that is what I thought in the first place, however Jan's
->>> comment "That's not true, Xenomai threads can run in non-RT schedulin=
-g
->>> classes as well. They may just gain RT priority while holding some
->>> lock that is requested by a RT thread as well." made me think I was
->>> wrong...
->>>
->>> So we would really need a SCHED_IDLE for Xenomai then to solve this p=
-roblem?
->> I don't think so. But we do need to solve the issue that a non-RT thre=
-ad
->> stays too long in primary mode and is thus scheduled by Xenomai with t=
-he
->> wrong priority /wrt other Linux task at its level.
->>
->> For the time being, you can work around this by issuing a Linux syscal=
-l
->> before entering long processing loops - unless your task doesn't do th=
-is
->> anyway, e.g. to perform some Linux I/O.
->>
->=20
-> I think that's need. Currently the statistics task takes a mutex and wa=
-its on a message queue for messages. That's the only time it should poten=
-tially run in primary mode. After it returns the Mutex it should continue=
- running with a policy similar to SCHED_IDLE to give other tasks a chance=
- to run. I see how switching back to secondary mode could be achieved by =
-issuing a Linux syscall. Is there another way which doesn't involve chang=
-ing the source code of our application? (The proper way?)
+Sure, but I don't find useful to clutter it even more to get it working.
 
-The proper way would be to not having to change the application code.
-But this workaround (Linux syscall or *_set_mode()) is required until we
-improve the nucleus.
-
-Jan
+> Jan
+> 
 
 
---------------enig347B36EA5A3AF3232D8F64DD
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+-- 
+Philippe.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAku62IUACgkQitSsb3rl5xSO5gCfYRqB/c2flwkEzrglVJeJI4xG
-D/YAoNVxY8F5OciT1yXr747H+98RgVl0
-=aUew
------END PGP SIGNATURE-----
-
---------------enig347B36EA5A3AF3232D8F64DD--
 
