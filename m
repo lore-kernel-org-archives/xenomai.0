@@ -1,11 +1,12 @@
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Mon, 19 Apr 2010 12:28:58 +0200
-Message-Id: <cd62cf2b8f394791dd4e47fa89d9a6de06bbe4a9.1271672940.git.jan.kiszka@domain.hid>
+Date: Mon, 19 Apr 2010 12:28:59 +0200
+Message-Id: <29980fb30145a50799e96a0549e08b2580babfde.1271672940.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
 References: <cover.1271672940.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
 References: <cover.1271672940.git.jan.kiszka@domain.hid>
-Subject: [Xenomai-core] [PATCH v4 18/25] testing: Clean up Kconfig rules
+Subject: [Xenomai-core] [PATCH v4 19/25] RTIPC: Drop unused wrapper around
+	close_lock_count
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,63 +18,26 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-To exclude modules from built-in, make them depend on 'm' is sufficient.
-
+CC: Philippe Gerum <rpm@xenomai.org>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- ksrc/drivers/testing/Config.in |    2 +-
- ksrc/drivers/testing/Kconfig   |   14 +++++---------
- 2 files changed, 6 insertions(+), 10 deletions(-)
+ ksrc/drivers/ipc/internal.h |    5 -----
+ 1 files changed, 0 insertions(+), 5 deletions(-)
 
-diff --git a/ksrc/drivers/testing/Config.in b/ksrc/drivers/testing/Config.in
-index 3552670..215c38d 100644
---- a/ksrc/drivers/testing/Config.in
-+++ b/ksrc/drivers/testing/Config.in
-@@ -15,6 +15,6 @@ dep_tristate 'Context switches test driver' CONFIG_XENO_DRIVERS_SWITCHTEST $CONF
+diff --git a/ksrc/drivers/ipc/internal.h b/ksrc/drivers/ipc/internal.h
+index 296a988..ed8c103 100644
+--- a/ksrc/drivers/ipc/internal.h
++++ b/ksrc/drivers/ipc/internal.h
+@@ -127,9 +127,4 @@ extern struct xnptree rtipc_ptree;
+ #define rtipc_enter_atomic(lockctx)	xnlock_get_irqsave(&nklock, (lockctx))
+ #define rtipc_leave_atomic(lockctx)	xnlock_put_irqrestore(&nklock, (lockctx))
  
- dep_tristate 'Kernel-only latency measurement module' CONFIG_XENO_DRIVERS_KLATENCY $CONFIG_XENO_DRIVERS_TIMERBENCH m
- 
--dep_tristate 'User-space real-time signals testing module' CONFIG_XENO_DRIVERS_SIGTEST $CONFIG_MODULES m
-+dep_tristate 'User-space real-time signals testing module' CONFIG_XENO_DRIVERS_SIGTEST m
- 
- endmenu
-diff --git a/ksrc/drivers/testing/Kconfig b/ksrc/drivers/testing/Kconfig
-index 05d6a49..883ede1 100644
---- a/ksrc/drivers/testing/Kconfig
-+++ b/ksrc/drivers/testing/Kconfig
-@@ -1,9 +1,5 @@
- menu "Testing drivers"
- 
--config XENO_TESTING_MODULE
--        depends on MODULES
--	def_tristate m
+-static inline int rtipc_socket_locked(struct rtdm_dev_context *context)
+-{
+-	return atomic_read(&context->close_lock_count);
+-}
 -
- config XENO_DRIVERS_TESTING_LEGACY_NAMES
- 	depends on XENO_SKIN_RTDM
- 	bool "Use legacy names for testing drivers"
-@@ -22,7 +18,7 @@ config XENO_DRIVERS_TIMERBENCH
- 	See testsuite/latency for a possible front-end.
- 
- config XENO_DRIVERS_KLATENCY
--	depends on XENO_DRIVERS_TIMERBENCH && XENO_TESTING_MODULE
-+	depends on XENO_DRIVERS_TIMERBENCH && m
- 	tristate "Kernel-only latency measurement module"
- 	help
- 	Kernel module for kernel-only latency measurement.
-@@ -44,9 +40,9 @@ config XENO_DRIVERS_SWITCHTEST
- 	FPU switches.
- 
- config XENO_DRIVERS_SIGTEST
--       depends on XENO_TESTING_MODULE
--       tristate "User-space real-time signals testing module"
--       help
--       Elementary skin for unit testing user-space real-time signals.
-+	depends on m
-+	tristate "User-space real-time signals testing module"
-+	help
-+	Elementary skin for unit testing user-space real-time signals.
- 
- endmenu
+ #endif /* !_RTIPC_INTERNAL_H */
 -- 
 1.6.0.2
 
