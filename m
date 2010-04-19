@@ -1,12 +1,12 @@
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Mon, 19 Apr 2010 12:28:59 +0200
-Message-Id: <29980fb30145a50799e96a0549e08b2580babfde.1271672940.git.jan.kiszka@domain.hid>
+Date: Mon, 19 Apr 2010 12:29:00 +0200
+Message-Id: <f28827c2c02703040168dc1e60e36bd4c5e2a464.1271672940.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
 References: <cover.1271672940.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
 References: <cover.1271672940.git.jan.kiszka@domain.hid>
-Subject: [Xenomai-core] [PATCH v4 19/25] RTIPC: Drop unused wrapper around
-	close_lock_count
+Subject: [Xenomai-core] [PATCH v4 20/25] RTDM: Document device close
+	procedure
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,26 +18,41 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
+Interating over the close handler when it returns -EAGAIN or in case a
+pending reference to the device context exists is RTDM practice since
+day one. Documenting this is seriously overdue.
+
 CC: Philippe Gerum <rpm@xenomai.org>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- ksrc/drivers/ipc/internal.h |    5 -----
- 1 files changed, 0 insertions(+), 5 deletions(-)
+ include/rtdm/rtdm_driver.h |   11 +++++++++--
+ 1 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/ksrc/drivers/ipc/internal.h b/ksrc/drivers/ipc/internal.h
-index 296a988..ed8c103 100644
---- a/ksrc/drivers/ipc/internal.h
-+++ b/ksrc/drivers/ipc/internal.h
-@@ -127,9 +127,4 @@ extern struct xnptree rtipc_ptree;
- #define rtipc_enter_atomic(lockctx)	xnlock_get_irqsave(&nklock, (lockctx))
- #define rtipc_leave_atomic(lockctx)	xnlock_put_irqrestore(&nklock, (lockctx))
- 
--static inline int rtipc_socket_locked(struct rtdm_dev_context *context)
--{
--	return atomic_read(&context->close_lock_count);
--}
--
- #endif /* !_RTIPC_INTERNAL_H */
+diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
+index 07b73a3..380d752 100644
+--- a/include/rtdm/rtdm_driver.h
++++ b/include/rtdm/rtdm_driver.h
+@@ -193,11 +193,18 @@ typedef int (*rtdm_socket_handler_t)(struct rtdm_dev_context *context,
+  *
+  * @param[in] context Context structure associated with opened device instance
+  * @param[in] user_info Opaque pointer to information about user mode caller,
+- * NULL if kernel mode call
++ * NULL if kernel mode or deferred user mode call
+  *
+  * @return 0 on success. On failure return either -ENOSYS, to request that
+  * this handler be called again from the opposite realtime/non-realtime
+- * context, or another negative error code.
++ * context, -EAGAIN to request a recall after a grace period, or a valid
++ * negative error code according to IEEE Std 1003.1.
++ *
++ * @note Drivers must be prepared for that case that the close handler is
++ * invoked more than once per open context (even if the handler already
++ * completed an earlier run successfully). The driver has to avoid releasing
++ * resources twice as well as returning false errors on successive close
++ * invocations.
+  *
+  * @see @c close() in IEEE Std 1003.1,
+  * http://www.opengroup.org/onlinepubs/009695399 */
 -- 
 1.6.0.2
 
