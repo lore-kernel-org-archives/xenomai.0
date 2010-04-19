@@ -1,12 +1,12 @@
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Mon, 19 Apr 2010 12:28:44 +0200
-Message-Id: <7df0c1d96bc5885835af56dee665bdf90dec44be.1271672940.git.jan.kiszka@domain.hid>
+Date: Mon, 19 Apr 2010 12:28:47 +0200
+Message-Id: <d3fc7dcfbcafd41d9b440a857e76242fd548903d.1271672940.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
 References: <cover.1271672940.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
 References: <cover.1271672940.git.jan.kiszka@domain.hid>
-Subject: [Xenomai-core] [PATCH v4 04/25] Revert "rtdm: tag syscalls as
-	conforming"
+Subject: [Xenomai-core] [PATCH v4 07/25] RTIPC: Drop support for RT socket
+	creation/deletion
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,44 +16,58 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Alexis Berlemont <berlemont.hauw@domain.hid>, xenomai-core <xenomai@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This reverts commit 13bfdd477ab880499d2e8f3b82c49ef4d2cccff0. We better
-let the driver trigger the confoming switch once it detects such a case
-by using the new service rtdm_rt_capable(). Always being comforming
-caused regressions for existing designs.
+This is deprecated now, RT callers will automatically be migrated to
+NRT to perform the requests. Moreover, dropping it allows us to allocate
+resources from Linux instead of using the precious system heap.
 
 CC: Philippe Gerum <rpm@xenomai.org>
-CC: Alexis Berlemont <berlemont.hauw@domain.hid>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- ksrc/skins/rtdm/syscall.c |   10 +++++-----
- 1 files changed, 5 insertions(+), 5 deletions(-)
+ ksrc/drivers/ipc/rtipc.c |    8 +++-----
+ 1 files changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/ksrc/skins/rtdm/syscall.c b/ksrc/skins/rtdm/syscall.c
-index d869887..80785ab 100644
---- a/ksrc/skins/rtdm/syscall.c
-+++ b/ksrc/skins/rtdm/syscall.c
-@@ -154,14 +154,14 @@ static xnsysent_t __systab[] = {
- 	[__rtdm_close] =
- 	    {sys_rtdm_close, __xn_exec_current | __xn_exec_adaptive},
- 	[__rtdm_ioctl] =
--	    {sys_rtdm_ioctl, __xn_exec_conforming | __xn_exec_adaptive},
--	[__rtdm_read] = {sys_rtdm_read, __xn_exec_conforming | __xn_exec_adaptive},
-+	    {sys_rtdm_ioctl, __xn_exec_current | __xn_exec_adaptive},
-+	[__rtdm_read] = {sys_rtdm_read, __xn_exec_current | __xn_exec_adaptive},
- 	[__rtdm_write] =
--	    {sys_rtdm_write, __xn_exec_conforming | __xn_exec_adaptive},
-+	    {sys_rtdm_write, __xn_exec_current | __xn_exec_adaptive},
- 	[__rtdm_recvmsg] =
--	    {sys_rtdm_recvmsg, __xn_exec_conforming | __xn_exec_adaptive},
-+	    {sys_rtdm_recvmsg, __xn_exec_current | __xn_exec_adaptive},
- 	[__rtdm_sendmsg] =
--	    {sys_rtdm_sendmsg, __xn_exec_conforming | __xn_exec_adaptive},
-+	    {sys_rtdm_sendmsg, __xn_exec_current | __xn_exec_adaptive},
- };
+diff --git a/ksrc/drivers/ipc/rtipc.c b/ksrc/drivers/ipc/rtipc.c
+index 563cc4e..71629cb 100644
+--- a/ksrc/drivers/ipc/rtipc.c
++++ b/ksrc/drivers/ipc/rtipc.c
+@@ -158,13 +158,13 @@ static int rtipc_socket(struct rtdm_dev_context *context,
  
- static struct xnskin_props __props = {
+ 	p = rtdm_context_to_private(context);
+ 	p->proto = proto;
+-	p->state = xnmalloc(proto->proto_statesz);
++	p->state = kmalloc(proto->proto_statesz, GFP_KERNEL);
+ 	if (p->state == NULL)
+ 		return -ENOMEM;
+ 
+ 	ret = proto->proto_ops.socket(p, user_info);
+ 	if (ret)
+-		xnfree(p->state);
++		kfree(p->state);
+ 
+ 	return ret;
+ }
+@@ -180,7 +180,7 @@ static int rtipc_close(struct rtdm_dev_context *context,
+ 	if (ret)
+ 		return ret;
+ 
+-	xnfree(p->state);
++	kfree(p->state);
+ 
+ 	return 0;
+ }
+@@ -232,10 +232,8 @@ static struct rtdm_device device = {
+ 	.device_name	=	"rtipc",
+ 	.protocol_family=	PF_RTIPC,
+ 	.socket_type	=	SOCK_DGRAM,
+-	.socket_rt	=	rtipc_socket,
+ 	.socket_nrt	=	rtipc_socket,
+ 	.ops = {
+-		.close_rt	=	NULL,
+ 		.close_nrt	=	rtipc_close,
+ 		.recvmsg_rt	=	rtipc_recvmsg,
+ 		.recvmsg_nrt	=	NULL,
 -- 
 1.6.0.2
 
