@@ -1,12 +1,12 @@
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Mon, 19 Apr 2010 12:29:00 +0200
-Message-Id: <f28827c2c02703040168dc1e60e36bd4c5e2a464.1271672940.git.jan.kiszka@domain.hid>
+Date: Mon, 19 Apr 2010 12:29:01 +0200
+Message-Id: <80d84fc6c067be95ee7489ab0b4bc4ea006869e7.1271672940.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
 References: <cover.1271672940.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
 References: <cover.1271672940.git.jan.kiszka@domain.hid>
-Subject: [Xenomai-core] [PATCH v4 20/25] RTDM: Document device close
-	procedure
+Subject: [Xenomai-core] [PATCH v4 21/25] Add list_first_entry wrapper for
+	older kernels
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,41 +18,28 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Interating over the close handler when it returns -EAGAIN or in case a
-pending reference to the device context exists is RTDM practice since
-day one. Documenting this is seriously overdue.
-
 CC: Philippe Gerum <rpm@xenomai.org>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- include/rtdm/rtdm_driver.h |   11 +++++++++--
- 1 files changed, 9 insertions(+), 2 deletions(-)
+ include/asm-generic/wrappers.h |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
 
-diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
-index 07b73a3..380d752 100644
---- a/include/rtdm/rtdm_driver.h
-+++ b/include/rtdm/rtdm_driver.h
-@@ -193,11 +193,18 @@ typedef int (*rtdm_socket_handler_t)(struct rtdm_dev_context *context,
-  *
-  * @param[in] context Context structure associated with opened device instance
-  * @param[in] user_info Opaque pointer to information about user mode caller,
-- * NULL if kernel mode call
-+ * NULL if kernel mode or deferred user mode call
-  *
-  * @return 0 on success. On failure return either -ENOSYS, to request that
-  * this handler be called again from the opposite realtime/non-realtime
-- * context, or another negative error code.
-+ * context, -EAGAIN to request a recall after a grace period, or a valid
-+ * negative error code according to IEEE Std 1003.1.
-+ *
-+ * @note Drivers must be prepared for that case that the close handler is
-+ * invoked more than once per open context (even if the handler already
-+ * completed an earlier run successfully). The driver has to avoid releasing
-+ * resources twice as well as returning false errors on successive close
-+ * invocations.
-  *
-  * @see @c close() in IEEE Std 1003.1,
-  * http://www.opengroup.org/onlinepubs/009695399 */
+diff --git a/include/asm-generic/wrappers.h b/include/asm-generic/wrappers.h
+index 64ec43f..d864397 100644
+--- a/include/asm-generic/wrappers.h
++++ b/include/asm-generic/wrappers.h
+@@ -559,6 +559,11 @@ static inline void wrap_proc_dir_entry_owner(struct proc_dir_entry *entry)
+ #endif /* LINUX_VERSION_CODE < KERNEL_VERSION(2,6,30) */
+ #endif /* CONFIG_PROC_FS */
+ 
++#ifndef list_first_entry
++#define list_first_entry(ptr, type, member) \
++	list_entry((ptr)->next, type, member)
++#endif
++
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,32)
+ #define rthal_irq_descp(irq)	(irq_desc + (irq))
+ #else /* LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,32) */
 -- 
 1.6.0.2
 
