@@ -1,36 +1,172 @@
-Message-ID: <4BDAEF94.1050400@domain.hid>
-Date: Fri, 30 Apr 2010 16:56:20 +0200
+Message-ID: <4BCC9D8D.10906@domain.hid>
+Date: Mon, 19 Apr 2010 20:14:37 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <x2qa2d86cab1004300739z5dffe340o7df607e1dc2ec189@domain.hid>	
-	<4BDAECA0.8030006@domain.hid>	
-	<z2sa2d86cab1004300748n41fbef55t5fefc57827f2f089@domain.hid>	
-	<4BDAEE48.3060507@domain.hid>
-	<r2wa2d86cab1004300753g460979f8q2964646a5c362df@domain.hid>
-In-Reply-To: <r2wa2d86cab1004300753g460979f8q2964646a5c362df@domain.hid>
+References: <4BCC619E.2@domain.hid>
+	<4BCC6CEE.70907@domain.hid>		<4BCC6E3C.3090301@domain.hid>
+	<4BCC7092.1030809@domain.hid>		<4BCC71AF.4030903@domain.hid>
+	<4BCC77BD.9040900@domain.hid>		<4BCC78D5.3010405@domain.hid>
+	<4BCC7D88.4070403@domain.hid>	<1271693411.16659.128.camel@domain.hid>	<4BCC814C.6050003@domain.hid>
+	<4BCC8484.1020108@domain.hid>	<4BCC9107.1080605@domain.hid>
+	<4BCC9247.10709@domain.hid>	<4BCC9628.7030809@domain.hid>
+	<4BCC9ADA.2020909@domain.hid>
+In-Reply-To: <4BCC9ADA.2020909@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] help with porting simple posix application
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Leyrit Vincent <sec.leyrit@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Leyrit Vincent wrote:
-> sorry i have forgot to post all the code :
-> here printf is a define to the one provided by xenomai library :
-> 
-> #define xnarch_printf printf
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> Gilles Chanteperdrix wrote:
+>>>>> Jan Kiszka wrote:
+>>>>>> Philippe Gerum wrote:
+>>>>>>>>>> config XENO_OPT_DEBUG_FOO
+>>>>>>>>>> 	bool "..."
+>>>>>>>>>>
+>>>>>>>>>> config XENO_OPT_DEBUG_FOO_P
+>>>>>>>>>> 	int
+>>>>>>>>>> 	default "1" if XENO_OPT_DEBUG_FOO
+>>>>>>>>>> 	default "0"
+>>>>>>>>>>
+>>>>>>>>>> and XENO_DEBUG() could be extended to test for
+>>>>>>>>>> CONFIG_XENO_OPT_DEBUG_FOO_P when given "FOO". I'm just not sur=
+e if this
+>>>>>>>>>> can be expressed for legacy 2.4 kernels, so it might have to w=
+ait for
+>>>>>>>>>> Xenomai 3.
+>>>>>>> Well, actually, I would not merge this in Xenomai 3. I find this =
+rather
+>>>>>>> overkill; mainline first I mean, and mainline, i.e. the Xenomai c=
+ode
+>>>>>>> base only requires a simple and straightforward way to get debug
+>>>>>>> switches right. Having to make Kconfig a kitchen sink for some un=
+known
+>>>>>>> out of tree modules to be happy is not really my preferred approa=
+ch in
+>>>>>>> this particular case.
+>>>>>>>
+>>>>>>> Don't get me wrong, I'm not opposed to a more decentralized appro=
+ach on
+>>>>>>> the paper, it's just that I only care about the mainline tree her=
+e.
+>>>>>> The point is not out-of-tree but robustness. Neither the current
+>>>>>> decentralized #ifdef-#define nor its centralized brother meet this=
 
-If you do not believe me, use pthread_set_mode_np as explained in the howto.
+>>>>>> criteria. An approach like the above which forces you to provide a=
+ll
+>>>>>> required bits before any of the cases (disabled/enabled) starts to=
+ work
+>>>>>> does so.
+>>>>> Ok. What about:
+>>>>>
+>>>>> #define __name2(a, b) a ## b
+>>>>> #define name2(a, b) __name2(a, b)
+>>>>>
+>>>>> #define DECLARE_ASSERT_SYMBOL(sym)					\
+>>>>> 	static const int CONFIG_XENO_OPT_DEBUG_##sym##0 =3D 0,		\
+>>>>> 		__CONFIG_XENO_OPT_DEBUG_##sym =3D name2(CONFIG_XENO_OPT_DEBUG_##s=
+ym, 0)
+>>>>>
+>>>>> #define XENO_ASSERT(subsystem,cond,action)  do { \
+>>>>>     if (unlikely(__CONFIG_XENO_OPT_DEBUG_##subsystem > 0 && !(cond)=
+)) { \
+>>>>>         xnarch_trace_panic_freeze(); \
+>>>>>         xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LI=
+NE__, (#cond)); \
+>>>>>         xnarch_trace_panic_dump(); \
+>>>>>         action; \
+>>>>>     } \
+>>>>> } while(0)
+>>>>>
+>>>>> DECLARE_ASSERT_SYMBOL(NUCLEUS);
+>>>>>
+>>>>> It fails to compile when the debug symbol is set and
+>>>>> DECLARE_ASSERT_SYMBOL is missing, which plugs the failure of my pre=
+vious
+>>>>> attempt.
+>>>> I'm still wrapping my head around this. What would be the usage,
+>>>>
+>>>> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
+>>>> #define CONFIG_XENO_OPT_DEBUG_FOO 0
+>>>> #endif
+>>>>
+>>>> DECLARE_ASSERT_SYMBOL(FOO);
+>>>>
+>>>> ? If the compiler is smart enough to still drop the asserts based on=
 
--- 
+>>>> static const, I'm fine as this is an improvement.
+>>> No, you just use DECLARE_ASSERT_SYMBOL(FOO)
+>> Would be nice - if it worked.
+>>
+>>>> Still, IMHO, this solution would not even win the second league beau=
+ty
+>>>> contest (now it comes with as many additional lines as the
+>>>> Kconfig-approach).
+>>> Yes, it is not pretty but to add a config option you just add the usu=
+al
+>>> Kconfig stuff, then DECLARE_ASSERT_SYMBOL in the code instead of the
+>>> #ifndef #define foo 0 #endif.
+>>>
+>>> If you do not do it, you get a compilation error whether the option i=
+s
+>>> enabled or not.
+>>>
+>>> It can be decentralized, the find | grep mentioned earlier will still=
+ work.
+>> If we can make it work like that, I'm all for it. But:
+>>
+>> error: initializer element is not constant
+>> (when disabled)
+>>
+>> or
+>>
+>> error: =E2=80=98y0=E2=80=99 undeclared here (not in a function)
+>> (when enabled)
+>>
+>> I'm afraid the preprocessor is not powerful enough for this task (we
+>> would need macros that include preprocessor conditionals).
+>=20
+> The following seems to work for me:
+>=20
+> #define __name2(a, b) a ## b
+> #define name2(a, b) __name2(a, b)
+>=20
+> #define DECLARE_ASSERT_SYMBOL(sym)                                     =
+ \
+>         static const int CONFIG_XENO_OPT_DEBUG_##sym##0 =3D 0
+>=20
+> #define XENO_DEBUG(sym) (name2(CONFIG_XENO_OPT_DEBUG_##sym,0) > 0)
+>=20
+> #define XENO_ASSERT(subsystem,cond,action)  do { \
+>     if (unlikely(XENO_DEBUG(subsystem) && !(cond))) { \
+>         xnarch_trace_panic_freeze(); \
+>         xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LINE__=
+, (#cond)); \
+>         xnarch_trace_panic_dump(); \
+>         action; \
+>     } \
+> } while(0)
+>=20
+> DECLARE_ASSERT_SYMBOL(NUCLEUS);
+>=20
+
+We only loose the detection of the debug symbol used and not declared if
+it is enabled. But this looks to me like a minor issue. Still trying thou=
+gh.
+
+--=20
 					    Gilles.
+
 
