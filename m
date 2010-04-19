@@ -1,11 +1,12 @@
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Mon, 19 Apr 2010 12:29:04 +0200
-Message-Id: <be9c336507bc21463d908244756281102ba49b65.1271672940.git.jan.kiszka@domain.hid>
+Date: Mon, 19 Apr 2010 12:29:03 +0200
+Message-Id: <fbbeec611f8f5ed9a8e9652894b150a02ca62c7b.1271672940.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
 References: <cover.1271672940.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
 References: <cover.1271672940.git.jan.kiszka@domain.hid>
-Subject: [Xenomai-core] [PATCH v4 24/25] RTDM: Add basic unit test
+Subject: [Xenomai-core] [PATCH v4 23/25] RTDM: Early fd release with
+	poll-free context reference tracking
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,486 +18,467 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-This unit test for RTDM validates deferred device closing and driver
-deregistration due to pending references. Further tests can be added in
-the future.
+Two changes in one as they are tightly related: Once close is called,
+remove the file descriptor from open table, allowing its reuse while
+close for the previous user proceeds.
+
+The second and major part of the patch avoids time-based polling while
+waiting for context references to be dropped. This specifically helps in
+scenarios where references can be held for a longer time beyond the
+first close.
 
 CC: Philippe Gerum <rpm@xenomai.org>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- include/rtdm/rttesting.h        |    9 ++
- ksrc/drivers/testing/Config.in  |    2 +
- ksrc/drivers/testing/Kconfig    |    6 ++
- ksrc/drivers/testing/Makefile   |   12 +++-
- ksrc/drivers/testing/rtdmtest.c |  191 +++++++++++++++++++++++++++++++++++++++
- src/testsuite/unit/Makefile.am  |   17 ++++-
- src/testsuite/unit/rtdm.c       |  114 +++++++++++++++++++++++
- 7 files changed, 349 insertions(+), 2 deletions(-)
- create mode 100644 ksrc/drivers/testing/rtdmtest.c
- create mode 100644 src/testsuite/unit/rtdm.c
+ include/rtdm/rtdm_driver.h |   16 ++++-
+ ksrc/skins/rtdm/core.c     |  168 ++++++++++++++++++++++++++++++-------------
+ ksrc/skins/rtdm/device.c   |   45 ++++++++++--
+ ksrc/skins/rtdm/internal.h |    8 +--
+ 4 files changed, 170 insertions(+), 67 deletions(-)
 
-diff --git a/include/rtdm/rttesting.h b/include/rtdm/rttesting.h
-index a660139..e936630 100644
---- a/include/rtdm/rttesting.h
-+++ b/include/rtdm/rttesting.h
-@@ -141,6 +141,10 @@ struct rttst_swtest_error {
- 	unsigned fp_val;
+diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
+index 380d752..1a4097b 100644
+--- a/include/rtdm/rtdm_driver.h
++++ b/include/rtdm/rtdm_driver.h
+@@ -379,6 +379,7 @@ struct rtdm_operations {
+ 
+ struct rtdm_devctx_reserved {
+ 	void *owner;
++	struct list_head cleanup;
  };
  
-+#define RTTST_RTDM_NORMAL_CLOSE		0
-+#define RTTST_RTDM_DEFER_CLOSE_HANDLER	1
-+#define RTTST_RTDM_DEFER_CLOSE_CONTEXT	2
+ /**
+@@ -560,19 +561,28 @@ int rtdm_dev_unregister(struct rtdm_device *device, unsigned int poll_delay);
+ struct rtdm_dev_context *rtdm_context_get(int fd);
+ 
+ #ifndef DOXYGEN_CPP /* Avoid static inline tags for RTDM in doxygen */
 +
- #define RTIOC_TYPE_TESTING		RTDM_CLASS_TESTING
- 
- /*!
-@@ -152,6 +156,8 @@ struct rttst_swtest_error {
- #define RTDM_SUBCLASS_IRQBENCH		1
- /** subclass name: "switchtest" */
- #define RTDM_SUBCLASS_SWITCHTEST	2
-+/** subclase name: "rtdm" */
-+#define RTDM_SUBCLASS_RTDMTEST		3
- /** @} */
- 
- /*!
-@@ -208,6 +214,9 @@ struct rttst_swtest_error {
- 
- #define RTTST_RTIOC_SWTEST_SET_PAUSE \
- 	_IOW(RTIOC_TYPE_TESTING, 0x38, unsigned long)
++#define CONTEXT_IS_LOCKED(context) \
++	(atomic_read(&(context)->close_lock_count) > 1 || \
++	 (test_bit(RTDM_CLOSING, &(context)->context_flags) && \
++	  atomic_read(&(context)->close_lock_count) > 0))
 +
-+#define RTTST_RTIOC_RTDM_DEFER_CLOSE \
-+	_IOW(RTIOC_TYPE_TESTING, 0x40, unsigned long)
- /** @} */
+ static inline void rtdm_context_lock(struct rtdm_dev_context *context)
+ {
+-	XENO_ASSERT(RTDM, atomic_read(&context->close_lock_count) > 0,
++	XENO_ASSERT(RTDM, CONTEXT_IS_LOCKED(context),
+ 		    /* just warn if context was a dangling pointer */);
+ 	atomic_inc(&context->close_lock_count);
+ }
  
- /** @} */
-diff --git a/ksrc/drivers/testing/Config.in b/ksrc/drivers/testing/Config.in
-index 215c38d..4f81cf9 100644
---- a/ksrc/drivers/testing/Config.in
-+++ b/ksrc/drivers/testing/Config.in
-@@ -17,4 +17,6 @@ dep_tristate 'Kernel-only latency measurement module' CONFIG_XENO_DRIVERS_KLATEN
- 
- dep_tristate 'User-space real-time signals testing module' CONFIG_XENO_DRIVERS_SIGTEST m
- 
-+dep_tristate 'RTDM unit tests driver' CONFIG_XENO_DRIVERS_RTDMTEST $CONFIG_XENO_SKIN_RTDM m
++extern int rtdm_apc;
 +
- endmenu
-diff --git a/ksrc/drivers/testing/Kconfig b/ksrc/drivers/testing/Kconfig
-index 883ede1..28504dc 100644
---- a/ksrc/drivers/testing/Kconfig
-+++ b/ksrc/drivers/testing/Kconfig
-@@ -45,4 +45,10 @@ config XENO_DRIVERS_SIGTEST
- 	help
- 	Elementary skin for unit testing user-space real-time signals.
+ static inline void rtdm_context_unlock(struct rtdm_dev_context *context)
+ {
+-	XENO_ASSERT(RTDM, atomic_read(&context->close_lock_count) > 0,
++	XENO_ASSERT(RTDM, CONTEXT_IS_LOCKED(context),
+ 		    /* just warn if context was a dangling pointer */);
+ 	smp_mb__before_atomic_dec();
+-	atomic_dec(&context->close_lock_count);
++	if (unlikely(atomic_dec_and_test(&context->close_lock_count)))
++		rthal_apc_schedule(rtdm_apc);
+ }
  
-+config XENO_DRIVERS_RTDMTEST
-+	depends on XENO_SKIN_RTDM && m
-+	tristate "RTDM unit tests driver"
-+	help
-+	Kernel driver for performing RTDM unit tests.
-+
- endmenu
-diff --git a/ksrc/drivers/testing/Makefile b/ksrc/drivers/testing/Makefile
-index 7878cd5..17a6cf1 100644
---- a/ksrc/drivers/testing/Makefile
-+++ b/ksrc/drivers/testing/Makefile
-@@ -9,6 +9,7 @@ obj-$(CONFIG_XENO_DRIVERS_IRQBENCH)   += xeno_irqbench.o
- obj-$(CONFIG_XENO_DRIVERS_SWITCHTEST) += xeno_switchtest.o
- obj-$(CONFIG_XENO_DRIVERS_KLATENCY)   += xeno_klat.o
- obj-$(CONFIG_XENO_DRIVERS_SIGTEST)    += xeno_sigtest.o
-+obj-$(CONFIG_XENO_DRIVERS_RTDMTEST)   += xeno_rtdmtest.o
+ static inline void rtdm_context_put(struct rtdm_dev_context *context)
+diff --git a/ksrc/skins/rtdm/core.c b/ksrc/skins/rtdm/core.c
+index e04b3f6..bf905df 100644
+--- a/ksrc/skins/rtdm/core.c
++++ b/ksrc/skins/rtdm/core.c
+@@ -26,7 +26,7 @@
+  * @{
+  */
  
- xeno_timerbench-y := timerbench.o
+-#include <linux/delay.h>
++#include <linux/workqueue.h>
  
-@@ -20,6 +21,8 @@ xeno_klat-y := klat.o
+ #include <nucleus/pod.h>
+ #include <nucleus/ppd.h>
+@@ -35,7 +35,7 @@
  
- xeno_sigtest-y := sigtest_module.o
+ #include "rtdm/internal.h"
  
-+xeno_rtdmtest-y := rtdmtest.o
-+
- EXTRA_CFLAGS += -D__IN_XENOMAI__ -Iinclude/xenomai
+-#define CLOSURE_RETRY_PERIOD	100	/* ms */
++#define CLOSURE_RETRY_PERIOD_MS	100
  
- else
-@@ -33,6 +36,7 @@ obj-$(CONFIG_XENO_DRIVERS_IRQBENCH)   += xeno_irqbench.o
- obj-$(CONFIG_XENO_DRIVERS_SWITCHTEST) += xeno_switchtest.o
- obj-$(CONFIG_XENO_DRIVERS_KLATENCY)   += xeno_klat.o
- obj-$(CONFIG_XENO_DRIVERS_SIGTEST)    += xeno_sigtest.o
-+obj-$(CONFIG_XENO_DRIVERS_RTDMTEST)   += xeno_rtdmtest.o
+ #define FD_BITMAP_SIZE  ((RTDM_FD_MAX + BITS_PER_LONG-1) / BITS_PER_LONG)
  
- xeno_timerbench-objs := timerbench.o
+@@ -44,6 +44,10 @@ struct rtdm_fildes fildes_table[RTDM_FD_MAX] =
+ static unsigned long used_fildes[FD_BITMAP_SIZE];
+ int open_fildes;	/* number of used descriptors */
  
-@@ -44,8 +48,11 @@ xeno_klat-objs := klat.o
++static DECLARE_WORK_FUNC(close_callback);
++static DECLARE_DELAYED_WORK_NODATA(close_work, close_callback);
++static LIST_HEAD(cleanup_queue);
++
+ xntbase_t *rtdm_tbase;
+ EXPORT_SYMBOL(rtdm_tbase);
  
- xeno_sigtest-objs := sigtest_module.o
+@@ -81,8 +85,7 @@ struct rtdm_dev_context *rtdm_context_get(int fd)
+ 	xnlock_get_irqsave(&rt_fildes_lock, s);
  
-+xeno_rtdmtest-objs := rtdmtest.o
-+
- export-objs := $(xeno_timerbench-objs) $(xeno_irqbench-objs) \
--	$(xeno_switchtest-objs) $(xeno_klat-objs) $(xeno_sigtest-objs)
-+	$(xeno_switchtest-objs) $(xeno_klat-objs) $(xeno_sigtest-objs) \
-+	$(xeno_rtdmtest-objs)
+ 	context = fildes_table[fd].context;
+-	if (unlikely(!context ||
+-		     test_bit(RTDM_CLOSING, &context->context_flags))) {
++	if (unlikely(!context)) {
+ 		xnlock_put_irqrestore(&rt_fildes_lock, s);
+ 		return NULL;
+ 	}
+@@ -106,8 +109,10 @@ static int create_instance(struct rtdm_device *device,
+ 	int fd;
+ 	spl_t s;
  
- EXTRA_CFLAGS += -D__IN_XENOMAI__ -I$(TOPDIR)/include/xenomai -I$(TOPDIR)/include/xenomai/compat
+-	/* Reset to NULL so that we can always use cleanup_instance to revert
+-	   also partially successful allocations */
++	/*
++	 * Reset to NULL so that we can always use cleanup_files/instance to
++	 * revert also partially successful allocations.
++	 */
+ 	*context_ptr = NULL;
+ 	*fildes_ptr = NULL;
  
-@@ -66,4 +73,7 @@ xeno_klat.o: $(xeno_klat-objs)
- xeno_sigtest.o: $(xeno_sigtest-objs)
- 	$(LD) -r -o $@ $(xeno_sigtest-objs)
+@@ -155,7 +160,7 @@ static int create_instance(struct rtdm_device *device,
  
-+xeno_rtdmtest.o: $(xeno_rtdmtest-objs)
-+	$(LD) -r -o $@ $(xeno_rtdmtest-objs)
-+
- endif
-diff --git a/ksrc/drivers/testing/rtdmtest.c b/ksrc/drivers/testing/rtdmtest.c
-new file mode 100644
-index 0000000..12540de
---- /dev/null
-+++ b/ksrc/drivers/testing/rtdmtest.c
-@@ -0,0 +1,191 @@
-+/*
-+ * Copyright (C) 2010 Jan Kiszka <jan.kiszka@domain.hid>.
-+ *
-+ * Xenomai is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * Xenomai is distributed in the hope that it will be useful, but
-+ * WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-+ * General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with Xenomai; if not, write to the Free Software Foundation,
-+ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ */
-+
-+#include <linux/module.h>
-+
-+#include <rtdm/rtdm_driver.h>
-+#include <rtdm/rttesting.h>
-+
-+static unsigned int start_index;
-+
-+module_param(start_index, uint, 0400);
-+MODULE_PARM_DESC(start_index, "First device instance number to be used");
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("jan.kiszka@domain.hid");
-+
-+struct rtdm_test_context {
-+	rtdm_timer_t close_timer;
-+	unsigned long close_counter;
-+	unsigned long close_deferral;
-+};
-+
-+static void close_timer_proc(rtdm_timer_t *timer)
-+{
-+	struct rtdm_test_context *ctx =
-+		container_of(timer, struct rtdm_test_context, close_timer);
-+
-+	if (ctx->close_counter != 1)
-+		printk(KERN_ERR
-+		       "rtdmtest: %s: close_counter is %lu, should be 1!\n",
-+		       __FUNCTION__, ctx->close_counter);
-+
-+	rtdm_context_unlock(rtdm_private_to_context(ctx));
+ 	context->fd = fd;
+ 	context->ops = &device->ops;
+-	atomic_set(&context->close_lock_count, 0);
++	atomic_set(&context->close_lock_count, 1);
+ 
+ #ifdef CONFIG_XENO_OPT_PERVASIVE
+ 	ppd = xnshadow_ppd_get(__rtdm_muxid);
+@@ -163,31 +168,34 @@ static int create_instance(struct rtdm_device *device,
+ 
+ 	context->reserved.owner =
+ 	    ppd ? container_of(ppd, struct rtdm_process, ppd) : NULL;
++	INIT_LIST_HEAD(&context->reserved.cleanup);
+ 
+ 	return 0;
+ }
+ 
+-static int cleanup_instance(struct rtdm_device *device,
+-			    struct rtdm_dev_context *context,
+-			    struct rtdm_fildes *fildes, int nrt_mem)
++static void __cleanup_fildes(struct rtdm_fildes *fildes)
+ {
+-	spl_t s;
+-
+-	xnlock_get_irqsave(&rt_fildes_lock, s);
++	clear_bit((fildes - fildes_table), used_fildes);
++	fildes->context = NULL;
++	open_fildes--;
 +}
-+
-+static int rtdm_test_open(struct rtdm_dev_context *context,
-+			  rtdm_user_info_t *user_info, int oflags)
+ 
+-	if (context && unlikely(atomic_read(&context->close_lock_count) > 1)) {
+-		xnlock_put_irqrestore(&rt_fildes_lock, s);
+-		return -EAGAIN;
+-	}
++static void cleanup_fildes(struct rtdm_fildes *fildes)
 +{
-+	struct rtdm_test_context *ctx =
-+		(struct rtdm_test_context *)context->dev_private;
-+
-+	rtdm_timer_init(&ctx->close_timer, close_timer_proc,
-+			"rtdm close test");
-+	ctx->close_counter = 0;
-+	ctx->close_deferral = RTTST_RTDM_NORMAL_CLOSE;
-+
-+	return 0;
++	spl_t s;
+ 
+-	if (fildes) {
+-		clear_bit((fildes - fildes_table), used_fildes);
+-		fildes->context = NULL;
+-		open_fildes--;
+-	}
++	if (!fildes)
++		return;
+ 
++	xnlock_get_irqsave(&rt_fildes_lock, s);
++	__cleanup_fildes(fildes);
+ 	xnlock_put_irqrestore(&rt_fildes_lock, s);
 +}
-+
-+static int rtdm_test_close(struct rtdm_dev_context *context,
-+			   rtdm_user_info_t *user_info)
+ 
++static void cleanup_instance(struct rtdm_device *device,
++			     struct rtdm_dev_context *context,
++			     int nrt_mem)
 +{
-+	struct rtdm_test_context *ctx =
-+		(struct rtdm_test_context *)context->dev_private;
+ 	if (context) {
+ 		if (device->reserved.exclusive_context)
+ 			context->device = NULL;
+@@ -200,10 +208,62 @@ static int cleanup_instance(struct rtdm_device *device,
+ 	}
+ 
+ 	rtdm_dereference_device(device);
++}
+ 
+-	return 0;
++static DECLARE_WORK_FUNC(close_callback)
++{
++	struct rtdm_dev_context *context;
++	LIST_HEAD(deferred_list);
++	int reschedule = 0;
++	int err;
++	spl_t s;
 +
-+	ctx->close_counter++;
++	xnlock_get_irqsave(&rt_fildes_lock, s);
 +
-+	switch (ctx->close_deferral) {
-+	case RTTST_RTDM_DEFER_CLOSE_HANDLER:
-+		if (ctx->close_counter <= 3)
-+			return -EAGAIN;
-+		if (ctx->close_counter > 4) {
-+			printk(KERN_ERR
-+			       "rtdmtest: %s: close_counter is %lu, "
-+			       "should be 2!\n",
-+			       __FUNCTION__, ctx->close_counter);
-+			return 0;
-+		}
-+		break;
++	while (!list_empty(&cleanup_queue)) {
++		context = list_first_entry(&cleanup_queue,
++					   struct rtdm_dev_context,
++					   reserved.cleanup);
++		list_del(&context->reserved.cleanup);
++		atomic_inc(&context->close_lock_count);
 +
-+	case RTTST_RTDM_DEFER_CLOSE_CONTEXT:
-+		if (ctx->close_counter == 1) {
-+			rtdm_context_lock(context);
-+			rtdm_timer_start(&ctx->close_timer, 300000000ULL, 0,
-+					 RTDM_TIMERMODE_RELATIVE);
-+			return 0;
++		xnlock_put_irqrestore(&rt_fildes_lock, s);
++
++		err = context->ops->close_nrt(context, NULL);
++
++		if (err == -EAGAIN ||
++		    atomic_read(&context->close_lock_count) > 1) {
++			atomic_dec(&context->close_lock_count);
++			list_add_tail(&context->reserved.cleanup,
++				      &deferred_list);
++			if (err == -EAGAIN)
++				reschedule = 1;
++		} else {
++			trace_mark(xn_rtdm, fd_closed, "fd %d", context->fd);
++
++			cleanup_instance(context->device, context,
++					 test_bit(RTDM_CREATED_IN_NRT,
++						  &context->context_flags));
 +		}
-+		if (ctx->close_counter > 2) {
-+			printk(KERN_ERR
-+			       "rtdmtest: %s: close_counter is %lu, "
-+			       "should be 2!\n",
-+			       __FUNCTION__, ctx->close_counter);
-+			return 0;
-+		}
-+		break;
++
++		xnlock_get_irqsave(&rt_fildes_lock, s);
 +	}
 +
-+	rtdm_timer_destroy(&ctx->close_timer);
++	list_splice(&deferred_list, &cleanup_queue);
 +
-+	return 0;
++	xnlock_put_irqrestore(&rt_fildes_lock, s);
++
++	if (reschedule)
++		schedule_delayed_work(&close_work,
++				      (HZ * CLOSURE_RETRY_PERIOD_MS) / 1000);
+ }
+ 
++void rtdm_apc_handler(void *cookie)
++{
++	schedule_delayed_work(&close_work, 0);
 +}
 +
-+static int rtdm_test_ioctl(struct rtdm_dev_context *context,
-+			   rtdm_user_info_t *user_info,
-+			   unsigned int request, void __user *arg)
-+{
-+	struct rtdm_test_context *ctx =
-+		(struct rtdm_test_context *)context->dev_private;
-+	int err = 0;
 +
-+	switch (request) {
-+	case RTTST_RTIOC_RTDM_DEFER_CLOSE:
-+		ctx->close_deferral = (unsigned long)arg;
-+		break;
+ int __rt_dev_open(rtdm_user_info_t *user_info, const char *path, int oflag)
+ {
+ 	struct rtdm_device *device;
+@@ -245,7 +305,8 @@ int __rt_dev_open(rtdm_user_info_t *user_info, const char *path, int oflag)
+ 	return context->fd;
+ 
+ cleanup_out:
+-	cleanup_instance(device, context, fildes, nrt_mode);
++	cleanup_fildes(fildes);
++	cleanup_instance(device, context, nrt_mode);
+ 
+ err_out:
+ 	return ret;
+@@ -296,7 +357,8 @@ int __rt_dev_socket(rtdm_user_info_t *user_info, int protocol_family,
+ 	return context->fd;
+ 
+ cleanup_out:
+-	cleanup_instance(device, context, fildes, nrt_mode);
++	cleanup_fildes(fildes);
++	cleanup_instance(device, context, nrt_mode);
+ 
+ err_out:
+ 	return ret;
+@@ -317,7 +379,6 @@ int __rt_dev_close(rtdm_user_info_t *user_info, int fd)
+ 	if (unlikely((unsigned int)fd >= RTDM_FD_MAX))
+ 		goto err_out;
+ 
+-again:
+ 	xnlock_get_irqsave(&rt_fildes_lock, s);
+ 
+ 	context = fildes_table[fd].context;
+@@ -327,47 +388,52 @@ again:
+ 		goto err_out;	/* -EBADF */
+ 	}
+ 
++	/* Avoid asymmetric close context by switching to nrt. */
++	if (unlikely(test_bit(RTDM_CREATED_IN_NRT, &context->context_flags)) &&
++	    !nrt_mode) {
++		xnlock_put_irqrestore(&rt_fildes_lock, s);
 +
-+	default:
-+		err = -ENOTTY;
++		ret = -ENOSYS;
++		goto err_out;
 +	}
++
+ 	set_bit(RTDM_CLOSING, &context->context_flags);
+ 	atomic_inc(&context->close_lock_count);
+ 
++	__cleanup_fildes(&fildes_table[fd]);
++
+ 	xnlock_put_irqrestore(&rt_fildes_lock, s);
+ 
+ 	if (nrt_mode)
+ 		ret = context->ops->close_nrt(context, user_info);
+-	else {
+-		/* Avoid asymmetric close context by switching to nrt. */
+-		if (unlikely(
+-		    test_bit(RTDM_CREATED_IN_NRT, &context->context_flags))) {
+-			ret = -ENOSYS;
+-			goto unlock_out;
+-		}
++	else
+ 		ret = context->ops->close_rt(context, user_info);
+-	}
+ 
+ 	XENO_ASSERT(RTDM, !rthal_local_irq_disabled(),
+ 		    rthal_local_irq_enable(););
+ 
+-	if (unlikely(ret == -EAGAIN) && nrt_mode) {
+-		rtdm_context_unlock(context);
+-		msleep(CLOSURE_RETRY_PERIOD);
+-		goto again;
+-	} else if (unlikely(ret < 0))
+-		goto unlock_out;
++	xnlock_get_irqsave(&rt_fildes_lock, s);
+ 
+-	ret = cleanup_instance(context->device, context, &fildes_table[fd],
+-			       test_bit(RTDM_CREATED_IN_NRT,
+-			       &context->context_flags));
+-	if (ret < 0) {
+-		rtdm_context_unlock(context);
++	if (ret == -EAGAIN || atomic_read(&context->close_lock_count) > 2) {
++		atomic_dec(&context->close_lock_count);
++		list_add(&context->reserved.cleanup, &cleanup_queue);
+ 
+-		if (!nrt_mode)
+-			goto err_out;
++		xnlock_put_irqrestore(&rt_fildes_lock, s);
+ 
+-		msleep(CLOSURE_RETRY_PERIOD);
+-		goto again;
++		if (ret == -EAGAIN) {
++			rthal_apc_schedule(rtdm_apc);
++			ret = 0;
++		}
++		goto unlock_out;
+ 	}
+ 
+-	trace_mark(xn_rtdm, fd_closed, "fd %d", fd);
++	xnlock_put_irqrestore(&rt_fildes_lock, s);
++
++	trace_mark(xn_rtdm, fd_closed, "fd %d", context->fd);
++
++	cleanup_instance(context->device, context,
++			 test_bit(RTDM_CREATED_IN_NRT,
++				  &context->context_flags));
+ 
+ 	return ret;
+ 
+@@ -402,7 +468,7 @@ void cleanup_owned_contexts(void *owner)
+ 					 fd);
+ 
+ 			ret = __rt_dev_close(NULL, fd);
+-			XENO_ASSERT(RTDM, ret >= 0 || ret == -EBADF,
++			XENO_ASSERT(RTDM, ret == 0 || ret == -EBADF,
+ 				    /* only warn here */;);
+ 		}
+ 	}
+diff --git a/ksrc/skins/rtdm/device.c b/ksrc/skins/rtdm/device.c
+index e229932..6eb2975 100644
+--- a/ksrc/skins/rtdm/device.c
++++ b/ksrc/skins/rtdm/device.c
+@@ -58,6 +58,9 @@ struct list_head *rtdm_protocol_devices;	/* hash table */
+ static int name_hashkey_mask;
+ static int proto_hashkey_mask;
+ 
++int rtdm_apc;
++EXPORT_SYMBOL(rtdm_apc);
++
+ DECLARE_MUTEX(nrt_dev_lock);
+ DEFINE_XNLOCK(rt_dev_lock);
+ 
+@@ -458,19 +461,28 @@ EXPORT_SYMBOL(rtdm_dev_unregister);
+ 
+ int __init rtdm_dev_init(void)
+ {
+-	int i;
++	int err, i;
++
++	rtdm_apc = rthal_apc_alloc("deferred RTDM close", rtdm_apc_handler,
++				   NULL);
++	if (rtdm_apc < 0)
++		return rtdm_apc;
+ 
+ 	name_hashkey_mask = devname_hashtab_size - 1;
+ 	proto_hashkey_mask = protocol_hashtab_size - 1;
+ 	if (((devname_hashtab_size & name_hashkey_mask) != 0) ||
+-	    ((protocol_hashtab_size & proto_hashkey_mask) != 0))
+-		return -EINVAL;
++	    ((protocol_hashtab_size & proto_hashkey_mask) != 0)) {
++		err = -EINVAL;
++		goto err_out1;
++	}
+ 
+ 	rtdm_named_devices = (struct list_head *)
+ 	    kmalloc(devname_hashtab_size * sizeof(struct list_head),
+ 		    GFP_KERNEL);
+-	if (!rtdm_named_devices)
+-		return -ENOMEM;
++	if (!rtdm_named_devices) {
++		err = -ENOMEM;
++		goto err_out1;
++	}
+ 
+ 	for (i = 0; i < devname_hashtab_size; i++)
+ 		INIT_LIST_HEAD(&rtdm_named_devices[i]);
+@@ -479,14 +491,33 @@ int __init rtdm_dev_init(void)
+ 	    kmalloc(protocol_hashtab_size * sizeof(struct list_head),
+ 		    GFP_KERNEL);
+ 	if (!rtdm_protocol_devices) {
+-		kfree(rtdm_named_devices);
+-		return -ENOMEM;
++		err = -ENOMEM;
++		goto err_out2;
+ 	}
+ 
+ 	for (i = 0; i < protocol_hashtab_size; i++)
+ 		INIT_LIST_HEAD(&rtdm_protocol_devices[i]);
+ 
+ 	return 0;
++
++err_out2:
++	kfree(rtdm_named_devices);
++
++err_out1:
++	rthal_apc_free(rtdm_apc);
 +
 +	return err;
 +}
 +
-+static struct rtdm_device device[2] = { [0 ... 1] = {
-+	.struct_version		= RTDM_DEVICE_STRUCT_VER,
-+
-+	.device_flags		= RTDM_NAMED_DEVICE | RTDM_EXCLUSIVE,
-+	.context_size		= sizeof(struct rtdm_test_context),
-+	.device_name		= "",
-+
-+	.open_nrt		= rtdm_test_open,
-+
-+	.ops = {
-+		.close_nrt	= rtdm_test_close,
-+
-+		.ioctl_rt	= rtdm_test_ioctl,
-+		.ioctl_nrt	= rtdm_test_ioctl,
-+	},
-+
-+	.device_class		= RTDM_CLASS_TESTING,
-+	.device_sub_class	= RTDM_SUBCLASS_RTDMTEST,
-+	.profile_version	= RTTST_PROFILE_VER,
-+	.driver_name		= "xeno_rtdmtest",
-+	.driver_version		= RTDM_DRIVER_VER(0, 1, 0),
-+	.peripheral_name	= "RTDM unit test",
-+	.provider_name		= "Jan Kiszka",
-+} };
-+
-+static int __init __rtdm_test_init(void)
++void __exit rtdm_dev_cleanup(void)
 +{
-+	int dev = 0;
-+	int err;
-+
-+	while (1) {
-+		device[dev].proc_name = device[dev].device_name;
-+
-+		snprintf(device[dev].device_name, RTDM_MAX_DEVNAME_LEN,
-+			 "rttest-rtdm%d",
-+			 start_index);
-+		err = rtdm_dev_register(&device[dev]);
-+
-+		start_index++;
-+
-+		if (!err) {
-+			if (++dev >= ARRAY_SIZE(device))
-+				break;
-+		} else if (err != -EEXIST) {
-+			while (dev > 0) {
-+				dev--;
-+				rtdm_dev_unregister(&device[dev], 1000);
-+			}
-+			return err;
-+		}
-+	}
-+	return 0;
-+}
-+
-+static void __exit __rtdm_test_exit(void)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(device); i++)
-+		rtdm_dev_unregister(&device[i], 1000);
-+}
-+
-+module_init(__rtdm_test_init);
-+module_exit(__rtdm_test_exit);
-diff --git a/src/testsuite/unit/Makefile.am b/src/testsuite/unit/Makefile.am
-index 8966883..f37ec33 100644
---- a/src/testsuite/unit/Makefile.am
-+++ b/src/testsuite/unit/Makefile.am
-@@ -10,7 +10,8 @@ test_PROGRAMS = \
- 	mutex-torture-native \
- 	cond-torture-posix \
- 	cond-torture-native \
--	check-vdso
-+	check-vdso \
-+	rtdm
++	/*
++	 * Note: no need to flush the cleanup_queue as no device is allowed
++	 * to deregister as long as there are references.
++	 */
++	rthal_apc_free(rtdm_apc);
++	kfree(rtdm_named_devices);
++	kfree(rtdm_protocol_devices);
+ }
  
- arith_SOURCES = arith.c arith-noinline.c arith-noinline.h
+ /*@}*/
+diff --git a/ksrc/skins/rtdm/internal.h b/ksrc/skins/rtdm/internal.h
+index 69299f8..3d39def 100644
+--- a/ksrc/skins/rtdm/internal.h
++++ b/ksrc/skins/rtdm/internal.h
+@@ -80,15 +80,11 @@ static inline void rtdm_dereference_device(struct rtdm_device *device)
+ }
  
-@@ -105,6 +106,20 @@ check_vdso_LDADD = \
- 	../../skins/common/libxenomai.la \
- 	-lpthread -lm
+ int __init rtdm_dev_init(void);
+-
+-static inline void rtdm_dev_cleanup(void)
+-{
+-	kfree(rtdm_named_devices);
+-	kfree(rtdm_protocol_devices);
+-}
++void __exit rtdm_dev_cleanup(void);
  
-+rtdm_SOURCES = rtdm.c
-+
-+rtdm_CPPFLAGS = \
-+	-I$(top_srcdir)/include/posix @XENO_USER_CFLAGS@ -g -DXENO_POSIX \
-+	-I$(top_srcdir)/include
-+
-+rtdm_LDFLAGS = $(XENO_POSIX_WRAPPERS) @XENO_USER_LDFLAGS@
-+
-+rtdm_LDADD = \
-+	../../skins/posix/libpthread_rt.la \
-+	../../skins/native/libnative.la \
-+	../../skins/common/libxenomai.la \
-+	-lpthread -lrt -lm
-+
- install-data-local:
- 	$(mkinstalldirs) $(DESTDIR)$(rundir)
- 	@sed -e's,@exec_prefix\@,$(exec_prefix),g' $(srcdir)/runinfo.in > $(DESTDIR)$(rundir)/.runinfo
-diff --git a/src/testsuite/unit/rtdm.c b/src/testsuite/unit/rtdm.c
-new file mode 100644
-index 0000000..e472c9b
---- /dev/null
-+++ b/src/testsuite/unit/rtdm.c
-@@ -0,0 +1,114 @@
-+/*
-+ * Functional testing of RTDM services.
-+ *
-+ * Copyright (C) 2010 Jan Kiszka <jan.kiszka@domain.hid>.
-+ *
-+ * Released under the terms of GPLv2.
-+ */
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <errno.h>
-+#include <unistd.h>
-+#include <native/timer.h>
-+#include <rtdm/rttesting.h>
-+
-+#define NS_PER_MS (1000000)
-+
-+static void check_inner(const char *fn, int line, const char *msg,
-+			int status, int expected)
-+{
-+	if (status == expected)
-+		return;
-+
-+	fprintf(stderr, "FAILED %s:%d: %s returned %d instead of %d - %s\n",
-+		fn, line, msg, status, expected, strerror(-status));
-+	exit(EXIT_FAILURE);
-+}
-+
-+#define check(msg, status, expected) ({					\
-+	int __status = status;						\
-+	check_inner(__FUNCTION__, __LINE__, msg,			\
-+		    __status < 0 ? -errno : __status, expected);	\
-+	__status;							\
-+})
-+
-+#define check_no_error(msg, status) ({					\
-+	int __status = status;						\
-+	check_inner(__FUNCTION__, __LINE__, msg,			\
-+		    __status < 0 ? -errno : 0, 0);			\
-+	__status;							\
-+})
-+
-+static void check_sleep_inner(const char *fn, int line,
-+			      const char *msg, unsigned long long start)
-+{
-+	unsigned long long diff = rt_timer_tsc2ns(rt_timer_tsc() - start);
-+
-+	if (diff < 300 * NS_PER_MS) {
-+		fprintf(stderr, "FAILED %s:%d: %s waited only %Ld.%06u ms\n",
-+			fn, line, msg, diff / 1000000,
-+			(unsigned)(diff % 1000000));
-+		exit(EXIT_FAILURE);
-+	}
-+}
-+#define check_sleep(msg, start) \
-+	check_sleep_inner(__FUNCTION__, __LINE__, msg, start)
-+
-+static const char *devname = "/dev/rttest-rtdm0";
-+static const char *devname2 = "/dev/rttest-rtdm1";
-+
-+int main(int argc, const char *argv[])
-+{
-+	unsigned long long start;
-+	int dev, dev2;
-+
-+	printf("Setup\n");
-+	check("modprobe", system("modprobe xeno_rtdmtest"), 0);
-+	dev = check_no_error("open", open(devname, O_RDWR));
-+
-+	printf("Exclusive open\n");
-+	check("open", open(devname, O_RDWR), -EBUSY);
-+
-+	printf("Successive open\n");
-+	dev2 = check("open", open(devname2, O_RDWR), dev + 1);
-+	check("close", close(dev2), 0);
-+
-+	printf("Defer close by driver handler\n");
-+	check("ioctl", ioctl(dev, RTTST_RTIOC_RTDM_DEFER_CLOSE,
-+			     RTTST_RTDM_DEFER_CLOSE_HANDLER), 0);
-+	start = rt_timer_tsc();
-+	check("close", close(dev), 0);
-+	check("open", open(devname, O_RDWR), -EBUSY);
-+	dev2 = check("open", open(devname2, O_RDWR), dev);
-+	check("close", close(dev2), 0);
-+	usleep(300000);
-+	dev = check("open", open(devname, O_RDWR), dev);
-+
-+	printf("Defer close by pending reference\n");
-+	check("ioctl", ioctl(dev, RTTST_RTIOC_RTDM_DEFER_CLOSE,
-+			     RTTST_RTDM_DEFER_CLOSE_CONTEXT), 0);
-+	start = rt_timer_tsc();
-+	check("close", close(dev), 0);
-+	check("open", open(devname, O_RDWR), -EBUSY);
-+	dev2 = check("open", open(devname2, O_RDWR), dev);
-+	check("close", close(dev2), 0);
-+	usleep(300000);
-+	dev = check("open", open(devname, O_RDWR), dev);
-+
-+	printf("Normal close\n");
-+	check("ioctl", ioctl(dev, RTTST_RTIOC_RTDM_DEFER_CLOSE,
-+			     RTTST_RTDM_NORMAL_CLOSE), 0);
-+	check("close", close(dev), 0);
-+	dev = check("open", open(devname, O_RDWR), dev);
-+
-+	printf("Deferred module unload\n");
-+	check("ioctl", ioctl(dev, RTTST_RTIOC_RTDM_DEFER_CLOSE,
-+			     RTTST_RTDM_DEFER_CLOSE_CONTEXT), 0);
-+	start = rt_timer_tsc();
-+	check("close", close(dev), 0);
-+	check("rmmod", system("rmmod xeno_rtdmtest"), 0);
-+	check_sleep("rmmod", start);
-+
-+	return 0;
-+}
+ int rtdm_proc_register_device(struct rtdm_device *device);
+ int __init rtdm_proc_init(void);
+ void rtdm_proc_cleanup(void);
++void rtdm_apc_handler(void *cookie);
+ 
+ #endif /* _RTDM_INTERNAL_H */
 -- 
 1.6.0.2
 
