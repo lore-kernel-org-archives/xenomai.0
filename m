@@ -1,6 +1,6 @@
-Message-ID: <4BCCB107.7090800@domain.hid>
-Date: Mon, 19 Apr 2010 21:37:43 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4BCCB34B.8020609@domain.hid>
+Date: Mon, 19 Apr 2010 21:47:23 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4BCC619E.2@domain.hid>
 	<4BCC6CEE.70907@domain.hid>		<4BCC6E3C.3090301@domain.hid>
@@ -13,11 +13,10 @@ References: <4BCC619E.2@domain.hid>
 	<4BCC9E81.8000209@domain.hid> <4BCC9F49.1010302@domain.hid>
 	<4BCCA30A.7050208@domain.hid> <4BCCA3C0.7040209@domain.hid>
 	<4BCCAA38.4070000@domain.hid> <4BCCAD4D.9040600@domain.hid>
-In-Reply-To: <4BCCAD4D.9040600@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC70A34AE73B10A7439EDA648"
-Sender: jan.kiszka@domain.hid
+	<4BCCB107.7090800@domain.hid>
+In-Reply-To: <4BCCB107.7090800@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -27,134 +26,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC70A34AE73B10A7439EDA648
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> Jan Kiszka wrote:
->>>>>> My compiler still complains about undefined 'y0' in the enabled ca=
-se.
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Jan Kiszka wrote:
+>>>>> Gilles Chanteperdrix wrote:
+>>>>>> Jan Kiszka wrote:
+>>>>>>> My compiler still complains about undefined 'y0' in the enabled case.
+>>>>>>>
+>>>>>>> I'll try to dig into a different direction now: Automatic generation
+>>>>>>> during build. This is what the kernel does as well when the preprocessor
+>>>>>>> gives up. Would even save the DECLARE and should make everyone happy.
+>>>>>> No, please nothing like that.
+>>>>> Because ... ?
+>>>>>
+>>>>> BTW, I'll extend the prepare stage. Defining the proper dependencies for
+>>>>> build-time generation gets too hairy.
+>>>>>
+>>>>>> This one works for me:
+>>>>>> #include <stdlib.h>
+>>>>>> #include <stdio.h>
 >>>>>>
->>>>>> I'll try to dig into a different direction now: Automatic generati=
-on
->>>>>> during build. This is what the kernel does as well when the prepro=
-cessor
->>>>>> gives up. Would even save the DECLARE and should make everyone hap=
-py.
->>>>> No, please nothing like that.
->>>> Because ... ?
->>>>
->>>> BTW, I'll extend the prepare stage. Defining the proper dependencies=
- for
->>>> build-time generation gets too hairy.
->>>>
->>>>> This one works for me:
->>>>> #include <stdlib.h>
->>>>> #include <stdio.h>
->>>>>
->>>>> #define __name2(a, b) a ## b
->>>>> #define name2(a, b) __name2(a, b)
->>>>>
->>>>> #define DECLARE_ASSERT_SYMBOL(sym)                                 =
-     \
->>>>>         static const int XENO_OPT_DEBUG_##sym =3D 0; \
->>>>>         static const int CONFIG_XENO_OPT_DEBUG_##sym##0 =3D 0
->>>>>
->>>>> #define XENO_DEBUG(sym) \
->>>>>         (name2(CONFIG_XENO_OPT_DEBUG_##sym,0) > XENO_OPT_DEBUG_##sy=
-m)
->>>>>
->>>>> #define XENO_ASSERT(subsystem,cond,action)  do { \
->>>>>     if (unlikely(XENO_DEBUG(subsystem) && !(cond))) { \
->>>>>         xnarch_trace_panic_freeze(); \
->>>>>         xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LI=
-NE__, (#cond)); \
->>>>>         xnarch_trace_panic_dump(); \
->>>>>         action; \
->>>>>     } \
->>>>> } while(0)
->>>>>
->>>>> DECLARE_ASSERT_SYMBOL(NUCLEUS);
->>>>>
->>>>> int main(void)
->>>>> {
->>>>>         if (XENO_DEBUG(NUCLEUS))
->>>>>                 printf("Hello\n");
->>>>> }
->>>>>
->>>>> Please try and send me the result of pre-processing if
->>>>> it does not work for you.
->>>>>
->>>> Find it attached.
->>> It looks like you are defining CONFIG_XENO_OPT_DEBUG_NUCLEUS to be y
->>> instead of 1.
->> Right, my bad.
+>>>>>> #define __name2(a, b) a ## b
+>>>>>> #define name2(a, b) __name2(a, b)
+>>>>>>
+>>>>>> #define DECLARE_ASSERT_SYMBOL(sym)                                      \
+>>>>>>         static const int XENO_OPT_DEBUG_##sym = 0; \
+>>>>>>         static const int CONFIG_XENO_OPT_DEBUG_##sym##0 = 0
+>>>>>>
+>>>>>> #define XENO_DEBUG(sym) \
+>>>>>>         (name2(CONFIG_XENO_OPT_DEBUG_##sym,0) > XENO_OPT_DEBUG_##sym)
+>>>>>>
+>>>>>> #define XENO_ASSERT(subsystem,cond,action)  do { \
+>>>>>>     if (unlikely(XENO_DEBUG(subsystem) && !(cond))) { \
+>>>>>>         xnarch_trace_panic_freeze(); \
+>>>>>>         xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LINE__, (#cond)); \
+>>>>>>         xnarch_trace_panic_dump(); \
+>>>>>>         action; \
+>>>>>>     } \
+>>>>>> } while(0)
+>>>>>>
+>>>>>> DECLARE_ASSERT_SYMBOL(NUCLEUS);
+>>>>>>
+>>>>>> int main(void)
+>>>>>> {
+>>>>>>         if (XENO_DEBUG(NUCLEUS))
+>>>>>>                 printf("Hello\n");
+>>>>>> }
+>>>>>>
+>>>>>> Please try and send me the result of pre-processing if
+>>>>>> it does not work for you.
+>>>>>>
+>>>>> Find it attached.
+>>>> It looks like you are defining CONFIG_XENO_OPT_DEBUG_NUCLEUS to be y
+>>>> instead of 1.
+>>> Right, my bad.
+>>>
+>>> Works now, just leaving a trace when optimization is off.
+>> I believe the current approach would have the same problem. And in any
+> 
+> Nope, it's a pure preprocessor approach.
+
+When you use if(XENO_DEBUG(foo)) you are using the compiler, not the
+preprocessor.
+
+To see if there is a difference, you should try #if XENO_DEBUG(foo). And
+from what I see, in that case I do not have any trace of anything generated.
+
+>>> diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
+>>> index 24b1f17..d8038e0 100755
+>>> Please let me know what precisely you dislike in this approach.
+>> You have to re-run prepare-kernel when you modify the source.
+> 
+> Normally, you have to anyway as you add some header or some other source
+> file during this process.
+
+Not necessarily.
+
+>> I do not like dynamic sources generation. Especially when we have a
+>> working solution based on C pre-processor macros.
 >>
->> Works now, just leaving a trace when optimization is off.
->=20
-> I believe the current approach would have the same problem. And in any
+> 
+> My prepare-kernel approach also detects stall debug stuff: The uitron
+> use of XENO_DEBUG is not backed by any config option.
 
-Nope, it's a pure preprocessor approach.
+The current candidate would also detect the missing
+DECLARE_ASSERT_SYMBOL in that case.
 
-> case the kernel is never compiled without optimization, some other
-> things break in that case.
->=20
->> But as it still requires explicit declaration, I'm more in favor of
->> (...)
->>
->> diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
->> index 24b1f17..d8038e0 100755
->> Please let me know what precisely you dislike in this approach.
->=20
-> You have to re-run prepare-kernel when you modify the source.
-
-Normally, you have to anyway as you add some header or some other source
-file during this process.
-
-> And if you run it for every compilation, it wil slow the compilation do=
-wn.
-> And you will have to add some tricks to avoid touching the generated
-> file if its contents did not change to avoid a full re-compilation.
-> And if you do all that you will end-up at best with 20 lines of shell.
->=20
-> The current candidate is 3 lines of C macro + 1 line per debug symbol.
-
-The changes to assert.h do not matter that much. More important is that
-you do not need to bother about adding the declare somewhere.
-
->=20
-> I do not like dynamic sources generation. Especially when we have a
-> working solution based on C pre-processor macros.
->=20
-
-My prepare-kernel approach also detects stall debug stuff: The uitron
-use of XENO_DEBUG is not backed by any config option.
-
-Jan
-
-
---------------enigC70A34AE73B10A7439EDA648
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkvMsQsACgkQitSsb3rl5xRrsQCg16gFDvRCnIgR7GzxvKSSXzQi
-9DMAoI/VNt5iuTdomOnhXFVTd/7FFQZv
-=hg39
------END PGP SIGNATURE-----
-
---------------enigC70A34AE73B10A7439EDA648--
+-- 
+					    Gilles.
 
