@@ -1,47 +1,109 @@
-Message-ID: <4BBF0DD0.8000708@domain.hid>
-Date: Fri, 09 Apr 2010 13:21:52 +0200
+Message-ID: <4BCC9247.10709@domain.hid>
+Date: Mon, 19 Apr 2010 19:26:31 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <l2sa16d1e451004090414saf9c9e7s3defe4d713ae55e@domain.hid>
-In-Reply-To: <l2sa16d1e451004090414saf9c9e7s3defe4d713ae55e@domain.hid>
+References: <4BCC619E.2@domain.hid> <4BCC6CEE.70907@domain.hid>	
+	<4BCC6E3C.3090301@domain.hid> <4BCC7092.1030809@domain.hid>	
+	<4BCC71AF.4030903@domain.hid> <4BCC77BD.9040900@domain.hid>	
+	<4BCC78D5.3010405@domain.hid> <4BCC7D88.4070403@domain.hid>
+	<1271693411.16659.128.camel@domain.hid>
+	<4BCC814C.6050003@domain.hid> <4BCC8484.1020108@domain.hid>
+	<4BCC9107.1080605@domain.hid>
+In-Reply-To: <4BCC9107.1080605@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] What off the shelf system will run Xenomai
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Serge Gale <supernovagt@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Serge Gale wrote:
-> Hi,
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Philippe Gerum wrote:
+>>>>>>> config XENO_OPT_DEBUG_FOO
+>>>>>>> 	bool "..."
+>>>>>>>
+>>>>>>> config XENO_OPT_DEBUG_FOO_P
+>>>>>>> 	int
+>>>>>>> 	default "1" if XENO_OPT_DEBUG_FOO
+>>>>>>> 	default "0"
+>>>>>>>
+>>>>>>> and XENO_DEBUG() could be extended to test for
+>>>>>>> CONFIG_XENO_OPT_DEBUG_FOO_P when given "FOO". I'm just not sure if this
+>>>>>>> can be expressed for legacy 2.4 kernels, so it might have to wait for
+>>>>>>> Xenomai 3.
+>>>> Well, actually, I would not merge this in Xenomai 3. I find this rather
+>>>> overkill; mainline first I mean, and mainline, i.e. the Xenomai code
+>>>> base only requires a simple and straightforward way to get debug
+>>>> switches right. Having to make Kconfig a kitchen sink for some unknown
+>>>> out of tree modules to be happy is not really my preferred approach in
+>>>> this particular case.
+>>>>
+>>>> Don't get me wrong, I'm not opposed to a more decentralized approach on
+>>>> the paper, it's just that I only care about the mainline tree here.
+>>> The point is not out-of-tree but robustness. Neither the current
+>>> decentralized #ifdef-#define nor its centralized brother meet this
+>>> criteria. An approach like the above which forces you to provide all
+>>> required bits before any of the cases (disabled/enabled) starts to work
+>>> does so.
+>> Ok. What about:
+>>
+>> #define __name2(a, b) a ## b
+>> #define name2(a, b) __name2(a, b)
+>>
+>> #define DECLARE_ASSERT_SYMBOL(sym)					\
+>> 	static const int CONFIG_XENO_OPT_DEBUG_##sym##0 = 0,		\
+>> 		__CONFIG_XENO_OPT_DEBUG_##sym = name2(CONFIG_XENO_OPT_DEBUG_##sym, 0)
+>>
+>> #define XENO_ASSERT(subsystem,cond,action)  do { \
+>>     if (unlikely(__CONFIG_XENO_OPT_DEBUG_##subsystem > 0 && !(cond))) { \
+>>         xnarch_trace_panic_freeze(); \
+>>         xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LINE__, (#cond)); \
+>>         xnarch_trace_panic_dump(); \
+>>         action; \
+>>     } \
+>> } while(0)
+>>
+>> DECLARE_ASSERT_SYMBOL(NUCLEUS);
+>>
+>> It fails to compile when the debug symbol is set and
+>> DECLARE_ASSERT_SYMBOL is missing, which plugs the failure of my previous
+>> attempt.
 > 
-> I am very much of a noob in this topic. My company needs a Real Time
-> OS for development and I have been asked to research the area. I have
-> no knowledge in this area what so ever so please forgive if I sound
-> rather dumb.
-> I have looked at a few available OS's such as VxWorks, RTLinux by
-> WindRiver and the GPL one and of course Xenomai. My choice is Xenomai,
-> but what I have to do now is to see what hardware it requires.
-> Is there are an off the shelf rack unit available that I can buy that
-> will run Xenomai? I need to specify hardware for the system to run on
-> so I would greatly appreciate if someone can point me out in the right
-> direction please.
+> I'm still wrapping my head around this. What would be the usage,
+> 
+> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
+> #define CONFIG_XENO_OPT_DEBUG_FOO 0
+> #endif
+> 
+> DECLARE_ASSERT_SYMBOL(FOO);
+> 
+> ? If the compiler is smart enough to still drop the asserts based on
+> static const, I'm fine as this is an improvement.
 
-Hi,
+No, you just use DECLARE_ASSERT_SYMBOL(FOO)
 
-On Xenomai web site, you will find a list of the board on which Xenomai
-has been tested:
-http://www.xenomai.org/index.php/Embedded_Device_Support
-http://www.xenomai.org/index.php/Other_Hardware_Support
+> 
+> Still, IMHO, this solution would not even win the second league beauty
+> contest (now it comes with as many additional lines as the
+> Kconfig-approach).
 
-Regards.
+Yes, it is not pretty but to add a config option you just add the usual
+Kconfig stuff, then DECLARE_ASSERT_SYMBOL in the code instead of the
+#ifndef #define foo 0 #endif.
+
+If you do not do it, you get a compilation error whether the option is
+enabled or not.
+
+It can be decentralized, the find | grep mentioned earlier will still work.
 
 -- 
 					    Gilles.
