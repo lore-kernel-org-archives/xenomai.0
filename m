@@ -1,144 +1,204 @@
-Message-ID: <4BD94E31.8030403@domain.hid>
-Date: Thu, 29 Apr 2010 11:15:29 +0200
+Message-ID: <4BCC9E81.8000209@domain.hid>
+Date: Mon, 19 Apr 2010 20:18:41 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+References: <4BCC619E.2@domain.hid>
+	<4BCC6CEE.70907@domain.hid>		<4BCC6E3C.3090301@domain.hid>
+	<4BCC7092.1030809@domain.hid>		<4BCC71AF.4030903@domain.hid>
+	<4BCC77BD.9040900@domain.hid>		<4BCC78D5.3010405@domain.hid>
+	<4BCC7D88.4070403@domain.hid>	<1271693411.16659.128.camel@domain.hid>	<4BCC814C.6050003@domain.hid>
+	<4BCC8484.1020108@domain.hid>	<4BCC9107.1080605@domain.hid>
+	<4BCC9247.10709@domain.hid>	<4BCC9628.7030809@domain.hid>
+	<4BCC9ADA.2020909@domain.hid> <4BCC9D8D.10906@domain.hid>
+In-Reply-To: <4BCC9D8D.10906@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig7F2250BEA27E8D26D5B5DBCE"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig7F2250BEA27E8D26D5B5DBCE
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Subject: [Adeos-main] RTLWS12 Call for Papers
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: adeos-main <adeos-main@gna.org>
 
-                      Twelfth Real-Time Linux Workshop
+Gilles Chanteperdrix wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Jan Kiszka wrote:
+>>>>> Gilles Chanteperdrix wrote:
+>>>>>> Jan Kiszka wrote:
+>>>>>>> Philippe Gerum wrote:
+>>>>>>>>>>> config XENO_OPT_DEBUG_FOO
+>>>>>>>>>>> 	bool "..."
+>>>>>>>>>>>
+>>>>>>>>>>> config XENO_OPT_DEBUG_FOO_P
+>>>>>>>>>>> 	int
+>>>>>>>>>>> 	default "1" if XENO_OPT_DEBUG_FOO
+>>>>>>>>>>> 	default "0"
+>>>>>>>>>>>
+>>>>>>>>>>> and XENO_DEBUG() could be extended to test for
+>>>>>>>>>>> CONFIG_XENO_OPT_DEBUG_FOO_P when given "FOO". I'm just not su=
+re if this
+>>>>>>>>>>> can be expressed for legacy 2.4 kernels, so it might have to =
+wait for
+>>>>>>>>>>> Xenomai 3.
+>>>>>>>> Well, actually, I would not merge this in Xenomai 3. I find this=
+ rather
+>>>>>>>> overkill; mainline first I mean, and mainline, i.e. the Xenomai =
+code
+>>>>>>>> base only requires a simple and straightforward way to get debug=
 
-                           October 25 to 27, 2010
-                            Strathmore University
-                      Faculty of Information Technology
-                               Nairobi, Kenya
+>>>>>>>> switches right. Having to make Kconfig a kitchen sink for some u=
+nknown
+>>>>>>>> out of tree modules to be happy is not really my preferred appro=
+ach in
+>>>>>>>> this particular case.
+>>>>>>>>
+>>>>>>>> Don't get me wrong, I'm not opposed to a more decentralized appr=
+oach on
+>>>>>>>> the paper, it's just that I only care about the mainline tree he=
+re.
+>>>>>>> The point is not out-of-tree but robustness. Neither the current
+>>>>>>> decentralized #ifdef-#define nor its centralized brother meet thi=
+s
+>>>>>>> criteria. An approach like the above which forces you to provide =
+all
+>>>>>>> required bits before any of the cases (disabled/enabled) starts t=
+o work
+>>>>>>> does so.
+>>>>>> Ok. What about:
+>>>>>>
+>>>>>> #define __name2(a, b) a ## b
+>>>>>> #define name2(a, b) __name2(a, b)
+>>>>>>
+>>>>>> #define DECLARE_ASSERT_SYMBOL(sym)					\
+>>>>>> 	static const int CONFIG_XENO_OPT_DEBUG_##sym##0 =3D 0,		\
+>>>>>> 		__CONFIG_XENO_OPT_DEBUG_##sym =3D name2(CONFIG_XENO_OPT_DEBUG_##=
+sym, 0)
+>>>>>>
+>>>>>> #define XENO_ASSERT(subsystem,cond,action)  do { \
+>>>>>>     if (unlikely(__CONFIG_XENO_OPT_DEBUG_##subsystem > 0 && !(cond=
+))) { \
+>>>>>>         xnarch_trace_panic_freeze(); \
+>>>>>>         xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __L=
+INE__, (#cond)); \
+>>>>>>         xnarch_trace_panic_dump(); \
+>>>>>>         action; \
+>>>>>>     } \
+>>>>>> } while(0)
+>>>>>>
+>>>>>> DECLARE_ASSERT_SYMBOL(NUCLEUS);
+>>>>>>
+>>>>>> It fails to compile when the debug symbol is set and
+>>>>>> DECLARE_ASSERT_SYMBOL is missing, which plugs the failure of my pr=
+evious
+>>>>>> attempt.
+>>>>> I'm still wrapping my head around this. What would be the usage,
+>>>>>
+>>>>> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
+>>>>> #define CONFIG_XENO_OPT_DEBUG_FOO 0
+>>>>> #endif
+>>>>>
+>>>>> DECLARE_ASSERT_SYMBOL(FOO);
+>>>>>
+>>>>> ? If the compiler is smart enough to still drop the asserts based o=
+n
+>>>>> static const, I'm fine as this is an improvement.
+>>>> No, you just use DECLARE_ASSERT_SYMBOL(FOO)
+>>> Would be nice - if it worked.
+>>>
+>>>>> Still, IMHO, this solution would not even win the second league bea=
+uty
+>>>>> contest (now it comes with as many additional lines as the
+>>>>> Kconfig-approach).
+>>>> Yes, it is not pretty but to add a config option you just add the us=
+ual
+>>>> Kconfig stuff, then DECLARE_ASSERT_SYMBOL in the code instead of the=
+
+>>>> #ifndef #define foo 0 #endif.
+>>>>
+>>>> If you do not do it, you get a compilation error whether the option =
+is
+>>>> enabled or not.
+>>>>
+>>>> It can be decentralized, the find | grep mentioned earlier will stil=
+l work.
+>>> If we can make it work like that, I'm all for it. But:
+>>>
+>>> error: initializer element is not constant
+>>> (when disabled)
+>>>
+>>> or
+>>>
+>>> error: =E2=80=98y0=E2=80=99 undeclared here (not in a function)
+>>> (when enabled)
+>>>
+>>> I'm afraid the preprocessor is not powerful enough for this task (we
+>>> would need macros that include preprocessor conditionals).
+>> The following seems to work for me:
+>>
+>> #define __name2(a, b) a ## b
+>> #define name2(a, b) __name2(a, b)
+>>
+>> #define DECLARE_ASSERT_SYMBOL(sym)                                    =
+  \
+>>         static const int CONFIG_XENO_OPT_DEBUG_##sym##0 =3D 0
+>>
+>> #define XENO_DEBUG(sym) (name2(CONFIG_XENO_OPT_DEBUG_##sym,0) > 0)
+>>
+>> #define XENO_ASSERT(subsystem,cond,action)  do { \
+>>     if (unlikely(XENO_DEBUG(subsystem) && !(cond))) { \
+>>         xnarch_trace_panic_freeze(); \
+>>         xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LINE_=
+_, (#cond)); \
+>>         xnarch_trace_panic_dump(); \
+>>         action; \
+>>     } \
+>> } while(0)
+>>
+>> DECLARE_ASSERT_SYMBOL(NUCLEUS);
+>>
+>=20
+> We only loose the detection of the debug symbol used and not declared i=
+f
+> it is enabled. But this looks to me like a minor issue. Still trying th=
+ough.
+>=20
+
+My compiler still complains about undefined 'y0' in the enabled case.
+
+I'll try to dig into a different direction now: Automatic generation
+during build. This is what the kernel does as well when the preprocessor
+gives up. Would even save the DECLARE and should make everyone happy.
+
+Jan
 
 
-Following the meetings of academics, developers and users of real-time
-and embedded Linux at the previous eleven real-time Linux workshops held
-world-wide (Vienna, Orlando, Milano, Boston, Valencia, Singapore, Lille,
-Lanzhou, Linz, Guadalajara and Dresden) - the Real-Time Linux Workshop
-for 2010 will come to Africa for the first time. It will be held at the
-Strathmore University in Nairobi, Kenya, from October 25 through 27,
-preceded by one week public seminars.
+--------------enig7F2250BEA27E8D26D5B5DBCE
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-Rationale
+iEYEARECAAYFAkvMnoEACgkQitSsb3rl5xRoqACgwRk0L/7c+IhC7zR9gT1HR8hb
+/DoAmgIfnYthtVLabKoEZwQ7VtT/AzdN
+=5GMR
+-----END PGP SIGNATURE-----
 
-Embedded and real-time Linux have been rapidly gaining traction in
-consumer electronics and made significant advance into industrial
-computing. Today, Linux runs a wide range of industrial applications
-including real-time and safety-related systems. This vast pool of
-technology not only has the potential to improve the capabilities of
-computer systems in general but also has the ability to include new
-regions of this world into this creative process. These regions have
-been excluded so far due to the economic constraints involved with
-proprietary development models. Opening the door for the creative
-potential of engineers in Africa, exchanging ideas between diverse
-technical cultures is an essential contribution to advancing the
-capabilities of Open Source.
-
-
-Call for papers
-
-Authors from academics, industry as well as the user community are
-invited to submit papers on original work related to Open Source
-real-time systems. Such work may deal with general topics related to
-Open Source and free-software based real-time systems but also with
-research, experiments and case studies, as well as with issues of
-integration of Open Source real-time and embedded systems. A special
-focus will be on industrial case studies and safety-related systems.
-Topics of interest include, but are not limited to:
-
- * Modifications and variants of the GNU/Linux operating systems
-   extending its real-time capabilities
- * Contributions to real-time Linux variants, drivers and extensions
- * User-mode real-time concepts, implementation and experience
- * Real-time Linux applications, in academia, research and industry
- * Safety-related FLOSS systems
- * Work in progress reports, covering recent developments
- * Educational material on real-time Linux
- * Tools for embedding Linux or real-time Linux and embedded real-time
-   Linux applications
- * RTOS core concepts, RT-safe synchronization mechanisms
- * RT-safe interaction of RT and non RT components
- * IPC mechanisms in RTOS
- * Analysis and benchmarking methods and results of real-time GNU/Linux
-   variants
- * Real-time networking with COTS
- * Medical applications using COTS and FLOSS
- * Debugging techniques and tools, both for code and temporal debugging
-   of core RTOS components, drivers and real-time applications
- * Real-time related extensions to development environments
-
-Abstract submission
-
-   If you wish to present a paper at the workshop, please submit an
-   abstract using the submission page at
-   http://www.osadl.org/RTLWS12-Abstract.submission-form.0.html.
-
-Important dates
-
- * Deadline for abstract submission on June 7, 2010
- * Notification upon acceptance by July 12, 2010
- * Paper submission deadline on September 6, 2010
- * Workshop from October 25 to 27, 2010
-
-Venue of the Strathmore University, Faculty of Information Technology
-
-   Address and location
-
-   Faculty of Information Technology
-   University Auditorium, Phase II
-   Strathmore University
-   Ole Sangale Road, Madaraka Estate
-   P. O. Box 59857-00200
-   Nairobi
-
-   http://www.strathmore.edu/fit/
-
-Program committee
-
- * Alfons Crespo, University Valencia, Spain
- * Carsten Emde, OSADL, Germany
- * Roberto Bucher, University of Applied Sciences of Southern
-   Switzerland, Lugano-Manno, Switzerland
- * Gerhard Fohler, Technische Universit=E4t Kaiserslautern, Germany
- * Kamau Gachigi, School of Engineering, University of Nairobi, Kenya
- * Thomas Gleixner, Linutronix, Germany
- * Nicholas Mc Guire, Lanzhou University, China
- * Hermann H=E4rtig, Technische Universit=E4t Dresden, Germany
- * Paul E. McKenney, IBM
- * Jan Kiszka, Siemens, Germany
- * Miguel Masmano, Universidad Politecnica de Valencia, Spain
- * Peter Okech, Strathmore University, Kenya
- * Odongo William Okello, University of Nairobi, Kenya
- * Daniel Orwa, University of Nairobi, Kenya
- * Zhou Qingguo, Lanzhou University, China
- * Ismael Ripoll, University Valencia, Spain
- * Georg Schiesser, OpenTech, Austria
- * Stefan Sch=F6negger, Bernecker + Rainer, Austria
- * Joseph Sevilla, Strathmore University, Nairobi, Kenya
- * Martin Terbuc, University of Maribor, Slovenia
- * Peter Theuri, University of Nairobi, Kenya
- * Bernhard Zagar, Johanes Keppler University, Austria
- * Peter Zijlstra, Red Hat, Netherlands
-
-Workshop organizers
-
-  * Strathmore University, Faculty of Information Technology, Nairobi,
-    Kenya http://www.strathmore.edu/fit/
-  * OSADL Real Time Linux Foundation Working Group
-    http://www.realtimelinuxfoundation.org/
-  * Distributed and Embedded Systems Lab, Lanzhou University, China
-    http://dslab.lzu.edu.cn
+--------------enig7F2250BEA27E8D26D5B5DBCE--
 
