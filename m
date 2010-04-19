@@ -1,12 +1,12 @@
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Mon, 19 Apr 2010 12:28:47 +0200
-Message-Id: <d3fc7dcfbcafd41d9b440a857e76242fd548903d.1271672940.git.jan.kiszka@domain.hid>
+Date: Mon, 19 Apr 2010 12:28:50 +0200
+Message-Id: <ba4f888a913a0e4b466ee090190faac01aba691a.1271672940.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
 References: <cover.1271672940.git.jan.kiszka@domain.hid>
 In-Reply-To: <cover.1271672940.git.jan.kiszka@domain.hid>
 References: <cover.1271672940.git.jan.kiszka@domain.hid>
-Subject: [Xenomai-core] [PATCH v4 07/25] RTIPC: Drop support for RT socket
-	creation/deletion
+Subject: [Xenomai-core] [PATCH v4 10/25] Analogy: Drop support for
+	opening/closing in real-time
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,58 +16,33 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: Alexis Berlemont <berlemont.hauw@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-This is deprecated now, RT callers will automatically be migrated to
-NRT to perform the requests. Moreover, dropping it allows us to allocate
-resources from Linux instead of using the precious system heap.
+This is deprected now, RT callers will automatically be switched to
+non-RT.
 
-CC: Philippe Gerum <rpm@xenomai.org>
+CC: Alexis Berlemont <berlemont.hauw@domain.hid>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- ksrc/drivers/ipc/rtipc.c |    8 +++-----
- 1 files changed, 3 insertions(+), 5 deletions(-)
+ ksrc/drivers/analogy/rtdm_interface.c |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
 
-diff --git a/ksrc/drivers/ipc/rtipc.c b/ksrc/drivers/ipc/rtipc.c
-index 563cc4e..71629cb 100644
---- a/ksrc/drivers/ipc/rtipc.c
-+++ b/ksrc/drivers/ipc/rtipc.c
-@@ -158,13 +158,13 @@ static int rtipc_socket(struct rtdm_dev_context *context,
+diff --git a/ksrc/drivers/analogy/rtdm_interface.c b/ksrc/drivers/analogy/rtdm_interface.c
+index f769e4a..99abf2f 100644
+--- a/ksrc/drivers/analogy/rtdm_interface.c
++++ b/ksrc/drivers/analogy/rtdm_interface.c
+@@ -227,11 +227,9 @@ static struct rtdm_device rtdm_devs[A4L_NB_DEVICES] =
+ 		.context_size =		sizeof(struct a4l_dummy_context),
+ 		.device_name = 		"",
  
- 	p = rtdm_context_to_private(context);
- 	p->proto = proto;
--	p->state = xnmalloc(proto->proto_statesz);
-+	p->state = kmalloc(proto->proto_statesz, GFP_KERNEL);
- 	if (p->state == NULL)
- 		return -ENOMEM;
+-		.open_rt =		a4l_rt_open,
+ 		.open_nrt =		a4l_rt_open,
  
- 	ret = proto->proto_ops.socket(p, user_info);
- 	if (ret)
--		xnfree(p->state);
-+		kfree(p->state);
- 
- 	return ret;
- }
-@@ -180,7 +180,7 @@ static int rtipc_close(struct rtdm_dev_context *context,
- 	if (ret)
- 		return ret;
- 
--	xnfree(p->state);
-+	kfree(p->state);
- 
- 	return 0;
- }
-@@ -232,10 +232,8 @@ static struct rtdm_device device = {
- 	.device_name	=	"rtipc",
- 	.protocol_family=	PF_RTIPC,
- 	.socket_type	=	SOCK_DGRAM,
--	.socket_rt	=	rtipc_socket,
- 	.socket_nrt	=	rtipc_socket,
- 	.ops = {
--		.close_rt	=	NULL,
- 		.close_nrt	=	rtipc_close,
- 		.recvmsg_rt	=	rtipc_recvmsg,
- 		.recvmsg_nrt	=	NULL,
+ 		.ops = {
+-			.close_rt =	a4l_rt_close,
+ 			.ioctl_rt =	a4l_rt_ioctl,
+ 			.read_rt =	a4l_rt_read,
+ 			.write_rt =	a4l_rt_write,
 -- 
 1.6.0.2
 
