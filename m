@@ -1,11 +1,12 @@
-Message-ID: <4BCD71C5.6080002@domain.hid>
-Date: Tue, 20 Apr 2010 11:20:05 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4BCDA299.9030203@domain.hid>
+Date: Tue, 20 Apr 2010 14:48:25 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+References: <4BCC619E.2@domain.hid> <4BCC6CEE.70907@domain.hid>
+In-Reply-To: <4BCC6CEE.70907@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [pit pull] uitron debug fix and rtdm_rt_capable
-	refinement
+Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -14,25 +15,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-The following changes since commit bc3fefdc8dccc5e77f48f708537d48ff01734a83:
-  Jan Kiszka (1):
-        Move schedule_delayed_work into wrapping header
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Hi,
+>>
+>> I found some code which was referencing directly some
+>> CONFIG_XENO_OPT_DEBUG_ variables with things like:
+>>
+>> #ifdef CONFIG_XENO_OPT_DEBUG_FOO
+>>
+>> This usage is incompatible with the pre-requisites of the assert.h
+>> header that CONFIG_XENO_OPT_DEBUG_FOO should be defined at all times.
+>> While grepping for CONFIG_XENO_OPT_DEBUG_, I found that we also have
+>> many duplicates of construction like:
+>> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
+>> #define CONFIG_XENO_OPT_DEBUG_FOO 0
+>> #endif /* CONFIG_XENO_OPT_DEBUG_FOO */
+>>
+>> So, a patch follows which:
+>> - replace the #ifdef with some #if XENO_DEBUG(FOO)
+> 
+> Should probably come as a separate patch.
+> 
+>> - move all the initializations to assert.h
+>>
+>> This will make any reference to CONFIG_XENO_OPT_DEBUG_FOO outside of
+>> assert.h suspicious, and easy to detect.
+> 
+> How many duplicates did you find?
+> 
+> Generally, I'm more a fan of decentralized management here (e.g. this
+> avoids needless patch conflicts in central files).
 
-are available in the git repository at:
+My latest approach was not really working (it was working, but generated
+warning when compiled with -Wundef, and the kernel is compiled with
+-Wundef). So, let us stop the madness.
 
-  git://git.xenomai.org/xenomai-jki.git for-upstream
+I have merged the following solution:
+- fixed the direct references to CONFIG_XENO_OPT_DEBUG_FOO and replaced
+them with XENO_DEBUG(FOO)
+- moved the duplicate CONFIG_XENO_OPT_DEBUG_FOO initializations which
+did not fit to a particular file to assert.h (actually only QUEUES and
+NUCLEUS), let the other initializations live in peace where they were.
 
-Jan Kiszka (2):
-      uitron: Fix skin debug option
-      RTDM: Restrict use of rtdm_rt_capable
+This is complemented by a check_script whose result on the previous
+xenomai version you can see at:
+http://sisyphus.hd.free.fr/~gilles/bx/distcheck/xenomai/log.html
 
- include/rtdm/rtdm_driver.h |    7 +++++--
- ksrc/skins/rtdm/drvlib.c   |    6 ++++--
- ksrc/skins/uitron/Kconfig  |    9 +++++++++
- ksrc/skins/uitron/ppd.h    |    4 ++--
- 4 files changed, 20 insertions(+), 6 deletions(-)
-
+-- 
+					    Gilles.
 
