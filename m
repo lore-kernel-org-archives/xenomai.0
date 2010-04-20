@@ -1,165 +1,201 @@
-Message-ID: <4BCC9628.7030809@domain.hid>
-Date: Mon, 19 Apr 2010 19:43:04 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4BCC619E.2@domain.hid> <4BCC6CEE.70907@domain.hid>	
-	<4BCC6E3C.3090301@domain.hid> <4BCC7092.1030809@domain.hid>	
-	<4BCC71AF.4030903@domain.hid> <4BCC77BD.9040900@domain.hid>	
-	<4BCC78D5.3010405@domain.hid> <4BCC7D88.4070403@domain.hid>
-	<1271693411.16659.128.camel@domain.hid>
-	<4BCC814C.6050003@domain.hid> <4BCC8484.1020108@domain.hid>
-	<4BCC9107.1080605@domain.hid> <4BCC9247.10709@domain.hid>
-In-Reply-To: <4BCC9247.10709@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigD50406E43F7F2ECE845628B5"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+In-Reply-To: <1271697374.16659.156.camel@domain.hid>
+References: <20100419190151.56913gdansdxkhvk@domain.hid>
+	<1271697374.16659.156.camel@domain.hid>
+Date: Tue, 20 Apr 2010 00:46:46 -0400
+Message-ID: <g2tdd8925a51004192146m3dc41c1la59720974282b961@domain.hid>
+From: Josh Bowman <jbowman@domain.hid>
+Content-Type: multipart/alternative; boundary=0016e68eeeddcb2a5d0484a3c3e8
+Subject: Re: [Xenomai-help] RT_QUEUE problem in Sender/Receiver order
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org, Michel He <michel.he@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD50406E43F7F2ECE845628B5
-Content-Type: text/plain; charset=UTF-8
+--0016e68eeeddcb2a5d0484a3c3e8
+Content-Type: text/plain; charset=ISO-8859-1
+
+Hi,
+
+I'm reluctant to jump in here with my own notably limited psychic powers,
+but I did notice that the code given spawns the receiving tasks before it
+creates the queues that they receive from.  This would create a race
+condition (if a STD_PRIO task can preempt the task that's doing the
+initialization.)
+
+-Josh
+
+On Mon, Apr 19, 2010 at 1:16 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+
+> On Mon, 2010-04-19 at 19:01 +0200, Michel He wrote:
+> >
+> >       err = rt_task_spawn(&test_task2_ptr, "Recep2", STACK_SIZE,
+> STD_PRIO,
+> > 0, &testtask2, NULL);
+> >       if (err) {
+> >               rt_printf("error rt_task_spawn 2\n");
+> >               return 0;
+> >       }
+> >       recvTask[nrecvhost]=&test_task2_ptr;
+> >
+> >       err =
+> > rt_queue_create(&(recvCanal[nrecvhost]),"Recep2CANAL",MAX_MESSAGE_LENGTH,
+> > QUEUE_LIM, Q_FIFO);
+> >
+> >       if (err) {
+> >               rt_printf("error RT_canal_create 2 \n");
+> >               return 0;
+> >       }
+> >       nrecvhost++;
+> >
+> >
+> >       err = rt_task_spawn(&test_task3_ptr, "Recep3", STACK_SIZE,
+> STD_PRIO,
+> > 0, &testtask3, NULL);
+> >       if (err) {
+> >               rt_printf("error rt_task_spawn 3\n");
+> >               return 0;
+> >       }
+> >       recvTask[nrecvhost]=&test_task3_ptr;
+> >
+> >       err =
+> > rt_queue_create(&(recvCanal[nrecvhost]),"Recep3CANAL",MAX_MESSAGE_LENGTH,
+> > QUEUE_LIM, Q_FIFO);
+> >
+> >       if (err) {
+> >               rt_printf("error RT_canal_create 2 \n");
+> >               return 0;
+> >
+> >       }
+> >       nrecvhost++;
+> >
+> >
+> >       err = rt_task_spawn(&test_task_ptr, "Sender", STACK_SIZE, STD_PRIO,
+> > 0, &testtask, NULL);
+> >       if (err) {
+> >               rt_printf("error rt_task_spawn\n");
+> >               return 0;
+> >       }
+> >       recvTask[nrecvhost]=&test_task_ptr;
+> >       nrecvhost++;
+> >
+> >
+> >
+> > testtask2()
+> > {
+> > ...
+> >
+> rcbytes=RT_queue_read(&(recvCanal[0]),&rcvmsg,sizeof(rcvmsg),TM_INFINITE);
+> > }
+> >
+> >
+> > testtask3()
+> > {
+> > ...
+> >
+> rcbytes=RT_queue_read(&(recvCanal[1]),&rcvmsg,sizeof(rcvmsg),TM_INFINITE);
+> > }
+> >
+>
+
+--0016e68eeeddcb2a5d0484a3c3e8
+Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Philippe Gerum wrote:
->>>>>>>> config XENO_OPT_DEBUG_FOO
->>>>>>>> 	bool "..."
->>>>>>>>
->>>>>>>> config XENO_OPT_DEBUG_FOO_P
->>>>>>>> 	int
->>>>>>>> 	default "1" if XENO_OPT_DEBUG_FOO
->>>>>>>> 	default "0"
->>>>>>>>
->>>>>>>> and XENO_DEBUG() could be extended to test for
->>>>>>>> CONFIG_XENO_OPT_DEBUG_FOO_P when given "FOO". I'm just not sure =
-if this
->>>>>>>> can be expressed for legacy 2.4 kernels, so it might have to wai=
-t for
->>>>>>>> Xenomai 3.
->>>>> Well, actually, I would not merge this in Xenomai 3. I find this ra=
-ther
->>>>> overkill; mainline first I mean, and mainline, i.e. the Xenomai cod=
-e
->>>>> base only requires a simple and straightforward way to get debug
->>>>> switches right. Having to make Kconfig a kitchen sink for some unkn=
-own
->>>>> out of tree modules to be happy is not really my preferred approach=
- in
->>>>> this particular case.
->>>>>
->>>>> Don't get me wrong, I'm not opposed to a more decentralized approac=
-h on
->>>>> the paper, it's just that I only care about the mainline tree here.=
+Hi,<br><br>I&#39;m reluctant to jump in here with my own notably limited ps=
+ychic powers, but I did notice that the code given spawns the receiving tas=
+ks before it creates the queues that they receive from.=A0 This would creat=
+e a race condition (if  a STD_PRIO task can preempt  the task that&#39;s do=
+ing the initialization.)<br>
+<br>-Josh<br><br><div class=3D"gmail_quote">On Mon, Apr 19, 2010 at 1:16 PM=
+, Philippe Gerum <span dir=3D"ltr">&lt;<a href=3D"mailto:rpm@xenomai.org">r=
+pm@domain.hid</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" s=
+tyle=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8e=
+x; padding-left: 1ex;">
+<div class=3D"im">On Mon, 2010-04-19 at 19:01 +0200, Michel He wrote:<br></=
+div><div><div class=3D"h5">&gt;<br>
+&gt; =A0 =A0 =A0 err =3D rt_task_spawn(&amp;test_task2_ptr, &quot;Recep2&qu=
+ot;, STACK_SIZE, STD_PRIO,<br>
+&gt; 0, &amp;testtask2, NULL);<br>
+&gt; =A0 =A0 =A0 if (err) {<br>
+&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 rt_printf(&quot;error rt_task_spawn 2\n&qu=
+ot;);<br>
+&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 return 0;<br>
+&gt; =A0 =A0 =A0 }<br>
+&gt; =A0 =A0 =A0 recvTask[nrecvhost]=3D&amp;test_task2_ptr;<br>
+&gt;<br>
+&gt; =A0 =A0 =A0 err =3D<br>
+&gt; rt_queue_create(&amp;(recvCanal[nrecvhost]),&quot;Recep2CANAL&quot;,MA=
+X_MESSAGE_LENGTH,<br>
+&gt; QUEUE_LIM, Q_FIFO);<br>
+&gt;<br>
+&gt; =A0 =A0 =A0 if (err) {<br>
+&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 rt_printf(&quot;error RT_canal_create 2 \n=
+&quot;);<br>
+&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 return 0;<br>
+&gt; =A0 =A0 =A0 }<br>
+&gt; =A0 =A0 =A0 nrecvhost++;<br>
+&gt;<br>
+&gt;<br>
+&gt; =A0 =A0 =A0 err =3D rt_task_spawn(&amp;test_task3_ptr, &quot;Recep3&qu=
+ot;, STACK_SIZE, STD_PRIO,<br>
+&gt; 0, &amp;testtask3, NULL);<br>
+&gt; =A0 =A0 =A0 if (err) {<br>
+&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 rt_printf(&quot;error rt_task_spawn 3\n&qu=
+ot;);<br>
+&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 return 0;<br>
+&gt; =A0 =A0 =A0 }<br>
+&gt; =A0 =A0 =A0 recvTask[nrecvhost]=3D&amp;test_task3_ptr;<br>
+&gt;<br>
+&gt; =A0 =A0 =A0 err =3D<br>
+&gt; rt_queue_create(&amp;(recvCanal[nrecvhost]),&quot;Recep3CANAL&quot;,MA=
+X_MESSAGE_LENGTH,<br>
+&gt; QUEUE_LIM, Q_FIFO);<br>
+&gt;<br>
+&gt; =A0 =A0 =A0 if (err) {<br>
+&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 rt_printf(&quot;error RT_canal_create 2 \n=
+&quot;);<br>
+&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 return 0;<br>
+&gt;<br>
+&gt; =A0 =A0 =A0 }<br>
+&gt; =A0 =A0 =A0 nrecvhost++;<br>
+&gt;<br>
+&gt;<br>
+&gt; =A0 =A0 =A0 err =3D rt_task_spawn(&amp;test_task_ptr, &quot;Sender&quo=
+t;, STACK_SIZE, STD_PRIO,<br>
+&gt; 0, &amp;testtask, NULL);<br>
+&gt; =A0 =A0 =A0 if (err) {<br>
+&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 rt_printf(&quot;error rt_task_spawn\n&quot=
+;);<br>
+&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 return 0;<br>
+&gt; =A0 =A0 =A0 }<br>
+&gt; =A0 =A0 =A0 recvTask[nrecvhost]=3D&amp;test_task_ptr;<br>
+&gt; =A0 =A0 =A0 nrecvhost++;<br>
+&gt;<br>
+&gt;<br>
+&gt;<br>
+&gt; testtask2()<br>
+&gt; {<br>
+&gt; ...<br>
+&gt; rcbytes=3DRT_queue_read(&amp;(recvCanal[0]),&amp;rcvmsg,sizeof(rcvmsg)=
+,TM_INFINITE);<br>
+&gt; }<br>
+&gt;<br>
+&gt;<br>
+&gt; testtask3()<br>
+&gt; {<br>
+&gt; ...<br>
+&gt; rcbytes=3DRT_queue_read(&amp;(recvCanal[1]),&amp;rcvmsg,sizeof(rcvmsg)=
+,TM_INFINITE);<br>
+&gt; }<br>
+&gt;<br></div></div></blockquote></div><br>
 
->>>> The point is not out-of-tree but robustness. Neither the current
->>>> decentralized #ifdef-#define nor its centralized brother meet this
->>>> criteria. An approach like the above which forces you to provide all=
-
->>>> required bits before any of the cases (disabled/enabled) starts to w=
-ork
->>>> does so.
->>> Ok. What about:
->>>
->>> #define __name2(a, b) a ## b
->>> #define name2(a, b) __name2(a, b)
->>>
->>> #define DECLARE_ASSERT_SYMBOL(sym)					\
->>> 	static const int CONFIG_XENO_OPT_DEBUG_##sym##0 =3D 0,		\
->>> 		__CONFIG_XENO_OPT_DEBUG_##sym =3D name2(CONFIG_XENO_OPT_DEBUG_##sym=
-, 0)
->>>
->>> #define XENO_ASSERT(subsystem,cond,action)  do { \
->>>     if (unlikely(__CONFIG_XENO_OPT_DEBUG_##subsystem > 0 && !(cond)))=
- { \
->>>         xnarch_trace_panic_freeze(); \
->>>         xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LINE=
-__, (#cond)); \
->>>         xnarch_trace_panic_dump(); \
->>>         action; \
->>>     } \
->>> } while(0)
->>>
->>> DECLARE_ASSERT_SYMBOL(NUCLEUS);
->>>
->>> It fails to compile when the debug symbol is set and
->>> DECLARE_ASSERT_SYMBOL is missing, which plugs the failure of my previ=
-ous
->>> attempt.
->> I'm still wrapping my head around this. What would be the usage,
->>
->> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
->> #define CONFIG_XENO_OPT_DEBUG_FOO 0
->> #endif
->>
->> DECLARE_ASSERT_SYMBOL(FOO);
->>
->> ? If the compiler is smart enough to still drop the asserts based on
->> static const, I'm fine as this is an improvement.
->=20
-> No, you just use DECLARE_ASSERT_SYMBOL(FOO)
-
-Would be nice - if it worked.
-
->=20
->> Still, IMHO, this solution would not even win the second league beauty=
-
->> contest (now it comes with as many additional lines as the
->> Kconfig-approach).
->=20
-> Yes, it is not pretty but to add a config option you just add the usual=
-
-> Kconfig stuff, then DECLARE_ASSERT_SYMBOL in the code instead of the
-> #ifndef #define foo 0 #endif.
->=20
-> If you do not do it, you get a compilation error whether the option is
-> enabled or not.
->=20
-> It can be decentralized, the find | grep mentioned earlier will still w=
-ork.
-
-If we can make it work like that, I'm all for it. But:
-
-error: initializer element is not constant
-(when disabled)
-
-or
-
-error: =E2=80=98y0=E2=80=99 undeclared here (not in a function)
-(when enabled)
-
-I'm afraid the preprocessor is not powerful enough for this task (we
-would need macros that include preprocessor conditionals).
-
-Jan
-
-
---------------enigD50406E43F7F2ECE845628B5
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkvMljUACgkQitSsb3rl5xRD+QCfcUJ/9x29R8ITmsnPFKPCbo+N
-7s4An18/lizSSspQxd9GXEi61JJyFqo/
-=MW5i
------END PGP SIGNATURE-----
-
---------------enigD50406E43F7F2ECE845628B5--
+--0016e68eeeddcb2a5d0484a3c3e8--
 
