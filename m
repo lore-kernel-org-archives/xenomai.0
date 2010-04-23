@@ -1,144 +1,81 @@
-Message-ID: <4BCC993E.6020402@domain.hid>
-Date: Mon, 19 Apr 2010 19:56:14 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4BD18F49.9060206@domain.hid>
+Date: Fri, 23 Apr 2010 14:15:05 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4BCC619E.2@domain.hid> <4BCC6CEE.70907@domain.hid>	
-	<4BCC6E3C.3090301@domain.hid> <4BCC7092.1030809@domain.hid>	
-	<4BCC71AF.4030903@domain.hid> <4BCC77BD.9040900@domain.hid>	
-	<4BCC78D5.3010405@domain.hid> <4BCC7D88.4070403@domain.hid>
-	<1271693411.16659.128.camel@domain.hid>
-	<4BCC814C.6050003@domain.hid> <4BCC8484.1020108@domain.hid>
-	<4BCC9107.1080605@domain.hid> <4BCC9247.10709@domain.hid>
-	<4BCC9628.7030809@domain.hid>
-In-Reply-To: <4BCC9628.7030809@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <loom.20100423T115628-343@domain.hid>
+In-Reply-To: <loom.20100423T115628-343@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai 2.5.1: trace_mark usable on 2.6.30.1
+	without LTT patch?
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Joerg Albert <jal2@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Gilles Chanteperdrix wrote:
->>>> Jan Kiszka wrote:
->>>>> Philippe Gerum wrote:
->>>>>>>>> config XENO_OPT_DEBUG_FOO
->>>>>>>>> 	bool "..."
->>>>>>>>>
->>>>>>>>> config XENO_OPT_DEBUG_FOO_P
->>>>>>>>> 	int
->>>>>>>>> 	default "1" if XENO_OPT_DEBUG_FOO
->>>>>>>>> 	default "0"
->>>>>>>>>
->>>>>>>>> and XENO_DEBUG() could be extended to test for
->>>>>>>>> CONFIG_XENO_OPT_DEBUG_FOO_P when given "FOO". I'm just not sure=
- if this
->>>>>>>>> can be expressed for legacy 2.4 kernels, so it might have to wa=
-it for
->>>>>>>>> Xenomai 3.
->>>>>> Well, actually, I would not merge this in Xenomai 3. I find this r=
-ather
->>>>>> overkill; mainline first I mean, and mainline, i.e. the Xenomai co=
-de
->>>>>> base only requires a simple and straightforward way to get debug
->>>>>> switches right. Having to make Kconfig a kitchen sink for some unk=
-nown
->>>>>> out of tree modules to be happy is not really my preferred approac=
-h in
->>>>>> this particular case.
->>>>>>
->>>>>> Don't get me wrong, I'm not opposed to a more decentralized approa=
-ch on
->>>>>> the paper, it's just that I only care about the mainline tree here=
-=2E
->>>>> The point is not out-of-tree but robustness. Neither the current
->>>>> decentralized #ifdef-#define nor its centralized brother meet this
->>>>> criteria. An approach like the above which forces you to provide al=
-l
->>>>> required bits before any of the cases (disabled/enabled) starts to =
-work
->>>>> does so.
->>>> Ok. What about:
->>>>
->>>> #define __name2(a, b) a ## b
->>>> #define name2(a, b) __name2(a, b)
->>>>
->>>> #define DECLARE_ASSERT_SYMBOL(sym)					\
->>>> 	static const int CONFIG_XENO_OPT_DEBUG_##sym##0 =3D 0,		\
->>>> 		__CONFIG_XENO_OPT_DEBUG_##sym =3D name2(CONFIG_XENO_OPT_DEBUG_##sy=
-m, 0)
->>>>
->>>> #define XENO_ASSERT(subsystem,cond,action)  do { \
->>>>     if (unlikely(__CONFIG_XENO_OPT_DEBUG_##subsystem > 0 && !(cond))=
-) { \
->>>>         xnarch_trace_panic_freeze(); \
->>>>         xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LIN=
-E__, (#cond)); \
->>>>         xnarch_trace_panic_dump(); \
->>>>         action; \
->>>>     } \
->>>> } while(0)
->>>>
->>>> DECLARE_ASSERT_SYMBOL(NUCLEUS);
->>>>
->>>> It fails to compile when the debug symbol is set and
->>>> DECLARE_ASSERT_SYMBOL is missing, which plugs the failure of my prev=
-ious
->>>> attempt.
->>> I'm still wrapping my head around this. What would be the usage,
->>>
->>> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
->>> #define CONFIG_XENO_OPT_DEBUG_FOO 0
->>> #endif
->>>
->>> DECLARE_ASSERT_SYMBOL(FOO);
->>>
->>> ? If the compiler is smart enough to still drop the asserts based on
->>> static const, I'm fine as this is an improvement.
->> No, you just use DECLARE_ASSERT_SYMBOL(FOO)
->=20
-> Would be nice - if it worked.
->=20
->>> Still, IMHO, this solution would not even win the second league beaut=
-y
->>> contest (now it comes with as many additional lines as the
->>> Kconfig-approach).
->> Yes, it is not pretty but to add a config option you just add the usua=
-l
->> Kconfig stuff, then DECLARE_ASSERT_SYMBOL in the code instead of the
->> #ifndef #define foo 0 #endif.
->>
->> If you do not do it, you get a compilation error whether the option is=
+Joerg Albert wrote:
+> Hi,
+> 
+> I run Xenomai 2.5.1 on top of ipipe-2.6.30-powerpc-2.7-01 from
+> http://git.denx.de/ipipe-2.6.git with Adeos updated from 2.7-01 to 2.7-06.
+> Platform is a MPC8533.
+> 
+> In order to track down a problem I'd like to use trace_mark() (with my own probe
+> function), but I'm a bit confused by the code in
+> include/asm-generic/xenomai/wrappers.h:
+> 
+> #ifdef CONFIG_LTT
+> 
+> #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24)
+> #define trace_mark(channel, ev, fmt, args...)	\
+> 	MARK(channel##_##ev, fmt , ##args)
+> #else /* >= 2.6.24 */
+> #include <linux/marker.h>
+> #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,27)
+> #undef trace_mark
+> #define trace_mark(channel, ev, fmt, args...)	\
+> 	__trace_mark(0, channel##_##ev, NULL, fmt, ## args)
+> #endif /* < 2.6.27 */
+> #endif /* >= 2.6.24 */
+> 
+> #else /* !CONFIG_LTT */
+> #undef trace_mark
+> #define trace_mark(channel, ev, fmt, args...)	do { } while (0)
+> #endif /* !CONFIG_LTT */
+> 
+> 
+> My kernel doesn't provide CONFIG_LTT and its trace_mark() implementation in
+> include/linux/marker.h is:
+> #define trace_mark(name, format, args...)
+> 
+> Does this imply that I have trace_mark inside the Xenomai code only after
+> applying some additional LTT patch to the kernel?
 
->> enabled or not.
->>
->> It can be decentralized, the find | grep mentioned earlier will still =
-work.
->=20
-> If we can make it work like that, I'm all for it. But:
->=20
-> error: initializer element is not constant
-> (when disabled)
+Yes and no.
 
-Right, I get this one. I only tested with the preprocessor.
+No, as you just have to register your tracing back-end with the marker
+subsystem (and make sure that the latter is enabled). That's what LTT
+did as well. Check linux/samples/markers.
 
-> or
->=20
-> error: =E2=80=98y0=E2=80=99 undeclared here (not in a function)
-> (when enabled)
+Yes, because some bits of the LTT-for-Ipipe patch [1] perpare the marker
+call path for use over Xenomai.
 
-However, it works for me when enabled. Trying harder now.
+BTW, as trace_mark disappeared again with kernel 2.6.32, we have to
+rework this in the near future, hopefully being able to exploit native
+tracing (aka ftrace) this time.
 
---=20
-					    Gilles.
+Jan
 
+[1]http://git.kiszka.org/?p=ipipe-2.6.git;a=commitdiff;h=c4574be8999093f556ae386fa299e05d72132543
+
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
