@@ -1,16 +1,17 @@
-Message-ID: <4BCC814C.6050003@domain.hid>
-Date: Mon, 19 Apr 2010 18:14:04 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <4BCC619E.2@domain.hid> <4BCC6CEE.70907@domain.hid>	
-	<4BCC6E3C.3090301@domain.hid> <4BCC7092.1030809@domain.hid>	
-	<4BCC71AF.4030903@domain.hid> <4BCC77BD.9040900@domain.hid>	
-	<4BCC78D5.3010405@domain.hid> <4BCC7D88.4070403@domain.hid>
-	<1271693411.16659.128.camel@domain.hid>
-In-Reply-To: <1271693411.16659.128.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4BD1E55E.2080604@domain.hid>
+References: <4B9A5CDA.7080704@domain.hid>
+	<1272020668.9515.763.camel@domain.hid>
+	<4BD18F79.6080708@domain.hid>
+	<1272032336.28983.21.camel@domain.hid>
+	<1272033034.28983.28.camel@domain.hid>
+	<4BD1E55E.2080604@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Fri, 23 Apr 2010 23:38:51 +0200
+Message-ID: <1272058731.28983.119.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
+Subject: Re: [Xenomai-core] [Adeos-main]  [RFC] KVM over Xenomai and I-pipe
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -19,107 +20,154 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: adeos-main <adeos-main@gna.org>, xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> On Mon, 2010-04-19 at 17:58 +0200, Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> Jan Kiszka wrote:
->>>>>> Gilles Chanteperdrix wrote:
->>>>>>> Jan Kiszka wrote:
->>>>>>>> Gilles Chanteperdrix wrote:
->>>>>>>>> Hi,
->>>>>>>>>
->>>>>>>>> I found some code which was referencing directly some
->>>>>>>>> CONFIG_XENO_OPT_DEBUG_ variables with things like:
->>>>>>>>>
->>>>>>>>> #ifdef CONFIG_XENO_OPT_DEBUG_FOO
->>>>>>>>>
->>>>>>>>> This usage is incompatible with the pre-requisites of the assert.h
->>>>>>>>> header that CONFIG_XENO_OPT_DEBUG_FOO should be defined at all times.
->>>>>>>>> While grepping for CONFIG_XENO_OPT_DEBUG_, I found that we also have
->>>>>>>>> many duplicates of construction like:
->>>>>>>>> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
->>>>>>>>> #define CONFIG_XENO_OPT_DEBUG_FOO 0
->>>>>>>>> #endif /* CONFIG_XENO_OPT_DEBUG_FOO */
->>>>>>>>>
->>>>>>>>> So, a patch follows which:
->>>>>>>>> - replace the #ifdef with some #if XENO_DEBUG(FOO)
->>>>>>>> Should probably come as a separate patch.
->>>>>>> Come on, the patch is simple, one patch for this is enough.
->>>>>> One part is an obvious fix, the other a refactoring under discussion.
->>>>>>
->>>>>>>>> - move all the initializations to assert.h
->>>>>>>>>
->>>>>>>>> This will make any reference to CONFIG_XENO_OPT_DEBUG_FOO outside of
->>>>>>>>> assert.h suspicious, and easy to detect.
->>>>>>>> How many duplicates did you find?
->>>>>>> A lot, especially for CONFIG_XENO_OPT_DEBUG_NUCLEUS
->>>>>> That's because the CONFIG_XENO_OPT_DEBUG_NUCLEUS defines were misplaced.
->>>>>> Besides that we had one CONFIG_XENO_OPT_DEBUG_QUEUE duplicate, but tons
->>>>>> of proper users. I don't see such an immediate need.
->>>>>>
->>>>>> When adding this kind of switching, it's till more handy to have things
->>>>>> locally in your subsystem. That also makes reviewing easier when you
->>>>>> only find changes in files that belong to a subsystem.
->>>>> That is not the main point, the main point is that putting all these
->>>>> defines in one files allow to detect easily direct references to the
->>>>> symbols.
->>>>>
->>>>>>>> Generally, I'm more a fan of decentralized management here (e.g. this
->>>>>>>> avoids needless patch conflicts in central files).
->>>>>>> If we maintain the list in alphabetical order (which I have done), we 
->>>>>>> reduce the likeliness for conflicts. The aim of doing this is also that 
->>>>>>> I can check that the sources are clean with:
->>>>>>>
->>>>>>> find xenomai-2.5 ! -name 'assert.h' -name '*.[ch]' | xargs grep CONFIG_XENO_OPT_DEBUG_
->>>>>>>
->>>>>>> And that I can add this test to the automated build test.
->>>>>>>
->>>>>>> Note that forgetting to add a #define to the list yields an immediate
->>>>>>> compilation error. So, the patch makes things completely safe.
->>>>>> What did you change to make this happen (for new users of XENO_DEBUG)?
->>>>> Nothing. If you forget to add the define, and do not enable the debug
->>>>> option (which everybody does most of the time), you get a compilation
->>>>> error.
->>>> The alternative (and decentralized) approach for fixing this consists of
->>>> Kconfig magic for generating the value:
->>>>
->>>> config XENO_OPT_DEBUG_FOO
->>>> 	bool "..."
->>>>
->>>> config XENO_OPT_DEBUG_FOO_P
->>>> 	int
->>>> 	default "1" if XENO_OPT_DEBUG_FOO
->>>> 	default "0"
->>>>
->>>> and XENO_DEBUG() could be extended to test for
->>>> CONFIG_XENO_OPT_DEBUG_FOO_P when given "FOO". I'm just not sure if this
->>>> can be expressed for legacy 2.4 kernels, so it might have to wait for
->>>> Xenomai 3.
+On Fri, 2010-04-23 at 20:22 +0200, Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> > On Fri, 2010-04-23 at 16:18 +0200, Philippe Gerum wrote:
+> >> On Fri, 2010-04-23 at 14:15 +0200, Jan Kiszka wrote:
+> >>> [ dropping xenomai-help before going into details ]
+> >>>
+> >>> Philippe Gerum wrote:
+> >>>> On Fri, 2010-03-12 at 16:25 +0100, Jan Kiszka wrote:
+> >>>>> Hi,
+> >>>>>
+> >>>>> this is still in the state "study", but it is working fairly nicely so far:
+> >>>>>
+> >>>>> These two patches harden latest KVM for use over I-pipe kernels and make
+> >>>>> Xenomai aware of the lazy host state restoring that KVM uses for
+> >>>>> performance reasons. The latter basically means calling the sched-out
+> >>>>> notifier that KVM registers with the kernel when switching from a Linux
+> >>>>> task to some shadow. This is safe in all recent versions of KVM and
+> >>>>> still gives nice KVM performance (that of KVM before 2.6.32) without
+> >>>>> significant impact on the RT latency (Note: if you have an old VT-x CPU,
+> >>>>> guest-issued wbinvd will ruin RT as it is not intercepted by the hardware!).
+> >>>>>
+> >>>>> To test it, you need to apply the kernel patch on top of current kvm.git
+> >>>>> master [1], obtain kvm-kmod.git [2], run configure on it (assuming your
+> >>>>> host kernel is a Xenomai one, otherwise use --kerneldir) and then "make
+> >>>>> sync-kmod LINUX=/path/to/kvm.git". After a final make && make install,
+> >>>>> you will have recent kvm modules that are I-pipe aware. The Xenomai
+> >>>>> patch simply appies to the 2.5 tree. This has been tested with
+> >>>>> ipipe-2.6.32-x86-2.6-01 + [3] and Xenomai-2.5 git.
+> >>>>>
+> >>>>> Feedback welcome, specifically if you think it's worth integrating both
+> >>>>> patches into upstream. The kernel bits would make sense over some
+> >>>>> 2.6.33-x86, but additional work will be required to account for the
+> >>>>> user-return notifiers introduced with that release (kvm-kmod currently
+> >>>>> wraps them away for older kernels).
+> >>>> No concern on the final goal, running a Xenomai-enabled kernel
+> >>>> rock-solid over KVM is a must.
+> >>>>
+> >>>> The KVM code ironing from the 1st patch looks fine to me, no big deal to
+> >>>> maintain AFAICS. I would be only concerned by the 2nd patch,
+> >>>> specifically how the KVM callout is invoked from the Xenomai context
+> >>>> switching code:
+> >>>>
+> >>>> - depending on CONFIG_PREEMPT_NOTIFIERS is much broader than required; I
+> >>>> guess that CONFIG_KVM would be enough.
+> >>> So far, only CONFIG_KVM enables CONFIG_PREEMPT_NOTIFIERS. Granted, this
+> >>> could change in the future. But letting our invocation depend on
+> >>> CONFIG_KVM would not automatically remove the need to review those new
+> >>> notifiers (BTW, there would be a fairly high probability that those will
+> >>> be of some use for Xenomai as well).
+> >>>
+> >>>> - calling the KVM callout directly instead of going through the notifier
+> >>>> list would be more acceptable, so that we don't assume anything from the
+> >>>> non-KVM hooks (whether they exist or not), albeit we may assume that we
+> >>>> have complete information about which KVM callout has to be run for a
+> >>>> particular kernel version.
+> >>> Possible, but hacky. We would have to
+> >>>
+> >>> - export the callback from the KVM module
+> >>>   (this will also mean the nucleus will depend on CONFIG_KVM if the
+> >>>   latter is on)
+> >> Which is already the case for a number of knobs anyway (particularly on
+> >> x86*).
 > 
-> Well, actually, I would not merge this in Xenomai 3. I find this rather
-> overkill; mainline first I mean, and mainline, i.e. the Xenomai code
-> base only requires a simple and straightforward way to get debug
-> switches right. Having to make Kconfig a kitchen sink for some unknown
-> out of tree modules to be happy is not really my preferred approach in
-> this particular case.
+> The difference is that kvm can be configured as _module_. Simply
+> exporting won't be enough.
 > 
-> Don't get me wrong, I'm not opposed to a more decentralized approach on
-> the paper, it's just that I only care about the mainline tree here.
 
-The point is not out-of-tree but robustness. Neither the current
-decentralized #ifdef-#define nor its centralized brother meet this
-criteria. An approach like the above which forces you to provide all
-required bits before any of the cases (disabled/enabled) starts to work
-does so.
+Quite frankly, I see no showstopper in forcing a statically built KVM
+whenever Xenomai is enabled, provided we do that onmy when say,
+CONFIG_XENOMAI_VMCLIENT is switched on. Would you see a significant
+feature loss in removing modular support for KVM in this context?
 
-Jan
+> >>
+> >>> - somehow get hold of the notifier entry (I have no clue how as they are
+> >>>   per-vcpu)
+> >>> - invoke the callback directly, passing that notifier entry
+> >>>
+> >> This is what I had in mind in my post.
+> > 
+> > Sorry, wrong read: what I had in mind, was simply to identify the KVM
+> > hook within the code, and forge a correct call interface, whatever this
+> > means (i.e. with the original notifier entry, or by providing a second
+> > hook entry point which would not require such notifier entry).
+> 
+> As KVM registers dynamically with the notifier chain (when the
+> corresponding VCPU is scheduled in an out), getting the right context is
+> tricky unless you reuse the notifier chain or let I-pipe provide another
+> callback interface.
+> 
+> > 
+> >>> or
+> >>>
+> >>> - identify the KVM callback in the notifier chain and only call that one
+> >>>   when walking the list
+> >> I don't see any upside to this yet. If this is about context preparation
+> >> that would be done by the notification system, then we'd better off
+> >> mimicking it, instead of introducing kludges to reuse it.
+> 
+> Mimicking will mean (almost) 1:1 copying.
+
+Yes, for sure. That's the price to pay, I guess, like for anything we
+must reuse from the innards.
+
+> 
+> >>
+> >>> The latter could be achieved by somehow tagging KVM notifiers in order
+> >>> to find them when walking the chain. Still quite some patching, and I'm
+> >>> not yet sure it's worth the safety gain.
+> >> The point is that we shall check whether our coupling to the KVM system
+> >> is correct, for each kernel version we want to support anyway. This
+> >> means that some preparation work has to be done, whether it is by
+> >> inspecting the possibly NMI-unsafe notifier hooks or the interface rules
+> >> to the KVM hook is not the most important thing here.
+> >>
+> >> If you definition of "hacky" here means "ad hoc", in any case, any
+> >> implementation you could find would be hacky, because Xenomai introduces
+> >> a context switching spot in a kernel that does not expect it, and as
+> >> such, we do bypass the normal paths for this. Therefore, I see no way to
+> >> do this without exactly knowing the kernel/KVM context, on a per-release
+> >> basis.
+> 
+> Right, that's what we already have to know in order to reuse e.g.
+> switch_mm safely. The preempt notifier plays in the same league as they
+> are there to inform subsystems about such kind of switches.
+> 
+> So we have two basic options:
+>  - patch KVM to additionally register callbacks with I-pipe
+>    (ipipe_preempt_notifiers)
+>  - reuse the existing sched_out notifier, keeping an eye on potential
+>    new users (they exist since 2.6.23 - without anyone else showing
+>    interest so far)
+> 
+> In both case, we will pull some tricky parts of KVM on our review list,
+> that's unavoidable. But as long as we reuse well-established interfaces
+> for this, I'm not too concerned about this.
+> 
+
+Ack.
+
+> Jan
+> 
+
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Philippe.
+
+
 
