@@ -1,17 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4BD1E55E.2080604@domain.hid>
-References: <4B9A5CDA.7080704@domain.hid>
-	<1272020668.9515.763.camel@domain.hid>
-	<4BD18F79.6080708@domain.hid>
-	<1272032336.28983.21.camel@domain.hid>
-	<1272033034.28983.28.camel@domain.hid>
-	<4BD1E55E.2080604@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 23 Apr 2010 23:38:51 +0200
-Message-ID: <1272058731.28983.119.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Adeos-main]  [RFC] KVM over Xenomai and I-pipe
+Date: Sun, 25 Apr 2010 00:20:30 +0200
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <20100424222030.GA3143@domain.hid>
+References: <4BA259D1.4020704@domain.hid> <4BA2BFCF.8010000@domain.hid>
+	<4BB0F428.5050905@domain.hid> <20100405215416.GA2522@domain.hid>
+	<0B3F00B1-55F9-4239-A154-E63EAE89072B@usc.edu>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0B3F00B1-55F9-4239-A154-E63EAE89072B@usc.edu>
+Subject: Re: [Xenomai-core] Analogy: cmd_bits
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -20,154 +17,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>, xenomai-core <xenomai@xenomai.org>
+To: Stefan Schaal <sschaal@domain.hid>
+Cc: Peter Pastor Sampedro <pastorsa@domain.hid>, xenomai@xenomai.org
 
-On Fri, 2010-04-23 at 20:22 +0200, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> > On Fri, 2010-04-23 at 16:18 +0200, Philippe Gerum wrote:
-> >> On Fri, 2010-04-23 at 14:15 +0200, Jan Kiszka wrote:
-> >>> [ dropping xenomai-help before going into details ]
-> >>>
-> >>> Philippe Gerum wrote:
-> >>>> On Fri, 2010-03-12 at 16:25 +0100, Jan Kiszka wrote:
-> >>>>> Hi,
-> >>>>>
-> >>>>> this is still in the state "study", but it is working fairly nicely so far:
-> >>>>>
-> >>>>> These two patches harden latest KVM for use over I-pipe kernels and make
-> >>>>> Xenomai aware of the lazy host state restoring that KVM uses for
-> >>>>> performance reasons. The latter basically means calling the sched-out
-> >>>>> notifier that KVM registers with the kernel when switching from a Linux
-> >>>>> task to some shadow. This is safe in all recent versions of KVM and
-> >>>>> still gives nice KVM performance (that of KVM before 2.6.32) without
-> >>>>> significant impact on the RT latency (Note: if you have an old VT-x CPU,
-> >>>>> guest-issued wbinvd will ruin RT as it is not intercepted by the hardware!).
-> >>>>>
-> >>>>> To test it, you need to apply the kernel patch on top of current kvm.git
-> >>>>> master [1], obtain kvm-kmod.git [2], run configure on it (assuming your
-> >>>>> host kernel is a Xenomai one, otherwise use --kerneldir) and then "make
-> >>>>> sync-kmod LINUX=/path/to/kvm.git". After a final make && make install,
-> >>>>> you will have recent kvm modules that are I-pipe aware. The Xenomai
-> >>>>> patch simply appies to the 2.5 tree. This has been tested with
-> >>>>> ipipe-2.6.32-x86-2.6-01 + [3] and Xenomai-2.5 git.
-> >>>>>
-> >>>>> Feedback welcome, specifically if you think it's worth integrating both
-> >>>>> patches into upstream. The kernel bits would make sense over some
-> >>>>> 2.6.33-x86, but additional work will be required to account for the
-> >>>>> user-return notifiers introduced with that release (kvm-kmod currently
-> >>>>> wraps them away for older kernels).
-> >>>> No concern on the final goal, running a Xenomai-enabled kernel
-> >>>> rock-solid over KVM is a must.
-> >>>>
-> >>>> The KVM code ironing from the 1st patch looks fine to me, no big deal to
-> >>>> maintain AFAICS. I would be only concerned by the 2nd patch,
-> >>>> specifically how the KVM callout is invoked from the Xenomai context
-> >>>> switching code:
-> >>>>
-> >>>> - depending on CONFIG_PREEMPT_NOTIFIERS is much broader than required; I
-> >>>> guess that CONFIG_KVM would be enough.
-> >>> So far, only CONFIG_KVM enables CONFIG_PREEMPT_NOTIFIERS. Granted, this
-> >>> could change in the future. But letting our invocation depend on
-> >>> CONFIG_KVM would not automatically remove the need to review those new
-> >>> notifiers (BTW, there would be a fairly high probability that those will
-> >>> be of some use for Xenomai as well).
-> >>>
-> >>>> - calling the KVM callout directly instead of going through the notifier
-> >>>> list would be more acceptable, so that we don't assume anything from the
-> >>>> non-KVM hooks (whether they exist or not), albeit we may assume that we
-> >>>> have complete information about which KVM callout has to be run for a
-> >>>> particular kernel version.
-> >>> Possible, but hacky. We would have to
-> >>>
-> >>> - export the callback from the KVM module
-> >>>   (this will also mean the nucleus will depend on CONFIG_KVM if the
-> >>>   latter is on)
-> >> Which is already the case for a number of knobs anyway (particularly on
-> >> x86*).
-> 
-> The difference is that kvm can be configured as _module_. Simply
-> exporting won't be enough.
-> 
+Hi,
 
-Quite frankly, I see no showstopper in forcing a statically built KVM
-whenever Xenomai is enabled, provided we do that onmy when say,
-CONFIG_XENOMAI_VMCLIENT is switched on. Would you see a significant
-feature loss in removing modular support for KVM in this context?
+Stefan Schaal wrote:
+> I tried the new cmd_bits function today to use commands to write to a DIO device on my NI6259 board (thanks a lot, Alexis, for starting this!). Unfortunately, cmd_bits terminates with an error:
+> 
+> root@domain.hid> ./cmd_bits -v -s 2 0xffffffff 0xffffffff
+> cmd_bits: device analogy0 opened (fd=0)
+> cmd_bits: basic descriptor retrieved
+> 	 subdevices count = 14
+> 	 read subdevice index = 0
+> 	 write subdevice index = 1
+> cmd_bits: complex descriptor retrieved
+> cmd_bits: selected subdevice index = 2
+> cmd_bits: command successfully sent
+> cmd_bits: a4l_write failed (err=-2) (count=0)       
+> (I added a counter in the while loop in cmd_bits.c, and the error occurs immediately after the while loop is entered, i.e., count=0)
+> 
+> root@domain.hid> dmesg
+> [63462.716029] Analogy: a4l_write: idle subdevice
 
-> >>
-> >>> - somehow get hold of the notifier entry (I have no clue how as they are
-> >>>   per-vcpu)
-> >>> - invoke the callback directly, passing that notifier entry
-> >>>
-> >> This is what I had in mind in my post.
-> > 
-> > Sorry, wrong read: what I had in mind, was simply to identify the KVM
-> > hook within the code, and forge a correct call interface, whatever this
-> > means (i.e. with the original notifier entry, or by providing a second
-> > hook entry point which would not require such notifier entry).
-> 
-> As KVM registers dynamically with the notifier chain (when the
-> corresponding VCPU is scheduled in an out), getting the right context is
-> tricky unless you reuse the notifier chain or let I-pipe provide another
-> callback interface.
-> 
-> > 
-> >>> or
-> >>>
-> >>> - identify the KVM callback in the notifier chain and only call that one
-> >>>   when walking the list
-> >> I don't see any upside to this yet. If this is about context preparation
-> >> that would be done by the notification system, then we'd better off
-> >> mimicking it, instead of introducing kludges to reuse it.
-> 
-> Mimicking will mean (almost) 1:1 copying.
-
-Yes, for sure. That's the price to pay, I guess, like for anything we
-must reuse from the innards.
+I noticed this bug. I am working on it. This test program disclosed an
+annoying bug which needs some time to fix: a4l_async_write() returned
+"idle subdevice" because the subdevice index is wrongly retrieved.
 
 > 
-> >>
-> >>> The latter could be achieved by somehow tagging KVM notifiers in order
-> >>> to find them when walking the chain. Still quite some patching, and I'm
-> >>> not yet sure it's worth the safety gain.
-> >> The point is that we shall check whether our coupling to the KVM system
-> >> is correct, for each kernel version we want to support anyway. This
-> >> means that some preparation work has to be done, whether it is by
-> >> inspecting the possibly NMI-unsafe notifier hooks or the interface rules
-> >> to the KVM hook is not the most important thing here.
-> >>
-> >> If you definition of "hacky" here means "ad hoc", in any case, any
-> >> implementation you could find would be hacky, because Xenomai introduces
-> >> a context switching spot in a kernel that does not expect it, and as
-> >> such, we do bypass the normal paths for this. Therefore, I see no way to
-> >> do this without exactly knowing the kernel/KVM context, on a per-release
-> >> basis.
+> Any thoughts what may cause this error?
 > 
-> Right, that's what we already have to know in order to reuse e.g.
-> switch_mm safely. The preempt notifier plays in the same league as they
-> are there to inform subsystems about such kind of switches.
+> Best wishes,
 > 
-> So we have two basic options:
->  - patch KVM to additionally register callbacks with I-pipe
->    (ipipe_preempt_notifiers)
->  - reuse the existing sched_out notifier, keeping an eye on potential
->    new users (they exist since 2.6.23 - without anyone else showing
->    interest so far)
-> 
-> In both case, we will pull some tricky parts of KVM on our review list,
-> that's unavoidable. But as long as we reuse well-established interfaces
-> for this, I'm not too concerned about this.
-> 
-
-Ack.
-
-> Jan
-> 
-
+> -Stefan
 
 -- 
-Philippe.
-
-
+Alexis.
 
