@@ -1,14 +1,15 @@
-Message-ID: <4BD49468.8000301@domain.hid>
-Date: Sun, 25 Apr 2010 21:13:44 +0200
+Message-ID: <4BD54515.9010101@domain.hid>
+Date: Mon, 26 Apr 2010 09:47:33 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4BD45469.5040006@domain.hid> <4BD4926D.2080908@domain.hid>
-In-Reply-To: <4BD4926D.2080908@domain.hid>
+References: <cover.1271600150.git.jan.kiszka@domain.hid>
+In-Reply-To: <cover.1271600150.git.jan.kiszka@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig53C6C5158A8E30C9C94FB446"
+	boundary="------------enig62B72F21E7560FF1CAA1147F"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [git pull] Fix bogus lock stealing case
+Subject: Re: [Xenomai-core] [PATCH 00/23] [git pull] procfs overflow fixes
+	and seq_file conversions
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -21,44 +22,43 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig53C6C5158A8E30C9C94FB446
-Content-Type: text/plain; charset=UTF-8
+--------------enig62B72F21E7560FF1CAA1147F
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> The following changes since commit fbc3b858ee728c1a6b03996e3285198caa7=
-053c6:
->>   Gilles Chanteperdrix (1):
->>         debug: fix CONFIG_XENO_OPT_DEBUG_* issues
->>
->> are available in the git repository at:
->>
->>   git://git.xenomai.org/xenomai-jki.git for-upstream
+Jan Kiszka wrote:
+> The following changes since commit 113ea4d56e8b215cb56ae7673013163ea5a5=
+987d:
+>   Gilles Chanteperdrix (1):
+>         switchtest: increase stack sizes
 >=20
-> Something wrong here, the logs on your branch appear as:
+> are available in the git repository at:
 >=20
-> 13ee2a1 nucleus: Fix bogus lock stealing case
-> d0d95bf mutex-torture: Add test for disallowed lock stealing
-> 9ef976e RTDM: Restrict use of rtdm_rt_capable
-> 6b75977 uitron: Fix skin debug option
-> bc3fefd Move schedule_delayed_work into wrapping header
-> 41b1eca RTDM: Drop __exit from rtdm_dev_cleanup
-> 4f3d3f2 bootstrap
-> 78acd8c Merge commit 'jan'
-> 700a9fd arm: add a generic-vfp architecture, which enables vfp and
-> compiles for armv5
-> 8337fc5 RTDM: Use non-atomic bitops for used_fildes
+>   git://git.xenomai.org/xenomai-jki.git queues/proc
 >=20
-> Seems you forgot to rebase?
+> This series fixes some of the potential (but when they happen fatal)
+> overflows in our procfs outputs. Specifically, it fixes all issues in
+> RTDM (one of them hit us in the field) and the recently reported
+> overflow in /proc/xenomai/heap. Moreover, Wolfgang started the lengthy
+> conversion of the registry by introducing a new seq_file-based interfac=
+e
+> and already moving the native skin over.
 >=20
+> The future belongs to seq_file, so some of the patches are strictly
+> spoken not yet required. But we better start this effort before the las=
+t
+> legacy interface user was converted and the old interface is suddenly
+> dropped from the kernel. This may not be that far away. A patch of mine=
 
-Oops, incomplete rebase. Fixed.
+> to improve error reporting of the old interface was rejected with
+> "->read_proc is going to be removed, so there is no point."
+
+Did you already have a chance to look into this series?
 
 Jan
 
 
---------------enig53C6C5158A8E30C9C94FB446
+--------------enig62B72F21E7560FF1CAA1147F
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -67,10 +67,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkvUlHIACgkQitSsb3rl5xQjXwCeJPgyUmWo/2EHGNErKy6ogZkB
-fKQAnA9ZOZT0oRQ4hW3dEl+WBoNol9vt
-=y1LC
+iEYEARECAAYFAkvVRRkACgkQitSsb3rl5xTIPwCfaE9atVND5Te2R6+QBWvMGyjY
+h1cAn2ulg3gUwOJR0zjg128JPQNti1Tg
+=jIDX
 -----END PGP SIGNATURE-----
 
---------------enig53C6C5158A8E30C9C94FB446--
+--------------enig62B72F21E7560FF1CAA1147F--
 
