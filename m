@@ -1,13 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4BD49468.8000301@domain.hid>
-References: <4BD45469.5040006@domain.hid> <4BD4926D.2080908@domain.hid>
-	<4BD49468.8000301@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 26 Apr 2010 17:21:26 +0200
-Message-ID: <1272295286.28983.224.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4BD5BA03.5000101@domain.hid>
+Date: Mon, 26 Apr 2010 18:06:27 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <4BD5987A.2050804@domain.hid> <4BD59A48.5070002@domain.hid>
+In-Reply-To: <4BD59A48.5070002@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [git pull] Fix bogus lock stealing case
+Subject: [Xenomai-core] [PATCH] nucleus: Plug race between rpi_clear_remote
+	and rpi_next
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,65 +16,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-On Sun, 2010-04-25 at 21:13 +0200, Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
-> > Jan Kiszka wrote:
-> >> The following changes since commit fbc3b858ee728c1a6b03996e3285198caa7053c6:
-> >>   Gilles Chanteperdrix (1):
-> >>         debug: fix CONFIG_XENO_OPT_DEBUG_* issues
-> >>
-> >> are available in the git repository at:
-> >>
-> >>   git://git.xenomai.org/xenomai-jki.git for-upstream
-> > 
-> > Something wrong here, the logs on your branch appear as:
-> > 
-> > 13ee2a1 nucleus: Fix bogus lock stealing case
-> > d0d95bf mutex-torture: Add test for disallowed lock stealing
-> > 9ef976e RTDM: Restrict use of rtdm_rt_capable
-> > 6b75977 uitron: Fix skin debug option
-> > bc3fefd Move schedule_delayed_work into wrapping header
-> > 41b1eca RTDM: Drop __exit from rtdm_dev_cleanup
-> > 4f3d3f2 bootstrap
-> > 78acd8c Merge commit 'jan'
-> > 700a9fd arm: add a generic-vfp architecture, which enables vfp and
-> > compiles for armv5
-> > 8337fc5 RTDM: Use non-atomic bitops for used_fildes
-> > 
-> > Seems you forgot to rebase?
-> > 
+Jan Kiszka wrote:
+> Jan Kiszka wrote:
+>> Hi,
+>>
+>> I'm meditating over an oops in rpi_clear_remote. NULL pointer deref, it
+>> /seems/ like thread->rpi is invalid. Looking at the code, I wonder if
+>> this could explain the bug:
+>>
+>>
+>> static void rpi_clear_remote(struct xnthread *thread)
+>> {
+>> ...
+>>         rpi = thread->rpi;
+>>         if (unlikely(rpi == NULL))
+>>                 return;
+>>
+>>         xnlock_get_irqsave(&rpi->rpilock, s);
+>>
+>>         /*
+>>          * The RPI slot - if present - is always valid, and won't
+>>          * change since the thread is resuming on this CPU and cannot
+>>          * migrate under our feet. We may grab the remote slot lock
+>>          * now.
+>>          */
+>>         xnsched_pop_rpi(thread);
+>>         thread->rpi = NULL;
+>>
+>> ...
+>>
+>> So we deref (xnsched_pop_rpi) and clear thread->rpi under rpilock, but
+>> we check for it without any protection? Sounds racy. I think 'thread' is
+>> not only pointing to the current thread but could refer to a foreign one
+>> as well, right? Don't we need this:
+>>
+>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
+>> index 872c37f..1f995d6 100644
+>> --- a/ksrc/nucleus/shadow.c
+>> +++ b/ksrc/nucleus/shadow.c
+>> @@ -331,6 +331,12 @@ static void rpi_clear_remote(struct xnthread *thread)
+>>  
+>>  	xnlock_get_irqsave(&rpi->rpilock, s);
+>>  
+>> +	/* Re-check under lock, someone may have cleared rpi by now. */
+>> +	if (unlikely(thread->rpi == NULL)) {
+>> +		xnlock_put_irqrestore(&rpi->rpilock, s);
+>> +		return;
+>> +	}
+>> +
+>>  	/*
+>>  	 * The RPI slot - if present - is always valid, and won't
+>>  	 * change since the thread is resuming on this CPU and cannot
 > 
-> Oops, incomplete rebase. Fixed.
+> Another worry: Can thread->rpi become != rpi without being NULL? Or can
+> we really only race for clearance here?
 > 
 
-I was worried about any implication regarding v2.4.x, so I checked. It
-turned out that such bug has been introduced by the FASTSYNCH code, with
-the advent of xnsynch_acquire(). This code has added a fastpath that did
-not exist initially for returning to the caller, which overlooked the
-WAKEN/ROBBED semantics.
+I think so now, therefore I'm proposing this:
 
-The basic assumptions were:
+----------->
 
-- XNWAKEN+XNROBBED bits are inconditionally cleared by
-xnpod_suspend_thread().
-- wwake makes sense only in a XNWAKEN context (therefore, you don't have
-to clear it until you actually exit from xnsynch_sleep_on, and you may
-only test it whenever XNWAKEN is raised).
-- the only way to exit from xnsynch_sleep_on() used to be via the
-unlock_and_exit path, which did clear the relevant bits, along with
-wwake.
+Most RPI services work on the current task or the one to be scheduled in
+next, thus are naturally serialized. But rpi_next is not as it can walk
+the chain of RPI requests for a CPU independently. In that case,
+clearing RPI via rpi_clear_remote can race with rpi_next, and if the
+former loses after checking thread->rpi for NULL, we will dereference a
+NULL pointer in xnsched_pop_rpi().
 
-The first two assumptions are still valid, fortunately.
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ ksrc/nucleus/shadow.c |    9 +++++++++
+ 1 files changed, 9 insertions(+), 0 deletions(-)
 
-So, the good news is that v2.4.x is fine. And good news are a nice way
-to relax, which is another good news.
-
-
--- 
-Philippe.
-
+diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
+index 872c37f..cf7c08f 100644
+--- a/ksrc/nucleus/shadow.c
++++ b/ksrc/nucleus/shadow.c
+@@ -332,6 +332,15 @@ static void rpi_clear_remote(struct xnthread *thread)
+ 	xnlock_get_irqsave(&rpi->rpilock, s);
+ 
+ 	/*
++	 * Re-check under lock. Someone may have invoked rpi_next and cleared
++	 * rpi by now.
++	 */
++	if (unlikely(!rpi_p(thread))) {
++		xnlock_put_irqrestore(&rpi->rpilock, s);
++		return;
++	}
++
++	/*
+ 	 * The RPI slot - if present - is always valid, and won't
+ 	 * change since the thread is resuming on this CPU and cannot
+ 	 * migrate under our feet. We may grab the remote slot lock
 
 
