@@ -1,5 +1,5 @@
-Message-ID: <4BD6FCA0.9080906@domain.hid>
-Date: Tue, 27 Apr 2010 17:02:56 +0200
+Message-ID: <4BD71157.9060804@domain.hid>
+Date: Tue, 27 Apr 2010 18:31:19 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1272375452-7626-1-git-send-email-fg@domain.hid>
@@ -27,9 +27,12 @@ Fabian Godehardt wrote:
 > This patch may also be of interest for the 2.6.28 and 2.6.29 patches.
 > 
 > Tested with a S3C2440 cpu.
+> 
+> Signed-off-by: Fabian Godehardt <fg@domain.hid>
 
-Thanks a lot. Patches for 2.6.31 and 2.6.33 should be out soon, and they
-will include that patch too.
+I guess you imagine that I am not going to change the I-pipe patch in
+Xenomai tree without changing its version number, so, could you send me
+again this change as a patch against the I-pipe tree?
 
 -- 
 					    Gilles.
