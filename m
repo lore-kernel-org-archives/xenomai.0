@@ -1,23 +1,8 @@
-Message-ID: <4BD6BF21.20303@domain.hid>
-Date: Tue, 27 Apr 2010 12:40:33 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <4BD5987A.2050804@domain.hid> <4BD59A48.5070002@domain.hid>	
-	<4BD5BA03.5000101@domain.hid>	
-	<1272331158.28983.287.camel@domain.hid>
-	<4BD68843.4030806@domain.hid>	
-	<1272356029.28983.333.camel@domain.hid>	
-	<4BD69F7D.9060006@domain.hid>	
-	<1272359559.28983.380.camel@domain.hid>	
-	<4BD6AE1E.6050704@domain.hid>	
-	<1272360740.28983.382.camel@domain.hid>	
-	<4BD6AFC2.1090300@domain.hid>
-	<1272361898.28983.395.camel@domain.hid>
-In-Reply-To: <1272361898.28983.395.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] nucleus: Plug race between
-	rpi_clear_remote and rpi_next
+From: Fabian Godehardt <fg@domain.hid>
+Date: Tue, 27 Apr 2010 14:37:32 +0100
+Message-Id: <1272375452-7626-1-git-send-email-fg@domain.hid>
+Subject: [Xenomai-core] [PATCH] adeos-ipipe-2.6.30-arm-1.15-01.patch: Fix
+	hang on 'Calibrating delay loop...' on S3C24xx
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -26,266 +11,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Tue, 2010-04-27 at 11:34 +0200, Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> On Tue, 2010-04-27 at 11:27 +0200, Jan Kiszka wrote:
->>>> Philippe Gerum wrote:
->>>>> On Tue, 2010-04-27 at 10:25 +0200, Jan Kiszka wrote:
->>>>>> Philippe Gerum wrote:
->>>>>>> On Tue, 2010-04-27 at 08:46 +0200, Jan Kiszka wrote:
->>>>>>>> Philippe Gerum wrote:
->>>>>>>>> On Mon, 2010-04-26 at 18:06 +0200, Jan Kiszka wrote:
->>>>>>>>>> Jan Kiszka wrote:
->>>>>>>>>>> Jan Kiszka wrote:
->>>>>>>>>>>> Hi,
->>>>>>>>>>>>
->>>>>>>>>>>> I'm meditating over an oops in rpi_clear_remote. NULL pointer deref, it
->>>>>>>>>>>> /seems/ like thread->rpi is invalid. Looking at the code, I wonder if
->>>>>>>>>>>> this could explain the bug:
->>>>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>>> static void rpi_clear_remote(struct xnthread *thread)
->>>>>>>>>>>> {
->>>>>>>>>>>> ...
->>>>>>>>>>>>         rpi = thread->rpi;
->>>>>>>>>>>>         if (unlikely(rpi == NULL))
->>>>>>>>>>>>                 return;
->>>>>>>>>>>>
->>>>>>>>>>>>         xnlock_get_irqsave(&rpi->rpilock, s);
->>>>>>>>>>>>
->>>>>>>>>>>>         /*
->>>>>>>>>>>>          * The RPI slot - if present - is always valid, and won't
->>>>>>>>>>>>          * change since the thread is resuming on this CPU and cannot
->>>>>>>>>>>>          * migrate under our feet. We may grab the remote slot lock
->>>>>>>>>>>>          * now.
->>>>>>>>>>>>          */
->>>>>>>>>>>>         xnsched_pop_rpi(thread);
->>>>>>>>>>>>         thread->rpi = NULL;
->>>>>>>>>>>>
->>>>>>>>>>>> ...
->>>>>>>>>>>>
->>>>>>>>>>>> So we deref (xnsched_pop_rpi) and clear thread->rpi under rpilock, but
->>>>>>>>>>>> we check for it without any protection? Sounds racy. I think 'thread' is
->>>>>>>>>>>> not only pointing to the current thread but could refer to a foreign one
->>>>>>>>>>>> as well, right? Don't we need this:
->>>>>>>>>>>>
->>>>>>>>>>>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
->>>>>>>>>>>> index 872c37f..1f995d6 100644
->>>>>>>>>>>> --- a/ksrc/nucleus/shadow.c
->>>>>>>>>>>> +++ b/ksrc/nucleus/shadow.c
->>>>>>>>>>>> @@ -331,6 +331,12 @@ static void rpi_clear_remote(struct xnthread *thread)
->>>>>>>>>>>>  
->>>>>>>>>>>>  	xnlock_get_irqsave(&rpi->rpilock, s);
->>>>>>>>>>>>  
->>>>>>>>>>>> +	/* Re-check under lock, someone may have cleared rpi by now. */
->>>>>>>>>>>> +	if (unlikely(thread->rpi == NULL)) {
->>>>>>>>>>>> +		xnlock_put_irqrestore(&rpi->rpilock, s);
->>>>>>>>>>>> +		return;
->>>>>>>>>>>> +	}
->>>>>>>>>>>> +
->>>>>>>>>>>>  	/*
->>>>>>>>>>>>  	 * The RPI slot - if present - is always valid, and won't
->>>>>>>>>>>>  	 * change since the thread is resuming on this CPU and cannot
->>>>>>>>>>> Another worry: Can thread->rpi become != rpi without being NULL? Or can
->>>>>>>>>>> we really only race for clearance here?
->>>>>>>>>>>
->>>>>>>>>> I think so now, therefore I'm proposing this:
->>>>>>>>>>
->>>>>>>>>> ----------->
->>>>>>>>>>
->>>>>>>>>> Most RPI services work on the current task or the one to be scheduled in
->>>>>>>>>> next, thus are naturally serialized. But rpi_next is not as it can walk
->>>>>>>>>> the chain of RPI requests for a CPU independently. In that case,
->>>>>>>>>> clearing RPI via rpi_clear_remote can race with rpi_next, and if the
->>>>>>>>>> former loses after checking thread->rpi for NULL, we will dereference a
->>>>>>>>>> NULL pointer in xnsched_pop_rpi().
->>>>>>>>>>
->>>>>>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->>>>>>>>>> ---
->>>>>>>>>>  ksrc/nucleus/shadow.c |    9 +++++++++
->>>>>>>>>>  1 files changed, 9 insertions(+), 0 deletions(-)
->>>>>>>>>>
->>>>>>>>>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
->>>>>>>>>> index 872c37f..cf7c08f 100644
->>>>>>>>>> --- a/ksrc/nucleus/shadow.c
->>>>>>>>>> +++ b/ksrc/nucleus/shadow.c
->>>>>>>>>> @@ -332,6 +332,15 @@ static void rpi_clear_remote(struct xnthread *thread)
->>>>>>>>>>  	xnlock_get_irqsave(&rpi->rpilock, s);
->>>>>>>>>>  
->>>>>>>>>>  	/*
->>>>>>>>>> +	 * Re-check under lock. Someone may have invoked rpi_next and cleared
->>>>>>>>>> +	 * rpi by now.
->>>>>>>>>> +	 */
->>>>>>>>>> +	if (unlikely(!rpi_p(thread))) {
->>>>>>>>>> +		xnlock_put_irqrestore(&rpi->rpilock, s);
->>>>>>>>>> +		return;
->>>>>>>>>> +	}
->>>>>>>>>> +
->>>>>>>>>> +	/*
->>>>>>>>>>  	 * The RPI slot - if present - is always valid, and won't
->>>>>>>>>>  	 * change since the thread is resuming on this CPU and cannot
->>>>>>>>>>  	 * migrate under our feet. We may grab the remote slot lock
->>>>>>>>>>
->>>>>>>>> The suggested patch papers over the actual issue, which is that
->>>>>>>>> rpi_clear_remote() may not invoke rpi_next(), because it may only affect
->>>>>>>> I don't think that in our case rpi_clear_remote called rpi_next and
->>>>>>>> therefore crashed. It should rather have been the scenario of both
->>>>>>>> running in parallel on different CPUs, the former on behalf of a
->>>>>>>> migrated shadow that wants to clear its remainders on the remote CPU,
->>>>>>>> the latter on that CPU, picking a new top RPI after some other shadow
->>>>>>>> was removed from the queue. Is this a possible scenario, and would your
->>>>>>>> patch cover it?
->>>>>>>>
->>>>>>>>> the RPI state of the argument thread which must be a local one, and not
->>>>>>>>> that of any random thread that happens to be linked to the remote RPI
->>>>>>>>> queue.
->>>>>>>>>
->>>>>>>>> By calling rpi_next(), rpi_clear_remote() shoots itself in the foot,
->>>>>>>>> allowing a concurrent invocation of itself on a remote CPU, to fiddle
->>>>>>>>> with the rpi backlink of a thread which is not active on the
->>>>>>>>> local/per-cpu Xenomai scheduler instance, which is the point where
->>>>>>>>> things start to hit the crapper.
->>>>>>>>>
->>>>>>>>> Now, unless I can't even synchronize the couple of neurons I have left
->>>>>>>>> at this hour, the following patch should better fix the issue, because
->>>>>>>>> it restores the two basic rules that apply to the whole RPI machinery,
->>>>>>>>> namely:
->>>>>>>>>
->>>>>>>>> - rpi_* calls may only alter the contents of the local scheduler's RPI
->>>>>>>>> queue, with the notable exception of rpi_clear_remote() which may remove
->>>>>>>>> the given _local_ thread only, from a remote RPI slot.
->>>>>>>>>
->>>>>>>>> - rpi_* calls may only change the RPI state of threads which are
->>>>>>>>> controlled by the local Xenomai scheduler instance, except rpi_push()
->>>>>>>>> when called for setting up the RPI state of an emerging thread, in which
->>>>>>>>> case this is a no-conflict zone.
->>>>>>>>>
->>>>>>>>> That breakage was introduced in the early 2.5.1 timeframe, so 2.4.x
->>>>>>>>> should be immune from this particular bug.
->>>>>>>>>
->>>>>>>>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
->>>>>>>>> index 872c37f..1397ed1 100644
->>>>>>>>> --- a/ksrc/nucleus/shadow.c
->>>>>>>>> +++ b/ksrc/nucleus/shadow.c
->>>>>>>>> @@ -340,7 +340,12 @@ static void rpi_clear_remote(struct xnthread *thread)
->>>>>>>>>  	xnsched_pop_rpi(thread);
->>>>>>>>>  	thread->rpi = NULL;
->>>>>>>>>  
->>>>>>>>> -	if (rpi_next(rpi, s) == NULL)
->>>>>>>>> +	/*
->>>>>>>>> +	 * If the remote RPI queue was emptied, prepare for kicking
->>>>>>>>> +	 * xnshadow_rpi_check() on the relevant CPU to demote the root
->>>>>>>>> +	 * thread priority there.
->>>>>>>>> +	 */
->>>>>>>>> +	if (xnsched_peek_rpi(rpi) == NULL) /* No rpi_next() here. */
->>>>>>>>>  		rcpu = xnsched_cpu(rpi);
->>>>>>>>>  
->>>>>>>>>  	xnlock_put_irqrestore(&rpi->rpilock, s);
->>>>>>>>>
->>>>>>>>>
->>>>>>>> I have to confess, I do not understand how the patch may relate to our
->>>>>>>> crash. But that's because I still only have a semi-understanding of this
->>>>>>>> frightening complex RPI code. However, the fact that thread->rpi is now
->>>>>>>> again only checked outside its protecting lock leaves me with a very bad
->>>>>>>> feeling...
->>>>>>>>
->>>>>>> My point is that we should not have to protect a section of code which
->>>>>>> may never conflict in any case, by design; we will likely agree that
->>>>>>> sprinkling locks everywhere to get a warm and fuzzy feeling is no
->>>>>>> solution, it's actually a significant source of regression.
->>>>>>>
->>>>>>> The idea, behind keeping most rpi_* operations applicable to locally
->>>>>>> scheduled threads, is to introduce such a design, even when remote RPI
->>>>>>> slots are involved. thread->sched == xnpod_current_sched() for each
->>>>>>> rpi_*(sched, ...) calls is what is important in this logic. Another
->>>>>>> original assumption was that no RPI updates could be done in interrupt
->>>>>>> context, which is now wrong due to the change in xnshadow_rpi_check().
->>>>>>>
->>>>>>> In short: we have to make sure that rpi_next() does not break the basic
->>>>>>> assumptions of the RPI core, first.
->>>>>> Please check my scenario again: My concern is that a thread can be
->>>>>> queued for a short while on a remote sched,
->>>>> No, it can't, that is the crux of the matter, well, at least, this
->>>>> should not be possible if the basic assumptions are preserved (have a
->>>>> look at the rpi_clear_remote() callers, the target thread may not
->>>>> migrate or be scheduled in linux-wise, or exit RPI via rpi_pop() during
->>>>> the call -- all places where the rpi backlink may be cleared). Only a
->>>>> caller operating from the local CPU should be allowed to alter the RPI
->>>>> state of threads linked to the RPI slot of that same CPU.
->>>>>
->>>>> rpi_clear_remote() is not even an exception to this, since it alters a
->>>>> remote RPI slot, but for a thread which does run on the local CPU.
->>>>>
->>>>>>  and while that is the case,
->>>>>> it can be manipulated (/wrt ->rpi) _concurrently_ (as we do not hold the
->>>>>> remote rpilock all the time). I'm quite sure now that your patch does
->>>>>> not change this.
->>>>> My patch attempts fixing the core issue, not just plugging one of its
->>>>> bad outcomes.
->>>>>
->>>>> Again, the point is not to pretend that your patch is wrong, and it
->>>>> surely "plugs" one issue we have due to rpi_next(). The point is to make
->>>>> sure that all issues are covered, by fixing the usage of rpi_next(), or
->>>>> find another way to fix what rpi_next() was supposed to fix in the first
->>>>> place.
->>>> So, if you are right, we could (in theory) replace rpilock with local
->>>> IRQ disabling? That would be the proof from me that it doesn't matter to
->>>> test thread->rpi outside the lock.
->>> Noo, you did not get it yet. The rpilock is protecting the per-cpu RPI
->>> queues, NOT thread->rpi. 
->> So linking a thread to an RPI queue and setting its ->rpi are not always
->> related?
-> 
-> Exactly. Normally, a remote CPU should not be allowed to compete with
-> another one for updating the rpi backlink of a thread it does NOT own,
-> meaning not linked to the local scheduler. 
-> 
-> My understanding is that rpi_next() is deliberately breaking that rule
-> when called from rpi_clear_remote() for a non-local scheduler, therefore
-> altering rpi backlinks of threads which do NOT belong to the local
-> scheduler.
+This patch should fix the hang during 'Calibrating delay loop...' on S3C24xx
+based kernels. Problem is that some machines do not have an externel TCLK
+signal so the timer doesn't start running.
 
-Just dug out the backtrace again: Where we saw the crash was (likely -
-lots of inline functions) in the chain schedule_event -> rpi_switch ->
-rpi_migrate -> rpi_clear_remote. To my understanding, this clear takes
-place on the CPU that is the target of the just migrated Linux task. At
-that point, isn't the task's shadow no longer linked to the original
-CPU's RPI queue? And if that remote CPU now calls rpi_next e.g. via
-rpi_pop, doesn't that step cause a clearance as well, thus races with
-the one we started via rpi_migrate?
+This patch may also be of interest for the 2.6.28 and 2.6.29 patches.
 
-Even if I'm wrong on the above, the conditions for manipulating
-thread->rpi should be documented or even checked (i.e. when setting
-thread->rpi, thread->sched must equal the local sched - right?).
+Tested with a S3C2440 cpu.
 
-> 
-> Who is wrong then? Well, I tend to think that rpi_next() should not be
-> called in the only cross-CPU context we have, namely rpi_clear_remote().
-> In that very particular case, where we own the target thread, and we
-> want to complete its recent migration to our local CPU.
-> 
-> This is why I was insisting on the notion of calling context for all
-> rpi* calls, with respect to what threads may be touched by a given CPU. 
-> 
-> But, I am now worried by xnshadow_rpi_check(), which - by calling
-> rpi_next() instead of simply peeking at the RPI queue head - introduces
-> a potential race wrt the rpi backlink, when we deal with
-> rpi_clear_remote() on the _same_ CPU.
+Signed-off-by: Fabian Godehardt <fg@domain.hid>
+---
+ .../patches/adeos-ipipe-2.6.30-arm-1.15-01.patch   |   17 +++--------------
+ 1 files changed, 3 insertions(+), 14 deletions(-)
 
-OK, then we have at least one reason to not trust thread->rpi unless we
-hold rpilock. That's my whole point.
-
-BTW, the pattern I suggested is a fairly common one in the kernel due to
-all its complex (because fine-grained) locking. And that I thought I had
-to introduce raised my worries about RPI locking noticeably. :-/
-
-Jan
-
+diff --git a/ksrc/arch/arm/patches/adeos-ipipe-2.6.30-arm-1.15-01.patch b/ksrc/arch/arm/patches/adeos-ipipe-2.6.30-arm-1.15-01.patch
+index 5760e2e..2358cfb 100644
+--- a/ksrc/arch/arm/patches/adeos-ipipe-2.6.30-arm-1.15-01.patch
++++ b/ksrc/arch/arm/patches/adeos-ipipe-2.6.30-arm-1.15-01.patch
+@@ -6925,18 +6925,7 @@ index 3b27b29..8e6e479 100644
+  		__raw_writel(tcfg1, S3C2410_TCFG1);
+  	} else {
+  		unsigned long pclk;
+-@@ -204,12 +254,25 @@ static void s3c2410_timer_setup (void)
+- 		clk_set_parent(tin, tdiv);
+- 
+- 		tcnt = clk_get_rate(tin) / HZ;
+-+
+-+		tcfg1 = __raw_readl(S3C2410_TCFG1);
+-+		tcfg1 &= ~(S3C2410_TCFG1_MUX4_MASK | S3C2410_TCFG1_MUX3_MASK);
+-+		tcfg1 |= (S3C2410_TCFG1_MUX4_TCLK1 | S3C2410_TCFG1_MUX3_TCLK1);
+-+		__raw_writel(tcfg1, S3C2410_TCFG1);
+- 	}
+- 
+- 	tcon = __raw_readl(S3C2410_TCON);
++@@ -210,6 +260,14 @@ static void s3c2410_timer_setup (void)
+  	tcfg0 = __raw_readl(S3C2410_TCFG0);
+  	tcfg1 = __raw_readl(S3C2410_TCFG1);
+  
+@@ -6951,7 +6940,7 @@ index 3b27b29..8e6e479 100644
+  	/* timers reload after counting zero, so reduce the count by 1 */
+  
+  	tcnt--;
+-@@ -226,23 +289,37 @@ static void s3c2410_timer_setup (void)
++@@ -226,23 +284,37 @@ static void s3c2410_timer_setup (void)
+  	__raw_writel(tcfg1, S3C2410_TCFG1);
+  	__raw_writel(tcfg0, S3C2410_TCFG0);
+  
+@@ -7000,7 +6989,7 @@ index 3b27b29..8e6e479 100644
+  }
+  
+  static void __init s3c2410_timer_resources(void)
+-@@ -283,3 +360,58 @@ struct sys_timer s3c24xx_timer = {
++@@ -283,3 +355,58 @@ struct sys_timer s3c24xx_timer = {
+  	.offset		= s3c2410_gettimeoffset,
+  	.resume		= s3c2410_timer_setup
+  };
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+1.6.6.1
+
 
