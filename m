@@ -1,17 +1,12 @@
-Message-ID: <4BCC8484.1020108@domain.hid>
-Date: Mon, 19 Apr 2010 18:27:48 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4BCC619E.2@domain.hid> <4BCC6CEE.70907@domain.hid>	
-	<4BCC6E3C.3090301@domain.hid> <4BCC7092.1030809@domain.hid>	
-	<4BCC71AF.4030903@domain.hid> <4BCC77BD.9040900@domain.hid>	
-	<4BCC78D5.3010405@domain.hid> <4BCC7D88.4070403@domain.hid>
-	<1271693411.16659.128.camel@domain.hid>
-	<4BCC814C.6050003@domain.hid>
-In-Reply-To: <4BCC814C.6050003@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4BDADC13.2070500@domain.hid>
+References: <4BDADC13.2070500@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Fri, 30 Apr 2010 22:13:22 +0200
+Message-ID: <1272658402.24705.108.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
+Subject: Re: [Xenomai-core] [RFC] Fix excessive host tick latencies
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -23,60 +18,64 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->>>>> config XENO_OPT_DEBUG_FOO
->>>>> 	bool "..."
->>>>>
->>>>> config XENO_OPT_DEBUG_FOO_P
->>>>> 	int
->>>>> 	default "1" if XENO_OPT_DEBUG_FOO
->>>>> 	default "0"
->>>>>
->>>>> and XENO_DEBUG() could be extended to test for
->>>>> CONFIG_XENO_OPT_DEBUG_FOO_P when given "FOO". I'm just not sure if this
->>>>> can be expressed for legacy 2.4 kernels, so it might have to wait for
->>>>> Xenomai 3.
->> Well, actually, I would not merge this in Xenomai 3. I find this rather
->> overkill; mainline first I mean, and mainline, i.e. the Xenomai code
->> base only requires a simple and straightforward way to get debug
->> switches right. Having to make Kconfig a kitchen sink for some unknown
->> out of tree modules to be happy is not really my preferred approach in
->> this particular case.
->>
->> Don't get me wrong, I'm not opposed to a more decentralized approach on
->> the paper, it's just that I only care about the mainline tree here.
+On Fri, 2010-04-30 at 15:33 +0200, Jan Kiszka wrote:
+> Hi Philippe,
 > 
-> The point is not out-of-tree but robustness. Neither the current
-> decentralized #ifdef-#define nor its centralized brother meet this
-> criteria. An approach like the above which forces you to provide all
-> required bits before any of the cases (disabled/enabled) starts to work
-> does so.
+> I'm not 100% sure if this plugs all remaining wholes in the deferred
+> host tick processing, but at least the most easiest reproducible one is
+> cured now for me (Linux latency peak after termination of 'latency').
+> Please let me know if you see more potential issues, otherwise I would
+> include this in my for-upstream queue.
 
-Ok. What about:
+That patch is correct, please queue it. Anything that breaks the
+assumption described in the following comment from
+xntimer_next_local_shot() is wrong wrt tick deferral: "The host tick
+deferral is cleared whenever Xenomai is about to yield control to the
+host kernel".
 
-#define __name2(a, b) a ## b
-#define name2(a, b) __name2(a, b)
+In short, when the code will match the comments and documentation, we
+will be done with debugging.
 
-#define DECLARE_ASSERT_SYMBOL(sym)					\
-	static const int CONFIG_XENO_OPT_DEBUG_##sym##0 = 0,		\
-		__CONFIG_XENO_OPT_DEBUG_##sym = name2(CONFIG_XENO_OPT_DEBUG_##sym, 0)
+> 
+> Found while instrumenting the timer core to find RT timer latencies.
+> Hope they become visible now...
+> 
+> Jan
+> 
+> -------
+> 
+> If a reschedule is pending, we won't allow the host timer to decide
+> about the next hardware tick. But if that next reschedule will simply
+> keep ROOT (which, e.g., happens during thread deletion), this deferral
+> can impose significant unwanted timer latencies on Linux.
+> 
+> diff --git a/ksrc/nucleus/pod.c b/ksrc/nucleus/pod.c
+> index 3ffd548..fb63f35 100644
+> --- a/ksrc/nucleus/pod.c
+> +++ b/ksrc/nucleus/pod.c
+> @@ -2184,9 +2184,16 @@ void __xnpod_schedule(struct xnsched *sched)
+>  	zombie = xnthread_test_state(curr, XNZOMBIE);
+>  
+>  	next = xnsched_pick_next(sched);
+> -	if (next == curr && !xnthread_test_state(curr, XNRESTART))
+> +	if (next == curr && !xnthread_test_state(curr, XNRESTART)) {
+>  		/* Note: the root thread never restarts. */
+> +		if (unlikely(xnthread_test_state(next, XNROOT))) {
+> +			if (testbits(sched->status, XNHTICK))
+> +				xnintr_host_tick(sched);
+> +			if (testbits(sched->status, XNHDEFER))
+> +				xntimer_next_local_shot(sched);
+> +		}
+>  		goto signal_unlock_and_exit;
+> +	}
+>  
+>  	XENO_BUGON(NUCLEUS, need_resched == 0);
+>  
+> 
 
-#define XENO_ASSERT(subsystem,cond,action)  do { \
-    if (unlikely(__CONFIG_XENO_OPT_DEBUG_##subsystem > 0 && !(cond))) { \
-        xnarch_trace_panic_freeze(); \
-        xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LINE__, (#cond)); \
-        xnarch_trace_panic_dump(); \
-        action; \
-    } \
-} while(0)
-
-DECLARE_ASSERT_SYMBOL(NUCLEUS);
-
-It fails to compile when the debug symbol is set and
-DECLARE_ASSERT_SYMBOL is missing, which plugs the failure of my previous
-attempt.
 
 -- 
-					    Gilles.
+Philippe.
+
+
 
