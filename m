@@ -1,20 +1,13 @@
-Message-ID: <4BCC9F49.1010302@domain.hid>
-Date: Mon, 19 Apr 2010 20:22:01 +0200
+Message-ID: <4BDC332E.2010804@domain.hid>
+Date: Sat, 01 May 2010 15:57:02 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4BCC619E.2@domain.hid>
-	<4BCC6CEE.70907@domain.hid>		<4BCC6E3C.3090301@domain.hid>
-	<4BCC7092.1030809@domain.hid>		<4BCC71AF.4030903@domain.hid>
-	<4BCC77BD.9040900@domain.hid>		<4BCC78D5.3010405@domain.hid>
-	<4BCC7D88.4070403@domain.hid>	<1271693411.16659.128.camel@domain.hid>	<4BCC814C.6050003@domain.hid>
-	<4BCC8484.1020108@domain.hid>	<4BCC9107.1080605@domain.hid>
-	<4BCC9247.10709@domain.hid>	<4BCC9628.7030809@domain.hid>
-	<4BCC9ADA.2020909@domain.hid> <4BCC9D8D.10906@domain.hid>
-	<4BCC9E81.8000209@domain.hid>
-In-Reply-To: <4BCC9E81.8000209@domain.hid>
+References: <E1O78nO-0008PE-EK@xenomai.org>
+In-Reply-To: <E1O78nO-0008PE-EK@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] [RFC] fix XENO_OPT_DEBUG bugs.
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : native: Improve fault
+ tolerance /wrt multiple task deletions
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -26,199 +19,36 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Gilles Chanteperdrix wrote:
->>>>> Jan Kiszka wrote:
->>>>>> Gilles Chanteperdrix wrote:
->>>>>>> Jan Kiszka wrote:
->>>>>>>> Philippe Gerum wrote:
->>>>>>>>>>>> config XENO_OPT_DEBUG_FOO
->>>>>>>>>>>> 	bool "..."
->>>>>>>>>>>>
->>>>>>>>>>>> config XENO_OPT_DEBUG_FOO_P
->>>>>>>>>>>> 	int
->>>>>>>>>>>> 	default "1" if XENO_OPT_DEBUG_FOO
->>>>>>>>>>>> 	default "0"
->>>>>>>>>>>>
->>>>>>>>>>>> and XENO_DEBUG() could be extended to test for
->>>>>>>>>>>> CONFIG_XENO_OPT_DEBUG_FOO_P when given "FOO". I'm just not s=
-ure if this
->>>>>>>>>>>> can be expressed for legacy 2.4 kernels, so it might have to=
- wait for
->>>>>>>>>>>> Xenomai 3.
->>>>>>>>> Well, actually, I would not merge this in Xenomai 3. I find thi=
-s rather
->>>>>>>>> overkill; mainline first I mean, and mainline, i.e. the Xenomai=
- code
->>>>>>>>> base only requires a simple and straightforward way to get debu=
-g
->>>>>>>>> switches right. Having to make Kconfig a kitchen sink for some =
-unknown
->>>>>>>>> out of tree modules to be happy is not really my preferred appr=
-oach in
->>>>>>>>> this particular case.
->>>>>>>>>
->>>>>>>>> Don't get me wrong, I'm not opposed to a more decentralized app=
-roach on
->>>>>>>>> the paper, it's just that I only care about the mainline tree h=
-ere.
->>>>>>>> The point is not out-of-tree but robustness. Neither the current=
+GIT version control wrote:
+> Module: xenomai-jki
+> Branch: for-upstream
+> Commit: 5d2fa6c7578683e036d88bc6dbb6a7f458dfe705
+> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=5d2fa6c7578683e036d88bc6dbb6a7f458dfe705
+> 
+> Author: Jan Kiszka <jan.kiszka@domain.hid>
+> Date:   Wed Apr 28 15:08:11 2010 +0200
+> 
+> native: Improve fault tolerance /wrt multiple task deletions
+> 
+> As we may pass the pthread handle of an RT_TASK directly to glibc, we
+> may trigger a SIGSEGV if the underlying thread was already terminated.
+> Try to catch this application mistakes by clearing the handle at least
+> in that task descriptor which successfully ran rt_task_delete or
+> rt_task_join.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 
->>>>>>>> decentralized #ifdef-#define nor its centralized brother meet th=
-is
->>>>>>>> criteria. An approach like the above which forces you to provide=
- all
->>>>>>>> required bits before any of the cases (disabled/enabled) starts =
-to work
->>>>>>>> does so.
->>>>>>> Ok. What about:
->>>>>>>
->>>>>>> #define __name2(a, b) a ## b
->>>>>>> #define name2(a, b) __name2(a, b)
->>>>>>>
->>>>>>> #define DECLARE_ASSERT_SYMBOL(sym)					\
->>>>>>> 	static const int CONFIG_XENO_OPT_DEBUG_##sym##0 =3D 0,		\
->>>>>>> 		__CONFIG_XENO_OPT_DEBUG_##sym =3D name2(CONFIG_XENO_OPT_DEBUG_#=
-#sym, 0)
->>>>>>>
->>>>>>> #define XENO_ASSERT(subsystem,cond,action)  do { \
->>>>>>>     if (unlikely(__CONFIG_XENO_OPT_DEBUG_##subsystem > 0 && !(con=
-d))) { \
->>>>>>>         xnarch_trace_panic_freeze(); \
->>>>>>>         xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __=
-LINE__, (#cond)); \
->>>>>>>         xnarch_trace_panic_dump(); \
->>>>>>>         action; \
->>>>>>>     } \
->>>>>>> } while(0)
->>>>>>>
->>>>>>> DECLARE_ASSERT_SYMBOL(NUCLEUS);
->>>>>>>
->>>>>>> It fails to compile when the debug symbol is set and
->>>>>>> DECLARE_ASSERT_SYMBOL is missing, which plugs the failure of my p=
-revious
->>>>>>> attempt.
->>>>>> I'm still wrapping my head around this. What would be the usage,
->>>>>>
->>>>>> #ifndef CONFIG_XENO_OPT_DEBUG_FOO
->>>>>> #define CONFIG_XENO_OPT_DEBUG_FOO 0
->>>>>> #endif
->>>>>>
->>>>>> DECLARE_ASSERT_SYMBOL(FOO);
->>>>>>
->>>>>> ? If the compiler is smart enough to still drop the asserts based =
-on
->>>>>> static const, I'm fine as this is an improvement.
->>>>> No, you just use DECLARE_ASSERT_SYMBOL(FOO)
->>>> Would be nice - if it worked.
->>>>
->>>>>> Still, IMHO, this solution would not even win the second league be=
-auty
->>>>>> contest (now it comes with as many additional lines as the
->>>>>> Kconfig-approach).
->>>>> Yes, it is not pretty but to add a config option you just add the u=
-sual
->>>>> Kconfig stuff, then DECLARE_ASSERT_SYMBOL in the code instead of th=
-e
->>>>> #ifndef #define foo 0 #endif.
->>>>>
->>>>> If you do not do it, you get a compilation error whether the option=
- is
->>>>> enabled or not.
->>>>>
->>>>> It can be decentralized, the find | grep mentioned earlier will sti=
-ll work.
->>>> If we can make it work like that, I'm all for it. But:
->>>>
->>>> error: initializer element is not constant
->>>> (when disabled)
->>>>
->>>> or
->>>>
->>>> error: =E2=80=98y0=E2=80=99 undeclared here (not in a function)
->>>> (when enabled)
->>>>
->>>> I'm afraid the preprocessor is not powerful enough for this task (we=
+Ok. I have tested this patch (though I could not find whether it was
+discussed on the mailing list). And in fact, it looks to me like it
+turns an application error into a silently working application. So, I
+would propose:
+- to use 0x8 instead of 0, to cause a segfault if an invalid handle is
+used, without any risk of side effect (such as killing or joining the
+wrong task if ever a pthread_t is reused)
+- if Xenomai is compiled with --enable-debug, return -EINVAL, or use an
+assert if such a value is encountered.
 
->>>> would need macros that include preprocessor conditionals).
->>> The following seems to work for me:
->>>
->>> #define __name2(a, b) a ## b
->>> #define name2(a, b) __name2(a, b)
->>>
->>> #define DECLARE_ASSERT_SYMBOL(sym)                                   =
-   \
->>>         static const int CONFIG_XENO_OPT_DEBUG_##sym##0 =3D 0
->>>
->>> #define XENO_DEBUG(sym) (name2(CONFIG_XENO_OPT_DEBUG_##sym,0) > 0)
->>>
->>> #define XENO_ASSERT(subsystem,cond,action)  do { \
->>>     if (unlikely(XENO_DEBUG(subsystem) && !(cond))) { \
->>>         xnarch_trace_panic_freeze(); \
->>>         xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LINE=
-__, (#cond)); \
->>>         xnarch_trace_panic_dump(); \
->>>         action; \
->>>     } \
->>> } while(0)
->>>
->>> DECLARE_ASSERT_SYMBOL(NUCLEUS);
->>>
->> We only loose the detection of the debug symbol used and not declared =
-if
->> it is enabled. But this looks to me like a minor issue. Still trying t=
-hough.
->>
->=20
-> My compiler still complains about undefined 'y0' in the enabled case.
->=20
-> I'll try to dig into a different direction now: Automatic generation
-> during build. This is what the kernel does as well when the preprocesso=
-r
-> gives up. Would even save the DECLARE and should make everyone happy.
 
-No, please nothing like that.
-
-This one works for me:
-#include <stdlib.h>
-#include <stdio.h>
-
-#define __name2(a, b) a ## b
-#define name2(a, b) __name2(a, b)
-
-#define DECLARE_ASSERT_SYMBOL(sym)                                      \=
-
-        static const int XENO_OPT_DEBUG_##sym =3D 0; \
-        static const int CONFIG_XENO_OPT_DEBUG_##sym##0 =3D 0
-
-#define XENO_DEBUG(sym) \
-        (name2(CONFIG_XENO_OPT_DEBUG_##sym,0) > XENO_OPT_DEBUG_##sym)
-
-#define XENO_ASSERT(subsystem,cond,action)  do { \
-    if (unlikely(XENO_DEBUG(subsystem) && !(cond))) { \
-        xnarch_trace_panic_freeze(); \
-        xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LINE__, =
-(#cond)); \
-        xnarch_trace_panic_dump(); \
-        action; \
-    } \
-} while(0)
-
-DECLARE_ASSERT_SYMBOL(NUCLEUS);
-
-int main(void)
-{
-        if (XENO_DEBUG(NUCLEUS))
-                printf("Hello\n");
-}
-
-Please try and send me the result of pre-processing if
-it does not work for you.
-
---=20
+-- 
 					    Gilles.
-
 
