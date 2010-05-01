@@ -1,135 +1,98 @@
-Message-ID: <4BE983C0.9010909@domain.hid>
-Date: Tue, 11 May 2010 18:20:16 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <20100511142653.GA22374@domain.hid>
-In-Reply-To: <20100511142653.GA22374@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4BDC6924.2070302@domain.hid>
+References: <4BD5987A.2050804@domain.hid> <4BD59A48.5070002@domain.hid>
+	<4BD5BA03.5000101@domain.hid>
+	<1272331158.28983.287.camel@domain.hid>	<4BD68843.4030806@domain.hid>
+	<1272356029.28983.333.camel@domain.hid>
+	<4BD69F7D.9060006@domain.hid>
+	<1272359559.28983.380.camel@domain.hid>
+	<4BD6AE1E.6050704@domain.hid>
+	<1272360740.28983.382.camel@domain.hid>
+	<4BD6AFC2.1090300@domain.hid>
+	<1272361898.28983.395.camel@domain.hid>
+	<4BD6BF21.20303@domain.hid>
+	<1272734766.2440.46.camel@domain.hid>
+	<4BDC6924.2070302@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Sat, 01 May 2010 20:59:21 +0200
+Message-ID: <1272740361.2440.49.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Scheduling clarification/solution...
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [PATCH] nucleus: Plug race between
+ rpi_clear_remote and rpi_next
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Tschaeche IT-Services <services@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Tschaeche IT-Services wrote:
-> Hi,
+On Sat, 2010-05-01 at 19:47 +0200, Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> > Don't you think that, quoting yourself:
+> > 
+> > "I have to confess, I do not understand how the patch may relate to our
+> > crash. But that's because I still only have a semi-understanding of this
+> > frightening complex RPI code"
+> > 
+> > does not fit that well with any kind of strong assertion made later on
+> > the same topic, not backed by facts?
 > 
-> having done some tests and having read the thread
-> https://mail.gna.org/public/xenomai-help/2010-04/msg00051.html 
-> i got the following understanding:
-> 
-> 1. Xenomai tasks can be in the state RT and non-RT (relaxed).
->    That means: If in RT state, it's scheduled by the Xenomai
->    scheduler and if in non-RT state it's scheduled by the
->    Linux scheduler.
-> 
-> 2. After a Xeno-task did a Linux-Systemcall, e.g. getpid(),
->    it will be in non-RT state, raising the Xeno-Root task
->    to the priority of Xeno-task (setup by rt_task_shadow()).
->    Clearing T_RPIOFF with rt_task_set_mode() disables raising
->    priority of the Xeno-Root task when the task is migrating
->    from Xenomai RT to Linux non-RT state.
-> 
->    The Linux scheduler priority of a shadowed Xeno task in
->    non-RT state is not touched when migrating from RT -> non-RT.
->    Linux scheduling policy and priority depend only on calls
->    to sched_setscheduler() pthread_setschedparam() and similar
->    Linux/Posix calls. (on the other side Linux/Posix calls
->    does not control priority when in RT xenomai state).
-> 
->    Lazy switching means, that this non-RT Xeno-task will stay
->    scheduled by the Linux scheduler until the next Xenomai rt-call.
->    This implies, that it may be blocked by other non-RT or
->    plain Linux tasks of higher Linux priorities by the
->    Linux scheduler while in non-RT state.
-> 
-> 3. After a Xeno-task did a Xenomai-Call, e.g. rt-driver call
->    or rt_mutex_acquire(), it will be in RT state, scheduled
->    by the Xenomai scheduler.
-> 
->    Lazy switching means, that this RT task will stay scheduled
->    by the Xenomai scheduler until the next Linux-System call.
-> 
-> We want a setup with 3 xenomai-shadowed tasks:
-> 
->   - RT-Task: Running in high priority RT context
->   	(Xenomai scheduler, low latency high prio)
-> 
->   - Cyclic-Task: Running in non-RT context
-> 	(Linux scheduler, prio 0 equal to system services)
-> 
->   - Background-Task: Running in non-RT context
->   	(Linux scheduler, low/IDLE prio)
-> 
-> All of them may acquire shared rt-mutices, which is the reason
-> for shadowing Cyclic- and Background-task (plain Linux tasks are not
-> able to acquire an RT-mutex). What we need is:
-> 
-> 1. When Cyclic-/Background-task acquires an RT-mutex it migrates
->    from Linux to Xenomai scheduler. When releasing the mutex,
->    the task should be forced to migrate back to Linux scheduler.
-> 
->    How to achieve that?
-> 
->    By calling Linux-Syscall getpid()?
+> See, as long as you do not directly explain why my concerns on this
+> naturally racy construct were not valid (I brought up quite a few
+> concrete questions),
 
-That's the workaround for now, true solution is not yet available
-(Philippe is on it).
+Which were answered. And you seem to consider that a construct is racy
+by design without taking care of understanding why they could be
+perfectly valid in the proper context. This is what I was pointing out,
+all time long.
 
+>  I couldn't help raising them over and over again.
+> This has, in fact, nothing to do with understanding the RPI code in all
+> its details. It's about reviewing basic patterns of it. But now that the
+> critical bit is gone, I'm surely no longer concerned. :)
 > 
->    Is there a Xenomai flag (rt_task_set_mode()) doing that automatically,
->    after all RT-resources are released? Which version 2.4.10/2.5.x?
+> > 
+> > So, I'm suggesting that we move on, and end this discussion in a
+> > positive manner, i.e. by fixing this code. I hear your concerns, like I
+> > always do, and I'm trying to find a solution that does not paper over
+> > another issue. I guess we should be able to settle on this.
+> > 
+> > I pushed two patches in my for-upstream queue, with lengthy comments to
+> > explain what they do and why this is needed:
+> > 
+> > http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=ac5c739dabcb14334c2e390a9e3064f11f97283c
+> > http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=d3242401b8e1cf2c28822f801b681194243b4394
+> > 
+> > - the first patch is a plain revert of the commit introducing
+> > rpi_next(), which caused the bug you observed in SMP mode, and that your
+> > patch plugged successfully.
+> > 
+> > - the second patch is the proper fix for the issue rpi_next() tried to
+> > address.
+> > 
+> > Could you please try them, and report whether this also fixes the issue
+> > for you? In the meantime, I will be analyzing the RPI code once again,
+> > to check whether your patch still covers a possible case, or not.
 > 
->    Do we have to use the patch mentioned in the thread?
-
-That patch is targeting the (now unsupported) 2.4 series. The official
-solution will be for 2.5.x or some 2.6.x.
-
+> I will try my best, but the issue showed up only once in countless
+> application runs. We will role out the patches at the next chance (we
+> already had to push my workaround as we need to deliver the fastsynch
+> fix, so it may take a while).
 > 
-> 2. If Background-task acquires an RT-mutex and is interrupted by RT-task,
->    which tries to acquire the same mutex, background inherits RT-tasks
->    priority in Xenomai RT context. When background calls to Linux in this
->    state, Xenomai-Root task gets RT-task's priority (priority coupling),
->    but, because background is scheduled by Linux scheduler now,
->    it may be blocked by other non-RT threads running with higher
->    Linux priority (e.g. while(1) in cyclic). Is there a method
->    in Xenomai to inherit Xenomai-priority to the Linux-scheduler
->    settings of a task while the task holds RT resources?
 
-No, such a setup is generally considered as a design flaw.
+No problem with that, you were the one hit by the issue so far.
 
+> Jan
 > 
->    Is it possible to detect if an RT task calls to Linux while
->    holding some RT resources? E.g. a SIGXPU (like for T_WARNSW)
->    dependent on acquired RT resources?
 
-CONFIG_XENO_OPT_DEBUG_SYNCH_RELAX + T_WARNSW for the task that must not
-suffer from such a prio inversion.
-
-> 
->    I assume/conclude: While holding RT resources a task must not switch
->    to secondary domain. If so, we move control to the Linux scheduler
->    loosing RT capabilities. Right?
-
-Generally right. Syscalls that cannot block on other Linux tasks are an
-exception. But that can break when you have to upgrade your kernel.
-
-> 
-> Best regards and thanks,
-> 
-> 	Olli
-
-Jan
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Philippe.
+
+
 
