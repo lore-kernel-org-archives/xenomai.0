@@ -1,15 +1,17 @@
-Message-ID: <4BF2989B.4000506@domain.hid>
-Date: Tue, 18 May 2010 15:39:39 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4BDC3ADA.4040608@domain.hid>
+Date: Sat, 01 May 2010 16:29:46 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <1274182125-12750-1-git-send-email-P.B.Cheblakov@domain.hid>
-	<201005181429.59169.smolorz@domain.hid>
-	<4BF28B0B.1010002@domain.hid>
-	<201005181529.40843.smolorz@domain.hid>
-In-Reply-To: <201005181529.40843.smolorz@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] rtcan: add rtcan_plx_pci driver
+References: <E1O78nO-0008PE-EK@xenomai.org> <4BDC332E.2010804@domain.hid>
+	<4BDC357A.30803@domain.hid> <4BDC3686.9050004@domain.hid>
+	<4BDC3829.9070306@domain.hid> <4BDC3A09.2060106@domain.hid>
+In-Reply-To: <4BDC3A09.2060106@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigB076D7FB16664E80D110ED03"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : native: Improve fault
+ tolerance /wrt multiple task deletions
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,61 +20,123 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Sebastian Smolorz <smolorz@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On 05/18/2010 03:29 PM, Sebastian Smolorz wrote:
-> Wolfgang Grandegger wrote:
->> On 05/18/2010 02:29 PM, Sebastian Smolorz wrote:
->>> Hi Wolfgang,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigB076D7FB16664E80D110ED03
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>> Gilles Chanteperdrix wrote:
+>>>>> GIT version control wrote:
+>>>>>> Module: xenomai-jki
+>>>>>> Branch: for-upstream
+>>>>>> Commit: 5d2fa6c7578683e036d88bc6dbb6a7f458dfe705
+>>>>>> URL:    http://git.xenomai.org/?p=3Dxenomai-jki.git;a=3Dcommit;h=3D=
+5d2fa6c7578683e036d88bc6dbb6a7f458dfe705
+>>>>>>
+>>>>>> Author: Jan Kiszka <jan.kiszka@domain.hid>
+>>>>>> Date:   Wed Apr 28 15:08:11 2010 +0200
+>>>>>>
+>>>>>> native: Improve fault tolerance /wrt multiple task deletions
+>>>>>>
+>>>>>> As we may pass the pthread handle of an RT_TASK directly to glibc,=
+ we
+>>>>>> may trigger a SIGSEGV if the underlying thread was already termina=
+ted.
+>>>>>> Try to catch this application mistakes by clearing the handle at l=
+east
+>>>>>> in that task descriptor which successfully ran rt_task_delete or
+>>>>>> rt_task_join.
+>>>>>>
+>>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+>>>>> Ok. I have tested this patch (though I could not find whether it wa=
+s
+>>>>> discussed on the mailing list). And in fact, it looks to me like it=
+
+>>>>> turns an application error into a silently working application.
+>>>> Then there is probably something broken: rt_task_delete is supposed =
+to
+>>>> return -EIDRM of the passed handle no longer exists. That's at least=
+
+>>>> what the doc says. The point of this patch is to turn an application=
+
+>>>> crash into a proper error return value (and that not only for
+>>>> --enable-debug).
+>>> Here is the test I used:
+>>> #include <stdio.h>
+>>> #include <native/task.h>
+>>> #include <sys/mman.h>
 >>>
->>> Wolfgang Grandegger wrote:
->>>> On 05/18/2010 01:42 PM, Sebastian Smolorz wrote:
->>>>> Pavel Cheblakov wrote:
->>>>>> This is a general driver for cards based on PLX90xx PCI-bridges.
->>>>>> It supports following cards:
->>>>>>  - Adlink PCI-7841/cPCI-7841 card (http://www.adlinktech.com/)
->>>>>>  - Adlink PCI-7841/cPCI-7841 SE card
->>>>>>  - esd CAN-PCI/CPCI/PCI104/200 (http://www.esd.eu/)
->>>>>>  - esd CAN-PCI/PMC/266
->>>>>>  - esd CAN-PCIe/2000
->>>>>>  - Marathon CAN-bus-PCI card (http://www.marathon.ru/)
->>>>>>  - TEWS TECHNOLOGIES TPMC810 card (http://www.tews.com/)
->>>>>
->>>>> The esd cards mentioned above are supported by the RTCAN driver
->>>>> xeno_can_esd_pci. Why do you propose a new driver instead of
->>>>> extending the existing one?
->>>>
->>>> For Socket-CAN, this driver is supposed to support all PLX PCI based
->>>> boards including the esd CAN PCI cards and also the IXXAT PCI board
->>>> (not yet done, though). The RTCAN driver xeno_can_esd_pci is a
->>>> *dedicated* driver for that card without generic support for the PLX
->>>> PCI chips. Extending it makes little sense. The question is if we want
->>>> to drop xeno_can_esd_pci and xeno_can_ixxat_pci.
+>>> void task_main(void* arg)
+>>> {
+>>>         rt_task_sleep(1000000000);
+>>> }
 >>>
->>> With extending the esd_pci driver I meant to take this driver as a
->>> basis to add support for more cards. Of course this would mean to
->>> rename the driver in order to reflect that. I'm not against a
->>> unification of esd_pci and ixxat_pci but it's unneccessary work to
->>> write a new RTCAN driver if there exists another one which is tried and
->>> tested in the field. So my question was why  Pavel did not take the
->>> esd_pci driver as the starting position.
+>>> int main(void)
+>>> {
+>>>      RT_TASK task;
+>>>
+>>>      mlockall(MCL_CURRENT|MCL_FUTURE);
+>>>      rt_task_create(&task, "task", 128*1024, 99, T_FPU|T_JOINABLE);
+>>>      rt_task_start(&task, task_main, NULL);
+>>>      fprintf(stderr, "join: %d\n", rt_task_join(&task));
+>>>      fprintf(stderr, "delete: %d\n", rt_task_delete(&task));
+>>> }
+>>>
+>>> it prints:
+>>> join: 0
+>>> delete: 0
+>>>
+>>> This said, I like the segfault, because people probably never check t=
+he
+>>> return value of rt_task_join/rt_task_delete (which is, I guess, the
+>>> reason why phtread_cancel and pthread_join segfault themselves, becau=
+se
+>>> the posix spec allows to return ESRCH in that case).
+>> Well, that's kind of hard to sell to people writing software based on
+>> documentation. We documented -EIDRM, so we should make it work like
+>> this. Will look into this later.
 >>
->> He did *not* write a new RTCAN driver. He ported plx_pci.c from the
->> mainline kernel to rtcan,
-> 
-> So it is a new RTCAN driver - never mind, just nitpicking. ;-)
-> 
-> As I said, I'm in favour of a unified driver which supports more cards than 
-> esd_pci and ixxat_pci. The question is how we proceed best when we include 
-> rt_sja1000_plx_pci. I suggest not to remove esd_pci immediately but rather 
-> mark it deprecated with a reference to the new driver, e.g. in the Kconfig 
-> help text. That way we would have a fallback driver in case of unforeseen 
-> issues with the new driver.
+>> The fact that pthread_cancel /may/ crash on invalid thread handles is =
+an
+>> implementation detail: The handle is a pointer to an object that /may/=
 
-Fine with me. Marking it as deprecated is a good thing, though. Note
-that the esd part of the plx_pci driver was contributed by Matthias
-Fuchs, including support for the *new* esd pci cards.
+>> no longer exist in memory when dereferenced.
+>=20
+> Ok, another point is that when cancelling a joinable thread,
+> pthread_join should still be called after pthread_cancel. So,
+> rt_task_join should still be able to call pthread_join after a call to
+> rt_task_delete.
+>=20
+> Running pthread_join inside rt_task_delete is not an option, as there
+> would be a risk for deadlocks.
+>=20
 
-Wolfgang.
+So we should always pthread_detach before canceling a thread in
+rt_task_delete?
+
+Jan
+
+
+--------------enigB076D7FB16664E80D110ED03
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkvcOt0ACgkQitSsb3rl5xQzqACfT0+R8fhMvv+ER2962HvpyziZ
+h+UAnApGlI7qKMZsHfcUI+VLxgujhgoL
+=djRr
+-----END PGP SIGNATURE-----
+
+--------------enigB076D7FB16664E80D110ED03--
 
