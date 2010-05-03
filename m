@@ -1,60 +1,73 @@
-Message-ID: <4BDC41EF.4050004@domain.hid>
-Date: Sat, 01 May 2010 16:59:59 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Andreas Glatz <AndreasGlatz@domain.hid>
+Date: Sun, 2 May 2010 21:41:03 -0400
+Message-ID: <245373446233674495BCA5CA2FC1EB17378D015936@domain.hid>
+References: <20100430233410.GA8991@domain.hid>,
+	<4BDBF265.7080501@domain.hid>
+	<245373446233674495BCA5CA2FC1EB17378D015935@domain.hid>,
+	<4BDC57EB.3030106@domain.hid>
+In-Reply-To: <4BDC57EB.3030106@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <E1O78nO-0008PE-EK@xenomai.org> <4BDC332E.2010804@domain.hid>
-	<4BDC357A.30803@domain.hid>
-In-Reply-To: <4BDC357A.30803@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : native: Improve fault
- tolerance /wrt multiple task deletions
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Page fault and secondary mode switch on PowerPC
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> GIT version control wrote:
->>> Module: xenomai-jki
->>> Branch: for-upstream
->>> Commit: 5d2fa6c7578683e036d88bc6dbb6a7f458dfe705
->>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=5d2fa6c7578683e036d88bc6dbb6a7f458dfe705
->>>
->>> Author: Jan Kiszka <jan.kiszka@domain.hid>
->>> Date:   Wed Apr 28 15:08:11 2010 +0200
->>>
->>> native: Improve fault tolerance /wrt multiple task deletions
->>>
->>> As we may pass the pthread handle of an RT_TASK directly to glibc, we
->>> may trigger a SIGSEGV if the underlying thread was already terminated.
->>> Try to catch this application mistakes by clearing the handle at least
->>> in that task descriptor which successfully ran rt_task_delete or
->>> rt_task_join.
->>>
->>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->> Ok. I have tested this patch (though I could not find whether it was
->> discussed on the mailing list). And in fact, it looks to me like it
->> turns an application error into a silently working application.
-> 
-> Then there is probably something broken: rt_task_delete is supposed to
-> return -EIDRM of the passed handle no longer exists. That's at least
-> what the doc says. The point of this patch is to turn an application
-> crash into a proper error return value (and that not only for
-> --enable-debug).
+Hi,
 
-After some investigation, it turns out that opaque2 == 0 is already
-useful for another case: when rt_task_delete'ing a thread belonging to
-another process than the current process. So, by attaching two meanings
-to this value, we introduce a regression.
+>>>> We are running our tests now where Linux is bombarded with interrupts.=
+ Under certain conditions
+>>>> we found that we get page faults in IRQ Tasks which cause a secondary =
+mode switch. To my understanding
+>>>> and what makes things worse is that, ISR tasks always run with the sch=
+eduler lock bit set (T_LOCK).
+>>>> In our case this means that when we switch to the secondary mode from =
+the ISR Task, all other Xenomai
+>>>> tasks don't get scheduled until the ISR task returns to primary mode. =
+Since Linux is under heavy
+>>>> interrupt load, it takes about 1-2sec for any Xenomai task to start ru=
+nning again.
+>>>>
+>>>> I attached a LTTng trace where you can see whats going on. Here the sh=
+ort version:
+>>> Could you tell us what version of Xenomai you are using?
+>>
+>> Linux 2.6.32-5, Xenomai 2.4.10.1, Ipipe 2.8
+>>
+>>
+>>> And if your program uses fork() (or anything which uses fork such as
+>>> system(), or popen())?
+>>
+>> Yes but all the real-time threads are created in the parent.
+>> The children are just helper processes which don't make use of Xenomai A=
+PIs at all.
+>
+> It does not matter. When you call fork, the linux kernel sets up copy on
+> write for most mappings such as the stacks in both the parent and the
+> child. The I-pipe patch for other architectures sets up a (costly, so
+> best avoided anyway) protection for this case but not on powerpc.
 
--- 
-					    Gilles.
+I was wrong... there is one case where we use system() from an RT task in t=
+he parent...
+I'm thinking what to do about it...
+
+> If the helper processes are only needed at the beginning of the process
+> life, you can fault all the mappings after the last fork (I have a piece
+> of code which does that if you are interested).
+
+Could you send the code to me?=20
+
+Thanks a lot,
+
+Andreas=
 
