@@ -1,42 +1,32 @@
-Message-ID: <4BF1D7CF.7040300@domain.hid>
-Date: Tue, 18 May 2010 01:57:03 +0200
+Message-ID: <4BDF19ED.7060104@domain.hid>
+Date: Mon, 03 May 2010 20:46:05 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTil1N6ULXXuv4nx5n_amHqE61tZNuSaw6ndLPdPL@mail.gmail.com>	
-	<4BF18A00.706@domain.hid>	
-	<AANLkTinkr4vDIHFMJigC7i9dCXjoG2d_gNG11txXrjpd@domain.hid>	
-	<4BF192A6.6080508@domain.hid>
-	<AANLkTikwsGEOg6tDNA-ZiaX9P362egUat7lVthR1gzIU@mail.gmail.com>
-In-Reply-To: <AANLkTikwsGEOg6tDNA-ZiaX9P362egUat7lVthR1gzIU@mail.gmail.com>
+References: <4BDE8F79.5010905@domain.hid>
+In-Reply-To: <4BDE8F79.5010905@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Error building userspace: "selected processor
- does not support `rsc r7, r7, #0'
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [PATCH] debian: sync with 2.5.2-2 from
+	debian.org, 
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jeremy Brown <jhbrown@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Stefan Kisdaroczi <kisda@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jeremy Brown wrote:
->>>         .syntax unified
->> That is the key: I presume this means your compiler generates syntax
->> which works both with ARM and thumb2, and rsc does not exist with
->> thumb2. Note that from a performance point of view, this may not be a win.
+Stefan Kisdaroczi wrote:
+> Hi Philippe,
 > 
-> Ah, success --- based on your note, a colleague of mine determined
-> that arranging to pass gcc the (undocumented) "-marm" flag enables the
-> compiler to build the unpatched Xenomai 2.5.3 sources from beginning
-> to end.  For posterity, I recompiled your example code with -O2 -marm,
-> and appended it below.
+> Roland Stigge has accepted the "group xenomai" patch and uploaded xenomai 2.5.2-2 to debian unstable.
+> I have attached a patch against rpm/for-upstream to sync up with 2.5.2-2.
+> Please ignore other patches I sent earlier, the attached patch contains them. Thanks.
 
-Ok. Does it solve the ICE too?
+Reading your patch, maybe libxenomai.so.0 should be called libxenomai.so.1 ?
 
 -- 
 					    Gilles.
