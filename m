@@ -1,282 +1,186 @@
-Message-ID: <4C0E6E5F.4010907@domain.hid>
-Date: Tue, 08 Jun 2010 18:22:55 +0200
-From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+Message-ID: <4BE082A7.1040500@domain.hid>
+Date: Tue, 04 May 2010 22:25:11 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4C0E51F0.6080300@domain.hid>
-	<1276009893.2982.17.camel@domain.hid>
-In-Reply-To: <1276009893.2982.17.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH,
- RFC] Instrumentation to detect delayed timers
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Subject: [Adeos-main] adeos-ipipe-2.6.31-arm-1.16-01 pull request.
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Adeos <adeos-main@gna.org>
 
-Philippe Gerum wrote:
-> On Tue, 2010-06-08 at 16:21 +0200, Wolfgang Mauerer wrote:
->> Hi,
->>
->> the attached patch augments the timer expiration handler with some checks
->> for excessive timer latencies. Depending on the configuration options, it
->> freezes the ipipe tracer and creates a list of delayed timers.
->>
->> This code was useful for us in debugging some problems with faulty hardware.
->> Would such a thing be suitable for mainline?
-> 
-> No, I don't think so, albeit the debug feature it brings in makes sense.
-> 
-> - the code, as is, adds significant cruft to the timer code, which is
-> per se a problem. Debug is ok, but I really would like that code to have
-> a much lower impact source-wise.
+The following changes since commit 9508665feb17608178a1c6b1051525d644de2f8f:
+  Jan Kiszka (1):
+        Disable both real and virtual interrupts during ftrace code changes
 
-so something along the lines of
+are available in the git repository at:
 
-xntimer_enqueue_aperiodic(...)
-{
-...
-	large_latency_hook_whatever(args);
-...
-}
+  git://git.xenomai.org/ipipe-gch.git for-ipipe-2.6.31-arm
 
-where large_latency_hook_whatever() is #ifdef'd to nop if not
-compile-time configured would be acceptable I suppose?
+Fabian Godehardt (1):
+      Fix hang on 'Calibrating delay loop...' on S3C24xx
 
-> - dependency on debugfs is wrong; we still have to take care of legacy
-> 2.4 kernels. I know, this is a real PITA, and I'm more than willing to
-> get rid of that "heritage" in 3.x, but for now, 2.x still requires to be
-> 2.4-compatible.
+Gilles Chanteperdrix (27):
+      FCSE: pid life cycle.
+      FCSE: Conversions between VA and MVA.
+      FCSE: Address-space limits.
+      FCSE: differentiate cpu_tlb_mask from cpu_vm_mask.
+      FCSE: Make the shared mappings uncacheable.
+      "Best-effort" FCSE: choose whether to flush cache at run-time.
+      "Best-effort" FCSE: Allow PID re-use.
+      "Best-effort" FCSE: Handle shared mappings.
+      "Best-effort" FCSE: Handle mappings above 32 MB
+      FCSE: add Makefile and compilation option.
+      adeos-ipipe-2.6.31-arm-1.15-01
+      Add missing export symbol
+      Add missing clobber for operations on cp15
+      Fix memory layout
+      Fix ptrace with FCSE
+      Cosmetic fixes
+      Add support for FCSE on Feroceon
+      Track more accurately which tasks are currently in cache
+      Dynamic FCSE pid-reallocation
+      FCSE: finalize v4
+      FCSE v4 optimizations
+      Integrate I-pipe with FCSE v4
+      Disable omap low-power irq controller feature
+      Disable OMAP I2C irq line to avoid spurious irqs
+      Reduce interrupt masking section for VFP exceptions handling
+      Remove dead code
+      adeos-ipipe-2.6.31-arm-1.16-01
 
-oh, yeah. procfs would be a replacement, but using debugfs via ipipe
-is much nicer since this is definitely debugging stuff.
+Henri Roosen (1):
+      Fix bug on imx31 when accessing hardware timer in user-space
 
-> - but, beyond this, this is something that should go into the I-pipe
-> tracer instead, exporting a new dedicated interface to log a high
-> latency event. There, you could use whatever fits to implement it, since
-> there is by definition no consideration for compat with legacy kernels.
-> I'm thinking of having ipipe_trace_latency(unsigned long delta, const
-> char *source). That would be reusable in other, non-Xenomai contexts as
-> well.
+ arch/arm/Kconfig                                   |    4 +
+ arch/arm/boot/compressed/head.S                    |    9 +
+ arch/arm/common/it8152.c                           |    7 +-
+ arch/arm/include/asm/assembler.h                   |   24 +
+ arch/arm/include/asm/atomic.h                      |   16 +-
+ arch/arm/include/asm/bitops.h                      |   24 +-
+ arch/arm/include/asm/cacheflush.h                  |   80 +++-
+ arch/arm/include/asm/cpu-multi32.h                 |    5 +-
+ arch/arm/include/asm/cpu-single.h                  |    3 +-
+ arch/arm/include/asm/fcse.h                        |  177 +++++++
+ arch/arm/include/asm/ipipe.h                       |  274 ++++++++++
+ arch/arm/include/asm/ipipe_base.h                  |  108 ++++
+ arch/arm/include/asm/irqflags.h                    |  130 ++++-
+ arch/arm/include/asm/memory.h                      |    5 +
+ arch/arm/include/asm/mmu.h                         |   11 +
+ arch/arm/include/asm/mmu_context.h                 |  105 ++++-
+ arch/arm/include/asm/pgtable.h                     |   59 ++-
+ arch/arm/include/asm/proc-fns.h                    |    5 +-
+ arch/arm/include/asm/processor.h                   |    5 +
+ arch/arm/include/asm/resource.h                    |   10 +
+ arch/arm/include/asm/system.h                      |   19 +-
+ arch/arm/include/asm/thread_info.h                 |   12 +
+ arch/arm/include/asm/tlbflush.h                    |   14 +-
+ arch/arm/kernel/Makefile                           |    2 +
+ arch/arm/kernel/entry-armv.S                       |  142 +++++-
+ arch/arm/kernel/entry-common.S                     |   72 +++-
+ arch/arm/kernel/entry-header.S                     |   11 +
+ arch/arm/kernel/fcse.c                             |  465 +++++++++++++++++
+ arch/arm/kernel/ipipe.c                            |  533 ++++++++++++++++++++
+ arch/arm/kernel/irq.c                              |    2 +
+ arch/arm/kernel/process.c                          |   10 +-
+ arch/arm/kernel/ptrace.c                           |    4 +
+ arch/arm/kernel/smp.c                              |    7 +-
+ arch/arm/kernel/traps.c                            |   20 +
+ arch/arm/mach-at91/Kconfig                         |   13 +
+ arch/arm/mach-at91/Makefile                        |   11 +
+ arch/arm/mach-at91/at91_ipipe_time.c               |  418 +++++++++++++++
+ arch/arm/mach-at91/at91rm9200.c                    |   44 ++
+ arch/arm/mach-at91/at91sam9260.c                   |   44 ++
+ arch/arm/mach-at91/at91sam9261.c                   |   44 ++
+ arch/arm/mach-at91/at91sam9263.c                   |   44 ++
+ arch/arm/mach-at91/at91sam9rl.c                    |   44 ++
+ arch/arm/mach-at91/gpio.c                          |   53 ++-
+ arch/arm/mach-at91/include/mach/hardware.h         |   19 +
+ arch/arm/mach-at91/include/mach/irqs.h             |    2 +
+ arch/arm/mach-at91/include/mach/timex.h            |    2 +-
+ arch/arm/mach-at91/irq.c                           |    3 +
+ arch/arm/mach-integrator/core.c                    |  171 +++++--
+ .../arm/mach-integrator/include/mach/entry-macro.S |    6 +-
+ arch/arm/mach-integrator/include/mach/irqs.h       |    1 -
+ arch/arm/mach-integrator/include/mach/platform.h   |    7 +-
+ arch/arm/mach-integrator/include/mach/timex.h      |    4 +-
+ arch/arm/mach-integrator/integrator_cp.c           |   20 +-
+ arch/arm/mach-ixp4xx/common.c                      |  173 +++++++
+ arch/arm/mach-mx3/devices.c                        |   13 +
+ arch/arm/mach-mx3/mx31ads.c                        |    2 +-
+ arch/arm/mach-mx3/mx31pdk.c                        |    3 +-
+ arch/arm/mach-omap2/irq.c                          |   12 +-
+ arch/arm/mach-omap2/timer-gp.c                     |  164 ++++++-
+ arch/arm/mach-pxa/irq.c                            |    3 +
+ arch/arm/mach-pxa/leds-idp.c                       |    1 +
+ arch/arm/mach-pxa/leds-lubbock.c                   |    1 +
+ arch/arm/mach-pxa/leds-mainstone.c                 |    1 +
+ arch/arm/mach-pxa/lpd270.c                         |    3 +-
+ arch/arm/mach-pxa/lubbock.c                        |    3 +-
+ arch/arm/mach-pxa/mainstone.c                      |    3 +-
+ arch/arm/mach-pxa/pcm990-baseboard.c               |    3 +-
+ arch/arm/mach-pxa/time.c                           |  154 ++++++-
+ arch/arm/mach-pxa/viper.c                          |    3 +-
+ arch/arm/mach-s3c2410/include/mach/irqs.h          |    2 +
+ arch/arm/mach-s3c2440/irq.c                        |    7 +-
+ arch/arm/mach-sa1100/irq.c                         |    6 +-
+ arch/arm/mach-sa1100/leds-assabet.c                |    1 +
+ arch/arm/mach-sa1100/leds-badge4.c                 |    1 +
+ arch/arm/mach-sa1100/leds-cerf.c                   |    1 +
+ arch/arm/mach-sa1100/leds-hackkit.c                |    1 +
+ arch/arm/mach-sa1100/leds-lart.c                   |    1 +
+ arch/arm/mach-sa1100/leds-simpad.c                 |    1 +
+ arch/arm/mach-sa1100/time.c                        |  153 ++++++-
+ arch/arm/mm/Kconfig                                |   80 +++
+ arch/arm/mm/alignment.c                            |    3 +
+ arch/arm/mm/context.c                              |    7 +-
+ arch/arm/mm/copypage-v4mc.c                        |    2 +-
+ arch/arm/mm/copypage-xscale.c                      |    2 +-
+ arch/arm/mm/fault-armv.c                           |   60 +++-
+ arch/arm/mm/fault.c                                |   69 +++
+ arch/arm/mm/flush.c                                |   29 +-
+ arch/arm/mm/ioremap.c                              |    1 +
+ arch/arm/mm/mmap.c                                 |   34 +-
+ arch/arm/mm/pgd.c                                  |   50 ++-
+ arch/arm/mm/proc-arm920.S                          |    9 +
+ arch/arm/mm/proc-arm926.S                          |    9 +
+ arch/arm/mm/proc-feroceon.S                        |   13 +
+ arch/arm/mm/proc-xscale.S                          |    9 +
+ arch/arm/plat-mxc/cpu.c                            |   28 +-
+ arch/arm/plat-mxc/gpio.c                           |   18 +-
+ arch/arm/plat-mxc/include/mach/common.h            |    4 +
+ arch/arm/plat-mxc/time.c                           |  185 +++++++
+ arch/arm/plat-omap/Kconfig                         |    2 +
+ arch/arm/plat-omap/dmtimer.c                       |    7 +
+ arch/arm/plat-omap/gpio.c                          |    3 +-
+ arch/arm/plat-omap/include/mach/dmtimer.h          |    3 +
+ arch/arm/plat-pxa/gpio.c                           |    5 +-
+ arch/arm/plat-s3c/time.c                           |  211 +++++++--
+ arch/arm/plat-s3c24xx/irq.c                        |   29 +-
+ arch/arm/plat-s3c24xx/s3c244x-irq.c                |    9 +-
+ arch/arm/vfp/entry.S                               |    3 +-
+ arch/arm/vfp/vfphw.S                               |   13 +-
+ arch/arm/vfp/vfpmodule.c                           |   37 +-
+ drivers/i2c/busses/i2c-omap.c                      |   10 +
+ drivers/misc/Kconfig                               |    2 +-
+ include/asm-generic/resource.h                     |    8 +
+ include/linux/lockdep.h                            |    2 +-
+ include/linux/resource.h                           |    6 -
+ kernel/trace/Kconfig                               |    1 +
+ 115 files changed, 4712 insertions(+), 291 deletions(-)
+ create mode 100644 arch/arm/include/asm/fcse.h
+ create mode 100644 arch/arm/include/asm/ipipe.h
+ create mode 100644 arch/arm/include/asm/ipipe_base.h
+ create mode 100644 arch/arm/kernel/fcse.c
+ create mode 100644 arch/arm/kernel/ipipe.c
+ create mode 100644 arch/arm/mach-at91/at91_ipipe_time.c
 
-Sounds reasonable.
-
-Would it make sense to augment ipipe_trace_latency() with an additional
-type argument to distinguish different latency sources, or is this
-overkill?
-
-Best, Wolfgang
-
-> 
-> Additionally, the latency spots could appear as events in the tracer log
-> as well, which may help debugging them a lot, since you would know about
-> the actual context.
-> 
->> Regards, Wolfgang
->>
->> ---
->> commit 9c2a3908ac4aff21022a577552002fc2622d3670
->> Author: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
->> Date:   Mon Jun 7 15:34:39 2010 +0200
->>
->>     This patch provides the possibility to check upon timer expiration
->>     how much a timer has been delayed. When the delay surpasses a configurable
->>     threshold, the ipipe tracer is frozen. Additionally, the patch allows
->>     for the creation of a list of timers that have suffered from excessive
->>     delays.
->>     
->>     The mechanism can be disabled at both, compile- and runtime. There is no
->>     overhead in the former case.
->>     
->>     Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
->>
->> diff --git a/ksrc/nucleus/Kconfig b/ksrc/nucleus/Kconfig
->> index 211a4ad..ffed3f8 100644
->> --- a/ksrc/nucleus/Kconfig
->> +++ b/ksrc/nucleus/Kconfig
->> @@ -293,6 +293,24 @@ config XENO_OPT_DEBUG_TIMERS
->>  	This option activates debugging output for critical
->>  	timer-related operations performed by the Xenomai core.
->>  
->> +config XENO_OPT_DEBUG_TIMER_LATENCY
->> +	bool "Log excessive timer latencies"
->> +	depends on XENO_OPT_DEBUG && (XENO_OPT_STATS || IPIPE_TRACE)
->> +	help
->> +
->> +	This option activates recording of excessive timer latencies.
->> +	In contrast to the userland latency checker which is statistical
->> +	in nature, this test checks every expiring timer and is thus
->> +	more precise. However, it adds some runtime overhead when
->> +	activated.
->> +
->> +	When the ipipe tracer is enabled, the trace is frozen
->> +	when a latency maximum above the threshold set in
->> +	the debugfs file timer_lattest/lat_threshold_us is detected.
->> +	When Xenomai statistics collection is enabled, a list of
->> +	excessive latencies together with the names of the timers
->> +	is kept in the debugfs file timer_lattest/exc_timer_list.
->> +
->>  config XENO_OPT_DEBUG_SYNCH_RELAX
->>  	bool "Detect mutexes held in relaxed sections"
->>  	depends on XENO_OPT_PERVASIVE && XENO_OPT_DEBUG
->> diff --git a/ksrc/nucleus/timer.c b/ksrc/nucleus/timer.c
->> index d813c4f..01dad44 100644
->> --- a/ksrc/nucleus/timer.c
->> +++ b/ksrc/nucleus/timer.c
->> @@ -36,11 +36,37 @@
->>   *
->>   *@{*/
->>  
->> +#include <linux/debugfs.h>
->>  #include <nucleus/pod.h>
->>  #include <nucleus/thread.h>
->>  #include <nucleus/timer.h>
->> +#include <nucleus/trace.h>
->>  #include <asm/xenomai/bits/timer.h>
->>  
->> +#ifdef CONFIG_XENO_OPT_DEBUG_TIMER_LATENCY
->> +#define NANO 1000000000ll
->> +#define MU   1000000ll
->> +#define NANO_PER_MU (NANO/MU)
->> +
->> +static u32 lat_thresh = 0; /* in \mu s, set to zero to disable */
->> +
->> +#ifdef CONFIG_XENO_OPT_STATS
->> +#include <linux/seq_file.h>
->> +
->> +#define NUM_REC_LATENCIES	500
->> +static int num_lat_exc_timers = -1;
->> +static bool lat_rec_overflow = false; /* Set when more than NUM_REC_LATENCIES
->> +				       * excessive latencies have been
->> +				       * observed */
->> +struct lat_rec {
->> +	char name[XNOBJECT_NAME_LEN];
->> +	xnsticks_t delta;
->> +};
->> +
->> +static struct lat_rec delayed_timers[NUM_REC_LATENCIES];
->> +#endif // CONFIG_XENO_OPT_STATS
->> +#endif // XENO_OPT_DEBUG_TIMER_LATENCY
->> +
->>  static inline void xntimer_enqueue_aperiodic(xntimer_t *timer)
->>  {
->>  	xntimerq_t *q = &timer->sched->timerqueue;
->> @@ -368,6 +394,32 @@ void xntimer_tick_aperiodic(void)
->>  		if (delta > (xnsticks_t)nklatency)
->>  			break;
->>  
->> +#ifdef CONFIG_XENO_OPT_DEBUG_TIMER_LATENCY
->> +		/*
->> +		 * Check for severly delayed timers, but omit the host tick
->> +		 * timer as it can be delayed intentionally, thus causing
->> +		 * spurious excessive latencies (see
->> +		 * xntimer_next_local_shot()).
->> +		 */
->> +		if (lat_thresh && (timer != &sched->htimer)) {
->> +			delta = xnarch_tsc_to_ns(-delta);
->> +			if (delta > ((xnsticks_t)lat_thresh)*NANO_PER_MU) {
->> +				xnarch_trace_user_freeze(delta, 1);
->> +#ifdef CONFIG_XENO_OPT_STATS
->> +				if (num_lat_exc_timers < NUM_REC_LATENCIES - 1) {
->> +					num_lat_exc_timers++;
->> +				} else {
->> +					lat_rec_overflow = true;
->> +					num_lat_exc_timers = 0;
->> +				}
->> +				xnobject_copy_name(delayed_timers[num_lat_exc_timers].name,
->> +						   timer->name);
->> +				delayed_timers[num_lat_exc_timers].delta = delta;
->> +#endif // XENO_OPT_STATS
->> +			}
->> +		}
->> +#endif // XENO_OPT_DEBUG_TIMER_LATENCY
->> +
->>  		trace_mark(xn_nucleus, timer_expire, "timer %p", timer);
->>  
->>  		xntimer_dequeue_aperiodic(timer);
->> @@ -1147,10 +1199,70 @@ static int timer_read_proc(char *page,
->>  	return len;
->>  }
->>  
->> +#ifdef CONFIG_XENO_OPT_STATS
->> +static int lat_exc_seq_show(struct seq_file *f, void *v)
->> +{
->> +	int count, max;
->> +
->> +	if (num_lat_exc_timers < 0) {
->> +		seq_printf(f, "(No excessive timer latencies detected)\n");
->> +		return 0;
->> +	}
->> +
->> +	if (lat_rec_overflow)
->> +		max = NUM_REC_LATENCIES;
->> +	else
->> +		max = num_lat_exc_timers;
->> +
->> +	for (count = 0; count < max; count++) {
->> +		seq_printf(f, "Timer '%s', delay %lld ns\n",
->> +			   delayed_timers[count].name,
->> +			   delayed_timers[count].delta);
->> +	}
->> +
->> +	if (lat_rec_overflow) {
->> +		seq_printf(f, "WARNING: Latency tracking array overflow detected.\n");
->> +		seq_printf(f, "         Not all excessive latencies are shown.\n");
->> +
->> +	}
->> +	return 0;
->> +}
->> +
->> +static int lat_exc_seq_open(struct inode *inode, struct file *file)
->> +{
->> +	return single_open(file, lat_exc_seq_show, NULL);
->> +}
->> +
->> +static struct file_operations lat_exc_fops = {
->> +        .owner          = THIS_MODULE,
->> +        .open           = lat_exc_seq_open,
->> +        .read           = seq_read,
->> +        .llseek         = seq_lseek,
->> +};
->> +#endif // CONFIG_XENO_OPT_STATS
->> +
->>  void xntimer_init_proc(void)
->>  {
->>  	rthal_add_proc_leaf("timer", &timer_read_proc, NULL, NULL,
->>  			    rthal_proc_root);
->> +
->> +#ifdef CONFIG_XENO_OPT_DEBUG_TIMER_LATENCY
->> +	struct dentry *debugfs_dir;
->> +
->> +	debugfs_dir = debugfs_create_dir("timer_lattest", NULL);
->> +
->> +	if (debugfs_dir) {
->> +		if (!debugfs_create_u32("lat_threshold_us", 0666,
->> +					debugfs_dir, &lat_thresh))
->> +			panic("Could not create lat_threshold_us");
->> +
->> +#ifdef CONFIG_XENO_OPT_STATS
->> +		if (!debugfs_create_file("exc_timer_list", 0600,
->> +					 debugfs_dir, NULL, &lat_exc_fops))
->> +			panic("Could not create exc_timer_list");
->> +#endif // XENO_OPT_STATS
->> +	}
->> +#endif // XENO_OPT_DEBUG_TIMER_LATENCY
->>  }
->>  
->>  void xntimer_cleanup_proc(void)
->>
->> _______________________________________________
->> Xenomai-core mailing list
->> Xenomai-core@domain.hid
->> https://mail.gna.org/listinfo/xenomai-core
-> 
-> 
-
+-- 
+					    Gilles.
 
