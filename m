@@ -1,57 +1,44 @@
-Message-ID: <4C0B478A.7060303@domain.hid>
-Date: Sun, 06 Jun 2010 09:00:26 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4BE081C8.5070607@domain.hid>
+Date: Tue, 04 May 2010 22:21:28 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4C037798.8070307@domain.hid>	<1275403262-23939-1-git-send-email-P.B.Cheblakov@domain.hid>	<4C051D3F.2030407@domain.hid>
-	<4C0A8B94.7020207@domain.hid> <4C0ABA8F.8000104@domain.hid>
-	<4C0ABE03.9000400@domain.hid>
-In-Reply-To: <4C0ABE03.9000400@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] [PATCH V3] rtcan: add rtcan_plx_pci driver
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Content-Transfer-Encoding: 7bit
+Subject: [Adeos-main] adeos-ipipe-2.6.30-arm-1.15-02 pull request.
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Adeos <adeos-main@gna.org>
 
-On 06/05/2010 11:13 PM, Gilles Chanteperdrix wrote:
-> Wolfgang Grandegger wrote:
->> On 06/05/2010 07:38 PM, Gilles Chanteperdrix wrote:
->>> P.B.Cheblakov wrote:
->>>> I'v=D1=83 merged fixes from Wolfgang for Kconfig and for warnings in=
- this=20
->>>> patch and tested it
->>> Thanks, but it seems we still have a few build issues:
->>> - the PCI IDs used by this patch are not available in old kernels
->>
->> OK, this can to be fixed with some "ifndef ..." lines. What kernel did
->> make problems?
->=20
-> http://sisyphus.hd.free.fr/~gilles/bx
+The following changes since commit 3e02b1d21cafbf00dc12650f684035bbbd2d6566:
+  Gilles Chanteperdrix (1):
+        adeos-ipipe-2.6.30-arm-1.15-01
 
-OK.
+are available in the git repository at:
 
->>> - the I-pipe patches no longer apply on some stable releases.
->>
->> I don't understand this issue? What does it have to do with this drive=
-r?
->=20
-> Nothing. It simply showed up at the same time because I had not run the
-> build test for some time.
+  git://git.xenomai.org/ipipe-gch.git for-ipipe-2.6.30-arm
 
-Hm, the error message is quite clear:
+Fabian Godehardt (1):
+      Fix hang on 'Calibrating delay loop...' on S3C24xx
 
-prepare-kernel.sh: Unable to patch kernel 2.6.33.5 with adeos-ipipe-2.6.3=
-3.4-powerpc-2.9-01.patch
+Gilles Chanteperdrix (1):
+      adeos-ipipe-2.6.30-arm-1.15-02
 
-But it's dissappointing that a successive extraversion breaks the patch.
+Henri Roosen (1):
+      Fix bug on imx31 when accessing hardware timer in user-space
 
-Wolfgang.
+ arch/arm/include/asm/ipipe.h            |    6 +++---
+ arch/arm/mach-mx3/devices.c             |   13 +++++++++++++
+ arch/arm/plat-mxc/cpu.c                 |   28 +++++++++++++++++++++++++++-
+ arch/arm/plat-mxc/include/mach/common.h |    4 ++++
+ arch/arm/plat-s3c/time.c                |    5 -----
+ 5 files changed, 47 insertions(+), 9 deletions(-)
 
+-- 
+					    Gilles.
 
