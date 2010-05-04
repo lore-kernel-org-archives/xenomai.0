@@ -1,115 +1,44 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4BDA7BF7.9090507@domain.hid>
-References: <cover.1271600150.git.jan.kiszka@domain.hid>
-	<4BD54515.9010101@domain.hid>  <4BD5C8C4.3040207@domain.hid>
-	<1272577158.24705.16.camel@domain.hid>
-	<4BDA7BF7.9090507@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sat, 01 May 2010 18:02:26 +0200
-Message-ID: <1272729746.2440.15.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 00/23] [git pull] procfs overflow fixes
- and seq_file conversions
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+MIME-Version: 1.0
+In-Reply-To: <k2j48abf2c21004300618oa524c39areaa358d4669b0b61@domain.hid>
+References: <i2z48abf2c21004282309r50f047bck4be213c0aac6efe1@domain.hid>
+	<p2y48abf2c21004290820g1dabc981y5a1dbd141f64059e@domain.hid>
+	<1272554724.28983.444.camel@domain.hid>
+	<y2x48abf2c21004291716m769fc355ld978b2da54d4ea1d@domain.hid>
+	<1272616194.24705.36.camel@domain.hid>
+	<s2g48abf2c21004300217q31bce099g588cb0bdc4bf380f@domain.hid>
+	<1272619558.24705.40.camel@domain.hid>
+	<p2k48abf2c21004300503od8d6e868r2cdeef0ab62e3376@domain.hid>
+	<1272631287.24705.72.camel@domain.hid>
+	<k2j48abf2c21004300618oa524c39areaa358d4669b0b61@domain.hid>
+Date: Tue, 4 May 2010 09:41:26 +0800
+Message-ID: <g2n48abf2c21005031841j1a6556e3p594f950cb18bd08e@domain.hid>
+From: Peter Pan <pppeterpppan@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-help] cyclictest gives out segmentation fault with
+	xenomai 2.5.2 in powerpc arch
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Fri, 2010-04-30 at 08:43 +0200, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> > On Mon, 2010-04-26 at 19:09 +0200, Gilles Chanteperdrix wrote: 
-> >> Jan Kiszka wrote:
-> >>> Jan Kiszka wrote:
-> >>>> The following changes since commit 113ea4d56e8b215cb56ae7673013163ea5a5987d:
-> >>>>   Gilles Chanteperdrix (1):
-> >>>>         switchtest: increase stack sizes
-> >>>>
-> >>>> are available in the git repository at:
-> >>>>
-> >>>>   git://git.xenomai.org/xenomai-jki.git queues/proc
-> >>>>
-> >>>> This series fixes some of the potential (but when they happen fatal)
-> >>>> overflows in our procfs outputs. Specifically, it fixes all issues in
-> >>>> RTDM (one of them hit us in the field) and the recently reported
-> >>>> overflow in /proc/xenomai/heap. Moreover, Wolfgang started the lengthy
-> >>>> conversion of the registry by introducing a new seq_file-based interface
-> >>>> and already moving the native skin over.
-> >>>>
-> >>>> The future belongs to seq_file, so some of the patches are strictly
-> >>>> spoken not yet required. But we better start this effort before the last
-> >>>> legacy interface user was converted and the old interface is suddenly
-> >>>> dropped from the kernel. This may not be that far away. A patch of mine
-> >>>> to improve error reporting of the old interface was rejected with
-> >>>> "->read_proc is going to be removed, so there is no point."
-> >>> Did you already have a chance to look into this series?
-> >> Not yet, that is a big series. With a high potential for kernel crashes,
-> >> memory leaks and other things like that. I am trying to find a way to
-> >> test it. Maybe we can try and run it with kmemcheck?
-> >>
-> > 
-> > Looking at this series, I eventually made my mind about the kind of
-> > support I'd wish in this area. It boils down to:
-> > 
-> > - getting rid of the PAGE_SIZE limitation on read as this series does,
-> > - reducing the impact on latency of large outputs,
-> > - hiding discrepancies between linux kernel
-> > releases, regarding the proper way to export kernel object states
-> > to userland (like the planned deprecation of read procs).
-> > - providing a common encapsulation to do that, which brings all the
-> > previous properties in a normalized way, and helps removing direct
-> > dependencies of other core code on PROC_FS
-> > - rebasing the registry support on top of this feature, so that skins
-> > are automatically feature-enabled when going through the registry to
-> > export stuff to userland (as they should).
-> > 
-> > To this end, I came up with the so-called "virtual file" (aka vfile)
-> > support for the nucleus, and have toyed with those ideas here: 
-> > git://git.xenomai.org/xenomai-rpm.git	queue/vfile
-> > 
-> > This is still early work in progress, not all the codebase was converted
-> > to use the vfiles (registry and native API were), and I tested the
-> > result only in a very limited manner; so this is not for inclusion into
-> > 2.5.x given the amount of code that touches anyway. But I will likely
-> > submit this for inclusion at some point into any upcoming 2.6.x, if
-> > vfiles turn out to fit the job.
-> > 
-> 
-> Looks good on first sight to simplify all our revision-based list walks
-> (and those that should better work like that). To make it a universal
-> abstraction for /proc/xenomai (or what ever it will be in the future), I
-> think just a bit more flexibility is required.
-> 
-> Specifically, we a way to modify the locking and data acquisition
-> strategy. We have nodes that do not require any locking at all but still
-> want to use the seq_file pattern. And we have some nodes that use
-> different locks, including Linux semaphores/mutexes. I think if you
-> allow to specify the lock to be used and its type (xnlock or Linux mutex
-> - BTW, a good chance to wrap away semaphores for legacy kernels), all
-> required use cases should be covered:
->  - xnlock -> revision-based ahead-of-print data acquisition
->  - Linux mutex -> simply hold the lock while printing
->  - NULL -> provide lockless seq_file printing
+The calibrated latency for PPC460GT:
 
-That makes sense. To do this sanely, I will have to raise the
-abstraction level a bit more to specialize the vfile base, for deriving
-both a snapshot-driven vfile (the current one), and a regular one (the
-linux kind of seqfile), for which a locking resource may be specified. I
-will extend this code accordingly.
+latency : 2077
+results :
+periodic user-mode task:
+RTS|      0.006|      0.095|      8.229|       0|     0|    00:00:10/00:00:10
 
-> 
-> Jan
-> 
+The calibrated latency for P2020RDB:
 
-
--- 
-Philippe.
-
-
+latency : 2736
+results :
+periodic user-mode task:
+RTS|      0.000|      0.064|      3.152|       0|     0|    00:00:20/00:00:20
 
