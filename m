@@ -1,13 +1,15 @@
-Message-ID: <4BE27AA7.2070302@domain.hid>
-Date: Thu, 06 May 2010 10:15:35 +0200
+Message-ID: <4BE315C9.1050008@domain.hid>
+Date: Thu, 06 May 2010 21:17:29 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <o2hcfed72901005060052o40bcc542gf42d45e3488c43f1@domain.hid>
-In-Reply-To: <o2hcfed72901005060052o40bcc542gf42d45e3488c43f1@domain.hid>
+References: <o2hcfed72901005060052o40bcc542gf42d45e3488c43f1@domain.hid>	
+	<4BE27AA7.2070302@domain.hid>
+	<i2kcfed72901005060830q1d29f948x4b558e2cf8cb617a@domain.hid>
+In-Reply-To: <i2kcfed72901005060830q1d29f948x4b558e2cf8cb617a@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Problem getting the time with a kernel patched
- with	xenomai
+ with xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,41 +20,21 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Divi Oillo <divi.oillo@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: Xenomai help <xenomai@xenomai.org>
 
 Divi Oillo wrote:
-> Hi, I post this message because I need a little help.
+> I don't have CONFIG_HPET=y and CONFIG_HPET_MMAP=y in the .config of my
+> patched kernel. How can I configure my patched kernel to fix my problem?
+> Can I add these two options in my patched kernel .config?
 
-Hi,
+Yes you can, but more important than the kernel options are the run time
+decisions, of which you are informed in the kernel logs, as my last mail
+already told you. Anyway, all this is not really specific about Xenomai,
+so you would probably be better of finding some web site explaining
+high-res timers in details.
 
-> (...)
->                 gettimeofday(&timestamp_sav,NULL);
->                 nanosleep(&req,&req);
->                 gettimeofday(&timestamp,NULL);
-> (...)
+And please do not forget to CC the mailing list.
 
-Note that your application does not benefit from any improvements made
-by Xenomai, it is using Linux services.
-
-
-> Why do I have +10010 =C2=B5s or +10011 =C2=B5s between each dating with=
- my xenomai
-> kernel and approximately +300 =C2=B5s with my non-patched kernel?
-> Thanks.
-
-To obtain such results, you are probably running your test on an idle
-system. But anyway, the problem is probably that the vanilla
-configuration probably has high resolutions timers running, whereas the
-Xenomai patched kernel has not.
-
-Whether high resolution timers are enabled is both a question of
-kernel-configuration (CONFIG_HIGHRES_TIMERS, CONFIG_X86_LOCAL_APIC,
-CONFIG_HPET have an influence), and a question of run-time decisions.
-You should find some hints in the kernel messages.
-
-Regards.
-
---=20
+-- 
 					    Gilles.
-
 
