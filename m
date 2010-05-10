@@ -1,13 +1,9 @@
-Message-ID: <4BE3EF87.1030608@domain.hid>
-Date: Fri, 07 May 2010 12:46:31 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <l2tff1d78711005030332i4120fbc5w46c47785200e67ce@domain.hid>		<4BE1C695.10803@domain.hid>	<y2iff1d78711005070234i3d731b20sd1d6719d4c41b206@domain.hid>
-	<4BE3E2CC.9050804@domain.hid>
-In-Reply-To: <4BE3E2CC.9050804@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] System freezes when CAN buffer overflows
+Date: Mon, 10 May 2010 11:03:33 +0200
+Message-ID: <AANLkTimWzc7PUZP2g7hxT-upoxCcBj777L9c7d7rTRQe@domain.hid>
+From: Divi Oillo <divi.oillo@domain.hid>
+Content-Type: multipart/alternative; boundary=0015174c3c34f47619048639ae2b
+Subject: [Xenomai-help] Problem with a serial test sofware
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,63 +13,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
-> On 05/07/2010 11:34 AM, Steven Kauffmann wrote:
->> On Wed, May 5, 2010 at 9:27 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
->>> On 05/03/2010 12:32 PM, Steven Kauffmann wrote:
->>>> Hi all,
->>>>
->>>> When I close my application a cleanup function is called. In this
->>>> function I first close the CAN listener thread that handles incoming
->>>> CAN messages. After that some other cleanup code is executed and at
->>>> the end I finally close the socket. If I close the application when
->>>> the CAN bus is idle, no problems occur. When the CAN bus is active,
->>>> I'm getting a CAN buffer overflow after the CAN listener thread is
->>>> closed which results in a system freeze.
->>> This is normal behaviour (not the freeze, though). Obviously you receive
->>> CAN messages at rather high rate and as long as the socket is open, the
->>> ISR tries to deliver it to the socket's RX buffer and when it gets full
->>> an error counter is increased and an error message is printed out if
->>> debugging is enabled. See:
->>>
->>> http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/can/rtcan_raw.c#122
->>>
->>>> I can reproduce this problem with an easy example (see rtcanTest.c).
->>>> This program opens a socket but it does not start a CAN listener
->>>> thread. This results in a CAN buffer overflow when sending CAN
->>>> messages ( using rtcansend ) and a system freeze. Executing the
->>>> following command twice triggers the problem "rtcansend rtcan1 -l 100
->>>> 001#00 00 00 00 00 00 00 00".
->>>>
->>>> Tested with the latest xenomai 2.4 branch + CAN peak pci card.
->>>>
->>>> Workaround for me is closing the socket immediately after the CAN
->>>> listener thread is closed. Can this be a system configuration problem
->>>> (config file attached) or a driver problem?
->>> The problem is due to the error messages at high rate. It should be
->>> rate-limited somehow or even be removed. Does Xenomai already have
->>> a rtdm_printk_ratelimted function? I will have a closer look
->>> a.s.a.p. Disabling debugging should also help.
->> The problem (system freeze) also occurs when debugging
->> (CONFIG_XENO_OPT_DEBUG) is disabled.
-> 
-> I'm speaking about CONFIG_XENO_DRIVERS_CAN_DEBUG! At a closer look I
-> think rtdm_printk is mapped to printk, which may even force a switch
-> to secondary mode.
+--0015174c3c34f47619048639ae2b
+Content-Type: text/plain; charset=ISO-8859-1
 
-Nope, this is kernel space. printk will write to a ring buffer that gets
-flushed on next switch to the Linux domain.
+Hi,
 
-Jan
+I have a kernel 2.6.32.12 with Xenomai 2.5.3
+I'm using a serial port with a PCMCIA card receiving a message each second
+(9600 8N1) and I'm having some trouble with this software:
+http://www.captain.at/xenomai-serial-port-example.php
 
-PS: I'm open for a rtdm_printk_ratelimit for RTDM, but I think the
-underlying service should be provided by Xenomai to eventually allow
-reuse in the nucleus or some skin.
+$ dmesg | grep ttyS0
+[   10.550153] 0.0: ttyS0 at I/O 0x5100 (irq = 10) is a 16550A
+$ sudo setserial /dev/ttyS0
+/dev/ttyS0, UART: 16550A, Port: 0x5100, IRQ: 10
+$ sudo setserial /dev/ttyS0 uart none
+$ sudo modprobe xeno_16550A io=0x5100 irq=10
+$ sudo ./rt_serial_uprog
+START RT_SERIAL
+rt_serial_uprog: PRESS CTRL-C to EXIT
+rt_serial_uprog: rtser_file opened
+rt_serial_uprog: serial-port-config written
+rt_serial_uprog: read-task created
+rt_serial_uprog: starting read-task
+read_task : error while RTSER_RTIOC_WAIT_EVENT, code -110
+rt_serial_uprog: rtser0 (rtser) -> closed
+read_task : exit
 
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+I don't receive any message...
+
+$ lsmod
+xeno_16550A            10568  0
+serial_cs              20295  1
+pcmcia                 34113  1 serial_cs
+pcmcia_core            36724  4 serial_cs,pcmcia,yenta_socket,rsrc_nonstatic
+
+Regards.
+
+--0015174c3c34f47619048639ae2b
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi,<br>
+<br>
+I have a kernel 2.6.32.12 with Xenomai 2.5.3<br>
+I&#39;m using a serial port with a PCMCIA card receiving a message each
+second (9600 8N1) and I&#39;m having some trouble with this software:<br>
+<a href=3D"http://www.captain.at/xenomai-serial-port-example.php" target=3D=
+"_blank">http://www.captain.at/xenomai-serial-port-example.php</a><br>
+<br>
+$ dmesg | grep ttyS0<br>
+[=A0 =A010.550153] 0.0: ttyS0 at I/O 0x5100 (irq =3D 10) is a 16550A<br>
+$ sudo setserial /dev/ttyS0<br>
+/dev/ttyS0, UART: 16550A, Port: 0x5100, IRQ: 10<br>
+$ sudo setserial /dev/ttyS0 uart none<br>
+$ sudo modprobe xeno_16550A io=3D0x5100 irq=3D10<br>
+$ sudo ./rt_serial_uprog<br>
+START RT_SERIAL<br>
+rt_serial_uprog: PRESS CTRL-C to EXIT<br>
+rt_serial_uprog: rtser_file opened<br>
+rt_serial_uprog: serial-port-config written<br>
+rt_serial_uprog: read-task created<br>
+rt_serial_uprog: starting read-task<br>
+read_task : error while RTSER_RTIOC_WAIT_EVENT, code -110<br>
+rt_serial_uprog: rtser0 (rtser) -&gt; closed<br>
+read_task : exit<br>
+<br>
+I don&#39;t receive any message...<br>
+<br>
+$ lsmod<br>
+xeno_16550A=A0 =A0 =A0 =A0 =A0 =A0 10568=A0 0<br>
+serial_cs=A0 =A0 =A0 =A0 =A0 =A0 =A0 20295=A0 1<br>
+pcmcia=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A034113=A0 1 serial_cs<br>
+pcmcia_core=A0 =A0 =A0 =A0 =A0 =A0 36724=A0 4 serial_cs,pcmcia,yenta_socket=
+,rsrc_nonstatic<br>
+<br>
+Regards.
+
+--0015174c3c34f47619048639ae2b--
 
