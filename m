@@ -1,98 +1,51 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4BDC6924.2070302@domain.hid>
-References: <4BD5987A.2050804@domain.hid> <4BD59A48.5070002@domain.hid>
-	<4BD5BA03.5000101@domain.hid>
-	<1272331158.28983.287.camel@domain.hid>	<4BD68843.4030806@domain.hid>
-	<1272356029.28983.333.camel@domain.hid>
-	<4BD69F7D.9060006@domain.hid>
-	<1272359559.28983.380.camel@domain.hid>
-	<4BD6AE1E.6050704@domain.hid>
-	<1272360740.28983.382.camel@domain.hid>
-	<4BD6AFC2.1090300@domain.hid>
-	<1272361898.28983.395.camel@domain.hid>
-	<4BD6BF21.20303@domain.hid>
-	<1272734766.2440.46.camel@domain.hid>
-	<4BDC6924.2070302@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sat, 01 May 2010 20:59:21 +0200
-Message-ID: <1272740361.2440.49.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4BE9AB86.5040805@domain.hid>
+Date: Tue, 11 May 2010 21:09:58 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <20100511142653.GA22374@domain.hid>
+In-Reply-To: <20100511142653.GA22374@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] nucleus: Plug race between
- rpi_clear_remote and rpi_next
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Scheduling clarification/solution...
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Tschaeche IT-Services <services@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Sat, 2010-05-01 at 19:47 +0200, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> > Don't you think that, quoting yourself:
-> > 
-> > "I have to confess, I do not understand how the patch may relate to our
-> > crash. But that's because I still only have a semi-understanding of this
-> > frightening complex RPI code"
-> > 
-> > does not fit that well with any kind of strong assertion made later on
-> > the same topic, not backed by facts?
+Tschaeche IT-Services wrote:
+> Hi,
 > 
-> See, as long as you do not directly explain why my concerns on this
-> naturally racy construct were not valid (I brought up quite a few
-> concrete questions),
+> having done some tests and having read the thread
+> https://mail.gna.org/public/xenomai-help/2010-04/msg00051.html 
+> i got the following understanding:
 
-Which were answered. And you seem to consider that a construct is racy
-by design without taking care of understanding why they could be
-perfectly valid in the proper context. This is what I was pointing out,
-all time long.
+You are summarizing stuff explained in Xenomai documentation:
+http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Life-with-Adeos-rev-B.pdf
+http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Native-API-Tour-rev-C.pdf
+http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai
 
->  I couldn't help raising them over and over again.
-> This has, in fact, nothing to do with understanding the RPI code in all
-> its details. It's about reviewing basic patterns of it. But now that the
-> critical bit is gone, I'm surely no longer concerned. :)
-> 
-> > 
-> > So, I'm suggesting that we move on, and end this discussion in a
-> > positive manner, i.e. by fixing this code. I hear your concerns, like I
-> > always do, and I'm trying to find a solution that does not paper over
-> > another issue. I guess we should be able to settle on this.
-> > 
-> > I pushed two patches in my for-upstream queue, with lengthy comments to
-> > explain what they do and why this is needed:
-> > 
-> > http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=ac5c739dabcb14334c2e390a9e3064f11f97283c
-> > http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=d3242401b8e1cf2c28822f801b681194243b4394
-> > 
-> > - the first patch is a plain revert of the commit introducing
-> > rpi_next(), which caused the bug you observed in SMP mode, and that your
-> > patch plugged successfully.
-> > 
-> > - the second patch is the proper fix for the issue rpi_next() tried to
-> > address.
-> > 
-> > Could you please try them, and report whether this also fixes the issue
-> > for you? In the meantime, I will be analyzing the RPI code once again,
-> > to check whether your patch still covers a possible case, or not.
-> 
-> I will try my best, but the issue showed up only once in countless
-> application runs. We will role out the patches at the next chance (we
-> already had to push my workaround as we need to deliver the fastsynch
-> fix, so it may take a while).
-> 
+To be consistent, when a task is scheduled by Xenomai scheduler, we say
+it is in "primary mode", whereas when scheduled by Linux scheduler, we
+say it is in "secondary mode". Since this is the terminology we chose,
+you would probably better stick to it than using other terms.
 
-No problem with that, you were the one hit by the issue so far.
 
-> Jan
-> 
+> (...)
+>    Linux/Posix calls. (on the other side Linux/Posix calls
+>    does not control priority when in RT xenomai state).
 
+I do not really understand what you mean. The priorities are fully
+propagated between the two schedulers. If you call phtread_setschedparam
+or sched_setscheduler, the priority should be propagated to a Xenomai
+thread.
 
 -- 
-Philippe.
-
-
+					    Gilles.
 
