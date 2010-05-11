@@ -1,12 +1,10 @@
-Message-ID: <4BE96428.4080104@domain.hid>
-Date: Tue, 11 May 2010 16:05:28 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Tue, 11 May 2010 16:26:53 +0200
+From: Tschaeche IT-Services <services@domain.hid>
+Message-ID: <20100511142653.GA22374@domain.hid>
 MIME-Version: 1.0
-References: <DFFBF4EB468A894AB1474ED220F05AF60134C0BA@srv-dc.ona-electroerosion.com>
-In-Reply-To: <DFFBF4EB468A894AB1474ED220F05AF60134C0BA@srv-dc.ona-electroerosion.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai and/or PREEMPT_RT patch
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [Xenomai-help] Scheduling clarification/solution...
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,58 +14,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Asier Tamayo <asier.tamayo@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Asier Tamayo wrote:
-> Hello all:
-> 
-> I'm just a newbie to this list, so just forgive me if my question is obvious or has been answered many times ;-)
-> 
-> I want to do a port from an old system running a proprietary RTOS to a new one based in Linux. My system runs many applications at the same time (GUI, parsers, ...), a few of which are hard real-time. 
-> 
-> I've seen there are many approaches to the real-time issue in Linux; finally, it seems to me that the only solutions that will last are Xenomai and the PREEMPT_RT patches (OSADL). Am I wrong?
+Hi,
 
-These are surely the primary candidates. More approaches exists, but I
-wouldn't start considering them until you reach the limits of the
-mentioned ones (which is quite hard these days).
+having done some tests and having read the thread
+https://mail.gna.org/public/xenomai-help/2010-04/msg00051.html 
+i got the following understanding:
 
-> 
-> Can anybody give me some advice about which system to use? Any good comparison I can read? Everything I find comparing real-time Linux approaches seems to be quite out of date.
+1. Xenomai tasks can be in the state RT and non-RT (relaxed).
+   That means: If in RT state, it's scheduled by the Xenomai
+   scheduler and if in non-RT state it's scheduled by the
+   Linux scheduler.
 
-There are many factors of your scenario that influence a comparison. So
-you should sketch your requirements and variables first. To name a few:
- - CPU architecture
- - overview on your critical loop(s)
- - their timing requirements
- - portability of your applications (to decide about application
-   adaption vs. legacy OS emulation)
+2. After a Xeno-task did a Linux-Systemcall, e.g. getpid(),
+   it will be in non-RT state, raising the Xeno-Root task
+   to the priority of Xeno-task (setup by rt_task_shadow()).
+   Clearing T_RPIOFF with rt_task_set_mode() disables raising
+   priority of the Xeno-Root task when the task is migrating
+   from Xenomai RT to Linux non-RT state.
 
-As we are on the Xenomai list, the major strengths (personal opinion) of
-this approach should already be mentioned:
- - well extensible to emulate legacy RTOS APIs
- - strict separation between RT and Linux domain - nevertheless, both
-   contexts are smoothly usable from within the very same user space
-   application
+   The Linux scheduler priority of a shadowed Xeno task in
+   non-RT state is not touched when migrating from RT -> non-RT.
+   Linux scheduling policy and priority depend only on calls
+   to sched_setscheduler() pthread_setschedparam() and similar
+   Linux/Posix calls. (on the other side Linux/Posix calls
+   does not control priority when in RT xenomai state).
 
-> Should I use Xenomai on its own? Or maybe Xenomai and Linux with the preempt patches applied? Running the GUI, which demands a lot of CPU and RAM, can have any effect on the real-time behaviour?
+   Lazy switching means, that this non-RT Xeno-task will stay
+   scheduled by the Linux scheduler until the next Xenomai rt-call.
+   This implies, that it may be blocked by other non-RT or
+   plain Linux tasks of higher Linux priorities by the
+   Linux scheduler while in non-RT state.
 
-Independent of the software approach, hardware can always ruin your day,
-specifically on x86 (SMI, contentions on I/O buses, shared caches,
-etc.). Weather this matters to you, depends on your timing requirements
-and how "hard" your real-time has to be.
+3. After a Xeno-task did a Xenomai-Call, e.g. rt-driver call
+   or rt_mutex_acquire(), it will be in RT state, scheduled
+   by the Xenomai scheduler.
 
-> 
-> Any hint will be really helpful,
-> 
-> Best regards,
-> 
-> Asier
+   Lazy switching means, that this RT task will stay scheduled
+   by the Xenomai scheduler until the next Linux-System call.
 
-HTH,
-Jan
+We want a setup with 3 xenomai-shadowed tasks:
 
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+  - RT-Task: Running in high priority RT context
+  	(Xenomai scheduler, low latency high prio)
+
+  - Cyclic-Task: Running in non-RT context
+	(Linux scheduler, prio 0 equal to system services)
+
+  - Background-Task: Running in non-RT context
+  	(Linux scheduler, low/IDLE prio)
+
+All of them may acquire shared rt-mutices, which is the reason
+for shadowing Cyclic- and Background-task (plain Linux tasks are not
+able to acquire an RT-mutex). What we need is:
+
+1. When Cyclic-/Background-task acquires an RT-mutex it migrates
+   from Linux to Xenomai scheduler. When releasing the mutex,
+   the task should be forced to migrate back to Linux scheduler.
+
+   How to achieve that?
+
+   By calling Linux-Syscall getpid()?
+
+   Is there a Xenomai flag (rt_task_set_mode()) doing that automatically,
+   after all RT-resources are released? Which version 2.4.10/2.5.x?
+
+   Do we have to use the patch mentioned in the thread?
+
+2. If Background-task acquires an RT-mutex and is interrupted by RT-task,
+   which tries to acquire the same mutex, background inherits RT-tasks
+   priority in Xenomai RT context. When background calls to Linux in this
+   state, Xenomai-Root task gets RT-task's priority (priority coupling),
+   but, because background is scheduled by Linux scheduler now,
+   it may be blocked by other non-RT threads running with higher
+   Linux priority (e.g. while(1) in cyclic). Is there a method
+   in Xenomai to inherit Xenomai-priority to the Linux-scheduler
+   settings of a task while the task holds RT resources?
+
+   Is it possible to detect if an RT task calls to Linux while
+   holding some RT resources? E.g. a SIGXPU (like for T_WARNSW)
+   dependent on acquired RT resources?
+
+   I assume/conclude: While holding RT resources a task must not switch
+   to secondary domain. If so, we move control to the Linux scheduler
+   loosing RT capabilities. Right?
+
+Best regards and thanks,
+
+	Olli
+
 
