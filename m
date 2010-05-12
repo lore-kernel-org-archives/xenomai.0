@@ -1,12 +1,9 @@
-Message-ID: <4BE9AB86.5040805@domain.hid>
-Date: Tue, 11 May 2010 21:09:58 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20100511142653.GA22374@domain.hid>
-In-Reply-To: <20100511142653.GA22374@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Scheduling clarification/solution...
+Date: Wed, 12 May 2010 18:46:20 +0800
+Message-ID: <AANLkTinbt2EqgVr_rzyJJEgOVfgRYgHEhQB8CtBOCGsr@domain.hid>
+From: Everett Wang <everteq@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai-help] my first test run on beagleboard
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,36 +13,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Tschaeche IT-Services <services@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Tschaeche IT-Services wrote:
-> Hi,
-> 
-> having done some tests and having read the thread
-> https://mail.gna.org/public/xenomai-help/2010-04/msg00051.html 
-> i got the following understanding:
+Hi all,
 
-You are summarizing stuff explained in Xenomai documentation:
-http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Life-with-Adeos-rev-B.pdf
-http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Native-API-Tour-rev-C.pdf
-http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai
-
-To be consistent, when a task is scheduled by Xenomai scheduler, we say
-it is in "primary mode", whereas when scheduled by Linux scheduler, we
-say it is in "secondary mode". Since this is the terminology we chose,
-you would probably better stick to it than using other terms.
+I finally managed to compile and install xenomai on my beagleboard C4.
+I just did a
+kernel latency test and this is the result. Does it look reasonable?
+the board is not running
+anything except the kernel latency in the testsuit directory (C4
+running at 720Mhgz)
 
 
-> (...)
->    Linux/Posix calls. (on the other side Linux/Posix calls
->    does not control priority when in RT xenomai state).
+* Type ^C to stop this application.
+*
+*
+== Sampling period: 1000 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+warming up...
+RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+RTD|      4.615|     12.538|     44.307|       0|     0|      4.615|     44.307
+RTD|      3.923|     12.923|     45.923|       0|     0|      3.923|     45.923
+RTD|      5.153|     12.923|     44.923|       0|     0|      3.923|     45.923
+RTD|     11.076|     12.999|     45.923|       0|     0|      3.923|     45.923
+RTD|      1.307|     12.538|     44.384|       0|     0|      1.307|     45.923
+RTD|      3.461|     12.846|     46.461|       0|     0|      1.307|     46.461
+RTD|      4.999|     12.538|     47.615|       0|     0|      1.307|     47.615
+RTD|     10.615|     12.923|     48.076|       0|     0|      1.307|     48.076
+RTD|     11.153|     12.923|     45.538|       0|     0|      1.307|     48.076
+RTD|      3.461|     12.846|     47.076|       0|     0|      1.307|     48.076
+RTD|     11.153|     12.538|     44.692|       0|     0|      1.307|     48.076
+RTD|      8.692|     12.846|     47.461|       0|     0|      1.307|     48.076
+RTD|      5.307|     12.538|     48.769|       0|     0|      1.307|     48.769
+RTD|      1.692|     12.846|     45.307|       0|     0|      1.307|     48.769
 
-I do not really understand what you mean. The priorities are fully
-propagated between the two schedulers. If you call phtread_setschedparam
-or sched_setscheduler, the priority should be propagated to a Xenomai
-thread.
 
--- 
-					    Gilles.
+Best regards,
+
+Everett
 
