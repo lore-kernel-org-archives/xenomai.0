@@ -1,11 +1,11 @@
-Message-ID: <4BEAA7E5.2060103@domain.hid>
-Date: Wed, 12 May 2010 15:06:45 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Wolfgang Denk <wd@domain.hid>
 MIME-Version: 1.0
+Content-type: text/plain; charset=ISO-8859-1
+Content-transfer-encoding: 8bit
+In-reply-to: <SNT119-W494F38A017E8C5258B4B21B0FB0@domain.hid>
 References: <SNT119-W494F38A017E8C5258B4B21B0FB0@domain.hid>
-In-Reply-To: <SNT119-W494F38A017E8C5258B4B21B0FB0@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Date: Wed, 12 May 2010 17:29:38 +0200
+Message-Id: <20100512152938.08812C67D4E@gemini.denx.de>
 Subject: Re: [Xenomai-help] xenomai test problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -19,30 +19,35 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: federico lolli <federicololli@domain.hid>
 Cc: xenomai@xenomai.org
 
-federico lolli wrote:
->  Hi all,
-> 
-> I'm trying to install Xenomai on ARM sam9g20.
-> I compiled the kernel with Xenomai patch and create the filesystem with
-> buildroot.
+Dear federico lolli,
+
+In message <SNT119-W494F38A017E8C5258B4B21B0FB0@domain.hid> you wrote:
+>
+>  Hi all,I'm trying to install Xenomai on ARM sam9g20.
+...
 > crosscompiling Xenomai with these commands:
-> 
-> fede@domain.hid$ ./configure
-> --host=arm-linux-gnueabi --enable-arm-eabi --enable-arm-mach=at91sam9
-> --disable-arm-tsc --enable-static
+>
+> fede@domain.hid$ ./configure --host=arm-linux-gnueabi --enable-arm-eabi --enable-arm-mach=at91sam9 --disable-arm-tsc --enable-static
 > make DESTDIR=/home/fede/foxg20/kernel/l/ install
-> I copy the file in the arm-filesystem
-> but when I try to run / usr / Xenomai / bin
-> for example, the file latency
-> get:
+
+Hm... I see you running "make", but where to you tell it to use a
+cross compiler?
+
 > ./latency
 > -sh: ./latency:not found
-> any suggestions?
 
-Could you try compiling with dynamic libraries, to see if
---enable-static could be the issue? Also, you should try running make
-DESTDIR=/path/to/buildroot/nfsroot install to install the binaries.
+Try running "file ./latency" and verify that this actually an ARM
+binary - I guess you used the native compilers, and your ARM system
+refuses to run x86 binaries.
+
+Best regards,
+
+Wolfgang Denk
 
 -- 
-					    Gilles.
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
+Karl's version of Parkinson's Law: Work expands to  exceed  the  time
+alloted it.
 
