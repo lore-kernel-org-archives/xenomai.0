@@ -1,10 +1,11 @@
-Message-ID: <4BEAD311.7060003@domain.hid>
-Date: Wed, 12 May 2010 18:10:57 +0200
+Message-ID: <4BEAD92A.50804@domain.hid>
+Date: Wed, 12 May 2010 18:36:58 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <SNT119-W494F38A017E8C5258B4B21B0FB0@domain.hid>
-	<20100512152938.08812C67D4E@gemini.denx.de>
-In-Reply-To: <20100512152938.08812C67D4E@gemini.denx.de>
+References: <SNT119-W494F38A017E8C5258B4B21B0FB0@domain.hid>,
+	<4BEAA7E5.2060103@domain.hid>
+	<SNT119-W567E94D57BF7E73A87B0DDB0FB0@domain.hid>
+In-Reply-To: <SNT119-W567E94D57BF7E73A87B0DDB0FB0@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] xenomai test problem
@@ -17,24 +18,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Denk <wd@domain.hid>
-Cc: xenomai@xenomai.org
+To: federico lolli <federicololli@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Wolfgang Denk wrote:
-> Dear federico lolli,
+federico lolli wrote:
 > 
-> In message <SNT119-W494F38A017E8C5258B4B21B0FB0@domain.hid> you wrote:
->>  Hi all,I'm trying to install Xenomai on ARM sam9g20.
-> ...
->> crosscompiling Xenomai with these commands:
->>
->> fede@domain.hid$ ./configure --host=arm-linux-gnueabi --enable-arm-eabi --enable-arm-mach=at91sam9 --disable-arm-tsc --enable-static
->> make DESTDIR=/home/fede/foxg20/kernel/l/ install
+> I tried with  static libraries and dynamic libraries,  but nothing has
+> changed.
 > 
-> Hm... I see you running "make", but where to you tell it to use a
-> cross compiler?
+> also the command "make DESTDIR = / path / to / buildroot / nfsroot
+> install" was not successful.....
 
-The --host argument passed to configure is used as a compiler prefix.
+Of course /path/to/buildroot/nfsroot is not meant to be used literally,
+you were supposed to replace it with the path where you installed
+buildroot on your system.
+
+And please do not forget to CC the mailing list.
 
 
 -- 
