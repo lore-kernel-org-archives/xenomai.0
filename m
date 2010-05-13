@@ -1,15 +1,11 @@
-Message-ID: <4BEBC119.4070408@domain.hid>
-Date: Thu, 13 May 2010 11:06:33 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <4BEB0A05.5020006@domain.hid> <4BEB0EF2.7020604@domain.hid>
-	<4BEB1C06.7030907@domain.hid> <4BEBB838.2080407@domain.hid>
-In-Reply-To: <4BEBB838.2080407@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1E024B8FC3B7D78D5FB92A47"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] native kernel task example
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01CAF2E9.A7BC4AB9"
+Date: Thu, 13 May 2010 15:14:28 -0700
+Message-ID: <2319761F7FA0D1479BA77EC2E0A8E7BCE3D6E7@domain.hid>
+From: "Abhijit Majumdar" <abhijit.majumdar@domain.hid>
+Subject: [Xenomai-help] Question about getting system time
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,66 +15,222 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: ramoncostacastello@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1E024B8FC3B7D78D5FB92A47
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01CAF2E9.A7BC4AB9
+Content-Type: text/plain;
+	charset="US-ASCII"
 Content-Transfer-Encoding: quoted-printable
 
-Ramon wrote:
-> Hi,
->=20
-> I have a system developed (teaching and research purposes) developed in=
+Hi folks
 
-> RTLinuxfree and currently I'm trying to migrate
-> this system to Xenomai (several task periodical task with period of
-> 100us (one at 50us)).
-> As a first step I would like to run them at kernel level to preserve
-> performance (hard realtime),
+=20
 
-Unless your system is already running on its limits with this 20 KHz
-job, kernel vs. user space won't make the big difference. Check the
-results of the latency test while loading the system with I/O and memory
-cache stress to get a first impression.
+I am facing a strange problem in getting system time.
 
-> latter I will try to migrate
-> user space.
+=20
 
-Specifically while trying to stabilize the port, you will quickly love
-the robustness of user space: if something crashes or hangs, just attach
-gdb - but don't forget to enable the Xenomai watchdog in order to catch
-runaway tasks.
+My requirement:
 
->=20
-> This task contains low level  commands (out, in commands to access AD/D=
-A
-> card registers)
+=20
 
-iopl(3) will grant your root user space process in/out privileges. Not
-nice, but probably easier as a first step than porting over the Analogy
-framework.
+ In a hard real time task I need to get the current system time and
+store it in a structure. Later at some point of time a java application
+a windows system is supposed to convert it into user-readable date-time
+format. I am using rt_timer_tsc2ns(rt_timer_read()) to get the current
+time.=20
 
-Jan
+=20
 
-PS: Specifically for educational purposes, it is a bad idea to continue
-spreading the legacy concept of kernel-based RT applications.
+Problem:=20
+
+=20
+
+However the java application prints a date in 1980 (I converted nanosec
+to millisec before using java API). I kind of expected rt_timer_tsc2ns
+to return nanoseconds from 1st Jan 1970 because it is common for
+programming tools and languages, although I must admit that I did not
+see that in the xenomai API documentation.
+
+=20
+
+Am I doing something wrong? Should I have to compile the kernel with
+some specific parameter?
+
+=20
+
+Any help will be appreciated.
+
+=20
+
+thanks
+
+Abhijit
+
+=20
 
 
---------------enig1E024B8FC3B7D78D5FB92A47
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+------_=_NextPart_001_01CAF2E9.A7BC4AB9
+Content-Type: text/html;
+	charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns=3D"http://www.w3.org/TR/REC-html40">
 
-iEYEARECAAYFAkvrwRwACgkQitSsb3rl5xS8vACeMjGPoYDxFQh81cPfTYQ6cXXE
-mo8AnR8lBgoemx/G9G5IPEiEkTduPpPf
-=vBKb
------END PGP SIGNATURE-----
+<head>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Dus-ascii">
+<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
+<style>
+<!--
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:Arial;
+	color:windowtext;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.25in 1.0in 1.25in;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
 
---------------enig1E024B8FC3B7D78D5FB92A47--
+</head>
+
+<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
+
+<div class=3DSection1>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Hi folks<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>I am facing a strange problem in getting system =
+time.<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><b><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial;font-weight:bold'>My =
+requirement</span></font></b><font
+size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;font-family:Arial'>:<o:p></o:p></span></font></=
+p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>&nbsp;In a hard real time task I need to get the =
+current
+system time and store it in a structure. Later at some point of time a =
+java
+application a windows system is supposed to convert it into =
+user-readable
+date-time format. I am using </span></font><font size=3D2 =
+face=3D"Courier New"><span
+style=3D'font-size:10.0pt;font-family:"Courier =
+New"'>rt_timer_tsc2ns(rt_timer_read())
+to get the current time. <o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><b><font size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:
+10.0pt;font-family:"Courier =
+New";font-weight:bold'>Problem</span></font></b><font
+size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;font-family:"Courier New"'>:
+<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3D"Courier New"><span =
+style=3D'font-size:10.0pt;
+font-family:"Courier New"'>However the java application prints a date in =
+1980
+(I converted nanosec to millisec before using java API). I kind of =
+expected
+rt_timer_tsc2ns to return nanoseconds from 1st Jan 1970 because it is =
+common
+for programming tools and languages, although I must admit that I did =
+not see
+that in the xenomai API documentation.</span></font><font size=3D2 =
+face=3DArial><span
+style=3D'font-size:10.0pt;font-family:Arial'><o:p></o:p></span></font></p=
+>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Am I doing something wrong? Should I have to compile =
+the
+kernel with some specific parameter?<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Any help will be =
+appreciated.<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>thanks<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Abhijit<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+</div>
+
+</body>
+
+</html>
+
+------_=_NextPart_001_01CAF2E9.A7BC4AB9--
 
