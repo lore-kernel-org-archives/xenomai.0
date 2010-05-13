@@ -1,42 +1,64 @@
-Message-ID: <4BDDA1CF.2060903@domain.hid>
-Date: Sun, 02 May 2010 18:01:19 +0200
-From: Roland Stigge <stigge@domain.hid>
-MIME-Version: 1.0
-References: <4B6E8167.6010907@domain.hid>	<4B76B7F2.2050303@domain.hid>	<4B76C045.2070602@domain.hid>	<1266140329.27019.17.camel@domain.hid>	<4B867EB5.9090504@domain.hid>	<4B867FF9.2020709@domain.hid>	<4B868228.10206@domain.hid>	<4B868958.3000503@domain.hid>
-	<4B86B0DB.4000600@domain.hid> <4B87CE3E.2070402@domain.hid>
-In-Reply-To: <4B87CE3E.2070402@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Xenomai in Debian
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+From: Jonata Apolinario <jonataapolinario@domain.hid>
+Date: Thu, 13 May 2010 22:05:05 +0000 (UTC)
+Message-ID: <loom.20100514T000318-597@domain.hid>
+References: <SNT125-W47B0622A941FB9CEDA2C479C350@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-help] a problem about Calibrating delay loop...
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Hi Stefan,
+费朱青 <mouse19875 <at> hotmail.com> writes:
 
-Stefan Kisdaroczi wrote:
-> I have attached a patch against debian xenomai version 2.5.1-4, changes:
->  - create group xenomai on install
->  - added a init-script which sets /sys/.../xenomai_gid if
->    /sys/.../xenomai_gid exists
->  - added a modprobe-script that adds the xenomai_gid parameter if the user
->    did call modprobe without xenomai_gid=
 > 
-> With this changes, all users which are member of the group xenomai are able
-> to run xenomai apps, with xeno_nucleus builtin or as a module.
+> 
+> HI all,
+>      I am porting xenomai-2.5.1 to arm architecture(Samsung
+S3C2440).Everything is ok when I do patch and compile.But the board start
+up,console lock and say"calbrating delay loop...".(before patch xenomai into
+kernel,the kernel image can work well)
+>      Xenomai say that it supports "S3C24xx family" ,but I always meet this
+problem.
+>      Someone said the timer interrupt does not work,I don't know how to watch
+it and work out this problem.
+>      Do you know some methods that can  solve it ? 
+> thanks
+> justin fei更多热辣资讯尽在新版MSN首页！ 立刻访问！
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help <at> gna.org
+> https://mail.gna.org/listinfo/xenomai-help
+> 
 
-Looks fine. Just uploaded into Debian. (And renamed
-/etc/modprobe.d/xenomai to xenomai.conf.)
 
-Thanks!
+Hi!
+well, i think i solved.
+i found in arch/arm/plat-s3c/time.c:
+the path inserted these lines:
 
-bye,
-  Roland
+tcfg1 = __raw_readl(S3C2410_TCFG1);
+tcfg1 &= ~(S3C2410_TCFG1_MUX4_MASK | S3C2410_TCFG1_MUX3_MASK);
+tcfg1 |= (S3C2410_TCFG1_MUX4_TCLK1 | S3C2410_TCFG1_MUX3_TCLK1);
+__raw_writel(tcfg1, S3C2410_TCFG1);
+
+in the function "static void s3c2410_timer_setup (void)"
+in the "else" side of the "if (use_tclk1_12())"
+use_tclk1_12 as i can see is to use external clock on pin clk1.
+the patch put these lines in the else too, that as i can see, is wrong.
+i removed these lines from the ELSE side and the kernel passed by this point.
+
+see if it solves your problem and post your results.
+ Thanks!
+
 
