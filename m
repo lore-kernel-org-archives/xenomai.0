@@ -1,13 +1,12 @@
-Message-ID: <4BECE0E9.4000807@domain.hid>
-Date: Fri, 14 May 2010 07:34:33 +0200
+Message-ID: <4BECE339.3060902@domain.hid>
+Date: Fri, 14 May 2010 07:44:25 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <SNT125-W47B0622A941FB9CEDA2C479C350@domain.hid>
-	<loom.20100514T000318-597@domain.hid>
-In-Reply-To: <loom.20100514T000318-597@domain.hid>
+References: <2319761F7FA0D1479BA77EC2E0A8E7BCE3D6E7@domain.hid>
+In-Reply-To: <2319761F7FA0D1479BA77EC2E0A8E7BCE3D6E7@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] a problem about Calibrating delay loop...
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Question about getting system time
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,63 +16,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jonata Apolinario <jonataapolinario@domain.hid>
+To: Abhijit Majumdar <abhijit.majumdar@domain.hid>
 Cc: xenomai@xenomai.org
 
-Jonata Apolinario wrote:
-> =E8=B4=B9=E6=9C=B1=E9=9D=92 <mouse19875 <at> hotmail.com> writes:
->=20
->>
->> HI all,
->>      I am porting xenomai-2.5.1 to arm architecture(Samsung
-> S3C2440).Everything is ok when I do patch and compile.But the board sta=
-rt
-> up,console lock and say"calbrating delay loop...".(before patch xenomai=
- into
-> kernel,the kernel image can work well)
->>      Xenomai say that it supports "S3C24xx family" ,but I always meet =
-this
-> problem.
->>      Someone said the timer interrupt does not work,I don't know how t=
-o watch
-> it and work out this problem.
->>      Do you know some methods that can  solve it ?=20
->> thanks
->> justin fei=E6=9B=B4=E5=A4=9A=E7=83=AD=E8=BE=A3=E8=B5=84=E8=AE=AF=E5=B0=
-=BD=E5=9C=A8=E6=96=B0=E7=89=88MSN=E9=A6=96=E9=A1=B5=EF=BC=81 =E7=AB=8B=E5=
-=88=BB=E8=AE=BF=E9=97=AE=EF=BC=81
->>
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help <at> gna.org
->> https://mail.gna.org/listinfo/xenomai-help
->>
->=20
->=20
-> Hi!
-> well, i think i solved.
-> i found in arch/arm/plat-s3c/time.c:
-> the path inserted these lines:
->=20
-> tcfg1 =3D __raw_readl(S3C2410_TCFG1);
-> tcfg1 &=3D ~(S3C2410_TCFG1_MUX4_MASK | S3C2410_TCFG1_MUX3_MASK);
-> tcfg1 |=3D (S3C2410_TCFG1_MUX4_TCLK1 | S3C2410_TCFG1_MUX3_TCLK1);
-> __raw_writel(tcfg1, S3C2410_TCFG1);
->=20
-> in the function "static void s3c2410_timer_setup (void)"
-> in the "else" side of the "if (use_tclk1_12())"
-> use_tclk1_12 as i can see is to use external clock on pin clk1.
-> the patch put these lines in the else too, that as i can see, is wrong.=
+Abhijit Majumdar wrote:
+> Hi folks
+> 
+>  
+> 
+> I am facing a strange problem in getting system time.
+> 
+>  
+> 
+> My requirement:
+> 
+>  
+> 
+>  In a hard real time task I need to get the current system time and
+> store it in a structure. Later at some point of time a java application
+> a windows system is supposed to convert it into user-readable date-time
+> format. I am using rt_timer_tsc2ns(rt_timer_read()) to get the current
+> time. 
 
-> i removed these lines from the ELSE side and the kernel passed by this =
-point.
->=20
-> see if it solves your problem and post your results.
+You should be using rt_timer_ticks2ns(rt_timer_read()), rt_timer_tsc2ns
+should be used with rt_timer_tsc().
 
-This issue is fixed in Xenomai 2.5.3.
 
---=20
+> 
+>  
+> 
+> Problem: 
+> 
+>  
+> 
+> However the java application prints a date in 1980 (I converted nanosec
+> to millisec before using java API). I kind of expected rt_timer_tsc2ns
+> to return nanoseconds from 1st Jan 1970 because it is common for
+> programming tools and languages, although I must admit that I did not
+> see that in the xenomai API documentation.
+> 
+>  
+> 
+> Am I doing something wrong? Should I have to compile the kernel with
+> some specific parameter?
+
+The problem you may have is that Xenomai clock is synchronized with
+Linux clock when Xenomai starts, and it may happen at a time when Linux
+clock is not yet set to the current time. If that is the case, you
+should set xenomai's time during the boot process after Linux' time has
+been set. Currently, the only service to do this is clock_settime,
+implemented by the posix skin.
+
+-- 
 					    Gilles.
-
 
