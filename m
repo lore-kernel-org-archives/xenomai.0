@@ -1,11 +1,12 @@
-Message-ID: <4BECE339.3060902@domain.hid>
-Date: Fri, 14 May 2010 07:44:25 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+From: Andreas Glatz <AndreasGlatz@domain.hid>
+Date: Fri, 14 May 2010 06:34:05 -0400
+Message-ID: <245373446233674495BCA5CA2FC1EB17378D01593B@RCexchangeSVR1.ruggedcom.local>
 References: <2319761F7FA0D1479BA77EC2E0A8E7BCE3D6E7@domain.hid>
 In-Reply-To: <2319761F7FA0D1479BA77EC2E0A8E7BCE3D6E7@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Question about getting system time
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,57 +17,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Abhijit Majumdar <abhijit.majumdar@domain.hid>
-Cc: xenomai@xenomai.org
+To: Abhijit Majumdar <abhijit.majumdar@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Abhijit Majumdar wrote:
-> Hi folks
-> 
->  
-> 
-> I am facing a strange problem in getting system time.
-> 
->  
-> 
-> My requirement:
-> 
->  
-> 
->  In a hard real time task I need to get the current system time and
-> store it in a structure. Later at some point of time a java application
-> a windows system is supposed to convert it into user-readable date-time
-> format. I am using rt_timer_tsc2ns(rt_timer_read()) to get the current
-> time. 
+Hi,
 
-You should be using rt_timer_ticks2ns(rt_timer_read()), rt_timer_tsc2ns
-should be used with rt_timer_tsc().
+We had a similar problem. We solved it by compiling the native skin as a mo=
+dule and loading it _after_ the kernel has been syncronized with the real-t=
+ime clock chip.
+
+Andreas
 
 
-> 
->  
-> 
-> Problem: 
-> 
->  
-> 
-> However the java application prints a date in 1980 (I converted nanosec
-> to millisec before using java API). I kind of expected rt_timer_tsc2ns
-> to return nanoseconds from 1st Jan 1970 because it is common for
-> programming tools and languages, although I must admit that I did not
-> see that in the xenomai API documentation.
-> 
->  
-> 
-> Am I doing something wrong? Should I have to compile the kernel with
-> some specific parameter?
+________________________________________
+From: xenomai-help-bounces@domain.hid [xenomai-help-bounces@domain.hid] On Behalf=
+ Of Abhijit Majumdar [abhijit.majumdar@domain.hid]
+Sent: Thursday, May 13, 2010 6:14 PM
+To: xenomai@xenomai.org
+Subject: [Xenomai-help] Question about getting system time
 
-The problem you may have is that Xenomai clock is synchronized with
-Linux clock when Xenomai starts, and it may happen at a time when Linux
-clock is not yet set to the current time. If that is the case, you
-should set xenomai's time during the boot process after Linux' time has
-been set. Currently, the only service to do this is clock_settime,
-implemented by the posix skin.
+Hi folks
 
--- 
-					    Gilles.
+I am facing a strange problem in getting system time.
+
+My requirement:
+
+ In a hard real time task I need to get the current system time and store i=
+t in a structure. Later at some point of time a java application a windows =
+system is supposed to convert it into user-readable date-time format. I am =
+using rt_timer_tsc2ns(rt_timer_read()) to get the current time.
+
+Problem:
+
+However the java application prints a date in 1980 (I converted nanosec to =
+millisec before using java API). I kind of expected rt_timer_tsc2ns to retu=
+rn nanoseconds from 1st Jan 1970 because it is common for programming tools=
+ and languages, although I must admit that I did not see that in the xenoma=
+i API documentation.
+
+Am I doing something wrong? Should I have to compile the kernel with some s=
+pecific parameter?
+
+Any help will be appreciated.
+
+thanks
+Abhijit
+
 
