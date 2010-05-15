@@ -1,17 +1,12 @@
-From: Travis Stratman <tstratman@domain.hid>
-In-Reply-To: <1273875426.6334.461.camel@domain.hid>
-References: <2319761F7FA0D1479BA77EC2E0A8E7BCE3D72A@alpine.pivotalsys.com>
-	<4BED7D5B.6050605@domain.hid>
-	<1273866035.6334.435.camel@domain.hid>
-	<4BEDC668.40708@domain.hid>
-	<1273875426.6334.461.camel@domain.hid>
-Date: Fri, 14 May 2010 18:37:45 -0500
-Message-Id: <1273880265.6334.487.camel@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_mutex created prior to main causes
-	board	to	freeze?
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 14 May 2010 19:18:53 -0500
+Message-ID: <181804936ABC2349BE503168465576460EBD5C0D@exchserver.basler.com>
+From: "Steve Deiters" <SteveDeiters@domain.hid>
+Subject: [Xenomai-help] rt_task_sleep causing crashes on PowerPC
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,114 +16,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, 2010-05-14 at 17:17 -0500, Travis Stratman wrote:
->  > > Using strace I was able to determine that the first statements in main()
-> > > were not even reached. The strace output would generally stop on access
-> > > to /dev/rtheap or rt_sigaction(SIGXCPU...). My suspicion was the global
-> > > object instantiation calling rt_mutex_create().
-> > 
-> > I would suspect an issue with the fast mutexes, since they require a
-> > shared heap to have been mapped prior to the mutex creation. But if you
-> > say you saw the same issue on 2.4.8, it must be something completely
-> > different. I will try and reproduce the issue ASAP.
-> > 
-> 
-> Thanks! Come to think of it I don't recall ever seeing access to rtheap
-> on the 2.4.8 traces, just the rt_sigaction. BTW the code is being
-> cross-compiled using gcc-4.2.4 arm-linux-gnueabi-g++ with -march=armv5te
-> -mtune=arm926ej-s flags. Let me know what else I can provide that will
-> be helpful.
+I am running Xenomai 2.5.3, I-pipe version 2.9-00, with Linux 2.6.33.4
+on a PowerPC MPC5121.  With small values of sleep ticks passed to
+rt_task_sleep, I get various sorts of crashes.  Here is a simple program
+using a delay loop that exhibits the behavior.
 
-I went back and took an strace of the code that caused the board to fail
-on 2.5.2 with the pointers initialized in main() but before mlockall().
-This is where the strace stops:
-....
-mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x1020000
-syscall_983045(0x101fee0, 0x101fee0, 0x1020638, 0x10205b8, 0x1023058, 0, 0x58, 0xf0005, 0xffff5bfc, 0x1023058, 0x1023000, 0x1cd8b1c, 0, 0x1cd87f8, 0x8, 0x1
-001ffc, 0x20000010, 0x101fee0, 0xc4a0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0) = 0
-mprotect(0x141f000, 4096, PROT_READ)    = 0
-mprotect(0x135d000, 4096, PROT_READ)    = 0
-mprotect(0x134e000, 8192, PROT_READ)    = 0
-....
 
-On the second and third time that I ran after resetting it it got a
-little farther:
-....
-mprotect(0x141f000, 4096, PROT_READ)    = 0
-mprotect(0x135d000, 4096, PROT_READ)    = 0
-mprotect(0x134e000, 8192, PROT_READ)    = 0
-mprotect(0x1229000, 8192, PROT_READ)    = 0
-mprotect(0x103e000, 4096, PROT_READ)    = 0
-munmap(0x101c000, 4779)                 = 0
-epoll_wait(0x101fa88, 0x1cbae14, 0x1cbae1c, 0x10279a0) = 984
-ipc_subcall(0x101fa90, 0xc, 0x101faa8, 0xffffffec) = 0
-rt_sigaction(SIGRTMIN, {0x1027f3c, [], SA_SIGINFO|0x4000000}, NULL, 8) = 0
-rt_sigaction(SIGRT_1, {0x1027e10, [], SA_RESTART|SA_SIGINFO|0x4000000}, NULL, 8) = 0
-rt_sigprocmask(SIG_UNBLOCK, [RTMIN RT_1], NULL, 8) = 0
-getrlimit(RLIMIT_STACK, {rlim_cur=8192*1024, rlim_max=RLIM_INFINITY}) = 0
-brk(0)                                  = 0x2c000
-brk(0x4d000)                            = 0x4d000
-futex(0x122f348, FUTEX_WAKE, 2147483647) = 0
-rt_sigaction(SIGILL, {0x10431ec, [ILL], SA_RESTART|0x4000000}, {SIG_DFL}, 8) = 0
-rt_sigaction(SIGILL, {SIG_DFL}, {0x10431ec, [ILL], SA_RESTART|0x4000000}, 8) = 0
-open("/dev/mem", O_RDONLY|O_SYNC)       = 3
-mmap2(NULL, 4096, PROT_READ, MAP_SHARED, 3, 0xfffa0) = 0x101c000
-close(3)                                = 0
-open("/dev/rtheap", O_RDWR)             = 3
-ioctl(3, 0, 0xc1eef410)                 = 0
-mmap2(NULL, 12288, PROT_READ|PROT_WRITE, MAP_SHARED, 3, 0) = 0x1421000
-close(3)                                = 0
-open("/dev/rtheap", O_RDWR)             = 3
-ioctl(3, 0, 0xc03c5088)                 = 0
-mmap2(NULL, 12288, PROT_READ|PROT_WRITE, MAP_SHARED, 3, 0)
-....
+-----
+#include <stdio.h>
+#include <errno.h>
+#include <native/task.h>
+#include <native/timer.h>
 
-The relevant code in main() looks like this:
-----
-  g_terminate = new SyncObject<int>("terminate");
-  g_log_level = new SyncObject<int>("log level");
-  g_temperature = new SyncObject<int>("temperature");
-  g_set_point = new SyncObject<SetPoint> ("Set Point");
-  g_decimation = new SyncObject<int>("decimation");
-  g_flow_feedback = new SyncObject<int>("flow feedback");
-  g_valve_override = new SyncObject<int>("valve override");
+int main(int argc, char **argv)
+{
+   int cnt=3D0;
+   while(1)
+   {
+      int ret;
+      if((ret =3D rt_task_sleep(rt_timer_ns2ticks(1000UL)))) {
+         errno =3D -ret;
+         perror("rt_task_sleep");
+      }
+      if(cnt++ > 100)
+         break;
+   }
+   return 0;
+}
 
-  signal(SIGTERM, handleShutdownSignal);
-  signal(SIGINT, handleShutdownSignal);
+If I increase the tick count, it seems to not occur.  The errors I get
+are not quite consistent.  Here are a few examples of the output I get
+from the kernel log.
 
-  signal(SIGXCPU, handleTaskModeChange);
+-----
 
-  mlockall(MCL_CURRENT | MCL_FUTURE);
-----
+[   22.213774] Xenomai: Switching  to secondary mode after exception
+#769 from user-space at 0xff7c7ac (pid 571)
+[   22.226494] I-pipe: Detected illicit call from domain 'Xenomai'
+[   22.226505] <3>        into a service reserved for domain 'Linux' and
+below.
 
-I then moved the instantiation back below mlockall() and tested to make
-sure that it was still working (it does). To make for a more
-reproducible test I added a mutex directly in main() and tested it
-before and after the mlockall(), leaving all other code as-is. i.e.:
-----
-RT_MUTEX test_mutex;
-....
-rt_mutex_create(&test_mutex, "test_mutex");
-----
+-----
 
-If rt_mutex_create() is before mlockall() the board freezes. If it is
-after, the application continues. strace shows similar behavior to the
-above listings.
+[  216.495518] BUG: scheduling while atomic: gatekeeper/0/155/0x00000002
+[  216.501932] Modules linked in:
+[  216.504933] Call Trace:
+[  216.507414] [c7883ed0] [c0008ba0] show_stack+0x3c/0x160 (unreliable)
+[  216.513727] [c7883f00] [c001b338] __schedule_bug+0x6c/0x80
+[  216.519211] [c7883f20] [c02792ec] schedule+0x5a8/0x5bc
+[  216.524345] [c7883f70] [c00737cc] gatekeeper_thread+0x150/0x194
+[  216.530250] [c7883fc0] [c003f250] kthread+0x78/0x7c
+[  216.535111] [c7883ff0] [c0012ee8] kernel_thread+0x4c/0x68
 
-However, when I added a similar test to a very simple timer task
-application that I have, I could not reproduce the issue.
 
-Thanks
-> 
-> -Travis
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+I'm not sure if I have something misconfigured or what.  I am upgrading
+from Xenomai 2.4.10 on an older kernel and I did not have this same
+problem.
+
+Thanks.
 
 
