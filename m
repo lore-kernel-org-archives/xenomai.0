@@ -1,164 +1,41 @@
-Message-ID: <4BDE8F79.5010905@domain.hid>
-Date: Mon, 03 May 2010 10:55:21 +0200
-From: Stefan Kisdaroczi <kisda@domain.hid>
+Message-ID: <4BF18A00.706@domain.hid>
+Date: Mon, 17 May 2010 20:25:04 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig3E4096AF864EFE041E00BA9D"
-Subject: [Xenomai-core] [PATCH] debian: sync with 2.5.2-2 from debian.org,
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig3E4096AF864EFE041E00BA9D
-Content-Type: multipart/mixed;
- boundary="------------020808000607020803040400"
-
-This is a multi-part message in MIME format.
---------------020808000607020803040400
+References: <AANLkTil1N6ULXXuv4nx5n_amHqE61tZNuSaw6ndLPdPL@mail.gmail.com>
+In-Reply-To: <AANLkTil1N6ULXXuv4nx5n_amHqE61tZNuSaw6ndLPdPL@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Error building userspace: "selected processor
+ does	not support `rsc r7, r7, #0'
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Jeremy Brown <jhbrown@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Hi Philippe,
+Jeremy Brown wrote:
+> {standard input}: Assembler messages:
+> {standard input}:140: Error: selected processor does not support `rsc
+> r7,r7,#0'
+> {standard input}:159: Error: selected processor does not support `rsc
+> r1,r1,#0'
+> make: *** [libxenomai_la-timeconv.lo] Error 1
 
-Roland Stigge has accepted the "group xenomai" patch and uploaded xenomai=
- 2.5.2-2 to debian unstable.
-I have attached a patch against rpm/for-upstream to sync up with 2.5.2-2.=
+Ok. Could you try and compile the following piece of code with your
+toolchain and show me the disassembly ?
 
-Please ignore other patches I sent earlier, the attached patch contains t=
-hem. Thanks.
+long long foo(long long x)
+{
+        return -x;
+}
 
-Stefan
-
---------------020808000607020803040400
-Content-Type: text/plain;
- name="0001-debian-sync-with-2.5.2-2-from-debian.org.patch"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="0001-debian-sync-with-2.5.2-2-from-debian.org.patch"
-
-RnJvbSAxY2RlNGYzYzhhNmQ4NGFkMWZjMDQzNjgyZmEyODJmZWE4MDlhMjI4IE1vbiBTZXAg
-MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBTdGVmYW4gS2lzZGFyb2N6aSA8a2lzZGFAaGlzcGVl
-ZC5jaD4KRGF0ZTogTW9uLCAzIE1heSAyMDEwIDEwOjM3OjA5ICswMjAwClN1YmplY3Q6IFtQ
-QVRDSF0gZGViaWFuOiBzeW5jIHdpdGggMi41LjItMiBmcm9tIGRlYmlhbi5vcmcKCi0tLQog
-ZGViaWFuL2NoYW5nZWxvZyAgICAgICAgICAgICAgICB8ICAgMTcgKysrKysrKysrKysrKysr
-KysKIGRlYmlhbi9saWJ4ZW5vbWFpMS5kaXJzICAgICAgICAgfCAgICAxICsKIGRlYmlhbi9s
-aWJ4ZW5vbWFpMS5saW50aWFuICAgICAgfCAgICA3ICsrKysrKy0KIGRlYmlhbi9saWJ4ZW5v
-bWFpMS5tb2Rwcm9iZSAgICAgfCAgICAzICsrKwogZGViaWFuL2xpYnhlbm9tYWkxLnBvc3Rp
-bnN0ICAgICB8ICAgMjAgKysrKysrKysrKysrKysrKysrLS0KIGRlYmlhbi9saWJ4ZW5vbWFp
-MS54ZW5vbWFpLmluaXQgfCAgICAxIC0KIGRlYmlhbi9ydWxlcyAgICAgICAgICAgICAgICAg
-ICAgfCAgICAyICsrCiBkZWJpYW4veGVub21haS1ydW50aW1lLmluc3RhbGwgIHwgICAgMSAr
-CiA4IGZpbGVzIGNoYW5nZWQsIDQ4IGluc2VydGlvbnMoKyksIDQgZGVsZXRpb25zKC0pCiBj
-cmVhdGUgbW9kZSAxMDA2NDQgZGViaWFuL2xpYnhlbm9tYWkxLm1vZHByb2JlCgpkaWZmIC0t
-Z2l0IGEvZGViaWFuL2NoYW5nZWxvZyBiL2RlYmlhbi9jaGFuZ2Vsb2cKaW5kZXggNmQyZDNj
-Zi4uOWYwMDFhOSAxMDA2NDQKLS0tIGEvZGViaWFuL2NoYW5nZWxvZworKysgYi9kZWJpYW4v
-Y2hhbmdlbG9nCkBAIC0xLDMgKzEsMjAgQEAKK3hlbm9tYWkgKDIuNS4yLTIpIHVuc3RhYmxl
-OyB1cmdlbmN5PWxvdworCisgICogQWRkZWQgcGF0Y2ggZnJvbSBTdGVmYW4gS2lzZGFyb2N6
-aSA8a2lzZGFAaGlzcGVlZC5jaD46CisgICAgLSBDcmVhdGUgZ3JvdXAgeGVub21haSBvbiBp
-bnN0YWxsCisgICAgLSBBZGRlZCBhIGluaXQtc2NyaXB0IHdoaWNoIHNldHMgL3N5cy8uLi4v
-eGVub21haV9naWQgaWYKKyAgICAgIC9zeXMvLi4uL3hlbm9tYWlfZ2lkIGV4aXN0cworICAg
-IC0gQWRkZWQgYSBtb2Rwcm9iZS1zY3JpcHQgdGhhdCBhZGRzIHRoZSB4ZW5vbWFpX2dpZCBw
-YXJhbWV0ZXIgaWYgdGhlIHVzZXIKKyAgICAgIGRpZCBjYWxsIG1vZHByb2JlIHdpdGhvdXQg
-eGVub21haV9naWQ9CisKKyAtLSBSb2xhbmQgU3RpZ2dlIDxzdGlnZ2VAYW50Y29tLmRlPiAg
-U3VuLCAwMiBNYXkgMjAxMCAxNzowNjoxNCArMDIwMAorCit4ZW5vbWFpICgyLjUuMi0xKSB1
-bnN0YWJsZTsgdXJnZW5jeT1sb3cKKworICAqIE5ldyB1cHN0cmVhbSByZWxlYXNlCisKKyAt
-LSBSb2xhbmQgU3RpZ2dlIDxzdGlnZ2VAYW50Y29tLmRlPiAgTW9uLCAyOSBNYXIgMjAxMCAy
-MDo1MTowNyArMDIwMAorCiB4ZW5vbWFpICgyLjUuMS00KSB1bnN0YWJsZTsgdXJnZW5jeT1s
-b3cKIAogICAqIEFkZGVkIHBhdGNoZXMgYnkgU3RlZmFuIEtpc2Rhcm9jemkgPGtpc2RhQGhp
-c3BlZWQuY2g+OgpkaWZmIC0tZ2l0IGEvZGViaWFuL2xpYnhlbm9tYWkxLmRpcnMgYi9kZWJp
-YW4vbGlieGVub21haTEuZGlycwppbmRleCAxNzM3ZWExLi4zNWY0YjUxIDEwMDY0NAotLS0g
-YS9kZWJpYW4vbGlieGVub21haTEuZGlycworKysgYi9kZWJpYW4vbGlieGVub21haTEuZGly
-cwpAQCAtMSwyICsxLDMgQEAKK2V0Yy9tb2Rwcm9iZS5kCiBldGMvdWRldi9ydWxlcy5kCiB1
-c3Ivc2hhcmUvbGludGlhbi9vdmVycmlkZXMKZGlmZiAtLWdpdCBhL2RlYmlhbi9saWJ4ZW5v
-bWFpMS5saW50aWFuIGIvZGViaWFuL2xpYnhlbm9tYWkxLmxpbnRpYW4KaW5kZXggZmUwZGE0
-Ni4uZjU2OTRhMyAxMDA2NDQKLS0tIGEvZGViaWFuL2xpYnhlbm9tYWkxLmxpbnRpYW4KKysr
-IGIvZGViaWFuL2xpYnhlbm9tYWkxLmxpbnRpYW4KQEAgLTEsMiArMSw3IEBACi0jIG5vIGNv
-bnRhaW5lZCBzaGFyZWQgbGlicmFyeSBuYW1lcyByZWZlciB0byAieGVub21haSIsIHRoZXJl
-Zm9yZSBvd24gbmFtZQorIyBUaGUgcGFja2FnZSBsaWJ4ZW5vbWFpMSBmaXJzdCBkaWRuJ3Qg
-Y29udGFpbiBhIGxpYnJhcnkgY2FsbGVkICp4ZW5vbWFpKi4KKyMgVGhlcmVmb3JlLCBJIGNh
-bGxlZCBpdCBsaWJ4ZW5vbWFpMS4gTm93LCB1cHN0cmVhbSBpbnRyb2R1Y2VkIGxpYnhlbm9t
-YWkwIGluCisjIHRoZSBwYWNrYWdlLiAgSSdtIGxlYXZpbmcgdGhlIHBhY2thZ2UgbmFtZSBs
-aWJ4ZW5vbWFpMSBmb3Igbm93IHNpbmNlCisjIGRvd25ncmFkaW5nIHRoZSBudW1iZXIgaW4g
-dGhlIHBhY2thZ2UgbmFtZSBpcyBwcm9iYWJseSBhIGJhZCBpZGVhLCBhbmQKKyMgc3luY2hy
-b25pemluZyB0aGUgcGFja2FnZSBuYW1lIHdpdGggdGhlIFNPIHZlcnNpb24gbnVtYmVyIGlz
-bid0IGVhc2lseQorIyBwb3NzaWJsZSBhbnl3YXkgc2luY2UgdGhlIHBhY2thZ2UgY29udGFp
-bnMgc2V2ZXJhbCBsaWJyYXJpZXMuCiBsaWJ4ZW5vbWFpMTogcGFja2FnZS1uYW1lLWRvZXNu
-dC1tYXRjaC1zb25hbWVzIGxpYmFuYWxvZ3kxIGxpYm5hdGl2ZTMgbGlicHNvczAgbGlicHRo
-cmVhZC1ydDEgbGlicnRhaTAgbGlicnRkazAgbGlicnRkbTEgbGlidWl0cm9uMCBsaWJ2cnR4
-MCBsaWJ2eHdvcmtzMSBsaWJ4ZW5vbWFpMApkaWZmIC0tZ2l0IGEvZGViaWFuL2xpYnhlbm9t
-YWkxLm1vZHByb2JlIGIvZGViaWFuL2xpYnhlbm9tYWkxLm1vZHByb2JlCm5ldyBmaWxlIG1v
-ZGUgMTAwNjQ0CmluZGV4IDAwMDAwMDAuLjE5NTM4NTQKLS0tIC9kZXYvbnVsbAorKysgYi9k
-ZWJpYW4vbGlieGVub21haTEubW9kcHJvYmUKQEAgLTAsMCArMSwzIEBACitpbnN0YWxsIHhl
-bm9fbnVjbGV1cyAvc2Jpbi9tb2Rwcm9iZSAtLWlnbm9yZS1pbnN0YWxsIHhlbm9fbnVjbGV1
-cyAkQ01ETElORV9PUFRTIFwKKyAgJCgvdXNyL2Jpbi90ZXN0ICQoL2Jpbi9lY2hvIC1uICck
-Q01ETElORV9PUFRTJyB8IC9iaW4vZ3JlcCB4ZW5vbWFpX2dpZCkgXAorICAgIHx8IC91c3Iv
-YmluL2dldGVudCBncm91cCB4ZW5vbWFpIHwgL3Vzci9iaW4vY3V0IC1kOiAtZjMgfCAvYmlu
-L3NlZCAtZSAncy9eL3hlbm9tYWlfZ2lkXD0vJykKZGlmZiAtLWdpdCBhL2RlYmlhbi9saWJ4
-ZW5vbWFpMS5wb3N0aW5zdCBiL2RlYmlhbi9saWJ4ZW5vbWFpMS5wb3N0aW5zdAppbmRleCA4
-YWZjNmZjLi45N2MzNDc2IDEwMDY0NAotLS0gYS9kZWJpYW4vbGlieGVub21haTEucG9zdGlu
-c3QKKysrIGIvZGViaWFuL2xpYnhlbm9tYWkxLnBvc3RpbnN0CkBAIC0xLDYgKzEsMjIgQEAK
-ICMhL2Jpbi9zaCAtZQogCi1ybSAtZiAvZXRjL3VkZXYvcnVsZXMuZC94ZW5vbWFpLnJ1bGVz
-Ci1sbiAtc2YgLi4veGVub21haS5ydWxlcyAvZXRjL3VkZXYvcnVsZXMuZC94ZW5vbWFpLnJ1
-bGVzCitjYXNlICIkMSIgaW4KKyAgICBjb25maWd1cmUpCisgICAgICAgICMgQWRkIHRoZSB4
-ZW5vbWFpIGdyb3VwIHVubGVzcyBpdCdzIGFscmVhZHkgdGhlcmUKKyAgICAgICAgaWYgISBn
-ZXRlbnQgZ3JvdXAgeGVub21haSA+L2Rldi9udWxsOyB0aGVuCisgICAgICAgICAgICBhZGRn
-cm91cCAtLXF1aWV0IC0tc3lzdGVtIHhlbm9tYWkgfHwgdHJ1ZQorICAgICAgICBmaQorICAg
-ICAgICBybSAtZiAvZXRjL3VkZXYvcnVsZXMuZC94ZW5vbWFpLnJ1bGVzCisgICAgICAgIGxu
-IC1zZiAuLi94ZW5vbWFpLnJ1bGVzIC9ldGMvdWRldi9ydWxlcy5kL3hlbm9tYWkucnVsZXMK
-KyAgICA7OworCisgICAgYWJvcnQtdXBncmFkZXxhYm9ydC1yZW1vdmV8YWJvcnQtZGVjb25m
-aWd1cmUpCisgICAgOzsKKworICAgICopCisgICAgICAgIGVjaG8gInBvc3RpbnN0IGNhbGxl
-ZCB3aXRoIHVua25vd24gYXJndW1lbnQgXGAkMSciID4mMgorICAgICAgICBleGl0IDEKKyAg
-ICA7OworZXNhYwogCiAjREVCSEVMUEVSIwpkaWZmIC0tZ2l0IGEvZGViaWFuL2xpYnhlbm9t
-YWkxLnhlbm9tYWkuaW5pdCBiL2RlYmlhbi9saWJ4ZW5vbWFpMS54ZW5vbWFpLmluaXQKaW5k
-ZXggZWJiNTA5Mi4uZTI0M2I1ZSAxMDA2NDQKLS0tIGEvZGViaWFuL2xpYnhlbm9tYWkxLnhl
-bm9tYWkuaW5pdAorKysgYi9kZWJpYW4vbGlieGVub21haTEueGVub21haS5pbml0CkBAIC0y
-NCw3ICsyNCw2IEBAIGNhc2UgIiQxIiBpbgogICAgICAgICBlY2hvICItMSIgPiAkRklMRU5B
-TUUKICAgICAgICAgOzsKICAgcmVzdGFydHxmb3JjZS1yZWxvYWQpCi0gICAgICAgICQwIHN0
-b3AKICAgICAgICAgJDAgc3RhcnQKICAgICAgICAgOzsKICAgKikKZGlmZiAtLWdpdCBhL2Rl
-Ymlhbi9ydWxlcyBiL2RlYmlhbi9ydWxlcwppbmRleCA0Y2I1M2EzLi5lMzk5NzdkIDEwMDc1
-NQotLS0gYS9kZWJpYW4vcnVsZXMKKysrIGIvZGViaWFuL3J1bGVzCkBAIC0zOCw2ICszOCw3
-IEBAIGVuZGlmCiAJQ09ORklHX09QVFMgKz0gLS1wcmVmaXg9L3VzciBcCiAJICAgICAgICAg
-ICAgLS1pbmNsdWRlZGlyPS91c3IvaW5jbHVkZS94ZW5vbWFpIFwKIAkgICAgICAgICAgICAt
-LW1hbmRpcj0vdXNyL3NoYXJlL21hbiBcCisJCSAgICAtLXdpdGgtdGVzdGRpcj0vdXNyL2xp
-Yi94ZW5vbWFpCiAKIGlmbmVxICgkKERFQl9IT1NUX0dOVV9UWVBFKSwkKERFQl9CVUlMRF9H
-TlVfVFlQRSkpCiAJQ09ORklHX09QVFMgKz0gLS1idWlsZCAkKERFQl9CVUlMRF9HTlVfVFlQ
-RSkgLS1ob3N0ICQoREVCX0hPU1RfR05VX1RZUEUpCkBAIC05Nyw2ICs5OCw3IEBAIGluc3Rh
-bGw6IGJ1aWxkCiAJZm9yIGYgaW4gJChDVVJESVIpL2tzcmMvbnVjbGV1cy91ZGV2LyoucnVs
-ZXMgOyBkbyBcCiAJICAgIGNhdCAkJGYgPj4gJChDVVJESVIpL2RlYmlhbi9saWJ4ZW5vbWFp
-MS9ldGMvdWRldi94ZW5vbWFpLnJ1bGVzIDsgXAogCWRvbmUKKwlpbnN0YWxsIC1tIDY0NCBk
-ZWJpYW4vbGlieGVub21haTEubW9kcHJvYmUgJChDVVJESVIpL2RlYmlhbi9saWJ4ZW5vbWFp
-MS9ldGMvbW9kcHJvYmUuZC94ZW5vbWFpLmNvbmYKIAkjIHJlbW92ZSBlbXB0eSBkaXJlY3Rv
-cnkKIAlybSAtcmYgJChDVVJESVIpL2RlYmlhbi94ZW5vbWFpLWRvYy91c3Ivc2hhcmUvZG9j
-L3hlbm9tYWktZG9jL3BzCiAJY3AgZGViaWFuL2xpYnhlbm9tYWkxLmxpbnRpYW4gJChDVVJE
-SVIpL2RlYmlhbi9saWJ4ZW5vbWFpMS91c3Ivc2hhcmUvbGludGlhbi9vdmVycmlkZXMvbGli
-eGVub21haTEKZGlmZiAtLWdpdCBhL2RlYmlhbi94ZW5vbWFpLXJ1bnRpbWUuaW5zdGFsbCBi
-L2RlYmlhbi94ZW5vbWFpLXJ1bnRpbWUuaW5zdGFsbAppbmRleCBjOWVlZTc1Li5kMWRiZTEz
-IDEwMDY0NAotLS0gYS9kZWJpYW4veGVub21haS1ydW50aW1lLmluc3RhbGwKKysrIGIvZGVi
-aWFuL3hlbm9tYWktcnVudGltZS5pbnN0YWxsCkBAIC0yLDMgKzIsNCBAQCB1c3IvYmluCiB1
-c3Ivc2JpbgogdXNyL3NoYXJlL21hbgogdXNyL3NoYXJlL3hlbm9tYWkKK3Vzci9saWIveGVu
-b21haQotLSAKMS41LjYuNQoK
---------------020808000607020803040400--
-
---------------enig3E4096AF864EFE041E00BA9D
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iD8DBQFL3o95IPTw9rIdn6oRAqCsAJ9feeHXycLeyTgXaNnr72YSwhDbPgCdE43n
-7kcyftzAH9jJFqSE5+SGZUU=
-=cOoS
------END PGP SIGNATURE-----
-
---------------enig3E4096AF864EFE041E00BA9D--
+-- 
+					    Gilles.
 
