@@ -1,12 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <181804936ABC2349BE503168465576460EBD5C0D@exchserver.basler.com>
-References: <181804936ABC2349BE503168465576460EBD5C0D@exchserver.basler.com>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sun, 16 May 2010 23:57:43 +0200
-Message-ID: <1274047063.2972.1.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_task_sleep causing crashes on PowerPC
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 17 May 2010 11:27:44 -0500
+Message-ID: <181804936ABC2349BE503168465576460EBD6239@domain.hid>
+In-Reply-To: <4BED2910.6020105@domain.hid>
+References: <2319761F7FA0D1479BA77EC2E0A8E7BCE3D6E7@domain.hid><245373446233674495BCA5CA2FC1EB17378D01593B@RCexchangeSVR1.ruggedcom.local>
+	<4BED2910.6020105@domain.hid>
+From: "Steve Deiters" <SteveDeiters@domain.hid>
+Subject: Re: [Xenomai-help] Question about getting system time
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,36 +19,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steve Deiters <SteveDeiters@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Andreas Glatz <AndreasGlatz@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Fri, 2010-05-14 at 19:18 -0500, Steve Deiters wrote:
-> I am running Xenomai 2.5.3, I-pipe version 2.9-00, with Linux 2.6.33.4
-> on a PowerPC MPC5121.  With small values of sleep ticks passed to
-> rt_task_sleep, I get various sorts of crashes.  Here is a simple program
-> using a delay loop that exhibits the behavior.
+> > Hi,
+> >=20
+> > We had a similar problem. We solved it by compiling the=20
+> native skin as=20
+> > a module and loading it _after_ the kernel has been=20
+> syncronized with=20
+> > the real-time clock chip.
+>=20
+> Yes, that works too. There is also an option in the kernel=20
+> for the kernel to synchronize with the RTC clock directly,=20
+> without requiring hwclock. I do not know if it is run before=20
+> starting Xenomai though.
 
-<snip>
+I have a similar requirement, except I want to keep the Xenomai clock
+synchronized with Linux services that use adjtime/adjtimex, e.g. NTP.
+It is not sufficient in this case to delay the startup of Xenomai.  I
+suppose as a workaround I could create a low priority periodic thread
+that reads the Linux clock with gettimeofday and sets the Xenomai one
+with clock_settime.
 
-> 
-> I'm not sure if I have something misconfigured or what.  I am upgrading
-> from Xenomai 2.4.10 on an older kernel and I did not have this same
-> problem.
-> 
+Any other suggestions for providing timestamps to real time tasks in
+this case?
 
-Bug confirmed here. Your setup is not involved, I'll send a fix asap.
-
-> Thanks.
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
-
--- 
-Philippe.
-
+Thanks.
 
 
