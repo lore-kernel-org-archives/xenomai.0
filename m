@@ -1,14 +1,17 @@
-Message-ID: <4BF1794A.6050207@domain.hid>
-Date: Mon, 17 May 2010 19:13:46 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <2319761F7FA0D1479BA77EC2E0A8E7BCE3D6E7@domain.hid><245373446233674495BCA5CA2FC1EB17378D01593B@RCexchangeSVR1.ruggedcom.local>	<4BED2910.6020105@domain.hid>
+From: Josh Karch <JKarch@domain.hid>
+Date: Mon, 17 May 2010 11:02:17 -0700
+Message-ID: <843773D242212C4882D4EDFFBF665F7F0C9F71BAFF@FW-SBS.fw.local>
+References: <2319761F7FA0D1479BA77EC2E0A8E7BCE3D6E7@domain.hid><245373446233674495BCA5CA2FC1EB17378D01593B@RCexchangeSVR1.ruggedcom.local>
+	<4BED2910.6020105@domain.hid>
 	<181804936ABC2349BE503168465576460EBD6239@domain.hid>
 	<4BF17464.5090100@domain.hid>
-	<181804936ABC2349BE503168465576460EBD62C8@domain.hid>
-In-Reply-To: <181804936ABC2349BE503168465576460EBD62C8@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+	<181804936ABC2349BE503168465576460EBD62C8@domain.hid>,
+	<4BF1794A.6050207@domain.hid>
+In-Reply-To: <4BF1794A.6050207@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Question about getting system time
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -19,36 +22,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steve Deiters <SteveDeiters@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "Mauerer,
-	Wolfgang" <wolfgang.mauerer@domain.hid>, Andreas Glatz <AndreasGlatz@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>, Steve Deiters <SteveDeiters@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Andreas Glatz <AndreasGlatz@domain.hid>, "Mauerer,
+	Wolfgang" <wolfgang.mauerer@domain.hid>
+
+Jan, =20
+
+If no ntp server updates are made to the Linux clock,  we have noticed over=
+ a week's period a drift of ten or so seconds difference between the Linux =
+clock and the Xenomai get time function and often have to reboot our machin=
+e to resynchronize the Xenomai and Linux clocks back to less than a couple =
+seconds difference.  I was wondering if you might explain why that might ha=
+ppen?
+
+SIncerely,
+
+Joshua Karch
+
+
+________________________________________
+From: xenomai-help-bounces@domain.hid [xenomai-help-bounces@domain.hid] On Behalf=
+ Of Jan Kiszka [jan.kiszka@domain.hid]
+Sent: Monday, May 17, 2010 10:13 AM
+To: Steve Deiters
+Cc: xenomai@xenomai.org; Mauerer,      Wolfgang; Andreas Glatz
+Subject: Re: [Xenomai-help] Question about getting system time
 
 Steve Deiters wrote:
->> Periodically setting the time is risky if timed jobs depend 
+>> Periodically setting the time is risky if timed jobs depend
 >> on Xenomai's real-time clock - it may jump in all directions...
 >>
->>> Any other suggestions for providing timestamps to real time 
->> tasks in 
+>>> Any other suggestions for providing timestamps to real time
+>> tasks in
 >>> this case?
->> Do you just need precise timestamps from with real-time 
->> tasks, or do you have to synchronize timer events of the 
+>> Do you just need precise timestamps from with real-time
+>> tasks, or do you have to synchronize timer events of the
 >> Xenomai core on an external clock?
 >>
->> For the former case (precisely our scenario), we laid the 
->> ground to extend Xenomai 2.5 with RT-safe syscalls to obtain 
->> Linux's view on gettimeofday. It "just" needs some polishing 
+>> For the former case (precisely our scenario), we laid the
+>> ground to extend Xenomai 2.5 with RT-safe syscalls to obtain
+>> Linux's view on gettimeofday. It "just" needs some polishing
 >> to post this for upstream.
 >> Wolfgang (CC'ed) is working on this.
-> 
+>
 > I'm just looking to get timestamps in the real time task.  At least in
 > my case being able to call gettimeofday from the real time thread would
 > be exactly what I need.
-> 
+>
 > By the way, calling gettimeofday currently within a real time thread
 > seems to occasionally freeze up my whole system.  I was going to make
 > another post for this after I got a chance to verify some details.  Has
 > anyone noticed anything similar to this?
-> 
+>
 
 Yes, that's expected: If gettimeofday runs syscall-less, it tries to
 read the time offset from a page which the Linux kernel updates
@@ -61,7 +86,12 @@ task, and the system will recover.
 
 Jan
 
--- 
+--
 Siemens AG, Corporate Technology, CT T DE IT 1
 Corporate Competence Center Embedded Linux
+
+_______________________________________________
+Xenomai-help mailing list
+Xenomai-help@domain.hid
+https://mail.gna.org/listinfo/xenomai-help
 
