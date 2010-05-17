@@ -1,14 +1,15 @@
-Message-ID: <4BF1903C.50801@domain.hid>
-Date: Mon, 17 May 2010 11:51:40 -0700
-From: Thomas Lockhart <Thomas.Lockhart@domain.hid>
+Message-ID: <4BF190D7.9060804@domain.hid>
+Date: Mon, 17 May 2010 20:54:15 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <2319761F7FA0D1479BA77EC2E0A8E7BCE3D6E7@domain.hid><245373446233674495BCA5CA2FC1EB17378D01593B@RCexchangeSVR1.ruggedcom.local>	<4BED2910.6020105@domain.hid>	<181804936ABC2349BE503168465576460EBD6239@domain.hid>	<4BF17464.5090100@domain.hid>	<181804936ABC2349BE503168465576460EBD62C8@domain.hid>,
-	<4BF1794A.6050207@domain.hid>
-	<843773D242212C4882D4EDFFBF665F7F0C9F71BAFF@FW-SBS.fw.local>
-In-Reply-To: <843773D242212C4882D4EDFFBF665F7F0C9F71BAFF@FW-SBS.fw.local>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <AANLkTil1N6ULXXuv4nx5n_amHqE61tZNuSaw6ndLPdPL@mail.gmail.com>	
+	<4BF18A00.706@domain.hid>
+	<AANLkTinkr4vDIHFMJigC7i9dCXjoG2d_gNG11txXrjpd@domain.hid>
+In-Reply-To: <AANLkTinkr4vDIHFMJigC7i9dCXjoG2d_gNG11txXrjpd@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Question about getting system time
+Subject: Re: [Xenomai-help] Error building userspace: "selected processor
+ does not support `rsc r7, r7, #0'
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,36 +19,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Josh Karch <JKarch@domain.hid>, Steve Deiters <SteveDeiters@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, Andreas Glatz <AndreasGlatz@domain.hid>, "Mauerer,
-	Wolfgang" <wolfgang.mauerer@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jeremy Brown <jhbrown@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
->  If no ntp server updates are made to the Linux clock,  we have
->  noticed over a week's period a drift of ten or so seconds difference
->  between the Linux clock and the Xenomai get time function and often
->  have to reboot our machine to resynchronize the Xenomai and Linux
->  clocks back to less than a couple seconds difference.  I was
->  wondering if you might explain why that might happen?
+Jeremy Brown wrote:
+> On Mon, May 17, 2010 at 11:25 AM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>> Jeremy Brown wrote:
+>>> {standard input}: Assembler messages:
+>>> {standard input}:140: Error: selected processor does not support `rsc
+>>> r7,r7,#0'
+>>> {standard input}:159: Error: selected processor does not support `rsc
+>>> r1,r1,#0'
+>>> make: *** [libxenomai_la-timeconv.lo] Error 1
+>> Ok. Could you try and compile the following piece of code with your
+>> toolchain and show me the disassembly ?
+>>
+>> long long foo(long long x)
+>> {
+>>        return -x;
+>> }
+>>
+>> --
+>>                                            Gilles.
+> 
+> Thanks for the quick reply!  Here's the complete contents of foo.s:
+> 
+>         .syntax unified
+>         .arch armv7-a
+>         .eabi_attribute 27, 3
+>         .fpu vfpv3-d16
+>         .eabi_attribute 20, 1
+>         .eabi_attribute 21, 1
+>         .eabi_attribute 23, 3
+>         .eabi_attribute 24, 1
+>         .eabi_attribute 25, 1
+>         .eabi_attribute 26, 2
+>         .eabi_attribute 30, 6
+>         .eabi_attribute 18, 4
+>         .thumb
+>         .file   "foo.c"
+>         .text
+>         .align  2
+>         .global foo
+>         .thumb
+>         .thumb_func
+>         .type   foo, %function
+> foo:
+>         @ args = 0, pretend = 0, frame = 8
+>         @ frame_needed = 1, uses_anonymous_args = 0
+>         @ link register save eliminated.
+>         push    {r7}
+>         sub     sp, sp, #12
+>         add     r7, sp, #0
+>         strd    r0, [r7]
+>         ldrd    r0, [r7]
+>         negs    r2, r0
+>         sbc     r3, r1, r1, lsl #1
+>         mov     r0, r2
+>         mov     r1, r3
+>         add     r7, r7, #12
+>         mov     sp, r7
+>         pop     {r7}
+>         bx      lr
+>         .size   foo, .-foo
+>         .ident  "GCC: (Ubuntu 4.4.3-4ubuntu5) 4.4.3"
+>         .section        .note.GNU-stack,"",%progbits
+> 
 
-Your clock oscillator on the x86 PC is drifting wrt NTP time (the 
-oscillators are known to be bad time sources). We see the same effect 
-here. With NTP running, try running a RT periodic thread and obtain both 
-Linux system time and Xenomai RT time. You will see a sawtooth time 
-difference reaching around 1msec in magnitude before NTP readjusts Linux 
-system time back down to near zero. Then the clocks drift wrt one 
-another until you have around a 1msec difference, and NTP adjusts the 
-time again. I recall a periodicity of around 30-60sec per adjustment 
-cycle (5-10 seconds per week) but it is dependent on the characteristics 
-of your specific oscillator on the motherboard.
+Compile with -O2 please
 
-I have thought to cope with this by having a rate parameter on the code 
-encapsulating my timing source (I have "drivers" for Linux system time, 
-Xenomai time, and hardware timing sources). The NTP rate in the drift 
-file is pretty constant, so one could presumably use that rate to adjust 
-your timers.
 
-hth
-
-                                      - Tom
-
+-- 
+					    Gilles.
 
