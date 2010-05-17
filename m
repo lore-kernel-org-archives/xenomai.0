@@ -1,16 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <4BF192A6.6080508@domain.hid>
-References: <AANLkTil1N6ULXXuv4nx5n_amHqE61tZNuSaw6ndLPdPL@mail.gmail.com>
-	<4BF18A00.706@domain.hid>
-	<AANLkTinkr4vDIHFMJigC7i9dCXjoG2d_gNG11txXrjpd@domain.hid>
-	<4BF192A6.6080508@domain.hid>
-Date: Mon, 17 May 2010 13:50:57 -0700
-Message-ID: <AANLkTikwsGEOg6tDNA-ZiaX9P362egUat7lVthR1gzIU@mail.gmail.com>
-From: Jeremy Brown <jhbrown@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Error building userspace: "selected processor
-	does not support `rsc r7, r7, #0'
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1274047063.2972.1.camel@domain.hid>
+References: <181804936ABC2349BE503168465576460EBD5C0D@exchserver.basler.com>
+	<1274047063.2972.1.camel@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 17 May 2010 23:32:30 +0200
+Message-ID: <1274131950.2972.41.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] rt_task_sleep causing crashes on PowerPC
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,78 +17,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Steve Deiters <SteveDeiters@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Mon, May 17, 2010 at 12:01 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> Jeremy Brown wrote:
->> On Mon, May 17, 2010 at 11:25 AM, Gilles Chanteperdrix
->> <gilles.chanteperdrix@xenomai.org> wrote:
->>> Jeremy Brown wrote:
->>>> {standard input}: Assembler messages:
->>>> {standard input}:140: Error: selected processor does not support `rsc
->>>> r7,r7,#0'
->>>> {standard input}:159: Error: selected processor does not support `rsc
->>>> r1,r1,#0'
->>>> make: *** [libxenomai_la-timeconv.lo] Error 1
->>> Ok. Could you try and compile the following piece of code with your
->>> toolchain and show me the disassembly ?
->>>
->>> long long foo(long long x)
->>> {
->>> =A0 =A0 =A0 =A0return -x;
->>> }
->>>
->>> --
->>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0 =A0 =A0Gilles.
->>
->> Thanks for the quick reply! =A0Here's the complete contents of foo.s:
->>
->> =A0 =A0 =A0 =A0 .syntax unified
->
-> That is the key: I presume this means your compiler generates syntax
-> which works both with ARM and thumb2, and rsc does not exist with
-> thumb2. Note that from a performance point of view, this may not be a win=
-.
+On Sun, 2010-05-16 at 23:57 +0200, Philippe Gerum wrote:
+> On Fri, 2010-05-14 at 19:18 -0500, Steve Deiters wrote:
+> > I am running Xenomai 2.5.3, I-pipe version 2.9-00, with Linux 2.6.33.4
+> > on a PowerPC MPC5121.  With small values of sleep ticks passed to
+> > rt_task_sleep, I get various sorts of crashes.  Here is a simple program
+> > using a delay loop that exhibits the behavior.
+> 
+> <snip>
+> 
+> > 
+> > I'm not sure if I have something misconfigured or what.  I am upgrading
+> > from Xenomai 2.4.10 on an older kernel and I did not have this same
+> > problem.
+> > 
+> 
+> Bug confirmed here. Your setup is not involved, I'll send a fix asap.
 
-Ah, success --- based on your note, a colleague of mine determined
-that arranging to pass gcc the (undocumented) "-marm" flag enables the
-compiler to build the unpatched Xenomai 2.5.3 sources from beginning
-to end.  For posterity, I recompiled your example code with -O2 -marm,
-and appended it below.
+It turned out to be a stack overflow issue, which could happen under
+very high IRQ pressure with unlocked context switch enabled. In short,
+the smaller the tick passed in your example, the more likely the Xenomai
+rescheduling code to accept another IRQ while switching thread contexts,
+then enter a deadly recursive rescheduling loop, eating the underlying
+stack space up to a complete overflow.
 
-Thank you for all of your help!
+For that to happen, a significant (i.e. long enough) IRQ burst must hit
+the system at a frequency which is higher than what the platform can
+cope with, or at least close to the limit.
 
-Jeremy
+rt_task_sleep() is not directly involved in the bug, it just happened to
+trigger the next incoming timer IRQ, but any timed service would have
+caused the same issue, or any external IRQ flood leading some interrupt
+handler to raise the need-to-reschedule bit continuously.
+ 
+Please try this fix:
+http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=5f1d30a5da27b7f57c486a3a25caf3c26a709073
 
-        .arch armv7-a
-        .eabi_attribute 27, 3
-        .fpu vfpv3-d16
-        .eabi_attribute 20, 1
-        .eabi_attribute 21, 1
-        .eabi_attribute 23, 3
-        .eabi_attribute 24, 1
-        .eabi_attribute 25, 1
-        .eabi_attribute 26, 2
-        .eabi_attribute 30, 2
-        .eabi_attribute 18, 4
-        .file   "foo.c"
-        .text
-        .align  2
-        .global foo
-        .type   foo, %function
-foo:
-        @ args =3D 0, pretend =3D 0, frame =3D 0
-        @ frame_needed =3D 0, uses_anonymous_args =3D 0
-        @ link register save eliminated.
-        rsbs    r2, r0, #0
-        rsc     r3, r1, #0
-        mov     r1, r3
-        mov     r0, r2
-        bx      lr
-        .size   foo, .-foo
-        .ident  "GCC: (Ubuntu 4.4.3-4ubuntu5) 4.4.3"
-        .section        .note.GNU-stack,"",%progbits
+If you don't want to patch your tree yet, a work around for this bug is
+to disable the support for unlocked context switching from the "Machine"
+menu (CONFIG_XENO_HW_UNLOCKED_SWITCH).
+
+The bad news is that all archs implementing unlocked context switching
+are affected by this bug in all 2.5.x releases, meaning arm and powerpc
+for now. The good news, is... Crap. There is no good news.
+
+PS: Xenomai 2.4.x is immune to this bug (it does not have unlocked
+context switching support in the first place).
+
+-- 
+Philippe.
+
+
 
