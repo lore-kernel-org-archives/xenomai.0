@@ -1,11 +1,14 @@
-Message-ID: <4BF268DE.1080809@domain.hid>
-Date: Tue, 18 May 2010 12:15:58 +0200
-From: Stefan Kisdaroczi <kisda@domain.hid>
+Message-ID: <4BF273ED.2070802@domain.hid>
+Date: Tue, 18 May 2010 13:03:09 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+References: <4BF268DE.1080809@domain.hid>
+In-Reply-To: <4BF268DE.1080809@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigBF30B1E0B0D1AC94E19983C4"
-Subject: [Xenomai-core] rtdm_dev_register oops
+	boundary="------------enig77930E4EFF69047A2D6513D7"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] rtdm_dev_register oops
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -14,143 +17,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Stefan Kisdaroczi <kisda@domain.hid>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigBF30B1E0B0D1AC94E19983C4
-Content-Type: multipart/mixed;
- boundary="------------080901050407050900090101"
-
-This is a multi-part message in MIME format.
---------------080901050407050900090101
-Content-Type: text/plain; charset=UTF-8
+--------------enig77930E4EFF69047A2D6513D7
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-hi,
+Stefan Kisdaroczi wrote:
+> hi,
+>=20
+> i got a exception in rtdm_dev_register(). I didnt call rtdm_dev_unregis=
+ter in my driver
+> and after insmodding the module again I got a oops.
 
-i got a exception in rtdm_dev_register(). I didnt call rtdm_dev_unregiste=
-r in my driver
-and after insmodding the module again I got a oops.
-xenomai 2.5.3, linux 2.6.32.11, x86 32bit, ubuntu 10.04.
+And that is surprising to you? :)
 
-Attached is the dmesg-trace and a small rtdm-module foo.c for reproductio=
-n:
-insmod ./xeno_foo.ko
-rmmod xeno_foo
-insmod ./xeno_foo.ko -> oops
+If you leave the previous device registered on rmmod, oopses are
+programmed to occur: You leave references to unallocated memory behind.
 
-thanks
-stefan
+Jan
 
---------------080901050407050900090101
-Content-Type: text/plain;
- name="Makefile"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="Makefile"
+> xenomai 2.5.3, linux 2.6.32.11, x86 32bit, ubuntu 10.04.
+>=20
+> Attached is the dmesg-trace and a small rtdm-module foo.c for reproduct=
+ion:
+> insmod ./xeno_foo.ko
+> rmmod xeno_foo
+> insmod ./xeno_foo.ko -> oops
+>=20
+> thanks
+> stefan
 
-VU5BTUUgICAgICAgICAgICAgICAgIDo9ICQoc2hlbGwgdW5hbWUgLXIpClBXRCAgICAgICAg
-ICAgICAgICAgICA6PSAkKHNoZWxsIHB3ZCkKCkxJTlVYU09VUkNFRElSICAgICAgICA6PSAv
-dXNyL3NyYy9saW51eC1oZWFkZXJzLSQoVU5BTUUpCgpvYmotbSAgICAgICAgICAgICAgICAg
-Oj0geGVub19mb28ubwp4ZW5vX2Zvby15ICAgICAgICAgICAgOj0gZm9vLm8KRVhUUkFfQ0ZM
-QUdTICAgICAgICAgIDo9IC1JL3Vzci9zcmMvbGludXgtaGVhZGVycy0kKFVOQU1FKS9pbmNs
-dWRlL3hlbm9tYWkKCmFsbDo6CgkkKE1BS0UpIC1DICQoTElOVVhTT1VSQ0VESVIpIFNVQkRJ
-UlM9JChQV0QpIG1vZHVsZXMKCmNsZWFuOjoKCSQoUk0pIC4qLmNtZCAqLmNtZCAqLm8gKi5r
-byAqLm1vZC5jICoub3JkZXIgKi5zeW12ZXJzCgkkKFJNKSAtUiAudG1wKgoKLlBIT05ZOiBj
-bGVhbgoK
---------------080901050407050900090101
-Content-Type: text/plain;
- name="foo.c"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="foo.c"
 
-CiNpbmNsdWRlIDxsaW51eC9tb2R1bGUuaD4KI2luY2x1ZGUgPHJ0ZG0vcnRkbV9kcml2ZXIu
-aD4KCk1PRFVMRV9BVVRIT1IoICJTdGVmYW4gS2lzZGFyb2N6aSIgKTsKTU9EVUxFX0xJQ0VO
-U0UoICJHUEwiICk7CgoKaW50IGZvb19vcGVuX25ydCggc3RydWN0IHJ0ZG1fZGV2X2NvbnRl
-eHQgKmNvbnRleHQsCgkJCSBydGRtX3VzZXJfaW5mb190ICp1c2VyX2luZm8sCgkJCSBpbnQg
-b2ZsYWdzICkgew0KCXJldHVybiAwOwp9DQoKaW50IGZvb19jbG9zZV9ucnQoIHN0cnVjdCBy
-dGRtX2Rldl9jb250ZXh0ICpjb250ZXh0LA0KCQkJICBydGRtX3VzZXJfaW5mb190ICp1c2Vy
-X2luZm8gKSB7DQoJcmV0dXJuIDA7Cn0KCnN0cnVjdCBydGRtX2RldmljZSBmb29fcnRkbV9k
-ZXZpY2UgPSB7DQoJZGV2aWNlX2ZsYWdzOgkJUlRETV9OQU1FRF9ERVZJQ0UsDQoJZGV2aWNl
-X2NsYXNzOgkJUlRETV9DTEFTU19FWFBFUklNRU5UQUwsDQoJZGV2aWNlX3N1Yl9jbGFzczoJ
-UlRETV9TVUJDTEFTU19HRU5FUklDLAoJZGV2aWNlX25hbWU6CQkiZm9vMCIsCglwcm9jX25h
-bWU6CQkiZm9vMCIsCglkZXZpY2VfaWQ6CQkwLAoKCW9wZW5fbnJ0IDoJCWZvb19vcGVuX25y
-dCwNCglvcHM6IHsNCgkJY2xvc2VfbnJ0Oglmb29fY2xvc2VfbnJ0LA0KCX0sCn07DQoKCmlu
-dCBfX2luaXQgZm9vX2luaXQoIHZvaWQgKSB7CglyZXR1cm4gcnRkbV9kZXZfcmVnaXN0ZXIo
-ICZmb29fcnRkbV9kZXZpY2UgKTsKfQoKdm9pZCBfX2V4aXQgZm9vX2V4aXQoIHZvaWQgKSB7
-CgkvKiBydGRtX2Rldl91bnJlZ2lzdGVyKCAmZm9vX3J0ZG1fZGV2aWNlLCAxMDAwICk7ICov
-Cn0KCm1vZHVsZV9pbml0KCBmb29faW5pdCApOwptb2R1bGVfZXhpdCggZm9vX2V4aXQgKTsK
-
---------------080901050407050900090101
-Content-Type: text/plain;
- name="foo.trace"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="foo.trace"
-
-WyAgMTg1LjAwMDMyNl0gQlVHOiB1bmFibGUgdG8gaGFuZGxlIGtlcm5lbCBOVUxMIHBvaW50
-ZXIgZGVyZWZlcmVuY2UgYXQgKG51bGwpClsgIDE4NS4wMDAzNDBdIElQOiBbPGMwMWY4NzNh
-Pl0gcnRkbV9kZXZfcmVnaXN0ZXIrMHgyZWEvMHg0NzAKWyAgMTg1LjAwMDM1OF0gKnBkZSA9
-IDAwMDAwMDAwIApbICAxODUuMDAwMzY1XSBPb3BzOiAwMDAwIFsjMV0gU01QIApbICAxODUu
-MDAwMzczXSBsYXN0IHN5c2ZzIGZpbGU6IC9zeXMvZGV2aWNlcy9wY2kwMDAwOjAwLzAwMDA6
-MDA6MDIuMC8wMDAwOjAxOjAwLjIvMDAwMDowMzowZC4wL2hvc3Q0L3RhcmdldDQ6MDoxLzQ6
-MDoxOjAvYmxvY2svc2RiL3VldmVudApbICAxODUuMDAwMzgxXSBNb2R1bGVzIGxpbmtlZCBp
-bjogeGVub19mb28oKykgc25kX2ludGVsOHgwIHNuZF9hYzk3X2NvZGVjIGFjOTdfYnVzIHNu
-ZF9wY21fb3NzIHNuZF9taXhlcl9vc3Mgc25kX3BjbSBzbmRfc2VxX2R1bW15IGhpc2F4IGNy
-Y19jY2l0dCBpc2RuIHNuZF9zZXFfb3NzIGNvbTIwMDIwX3BjaSBzbmRfc2VxX21pZGkgc25k
-X3Jhd21pZGkgc25kX3NlcV9taWRpX2V2ZW50IGNvbTIwMDIwIGFyY25ldCBzbmRfc2VxIHNu
-ZF90aW1lciBzbmRfc2VxX2RldmljZSBwc21vdXNlIGU3NTJ4X2VkYWMgc25kIHNocGNocCBw
-cGRldiBzb3VuZGNvcmUgc2VyaW9fcmF3IGVkYWNfY29yZSBzbmRfcGFnZV9hbGxvYyBscCBk
-Y2RiYXMgcGFycG9ydF9wYyBwYXJwb3J0IHVzYmhpZCBmbG9wcHkgaGlkIGFpYzc5eHggZTEw
-MDAgc2NzaV90cmFuc3BvcnRfc3BpIFtsYXN0IHVubG9hZGVkOiB4ZW5vX2Zvb10KWyAgMTg1
-LjAwMDQ2OF0gClsgIDE4NS4wMDA0NzZdIFBpZDogMjIxNiwgY29tbTogaW5zbW9kIE5vdCB0
-YWludGVkICgyLjYuMzIuMTEteGVub21haS0yLjUuMyAjMikgUHJlY2lzaW9uIFdvcmtTdGF0
-aW9uIDQ3MCAgICAKWyAgMTg1LjAwMDQ4M10gRUlQOiAwMDYwOls8YzAxZjg3M2E+XSBFRkxB
-R1M6IDAwMjEwMjAyIENQVTogMApbICAxODUuMDAwNDkxXSBFSVAgaXMgYXQgcnRkbV9kZXZf
-cmVnaXN0ZXIrMHgyZWEvMHg0NzAKWyAgMTg1LjAwMDQ5OF0gRUFYOiAwMDAwMDAwMSBFQlg6
-IDAwMDAwM2EwIEVDWDogMDAwMDAzYTAgRURYOiBmODMyZTA2YwpbICAxODUuMDAwNTAzXSBF
-U0k6IDAwMDAwMDAwIEVESTogZjgzM2YwNmMgRUJQOiBmNjU5NWY1NCBFU1A6IGY2NTk1ZjM0
-ClsgIDE4NS4wMDA1MDldICBEUzogMDA3YiBFUzogMDA3YiBGUzogMDBkOCBHUzogMDAzMyBT
-UzogMDA2OApbICAxODUuMDAwNTE1XSBQcm9jZXNzIGluc21vZCAocGlkOiAyMjE2LCB0aT1m
-NjU5NDAwMCB0YXNrPWVjYzFiMzQwIHRhc2sudGk9ZjY1OTQwMDApClsgIDE4NS4wMDA1MjBd
-IEktcGlwZSBkb21haW4gTGludXgKWyAgMTg1LjAwMDUyNF0gU3RhY2s6ClsgIDE4NS4wMDA1
-MjhdICBjMDE5YmExNyBmNjU5NWY1NCBjMDU5Yjk1MyBmODMzZjA2MCAwMDAwMDNhMCBmZmZm
-ZmZmYyBmODMzZjEyMCAwMDAwMDAwMApbICAxODUuMDAwNTQ0XSA8MD4gZjY1OTVmNWMgZjgz
-NDIwMGQgZjY1OTVmODggYzAxMDExMzIgZjgzM2YxMjAgYzA3NzIzYTAgZmZmZmZmZmMgZjgz
-M2YxMjAKWyAgMTg1LjAwMDU2M10gPDA+IGI3ODE1ZmY0IGY4MzQyMDAwIGZmZmZmZmZjIGY4
-MzNmMTIwIGI3ODE1ZmY0IGY2NTk1ZmFjIGMwMTc1MzcxIDAwMjAwMDQ2ClsgIDE4NS4wMDA1
-ODNdIENhbGwgVHJhY2U6ClsgIDE4NS4wMDA1OTRdICBbPGMwMTliYTE3Pl0gPyB0cmFjZXBv
-aW50X21vZHVsZV9ub3RpZnkrMHgyNy8weDMwClsgIDE4NS4wMDA2MDVdICBbPGMwNTliOTUz
-Pl0gPyBub3RpZmllcl9jYWxsX2NoYWluKzB4NDMvMHg2MApbICAxODUuMDAwNjE2XSAgWzxm
-ODM0MjAwZD5dID8gZm9vX2luaXQrMHhkLzB4ZiBbeGVub19mb29dClsgIDE4NS4wMDA2Mjdd
-ICBbPGMwMTAxMTMyPl0gPyBkb19vbmVfaW5pdGNhbGwrMHgzMi8weDFiMApbICAxODUuMDAw
-NjM2XSAgWzxmODM0MjAwMD5dID8gZm9vX2luaXQrMHgwLzB4ZiBbeGVub19mb29dClsgIDE4
-NS4wMDA2NDhdICBbPGMwMTc1MzcxPl0gPyBzeXNfaW5pdF9tb2R1bGUrMHhiMS8weDIyMApb
-ICAxODUuMDAwNjU3XSAgWzxjMDEwMzE0NT5dID8gc3lzZW50ZXJfZG9fY2FsbCsweDEyLzB4
-MTYKWyAgMTg1LjAwMDY2M10gQ29kZTogYmYgOTIgYzAgMjEgZjEgYzEgZTEgMDMgODkgNGQg
-ZjAgMDEgYzggOGIgMzAgOGIgMTYgMGYgMTggMDIgOTAgMzkgZjAgMGYgODQgYzggMDAgMDAg
-MDAgODkgNWQgZWMgODkgY2IgZWIgMWMgOTAgOGQgNzQgMjYgMDAgOGIgMzYgPDhiPiAwNiAw
-ZiAxOCAwMCA5MCBhMSBjMCBiZiA5MiBjMCAwMSBkOCAzOSBjNiAwZiA4NCBhMiAwMCAwMCAw
-MCAKWyAgMTg1LjAwMDc1Nl0gRUlQOiBbPGMwMWY4NzNhPl0gcnRkbV9kZXZfcmVnaXN0ZXIr
-MHgyZWEvMHg0NzAgU1M6RVNQIDAwNjg6ZjY1OTVmMzQKWyAgMTg1LjAwMDc2N10gQ1IyOiAw
-MDAwMDAwMDAwMDAwMDAwClsgIDE4NS4wMDA3NzJdIC0tLVsgZW5kIHRyYWNlIGRiYWY2NTYy
-MDhiMmNjNjIgXS0tLQo=
---------------080901050407050900090101--
-
---------------enigBF30B1E0B0D1AC94E19983C4
+--------------enig77930E4EFF69047A2D6513D7
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+Version: GnuPG v2.0.9 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFL8mjjIPTw9rIdn6oRAtPQAJ4z4tFMaZoXrpM1iN02rry9TOzx5gCdFW+7
-thiwhfgsJfIpX9/oOoKcABo=
-=4WSX
+iEYEARECAAYFAkvyc/EACgkQitSsb3rl5xSbngCghgBfTmWzGEtZCwDncieDMvmr
+gWEAoMSJ/zNQh6Yye+n9Mg/oZlbqMjzB
+=O6Y3
 -----END PGP SIGNATURE-----
 
---------------enigBF30B1E0B0D1AC94E19983C4--
+--------------enig77930E4EFF69047A2D6513D7--
 
