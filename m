@@ -1,18 +1,13 @@
-Message-ID: <4BF64A65.6090202@domain.hid>
-Date: Fri, 21 May 2010 10:55:01 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4BFA2111.5020503@domain.hid>
+Date: Mon, 24 May 2010 13:47:45 +0700
+From: "P.B.Cheblakov" <P.B.Cheblakov@domain.hid>
 MIME-Version: 1.0
-References: <2319761F7FA0D1479BA77EC2E0A8E7BCE3D6E7@domain.hid><245373446233674495BCA5CA2FC1EB17378D01593B@RCexchangeSVR1.ruggedcom.local>	<4BED2910.6020105@domain.hid>	<181804936ABC2349BE503168465576460EBD6239@domain.hid>	<4BF17464.5090100@domain.hid>	<181804936ABC2349BE503168465576460EBD62C8@domain.hid>	<4BF251EC.7040605@domain.hid>
-	<4BF267D3.4040500@domain.hid>	<4BF28401.6060503@domain.hid>
-	<4BF28B0C.3080705@domain.hid>	<4BF2AB19.5060701@domain.hid>
-	<4BF2DF77.90806@domain.hid>	<4BF2F73C.7070605@domain.hid>
-	<4BF3045E.5080707@domain.hid> <4BF31010.2080003@domain.hid>
-	<4BF31386.4030402@domain.hid> <4BF31C83.5070109@domain.hid>
-	<4BF37BFD.6030709@domain.hid> <4BF38F14.1060105@domain.hid>
-In-Reply-To: <4BF38F14.1060105@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <1274245032-10610-1-git-send-email-P.B.Cheblakov@domain.hid>
+	<4BF3953D.8070108@domain.hid>
+In-Reply-To: <4BF3953D.8070108@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Question about getting system time
+Subject: Re: [Xenomai-core] [PATCH V2] rtcan: add rtcan_plx_pci driver
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -21,42 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Andreas Glatz <AndreasGlatz@domain.hid>, Wolfgang Mauerer <wolfgang.mauerer@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Just like it seems to be the case for Steve (unless I misunderstood his
->>> reply), it is very useful for us being able to time-stamp events in RT
->>> context that need to be correlated with events stamped in non-RT
->>> (including non-Xenomai) parts or even on other systems: (offline) data
->>> fusion, logging, tracing. I even bet that this is currently the major
->>> use case for synchronized clocks, only a smaller part already has the
->>> need to synchronize timed activities on a common clock source. But there
->>> is huge potential in the second part once we can provide a stable
->>> infrastructure.
->> I already had such issues, and I did not solve them by modifying Xenomai
->> core.
+Wolfgang Grandegger wrote:
+> On 05/19/2010 06:57 AM, Pavel Cheblakov wrote:
+>   
+>> This is a general driver for cards based on PLX90xx PCI-bridges.
+>> It supports following cards:
+>>  - Adlink PCI-7841/cPCI-7841 card (http://www.adlinktech.com/)
+>>  - Adlink PCI-7841/cPCI-7841 SE card
+>>  - esd CAN-PCI/CPCI/PCI104/200 (http://www.esd.eu/)
+>>  - esd CAN-PCI/PMC/266
+>>  - esd CAN-PCIe/2000
+>>  - Marathon CAN-bus-PCI card (http://www.marathon.ru/)
+>>  - TEWS TECHNOLOGIES TPMC810 card (http://www.tews.com/)
 >>
->>> Even a "third clock" would have to be delivered for more archs than x86,
->>> no question. We would basically need a generic but slow syscall variant
->>> and per-arch syscall-less optimizations (where feasible).
->> So, you would add a syscall which would becomre useless when you have
->> implemented synchronized clocks properly? Yet another reason for
->> avoiding this solution.
+>> This driver has been ported from socketcan of mainline Linux kernel 2.6.34.
+>> Support of esd cards has been added by Matthias Fuchs in linux-next
 >>
-> 
-> Could be "CLOCK_LINUX" - ie. no need for a new syscall.
+>> 'rtcan_esd_pci' driver marked as deprecated.
+>>
+>> Signed-off-by: Pavel Cheblakov <P.B.Cheblakov@domain.hid>
+>> Acked-by: Wolfgang Grandegger <wg@domain.hid>
+>>     
+>
+> Looks good now, thanks.
+>
+> Wolfgang.
+>   
+Hello!
 
-I am Ok for this solution (and now that I think about it, I wonder if we
-did not already have this discussion). Anyway, I would go for
-CLOCK_HOST_REALTIME, in case someone wants to implement
-CLOCK_HOST_MONOTONIC. The advantage is that we can return EINVAL in the
-timer_create or clock_settime calls, to indicate clearly that using this
-clock for timing services is verboten. And when/if the full
-synchronization is implemented, the ID simply becomes a #define.
+Wolfgang, will be added my driver to xenomai repo?
+I want to share it with my colleagues and it will be a good resource.
 
--- 
-					    Gilles.
+Pavel
 
