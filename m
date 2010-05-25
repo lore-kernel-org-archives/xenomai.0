@@ -1,19 +1,14 @@
-Message-ID: <4BFA9F2C.1040808@domain.hid>
-Date: Mon, 24 May 2010 17:45:48 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Date: Tue, 25 May 2010 13:44:44 +0200
+From: Tschaeche IT-Services <services@domain.hid>
+Message-ID: <20100525114444.GA30677@domain.hid>
+References: <20100520142614.GA23058@domain.hid>
+	<1274434121.2444.9.camel@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTimhw6cOHeDP3D4Om8nBiT-aURPWxbIrT23hNcNW@mail.gmail.com>	
-	<4BF8F73D.3070008@domain.hid>	
-	<AANLkTikT2AgxYKn4rK1jHtHzcK_AwJBzNANjDtAnyrwt@domain.hid>	
-	<4BF94DE3.90001@domain.hid>	
-	<AANLkTinUBnuLgLj-k_rPVEPHtgf8gC5ZtTcbgnmspRn7@domain.hid>	
-	<4BF95796.6030504@domain.hid>	
-	<AANLkTin9MXTXmDZhZSgalCS4KpurXpAa_5l9xLvHDTY9@domain.hid>
-	<AANLkTinW1CDCo0pzSFHS8QwQg6TP3WS8rXGoWC7UDryy@domain.hid>
-In-Reply-To: <AANLkTinW1CDCo0pzSFHS8QwQg6TP3WS8rXGoWC7UDryy@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] problem with serial example
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <1274434121.2444.9.camel@domain.hid>
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Monitoring Xenomai scheduler switches
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,92 +18,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Everett Wang <everteq@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 05/24/2010 09:32 AM, Everett Wang wrote:
-> On Mon, May 24, 2010 at 7:36 AM, Everett Wang <everteq@domain.hid> wrote:
->> On Mon, May 24, 2010 at 12:28 AM, Wolfgang Grandegger <wg@domain.hid> wrote:
->>> On 05/23/2010 06:19 PM, Everett Wang wrote:
->>>> On Sun, May 23, 2010 at 11:46 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
->>>
->>>>> There are other possibilities to interact with Linux, e.g. telnet,
->>>>> slogin or netcat. But it's always good to have a console.
->>>>>
->>>> I guess I need a USB to ethernet for these.
->>>
->>> Yes.
->>>
->>> ...
->>>>> All three uarts are occupied by Linux and you cannot use them as
->>>>> rtserial. First you need to release at least one of them. What Linux
->>>>> config do you use for your board?
->>>>
->>>> I didn't do any configuration. Do you mean to config these during kernel
->>>> configuration?
->>>
->>> Can you show us the .config of your kernel?
->>>
->>> Some more insights:
->>>
->>> I think the serial ports for the beagle boards are configured in:
->>>
->>> http://lxr.linux.no/#linux+v2.6.34/arch/arm/mach-omap2/serial.c
->>>
->>> Therein you find entries like:
->>>
->>> http://lxr.linux.no/#linux+v2.6.34/arch/arm/mach-omap2/serial.c#L82
->>>
->>> As you can see, a regshift of 2 is used, which is not yet supported by
->>> the 16550A RTDM driver. Should not be a big deal to add it, though.
->>> Also, as "baud_base" you should use OMAP24XX_BASE_BAUD.
->>>
->>> Wolfgang.
->>>
->>
->> Thanks for the suggestions. The .config file is attached. I will look at the
->> code you pointed to today to study the configuration of the serial port.
->>
->> Everett
->>
-> 
-> Hi Wolfgang,
-> 
-> I looked at the serial.c and function you pointed too. I have can't figure
-> out how to modify it. Could you point me to the right direction to read so
-> I can understand and eventually improve the serial for beagleboard? I thought
-> I could limit the kernel to use only one of the uart (console) by
-> changing function
->  __init omap_serial_init(void):
-> 
->  void __init omap_serial_init(void)
-> {
->         int i;
-> 
-> //        for (i = 0; i < ARRAY_SIZE(omap_uart); i++)
-> //                omap_serial_init_port(i);
->       omap_serial_init_port(2);
-> }
-> 
-> But the kernel hangs during booting after printing this message:
-> 
-> uncompressing Linux... done.
-> 
-> I guess it is not that simple to let kernel not to claim the uart0 and uart1.
+On Fri, May 21, 2010 at 11:28:41AM +0200, Philippe Gerum wrote:
+> > ...
+> > It seems, that our code is not called when Xenomai switches to the RO=
+OT task.
+> >=20
+> > We already had this issue with Xenomai 2.4.10
+> > and solved it by applying the attached patch.
+> >=20
+> > How can we catch these Xenomai scheduler events in 2.5.3?
+> >=20
+> > What is the reason for filtering them out?
+>=20
+> No valid one. Patch queued in my tree, thanks.
+=20
+Just tested your queued patch for 2.5.3 in our build.
+Looks great now: we are able to trace all context switches now :-)
 
-Yes, unfortunately. I would try to comment out the uarts you want to
-use for rtser in the following struct:
+Thanks,
 
-http://lxr.linux.no/#linux+v2.6.34/arch/arm/mach-omap2/serial.c#L562
+   Olli
 
-Maybe the better option is to download setserial from
-
-http://sourceforge.net/projects/setserial/files/setserial/2.17/setserial-2.17.tar.gz/download
-
-and cross-compile it for your target. Then try:
-
-# setserial /dev/ttyS2 uart none
-
-Wolfgang.
-
+--=20
+Tschaeche IT-Services       Tel.:  +49/9134/9089850
+Dr.-Ing. Oliver Tsch=E4che    Mobil: +49/176/20435601
+Welluckenweg 4              Email: services@domain.hid
+91077 Neunkirchen
 
