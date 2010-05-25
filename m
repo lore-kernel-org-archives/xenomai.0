@@ -1,14 +1,10 @@
-Date: Tue, 25 May 2010 13:44:44 +0200
-From: Tschaeche IT-Services <services@domain.hid>
-Message-ID: <20100525114444.GA30677@domain.hid>
-References: <20100520142614.GA23058@domain.hid>
-	<1274434121.2444.9.camel@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-In-Reply-To: <1274434121.2444.9.camel@domain.hid>
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Monitoring Xenomai scheduler switches
+Date: Tue, 25 May 2010 14:05:50 +0200
+Message-ID: <AANLkTinjobDAuybm7LnJTEijjY4CSTArH8TOzFpNzQcp@domain.hid>
+From: Nape Ibrahim Lentsoane <nape.lentsoane@domain.hid>
+Content-Type: multipart/alternative; boundary=0016e68deb5e82c17e048769fab8
+Subject: [Xenomai-help] RT-Socket-CAN: Problem installing PMC-CAN266
+	interface card
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,33 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, May 21, 2010 at 11:28:41AM +0200, Philippe Gerum wrote:
-> > ...
-> > It seems, that our code is not called when Xenomai switches to the RO=
-OT task.
-> >=20
-> > We already had this issue with Xenomai 2.4.10
-> > and solved it by applying the attached patch.
-> >=20
-> > How can we catch these Xenomai scheduler events in 2.5.3?
-> >=20
-> > What is the reason for filtering them out?
->=20
-> No valid one. Patch queued in my tree, thanks.
-=20
-Just tested your queued patch for 2.5.3 in our build.
-Looks great now: we are able to trace all context switches now :-)
+--0016e68deb5e82c17e048769fab8
+Content-Type: text/plain; charset=ISO-8859-1
 
-Thanks,
+Hi,
 
-   Olli
+We have recently bought a PMC-CAN/266 from ESD and we  are currently
+experiencing some problems with it when intalling it on a Linux Ubuntu
+machine with Xenomai installed. When we plug the board into the PC it[PC]
+does not want to boot successfully, it hangs and gives error messages after
+an attempt at "Loading Module Drivers...". Just wondering should I install
+the driver that came with the card first and then install the hardware
+after?
 
---=20
-Tschaeche IT-Services       Tel.:  +49/9134/9089850
-Dr.-Ing. Oliver Tsch=E4che    Mobil: +49/176/20435601
-Welluckenweg 4              Email: services@domain.hid
-91077 Neunkirchen
+For info: when I power up the PC without the PMC card it boots normal with
+no errors.
+
+What could I be doing wrong here? please help.
+
+Regards,
+Nape
+
+--0016e68deb5e82c17e048769fab8
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi,<br><br>We have recently bought a PMC-CAN/266 from ESD and we=A0 are cur=
+rently experiencing some problems with it when intalling it on a Linux Ubun=
+tu machine with Xenomai installed. When we plug the board into the PC it[PC=
+] does not want to boot successfully, it hangs and gives error messages aft=
+er an attempt at &quot;Loading Module Drivers...&quot;. Just wondering shou=
+ld I install the driver that came with the card first and then install the =
+hardware after?<br>
+<br>For info: when I power up the PC without the PMC card it boots normal w=
+ith no errors.<br><br>What could I be doing wrong here? please help.<br><br=
+>Regards,<br>Nape<br>
+
+--0016e68deb5e82c17e048769fab8--
 
