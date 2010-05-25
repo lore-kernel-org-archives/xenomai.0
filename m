@@ -1,14 +1,13 @@
-From: Josh Karch <JKarch@domain.hid>
-Date: Tue, 25 May 2010 09:27:12 -0700
-Message-ID: <843773D242212C4882D4EDFFBF665F7F0CA39CB563@domain.hid>
-References: <AANLkTinjobDAuybm7LnJTEijjY4CSTArH8TOzFpNzQcp@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <AANLkTinjobDAuybm7LnJTEijjY4CSTArH8TOzFpNzQcp@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] RT-Socket-CAN: Problem installing
-	PMC-CAN266	interface card
+References: <AANLkTinjobDAuybm7LnJTEijjY4CSTArH8TOzFpNzQcp@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 25 May 2010 19:00:06 +0200
+Message-ID: <1274806806.2444.151.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] RT-Socket-CAN: Problem installing PMC-CAN266
+ interface card
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,36 +17,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Nape Ibrahim Lentsoane <nape.lentsoane@domain.hid>
+Cc: xenomai@xenomai.org
 
-________________________________________
-From: xenomai-help-bounces@domain.hid [xenomai-help-bounces@domain.hid] On Behalf=
- Of Nape Ibrahim Lentsoane [nape.lentsoane@domain.hid]
-Sent: Tuesday, May 25, 2010 5:05 AM
-To: xenomai@xenomai.org
-Subject: [Xenomai-help] RT-Socket-CAN: Problem installing PMC-CAN266    int=
-erface card
+On Tue, 2010-05-25 at 14:05 +0200, Nape Ibrahim Lentsoane wrote:
+> Hi,
+> 
+> We have recently bought a PMC-CAN/266 from ESD and we  are currently
+> experiencing some problems with it when intalling it on a Linux Ubuntu
+> machine with Xenomai installed. When we plug the board into the PC
+> it[PC] does not want to boot successfully, it hangs and gives error
+> messages after an attempt at "Loading Module Drivers...". Just
+> wondering should I install the driver that came with the card first
+> and then install the hardware after?
+> 
+> For info: when I power up the PC without the PMC card it boots normal
+> with no errors.
 
-Hi,
+You may want to try reverting this patch if present in your code base:
 
-We have recently bought a PMC-CAN/266 from ESD and we  are currently experi=
-encing some problems with it when intalling it on a Linux Ubuntu machine wi=
-th Xenomai installed. When we plug the board into the PC it[PC] does not wa=
-nt to boot successfully, it hangs and gives error messages after an attempt=
- at "Loading Module Drivers...". Just wondering should I install the driver=
- that came with the card first and then install the hardware after?
+http://git.denx.de/?p=ipipe-2.6.git;a=commit;h=ae1b39a521d535d6dbd61046666348c106d45f5e
 
-For info: when I power up the PC without the PMC card it boots normal with =
-no errors.
-
-What could I be doing wrong here? please help.
-
-Regards,
-Nape
+> 
+> What could I be doing wrong here? please help.
+> 
+> Regards,
+> Nape
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
 
-Nape, you may consider checking for PCI IRQ conflicts which could pose a pr=
-oblem with the RT drivers loading.
+-- 
+Philippe.
 
-Joshua Karch=
+
 
