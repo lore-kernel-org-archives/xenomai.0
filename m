@@ -1,128 +1,167 @@
-Message-ID: <4C04BCAD.4080106@domain.hid>
-Date: Tue, 01 Jun 2010 14:54:21 +0700
-From: "P.B.Cheblakov" <P.B.Cheblakov@domain.hid>
+Message-ID: <4BFE2072.2090404@domain.hid>
+Date: Thu, 27 May 2010 09:34:10 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <1274245032-10610-1-git-send-email-P.B.Cheblakov@domain.hid>	<4BF3953D.8070108@domain.hid>
-	<4BFA2111.5020503@domain.hid> <4BFA2696.5070302@domain.hid>
-	<4C026436.6010903@domain.hid> <4C029F67.6010602@domain.hid>
-	<4C03689D.4010304@domain.hid> <4C037798.8070307@domain.hid>
-In-Reply-To: <4C037798.8070307@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <AANLkTimhw6cOHeDP3D4Om8nBiT-aURPWxbIrT23hNcNW@mail.gmail.com>	<4BF8F73D.3070008@domain.hid>	<AANLkTikT2AgxYKn4rK1jHtHzcK_AwJBzNANjDtAnyrwt@domain.hid>	<4BF94DE3.90001@domain.hid>	<AANLkTinUBnuLgLj-k_rPVEPHtgf8gC5ZtTcbgnmspRn7@domain.hid>	<4BF95796.6030504@domain.hid>	<AANLkTin9MXTXmDZhZSgalCS4KpurXpAa_5l9xLvHDTY9@domain.hid>	<AANLkTinW1CDCo0pzSFHS8QwQg6TP3WS8rXGoWC7UDryy@domain.hid>	<4BFA9F2C.1040808@domain.hid>	<AANLkTingSXRAZDsNW6VUsDMh9prHKvnk_jV3PjTnSl8s@domain.hid>	<4BFCB3E8.4040607@domain.hid>
+	<AANLkTin1Oq15DI0FctW77a7y1mBdY8Aq87sgCEJ013wj@domain.hid>
+In-Reply-To: <AANLkTin1Oq15DI0FctW77a7y1mBdY8Aq87sgCEJ013wj@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH V2] rtcan: add rtcan_plx_pci driver
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] problem with serial example
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Everett Wang <everteq@domain.hid>
 Cc: xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
-> On 05/31/2010 09:43 AM, Gilles Chanteperdrix wrote:
->   
->> Wolfgang Grandegger wrote:
->>     
->>> On 05/30/2010 03:12 PM, Gilles Chanteperdrix wrote:
->>>       
->>>> Wolfgang Grandegger wrote:
->>>>         
->>>>> From my point of view, yes. Gilles could you please commit this patch?
->>>>>           
->>>> No, it seems the patch causes a build issue:
+On 05/27/2010 03:22 AM, Everett Wang wrote:
+> On Wed, May 26, 2010 at 1:38 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
+>> On 05/25/2010 03:47 PM, Everett Wang wrote:
+>>> On Mon, May 24, 2010 at 11:45 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
+>>>> On 05/24/2010 09:32 AM, Everett Wang wrote:
+>>>>> On Mon, May 24, 2010 at 7:36 AM, Everett Wang <everteq@domain.hid> wrote:
+>>>>>> On Mon, May 24, 2010 at 12:28 AM, Wolfgang Grandegger <wg@domain.hid> wrote:
+>>>>>>> On 05/23/2010 06:19 PM, Everett Wang wrote:
+>>>>>>>> On Sun, May 23, 2010 at 11:46 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
+>>>>>>>
+>>>>>>>>> There are other possibilities to interact with Linux, e.g. telnet,
+>>>>>>>>> slogin or netcat. But it's always good to have a console.
+>>>>>>>>>
+>>>>>>>> I guess I need a USB to ethernet for these.
+>>>>>>>
+>>>>>>> Yes.
+>>>>>>>
+>>>>>>> ...
+>>>>>>>>> All three uarts are occupied by Linux and you cannot use them as
+>>>>>>>>> rtserial. First you need to release at least one of them. What Linux
+>>>>>>>>> config do you use for your board?
+>>>>>>>>
+>>>>>>>> I didn't do any configuration. Do you mean to config these during kernel
+>>>>>>>> configuration?
+>>>>>>>
+>>>>>>> Can you show us the .config of your kernel?
+>>>>>>>
+>>>>>>> Some more insights:
+>>>>>>>
+>>>>>>> I think the serial ports for the beagle boards are configured in:
+>>>>>>>
+>>>>>>> http://lxr.linux.no/#linux+v2.6.34/arch/arm/mach-omap2/serial.c
+>>>>>>>
+>>>>>>> Therein you find entries like:
+>>>>>>>
+>>>>>>> http://lxr.linux.no/#linux+v2.6.34/arch/arm/mach-omap2/serial.c#L82
+>>>>>>>
+>>>>>>> As you can see, a regshift of 2 is used, which is not yet supported by
+>>>>>>> the 16550A RTDM driver. Should not be a big deal to add it, though.
+>>>>>>> Also, as "baud_base" you should use OMAP24XX_BASE_BAUD.
+>>>>>>>
+>>>>>>> Wolfgang.
+>>>>>>>
+>>>>>>
+>>>>>> Thanks for the suggestions. The .config file is attached. I will look at the
+>>>>>> code you pointed to today to study the configuration of the serial port.
+>>>>>>
+>>>>>> Everett
+>>>>>>
+>>>>>
+>>>>> Hi Wolfgang,
+>>>>>
+>>>>> I looked at the serial.c and function you pointed too. I have can't figure
+>>>>> out how to modify it. Could you point me to the right direction to read so
+>>>>> I can understand and eventually improve the serial for beagleboard? I thought
+>>>>> I could limit the kernel to use only one of the uart (console) by
+>>>>> changing function
+>>>>>  __init omap_serial_init(void):
+>>>>>
+>>>>>  void __init omap_serial_init(void)
+>>>>> {
+>>>>>         int i;
+>>>>>
+>>>>> //        for (i = 0; i < ARRAY_SIZE(omap_uart); i++)
+>>>>> //                omap_serial_init_port(i);
+>>>>>       omap_serial_init_port(2);
+>>>>> }
+>>>>>
+>>>>> But the kernel hangs during booting after printing this message:
+>>>>>
+>>>>> uncompressing Linux... done.
+>>>>>
+>>>>> I guess it is not that simple to let kernel not to claim the uart0 and uart1.
 >>>>
->>>> http://sisyphus.hd.free.fr/~gilles/bx/
->>>>         
->>> Oops, obviously the Kconfig entry is invalid:
+>>>> Yes, unfortunately. I would try to comment out the uarts you want to
+>>>> use for rtser in the following struct:
+>>>>
+>>>> http://lxr.linux.no/#linux+v2.6.34/arch/arm/mach-omap2/serial.c#L562
+>>>>
+>>>> Maybe the better option is to download setserial from
+>>>>
+>>>> http://sourceforge.net/projects/setserial/files/setserial/2.17/setserial-2.17.tar.gz/download
+>>>>
+>>>> and cross-compile it for your target. Then try:
+>>>>
+>>>> # setserial /dev/ttyS2 uart none
+>>>>
+>>>> Wolfgang.
+>>>>
+>>>>
 >>>
->>> +config XENO_DRIVERS_CAN_SJA1000_ESD_PCI (DEPRECATED)
+>>> Hi Wolfgang,
 >>>
->>> The "(DEPRECATED)" is causing the trouble, I assume.
+>>> Thanks,
 >>>
->>>  	depends on XENO_DRIVERS_CAN_SJA1000 && PCI
->>>  	tristate "ESD PCI Cards"
+>>> I took the easiest way by
+>>> opkg install setserial
 >>>
->>> Maybe you want to add the "(DEPRECATED)" here.
+>>> The setserial got installed into my flash. I then
 >>>
->>>  	help
->>> @@ -61,6 +76,9 @@ config XENO_DRIVERS_CAN_SJA1000_ESD_PCI
->>>  	CAN-PCI/266, CAN-PMC/266 (PMC), CAN-CPCI/200 (CompactPCI),
->>>  	CAN-PCIe2000 (PCI Express) and CAN-PCI104/200 (PCI104)
->>>  	from the esd electronic system design gmbh (http://www.esd.eu).
->>> +	
+>>>  # setserial /dev/ttyS0 uart none
+>>> Linux has no complain. dmesg | tail doesn't show anything
 >>>
->>> Trailing white space!
+>>> Finally I did this:
+>>>  # setserial /dev/ttyS2 uart none
+>>> Linux reports "Can't set serial info: Device or resource busy". The
+>>> uart3 is used by console login.
+>>> And my console login still works,
 >>>
->>> +	This driver is deprecated. It's functionality is now provided by
->>> +	"PLX90xx PCI-bridge based Cards" driver.
->>>
->>> Pavel, could you please fix that.
->>>       
->> Ok. If these are the only differences between the patch which was
->> actually tested and the patch you posted, simply tell us, I can fix it
->> in my tree.
->>     
->
-> The attached patch fixes the remaining issues, including some compiler
-> warnings :-(.
->
-> Thanks,
->
-> Wolfgang.
->
-> ---
->  ksrc/drivers/can/sja1000/Kconfig         |   10 ++++------
->  ksrc/drivers/can/sja1000/rtcan_plx_pci.c |    8 ++++----
->  2 files changed, 8 insertions(+), 10 deletions(-)
->   
-[snip]
-> Index: xenomai-2.5/ksrc/drivers/can/sja1000/rtcan_plx_pci.c
-> ===================================================================
-> --- xenomai-2.5.orig/ksrc/drivers/can/sja1000/rtcan_plx_pci.c
-> +++ xenomai-2.5/ksrc/drivers/can/sja1000/rtcan_plx_pci.c
-> @@ -288,12 +288,12 @@ static DEFINE_PCI_DEVICE_TABLE(plx_pci_t
->  };
->  MODULE_DEVICE_TABLE(pci, plx_pci_tbl);
->  
-> -static u8 plx_pci_read_reg(const struct rtcan_device *dev, int port)
-> +static u8 plx_pci_read_reg(struct rtcan_device *dev, int port)
->  {
->  	return ioread8((void* __iomem)dev->base_addr + port);
->  }
->  
-> -static void plx_pci_write_reg(const struct rtcan_device *dev, int port, u8 val)
-> +static void plx_pci_write_reg(struct rtcan_device *dev, int port, u8 val)
->  {
->  	iowrite8(val, (void* __iomem)dev->base_addr + port);
->  }
-> @@ -303,7 +303,7 @@ static void plx_pci_write_reg(const stru
->   * by trying to switch 'em from the Basic mode into the PeliCAN mode.
->   * Also check states of some registers in reset mode.
->   */
-> -static inline int plx_pci_check_sja1000(const struct rtcan_device *dev)
-> +static inline int plx_pci_check_sja1000(struct rtcan_device *dev)
->  {
->  	int flag = 0;
->  
-> @@ -507,7 +507,7 @@ static int __devinit plx_pci_add_card(st
->  		}
->  
->  		strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
-> -		dev->board_name = ci->name;
-> +		dev->board_name = (char *)ci->name;
->  
->  		card->rtcan_dev[i] = dev;
->  		chip = card->rtcan_dev[i]->priv;
->   
+>>> I guess I still don't have a clear direction what to do next. What are
+>>> needed to make the uart
+>>> to work with xenomai? I also want to make SPI to work with xenomai. Is
+>>> that even harder to
+>>> do?
+>>
+>> Next I would try to load the xeno_16550a.ko as described earlier. Then
+>> you need to fix the register access by introducing a proper regshift, at
+>> least. I can't tell if other fixups are necessary but if you are lucky
+>> it will already work. And yes, implementing a RTDM SPI driver is even
+>> harder, unfortunately.
+>>
+>> Wolfgang.
+>>
+> 
+> Hi Wolfgang,
+> 
+> Thanks for your information. I am still interested in doing work on both
+> xeno_16550a.ko and RTDM SPI. Could you give me an overview of
+> what kind of knowledge is required, and where I can find more information
+> about them? Right now I feel I don't have a clear understanding to
+> modify the code.
 
-Wolfgang, I purposely emphasize diferences between Socketcan API and 
-RT-CAN API. I think, that API in Socketcan is slightly better (e.g. 
-'const' in function declaration).
-I'm sorry that I haven't said it previously.
+I already explained what I would do to get the xeno_16550a.ko working on
+your hardware (see above). Concerning a RTDM SPI driver, there has been
+some discussion on this topic recently. You can find further information
+in t he following thread (see also follow-up mail):
 
-Pavel
+https://mail.gna.org/public/xenomai-help/2010-04/msg00084.html
 
+The doc for the RTDM driver interface is here:
+
+http://www.xenomai.org/documentation/trunk/html/api/index.html
+
+Wolfgang.
 
