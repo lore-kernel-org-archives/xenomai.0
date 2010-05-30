@@ -1,71 +1,51 @@
-Message-ID: <4C0AB7BA.7000100@domain.hid>
-Date: Sat, 05 Jun 2010 22:46:50 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <E1OKZdD-0003ml-45@domain.hid> <4C095876.3060605@domain.hid>
-	<4C099329.6000303@domain.hid> <4C0A49C4.8000509@domain.hid>
-	<4C0A9AB9.7030602@domain.hid> <4C0A9C2A.1030002@domain.hid>
-	<4C0AA224.6060409@domain.hid> <4C0AA2F0.6050201@domain.hid>
-	<4C0AA3EC.7040106@domain.hid> <4C0AA548.6070409@domain.hid>
-In-Reply-To: <4C0AA548.6070409@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig4BBBA04CE1B9575B6C61DDC2"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : native: Rework
- handling of pthread carrier thread
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Date: Sun, 30 May 2010 09:14:46 -0700
+Message-ID: <AANLkTimHOPpI3mst8-fM4Atf6V_-kurbqD-RKZdWDbUY@mail.gmail.com>
+From: Ettore Pedretti <epedrett@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai-help] How to generate a waveform / digital output (Alexis)
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4BBBA04CE1B9575B6C61DDC2
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>> Not being able to join a deleted task undermines seriously the utilit=
-y
->>> of rt_task_join... What is it useful for, then?
->> See the doc: You join or delete, but not both.
->=20
-> Looks to me like a workaround: you are not able to handle properly the
-> life-cycle of an RT_TASK, so you changed the rules... is there really n=
-o
-> other way?
+I finally managed to return to the site where we have the National
+Instruments PCI-6711 board. The old problem with analogy_ni_pcimio
+seem solved. I can attach the driver and cmd_write seems to work.
 
-First of all, it turns a SEGV into a proper error code. Moreover,
-rt_task_join now officially finalizes the object for native (it always
-did technically!), as does pthread_join for POSIX. No rule changed, just
-rule documentation and violation detection added. One may argue about
-join after delete, but for what use case such a change of rt_task_delete
-semantic?
+I have been trying unsuccessfully to modify cmd_write to generate a
+waveform. What I would like to do is to generate a sawtooth waveform
+and send a digital pulse (trigger for an infrared camera) at the end
+of the waveform. That should be running continuously until stopped.
 
-Jan
+I tried to modify your example "cmd_write" and the comedi programme
+called "ao_waveform.c ". Many commands seem not to be implemented on
+the analogy side. I tried to use the documentation on the comedi site
+and the API description on the xenomai/analogy side but I got  even
+more confused. It does not seem like a simple matter of exchanging
+comedi_  for a4l_ as you indicated in one thread.
+
+Do you have any example similar to ao_waveform.c I could try to modify
+for my application? That would be a start. I have been unsuccessfully
+searching the threads for something vaguely similar.
+
+All the best
+Ettore
 
 
---------------enig4BBBA04CE1B9575B6C61DDC2
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkwKt70ACgkQitSsb3rl5xQB3ACgn/ZdBwtYdW6uVqa1AMWCmEfy
-NREAoOVX2ary7ZZrQcXtIj9/fOMzss/Z
-=mlWR
------END PGP SIGNATURE-----
-
---------------enig4BBBA04CE1B9575B6C61DDC2--
+-- 
+Ettore Pedretti, SUPA
+School of Physics and Astronomy
+University of St Andrews, North Haugh,
+St Andrews, Fife, KY16 9SS, Scotland
+Ph: +44-1334-461666, Fax: +44-1334-463104
+The University of St Andrews is a charity registered in Scotland : No SC013532
 
