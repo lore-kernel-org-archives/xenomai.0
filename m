@@ -1,11 +1,13 @@
-Message-ID: <4C00172F.7060605@domain.hid>
-Date: Fri, 28 May 2010 21:19:11 +0200
+Message-ID: <4C026436.6010903@domain.hid>
+Date: Sun, 30 May 2010 15:12:22 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+References: <1274245032-10610-1-git-send-email-P.B.Cheblakov@domain.hid>	<4BF3953D.8070108@domain.hid>
+	<4BFA2111.5020503@domain.hid> <4BFA2696.5070302@domain.hid>
+In-Reply-To: <4BFA2696.5070302@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Xenomai.org migration.
-Reply-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] [PATCH V2] rtcan: add rtcan_plx_pci driver
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -14,19 +16,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>, Xenomai core <Xenomai-core@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai@xenomai.org
 
+Wolfgang Grandegger wrote:
+> From my point of view, yes. Gilles could you please commit this patch?
 
-Hi,
+No, it seems the patch causes a build issue:
 
-xenomai.org migrated to a new hoster. If you see something wrong, please
-feel free to signal it to me (and please cc
-gilles.chanteperdrix@xenomai.org in case the xenomai.org mail server is
-really out). Note that the wikis on the old and new server are currently
-out of sync, they should be in sync soon, but if you see something wrong
-with the wiki, say, tomorrow, please signal it too.
+http://sisyphus.hd.free.fr/~gilles/bx/
 
-Thanks in advance.
 
 -- 
 					    Gilles.
