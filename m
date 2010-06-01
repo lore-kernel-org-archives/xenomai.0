@@ -1,13 +1,12 @@
-Message-ID: <4C051100.7000803@domain.hid>
-Date: Tue, 01 Jun 2010 15:54:08 +0200
-From: Daniele Nicolodi <daniele@domain.hid>
+Message-ID: <4C051254.3000103@domain.hid>
+Date: Tue, 01 Jun 2010 15:59:48 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4C04E8D8.8030101@domain.hid> <4C04EDAF.1080800@domain.hid>
-In-Reply-To: <4C04EDAF.1080800@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <20100601135005.GA5483@domain.hid>
+In-Reply-To: <20100601135005.GA5483@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Linux kernel 2.6.32.14 and Xenomai 2.5.2 does
-	not boot
+Subject: Re: [Xenomai-help] Handling Linux Signals in primary domain context
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,33 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Tschaeche IT-Services <services@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 01/06/10 13:23, Jan Kiszka wrote:
-> Daniele Nicolodi wrote:
->> Hello.
->>
->> In the process of upgrading my data acquisition system from Xenomai
->> 2.5.0 to Xenomai 2.5.2, I also upgraded the kernel from the 2.6.30
->> release to 2.6.32.14.
+Tschaeche IT-Services wrote:
+> Hi,
 > 
-> Latest Xenomai is 2.5.3, latest 2.6.32 patch is
-> adeos-ipipe-2.6.32.13-x86-2.6-04.patch [1]. Make sure you have both.
+> we have the following scenario:
+> 
+> A high priority periodic primary domain task (H), which calls
+> rt_task_suspend(L) in each even period and rt_task_resume(L)
+> in each odd period on a low priority primary domain task (L).
+> L-task consumes all available CPU resources (while(1)).
+> Thus, the rest of each cycle (after H has got the CPU) is used
+> alternately by L-task, ROOT-task, L-task,...
+> 
+> In our debugging implementation, we send a SIGTRAP to L-task.
+> H-task recognizes this by reporting EINTR when calling rt_task_suspend(L).
+> But, the while(1) in L-task is not interrupted although there is a SIGTRAP
+> pending.
 
-This adeos patch does not apply cleanly to 2.6.32.14 kernel sources.
-Looks like a hunk in include/linux/modules.h has been applied upstream.
-However this was easy to merge.
+That is expected, the automatic migration from primary mode to secondary
+mode when recieving a signal only works if the task emits syscall.
 
-Using the latest xenomai and adeos patch however results again in a
-kernel that does not boot on my hardware. This problem is present since
-the first time I have been trying to use xenomai on this box, as I wrote
-in an email to the list on the 17th February early this year, it is thus
-not a recent regression.
+> 
+> Our workaround could be, to send a rt_signal when rt_task_suspend()
+> returns EINTR and, then, in the rt-signal handler migrate L-task
+> to secondary domain (calling rt_task_set_mode(T_PRIMARY,0))
+> initiating the Linux scheduler, which, then, initiates the SIGTRAP handling
+> in secondary domain context.
+> 
+> Is there a simpler way to get primary domain tasks interrupted
+> by Linux signals? Xenomai already knows about the pending signal
+> and, maybe, could initiate the secondary domain switch on a primary scheduler
+> event.
 
-Further suggestions?
+Xenomai tasks are expected to emit system calls from time to time. I am
+afraid your use case is kind of out of what Xenomai was made for.
 
-Thanks. Cheers,
 -- 
-Daniele
+					    Gilles.
 
