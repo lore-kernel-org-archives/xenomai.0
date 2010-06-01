@@ -1,10 +1,10 @@
-Message-ID: <4C051254.3000103@domain.hid>
-Date: Tue, 01 Jun 2010 15:59:48 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <20100601135005.GA5483@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <20100601135005.GA5483@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <20100601135005.GA5483@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 01 Jun 2010 16:32:37 +0200
+Message-ID: <1275402757.27918.151.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Handling Linux Signals in primary domain context
 List-Id: Help regarding installation and common use of Xenomai
@@ -19,7 +19,7 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Tschaeche IT-Services <services@domain.hid>
 Cc: xenomai@xenomai.org
 
-Tschaeche IT-Services wrote:
+On Tue, 2010-06-01 at 15:50 +0200, Tschaeche IT-Services wrote:
 > Hi,
 > 
 > we have the following scenario:
@@ -36,8 +36,7 @@ Tschaeche IT-Services wrote:
 > But, the while(1) in L-task is not interrupted although there is a SIGTRAP
 > pending.
 
-That is expected, the automatic migration from primary mode to secondary
-mode when recieving a signal only works if the task emits syscall.
+Using SIGTRAP will badly conflict with GDB. Hope this is ok.
 
 > 
 > Our workaround could be, to send a rt_signal when rt_task_suspend()
@@ -51,9 +50,28 @@ mode when recieving a signal only works if the task emits syscall.
 > and, maybe, could initiate the secondary domain switch on a primary scheduler
 > event.
 
-Xenomai tasks are expected to emit system calls from time to time. I am
-afraid your use case is kind of out of what Xenomai was made for.
+Not in the absence of syscall. We thought about this once already, when
+considering how a watchdog preempting a runaway task in primary mode
+could force a secondary mode switch: there is no sane and easy solution
+to this unfortunately.
+
+If the basic idea is about throttling the activity of the L-task, then
+you could use the sporadic server policy (enabled via
+pthread_setschedparam_ex()).
+
+> 
+> Thanks,
+> 
+> 	Olli
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+
 
 -- 
-					    Gilles.
+Philippe.
+
+
 
