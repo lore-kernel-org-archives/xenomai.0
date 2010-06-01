@@ -1,167 +1,750 @@
-Message-ID: <4BFE2072.2090404@domain.hid>
-Date: Thu, 27 May 2010 09:34:10 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
-MIME-Version: 1.0
-References: <AANLkTimhw6cOHeDP3D4Om8nBiT-aURPWxbIrT23hNcNW@mail.gmail.com>	<4BF8F73D.3070008@domain.hid>	<AANLkTikT2AgxYKn4rK1jHtHzcK_AwJBzNANjDtAnyrwt@domain.hid>	<4BF94DE3.90001@domain.hid>	<AANLkTinUBnuLgLj-k_rPVEPHtgf8gC5ZtTcbgnmspRn7@domain.hid>	<4BF95796.6030504@domain.hid>	<AANLkTin9MXTXmDZhZSgalCS4KpurXpAa_5l9xLvHDTY9@domain.hid>	<AANLkTinW1CDCo0pzSFHS8QwQg6TP3WS8rXGoWC7UDryy@domain.hid>	<4BFA9F2C.1040808@domain.hid>	<AANLkTingSXRAZDsNW6VUsDMh9prHKvnk_jV3PjTnSl8s@domain.hid>	<4BFCB3E8.4040607@domain.hid>
-	<AANLkTin1Oq15DI0FctW77a7y1mBdY8Aq87sgCEJ013wj@domain.hid>
-In-Reply-To: <AANLkTin1Oq15DI0FctW77a7y1mBdY8Aq87sgCEJ013wj@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] problem with serial example
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Pavel Cheblakov <P.B.Cheblakov@domain.hid>
+Date: Tue,  1 Jun 2010 21:41:02 +0700
+Message-Id: <1275403262-23939-1-git-send-email-P.B.Cheblakov@domain.hid>
+In-Reply-To: <4C037798.8070307@domain.hid>
+References: <4C037798.8070307@domain.hid>
+Subject: [Xenomai-core] [PATCH V3] rtcan: add rtcan_plx_pci driver
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Everett Wang <everteq@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-On 05/27/2010 03:22 AM, Everett Wang wrote:
-> On Wed, May 26, 2010 at 1:38 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
->> On 05/25/2010 03:47 PM, Everett Wang wrote:
->>> On Mon, May 24, 2010 at 11:45 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
->>>> On 05/24/2010 09:32 AM, Everett Wang wrote:
->>>>> On Mon, May 24, 2010 at 7:36 AM, Everett Wang <everteq@domain.hid> wrote:
->>>>>> On Mon, May 24, 2010 at 12:28 AM, Wolfgang Grandegger <wg@domain.hid> wrote:
->>>>>>> On 05/23/2010 06:19 PM, Everett Wang wrote:
->>>>>>>> On Sun, May 23, 2010 at 11:46 PM, Wolfgang Grandegger <wg@domain.hid> wrote:
->>>>>>>
->>>>>>>>> There are other possibilities to interact with Linux, e.g. telnet,
->>>>>>>>> slogin or netcat. But it's always good to have a console.
->>>>>>>>>
->>>>>>>> I guess I need a USB to ethernet for these.
->>>>>>>
->>>>>>> Yes.
->>>>>>>
->>>>>>> ...
->>>>>>>>> All three uarts are occupied by Linux and you cannot use them as
->>>>>>>>> rtserial. First you need to release at least one of them. What Linux
->>>>>>>>> config do you use for your board?
->>>>>>>>
->>>>>>>> I didn't do any configuration. Do you mean to config these during kernel
->>>>>>>> configuration?
->>>>>>>
->>>>>>> Can you show us the .config of your kernel?
->>>>>>>
->>>>>>> Some more insights:
->>>>>>>
->>>>>>> I think the serial ports for the beagle boards are configured in:
->>>>>>>
->>>>>>> http://lxr.linux.no/#linux+v2.6.34/arch/arm/mach-omap2/serial.c
->>>>>>>
->>>>>>> Therein you find entries like:
->>>>>>>
->>>>>>> http://lxr.linux.no/#linux+v2.6.34/arch/arm/mach-omap2/serial.c#L82
->>>>>>>
->>>>>>> As you can see, a regshift of 2 is used, which is not yet supported by
->>>>>>> the 16550A RTDM driver. Should not be a big deal to add it, though.
->>>>>>> Also, as "baud_base" you should use OMAP24XX_BASE_BAUD.
->>>>>>>
->>>>>>> Wolfgang.
->>>>>>>
->>>>>>
->>>>>> Thanks for the suggestions. The .config file is attached. I will look at the
->>>>>> code you pointed to today to study the configuration of the serial port.
->>>>>>
->>>>>> Everett
->>>>>>
->>>>>
->>>>> Hi Wolfgang,
->>>>>
->>>>> I looked at the serial.c and function you pointed too. I have can't figure
->>>>> out how to modify it. Could you point me to the right direction to read so
->>>>> I can understand and eventually improve the serial for beagleboard? I thought
->>>>> I could limit the kernel to use only one of the uart (console) by
->>>>> changing function
->>>>>  __init omap_serial_init(void):
->>>>>
->>>>>  void __init omap_serial_init(void)
->>>>> {
->>>>>         int i;
->>>>>
->>>>> //        for (i = 0; i < ARRAY_SIZE(omap_uart); i++)
->>>>> //                omap_serial_init_port(i);
->>>>>       omap_serial_init_port(2);
->>>>> }
->>>>>
->>>>> But the kernel hangs during booting after printing this message:
->>>>>
->>>>> uncompressing Linux... done.
->>>>>
->>>>> I guess it is not that simple to let kernel not to claim the uart0 and uart1.
->>>>
->>>> Yes, unfortunately. I would try to comment out the uarts you want to
->>>> use for rtser in the following struct:
->>>>
->>>> http://lxr.linux.no/#linux+v2.6.34/arch/arm/mach-omap2/serial.c#L562
->>>>
->>>> Maybe the better option is to download setserial from
->>>>
->>>> http://sourceforge.net/projects/setserial/files/setserial/2.17/setserial-2.17.tar.gz/download
->>>>
->>>> and cross-compile it for your target. Then try:
->>>>
->>>> # setserial /dev/ttyS2 uart none
->>>>
->>>> Wolfgang.
->>>>
->>>>
->>>
->>> Hi Wolfgang,
->>>
->>> Thanks,
->>>
->>> I took the easiest way by
->>> opkg install setserial
->>>
->>> The setserial got installed into my flash. I then
->>>
->>>  # setserial /dev/ttyS0 uart none
->>> Linux has no complain. dmesg | tail doesn't show anything
->>>
->>> Finally I did this:
->>>  # setserial /dev/ttyS2 uart none
->>> Linux reports "Can't set serial info: Device or resource busy". The
->>> uart3 is used by console login.
->>> And my console login still works,
->>>
->>> I guess I still don't have a clear direction what to do next. What are
->>> needed to make the uart
->>> to work with xenomai? I also want to make SPI to work with xenomai. Is
->>> that even harder to
->>> do?
->>
->> Next I would try to load the xeno_16550a.ko as described earlier. Then
->> you need to fix the register access by introducing a proper regshift, at
->> least. I can't tell if other fixups are necessary but if you are lucky
->> it will already work. And yes, implementing a RTDM SPI driver is even
->> harder, unfortunately.
->>
->> Wolfgang.
->>
-> 
-> Hi Wolfgang,
-> 
-> Thanks for your information. I am still interested in doing work on both
-> xeno_16550a.ko and RTDM SPI. Could you give me an overview of
-> what kind of knowledge is required, and where I can find more information
-> about them? Right now I feel I don't have a clear understanding to
-> modify the code.
+This is a general driver for cards based on PLX90xx PCI-bridges.
+It supports following cards:
+ - Adlink PCI-7841/cPCI-7841 card (http://www.adlinktech.com/)
+ - Adlink PCI-7841/cPCI-7841 SE card
+ - esd CAN-PCI/CPCI/PCI104/200 (http://www.esd.eu/)
+ - esd CAN-PCI/PMC/266
+ - esd CAN-PCIe/2000
+ - Marathon CAN-bus-PCI card (http://www.marathon.ru/)
+ - TEWS TECHNOLOGIES TPMC810 card (http://www.tews.com/)
 
-I already explained what I would do to get the xeno_16550a.ko working on
-your hardware (see above). Concerning a RTDM SPI driver, there has been
-some discussion on this topic recently. You can find further information
-in t he following thread (see also follow-up mail):
+This driver has been ported from socketcan of mainline Linux kernel 2.6.34.
+Support of esd cards has been added by Matthias Fuchs in linux-next
 
-https://mail.gna.org/public/xenomai-help/2010-04/msg00084.html
+'rtcan_esd_pci' driver marked as deprecated.
 
-The doc for the RTDM driver interface is here:
+Signed-off-by: Pavel Cheblakov <P.B.Cheblakov@domain.hid>
+---
+ ksrc/drivers/can/sja1000/Kconfig         |   20 +-
+ ksrc/drivers/can/sja1000/Makefile        |    7 +
+ ksrc/drivers/can/sja1000/rtcan_plx_pci.c |  608 ++++++++++++++++++++++++++++++
+ 3 files changed, 633 insertions(+), 2 deletions(-)
+ create mode 100644 ksrc/drivers/can/sja1000/rtcan_plx_pci.c
 
-http://www.xenomai.org/documentation/trunk/html/api/index.html
+diff --git a/ksrc/drivers/can/sja1000/Kconfig b/ksrc/drivers/can/sja1000/Kconfig
+index 56f4691..fdb12dc 100644
+--- a/ksrc/drivers/can/sja1000/Kconfig
++++ b/ksrc/drivers/can/sja1000/Kconfig
+@@ -41,6 +41,21 @@ config XENO_DRIVERS_CAN_SJA1000_IXXAT_PCI
+ 	the second channel working, Xenomai's shared interrupt support
+ 	must be enabled.
+ 
++config XENO_DRIVERS_CAN_SJA1000_PLX_PCI
++	depends on XENO_DRIVERS_CAN_SJA1000 && PCI
++	tristate "PLX90xx PCI-bridge based Cards"
++	help
++
++	This driver is for CAN interface cards based on
++	the PLX90xx PCI bridge.
++	Driver supports now:
++	 - Adlink PCI-7841/cPCI-7841 card (http://www.adlinktech.com/)
++	 - Adlink PCI-7841/cPCI-7841 SE card
++	 - esd CAN-PCI/CPCI/PCI104/200 (http://www.esd.eu/)
++	 - esd CAN-PCI/PMC/266
++	 - esd CAN-PCIe/2000
++	 - Marathon CAN-bus-PCI card (http://www.marathon.ru/)
++	 - TEWS TECHNOLOGIES TPMC810 card (http://www.tews.com/)
+ 
+ config XENO_DRIVERS_CAN_SJA1000_EMS_PCI
+ 	depends on XENO_DRIVERS_CAN_SJA1000 && PCI
+@@ -51,10 +66,9 @@ config XENO_DRIVERS_CAN_SJA1000_EMS_PCI
+ 	W������nsche (http://www.ems-wuensche.de). To get the second channel
+ 	working, Xenomai's shared interrupt support must be enabled.
+ 
+-
+ config XENO_DRIVERS_CAN_SJA1000_ESD_PCI
+ 	depends on XENO_DRIVERS_CAN_SJA1000 && PCI
+-	tristate "ESD PCI Cards"
++	tristate "ESD PCI Cards (DEPRECATED)"
+ 	help
+ 
+ 	This driver supports the esd PCI CAN cards CAN-PCI/200,
+@@ -62,6 +76,8 @@ config XENO_DRIVERS_CAN_SJA1000_ESD_PCI
+ 	CAN-PCIe2000 (PCI Express) and CAN-PCI104/200 (PCI104)
+ 	from the esd electronic system design gmbh (http://www.esd.eu).
+ 
++	This driver is deprecated. It's functionality is now provided by
++	"PLX90xx PCI-bridge based Cards" driver.
+ 
+ config XENO_DRIVERS_CAN_SJA1000_PEAK_DNG
+ 	depends on XENO_DRIVERS_CAN_SJA1000 && !PARPORT
+diff --git a/ksrc/drivers/can/sja1000/Makefile b/ksrc/drivers/can/sja1000/Makefile
+index 09a03ab..389ca04 100644
+--- a/ksrc/drivers/can/sja1000/Makefile
++++ b/ksrc/drivers/can/sja1000/Makefile
+@@ -7,6 +7,7 @@ EXTRA_CFLAGS += -D__IN_XENOMAI__ -Iinclude/xenomai -Idrivers/xenomai/can -Idrive
+ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000) += xeno_can_sja1000.o
+ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_PEAK_PCI) += xeno_can_peak_pci.o
+ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_PEAK_DNG) += xeno_can_peak_dng.o
++obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_PLX_PCI) += xeno_can_plx_pci.o
+ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_IXXAT_PCI) += xeno_can_ixxat_pci.o
+ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_EMS_PCI) += xeno_can_ems_pci.o
+ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_ESD_PCI) += xeno_can_esd_pci.o
+@@ -16,6 +17,7 @@ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM) += xeno_can_mem.o
+ xeno_can_sja1000-y := rtcan_sja1000.o rtcan_sja1000_proc.o
+ xeno_can_peak_pci-y := rtcan_peak_pci.o
+ xeno_can_peak_dng-y := rtcan_peak_dng.o
++xeno_can_plx_pci-y := rtcan_plx_pci.o
+ xeno_can_ixxat_pci-y := rtcan_ixxat_pci.o
+ xeno_can_ems_pci-y := rtcan_ems_pci.o
+ xeno_can_esd_pci-y := rtcan_esd_pci.o
+@@ -31,6 +33,7 @@ O_TARGET := built-in.o
+ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000) += xeno_can_sja1000.o 
+ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_PEAK_PCI) += xeno_can_peak_pci.o 
+ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_PEAK_DNG) += xeno_can_peak_dng.o 
++obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_PLX_PCI) += xeno_can_plx_pci.o
+ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_IXXAT_PCI) += xeno_can_ixxat_pci.o
+ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_EMS_PCI) += xeno_can_ems_pci.o
+ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_ESD_PCI) += xeno_can_esd_pci.o
+@@ -42,6 +45,7 @@ list-multi := xeno_can_sja1000.o
+ xeno_can_sja1000-objs := rtcan_sja1000.o rtcan_sja1000_proc.o
+ xeno_can_peak_pci-objs := rtcan_peak_pci.o
+ xeno_can_peak_dng-objs := rtcan_peak_dng.o
++xeno_can_plx_pci-objs := rtcan_plx_pci.o
+ xeno_can_ixxat_pci-objs := rtcan_ixxat_pci.o
+ xeno_can_ems_pci-objs := rtcan_ems_pci.o
+ xeno_can_esd_pci-objs := rtcan_esd_pci.o
+@@ -63,6 +67,9 @@ xeno_can_peak_pci.o: $(xeno_can_peak_pci-objs)
+ xeno_can_peak_dng.o: $(xeno_can_peak_dng-objs)
+ 	$(LD) -r -o $@ $(xeno_can_peak_dng-objs)
+ 
++xeno_can_plx_pci.o: $(xeno_can_plx_pci-objs)
++	$(LD) -r -o $@ $(xeno_can_plx_pci-objs)
++
+ xeno_can_ixxat_pci.o: $(xeno_can_ixxat_pci-objs)
+ 	$(LD) -r -o $@ $(xeno_can_ixxat_pci-objs)
+ 
+diff --git a/ksrc/drivers/can/sja1000/rtcan_plx_pci.c b/ksrc/drivers/can/sja1000/rtcan_plx_pci.c
+new file mode 100644
+index 0000000..bb2c547
+--- /dev/null
++++ b/ksrc/drivers/can/sja1000/rtcan_plx_pci.c
+@@ -0,0 +1,608 @@
++/*
++ * Copyright (C) 2008-2010 Pavel Cheblakov <P.B.Cheblakov@domain.hid>
++ *
++ * Derived from the ems_pci.c driver:
++ *	Copyright (C) 2007 Wolfgang Grandegger <wg@domain.hid>
++ *	Copyright (C) 2008 Markus Plessing <plessing@domain.hid>
++ *	Copyright (C) 2008 Sebastian Haas <haas@domain.hid>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the version 2 of the GNU General Public License
++ * as published by the Free Software Foundation
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software Foundation,
++ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
++ */
++
++#include <linux/module.h>
++#include <linux/delay.h>
++#include <linux/pci.h>
++#include <linux/io.h>
++
++#include <rtdm/rtdm_driver.h>
++
++/* CAN device profile */
++#include <rtdm/rtcan.h>
++#include <rtcan_dev.h>
++#include <rtcan_raw.h>
++#include <rtcan_internal.h>
++#include <rtcan_sja1000.h>
++#include <rtcan_sja1000_regs.h>
++
++#define RTCAN_DRV_NAME "rt_sja1000_plx_pci"
++#define RTCAN_DEV_NAME "rtcan%d"
++
++MODULE_AUTHOR("Pavel Cheblakov <P.B.Cheblakov@domain.hid>");
++MODULE_DESCRIPTION("RTCAN driver for PLX90xx PCI-bridge cards with "
++		   "the SJA1000 chips");
++MODULE_SUPPORTED_DEVICE("Adlink PCI-7841/cPCI-7841, "
++			"Adlink PCI-7841/cPCI-7841 SE, "
++			"Marathon CAN-bus-PCI, "
++			"TEWS TECHNOLOGIES TPMC810, "
++			"esd CAN-PCI/CPCI/PCI104/200, "
++			"esd CAN-PCI/PMC/266, "
++			"esd CAN-PCIe/2000")
++MODULE_LICENSE("GPL v2");
++
++#define PLX_PCI_MAX_CHAN 2
++
++struct plx_pci_card {
++	int channels;			/* detected channels count */
++	struct rtcan_device *rtcan_dev[PLX_PCI_MAX_CHAN];
++	void __iomem *conf_addr;
++
++	/* Pointer to device-dependent reset function */
++	void (*reset_func)(struct pci_dev *pdev);
++};
++
++#define PLX_PCI_CAN_CLOCK (16000000 / 2)
++
++/* PLX9030/9050/9052 registers */
++#define PLX_INTCSR	0x4c		/* Interrupt Control/Status */
++#define PLX_CNTRL	0x50		/* User I/O, Direct Slave Response,
++					 * Serial EEPROM, and Initialization
++					 * Control register
++					 */
++
++#define PLX_LINT1_EN	0x1		/* Local interrupt 1 enable */
++#define PLX_LINT2_EN	(1 << 3)	/* Local interrupt 2 enable */
++#define PLX_PCI_INT_EN	(1 << 6)	/* PCI Interrupt Enable */
++#define PLX_PCI_RESET	(1 << 30)	/* PCI Adapter Software Reset */
++
++/* PLX9056 registers */
++#define PLX9056_INTCSR	0x68		/* Interrupt Control/Status */
++#define PLX9056_CNTRL	0x6c		/* Control / Software Reset */
++
++#define PLX9056_LINTI	(1 << 11)
++#define PLX9056_PCI_INT_EN (1 << 8)
++#define PLX9056_PCI_RCR	(1 << 29)	/* Read Configuration Registers */
++
++/*
++ * The board configuration is probably following:
++ * RX1 is connected to ground.
++ * TX1 is not connected.
++ * CLKO is not connected.
++ * Setting the OCR register to 0xDA is a good idea.
++ * This means normal output mode, push-pull and the correct polarity.
++ */
++#define PLX_PCI_OCR	(SJA_OCR_MODE_NORMAL | SJA_OCR_TX0_PUSHPULL | SJA_OCR_TX1_PUSHPULL)
++
++/*
++ * In the CDR register, you should set CBP to 1.
++ * You will probably also want to set the clock divider value to 7
++ * (meaning direct oscillator output) because the second SJA1000 chip
++ * is driven by the first one CLKOUT output.
++ */
++#define PLX_PCI_CDR			(SJA_CDR_CBP | SJA_CDR_CAN_MODE)
++
++/* SJA1000 Control Register in the BasicCAN Mode */
++#define SJA_CR				0x00
++
++/* States of some SJA1000 registers after hardware reset in the BasicCAN mode*/
++#define REG_CR_BASICCAN_INITIAL		0x21
++#define REG_CR_BASICCAN_INITIAL_MASK	0xa1
++#define REG_SR_BASICCAN_INITIAL		0x0c
++#define REG_IR_BASICCAN_INITIAL		0xe0
++
++/* States of some SJA1000 registers after hardware reset in the PeliCAN mode*/
++#define REG_MOD_PELICAN_INITIAL		0x01
++#define REG_SR_PELICAN_INITIAL		0x3c
++#define REG_IR_PELICAN_INITIAL		0x00
++
++#define ADLINK_PCI_VENDOR_ID		0x144A
++#define ADLINK_PCI_DEVICE_ID		0x7841
++
++#define ESD_PCI_SUB_SYS_ID_PCI200	0x0004
++#define ESD_PCI_SUB_SYS_ID_PCI266	0x0009
++#define ESD_PCI_SUB_SYS_ID_PMC266	0x000e
++#define ESD_PCI_SUB_SYS_ID_CPCI200	0x010b
++#define ESD_PCI_SUB_SYS_ID_PCIE2000	0x0200
++#define ESD_PCI_SUB_SYS_ID_PCI104200	0x0501
++
++#define MARATHON_PCI_DEVICE_ID		0x2715
++
++#define TEWS_PCI_VENDOR_ID		0x1498
++#define TEWS_PCI_DEVICE_ID_TMPC810	0x032A
++
++static void plx_pci_reset_common(struct pci_dev *pdev);
++static void plx_pci_reset_marathon(struct pci_dev *pdev);
++static void plx9056_pci_reset_common(struct pci_dev *pdev);
++
++struct plx_pci_channel_map {
++	u32 bar;
++	u32 offset;
++	u32 size;		/* 0x00 - auto, e.g. length of entire bar */
++};
++
++struct plx_pci_card_info {
++	const char *name;
++	int channel_count;
++	u32 can_clock;
++	u8 ocr;			/* output control register */
++	u8 cdr;			/* clock divider register */
++
++	/* Parameters for mapping local configuration space */
++	struct plx_pci_channel_map conf_map;
++
++	/* Parameters for mapping the SJA1000 chips */
++	struct plx_pci_channel_map chan_map_tbl[PLX_PCI_MAX_CHAN];
++
++	/* Pointer to device-dependent reset function */
++	void (*reset_func)(struct pci_dev *pdev);
++};
++
++static struct plx_pci_card_info plx_pci_card_info_adlink __devinitdata = {
++	"Adlink PCI-7841/cPCI-7841", 2,
++	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
++	{1, 0x00, 0x00}, { {2, 0x00, 0x80}, {2, 0x80, 0x80} },
++	&plx_pci_reset_common
++	/* based on PLX9052 */
++};
++
++static struct plx_pci_card_info plx_pci_card_info_adlink_se __devinitdata = {
++	"Adlink PCI-7841/cPCI-7841 SE", 2,
++	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
++	{0, 0x00, 0x00}, { {2, 0x00, 0x80}, {2, 0x80, 0x80} },
++	&plx_pci_reset_common
++	/* based on PLX9052 */
++};
++
++static struct plx_pci_card_info plx_pci_card_info_esd200 __devinitdata = {
++	"esd CAN-PCI/CPCI/PCI104/200", 2,
++	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
++	{0, 0x00, 0x00}, { {2, 0x00, 0x80}, {2, 0x100, 0x80} },
++	&plx_pci_reset_common
++	/* based on PLX9030/9050 */
++};
++
++static struct plx_pci_card_info plx_pci_card_info_esd266 __devinitdata = {
++	"esd CAN-PCI/PMC/266", 2,
++	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
++	{0, 0x00, 0x00}, { {2, 0x00, 0x80}, {2, 0x100, 0x80} },
++	&plx9056_pci_reset_common
++	/* based on PLX9056 */
++};
++
++static struct plx_pci_card_info plx_pci_card_info_esd2000 __devinitdata = {
++	"esd CAN-PCIe/2000", 2,
++	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
++	{0, 0x00, 0x00}, { {2, 0x00, 0x80}, {2, 0x100, 0x80} },
++	&plx9056_pci_reset_common
++	/* based on PEX8311 */
++};
++
++static struct plx_pci_card_info plx_pci_card_info_marathon __devinitdata = {
++	"Marathon CAN-bus-PCI", 2,
++	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
++	{0, 0x00, 0x00}, { {2, 0x00, 0x00}, {4, 0x00, 0x00} },
++	&plx_pci_reset_marathon
++	/* based on PLX9052 */
++};
++
++static struct plx_pci_card_info plx_pci_card_info_tews __devinitdata = {
++	"TEWS TECHNOLOGIES TPMC810", 2,
++	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
++	{0, 0x00, 0x00}, { {2, 0x000, 0x80}, {2, 0x100, 0x80} },
++	&plx_pci_reset_common
++	/* based on PLX9030 */
++};
++
++static DEFINE_PCI_DEVICE_TABLE(plx_pci_tbl) = {
++	{
++		/* Adlink PCI-7841/cPCI-7841 */
++		ADLINK_PCI_VENDOR_ID, ADLINK_PCI_DEVICE_ID,
++		PCI_ANY_ID, PCI_ANY_ID,
++		PCI_CLASS_NETWORK_OTHER << 8, ~0,
++		(kernel_ulong_t)&plx_pci_card_info_adlink
++	},
++	{
++		/* Adlink PCI-7841/cPCI-7841 SE */
++		ADLINK_PCI_VENDOR_ID, ADLINK_PCI_DEVICE_ID,
++		PCI_ANY_ID, PCI_ANY_ID,
++		PCI_CLASS_COMMUNICATION_OTHER << 8, ~0,
++		(kernel_ulong_t)&plx_pci_card_info_adlink_se
++	},
++	{
++		/* esd CAN-PCI/200 */
++		PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9050,
++		PCI_VENDOR_ID_ESDGMBH, ESD_PCI_SUB_SYS_ID_PCI200,
++		0, 0,
++		(kernel_ulong_t)&plx_pci_card_info_esd200
++	},
++	{
++		/* esd CAN-CPCI/200 */
++		PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9030,
++		PCI_VENDOR_ID_ESDGMBH, ESD_PCI_SUB_SYS_ID_CPCI200,
++		0, 0,
++		(kernel_ulong_t)&plx_pci_card_info_esd200
++	},
++	{
++		/* esd CAN-PCI104/200 */
++		PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9030,
++		PCI_VENDOR_ID_ESDGMBH, ESD_PCI_SUB_SYS_ID_PCI104200,
++		0, 0,
++		(kernel_ulong_t)&plx_pci_card_info_esd200
++	},
++	{
++		/* esd CAN-PCI/266 */
++		PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9056,
++		PCI_VENDOR_ID_ESDGMBH, ESD_PCI_SUB_SYS_ID_PCI266,
++		0, 0,
++		(kernel_ulong_t)&plx_pci_card_info_esd266
++	},
++	{
++		/* esd CAN-PMC/266 */
++		PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9056,
++		PCI_VENDOR_ID_ESDGMBH, ESD_PCI_SUB_SYS_ID_PMC266,
++		0, 0,
++		(kernel_ulong_t)&plx_pci_card_info_esd266
++	},
++	{
++		/* esd CAN-PCIE/2000 */
++		PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9056,
++		PCI_VENDOR_ID_ESDGMBH, ESD_PCI_SUB_SYS_ID_PCIE2000,
++		0, 0,
++		(kernel_ulong_t)&plx_pci_card_info_esd2000
++	},
++	{
++		/* Marathon CAN-bus-PCI card */
++		PCI_VENDOR_ID_PLX, MARATHON_PCI_DEVICE_ID,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		(kernel_ulong_t)&plx_pci_card_info_marathon
++	},
++	{
++		/* TEWS TECHNOLOGIES TPMC810 card */
++		TEWS_PCI_VENDOR_ID, TEWS_PCI_DEVICE_ID_TMPC810,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		(kernel_ulong_t)&plx_pci_card_info_tews
++	},
++	{ 0,}
++};
++MODULE_DEVICE_TABLE(pci, plx_pci_tbl);
++
++static u8 plx_pci_read_reg(struct rtcan_device *dev, int port)
++{
++	return ioread8((void* __iomem)dev->base_addr + port);
++}
++
++static void plx_pci_write_reg(struct rtcan_device *dev, int port, u8 val)
++{
++	iowrite8(val, (void* __iomem)dev->base_addr + port);
++}
++
++/*
++ * Check if a CAN controller is present at the specified location
++ * by trying to switch 'em from the Basic mode into the PeliCAN mode.
++ * Also check states of some registers in reset mode.
++ */
++static inline int plx_pci_check_sja1000(struct rtcan_device *dev)
++{
++	int flag = 0;
++
++	struct rtcan_sja1000 *chip = (struct rtcan_sja1000 *)dev->priv;
++
++	/*
++	 * Check registers after hardware reset (the Basic mode)
++	 * See states on p. 10 of the Datasheet.
++	 */
++	if ((chip->read_reg(dev, SJA_CR) & REG_CR_BASICCAN_INITIAL_MASK) ==
++	    REG_CR_BASICCAN_INITIAL &&
++	    (chip->read_reg(dev, SJA_SR) == REG_SR_BASICCAN_INITIAL) &&
++	    (chip->read_reg(dev, SJA_IR) == REG_IR_BASICCAN_INITIAL))
++		flag = 1;
++
++	/* Bring the SJA1000 into the PeliCAN mode*/
++	chip->write_reg(dev, SJA_CDR, SJA_CDR_CAN_MODE);
++
++	/*
++	 * Check registers after reset in the PeliCAN mode.
++	 * See states on p. 23 of the Datasheet.
++	 */
++	if (chip->read_reg(dev, SJA_MOD) == REG_MOD_PELICAN_INITIAL &&
++	    chip->read_reg(dev, SJA_SR) == REG_SR_PELICAN_INITIAL &&
++	    chip->read_reg(dev, SJA_IR) == REG_IR_PELICAN_INITIAL)
++		return flag;
++
++	return 0;
++}
++
++/*
++ * PLX9030/50/52 software reset
++ * Also LRESET# asserts and brings to reset device on the Local Bus (if wired).
++ * For most cards it's enough for reset the SJA1000 chips.
++ */
++static void plx_pci_reset_common(struct pci_dev *pdev)
++{
++	struct plx_pci_card *card = pci_get_drvdata(pdev);
++	u32 cntrl;
++
++	cntrl = ioread32(card->conf_addr + PLX_CNTRL);
++	cntrl |= PLX_PCI_RESET;
++	iowrite32(cntrl, card->conf_addr + PLX_CNTRL);
++	udelay(100);
++	cntrl ^= PLX_PCI_RESET;
++	iowrite32(cntrl, card->conf_addr + PLX_CNTRL);
++};
++
++/*
++ * PLX9056 software reset
++ * Assert LRESET# and reset device(s) on the Local Bus (if wired).
++ */
++static void plx9056_pci_reset_common(struct pci_dev *pdev)
++{
++	struct plx_pci_card *card = pci_get_drvdata(pdev);
++	u32 cntrl;
++
++	/* issue a local bus reset */
++	cntrl = ioread32(card->conf_addr + PLX9056_CNTRL);
++	cntrl |= PLX_PCI_RESET;
++	iowrite32(cntrl, card->conf_addr + PLX9056_CNTRL);
++	udelay(100);
++	cntrl ^= PLX_PCI_RESET;
++	iowrite32(cntrl, card->conf_addr + PLX9056_CNTRL);
++
++	/* reload local configuration from EEPROM */
++	cntrl |= PLX9056_PCI_RCR;
++	iowrite32(cntrl, card->conf_addr + PLX9056_CNTRL);
++
++	/*
++	 * There is no safe way to poll for the end
++	 * of reconfiguration process. Waiting for 10ms
++	 * is safe.
++	 */
++	mdelay(10);
++
++	cntrl ^= PLX9056_PCI_RCR;
++	iowrite32(cntrl, card->conf_addr + PLX9056_CNTRL);
++};
++
++/* Special reset function for Marathon card */
++static void plx_pci_reset_marathon(struct pci_dev *pdev)
++{
++	void __iomem *reset_addr;
++	int i;
++	int reset_bar[2] = {3, 5};
++
++	plx_pci_reset_common(pdev);
++
++	for (i = 0; i < 2; i++) {
++		reset_addr = pci_iomap(pdev, reset_bar[i], 0);
++		if (!reset_addr) {
++			dev_err(&pdev->dev, "Failed to remap reset "
++				"space %d (BAR%d)\n", i, reset_bar[i]);
++		} else {
++			/* reset the SJA1000 chip */
++			iowrite8(0x1, reset_addr);
++			udelay(100);
++			pci_iounmap(pdev, reset_addr);
++		}
++	}
++}
++
++static void plx_pci_del_card(struct pci_dev *pdev)
++{
++	struct plx_pci_card *card = pci_get_drvdata(pdev);
++	struct rtcan_device *dev;
++	int i = 0;
++
++	for (i = 0; i < card->channels; i++) {
++		dev = card->rtcan_dev[i];
++		if (!dev)
++			continue;
++
++		dev_info(&pdev->dev, "Removing %s\n", dev->name);
++		rtcan_sja1000_unregister(dev);
++		if (dev->base_addr)
++			pci_iounmap(pdev, (void* __iomem)dev->base_addr);
++		rtcan_dev_free(dev);
++	}
++
++	card->reset_func(pdev);
++
++	/*
++	 * Disable interrupts from PCI-card and disable local
++	 * interrupts
++	 */
++	if (pdev->device != PCI_DEVICE_ID_PLX_9056)
++		iowrite32(0x0, card->conf_addr + PLX_INTCSR);
++	else
++		iowrite32(0x0, card->conf_addr + PLX9056_INTCSR);
++
++	if (card->conf_addr)
++		pci_iounmap(pdev, card->conf_addr);
++
++	kfree(card);
++
++	pci_disable_device(pdev);
++	pci_set_drvdata(pdev, NULL);
++}
++
++/*
++ * Probe PLX90xx based device for the SJA1000 chips and register each
++ * available CAN channel to SJA1000 Socket-CAN subsystem.
++ */
++static int __devinit plx_pci_add_card(struct pci_dev *pdev,
++				      const struct pci_device_id *ent)
++{
++	struct rtcan_sja1000 *chip;
++	struct rtcan_device *dev;
++	struct plx_pci_card *card;
++	struct plx_pci_card_info *ci;
++	int err, i;
++	u32 val;
++	void __iomem *addr;
++
++	ci = (struct plx_pci_card_info *)ent->driver_data;
++
++	if (pci_enable_device(pdev) < 0) {
++		dev_err(&pdev->dev, "Failed to enable PCI device\n");
++		return -ENODEV;
++	}
++
++	dev_info(&pdev->dev, "Detected \"%s\" card at slot #%i\n",
++		 ci->name, PCI_SLOT(pdev->devfn));
++
++	/* Allocate card structures to hold addresses, ... */
++	card = kzalloc(sizeof(*card), GFP_KERNEL);
++	if (!card) {
++		dev_err(&pdev->dev, "Unable to allocate memory\n");
++		pci_disable_device(pdev);
++		return -ENOMEM;
++	}
++
++	pci_set_drvdata(pdev, card);
++
++	card->channels = 0;
++
++	/* Remap PLX90xx configuration space */
++	addr = pci_iomap(pdev, ci->conf_map.bar, ci->conf_map.size);
++	if (!addr) {
++		err = -ENOMEM;
++		dev_err(&pdev->dev, "Failed to remap configuration space "
++			"(BAR%d)\n", ci->conf_map.bar);
++		goto failure_cleanup;
++	}
++	card->conf_addr = addr + ci->conf_map.offset;
++
++	ci->reset_func(pdev);
++	card->reset_func = ci->reset_func;
++
++	/* Detect available channels */
++	for (i = 0; i < ci->channel_count; i++) {
++		struct plx_pci_channel_map *cm = &ci->chan_map_tbl[i];
++
++		dev = rtcan_dev_alloc(sizeof(struct rtcan_sja1000),
++				      sizeof(struct plx_pci_card));
++		if (!dev) {
++			err = -ENOMEM;
++			goto failure_cleanup;
++		}
++
++		strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
++		dev->board_name = (char *)ci->name;
++
++		card->rtcan_dev[i] = dev;
++		chip = card->rtcan_dev[i]->priv;
++		chip->irq_flags = RTDM_IRQTYPE_SHARED;
++		chip->irq_num = pdev->irq;
++
++		/*
++		 * Remap IO space of the SJA1000 chips
++		 * This is device-dependent mapping
++		 */
++		addr = pci_iomap(pdev, cm->bar, cm->size);
++		if (!addr) {
++			err = -ENOMEM;
++			dev_err(&pdev->dev, "Failed to remap BAR%d\n", cm->bar);
++			goto failure_cleanup;
++		}
++
++		dev->base_addr = (unsigned long)(addr + cm->offset);
++		chip->read_reg = plx_pci_read_reg;
++		chip->write_reg = plx_pci_write_reg;
++
++		/* Check if channel is present */
++		if (plx_pci_check_sja1000(dev)) {
++			dev->can_sys_clock = ci->can_clock;
++			chip->ocr = ci->ocr;
++			chip->cdr = ci->cdr;
++
++			/* Register SJA1000 device */
++			err = rtcan_sja1000_register(dev);
++			if (err) {
++				dev_err(&pdev->dev, "Registering device failed "
++					"(err=%d)\n", err);
++				rtcan_dev_free(dev);
++				goto failure_cleanup;
++			}
++
++			card->channels++;
++
++			dev_info(&pdev->dev, "Channel #%d at 0x%p, irq %d "
++				 "registered as %s\n", i + 1,
++				 (void* __iomem)dev->base_addr, chip->irq_num,
++				 dev->name);
++		} else {
++			dev_err(&pdev->dev, "Channel #%d not detected\n",
++				i + 1);
++			rtcan_dev_free(dev);
++		}
++	}
++
++	if (!card->channels) {
++		err = -ENODEV;
++		goto failure_cleanup;
++	}
++
++	/*
++	 * Enable interrupts from PCI-card (PLX90xx) and enable Local_1,
++	 * Local_2 interrupts from the SJA1000 chips
++	 */
++	if (pdev->device != PCI_DEVICE_ID_PLX_9056) {
++		val = ioread32(card->conf_addr + PLX_INTCSR);
++		if (pdev->subsystem_vendor == PCI_VENDOR_ID_ESDGMBH)
++			val |= PLX_LINT1_EN | PLX_PCI_INT_EN;
++		else
++			val |= PLX_LINT1_EN | PLX_LINT2_EN | PLX_PCI_INT_EN;
++		iowrite32(val, card->conf_addr + PLX_INTCSR);
++	} else {
++		iowrite32(PLX9056_LINTI | PLX9056_PCI_INT_EN,
++			  card->conf_addr + PLX9056_INTCSR);
++	}
++	return 0;
++
++failure_cleanup:
++	dev_err(&pdev->dev, "Error: %d. Cleaning Up.\n", err);
++
++	plx_pci_del_card(pdev);
++
++	return err;
++}
++
++static struct pci_driver plx_pci_driver = {
++	.name = RTCAN_DRV_NAME,
++	.id_table = plx_pci_tbl,
++	.probe = plx_pci_add_card,
++	.remove = plx_pci_del_card,
++};
++
++static int __init plx_pci_init(void)
++{
++	return pci_register_driver(&plx_pci_driver);
++}
++
++static void __exit plx_pci_exit(void)
++{
++	pci_unregister_driver(&plx_pci_driver);
++}
++
++module_init(plx_pci_init);
++module_exit(plx_pci_exit);
+-- 
+1.6.0.6
 
-Wolfgang.
 
