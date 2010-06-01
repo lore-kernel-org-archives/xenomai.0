@@ -1,14 +1,13 @@
-Date: Sat, 5 Jun 2010 23:40:05 +0200
-From: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <20100605214004.GC8097@domain.hid>
-References: <AANLkTilOsBQXASMpEHjKs0JwOy8c2EaLG26Vej8sueZC@mail.gmail.com>
-	<20100602221243.GC2590@domain.hid>
-	<AANLkTikzXKkmKfglVBiXusKjXG0LHqAxDh7XY5gw1O7B@mail.gmail.com>
+Message-ID: <4C053C51.4090903@domain.hid>
+Date: Tue, 01 Jun 2010 18:58:57 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AANLkTikzXKkmKfglVBiXusKjXG0LHqAxDh7XY5gw1O7B@mail.gmail.com>
-Subject: Re: [Xenomai-help] National Instruments PCI-6711
+References: <20100601135005.GA5483@domain.hid>	<1275402757.27918.151.camel@domain.hid>
+	<20100601155403.GA8240@domain.hid>
+In-Reply-To: <20100601155403.GA8240@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Handling Linux Signals in primary domain context
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,73 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ettore Pedretti <epedrett@domain.hid>
-Cc: xenomai@xenomai.org, John Monnier <monnier@domain.hid>
+To: Tschaeche IT-Services <services@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+Tschaeche IT-Services wrote:
+> On Tue, Jun 01, 2010 at 04:32:37PM +0200, Philippe Gerum wrote:
+>> Not in the absence of syscall. We thought about this once already, when
+>> considering how a watchdog preempting a runaway task in primary mode
+>> could force a secondary mode switch: there is no sane and easy solution
+>> to this unfortunately.
+> 
+> This is exactly Sigmatek's problem: Our customers develop code
+> within our debugging/development environment. We want to catch
+> this situation (the developer implements a while(1)) with a
+> watchdog throwing SIGTRAP so that our debugger gets active
+> and can locate the problem according to the stack frame...
 
-Ettore Pedretti wrote:
-> Hi,
-> 
-> > On the other side, that is just the theory. I would not be surprised
-> > to find a Comedi driver which proposes the behaviour you ask thanks to
-> > a driver-specific hidden cheat flag somewhere in the structure.
-> 
-> How can I find out the "hidden cheat" and how can I exploit it?
-> 
+CONFIG_XENO_OPT_WATCHDOG is probably what you are looking for. It tries
+to catch "well-behaving" broken threads via SIGDEBUG and kills the
+hopelessly broken rest - system alive again.
 
-That was just a supposition. I have not seen such a thing in the
-Analogy NI driver (inherited from the Comedi one). Have you had a look
-at the Comedi list ?
+You can then debug the former and need to do code review on the latter.
+Or you could also try to add some loop-breaking Xenomai syscalls (or
+even more clever checks) to library services the code under suspect
+usually invokes.
 
-I just read again your first mail. You said the NI Linux driver
-provides the requested option. Do you have any source code ? I
-remember just having found a binary driver.
-
-> >> What is the closest functionality I can get to programming the card
-> >> and letting it run without further intervention?
-> >>
-> >
-> > I have no answer so far. That would need an extension of the framework.
-> 
-> How difficult would that be? Is it a major change to the framework? It
-> seems to me that this is a nice option. You would not use any of your
-> bus bandwidth and could just change the waveform when you need it.
-> 
-
-I agree this feature would be nice but I cannot tell you that I will
-add some tricky code in some corner just to let this option work. The
-problem with the command system is that it expects a continuous data
-transfer until the end of the acquisition. 
-
-Maybe, a way to quickly implement it would be to use an instruction
-(it may be possible, I cannot ensure you); but to do so I need the
-code which properly programs the DAQ-STC. 
-
-> Ettore
-> 
-> >> All the best
-> >> Ettore
-> >>
-> >> _______________________________________________
-> >> Xenomai-help mailing list
-> >> Xenomai-help@domain.hid
-> >> https://mail.gna.org/listinfo/xenomai-help
-> >
-> > --
-> > Alexis.
-> >
-> 
-> 
-> 
-> -- 
-> Ettore Pedretti, SUPA
-> School of Physics and Astronomy
-> University of St Andrews, North Haugh,
-> St Andrews, Fife, KY16 9SS, Scotland
-> Ph: +44-1334-461666, Fax: +44-1334-463104
-> The University of St Andrews is a charity registered in Scotland : No SC013532
+Jan
 
 -- 
-Alexis.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
