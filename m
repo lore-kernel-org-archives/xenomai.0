@@ -1,9 +1,11 @@
+Message-ID: <4C04E8D8.8030101@domain.hid>
+Date: Tue, 01 Jun 2010 13:02:48 +0200
+From: Daniele Nicolodi <daniele@domain.hid>
 MIME-Version: 1.0
-Date: Tue, 1 Jun 2010 09:45:32 +0800
-Message-ID: <AANLkTimu2exL1jW_LoGtrQxStjGwLb5C5PvSGJOtSZPP@mail.gmail.com>
-From: Everett Wang <everteq@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai-help] IRQ programming
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Linux kernel 2.6.32.14 and Xenomai 2.5.2 does not
+	boot
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,20 +17,22 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi All,
+Hello.
 
-I want to us an x86 machine to program IRQ from an externel signal
-(GPS). The GPS device can send
-a square pulse from precision timer. But I am not sure where this
-signal should be connected to so an IRQ can be
-generated. I googled this topics a little bit and found that parallel
-port can be used. Since most embedded
-X86 board now doesn't have any parallel port, I wonder if we have a
-better way to sensor the signal? Can
-I route the GPS pulse signal to serial port to generate IRQ? or use
-GPIO that some of the boards have?
+In the process of upgrading my data acquisition system from Xenomai
+2.5.0 to Xenomai 2.5.2, I also upgraded the kernel from the 2.6.30
+release to 2.6.32.14.
 
-Any suggestions are welcome,
+However the new kernel, compiled with the same options as the old one,
+does not boot on my hardware, a x86 PC with a Celeron CPU. After the
+boot loader I'm left with a black screen.
 
-Everett
+I have noticed that going from the 2.6.30 to the 2.6.32 kernel the Adeos
+Ipipe patch goes from version 2.4 to 2.6. Can this be related to my problem?
+
+How can I investigate, and eventually solve, this problem?
+
+Thanks. Cheers,
+-- 
+Daniele
 
