@@ -1,13 +1,10 @@
-Message-ID: <4C04EDAF.1080800@domain.hid>
-Date: Tue, 01 Jun 2010 13:23:27 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Tue, 1 Jun 2010 15:50:05 +0200
+From: Tschaeche IT-Services <services@domain.hid>
+Message-ID: <20100601135005.GA5483@domain.hid>
 MIME-Version: 1.0
-References: <4C04E8D8.8030101@domain.hid>
-In-Reply-To: <4C04E8D8.8030101@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Linux kernel 2.6.32.14 and Xenomai 2.5.2 does
-	not boot
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [Xenomai-help] Handling Linux Signals in primary domain context
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,36 +14,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniele Nicolodi <daniele@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Daniele Nicolodi wrote:
-> Hello.
-> 
-> In the process of upgrading my data acquisition system from Xenomai
-> 2.5.0 to Xenomai 2.5.2, I also upgraded the kernel from the 2.6.30
-> release to 2.6.32.14.
+Hi,
 
-Latest Xenomai is 2.5.3, latest 2.6.32 patch is
-adeos-ipipe-2.6.32.13-x86-2.6-04.patch [1]. Make sure you have both.
+we have the following scenario:
 
-> 
-> However the new kernel, compiled with the same options as the old one,
-> does not boot on my hardware, a x86 PC with a Celeron CPU. After the
-> boot loader I'm left with a black screen.
-> 
-> I have noticed that going from the 2.6.30 to the 2.6.32 kernel the Adeos
-> Ipipe patch goes from version 2.4 to 2.6. Can this be related to my problem?
-> 
-> How can I investigate, and eventually solve, this problem?
-> 
-> Thanks. Cheers,
+A high priority periodic primary domain task (H), which calls
+rt_task_suspend(L) in each even period and rt_task_resume(L)
+in each odd period on a low priority primary domain task (L).
+L-task consumes all available CPU resources (while(1)).
+Thus, the rest of each cycle (after H has got the CPU) is used
+alternately by L-task, ROOT-task, L-task,...
 
-Jan
+In our debugging implementation, we send a SIGTRAP to L-task.
+H-task recognizes this by reporting EINTR when calling rt_task_suspend(L).
+But, the while(1) in L-task is not interrupted although there is a SIGTRAP
+pending.
 
-[1]http://download.gna.org/adeos/patches/v2.6/x86/adeos-ipipe-2.6.32.13-x86-2.6-04.patch
+Our workaround could be, to send a rt_signal when rt_task_suspend()
+returns EINTR and, then, in the rt-signal handler migrate L-task
+to secondary domain (calling rt_task_set_mode(T_PRIMARY,0))
+initiating the Linux scheduler, which, then, initiates the SIGTRAP handling
+in secondary domain context.
 
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Is there a simpler way to get primary domain tasks interrupted
+by Linux signals? Xenomai already knows about the pending signal
+and, maybe, could initiate the secondary domain switch on a primary scheduler
+event.
+
+Thanks,
+
+	Olli
 
