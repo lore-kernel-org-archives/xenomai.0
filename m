@@ -1,14 +1,16 @@
-Date: Wed, 2 Jun 2010 22:59:55 +0200
+Date: Wed, 2 Jun 2010 23:06:35 +0200
 From: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <20100602205955.GA2590@domain.hid>
-References: <4C0395C1.6050902@domain.hid>
+Message-ID: <20100602210634.GB2590@domain.hid>
+References: <AANLkTimHOPpI3mst8-fM4Atf6V_-kurbqD-RKZdWDbUY@mail.gmail.com>
+	<4C038E30.5070606@domain.hid>
+	<AANLkTimSJSagZ2zccsNZbgNE0RDP5ECPjSNqhyvVBtgk@domain.hid>
+	<AANLkTimVOpXi7D_speJ1AuygscOt8NxGt4ZP_o8Vjrql@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <4C0395C1.6050902@domain.hid>
-Subject: Re: [Xenomai-help] Analogy: unable to use sampling frequency higher
- that 10kHz
+In-Reply-To: <AANLkTimVOpXi7D_speJ1AuygscOt8NxGt4ZP_o8Vjrql@domain.hid>
+Subject: Re: [Xenomai-help] How to generate a waveform / digital output
+ (Alexis)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,52 +20,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniele Nicolodi <daniele@domain.hid>
+To: Ettore Pedretti <epedrett@domain.hid>
 Cc: xenomai@xenomai.org
 
-Hi,=20
+Hi,
 
-Daniele Nicolodi wrote:
-> Hello. I finally went back to work to my data acquisition
-> infrastructure. I'm now trying to increase the sampling frequency of my
-> control loop. I do not have any problem up to 10 kHz, but when I
-> increase the sampling frequency above this limits the ADC driver stop
-> working fine. In the kernel log I obtain a huge list of
->=20
-> Analogy: analogy_ni_pcmio: ni_mio_common: interrupt: didn't clear
-> interrup? status=3D0x9030
->=20
-> From where can I start to investigate this problem?
+Ettore Pedretti wrote:
+> Hi Daniele,
+> 
+> Thanks again for your code. It works when I select range=0
+> 
+> ./analogy-waveform --r 0
+> ./analogy-phasemod --r 0
+> 
+> I get a sine wave out of the card
+> 
 
-At the end of the IRQ handling function, a status register is read
-again just to be sure the interrupt flag has been cleared. If it is
-not the case the message you presented above is printed (by the way, I
-will fix the spelling mistake...).
+If you are OK with it, I will integrate this code into cmd_write (or
+instead of it).
 
-With TRIG_WAKE_EOS, I am pretty sure (I have not checked in the DAQ
-STC manual yet) that an interrupt is generated at every scan, which would
-mean that the CPU would handle an interrupt every 100=B5s at least. So
-it may not be surprising that, sometimes, the interrupt N + 1 is
-triggered during the execution of the handler for the interrupt N.
+Many thanks.
 
-I am wondering whether we should remove this trace at least when
-TRIG_WAKE_EOS is specified.
-
->=20
-> I encounter this problem only when I use analogy commands with the
-> TRIG_WAKE_EOS flag. If I do not specify this flag all works fine up to
-> 100 kHz. However I need my data in real time, and therefore I need to
-> specify this flag.
->=20
-> Cheers,
-> --=20
-> Daniele
->=20
+> Thanks a bunch!!
+> 
+> Ettore
+> 
+> On 31 May 2010 16:24, Ettore Pedretti <ep41@domain.hid> wrote:
+> > Hi Daniele,
+> >
+> > Thanks very much for your help. It is very appreciated. I compiled
+> > your programs. When I run them I get:
+> >
+> > fangorn:~/control/CHAMP/analogy# ./analogy-waveform
+> > amplitude=1.000000
+> > offset=0.000000
+> > analogy-waveform.c:364:main:DEBUG: device=analogy0 fd=0
+> > analogy-waveform.c:365:main:DEBUG: subdevices=14
+> > analogy-waveform.c:366:main:DEBUG: read subdevice=-1
+> > analogy-waveform.c:367:main:DEBUG: write subdevice=1
+> > analogy-waveform.c:368:main:DEBUG: sbsize=16456
+> > analogy-waveform.c:374:main:DEBUG: subdevice=1
+> > analogy-waveform.c:405:main:DEBUG: range=0 10000000 -10000000
+> > analogy-waveform.c:411:main:DEBUG: min=-1.000000 max=1.000000
+> > analogy-waveform.c:414:main:DEBUG: range=-1
+> > analogy-waveform.c:419:main:ERROR: analogy get rngnfo
+> >
+> > and dmesg:
+> >
+> > Analogy: a4l_rt_ioctl: minor=0
+> > Analogy: a4l_rt_ioctl: minor=0
+> > Analogy: a4l_rt_ioctl: minor=0
+> > Analogy: a4l_ioctl_cancel: minor=0
+> > Analogy: a4l_ioctl_cancel: non functional subdevice
+> > Analogy: a4l_rt_close: minor=0
+> >
+> > What am I doing wrong? do I need to pass a parameter?
+> >
+> > Cheers
+> >
+> > Ettore
+> >
+> > --
+> > Ettore Pedretti, SUPA
+> > School of Physics and Astronomy
+> > University of St Andrews, North Haugh,
+> > St Andrews, Fife, KY16 9SS, Scotland
+> > Ph: +44-1334-461666, Fax: +44-1334-463104
+> > The University of St Andrews is a charity registered in Scotland : No SC013532
+> >
+> 
+> 
+> 
+> -- 
+> Ettore Pedretti, SUPA
+> School of Physics and Astronomy
+> University of St Andrews, North Haugh,
+> St Andrews, Fife, KY16 9SS, Scotland
+> Ph: +44-1334-461666, Fax: +44-1334-463104
+> The University of St Andrews is a charity registered in Scotland : No SC013532
+> 
 > _______________________________________________
 > Xenomai-help mailing list
 > Xenomai-help@domain.hid
 > https://mail.gna.org/listinfo/xenomai-help
 
---=20
+-- 
 Alexis.
 
