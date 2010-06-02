@@ -1,12 +1,14 @@
-Message-ID: <4C068321.1000902@domain.hid>
-Date: Wed, 02 Jun 2010 18:13:21 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Wed, 2 Jun 2010 22:59:55 +0200
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <20100602205955.GA2590@domain.hid>
+References: <4C0395C1.6050902@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTikLJC_pFm9l6G1t7vlUfzrqMAt7zu9t_uRNZV15@domain.hid>
-In-Reply-To: <AANLkTikLJC_pFm9l6G1t7vlUfzrqMAt7zu9t_uRNZV15@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] xeno-test problem
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <4C0395C1.6050902@domain.hid>
+Subject: Re: [Xenomai-help] Analogy: unable to use sampling frequency higher
+ that 10kHz
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,47 +18,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Cyril Wallois <walloiscyril@domain.hid>
+To: Daniele Nicolodi <daniele@domain.hid>
 Cc: xenomai@xenomai.org
 
-Cyril Wallois wrote:
-> Thanks for your fast reply gilles,
-> 
-> I don't use the right word to explain my problem, the lock-up with
-> xeno-test is solve with newer version of xenomai and linux kernel.
+Hi,=20
 
-Not quite. It will work with the newer version because the default
-period of the latency test is 1000us instead of 100us. But your ARM is
-still probably not able to sustain a 100us period.
+Daniele Nicolodi wrote:
+> Hello. I finally went back to work to my data acquisition
+> infrastructure. I'm now trying to increase the sampling frequency of my
+> control loop. I do not have any problem up to 10 kHz, but when I
+> increase the sampling frequency above this limits the ADC driver stop
+> working fine. In the kernel log I obtain a huge list of
+>=20
+> Analogy: analogy_ni_pcmio: ni_mio_common: interrupt: didn't clear
+> interrup? status=3D0x9030
+>=20
+> From where can I start to investigate this problem?
 
-> 
-> I have always to solve my problem when running rtnet :
-> 
-> Xenomai: suspending kernel thread bf0270e0 ('rtnet-rtpc') at 0xbf02b814
-> after exception #8
+At the end of the IRQ handling function, a status register is read
+again just to be sure the interrupt flag has been cleared. If it is
+not the case the message you presented above is printed (by the way, I
+will fix the spelling mistake...).
 
-What you need is to type cat /proc/modules on the target to see the
-module to which the address 0xbf02b814 corresponds. Then run objdump to
-disassemble the faulting module. But I believe Jan explained you all
-that when answering the original request.
+With TRIG_WAKE_EOS, I am pretty sure (I have not checked in the DAQ
+STC manual yet) that an interrupt is generated at every scan, which would
+mean that the CPU would handle an interrupt every 100=B5s at least. So
+it may not be surprising that, sometimes, the interrupt N + 1 is
+triggered during the execution of the handler for the interrupt N.
 
+I am wondering whether we should remove this trace at least when
+TRIG_WAKE_EOS is specified.
 
->
-> Now, I'm searching for tools to debug the kernel on a remote target and
-> read the value in the register.
+>=20
+> I encounter this problem only when I use analogy commands with the
+> TRIG_WAKE_EOS flag. If I do not specify this flag all works fine up to
+> 100 kHz. However I need my data in real time, and therefore I need to
+> specify this flag.
+>=20
+> Cheers,
+> --=20
+> Daniele
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
 > https://mail.gna.org/listinfo/xenomai-help
 
-
-To print the values of registers, you can add some printks to the
-xnpod_trap_fault function in the ksrc/nucleus/pod.c file in Xenomai
-sources. We could arguably add that to Xenomai code, but we did not do
-it yet.
-
-As for the alignment issue itself, please take care, on the receive path
-of your driver to pass, to the rtnet stack, buffers where the IP header
-is aligned on a 4 bytes boundary. Since the ethernet header is 6 bytes
-long, it means that the ethernet header alignement should be 2 modulo 4.
-
--- 
-					    Gilles.
+--=20
+Alexis.
 
