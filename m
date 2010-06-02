@@ -1,12 +1,15 @@
-Message-ID: <4C17ACBF.2060705@domain.hid>
-Date: Tue, 15 Jun 2010 18:39:27 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4C17AA80.9000804@domain.hid>
-In-Reply-To: <4C17AA80.9000804@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4C061823.70005@domain.hid>
+References: <20100601135005.GA5483@domain.hid>
+	<1275402757.27918.151.camel@domain.hid>
+	<20100601155403.GA8240@domain.hid>
+	<4C053C51.4090903@domain.hid> <4C061823.70005@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 02 Jun 2010 11:15:36 +0200
+Message-ID: <1275470136.18250.16.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pcibios_find_device
+Subject: Re: [Xenomai-help] Handling Linux Signals in primary domain context
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,29 +19,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: ramoncostacastello@domain.hid
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-Ramon wrote:
-> Hi,
+On Wed, 2010-06-02 at 10:36 +0200, Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+> > Tschaeche IT-Services wrote:
+> >> On Tue, Jun 01, 2010 at 04:32:37PM +0200, Philippe Gerum wrote:
+> >>> Not in the absence of syscall. We thought about this once already, when
+> >>> considering how a watchdog preempting a runaway task in primary mode
+> >>> could force a secondary mode switch: there is no sane and easy solution
+> >>> to this unfortunately.
+> >> This is exactly Sigmatek's problem: Our customers develop code
+> >> within our debugging/development environment. We want to catch
+> >> this situation (the developer implements a while(1)) with a
+> >> watchdog throwing SIGTRAP so that our debugger gets active
+> >> and can locate the problem according to the stack frame...
+> > 
+> > CONFIG_XENO_OPT_WATCHDOG is probably what you are looking for. It tries
+> > to catch "well-behaving" broken threads via SIGDEBUG and kills the
+> > hopelessly broken rest - system alive again.
+> > 
+> > You can then debug the former and need to do code review on the latter.
+> > Or you could also try to add some loop-breaking Xenomai syscalls (or
+> > even more clever checks) to library services the code under suspect
+> > usually invokes.
 > 
-> I'm porting an old practice environment in RTLinux to Xenomai.
+> I am afraid "well-behaving" means emitting syscalls. We have a radical
+> way to cause a SIGSEGV to be sent to a thread having run amok: set its
+> PC to an invalid address (after having printed the real PC). gdb will
+> not be able to print where the program stopped, but should be able to
+> print the backtrace.
 > 
-> In that code I use commands like "pcibios_find_device" to obtain the 
-> addresses used by a PCI AD/DA board
-> (we access to this device at a register level  using outb commands).
-> 
-> In the old rtlinux environment my code was executed in kernel mode and I 
-> could access "pcibios_...."  commands easily. Is it possible
-> to use these commands in user space mode (using xenomai) ?
 
-Not directly, but you may use libpci:
-http://mj.ucw.cz/pciutils.html
+Actually, we could extend this logic and forge a stack frame to return
+to the preempted application code via some userland trampoline code,
+doing the switch:
 
-Note however that you may run into other issues if you intend to use
-hardware directly in user-space. It is probably a better idea to use
-RTDM to write a driver in kernel-space.
+[watchdog trigger]
+	forge_return_frame(on =regs->sp, to =regs->pc);
+	regs->pc = __oops_I_did_it_again;
+
+__oops_I_did_it_again:
+	__xn_migrate(LINUX_DOMAIN);
+	ret (via forged frame)
+
+The thing is, that this brings in some arch-dep code to forge a stack
+frame (like the kernel uses for signals), that should rather live in the
+pipeline core.
+
 
 -- 
-					    Gilles.
+Philippe.
+
+
 
