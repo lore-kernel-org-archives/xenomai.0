@@ -1,12 +1,13 @@
-Date: Thu, 3 Jun 2010 00:12:43 +0200
-From: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <20100602221243.GC2590@domain.hid>
-References: <AANLkTilOsBQXASMpEHjKs0JwOy8c2EaLG26Vej8sueZC@mail.gmail.com>
+From: "Katsuhiko Isono" <k-isono@domain.hid>
+Date: Thu, 3 Jun 2010 08:31:52 +0900
+Message-ID: <6D556AFBBAD7426CBD7EDECBA8A2A361@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AANLkTilOsBQXASMpEHjKs0JwOy8c2EaLG26Vej8sueZC@mail.gmail.com>
-Subject: Re: [Xenomai-help] National Instruments PCI-6711
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] "arm: fix mm switching" patch effective also for
+	2.4.10 ?
+Reply-To: k-isono@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,58 +17,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ettore Pedretti <epedrett@domain.hid>
-Cc: xenomai@xenomai.org, John Monnier <monnier@domain.hid>
+To: xenomai@xenomai.org
 
-Hi,
+I use linux-2.6.26 + xenomai-2.4.10 with custom arm(i.mx31) board.
 
-Ettore Pedretti wrote:
-> Dear All,
-> 
-> Thanks for all the help getting the PCI-6711 running under xenomai. I
-> have a question about the functionalities implemented by the analogy
-> driver,
-> 
-> With the NI linux driver we can programme  some waveforms in and let
-> them run without further intervention. We do not need to change the
-> waveforms in real time. Is it possible to do this with the analogy
-> driver?
+When realtime application was executed on my environment,
+application caused the SIGSEGV fault about once every several hours.
 
-I remember having read in the DAQ STC manual that such a feature was
-available for the digital output subdevice. So, it may not be
-surprising that it is also available for the analog output device.
+However, when I applied "arm: fix mm switching" patch of xenomai-2.5 to 
+my environment, SIGSEGV fault did not happen.
 
-> 
-> I guess you should use analogy commands and an asynchronous
-> acquisition command. All the examples I have seen on comedi/analogy
-> put the acquisition in a while loop. It seems as if you need to fill
-> the buffer each time.
+There is a following question.
+ - Is this patch effective also for 2.4.10 ?
+ - What trouble is corrected with this patch ?
 
-Precisely, even if the hardware is able to work like you expect, the
-command API does not support it. The command structure
-(inherited from Comedi) defines via the stop_src and stop_arg fields
-the length of the asynchronous acquisition and all the data are to be
-going through the application. 
+Best regards,
 
-On the other side, that is just the theory. I would not be surprised
-to find a Comedi driver which proposes the behaviour you ask thanks to
-a driver-specific hidden cheat flag somewhere in the structure.
+K.Isono
 
-> 
-> What is the closest functionality I can get to programming the card
-> and letting it run without further intervention?
-> 
 
-I have no answer so far. That would need an extension of the framework.
-
-> All the best
-> Ettore
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
--- 
-Alexis.
 
