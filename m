@@ -1,14 +1,13 @@
+Message-ID: <4C062106.50809@domain.hid>
+Date: Wed, 02 Jun 2010 11:14:46 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <AANLkTik39wezPyRC-myOQi_etA5EPAg-LgzSqyO40IX7@domain.hid>
-References: <AANLkTim0tClnDQPN3u5ozJSEU6BcX--Xf9Ekw00ADvgy@domain.hid> 
-	<4C1353D8.2060507@domain.hid>
-	<AANLkTik39wezPyRC-myOQi_etA5EPAg-LgzSqyO40IX7@domain.hid>
-From: Luc ANTOLINOS <luciogistr@domain.hid>
-Date: Mon, 14 Jun 2010 16:53:22 +0200
-Message-ID: <AANLkTikvdlckp3H_yQyYOpjG9-mLx-3Qm5Z2mjLpKQIz@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai-help] error on rt_dev_read, code Success,
-	what does it 	mean?
+References: <20100601135005.GA5483@domain.hid>	<1275402757.27918.151.camel@domain.hid>	<20100601155403.GA8240@domain.hid>
+	<4C053C51.4090903@domain.hid> <4C061823.70005@domain.hid>
+In-Reply-To: <4C061823.70005@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Handling Linux Signals in primary domain context
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,20 +17,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Everett Wang <everteq@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 12 June 2010 12:13, Everett Wang <everteq@domain.hid> wrote:
-> get a " code input/output error". That is better. What can cause
-> input/output error? I get my serial port in that state consistently
-> when I
-> finish running my GPS program. I can reset it to a usable serial port
-> again by remove and re-load xeno-16550A module. But setserial -G can't
-> see anything unusual. Could it be some unclosed serial port?
-Hi,
-Does this error appear while running or only after exiting (no error
-while running the first time after reloading the module) ?
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Tschaeche IT-Services wrote:
+>>> On Tue, Jun 01, 2010 at 04:32:37PM +0200, Philippe Gerum wrote:
+>>>> Not in the absence of syscall. We thought about this once already, when
+>>>> considering how a watchdog preempting a runaway task in primary mode
+>>>> could force a secondary mode switch: there is no sane and easy solution
+>>>> to this unfortunately.
+>>> This is exactly Sigmatek's problem: Our customers develop code
+>>> within our debugging/development environment. We want to catch
+>>> this situation (the developer implements a while(1)) with a
+>>> watchdog throwing SIGTRAP so that our debugger gets active
+>>> and can locate the problem according to the stack frame...
+>> CONFIG_XENO_OPT_WATCHDOG is probably what you are looking for. It tries
+>> to catch "well-behaving" broken threads via SIGDEBUG and kills the
+>> hopelessly broken rest - system alive again.
+>>
+>> You can then debug the former and need to do code review on the latter.
+>> Or you could also try to add some loop-breaking Xenomai syscalls (or
+>> even more clever checks) to library services the code under suspect
+>> usually invokes.
+> 
+> I am afraid "well-behaving" means emitting syscalls. We have a radical
+> way to cause a SIGSEGV to be sent to a thread having run amok: set its
+> PC to an invalid address (after having printed the real PC). gdb will
+> not be able to print where the program stopped, but should be able to
+> print the backtrace.
+
+Just discussing this with our customer raised spontaneous interest (due
+to the yet unsolved switching issue with non-RT Xenomai threads). I'm
+going to look into this, also trying to find some more sophisticated
+approaches, e.g. simulating a call to preserve the call trace (which
+would make it really useful) or jumping to some helper function that
+issues a syscall.
+
+Jan
 
 -- 
-Luc
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
