@@ -1,5 +1,5 @@
-Message-ID: <4C06265C.3030108@domain.hid>
-Date: Wed, 02 Jun 2010 11:37:32 +0200
+Message-ID: <4C0627AF.3060101@domain.hid>
+Date: Wed, 02 Jun 2010 11:43:11 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <20100601135005.GA5483@domain.hid>	
@@ -7,9 +7,9 @@ References: <20100601135005.GA5483@domain.hid>
 	<20100601155403.GA8240@domain.hid>
 	<4C053C51.4090903@domain.hid>	 <4C061823.70005@domain.hid>	
 	<1275470136.18250.16.camel@domain.hid>	
-	<4C062246.40107@domain.hid>
-	<1275470925.18250.18.camel@domain.hid>
-In-Reply-To: <1275470925.18250.18.camel@domain.hid>
+	<4C06229F.3030403@domain.hid>
+	<1275471267.18250.22.camel@domain.hid>
+In-Reply-To: <1275471267.18250.22.camel@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Handling Linux Signals in primary domain context
@@ -23,10 +23,10 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
 Philippe Gerum wrote:
-> On Wed, 2010-06-02 at 11:20 +0200, Jan Kiszka wrote:
+> On Wed, 2010-06-02 at 11:21 +0200, Gilles Chanteperdrix wrote:
 >> Philippe Gerum wrote:
 >>> On Wed, 2010-06-02 at 10:36 +0200, Gilles Chanteperdrix wrote:
 >>>> Jan Kiszka wrote:
@@ -66,27 +66,25 @@ Philippe Gerum wrote:
 >>> __oops_I_did_it_again:
 >>> 	__xn_migrate(LINUX_DOMAIN);
 >>> 	ret (via forged frame)
->> Yep, that's what came to my mind as well. But the __oops_I_did_it_again
->> part has to reside in user space, no?
-> 
-> Clearly, yes. Either we map this explictly, or we just make sure to
-> compile it in each app, and pass its address at skin binding time. Our
-> text is mmlocked anyway.
-> 
+>>>
 >>> The thing is, that this brings in some arch-dep code to forge a stack
 >>> frame (like the kernel uses for signals), that should rather live in the
 >>> pipeline core.
->> Actually, we are then close to enabling signal delivery outside syscalls...
+>> There seems to be a simple approach:
+>> when the thread runs amok, set the pc to invalid address, save the real
+>> pc somewhere
+>> when relaxing for handling the exception (xnpod_trap_fault), if the amok
+>> bit is set, restore the pc in the saved registers from the saved location.
 >>
 > 
-> Yes, looks like.
+> It's indeed simpler. The limit of this approach is to count on a correct
+> behaviour of the fault mechanism, since we would rely on it implicitly
+> to deal with the mode switch. By "correct", I mean: the instruction
+> fetch fault must be detectable and recoverable the same way, regardless
+> of the architecture.
 
-When thinking about this real signals things, I was thinking about
-putting the forging code into Xenomai (the code is the same for all
-kernel versions, so there is no reason to put it into the I-pipe, and we
-may have to emit a special syscall to restore the context when handling
-the signal is done). What we need the I-pipe for, however, is to trigger
-some event on the way back to user-space.
+Yes, if the kernel looks at what is under the PC to handle the fault, we
+are toast because it will probably do it after we have restored the real PC.
 
 -- 
 					    Gilles.
