@@ -1,16 +1,12 @@
-Date: Wed, 2 Jun 2010 23:06:35 +0200
+Date: Thu, 3 Jun 2010 00:12:43 +0200
 From: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <20100602210634.GB2590@domain.hid>
-References: <AANLkTimHOPpI3mst8-fM4Atf6V_-kurbqD-RKZdWDbUY@mail.gmail.com>
-	<4C038E30.5070606@domain.hid>
-	<AANLkTimSJSagZ2zccsNZbgNE0RDP5ECPjSNqhyvVBtgk@domain.hid>
-	<AANLkTimVOpXi7D_speJ1AuygscOt8NxGt4ZP_o8Vjrql@domain.hid>
+Message-ID: <20100602221243.GC2590@domain.hid>
+References: <AANLkTilOsBQXASMpEHjKs0JwOy8c2EaLG26Vej8sueZC@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <AANLkTimVOpXi7D_speJ1AuygscOt8NxGt4ZP_o8Vjrql@domain.hid>
-Subject: Re: [Xenomai-help] How to generate a waveform / digital output
- (Alexis)
+In-Reply-To: <AANLkTilOsBQXASMpEHjKs0JwOy8c2EaLG26Vej8sueZC@mail.gmail.com>
+Subject: Re: [Xenomai-help] National Instruments PCI-6711
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,83 +17,51 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Ettore Pedretti <epedrett@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: xenomai@xenomai.org, John Monnier <monnier@domain.hid>
 
 Hi,
 
 Ettore Pedretti wrote:
-> Hi Daniele,
+> Dear All,
 > 
-> Thanks again for your code. It works when I select range=0
+> Thanks for all the help getting the PCI-6711 running under xenomai. I
+> have a question about the functionalities implemented by the analogy
+> driver,
 > 
-> ./analogy-waveform --r 0
-> ./analogy-phasemod --r 0
+> With the NI linux driver we can programme  some waveforms in and let
+> them run without further intervention. We do not need to change the
+> waveforms in real time. Is it possible to do this with the analogy
+> driver?
+
+I remember having read in the DAQ STC manual that such a feature was
+available for the digital output subdevice. So, it may not be
+surprising that it is also available for the analog output device.
+
 > 
-> I get a sine wave out of the card
+> I guess you should use analogy commands and an asynchronous
+> acquisition command. All the examples I have seen on comedi/analogy
+> put the acquisition in a while loop. It seems as if you need to fill
+> the buffer each time.
+
+Precisely, even if the hardware is able to work like you expect, the
+command API does not support it. The command structure
+(inherited from Comedi) defines via the stop_src and stop_arg fields
+the length of the asynchronous acquisition and all the data are to be
+going through the application. 
+
+On the other side, that is just the theory. I would not be surprised
+to find a Comedi driver which proposes the behaviour you ask thanks to
+a driver-specific hidden cheat flag somewhere in the structure.
+
+> 
+> What is the closest functionality I can get to programming the card
+> and letting it run without further intervention?
 > 
 
-If you are OK with it, I will integrate this code into cmd_write (or
-instead of it).
+I have no answer so far. That would need an extension of the framework.
 
-Many thanks.
-
-> Thanks a bunch!!
-> 
+> All the best
 > Ettore
-> 
-> On 31 May 2010 16:24, Ettore Pedretti <ep41@domain.hid> wrote:
-> > Hi Daniele,
-> >
-> > Thanks very much for your help. It is very appreciated. I compiled
-> > your programs. When I run them I get:
-> >
-> > fangorn:~/control/CHAMP/analogy# ./analogy-waveform
-> > amplitude=1.000000
-> > offset=0.000000
-> > analogy-waveform.c:364:main:DEBUG: device=analogy0 fd=0
-> > analogy-waveform.c:365:main:DEBUG: subdevices=14
-> > analogy-waveform.c:366:main:DEBUG: read subdevice=-1
-> > analogy-waveform.c:367:main:DEBUG: write subdevice=1
-> > analogy-waveform.c:368:main:DEBUG: sbsize=16456
-> > analogy-waveform.c:374:main:DEBUG: subdevice=1
-> > analogy-waveform.c:405:main:DEBUG: range=0 10000000 -10000000
-> > analogy-waveform.c:411:main:DEBUG: min=-1.000000 max=1.000000
-> > analogy-waveform.c:414:main:DEBUG: range=-1
-> > analogy-waveform.c:419:main:ERROR: analogy get rngnfo
-> >
-> > and dmesg:
-> >
-> > Analogy: a4l_rt_ioctl: minor=0
-> > Analogy: a4l_rt_ioctl: minor=0
-> > Analogy: a4l_rt_ioctl: minor=0
-> > Analogy: a4l_ioctl_cancel: minor=0
-> > Analogy: a4l_ioctl_cancel: non functional subdevice
-> > Analogy: a4l_rt_close: minor=0
-> >
-> > What am I doing wrong? do I need to pass a parameter?
-> >
-> > Cheers
-> >
-> > Ettore
-> >
-> > --
-> > Ettore Pedretti, SUPA
-> > School of Physics and Astronomy
-> > University of St Andrews, North Haugh,
-> > St Andrews, Fife, KY16 9SS, Scotland
-> > Ph: +44-1334-461666, Fax: +44-1334-463104
-> > The University of St Andrews is a charity registered in Scotland : No SC013532
-> >
-> 
-> 
-> 
-> -- 
-> Ettore Pedretti, SUPA
-> School of Physics and Astronomy
-> University of St Andrews, North Haugh,
-> St Andrews, Fife, KY16 9SS, Scotland
-> Ph: +44-1334-461666, Fax: +44-1334-463104
-> The University of St Andrews is a charity registered in Scotland : No SC013532
 > 
 > _______________________________________________
 > Xenomai-help mailing list
