@@ -1,12 +1,12 @@
-Message-ID: <4C053608.3030604@domain.hid>
-Date: Tue, 01 Jun 2010 18:32:08 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4C07B70E.6050303@domain.hid>
+Date: Thu, 03 Jun 2010 16:07:10 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4C04E8D8.8030101@domain.hid> <4C04EDAF.1080800@domain.hid>
-	<4C051100.7000803@domain.hid> <4C051E26.8020102@domain.hid>
-	<4C053217.5010809@domain.hid>
-In-Reply-To: <4C053217.5010809@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4C04E8D8.8030101@domain.hid>	<4C04EDAF.1080800@domain.hid>	<4C051100.7000803@domain.hid>	<4C051E26.8020102@domain.hid>	<4C053217.5010809@domain.hid>	<4C053608.3030604@domain.hid>	<4C06011A.7020507@domain.hid>	<4C07A9F4.7090709@domain.hid>
+	<4C07AC61.4040705@domain.hid> <4C07B031.6090504@domain.hid>
+	<4C07B530.3040200@domain.hid>
+In-Reply-To: <4C07B530.3040200@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Linux kernel 2.6.32.14 and Xenomai 2.5.2 does
 	not boot
@@ -19,57 +19,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniele Nicolodi <daniele@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Daniele Nicolodi wrote:
-> On 01/06/10 16:50, Jan Kiszka wrote:
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
 >> Daniele Nicolodi wrote:
->>> On 01/06/10 13:23, Jan Kiszka wrote:
->>>> Daniele Nicolodi wrote:
->>>>> Hello.
->>>>>
->>>>> In the process of upgrading my data acquisition system from Xenomai
->>>>> 2.5.0 to Xenomai 2.5.2, I also upgraded the kernel from the 2.6.30
->>>>> release to 2.6.32.14.
->>>> Latest Xenomai is 2.5.3, latest 2.6.32 patch is
->>>> adeos-ipipe-2.6.32.13-x86-2.6-04.patch [1]. Make sure you have both.
->>> This adeos patch does not apply cleanly to 2.6.32.14 kernel sources.
->>> Looks like a hunk in include/linux/modules.h has been applied upstream.
->>> However this was easy to merge.
+>>> Booting a working 2.6.30 kernel I noticed this error message as first
+>>> output on the console. Can it be related to my issue with more modern
+>>> kernels and ipipe patches?
 >>>
->>> Using the latest xenomai and adeos patch however results again in a
->>> kernel that does not boot on my hardware. This problem is present since
->>> the first time I have been trying to use xenomai on this box, as I wrote
->>> in an email to the list on the 17th February early this year, it is thus
->>> not a recent regression.
+>>> ERROR: 8254 timer not connected to IO-APIC
 >>>
->>> Further suggestions?
->> Please send an updated .config file.
+>>> I have no idea of what it means.
+>> Is APIC enabled in your kernel configuration?
 > 
-> It is attached.
+> It likely is.
+> 
+> I'm getting this error for many kernel releases now. It must be related
+> to I-pipe's patching of the APIC or IO-APIC code. Irritating but mostly
+> harmless.
 
-OK, will try to build a test kernel from it later.
+What I mean is that when Xenomai wants to use the 8254 (which is the
+case if the APIC is disabled in linux kernel configuration) and the 8254
+has become unreachable by Linux by some change in recent versions,
+Xenomai timing subystem becomes screwed up.
 
-Does you system boot up as soon as you disable CONFIG_IPIPE (and
-Xenomai, of course)? CONFIG_IPIPE_DEBUG* has no influence either?
+When, on the other hand, Xenomai wants to use the APIC, the fact that
+the 8254 has become unreachable is harmless.
 
-> 
->> Note that the configs you sent in Feb. were broken /wrt power management
->> setting (there should have been big fat warnings signs visible in the
->> Xenomai sub-menu). I don't think this should cause the lock-ups, but you
->> won't like the latency results (+ timing can be corrupted for the whole
->> system).
-> 
-> I did notice that, and I corrected it. This new configuration I'm using
-> should be a valid one.
-> 
-> Thanks for your help,
-> 
-
-Jan
+And from the .config Daniele posted, it appears that he disabled APIC,
+so that Xenomai is trying to use the 8254.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
