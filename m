@@ -1,17 +1,14 @@
-Message-ID: <4C07ABC9.3040204@domain.hid>
-Date: Thu, 03 Jun 2010 15:19:05 +0200
+Message-ID: <4C07AC61.4040705@domain.hid>
+Date: Thu, 03 Jun 2010 15:21:37 +0200
 From: Daniele Nicolodi <daniele@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTimHOPpI3mst8-fM4Atf6V_-kurbqD-RKZdWDbUY@mail.gmail.com>
-	<4C038E30.5070606@domain.hid>
-	<AANLkTimSJSagZ2zccsNZbgNE0RDP5ECPjSNqhyvVBtgk@domain.hid>
-	<AANLkTimVOpXi7D_speJ1AuygscOt8NxGt4ZP_o8Vjrql@domain.hid>
-	<20100602210634.GB2590@domain.hid>
-In-Reply-To: <20100602210634.GB2590@domain.hid>
+References: <4C04E8D8.8030101@domain.hid>	<4C04EDAF.1080800@domain.hid>	<4C051100.7000803@domain.hid>	<4C051E26.8020102@domain.hid>	<4C053217.5010809@domain.hid>	<4C053608.3030604@domain.hid>
+	<4C06011A.7020507@domain.hid> <4C07A9F4.7090709@domain.hid>
+In-Reply-To: <4C07A9F4.7090709@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] How to generate a waveform / digital output
-	(Alexis)
+Subject: Re: [Xenomai-help] Linux kernel 2.6.32.14 and Xenomai 2.5.2 does
+ not boot
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,36 +18,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Alexis Berlemont <alexis.berlemont@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 02/06/10 23:06, Alexis Berlemont wrote:
-> Hi,
-> 
-> Ettore Pedretti wrote:
->> Hi Daniele,
->>
->> Thanks again for your code. It works when I select range=0
->>
->> ./analogy-waveform --r 0
->> ./analogy-phasemod --r 0
->>
->> I get a sine wave out of the card
->>
-> 
-> If you are OK with it, I will integrate this code into cmd_write (or
-> instead of it).
+Booting a working 2.6.30 kernel I noticed this error message as first
+output on the console. Can it be related to my issue with more modern
+kernels and ipipe patches?
 
-You can of course include this code in the analogy distribution.
-Be warned, however, that this is just proven at the "works for me"
-level, and the option parsing and wrong usage reporting sections can see
-some nice improvements.
+ERROR: 8254 timer not connected to IO-APIC
 
-I would like however to retain the copyright on the code, the license
-should be GPL v3 or later, it this suits in xenomai. Otherwise GPL v2 is
-fine also.
+I have no idea of what it means.
 
-Thanks. Cheers,
 -- 
 Daniele
 
