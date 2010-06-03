@@ -1,13 +1,16 @@
-Message-ID: <4C077391.8000006@domain.hid>
-Date: Thu, 03 Jun 2010 11:19:13 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4C07A9F4.7090709@domain.hid>
+Date: Thu, 03 Jun 2010 15:11:16 +0200
+From: Daniele Nicolodi <daniele@domain.hid>
 MIME-Version: 1.0
-References: <6D556AFBBAD7426CBD7EDECBA8A2A361@domain.hid>
-In-Reply-To: <6D556AFBBAD7426CBD7EDECBA8A2A361@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <4C04E8D8.8030101@domain.hid>
+	<4C04EDAF.1080800@domain.hid>	<4C051100.7000803@domain.hid>
+	<4C051E26.8020102@domain.hid>	<4C053217.5010809@domain.hid>
+	<4C053608.3030604@domain.hid> <4C06011A.7020507@domain.hid>
+In-Reply-To: <4C06011A.7020507@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] "arm: fix mm switching" patch effective also for
- 2.4.10 ?
+Subject: Re: [Xenomai-help] Linux kernel 2.6.32.14 and Xenomai 2.5.2 does
+	not boot
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,36 +20,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: k-isono@domain.hid
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Katsuhiko Isono wrote:
-> I use linux-2.6.26 + xenomai-2.4.10 with custom arm(i.mx31) board.
+On 02/06/10 08:58, Jan Kiszka wrote:
+> Jan Kiszka wrote:
+>> Daniele Nicolodi wrote:
+>>> On 01/06/10 16:50, Jan Kiszka wrote:
+>>>> Daniele Nicolodi wrote:
+>>>>> On 01/06/10 13:23, Jan Kiszka wrote:
+>>>>>> Daniele Nicolodi wrote:
+>>>>>>> Hello.
+>>>>>>>
+>>>>>>> In the process of upgrading my data acquisition system from Xenomai
+>>>>>>> 2.5.0 to Xenomai 2.5.2, I also upgraded the kernel from the 2.6.30
+>>>>>>> release to 2.6.32.14.
+>>>>>> Latest Xenomai is 2.5.3, latest 2.6.32 patch is
+>>>>>> adeos-ipipe-2.6.32.13-x86-2.6-04.patch [1]. Make sure you have both.
+>>>>> This adeos patch does not apply cleanly to 2.6.32.14 kernel sources.
+>>>>> Looks like a hunk in include/linux/modules.h has been applied upstream.
+>>>>> However this was easy to merge.
+>>>>>
+>>>>> Using the latest xenomai and adeos patch however results again in a
+>>>>> kernel that does not boot on my hardware. This problem is present since
+>>>>> the first time I have been trying to use xenomai on this box, as I wrote
+>>>>> in an email to the list on the 17th February early this year, it is thus
+>>>>> not a recent regression.
+>>>>>
+>>>>> Further suggestions?
+>>>> Please send an updated .config file.
+>>> It is attached.
+>>
+>> OK, will try to build a test kernel from it later.
 > 
-> When realtime application was executed on my environment,
-> application caused the SIGSEGV fault about once every several hours.
+> No problems on the target I have at hand.
 > 
-> However, when I applied "arm: fix mm switching" patch of xenomai-2.5 to 
-> my environment, SIGSEGV fault did not happen.
-> 
-> There is a following question.
->  - Is this patch effective also for 2.4.10 ?
->  - What trouble is corrected with this patch ?
+> Did you already enable a serial console, maybe even an early one, and
+> tried to catch the last word of your system (if any)?
 
-The version of the I-pipe patch you are using has another known bug than
-the one fixed by the "arm: fix mm switching" patch (by the way, to be
-sure that we are talking about the same patch, I would prefer an URL
-pointing to xenomai's gitweb), the bug mentioned here:
+I haven't. I'll do as soon as I find more time to work on this.
 
-https://mail.gna.org/public/xenomai-core/2009-08/msg00021.html
+>> Does you system boot up as soon as you disable CONFIG_IPIPE (and
+>> Xenomai, of course)? CONFIG_IPIPE_DEBUG* has no influence either?
 
-And the fix for this bug in the I-pipe patches which comes with Xenomai
-2.4.10 should fix both bugs.
+I build a kernel with all che CONFIG_IPIPE_DEBUG* options turned on, but
+here hasn't been any change in behavior. I think that the issue
+manifests itself before the kernel is able to initialize the local console.
 
-So, in short, do you oberve the segmentation faults when using the
-I-pipe patches which ship with Xenomai 2.4.10 rather than whatever patch
-you are using for linux 2.6.26?
+A you suggest, an early serial console would kelp my be the only way to
+get some informations on this problem.
 
+Thanks. Cheers,
 -- 
-					    Gilles.
+Daniele
 
