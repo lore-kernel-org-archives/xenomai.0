@@ -1,70 +1,46 @@
+Date: Thu, 3 Jun 2010 10:35:50 -0400
+Message-ID: <20100603143550.GD4438@domain.hid>
+References: <op.vdpsychunuwxn3@domain.hid>
 MIME-Version: 1.0
-Date: Sun, 30 May 2010 09:44:03 +0800
-Message-ID: <AANLkTimibgE4TlTLTaehsyZWQbrJBXCAeRaMTj0dEdZR@mail.gmail.com>
-From: Everett Wang <everteq@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai-help] Beagleboard and RTDM serial example
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <op.vdpsychunuwxn3@domain.hid>
+From: Andreas Glatz <andreasglatz@domain.hid>
+Subject: Re: [Xenomai-core] rt_pipe_open / rt_pipe_delete bug
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: stephane ancelot <sancelot@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi All,
+On Thu, Jun 03, 2010 at 04:09:38AM -0400, stephane ancelot wrote:
+> Hi,
+> 
+> tryied in v2.4.10 :
+> 
+> 
+> I have opened a /dev/rtp7 pipe , and deleted it.
+> 
+> if I launch again the same program, rt_pipe_open replies with -EBUSY ....
+> 
 
-I have made some progress in getting RTDM 16550A working for my
-beagleboard. Followed
-Wolfgang's instructions, I first set uart 0,1 free from kernel then
-load 16550A driver.
+Can you describe the sequence how you are invoking rt_pipe_open()/open()/rt_pipe_delete()?
 
-setserial /dev/ttyS0 uart none
-setserial /dev/ttyS1 uart none
+If the following description applies to you then you discovered what we've discovered
+before and there is no easy fix for that as far as I know.
 
-I can load the driver fine:
-insmod /lib/modules/2.6.33.3/kernel/drivers/xenomai/serial/xeno_16550A.ko
-mem=0x4806a000 irq=72 baud_base=3000000
+1) create pipe with rt_pipe_open()
+2) connect to it by opening /dev/rtp7 with open()
+3) delete pipe with rt_pipe_delete() (for example by killing the Xenomai application)
+4) create same pipe again with rt_pipe_open() (for example by restarting the
+   Xenomai application with /dev/rtp7 is still open)
 
-The baud_base is set to 3000000 since the
-linux/arch/arm/plat-omap/include/plat/serial.h defined
-OMAP24XX_BASE_BAUD  3000000. Hope this is OK.
-after that I can see the rtser0 in the /proc/xenomai/rtdm:
+--> rt_pipe_open() reports an error
 
-cat /proc/xenomai/rtdm/rtser0/information
-driver:         xeno_16550A
-version:        1.5.2
-peripheral:     UART 16550A
-provider:       Jan Kiszka
-class:          2
-sub-class:      0
-flags:          EXCLUSIVE  NAMED_DEVICE
-
-But I can only create one rtser. When I tried to create an other rtser
-for ttyS1, I had this:
-
-insmod /lib/modules/2.6.33.3/kernel/drivers/xenomai/serial/xeno_16550A.ko
-mem=0x4806c000 irq=73 baud_base=3000000
-insmod: error inserting
-'/lib/modules/2.6.33.3/kernel/drivers/xenomai/serial/xeno_16550A.ko':
--1 File exists
-
-I could also do the ttyS1 first. It will create an rtser0 as well. But
-when I do insmod for ttyS0, it will have the same error message.
-
-How can I create rtser0 and rtser1 for beagleboard?
-
-In the xenomai example cross-link, it requires two rtsers, one for
-read and another for write. Can I have just one for both read and
-write?
-Currently I have a GPS connected to ttyS1. It sends some data every
-0.1 second. I want to modify the example so I can read the
-GPS data in real time. This should be easy to do?
-
-Have a nice weekend,
-
-Everett
+Andreas
 
