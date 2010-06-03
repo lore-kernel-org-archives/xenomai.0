@@ -1,12 +1,13 @@
-Message-ID: <4C0751FC.8050009@domain.hid>
-Date: Thu, 03 Jun 2010 08:55:56 +0200
+Message-ID: <4C075206.80003@domain.hid>
+Date: Thu, 03 Jun 2010 08:56:06 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4C0692A9.2080806@domain.hid> <4C06953D.90003@domain.hid>
-In-Reply-To: <4C06953D.90003@domain.hid>
+References: <4C0692A9.2080806@domain.hid>
+	<1275512284.18250.56.camel@domain.hid>
+In-Reply-To: <1275512284.18250.56.camel@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig1871C4AFA831D2F2ED9B6423"
+	boundary="------------enigBD948338AA0AF4D8FF0BDE08"
 Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-core] [RFC] Break out of endless user space loops
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -17,16 +18,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>, Tschaeche IT-Services <services@domain.hid>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1871C4AFA831D2F2ED9B6423
+--------------enigBD948338AA0AF4D8FF0BDE08
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
+Philippe Gerum wrote:
+> On Wed, 2010-06-02 at 19:19 +0200, Jan Kiszka wrote:
 >> Hi all,
 >>
 >> here is the first apparently working prototype for getting hold of
@@ -42,16 +43,21 @@ t.
 >> preempted register set at I-pipe level. I basically replicated what
 >> Linux does these days as well and exported it as ipipe_get_irq_regs()
 >> (the second patch).
+>>
+>> This is an x86-64-only draft which clearly needs more love. I'm open f=
+or
+>> suggestions of different abstractions wherever you see a need.
 >=20
-> You already have the regs in xnarch_fault_info.
->=20
+> What if you have no MMU ?
 
-We only pass this around for exceptions.
+Then you either have an MPU detecting NULL pointer accesses or you can
+actually redirect the PC to some kernel function containing some other
+invalid, exception-raising instruction.
 
 Jan
 
 
---------------enig1871C4AFA831D2F2ED9B6423
+--------------enigBD948338AA0AF4D8FF0BDE08
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -60,10 +66,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.9 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkwHUgEACgkQitSsb3rl5xR+WACgw7Tho4R25Oxjpg4KC0lfH2RN
-wOoAnitgzD/k6plRzUCd+ao3nkXWETZD
-=fZao
+iEYEARECAAYFAkwHUgYACgkQitSsb3rl5xQk8QCg4dlLTrME4VOpr6zafshmTsQ+
+238AoM3HKwnpO+rn76lGrus2LD6SnFyy
+=txmG
 -----END PGP SIGNATURE-----
 
---------------enig1871C4AFA831D2F2ED9B6423--
+--------------enigBD948338AA0AF4D8FF0BDE08--
 
