@@ -1,13 +1,12 @@
-Message-ID: <4C0ABA8F.8000104@domain.hid>
-Date: Sat, 05 Jun 2010 22:58:55 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Date: Sat, 5 Jun 2010 23:11:02 +0200
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <20100605211102.GB8097@domain.hid>
+References: <9FDCB500-CFA2-42CC-A7CB-EDFD66AF366C@usc.edu>
 MIME-Version: 1.0
-References: <4C037798.8070307@domain.hid>	<1275403262-23939-1-git-send-email-P.B.Cheblakov@domain.hid>	<4C051D3F.2030407@domain.hid>
-	<4C0A8B94.7020207@domain.hid>
-In-Reply-To: <4C0A8B94.7020207@domain.hid>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai-core] [PATCH V3] rtcan: add rtcan_plx_pci driver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9FDCB500-CFA2-42CC-A7CB-EDFD66AF366C@usc.edu>
+Subject: Re: [Xenomai-core] analogy - experimental branch
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,25 +15,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Stefan Schaal <sschaal@domain.hid>
+Cc: Peter Pastor Sampedro <pastorsa@domain.hid>, xenomai@xenomai.org
 
-On 06/05/2010 07:38 PM, Gilles Chanteperdrix wrote:
-> P.B.Cheblakov wrote:
->> I'vу merged fixes from Wolfgang for Kconfig and for warnings in this 
->> patch and tested it
+Hi Stefan,
+
+Stefan Schaal wrote:
+> Hi Alexis,
 > 
-> Thanks, but it seems we still have a few build issues:
-> - the PCI IDs used by this patch are not available in old kernels
+>   I was just wondering whether the new "experimental" branch in your git repository is something that can be tried already.
+> 
 
-OK, this can to be fixed with some "ifndef ..." lines. What kernel did
-make problems?
+No. Not yet. This branch is aimed at temporarily holding the
+corrections I am trying to do for the cmd_bits issue. It needs quite a
+lot of work and I have not finished yet. 
 
-> - the I-pipe patches no longer apply on some stable releases.
+If you have a look at the commits in this branch, we will see many
+"(broken)".
 
-I don't understand this issue? What does it have to do with this driver?
+> Best wishes,
+> 
+> -Stefan
 
-Wolfgang.
-
-
+-- 
+Alexis.
 
