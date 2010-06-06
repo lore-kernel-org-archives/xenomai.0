@@ -1,17 +1,18 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1275812358.18250.315.camel@domain.hid>
-References: <4C037798.8070307@domain.hid>
-	<1275403262-23939-1-git-send-email-P.B.Cheblakov@domain.hid>
-	<4C051D3F.2030407@domain.hid> <4C0A8B94.7020207@domain.hid>
-	<4C0ABA8F.8000104@domain.hid> <4C0ABE03.9000400@domain.hid>
-	<4C0B478A.7060303@domain.hid>
-	<1275812358.18250.315.camel@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sun, 06 Jun 2010 11:00:39 +0200
-Message-ID: <1275814839.18250.357.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] [PATCH V3] rtcan: add rtcan_plx_pci driver
+Message-ID: <4C0B9846.7050203@domain.hid>
+Date: Sun, 06 Jun 2010 14:44:54 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <E1OKZdD-0003ml-45@domain.hid> <4C095876.3060605@domain.hid>
+	<4C099329.6000303@domain.hid> <4C0A49C4.8000509@domain.hid>
+	<4C0A9AB9.7030602@domain.hid> <4C0A9C2A.1030002@domain.hid>
+	<4C0AA224.6060409@domain.hid> <4C0AA2F0.6050201@domain.hid>
+	<4C0AA3EC.7040106@domain.hid> <4C0AA548.6070409@domain.hid>
+	<4C0AB7BA.7000100@domain.hid>
+In-Reply-To: <4C0AB7BA.7000100@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : native: Rework
+ handling of pthread carrier thread
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -20,68 +21,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Sun, 2010-06-06 at 10:19 +0200, Philippe Gerum wrote:
-> On Sun, 2010-06-06 at 09:00 +0200, Wolfgang Grandegger wrote:
-> > On 06/05/2010 11:13 PM, Gilles Chanteperdrix wrote:
-> > > Wolfgang Grandegger wrote:
-> > >> On 06/05/2010 07:38 PM, Gilles Chanteperdrix wrote:
-> > >>> P.B.Cheblakov wrote:
-> > >>>> I'v=D1=83 merged fixes from Wolfgang for Kconfig and for warnings =
-in this=20
-> > >>>> patch and tested it
-> > >>> Thanks, but it seems we still have a few build issues:
-> > >>> - the PCI IDs used by this patch are not available in old kernels
-> > >>
-> > >> OK, this can to be fixed with some "ifndef ..." lines. What kernel d=
-id
-> > >> make problems?
-> > >=20
-> > > http://sisyphus.hd.free.fr/~gilles/bx
-> >=20
-> > OK.
-> >=20
-> > >>> - the I-pipe patches no longer apply on some stable releases.
-> > >>
-> > >> I don't understand this issue? What does it have to do with this dri=
-ver?
-> > >=20
-> > > Nothing. It simply showed up at the same time because I had not run t=
-he
-> > > build test for some time.
-> >=20
-> > Hm, the error message is quite clear:
-> >=20
-> > prepare-kernel.sh: Unable to patch kernel 2.6.33.5 with adeos-ipipe-2.6=
-.33.4-powerpc-2.9-01.patch
-> >=20
-> > But it's dissappointing that a successive extraversion breaks the patch=
-.
->=20
-> ppc64 upstream issue. I've remerged here, I'll push an updated patch in
-> the coming hours after some testing.
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Not being able to join a deleted task undermines seriously the utility
+>>>> of rt_task_join... What is it useful for, then?
+>>> See the doc: You join or delete, but not both.
+>> Looks to me like a workaround: you are not able to handle properly the
+>> life-cycle of an RT_TASK, so you changed the rules... is there really no
+>> other way?
+> 
+> First of all, it turns a SEGV into a proper error code. Moreover,
+> rt_task_join now officially finalizes the object for native (it always
+> did technically!), as does pthread_join for POSIX. No rule changed, just
+> rule documentation and violation detection added. One may argue about
+> join after delete, but for what use case such a change of rt_task_delete
+> semantic?
 
-Should be ok now:
-http://download.gna.org/adeos/patches/v2.6/powerpc/adeos-ipipe-2.6.33.5-pow=
-erpc-2.10-00.patch
+rt_task_delete, pthread_cancel, pthread_detach are not synchronous,
+after one of these calls, you do not have any guarantee that the
+ressources attached to a thread are free for re-use. After pthread_join,
+you do.
 
->=20
-> >=20
-> > Wolfgang.
-> >=20
-> >=20
-> > _______________________________________________
-> > Xenomai-core mailing list
-> > Xenomai-core@domain.hid
-> > https://mail.gna.org/listinfo/xenomai-core
->=20
->=20
+So, the question is what is more important, to have a way to wait for
+the ressources attached to a thread to be freed? Or to avoid
+segmentation faults in broken application?
 
+I do not generally mind segmentation faults in broken applications if we
+can not avoid them without breaking other applications. A segmentation
+fault is one of the simplest things to debug.
 
---=20
-Philippe.
+However, I do not have a strong opinion on this, it is just an open
+question. More generally, I would like us to discuss once and for all
+about the semantic of the various calls and their effect on the RT_TASK
+duration, instead of changing this semantic every release and risk
+breaking non-broken applications (I mean, the one which do not segfault).
 
-
+-- 
+					    Gilles.
 
