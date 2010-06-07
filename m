@@ -1,13 +1,14 @@
-Message-ID: <4C053C51.4090903@domain.hid>
-Date: Tue, 01 Jun 2010 18:58:57 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: "Katsuhiko Isono" <k-isono@domain.hid>
+Date: Mon, 7 Jun 2010 14:54:59 +0900
+Message-ID: <5311F6C579A24F0F9BEBD27186749943@domain.hid>
 MIME-Version: 1.0
-References: <20100601135005.GA5483@domain.hid>	<1275402757.27918.151.camel@domain.hid>
-	<20100601155403.GA8240@domain.hid>
-In-Reply-To: <20100601155403.GA8240@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Handling Linux Signals in primary domain context
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <4C08BF6D.1030806@domain.hid>
+Subject: Re: [Xenomai-help] "arm: fix mm switching" patch effective also for
+	2.4.10 ?
+Reply-To: k-isono@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,34 +18,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Tschaeche IT-Services <services@domain.hid>
+To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Tschaeche IT-Services wrote:
-> On Tue, Jun 01, 2010 at 04:32:37PM +0200, Philippe Gerum wrote:
->> Not in the absence of syscall. We thought about this once already, when
->> considering how a watchdog preempting a runaway task in primary mode
->> could force a secondary mode switch: there is no sane and easy solution
->> to this unfortunately.
-> 
-> This is exactly Sigmatek's problem: Our customers develop code
-> within our debugging/development environment. We want to catch
-> this situation (the developer implements a while(1)) with a
-> watchdog throwing SIGTRAP so that our debugger gets active
-> and can locate the problem according to the stack frame...
 
-CONFIG_XENO_OPT_WATCHDOG is probably what you are looking for. It tries
-to catch "well-behaving" broken threads via SIGDEBUG and kills the
-hopelessly broken rest - system alive again.
 
-You can then debug the former and need to do code review on the latter.
-Or you could also try to add some loop-breaking Xenomai syscalls (or
-even more clever checks) to library services the code under suspect
-usually invokes.
 
-Jan
+> Katsuhiko Isono wrote:
+> >> -----Original Message-----
+> >> Katsuhiko Isono wrote:
+> >>> I use linux-2.6.26 + xenomai-2.4.10 with custom arm(i.mx31) board.
+> >>>
+> >>> When realtime application was executed on my environment,
+> >>> application caused the SIGSEGV fault about once every=20
+> several hours.
+> >>>
+> >>> However, when I applied "arm: fix mm switching" patch of=20
+> >> xenomai-2.5 to=20
+> >>> my environment, SIGSEGV fault did not happen.
+> >>>
+> >>> There is a following question.
+> >>>  - Is this patch effective also for 2.4.10 ?
+> >>>  - What trouble is corrected with this patch ?
+> >> The version of the I-pipe patch you are using has another=20
+> >> known bug than
+> >> the one fixed by the "arm: fix mm switching" patch (by the=20
+> way, to be
+> >> sure that we are talking about the same patch, I would=20
+> prefer an URL
+> >> pointing to xenomai's gitweb), the bug mentioned here:
+> >>
+> >> https://mail.gna.org/public/xenomai-core/2009-08/msg00021.html
+> >>
+> >> And the fix for this bug in the I-pipe patches which comes=20
+> >> with Xenomai
+> >> 2.4.10 should fix both bugs.
+> >>
+> >> So, in short, do you oberve the segmentation faults when using the
+> >> I-pipe patches which ship with Xenomai 2.4.10 rather than=20
+> >> whatever patch
+> >> you are using for linux 2.6.26?
+> >>
+> >=20
+> > Thank you for your reply.
+> >=20
+> > I use linux-2.6.26 of Freescale BSP because I develop custom board.=20
+>=20
+> Actually, I do not really understand this argument. It looks as easy =
+to
+> develop a custom board support with the mainline kernel as with a =
+vendor
+> version. And at least, with the mainline kernel, you are not stuck =
+with
+> whatever version the vendor chose.
 
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+The reason for using FreeScale BSP is that functions(SDMA,..etc) were =
+richer=20
+than mainline at the time of transplanted to our board.
+
 
