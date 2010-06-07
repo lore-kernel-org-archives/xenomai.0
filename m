@@ -1,11 +1,12 @@
-Message-ID: <4C0D3EED.5080302@domain.hid>
-Date: Mon, 07 Jun 2010 20:48:13 +0200
-From: Ramon <ramoncostacastello@domain.hid>
+Message-ID: <4C0D42F9.9090306@domain.hid>
+Date: Mon, 07 Jun 2010 21:05:29 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <4C0D3EED.5080302@domain.hid>
+In-Reply-To: <4C0D3EED.5080302@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] installing xenomai in a debian distribution
-Reply-To: ramoncostacastello@domain.hid
+Subject: Re: [Xenomai-help] installing xenomai in a debian distribution
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,18 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: ramoncostacastello@domain.hid
+Cc: xenomai@xenomai.org
 
-Hi,
+Ramon wrote:
+> Hi,
+> 
+> I have installed a debian distribution from scratch (debian-504-i386),
+> latter I have installed the libxenomai, libxenomai-dev, 
+> linux-patch-xenomai, xenomai-doc & xenomai-runtime
+> package included in the distribution.
+> 
+> In order to complete the installation, which are the next steps I should 
+> follow ?
 
-I have installed a debian distribution from scratch (debian-504-i386),
-latter I have installed the libxenomai, libxenomai-dev, 
-linux-patch-xenomai, xenomai-doc & xenomai-runtime
-package included in the distribution.
+See:
 
-In order to complete the installation, which are the next steps I should 
-follow ?
+http://www.xenomai.org/index.php/Building_Debian_packages
 
-Best wishes,
-Ramon
+-- 
+					    Gilles.
 
