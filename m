@@ -1,14 +1,12 @@
-From: "Katsuhiko Isono" <k-isono@domain.hid>
-Date: Mon, 7 Jun 2010 14:54:59 +0900
-Message-ID: <5311F6C579A24F0F9BEBD27186749943@domain.hid>
+Message-ID: <4C0CA863.9000304@domain.hid>
+Date: Mon, 07 Jun 2010 10:05:55 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <4C08BF6D.1030806@domain.hid>
-Subject: Re: [Xenomai-help] "arm: fix mm switching" patch effective also for
-	2.4.10 ?
-Reply-To: k-isono@domain.hid
+References: <AANLkTil10j3uoPdVXmgE8kIPrMQRSAArQB5gz3swDruD@mail.gmail.com>
+In-Reply-To: <AANLkTil10j3uoPdVXmgE8kIPrMQRSAArQB5gz3swDruD@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] RTDM rs232 strange behavior
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,62 +16,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
+To: Everett Wang <everteq@domain.hid>
 Cc: xenomai@xenomai.org
 
+On 06/05/2010 04:22 AM, Everett Wang wrote:
+> Hi All,
+> 
+> I am playing around with xenomai and RTDM serial driver on a
+> 1.7Ghz Pentium-M machine running xenomai 2.5.3. The example cross-link
+> produced this result:
+> 
+> main : starting read-task
+>  Nr |   write->irq    |    irq->read    |   write->read   |
+> -----------------------------------------------------------
+>   0 |          118948 |          614135 |          733083
+>   1 |          115598 |          614281 |          729879
+>   2 |          108917 |          614982 |          723899
+>   3 |          106101 |          616560 |          722661
+>   4 |          113457 |          614971 |          728428
+>   5 |          110358 |          614265 |          724623
+>   6 |          106499 |          614406 |          720905
+>   7 |          110363 |          615015 |          725378
+>   8 |          115478 |          614840 |          730318
+>   9 |          110766 |          614168 |          724934
+>  10 |          108986 |          616435 |          725421
+>  11 |          108030 |          614299 |          722329
+>  12 |          109369 |          614420 |          723789
+>  13 |          105862 |          614456 |          720318
+>  14 |          110428 |          616301 |          726729
+> 
+> Is 0.7 millisecond between write and read a reasonable number?
 
+No, at least not for a baudrate of 115200. Does the "latency" test
+report reasonable latency figures? And how did you load xeno_16550A.ko?
 
+> I then changed the example a little: I let write task only
+> write 4 characters and instruct read task to read 10 characters.
+> I thought the read task will tell me when that only 4 characters
+> is read. But to my surprise, it waited until write-task
+> filled all 10 characters before finish reading. How can I
+> change the code to just do the read to whatever charaters
+> are avaliable without waiting to fill all the characters I
+> asked for? I will use this capability to read a GPS. It's
+> output length is unknow before reading.
 
-> Katsuhiko Isono wrote:
-> >> -----Original Message-----
-> >> Katsuhiko Isono wrote:
-> >>> I use linux-2.6.26 + xenomai-2.4.10 with custom arm(i.mx31) board.
-> >>>
-> >>> When realtime application was executed on my environment,
-> >>> application caused the SIGSEGV fault about once every=20
-> several hours.
-> >>>
-> >>> However, when I applied "arm: fix mm switching" patch of=20
-> >> xenomai-2.5 to=20
-> >>> my environment, SIGSEGV fault did not happen.
-> >>>
-> >>> There is a following question.
-> >>>  - Is this patch effective also for 2.4.10 ?
-> >>>  - What trouble is corrected with this patch ?
-> >> The version of the I-pipe patch you are using has another=20
-> >> known bug than
-> >> the one fixed by the "arm: fix mm switching" patch (by the=20
-> way, to be
-> >> sure that we are talking about the same patch, I would=20
-> prefer an URL
-> >> pointing to xenomai's gitweb), the bug mentioned here:
-> >>
-> >> https://mail.gna.org/public/xenomai-core/2009-08/msg00021.html
-> >>
-> >> And the fix for this bug in the I-pipe patches which comes=20
-> >> with Xenomai
-> >> 2.4.10 should fix both bugs.
-> >>
-> >> So, in short, do you oberve the segmentation faults when using the
-> >> I-pipe patches which ship with Xenomai 2.4.10 rather than=20
-> >> whatever patch
-> >> you are using for linux 2.6.26?
-> >>
-> >=20
-> > Thank you for your reply.
-> >=20
-> > I use linux-2.6.26 of Freescale BSP because I develop custom board.=20
->=20
-> Actually, I do not really understand this argument. It looks as easy =
-to
-> develop a custom board support with the mainline kernel as with a =
-vendor
-> version. And at least, with the mainline kernel, you are not stuck =
-with
-> whatever version the vendor chose.
+Setting the config rx timeout to RTSER_TIMEOUT_NONE should help.
 
-The reason for using FreeScale BSP is that functions(SDMA,..etc) were =
-richer=20
-than mainline at the time of transplanted to our board.
+> Most GPS can also produce a precisive time pulse when data
+> is ready. Is it be possible to connect this to a pin in rs232 (CTS, for example)
+> to triger a IRQ so the data can be read in a timely manner?
 
+That depends on the signals, I can imagine. I'm not a hardware guy but I
+know that many GPS receiver come with a read-to-use RS232 interface.
+
+Wolfgang.
 
