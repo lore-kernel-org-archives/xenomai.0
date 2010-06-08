@@ -1,12 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <4C0E05F6.5030200@domain.hid>
-References: <AANLkTimIDghE4o5RpesavooS0cB96ekIgYTXv8rkPRZb@domain.hid>
-	<4C0E05F6.5030200@domain.hid>
-Date: Tue, 8 Jun 2010 18:04:46 +0200
-Message-ID: <AANLkTikxCJ0mDTu2RmSndN-McFJNv1PuWV8j-xywS3NK@mail.gmail.com>
-From: Cyril Wallois <walloiscyril@domain.hid>
-Content-Type: multipart/alternative; boundary=0015174c1240b98b2e048886f215
-Subject: Re: [Xenomai-help] [RTnet-users] Alignment problem
+In-Reply-To: <4C0D42F9.9090306@domain.hid>
+References: <4C0D3EED.5080302@domain.hid>
+	<4C0D42F9.9090306@domain.hid>
+Date: Tue, 8 Jun 2010 19:01:41 +0200
+Message-ID: <AANLkTilAzvuYqA_0wQnnM9EES407fqb2kCzSdzoQRejg@domain.hid>
+From: ramon costa <ramoncostacastello@domain.hid>
+Content-Type: multipart/alternative; boundary=0016e646414e47e9cf048887bed1
+Subject: Re: [Xenomai-help] installing xenomai in a debian distribution
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,62 +18,52 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
---0015174c1240b98b2e048886f215
+--0016e646414e47e9cf048887bed1
 Content-Type: text/plain; charset=ISO-8859-1
 
-Hi Gilles,
+Hi,
 
-Thanks for your help
+I follow the step in
 
-Still on ARM, right? Do you have the same issue if you use an I-pipe
-> patch for a more recent kernel versions (anything more recent than 2.6.28).
->
+http://www.xenomai.org/index.php/Building_Debian_packages
 
-Yes on ARM with PXA270 (toradex colibri), I try to use a newer kernel but I
-have a problem of file system and can't use NFS (ethernet driver as module
-for rtnet).
-On an other embedded system, with kernel 2.6.29, I haven't any problem.
+It is said :
 
-Other than that, you do not give us enough information to help solving
-> your issue. What about the last issue you had? What was the value of the
-> r3 register at the time of the alignment fault?
->
+wget http://www.kernel.org/pub/linux/kernel/v2.6/linux-2.6.32.11.tar.bz2
+&& tar -jxf linux-2.6.32.11.tar.bz2 && cd linux-2.6.32.11
 
-I don't solve the last issue, I focus on try with newer version of kernel
-and xenomai.
-Probably my problem should be solve with a more recent kernel , I think I
-will try 2.6.29 (and try to solve fs problem).
+and latter
 
-Regards,
+/usr/src/kernel-patches/i386/apply/xenomai
 
-WALLOIS Cyril
+Unfortunatelly the system replies
+No "Xenomai realtime kernel patches" patch found for kernel version 2.6.32.11
 
---0015174c1240b98b2e048886f215
+What I'm doing wrong ?
+
+any idea ?
+
+Ramon
+
+--0016e646414e47e9cf048887bed1
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Hi Gilles,<br><br>Thanks for your help<br><br>
-<div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margi=
-n: 0pt 0pt 0pt 0.8ex; border-left: 1px solid rgb(204, 204, 204); padding-le=
-ft: 1ex;">Still on ARM, right? Do you have the same issue if you use an I-p=
-ipe<br>
+Hi,<br><br>I follow the step in <br><br><a href=3D"http://www.xenomai.org/i=
+ndex.php/Building_Debian_packages" target=3D"_blank">http://www.xenomai.org=
+/index.php/Building_Debian_packages</a><br><br>It is said :<br><pre>wget <a=
+ href=3D"http://www.kernel.org/pub/linux/kernel/v2.6/linux-2.6.32.11.tar.bz=
+2" title=3D"http://www.kernel.org/pub/linux/kernel/v2.6/linux-2.6.32.11.tar=
+.bz2" rel=3D"nofollow" target=3D"_blank">http://www.kernel.org/pub/linux/ke=
+rnel/v2.6/linux-2.6.32.11.tar.bz2</a> &amp;&amp; tar -jxf linux-2.6.32.11.t=
+ar.bz2 &amp;&amp; cd linux-2.6.32.11<br>
 
-patch for a more recent kernel versions (anything more recent than 2.6.28).=
-<br></blockquote><div>=A0</div><div>Yes on ARM with PXA270 (toradex colibri=
-), I try to use a newer kernel but I have a problem of file system and can&=
-#39;t use NFS (ethernet driver as module for rtnet).<br>
-On an other embedded system, with kernel 2.6.29, I haven&#39;t any problem.=
-<br><br></div><blockquote class=3D"gmail_quote" style=3D"margin: 0pt 0pt 0p=
-t 0.8ex; border-left: 1px solid rgb(204, 204, 204); padding-left: 1ex;">
-Other than that, you do not give us enough information to help solving<br>
-your issue. What about the last issue you had? What was the value of the<br=
->
-r3 register at the time of the alignment fault?<font color=3D"#888888"><br>=
-</font></blockquote><div>=A0</div><div>I don&#39;t solve the last issue, I =
-focus on try with newer version of kernel and xenomai.<br>Probably my probl=
-em should be solve with a more recent kernel , I think I will try 2.6.29 (a=
-nd try to solve fs problem).<br>
-<br>Regards,<br><br>WALLOIS Cyril<br></div></div><br>
+<br>and latter</pre>
+<pre>/usr/src/kernel-patches/i386/apply/xenomai<br><br>Unfortunatelly the s=
+ystem replies<br>No &quot;Xenomai realtime kernel patches&quot; patch found=
+ for kernel version 2.6.32.11<br><br>What I&#39;m doing wrong ?<br><br>
+any idea ?<br><br>Ramon<br><br></pre>
+<a name=3D"1291881a020a4950_result_2"></a>
 
---0015174c1240b98b2e048886f215--
+--0016e646414e47e9cf048887bed1--
 
