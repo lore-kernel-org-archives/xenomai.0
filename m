@@ -1,13 +1,12 @@
-From: Sebastian Smolorz <smolorz@domain.hid>
-Date: Tue, 8 Jun 2010 16:14:54 +0200
-References: <20100608135425.99830@domain.hid>
-In-Reply-To: <20100608135425.99830@domain.hid>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <201006081614.54946.smolorz@domain.hid>
-Subject: Re: [Xenomai-help] xeno_can_mem driver
+In-Reply-To: <4C0E05F6.5030200@domain.hid>
+References: <AANLkTimIDghE4o5RpesavooS0cB96ekIgYTXv8rkPRZb@domain.hid>
+	<4C0E05F6.5030200@domain.hid>
+Date: Tue, 8 Jun 2010 18:04:46 +0200
+Message-ID: <AANLkTikxCJ0mDTu2RmSndN-McFJNv1PuWV8j-xywS3NK@mail.gmail.com>
+From: Cyril Wallois <walloiscyril@domain.hid>
+Content-Type: multipart/alternative; boundary=0015174c1240b98b2e048886f215
+Subject: Re: [Xenomai-help] [RTnet-users] Alignment problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,63 +16,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Nils Armbruster <nils-a@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Nils Armbruster wrote:
-> I'm currently trying to get the can-interfaces of an Samsung S3C2440
->  based board working (NetDCU10). The used Linux kernel version is 2.6.19,
->  because this was deliverd in the BSP. I patched this kernel with Xenomai
->  2.4.0., as this was the newest Version I managed the Kernel to compile
->  with.
-> 
-> The standard driver delivered with the board (lincan 0.3.3) mappes the
->  can devices to 10000000-10000007 : onboard-can
-> 10000008-1000000f :
-> onboard-can
+--0015174c1240b98b2e048886f215
+Content-Type: text/plain; charset=ISO-8859-1
 
-Hmm, the SJA1000 has 32 registers, not just 8.
+Hi Gilles,
 
-> So I tried to use the driver xeno_can_mem.
-> 
-> I use
-> modprobe xen_can_mem mem=0x10000000 irq=17 clock=48000000
+Thanks for your help
 
-Are you sure you give the right clock frequency? Seems to be too high.
+Still on ARM, right? Do you have the same issue if you use an I-pipe
+> patch for a more recent kernel versions (anything more recent than 2.6.28).
+>
 
-> to install the module but it complains that there is no such device...
-> 
-> As far as I know, this board uses the an sja1000p chip for can. Do you
->  know if there are any differences to the sja1000 chip? Are there any
->  changes necessary in the driver sources?
-> 
-> I figured out, that the installation of the driver stops in the function
->  int rtcan_sja1000_register(struct rtcan_device *dev) And there in that
->  part:
-> 
->     printk("chip->read_reg(dev, SJA_SR) = %d \n",chip->read_reg(dev,
->  SJA_SR)); if ((chip->read_reg(dev, SJA_SR) &
-> 	 (SJA_SR_RBS | SJA_SR_DOS | SJA_SR_TBS)) != SJA_SR_TBS) {
-> 	printk("ERROR! No SJA1000 device found!\n");
-> 	return -ENODEV;
->     }
-> 
-> When I comment this out the installation works and in /proc/iomem
->  sja1000-mem is visible. But I'm not able to send Can-messages with
->  rtcansen.
-> The program seems to work, but no messages are send as I checked it with
->  a scope.
+Yes on ARM with PXA270 (toradex colibri), I try to use a newer kernel but I
+have a problem of file system and can't use NFS (ethernet driver as module
+for rtnet).
+On an other embedded system, with kernel 2.6.29, I haven't any problem.
 
-There is no point in commenting out the driver's check for the existence of 
-the SJA1000 and complain that it does not work. This check is there for a 
-good reason.
+Other than that, you do not give us enough information to help solving
+> your issue. What about the last issue you had? What was the value of the
+> r3 register at the time of the alignment fault?
+>
 
-> 
-> Does anybody have an hint for me, how to get the can driver working?
+I don't solve the last issue, I focus on try with newer version of kernel
+and xenomai.
+Probably my problem should be solve with a more recent kernel , I think I
+will try 2.6.29 (and try to solve fs problem).
 
-First find out where the 32 registers of the SJA1000 are mapped and also 
-check the clock frequency.
+Regards,
 
--- 
-Sebastian
+WALLOIS Cyril
+
+--0015174c1240b98b2e048886f215
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi Gilles,<br><br>Thanks for your help<br><br>
+<div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margi=
+n: 0pt 0pt 0pt 0.8ex; border-left: 1px solid rgb(204, 204, 204); padding-le=
+ft: 1ex;">Still on ARM, right? Do you have the same issue if you use an I-p=
+ipe<br>
+
+patch for a more recent kernel versions (anything more recent than 2.6.28).=
+<br></blockquote><div>=A0</div><div>Yes on ARM with PXA270 (toradex colibri=
+), I try to use a newer kernel but I have a problem of file system and can&=
+#39;t use NFS (ethernet driver as module for rtnet).<br>
+On an other embedded system, with kernel 2.6.29, I haven&#39;t any problem.=
+<br><br></div><blockquote class=3D"gmail_quote" style=3D"margin: 0pt 0pt 0p=
+t 0.8ex; border-left: 1px solid rgb(204, 204, 204); padding-left: 1ex;">
+Other than that, you do not give us enough information to help solving<br>
+your issue. What about the last issue you had? What was the value of the<br=
+>
+r3 register at the time of the alignment fault?<font color=3D"#888888"><br>=
+</font></blockquote><div>=A0</div><div>I don&#39;t solve the last issue, I =
+focus on try with newer version of kernel and xenomai.<br>Probably my probl=
+em should be solve with a more recent kernel , I think I will try 2.6.29 (a=
+nd try to solve fs problem).<br>
+<br>Regards,<br><br>WALLOIS Cyril<br></div></div><br>
+
+--0015174c1240b98b2e048886f215--
 
