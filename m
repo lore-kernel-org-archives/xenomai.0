@@ -1,13 +1,9 @@
-From: Sebastian Smolorz <smolorz@domain.hid>
-Date: Wed, 9 Jun 2010 11:10:01 +0200
-References: <20100609084823.99850@domain.hid>
-In-Reply-To: <20100609084823.99850@domain.hid>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <201006091110.01783.smolorz@domain.hid>
-Subject: Re: [Xenomai-help] xeno_can_mem driver
+Date: Wed, 9 Jun 2010 11:52:40 +0100
+Message-ID: <AANLkTilEKG3zHL2p7jqkZlTqBDKXs7gXApmcaNQDxHZa@domain.hid>
+From: Stephen Bryant <sbxenomai@domain.hid>
+Content-Type: multipart/alternative; boundary=0016e65b635a703a07048896b48b
+Subject: [Xenomai-help] Why are open_rt, close_rt and socket_rt deprecated?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,46 +13,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Nils Armbruster <nils-a@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Nils Armbruster wrote:
-> >>  So I tried to use the driver xeno_can_mem.
-> >>
-> >>  I use
-> >>  modprobe xen_can_mem mem=0x10000000 irq=17 clock=48000000
-> >
-> > Are you sure you give the right clock frequency? Seems to be too high.
-> 
-> I used this clock frequency because I noticed, that the frequency is
->  divided by 2. So I just tried it. The frequency I found in the original
->  driver is 24MHz.
+--0016e65b635a703a07048896b48b
+Content-Type: text/plain; charset=ISO-8859-1
 
-You definitely have to define 24MHz here, not 48MHz.
+Hi,
 
-> But even with clock=24000000 it appears "No such device".
+Since moving to Xenomai 2.5.3 I have noticed that loading one of our kernel
+drivers leads to a warning about open_rt and close_rt, stating that they are
+deprecated and the drivers require update.  I am sure there is a good reason
+for this, but I haven't found an explanation in the Xenomai documentation
+(API / The Real-Time Driver Model and First Applications) or on the mailing
+lists (help / core), or anywhere else (Google).
 
-Sure, this is another problem: The SJA1000 registers are not accessible (see 
-below).
+I can re-write the driver so that it doesn't use open_rt / close_rt without
+affecting the applications that use it, but I am curious as to why using
+them is a bad idea? Is it just because loading / unloading a driver does not
+take a deterministic time, and therefore should not be considered real-time?
 
-> >>  Does anybody have an hint for me, how to get the can driver working?
-> >
-> > First find out where the 32 registers of the SJA1000 are mapped and
-> > also check the clock frequency.
-> 
-> Sorry for my stupid question, but how can I find out where the registers
->  are mapped? In the original driver the base address is defined as
->  0x10000000. Port size ist defined as 4 and when the memory region is
->  requested twice of the port size is requested:
->  request_mem_region(mem_addr, nx_can->if_portsize * 2, "onboard-can")
-> 
-> Do you have any suggestions how I should proceed?
+Steve
 
-Either you study the appropriate datasheet to learn how the SJA1000 
-registers are accessible from your board, or you go through the code of your 
-original driver and search for the way the SJA registers are read and write. 
-For example, the SJA_CDR register is the last of the 32 registers.
+--0016e65b635a703a07048896b48b
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
--- 
-Sebastian
+<span class=3D"gI"><span class=3D"ik">Hi, <br><br>Since moving to Xenomai 2=
+.5.3 I have noticed that loading one of our kernel drivers leads to a warni=
+ng about open_rt and close_rt, stating that they are deprecated and the dri=
+vers require update.=A0 I am sure there is a good reason for this, but I ha=
+ven&#39;t found an explanation in the Xenomai documentation (API / </span><=
+/span><span class=3D"gI"><span class=3D"ik">The Real-Time Driver Model and =
+First Applications</span></span><span class=3D"gI"><span class=3D"ik">) or =
+on the mailing lists (help / core), or anywhere else (Google).<br>
+<br>I can re-write the driver so that it doesn&#39;t use open_rt / close_rt=
+ without affecting the applications that use it, but I am curious as to why=
+ using them is a bad idea? Is it just because loading / unloading a driver =
+does not take a deterministic time, and therefore should not be considered =
+real-time?<br>
+<br>Steve<br></span></span>
+
+--0016e65b635a703a07048896b48b--
 
