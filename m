@@ -1,84 +1,66 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 26 May 2010 14:03:08 -0700
-Message-ID: <2319761F7FA0D1479BA77EC2E0A8E7BCE8A603@domain.hid>
-In-Reply-To: <1274047063.2972.1.camel@domain.hid>
-References: <181804936ABC2349BE503168465576460EBD5C0D@exchserver.basler.com>
-	<1274047063.2972.1.camel@domain.hid>
-From: "Abhijit Majumdar" <abhijit.majumdar@domain.hid>
-Subject: Re: [Xenomai-help] rt_task_sleep causing crashes on PowerPC
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4C0692A9.2080806@domain.hid>
+References: <4C0692A9.2080806@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 09 Jun 2010 12:41:23 +0200
+Message-ID: <1276080083.18906.52.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] [PATCH] Mayday support (was: Re: [RFC] Break out of
+ endless user space loops)
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>, Steve Deiters <SteveDeiters@domain.hid>
-Cc: xenomai@xenomai.org
-
-Hi
-
-I get similar problem the xenomai posix skin. I have the latest version
-of Xenomai (2.5.3) and kernel 2.6.28.=20
-
-I am using clock_nanosleep(CLOCK_REALTIME, ......) to wait for 1
-millisecond. It freezes the system. However if I sleep for a second it
-is fine.
-
-Philippe, should your fix work in my case too? If so, can you please
-send the fix.
-
-thanks
-Abhijit
-
------Original Message-----
-From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid]
-On Behalf Of Philippe Gerum
-Sent: Sunday, May 16, 2010 2:58 PM
-To: Steve Deiters
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] rt_task_sleep causing crashes on PowerPC
-
-On Fri, 2010-05-14 at 19:18 -0500, Steve Deiters wrote:
-> I am running Xenomai 2.5.3, I-pipe version 2.9-00, with Linux 2.6.33.4
-> on a PowerPC MPC5121.  With small values of sleep ticks passed to
-> rt_task_sleep, I get various sorts of crashes.  Here is a simple
-program
-> using a delay loop that exhibits the behavior.
-
-<snip>
-
->=20
-> I'm not sure if I have something misconfigured or what.  I am
-upgrading
-> from Xenomai 2.4.10 on an older kernel and I did not have this same
-> problem.
->=20
-
-Bug confirmed here. Your setup is not involved, I'll send a fix asap.
-
-> Thanks.
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, Tschaeche IT-Services <services@domain.hid>
 
 
---=20
+I've toyed a bit to find a generic approach for the nucleus to regain
+complete control over a userland application running in a syscall-less
+loop.
+
+The original issue was about recovering gracefully from a runaway
+situation detected by the nucleus watchdog, where a thread would spin in
+primary mode without issuing any syscall, but this would also apply for
+real-time signals pending for such a thread. Currently, Xenomai rt
+signals cannot preempt syscall-less code running in primary mode either.
+
+The major difference between the previous approaches we discussed about
+and this one, is the fact that we now force the runaway thread to run a
+piece of valid code that calls into the nucleus. We do not force the
+thread to run faulty code or at a faulty address anymore. Therefore, we
+can reuse this feature to improve the rt signal management, without
+having to forge yet-another signal stack frame for this.
+
+The code introduced only fixes the watchdog related issue, but also does
+some groundwork for enhancing the rt signal support later. The
+implementation details can be found here:
+http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=4cf21a2ae58354819da6475ae869b96c2defda0c
+
+The current mayday support is only available for powerpc and x86 for
+now, more will come in the next days. To have it enabled, you have to
+upgrade your I-pipe patch to 2.6.32.15-2.7-00 or 2.6.34-2.7-00 for x86,
+2.6.33.5-2.10-01 or 2.6.34-2.10-00 for powerpc. That feature relies on a
+new interface available from those latest patches.
+
+The current implementation does not break the 2.5.x ABI on purpose, so
+we could merge it into the stable branch.
+
+We definitely need user feedback on this. Typically, does arming the
+nucleus watchdog with that patch support in, properly recovers from your
+favorite "get me out of here" situation? TIA,
+
+You can pull this stuff from
+git://git.xenomai.org/xenomai-rpm.git, queue/mayday branch.
+
+
+-- 
 Philippe.
 
 
-
-_______________________________________________
-Xenomai-help mailing list
-Xenomai-help@domain.hid
-https://mail.gna.org/listinfo/xenomai-help
 
