@@ -1,5 +1,5 @@
-Message-ID: <4C0F8574.80101@domain.hid>
-Date: Wed, 09 Jun 2010 14:13:40 +0200
+Message-ID: <4C0F88E7.9000401@domain.hid>
+Date: Wed, 09 Jun 2010 14:28:23 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4C0D3EED.5080302@domain.hid>	<4C0D42F9.9090306@domain.hid>	<AANLkTilAzvuYqA_0wQnnM9EES407fqb2kCzSdzoQRejg@domain.hid>	<4C0E7A5B.7040603@domain.hid>	<4C0E8CB9.1090208@domain.hid>	<4C0E8D41.4010006@domain.hid>
@@ -29,13 +29,16 @@ ramon costa wrote:
 > 
 > It is said that "This howto was written for Linux 2.6.32.11 and Xenomai
 > 2.5.3,"
-> 
-> I'm I doing something wrong or there's a problem in howto page ?
 
-Maybe instead of asking the same question again and again, you could
-answer the question I asked? What version are you trying to install?
+The howto also says:
+"This howto was written for Xenomai 2.5.3, please use the latest stable
+Xenomai release and adapt the version numbers accordingly."
+I do not see how the howto could be made more clear about that.
 
-Also,  please CC the mailing list.
+The exact kernel versions available depend on the version of Xenomai you
+are using. When a version is released, we try hard to make it work with
+most past released kernel versions, but we can not predict the future
+and make it work with all future kernel versions.
 
 -- 
 					    Gilles.
