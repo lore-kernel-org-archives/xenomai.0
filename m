@@ -1,13 +1,14 @@
-Message-ID: <4C0F97DA.3050501@domain.hid>
-Date: Wed, 09 Jun 2010 15:32:10 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Wed, 9 Jun 2010 15:38:41 +0200
+From: Tschaeche IT-Services <services@domain.hid>
+Message-ID: <20100609133841.GA24216@domain.hid>
+References: <4C0692A9.2080806@domain.hid>
+	<1276080083.18906.52.camel@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTilEKG3zHL2p7jqkZlTqBDKXs7gXApmcaNQDxHZa@domain.hid>
-In-Reply-To: <AANLkTilEKG3zHL2p7jqkZlTqBDKXs7gXApmcaNQDxHZa@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Why are open_rt,
-	close_rt and socket_rt deprecated?
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1276080083.18906.52.camel@domain.hid>
+Subject: Re: [Xenomai-help] [PATCH] Mayday support (was: Re: [RFC] Break out
+	of endless user space loops)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,43 +18,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stephen Bryant <sbxenomai@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Stephen Bryant wrote:
-> Hi,
+Not quite sure if i understood correctly. Trying to summarize:
+
+Triggering the syscall code (to get out of the loop) is initiated
+by the nucleus watchdog (available with CONFIG_XENO_OPT_WATCHDOG)
+and can't be forced manually yet. Right?
+
+Your (Philippe's) commit message says:
+> ...
+> runaway thread situation detected by the nucleus watchdog. Instead of
+> killing the runaway thread bluntly, this feature allows to force a
+> relax on it, despite the syscall-less nature of the code it was
+> ...
+
+How do i choose between "killing" and "force a relax"?
+Or does the watchdog already set a Linux signal,
+which is handled when the task gets relaxed?
+
+Then, for testing, i have to do the following:
+- apply patches ;-)
+- setup the watchdog with an appropriate timeout
+	(wd_timeout_arg/CONFIG_XENO_OPT_WATCHDOG_TIMEOUT)
+- no changes in our user space application
+- just wait until watchdog forces relaxing the task
+	which will initiate linux signal handling
+
+correct?
+
+Thanks for your support,
+
+	Olli
+
+On Wed, Jun 09, 2010 at 12:41:23PM +0200, Philippe Gerum wrote:
 > 
-> Since moving to Xenomai 2.5.3 I have noticed that loading one of our
-> kernel drivers leads to a warning about open_rt and close_rt, stating
-> that they are deprecated and the drivers require update.  I am sure
-> there is a good reason for this, but I haven't found an explanation in
-> the Xenomai documentation (API / The Real-Time Driver Model and First
-> Applications) or on the mailing lists (help / core), or anywhere else
-> (Google).
-
-The issue has been discussed at length on the xenomai-core mailing list.
-
+> I've toyed a bit to find a generic approach for the nucleus to regain
+> complete control over a userland application running in a syscall-less
+> loop.
 > 
-> I can re-write the driver so that it doesn't use open_rt / close_rt
-> without affecting the applications that use it, but I am curious as to
-> why using them is a bad idea? Is it just because loading / unloading a
-> driver does not take a deterministic time, and therefore should not be
-> considered real-time?
-
-If your driver defines an _rt and an _nrt callback for open and close,
-what particular callback is used depends on the current mode. The
-problem is that this is unreliable.
-
-Even if you think you forced the mode you wanted before calling open or
-close, this mode can change due to an asynchronous event such as a
-fault, a signal, or because you are running under gdb. There was an
-attempt to make this working reliably, but it was reverted after a long
-discussion.
-
-And since having primary mode only open and close syscalls is not really
-necessary, it was decided to deprecate open_rt and close_rt.
-
-
--- 
-					    Gilles.
+> The original issue was about recovering gracefully from a runaway
+> situation detected by the nucleus watchdog, where a thread would spin in
+> primary mode without issuing any syscall, but this would also apply for
+> real-time signals pending for such a thread. Currently, Xenomai rt
+> signals cannot preempt syscall-less code running in primary mode either.
+> 
+> The major difference between the previous approaches we discussed about
+> and this one, is the fact that we now force the runaway thread to run a
+> piece of valid code that calls into the nucleus. We do not force the
+> thread to run faulty code or at a faulty address anymore. Therefore, we
+> can reuse this feature to improve the rt signal management, without
+> having to forge yet-another signal stack frame for this.
+> 
+> The code introduced only fixes the watchdog related issue, but also does
+> some groundwork for enhancing the rt signal support later. The
+> implementation details can be found here:
+> http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=4cf21a2ae58354819da6475ae869b96c2defda0c
+> 
+> The current mayday support is only available for powerpc and x86 for
+> now, more will come in the next days. To have it enabled, you have to
+> upgrade your I-pipe patch to 2.6.32.15-2.7-00 or 2.6.34-2.7-00 for x86,
+> 2.6.33.5-2.10-01 or 2.6.34-2.10-00 for powerpc. That feature relies on a
+> new interface available from those latest patches.
+> 
+> The current implementation does not break the 2.5.x ABI on purpose, so
+> we could merge it into the stable branch.
+> 
+> We definitely need user feedback on this. Typically, does arming the
+> nucleus watchdog with that patch support in, properly recovers from your
+> favorite "get me out of here" situation? TIA,
+> 
+> You can pull this stuff from
+> git://git.xenomai.org/xenomai-rpm.git, queue/mayday branch.
+> 
+> 
+> -- 
+> Philippe.
+> 
+> 
 
