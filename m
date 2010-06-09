@@ -1,14 +1,14 @@
-Message-ID: <4C0FCBEF.2050504@domain.hid>
-Date: Wed, 09 Jun 2010 19:14:23 +0200
-From: Stefan Kisdaroczi <kisda@domain.hid>
+Date: Wed, 9 Jun 2010 20:11:53 +0200
+From: Tschaeche IT-Services <services@domain.hid>
+Message-ID: <20100609181153.GA27353@domain.hid>
+References: <4C0692A9.2080806@domain.hid>
+	<1276080083.18906.52.camel@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTim6W405xv2vwsA57MUle64rB7REu-hLv_t5nFC9@domain.hid>
-	<4C0FC490.2070207@domain.hid>
-In-Reply-To: <4C0FC490.2070207@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigAF620943B8DE0B1BD1ED11B3"
-Subject: Re: [Xenomai-help] error while compiling the kernel
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1276080083.18906.52.camel@domain.hid>
+Subject: Re: [Xenomai-help] [PATCH] Mayday support (was: Re: [RFC] Break out
+	of endless user space loops)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,72 +18,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org, xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAF620943B8DE0B1BD1ED11B3
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+On Wed, Jun 09, 2010 at 12:41:23PM +0200, Philippe Gerum wrote:
+> We definitely need user feedback on this. Typically, does arming the
+> nucleus watchdog with that patch support in, properly recovers from your
+> favorite "get me out of here" situation? TIA,
+> 
+> You can pull this stuff from
+> git://git.xenomai.org/xenomai-rpm.git, queue/mayday branch.
 
-Am 09.06.2010 18:42, schrieb Stefan Kisdaroczi:
-> Am 09.06.2010 18:18, schrieb ramon costa:
->> Hi,
->>
->> During the compilation  (CONCURRENCY_LEVEL=3D2 fakeroot make-kpkg --in=
-itrd
->> --append-to-version -xenomai-2.5.3 --revision 1.0 binary-arch)
->> the following error is obtained :
->>
->>   H16TOFW firmware/matrox/g400_warp.fw
->> make[2]: Leaving directory `/home/costa/linux-2.6.32.11'
->> /usr/bin/make -j2 EXTRAVERSION=3D.11-xenomai-2.5.3  ARCH=3Di386 \
->>                  -C Documentation/lguest
->> make[2]: Entering directory
->> `/home/costa/linux-2.6.32.11/Documentation/lguest'
->> cc -m32 -Wall -Wmissing-declarations -Wmissing-prototypes -O3
->> -I../../include -I../../arch/x86/include -U_FORTIFY_SOURCE    lguest.c=
- =20
->> -o lguest
->> lguest.c:21:25: error: sys/eventfd.h: No such file or directory
->> lguest.c: In function =E2=80=98create_thread=E2=80=99:
->> lguest.c:1027: warning: implicit declaration of function =E2=80=98even=
-tfd=E2=80=99
->> make[2]: *** [lguest] Error 1
->> make[2]: Leaving directory
->> `/home/costa/linux-2.6.32.11/Documentation/lguest'
->> make[1]: *** [debian/stamp/build/kernel] Error 2
->> make[1]: Leaving directory `/home/costa/linux-2.6.32.11'
->> make: *** [debian/stamp/do-build-arch] Error 2
->> debian:/home/costa/linux-2.6.32.11# make menuconfig
->> scripts/kconfig/mconf arch/x86/Kconfig
->>
->>
->> any suggestion ?
->=20
-> Disable "Linux hypervisor example code" in the "Virtualization" section=
- of the kernel configuration.
+manually build a kernel (timeout 1s) with your patches.
+user space linked to 2.5.3 libraries without any patches.
+Looks fine: the amok task is switched to secondary domain
+(we catched the SIGXCPU) running the loop in secondary domain.
+then, on a SIGTRAP the task leaves the loop.
 
-additional note:
-The problem is the combination of a "old" glibc in debian lenny and a "ne=
-w" kernel.
-Has nothing to do with xenomai or the ipipe patch.
+also, if SIGTRAP arives before SIGXCPU it looks good,
+apart from the latency of 1s.
 
-Stefan
+did not check the ucontext within the exception handler, yet.
+would like to setup a reproducible kernel build first...
+we will go into deeper testing in 2 weeks.
 
+maybe we need a finer granularity than 1s for the watchdog timeout.
+is there a chance?
 
---------------enigAF620943B8DE0B1BD1ED11B3
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+will your patches be merged in an official 2.5.x version?
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+thanks for your great support,
 
-iD8DBQFMD8vvIPTw9rIdn6oRAhLYAJ0UkeaCoTvLVuXSQiSVJZSbnA5AfACfXiZK
-UU+qH3Bi6qQsWPKbv8pBlkw=
-=z1XG
------END PGP SIGNATURE-----
-
---------------enigAF620943B8DE0B1BD1ED11B3--
+	Olli
 
