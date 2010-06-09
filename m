@@ -1,9 +1,13 @@
+Message-ID: <4C0F8574.80101@domain.hid>
+Date: Wed, 09 Jun 2010 14:13:40 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Wed, 9 Jun 2010 11:52:40 +0100
-Message-ID: <AANLkTilEKG3zHL2p7jqkZlTqBDKXs7gXApmcaNQDxHZa@domain.hid>
-From: Stephen Bryant <sbxenomai@domain.hid>
-Content-Type: multipart/alternative; boundary=0016e65b635a703a07048896b48b
-Subject: [Xenomai-help] Why are open_rt, close_rt and socket_rt deprecated?
+References: <4C0D3EED.5080302@domain.hid>	<4C0D42F9.9090306@domain.hid>	<AANLkTilAzvuYqA_0wQnnM9EES407fqb2kCzSdzoQRejg@domain.hid>	<4C0E7A5B.7040603@domain.hid>	<4C0E8CB9.1090208@domain.hid>	<4C0E8D41.4010006@domain.hid>
+	<AANLkTimxN8fv5IbXu4v8m106U-rUucvv9Ipjf5E9aMr1@domain.hid>
+In-Reply-To: <AANLkTimxN8fv5IbXu4v8m106U-rUucvv9Ipjf5E9aMr1@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] installing xenomai in a debian distribution
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -13,45 +17,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: ramon costa <ramoncostacastello@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
---0016e65b635a703a07048896b48b
-Content-Type: text/plain; charset=ISO-8859-1
+ramon costa wrote:
+> Hi
+> 
+> In
+> 
+> http://www.xenomai.org/index.php/Building_Debian_packages
+> 
+> It is said that "This howto was written for Linux 2.6.32.11 and Xenomai
+> 2.5.3,"
+> 
+> I'm I doing something wrong or there's a problem in howto page ?
 
-Hi,
+Maybe instead of asking the same question again and again, you could
+answer the question I asked? What version are you trying to install?
 
-Since moving to Xenomai 2.5.3 I have noticed that loading one of our kernel
-drivers leads to a warning about open_rt and close_rt, stating that they are
-deprecated and the drivers require update.  I am sure there is a good reason
-for this, but I haven't found an explanation in the Xenomai documentation
-(API / The Real-Time Driver Model and First Applications) or on the mailing
-lists (help / core), or anywhere else (Google).
+Also,  please CC the mailing list.
 
-I can re-write the driver so that it doesn't use open_rt / close_rt without
-affecting the applications that use it, but I am curious as to why using
-them is a bad idea? Is it just because loading / unloading a driver does not
-take a deterministic time, and therefore should not be considered real-time?
-
-Steve
-
---0016e65b635a703a07048896b48b
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<span class=3D"gI"><span class=3D"ik">Hi, <br><br>Since moving to Xenomai 2=
-.5.3 I have noticed that loading one of our kernel drivers leads to a warni=
-ng about open_rt and close_rt, stating that they are deprecated and the dri=
-vers require update.=A0 I am sure there is a good reason for this, but I ha=
-ven&#39;t found an explanation in the Xenomai documentation (API / </span><=
-/span><span class=3D"gI"><span class=3D"ik">The Real-Time Driver Model and =
-First Applications</span></span><span class=3D"gI"><span class=3D"ik">) or =
-on the mailing lists (help / core), or anywhere else (Google).<br>
-<br>I can re-write the driver so that it doesn&#39;t use open_rt / close_rt=
- without affecting the applications that use it, but I am curious as to why=
- using them is a bad idea? Is it just because loading / unloading a driver =
-does not take a deterministic time, and therefore should not be considered =
-real-time?<br>
-<br>Steve<br></span></span>
-
---0016e65b635a703a07048896b48b--
+-- 
+					    Gilles.
 
