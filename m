@@ -1,14 +1,14 @@
-Date: Tue, 1 Jun 2010 17:54:04 +0200
-From: Tschaeche IT-Services <services@domain.hid>
-Message-ID: <20100601155403.GA8240@domain.hid>
-References: <20100601135005.GA5483@domain.hid>
-	<1275402757.27918.151.camel@domain.hid>
+Message-ID: <4C0FCBEF.2050504@domain.hid>
+Date: Wed, 09 Jun 2010 19:14:23 +0200
+From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="9amGYk9869ThD9tj"
-Content-Disposition: inline
-In-Reply-To: <1275402757.27918.151.camel@domain.hid>
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Handling Linux Signals in primary domain context
+References: <AANLkTim6W405xv2vwsA57MUle64rB7REu-hLv_t5nFC9@domain.hid>
+	<4C0FC490.2070207@domain.hid>
+In-Reply-To: <4C0FC490.2070207@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigAF620943B8DE0B1BD1ED11B3"
+Subject: Re: [Xenomai-help] error while compiling the kernel
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,151 +18,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-
---9amGYk9869ThD9tj
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigAF620943B8DE0B1BD1ED11B3
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 01, 2010 at 04:32:37PM +0200, Philippe Gerum wrote:
-> Not in the absence of syscall. We thought about this once already, when
-> considering how a watchdog preempting a runaway task in primary mode
-> could force a secondary mode switch: there is no sane and easy solution
-> to this unfortunately.
+Am 09.06.2010 18:42, schrieb Stefan Kisdaroczi:
+> Am 09.06.2010 18:18, schrieb ramon costa:
+>> Hi,
+>>
+>> During the compilation  (CONCURRENCY_LEVEL=3D2 fakeroot make-kpkg --in=
+itrd
+>> --append-to-version -xenomai-2.5.3 --revision 1.0 binary-arch)
+>> the following error is obtained :
+>>
+>>   H16TOFW firmware/matrox/g400_warp.fw
+>> make[2]: Leaving directory `/home/costa/linux-2.6.32.11'
+>> /usr/bin/make -j2 EXTRAVERSION=3D.11-xenomai-2.5.3  ARCH=3Di386 \
+>>                  -C Documentation/lguest
+>> make[2]: Entering directory
+>> `/home/costa/linux-2.6.32.11/Documentation/lguest'
+>> cc -m32 -Wall -Wmissing-declarations -Wmissing-prototypes -O3
+>> -I../../include -I../../arch/x86/include -U_FORTIFY_SOURCE    lguest.c=
+ =20
+>> -o lguest
+>> lguest.c:21:25: error: sys/eventfd.h: No such file or directory
+>> lguest.c: In function =E2=80=98create_thread=E2=80=99:
+>> lguest.c:1027: warning: implicit declaration of function =E2=80=98even=
+tfd=E2=80=99
+>> make[2]: *** [lguest] Error 1
+>> make[2]: Leaving directory
+>> `/home/costa/linux-2.6.32.11/Documentation/lguest'
+>> make[1]: *** [debian/stamp/build/kernel] Error 2
+>> make[1]: Leaving directory `/home/costa/linux-2.6.32.11'
+>> make: *** [debian/stamp/do-build-arch] Error 2
+>> debian:/home/costa/linux-2.6.32.11# make menuconfig
+>> scripts/kconfig/mconf arch/x86/Kconfig
+>>
+>>
+>> any suggestion ?
+>=20
+> Disable "Linux hypervisor example code" in the "Virtualization" section=
+ of the kernel configuration.
 
-This is exactly Sigmatek's problem: Our customers develop code
-within our debugging/development environment. We want to catch
-this situation (the developer implements a while(1)) with a
-watchdog throwing SIGTRAP so that our debugger gets active
-and can locate the problem according to the stack frame...
+additional note:
+The problem is the combination of a "old" glibc in debian lenny and a "ne=
+w" kernel.
+Has nothing to do with xenomai or the ipipe patch.
 
-Find attached a separated test case (using SIGTERM which
-should terminate the application). When pressing space
-the system freezes (work_l() is in the while() loop with
-pending signal and work_h() does not rt_task_suspend()
-anymore (returning EINTR).
+Stefan
 
-Then, we implement a workaround sending a rt-signal
-when rt_task_suspend() returns EINTR. In the rt-signal
-handler we explicitely migrate the task to secondary
-domain, where linux signal handling is triggered...
 
-Thanks,
+--------------enigAF620943B8DE0B1BD1ED11B3
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-	Olli
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
---=20
-Tschaeche IT-Services       Tel.:  +49/9134/9089850
-Dr.-Ing. Oliver Tsch=E4che    Mobil: +49/176/20435601
-Welluckenweg 4              Email: services@domain.hid
-91077 Neunkirchen
+iD8DBQFMD8vvIPTw9rIdn6oRAhLYAJ0UkeaCoTvLVuXSQiSVJZSbnA5AfACfXiZK
+UU+qH3Bi6qQsWPKbv8pBlkw=
+=z1XG
+-----END PGP SIGNATURE-----
 
---9amGYk9869ThD9tj
-Content-Type: text/x-csrc; charset=us-ascii
-Content-Disposition: attachment; filename="signal2xenomai.c"
-
-/* compile with gcc -Wall -D_GNU_SOURCE -lpthread -o thisfile thisfile.c */
-/*
- * Simple test app to show pthread api mutex behaviour.
- *
- * This is compared against the Xenomai native api behaviour.
- * See mutex_xeno_native.c
- */
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/mman.h>		/* Needed for mlockall() */
-#include <limits.h>
-#include <pthread.h>
-
-#include "native/task.h"
-
-#define MY_STACK_SIZE (100*1024)      /* 100 kB is enough for now. */
-
-static pthread_t ph, pl;
-static RT_TASK xh, xl;
-static volatile int state = 0;
-
-void *
-work_h(void *cookie)
-{
-	if (rt_task_shadow(&xh, "high", 50, 0)) {
-		printf("failed to shadow high\n");
-		return NULL;
-	}
-	if (rt_task_set_periodic(&xh, TM_NOW, 1000000)) {
-		printf("failed to set high periodic\n");
-		return NULL;
-	}
-	while (1) {
-		if (rt_task_wait_period(NULL)) {
-			printf("wait_period failed\n");
-			break;
-		}
-
-		switch (state) {
-			case -1:
-				if (rt_task_suspend(&xl)) {
-					/* work around??? */
-				}
-				state = 1;
-				break;
-			case 1:
-				rt_task_resume(&xl);
-				state = -1;
-				break;
-			default:
-				break;
-		}
-	}
-	return NULL;
-}
-
-void *
-work_l(void *cookie)
-{
-	if (rt_task_shadow(&xl, "low", 25, 0)) {
-		printf("failed to shadow low\n");
-		return NULL;
-	}
-	if (rt_task_set_mode(0, T_PRIMARY, NULL)) {
-		printf("failed to migrate low\n");
-		return NULL;
-	}
-	state = -1;
-	while (1)
-		;
-	return NULL;
-}
-
-int main(void)
-{
-	pthread_attr_t threadattr;
-	mlockall(MCL_CURRENT | MCL_FUTURE);
-
-	pthread_attr_init(&threadattr);
-	pthread_attr_setstacksize(&threadattr, MY_STACK_SIZE);
-
-	pthread_create(&ph, &threadattr, work_h, NULL);
-	printf("high prio watchdog started\n");
-	pthread_create(&pl, &threadattr, work_l, NULL);
-	printf("low prio work started\n");
-
-	printf("Press <ENTER> to send a signal\n");
-	getc(stdin);
-
-	pthread_kill(pl, SIGTERM);
-
-	/* you will not get here, because work_l() eats up your CPU */
-	printf("Press <ENTER> to finish\n");
-	getc(stdin);
-
-	printf("main finished\n");
-	return 0;
-}
-
---9amGYk9869ThD9tj--
+--------------enigAF620943B8DE0B1BD1ED11B3--
 
