@@ -1,13 +1,11 @@
-Message-ID: <4C062106.50809@domain.hid>
-Date: Wed, 02 Jun 2010 11:14:46 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4C1672ED.4080101@domain.hid>
+Date: Mon, 14 Jun 2010 20:20:29 +0200
+From: Ramon <ramoncostacastello@domain.hid>
 MIME-Version: 1.0
-References: <20100601135005.GA5483@domain.hid>	<1275402757.27918.151.camel@domain.hid>	<20100601155403.GA8240@domain.hid>
-	<4C053C51.4090903@domain.hid> <4C061823.70005@domain.hid>
-In-Reply-To: <4C061823.70005@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Handling Linux Signals in primary domain context
+Content-Type: multipart/alternative;
+	boundary="------------010903030502010905090206"
+Subject: [Xenomai-help] rt_task_set_periodic
+Reply-To: ramoncostacastello@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,47 +15,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Tschaeche IT-Services wrote:
->>> On Tue, Jun 01, 2010 at 04:32:37PM +0200, Philippe Gerum wrote:
->>>> Not in the absence of syscall. We thought about this once already, when
->>>> considering how a watchdog preempting a runaway task in primary mode
->>>> could force a secondary mode switch: there is no sane and easy solution
->>>> to this unfortunately.
->>> This is exactly Sigmatek's problem: Our customers develop code
->>> within our debugging/development environment. We want to catch
->>> this situation (the developer implements a while(1)) with a
->>> watchdog throwing SIGTRAP so that our debugger gets active
->>> and can locate the problem according to the stack frame...
->> CONFIG_XENO_OPT_WATCHDOG is probably what you are looking for. It tries
->> to catch "well-behaving" broken threads via SIGDEBUG and kills the
->> hopelessly broken rest - system alive again.
->>
->> You can then debug the former and need to do code review on the latter.
->> Or you could also try to add some loop-breaking Xenomai syscalls (or
->> even more clever checks) to library services the code under suspect
->> usually invokes.
-> 
-> I am afraid "well-behaving" means emitting syscalls. We have a radical
-> way to cause a SIGSEGV to be sent to a thread having run amok: set its
-> PC to an invalid address (after having printed the real PC). gdb will
-> not be able to print where the program stopped, but should be able to
-> print the backtrace.
+This is a multi-part message in MIME format.
+--------------010903030502010905090206
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Just discussing this with our customer raised spontaneous interest (due
-to the yet unsolved switching issue with non-RT Xenomai threads). I'm
-going to look into this, also trying to find some more sophisticated
-approaches, e.g. simulating a call to preserve the call trace (which
-would make it really useful) or jumping to some helper function that
-issues a syscall.
+Hi,
 
-Jan
+I'm beginning to work with periodical task in xenomai. Currently I'm 
+using rt_task_set_periodic.
 
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+The third parameter RTIME period allows to specify the period in  clock 
+ticks (taken from : 
+http://www.xenomai.org/documentation/xenomai-2.5/html/api/group__task.html).
+
+I would like to know how can I get information from the clock tick 
+(which is the value? , can be changed ?) ?
+
+Why Is the minimum period I can use in user space ? (experimentally it 
+seems to be 0.1ms in my system)
+Working in kernel space this period is lower ?
+
+
+When using the POSIX skin
+int pthread_make_periodic_np    (    pthread_t     thread,struct 
+timespec *     starttp,struct timespec *     periodtp    )
+the resolution is the same ? (performance will be the same ?)
+
+Is there any simple approach to develop a periodic task using the POSIX 
+     commands (pthread_cond_timedwait 
+<group__posix__cond.html#gfc43955fc3f1cb43723a9e0be19d0ad1> ?) ?
+
+
+
+Thank you in advance
+Ramon
+
+--------------010903030502010905090206
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+Hi,<br>
+<br>
+I'm beginning to work with periodical task in xenomai. Currently I'm
+using rt_task_set_periodic.<br>
+<br>
+The third parameter RTIME period allows to specify the period in&nbsp; clock
+ticks (taken from : <a
+ href="http://www.xenomai.org/documentation/xenomai-2.5/html/api/group__task.html">http://www.xenomai.org/documentation/xenomai-2.5/html/api/group__task.html</a>).<br>
+<br>
+I would like to know how can I get information from the clock tick
+(which is the value? , can be changed ?) ?<br>
+<br>
+Why Is the minimum period I can use in user space ? (experimentally it
+seems to be 0.1ms in my system)<br>
+Working in kernel space this period is lower ?<br>
+<br>
+<br>
+When using the POSIX skin<br>
+int pthread_make_periodic_np&nbsp;&nbsp;&nbsp; (&nbsp;&nbsp;&nbsp; pthread_t &nbsp;&nbsp;&nbsp; thread,struct
+timespec * &nbsp;&nbsp;&nbsp; starttp,struct timespec * &nbsp;&nbsp;&nbsp; periodtp&nbsp;&nbsp;&nbsp; ) <br>
+the resolution is the same ? (performance will be the same ?)<br>
+<br>
+Is there any simple approach to develop a periodic task using the POSIX
+&nbsp;&nbsp;&nbsp; commands (<span class="Apple-style-span"
+ style="border-collapse: separate; color: rgb(0, 0, 0); font-family: 'Times New Roman'; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; font-size: medium;"><span
+ class="Apple-style-span"
+ style="font-family: Geneva,Arial,Helvetica,sans-serif; font-size: 13px;"><a
+ class="el"
+ href="group__posix__cond.html#gfc43955fc3f1cb43723a9e0be19d0ad1"
+ style="color: rgb(26, 65, 168); text-decoration: none; font-weight: bold; background-color: rgb(242, 242, 255);">pthread_cond_timedwait</a><span
+ class="Apple-converted-space"> ?</span></span></span>) ? <br>
+<br>
+<br>
+<br>
+Thank you in advance<br>
+Ramon<br>
+</body>
+</html>
+
+--------------010903030502010905090206--
 
