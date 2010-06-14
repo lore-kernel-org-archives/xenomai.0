@@ -1,11 +1,12 @@
-Content-Type: text/plain; charset=utf-8; format=flowed; delsp=yes
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <op.veaoxplznuwxn3@domain.hid>
 References: <op.vdpsychunuwxn3@domain.hid>
 	<20100603143550.GD4438@domain.hid>
-Date: Mon, 14 Jun 2010 16:52:27 +0200
-MIME-Version: 1.0
-From: "stephane ancelot" <sancelot@domain.hid>
-Message-ID: <op.veaoxplznuwxn3@domain.hid>
-In-Reply-To: <20100603143550.GD4438@domain.hid>
+	<op.veaoxplznuwxn3@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 14 Jun 2010 18:08:56 +0200
+Message-ID: <1276531736.18906.193.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-core] rt_pipe_open / rt_pipe_delete bug
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -16,49 +17,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Andreas Glatz <andreasglatz@domain.hid>
+To: stephane ancelot <sancelot@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-H
-Le Thu, 03 Jun 2010 16:35:50 +0200, Andreas Glatz =20
-<andreasglatz@domain.hid> a =C3=A9crit:
-
-> On Thu, Jun 03, 2010 at 04:09:38AM -0400, stephane ancelot wrote:
->> Hi,
->>
->> tryied in v2.4.10 :
->>
->>
->> I have opened a /dev/rtp7 pipe , and deleted it.
->>
->> if I launch again the same program, rt_pipe_open replies with -EBUSY =20
->> ....
->>
->
-> Can you describe the sequence how you are invoking =20
-> rt_pipe_open()/open()/rt_pipe_delete()?
->
-> If the following description applies to you then you discovered what =20
-> we've discovered
-> before and there is no easy fix for that as far as I know.
->
-> 1) create pipe with rt_pipe_open()
-> 2) connect to it by opening /dev/rtp7 with open()
-> 3) delete pipe with rt_pipe_delete() (for example by killing the Xenoma=
+On Mon, 2010-06-14 at 16:52 +0200, stephane ancelot wrote:
+> H
+> Le Thu, 03 Jun 2010 16:35:50 +0200, Andreas Glatz =20
+> <andreasglatz@domain.hid> a =C3=A9crit:
+>=20
+> > On Thu, Jun 03, 2010 at 04:09:38AM -0400, stephane ancelot wrote:
+> >> Hi,
+> >>
+> >> tryied in v2.4.10 :
+> >>
+> >>
+> >> I have opened a /dev/rtp7 pipe , and deleted it.
+> >>
+> >> if I launch again the same program, rt_pipe_open replies with -EBUSY =20
+> >> ....
+> >>
+> >
+> > Can you describe the sequence how you are invoking =20
+> > rt_pipe_open()/open()/rt_pipe_delete()?
+> >
+> > If the following description applies to you then you discovered what =20
+> > we've discovered
+> > before and there is no easy fix for that as far as I know.
+> >
+> > 1) create pipe with rt_pipe_open()
+> > 2) connect to it by opening /dev/rtp7 with open()
+> > 3) delete pipe with rt_pipe_delete() (for example by killing the Xenoma=
 i =20
-> application)
-> 4) create same pipe again with rt_pipe_open() (for example by restartin=
+> > application)
+> > 4) create same pipe again with rt_pipe_open() (for example by restartin=
 g =20
-> the
->    Xenomai application with /dev/rtp7 is still open)
->
-> --> rt_pipe_open() reports an error
->
+> > the
+> >    Xenomai application with /dev/rtp7 is still open)
+> >
+> > --> rt_pipe_open() reports an error
+> >
+>=20
+> Yes, but it has worked in xeno 2.1 ....
 
-Yes, but it has worked in xeno 2.1 .... Is there a work around ? only =20
-hacking it ?
-Best Regards
-S.Ancelot
+2.1 was utterly broken wrt pipe session handling, it did not work, at
+all. It just created opportunities to trash your kernel memory badly
+upon rt-side closure, by allowing userland to work on a deallocated pipe
+while in a race window.
 
-> Andreas
+Now both ends are in sync, and the rt-pipe is allowed to linger until
+userland is really done with it, i.e. when it has closed its endpoint.
+You will get -EBUSY on the rt-side until that point is reached.
+
+>  Is there a work around ? only =20
+> hacking it ?
+
+Fix your app on the userland side. It should receive a zero-length read
+upon rt-side closure. You just need to check for this, then close this
+endpoint and reopen it right after if need be.
+
+> Best Regards
+> S.Ancelot
+>=20
+> > Andreas
+>=20
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+
+
+--=20
+Philippe.
+
+
 
