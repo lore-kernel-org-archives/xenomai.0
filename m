@@ -1,12 +1,11 @@
-Message-ID: <4C17762D.4010906@domain.hid>
-Date: Tue, 15 Jun 2010 14:46:37 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4C17AA80.9000804@domain.hid>
+Date: Tue, 15 Jun 2010 18:29:52 +0200
+From: Ramon <ramoncostacastello@domain.hid>
 MIME-Version: 1.0
-References: <4C177276.7060005@domain.hid>
-In-Reply-To: <4C177276.7060005@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] How to avoid a tight real time loop
+Subject: [Xenomai-help] pcibios_find_device
+Reply-To: ramoncostacastello@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,39 +15,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniele Nicolodi <daniele@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Daniele Nicolodi wrote:
-> Hello. In my application I need to read data from an ADC card in blocks
-> of a given number of samples. For efficiency I'm using an mmapped buffer
-> to exchange data with the ADC driver. I'm setting up the acquisition,
-> and then calling a loop like this:
-> 
-> unsigned int required = <compute required number of bytes>;
-> unsigned int read = 0;
-> while (1) {
->   while (read < required) {
->     read = a4l_pool(...);
->   }
->   process(buffer, ...);
-> }
-> 
-> However if I run this loop in a real time thread the tight while loop is
-> an obvious cpu hog: the watchdog kicks in and kills the thread.
-> 
-> There is not an analogy API that can be used to require a certain amount
-> of data to the ADC driver. How can I code this loop to let other
-> processes to run?
+Hi,
 
-You should define a period, and how much data you want to process during
-this period. Then make your task periodic, and wait for the next period
-at the beginning of the loop.
+I'm porting an old practice environment in RTLinux to Xenomai.
 
-> 
-> Thanks. Cheers,
+In that code I use commands like "pcibios_find_device" to obtain the 
+addresses used by a PCI AD/DA board
+(we access to this device at a register level  using outb commands).
 
+In the old rtlinux environment my code was executed in kernel mode and I 
+could access "pcibios_...."  commands easily. Is it possible
+to use these commands in user space mode (using xenomai) ?
 
--- 
-					    Gilles.
+Thank you
+Ramon
 
