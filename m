@@ -1,16 +1,13 @@
-Message-ID: <4C062246.40107@domain.hid>
-Date: Wed, 02 Jun 2010 11:20:06 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4C191D91.6060209@domain.hid>
+Date: Wed, 16 Jun 2010 20:53:05 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20100601135005.GA5483@domain.hid>	
-	<1275402757.27918.151.camel@domain.hid>	
-	<20100601155403.GA8240@domain.hid>
-	<4C053C51.4090903@domain.hid>	 <4C061823.70005@domain.hid>
-	<1275470136.18250.16.camel@domain.hid>
-In-Reply-To: <1275470136.18250.16.camel@domain.hid>
+References: <181804936ABC2349BE503168465576460EBD5C0D@exchserver.basler.com>	<1274047063.2972.1.camel@domain.hid>	<2319761F7FA0D1479BA77EC2E0A8E7BCE8A603@domain.hid>	<1275033915.27918.31.camel@domain.hid>	<2319761F7FA0D1479BA77EC2E0A8E7BCEDCE09@domain.hid>
+	<4C191D07.4050203@domain.hid>
+In-Reply-To: <4C191D07.4050203@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Handling Linux Signals in primary domain context
+Subject: Re: [Xenomai-help] rt_task_sleep causing crashes on PowerPC
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,63 +17,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Abhijit Majumdar <abhijit.majumdar@domain.hid>
+Cc: xenomai@xenomai.org, Steve Deiters <SteveDeiters@domain.hid>
 
-Philippe Gerum wrote:
-> On Wed, 2010-06-02 at 10:36 +0200, Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Tschaeche IT-Services wrote:
->>>> On Tue, Jun 01, 2010 at 04:32:37PM +0200, Philippe Gerum wrote:
->>>>> Not in the absence of syscall. We thought about this once already, when
->>>>> considering how a watchdog preempting a runaway task in primary mode
->>>>> could force a secondary mode switch: there is no sane and easy solution
->>>>> to this unfortunately.
->>>> This is exactly Sigmatek's problem: Our customers develop code
->>>> within our debugging/development environment. We want to catch
->>>> this situation (the developer implements a while(1)) with a
->>>> watchdog throwing SIGTRAP so that our debugger gets active
->>>> and can locate the problem according to the stack frame...
->>> CONFIG_XENO_OPT_WATCHDOG is probably what you are looking for. It tries
->>> to catch "well-behaving" broken threads via SIGDEBUG and kills the
->>> hopelessly broken rest - system alive again.
->>>
->>> You can then debug the former and need to do code review on the latter.
->>> Or you could also try to add some loop-breaking Xenomai syscalls (or
->>> even more clever checks) to library services the code under suspect
->>> usually invokes.
->> I am afraid "well-behaving" means emitting syscalls. We have a radical
->> way to cause a SIGSEGV to be sent to a thread having run amok: set its
->> PC to an invalid address (after having printed the real PC). gdb will
->> not be able to print where the program stopped, but should be able to
->> print the backtrace.
+Gilles Chanteperdrix wrote:
+> Abhijit Majumdar wrote:
+>> Hi Philippe
 >>
+>> I have attached a standalone test program which crashes my system. It
+>> uses poxis skin to create a simple task which sleeps for 10 micro sec
+>> and wakes up and continues to do so until the user kills the process.
+>>
+>> Interesting things note -- 
+>>
+>> 	1. If I uncomment the printf statement at the beginning of the
+>> while loop the program does not crash any more.
+>> 	2. OR if I use rt_task_sleep instead of clock_nanosleep it does
+>> not crash.
+>>
+>> I am using xenomai 2.5.2 and the arm platform has kernel 2.6.28.
 > 
-> Actually, we could extend this logic and forge a stack frame to return
-> to the preempted application code via some userland trampoline code,
-> doing the switch:
+> That is a not vague. In any case, 10us on an ARM is much too short. As I
+> think I already told someone at pivotal systems, ARM latencies are
+> larger than 50 us, and most of the time larger than 100us. So, asking
+> for a 10us sleep is preposterous.
 > 
-> [watchdog trigger]
-> 	forge_return_frame(on =regs->sp, to =regs->pc);
-> 	regs->pc = __oops_I_did_it_again;
+> However, if you want your report to be useful:
+> - please try the latest version (that would be Xenomai 2.5.3)
+> - send us the full log of the serial console, not the part you think is
+> relevant (the error comes here while xnpod_schedule is trying to print a
+> message, the interesting part is not the failure of add_preempt_count,
+> but probably more the error message which xnpod_schedule wants to print).
+> - sens us your kernel configuration.
+
+And include the version of the I-pipe patch you are using.
+
 > 
-> __oops_I_did_it_again:
-> 	__xn_migrate(LINUX_DOMAIN);
-> 	ret (via forged frame)
 
-Yep, that's what came to my mind as well. But the __oops_I_did_it_again
-part has to reside in user space, no?
-
-> 
-> The thing is, that this brings in some arch-dep code to forge a stack
-> frame (like the kernel uses for signals), that should rather live in the
-> pipeline core.
-
-Actually, we are then close to enabling signal delivery outside syscalls...
-
-Jan
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
