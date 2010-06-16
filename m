@@ -1,10 +1,10 @@
-Message-ID: <4C190092.2040708@domain.hid>
-Date: Wed, 16 Jun 2010 18:49:22 +0200
-From: Daniele Nicolodi <daniele@domain.hid>
+Message-ID: <4C1915BD.1020601@domain.hid>
+Date: Wed, 16 Jun 2010 20:19:41 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4C177276.7060005@domain.hid> <20100615221116.GB3087@domain.hid>
 In-Reply-To: <20100615221116.GB3087@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] How to avoid a tight real time loop
 List-Id: Help regarding installation and common use of Xenomai
@@ -19,7 +19,27 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Alexis Berlemont <alexis.berlemont@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 16/06/10 00:11, Alexis Berlemont wrote:
+Alexis Berlemont wrote:
+> Hi,
+> 
+> Daniele Nicolodi wrote:
+>> Hello. In my application I need to read data from an ADC card in blocks
+>> of a given number of samples. For efficiency I'm using an mmapped buffer
+>> to exchange data with the ADC driver. I'm setting up the acquisition,
+>> and then calling a loop like this:
+>>
+>> unsigned int required = <compute required number of bytes>;
+>> unsigned int read = 0;
+>> while (1) {
+>>   while (read < required) {
+>>     read = a4l_pool(...);
+>>   }
+>>   process(buffer, ...);
+>> }
+>>
+>> However if I run this loop in a real time thread the tight while loop is
+>> an obvious cpu hog: the watchdog kicks in and kills the thread.
+>>
 >> There is not an analogy API that can be used to require a certain amount
 >> of data to the ADC driver. How can I code this loop to let other
 >> processes to run?
@@ -28,23 +48,17 @@ On 16/06/10 00:11, Alexis Berlemont wrote:
 > helped you in an unmapped configuration. If you set the flag
 > A4L_CMD_BULK in the field "flags" of the command structure, a call to
 > a4l_async_read() only returns when the data size specified as argument
-> is available.
-
-Unfortunately copying memory data around would decrease too much the
-performance of my data acquisition code. By the way, I think that using
-the O_NONBLOCK fcntl flag on the device descriptor file descriptor would
-be the best way to activate this feature.
-
+> is available. 
+> 
 > Unfortunately, I have not done the same thing with a4l_poll, I might
 > have added the requested size as an additional argument to a4l_poll. 
 > 
 > Any idea on how to extend the API without breaking it ?
 
-I do not see any way rather than augmenting the function signature with
-an additional parameter. If you want to maintain API compatibility the
-only thing to do is to add a different function.
+Maybe it would be possible to use the standard "select" call, with a
+threshold configurable with an ioctl ?
 
-Cheers,
+
 -- 
-Daniele
+					    Gilles.
 
