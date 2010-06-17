@@ -1,14 +1,14 @@
-Message-ID: <4C19E169.6000003@domain.hid>
-Date: Thu, 17 Jun 2010 10:48:41 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4C19E1D8.6010705@domain.hid>
+Date: Thu, 17 Jun 2010 10:50:32 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTim0tClnDQPN3u5ozJSEU6BcX--Xf9Ekw00ADvgy@domain.hid>	<4C1353D8.2060507@domain.hid>	<AANLkTik39wezPyRC-myOQi_etA5EPAg-LgzSqyO40IX7@domain.hid>	<AANLkTikvdlckp3H_yQyYOpjG9-mLx-3Qm5Z2mjLpKQIz@domain.hid>	<AANLkTimlCliOasZWWbfgL1GzVby9RpFcIxWDCWSOYZbo@domain.hid>	<AANLkTikh-hjeotppDa6m2HB2EqUCMs8eL7iTjROzIeNE@mail.gmail.com>
-	<AANLkTinnpZFoTs5pxP5vkfdasG26cOGOvDAF4GKGHSW0@domain.hid>
-In-Reply-To: <AANLkTinnpZFoTs5pxP5vkfdasG26cOGOvDAF4GKGHSW0@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <181804936ABC2349BE503168465576460EBD5C0D@exchserver.basler.com>	<1274047063.2972.1.camel@domain.hid>	<2319761F7FA0D1479BA77EC2E0A8E7BCE8A603@domain.hid>	<1275033915.27918.31.camel@domain.hid>	<2319761F7FA0D1479BA77EC2E0A8E7BCEDCE09@domain.hid>
+	<4C191D07.4050203@domain.hid> <4C191D91.6060209@domain.hid>
+	<2319761F7FA0D1479BA77EC2E0A8E7BCEDCE78@domain.hid>
+In-Reply-To: <2319761F7FA0D1479BA77EC2E0A8E7BCEDCE78@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] error on rt_dev_read, code Success,
-	what does it  mean?
+Subject: Re: [Xenomai-help] rt_task_sleep causing crashes on PowerPC
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,25 +18,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Everett Wang <everteq@domain.hid>
-Cc: xenomai@xenomai.org
+To: Abhijit Majumdar <abhijit.majumdar@domain.hid>
+Cc: xenomai@xenomai.org, Steve Deiters <SteveDeiters@domain.hid>
 
-Everett Wang wrote:
-> Hi Jan and Luc,
-> 
-> Thanks for the helping suggestions. After reading from the manual, I
-> still have difficult
-> finding how to clear RX queue and overflow error. Nor how to purge the
-> read buffer. What are
-> the functions for these tasks?
+Abhijit Majumdar wrote:
+> We use adeos-ipipe-2.6.28.10-arm-1.12-07.patch.
 
-Check
-
-http://www.xenomai.org/documentation/xenomai-2.5/html/api/group__profiles.html#gc6abf51719ec6aa6e31f98a237721e01
-
-Jan
+Ok. That is the latest I-pipe patch for 2.6.28. However, why are you
+using a 2.6.28 kernel? If you are starting a new project, there is no
+reason not to pick the latest kernel.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
