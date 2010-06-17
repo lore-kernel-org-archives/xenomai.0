@@ -1,15 +1,17 @@
-Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 16 Jun 2010 16:55:41 -0700
-Message-ID: <2319761F7FA0D1479BA77EC2E0A8E7BCEDCE78@domain.hid>
-In-Reply-To: <4C191D91.6060209@domain.hid>
-References: <181804936ABC2349BE503168465576460EBD5C0D@exchserver.basler.com>	<1274047063.2972.1.camel@domain.hid>	<2319761F7FA0D1479BA77EC2E0A8E7BCE8A603@domain.hid>	<1275033915.27918.31.camel@domain.hid>	<2319761F7FA0D1479BA77EC2E0A8E7BCEDCE09@domain.hid>
-	<4C191D07.4050203@domain.hid> <4C191D91.6060209@domain.hid>
-From: "Abhijit Majumdar" <abhijit.majumdar@domain.hid>
-Subject: Re: [Xenomai-help] rt_task_sleep causing crashes on PowerPC
+In-Reply-To: <AANLkTikh-hjeotppDa6m2HB2EqUCMs8eL7iTjROzIeNE@mail.gmail.com>
+References: <AANLkTim0tClnDQPN3u5ozJSEU6BcX--Xf9Ekw00ADvgy@domain.hid>
+	<4C1353D8.2060507@domain.hid>
+	<AANLkTik39wezPyRC-myOQi_etA5EPAg-LgzSqyO40IX7@domain.hid>
+	<AANLkTikvdlckp3H_yQyYOpjG9-mLx-3Qm5Z2mjLpKQIz@domain.hid>
+	<AANLkTimlCliOasZWWbfgL1GzVby9RpFcIxWDCWSOYZbo@domain.hid>
+	<AANLkTikh-hjeotppDa6m2HB2EqUCMs8eL7iTjROzIeNE@mail.gmail.com>
+Date: Thu, 17 Jun 2010 15:49:01 +0800
+Message-ID: <AANLkTinnpZFoTs5pxP5vkfdasG26cOGOvDAF4GKGHSW0@domain.hid>
+From: Everett Wang <everteq@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-help] error on rt_dev_read, code Success,
+	what does it 	mean?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,59 +21,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org, Steve Deiters <SteveDeiters@domain.hid>
+To: Luc ANTOLINOS <luciogistr@domain.hid>
+Cc: xenomai@xenomai.org
 
-We use adeos-ipipe-2.6.28.10-arm-1.12-07.patch.
+Hi Jan and Luc,
 
---Abhijit
+Thanks for the helping suggestions. After reading from the manual, I
+still have difficult
+finding how to clear RX queue and overflow error. Nor how to purge the
+read buffer. What are
+the functions for these tasks?
 
------Original Message-----
-From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
-Sent: Wednesday, June 16, 2010 11:53 AM
-To: Abhijit Majumdar
-Cc: xenomai@xenomai.org; Steve Deiters
-Subject: Re: [Xenomai-help] rt_task_sleep causing crashes on PowerPC
+Thanks,
 
-Gilles Chanteperdrix wrote:
-> Abhijit Majumdar wrote:
->> Hi Philippe
+Everett
+
+
+
+On Tue, Jun 15, 2010 at 5:27 PM, Luc ANTOLINOS <luciogistr@domain.hid> wrote:
+> On 15 June 2010 02:45, Everett Wang <everteq@domain.hid> wrote:
+>> Hi,
 >>
->> I have attached a standalone test program which crashes my system. It
->> uses poxis skin to create a simple task which sleeps for 10 micro sec
->> and wakes up and continues to do so until the user kills the process.
->>
->> Interesting things note --=20
->>
->> 	1. If I uncomment the printf statement at the beginning of the
->> while loop the program does not crash any more.
->> 	2. OR if I use rt_task_sleep instead of clock_nanosleep it does
->> not crash.
->>
->> I am using xenomai 2.5.2 and the arm platform has kernel 2.6.28.
->=20
-> That is a not vague. In any case, 10us on an ARM is much too short. As
-I
-> think I already told someone at pivotal systems, ARM latencies are
-> larger than 50 us, and most of the time larger than 100us. So, asking
-> for a 10us sleep is preposterous.
->=20
-> However, if you want your report to be useful:
-> - please try the latest version (that would be Xenomai 2.5.3)
-> - send us the full log of the serial console, not the part you think
-is
-> relevant (the error comes here while xnpod_schedule is trying to print
-a
-> message, the interesting part is not the failure of add_preempt_count,
-> but probably more the error message which xnpod_schedule wants to
-print).
-> - sens us your kernel configuration.
-
-And include the version of the I-pipe patch you are using.
-
->=20
-
-
---=20
-					    Gilles.
+>> That is exactly correct. I can run my small program as long as I want, when I
+>> first started my computer and load the module. But after I exit it by
+>> press control-C,
+>> I can't run it successfully. So it could be something my program does when it
+>> exiting that sets the port in a strange state.
+> Hi,
+> - Just after opening the serial port, can you get the status with
+> RTSER_RTIOC_GET_STATUS to be sure the uart driver reset the flags (it
+> should).
+> - If you purge the read buffer and try again to read (instead of
+> exiting the program), is the error still here ? Is the error at the
+> first read or at each read. In the line status bits, you have only
+> RTSER_LSR_TRANSM_EMPTY , RTSER_LSR_THR_EMTPY,
+> RTSER_LSR_OVERRUN_ER ? never Software overrun (just to confirm).
+> - Have to tried to open,read,close 2 times in the same program instead
+> of killing and running again the program ? You can then determine if
+> it comes from the opening/closing routines ?
+> - Can you also test by sending data from another computer for example
+> (if possible) instead of directly from you GPS. Trying to determine if
+> the problem is really the uart hardware or just sofware (your code or
+> driver code).
+>
+> --
+> Luc
+>
 
