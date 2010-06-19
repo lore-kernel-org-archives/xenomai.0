@@ -1,45 +1,58 @@
-Message-ID: <4BF50D90.20203@domain.hid>
-Date: Thu, 20 May 2010 12:23:12 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4C1CB7EA.5030005@domain.hid>
+Date: Sat, 19 Jun 2010 14:28:26 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <201005191125.51812.smolorz@domain.hid>
-	<4BF50124.20801@domain.hid> <4BF50BEA.4030208@domain.hid>
-In-Reply-To: <4BF50BEA.4030208@domain.hid>
+References: <E1OKZdD-0003ml-45@domain.hid>
+	<4C095876.3060605@domain.hid>	<4C099329.6000303@domain.hid>
+	<4C0A49C4.8000509@domain.hid>	<4C0A9AB9.7030602@domain.hid>
+	<4C0A9C2A.1030002@domain.hid>	<4C0AA224.6060409@domain.hid>
+	<4C0AA2F0.6050201@domain.hid>	<4C0AA3EC.7040106@domain.hid>
+	<4C0AA548.6070409@domain.hid>	<4C0AB7BA.7000100@domain.hid>
+	<4C0B9846.7050203@domain.hid> <4C1BC224.5040505@domain.hid>
+	<4C1BC3BA.3020603@domain.hid> <4C1BD462.1000702@domain.hid>
+	<4C1C9882.9060103@domain.hid> <4C1CAF8A.1000900@domain.hid>
+In-Reply-To: <4C1CAF8A.1000900@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [BUG] Interrupt recursion with libata-sff
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : native: Rework
+ handling of pthread carrier thread
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Looks like your problem is x86-32 returning from interrupts with hard
->> IRQs enabled (and therefore flushing the pipeline already over the
->> interrupt handler). That should ideally be unified with x86-64 now, also
->> as x86-64 may already gain better testing than 32 bit.
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> As for the rt_task_delete/rt_task_join question, I think we should have
+>> to call rt_task_join after deleting  a thread, because that is the only
+>> way to make sure that all the ressources associated to a thread are free.
 > 
-> I may have not understood right, but from my understanding, the big
-> difference between x86_32 and x86_64 is that interrupts flags are
-> virtualized in x86_32's entry.S. To unify x86_32 and x86_64 would
-> basically mean rewrite this. And the the two entry.S are separated, so
-> x86_32 has to be tested separately from x86_64.
+> The question is not how we can release resources (that's trivial:
+> pthread_detach) but if we officially provide the service "join after
+> delete" to the user. If we do this, its limitations and implications on
+> the native interface need to be documented. So far this is fuzzy unless
+> you know our implementation.
 
-For sure. But there will be more synergies in arch/x86/kernel/ipipe.c
-then, less #ifdefs. And the complexity of entry_32.S changes may
-decrease. Moreover, given the same design, there is also a higher
-probability to catch common problems.
+No pthread_detach does not insure you that the ressources are released.
+It insures you that they will be released at a later point in time. That
+is the point. The only way to ensure that the ressources have been
+released, or more precisely, to wait for them to be released, is to call
+phtread_join. If you did not want to wait for that, then there was no
+point to create the thread joinable in the first place.
 
-Jan
+Anyway, yes, I agree, this behaviour of rt_task_join should be documented.
+
+> 
+> Jan
+> 
+
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
