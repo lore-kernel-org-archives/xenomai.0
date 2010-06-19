@@ -1,102 +1,113 @@
-Message-ID: <4C0A9960.8040609@domain.hid>
-Date: Sat, 05 Jun 2010 20:37:20 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <4C07BA95.9080402@domain.hid>
-	<1275759652.18250.178.camel@domain.hid>
-In-Reply-To: <1275759652.18250.178.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigBF68A3C2AC9DA2F7FB61F530"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Adeos-main] [RFC][PATCH 2/2] x86: Add support for
-	ipipe_get_irq_regs
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigBF68A3C2AC9DA2F7FB61F530
-Content-Type: text/plain; charset=UTF-8
+Mime-Version: 1.0 (Apple Message framework v1081)
+Content-Type: text/plain; charset=iso-8859-1
+From: Piquesel <piquesel@domain.hid>
+In-Reply-To: <4C1C9FD3.4000704@domain.hid>
+Date: Sat, 19 Jun 2010 18:05:56 +0200
 Content-Transfer-Encoding: quoted-printable
+Message-Id: <8C0BA148-FA50-48A4-9700-FC496C47D33F@xenomai.org>
+References: <AANLkTinRyxZ-BB_VwB2XPYwIPik8to_eynd-c-nNulQ1@domain.hid>
+	<4C19EDA4.2030601@domain.hid> <4C1A040F.4030209@domain.hid>
+	<AANLkTikMtR9kMd424sXIUdULJlaRxKIlJ19ElJ4Pt4o1@domain.hid>
+	<C159A093-EA69-4903-8114-145C4355A0C0@domain.hid>
+	<AANLkTim91ABqsvWb_GqMhOwnDlIQNfz1qoE-ABWc3KGE@mail.gmail.com>
+	<4C1C9159.1000408@domain.hid>
+	<2DD1EFE4-AE92-4F78-9BAF-7441D7D0DB3E@gmail.com>
+	<4C1C9FD3.4000704@domain.hid>
+Subject: Re: [Xenomai-help] application make file
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> On Thu, 2010-06-03 at 16:22 +0200, Jan Kiszka wrote:
->> From: Jan Kiszka <jan.kiszka@domain.hid>
->>
->> Implement the x86 arch bits for ipipe_get_irq_regs support. This allow=
-s
->> to drop __ipipe_tick_regs and use the new service instead.
+Hi,=20
+
+oops, something went wrong with my previous answer sent from my cell =
+phone. I post again then. See inline.
+
+Le 19 juin 2010 =E0 12:45, Gilles Chanteperdrix a =E9crit :
+
+> Bruno Rouchouse wrote:
+>> Hi Gilles,
+>>=20
+>> I do understand your point an mostly agrees with it. What you say is =20=
+
+>> really common sense.
+>>=20
+>> However, I would object 2 points: first it's everyone's freedom to =20=
+
+>> help someone or not even if it is a dummy question. In fact, due to =
+my =20
+>> knowledge, I can help only on those ;)
 >=20
-> I'm unsure whether this patch would actually replace __ipipe_tick_regs
-> properly, particularly regarding how the profiling code works.
+>>=20
+>> Second, it's not so easy when you start using a technology to find =
+all =20
+>> the right pointers and have all the answers. For instance, I'm still =20=
 
-tick_regs are a "workaround", this approach appears to me way closer to
-how native works.
-
+>> struggling with lot's of git features and workflow although =
+everything =20
+>> is documented. Reading all man pages does not really help me for =
+every =20
+>> use case.
 >=20
-> But I'm now convinced that we are on the wrong track, with trying to
-> track the IRQ frame, for the purpose we discussed on the Xenomai mailin=
-g
-> list. In fact, Gilles already told us about the best approach, we did
-> not pay attention enough, though:
-> https://mail.gna.org/public/xenomai-help/2010-06/msg00033.html
+>>=20
+>> Finally, I answered privately without putting the list in cc =20
+>> especially to avoid bothering advanced users. I don't really see =20
+>> anything wrong with that.
 >=20
-> Basically, we want to get a hold of the register frame of a task contex=
-t
-> before it returns to user-space, so that we can do some fixups.
-> Therefore, the best option is clearly to add a special event, that the
-> pipeline would dispatch upon request, when:
+> Well, the problem with private answers is that other people on the =
+list
+> do not know that you have answered.
 >=20
-> - __ipipe_grab/handle_irq is about to return to userland
-> - __ipipe_syscall_root is about to do the same
+Yes that's the problem in fact. I actually only answer on public =
+mailing-list when I'm 100% sure of the answer.
+
+There's always a trade-off between answering privately or publicly. If =
+you wrongly answer just to one person: no big deal. If you answer to the =
+mailing list and are damned wrong, then you expose your ignorance to the =
+project but also to the world :-) Google will always be here to remind =
+you what you once answered and will always dig that out for you from old =
+archives ;-)
+
+Well, I know I'm exaggerating a little bit but it is true (at least for =
+me) that answering publicly on project mailing-lists (open source =
+projects in general) is not always a straightforward consideration.
+
+> I really have no problem with other people than me answering the
+> questions, and in fact, I would even be glad if it happened more =
+often.
+> And in that case, of course, it would be nice to answer on the list, =
+so
+> that I know that the question is answered and I do not have to answer =
+it.
 >=20
-> In those contexts, we do have the _real_ register frame for the context=
-,
-> which removes the restriction on faked IRQ frames induced by the
-> deferred interrupt model.
-
-The register frame is incomplete, but it is very real. It is what you
-get when an interrupt fires right after the kernel re-enabled IRQ deliver=
-y.
-
-> We could then use that feature, not only for
-> having a more graceful watchdog, but for allowing Xenomai's real-time
-> signals to preempt syscall-less code as well.
+> As for the issue itself, it helps some people to bootstrap them by
+> answering their first questions directly. But look at Everett posts, =
+we
+> have helped him in each and every step of his work, and he still
+> continues to post questions instead of looking for answers himself. We
+> simply have to stop at some points, or we will do his work in his =
+stead.
 >=20
-> I worked on this lately, and eventually coupled that event to a
-> generalized support for forcing userland to run a kernel exit. I'll pos=
-t
-> more info to the Xenomai list.
+Fair point, I agree. I didn't check the context here in fact.
 
-That said, I'm not opposed to some kind of "I-pipe user space return
-notifiers", specifically as they will include the syscall path. Maybe we
-can still save bits of this approach to overcome the tick_regs and
-related patches of the profiling code.
+Thx.
 
-Jan
+-- Bruno
 
+> --=20
+> 					    Gilles.
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
---------------enigBF68A3C2AC9DA2F7FB61F530
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.9 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iEYEARECAAYFAkwKmWUACgkQitSsb3rl5xR/LACg3DSpfsNdbJIzm+fj+HHCKeRM
-q9MAnR/6biZ2qJ54s1tsceB0N2on2K2l
-=KJnX
------END PGP SIGNATURE-----
-
---------------enigBF68A3C2AC9DA2F7FB61F530--
 
