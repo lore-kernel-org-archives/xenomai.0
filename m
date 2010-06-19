@@ -1,13 +1,14 @@
-Message-ID: <4C1FAC04.8080100@domain.hid>
-Date: Mon, 21 Jun 2010 20:14:28 +0200
-From: Daniele Nicolodi <daniele@domain.hid>
+Message-ID: <4C1C8796.1050900@domain.hid>
+Date: Sat, 19 Jun 2010 11:02:14 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <4C093C93.4000907@domain.hid>	<4C0CEC7E.6080408@domain.hid>	<4C0CF99F.1090700@domain.hid>	<4C19E5C8.8070802@domain.hid>	<4C1F2AE4.6030304@domain.hid>
-	<AANLkTim2aawiM9Rn-9yosiqLJFfVT6ko-uluJRPskZ7y@domain.hid>
-In-Reply-To: <AANLkTim2aawiM9Rn-9yosiqLJFfVT6ko-uluJRPskZ7y@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [comedi] NI 6251 "wrong" samples
+References: <AANLkTinRyxZ-BB_VwB2XPYwIPik8to_eynd-c-nNulQ1@domain.hid>	<4C19EDA4.2030601@domain.hid>
+	<4C1A040F.4030209@domain.hid>	<AANLkTikMtR9kMd424sXIUdULJlaRxKIlJ19ElJ4Pt4o1@domain.hid>	<C159A093-EA69-4903-8114-145C4355A0C0@domain.hid>
+	<AANLkTim91ABqsvWb_GqMhOwnDlIQNfz1qoE-ABWc3KGE@mail.gmail.com>
+In-Reply-To: <AANLkTim91ABqsvWb_GqMhOwnDlIQNfz1qoE-ABWc3KGE@mail.gmail.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] application make file
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,64 +18,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Alexis Berlemont <alexis.berlemont@domain.hid>
-Cc: xenomai@xenomai.org, comedi_list@domain.hid
+To: Everett Wang <everteq@domain.hid>
+Cc: xenomai@xenomai.org, Bruno Rouchouse <brouchouse@domain.hid>
 
-On 21/06/10 13:59, Alexis Berlemont wrote:
->> I have tried to look at Analogy buffer handling, but the lack of any
->> comment in the source code makes understanding how it is supposed to
->> work a complex task.
+On 06/19/2010 09:34 AM, Everett Wang wrote:
+> On Fri, Jun 18, 2010 at 7:40 PM, Bruno Rouchouse <brouchouse@domain.hid> =
+wrote:
+>> Hi,
+>> if you haven't found it yet and if I understood correctly your question,
+>> xeno-config is probably what you need here ;)
+>> "xeno-config
+>> is a script that is used to to display the compiler and linker flags tha=
+t are required for building applications that use Xenomai."
+>> Regards,
+>> --Bruno
+>> Le 17 juin 2010 =E0 17:39, Everett Wang a =E9crit :
 >>
-> Please, tell me where comments are lacking, I will fix that.
-
-I find buffer.c and buffer.h to be under documented to be easily
-understood. For example it is not clear what the *_count members of the
-a4l_buf_t struct are for without a quite tedious inspection of the code.
-
->> Alexis, can you see any case where there may be a synchronization issue
->> like the one I'm seeing in your code? Any suggestion in where to look
->> for the bug?
+>> On Thu, Jun 17, 2010 at 7:16 PM, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
 >>
-> 
-> You told you that the bug was occuring randomly and that there was no
-> pattern in the repetition of the bad samples. But are you sure that
-> the wrong samples do not occur every modulo x * 64KB ?
+>> Gilles Chanteperdrix wrote:
+>>
+>> Everett Wang wrote:
+>>
+>> Hi All,
+>>
+>> Now my application based user space xenomai has a few files and I want
+>>
+>> to construct a Makefile to compile them. I looked at the
+>>
+>> Makefiles in examples folder. It is not straight forward to modify one
+>>
+>> for myself. I have c files and header files.  It is possible to get
+>>
+>> a makefile with minor changes so it can automatically find the
+>>
+>> dependence of c and h files?
+>>
+>> You can do this quite easily with GNU make.
+>>
+>> Namely:
+>>
+>> http://www.gnu.org/software/make/manual/html_node/Automatic-Prerequisite=
+s.html#Automatic-Prerequisites
+>>
+>> --
+>>
+>>                                            Gilles.
+>>
+>>
+>> Thanks Gilles,
+>>
+>> I can construct a Makefile for a non realtime application
+>> with multiple files. What I don't know are the extra flags
+>> for compiling and linking that xenomai requires. My
+>> thinking is that after I have a normal (non xenomai) Makefile,
+>> I can just add the compile flags when I compile each of the files
+>> and add linking flags to produce a real time final program.
+>>
+>> Everett
+>>
+>> _______________________________________________
+>> Xenomai-help mailing list
+>> Xenomai-help@domain.hid
+>> https://mail.gna.org/listinfo/xenomai-help
+>>
+>>
+>=20
+> Thanks for the help. I touched cross-link.c then a "make -n" to find out =
+the
+> xenomai flags.  I added these flags to my normal make file. It compiles
+> and runs fine now.
+>=20
+> compiler flags:
+> CFLAGS_XENO =3D -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -Wall
+> -pipe -D__XENO__
+>=20
+> linker flags:
+> LDFLAGS_XENO =3D -L/usr/xenomai/lib -lxenomai -lpthread  -lnative -lrtdm
+> -Xlinker -rpath -Xlinker /usr/xenomai/lib
+>=20
+> Hopefully it can be useful for new xenomai users.
 
-I convinced myself that this is not the case. For sure the error is not
-there at any ring buffer wrap around. I increased the buffer size to
-128KB and there hasn't been any noticeable difference. Am I right
-supposing that those 64KB you are referring to are the buffer size?
+You should use *xeno-config* in your Makefile to get the proper compiler
+and linker flags.
 
-> If the bug is located in Analogy buffer handling, it should not be
-> specific to a driver. So, I will try to reproduce it with the testing
-> drivers. I will compare the mapped and unmapped acquisition results.
-> If I remember well, the "fake" driver outputs some deterministic
-> content.  If nothing comes out, I will try to use a NI device.
-
-To detect the problem you need to feed a deterministic signal to your
-device. It looks like every now and then an old sample is returned (I
-say so because the wrong value is always in the signal range). If you
-feed a constant value you would be unable to distinguish the wrong
-sample from the good ones. If you are missing a function generator the
-DAC channels of the NI ADC board work just fine, as long as you provide
-proper low pass filters.
-
-My test case is a phase-meter implementation. I'm testing the phase
-noise of the phase-meter and thus I acquire a zero mean sine wave. Every
-now and then the average of a fixed number of samples, containing an
-integer number of sine waves, is far from zero. When I detect this
-situation I dump the content of the current buffer, and in each dump
-there is always a single wrong sample.
-
-My code is embedded into a data acquisition framework I'm developing,
-but I can provide the code, however I can take a little bit to have it
-to compile stand alone.
-
-The bug shows usually after some minutes to half an hour of data taking
-at 10 to 50 kHz. It would be unpractical to save all that data to disk
-for inspection.
-
-Thanks. Cheers,
--- 
-Daniele
+Wolfgang,
 
