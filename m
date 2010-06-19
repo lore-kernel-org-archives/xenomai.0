@@ -1,12 +1,18 @@
-Message-ID: <4C289319.4050807@domain.hid>
-Date: Mon, 28 Jun 2010 14:18:33 +0200
+Message-ID: <4C1C9FD3.4000704@domain.hid>
+Date: Sat, 19 Jun 2010 12:45:39 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTimKEFqaOGLrvLhpf0FqqdTkAPraazAnbuUGMa0V@mail.gmail.com>
-In-Reply-To: <AANLkTimKEFqaOGLrvLhpf0FqqdTkAPraazAnbuUGMa0V@mail.gmail.com>
+References: <AANLkTinRyxZ-BB_VwB2XPYwIPik8to_eynd-c-nNulQ1@domain.hid>
+	<4C19EDA4.2030601@domain.hid> <4C1A040F.4030209@domain.hid>
+	<AANLkTikMtR9kMd424sXIUdULJlaRxKIlJ19ElJ4Pt4o1@domain.hid>
+	<C159A093-EA69-4903-8114-145C4355A0C0@domain.hid>
+	<AANLkTim91ABqsvWb_GqMhOwnDlIQNfz1qoE-ABWc3KGE@mail.gmail.com>
+	<4C1C9159.1000408@domain.hid>
+	<2DD1EFE4-AE92-4F78-9BAF-7441D7D0DB3E@gmail.com>
+In-Reply-To: <2DD1EFE4-AE92-4F78-9BAF-7441D7D0DB3E@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] IRQ conflict issues with and ESD PMC card.
+Subject: Re: [Xenomai-help] application make file
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,39 +22,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Nape Ibrahim Lentsoane <nape.lentsoane@domain.hid>
-Cc: xenomai@xenomai.org
+To: Bruno Rouchouse <brouchouse@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Nape Ibrahim Lentsoane wrote:
-> Hello,
+Bruno Rouchouse wrote:
+> Hi Gilles,
 > 
-> I've been having this problem for some time now and I hope someone from
-> the Xenomai community can help.
-> Basically, my kernel does not want to boot with PMC card. I have managed
-> to use console redirection of messages
-> to the serial port and I can see the error messages. From what I can
-> see, there is a problem with '/xnintr_irq_handler/' due
-> to this message at boot time: /Xenomai: xnintr_irq_handler: IRQ10 not
-> handled. Disabling IRQ line./
+> I do understand your point an mostly agrees with it. What you say is  
+> really common sense.
+> 
+> However, I would object 2 points: first it's everyone's freedom to  
+> help someone or not even if it is a dummy question. In fact, due to my  
+> knowledge, I can help only on those ;)
 
-As repeated many times, disabling ACPI has been known to cause such
-issues. So, you should keep ACPI enabled, only ACPI_PROCESSOR needs to
-be disabled.
+> 
+> Second, it's not so easy when you start using a technology to find all  
+> the right pointers and have all the answers. For instance, I'm still  
+> struggling with lot's of git features and workflow although everything  
+> is documented. Reading all man pages does not really help me for every  
+> use case.
 
-For IRQ conflicts, see:
-http://www.xenomai.org/index.php/FAQs#What_can_I_do_if_Xenomai_and_Linux_devices_share_the_same_IRQ.3F
+> 
+> Finally, I answered privately without putting the list in cc  
+> especially to avoid bothering advanced users. I don't really see  
+> anything wrong with that.
 
-Also, to be sure that the problem you have is not a configuration issue,
-try the Xenomai-patched linux kernel, with exactly the same
-configuration, only with CONFIG_XENOMAI and CONFIG_IPIPE turned off. If
-it does not boot, then the issue is not caused by Xenomai.
+Well, the problem with private answers is that other people on the list
+do not know that you have answered.
 
-If it does boot, then please send another mail, including, this time:
-- the version of the Linux kernel you use;
-- the Adeos and Xenomai versions you use;
-- the contents of /proc/interrupts and /proc/xenomai/irq;
-- the full serial log, from the boot up to the bug;
-- the two .config file, the one which boots, the one which does not.
+I really have no problem with other people than me answering the
+questions, and in fact, I would even be glad if it happened more often.
+And in that case, of course, it would be nice to answer on the list, so
+that I know that the question is answered and I do not have to answer it.
+
+As for the issue itself, it helps some people to bootstrap them by
+answering their first questions directly. But look at Everett posts, we
+have helped him in each and every step of his work, and he still
+continues to post questions instead of looking for answers himself. We
+simply have to stop at some points, or we will do his work in his stead.
 
 -- 
 					    Gilles.
