@@ -1,152 +1,103 @@
-Message-ID: <4C335199.7000401@domain.hid>
-Date: Tue, 06 Jul 2010 17:54:01 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: "Charlton, John" <john.charlton@domain.hid>
+Date: Mon, 21 Jun 2010 10:52:37 -0400
+Message-ID: <CF7FB0793253794F9F45991443E5FE200935FF897B@us194mx002.tycoelectronics.net>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+	boundary="_000_CF7FB0793253794F9F45991443E5FE200935FF897Bus194mx002tyc_"
 MIME-Version: 1.0
-References: <4C0692A9.2080806@domain.hid>	
-	<1276080083.18906.52.camel@domain.hid>	
-	<4C234A15.2030708@domain.hid>	
-	<1277654519.2305.7.camel@domain.hid>	
-	<4C28AC49.3080209@domain.hid>
-	<1278431097.1939.7.camel@domain.hid>
-In-Reply-To: <1278431097.1939.7.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] Mayday support
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: [Xenomai-help] rt_dev_send() does not timeout
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Tschaeche IT-Services <services@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: "'xenomai@xenomai.org'" <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> On Mon, 2010-06-28 at 16:06 +0200, Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> On Thu, 2010-06-24 at 14:05 +0200, Jan Kiszka wrote:
->>>> Philippe Gerum wrote:
->>>>> I've toyed a bit to find a generic approach for the nucleus to regain
->>>>> complete control over a userland application running in a syscall-less
->>>>> loop.
->>>>>
->>>>> The original issue was about recovering gracefully from a runaway
->>>>> situation detected by the nucleus watchdog, where a thread would spin in
->>>>> primary mode without issuing any syscall, but this would also apply for
->>>>> real-time signals pending for such a thread. Currently, Xenomai rt
->>>>> signals cannot preempt syscall-less code running in primary mode either.
->>>>>
->>>>> The major difference between the previous approaches we discussed about
->>>>> and this one, is the fact that we now force the runaway thread to run a
->>>>> piece of valid code that calls into the nucleus. We do not force the
->>>>> thread to run faulty code or at a faulty address anymore. Therefore, we
->>>>> can reuse this feature to improve the rt signal management, without
->>>>> having to forge yet-another signal stack frame for this.
->>>>>
->>>>> The code introduced only fixes the watchdog related issue, but also does
->>>>> some groundwork for enhancing the rt signal support later. The
->>>>> implementation details can be found here:
->>>>> http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=4cf21a2ae58354819da6475ae869b96c2defda0c
->>>>>
->>>>> The current mayday support is only available for powerpc and x86 for
->>>>> now, more will come in the next days. To have it enabled, you have to
->>>>> upgrade your I-pipe patch to 2.6.32.15-2.7-00 or 2.6.34-2.7-00 for x86,
->>>>> 2.6.33.5-2.10-01 or 2.6.34-2.10-00 for powerpc. That feature relies on a
->>>>> new interface available from those latest patches.
->>>>>
->>>>> The current implementation does not break the 2.5.x ABI on purpose, so
->>>>> we could merge it into the stable branch.
->>>>>
->>>>> We definitely need user feedback on this. Typically, does arming the
->>>>> nucleus watchdog with that patch support in, properly recovers from your
->>>>> favorite "get me out of here" situation? TIA,
->>>>>
->>>>> You can pull this stuff from
->>>>> git://git.xenomai.org/xenomai-rpm.git, queue/mayday branch.
->>>>>
->>>> I've retested the feature as it's now in master, and it has one
->>>> remaining problem: If you run the cpu hog under gdb control and try to
->>>> break out of the while(1) loop, this doesn't work before the watchdog
->>>> expired - of course. But if you send the break before the expiry (or hit
->>>> a breakpoint), something goes wrong. The Xenomai task continues to spin,
->>>> and there is no chance to kill its process (only gdb).
->>> I can't reproduce this easily here; it happened only once on a lite52xx,
->>> and then disappeared; no way to reproduce this once on a dual core atom
->>> in 64bit mode, or on a x86_32 single core platform either. But I still
->>> saw it once on a powerpc target, so this looks like a generic
->>> time-dependent issue.
->>>
->>> Do you have the same behavior on a single core config,
->> You cannot reproduce it on a single core as the CPU hog will occupy that
->> core and gdb cannot be operated.
->>
->>> and/or without
->>> WARNSW enabled?
->> Just tried and disabled WARNSW in the test below: no difference.
->>
->>> Also, could you post your hog test code? maybe there is a difference
->>> with the way I'm testing.
->> #include <signal.h>
->> #include <native/task.h>
->> #include <sys/mman.h>
->> #include <stdlib.h>
->>
->> void sighandler(int sig, siginfo_t *si, void *context)
->> {
->> 	printf("SIGDEBUG: reason=%d\n", si->si_value.sival_int);
->> 	exit(1);
->> }
->>
->> void loop(void *arg)
->> {
->> 	RT_TASK_INFO info;
->>
->> 	while (1)
->> 		if (!arg)
->> 			rt_task_inquire(NULL, &info);
->> }
->>
->> int main(int argc, const char *argv[])
->> {
->> 	struct sigaction sa;
->> 	RT_TASK task;
->>
->> 	sigemptyset(&sa.sa_mask);
->> 	sa.sa_sigaction = sighandler;
->> 	sa.sa_flags = SA_SIGINFO;
->> 	sigaction(SIGDEBUG, &sa, NULL);
->>
->> 	mlockall(MCL_CURRENT|MCL_FUTURE);
->> 	rt_task_spawn(&task, "cpu-hog", 0, 99, T_JOINABLE|T_WARNSW, loop,
->> 		(void *)(long)((argc > 1) && strcmp(argv[1], "--lethal") == 0));
->> 	rt_task_join(&task);
->>
->> 	return 0;
->> }
-> 
-> I can't reproduce this issue, leaving the watchdog threshold to the
-> default value (4s).
-> 
->> CONFIG_XENO_OPT_WATCHDOG=y
->> CONFIG_XENO_OPT_WATCHDOG_TIMEOUT=60
-> 
-> 60s seems way too long to have a chance of recovering from a runaway
-> loop to a reasonably sane state.
+--_000_CF7FB0793253794F9F45991443E5FE200935FF897Bus194mx002tyc_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-That's required for debugging the kernel.
+We are experiencing a problem with the user mode CanFestival library when i=
+t calls rt_dev_send() when the CAN bus is disconnected.  In that case the r=
+tcan driver info is:
 
-> Do you still see the issue with shorter
-> timeouts?
+root@domain.hid:~# cat /proc/rtcan/rtcan0/info
+Device     rtcan0
+Controller SJA1000
+Board      PEAK-PCI
+Clock-Hz   8000000
+Baudrate   1000000
+Bit-time   brp=3D1 prop_seg=3D0 phase_seg1=3D5 phase_seg2=3D2 sjw=3D1 sam=
+=3D0
+Ctrl-Mode
+State      passive
+TX-Counter 1
+RX-Counter 0
+Errors     2
+Refcount   3
+root@domain.hid:~#
 
-Yes, I usually lower the timeout before triggering the issue.
+The rt_dev_send() function hangs and does not timeout or return an error an=
+d never returns. We are using Xenomai 2.5.2 with linux 2.6.32.7.
 
-OK, I will try to find some time to look closer at this.
+John
 
-Jan
 
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+--_000_CF7FB0793253794F9F45991443E5FE200935FF897Bus194mx002tyc_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
+>
+<meta name=3D"Generator" content=3D"Microsoft Exchange Server">
+<!-- converted from rtf -->
+<style><!-- .EmailQuote { margin-left: 1pt; padding-left: 4pt; border-left:=
+ #800000 2px solid; } --></style>
+</head>
+<body>
+<font face=3D"Arial, sans-serif" size=3D"2">
+<div>We are experiencing a problem with the user mode CanFestival library w=
+hen it calls rt_dev_send() when the CAN bus is disconnected.&nbsp; In that =
+case the rtcan driver info is:</div>
+<div>&nbsp;</div>
+<div><font face=3D"Courier New, monospace">root@domain.hid:~# cat /proc/rtca=
+n/rtcan0/info</font></div>
+<div><font face=3D"Courier New, monospace">Device&nbsp;&nbsp;&nbsp;&nbsp; r=
+tcan0</font></div>
+<div><font face=3D"Courier New, monospace">Controller SJA1000</font></div>
+<div><font face=3D"Courier New, monospace">Board&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp; PEAK-PCI</font></div>
+<div><font face=3D"Courier New, monospace">Clock-Hz&nbsp;&nbsp; 8000000</fo=
+nt></div>
+<div><font face=3D"Courier New, monospace">Baudrate&nbsp;&nbsp; 1000000</fo=
+nt></div>
+<div><font face=3D"Courier New, monospace">Bit-time&nbsp;&nbsp; brp=3D1 pro=
+p_seg=3D0 phase_seg1=3D5 phase_seg2=3D2 sjw=3D1 sam=3D0</font></div>
+<div><font face=3D"Courier New, monospace">Ctrl-Mode</font></div>
+<div><font face=3D"Courier New, monospace">State&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp; passive</font></div>
+<div><font face=3D"Courier New, monospace">TX-Counter 1</font></div>
+<div><font face=3D"Courier New, monospace">RX-Counter 0</font></div>
+<div><font face=3D"Courier New, monospace">Errors&nbsp;&nbsp;&nbsp;&nbsp; 2=
+</font></div>
+<div><font face=3D"Courier New, monospace">Refcount&nbsp;&nbsp; 3</font></d=
+iv>
+<div><font face=3D"Courier New, monospace">root@domain.hid:~#</font></div>
+<div><font face=3D"Courier New, monospace">&nbsp;</font></div>
+<div>The rt_dev_send() function hangs and does not timeout or return an err=
+or and never returns. We are using Xenomai 2.5.2 with linux 2.6.32.7.</div>
+<div>&nbsp;</div>
+<div>John</div>
+<div>&nbsp;</div>
+</font>
+</body>
+</html>
+
+--_000_CF7FB0793253794F9F45991443E5FE200935FF897Bus194mx002tyc_--
 
