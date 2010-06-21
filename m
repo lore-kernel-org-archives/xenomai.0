@@ -1,20 +1,14 @@
-Message-ID: <4C1A4E1B.8090905@domain.hid>
-Date: Thu, 17 Jun 2010 18:32:27 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Charlton, John" <john.charlton@domain.hid>
+Date: Mon, 21 Jun 2010 16:04:02 -0400
+Message-ID: <CF7FB0793253794F9F45991443E5FE200935FF8983@domain.hid>
+References: <CF7FB0793253794F9F45991443E5FE200935FF897B@us194mx002.tycoelectronics.net>
+	<4C1F9CCC.1050806@domain.hid>
+In-Reply-To: <4C1F9CCC.1050806@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <181804936ABC2349BE503168465576460EBD5C0D@exchserver.basler.com>	
-	<1274047063.2972.1.camel@domain.hid>	
-	<2319761F7FA0D1479BA77EC2E0A8E7BCE8A603@domain.hid>	
-	<1275033915.27918.31.camel@domain.hid>	
-	<2319761F7FA0D1479BA77EC2E0A8E7BCEDCE09@domain.hid>	
-	<4C191D07.4050203@domain.hid> <4C191D91.6060209@domain.hid>	
-	<2319761F7FA0D1479BA77EC2E0A8E7BCEDCE78@domain.hid>	
-	<4C19E1D8.6010705@domain.hid>
-	<1276792000.4890.600.camel@domain.hid>
-In-Reply-To: <1276792000.4890.600.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_task_sleep causing crashes on PowerPC
+Subject: Re: [Xenomai-help] rt_dev_send() does not timeout
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,37 +18,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Travis Stratman <tstratman@domain.hid>
-Cc: xenomai@xenomai.org, Steve Deiters <SteveDeiters@domain.hid>
+To: 'Wolfgang Grandegger' <wg@domain.hid>
+Cc: "'xenomai@xenomai.org'" <xenomai@xenomai.org>
 
-Travis Stratman wrote:
-> Gilles,
-> 
-> On Thu, 2010-06-17 at 10:50 +0200, Gilles Chanteperdrix wrote:
->> Abhijit Majumdar wrote:
->>> We use adeos-ipipe-2.6.28.10-arm-1.12-07.patch.
->> Ok. That is the latest I-pipe patch for 2.6.28. However, why are you
->> using a 2.6.28 kernel? If you are starting a new project, there is no
->> reason not to pick the latest kernel.
-> 
-> The 2.6.28.10 kernel that they are using is the latest release that we
-> provide that has support patches for the board that they are using. We
-> pick a stable version and develop with that for awhile before updating
-> to a newer version, as we simply don't have enough developers to
-> continually update and re-test newer kernel versions for all of our
-> products. We are working on a newer version for a new board but that
-> hasn't been tested yet.
-> 
-> Abhijit: it would be possible to compile a new kernel (i.e. 2.6.33) with
-> Xenomai 2.5.3 for the AT91SAM9G20 eval board that would work with your
-> board (after some configuration changes). It wouldn't support all of the
-> custom I/O but you would be able to test the failure that you are
-> seeing. The AT91 patch set for 2.6.33 would also need to be applied. The
-> at91 experimental patch set is not ported to 2.6.33 yet, but this
-> shouldn't be a problem for initial testing.
+Thank you.  I overlooked that one.  That was the problem.=20
 
-Ok, forget it, 2.6.28 is fine.
+-----Original Message-----
+From: Wolfgang Grandegger [mailto:wg@domain.hid
+Sent: Monday, June 21, 2010 1:10 PM
+To: Charlton, John
+Cc: 'xenomai@xenomai.org'
+Subject: Re: [Xenomai-help] rt_dev_send() does not timeout
 
--- 
-					    Gilles.
+On 06/21/2010 04:52 PM, Charlton, John wrote:
+> We are experiencing a problem with the user mode CanFestival library when=
+ it calls rt_dev_send() when the CAN bus is disconnected.  In that case the=
+ rtcan driver info is:
+>=20
+> root@domain.hid:~# cat /proc/rtcan/rtcan0/info
+> Device     rtcan0
+> Controller SJA1000
+> Board      PEAK-PCI
+> Clock-Hz   8000000
+> Baudrate   1000000
+> Bit-time   brp=3D1 prop_seg=3D0 phase_seg1=3D5 phase_seg2=3D2 sjw=3D1 sam=
+=3D0
+> Ctrl-Mode
+> State      passive
+> TX-Counter 1
+> RX-Counter 0
+> Errors     2
+> Refcount   3
+> root@domain.hid:~#
+>=20
+> The rt_dev_send() function hangs and does not timeout or return an error =
+and never returns. We are using Xenomai 2.5.2 with linux 2.6.32.7.
+
+It's the normal behaviour if you have not set RTCAN_RTIOC_SND_TIMEOUT and d=
+on't use non-blocking mode. Is that the case?
+
+Wolfgang.
 
