@@ -1,92 +1,95 @@
-Message-ID: <4C2F8DCF.2050903@domain.hid>
-Date: Sat, 03 Jul 2010 21:21:51 +0200
-From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 MIME-Version: 1.0
-References: <1278071353-13836-1-git-send-email-wolfgang.mauerer@domain.hid>
-	<1278071353-13836-6-git-send-email-wolfgang.mauerer@domain.hid>
-	<4C2F273C.8060201@domain.hid>
-In-Reply-To: <4C2F273C.8060201@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 5/7] posix: Support reading the host
- realtime clock in realtime context
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+In-Reply-To: <4C1F2AE4.6030304@domain.hid>
+References: <4C093C93.4000907@domain.hid> <4C0CEC7E.6080408@domain.hid>
+	<4C0CF99F.1090700@domain.hid> <4C19E5C8.8070802@domain.hid>
+	<4C1F2AE4.6030304@domain.hid>
+Date: Mon, 21 Jun 2010 13:59:44 +0200
+Message-ID: <AANLkTim2aawiM9Rn-9yosiqLJFfVT6ko-uluJRPskZ7y@domain.hid>
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] [comedi] NI 6251 "wrong" samples
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Kiszka, Jan" <jan.kiszka@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Daniele Nicolodi <daniele@domain.hid>
+Cc: xenomai@xenomai.org, comedi_list@domain.hid
 
-Gilles Chanteperdrix wrote:
-> Wolfgang Mauerer wrote:
->> Wall time management is typically assisted by the NTP
->> protocol in the Linux context, but this information is
->> not propagated to Xenomai. This patch adds support
->> for a CLOCK_HOST_REALTIME clock id that is coupled to the
->> host operating system's realtime clock. The required
->> information from the Kernel into Xenomai. The data exchange
->> is designed to allow for lockless reading from userland.
->>
->> Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
->> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->> ---
->>  include/posix/time.h     |    2 +
->>  ksrc/skins/posix/clock.c |   90 +++++++++++++++++++++++++++++++++++++++++++++-
->>  2 files changed, 91 insertions(+), 1 deletions(-)
->>
->> diff --git a/include/posix/time.h b/include/posix/time.h
->> index 4f2d760..938feb6 100644
->> --- a/include/posix/time.h
->> +++ b/include/posix/time.h
->> @@ -50,6 +50,8 @@
->>  #define CLOCK_MONOTONIC 1
->>  #endif /* CLOCK_MONOTONIC */
->>  
->> +#define CLOCK_HOST_REALTIME 16
->> +
->>  #if defined(__KERNEL__) || defined(__XENO_SIM__)
->>  
->>  struct sigevent;
->> diff --git a/ksrc/skins/posix/clock.c b/ksrc/skins/posix/clock.c
->> index 553e123..f5a789b 100644
->> --- a/ksrc/skins/posix/clock.c
->> +++ b/ksrc/skins/posix/clock.c
->> @@ -50,6 +50,13 @@
->>   *@{*/
->>  
->>  #include <posix/thread.h>
->> +#include <linux/ipipe_tickdev.h>
->> +#include <linux/math64.h>
-> 
-> Do we really need this? Because we probably do not have it in 2.4
-> kernels. Besides, we do not include linux/ headers in Xenomai code.
-> 
-right, math64.h should be xenomai/asm-generic/arith.h for
-xnarch_divrem_billion(). ipipe_tickdev.h is superfluous since
-all definitions go through xnarch and rthal.
+Hi,
 
->> +static int do_clock_host_realtime(struct timespec *tp)
->> +{
->> +#ifdef CONFIG_XENO_OPT_HOSTRT
->> (...)
->> +	return 0;
->> +#else /* CONFIG_XENO_OPT_HOSTRT */
->> +	return -1;
-> 
-> return -EINVAL;
-> 
->> +	case CLOCK_HOST_REALTIME:
->> +		if (do_clock_host_realtime(tp) != 0) {
-> 		rc = do_clock_host_realtime(tp);
-> 		if (rc < 0) {
-> 			thread_set_errno(-rc);
-> 			return -1;
-> 		}
-> 
-> 
+On Mon, Jun 21, 2010 at 11:03 AM, Daniele Nicolodi <daniele@domain.hid> wro=
+te:
+> On 17/06/10 11:07, Daniele Nicolodi wrote:
+>> No. I'm running a continuous memory mapped acquisition. The only maybe
+>> uncommon thing I'm doing is that I'm reading the mmapped buffer in fixed
+>> chunks, rather than reading all the samples available each time. The
+>> number of samples I read each time is larger than the 4095 samples after
+>> which the hardware sends the FIFO half full trigger event.
+>
+> I modified my code from a loop like:
+>
+> unsigned int required =3D <compute required number of bytes>;
+> unsigned int read =3D 0;
+> void * buffer =3D a4l_mmap(dsc, ...);
+> while (1) {
+> =A0while (read < required) {
+> =A0 =A0read =3D a4l_pool(...);
+> =A0 =A0clock_nanosleep(...);
+> =A0}
+> =A0process(buffer, ...);
+> =A0a4l_buff_markrw(dsc, subdevice, required, ...);
+> }
+>
+> to something like:
+>
+> unsigned int required =3D <compute required number of bytes>;
+> unsigned int read =3D 0;
+> void *buffer =3D malloc(required);
+> while (1) {
+> =A0while (read < required) {
+> =A0 =A0a4l_sys_read(dsc, buffer + read, required - read);
+> =A0}
+> =A0process(buffer, ...);
+> }
+>
+> I tested this setup over the weekend and the wrong samples went away!
+>
+> Therefore i suspect that the problem is not related to FIFO
+> synchronization but to kernel space buffer handling.
+>
+> I have tried to look at Analogy buffer handling, but the lack of any
+> comment in the source code makes understanding how it is supposed to
+> work a complex task.
+>
+Please, tell me where comments are lacking, I will fix that.
 
+> Alexis, can you see any case where there may be a synchronization issue
+> like the one I'm seeing in your code? Any suggestion in where to look
+> for the bug?
+>
+
+You told you that the bug was occuring randomly and that there was no
+pattern in the repetition of the bad samples. But are you sure that
+the wrong samples do not occur every modulo x * 64KB ?
+
+If the bug is located in Analogy buffer handling, it should not be
+specific to a driver. So, I will try to reproduce it with the testing
+drivers. I will compare the mapped and unmapped acquisition results.
+If I remember well, the "fake" driver outputs some deterministic
+content.  If nothing comes out, I will try to use a NI device.
+
+Many thanks for reporting that.
+
+> Thanks. Cheers,
+> --
+> Daniele
+>
+
+Alexis.
 
