@@ -1,17 +1,16 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <AANLkTilBt1fx4MFJ_Tmuz-fUl1D190u_FYDfLn09JaA3@domain.hid>
-References: <AANLkTikU5zPKew64ZxWGokwh5R5F-sNegWdDzOENWdzB@mail.gmail.com>
-	<4C1B7EB1.2040006@domain.hid>
-	<AANLkTinABTK2nMI0QfZVaULQ4OKwF0678PKOBc_OMIn1@domain.hid>
-	<AANLkTiklRlwsIJfelo0eT2GZDvI6PtDAwc4qluLCr6R5@domain.hid>
-	<4C1B8C04.3010900@domain.hid> <4C1BCCBF.7010400@domain.hid>
-	<AANLkTilBt1fx4MFJ_Tmuz-fUl1D190u_FYDfLn09JaA3@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 24 Jun 2010 00:00:01 +0200
-Message-ID: <1277330401.2453.145.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4C2326A7.8010906@domain.hid>
+Date: Thu, 24 Jun 2010 11:34:31 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <4C0692A9.2080806@domain.hid>
+	<1276080083.18906.52.camel@domain.hid>
+	<20100609181153.GA27353@domain.hid>
+	<1276902677.12743.108.camel@domain.hid>
+	<20100624092259.GA21635@domain.hid>
+In-Reply-To: <20100624092259.GA21635@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Fwd: problem in pthread_mutex_lock/unlock
+Subject: Re: [Xenomai-core] [PATCH] Mayday support
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -20,133 +19,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Nero Fernandez <grimlynch@domain.hid>
-Cc: xenomai@xenomai.org
+To: Tschaeche IT-Services <services@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, 2010-06-24 at 02:15 +0530, Nero Fernandez wrote:
-> Thanks for your response, Gilles.
+Tschaeche IT-Services wrote:
+> On Sat, Jun 19, 2010 at 01:11:17AM +0200, Philippe Gerum wrote:
+>> On Wed, 2010-06-09 at 20:11 +0200, Tschaeche IT-Services wrote:
+>>> On Wed, Jun 09, 2010 at 12:41:23PM +0200, Philippe Gerum wrote:
+>>>> We definitely need user feedback on this. Typically, does arming the
+>>>> nucleus watchdog with that patch support in, properly recovers from your
+>>>> favorite "get me out of here" situation? TIA,
+>>>>
+>>>> You can pull this stuff from
+>>>> git://git.xenomai.org/xenomai-rpm.git, queue/mayday branch.
+>>> manually build a kernel (timeout 1s) with your patches.
+>>> user space linked to 2.5.3 libraries without any patches.
+>>> Looks fine: the amok task is switched to secondary domain
+>>> (we catched the SIGXCPU) running the loop in secondary domain.
+>>> then, on a SIGTRAP the task leaves the loop.
+>>>
+>>> also, if SIGTRAP arives before SIGXCPU it looks good,
+>>> apart from the latency of 1s.
+>>>
+>>> did not check the ucontext within the exception handler, yet.
+>>> would like to setup a reproducible kernel build first...
+>>> we will go into deeper testing in 2 weeks.
+>>>
+>>> maybe we need a finer granularity than 1s for the watchdog timeout.
+>>> is there a chance?
+>> The watchdog is not meant to be used for implementing application-level
+>> health monitors, which is what you seem to be looking after. The
+>> watchdog is really about pulling the break while debugging, as a mean
+>> not to brick your board when things start to hit the crapper, without
+>> knowing anything from the error source. For that purpose, the current 1s
+>> granularity is just fine. It makes the nucleus watchdog as tactful as a
+>> lumberjack, which is what we want in those circumstances: we want it to
+>> point the finger at the problem we did not know about yet and keep the
+>> board afloat; it is neither meant to monitor a specific code we know in
+>> advance that might misbehave, nor provide any kind of smart contingency
+>> plan.
+>>
+>> I would rather think that you may need something like a RTDM driver
+>> actually implementing smarter health monitoring features that you could
+>> use along with your app. That driver would expose a normalized socket
+>> interface for observing how things go app-wise, by collecting data about
+>> the current health status. It would have to tap into the mayday routines
+>> for recovering from runaway situations it may detect via its own,
+>> fine-grained watchdog service for instance.
 > 
-> i modified the code to use semaphore instead of mutex, which worked
-> fine.
-> Attached is a compilation of some latency figures and system loading
-> figures (using lmbench)
-> that i obtained from my proprietary ARM-9 board, using Xenomai-2.5.2.
-> 
-> Any comments are welcome. TIY.
-> 
+> Perfect, that's exactly what we want (and already have implemented).
+> How can i tap into the MayDay routines from my driver?
+> Is there a rt_mayday(RT_TASK)?
 
-Yikes. Let me sum up what I understood from your intent:
+I think you will simply have to call the nucleus services directly,
+which indicates that there is something wrong with it conceptually.
 
-- you are measuring lmbench test latencies, that is to say, you don't
-measure the real-time core capabilities at all. Unless you crafted a
-Xenomai-linked version of lmbench, you are basically testing regular
-processes.
+An RTDM driver is just another workaround. A better solution will once
+come with RT-signals: A user space(!) high-prio watchdog thread will be
+able to send a signal to the spinning thread, and the signal handler can
+then report the error and/or kick the thread out of primary mode.
 
-- you are benchmarking your own port of the interrupt pipeline over some
-random, outdated vendor kernel (2.6.18-based Mvista 5.0 dates back to
-2007, right?), albeit the original ARM port of such code is based on
-mainline since day #1. Since the latest latency-saving features like
-FCSE are available with Adeos patches on recent kernels, you are likely
-looking at ancient light rays from a fossile galaxy (btw, this may
-explain the incorrect results in the 0k context switch test - you don't
-have FCSE enabled in your Adeos port, right?).
+Alternatively, the nucleus could export a user space interface to send
+SIGDEBUG from an RT thread to some other thread. That would allow to
+push the watchdog policy into user space, freeing the kernel (or some
+workaround driver) from any customization burdens.
 
-- instead of reporting figures from a real-time interrupt handler
-actually connected to the Xenomai core, you hijacked the system timer
-core to pile up your instrumentation on top of the original code you
-were supposed to benchmark. If this helps, run /usr/xenomai/bin/latency
--t2 and you will get the real figures.
-
-Quoting you, from your document:
-"The intent for running these tests is to gauge the overhead of running
-interrupt-virtualization and further running a (real-time co-kernel + 
-interrupt virtualization) on an embedded-device."
-
-I'm unsure that you clearly identified the functional layers. If you
-don't measure the Xenomai core based on Xenomai activities, then you
-don't measure the co-kernel overhead. Besides, trying to measure the
-interrupt pipeline overhead via the lmbench micro-benchmarks makes no
-sense.
-
-> 
-> On Sat, Jun 19, 2010 at 1:15 AM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->         
->         Gilles Chanteperdrix wrote:
->         > Nero Fernandez wrote:
->         >> On Fri, Jun 18, 2010 at 7:42 PM, Gilles Chanteperdrix
->         >> <gilles.chanteperdrix@xenomai.org
->         >> <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
->         >>
->         >>     Nero Fernandez wrote:
->         >>     > Hi,
->         >>     >
->         >>     > Please find an archive attached, containing :
->         >>     >  - a program for testing context-switch-latency using
->         posix-APIs
->         >>     >    for native linux kernel and xenomai-posix-skin
->         (userspace).
->         >>     >  - Makefile to build it using xenomai
->         >>
->         >>     Your program is very long to tell fast. But it seems
->         you are using the
->         >>     mutex as if they were recursive. Xenomai posix skin
->         mutexes used to be
->         >>     recursive by default, but no longer are.
->         >>
->         >>     Also note that your code does not check the return
->         value of the posix
->         >>     skin services, which is a really bad idea.
->         >>
->         >>     --
->         >>                                                Gilles.
->         >>
->         >>
->         >> Thanks for the prompt response.
->         >>
->         >> Could you explain  'recursive usage of mutex' a little
->         further?
->         >> Are the xenomai pthread-mutexes very different in behaviour
->         than regular
->         >> posix mutexes?
->         >
->         > The posix specification does not define the default type of
->         a mutex. So,
->         >  in short, the behaviour of a "regular posix mutex" is
->         unspecified.
->         > However, following the principle of least surprise, Xenomai
->         chose, like
->         > Linux, to use the "normal" type by default.
->         >
->         > What is the type of a posix mutex is explained in many
->         places, starting
->         > with Xenomai API documentation. So, no, I will not repeat it
->         here.
->         
->         
->         Actually, that is not your problem. However, you do not check
->         the return
->         value of posix services, which is a bad idea. And indeed, if
->         you check
->         it you will find your error: a thread which does not own a
->         mutex tries
->         to unlock it.
->         
->         Sorry, mutex are not semaphore, this is invalid, and Xenomai
->         returns an
->         error in such a case.
->         
->         --
->                                                    Gilles.
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
-
+Jan
 
 -- 
-Philippe.
-
-
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
