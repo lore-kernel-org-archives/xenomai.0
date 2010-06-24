@@ -1,12 +1,13 @@
-Message-ID: <4C23B213.5080103@domain.hid>
-Date: Thu, 24 Jun 2010 21:29:23 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Fri, 25 Jun 2010 00:50:57 +0200
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <20100624225057.GA9802@domain.hid>
+References: <4C177276.7060005@domain.hid> <20100615221116.GB3087@domain.hid>
+	<4C1915BD.1020601@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTik_lbFNx1L6vYAYLVZDnEWG7IdQnAq7-4z2pLiy@domain.hid>
-In-Reply-To: <AANLkTik_lbFNx1L6vYAYLVZDnEWG7IdQnAq7-4z2pLiy@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Some questions about Xenomai
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4C1915BD.1020601@domain.hid>
+Subject: Re: [Xenomai-help] How to avoid a tight real time loop
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,61 +17,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Charles Clerdan <charles.clerdan@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Charles Clerdan wrote:
-> Hi,
+Gilles Chanteperdrix wrote:
+> Alexis Berlemont wrote:
+> > Hi,
+> > 
+> > Daniele Nicolodi wrote:
+> >> Hello. In my application I need to read data from an ADC card in blocks
+> >> of a given number of samples. For efficiency I'm using an mmapped buffer
+> >> to exchange data with the ADC driver. I'm setting up the acquisition,
+> >> and then calling a loop like this:
+> >>
+> >> unsigned int required = <compute required number of bytes>;
+> >> unsigned int read = 0;
+> >> while (1) {
+> >>   while (read < required) {
+> >>     read = a4l_pool(...);
+> >>   }
+> >>   process(buffer, ...);
+> >> }
+> >>
+> >> However if I run this loop in a real time thread the tight while loop is
+> >> an obvious cpu hog: the watchdog kicks in and kills the thread.
+> >>
+> >> There is not an analogy API that can be used to require a certain amount
+> >> of data to the ADC driver. How can I code this loop to let other
+> >> processes to run?
+> > 
+> > As a matter of fact, there is something in the API which could have
+> > helped you in an unmapped configuration. If you set the flag
+> > A4L_CMD_BULK in the field "flags" of the command structure, a call to
+> > a4l_async_read() only returns when the data size specified as argument
+> > is available. 
+> > 
+> > Unfortunately, I have not done the same thing with a4l_poll, I might
+> > have added the requested size as an additional argument to a4l_poll. 
+> > 
+> > Any idea on how to extend the API without breaking it ?
 > 
-> I'm actually working on an academic project about Real-Time on Xenomai.
-> I have some questions about Xenomai (for all of them, the application is in
-> user-space).
+> Maybe it would be possible to use the standard "select" call, with a
+> threshold configurable with an ioctl ?
 
-An off-topic remark: "actually" is a "faux-ami", it does not mean at all
-the same thing as "actuellement" in french.
+Thanks. I added your idea in my TODO list.
 
 > 
-> How can we use gdb with a RT application? (I understand that, a Xenomai
-> thread has no PID because it's use a TASK descriptor instead but gdb needs a
-> PID to attach with)
-
-a Xenomai thread is first of all a full-blown glibc thread, and thus, a
-process containing a Xenomai thread is a full-blown linux process, with
-a valid PID. Note that talking about the PID of a thread does not really
-make sense, because a PID is a Process ID, so the identifier of the
-process, not the thread, and gdb also attaches to a process, that is, to
-all the threads of a process at once.
-
-There is not much to say about debugging with gdb a process running
-Xenomai threads, but since it is an FAQ, we answered it here:
-http://www.xenomai.org/index.php/FAQs#How_can_GDB_be_used.3F
-
 > 
-> How can I detect that a Xenomai thread is in secondary mode (I try to use
-> RT_TASK_INFO but the value is always 0 even if I do non-RT call) ? And does
-> a mecanism like assertion exist in order to prevent this?
-
-You do not want to detect that a Xenomai thread is running in secondary
-mode, this can lead to crappy code which we do not want to cause you to
-write. What you may want, however, is to detect that a thread which you
-would want to run in primary mode has switched to secondary mode. For
-this, you should do what the file examples/native/sigdebug.c found in
-Xenomai sources does, or if you are using the POSIX skin, what is
-documented here:
-http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Using_the_PTHREAD_WARNSW_bit.
-
-> 
-> I want to make an IT server as exemple, how can I get back some IT or
-> generate them from the ADEOS' I-pipe ?
-
-Well. You may theoretically use the native or POSIX API to handle
-interrupts (I guess by IT you mean interrupts?) in user-space, but it is
-discouraged. What you should do, however, is to write an RTDM driver. See:
-http://www.xenomai.org/documentation/branches/v2.3.x/pdf/RTDM-and-Applications.pdf
-
-For the detailed documentations of the native, posix and RTDM skins, see:
-http://www.xenomai.org/documentation/xenomai-2.5/html/api/index.html
+> -- 
+> 					    Gilles.
 
 -- 
-					    Gilles.
+Alexis.
 
