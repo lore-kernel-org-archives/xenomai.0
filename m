@@ -1,45 +1,33 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <L34DKN$311326070828550CADE0C702EEB30506@domain.hid>
-References: <L34DKN$311326070828550CADE0C702EEB30506@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 28 May 2010 10:13:42 +0200
-Message-ID: <1275034422.27918.39.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] How to create multiple domains?
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Marco Toschi <info@domain.hid>
-Cc: adeos-main@gna.org
+Date: Fri, 25 Jun 2010 01:53:20 +0200
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <20100624235320.GC9802@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [Xenomai-core] Some changes in Analogy core
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-On Fri, 2010-05-28 at 09:45 +0200, Marco Toschi wrote:
-> Hello to everyone,
-> I would try to develop a system with multiple domains. Could you
-> suggest some tutorial, examples, howto, ecc...?
-> 
+Hi,
 
-The existing docs I know of are fairly outdated wrt the API, but the
-basics remain:
-http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Life-with-Adeos-rev-B.pdf
-http://home.gna.org/adeos/doc/api/globals.html
+I just pushed into my git repository (branch analogy) some significant
+changes in the asynchronous buffer management.
 
-> Many Thanks,
-> Marco Toschi
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
+These modifications intend to fix a major issue in the analogy
+architecture: only the default input and output subdevices were
+reachable via read / write syscalls.  
 
+These changes do not induce any API / ABI breakage. 
+
+If you notice a problem, please tell me.
 
 -- 
-Philippe.
-
-
+Alexis.
 
