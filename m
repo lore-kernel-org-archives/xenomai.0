@@ -1,13 +1,15 @@
-Message-ID: <4C249D4B.7000303@domain.hid>
-Date: Fri, 25 Jun 2010 14:12:59 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTik_lbFNx1L6vYAYLVZDnEWG7IdQnAq7-4z2pLiy@domain.hid>	<4C23B213.5080103@domain.hid>	<AANLkTimofdDy_OSC6dr_2l4X8vAn8oPsQdqVXrSWZ-2e@domain.hid>
-	<AANLkTikA0fz6Rt8-4NqaOGL7_b_UdbVzSXCRYxg8J68h@domain.hid>
-In-Reply-To: <AANLkTikA0fz6Rt8-4NqaOGL7_b_UdbVzSXCRYxg8J68h@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Some questions about Xenomai
+Sender: epedrett@domain.hid
+In-Reply-To: <20100605214004.GC8097@domain.hid>
+References: <AANLkTilOsBQXASMpEHjKs0JwOy8c2EaLG26Vej8sueZC@mail.gmail.com>
+	<20100602221243.GC2590@domain.hid>
+	<AANLkTikzXKkmKfglVBiXusKjXG0LHqAxDh7XY5gw1O7B@mail.gmail.com>
+	<20100605214004.GC8097@domain.hid>
+Date: Fri, 25 Jun 2010 14:55:27 +0100
+Message-ID: <AANLkTilMiOVs__1a7uOEDuquvuRqxaHowYgbvWbrl6cx@domain.hid>
+From: Ettore Pedretti <ep41@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-help] National Instruments PCI-6711
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,44 +19,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Charles Clerdan <charles.clerdan@domain.hid>
-Cc: xenomai@xenomai.org
+To: Alexis Berlemont <alexis.berlemont@domain.hid>
+Cc: xenomai@xenomai.org, John Monnier <monnier@domain.hid>
 
-Charles Clerdan wrote:
-> And a last one (for now ...), I read here  :-
-> http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Native-API-Tour-rev-C.pdf
-> that :
-> /"When a realtime
-> task executes into the Linux domain on a given processor, the
-> Linux kernel as a whole inherits the realtime
-> priority of such task, and thus
-> competes for the CPU resource by priority with other realtime
-> tasks regardless of
-> the domain (i.e. Linux or Xenomai) they happen to belong to. In other
-> words, the
-> realtime
-> priority scheme enforced by the native API is consistent across domains. "/
-> 
-> I was thinking that Linux were a process of Xenomai with the lowest
-> effective priority, and a task in secondary mode were only in
-> competition with the others Linux threads (or others Xenomai thread in
-> 2ndary mode). But if I'm wrong, how can the 2 schedulers share
-> ressources in order to keep a hard real-time behaviour (at less for
-> Xenomai tasks in 1st mode).
+Hi,
 
-I am not sure I understand your question.
+Sorry for the delay in answering. I left the observatory and went on
+holiday for a while.
 
-The two schedulers do not share ressources. What is meant by this
-sentence is that the Linux kernel is a task, from Xenomai scheduler's
-point of view, and this tasks inherits the priority of Xenomai tasks
-running in secondary mode. The Linux scheduler is not involved.
+The standard NI driver can be downloaded from:
+http://sine.ni.com/nips/cds/view/p/lang/en/nid/14480
 
-And giving to a task running in secondary mode a priority higher than a
-task running in primary mode looks like a design error anyway.
+We found this on the NI web site. I do not know if it is useful:
 
-If you do not like this behaviour, you can disable it, but, on the whole
-it makes things a little more natural.
+http://sine.ni.com/nips/cds/view/p/lang/en/nid/11737
+
+Maybe it is the standard example that you already used to develop
+comedi/analogy drivers. Please let me know if it is of any use for
+you.
+
+Best regards
+Ettore
+
+On 5 June 2010 22:40, Alexis Berlemont <alexis.berlemont@domain.hid> wrote:
+> Hi,
+>
+> Ettore Pedretti wrote:
+>> Hi,
+>>
+>> > On the other side, that is just the theory. I would not be surprised
+>> > to find a Comedi driver which proposes the behaviour you ask thanks to
+>> > a driver-specific hidden cheat flag somewhere in the structure.
+>>
+>> How can I find out the "hidden cheat" and how can I exploit it?
+>>
+>
+> That was just a supposition. I have not seen such a thing in the
+> Analogy NI driver (inherited from the Comedi one). Have you had a look
+> at the Comedi list ?
+>
+> I just read again your first mail. You said the NI Linux driver
+> provides the requested option. Do you have any source code ? I
+> remember just having found a binary driver.
+>
+>> >> What is the closest functionality I can get to programming the card
+>> >> and letting it run without further intervention?
+>> >>
+>> >
+>> > I have no answer so far. That would need an extension of the framework.
+>>
+>> How difficult would that be? Is it a major change to the framework? It
+>> seems to me that this is a nice option. You would not use any of your
+>> bus bandwidth and could just change the waveform when you need it.
+>>
+>
+> I agree this feature would be nice but I cannot tell you that I will
+> add some tricky code in some corner just to let this option work. The
+> problem with the command system is that it expects a continuous data
+> transfer until the end of the acquisition.
+>
+> Maybe, a way to quickly implement it would be to use an instruction
+> (it may be possible, I cannot ensure you); but to do so I need the
+> code which properly programs the DAQ-STC.
+>
+>> Ettore
+>>
+>> >> All the best
+>> >> Ettore
+>> >>
+>> >> _______________________________________________
+>> >> Xenomai-help mailing list
+>> >> Xenomai-help@domain.hid
+>> >> https://mail.gna.org/listinfo/xenomai-help
+>> >
+>> > --
+>> > Alexis.
+>> >
+>>
+>>
+>>
+>> --
+>> Ettore Pedretti, SUPA
+>> School of Physics and Astronomy
+>> University of St Andrews, North Haugh,
+>> St Andrews, Fife, KY16 9SS, Scotland
+>> Ph: +44-1334-461666, Fax: +44-1334-463104
+>> The University of St Andrews is a charity registered in Scotland : No SC013532
+>
+> --
+> Alexis.
+>
+
+
 
 -- 
-					    Gilles.
+Ettore Pedretti, SUPA
+School of Physics and Astronomy
+University of St Andrews, North Haugh,
+St Andrews, Fife, KY16 9SS, Scotland
+Ph: +44-1334-461666, Fax: +44-1334-463104
+The University of St Andrews is a charity registered in Scotland : No SC013532
 
