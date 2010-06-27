@@ -1,181 +1,99 @@
+Date: Sun, 27 Jun 2010 12:37:12 +0200
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <20100627103712.GA2565@domain.hid>
+References: <9FDCB500-CFA2-42CC-A7CB-EDFD66AF366C@usc.edu>
+	<20100605211102.GB8097@domain.hid>
+	<20100624224259.GA2800@domain.hid>
+	<7FB1B9EA-EB7E-45A2-9C1F-D97916381AF3@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <4BFCB3E8.4040607@domain.hid>
-References: <AANLkTimhw6cOHeDP3D4Om8nBiT-aURPWxbIrT23hNcNW@mail.gmail.com>
-	<4BF8F73D.3070008@domain.hid>
-	<AANLkTikT2AgxYKn4rK1jHtHzcK_AwJBzNANjDtAnyrwt@domain.hid>
-	<4BF94DE3.90001@domain.hid>
-	<AANLkTinUBnuLgLj-k_rPVEPHtgf8gC5ZtTcbgnmspRn7@domain.hid>
-	<4BF95796.6030504@domain.hid>
-	<AANLkTin9MXTXmDZhZSgalCS4KpurXpAa_5l9xLvHDTY9@domain.hid>
-	<AANLkTinW1CDCo0pzSFHS8QwQg6TP3WS8rXGoWC7UDryy@domain.hid>
-	<4BFA9F2C.1040808@domain.hid>
-	<AANLkTingSXRAZDsNW6VUsDMh9prHKvnk_jV3PjTnSl8s@domain.hid>
-	<4BFCB3E8.4040607@domain.hid>
-Date: Thu, 27 May 2010 09:22:39 +0800
-Message-ID: <AANLkTin1Oq15DI0FctW77a7y1mBdY8Aq87sgCEJ013wj@domain.hid>
-From: Everett Wang <everteq@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] problem with serial example
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7FB1B9EA-EB7E-45A2-9C1F-D97916381AF3@domain.hid>
+Subject: Re: [Xenomai-core] analogy - experimental branch
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Stefan Schaal <sschaal@domain.hid>
+Cc: Peter Pastor Sampedro <pastorsa@domain.hid>, xenomai@xenomai.org
 
-On Wed, May 26, 2010 at 1:38 PM, Wolfgang Grandegger <wg@domain.hid> wr=
-ote:
-> On 05/25/2010 03:47 PM, Everett Wang wrote:
->> On Mon, May 24, 2010 at 11:45 PM, Wolfgang Grandegger <wg@domain.hid=
-> wrote:
->>> On 05/24/2010 09:32 AM, Everett Wang wrote:
->>>> On Mon, May 24, 2010 at 7:36 AM, Everett Wang <everteq@domain.hid> wrot=
-e:
->>>>> On Mon, May 24, 2010 at 12:28 AM, Wolfgang Grandegger <wg@domain.hid.=
-com> wrote:
->>>>>> On 05/23/2010 06:19 PM, Everett Wang wrote:
->>>>>>> On Sun, May 23, 2010 at 11:46 PM, Wolfgang Grandegger <wg@domain.hid=
-r.com> wrote:
->>>>>>
->>>>>>>> There are other possibilities to interact with Linux, e.g. telnet,
->>>>>>>> slogin or netcat. But it's always good to have a console.
->>>>>>>>
->>>>>>> I guess I need a USB to ethernet for these.
->>>>>>
->>>>>> Yes.
->>>>>>
->>>>>> ...
->>>>>>>> All three uarts are occupied by Linux and you cannot use them as
->>>>>>>> rtserial. First you need to release at least one of them. What Lin=
-ux
->>>>>>>> config do you use for your board?
->>>>>>>
->>>>>>> I didn't do any configuration. Do you mean to config these during k=
-ernel
->>>>>>> configuration?
->>>>>>
->>>>>> Can you show us the .config of your kernel?
->>>>>>
->>>>>> Some more insights:
->>>>>>
->>>>>> I think the serial ports for the beagle boards are configured in:
->>>>>>
->>>>>> http://lxr.linux.no/#linux+v2.6.34/arch/arm/mach-omap2/serial.c
->>>>>>
->>>>>> Therein you find entries like:
->>>>>>
->>>>>> http://lxr.linux.no/#linux+v2.6.34/arch/arm/mach-omap2/serial.c#L82
->>>>>>
->>>>>> As you can see, a regshift of 2 is used, which is not yet supported =
-by
->>>>>> the 16550A RTDM driver. Should not be a big deal to add it, though.
->>>>>> Also, as "baud_base" you should use OMAP24XX_BASE_BAUD.
->>>>>>
->>>>>> Wolfgang.
->>>>>>
->>>>>
->>>>> Thanks for the suggestions. The .config file is attached. I will look=
- at the
->>>>> code you pointed to today to study the configuration of the serial po=
-rt.
->>>>>
->>>>> Everett
->>>>>
->>>>
->>>> Hi Wolfgang,
->>>>
->>>> I looked at the serial.c and function you pointed too. I have can't fi=
-gure
->>>> out how to modify it. Could you point me to the right direction to rea=
-d so
->>>> I can understand and eventually improve the serial for beagleboard? I =
-thought
->>>> I could limit the kernel to use only one of the uart (console) by
->>>> changing function
->>>> =A0__init omap_serial_init(void):
->>>>
->>>> =A0void __init omap_serial_init(void)
->>>> {
->>>> =A0 =A0 =A0 =A0 int i;
->>>>
->>>> // =A0 =A0 =A0 =A0for (i =3D 0; i < ARRAY_SIZE(omap_uart); i++)
->>>> // =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0omap_serial_init_port(i);
->>>> =A0 =A0 =A0 omap_serial_init_port(2);
->>>> }
->>>>
->>>> But the kernel hangs during booting after printing this message:
->>>>
->>>> uncompressing Linux... done.
->>>>
->>>> I guess it is not that simple to let kernel not to claim the uart0 and=
- uart1.
->>>
->>> Yes, unfortunately. I would try to comment out the uarts you want to
->>> use for rtser in the following struct:
->>>
->>> http://lxr.linux.no/#linux+v2.6.34/arch/arm/mach-omap2/serial.c#L562
->>>
->>> Maybe the better option is to download setserial from
->>>
->>> http://sourceforge.net/projects/setserial/files/setserial/2.17/setseria=
-l-2.17.tar.gz/download
->>>
->>> and cross-compile it for your target. Then try:
->>>
->>> # setserial /dev/ttyS2 uart none
->>>
->>> Wolfgang.
->>>
->>>
->>
->> Hi Wolfgang,
->>
->> Thanks,
->>
->> I took the easiest way by
->> opkg install setserial
->>
->> The setserial got installed into my flash. I then
->>
->> =A0# setserial /dev/ttyS0 uart none
->> Linux has no complain. dmesg | tail doesn't show anything
->>
->> Finally I did this:
->> =A0# setserial /dev/ttyS2 uart none
->> Linux reports "Can't set serial info: Device or resource busy". The
->> uart3 is used by console login.
->> And my console login still works,
->>
->> I guess I still don't have a clear direction what to do next. What are
->> needed to make the uart
->> to work with xenomai? I also want to make SPI to work with xenomai. Is
->> that even harder to
->> do?
->
-> Next I would try to load the xeno_16550a.ko as described earlier. Then
-> you need to fix the register access by introducing a proper regshift, at
-> least. I can't tell if other fixups are necessary but if you are lucky
-> it will already work. And yes, implementing a RTDM SPI driver is even
-> harder, unfortunately.
->
-> Wolfgang.
->
+Hi,
 
-Hi Wolfgang,
 
-Thanks for your information. I am still interested in doing work on both
-xeno_16550a.ko and RTDM SPI. Could you give me an overview of
-what kind of knowledge is required, and where I can find more information
-about them? Right now I feel I don't have a clear understanding to
-modify the code.
+Stefan Schaal wrote:
+> Hi Alexis,
+> 
+>   thanks so much for the new analogy software. Here are some first observations:
+> 
+> 1) cmd_bits.c works fine on our NI6250 board
+> 
+> 2) however, a slightly modified version hangs -- I appended my cmd_bits.c to this email. All what I added is a for loop around the a4l_async_write() and a4l_snd_insn() commands, i.e., I wanted to trigger a write repeatedly. Look for the "sschaal" comment in my modified cmd_bits.c .  After 32 iterations, cmd_bits hangs, no error messages in dmesg. Interesting, when I change your "trigger_threshold" variable from 128 to 256, my loop runs for 16 iterations (other changes of the trigger threshold adjust the number of iterations I get in a similar way). Thus, it feels like there is a buffer which does not get reset after a4l_snd_insn() is called -- does this make sense?
+> 
 
-Thanks,
+Could you tell me if the mite triggered an interrupt ? Could you send
+a dump of cat /proc/xenomai/irq after having made the test program
+hang ?
 
-Everett
+Many thanks,
+
+> Best wishes,
+> 
+> -Stefan
+> 
+> 
+> On Jun 24, 2010, at 15:43, Alexis Berlemont wrote:
+> 
+> > Hi,
+> > 
+> > Alexis Berlemont wrote:
+> >> Hi Stefan,
+> >> 
+> >> Stefan Schaal wrote:
+> >>> Hi Alexis,
+> >>> 
+> >>>  I was just wondering whether the new "experimental" branch in your git repository is something that can be tried already.
+> >>> 
+> >> 
+> >> No. Not yet. This branch is aimed at temporarily holding the
+> >> corrections I am trying to do for the cmd_bits issue. It needs quite a
+> >> lot of work and I have not finished yet. 
+> >> 
+> >> If you have a look at the commits in this branch, we will see many
+> >> "(broken)".
+> >> 
+> > 
+> > I just rebased the experimental branch into the branch analogy. So,
+> > starting from now, we should be able to properly use cmd_bits with a
+> > clone of my git repository.
+> > 
+> > After having reworked the asynchronous buffer subsystem (and having
+> > fixed some oops in the NI driver and in the new code), cmd_bits can
+> > correctly communicate with the DIO subdevice. 
+> > 
+> > A command like "./cmd_bits 0xffff 0xffff" works on my
+> > board. Unfortunately, I have not done the necessary to check the
+> > digital output lines yet.
+> > 
+> > 
+> >>> Best wishes,
+> >>> 
+> >>> -Stefan
+> >> 
+> >> -- 
+> >> Alexis.
+> > 
+> > -- 
+> > Alexis.
+> 
+> 
+> ======================================================= cmd_bits.c ==================================================
+
+
+
+-- 
+Alexis.
 
