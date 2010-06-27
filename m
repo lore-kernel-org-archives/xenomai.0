@@ -1,14 +1,16 @@
-Message-ID: <4C03689D.4010304@domain.hid>
-Date: Mon, 31 May 2010 09:43:25 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <1274245032-10610-1-git-send-email-P.B.Cheblakov@domain.hid>	<4BF3953D.8070108@domain.hid>
-	<4BFA2111.5020503@domain.hid> <4BFA2696.5070302@domain.hid>
-	<4C026436.6010903@domain.hid> <4C029F67.6010602@domain.hid>
-In-Reply-To: <4C029F67.6010602@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH V2] rtcan: add rtcan_plx_pci driver
+Mime-Version: 1.0 (Apple Message framework v1081)
+Content-Type: text/plain; charset=us-ascii
+From: Stefan Schaal <sschaal@domain.hid>
+In-Reply-To: <20100627103712.GA2565@domain.hid>
+Date: Sun, 27 Jun 2010 08:53:08 -0700
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <46F86785-737D-41F4-BC37-5DC5A4462039@domain.hid>
+References: <9FDCB500-CFA2-42CC-A7CB-EDFD66AF366C@usc.edu>
+	<20100605211102.GB8097@domain.hid>
+	<20100624224259.GA2800@domain.hid>
+	<7FB1B9EA-EB7E-45A2-9C1F-D97916381AF3@domain.hid>
+	<20100627103712.GA2565@domain.hid>
+Subject: Re: [Xenomai-core] analogy - experimental branch
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,47 +19,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai@xenomai.org
+To: Alexis Berlemont <alexis.berlemont@domain.hid>
+Cc: Peter Pastor Sampedro <pastorsa@domain.hid>, xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
-> On 05/30/2010 03:12 PM, Gilles Chanteperdrix wrote:
->> Wolfgang Grandegger wrote:
->>> From my point of view, yes. Gilles could you please commit this patch?
->> No, it seems the patch causes a build issue:
->>
->> http://sisyphus.hd.free.fr/~gilles/bx/
-> 
-> Oops, obviously the Kconfig entry is invalid:
-> 
-> +config XENO_DRIVERS_CAN_SJA1000_ESD_PCI (DEPRECATED)
-> 
-> The "(DEPRECATED)" is causing the trouble, I assume.
-> 
->  	depends on XENO_DRIVERS_CAN_SJA1000 && PCI
->  	tristate "ESD PCI Cards"
-> 
-> Maybe you want to add the "(DEPRECATED)" here.
-> 
->  	help
-> @@ -61,6 +76,9 @@ config XENO_DRIVERS_CAN_SJA1000_ESD_PCI
->  	CAN-PCI/266, CAN-PMC/266 (PMC), CAN-CPCI/200 (CompactPCI),
->  	CAN-PCIe2000 (PCI Express) and CAN-PCI104/200 (PCI104)
->  	from the esd electronic system design gmbh (http://www.esd.eu).
-> +	
-> 
-> Trailing white space!
-> 
-> +	This driver is deprecated. It's functionality is now provided by
-> +	"PLX90xx PCI-bridge based Cards" driver.
-> 
-> Pavel, could you please fix that.
+Hi Alexis,
 
-Ok. If these are the only differences between the patch which was
-actually tested and the patch you posted, simply tell us, I can fix it
-in my tree.
+  I did a reboot, ran my modified cmd_bits.c again one time.=20
+
+cat /proc/xenomai/irq  reports:
+
+IRQ         CPU0        CPU1        CPU2        CPU3        CPU4        =
+CPU5        CPU6        CPU7
+ 56:           0           0           0           0           0         =
+  0           0           0         Analogy device
+518:           0           1           1           1           1         =
+  1           1           1         [IPI]
+521:      626392      618020      618539      620274      617326      =
+625008      622464      626300         [timer]
+522:           0           0           0           0           0         =
+  0           0           0         [critical sync]
+546:           0           0           0           0           0         =
+  0           0           0         [virtual]
 
 
--- 
-					    Gilles.
+-Stefan
+
+On Jun 27, 2010, at 3:37, Alexis Berlemont wrote:
+
+> Hi,
+>=20
+>=20
+> Stefan Schaal wrote:
+>> Hi Alexis,
+>>=20
+>>  thanks so much for the new analogy software. Here are some first =
+observations:
+>>=20
+>> 1) cmd_bits.c works fine on our NI6250 board
+>>=20
+>> 2) however, a slightly modified version hangs -- I appended my =
+cmd_bits.c to this email. All what I added is a for loop around the =
+a4l_async_write() and a4l_snd_insn() commands, i.e., I wanted to trigger =
+a write repeatedly. Look for the "sschaal" comment in my modified =
+cmd_bits.c .  After 32 iterations, cmd_bits hangs, no error messages in =
+dmesg. Interesting, when I change your "trigger_threshold" variable from =
+128 to 256, my loop runs for 16 iterations (other changes of the trigger =
+threshold adjust the number of iterations I get in a similar way). Thus, =
+it feels like there is a buffer which does not get reset after =
+a4l_snd_insn() is called -- does this make sense?
+>>=20
+>=20
+> Could you tell me if the mite triggered an interrupt ? Could you send
+> a dump of cat /proc/xenomai/irq after having made the test program
+> hang ?
+>=20
+> Many thanks,
+>=20
+>> Best wishes,
+>>=20
+>> -Stefan
+>>=20
+>>=20
+>> On Jun 24, 2010, at 15:43, Alexis Berlemont wrote:
+>>=20
+>>> Hi,
+>>>=20
+>>> Alexis Berlemont wrote:
+>>>> Hi Stefan,
+>>>>=20
+>>>> Stefan Schaal wrote:
+>>>>> Hi Alexis,
+>>>>>=20
+>>>>> I was just wondering whether the new "experimental" branch in your =
+git repository is something that can be tried already.
+>>>>>=20
+>>>>=20
+>>>> No. Not yet. This branch is aimed at temporarily holding the
+>>>> corrections I am trying to do for the cmd_bits issue. It needs =
+quite a
+>>>> lot of work and I have not finished yet.=20
+>>>>=20
+>>>> If you have a look at the commits in this branch, we will see many
+>>>> "(broken)".
+>>>>=20
+>>>=20
+>>> I just rebased the experimental branch into the branch analogy. So,
+>>> starting from now, we should be able to properly use cmd_bits with a
+>>> clone of my git repository.
+>>>=20
+>>> After having reworked the asynchronous buffer subsystem (and having
+>>> fixed some oops in the NI driver and in the new code), cmd_bits can
+>>> correctly communicate with the DIO subdevice.=20
+>>>=20
+>>> A command like "./cmd_bits 0xffff 0xffff" works on my
+>>> board. Unfortunately, I have not done the necessary to check the
+>>> digital output lines yet.
+>>>=20
+>>>=20
+>>>>> Best wishes,
+>>>>>=20
+>>>>> -Stefan
+>>>>=20
+>>>> --=20
+>>>> Alexis.
+>>>=20
+>>> --=20
+>>> Alexis.
+>>=20
+>>=20
+>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D cmd_bits.c =
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+
+>=20
+>=20
+>=20
+> --=20
+> Alexis.
+
 
