@@ -1,16 +1,14 @@
-Mime-Version: 1.0 (Apple Message framework v1081)
-Content-Type: text/plain; charset=us-ascii
-From: Stefan Schaal <sschaal@domain.hid>
-In-Reply-To: <20100627103712.GA2565@domain.hid>
-Date: Sun, 27 Jun 2010 08:53:08 -0700
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <46F86785-737D-41F4-BC37-5DC5A4462039@domain.hid>
-References: <9FDCB500-CFA2-42CC-A7CB-EDFD66AF366C@usc.edu>
-	<20100605211102.GB8097@domain.hid>
-	<20100624224259.GA2800@domain.hid>
-	<7FB1B9EA-EB7E-45A2-9C1F-D97916381AF3@domain.hid>
-	<20100627103712.GA2565@domain.hid>
-Subject: Re: [Xenomai-core] analogy - experimental branch
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4C234A15.2030708@domain.hid>
+References: <4C0692A9.2080806@domain.hid>
+	<1276080083.18906.52.camel@domain.hid>
+	<4C234A15.2030708@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Sun, 27 Jun 2010 18:01:59 +0200
+Message-ID: <1277654519.2305.7.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH] Mayday support
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -19,124 +17,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Alexis Berlemont <alexis.berlemont@domain.hid>
-Cc: Peter Pastor Sampedro <pastorsa@domain.hid>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org, Tschaeche IT-Services <services@domain.hid>
 
-Hi Alexis,
+On Thu, 2010-06-24 at 14:05 +0200, Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> > I've toyed a bit to find a generic approach for the nucleus to regain
+> > complete control over a userland application running in a syscall-less
+> > loop.
+> > 
+> > The original issue was about recovering gracefully from a runaway
+> > situation detected by the nucleus watchdog, where a thread would spin in
+> > primary mode without issuing any syscall, but this would also apply for
+> > real-time signals pending for such a thread. Currently, Xenomai rt
+> > signals cannot preempt syscall-less code running in primary mode either.
+> > 
+> > The major difference between the previous approaches we discussed about
+> > and this one, is the fact that we now force the runaway thread to run a
+> > piece of valid code that calls into the nucleus. We do not force the
+> > thread to run faulty code or at a faulty address anymore. Therefore, we
+> > can reuse this feature to improve the rt signal management, without
+> > having to forge yet-another signal stack frame for this.
+> > 
+> > The code introduced only fixes the watchdog related issue, but also does
+> > some groundwork for enhancing the rt signal support later. The
+> > implementation details can be found here:
+> > http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=4cf21a2ae58354819da6475ae869b96c2defda0c
+> > 
+> > The current mayday support is only available for powerpc and x86 for
+> > now, more will come in the next days. To have it enabled, you have to
+> > upgrade your I-pipe patch to 2.6.32.15-2.7-00 or 2.6.34-2.7-00 for x86,
+> > 2.6.33.5-2.10-01 or 2.6.34-2.10-00 for powerpc. That feature relies on a
+> > new interface available from those latest patches.
+> > 
+> > The current implementation does not break the 2.5.x ABI on purpose, so
+> > we could merge it into the stable branch.
+> > 
+> > We definitely need user feedback on this. Typically, does arming the
+> > nucleus watchdog with that patch support in, properly recovers from your
+> > favorite "get me out of here" situation? TIA,
+> > 
+> > You can pull this stuff from
+> > git://git.xenomai.org/xenomai-rpm.git, queue/mayday branch.
+> > 
+> 
+> I've retested the feature as it's now in master, and it has one
+> remaining problem: If you run the cpu hog under gdb control and try to
+> break out of the while(1) loop, this doesn't work before the watchdog
+> expired - of course. But if you send the break before the expiry (or hit
+> a breakpoint), something goes wrong. The Xenomai task continues to spin,
+> and there is no chance to kill its process (only gdb).
 
-  I did a reboot, ran my modified cmd_bits.c again one time.=20
+I can't reproduce this easily here; it happened only once on a lite52xx,
+and then disappeared; no way to reproduce this once on a dual core atom
+in 64bit mode, or on a x86_32 single core platform either. But I still
+saw it once on a powerpc target, so this looks like a generic
+time-dependent issue.
 
-cat /proc/xenomai/irq  reports:
+Do you have the same behavior on a single core config, and/or without
+WARNSW enabled?
 
-IRQ         CPU0        CPU1        CPU2        CPU3        CPU4        =
-CPU5        CPU6        CPU7
- 56:           0           0           0           0           0         =
-  0           0           0         Analogy device
-518:           0           1           1           1           1         =
-  1           1           1         [IPI]
-521:      626392      618020      618539      620274      617326      =
-625008      622464      626300         [timer]
-522:           0           0           0           0           0         =
-  0           0           0         [critical sync]
-546:           0           0           0           0           0         =
-  0           0           0         [virtual]
+Also, could you post your hog test code? maybe there is a difference
+with the way I'm testing.
+
+> 
+> # cat /proc/xenomai/sched
+> CPU  PID    CLASS  PRI      TIMEOUT   TIMEBASE   STAT       NAME
+>   0  0      idle    -1      -         master     RR         ROOT/0
+
+Eeek. This symbolic stat mode label looks weird.
+
+>   1  0      idle    -1      -         master     R          ROOT/1
+>   0  6120   rt      99      -         master     Tt         cpu-hog
+> # cat /proc/xenomai/stat
+> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+>   0  0      0          0          0     00500088    0.0  ROOT/0
+>   1  0      0          0          0     00500080   99.7  ROOT/1
+>   0  6120   0          1          0     00342180  100.0  cpu-hog
+>   0  0      0          21005      0     00000000    0.0  IRQ3340: [timer]
+>   1  0      0          35887      0     00000000    0.3  IRQ3340: [timer]
+> 
+> Jan
+> 
 
 
--Stefan
+-- 
+Philippe.
 
-On Jun 27, 2010, at 3:37, Alexis Berlemont wrote:
-
-> Hi,
->=20
->=20
-> Stefan Schaal wrote:
->> Hi Alexis,
->>=20
->>  thanks so much for the new analogy software. Here are some first =
-observations:
->>=20
->> 1) cmd_bits.c works fine on our NI6250 board
->>=20
->> 2) however, a slightly modified version hangs -- I appended my =
-cmd_bits.c to this email. All what I added is a for loop around the =
-a4l_async_write() and a4l_snd_insn() commands, i.e., I wanted to trigger =
-a write repeatedly. Look for the "sschaal" comment in my modified =
-cmd_bits.c .  After 32 iterations, cmd_bits hangs, no error messages in =
-dmesg. Interesting, when I change your "trigger_threshold" variable from =
-128 to 256, my loop runs for 16 iterations (other changes of the trigger =
-threshold adjust the number of iterations I get in a similar way). Thus, =
-it feels like there is a buffer which does not get reset after =
-a4l_snd_insn() is called -- does this make sense?
->>=20
->=20
-> Could you tell me if the mite triggered an interrupt ? Could you send
-> a dump of cat /proc/xenomai/irq after having made the test program
-> hang ?
->=20
-> Many thanks,
->=20
->> Best wishes,
->>=20
->> -Stefan
->>=20
->>=20
->> On Jun 24, 2010, at 15:43, Alexis Berlemont wrote:
->>=20
->>> Hi,
->>>=20
->>> Alexis Berlemont wrote:
->>>> Hi Stefan,
->>>>=20
->>>> Stefan Schaal wrote:
->>>>> Hi Alexis,
->>>>>=20
->>>>> I was just wondering whether the new "experimental" branch in your =
-git repository is something that can be tried already.
->>>>>=20
->>>>=20
->>>> No. Not yet. This branch is aimed at temporarily holding the
->>>> corrections I am trying to do for the cmd_bits issue. It needs =
-quite a
->>>> lot of work and I have not finished yet.=20
->>>>=20
->>>> If you have a look at the commits in this branch, we will see many
->>>> "(broken)".
->>>>=20
->>>=20
->>> I just rebased the experimental branch into the branch analogy. So,
->>> starting from now, we should be able to properly use cmd_bits with a
->>> clone of my git repository.
->>>=20
->>> After having reworked the asynchronous buffer subsystem (and having
->>> fixed some oops in the NI driver and in the new code), cmd_bits can
->>> correctly communicate with the DIO subdevice.=20
->>>=20
->>> A command like "./cmd_bits 0xffff 0xffff" works on my
->>> board. Unfortunately, I have not done the necessary to check the
->>> digital output lines yet.
->>>=20
->>>=20
->>>>> Best wishes,
->>>>>=20
->>>>> -Stefan
->>>>=20
->>>> --=20
->>>> Alexis.
->>>=20
->>> --=20
->>> Alexis.
->>=20
->>=20
->> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D cmd_bits.c =
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-
->=20
->=20
->=20
-> --=20
-> Alexis.
 
 
