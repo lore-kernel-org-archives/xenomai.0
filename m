@@ -1,13 +1,11 @@
-Message-ID: <4C28A71F.8030902@domain.hid>
-Date: Mon, 28 Jun 2010 15:43:59 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: "Sydir, Jerry" <jerry.sydir@domain.hid>
+Date: Mon, 28 Jun 2010 09:48:10 -0700
+Message-ID: <8EA2C2C4116BF44AB370468FBF85A777016574B413@domain.hid>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+	boundary="_000_8EA2C2C4116BF44AB370468FBF85A777016574B413orsmsx504amrc_"
 MIME-Version: 1.0
-References: <AANLkTimKEFqaOGLrvLhpf0FqqdTkAPraazAnbuUGMa0V@mail.gmail.com>	<4C289319.4050807@domain.hid>
-	<4C289FF2.6010208@domain.hid>
-In-Reply-To: <4C289FF2.6010208@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] IRQ conflict issues with and ESD PMC card.
+Subject: [Xenomai-help] machine hangs running oprofile on xenomai kernel
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,64 +15,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Stefan Kisdaroczi wrote:
-> Salut Gilles,
-> 
-> i need to jump in.
-> 
-> Am 28.06.2010 14:18, schrieb Gilles Chanteperdrix:
->> Nape Ibrahim Lentsoane wrote:
->>> Hello,
->>>
->>> I've been having this problem for some time now and I hope someone from
->>> the Xenomai community can help.
->>> Basically, my kernel does not want to boot with PMC card. I have managed
->>> to use console redirection of messages
->>> to the serial port and I can see the error messages. From what I can
->>> see, there is a problem with '/xnintr_irq_handler/' due
->>> to this message at boot time: /Xenomai: xnintr_irq_handler: IRQ10 not
->>> handled. Disabling IRQ line./
->> As repeated many times, disabling ACPI has been known to cause such
->> issues. So, you should keep ACPI enabled, only ACPI_PROCESSOR needs to
->> be disabled.
->>
->> For IRQ conflicts, see:
->> http://www.xenomai.org/index.php/FAQs#What_can_I_do_if_Xenomai_and_Linux_devices_share_the_same_IRQ.3F
-> 
-> I had to consult this wiki already multiple times (every time I get a new box...)
-> It's ok, but there is not really a solution. Currently I have one pci-card
-> and a rtdm driver. I got my unshared realtime IRQ after disabling the soundcard.
-> 
-> At the end of the year I need to be able to use three of these cards and
-> five realtime serial connections in one machine. I already have sleepless
-> nights ;-) and hope I understood something wrong...
-> 
-> AFAIK with 2.6.31 "threaded IRQ's" were merged to mainline. Would it be possible
-> now for IPIPE to pass down the IRQ's to linux so that the IRQ is handled, but
-> the IRQ-Thread is not started ? Or something like ?
-> 
+--_000_8EA2C2C4116BF44AB370468FBF85A777016574B413orsmsx504amrc_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-It's still not that simple. Threaded IRQs per se do not solve the issue,
-neither in upstream nor for Xenomai.
+Hello,
 
-What they do, though, is to lay the ground for slowing enabling RT-safe
-IRQ-sharing in more and more Linux drivers: Given a proper split-up
-between top-half and threaded handler, you now have the means (with
-upstream) or at least the blueprint (for Xenomai) how to quickly silence
-an IRQ line at device level. For Xenomai, these handler would have to be
-made co-scheduling-safe and could then be registered against RTDM as
-shared RT-IRQs. Still, this issue cannot be addressed automatically, it
-has to be developed driver by driver.
+I am having trouble running oprofile on a xenomai kernel. I am running the =
+2.5.3 version of xenomai built into a 2.6.32.11 version of the kernel runni=
+ng on an Intel Core 2 duo. I have tried both the 0.9.3 and 0.9.6 versions o=
+f oprofile. When I try to start collection ("opcontrol -start") the machine=
+ hangs. Oprofile runs without trouble on a clean version of the 2.6.32.11 k=
+ernel built using the same configuration as the xenomai version.
 
-The better news is that modern hardware now more and more provides MSI,
-and that's an inherently unshared IRQ source.
+Is this a know limitation? Are there any configuration settings that I need=
+ to use?
 
-Jan
+Best Regards,
+Jerry
 
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+--_000_8EA2C2C4116BF44AB370468FBF85A777016574B413orsmsx504amrc_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" xmlns:w=3D"urn:sc=
+hemas-microsoft-com:office:word" xmlns=3D"http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=3DContent-Type content=3D"text/html; charset=3Dus-ascii">
+<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Batang;
+	panose-1:2 3 6 0 0 1 1 1 1 1;}
+@font-face
+	{font-family:"\@Batang";
+	panose-1:2 3 6 0 0 1 1 1 1 1;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:Arial;
+	color:windowtext;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.25in 1.0in 1.25in;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+
+</head>
+
+<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
+
+<div class=3DSection1>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
+0.0pt;
+font-family:Arial'>Hello,<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
+0.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
+0.0pt;
+font-family:Arial'>I am having trouble running oprofile on a xenomai kernel=
+. I
+am running the 2.5.3 version of xenomai built into a 2.6.32.11 version of t=
+he
+kernel running on an Intel Core 2 duo. I have tried both the 0.9.3 and 0.9.=
+6
+versions of oprofile. When I try to start collection (&#8220;opcontrol &#82=
+11;start&#8221;)
+the machine hangs. Oprofile runs without trouble on a clean version of the
+2.6.32.11 kernel built using the same configuration as the xenomai version.=
+<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
+0.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
+0.0pt;
+font-family:Arial'>Is this a know limitation? Are there any configuration
+settings that I need to use? <o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
+0.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
+0.0pt;
+font-family:Arial'>Best Regards,<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
+0.0pt;
+font-family:Arial'>Jerry<o:p></o:p></span></font></p>
+
+</div>
+
+</body>
+
+</html>
+
+--_000_8EA2C2C4116BF44AB370468FBF85A777016574B413orsmsx504amrc_--
 
