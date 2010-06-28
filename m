@@ -1,15 +1,15 @@
-Message-ID: <4C037798.8070307@domain.hid>
-Date: Mon, 31 May 2010 10:47:20 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4C28AC49.3080209@domain.hid>
+Date: Mon, 28 Jun 2010 16:06:01 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <1274245032-10610-1-git-send-email-P.B.Cheblakov@domain.hid>	<4BF3953D.8070108@domain.hid>
-	<4BFA2111.5020503@domain.hid> <4BFA2696.5070302@domain.hid>
-	<4C026436.6010903@domain.hid> <4C029F67.6010602@domain.hid>
-	<4C03689D.4010304@domain.hid>
-In-Reply-To: <4C03689D.4010304@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] [PATCH V2] rtcan: add rtcan_plx_pci driver
+References: <4C0692A9.2080806@domain.hid>	
+	<1276080083.18906.52.camel@domain.hid>	
+	<4C234A15.2030708@domain.hid>
+	<1277654519.2305.7.camel@domain.hid>
+In-Reply-To: <1277654519.2305.7.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH] Mayday support
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,133 +18,182 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Tschaeche IT-Services <services@domain.hid>
 
-On 05/31/2010 09:43 AM, Gilles Chanteperdrix wrote:
-> Wolfgang Grandegger wrote:
->> On 05/30/2010 03:12 PM, Gilles Chanteperdrix wrote:
->>> Wolfgang Grandegger wrote:
->>>> From my point of view, yes. Gilles could you please commit this patch?
->>> No, it seems the patch causes a build issue:
+Philippe Gerum wrote:
+> On Thu, 2010-06-24 at 14:05 +0200, Jan Kiszka wrote:
+>> Philippe Gerum wrote:
+>>> I've toyed a bit to find a generic approach for the nucleus to regain
+>>> complete control over a userland application running in a syscall-less
+>>> loop.
 >>>
->>> http://sisyphus.hd.free.fr/~gilles/bx/
->>
->> Oops, obviously the Kconfig entry is invalid:
->>
->> +config XENO_DRIVERS_CAN_SJA1000_ESD_PCI (DEPRECATED)
->>
->> The "(DEPRECATED)" is causing the trouble, I assume.
->>
->>  	depends on XENO_DRIVERS_CAN_SJA1000 && PCI
->>  	tristate "ESD PCI Cards"
->>
->> Maybe you want to add the "(DEPRECATED)" here.
->>
->>  	help
->> @@ -61,6 +76,9 @@ config XENO_DRIVERS_CAN_SJA1000_ESD_PCI
->>  	CAN-PCI/266, CAN-PMC/266 (PMC), CAN-CPCI/200 (CompactPCI),
->>  	CAN-PCIe2000 (PCI Express) and CAN-PCI104/200 (PCI104)
->>  	from the esd electronic system design gmbh (http://www.esd.eu).
->> +=09
->>
->> Trailing white space!
->>
->> +	This driver is deprecated. It's functionality is now provided by
->> +	"PLX90xx PCI-bridge based Cards" driver.
->>
->> Pavel, could you please fix that.
->=20
-> Ok. If these are the only differences between the patch which was
-> actually tested and the patch you posted, simply tell us, I can fix it
-> in my tree.
+>>> The original issue was about recovering gracefully from a runaway
+>>> situation detected by the nucleus watchdog, where a thread would spin in
+>>> primary mode without issuing any syscall, but this would also apply for
+>>> real-time signals pending for such a thread. Currently, Xenomai rt
+>>> signals cannot preempt syscall-less code running in primary mode either.
+>>>
+>>> The major difference between the previous approaches we discussed about
+>>> and this one, is the fact that we now force the runaway thread to run a
+>>> piece of valid code that calls into the nucleus. We do not force the
+>>> thread to run faulty code or at a faulty address anymore. Therefore, we
+>>> can reuse this feature to improve the rt signal management, without
+>>> having to forge yet-another signal stack frame for this.
+>>>
+>>> The code introduced only fixes the watchdog related issue, but also does
+>>> some groundwork for enhancing the rt signal support later. The
+>>> implementation details can be found here:
+>>> http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=4cf21a2ae58354819da6475ae869b96c2defda0c
+>>>
+>>> The current mayday support is only available for powerpc and x86 for
+>>> now, more will come in the next days. To have it enabled, you have to
+>>> upgrade your I-pipe patch to 2.6.32.15-2.7-00 or 2.6.34-2.7-00 for x86,
+>>> 2.6.33.5-2.10-01 or 2.6.34-2.10-00 for powerpc. That feature relies on a
+>>> new interface available from those latest patches.
+>>>
+>>> The current implementation does not break the 2.5.x ABI on purpose, so
+>>> we could merge it into the stable branch.
+>>>
+>>> We definitely need user feedback on this. Typically, does arming the
+>>> nucleus watchdog with that patch support in, properly recovers from your
+>>> favorite "get me out of here" situation? TIA,
+>>>
+>>> You can pull this stuff from
+>>> git://git.xenomai.org/xenomai-rpm.git, queue/mayday branch.
+>>>
+>> I've retested the feature as it's now in master, and it has one
+>> remaining problem: If you run the cpu hog under gdb control and try to
+>> break out of the while(1) loop, this doesn't work before the watchdog
+>> expired - of course. But if you send the break before the expiry (or hit
+>> a breakpoint), something goes wrong. The Xenomai task continues to spin,
+>> and there is no chance to kill its process (only gdb).
+> 
+> I can't reproduce this easily here; it happened only once on a lite52xx,
+> and then disappeared; no way to reproduce this once on a dual core atom
+> in 64bit mode, or on a x86_32 single core platform either. But I still
+> saw it once on a powerpc target, so this looks like a generic
+> time-dependent issue.
+> 
+> Do you have the same behavior on a single core config,
 
-The attached patch fixes the remaining issues, including some compiler
-warnings :-(.
+You cannot reproduce it on a single core as the CPU hog will occupy that
+core and gdb cannot be operated.
 
-Thanks,
+> and/or without
+> WARNSW enabled?
 
-Wolfgang.
+Just tried and disabled WARNSW in the test below: no difference.
 
----
- ksrc/drivers/can/sja1000/Kconfig         |   10 ++++------
- ksrc/drivers/can/sja1000/rtcan_plx_pci.c |    8 ++++----
- 2 files changed, 8 insertions(+), 10 deletions(-)
+> 
+> Also, could you post your hog test code? maybe there is a difference
+> with the way I'm testing.
 
-Index: xenomai-2.5/ksrc/drivers/can/sja1000/Kconfig
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai-2.5.orig/ksrc/drivers/can/sja1000/Kconfig
-+++ xenomai-2.5/ksrc/drivers/can/sja1000/Kconfig
-@@ -66,21 +66,19 @@ config XENO_DRIVERS_CAN_SJA1000_EMS_PCI
- 	W=FCnsche (http://www.ems-wuensche.de). To get the second channel
- 	working, Xenomai's shared interrupt support must be enabled.
-=20
--
--config XENO_DRIVERS_CAN_SJA1000_ESD_PCI (DEPRECATED)
-+config XENO_DRIVERS_CAN_SJA1000_ESD_PCI
- 	depends on XENO_DRIVERS_CAN_SJA1000 && PCI
--	tristate "ESD PCI Cards"
-+	tristate "ESD PCI Cards (DEPRECATED)"
- 	help
-=20
- 	This driver supports the esd PCI CAN cards CAN-PCI/200,
- 	CAN-PCI/266, CAN-PMC/266 (PMC), CAN-CPCI/200 (CompactPCI),
- 	CAN-PCIe2000 (PCI Express) and CAN-PCI104/200 (PCI104)
--	from the esd electronic system design gmbh (http://www.esd.eu).
--=09
-+	from the esd electronic system design gmbh (http://www.esd.eu)
-+
- 	This driver is deprecated. It's functionality is now provided by
- 	"PLX90xx PCI-bridge based Cards" driver.
-=20
--
- config XENO_DRIVERS_CAN_SJA1000_PEAK_DNG
- 	depends on XENO_DRIVERS_CAN_SJA1000 && !PARPORT
- 	tristate "PEAK Parallel Port Dongle"
-Index: xenomai-2.5/ksrc/drivers/can/sja1000/rtcan_plx_pci.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai-2.5.orig/ksrc/drivers/can/sja1000/rtcan_plx_pci.c
-+++ xenomai-2.5/ksrc/drivers/can/sja1000/rtcan_plx_pci.c
-@@ -288,12 +288,12 @@ static DEFINE_PCI_DEVICE_TABLE(plx_pci_t
- };
- MODULE_DEVICE_TABLE(pci, plx_pci_tbl);
-=20
--static u8 plx_pci_read_reg(const struct rtcan_device *dev, int port)
-+static u8 plx_pci_read_reg(struct rtcan_device *dev, int port)
- {
- 	return ioread8((void* __iomem)dev->base_addr + port);
- }
-=20
--static void plx_pci_write_reg(const struct rtcan_device *dev, int port, u8=
- val)
-+static void plx_pci_write_reg(struct rtcan_device *dev, int port, u8 val)
- {
- 	iowrite8(val, (void* __iomem)dev->base_addr + port);
- }
-@@ -303,7 +303,7 @@ static void plx_pci_write_reg(const stru
-  * by trying to switch 'em from the Basic mode into the PeliCAN mode.
-  * Also check states of some registers in reset mode.
-  */
--static inline int plx_pci_check_sja1000(const struct rtcan_device *dev)
-+static inline int plx_pci_check_sja1000(struct rtcan_device *dev)
- {
- 	int flag =3D 0;
-=20
-@@ -507,7 +507,7 @@ static int __devinit plx_pci_add_card(st
- 		}
-=20
- 		strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
--		dev->board_name =3D ci->name;
-+		dev->board_name =3D (char *)ci->name;
-=20
- 		card->rtcan_dev[i] =3D dev;
- 		chip =3D card->rtcan_dev[i]->priv;
+#include <signal.h>
+#include <native/task.h>
+#include <sys/mman.h>
+#include <stdlib.h>
 
+void sighandler(int sig, siginfo_t *si, void *context)
+{
+	printf("SIGDEBUG: reason=%d\n", si->si_value.sival_int);
+	exit(1);
+}
 
+void loop(void *arg)
+{
+	RT_TASK_INFO info;
 
-=20
+	while (1)
+		if (!arg)
+			rt_task_inquire(NULL, &info);
+}
+
+int main(int argc, const char *argv[])
+{
+	struct sigaction sa;
+	RT_TASK task;
+
+	sigemptyset(&sa.sa_mask);
+	sa.sa_sigaction = sighandler;
+	sa.sa_flags = SA_SIGINFO;
+	sigaction(SIGDEBUG, &sa, NULL);
+
+	mlockall(MCL_CURRENT|MCL_FUTURE);
+	rt_task_spawn(&task, "cpu-hog", 0, 99, T_JOINABLE|T_WARNSW, loop,
+		(void *)(long)((argc > 1) && strcmp(argv[1], "--lethal") == 0));
+	rt_task_join(&task);
+
+	return 0;
+}
+
+> 
+>> # cat /proc/xenomai/sched
+>> CPU  PID    CLASS  PRI      TIMEOUT   TIMEBASE   STAT       NAME
+>>   0  0      idle    -1      -         master     RR         ROOT/0
+> 
+> Eeek. This symbolic stat mode label looks weird.
+
+Hmm, haven't noticed this yet. I'm running a kind of all-yes config,
+namely:
+
+...
+CONFIG_XENOMAI=y
+CONFIG_XENO_GENERIC_STACKPOOL=y
+CONFIG_XENO_FASTSYNCH=y
+CONFIG_XENO_OPT_NUCLEUS=y
+CONFIG_XENO_OPT_PERVASIVE=y
+CONFIG_XENO_OPT_PRIOCPL=y
+CONFIG_XENO_OPT_PIPELINE_HEAD=y
+CONFIG_XENO_OPT_SCHED_CLASSES=y
+CONFIG_XENO_OPT_SCHED_TP=y
+CONFIG_XENO_OPT_SCHED_TP_NRPART=4
+CONFIG_XENO_OPT_SCHED_SPORADIC=y
+CONFIG_XENO_OPT_SCHED_SPORADIC_MAXREPL=8
+CONFIG_XENO_OPT_PIPE=y
+CONFIG_XENO_OPT_MAP=y
+CONFIG_XENO_OPT_PIPE_NRDEV=32
+CONFIG_XENO_OPT_REGISTRY_NRSLOTS=512
+CONFIG_XENO_OPT_SYS_HEAPSZ=256
+CONFIG_XENO_OPT_SYS_STACKPOOLSZ=128
+CONFIG_XENO_OPT_SEM_HEAPSZ=12
+CONFIG_XENO_OPT_GLOBAL_SEM_HEAPSZ=12
+CONFIG_XENO_OPT_STATS=y
+CONFIG_XENO_OPT_DEBUG=y
+# CONFIG_XENO_OPT_DEBUG_NUCLEUS is not set
+# CONFIG_XENO_OPT_DEBUG_XNLOCK is not set
+# CONFIG_XENO_OPT_DEBUG_QUEUES is not set
+# CONFIG_XENO_OPT_DEBUG_REGISTRY is not set
+# CONFIG_XENO_OPT_DEBUG_TIMERS is not set
+CONFIG_XENO_OPT_DEBUG_SYNCH_RELAX=y
+CONFIG_XENO_OPT_WATCHDOG=y
+CONFIG_XENO_OPT_WATCHDOG_TIMEOUT=60
+CONFIG_XENO_OPT_SHIRQ=y
+CONFIG_XENO_OPT_SELECT=y
+
+#
+# Timing
+#
+CONFIG_XENO_OPT_TIMING_PERIODIC=y
+CONFIG_XENO_OPT_TIMING_VIRTICK=1000
+CONFIG_XENO_OPT_TIMING_SCHEDLAT=0
+
+#
+# Scalability
+#
+CONFIG_XENO_OPT_SCALABLE_SCHED=y
+# CONFIG_XENO_OPT_TIMER_LIST is not set
+CONFIG_XENO_OPT_TIMER_HEAP=y
+# CONFIG_XENO_OPT_TIMER_WHEEL is not set
+CONFIG_XENO_OPT_TIMER_HEAP_CAPACITY=256
+...
+
+Maybe this has some influence as well. The 'RR' correlates with starting
+the hog, with or without gdb.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
