@@ -1,39 +1,33 @@
-Message-ID: <4C036DF6.8020201@domain.hid>
-Date: Mon, 31 May 2010 10:06:14 +0200
-From: Albert Veli <albert.veli@domain.hid>
+Message-ID: <4C28F761.8030205@domain.hid>
+Date: Mon, 28 Jun 2010 21:26:25 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <AANLkTikU5zPKew64ZxWGokwh5R5F-sNegWdDzOENWdzB@mail.gmail.com>	<4C1B7EB1.2040006@domain.hid>	<AANLkTinABTK2nMI0QfZVaULQ4OKwF0678PKOBc_OMIn1@domain.hid>	<AANLkTiklRlwsIJfelo0eT2GZDvI6PtDAwc4qluLCr6R5@domain.hid>	<4C1B8C04.3010900@domain.hid>	<4C1BCCBF.7010400@domain.hid>	<AANLkTilBt1fx4MFJ_Tmuz-fUl1D190u_FYDfLn09JaA3@domain.hid>	<1277330401.2453.145.camel@domain.hid>	<AANLkTincrp1q4RbmCoijrummF3IS_tfBJ-YGZnGFbpw0@domain.hid>	<4C234679.10209@domain.hid>	<AANLkTilPgVl1k1TUWBjwmT969SL5ga227so3x8VSqXtP@mail.gmail.com>	<4C23682A.8060505@domain.hid>
+	<AANLkTiki3aaq9r2y_GYKqp7EURyavyEhFk6oD90hvFrK@mail.gmail.com>
+In-Reply-To: <AANLkTiki3aaq9r2y_GYKqp7EURyavyEhFk6oD90hvFrK@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] 2.6.32 patch for arm?
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Fwd: problem in pthread_mutex_lock/unlock
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Nero Fernandez <grimlynch@domain.hid>
+Cc: xenomai@xenomai.org
 
-Dear xenomai-help list,
+Nero Fernandez wrote:
+> Thanks for the rootfs, Gilles.
+> Although i am unable to use it directly (i get 'illegal instruction'
+> error while running any application/busybox-applet), i will try
+> to construct a similar test-setup for further testing.
 
-I am looking at the ipipe patch for a custom arm-board. The linux kernel
-version is 2.6.32.x (currently 2.6.32.14). It was chosen because it is
-defined to be a "long-term" stable release and we do not plan on
-changing the minor version very often.
-
-Now the problem is that ipipe patches for 2.6.32.x are only available
-for x86 and ppc. For arm I can only find 2.6.30.x, 2.6.31.x and 2.6.33.x
-but not 2.6.32.x.
-
-Are there any plans for creating an ipipe arm-patch for 2.6.32.x? I have
-tried to port the 2.6.33 patch back to 2.6.32 but it is a pretty
-intrusive patch and the chance for me to get it correctly done is
-somewhere between slim to none :-)
+It is an EABI rootfs. Is EABI enabled in your kernel configuration?
 
 
-Best regards,
-
-Albert
+-- 
+					    Gilles.
 
