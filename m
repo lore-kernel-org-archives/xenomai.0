@@ -1,11 +1,12 @@
-From: "Sydir, Jerry" <jerry.sydir@domain.hid>
-Date: Mon, 28 Jun 2010 09:48:10 -0700
-Message-ID: <8EA2C2C4116BF44AB370468FBF85A777016574B413@domain.hid>
-Content-Language: en-US
-Content-Type: multipart/alternative;
-	boundary="_000_8EA2C2C4116BF44AB370468FBF85A777016574B413orsmsx504amrc_"
+Message-ID: <4C2A078E.80009@domain.hid>
+Date: Tue, 29 Jun 2010 16:47:42 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: [Xenomai-help] machine hangs running oprofile on xenomai kernel
+References: <8EA2C2C4116BF44AB370468FBF85A777016574B413@domain.hid>
+In-Reply-To: <8EA2C2C4116BF44AB370468FBF85A777016574B413@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] machine hangs running oprofile on xenomai kernel
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,124 +16,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Sydir, Jerry" <jerry.sydir@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
---_000_8EA2C2C4116BF44AB370468FBF85A777016574B413orsmsx504amrc_
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Sydir, Jerry wrote:
+> Hello,
+> 
+> I am having trouble running oprofile on a xenomai kernel. I am running the 2.5.3 version of xenomai built into a 2.6.32.11 version of the kernel running on an Intel Core 2 duo. I have tried both the 0.9.3 and 0.9.6 versions of oprofile. When I try to start collection ("opcontrol -start") the machine hangs. Oprofile runs without trouble on a clean version of the 2.6.32.11 kernel built using the same configuration as the xenomai version.
+> 
+> Is this a know limitation? Are there any configuration settings that I need to use?
 
-Hello,
+Could you try if loading oprofile with module parameter timer=1 helps?
+It will not profile Xenomai code anymore, but may point to the NMI path.
 
-I am having trouble running oprofile on a xenomai kernel. I am running the =
-2.5.3 version of xenomai built into a 2.6.32.11 version of the kernel runni=
-ng on an Intel Core 2 duo. I have tried both the 0.9.3 and 0.9.6 versions o=
-f oprofile. When I try to start collection ("opcontrol -start") the machine=
- hangs. Oprofile runs without trouble on a clean version of the 2.6.32.11 k=
-ernel built using the same configuration as the xenomai version.
+But oprofile might have its own problems. This is what I got testing it
+on 2.6.34 (opcontrol --dump in a profiling session):
 
-Is this a know limitation? Are there any configuration settings that I need=
- to use?
+[  667.539673] =======================================================
+[  667.540063] [ INFO: possible circular locking dependency detected ]
+[  667.540063] 2.6.34-xeno_64 #24
+[  667.540063] -------------------------------------------------------
+[  667.540063] oprofiled/6497 is trying to acquire lock:
+[  667.540063]  (&mm->mmap_sem){++++++}, at: [<ffffffff8111fd9b>] might_fault+0x68/0xb5
+[  667.540063]
+[  667.540063] but task is already holding lock:
+[  667.540063]  (dcookie_mutex){+.+.+.}, at: [<ffffffff81190980>] sys_lookup_dcookie+0x44/0x182
+[  667.540063]
+[  667.540063] which lock already depends on the new lock.
+[  667.540063]
+[  667.540063]
+[  667.540063] the existing dependency chain (in reverse order) is:
+[  667.540063]
+[  667.540063] -> #1 (dcookie_mutex){+.+.+.}:
+[  667.540063]        [<ffffffff81065f0e>] __lock_acquire+0x150b/0x1862
+[  667.540063]        [<ffffffff8106635d>] lock_acquire+0xf8/0x122
+[  667.540063]        [<ffffffff8132ed77>] mutex_lock_nested+0x69/0x336
+[  667.540063]        [<ffffffff81190aed>] get_dcookie+0x2f/0x13e
+[  667.540063]        [<ffffffffa02d4fbb>] sync_buffer+0x1a9/0x413 [oprofile]
+[  667.540063]        [<ffffffffa02d523b>] task_exit_notify+0x16/0x1a [oprofile]
+[  667.540063]        [<ffffffff81334813>] notifier_call_chain+0x38/0x60
+[  667.540063]        [<ffffffff810569c6>] __blocking_notifier_call_chain+0x52/0x6f
+[  667.540063]        [<ffffffff810569f7>] blocking_notifier_call_chain+0x14/0x16
+[  667.540063]        [<ffffffff810599ed>] profile_task_exit+0x1a/0x1c
+[  667.540063]        [<ffffffff81039e37>] do_exit+0x2a/0x705
+[  667.540063]        [<ffffffff8103a58a>] do_group_exit+0x78/0xa1
+[  667.540063]        [<ffffffff8103a5ca>] sys_exit_group+0x17/0x1b
+[  667.540063]        [<ffffffff81002b7f>] system_call_fastpath+0x16/0x1b
+[  667.540063]
+[  667.540063] -> #0 (&mm->mmap_sem){++++++}:
+[  667.540063]        [<ffffffff81065c33>] __lock_acquire+0x1230/0x1862
+[  667.540063]        [<ffffffff8106635d>] lock_acquire+0xf8/0x122
+[  667.540063]        [<ffffffff8111fdc8>] might_fault+0x95/0xb5
+[  667.540063]        [<ffffffff81190a76>] sys_lookup_dcookie+0x13a/0x182
+[  667.540063]        [<ffffffff81002b7f>] system_call_fastpath+0x16/0x1b
+[  667.540063]
+[  667.540063] other info that might help us debug this:
+[  667.540063]
+[  667.540063] 1 lock held by oprofiled/6497:
+[  667.540063]  #0:  (dcookie_mutex){+.+.+.}, at: [<ffffffff81190980>] sys_lookup_dcookie+0x44/0x182
+[  667.540063]
+[  667.540063] stack backtrace:
+[  667.540063] Pid: 6497, comm: oprofiled Not tainted 2.6.34-xeno_64 #24
+[  667.540063] Call Trace:
+[  667.540063]  [<ffffffff810644a7>] print_circular_bug+0xb3/0xc2
+[  667.540063]  [<ffffffff81065c33>] __lock_acquire+0x1230/0x1862
+[  667.540063]  [<ffffffff8106635d>] lock_acquire+0xf8/0x122
+[  667.540063]  [<ffffffff8111fd9b>] ? might_fault+0x68/0xb5
+[  667.540063]  [<ffffffff8111fdc8>] might_fault+0x95/0xb5
+[  667.540063]  [<ffffffff8111fd9b>] ? might_fault+0x68/0xb5
+[  667.540063]  [<ffffffff81190a76>] sys_lookup_dcookie+0x13a/0x182
+[  667.540063]  [<ffffffff81002b7f>] system_call_fastpath+0x16/0x1b
 
-Best Regards,
-Jerry
+Maybe perf works, maybe it also has issues when using NMIs. I haven't
+tried this yet over Xenomai.
 
---_000_8EA2C2C4116BF44AB370468FBF85A777016574B413orsmsx504amrc_
-Content-Type: text/html; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Jan
 
-<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" xmlns:w=3D"urn:sc=
-hemas-microsoft-com:office:word" xmlns=3D"http://www.w3.org/TR/REC-html40">
-
-<head>
-<meta http-equiv=3DContent-Type content=3D"text/html; charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:Batang;
-	panose-1:2 3 6 0 0 1 1 1 1 1;}
-@font-face
-	{font-family:"\@Batang";
-	panose-1:2 3 6 0 0 1 1 1 1 1;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:Arial;
-	color:windowtext;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.25in 1.0in 1.25in;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-
-</head>
-
-<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
-0.0pt;
-font-family:Arial'>Hello,<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
-0.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
-0.0pt;
-font-family:Arial'>I am having trouble running oprofile on a xenomai kernel=
-. I
-am running the 2.5.3 version of xenomai built into a 2.6.32.11 version of t=
-he
-kernel running on an Intel Core 2 duo. I have tried both the 0.9.3 and 0.9.=
-6
-versions of oprofile. When I try to start collection (&#8220;opcontrol &#82=
-11;start&#8221;)
-the machine hangs. Oprofile runs without trouble on a clean version of the
-2.6.32.11 kernel built using the same configuration as the xenomai version.=
-<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
-0.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
-0.0pt;
-font-family:Arial'>Is this a know limitation? Are there any configuration
-settings that I need to use? <o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
-0.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
-0.0pt;
-font-family:Arial'>Best Regards,<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
-0.0pt;
-font-family:Arial'>Jerry<o:p></o:p></span></font></p>
-
-</div>
-
-</body>
-
-</html>
-
---_000_8EA2C2C4116BF44AB370468FBF85A777016574B413orsmsx504amrc_--
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
