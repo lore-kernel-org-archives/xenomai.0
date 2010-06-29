@@ -1,12 +1,14 @@
-Message-ID: <4C2A518F.8030302@domain.hid>
-Date: Tue, 29 Jun 2010 22:03:27 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Sydir, Jerry" <jerry.sydir@domain.hid>
+Date: Tue, 29 Jun 2010 14:27:48 -0700
+Message-ID: <8EA2C2C4116BF44AB370468FBF85A7770165815E06@domain.hid>
+References: <8EA2C2C4116BF44AB370468FBF85A777016574B413@domain.hid>
+	<4C2A078E.80009@domain.hid>
+In-Reply-To: <4C2A078E.80009@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <22150A2C94CC924695BE248F94CD11F2CD0F@EXDB4.ug.kth.se>
-In-Reply-To: <22150A2C94CC924695BE248F94CD11F2CD0F@EXDB4.ug.kth.se>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai and Gumstix Overo
+Subject: Re: [Xenomai-help] machine hangs running oprofile on xenomai kernel
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,24 +18,115 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fredrik Asplund <fasplund@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Fredrik Asplund wrote:
-> Hello, I am trying to get Xenomai to work with Gumstix Overo. I
-> managed to set up a working build for the User Side, but when I tried
-> to patch the Kernel source folder (which contains
-> linux-omap3-2.6.33-r78 downloaded using
-> "git://www.sakoman.com/git/linux-omap-2.6;branch=omap3-2.6.33") using
-> the prepare-kernel.sh script I ran into problems. I guess the problem
-> is that the patches do not work with that Kernel Version (see the
-> attached log for details)? But how should I proceed to fix this? 
-> Sincerely, / Fredrik
+Hi Jan,
 
-Xenomai 2.5.3 was tested on OMAP3 with the mainline kernel. If you
-absolutely want to use this vendor branch, you will have to fix the
-patch rejects by hand.
+Thanks for your reply. I tried loading the oprofile module with timer=3D1 a=
+nd oprofile seems to work (doesn't hang the system and spits out some resul=
+ts). So it appears that the use of NMIs are the problem. Do you have any su=
+ggestions on what to try next?
 
--- 
-					    Gilles.
+Best Regards,
+Jerry
+
+-----Original Message-----
+From: Jan Kiszka [mailto:jan.kiszka@domain.hid
+Sent: Tuesday, June 29, 2010 7:48 AM
+To: Sydir, Jerry
+Cc: xenomai@xenomai.org
+Subject: Re: machine hangs running oprofile on xenomai kernel
+
+Sydir, Jerry wrote:
+> Hello,
+>=20
+> I am having trouble running oprofile on a xenomai kernel. I am running th=
+e 2.5.3 version of xenomai built into a 2.6.32.11 version of the kernel run=
+ning on an Intel Core 2 duo. I have tried both the 0.9.3 and 0.9.6 versions=
+ of oprofile. When I try to start collection ("opcontrol -start") the machi=
+ne hangs. Oprofile runs without trouble on a clean version of the 2.6.32.11=
+ kernel built using the same configuration as the xenomai version.
+>=20
+> Is this a know limitation? Are there any configuration settings that I ne=
+ed to use?
+
+Could you try if loading oprofile with module parameter timer=3D1 helps?
+It will not profile Xenomai code anymore, but may point to the NMI path.
+
+But oprofile might have its own problems. This is what I got testing it
+on 2.6.34 (opcontrol --dump in a profiling session):
+
+[  667.539673] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+[  667.540063] [ INFO: possible circular locking dependency detected ]
+[  667.540063] 2.6.34-xeno_64 #24
+[  667.540063] -------------------------------------------------------
+[  667.540063] oprofiled/6497 is trying to acquire lock:
+[  667.540063]  (&mm->mmap_sem){++++++}, at: [<ffffffff8111fd9b>] might_fau=
+lt+0x68/0xb5
+[  667.540063]
+[  667.540063] but task is already holding lock:
+[  667.540063]  (dcookie_mutex){+.+.+.}, at: [<ffffffff81190980>] sys_looku=
+p_dcookie+0x44/0x182
+[  667.540063]
+[  667.540063] which lock already depends on the new lock.
+[  667.540063]
+[  667.540063]
+[  667.540063] the existing dependency chain (in reverse order) is:
+[  667.540063]
+[  667.540063] -> #1 (dcookie_mutex){+.+.+.}:
+[  667.540063]        [<ffffffff81065f0e>] __lock_acquire+0x150b/0x1862
+[  667.540063]        [<ffffffff8106635d>] lock_acquire+0xf8/0x122
+[  667.540063]        [<ffffffff8132ed77>] mutex_lock_nested+0x69/0x336
+[  667.540063]        [<ffffffff81190aed>] get_dcookie+0x2f/0x13e
+[  667.540063]        [<ffffffffa02d4fbb>] sync_buffer+0x1a9/0x413 [oprofil=
+e]
+[  667.540063]        [<ffffffffa02d523b>] task_exit_notify+0x16/0x1a [opro=
+file]
+[  667.540063]        [<ffffffff81334813>] notifier_call_chain+0x38/0x60
+[  667.540063]        [<ffffffff810569c6>] __blocking_notifier_call_chain+0=
+x52/0x6f
+[  667.540063]        [<ffffffff810569f7>] blocking_notifier_call_chain+0x1=
+4/0x16
+[  667.540063]        [<ffffffff810599ed>] profile_task_exit+0x1a/0x1c
+[  667.540063]        [<ffffffff81039e37>] do_exit+0x2a/0x705
+[  667.540063]        [<ffffffff8103a58a>] do_group_exit+0x78/0xa1
+[  667.540063]        [<ffffffff8103a5ca>] sys_exit_group+0x17/0x1b
+[  667.540063]        [<ffffffff81002b7f>] system_call_fastpath+0x16/0x1b
+[  667.540063]
+[  667.540063] -> #0 (&mm->mmap_sem){++++++}:
+[  667.540063]        [<ffffffff81065c33>] __lock_acquire+0x1230/0x1862
+[  667.540063]        [<ffffffff8106635d>] lock_acquire+0xf8/0x122
+[  667.540063]        [<ffffffff8111fdc8>] might_fault+0x95/0xb5
+[  667.540063]        [<ffffffff81190a76>] sys_lookup_dcookie+0x13a/0x182
+[  667.540063]        [<ffffffff81002b7f>] system_call_fastpath+0x16/0x1b
+[  667.540063]
+[  667.540063] other info that might help us debug this:
+[  667.540063]
+[  667.540063] 1 lock held by oprofiled/6497:
+[  667.540063]  #0:  (dcookie_mutex){+.+.+.}, at: [<ffffffff81190980>] sys_=
+lookup_dcookie+0x44/0x182
+[  667.540063]
+[  667.540063] stack backtrace:
+[  667.540063] Pid: 6497, comm: oprofiled Not tainted 2.6.34-xeno_64 #24
+[  667.540063] Call Trace:
+[  667.540063]  [<ffffffff810644a7>] print_circular_bug+0xb3/0xc2
+[  667.540063]  [<ffffffff81065c33>] __lock_acquire+0x1230/0x1862
+[  667.540063]  [<ffffffff8106635d>] lock_acquire+0xf8/0x122
+[  667.540063]  [<ffffffff8111fd9b>] ? might_fault+0x68/0xb5
+[  667.540063]  [<ffffffff8111fdc8>] might_fault+0x95/0xb5
+[  667.540063]  [<ffffffff8111fd9b>] ? might_fault+0x68/0xb5
+[  667.540063]  [<ffffffff81190a76>] sys_lookup_dcookie+0x13a/0x182
+[  667.540063]  [<ffffffff81002b7f>] system_call_fastpath+0x16/0x1b
+
+Maybe perf works, maybe it also has issues when using NMIs. I haven't
+tried this yet over Xenomai.
+
+Jan
+
+--=20
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
