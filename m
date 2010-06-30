@@ -1,10 +1,10 @@
-Message-ID: <4C2BB5C0.3020407@domain.hid>
-Date: Wed, 30 Jun 2010 23:23:12 +0200
+Message-ID: <4C2BB70E.7020309@domain.hid>
+Date: Wed, 30 Jun 2010 23:28:46 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTimKEFqaOGLrvLhpf0FqqdTkAPraazAnbuUGMa0V@mail.gmail.com>	<4C289319.4050807@domain.hid>	<AANLkTin9R46PUKwDQw_nXck_RkL9TH01Qqhuw-7YwmDT@mail.gmail.com>	<4C2A1B0A.3000204@domain.hid>
-	<AANLkTilr3TVOW5mLVTfIYW33TpkiIFuPStuO_TxgmMrS@mail.gmail.com>
-In-Reply-To: <AANLkTilr3TVOW5mLVTfIYW33TpkiIFuPStuO_TxgmMrS@mail.gmail.com>
+References: <AANLkTimKEFqaOGLrvLhpf0FqqdTkAPraazAnbuUGMa0V@mail.gmail.com>	<4C289319.4050807@domain.hid>
+	<4C289FF2.6010208@domain.hid> <4C28A71F.8030902@domain.hid>
+In-Reply-To: <4C28A71F.8030902@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] IRQ conflict issues with and ESD PMC card.
@@ -17,49 +17,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Nape Ibrahim Lentsoane <nape.lentsoane@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Nape Ibrahim Lentsoane wrote:
-> Okay, we updated the BIOS with a custom made version from Advantech. At
-> least we are able too boot now but
-> now  my usb mouse/port does not work. By the way I'm running on an
-> industrial SBC from Advantech model MIC-3390.
-> The contents of /proc/interrupts and /proc/xenomai/irq are in
-> "pro_interrupts.txt" and "xenomai_irq_2.txt" respectively
-> as attached.
+Jan Kiszka wrote:
+> Stefan Kisdaroczi wrote:
+>> Salut Gilles,
+>>
+>> i need to jump in.
+>>
+>> Am 28.06.2010 14:18, schrieb Gilles Chanteperdrix:
+>>> Nape Ibrahim Lentsoane wrote:
+>>>> Hello,
+>>>>
+>>>> I've been having this problem for some time now and I hope someone from
+>>>> the Xenomai community can help.
+>>>> Basically, my kernel does not want to boot with PMC card. I have managed
+>>>> to use console redirection of messages
+>>>> to the serial port and I can see the error messages. From what I can
+>>>> see, there is a problem with '/xnintr_irq_handler/' due
+>>>> to this message at boot time: /Xenomai: xnintr_irq_handler: IRQ10 not
+>>>> handled. Disabling IRQ line./
+>>> As repeated many times, disabling ACPI has been known to cause such
+>>> issues. So, you should keep ACPI enabled, only ACPI_PROCESSOR needs to
+>>> be disabled.
+>>>
+>>> For IRQ conflicts, see:
+>>> http://www.xenomai.org/index.php/FAQs#What_can_I_do_if_Xenomai_and_Linux_devices_share_the_same_IRQ.3F
+>> I had to consult this wiki already multiple times (every time I get a new box...)
+>> It's ok, but there is not really a solution. Currently I have one pci-card
+>> and a rtdm driver. I got my unshared realtime IRQ after disabling the soundcard.
+>>
+>> At the end of the year I need to be able to use three of these cards and
+>> five realtime serial connections in one machine. I already have sleepless
+>> nights ;-) and hope I understood something wrong...
+>>
+>> AFAIK with 2.6.31 "threaded IRQ's" were merged to mainline. Would it be possible
+>> now for IPIPE to pass down the IRQ's to linux so that the IRQ is handled, but
+>> the IRQ-Thread is not started ? Or something like ?
+>>
 > 
-> Something strange which I do not understand is that ran the '# lsmod | grep
-> xeno_can' and look at the results in the
-> attached file "lsmod_grep_xeno_can.txt". What is puzzling is that I
-> configured the Xenomai CAN stuff to load as modules
-> but here they are automatically loaded, how's that?
+> It's still not that simple. Threaded IRQs per se do not solve the issue,
+> neither in upstream nor for Xenomai.
 > 
-> I'll try to enable the APIC and local APIC and see what happens.
+> What they do, though, is to lay the ground for slowing enabling RT-safe
+> IRQ-sharing in more and more Linux drivers: Given a proper split-up
+> between top-half and threaded handler, you now have the means (with
+> upstream) or at least the blueprint (for Xenomai) how to quickly silence
+> an IRQ line at device level. For Xenomai, these handler would have to be
+> made co-scheduling-safe and could then be registered against RTDM as
+> shared RT-IRQs. Still, this issue cannot be addressed automatically, it
+> has to be developed driver by driver.
 
-Ok. Now we can see things more clearly. First: the APIC is already
-enabled in your kernel configuration, and seems not to be used, the ACPI
-is broken, I do not know if this is the problem, but it seems your APIC
-is not used. This is bad news. If that is possible, you should try and
-use a BIOS with ACPI. I mean, come on, this has been the standard for
-over 10 years now. See:
-http://en.wikipedia.org/wiki/ACPI
+If what you want is run the top-half ahead of the pipeline, you do not
+need RTDM. I-pipe can do it (the way we do interrupts demultiplexing on
+embedded platforms).
 
-Second, your kernel is not really well configured:
-- you have enabled multi-processor support whereas you have a single
-CPU, disable it
-- you probably use the generic IDE driver, whereas you should use the
-one for the hardware you really have, use lspci to find out what the
-hardware you use is.
-- you enabled Xenomai SMI workaround, at this stage, this is a bad idea,
-you should follow the guidelines in the "TROUBLESHOOTING" guide in order
-to enable it. But this is too early, please keep it disabled for now.
-
-And now, the really bad news: you have the IRQ shared between Xenomai
-driver and Linux driver issue. IRQ 12 is used both by the Xenomai CAN
-driver and by the Linux USB controller. This is probably the reason why
-the USB is not working. See the FAQ for suggestions on how you may solve
-this issue.
+I am not sure we want the issue to be addressed automatically, it looks
+dangerous for the determinism.
 
 -- 
 					    Gilles.
