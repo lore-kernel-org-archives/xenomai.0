@@ -1,13 +1,9 @@
-Message-ID: <4C2B3D07.9020108@domain.hid>
-Date: Wed, 30 Jun 2010 14:48:07 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <207586.75053.qm@domain.hid>
+Date: Wed, 30 Jun 2010 07:03:18 -0700 (PDT)
+From: Fatih ULUSOY <fxulusoy@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTimKEFqaOGLrvLhpf0FqqdTkAPraazAnbuUGMa0V@mail.gmail.com>	<4C289319.4050807@domain.hid>	<AANLkTin9R46PUKwDQw_nXck_RkL9TH01Qqhuw-7YwmDT@mail.gmail.com>	<4C2A1B0A.3000204@domain.hid>	<AANLkTilr3TVOW5mLVTfIYW33TpkiIFuPStuO_TxgmMrS@mail.gmail.com>	<4C2B2E60.9090101@domain.hid>
-	<AANLkTiliwFI3R-J7nk5PEuqGjQUIR_cNLVuqzsXSF4WF@mail.gmail.com>
-In-Reply-To: <AANLkTiliwFI3R-J7nk5PEuqGjQUIR_cNLVuqzsXSF4WF@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] IRQ conflict issues with and ESD PMC card.
+Content-Type: multipart/alternative; boundary="0-295124994-1277906598=:75053"
+Subject: [Xenomai-help] How to Ethenet-Powerlink under Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,31 +13,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Nape Ibrahim Lentsoane <nape.lentsoane@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Nape Ibrahim Lentsoane wrote:
->     > The contents of /proc/interrupts and /proc/xenomai/irq are in
->     > "pro_interrupts.txt" and "xenomai_irq_2.txt" respectively
->     > as attached.
->     >
->     > Something strange which I do not understand is that ran the '#
->     lsmod | grep
->     > xeno_can' and look at the results in the
->     > attached file "lsmod_grep_xeno_can.txt". What is puzzling is that I
->     > configured the Xenomai CAN stuff to load as modules
->     > but here they are automatically loaded, how's that?
-> 
->     The linux kernel or the root file system did this, Xenomai is not
->     involved. Xenomai CAN drivers are simply declared as drivers for PCI
->     boards and handled by whatever does that for the version of the kernel
->     you are using. I think it is udev, but I could not be sure, these things
->     have changed many times over time, I lost track.
-> 
-> How can I stop it from doing that. I'm not sure how (newbie).
+--0-295124994-1277906598=:75053
+Content-Type: text/plain; charset=us-ascii
 
-You are asking the wrong list.
+Hi all,
 
--- 
-					    Gilles.
+As a part of the project that I am working on, I need to run Ethenet-Powerlink 
+under Xenomai.  After some googling I found a  publication "Ethernet POWERLINK 
+for Linux version of the REX Control  System". Except this publication there is 
+not many useful documentation  on this issue. They have modified the 
+OpenPowerlink source code. Modifiying openpowerlink is a bit complicated  work 
+for me because I am not experienced on these areas :( Is there anybody who have 
+experienced with Ethernet-Powerlink under Xenomai? Any comment,  any doc will be 
+really helpful and I will be appreciated. 
+
+
+Thanks.
+
+Fatih Ulusoy
+
+
+
+      
+--0-295124994-1277906598=:75053
+Content-Type: text/html; charset=us-ascii
+
+<html><head><style type="text/css"><!-- DIV {margin:0px;} --></style></head><body><div style="font-family:times new roman,new york,times,serif;font-size:12pt"><div>Hi all,<br><br>As a part of the project that I am working on, I need to run Ethenet-Powerlink under Xenomai.&nbsp; After some googling I found a 
+publication "Ethernet POWERLINK for Linux version of the REX Control 
+System". Except this publication there is not many useful documentation 
+on this issue. They have modified the OpenPowerlink source code. Modifiying openpowerlink is a bit complicated
+ work for me because I am not experienced on these areas :( Is there anybody who have experienced with Ethernet-Powerlink under Xenomai? Any comment, 
+any doc will be really helpful and I will be appreciated. <br><br>Thanks.<br><br>Fatih Ulusoy<br>
+</div>
+</div><br>
+
+      </body></html>
+--0-295124994-1277906598=:75053--
 
