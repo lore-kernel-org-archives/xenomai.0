@@ -1,18 +1,12 @@
-From: Fredrik Asplund <fasplund@domain.hid>
-Date: Fri, 2 Jul 2010 07:33:22 +0000
-Message-ID: <22150A2C94CC924695BE248F94CD11F2D27F@EXDB4.ug.kth.se>
-References: <22150A2C94CC924695BE248F94CD11F2CD0F@EXDB4.ug.kth.se>
-	<4C2A518F.8030302@domain.hid>
-	<22150A2C94CC924695BE248F94CD11F2CDC2@domain.hid>
-	<4C2B0043.1070108@domain.hid>
-	<AANLkTikdRdEXJd97HKlWzUmon8bu94n-ATNozWyOmTOu@domain.hid>
-	<22150A2C94CC924695BE248F94CD11F2D063@domain.hid>
+Message-ID: <4C2D9FF0.3030502@domain.hid>
+Date: Fri, 02 Jul 2010 10:14:40 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <22150A2C94CC924695BE248F94CD11F2CD0F@EXDB4.ug.kth.se>	<4C2A518F.8030302@domain.hid>	<22150A2C94CC924695BE248F94CD11F2CDC2@domain.hid>	<4C2B0043.1070108@domain.hid>	<AANLkTikdRdEXJd97HKlWzUmon8bu94n-ATNozWyOmTOu@domain.hid>	<22150A2C94CC924695BE248F94CD11F2D063@domain.hid>
 	<AANLkTinqA_l4Jersd-1EfCMecqal2ZkSepe5DhtQAEJ3@domain.hid>
 In-Reply-To: <AANLkTinqA_l4Jersd-1EfCMecqal2ZkSepe5DhtQAEJ3@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Xenomai and Gumstix Overo
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -23,21 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?iso-8859-1?Q?Felipe_Brand=E3o_Cavalcanti?= <cavalkaf@domain.hid>
+To: =?UTF-8?B?RmVsaXBlIEJyYW5kw6NvIENhdmFsY2FudGk=?= <cavalkaf@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
->I've edited the bitbake files for the kernel, but what I usually do is to
->run the unpack script, replace the flush.c file, and keep the process goin=
-g.
->The defconfig is pretty much standard, except that I've enabled several
->debugging options and got rid of a few troublesome pieces of code (power
->management, CPU Freq. scaling, etc...). As for the edits, they seem very
->similar to yours, but I didn't look at them very carefully.
->Fredrik, did you managed to get a kernel compiled at all?
+Felipe Brand=C3=A3o Cavalcanti wrote:
+> Sorry for the late reply.
+>=20
+> Anyway, I did enable Xenomai in the kernel itself, so no modules
+> involved - can't modprobe anything.
+>=20
+> As for the vanilla kernel, I've tried for a while to get it working
+> right on my board, but no luck. I am not sure if it has support to all
+> the peripherals, or if there is something that I am doing wrong (used
+> the defconfig, no modifications).
+>=20
+> I've edited the bitbake files for the kernel, but what I usually do is
+> to run the unpack script, replace the flush.c file, and keep the proces=
+s
+> going. The defconfig is pretty much standard, except that I've enabled
+> several debugging options and got rid of a few troublesome pieces of
+> code (power management, CPU Freq. scaling, etc...). As for the edits,
+> they seem very similar to yours, but I didn't look at them very careful=
+ly.
+>=20
+> Fredrik, did you managed to get a kernel compiled at all?
 
-Yes, no problems in compiling, but I have not yet had the time to actually =
-run the resulting image. I will check where my setup crashes (no doubt it w=
-ill... :/) and compare our files to see if I can figure something out.
+What about the EABI?
 
-/ Fredrik
+--=20
+					    Gilles.
+
 
