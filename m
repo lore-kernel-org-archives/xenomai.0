@@ -1,10 +1,10 @@
 From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
-Date: Fri,  2 Jul 2010 13:49:12 +0200
-Message-Id: <1278071353-13836-7-git-send-email-wolfgang.mauerer@domain.hid>
+Date: Fri,  2 Jul 2010 13:49:13 +0200
+Message-Id: <1278071353-13836-8-git-send-email-wolfgang.mauerer@domain.hid>
 In-Reply-To: <1278071353-13836-1-git-send-email-wolfgang.mauerer@domain.hid>
 References: <1278071353-13836-1-git-send-email-wolfgang.mauerer@domain.hid>
-Subject: [Xenomai-core] [PATCH 6/7] posix: Userspace hostrt reading without
-	switching to kernel mode
+Subject: [Xenomai-core] [PATCH 7/7] posix: Add some example code for
+	CLOCK_HOST_REALTIME
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -14,200 +14,126 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+Cc: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 
-From: Wolfgang Mauerer (none) <wolfgang@domain.hid>
-
-We can do this since the data are on the shared semaphore heap.
-The basis data structure is placed so that it is accessible from
-both the Linux kernel and Xenomai kernel/userland. This also
-requires to make the structure work with both kernel and userland
-definitions for elementary data types.
-
-We use a seqlock retry mechanism to ensure that we obtain a
-consistent data set.
+... and for reading the contents of the hostrt data.
 
 Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- include/nucleus/Makefile.am    |    1 +
- include/nucleus/seqlock_user.h |   57 +++++++++++++++++++++++++++++++++++
- src/skins/posix/clock.c        |   65 ++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 123 insertions(+), 0 deletions(-)
- create mode 100644 include/nucleus/seqlock_user.h
+ examples/posix/Makefile      |    3 +-
+ examples/posix/show_hrtime.c |   82 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 84 insertions(+), 1 deletions(-)
+ create mode 100644 examples/posix/show_hrtime.c
 
-diff --git a/include/nucleus/Makefile.am b/include/nucleus/Makefile.am
-index b04d7f6..9a72b24 100644
---- a/include/nucleus/Makefile.am
-+++ b/include/nucleus/Makefile.am
-@@ -35,5 +35,6 @@ includesub_HEADERS = \
- 	trace.h \
- 	types.h \
- 	vdso.h \
-+	seqlock_user.h \
- 	version.h \
- 	xenomai.h
-diff --git a/include/nucleus/seqlock_user.h b/include/nucleus/seqlock_user.h
+diff --git a/examples/posix/Makefile b/examples/posix/Makefile
+index 1bf46a4..c5ec8cb 100644
+--- a/examples/posix/Makefile
++++ b/examples/posix/Makefile
+@@ -1,7 +1,7 @@
+ ###### CONFIGURATION ######
+ 
+ ### List of applications to be build
+-APPLICATIONS = satch
++APPLICATIONS = satch show_hrtime
+ 
+ ### Note: to override the search path for the xeno-config script, use "make XENO=..."
+ 
+@@ -14,6 +14,7 @@ MODULES = satch
+ all::
+ 
+ satch: satch.c
++show_hrtime: show_hrtime.c
+ 
+ 
+ ###### USER SPACE BUILD (no change required normally) ######
+diff --git a/examples/posix/show_hrtime.c b/examples/posix/show_hrtime.c
 new file mode 100644
-index 0000000..598d4da
+index 0000000..932c9f8
 --- /dev/null
-+++ b/include/nucleus/seqlock_user.h
-@@ -0,0 +1,57 @@
-+#ifndef __SEQLOCK_USER_H
-+#define __SEQLOCK_USER_H
-+
-+/* Originally from the linux kernel, adapted for userland and Xenomai */
-+
-+#include <asm/xenomai/atomic.h>
-+
-+typedef struct seqcount {
-+	unsigned sequence;
-+} seqcount_t;
-+
-+#define SEQCNT_ZERO { 0 }
-+#define seqcount_init(x) do { *(x) = (seqcount_t) SEQCNT_ZERO; } while (0)
-+
-+/* Start of read using pointer to a sequence counter only.  */
-+static inline unsigned read_seqcount_begin(const seqcount_t *s)
-+{
-+	unsigned ret;
-+
-+repeat:
-+	ret = s->sequence;
-+	xnarch_read_memory_barrier();
-+	if (unlikely(ret & 1)) {
-+		cpu_relax();
-+		goto repeat;
-+	}
-+	return ret;
-+}
-+
++++ b/examples/posix/show_hrtime.c
+@@ -0,0 +1,82 @@
 +/*
-+ * Test if reader processed invalid data because sequence number has changed.
++ * Dump CLOCK_HOST_REALTIME data in the vdso page
++ * Written by Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 + */
-+static inline int read_seqcount_retry(const seqcount_t *s, unsigned start)
-+{
-+	xnarch_read_memory_barrier();
 +
-+	return s->sequence != start;
-+}
-+
-+
-+/*
-+ * The sequence counter only protects readers from concurrent writers.
-+ * Writers must use their own locking.
-+ */
-+static inline void write_seqcount_begin(seqcount_t *s)
-+{
-+	s->sequence++;
-+	xnarch_write_memory_barrier();
-+}
-+
-+static inline void write_seqcount_end(seqcount_t *s)
-+{
-+	xnarch_write_memory_barrier();
-+	s->sequence++;
-+}
-+
-+#endif
-diff --git a/src/skins/posix/clock.c b/src/skins/posix/clock.c
-index e27a2ec..19d6c07 100644
---- a/src/skins/posix/clock.c
-+++ b/src/skins/posix/clock.c
-@@ -25,6 +25,9 @@
- #include <time.h>
- #include <asm/xenomai/arith.h>
- #include <asm-generic/xenomai/timeconv.h>
-+#include <nucleus/seqlock_user.h>
-+#include <sys/types.h>
++#include <stdio.h>
++#include <sys/mman.h>
 +#include <nucleus/vdso.h>
- 
- extern int __pse51_muxid;
- 
-@@ -56,6 +59,63 @@ int __wrap_clock_getres(clockid_t clock_id, struct timespec *tp)
- 	return -1;
- }
- 
-+int __do_clock_host_realtime(struct timespec *ts, void *tzp)
++#include <nucleus/types.h>
++#include <nucleus/seqlock_user.h>
++#include <native/task.h>
++
++extern unsigned long xeno_sem_heap[2];
++static unsigned modeswitches = 0;
++
++void count_modeswitches(int sig __attribute__((unused)))
 +{
-+	int err;
-+#ifdef XNARCH_HAVE_NONPRIV_TSC
-+	unsigned int seq;
-+	cycle_t now, base, mask, cycle_delta;
-+	unsigned long mult, shift, nsec, rem;
-+	struct xnarch_hostrt_data *hostrt_data;
-+
-+	if (!xnvdso_test_feature(XNVDSO_FEAT_HOST_REALTIME))
-+		return -1;
-+
-+	hostrt_data = &nkvdso->hostrt_data;
-+
-+	if (unlikely(!hostrt_data->live))
-+		return -1;
-+
-+	/*
-+	 * The following is essentially a verbatim copy of the
-+	 * mechanism in the kernel.
-+	 */
-+retry:
-+	seq = read_seqcount_begin(&hostrt_data->seqcount);
-+
-+	now = __xn_rdtsc();
-+	base = hostrt_data->cycle_last;
-+	mask = hostrt_data->mask;
-+	mult = hostrt_data->mult;
-+	shift = hostrt_data->shift;
-+	ts->tv_sec = hostrt_data->wall_time_sec;
-+	nsec = hostrt_data->wall_time_nsec;
-+
-+	/* If the data changed during the read, try the
-+	   alternative data element */
-+	if (read_seqcount_retry(&hostrt_data->seqcount, seq))
-+		goto retry;
-+
-+	cycle_delta = (now - base) & mask;
-+	nsec += (cycle_delta * mult) >> shift;
-+
-+	ts->tv_sec += xnarch_divrem_billion(nsec, &rem);
-+	ts->tv_nsec = rem;
-+
-+	return 0;
-+#else /* XNARCH_HAVE_NONPRIV_TSC */
-+	err = -XENOMAI_SKINCALL2(__pse51_muxid,
-+				 __pse51_clock_gettime,
-+				 CLOCK_HOST_REALTIME, ts);
-+
-+	if (!err)
-+		return 0;
-+
-+	errno = err;
-+	return -1;
-+#endif /* XNARCH_HAVE_NONPRIV_TSC */
++	modeswitches++;
 +}
 +
- int __wrap_clock_gettime(clockid_t clock_id, struct timespec *tp)
- {
- 	int err;
-@@ -68,7 +128,11 @@ int __wrap_clock_gettime(clockid_t clock_id, struct timespec *tp)
- 		tp->tv_sec = xnarch_divrem_billion(ns, &rem);
- 		tp->tv_nsec = rem;
- 		return 0;
-+	} else if (clock_id == CLOCK_HOST_REALTIME) {
-+		err = __do_clock_host_realtime(tp, NULL);
-+		goto out;
- 	}
++int main(int argc, char **argv)
++{
++	int res;
++	struct timespec ts1, ts2;
 +
- #endif /* XNARCH_HAVE_NONPRIV_TSC */
- 
- 	err = -XENOMAI_SKINCALL2(__pse51_muxid,
-@@ -76,6 +140,7 @@ int __wrap_clock_gettime(clockid_t clock_id, struct timespec *tp)
- 				 clock_id,
- 				 tp);
- 
-+out:
- 	if (!err)
- 		return 0;
- 
++	mlockall(MCL_CURRENT|MCL_FUTURE);
++
++	if (!xeno_sem_heap[1]) {
++		fprintf(stderr, "Could not determine position of the "
++			"global semaphore heap\n");
++		return 1;
++	}
++
++	if (!xnvdso_test_feature(XNVDSO_FEAT_HOST_REALTIME)) {
++		printf("XNVDSO_FEAT_HOST_REALTIME not available\n");
++		return 1;
++	}
++
++	if (nkvdso->hostrt_data.live)
++		printf("hostrt data area is live\n");
++	else {
++		printf("hostrt data area is not live\n");
++		return 2;
++	}
++
++	printf("Sequence counter : %u\n",
++	       nkvdso->hostrt_data.seqcount.sequence);
++	printf("wall_time_sec    : %ld\n", nkvdso->hostrt_data.wall_time_sec);
++	printf("wall_time_nsec   : %u\n", nkvdso->hostrt_data.wall_time_nsec);
++	printf("wall_to_monotonic\n");
++	printf("          tv_sec : %jd\n",
++	       (intmax_t)nkvdso->hostrt_data.wall_to_monotonic.tv_sec);
++	printf("         tv_nsec : %ld\n",
++	       nkvdso->hostrt_data.wall_to_monotonic.tv_nsec);
++	printf("cycle_last       : %lu\n", nkvdso->hostrt_data.cycle_last);
++	printf("mask             : 0x%lx\n", nkvdso->hostrt_data.mask);
++	printf("mult             : %u\n", nkvdso->hostrt_data.mult);
++	printf("shift            : %u\n\n", nkvdso->hostrt_data.shift);
++
++	res = clock_gettime(CLOCK_REALTIME, &ts1);
++	if (res)
++		printf("clock_gettime(CLOCK_REALTIME) failed!\n");
++
++	signal(SIGXCPU, count_modeswitches);
++	rt_task_set_mode(0, T_WARNSW, NULL);
++	modeswitches = 0;
++	res = clock_gettime(CLOCK_HOST_REALTIME, &ts2);
++	if (res)
++		printf("clock_gettime(CLOCK_HOST_REALTIME) failed!\n");
++
++	if (modeswitches == 1) {
++		printf("CLOCK_HOST_REALTIME caused a mode switch.\n");
++		return 3;
++	}
++
++	rt_task_set_mode(T_PRIMARY, 0, NULL);
++	printf("CLOCK_REALTIME     : tv_sec = %jd, tv_nsec = %ld\n",
++	       ts1.tv_sec, ts1.tv_nsec);
++	printf("CLOCK_HOST_REALTIME: tv_sec = %jd, tv_nsec = %ld\n",
++	       ts2.tv_sec, ts2.tv_nsec);
++	return 0;
++}
 -- 
 1.6.4
 
