@@ -1,9 +1,9 @@
 From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
-Date: Fri,  2 Jul 2010 13:49:07 +0200
-Message-Id: <1278071353-13836-2-git-send-email-wolfgang.mauerer@domain.hid>
+Date: Fri,  2 Jul 2010 13:49:08 +0200
+Message-Id: <1278071353-13836-3-git-send-email-wolfgang.mauerer@domain.hid>
 In-Reply-To: <1278071353-13836-1-git-send-email-wolfgang.mauerer@domain.hid>
 References: <1278071353-13836-1-git-send-email-wolfgang.mauerer@domain.hid>
-Subject: [Xenomai-core] [PATCH 1/7] nucleus: Spelling fix for check-vdso.c
+Subject: [Xenomai-core] [PATCH 2/7] nucleus: Sanity check for vdso.h
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,25 +15,30 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@domain.hid>, Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 
+Including the file only makes sense when support for pervasive
+rt is enabled, so add a corresponding check.
+
 Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
- src/testsuite/unit/check-vdso.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ include/nucleus/vdso.h |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
 
-diff --git a/src/testsuite/unit/check-vdso.c b/src/testsuite/unit/check-vdso.c
-index 8f90420..17684de 100644
---- a/src/testsuite/unit/check-vdso.c
-+++ b/src/testsuite/unit/check-vdso.c
-@@ -15,7 +15,7 @@ int main(int argc, char **argv)
- 	unsigned long long test_features;
+diff --git a/include/nucleus/vdso.h b/include/nucleus/vdso.h
+index c431f88..2343e5d 100644
+--- a/include/nucleus/vdso.h
++++ b/include/nucleus/vdso.h
+@@ -23,6 +23,10 @@
+  * 02111-1307, USA.
+  */
  
- 	if (argc != 2) {
--		printf("No specific feature(s) given, using XNVDSO_FEATURE\n");
-+		printf("No specific feature(s) given, using XNVDSO_FEATURES\n");
- 		test_features = XNVDSO_FEATURES;
- 	} else {
- 		test_features = strtoull(argv[1], NULL, 0);
++#if defined(__KERNEL__) && !defined(CONFIG_XENO_OPT_PERVASIVE)
++#error "vdso.h included in a kernel configuration without pervasive rt support!"
++#endif
++
+ #include <nucleus/types.h>
+ 
+ /*
 -- 
 1.6.4
 
