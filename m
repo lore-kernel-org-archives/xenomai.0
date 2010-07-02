@@ -1,10 +1,12 @@
-From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
-Date: Fri,  2 Jul 2010 13:49:13 +0200
-Message-Id: <1278071353-13836-8-git-send-email-wolfgang.mauerer@domain.hid>
-In-Reply-To: <1278071353-13836-1-git-send-email-wolfgang.mauerer@domain.hid>
+Message-ID: <4C2DEF35.3000605@domain.hid>
+Date: Fri, 02 Jul 2010 15:52:53 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <1278071353-13836-1-git-send-email-wolfgang.mauerer@domain.hid>
-Subject: [Xenomai-core] [PATCH 7/7] posix: Add some example code for
-	CLOCK_HOST_REALTIME
+In-Reply-To: <1278071353-13836-1-git-send-email-wolfgang.mauerer@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH 0/7] Host realtime clock support
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,128 +15,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
-Cc: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+To: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+Cc: xenomai@xenomai.org
 
-... and for reading the contents of the hostrt data.
+Wolfgang Mauerer wrote:
+> (This is the Xenomai part of the mechanism, please see the ipipe
+>  mailing list for the patches that provide the required basis 
+>  infrastructure)
+> 
+> This patch series extends Xenomai with a new clock, CLOCK_HOST_REALTIME.
+> It allows for sharing NTP-corrected real time timestamps between
+> Linux/ipipe and Xenomai. The data are also available in userspace and can
+> be read without switching to kernel mode. Notice, however, that the new
+> clock only enables to read to time, but cannot serve as a full time basis.
+> Some changes to the ipipe layer are required as basis.
+> 
+> In contrast to the initial approach, we don't use a transactional mechanism
+> to copy the information over from Linux, but use classical synchronisation.
+> The code can be compiled in conditionally for both, ipipe and Xenomai. When
+> disabled by architectures that don't support apt clock sources, there is
+> no runtime-overhead associated with the feature.
+> 
+> Some points that may require further discussion:
+> 
+> - POSIX only specifies a few clock_ids, and these have already been
+>   extended by the Linux kernel. We use the maximum id (16) for the new
+>   clock, but it might also make sense to use 7 (CLOCK_MONOTONIC_COARSE+1)
+>   or 4 (CLOCK_THREAD_CPUTIME_ID+1).
+> 
+> - The current implementation deals with x86_64's TSC. Support for other
+>   architectures can be added. Additionally, the user has to make sure that
+>   the TSC clock source remains active once selected.  To implement 
+>   deactivation (e.g., when the Linux clock source is changed), more 
+>   ipipe hooks would be required, though.
+> 
+>   There are two alternatives including other architectures:
+> 
+>   * We can create a new clocksource that abstracts the per-architecture
+>     differences, and use this clocksource as basis for
+>     Xenomai. Essentially, this means mapping all desired
+>     non-x86-Clocksources to the interface offered in this patch.
+>     This requires more changes in the ipipe layer than variant B, namely,
+>   * We can create a union in struct xnvdso of all arch-specific clock
+>     datasets and introduce feature flags like XNVDSO_FEAT_HOSTRT_X86,
+>     XNVDSO_FEAT_HOSTRT_WHATEVER. The reader-side code then needs to
+>     match the data provided, which requires more changes on the
+>     Xenomai side.
 
-Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
----
- examples/posix/Makefile      |    3 +-
- examples/posix/show_hrtime.c |   82 ++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 84 insertions(+), 1 deletions(-)
- create mode 100644 examples/posix/show_hrtime.c
+The dataset is the same on all architectures, since we provide the same
+"clocksource abstraction" on the 5 architectures we support: a TSC
+emulation. So, a simple approach is simply cut-and-paste the x86
+update_vsyscall code for other architectures, another approach is to put
+this code in a wrapper which we call on all architectures.
 
-diff --git a/examples/posix/Makefile b/examples/posix/Makefile
-index 1bf46a4..c5ec8cb 100644
---- a/examples/posix/Makefile
-+++ b/examples/posix/Makefile
-@@ -1,7 +1,7 @@
- ###### CONFIGURATION ######
- 
- ### List of applications to be build
--APPLICATIONS = satch
-+APPLICATIONS = satch show_hrtime
- 
- ### Note: to override the search path for the xeno-config script, use "make XENO=..."
- 
-@@ -14,6 +14,7 @@ MODULES = satch
- all::
- 
- satch: satch.c
-+show_hrtime: show_hrtime.c
- 
- 
- ###### USER SPACE BUILD (no change required normally) ######
-diff --git a/examples/posix/show_hrtime.c b/examples/posix/show_hrtime.c
-new file mode 100644
-index 0000000..932c9f8
---- /dev/null
-+++ b/examples/posix/show_hrtime.c
-@@ -0,0 +1,82 @@
-+/*
-+ * Dump CLOCK_HOST_REALTIME data in the vdso page
-+ * Written by Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
-+ */
-+
-+#include <stdio.h>
-+#include <sys/mman.h>
-+#include <nucleus/vdso.h>
-+#include <nucleus/types.h>
-+#include <nucleus/seqlock_user.h>
-+#include <native/task.h>
-+
-+extern unsigned long xeno_sem_heap[2];
-+static unsigned modeswitches = 0;
-+
-+void count_modeswitches(int sig __attribute__((unused)))
-+{
-+	modeswitches++;
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	int res;
-+	struct timespec ts1, ts2;
-+
-+	mlockall(MCL_CURRENT|MCL_FUTURE);
-+
-+	if (!xeno_sem_heap[1]) {
-+		fprintf(stderr, "Could not determine position of the "
-+			"global semaphore heap\n");
-+		return 1;
-+	}
-+
-+	if (!xnvdso_test_feature(XNVDSO_FEAT_HOST_REALTIME)) {
-+		printf("XNVDSO_FEAT_HOST_REALTIME not available\n");
-+		return 1;
-+	}
-+
-+	if (nkvdso->hostrt_data.live)
-+		printf("hostrt data area is live\n");
-+	else {
-+		printf("hostrt data area is not live\n");
-+		return 2;
-+	}
-+
-+	printf("Sequence counter : %u\n",
-+	       nkvdso->hostrt_data.seqcount.sequence);
-+	printf("wall_time_sec    : %ld\n", nkvdso->hostrt_data.wall_time_sec);
-+	printf("wall_time_nsec   : %u\n", nkvdso->hostrt_data.wall_time_nsec);
-+	printf("wall_to_monotonic\n");
-+	printf("          tv_sec : %jd\n",
-+	       (intmax_t)nkvdso->hostrt_data.wall_to_monotonic.tv_sec);
-+	printf("         tv_nsec : %ld\n",
-+	       nkvdso->hostrt_data.wall_to_monotonic.tv_nsec);
-+	printf("cycle_last       : %lu\n", nkvdso->hostrt_data.cycle_last);
-+	printf("mask             : 0x%lx\n", nkvdso->hostrt_data.mask);
-+	printf("mult             : %u\n", nkvdso->hostrt_data.mult);
-+	printf("shift            : %u\n\n", nkvdso->hostrt_data.shift);
-+
-+	res = clock_gettime(CLOCK_REALTIME, &ts1);
-+	if (res)
-+		printf("clock_gettime(CLOCK_REALTIME) failed!\n");
-+
-+	signal(SIGXCPU, count_modeswitches);
-+	rt_task_set_mode(0, T_WARNSW, NULL);
-+	modeswitches = 0;
-+	res = clock_gettime(CLOCK_HOST_REALTIME, &ts2);
-+	if (res)
-+		printf("clock_gettime(CLOCK_HOST_REALTIME) failed!\n");
-+
-+	if (modeswitches == 1) {
-+		printf("CLOCK_HOST_REALTIME caused a mode switch.\n");
-+		return 3;
-+	}
-+
-+	rt_task_set_mode(T_PRIMARY, 0, NULL);
-+	printf("CLOCK_REALTIME     : tv_sec = %jd, tv_nsec = %ld\n",
-+	       ts1.tv_sec, ts1.tv_nsec);
-+	printf("CLOCK_HOST_REALTIME: tv_sec = %jd, tv_nsec = %ld\n",
-+	       ts2.tv_sec, ts2.tv_nsec);
-+	return 0;
-+}
+This update_vsyscall code would call ipipe_dispatch_event to pass the
+data to Xenomai.
+
 -- 
-1.6.4
-
+					    Gilles.
 
