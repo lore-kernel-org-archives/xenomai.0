@@ -1,13 +1,15 @@
-Message-ID: <4C2F8F9B.30300@domain.hid>
-Date: Sat, 03 Jul 2010 21:29:31 +0200
+Message-ID: <4C2F9028.7010406@domain.hid>
+Date: Sat, 03 Jul 2010 21:31:52 +0200
 From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 MIME-Version: 1.0
 References: <1278071353-13836-1-git-send-email-wolfgang.mauerer@domain.hid>
-	<4C2F6BCA.2020300@domain.hid>
-In-Reply-To: <4C2F6BCA.2020300@domain.hid>
+	<1278071353-13836-5-git-send-email-wolfgang.mauerer@domain.hid>
+	<4C2F25C1.3050801@domain.hid>
+In-Reply-To: <4C2F25C1.3050801@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 0/7] Host realtime clock support
+Subject: Re: [Xenomai-core] [PATCH 4/7] nucleus: Add CLOCK_HOST_REALTIME
+ bits to	nkvdso
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -21,22 +23,29 @@ Cc: "Kiszka, Jan" <jan.kiszka@domain.hid>, "xenomai@xenomai.org" <xenomai@xenoma
 
 Gilles Chanteperdrix wrote:
 > Wolfgang Mauerer wrote:
->> Some points that may require further discussion:
+>> Augment the shared vdso page with all data required to
+>> implement a clock CLOCK_HOST_REALTIME that provides time
+>> information synchronised with the NTP-corrected time
+>> in the Linux kernel.
 >>
->> - POSIX only specifies a few clock_ids, and these have already been
->>   extended by the Linux kernel. We use the maximum id (16) for the new
->>   clock, but it might also make sense to use 7 (CLOCK_MONOTONIC_COARSE+1)
->>   or 4 (CLOCK_THREAD_CPUTIME_ID+1).
+>> The definition of the hostrt data is placed in a separate
+>> head file so that we can use it irregardless of pervasive
+>> rt support is compiled in or not.
 > 
-> Why are we limited to 16 clocks? I mean we do not go trough any
-> kernel/glibc path, so it looks like we can use any number. Or did I miss
-> something?
+> Ok. Would not it be more simple to define the nkvdso even without
+> pervasive support?
+
+Thought about that, but having a shared kernel/userland object
+without pervasive RT support seemed a bit unnatural to me.
 > 
+>> +#if defined(CONFIG_XENO_OPT_HOSTRT) && !defined(CONFIG_XENO_OPT_PERVASIVE)
+>> +	nkhostrt_data = xnarch_alloc_host_mem(sizeof(struct xnarch_hostrt_data));
+> 
+> should be sizeof(*nkhostrt_data)
+> 
+> But why a dynamic allocation at all?
 
-To goal was to find a number that's least surprising and blends best
-with the POSIX conventions and the existing numbers in Linux. Maximum
-was referring to the definition in the Linux kernel, but I'm happy
-to pick any larger number, including 23 and 42 ;-)
+not really required, can also make it static if you prefer.
 
-Regards, Wolfgang
+Best regards, Wolfgang
 
