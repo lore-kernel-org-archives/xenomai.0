@@ -1,14 +1,14 @@
-Message-ID: <4C2F25C1.3050801@domain.hid>
-Date: Sat, 03 Jul 2010 13:57:53 +0200
+Message-ID: <4C2F273C.8060201@domain.hid>
+Date: Sat, 03 Jul 2010 14:04:12 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1278071353-13836-1-git-send-email-wolfgang.mauerer@domain.hid>
-	<1278071353-13836-5-git-send-email-wolfgang.mauerer@domain.hid>
-In-Reply-To: <1278071353-13836-5-git-send-email-wolfgang.mauerer@domain.hid>
+	<1278071353-13836-6-git-send-email-wolfgang.mauerer@domain.hid>
+In-Reply-To: <1278071353-13836-6-git-send-email-wolfgang.mauerer@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH 4/7] nucleus: Add CLOCK_HOST_REALTIME
- bits to	nkvdso
+Subject: Re: [Xenomai-core] [PATCH 5/7] posix: Support reading the host
+ realtime clock in realtime context
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -21,24 +21,65 @@ To: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
 Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
 Wolfgang Mauerer wrote:
-> Augment the shared vdso page with all data required to
-> implement a clock CLOCK_HOST_REALTIME that provides time
-> information synchronised with the NTP-corrected time
-> in the Linux kernel.
+> Wall time management is typically assisted by the NTP
+> protocol in the Linux context, but this information is
+> not propagated to Xenomai. This patch adds support
+> for a CLOCK_HOST_REALTIME clock id that is coupled to the
+> host operating system's realtime clock. The required
+> information from the Kernel into Xenomai. The data exchange
+> is designed to allow for lockless reading from userland.
 > 
-> The definition of the hostrt data is placed in a separate
-> head file so that we can use it irregardless of pervasive
-> rt support is compiled in or not.
+> Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+> ---
+>  include/posix/time.h     |    2 +
+>  ksrc/skins/posix/clock.c |   90 +++++++++++++++++++++++++++++++++++++++++++++-
+>  2 files changed, 91 insertions(+), 1 deletions(-)
+> 
+> diff --git a/include/posix/time.h b/include/posix/time.h
+> index 4f2d760..938feb6 100644
+> --- a/include/posix/time.h
+> +++ b/include/posix/time.h
+> @@ -50,6 +50,8 @@
+>  #define CLOCK_MONOTONIC 1
+>  #endif /* CLOCK_MONOTONIC */
+>  
+> +#define CLOCK_HOST_REALTIME 16
+> +
+>  #if defined(__KERNEL__) || defined(__XENO_SIM__)
+>  
+>  struct sigevent;
+> diff --git a/ksrc/skins/posix/clock.c b/ksrc/skins/posix/clock.c
+> index 553e123..f5a789b 100644
+> --- a/ksrc/skins/posix/clock.c
+> +++ b/ksrc/skins/posix/clock.c
+> @@ -50,6 +50,13 @@
+>   *@{*/
+>  
+>  #include <posix/thread.h>
+> +#include <linux/ipipe_tickdev.h>
+> +#include <linux/math64.h>
 
-Ok. Would not it be more simple to define the nkvdso even without
-pervasive support?
+Do we really need this? Because we probably do not have it in 2.4
+kernels. Besides, we do not include linux/ headers in Xenomai code.
 
-> +#if defined(CONFIG_XENO_OPT_HOSTRT) && !defined(CONFIG_XENO_OPT_PERVASIVE)
-> +	nkhostrt_data = xnarch_alloc_host_mem(sizeof(struct xnarch_hostrt_data));
+> +static int do_clock_host_realtime(struct timespec *tp)
+> +{
+> +#ifdef CONFIG_XENO_OPT_HOSTRT
+> (...)
+> +	return 0;
+> +#else /* CONFIG_XENO_OPT_HOSTRT */
+> +	return -1;
 
-should be sizeof(*nkhostrt_data)
+return -EINVAL;
 
-But why a dynamic allocation at all?
+> +	case CLOCK_HOST_REALTIME:
+> +		if (do_clock_host_realtime(tp) != 0) {
+		rc = do_clock_host_realtime(tp);
+		if (rc < 0) {
+			thread_set_errno(-rc);
+			return -1;
+		}
 
 
 -- 
