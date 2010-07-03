@@ -1,24 +1,13 @@
-From: Fredrik Asplund <fasplund@domain.hid>
-Date: Sat, 3 Jul 2010 09:07:48 +0000
-Message-ID: <22150A2C94CC924695BE248F94CD11F2D4D6@domain.hid>
-References: <22150A2C94CC924695BE248F94CD11F2CD0F@EXDB4.ug.kth.se>
-	<4C2A518F.8030302@domain.hid>
-	<22150A2C94CC924695BE248F94CD11F2CDC2@domain.hid>
-	<4C2B0043.1070108@domain.hid>
-	<AANLkTikdRdEXJd97HKlWzUmon8bu94n-ATNozWyOmTOu@domain.hid>
-	<22150A2C94CC924695BE248F94CD11F2D063@domain.hid>
-	<AANLkTinqA_l4Jersd-1EfCMecqal2ZkSepe5DhtQAEJ3@domain.hid>
-	<22150A2C94CC924695BE248F94CD11F2D27F@EXDB4.ug.kth.se>
-	<22150A2C94CC924695BE248F94CD11F2D375@domain.hid>
-	<4C2DDE49.1080009@domain.hid>
-	<22150A2C94CC924695BE248F94CD11F2D3C1@domain.hid>
-	<AANLkTimw6Bz9-ZVvFl46_WTlo2Z-T8Kc0mebS5DYd-1K@mail.gmail.com>
-In-Reply-To: <AANLkTimw6Bz9-ZVvFl46_WTlo2Z-T8Kc0mebS5DYd-1K@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <4C2F24CF.7090309@domain.hid>
+Date: Sat, 03 Jul 2010 13:53:51 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Xenomai and Gumstix Overo
+References: <AANLkTimOQfrs56FSp2JQUWtD7wDACYRmCrX6AF-pU3RC@mail.gmail.com>
+In-Reply-To: <AANLkTimOQfrs56FSp2JQUWtD7wDACYRmCrX6AF-pU3RC@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] kernel warnings and oopses calling gpiolib
+ functions from xenomai kernel space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -28,16 +17,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?iso-8859-1?Q?Felipe_Brand=E3o_Cavalcanti?= <cavalkaf@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jeremy Brown <jhbrown@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
->OK, just tried your kernel - same problem. That means that something is wr=
-ong with my user-space build....
->Will try to enable EABI now as suggested by Gilles.
+Jeremy Brown wrote:
+> Thanks in advance for any and all help!
 
-Ok. You can find a description of what I did, the images and the build file=
-s at "http://flyg.sagar.se/node/17". Perhaps you can find the problem by co=
-mparing that with your setup.
+Hi,
 
-/ Fredrik
+from your post, we can conclude that gpio_set_value is a Linux kernel
+function which can yet not be used in Xenomai context (you could
+probably even get more explicit messages by enabling I-pipe debugging).
+I am going to try and propose a fix for this issue, will send you a
+patch ASAP.
+
+Note that the issue is more an Adeos I-pipe issue than a Xenomai issue,
+so I am more interested in knowing what version of adeos than what
+version of Xenomai you are using. But chances that the problem exists
+with all versions anyway.
+
+Regards.
+
+-- 
+					    Gilles.
 
