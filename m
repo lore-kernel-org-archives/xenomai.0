@@ -1,14 +1,14 @@
-Message-ID: <4C2F97D6.6000506@domain.hid>
-Date: Sat, 03 Jul 2010 22:04:38 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <22150A2C94CC924695BE248F94CD11F2CD0F@EXDB4.ug.kth.se>	<4C2A518F.8030302@domain.hid>	<22150A2C94CC924695BE248F94CD11F2CDC2@domain.hid>	<4C2B0043.1070108@domain.hid>	<AANLkTikdRdEXJd97HKlWzUmon8bu94n-ATNozWyOmTOu@domain.hid>	<22150A2C94CC924695BE248F94CD11F2D063@domain.hid>	<AANLkTinqA_l4Jersd-1EfCMecqal2ZkSepe5DhtQAEJ3@domain.hid>	<22150A2C94CC924695BE248F94CD11F2D27F@EXDB4.ug.kth.se>	<22150A2C94CC924695BE248F94CD11F2D375@domain.hid>	<4C2DDE49.1080009@domain.hid>	<22150A2C94CC924695BE248F94CD11F2D3C1@domain.hid>
-	<AANLkTimw6Bz9-ZVvFl46_WTlo2Z-T8Kc0mebS5DYd-1K@mail.gmail.com>
-	<22150A2C94CC924695BE248F94CD11F2D4D6@domain.hid>
-In-Reply-To: <22150A2C94CC924695BE248F94CD11F2D4D6@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai and Gumstix Overo
+In-Reply-To: <4C2F715C.9050800@domain.hid>
+References: <AANLkTimOQfrs56FSp2JQUWtD7wDACYRmCrX6AF-pU3RC@mail.gmail.com> 
+	<4C2F24CF.7090309@domain.hid> <4C2F715C.9050800@domain.hid>
+From: Jeremy Brown <jhbrown@domain.hid>
+Date: Sat, 3 Jul 2010 23:09:25 -0700
+Message-ID: <AANLkTik3BRHa0xcRdUbovhTwMn6aIfyk__v33II-nYxx@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] kernel warnings and oopses calling gpiolib
+	functions from xenomai kernel space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,28 +18,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fredrik Asplund <fasplund@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Fredrik Asplund wrote:
->> OK, just tried your kernel - same problem. That means that
->> something is wrong with my user-space build.... Will try to enable
->> EABI now as suggested by Gilles.
-> 
-> Ok. You can find a description of what I did, the images and the
-> build files at "http://flyg.sagar.se/node/17".
+Will do, but with the holiday here, probably no earlier than Tuesday.
 
-I read this page and would have a few remarks. When using
-prepare-kernel, you can pass all arguments on the command line to the
-script so that it does not ask any question.
+Thanks for the quick response!
 
-The Adeos project has a git: git://git.denx.de/ipipe-2.6.git
-You can use it to merge the I-pipe with your vendor branch.
+Jeremy
 
-About the QA issues: if there is something wrong with Xenomai which
-causes these QA issues, please tell us so that we can fix it, for
-verifying Xenomai sources integrity, you can use the gpg signature.
 
--- 
-					    Gilles.
+On Sat, Jul 3, 2010 at 10:20 AM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> Gilles Chanteperdrix wrote:
+>> Jeremy Brown wrote:
+>>> Thanks in advance for any and all help!
+>>
+>> Hi,
+>>
+>> from your post, we can conclude that gpio_set_value is a Linux kernel
+>> function which can yet not be used in Xenomai context (you could
+>> probably even get more explicit messages by enabling I-pipe debugging).
+>> I am going to try and propose a fix for this issue, will send you a
+>> patch ASAP.
+>>
+>> Note that the issue is more an Adeos I-pipe issue than a Xenomai issue,
+>> so I am more interested in knowing what version of adeos than what
+>> version of Xenomai you are using. But chances that the problem exists
+>> with all versions anyway.
+>
+> Could you try the following patch?
+>
+> diff --git a/arch/arm/plat-omap/gpio.c b/arch/arm/plat-omap/gpio.c
+> index 589a4bb..f1d85ff 100644
+> --- a/arch/arm/plat-omap/gpio.c
+> +++ b/arch/arm/plat-omap/gpio.c
+> @@ -195,7 +195,7 @@ struct gpio_bank {
+> =A0#endif
+> =A0 =A0 =A0 =A0u32 level_mask;
+> =A0 =A0 =A0 =A0u32 toggle_mask;
+> - =A0 =A0 =A0 spinlock_t lock;
+> + =A0 =A0 =A0 ipipe_spinlock_t lock;
+> =A0 =A0 =A0 =A0struct gpio_chip chip;
+> =A0 =A0 =A0 =A0struct clk *dbck;
+> =A0 =A0 =A0 =A0u32 mod_usage;
+>
+> --
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0Gilles.
+>
 
