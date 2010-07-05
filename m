@@ -1,12 +1,11 @@
-Message-ID: <4C31E2D8.4040507@domain.hid>
-Date: Mon, 05 Jul 2010 15:49:12 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Pierre.QUELIN@solystic.com
+Message-ID: <OF23F79C8E.BB556922-ONC1257757.004D04A6-C1257757.004D04A6@domain.hid>
+Date: Mon, 5 Jul 2010 16:01:14 +0200
 MIME-Version: 1.0
-References: <AANLkTilrKXFtMXISQCHjKKtqwfLbZWXEk33PjE_RApYO@mail.gmail.com>
-In-Reply-To: <AANLkTilrKXFtMXISQCHjKKtqwfLbZWXEk33PjE_RApYO@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] usb4rt compilation with Xenomai
+Content-type: multipart/alternative; 
+	Boundary="0__=4EBBFDC4DFDE82368f9e8a93df938690918c4EBBFDC4DFDE8236"
+Content-Disposition: inline
+Subject: [Xenomai-help] Pierre QUELIN/VAL/POSTAL est absent(e).
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,21 +15,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ricardo Barbosa <ricardo.barbosa@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Ricardo Barbosa wrote:
-> Hi,
-> 
-> I'm building a BeagleBoard BSP with realtime (ARM architecture). I've
-> already installed Xenomai 2.5.3 but I'm having trouble integrating
-> usb4rt into it. How can I cross-compile usb4rt to be used with Xenomai?
-> I'm asking this because usb4rt readme asks for rtai path installation
-> but I only have Xenomai installed, how can I proceed?
+--0__=4EBBFDC4DFDE82368f9e8a93df938690918c4EBBFDC4DFDE8236
+Content-type: text/plain; charset=ISO-8859-1
+Content-transfer-encoding: quoted-printable
 
-usb4rt is not part of Xenomai distribution. Please contact the usb4rt
-mailing list.
 
--- 
-					    Gilles.
+
+Je serai absent(e) =E0 partir du  05/07/2010 de retour le 19/07/2010.
+
+Je r=E9pondrai =E0 votre message d=E8s mon retour.=
+
+--0__=4EBBFDC4DFDE82368f9e8a93df938690918c4EBBFDC4DFDE8236
+Content-type: text/html; charset=ISO-8859-1
+Content-Disposition: inline
+Content-transfer-encoding: quoted-printable
+
+<html><body>
+<p>Je serai absent(e) =E0 partir du  05/07/2010 de retour le 19/07/2010=
+.<br>
+<br>
+Je r=E9pondrai =E0 votre message d=E8s mon retour.</body></html>=
+
+--0__=4EBBFDC4DFDE82368f9e8a93df938690918c4EBBFDC4DFDE8236--
+
 
