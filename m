@@ -1,5 +1,6 @@
-MIME-Version: 1.0
-In-Reply-To: <22150A2C94CC924695BE248F94CD11F2D5F3@domain.hid>
+From: Fredrik Asplund <fasplund@domain.hid>
+Date: Mon, 5 Jul 2010 13:21:37 +0000
+Message-ID: <22150A2C94CC924695BE248F94CD11F2D75E@EXDB4.ug.kth.se>
 References: <22150A2C94CC924695BE248F94CD11F2CD0F@EXDB4.ug.kth.se>
 	<4C2A518F.8030302@domain.hid>
 	<22150A2C94CC924695BE248F94CD11F2CDC2@domain.hid>
@@ -15,10 +16,12 @@ References: <22150A2C94CC924695BE248F94CD11F2CD0F@EXDB4.ug.kth.se>
 	<22150A2C94CC924695BE248F94CD11F2D4D6@domain.hid>
 	<AANLkTimRsJQOJehXmFnWE0vEYTkDLXivif3aeNaTNJB8@domain.hid>
 	<22150A2C94CC924695BE248F94CD11F2D5F3@domain.hid>
-Date: Mon, 5 Jul 2010 10:13:58 -0300
-Message-ID: <AANLkTimtPz6v0XseTXMFwENAs4bF1mTfQEtTCY-W5VaI@mail.gmail.com>
-From: =?ISO-8859-1?Q?Felipe_Brand=E3o_Cavalcanti?= <cavalkaf@domain.hid>
-Content-Type: multipart/alternative; boundary=001485f876e8a48b99048aa3b510
+	<AANLkTimtPz6v0XseTXMFwENAs4bF1mTfQEtTCY-W5VaI@mail.gmail.com>
+In-Reply-To: <AANLkTimtPz6v0XseTXMFwENAs4bF1mTfQEtTCY-W5VaI@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Xenomai and Gumstix Overo
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -29,59 +32,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fredrik Asplund <fasplund@domain.hid>
+To: =?iso-8859-1?Q?Felipe_Brand=E3o_Cavalcanti?= <cavalkaf@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
---001485f876e8a48b99048aa3b510
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+>I downloaded the uImage and RootFS from your website and deployed to the
+>SD Card - and it did boot from the SD (I saw the clean startup and the log=
+s).
+>The kernel has Xenomai enabled, but the user-space portion doesn't seem to=
+ be installed.
 
-2010/7/5 Fredrik Asplund <fasplund@domain.hid>
+Ok. I must have copied the wrong file to DropBox. Try this one instead:
 
-> > Just tried your build... it seems that the available image doesn't
-> include Xenomai!
->
-> Strange. How did you deploy it (i.e. if you deployed it on a SD Card, did
-> you check that it actually followed that boot path?)?
->
->
-I downloaded the uImage and RootFS from your website and deployed to the SD
-Card - and it did boot from the SD (I saw the clean startup and the logs).
-The kernel has Xenomai enabled, but the user-space portion doesn't seem to
-be installed.
-
-
---=20
-      -Felipe Brand=E3o Cavalcanti
-      LARA - Automation and Robotics Laboratory
-      Department of Electrical Engineering
-      UnB - University of Bras=EDlia, Brazil
-      http://www.lara.unb.br/~fbcavalcanti/
-
---001485f876e8a48b99048aa3b510
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<br><br><div class=3D"gmail_quote">2010/7/5 Fredrik Asplund <span dir=3D"lt=
-r">&lt;<a href=3D"mailto:fasplund@domain.hid">fasplund@domain.hid</a>&gt;</span><br=
-><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204,=
- 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-<div class=3D"im">&gt; Just tried your build... it seems that the available=
- image doesn&#39;t include Xenomai!<br>
-<br>
-</div>Strange. How did you deploy it (i.e. if you deployed it on a SD Card,=
- did you check that it actually followed that boot path?)?<br>
-<br>
-</blockquote></div><br>I downloaded the uImage and RootFS from your website=
- and deployed to the SD Card - and it did boot from the SD (I saw the clean=
- startup and the logs). The kernel has Xenomai enabled, but the user-space =
-portion doesn&#39;t seem to be installed.<br>
-<br clear=3D"all"><br>-- <br> =A0 =A0 =A0 -Felipe Brand=E3o Cavalcanti<br> =
-=A0 =A0 =A0 LARA - Automation and Robotics Laboratory<br> =A0 =A0 =A0 Depar=
-tment of Electrical Engineering<br> =A0 =A0 =A0 UnB - University of Bras=ED=
-lia, Brazil<br> =A0 =A0 =A0 <a href=3D"http://www.lara.unb.br/~fbcavalcanti=
-/">http://www.lara.unb.br/~fbcavalcanti/</a><br>
-
-
---001485f876e8a48b99048aa3b510--
+http://dl.dropbox.com/u/8307741/Angstrom-gumstixwithxenomai-glibc-ipk-2010.=
+4-test-20100701-overo.rootfs.tar.bz2
 
