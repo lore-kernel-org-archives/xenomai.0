@@ -1,6 +1,6 @@
 From: Fredrik Asplund <fasplund@domain.hid>
-Date: Mon, 5 Jul 2010 13:21:37 +0000
-Message-ID: <22150A2C94CC924695BE248F94CD11F2D75E@EXDB4.ug.kth.se>
+Date: Mon, 5 Jul 2010 13:34:40 +0000
+Message-ID: <22150A2C94CC924695BE248F94CD11F2D797@domain.hid>
 References: <22150A2C94CC924695BE248F94CD11F2CD0F@EXDB4.ug.kth.se>
 	<4C2A518F.8030302@domain.hid>
 	<22150A2C94CC924695BE248F94CD11F2CDC2@domain.hid>
@@ -17,7 +17,8 @@ References: <22150A2C94CC924695BE248F94CD11F2CD0F@EXDB4.ug.kth.se>
 	<AANLkTimRsJQOJehXmFnWE0vEYTkDLXivif3aeNaTNJB8@domain.hid>
 	<22150A2C94CC924695BE248F94CD11F2D5F3@domain.hid>
 	<AANLkTimtPz6v0XseTXMFwENAs4bF1mTfQEtTCY-W5VaI@mail.gmail.com>
-In-Reply-To: <AANLkTimtPz6v0XseTXMFwENAs4bF1mTfQEtTCY-W5VaI@mail.gmail.com>
+	<22150A2C94CC924695BE248F94CD11F2D75E@EXDB4.ug.kth.se>
+In-Reply-To: <22150A2C94CC924695BE248F94CD11F2D75E@EXDB4.ug.kth.se>
 Content-Language: en-US
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
@@ -32,17 +33,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?iso-8859-1?Q?Felipe_Brand=E3o_Cavalcanti?= <cavalkaf@domain.hid>
+To: Fredrik Asplund <fasplund@domain.hid>, =?iso-8859-1?Q?Felipe_Brand=E3o_Cavalcanti?= <cavalkaf@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
->I downloaded the uImage and RootFS from your website and deployed to the
->SD Card - and it did boot from the SD (I saw the clean startup and the log=
-s).
->The kernel has Xenomai enabled, but the user-space portion doesn't seem to=
- be installed.
+>>I downloaded the uImage and RootFS from your website and deployed to the
+>>SD Card - and it did boot from the SD (I saw the clean startup and the lo=
+gs).
+>>The kernel has Xenomai enabled, but the user-space portion doesn't seem t=
+o be installed.
+>Ok. I must have copied the wrong file to DropBox. Try this one instead:
+>http://dl.dropbox.com/u/8307741/Angstrom-gumstixwithxenomai
+>-glibc-ipk-2010.4-test-20100701-overo.rootfs.tar.bz2
 
-Ok. I must have copied the wrong file to DropBox. Try this one instead:
+I checked my SD Card and the file above is the one I used when testing Xeno=
+mai last week (and also the one which has a name that corresponds to the bu=
+ild file I used). The other one must have been some old rootfs which I buil=
+t earlier (it was around 23-01 when I updated the Wiki).
 
-http://dl.dropbox.com/u/8307741/Angstrom-gumstixwithxenomai-glibc-ipk-2010.=
-4-test-20100701-overo.rootfs.tar.bz2
+Sorry.
 
