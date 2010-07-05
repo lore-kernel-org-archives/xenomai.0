@@ -1,29 +1,9 @@
-From: Fredrik Asplund <fasplund@domain.hid>
-Date: Mon, 5 Jul 2010 13:34:40 +0000
-Message-ID: <22150A2C94CC924695BE248F94CD11F2D797@domain.hid>
-References: <22150A2C94CC924695BE248F94CD11F2CD0F@EXDB4.ug.kth.se>
-	<4C2A518F.8030302@domain.hid>
-	<22150A2C94CC924695BE248F94CD11F2CDC2@domain.hid>
-	<4C2B0043.1070108@domain.hid>
-	<AANLkTikdRdEXJd97HKlWzUmon8bu94n-ATNozWyOmTOu@domain.hid>
-	<22150A2C94CC924695BE248F94CD11F2D063@domain.hid>
-	<AANLkTinqA_l4Jersd-1EfCMecqal2ZkSepe5DhtQAEJ3@domain.hid>
-	<22150A2C94CC924695BE248F94CD11F2D27F@EXDB4.ug.kth.se>
-	<22150A2C94CC924695BE248F94CD11F2D375@domain.hid>
-	<4C2DDE49.1080009@domain.hid>
-	<22150A2C94CC924695BE248F94CD11F2D3C1@domain.hid>
-	<AANLkTimw6Bz9-ZVvFl46_WTlo2Z-T8Kc0mebS5DYd-1K@mail.gmail.com>
-	<22150A2C94CC924695BE248F94CD11F2D4D6@domain.hid>
-	<AANLkTimRsJQOJehXmFnWE0vEYTkDLXivif3aeNaTNJB8@domain.hid>
-	<22150A2C94CC924695BE248F94CD11F2D5F3@domain.hid>
-	<AANLkTimtPz6v0XseTXMFwENAs4bF1mTfQEtTCY-W5VaI@mail.gmail.com>
-	<22150A2C94CC924695BE248F94CD11F2D75E@EXDB4.ug.kth.se>
-In-Reply-To: <22150A2C94CC924695BE248F94CD11F2D75E@EXDB4.ug.kth.se>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Xenomai and Gumstix Overo
+Date: Mon, 5 Jul 2010 10:44:33 -0300
+Message-ID: <AANLkTilrKXFtMXISQCHjKKtqwfLbZWXEk33PjE_RApYO@mail.gmail.com>
+From: Ricardo Barbosa <ricardo.barbosa@domain.hid>
+Content-Type: multipart/alternative; boundary=e0cb4e887453fe7b2b048aa42288
+Subject: [Xenomai-help] usb4rt compilation with Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -33,22 +13,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fredrik Asplund <fasplund@domain.hid>, =?iso-8859-1?Q?Felipe_Brand=E3o_Cavalcanti?= <cavalkaf@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
->>I downloaded the uImage and RootFS from your website and deployed to the
->>SD Card - and it did boot from the SD (I saw the clean startup and the lo=
-gs).
->>The kernel has Xenomai enabled, but the user-space portion doesn't seem t=
-o be installed.
->Ok. I must have copied the wrong file to DropBox. Try this one instead:
->http://dl.dropbox.com/u/8307741/Angstrom-gumstixwithxenomai
->-glibc-ipk-2010.4-test-20100701-overo.rootfs.tar.bz2
+--e0cb4e887453fe7b2b048aa42288
+Content-Type: text/plain; charset=ISO-8859-1
 
-I checked my SD Card and the file above is the one I used when testing Xeno=
-mai last week (and also the one which has a name that corresponds to the bu=
-ild file I used). The other one must have been some old rootfs which I buil=
-t earlier (it was around 23-01 when I updated the Wiki).
+Hi,
 
-Sorry.
+I'm building a BeagleBoard BSP with realtime (ARM architecture). I've
+already installed Xenomai 2.5.3 but I'm having trouble integrating usb4rt
+into it. How can I cross-compile usb4rt to be used with Xenomai? I'm asking
+this because usb4rt readme asks for rtai path installation but I only have
+Xenomai installed, how can I proceed?
+
+Thanks in advance.
+
+--e0cb4e887453fe7b2b048aa42288
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi,<br><br>I&#39;m building a BeagleBoard BSP with realtime (ARM architectu=
+re). I&#39;ve already installed Xenomai 2.5.3 but I&#39;m having trouble in=
+tegrating usb4rt into it. How can I cross-compile usb4rt to be used with Xe=
+nomai? I&#39;m asking this because usb4rt readme asks for rtai path install=
+ation but I only have Xenomai installed, how can I proceed?<br>
+<br>Thanks in advance.<br><br>
+
+--e0cb4e887453fe7b2b048aa42288--
 
