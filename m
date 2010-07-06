@@ -1,14 +1,11 @@
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-In-Reply-To: <4C2F715C.9050800@domain.hid>
-References: <AANLkTimOQfrs56FSp2JQUWtD7wDACYRmCrX6AF-pU3RC@mail.gmail.com>
-	<4C2F24CF.7090309@domain.hid> <4C2F715C.9050800@domain.hid>
-Date: Tue, 6 Jul 2010 10:03:16 -0700
-Message-ID: <AANLkTin_HbP5RrdSZg6xgNKAhr0f9UkqGgHjC6xkH3HX@mail.gmail.com>
-From: Jeremy Brown <jhbrown@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] kernel warnings and oopses calling gpiolib
-	functions from xenomai kernel space
+Date: Tue, 6 Jul 2010 13:36:05 -0500
+Message-ID: <181804936ABC2349BE503168465576460F3847C2@domain.hid>
+From: "Steve Deiters" <SteveDeiters@domain.hid>
+Subject: [Xenomai-help] Mixing skin calls (cancellation points)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,55 +15,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-To the best of our ability to tell, this patch resolved our problem
---- thank you!
+Is it in general valid to mix calls from different skins?  In
+particular, can I expect the native skin calls to work as POSIX
+cancellation points?  For example, if I have a POSIX thread with a
+pthread_t identifier which I know calls rt_cond_wait somewhere, will it
+work as a cancellation point when I call pthread_cancel?
 
-Jeremy
+The example program attached will not cancel if I have CANCEL_DEFERRED
+defined as 1 at the top, which sets the cancel type to deferred.  This
+is on a PowerPC with Xenomai 2.5.3.  I think this worked with Xenomai
+2.4.10.
 
-PS The pipe patch version is whatever prepare-kernel applied by
-default, which I think for our xenomai checkout and kernel version is
-adeos-ipipe-2.6.33-arm-1.16-01.patch
 
-On Sat, Jul 3, 2010 at 10:20 AM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> Gilles Chanteperdrix wrote:
->> Jeremy Brown wrote:
->>> Thanks in advance for any and all help!
->>
->> Hi,
->>
->> from your post, we can conclude that gpio_set_value is a Linux kernel
->> function which can yet not be used in Xenomai context (you could
->> probably even get more explicit messages by enabling I-pipe debugging).
->> I am going to try and propose a fix for this issue, will send you a
->> patch ASAP.
->>
->> Note that the issue is more an Adeos I-pipe issue than a Xenomai issue,
->> so I am more interested in knowing what version of adeos than what
->> version of Xenomai you are using. But chances that the problem exists
->> with all versions anyway.
->
-> Could you try the following patch?
->
-> diff --git a/arch/arm/plat-omap/gpio.c b/arch/arm/plat-omap/gpio.c
-> index 589a4bb..f1d85ff 100644
-> --- a/arch/arm/plat-omap/gpio.c
-> +++ b/arch/arm/plat-omap/gpio.c
-> @@ -195,7 +195,7 @@ struct gpio_bank {
-> =A0#endif
-> =A0 =A0 =A0 =A0u32 level_mask;
-> =A0 =A0 =A0 =A0u32 toggle_mask;
-> - =A0 =A0 =A0 spinlock_t lock;
-> + =A0 =A0 =A0 ipipe_spinlock_t lock;
-> =A0 =A0 =A0 =A0struct gpio_chip chip;
-> =A0 =A0 =A0 =A0struct clk *dbck;
-> =A0 =A0 =A0 =A0u32 mod_usage;
->
-> --
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0Gilles.
->
+--------
+
+
+#include <stdio.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <native/task.h>
+#include <native/cond.h>
+
+#define CANCEL_DEFERRED 1
+
+RT_MUTEX mutex;
+RT_COND cond;
+pthread_t thread;
+
+void *entry(void *cookie)
+{
+   fprintf(stderr, "Starting thread\n");
+
+#if CANCEL_DEFERRED
+   pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
+#else
+   pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+#endif
+
+   rt_mutex_acquire(&mutex, TM_INFINITE);
+   rt_cond_wait(&cond, &mutex, TM_INFINITE);
+   rt_mutex_release(&mutex);
+
+   return NULL;
+}
+
+int main(int argc, char **argv)
+{
+   int ret;
+   pthread_attr_t attr;
+
+   if((ret =3D rt_mutex_create(&mutex, NULL)))
+   {
+      errno =3D -ret;
+      perror("rt_mutex_create");
+      exit(EXIT_FAILURE);
+   }
+
+   if((ret =3D rt_cond_create(&cond, NULL)))
+   {
+      errno =3D -ret;
+      perror("rt_cond_create");
+      exit(EXIT_FAILURE);
+   }
+
+   pthread_attr_init(&attr);
+   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+
+   if(pthread_create(&thread, &attr, entry, NULL))
+   {
+      perror("pthread_create");
+      exit(EXIT_FAILURE);
+   }
+
+   fprintf(stderr, "Sleeping 5 seconds\n");
+   sleep(5);
+   fprintf(stderr, "Woke up, cancelling thread\n");
+
+   pthread_cancel(thread);
+   pthread_join(thread, NULL);
+
+   return 0;
+}
 
