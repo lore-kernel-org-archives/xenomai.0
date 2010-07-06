@@ -1,16 +1,14 @@
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-In-Reply-To: <4BA0654D.5040602@domain.hid>
-References: <201003161329.32546.peter@domain.hid>
-	<4B9FB9AD.2040509@domain.hid> 
-	<201003162232.23352.peter@domain.hid>
-	<4BA0654D.5040602@domain.hid>
-From: Peter Soetens <peter@domain.hid>
-Date: Tue, 6 Jul 2010 21:00:56 +0200
-Message-ID: <AANLkTim9LqZGROIz--poHWB4ikHWsvPJu2ClX_TanH88@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] xeno_sigwinch_handler causes segfault with
-	readline
+Date: Tue, 6 Jul 2010 14:03:30 -0500
+Message-ID: <181804936ABC2349BE503168465576460F384827@domain.hid>
+In-Reply-To: <4C3378E2.2050401@domain.hid>
+References: <181804936ABC2349BE503168465576460F3847C2@domain.hid> 
+	<4C3378E2.2050401@domain.hid>
+From: "Steve Deiters" <SteveDeiters@domain.hid>
+Subject: Re: [Xenomai-help] Mixing skin calls (cancellation points)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,62 +19,94 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Wed, Mar 17, 2010 at 7:14 AM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> Peter Soetens wrote:
->> On Tuesday 16 March 2010 18:02:37 Gilles Chanteperdrix wrote:
->>> Peter Soetens wrote:
->>>> I'm testing with (don't shoot me)
->>>> * 2.6.31.1-ipipe-2.4-07 #3 SMP
->>>> * Xenomai 2.4.93 (please!)
->>>>
->>>> But a user reported with:
->>>> * Kernel 2.6.32.7
->>>> * Xenomai 2.5.1
->>>>
->>>> the same issue. When we first shadow the main thread and then call int=
-o
->>>> readline code, we get segfaults, pointing to xeno_sigwinch_handler.
->>>>
->>>> According to docs, we need to be careful when installing a signal hand=
-ler
->>>> on winch after shadowing. Is this still the issue (I suppose so), or w=
-hy
->>>> don't we get a nice( that's relative) 'abort' explaining what to do
->>>> instead of a segfault ?
->>>>
->>>> I'll delve into libreadline to see on how to override/disable the
->>>> winching by readline, but I hope there is some standard solution, mayb=
-e
->>>> by one of the Xenomai users.
->>> We have an awful memory corruption issue with Xenomai 2.5.1, so please
->>> upgrade to Xenomai 2.5 development head, it will be released as 2.5.2
->>> this week-end, except maybe for some additions in analogy. Another
->>> possibility is an issue with stack sizes, it may happen that libreadlin=
-e
->>> requires some huge stack sizes. We made some work to increase the
->>> default stack size, but libreadline may need even more.
->>
->> I can at least confirm that when setting:
->> =C2=A0 rl_catch_sigwinch =3D 0;
->> before installing the readline signal handlers fixes this issue (but dis=
-ables
->> responding to terminal resizes).
->
-> Right, I am probably on the wrong track. If the application registers a
-> SIGWINCH handler, this handler must be registered with the SA_SIGINFO
-> flag, and call the xeno_sigwinch_handler function.
->
-> Another solution is to call the function xeno_sigshadow_install(), right
-> after libreadline installs its handler.
+> -----Original Message-----
+> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
+> Sent: Tuesday, July 06, 2010 1:42 PM
+> To: Steve Deiters
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai-help] Mixing skin calls (cancellation points)
+>=20
+> Steve Deiters wrote:
+> > Is it in general valid to mix calls from different skins?  In=20
+> > particular, can I expect the native skin calls to work as POSIX=20
+> > cancellation points?  For example, if I have a POSIX thread with a=20
+> > pthread_t identifier which I know calls rt_cond_wait=20
+> somewhere, will=20
+> > it work as a cancellation point when I call pthread_cancel?
+> >=20
+> > The example program attached will not cancel if I have=20
+> CANCEL_DEFERRED=20
+> > defined as 1 at the top, which sets the cancel type to=20
+> deferred.  This=20
+> > is on a PowerPC with Xenomai 2.5.3.  I think this worked=20
+> with Xenomai=20
+> > 2.4.10.
+> >=20
+> >=20
+> > --------
+> >=20
+> >=20
+> > #include <stdio.h>
+> > #include <errno.h>
+> > #include <stdlib.h>
+> > #include <unistd.h>
+> > #include <pthread.h>
+> > #include <native/task.h>
+> > #include <native/cond.h>
+> >=20
+> > #define CANCEL_DEFERRED 1
+> >=20
+> > RT_MUTEX mutex;
+> > RT_COND cond;
+> > pthread_t thread;
+> >=20
+> > void *entry(void *cookie)
+> > {
+> >    fprintf(stderr, "Starting thread\n");
+> >=20
+> > #if CANCEL_DEFERRED
+> >    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL); #else
+> >    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL); #endif
+> >=20
+> >    rt_mutex_acquire(&mutex, TM_INFINITE);
+> >    rt_cond_wait(&cond, &mutex, TM_INFINITE);
+> >    rt_mutex_release(&mutex);
+> >=20
+> >    return NULL;
+> > }
+>=20
+> This program would also deadlock with plain POSIX: you are=20
+> missing a cleanup handler which releases the mutex.
+>=20
+> --=20
+> 					    Gilles.
+>=20
 
-This has been for a while, but the proposed xeno_sigshadow_install()
-solution is outdated, the function disappeared. The documentation
-proposes to forward the signal first to xenomai and then decide if it
-should be handled. What to do if the sigwinch handler is installed by
-a 3rd party app that I can't modify ?
+My situation here is that I have some library routines, which were
+written using the native skin.  It was done like this so users of the
+library were not forced to link against the POSIX skin.  Not to say that
+they would use the libc POSIX implementation, just that they may want=
+ to
+use only the native skin.
 
-Peter
+Is there a deadlock issue here if I have the cancellation as deferred?
+Won't the rt_cond_wait already release the mutex.  This is similar to
+pthread_cond_wait which is a cancellation point in POSIX.  I realize the
+potential for deadlock if it asynchronous which is why I want the
+cancellation as deferred.
+
+If I ever do need to do something like this, can I use the
+rt_task_add_hook looking at T_HOOK_DELETE in place of a POSIX cleanup
+handler?
+
+This still doesn't say whether or not I can rely on the rt_cond_wait as
+a cancellation point.  If not I may have only two options: rewrite the
+library using the POSIX skin and force the users to use the POSIX skin,
+or force the user to use the native skin or avoid using pthread_cancel.
+Neither one is an appealing option.
+
+Thanks.
+
 
