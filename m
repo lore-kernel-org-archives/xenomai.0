@@ -1,13 +1,9 @@
-Message-ID: <4C34438D.9020905@domain.hid>
-Date: Wed, 07 Jul 2010 11:06:21 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTik-cpk4RfJGxj422mOvU1xQFdQCfB8gno7uzD7N@mail.gmail.com>
-In-Reply-To: <AANLkTik-cpk4RfJGxj422mOvU1xQFdQCfB8gno7uzD7N@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] native: A 32k stack is not always a 'reasonable'
- size
+Date: Wed, 7 Jul 2010 17:56:52 +0800
+Message-ID: <AANLkTilmN6HTqYAcEv5qTqYhpjgBiMYQAPvPwCnynAHu@domain.hid>
+From: Everett Wang <everteq@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai-help] task management, multi-thread, multi-core
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,35 +13,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Peter Soetens <peter@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Peter Soetens wrote:
-> At least, not for Orocos applications. We've had hard to debug
-> application segfaults that used just a 'little' bit more than 32k. We
-> had to raise the stack size to 128k to get reliably through our
-> application startup. I stem from the old 'mlockall ate my RAM'
-> generation where we typically reduced stack sizes in order to have
-> some crumbles left for the heap. But 32k wasn't really what we were
-> aiming for.
-> 
-> Maybe we should explicitly document the 32k limit and its limitations
-> for certain applications...?
+Hi All,
 
-Again, things have been fixed in 2.5.3 with regard to stack sizes, could
-you check that you have the same behaviour?
+I am working on a navigation program that has two realtime tasks. One
+is a high priority one executed in a higher frequency. Another task
+runs about 1/10th of the first one, but requires substantially more
+CPU computations. I am using an atom board which has dual threads
+capability. I am worried that the second task can block the execution
+of the first one until it finishs all the calculations. Can this
+happen in a dual thread and/or dual core CPU? If yes, should I break
+the task two into small chunks and let the task one to send a trigger
+to
+execute one chunk at a time? I know it is not xenomai specific
+question and I have tried to read manual or other documents trying to
+figure
+it out.
 
-As for 32KiB, it is only a default stack size, it is only reasonable in
-the sense that 2MiB is unreasonable on a low-end system. 32KiB was
-picked because it allows printf to work. Now, whatever stack size we
-choose, there will be applications which need more, this does not really
-make the default unreasonable.
+I have read that tasks require more resources than threads in Linux.
+The inter-threads communication is also more efficient than that of
+tasks. Are these also true for xenomai realtime OS? Should I create
+threads instead of tasks?
 
-> PS: can anyone allow 'sspr' (=me) to edit/add stuff on the wiki ?
 
-Looks like you passed an incorrect mail address for this account, so it
-could not be verified, did you fix this?
+Any suggestions are welcome. Thanks for reading. :-)
 
--- 
-					    Gilles.
+Everett
 
