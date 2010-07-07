@@ -1,12 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <4C3380FB.7010700@domain.hid>
-References: <AANLkTikaVz0DcwnQHbAkRf5LzrBy3zXxHhhJzYEAIgYD@mail.gmail.com> 
-	<4C3380FB.7010700@domain.hid>
+In-Reply-To: <4C34438D.9020905@domain.hid>
+References: <AANLkTik-cpk4RfJGxj422mOvU1xQFdQCfB8gno7uzD7N@mail.gmail.com> 
+	<4C34438D.9020905@domain.hid>
 From: Peter Soetens <peter@domain.hid>
-Date: Wed, 7 Jul 2010 22:51:17 +0200
-Message-ID: <AANLkTin8Hw2Zb4j4aooB2l6F6PXB6HUYm_R6NYyU_4G7@domain.hid>
+Date: Wed, 7 Jul 2010 22:57:20 +0200
+Message-ID: <AANLkTiklX49KAfAlZND9FhVaTJZpdADFpuUIO-lkm6f6@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai-help] 2.5.2 + 2.6.32 patched kernel causes system reset
+Subject: Re: [Xenomai-help] native: A 32k stack is not always a 'reasonable'
+	size
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,48 +20,42 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-On Tue, Jul 6, 2010 at 9:16 PM, Gilles Chanteperdrix
+On Wed, Jul 7, 2010 at 11:06 AM, Gilles Chanteperdrix
 <gilles.chanteperdrix@xenomai.org> wrote:
 > Peter Soetens wrote:
->> Hi,
+>> At least, not for Orocos applications. We've had hard to debug
+>> application segfaults that used just a 'little' bit more than 32k. We
+>> had to raise the stack size to 128k to get reliably through our
+>> application startup. I stem from the old 'mlockall ate my RAM'
+>> generation where we typically reduced stack sizes in order to have
+>> some crumbles left for the heap. But 32k wasn't really what we were
+>> aiming for.
 >>
->> We have a single-core Pentium M industrial PC equiped with Xenomai
->> 2.5.2 patched vanilla Linux 2.6.32.7.
->> We have two builds of the kernel: one that causes a reliable system
->> reset when starting a 'heavy' Orocos application (lot of thread
->> creation/deletions), the other is rock solid. We think it is related
->> to thread creation in the native skin, since we could at least twice
->> cause the reset by just creating a native thread (that was meant to
->> block on a semaphore) but this was hard to reproduce. Stack size was
->> set to 128k, but only trivial code was executed.We had the impression
->> that enlarging the stack size to 256k caused less resets, but it was
->> still very frequent. Setting the stack size too low caused segfaults
->> in the app, not a kernel crash.
->>
->> The stable config and the diffs between both configs are in
->> attachment. Read it as: apply this patch to make it unstable. Any
->> clues what is the most likely suspect ? Could the xenomai watchdog
->> cause the reset ?
->>
->> Thanks for any pointers, we're prepared to bisect this, if any one
->> knows a tool to do a bisect on a set of config options, we'll be glad
->> to use it.
+>> Maybe we should explicitly document the 32k limit and its limitations
+>> for certain applications...?
 >
-> Before investing any more time, please upgrade to Xenomai 2.5.3.
+> Again, things have been fixed in 2.5.3 with regard to stack sizes, could
+> you check that you have the same behaviour?
 
-X 2.5.3 has exactly the same behaviour. We enabled the UP_APIC, but
-that didn't help. We then enabled COMFIG_SMP, which caused noticable
-slowdown during booting (boot takes 2x as long compared to both
-good/bad configs which have equal speed). We then disabled the Xenomai
-watchdog, to no avail.
+I think we had, but I'm uncertain right now.
 
-It's really a bisecting issue between the two configs. As I said
-before, it's as good as 100% reproducible on our setup.
+>
+> As for 32KiB, it is only a default stack size, it is only reasonable in
+> the sense that 2MiB is unreasonable on a low-end system. 32KiB was
+> picked because it allows printf to work. Now, whatever stack size we
+> choose, there will be applications which need more, this does not really
+> make the default unreasonable.
 
-'They' are pulling me of this and someone else will do further testing
-hopefully next week (you know how these things go though...).
+I knew you would say that. It deserves an entry in the faq or some
+trouble shooting document though.
 
-We've struck something, we just have to corner it.
+>
+>> PS: can anyone allow 'sspr' (=me) to edit/add stuff on the wiki ?
+>
+> Looks like you passed an incorrect mail address for this account, so it
+> could not be verified, did you fix this?
+
+I did. Didn't realize there was a problem.
 
 Peter
 
