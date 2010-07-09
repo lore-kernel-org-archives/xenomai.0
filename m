@@ -1,11 +1,20 @@
-Date: 9 Jul 2010 09:14:47 -0000
+Message-ID: <20100709114655.46571rvnivjguu4w@domain.hid>
+Date: Fri, 09 Jul 2010 11:46:55 +0200
+From: Michel He <michel.he@domain.hid>
+References: <20100316150037.11405209mnid677k@domain.hid>
+	<4B9FB4A8.6000903@domain.hid>
+	<20100316183247.34995yxgivc3ilj4@domain.hid>
+	<4B9FC1F2.1070002@domain.hid>
+	<20100316191024.117214qo52wr9aps@domain.hid>
+In-Reply-To: <20100316191024.117214qo52wr9aps@domain.hid>
 MIME-Version: 1.0
-Message-ID: <1278662535.S.3844.38495.F.H.TkdpbGxlcyBDaGFudGVwZXJkcml4AFJlOiBbWGVub21haS1oZWxwXSBUZXN0aW5nIFJUTmV0IGluIFhlbm8_.f4-235-214.old.1278666886.41605@domain.hid>
-in-reply-to: <4C36D78C.6090400@domain.hid>
-From: "prakash srinivasan" <asprakash_83@domain.hid>
-Content-Type: multipart/alternative;
-	boundary="=_b0d03b48ce2b6db1c70d1156557b4951"
-Subject: Re: [Xenomai-help] =?utf-8?q?Testing_RTNet_in_Xenomai?=
+Content-Type: text/plain;
+ charset=ISO-8859-1;
+ DelSp="Yes";
+ format="flowed"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Mini2440 on the kernel 2.6.30.1
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,82 +24,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: gilles.chanteperdrix@xenomai.org
+To: Michel He <michel.he@domain.hid>
 Cc: xenomai@xenomai.org
 
---=_b0d03b48ce2b6db1c70d1156557b4951
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="UTF-8"
+ok, thanks for help as far as concerned the S3C2440 issues on that board.
 
+So what has been previously found out is: no external clock connected =20
+on pin clk1 of timer 3, instead timer 2 and 3 are used to drive the =20
+sound module. Since I get changed the timer 3 to timer 1, it can boot =20
+to shell. However, the xenomai test give a 7000 us of average latency, =20
+it is even worst than pure Linux system. Also, the USB, nor the camera =20
+won't work at all (the system get freezed when plug them in). The UART =20
+and LCD are OK. The sound is buggy due to lags, it seems the buffer =20
+not continuously filled up by linux. So far the others modules are not =20
+tested.
 
+Something should get wrong, but no idea how to figure it out.
 
+Michel He <michel.he@domain.hid> a =E9crit=A0:
 
-
-On Fri, 09 Jul 2010 13:32:15 +0530  wrote
-
->prakash srinivasan wrote:
-
-
-
->>> I answer you: "read README.INSTALL".
-
-
-
->> Yes. But I am sure, it was irrelevant to my query.
-
-
-
->And you are wrong. It answers exactly your question. It explains that
-
->the build was split in two, a user-space part and a kernel-space part,
-
->which is why, in particular, you will not get any module when >compiling the user-space part. It also explains that you have the >possibility to compile Xenomai support to be built-in the kernel, in >which case you will not get any Xenomai modules at all. How is that >irrelevant to your query.
-
-
-
-Including me, most of the beginners are reading the README/INSTALL file first. But they are struggling at the begging coz of not clear about this documents. I referred both of the documentations. But I was not clear.
-
-
-
-Now I got the clear idea about it. Thanks for the info.
-
-
-
--Prakash
---=_b0d03b48ce2b6db1c70d1156557b4951
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/html; charset="UTF-8"
-
-<br />
-<br />
-On Fri, 09 Jul 2010 13:32:15 +0530  wrote<br />
->prakash srinivasan wrote:<br />
-<br />
->>> I answer you: "read README.INSTALL".<br />
-<br />
->> Yes. But I am sure, it was irrelevant to my query.<br />
-<br />
->And you are wrong. It answers exactly your question. It explains that<br /=
+> How can I exactly figure out which driver is using the Timer 3 ? I =20
+> wonder if there's a list of interrupt somewhere ? in irq.c -> =20
+> watch-dog and ac97, Both are disactivated from the kernel.
 >
->the build was split in two, a user-space part and a kernel-space part,<br =
-/>
->which is why, in particular, you will not get any module when >compiling t=
-he user-space part. It also explains that you have the >possibility to comp=
-ile Xenomai support to be built-in the kernel, in >which case you will not =
-get any Xenomai modules at all. How is that >irrelevant to your query.<br /=
 >
-<br />
-Including me, most of the beginners are reading the README/INSTALL file fir=
-st. But they are struggling at the begging coz of not clear about this docu=
-ments. I referred both of the documentations. But I was not clear.<br />
-<br />
-Now I got the clear idea about it. Thanks for the info.<br />
-<br />
--Prakash<br><Table border=3D0 Width=3D644 Height=3D57 cellspacing=3D0 cellp=
-adding=3D0 style=3D"font-family:Verdana;font-size:11px;line-height:15px;"><=
-TR><td><A HREF=3D"http://sigads.rediff.com/RealMedia/ads/click_nx.ads/www.r=
-ediffmail.com/signatureline.htm@domain.hid?" target=3D"_blank"><IMG SRC=3D"http=
-://sigads.rediff.com/RealMedia/ads/adstream_nx.ads/www.rediffmail.com/signa=
-tureline.htm@domain.hid"></A></td></TR></Table>
---=_b0d03b48ce2b6db1c70d1156557b4951--
+>
+> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> a =E9crit=
+=A0:
+>
+>> Michel He wrote:
+>>> Still not working after reactivation of Timer 3. Here's the codes :
+>>
+>> Well, if timer 3 is used by another driver in the system, no wonder that
+>> it does not work. You will not get it to work by just changing a few
+>> things here and there. You have to actually understand what is needed
+>> and fix the implementation (probably to use another timer). Fortunately,
+>> you have the I-pipe porting guide to arm to understand what is needed.
+>>
+>>
+>> --
+>> Gilles Chanteperdrix, Free Electrons
+>> Kernel, drivers, real-time and embedded Linux
+>> development, consulting, training and support.
+>> http://free-electrons.com
+>>
+>
+>
+
+
 
