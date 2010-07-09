@@ -1,25 +1,11 @@
-Message-ID: <4C35FDC7.8000908@domain.hid>
-Date: Thu, 08 Jul 2010 18:33:11 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: 9 Jul 2010 04:40:16 -0000
 MIME-Version: 1.0
-References: <AANLkTik-cpk4RfJGxj422mOvU1xQFdQCfB8gno7uzD7N@mail.gmail.com>	
-	<4C34438D.9020905@domain.hid>	
-	<AANLkTiklX49KAfAlZND9FhVaTJZpdADFpuUIO-lkm6f6@domain.hid>	
-	<4C34EF76.2040602@domain.hid>	
-	<AANLkTik9RCKn90TnCj3JWBQF_XWaHbH0vSgp2vOu8HfH@mail.gmail.com>	
-	<4C3508E1.7090100@domain.hid>	
-	<1278578261.1810.67.camel@domain.hid>	
-	<4C359326.1090509@domain.hid>	
-	<1278582612.1810.124.camel@domain.hid>	
-	<4C35A094.4010206@domain.hid>	
-	<1278584354.1810.137.camel@domain.hid>	
-	<4C35BAEF.5020308@domain.hid>
-	<1278601290.1810.150.camel@domain.hid>
-In-Reply-To: <1278601290.1810.150.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] native: A 32k stack is not always a 'reasonable'
- size
+Message-ID: <1278598017.S.4635.60583.F.H.TkdpbGxlcyBDaGFudGVwZXJkcml4AFJlOiBbWGVub21haS1oZWxwXSBUZXN0aW5nIFJUTmV0IGluIFhlbm8_.f4-234-220.old.1278650416.1245@domain.hid>
+in-reply-to: <4C35DAE2.3050504@domain.hid>
+From: "prakash srinivasan" <asprakash_83@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="=_728171b8ea2989ccec89a23f7f7b686a"
+Subject: Re: [Xenomai-help] =?utf-8?q?Testing_RTNet_in_Xenomai?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -29,38 +15,233 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: gilles.chanteperdrix@xenomai.org
+Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> I mean that glibc does not pre-allocate pieces of anon memory to honor
-> requests for stack chunks, it gets them on the fly from an internal
-> cache if one matches, or mmaps its. Besides, the cache itself is only
-> fed with recycled stacks from terminated threads it seems, so we can't
-> predict whether all stacks there would be contiguous.
-> 
-> For instance, I'm assuming that tweaking your code like below would
-> likely prevent the stack segments from being contiguous:
-> 
->         pthread_create(&ida, NULL, thread, NULL);
->       +	mmap(NULL, 8*1024*1024, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-> 	pthread_create(&idb, NULL, thread, NULL);
->         pthread_join(ida, NULL);
-> 
-> If so, it is indeed likely that segments would be contiguous if threads
-> are started the way you did; on the other hand, it is possible that a
-> more complex application does not suffer this. Granted, this does not
-> help us that much anyway.
-> 
-> My point is that nothing guarantees us either contiguous or sparse stack
-> address ranges, so we probably should not rely on those assumptions.
+--=_728171b8ea2989ccec89a23f7f7b686a
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 
-So the worst case, in case of massive stack overflow, or in a system
-without MMU is silent corruption of unrelated data.
 
-I am not sure of what we can do about that. Not sure
--fstack-protector/-fstack-check is a solution.
 
--- 
-					    Gilles.
+
+
+On Thu, 08 Jul 2010 19:36:57 +0530  wrote
+
+>prakash srinivasan wrote:
+
+
+
+> 
+
+
+
+>>>To install Xenomai, please follow the installation instructions. You
+
+
+
+>>>
+
+
+
+>>>will find them in the README.INSTALL file in Xenomai sources
+
+
+
+>>>
+
+
+
+>>>distribution, or online:
+
+
+
+>>>
+
+
+
+>>>http://www.xenomai.org/documentation/xenomai-2.5/README.INSTALL
+
+
+
+>> 
+
+
+
+>> Dear Gilles,
+
+
+
+>> Thanks for the info. I justed followed the document,
+
+
+
+>> http://download.intel.com/design/intarch/papers/322386.pdf Coz I am also
+
+
+
+>> testing in the same ARCH. I followed the steps. Everything was fine
+
+
+
+>> without any issues and tested the xenomai-2.4.6 as they mentioned in the
+
+
+
+>> doc.
+
+
+
+
+
+
+
+>> But I have doubt that there is no modules created after it was installed
+
+
+
+>> successfully in /usr/xenomai/. I just like to know whether xenomai
+
+
+
+>> installation will create any "modules" folder in /usr/xenomai/ or not?.
+
+
+
+
+
+
+
+>You ask me a question.
+
+
+
+>I answer you: "read README.INSTALL".
+
+
+
+Yes. But I am sure, it was irrelevant to my query. 
+
+
+
+>You tell me: "I did not read README.INSTALL", then proceed to ask your
+
+
+
+>question again.
+
+
+
+I never said, "I did not read README.INSTALL". I referred both of the files, the README.INSTALL and pdf file What I mentioned.    
+
+
+
+>Are you kidding me?
+
+
+
+Never. I guess you are kidding me. But whatever it may be, We are not sitting here for kidding each others. May be you misread my queries or my words were not clear. If you think I am kidding you, I would like to apologies for that. I dont like to waste your valuable time. So dont take my topics seriously in future and kindly ignore my threads.   
+
+
+
+I got the expected info from wolfgang.
+
+
+
+Thanks for your reply anyway.
+
+
+
+-Prakash
+
+
+--=_728171b8ea2989ccec89a23f7f7b686a
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset="UTF-8"
+
+<br />
+<br />
+On Thu, 08 Jul 2010 19:36:57 +0530  wrote<br />
+>prakash srinivasan wrote:<br />
+<br />
+> <br />
+<br />
+>>>To install Xenomai, please follow the installation instructions. You<br =
+/>
+<br />
+>>><br />
+<br />
+>>>will find them in the README.INSTALL file in Xenomai sources<br />
+<br />
+>>><br />
+<br />
+>>>distribution, or online:<br />
+<br />
+>>><br />
+<br />
+>>>http://www.xenomai.org/documentation/xenomai-2.5/README.INSTALL<br />
+<br />
+>> <br />
+<br />
+>> Dear Gilles,<br />
+<br />
+>> Thanks for the info. I justed followed the document,<br />
+<br />
+>> http://download.intel.com/design/intarch/papers/322386.pdf Coz I am also=
+<br />
+<br />
+>> testing in the same ARCH. I followed the steps. Everything was fine<br /=
+>
+<br />
+>> without any issues and tested the xenomai-2.4.6 as they mentioned in the=
+<br />
+<br />
+>> doc.<br />
+<br />
+<br />
+<br />
+>> But I have doubt that there is no modules created after it was installed=
+<br />
+<br />
+>> successfully in /usr/xenomai/. I just like to know whether xenomai<br />
+<br />
+>> installation will create any "modules" folder in /usr/xenomai/ or not?.<=
+br />
+<br />
+<br />
+<br />
+>You ask me a question.<br />
+<br />
+>I answer you: "read README.INSTALL".<br />
+<br />
+Yes. But I am sure, it was irrelevant to my query. <br />
+<br />
+>You tell me: "I did not read README.INSTALL", then proceed to ask your<br =
+/>
+<br />
+>question again.<br />
+<br />
+I never said, "I did not read README.INSTALL". I referred both of the files=
+, the README.INSTALL and pdf file What I mentioned.    <br />
+<br />
+>Are you kidding me?<br />
+<br />
+Never. I guess you are kidding me. But whatever it may be, We are not sitti=
+ng here for kidding each others. May be you misread my queries or my words =
+were not clear. If you think I am kidding you, I would like to apologies fo=
+r that. I dont like to waste your valuable time. So dont take my topics ser=
+iously in future and kindly ignore my threads.   <br />
+<br />
+I got the expected info from wolfgang.<br />
+<br />
+Thanks for your reply anyway.<br />
+<br />
+-Prakash<br />
+<br><Table border=3D0 Width=3D644 Height=3D57 cellspacing=3D0 cellpadding=
+=3D0 style=3D"font-family:Verdana;font-size:11px;line-height:15px;"><TR><td=
+><A HREF=3D"http://sigads.rediff.com/RealMedia/ads/click_nx.ads/www.rediffm=
+ail.com/signatureline.htm@domain.hid?" target=3D"_blank"><IMG SRC=3D"http://sig=
+ads.rediff.com/RealMedia/ads/adstream_nx.ads/www.rediffmail.com/signatureli=
+ne.htm@domain.hid"></A></td></TR></Table>
+--=_728171b8ea2989ccec89a23f7f7b686a--
 
