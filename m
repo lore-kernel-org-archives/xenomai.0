@@ -1,12 +1,12 @@
-Message-ID: <4C36D78C.6090400@domain.hid>
-Date: Fri, 09 Jul 2010 10:02:20 +0200
+Message-ID: <4C36D8A0.80404@domain.hid>
+Date: Fri, 09 Jul 2010 10:06:56 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1278598017.S.4635.60583.F.H.TkdpbGxlcyBDaGFudGVwZXJkcml4AFJlOiBbWGVub21haS1oZWxwXSBUZXN0aW5nIFJUTmV0IGluIFhlbm8_.f4-234-220.old.1278650416.1245@domain.hid>
-In-Reply-To: <1278598017.S.4635.60583.F.H.TkdpbGxlcyBDaGFudGVwZXJkcml4AFJlOiBbWGVub21haS1oZWxwXSBUZXN0aW5nIFJUTmV0IGluIFhlbm8_.f4-234-220.old.1278650416.1245@domain.hid>
+References: <AANLkTim9bUjQBI43P2Z7DL4ZQsZdjMMQ3ZZf2p54bAso@domain.hid>
+In-Reply-To: <AANLkTim9bUjQBI43P2Z7DL4ZQsZdjMMQ3ZZf2p54bAso@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Testing RTNet in Xenomai
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] xenomia adeos pacht error
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,24 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: prakash srinivasan <asprakash_83@domain.hid>
+To: =?UTF-8?B?R8O2cmtlbSBLYXJhZG/En2Fu?= <gkaradagan@domain.hid>
 Cc: xenomai@xenomai.org
 
-prakash srinivasan wrote:
->> I answer you: "read README.INSTALL".
-> 
-> 
-> 
-> Yes. But I am sure, it was irrelevant to my query.
+G=C3=B6rkem Karado=C4=9Fan wrote:
+> hi all,
+>=20
+> i follow this install introduction (
+> http://www.xenomai.org/documentation/xenomai-2.5/README.INSTALL)
+>=20
+> and i write this code
+>=20
+> /opt/xenomai-2.5.3/scripts/prepare-kernel.sh --arch=3Darm \
+>   --adeos=3D/opt/xenomai-2.5.3/ksrc/arch/arm/patches/adeos-ipipe-2.6.20=
+-arm-*
+> \
+> --linux=3D/opt/linux-02.01.03.11/
+>=20
+> and i got this error codes
+>=20
+> Hunk #1 FAILED at 156.
+> 1 out of 1 hunk FAILED -- saving rejects to file mm/vmalloc.c.rej
+> prepare-kernel.sh: Unable to patch kernel 2.6.29-rc3 with
+> adeos-ipipe-2.6.20-arm-1.8-03.patch.
+>=20
+> i use linux-02.01.03.11 because of omap3530. Do you know which pacht is=
+ able
+> with kernel 2.6.29.rc3..
 
-And you are wrong. It answers exactly your question. It explains that
-the build was split in two, a user-space part and a kernel-space part,
-which is why, in particular, you will not get any module when compiling
-the user-space part. It also explains that you have the possibility to
-compile Xenomai support to be built-in the kernel, in which case you
-will not get any Xenomai modules at all. How is that irrelevant to your
-query.
+It seems I am having a hard time to get understood this days. I do not
+know what linux-02.01.03.11 is, and I do not really care, but it is not
+the mainline kernel. As I told you in the answer to your previous
+question here:
+https://mail.gna.org/public/xenomai-help/2010-07/msg00078.html
+We only provide Adeos patches for the mainline kernel.
 
--- 
+--=20
 					    Gilles.
+
 
