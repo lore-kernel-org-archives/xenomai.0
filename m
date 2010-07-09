@@ -1,9 +1,11 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <AANLkTim9bUjQBI43P2Z7DL4ZQsZdjMMQ3ZZf2p54bAso@domain.hid>
+In-Reply-To: <AANLkTilima6OiNDUW_79WeV08NLO-K8jtrcZWnEw8hdT@mail.gmail.com>
 References: <AANLkTim9bUjQBI43P2Z7DL4ZQsZdjMMQ3ZZf2p54bAso@domain.hid>
+	<AANLkTikh0wG-xK50wvmfVe0KBB25BKz4k2Ys3O26r7zq@domain.hid>
+	<AANLkTilima6OiNDUW_79WeV08NLO-K8jtrcZWnEw8hdT@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 09 Jul 2010 10:45:31 +0200
-Message-ID: <1278665131.1810.378.camel@domain.hid>
+Date: Fri, 09 Jul 2010 10:51:09 +0200
+Message-ID: <1278665469.1810.382.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] xenomia adeos pacht error
@@ -19,76 +21,67 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: =?UTF-8?Q?G=C3=B6rkem_Karado=C4=9Fan?= <gkaradagan@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Fri, 2010-07-09 at 10:28 +0300, G=C3=B6rkem Karado=C4=9Fan wrote:
-> hi all,
+On Fri, 2010-07-09 at 11:34 +0300, G=C3=B6rkem Karado=C4=9Fan wrote:
 >=20
-> i follow this install introduction
-> (http://www.xenomai.org/documentation/xenomai-2.5/README.INSTALL)
 >=20
-> and i write this code=20
+> 2010/7/9 G=C3=B6rkem Karado=C4=9Fan <gkaradagan@domain.hid>
+>        =20
+>        =20
+>         ok  Gilles i hope  i understand you now . i changed my linux
+>         kernel. and tried again but this time=20
+>         when i write this code make ARCH=3Darm CROSS_COMPILE=3Darm-linux-
+>         O=3D$build_root bzImage modules
+>          i got this errors :S.=20
+>        =20
+>         thank you again ...
+
+
+This is not the right list for this question.
+
+Please have a look there first and foremost, you will find useful hints
+to set up your kernel project:
+http://kernelnewbies.org/FAQ/KernelCompilation
+
+>        =20
+>        =20
+>        =20
+>         root@domain.hid# make ARCH=3Darm
+>         CROSS_COMPILE=3Darm-linux- O=3D$build_root bzImage modules
+>         make: arm-linux-gcc: Command not found
+>         scripts/kconfig/conf -s arch/arm/Kconfig
+>         make: arm-linux-gcc: Command not found
+>           CHK     include/linux/version.h
+>           UPD     include/linux/version.h
+>           SYMLINK include/asm-arm/arch -> include/asm-arm/arch-at91
+>           Generating include/asm-arm/mach-types.h
+>           CHK     include/linux/utsrelease.h
+>           UPD     include/linux/utsrelease.h
+>           SYMLINK include/asm -> include/asm-arm
+>           CC      arch/arm/kernel/asm-offsets.s
+>         /bin/sh: arm-linux-gcc: not found
+>         make[1]: *** [arch/arm/kernel/asm-offsets.s] Error 127
+>         make: *** [prepare0] Error 2
+>         root@domain.hid
 >=20
-> /opt/xenomai-2.5.3/scripts/prepare-kernel.sh --arch=3Darm \
+> and i forget build_root and i wrote it. again again i have error :S
 >=20
-> --adeos=3D/opt/xenomai-2.5.3/ksrc/arch/arm/patches/adeos-ipipe-2.6.20-arm=
--* \
-> --linux=3D/opt/linux-02.01.03.11/
->=20
-> and i got this error codes
->=20
-> Hunk #1 FAILED at 156.
-> 1 out of 1 hunk FAILED -- saving rejects to file mm/vmalloc.c.rej
-> prepare-kernel.sh: Unable to patch kernel 2.6.29-rc3 with
-> adeos-ipipe-2.6.20-arm-1.8-03.patch.
->=20
-> i use linux-02.01.03.11 because of omap3530. Do you know which pacht
-> is able with kernel 2.6.29.rc3..
->=20
-
-Please make sure to actually read the answer you have been given before
-rehashing the same question:
-https://mail.gna.org/public/xenomai-help/2010-07/msg00078.html
-
-That answer is crystal clear: i.e. Adeos patches for ARM are based on
-the mainline kernel tree, and not on any vendor branch. I guess that you
-can infer quite easily from this why those patches won't apply neatly on
-your vendor kernel then.
-
-Patches in ksrc/arm/patches/ should be used preferably. With a little
-effort, you should be able to find more information about this in the
-FAQ:
-http://www.xenomai.org/index.php/FAQs#Which_I-pipe_patch_should_I_use_with_=
-Xenomai_version_X_on_platform_Y.3F
-
-To sum up:
-
-- the information is there, please read it.
-- from the information you gave us, and despite what Gilles told you
-explicitly in the mail mentioned above, you are still trying to apply a
-patch for kernel 2.6.20 to 2.6.29. This can't work, and very much looks
-like masochistic, really. There must be a reason why we issued a
-specific patch for each different kernel release we wanted to support
-over time, right?
-- you depend on a vendor kernel tree: you are on your own then. We just
-cannot maintain patches for each and every tree variant, so don't expect
-this patch to exist just because you need it. You could wait for quite a
-long time.
-
-Now, your options:
-
-As mentioned in the FAQ, you can find older releases of Adeos patches on
-our download site, including for 2.6.29. Those patches may or may not
-work for your kernel and/or omap platform, you will have to try and
-check by yourself. It is likely that those patches won't apply
-out-of-the-box, and will require some updates to fit your kernel though,
-be prepared for that.
-
-How complex it might be to get a working patch for your vendor kernel is
-unknown to us, just because we have no clue about what makes that kernel
-tree different from mainline, and quite frankly, we don't care about
-this. Time is a scarce resource for everyone.
-
-> thanks...
->=20
+> root@domain.hid# make ARCH=3Darm
+> CROSS_COMPILE=3Darm-linux- O=3D/opt/linux-2.6.25.11/build_root bzImage
+> modules
+> make[1]: arm-linux-gcc: Command not found
+>   GEN     /opt/linux-2.6.25.11/build_root/Makefile
+> scripts/kconfig/conf -s arch/arm/Kconfig
+> make[1]: arm-linux-gcc: Command not found
+>   CHK     include/linux/version.h
+>   SYMLINK include/asm-arm/arch -> include/asm-arm/arch-at91
+> make[2]: `/opt/linux-2.6.25.11/include/asm-arm/mach-types.h' is up to
+> date.
+>   Using /opt/linux-2.6.25.11 as source for kernel
+>   /opt/linux-2.6.25.11 is not clean, please run 'make mrproper'
+>   in the '/opt/linux-2.6.25.11' directory.
+> make[1]: *** [prepare3] Error 1
+> make: *** [sub-make] Error 2
+> root@domain.hid
 >=20
 > _______________________________________________
 > Xenomai-help mailing list
