@@ -1,107 +1,120 @@
-Message-ID: <4C1C8796.1050900@domain.hid>
-Date: Sat, 19 Jun 2010 11:02:14 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
-MIME-Version: 1.0
-References: <AANLkTinRyxZ-BB_VwB2XPYwIPik8to_eynd-c-nNulQ1@domain.hid>	<4C19EDA4.2030601@domain.hid>
-	<4C1A040F.4030209@domain.hid>	<AANLkTikMtR9kMd424sXIUdULJlaRxKIlJ19ElJ4Pt4o1@domain.hid>	<C159A093-EA69-4903-8114-145C4355A0C0@domain.hid>
-	<AANLkTim91ABqsvWb_GqMhOwnDlIQNfz1qoE-ABWc3KGE@mail.gmail.com>
-In-Reply-To: <AANLkTim91ABqsvWb_GqMhOwnDlIQNfz1qoE-ABWc3KGE@mail.gmail.com>
-Content-Type: text/plain; charset="iso-8859-1"
+Mime-Version: 1.0 (Apple Message framework v1081)
+Content-Type: text/plain; charset=us-ascii
+From: Stefan Schaal <sschaal@domain.hid>
+In-Reply-To: <20100712222926.GA2463@domain.hid>
+Date: Mon, 12 Jul 2010 22:51:42 -0700
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] application make file
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Message-Id: <F730DBD8-DEB8-4C64-BA65-19657D6EFA95@domain.hid>
+References: <20100627103712.GA2565@domain.hid>
+	<46F86785-737D-41F4-BC37-5DC5A4462039@domain.hid>
+	<20100630134535.GA2849@domain.hid>
+	<B09D50F0-3A7A-4501-8E96-C5E67AE11D19@domain.hid>
+	<20100705214047.GB2444@domain.hid>
+	<20100705220238.GC2444@domain.hid>
+	<5A2DB1C3-C660-45BE-9743-716F63C11825@domain.hid>
+	<20100709221733.GC10254@domain.hid>
+	<5BACCC6E-A481-4953-ABAC-ACE3185E1A9C@usc.edu>
+	<3712D196-B8B5-430C-A5F5-189C77F76997@domain.hid>
+	<20100712222926.GA2463@domain.hid>
+Subject: Re: [Xenomai-core] analogy - experimental branch
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Everett Wang <everteq@domain.hid>
-Cc: xenomai@xenomai.org, Bruno Rouchouse <brouchouse@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Alexis Berlemont <alexis.berlemont@domain.hid>
+Cc: Peter Pastor Sampedro <pastorsa@domain.hid>, xenomai@xenomai.org
 
-On 06/19/2010 09:34 AM, Everett Wang wrote:
-> On Fri, Jun 18, 2010 at 7:40 PM, Bruno Rouchouse <brouchouse@domain.hid> =
-wrote:
->> Hi,
->> if you haven't found it yet and if I understood correctly your question,
->> xeno-config is probably what you need here ;)
->> "xeno-config
->> is a script that is used to to display the compiler and linker flags tha=
-t are required for building applications that use Xenomai."
->> Regards,
->> --Bruno
->> Le 17 juin 2010 =E0 17:39, Everett Wang a =E9crit :
->>
->> On Thu, Jun 17, 2010 at 7:16 PM, Gilles Chanteperdrix
->> <gilles.chanteperdrix@xenomai.org> wrote:
->>
->> Gilles Chanteperdrix wrote:
->>
->> Everett Wang wrote:
->>
->> Hi All,
->>
->> Now my application based user space xenomai has a few files and I want
->>
->> to construct a Makefile to compile them. I looked at the
->>
->> Makefiles in examples folder. It is not straight forward to modify one
->>
->> for myself. I have c files and header files.  It is possible to get
->>
->> a makefile with minor changes so it can automatically find the
->>
->> dependence of c and h files?
->>
->> You can do this quite easily with GNU make.
->>
->> Namely:
->>
->> http://www.gnu.org/software/make/manual/html_node/Automatic-Prerequisite=
-s.html#Automatic-Prerequisites
->>
->> --
->>
->>                                            Gilles.
->>
->>
->> Thanks Gilles,
->>
->> I can construct a Makefile for a non realtime application
->> with multiple files. What I don't know are the extra flags
->> for compiling and linking that xenomai requires. My
->> thinking is that after I have a normal (non xenomai) Makefile,
->> I can just add the compile flags when I compile each of the files
->> and add linking flags to produce a real time final program.
->>
->> Everett
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->>
->>
->=20
-> Thanks for the help. I touched cross-link.c then a "make -n" to find out =
-the
-> xenomai flags.  I added these flags to my normal make file. It compiles
-> and runs fine now.
->=20
-> compiler flags:
-> CFLAGS_XENO =3D -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -Wall
-> -pipe -D__XENO__
->=20
-> linker flags:
-> LDFLAGS_XENO =3D -L/usr/xenomai/lib -lxenomai -lpthread  -lnative -lrtdm
-> -Xlinker -rpath -Xlinker /usr/xenomai/lib
->=20
-> Hopefully it can be useful for new xenomai users.
+Hi Alexis,
 
-You should use *xeno-config* in your Makefile to get the proper compiler
-and linker flags.
+  thanks a lot for the explanations. One item I am confused about is =
+that you write that TRIG_TIMER is not suitable for DIO, but in =
+cmd_write.c in your sample code, it is used for the analog write without =
+problems. Wouldn't one be able to just use the same clock source for DIO =
+as in analogue I/O?
 
-Wolfgang,
+Best wishes,
+
+-Stefan
+
+
+
+On Jul 12, 2010, at 15:29, Alexis Berlemont wrote:
+
+> Hi,
+>=20
+> Stefan Schaal wrote:
+>> Hi Alexis,
+>>=20
+>>  I guess I slowly understand that my clocking signal connected to
+>>  scan_begin_arg has to come from an external DIO input, if
+>>  scan_bigin_src =3D TRIG_EXT, and that the insn instruction is still
+>>  needed to trigger the entire acquisition.=20
+>=20
+> Yes. The trigger instruction is needed so as to start the whole
+> acquisition (which is composed of many scans). A periodic external
+> signal is needed so as to trigger each scan.
+>=20
+>>=20
+>>  Alternatively, would it be possible to use the internal clocking =
+signals like=20
+>>=20
+>> scan_bigin_src =3D TRIG_FOLLOW
+>>=20
+>> or=20
+>>=20
+>> scan_bigin_src =3D TRIG_TIMER
+>=20
+> I think you are right. If the sampling clock comes from another
+> subdevice, TRIG_EXT may not be the most appropriate constant. However,
+> the original comedi driver only expects TRIG_EXT even if... the
+> sampling signal is not external.
+>=20
+> TRIG_TIMER does not seem suitable because it assumes an independant
+> sampling clock is available. =20
+>=20
+> And TRIG_FOLLOW may be the most appropriate one. We should modify the
+> driver so that TRIG_FOLLOW is used if the analog sampling clock is
+> chosen.
+>=20
+>>=20
+>>=20
+>> if I try any of these sources, I get an error -22, and dmesg reports:
+>>=20
+>> [195882.321300] Analogy: a4l_check_cmddesc: scan_begin_src, trigger =
+unsupported
+>>=20
+>=20
+> For me, the command interface is an empty shell because the various
+> parameters (start_src, scan_begin_src, ...) and the values (TRIG_*)
+> are imposed. And, on the other side, the driver is fully in charge of
+> the command structure as it is. So, the comedi command imposes a
+> communication method but does not ease the driver's task of managing
+> it (errors checking, translation, etc.)
+>=20
+> And, in our case: DIO, we may conclude that this imposed API does not
+> fit well: in scan_begin_arg, we have to pass an index which is
+> supposed to correspond to some sampling clock (which is specific to a
+> board). Then, we use a generic interface with board-specific
+> arguments.
+>=20
+> So, to sum up, I understand your point: the way we control the driver
+> may not always be the most appropriate one. But, we inherited from
+> comedi both the interface and the drivers.=20
+>=20
+> On my side, I am working on trying to implement (as a background task)
+> a generic interface a little bit more based on discovery (query /
+> enum) that would render the command interface obsolete. Unfortunately,
+> I have nothing interesting to show yet.
+>=20
+>> Best wishes,
+>>=20
+>> -STefan
+>>=20
+>>=20
+>=20
+
 
