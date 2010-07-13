@@ -1,10 +1,11 @@
-From: Tim Cussins <timcussins@domain.hid>
+From: Flavio Alves <flavio.alves@domain.hid>
 Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 12 Jul 2010 15:10:17 +0100
-Message-ID: <1278943817.7023.18.camel@domain.hid>
+Date: Tue, 13 Jul 2010 15:45:02 -0300
+Message-ID: <1279046702.31665.65.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Marvell sheeva support
+Subject: [Xenomai-help] Kernel compilation procedures for imx51
+Reply-To: flavio.alves@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,21 +17,34 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi all,
+Hello,
 
-We're looking at migrating to one of Marvell's MV88F series SOC's, and
-are very keen to deploy Xenomai as part of our solution.
+I would like to build a linux kernel with Xenomai to run on a iMX51
+board (iMX51EVK).
 
-I noticed Sergey Didenko was looking at this a few months back and
-things looked to be ok - has his (or anyone else's) work made it into a
-stable release?
+I am currently using the last version of the BSP from Freescale website
+(LTIB). If I apply the BSP's patches before the Xenomai's patches, the
+patches are not applied. So, I first apply Xenomai's patches and then
+BSP's patches.
 
-I will be able to assist in about a fortnight if that would be useful
-for squaring that work away.
+The problem in this approach is that I have compilation errors, even if
+I have all the patches successfully applied.
 
-Let me know if I can help!
+I saw at Denx homepage that there is a specific patch for Xenomai for
+iMX51. But the patch provided by the website must be used into the
+"rel_imx_2.6.31_10.02.00" tag in in Freescale's LTIB source tree. I
+believe the release version of LTIB that I am using is 10.04.00 (and not
+10.02.00) and maybe that's the reason why it is not compiling. How do I
+get that release of LTIB?
 
-Cheers,
-Tim
+I saw that the patch provided in the website
+(adeos-ipipe-2.6.31-arm-1.15-01.patch) is different from the Xenomai
+2.5.3 package (adeos-ipipe-2.6.31-arm-1.15-02.patch). Does it mean that
+this topic was solved?
+
+Best Regards,
+
+Flavio
+
 
 
