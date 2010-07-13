@@ -1,26 +1,14 @@
-Message-ID: <20100720181738.33651coeinh5cx7k@domain.hid>
-Date: Tue, 20 Jul 2010 18:17:38 +0200
-From: Michel He <michel.he@domain.hid>
-References: <20100316150037.11405209mnid677k@domain.hid>
-	<4B9FB4A8.6000903@domain.hid>
-	<20100316183247.34995yxgivc3ilj4@domain.hid>
-	<4B9FC1F2.1070002@domain.hid>
-	<20100316191024.117214qo52wr9aps@domain.hid>
-	<20100709114655.46571rvnivjguu4w@domain.hid>
-	<4C36F32A.4080404@domain.hid>
-	<20100719184826.21461mofq8kwzh7k@domain.hid>
-	<4C448815.8050803@domain.hid>
-	<20100720112613.75802eoute2c2xts@domain.hid>
-	<4C457577.50405@domain.hid>
-In-Reply-To: <4C457577.50405@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=ISO-8859-1;
- DelSp="Yes";
- format="flowed"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Mini2440 on the kernel 2.6.30.1
+From: jmf <xeno.nonono@domain.hid>
+Date: Tue, 13 Jul 2010 22:49:55 +0000 (UTC)
+Message-ID: <loom.20100714T004823-633@domain.hid>
+References: <001b01cb1e9c$54ddbae0$fe9930a0$@com>	<4C35CC27.1000407@domain.hid>
+	<loom.20100713T211010-119@domain.hid>
+	<4C3CD1AF.8080204@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help]
+	=?utf-8?q?fatal=3A_error_xeno=5Fnucleus_not_found?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -30,25 +18,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Yes, absolutely sure. It's the same .config
+Gilles Chanteperdrix <gilles.chanteperdrix <at> xenomai.org> writes:
 
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> a =E9crit=A0:
+> 
+> jmf wrote:
+> > Gilles Chanteperdrix <gilles.chanteperdrix <at> xenomai.org> writes:
+> > 
+> >> Gilson Bellon wrote:
+> >>>
+> >>> Dear all,
+> >>
+> > 
+> > I've got exactly the same situation!
+> > Followed this for setup: http://www.xenomai.org/index.php/...
+> > 
+> > In /usr/share/xenomai/testsuite/ there's:
+> > clocktest  cyclic  irqbench  klatency  latency  sigtest  switchtest  unit
+> > 
+> > 
+> > $ bash xeno-test (/usr/bin/xeno-test)
+> > 
+> > part of the output:
+> > 
+> > Is this just a question of invalid filepaths?
+> 
+> As I already said (it is the fourth time I tell it in this thread
+> actually), the "run" script seem not to work any longer. We are going to
+> fix them. But in the mean time, simply run the binaries directly.
+> 
+> Now, if my explanation is not clear, simply tell me instead of repeating
+> the question over and over again.
+> 
 
-> Michel He wrote:
->> Ok, just updated from 2.6.30.1 to 2.6.30.3, everything back to normal,
->> under 100 us. but the mystery remains entire.
->
-> Please no private messages.
->
-> You should really investigate the situation where you had big latencies.
-> Are you sure you are using exactly the same kernel configuration for the
-> two setups?
->
-> --
-> =09=09=09=09=09    Gilles.
->
+When I googled the error message, the *only* thing that came up was
+the thread started by Gilson Bellon which ended with your unanswered
+question what command he ran. So I thought I'd answer for him.
+No idea where your previous three answers to this could be found in
+this thread.
 
+Anyway, thanks. So I take it as this is no sign for an incomplete setup
+and we shall just run the tools cyclictest/switchtest/latency manually.
+If that's wrong, then your explanation is not clear to me.
 
 
