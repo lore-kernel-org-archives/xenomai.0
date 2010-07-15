@@ -1,13 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <638179785.1790459.1280306472842.JavaMail.fmail@domain.hid>
-References: <638179785.1790459.1280306472842.JavaMail.fmail@domain.hid>
-Content-Type: text/plain; charset="us-ascii"
-Date: Sat, 31 Jul 2010 12:35:04 +0200
-Message-ID: <1280572504.2092.15.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4C3F192A.8080203@domain.hid>
+Date: Thu, 15 Jul 2010 16:20:26 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <AANLkTinwyQgI26INSzLlvgyP2hlAmuziK7V3iNCVa8Nd@domain.hid>	<4C3EFB0B.7050801@domain.hid>
+	<AANLkTinH0vj7gAxa8LscV_-Hvmggo9LigQkp30nIUcz6@domain.hid>
+In-Reply-To: <AANLkTinH0vj7gAxa8LscV_-Hvmggo9LigQkp30nIUcz6@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Deadlock with interrupt shield activated / Avoid
- mode switches at compile time
+Subject: Re: [Xenomai-help] [RTnet-users] Alignment problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,56 +17,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Markus Seemann <International-Asso@domain.hid>
+To: Cyril Wallois <walloiscyril@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Wed, 2010-07-28 at 10:41 +0200, Markus Seemann wrote:
-> Hello,
+Cyril Wallois wrote:
+> Hi Gilles,
 > 
-> a more theoretical question:
-> 
-> Is it possible to provocate a deadlock while switching a RTTask from primary mode to secondary mode when the interrupt shield is activated?
-> Perhaps with this kind of scenario:
-> - linux process takes semaphore
-> - RTTask switches to secondary mode and also tries to take this semaphore
-> - The semaphore would be released in ISR context of the linux kernel. But the interrupt shield prevents the execution of this isr.
-> 
-> How realistic is this scenario?
+> Sorry, I don't mention that my problem has ever been evoqued on
+> xenomai-help one month ago :
 
-The I-shield would be disengaged as soon as a non-Xenomai thread is
-scheduled in, resuming the linux ISR flow. So unless the CPU remains
-100% busy to process Xenomai threads either in primary or secondary mode
-- which would be the first problem to solve - this can't happen (the RT
-task for one would block, pending on the semaphore, creating an
-opportunity for non-RT threads to resume).
+Ok. But if you had used the "reply" function of your MUA, the mail you
+would have sent would have contained a "Reference" header pointing to
+the mail you were replying, which would have allowed the MUA of the
+people reading your mail, including Xenomai mailing list archives, to
+properly sort this new mail as a follow-up of the mail you were replying to.
 
-This is not to say that the I-shield might not bring other tricky
-issue(s) in, but this one is not possible by design.
+> 0xc002d3c8 correspond to do_page_fault in /proc/kallsyms
 
-> 
-> 
-> Another question:
-> Is it possible to avoid mode switches for realtime tasks at compile time for a specific task?
-> 
-
-Avoiding a priori would mean to deny compilation when a code path which
-may lead to a linux syscall is detected; not quite simple to implement
-for userland apps given otherwise valid dependencies on the glibc
-Xenomai may have (e.g. for creating threads).
-
-> Thanks in advance,
-> Markus
-> ___________________________________________________________
-> Neu: WEB.DE De-Mail - Einfach wie E-Mail, sicher wie ein Brief!  
-> Jetzt De-Mail-Adresse reservieren: https://produkte.web.de/go/demail02
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+Ok. So, you enter do_page_fault from primary mode. Compile your kernel
+with frame pointers, and try and insert a call to show_stack(NULL,NULL)
+in the Xenomai code printing the messages which you see.
 
 -- 
-Philippe.
-
-
+					    Gilles.
 
