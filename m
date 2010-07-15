@@ -1,18 +1,12 @@
+Message-ID: <4C3EF6D6.6040907@domain.hid>
+Date: Thu, 15 Jul 2010 13:53:58 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <4C4EEBE3.9020806@domain.hid>
-References: <1279046702.31665.65.camel@domain.hid> <4C3CB655.1020801@domain.hid>
-	<1279048661.31665.81.camel@domain.hid> <1280149567.1856.15.camel@domain.hid>
-	<4C4D9131.7080504@domain.hid> <1280153187.1856.25.camel@domain.hid>
-	<4C4D97AC.2030609@domain.hid> <1280154697.1856.29.camel@domain.hid>
-	<4C4D9E04.6060407@domain.hid> <1280156219.1856.32.camel@domain.hid>
-	<4C4DA340.4030400@domain.hid> <1280187666.1963.34.camel@domain.hid>
-	<4C4E8A64.1000701@domain.hid> <1280239972.1865.7.camel@domain.hid>
-	<4C4EEBE3.9020806@domain.hid>
-Date: Tue, 27 Jul 2010 15:42:03 -0300
-Message-ID: <AANLkTim4A+3sLGzgdhc_Xhfn0bAW+hLZtuUJVyVocLOZ@mail.gmail.com>
-From: Flavio de Castro Alves Filho <flavio.alves@domain.hid>
-Content-Type: multipart/alternative; boundary=0016368332f49464eb048c62db30
-Subject: Re: [Xenomai-help] Kernel compilation procedures for imx51
+References: <1278943817.7023.18.camel@domain.hid>
+In-Reply-To: <1278943817.7023.18.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Marvell sheeva support
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,85 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Tim Cussins <timcussins@domain.hid>
+Cc: xenomai@xenomai.org
 
---0016368332f49464eb048c62db30
-Content-Type: text/plain; charset=ISO-8859-1
+Tim Cussins wrote:
+> Hi all,
+> 
+> We're looking at migrating to one of Marvell's MV88F series SOC's, and
+> are very keen to deploy Xenomai as part of our solution.
+> 
+> I noticed Sergey Didenko was looking at this a few months back and
+> things looked to be ok - has his (or anyone else's) work made it into a
+> stable release?
+> 
+> I will be able to assist in about a fortnight if that would be useful
+> for squaring that work away.
+> 
+> Let me know if I can help!
 
-It worked.
+We are interested. I seem to remember that Serguey had unexplained
+latencies issues, so, if you start with his work, please bear this in
+mind, there was probably something wrong with his port. A guide
+explaining how to port the I-pipe patch on ARM exists:
+http://www.xenomai.org/index.php/I-pipe:ArmPorting
 
-As soon as I have the compilation done, I report the result.
+The section about chained GPIOs irqs is outdated, if your platform has
+some, I will explain how it should be implemented.
 
-Thanks for the help.
+Please start from the I-pipe git (git://git.denx.de/ipipe-2.6.git),
+merging it with the branch you will use if needed, so that you can
+submit a patch only containing the modifications necessary for the
+Sheeva platform.
 
-Best regards.
+We can also provide you with a root filesystem for validating this platform.
 
-Flavio
-
-Flavio de Castro Alves Filho
-Phi Innovations - Embedded Software Services
-www.phiinnovations.com
-Phone: +55 19 81 55 72 40
-Skype: flavio.de.castro.alves.filho
-
-
-2010/7/27 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-
-> Flavio Alves wrote:
-> > Hello,
-> >
-> > I am still having problems with the patch:
-> >
-> > I performed the following procedures
-> >
-> > 1) git clone
-> > http://opensource.freescale.com/pub/scm/imx/linux-2.6-imx.git
-> > 2) cd linux-2.6-imx
-> > 3) git checkout rel_imx_2.6.31_10.02.00
-> > 4) patch -p0 < ../adeos-ipipe-2.6.31-arm-1.16-01.patch
->
-> It should be patch -p1
->
-> --
->                                             Gilles.
->
-
---0016368332f49464eb048c62db30
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-It worked.<br><br>As soon as I have the compilation done, I report the resu=
-lt.<br><br>Thanks for the help.<br><br>Best regards.<br><br>Flavio<br><br c=
-lear=3D"all">Flavio de Castro Alves Filho<br>Phi Innovations - Embedded Sof=
-tware Services<br>
-<a href=3D"http://www.phiinnovations.com">www.phiinnovations.com</a><br>Pho=
-ne: +55 19 81 55 72 40<br>Skype: flavio.de.castro.alves.filho<br>
-<br><br><div class=3D"gmail_quote">2010/7/27 Gilles Chanteperdrix <span dir=
-=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.cha=
-nteperdrix@domain.hid</a>&gt;</span><br><blockquote class=3D"gmail_quote" =
-style=3D"margin: 0pt 0pt 0pt 0.8ex; border-left: 1px solid rgb(204, 204, 20=
-4); padding-left: 1ex;">
-Flavio Alves wrote:<br>
-&gt; Hello,<br>
-&gt;<br>
-<div class=3D"im">&gt; I am still having problems with the patch:<br>
-&gt;<br>
-&gt; I performed the following procedures<br>
-&gt;<br>
-&gt; 1) git clone<br>
-&gt; <a href=3D"http://opensource.freescale.com/pub/scm/imx/linux-2.6-imx.g=
-it" target=3D"_blank">http://opensource.freescale.com/pub/scm/imx/linux-2.6=
--imx.git</a><br>
-&gt; 2) cd linux-2.6-imx<br>
-&gt; 3) git checkout rel_imx_2.6.31_10.02.00<br>
-&gt; 4) patch -p0 &lt; ../adeos-ipipe-2.6.31-arm-1.16-01.patch<br>
-<br>
-</div>It should be patch -p1<br>
-<br>
---<br>
-<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.<br>
-</font></blockquote></div><br>
-
---0016368332f49464eb048c62db30--
+-- 
+					    Gilles.
 
