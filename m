@@ -1,130 +1,75 @@
-Message-ID: <4C6BCB51.4010805@domain.hid>
-Date: Wed, 18 Aug 2010 14:00:17 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1282047938.5255.89.camel@domain.hid>	
-	<4C6B146D.9010004@domain.hid>
-	<1282126974.5255.262.camel@domain.hid>	
-	<4C6BBD62.3050907@domain.hid>
-	<1282131617.5255.286.camel@domain.hid>
-In-Reply-To: <1282131617.5255.286.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] xenomai 2.5.3/native, kernel 2.6.31.8 and fork()
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+In-Reply-To: <4C40015E.3030805@domain.hid>
+References: <AANLkTinwyQgI26INSzLlvgyP2hlAmuziK7V3iNCVa8Nd@domain.hid>
+	<4C3EFB0B.7050801@domain.hid>
+	<AANLkTinH0vj7gAxa8LscV_-Hvmggo9LigQkp30nIUcz6@domain.hid>
+	<4C3F192A.8080203@domain.hid>
+	<AANLkTinJaCoe5nfcUuC25_0eOLJid1hk582uFdzRZT1_@domain.hid>
+	<4C3F471F.4030002@domain.hid> <4C40015E.3030805@domain.hid>
+Date: Fri, 16 Jul 2010 11:51:53 +0200
+Message-ID: <AANLkTikE1IUPWQRiGDbw1BH0GL4zQA-2GY3bhceOnlb2@domain.hid>
+From: Cyril Wallois <walloiscyril@domain.hid>
+Content-Type: multipart/alternative; boundary=0015174c1aa82a8956048b7e2b46
+Subject: Re: [Xenomai-help] [RTnet-users] Alignment problem
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: =?UTF-8?B?S3J6eXN6dG9mIELFgmFzemtvd3NraQ==?= <kb@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Krzysztof B=C5=82aszkowski wrote:
-> On Wed, 2010-08-18 at 13:00 +0200, Gilles Chanteperdrix wrote:
->> Krzysztof B=C5=82aszkowski wrote:
->>> On Wed, 2010-08-18 at 00:59 +0200, Gilles Chanteperdrix wrote:
->>>> - I have not really checked your user-space compilation flags, I am
->>>> using xeno-config to get the correct ones.
->>> xeno-config --skin=3Dnative --cflags gives:
->>>
->>> -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XEN=
-O__
->>>
->>>
->>> note that there is no xenomai installed on my r&d server
->>> in /usr/xenomai/
->>>
->>> i build xenomai per kernel and install it in kernel's INSTALL sub-dir=
+--0015174c1aa82a8956048b7e2b46
+Content-Type: text/plain; charset=ISO-8859-1
 
->>> (DESTDIR=3D) as well as kernel's modules and other related stuff for =
-this
->>> particular kernel.
->>> (otherwise i would go mad soon due to various versions ..)
->> xeno-config handles the DESTDIR environment variable (failing to do th=
-is
->> would be kind of silly, because a lot of people, including the
->> maintainers, use Xenomai mostly in cross-compiled environment).
->=20
-> no, it does not.
->=20
-> ./xeno-config
-> xeno-config --verbose
->         --version=3D"2.5.4"
->         --cc=3D"gcc"
->         --arch=3D"x86"
->         --prefix=3D"/usr/xenomai"
->         --xeno-cflags=3D"-I/usr/xenomai/include -D_GNU_SOURCE -D_REENTR=
-ANT
-> -Wall -pipe -D__XENO__"
->         --xeno-ldflags=3D"-L/usr/xenomai/lib -lxenomai -lpthread "
->         --posix-cflags=3D""
-> POSIX support is not available
->         --posix-ldflags=3D""
->         --library-dir=3D"/usr/xenomai/lib"
-> Usage xeno-config --skin=3Dskinname OPTIONS
-> Options :
->         --help
->         --v,--verbose
->         --version
->         --cc
->         --arch
->         --prefix
->         --skin native|posix|psos|rtai|rtdm|uitron|vrtx|vxworks
->         --cflags
->         --ldflags
->         --lib*-dir,--libdir,--user-libdir
->=20
-> Deprecated options:
->         --xeno-cflags
->         --xeno-ldflags
->         --posix-cflags
->         --posix-ldflags
->=20
->=20
-> while it was built like this:
->=20
-> make DESTDIR=3D/root/... install
+Thanks for all Gilles.
 
-You are not paying attention. I said it "handles the DESTDIR environment
- variable". So, you should pass DESTDIR as an environment variable to
-xeno-config. As in:
+Cyril
 
-DESTDIR=3D/root/.... xeno-config --skin=3Dnative --cflags
+2010/7/16 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-The xeno-config script is built when Xenomai is compiled, not installed,
-at this point, it would be against the rules to assume that a DESTDIR is
-set, and hardcode a DESTDIR value into xeno-config.
+> Gilles Chanteperdrix wrote:
+> > Cyril Wallois wrote:
+> >> I try show_stack(NULL,NULL)  after the Xenomai error message, but I have
+> >> a lock up (the Xenomai code is not printing).
+> >
+> > Ok. Try adding a call to xnarch_trace_panic_freeze() before the call to
+> > show_stack.
+>
+> Sorry, I meant rthal_emergency_console()
+>
+> --
+>                                             Gilles.
+>
 
-See GNU make documentation:
-http://www.gnu.org/software/make/manual/html_node/DESTDIR.html
+--0015174c1aa82a8956048b7e2b46
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-And for a good reason, the final destination of Xenomai on your system
-may be different from where you initially installed it. So, handling
-DESTDIR dynamically in xeno-config makes things more flexible.
+Thanks for all Gilles.<br><br>Cyril<br><br><div class=3D"gmail_quote">2010/=
+7/16 Gilles Chanteperdrix <span dir=3D"ltr">&lt;<a href=3D"mailto:gilles.ch=
+anteperdrix@domain.hid">gilles.chanteperdrix@xenomai.org</a>&gt;</span><br><bl=
+ockquote class=3D"gmail_quote" style=3D"margin: 0pt 0pt 0pt 0.8ex; border-l=
+eft: 1px solid rgb(204, 204, 204); padding-left: 1ex;">
+Gilles Chanteperdrix wrote:<br>
+<div class=3D"im">&gt; Cyril Wallois wrote:<br>
+&gt;&gt; I try show_stack(NULL,NULL) =A0after the Xenomai error message, bu=
+t I have<br>
+&gt;&gt; a lock up (the Xenomai code is not printing).<br>
+&gt;<br>
+&gt; Ok. Try adding a call to xnarch_trace_panic_freeze() before the call t=
+o<br>
+&gt; show_stack.<br>
+<br>
+</div>Sorry, I meant rthal_emergency_console()<br>
+<br>
+--<br>
+<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.<br>
+</font></blockquote></div><br>
 
-> but there is still a difference in xeno-shmem-fork behavior when linked=
-
-> with pthread or not from command line.
-
-Ok. But linking with pthread is the only supported way of using Xenomai. =
-A
->> What version of opensuse?
->=20
-> 11.1 - 32. i do not crosscompile on x86_64 to x86 because i have
-> encountered various strange mismatches in the past.
->=20
-> rather i use native clean x86 environment (on e.g. x86_64)
-
-I do this all the time, and never had any problem.
-Also, why not running 64 bits code on your atom? There are some x86_32
-only atoms? What about SMP?
-
-By the way, did you forget to semd me your .config ?
-
---=20
-					    Gilles.
-
+--0015174c1aa82a8956048b7e2b46--
 
