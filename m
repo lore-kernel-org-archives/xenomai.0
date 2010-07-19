@@ -1,14 +1,22 @@
-Message-ID: <4C440D6F.1060204@domain.hid>
-Date: Mon, 19 Jul 2010 10:31:43 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20100719184826.21461mofq8kwzh7k@domain.hid>
+Date: Mon, 19 Jul 2010 18:48:26 +0200
+From: Michel He <michel.he@domain.hid>
+References: <20100316150037.11405209mnid677k@domain.hid>
+	<4B9FB4A8.6000903@domain.hid>
+	<20100316183247.34995yxgivc3ilj4@domain.hid>
+	<4B9FC1F2.1070002@domain.hid>
+	<20100316191024.117214qo52wr9aps@domain.hid>
+	<20100709114655.46571rvnivjguu4w@domain.hid>
+	<4C36F32A.4080404@domain.hid>
+In-Reply-To: <4C36F32A.4080404@domain.hid>
 MIME-Version: 1.0
-References: <4C43C83F.5030401@domain.hid> <4C43D265.9080609@domain.hid>
-	<4C43FC4F.3010006@domain.hid>
-In-Reply-To: <4C43FC4F.3010006@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+ charset=ISO-8859-1;
+ DelSp="Yes";
+ format="flowed"
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Adeos patched kernel hangs mounting root file
- system
+Subject: Re: [Xenomai-help] Mini2440 on the kernel 2.6.30.1
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,283 +26,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bob Feretich <bob.feretich@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Bob Feretich wrote:
->   Thank you for the quick reply.
->=20
-> I rebuilt the non-Adeos patched kernel with the 32 KHz clocked disabled=
-=2E=20
-> It booted correctly, so that wasn't the problem.  I didn't see any othe=
-r=20
-> significant differences in the console boot logs.
->=20
-> The console log for the non-Adeos patched kernel with the 32 KHz clocke=
-d=20
-> disabled is pasted below. The /proc/interrupts contents is displayed at=
-=20
-> the end.
->=20
-> I used the 1.16-01 patch.
->=20
->> Reading boot sector
->> Loading u-boot.bin from mmc
->>
->>
->> U-Boot 2009.06-rc2 (Nov 02 2009 - 23:57:20)
->>
->> OMAP3530-GP ES3.0, CPU-OPP2 L3-165MHz
->> OMAP3 Beagle board + LPDDR/NAND
->> DRAM:  256 MB
->> NAND:  256 MiB
->> In:    serial
->> Out:   serial
->> Err:   serial
->> Board revision C
->> Die ID #317000030000000004013f8a1701a01b
->> Hit any key to stop autoboot:  0
->> mmc1 is available
->> reading uImage
->>
->> 1867604 bytes read
->> ## Booting kernel from Legacy Image at 80300000 ...
->>    Image Name:   Angstrom/2.6.31/beagleboard
->>    Image Type:   ARM Linux Kernel Image (uncompressed)
->>    Data Size:    1867540 Bytes =3D  1.8 MB
->>    Load Address: 80008000
->>    Entry Point:  80008000
->>    Verifying Checksum ... OK
->>    Loading Kernel Image ... OK
->> OK
->>
->> Starting kernel ...
->>
->> Uncompressing=20
->> Linux.................................................................=
-=2E.......................
->> ............................. done, booting the kernel.
->> Linux version 2.6.31-omap1 (Bob@domain.hid) (gcc version 4.3.3 (GCC)=
-=20
->> ) #2 Sun Jul 18 22:38:24 PDT 2010
->> CPU: ARMv7 Processor [411fc083] revision 3 (ARMv7), cr=3D10c53c7f
->> CPU: VIPT nonaliasing data cache, VIPT nonaliasing instruction cache
->> Machine: OMAP3 Beagle Board
->> Memory policy: ECC disabled, Data cache writeback
->> OMAP3430 ES3.0
->> SRAM: Mapped pa 0x40200000 to va 0xe3000000 size: 0x100000
->> Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 6=
-5024
->> Kernel command line: console=3DttyS2,115200n8 root=3D/dev/mmcblk0p2 rw=
-=20
->> rootfstype=3Dext3 rootwait
->> PID hash table entries: 1024 (order: 10, 4096 bytes)
->> Dentry cache hash table entries: 32768 (order: 5, 131072 bytes)
->> Inode-cache hash table entries: 16384 (order: 4, 65536 bytes)
->> Memory: 128MB 128MB =3D 256MB total
->> Memory: 255872KB available (3232K code, 290K data, 132K init, 0K highm=
-em)
->> NR_IRQS:402
->> Clocking rate (Crystal/Core/MPU): 26.0/332/500 MHz
->> Reprogramming SDRC clock to 332000000 Hz
->> GPMC revision 5.0
->> IRQ: Found an INTC at 0xd8200000 (revision 4.0) with 96 interrupts
->> Total of 96 interrupts on 1 active controller
->> OMAP34xx GPIO hardware version 2.5
->> OMAP clockevent source: GPTIMER1 at 13000000 Hz
->> Console: colour dummy device 80x30
->> Calibrating delay loop... 498.07 BogoMIPS (lpj=3D2490368)
->> Mount-cache hash table entries: 512
->> CPU: Testing write buffer coherency: ok
->> regulator: core version 0.5
->> NET: Registered protocol family 16
->> Found NAND on CS0
->> Registering NAND on CS0
->> OMAP DMA hardware revision 4.0
->> bio: create slab <bio-0> at 0
->> i2c_omap i2c_omap.1: bus 1 rev3.12 at 2600 kHz
->> twl4030: PIH (irq 7) chaining IRQs 368..375
->> twl4030: power (irq 373) chaining IRQs 376..383
->> twl4030: gpio (irq 368) chaining IRQs 384..401
->> regulator: VMMC1: 1850 <--> 3150 mV normal standby
->> regulator: VDAC: 1800 mV normal standby
->> regulator: VUSB1V5: 1500 mV normal standby
->> regulator: VUSB1V8: 1800 mV normal standby
->> regulator: VUSB3V1: 3100 mV normal standby
->> regulator: VPLL2: 1800 mV normal standby
->> regulator: VSIM: 1800 <--> 3000 mV normal standby
->> i2c_omap i2c_omap.3: bus 3 rev3.12 at 100 kHz
->> SCSI subsystem initialized
->> twl4030_usb twl4030_usb: Initialized TWL4030 USB module
->> usbcore: registered new interface driver usbfs
->> usbcore: registered new interface driver hub
->> usbcore: registered new device driver usb
->> musb_hdrc: version 6.0, musb-dma, otg (peripheral+host), debug=3D0
->> musb_hdrc: USB OTG mode controller at d80ab000 using DMA, IRQ 92
->> NET: Registered protocol family 2
->> IP route cache hash table entries: 2048 (order: 1, 8192 bytes)
->> TCP established hash table entries: 8192 (order: 4, 65536 bytes)
->> TCP bind hash table entries: 8192 (order: 3, 32768 bytes)
->> TCP: Hash tables configured (established 8192 bind 8192)
->> TCP reno registered
->> NET: Registered protocol family 1
->> VFS: Disk quotas dquot_6.5.2
->> Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
->> JFFS2 version 2.2. (NAND) =C3=AF=C2=BF=C2=BD=C3=82=C2=A9 2001-2006 Red=
- Hat, Inc.
->> msgmni has been set to 500
->> alg: No test for stdrng (krng)
->> Block layer SCSI generic (bsg) driver version 0.4 loaded (major 254)
->> io scheduler noop registered
->> io scheduler anticipatory registered (default)
->> io scheduler deadline registered
->> io scheduler cfq registered
->> Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
->> serial8250.0: ttyS0 at MMIO 0x4806a000 (irq =3D 72) is a ST16654
->> serial8250.1: ttyS1 at MMIO 0x4806c000 (irq =3D 73) is a ST16654
->> serial8250.2: ttyS2 at MMIO 0x49020000 (irq =3D 74) is a ST16654
->> console [ttyS2] enabled
->> brd: module loaded
->> loop: module loaded
->> i2c /dev entries driver
->> usbcore: registered new interface driver asix
->> usbcore: registered new interface driver cdc_ether
->> usbcore: registered new interface driver net1080
->> usbcore: registered new interface driver cdc_subset
->> usbcore: registered new interface driver zaurus
->> usbmon: debugfs is not available
->> ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
->> ehci-omap ehci-omap.0: OMAP-EHCI Host Controller
->> ehci-omap ehci-omap.0: new USB bus registered, assigned bus number 1
->> ehci-omap ehci-omap.0: irq 77, io mem 0x48064800
->> ehci-omap ehci-omap.0: USB 2.0 started, EHCI 1.00
->> usb usb1: New USB device found, idVendor=3D1d6b, idProduct=3D0002
->> usb usb1: New USB device strings: Mfr=3D3, Product=3D2, SerialNumber=3D=
-1
->> usb usb1: Product: OMAP-EHCI Host Controller
->> usb usb1: Manufacturer: Linux 2.6.31-omap1 ehci_hcd
->> usb usb1: SerialNumber: ehci-omap.0
->> usb usb1: configuration #1 chosen from 1 choice
->> hub 1-0:1.0: USB hub found
->> hub 1-0:1.0: 3 ports detected
->> g_ether gadget: using random self ethernet address
->> g_ether gadget: using random host ethernet address
->> usb0: MAC 8a:fe:ec:d2:7c:3d
->> usb0: HOST MAC 9a:ca:2d:10:da:55
->> g_ether gadget: Ethernet Gadget, version: Memorial Day 2008
->> g_ether gadget: g_ether ready
->> musb_hdrc musb_hdrc: MUSB HDRC host driver
->> musb_hdrc musb_hdrc: new USB bus registered, assigned bus number 2
->> usb usb2: New USB device found, idVendor=3D1d6b, idProduct=3D0002
->> usb usb2: New USB device strings: Mfr=3D3, Product=3D2, SerialNumber=3D=
-1
->> usb usb2: Product: MUSB HDRC host driver
->> usb usb2: Manufacturer: Linux 2.6.31-omap1 musb-hcd
->> usb usb2: SerialNumber: musb_hdrc
->> usb usb2: configuration #1 chosen from 1 choice
->> hub 2-0:1.0: USB hub found
->> hub 2-0:1.0: 1 port detected
->> mmci-omap-hs mmci-omap-hs.0: Failed to get debounce clock
->> TCP cubic registered
->> NET: Registered protocol family 17
->> NET: Registered protocol family 15
->> RPC: Registered udp transport module.
->> RPC: Registered tcp transport module.
->> Power Management for TI OMAP3.
->> VFP support v0.3: implementor 41 architecture 3 part 30 variant c rev =
-1
->> regulator_init_complete: incomplete constraints, leaving VDVI on
->> regulator_init_complete: incomplete constraints, leaving VDAC on
->> Waiting for root device /dev/mmcblk0p2...
->> mmc0: new high speed SDHC card at address 1234
->> mmcblk0: mmc0:1234 SA04G 3.68 GiB
->>  mmcblk0: p1 p2
->> kjournald starting.  Commit interval 5 seconds
->> EXT3 FS on mmcblk0p2, internal journal
->> EXT3-fs: mounted filesystem with writeback data mode.
->> VFS: Mounted root (ext3 filesystem) on device 179:2.
->> Freeing init memory: 132K
->> INIT: version 2.86 booting
->> Please wait: booting...
->> Starting udev
->> Remounting root file system...
->> Caching udev devnodes
->> Populating dev cache
->> root: mount: mounting rootfs on / failed: No such file or directory
->> Configuring network interfaces... ifconfig: SIOCGIFFLAGS: No such devi=
-ce
->> done.
->> Setting up IP spoofing protection: rp_filter.
->> hwclock: can't open '/dev/misc/rtc': No such file or directory
->> Tue May 18 20:58:00 UTC 2010
->> hwclock: can't open '/dev/misc/rtc': No such file or directory
->> Configuring update-modules.
->> Starting to configure packages...
->> Nothing to be done
->> Finished to configure packages.
->> INIT: Entering runlevel: 5
->> Creating Dropbear SSH server RSA host key.
->> Will output 1024 bit rsa secret key to=20
->> '/etc/dropbear/dropbear_rsa_host_key'
->> Generating key, this may take a while...
->> Public key portion is:
->> ssh-rsa=20
->> AAAAB3NzaC1yc2EAAAADAQABAAAAgwDJb1gWi2/u83v7e+S9Ij31aK/QMD72J47fdtDm4j=
-n37GTq6JpL7UxsmcTGRB30bmKFzMhP
->> w0uCsbTAeU29KOG6BdlSYK1oI5bDl7jdYHeBvhoejrDCvdp3R9//3rVs0y+c7WYgDRid5a=
-OxSSUAg2j+Ec6PuGniLBNYWOG7mJmru79P=20
->> roo
->> t@domain.hid
->> Fingerprint: md5 c6:e9:c0:07:33:e3:5c:61:35:a5:e0:24:e0:41:03:86
->> Starting Dropbear SSH server: dropbear.
->> Starting syslogd/klogd: done
->>
->> .-------.
->> |       |                  .-.
->> |   |   |-----.-----.-----.| |   .----..-----.-----.
->> |       |     | __  |  ---'| '--.|  .-'|     |     |
->> |   |   |  |  |     |---  ||  --'|  |  |  '  | | | |
->> '---'---'--'--'--.  |-----''----''--'  '-----'-'-'-'
->>                 -'  |
->>                 '---'
->>
->> The Angstrom Distribution beagleboard ttyS2
->>
->> Angstrom 2010.4-test-20100518 beagleboard ttyS2
->>
->> beagleboard login: root
->> root@domain.hid:~# cat /proc/interrupts
->>            CPU0
->>   7:          2        INTC  TWL4030-PIH
->>  11:          0        INTC  prcm
->>  12:       1078        INTC  DMA
->>  37:       1009        INTC  gp timer
->>  56:        273        INTC  i2c_omap
->>  61:          0        INTC  i2c_omap
->>  72:          1        INTC  serial idle
->>  73:          1        INTC  serial idle
->>  74:        158        INTC  serial idle, serial
->>  77:          0        INTC  ehci_hcd:usb1
->>  83:       1346        INTC  mmc0
->>  92:          1        INTC  musb_hdrc
->>  93:          0        INTC  musb_hdrc
->> 378:          2     twl4030  twl4030_usb
->> 384:          0     twl4030  mmc0
->> Err:          0
->> root@domain.hid
+Hello Gilles,
 
-Ok. Several questions: what is this MADC patch you were talking about?
-If this is a kernel patch, if yes, could you try and remove it?
+    I just tested the latest I-pipe with Xenomai versions 2.5.3. So =20
+the average latency 7000 us has slightly been improved. It is now =20
+about 4000 us, that's too much for servo motor controlling. The =20
+S3C2410 PWM divider is 1/2 (this is the minimum) and the prescalar is =20
+set to 0 (no shift)...
 
-You have an error message about mmc:
-mmci-omap-hs mmci-omap-hs.0: Failed to get debounce clock
+Bye !
 
-which I do not have. Could this not explain some issues?
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> a =E9crit=A0:
 
-You are using the 2.6.31 kernel which does not work for you, whereas
-2.6.33 works for me. Could you test 2.6.33?
+> Michel He wrote:
+>> ok, thanks for help as far as concerned the S3C2440 issues on that board.
+>>
+>> So what has been previously found out is: no external clock connected
+>> on pin clk1 of timer 3, instead timer 2 and 3 are used to drive the
+>> sound module. Since I get changed the timer 3 to timer 1, it can boot
+>> to shell. However, the xenomai test give a 7000 us of average latency,
+>> it is even worst than pure Linux system. Also, the USB, nor the camera
+>> won't work at all (the system get freezed when plug them in). The UART
+>> and LCD are OK. The sound is buggy due to lags, it seems the buffer
+>> not continuously filled up by linux. So far the others modules are not
+>> tested.
+>>
+>> Something should get wrong, but no idea how to figure it out.
+>
+> The timer issue you had should have been fixed in the latest I-pipe
+> versions. Could you try Xenomai 2.5.3 and one of the I-pipe patch it
+> contains and see if it has the same latencies issues?
+>
+> --
+> =09=09=09=09=09    Gilles.
+>
 
---=20
-					    Gilles.
 
 
