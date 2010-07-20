@@ -1,14 +1,13 @@
-Message-ID: <4C45CF88.20608@domain.hid>
-Date: Tue, 20 Jul 2010 18:32:08 +0200
-From: Theo Veenker <T.J.G.Veenker@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <4C45539B.70204@domain.hid> <4C45770F.10302@domain.hid>
-	<4C458607.1060402@domain.hid> <4C45869D.9020501@domain.hid>
-In-Reply-To: <4C45869D.9020501@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
- boot on ubuntu lucid system
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 20 Jul 2010 13:15:05 -0500
+Message-ID: <DF4FA7675C9F484AB1B63EAFDEE61762B6FDF8@domain.hid>
+From: "Roberts, Patrick M AMRDEC/Aeigs" <Patrick.M.Roberts@domain.hid>
+Subject: [Xenomai-help] High Latency on Dell Laptop, kernel=2.6.3.16,
+	Xen= 2.5.3, Ubuntu (UNCLASSIFIED)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,45 +17,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: pat1micom@domain.hid, proberts@domain.hid
 
-Gilles Chanteperdrix wrote:
-> Theo Veenker wrote:
->> Stefan Kisdaroczi wrote:
->>> On 20.07.2010 09:43, Theo Veenker wrote:
->>>> Hi,
->>>>
->>>> I want to upgrade all our PC's from Ubuntu hardy to lucid and in the process
->>>> I'm also going from kernel 2.6.29.5 with Xenomai 2.4.8 to kernel 2.6.32.11
->>>> with Xenomai 2.5.3.
->>>>
->>>> I first built and tested the 2.6.32.11 kernel with 2.5.3 on my hardy system
->>>> and all went fine. But the problem is it just doesn't run on the lucid distro.
->>>> However the vanilla kernel runs fine. I also tried with a config based on the
->>>> ubuntu lucid config, with relevant modules compiled in (I don't use initrd).
->>>>   
->>> Are you sure it's not initrd related ?
->>>
->>> After installing the kernel with dpkg --install i had to run
->>> '# update-initramfs -c -k all' and '# update-grub' manually.
->>> This is not necessary on debian lenny/squeeze and worked
->>> (if I remember correctly) with ubuntu karmic too.
->>> Check in your grub config if there is a initrd entry.
->> Unfortunately this doesn't make a difference. Created initrd for regular and
->> kernel with xenomai; grub config OK. But still the regular kernel works and
->> the other one gives me just a black screen.
-> 
-> Have you tried removing "quiet" from the kernel command line?
+Classification: UNCLASSIFIED
+Caveats: NONE
 
-Yes I always do. It somehow hangs before outputting anything. In the meantime
-I have recompiled again with BLK_DEV_INITRD set and running update-initramfs etc
-as Stefan suggested. No effect. When I install this kernel on an Ubuntu hardy
-system it works as expected; on Ubuntu lucid it does not. Could it be due to
-this plymouth crap?
+Hi Guys,  This is my first time using Xenomai and hoping that you can
+help.  I have installed Xenomai on two different machines a netbook with
+a N450 processor (latency results ~2 us) and a Dell Precision M6500
+(consistent latency results ~700 us).  I have tried several iterations
+and combinations of a) SMI work around on/off b) BIOS legacy suport
+on/off c) power management and cpu scaling on/off, etc.   My Setup is:
 
-Theo
+1) Dell Precision M6500 with Dual Core I7 processor.
+2) Base Lunix, Ubuntu Lucid Lynx 10.04
+3) kernel 2.6.32.16 from kernel.org
+4) xenomai 2.5.3
+5) adeos patch =3D adeos-ipipe-2.6.32.11-x86-2.6-03.patch
+6)  make menuconfig
+    a) Processor type->HPET Timer   turn it off
+    b) drivers->Plug and Play -> Plug and Play BIOS   turn it off
+    c) Device->input->misc->PC speaker  turn it off
+    d) Power Management->Power Management Support  (Turn off all
+    e) Power management Support->CPU Frequency scaling  turn off
+    f) Processortype->processor family Core 2/ newer Xeon
+    g) Processortype-> -fstack-protector buffer overflow (EXPERIMENT)
+turn off
+    h) realtime->machine->smiworkaround->enable SMI workaround  turn on
+(global disable on/off)
+    i) devicedriver->Serial ATA (prod)->AHCI SATA Support  (ON not
+module)
 
+7) Other options experimented with
+    device-driver->USB support->OHCI HCD  <m>
+    device-driver->usb support->UHCI HCD  <m>
+    device-driver->usb support->ehci hcd  <m>
+    device-driver->usb support->USB MASS  <m>
+    processor types -> High Memory support, change from 4 to <off>
+    processor types -> PAE (Phys...) to <off>
+    processor types -> Premption Model  <Preemptible Kernel (Low
+Desktop)
+    processor types -> Symmetric multi-processing support already <*>
+    Real-time sub-system --> Xenomai->drivers->Testing driver->Contect
+switch-> (enabled)
+
+I never did see any mention of SMI work around in my kernel logs.  I did
+see a mention of SMI interrupts are used for thermal cpu throttling.
+
+Any suggestions are appreciated.
+Thanks,
+Patrick M. Roberts
+Classification: UNCLASSIFIED
+Caveats: NONE
 
 
 
