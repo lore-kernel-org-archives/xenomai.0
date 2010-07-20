@@ -1,14 +1,15 @@
-Content-class: urn:content-classes:message
+Message-ID: <4C454DA2.4080302@domain.hid>
+Date: Tue, 20 Jul 2010 09:17:54 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 13 Jul 2010 17:49:16 -0500
-Message-ID: <181804936ABC2349BE503168465576460F48EB4B@exchserver.basler.com>
-In-Reply-To: <4C3CE5C3.30403@domain.hid>
-References: <181804936ABC2349BE503168465576460F48EB21@domain.hid> 
-	<4C3CE5C3.30403@domain.hid>
-From: "Steve Deiters" <SteveDeiters@domain.hid>
-Subject: Re: [Xenomai-help] Timed waits with POSIX skin using CLOCK_REALTIME
+References: <4C43C83F.5030401@domain.hid> <4C43D265.9080609@domain.hid>
+	<4C43FC4F.3010006@domain.hid> <4C440D6F.1060204@domain.hid>
+	<4C454D18.1030207@domain.hid>
+In-Reply-To: <4C454D18.1030207@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Adeos patched kernel hangs mounting root file
+ system
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,71 +19,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Bob Feretich <bob.feretich@domain.hid>
 Cc: xenomai@xenomai.org
 
-> -----Original Message-----
-> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
-> Sent: Tuesday, July 13, 2010 5:17 PM
-> To: Steve Deiters
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] Timed waits with POSIX skin using=20
-> CLOCK_REALTIME
->=20
-> Steve Deiters wrote:
-> > This is probably more of a general POSIX programming=20
-> question.  Some=20
-> > of the timed wait routines in POSIX (pthread_mutex_timedlock, etc)=20
-> > take an absolute timeout value in terms of CLOCK_REALTIME. =20
-> How then=20
-> > are these routines not subject to timing error when the=20
-> CLOCK_REALTIME=20
-> > is changed, e.g. with clock_settime?
->=20
-> I am not sure I understand the question. We tried and=20
-> implement what is described for instance here:
->=20
-> http://www.opengroup.org/onlinepubs/009695399/functions/clock_
-> settime.html
->=20
-> --=20
-> 					    Gilles.
->=20
+Bob Feretich wrote:
+>   On the BeagleBoard...
+> 
+>     * The SD card/MMC is attached to the OMAP3530 chip MMC1 hardware
+>       Port. (The chip has 3 SD/MMC ports, numbered 1, 2, and 3.) The
+>       BeagleBoard connects the MMC2 port to an expansion connector and
+>       its not used in my application. The BeagleBoard does not use MMC3
+>       (not connected to anything).
+>     * The MMC1 hardware port is the first mmc port and is referred to in
+>       the kernel mmc0.
+>     * The OMAP controller for this port interrupts on IRQ 83.
+>     * The OMAP controller also uses SDMA channels 60 and 61 which
+>       results in other IRQs from the DMA controller.
+>     * The Card Detect signal from the SD card/MMC interface is wired to
+>       a TPS65950 chip
+>     * This TPS65950 chip presents the Card Detect interrupt to the
+>       OMAP3530 via sys_nirq[0]. This signal is mapped to IRQ 7. The
+>       TPS65950 can funnel up to 18 interrupts into sys_nirq[0].
+>     * The Level 2 interrupt handler maps the Card Detect interrupt to
+>       IRQ 384.  IRQ 384 is the first IRQ of the TWL4030 GPIO IRQ space.
+>       Apparently the the TWL4030 interrupt mapping is used for the TPS65950.
+>     * My SD card has two partitions. The first is a FAT partition
+>       containing the u-boot and kernel boot image. The second is a ext3
+>       partition containing the root file system.
+> 
+> It's possible that the kernel is expecting a Card Detect interrupt to 
+> proceed with the mounting of the root file system. I noticed that the 
+> /proc/interrupts listing that I mailed you showed 2 interrupts each on 
+> IRQ 384 and on IRQ 7.
+> Does Xenomai support TWL4030 style Level 2 interrupts?
+> Could pending interrupts have gotten lost when when Adeos initializes?
 
-It is not a question of the implementation, but more so of the
-specification.
+Could you test 2.6.33 ?
 
-For example, if I do something similar to the following:
-
-clock_gettime(CLOCK_REALTIME, &tv);     /* Point A */
-tv.tv_sec +=3D 5;
-pthread_mutex_timedlock(&mutex, &tv);   /* Point B */
-
-And somewhere else in the sytem after point A but before point B returns
-the time is changed:
-
-clock_settime(CLOCK_REALTIME, &new_time);
-
-If the new_time differs from the original time by a significant amount
-then point B will either return ETIMEDOUT if the time was set forward,
-or block for a potentially long period if the time was set backward.
-
-This behavior seems to be indicated in the following paragraph from the
-specification:
-
-"If the value of the CLOCK_REALTIME clock is set via clock_settime(),
-the new value of the clock shall be used to determine the time of
-expiration for absolute time services based upon the CLOCK_REALTIME
-clock. This applies to the time at which armed absolute timers expire.
-If the absolute time requested at the invocation of such a time service
-is before the new value of the clock, the time service shall expire
-immediately as if the clock had reached the requested time normally."
-
-
-I'm not actually having any problems with this, as I am not using these
-routines.  I just thought it was a curious contrast compared to e.g.
-rt_mutex_acquire which specifies a relative timeout.  I don't understand
-how the POSIX timed services expect to have consistent timing using
-absolute timeout values if they are not based at least on
-CLOCK_MONOTONIC which cannot be set.
+-- 
+					    Gilles.
 
