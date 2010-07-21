@@ -1,6 +1,6 @@
-Message-ID: <4C468485.5060408@domain.hid>
-Date: Wed, 21 Jul 2010 07:24:21 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4C469173.1020703@domain.hid>
+Date: Tue, 20 Jul 2010 23:19:31 -0700
+From: Bob Feretich <bob.feretich@domain.hid>
 MIME-Version: 1.0
 References: <4C43C83F.5030401@domain.hid>
 	<4C43D265.9080609@domain.hid>	<4C43FC4F.3010006@domain.hid>
@@ -8,10 +8,10 @@ References: <4C43C83F.5030401@domain.hid>
 	<4C454C0C.6000100@domain.hid>	<4C4550C8.3070504@domain.hid>
 	<4C45541C.5090507@domain.hid> <4C45CEE6.5000903@domain.hid>
 	<4C460506.3010103@domain.hid> <4C46141F.50103@domain.hid>
-	<4C468040.3030509@domain.hid>
-In-Reply-To: <4C468040.3030509@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<4C468040.3030509@domain.hid> <4C468485.5060408@domain.hid>
+In-Reply-To: <4C468485.5060408@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="------------060105070606060403050009"
 Subject: Re: [Xenomai-help] Adeos patched kernel hangs mounting root file
  system
 List-Id: Help regarding installation and common use of Xenomai
@@ -23,118 +23,150 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bob Feretich <bob.feretich@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
-Bob Feretich wrote:
->   Xenomai booted with the 2.6.33 kernel on BeagleBoard!
-> I built the below 2.6.33 kernels...
-> 
->     * No Angstrom patches, no Adeos patch - - it booted, I noticed that
->       /proc/interrupts showed no interrupts occurred on IRQs 7 or 378
->       (SD card Detect). The 2.6.31 kernel showed 2 on each IRQ just
->       after boot.
->     * No Angstrom patches, Adeos patch, but Xenomai disabled - - it
->       booted. Still no interrupts on IRQs 7 or 378.
->     * No Angstrom patches, Adeos patch, and Xenomai enabled - - it
->       booted! :-)   Still no interrupts on IRQs 7 or 378.
-> 
-> Something obviously changed in the kernel between 2.6.31 and 2.6.33 to 
-> suppress the IRQ 378 interrupts that occurred at boot time. This change 
-> *may* be the reason that Xenomai works on the Beagleboard at 2.6.33, but 
-> not at 2.6.31.
-> 
-> I suspect that the Adeos patch may have trouble handling Level 2 
-> interrupts coming through a twl4030 device. I know that it is an OMAP 
-> design practice to route the SD/MMC Card Detect interrupt through this 
-> device. The device also controls several voltage regulators supplying 
-> power to the board and OMAP chip. Overvoltage/undervoltage/thermal 
-> alerts may also be originated by this device.
+This is a multi-part message in MIME format.
+--------------060105070606060403050009
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-That is not really possible. The Adeos pipeline does not really "see"
-the twl4030 level 2 interrupts, as I said, these are dispatched manually
-by a thread, and not handled by the usual chained interrupts mechanism.
+  Comments inline...
 
-However, I had trouble with this code on 2.6.33 generating spurious i2c
+On 7/20/2010 10:24 PM, Gilles Chanteperdrix wrote:
+> ... snipped ...
+> However, I had trouble with this code on 2.6.33 generating spurious i2c
+> interrupts, which lead me to the following patch:
+> http://git.xenomai.org/?p=ipipe-gch.git;a=commitdiff;h=cdc72520c88b329fa785b0e1f45392cdfff10ec6;hp=e52fee515be7c5b914c201c19604cd700afbc44f
+>
+> which I backported to 2.6.31 without testing it. Could you try and
+> revert it?
+Sure. I'll start tomorrow.
+>> The easiest way to test the twl4030 interrupt handling may be to use the
+>> SD Card for a removable file system (not root). If the file system
+>> automounts when the SD Card is plugged in, that would indicate that the
+>> twl4030 interrupts are being handled correctly. From the available
+>> documentation, the micro-SD card slot on the IGEPv2 should be able to be
+>> used for this testing.
+> I tested reads and writes on the sd card on IGEPv2, it works, generating
+> interrupts.
+>
+Reading and writing is all done via IRQ 83 (for MMC1) and IRQ 86 (for 
+MMC2).  It would not exercise IRQ 384.
+
+The /proc/interrupts that you posted showed...
+  83:         66        INTC  mmc0
+  86:         12        INTC  mmc1
+  92:          1        INTC  musb_hdrc
+336:        809        GPIO  eth0
+378:          0     twl4030  twl4030_usb
+384:          0     twl4030  mmc0
+
+IRQ 378 is a USB power system interrupt of some sort. The twl4030 family 
+power interrupts for OMAP3 are in the range of IRQ 376 
+(TWL4030_PWR_IRQ_BASE) to IRQ 383 (TWL4030_PWR_IRQ_END).
+
+IRQ 384 is the first GPIO pin on the twl4030. On the BeagleBoard, it's 
+connected to the SD Card Detect circuit. I believe that is also true for 
+the IGEPv2. The Level 2 GPIO interrupts (from the twl4030 family chip, 
+not OMAP chip GPIO pins) are in the range of IRQ 384 
+(TWL4030_GPIO_IRQ_BASE) to IRQ 383 (TWL4030_GPIO_IRQ_END).
+
+Note that the above ranges apply to all boards that use an OMAP3 chip. 
+Of course future changes to the kernel's interrupt handlers can reassign 
+any IRQ above 95. (OMAP3 chip hardware IRQs stop at 95. The rest are 
+software assigned.)
+>> My current dilemma is to figure out how to move the pieces of Angstrom
+>> that I want from the 2.6.32 kernel system to the 2.6.33 kernel ahead of
+>> the Angstrom train. :-(
+> We probably can get 2.6.31 to work, we just have to figure out what is
+> wrong.
+Thanks for your willingness to help.
+
+Regards,
+Bob Feretich
+
+--------------060105070606060403050009
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  </head>
+  <body bgcolor="#ffffff" text="#000000">
+    Comments inline...<br>
+    <br>
+    On 7/20/2010 10:24 PM, Gilles Chanteperdrix wrote:
+    <blockquote cite="mid:4C468485.5060408@domain.hid" type="cite">...
+      snipped ...<br>
+      <pre wrap="">However, I had trouble with this code on 2.6.33 generating spurious i2c
 interrupts, which lead me to the following patch:
-http://git.xenomai.org/?p=ipipe-gch.git;a=commitdiff;h=cdc72520c88b329fa785b0e1f45392cdfff10ec6;hp=e52fee515be7c5b914c201c19604cd700afbc44f
+<a class="moz-txt-link-freetext" href="http://git.xenomai.org/?p=ipipe-gch.git;a=commitdiff;h=cdc72520c88b329fa785b0e1f45392cdfff10ec6;hp=e52fee515be7c5b914c201c19604cd700afbc44f">http://git.xenomai.org/?p=ipipe-gch.git;a=commitdiff;h=cdc72520c88b329fa785b0e1f45392cdfff10ec6;hp=e52fee515be7c5b914c201c19604cd700afbc44f</a>
 
 which I backported to 2.6.31 without testing it. Could you try and
 revert it?
-
-> 
-> The easiest way to test the twl4030 interrupt handling may be to use the 
-> SD Card for a removable file system (not root). If the file system 
-> automounts when the SD Card is plugged in, that would indicate that the 
-> twl4030 interrupts are being handled correctly. From the available 
-> documentation, the micro-SD card slot on the IGEPv2 should be able to be 
-> used for this testing.
-
+</pre>
+    </blockquote>
+    Sure. I'll start tomorrow.<br>
+    <blockquote cite="mid:4C468485.5060408@domain.hid" type="cite">
+      <blockquote type="cite">
+        <pre wrap="">The easiest way to test the twl4030 interrupt handling may be to use the 
+SD Card for a removable file system (not root). If the file system 
+automounts when the SD Card is plugged in, that would indicate that the 
+twl4030 interrupts are being handled correctly. From the available 
+documentation, the micro-SD card slot on the IGEPv2 should be able to be 
+used for this testing.
+</pre>
+      </blockquote>
+      <pre wrap="">
 I tested reads and writes on the sd card on IGEPv2, it works, generating
 interrupts.
 
-> 
-> My current dilemma is to figure out how to move the pieces of Angstrom 
-> that I want from the 2.6.32 kernel system to the 2.6.33 kernel ahead of 
-> the Angstrom train. :-(
-
-We probably can get 2.6.31 to work, we just have to figure out what is
+</pre>
+    </blockquote>
+    Reading and writing is all done via IRQ 83 (for MMC1) and IRQ 86
+    (for MMC2).  It would not exercise IRQ 384.<br>
+    <br>
+    The /proc/interrupts that you posted showed...<br>
+    <tt> 83:         66        INTC  mmc0<br>
+       86:         12        INTC  mmc1<br>
+       92:          1        INTC  musb_hdrc<br>
+      336:        809        GPIO  eth0<br>
+      378:          0     twl4030  twl4030_usb<br>
+      384:          0     twl4030  mmc0</tt><br>
+    <br>
+    IRQ 378 is a USB power system interrupt of some sort. The twl4030
+    family power interrupts for OMAP3 are in the range of IRQ 376 <small>(TWL4030_PWR_IRQ_BASE)</small>
+    to IRQ 383<small> (TWL4030_PWR_IRQ_END)</small>.<br>
+    <br>
+    IRQ 384 is the first GPIO pin on the twl4030. On the BeagleBoard,
+    it's connected to the SD Card Detect circuit. I believe that is also
+    true for the IGEPv2. The Level 2 GPIO interrupts (from the twl4030
+    family chip, not OMAP chip GPIO pins) are in the range of IRQ 384 <small>(TWL4030_GPIO_IRQ_BASE)</small>
+    to IRQ 383<small> (TWL4030_GPIO_IRQ_END)</small>.<br>
+    <br>
+    Note that the above ranges apply to all boards that use an OMAP3
+    chip. Of course future changes to the kernel's interrupt handlers
+    can reassign any IRQ above 95. (OMAP3 chip hardware IRQs stop at 95.
+    The rest are software assigned.)<br>
+    <blockquote cite="mid:4C468485.5060408@domain.hid" type="cite">
+      <blockquote type="cite">
+        <pre wrap="">My current dilemma is to figure out how to move the pieces of Angstrom 
+that I want from the 2.6.32 kernel system to the 2.6.33 kernel ahead of 
+the Angstrom train. :-(
+</pre>
+      </blockquote>
+      <pre wrap="">We probably can get 2.6.31 to work, we just have to figure out what is
 wrong.
+</pre>
+    </blockquote>
+    Thanks for your willingness to help.<br>
+    <br>
+    Regards,<br>
+    Bob Feretich<br>
+  </body>
+</html>
 
-> 
-> Many thanks for you help Gilles.
-> 
-> Now that I can see Xenomai running, is there any documentation that 
-> describes useful things I can poke to obtain Xenomai state, status and 
-> statistics? (for example the meanings of the data in the /proc/Xemomai 
-> directory)
-
-We have this for /proc/xenomai/sched:
-http://www.xenomai.org/index.php/Proc/xenomai/sched
-
-You also have /proc/xenomai/stat, but I do not think we have a detailed
-page for it.
-
-> 
-> Regards,
-> Bob Feretich
-> 
-> On 7/20/2010 2:24 PM, Gilles Chanteperdrix wrote:
->> Bob Feretich wrote:
->>>    I have downloaded the 2.6.33 omap kernel and I 'm starting to work
->>> with it. I'll write again when I have a clean boot of the vanilla kernel
->>> and tried to boot again with the Adeos patch.
->>>
->>> I think that I figured out how to tell OpenEmbedded to build it.
->>>
->>> When you display /proc/interrupts on the IGEPv2, do you see interrupts
->>> occuring at IRQs greater or equal to IRQ 384?
->>> Do you see the same number reflected in IRQ 7?
->> I see this:
->>             CPU0
->>    7:     104068        INTC  TWL4030-PIH
->>   12:          4        INTC  DMA
->>   37:       1408        INTC  gp timer
->>   56:     313486        INTC  i2c_omap
->>   61:          0        INTC  i2c_omap
->>   74:         42        INTC  serial
->>   77:         93        INTC  ehci_hcd:usb2
->>   83:         66        INTC  mmc0
->>   86:         12        INTC  mmc1
->>   92:          1        INTC  musb_hdrc
->> 336:        809        GPIO  eth0
->> 378:          0     twl4030  twl4030_usb
->> 384:          0     twl4030  mmc0
->>
->> I believe the interrupts tagged "twl4030" are chained interrupts. Having
->> looked at the code, these interrupts are not chained the usual way
->> because they require i2c communication, which in turn requires a context
->> allowed to sleep, so they are dispatched by a kernel thread.
->>
->>
-> 
-
-
--- 
-					    Gilles.
+--------------060105070606060403050009--
 
