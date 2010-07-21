@@ -1,14 +1,9 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1279623645.2187.35.camel@domain.hid>
-References: <1278943817.7023.18.camel@domain.hid>  <4C3EF6D6.6040907@domain.hid>
-	<1279210298.1995.38.camel@domain.hid>
-	<1279623645.2187.35.camel@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 21 Jul 2010 11:50:41 +0200
-Message-ID: <1279705841.1995.132.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Marvell sheeva support
+MIME-Version: 1.0
+Date: Wed, 21 Jul 2010 11:54:03 +0100
+Message-ID: <AANLkTilWSsSuCKRxQg0NIkeeR28eqpdJfaVm_CiemnqF@mail.gmail.com>
+From: Stephen Bryant <sbxenomai@domain.hid>
+Content-Type: multipart/alternative; boundary=00163692009dc1c25e048be39e7b
+Subject: [Xenomai-help] Unexpected preemption of highest priority thread
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,116 +13,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Tim Cussins <timcussins@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Tue, 2010-07-20 at 12:00 +0100, Tim Cussins wrote:
-> Hi guys,
-> 
-> I hope you don't mind if I reply to you together.
-> 
-> On Thu, 2010-07-15 at 18:11 +0200, Philippe Gerum wrote:
-> > On Thu, 2010-07-15 at 13:53 +0200, Gilles Chanteperdrix wrote:
-> > > Tim Cussins wrote:
-> > > > Hi all,
-> > > > 
-> > > > We're looking at migrating to one of Marvell's MV88F series SOC's, and
-> > > > are very keen to deploy Xenomai as part of our solution.
-> > > > 
-> > > > I noticed Sergey Didenko was looking at this a few months back and
-> > > > things looked to be ok - has his (or anyone else's) work made it into a
-> > > > stable release?
-> > > > 
-> > > > I will be able to assist in about a fortnight if that would be useful
-> > > > for squaring that work away.
-> > > > 
-> > > > Let me know if I can help!
-> > > 
-> > > We are interested. I seem to remember that Serguey had unexplained
-> > > latencies issues, so, if you start with his work, please bear this in
-> > > mind, there was probably something wrong with his port. A guide
-> > > explaining how to port the I-pipe patch on ARM exists:
-> > > http://www.xenomai.org/index.php/I-pipe:ArmPorting
-> 
-> > > The section about chained GPIOs irqs is outdated, if your platform has
-> > > some, I will explain how it should be implemented.
-> > > 
-> > > Please start from the I-pipe git (git://git.denx.de/ipipe-2.6.git),
-> > > merging it with the branch you will use if needed, so that you can
-> > > submit a patch only containing the modifications necessary for the
-> > > Sheeva platform.
-> 
-> Not a problem :)
-> 
-> > > We can also provide you with a root filesystem for validating this platform.
-> 
-> That would be brilliant. I imagine I'll be iterating though uImages on
-> an SD card loaded with your rootfs. Sound ok? Let me know how to obtain
-> the rootfs (or better, show me how you prefer to do it, so I learn
-> something! Ta.)
-> 
-> > 
-> > You can also use the patch below as a starting point for your port:
-> > http://download.gna.org/adeos/patches/tmp/adeos-ipipe-2.6.29-mv88f6290.patch
-> 
-> I've tried applying this to vanilla 2.6.29 and 2.6.29.6 - it doesn't
-> apply cleanly (well, fails :P). Am I approaching this the wrong way?
-> Also tried chucking the patch into the xenomai tree and getting
-> prepare_kernel.sh to try: still no joy.
+--00163692009dc1c25e048be39e7b
+Content-Type: text/plain; charset=ISO-8859-1
 
-The patch applies to a non-mainline tree including the board support for
-the mv88f6290; this support is missing from 2.6.29 mainline, hence the
-two rejects I see here.
+Hi,
 
-What is your target kernel and MV88 variant exactly?
+I have some code (simplified example below) which uses
+'pthread_wait_np(&Overrun)' within a while loop, using a period of
+1,000,000ns (1ms) which has been set using 'pthread_make_periodic_np()'.
+This wakes the thread up less than 2,000ns late in general, sometimes
+20,000ns late, and at most less than 45,000ns late. To ensure that I perform
+the tasks within the thread from a consistent 'millisecond tick' I set an
+expected time value 45,000ns later than the earliest wake time each period,
+and then use a busy loop until the current time equals this expected time.
+This busy loop takes < 600ns per cycle, and so the latency from my expected
+time should be a maximum of 600ns. The latencies I am actually seeing are as
+high as 13,000ns, and these occur during this busy loop (I have timed it),
+implying that this loop is being preempted.
 
-> 
-> > caveats:
-> > 
-> > - it is based on an old kernel release, and moving to 2.6.3x would
-> > require some work. If you need so, then you should merge the
-> > arm-dependent bits from the patch above with the generic I-pipe bits
-> > from a newer release as available here (e.g. 2.6.33):
-> > http://download.gna.org/adeos/patches/v2.6/arm/
-> 
-> Building and running the current patch (2.6.29) seems like a reasonable
-> starting point, but producing a 2.6.33 patch seems like the right thing
-> to do...
-> 
-> > - the fcse implementation in that patch won't work with the l2 outer
-> > cache enabled. The two options have been made mutually exclusive via
-> > Kconfig.
-> 
-> Out of interest: is this a fundamental limitation, or do you believe
-> that the L2 and FCSE might be happy together after a bit of work?
-> 
+while(1)
+{
+   pthread_wait_np(&Overrun);
 
-It should be possible to fix this, but that would require some surgery
-in the arch-dep mm code.
+   WakeTime = GetTime();
+   while(WakeTime < ExpectedTime)
+   { WakeTime = GetTime(); } // Preempted here
 
-> >  you should use Xenomai 2.5.3 or above to get this running.
-> > 
-> > As a reference point, the worst-case scheduling latency for user-space
-> > threads, observed on a mv88f6290 using that patch with fcse enabled (no
-> > l2), is below 70 us.
-> 
-> That's brilliant. Our requirements aren't for super-low latency, but
-> definitely realtime. We might go with L2 and no FCSE if the latency is
-> still ok. Just FYI :)
-> 
-> > HTH,
-> > 
-> 
-> Yep, thanks. I'll be able to do this work: I'm just trying to estimate
-> how long it'll take me to get up to speed and produce a patch for 2.6.33.
-> Any thoughts on the volume and nature of the work remaining would be helpful.
-> 
-> Cheers,
-> Tim
-> 
+   DoWork();
 
--- 
-Philippe.
+   ExpectedTime += Period;
+}
 
+This is a Xenomai POSIX thread with a priority of 99, and is the only thread
+within my program with a priority of 99 or higher. There are no context
+switches occuring within this thread (confirmed using pthread_set_mode_np(0,
+PTHREAD_WARNSW)).
 
+I have had a brief experimentation with kernel settings, for example
+applying the SMI workaround, but this produces no difference to the
+preemption that I measure. I have also re-read all the documentation I could
+find about Xenomai and preemption and I cannot see any way of fixing this
+without trial and error with the kernel settings.
+
+Do you have any other ideas for avenues that I could explore, or could you
+recommend documentation about parts of the kernel that are more likely to
+have an effect on preemption to speed up this process?
+
+I am running Ubuntu on:
+Kernel: 2.6.32.8
+Xenomai: 2.5.3
+
+Steve
+
+--00163692009dc1c25e048be39e7b
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi,<br><br>I have some code (simplified example below) which uses &#39;pthr=
+ead_wait_np(&amp;Overrun)&#39; within a while loop, using a period of 1,000=
+,000ns (1ms) which has been set using &#39;pthread_make_periodic_np()&#39;.=
+ This wakes the thread up less than 2,000ns late in general, sometimes 20,0=
+00ns late, and at most less than 45,000ns late. To ensure that I perform th=
+e tasks within the thread from a consistent &#39;millisecond tick&#39; I se=
+t an expected time value 45,000ns later than the earliest wake time each pe=
+riod, and then use a busy loop until the current time equals this expected =
+time. This busy loop takes &lt; 600ns per cycle, and so the latency from my=
+ expected time should be a maximum of 600ns. The latencies I am actually se=
+eing are as high as 13,000ns, and these occur during this busy loop (I have=
+ timed it), implying that this loop is being preempted.<br>
+<br>while(1)<br>{<br>=A0=A0 pthread_wait_np(&amp;Overrun);<br><br>=A0=A0 Wa=
+keTime =3D GetTime();<br>=A0=A0 while(WakeTime &lt; ExpectedTime)<br>=A0=A0=
+ { WakeTime =3D GetTime(); } // Preempted here<br><br>=A0=A0 DoWork();<br><=
+br>=A0=A0 ExpectedTime +=3D Period;<br>
+}<br><br>This is a Xenomai POSIX thread with a priority of 99, and is the o=
+nly thread within my program with a priority of 99 or higher. There are no =
+context switches occuring within this thread (confirmed using pthread_set_m=
+ode_np(0, PTHREAD_WARNSW)).<br>
+<br>I have had a brief experimentation with kernel settings, for example ap=
+plying the SMI workaround, but this produces no difference to the preemptio=
+n that I measure. I have also re-read all the documentation I could find ab=
+out Xenomai and preemption and I cannot see any way of fixing this without =
+trial and error with the kernel settings.<br>
+<br>Do you have any other ideas for avenues that I could explore, or could =
+you recommend documentation about parts of the kernel that are more likely =
+to have an effect on preemption to speed up this process?<br><br>I am runni=
+ng Ubuntu on:<br>
+Kernel: 2.6.32.8<br>Xenomai: 2.5.3<br><br>Steve<br>
+
+--00163692009dc1c25e048be39e7b--
 
