@@ -1,13 +1,14 @@
-Message-ID: <4C3CF142.6080702@domain.hid>
-Date: Wed, 14 Jul 2010 01:05:38 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <001b01cb1e9c$54ddbae0$fe9930a0$@com>	<4C35CC27.1000407@domain.hid>	<loom.20100713T211010-119@domain.hid>	<4C3CD1AF.8080204@domain.hid>
-	<loom.20100714T004823-633@domain.hid>
-In-Reply-To: <loom.20100714T004823-633@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1279623645.2187.35.camel@domain.hid>
+References: <1278943817.7023.18.camel@domain.hid>  <4C3EF6D6.6040907@domain.hid>
+	<1279210298.1995.38.camel@domain.hid>
+	<1279623645.2187.35.camel@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 21 Jul 2010 11:50:41 +0200
+Message-ID: <1279705841.1995.132.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] fatal: error xeno_nucleus not found
+Subject: Re: [Xenomai-help] Marvell sheeva support
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,50 +18,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jmf <xeno.nonono@domain.hid>
+To: Tim Cussins <timcussins@domain.hid>
 Cc: xenomai@xenomai.org
 
-jmf wrote:
-> Gilles Chanteperdrix <gilles.chanteperdrix <at> xenomai.org> writes:
+On Tue, 2010-07-20 at 12:00 +0100, Tim Cussins wrote:
+> Hi guys,
 > 
->> jmf wrote:
->>> Gilles Chanteperdrix <gilles.chanteperdrix <at> xenomai.org> writes:
->>>
->>>> Gilson Bellon wrote:
->>>>> Dear all,
->>> I've got exactly the same situation!
->>> Followed this for setup: http://www.xenomai.org/index.php/...
->>>
->>> In /usr/share/xenomai/testsuite/ there's:
->>> clocktest  cyclic  irqbench  klatency  latency  sigtest  switchtest  unit
->>>
->>>
->>> $ bash xeno-test (/usr/bin/xeno-test)
->>>
->>> part of the output:
->>>
->>> Is this just a question of invalid filepaths?
->> As I already said (it is the fourth time I tell it in this thread
->> actually), the "run" script seem not to work any longer. We are going to
->> fix them. But in the mean time, simply run the binaries directly.
->>
->> Now, if my explanation is not clear, simply tell me instead of repeating
->> the question over and over again.
->>
+> I hope you don't mind if I reply to you together.
 > 
-> When I googled the error message, the *only* thing that came up was
-> the thread started by Gilson Bellon which ended with your unanswered
-> question what command he ran. So I thought I'd answer for him.
-> No idea where your previous three answers to this could be found in
-> this thread.
+> On Thu, 2010-07-15 at 18:11 +0200, Philippe Gerum wrote:
+> > On Thu, 2010-07-15 at 13:53 +0200, Gilles Chanteperdrix wrote:
+> > > Tim Cussins wrote:
+> > > > Hi all,
+> > > > 
+> > > > We're looking at migrating to one of Marvell's MV88F series SOC's, and
+> > > > are very keen to deploy Xenomai as part of our solution.
+> > > > 
+> > > > I noticed Sergey Didenko was looking at this a few months back and
+> > > > things looked to be ok - has his (or anyone else's) work made it into a
+> > > > stable release?
+> > > > 
+> > > > I will be able to assist in about a fortnight if that would be useful
+> > > > for squaring that work away.
+> > > > 
+> > > > Let me know if I can help!
+> > > 
+> > > We are interested. I seem to remember that Serguey had unexplained
+> > > latencies issues, so, if you start with his work, please bear this in
+> > > mind, there was probably something wrong with his port. A guide
+> > > explaining how to port the I-pipe patch on ARM exists:
+> > > http://www.xenomai.org/index.php/I-pipe:ArmPorting
 > 
-> Anyway, thanks. So I take it as this is no sign for an incomplete setup
-> and we shall just run the tools cyclictest/switchtest/latency manually.
-> If that's wrong, then your explanation is not clear to me.
+> > > The section about chained GPIOs irqs is outdated, if your platform has
+> > > some, I will explain how it should be implemented.
+> > > 
+> > > Please start from the I-pipe git (git://git.denx.de/ipipe-2.6.git),
+> > > merging it with the branch you will use if needed, so that you can
+> > > submit a patch only containing the modifications necessary for the
+> > > Sheeva platform.
+> 
+> Not a problem :)
+> 
+> > > We can also provide you with a root filesystem for validating this platform.
+> 
+> That would be brilliant. I imagine I'll be iterating though uImages on
+> an SD card loaded with your rootfs. Sound ok? Let me know how to obtain
+> the rootfs (or better, show me how you prefer to do it, so I learn
+> something! Ta.)
+> 
+> > 
+> > You can also use the patch below as a starting point for your port:
+> > http://download.gna.org/adeos/patches/tmp/adeos-ipipe-2.6.29-mv88f6290.patch
+> 
+> I've tried applying this to vanilla 2.6.29 and 2.6.29.6 - it doesn't
+> apply cleanly (well, fails :P). Am I approaching this the wrong way?
+> Also tried chucking the patch into the xenomai tree and getting
+> prepare_kernel.sh to try: still no joy.
 
-Ok. Sorry, Gilson thread went on with private mails. Yes, you understood
-correctly.
+The patch applies to a non-mainline tree including the board support for
+the mv88f6290; this support is missing from 2.6.29 mainline, hence the
+two rejects I see here.
+
+What is your target kernel and MV88 variant exactly?
+
+> 
+> > caveats:
+> > 
+> > - it is based on an old kernel release, and moving to 2.6.3x would
+> > require some work. If you need so, then you should merge the
+> > arm-dependent bits from the patch above with the generic I-pipe bits
+> > from a newer release as available here (e.g. 2.6.33):
+> > http://download.gna.org/adeos/patches/v2.6/arm/
+> 
+> Building and running the current patch (2.6.29) seems like a reasonable
+> starting point, but producing a 2.6.33 patch seems like the right thing
+> to do...
+> 
+> > - the fcse implementation in that patch won't work with the l2 outer
+> > cache enabled. The two options have been made mutually exclusive via
+> > Kconfig.
+> 
+> Out of interest: is this a fundamental limitation, or do you believe
+> that the L2 and FCSE might be happy together after a bit of work?
+> 
+
+It should be possible to fix this, but that would require some surgery
+in the arch-dep mm code.
+
+> >  you should use Xenomai 2.5.3 or above to get this running.
+> > 
+> > As a reference point, the worst-case scheduling latency for user-space
+> > threads, observed on a mv88f6290 using that patch with fcse enabled (no
+> > l2), is below 70 us.
+> 
+> That's brilliant. Our requirements aren't for super-low latency, but
+> definitely realtime. We might go with L2 and no FCSE if the latency is
+> still ok. Just FYI :)
+> 
+> > HTH,
+> > 
+> 
+> Yep, thanks. I'll be able to do this work: I'm just trying to estimate
+> how long it'll take me to get up to speed and produce a patch for 2.6.33.
+> Any thoughts on the volume and nature of the work remaining would be helpful.
+> 
+> Cheers,
+> Tim
+> 
 
 -- 
-					    Gilles.
+Philippe.
+
+
 
