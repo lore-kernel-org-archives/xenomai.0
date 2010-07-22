@@ -1,12 +1,15 @@
-Message-ID: <4C47F932.3060400@domain.hid>
-Date: Thu, 22 Jul 2010 09:54:26 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTilWSsSuCKRxQg0NIkeeR28eqpdJfaVm_CiemnqF@mail.gmail.com>	<4C46D49F.6030102@domain.hid>	<AANLkTikJgzkkxQyM8DQqVz17ovJmPiIkdZMIFJImExIE@mail.gmail.com>	<4C46F0D9.4030906@domain.hid>
+In-Reply-To: <4C47F932.3060400@domain.hid>
+References: <AANLkTilWSsSuCKRxQg0NIkeeR28eqpdJfaVm_CiemnqF@mail.gmail.com>
+	<4C46D49F.6030102@domain.hid>
+	<AANLkTikJgzkkxQyM8DQqVz17ovJmPiIkdZMIFJImExIE@mail.gmail.com>
+	<4C46F0D9.4030906@domain.hid>
 	<AANLkTilP98GMfCx1rcgWto9eBmnDwtuavBteD8inFM6V@mail.gmail.com>
-In-Reply-To: <AANLkTilP98GMfCx1rcgWto9eBmnDwtuavBteD8inFM6V@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<4C47F932.3060400@domain.hid>
+Date: Thu, 22 Jul 2010 10:09:40 +0100
+Message-ID: <AANLkTilP1f217jN3krm_Cdqu4LaYwpUMu6mMnLiUJq2f@domain.hid>
+From: Stephen Bryant <sbxenomai@domain.hid>
+Content-Type: multipart/mixed; boundary=00163662e5644444f6048bf64777
 Subject: Re: [Xenomai-help] Unexpected preemption of highest priority thread
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,34 +20,265 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stephen Bryant <sbxenomai@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Stephen Bryant wrote:
-> On 21 July 2010 14:06, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org
-> <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
-> 
->     Stephen Bryant wrote:
->     > I've had a look at dmesg, but cannot find any references to SMI - what
->     > should I be looking for?
-> 
->     What is described in the TROUBLESHOOTING file.
-> 
-> 
-> I have tried disabling the SMI workaround, ensuring that SMI detection
-> is not disabled, and logging the kernel output (setting the kernel log
-> level to 8 in grub and sending the output to the serial port to be
-> picked up by another machine). The troubleshooting file states that I
-> should see "Xenomai: Intel chipset found and SMI workaround not
-> enabled, you may encounter high interrupt latencies." in this output,
-> however this does not occur - I am using an Intel Core 2 Duo but with
-> SMP disabled, if this has any relevance.
+--00163662e5644444f6048bf64777
+Content-Type: multipart/alternative; boundary=00163662e5644444ee048bf64775
 
-The SMI detection/workaround is based on the chipset you have. If your
-chipset is an ICH10, Stefan posted a patch a few days ago. If it is
-another one, then please send us the result of lspci -vv on your target.
+--00163662e5644444ee048bf64775
+Content-Type: text/plain; charset=ISO-8859-1
 
--- 
-					    Gilles.
+On 22 July 2010 08:54, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> Stephen Bryant wrote:
+> > On 21 July 2010 14:06, Gilles Chanteperdrix
+> > <gilles.chanteperdrix@xenomai.org
+> > <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
+> >
+> >     Stephen Bryant wrote:
+> >     > I've had a look at dmesg, but cannot find any references to SMI -
+> what
+> >     > should I be looking for?
+> >
+> >     What is described in the TROUBLESHOOTING file.
+> >
+> >
+> > I have tried disabling the SMI workaround, ensuring that SMI detection
+> > is not disabled, and logging the kernel output (setting the kernel log
+> > level to 8 in grub and sending the output to the serial port to be
+> > picked up by another machine). The troubleshooting file states that I
+> > should see "Xenomai: Intel chipset found and SMI workaround not
+> > enabled, you may encounter high interrupt latencies." in this output,
+> > however this does not occur - I am using an Intel Core 2 Duo but with
+> > SMP disabled, if this has any relevance.
+>
+> The SMI detection/workaround is based on the chipset you have. If your
+> chipset is an ICH10, Stefan posted a patch a few days ago. If it is
+> another one, then please send us the result of lspci -vv on your target.
+>
+
+It seems to be ICH8, so the result is attached,
+
+Steve
+
+--00163662e5644444ee048bf64775
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div class=3D"gmail_quote">On 22 July 2010 08:54, Gilles Chanteperdrix <spa=
+n dir=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gille=
+s.chanteperdrix@domain.hid</a>&gt;</span> wrote:<br><blockquote class=3D"g=
+mail_quote" style=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt=
+ 0pt 0pt 0.8ex; padding-left: 1ex;">
+<div class=3D"im">Stephen Bryant wrote:<br>
+&gt; On 21 July 2010 14:06, Gilles Chanteperdrix<br>
+&gt; &lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.chantep=
+erdrix@domain.hid</a><br>
+</div><div class=3D"im">&gt; &lt;mailto:<a href=3D"mailto:gilles.chanteperd=
+rix@domain.hid">gilles.chanteperdrix@xenomai.org</a>&gt;&gt; wrote:<br>
+&gt;<br>
+&gt; =A0 =A0 Stephen Bryant wrote:<br>
+</div><div class=3D"im">&gt; =A0 =A0 &gt; I&#39;ve had a look at dmesg, but=
+ cannot find any references to SMI - what<br>
+&gt; =A0 =A0 &gt; should I be looking for?<br>
+&gt;<br>
+&gt; =A0 =A0 What is described in the TROUBLESHOOTING file.<br>
+&gt;<br>
+&gt;<br>
+&gt; I have tried disabling the SMI workaround, ensuring that SMI detection=
+<br>
+&gt; is not disabled, and logging the kernel output (setting the kernel log=
+<br>
+&gt; level to 8 in grub and sending the output to the serial port to be<br>
+&gt; picked up by another machine). The troubleshooting file states that I<=
+br>
+&gt; should see &quot;Xenomai: Intel chipset found and SMI workaround not<b=
+r>
+&gt; enabled, you may encounter high interrupt latencies.&quot; in this out=
+put,<br>
+&gt; however this does not occur - I am using an Intel Core 2 Duo but with<=
+br>
+&gt; SMP disabled, if this has any relevance.<br>
+<br>
+</div>The SMI detection/workaround is based on the chipset you have. If you=
+r<br>
+chipset is an ICH10, Stefan posted a patch a few days ago. If it is<br>
+another one, then please send us the result of lspci -vv on your target.<br=
+>
+</blockquote><div>=A0<br>It seems to be ICH8, so the result is attached,<br=
+><br>Steve<font color=3D"#888888"><br>
+</font><br></div></div>
+
+--00163662e5644444ee048bf64775--
+
+--00163662e5644444f6048bf64777
+Content-Type: text/plain; charset=US-ASCII; name="lspci-vv.txt"
+Content-Disposition: attachment; filename="lspci-vv.txt"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_gbxe1s850
+
+MDA6MDAuMCBIb3N0IGJyaWRnZTogSW50ZWwgQ29ycG9yYXRpb24gODJROTYzL1E5NjUgTWVtb3J5
+IENvbnRyb2xsZXIgSHViIChyZXYgMDIpCglTdWJzeXN0ZW06IEhld2xldHQtUGFja2FyZCBDb21w
+YW55IFVua25vd24gZGV2aWNlIDI4MDgKCUNvbnRyb2w6IEkvTy0gTWVtKyBCdXNNYXN0ZXIrIFNw
+ZWNDeWNsZS0gTWVtV0lOVi0gVkdBU25vb3AtIFBhckVyci0gU3RlcHBpbmctIFNFUlIrIEZhc3RC
+MkItCglTdGF0dXM6IENhcCsgNjZNSHotIFVERi0gRmFzdEIyQisgUGFyRXJyLSBERVZTRUw9ZmFz
+dCA+VEFib3J0LSA8VEFib3J0LSA8TUFib3J0KyA+U0VSUi0gPFBFUlItCglMYXRlbmN5OiAwCglD
+YXBhYmlsaXRpZXM6IDxhY2Nlc3MgZGVuaWVkPgoKMDA6MDIuMCBWR0EgY29tcGF0aWJsZSBjb250
+cm9sbGVyOiBJbnRlbCBDb3Jwb3JhdGlvbiA4MlE5NjMvUTk2NSBJbnRlZ3JhdGVkIEdyYXBoaWNz
+IENvbnRyb2xsZXIgKHJldiAwMikgKHByb2ctaWYgMDAgW1ZHQSBjb250cm9sbGVyXSkKCVN1YnN5
+c3RlbTogSGV3bGV0dC1QYWNrYXJkIENvbXBhbnkgVW5rbm93biBkZXZpY2UgMjgwOAoJQ29udHJv
+bDogSS9PKyBNZW0rIEJ1c01hc3RlcisgU3BlY0N5Y2xlLSBNZW1XSU5WLSBWR0FTbm9vcC0gUGFy
+RXJyLSBTdGVwcGluZy0gU0VSUi0gRmFzdEIyQi0KCVN0YXR1czogQ2FwKyA2Nk1Iei0gVURGLSBG
+YXN0QjJCKyBQYXJFcnItIERFVlNFTD1mYXN0ID5UQWJvcnQtIDxUQWJvcnQtIDxNQWJvcnQtID5T
+RVJSLSA8UEVSUi0KCUxhdGVuY3k6IDAKCUludGVycnVwdDogcGluIEEgcm91dGVkIHRvIElSUSAx
+NgoJUmVnaW9uIDA6IE1lbW9yeSBhdCBmMDQwMDAwMCAoMzItYml0LCBub24tcHJlZmV0Y2hhYmxl
+KSBbc2l6ZT0xTV0KCVJlZ2lvbiAyOiBNZW1vcnkgYXQgZTAwMDAwMDAgKDY0LWJpdCwgcHJlZmV0
+Y2hhYmxlKSBbc2l6ZT0yNTZNXQoJUmVnaW9uIDQ6IEkvTyBwb3J0cyBhdCAxMjAwIFtzaXplPThd
+CglDYXBhYmlsaXRpZXM6IDxhY2Nlc3MgZGVuaWVkPgoKMDA6MWEuMCBVU0IgQ29udHJvbGxlcjog
+SW50ZWwgQ29ycG9yYXRpb24gODI4MDFIIChJQ0g4IEZhbWlseSkgVVNCIFVIQ0kgQ29udHJvbGxl
+ciAjNCAocmV2IDAyKSAocHJvZy1pZiAwMCBbVUhDSV0pCglTdWJzeXN0ZW06IEhld2xldHQtUGFj
+a2FyZCBDb21wYW55IFVua25vd24gZGV2aWNlIDI4MDgKCUNvbnRyb2w6IEkvTysgTWVtLSBCdXNN
+YXN0ZXIrIFNwZWNDeWNsZS0gTWVtV0lOVi0gVkdBU25vb3AtIFBhckVyci0gU3RlcHBpbmctIFNF
+UlItIEZhc3RCMkItCglTdGF0dXM6IENhcC0gNjZNSHotIFVERi0gRmFzdEIyQisgUGFyRXJyLSBE
+RVZTRUw9bWVkaXVtID5UQWJvcnQtIDxUQWJvcnQtIDxNQWJvcnQtID5TRVJSLSA8UEVSUi0KCUxh
+dGVuY3k6IDAKCUludGVycnVwdDogcGluIEEgcm91dGVkIHRvIElSUSAyMAoJUmVnaW9uIDQ6IEkv
+TyBwb3J0cyBhdCAxMTAwIFtzaXplPTMyXQoKMDA6MWEuMSBVU0IgQ29udHJvbGxlcjogSW50ZWwg
+Q29ycG9yYXRpb24gODI4MDFIIChJQ0g4IEZhbWlseSkgVVNCIFVIQ0kgQ29udHJvbGxlciAjNSAo
+cmV2IDAyKSAocHJvZy1pZiAwMCBbVUhDSV0pCglTdWJzeXN0ZW06IEhld2xldHQtUGFja2FyZCBD
+b21wYW55IFVua25vd24gZGV2aWNlIDI4MDgKCUNvbnRyb2w6IEkvTysgTWVtLSBCdXNNYXN0ZXIr
+IFNwZWNDeWNsZS0gTWVtV0lOVi0gVkdBU25vb3AtIFBhckVyci0gU3RlcHBpbmctIFNFUlItIEZh
+c3RCMkItCglTdGF0dXM6IENhcC0gNjZNSHotIFVERi0gRmFzdEIyQisgUGFyRXJyLSBERVZTRUw9
+bWVkaXVtID5UQWJvcnQtIDxUQWJvcnQtIDxNQWJvcnQtID5TRVJSLSA8UEVSUi0KCUxhdGVuY3k6
+IDAKCUludGVycnVwdDogcGluIEIgcm91dGVkIHRvIElSUSAyMQoJUmVnaW9uIDQ6IEkvTyBwb3J0
+cyBhdCAxMTIwIFtzaXplPTMyXQoKMDA6MWEuNyBVU0IgQ29udHJvbGxlcjogSW50ZWwgQ29ycG9y
+YXRpb24gODI4MDFIIChJQ0g4IEZhbWlseSkgVVNCMiBFSENJIENvbnRyb2xsZXIgIzIgKHJldiAw
+MikgKHByb2ctaWYgMjAgW0VIQ0ldKQoJU3Vic3lzdGVtOiBIZXdsZXR0LVBhY2thcmQgQ29tcGFu
+eSBVbmtub3duIGRldmljZSAyODA4CglDb250cm9sOiBJL08tIE1lbSsgQnVzTWFzdGVyKyBTcGVj
+Q3ljbGUtIE1lbVdJTlYtIFZHQVNub29wLSBQYXJFcnItIFN0ZXBwaW5nLSBTRVJSKyBGYXN0QjJC
+LQoJU3RhdHVzOiBDYXArIDY2TUh6LSBVREYtIEZhc3RCMkIrIFBhckVyci0gREVWU0VMPW1lZGl1
+bSA+VEFib3J0LSA8VEFib3J0LSA8TUFib3J0LSA+U0VSUi0gPFBFUlItCglMYXRlbmN5OiAwCglJ
+bnRlcnJ1cHQ6IHBpbiBDIHJvdXRlZCB0byBJUlEgMjIKCVJlZ2lvbiAwOiBNZW1vcnkgYXQgZjA1
+MDQwMDAgKDMyLWJpdCwgbm9uLXByZWZldGNoYWJsZSkgW3NpemU9MUtdCglDYXBhYmlsaXRpZXM6
+IDxhY2Nlc3MgZGVuaWVkPgoKMDA6MWIuMCBBdWRpbyBkZXZpY2U6IEludGVsIENvcnBvcmF0aW9u
+IDgyODAxSCAoSUNIOCBGYW1pbHkpIEhEIEF1ZGlvIENvbnRyb2xsZXIgKHJldiAwMikKCVN1YnN5
+c3RlbTogSGV3bGV0dC1QYWNrYXJkIENvbXBhbnkgVW5rbm93biBkZXZpY2UgMjgwOAoJQ29udHJv
+bDogSS9PLSBNZW0rIEJ1c01hc3RlcisgU3BlY0N5Y2xlLSBNZW1XSU5WLSBWR0FTbm9vcC0gUGFy
+RXJyLSBTdGVwcGluZy0gU0VSUisgRmFzdEIyQi0KCVN0YXR1czogQ2FwKyA2Nk1Iei0gVURGLSBG
+YXN0QjJCLSBQYXJFcnItIERFVlNFTD1mYXN0ID5UQWJvcnQtIDxUQWJvcnQtIDxNQWJvcnQtID5T
+RVJSLSA8UEVSUi0KCUxhdGVuY3k6IDAsIENhY2hlIExpbmUgU2l6ZTogNjQgYnl0ZXMKCUludGVy
+cnVwdDogcGluIEEgcm91dGVkIHRvIElSUSA1CglSZWdpb24gMDogTWVtb3J5IGF0IGYwNTAwMDAw
+ICg2NC1iaXQsIG5vbi1wcmVmZXRjaGFibGUpIFtzaXplPTE2S10KCUNhcGFiaWxpdGllczogPGFj
+Y2VzcyBkZW5pZWQ+CgowMDoxYy4wIFBDSSBicmlkZ2U6IEludGVsIENvcnBvcmF0aW9uIDgyODAx
+SCAoSUNIOCBGYW1pbHkpIFBDSSBFeHByZXNzIFBvcnQgMSAocmV2IDAyKSAocHJvZy1pZiAwMCBb
+Tm9ybWFsIGRlY29kZV0pCglDb250cm9sOiBJL08rIE1lbSsgQnVzTWFzdGVyKyBTcGVjQ3ljbGUt
+IE1lbVdJTlYtIFZHQVNub29wLSBQYXJFcnItIFN0ZXBwaW5nLSBTRVJSKyBGYXN0QjJCLQoJU3Rh
+dHVzOiBDYXArIDY2TUh6LSBVREYtIEZhc3RCMkItIFBhckVyci0gREVWU0VMPWZhc3QgPlRBYm9y
+dC0gPFRBYm9ydC0gPE1BYm9ydC0gPlNFUlItIDxQRVJSLQoJTGF0ZW5jeTogMCwgQ2FjaGUgTGlu
+ZSBTaXplOiA2NCBieXRlcwoJQnVzOiBwcmltYXJ5PTAwLCBzZWNvbmRhcnk9MjAsIHN1Ym9yZGlu
+YXRlPTIwLCBzZWMtbGF0ZW5jeT0wCglJL08gYmVoaW5kIGJyaWRnZTogMDAwMDIwMDAtMDAwMDJm
+ZmYKCU1lbW9yeSBiZWhpbmQgYnJpZGdlOiBmMDkwMDAwMC1mMGJmZmZmZgoJUHJlZmV0Y2hhYmxl
+IG1lbW9yeSBiZWhpbmQgYnJpZGdlOiAwMDAwMDAwMDgwMDAwMDAwLTAwMDAwMDAwODAxZmZmZmYK
+CVNlY29uZGFyeSBzdGF0dXM6IDY2TUh6LSBGYXN0QjJCLSBQYXJFcnItIERFVlNFTD1mYXN0ID5U
+QWJvcnQtIDxUQWJvcnQtIDxNQWJvcnQtIDxTRVJSLSA8UEVSUi0KCUJyaWRnZUN0bDogUGFyaXR5
+LSBTRVJSKyBOb0lTQS0gVkdBLSBNQWJvcnQtID5SZXNldC0gRmFzdEIyQi0KCUNhcGFiaWxpdGll
+czogPGFjY2VzcyBkZW5pZWQ+CgowMDoxYy4xIFBDSSBicmlkZ2U6IEludGVsIENvcnBvcmF0aW9u
+IDgyODAxSCAoSUNIOCBGYW1pbHkpIFBDSSBFeHByZXNzIFBvcnQgMiAocmV2IDAyKSAocHJvZy1p
+ZiAwMCBbTm9ybWFsIGRlY29kZV0pCglDb250cm9sOiBJL08rIE1lbSsgQnVzTWFzdGVyKyBTcGVj
+Q3ljbGUtIE1lbVdJTlYtIFZHQVNub29wLSBQYXJFcnItIFN0ZXBwaW5nLSBTRVJSKyBGYXN0QjJC
+LQoJU3RhdHVzOiBDYXArIDY2TUh6LSBVREYtIEZhc3RCMkItIFBhckVyci0gREVWU0VMPWZhc3Qg
+PlRBYm9ydC0gPFRBYm9ydC0gPE1BYm9ydC0gPlNFUlItIDxQRVJSLQoJTGF0ZW5jeTogMCwgQ2Fj
+aGUgTGluZSBTaXplOiA2NCBieXRlcwoJQnVzOiBwcmltYXJ5PTAwLCBzZWNvbmRhcnk9M2YsIHN1
+Ym9yZGluYXRlPTNmLCBzZWMtbGF0ZW5jeT0wCglJL08gYmVoaW5kIGJyaWRnZTogMDAwMDMwMDAt
+MDAwMDNmZmYKCU1lbW9yeSBiZWhpbmQgYnJpZGdlOiBmMDYwMDAwMC1mMDhmZmZmZgoJUHJlZmV0
+Y2hhYmxlIG1lbW9yeSBiZWhpbmQgYnJpZGdlOiAwMDAwMDAwMDgwMjAwMDAwLTAwMDAwMDAwODAz
+ZmZmZmYKCVNlY29uZGFyeSBzdGF0dXM6IDY2TUh6LSBGYXN0QjJCLSBQYXJFcnItIERFVlNFTD1m
+YXN0ID5UQWJvcnQtIDxUQWJvcnQtIDxNQWJvcnQtIDxTRVJSLSA8UEVSUi0KCUJyaWRnZUN0bDog
+UGFyaXR5LSBTRVJSKyBOb0lTQS0gVkdBLSBNQWJvcnQtID5SZXNldC0gRmFzdEIyQi0KCUNhcGFi
+aWxpdGllczogPGFjY2VzcyBkZW5pZWQ+CgowMDoxZC4wIFVTQiBDb250cm9sbGVyOiBJbnRlbCBD
+b3Jwb3JhdGlvbiA4MjgwMUggKElDSDggRmFtaWx5KSBVU0IgVUhDSSBDb250cm9sbGVyICMxIChy
+ZXYgMDIpIChwcm9nLWlmIDAwIFtVSENJXSkKCVN1YnN5c3RlbTogSGV3bGV0dC1QYWNrYXJkIENv
+bXBhbnkgVW5rbm93biBkZXZpY2UgMjgwOAoJQ29udHJvbDogSS9PKyBNZW0tIEJ1c01hc3Rlcisg
+U3BlY0N5Y2xlLSBNZW1XSU5WLSBWR0FTbm9vcC0gUGFyRXJyLSBTdGVwcGluZy0gU0VSUi0gRmFz
+dEIyQi0KCVN0YXR1czogQ2FwLSA2Nk1Iei0gVURGLSBGYXN0QjJCKyBQYXJFcnItIERFVlNFTD1t
+ZWRpdW0gPlRBYm9ydC0gPFRBYm9ydC0gPE1BYm9ydC0gPlNFUlItIDxQRVJSLQoJTGF0ZW5jeTog
+MAoJSW50ZXJydXB0OiBwaW4gQSByb3V0ZWQgdG8gSVJRIDIwCglSZWdpb24gNDogSS9PIHBvcnRz
+IGF0IDExNDAgW3NpemU9MzJdCgowMDoxZC4xIFVTQiBDb250cm9sbGVyOiBJbnRlbCBDb3Jwb3Jh
+dGlvbiA4MjgwMUggKElDSDggRmFtaWx5KSBVU0IgVUhDSSBDb250cm9sbGVyICMyIChyZXYgMDIp
+IChwcm9nLWlmIDAwIFtVSENJXSkKCVN1YnN5c3RlbTogSGV3bGV0dC1QYWNrYXJkIENvbXBhbnkg
+VW5rbm93biBkZXZpY2UgMjgwOAoJQ29udHJvbDogSS9PKyBNZW0tIEJ1c01hc3RlcisgU3BlY0N5
+Y2xlLSBNZW1XSU5WLSBWR0FTbm9vcC0gUGFyRXJyLSBTdGVwcGluZy0gU0VSUi0gRmFzdEIyQi0K
+CVN0YXR1czogQ2FwLSA2Nk1Iei0gVURGLSBGYXN0QjJCKyBQYXJFcnItIERFVlNFTD1tZWRpdW0g
+PlRBYm9ydC0gPFRBYm9ydC0gPE1BYm9ydC0gPlNFUlItIDxQRVJSLQoJTGF0ZW5jeTogMAoJSW50
+ZXJydXB0OiBwaW4gQiByb3V0ZWQgdG8gSVJRIDIxCglSZWdpb24gNDogSS9PIHBvcnRzIGF0IDEx
+NjAgW3NpemU9MzJdCgowMDoxZC43IFVTQiBDb250cm9sbGVyOiBJbnRlbCBDb3Jwb3JhdGlvbiA4
+MjgwMUggKElDSDggRmFtaWx5KSBVU0IyIEVIQ0kgQ29udHJvbGxlciAjMSAocmV2IDAyKSAocHJv
+Zy1pZiAyMCBbRUhDSV0pCglTdWJzeXN0ZW06IEhld2xldHQtUGFja2FyZCBDb21wYW55IFVua25v
+d24gZGV2aWNlIDI4MDgKCUNvbnRyb2w6IEkvTy0gTWVtKyBCdXNNYXN0ZXIrIFNwZWNDeWNsZS0g
+TWVtV0lOVi0gVkdBU25vb3AtIFBhckVyci0gU3RlcHBpbmctIFNFUlIrIEZhc3RCMkItCglTdGF0
+dXM6IENhcCsgNjZNSHotIFVERi0gRmFzdEIyQisgUGFyRXJyLSBERVZTRUw9bWVkaXVtID5UQWJv
+cnQtIDxUQWJvcnQtIDxNQWJvcnQtID5TRVJSLSA8UEVSUi0KCUxhdGVuY3k6IDAKCUludGVycnVw
+dDogcGluIEEgcm91dGVkIHRvIElSUSAyMAoJUmVnaW9uIDA6IE1lbW9yeSBhdCBmMDUwNDQwMCAo
+MzItYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0xS10KCUNhcGFiaWxpdGllczogPGFjY2Vz
+cyBkZW5pZWQ+CgowMDoxZS4wIFBDSSBicmlkZ2U6IEludGVsIENvcnBvcmF0aW9uIDgyODAxIFBD
+SSBCcmlkZ2UgKHJldiBmMikgKHByb2ctaWYgMDEgW1N1YnRyYWN0aXZlIGRlY29kZV0pCglDb250
+cm9sOiBJL08rIE1lbSsgQnVzTWFzdGVyKyBTcGVjQ3ljbGUtIE1lbVdJTlYtIFZHQVNub29wLSBQ
+YXJFcnItIFN0ZXBwaW5nLSBTRVJSKyBGYXN0QjJCLQoJU3RhdHVzOiBDYXArIDY2TUh6LSBVREYt
+IEZhc3RCMkItIFBhckVyci0gREVWU0VMPWZhc3QgPlRBYm9ydC0gPFRBYm9ydC0gPE1BYm9ydC0g
+PlNFUlItIDxQRVJSLQoJTGF0ZW5jeTogMAoJQnVzOiBwcmltYXJ5PTAwLCBzZWNvbmRhcnk9MDcs
+IHN1Ym9yZGluYXRlPTA3LCBzZWMtbGF0ZW5jeT0zMgoJU2Vjb25kYXJ5IHN0YXR1czogNjZNSHot
+IEZhc3RCMkIrIFBhckVyci0gREVWU0VMPW1lZGl1bSA+VEFib3J0LSA8VEFib3J0LSA8TUFib3J0
+KyA8U0VSUi0gPFBFUlItCglCcmlkZ2VDdGw6IFBhcml0eS0gU0VSUisgTm9JU0EtIFZHQS0gTUFi
+b3J0LSA+UmVzZXQtIEZhc3RCMkItCglDYXBhYmlsaXRpZXM6IDxhY2Nlc3MgZGVuaWVkPgoKMDA6
+MWYuMCBJU0EgYnJpZGdlOiBJbnRlbCBDb3Jwb3JhdGlvbiA4MjgwMUhCL0hSIChJQ0g4L1IpIExQ
+QyBJbnRlcmZhY2UgQ29udHJvbGxlciAocmV2IDAyKQoJU3Vic3lzdGVtOiBIZXdsZXR0LVBhY2th
+cmQgQ29tcGFueSBVbmtub3duIGRldmljZSAyODA4CglDb250cm9sOiBJL08rIE1lbSsgQnVzTWFz
+dGVyKyBTcGVjQ3ljbGUtIE1lbVdJTlYtIFZHQVNub29wLSBQYXJFcnItIFN0ZXBwaW5nLSBTRVJS
+KyBGYXN0QjJCLQoJU3RhdHVzOiBDYXArIDY2TUh6LSBVREYtIEZhc3RCMkItIFBhckVyci0gREVW
+U0VMPW1lZGl1bSA+VEFib3J0LSA8VEFib3J0LSA8TUFib3J0LSA+U0VSUi0gPFBFUlItCglMYXRl
+bmN5OiAwCglDYXBhYmlsaXRpZXM6IDxhY2Nlc3MgZGVuaWVkPgoKMDA6MWYuMiBJREUgaW50ZXJm
+YWNlOiBJbnRlbCBDb3Jwb3JhdGlvbiA4MjgwMUggKElDSDggRmFtaWx5KSA0IHBvcnQgU0FUQSBJ
+REUgQ29udHJvbGxlciAocmV2IDAyKSAocHJvZy1pZiA4YSBbTWFzdGVyIFNlY1AgUHJpUF0pCglT
+dWJzeXN0ZW06IEhld2xldHQtUGFja2FyZCBDb21wYW55IFVua25vd24gZGV2aWNlIDI4MDgKCUNv
+bnRyb2w6IEkvTysgTWVtLSBCdXNNYXN0ZXIrIFNwZWNDeWNsZS0gTWVtV0lOVi0gVkdBU25vb3At
+IFBhckVyci0gU3RlcHBpbmctIFNFUlItIEZhc3RCMkItCglTdGF0dXM6IENhcCsgNjZNSHorIFVE
+Ri0gRmFzdEIyQisgUGFyRXJyLSBERVZTRUw9bWVkaXVtID5UQWJvcnQtIDxUQWJvcnQtIDxNQWJv
+cnQtID5TRVJSLSA8UEVSUi0KCUxhdGVuY3k6IDAKCUludGVycnVwdDogcGluIEIgcm91dGVkIHRv
+IElSUSAxOAoJUmVnaW9uIDA6IEkvTyBwb3J0cyBhdCAwMWYwIFtzaXplPThdCglSZWdpb24gMTog
+SS9PIHBvcnRzIGF0IDAzZjQgW3NpemU9MV0KCVJlZ2lvbiAyOiBJL08gcG9ydHMgYXQgMDE3MCBb
+c2l6ZT04XQoJUmVnaW9uIDM6IEkvTyBwb3J0cyBhdCAwMzc0IFtzaXplPTFdCglSZWdpb24gNDog
+SS9PIHBvcnRzIGF0IDExYzAgW3NpemU9MTZdCglSZWdpb24gNTogSS9PIHBvcnRzIGF0IDExZDAg
+W3NpemU9MTZdCglDYXBhYmlsaXRpZXM6IDxhY2Nlc3MgZGVuaWVkPgoKMDA6MWYuNSBJREUgaW50
+ZXJmYWNlOiBJbnRlbCBDb3Jwb3JhdGlvbiA4MjgwMUggKElDSDggRmFtaWx5KSAyIHBvcnQgU0FU
+QSBJREUgQ29udHJvbGxlciAocmV2IDAyKSAocHJvZy1pZiA4NSBbTWFzdGVyIFNlY08gUHJpT10p
+CglTdWJzeXN0ZW06IEhld2xldHQtUGFja2FyZCBDb21wYW55IFVua25vd24gZGV2aWNlIDI4MDgK
+CUNvbnRyb2w6IEkvTysgTWVtLSBCdXNNYXN0ZXIrIFNwZWNDeWNsZS0gTWVtV0lOVi0gVkdBU25v
+b3AtIFBhckVyci0gU3RlcHBpbmctIFNFUlItIEZhc3RCMkItCglTdGF0dXM6IENhcCsgNjZNSHor
+IFVERi0gRmFzdEIyQisgUGFyRXJyLSBERVZTRUw9bWVkaXVtID5UQWJvcnQtIDxUQWJvcnQtIDxN
+QWJvcnQtID5TRVJSLSA8UEVSUi0KCUxhdGVuY3k6IDAKCUludGVycnVwdDogcGluIEIgcm91dGVk
+IHRvIElSUSAxOAoJUmVnaW9uIDA6IEkvTyBwb3J0cyBhdCAxMjE4IFtzaXplPThdCglSZWdpb24g
+MTogSS9PIHBvcnRzIGF0IDEyMzAgW3NpemU9NF0KCVJlZ2lvbiAyOiBJL08gcG9ydHMgYXQgMTIy
+MCBbc2l6ZT04XQoJUmVnaW9uIDM6IEkvTyBwb3J0cyBhdCAxMjM0IFtzaXplPTRdCglSZWdpb24g
+NDogSS9PIHBvcnRzIGF0IDExZTAgW3NpemU9MTZdCglSZWdpb24gNTogSS9PIHBvcnRzIGF0IDEx
+ZjAgW3NpemU9MTZdCglDYXBhYmlsaXRpZXM6IDxhY2Nlc3MgZGVuaWVkPgoKMjA6MDAuMCBDb21t
+dW5pY2F0aW9uIGNvbnRyb2xsZXI6IFVua25vd24gZGV2aWNlIDE2M2Y6MDAxOCAocmV2IDAxKQoJ
+Q29udHJvbDogSS9PLSBNZW0rIEJ1c01hc3RlcisgU3BlY0N5Y2xlLSBNZW1XSU5WLSBWR0FTbm9v
+cC0gUGFyRXJyLSBTdGVwcGluZy0gU0VSUi0gRmFzdEIyQi0KCVN0YXR1czogQ2FwKyA2Nk1Iei0g
+VURGLSBGYXN0QjJCLSBQYXJFcnItIERFVlNFTD1mYXN0ID5UQWJvcnQtIDxUQWJvcnQtIDxNQWJv
+cnQtID5TRVJSLSA8UEVSUi0KCUxhdGVuY3k6IDAsIENhY2hlIExpbmUgU2l6ZTogNjQgYnl0ZXMK
+CUludGVycnVwdDogcGluIEEgcm91dGVkIHRvIElSUSAxMQoJUmVnaW9uIDA6IE1lbW9yeSBhdCBm
+MDkwMDAwMCAoMzItYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT00S10KCUNhcGFiaWxpdGll
+czogPGFjY2VzcyBkZW5pZWQ+CgozZjowMC4wIEV0aGVybmV0IGNvbnRyb2xsZXI6IEJyb2FkY29t
+IENvcnBvcmF0aW9uIE5ldFh0cmVtZSBCQ001NzU1IEdpZ2FiaXQgRXRoZXJuZXQgUENJIEV4cHJl
+c3MgKHJldiAwMikKCVN1YnN5c3RlbTogSGV3bGV0dC1QYWNrYXJkIENvbXBhbnkgVW5rbm93biBk
+ZXZpY2UgMjgwOAoJQ29udHJvbDogSS9PLSBNZW0rIEJ1c01hc3RlcisgU3BlY0N5Y2xlLSBNZW1X
+SU5WLSBWR0FTbm9vcC0gUGFyRXJyLSBTdGVwcGluZy0gU0VSUi0gRmFzdEIyQi0KCVN0YXR1czog
+Q2FwKyA2Nk1Iei0gVURGLSBGYXN0QjJCLSBQYXJFcnItIERFVlNFTD1mYXN0ID5UQWJvcnQtIDxU
+QWJvcnQtIDxNQWJvcnQtID5TRVJSLSA8UEVSUi0KCUxhdGVuY3k6IDAsIENhY2hlIExpbmUgU2l6
+ZTogNjQgYnl0ZXMKCUludGVycnVwdDogcGluIEEgcm91dGVkIHRvIElSUSAxNwoJUmVnaW9uIDA6
+IE1lbW9yeSBhdCBmMDgwMDAwMCAoNjQtYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT02NEtd
+CglFeHBhbnNpb24gUk9NIGF0IDxpZ25vcmVkPiBbZGlzYWJsZWRdCglDYXBhYmlsaXRpZXM6IDxh
+Y2Nlc3MgZGVuaWVkPgoK
+--00163662e5644444f6048bf64777--
 
