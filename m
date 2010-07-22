@@ -1,10 +1,23 @@
-From: jmf <xeno.nonono@domain.hid>
-Date: Wed, 14 Jul 2010 16:10:32 +0000 (UTC)
-Message-ID: <loom.20100714T170447-439@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Message-ID: <4C48D5BD.6000207@domain.hid>
+Date: Fri, 23 Jul 2010 01:35:25 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <4C43C83F.5030401@domain.hid>
+	<4C43D265.9080609@domain.hid>	<4C43FC4F.3010006@domain.hid>
+	<4C440D6F.1060204@domain.hid>	<4C44E9C9.3020600@domain.hid>
+	<4C454C0C.6000100@domain.hid>	<4C4550C8.3070504@domain.hid>
+	<4C45541C.5090507@domain.hid> <4C45CEE6.5000903@domain.hid>
+	<4C460506.3010103@domain.hid> <4C46141F.50103@domain.hid>
+	<4C468040.3030509@domain.hid> <4C468485.5060408@domain.hid>
+	<4C47597F.1010406@domain.hid>
+	<4C478313.2030606@domain.hid>
+	<4C48C1BB.8080606@domain.hid> <4C48C2CE.1030706@domain.hid>
+	<4C48D539.8040406@domain.hid>
+In-Reply-To: <4C48D539.8040406@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Does this config optimally fit my Hardware?
+Subject: Re: [Xenomai-help] Adeos patched kernel hangs mounting root file
+ system - correction
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,43 +27,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Bob Feretich <bob.feretich@domain.hid>
+Cc: xenomai@xenomai.org
 
-Dear all,
+Bob Feretich wrote:
+>   Even bisecting I'd probably be looking at over 10 iterations.
 
-I've set up a Xenomai system with Ubuntu 10.04 32bit/2.6.32-21/2.5.3 and
-everything seems to be fine (I'm new to Linux and RT anyway). However, I'd like
-to make sure that the kernel config is optimally adapted to my hardware (Intel
-Atom board, 945GCLF2, 4 cores with Hyperthreading, one RT thread only runs
-on CPU 1, the others are free).
+So ? Every iteration takes about 2 minutes to compile, 2 minutes to
+test, that is 20 minutes.
 
-I'm especially unsure about the timers/clocks, whether 8254, TSC, the counter
-on the LAPIC or HPET will be used and what would be preferable (HPET rather
-than TSC?). Btw, on startup I also get "MT-Bios Bug: 8264 timer not connected
-to IO-APIC". Could anyone tell me if my config fits my hardware?
-
-User-space support with default options:
-
---enable-x86-tsc TRUE
---enable-smp FALSE
-
-Kernel config:
-
-CONFIG_HPET_TIMER y (HPET enabled in BIOS)
-CONFIG_HIGH_RES_TIMERS y
-CONFIG_XENO_HW_SMI_WORKAROUND y
-CONFIG_SMP y
-CONFIG_CPU_FREQ false ("# CONFIG_CPU_FREQ is not set")
-CONFIG_APM false ("# CONFIG_APM is not set")
-CONFIG_ACPI_PROCESSOR false ("# CONFIG_ACPI_PROCESSOR is not set")
-CONFIG_ACPI y
-CONFIG_SCHED_SMT y
-CONFIG_INPUT_PCSPKR m (?)
-CONFIG_PCSPKR_PLATFORM y
-CONFIG_X86_LOCAL_APIC y
-CONFIG_X86_IO_APIC y
-CONFIG_X86_TSC y
-
-(tell me when I should post the complete config file)
-
+-- 
+					    Gilles.
 
