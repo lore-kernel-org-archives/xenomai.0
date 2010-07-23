@@ -1,13 +1,9 @@
-From: =?iso-8859-1?Q?Peter_K=FCnnemann_ITB?= <itb.pkue@domain.hid>
-Date: Wed, 14 Jul 2010 18:17:14 +0200
-Message-ID: <4c3de30f.cf7d0e0a.6141.4e93@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Language: de
-Subject: [Xenomai-help] arch 'powerpc' make: error 'struct ipipe_sysinfo'
-	has no member named 'cpufreq'
+Date: Fri, 23 Jul 2010 10:56:45 -0500
+Message-ID: <AANLkTimdQf_=R9dCwP1ootosGii+9zWzo=8FmJNN01Ku@domain.hid>
+From: Patrick Roberts <pat1micom@domain.hid>
+Content-Type: multipart/alternative; boundary=001485f1a0bcf181d5048c1014a6
+Subject: Re: [Xenomai-help] Unexpected preemption of highest priority
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,61 +15,144 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi all
+--001485f1a0bcf181d5048c1014a6
+Content-Type: text/plain; charset=ISO-8859-1
 
-I am about to get a xenomai kernel 2.6.34 to be run on a lite5200 =
-platform (IceCube?).
-The patches from=20
+>>>     Stephen Bryant wrote:
 
-"http://download.gna.org/adeos/patches/v2.6/powerpc/adeos-ipipe-2.6.34-po=
-werpc-2.10-03.patch"
+>>>     > I've had a look at dmesg, but cannot find any references to SMI -
 
-did apply without any problem. The make however resulted in the failure =
-reported below.
+>> what
 
-...
-  CC      kernel/time/tick-sched.o
-  LD      kernel/time/built-in.o
-  CC      kernel/xenomai/arch/generic/hal.o
-In file included from =
-/opt/eldk/ppc_6xx/usr/src/linux-2.6.34-xenomai/arch/powerpc/include/asm/x=
-enomai/hal.h:32,
-                 from kernel/xenomai/arch/generic/hal.c:47:
-include/asm-generic/xenomai/hal.h: In function 'rthal_get_cpufreq':
-include/asm-generic/xenomai/hal.h:176: error: 'struct ipipe_sysinfo' has =
-no member named 'cpufreq'
-include/asm-generic/xenomai/hal.h: In function 'rthal_get_timerfreq':
-include/asm-generic/xenomai/hal.h:183: error: 'struct ipipe_sysinfo' has =
-no member named 'archdep'
-In file included from kernel/xenomai/arch/generic/hal.c:47:
-/opt/eldk/ppc_6xx/usr/src/linux-2.6.34-xenomai/arch/powerpc/include/asm/x=
-enomai/hal.h: In function 'rthal_get_active_mm':
-/opt/eldk/ppc_6xx/usr/src/linux-2.6.34-xenomai/arch/powerpc/include/asm/x=
-enomai/hal.h:109: error: 'ipipe_active_mm' undeclared
-(first use in this function)
-/opt/eldk/ppc_6xx/usr/src/linux-2.6.34-xenomai/arch/powerpc/include/asm/x=
-enomai/hal.h:109: error: (Each undeclared identifier is
-reported only once
-/opt/eldk/ppc_6xx/usr/src/linux-2.6.34-xenomai/arch/powerpc/include/asm/x=
-enomai/hal.h:109: error: for each function it appears in.)
-kernel/xenomai/arch/generic/hal.c: In function 'rthal_add_proc_leaf':
-kernel/xenomai/arch/generic/hal.c:740: error: 'struct proc_dir_entry' =
-has no member named 'owner'
-kernel/xenomai/arch/generic/hal.c: In function 'rthal_proc_register':
-kernel/xenomai/arch/generic/hal.c:755: error: 'struct proc_dir_entry' =
-has no member named 'owner'
+>>>     > should I be looking for?
 
-I'ld really like to get the 2.34 kernel running because I managed to =
-make it running without Xenomai already, whereas 2.6.24 did not
-made it because of other problems with the board settings
+>>>
 
-Any help would be very much appreciated
+>>>     What is described in the TROUBLESHOOTING file.
 
-  mit freundlichen Gr=FC=DFen,
-  sincerely yours
-  sinc=E8res salutations
+>>>
 
-Peter Kuennemann
+>>>
 
+>>> I have tried disabling the SMI workaround, ensuring that SMI detection
 
+>>> is not disabled, and logging the kernel output (setting the kernel log
+
+>>> level to 8 in grub and sending the output to the serial port to be
+
+>>> picked up by another machine). The troubleshooting file states that I
+
+>>> should see "Xenomai: Intel chipset found and SMI workaround not
+
+>>> enabled, you may encounter high interrupt latencies." in this output,
+
+>>> however this does not occur - I am using an Intel Core 2 Duo but with
+
+>>> SMP disabled, if this has any relevance.
+
+>> The SMI detection/workaround is based on the chipset you have. If your
+
+>> chipset is an ICH10, Stefan posted a patch a few days ago. If it is
+
+>> another one, then please send us the result of lspci -vv on your target.
+
+>>
+
+>
+> It seems to be ICH8, so the result is attached,
+
+ I appear to have a similar problem to Stephen except have a different chip
+set.
+The output of lspci -vv:
+"Intel Corporation 5 Series/3400 Series Chipset"
+Any suggestions?  I assume that it is the SMI interrupts that are causing my
+high latency.
+
+Patrick
+
+--001485f1a0bcf181d5048c1014a6
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt;&gt;<span style=3D"mso-spacerun: yes">=A0=A0=A0=
+=A0 </span>Stephen Bryant wrote:</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt;&gt;<span style=3D"mso-spacerun: yes">=A0=A0=A0=
+=A0 </span>&gt; I&#39;ve had a look at dmesg, but cannot find any reference=
+s to SMI -</font></font></p>
+
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt; what</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt;&gt;<span style=3D"mso-spacerun: yes">=A0=A0=A0=
+=A0 </span>&gt; should I be looking for?</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt;&gt;=A0</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt;&gt;<span style=3D"mso-spacerun: yes">=A0=A0=A0=
+=A0 </span>What is described in the TROUBLESHOOTING file.</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt;&gt;=A0</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt;&gt;=A0</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt;&gt; I have tried disabling the SMI workaround, e=
+nsuring that SMI detection</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt;&gt; is not disabled, and logging the kernel outp=
+ut (setting the kernel log</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt;&gt; level to 8 in grub and sending the output to=
+ the serial port to be</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt;&gt; picked up by another machine). The troublesh=
+ooting file states that I</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt;&gt; should see &quot;Xenomai: Intel chipset foun=
+d and SMI workaround not</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt;&gt; enabled, you may encounter high interrupt la=
+tencies.&quot; in this output,</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt;&gt; however this does not occur - I am using an =
+Intel Core 2 Duo but with</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt;&gt; SMP disabled, if this has any relevance.</fo=
+nt></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt; The SMI detection/workaround is based on the chi=
+pset you have. If your</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt; chipset is an ICH10, Stefan posted a patch a few=
+ days ago. If it is</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt; another one, then please send us the result of l=
+spci -vv on your target.</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;&gt;=A0</font></font></p>
+<p style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><font=
+ face=3D"Calibri">&gt;=A0</font></font></p>
+<div style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><fo=
+nt face=3D"Calibri">&gt; It seems to be ICH8, so the result is attached,</f=
+ont></font></div>
+<div style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3"><fo=
+nt face=3D"Calibri"></font></font>=A0</div>
+<div style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3" fac=
+e=3D"Calibri">=A0I appear to have a similar problem to Stephen except have =
+a different chip set.</font></div>
+<div style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3" fac=
+e=3D"Calibri">The output of lspci -vv:</font></div>
+<div style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3" fac=
+e=3D"Calibri">&quot;Intel Corporation 5 Series/3400 Series Chipset&quot;</f=
+ont></div>
+<div style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3" fac=
+e=3D"Calibri">Any suggestions?=A0 I assume that it is the SMI interrupts th=
+at are causing my high latency.</font></div>
+<div style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3" fac=
+e=3D"Calibri"></font>=A0</div>
+<div style=3D"MARGIN: 0in 0in 0pt" class=3D"MsoNormal"><font size=3D"3" fac=
+e=3D"Calibri">Patrick</font></div>
+
+--001485f1a0bcf181d5048c1014a6--
 
