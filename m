@@ -1,5 +1,5 @@
-Message-ID: <4C496047.5070109@domain.hid>
-Date: Fri, 23 Jul 2010 11:26:31 +0200
+Message-ID: <4C4960F4.3020306@domain.hid>
+Date: Fri, 23 Jul 2010 11:29:24 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <AANLkTikROCnKiEBnl2W92zNQUNkScJ0reqaKVtS2iFcw@domain.hid>
@@ -20,6 +20,28 @@ To: =?UTF-8?B?R8O2cmtlbSBLYXJhZG/En2Fu?= <gkaradagan@domain.hid>
 Cc: xenomai@xenomai.org
 
 G=C3=B6rkem Karado=C4=9Fan wrote:
+> $ /opt/xenomai-2.5.3/scripts/prepare-kernel.sh --arch=3Darm \
+> =20
+> --adeos=3D/opt/xenomai-2.5.3/ksrc/arch/arm/patches/adeos-ipipe-2.6.33-a=
+rm-* \
+>   --linux=3D/opt/linux-2.6.33/
+> $ cd /opt/linux-2.6.33/
+> $ mkdir build_root
+> $ make ARCH=3Darm CROSS_COMPILE=3Darm-none-linux-gnueabi-
+> O=3D/opt/linux-2.6.33/build_root omap3_evm_defconfig
+> $ make ARCH=3Darm CROSS_COMPILE=3Darm-none-linux-gnueabi-
+> O=3D/opt/linux-2.6.33/build_root bzImage modules
+>=20
+> $ cd /opt/linux-2.6.33/build_root
+> $ /opt/xenomai-2.5.3/configure --build=3Di686-pc-linux-gnu
+> --host=3Darm-linux --enable-arm-mach=3Domap3 --enable-arm-tsc
+> $ mkdir staging_dir
+> $ cd ..
+> $ make DESTDIR=3D/opt/linux-2.6.33/staging_dir install ///// I got this=
+
+> error in this part.
+
+
 > libtool: compile:  gcc -DHAVE_CONFIG_H -I. -I/opt/xenomai-2.5.3/src/rtd=
 k
 > -I../../src/include -O2 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe
@@ -32,10 +54,14 @@ k
 > /opt/xenomai-2.5.3/src/rtdk/init.c:1: error: bad value (armv7-a) for
 > -mtune=3D switch
 
-Your toolchain does not support the -march=3Darmv7-a flag. Either stop
-using an old toolchain, or pass --enable-arm-mach=3Dimx31 to xenomai
-configure script.
+Sorry, wrong answer. You have not told configure the proper compilation
+prefix, so, it failed finding "arm-linux-gcc", and fall back to gcc.
+Unfortunately, gcc is not able to generate arm code, only
+arm-none-linux-gnueabi-gcc is.
 
+pass --host=3Darm-none-linux-gnueabi to configure, or pass a value for CC=
+
+on configure command line.
 
 --=20
 					    Gilles.
