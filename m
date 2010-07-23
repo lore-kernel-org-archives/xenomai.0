@@ -1,24 +1,9 @@
-Message-ID: <4C492A81.5030201@domain.hid>
-Date: Fri, 23 Jul 2010 07:37:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4C43C83F.5030401@domain.hid>
-	<4C43D265.9080609@domain.hid>	<4C43FC4F.3010006@domain.hid>
-	<4C440D6F.1060204@domain.hid>	<4C44E9C9.3020600@domain.hid>
-	<4C454C0C.6000100@domain.hid>	<4C4550C8.3070504@domain.hid>
-	<4C45541C.5090507@domain.hid> <4C45CEE6.5000903@domain.hid>
-	<4C460506.3010103@domain.hid> <4C46141F.50103@domain.hid>
-	<4C468040.3030509@domain.hid> <4C468485.5060408@domain.hid>
-	<4C47597F.1010406@domain.hid>
-	<4C478313.2030606@domain.hid>
-	<4C48C1BB.8080606@domain.hid> <4C48C2CE.1030706@domain.hid>
-	<4C48D539.8040406@domain.hid> <4C48D5BD.6000207@domain.hid>
-	<4C48E443.3040909@domain.hid>
-In-Reply-To: <4C48E443.3040909@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Adeos patched kernel hangs mounting root file
- system - correction
+Date: Fri, 23 Jul 2010 10:33:18 +0300
+Message-ID: <AANLkTikROCnKiEBnl2W92zNQUNkScJ0reqaKVtS2iFcw@domain.hid>
+From: =?ISO-8859-9?Q?G=F6rkem_Karado=F0an?= <gkaradagan@domain.hid>
+Content-Type: multipart/alternative; boundary=0016e640d3d2739a90048c090c15
+Subject: [Xenomai-help] staging_dir install errors
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -28,26 +13,179 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bob Feretich <bob.feretich@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Bob Feretich wrote:
->   I guess that I need to buy a new build server. My turn around time on 
-> a new kernel is about 2 hours. (1.1 GHz Athelon 1.5 GB RAM 1-core)
-> It's fine for compiling my applications and drivers. I hadn't planned on 
-> building multiple kernels per day.
+--0016e640d3d2739a90048c090c15
+Content-Type: text/plain; charset=ISO-8859-1
 
-That is because you restart building the kernel from scratch every time.
-If, on the other hand, you only re-run make in the kernel build-tree
-after having changed a few files in the source tree under git control,
-the kernel build system will only re-build those files which have
-changed. And I guess you mean an x86 kernel, because an ARM kernel
-usually has far less options than an x86 kernel and is really fast to
-compile.
+$ /opt/xenomai-2.5.3/scripts/prepare-kernel.sh --arch=arm \
+  --adeos=/opt/xenomai-2.5.3/ksrc/arch/arm/patches/adeos-ipipe-2.6.33-arm-*
+\
+  --linux=/opt/linux-2.6.33/
+$ cd /opt/linux-2.6.33/
+$ mkdir build_root
+$ make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi-
+O=/opt/linux-2.6.33/build_root omap3_evm_defconfig
+$ make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi-
+O=/opt/linux-2.6.33/build_root bzImage modules
 
-If you want to be able to debug Linux kernel issues, you can not keep a
-turn around time of 2 hours.
+$ cd /opt/linux-2.6.33/build_root
+$ /opt/xenomai-2.5.3/configure --build=i686-pc-linux-gnu --host=arm-linux
+--enable-arm-mach=omap3 --enable-arm-tsc
+$ mkdir staging_dir
+$ cd ..
+$ make DESTDIR=/opt/linux-2.6.33/staging_dir install ///// I got this error
+in this part.
 
--- 
-					    Gilles.
+
+i prepare this installing documents, and i came last part without errors
+but last part i got this error code :)
+
+root@domain.hid# make DESTDIR=/opt/linux-2.6.33/staging_dir
+install
+Making install in src
+make[1]: Entering directory `/opt/linux-2.6.33/src'
+Making install in include
+make[2]: Entering directory `/opt/linux-2.6.33/src/include'
+make[3]: Entering directory `/opt/linux-2.6.33/src/include'
+make[3]: Nothing to be done for `install-exec-am'.
+make[3]: Nothing to be done for `install-data-am'.
+make[3]: Leaving directory `/opt/linux-2.6.33/src/include'
+make[2]: Leaving directory `/opt/linux-2.6.33/src/include'
+Making install in rtdk
+make[2]: Entering directory `/opt/linux-2.6.33/src/rtdk'
+/bin/bash ../../libtool --tag=CC   --mode=compile gcc -DHAVE_CONFIG_H -I.
+-I/opt/xenomai-2.5.3/src/rtdk -I../../src/include  -O2 -D_GNU_SOURCE
+-D_REENTRANT -Wall -pipe -march=armv7-a -D__XENO__ -D__IN_XENO__
+-Wstrict-prototypes -I/opt/xenomai-2.5.3/include    -MT librtdk_la-init.lo
+-MD -MP -MF .deps/librtdk_la-init.Tpo -c -o librtdk_la-init.lo `test -f
+'init.c' || echo '/opt/xenomai-2.5.3/src/rtdk/'`init.c
+libtool: compile:  gcc -DHAVE_CONFIG_H -I. -I/opt/xenomai-2.5.3/src/rtdk
+-I../../src/include -O2 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe
+-march=armv7-a -D__XENO__ -D__IN_XENO__ -Wstrict-prototypes
+-I/opt/xenomai-2.5.3/include -MT librtdk_la-init.lo -MD -MP -MF
+.deps/librtdk_la-init.Tpo -c /opt/xenomai-2.5.3/src/rtdk/init.c  -fPIC -DPIC
+-o .libs/librtdk_la-init.o
+/opt/xenomai-2.5.3/src/rtdk/init.c:1: error: bad value (armv7-a) for -march=
+switch
+/opt/xenomai-2.5.3/src/rtdk/init.c:1: error: bad value (armv7-a) for -mtune=
+switch
+make[2]: *** [librtdk_la-init.lo] Error 1
+make[2]: Leaving directory `/opt/linux-2.6.33/src/rtdk'
+make[1]: *** [install-recursive] Error 1
+make[1]: Leaving directory `/opt/linux-2.6.33/src'
+make: *** [install-recursive] Error 1
+root@domain.hid# make DESTDIR=/opt/linux-2.6.33/staging_dir
+install
+Making install in src
+make[1]: Entering directory `/opt/linux-2.6.33/src'
+Making install in include
+make[2]: Entering directory `/opt/linux-2.6.33/src/include'
+make[3]: Entering directory `/opt/linux-2.6.33/src/include'
+make[3]: Nothing to be done for `install-exec-am'.
+make[3]: Nothing to be done for `install-data-am'.
+make[3]: Leaving directory `/opt/linux-2.6.33/src/include'
+make[2]: Leaving directory `/opt/linux-2.6.33/src/include'
+Making install in rtdk
+make[2]: Entering directory `/opt/linux-2.6.33/src/rtdk'
+/bin/bash ../../libtool --tag=CC   --mode=compile gcc -DHAVE_CONFIG_H -I.
+-I/opt/xenomai-2.5.3/src/rtdk -I../../src/include  -O2 -D_GNU_SOURCE
+-D_REENTRANT -Wall -pipe -march=armv7-a -D__XENO__ -D__IN_XENO__
+-Wstrict-prototypes -I/opt/xenomai-2.5.3/include    -MT librtdk_la-init.lo
+-MD -MP -MF .deps/librtdk_la-init.Tpo -c -o librtdk_la-init.lo `test -f
+'init.c' || echo '/opt/xenomai-2.5.3/src/rtdk/'`init.c
+libtool: compile:  gcc -DHAVE_CONFIG_H -I. -I/opt/xenomai-2.5.3/src/rtdk
+-I../../src/include -O2 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe
+-march=armv7-a -D__XENO__ -D__IN_XENO__ -Wstrict-prototypes
+-I/opt/xenomai-2.5.3/include -MT librtdk_la-init.lo -MD -MP -MF
+.deps/librtdk_la-init.Tpo -c /opt/xenomai-2.5.3/src/rtdk/init.c  -fPIC -DPIC
+-o .libs/librtdk_la-init.o
+/opt/xenomai-2.5.3/src/rtdk/init.c:1: error: bad value (armv7-a) for -march=
+switch
+/opt/xenomai-2.5.3/src/rtdk/init.c:1: error: bad value (armv7-a) for -mtune=
+switch
+make[2]: *** [librtdk_la-init.lo] Error 1
+make[2]: Leaving directory `/opt/linux-2.6.33/src/rtdk'
+make[1]: *** [install-recursive] Error 1
+make[1]: Leaving directory `/opt/linux-2.6.33/src'
+make: *** [install-recursive] Error 1
+
+--0016e640d3d2739a90048c090c15
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+$ /opt/xenomai-2.5.3/scripts/prepare-kernel.sh --arch=3Darm \<br>=A0 --adeo=
+s=3D/opt/xenomai-2.5.3/ksrc/arch/arm/patches/adeos-ipipe-2.6.33-arm-* \<br>=
+=A0 --linux=3D/opt/linux-2.6.33/<br>$ cd /opt/linux-2.6.33/<br>$ mkdir buil=
+d_root<br>
+$ make ARCH=3Darm CROSS_COMPILE=3Darm-none-linux-gnueabi- O=3D/opt/linux-2.=
+6.33/build_root omap3_evm_defconfig<br>$ make ARCH=3Darm CROSS_COMPILE=3Dar=
+m-none-linux-gnueabi- O=3D/opt/linux-2.6.33/build_root bzImage modules<br><=
+br>$ cd /opt/linux-2.6.33/build_root<br>
+$ /opt/xenomai-2.5.3/configure --build=3Di686-pc-linux-gnu --host=3Darm-lin=
+ux --enable-arm-mach=3Domap3 --enable-arm-tsc<br>$ mkdir staging_dir<br>$ c=
+d ..<br>$ make DESTDIR=3D/opt/linux-2.6.33/staging_dir install ///// I got =
+this error in this part. <br>
+<br><br>i prepare this installing documents, and i came last part without e=
+rrors=A0 but last part i got this error code :) <br><br>root@domain.hid=
+nux-2.6.33# make DESTDIR=3D/opt/linux-2.6.33/staging_dir install<br>Making =
+install in src<br>
+make[1]: Entering directory `/opt/linux-2.6.33/src&#39;<br>Making install i=
+n include<br>make[2]: Entering directory `/opt/linux-2.6.33/src/include&#39=
+;<br>make[3]: Entering directory `/opt/linux-2.6.33/src/include&#39;<br>
+make[3]: Nothing to be done for `install-exec-am&#39;.<br>make[3]: Nothing =
+to be done for `install-data-am&#39;.<br>make[3]: Leaving directory `/opt/l=
+inux-2.6.33/src/include&#39;<br>make[2]: Leaving directory `/opt/linux-2.6.=
+33/src/include&#39;<br>
+Making install in rtdk<br>make[2]: Entering directory `/opt/linux-2.6.33/sr=
+c/rtdk&#39;<br>/bin/bash ../../libtool --tag=3DCC=A0=A0 --mode=3Dcompile gc=
+c -DHAVE_CONFIG_H -I. -I/opt/xenomai-2.5.3/src/rtdk -I../../src/include=A0 =
+-O2 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -march=3Darmv7-a -D__XENO__ -D__=
+IN_XENO__ -Wstrict-prototypes -I/opt/xenomai-2.5.3/include=A0=A0=A0 -MT lib=
+rtdk_la-init.lo -MD -MP -MF .deps/librtdk_la-init.Tpo -c -o librtdk_la-init=
+.lo `test -f &#39;init.c&#39; || echo &#39;/opt/xenomai-2.5.3/src/rtdk/&#39=
+;`init.c<br>
+libtool: compile:=A0 gcc -DHAVE_CONFIG_H -I. -I/opt/xenomai-2.5.3/src/rtdk =
+-I../../src/include -O2 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -march=3Darm=
+v7-a -D__XENO__ -D__IN_XENO__ -Wstrict-prototypes -I/opt/xenomai-2.5.3/incl=
+ude -MT librtdk_la-init.lo -MD -MP -MF .deps/librtdk_la-init.Tpo -c /opt/xe=
+nomai-2.5.3/src/rtdk/init.c=A0 -fPIC -DPIC -o .libs/librtdk_la-init.o<br>
+/opt/xenomai-2.5.3/src/rtdk/init.c:1: error: bad value (armv7-a) for -march=
+=3D switch<br>/opt/xenomai-2.5.3/src/rtdk/init.c:1: error: bad value (armv7=
+-a) for -mtune=3D switch<br>make[2]: *** [librtdk_la-init.lo] Error 1<br>ma=
+ke[2]: Leaving directory `/opt/linux-2.6.33/src/rtdk&#39;<br>
+make[1]: *** [install-recursive] Error 1<br>make[1]: Leaving directory `/op=
+t/linux-2.6.33/src&#39;<br>make: *** [install-recursive] Error 1<br>root@domain.hid=
+rkem:/opt/linux-2.6.33# make DESTDIR=3D/opt/linux-2.6.33/staging_dir instal=
+l<br>
+Making install in src<br>make[1]: Entering directory `/opt/linux-2.6.33/src=
+&#39;<br>Making install in include<br>make[2]: Entering directory `/opt/lin=
+ux-2.6.33/src/include&#39;<br>make[3]: Entering directory `/opt/linux-2.6.3=
+3/src/include&#39;<br>
+make[3]: Nothing to be done for `install-exec-am&#39;.<br>make[3]: Nothing =
+to be done for `install-data-am&#39;.<br>make[3]: Leaving directory `/opt/l=
+inux-2.6.33/src/include&#39;<br>make[2]: Leaving directory `/opt/linux-2.6.=
+33/src/include&#39;<br>
+Making install in rtdk<br>make[2]: Entering directory `/opt/linux-2.6.33/sr=
+c/rtdk&#39;<br>/bin/bash ../../libtool --tag=3DCC=A0=A0 --mode=3Dcompile gc=
+c -DHAVE_CONFIG_H -I. -I/opt/xenomai-2.5.3/src/rtdk -I../../src/include=A0 =
+-O2 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -march=3Darmv7-a -D__XENO__ -D__=
+IN_XENO__ -Wstrict-prototypes -I/opt/xenomai-2.5.3/include=A0=A0=A0 -MT lib=
+rtdk_la-init.lo -MD -MP -MF .deps/librtdk_la-init.Tpo -c -o librtdk_la-init=
+.lo `test -f &#39;init.c&#39; || echo &#39;/opt/xenomai-2.5.3/src/rtdk/&#39=
+;`init.c<br>
+libtool: compile:=A0 gcc -DHAVE_CONFIG_H -I. -I/opt/xenomai-2.5.3/src/rtdk =
+-I../../src/include -O2 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -march=3Darm=
+v7-a -D__XENO__ -D__IN_XENO__ -Wstrict-prototypes -I/opt/xenomai-2.5.3/incl=
+ude -MT librtdk_la-init.lo -MD -MP -MF .deps/librtdk_la-init.Tpo -c /opt/xe=
+nomai-2.5.3/src/rtdk/init.c=A0 -fPIC -DPIC -o .libs/librtdk_la-init.o<br>
+/opt/xenomai-2.5.3/src/rtdk/init.c:1: error: bad value (armv7-a) for -march=
+=3D switch<br>/opt/xenomai-2.5.3/src/rtdk/init.c:1: error: bad value (armv7=
+-a) for -mtune=3D switch<br>make[2]: *** [librtdk_la-init.lo] Error 1<br>ma=
+ke[2]: Leaving directory `/opt/linux-2.6.33/src/rtdk&#39;<br>
+make[1]: *** [install-recursive] Error 1<br>make[1]: Leaving directory `/op=
+t/linux-2.6.33/src&#39;<br>make: *** [install-recursive] Error 1<br><br><br=
+>
+
+--0016e640d3d2739a90048c090c15--
 
