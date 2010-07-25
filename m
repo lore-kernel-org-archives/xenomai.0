@@ -1,5 +1,5 @@
-Message-ID: <4C4BE198.7030503@domain.hid>
-Date: Sun, 25 Jul 2010 09:02:48 +0200
+Message-ID: <4C4C02BC.4010306@domain.hid>
+Date: Sun, 25 Jul 2010 11:24:12 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4C43C83F.5030401@domain.hid>
@@ -37,24 +37,60 @@ Bob Feretich wrote:
 > With the Adeos patch installed, but Adeos disabled, the system ran 
 > normally. IRQ 384s were presented and serviced.  (The SD card removal 
 > amd insertion was handled correctly.)
-> 
 
-That is reassuring.
+Ok. Could you try the following patch? It fixes the "always growing PIH 
+interrupt count" number here, and now I have some twl4030_usb 
+interrupts. However, I could not test the SD card insertion/removal, 
+because I am working on the board remotely.
 
-
-> (...)
-> Test 2 results:
-> With the Adeos patch installed,  Adeos enabled, Xenomai disabled, the 
-> spurious irpt patch reverted....
-> The system ran normally, until an IRQ 384 occurred. Then continuous 
-> spurious interrupts occurred.
-
-Ok. So, we have a real issue, which the "fix" was just papering over.
-Now, we just have to understand what happens. Thanks.
-
-Note that the board still works when it displays the "spurious
-interrupts" messages, only the serial console is rendered unusable by
-the messages.
+diff --git a/drivers/i2c/busses/i2c-omap.c b/drivers/i2c/busses/i2c-omap.c
+index 8d608a1..0037e31 100644
+--- a/drivers/i2c/busses/i2c-omap.c
++++ b/drivers/i2c/busses/i2c-omap.c
+@@ -478,10 +478,6 @@ static int omap_i2c_xfer_msg(struct i2c_adapter *adap,
+ 	if (msg->len == 0)
+ 		return -EINVAL;
+ 
+-#ifdef CONFIG_IPIPE
+-	disable_irq(dev->irq);
+-#endif /* CONFIG_IPIPE */
+-
+ 	omap_i2c_write_reg(dev, OMAP_I2C_SA_REG, msg->addr);
+ 
+ 	/* REVISIT: Could the STB bit of I2C_CON be used with probing? */
+@@ -525,9 +521,6 @@ static int omap_i2c_xfer_msg(struct i2c_adapter *adap,
+ 
+ 			/* Let the user know if i2c is in a bad state */
+ 			if (time_after(jiffies, delay)) {
+-#ifdef CONFIG_IPIPE
+-				enable_irq(dev->irq);
+-#endif /* CONFIG_IPIPE */
+ 				dev_err(dev->dev, "controller timed out "
+ 				"waiting for start condition to finish\n");
+ 				return -ETIMEDOUT;
+@@ -539,9 +532,6 @@ static int omap_i2c_xfer_msg(struct i2c_adapter *adap,
+ 		w &= ~OMAP_I2C_CON_STT;
+ 		omap_i2c_write_reg(dev, OMAP_I2C_CON_REG, w);
+ 	}
+-#ifdef CONFIG_IPIPE
+-	enable_irq(dev->irq);
+-#endif /* CONFIG_IPIPE */
+ 
+ 	/*
+ 	 * REVISIT: We should abort the transfer on signals, but the bus goes
+diff --git a/drivers/mfd/twl4030-irq.c b/drivers/mfd/twl4030-irq.c
+index 9df9a5a..fb4b9f2 100644
+--- a/drivers/mfd/twl4030-irq.c
++++ b/drivers/mfd/twl4030-irq.c
+@@ -332,7 +332,7 @@ static int twl4030_irq_thread(void *data)
+ 					note_interrupt(module_irq, d,
+ 							IRQ_NONE);
+ 				else
+-					d->handle_irq(module_irq, d);
++					ipipe_handle_irq_cond(module_irq);
+ 			}
+ 		}
+ 		local_irq_enable();
 
 -- 
 					    Gilles.
